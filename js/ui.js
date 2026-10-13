@@ -2,6 +2,7 @@
 import * as Ink from './ink.js';
 import { h } from './explain.js';
 import * as Share from './share.js';
+import { renderTex } from './tex.js';
 
 const I = {
   pen: '<path d="M4 20l1.2-4.6L16.4 4.2a2 2 0 0 1 2.8 0l.6.6a2 2 0 0 1 0 2.8L8.6 18.8z"/><path d="M14.5 6l3.5 3.5"/>',
@@ -20,6 +21,7 @@ const icon = (k) => '<svg viewBox="0 0 24 24" aria-hidden="true">' + I[k] + '</s
 
 export function boot({ key, homeHref = '../../', title = '' }) {
   const sh = Share.setup(key);
+  if (window.katex) renderTex(document);
   fitLesson();
   /* ---------- toolbar ---------- */
   const tb = h('header', 'tb no-ink'); tb.id = 'tb';

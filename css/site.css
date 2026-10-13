@@ -374,3 +374,7 @@ body.board-open { overflow: hidden; }
 .qr-img { width: min(62vh, 78vw); margin: 10px auto; }
 .qr-img svg { width: 100%; height: auto; display: block; }
 .qr-url { font: 600 18px var(--font); color: var(--ink2); margin-bottom: 14px; word-break: break-all; }
+
+/* KaTeX tweaks: keep math the same size as the text around it, and readable on the projector */
+.katex { font-size: 1.08em; }
+.tex.display { display: block; text-align: center; margin: 6px 0; }
