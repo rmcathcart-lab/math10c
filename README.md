@@ -1,4 +1,18 @@
-# Math 10C Practice
+# Math 10C
+
+Everything for Mr. Cathcart's Math 10C, in one site: https://rmcathcart-lab.github.io/math10c/
+
+| Part | Where | Repo folder |
+|---|---|---|
+| **Practice** (students: homework with generated questions, sign-in, progress) | `/math10c/` | root (`index.html`, `js/`, `assets/`) |
+| **Lessons** (projected from the iPad with Apple Pencil ink; students view the class notes with `?class=B`) | `/math10c/lessons/` | `lessons/` (see `lessons/README.md`, `lessons/LESSON_BRIEF.md`) |
+| **Teacher dashboard** (Practice Ledger) | `/math10c/teacher/` | `teacher/` |
+
+The lesson pages share the practice site's calculator (`js/calc.js`) and KaTeX (`assets/katex`). Each has its own Apps Script
+backend (`backend/Code.gs` = Practice Ledger, `lessons/backend/Code.gs` = Teaching Ink). GitHub Pages builds from `main`.
+The old `math10C-practice` and `math10c-teaching` sites redirect here (paths, `?class=` and `#/…` are kept).
+
+# Practice
 
 Homework practice for every Math 10C lesson, built from the course booklets. Every question is a generator: it keeps the idea and difficulty of the booklet question and changes the numbers, so each student gets their own version (the same on every device) and a fresh one whenever they need it.
 

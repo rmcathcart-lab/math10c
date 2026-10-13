@@ -9,10 +9,12 @@ async def main():
     urllib.request.urlopen(MOCK + '?action=setblock&key=testkey&class=10c-b&block=C').read()
     errs = []
     async with async_playwright() as p:
-        b = await p.chromium.launch(); page = await (await b.new_context(viewport={'width': 1300, 'height': 950})).new_page()
+        b = await p.chromium.launch(); ctx = await b.new_context(viewport={'width': 1300, 'height': 950})
+        await ctx.route('**/script.google.com/**', lambda r: r.abort())  # the live Teaching Ink backend
+        page = await ctx.new_page()
         page.on('pageerror', lambda e: errs.append(str(e)))
         await page.route('**/cdn.jsdelivr.net/**', lambda r: r.abort())
-        await page.route('**/js/config.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=CONFIG))
+        await page.route(BASE + 'js/config.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=CONFIG))
         await page.goto(BASE + '?class=10c-b'); await page.wait_for_selector('.name-btn', timeout=10000)
         await page.click('.name-btn:has-text("Ben Lee")')
         pins = page.locator('.field.pin'); await pins.nth(0).fill('4321'); await pins.nth(1).fill('4321')
@@ -22,6 +24,12 @@ async def main():
         print('home cards:', home)
         assert len(home) == 15 and home[0].endswith('/u1/l1/?class=C') and home[5].endswith('/u1/l6a/?class=C') and home[7].endswith('/u1/l7/?class=C') and all(h is None for h in home[8:]), home
         await page.screenshot(path='/tmp/home_cards.png', full_page=False)
+        # the card opens the lesson page itself (served from the same repo) in a new tab
+        async with page.context.expect_page() as pi: await page.click('a.lesson-teach >> nth=0')
+        lp = await pi.value; await lp.wait_for_load_state('load'); await lp.wait_for_timeout(1500)
+        lesson = await lp.evaluate("[location.pathname + location.search, !!(window.HW && HW.Calc), document.querySelectorAll('.katex').length, (document.querySelector('a.assign')||{}).href]")
+        print('lesson page:', lesson); assert lesson[0] == '/lessons/u1/l1/?class=C' and lesson[1] and lesson[3] == BASE + '#/lesson/u1l1', lesson
+        await lp.close()
         await page.set_viewport_size({'width': 390, 'height': 800}); await page.wait_for_timeout(200)
         await page.screenshot(path='/tmp/home_cards_phone.png')
         await page.set_viewport_size({'width': 1300, 'height': 950})
@@ -34,8 +42,8 @@ async def main():
         await page.screenshot(path='/tmp/teach_link.png', clip={'x': 0, 'y': 0, 'width': 1300, 'height': 600})
         await page.set_viewport_size({'width': 390, 'height': 800}); await page.evaluate("location.hash = '#/lesson/u1l2'"); await page.wait_for_timeout(500)
         await page.screenshot(path='/tmp/teach_link_phone.png')
-        ok = out == {'u1l1': 'https://rmcathcart-lab.github.io/math10c-teaching/u1/l1/?class=C',
-                     'u1l6a': 'https://rmcathcart-lab.github.io/math10c-teaching/u1/l6a/?class=C', 'u2l1': None}
+        ok = out == {'u1l1': BASE + 'lessons/u1/l1/?class=C',
+                     'u1l6a': BASE + 'lessons/u1/l6a/?class=C', 'u2l1': None}
         print('errors:', errs); print('PASS' if ok and not errs else 'FAIL')
         await b.close()
 asyncio.run(main())

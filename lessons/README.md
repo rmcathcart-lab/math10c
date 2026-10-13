@@ -2,7 +2,7 @@
 
 Math 10C lessons built to be projected from an iPad and written on with an Apple Pencil.
 
-**Site:** https://rmcathcart-lab.github.io/math10c-teaching/ (GitHub Pages builds from the `gh-pages` branch: push `main` to both `main` and `gh-pages`).
+**Site:** https://rmcathcart-lab.github.io/math10c/lessons/ — part of the combined `math10c` repo (practice site at the root, lesson pages here). GitHub Pages builds from `main`.
 
 ## What's on a lesson page
 
@@ -27,7 +27,7 @@ With `inkApi` set in `js/config.js` (the /exec URL of `backend/Code.gs`, an Apps
 - `js/ui.js` — toolbar, menu, board, calculator wiring and key-press demos (`data-keys="91 ÷ 7 ="`).
 - `js/explain.js` — the step-through explainer framework (`Explainer`), the tap-to-split `FactorTree`, number helpers.
 - `js/lessons/u1l1.js` — Unit 1 Lesson 1's explainers.
-- `js/calc.js`, `css/calc.css` — copied from `math10C-practice`.
+- `css/calc.css` — calculator styles for lesson pages; the calculator itself is the practice site's `../js/calc.js` (shared), as is KaTeX (`../assets/katex`).
 - `u1/l1/index.html` — the lesson page.
 
 ## Adding a lesson
@@ -37,3 +37,4 @@ See `LESSON_BRIEF.md` for the full checklist used to build Lessons 2–7.
 1. Copy `u1/l1/index.html` to `uN/lM/index.html`; every card that should take ink gets a unique `data-ink` id and a `data-section` name for the Jump menu.
 2. Write `js/lessons/uNlM.js` with explainer definitions (`{ title, height, choices, intro, make(stage, value, ex) → steps }`) and mount them on `[data-explainer]` elements.
 3. Call `boot({ key: 'uNlM', title: '…' })` and add the lesson to `index.html`.
+4. Add the id to `HW.TEACHING.lessons` in the root `js/catalog.js`, so the practice site links to it.

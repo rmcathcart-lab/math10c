@@ -322,6 +322,8 @@ body.board-open { overflow: hidden; }
 
 /* ---------------- home page ---------------- */
 .home-wrap { max-width: 980px; margin: 0 auto; padding: 36px 20px 80px; }
+.home-links { margin: -4px 0 22px; font-size: 16px; color: var(--muted); }
+.home-links a { font-weight: 600; }
 .unit { margin-bottom: 22px; }
 .unit-h { display: flex; align-items: baseline; gap: 12px; margin: 0 0 12px; }
 .lessons { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }

@@ -1,8 +1,15 @@
 # Brief: build one Math 10C teaching lesson page (Unit 1)
 
+> **Repo:** these lesson pages now live in the combined repo **rmcathcart-lab/math10c**, folder `lessons/`
+> (site: https://rmcathcart-lab.github.io/math10c/lessons/). The old `math10c-teaching` repo only redirects here.
+> After adding a lesson page, also add its id to `HW.TEACHING.lessons` in `js/catalog.js` (repo root) so the practice
+> site shows its Lesson card and sidebar button.
+
+
 You are building ONE lesson page for Ryan's (a high-school math teacher in Alberta) "Math 10C Teaching" site:
-`/home/claude/math10c-teaching` (served live on GitHub Pages; a local server is already running at
-http://localhost:8765/ serving that folder — if it isn't, start one: `cd /home/claude/math10c-teaching && nohup python3 -m http.server 8765 &`).
+the `lessons/` folder of the `math10c` repo (clone at `/home/claude/math10c`; served live on GitHub Pages). Serve the
+REPO ROOT, not `lessons/` (pages load the shared calculator and KaTeX from the root): `cd /home/claude/math10c && nohup python3 -m http.server 8765 &`,
+then open http://localhost:8765/lessons/u1/lN/. File paths below are relative to `lessons/`.
 
 Ryan projects these pages from his iPad, writes on them with an Apple Pencil, and steps through explainer animations
 while he teaches. He loved Lesson 1 — "make sure you do them to the same calibre you did for lesson 1, because lesson 1
@@ -20,7 +27,8 @@ looks awesome". Lesson 1 is the reference for EVERYTHING: structure, tone, densi
 - `js/tex.js` — NEW: KaTeX math. `tex('\\sqrt[3]{54}')` returns HTML; any element with class `tex` (text = LaTeX) is typeset
   at page boot. Use it for radicals, fractions, repeating bars (`0.\\overline{36}`), exponents, set symbols (`\\mathbb{Q}`, `\\overline{Q}`)…
   To use KaTeX the page must include, in `<head>`:
-  `<link rel="stylesheet" href="../../assets/katex/katex.min.css">` and `<script src="../../assets/katex/katex.min.js"></script>`.
+  `<link rel="stylesheet" href="../../../assets/katex/katex.min.css">` and `<script src="../../../assets/katex/katex.min.js"></script>`
+  (KaTeX and the calculator `../../../js/calc.js` are shared with the practice site at the repo root).
 - `css/site.css` — all shared styles. `js/ui.js` — toolbar, calculator demo key spec (KEYMAP: digits, ÷ × + − ^ ( ) = √ ˣ√ x² x³ x⁻¹ π (−) F◂▸D ab/c d/e).
   Example: `data-keys="3 ˣ√ 64 ="` shows the TI-30XIIS x-th root. `data-keys="√ 50 ="`.
 - `js/ink.js` — DON'T change. Every card is a writing surface via a unique `data-ink="<id>"`; every card that should be in
@@ -67,7 +75,7 @@ looks awesome". Lesson 1 is the reference for EVERYTHING: structure, tone, densi
 - Improve the lesson where it helps: "Watch out" tips for common mistakes, a "Think" question, quick-reference cards,
   calculator tips with "Show me" key demos wherever the TI-30XIIS is relevant (roots, decimals, F◂▸D fraction conversion, checking).
 - Summary card ("Key ideas", 4 tiles) + an assignment link card to the practice site:
-  `https://rmcathcart-lab.github.io/math10C-practice/#/lesson/u1lN` ("Assignment N — <title>", "Practice on the Math 10C Practice site"),
+  `../../../#/lesson/u1lN` (the practice site is the root of the same repo) ("Assignment N — <title>", "Practice on the Math 10C Practice site"),
   and a "Next lesson →" link to the next lesson page if there is one (`../lM/`).
 - Math must LOOK like math: use KaTeX (`tex`) for radicals, fractions, repeating bars, set names. Numbers ≥ 1000 use a thin
   space like the booklet ("3 432") — `fmt()` does this.

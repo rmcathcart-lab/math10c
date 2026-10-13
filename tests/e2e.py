@@ -14,7 +14,7 @@ async def setup(page, errs):
     page.on('console', lambda m: errs.append('console: ' + m.text) if m.type == 'error' and 'jsdelivr' not in m.text and 'ERR_FAILED' not in m.text else None)
     await page.route('**/cdn.jsdelivr.net/**', lambda r: r.abort())
     await page.route('**/cdnjs.cloudflare.com/**', lambda r: r.abort())
-    await page.route('**/js/config.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=CONFIG))
+    await page.route(BASE + 'js/config.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=CONFIG))
 
 async def inst(page): return await page.evaluate("HW.App.cur().inst ? {key: HW.App.cur().inst.key, type: HW.App.cur().inst.input.type, n: HW.App.cur().inst.input.n, opts: HW.App.cur().inst.input.options} : null")
 async def goto_item(page, id): await page.evaluate("location.hash = '#/lesson/u1l1/%s'" % id); await page.wait_for_timeout(250)
@@ -98,7 +98,7 @@ async def main():
         await page.click('a.lesson-row'); await page.wait_for_selector('.qcard')
         # the sidebar starts with a link to the lesson on the teaching site, for this student's block (10c-b → B)
         tl = await page.evaluate("[location.hash, (document.querySelector('.qnav a.teach-link')||{}).href, (document.querySelector('.qnav a.teach-link')||{}).target, document.querySelectorAll('.xnav').length]")
-        print('teaching link:', tl); assert tl[0].endswith('/1a') and tl[1] == 'https://rmcathcart-lab.github.io/math10c-teaching/u1/l1/?class=B' and tl[2] == '_blank' and tl[3] == 0, tl
+        print('teaching link:', tl); assert tl[0].endswith('/1a') and tl[1] == BASE + 'lessons/u1/l1/?class=B' and tl[2] == '_blank' and tl[3] == 0, tl
         await goto_item(page, '1a'); await page.wait_for_selector('.qcard .btn-check')
 
         # 1a right first try
