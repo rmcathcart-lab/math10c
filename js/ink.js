@@ -108,7 +108,7 @@ export function pack(s) {
 }
 function unpack(o) { return { id: o.id || rid(), t: o.t, c: o.c, w: o.w, pen: !!o.pen, p: o.p }; }
 function flush() {
-  clearTimeout(saveTimer);
+  clearTimeout(saveTimer); commitPending();
   if (!S.key) return;
   const out = {};
   S.surfaces.forEach((sf, id) => { if (sf.strokes.length) out[id] = sf.strokes.map(pack); });
@@ -148,8 +148,10 @@ function apply(act, inverse) {
   act.strokes.forEach((s) => { if (addIt) sf.add(s); else sf.remove(s); });
   sync(addIt, act.surf, act.strokes);
 }
-export function undo() { const a = S.undo.pop(); if (!a) return; apply(a, true); S.redo.push(a); emit(); save(); }
-export function redo() { const a = S.redo.pop(); if (!a) return; apply(a, false); S.undo.push(a); emit(); save(); }
+export function undo() { commitPending();
+   const a = S.undo.pop(); if (!a) return; apply(a, true); S.redo.push(a); emit(); save(); }
+export function redo() { commitPending();
+   const a = S.redo.pop(); if (!a) return; apply(a, false); S.undo.push(a); emit(); save(); }
 
 /* ---------------- pointer handling ---------------- */
 function surfaceFor(target) {
@@ -159,31 +161,68 @@ function surfaceFor(target) {
 }
 function writes(type) { return type === 'pen' || type === 'mouse' || (type === 'touch' && S.finger); }
 
+/* With a light touch, Safari can lose and regain the Pencil's contact several times within one stroke, which used to
+ * leave a chain of short separate strokes. So a Pencil stroke isn't finished on pointerup straight away: if the Pencil
+ * touches down again within a moment, close to where it lifted, the same stroke carries on. */
+const JOIN_MS = 160, JOIN_PX = 28;
+let pending = null;
+function commitPending() {
+  if (!pending) return;
+  const A = pending.A; clearTimeout(pending.timer); pending = null;
+  finishStroke(A);
+}
+function resumeStroke(e, sf) {
+  if (!pending || e.pointerType !== 'pen' || pending.A.sf !== sf || Date.now() - pending.at > JOIN_MS) return false;
+  const A = pending.A, lc = A.lastClient;
+  if (!lc || Math.hypot(lc[0] - e.clientX, lc[1] - e.clientY) > JOIN_PX) return false;
+  clearTimeout(pending.timer); pending = null;
+  A.id = e.pointerId; sf.rect = sf.el.getBoundingClientRect(); S.active = A;
+  addPoint(A, e);
+  return true;
+}
 function onDown(e) {
   if (S.active || S.readonly || S.tool === 'hand' || !writes(e.pointerType)) return;
   if (e.pointerType === 'mouse' && e.button !== 0) return;
-  const sf = surfaceFor(e.target); if (!sf) return;
+  const sf = surfaceFor(e.target); if (!sf) { commitPending(); return; }
   e.preventDefault();
+  if (resumeStroke(e, sf)) { try { sf.el.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ } document.body.classList.add('inking'); hideDot(); return; }
+  commitPending();
   sf.rect = sf.el.getBoundingClientRect();
-  const [x, y] = sf.toLocal(e.clientX, e.clientY), pr = Math.max(0.3, pressure(e));
+  const [x, y] = sf.toLocal(e.clientX, e.clientY), pr = pressure(e, null);
   S.penDownAt = Date.now(); hideDot();
   if (S.tool === 'eraser') {
     S.active = { id: e.pointerId, sf, erase: [] }; eraseAt(x, y);
   } else {
     const s = { id: rid(), t: S.tool === 'highlighter' ? 'hl' : S.tool === 'laser' ? 'laser' : 'pen', c: S.color, w: S.size, pen: e.pointerType === 'pen', p: [[x, y, pr]] };
     const node = sf.node(s); (s.t === 'hl' ? sf.gHl : s.t === 'laser' ? sf.gLaser : sf.gPen).appendChild(node);
-    S.active = { id: e.pointerId, sf, s, node, dirty: true }; schedule();
+    S.active = { id: e.pointerId, sf, s, node, dirty: true, lastClient: [e.clientX, e.clientY] }; schedule();
   }
   try { sf.el.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
   document.body.classList.add('inking');
 }
-function pressure(e) { return e.pointerType === 'pen' ? Math.max(0.05, e.pressure || 0.5) : 0.5; }
+/* Pencil pressure, eased so a light touch still gives a solid line. A reading of 0 mid-stroke (it happens with a
+ * light touch) keeps the previous value instead of jumping. */
+function pressure(e, prev) {
+  if (e.pointerType !== 'pen') return 0.5;
+  const p = e.pressure;
+  if (!(p > 0)) return prev != null ? prev : 0.5;
+  return 0.3 + 0.7 * Math.pow(Math.min(1, p), 0.6);
+}
+function addPoint(A, ev) {
+  const [x, y] = A.sf.toLocal(ev.clientX, ev.clientY);
+  A.lastClient = [ev.clientX, ev.clientY];
+  const last = A.s.p[A.s.p.length - 1];
+  if (Math.hypot(last[0] - x, last[1] - y) < 1.1) return; // skip sub-pixel jitter between samples
+  // Smooth the pressure: each reading only moves the width part of the way towards it.
+  A.s.p.push([x, y, last[2] + (pressure(ev, last[2]) - last[2]) * 0.25]);
+  A.dirty = true;
+}
 /* Pencil hover (iPad Pro M2 and later, iPad Air M2 and later, iPad mini A17 Pro): Safari sends pen pointermove
  * events with no buttons pressed while the Pencil hovers just above the screen. Show a laser dot there so the
  * class can see what you're pointing at. It takes the pen colour (yellow for the highlighter, a ring for the eraser). */
 let dot = null, dotTimer = 0;
 function hoverDot(e) {
-  if (!S.hover || S.readonly || e.pointerType !== 'pen' || e.buttons || S.active) return hideDot();
+  if (!S.hover || S.readonly || e.pointerType !== 'pen' || e.buttons || S.active || pending) return hideDot();
   if (!dot) { dot = document.createElement('div'); dot.id = 'hoverdot'; dot.setAttribute('aria-hidden', 'true'); document.body.appendChild(dot); }
   const c = S.tool === 'highlighter' ? HL.c : S.tool === 'laser' ? '#ff2d2d' : S.tool === 'hand' ? '#13807a' : (COLORS[S.color] || '#ff2d2d');
   dot.className = S.tool === 'eraser' ? 'ring show' : 'show';
@@ -198,14 +237,10 @@ function onMove(e) {
   e.preventDefault();
   const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : null, list = evs && evs.length ? evs : [e];
   for (const ev of list) {
-    const [x, y] = A.sf.toLocal(ev.clientX, ev.clientY);
-    if (A.erase) { eraseAt(x, y); continue; }
-    const last = A.s.p[A.s.p.length - 1];
-    if (Math.hypot(last[0] - x, last[1] - y) < 1.1) continue; // skip sub-pixel jitter between samples
-    // Smooth the pressure: each reading only moves the width part of the way towards it.
-    A.s.p.push([x, y, last[2] + (pressure(ev) - last[2]) * 0.25]);
+    if (A.erase) { const [x, y] = A.sf.toLocal(ev.clientX, ev.clientY); eraseAt(x, y); continue; }
+    addPoint(A, ev);
   }
-  if (!A.erase) { A.dirty = true; schedule(); }
+  if (!A.erase && A.dirty) schedule();
 }
 function onUp(e) {
   const A = S.active; if (!A || e.pointerId !== A.id) return;
@@ -213,6 +248,10 @@ function onUp(e) {
   try { A.sf.el.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
   A.sf.rect = null;
   if (A.erase) { if (A.erase.length) push({ type: 'erase', surf: A.sf.id, strokes: A.erase }); return; }
+  if (A.s.pen) { pending = { A, at: Date.now(), timer: setTimeout(commitPending, JOIN_MS) }; return; }
+  finishStroke(A);
+}
+function finishStroke(A) {
   const s = A.s; A.node.remove();
   if (s.t === 'laser') { fadeLaser(A.sf, s); return; }
   A.sf.add(s); push({ type: 'add', surf: A.sf.id, strokes: [s] });
@@ -276,10 +315,12 @@ export function register(el) {
   const sf = new Surface(el, id); S.surfaces.set(id, sf); loadInto(sf); return sf;
 }
 export function clearSurface(id) {
+  commitPending();
   const sf = S.surfaces.get(id); if (!sf || !sf.strokes.length) return;
   push({ type: 'erase', surf: id, strokes: sf.clear() });
 }
 export function clearAll() {
+  commitPending();
   S.surfaces.forEach((sf, id) => { if (sf.strokes.length) S.undo.push({ type: 'erase', surf: id, strokes: sf.clear() }); });
   if (S.opHook) S.opHook({ a: 'reset' });
   S.redo = []; emit(); flush();
