@@ -7,8 +7,10 @@
  */
 
 export const h = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
-export const fmt = (n) => (Math.abs(n) >= 1000 ? n.toLocaleString('en-CA').replace(/,/g, ' ') : String(n)); // thin-space thousands like the booklet
+export const fmt = (n) => (Math.abs(n) >= 1000 ? n.toLocaleString('en-CA').replace(/,/g, '\u202f') : String(n)); // narrow no-break space thousands, like the booklet
 const CANCEL = { cancelled: true };
+// A step that was cut short (Back, Start over, a new number) stops with CANCEL; that's expected, not an error.
+addEventListener('unhandledrejection', (e) => { if (e.reason === CANCEL) e.preventDefault(); });
 
 /* ---------------- number helpers ---------------- */
 export function factors(n) { const lo = [], hi = []; for (let d = 1; d * d <= n; d++) if (n % d === 0) { lo.push(d); if (d * d !== n) hi.unshift(n / d); } return lo.concat(hi); }
@@ -82,9 +84,11 @@ export class Explainer {
         check();
         if (fast || !ms) { setStyles(el, kf[kf.length - 1]); return Promise.resolve(); }
         const a = el.animate(kf, { duration: ms, delay: o.delay || 0, easing: o.easing || 'cubic-bezier(.25,.75,.3,1)', fill: 'both' });
-        return a.finished.then(() => { setStyles(el, kf[kf.length - 1]); a.cancel(); }, () => {});
+        // If the explainer was reset or rebuilt meanwhile, stop the step here so it can't add to the new picture.
+        const p = a.finished.then(() => { setStyles(el, kf[kf.length - 1]); a.cancel(); }, () => {}).then(check);
+        p.catch(() => {}); return p;
       },
-      sleep(ms) { check(); return fast ? Promise.resolve() : new Promise((r) => setTimeout(r, ms)); },
+      sleep(ms) { check(); if (fast) return Promise.resolve(); const p = new Promise((r) => setTimeout(r, ms)).then(check); p.catch(() => {}); return p; },
       pop(el, ms = 380, o = {}) { return this.anim(el, [{ opacity: 0, transform: 'scale(.4)' }, { opacity: 1, transform: 'scale(1.12)', offset: 0.65 }, { opacity: 1, transform: 'scale(1)' }], ms, o); },
       fadeIn(el, ms = 350, o = {}) { return this.anim(el, [{ opacity: 0, transform: o.from || 'translateY(8px)' }, { opacity: 1, transform: 'none' }], ms, o); },
       shake(el) { return this.anim(el, [{ transform: 'translateX(0)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(-4px)' }, { transform: 'translateX(0)' }], 360); }

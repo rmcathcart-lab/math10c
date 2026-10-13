@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Number Sense Check-Up · Math 10C 1.7</title>
+<meta name="description" content="Math 10C Unit 1 Lesson 7: cumulative check-up on prime factorization, GCF and LCM, perfect powers, rational and irrational numbers, and radicals. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u1l7.css">
+<script src="../../assets/katex/katex.min.js"></script>
+<script src="../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 1 Number · Lesson 7</div>
+  <h1>Cumulative Number Sense Check-Up</h1>
+  <p class="lede">One pass through the whole unit: prime factorization, GCF and LCM, perfect powers, the real number system, and radicals. Ten diploma-style questions — try each one first, then check.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>find the prime factorization of a large number and use it to answer questions about its prime factors</li>
+      <li>find the GCF and LCM from prime factorizations — and reason backwards from them</li>
+      <li>use exponents to decide if a number is a perfect square or a perfect cube</li>
+      <li>classify numbers as rational or irrational, and write a repeating decimal as a fraction</li>
+      <li>estimate, compare and order radicals, even with different indices</li>
+    </ul>
+  </div>
+  <div class="outcome"><b>AN1</b> Demonstrate an understanding of factors of whole numbers by determining the prime factors, greatest common factor, least common multiple, square root and cube root.</div>
+  <div class="outcome" style="margin-top:6px"><b>AN2</b> Demonstrate an understanding of irrational numbers by representing, identifying and simplifying irrational numbers, and by ordering irrational numbers.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: The Four Fours">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Four Fours</h2></div>
+  <p class="big">Make every number from <b>0</b> to <b>10</b> using <b>exactly four 4s</b>. No other digits!</p>
+
+  <div class="ff-board">
+    <div class="ff-fours"><span class="ff-four">4</span><span class="ff-four">4</span><span class="ff-four">4</span><span class="ff-four">4</span></div>
+    <div class="ff-tools">
+      <div class="ff-tools-h">Tools you may use:</div>
+      <div class="ff-tool-row"><span class="ff-tool">+</span><span class="ff-tool">−</span><span class="ff-tool">×</span><span class="ff-tool">÷</span><span class="ff-tool">( )</span><span class="ff-tool"><span class="tex">\sqrt{\ }</span></span><span class="ff-tool"><span class="tex">x^y</span></span>
+        <span class="ff-glue"><span>44</span><i></i><small>no gluing!</small></span></div>
+    </div>
+  </div>
+
+  <div class="ff-targets">
+    <button class="ff-t done" data-n="0"><span class="n">0</span><span class="e"><span class="tex">4+4-4-4</span></span></button>
+    <button class="ff-t" data-n="1"><span class="n">1</span><span class="e"><span class="tex">(4+4)\div(4+4)</span></span></button>
+    <button class="ff-t" data-n="2"><span class="n">2</span><span class="e"><span class="tex">4\div4+4\div4</span></span></button>
+    <button class="ff-t" data-n="3"><span class="n">3</span><span class="e"><span class="tex">(4+4+4)\div4</span></span></button>
+    <button class="ff-t" data-n="4"><span class="n">4</span><span class="e"><span class="tex">4+(4-4)\times4</span></span></button>
+    <button class="ff-t" data-n="5"><span class="n">5</span><span class="e"><span class="tex">(4\times4+4)\div4</span></span></button>
+    <button class="ff-t" data-n="6"><span class="n">6</span><span class="e"><span class="tex">4+(4+4)\div4</span></span></button>
+    <button class="ff-t" data-n="7"><span class="n">7</span><span class="e"><span class="tex">4+4-4\div4</span></span></button>
+    <button class="ff-t" data-n="8"><span class="n">8</span><span class="e"><span class="tex">4+4+4-4</span></span></button>
+    <button class="ff-t" data-n="9"><span class="n">9</span><span class="e"><span class="tex">4+4+4\div4</span></span></button>
+    <button class="ff-t ten" data-n="10"><span class="n">10</span><span class="e"><span class="ten-wait">Hmm… see <b>the big one</b></span><span class="ten-ok"><span class="tex">4+4+4-\sqrt{4}</span></span></span></button>
+    <div class="ff-side"><span class="muted">Tap a target to see one way.</span><button class="pill small" data-ffall>Show all</button></div>
+  </div>
+
+  <div class="ff-qs">
+    <div class="q-line"><div class="q-num">1</div><div>Make <b>1</b> and <b>8</b>.</div></div>
+    <div class="q-line"><div class="q-num">2</div><div>Make <b>3</b> and <b>9</b>.</div></div>
+    <div class="q-line"><div class="q-num">3</div><div>What is <span class="tex">\sqrt{4}</span>? Use <span class="tex">\sqrt{4}</span> to make <b>6</b> a new way.
+      <button class="pill small" data-rv="q3">Reveal</button>
+      <div class="rv" id="q3"><span class="tex">\sqrt{4}=2</span> (the principal root, not −2). &nbsp;<span class="tex">6=4+\sqrt{4}+4-4</span> &nbsp;or&nbsp; <span class="tex">4+\sqrt{4}\times4\div4</span>. <span class="red">Careful:</span> <span class="tex">4\times\sqrt{4}-\sqrt{4}=6</span> uses only <b>three</b> 4s!</div></div></div>
+  </div>
+
+  <div class="poll ff-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> With only <b>+ − × ÷</b> and brackets (no roots or powers), exactly <b>one</b> target from 0 to 10 is <b>impossible</b>. Which one? Then rescue it! <b>Guess first.</b></div></div>
+    <div class="poll-opts four">
+      <div class="opt"><b>A</b> 5</div>
+      <div class="opt"><b>B</b> 7</div>
+      <div class="opt"><b>C</b> 9</div>
+      <div class="opt right"><b>D</b> 10</div>
+    </div>
+    <button class="pill" data-poll>Reveal</button>
+    <div class="poll-ans"><b>D — 10.</b> A computer check of every bracket arrangement reaches 0 to 9, but never 10. A square root rescues it: <span class="tex">10=4+4+4-\sqrt{4}</span> or <span class="tex">(4\times4+4)\div\sqrt{4}</span>. The traps: 5 and 7 <i>feel</i> hard, but <span class="tex">5=(4\times4+4)\div4</span> and <span class="tex">7=4+4-4\div4</span>.</div>
+  </div>
+
+  <div class="ff-more">
+    <span class="ff-more-h">Finished? Try</span>
+    <button class="ff-x" data-x="12"><b>12</b><span><span class="tex">4\times(4-4\div4)</span></span></button>
+    <button class="ff-x" data-x="15"><b>15</b><span><span class="tex">4\times4-4\div4</span></span></button>
+    <button class="ff-x" data-x="16"><b>16</b><span><span class="tex">4+4+4+4</span></span></button>
+    <button class="ff-x" data-x="17"><b>17</b><span><span class="tex">4\times4+4\div4</span></span></button>
+    <button class="ff-x" data-x="20"><b>20</b><span><span class="tex">(4+4\div4)\times4</span></span></button>
+  </div>
+
+  <div class="bridge">
+    <div class="bridge-h">From four 4s to today’s check-up <span class="muted">(tap a card)</span></div>
+    <div class="bridge-grid">
+      <button class="br-card"><span class="br-tag">1 · Factoring</span><span class="br-q">Factor <span class="tex">4\times4\times4\times4=256</span>.</span><span class="br-a"><span class="tex">256=2^8</span>, because each <span class="tex">4=2\times2</span>.</span></button>
+      <button class="br-card"><span class="br-tag">2 · Perfect powers</span><span class="br-q">Is 256 a perfect square? A perfect cube?</span><span class="br-a">Square: yes, 8 is even (<span class="tex">\sqrt{256}=2^4=16</span>). Cube: no, 8 isn’t a multiple of 3.</span></button>
+      <button class="br-card"><span class="br-tag">3 · Real numbers</span><span class="br-q">Rational or irrational: <span class="tex">\sqrt{4+4}</span> and <span class="tex">4\div(4+4+4)</span>?</span><span class="br-a"><span class="tex">\sqrt{8}=2\sqrt{2}</span> is <b>irrational</b>; <span class="tex">\tfrac13=0.\overline{3}</span> is <b>rational</b>.</span></button>
+      <button class="br-card"><span class="br-tag">4 · Radicals</span><span class="br-q">Largest: <span class="tex">\sqrt{4\cdot4}</span>, <span class="tex">\sqrt[3]{4\cdot4\cdot4}</span> or <span class="tex">\sqrt[4]{4\cdot4\cdot4\cdot4}</span>?</span><span class="br-a">Trick question — they all equal <b>4</b>.</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 1. Prime factorization, GCF, LCM ================= -->
+<section class="card" data-ink="s1" data-section="1. Prime Factorization">
+  <div class="sec-h"><span class="badge">1</span><h2>Prime Factorization, GCF, and LCM</h2></div>
+  <div class="def">Every whole number greater than 1 breaks apart <b>uniquely</b> into a product of primes — its <b>prime factorization</b>. For a big number, the <b>division ladder</b> keeps you organized: smallest prime first, until you reach 1.</div>
+  <div class="explainer" data-explainer="ladder"></div>
+  <div class="tip-row">
+    <div class="tip watch"><div class="tip-ic">!</div><div><b>Prime factors are a list of primes.</b> 15 divides 4 290, but 15 = 3 × 5 isn’t prime — so it is <b>not</b> a prime factor.</div></div>
+    <div class="tip calc-tip">
+      <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+      <div><b>Is 19 a factor of 2 574?</b> <span class="keys"><kbd>2</kbd><kbd>5</kbd><kbd>7</kbd><kbd>4</kbd><kbd>÷</kbd><kbd>1</kbd><kbd>9</kbd><kbd>ENTER</kbd></span> → 135.47… not whole, so no.</div>
+      <button class="pill" data-keys="2574 ÷ 19 =">Show me</button>
+    </div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Reading prime factors off a large number</h3></div>
+  <p class="q">Find each prime factorization first, then answer the question.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) Which of the following is <em>not</em> a prime factor of 2 574?<div class="mc"><span><b>A</b> 3</span><span><b>B</b> 11</span><span><b>C</b> 13</span><span><b>D</b> 19</span></div></div><div class="work" style="--h:360px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">2 574 = 2 × 1 287 = 2 × 3 × 429 = 2 × 3 × 3 × 143 = 2 × 3<sup>2</sup> × 11 × 13<br>Prime factors 2, 3, 11, 13 — not 19. <b>D</b></div></div></div>
+    <div class="part"><div class="pl">(b) How many of 5, 13, 17, 15 are prime factors of 4 290?<div class="mc"><span><b>A</b> 1</span><span><b>B</b> 2</span><span><b>C</b> 3</span><span><b>D</b> 4</span></div></div><div class="work" style="--h:360px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">4 290 = 2 × 3 × 5 × 11 × 13<br>5 ✓, 13 ✓; 17 doesn’t divide; 15 divides but isn’t prime.<br><b>B — 2 of them</b></div></div></div>
+    <div class="part"><div class="pl">(c) The sum of all the prime factors of 43 010 is ____.<div class="mc"><span class="nr">Numerical response</span></div></div><div class="work" style="--h:360px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">43 010 = 2 × 5 × 11 × 17 × 23<br>2 + 5 + 11 + 17 + 23 = <b>58</b></div></div></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. GCF and LCM">
+  <h3 class="sub">GCF and LCM from the prime factorizations</h3>
+  <div class="def-grid">
+    <div class="def"><b>GCF</b> (greatest common factor) — multiply the primes the numbers <b>share</b>, each to the <b>lowest</b> power present.<div class="eg">12 = 2<sup>2</sup> × 3, 18 = 2 × 3<sup>2</sup> → GCF = 2 × 3 = 6</div></div>
+    <div class="def amber"><b>LCM</b> (least common multiple) — multiply <b>every</b> prime in <b>either</b> number, each to the <b>highest</b> power present.<div class="eg">LCM = 2<sup>2</sup> × 3<sup>2</sup> = 36</div></div>
+  </div>
+  <div class="explainer" data-explainer="venn"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Sanity check.</b> The GCF can’t be <b>bigger</b> than the smaller number, and the LCM can’t be <b>smaller</b> than the larger number. If the numbers share no primes, GCF = 1 and LCM = their product.</div></div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>The LCM written as a product of primes</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">The least common multiple of 10 and 21 can be written as a product of prime factors in the form <span class="tex">a\times b\times c\times d</span>, where <span class="tex">a,b,c,d</span> are primes with <span class="tex">a&lt;b&lt;c&lt;d</span>. The value of <span class="tex">c</span> is
+      <div class="mc"><span><b>A</b> 2</span><span><b>B</b> 3</span><span><b>C</b> 5</span><span><b>D</b> 210</span></div></div>
+      <div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">10 = 2 × 5 and 21 = 3 × 7 share no primes, so LCM = 2 × 3 × 5 × 7 = 210.<br>a = 2, b = 3, c = 5, d = 7 → <b>C (c = 5)</b></div></div></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>The GCF of two four-digit numbers</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">The greatest common factor of 3 003 and 3 135 is ____. <span class="nr">Numerical response</span></div>
+      <div class="work" style="--h:330px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">3 003 = 3 × 1 001 = 3 × 7 × 11 × 13 &nbsp;·&nbsp; 3 135 = 3 × 1 045 = 3 × 5 × 11 × 19<br>Shared primes 3 and 11: GCF = 3 × 11 = <b>33</b></div></div></div>
+  </div>
+  <div class="part think"><div class="pl"><span class="think-tag">Think</span> What is the <b>LCM</b> of 3 003 and 3 135? Then check: is GCF × LCM = 3 003 × 3 135?</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">LCM = 3 × 5 × 7 × 11 × 13 × 19 = <b>285 285</b>. And 33 × 285 285 = 9 414 405 = 3 003 × 3 135 ✓ — for two numbers, <b>GCF × LCM = their product</b>.</div></div></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check it.</b> <span class="keys"><kbd>3</kbd><kbd>0</kbd><kbd>0</kbd><kbd>3</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> = 91 and 3 135 ÷ 33 = 95. Both whole, and 91 = 7 × 13, 95 = 5 × 19 share nothing more — so 33 is the <b>greatest</b>.</div>
+    <button class="pill" data-keys="3003 ÷ 33 =">Show me</button>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Reasoning backwards from a GCF</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">The least common multiple of 9 and 20 is equal to the greatest common factor of the numbers <span class="tex">P</span> and <span class="tex">Q</span>. Which of the following statements <b>must be false</b>?
+      <div class="mc mc2"><span><b>A</b> <span class="tex">P</span> is a multiple of 5.</span><span><b>B</b> <span class="tex">Q</span> is a multiple of 45.</span><span><b>C</b> <span class="tex">P</span> could be less than 150.</span><span><b>D</b> <span class="tex">Q</span> could be greater than 2 000.</span></div></div>
+      <div class="work" style="--h:330px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">LCM(9, 20) = 2<sup>2</sup> × 3<sup>2</sup> × 5 = 180 = GCF(P, Q), so P and Q are both multiples of 180.<br>A true (180 = 5 × 36) · B true (180 = 45 × 4) · C: P ≥ 180, never less than 150 · D true (Q = 3 600 works)<br><b>C</b></div></div></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="w4" data-section="Example 4 check">
+  <h3 class="sub">Example 4, step by step</h3>
+  <div class="explainer" data-explainer="backwards"></div>
+</section>
+
+<!-- ================= 2. Perfect squares and cubes ================= -->
+<section class="card" data-ink="s2" data-section="2. Perfect Squares and Cubes">
+  <div class="sec-h"><span class="badge">2</span><h2>Perfect Squares, Perfect Cubes, and the Factor Tree</h2></div>
+  <div class="def-grid">
+    <div class="def">A <b>perfect square</b> has every prime exponent <b>even</b>.<div class="eg">144 = 2<sup>4</sup> × 3<sup>2</sup> → <span class="tex">\sqrt{144}=2^2\times3=12</span></div></div>
+    <div class="def amber">A <b>perfect cube</b> has every prime exponent a <b>multiple of 3</b>.<div class="eg">216 = 2<sup>3</sup> × 3<sup>3</sup> → <span class="tex">\sqrt[3]{216}=2\times3=6</span></div></div>
+  </div>
+  <p>Why? A square root splits the primes into <b>2 identical groups</b>; a cube root into <b>3</b>. A partly filled factor tree still works: whatever is missing is <b>forced</b> by the condition you need.</p>
+  <div class="explainer" data-explainer="powers"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Look at the exponents, not the number.</b> 72 = 2<sup>3</sup> × 3<sup>2</sup> is even, but it is <b>not</b> a perfect square — the exponent 3 is odd.</div></div>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>A partly completed factor tree</h3></div>
+  <p class="q">The tree shows the partial prime factorization of a number <span class="tex">x</span>. The unknown <span class="tex">d</span> branches into <b>exactly two</b> primes.</p>
+  <div class="ex5-grid">
+    <svg class="lt-fig" viewBox="18 6 380 330" aria-label="Partial factor tree: x splits into a and b; a into 3 and 5; b into 3 and c; c into 3 and d; d into two unknown primes"><g class="lt-lines"><line x1="170" y1="28" x2="85" y2="100"/><line x1="170" y1="28" x2="255" y2="100"/><line x1="85" y1="100" x2="40" y2="175"/><line x1="85" y1="100" x2="130" y2="175"/><line x1="255" y1="100" x2="205" y2="175"/><line x1="255" y1="100" x2="300" y2="175"/><line x1="300" y1="175" x2="250" y2="250"/><line x1="300" y1="175" x2="340" y2="250"/><line x1="340" y1="250" x2="305" y2="318" class="dash"/><line x1="340" y1="250" x2="375" y2="318" class="dash"/></g><g class="lt-t"><rect x="153" y="12" width="34" height="32" rx="8" class="nv"/><text x="170" y="36" class="v">x</text><rect x="68" y="84" width="34" height="32" rx="8" class="nv"/><text x="85" y="108" class="v">a</text><rect x="238" y="84" width="34" height="32" rx="8" class="nv"/><text x="255" y="108" class="v">b</text><circle cx="40" cy="175" r="17" class="np"/><text x="40" y="182">3</text><circle cx="130" cy="175" r="17" class="np"/><text x="130" y="182">5</text><circle cx="205" cy="175" r="17" class="np"/><text x="205" y="182">3</text><rect x="283" y="159" width="34" height="32" rx="8" class="nv"/><text x="300" y="183" class="v">c</text><circle cx="250" cy="250" r="17" class="np"/><text x="250" y="257">3</text><rect x="323" y="234" width="34" height="32" rx="8" class="nv"/><text x="340" y="258" class="v">d</text><circle cx="305" cy="318" r="7" class="nq"/><circle cx="375" cy="318" r="7" class="nq"/></g></svg>
+    <div class="parts c2">
+      <div class="part"><div class="pl">(a) If <span class="tex">x</span> is a perfect square, then the minimum value of <span class="tex">d</span> is<div class="mc"><span><b>A</b> 5</span><span><b>B</b> 9</span><span><b>C</b> 15</span><span><b>D</b> 25</span></div></div><div class="work" style="--h:300px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">x = (3 × 5)(3 × 3 × d) = 3<sup>3</sup> × 5 × d. Both exponents odd, so d = 3 × 5.<br>x = 3<sup>4</sup> × 5<sup>2</sup> = 2 025 = 45<sup>2</sup> → <b>C (d = 15)</b></div></div></div>
+      <div class="part"><div class="pl">(b) If <span class="tex">x</span> is a perfect cube, then the minimum value of <span class="tex">x</span> is ____.<div class="mc"><span class="nr">Numerical response</span></div></div><div class="work" style="--h:300px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">x = 3<sup>3</sup> × 5 × d: the 5 needs two more 5s, so d = 5 × 5 = 25.<br>x = 3<sup>3</sup> × 5<sup>3</sup> = <b>3 375</b> = 15<sup>3</sup></div></div></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check (b).</b> The x-th root key: <span class="keys"><kbd>3</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>3</kbd><kbd>3</kbd><kbd>7</kbd><kbd>5</kbd><kbd>ENTER</kbd></span> gives a whole number, 15 — so 3 375 is a perfect cube.</div>
+    <button class="pill" data-keys="3 ˣ√ 3375 =">Show me</button>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="w5" data-section="Example 5 check">
+  <h3 class="sub">Example 5, step by step</h3>
+  <div class="explainer" data-explainer="treeFill"></div>
+  <div class="ex explainer-tree" id="tree5">
+    <div class="ex-top no-ink"><div class="ex-title">Check it with numbers — tap <span class="tex">d</span> to split it</div>
+      <div class="ex-chips"><button class="chip on" data-d="15">(a) d = 15</button><button class="chip" data-d="25">(b) d = 25</button></div>
+    </div>
+    <div class="ft-host" style="--fth:330px"></div>
+  </div>
+</section>
+
+<!-- ================= 3. The real number system ================= -->
+<section class="card" data-ink="s3" data-section="3. The Real Number System">
+  <div class="sec-h"><span class="badge">3</span><h2>The Real Number System</h2></div>
+  <div class="def">Every real number belongs to at least one of <span class="tex">N</span> (natural), <span class="tex">W</span> (whole), <span class="tex">I</span> (integer), <span class="tex">Q</span> (rational) or <span class="tex">\overline{Q}</span> (irrational). The decimal usually decides it: <b>terminating or repeating → rational</b>; everything else → irrational.</div>
+  <div class="nest">
+    <div class="nest-r"><span class="nest-l"><span class="tex">R</span> real numbers</span>
+      <div class="nest-q"><span class="nest-l"><span class="tex">Q</span> rational <small>— can be written as <span class="tex">\tfrac{a}{b}</span> (integers, <span class="tex">b\neq0</span>)</small></span>
+        <div class="nest-i"><span class="nest-l"><span class="tex">I</span> integers</span>
+          <div class="nest-w"><span class="nest-l"><span class="tex">W</span> whole</span>
+            <div class="nest-n"><span class="nest-l"><span class="tex">N</span> natural</span><div class="nest-eg">1, 2, 3, …</div></div>
+            <div class="nest-eg">0</div></div>
+          <div class="nest-eg">−3, −1</div></div>
+        <div class="nest-eg"><span class="tex">\dfrac{3}{4},\ -0.5,\ 0.\overline{3}</span></div></div>
+      <div class="nest-qb"><span class="nest-l"><span class="tex">\overline{Q}</span> irrational</span><div class="nest-eg"><span class="tex">\sqrt{2},\ \pi,\ \sqrt[3]{9}</span><br>2.0200200020…</div></div>
+    </div>
+  </div>
+  <div class="explainer" data-explainer="decimals"></div>
+</section>
+
+<section class="card example" data-ink="ex6" data-section="Example 6">
+  <div class="ex-head"><span class="ex-tag">Example 6</span><h3>What an irrational decimal looks like</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">A certain number is irrational. Its decimal representation is
+      <div class="mc mc2"><span><b>A</b> terminating and repeating</span><span><b>B</b> terminating and non-repeating</span><span><b>C</b> non-terminating and repeating</span><span><b>D</b> non-terminating and non-repeating</span></div></div>
+      <div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Terminating or repeating decimals are rational. Irrational means <b>not</b> rational, so it never ends and never repeats. <b>D</b></div></div></div>
+  </div>
+  <div class="space" id="ex6-space"></div>
+  <button class="more" data-more="ex6-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s3b" data-section="3. Rational or irrational?">
+  <h3 class="sub">Sorting: rational or irrational?</h3>
+  <p>Ask: can I write it <b>exactly</b> as a fraction of integers? A root is rational only when the radicand is a perfect power of the right kind — and that includes fractions and decimals like <span class="tex">\tfrac{9}{16}</span> or <span class="tex">0.09</span>.</p>
+  <div class="explainer" data-explainer="sort"></div>
+  <div class="tip-row">
+    <div class="tip watch"><div class="tip-ic">!</div><div><b>A pattern isn’t a repeat.</b> 2.020020002… has a pattern, but no <b>fixed block</b> repeats. Irrational.</div></div>
+    <div class="tip watch"><div class="tip-ic">!</div><div><b>Decimals under a root:</b> <span class="tex">\sqrt{0.09}=0.3</span> is rational, but <span class="tex">\sqrt{0.9}=0.9486\ldots</span> is not.</div></div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex7" data-section="Example 7">
+  <div class="ex-head"><span class="ex-tag">Example 7</span><h3>Sorting four numbers into rational or irrational</h3></div>
+  <p class="q">Which of the following are rational numbers?</p>
+  <div class="parts c4">
+    <div class="part"><div class="pl">I &nbsp;<span class="tex">2.020020002\ldots</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Zero runs keep growing: never ends, never repeats. <b>Irrational</b></div></div></div>
+    <div class="part"><div class="pl">II &nbsp;<span class="tex">\sqrt[3]{\dfrac{27}{125}}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">27=3^3,\ 125=5^3</span>, so it equals <span class="tex">\tfrac35</span>. <b>Rational</b></div></div></div>
+    <div class="part"><div class="pl">III &nbsp;<span class="tex">\sqrt{0.09}</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">0.3^2=0.09</span>, so it equals <span class="tex">0.3=\tfrac{3}{10}</span>. <b>Rational</b></div></div></div>
+    <div class="part"><div class="pl">IV &nbsp;<span class="tex">0.\overline{47}</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Repeats the block 47 forever (= <span class="tex">\tfrac{47}{99}</span>). <b>Rational</b></div></div></div>
+  </div>
+  <div class="parts c1">
+    <div class="part mc-part"><div class="pl">So the rational numbers are
+      <div class="mc mc2"><span><b>A</b> III and IV only</span><span><b>B</b> II, III and IV only</span><span><b>C</b> I, II, III and IV</span><span><b>D</b> some other combination</span></div></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Only I is irrational. <b>B — II, III and IV</b></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>II on the calculator.</b> <span class="keys"><kbd>3</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>(</kbd><kbd>2</kbd><kbd>7</kbd><kbd>÷</kbd><kbd>1</kbd><kbd>2</kbd><kbd>5</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 0.6, then <kbd>F◂▸D</kbd> shows the fraction 3/5.</div>
+    <button class="pill" data-keys="3 ˣ√ ( 27 ÷ 125 ) = F◂▸D">Show me</button>
+  </div>
+  <div class="space" id="ex7-space"></div>
+  <button class="more" data-more="ex7-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s3c" data-section="3. Repeating decimal to fraction">
+  <h3 class="sub">Remember: a repeating decimal back to a fraction</h3>
+  <p>Multiply by <b>10, 100, 1 000…</b> — one zero for each digit in the repeating block — so the repeating tails <b>line up</b>. Subtract, and the tails disappear.</p>
+  <div class="explainer" data-explainer="repFrac"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Simplify a fraction with the calculator.</b> <span class="keys"><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd><kbd>÷</kbd><kbd>9</kbd><kbd>9</kbd><kbd>ENTER</kbd></span> gives 2.3636…, then <kbd>F◂▸D</kbd> turns it into the fraction in lowest terms.</div>
+    <button class="pill" data-keys="234 ÷ 99 = F◂▸D">Show me</button>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex8" data-section="Example 8">
+  <div class="ex-head"><span class="ex-tag">Example 8</span><h3>A repeating decimal back to a fraction</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">The rational number <span class="tex">2.\overline{36}</span> can be written as an improper fraction in simplest form <span class="tex">\dfrac{c}{d}</span>. The value of <span class="tex">c</span> is
+      <div class="mc"><span><b>A</b> 26</span><span><b>B</b> 13</span><span><b>C</b> 11</span><span><b>D</b> 9</span></div></div>
+      <div class="work" style="--h:340px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">x = 2.3636…, 100x = 236.3636…, so 99x = 234 and <span class="tex">x=\tfrac{234}{99}=\tfrac{26}{11}</span> (÷ 9). <b>A (c = 26)</b></div></div></div>
+  </div>
+  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Use the same method on <span class="tex">0.\overline{9}</span>. What do you get?</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">10x = 9.999…, so 9x = 9 and <b>x = 1</b>. <span class="tex">0.\overline{9}</span> and 1 are the <b>same number</b>!</div></div></div>
+  <div class="space" id="ex8-space"></div>
+  <button class="more" data-more="ex8-space">+ More space</button>
+</section>
+
+<!-- ================= 4. Ordering and estimating radicals ================= -->
+<section class="card" data-ink="s4" data-section="4. Ordering Radicals">
+  <div class="sec-h"><span class="badge">4</span><h2>Ordering and Estimating Radicals</h2></div>
+  <div class="def">Pin a radical between <b>consecutive perfect powers</b> — that’s usually enough to place it on a number line. To compare radicals with <b>different indices</b>, evaluate exactly where you can and estimate the rest.</div>
+  <div class="pp">
+    <div class="pp-h">Perfect powers to know <span class="muted">(tap a blank to fill it)</span><button class="pill small" data-ppall>Fill all</button></div>
+    <div class="pp-grid">
+      <div class="pp-c hd"><span class="tex">n</span></div><div class="pp-c hd"><span class="tex">n^2</span></div><div class="pp-c hd"><span class="tex">n^3</span></div><div class="pp-c hd"><span class="tex">n^4</span></div><div class="pp-c hd"><span class="tex">n^5</span></div>
+      <div class="pp-c n">2</div><button class="blank pp-b" data-a="4"></button><button class="blank pp-b" data-a="8"></button><button class="blank pp-b" data-a="16"></button><button class="blank pp-b" data-a="32"></button>
+      <div class="pp-c n">3</div><button class="blank pp-b" data-a="9"></button><button class="blank pp-b" data-a="27"></button><button class="blank pp-b" data-a="81"></button><button class="blank pp-b" data-a="243"></button>
+      <div class="pp-c n">4</div><button class="blank pp-b" data-a="16"></button><button class="blank pp-b" data-a="64"></button><button class="blank pp-b" data-a="256"></button><button class="blank pp-b" data-a="1 024"></button>
+      <div class="pp-c n">5</div><button class="blank pp-b" data-a="25"></button><button class="blank pp-b" data-a="125"></button><button class="blank pp-b" data-a="625"></button><button class="blank pp-b" data-a="3 125"></button>
+    </div>
+  </div>
+  <div class="explainer" data-explainer="compare"></div>
+  <div class="tip-row">
+    <div class="tip watch"><div class="tip-ic">!</div><div><b>Don’t halve!</b> <span class="tex">\sqrt{17}</span> is about 4.1, not 8.5. A root lives <b>between perfect powers</b>: <span class="tex">\sqrt{16}=4</span> and <span class="tex">\sqrt{25}=5</span>.</div></div>
+    <div class="tip calc-tip">
+      <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+      <div><b>Any index.</b> Index first, then <kbd>2nd</kbd><kbd>^</kbd> (ˣ√), then the radicand: <span class="keys"><kbd>4</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>8</kbd><kbd>1</kbd><kbd>ENTER</kbd></span> = 3.</div>
+      <button class="pill" data-keys="4 ˣ√ 81 =">Show me</button>
+    </div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex9" data-section="Example 9">
+  <div class="ex-head"><span class="ex-tag">Example 9</span><h3>Estimating a sum of two square roots</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl"><span class="tex">M</span> and <span class="tex">N</span> are fixed irrational numbers satisfying <span class="tex">20&lt;M&lt;30</span> and <span class="tex">5&lt;N&lt;6</span>. The value of <span class="tex">\sqrt{M}+\sqrt{N}</span> is best represented on the number line by
+      <div class="mc"><span><b>A</b> <span class="tex">P</span></span><span><b>B</b> <span class="tex">Q</span></span><span><b>C</b> <span class="tex">R</span></span><span><b>D</b> <span class="tex">S</span></span></div></div>
+      <svg class="nl-fig" viewBox="0 0 760 80" aria-label="Number line from 0 to 10 with points P, Q, R and S">
+        <line x1="20" y1="50" x2="745" y2="50" class="ax"/><path d="M745 44 L756 50 L745 56" class="ax"/>
+        <g class="tk"></g>
+        <circle cx="265" cy="50" r="6"/><text x="265" y="34" class="pt">P</text>
+        <circle cx="454" cy="50" r="6"/><text x="454" y="34" class="pt">Q</text>
+        <circle cx="538" cy="50" r="6"/><text x="538" y="34" class="pt">R</text>
+        <circle cx="671" cy="50" r="6"/><text x="671" y="34" class="pt">S</text>
+      </svg>
+      <div class="work" style="--h:280px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">4.47&lt;\sqrt{M}&lt;5.48</span> and <span class="tex">2.24&lt;\sqrt{N}&lt;2.45</span>, so <span class="tex">6.71&lt;\sqrt{M}+\sqrt{N}&lt;7.93</span>.<br>Only R ≈ 7.4 is inside. <b>C</b></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>The low end.</b> <span class="keys"><kbd>2nd</kbd><kbd>x²</kbd><kbd>2</kbd><kbd>0</kbd><kbd>)</kbd><kbd>+</kbd><kbd>2nd</kbd><kbd>x²</kbd><kbd>5</kbd><kbd>ENTER</kbd></span> → <span class="tex">\sqrt{20}+\sqrt{5}\approx6.71</span>.</div>
+    <button class="pill" data-keys="√ 20 ) + √ 5 =">Show me</button>
+  </div>
+  <div class="space" id="ex9-space"></div>
+  <button class="more" data-more="ex9-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="w9" data-section="Example 9 check">
+  <h3 class="sub">Example 9, step by step</h3>
+  <div class="explainer" data-explainer="estimate"></div>
+</section>
+
+<section class="card example" data-ink="ex10" data-section="Example 10">
+  <div class="ex-head"><span class="ex-tag">Example 10</span><h3>Comparing radicals with different indices</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">Consider the numbers <span class="tex">\sqrt[3]{64},\ \sqrt[4]{81},\ \sqrt{17},\ \sqrt[5]{243}</span>. The largest of these numbers is
+      <div class="mc"><span><b>A</b> <span class="tex">\sqrt{17}</span></span><span><b>B</b> <span class="tex">\sqrt[4]{81}</span></span><span><b>C</b> <span class="tex">\sqrt[3]{64}</span></span><span><b>D</b> <span class="tex">\sqrt[5]{243}</span></span></div></div>
+      <div class="work" style="--h:300px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sqrt[3]{64}=4,\ \sqrt[4]{81}=3,\ \sqrt[5]{243}=3</span>, and <span class="tex">16&lt;17&lt;25</span> so <span class="tex">\sqrt{17}\approx4.12</span>. <b>A</b></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check one.</b> <span class="keys"><kbd>5</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>2</kbd><kbd>4</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> = 3. Then <span class="keys"><kbd>2nd</kbd><kbd>x²</kbd><kbd>1</kbd><kbd>7</kbd><kbd>ENTER</kbd></span> ≈ 4.12.</div>
+    <button class="pill" data-keys="5 ˣ√ 243 =">Show me</button>
+    <button class="pill" data-keys="√ 17 =">√17</button>
+  </div>
+  <div class="space" id="ex10-space"></div>
+  <button class="more" data-more="ex10-space">+ More space</button>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Factor first.</b> GCF = <b>shared</b> primes, lowest powers. LCM = <b>every</b> prime, highest powers. Prime factors are a <b>list of primes</b>.</div>
+    <div><b>Perfect powers.</b> Square: every exponent <b>even</b>. Cube: every exponent a <b>multiple of 3</b>. Missing factors are forced by that rule.</div>
+    <div><b>Rational</b> ⇔ fraction of integers ⇔ decimal <b>terminates or repeats</b>. Otherwise <b>irrational</b> (<span class="tex">\overline{Q}</span>).</div>
+    <div><b>Radicals.</b> Pin between perfect powers; evaluate exact ones first; compare on a number line (or raise to a common power).</div>
+  </div>
+  <a class="assign" href="https://rmcathcart-lab.github.io/math10C-practice/#/lesson/u1l7" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 7 — Cumulative Number Sense Check-Up</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <div class="review">
+    <div class="review-h"><span class="kicker">Up next</span><b>Unit 1 review and test.</b> <span class="muted">Shaky on a question today? Go back to its lesson.</span></div>
+    <div class="review-grid">
+      <a href="../l1/"><span class="rn">1.1</span>Prime factorization <small>Ex. 1</small></a>
+      <a href="../l2/"><span class="rn">1.2</span>GCF, LCM, perfect powers <small>Ex. 2–5</small></a>
+      <a href="../l3/"><span class="rn">1.3</span>Rational, irrational, decimals <small>Ex. 6, 8</small></a>
+      <a href="../l4/"><span class="rn">1.4</span>The real number system <small>Ex. 7</small></a>
+      <a href="../l5/"><span class="rn">1.5</span>Roots of real numbers <small>Ex. 9, 10</small></a>
+      <a href="../l6a/"><span class="rn">1.6A</span>Entire and mixed radicals <small>Assignment</small></a>
+      <a href="../l6b/"><span class="rn">1.6B</span>Index 3 and higher <small>Assignment</small></a>
+    </div>
+  </div>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u1l7.js';
+  boot({ key: 'u1l7', homeHref: '../../', title: '1.7 Number Sense Check-Up' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

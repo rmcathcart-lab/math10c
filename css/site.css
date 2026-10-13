@@ -152,7 +152,7 @@ kbd { display: inline-block; min-width: 26px; padding: 1px 6px; margin: 0 1px; b
 .c2-b { font-size: 26px; font-weight: 800; margin: 2px 0; }
 .methods { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; margin: 4px 0 10px; }
 .method { background: #f6f5f1; border-radius: 12px; padding: 12px 16px; font-size: 18px; }
-.method:nth-child(2) { background: none; display: grid; place-items: center; padding: 0; }
+.methods > .method:nth-child(2) { background: none; display: grid; place-items: center; padding: 0; }
 .method-or { font-weight: 800; color: var(--muted); }
 .m-h { font: 800 21px var(--round); color: var(--brand); margin-bottom: 4px; }
 .method .muted { font-size: 16px; margin-top: 6px; }
@@ -176,7 +176,7 @@ kbd { display: inline-block; min-width: 26px; padding: 1px 6px; margin: 0 1px; b
 .ex-custom input { width: 84px; border: 1.5px solid var(--line); border-radius: 18px; padding: 4px 12px; font: 600 16px var(--font); min-height: 36px; }
 .ex-stage { position: relative; background: #fbfaf6; border: 1px solid var(--line2); border-radius: 14px; overflow: hidden; }
 .ex-stage > * { position: absolute; }
-.ex-cap { min-height: 64px; font-size: 20px; padding: 12px 4px 4px; line-height: 1.4; }
+.ex-cap { min-height: 100px; font-size: 20px; padding: 12px 4px 4px; line-height: 1.4; }
 .ex-ctl { display: flex; align-items: center; gap: 8px; }
 .exb { display: inline-flex; align-items: center; gap: 4px; height: 44px; min-width: 44px; justify-content: center; border: 1.5px solid var(--line); background: #fff; border-radius: 12px; padding: 0 12px; font-weight: 700; font-size: 16px; cursor: pointer; }
 .exb svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
@@ -378,3 +378,17 @@ body.board-open { overflow: hidden; }
 /* KaTeX tweaks: keep math the same size as the text around it, and readable on the projector */
 .katex { font-size: 1.08em; }
 .tex.display { display: block; text-align: center; margin: 6px 0; }
+
+.katex svg { pointer-events: none; } /* KaTeX's wide root-bar SVG must not block taps underneath */
+.assign + .assign { margin-top: 10px; }
+.assign.next-l { border-color: var(--line); background: #faf9f6; }
+/* iPad portrait: squeeze the toolbar so it fits without scrolling sideways */
+@media (max-width: 900px) {
+  .tb { gap: 4px; padding-left: 6px; padding-right: 6px; }
+  .tbtn { min-width: 38px; padding: 0 5px; }
+  .tb-group { padding: 0 2px; gap: 2px; }
+  .sw { width: 24px; height: 24px; margin: 0; }
+  .share-badge { padding: 5px 8px; font-size: 12px; }
+  .share-badge span { max-width: 92px; overflow: hidden; text-overflow: ellipsis; }
+}
+@media (max-width: 760px) { .tbtn[data-act=redo] { display: none; } .share-badge span { display: none; } }

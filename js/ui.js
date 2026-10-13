@@ -194,7 +194,7 @@ export async function calcDemo(spec) {
   const c = calc(); if (!c.isOpen()) c.show();
   const g = ++demoGen, toks = spec.trim().split(/\s+/), box = c.node;
   let cap = box.querySelector('.calc-demo-cap'); if (!cap) { cap = h('div', 'calc-demo-cap'); box.appendChild(cap); }
-  c.calc.press('clear'); c.calc.second = false; c.render();
+  c.calc.press('clear'); c.calc.press('clear'); c.calc.second = false; c.calc.menu = null; c.render(); // twice: the first only dismisses an error
   const label = (t) => (t === '=' ? 'ENTER' : t === '√' ? '2nd x² (√)' : t === 'ˣ√' ? '2nd ^ (ˣ√)' : t === 'x³' ? '2nd |x| (x³)' : t);
   for (let i = 0; i < toks.length; i++) {
     if (g !== demoGen) return;
