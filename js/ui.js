@@ -1,6 +1,7 @@
 /* The page shell shared by every lesson: toolbar, menu, blank board, calculator, answer reveals, "more space". */
 import * as Ink from './ink.js';
 import { h } from './explain.js';
+import * as Share from './share.js';
 
 const I = {
   pen: '<path d="M4 20l1.2-4.6L16.4 4.2a2 2 0 0 1 2.8 0l.6.6a2 2 0 0 1 0 2.8L8.6 18.8z"/><path d="M14.5 6l3.5 3.5"/>',
@@ -18,11 +19,14 @@ const I = {
 const icon = (k) => '<svg viewBox="0 0 24 24" aria-hidden="true">' + I[k] + '</svg>';
 
 export function boot({ key, homeHref = '../../', title = '' }) {
+  const sh = Share.setup(key);
+  fitLesson();
   /* ---------- toolbar ---------- */
   const tb = h('header', 'tb no-ink'); tb.id = 'tb';
   tb.innerHTML = `
     <a class="tbtn home" href="${homeHref}" title="All lessons" aria-label="All lessons">${icon('home')}</a>
     <div class="tb-title">${title}</div>
+    <div class="share-badge"></div>
     <div class="tb-group tools">
       <button class="tbtn" data-tool="pen" title="Pen (P)" aria-label="Pen">${icon('pen')}</button>
       <button class="tbtn" data-tool="highlighter" title="Highlighter (H)" aria-label="Highlighter">${icon('hl')}</button>
@@ -34,11 +38,11 @@ export function boot({ key, homeHref = '../../', title = '' }) {
       ${Object.keys(Ink.COLORS).map((c) => `<button class="sw" data-color="${c}" style="--c:${Ink.COLORS[c]}" title="${c === 'ink' ? 'Black' : c[0].toUpperCase() + c.slice(1)} pen" aria-label="${c} pen"></button>`).join('')}
       <button class="tbtn size" title="Pen size" aria-label="Pen size"><i></i></button>
     </div>
-    <div class="tb-group">
+    <div class="tb-group hist">
       <button class="tbtn" data-act="undo" title="Undo (two-finger tap)" aria-label="Undo">${icon('undo')}</button>
       <button class="tbtn" data-act="redo" title="Redo" aria-label="Redo">${icon('redo')}</button>
     </div>
-    <div class="tb-group">
+    <div class="tb-group tb-right">
       <button class="tbtn wide" data-act="board" title="Blank board (B)">${icon('board')}<span>Board</span></button>
       <button class="tbtn wide" data-act="calc" title="TI-30XIIS calculator (C)">${icon('calc')}<span>Calc</span></button>
       <button class="tbtn" data-act="menu" title="More" aria-label="More">${icon('more')}</button>
@@ -74,28 +78,31 @@ export function boot({ key, homeHref = '../../', title = '' }) {
   function toggleMenu(force) {
     const show = force == null ? menu.classList.contains('hidden') : force;
     if (!show) { menu.classList.add('hidden'); return; }
-    const s = Ink.state();
+    const s = Ink.state(), shareMenu = Share.menuSection(sh);
     const secs = [...document.querySelectorAll('[data-section]')];
-    menu.innerHTML = `
+    menu.innerHTML = `${shareMenu.bottom ? '' : shareMenu.html}
       <div class="mp-h">Jump to</div>
       <div class="mp-secs">${secs.map((el, i) => `<button class="mp-item" data-i="${i}">${el.dataset.section}</button>`).join('')}</div>
       <div class="mp-sep"></div>
-      <label class="mp-item tog"><span>Laser dot when the Pencil hovers</span><input type="checkbox" data-t="hover" ${s.hover ? 'checked' : ''}><i></i></label>
-      <label class="mp-item tog"><span>Finger draws too</span><input type="checkbox" data-t="finger" ${s.finger ? 'checked' : ''}><i></i></label>
+      ${sh.readonly ? '' : `<label class="mp-item tog"><span>Laser dot when the Pencil hovers</span><input type="checkbox" data-t="hover" ${s.hover ? 'checked' : ''}><i></i></label>
+      <label class="mp-item tog"><span>Finger draws too</span><input type="checkbox" data-t="finger" ${s.finger ? 'checked' : ''}><i></i></label>`}
       <button class="mp-item" data-m="answers">Show all answers</button>
       <button class="mp-item" data-m="hideanswers">Hide all answers</button>
       <button class="mp-item" data-m="print">Print / save as PDF</button>
-      <button class="mp-item danger" data-m="clear">Clear all ink on this lesson…</button>
-      <div class="mp-tip">Pencil writes · finger scrolls · two-finger tap = undo.<br>Tap a button with the Pencil to press it.</div>`;
+      ${sh.readonly ? '' : `<button class="mp-item danger" data-m="clear">${sh.cls ? 'Clear all ink for ' + sh.label + '…' : 'Clear all ink on this lesson…'}</button>`}
+      ${shareMenu.bottom ? shareMenu.html : ''}
+      ${sh.readonly ? '' : '<div class="mp-tip">Pencil writes · finger scrolls · two-finger tap = undo.<br>Tap a button with the Pencil to press it.</div>'}`;
     menu.classList.remove('hidden');
     menu.querySelectorAll('[data-i]').forEach((b) => b.onclick = () => { toggleMenu(false); toggleBoard(false); secs[b.dataset.i].scrollIntoView({ behavior: 'smooth', block: 'start' }); });
-    menu.querySelector('[data-t=finger]').onchange = (e) => Ink.setFinger(e.target.checked);
-    menu.querySelector('[data-t=hover]').onchange = (e) => Ink.setHover(e.target.checked);
+    const tf = menu.querySelector('[data-t=finger]'), th = menu.querySelector('[data-t=hover]');
+    if (tf) tf.onchange = (e) => Ink.setFinger(e.target.checked);
+    if (th) th.onchange = (e) => Ink.setHover(e.target.checked);
+    shareMenu.wire(menu, () => toggleMenu(false));
     menu.querySelector('[data-m=answers]').onclick = () => { document.querySelectorAll('.part').forEach((p) => p.classList.add('shown')); toggleMenu(false); };
     menu.querySelector('[data-m=hideanswers]').onclick = () => { document.querySelectorAll('.part').forEach((p) => p.classList.remove('shown')); toggleMenu(false); };
     menu.querySelector('[data-m=print]').onclick = () => { toggleMenu(false); Ink.flush(); setTimeout(() => print(), 50); };
     const c = menu.querySelector('[data-m=clear]');
-    c.onclick = () => {
+    if (c) c.onclick = () => {
       if (!c.classList.contains('confirm')) { c.classList.add('confirm'); c.textContent = 'Tap again to clear every page of ink'; return; }
       Ink.clearAll(); toggleMenu(false); Ink.toast('Ink cleared');
     };
@@ -126,16 +133,31 @@ export function boot({ key, homeHref = '../../', title = '' }) {
   });
   document.querySelectorAll('[data-more]').forEach((b) => {
     const target = document.getElementById(b.dataset.more);
-    b.addEventListener('click', () => { const cur = parseFloat(getComputedStyle(target).minHeight) || target.offsetHeight; target.style.minHeight = (cur + 260) + 'px'; saveSpace(); });
+    b.addEventListener('click', () => { const cur = parseFloat(getComputedStyle(target).minHeight) || target.offsetHeight; target.style.minHeight = (cur + 260) + 'px'; saveSpace(); Ink.emitOp({ a: 'space', id: target.id, h: target.style.minHeight }); });
   });
-  const spaceKey = 'space:' + key;
+  const spaceKey = 'space:' + sh.inkKey;
   function saveSpace() { const o = {}; document.querySelectorAll('[data-more]').forEach((b) => { const t = document.getElementById(b.dataset.more); if (t.style.minHeight) o[t.id] = t.style.minHeight; }); try { localStorage.setItem(spaceKey, JSON.stringify(o)); } catch (e) { /* ignore */ } }
-  try { const o = JSON.parse(localStorage.getItem(spaceKey) || '{}'); for (const id in o) { const t = document.getElementById(id); if (t) t.style.minHeight = o[id]; } } catch (e) { /* ignore */ }
+  if (!sh.readonly) try { const o = JSON.parse(localStorage.getItem(spaceKey) || '{}'); for (const id in o) { const t = document.getElementById(id); if (t) t.style.minHeight = o[id]; } } catch (e) { /* ignore */ }
 
   /* ---------- calculator demos ---------- */
   document.querySelectorAll('[data-keys]').forEach((b) => b.addEventListener('click', () => calcDemo(b.dataset.keys)));
 
-  Ink.init(key);
+  Ink.init(sh.inkKey, { readonly: sh.readonly });
+  Share.start(sh, $('.share-badge'));
+}
+
+/* The lesson is always laid out 1080 px wide and scaled down to fit narrower screens, like a PDF page. That keeps
+ * ink lined up with the content on every device — the teacher's iPad in either orientation and students' phones. */
+const LESSON_W = 1080;
+function fitLesson() {
+  const lesson = document.querySelector('.lesson'); if (!lesson) return;
+  const wrap = h('div', 'fit'); lesson.parentNode.insertBefore(wrap, lesson); wrap.appendChild(lesson);
+  const fit = () => {
+    const s = Math.min(1, document.documentElement.clientWidth / LESSON_W);
+    lesson.style.transform = s < 1 ? 'scale(' + s + ')' : '';
+    wrap.style.height = Math.ceil(lesson.offsetHeight * s) + 'px';
+  };
+  new ResizeObserver(fit).observe(lesson); addEventListener('resize', fit); fit();
 }
 
 /* ---------- calculator ---------- */

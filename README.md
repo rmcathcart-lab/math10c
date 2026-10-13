@@ -11,9 +11,19 @@ Math 10C lessons built to be projected from an iPad and written on with an Apple
 - **Examples** have dotted work space for each part, an Answer button per part, and "+ More space".
 - **Board** opens a blank grid page; **Calc** opens the TI-30XIIS-style calculator from the Math 10C Practice site. "Show me" buttons press the keys on the calculator one at a time.
 
+## Live notes for students
+
+With `inkApi` set in `js/config.js` (the /exec URL of `backend/Code.gs`, an Apps Script bound to a Google Sheet):
+
+- The teacher signs in once per device (••• → Teacher → teacher key; `setup()` in the script prints it), then picks a class in the ••• menu. The page becomes `?class=B` and every stroke, erase, undo and "+ More space" is sent to that class's tab in the sheet. Unsent changes wait on the device until they're saved.
+- Students open the class link (or scan the QR from ••• → Show the class link as a QR code). Their page is view only and checks for new ink every few seconds. Each class keeps its own notes; clearing the ink clears only that class.
+- The lesson is laid out 1080 px wide and scaled to fit the screen, so ink lines up with the content on every device.
+- Testing locally: `node backend/mock_server.js 8790` (teacher key TEST01) and in the browser console `localStorage.setItem('ink:api', JSON.stringify('http://localhost:8790/'))`.
+
 ## Code map
 
 - `js/ink.js` — the Pencil ink engine (SVG layer per `[data-ink]` element, strokes stored in a 1000-unit-wide coordinate system so they scale with the page). Uses [perfect-freehand](https://github.com/steveruizok/perfect-freehand) (MIT) for pressure strokes.
+- `js/share.js`, `js/config.js`, `backend/Code.gs` — live sharing (see above).
 - `js/ui.js` — toolbar, menu, board, calculator wiring and key-press demos (`data-keys="91 ÷ 7 ="`).
 - `js/explain.js` — the step-through explainer framework (`Explainer`), the tap-to-split `FactorTree`, number helpers.
 - `js/lessons/u1l1.js` — Unit 1 Lesson 1's explainers.

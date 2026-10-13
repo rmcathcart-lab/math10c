@@ -19,8 +19,9 @@ const PEN_SIZES = [2.1, 3.3, 5.6];
 const COLORS = { ink: '#1c2230', blue: '#1f5bd6', red: '#d42a2a', green: '#16884a' };
 const HL = { c: '#ffd60a', a: 0.38, size: 22 };
 
+const rid = () => Math.random().toString(36).slice(2, 10);
 const S = {
-  key: 'ink:default', tool: 'pen', color: 'ink', size: 1, finger: false, hover: true,
+  key: 'ink:default', readonly: false, opHook: null, tool: 'pen', color: 'ink', size: 1, finger: false, hover: true,
   surfaces: new Map(), undo: [], redo: [], active: null, penDownAt: 0, listeners: new Set()
 };
 
@@ -100,26 +101,50 @@ function segDist(x, y, a, b) {
 /* ---------------- saving ---------------- */
 let saveTimer = 0;
 function save() { clearTimeout(saveTimer); saveTimer = setTimeout(flush, 500); }
+export function pack(s) {
+  return { id: s.id, t: s.t, c: s.c, w: s.w, pen: s.pen ? 1 : 0, p: s.p.map((q) => [Math.round(q[0] * 10) / 10, Math.round(q[1] * 10) / 10, Math.round(q[2] * 100) / 100]) };
+}
+function unpack(o) { return { id: o.id || rid(), t: o.t, c: o.c, w: o.w, pen: !!o.pen, p: o.p }; }
 function flush() {
   clearTimeout(saveTimer);
+  if (!S.key) return;
   const out = {};
-  S.surfaces.forEach((sf, id) => {
-    if (!sf.strokes.length) return;
-    out[id] = sf.strokes.map((s) => ({ t: s.t, c: s.c, w: s.w, pen: s.pen ? 1 : 0, p: s.p.map((q) => [Math.round(q[0] * 10) / 10, Math.round(q[1] * 10) / 10, Math.round(q[2] * 100) / 100]) }));
-  });
+  S.surfaces.forEach((sf, id) => { if (sf.strokes.length) out[id] = sf.strokes.map(pack); });
   ls(S.key, { v: 1, s: out });
 }
 function loadInto(sf) {
   const data = S.saved && S.saved.s && S.saved.s[sf.id]; if (!data) return;
-  data.forEach((s) => sf.add({ t: s.t, c: s.c, w: s.w, pen: !!s.pen, p: s.p }));
+  data.forEach((s) => sf.add(unpack(s)));
 }
 
+/* ---------------- sharing hooks (js/share.js) ----------------
+ * Every change the teacher makes goes out as an op: { a: 'add', s: surface, ...stroke } | { a: 'del', s, ids } | { a: 'reset' }.
+ * applyOp() puts an op from the server onto the page without sending it back out. */
+function sync(addIt, surf, strokes) {
+  if (!S.opHook || !strokes.length) return;
+  if (addIt) strokes.forEach((s) => S.opHook(Object.assign({ a: 'add', s: surf }, pack(s))));
+  else S.opHook({ a: 'del', s: surf, ids: strokes.map((s) => s.id) });
+}
+export function onOp(f) { S.opHook = f; }
+export function emitOp(op) { if (S.opHook) S.opHook(op); }
+export function applyOp(op) {
+  if (op.a === 'reset') { wipe(); return; }
+  if (op.a === 'space') { const el = document.getElementById(op.id); if (el) el.style.minHeight = op.h; return; }
+  const sf = S.surfaces.get(op.s); if (!sf) return;
+  if (op.a === 'add') { if (!sf.strokes.some((x) => x.id === op.id)) sf.add(unpack(op)); }
+  else if (op.a === 'del') { const ids = new Set(op.ids); sf.strokes.filter((x) => ids.has(x.id)).forEach((x) => sf.remove(x)); }
+  save();
+}
+export function wipe() { S.surfaces.forEach((sf) => sf.clear()); S.undo = []; S.redo = []; emit(); save(); }
+export function allOps() { const out = []; S.surfaces.forEach((sf, id) => sf.strokes.forEach((s) => out.push(Object.assign({ a: 'add', s: id }, pack(s))))); return out; }
+
 /* ---------------- history ---------------- */
-function push(act) { S.undo.push(act); if (S.undo.length > 300) S.undo.shift(); S.redo = []; emit(); save(); }
+function push(act) { S.undo.push(act); if (S.undo.length > 300) S.undo.shift(); S.redo = []; sync(act.type === 'add', act.surf, act.strokes); emit(); save(); }
 function apply(act, inverse) {
   const sf = S.surfaces.get(act.surf); if (!sf) return;
   const addIt = (act.type === 'add') !== inverse;
   act.strokes.forEach((s) => { if (addIt) sf.add(s); else sf.remove(s); });
+  sync(addIt, act.surf, act.strokes);
 }
 export function undo() { const a = S.undo.pop(); if (!a) return; apply(a, true); S.redo.push(a); emit(); save(); }
 export function redo() { const a = S.redo.pop(); if (!a) return; apply(a, false); S.undo.push(a); emit(); save(); }
@@ -133,7 +158,7 @@ function surfaceFor(target) {
 function writes(type) { return type === 'pen' || type === 'mouse' || (type === 'touch' && S.finger); }
 
 function onDown(e) {
-  if (S.active || S.tool === 'hand' || !writes(e.pointerType)) return;
+  if (S.active || S.readonly || S.tool === 'hand' || !writes(e.pointerType)) return;
   if (e.pointerType === 'mouse' && e.button !== 0) return;
   const sf = surfaceFor(e.target); if (!sf) return;
   e.preventDefault();
@@ -143,7 +168,7 @@ function onDown(e) {
   if (S.tool === 'eraser') {
     S.active = { id: e.pointerId, sf, erase: [] }; eraseAt(x, y);
   } else {
-    const s = { t: S.tool === 'highlighter' ? 'hl' : S.tool === 'laser' ? 'laser' : 'pen', c: S.color, w: S.size, pen: e.pointerType === 'pen', p: [[x, y, pr]] };
+    const s = { id: rid(), t: S.tool === 'highlighter' ? 'hl' : S.tool === 'laser' ? 'laser' : 'pen', c: S.color, w: S.size, pen: e.pointerType === 'pen', p: [[x, y, pr]] };
     const node = sf.node(s); (s.t === 'hl' ? sf.gHl : s.t === 'laser' ? sf.gLaser : sf.gPen).appendChild(node);
     S.active = { id: e.pointerId, sf, s, node, dirty: true }; schedule();
   }
@@ -156,7 +181,7 @@ function pressure(e) { return e.pointerType === 'pen' ? Math.max(0.05, e.pressur
  * class can see what you're pointing at. It takes the pen colour (yellow for the highlighter, a ring for the eraser). */
 let dot = null, dotTimer = 0;
 function hoverDot(e) {
-  if (!S.hover || e.pointerType !== 'pen' || e.buttons || S.active) return hideDot();
+  if (!S.hover || S.readonly || e.pointerType !== 'pen' || e.buttons || S.active) return hideDot();
   if (!dot) { dot = document.createElement('div'); dot.id = 'hoverdot'; dot.setAttribute('aria-hidden', 'true'); document.body.appendChild(dot); }
   const c = S.tool === 'highlighter' ? HL.c : S.tool === 'laser' ? '#ff2d2d' : S.tool === 'hand' ? '#13807a' : (COLORS[S.color] || '#ff2d2d');
   dot.className = S.tool === 'eraser' ? 'ring show' : 'show';
@@ -206,7 +231,7 @@ function fadeLaser(sf, s) {
  * that land on a writing surface. Finger touches are left alone (they scroll), except while the Pencil is down,
  * so a resting palm can't drag the page mid-stroke. */
 function touchBlocks(e, start) {
-  if (S.tool === 'hand') return false;
+  if (S.tool === 'hand' || S.readonly) return false;
   const list = start ? e.changedTouches : e.touches;
   for (const t of list) {
     const stylus = t.touchType === 'stylus';
@@ -253,12 +278,15 @@ export function clearSurface(id) {
 }
 export function clearAll() {
   S.surfaces.forEach((sf, id) => { if (sf.strokes.length) S.undo.push({ type: 'erase', surf: id, strokes: sf.clear() }); });
+  if (S.opHook) S.opHook({ a: 'reset' });
   S.redo = []; emit(); flush();
 }
 export function hasInk() { for (const sf of S.surfaces.values()) if (sf.strokes.length) return true; return false; }
 
-export function init(key) {
-  S.key = 'ink:' + key; S.saved = ls(S.key);
+/* opts.readonly: a student's view — no writing, nothing saved on the device (the notes come from the server). */
+export function init(key, opts = {}) {
+  S.readonly = !!opts.readonly; S.key = S.readonly ? null : 'ink:' + key; S.saved = S.key ? ls(S.key) : null;
+  if (S.readonly) document.body.classList.add('viewer');
   const st = ls('ink:settings'); if (st) { S.tool = st.tool || 'pen'; S.color = st.color || 'ink'; S.size = st.size != null ? st.size : 1; S.finger = !!st.finger; S.hover = st.hover !== false; }
   document.querySelectorAll('[data-ink]').forEach(register);
   document.addEventListener('pointerdown', onDown, { passive: false });
