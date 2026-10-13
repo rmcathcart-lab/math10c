@@ -352,3 +352,10 @@ body.board-open { overflow: hidden; }
 .ft-gift.ft-tight .ftn { width: 56px; height: 34px; font-size: 16px; }
 .ft-gift.ft-tight .ftn.wide { width: 64px; }
 .ft-plain.ft-tight .ftn { font-size: 18px; min-width: 34px; height: 34px; padding: 0 4px; }
+
+/* Pencil hover laser dot */
+#hoverdot { position: fixed; left: -11px; top: -11px; width: 22px; height: 22px; border-radius: 50%; pointer-events: none; z-index: 140; opacity: 0;
+  background: radial-gradient(circle, #fff 0 18%, var(--dc) 30% 62%, transparent 72%); box-shadow: 0 0 14px 4px color-mix(in srgb, var(--dc) 55%, transparent); transition: opacity .15s; will-change: transform; }
+#hoverdot.show { opacity: 1; }
+#hoverdot.ring { left: -13px; top: -13px; width: 26px; height: 26px; background: rgba(255,255,255,.35); border: 2.5px solid var(--dc); box-shadow: none; }
+@media print { #hoverdot { display: none; } }

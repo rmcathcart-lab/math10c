@@ -80,7 +80,8 @@ export function boot({ key, homeHref = '../../', title = '' }) {
       <div class="mp-h">Jump to</div>
       <div class="mp-secs">${secs.map((el, i) => `<button class="mp-item" data-i="${i}">${el.dataset.section}</button>`).join('')}</div>
       <div class="mp-sep"></div>
-      <label class="mp-item tog"><span>Finger draws too</span><input type="checkbox" ${s.finger ? 'checked' : ''}><i></i></label>
+      <label class="mp-item tog"><span>Laser dot when the Pencil hovers</span><input type="checkbox" data-t="hover" ${s.hover ? 'checked' : ''}><i></i></label>
+      <label class="mp-item tog"><span>Finger draws too</span><input type="checkbox" data-t="finger" ${s.finger ? 'checked' : ''}><i></i></label>
       <button class="mp-item" data-m="answers">Show all answers</button>
       <button class="mp-item" data-m="hideanswers">Hide all answers</button>
       <button class="mp-item" data-m="print">Print / save as PDF</button>
@@ -88,7 +89,8 @@ export function boot({ key, homeHref = '../../', title = '' }) {
       <div class="mp-tip">Pencil writes · finger scrolls · two-finger tap = undo.<br>Tap a button with the Pencil to press it.</div>`;
     menu.classList.remove('hidden');
     menu.querySelectorAll('[data-i]').forEach((b) => b.onclick = () => { toggleMenu(false); toggleBoard(false); secs[b.dataset.i].scrollIntoView({ behavior: 'smooth', block: 'start' }); });
-    menu.querySelector('input').onchange = (e) => Ink.setFinger(e.target.checked);
+    menu.querySelector('[data-t=finger]').onchange = (e) => Ink.setFinger(e.target.checked);
+    menu.querySelector('[data-t=hover]').onchange = (e) => Ink.setHover(e.target.checked);
     menu.querySelector('[data-m=answers]').onclick = () => { document.querySelectorAll('.part').forEach((p) => p.classList.add('shown')); toggleMenu(false); };
     menu.querySelector('[data-m=hideanswers]').onclick = () => { document.querySelectorAll('.part').forEach((p) => p.classList.remove('shown')); toggleMenu(false); };
     menu.querySelector('[data-m=print]').onclick = () => { toggleMenu(false); Ink.flush(); setTimeout(() => print(), 50); };

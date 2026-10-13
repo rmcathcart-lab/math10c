@@ -20,7 +20,7 @@ const COLORS = { ink: '#1c2230', blue: '#1f5bd6', red: '#d42a2a', green: '#16884
 const HL = { c: '#ffd60a', a: 0.38, size: 22 };
 
 const S = {
-  key: 'ink:default', tool: 'pen', color: 'ink', size: 1, finger: false,
+  key: 'ink:default', tool: 'pen', color: 'ink', size: 1, finger: false, hover: true,
   surfaces: new Map(), undo: [], redo: [], active: null, penDownAt: 0, listeners: new Set()
 };
 
@@ -139,7 +139,7 @@ function onDown(e) {
   e.preventDefault();
   sf.rect = sf.el.getBoundingClientRect();
   const [x, y] = sf.toLocal(e.clientX, e.clientY), pr = pressure(e);
-  S.penDownAt = Date.now();
+  S.penDownAt = Date.now(); hideDot();
   if (S.tool === 'eraser') {
     S.active = { id: e.pointerId, sf, erase: [] }; eraseAt(x, y);
   } else {
@@ -151,7 +151,22 @@ function onDown(e) {
   document.body.classList.add('inking');
 }
 function pressure(e) { return e.pointerType === 'pen' ? Math.max(0.05, e.pressure || 0.5) : 0.5; }
+/* Pencil hover (iPad Pro M2 and later, iPad Air M2 and later, iPad mini A17 Pro): Safari sends pen pointermove
+ * events with no buttons pressed while the Pencil hovers just above the screen. Show a laser dot there so the
+ * class can see what you're pointing at. It takes the pen colour (yellow for the highlighter, a ring for the eraser). */
+let dot = null, dotTimer = 0;
+function hoverDot(e) {
+  if (!S.hover || e.pointerType !== 'pen' || e.buttons || S.active) return hideDot();
+  if (!dot) { dot = document.createElement('div'); dot.id = 'hoverdot'; dot.setAttribute('aria-hidden', 'true'); document.body.appendChild(dot); }
+  const c = S.tool === 'highlighter' ? HL.c : S.tool === 'laser' ? '#ff2d2d' : S.tool === 'hand' ? '#13807a' : (COLORS[S.color] || '#ff2d2d');
+  dot.className = S.tool === 'eraser' ? 'ring show' : 'show';
+  dot.style.setProperty('--dc', S.tool === 'eraser' ? '#6a7182' : c);
+  dot.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
+  clearTimeout(dotTimer); dotTimer = setTimeout(hideDot, 350);
+}
+function hideDot() { if (dot) dot.classList.remove('show'); }
 function onMove(e) {
+  if (e.pointerType === 'pen' && !S.active) hoverDot(e);
   const A = S.active; if (!A || e.pointerId !== A.id) return;
   e.preventDefault();
   const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : null, list = evs && evs.length ? evs : [e];
@@ -225,7 +240,8 @@ export function setTool(t) { S.tool = t; settings(); emit(); }
 export function setColor(c) { S.color = c; if (S.tool !== 'pen') S.tool = 'pen'; settings(); emit(); }
 export function setSize(i) { S.size = i; settings(); emit(); }
 export function setFinger(on) { S.finger = on; settings(); emit(); }
-function settings() { ls('ink:settings', { tool: S.tool === 'laser' || S.tool === 'eraser' ? 'pen' : S.tool, color: S.color, size: S.size, finger: S.finger }); }
+export function setHover(on) { S.hover = on; if (!on) hideDot(); settings(); emit(); }
+function settings() { ls('ink:settings', { tool: S.tool === 'laser' || S.tool === 'eraser' ? 'pen' : S.tool, color: S.color, size: S.size, finger: S.finger, hover: S.hover }); }
 
 export function register(el) {
   const id = el.dataset.ink; if (!id || S.surfaces.has(id)) return S.surfaces.get(id);
@@ -243,11 +259,13 @@ export function hasInk() { for (const sf of S.surfaces.values()) if (sf.strokes.
 
 export function init(key) {
   S.key = 'ink:' + key; S.saved = ls(S.key);
-  const st = ls('ink:settings'); if (st) { S.tool = st.tool || 'pen'; S.color = st.color || 'ink'; S.size = st.size != null ? st.size : 1; S.finger = !!st.finger; }
+  const st = ls('ink:settings'); if (st) { S.tool = st.tool || 'pen'; S.color = st.color || 'ink'; S.size = st.size != null ? st.size : 1; S.finger = !!st.finger; S.hover = st.hover !== false; }
   document.querySelectorAll('[data-ink]').forEach(register);
   document.addEventListener('pointerdown', onDown, { passive: false });
   document.addEventListener('pointermove', onMove, { passive: false });
   document.addEventListener('pointerup', onUp); document.addEventListener('pointercancel', onUp);
+  document.addEventListener('pointerleave', hideDot); document.addEventListener('pointerout', (e) => { if (!e.relatedTarget && e.pointerType === 'pen') hideDot(); });
+  document.addEventListener('scroll', hideDot, { passive: true });
   document.addEventListener('touchstart', onTouchStart, { passive: false });
   document.addEventListener('touchmove', onTouchMove, { passive: false });
   document.addEventListener('touchend', onTouchEnd); document.addEventListener('touchcancel', () => { twoTap = null; });
