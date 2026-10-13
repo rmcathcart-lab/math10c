@@ -3,7 +3,7 @@
  * (ink is only saved on that device). Once it's set, only a device signed in with the teacher key can write; everyone
  * else sees the teacher's notes for their class link (?class=B), view only. */
 export const CONFIG = {
-  inkApi: '',
+  inkApi: 'https://script.google.com/macros/s/AKfycbydF6igTRmGmBtnoEpzReVpXlOfI2sqgatBZR13pqAop_q_jF1ul4myYFxjvYMV0AgBQQ/exec',
   classes: ['A', 'B', 'C', 'D'],
   classLabel: (c) => (/^[A-D]$/.test(c) ? 'Block ' + c : c)
 };
