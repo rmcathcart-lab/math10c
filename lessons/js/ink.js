@@ -206,11 +206,8 @@ function resumeStroke(e, sf) {
  * more than a couple of points, shift the stroke onto the tip. */
 function calibrate(A, ev) {
   if (A.calDone || (A.calTries = (A.calTries || 0) + 1) > 4) return;
-  const t = ev.target;
-  if (!(t instanceof HTMLElement) || !t.offsetWidth || typeof ev.offsetX !== 'number') return;
-  if (t !== A.sf.el && getComputedStyle(t).display === 'inline') return;
-  const tr = t.getBoundingClientRect(), k = tr.width / t.offsetWidth; if (!(k > 0)) return;
-  const dx = tr.left + (t.clientLeft + ev.offsetX) * k - ev.clientX, dy = tr.top + (t.clientTop + ev.offsetY) * k - ev.clientY;
+  const sh = spaceShift(ev); if (!sh) return;
+  const dx = sh.dx, dy = sh.dy;
   A.calDone = true;
   if (Math.abs(dx) < 2.5 && Math.abs(dy) < 2.5) return;
   const r = A.sf.rect || A.sf.measure(), u = VBW / r.width, old = A.off || [0, 0];
@@ -256,15 +253,35 @@ function addPoint(A, ev) {
 }
 /* Pencil hover (iPad Pro M2 and later, iPad Air M2 and later, iPad mini A17 Pro): Safari sends pen pointermove
  * events with no buttons pressed while the Pencil hovers just above the screen. Show a laser dot there so the
- * class can see what you're pointing at. It takes the pen colour (yellow for the highlighter, a ring for the eraser). */
+ * class can see what you're pointing at. It takes the pen colour (yellow for the highlighter, a ring for the eraser).
+ * When the page is pinch-zoomed, Safari's clientX/Y and the page's layout can be in shifted coordinate spaces, so the
+ * dot doesn't use clientX/Y directly: it sits inside the lesson and is placed with the same correction as the pen
+ * (spaceShift), and is shrunk by the zoom so it stays the same size on screen. */
 let dot = null, dotTimer = 0;
+const shift = { dx: 0, dy: 0 };
+/* How far the event's clientX/Y is from the layout's coordinate space, worked out from the browser's own
+ * offsetX/offsetY on a block element. Remembered, so events over inline text can use the last good value. */
+function spaceShift(ev) {
+  const t = ev.target;
+  if (!(t instanceof HTMLElement) || !t.offsetWidth || typeof ev.offsetX !== 'number') return null;
+  if (getComputedStyle(t).display === 'inline') return null;
+  const tr = t.getBoundingClientRect(), k = tr.width / t.offsetWidth; if (!(k > 0)) return null;
+  shift.dx = tr.left + (t.clientLeft + ev.offsetX) * k - ev.clientX;
+  shift.dy = tr.top + (t.clientTop + ev.offsetY) * k - ev.clientY;
+  return shift;
+}
 function hoverDot(e) {
   if (!S.hover || S.readonly || e.pointerType !== 'pen' || e.buttons || S.active || pending) return hideDot();
-  if (!dot) { dot = document.createElement('div'); dot.id = 'hoverdot'; dot.setAttribute('aria-hidden', 'true'); document.body.appendChild(dot); }
+  const host = (e.target.closest && e.target.closest('.board')) || document.querySelector('.lesson') || document.body;
+  if (!dot) { dot = document.createElement('div'); dot.id = 'hoverdot'; dot.setAttribute('aria-hidden', 'true'); }
+  if (dot.parentNode !== host) { if (getComputedStyle(host).position === 'static') host.style.position = 'relative'; host.appendChild(dot); }
+  spaceShift(e);
+  const hr = host.getBoundingClientRect(), s = (hr.width / host.offsetWidth) || 1, z = zoom();
+  const x = (e.clientX + shift.dx - hr.left) / s, y = (e.clientY + shift.dy - hr.top) / s;
   const c = S.tool === 'highlighter' ? HL.c : S.tool === 'laser' ? '#ff2d2d' : S.tool === 'hand' ? '#13807a' : (COLORS[S.color] || '#ff2d2d');
   dot.className = S.tool === 'eraser' ? 'ring show' : 'show';
   dot.style.setProperty('--dc', S.tool === 'eraser' ? '#6a7182' : c);
-  dot.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
+  dot.style.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + (1 / (s * z)) + ')';
   clearTimeout(dotTimer); dotTimer = setTimeout(hideDot, 350);
 }
 function hideDot() { if (dot) dot.classList.remove('show'); }
