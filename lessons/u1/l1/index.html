@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Prime Building Blocks · Math 10C 1.1</title>
+<meta name="description" content="Math 10C Unit 1 Lesson 1: factors, primes and composites, prime factorization. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<script src="../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 1 Number · Lesson 1</div>
+  <h1>Prime Building Blocks of Numbers</h1>
+  <p class="lede">Every whole number bigger than 1 is built by multiplying primes together. Today we find factors, sort primes from composites, and take numbers apart into their prime building blocks.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>list all the factors of a whole number, in pairs, without missing any</li>
+      <li>decide whether a number is prime or composite</li>
+      <li>tell the difference between the <em>prime factors</em> of a number and its <em>product of prime factors</em></li>
+      <li>find a prime factorization with a division ladder or a factor tree</li>
+    </ul>
+  </div>
+  <div class="outcome"><b>AN1</b> Demonstrate an understanding of factors of whole numbers by determining the prime factors, greatest common factor, least common multiple, square root and cube root.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: Unwrap the Number">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Unwrap the Number</h2></div>
+  <p class="big">Open any box into <b>two smaller boxes that multiply</b> to it. <b class="teal">Prime</b> boxes are <b class="teal">sealed</b>: they can’t be opened. <span class="muted">(No 1 boxes! 7 = 1 × 7 doesn’t make anything smaller.)</span></p>
+
+  <div class="seal-q">
+    <div class="q-num">1</div>
+    <div><b>Which of these are sealed?</b> <span class="muted">Tap a box to try to open it.</span>
+      <div class="gift-row">
+        <button class="giftbtn" data-v="9"><span>9</span><small>&nbsp;</small></button>
+        <button class="giftbtn" data-v="11"><span>11</span><small>&nbsp;</small></button>
+        <button class="giftbtn" data-v="15"><span>15</span><small>&nbsp;</small></button>
+        <button class="giftbtn" data-v="17"><span>17</span><small>&nbsp;</small></button>
+        <button class="giftbtn" data-v="21"><span>21</span><small>&nbsp;</small></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="q-line"><div class="q-num">2</div><div><b>Unwrap 360 all the way.</b> Maya opened it as 2 × 180. Leo opened it as 10 × 36. Tap a box that can still open and pick how to split it.</div></div>
+  <div class="two-trees">
+    <div class="tree-card"><div class="tree-name">Maya</div><div id="tree-maya" class="ft-host" style="--fth:330px"></div></div>
+    <div class="tree-card"><div class="tree-name">Leo</div><div id="tree-leo" class="ft-host" style="--fth:330px"></div></div>
+  </div>
+  <div id="compare" class="compare"></div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Everyone in the class unwraps 360 their own way. How many <b>different sets</b> of sealed boxes will we get? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> Lots — about one per student</div>
+      <div class="opt"><b>B</b> A few — it depends on the first split</div>
+      <div class="opt right"><b>C</b> Just one set</div>
+    </div>
+    <button class="pill" data-poll>Reveal</button>
+    <div class="poll-ans"><b>C — just one set.</b> Every route ends at 360 = 2 × 2 × 2 × 3 × 3 × 5. The trees look different, but the sealed boxes never change. 10 isn’t sealed: it opens to 2 × 5. <b>Every composite number has exactly one set of prime building blocks.</b></div>
+  </div>
+</section>
+
+<!-- ================= 1. Factors ================= -->
+<section class="card" data-ink="s1" data-section="1. Factors">
+  <div class="sec-h"><span class="badge">1</span><h2>Factors</h2></div>
+  <div class="def"><b>Factors</b> of a whole number are the whole numbers that divide into it <b>evenly</b> (no remainder).</div>
+  <p>Only 1, 2, 7 and 14 divide evenly into 14, so 14 has <b>four factors</b>. Factors come in <b>pairs</b> that multiply to the number:</p>
+  <p class="display">14 = 1 × 14 = 2 × 7</p>
+  <div class="explainer" data-explainer="rectangles"></div>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. Factor rainbow">
+  <p>To list factors <b>without missing any</b>, test 1, 2, 3, … in order. Each number that works brings its partner. Stop when the pairs would start repeating — that happens once you pass the <b>square root</b>.</p>
+  <div class="explainer" data-explainer="rainbow"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Watch out.</b> Don’t stop too early: 40 ÷ 5 = 8 is easy to miss. And a square number’s middle factor is listed <b>once</b>: 16 = 4 × 4 gives just one 4.</div></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Listing factors, and counting them</h3></div>
+  <p class="q"><b>(a)</b> State the factors of the following.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(i) 16</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">16 = 1 × 16 = 2 × 8 = 4 × 4<br><b>1, 2, 4, 8, 16</b></div></div></div>
+    <div class="part"><div class="pl">(ii) 40</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">40 = 1 × 40 = 2 × 20 = 4 × 10 = 5 × 8<br><b>1, 2, 4, 5, 8, 10, 20, 40</b></div></div></div>
+  </div>
+  <p class="q"><b>(b)</b> In each case, determine the number of factors of the given whole number.</p>
+  <div class="parts c5">
+    <div class="part"><div class="pl">(i) 4</div><div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">1, 2, 4<br><b>3 factors</b></div></div></div>
+    <div class="part"><div class="pl">(ii) 12</div><div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">1, 2, 3, 4, 6, 12<br><b>6 factors</b></div></div></div>
+    <div class="part"><div class="pl">(iii) 1</div><div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">1 = 1 × 1<br><b>1 factor</b></div></div></div>
+    <div class="part"><div class="pl">(iv) 11</div><div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">1, 11<br><b>2 factors</b></div></div></div>
+    <div class="part"><div class="pl">(v) 28</div><div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">1, 2, 4, 7, 14, 28<br><b>6 factors</b></div></div></div>
+  </div>
+  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Which numbers in this example have an <b>odd</b> number of factors? What do they have in common?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">16, 4 and 1. They’re <b>perfect squares</b>: the middle pair (4 × 4, 2 × 2, 1 × 1) only counts once. More on these in Lesson 2.</div></div></div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<!-- ================= 2. Prime and composite ================= -->
+<section class="card" data-ink="s2" data-section="2. Prime and Composite">
+  <div class="sec-h"><span class="badge">2</span><h2>Prime and Composite Numbers</h2></div>
+  <div class="def-grid">
+    <div class="def"><b>Prime number</b> — has <b>exactly two</b> factors, 1 and itself.<div class="eg">2 = 1 × 2 &nbsp;&nbsp; 13 = 1 × 13</div></div>
+    <div class="def amber"><b>Composite number</b> — has <b>more than two</b> factors.<div class="eg">12: 1, 2, 3, 4, 6, 12 &nbsp;&nbsp; 28: 1, 2, 4, 7, 14, 28</div></div>
+  </div>
+  <div class="def gray"><b>1 and 0 are neither.</b> 1 has only <b>one</b> factor. Every whole number divides into 0 (0 = 5 × 0), so 0 has <b>infinitely many</b> factors — and no product of primes can ever make 0.</div>
+  <div class="explainer" data-explainer="sieve"></div>
+  <div class="primes-fill">
+    <div><b>The first ten prime numbers</b> <span class="muted">(tap a blank to fill it)</span></div>
+    <div class="pl-row">2, 3, 5, <button class="blank" data-a="7"></button>, <button class="blank" data-a="11"></button>, <button class="blank" data-a="13"></button>, <button class="blank" data-a="17"></button>, <button class="blank" data-a="19"></button>, <button class="blank" data-a="23"></button>, <button class="blank" data-a="29"></button>, …
+      <button class="pill small" data-fillall>Fill all</button></div>
+  </div>
+  <div class="tip-row">
+    <div class="tip watch"><div class="tip-ic">!</div><div><b>2 is the only even prime.</b> Every other even number has 2 as a factor.</div></div>
+    <div class="tip watch"><div class="tip-ic">!</div><div><b>Odd doesn’t mean prime.</b> 9, 15, 21, 51 and 91 are all odd — and all composite.</div></div>
+  </div>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. Testing for prime">
+  <h3 class="sub">Testing a bigger number</h3>
+  <p>Divide by each <b>prime up to the square root</b>. If none of them divides evenly, the number is prime. The first three tests have shortcuts:</p>
+  <div class="rules">
+    <div class="rule"><span class="rp">÷ 2</span>last digit is even (0, 2, 4, 6, 8)</div>
+    <div class="rule"><span class="rp">÷ 3</span>digits add up to a multiple of 3 <span class="muted">(51: 5 + 1 = 6 ✓)</span></div>
+    <div class="rule"><span class="rp">÷ 5</span>last digit is 0 or 5</div>
+    <div class="rule"><span class="rp">÷ 7, 11, 13…</span>use the calculator: is the answer a whole number?</div>
+  </div>
+  <div class="explainer" data-explainer="detective"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>On the calculator.</b> How far do we test 97? <span class="keys"><kbd>2nd</kbd><kbd>x²</kbd><kbd>9</kbd><kbd>7</kbd><kbd>ENTER</kbd></span> gives √97 ≈ 9.85, so test 2, 3, 5 and 7.</div>
+    <button class="pill" data-keys="√ 97 =">Show me</button>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>On the calculator.</b> Is 7 a factor of 91? <span class="keys"><kbd>9</kbd><kbd>1</kbd><kbd>÷</kbd><kbd>7</kbd><kbd>ENTER</kbd></span> gives 13 — a whole number, so yes: 91 = 7 × 13.</div>
+    <button class="pill" data-keys="91 ÷ 7 =">Show me</button>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Prime or composite?</h3></div>
+  <p class="q">Classify the following whole numbers as prime or composite.</p>
+  <div class="parts c5">
+    <div class="part"><div class="pl">(a) 51</div><div class="work" style="--h:260px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">51 = 3 × 17<br><b>composite</b></div></div></div>
+    <div class="part"><div class="pl">(b) 59</div><div class="work" style="--h:260px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">√59 &lt; 8; 2, 3, 5, 7 don’t divide<br><b>prime</b></div></div></div>
+    <div class="part"><div class="pl">(c) 63</div><div class="work" style="--h:260px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">63 = 7 × 9<br><b>composite</b></div></div></div>
+    <div class="part"><div class="pl">(d) 91</div><div class="work" style="--h:260px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">91 = 7 × 13<br><b>composite</b></div></div></div>
+    <div class="part"><div class="pl">(e) 97</div><div class="work" style="--h:260px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">√97 &lt; 10; 2, 3, 5, 7 don’t divide<br><b>prime</b></div></div></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<!-- ================= 3. Prime factors ================= -->
+<section class="card" data-ink="s3" data-section="3. Prime Factors">
+  <div class="sec-h"><span class="badge">3</span><h2>Prime Factors</h2></div>
+  <div class="def">The <b>prime factors</b> of a whole number are the factors that are themselves <b>prime</b>.</div>
+  <p>The factors of 18 are 1, 2, 3, 6, 9 and 18. Only 2 and 3 are prime, so the prime factors of 18 are <b>2 and 3</b>.</p>
+  <div class="explainer" data-explainer="primeFilter"></div>
+  <div class="compare-2">
+    <div><div class="c2-h">Prime factors of 18</div><div class="c2-b">2, 3</div><div class="muted">a <b>list</b> — each prime once</div></div>
+    <div><div class="c2-h">18 as a product of prime factors</div><div class="c2-b">18 = 2 × 3 × 3 = 2 × 3<sup>2</sup></div><div class="muted">an <b>equation</b> — repeats included, so it multiplies back to 18</div></div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Factors, prime factors, and a product of primes</h3></div>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) State the factors of 44.</div><div class="work" style="--h:280px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">44 = 1 × 44 = 2 × 22 = 4 × 11<br><b>1, 2, 4, 11, 22, 44</b></div></div></div>
+    <div class="part"><div class="pl">(b) State the prime factors of 44.</div><div class="work" style="--h:280px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Of 1, 2, 4, 11, 22, 44 only these are prime:<br><b>2 and 11</b></div></div></div>
+    <div class="part"><div class="pl">(c) Express 44 as a product of prime factors.</div><div class="work" style="--h:280px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">44 = 4 × 11 = 2 × 2 × 11<br><b>44 = 2<sup>2</sup> × 11</b></div></div></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<!-- ================= 4. Prime factorization ================= -->
+<section class="card" data-ink="s4" data-section="4. Prime Factorization">
+  <div class="sec-h"><span class="badge">4</span><h2>Prime Factorization</h2></div>
+  <div class="def"><b>Prime factorization</b> breaks a composite number down until <b>only primes</b> remain. Every composite number has exactly <b>one</b> set of prime factors (that’s the warm-up!).</div>
+  <div class="methods">
+    <div class="method"><div class="m-h">Division ladder</div>Divide by the <b>smallest prime</b> that fits. Repeat on the answer until you reach <b>1</b>. The primes are <b>down the left side</b>.<div class="muted">Very organized — great for big numbers.</div></div>
+    <div class="method"><div class="method-or">or</div></div>
+    <div class="method"><div class="m-h">Factor tree</div>Split the number into <b>any</b> factor pair. Keep splitting every composite until each branch ends in a <b>prime</b> (circle it).<div class="muted">Quick when you spot a friendly pair like 10.</div></div>
+  </div>
+  <p class="display">90 = 2 × 3 × 3 × 5 = 2 × 3<sup>2</sup> × 5 <span class="muted small">primes from smallest to largest, exponents for repeats</span></p>
+  <div class="explainer" data-explainer="ladder"></div>
+</section>
+
+<section class="card" data-ink="s4b" data-section="4. Factor trees">
+  <div class="ex explainer-tree" id="tree4">
+    <div class="ex-top no-ink"><div class="ex-title">Method 2: the factor tree — tap a number to split it</div>
+      <div class="ex-chips"><button class="chip on" data-n="90">90</button><button class="chip" data-n="360">360</button><button class="chip" data-n="1001">1001</button><span class="ex-sep">Example 5 check:</span><button class="chip" data-n="7650">7 650</button>
+        <form class="ex-custom"><input type="text" inputmode="numeric" placeholder="other" aria-label="Choose your own number"><button class="chip go" type="submit">Go</button></form></div>
+    </div>
+    <div class="ft-host" style="--fth:380px"></div>
+  </div>
+  <p class="small muted">Different first splits make different-looking trees, but the circled primes at the ends of the branches are always the same.</p>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>The division ladder on a larger number</h3></div>
+  <p class="q">Use a division ladder to determine the prime factorization of <b>3 432</b>.</p>
+  <div class="parts c1">
+    <div class="part"><div class="work" style="--h:470px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">2 | 3 432 → 2 | 1 716 → 2 | 858 → 3 | 429 → 11 | 143 → 13 | 13 → 1<br><b>3 432 = 2<sup>3</sup> × 3 × 11 × 13</b></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check it on the calculator.</b> <span class="keys"><kbd>2</kbd><kbd>^</kbd><kbd>3</kbd><kbd>×</kbd><kbd>3</kbd><kbd>×</kbd><kbd>1</kbd><kbd>1</kbd><kbd>×</kbd><kbd>1</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> should give back 3 432.</div>
+    <button class="pill" data-keys="2 ^ 3 × 3 × 11 × 13 =">Show me</button>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>The factor tree on a larger number</h3></div>
+  <p class="q">Use a factor tree to determine the prime factorization of <b>7 650</b>.</p>
+  <div class="parts c1">
+    <div class="part"><div class="work" style="--h:500px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">7 650 = 10 × 765 = (2 × 5) × (5 × 153) = 2 × 5 × 5 × 9 × 17<br><b>7 650 = 2 × 3<sup>2</sup> × 5<sup>2</sup> × 17</b></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check it.</b> The <kbd>x²</kbd> key squares: <span class="keys"><kbd>2</kbd><kbd>×</kbd><kbd>3</kbd><kbd>x²</kbd><kbd>×</kbd><kbd>5</kbd><kbd>x²</kbd><kbd>×</kbd><kbd>1</kbd><kbd>7</kbd><kbd>ENTER</kbd></span> should give 7 650.</div>
+    <button class="pill" data-keys="2 × 3 x² × 5 x² × 17 =">Show me</button>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Factors</b> divide evenly and come in pairs. Test 1, 2, 3, … up to the square root.</div>
+    <div><b>Prime:</b> exactly two factors. <b>Composite:</b> more than two. 0 and 1 are neither.</div>
+    <div><b>Prime factors</b> are a list (2, 3). A <b>prime factorization</b> is an equation (18 = 2 × 3<sup>2</sup>).</div>
+    <div>Ladder or tree, every composite number has <b>one</b> prime factorization.</div>
+  </div>
+  <a class="assign" href="https://rmcathcart-lab.github.io/math10C-practice/#/lesson/u1l1" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 1 — Prime Building Blocks</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l2/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 2 — Prime Factorization at Work: GCF, LCM, and Perfect Powers</b></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u1l1.js';
+  boot({ key: 'u1l1', homeHref: '../../', title: '1.1 Prime Building Blocks' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>
