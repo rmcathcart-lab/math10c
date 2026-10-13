@@ -1,7 +1,7 @@
 # Brief: build one Math 10C teaching lesson page (Unit 1)
 
 > **Repo:** these lesson pages now live in the combined repo **rmcathcart-lab/math10c**, folder `lessons/`
-> (site: https://rmcathcart-lab.github.io/math10c/lessons/). The old `math10c-teaching` repo only redirects here.
+> (site: https://rmcathcart-lab.github.io/math10c/lessons/). It replaces the old `math10c-teaching` repo, which is retired.
 > Publishing: push `main` to both `main` and `gh-pages` (Pages builds from `gh-pages`).
 > After adding a lesson page, also add its id to `HW.TEACHING.lessons` in `js/catalog.js` (repo root) so the practice
 > site shows its Lesson card and sidebar button.

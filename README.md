@@ -12,7 +12,7 @@ The lesson pages share the practice site's calculator (`js/calc.js`) and KaTeX (
 backend (`backend/Code.gs` = Practice Ledger, `lessons/backend/Code.gs` = Teaching Ink).
 
 **Publishing:** GitHub Pages builds from the `gh-pages` branch, so push `main` to both: `git push origin main main:gh-pages`.
-The old `math10C-practice` and `math10c-teaching` sites redirect here (paths, `?class=` and `#/…` are kept).
+(This replaces the old separate `math10C-practice` and `math10c-teaching` repos; their full history is included here.)
 
 # Practice
 
