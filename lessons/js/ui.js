@@ -49,7 +49,11 @@ export function boot({ key, homeHref = '../../', title = '' }) {
       <button class="tbtn wide" data-act="calc" title="TI-30XIIS calculator (C)">${icon('calc')}<span>Calc</span></button>
       <button class="tbtn" data-act="menu" title="More" aria-label="More">${icon('more')}</button>
     </div>`;
-  document.body.prepend(tb);
+  /* The toolbar and its menu live in a fixed layer (#hud) that stays the same size at the top of the screen while
+   * the page is pinch-zoomed (see followZoom). A spacer keeps the lesson below the toolbar. */
+  const hud = h('div', 'hud'); hud.id = 'hud'; hud.appendChild(tb);
+  document.body.prepend(hud, h('div', 'tb-space'));
+  followZoom(hud);
   const $ = (s) => tb.querySelector(s), $$ = (s) => [...tb.querySelectorAll(s)];
   $$('[data-tool]').forEach((b) => b.addEventListener('click', () => Ink.setTool(b.dataset.tool)));
   $$('[data-color]').forEach((b) => b.addEventListener('click', () => Ink.setColor(b.dataset.color)));
@@ -76,7 +80,7 @@ export function boot({ key, homeHref = '../../', title = '' }) {
 
   /* ---------- menu ---------- */
   const menu = h('div', 'menu-pop hidden');
-  document.body.appendChild(menu);
+  hud.appendChild(menu);
   function toggleMenu(force) {
     const show = force == null ? menu.classList.contains('hidden') : force;
     if (!show) { menu.classList.add('hidden'); return; }
@@ -146,6 +150,38 @@ export function boot({ key, homeHref = '../../', title = '' }) {
 
   Ink.init(sh.inkKey, { readonly: sh.readonly });
   Share.start(sh, $('.share-badge'));
+}
+
+/* Pinch zoom: Safari zooms everything, fixed toolbars included, so the toolbar would grow and slide off the top of
+ * the screen. visualViewport says where the zoomed-in view is; the HUD layer is moved there and shrunk by the zoom
+ * so the toolbar stays put, at its normal size. While two fingers are pinching it fades out and comes back when
+ * the fingers lift (Safari doesn't always run page code mid-pinch, so following it live would look jumpy). */
+function followZoom(hud) {
+  const vv = window.visualViewport; if (!vv) return;
+  let last = '', loop = 0, until = 0, pinching = false;
+  const place = () => {
+    const s = vv.scale || 1, x = vv.offsetLeft, y = vv.offsetTop;
+    const t = (Math.abs(s - 1) < 0.005 && Math.abs(x) < 0.5 && Math.abs(y) < 0.5) ? '' : 'translate(' + x + 'px,' + y + 'px) scale(' + (1 / s) + ')';
+    if (t !== last) { hud.style.transform = t; last = t; }
+    document.body.classList.toggle('zoomed', s > 1.005);
+  };
+  const tick = () => { place(); loop = performance.now() < until ? requestAnimationFrame(tick) : 0; };
+  const follow = (ms) => { until = Math.max(until, performance.now() + ms); if (!loop) loop = requestAnimationFrame(tick); };
+  const fingers = (e) => [...e.touches].filter((t) => t.touchType !== 'stylus').length;
+  vv.addEventListener('resize', () => { place(); follow(400); });
+  vv.addEventListener('scroll', () => { place(); follow(400); });
+  addEventListener('scroll', () => follow(400), { passive: true });
+  document.addEventListener('touchstart', () => follow(1500), { passive: true });
+  document.addEventListener('touchmove', (e) => {
+    if (fingers(e) >= 2 && !pinching) { pinching = true; hud.classList.add('pinch'); }
+    follow(1500);
+  }, { passive: true });
+  const end = (e) => {
+    if (pinching && fingers(e) === 0) { pinching = false; place(); setTimeout(() => { place(); hud.classList.remove('pinch'); }, 60); }
+    follow(1800);
+  };
+  document.addEventListener('touchend', end, { passive: true }); document.addEventListener('touchcancel', end, { passive: true });
+  place();
 }
 
 /* The lesson is always laid out 1080 px wide and scaled down to fit narrower screens, like a PDF page. That keeps

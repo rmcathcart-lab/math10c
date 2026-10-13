@@ -22,7 +22,7 @@ async def main():
         # home page: a lesson card to the left of each assignment (Unit 1 only so far)
         home = await page.evaluate("[...document.querySelectorAll('.lesson-line')].map(l => { const a = l.querySelector('a.lesson-teach'); return a ? a.getAttribute('href') : null; })")
         print('home cards:', home)
-        assert len(home) == 15 and home[0].endswith('/u1/l1/?class=C') and home[5].endswith('/u1/l6a/?class=C') and home[7].endswith('/u1/l7/?class=C') and all(h is None for h in home[8:]), home
+        assert len(home) == 15 and home[0].endswith('/u1/l1/?class=C') and home[5].endswith('/u1/l6a/?class=C') and home[7].endswith('/u1/l7/?class=C') and home[8].endswith('/u2/l1/?class=C') and home[14].endswith('/u2/l6/?class=C'), home
         await page.screenshot(path='/tmp/home_cards.png', full_page=False)
         # the card opens the lesson page itself (served from the same repo) in a new tab
         async with page.context.expect_page() as pi: await page.click('a.lesson-teach >> nth=0')
@@ -43,7 +43,7 @@ async def main():
         await page.set_viewport_size({'width': 390, 'height': 800}); await page.evaluate("location.hash = '#/lesson/u1l2'"); await page.wait_for_timeout(500)
         await page.screenshot(path='/tmp/teach_link_phone.png')
         ok = out == {'u1l1': BASE + 'lessons/u1/l1/?class=C',
-                     'u1l6a': BASE + 'lessons/u1/l6a/?class=C', 'u2l1': None}
+                     'u1l6a': BASE + 'lessons/u1/l6a/?class=C', 'u2l1': BASE + 'lessons/u2/l1/?class=C'}
         print('errors:', errs); print('PASS' if ok and not errs else 'FAIL')
         await b.close()
 asyncio.run(main())

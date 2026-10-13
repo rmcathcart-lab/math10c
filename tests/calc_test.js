@@ -23,6 +23,12 @@ run('1 2 3 4 5 6 7 8 9 mul 1 0 0 0 enter','1.23456789E11');
 run('0 . 0 0 0 0 0 0 0 0 0 0 1 2 enter','1.2E-11');
 run('2 pow 3 pow 2 enter','64.');
 run('neg 8 pow lp 1 div 3 rp enter','-2.');
+// negative base with a fractional exponent: the real TI-30XIIS only allows 1/(odd number) (TI KB 40237)
+run('lp neg 8 rp pow lp 1 div 3 rp enter','-2.');
+run('lp neg 8 rp pow lp neg 1 div 3 rp enter','-0.5');
+run('lp neg 8 rp pow lp 2 div 3 rp enter','DOMAIN ERROR');
+run('lp neg 1 6 rp pow lp 1 div 4 rp enter','DOMAIN ERROR');
+run('lp lp neg 8 rp pow lp 1 div 3 rp rp sq enter','4.');
 run('9 0 asin','');
 run('0 . 3 6 3 6 3 6 3 6 3 6 enter fd','4┘11');
 run('0 . 4 4 4 4 4 4 4 4 4 4 enter fd','4┘9');

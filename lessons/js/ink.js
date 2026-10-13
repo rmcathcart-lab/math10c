@@ -69,7 +69,13 @@ class Surface {
     this.gPen = document.createElementNS(SVGNS, 'g'); this.gLaser = document.createElementNS(SVGNS, 'g'); this.gLaser.setAttribute('class', 'laser');
     svg.append(this.gHl, this.gPen, this.gLaser); el.appendChild(svg); this.svg = svg;
   }
-  toLocal(cx, cy) { const r = this.rect || this.el.getBoundingClientRect(), k = VBW / r.width; return [(cx - r.left) * k, (cy - r.top) * k]; }
+  /* Page (client) coordinates → this layer's 1000-wide units. Measured against the ink layer itself (inside the
+   * card's border); `off` is the stroke's alignment correction (see calibrate). */
+  measure() { this.rect = this.svg.getBoundingClientRect(); return this.rect; }
+  toLocal(cx, cy, off) {
+    const r = this.rect || this.measure(), k = VBW / r.width;
+    return [(cx + (off ? off[0] : 0) - r.left) * k, (cy + (off ? off[1] : 0) - r.top) * k];
+  }
   node(s) {
     const p = document.createElementNS(SVGNS, 'path'); p.setAttribute('fill', colorOf(s)); return p;
   }
@@ -162,22 +168,54 @@ function writes(type) { return type === 'pen' || type === 'mouse' || (type === '
 
 /* With a light touch, Safari can lose and regain the Pencil's contact several times within one stroke, which used to
  * leave a chain of short separate strokes. So a Pencil stroke isn't finished on pointerup straight away: if the Pencil
- * touches down again within a moment, close to where it lifted, the same stroke carries on. */
-const JOIN_MS = 160, JOIN_PX = 28;
+ * touches down again almost at once, right where the moving tip would have got to, the same stroke carries on.
+ * A real lift between letters doesn't qualify: the next letter starts somewhere else, not on the line the pen was
+ * already travelling along, so it stays a separate stroke. Distances are in on-screen points (zoom included). */
+const JOIN_MS = 90, JOIN_ERR = 8;
 let pending = null;
+const zoom = () => (window.visualViewport && visualViewport.scale) || 1;
+function trail(A, x, y) {
+  const now = performance.now(), T = A.trail || (A.trail = []);
+  T.push([x, y, now]); while (T.length > 2 && now - T[1][2] > 40) T.shift();
+}
+function liftVelocity(A) {
+  const T = A.trail; if (!T || T.length < 2) return [0, 0];
+  const a = T[0], b = T[T.length - 1], dt = b[2] - a[2];
+  return dt > 4 ? [(b[0] - a[0]) / dt, (b[1] - a[1]) / dt] : [0, 0];
+}
 function commitPending() {
   if (!pending) return;
   const A = pending.A; clearTimeout(pending.timer); pending = null;
   finishStroke(A);
 }
 function resumeStroke(e, sf) {
-  if (!pending || e.pointerType !== 'pen' || pending.A.sf !== sf || Date.now() - pending.at > JOIN_MS) return false;
-  const A = pending.A, lc = A.lastClient;
-  if (!lc || Math.hypot(lc[0] - e.clientX, lc[1] - e.clientY) > JOIN_PX) return false;
+  if (!pending || e.pointerType !== 'pen' || pending.A.sf !== sf) return false;
+  const dt = performance.now() - pending.at; if (dt > JOIN_MS) return false;
+  const A = pending.A, lc = pending.lift, v = pending.v, z = zoom();
+  const err = Math.hypot(e.clientX - (lc[0] + v[0] * dt), e.clientY - (lc[1] + v[1] * dt)) * z;
+  const travel = Math.hypot(v[0], v[1]) * dt * z;
+  if (err > JOIN_ERR + 0.15 * travel) return false;
   clearTimeout(pending.timer); pending = null;
-  A.id = e.pointerId; sf.rect = sf.el.getBoundingClientRect(); S.active = A;
-  addPoint(A, e);
+  A.id = e.pointerId; sf.measure(); S.active = A; A.trail = null;
+  addPoint(A, e); trail(A, e.clientX, e.clientY);
   return true;
+}
+/* Alignment check. Safari can report the Pencil's position and the page's layout in slightly different coordinate
+ * spaces (it has happened with pinch zoom), which puts the ink a little off the tip. The event's offsetX/offsetY is
+ * worked out by the browser from its own hit-testing, so compare the two once per stroke and, if they disagree by
+ * more than a couple of points, shift the stroke onto the tip. */
+function calibrate(A, ev) {
+  if (A.calDone || (A.calTries = (A.calTries || 0) + 1) > 4) return;
+  const t = ev.target;
+  if (!(t instanceof HTMLElement) || !t.offsetWidth || typeof ev.offsetX !== 'number') return;
+  if (t !== A.sf.el && getComputedStyle(t).display === 'inline') return;
+  const tr = t.getBoundingClientRect(), k = tr.width / t.offsetWidth; if (!(k > 0)) return;
+  const dx = tr.left + (t.clientLeft + ev.offsetX) * k - ev.clientX, dy = tr.top + (t.clientTop + ev.offsetY) * k - ev.clientY;
+  A.calDone = true;
+  if (Math.abs(dx) < 2.5 && Math.abs(dy) < 2.5) return;
+  const r = A.sf.rect || A.sf.measure(), u = VBW / r.width, old = A.off || [0, 0];
+  A.off = [dx, dy];
+  if (A.s) { A.s.p.forEach((q) => { q[0] += (dx - old[0]) * u; q[1] += (dy - old[1]) * u; }); A.dirty = true; }
 }
 function onDown(e) {
   if (S.active || S.readonly || S.tool === 'hand' || !writes(e.pointerType)) return;
@@ -186,15 +224,17 @@ function onDown(e) {
   e.preventDefault();
   if (resumeStroke(e, sf)) { try { sf.el.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ } document.body.classList.add('inking'); hideDot(); return; }
   commitPending();
-  sf.rect = sf.el.getBoundingClientRect();
-  const [x, y] = sf.toLocal(e.clientX, e.clientY), pr = pressure(e, null);
+  sf.measure();
+  const pr = pressure(e, null);
   S.penDownAt = Date.now(); hideDot();
   if (S.tool === 'eraser') {
-    S.active = { id: e.pointerId, sf, erase: [] }; eraseAt(x, y);
+    S.active = { id: e.pointerId, sf, erase: [] }; calibrate(S.active, e);
+    const [x, y] = sf.toLocal(e.clientX, e.clientY, S.active.off); eraseAt(x, y);
   } else {
+    const [x, y] = sf.toLocal(e.clientX, e.clientY);
     const s = { id: rid(), t: S.tool === 'highlighter' ? 'hl' : S.tool === 'laser' ? 'laser' : 'pen', c: S.color, w: S.size, pen: e.pointerType === 'pen', p: [[x, y, pr]] };
     const node = sf.node(s); (s.t === 'hl' ? sf.gHl : s.t === 'laser' ? sf.gLaser : sf.gPen).appendChild(node);
-    S.active = { id: e.pointerId, sf, s, node, dirty: true, lastClient: [e.clientX, e.clientY] }; schedule();
+    S.active = { id: e.pointerId, sf, s, node, dirty: true }; calibrate(S.active, e); trail(S.active, e.clientX, e.clientY); schedule();
   }
   try { sf.el.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
   document.body.classList.add('inking');
@@ -208,8 +248,7 @@ function pressure(e, prev) {
   return Math.max(0.05, Math.min(1, p));
 }
 function addPoint(A, ev) {
-  const [x, y] = A.sf.toLocal(ev.clientX, ev.clientY);
-  A.lastClient = [ev.clientX, ev.clientY];
+  const [x, y] = A.sf.toLocal(ev.clientX, ev.clientY, A.off);
   const last = A.s.p[A.s.p.length - 1];
   if (Math.abs(last[0] - x) + Math.abs(last[1] - y) < 0.4) return;
   A.s.p.push([x, y, pressure(ev, last[2])]);
@@ -233,12 +272,13 @@ function onMove(e) {
   if (e.pointerType === 'pen' && !S.active) hoverDot(e);
   const A = S.active; if (!A || e.pointerId !== A.id) return;
   e.preventDefault();
+  calibrate(A, e);
   const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : null, list = evs && evs.length ? evs : [e];
   for (const ev of list) {
-    if (A.erase) { const [x, y] = A.sf.toLocal(ev.clientX, ev.clientY); eraseAt(x, y); continue; }
+    if (A.erase) { const [x, y] = A.sf.toLocal(ev.clientX, ev.clientY, A.off); eraseAt(x, y); continue; }
     addPoint(A, ev);
   }
-  if (!A.erase && A.dirty) schedule();
+  if (!A.erase) { trail(A, e.clientX, e.clientY); if (A.dirty) schedule(); }
 }
 function onUp(e) {
   const A = S.active; if (!A || e.pointerId !== A.id) return;
@@ -246,7 +286,7 @@ function onUp(e) {
   try { A.sf.el.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
   A.sf.rect = null;
   if (A.erase) { if (A.erase.length) push({ type: 'erase', surf: A.sf.id, strokes: A.erase }); return; }
-  if (A.s.pen) { pending = { A, at: Date.now(), timer: setTimeout(commitPending, JOIN_MS) }; return; }
+  if (A.s.pen) { pending = { A, at: performance.now(), lift: A.trail && A.trail.length ? A.trail[A.trail.length - 1].slice(0, 2) : [e.clientX, e.clientY], v: liftVelocity(A), timer: setTimeout(commitPending, JOIN_MS) }; return; }
   finishStroke(A);
 }
 function finishStroke(A) {
@@ -260,7 +300,7 @@ function eraseAt(x, y) {
 }
 let raf = 0;
 function schedule() { if (!raf) raf = requestAnimationFrame(paint); }
-function paint() { raf = 0; const A = S.active; if (A && A.dirty && A.node) { A.node.setAttribute('d', pathFor(A.s, false)); A.dirty = false; } }
+function paint() { raf = 0; const A = S.active; if (A && A.dirty && A.node) { A.node.setAttribute('d', pathFor(A.s, true)); A.dirty = false; } }
 function fadeLaser(sf, s) {
   const p = sf.node(s); p.setAttribute('d', pathFor(s, true)); sf.gLaser.appendChild(p);
   const a = p.animate([{ opacity: 1 }, { opacity: 1, offset: 0.55 }, { opacity: 0 }], { duration: 1500, easing: 'ease-in' });
@@ -335,7 +375,9 @@ export function init(key, opts = {}) {
   document.addEventListener('pointermove', onMove, { passive: false });
   document.addEventListener('pointerup', onUp); document.addEventListener('pointercancel', onUp);
   document.addEventListener('pointerleave', hideDot); document.addEventListener('pointerout', (e) => { if (!e.relatedTarget && e.pointerType === 'pen') hideDot(); });
-  document.addEventListener('scroll', hideDot, { passive: true });
+  const remeasure = () => { if (S.active) S.active.sf.rect = null; };
+  document.addEventListener('scroll', () => { hideDot(); remeasure(); }, { passive: true });
+  if (window.visualViewport) { visualViewport.addEventListener('scroll', remeasure); visualViewport.addEventListener('resize', remeasure); }
   document.addEventListener('touchstart', onTouchStart, { passive: false });
   document.addEventListener('touchmove', onTouchMove, { passive: false });
   document.addEventListener('touchend', onTouchEnd); document.addEventListener('touchcancel', () => { twoTap = null; });

@@ -40,8 +40,13 @@
     pow: function (a, b) {
       if (a.f === 0 && b.f < 0) throw err('DIVIDE BY 0');
       if (a.q && b.q && b.q[1] === 1 && Math.abs(b.q[0]) <= 64) { var e = b.q[0], n = Math.pow(a.q[0], Math.abs(e)), d = Math.pow(a.q[1], Math.abs(e)); if (Math.abs(n) < 1e15 && d < 1e15) return e >= 0 ? fromQ(n, d) : fromQ(d, n); }
-      if (a.f < 0 && b.q && b.q[1] % 2 === 1) { var r = Math.pow(-a.f, b.f); return V(b.q[0] % 2 ? -r : r); } // odd-denominator roots of negatives
-      if (a.f < 0 && b.f % 1) throw err('DOMAIN');
+      // A negative base with a fractional exponent: the real TI-30XIIS only accepts it when 1 ÷ exponent is a whole odd
+      // number, e.g. (−8)^(1/3) = −2. (−8)^(2/3) is a DOMAIN error on the calculator (TI knowledge base 40237): take the root first.
+      if (a.f < 0 && b.f % 1) {
+        var inv = 1 / b.f, k = Math.round(inv);
+        if (Math.abs(inv - k) < 1e-9 && Math.abs(k) % 2 === 1) return V(-Math.pow(-a.f, b.f));
+        throw err('DOMAIN');
+      }
       return V(Math.pow(a.f, b.f));
     },
     neg: function (a) { return a.q ? fromQ(-a.q[0], a.q[1]) : V(-a.f); }

@@ -23,7 +23,13 @@ b { font-weight: 700; }
 sup { font-size: .68em; line-height: 0; }
 
 /* ---------------- toolbar ---------------- */
-.tb { position: sticky; top: 0; z-index: 100; height: var(--tbh); display: flex; align-items: center; gap: 10px; padding: 0 12px; padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right));
+/* #hud: a fixed layer the size of the screen holding the toolbar and menu; ui.js counter-scales it during pinch zoom */
+.hud { position: fixed; left: 0; top: 0; width: 100%; height: 100%; z-index: 100; pointer-events: none; transform-origin: 0 0; transition: opacity .12s; }
+.hud > * { pointer-events: auto; }
+.hud.pinch { opacity: 0; }
+.hud.pinch > * { pointer-events: none; }
+.tb-space { height: var(--tbh); }
+.tb { position: absolute; top: 0; left: 0; right: 0; z-index: 100; height: var(--tbh); display: flex; align-items: center; gap: 10px; padding: 0 12px; padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right));
   background: rgba(255, 255, 255, .94); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
 .tb-title { font-weight: 700; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 1 1 auto; color: var(--ink2); }
 .tb-group { display: flex; align-items: center; gap: 4px; padding: 0 6px; border-left: 1px solid var(--line2); }
@@ -305,7 +311,7 @@ body.inking { -webkit-user-select: none; user-select: none; }
 body.board-open { overflow: hidden; }
 
 /* ---------------- menu, toast ---------------- */
-.menu-pop { position: fixed; top: calc(var(--tbh) + 6px); right: 12px; z-index: 110; width: 320px; max-height: calc(100vh - var(--tbh) - 20px); overflow: auto; background: #fff; border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 16px 40px rgba(20,24,33,.18); padding: 8px; font-size: 17px; }
+.menu-pop { position: absolute; top: calc(var(--tbh) + 6px); right: 12px; z-index: 110; width: 320px; max-height: calc(100% - var(--tbh) - 20px); overflow: auto; background: #fff; border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 16px 40px rgba(20,24,33,.18); padding: 8px; font-size: 17px; }
 .mp-h { font-size: 13px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; padding: 6px 10px 2px; }
 .mp-item { display: flex; align-items: center; justify-content: space-between; width: 100%; text-align: left; border: none; background: transparent; padding: 9px 10px; border-radius: 10px; cursor: pointer; font-size: 17px; }
 .mp-item:hover { background: #f4f2ec; }
@@ -337,7 +343,7 @@ body.board-open { overflow: hidden; }
 /* ---------------- print ---------------- */
 @media print {
   body { background: #fff; font-size: 14px; }
-  .tb, .ex-ctl, .ft-ctl, .more, .reveal, .board, .menu-pop, .calc, .ex-chips, .pill, #toast { display: none !important; }
+  .hud, .tb-space, .tb, .ex-ctl, .ft-ctl, .more, .reveal, .board, .menu-pop, .calc, .ex-chips, .pill, #toast { display: none !important; }
   .lesson { width: auto; padding: 0; transform: none !important; }
   .fit { height: auto !important; overflow: visible; }
   .share-badge { display: none !important; }
