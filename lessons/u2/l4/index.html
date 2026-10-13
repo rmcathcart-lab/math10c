@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scientific Notation · Math 10C 2.4</title>
+<meta name="description" content="Math 10C Unit 2 Lesson 4 (Application / Extension): scientific notation. Standard notation, product form and a × 10ⁿ, renormalizing a coefficient, and multiplying and dividing with the exponent laws. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u2l4.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 2 Exponents · Lesson 4</div>
+  <h1>Scientific Notation <span class="ext-tag">Application / Extension</span></h1>
+  <p class="lede">The Sun is about <b>150 000 000 000 m</b> away, and a red blood cell is <b>0.000008 m</b> across. Numbers like these are hard to read and easy to get wrong. Scientific notation writes them as <span class="tex">a\times10^{n}</span>, and then the exponent laws make multiplying and dividing them quick.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>move between <em>standard notation</em>, <em>product form</em> and <em>scientific notation</em></li>
+      <li>rewrite a number whose coefficient is out of range (<b>renormalize</b> it)</li>
+      <li>multiply and divide numbers in scientific notation with the <b>product</b> and <b>quotient</b> laws</li>
+      <li>solve problems with very large and very small numbers, and check them with the <kbd>EE</kbd> key</li>
+    </ul>
+  </div>
+  <div class="ext-note"><span class="ext-ic">+</span><div><b>Application / Extension.</b> Scientific notation is not a Math 10C outcome on its own: converting numbers is review from Grade 9 and Science 10. It appears here as a <b>context for using the exponent laws</b>.</div></div>
+  <div class="outcome"><b>AN3</b> Demonstrate an understanding of powers with integral and rational exponents.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: How Many Heartbeats?">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>How Many Heartbeats?</h2></div>
+  <p class="big">A resting heart beats about <b>70 times a minute</b>, every minute, for life.</p>
+
+  <div class="hb-top">
+    <div class="hb-heart" aria-hidden="true"><svg viewBox="-2.2 -1.9 4.4 4.6"><path d="M0 2.3 C-0.6 1.75 -2 0.8 -2 -0.25 C-2 -1.35 -0.55 -1.7 0 -0.65 C0.55 -1.7 2 -1.35 2 -0.25 C2 0.8 0.6 1.75 0 2.3 Z"/><ellipse cx="-1.2" cy="-0.6" rx="0.32" ry="0.2" fill="#fff" opacity=".35"/></svg></div>
+    <div class="hb-monitor" aria-label="Heart monitor: about 70 beats per minute">
+      <div class="hb-grid"></div>
+      <svg class="hb-trace" id="hb-trace" preserveAspectRatio="none"></svg>
+      <div class="hb-bpm">≈ 70 beats per minute</div>
+    </div>
+  </div>
+
+  <div class="hb-chain" id="hb-chain">
+    <div class="hb-card given"><div class="hb-t">1 minute</div><div class="hb-v">70 beats</div></div>
+    <div class="hb-x">× 60</div>
+    <button class="hb-card" data-hb="4200" data-sci=""><div class="hb-t">1 hour</div><div class="hb-v">? beats</div></button>
+    <div class="hb-x">× 24</div>
+    <button class="hb-card" data-hb="100800" data-sci="\approx1.0\times10^{5}"><div class="hb-t">1 day</div><div class="hb-v">? beats</div></button>
+    <div class="hb-x">× 365</div>
+    <button class="hb-card" data-hb="36792000" data-sci="\approx3.68\times10^{7}"><div class="hb-t">1 year</div><div class="hb-v">? beats</div></button>
+    <div class="hb-x">× 80</div>
+    <button class="hb-card big" data-hb="2943360000" data-sci="\approx2.9\times10^{9}"><div class="hb-t">80 years</div><div class="hb-v">? beats</div></button>
+  </div>
+  <p class="small muted hb-hint">Tap a <b>?</b> card to reveal it, after the class has had a go.</p>
+
+  <div class="wq-grid">
+    <div class="wq">
+      <div class="q-line"><div class="q-num">1</div><div>How many beats in <b>1 hour</b>?</div></div>
+      <div class="wq-a"><button class="pill small" data-wq>Answer</button><div class="q-ans"><span class="tex">70\times60=4\,200</span> beats.</div></div>
+    </div>
+    <div class="wq">
+      <div class="q-line"><div class="q-num">2</div><div>About how many in <b>1 day</b>?</div></div>
+      <div class="wq-a"><button class="pill small" data-wq>Answer</button><div class="q-ans"><span class="tex">4\,200\times24=100\,800</span>, about <span class="tex">100\,000=1\times10^{5}</span> beats.</div></div>
+    </div>
+  </div>
+
+  <div class="wq q3">
+    <div class="q-line"><div class="q-num">3</div><div>One year is about <b>36 800 000</b> beats. Which of these <b>equal</b> it? <span class="muted">Tap each one to check.</span></div></div>
+    <div class="q3-opts">
+      <button class="q3-opt" data-q3="sci"><span class="tex">3.68\times10^{7}</span><small>&nbsp;</small></button>
+      <button class="q3-opt" data-q3="eq"><span class="tex">36.8\times10^{6}</span><small>&nbsp;</small></button>
+      <button class="q3-opt" data-q3="no"><span class="tex">3.68\times10^{6}</span><small>&nbsp;</small></button>
+    </div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> About how many times does a heart beat in an <b>80-year</b> life? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> about 3 million</div>
+      <div class="opt right"><b>B</b> about 3 billion</div>
+      <div class="opt"><b>C</b> about 3 trillion</div>
+    </div>
+    <button class="pill" data-poll>Reveal</button>
+    <div class="poll-ans"><b>B, about 3 billion.</b> <span class="tex">70\times60\times24\times365\times80=2\,943\,360\,000\approx2.9\times10^{9}</span>. One year alone is already over 36 million, so A is far too small; C has three extra zeros. <b>Surprise:</b> there are only about <span class="tex">2.5\times10^{9}</span> <em>seconds</em> in 80 years, so your heart beats more times than there are seconds in your life!</div>
+  </div>
+
+  <div class="pulse-card">
+    <div class="q-line"><div class="q-num ok-n">♥</div><div><b>Try it.</b> Find your pulse (wrist or neck). Count the beats for <b>15 seconds</b>, then multiply by 4. Who’s closest to 70?</div></div>
+    <div class="pulse-row">
+      <button class="pill" id="pulse-go">Start the 15-second count</button>
+      <div class="pulse-clock" id="pulse-clock"><span class="pc-n">15</span><span class="pc-l">seconds</span></div>
+      <div class="pulse-msg" id="pulse-msg">Resting rates vary a lot (roughly 60 to 100 is typical), so 70 is just a round “about” value.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 1. Recap ================= -->
+<section class="card" data-ink="s1" data-section="1. Scientific Notation (Recap)">
+  <div class="sec-h"><span class="badge">1</span><h2>Scientific Notation (Recap)</h2></div>
+  <div class="def">A positive number is in <b>scientific notation</b> when it is written as <span class="tex">a\times10^{n}</span>, where the <b>coefficient</b> <span class="tex">a</span> satisfies <span class="tex">1\le a\lt10</span> and <span class="tex">n</span> is an <b>integer</b>. Every positive number has exactly <b>one</b> scientific-notation form.</div>
+  <p><b>Product form</b> shows where the power of ten comes from:</p>
+  <div class="def-grid">
+    <div class="def pf"><div class="pf-h">A big number: multiply by tens</div><span class="tex">52\,000=5.2\times10\times10\times10\times10=5.2\times10^{4}</span></div>
+    <div class="def amber pf"><div class="pf-h">A small number: divide by tens</div><span class="tex">0.00047=\dfrac{4.7}{10\times10\times10\times10}=4.7\times10^{-4}</span></div>
+  </div>
+  <p>To change <span class="tex">a\times10^{n}</span> to standard notation, move the decimal point of <span class="tex">a</span> by <span class="tex">n</span> places: to the <b>right</b> if <span class="tex">n</span> is positive, to the <b>left</b> if <span class="tex">n</span> is negative. <span class="muted">○ = where the point starts &nbsp; ● = where it ends</span></p>
+  <div class="explainer" data-explainer="hops"></div>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. Which sign? + the EE key">
+  <h3 class="sub">Which sign does the exponent get?</h3>
+  <div class="sign-grid">
+    <div class="sign-t pos"><div class="sign-h">Number ≥ 10</div><div class="sign-n"><span class="tex">n</span> is <b>positive</b></div><span class="tex">84\,200=8.42\times10^{4}</span></div>
+    <div class="sign-t zero"><div class="sign-h">Number from 1 to 10</div><div class="sign-n"><span class="tex">n=0</span></div><span class="tex">9.1=9.1\times10^{0}</span></div>
+    <div class="sign-t neg"><div class="sign-h">Number less than 1</div><div class="sign-n"><span class="tex">n</span> is <b>negative</b></div><span class="tex">0.00072=7.2\times10^{-4}</span></div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>A negative exponent does not make a negative number.</b> <span class="tex">7.2\times10^{-4}=0.00072</span> is small, but still positive. The sign of <span class="tex">n</span> only says <b>which way</b> the point moves.</div></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>The <kbd>EE</kbd> key means “× 10 to the”.</b> To type <span class="tex">4.1\times10^{-3}</span>: <span class="keys"><kbd>4</kbd><kbd>.</kbd><kbd>1</kbd><kbd>EE</kbd><kbd>(−)</kbd><kbd>3</kbd><kbd>ENTER</kbd></span>. The screen shows <b>4.1E-3</b> and the answer 0.0041. Use <kbd>(−)</kbd>, not <kbd>−</kbd>, for a negative exponent.</div>
+    <button class="pill" data-keys="4.1 EE (−) 3 =">Show me</button>
+  </div>
+</section>
+
+<section class="card" data-ink="s1c" data-section="1. Powers of ten: how big, how small">
+  <h3 class="sub">How big? How small? A powers-of-ten scale</h3>
+  <p>On this scale every tick is <b>10 times</b> the one to its left. The exponent tells you <b>where</b> a measurement sits: positive exponents are bigger than 1 m, negative exponents are smaller.</p>
+  <div class="explainer" data-explainer="zoom"></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Standard notation, product form, and scientific notation</h3></div>
+  <p class="q">Complete the table.</p>
+  <div class="sn-table">
+    <div class="sn-head"><div>Standard Notation</div><div>Product Form</div><div>Scientific Notation</div><div></div></div>
+    <div class="part sn-row">
+      <div class="sn-c given"><span class="tex">84\,200</span></div>
+      <div class="sn-c work"><div class="ans"><span class="tex">8.42\times10\times10\times10\times10</span></div></div>
+      <div class="sn-c work"><div class="ans"><span class="tex">\mathbf{8.42\times10^{4}}</span></div></div>
+      <div class="sn-b"><button class="reveal">Answer</button></div>
+    </div>
+    <div class="part sn-row">
+      <div class="sn-c given"><span class="tex">0.00072</span></div>
+      <div class="sn-c work"><div class="ans"><span class="tex">\dfrac{7.2}{10\times10\times10\times10}</span></div></div>
+      <div class="sn-c work"><div class="ans"><span class="tex">\mathbf{7.2\times10^{-4}}</span></div></div>
+      <div class="sn-b"><button class="reveal">Answer</button></div>
+    </div>
+    <div class="part sn-row">
+      <div class="sn-c work"><div class="ans"><span class="tex">\mathbf{605}</span></div></div>
+      <div class="sn-c given"><span class="tex">6.05\times10\times10</span></div>
+      <div class="sn-c work"><div class="ans"><span class="tex">\mathbf{6.05\times10^{2}}</span></div></div>
+      <div class="sn-b"><button class="reveal">Answer</button></div>
+    </div>
+    <div class="part sn-row">
+      <div class="sn-c work"><div class="ans"><span class="tex">\mathbf{0.0041}</span></div></div>
+      <div class="sn-c work"><div class="ans"><span class="tex">\dfrac{4.1}{10\times10\times10}</span></div></div>
+      <div class="sn-c given"><span class="tex">4.1\times10^{-3}</span></div>
+      <div class="sn-b"><button class="reveal">Answer</button></div>
+    </div>
+  </div>
+  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Write <b>9.1</b> in scientific notation. What is the exponent, and why?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\mathbf{9.1\times10^{0}}</span>. 9.1 is already between 1 and 10, so the point makes <b>no hops</b>, and <span class="tex">10^{0}=1</span>.</div></div></div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s1d" data-section="1. Out of range: renormalize">
+  <h3 class="sub">When the coefficient is out of range</h3>
+  <div class="def amber"><b>Renormalize</b>: if the coefficient is <b>not</b> between 1 and 10, move its decimal point until it is, and change the exponent by the <b>same number of places</b> the <b>other way</b>, so the value doesn’t change.</div>
+  <div class="renorm-rules">
+    <div class="rr"><span class="tex">34.5\times10^{4}</span><span class="rr-arrow">point <b>left</b> 1<br>exponent <b>up</b> 1</span><span class="tex">3.45\times10^{5}</span></div>
+    <div class="rr"><span class="tex">0.35\times10^{-6}</span><span class="rr-arrow">point <b>right</b> 1<br>exponent <b>down</b> 1</span><span class="tex">3.5\times10^{-7}</span></div>
+  </div>
+  <div class="explainer" data-explainer="renorm"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Coefficient smaller ⇒ exponent bigger</b> (and the other way round). A common slip: <span class="nw"><span class="tex">34.5\times10^{4}=3.45\times10^{3}</span> ✗</span>. That changes the value from 345 000 to 3 450.</div></div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>A coefficient that is out of range</h3></div>
+  <p class="q">Each number is <b>not</b> in scientific notation. Explain why, and rewrite it correctly.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) <span class="tex">0.35\times10^{-6}</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The coefficient 0.35 is <b>less than 1</b>. Point 1 place <b>right</b> <span class="nw">(<span class="tex">0.35=3.5\times10^{-1}</span>)</span>, so the exponent goes <b>down</b> 1:<br><span class="tex">0.35\times10^{-6}=3.5\times10^{-1}\times10^{-6}=\mathbf{3.5\times10^{-7}}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">34.5\times10^{4}</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The coefficient 34.5 is <b>10 or more</b>. Point 1 place <b>left</b> <span class="nw">(<span class="tex">34.5=3.45\times10^{1}</span>)</span>, so the exponent goes <b>up</b> 1:<br><span class="tex">34.5\times10^{4}=3.45\times10^{1}\times10^{4}=\mathbf{3.45\times10^{5}}</span></div></div></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<!-- ================= 2. Multiplying and dividing ================= -->
+<section class="card" data-ink="s2" data-section="2. Multiplying and Dividing">
+  <div class="sec-h"><span class="badge">2</span><h2>Multiplying and Dividing with the Exponent Laws</h2></div>
+  <p>The exponent laws do this work by hand. Deal with the <b class="sn-coef">coefficients</b> and the <b class="sn-pow">powers of 10</b> separately, then <b>renormalize</b> if the new coefficient is not between 1 and 10.</p>
+  <div class="def-grid">
+    <div class="def"><b>Multiply</b>: multiply the coefficients, <b>add</b> the exponents (Product Law).<div class="law-tex"><span class="tex">(a\times10^{m})(b\times10^{n})=(a\times b)\times10^{m+n}</span></div></div>
+    <div class="def"><b>Divide</b>: divide the coefficients, <b>subtract</b> the exponents (Quotient Law).<div class="law-tex"><span class="tex">(a\times10^{m})\div(b\times10^{n})=(a\div b)\times10^{m-n}</span></div></div>
+  </div>
+  <div class="explainer" data-explainer="muldiv"></div>
+  <div class="tip-row">
+    <div class="tip watch"><div class="tip-ic">!</div><div><b>Coefficients multiply; only exponents add.</b> <span class="tex">(2.5\times10^{5})(3\times10^{4})</span> is <b>not</b> <span class="tex">5.5\times10^{9}</span> and not <span class="tex">7.5\times10^{20}</span>.</div></div>
+    <div class="tip watch"><div class="tip-ic">!</div><div><b>Watch the signs.</b> <span class="tex">-3-5=-8</span> and <span class="tex">4-(-2)=6</span>. Then renormalize the right way: <span class="tex">20\times10^{-9}=2\times10^{-8}</span>.</div></div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Products and quotients, with renormalizing</h3></div>
+  <p class="q">Evaluate each expression and write the result in scientific notation.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) <span class="tex">(2.5\times10^{5})(3\times10^{4})</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">2.5\times3=7.5;\ \ 5+4=9</span><br><span class="tex">\mathbf{7.5\times10^{9}}</span> (already in range)</div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">(6.4\times10^{8})\div(1.6\times10^{3})</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">6.4\div1.6=4;\ \ 8-3=5</span><br><span class="tex">\mathbf{4\times10^{5}}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">(4\times10^{-3})(5\times10^{-6})</span></div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">4\times5=20;\ \ -3+(-6)=-9</span><br><span class="tex">20\times10^{-9}=2\times10^{1}\times10^{-9}=\mathbf{2\times10^{-8}}</span></div></div></div>
+    <div class="part"><div class="pl">(d) <span class="tex">(1.2\times10^{-3})\div(4\times10^{5})</span></div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">1.2\div4=0.3;\ \ -3-5=-8</span><br><span class="tex">0.3\times10^{-8}=3\times10^{-1}\times10^{-8}=\mathbf{3\times10^{-9}}</span></div></div></div>
+  </div>
+  <div class="part think"><div class="pl"><span class="think-tag">Think</span> How could you tell, <b>before</b> calculating, that the answers to (c) and (d) are both less than 1?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">In (c) both numbers are less than 1, and multiplying two numbers less than 1 gives something even smaller. In (d) a tiny number is divided by a huge one. Both answers get <b>negative exponents</b>.</div></div></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check (c) with <kbd>EE</kbd>.</b> <span class="keys"><kbd>4</kbd><kbd>EE</kbd><kbd>(−)</kbd><kbd>3</kbd><kbd>×</kbd><kbd>5</kbd><kbd>EE</kbd><kbd>(−)</kbd><kbd>6</kbd><kbd>ENTER</kbd></span>. The answer shows as <b>2 ×10<sup>−8</sup></b>: read it as <span class="tex">2\times10^{-8}</span>.</div>
+    <div class="pill-col"><button class="pill" data-keys="4 EE (−) 3 × 5 EE (−) 6 =">Show (c)</button><button class="pill" data-keys="1.2 EE (−) 3 ÷ 4 EE 5 =">Show (d)</button></div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Typing “× 10 ^” instead of EE?</b> Then each number needs its own brackets. <span class="keys"><kbd>6.4</kbd><kbd>×</kbd><kbd>10</kbd><kbd>^</kbd><kbd>8</kbd><kbd>÷</kbd><kbd>1.6</kbd><kbd>×</kbd><kbd>10</kbd><kbd>^</kbd><kbd>3</kbd></span> works left to right, so it <b>multiplies</b> by <span class="tex">10^{3}</span> instead of dividing: you get <span class="tex">4\times10^{11}</span>, not <span class="tex">4\times10^{5}</span>. <kbd>EE</kbd> keeps each number in one piece.</div>
+    <div class="pill-col"><button class="pill" data-keys="6.4 × 10 ^ 8 ÷ 1.6 × 10 ^ 3 =">Show the slip</button><button class="pill" data-keys="6.4 EE 8 ÷ 1.6 EE 3 =">Show EE</button></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. Distance ÷ speed">
+  <h3 class="sub">Problems with huge distances: <span class="tex">\text{time}=\dfrac{\text{distance}}{\text{speed}}</span></h3>
+  <p>Light travels about <span class="tex">3\times10^{8}</span> m every second: that’s 300 000 km, about <b>7½ times around the Earth</b>. Even so, space is so big that light takes a while to cross it.</p>
+  <div class="explainer" data-explainer="light"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Very big answers.</b> How far does light go in a year (about <span class="tex">3.15\times10^{7}</span> s)? <span class="keys"><kbd>3</kbd><kbd>EE</kbd><kbd>8</kbd><kbd>×</kbd><kbd>3</kbd><kbd>.</kbd><kbd>1</kbd><kbd>5</kbd><kbd>EE</kbd><kbd>7</kbd><kbd>ENTER</kbd></span>. The calculator can’t fit all the digits, so it shows <b>9.45 ×10<sup>15</sup></b>. That means <span class="tex">9.45\times10^{15}</span> m (a <b>light-year</b>). Never copy it down as <span class="tex">9.45^{15}</span>.</div>
+    <button class="pill" data-keys="3 EE 8 × 3.15 EE 7 =">Show me</button>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>How long does sunlight take to reach us?</h3></div>
+  <p class="q">The Sun is about <span class="tex">1.5\times10^{11}</span> m from Earth, and light travels about <span class="tex">3\times10^{8}</span> m/s.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) About how many <b>seconds</b> does sunlight take to reach Earth?</div><div class="work" style="--h:260px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">t=\dfrac{1.5\times10^{11}}{3\times10^{8}}=0.5\times10^{11-8}=0.5\times10^{3}</span><br><span class="tex">=5\times10^{-1}\times10^{3}=\mathbf{5\times10^{2}}</span> s (500 s)</div></div></div>
+    <div class="part"><div class="pl">(b) About how many <b>minutes</b> is that?</div><div class="work" style="--h:260px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">500\div60\approx\mathbf{8.3}</span> minutes<br>The sunlight you see left the Sun about 8 minutes ago.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check it.</b> <span class="keys"><kbd>1</kbd><kbd>.</kbd><kbd>5</kbd><kbd>EE</kbd><kbd>1</kbd><kbd>1</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>EE</kbd><kbd>8</kbd><kbd>ENTER</kbd></span> gives 500. Keep going <kbd>÷</kbd><kbd>6</kbd><kbd>0</kbd> for minutes: 8.333…</div>
+    <div class="pill-col"><button class="pill" data-keys="1.5 EE 11 ÷ 3 EE 8 =">Show seconds</button><button class="pill" data-keys="1.5 EE 11 ÷ 3 EE 8 ÷ 60 =">Show minutes</button></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Scientific notation</b> is <span class="tex">a\times10^{n}</span> with <span class="tex">1\le a\lt10</span>. Product form shows the tens: <span class="tex">52\,000=5.2\times10\times10\times10\times10</span>.</div>
+    <div><b>Count the hops.</b> Big numbers get a positive exponent, numbers less than 1 a negative one: <span class="tex">0.00047=4.7\times10^{-4}</span>.</div>
+    <div><b>Renormalize</b>: point left ⇒ exponent up; point right ⇒ exponent down. <span class="tex">34.5\times10^{4}=3.45\times10^{5}</span></div>
+    <div><b>Multiply</b>: coefficients × , exponents +. <b>Divide</b>: coefficients ÷ , exponents −. Then renormalize. Check with <kbd>EE</kbd>.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u2l4" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 4 — Scientific Notation</b><div class="muted">Application / Extension · Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l5a/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 5A — Rational Exponents and Radicals</b><div class="muted">What exponents like <span class="tex">\tfrac{1}{2}</span> and <span class="tex">\tfrac{2}{3}</span> mean</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u2l4.js';
+  boot({ key: 'u2l4', homeHref: '../../', title: '2.4 Scientific Notation (Extension)' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

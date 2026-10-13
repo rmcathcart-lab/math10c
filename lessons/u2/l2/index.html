@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Several Exponent Laws · Math 10C 2.2</title>
+<meta name="description" content="Math 10C Unit 2 Lesson 2: simplifying expressions with several exponent laws. Expanded factor form, one base at a time, multi-law chains, negative bases and variable exponents. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u2l2.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 2 Exponents · Lesson 2</div>
+  <h1>Simplifying Expressions with Several Exponent Laws</h1>
+  <p class="lede">Real expressions rarely need just one law. <span class="tex">(2x^3)^4</span> needs two, and a fraction with brackets on top and bottom can need four. Today we chain the laws together in a sensible order, one base at a time, then deal with negative bases and with exponents that are whole expressions.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>explain a simplification by writing each power in <em>expanded factor form</em></li>
+      <li>simplify a product or quotient: the coefficients first, then <b>one base at a time</b></li>
+      <li>choose and apply two or more exponent laws, in the right order, in one chain</li>
+      <li>tell <span class="tex">(-a)^n</span> from <span class="tex">-a^n</span> and keep track of the sign</li>
+      <li>add and subtract exponents that are algebraic expressions <span class="muted">(extension)</span></li>
+    </ul>
+  </div>
+  <div class="outcome"><b>AN3</b> Demonstrate an understanding of powers with integral and rational exponents.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: The Photocopier">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Photocopier</h2></div>
+  <p class="big">Set the copier to <b>200%</b>. Copy the picture. Then copy the <b>copy</b>. Then again… <span class="muted">Press COPY, and tap any sheet to see how many originals fit on it.</span></p>
+
+  <div class="pc-box" id="copier"></div>
+
+  <div class="wu-grid">
+    <div class="wq">
+      <div class="q-line"><div class="q-num">1</div><div>The original is <b>3 cm</b> wide. How wide is Copy 1? How wide is Copy 2?</div></div>
+      <div class="wq-a"><button class="pill small" type="button" data-wq="1">Answer</button><div class="q-ans">Copy 1 is <b>6 cm</b> and Copy 2 is <b>12 cm</b>. 200% means every length <b>doubles</b>.</div></div>
+    </div>
+    <div class="wq">
+      <div class="q-line"><div class="q-num">2</div><div>How many originals would it take to <b>cover</b> Copy 1?</div></div>
+      <div class="wq-a"><button class="pill small" type="button" data-wq="1">Answer</button><div class="q-ans"><b>4.</b> Twice as wide <b>and</b> twice as tall: <span class="tex">2\times2=2^2=4</span> times the area.</div></div>
+    </div>
+    <div class="wq">
+      <div class="q-line"><div class="q-num">3</div><div>Copy 2 has how many times the <b>area</b> of the original? Write it as a power of 4.</div></div>
+      <div class="wq-a"><button class="pill small" type="button" data-wq="2">Answer</button><div class="q-ans"><span class="tex">4\times4=4^2=\boldsymbol{16}</span> times. Check: <span class="tex">12^2=144</span>, <span class="tex">3^2=9</span>, and <span class="tex">144\div9=16</span>.</div></div>
+    </div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Copy 3 is a 200% copy of Copy 2. Its <b>area</b> is how many times the area of the original? <b>Guess first.</b></div></div>
+    <div class="poll-opts c4">
+      <div class="opt"><b>A</b> 6</div>
+      <div class="opt"><b>B</b> 8</div>
+      <div class="opt"><b>C</b> 12</div>
+      <div class="opt right"><b>D</b> 64</div>
+    </div>
+    <button class="pill" type="button" data-poll>Reveal</button>
+    <div class="poll-ans"><b>D, 64 times.</b> Each copy multiplies the area by <span class="tex">4=2^2</span>, three times: <span class="tex">(2^2)^3=2^2\times2^2\times2^2=2^6=64</span>. Check: Copy 3 is 24 cm wide, <span class="tex">24^2=576</span> and <span class="tex">576\div9=64</span>.<br>
+      <span class="muted"><b>A</b> adds (2 per copy, 3 copies). <b>B</b>, <span class="tex">2^3=8</span>, is right for the <b>width</b>, but area doubles in two directions. <b>C</b> uses the 3 as a multiplier instead of an exponent.</span></div>
+  </div>
+
+  <div class="wq wq-wide">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Challenge your neighbour.</b> What zoom % would make Copy 3 in <b>one</b> press?</div></div>
+    <div class="wq-a"><button class="pill small" type="button" data-wq="3">Answer</button><div class="q-ans"><b>800%</b>, since <span class="tex">2\times2\times2=2^3=8</span>. With side <span class="tex">s</span>, Copy 3 has side <span class="tex">2^3s</span> and area <span class="tex">(2^3s)^2=2^6s^2=64s^2</span>: <b>two laws in one chain</b>. That’s today.</div></div>
+  </div>
+</section>
+
+<!-- ================= 1. Expanded factor form ================= -->
+<section class="card" data-ink="s1" data-section="1. Expanding Into Factors">
+  <div class="sec-h"><span class="badge">1</span><h2>Recap: Expanding Into Factors</h2></div>
+  <p>Lesson 1 built each law by expanding powers into factors. The same check works when there are <b>coefficients</b>: write each term in <b>expanded factor form</b>.</p>
+  <div class="ef-grid">
+    <div class="ef-col">
+      <div class="ef-h">Multiplying</div>
+      <div class="tex display">\begin{aligned}&amp;3x^2\times2x^4\\&amp;=(3\cdot x\cdot x)\times(2\cdot x\cdot x\cdot x\cdot x)\\&amp;=(3\times2)\cdot(x\cdot x\cdot x\cdot x\cdot x\cdot x)\\&amp;=6x^6\end{aligned}</div>
+    </div>
+    <div class="ef-col">
+      <div class="ef-h">Dividing</div>
+      <div class="tex display">\begin{aligned}&amp;12a^5\div3a^2\\&amp;=\dfrac{12\cdot a\cdot a\cdot a\cdot a\cdot a}{3\cdot a\cdot a}\\&amp;=\dfrac{12}{3}\cdot a\cdot a\cdot a\\&amp;=4a^3\end{aligned}</div>
+    </div>
+  </div>
+  <div class="def"><b>Coefficients</b> combine like ordinary numbers. The <b>variable factors</b> stack up (Product Law) or cancel (Quotient Law).</div>
+  <div class="explainer" data-explainer="expand"></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Three students, three answers</h3></div>
+  <p class="q">Three students are asked to simplify <span class="tex">5x^2\times4x^4</span>. Their answers are shown below.</p>
+  <div class="students">
+    <div class="stu"><div class="stu-n">Devon</div><div class="tex">20x^8</div></div>
+    <div class="stu"><div class="stu-n">Farah</div><div class="tex">9x^6</div></div>
+    <div class="stu"><div class="stu-n">Priya</div><div class="tex">20x^6</div></div>
+  </div>
+  <p class="q">Use expanded factor form to explain which student’s answer is correct, and describe the mistake made by each of the other two.</p>
+  <div class="parts c1">
+    <div class="part"><div class="work" style="--h:330px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(5\cdot x\cdot x)\times(4\cdot x\cdot x\cdot x\cdot x)=(5\times4)\cdot(x\cdot x\cdot x\cdot x\cdot x\cdot x)=\boldsymbol{20x^6}</span>, so <b>Priya is correct</b>.<br>
+      <b>Devon</b> multiplied the exponents (<span class="tex">2\times4=8</span>) instead of adding them: there are only <span class="tex">2+4=6</span> factors of <span class="tex">x</span>.<br>
+      <b>Farah</b> added the coefficients (<span class="tex">5+4=9</span>) instead of multiplying them: the 5 and the 4 multiply to 20.</div></div></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. Cancelling in pairs">
+  <h3 class="sub">Dividing: the factors cancel in pairs</h3>
+  <p>Each <span class="tex">a</span> on the bottom cancels one <span class="tex">a</span> on the top, because <span class="tex">\dfrac{a}{a}=1</span>. Whatever is left on top is the answer’s power.</p>
+  <div class="explainer" data-explainer="cancel"></div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Justifying the quotient law with factors</h3></div>
+  <p class="q">Use expanded factor form to explain why <span class="tex">10a^8\div5a^3=2a^5</span>.</p>
+  <div class="parts c1">
+    <div class="part"><div class="work" style="--h:280px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">10a^8=10\cdot(a\cdot a\cdot a\cdot a\cdot a\cdot a\cdot a\cdot a)</span> has 8 factors of <span class="tex">a</span>; <span class="tex">5a^3=5\cdot(a\cdot a\cdot a)</span> has 3.<br>
+      The coefficients reduce, <span class="tex">10\div5=2</span>, and 3 of the 8 factors of <span class="tex">a</span> cancel, leaving <span class="tex">8-3=5</span>.<br>
+      So <span class="tex">10a^8\div5a^3=\boldsymbol{2a^5}</span>, just as the quotient law predicts. ✓</div></div></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<!-- ================= 2. Strategy ================= -->
+<section class="card" data-ink="s2" data-section="2. A Strategy">
+  <div class="sec-h"><span class="badge">2</span><h2>A Strategy for Combining Several Laws</h2></div>
+  <p>With several laws at once, work in this order:</p>
+  <ol class="strat">
+    <li><span class="st-n">Step 1</span><div><b>Raise each bracket to its power</b> (Power of a Product / Power of a Quotient / Power of a Power): <b>every</b> factor inside, coefficient included.</div></li>
+    <li><span class="st-n">Step 2</span><div><b>Multiply or divide the coefficients</b> like ordinary numbers.</div></li>
+    <li><span class="st-n">Step 3</span><div><b>Add or subtract exponents, one base at a time</b> (Product and Quotient Laws).</div></li>
+    <li><span class="st-n">Step 4</span><div>If the whole expression sits inside an <b>outer bracket</b>, simplify inside first and apply that outer power <b>last</b>.</div></li>
+    <li class="later"><span class="st-n">Step 5</span><div>Rewrite any negative exponent as a positive one <span class="muted">(Lesson 3)</span>.</div></li>
+  </ol>
+  <div class="laws-ref">
+    <div class="lr-h">The laws from Lesson 1</div>
+    <div class="lr-grid">
+      <div class="lr lr-prod"><b>Product</b><span class="tex">a^m\cdot a^n=a^{m+n}</span></div>
+      <div class="lr lr-quot"><b>Quotient</b><span class="tex">\dfrac{a^m}{a^n}=a^{m-n}</span></div>
+      <div class="lr lr-ppow"><b>Power of a Power</b><span class="tex">(a^m)^n=a^{mn}</span></div>
+      <div class="lr lr-pprod"><b>Power of a Product</b><span class="tex">(ab)^m=a^mb^m</span></div>
+      <div class="lr lr-pquot"><b>Power of a Quotient</b><span class="tex">\left(\dfrac{a}{b}\right)^n=\dfrac{a^n}{b^n}</span></div>
+      <div class="lr lr-zero"><b>Zero Exponent</b><span class="tex">a^0=1</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. One base at a time">
+  <h3 class="sub">One base at a time</h3>
+  <p>Sort the pieces into <b>columns</b>: the numbers in one, each letter in its own. Then each column is a small, one-law problem.</p>
+  <div class="explainer" data-explainer="oneBase"></div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>One base at a time</h3></div>
+  <p class="q">Simplify the following.</p>
+  <div class="parts c4">
+    <div class="part"><div class="pl">(a) <span class="tex">6x^4\times3x^5</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">6\times3=18</span>; <span class="tex">x^{4+5}=x^9</span><br><span class="tex">\boldsymbol{18x^9}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">(-8a^6)(5a^9)</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(-8)(5)=-40</span>; <span class="tex">a^{6+9}=a^{15}</span><br><span class="tex">\boldsymbol{-40a^{15}}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">\dfrac{24y^{18}}{8y^6}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">24\div8=3</span>; <span class="tex">y^{18-6}=y^{12}</span><br><span class="tex">\boldsymbol{3y^{12}}</span></div></div></div>
+    <div class="part"><div class="pl">(d) <span class="tex">\dfrac{40b^{15}}{48b^9}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\tfrac{40}{48}=\tfrac{5}{6}</span>; <span class="tex">b^{15-9}=b^6</span><br><span class="tex">\boldsymbol{\tfrac{5}{6}b^6}</span></div></div></div>
+    <div class="part"><div class="pl">(e) <span class="tex">(2a^5)(a^6)(4a^2)</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">2\times1\times4=8</span>; <span class="tex">a^{5+6+2}=a^{13}</span><br><span class="tex">\boldsymbol{8a^{13}}</span></div></div></div>
+    <div class="part"><div class="pl">(f) <span class="tex">(-20n^7)\div(-4n)</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(-20)\div(-4)=5</span>; <span class="tex">n^{7-1}=n^6</span><br><span class="tex">\boldsymbol{5n^6}</span></div></div></div>
+    <div class="part"><div class="pl">(g) <span class="tex">a^6b^9\times a^2b^3</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">a^{6+2}=a^8</span>; <span class="tex">b^{9+3}=b^{12}</span><br><span class="tex">\boldsymbol{a^8b^{12}}</span></div></div></div>
+    <div class="part"><div class="pl">(h) <span class="tex">\dfrac{x^7y^5}{x^3y^2}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x^{7-3}=x^4</span>; <span class="tex">y^{5-2}=y^3</span><br><span class="tex">\boldsymbol{x^4y^3}</span></div></div></div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>A letter with no exponent has exponent 1.</b> In (f), <span class="tex">n=n^1</span>, so <span class="tex">n^7\div n=n^{7-1}=n^6</span>, not <span class="tex">n^7</span>. And a term with no number in front, like <span class="tex">a^6</span> in (e), has coefficient 1.</div></div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2c" data-section="2. Multi-law chains">
+  <h3 class="sub">Two or more laws in one chain</h3>
+  <p>Follow the strategy one line at a time. Each line uses one or two laws; the badges show <b>which law</b> just did the work.</p>
+  <div class="explainer" data-explainer="chain"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Every factor inside the bracket gets the power, the number too.</b> <span class="tex">(2x^3)^4=2^4x^{12}=16x^{12}</span>, not <span class="tex">2x^{12}</span>. A negative number inside gets it as well: <span class="tex">(-3)^3=-27</span>.</div></div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Two or more laws in one chain</h3></div>
+  <p class="q">Simplify the following. Each part uses two or more of the exponent laws.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">(2x^3)^4</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Power of a product: <span class="tex">2^4=16</span>, <span class="tex">x^{3\times4}=x^{12}</span><br><span class="tex">\boldsymbol{16x^{12}}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">(-3a^2b^4)^3</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(-3)^3=-27</span> (odd power); <span class="tex">a^{2\times3}=a^6</span>, <span class="tex">b^{4\times3}=b^{12}</span><br><span class="tex">\boldsymbol{-27a^6b^{12}}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">\dfrac{x^4\cdot x^6}{x^3\cdot x^2}</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Top <span class="tex">x^{10}</span>, bottom <span class="tex">x^5</span>; then <span class="tex">x^{10-5}</span><br><span class="tex">\boldsymbol{x^5}</span></div></div></div>
+    <div class="part"><div class="pl">(d) <span class="tex">\left(-\dfrac{3a}{b^2}\right)^3</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(-3)^3=-27</span> and <span class="tex">a^3</span> on top; <span class="tex">b^{2\times3}=b^6</span> on the bottom<br><span class="tex">\boldsymbol{-\dfrac{27a^3}{b^6}}</span></div></div></div>
+    <div class="part"><div class="pl">(e) <span class="tex">\left(\dfrac{6a^3\times2a^5}{4a^2}\right)^3</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Inside first: <span class="tex">\dfrac{12a^8}{4a^2}=3a^6</span>. Outer power last: <span class="tex">(3a^6)^3=3^3a^{18}</span><br><span class="tex">\boldsymbol{27a^{18}}</span></div></div></div>
+    <div class="part"><div class="pl">(f) <span class="tex">\dfrac{54(a^3b^4)^2}{(3a^2)^3}</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\dfrac{54a^6b^8}{27a^6}=2a^{6-6}b^8=2a^0b^8</span><br><span class="tex">\boldsymbol{2b^8}</span></div></div></div>
+    <div class="part"><div class="pl">(g) <span class="tex">(3a^4b)^2(2a^3b^5)</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(3a^4b)^2=9a^8b^2</span>; then <span class="tex">9\times2=18</span>, <span class="tex">a^{8+3}</span>, <span class="tex">b^{2+5}</span><br><span class="tex">\boldsymbol{18a^{11}b^7}</span></div></div></div>
+    <div class="part think span2"><div class="pl"><span class="think-tag">Think</span> Kai wrote <span class="tex">(2x^3)^4=2x^{12}</span>, and Mia wrote <span class="tex">(2x^3)^4=8x^{12}</span>. What did each of them do wrong?</div><div class="work" style="--h:140px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Kai</b> never raised the 2 to the 4th: it’s a factor inside the bracket, so it gets the power too. <b>Mia</b> multiplied <span class="tex">2\times4</span> instead of working out <span class="tex">2^4=16</span>. Correct: <span class="tex">\boldsymbol{16x^{12}}</span>.</div></div></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2d" data-section="2. Check with a number">
+  <h3 class="sub">Is my answer right? Check it with a number</h3>
+  <p>An expression and its simplified form are <b>equal for every value</b> of the variable. So substitute a number into both: if the values don’t match, there’s a mistake.</p>
+  <div class="explainer" data-explainer="check"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check Example 4(a) at <span class="tex">x=2</span>.</b> The original: <span class="keys"><kbd>(</kbd><kbd>2</kbd><kbd>×</kbd><kbd>2</kbd><kbd>^</kbd><kbd>3</kbd><kbd>)</kbd><kbd>^</kbd><kbd>4</kbd><kbd>ENTER</kbd></span>. The answer: <span class="keys"><kbd>1</kbd><kbd>6</kbd><kbd>×</kbd><kbd>2</kbd><kbd>^</kbd><kbd>1</kbd><kbd>2</kbd><kbd>ENTER</kbd></span>. Both give 65 536 ✓.</div>
+    <div class="pill-col"><button class="pill" data-keys="( 2 × 2 ^ 3 ) ^ 4 =">Show original</button><button class="pill" data-keys="16 × 2 ^ 12 =">Show answer</button></div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Don’t test with 0 or 1.</b> <span class="tex">1^8</span> and <span class="tex">1^6</span> are both 1, so a wrong exponent slips right past. Use 2 or 3.</div></div>
+</section>
+
+<!-- ================= 3. Negative bases ================= -->
+<section class="card" data-ink="s3" data-section="3. Negative Bases">
+  <div class="sec-h"><span class="badge">3</span><h2>Negative Bases: <span class="tex">(-a)^n</span> versus <span class="tex">-a^n</span></h2></div>
+  <div class="def-grid">
+    <div class="def"><b class="nb-h"><span class="tex">(-a)^n</span></b> The negative sign is <b>part of the base</b>, so it gets raised to the power too.<div class="eg"><span class="tex">(-a)^n=a^n</span> when <span class="tex">n</span> is <b>even</b> &nbsp;·&nbsp; <span class="tex">(-a)^n=-a^n</span> when <span class="tex">n</span> is <b>odd</b></div></div>
+    <div class="def amber"><b class="nb-h"><span class="tex">-a^n</span></b> Only <span class="tex">a</span> is the base. The exponent applies to <span class="tex">a</span> alone; the negative sign out front is applied <b>afterward</b>.<div class="eg">Always the opposite sign of <span class="tex">a^n</span>: &nbsp;<span class="tex">-a^n=-(a^n)</span></div></div>
+  </div>
+  <div class="explainer" data-explainer="signs"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>The calculator agrees.</b> The TI-30XIIS does powers <b>before</b> negation: <span class="keys"><kbd>(−)</kbd><kbd>2</kbd><kbd>x²</kbd><kbd>ENTER</kbd></span> gives <b>−4</b>, which is <span class="tex">-2^2</span>. For <span class="tex">(-2)^2</span> you need the brackets: <span class="keys"><kbd>(</kbd><kbd>(−)</kbd><kbd>2</kbd><kbd>)</kbd><kbd>x²</kbd><kbd>ENTER</kbd></span> gives <b>4</b>.</div>
+    <div class="pill-col"><button class="pill" data-keys="(−) 2 x² =">Show −2²</button><button class="pill" data-keys="( (−) 2 ) x² =">Show (−2)²</button></div>
+  </div>
+</section>
+
+<section class="card" data-ink="s3b" data-section="3. NOT exponent laws">
+  <div class="traps">
+    <div class="traps-h"><span class="tip-ic">!</span> These are <b>NOT</b> exponent laws: common traps <span class="muted">(tap “Test it” to try numbers)</span></div>
+    <div class="trap"><div class="trap-l"><span class="tex">(a+b)^2\neq a^2+b^2</span></div><div class="trap-why">The exponent does not distribute over <b>+</b>.</div><button class="pill small" type="button" data-trap>Test it</button><div class="trap-n"><span class="tex">(2+3)^2=5^2=25</span>, but <span class="tex">2^2+3^2=4+9=13</span>.</div></div>
+    <div class="trap"><div class="trap-l"><span class="tex">2^3\cdot3^2\neq6^5</span></div><div class="trap-why">Different bases: the Product Law needs the <b>same</b> base.</div><button class="pill small" type="button" data-trap>Test it</button><div class="trap-n"><span class="tex">2^3\cdot3^2=8\times9=72</span>, but <span class="tex">6^5=7\,776</span>.</div></div>
+    <div class="trap"><div class="trap-l"><span class="tex">a^m+a^n\neq a^{m+n}</span></div><div class="trap-why">Adding powers is not multiplying them.</div><button class="pill small" type="button" data-trap>Test it</button><div class="trap-n"><span class="tex">2^3+2^2=8+4=12</span>, but <span class="tex">2^5=32</span>.</div></div>
+    <div class="trap-next"><i>Coming in Lesson 3:</i> <span class="tex">4x^{-2}\neq\dfrac{1}{4x^2}</span>. An exponent belongs only to the base it touches.</div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Negative bases</h3></div>
+  <p class="q">Write in simplest form.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">(-a)^8\div(-a)^5</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Same base <span class="tex">(-a)</span>: <span class="tex">(-a)^{8-5}=(-a)^3</span>; odd exponent, so negative<br><span class="tex">\boldsymbol{-a^3}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">-a^8\div(-a)^5</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\dfrac{-a^8}{-a^5}</span>: the two negatives cancel, so <span class="tex">a^{8-5}</span><br><span class="tex">\boldsymbol{a^3}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">-a^9\div(-a)^4</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(-a)^4=a^4</span> (even), so <span class="tex">\dfrac{-a^9}{a^4}=-a^{9-4}</span><br><span class="tex">\boldsymbol{-a^5}</span></div></div></div>
+  </div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(d) <span class="tex">\dfrac{100x^6y^9(-z^2)^3}{5(2x^2y)^3z^2y^2}</span></div><div class="work" style="--h:300px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Powers first: <span class="tex">(-z^2)^3=-z^6</span> (odd) and <span class="tex">(2x^2y)^3=8x^6y^3</span>. Top <span class="tex">=-100x^6y^9z^6</span>, bottom <span class="tex">=40x^6y^5z^2</span>.<br>
+      One base at a time: <span class="tex">-\tfrac{100}{40}\cdot x^{6-6}\cdot y^{9-5}\cdot z^{6-2}=-\tfrac{5}{2}x^0y^4z^4=\boldsymbol{-\dfrac{5}{2}y^4z^4}</span></div></div></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<!-- ================= 4. Variable exponents ================= -->
+<section class="card" data-ink="s4" data-section="4. Extension: Variable Exponents">
+  <div class="sec-h"><span class="badge">4</span><h2>Extension: Variable Exponents</h2></div>
+  <div class="def">The laws still apply when the exponents are <b>algebraic expressions</b>: add or subtract the exponent <b>expressions</b> instead of single numbers. The base never changes; all the work happens <b>up in the exponent</b>.</div>
+  <div class="explainer" data-explainer="varExp"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Subtract the whole bottom exponent: use brackets.</b> Forget them and <span class="tex">5x+2y-x-3y=4x-y</span>, which is wrong. With brackets: <span class="tex">(5x+2y)-(x-3y)=4x+5y</span>.</div></div>
+</section>
+
+<section class="card example" data-ink="ex6" data-section="Example 6">
+  <div class="ex-head"><span class="ex-tag">Example 6</span><h3>Variable exponents</h3></div>
+  <p class="q">Simplify each expression.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">\dfrac{b^{5x+2y}}{b^{x-3y}}</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(5x+2y)-(x-3y)=5x+2y-x+3y=4x+5y</span><br><span class="tex">\boldsymbol{b^{4x+5y}}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">\dfrac{x^{4a+9b}\cdot x^{2a+b}}{x^a\cdot x^{3a-4b}}</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Top <span class="tex">6a+10b</span>; bottom <span class="tex">4a-4b</span><br><span class="tex">(6a+10b)-(4a-4b)=2a+14b</span><br><span class="tex">\boldsymbol{x^{2a+14b}}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">\dfrac{m^{2x+5}}{m^6}</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(2x+5)-6=2x-1</span><br><span class="tex">\boldsymbol{m^{2x-1}}</span></div></div></div>
+  </div>
+  <div class="space" id="ex6-space"></div>
+  <button class="more" data-more="ex6-space">+ More space</button>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Expanded factor form</b> explains every law: <span class="tex">5x^2\times4x^4=(5\times4)(x\cdot x\cdot x\cdot x\cdot x\cdot x)=20x^6</span>. Coefficients multiply; exponents add.</div>
+    <div><b>Brackets first</b> (every factor inside, the number too), then the <b>coefficients</b>, then <b>one base at a time</b>. An outer bracket around everything goes <b>last</b>.</div>
+    <div><span class="tex">(-a)^n</span>: the sign is in the base, so it’s <b>positive for even</b> <span class="tex">n</span>, negative for odd. <span class="tex">-a^n</span> is <b>always</b> the opposite of <span class="tex">a^n</span>.</div>
+    <div>Variable exponents: <b>add or subtract the exponent expressions</b>, with brackets: <span class="tex">b^{5x+2y}\div b^{x-3y}=b^{4x+5y}</span>. Check any answer by substituting 2 or 3.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u2l2" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 2 — Simplifying Expressions with Several Exponent Laws</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l3/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 3 — Negative Exponents</b><div class="muted">What happens past <span class="tex">a^0=1</span></div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u2l2.js';
+  boot({ key: 'u2l2', homeHref: '../../', title: '2.2 Several Exponent Laws' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

@@ -5,7 +5,8 @@ prints the same numbers for the old site."""
 import asyncio, os, re
 from playwright.async_api import async_playwright
 BASE = 'http://localhost:8811/'
-IDS = ['l1', 'l2', 'l3', 'l4', 'l5', 'l6a', 'l6b', 'l7']
+IDS = ['u1/l1', 'u1/l2', 'u1/l3', 'u1/l4', 'u1/l5', 'u1/l6a', 'u1/l6b', 'u1/l7',
+       'u2/l1', 'u2/l2', 'u2/l3', 'u2/l4', 'u2/l5a', 'u2/l5b', 'u2/l6']
 async def probe(ctx, url):
     page = await ctx.new_page(); errs, bad = [], []
     page.on('pageerror', lambda e: errs.append(str(e)))
@@ -28,11 +29,11 @@ async def main():
         for site in [BASE + 'lessons/'] + ([os.environ['COMPARE']] if os.environ.get('COMPARE') else []):
             print('==', site)
             for l in IDS + ['']:
-                url = site + ('u1/' + l + '/?class=B' if l else '')
+                url = site + (l + '/?class=B' if l else '')
                 info, errs, bad = await probe(ctx, url)
-                print(f"{l or 'home':4} {info} errors={errs[:2]} missing={bad[:3]}")
+                print(f"{l or 'home':7} {info} errors={errs[:2]} missing={bad[:3]}")
                 if site.startswith(BASE):
                     if errs or bad: ok = False
-                    if l and (not info['calc'] or info['texLeft'] or not info['assign'] or not info['assign'].startswith(BASE + '#/lesson/u1' + l)): ok = False
+                    if l and (not info['calc'] or info['texLeft'] or not info['assign'] or not info['assign'].startswith(BASE + '#/lesson/' + l.replace('/', ''))): ok = False
         print('PASS' if ok else 'FAIL'); await b.close()
 asyncio.run(main())
