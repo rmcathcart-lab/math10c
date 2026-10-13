@@ -37,10 +37,9 @@ function strokeOpts(s, last) {
   if (s.t === 'hl') return { size: HL.size, thinning: 0, smoothing: 0.6, streamline: 0.5, simulatePressure: false, last, start: { cap: true }, end: { cap: true } };
   if (s.t === 'laser') return { size: 6, thinning: 0.2, smoothing: 0.6, streamline: 0.45, simulatePressure: false, last };
   const pen = s.pen;
-  // Gentle pressure response + strong smoothing: Apple Pencil pressure and position readings jitter from sample to
-  // sample, and a high thinning value turns that jitter into a beaded, start-stop line.
-  return { size: PEN_SIZES[s.w] * (pen ? 1.2 : 1), thinning: pen ? 0.38 : 0.45, smoothing: 0.7, streamline: 0.5, simulatePressure: !pen, last,
-    easing: (t) => Math.sin((t * Math.PI) / 2), start: { taper: 0, cap: true }, end: { taper: 0, cap: true } };
+  // Full pressure response (Ryan preferred it). Choppiness at light pressure is handled by joining strokes instead.
+  return { size: PEN_SIZES[s.w] * (pen ? 1.25 : 1), thinning: pen ? 0.62 : 0.5, smoothing: 0.55, streamline: pen ? 0.32 : 0.45, simulatePressure: !pen, last,
+    easing: (t) => t, start: { taper: 0, cap: true }, end: { taper: 0, cap: true } };
 }
 function outlineToPath(pts) {
   const n = pts.length; if (!n) return '';
@@ -206,15 +205,14 @@ function pressure(e, prev) {
   if (e.pointerType !== 'pen') return 0.5;
   const p = e.pressure;
   if (!(p > 0)) return prev != null ? prev : 0.5;
-  return 0.3 + 0.7 * Math.pow(Math.min(1, p), 0.6);
+  return Math.max(0.05, Math.min(1, p));
 }
 function addPoint(A, ev) {
   const [x, y] = A.sf.toLocal(ev.clientX, ev.clientY);
   A.lastClient = [ev.clientX, ev.clientY];
   const last = A.s.p[A.s.p.length - 1];
-  if (Math.hypot(last[0] - x, last[1] - y) < 1.1) return; // skip sub-pixel jitter between samples
-  // Smooth the pressure: each reading only moves the width part of the way towards it.
-  A.s.p.push([x, y, last[2] + (pressure(ev, last[2]) - last[2]) * 0.25]);
+  if (Math.abs(last[0] - x) + Math.abs(last[1] - y) < 0.4) return;
+  A.s.p.push([x, y, pressure(ev, last[2])]);
   A.dirty = true;
 }
 /* Pencil hover (iPad Pro M2 and later, iPad Air M2 and later, iPad mini A17 Pro): Safari sends pen pointermove
