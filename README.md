@@ -9,7 +9,9 @@ Everything for Mr. Cathcart's Math 10C, in one site: https://rmcathcart-lab.gith
 | **Teacher dashboard** (Practice Ledger) | `/math10c/teacher/` | `teacher/` |
 
 The lesson pages share the practice site's calculator (`js/calc.js`) and KaTeX (`assets/katex`). Each has its own Apps Script
-backend (`backend/Code.gs` = Practice Ledger, `lessons/backend/Code.gs` = Teaching Ink). GitHub Pages builds from `main`.
+backend (`backend/Code.gs` = Practice Ledger, `lessons/backend/Code.gs` = Teaching Ink).
+
+**Publishing:** GitHub Pages builds from the `gh-pages` branch, so push `main` to both: `git push origin main main:gh-pages`.
 The old `math10C-practice` and `math10c-teaching` sites redirect here (paths, `?class=` and `#/…` are kept).
 
 # Practice
