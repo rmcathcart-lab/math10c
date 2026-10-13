@@ -81,7 +81,7 @@ function doPost(e) {
       if (op && op.a === 'reset') {
         rows = [];
         sh.clearContents(); sh.getRange(1, 1).setValue(JSON.stringify({ epoch: Date.now() }));
-      } else if (op && (op.a === 'add' || op.a === 'del')) {
+      } else if (op && (op.a === 'add' || op.a === 'del' || op.a === 'space')) {
         var j = JSON.stringify(op); if (j.length < 49000) rows.push([j]);
       }
     });
