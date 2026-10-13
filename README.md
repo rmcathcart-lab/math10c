@@ -32,6 +32,8 @@ With `inkApi` set in `js/config.js` (the /exec URL of `backend/Code.gs`, an Apps
 
 ## Adding a lesson
 
+See `LESSON_BRIEF.md` for the full checklist used to build Lessons 2–7.
+
 1. Copy `u1/l1/index.html` to `uN/lM/index.html`; every card that should take ink gets a unique `data-ink` id and a `data-section` name for the Jump menu.
 2. Write `js/lessons/uNlM.js` with explainer definitions (`{ title, height, choices, intro, make(stage, value, ex) → steps }`) and mount them on `[data-explainer]` elements.
 3. Call `boot({ key: 'uNlM', title: '…' })` and add the lesson to `index.html`.
