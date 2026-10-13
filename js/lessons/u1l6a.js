@@ -478,8 +478,8 @@ const entire = {
     const chk = add(stage, h('div', 'wk-check'), W * 0.6, 22); chk.style.width = (W * 0.4 - 30) + 'px'; chk.style.height = '86px'; hide(chk);
     const val = c0.val * Math.sqrt(n);
     return [{
-      cap: neg ? `The <b>−</b> is not part of the coefficient that moves: a square root is never negative, so the − <b>stays outside</b>. The ${aT} goes in as ${tex(`\\sqrt{${a2T}}`)}.`
-        : `Every positive number is the square root of its square: ${tex(`${aT}=\\sqrt{${sqT}}=\\sqrt{${a2T}}`)}. So the ${aT} can go under a root sign.`,
+      cap: neg ? `The <b>−</b> is not part of the coefficient that moves: a square root is never negative, so the − <b>stays outside</b>. The ${tex(aT)} goes in as ${tex(`\\sqrt{${a2T}}`)}.`
+        : `Every positive number is the square root of its square: ${tex(`${aT}=\\sqrt{${sqT}}=\\sqrt{${a2T}}`)}. So the ${tex(aT)} can go under a root sign.`,
       run: (c) => showRow(c, stage, r1, [[r0.q('.tk-c'), r1.q('.tk-c'), aT], neg ? [r0.q('.tk-m'), r1.q('.tk-m'), '-'] : [null, null]], fs)
     }, {
       cap: `Run the product rule backwards: ${tex(`\\sqrt{${a2T}}\\times${R(n)}=\\sqrt{${a2T}\\times${n}}`)}.`,

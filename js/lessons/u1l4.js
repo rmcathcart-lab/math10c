@@ -630,7 +630,7 @@ const cubes = {
     const cbLabs = []; for (let v = lo; v <= hi; v++) cbLabs.push(add(stage, h('div', 'nl-lab sq c' + (Math.abs(v) === a || Math.abs(v) === A ? ' key' : ''), fmtS(v ** 3)), NL1.X(v), y1 - 24));
     const t1 = add(stage, h('div', 'nl-tag', 'cubes'), 14, y1 - 34), t2 = add(stage, h('div', 'nl-tag', 'roots'), 14, y1 + 14);
     hide(...NL1.els, ...cbLabs, t1, t2);
-    const near = e <= A ** 3 - m - 0 ? a : A, nearS = sg * near; // closer cube (by distance in the cubes)
+    const near = Math.round(Math.cbrt(m)), nearS = sg * near; // nearest whole number (closer cube isn't always the same)
     const lin = sg * (a + e / (A ** 3 - a ** 3));
     const mk = add(stage, h('div', 'nl-mark c', `<b>${fmtS(n)}</b>`), NL1.X(perfect ? sg * a : lin), y1 - 58); hide(mk);
     const mkLine = sv('line', { x1: NL1.X(perfect ? sg * a : lin), x2: NL1.X(perfect ? sg * a : lin), y1: y1 - 44, y2: y1, class: 'nl-mk' }, svg); hide(mkLine);
@@ -667,7 +667,7 @@ const cubes = {
       run: async (c) => { const l = line(`${a}^3 = ${a ** 3}`); await Promise.all([showCube(c), c.fadeIn(l, 300, { delay: 300 }), ...left.map((g, i) => c.anim(g, [{ opacity: 0 }, { opacity: 1 }], 250, { delay: 600 + i * 70 })), c.fadeIn(leftLab, 300, { delay: 700 })]); }
     });
     steps.push({
-      cap: `A <b>${A} × ${A} × ${A}</b> cube needs <b>${fmt(A ** 3)}</b> — ${stepsTo} more than we have. So ${T(cb(m))} is between <b>${a} and ${A}</b>, closer to <b>${near}</b> (${fmt(m)} is ${e} above ${a ** 3} and ${stepsTo} below ${fmt(A ** 3)}).`,
+      cap: `A <b>${A} × ${A} × ${A}</b> cube needs <b>${fmt(A ** 3)}</b> — ${stepsTo} more than we have. So ${T(cb(m))} is between <b>${a} and ${A}</b> (${fmt(m)} is ${e} above ${a ** 3} and ${stepsTo} below ${fmt(A ** 3)}).`,
       run: async (c) => { const l = line(`${a ** 3} \\lt ${m} \\lt ${A ** 3}`, 'amber'); await Promise.all([c.anim(big, [{ opacity: 0 }, { opacity: 1 }], 500), c.fadeIn(bigLab, 400), c.fadeIn(l, 300)]); }
     });
     if (sg < 0) steps.push({

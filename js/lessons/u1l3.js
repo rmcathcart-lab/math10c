@@ -276,7 +276,7 @@ const IRR = {
   sqrt3: '7320508075688772935274463415058723669428052538103806280558069794519330169088000370811461',
   pi: '1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348',
   sqrt7: '6457513110645905905016157536392604257102591830824501803683344592010688232302836277603928',
-  sqrt12: '4641016151377545870548926832011744733885610507620761256111613958903866033817600074162292'
+  sqrt12: '4641016151377545870548926830117447338856105076207612561116139589038660338176000741622923'
 };
 const growing = (() => { let s = ''; for (let n = 1; s.length < 90; n++) s += '1'.repeat(n) + '2'; return s; })();
 const STR = {
@@ -460,8 +460,8 @@ const numline = {
         const sq = squeeze(o.n), inner = Math.sqrt(o.n);
         const sqT = `${sq.slo}<${o.n}<${sq.shi}\\ \\Rightarrow\\ ${sq.lo}<\\sqrt{${o.n}}<${sq.hi}`;
         if (o.c) {
-          why = tex(`${sqT}\\qquad ${o.t}=${o.c}\\times\\sqrt{${o.n}}\\approx${o.c}\\times${inner.toFixed(2)}\\approx${val.toFixed(2)}`);
-          cap = `<b>(${LET[idx]})</b> ${tex(o.t)} means ${o.c} × ${tex(`\\sqrt{${o.n}}`)}. Squeeze: ${tex(`\\sqrt{${o.n}}`)} is between ${sq.lo} and ${sq.hi} (about ${inner.toFixed(2)}), so ${tex(o.t)} ≈ ${o.c} × ${inner.toFixed(2)} ≈ <b>${val.toFixed(2)}</b>.`;
+          why = tex(`${sqT}\\qquad ${o.t}=${o.c}\\times\\sqrt{${o.n}}\\approx${o.c}\\times${inner.toFixed(3)}\\ldots\\approx${val.toFixed(2)}`);
+          cap = `<b>(${LET[idx]})</b> ${tex(o.t)} means ${o.c} × ${tex(`\\sqrt{${o.n}}`)}. Squeeze: ${tex(`\\sqrt{${o.n}}`)} is between ${sq.lo} and ${sq.hi} (about ${inner.toFixed(3)}…), so ${tex(o.t)} ≈ ${o.c} × ${inner.toFixed(3)}… ≈ <b>${val.toFixed(2)}</b>.`;
         } else {
           const closer = o.n - sq.slo < sq.shi - o.n ? [sq.slo, sq.lo] : [sq.shi, sq.hi];
           why = tex(`${sqT}\\qquad ${o.t}\\approx${val.toFixed(2)}`);
