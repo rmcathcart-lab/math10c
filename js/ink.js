@@ -10,7 +10,7 @@
  *  - Tools: pen (4 colours, 3 sizes), highlighter, stroke eraser, laser pointer (fades), hand (pencil scrolls).
  *  - Undo / redo (buttons, Cmd+Z, or a two-finger tap). Ink is saved on this device, per lesson.
  */
-import { getStroke } from './vendor/perfect-freehand.mjs';
+import { getStroke } from './vendor/perfect-freehand.js';
 
 const VBW = 1000;                       // viewBox width of every surface
 const SVGNS = 'http://www.w3.org/2000/svg';

@@ -2,7 +2,7 @@
 
 Math 10C lessons built to be projected from an iPad and written on with an Apple Pencil.
 
-**Site:** https://rmcathcart-lab.github.io/math10c-teaching/
+**Site:** https://rmcathcart-lab.github.io/math10c-teaching/ (GitHub Pages builds from the `gh-pages` branch: push `main` to both `main` and `gh-pages`).
 
 ## What's on a lesson page
 
