@@ -37,8 +37,10 @@ function strokeOpts(s, last) {
   if (s.t === 'hl') return { size: HL.size, thinning: 0, smoothing: 0.6, streamline: 0.5, simulatePressure: false, last, start: { cap: true }, end: { cap: true } };
   if (s.t === 'laser') return { size: 6, thinning: 0.2, smoothing: 0.6, streamline: 0.45, simulatePressure: false, last };
   const pen = s.pen;
-  return { size: PEN_SIZES[s.w] * (pen ? 1.25 : 1), thinning: pen ? 0.62 : 0.5, smoothing: 0.55, streamline: pen ? 0.32 : 0.45, simulatePressure: !pen, last,
-    easing: (t) => t, start: { taper: 0, cap: true }, end: { taper: 0, cap: true } };
+  // Gentle pressure response + strong smoothing: Apple Pencil pressure and position readings jitter from sample to
+  // sample, and a high thinning value turns that jitter into a beaded, start-stop line.
+  return { size: PEN_SIZES[s.w] * (pen ? 1.2 : 1), thinning: pen ? 0.38 : 0.45, smoothing: 0.7, streamline: 0.5, simulatePressure: !pen, last,
+    easing: (t) => Math.sin((t * Math.PI) / 2), start: { taper: 0, cap: true }, end: { taper: 0, cap: true } };
 }
 function outlineToPath(pts) {
   const n = pts.length; if (!n) return '';
@@ -163,7 +165,7 @@ function onDown(e) {
   const sf = surfaceFor(e.target); if (!sf) return;
   e.preventDefault();
   sf.rect = sf.el.getBoundingClientRect();
-  const [x, y] = sf.toLocal(e.clientX, e.clientY), pr = pressure(e);
+  const [x, y] = sf.toLocal(e.clientX, e.clientY), pr = Math.max(0.3, pressure(e));
   S.penDownAt = Date.now(); hideDot();
   if (S.tool === 'eraser') {
     S.active = { id: e.pointerId, sf, erase: [] }; eraseAt(x, y);
@@ -199,8 +201,9 @@ function onMove(e) {
     const [x, y] = A.sf.toLocal(ev.clientX, ev.clientY);
     if (A.erase) { eraseAt(x, y); continue; }
     const last = A.s.p[A.s.p.length - 1];
-    if (Math.abs(last[0] - x) + Math.abs(last[1] - y) < 0.4) continue;
-    A.s.p.push([x, y, pressure(ev)]);
+    if (Math.hypot(last[0] - x, last[1] - y) < 1.1) continue; // skip sub-pixel jitter between samples
+    // Smooth the pressure: each reading only moves the width part of the way towards it.
+    A.s.p.push([x, y, last[2] + (pressure(ev) - last[2]) * 0.25]);
   }
   if (!A.erase) { A.dirty = true; schedule(); }
 }
