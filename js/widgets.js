@@ -152,7 +152,7 @@
       };
       api.kind = 'mathlive';
     } else {
-      var inp = plainInput(opt.placeholder || ({ radical: 'e.g. 3sqrt(5)', fraction: 'e.g. 3/4', decimal: 'e.g. 0.1\\overline{6}', expr: 'Your answer', var: 'e.g. 3x sqrt(2x)', abs: 'Your answer', expo: 'e.g. 3x^4/(2y^2)', sci: 'e.g. 3.2 × 10^5' })[opt.keys] || 'e.g. 2^3 × 3 × 11', 'text'); inp.classList.add('ans-wide');
+      var inp = plainInput(opt.placeholder || ({ radical: 'e.g. 3sqrt(5)', fraction: 'e.g. 3/4', decimal: 'e.g. 0.1\\overline{6}', expr: 'Your answer', var: 'e.g. 3x sqrt(2x)', abs: 'Your answer', expo: 'e.g. 3x^4/(2y^2)', poly: 'e.g. 3x^2 - 5x + 4', sci: 'e.g. 3.2 × 10^5' })[opt.keys] || 'e.g. 2^3 × 3 × 11', 'text'); inp.classList.add('ans-wide');
       var prev = el('div', 'preview muted', 'Your answer will appear here as math.');
       var row2 = el('div', 'ans-row'); if (opt.before) row2.appendChild(el('span', 'ans-affix', HW.tex(opt.before)));
       row2.appendChild(inp); wrap.appendChild(row2); wrap.appendChild(prev);

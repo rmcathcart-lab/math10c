@@ -181,6 +181,7 @@
   }
   P.formIssue = function (ast) {
     var top = ast; while (top.t === 'paren') top = top.a;
+    if (top.t === 'num' && top.v === 0) return null; // the zero polynomial written as 0
     var terms = signedTerms(top, 1, []), seen = {}, i;
     for (i = 0; i < terms.length; i++) {
       var fs = factorsOf(terms[i].a, [], false), nums = 0, numsDen = 0, nv = [1, 1], dv = [1, 1], vars = {};
@@ -361,7 +362,7 @@
     opt = opt || {};
     var ws = opt.widths || cols.map(function () { return 1; }), hs = opt.heights || rows.map(function () { return 1; });
     var tw = ws.reduce(function (a, b) { return a + b; }, 0), th = hs.reduce(function (a, b) { return a + b; }, 0);
-    var html = '<div class="area-model" style="max-width:' + (opt.max || 460) + 'px"><div class="am-grid" style="grid-template-columns:auto ' + ws.map(function (w) { return (w / tw * 100).toFixed(2) + '%'; }).join(' ') + '">';
+    var html = '<div class="area-model" style="max-width:' + (opt.max || 460) + 'px"><div class="am-grid" style="grid-template-columns:auto ' + ws.map(function (w) { return 'minmax(0,' + (w / tw * 100).toFixed(3) + 'fr)'; }).join(' ') + '">';
     html += '<div class="am-corner"></div>' + cols.map(function (c) { return '<div class="am-top">' + texSvg(c) + '</div>'; }).join('');
     rows.forEach(function (r, j) {
       html += '<div class="am-side" style="min-height:' + Math.max(42, 110 * hs[j] / th) + 'px">' + texSvg(r) + '</div>';

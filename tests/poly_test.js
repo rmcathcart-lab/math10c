@@ -34,6 +34,7 @@ chk('x^2+10x+24', {}, {
   'x^2+24': 'wrong:missing-term', 'x^2+10x-24': 'wrong:sign', 'x^2+10x+10': 'wrong:term', '-x^2-10x-24': 'wrong:sign-all', 'x^2+10x': 'wrong:missing-term',
   'x^2+10x+24+0x': 'form:zero-term', 'x^{2+10x+24}': 'form:exp-box', 'x^{2}+10x^{1}+24': 'correct', 'x^{2}+10x+24x^{0}': 'form:zero-exp'
 });
+chk('0', {}, { '0': 'correct', 'x-x': 'form:like-terms' });
 chk('2y+15', {}, { '2y+15': 'correct', '\\frac{6}{3}y+15': 'form:lowest', '\\frac{2y}{1}+15': 'correct' });
 chk('-\\frac{3}{4}a^{3}+\\frac{1}{5}a^{2}-a-2', { order: 'desc', var: 'a' }, {
   '-\\frac{3}{4}a^3+\\frac{1}{5}a^2-a-2': 'correct', '-\\frac{3a^3}{4}+\\frac{a^2}{5}-a-2': 'correct', '\\frac{1}{5}a^2-\\frac{3}{4}a^3-a-2': 'wrong:order', '-0.75a^3+0.2a^2-a-2': 'correct'
