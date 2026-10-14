@@ -42,6 +42,7 @@
   function lin2(a, u, b, w) { return [M(a, u), M(b, w)]; }         // [a u, b w]
   function quad(a, b, c, v) { return [M(a, v, 2), M(b, v), N(c)].filter(function (m) { return !P.isZero(m); }); }
   function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var t2 = a % b; a = b; b = t2; } return a; }
+  function gcd3(a, b, c) { return gcd(gcd(a, b), c); } // a trinomial factor with no common factor (like the booklet's)
   function pv(n) { return n < 0 ? '(' + n + ')' : String(n); }
 
   /* partial products, like-term notes, distribution and area-model solutions */
@@ -127,6 +128,7 @@
   var H_BT = ['Multiply each term of the first factor by every term of the second: a binomial × trinomial gives ' + t('2\\times 3=6') + ' partial products. Then collect like terms.',
     'When you multiply powers of the same letter, add the exponents (' + t('x\\cdot x^{2}=x^{3}') + '). Watch the signs: a negative times a negative is positive.'];
   var H_3 = ['Multiply two of the binomials first (FOIL), then multiply that trinomial by the third binomial.', 'The second stage is a trinomial × binomial: ' + t('3\\times 2=6') + ' partial products. Then collect like terms.'];
+  var H_DS = ['Look for the two brackets that are a sum times a difference and multiply those first: the middle terms cancel, leaving a binomial.', 'Then multiply that binomial by the third bracket: only ' + t('2\\times 2=4') + ' partial products. Collect like terms if any.'];
   var H_33 = ['Every term of the first trinomial multiplies every term of the second: ' + t('3\\times 3=9') + ' partial products.', 'Organize them in three rows (one for each term of the first factor), then collect like terms.'];
 
   /* expand A·B (arrays); o.k: constant in front; o.wrong extra wrongs; o.lead display */
@@ -270,7 +272,7 @@
       /* ---------- Q4 expand and simplify ---------- */
       { num: '4', stem: 'Expand and simplify.', parts: [
         { id: '4a', level: 'EMG', make: function (r) {
-          var g = pickWhere(function () { return { c: r.int(2, 7), a: r.int(2, 5), b: r.int(2, 6), d: r.int(3, 9) }; }, function (g) { return g.b !== g.a * g.c; });
+          var g = pickWhere(function () { return { c: r.int(2, 7), a: r.int(2, 5), b: r.int(2, 6), d: r.int(3, 9) }; }, function (g) { return g.b !== g.a * g.c && gcd3(g.a, g.b, g.d) === 1; });
           var A = [M(1, 'x', 2), N(-g.c)], B = [M(g.a, 'x', 3), M(g.b, 'x'), N(-g.d)];
           var em = sum([M(g.a, 'x', 6), M(g.b, 'x', 2), N(-g.d), M(-g.c * g.a, 'x', 3), M(-g.c * g.b, 'x'), N(g.c * g.d)]);
           return expandPart(A, B, { wrong: [{ is: em, code: 'exp-mult', hint: 'Check the exponents: ' + t('x^{2}\\cdot ' + g.a + 'x^{3}=' + g.a + 'x^{5}') + ' — when you multiply powers you <b>add</b> the exponents, you don’t multiply them.' }] });
@@ -281,12 +283,12 @@
           return expandPart(A, B);
         } },
         { id: '4c', level: 'PRG', make: function (r) {
-          var g = pickWhere(function () { return { k: r.int(2, 5), p: r.int(2, 4), q: r.int(1, 5), s: r.int(2, 6) }; }, function (g) { return g.k * g.q !== g.s; });
+          var g = pickWhere(function () { return { k: r.int(2, 5), p: r.int(2, 4), q: r.int(1, 5), s: r.int(2, 6) }; }, function (g) { return g.k * g.q !== g.s && gcd3(g.p, g.q, g.s) === 1; });
           var A = lin2(1, 'a', -g.k, 'b'), B = [MM(g.p, { a: 2 }), MM(-g.q, { a: 1, b: 1 }), MM(-g.s, { b: 2 })];
           return expandPart(A, B, { hints: ['Multiply ' + t('a') + ' by every term of the trinomial, then ' + t('-' + g.k + 'b') + ' by every term: six partial products.', 'Like terms have the same letters with the same exponents: ' + t('a^{2}b') + ' and ' + t('ab^{2}') + ' are <b>not</b> like terms.'] });
         } },
         { id: '4d', level: 'PRG', make: function (r) {
-          var g = pickWhere(function () { return { m: r.int(2, 4), p: r.int(2, 4), q: r.int(1, 5), a: r.int(1, 3), b: r.int(1, 3), u: r.int(2, 6) }; }, function (g) { return gcd(g.p, g.q) === 1 && cnt(P.mul(lin(g.p, g.q, 'x'), quad(g.a, g.b, -g.u, 'x'))) === 4; });
+          var g = pickWhere(function () { return { m: r.int(2, 4), p: r.int(2, 4), q: r.int(1, 5), a: r.int(1, 3), b: r.int(1, 3), u: r.int(2, 6) }; }, function (g) { return gcd(g.p, g.q) === 1 && gcd3(g.a, g.b, g.u) === 1 && cnt(P.mul(lin(g.p, g.q, 'x'), quad(g.a, g.b, -g.u, 'x'))) === 4; });
           return expandPart(lin(g.p, g.q, 'x'), quad(g.a, g.b, -g.u, 'x'), { k: g.m });
         } }] },
       /* ---------- Q5 three binomials ---------- */
@@ -300,7 +302,7 @@
           return threePart([lin(1, -g.a, 'h'), lin(g.p, -g.b, 'h'), lin(g.q, -g.c, 'h')], 0, 1);
         } },
         { id: '5c', level: 'PRG', make: function (r) {
-          var g = pickWhere(function () { return { k: r.int(1, 4), p: r.int(2, 4), q: r.int(1, 5) }; }, function (g) { return g.p !== g.q; });
+          var g = pickWhere(function () { return { k: r.int(1, 4), p: r.int(2, 4), q: r.int(1, 5) }; }, function (g) { return g.p !== g.q && gcd(g.p, g.q) === 1; });
           var F3 = [lin2(1, 'a', g.k, 'b'), lin2(g.p, 'a', -g.q, 'b'), lin2(g.p, 'a', g.q, 'b')];
           return threePart(F3, 1, 2, { why: 'Take the <b>last two</b> first — they are a sum times a difference, so the middle terms cancel:',
             wrong: [{ is: P.mul(sum(F3[0]), sum([MM(g.p * g.p, { a: 2 }), MM(g.q * g.q, { b: 2 })])), code: 'dsq-sign', hint: t(br(F3[1]) + br(F3[2])) + ' is a difference times a sum: the result is a <b>difference</b> of squares, ' + t(tx(P.mul(sum(F3[1]), sum(F3[2]))) ) + '.' }],
@@ -340,7 +342,7 @@
       /* ---------- Q8 simplify ---------- */
       { num: '8', section: 'Part C — Longer Products', stem: 'Simplify.', parts: [
         { id: '8a', level: 'PRG', make: function (r) {
-          var g = { m: r.int(2, 5), c: r.int(2, 5), p: r.int(2, 3), q: r.int(1, 2), d: r.int(1, 4) };
+          var g = pickWhere(function () { return { m: r.int(2, 5), c: r.int(2, 5), p: r.int(2, 3), q: r.int(1, 2), d: r.int(1, 4) }; }, function (g) { return gcd3(g.p, g.q, g.d) === 1; });
           return expandPart([M(1, 'b', 2), N(g.c)], quad(g.p, -g.q, -g.d, 'b'), { k: -g.m });
         } },
         { id: '8b', level: 'PRG', make: function (r) {
@@ -367,7 +369,7 @@
             return { a1: r.int(2, 4), b1: -r.int(2, 5), d1: -r.int(3, 9), b2: r.int(1, 3), c2: r.int(2, 6), d2: -r.int(1, 5), p: r.int(2, 3), q: r.int(1, 3), rr: r.int(2, 4), s: r.int(2, 6), u: r.int(1, 4) };
           }, function (g) {
             var S = P.add(sum([M(g.a1, 'x', 3), M(g.b1, 'x', 2), N(g.d1)]), sum([M(g.b2, 'x', 2), M(g.c2, 'x'), N(g.d2)])), Pr = P.mul(sum(lin(g.p, -g.q, 'x')), sum(quad(g.rr, -g.s, g.u, 'x'))), D = P.sub(S, Pr);
-            if (gcd(g.p, g.q) !== 1 || cnt(D) !== 4 || cnt(Pr) !== 4) return false;
+            if (gcd(g.p, g.q) !== 1 || gcd3(g.rr, g.s, g.u) !== 1 || cnt(D) !== 4 || cnt(Pr) !== 4) return false;
             var v = fm[1](co(D, { x: 3 }), co(D, { x: 2 }), co(D, { x: 1 })); return v >= 1 && v <= 99;
           });
           var S1 = [M(g.a1, 'x', 3), M(g.b1, 'x', 2), N(g.d1)], S2 = [M(g.b2, 'x', 2), M(g.c2, 'x'), N(g.d2)], A = lin(g.p, -g.q, 'x'), B = quad(g.rr, -g.s, g.u, 'x');
@@ -415,7 +417,7 @@
           return expandPart(A, B, { lead: br(A) + br(Bs), order: 'desc', var: 'x', solPre: 'Reorder: ' + t(seq(B)) + '.<br>' });
         } },
         { id: 'e1b', level: 'PRG', make: function (r) {
-          var g = pickWhere(function () { return { p: r.int(2, 4), q: r.int(1, 3), a: r.int(2, 5), s: r.int(2, 5), u: r.int(1, 3) }; }, function (g) { return gcd(g.p, g.q) === 1 && cnt(P.mul(lin2(g.p, 'a', g.q, 'b'), sum([MM(g.a, { a: 2 }), MM(g.u, { a: 1, b: 1 }), MM(-g.s, { b: 2 })]))) === 4; });
+          var g = pickWhere(function () { return { p: r.int(2, 4), q: r.int(1, 3), a: r.int(2, 5), s: r.int(2, 5), u: r.int(1, 3) }; }, function (g) { return gcd(g.p, g.q) === 1 && gcd3(g.a, g.u, g.s) === 1 && cnt(P.mul(lin2(g.p, 'a', g.q, 'b'), sum([MM(g.a, { a: 2 }), MM(g.u, { a: 1, b: 1 }), MM(-g.s, { b: 2 })]))) === 4; });
           var A = lin2(g.p, 'a', g.q, 'b'), B = [MM(g.a, { a: 2 }), MM(g.u, { a: 1, b: 1 }), MM(-g.s, { b: 2 })], Bs = [B[0], B[2], B[1]];
           return expandPart(A, B, { lead: br(A) + br(Bs), order: 'desc', var: 'a', solPre: 'Reorder: ' + t(seq(B)) + '.<br>' });
         } },
@@ -425,12 +427,12 @@
           return expandPart(A, B, { lead: br(A) + br(Bs), order: 'desc', var: 'm', solPre: 'Reorder: ' + t(seq(B)) + '.<br>' });
         } },
         { id: 'e1d', level: 'PRG', make: function (r) {
-          var g = pickWhere(function () { return { a: r.int(2, 5), b: r.int(2, 4), c: r.int(5, 9), q: r.int(2, 5), s: r.int(1, 3) }; }, function (g) { return gcd(g.a, g.b) === 1 && cnt(P.mul(lin2(g.a, 'p', -g.b, 'q'), sum([MM(g.c, { p: 2 }), MM(-g.q, { p: 1, q: 1 }), MM(g.s, { q: 2 })]))) === 4; });
+          var g = pickWhere(function () { return { a: r.int(2, 5), b: r.int(2, 4), c: r.int(5, 9), q: r.int(2, 5), s: r.int(1, 3) }; }, function (g) { return gcd(g.a, g.b) === 1 && gcd3(g.c, g.q, g.s) === 1 && cnt(P.mul(lin2(g.a, 'p', -g.b, 'q'), sum([MM(g.c, { p: 2 }), MM(-g.q, { p: 1, q: 1 }), MM(g.s, { q: 2 })]))) === 4; });
           var A = lin2(g.a, 'p', -g.b, 'q'), B = [MM(g.c, { p: 2 }), MM(-g.q, { p: 1, q: 1 }), MM(g.s, { q: 2 })], Bs = [B[2], B[0], B[1]];
           return expandPart(A, B, { lead: br(A) + br(Bs), order: 'desc', var: 'p', solPre: 'Reorder: ' + t(seq(B)) + '.<br>' });
         } },
         { id: 'e1e', level: 'PRG', make: function (r) {
-          var g = pickWhere(function () { return { c: r.int(2, 5), a: r.int(2, 6), b: r.int(1, 4), d: r.int(3, 9) }; }, function (g) { return g.b !== g.a * g.c; });
+          var g = pickWhere(function () { return { c: r.int(2, 5), a: r.int(2, 6), b: r.int(1, 4), d: r.int(3, 9) }; }, function (g) { return g.b !== g.a * g.c && gcd3(g.a, g.b, g.d) === 1; });
           var A = [M(1, 'x', 2), N(g.c)], B = [M(-g.a, 'x', 3), M(g.b, 'x'), N(g.d)], Bs = [B[1], B[0], B[2]];
           return expandPart(A, B, { lead: br(A) + br(Bs), order: 'desc', var: 'x', solPre: 'Reorder: ' + t(seq(B)) + '.<br>' });
         } },
@@ -445,7 +447,7 @@
           return vertPart(quad(1, -g.b, g.c, 'x'), lin(g.p, -g.q, 'x'));
         } },
         { id: 'e2b', level: 'EMG', make: function (r) {
-          var g = pickWhere(function () { return { a: r.int(2, 3), b: r.int(1, 3), c: r.int(3, 7), p: r.int(2, 4), q: r.int(1, 5) }; }, function (g) { return gcd(g.p, g.q) === 1 && cnt(P.mul(quad(g.a, g.b, -g.c, 'a'), lin(g.p, g.q, 'a'))) === 4; });
+          var g = pickWhere(function () { return { a: r.int(2, 3), b: r.int(1, 3), c: r.int(3, 7), p: r.int(2, 4), q: r.int(1, 5) }; }, function (g) { return gcd(g.p, g.q) === 1 && gcd3(g.a, g.b, g.c) === 1 && cnt(P.mul(quad(g.a, g.b, -g.c, 'a'), lin(g.p, g.q, 'a'))) === 4; });
           return vertPart(quad(g.a, g.b, -g.c, 'a'), lin(g.p, g.q, 'a'));
         } },
         { id: 'e2c', level: 'EMG', make: function (r) {
@@ -489,14 +491,14 @@
       { num: '4', section: 'Extra practice B — Three binomials: choose your pairing', stem: 'Any two of the three brackets may be multiplied first — but look for the pair that is cheapest (a sum times a difference collapses to a binomial).',
         shared: function (r) { var a = r.int(1, 5), b; do { b = r.int(2, 7); } while (b === a); return { a: a, b: b }; },
         parts: [
-          { id: 'e4a', level: 'EMG', make: function (r, sh) { return threePart([lin(1, sh.a, 'x'), lin(1, -sh.a, 'x'), lin(1, sh.b, 'x')], 0, 1, { why: 'Multiply the <b>first and second</b> first — a sum times a difference gives a binomial:' }); } },
+          { id: 'e4a', level: 'EMG', make: function (r, sh) { return threePart([lin(1, sh.a, 'x'), lin(1, -sh.a, 'x'), lin(1, sh.b, 'x')], 0, 1, { why: 'Multiply the <b>first and second</b> first — a sum times a difference gives a binomial:', hints: H_DS }); } },
           { id: 'e4b', level: 'PRG', make: function (r) {
             var g = pickWhere(function () { return { p: r.int(2, 4), q: r.int(1, 3), a: r.int(2, 3), s: r.int(3, 9) }; }, function (g) { return gcd(g.p, g.q) === 1 && g.s % g.a !== 0 && cnt(P.mul(lin(g.p, -g.q, 'x'), lin(g.a, g.s, 'x'), lin(g.a, -g.s, 'x'))) === 4; });
-            return threePart([lin(g.p, -g.q, 'x'), lin(g.a, g.s, 'x'), lin(g.a, -g.s, 'x')], 1, 2, { why: 'Multiply the <b>second and third</b> first — a sum times a difference, so the middle terms vanish:' });
+            return threePart([lin(g.p, -g.q, 'x'), lin(g.a, g.s, 'x'), lin(g.a, -g.s, 'x')], 1, 2, { why: 'Multiply the <b>second and third</b> first — a sum times a difference, so the middle terms vanish:', hints: H_DS });
           } },
           { id: 'e4c', level: 'EMG', make: function (r) {
             var g = pickWhere(function () { return { c: r.int(2, 6), b: r.int(1, 5) }; }, function (g) { return g.b !== g.c && cnt(P.mul(lin(1, g.c, 'a'), lin(1, -g.b, 'a'), lin(1, -g.c, 'a'))) === 4; });
-            return threePart([lin(1, g.c, 'a'), lin(1, -g.b, 'a'), lin(1, -g.c, 'a')], 0, 2, { why: 'Multiply the <b>first and third</b> first — a sum times a difference collapses to two terms:' });
+            return threePart([lin(1, g.c, 'a'), lin(1, -g.b, 'a'), lin(1, -g.c, 'a')], 0, 2, { why: 'Multiply the <b>first and third</b> first — a sum times a difference collapses to two terms:', hints: H_DS });
           } },
           { id: 'e4d', level: 'EMG', make: function (r, sh) {
             var F3 = [lin(1, sh.a, 'x'), lin(1, -sh.a, 'x'), lin(1, sh.b, 'x')], Q = P.mul(sum(F3[1]), sum(F3[2])), T = P.mul(sum(F3[0]), Q), lead = F3.map(br).join('');
@@ -534,7 +536,7 @@
         } },
         { id: 'e5b', level: 'PRG', make: function (r) {
           var k = r.int(1, 4), m; do { m = r.int(1, 5); } while (m === k);
-          return threePart([lin2(1, 'a', -k, 'b'), lin2(1, 'a', k, 'b'), lin2(1, 'a', m, 'b')], 0, 1, { why: 'The first two are a sum times a difference, so the first stage gives a binomial:' });
+          return threePart([lin2(1, 'a', -k, 'b'), lin2(1, 'a', k, 'b'), lin2(1, 'a', m, 'b')], 0, 1, { why: 'The first two are a sum times a difference, so the first stage gives a binomial:', hints: H_DS });
         } },
         { id: 'e5c', level: 'PRG', make: function (r) {
           var g = pickWhere(function () { return { a: r.int(2, 6), b: r.int(1, 5), p: r.int(2, 3), c: r.int(1, 3) }; }, function (g) { return g.a !== g.b && gcd(g.p, g.c) === 1 && cnt(P.mul(lin(1, -g.a, 'y'), lin(1, -g.b, 'y'), lin(g.p, g.c, 'y'))) === 4; });
@@ -585,12 +587,12 @@
             ['Use ' + t('(a+b)^{3}=a^{3}+3a^{2}b+3ab^{2}+b^{3}') + ' with ' + t('a=x') + ' and ' + t('b=' + k) + '.'], 'cube by pattern ' + plain(br(A)));
         } },
         { id: 'e7d', level: 'PRG', make: function (r) {
-          var pq = pickWhere(function () { return [r.int(2, 3), r.int(1, 3)]; }, function (v) { return gcd(v[0], v[1]) === 1; }), p = pq[0], q = pq[1], A = lin2(p, 'm', -q, 'n'), T = P.pow(sum(A), 3), pm = p + 'm', qn = '(-' + q + 'n)';
+          var pq = pickWhere(function () { return [r.int(2, 3), r.int(1, 3)]; }, function (v) { return gcd(v[0], v[1]) === 1; }), p = pq[0], q = pq[1], A = lin2(p, 'm', -q, 'n'), T = P.pow(sum(A), 3), pm = p + 'm', qs = (q === 1 ? '' : q) + 'n', qn = '(-' + qs + ')';
           return polyPart('Use the pattern (don’t multiply out in stages) to write ' + t(br(A) + '^{3}') + '.', T, [
-            { is: P.sub(MM(p * p * p, { m: 3 }), MM(q * q * q, { n: 3 })), code: 'cube-each', hint: 'The pattern has four terms: ' + t('a^{3}+3a^{2}b+3ab^{2}+b^{3}') + ' with ' + t('a=' + pm) + ', ' + t('b=-' + q + 'n') + '.' },
+            { is: P.sub(MM(p * p * p, { m: 3 }), MM(q * q * q, { n: 3 })), code: 'cube-each', hint: 'The pattern has four terms: ' + t('a^{3}+3a^{2}b+3ab^{2}+b^{3}') + ' with ' + t('a=' + pm) + ', ' + t('b=-' + qs) + '.' },
             { is: sum([MM(p, { m: 3 }), MM(-3 * p * q, { m: 2, n: 1 }), MM(3 * p * q * q, { m: 1, n: 2 }), MM(-q * q * q, { n: 3 })]), code: 'coef-in', hint: 'Raise the whole term to the power: ' + t('(' + pm + ')^{3}=' + p * p * p + 'm^{3}') + ' and ' + t('(' + pm + ')^{2}=' + p * p + 'm^{2}') + '.' }],
             t(br(A) + '^{3}=(' + pm + ')^{3}+3(' + pm + ')^{2}' + qn + '+3(' + pm + ')' + qn + '^{2}+' + qn + '^{3}') + '<br>' + t('=' + tx(T)),
-            ['Use ' + t('(a+b)^{3}=a^{3}+3a^{2}b+3ab^{2}+b^{3}') + ' with ' + t('a=' + pm) + ' and ' + t('b=-' + q + 'n') + '.', 'Put each term in brackets before raising it to a power: ' + t('(' + pm + ')^{2}=' + p * p + 'm^{2}') + '.'], 'cube by pattern ' + plain(br(A)));
+            ['Use ' + t('(a+b)^{3}=a^{3}+3a^{2}b+3ab^{2}+b^{3}') + ' with ' + t('a=' + pm) + ' and ' + t('b=-' + qs) + '.', 'Put each term in brackets before raising it to a power: ' + t('(' + pm + ')^{2}=' + p * p + 'm^{2}') + '.'], 'cube by pattern ' + plain(br(A)));
         } },
         { id: 'e7e', level: 'EMG', make: function (r) {
           var k = r.int(2, 6), A = lin(1, -k, 'x'), T = P.pow(sum(A), 3), v = Math.pow(1 - k, 3);
@@ -602,7 +604,7 @@
             ['Pattern with a minus: ' + t('(a-b)^{3}=a^{3}-3a^{2}b+3ab^{2}-b^{3}') + '.', 'At ' + t('x=1') + ', every power of ' + t('x') + ' is ' + t('1') + ', so just add the coefficients.'], 'pattern + check ' + plain(br(A)) + '^3');
           return p;
         } },
-        { id: 'e7f', level: 'ADV', make: function (r) {
+        { id: 'e7f', level: 'PRG', make: function (r) {
           var L = r.pick([['a', 'b'], ['a', 'b'], ['x', 'y']]), a = L[0], b = L[1], labs = [a + '^{4}', a + '^{3}' + b, a + '^{2}' + b + '^{2}', a + b + '^{3}', b + '^{4}'], want = [1, 4, 6, 4, 1];
           return KP.fields('The coefficients of ' + t('(' + a + '+' + b + ')^{2}') + ' are ' + t('1,2,1') + ' and those of ' + t('(' + a + '+' + b + ')^{3}') + ' are ' + t('1,3,3,1') + '. Predict the five coefficients of ' + t('(' + a + '+' + b + ')^{4}') + '.',
             labs.map(function (l) { return box('Coefficient of ' + t(l) + ':', [a, b], { name: l.replace(/[{}]/g, ''), wide: false }); }),
@@ -616,7 +618,7 @@
         { id: 'e8a', level: 'ADV', make: function (r) {
           var c = r.int(1, 5), b = r.int(1, 5), d = r.int(1, 6), A = lin(1, c, 'x'), Q = quad(1, b, d, 'x'), T = P.mul(sum(A), sum(Q));
           return polyPart(t(br(A) + '\\big(\\underline{\\qquad\\qquad}\\big)=' + tx(T)) + '<br>Missing factor:', sum(Q), [{ is: P.add(M(1, 'x', 2), N(co(T) / c)), code: 'missing-term', hint: 'The missing factor must be a trinomial ' + t('x^{2}+bx+c') + ': use the ' + t('x^{2}') + ' column to find ' + t('b') + '.' }],
-            t('x\\times x^{2}=x^{3}') + ', so the missing factor is ' + t('x^{2}+bx+c') + '.<br>Constant: ' + t(c + 'c=' + co(T)) + ', so ' + t('c=' + d) + '.<br>' + t('x^{2}') + ' column: ' + t('b+' + c + '=' + co(T, { x: 2 })) + ', so ' + t('b=' + b) + '.<br>Missing factor: ' + t(seq(Q)) + '. Check: ' + t(br(A) + br(Q) + '=' + tx(T)) + ' ✓',
+            t('x\\times x^{2}=x^{3}') + ', so the missing factor is ' + t('x^{2}+bx+c') + '.<br>Constant: ' + t((c === 1 ? '' : c) + 'c=' + co(T)) + ', so ' + t('c=' + d) + '.<br>' + t('x^{2}') + ' column: ' + t('b+' + c + '=' + co(T, { x: 2 })) + ', so ' + t('b=' + b) + '.<br>Missing factor: ' + t(seq(Q)) + '. Check: ' + t(br(A) + br(Q) + '=' + tx(T)) + ' ✓',
             ['The first term must be ' + t('x^{2}') + ' (to make ' + t('x^{3}') + '). Then match the constant term, then the ' + t('x^{2}') + ' term.'], 'missing trinomial for ' + plain(tx(T)));
         } },
         { id: 'e8b', level: 'ADV', make: function (r) {
@@ -676,7 +678,7 @@
             [box(t('a='), ['x'], { name: 'a', wide: false }), box('Expansion:', ['x'], { name: 'Expansion' })],
             [intChk(g.a), polyChk(T, [wFoil(A, Q)])], [String(g.a), tx(T)], t('a=' + g.a) + '; ' + t(tx(T)),
             t('x') + ' column: ' + t(g.p + 'x(' + g.s + ')+a(-' + g.rr + 'x)=(' + g.p * g.s + '-' + g.rr + 'a)x') + '.<br>' + t(g.p * g.s + '-' + g.rr + 'a=' + c1) + ', so ' + t('-' + g.rr + 'a=' + (c1 - g.p * g.s)) + ' and ' + t('a=' + g.a) + '.<br>' + distSol(A, Q, br(A) + br(Q)),
-            ['Two products make the ' + t('x') + ' term: ' + t(g.p + 'x\\times ' + g.s) + ' and ' + t('a\\times(-' + g.rr + 'x)') + '. Set their sum equal to ' + t(c1 + 'x') + '.'], 'find a from x coefficient ' + plain(br(Q)));
+            ['Two products make the ' + t('x') + ' term: ' + t(g.p + 'x\\times ' + g.s) + ' and ' + t('a\\times(-' + g.rr + 'x)') + '. Set their sum equal to ' + t(tx(M(c1, 'x'))) + '.'], 'find a from x coefficient ' + plain(br(Q)));
         } },
         { id: 'e9d', level: 'ADV', make: function (r) {
           var g = pickWhere(function () { return { c: r.int(2, 6), b: r.int(-5, 5), d: r.int(-6, 6) }; }, function (g) { return g.b !== 0 && g.d !== 0 && cnt(P.mul(lin(1, g.c, 'x'), quad(1, g.b, g.d, 'x'))) === 4; });
@@ -787,7 +789,7 @@
               'Dimensions at ' + t('x=' + x) + ': ' + t(d.join(',\\ ')) + ', so ' + t('V=' + d.join('\\times ') + '=' + V) + ' cm³.<br>From the expansion: ' + t(atTex(T, x, 'x') + '=' + V) + ' ✓',
               ['Substitute ' + t('x=' + x) + ' into each dimension, then multiply.'], 'box volume at x=' + x, { after: 'cm³' });
           } },
-          { id: 'e12c', level: 'PRG', make: function (r, sh) {
+          { id: 'e12c', level: 'EMG', make: function (r, sh) {
             var m = Math.floor(sh.s / 2) + 1;
             return KP.number('The height is ' + t('(2x-' + sh.s + ')') + ' cm. What is the smallest whole number ' + t('x') + ' may be?', m, function (v) { return v < m && v >= 0 ? { code: 'height-neg', hint: 'At ' + t('x=' + v) + ' the height is ' + t('2(' + v + ')-' + sh.s + '=' + (2 * v - sh.s)) + ' cm. A length must be positive.' } : null; },
               'The height must be positive: ' + t('2x-' + sh.s + '>0') + ', so ' + t('x>' + sh.s / 2) + '. (At ' + t('x=1') + ' the height would be ' + t((2 - sh.s)) + ' cm.)<br>The smallest whole number is ' + t('x=' + m) + ', giving a ' + t((m + sh.p) + '\\times ' + (m + sh.q) + '\\times ' + (2 * m - sh.s)) + ' box.',
@@ -861,7 +863,7 @@
             [intChk(4, function (v) { return v === 1 ? { code: 'value', hint: 'Degrees <b>add</b> when polynomials are multiplied: ' + t('1+1+1+1') + '.' } : null; }),
               intChk(lc, function (v) { var s = ps.reduce(function (a, b) { return a + b; }, 0); return v === s && s !== lc ? { code: 'coef-sum', hint: 'The ' + t('x^{4}') + ' term is ' + t(ps.map(function (p) { return '(' + p + 'x)'; }).join('')) + ': <b>multiply</b> the ' + t('x') + '-coefficients.' } : v === -lc ? { code: 'sign', hint: 'Count the negative ' + t('x') + '-coefficients to get the sign.' } : null; })],
             ['4', String(lc)], 'degree ' + t('4') + ', leading coefficient ' + t(lc),
-            '<b>Degree ' + t('4') + '</b>: each bracket has degree ' + t('1') + ', and degrees add when polynomials are multiplied: ' + t('1+1+1+1=4') + '.<br><b>Leading coefficient</b>: the only way to make an ' + t('x^{4}') + ' term is to take the ' + t('x') + '-term from every bracket: ' + t(ps.map(function (p) { return '(' + tx(M(p, 'x')) + ')'; }).join('') + '=' + lc + 'x^{4}') + '. In general it is ' + t('p_{1}p_{2}p_{3}p_{4}') + '.',
+            '<b>Degree ' + t('4') + '</b>: each bracket has degree ' + t('1') + ', and degrees add when polynomials are multiplied: ' + t('1+1+1+1=4') + '.<br><b>Leading coefficient</b>: the only way to make an ' + t('x^{4}') + ' term is to take the ' + t('x') + '-term from every bracket: ' + t(ps.map(function (p) { return '(' + tx(M(p, 'x')) + ')'; }).join('') + '=' + tx(M(lc, 'x', 4))) + '. In general it is ' + t('p_{1}p_{2}p_{3}p_{4}') + '.',
             ['Which term of each bracket must you take to build the highest power of ' + t('x') + '?'], 'degree and leading coefficient of four binomials');
         } }] },
       { num: '15', stem: '<b>Reading a cubic off its factors.</b> In general, ' + t('(x+a)(x+b)(x+c)') + ' can be expanded with ' + t('a') + ', ' + t('b') + ', ' + t('c') + ' kept as letters.', parts: [

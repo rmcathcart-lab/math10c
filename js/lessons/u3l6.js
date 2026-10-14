@@ -316,10 +316,10 @@
           var opts = [
             { html: t('(x-' + s.p + ')(x+' + s.q + ')=' + tx(As)), right: s.err === 'fl', code: 'opt-A', why: s.err === 'fl' ? null : 'Check it: ' + t('x^{2}+' + s.q + 'x-' + s.p + 'x-' + s.p * s.q + '=' + tx(A)) + ' — this one is correct.' },
             { html: t('(' + s.a + 'x-' + s.b + ')^{2}=' + tx(Bs)), right: s.err === 'sq', code: 'opt-B', why: s.err === 'sq' ? null : 'Check it: ' + t('(' + s.a + 'x)^{2}-2(' + s.a + 'x)(' + s.b + ')+' + s.b + '^{2}=' + tx(B)) + ' — correct.' },
-            { html: t('(' + (s.c === 1 ? '' : s.c) + 'x+' + s.d + ')(x-' + s.e + ')=' + tx(Cs)), right: s.err === 'bin', code: 'opt-C', why: s.err === 'bin' ? null : 'Check it: ' + t(tx(mono(s.c, 'x', 2)) + tx(mono(-s.c * s.e, 'x')) + '+' + s.d + 'x-' + s.d * s.e + '=' + tx(C)) + ' — correct.' },
+            { html: t('(' + (s.c === 1 ? '' : s.c) + 'x+' + s.d + ')(x-' + s.e + ')=' + tx(Cs)), right: s.err === 'bin', code: 'opt-C', why: s.err === 'bin' ? null : 'Check it: ' + t(tx(mono(s.c, 'x', 2)) + tx(mono(-s.c * s.e, 'x')) + '+' + tx(mono(s.d, 'x')) + '-' + s.d * s.e + '=' + tx(C)) + ' — correct.' },
             { html: t('(x+' + s.f + ')(x-' + s.f + ')=' + tx(D)), code: 'opt-D', why: 'A sum times a difference: ' + t('x^{2}-' + s.f + '^{2}=' + tx(D)) + ' — correct.' }];
           var sol = s.err === 'sq' ? 'The middle term of a square is doubled: ' + t('2(' + s.a + 'x)(-' + s.b + ')=' + tx(mono(-2 * s.a * s.b, 'x'))) + ', so ' + t('(' + s.a + 'x-' + s.b + ')^{2}=' + tx(B)) + ', not ' + t(tx(Bs)) + '.'
-            : s.err === 'bin' ? 'Outer and inner: ' + t(tx(mono(-s.c * s.e, 'x')) + '+' + s.d + 'x=' + tx(mono(s.d - s.c * s.e, 'x'))) + ', so the product is ' + t(tx(C)) + ', not ' + t(tx(Cs)) + '.'
+            : s.err === 'bin' ? 'Outer and inner: ' + t(tx(mono(-s.c * s.e, 'x')) + '+' + tx(mono(s.d, 'x')) + '=' + tx(mono(s.d - s.c * s.e, 'x'))) + ', so the product is ' + t(tx(C)) + ', not ' + t(tx(Cs)) + '.'
               : 'The outer and inner products are missing: ' + t('(x-' + s.p + ')(x+' + s.q + ')=x^{2}+' + s.q + 'x-' + s.p + 'x-' + s.p * s.q + '=' + tx(A)) + '.';
           return KP.mc(r, 'Exactly one of the following expansions is <b>incorrect</b>. Which one?', opts, sol + ' The other three expansions are correct.',
             ['Expand each product yourself (all four partial products), and compare.', 'For a square, remember the middle term is <b>doubled</b>: ' + t('(a-b)^{2}=a^{2}-2ab+b^{2}') + '.'], 'which expansion is incorrect (' + s.err + ')', true);
@@ -629,7 +629,7 @@
           { id: 'e4f', level: 'EMG', make: function (r, sh) {
             var p = sh.p, q = sh.q, R = Y.mul(lin(1, p), lin(1, -q)), fl = [{ name: 'Product', label: 'expansion', mode: 'math', keys: 'poly', vars: ['x'] }, { name: 'Zero pairs', label: 'number of zero pairs of ' + t('x') + '-tiles' }];
             return KP.fields('Expand ' + t('(x+' + p + ')(x-' + q + ')') + ', and say how many zero pairs of ' + t('x') + '-tiles form.', fl,
-              [K.poly(R, { wrong: wl(R, [{ is: quad(1, p + q, -p * q), code: 'no-zero-pairs', hint: 'Shaded and white ' + t('x') + '-tiles cancel: ' + t(p + 'x-' + q + 'x') + '.' }]) }), K.number(p, numDiag([[q, 'no-zero-pairs', 'Each zero pair uses one shaded <b>and</b> one white tile. There are only ' + t(p) + ' shaded ' + t('x') + '-tiles.'], [p + q, 'no-zero-pairs', 'A zero pair is two tiles (one shaded, one white). Count pairs, not tiles.']]))],
+              [K.poly(R, { wrong: wl(R, [{ is: quad(1, p + q, -p * q), code: 'no-zero-pairs', hint: 'Shaded and white ' + t('x') + '-tiles cancel: ' + t(tx(mono(p, 'x')) + '-' + q + 'x') + '.' }]) }), K.number(p, numDiag([[q, 'no-zero-pairs', 'Each zero pair uses one shaded <b>and</b> one white tile. There are only ' + t(p) + ' shaded ' + t('x') + '-tiles.'], [p + q, 'no-zero-pairs', 'A zero pair is two tiles (one shaded, one white). Count pairs, not tiles.']]))],
               [tx(R), String(p)], t(tx(R)) + '; ' + t(p) + ' zero pair' + (p > 1 ? 's' : ''),
               t('(x+' + p + ')(x-' + q + ')=' + Y.seq([mono(1, 'x', 2), mono(-q, 'x'), mono(p, 'x'), Y.num(-p * q)]) + '=' + tx(R)) + '.<br>The ' + t(p) + ' shaded and ' + t(q) + ' white ' + t('x') + '-tiles form ' + t(p) + ' zero pair' + (p > 1 ? 's' : '') + ', leaving ' + t(q - p) + ' white ' + t('x') + '-tile' + (q - p > 1 ? 's' : '') + '; all ' + t(p * q) + ' unit tiles are white.',
               ['Shaded × white = white. Pair each shaded ' + t('x') + '-tile with a white one.'], 'tiles with zero pairs');
@@ -718,7 +718,8 @@
           } },
           { id: 'e6e', level: 'EMG', make: function (r) {
             var m = r.int(2, 6), n = r.int(1, 6); if (n === m) n++;
-            var F3 = r.shuffle([{ id: 'A', tex: 'x+' + m }, { id: 'B', tex: 'x-' + n }, { id: 'C', tex: 'x-' + m }]), show = F3.map(function (f) { return '(' + f.tex + ')'; }).join('');
+            // keep (x+m) next to (x−n), so the "written next to each other" distractor describes the display truthfully
+            var F3 = pickWhere(function () { return r.shuffle([{ id: 'A', tex: 'x+' + m }, { id: 'B', tex: 'x-' + n }, { id: 'C', tex: 'x-' + m }]); }, function (F) { var ia, ib; F.forEach(function (f, i) { if (f.id === 'A') ia = i; if (f.id === 'B') ib = i; }); return Math.abs(ia - ib) === 1; }), show =F3.map(function (f) { return '(' + f.tex + ')'; }).join('');
             return KP.mc(r, 'To expand ' + t(show) + ', which pair of factors is the short one to multiply first?', [
               { html: t('(x+' + m + ')(x-' + m + ')') + ', because a sum times a difference gives just ' + t('x^{2}-' + m * m) + '.', right: true },
               { html: t('(x+' + m + ')(x-' + n + ')') + ', because they are written next to each other.', code: 'opt-adj', why: 'Order doesn’t matter in a product. Look for a pair that gives only two terms.' },
@@ -733,7 +734,7 @@
             var s = pickWhere(function () { return { a: r.int(1, 5), b: r.int(2, 4), c: r.int(1, 7), d: r.int(1, 9) }; }, function (s) { return s.a * s.b - s.c !== 0 && s.a * s.b !== s.c; });
             var ans = s.a * s.b - s.c, T = quad(s.b, -s.c, s.d);
             return KP.number('The coefficient of ' + t('x^{2}') + ' in ' + t('(x+' + s.a + ')\\left(' + tx(T) + '\\right)') + ' is', ans,
-              numDiag([[-s.c, 'partial-miss', 'That is only ' + t('x\\times(-' + s.c + 'x)') + '. Another partial product also gives ' + t('x^{2}') + ': ' + t(s.a + '\\times ' + s.b + 'x^{2}') + '.'], [s.a * s.b, 'partial-miss', 'That is only ' + t(s.a + '\\times ' + s.b + 'x^{2}') + '. Another partial product also gives ' + t('x^{2}') + ': ' + t('x\\times(-' + s.c + 'x)') + '.'], [s.a * s.b + s.c, 'sign', 'Check the sign of ' + t('x\\times(-' + s.c + 'x)') + '.']]),
+              numDiag([[-s.c, 'partial-miss', 'That is only ' + t('x\\times(' + tx(mono(-s.c, 'x')) + ')') + '. Another partial product also gives ' + t('x^{2}') + ': ' + t(s.a + '\\times ' + s.b + 'x^{2}') + '.'], [s.a * s.b, 'partial-miss', 'That is only ' + t(s.a + '\\times ' + s.b + 'x^{2}') + '. Another partial product also gives ' + t('x^{2}') + ': ' + t('x\\times(' + tx(mono(-s.c, 'x')) + ')') + '.'], [s.a * s.b + s.c, 'sign', 'Check the sign of ' + t('x\\times(' + tx(mono(-s.c, 'x')) + ')') + '.']]),
               'Only two partial products give ' + t('x^{2}') + ': ' + t('x\\times(' + tx(mono(-s.c, 'x')) + ')=' + tx(mono(-s.c, 'x', 2))) + ' and ' + t(s.a + '\\times ' + s.b + 'x^{2}=' + s.a * s.b + 'x^{2}') + '. ' + t('-' + s.c + '+' + s.a * s.b + '=' + ans) + '.',
               ['Which pairs of terms (one from each bracket) multiply to give ' + t('x^{2}') + '?'], 'coefficient of x²');
           } },
@@ -856,7 +857,7 @@
               { html: 'From the exponent: ' + t('(x+' + k + ')^{3}') + ' has power ' + t(3) + ', so every coefficient is a multiple of ' + t(3) + '.', code: 'opt-exp', why: 'The first and last coefficients are ' + t(1) + ' and ' + t(k * k * k) + ', which aren’t multiples of ' + t(3) + ' in general. Think about the shape.' },
               { html: 'The cube was cut three times, so every group has three pieces.', code: 'opt-cuts', why: 'Two groups have only one piece (the big cube and the small corner cube).' },
               { html: 'It comes from ' + t(k + '+1') + ', the number of pieces along each edge.', code: 'opt-pieces', why: 'Each edge is cut into two pieces. Count how many ways a slab can be placed in the cube.' }],
-              t('1\\to') + ' the ' + t('x^{3}') + ' cube; ' + t(3 * k + '\\to') + ' the three ' + t(k + 'x^{2}') + ' slabs; ' + t(3 * k * k + '\\to') + ' the three ' + t(k * k + 'x') + ' bars; ' + t(k * k * k + '\\to') + ' the corner cube. A cube has three directions, so there are three slabs and three bars.',
+              t('1\\to') + ' the ' + t('x^{3}') + ' cube; ' + t(3 * k + '\\to') + ' the three ' + t(tx(mono(k, 'x', 2))) + ' slabs; ' + t(3 * k * k + '\\to') + ' the three ' + t(tx(mono(k * k, 'x'))) + ' bars; ' + t(k * k * k + '\\to') + ' the corner cube. A cube has three directions, so there are three slabs and three bars.',
               ['Picture the slabs: which face of the big cube does each one sit against?'], 'why three slabs');
           } }] },
       { num: '10',
@@ -914,7 +915,7 @@
         parts: [
           { id: 'e11a', level: 'BEG', make: function (r, sh) {
             var R = Y.mul(lin(1, sh.a), lin(1, sh.b));
-            return poly('Expand the original area, in m' + t('^{2}') + '.', R, { wrong: [{ is: quad(1, 0, sh.a * sh.b), code: 'outer-inner', hint: 'Include the outer and inner products: ' + t(sh.b + 'x+' + sh.a + 'x') + '.' }] },
+            return poly('Expand the original area, in m' + t('^{2}') + '.', R, { wrong: [{ is: quad(1, 0, sh.a * sh.b), code: 'outer-inner', hint: 'Include the outer and inner products: ' + t(tx(mono(sh.b, 'x')) + '+' + sh.a + 'x') + '.' }] },
               t('(x+' + sh.a + ')(x+' + sh.b + ')=' + Y.seq([mono(1, 'x', 2), mono(sh.b, 'x'), mono(sh.a, 'x'), Y.num(sh.a * sh.b)]) + '=' + tx(R)) + ' m' + t('^{2}'), ['Area = length × width.'], 'plot area');
           } },
           { id: 'e11b', level: 'EMG', make: function (r, sh) {
@@ -941,7 +942,7 @@
               t('(x+' + sh.a + '-k)(x+' + sh.b + '+k)=' + Y.seq([mono(1, 'x', 2), mono(sh.b, 'x'), Y.mono(1, { k: 1, x: 1 }), mono(sh.a, 'x'), Y.num(sh.a * sh.b), mono(sh.a, 'k'), Y.mono(-1, { k: 1, x: 1 }), mono(-sh.b, 'k'), mono(-1, 'k', 2)])) + '<br>' + t('=x^{2}+' + (sh.a + sh.b) + 'x+' + sh.a * sh.b + '+' + d + 'k-k^{2}') + ' (the ' + t('kx') + ' terms cancel)<br>Change ' + t('=' + d + 'k-k^{2}=k(' + d + '-k)') + ' m' + t('^{2}'),
               ['Multiply each of the three terms in the first bracket by each of the three in the second (nine products), collect, then subtract ' + t(tx(Y.mul(lin(1, sh.a), lin(1, sh.b)))) + '.'], 'area change in k');
           } },
-          { id: 'e11f', level: 'ADV', make: function (r, sh) {
+          { id: 'e11f', level: 'PRG', make: function (r, sh) {
             var d = sh.a - sh.b, want = [0, d];
             return { prompt: 'The change, ' + t(d + 'k-k^{2}=k(' + d + '-k)') + ', contains no ' + t('x') + '. Find <b>every</b> value of ' + t('k') + ' that leaves the area unchanged.', input: { type: 'list' }, key: want, answer: t('k=0') + ' and ' + t('k=' + d), text: 'k values with no area change',
               check: function (resp) {
@@ -1047,7 +1048,7 @@
           { id: 'e14a', level: 'BEG', make: function (r, sh) {
             var w = ex14(sh), fl = [{ name: 'Original', label: 'original expression at ' + t('x=1') }, { name: 'Line 3', label: 'Line 3 at ' + t('x=1') }];
             return KP.fields('Substitute ' + t('x=1') + ' into the original expression and into Line 3.', fl, [K.number(w.v0), K.number(w.v3)], [String(w.v0), String(w.v3)], t(w.v0) + ' and ' + t(w.v3),
-              'Original: ' + t(sh.m + '(1-' + sh.p + ')^{2}-(1+' + sh.q + ')(1-' + sh.rr + '+' + sh.s + ')=' + sh.m * (1 - sh.p) * (1 - sh.p) + '-' + (1 + sh.q) * (1 - sh.rr + sh.s) + '=' + w.v0) + '.<br>Line 3: ' + t(w.v3) + '. They are different, so the work is wrong.',
+              'Original: ' + t(sh.m + '(1-' + sh.p + ')^{2}-(1+' + sh.q + ')(1-' + sh.rr + '+' + sh.s + ')=' + sh.m * (1 - sh.p) * (1 - sh.p) + '-' + par((1 + sh.q) * (1 - sh.rr + sh.s)) + '=' + w.v0) + '.<br>Line 3: ' + t(w.v3) + '. They are different, so the work is wrong.',
               ['Replace every ' + t('x') + ' with ' + t(1) + '.'], 'substitution check x = 1');
           } },
           { id: 'e14b', level: 'PRG', make: function (r, sh) {
@@ -1090,7 +1091,7 @@
           { id: 'e15a', level: 'EMG', make: function (r, sh) {
             var w = ex15(sh);
             return poly('Expand the left side correctly.', w.R, { wrong: [{ is: w.S, code: 'drop-term', hint: 'That is the student’s answer. Check the ' + t('x') + ' terms: there are two of them to collect.' }] },
-              t(w.lhs + '=' + tx(Y.mul(mono(1, 'x'), w.T)) + plusTex(Y.mul(Y.num(sh.a), w.T)) + '=' + tx(w.R)) + '.<br>The student’s ' + t('x') + ' coefficient is wrong: ' + t(tx(mono(-sh.c, 'x')) + '+' + sh.a * sh.b + 'x=' + tx(mono(sh.a * sh.b - sh.c, 'x'))) + '.',
+              t(w.lhs + '=' + tx(Y.mul(mono(1, 'x'), w.T)) + plusTex(Y.mul(Y.num(sh.a), w.T)) + '=' + tx(w.R)) + '.<br>The student’s ' + t('x') + ' coefficient is wrong: ' + t(tx(mono(-sh.c, 'x')) + '+' + tx(mono(sh.a * sh.b, 'x')) + '=' + tx(mono(sh.a * sh.b - sh.c, 'x'))) + '.',
               ['Multiply ' + t('x') + ' and then ' + t(sh.a) + ' by each term of the trinomial.'], 'correct expansion');
           } },
           { id: 'e15b', level: 'EMG', make: function (r, sh) {
@@ -1206,9 +1207,19 @@
         parts: [
           { id: 'e18a', level: 'ADV', make: function () {
             var R = Y.add(mono(1, 'x', 4), Y.mono(2, { b: 1, x: 2 }), Y.mono(-1, { a: 2, x: 2 }), mono(1, 'b', 2));
-            return poly('Expand it fully. (Hint: group as ' + t('(x^{2}+b)+ax') + ' and ' + t('(x^{2}+b)-ax') + '.)', R, { var: 'x', wrong: [{ is: Y.add(mono(1, 'x', 4), Y.mono(2, { b: 1, x: 2 }), Y.mono(1, { a: 2, x: 2 }), mono(1, 'b', 2)), code: 'dos-sign', hint: t('(A+B)(A-B)=A^{2}-B^{2}') + ': the ' + t('a^{2}x^{2}') + ' term is subtracted.' }, { is: Y.add(mono(1, 'x', 4), Y.mono(-1, { a: 2, x: 2 }), mono(1, 'b', 2)), code: 'no-middle', hint: t('(x^{2}+b)^{2}') + ' has a middle term, ' + t('2bx^{2}') + '.' }] },
+            var p = poly('Expand it fully. (Hint: group as ' + t('(x^{2}+b)+ax') + ' and ' + t('(x^{2}+b)-ax') + '.)', R, { var: 'x', wrong: [{ is: Y.add(mono(1, 'x', 4), Y.mono(2, { b: 1, x: 2 }), Y.mono(1, { a: 2, x: 2 }), mono(1, 'b', 2)), code: 'dos-sign', hint: t('(A+B)(A-B)=A^{2}-B^{2}') + ': the ' + t('a^{2}x^{2}') + ' term is subtracted.' }, { is: Y.add(mono(1, 'x', 4), Y.mono(-1, { a: 2, x: 2 }), mono(1, 'b', 2)), code: 'no-middle', hint: t('(x^{2}+b)^{2}') + ' has a middle term, ' + t('2bx^{2}') + '.' }] },
               t('\\big[(x^{2}+b)+ax\\big]\\big[(x^{2}+b)-ax\\big]=(x^{2}+b)^{2}-(ax)^{2}') + '<br>' + t('=x^{4}+2bx^{2}+b^{2}-a^{2}x^{2}=x^{4}+(2b-a^{2})x^{2}+b^{2}') + '<br>The odd-degree terms (' + t('x^{3}') + ' and ' + t('x') + ') all cancel.',
               ['With the grouping it is a sum times a difference: ' + t('A=x^{2}+b') + ', ' + t('B=ax') + '.'], 'identity expansion');
+            // the booklet's own form x^4+(2b-a^2)x^2+b^2 (brackets only around a number coefficient of a power of x) is accepted
+            var base = p.check;
+            p.check = function (resp) {
+              var res = base(resp); if (res.v !== 'form' || typeof resp !== 'string') return res;
+              var s = resp.replace(/\\left|\\right|\s/g, ''), groups = s.match(/\([^()]*\)[^()]?/g) || [];
+              if (groups.length && /^[^()]*(\([^()x]*\)x[^()]*)+$/.test(s) && groups.every(function (g) { return /\)x$/.test(g); })) return ok();
+              return res;
+            };
+            p.good = ['x^{4}+(2b-a^{2})x^{2}+b^{2}'];
+            return p;
           } },
           { id: 'e18b', level: 'ADV', make: function (r, sh) {
             var K0 = sh.one[0], b = sh.one[1], a = sh.one[2], fl = [{ name: 'a', label: t('a') }, { name: 'b', label: t('b') }];
@@ -1243,7 +1254,7 @@
           var X = lin(s.a, -s.b), T = quad(1, s.c, -s.d), R = Y.mul(X, T);
           return polyMC(r, 'Expand and simplify ' + t(bt(X) + '\\left(' + tx(T) + '\\right)') + '.', R, [
             { p: Y.add(R, Y.num(-2 * s.b * s.d)), code: 'const-sign', why: 'Check the constant: ' + t('(-' + s.b + ')(-' + s.d + ')=+' + s.b * s.d) + '.' },
-            { p: Y.add(R, mono(2 * s.b, 'x', 2)), code: 'opt-x2', why: 'Check the ' + t('x^{2}') + ' terms: ' + t('(-' + s.b + ')(x^{2})=-' + s.b + 'x^{2}') + '.' },
+            { p: Y.add(R, mono(2 * s.b, 'x', 2)), code: 'opt-x2', why: 'Check the ' + t('x^{2}') + ' terms: ' + t('(-' + s.b + ')(x^{2})=' + tx(mono(-s.b, 'x', 2))) + '.' },
             { p: Y.add(R, mono(2 * s.b * s.c, 'x')), code: 'opt-x', why: 'Check the ' + t('x') + ' terms: ' + t(tx(mono(-s.a * s.d, 'x')) + '-' + s.b * s.c + 'x') + ' — both are negative.' }],
             t('=' + tx(Y.mul(mono(s.a, 'x'), T)) + plusTex(Y.mul(Y.num(-s.b), T)) + '=' + tx(R)),
             ['Multiply ' + t(s.a + 'x') + ' and then ' + t('-' + s.b) + ' by each term of the trinomial.'], 'MC binomial × trinomial');

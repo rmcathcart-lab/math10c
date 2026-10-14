@@ -330,7 +330,7 @@
           return ex([T(1, k, [bin(V(1), V(p, 'y')), bin(V(q), V(-1, 'y'))]), T(-1, 1, [bin(V(2, 'y'), V(-a)), bin(V(2, 'y'), V(-b))])]); } }] },
 
       { num: '6', section: 'Checking and using the patterns', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: '6', level: 'PRG', make: function (r) { return q6(r); } }] },
+        { id: '6', level: 'EMG', make: function (r) { return q6(r); } }] },
 
       { num: '7', stem: function (sh) { return 'A square patio has side length ' + t('x') + ' m. Each side length of the patio is increased by ' + t(sh.n) + ' m.'; },
         shared: function (r) { return { n: r.int(2, 6), s: r.int(4, 9) }; },
@@ -415,8 +415,8 @@
         },
         parts: [
           { id: 'e3', sub: 'decide', level: 'EMG', make: function (r, sh) {
-            var cols = [{ id: 'sq', html: 'square' }, { id: 'sd', html: 'sum × difference' }, { id: 'neither', html: 'neither' }], want = {};
-            var rows = sh.list.map(function (terms, i) { var id = String.fromCharCode(97 + i); want[id] = sh.kinds[i]; return { id: id, html: '<span style="white-space:nowrap">(' + id + ') ' + t(exprTex(terms)) + '</span>' }; });
+            var cols = [{ id: 'sq', html: 'square' }, { id: 'sd', html: 'sum ×<br>diff.' }, { id: 'neither', html: 'neither' }], want = {};
+            var rows = sh.list.map(function (terms, i) { var id = String.fromCharCode(97 + i); want[id] = sh.kinds[i]; var pcs = exprTex(terms).split(')('); return { id: id, html: '(' + id + ') ' + pcs.map(function (x, k) { return t((k ? '(' : '') + x + (k < pcs.length - 1 ? ')' : '')); }).join('<wbr>') }; });
             var sol = sh.list.map(function (terms, i) { var cl = classify(terms[0]), id = String.fromCharCode(97 + i);
               return '(' + id + ') ' + t(exprTex(terms)) + ': ' + (cl.kind === 'sq' ? '<b>square</b> — the same binomial twice' : cl.kind === 'sd' ? '<b>sum × difference</b> — same two terms, opposite signs' + (cl.swapped ? ' (reorder a bracket to see it)' : '') : '<b>neither</b> — the two brackets do not have the same two terms'); }).join('<br>');
             return B.grid('For each product, choose the pattern.', rows, cols, want, { why: function (row, got, w) {
@@ -623,7 +623,7 @@
       { num: '14', stem: 'A coefficient out front, and two different patterns in the same expression. Expand every product completely before collecting.', parts: [
         { id: 'e14a', level: 'PRG', make: function (r) { var k = r.int(2, 4), n = r.int(2, 6); return ex([T(1, k, [bin(X, V(n))], true), T(-1, 1, [bin(X, V(-n)), bin(X, V(n))])]); } },
         { id: 'e14b', level: 'PRG', make: function (r) { var p = r.int(2, 5), q = r.int(2, 5); if (p === q) q = p + 1; return ex([T(1, 1, [bin(V(p, 'a'), V(-q, 'b'))], true), T(1, 1, [bin(V(p, 'a'), V(q, 'b')), bin(V(p, 'a'), V(-q, 'b'))])]); } },
-        { id: 'e14c', level: 'PRG', make: function (r) { var k = r.int(3, 6), j = r.int(2, 3), q = r.int(2, 3); return ex([T(1, k, [bin(V(1, 'm'), V(q, 'n')), bin(V(1, 'm'), V(-q, 'n'))]), T(-1, j, [bin(V(1, 'm'), V(-q, 'n'))], true)]); } },
+        { id: 'e14c', level: 'PRG', make: function (r) { var k = r.int(3, 6), j = r.int(2, 3), q = r.int(2, 3); if (j === k) j = 2; return ex([T(1, k, [bin(V(1, 'm'), V(q, 'n')), bin(V(1, 'm'), V(-q, 'n'))]), T(-1, j, [bin(V(1, 'm'), V(-q, 'n'))], true)]); } },
         { id: 'e14d', level: 'PRG', make: function (r) { var n = r.int(1, 4), x2 = V(1, { x: 2 }); return ex([T(1, 1, [bin(x2, V(n)), bin(x2, V(-n))]), T(-1, 1, [bin(x2, V(-n))], true)]); } }] },
 
       { num: '15', section: 'Extra practice F — Stretch', stem: 'Squaring a <i>trinomial</i>: treat ' + t('(a+b+c)^{2}') + ' as the square of the two terms ' + t('(a+b)') + ' and ' + t('c') + '.', parts: [

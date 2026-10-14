@@ -140,7 +140,7 @@
       if (spec.distinctNeg) {
         var cs = ts.map(function (q) { return q.c; });
         if (cs.some(function (c) { return c[1] !== 1 || c[0] >= 0; })) return wrong('ex-coef', 'Every coefficient (the constant term too) must be a <b>negative integer</b>.');
-        if (cs.some(function (c, i) { return cs.some(function (d, j) { return j > i && d[0] === c[0]; }); })) return wrong('ex-coef', 'The four coefficients must all be <b>different</b>.');
+        if (cs.some(function (c, i) { return cs.some(function (d, j) { return j > i && d[0] === c[0]; }); })) return wrong('ex-coef', 'The ' + ['', '', 'two', 'three', 'four', 'five'][cs.length] + ' coefficients must all be <b>different</b>.');
       }
       if (spec.order) { var want = P.sorted(Sp, { order: 'desc', var: vs[0] }).map(function (q) { return q.key; }), got = P.writtenOrder(a.ast); if (got.join('|') !== want.join('|')) return wrong('ex-order', 'It must be written in <b>descending</b> order: highest power first, constant term last.'); }
       if (spec.extra) { var h = spec.extra(Sp); if (h) return wrong(h.code || 'ex-other', h.hint); }
@@ -280,11 +280,11 @@
       { id: 'e2c', level: 'EMG', make: function (r) { var a = r.int(2, 3), b = r.int(2, 3), c = r.int(Math.max(a, b) + 1, a + b - 1 >= Math.max(a, b) + 1 ? a + b - 1 : Math.max(a, b) + 1); return twoVarPart(r, [M(1, { m: a, n: b }), M(-r.int(2, 9), { m: c })]); } },
       { id: 'e2d', level: 'BEG', make: function (r) { return twoVarPart(r, [M(-r.int(2, 9), { p: r.int(3, 6), q: r.int(2, 5) })]); } }] },
     { num: '3', stem: 'None of these is in descending order, so the leading coefficient is <b>not</b> the number you see first. Rewrite each in descending powers of the variable, then state the leading coefficient, the constant term and the degree.', parts: [
-      { id: 'e3a', level: 'BEG', make: function (r) { var n = r.int(4, 5); return descRowPart(r, 'x', [T(r.int(2, 9), 'x', 1), T(-r.int(2, 9)), T(r.int(2, 5), 'x', n), T(-1, 'x', n - 1)]); } },
+      { id: 'e3a', level: 'BEG', make: function (r) { var n = r.int(4, 5), lc = r.int(2, 5), b; do { b = r.int(2, 9); } while (b === lc); return descRowPart(r, 'x', [T(b, 'x', 1), T(-r.int(2, 9)), T(lc, 'x', n), T(-1, 'x', n - 1)]); } },
       { id: 'e3b', level: 'EMG', make: function (r) { var f = r.pick([[-1, 2], [-1, 3], [-2, 3], [-3, 4]]); return descRowPart(r, 'y', [T(-r.int(2, 9)), T(r.int(2, 9), 'y', 2), T(f, 'y', r.int(4, 6)), T(1, 'y', 1)]); } },
       { id: 'e3c', level: 'EMG', make: function (r) { var n = r.int(5, 7), m = r.int(3, n - 1); return descRowPart(r, 't', [T(r.int(2, 9), 't', 2), T(-1, 't', n), T(r.int(2, 9), 't', m === 2 ? 3 : m)]); } }] },
     { num: '4', stem: function (sh) { return 'Consider ' + t(W(sh.terms)) + '. It is in two variables, which makes “leading coefficient” a question worth asking carefully.'; },
-      shared: function (r) { var terms = homog(r); return { terms: r.shuffle(terms), d: P.degree(terms[0]) }; },
+      shared: function (r) { var terms, lx, ly, g = 0; do { terms = homog(r); lx = P.lead(S(terms), 'x'); ly = P.lead(S(terms), 'y'); g++; } while (g < 100 && lx[0] * ly[1] === ly[0] * lx[1]); return { terms: r.shuffle(terms), d: P.degree(terms[0]) }; },
       parts: [
         { id: 'e4a', level: 'BEG', make: function (r, sh) {
           var fl = sh.terms.map(function (q) { return { name: 'Degree of ' + plainPoly(q), label: 'Degree of ' + t(tx(q)) }; }).concat([{ name: 'Degree of the polynomial', label: 'Degree of the polynomial' }]);
@@ -311,7 +311,7 @@
         } }] },
     { num: '5', stem: 'Give an example of each. (Answers will vary — yours must meet <b>every</b> condition listed.)', parts: [
       { id: 'e5a', level: 'EMG', make: function (r) {
-        var d = r.pick([5, 5, 4, 6]), c = r.pick([-4, -4, 3, -7, 8]), key = 'x^{3}y^{' + (d - 3) + '}+xy' + (c < 0 ? c : '+' + c);
+        var d = r.pick([5, 5, 4, 6]), c = r.pick([-4, -4, 3, -7, 8]), key = 'x^{3}y' + (d - 3 === 1 ? '' : '^{' + (d - 3) + '}') + '+xy' + (c < 0 ? c : '+' + c);
         return examplePart('a <b>trinomial</b> in <b>two</b> variables, of degree ' + t(d) + ', whose constant term is ' + t(c), { terms: 3, nvars: 2, degree: d, constant: c, vars: ['x', 'y'] }, key,
           ['x^' + (d - 1) + 'y-2x' + (c < 0 ? c : '+' + c), '5xy^' + (d - 1) + '+y' + (c < 0 ? c : '+' + c)], ['x^' + d + '+x' + (c < 0 ? c : '+' + c), 'x^3y^' + (d - 3) + '+xy+' + (c - 1 === 0 ? 2 : c - 1), 'x^3y^' + (d - 2) + '+xy' + (c < 0 ? c : '+' + c)],
           'For example ' + t(key) + ': three terms in ' + t('x') + ' and ' + t('y') + '; their degrees are ' + t(d + ', 2, 0') + ', so the degree is ' + t(d) + '; constant term ' + t(c) + '.', ['Start with the constant ' + t(c) + '. One term must have exponents adding to ' + t(d) + '; the other must have a smaller degree.'], 'example: trinomial 2 vars degree ' + d);
@@ -487,7 +487,7 @@
     { num: '16', stem: function (sh) { return 'A second student was asked to simplify ' + t(bracketsTex([{ s: 1, a: sh.A }, { s: -1, a: sh.B }])) + ' and wrote:' + '\\[\\begin{aligned}&' + bracketsTex([{ s: 1, a: sh.A }, { s: -1, a: sh.B }]) + '\\\\ &=' + W(sh.A.concat([P.neg(sh.B[0]), sh.B[1], sh.B[2]])) + '\\\\ &=' + tx(sh.stu) + '\\end{aligned}\\]'; },
       shared: function (r) {
         var A, Bq, stu, ans, g = 0;
-        do { A = [T(r.int(4, 8), 'y', 2), T(-r.int(2, 6), 'y', 1), T(r.int(3, 9))]; Bq = [T(r.int(1, 3), 'y', 2), T(-r.int(3, 9), 'y', 1), T(r.int(1, 5))]; stu = P.add(S(A), P.neg(Bq[0]), Bq[1], Bq[2]); ans = P.sub(S(A), S(Bq)); g++; } while (g < 100 && (P.count(ans) < 3 || P.count(stu) < 3));
+        do { A = [T(r.int(4, 8), 'y', 2), T(-r.int(2, 6), 'y', 1), T(r.int(3, 9))]; Bq = [T(r.int(1, 3), 'y', 2), T(-r.int(3, 9), 'y', 1), T(r.int(1, 5))]; stu = P.add(S(A), P.neg(Bq[0]), Bq[1], Bq[2]); ans = P.sub(S(A), S(Bq)); g++; } while (g < 100 && (P.count(ans) < 3 || P.count(stu) < 3 || P.at(stu, { y: 1 }) === P.at(ans, { y: 1 })));
         return { A: A, B: Bq, stu: stu, ans: ans };
       },
       parts: [
@@ -539,12 +539,13 @@
       } }] },
     { num: '18', section: 'Extra practice G — Stretch', stem: function (sh) { return 'A quadrilateral has a perimeter of ' + t('(' + tx(sh.per) + ')') + ' cm. Three of its sides measure ' + sh.s.slice(0, 3).map(function (s) { return t('(' + W(s) + ')'); }).join(', ') + ' cm.'; },
       shared: function (r) {
-        var s, per, g = 0;
+        var s, per, v, vals, g = 0;
         do {
           s = [[T(r.int(2, 4), 'x', 2), T(-r.int(1, 3), 'x', 1), T(r.int(1, 3))], [T(r.int(2, 5), 'x', 2), T(r.int(1, 3), 'x', 1), T(-r.int(3, 6))], [T(1, 'x', 2), T(r.int(3, 7), 'x', 1)], [T(r.int(2, 5), 'x', 2), T(-r.int(2, 4))]];
-          per = P.add(S(s[0]), S(s[1]), S(s[2]), S(s[3])); g++;
-        } while (g < 100 && P.count(per) < 3);
-        return { s: s, per: per, v: r.pick([2, 2, 3]) };
+          per = P.add(S(s[0]), S(s[1]), S(s[2]), S(s[3])); v = r.pick([2, 2, 3]); g++;
+          vals = s.map(function (q) { return P.at(S(q), { x: v }); });   // the four sides at x = v must make a real quadrilateral
+        } while (g < 100 && (P.count(per) < 3 || vals.some(function (a) { return a <= 0 || 2 * a >= vals[0] + vals[1] + vals[2] + vals[3]; })));
+        return { s: s, per: per, v: v };
       },
       parts: [
         { id: 'e18a', level: 'PRG', make: function (r, sh) {
@@ -581,7 +582,7 @@
         } }] },
     { num: '19', stem: 'Build a polynomial to order — every condition must hold at once.', parts: [
       { id: 'e19a', level: 'PRG', make: function (r) {
-        var D = r.pick([6, 6, 5, 7]), k = r.pick([3, 3, 2]), c = r.pick([9, 9, 4, -5]), key = '-4x^{' + (D - 2) + '}y^{2}+x^{' + (k - 1) + '}y' + (c < 0 ? c : '+' + c);
+        var D = r.pick([6, 6, 5, 7]), k = r.pick([3, 3, 2]), c = r.pick([9, 9, 4, -5]), key = '-4x^{' + (D - 2) + '}y^{2}+x' + (k - 1 === 1 ? '' : '^{' + (k - 1) + '}') + 'y' + (c < 0 ? c : '+' + c);
         var spec = { terms: 3, nvars: 2, degree: D, constant: c, vars: ['x', 'y'], extra: function (Sp) {
           var ts = P.terms(Sp), top = ts.filter(function (q) { return P.degree(M(1, q.v)) === D; });
           if (top.length !== 1) return { code: 'ex-other', hint: 'Exactly <b>one</b> term may have degree ' + t(D) + '.' };
@@ -873,7 +874,7 @@
         } }] },
       { num: '12', stem: 'Simplify.', parts: [
         { id: '12a', level: 'EMG', make: function (r) {
-          var y = r.pick(['y', 'x', 'm']), q = r.pick([3, 3, 4, 5]), m = r.pick([1, 2, 2, 3]), p1; do { p1 = r.int(1, q - 1); } while (ex.gcd(p1, q) > 1 && q !== 4);
+          var y = r.pick(['y', 'x', 'm']), q = r.pick([3, 3, 4, 5]), m = r.pick([1, 2, 2, 3]), p1; do { p1 = r.int(1, q - 1); } while (ex.gcd(p1, q) > 1);
           var p2 = m * q - p1, c1 = r.int(2, 9), c2; do { c2 = r.int(5, 25); } while (c2 === c1);
           var terms = [T([p1, q], y, 1), T(-c1), T([p2, q], y, 1), T(c2)], ans = S(terms);
           var badFrac = S([T(ex.norm(p1 + p2, 2 * q), y, 1), T(c2 - c1)]);

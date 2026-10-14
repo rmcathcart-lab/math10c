@@ -39,6 +39,7 @@ Homework practice for every Math 10C lesson, built from the course booklets. Eve
 | `js/lessons/u1l*.js`, `u2l*.js` | Units 1 and 2: every assignment question plus the extra practice |
 | `js/expr.js` | Reads typed answers (LaTeX or plain text): roots of any index, fractions, repeating decimals, π, variables |
 | `js/kitx.js` | Checkers for radicals (mixed/entire), fractions, repeating decimals, rounding, ordering, tables; part builders `K.P.*` |
+| `js/poly.js` | Unit 3: exact polynomial algebra (`HW.poly`), the polynomial answer checker `K.poly` / `K.P.poly` (exact equality + expanded/simplified nudges + classic-error diagnoses), the `poly` keypad, algebra tiles (`HW.tiles`) and area models (`HW.areaModel`). Tests: `tests/poly_test.js` |
 | `js/widgets.js`, `js/widgets2.js`, `js/steps.js` | Answer inputs: number, list (chips), math (MathLive, with keypads for radicals, fractions, repeating decimals, variables), multiple choice, select, prime/composite with a proof, pairs, ordering, tables, labelled boxes, division ladder, factor tree |
 | `js/calc.js` | The TI-30XIIS-style calculator |
 | `js/app.js`, `js/ledger.js` | The student app, and syncing to the teacher's ledger |

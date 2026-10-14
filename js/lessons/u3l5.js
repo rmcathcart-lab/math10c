@@ -22,7 +22,7 @@
     'square-only': 'Squared but did not multiply by the third factor', 'conj-sign': 'Sum × difference written with +', 'sa-half': 'Surface area without the factor 2', 'sa-face': 'Left out a pair of faces',
     'one-end': 'Only one end of the cylinder', 'no-ends': 'Left out the ends of the cylinder', 'no-square': 'Forgot to square the radius', 'diameter': 'Used the diameter as the radius',
     'pi-decimal': 'Replaced π with a decimal', 'no-pi': 'Left π out', 'one-end-border': 'Added the border at one end only', 'swap': 'Matched the increases to the wrong sides',
-    'given-x': 'Gave the value of x, not the answer asked', 'rounded-x': 'Rounded too early', 'plus-k': 'Substituted the wrong sign'
+    'given-x': 'Gave the value of x, not the answer asked', 'step-skipped': 'Gave the final result instead of the step asked for', 'rounded-x': 'Rounded too early', 'plus-k': 'Substituted the wrong sign'
   });
 
   /* ---------- small helpers ---------- */
@@ -122,7 +122,7 @@
       var ast = piAst(a.ast), r = P.read(ast);
       if (!r.ok) return r.why === 'not-poly' ? wrong('not-poly', 'That isn’t a polynomial: a variable has ended up in a denominator or an exponent. Check your work.') : wrong('value', null);
       var S = r.p;
-      if (P.eq(S, T)) { var fi = P.formIssue(ast); if (fi && fi.code !== 'not-poly') return form(fi.code, fi.msg || 'Right answer — now simplify it fully.'); return ok(); }
+      if (P.eq(S, T)) { var fi = P.formIssue(ast); if (fi && fi.code !== 'not-poly') return form(fi.code, fi.msg ? fi.msg.replace(/PI/g, '\\pi ') : 'Right answer — now simplify it fully.'); return ok(); }
       if (P.vars(S).indexOf(PI) < 0 && !P.isZero(tParts[1])) {
         var close = [0, 1.9].every(function (k) { var e = env(S, Math.PI, k), sv = P.at(S, e), tv = P.at(T, e); return Math.abs(sv - tv) <= 0.004 * Math.max(1, Math.abs(tv)); });
         if (close) return form('pi-decimal', 'Leave ' + t('\\pi') + ' in your answer as the symbol ' + t('\\pi') + ' (use the ' + t('\\pi') + ' key) — don’t replace it with a decimal.');
@@ -234,7 +234,7 @@
     if (o.left) c.vlab(0, OH, 0, o.left, 'left');
     var top = c.Y(iy + IH), bot = c.Y(iy), lft = c.X(ix), rgt = c.X(ix + IW);
     if (o.inW) { c.add(arrowEl(lft + 2, top + 11, rgt - 2, top + 11)); c.ptext((lft + rgt) / 2 - (o.inH ? 8 : 0), top + 26, o.inW); }
-    if (o.inH) { c.add(arrowEl(rgt - 11, top + 2, rgt - 11, bot - 2)); c.ptext(rgt - 25, (top + bot) / 2 + (o.inW ? 8 : 0), o.inH, { rot: true }); }
+    if (o.inH) { c.add(arrowEl(rgt - 11, top + 2, rgt - 11, bot - 2)); c.ptext(rgt - 25, o.inW ? Math.max((top + bot) / 2 + 8, top + 62) : (top + bot) / 2, o.inH, { rot: true }); }
     if (o.inner) { var cy = (top + bot) / 2, n = o.inner.length; o.inner.forEach(function (s, i) { c.ptext((lft + rgt) / 2, cy + (i - (n - 1) / 2) * 17, s, { size: 14 }); }); }
     if (o.border) {
       var yA = c.Y(OH * 0.3), xL = c.X(0), xI = lft; c.add(arrowEl(xL + 1, yA, xI - 1, yA)); c.ptext((xL + xI) / 2, yA - 10, o.border, { size: 14 });
@@ -421,7 +421,7 @@
       /* ---------- Q1(b): frame ---------- */
       { num: '1', stem: function (sh) {
           return 'A rectangular frame has outer dimensions ' + t(bt(sh.ow) + '\\text{ by }' + bt(sh.oh)) + ', with a rectangular opening ' + t(bt(sh.iw) + '\\text{ by }' + bt(sh.ih)) + ' cut from its interior. The shaded frame is the figure.' +
-            figFrame(at(sh.ow, sh.X), at(sh.oh, sh.X), clamp(at(sh.iw, sh.X), 0.5 * at(sh.ow, sh.X), 0.8 * at(sh.ow, sh.X)), clamp(at(sh.ih, sh.X), 0.42 * at(sh.oh, sh.X), 0.7 * at(sh.oh, sh.X)), { top: tx(sh.ow), left: tx(sh.oh), inW: tx(sh.iw), inH: tx(sh.ih), label: 'frame' });
+            figFrame(at(sh.ow, sh.X), at(sh.oh, sh.X), clamp(at(sh.iw, sh.X), 0.5 * at(sh.ow, sh.X), 0.8 * at(sh.ow, sh.X)), clamp(at(sh.ih, sh.X), 0.42 * at(sh.oh, sh.X), 0.7 * at(sh.oh, sh.X)), { top: tx(sh.ow), left: tx(sh.oh), inW: tx(sh.iw), inH: tx(sh.ih), label: 'frame', pw: 260, ph: 240 });
         },
         shared: function (r) {
           return gen(function () {
@@ -562,6 +562,7 @@
             return piPart('To show that ' + t('A=2\\pi ' + s + w + '+\\pi ' + w + '^{2}') + ', first expand the area of the outer circle, ' + t('\\pi(' + s + '+' + w + ')^{2}') + '.', tgt, [
               { is: piMul(sqNoMid(R)), code: 'no-middle', hint: t('(' + s + '+' + w + ')^{2}') + ' has a middle term, ' + t('2' + s + w) + '. Square first, then multiply every term by ' + t('\\pi') + '.' },
               { is: piMul(sqMidOnce(R)), code: 'middle-once', hint: 'The middle term of a square is doubled: ' + t('2' + s + w) + '.' },
+              { is: piMul(P.sub(P.pow(R, 2), P.pow(P.v(s), 2))), code: 'step-skipped', hint: 'That is the washer’s area ' + t('A') + '. This step asks only for the outer circle, ' + t('\\pi(' + s + '+' + w + ')^{2}') + ', expanded — before you subtract the hole.' },
               { is: P.add(P.mul(P.v(PI), P.pow(P.v(s), 2)), P.scale(P.mul(P.v(s), P.v(w)), 2), P.pow(P.v(w), 2)), code: 'no-pi', hint: 'Multiply <b>every</b> term of ' + t('(' + s + '+' + w + ')^{2}') + ' by ' + t('\\pi') + '.' }],
               steps(['\\pi(' + s + '+' + w + ')^{2}=\\pi(' + s + '^{2}+2' + s + w + '+' + w + '^{2})=\\pi ' + s + '^{2}+2\\pi ' + s + w + '+\\pi ' + w + '^{2}', 'A=(\\pi ' + s + '^{2}+2\\pi ' + s + w + '+\\pi ' + w + '^{2})-\\pi ' + s + '^{2}=2\\pi ' + s + w + '+\\pi ' + w + '^{2}\\ \\checkmark']),
               ['Square the binomial first: ' + t('(a+b)^{2}=a^{2}+2ab+b^{2}') + '.', 'Then multiply each term by ' + t('\\pi') + ' (use the ' + t('\\pi') + ' key).'], 'expand π(s+t)²', [s, w]);
@@ -891,7 +892,7 @@
       /* ---------- EP4: path of width x around a garden ---------- */
       { num: '4', stem: function (sh) {
           return 'A rectangular garden measures ' + t(bt(sh.gl) + '\\text{ m}') + ' by ' + t(bt(sh.gw) + '\\text{ m}') + '. A gravel path of uniform width ' + t('x\\text{ m}') + ' is laid all the way around the outside of it. The shaded region is the path.' +
-            figFrame(at(sh.lo, sh.X), at(sh.wo, sh.X), at(sh.gl, sh.X), at(sh.gw, sh.X), { inner: ['\\text{garden}', bt(sh.gl) + '\\text{ by }' + bt(sh.gw)], border: 'x', label: 'garden with a path' });
+            figFrame(at(sh.lo, sh.X), at(sh.wo, sh.X), at(sh.gl, sh.X), at(sh.gw, sh.X), { inner: ['\\text{garden}', tx(sh.gl), '\\text{by }' + tx(sh.gw)], border: 'x', label: 'garden with a path' });
         },
         shared: function (r) {
           return gen(function () {
@@ -1179,7 +1180,7 @@
       /* ---------- EP12: trapezoid ---------- */
       { num: '12', stem: function (sh) { return 'A trapezoid has parallel sides ' + t(bt(sh.a1) + CM) + ' and ' + t(bt(sh.a2) + CM) + ', and height ' + t(tx(sh.h) + CM) + '. Its area is ' + t('A=\\tfrac12h(a+b)') + '.' + figTrap(at(sh.a1, sh.X1), clamp(at(sh.a2, sh.X1), 0.3 * at(sh.a1, sh.X1), at(sh.a1, sh.X1)), clamp(at(sh.h, sh.X1), 0.35 * at(sh.a1, sh.X1), 0.8 * at(sh.a1, sh.X1)), tx(sh.a1), tx(sh.a2), tx(sh.h)); },
         shared: function (r) {
-          var a = r.int(2, 3), b = r.int(1, 4), c = r.int(3, 6), X1 = r.int(c + 1, c + 3), X2 = r.int(1, c - 1), a1 = lin(a, b), a2 = lin(1, -c), h = mono(2);
+          var a = r.int(2, 3), b = r.int(1, 4), c = r.int(3, 6), X1 = r.int(c + 1, c + 3), X2 = gen(function () { var v = r.int(1, c - 1); return (a + 1) * v + b - c ? v : null; }), a1 = lin(a, b), a2 = lin(1, -c), h = mono(2);
           return { a: a, b: b, c: c, X1: X1, X2: X2, a1: a1, a2: a2, h: h, A: P.mul(P.v('x'), P.add(a1, a2)) };
         },
         parts: [
@@ -1271,8 +1272,9 @@
       /* ---------- EP14: doubling the sides ---------- */
       { num: '14', stem: function (sh) {
           var X = 2;
+          var lv = at(sh.l, X), wv = clamp(at(sh.w, X), 0.6 * lv, 1.2 * lv); // softened so a thin rectangle keeps its side label and its 2×2 grid readable
           return 'A rectangle measures ' + t(bt(sh.l) + CM) + ' by ' + t(bt(sh.w) + CM) + '. A student claims: “If I double the length and double the width, the area doubles too.”' +
-            sideBySide([figRect(at(sh.l, X), at(sh.w, X), { bottom: tx(sh.l), left: tx(sh.w), pw: 90, ph: 60 }).svg('rectangle', 200), figRect(2 * at(sh.l, X), 2 * at(sh.w, X), { bottom: '2' + bt(sh.l), left: '2' + bt(sh.w), pw: 130, ph: 90, grid: true }).svg('doubled rectangle', 260)]);
+            sideBySide([figRect(lv, wv, { bottom: tx(sh.l), left: tx(sh.w), pw: 90, ph: 60 }).svg('rectangle', 200), figRect(2 * lv, 2 * wv, { bottom: '2' + bt(sh.l), left: '2' + bt(sh.w), pw: 130, ph: 90, grid: true }).svg('doubled rectangle', 260)]);
         },
         shared: function (r) {
           var a = r.int(1, 5), b = r.int(2, 3), c = r.int(1, 3), l = lin(1, a), w = lin(b, -c);
@@ -1402,7 +1404,7 @@
           } },
           { id: 'e17c', level: 'PRG', make: function (r, sh) {
             return polyPart('Subtract to find how much larger the cube’s volume is, and simplify. (Two whole degrees cancel.)', sh.D, [{ is: P.neg(sh.D), code: 'sign-all', hint: 'Cube minus prism.' }, { is: badSub(sh.C, sh.Pr), code: 'sub-sign', hint: 'Subtract every term of the prism’s volume.' }],
-              t('(' + tx(sh.C) + ')-(' + tx(sh.Pr) + ')=' + tx(sh.D)) + '. The ' + t('x^{3}') + ' <b>and</b> ' + t('x^{2}') + ' terms cancel. Factored: ' + t(sh.d * sh.d + '(x+' + sh.a + ')') + '.', ['Put the prism’s volume in brackets and subtract term by term.'], 'cube minus prism');
+              t('(' + tx(sh.C) + ')-(' + tx(sh.Pr) + ')=' + tx(sh.D)) + '. The ' + t('x^{3}') + ' <b>and</b> ' + t('x^{2}') + ' terms cancel. Factored: ' + t((sh.d === 1 ? '' : sh.d * sh.d) + '(x+' + sh.a + ')') + '.', ['Put the prism’s volume in brackets and subtract term by term.'], 'cube minus prism');
           } },
           { id: 'e17d', level: 'BEG', make: function (r, sh) {
             var X = 2, e = X + sh.a, Cv = e * e * e, Pv = (e - sh.d) * e * (e + sh.d);
@@ -1411,7 +1413,7 @@
               ['Work out both volumes with real numbers.'], 'difference at x=2', CM3);
           } },
           { id: 'e17e', level: 'PRG', make: function (r, sh) {
-            var z = -sh.a, D2 = sh.d * sh.d;
+            var z = -sh.a, D2 = sh.d === 1 ? '' : sh.d * sh.d;
             return mcPart(r, 'Setting your difference equal to zero gives ' + t('x=' + z) + '. Why doesn’t that give a cube and prism with equal volumes?', [
               { html: 'At ' + t('x=' + z) + ' the cube’s edge is ' + t(0) + ' and a prism side is negative, so no solids exist. For real solids ' + t('x+' + sh.a + '>0') + ', so ' + t(D2 + '(x+' + sh.a + ')>0') + ': the cube always wins.', right: true },
               { html: 'It does: at ' + t('x=' + z) + ' both solids have volume ' + t(0) + ', so they are equal.', why: 'A solid with an edge of ' + t(0) + ' (or a negative side) isn’t a solid at all.' },

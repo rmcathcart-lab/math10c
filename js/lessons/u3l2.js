@@ -123,7 +123,7 @@
   function foil(A, B, C, D) { var Fp = mul(A, C), O = mul(A, D), I = mul(B, C), L = mul(B, D); return { F: Fp, O: O, I: I, L: L, res: add(Fp, O, I, L) }; }
   function binWrongs(A, B, C, D, square) {
     var f = foil(A, B, C, D), out = [], bothNeg = coefOf(B) < 0 && coefOf(D) < 0;
-    out.push({ is: add(f.F, f.L), code: square ? 'no-middle' : 'fl-only', hint: square ? 'A square of a binomial is the binomial times <b>itself</b>: ' + t(pf(add(A, B)) + pf(add(A, B))) + '. Expand all four products — the Outside and Inside products give a middle term.' : 'You multiplied only the <b>First</b> terms and the <b>Last</b> terms. Two binomials give <b>four</b> products — the Outside and Inside products make the middle term.' });
+    out.push({ is: add(f.F, f.L), code: square ? 'no-middle' : 'fl-only', hint: square ? 'A square of a binomial is the binomial times <b>itself</b>: ' + t(br([A, B]) + br([A, B])) + '. Expand all four products — the Outside and Inside products give a middle term.' : 'You multiplied only the <b>First</b> terms and the <b>Last</b> terms. Two binomials give <b>four</b> products — the Outside and Inside products make the middle term.' });
     if (square) out.push({ is: add(f.F, f.O, f.L), code: 'middle-once', hint: 'The Outside and Inside products are the <b>same</b> here, so that term appears <b>twice</b> — the middle term is doubled.' });
     else {
       out.push({ is: add(f.F, f.O, f.L), code: 'one-middle', hint: 'You have only one of the two middle products. Find both the Outside product ' + t(dot(A, D)) + ' and the Inside product ' + t(dot(B, C)) + '.' });
@@ -201,7 +201,7 @@
     var top = tilesOf(A, B), side = tilesOf(C, D), x = xm(1), T = mul(lin(A, B), lin(C, D)), f = foil(xm(A), N(B), xm(C), N(D));
     var x2 = A * C, xs = [A * D, B * C], ones = B * D;
     var xTiles = (Math.abs(xs[0]) + Math.abs(xs[1])), zp = xs[0] * xs[1] < 0 ? Math.min(Math.abs(xs[0]), Math.abs(xs[1])) : 0;
-    var desc = 'Inside: ' + x2 + ' ' + t('x^{2}') + '-tile' + (x2 > 1 ? 's' : '') + '; ' + xTiles + ' ' + t('x') + '-tiles (' + (xs[0] > 0 && xs[1] > 0 ? 'all shaded' : [xs[0], xs[1]].map(function (v) { return Math.abs(v) + (v > 0 ? ' shaded' : ' white'); }).join(' and ')) + ')' + (zp ? ', so ' + zp + ' zero pair' + (zp > 1 ? 's' : '') + ' come' + (zp > 1 ? '' : 's') + ' out' : '') + '; ' + Math.abs(ones) + ' ' + (ones > 0 ? 'shaded' : 'white') + ' unit tiles.';
+    var desc = 'Inside: ' + x2 + ' ' + t('x^{2}') + '-tile' + (x2 > 1 ? 's' : '') + '; ' + xTiles + ' ' + t('x') + '-tiles (' + (xs[0] > 0 && xs[1] > 0 ? 'all shaded' : [xs[0], xs[1]].map(function (v) { return Math.abs(v) + (v > 0 ? ' shaded' : ' white'); }).join(' and ')) + ')' + (zp ? ', so ' + zp + ' zero pair' + (zp > 1 ? 's' : '') + ' come' + (zp > 1 ? '' : 's') + ' out' : '') + '; ' + Math.abs(ones) + ' ' + (ones > 0 ? 'shaded' : 'white') + ' unit tile' + (Math.abs(ones) > 1 ? 's' : '') + '.';
     var prod = sideFirst ? pf(lin(C, D)) + pf(lin(A, B)) : pf(lin(A, B)) + pf(lin(C, D));
     var p = pp(HW.tiles.legend() + HW.tiles.frame(top, side) + 'The factor tiles for ' + t(prod) + ' are in place: ' + t(tx(lin(A, B))) + ' across the top and ' + t(tx(lin(C, D))) + ' down the side. Fill the rectangle using the shading rule (same shading → shaded, different shading → white), then state the product.', T,
       binWrongs(xm(A), N(B), xm(C), N(D)).map(function (w) { if (w.code === 'last-sign') { w.code = 'tile-sign'; w.hint = 'Check the shading of the unit tiles: a unit tile is shaded only when the two factor tiles beside it have the <b>same</b> shading.'; } return w; }),
@@ -301,7 +301,7 @@
       s.check = s.ts.map(function (q) { return t(pf(s.m) + '(' + tx(q) + ')=' + tx(mul(s.m, q))); }).join(' and ');
     });
     var opts = S.map(function (s, j) { return { html: t(s.lhs + '=' + (j === err ? s.badTex : s.okTex)), right: j === err, why: j === err ? null : 'Check it: ' + s.check + ' — this expansion is correct.' }; });
-    var bad = S[err], why = err === 3 ? 'the ' + t(h + 'x^{2}') + ' was not multiplied into the second term' : 'a <b>sign error</b> in the second term';
+    var bad = S[err], why = err === 3 ? 'the coefficient ' + t(h) + ' of ' + t(h + 'x^{2}') + ' was not multiplied into the second term' : 'a <b>sign error</b> in the second term';
     return KP.mc(r, 'Which of the following expansions is <b>incorrect</b>?', opts, 'Check each one by distributing. In the incorrect one, ' + bad.check + ', so it should be ' + t(bad.lhs + '=' + bad.okTex) + ' — ' + why + '.', ['Distribute each monomial yourself, sign included, and compare.'], 'which expansion is wrong (MC)', true);
   }
   /* Q10: NR c − a − b */
@@ -922,9 +922,9 @@
             function (v) { if (v === o.k * o.c) return { code: 'asked-other', hint: t(o.k * o.c) + ' is the leading coefficient. First terms: ' + t('kx\\cdot ' + o.c + 'x=' + o.c + 'kx^{2}') + ', so ' + t(o.c + 'k=' + o.k * o.c) + '.' }; return null; },
             'First terms: ' + t('kx\\cdot ' + o.c + 'x=' + o.c + 'kx^{2}') + ', so ' + t(o.c + 'k=' + o.k * o.c) + ' and ' + t('k=' + o.k) + '.<br>Check: ' + t(br([xm(o.k), N(o.b)]) + br([xm(o.c), N(-o.d)]) + '=' + tx(T)) + ' ✓', ['Which two terms multiply to give the ' + t('x^{2}') + '-term?'], 'find k from leading term');
         } },
-        { id: 'e12c', level: 'ADV', make: function (r) {
+        { id: 'e12c', level: 'PRG', make: function (r) {
           var k = r.int(2, 9), fields = [nbox(t('k=')), nbox('or ' + t('k='))];
-          return { prompt: t('(x+k)(x-k)=x^{2}-' + k * k) + '. Find <b>both</b> possible values of ' + t('k') + '.', input: { type: 'fields', fields: fields }, key: [String(k), String(-k)], answer: t('k=' + k) + ' or ' + t('k=-' + k),
+          return { prompt: t('(x+k)(x-k)=x^{2}-' + k * k) + '. Find <b>both</b> possible values of ' + t('k') + ' (here ' + t('k') + ' may be negative).', input: { type: 'fields', fields: fields }, key: [String(k), String(-k)], answer: t('k=' + k) + ' or ' + t('k=-' + k),
             check: function (resp) {
               resp = resp || []; var v = [0, 1].map(function (i) { var p = HW.parse.number(resp[i] || ''); return p.ok ? p.value : null; });
               if (v[0] == null || v[1] == null) return form('incomplete', 'Fill in both boxes with a number.');
@@ -943,7 +943,7 @@
             function (v) { return v === k * k ? { code: 'asked-other', hint: 'That is ' + t('k^{2}') + '. Take the square root.' } : v === -k ? { code: 'sign', hint: 'The question says ' + t('k>0') + '.' } : null; },
             t('(' + m + 'a-kb)(' + m + 'a+kb)=' + m * m + 'a^{2}+' + m + 'akb-' + m + 'akb-k^{2}b^{2}=' + m * m + 'a^{2}-k^{2}b^{2}') + ', so ' + t('k^{2}=' + k * k) + ' and, since ' + t('k>0') + ', ' + t('k=' + k) + '.', ['The middle terms cancel. Compare the ' + t('b^{2}') + '-terms.'], 'difference of squares: find k');
         } },
-        { id: 'e12e', level: 'ADV', make: function (r) {
+        { id: 'e12e', level: 'PRG', make: function (r) {
           var a = r.int(2, 7), c = pickWhere(function () { return r.int(2, 8); }, function (v) { return v !== a; });
           if (r.chance(0.15)) { a = 4; c = 5; }
           var p = KP.fields('In ' + t('(x+' + a + ')(x+c)') + ' the coefficient of ' + t('x') + ' is ' + t(a + c) + '. Find ' + t('c') + ' and the constant term.', [nbox(t('c')), nbox('Constant term')],
