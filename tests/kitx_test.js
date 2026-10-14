@@ -2,7 +2,7 @@
 var fs = require('fs'), path = require('path'), vm = require('vm'), root = path.join(__dirname, '..');
 var ctx = { console: console, Math: Math, JSON: JSON, Number: Number, String: String, Array: Array, Object: Object, isFinite: isFinite, RegExp: RegExp, Error: Error };
 ctx.window = ctx; ctx.globalThis = ctx; vm.createContext(ctx);
-['assets/katex/katex.min.js', 'js/core.js', 'js/expr.js', 'js/kit.js', 'js/kitx.js'].forEach(function (f) { vm.runInContext(fs.readFileSync(path.join(root, f), 'utf8'), ctx, { filename: f }); });
+['assets/katex/katex.min.js', 'js/core.js', 'js/expr.js', 'js/kit.js', 'js/kitx.js', 'js/poly.js'].forEach(function (f) { vm.runInContext(fs.readFileSync(path.join(root, f), 'utf8'), ctx, { filename: f }); });
 var K = ctx.HW.kit, fails = 0, n = 0;
 function T(name, chk, resp, want, code) { n++; var r = chk(resp); var okk = r.v === want && (!code || r.code === code); if (!okk) { fails++; console.log('FAIL', name, JSON.stringify(resp), '->', JSON.stringify(r), 'want', want, code || ''); } }
 var mix72 = K.radical({ k: 6, n: 2, m: 2 }, 'mixed');

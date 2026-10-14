@@ -3,7 +3,7 @@
 var fs = require('fs'), path = require('path'), vm = require('vm'), root = path.join(__dirname, '..');
 var ctx = { console: console, Math: Math, JSON: JSON, Number: Number, String: String, Array: Array, Object: Object, isFinite: isFinite, RegExp: RegExp, Error: Error, Date: Date };
 ctx.window = ctx; ctx.globalThis = ctx; vm.createContext(ctx);
-['assets/katex/katex.min.js', 'js/core.js', 'js/expr.js', 'js/kit.js', 'js/kitx.js'].concat(fs.readdirSync(path.join(root, 'js/lessons')).sort().map(function (f) { return 'js/lessons/' + f; }))
+['assets/katex/katex.min.js', 'js/core.js', 'js/expr.js', 'js/kit.js', 'js/kitx.js', 'js/poly.js'].concat(fs.readdirSync(path.join(root, 'js/lessons')).sort().map(function (f) { return 'js/lessons/' + f; }))
   .forEach(function (f) { vm.runInContext(fs.readFileSync(path.join(root, f), 'utf8'), ctx, { filename: f }); });
 var HW = ctx.HW, n = 0, bad = 0, seen = {};
 function compact(t){ return String(t).replace(/\\(d|t)?frac\{([0-9])\}\{([0-9])\}/g,'\\frac$2$3').replace(/\\(d|t)?frac\{([0-9])\}/g,'\\frac$2').replace(/\\sqrt\{([0-9])\}/g,'\\sqrt$1'); }
