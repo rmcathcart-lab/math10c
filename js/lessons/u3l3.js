@@ -190,7 +190,7 @@
       var cl = classify(terms[0]);
       var h0 = cl.kind === 'sq' ? 'This is the square of a binomial: ' + SQ + '. Square the first term, double the product of the two terms, square the last term.'
         : cl.kind === 'sd' ? 'Same two terms, opposite signs: ' + SD + '. The middle terms cancel.'
-          : 'Expand the brackets first (FOIL), then multiply every term by the number in front.';
+          : terms[0].k !== 1 ? 'Expand the brackets first (FOIL), then multiply every term by the number in front.' : 'Use FOIL: multiply the First, Outer, Inner and Last terms, then collect like terms.';
       if (terms[0].k !== 1 && cl.kind !== 'foil') h0 += ' Then multiply every term by the number in front.';
       return [h0, 'Check: put a small number such as ' + t('1') + ' in for the variable(s) in the question and in your answer — the two values must match.'];
     }
@@ -233,7 +233,7 @@
       var v = i + 1;
       return { html: nm, right: v === n, why: v < n ? 'More of them are wrong than that. Expand each product yourself and compare: look for a missing or undoubled middle term, a coefficient that wasn’t squared, and the sign of the last term.' : 'Fewer are wrong than that — at least one you counted as incorrect is right. Expand each one carefully with ' + SQ + ' and ' + SD + '.' };
     });
-    var sol = items.map(function (it) { return t(it.q + '=' + P.tex(it.right)) + ': ' + (it.isBad ? '<b>incorrect</b> — ' + it.reason + '.' : '<b>correct</b>.'); }).join('<br>') + '<br>So <b>' + names[n - 1].toLowerCase() + '</b> of the expansions ' + (n === 1 ? 'is' : 'are') + ' incorrect.';
+    var sol = items.map(function (it) { return t(it.q + '=' + P.tex(it.shown)) + ': ' + (it.isBad ? '<b>incorrect</b> — ' + it.reason + '. Correct: ' + t(it.q + '=' + P.tex(it.right)) + '.' : '<b>correct</b>.'); }).join('<br>') + '<br>So <b>' + names[n - 1].toLowerCase() + '</b> of the expansions ' + (n === 1 ? 'is' : 'are') + ' incorrect.';
     return B.mc(r, 'A student provides the following expansions for four binomial products.<br>' + list + '<br>How many of the student’s expansions are <i>incorrect</i>?', opts, sol,
       ['Expand each product yourself. Squares: ' + SQ + '. Sum × difference: ' + SD + '.'], 'MC: how many of four expansions are wrong (' + n + ')', true);
   }
@@ -538,7 +538,7 @@
           rows.push({ terms: [T(1, 1, [bin(V(p, 'y'), V(-q))], true)], slip: '(' + p + 'y-' + q + ')^{2}=' + p + 'y^{2}-' + 2 * p * q + 'y+' + q * q, kind: 'coef' });
           rows.push({ terms: [T(1, 1, [bin(V(s, ll), V(u)), bin(V(s, ll), V(-u))])], slip: '(' + s + ll + '+' + u + ')(' + s + ll + '-' + u + ')=' + s * s + ll + '^{2}+' + u * u, kind: 'last' });
           var a2 = {}, b2 = {}; a2[L[0]] = 2; b2[L[1]] = 2;
-          rows.push({ terms: [T(1, 1, [bin(V(1, a2), V(-1, b2))], true)], slip: '(' + L[0] + '^{2}-' + L[1] + '^{2})^{2}=' + L[0] + '^{4}-' + L[1] + '^{4}', kind: 'missing' });
+          rows.push({ terms: [T(1, 1, [bin(V(1, a2), V(-1, b2))], true)], slip: '(' + L[0] + '^{2}-' + L[1] + '^{2})^{2}=' + L[0] + '^{4}+' + L[1] + '^{4}', kind: 'missing' });
           return { rows: rows };
         },
         parts: [
@@ -698,7 +698,7 @@
           return B.poly('Extend the idea: expand ' + t('(x-' + k + ')(x+' + k + ')(x^{2}+' + c(2) + ')(x^{4}+' + c(4) + ')') + '.', tg, { vars: ['x'], wrong: [
             { is: P.add(V(1, { x: 8 }), V(c(8))), code: 'sd-plus', hint: 'Every step is a sum × difference, so the last step gives a <b>difference</b>.' },
             { is: P.sub(V(1, { x: 7 }), V(c(8))), code: 'exponent', hint: 'Each step squares the previous: ' + t('x\\to x^{2}\\to x^{4}\\to x^{8}') + '.' },
-            { is: P.sub(V(1, { x: 8 }), V(c(4))), code: 'not-sq', hint: 'At each step the constant is squared too: ' + t(c(4) + '^{2}=' + c(8)) + '.' }] },
+            ].concat(k > 1 ? [{ is: P.sub(V(1, { x: 8 }), V(c(4))), code: 'not-sq', hint: 'At each step the constant is squared too: ' + t(c(4) + '^{2}=' + c(8)) + '.' }] : []) },
             t('(x-' + k + ')(x+' + k + ')=x^{2}-' + c(2)) + '<br>' + t('(x^{2}-' + c(2) + ')(x^{2}+' + c(2) + ')=x^{4}-' + c(4)) + '<br>' + t('(x^{4}-' + c(4) + ')(x^{4}+' + c(4) + ')=x^{8}-' + c(8)),
             ['Multiply the first two brackets, then the result with the next bracket, and so on — each step is a sum × difference.'], 'chain sd 4 factors'); } },
         { id: 'e17c', level: 'BEG', make: function (r) { var x = r.int(2, 4), fs = [x - 1, x + 1, x * x + 1, Math.pow(x, 4) + 1], pr = Math.pow(x, 8) - 1;

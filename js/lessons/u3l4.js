@@ -62,11 +62,10 @@
     return s + '<br>' + t('=' + tx(res, o));
   }
   function pairLine(A, B) { var res = P.mul(sum(A), sum(B)); return t(br(A) + br(B) + '=' + seq(partials(A, B)) + '=' + tx(res)); }
-  function grid(A, B, fill) { // (fr columns: the shared area model's % columns plus the label column overflow a phone screen)
-    return gridFix(HW.areaModel(B.map(function (b) { return tx(b); }), A.map(function (a) { return tx(a); }),
-      A.map(function (a) { return B.map(function (b) { return fill ? tx(P.mul(a, b)) : ''; }); }), { max: 380 }));
+  function grid(A, B, fill) {
+    return HW.areaModel(B.map(function (b) { return tx(b); }), A.map(function (a) { return tx(a); }),
+      A.map(function (a) { return B.map(function (b) { return fill ? tx(P.mul(a, b)) : ''; }); }), { max: 380 });
   }
-  function gridFix(html) { return html.replace(/grid-template-columns:auto ([\d.% ]+)/, function (m, cols) { return 'grid-template-columns:auto ' + cols.trim().split(/\s+/).map(function (c) { return 'minmax(0,' + (parseFloat(c) / 10).toFixed(2) + 'fr)'; }).join(' '); }); }
   /* three binomials F3 = [A, B, C]: multiply factors i and j first, then distribute the third over the result */
   function threeSol(F3, i, j, why) {
     var k = [0, 1, 2].filter(function (x) { return x !== i && x !== j; })[0], first = P.mul(sum(F3[i]), sum(F3[j])), T = termsOf(first);
@@ -293,7 +292,7 @@
       /* ---------- Q5 three binomials ---------- */
       { num: '5', section: 'Part B — Three Binomials and Volume', stem: 'Expand and simplify.', parts: [
         { id: '5a', level: 'PRG', make: function (r) {
-          var g = pickWhere(function () { return { a: r.int(1, 6), b: r.int(2, 7), k: r.pick([2, 3]), c: r.int(1, 3) }; }, function (g) { return g.a !== g.b; });
+          var g = pickWhere(function () { return { a: r.int(1, 6), b: r.int(2, 7), k: r.pick([2, 3]), c: r.int(1, 3) }; }, function (g) { return g.a !== g.b && gcd(g.k, g.c) === 1; });
           return threePart([lin(1, g.a, 'x'), lin(1, g.b, 'x'), lin(g.k, g.c, 'x')], 0, 1);
         } },
         { id: '5b', level: 'PRG', make: function (r) {
@@ -538,7 +537,7 @@
           return threePart([lin2(1, 'a', -k, 'b'), lin2(1, 'a', k, 'b'), lin2(1, 'a', m, 'b')], 0, 1, { why: 'The first two are a sum times a difference, so the first stage gives a binomial:' });
         } },
         { id: 'e5c', level: 'PRG', make: function (r) {
-          var g = pickWhere(function () { return { a: r.int(2, 6), b: r.int(1, 5), p: r.int(2, 3), c: r.int(1, 3) }; }, function (g) { return g.a !== g.b && cnt(P.mul(lin(1, -g.a, 'y'), lin(1, -g.b, 'y'), lin(g.p, g.c, 'y'))) === 4; });
+          var g = pickWhere(function () { return { a: r.int(2, 6), b: r.int(1, 5), p: r.int(2, 3), c: r.int(1, 3) }; }, function (g) { return g.a !== g.b && gcd(g.p, g.c) === 1 && cnt(P.mul(lin(1, -g.a, 'y'), lin(1, -g.b, 'y'), lin(g.p, g.c, 'y'))) === 4; });
           return threePart([lin(1, -g.a, 'y'), lin(1, -g.b, 'y'), lin(g.p, g.c, 'y')], 0, 1);
         } }] },
       /* ---------- EP Part C ---------- */
@@ -621,7 +620,7 @@
             ['The first term must be ' + t('x^{2}') + ' (to make ' + t('x^{3}') + '). Then match the constant term, then the ' + t('x^{2}') + ' term.'], 'missing trinomial for ' + plain(tx(T)));
         } },
         { id: 'e8b', level: 'ADV', make: function (r) {
-          var g = pickWhere(function () { return { p: r.int(2, 3), q: r.int(1, 5), b: r.int(1, 4), c: r.int(2, 7) }; }, function (g) { return cnt(P.mul(lin(g.p, -g.q, 'x'), quad(1, -g.b, g.c, 'x'))) === 4; });
+          var g = pickWhere(function () { return { p: r.int(2, 3), q: r.int(1, 5), b: r.int(1, 4), c: r.int(2, 7) }; }, function (g) { return gcd(g.p, g.q) === 1 && cnt(P.mul(lin(g.p, -g.q, 'x'), quad(1, -g.b, g.c, 'x'))) === 4; });
           var A = lin(g.p, -g.q, 'x'), Q = quad(1, -g.b, g.c, 'x'), T = P.mul(sum(A), sum(Q));
           return polyPart(t('\\big(\\underline{\\qquad\\qquad}\\big)' + br(Q) + '=' + tx(T)) + '<br>Missing factor:', sum(A), [{ is: sum(lin(g.p, g.q, 'x')), code: 'sign', hint: 'Check the sign: ' + t('(\\ ?\\ )\\times ' + g.c + '=' + co(T)) + '.' }],
             t(g.p + 'x^{3}\\div x^{2}=' + g.p + 'x') + ', so the missing factor is ' + t(g.p + 'x+q') + '.<br>Constant: ' + t(g.c + 'q=' + co(T)) + ', so ' + t('q=' + (-g.q)) + '.<br>Missing factor: ' + t(seq(A)) + '. Check: ' + t(br(A) + br(Q) + '=' + tx(T)) + ' ✓',
@@ -691,7 +690,7 @@
       /* ---------- EP Part E ---------- */
       { num: '10', section: 'Extra practice E — Find and fix the error', stem: function (sh) { return 'Asked to expand ' + t(sh.lead) + ', a student wrote ' + t(sh.lead + '=' + sh.work + '=' + tx(sh.S)) + '.'; },
         shared: function (r) {
-          var g = pickWhere(function () { return { a: r.pick([2, 3]), b: r.int(2, 5), p: r.int(2, 6) }; }, function (g) { return g.a * g.p !== g.b; });
+          var g = pickWhere(function () { return { a: r.pick([2, 3]), b: r.int(2, 5), p: r.int(2, 6) }; }, function (g) { return gcd(g.a, g.b) === 1 && g.a * g.p !== g.b; }); // a ≠ b: the binomial must not be 0 at x = 1 (Q10e)
           var A = lin(g.a, -g.b, 'x'), B = quad(1, g.p, -(1 + g.p), 'x'), lead = br(A) + br(B);
           var parts4 = [P.mul(A[0], B[0]), P.mul(A[0], B[1]), P.mul(A[1], B[0]), P.mul(A[1], B[2])], S = sum(parts4);
           return { g: g, A: A, B: B, lead: lead, parts4: parts4, work: seq(parts4), S: S, T: P.mul(sum(A), sum(B)), lost: [P.mul(A[0], B[2]), P.mul(A[1], B[1])] };
