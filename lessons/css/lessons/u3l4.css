@@ -1,0 +1,192 @@
+/* Math 10C · Unit 3 · Lesson 4 — Multiplying Polynomials II: styles used only on this page. */
+
+/* captions may run to three lines; reserve the room so nothing below an explainer moves while it plays */
+.ex-cap { min-height: 104px; }
+.ex-cap .katex { font-size: 1.04em; }
+.chip .katex { font-size: 1em; }
+.pl .katex { font-size: 1.1em; white-space: nowrap; }
+.pl .pl-note { display: block; font-weight: 400; }
+.ans .katex { font-size: 1.05em; }
+.sum-grid .katex, .tip .katex, .ans .katex, .ex-cap .katex, .q-ans .katex, .poll-ans .katex { white-space: nowrap; }
+.pill-col { display: flex; flex-direction: column; gap: 6px; }
+.xp-stamp { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font: 900 27px var(--round); color: #fff; z-index: 3; }
+.xp-stamp.ok { background: var(--ok); }
+.xp-stamp.no { background: var(--red); }
+.badge.ck-b { background: var(--ok); }
+
+/* ---------------- warm-up: the painted cube ---------------- */
+.pcw { display: grid; grid-template-columns: 452px 1fr; gap: 14px; background: #fbfaf6; border: 1px solid var(--line2); border-radius: 14px; padding: 12px 14px; margin: 6px 0 16px; }
+.pcw-left { display: flex; flex-direction: column; align-items: center; }
+.pcw-stage { width: 440px; height: 384px; }
+.pcw-dim { font-size: 17px; color: var(--ink2); margin-top: 2px; }
+.pcw-right { display: flex; flex-direction: column; gap: 10px; }
+.pcw-sizes { display: flex; flex-wrap: wrap; gap: 6px; }
+.pcw-cats { display: grid; gap: 8px; }
+.pcw-cat { display: grid; grid-template-columns: 58px 1fr auto; align-items: center; gap: 12px; text-align: left; background: #fff; border: 2px solid var(--line); border-radius: 14px; padding: 6px 14px 6px 8px; cursor: pointer; min-height: 70px; transition: border-color .2s, background .2s, box-shadow .2s; }
+.pcw-cn { display: flex; flex-direction: column; font-size: 19px; line-height: 1.25; }
+.pcw-where { font-size: 16px; color: var(--ink2); min-height: 1.2em; }
+.pcw-num { font: 800 28px var(--round); color: #b9b2a1; min-width: 104px; text-align: right; }
+.pcw-num small { font-size: 15px; font-weight: 700; }
+.pcw-cat.done .pcw-num { color: var(--ink); }
+.pcw-cat.k3 { --kc: #d2504a; } .pcw-cat.k2 { --kc: #d99a1c; } .pcw-cat.k1 { --kc: #2a948b; } .pcw-cat.k0 { --kc: #9a7a48; }
+.pcw-cat.done { border-left: 8px solid var(--kc); }
+.pcw-cat.on { border-color: var(--kc); background: #fffdf8; box-shadow: 0 0 0 3px color-mix(in srgb, var(--kc) 28%, transparent); }
+.pcw-cat.on .pcw-num { color: var(--kc); }
+.pcw-sum { font-size: 19px; min-height: 30px; padding: 2px 4px; }
+
+/* the cubes: painted (blue, booklet shades) and bare wood */
+.pc-svg, .pc-ico { display: block; overflow: visible; }
+.pc-svg polygon, .pc-ico polygon { stroke: #fff; stroke-width: 1.4; stroke-linejoin: round; transition: fill .3s, stroke .3s; }
+.pc-svg.many polygon { stroke-width: .8; }
+.pc-ico polygon { stroke: #1e2d46; stroke-width: 1.4; }
+.ft.pnt { fill: #bbccec; } .fl.pnt { fill: #8aa8de; } .fr.pnt { fill: #638bd3; }
+.ft.wd { fill: #f5e1be; } .fl.wd { fill: #e7cfa4; } .fr.wd { fill: #d8bc8c; }
+.pc-svg .cb { transition: opacity .35s; }
+.pc-svg.sel .cb { opacity: .07; }
+.pc-svg.sel-3 .cb.k3, .pc-svg.sel-2 .cb.k2, .pc-svg.sel-1 .cb.k1, .pc-svg.sel-0 .cb.k0 { opacity: 1; }
+.pc-svg.sel .cb polygon { stroke: #fff; }
+.pc-svg.sel-3 .k3 .ft { fill: #f3a29d; } .pc-svg.sel-3 .k3 .fl { fill: #e5736c; } .pc-svg.sel-3 .k3 .fr { fill: #c94a44; }
+.pc-svg.sel-2 .k2 .ft { fill: #ffd682; } .pc-svg.sel-2 .k2 .fl { fill: #f0b43c; } .pc-svg.sel-2 .k2 .fr { fill: #d0901a; }
+.pc-svg.sel-1 .k1 .ft { fill: #93d8d1; } .pc-svg.sel-1 .k1 .fl { fill: #4fb3aa; } .pc-svg.sel-1 .k1 .fr { fill: #2a8f86; }
+.pc-svg.sel-0 .k0 polygon, .pc-svg.peel .core polygon { stroke: #8a6a3a; }
+.pc-svg.sel-0 .k0 .ft, .pc-svg.peel .core .ft { fill: #f5e1be; }
+.pc-svg.sel-0 .k0 .fl, .pc-svg.peel .core .fl { fill: #e7cfa4; }
+.pc-svg.sel-0 .k0 .fr, .pc-svg.peel .core .fr { fill: #d8bc8c; }
+.pc-svg.peel .cb.shell { opacity: .07; }
+
+.wu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.wq { background: #fbfaf6; border: 1px solid var(--line2); border-radius: 14px; padding: 8px 14px 10px; }
+.wq .q-line { margin: 4px 0 6px; font-size: 18px; }
+.wq-a { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin-left: 50px; }
+.wq-a .pill.small { margin-left: 0; }
+.q-ans { visibility: hidden; color: var(--red); font-size: 17px; line-height: 1.4; min-height: 4.2em; }
+.wq.shown .q-ans { visibility: visible; animation: fadeUp .35s; }
+.wq.shown .pill { background: #fde9e7; border-color: #f2c9c4; color: var(--red); }
+.wq-wide { margin-top: 16px; }
+.wq-wide .wq-a { flex-direction: row; align-items: flex-start; gap: 12px; }
+.wq-wide .q-ans { min-height: 2.8em; font-size: 18px; }
+.q-num.bonus { background: var(--brand2); }
+.poll-opts.c4 { grid-template-columns: repeat(4, 1fr); }
+.poll-opts.c4 .opt { font-size: 24px; font-weight: 700; text-align: center; }
+.poll-ans { display: block; visibility: hidden; min-height: 5.6em; }
+.poll.revealed .poll-ans { visibility: visible; }
+.poll-ans .pill.small { margin-left: 8px; vertical-align: middle; }
+.hum { text-align: center; font-style: italic; color: var(--ink2); margin: 16px 0 0 !important; font-size: 19px; }
+
+/* ---------------- notes ---------------- */
+.rule-card { font-size: 19px; }
+.mn-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+.mn { background: #fff; border-radius: 10px; padding: 6px 10px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.mn-k { font-size: 16px; font-weight: 700; color: var(--brand); }
+.mn-v { font-size: 26px; line-height: 1.3; }
+.mn-n { font-size: 15px; color: var(--muted); }
+.tip.diag-tip { background: var(--brand-soft); }
+.tip.diag-tip .tip-ic { background: var(--brand2); color: #fff; font-size: 20px; }
+.ex3-row { display: grid; grid-template-columns: 372px 1fr; gap: 14px; align-items: start; margin-bottom: 14px; }
+.prism-fig { position: relative; }
+.prism-fig svg { display: block; }
+.pz-l { position: absolute; font-size: 18px; white-space: nowrap; }
+.prism-svg .bx-fr, .prism-svg .bx-tp, .prism-svg .bx-rt { stroke: var(--ink); stroke-width: 1.6; stroke-linejoin: round; }
+.prism-svg .hid { fill: none; stroke: var(--ink); stroke-width: 1.2; stroke-dasharray: 5 4; }
+.part.think { margin-bottom: 14px; }
+
+/* ---------------- explainer: handshakes ---------------- */
+.hs-head { font-size: 30px; white-space: nowrap; }
+.hs-colh { font-size: 15px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; white-space: nowrap; }
+.hs-svg { pointer-events: none; }
+.hs-p { height: 58px; display: grid; place-items: center; background: #fff; border: 3px solid var(--ink2); border-radius: 16px; font-size: 27px; z-index: 2; transition: background .3s, box-shadow .3s; }
+.hs-p.on { background: #fffaf0; }
+.hs-p.lonely { border-color: var(--red); background: #fff1ef; box-shadow: 0 0 0 5px rgba(201, 58, 51, .18); }
+.hs-ph { font: 800 15px var(--round); color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.hs-chip { display: flex; align-items: center; gap: 8px; font-size: 20px; height: 42px; white-space: nowrap; }
+.hs-chip.sm { font-size: 18px; gap: 6px; }
+.hs-chip i { flex: none; width: 24px; height: 24px; border-radius: 50%; color: #fff; font: 800 13px/24px var(--round); text-align: center; font-style: normal; }
+.hs-count { font-size: 21px; background: #fff; border: 2px solid var(--brand2); border-radius: 22px; padding: 3px 16px; white-space: nowrap; }
+.hs-fin { font-size: 25px; white-space: nowrap; background: #fff; border: 1px solid var(--line2); border-radius: 12px; padding: 4px 16px; }
+.hs-tag { font: 900 21px var(--round); background: #fff; border: 2px solid currentColor; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; z-index: 3; }
+
+/* ---------------- explainer: the grid ---------------- */
+.gr-head { font-size: 26px; white-space: nowrap; }
+.gr-frame { border: 2.5px solid var(--ink2); border-radius: 12px; background: #fff; }
+.gr-x { font: 800 26px var(--round); color: var(--muted); }
+.gr-lab { font-size: 26px; padding: 2px 10px; border-radius: 10px; transition: background .25s, box-shadow .25s; z-index: 2; white-space: nowrap; }
+.gr-lab.hl { background: #fff1c9; box-shadow: 0 0 0 3px #f4cf6a; }
+.gr-cell { border-radius: 9px; background: #f6f4ee; transition: background .4s; }
+.gr-svg { pointer-events: none; }
+.gr-t { font-size: 27px; font-weight: 600; white-space: nowrap; z-index: 2; transition: color .4s; }
+.gr-panel { background: #fff; border: 1px solid var(--line2); border-radius: 12px; padding: 8px 14px 10px; }
+.gr-ph { font: 800 14px var(--round); color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+.gr-row { font-size: 22px; padding: 4px 0; white-space: nowrap; }
+.gr-fin { font-size: 27px; white-space: nowrap; background: #fff; border: 2px solid var(--brand2); border-radius: 12px; padding: 4px 18px; }
+
+/* ---------------- explainer: distribution lines ---------------- */
+.ds-line { font-size: 25px; display: flex; align-items: center; padding: 0 12px; border-radius: 10px; white-space: nowrap; transition: background .3s; }
+.ds-line.tight { font-size: 23px; }
+.ds-line.now { background: #fff5dd; }
+.ds-line.final { background: #e3f1ef; }
+.ds-note { display: flex; align-items: center; font-size: 17px; color: var(--ink2); border-left: 3px solid var(--line); padding-left: 12px; line-height: 1.25; }
+.ds-note.start { color: var(--muted); font-style: italic; }
+
+/* ---------------- explainer: painted cube in algebra ---------------- */
+.co-n { font-size: 22px; background: #fff; border: 1px solid var(--line2); border-radius: 16px; padding: 0 14px; transition: border-color .3s, box-shadow .3s; }
+.co-n.on { border-color: var(--ok); box-shadow: 0 0 0 3px rgba(18, 128, 90, .2); }
+.co-panel { display: flex; flex-direction: column; gap: 8px; }
+.co-row { background: #fff; border: 1px solid var(--line2); border-radius: 12px; padding: 6px 14px; font-size: 22px; white-space: nowrap; }
+.co-row.key { border: 2px solid var(--brand2); background: #f2faf8; font-size: 24px; }
+.co-sub { font-size: 19px; color: var(--ink2); }
+
+/* ---------------- explainer: the box ---------------- */
+.bx-svg, .bx-svg8 { overflow: visible; pointer-events: none; }
+.bx-fr, .bx-tp, .bx-rt { stroke-linejoin: round; }
+.bx-svg .bx-fr { fill: #f3e6cf; stroke: #f3e6cf; stroke-width: 1; }
+.bx-svg .bx-tp { fill: #fbf3e4; stroke: #fbf3e4; stroke-width: 1; }
+.bx-svg .bx-rt { fill: #e3d0ad; stroke: #e3d0ad; stroke-width: 1; }
+.bx-svg.split .bx-fr, .bx-svg.split .bx-tp, .bx-svg.split .bx-rt { stroke: var(--ink); stroke-width: 1.8; }
+.prism-svg .bx-fr { fill: #f3e6cf; } .prism-svg .bx-tp { fill: #fbf3e4; } .prism-svg .bx-rt { fill: #e3d0ad; }
+.bx-out { fill: none; stroke: var(--ink); stroke-width: 2; stroke-linejoin: round; }
+.bx-cell { stroke-width: 1.8; }
+.bx-ticks line { stroke: var(--red); stroke-width: 3; stroke-linecap: round; }
+.bx-layer { width: 0; height: 0; }
+.bx-layer > * { position: absolute; }
+.bx-lab { white-space: nowrap; }
+.bx-lab.edge { font-size: 21px; font-weight: 600; }
+.bx-lab.sub { font-size: 19px; color: var(--red); font-weight: 700; }
+.bx-lab.cell { font-size: 19px; font-weight: 700; }
+.bx-lab.slab { font-size: 18px; background: rgba(255, 255, 255, .88); border-radius: 8px; padding: 0 6px; }
+.bx-b8 polygon { stroke: var(--ink); stroke-width: 1.4; }
+.bx-b8 .bx-fr { fill: color-mix(in srgb, var(--bc) 30%, #fff); }
+.bx-b8 .bx-tp { fill: color-mix(in srgb, var(--bc) 14%, #fff); }
+.bx-b8 .bx-rt { fill: color-mix(in srgb, var(--bc) 48%, #fff); }
+.bx-l8 { text-align: center; white-space: nowrap; font-size: 21px; line-height: 1.2; }
+.bx-dims { display: block; font-size: 14px; color: var(--muted); }
+.bx-h8 { font-size: 16px; color: var(--ink2); background: #fff; border: 1px solid var(--line2); border-radius: 10px; padding: 0 10px; }
+.bx-panel { display: flex; flex-direction: column; gap: 6px; }
+.bx-row { background: #fff; border: 1px solid var(--line2); border-radius: 10px; padding: 3px 12px 5px; font-size: 18px; white-space: nowrap; }
+.bx-k { display: block; font: 800 13px var(--round); color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.bx-row.key { border: 2px solid var(--brand2); background: #f2faf8; font-size: 22px; }
+.bx-row.b8 { font-size: 18px; }
+
+/* ---------------- explainer: which pair first ---------------- */
+.pr-col { height: 384px; background: #fff; border: 2px solid var(--line); border-radius: 14px; padding: 8px 10px; display: flex; flex-direction: column; gap: 8px; transition: border-color .3s, background .3s; }
+.pr-col.on { border-color: var(--amber); background: #fffaf0; }
+.pr-col.good { border-color: var(--ok); background: #f2faf6; }
+.pr-col .xp-stamp { position: absolute; right: 12px; bottom: 12px; }
+.pr-h { font: 800 15px var(--round); color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.pr-star { background: var(--ok); color: #fff; border-radius: 10px; padding: 0 8px; font-size: 12px; margin-left: 6px; vertical-align: 2px; }
+.pr-q { font-size: 20px; text-align: center; min-height: 60px; }
+.pr-l { font-size: 19px; white-space: nowrap; }
+.pr-l.pair2 { display: block; padding-left: 1.2em; }
+.pr-cont { padding-left: 1.2em; }
+.pr-l.small { font-size: 18px; }
+.pr-l.res { font-size: 21px; background: #e3f1ef; border-radius: 8px; padding: 2px 8px; align-self: flex-start; }
+.pr-fin { font-size: 22px; white-space: nowrap; }
+
+/* ---------------- explainer: check with a number ---------------- */
+.ck-pick { font-size: 22px; font-weight: 700; background: #fff; border: 2px solid var(--brand2); border-radius: 22px; padding: 2px 18px; }
+.ck-card { height: 290px; background: #fff; border: 2px solid var(--line); border-radius: 14px; padding: 8px 12px; text-align: center; transition: background .3s, border-color .3s; }
+.ck-card.good { border-color: var(--ok); background: #f2faf6; }
+.ck-card.bad { border-color: var(--red); background: #fff6f5; }
+.ck-h { font-weight: 800; font-size: 15px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.ck-e { font-size: 22px; min-height: 64px; display: grid; place-items: center; }
+.ck-s { font-size: 17px; line-height: 2; }
+.ck-v { font-size: 28px; margin-top: 2px; }

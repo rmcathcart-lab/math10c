@@ -6,7 +6,7 @@ import asyncio, os, re
 from playwright.async_api import async_playwright
 BASE = 'http://localhost:8811/'
 IDS = ['u1/l1', 'u1/l2', 'u1/l3', 'u1/l4', 'u1/l5', 'u1/l6a', 'u1/l6b', 'u1/l7',
-       'u2/l1', 'u2/l2', 'u2/l3', 'u2/l4', 'u2/l5a', 'u2/l5b', 'u2/l6']
+       'u2/l1', 'u2/l2', 'u2/l3', 'u2/l4', 'u2/l5a', 'u2/l5b', 'u2/l6', 'u3/l1', 'u3/l2', 'u3/l3', 'u3/l4', 'u3/l5', 'u3/l6']
 async def probe(ctx, url):
     page = await ctx.new_page(); errs, bad = [], []
     page.on('pageerror', lambda e: errs.append(str(e)))

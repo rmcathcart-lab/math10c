@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Polynomial Operations Review · Math 10C 3.6</title>
+<meta name="description" content="Math 10C Unit 3 Lesson 6: every polynomial skill in one place — classify, algebra tiles, FOIL, special products, binomial × trinomial, three binomials, area and volume, and the classic errors. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u3l6.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 3 Polynomial Operations · Lesson 6</div>
+  <h1>Polynomial Operations — Comprehensive Review</h1>
+  <p class="lede">Every skill in the unit, one worked example at a time: classify, model with tiles, expand, apply to area and volume — and catch the classic errors. Most examples today are <b>diploma style</b>: multiple choice and numerical response.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>name a polynomial by its number of terms, find its degree, and spot an expression that is <em>not</em> a polynomial</li>
+      <li>read an algebra-tile model, and use zero pairs to add, subtract and simplify</li>
+      <li>multiply monomials, binomials and trinomials — area model, FOIL, special products, three factors</li>
+      <li>write area and volume expressions, including a shape with a hole and a box folded from a sheet</li>
+      <li>find the classic errors, and check an expansion by substituting a number</li>
+    </ul>
+  </div>
+  <div class="outcome"><b>AN4</b> Demonstrate an understanding of the multiplication of polynomial expressions (limited to monomials, binomials and trinomials), concretely, pictorially and symbolically.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: The Magic Square">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Magic Square</h2></div>
+  <p class="big">Every <b>row</b>, <b>column</b> and <b>diagonal</b> adds to the same <b>magic sum</b>. <span class="muted">Tap a <b>?</b> to reveal it.</span></p>
+
+  <div class="ms" id="ms">
+    <div class="ms-col">
+      <div class="ms-grid num">
+        <div class="ms-cell">10</div><button class="ms-cell" type="button"><span class="ms-q">?</span><span class="ms-v">3</span></button><div class="ms-cell">8</div>
+        <button class="ms-cell" type="button"><span class="ms-q">?</span><span class="ms-v">5</span></button><div class="ms-cell">7</div><button class="ms-cell" type="button"><span class="ms-q">?</span><span class="ms-v">9</span></button>
+        <div class="ms-cell">6</div><button class="ms-cell" type="button"><span class="ms-q">?</span><span class="ms-v">11</span></button><div class="ms-cell">4</div>
+      </div>
+      <div class="ms-h">Number square</div>
+    </div>
+    <div class="ms-col">
+      <div class="ms-grid alg">
+        <div class="ms-cell"><span class="tex">2(x-1)</span><span class="ms-x2">2</span></div>
+        <div class="ms-cell"><span class="tex">3x+4</span><span class="ms-x2">10</span></div>
+        <div class="ms-cell"><span class="tex">x+1</span><span class="ms-x2">3</span></div>
+        <button class="ms-cell" type="button"><span class="ms-q">?</span><span class="ms-v"><span class="tex">x+4</span></span><span class="ms-x2">6</span></button>
+        <div class="ms-cell"><span class="tex">(x+1)^2-x^2</span><span class="ms-x2">5</span></div>
+        <button class="ms-cell" type="button"><span class="ms-q">?</span><span class="ms-v"><span class="tex">3x-2</span></span><span class="ms-x2">4</span></button>
+        <div class="ms-cell"><span class="tex">3x+1</span><span class="ms-x2">7</span></div>
+        <button class="ms-cell" type="button"><span class="ms-q">?</span><span class="ms-v"><span class="tex">x-2</span></span><span class="ms-x2">0</span></button>
+        <button class="ms-cell corner" type="button"><span class="ms-q">?</span><span class="ms-v"><span class="tex">2x+4</span></span><span class="ms-x2">8</span></button>
+      </div>
+      <div class="ms-h">Algebra square <button class="pill small" data-x2>Put x = 2</button></div>
+      <div class="ms-note" id="ms-note">&nbsp;</div>
+    </div>
+  </div>
+
+  <div class="ms-qs">
+    <div class="q-line"><div class="q-num">1</div><div>What is the magic sum of the <b>number square</b>? <button class="pill small" data-rv="wq1">Reveal</button>
+      <div class="rv" id="wq1"><b>21</b> — the diagonal 10 + 7 + 4 (or 8 + 7 + 6) is complete.</div></div></div>
+    <div class="q-line"><div class="q-num">2</div><div>Fill in its four missing numbers. <button class="pill small" data-fill>Fill all</button>
+      <div class="rv" id="wq2">Top 3, left 5, right 9, bottom 11. Every line: 21.</div></div></div>
+    <div class="q-line"><div class="q-num">3</div><div>Add the top row of the <b>algebra square</b> and simplify. <button class="pill small" data-rv="wq3">Reveal</button>
+      <div class="rv" id="wq3"><span class="tex">2x-2+3x+4+x+1=\mathbf{6x+3}</span><br>That’s the magic sum.</div></div></div>
+  </div>
+
+  <div class="poll ms-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> What goes in the <b class="red">red corner</b> of the algebra square? <b>Guess first!</b></div></div>
+    <div class="poll-opts four">
+      <div class="opt"><b>A</b> <span class="tex">2x</span></div>
+      <div class="opt right"><b>B</b> <span class="tex">2x+4</span></div>
+      <div class="opt"><b>C</b> <span class="tex">2x+6</span></div>
+      <div class="opt"><b>D</b> <span class="tex">4x+4</span></div>
+    </div>
+    <button class="pill" data-poll>Reveal</button>
+    <div class="poll-ans"><b>B — <span class="tex">2x+4</span>.</b> Centre: <span class="tex">(x+1)^2-x^2=x^2+2x+1-x^2=2x+1</span>. Main diagonal: <span class="tex">(6x+3)-2(x-1)-(2x+1)=6x+3-2x+2-2x-1=2x+4</span>.
+      <ul class="ms-traps">
+        <li><b>D</b> squares <span class="tex">(x+1)^2</span> as <span class="tex">x^2+1</span>, so the centre becomes just 1 — the classic <span class="tex">(a+b)^2\neq a^2+b^2</span> error (Section 4).</li>
+        <li><b>A</b> subtracts <span class="tex">2(x-1)</span> as <span class="tex">-2x-2</span>; <b>C</b> subtracts <span class="tex">(2x+1)</span> as <span class="tex">-2x+1</span>. The minus must reach <b>every</b> term.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="ms-bridge">
+    <div><b>Disagree with a neighbour?</b> Tap <b>Put x = 2</b>: every line of the algebra square should add to <span class="tex">6(2)+3=15</span>. Then tap the other <b>?</b> cells — can you predict them first?</div>
+    <div><b>Follow-up:</b> what value of <span class="tex">x</span> gives the algebra square the <b>same</b> magic sum as the number square? <button class="pill small" data-rv="wq4">Reveal</button>
+      <div class="rv" id="wq4"><span class="tex">6x+3=21</span>, so <span class="tex">x=3</span>.</div></div>
+  </div>
+</section>
+
+<!-- ================= rules at a glance ================= -->
+<section class="card" data-ink="rules" data-section="Rules at a Glance">
+  <div class="sec-h"><span class="badge">★</span><h2>Rules at a Glance</h2></div>
+  <p>The whole unit on one card. Tap a rule to see a quick example. <button class="pill small" data-deckall>Show all examples</button></p>
+  <div class="rg-deck">
+    <button class="rg"><span class="rg-n">Classify</span><span class="rg-f">1 term: <b>monomial</b> · 2: <b>binomial</b> · 3: <b>trinomial</b>. No negative exponents on a variable!</span><span class="rg-w"><span><span class="tex">-3,\ 9y</span> monomials · <span class="tex">x-5</span> binomial</span><small><span class="tex">x^2-4x^{-1}</span> is not a polynomial</small></span></button>
+    <button class="rg"><span class="rg-n">Degree</span><span class="rg-f">Degree of a term = <b>sum of its exponents</b>. Degree of a polynomial = the <b>highest</b> term degree.</span><span class="rg-w"><span class="tex">3a^2b^5-a^4+2</span><small>term degrees 7, 4, 0 → degree 7</small></span></button>
+    <button class="rg"><span class="rg-n">Add and subtract</span><span class="rg-f">Collect <b>like terms</b>. Subtracting a bracket = adding the <b>opposite</b> of every term.</span><span class="rg-w"><span class="tex">(5x^2-x)-(2x^2-3x)=3x^2+2x</span><small>zero pairs cancel; the minus flips every sign</small></span></button>
+    <button class="rg"><span class="rg-n">Monomial × polynomial</span><span class="rg-f">Distribute: coefficients <b>multiply</b>, exponents <b>add</b>, signs <b>multiply</b>.</span><span class="rg-w"><span class="tex">-2x^2(3x-4)=-6x^3+8x^2</span><small><span class="tex">x^2\cdot x=x^{2+1}</span>; (−)(−) = +</small></span></button>
+    <button class="rg"><span class="rg-n">Binomial × binomial</span><span class="rg-f"><b>FOIL</b> or the area model: <span class="tex">(a+b)(c+d)=ac+ad+bc+bd</span></span><span class="rg-w"><span class="tex">(x+3)(x-5)=x^2-5x+3x-15</span><small><span class="tex">=x^2-2x-15</span></small></span></button>
+    <button class="rg"><span class="rg-n">Square of a binomial</span><span class="rg-f"><span class="tex">(a\pm b)^2=a^2\pm2ab+b^2</span> &nbsp;— never just <span class="tex">a^2+b^2</span></span><span class="rg-w"><span class="tex">(2x+5)^2=4x^2+20x+25</span><small>middle term = 2 × first × last</small></span></button>
+    <button class="rg"><span class="rg-n">Sum × difference</span><span class="rg-f"><span class="tex">(a+b)(a-b)=a^2-b^2</span> &nbsp;— the middle terms cancel</span><span class="rg-w"><span class="tex">(3x+4)(3x-4)=9x^2-16</span><small>a difference of squares: 2 terms</small></span></button>
+    <button class="rg"><span class="rg-n">Bigger products</span><span class="rg-f">Binomial × trinomial: <b>6</b> partial products. Three binomials: multiply <b>two at a time</b>.</span><span class="rg-w"><span class="tex">(x+1)(x^2+2x+3)=x^3+3x^2+5x+3</span><small>like terms line up on the grid’s diagonals</small></span></button>
+    <button class="rg"><span class="rg-n">Area and volume</span><span class="rg-f"><span class="tex">A=lw</span>, triangle <span class="tex">\tfrac12bh</span>, <span class="tex">V=lwh</span>. Shaded = <b>whole − hole</b>, in brackets.</span><span class="rg-w"><span class="tex">(x+4)(x+2)-x^2=6x+8</span><small>a box cut from a sheet: <span class="tex">V=x(L-2x)(W-2x)</span></small></span></button>
+    <button class="rg"><span class="rg-n">Order and checking</span><span class="rg-f"><span class="tex">k(a+b)^2</span>: <b>square first</b>, then multiply by <span class="tex">k</span>. Check by <b>substituting</b> a number.</span><span class="rg-w"><span class="tex">2(x+1)^2=2(x^2+2x+1)=2x^2+4x+2</span><small><span class="tex">x=1</span>: both sides give 8 ✓</small></span></button>
+  </div>
+</section>
+
+<!-- ================= 1. Classifying ================= -->
+<section class="card" data-ink="s1" data-section="1. Classifying and Degree">
+  <div class="sec-h"><span class="badge">1</span><h2>Classifying Polynomials and Finding Degree</h2></div>
+  <div class="def-grid">
+    <div class="def">A <b>monomial</b> has exactly one term, a <b>binomial</b> two, a <b>trinomial</b> three. All of them are <b>polynomials</b>; with 4 or more terms we just say “polynomial”.<div class="eg"><span class="tex">9y</span> · <span class="tex">x-5</span> · <span class="tex">x^2+4x-1</span></div></div>
+    <div class="def amber">The <b>degree of a monomial</b> is the sum of the exponents on its variables. The <b>degree of a polynomial</b> is the largest degree among its terms.<div class="eg"><span class="tex">m^4n^2</span>: <span class="tex">4+2=6</span> · a constant like <span class="tex">-3</span> has degree 0</div></div>
+  </div>
+  <div class="def gray">A variable with a <b>negative exponent</b> (like <span class="tex">x^{-2}=\tfrac{1}{x^2}</span>) is not allowed in a polynomial term, so an expression containing one is <b>not a polynomial</b>.</div>
+  <div class="explainer" data-explainer="classify"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Two common slips.</b> The highest-degree term isn’t always written first (<span class="tex">4x^6-3x^8</span> has degree 8). And a term with two variables adds <b>both</b> exponents (<span class="tex">4x^2y^4</span> has degree 6, not 4).</div></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Monomial or not, and finding degree</h3></div>
+  <div class="parts c12">
+    <div class="part"><div class="pl">(a) Which of the following could <em>not</em> be classified as a monomial?</div>
+      <div class="mc c4"><div class="mo"><b>A</b><span class="tex">8x^3</span></div><div class="mo right"><b>B</b><span class="tex">x-5</span></div><div class="mo"><b>C</b><span class="tex">-3</span></div><div class="mo"><b>D</b><span class="tex">9y</span></div></div>
+      <div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>B</b> — <span class="tex">x-5</span> has two terms (a binomial); the others each have one term.</div></div></div>
+    <div class="part"><div class="pl">(b) Find the degree of the polynomial <span class="tex">m^4n^2+5p^3</span>.</div>
+      <div class="work" style="--h:120px"></div>
+      <div class="nr">Record your answer left to right. <span class="nr-b" data-nr="6"></span></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">m^4n^2</span>: <span class="tex">4+2=6</span>; <span class="tex">5p^3</span>: 3. The larger wins: <b>degree 6</b>.</div></div></div>
+  </div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(c) Which of the following is a polynomial of degree 6?</div>
+      <div class="romans"><span><b>I.</b> <span class="tex">7x^2</span></span><span><b>II.</b> <span class="tex">4x^6-3x^8</span></span><span><b>III.</b> <span class="tex">2x^3-5x^{-2}+6x^4</span></span><span><b>IV.</b> <span class="tex">4x^2y^4</span></span></div>
+      <div class="mc c4"><div class="mo right"><b>A</b>IV only</div><div class="mo"><b>B</b>III and IV only</div><div class="mo"><b>C</b>I, II, III, and IV</div><div class="mo"><b>D</b>some other combination</div></div>
+      <div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">I: degree 2 · II: degree 8 · III: <span class="tex">-5x^{-2}</span>, not a polynomial · IV: <span class="tex">2+4=6</span> ✓ &nbsp;→ <b>A (IV only)</b></div></div></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Leading coefficient, degree and constant term</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">The polynomial <span class="tex">4x^3-15+6x^4</span> has leading coefficient <span class="tex">P</span>, degree <span class="tex">Q</span>, and constant term <span class="tex">R</span>. Find the value of <span class="tex">P-Q-R</span>.</div>
+      <div class="work" style="--h:190px"></div>
+      <div class="nr">Record your answer left to right. <span class="nr-b" data-nr="17"></span></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Descending order: <span class="tex">6x^4+4x^3-15</span>, so <span class="tex">P=6</span>, <span class="tex">Q=4</span>, <span class="tex">R=-15</span>.<br><span class="tex">P-Q-R=6-4-(-15)=6-4+15=\mathbf{17}</span></div></div></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<!-- ================= 2. Algebra tiles ================= -->
+<section class="card" data-ink="s2" data-section="2. Algebra Tiles">
+  <div class="sec-h"><span class="badge">2</span><h2>Algebra Tiles: Zero Pairs and Multiplying</h2></div>
+  <div class="def">The course legend: a <b>shaded</b> tile is <b>positive</b>, an <b>unshaded</b> (outline only) tile is <b>negative</b>. One shaded and one unshaded tile of the same kind form a <b>zero pair</b> — together they are worth 0.</div>
+  <div class="u6-legend"><span><i class="t2"></i><span class="tex">x^2</span></span><span><i class="t1"></i><span class="tex">x</span></span><span><i class="t0"></i><span class="tex">1</span></span><span><i class="t0 neg"></i><span class="tex">-1</span> (unshaded)</span></div>
+  <div class="explainer" data-explainer="zeroPairs"></div>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. Multiplying with tiles">
+  <h3 class="sub">Multiplying with tiles: rows times columns</h3>
+  <p>The factor tiles go <b>across the top</b> and <b>down the side</b> of a frame; the product fills the rectangle. Each inside tile is <b>its row × its column</b>: same shading → shaded (+), different shading → unshaded (−).</p>
+  <div class="explainer" data-explainer="tileMul"></div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Reading a tile array as a product</h3></div>
+  <p class="q">The algebra-tile model shows the factor tiles across the top and down the side, and the product filled in: three shaded <span class="tex">x^2</span>-tiles and six unshaded <span class="tex">x</span>-tiles.</p>
+  <div class="parts c1">
+    <div class="part"><div class="fig" id="fig-ex3"></div>
+      <div class="pl">The diagram represents the expansion of</div>
+      <div class="mc c4"><div class="mo"><b>A</b><span class="tex">3x^2(x-2)</span></div><div class="mo"><b>B</b><span class="tex">x^2(x-2)</span></div><div class="mo right"><b>C</b><span class="tex">3x(x-2)</span></div><div class="mo"><b>D</b><span class="tex">3x(x+2)</span></div></div>
+      <div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Top: three shaded <span class="tex">x</span>-tiles = <span class="tex">3x</span>. Side: <span class="tex">x</span> and two unshaded units = <span class="tex">x-2</span>. Inside: <span class="tex">3x^2-6x</span> → <b>C</b></div></div></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<!-- ================= 3. Binomials ================= -->
+<section class="card" data-ink="s3" data-section="3. Multiplying Binomials">
+  <div class="sec-h"><span class="badge">3</span><h2>Multiplying Binomials</h2></div>
+  <div class="def">Two binomials make <b>four partial products</b> — First, Outer, Inner, Last. When the outer and inner products are <b>opposites</b>, as in <span class="tex">(x+y)(x-y)</span>, they cancel and leave a two-term <b>difference of squares</b>.</div>
+  <div class="explainer" data-explainer="foil"></div>
+</section>
+
+<section class="card" data-ink="s3b" data-section="3. Auditing an expansion">
+  <h3 class="sub">Find the error: audit every partial product</h3>
+  <p>To check an expansion, verify each partial product <b>separately</b>: coefficients multiply, <b>exponents add</b>, <b>signs multiply</b>.</p>
+  <div class="explainer" data-explainer="audit"></div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Counting terms, and auditing an expansion</h3></div>
+  <div class="parts c12">
+    <div class="part"><div class="pl">(a) How many terms remain after fully expanding and simplifying <span class="tex">(2x-5)(2x+5)</span>?</div>
+      <div class="work" style="--h:200px"></div>
+      <div class="nr">Record your answer left to right. <span class="nr-b" data-nr="2"></span></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">4x^2+10x-10x-25=4x^2-25</span><br>The middle terms cancel: <b>2 terms</b> (a difference of squares).</div></div></div>
+    <div class="part"><div class="pl">(b) Exactly one of the following expansions is correct. Which one?</div>
+      <div class="mc c1"><div class="mo"><b>A</b><span class="tex">-4x^2(2x^3+3)=-8x^6-12x^2</span></div><div class="mo"><b>B</b><span class="tex">-6x(3-2x)=-18x-12x^2</span></div><div class="mo"><b>C</b><span class="tex">-3x^3(5+x)=-15x^3-3x^3</span></div><div class="mo right"><b>D</b><span class="tex">-8x^2(1-x)=-8x^2+8x^3</span></div></div>
+      <div class="work" style="--h:130px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A: <span class="tex">x^{2+3}=x^5</span> · B: <span class="tex">(-6x)(-2x)=+12x^2</span> · C: <span class="tex">(-3x^3)(x)=-3x^4</span> · D ✓ → <b>D</b></div></div></div>
+  </div>
+  <div class="part think"><div class="pl"><span class="think-tag">Think</span> <span class="tex">(2x-5)(2x+5)</span> leaves 2 terms. Why does <span class="tex">(2x-5)(2x-5)</span> leave 3?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">In <span class="tex">(2x-5)(2x+5)</span> the outer and inner products are <span class="tex">+10x</span> and <span class="tex">-10x</span>: they cancel. In <span class="tex">(2x-5)^2</span> both are <span class="tex">-10x</span>, so they add: <span class="tex">4x^2-20x+25</span>.</div></div></div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<!-- ================= 4. Area ================= -->
+<section class="card" data-ink="s4" data-section="4. Applying to Area">
+  <div class="sec-h"><span class="badge">4</span><h2>Applying Multiplication to Area</h2></div>
+  <p>Area of a rectangle = <b>length × width</b>; area of a triangle = <span class="tex">\tfrac12</span> × base × height. With binomial sides, that’s a binomial product. A <b>square</b> with side <span class="tex">a+b</span> has area <span class="tex">(a+b)^2</span> — four pieces, not two:</p>
+  <div class="explainer" data-explainer="square"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>The classic error:</b> <span class="tex">(a+b)^2\neq a^2+b^2</span>. The two <span class="tex">ab</span> rectangles are real area — the middle term is <span class="tex">2ab</span>.</div></div>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Area of a rectangle with binomial sides</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">The area (in mm²) of a rectangle with length <span class="tex">5-b</span> mm and width <span class="tex">9-b</span> mm is</div>
+      <div class="mc c4"><div class="mo"><b>A</b><span class="tex">45+b^2</span></div><div class="mo"><b>B</b><span class="tex">45-4b-b^2</span></div><div class="mo"><b>C</b><span class="tex">45-4b+b^2</span></div><div class="mo right"><b>D</b><span class="tex">45-14b+b^2</span></div></div>
+      <div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(5-b)(9-b)=45-5b-9b+b^2=45-14b+b^2</span> → <b>D</b></div></div></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex6" data-section="Example 6">
+  <div class="ex-head"><span class="ex-tag">Example 6</span><h3>Area of an isosceles right triangle</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">Triangle <span class="tex">PQR</span> is isosceles and right-angled at <span class="tex">Q</span>, with legs <span class="tex">PQ=QR=2x+6</span> cm. If the area of the triangle can be written as <span class="tex">ax^2+bx+c</span> cm², find the value of <span class="tex">b</span>.</div>
+      <div class="mc c4"><div class="mo"><b>A</b>24</div><div class="mo right"><b>B</b>12</div><div class="mo"><b>C</b>6</div><div class="mo"><b>D</b>4</div></div>
+      <div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The legs are base and height: <span class="tex">\tfrac12(2x+6)^2=\tfrac12(4x^2+24x+36)=2x^2+12x+18</span>, so <span class="tex">b=12</span> → <b>B</b></div></div></div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>A is a trap:</b> 24 is the middle coefficient of the whole <b>square</b> <span class="tex">(2x+6)^2</span>. A right triangle is only half of it.</div></div>
+  <div class="space" id="ex6-space"></div>
+  <button class="more" data-more="ex6-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s4b" data-section="4. Whole minus hole">
+  <h3 class="sub">A shape with a hole: whole − hole</h3>
+  <p>Find the area of the <b>whole</b> shape and the area of the <b>hole</b>, then subtract — with the hole’s area <b>in brackets</b>, so the minus reaches every term.</p>
+  <div class="explainer" data-explainer="frame"></div>
+</section>
+
+<section class="card example" data-ink="ex7" data-section="Example 7">
+  <div class="ex-head"><span class="ex-tag">Example 7</span><h3>A rectangle with a square cut out</h3></div>
+  <p class="q"><i>Use the following diagram.</i> A rectangle has length <span class="tex">3x+5</span> mm and width <span class="tex">2x+6</span> mm. A square of side length <span class="tex">x+2</span> mm has been cut out of its interior, leaving the shaded region shown.</p>
+  <div class="parts c1">
+    <div class="part"><div class="fig" id="fig-ex7"></div>
+      <div class="pl">The area, in mm², of the shaded region is</div>
+      <div class="mc c4"><div class="mo"><b>A</b><span class="tex">5x^2+28x+30</span></div><div class="mo"><b>B</b><span class="tex">5x^2+32x+26</span></div><div class="mo right"><b>C</b><span class="tex">5x^2+24x+26</span></div><div class="mo"><b>D</b><span class="tex">5x^2+24x+34</span></div></div>
+      <div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(6x^2+28x+30)-(x^2+4x+4)=5x^2+24x+26</span> → <b>C</b></div></div></div>
+  </div>
+  <div class="space" id="ex7-space"></div>
+  <button class="more" data-more="ex7-space">+ More space</button>
+</section>
+
+<!-- ================= 5. Several terms ================= -->
+<section class="card" data-ink="s5" data-section="5. Several Groups">
+  <div class="sec-h"><span class="badge">5</span><h2>The Distributive Property with Several Terms</h2></div>
+  <div class="def"><b>Expand each group separately first</b>, then combine like terms at the very end. A minus in front of a bracket multiplies <b>every</b> term inside by <span class="tex">-1</span>.</div>
+  <div class="explainer" data-explainer="groups"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Watch the signs.</b> <span class="tex">-4x(x-3)=-4x^2+12x</span> (negative × negative = positive), and <span class="tex">-(7x+5)=-7x-5</span>, not <span class="tex">-7x+5</span>.</div></div>
+</section>
+
+<section class="card example" data-ink="ex8" data-section="Example 8">
+  <div class="ex-head"><span class="ex-tag">Example 8</span><h3>Three groups, then collect</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">The expression <span class="tex">5x(3-2x)-4x(x-3)-(7x+5)</span> can be written in the form <span class="tex">ax^2+bx+c</span>. Find the value of <span class="tex">abc</span>.</div>
+      <div class="work" style="--h:220px"></div>
+      <div class="nr">Record your answer left to right. <span class="nr-b" data-nr="1400"></span></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">15x-10x^2-4x^2+12x-7x-5=-14x^2+20x-5</span><br><span class="tex">abc=(-14)(20)(-5)=\mathbf{1400}</span></div></div></div>
+  </div>
+  <div class="space" id="ex8-space"></div>
+  <button class="more" data-more="ex8-space">+ More space</button>
+</section>
+
+<!-- ================= 6. Binomial x trinomial ================= -->
+<section class="card" data-ink="s6" data-section="6. Binomial × Trinomial">
+  <div class="sec-h"><span class="badge">6</span><h2>Multiplying a Binomial by a Trinomial, and Combining Results</h2></div>
+  <div class="def">Every term of the binomial multiplies every term of the trinomial: <b>2 × 3 = 6 partial products</b>. On a grid, like terms line up along the <b>diagonals</b>.</div>
+  <div class="explainer" data-explainer="grid"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check Example 9(a) by substitution.</b> At <span class="tex">t=2</span>: <span class="tex">(5\cdot2-2)(3\cdot2^2-4\cdot2-2)=8\times2=16</span>. Then <span class="tex">15(8)-26(4)-2(2)+4</span> must also be 16.</div>
+    <button class="pill" data-keys="15 × 2 x³ − 26 × 2 x² − 2 × 2 + 4 =">Show me</button>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex9" data-section="Example 9">
+  <div class="ex-head"><span class="ex-tag">Example 9</span><h3>Binomial times trinomial, and a sum minus a product</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(a) Expand <span class="tex">(5t-2)(3t^2-4t-2)</span>.</div>
+      <div class="mc c2"><div class="mo right"><b>A</b><span class="tex">15t^3-26t^2-2t+4</span></div><div class="mo"><b>B</b><span class="tex">15t^3-34t^2+2t+4</span></div><div class="mo"><b>C</b><span class="tex">15t^3-26t^2+2t+4</span></div><div class="mo"><b>D</b><span class="tex">15t^3-26t^2-2t-4</span></div></div>
+      <div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">15t^3-20t^2-10t-6t^2+8t+4=15t^3-26t^2-2t+4</span> → <b>A</b></div></div></div>
+    <div class="part"><div class="pl">(b) Subtracting the product of <span class="tex">(3x-2)</span> and <span class="tex">(2x+3)</span> from the sum of <span class="tex">(4x^2+2x-3)</span> and <span class="tex">(2x^2+4x-5)</span> results in a polynomial of the form <span class="tex">px^2+qx+r</span>. How many of the parameters <span class="tex">p,q,r</span> are equal to zero?</div>
+      <div class="mc c4"><div class="mo"><b>A</b>0</div><div class="mo right"><b>B</b>1</div><div class="mo"><b>C</b>2</div><div class="mo"><b>D</b>3</div></div>
+      <div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Sum <span class="tex">6x^2+6x-8</span>; product <span class="tex">6x^2+5x-6</span>; sum − product <span class="tex">=0x^2+x-2</span>. Only <span class="tex">p=0</span> → <b>B</b></div></div></div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>“Subtract A from B” means B − A.</b> The product comes <b>second</b>. Expand it first, keep it in brackets, then subtract. <span class="muted">(The groups explainer in Section 5 has an Example 9(b) check.)</span></div></div>
+  <div class="space" id="ex9-space"></div>
+  <button class="more" data-more="ex9-space">+ More space</button>
+</section>
+
+<!-- ================= 7. Three binomials ================= -->
+<section class="card" data-ink="s7" data-section="7. Three Binomials">
+  <div class="sec-h"><span class="badge">7</span><h2>Multiplying Three Binomials</h2></div>
+  <div class="def">Multiply <b>any two</b> together first, then multiply that result by the third factor. Two small grids instead of one big one.</div>
+  <div class="explainer" data-explainer="three"></div>
+</section>
+
+<section class="card example" data-ink="ex10" data-section="Example 10">
+  <div class="ex-head"><span class="ex-tag">Example 10</span><h3>Three factors, two stages</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">Expand <span class="tex">(a+2)(a-5)(3a+1)</span>.</div>
+      <div class="mc c2"><div class="mo right"><b>A</b><span class="tex">3a^3-8a^2-33a-10</span></div><div class="mo"><b>B</b><span class="tex">3a^3+10a^2-27a-10</span></div><div class="mo"><b>C</b><span class="tex">3a^3+a^2-39a-10</span></div><div class="mo"><b>D</b><span class="tex">3a^3-10</span></div></div>
+      <div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(a+2)(a-5)=a^2-3a-10</span>; &nbsp;<span class="tex">(a^2-3a-10)(3a+1)=3a^3-8a^2-33a-10</span> → <b>A</b></div></div></div>
+  </div>
+  <div class="space" id="ex10-space"></div>
+  <button class="more" data-more="ex10-space">+ More space</button>
+</section>
+
+<!-- ================= 8. Extension: completing the square ================= -->
+<section class="card ext" data-ink="s8" data-section="8. Extension: Completing the Square">
+  <div class="sec-h"><span class="badge">8</span><h2>Extension — Completing the Square</h2><span class="ext-tag">Extension</span></div>
+  <p class="muted"><i>Completing the square is a Math 20-1 skill and is not part of the Math 10C review.</i></p>
+  <div class="def">Every trinomial <span class="tex">x^2+bx+c</span> can be rewritten as <span class="tex">(x-p)^2+q</span>: take <span class="tex">p</span> to be <b>half the coefficient of <span class="tex">x</span>, with its sign flipped</b>, then adjust the constant to match.</div>
+  <div class="explainer" data-explainer="complete"></div>
+</section>
+
+<section class="card example ext" data-ink="ex11" data-section="Example 11">
+  <div class="ex-head"><span class="ex-tag">Example 11</span><h3><i>(Extension)</i> Matching coefficients, and completing the square</h3></div>
+  <p class="q">Use the square-of-a-binomial pattern in reverse.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) If <span class="tex">(x-a)^2+a=x^2-10x+c</span>, find the value of <span class="tex">c</span>.</div>
+      <div class="work" style="--h:220px"></div>
+      <div class="nr">Record your answer left to right. <span class="nr-b" data-nr="30"></span></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x^2-2ax+a^2+a</span>: <span class="tex">-2a=-10</span>, so <span class="tex">a=5</span><br><span class="tex">c=a^2+a=25+5=\mathbf{30}</span></div></div></div>
+    <div class="part"><div class="pl">(b) The trinomial <span class="tex">x^2-16x+70</span> can be expressed in the form <span class="tex">(x-p)^2+q</span>. Find the values of <span class="tex">p</span> and <span class="tex">q</span>.</div>
+      <div class="work" style="--h:220px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Half of <span class="tex">-16</span> is <span class="tex">-8</span>: <span class="tex">(x-8)^2=x^2-16x+64</span>, and <span class="tex">70-64=6</span><br><b><span class="tex">p=8,\ q=6</span></b></div></div></div>
+  </div>
+  <div class="space" id="ex11-space"></div>
+  <button class="more" data-more="ex11-space">+ More space</button>
+</section>
+
+<!-- ================= 9. Folded box ================= -->
+<section class="card" data-ink="s9" data-section="9. Volume of a Folded Box">
+  <div class="sec-h"><span class="badge">9</span><h2>An Application: Volume of a Folded Box</h2></div>
+  <p>Cut an <span class="tex">x</span>-by-<span class="tex">x</span> square from <b>each corner</b> of a sheet, fold up the sides, and you get an open box. Its volume is a product of <b>three</b> factors.</p>
+  <div class="explainer" data-explainer="box"></div>
+  <div class="tip-row">
+    <div class="tip watch"><div class="tip-ic">!</div><div><b>Minus <span class="tex">2x</span>, not <span class="tex">x</span>.</b> Every side of the sheet loses a square at <b>both</b> ends.</div></div>
+    <div class="tip calc-tip">
+      <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+      <div><b>Check at <span class="tex">x=2</span>:</b> <span class="tex">4(2)^3-48(2)^2+135(2)</span> should equal <span class="tex">2\times11\times5=110</span>.</div>
+      <button class="pill" data-keys="4 × 2 x³ − 48 × 2 x² + 135 × 2 =">Show me</button>
+    </div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex12" data-section="Example 12">
+  <div class="ex-head"><span class="ex-tag">Example 12</span><h3>Cut the corners, fold up the sides</h3></div>
+  <p class="q"><i>Use the following information.</i> A sheet of paper measures 15 cm by 9 cm. Squares of side <span class="tex">x</span> cm (shaded) are cut from each corner, as shown, and the paper is folded along the dashed lines to form an open rectangular box.</p>
+  <div class="fig" id="fig-ex12"></div>
+  <div class="parts c12">
+    <div class="part"><div class="pl">(a) The length and width (in cm) of the box are, respectively,</div>
+      <div class="mc c2"><div class="mo"><b>A</b><span class="tex">15-x</span>&nbsp;and&nbsp;<span class="tex">9-x</span></div><div class="mo right"><b>B</b><span class="tex">15-2x</span>&nbsp;and&nbsp;<span class="tex">9-2x</span></div><div class="mo"><b>C</b><span class="tex">15+x</span>&nbsp;and&nbsp;<span class="tex">9+x</span></div><div class="mo"><b>D</b><span class="tex">15+2x</span>&nbsp;and&nbsp;<span class="tex">9+2x</span></div></div>
+      <div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A strip <span class="tex">x</span> wide comes off <b>both</b> ends of every side: <span class="tex">15-2x</span> and <span class="tex">9-2x</span> → <b>B</b></div></div></div>
+    <div class="part"><div class="pl">(b) The volume of the box can be written as <span class="tex">ax^3+bx^2+cx</span>, where <span class="tex">a</span>, <span class="tex">b</span> and <span class="tex">c</span> are integers. Find the value of <span class="tex">a+c</span>.</div>
+      <div class="work" style="--h:190px"></div>
+      <div class="nr">Record your answer left to right. <span class="nr-b" data-nr="139"></span></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">V=x(15-2x)(9-2x)=x(4x^2-48x+135)</span><br><span class="tex">=4x^3-48x^2+135x</span>, so <span class="tex">a+c=4+135=\mathbf{139}</span></div></div></div>
+  </div>
+  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Which values of <span class="tex">x</span> actually make a box?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Every length must be positive: <span class="tex">x&gt;0</span> and <span class="tex">9-2x&gt;0</span>, so <span class="tex">0&lt;x&lt;4.5</span>. (At <span class="tex">x=4.5</span> the width is 0 — no box.)</div></div></div>
+  <div class="space" id="ex12-space"></div>
+  <button class="more" data-more="ex12-space">+ More space</button>
+</section>
+
+<!-- ================= 10. Common errors ================= -->
+<section class="card" data-ink="s10" data-section="10. Common Errors">
+  <div class="sec-h"><span class="badge">10</span><h2>Common Errors When Expanding Squared Binomials</h2></div>
+  <div class="rules">
+    <div class="rule"><span class="rp">Order</span><span class="tex">6(3y-2)^2</span>: the <b>square comes first</b>; the 6 multiplies afterwards. Distributing the 6 into the bracket first is wrong.</div>
+    <div class="rule"><span class="rp">Square it</span><span class="tex">(3y)^2=9y^2</span>. Squaring the first term is not doubling its coefficient (<span class="tex">6y^2</span>).</div>
+    <div class="rule"><span class="rp">Middle</span><span class="tex">(mx-n)^2=m^2x^2-2mnx+n^2</span>. Don’t forget the <b>2</b> in the middle term.</div>
+    <div class="rule"><span class="rp">Check</span>Substitute a value into the original and the expansion: they must give the <b>same</b> number.</div>
+  </div>
+  <div class="explainer" data-explainer="students"></div>
+  <div class="tip-row">
+    <div class="tip calc-tip">
+      <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+      <div><b>Example 13(e), left side</b> at <span class="tex">y=-3</span>: <span class="keys"><kbd>6</kbd><kbd>×</kbd><kbd>(</kbd><kbd>3</kbd><kbd>×</kbd><kbd>(−)</kbd><kbd>3</kbd><kbd>−</kbd><kbd>2</kbd><kbd>)</kbd><kbd>x²</kbd></span> gives 726.</div>
+      <button class="pill" data-keys="6 × ( 3 × (−) 3 − 2 ) x² =">Show me</button>
+    </div>
+    <div class="tip calc-tip">
+      <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+      <div><b>Right side:</b> bracket the <span class="tex">-3</span> before squaring, or the calculator squares 3 and then negates: <span class="tex">54(-3)^2-72(-3)+24</span>.</div>
+      <button class="pill" data-keys="54 × ( (−) 3 ) x² − 72 × (−) 3 + 24 =">Show me</button>
+    </div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex13" data-section="Example 13">
+  <div class="ex-head"><span class="ex-tag">Example 13</span><h3>Three students, three different errors</h3></div>
+  <p class="q">Priya, Marcus, and Devon each try to expand <span class="tex">6(3y-2)^2</span>. Their work is shown below. Each student’s work contains exactly one mathematical error.</p>
+  <table class="st-tab">
+    <tr><th>Priya</th><th>Marcus</th><th>Devon</th></tr>
+    <tr><td><span class="tex">6(3y-2)^2</span></td><td><span class="tex">6(3y-2)^2</span></td><td><span class="tex">6(3y-2)^2</span></td></tr>
+    <tr><td><span class="tex">(18y-12)^2</span></td><td><span class="tex">6(6y^2-12y+4)</span></td><td><span class="tex">6(9y^2-6y+4)</span></td></tr>
+    <tr><td><span class="tex">324y^2-432y+144</span></td><td><span class="tex">36y^2-72y+24</span></td><td><span class="tex">54y^2-36y+24</span></td></tr>
+  </table>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) Describe in detail the error Priya made.</div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">She distributed the 6 into <span class="tex">(3y-2)</span> <b>before squaring</b>. The square applies to <span class="tex">(3y-2)</span> first, then multiply by 6. (Her later lines are correct algebra.)</div></div></div>
+    <div class="part"><div class="pl">(b) Describe in detail the error Marcus made.</div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(3y)^2=9y^2</span>, but he wrote <span class="tex">6y^2</span>: he <b>doubled</b> the 3 instead of squaring it. His <span class="tex">-12y</span> and <span class="tex">+4</span> are right.</div></div></div>
+    <div class="part"><div class="pl">(c) Describe in detail the error Devon made.</div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The middle term is <span class="tex">2(3y)(-2)=-12y</span>; he wrote <span class="tex">-6y</span>, <b>forgetting the factor 2</b>. His <span class="tex">9y^2</span> and <span class="tex">+4</span> are right.</div></div></div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(d) Determine the correct expansion of <span class="tex">6(3y-2)^2</span>.</div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Square first, then distribute the 6:<br><span class="tex">6(9y^2-12y+4)=\boldsymbol{54y^2-72y+24}</span></div></div></div>
+    <div class="part"><div class="pl">(e) Verify your expansion by substituting <span class="tex">y=-3</span> into both the original expression and your expansion.</div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">LS <span class="tex">=6[3(-3)-2]^2=6(-11)^2=726</span><br>RS <span class="tex">=54(9)-72(-3)+24=486+216+24=726</span> ✓</div></div></div>
+  </div>
+  <div class="space" id="ex13-space"></div>
+  <button class="more" data-more="ex13-space">+ More space</button>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Classify:</b> count the terms. Degree = the <b>highest</b> sum of exponents in a term. A negative exponent on a variable means <b>not a polynomial</b>.</div>
+    <div><b>Every term × every term</b>: 2 × 2 = 4 and 2 × 3 = 6 partial products, then collect like terms. Exponents <b>add</b>, signs <b>multiply</b>.</div>
+    <div><b>Patterns:</b> <span class="tex">(a\pm b)^2=a^2\pm2ab+b^2</span> and <span class="tex">(a+b)(a-b)=a^2-b^2</span>. In <span class="tex">k(a+b)^2</span>, <b>square first</b>.</div>
+    <div><b>Apply:</b> shaded = whole − (hole); a box from a sheet has <span class="tex">V=x(L-2x)(W-2x)</span>. Check any expansion by <b>substituting</b> a number.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u3l6" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 6 — Polynomial Operations Review</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <div class="review">
+    <div class="review-h"><span class="kicker">Up next</span><b>Unit 3 review and test.</b> <span class="muted">Shaky on an example today? Go back to its lesson.</span></div>
+    <div class="review-grid">
+      <a href="../l1/"><span class="rn">3.1</span>Polynomials, tiles, adding and subtracting <small>Ex. 1, 2</small></a>
+      <a href="../l2/"><span class="rn">3.2</span>Monomials, binomials, area models and FOIL <small>Ex. 3, 4, 5, 8</small></a>
+      <a href="../l3/"><span class="rn">3.3</span>Special products <small>Ex. 4(a), 6, 13 · Ext. 11</small></a>
+      <a href="../l4/"><span class="rn">3.4</span>Binomial × trinomial, three binomials <small>Ex. 9, 10</small></a>
+      <a href="../l5/"><span class="rn">3.5</span>Area, volume and equations <small>Ex. 7, 12</small></a>
+      <div class="test"><span class="rn">Test</span>Unit 3 test: AN4 <small>multiply polynomials concretely, pictorially, symbolically</small></div>
+    </div>
+  </div>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u3l6.js';
+  boot({ key: 'u3l6', homeHref: '../../', title: '3.6 Polynomial Operations Review' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

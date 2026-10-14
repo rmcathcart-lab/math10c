@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Multiplying Monomials and Binomials · Math 10C 3.2</title>
+<meta name="description" content="Math 10C Unit 3 Lesson 2: area models and the distributive property, from a(b + c) to binomial times binomial, algebra tiles, two-digit multiplication, FOIL and substitution checks. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u3l2.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 3 Polynomial Operations · Lesson 2</div>
+  <h1>Multiplying Monomials and Binomials</h1>
+  <p class="lede">Cut a rectangle into pieces and its area splits into the pieces’ areas. That one picture explains how to multiply polynomials, from <span class="tex">5(x+2)</span> all the way to <span class="tex">(x+4)(x+1)</span>, and why <span class="tex">41\times53</span> is secretly the same problem. Today: area models, algebra tiles, the distributive property and FOIL.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>draw an area model for a monomial times a binomial, and for a binomial times a binomial</li>
+      <li>use the <b>distributive property</b> to expand a product, then collect like terms</li>
+      <li>multiply binomials with <b>algebra tiles</b>, using the shading rule and zero pairs</li>
+      <li>find a simplified area expression for a composite shape in two ways</li>
+      <li>use <b>FOIL</b> for a binomial times a binomial, and check any expansion by <b>substitution</b></li>
+    </ul>
+  </div>
+  <div class="outcome"><b>AN4</b> Demonstrate an understanding of the multiplication of polynomial expressions (limited to monomials, binomials and trinomials), concretely, pictorially and symbolically.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: Grow the Garden">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Grow the Garden</h2></div>
+  <p class="big">A <b>10 m by 6 m</b> garden gets <b>2 m longer</b> and <b>2 m wider</b>. Each little square is 1 m². <span class="muted">Tap the buttons to grow one side at a time.</span></p>
+
+  <div class="u3l2-wu">
+    <div class="u3l2-gd" id="garden"></div>
+    <div class="u3l2-wqs">
+      <div class="wq">
+        <div class="q-line"><div class="q-num">1</div><div>What is the area of the old (green) garden?</div></div>
+        <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">10\times6=\boldsymbol{60}</span> m²</div></div>
+      </div>
+      <div class="wq">
+        <div class="q-line"><div class="q-num">2</div><div>Suppose only the <b>10 m</b> side grew, to 12 m. How much area would be added?</div></div>
+        <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">12\times6=72</span>, so <b>12 m²</b> is added: one strip, 2 m by 6 m.</div></div>
+      </div>
+      <div class="wq">
+        <div class="q-line"><div class="q-num">3</div><div>Suppose only the <b>6 m</b> side grew, to 8 m. How much area would be added?</div></div>
+        <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">10\times8=80</span>, so <b>20 m²</b> is added: one strip, 10 m by 2 m.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Now <b>both</b> sides grow by 2 m. How much garden area is added? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> 4 m²</div>
+      <div class="opt"><b>B</b> 32 m²</div>
+      <div class="opt right"><b>C</b> 36 m²</div>
+    </div>
+    <button class="pill" type="button" data-poll>Reveal</button>
+    <div class="poll-ans"><b>C, 36 m².</b> The new garden is <span class="tex">12\times8=96</span> m², and <span class="tex">96-60=36</span>. Grow both sides in the picture: the new land is <b>three</b> pieces, <span class="tex">20+12+4=36</span>.<br>
+      <span class="muted"><b>B</b> adds the answers to 2 and 3 (<span class="tex">12+20</span>) and forgets the <b>2 × 2 corner</b>. <b>A</b> is only the corner. The corner is today’s whole lesson.</span></div>
+  </div>
+
+  <div class="wq wq-wide">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Challenge your neighbour.</b> A 10 m by 10 m garden grows 3 m each way. How much area is added?</div></div>
+    <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><b>69 m²:</b> two strips and a corner, <span class="tex">30+30+9=69</span>. Check: <span class="tex">13^2-100=169-100=69</span>.</div></div>
+  </div>
+</section>
+
+<!-- ================= 1. The area model ================= -->
+<section class="card" data-ink="s1" data-section="1. The Area Model">
+  <div class="sec-h"><span class="badge">1</span><h2>The Area Model</h2></div>
+  <p>The area of a rectangle is <b>length × width</b>. Cut a rectangle into two side-by-side pieces and its area splits into the <b>sum</b> of the two smaller areas. That gives a picture for multiplying a monomial by a binomial: build a rectangle with those side lengths, split it along the binomial’s two terms, and add the pieces.</p>
+  <div class="def">A rectangle <span class="tex">5</span> tall and <span class="tex">x+2</span> wide has area <span class="tex">5(x+2)</span>. Its two pieces have areas <span class="tex">5x</span> and <span class="tex">10</span>. Both describe the <b>same rectangle</b>, so <span class="tex">5(x+2)=5x+10</span>.</div>
+  <div class="explainer" data-explainer="areaMono"></div>
+  <div class="def gray"><b>Negative entries.</b> When a factor contains a subtraction, as in <span class="tex">-2(x-4)</span>, keep the same picture and write the <b>signed entries</b> (<span class="tex">-2</span> and <span class="tex">-4</span>) on its sides. A real length can’t be negative, so read it as a <b>bookkeeping</b> area model: it keeps track of every product, and a negative sign simply gives that piece a negative area.</div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Monomial times binomial, drawn as an area</h3></div>
+  <p class="q">Use an area model to determine each product. Sketch the rectangle, label the two side lengths of each piece, and state the resulting sum (or difference) of areas.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">4(x+3)</span></div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div class="u3l2-mini" data-side="4" data-top="x,3"></div><span class="tex">4(x+3)=\boldsymbol{4x+12}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">x(x+5)</span></div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div class="u3l2-mini" data-side="x" data-top="x,5"></div><span class="tex">x(x+5)=\boldsymbol{x^2+5x}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">-2(x-4)</span></div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div class="u3l2-mini" data-side="-2" data-top="x,-4"></div>Signed entries; <span class="tex">(-2)(-4)=+8</span><br><span class="tex">-2(x-4)=\boldsymbol{-2x+8}</span></div></div></div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(d) <span class="tex">3x(x-1)</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div class="u3l2-mini" data-side="3x" data-top="x,-1"></div><span class="tex">3x(x-1)=\boldsymbol{3x^2-3x}</span></div></div></div>
+    <div class="part"><div class="pl">(e) <span class="tex">(x-3)(2x)</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Put the monomial first: <span class="tex">(x-3)(2x)=2x(x-3)</span><div class="u3l2-mini" data-side="2x" data-top="x,-3"></div><span class="tex">(x-3)(2x)=\boldsymbol{2x^2-6x}</span></div></div></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<!-- ================= 2. The distributive property ================= -->
+<section class="card" data-ink="s2" data-section="2. The Distributive Property">
+  <div class="sec-h"><span class="badge">2</span><h2>The Distributive Property</h2></div>
+  <p>Every product in Example 1 is an instance of one rule. The monomial multiplies <b>each</b> term inside the bracket, which is exactly what the pieces of the rectangle did.</p>
+  <div class="u3l2-dp">
+    <div class="u3l2-dpb"><div class="u3l2-dph">Distributive property</div><span class="tex">a(b+c)=ab+ac</span></div>
+    <div class="u3l2-dpb"><div class="u3l2-dph">Monomial written second</div><span class="tex">(b+c)a=ba+ca</span></div>
+    <div class="u3l2-dpb"><div class="u3l2-dph">Any number of terms</div><span class="tex">a(b+c+d)=ab+ac+ad</span></div>
+  </div>
+  <div class="explainer" data-explainer="distA"></div>
+  <div class="def"><b>Expanding</b> means writing a <em>product</em> of polynomials as a <em>sum or difference of terms</em>. It combines the distributive property with the exponent rule <span class="tex">x^a\times x^b=x^{a+b}</span>: for example <span class="tex">x^3\cdot x^2=x^{3+2}=x^5</span>.</div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Distributing over two and three terms</h3></div>
+  <p class="q">Use the distributive property to determine the following products.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) <span class="tex">5(4x+2)</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">5(4x)+5(2)=\boldsymbol{20x+10}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">-3(3x^2+x-5)</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">-3(3x^2)+(-3)(x)+(-3)(-5)</span><br><span class="tex">=\boldsymbol{-9x^2-3x+15}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">(x^3-3)x^2</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Monomial written second: <span class="tex">x^3\cdot x^2-3\cdot x^2</span><br><span class="tex">=\boldsymbol{x^5-3x^2}</span></div></div></div>
+    <div class="part"><div class="pl">(d) <span class="tex">-4x(5x-3y+z)</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">-4x(5x)+(-4x)(-3y)+(-4x)(z)</span><br><span class="tex">=\boldsymbol{-20x^2+12xy-4xz}</span></div></div></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<!-- ================= 3. Expanding and simplifying ================= -->
+<section class="card" data-ink="s3" data-section="3. Expanding and Simplifying">
+  <div class="sec-h"><span class="badge">3</span><h2>Expanding and Simplifying</h2></div>
+  <div class="def">When an expression has <b>more than one set of brackets</b>, expand each bracket first, then <b>combine like terms</b>.</div>
+  <div class="explainer" data-explainer="distB"></div>
+  <div class="tip-row">
+    <div class="tip watch"><div class="tip-ic">!</div><div><b>Don’t do <span class="tex">8-3</span> first.</b> In <span class="tex">8-3(5x+2)</span> the 3 is stuck to the bracket: multiply before you subtract. <span class="tex">8-15x-6</span>, not <span class="tex">5(5x+2)</span>.</div></div>
+    <div class="tip watch"><div class="tip-ic">!</div><div><b>A bare minus means <span class="tex">-1</span>.</b> <span class="tex">-(6x+2x^2)=-6x-2x^2</span>: <b>every</b> sign inside the bracket flips, not just the first.</div></div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Expand every bracket, then collect</h3></div>
+  <p class="q">Expand and simplify.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">8-3(5x+2)</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Distribute the <span class="tex">-3</span>: <span class="tex">8-15x-6</span><br>Collect: <span class="tex">=\boldsymbol{-15x+2}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">3(4x-2)-3(x-5)</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Distribute both: <span class="tex">12x-6-3x+15</span><br>Collect: <span class="tex">=\boldsymbol{9x+9}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">4x(2x^2-5x+3)-(6x+2x^2)</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The bare <span class="tex">-</span> flips both signs:<br><span class="tex">8x^3-20x^2+12x-6x-2x^2</span><br>Collect: <span class="tex">=\boldsymbol{8x^3-22x^2+6x}</span></div></div></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<!-- ================= 4. Composite shapes ================= -->
+<section class="card" data-ink="s4" data-section="4. Area of Composite Shapes">
+  <div class="sec-h"><span class="badge">4</span><h2>Applying the Distributive Property: Area of Composite Shapes</h2></div>
+  <p>An irregular (composite) shape gets a simplified area expression in two ways:</p>
+  <div class="def-grid">
+    <div class="def"><b>Add</b> the areas of two rectangles that make up the shape.</div>
+    <div class="def amber"><b>Subtract</b> a missing corner from a larger rectangle.</div>
+  </div>
+  <p>Both must give the <b>same</b> expression, so doing it both ways is a built-in check.</p>
+  <div class="explainer" data-explainer="composite"></div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>One shape, two methods</h3></div>
+  <p class="q">Determine a simplified expression for the area of the shape below.</p>
+  <div class="u3l2-shape-host"><div class="u3l2-shape" data-shape="ex4"></div></div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(i) by adding the areas of two rectangles</div><div class="work" style="--h:330px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Cut across at the step. Top: <span class="tex">(5x+4)</span> by <span class="tex">3x</span>. Bottom: <span class="tex">(2x+7)</span> by <span class="tex">6x-3x=3x</span>.<br><span class="tex">A=(5x+4)(3x)+(2x+7)(3x)</span><br><span class="tex">=(15x^2+12x)+(6x^2+21x)=\boldsymbol{21x^2+33x}</span></div></div></div>
+    <div class="part"><div class="pl">(ii) by subtracting the area of one rectangle from another</div><div class="work" style="--h:330px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Outer rectangle <span class="tex">(5x+4)</span> by <span class="tex">6x</span>. Missing corner: <span class="tex">(5x+4)-(2x+7)=3x-3</span> by <span class="tex">6x-3x=3x</span>.<br><span class="tex">A=(5x+4)(6x)-(3x-3)(3x)</span><br><span class="tex">=(30x^2+24x)-(9x^2-9x)=\boldsymbol{21x^2+33x}</span> ✓ same</div></div></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<!-- ================= 5. Binomials with an area model ================= -->
+<section class="card" data-ink="s5" data-section="5. Binomials: the Area Model">
+  <div class="sec-h"><span class="badge">5</span><h2>Multiplying Binomials Using an Area Model</h2></div>
+  <p>Think of <span class="tex">(x+4)(x+1)</span> as the area of a rectangle of length <span class="tex">x+4</span> and width <span class="tex">x+1</span>. Splitting <b>both</b> sides breaks it into <b>four</b> smaller rectangles, and adding their areas gives the product in expanded form. It’s the garden from the warm-up, corner and all.</p>
+  <div class="explainer" data-explainer="areaGrow"></div>
+  <div class="def">The rectangle doesn’t have to be drawn to scale every time. The <b>four-cell grid</b> is a quick sketch of the same <b>area model</b>: one factor’s terms across the top, the other’s down the side, and each cell is a product. In this course both pictures are called an area model.</div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Four pieces, not two.</b> <span class="tex">(x+4)(x+1)\neq x^2+4</span>. That only counts the two corner pieces; the strips <span class="tex">4x</span> and <span class="tex">x</span> are part of the area too. Every piece of the rectangle counts, just like the corner in the warm-up.</div></div>
+</section>
+
+<section class="card" data-ink="s5b" data-section="5. Multiplying with Algebra Tiles">
+  <h3 class="sub">Multiplying with algebra tiles</h3>
+  <p>Algebra tiles build the same area model out of real pieces. Lay the tiles for one factor <b>across the top</b> of a frame and the tiles for the other factor <b>down the side</b>. Then fill the rectangle: each tile inside is the product of the factor tile above it and the factor tile beside it.</p>
+  <div class="u3l2-rules">
+    <div class="u3l2-legend" id="tile-legend"></div>
+    <div class="u3l2-shade" id="shade-rule"></div>
+  </div>
+  <div class="explainer" data-explainer="tiles"></div>
+  <p class="small muted">Count the tiles inside the frame to read the product, removing any zero pairs (one shaded and one unshaded tile of the same kind add to zero).</p>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Multiplying with algebra tiles</h3></div>
+  <p class="q">The factor tiles are already in place. Fill in each rectangle using the shading rule, then state the product. Look for zero pairs before you write the answer.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) <span class="tex">(x+2)(x-1)</span></div><div class="work u3l2-fwork" style="--h:300px"><div class="u3l2-frame" data-top="x,1,1" data-side="x,-1"></div></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div class="u3l2-frame small" data-top="x,1,1" data-side="x,-1" data-fill="1"></div>One <span class="tex">x^2</span>, two shaded and one unshaded <span class="tex">x</span>-tile (a zero pair), two unshaded units.<br><span class="tex">x^2+2x-x-2=\boldsymbol{x^2+x-2}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">(x-2)(x-1)</span></div><div class="work u3l2-fwork" style="--h:300px"><div class="u3l2-frame" data-top="x,-1,-1" data-side="x,-1"></div></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div class="u3l2-frame small" data-top="x,-1,-1" data-side="x,-1" data-fill="1"></div>One <span class="tex">x^2</span>, three unshaded <span class="tex">x</span>-tiles, two <b>shaded</b> units (unshaded × unshaded).<br><span class="tex">x^2-2x-x+2=\boldsymbol{x^2-3x+2}</span></div></div></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex6" data-section="Example 6">
+  <div class="ex-head"><span class="ex-tag">Example 6</span><h3>Area models as four-cell grids</h3></div>
+  <p class="q">Use an area model to determine each product.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">(x+5)(x+2)</span></div><div class="work" style="--h:270px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div class="u3l2-grid" data-top="x,5" data-side="x,2"></div><span class="tex">x^2+5x+2x+10=\boldsymbol{x^2+7x+10}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">(a^2-3)(a^2-7)</span></div><div class="work" style="--h:270px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div class="u3l2-grid" data-top="a^2,-3" data-side="a^2,-7"></div><span class="tex">a^4-3a^2-7a^2+21=\boldsymbol{a^4-10a^2+21}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">(2p+3q)(p+8q)</span></div><div class="work" style="--h:270px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div class="u3l2-grid" data-top="2p,3q" data-side="p,8q"></div><span class="tex">2p^2+3pq+16pq+24q^2</span><br><span class="tex">=\boldsymbol{2p^2+19pq+24q^2}</span></div></div></div>
+  </div>
+  <div class="space" id="ex6-space"></div>
+  <button class="more" data-more="ex6-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s5c" data-section="5. Two-digit numbers">
+  <h3 class="sub">The same grid multiplies two-digit numbers</h3>
+  <p>Split each number into <b>tens and ones</b>, then add the four partial products. No calculator needed, and it shows <b>why</b> the grid works: let <span class="tex">t=10</span>, and every two-digit number is a binomial in <span class="tex">t</span>.</p>
+  <div class="explainer" data-explainer="digits"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check the grid on the calculator.</b> <span class="keys"><kbd>4</kbd><kbd>1</kbd><kbd>×</kbd><kbd>5</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> gives 2 173, the same as <span class="tex">2\,000+50+120+3</span>.</div>
+    <button class="pill" data-keys="41 × 53 =">Show me</button>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex7" data-section="Example 7">
+  <div class="ex-head"><span class="ex-tag">Example 7</span><h3>The same grid on two-digit numbers</h3></div>
+  <p class="q">Use an area model and <b>no calculator</b> to determine each product.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) <span class="tex">32\times45</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Split <span class="tex">32=30+2</span> and <span class="tex">45=40+5</span>.<div class="u3l2-grid" data-top="30,2" data-side="40,5"></div><span class="tex">1\,200+80+150+10=\boldsymbol{1\,440}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">67\times84</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Split <span class="tex">67=60+7</span> and <span class="tex">84=80+4</span>.<div class="u3l2-grid" data-top="60,7" data-side="80,4"></div><span class="tex">4\,800+560+240+28=\boldsymbol{5\,628}</span></div></div></div>
+    <div class="part think span2"><div class="pl"><span class="think-tag">Think</span> Sam says <span class="tex">41\times53=40\times50+1\times3=2\,003</span>. Use the grid to explain what Sam forgot.</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Sam only used <b>two</b> of the four cells. The other two, <span class="tex">50\times1=50</span> and <span class="tex">3\times40=120</span>, are missing: <span class="tex">2\,003+170=\boldsymbol{2\,173}</span>. It’s the same mistake as <span class="tex">(x+4)(x+1)=x^2+4</span>.</div></div></div>
+  </div>
+  <div class="space" id="ex7-space"></div>
+  <button class="more" data-more="ex7-space">+ More space</button>
+</section>
+
+<!-- ================= 6. Distributive property and FOIL ================= -->
+<section class="card" data-ink="s6" data-section="6. Distributing a Binomial">
+  <div class="sec-h"><span class="badge">6</span><h2>Multiplying Binomials Using the Distributive Property and FOIL</h2></div>
+  <p>Distributing a whole binomial works exactly like distributing a monomial: treat <span class="tex">(c+d)</span> as one thing, distribute, then distribute again.</p>
+  <div class="u3l2-big tex display">(a+b)(c+d)=a(c+d)+b(c+d)=ac+ad+bc+bd</div>
+  <p>These are the <b>same four terms</b> the area model produced. The grid and the distributive property just organize the same calculation differently.</p>
+</section>
+
+<section class="card example" data-ink="ex8" data-section="Example 8">
+  <div class="ex-head"><span class="ex-tag">Example 8</span><h3>Distributing a binomial</h3></div>
+  <p class="q">Use the distributive property to determine each product.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) <span class="tex">(x+5)(x+3)</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x(x+3)+5(x+3)=x^2+3x+5x+15</span><br><span class="tex">=\boldsymbol{x^2+8x+15}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">(a-6)(3a-2)</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">a(3a-2)-6(3a-2)=3a^2-2a-18a+12</span><br><span class="tex">=\boldsymbol{3a^2-20a+12}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">(m-9)(n-9)</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">m(n-9)-9(n-9)=mn-9m-9n+81</span><br>No like terms: <span class="tex">\boldsymbol{mn-9m-9n+81}</span></div></div></div>
+    <div class="part"><div class="pl">(d) <span class="tex">(x+3y)(x-8y)</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x(x-8y)+3y(x-8y)=x^2-8xy+3xy-24y^2</span><br><span class="tex">=\boldsymbol{x^2-5xy-24y^2}</span></div></div></div>
+    <div class="part think span2"><div class="pl"><span class="think-tag">Think</span> Parts (a), (b) and (d) each had two middle terms to collect. Why didn’t (c)?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">In (c) the two binomials use <b>different letters</b>, so the middle products <span class="tex">-9m</span> and <span class="tex">-9n</span> aren’t like terms. In the others both middle products have the same letters (<span class="tex">3x</span> and <span class="tex">5x</span>; <span class="tex">-8xy</span> and <span class="tex">3xy</span>).</div></div></div>
+  </div>
+  <div class="space" id="ex8-space"></div>
+  <button class="more" data-more="ex8-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s6b" data-section="6. FOIL">
+  <h3 class="sub">FOIL: a memory device for the four products</h3>
+  <p>Those four products always follow the same pattern, so they can be remembered with the acronym <b>FOIL</b>. It is <b>not a new method</b>: it applies the distributive property to two binomials in a fixed order, so no term is missed.</p>
+  <div class="u3l2-foil-key">
+    <div class="u3l2-fk f"><b>F</b>irst<span class="tex">ac</span></div>
+    <div class="u3l2-fk o"><b>O</b>utside<span class="tex">ad</span></div>
+    <div class="u3l2-fk i"><b>I</b>nside<span class="tex">bc</span></div>
+    <div class="u3l2-fk l"><b>L</b>ast<span class="tex">bd</span></div>
+  </div>
+  <div class="explainer" data-explainer="foil"></div>
+</section>
+
+<section class="card" data-ink="s6c" data-section="6. FOIL is only 2 × 2">
+  <h3 class="sub">FOIL is only the 2 × 2 case</h3>
+  <p>FOIL works only for a <b>binomial times a binomial</b>: exactly <span class="tex">2\times2=4</span> products. A binomial times a trinomial (Lesson 4) has <span class="tex">2\times3=6</span> products, and FOIL would miss two of them. The distributive property, “<b>every term times every term</b>”, always works.</p>
+  <div class="explainer" data-explainer="foilLimit"></div>
+</section>
+
+<section class="card example" data-ink="ex9" data-section="Example 9">
+  <div class="ex-head"><span class="ex-tag">Example 9</span><h3>FOIL</h3></div>
+  <p class="q">Use FOIL to determine each product.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) <span class="tex">(x+7)(x+2)</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">F <span class="tex">x^2</span>; O <span class="tex">2x</span>; I <span class="tex">7x</span>; L <span class="tex">14</span><br><span class="tex">x^2+2x+7x+14=\boldsymbol{x^2+9x+14}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">(y-4)(y+6)</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">F <span class="tex">y^2</span>; O <span class="tex">6y</span>; I <span class="tex">-4y</span>; L <span class="tex">-24</span><br><span class="tex">y^2+6y-4y-24=\boldsymbol{y^2+2y-24}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">(2x+3)(x-5)</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">F <span class="tex">2x^2</span>; O <span class="tex">-10x</span>; I <span class="tex">3x</span>; L <span class="tex">-15</span><br><span class="tex">2x^2-10x+3x-15=\boldsymbol{2x^2-7x-15}</span></div></div></div>
+    <div class="part"><div class="pl">(d) <span class="tex">(4a-3b)^2</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Write it out: <span class="tex">(4a-3b)(4a-3b)</span>. F <span class="tex">16a^2</span>; O <span class="tex">-12ab</span>; I <span class="tex">-12ab</span>; L <span class="tex">9b^2</span><br><span class="tex">=\boldsymbol{16a^2-24ab+9b^2}</span></div></div></div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>A square is two copies.</b> <span class="tex">(4a-3b)^2\neq16a^2+9b^2</span>. Write the square as <span class="tex">(4a-3b)(4a-3b)</span> first; the O and I terms don’t disappear. (Lesson 3 is all about these.)</div></div>
+  <div class="space" id="ex9-space"></div>
+  <button class="more" data-more="ex9-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s6d" data-section="6. Check by substitution">
+  <h3 class="sub">Is my expansion right? Check by substitution</h3>
+  <p>A product and its expansion are <b>equal for every value</b> of the variable. Substitute a small number such as <span class="tex">x=2</span> into both: they must give the same value. For Example 9(a): <span class="tex">(2+7)(2+2)=36</span> and <span class="tex">2^2+9(2)+14=36</span> ✓</p>
+  <div class="explainer" data-explainer="subCheck"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check Example 9(a) at <span class="tex">x=2</span>.</b> The product: <span class="keys"><kbd>(</kbd><kbd>2</kbd><kbd>+</kbd><kbd>7</kbd><kbd>)</kbd><kbd>×</kbd><kbd>(</kbd><kbd>2</kbd><kbd>+</kbd><kbd>2</kbd><kbd>)</kbd><kbd>ENTER</kbd></span>. The expansion: <span class="keys"><kbd>2</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>9</kbd><kbd>×</kbd><kbd>2</kbd><kbd>+</kbd><kbd>1</kbd><kbd>4</kbd><kbd>ENTER</kbd></span>. Both give 36 ✓</div>
+    <div class="pill-col"><button class="pill" data-keys="( 2 + 7 ) × ( 2 + 2 ) =">Show product</button><button class="pill" data-keys="2 x² + 9 × 2 + 14 =">Show expansion</button></div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>0 and 1 make a weak test.</b> At <span class="tex">x=0</span>, <span class="tex">(x+7)(x+2)</span> and the wrong <span class="tex">x^2+14</span> both give 14, so the mistake slips past. Use 2 or 3.</div></div>
+</section>
+
+<section class="card example" data-ink="ex10" data-section="Example 10">
+  <div class="ex-head"><span class="ex-tag">Example 10</span><h3>Three methods, one answer</h3></div>
+  <p class="q">A rectangle has length <span class="tex">(3a+2)</span> cm and width <span class="tex">(a+5)</span> cm. Determine the area of the rectangle, in cm², three ways, and confirm that all three methods agree.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(i) use an area model</div><div class="work" style="--h:290px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div class="u3l2-grid" data-top="3a,2" data-side="a,5"></div><span class="tex">3a^2+2a+15a+10</span><br><span class="tex">=\boldsymbol{3a^2+17a+10}</span></div></div></div>
+    <div class="part"><div class="pl">(ii) use the distributive property</div><div class="work" style="--h:290px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">3a(a+5)+2(a+5)</span><br><span class="tex">=3a^2+15a+2a+10</span><br><span class="tex">=\boldsymbol{3a^2+17a+10}</span></div></div></div>
+    <div class="part"><div class="pl">(iii) use FOIL</div><div class="work" style="--h:290px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">F <span class="tex">3a^2</span>; O <span class="tex">15a</span>; I <span class="tex">2a</span>; L <span class="tex">10</span><br><span class="tex">=\boldsymbol{3a^2+17a+10}</span> cm²<br>All three agree ✓</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check at <span class="tex">a=2</span>.</b> Length <span class="tex">3(2)+2=8</span>, width <span class="tex">2+5=7</span>: area 56. The expansion: <span class="keys"><kbd>3</kbd><kbd>×</kbd><kbd>2</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>1</kbd><kbd>7</kbd><kbd>×</kbd><kbd>2</kbd><kbd>+</kbd><kbd>1</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> should also give 56.</div>
+    <div class="pill-col"><button class="pill" data-keys="( 3 × 2 + 2 ) × ( 2 + 5 ) =">Show product</button><button class="pill" data-keys="3 × 2 x² + 17 × 2 + 10 =">Show expansion</button></div>
+  </div>
+  <div class="space" id="ex10-space"></div>
+  <button class="more" data-more="ex10-space">+ More space</button>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Area model:</b> a rectangle split into pieces, one piece per product. Add the pieces: <span class="tex">5(x+2)=5x+10</span>. Negative entries give negative “bookkeeping” areas.</div>
+    <div><b>Distributive property:</b> <span class="tex">a(b+c)=ab+ac</span>. Multiply <b>every</b> term in the bracket (exponents add: <span class="tex">x^3\cdot x^2=x^5</span>), then collect like terms.</div>
+    <div><b>Binomial × binomial = four products:</b> <span class="tex">(a+b)(c+d)=ac+ad+bc+bd</span>, by grid, tiles, distributing or FOIL. FOIL is <b>only</b> the 2 × 2 case.</div>
+    <div><b>Check by substitution</b> at <span class="tex">x=2</span>: both forms give the same number. And two-digit multiplication <b>is</b> binomial multiplication: <span class="tex">41\times53=(40+1)(50+3)</span>.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u3l2" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 2 — Multiplying Monomials and Binomials</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l3/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 3 — Multiplying Polynomials I: Special Products</b><div class="muted">Squaring a binomial, and sum times difference</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u3l2.js';
+  boot({ key: 'u3l2', homeHref: '../../', title: '3.2 Multiplying Monomials and Binomials' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

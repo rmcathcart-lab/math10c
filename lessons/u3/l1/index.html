@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Polynomials: Review and Preview · Math 10C 3.1</title>
+<meta name="description" content="Math 10C Unit 3 Lesson 1: polynomials. Terms, degree and names (monomial, binomial, trinomial), ascending and descending order, algebra tiles, zero pairs, like terms, and adding and subtracting polynomials. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u3l1.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 3 Polynomial Operations · Lesson 1</div>
+  <h1>Polynomials — Review and Preview</h1>
+  <p class="lede">A polynomial is built from <b>terms</b>, the way a laundry pile is built from socks. Today we name polynomials and find their degree, model them with <b>algebra tiles</b>, and add and subtract them by gathering <b>like terms</b>, which sets up everything else in this unit.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>decide whether an expression is a polynomial, and name it a <em>monomial</em>, <em>binomial</em> or <em>trinomial</em></li>
+      <li>find the <b>degree</b> of a term and of a polynomial, its <b>leading coefficient</b> and its <b>constant term</b></li>
+      <li>write a polynomial in ascending or descending order</li>
+      <li>model a polynomial with algebra tiles, and read a tile picture</li>
+      <li>add and subtract polynomials by collecting like terms, with tiles and without</li>
+    </ul>
+  </div>
+  <div class="outcome"><b>AN4</b> Demonstrate an understanding of the multiplication of polynomial expressions (limited to monomials, binomials and trinomials), concretely, pictorially and symbolically.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: Sort the Socks">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Sort the Socks</h2></div>
+  <p class="big">Laundry day! Pair the socks by their <b>letters and exponents</b>, not their colours. <span class="muted">(Tap a sock to put it on a pile.)</span></p>
+
+  <div class="u3s-box" id="socks"></div>
+
+  <div class="wu-grid">
+    <div class="wq">
+      <div class="q-line"><div class="q-num">1</div><div>How many socks are on the line?</div></div>
+      <div class="wq-a"><button class="pill small" type="button" data-wq="1">Answer</button><div class="q-ans"><b>10 socks.</b> Each sock is one <b>term</b>; the whole line is one polynomial with 10 terms.</div></div>
+    </div>
+    <div class="wq">
+      <div class="q-line"><div class="q-num">2</div><div>Sort them into piles of matching socks. How many piles? Which is the <b>odd sock</b> with no partner?</div></div>
+      <div class="wq-a"><button class="pill small" type="button" data-wq="2">Answer</button><div class="q-ans"><b>4 piles:</b> <span class="tex">x^2</span>, <span class="tex">x</span>, numbers, and the odd sock <span class="tex">xy</span>. Colours are a decoy: <span class="tex">3x</span> and <span class="tex">7x^2</span> are both blue but don’t match.</div></div>
+    </div>
+    <div class="wq">
+      <div class="q-line"><div class="q-num">3</div><div>Squash each pile into <b>one</b> sock (add them up). What socks are left?</div></div>
+      <div class="wq-a"><button class="pill small" type="button" data-wq="3">Answer</button><div class="q-ans"><span class="tex">6x^2</span>, <span class="tex">-2x</span>, <span class="tex">-2</span> and <span class="tex">xy</span>: <span class="tex">6x^2+xy-2x-2</span>, <b>4 socks</b>. A bare <span class="tex">x</span> counts as <span class="tex">1x</span>.</div></div>
+    </div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Only <b>one</b> of these is a true matching pair. <b>Guess first:</b> which one?</div></div>
+    <div class="poll-opts c4">
+      <div class="opt"><b>A</b> <span class="tex">x^2</span> and <span class="tex">2x</span></div>
+      <div class="opt right"><b>B</b> <span class="tex">3xy</span> and <span class="tex">-5yx</span></div>
+      <div class="opt"><b>C</b> <span class="tex">4x</span> and <span class="tex">4y</span></div>
+      <div class="opt"><b>D</b> <span class="tex">x^3</span> and <span class="tex">3x</span></div>
+    </div>
+    <button class="pill" type="button" data-poll>Reveal</button>
+    <div class="poll-ans"><b>B.</b> <span class="tex">yx</span> is the same as <span class="tex">xy</span> (you can multiply in either order), so they match: <span class="tex">3xy-5yx=-2xy</span>.<br>
+      <span class="muted"><b>A</b> both have an <span class="tex">x</span> and a 2, but the exponents differ. <b>C</b> same number, different letter: the number never decides a match. <b>D</b> the 3 is an exponent in one and a coefficient in the other.</span></div>
+  </div>
+
+  <div class="wq wq-wide">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Hang <b>one</b> more sock so that, after squashing, only <b>3</b> socks are left. Four different socks work. Find them all.</div></div>
+    <div class="wq-a"><button class="pill small" type="button" data-wq="4">Answer</button><div class="q-ans"><span class="tex">-6x^2</span>, <span class="tex">-xy</span>, <span class="tex">2x</span> or <span class="tex">2</span>. Each one squashes a whole pile down to <b>zero</b>.</div></div>
+  </div>
+</section>
+
+<!-- ================= 1. Vocabulary ================= -->
+<section class="card" data-ink="s1" data-section="1. Basic Vocabulary">
+  <div class="sec-h"><span class="badge">1</span><h2>Basic Vocabulary</h2></div>
+  <p>A <b>variable</b> is a letter that stands for one or more numbers. An expression such as <span class="tex">3m-n+7</span> or <span class="tex">\dfrac{4}{y}-1</span> is an <b>algebraic expression</b>.</p>
+  <div class="def-grid">
+    <div class="def"><b>Monomial</b> — a number, a variable, or a <b>product</b> of numbers and variables. Every variable has a <b>positive integer</b> exponent, and no variable is in a denominator.<div class="eg"><span class="tex">7,\ \ y,\ \ 8y,\ \ -\tfrac{1}{3}pq,\ \ 0.75m^3,\ \ xyz,\ \ 3a^5b^2</span></div></div>
+    <div class="def amber"><b>Polynomial</b> — a monomial, or a sum or difference of monomials.<div class="eg"><span class="tex">9,\ \ y,\ \ 9+y,\ \ 3m+8n,\ \ y^2-6y-11</span></div></div>
+  </div>
+  <div class="def gray"><b>Numerical coefficient</b> — the number multiplying the variable(s) in a monomial. In <span class="tex">8y</span> it is 8; in <span class="tex">-\tfrac13pq</span> it is <span class="tex">-\tfrac13</span>; in <span class="tex">xyz</span> it is 1.</div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><span class="tex">\dfrac{3}{x}-2</span> is <b>not</b> a polynomial: <span class="tex">\dfrac{3}{x}=3x^{-1}</span>, and a negative exponent on a variable isn’t allowed. A variable in a denominator always means a negative exponent.</div></div>
+  <div class="explainer" data-explainer="polyCheck"></div>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. Terms and names">
+  <h3 class="sub">Terms, and naming a polynomial by its number of terms</h3>
+  <p>A polynomial is made up of one or more <b>terms</b>, separated by <span class="tex">+</span> or <span class="tex">-</span> signs.</p>
+  <div class="u3-names">
+    <div><b>Monomial</b><span class="nn">1 term</span><div class="tex">5y</div></div>
+    <div><b>Binomial</b><span class="nn">2 terms</span><div class="tex">y-6</div></div>
+    <div><b>Trinomial</b><span class="nn">3 terms</span><div class="tex">y^2+y-6</div></div>
+    <div><b>Polynomial</b><span class="nn">4 or more terms</span><div class="tex">x^3-2x^2+x-5</div></div>
+  </div>
+  <p class="small muted u3-mono">Mono = one, bi = two, tri = three, poly = many: like a monorail, a bicycle and a tricycle.</p>
+  <div class="explainer" data-explainer="nameMachine"></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Is it a polynomial, and what is it called?</h3></div>
+  <p class="q">For each expression: state whether it represents a polynomial; if it does not, explain why; and if it does, state whether it is a monomial, binomial, or trinomial.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">\dfrac{2}{5}mn^3+7</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Every exponent on a variable is a positive integer: a polynomial.<br>2 terms: <b>binomial</b></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">5x^{2/3}y</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The exponent <span class="tex">\tfrac{2}{3}</span> on <span class="tex">x</span> is not a positive integer.<br><b>Not a polynomial</b></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">\sqrt{3}\,x^5-2x^2+6</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sqrt3</span> is only a coefficient; the exponents 5 and 2 are fine.<br>3 terms: <b>trinomial</b></div></div></div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(d) <span class="tex">4y^3-7y+2y^{0.5}</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The exponent 0.5 on <span class="tex">y</span> is not a positive integer.<br><b>Not a polynomial</b></div></div></div>
+    <div class="part"><div class="pl">(e) <span class="tex">\dfrac{9}{b^2}</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\dfrac{9}{b^2}=9b^{-2}</span>: a negative exponent on a variable.<br><b>Not a polynomial</b></div></div></div>
+  </div>
+  <div class="part think"><div class="pl"><span class="think-tag">Think</span> <span class="tex">\sqrt{3}\,x^5</span> is allowed in a polynomial, but <span class="tex">\sqrt{x}</span> is not. Why?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sqrt3</span> is just a <b>number</b> (the coefficient), and any number is fine there. But <span class="tex">\sqrt{x}=x^{1/2}</span>: the exponent on the <b>variable</b> is <span class="tex">\tfrac12</span>, not a positive integer.</div></div></div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Counting variables and terms</h3></div>
+  <p class="q">Complete the following table.</p>
+  <div class="u3-table">
+    <div class="u3-th"><div>Polynomial expression</div><div># Variables</div><div># Terms</div><div>Name of polynomial</div><div></div></div>
+    <div class="part u3-tr"><div class="u3-te"><span class="tex">7a+5bc</span></div><div class="u3-tc"><span class="ans">3 (<span class="tex">a,b,c</span>)</span></div><div class="u3-tc"><span class="ans">2</span></div><div class="u3-tc"><span class="ans">binomial</span></div><div class="u3-ta"><button class="reveal">Answer</button></div></div>
+    <div class="part u3-tr"><div class="u3-te"><span class="tex">3p-5q+8r</span></div><div class="u3-tc"><span class="ans">3</span></div><div class="u3-tc"><span class="ans">3</span></div><div class="u3-tc"><span class="ans">trinomial</span></div><div class="u3-ta"><button class="reveal">Answer</button></div></div>
+    <div class="part u3-tr"><div class="u3-te"><span class="tex">y^2-4y-9</span></div><div class="u3-tc"><span class="ans">1</span></div><div class="u3-tc"><span class="ans">3</span></div><div class="u3-tc"><span class="ans">trinomial</span></div><div class="u3-ta"><button class="reveal">Answer</button></div></div>
+    <div class="part u3-tr"><div class="u3-te"><span class="tex">\sqrt{5}\,m</span></div><div class="u3-tc"><span class="ans">1</span></div><div class="u3-tc"><span class="ans">1</span></div><div class="u3-tc"><span class="ans">monomial</span></div><div class="u3-ta"><button class="reveal">Answer</button></div></div>
+    <div class="part u3-tr"><div class="u3-te"><span class="tex">5m^3+2m^2n+4n^2-7</span></div><div class="u3-tc"><span class="ans">2 (<span class="tex">m,n</span>)</span></div><div class="u3-tc"><span class="ans">4</span></div><div class="u3-tc"><span class="ans">polynomial</span></div><div class="u3-ta"><button class="reveal">Answer</button></div></div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Count each variable once.</b> In <span class="tex">5m^3+2m^2n+4n^2-7</span> the letters <span class="tex">m</span> and <span class="tex">n</span> show up again and again, but there are only <b>two</b> variables.</div></div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<!-- ================= 2. Degree ================= -->
+<section class="card" data-ink="s2" data-section="2. Degree">
+  <div class="sec-h"><span class="badge">2</span><h2>Classifying Polynomials by Degree</h2></div>
+  <div class="def-grid">
+    <div class="def"><b>Degree of a monomial</b> — the <b>sum of the exponents</b> of its variable(s).<div class="eg"><span class="tex">3x^4</span> has degree 4 &nbsp;·&nbsp; <span class="tex">-\tfrac{5}{6}ab^2c^3</span> has degree <span class="tex">1+2+3=6</span></div></div>
+    <div class="def amber"><b>Degree of a polynomial</b> — the degree of the term with the <b>highest</b> degree.<div class="eg"><span class="tex">2x^2y^3-4x^5+xy^4-8</span> has degree 5</div></div>
+  </div>
+  <div class="def gray"><b>Constant term</b> — a term of degree zero (no variable present). In <span class="tex">2x^2y^3-4x^5+xy^4-8</span> the constant term is <span class="tex">-8</span>.</div>
+  <div class="explainer" data-explainer="degree"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Don’t add up every exponent in the polynomial.</b> <span class="tex">2x^2y^3-4x^5+xy^4-8</span> has degree 5, not <span class="tex">2+3+5+1+4=15</span>. Find each term’s degree, then take the <b>highest</b>.</div></div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Building a polynomial to order</h3></div>
+  <p class="q">Give an example of each of the following.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) a binomial of degree 3 in one variable</div><div class="work" style="--h:130px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Answers may vary, e.g. <span class="tex">\boldsymbol{y^3-5}</span><br>(2 terms, highest power 3, one variable)</div></div></div>
+    <div class="part"><div class="pl">(b) a trinomial in two variables with a constant term</div><div class="work" style="--h:130px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Answers may vary, e.g. <span class="tex">\boldsymbol{m^2+mn-8}</span><br>(3 terms, variables <span class="tex">m</span> and <span class="tex">n</span>, constant term <span class="tex">-8</span>)</div></div></div>
+    <div class="part"><div class="pl">(c) a monomial of degree 5 with a numerical coefficient of 7</div><div class="work" style="--h:130px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Answers may vary, e.g. <span class="tex">\boldsymbol{7x^5}</span><br>(one term, coefficient 7, degree 5)</div></div></div>
+    <div class="part"><div class="pl">(d) a binomial of degree 10 with each term containing two variables</div><div class="work" style="--h:130px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Answers may vary, e.g. <span class="tex">\boldsymbol{x^7y^3+xy}</span><br>(<span class="tex">7+3=10</span>; both terms contain <span class="tex">x</span> and <span class="tex">y</span>)</div></div></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<!-- ================= 3. Single variable ================= -->
+<section class="card" data-ink="s3" data-section="3. One Variable: Order">
+  <div class="sec-h"><span class="badge">3</span><h2>Polynomials in a Single Variable</h2></div>
+  <div class="def-grid">
+    <div class="def"><b>Descending order</b> — powers <b>decreasing</b>.<div class="eg"><span class="tex">-x^2+7x+4</span> &nbsp;<span class="muted">(powers 2, 1, 0)</span></div></div>
+    <div class="def"><b>Ascending order</b> — powers <b>increasing</b>.<div class="eg"><span class="tex">4+7x-x^2</span> &nbsp;<span class="muted">(powers 0, 1, 2)</span></div></div>
+  </div>
+  <div class="def amber"><b>Leading coefficient</b> — the numerical coefficient of the term with the <b>highest power</b> of the variable. In <span class="tex">4+7x-x^2</span> it is <span class="tex">-1</span>, even though that term is written last.</div>
+  <div class="explainer" data-explainer="order"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>A term keeps its sign when it moves.</b> In <span class="tex">4-x^2+7x</span>, the <span class="tex">-x^2</span> card carries its minus sign wherever it goes.</div></div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Ordering, leading coefficient and constant term</h3></div>
+  <p class="q">Consider the polynomial expression <span class="tex">3x-5x^3+9+\dfrac{2x^2}{3}</span>.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Write the polynomial in descending powers of <span class="tex">x</span>.</div><div class="work" style="--h:140px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Terms <span class="tex">-5x^3,\ \tfrac23x^2,\ 3x,\ 9</span>; highest power first:<br><span class="tex">\boldsymbol{-5x^3+\tfrac{2}{3}x^2+3x+9}</span></div></div></div>
+    <div class="part"><div class="pl">(b) Write the polynomial in ascending powers of <span class="tex">x</span>.</div><div class="work" style="--h:140px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Lowest power first:<br><span class="tex">\boldsymbol{9+3x+\tfrac{2}{3}x^2-5x^3}</span></div></div></div>
+    <div class="part"><div class="pl">(c) State the leading coefficient and the constant term.</div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Highest power <span class="tex">x^3</span>: leading coefficient <b><span class="tex">-5</span></b>.<br>No variable: constant term <b>9</b>.</div></div></div>
+    <div class="part"><div class="pl">(d) State the numerical coefficient of the term in <span class="tex">x^2</span>.</div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\dfrac{2x^2}{3}=\dfrac{2}{3}x^2</span>, so the coefficient is <span class="tex">\boldsymbol{\tfrac{2}{3}}</span>.</div></div></div>
+  </div>
+  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Why does a constant term like 9 have degree 0?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Because <span class="tex">x^0=1</span>, we can write <span class="tex">9=9x^0</span>. The power of <span class="tex">x</span> is 0.</div></div></div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<!-- ================= 4. Algebra tiles ================= -->
+<section class="card" data-ink="s4" data-section="4. Algebra Tiles">
+  <div class="sec-h"><span class="badge">4</span><h2>Representing Polynomials with Algebra Tiles</h2></div>
+  <p>Each tile’s <b>area</b> is the term it stands for. The <b>shape</b> tells you which power of <span class="tex">x</span>; the <b>shading</b> tells you the sign.</p>
+  <div class="def u3-legdef"><b>Our legend:</b> a <b>shaded</b> tile is <b>positive</b>; an <b>unshaded</b> (outline only) tile is <b>negative</b>.</div>
+  <div class="u3-legend" id="legend"></div>
+  <div class="explainer" data-explainer="build"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>The <span class="tex">x</span>-tile isn’t a whole number of unit tiles long</b>, on purpose: <span class="tex">x</span> can stand for any number. That’s why you can’t trade an <span class="tex">x</span>-tile for unit tiles.</div></div>
+</section>
+
+<section class="card" data-ink="s4b" data-section="4. Reading tiles">
+  <h3 class="sub">Reading a tile picture</h3>
+  <p>Go the other way: <b>count each shape</b>, write shaded tiles as <span class="tex">+</span> and unshaded tiles as <span class="tex">-</span>.</p>
+  <div class="explainer" data-explainer="read"></div>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Reading a tile diagram</h3></div>
+  <p class="q">State the polynomial expression which describes each diagram below.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a)</div><div class="u3-figbox"><div data-tiles="x:3 1:-1" data-s="0.85"></div></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">3 shaded <span class="tex">x</span>-tiles and 1 unshaded unit tile: <span class="tex">3x+(-1)</span><br><span class="tex">\boldsymbol{3x-1}</span></div></div></div>
+    <div class="part"><div class="pl">(b)</div><div class="u3-figbox"><div data-tiles="x2:1 x:-2 1:3" data-s="0.85"></div></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">1 shaded <span class="tex">x^2</span>-tile, 2 unshaded <span class="tex">x</span>-tiles, 3 shaded unit tiles: <span class="tex">x^2+(-2x)+3</span><br><span class="tex">\boldsymbol{x^2-2x+3}</span></div></div></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<!-- ================= 5. Adding and subtracting ================= -->
+<section class="card" data-ink="s5" data-section="5. Adding Polynomials">
+  <div class="sec-h"><span class="badge">5</span><h2>Adding and Subtracting Polynomials</h2></div>
+  <div class="def"><b>Zero pair</b> — one shaded and one unshaded tile of the <b>same shape</b>. Together they are worth <b>0</b> (<span class="tex">x+(-x)=0</span>), so a zero pair can be removed without changing the value.</div>
+  <div class="u3m-box" id="tilemat">
+  </div>
+  <p class="small muted">The tile mat: add tiles with the buttons, tap a tile to take it away. Shaded tiles sit above the line and unshaded below, so zero pairs line up.</p>
+  <div class="explainer" data-explainer="addTiles"></div>
+</section>
+
+<section class="card" data-ink="s5b" data-section="5. Subtracting: flip">
+  <h3 class="sub">Subtracting: add the opposite</h3>
+  <p><b>Subtracting a polynomial is the same as adding its opposite.</b> The opposite of a polynomial has every sign changed; in tiles, every tile is <b>flipped</b>:</p>
+  <p class="display"><span class="tex">(5x+2)-(3x-7)=(5x+2)+(-3x+7)</span></p>
+  <div class="explainer" data-explainer="subTiles"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Flip every tile, not just the first.</b> <span class="tex">-(3x-7)=-3x+7</span>, not <span class="tex">-3x-7</span>. The minus sign belongs to the <b>whole</b> bracket.</div></div>
+</section>
+
+<section class="card example" data-ink="ex6" data-section="Example 6">
+  <div class="ex-head"><span class="ex-tag">Example 6</span><h3>Adding and subtracting with tiles</h3></div>
+  <p class="q">Use algebra tiles (or reasoning about zero pairs) to determine each result.</p>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(a) Addition: <span class="tex">(3x^2-4)+(x^2+5x-2)</span> <span class="muted small">The tiles for (a) are shown as a model.</span></div>
+      <div class="u3-figbox u3-fig6"><div class="u3-figc"><div data-tiles="x2:3 1:-4" data-s="0.72"></div><span class="tex">3x^2-4</span></div><div class="u3-figop">+</div><div class="u3-figc"><div data-tiles="x2:1 x:5 1:-2" data-s="0.72"></div><span class="tex">x^2+5x-2</span></div></div>
+      <div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x^2</span>-tiles: <span class="tex">3x^2+x^2=4x^2</span>; <span class="tex">x</span>-tiles only in the second polynomial: <span class="tex">5x</span>; unit tiles: <span class="tex">-4-2=-6</span>. No zero pairs form.<br><span class="tex">(3x^2-4)+(x^2+5x-2)=\boldsymbol{4x^2+5x-6}</span></div></div></div>
+    <div class="part"><div class="pl">(b) Subtraction: <span class="tex">(-2x^2+5x-3)-(3x^2-2x-4)</span></div><div class="work" style="--h:300px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Add the opposite: <span class="tex">(-2x^2+5x-3)+(-3x^2+2x+4)</span>.<br><span class="tex">x^2</span>: 2 unshaded join 3 unshaded, <span class="tex">-5x^2</span> (nothing cancels); <span class="tex">x</span>: <span class="tex">5x+2x=7x</span>; units: 3 unshaded meet 4 shaded, 3 zero pairs cancel and <span class="tex">1</span> is left.<br><span class="tex">(-2x^2+5x-3)-(3x^2-2x-4)=\boldsymbol{-5x^2+7x+1}</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check (b) by substituting <span class="tex">x=2</span>.</b> Equal polynomials give the same value for <b>every</b> <span class="tex">x</span>. Type the original with 2 in place of each <span class="tex">x</span> (use <kbd>(−)</kbd> for the negative): it gives <b>−5</b>. The answer: <span class="keys"><kbd>(−)</kbd><kbd>5</kbd><kbd>×</kbd><kbd>2</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>7</kbd><kbd>×</kbd><kbd>2</kbd><kbd>+</kbd><kbd>1</kbd><kbd>ENTER</kbd></span> also gives <b>−5</b> ✓.</div>
+    <div class="pill-col"><button class="pill" data-keys="( (−) 2 × 2 x² + 5 × 2 − 3 ) − ( 3 × 2 x² − 2 × 2 − 4 ) =">Show original</button><button class="pill" data-keys="(−) 5 × 2 x² + 7 × 2 + 1 =">Show answer</button></div>
+  </div>
+  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Kai wrote <span class="tex">(5x+2)-(3x-7)=2x-5</span>. What did he do wrong? What’s the right answer?</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">He only subtracted the <b>first</b> term: the <span class="tex">-7</span> must flip too. <span class="tex">(5x+2)+(-3x+7)=\boldsymbol{2x+9}</span>. Check at <span class="tex">x=2</span>: <span class="tex">12-(-1)=13</span> and <span class="tex">2(2)+9=13</span> ✓.</div></div></div>
+  <div class="space" id="ex6-space"></div>
+  <button class="more" data-more="ex6-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s5c" data-section="5. Like Terms">
+  <h3 class="sub">Like terms: no tiles needed</h3>
+  <div class="def-grid">
+    <div class="def"><b>Like terms</b> — the <b>same variable(s)</b> raised to the <b>same exponent(s)</b>.<div class="eg"><span class="tex">4p,\ 9p,\ p</span> &nbsp;·&nbsp; <span class="tex">3y^3,\ \tfrac14y^3,\ -6y^3</span></div></div>
+    <div class="def amber"><b>Unlike terms</b> — different variables, or the same variable with different exponents.<div class="eg"><span class="tex">3y^3,\ \tfrac14y^2,\ -6y</span> &nbsp;·&nbsp; <span class="tex">5m</span> and <span class="tex">5n</span></div></div>
+  </div>
+  <p>Only like terms can be combined into a single term: <b>add their coefficients</b> and keep the variable part. Tiles can only show <span class="tex">x^2</span>, <span class="tex">x</span> and 1, but the idea works for any variables: sort the terms into <b>families</b>.</p>
+  <div class="explainer" data-explainer="likeTerms"></div>
+  <div class="tip-row">
+    <div class="tip watch"><div class="tip-ic">!</div><div><span class="tex">x^2+x</span> is <b>not</b> <span class="tex">x^3</span> or <span class="tex">2x^2</span>. They aren’t like terms (different tile shapes!), so <span class="tex">x^2+x</span> is already simplified.</div></div>
+    <div class="tip watch"><div class="tip-ic">!</div><div><span class="tex">xy</span> and <span class="tex">yx</span> <b>are</b> like terms (multiply in any order), but <span class="tex">m^2n</span> and <span class="tex">mn^2</span> are <b>not</b>: same letters, different exponents.</div></div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex7" data-section="Example 7">
+  <div class="ex-head"><span class="ex-tag">Example 7</span><h3>Collecting like terms, horizontally and vertically</h3></div>
+  <p class="q">Simplify each of the following by collecting like terms.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) <span class="tex">(5p-3q+4r)+(2q-5p-7r)</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">p</span>: <span class="tex">5p-5p=0</span>; <span class="tex">q</span>: <span class="tex">-3q+2q=-q</span>; <span class="tex">r</span>: <span class="tex">4r-7r=-3r</span><br><span class="tex">=\boldsymbol{-q-3r}</span></div></div></div>
+    <div class="part"><div class="pl u3-vert">(b) <span class="tex">\begin{array}{r}6x^2-5x+4\\-\ (3x^2-8x-2)\\\hline\end{array}</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Column by column: <span class="tex">6x^2-3x^2=3x^2</span>; <span class="tex">-5x-(-8x)=3x</span>; <span class="tex">4-(-2)=6</span><br><span class="tex">=\boldsymbol{3x^2+3x+6}</span></div></div></div>
+  </div>
+  <div class="space" id="ex7-space"></div>
+  <button class="more" data-more="ex7-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex8" data-section="Example 8">
+  <div class="ex-head"><span class="ex-tag">Example 8</span><h3>Collecting like terms in longer expressions</h3></div>
+  <p class="q">Simplify.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) <span class="tex">7y-3y^2+4-5y^2+9-2y</span></div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">y^2</span>: <span class="tex">-3y^2-5y^2=-8y^2</span>; <span class="tex">y</span>: <span class="tex">7y-2y=5y</span>; numbers: <span class="tex">4+9=13</span><br><span class="tex">=\boldsymbol{-8y^2+5y+13}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">m^2n-mn^2+5m^3n-6mn^2+4m^2n</span></div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">m^3n</span>: <span class="tex">5m^3n</span>; <span class="tex">m^2n</span>: <span class="tex">m^2n+4m^2n=5m^2n</span>; <span class="tex">mn^2</span>: <span class="tex">-mn^2-6mn^2=-7mn^2</span><br><span class="tex">=\boldsymbol{5m^3n+5m^2n-7mn^2}</span></div></div></div>
+  </div>
+  <div class="space" id="ex8-space"></div>
+  <button class="more" data-more="ex8-space">+ More space</button>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div>A <b>polynomial</b> is a sum of terms whose variables have <b>positive integer</b> exponents. Name it by its terms: 1 <b>monomial</b>, 2 <b>binomial</b>, 3 <b>trinomial</b>, 4 or more <b>polynomial</b>.</div>
+    <div>A term’s <b>degree</b> is the sum of its exponents; a polynomial’s degree is its <b>highest</b> term degree. The <b>leading coefficient</b> belongs to the highest power.</div>
+    <div><b>Algebra tiles:</b> the shape says <span class="tex">x^2</span>, <span class="tex">x</span> or 1; <b>shaded</b> is positive, <b>unshaded</b> is negative. A <b>zero pair</b> is worth 0.</div>
+    <div>Combine only <b>like terms</b>: add the coefficients, keep the variable part. To <b>subtract</b>, add the opposite: flip <b>every</b> sign in the bracket.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u3l1" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 1 — Polynomials: Review and Preview</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l2/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 2 — Multiplying Monomials and Binomials</b><div class="muted">What happens when you multiply <span class="tex">3x</span> by <span class="tex">x</span>? Area models and FOIL.</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u3l1.js';
+  boot({ key: 'u3l1', homeHref: '../../', title: '3.1 Polynomials' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

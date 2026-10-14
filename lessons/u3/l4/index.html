@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Multiplying Polynomials II · Math 10C 3.4</title>
+<meta name="description" content="Math 10C Unit 3 Lesson 4: multiplying a binomial by a trinomial (grid and distribution, six partial products) and multiplying three binomials (volume of a box). Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u3l4.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 3 Polynomial Operations · Lesson 4</div>
+  <h1>Multiplying Polynomials II — Binomial × Trinomial and Three Binomials</h1>
+  <p class="lede">FOIL handles two binomials, but it runs out of hands the moment a factor has three terms. Today every term shakes hands with every term: <b>six partial products</b> at a time, organized in a grid or by distribution. Then three binomials at once, to find the volume of a box.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>explain why an <span class="tex">m</span>-term polynomial times an <span class="tex">n</span>-term polynomial makes <span class="tex">m\times n</span> partial products</li>
+      <li>multiply a binomial by a trinomial with a <b>grid</b> (area model) and with the <b>distributive property</b>, then collect like terms</li>
+      <li>multiply three binomials in two steps, and explain why the pair I multiply first doesn’t matter</li>
+      <li>write and expand the volume of a rectangular prism whose edges are binomials</li>
+      <li>check an expansion by substituting a number into both forms</li>
+    </ul>
+  </div>
+  <div class="outcome"><b>AN4</b> Demonstrate an understanding of the multiplication of polynomial expressions (limited to monomials, binomials and trinomials), concretely, pictorially and symbolically.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: The Painted Cube">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Painted Cube</h2></div>
+  <p class="big">A <b>3 by 3 by 3</b> cube is dipped in paint, then cut into <b>27</b> small cubes. Some small cubes got paint on 3 faces, some on 2, some on 1… and some on none. <span class="muted">Tap a kind of cube to find them all.</span></p>
+
+  <div class="pcw" id="paint"></div>
+
+  <div class="wu-grid">
+    <div class="wq">
+      <div class="q-line"><div class="q-num">1</div><div>How many small cubes have paint on <b>3</b> faces? Where are they?</div></div>
+      <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><b>8</b>, one at each <b>corner</b> of the big cube.</div></div>
+    </div>
+    <div class="wq">
+      <div class="q-line"><div class="q-num">2</div><div>How many have exactly <b>2</b> painted faces? Exactly <b>1</b>?</div></div>
+      <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans">Two faces: <b>12</b>, the middle of each of the 12 edges. One face: <b>6</b>, the centre of each of the 6 faces.</div></div>
+    </div>
+    <div class="wq">
+      <div class="q-line"><div class="q-num">3</div><div>How many have <b>no</b> paint? What if the big cube were 4 by 4 by 4?</div></div>
+      <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><b>1</b>, the hidden centre cube. Check: <span class="tex">8+12+6+1=27</span>. For 4 by 4 by 4 the core is <span class="tex">2\times2\times2=\boldsymbol{8}</span>.</div></div>
+    </div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> A <b>10 by 10 by 10</b> cube is painted, then cut into 1000 small cubes. How many small cubes have <b>no paint</b>? <b>Guess first.</b></div></div>
+    <div class="poll-opts c4">
+      <div class="opt"><b>A</b> 100</div>
+      <div class="opt"><b>B</b> 400</div>
+      <div class="opt right"><b>C</b> 512</div>
+      <div class="opt"><b>D</b> 729</div>
+    </div>
+    <button class="pill" type="button" data-poll>Reveal</button>
+    <div class="poll-ans"><b>C, 512: more than half!</b> Peel one layer off <b>every</b> side: <span class="tex">10-2=8</span> each way, so the unpainted core is <span class="tex">8\times8\times8=512</span>. <button class="pill small" type="button" data-showcube="10,10,10|0">Show it on the cube</button><br>
+      <span class="muted"><b>B</b> takes away <span class="tex">6\times100=600</span> outside cubes, but edge and corner cubes sit on 2 or 3 faces and get taken away more than once (only 488 are painted). <b>D</b> is <span class="tex">9^3</span>: a layer peeled off only <b>one</b> side each way. <b>A</b> is the “the paint must get most of them” gut feeling.</span></div>
+  </div>
+
+  <div class="wq wq-wide">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Challenge your neighbour.</b> A <b>3 × 4 × 5</b> box is painted and cut into 60 cubes. How many have no paint? <span class="muted">(It’s on the cube above too.)</span></div></div>
+    <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">(3-2)(4-2)(5-2)=1\times2\times3=\boldsymbol{6}</span>. For an <span class="tex">n\times n\times n</span> cube it’s <span class="tex">(n-2)(n-2)(n-2)</span>: <b>three binomials multiplied together</b>. That’s today.</div></div>
+  </div>
+  <p class="hum">Build a 2 by 2 by 2 cube from blocks. Predict first: how many small cubes escape the paint?</p>
+</section>
+
+<!-- ================= 1. Binomial x trinomial ================= -->
+<section class="card" data-ink="s1" data-section="1. Binomial × Trinomial">
+  <div class="sec-h"><span class="badge">1</span><h2>Multiplying a Binomial by a Trinomial</h2></div>
+  <p>When a binomial (2 terms) is multiplied by a trinomial (3 terms), every term of the binomial must <b>“shake hands”</b> with every term of the trinomial: <span class="tex">2\times3=6</span> partial products before any like terms are collected.</p>
+  <div class="def rule-card"><b>General rule for multiplying polynomials.</b> Multiply <b>every</b> term of the first factor by <b>every</b> term of the second, then collect like terms. An <span class="tex">m</span>-term polynomial times an <span class="tex">n</span>-term polynomial gives <span class="tex">m\times n</span> partial products before collecting.
+    <div class="mn-row">
+      <div class="mn"><span class="mn-k">binomial × binomial</span><span class="mn-v"><span class="tex">2\times2=4</span></span><span class="mn-n">this is <b>FOIL</b></span></div>
+      <div class="mn"><span class="mn-k">binomial × trinomial</span><span class="mn-v"><span class="tex">2\times3=6</span></span><span class="mn-n">today</span></div>
+      <div class="mn"><span class="mn-k">trinomial × trinomial</span><span class="mn-v"><span class="tex">3\times3=9</span></span><span class="mn-n">same rule</span></div>
+    </div>
+  </div>
+  <div class="explainer" data-explainer="handshake"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>FOIL is only the 2 × 2 case.</b> First, Outer, Inner, Last makes 4 products. With a trinomial, FOIL never touches its <b>middle</b> term, so two partial products go missing.</div></div>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. The grid">
+  <h3 class="sub">Method 1: the grid (area model)</h3>
+  <p>A small grid keeps track of all six. One factor labels the <b>rows</b>, the other labels the <b>columns</b>, and each cell holds the product of its row and column labels. Add every cell and combine like terms.</p>
+  <div class="explainer" data-explainer="grid"></div>
+  <div class="tip diag-tip"><div class="tip-ic">↘</div><div><b>Write both factors in descending powers</b> and the like terms land on the same <b>diagonal</b> of the grid. That makes them easy to spot.</div></div>
+</section>
+
+<section class="card" data-ink="s1c" data-section="1. Distribution">
+  <h3 class="sub">Method 2: the distributive property</h3>
+  <p>Each term of the first factor multiplies the <b>whole</b> second factor. It’s the same six products as the grid, written in a line.</p>
+  <div class="explainer" data-explainer="distribute"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Subtracting a product? Keep it in brackets.</b> Expand it first, then the minus sign flips <b>every</b> term inside: <span class="tex">-(25b^2-9)=-25b^2+9</span>.</div></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>The same product two ways: grid, then distribution</h3></div>
+  <p class="q">A rectangle has length <span class="tex">(3x+4)</span> cm and width <span class="tex">\left(x^2+3x+2\right)</span> cm. Determine the area of the rectangle, in cm², using</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(i) an area model (grid)</div><div class="work" style="--h:330px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\begin{array}{c|ccc}\times&amp;x^2&amp;3x&amp;2\\\hline3x&amp;3x^3&amp;9x^2&amp;6x\\4&amp;4x^2&amp;12x&amp;8\end{array}</span><br>Add all six cells, then collect: <span class="tex">3x^3+(9x^2+4x^2)+(6x+12x)+8</span><br><span class="tex">=\boldsymbol{3x^3+13x^2+18x+8}</span> cm²</div></div></div>
+    <div class="part"><div class="pl">(ii) the distributive property</div><div class="work" style="--h:330px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">=3x(x^2+3x+2)+4(x^2+3x+2)</span><br><span class="tex">=(3x^3+9x^2+6x)+(4x^2+12x+8)</span><br><span class="tex">=\boldsymbol{3x^3+13x^2+18x+8}</span><br>Both methods agree: the area is <span class="tex">(3x^3+13x^2+18x+8)</span> cm².</div></div></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Expanding a binomial times a trinomial</h3></div>
+  <p class="q">Expand and simplify.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) <span class="tex">(x^2-9)(3x^3+2x-7)</span></div><div class="work" style="--h:290px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">=x^2(3x^3+2x-7)-9(3x^3+2x-7)</span><br><span class="tex">=(3x^5+2x^3-7x^2)-(27x^3+18x-63)</span><br>Only the <span class="tex">x^3</span> terms are alike: <span class="tex">2x^3-27x^3=-25x^3</span><br><span class="tex">=\boldsymbol{3x^5-25x^3-7x^2-18x+63}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">(3y^2-2y-5)(y-4)</span></div><div class="work" style="--h:290px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">=3y^2(y-4)-2y(y-4)-5(y-4)</span><br><span class="tex">=(3y^3-12y^2)-(2y^2-8y)-(5y-20)</span><br><span class="tex">-12y^2-2y^2=-14y^2</span> and <span class="tex">8y-5y=3y</span><br><span class="tex">=\boldsymbol{3y^3-14y^2+3y+20}</span></div></div></div>
+  </div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(c) <span class="tex">3(b-5)(b^2-2b-4)-(5b-3)(5b+3)</span></div><div class="work" style="--h:330px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Binomial × trinomial first (six partial products): <span class="tex">(b-5)(b^2-2b-4)=b^3-2b^2-4b-5b^2+10b+20=b^3-7b^2+6b+20</span>, so <span class="tex">3(b-5)(b^2-2b-4)=3b^3-21b^2+18b+60</span>.<br>A sum times a difference: <span class="tex">(5b-3)(5b+3)=25b^2-9</span>.<br>Subtracting: <span class="tex">(3b^3-21b^2+18b+60)-(25b^2-9)=\boldsymbol{3b^3-46b^2+18b+69}</span></div></div></div>
+  </div>
+  <div class="part think"><div class="pl"><span class="think-tag">Think</span> In (a), how many partial products are there before collecting? Why does the answer have only <b>five</b> terms?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">2\times3=6</span> partial products. Only one pair is alike (<span class="tex">2x^3</span> and <span class="tex">-27x^3</span>), so they combine into one term: <span class="tex">6-1=5</span> terms.</div></div></div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<!-- ================= 2. Three binomials ================= -->
+<section class="card" data-ink="s2" data-section="2. Three Binomials">
+  <div class="sec-h"><span class="badge">2</span><h2>Multiplying Three Binomials</h2></div>
+  <p>The same idea extends to three binomials: <b>multiply the first two</b>, then <b>multiply that result by the third</b>, then collect like terms. Because multiplication is commutative and associative, neither the choice of which pair to multiply first nor the order of the factors changes the final expansion.</p>
+  <div class="def-grid">
+    <div class="def"><b>Two steps</b><div class="eg"><b>Step 1:</b> binomial × binomial gives a trinomial (FOIL, 4 products).<br><b>Step 2:</b> trinomial × binomial (6 products), then collect.</div></div>
+    <div class="def amber"><b>Volume of a rectangular prism</b><div class="eg"><span class="tex">V=\text{length}\times\text{width}\times\text{height}</span>. When the edges are binomials, the volume is a product of <b>three binomials</b>.</div></div>
+  </div>
+  <p>Back to the warm-up: the unpainted core of an <span class="tex">n\times n\times n</span> cube is <span class="tex">(n-2)(n-2)(n-2)</span>.</p>
+  <div class="explainer" data-explainer="core"></div>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. The box">
+  <h3 class="sub">A box with binomial edges</h3>
+  <p>Step 1 finds the area of the <b>base</b>. Step 2 multiplies by the <b>height</b>, which slices the box into layers.</p>
+  <div class="explainer" data-explainer="box"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Not just firsts and lasts.</b> <span class="tex">(x+3)(x+4)(x+6)\neq x^3+72</span>. Those are only 2 of the 8 blocks of the box. Every term of each factor has to meet every term of the others.</div></div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Volume of a rectangular prism</h3></div>
+  <p class="q">Consider the rectangular prism shown, with edge lengths <span class="tex">(x+3)</span> cm, <span class="tex">(x+4)</span> cm, and <span class="tex">(x+6)</span> cm.</p>
+  <div class="ex3-row">
+    <div class="prism-fig" id="prism"></div>
+    <div class="part ex3-a"><div class="pl">(a) Write an expression for the volume of the prism, in cm³.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">V=\text{length}\times\text{width}\times\text{height}</span>, so<br><span class="tex">V=\boldsymbol{(x+3)(x+4)(x+6)}</span> cm³</div></div></div>
+  </div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(b) Expand the expression in (a) to write the volume in the form <span class="tex">V=ax^3+bx^2+cx+d</span>.</div><div class="work" style="--h:340px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">First two: <span class="tex">(x+3)(x+4)=x^2+7x+12</span>. Then <span class="tex">(x^2+7x+12)(x+6)=x^2(x+6)+7x(x+6)+12(x+6)</span><br><span class="tex">=(x^3+6x^2)+(7x^2+42x)+(12x+72)=\boldsymbol{x^3+13x^2+54x+72}</span><br>So <span class="tex">V=x^3+13x^2+54x+72</span> cm³.</div></div></div>
+  </div>
+  <div class="part think"><div class="pl"><span class="think-tag">Think</span> If you multiplied all three binomials at once, without collecting in between, how many partial products would there be?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">2\times2\times2=\boldsymbol{8}</span>: one for each block of the box. <span class="tex">x^3+3x^2+4x^2+12x+6x^2+18x+24x+72</span> collects to the same answer.</div></div></div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2c" data-section="2. Any pair first">
+  <h3 class="sub">Does it matter which pair goes first?</h3>
+  <p>Three binomials can be paired up three ways. Try all three and compare.</p>
+  <div class="explainer" data-explainer="pairs"></div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>The order of the three factors does not matter</h3></div>
+  <p class="q">Expand and simplify.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) <span class="tex">(x-2)(x+5)(3x-1)</span></div><div class="work" style="--h:360px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">First two: <span class="tex">(x-2)(x+5)=x^2+3x-10</span><br><span class="tex">(x^2+3x-10)(3x-1)</span><br><span class="tex">=(3x^3-x^2)+(9x^2-3x)+(-30x+10)</span><br><span class="tex">=\boldsymbol{3x^3+8x^2-33x+10}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">(3x-1)(x-2)(x+5)</span> <span class="pl-note muted small">(multiply <span class="tex">(3x-1)(x-2)</span> first)</span></div><div class="work" style="--h:360px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A <b>different</b> pair first: <span class="tex">(3x-1)(x-2)=3x^2-7x+2</span><br><span class="tex">(3x^2-7x+2)(x+5)</span><br><span class="tex">=(3x^3+15x^2)+(-7x^2-35x)+(2x+10)</span><br><span class="tex">=\boldsymbol{3x^3+8x^2-33x+10}</span></div></div></div>
+  </div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(c) Comment on the results to (a) and (b).</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Both give the <b>same</b> polynomial, <span class="tex">3x^3+8x^2-33x+10</span>, even though (a) multiplied <span class="tex">(x-2)(x+5)</span> first and (b) multiplied <span class="tex">(3x-1)(x-2)</span> first. Multiplication is commutative and associative, so the three binomials can be grouped or reordered any way: <b>choose the easiest pair first</b>.</div></div></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<!-- ================= check ================= -->
+<section class="card" data-ink="s3" data-section="Check with a number">
+  <div class="sec-h"><span class="badge ck-b">✓</span><h2>Is My Expansion Right? Check It with a Number</h2></div>
+  <p>An expression and its expansion are <b>equal for every value</b> of the variable. Substitute the same number into both: if the values don’t match, there’s a mistake somewhere.</p>
+  <div class="explainer" data-explainer="check"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check Example 1 at <span class="tex">x=2</span>.</b> The original: <span class="keys"><kbd>(</kbd><kbd>3</kbd><kbd>×</kbd><kbd>2</kbd><kbd>+</kbd><kbd>4</kbd><kbd>)</kbd><kbd>×</kbd><kbd>(</kbd><kbd>2</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>3</kbd><kbd>×</kbd><kbd>2</kbd><kbd>+</kbd><kbd>2</kbd><kbd>)</kbd><kbd>ENTER</kbd></span>. The expansion: <span class="keys"><kbd>3</kbd><kbd>×</kbd><kbd>2</kbd><kbd>^</kbd><kbd>3</kbd><kbd>+</kbd><kbd>1</kbd><kbd>3</kbd><kbd>×</kbd><kbd>2</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>1</kbd><kbd>8</kbd><kbd>×</kbd><kbd>2</kbd><kbd>+</kbd><kbd>8</kbd><kbd>ENTER</kbd></span>. Both give <b>120</b> ✓.</div>
+    <div class="pill-col"><button class="pill" data-keys="( 3 × 2 + 4 ) × ( 2 x² + 3 × 2 + 2 ) =">Show original</button><button class="pill" data-keys="3 × 2 ^ 3 + 13 × 2 x² + 18 × 2 + 8 =">Show expansion</button></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check the box of Example 3 at <span class="tex">x=2</span>.</b> The edges are 5, 6 and 8: <span class="keys"><kbd>5</kbd><kbd>×</kbd><kbd>6</kbd><kbd>×</kbd><kbd>8</kbd><kbd>ENTER</kbd></span> gives 240. The expansion: <span class="keys"><kbd>2</kbd><kbd>^</kbd><kbd>3</kbd><kbd>+</kbd><kbd>1</kbd><kbd>3</kbd><kbd>×</kbd><kbd>2</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>5</kbd><kbd>4</kbd><kbd>×</kbd><kbd>2</kbd><kbd>+</kbd><kbd>7</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> also gives <b>240</b> ✓.</div>
+    <div class="pill-col"><button class="pill" data-keys="5 × 6 × 8 =">Show original</button><button class="pill" data-keys="2 ^ 3 + 13 × 2 x² + 54 × 2 + 72 =">Show expansion</button></div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>0 and 1 make a weak test.</b> At <span class="tex">x=1</span> every power of <span class="tex">x</span> is 1, so a wrong exponent slips right past. Use 2 or 3. A match is strong evidence; a mismatch <b>proves</b> there’s a mistake.</div></div>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Every term × every term</b>, then collect like terms. An <span class="tex">m</span>-term times an <span class="tex">n</span>-term polynomial makes <span class="tex">m\times n</span> partial products. FOIL is only the <span class="tex">2\times2</span> case.</div>
+    <div><b>Grid or distribution</b>, same six products: <span class="tex">(3x+4)(x^2+3x+2)=3x^3+13x^2+18x+8</span>. In a grid, like terms line up along the diagonals.</div>
+    <div><b>Three binomials, two steps:</b> multiply a pair, then multiply by the third. Any pair first gives the same answer, so pick the easiest.</div>
+    <div><b>Volume</b> of a box with binomial edges: <span class="tex">V=(x+3)(x+4)(x+6)=x^3+13x^2+54x+72</span>. Check any expansion by substituting 2 or 3.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u3l4" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 4 — Multiplying Polynomials II</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l5/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 5 — Applying Polynomial Products to Area, Volume, and Equations</b><div class="muted">Composite areas, framed regions, and equations that must be expanded first</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u3l4.js';
+  boot({ key: 'u3l4', homeHref: '../../', title: '3.4 Multiplying Polynomials II' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>
