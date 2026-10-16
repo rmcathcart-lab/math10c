@@ -70,7 +70,7 @@
 .u5l1-blanks i { flex: 1; border-bottom: 2px solid var(--ink2); margin: 0 4px; height: 28px; }
 
 /* booklet tables */
-.u5l1-tbl { border-collapse: collapse; margin: 8px 0 10px; font-size: 20px; }
+.u5l1-tbl { align-self: flex-start; border-collapse: collapse; margin: 8px 0 10px; font-size: 20px; }
 .u5l1-tbl th, .u5l1-tbl td { border: 1.5px solid #8b909b; padding: 6px 14px; text-align: center; }
 .u5l1-tbl th { background: #f6f5f1; font-weight: 700; }
 .u5l1-qtbl td { width: 190px; height: 46px; }

@@ -549,7 +549,7 @@ function mountWarm() {
 
   // the track
   const tr = document.getElementById('u5l4-track'); if (!tr) return;
-  const G = new Graph(tr, { width: 540, height: 330, xmin: 0, xmax: 800, ymin: -14, ymax: 46, xstep: 100, ystep: 10, xlabels: 200, ylabels: 10, xtitle: '\\text{distance (m)}', ytitle: '\\text{height (m)}', fontSize: 17 });
+  const G = new Graph(tr, { width: 500, height: 330, xmin: 0, xmax: 800, ymin: -14, ymax: 46, xstep: 100, ystep: 10, xlabels: 200, ylabels: 10, xtitle: 'd', ytitle: 'h', fontSize: 17 });
   const [ux0, uy0] = G.toPx(0, 0), [ux1, uy1] = G.toPx(800, -14);
   svgEl('rect', { x: ux0, y: uy0, width: ux1 - ux0, height: uy1 - uy0, fill: '#966e46', 'fill-opacity': 0.18 }, G.layers.bg);
   G.label(560, -8, '<i>underground</i>', { cls: 'u5l4-under' });
@@ -563,7 +563,7 @@ function mountWarm() {
   const done = {};
   const act = async (k) => {
     if (done[k]) return; done[k] = true; const c = liveCtx();
-    if (k === 'ext') { await G.reveal(G.point(150, 40, { color: 'purple', label: 'highest 40 m', pos: 'e' }), c); await G.reveal(G.point(260, -6, { color: 'purple', label: 'lowest −6 m', pos: 'e' }), c); }
+    if (k === 'ext') { await G.reveal(G.point(150, 40, { color: 'purple', label: 'highest 40 m', pos: 'e' }), c); await G.reveal(G.point(260, -6, { color: 'purple', label: 'lowest −6 m', pos: 'sw' }), c); }
     if (k === 'x') { await G.drawIn(G.shadeX(0, 800, { band: true }), 900, c); G.label(400, -14, '<b>0 to 800 m</b>', { pos: 'n', cls: 'bk-ptlab u5l4-dlab' }); }
     if (k === 'y') { if (!done.ext) await act('ext'); await G.drawIn(G.shadeY(-6, 40, { band: true }), 900, c); }
   };
@@ -621,7 +621,7 @@ function mountFigures() {
   }
   if (F.e4c) new MappingDiagram(F.e4c, { width: 300, height: 230, domain: [5, 7, 9], range: [1, 3], pairs: [[5, 1], [7, 3], [9, 1]], titles: null, color: COLORS.ink });
   if (F.e4d) {
-    const G = small(F.e4d, { width: 260, height: 260, xmin: -5, xmax: 11, ymin: -10, ymax: 6, xlabels: 4, ylabels: 4, fontSize: 15 });
+    const G = small(F.e4d, { width: 220, height: 220, xmin: -5, xmax: 11, ymin: -10, ymax: 6, xlabels: 4, ylabels: 4, fontSize: 15 });
     const ring = []; for (let i = 0; i <= 120; i++) { const t = (i / 120) * 2 * Math.PI; ring.push([3 + 6 * Math.cos(t), -2 + 6 * Math.sin(t)]); }
     G.polyline(ring, { closed: true, color: 'ink', width: 3 }); G.point(3, -2, { color: 'ink', r: 4.5 });
     G.shadeX(-3, 9); G.shadeY(-8, 4);

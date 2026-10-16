@@ -204,7 +204,7 @@ function mountFigures() {
     G.segment([5, 0], [5, 2], { color: 'purple', width: 4.5, arrowB: true });
     G.point(5, 2, { label: T('P(5,\\ 2)'), pos: 'ne', color: 'red' });
     G.label(2.5, 0, 'right 5', { pos: 'n', cls: 'u5l1-mvlab', color: 'amber' });
-    G.label(5, 1, 'up 2', { pos: 'e', cls: 'u5l1-mvlab', color: 'purple' });
+    G.label(5, 1, 'up 2', { pos: 'w', cls: 'u5l1-mvlab', color: 'purple' });
   }
 
   const ex1 = document.getElementById('fig-ex1');

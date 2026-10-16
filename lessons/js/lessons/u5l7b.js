@@ -368,9 +368,9 @@ const linearExpr = {
 /* ======================= explainer 7: forwards and backwards on the graph ======================= */
 const GF = {
   lin: { label: 'Line: Example 4(d) check', n: 'g', f: (x) => 5 * x - 2, tex: 'g(x)=5x-2', win: { xmin: -3, xmax: 6, ymin: -4, ymax: 20, ystep: 2 },
-    a: 2, b: 18, xs: [4], lab: [3.9, 13], lpos: 'e', back: `${T('x=4')}: one answer.` },
+    shape: 'line', a: 2, b: 18, xs: [4], lab: [3.9, 13], lpos: 'e', back: `${T('x=4')}: one answer.` },
   par: { label: 'Parabola: Example 5 check', n: 'f', f: (x) => x * x - 7, tex: 'f(x)=x^2-7', win: { xmin: -8, xmax: 8, ymin: -10, ymax: 42, ystep: 5 },
-    a: 5, b: 29, xs: [-6, 6], lab: [-0.4, 11], lpos: 'w', back: `${T('x=-6')} <b>or</b> ${T('x=6')}: the line meets the graph <b>twice</b>.`, extra: 38 }
+    shape: 'parabola', a: 5, b: 29, xs: [-6, 6], lab: [-0.4, 11], lpos: 'w', back: `${T('x=-6')} <b>or</b> ${T('x=6')}: the line meets the graph <b>twice</b>.`, extra: 38 }
 };
 const graphFB = {
   title: 'Forwards and backwards on the graph',
@@ -383,7 +383,7 @@ const graphFB = {
     const P = panel(stage, 500, 8, W - 512, 454, 'Read from the graph');
     const r = d.extra ? Math.sqrt(d.extra + 7) : 0;
     const steps = [
-      { cap: `The graph of ${T(d.tex)}.`, run: async (c) => { const L = G.fn(d.f, { color: 'teal' }); await G.drawIn(L, 900, c); G.label(d.lab[0], d.lab[1], T(d.tex), { pos: d.lpos, color: 'teal', cls: 'bk-ptlab' }); } },
+      { cap: `Draw the graph: a <b>${d.shape}</b>.`, run: async (c) => { const L = G.fn(d.f, { color: 'teal' }); await G.drawIn(L, 900, c); G.label(d.lab[0], d.lab[1], T(d.tex), { pos: d.lpos, color: 'teal', cls: 'bk-ptlab' }); } },
       { cap: `<b>Forwards</b>: evaluate ${T(n + '(' + d.a + ')')}. Start at ${T('x=' + d.a)} and go <b>up</b> to the graph…`,
         run: async (c) => { await G.reveal(G.point(d.a, 0, { color: 'blue', r: 6 }), c); await G.drawIn(G.segment([d.a, 0], [d.a, fa], { color: 'blue', arrowB: true, width: 3.5 }), 600, c); await G.reveal(G.point(d.a, fa, { color: 'blue', r: 7 }), c); } },
       { cap: `…then <b>across</b> to the vertical axis: ${T(n + '(' + d.a + ')=' + fa)}.`,
@@ -456,7 +456,7 @@ const NL = {
   e7: { label: 'Example 7', f: `P(x)=3${X}^2-5${X}+2`, inp: 'x+2',
     lines: [[`P(x+2)=3${S('x+2')}^2-5${S('x+2')}+2`, `Replace every ${T('x')} with ${T('(x+2)')}.`], ['=3(x^2+4x+4)-5(x+2)+2', `${T('(x+2)^2=x^2+4x+4')}.`],
       ['=3x^2+12x+12-5x-10+2', 'Distribute the 3 and the −5.'], ['=3x^2+7x+4', 'Collect like terms.']],
-    ck: { at: 'x=1', L: ['P(x+2)', 'P(3)', '27-15+2', '14'], R: ['3x^2+7x+4', '3(1)^2+7(1)+4', '3+7+4', '14'] } }
+    ck: { at: 'x=1', L: ['P(x+2)', 'P(3)', '27-15+2', '14'], R: ['3x^2+7x+4', '3(1)+7(1)+4', '3+7+4', '14'] } }
 };
 const nonlinearSub = {
   title: 'Extension: an expression into a non-linear function',
@@ -467,8 +467,8 @@ const nonlinearSub = {
     const d = NL[k], W = ex.W, LH = 56;
     const fx = add(stage, h('div', 'u5l7b-fx', K(d.f)), 22, 14);
     const ls = d.lines.map((l, i) => { const e = add(stage, h('div', 'u5l7b-ln sm', KL(l[0])), 22 + (i ? 40 : 0), 84 + i * LH); hide(e); return e; });
-    const card = checkCard(stage, { at: d.ck.at, left: d.ck.L, right: d.ck.R, ok: true, x: W - 356, y: 14, width: 344, hidden: true });
-    const warn = d.warn ? add(stage, box(h('div', 'u5l7b-warn', '✗ ' + d.warn), 344, 0), W - 356, 300) : null;
+    const card = checkCard(stage, { at: d.ck.at, left: d.ck.L, right: d.ck.R, ok: true, x: W - 392, y: 14, width: 380, hidden: true });
+    const warn = d.warn ? add(stage, box(h('div', 'u5l7b-warn', '✗ ' + d.warn), 380, 0), W - 392, 300) : null;
     if (warn) { warn.style.height = 'auto'; hide(warn); }
     const steps = [{ cap: `Every ${T('x')} is a slot. The input this time is ${T(d.inp)}.`, run: async (c) => { const s = [...fx.querySelectorAll('.u5l7b-slot')]; s.forEach((e) => e.classList.add('on')); await Promise.all(s.map((e) => pulse(c, e, 1.3))); } }];
     d.lines.forEach((l, i) => steps.push({ cap: l[1], run: async (c) => { await fadeIn(c, ls[i]); if (i === d.lines.length - 1) ls[i].classList.add('ansline'); } }));

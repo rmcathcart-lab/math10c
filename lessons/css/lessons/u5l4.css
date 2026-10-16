@@ -93,9 +93,11 @@
 /* answer shadows on the example figures: hidden until the part's answer is shown */
 .u5l4-sh { opacity: 0; transition: opacity .4s; }
 .part.shown .u5l4-sh { opacity: 1; }
-.u5l4-ansfig { display: grid; grid-template-columns: 1fr 260px; gap: 12px; align-items: center; }
+.u5l4-ansfig { display: grid; grid-template-columns: 1fr 220px; gap: 12px; align-items: center; }
 .u5l4-vt .bk-td, .u5l4-vt .bk-th { font-size: 26px; }
 .u5l4-ring circle { fill: none !important; stroke: var(--ok) !important; stroke-width: 3.5 !important; }
 .u5l4-pl.u5l4-sm { font-size: 20px; }
 .u5l4-pl.u5l4-calc { font-size: 20px; }
 .u5l4-acard .u5l4-pl { font-size: 20px; }
+.u5l4-nw { white-space: nowrap; }
+.u5l4-trsub { font: 500 15px var(--round); color: var(--muted); margin-left: 6px; }

@@ -153,14 +153,14 @@ function mountFigures() {
     const G = grid($('u5l8-a-ex4'), 'ex4', 300, 260, { fontSize: 13 });
     G.segment([0, 9000], [20, 0], { color: 'red', width: 3, ends: ['closed', 'closed'] });
     G.point(6, 6300, { color: 'red', r: 5, label: T('(6,\\ 6\\,300)'), pos: 'ne' });
-    G.label(20, 0, T('(20,\\ 0)'), { pos: 'n', color: 'red', cls: 'bk-ptlab', gap: 10 });
+    G.label(20, 0, T('(20,\\ 0)'), { pos: 'n', color: 'red', cls: 'bk-ptlab', gap: 26 });
   }
   if ($('u5l8-g-ex5')) grid($('u5l8-g-ex5'), 'ex5', 430, 340);
   if ($('u5l8-a-ex5')) {
     const G = grid($('u5l8-a-ex5'), 'ex5', 300, 250, { fontSize: 13 });
     G.segment([0, 18400], [5000, 153400], { color: 'red', width: 3, ends: ['closed', 'closed'] });
-    G.label(0, 18400, T('(0,\\ 18\\,400)'), { pos: 'ne', color: 'red', cls: 'bk-ptlab', gap: 6 });
-    G.label(5000, 153400, T('(5\\,000,\\ 153\\,400)'), { pos: 'sw', color: 'red', cls: 'bk-ptlab', gap: 8 });
+    G.label(0, 18400, T('(0,\\ 18\\,400)'), { pos: 'se', color: 'red', cls: 'bk-ptlab', gap: 6 });
+    G.label(5000, 153400, T('(5\\,000,\\ 153\\,400)'), { pos: 'nw', color: 'red', cls: 'bk-ptlab', gap: 2 });
   }
   if ($('u5l8-g-ex6')) grid($('u5l8-g-ex6'), 'ex6', 430, 330);
   if ($('u5l8-a-ex6')) {
@@ -206,7 +206,6 @@ const swap = {
     const arrow = add(wrap, h('div', 'u5l8-repl', `replace ${T(d.dir === 'f2y' ? fT : 'y')} with ${T(d.dir === 'f2y' ? 'y' : fT)} ↓`), 26, 124); arrow.style.opacity = 0;
     const legend = add(wrap, h('div', 'u5l8-leg', `<div class="u5l8-cin">⟷ horizontal axis: input ${T(v)} → <b>domain</b></div><div class="u5l8-cout">↕ vertical axis: output ${T(fT)} (or ${T('y')}) → <b>range</b></div>`), 26, 300); legend.style.opacity = 0;
     const G = new LG(stage, Object.assign({ x: ex.W - 392, y: 22, width: 380, height: 380, xtitle: v, ytitle: fT, fontSize: 15 }, d.win));
-    const outT = d.dir === 'f2y' ? fT : 'y';
     return [
       { cap: d.dir === 'f2y' ? `${T(fT + '=' + d.rhs)} is in <b>function notation</b>: ${T(d.name)} is the function’s <b>name</b> and ${T(v)}, in the brackets, is the <b>input</b>.`
         : `${T('y=' + d.rhs)} is in <b>${T('x')}-${T('y')} notation</b>: ${T('y')} is the <b>output</b> and ${T('x')} is the <b>input</b>.`,
@@ -218,7 +217,7 @@ const swap = {
         run: async (c) => { await Promise.all([R2.e, R2.b].map((e) => c.anim(e, [{ opacity: 0, transform: 'translateY(-156px)' }, { opacity: 1, transform: 'none' }], 700))); } },
       { cap: `The independent variable never changes: the input is still ${T(v)}${v !== 'x' ? ', not ' + T('x') : ''}.`,
         run: async (c) => { wrap.classList.add('u5l8-hot'); await Promise.all([R1.b, R2.b].map((e) => pulse(c, e, 1.06))); } },
-      { cap: `Inputs (${T(v)}) run along the <b>horizontal axis</b> and make up the <b>domain</b>. Outputs (${T(outT)}) run up the <b>vertical axis</b> and make up the <b>range</b>.`,
+      { cap: `Inputs (${T(v)}) run along the <b>horizontal axis</b> and make up the <b>domain</b>. Outputs (${T(fT)}, or ${T('y')}) run up the <b>vertical axis</b> and make up the <b>range</b>.`,
         run: async (c) => {
           const xa = G.segment([G.win.xmin, G.axisY()], [G.win.xmax, G.axisY()], { color: 'amber', width: 6, opacity: 0.55 });
           const ya = G.segment([G.axisX(), G.win.ymin], [G.axisX(), G.win.ymax], { color: 'purple', width: 6, opacity: 0.55 });
@@ -278,7 +277,7 @@ const machine = {
         run: (c) => tb.diffs(c, { col: 1 }) },
       { cap: d.linear ? `Join them with a straight line, arrows at both ends: every real number is an input. The vertical axis is the ${T('f(x)')}-axis, because ${T('f(x)')} plays the role of ${T('y')}.`
         : `Join them with a smooth curve, not a ruler. ${T('g(x)')} plays the role of ${T('y')} on the vertical axis.`,
-        run: async (c) => { const L = d.linear ? G.line([0, -3], [1, -1], { color: 'teal' }) : G.fn(d.f, { color: 'teal' }); await G.drawIn(L, 900, c); G.label(d.linear ? 3.2 : 0, d.linear ? 3.2 : 3.6, T(d.linear ? 'f(x)=2x-3' : 'g(x)=x^2-4'), { pos: d.linear ? 'w' : 'c', color: 'teal', cls: 'bk-ptlab' }); } }
+        run: async (c) => { const L = d.linear ? G.line([0, -3], [1, -1], { color: 'teal' }) : G.fn(d.f, { color: 'teal' }); await G.drawIn(L, 900, c); G.label(d.linear ? 1.2 : 0, d.linear ? 3.5 : 3.6, T(d.linear ? 'f(x)=2x-3' : 'g(x)=x^2-4'), { pos: d.linear ? 'w' : 'c', color: 'teal', cls: 'bk-ptlab' }); } }
     ];
   }
 };
@@ -317,7 +316,7 @@ const fwdBack = {
     const G = new LG(stage, { x: 10, y: 10, width: 570, height: 440, xmin: -50, xmax: 50, ymin: -60, ymax: 130, xstep: 10, ystep: 10, xlabels: 20, ylabels: 20, xtitle: 'C\\,(^{\\circ}\\mathrm{C})', ytitle: 'F(C)\\,(^{\\circ}\\mathrm{F})', fontSize: 16 });
     const P = panel(stage, 596, 10, ex.W - 606, 440, k === 'fwd' ? 'Forwards' : k === 'back' ? 'Backwards' : 'Output = input');
     const draw = { cap: `The graph of ${T('F(C)=1.8C+32')}: the input ${T('C')} (Celsius) runs across, the output ${T('F(C)')} (Fahrenheit) runs up.`,
-      run: async (c) => { await G.drawIn(G.fn(fFn, { color: 'teal' }), 900, c); G.label(-30, -40, T('F(C)=1.8C+32'), { pos: 'e', color: 'teal', cls: 'bk-ptlab' }); } };
+      run: async (c) => { await G.drawIn(G.fn(fFn, { color: 'teal' }), 900, c); G.label(-5, 110, T('F(C)=1.8C+32'), { pos: 'w', color: 'teal', cls: 'bk-ptlab' }); } };
     if (k === 'fwd') return [draw,
       { cap: `${T('F(20)')} gives the <b>input</b>. Find ${T('20')} on the <b>horizontal</b> axis…`,
         run: async (c) => { await pop(c, G.point(20, 0, { color: 'blue', r: 7 })); await lineIn(c, P, `${T('F(20)=\\,?')} &nbsp;input given`, 'u5l8-cin'); } },
@@ -370,7 +369,7 @@ const sweep = {
   intro: `The graph of a function ${T('p')}. Compare a <b>vertical</b> line (an input) with a <b>horizontal</b> line (an output). Press <b>Next</b>.`,
   make(stage, v, ex) {
     const G = new LG(stage, { x: 10, y: 10, width: 520, height: 440, xmin: -8, xmax: 8, ymin: -5, ymax: 7, xlabels: 2, ylabels: 2, xtitle: 'x', ytitle: 'p(x)' });
-    const P = panel(stage, 546, 10, ex.W - 556, 440, 'Solve p(x) = b');
+    const P = panel(stage, 546, 10, ex.W - 556, 440, 'Count the solutions');
     const count = line(P, '', 'u5l8-count'); count.style.opacity = 0;
     let vl, hl, dots, cur = [];
     const clearCur = () => { G.remove(...cur); cur = []; };
@@ -478,8 +477,8 @@ function candleScene(stage, ex, win) {
   const wax = add(stage, h('div', 'u5l8-wax'), cx - 26, 0), wick = add(stage, h('div', 'u5l8-wick'), cx - 1.5, 0), flame = add(stage, h('div', 'u5l8-flame'), cx - 11, 0);
   const clock = add(stage, h('div', 'u5l8-read'), 14, 2);
   // a ruler on the left, in cm, to the graph's scale
-  const ruler = add(stage, h('div', 'u5l8-ruler'), 34, base - 14 * uy); box(ruler, 22, 14 * uy);
-  for (let k = 0; k <= 14; k += 2) { const t = add(ruler, h('div', 'u5l8-rt', String(k)), 0, 14 * uy - k * uy); void t; }
+  const ruler = add(stage, h('div', 'u5l8-ruler'), 34, base - 12 * uy); box(ruler, 22, 12 * uy);
+  for (let k = 0; k <= 12; k += 2) add(ruler, h('div', 'u5l8-rt', String(k)), 0, 12 * uy - k * uy);
   const st = { t: 0 };
   const set = (t) => {
     st.t = t; const hh = Math.max(0, hFn(t));
@@ -582,7 +581,7 @@ const pool = {
       { cap: `(a) Start: ${T('V(0)=9\\,000')}. The pool is full before draining begins.`,
         run: async (c) => { await pop(c, G.point(0, 9000, { color: 'teal', r: 7, label: T('(0,\\ 9\\,000)'), pos: 'ne' })); } },
       { cap: `It loses ${T('450')} L every minute, so it is empty when ${T('t=9\\,000\\div450=20')}. Join ${T('(0,\\ 9\\,000)')} to ${T('(20,\\ 0)')}.`,
-        run: async (c) => { await G.drawIn(lineSeg(), 900, c); G.label(20, 0, T('(20,\\ 0)'), { pos: 'n', cls: 'bk-ptlab', color: 'teal', gap: 12 }); } },
+        run: async (c) => { await G.drawIn(lineSeg(), 900, c); G.label(20, 0, T('(20,\\ 0)'), { pos: 'n', cls: 'bk-ptlab', color: 'teal', gap: 30 }); } },
       { cap: `(b) ${T('V(6)=-450(6)+9\\,000=-2\\,700+9\\,000=6\\,300')}.`,
         run: async (c) => { await drain(c, 6, 1500); await readFwd(c, G, 6, 6300, { color: 'blue', yLab: T('6\\,300'), yPos: 'ne' }); } },
       { cap: `(c) In words: <b>6 minutes</b> after draining begins, <b>${nH(6300)} litres</b> of water remain in the pool.`,
@@ -590,13 +589,13 @@ const pool = {
     ];
     if (k === 'd') return [
       { cap: `i) ${T('V(0)=-450(0)+9\\,000=9\\,000')}: the <b>initial volume</b>, before draining starts.`,
-        run: async (c) => { await pop(c, G.point(0, 9000, { color: 'blue', r: 8 })); await pop(c, pill(G, 0, 9000, T('9\\,000'), 'blue', 'e')); } },
+        run: async (c) => { await pop(c, G.point(0, 9000, { color: 'blue', r: 8 })); await pop(c, pill(G, 0, 9000, T('9\\,000'), 'blue', 'ne')); } },
       { cap: `ii) ${T('V(15)=-6\\,750+9\\,000=2\\,250')}: after 15 minutes, ${T('2\\,250')} L remain.`,
         run: async (c) => { await drain(c, 15, 1600); await readFwd(c, G, 15, 2250, { color: 'blue', yLab: T('2\\,250'), yPos: 'ne' }); } },
       { cap: `iii) ${T('V(22)=-9\\,900+9\\,000=-900')}. Follow the rule past ${T('t=20')}, below the axis…`,
         run: async (c) => { await drain(c, 20, 700); await G.setWindow({ ymin: -2000 }, c, 800); const s = G.segment([20, 0], [22, -900], { color: 'red', width: 4, dash: true }); await G.drawIn(s, 500, c); await pop(c, G.point(22, -900, { color: 'red', r: 7 })); } },
       { cap: `A <b>negative volume is impossible</b>. The pool is empty at ${T('t=20')} (${T('V(20)=0')}) and stays empty, so the rule no longer describes the pool.`,
-        run: async (c) => { const [px, py] = G.toPx(22, -900); await stampIn(c, stamp(stage, '✗ impossible', { ok: false, x: 210 + px - 70, y: 8 + py - 60, size: 'sm' })); } }
+        run: async (c) => { const [px, py] = G.toPx(22, -900); await stampIn(c, stamp(stage, '✗ impossible', { ok: false, x: 210 + px - 110, y: 8 + py + 22, size: 'sm' })); } }
     ];
     if (k === 'e') return [
       { cap: `${T('V(t)=1\\,350')} gives the <b>output</b>. Go across at ${T('1\\,350')} to the graph…`,
@@ -645,9 +644,9 @@ const cost = {
     if (k !== 'a') mainLine();
     if (k === 'a') return [
       { cap: `Start: ${T('C(0)=18\\,400')}, the cost before any earbuds are made.`,
-        run: async (c) => { await pop(c, G.point(0, 18400, { color: 'teal', r: 7, label: T('(0,\\ 18\\,400)'), pos: 'ne' })); } },
+        run: async (c) => { await pop(c, G.point(0, 18400, { color: 'teal', r: 7, label: T('(0,\\ 18\\,400)'), pos: 'se' })); } },
       { cap: `The largest input: ${T('C(5\\,000)=18\\,400+27(5\\,000)=18\\,400+135\\,000=153\\,400')}.`,
-        run: async (c) => { await pop(c, G.point(5000, 153400, { color: 'teal', r: 7, label: T('(5\\,000,\\ 153\\,400)'), pos: 'sw' })); } },
+        run: async (c) => { await pop(c, G.point(5000, 153400, { color: 'teal', r: 7, label: T('(5\\,000,\\ 153\\,400)'), pos: 'nw' })); } },
       { cap: `Join them: the cost rises ${T('\\$27')} for every pair, so the graph is a straight line from ${T('(0,\\ 18\\,400)')} to ${T('(5\\,000,\\ 153\\,400)')}.`,
         run: async (c) => { await G.drawIn(mainLine(), 1000, c); } }
     ];
@@ -698,7 +697,7 @@ const rocket = {
       const t = st.t, H = Math.max(0, rFn(t)), gy = 8 + G.toPx(0, 0)[1], y = 8 + G.toPx(0, H)[1], down = t > 40 && t < 80;
       pad.style.top = gy + 'px';
       rk.style.top = y - 60 + 'px'; rk.style.transform = down ? 'rotate(180deg)' : 'none';
-      read.innerHTML = `${T('t=' + Math.round(t))} s<br>${T('h=' + nT(Math.round(H)))}`;
+      read.innerHTML = `${T('t=' + Math.round(t))} s<br>${T('h=' + nT(Math.round(H)))} cm`;
       const [px] = G.toPx(Math.min(t, 80), 0);
       link.setAttribute('x1', 96); link.setAttribute('y1', y); link.setAttribute('x2', GX + px); link.setAttribute('y2', y);
       link.style.opacity = st.on && H > 0 ? 1 : 0;

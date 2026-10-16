@@ -49,7 +49,9 @@ code { font: 600 .9em ui-monospace, "SF Mono", Menlo, Consolas, monospace; backg
 .u5l5-wrow { display: flex; align-items: center; gap: 40px; margin: 8px 0 0; }
 .u5l5-wins { display: flex; flex-direction: column; gap: 22px; font-size: 22px; }
 .u5l5-ansfig { display: flex; gap: 18px; align-items: center; }
-.u5l5-fullfig { display: flex; justify-content: center; margin: 0 0 10px; }
+.u5l5-fullfig { display: flex; justify-content: center; margin: 0 0 4px; }
+.u5l5-gpart .ansrow { align-items: stretch; }
+.u5l5-gpart .reveal { align-self: flex-start; }
 
 /* ---------------- the calculator screen ---------------- */
 .bk-calc .bk-L-data .bk-stroke { stroke-width: 3; }
