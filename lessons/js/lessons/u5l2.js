@@ -290,7 +290,7 @@ const fuelStory = {
         run: async (c) => { await G.drawIn(G.fn(VAN.f, { from: 20, to: 140, color: TEAL }), 1100, c); } },
       { cap: `Read the curve at ${T('s=50')}: about ${T('7.8')}. The equation agrees: ${T(`0.002(50)^2-0.32(50)+18.8=${f50.toFixed(1)}`)}.`,
         run: async (c) => { G.remove(q50, q50.q); const g = G.guides(50, f50); await G.drawIn(g, 600, c); await G.reveal(G.point(50, f50, { color: IV, r: 7, label: T('(50,\\ 7.8)'), pos: 'ne' }), c); await showLine(c, P, `${T('s=50')} → ${T('F=7.8')} L/100 km`); } },
-      { cap: `The <b>domain</b> is the speeds that make sense here: the curve’s shadow on the ${T(ivT('s'))}-axis runs from 20 to 140 km/h.`,
+      { cap: `The <b>domain</b> is the set of speeds the relation covers, from the slowest to the fastest tested: the curve’s shadow on the ${T(ivT('s'))}-axis runs from 20 to 140 km/h.`,
         run: async (c) => { await G.drawIn(G.shadeX(20, 140, { band: true }), 800, c); await showLine(c, P, `<b class="u5l2-ivt">Domain:</b> 20 to 140 km/h`); } },
       { cap: `What about ${T('s=-40')}? The equation gives ${T(`F=${fm40.toFixed(1)}`)}, but a speed of ${T('-40')} km/h makes no sense: ${T('-40')} is <b>not in the domain</b>.`,
         run: async (c) => { const l = await showLine(c, P, `${T('s=-40')}: ${T(`F=${fm40.toFixed(1)}`)}?`); const s = stamp(l, 'not in the domain', { ok: false, size: 'sm', rotate: -4 }); s.style.marginLeft = '10px'; await stampIn(c, s); } },
