@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Common Factors: The GCF of Monomials and Polynomials · Math 10C 4.1A</title>
+<meta name="description" content="Math 10C Unit 4 Lesson 1A: factoring is expanding run backwards. The greatest common factor of monomials (prime-factor columns, lowest powers), removing the GCF from a polynomial and checking by expanding, a negative GCF, and (Extension) fractional common factors. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u4l1a.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 4 Factoring · Lesson 1A</div>
+  <h1>Common Factors: The GCF of Monomials and Polynomials</h1>
+  <p class="lede">In Unit 3 we multiplied: <span class="tex">3x(x+4)=3x^2+12x</span>. <b>Factoring is expanding run backwards</b>: start with <span class="tex">3x^2+12x</span> and find the factors that made it. Today’s first tool is the <b>greatest common factor</b>: find the biggest thing every term shares, and pull it out front.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>explain why expanding and factoring are <b>opposite</b> processes</li>
+      <li>find the <b>GCF</b> of a set of monomials, from prime factorizations and by inspection (lowest power of each common letter)</li>
+      <li>factor a polynomial by <b>removing the GCF</b>, dividing every term by it, and <b>check by expanding</b></li>
+      <li>take out a <b>negative</b> GCF when the leading coefficient is negative</li>
+      <li><i>(Extension)</i> remove a <b>fractional</b> common factor so the bracket has whole-number coefficients</li>
+    </ul>
+  </div>
+  <div class="outcome"><b>AN5</b> Demonstrate an understanding of common factors and trinomial factoring, concretely, pictorially and symbolically.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: Tile the Floor">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Tile the Floor</h2></div>
+  <p class="big">Cover a <b>240 cm by 180 cm</b> floor with identical <b>square</b> tiles. <b>No cutting</b> allowed! <span class="muted">Tap a tile size to try it.</span></p>
+
+  <div class="u4l1a-wu">
+    <div class="u4l1a-fl" id="floor"></div>
+    <div class="u4l1a-wqs">
+      <div class="wq">
+        <div class="q-line"><div class="q-num">1</div><div>Using <b>20 cm</b> tiles: how many tiles?</div></div>
+        <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">240\div20=12</span> across, <span class="tex">180\div20=9</span> up: <span class="tex">12\times9=\boldsymbol{108}</span> tiles.</div></div>
+      </div>
+      <div class="wq">
+        <div class="q-line"><div class="q-num">2</div><div>Why won’t <b>50 cm</b> tiles work? Will <b>40 cm</b> tiles work?</div></div>
+        <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">240\div50=4.8</span>: the last tile in each row would be cut. 40 cm fails too: <span class="tex">240\div40=6</span> is fine, but <span class="tex">180\div40=4.5</span>. A size must fit <b>both</b> sides.</div></div>
+      </div>
+      <div class="wq">
+        <div class="q-line"><div class="q-num">3</div><div>A size works if it divides exactly into <span class="u4l1a-bl"></span> <em>and</em> into <span class="u4l1a-bl"></span>.</div></div>
+        <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><b>240</b><span> and <b>180</b>: it must be a <b>common factor</b>. Sizes that work: 1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30 and 60 cm.</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> What is the <b>biggest</b> square tile that fits with no cutting? And how many of them do you need? <b>Guess first.</b></div></div>
+    <div class="poll-opts c4">
+      <div class="opt"><b>A</b><span> 30 cm</span></div>
+      <div class="opt right"><b>B</b><span> 60 cm</span></div>
+      <div class="opt"><b>C</b> 90 cm</div>
+      <div class="opt"><b>D</b> 120 cm</div>
+    </div>
+    <button class="pill" type="button" data-poll>Reveal</button>
+    <div class="poll-ans"><b>B, 60 cm: only 12 tiles</b> (<span class="tex">240\div60=4</span> across, <span class="tex">180\div60=3</span> up). 60 is the <b>greatest common factor</b> of 240 and 180.<br>
+      <span class="muted"><b>A</b> works, but 30 is only <em>a</em> common factor, not the greatest: <span class="tex">8\times6=48</span> tiles. <b>C</b> fits the 180 side, but <span class="tex">240\div90\approx2.67</span>. <b>D</b> fits across, but <span class="tex">180\div120=1.5</span>.</span><br>
+      Today, the same idea with algebra: <span class="tex">240x+180y=60(4x+3y)</span>. The 4 and 3 left in the bracket are the tiles <b>across</b> and <b>up</b>.</div>
+  </div>
+
+  <div class="wq wq-wide">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Challenge your neighbour.</b> A hallway is <b>210 cm by 150 cm</b>. What is the biggest square tile, and how many does it take?</div></div>
+    <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><b>30 cm, 35 tiles.</b> <span class="tex">210=2\times3\times5\times7</span> and <span class="tex">150=2\times3\times5\times5</span>, so the GCF is <span class="tex">2\times3\times5=30</span>; <span class="tex">7\times5=35</span> tiles.</div></div>
+  </div>
+</section>
+
+<!-- ================= 1. Expanding and factoring ================= -->
+<section class="card" data-ink="s1" data-section="1. Expanding and Factoring">
+  <div class="sec-h"><span class="badge">1</span><h2>Expanding and Factoring Are Opposite Processes</h2></div>
+  <p>Multiplying polynomials out is called <b>expanding</b>: it turns a <b>product</b> into a <b>sum or difference of terms</b>.</p>
+  <div class="u4l1a-ef">
+    <div class="u4l1a-efh"><span></span><span>product</span><span></span><span>sum of terms</span></div>
+    <div class="u4l1a-efr"><span class="u4l1a-efk">monomial × polynomial</span><span class="tex">3x(x+4)</span><span class="u4l1a-efa"></span><span class="tex">3x^2+12x</span></div>
+    <div class="u4l1a-efr"><span class="u4l1a-efk">binomial × binomial → trinomial</span><span class="tex">(x+2)(x+6)</span><span class="u4l1a-efa"></span><span class="tex">x^2+8x+12</span></div>
+    <div class="u4l1a-efr"><span class="u4l1a-efk"></span><span class="tex">(3x+2)(x+5)</span><span class="u4l1a-efa"></span><span class="tex">3x^2+17x+10</span></div>
+    <div class="u4l1a-efr"><span class="u4l1a-efk">binomial × binomial → binomial</span><span class="tex">(x-7)(x+7)</span><span class="u4l1a-efa"></span><span class="tex">x^2-49</span></div>
+  </div>
+  <div class="def"><b>Factoring</b> is the reverse: rewriting a sum or difference of terms as a <b>product of factors</b>. Every factoring can be <b>checked by expanding</b> it back.</div>
+  <div class="explainer" data-explainer="twoWay"></div>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. The factoring toolbox">
+  <h3 class="sub">This unit builds a factoring toolbox, one lesson at a time</h3>
+  <div class="u4l1a-tools">
+    <div class="on"><b>1A</b><span>the greatest common factor</span></div>
+    <div><b>1B</b><span>binomial common factors and grouping</span></div>
+    <div><b>2</b><span><span class="tex">x^2+bx+c</span></span></div>
+    <div><b>3</b><span>the difference of squares</span></div>
+    <div><b>4</b><span><span class="tex">ax^2+bx+c</span></span></div>
+    <div><b>5</b><span>perfect squares and other special forms</span></div>
+    <div><b>6</b><span>choosing a strategy</span></div>
+    <div class="ext"><b>7</b><span><i>(Extension)</i> solving equations by factoring</span></div>
+    <div><b>8</b><span>unit review</span></div>
+  </div>
+  <p class="small muted">Every later tool starts the same way: <b>first take out the GCF</b>. That’s why it comes first.</p>
+</section>
+
+<!-- ================= 2. The GCF ================= -->
+<section class="card" data-ink="s2" data-section="2. The Greatest Common Factor">
+  <div class="sec-h"><span class="badge">2</span><h2>The Greatest Common Factor (GCF)</h2></div>
+  <p>The GCF of two whole numbers comes from their <b>prime factorizations</b>. Multiply the prime factors <b>common</b> to both lists:</p>
+  <div class="u4l1a-pfx">
+    <div><span class="tex">60=\underline{2}\times\underline{2}\times\underline{3}\times5</span><span class="tex">84=\underline{2}\times\underline{2}\times\underline{3}\times7</span></div>
+    <div class="u4l1a-pfr">GCF <span class="tex">=2\times2\times3=\boldsymbol{12}</span></div>
+  </div>
+  <p>The same idea works for <b>monomials</b>: letters are factors too.</p>
+  <div class="u4l1a-pfx">
+    <div><span class="tex">12a^4=\underline{2}\times2\times\underline{3}\times\underline{a}\times\underline{a}\times a\times a</span><span class="tex">18a^2b=\underline{2}\times\underline{3}\times3\times\underline{a}\times\underline{a}\times b</span></div>
+    <div class="u4l1a-pfr">GCF <span class="tex">=2\times3\times a\times a=\boldsymbol{6a^2}</span></div>
+  </div>
+  <div class="explainer" data-explainer="columns"></div>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. The shortcut">
+  <h3 class="sub">The shortcut: by inspection</h3>
+  <div class="def">Take the <b>GCF of the numerical coefficients</b>, then multiply by each <b>common letter</b> raised to its <b>lowest</b> exponent.<div class="eg">The GCF of <span class="tex">14p^2q^3</span> and <span class="tex">21pq^4</span> is <span class="tex">7pq^3</span>: GCF(14, 21) = 7, lowest powers <span class="tex">p^1</span> and <span class="tex">q^3</span>.</div></div>
+  <div class="def-grid">
+    <div class="def gray"><b>A letter missing from even one monomial is not common</b>, so it doesn’t appear in the GCF. The GCF of <span class="tex">12a^4</span> and <span class="tex">18a^2b</span> has no <span class="tex">b</span>.</div>
+    <div class="def amber"><b>Signs.</b> For a set of monomials, the GCF is <b>positive</b> unless <b>every</b> monomial is negative; then take the GCF negative too.</div>
+  </div>
+  <div class="explainer" data-explainer="lowest"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Lowest, not highest.</b> It’s tempting to grab the biggest power, but <span class="tex">x^4</span> isn’t a factor of <span class="tex">x^3</span>. The GCF can only use what <b>every</b> term has.</div></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>The GCF of a set of monomials</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(a) Write the prime factorization of <span class="tex">18x^3y</span> and <span class="tex">24xy^3</span>, and use it to determine the greatest common factor of <span class="tex">18x^3y</span> and <span class="tex">24xy^3</span>.</div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">18x^3y=2\times3\times3\times x\times x\times x\times y</span><br><span class="tex">24xy^3=2\times2\times2\times3\times x\times y\times y\times y</span><br>Common: <span class="tex">2,\ 3,\ x,\ y</span>, so GCF <span class="tex">=2\times3\times x\times y=\boldsymbol{6xy}</span></div></div></div>
+  </div>
+  <p class="q"><b>(b)</b> State the greatest common factor of each set of monomials by inspection.</p>
+  <div class="parts c4">
+    <div class="part"><div class="pl">(i) <span class="tex">16ab,\ 20a^2b^3</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">GCF(16, 20) = 4; lowest <span class="tex">a^1,b^1</span><br>GCF <span class="tex">=\boldsymbol{4ab}</span></div></div></div>
+    <div class="part"><div class="pl">(ii) <span class="tex">27x^4y^2,\ -36x^3y^5</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">GCF(27, 36) = 9; lowest <span class="tex">x^3,y^2</span>. Mixed signs, so positive.<br>GCF <span class="tex">=\boldsymbol{9x^3y^2}</span></div></div></div>
+    <div class="part"><div class="pl">(iii) <span class="tex">a^2bc^3,\ 3abc</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">GCF(1, 3) = 1; lowest <span class="tex">a^1,b^1,c^1</span><br>GCF <span class="tex">=\boldsymbol{abc}</span></div></div></div>
+    <div class="part"><div class="pl">(iv) <span class="tex">-30a^3b,\ -18a^2b^2,</span> <span class="tex">-24a^2b</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">All negative, so negative. GCF(30, 18, 24) = 6; lowest <span class="tex">a^2,b^1</span><br>GCF <span class="tex">=\boldsymbol{-6a^2b}</span></div></div></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<!-- ================= 3. Removing the GCF ================= -->
+<section class="card" data-ink="s3" data-section="3. Removing the GCF">
+  <div class="sec-h"><span class="badge">3</span><h2>Factoring by Removing the Greatest Common Factor</h2></div>
+  <p>Think of a polynomial as the <b>area of a rectangle</b>. Factoring it means finding the rectangle’s <b>side lengths</b>. With algebra tiles you can do it by hand: arrange the tiles into equal rows, and the <b>tallest</b> side you can make is the GCF.</p>
+  <div class="explainer" data-explainer="tileRect"></div>
+</section>
+
+<section class="card" data-ink="s3b" data-section="3. Pull it out front">
+  <h3 class="sub">Without tiles: divide every term by the GCF</h3>
+  <p>Since <span class="tex">6a^2b(3a+4b)=18a^3b+24a^2b^2</span>, factoring <span class="tex">18a^3b+24a^2b^2</span> gives <span class="tex">6a^2b(3a+4b)</span>: the GCF has been removed from <b>every</b> term, leaving a polynomial factor behind.</p>
+  <div class="u4l1a-big"><span class="tex">18a^3b+24a^2b^2</span><span class="u4l1a-arr2"><b>factor</b><i></i><b>expand</b></span><span class="tex">6a^2b(3a+4b)</span></div>
+  <div class="def amber"><b>Negative leading coefficient.</b> Remove a <b>negative</b> common factor so the bracket starts with a positive term: <span class="tex">-4x^2+10x=-2x(2x-5)</span>. <b>Every</b> sign inside the bracket flips. (This is the convention in every answer key in this unit.)</div>
+  <div class="explainer" data-explainer="pullA"></div>
+  <div class="tip-row">
+    <div class="tip watch"><div class="tip-ic">!</div><div><b>A term that equals the GCF leaves a 1.</b> <span class="tex">21x^2y^2-35xy+7x=7x(3xy^2-5y+\boldsymbol{1})</span>, not <span class="tex">7x(3xy^2-5y)</span>.</div></div>
+    <div class="tip watch"><div class="tip-ic">!</div><div><b>Dividing by a negative flips every sign,</b> not just the first: <span class="tex">-5mn-15m^2=-5m(n\boldsymbol{+}3m)</span>.</div></div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Filling in a missing factor</h3></div>
+  <p class="q">Complete the factoring in each case.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) <span class="tex">15x+25y=\underline{\qquad}(3x+5y)</span></div><div class="work" style="--h:140px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">5(3x+5y)=15x+25y</span><br>Blank <span class="tex">=\boldsymbol{5}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">8x^3+20x^2+4x=\underline{\qquad}(2x^2+5x+1)</span></div><div class="work" style="--h:140px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">4x(2x^2+5x+1)=8x^3+20x^2+4x</span><br>Blank <span class="tex">=\boldsymbol{4x}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">6a^2+30a=6a(a+\underline{\qquad})</span></div><div class="work" style="--h:140px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">6a(a+5)=6a^2+30a</span><br>Blank <span class="tex">=\boldsymbol{5}</span></div></div></div>
+    <div class="part"><div class="pl">(d) <span class="tex">24p-16q=8(\underline{\qquad}-2q)</span></div><div class="work" style="--h:140px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">8(3p-2q)=24p-16q</span><br>Blank <span class="tex">=\boldsymbol{3p}</span></div></div></div>
+    <div class="part"><div class="pl">(e) <span class="tex">-5mn-15m^2=-5m(\underline{\qquad\quad})</span></div><div class="work" style="--h:140px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The GCF is negative, so both signs flip: <span class="tex">-5m(n+3m)=-5mn-15m^2</span><br>Blank <span class="tex">=\boldsymbol{n+3m}</span></div></div></div>
+    <div class="part"><div class="pl">(f) <span class="tex">21x^2y^2-35xy+7x=7x(\underline{\qquad\qquad})</span></div><div class="work" style="--h:140px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">7x(3xy^2-5y+1)=21x^2y^2-35xy+7x</span><br>Blank <span class="tex">=\boldsymbol{3xy^2-5y+1}</span></div></div></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s3c" data-section="3. Factor completely and check">
+  <h3 class="sub">Factor completely, then check by expanding</h3>
+  <p><b>Factor completely</b> means nothing common is left inside the bracket. Then <b>check</b>: expand your answer and you must get the original polynomial back.</p>
+  <div class="explainer" data-explainer="pullB"></div>
+  <div class="explainer" data-explainer="findErr"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Another check: substitute <span class="tex">x=2</span> into both forms.</b> For <span class="tex">20x^4+5x^2=5x^2(4x^2+1)</span>: <span class="keys"><kbd>2</kbd><kbd>0</kbd><kbd>×</kbd><kbd>2</kbd><kbd>^</kbd><kbd>4</kbd><kbd>+</kbd><kbd>5</kbd><kbd>×</kbd><kbd>2</kbd><kbd>x²</kbd><kbd>ENTER</kbd></span> and <span class="keys"><kbd>5</kbd><kbd>×</kbd><kbd>2</kbd><kbd>x²</kbd><kbd>×</kbd><kbd>(</kbd><kbd>4</kbd><kbd>×</kbd><kbd>2</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>1</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> both give 340 ✓</div>
+    <div class="pill-col"><button class="pill" data-keys="20 × 2 ^ 4 + 5 × 2 x² =">Show original</button><button class="pill" data-keys="5 × 2 x² × ( 4 × 2 x² + 1 ) =">Show factored</button></div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Factor completely by removing the GCF</h3></div>
+  <p class="q">Factor each polynomial completely by removing the greatest common factor.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">18x-8</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">GCF(18, 8) = 2; no letter is in both terms.<br><span class="tex">18x-8=\boldsymbol{2(9x-4)}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">20x^4+5x^2</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">GCF(20, 5) = 5; lowest power <span class="tex">x^2</span>.<br><span class="tex">=\boldsymbol{5x^2(4x^2+1)}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">12a^3b^2+9ab^3+3ab^4</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">GCF(12, 9, 3) = 3; lowest <span class="tex">a^1,b^2</span>.<br><span class="tex">=\boldsymbol{3ab^2(4a^2+3b+b^2)}</span></div></div></div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(d) <span class="tex">14p^3-7p^2+21p</span></div><div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">GCF(14, 7, 21) = 7; lowest power <span class="tex">p^1</span>.<br><span class="tex">=\boldsymbol{7p(2p^2-p+3)}</span></div></div></div>
+    <div class="part"><div class="pl">(e) <span class="tex">35xy^2z^3-28x^2y^4z^2+42x^3y^2z^5</span></div><div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">GCF(35, 28, 42) = 7; lowest <span class="tex">x^1,y^2,z^2</span>: GCF <span class="tex">=7xy^2z^2</span>.<br>Quotients <span class="tex">5z</span>, <span class="tex">-4xy^2</span>, <span class="tex">6x^2z^3</span><br><span class="tex">=\boldsymbol{7xy^2z^2(5z-4xy^2+6x^2z^3)}</span></div></div></div>
+    <div class="part think span2"><div class="pl"><span class="think-tag">Think</span> Lee factored (b) as <span class="tex">5x(4x^3+x)</span>. It expands back correctly. Is Lee finished?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No.</b> <span class="tex">4x^3</span> and <span class="tex">x</span> still share an <span class="tex">x</span>, so <span class="tex">5x</span> isn’t the <b>greatest</b> common factor. Take out the lowest power, <span class="tex">x^2</span>: <span class="tex">5x^2(4x^2+1)</span>. Expanding can’t catch this one: always look inside the bracket too.</div></div></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>A formula in factored form</h3></div>
+  <div class="u4l1a-cone-row">
+    <p class="q">The surface area of a cone is given by <span class="tex">A=\pi r^2+\pi rs</span>, where <span class="tex">r</span> is the radius of the base and <span class="tex">s</span> is the slant height.</p>
+    <svg class="u4l1a-cone" viewBox="0 0 170 160" aria-label="A cone with base radius r and slant height s">
+      <path d="M20 112 L85 10 L150 112" fill="#e8f2f1" stroke="#1c2230" stroke-width="2.4" stroke-linejoin="round"/>
+      <ellipse cx="85" cy="112" rx="65" ry="17" fill="#d3e7e4" stroke="#1c2230" stroke-width="2.4"/>
+      <path d="M20 112 A65 17 0 0 1 150 112" fill="none" stroke="#1c2230" stroke-width="2" stroke-dasharray="6 5"/>
+      <line x1="85" y1="112" x2="150" y2="112" stroke="#c27a0e" stroke-width="2.4"/>
+      <circle cx="85" cy="112" r="3" fill="#1c2230"/>
+      <text x="113" y="104" class="u4l1a-ctx">r</text>
+      <text x="126" y="58" class="u4l1a-ctx">s</text>
+    </svg>
+  </div>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(i) Determine the surface area of a cone, to the nearest <span class="tex">0.01\ \text{cm}^2</span>, with slant height 8.20 cm and base radius 3.10 cm.</div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\pi r^2=\pi(3.10)^2=9.61\pi\approx30.1907</span><br><span class="tex">\pi rs=\pi(3.10)(8.20)=25.42\pi\approx79.8593</span><br><span class="tex">A\approx\boldsymbol{110.05\ \textbf{cm}^2}</span></div></div></div>
+    <div class="part"><div class="pl">(ii) Write the formula for <span class="tex">A</span> in factored form.</div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The GCF of <span class="tex">\pi r^2</span> and <span class="tex">\pi rs</span> is <span class="tex">\pi r</span>.<br><span class="tex">A=\boldsymbol{\pi r(r+s)}</span></div></div></div>
+    <div class="part"><div class="pl">(iii) Calculate the surface area, to the nearest <span class="tex">0.01\ \text{cm}^2</span>, using the factored form of <span class="tex">A</span>.</div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">A=\pi(3.10)(3.10+8.20)=\pi(3.10)(11.30)=35.03\pi</span><br><span class="tex">\approx\boldsymbol{110.05\ \textbf{cm}^2}</span>, the same value ✓</div></div></div>
+  </div>
+  <div class="u4l1a-tips">
+    <div class="tip calc-tip">
+      <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+      <div><b>(i) Expanded form.</b> <span class="keys"><kbd>π</kbd><kbd>×</kbd><kbd>3</kbd><kbd>.</kbd><kbd>1</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>π</kbd><kbd>×</kbd><kbd>3</kbd><kbd>.</kbd><kbd>1</kbd><kbd>×</kbd><kbd>8</kbd><kbd>.</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> → 110.0499…</div>
+      <button class="pill" data-keys="π × 3.1 x² + π × 3.1 × 8.2 =">Show me</button>
+    </div>
+    <div class="tip calc-tip">
+      <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+      <div><b>(iii) Factored form:</b> fewer keys, one <kbd>π</kbd>. <span class="keys"><kbd>π</kbd><kbd>×</kbd><kbd>3</kbd><kbd>.</kbd><kbd>1</kbd><kbd>×</kbd><kbd>(</kbd><kbd>3</kbd><kbd>.</kbd><kbd>1</kbd><kbd>+</kbd><kbd>8</kbd><kbd>.</kbd><kbd>2</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> → 110.0499…</div>
+      <button class="pill" data-keys="π × 3.1 × ( 3.1 + 8.2 ) =">Show me</button>
+    </div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<!-- ================= 4. Extension: fractional common factors ================= -->
+<section class="card u4l1a-ext" data-ink="s4" data-section="4. Extension: Fractional Common Factors">
+  <div class="sec-h"><span class="badge">4</span><h2>Extension — Monomial Common Factors Involving Fractions</h2><span class="u4l1a-ext-tag">Extension</span></div>
+  <p>When a polynomial has <b>fractional coefficients</b>, let the common factor itself be a fraction. Ask: <b>“what do I multiply this fraction by to rebuild each original term?”</b> Chosen well, it leaves a bracket with <b>whole-number</b> coefficients (an <b>integral</b> polynomial).</p>
+  <div class="u4l1a-big"><span class="tex">\tfrac14x^2-2x</span><span class="u4l1a-eq">=</span><span class="tex">\tfrac14x(x-8)</span><span class="u4l1a-bigc">because <span class="tex">\tfrac14x\cdot x=\tfrac14x^2</span> and <span class="tex">\tfrac14x\cdot(-8)=-2x</span></span></div>
+  <div class="explainer" data-explainer="fracOut"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Only the numbers become fractions.</b> In <span class="tex">\tfrac13\pi r^2-2\pi r=\tfrac13\pi r(r-6)</span>, the <span class="tex">\pi</span> comes out with the GCF. Leaving a <span class="tex">\pi</span> in the bracket means it was taken out twice.</div></div>
+</section>
+
+<section class="card example u4l1a-ext" data-ink="ex5" data-section="Example 5 (Extension)">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3><i>(Extension)</i> Fractional common factors</h3></div>
+  <p class="q">In each case a common factor has already been removed so that the remaining factor is an integral binomial. Fill in the blanks and check your work by expanding the factored form.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) <span class="tex">\tfrac12x^2+6x=\tfrac12x(\ \ \underline{\quad}+\underline{\quad}\ \ )</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\tfrac12x^2\div\tfrac12x=x</span>; <span class="tex">6x\div\tfrac12x=12</span><br><span class="tex">\tfrac12x(\boldsymbol{x}+\boldsymbol{12})</span>. Check: <span class="tex">\tfrac12x(x+12)=\tfrac12x^2+6x</span> ✓</div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">\tfrac15a^2-5a=\tfrac15a(\ \ \underline{\quad}-\underline{\quad}\ \ )</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\tfrac15a^2\div\tfrac15a=a</span>; <span class="tex">-5a\div\tfrac15a=-25</span><br><span class="tex">\tfrac15a(\boldsymbol{a}-\boldsymbol{25})</span>. Check: <span class="tex">\tfrac15a(a-25)=\tfrac15a^2-5a</span> ✓</div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">8x+\tfrac45=\tfrac45(\ \ \underline{\quad}+\underline{\quad}\ \ )</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">8x\div\tfrac45=10x</span>; <span class="tex">\tfrac45\div\tfrac45=1</span><br><span class="tex">\tfrac45(\boldsymbol{10x}+\boldsymbol{1})</span>. Check: <span class="tex">\tfrac45(10x+1)=8x+\tfrac45</span> ✓</div></div></div>
+    <div class="part"><div class="pl">(d) <span class="tex">\tfrac13a^2-\tfrac25b^2=\tfrac1{15}(\ \ \underline{\quad}-\underline{\quad}\ \ )</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\tfrac13a^2\div\tfrac1{15}=5a^2</span>; <span class="tex">\tfrac25b^2\div\tfrac1{15}=6b^2</span><br><span class="tex">\tfrac1{15}(\boldsymbol{5a^2}-\boldsymbol{6b^2})</span>. Check: <span class="tex">\tfrac1{15}(5a^2-6b^2)=\tfrac13a^2-\tfrac25b^2</span> ✓</div></div></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<section class="card example u4l1a-ext" data-ink="ex6" data-section="Example 6 (Extension)">
+  <div class="ex-head"><span class="ex-tag">Example 6</span><h3><i>(Extension)</i> Removing a fractional GCF</h3></div>
+  <p class="q">Complete the factoring in each case, filling in the blank(s) so that the remaining factor is an integral polynomial. Check mentally by expanding.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">a-\tfrac18a^2=\underline{\qquad}(8-a)</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">8\times(\text{blank})=a</span>, so the blank is <span class="tex">\boldsymbol{\tfrac18a}</span>.<br>Check: <span class="tex">\tfrac18a(8-a)=a-\tfrac18a^2</span> ✓</div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">\tfrac13\pi r^2-3\pi r=\underline{\qquad}(r-9)</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">r\times(\text{blank})=\tfrac13\pi r^2</span>, so the blank is <span class="tex">\boldsymbol{\tfrac13\pi r}</span>.<br>Check: <span class="tex">\tfrac13\pi r(r-9)=\tfrac13\pi r^2-3\pi r</span> ✓</div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">6x^2+3x+\tfrac37=\underline{\qquad}(14x^2+\underline{\quad}\,x+\underline{\quad})</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">14\times(\text{blank})=6\Rightarrow\tfrac37</span>; then <span class="tex">\tfrac37\times7=3</span> and <span class="tex">\tfrac37\times1=\tfrac37</span><br><span class="tex">=\boldsymbol{\tfrac37(14x^2+7x+1)}</span> ✓</div></div></div>
+  </div>
+  <div class="space" id="ex6-space"></div>
+  <button class="more" data-more="ex6-space">+ More space</button>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Factoring is expanding run backwards:</b> <span class="tex">{3x^2+12x}\rightleftarrows{3x(x+4)}</span>. A polynomial is a rectangle’s area; the factors are its sides. Check any factoring by <b>expanding</b>.</div>
+    <div><b>GCF of monomials:</b> the GCF of the numbers × each <b>common</b> letter to its <b>lowest</b> power. A letter missing from one term isn’t common. Negative only if <b>every</b> monomial is.</div>
+    <div><b>Remove the GCF:</b> divide <b>every</b> term by it; GCF out front, quotients in the bracket (a term equal to the GCF leaves <b>1</b>). Negative leading coefficient → take out a <b>negative</b> GCF; every sign flips.</div>
+    <div><b>Factored completely?</b> Nothing common left in the bracket. <i>(Extension)</i> A fraction can come out front too: <span class="tex">\tfrac14x^2-2x=\tfrac14x(x-8)</span>, leaving whole numbers.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u4l1a" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 1A — Common Factors: The GCF of Monomials and Polynomials</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l1b/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 1B — Common Factors: Binomial Common Factors and Grouping</b><div class="muted">When the common factor is a whole bracket</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u4l1a.js';
+  boot({ key: 'u4l1a', homeHref: '../../', title: '4.1A Common Factors' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

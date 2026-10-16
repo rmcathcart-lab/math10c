@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Binomial Common Factors and Grouping · Math 10C 4.1B</title>
+<meta name="description" content="Math 10C Unit 4 Lesson 1B: a whole bracket as the common factor, checking the leftover bracket, opposite brackets, factoring by grouping, rearranging before grouping, and checking by expanding. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u4l1b.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 4 Factoring · Lesson 1B</div>
+  <h1>Common Factors: Binomial Common Factors and Grouping</h1>
+  <p class="lede">The common factor can be a whole bracket, and pairing up the terms of a polynomial can create one. In Lesson 1A we pulled out <span class="tex">3x</span> from <span class="tex">6x^2+9x</span>. Today the thing we pull out is a whole <b>block</b> like <span class="tex">(x+3)</span>, and grouping is how we make that block appear.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>factor out a <b>binomial</b> common factor, treating the whole bracket as one block</li>
+      <li>check whether the leftover bracket still has a common factor, and spot <b>opposite</b> brackets like <span class="tex">(7-x)</span> and <span class="tex">(x-7)</span></li>
+      <li>factor a four-term polynomial <b>by grouping</b>: pair up, pull out, pull out again</li>
+      <li><b>rearrange</b> the terms when the first pairing doesn’t give matching brackets</li>
+      <li>check every factorization by <b>expanding</b> it back</li>
+    </ul>
+  </div>
+  <div class="outcome"><b>AN5</b> Demonstrate an understanding of common factors and trinomial factoring, concretely, pictorially and symbolically.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: The Combo Receipt">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Combo Receipt</h2></div>
+  <p class="big">One <b>combo</b> = one burger (<b>$6</b>) + one fries (<b>$3</b>). <span class="muted">Tap the buttons under the receipt to total it two different ways.</span></p>
+
+  <div class="u4l1b-wu">
+    <div class="u4l1b-menu" id="wu-menu"></div>
+    <div class="u4l1b-rbox">
+      <div class="u4l1b-rcpt" id="receipt">
+        <div class="u4l1b-rh">BIG ORDER</div>
+        <div class="u4l1b-rl" style="grid-row:2"><span>37 burgers</span><span>@ $6</span><b class="u4l1b-sub">$222</b></div>
+        <div class="u4l1b-rl" style="grid-row:3"><span>37 fries</span><span>@ $3</span><b class="u4l1b-sub">$111</b></div>
+        <div class="u4l1b-rl" style="grid-row:4"><span>63 burgers</span><span>@ $6</span><b class="u4l1b-sub">$378</b></div>
+        <div class="u4l1b-rl" style="grid-row:5"><span>63 fries</span><span>@ $3</span><b class="u4l1b-sub">$189</b></div>
+        <div class="u4l1b-brace" style="grid-row:2 / span 2"><span><b>37</b> combos</span></div>
+        <div class="u4l1b-brace b2" style="grid-row:4 / span 2"><span><b>63</b> combos</span></div>
+        <div class="u4l1b-rt"><span>TOTAL</span><b id="rc-total">?</b></div>
+      </div>
+      <div class="u4l1b-rctl">
+        <button class="pill" type="button" data-rc="lines">Add line by line</button>
+        <button class="pill" type="button" data-rc="combos">Count combos</button>
+        <button class="pill u4l1b-rreset" type="button" data-rc="reset" aria-label="Start over"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/></svg></button>
+      </div>
+      <div class="u4l1b-rwork" id="rc-work">&nbsp;</div>
+    </div>
+  </div>
+
+  <div class="u4l1b-wqs">
+    <div class="wq">
+      <div class="q-line"><div class="q-num">1</div><div>What does Team A pay for <b>7 combos</b>? Team B for <b>5 combos</b>?</div></div>
+      <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans">A: <span class="tex">7\times\$9=\$63</span><br>B: <span class="tex">5\times\$9=\$45</span></div></div>
+    </div>
+    <div class="wq">
+      <div class="q-line"><div class="q-num">2</div><div>Both teams’ total, two ways: <span class="tex">7\times9+5\times9</span> and <span class="tex">(7+5)\times9</span>.</div></div>
+      <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">63+45=\$108</span> and <span class="tex">12\times9=\$108</span>. Same answer; the second way is <b>one</b> multiplication.</div></div>
+    </div>
+    <div class="wq">
+      <div class="q-line"><div class="q-num">3</div><div>4 burgers, 4 fries, 9 burgers, 9 fries: how many <b>combos</b> is that?</div></div>
+      <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans">Pair each burger with a fries: <span class="tex">4+9=\boldsymbol{13}</span> combos, so <span class="tex">13\times\$9=\$117</span>.</div></div>
+    </div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> What is the <b>TOTAL</b> on the big order? No calculator: do it in your head! <b>Guess first.</b></div></div>
+    <div class="poll-opts c4">
+      <div class="opt"><b>A</b> $600</div>
+      <div class="opt right"><b>B</b> $900</div>
+      <div class="opt"><b>C</b> $1&#8239;200</div>
+      <div class="opt"><b>D</b> $1&#8239;800</div>
+    </div>
+    <button class="pill" type="button" data-poll>Reveal</button>
+    <div class="poll-ans"><b>B, $900.</b> Every burger has a matching fries, so the order is <span class="tex">37+63=100</span> combos at $9 each. Line by line it is <span class="tex">222+111+378+189=900</span>: the same, but much slower.<br>
+      <span class="muted"><b>A</b> ($600) counts the 100 burgers and forgets the fries. <b>C</b> ($1 200) prices all 200 items as burgers. <b>D</b> ($1 800) treats every one of the 200 items as a whole $9 combo.</span><br>
+      <span class="u4l1b-bridge">Counting combos <b>is</b> today’s lesson: <span class="tex">37\cdot6+37\cdot3+63\cdot6+63\cdot3=37(6+3)+63(6+3)=(6+3)(37+63)</span>. Pair the lines, pull out a factor from each pair, then pull out the shared bracket.</span></div>
+  </div>
+
+  <div class="wq wq-wide">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Race your neighbour.</b> One of you adds the four lines, the other counts combos. Then try this one in your head: <span class="tex">48\cdot7+48\cdot3+52\cdot7+52\cdot3</span></div></div>
+    <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">(48+52)(7+3)=100\times10=\boldsymbol{1\,000}</span></div></div>
+  </div>
+</section>
+
+<!-- ================= 1. A binomial common factor ================= -->
+<section class="card" data-ink="s1" data-section="1. Binomial Common Factor">
+  <div class="sec-h"><span class="badge">1</span><h2>Factoring Out a Binomial Common Factor</h2></div>
+  <p>In Lesson 1A the common factor was a monomial: <span class="tex">6x^2+9x=3x(2x+3)</span>. Exactly the same idea works when the common factor is a whole <b>binomial</b>.</p>
+  <div class="def">The common factor may be a whole binomial rather than a single term; pull that bracket out exactly as you would a monomial. In <span class="tex">5x(x+2)-3(x+2)</span> the quantity <span class="tex">(x+2)</span> multiplies both <span class="tex">5x</span> and <span class="tex">-3</span>, so <span class="tex">5x(x+2)-3(x+2)=(x+2)(5x-3)</span>.</div>
+  <div class="u4l1b-same">
+    <div><div class="u4l1b-sh">Lesson 1A: a monomial</div><span class="tex">\underbrace{3x}\cdot 2x+\underbrace{3x}\cdot 3=3x(2x+3)</span></div>
+    <div class="u4l1b-arrowc">same move</div>
+    <div><div class="u4l1b-sh">Today: a whole bracket</div><span class="tex">5x\cdot\underbrace{(x+2)}-3\cdot\underbrace{(x+2)}=(x+2)(5x-3)</span></div>
+  </div>
+  <div class="explainer" data-explainer="blockOut"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Don’t lose the 1.</b> In <span class="tex">2x(x+5)+(x+5)</span> the second term is <span class="tex">1\cdot(x+5)</span>. Pulling out <span class="tex">(x+5)</span> leaves <span class="tex">2x</span> <b>and</b> <span class="tex">1</span>, so the answer is <span class="tex">(x+5)(2x+1)</span>, not <span class="tex">(x+5)(2x)</span>.</div></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Removing a common binomial factor</h3></div>
+  <p class="q">Factor each polynomial by removing the common binomial factor.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">(5x)(x+8)-(2)(x+8)</span></div><div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(x+8)</span> multiplies both terms:<br><span class="tex">=\boldsymbol{(x+8)(5x-2)}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">5(2-3y)+4y(2-3y)</span></div><div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(2-3y)</span> multiplies both terms:<br><span class="tex">=\boldsymbol{(2-3y)(5+4y)}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">8a(3a+1)+(3a+1)</span></div><div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Lone bracket <span class="tex">=1\cdot(3a+1)</span>:<br><span class="tex">=\boldsymbol{(3a+1)(8a+1)}</span></div></div></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. Check the leftover bracket">
+  <h3 class="sub">Then check the leftover bracket</h3>
+  <p>After the binomial is removed, check whether the <b>leftover bracket</b> has a common factor of its own. A factorization is only finished when no bracket can be factored any further: the <b>simplest factored form</b>.</p>
+  <div class="explainer" data-explainer="leftover"></div>
+</section>
+
+<section class="card" data-ink="s1c" data-section="1. Opposite brackets">
+  <h3 class="sub">Opposite brackets: <span class="tex">(7-x)</span> and <span class="tex">(x-7)</span></h3>
+  <p>Sometimes the two brackets <b>almost</b> match: same pieces, opposite order. <span class="tex">(p-q)</span> and <span class="tex">(q-p)</span> are <b>opposites</b>, so one can be flipped into the other by taking out <span class="tex">-1</span>.</p>
+  <div class="u4l1b-rule"><span class="tex">q-p=-(p-q)</span><span class="u4l1b-rule-s">so</span><span class="tex">-k(q-p)=k(p-q)</span></div>
+  <div class="explainer" data-explainer="flipBlock"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Flipping a bracket costs a minus sign.</b> <span class="tex">7(7-x)</span> becomes <span class="tex">-7(x-7)</span>. Forget the sign change and the answer comes out <span class="tex">(x-7)(3x+7)</span>, which expands to something else.</div></div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Then check the leftover bracket</h3></div>
+  <p class="q">Factor each polynomial and write your answer in simplest factored form.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">(4y+3)(6y+1)+(4y+3)(2y)</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Pull out the shared <span class="tex">(4y+3)</span>:<br><span class="tex">(4y+3)\big[(6y+1)+2y\big]</span><br><span class="tex">=\boldsymbol{(4y+3)(8y+1)}</span>; nothing common is left in the bracket.</div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">5a(a-4)-15(a-4)</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Pull out <span class="tex">(a-4)</span>: <span class="tex">(a-4)(5a-15)</span>.<br>The bracket still has a common factor of 5, so<br><span class="tex">=\boldsymbol{5(a-4)(a-3)}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">3x(x-7)+7(7-x)</span></div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">7(7-x)=-7(x-7)</span>, so the binomials match:<br><span class="tex">3x(x-7)-7(x-7)</span><br><span class="tex">=\boldsymbol{(x-7)(3x-7)}</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check (c) at <span class="tex">x=2</span>.</b> The question: <span class="keys"><kbd>3</kbd><kbd>×</kbd><kbd>2</kbd><kbd>×</kbd><kbd>(</kbd><kbd>2</kbd><kbd>−</kbd><kbd>7</kbd><kbd>)</kbd><kbd>+</kbd><kbd>7</kbd><kbd>×</kbd><kbd>(</kbd><kbd>7</kbd><kbd>−</kbd><kbd>2</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 5. The answer: <span class="keys"><kbd>(</kbd><kbd>2</kbd><kbd>−</kbd><kbd>7</kbd><kbd>)</kbd><kbd>×</kbd><kbd>(</kbd><kbd>3</kbd><kbd>×</kbd><kbd>2</kbd><kbd>−</kbd><kbd>7</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> also gives 5 ✓</div>
+    <div class="pill-col"><button class="pill" data-keys="3 × 2 × ( 2 − 7 ) + 7 × ( 7 − 2 ) =">Show question</button><button class="pill" data-keys="( 2 − 7 ) × ( 3 × 2 − 7 ) =">Show answer</button></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<!-- ================= 2. Factoring by grouping ================= -->
+<section class="card" data-ink="s2" data-section="2. Factoring by Grouping">
+  <div class="sec-h"><span class="badge">2</span><h2>Factoring by Grouping</h2></div>
+  <p>A four-term polynomial usually has no factor common to <b>all four</b> terms. But splitting it into two pairs and removing each pair’s own common factor can leave the <b>same</b> binomial in both. Pair up, pull a monomial out of each pair, then pull out the shared binomial: this is <b>factoring by grouping</b>.</p>
+  <div class="u4l1b-tw2">
+    <div class="u4l1b-tw2-row"><span class="tex">x^2+3x+4x+12</span><span class="tex">=</span><span class="tex">x(x+3)+4(x+3)</span><span class="tex">=</span><span class="tex">(x+3)(x+4)</span></div>
+    <div class="u4l1b-tw2-arr"><span class="f">factor →</span><span class="e">← expand</span></div>
+  </div>
+  <p>Expanding and factoring are the <b>same equation read in opposite directions</b>. The algebra tiles show it: each pair builds a rectangle, and the two rectangles share a side.</p>
+  <div class="explainer" data-explainer="tileGroup"></div>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. Pair up, pull out, pull out again">
+  <h3 class="sub">Pair up, pull out, pull out again</h3>
+  <div class="u4l1b-steps">
+    <div class="u4l1b-step"><span class="u4l1b-sn">1</span><div><b>Pair up</b> the first two terms and the last two terms.</div></div>
+    <div class="u4l1b-step"><span class="u4l1b-sn">2</span><div><b>Pull out</b> each pair’s own common factor (its GCF).</div></div>
+    <div class="u4l1b-step"><span class="u4l1b-sn">3</span><div>The brackets match? <b>Pull out</b> the shared bracket.</div></div>
+    <div class="u4l1b-step chk"><span class="u4l1b-sn">✓</span><div><b>Check</b> by expanding back to the four terms.</div></div>
+  </div>
+  <div class="def amber"><b>Sign care.</b> If the second pair starts with a <b>minus</b>, pull out a <b>negative</b> factor so its bracket can match the first one. Pulling out a negative flips <b>every</b> sign inside: <span class="tex">-4a+6=-2(2a-3)</span>.</div>
+  <div class="explainer" data-explainer="grouping"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Check the inside signs.</b> <span class="tex">-4a+6</span> is <span class="tex">-2(2a-3)</span>, not <span class="tex">-2(2a+3)</span>: expand it to be sure, <span class="tex">-2\cdot(-3)=+6</span> ✓. Most grouping mistakes are a sign dropped right here.</div></div>
+</section>
+
+<section class="card" data-ink="s2c" data-section="2. Rearrange and try again">
+  <h3 class="sub">No match? Rearrange and try again</h3>
+  <p><b>You may need to rearrange the terms before grouping.</b> If the first pairing does not leave matching binomials, regroup so that terms sharing a factor sit together. Terms can be moved around freely (addition is commutative), as long as <b>each term keeps its own sign</b>.</p>
+  <div class="explainer" data-explainer="rearrange"></div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Pair up, pull out, pull out again</h3></div>
+  <p class="q">Factor each polynomial by grouping.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">x^2+4x+5x+20</span></div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x(x+4)+5(x+4)</span><br><span class="tex">=\boldsymbol{(x+4)(x+5)}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">6x^2-3x+8x-4</span></div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">3x(2x-1)+4(2x-1)</span><br><span class="tex">=\boldsymbol{(2x-1)(3x+4)}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">10a^2-15a-4a+6</span></div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">5a(2a-3)-2(2a-3)</span><br><span class="tex">=\boldsymbol{(2a-3)(5a-2)}</span></div></div></div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(d) <span class="tex">mn+mp-qn-qp</span></div><div class="work" style="--h:270px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Group by common letters:<br><span class="tex">m(n+p)-q(n+p)=\boldsymbol{(n+p)(m-q)}</span></div></div></div>
+    <div class="part"><div class="pl">(e) <span class="tex">3x^2+10y^2-6xy^2-5x</span></div><div class="work" style="--h:270px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The natural pairing shares no binomial, so rearrange: <span class="tex">x</span>-only terms together, <span class="tex">y^2</span> terms together:<br><span class="tex">(3x^2-5x)+(10y^2-6xy^2)</span><br><span class="tex">=x(3x-5)-2y^2(3x-5)=\boldsymbol{(3x-5)(x-2y^2)}</span></div></div></div>
+    <div class="part think span2"><div class="pl"><span class="think-tag">Think</span> Priya wrote <span class="tex">x^2-2x-3x+6=x(x-2)-3(x+2)</span> and decided it can’t be factored by grouping. What went wrong?</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A sign slip in pair 2: <span class="tex">-3x+6=-3(x-2)</span>, because <span class="tex">-3\cdot(-2)=+6</span>. The brackets <b>do</b> match: <span class="tex">x(x-2)-3(x-2)=\boldsymbol{(x-2)(x-3)}</span>. Expanding <span class="tex">-3(x+2)</span> gives <span class="tex">-3x-6</span>, which is how to catch it.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check (c) at <span class="tex">a=2</span>.</b> The question: <span class="keys"><kbd>1</kbd><kbd>0</kbd><kbd>×</kbd><kbd>2</kbd><kbd>x²</kbd><kbd>−</kbd><kbd>1</kbd><kbd>5</kbd><kbd>×</kbd><kbd>2</kbd><kbd>−</kbd><kbd>4</kbd><kbd>×</kbd><kbd>2</kbd><kbd>+</kbd><kbd>6</kbd><kbd>ENTER</kbd></span> gives 8. The answer: <span class="keys"><kbd>(</kbd><kbd>2</kbd><kbd>×</kbd><kbd>2</kbd><kbd>−</kbd><kbd>3</kbd><kbd>)</kbd><kbd>×</kbd><kbd>(</kbd><kbd>5</kbd><kbd>×</kbd><kbd>2</kbd><kbd>−</kbd><kbd>2</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> also gives 8 ✓</div>
+    <div class="pill-col"><button class="pill" data-keys="10 × 2 x² − 15 × 2 − 4 × 2 + 6 =">Show question</button><button class="pill" data-keys="( 2 × 2 − 3 ) × ( 5 × 2 − 2 ) =">Show answer</button></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>A whole bracket can be the common factor.</b> Treat it as one block and pull it out once: <span class="tex">5x(x+2)-3(x+2)=(x+2)(5x-3)</span>. A lone bracket is <span class="tex">1\cdot(\ldots)</span>: keep the 1.</div>
+    <div><b>Then check the leftover bracket:</b> <span class="tex">(a-4)(5a-15)=5(a-4)(a-3)</span>. Opposite brackets flip with a minus sign: <span class="tex">7(7-x)=-7(x-7)</span>.</div>
+    <div><b>Grouping:</b> pair up, pull out, pull out again: <span class="tex">x^2+3x+4x+12</span> <span class="tex">=x(x+3)+4(x+3)</span> <span class="tex">=(x+3)(x+4)</span>. Pair 2 starts with a minus? Pull out a negative.</div>
+    <div><b>No match? Rearrange</b> so terms that share a factor sit together, each with its own sign. <b>Always check by expanding:</b> factoring is expanding run backwards.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u4l1b" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 1B — Common Factors: Binomial Common Factors and Grouping</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l2/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 2 — Factoring Trinomials of the Form <span class="tex">x^2+bx+c</span></b><div class="muted">Algebra tiles, then two integers whose product is <span class="tex">c</span> and whose sum is <span class="tex">b</span></div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u4l1b.js';
+  boot({ key: 'u4l1b', homeHref: '../../', title: '4.1B Binomial Common Factors and Grouping' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>
