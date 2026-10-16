@@ -32,7 +32,7 @@ Options (defaults): `width 440, height 440, xmin/xmax/ymin/ymax ±10, xstep 1, y
 `xlabels/ylabels` (number step, auto), `xtitle 'x', ytitle 'y'` (TeX, `''` hides), `arrows true, grid true, axes true,
 numbers true, ticks false, origin false` (label 0), `major 0` (darker line every n steps), `pad` (px or `[t,r,b,l]`; auto
 leaves room for numbers when the window starts at 0), `fontSize 17, fnArrows true, color` (default curve colour),
-`theme: 'calc'` (calculator screen: bezel, no grid/numbers, ticks, blue curves, readout), `interactive` (see below).
+`theme: 'calc'` (calculator screen: bezel, no grid/numbers, ticks, blue curves, readout); like a real TI-84 it draws no axis when 0 is outside the window, `interactive` (see below).
 
 | Draw (graph coords; returns the element) | Notes |
 |---|---|
@@ -87,6 +87,7 @@ const N = new NumberLine(stage, { x: 20, y: 10, width: ex.W - 40, height: 150, m
 `new ValueTable(host, {x, y, headers: ['x','y'], rows: [[-2,-3], …], layout: 'v'|'h', cellW 96, cellH 52, tex true,
 hide, tap true, q '?', diffs, diffSpace 96})` — `hide`: a column index or header (`1`, `'y'`), `[[r, c]…]` or `(r, c) => bool`;
 hidden cells show `?` and reveal on tap. Numbers/strings are typeset with KaTeX (`{html: '…'}` for raw HTML).
+Note: a function `hide` also applies to rows added later with `addRow`.
 Methods: `cell(r, c)`, `reveal(r, c, cx)`, `hide(r, c)`, `set(r, c, v, cx)`, `fill(cx, {col, stagger})` (reveal a column
 top to bottom), `highlight(r, on)`, `highlightCol(c, on)`, `addRow(vals, cx)`, `await diffs(cx, {col, labels, color})`
 (curved arrows with +3, +3 … between rows; returns the differences), `clearDiffs()`. `el`, `grid`, `svg`, `html`.
@@ -178,3 +179,5 @@ gives <span data-reveal><span class="tex">7</span></span>
 - **Fully custom visuals are welcome.** The blocks are a head start, not a template: when a concept needs its own
   picture (tiles, a factor tree, a sieve, a story animation), write it by hand with `h`, `svgEl`, `c.anim` as before —
   mixing in a block wherever it saves time. Variety and the number of animations per lesson should not drop.
+
+Explainer tip: the stage height is `ex.def.height` (there is no `ex.H`); width is `ex.W`.

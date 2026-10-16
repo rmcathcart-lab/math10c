@@ -290,7 +290,7 @@ function calcSteps(stage, ex) {
       run: async (c) => { await lineIn(c, P, `<kbd>Y=</kbd> ${T('Y_1=2X-3')}`); } },
     { cap: `<kbd>GRAPH</kbd> draws it in the standard window, ${T('-10\\le X\\le 10')}.`,
       run: async (c) => { await lineIn(c, P, '<kbd>GRAPH</kbd>'); await G.drawIn(G.fn(f), 900, c); } },
-    { cap: `<kbd>2nd</kbd> <kbd>GRAPH</kbd> (TABLE) lists the same ordered pairs as our table of values.`,
+    { cap: `<kbd>2nd</kbd> <kbd>GRAPH</kbd> (TABLE) lists the same ordered pairs as our table of values (scroll up past 0 for the negative inputs).`,
       run: async (c) => {
         await lineIn(c, P, '<kbd>2nd</kbd> <kbd>GRAPH</kbd> &nbsp;TABLE');
         tb = new ValueTable(P, { headers: ['X', 'Y_1'], rows: [-2, -1, 0, 1, 2, 3].map((x) => [x, f(x)]), cellW: 92, cellH: 36, tap: false, cls: 'u5l8-calctbl' });
@@ -646,7 +646,7 @@ const cost = {
         run: async (c) => { await pop(c, G.point(0, 18400, { color: 'teal', r: 7, label: T('(0,\\ 18\\,400)'), pos: 'se' })); } },
       { cap: `The largest input: ${T('C(5\\,000)=18\\,400+27(5\\,000)=18\\,400+135\\,000=153\\,400')}.`,
         run: async (c) => { await pop(c, G.point(5000, 153400, { color: 'teal', r: 7, label: T('(5\\,000,\\ 153\\,400)'), pos: 'nw' })); } },
-      { cap: `Join them: the cost rises ${T('\\$27')} for every pair, so the graph is a straight line from ${T('(0,\\ 18\\,400)')} to ${T('(5\\,000,\\ 153\\,400)')}.`,
+      { cap: `Join them: the cost rises ${T('\\$27')} for every pair. Strictly, ${T('n')} counts whole pairs, so the graph is 5&#8239;001 dots, packed so close that we draw them as a line from ${T('(0,\\ 18\\,400)')} to ${T('(5\\,000,\\ 153\\,400)')}.`,
         run: async (c) => { await G.drawIn(mainLine(), 1000, c); } }
     ];
     if (k === 'b') return [

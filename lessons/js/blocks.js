@@ -308,6 +308,15 @@ export class Graph extends Box {
   fromEvent(e) { const [px, py] = this.pxOf(e); return this.fromPx(px, py); }
   /* ---- grid, axes, numbers ---- */
   frame() {
+    this.frameBase();
+    if (this.o.theme !== 'calc') return; // a real TI-84 draws no axis when 0 is outside the window (don't park it on the edge)
+    const w = this.win, ax = this.layers.axes, showX = w.ymin <= 0 && w.ymax >= 0, showY = w.xmin <= 0 && w.xmax >= 0;
+    const ls = ax.querySelectorAll('.bk-axis');
+    if (ls[0]) ls[0].style.display = showX ? '' : 'none';
+    if (ls[1]) ls[1].style.display = showY ? '' : 'none';
+    ax.querySelectorAll('.bk-tick, .bk-axhead').forEach((t) => { const vert = t.tagName === 'line' ? t.getAttribute('x1') === t.getAttribute('x2') : null; if (vert !== null) t.style.display = (vert ? showX : showY) ? '' : 'none'; });
+  }
+  frameBase() {
     const L = this.layers, w = this.win, o = this.o, P = this.P, fs = o.fontSize;
     L.bg.innerHTML = L.grid.innerHTML = L.axes.innerHTML = ''; this.axesHtml.innerHTML = '';
     const [x0, y0] = this.toPx(w.xmin, w.ymax), [x1, y1] = this.toPx(w.xmax, w.ymin), m = 12;
