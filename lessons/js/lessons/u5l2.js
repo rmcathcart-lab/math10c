@@ -198,13 +198,13 @@ const CE = {
   phone: { label: 'Phone charging', A: { n: 'minutes charging', s: 'the minutes charging', ic: 'phone', ax: 'minutes charging' }, B: { n: 'battery level (%)', s: 'the battery level', ic: 'battery', ax: 'battery level' }, dep: 'B',
     tests: [['Does the number of minutes charging depend on the battery level?', false, 'No: you decide how long to charge it.'], ['Does the battery level depend on the minutes charging?', true, 'Yes: the longer it charges, the fuller it gets.']],
     f: (u) => 0.12 + 0.8 * u },
-  van: { label: 'Van: fuel and speed', A: { n: `fuel consumption rate, ${T('F')}`, s: `the fuel consumption rate ${T('F')}`, ic: 'pump', ax: 'fuel consumption' }, B: { n: `speed, ${T('s')}`, s: `the speed ${T('s')}`, ic: 'speedo', ax: 'speed' }, dep: 'A',
-    tests: [['Does the fuel consumption rate depend on the speed?', true, 'Yes: how fast the van goes changes how much fuel it burns.'], ['Does the speed depend on the fuel consumption rate?', false, 'No: the driver chooses the speed.']],
+  van: { label: 'Van: fuel and speed', A: { n: `fuel consumption rate,&nbsp;${T('F')}`, s: `the fuel consumption rate ${T('F')}`, ic: 'pump', ax: 'fuel consumption' }, B: { n: `speed,&nbsp;${T('s')}`, s: `the speed ${T('s')}`, ic: 'speedo', ax: 'speed' }, dep: 'A',
+    tests: [['Does the fuel consumption rate depend on the speed?', true, 'Yes: speed changes how much fuel it burns.'], ['Does the speed depend on the fuel consumption rate?', false, 'No: the driver chooses the speed.']],
     f: (u) => { const s = 20 + 120 * u; return (0.002 * s * s - 0.32 * s + 18.8) / 15; } },
   ice: { label: 'Ice cream (warm-up)', A: { n: 'temperature (°C)', s: 'the temperature', ic: 'thermo', ax: 'temperature' }, B: { n: 'ice cream sales', s: 'ice cream sales', ic: 'cone', ax: 'ice cream sales' }, dep: 'B',
     tests: [['Does the temperature depend on ice cream sales?', false, 'No: selling cones doesn’t heat up the day.'], ['Do ice cream sales depend on the temperature?', true, 'Yes: hot days sell more cones.']],
     f: (u) => 0.1 + 0.78 * u * u },
-  museum: { label: 'Example 2(c)', A: { n: `number of visitors, ${T('v')}`, s: `the number of visitors ${T('v')}`, ic: 'people', ax: 'visitors' }, B: { n: `price of admission, ${T('p')}`, s: `the price ${T('p')}`, ic: 'ticket', ax: 'price' }, dep: 'A',
+  museum: { label: 'Example 2(c)', A: { n: `number of visitors,&nbsp;${T('v')}`, s: `the number of visitors ${T('v')}`, ic: 'people', ax: 'visitors' }, B: { n: `price of admission,&nbsp;${T('p')}`, s: `the price ${T('p')}`, ic: 'ticket', ax: 'price' }, dep: 'A',
     tests: [['Does the number of visitors depend on the price?', true, 'Yes: a higher price keeps some people away.'], ['Does the price depend on the number of visitors?', false, 'No: the museum sets the price for the day.']],
     f: (u) => 0.88 - 0.68 * u }
 };
@@ -438,7 +438,7 @@ const EG = {
   e3: { label: 'Example 3', f: (x) => 3 * x - 4, tex: 'y=3x-4', sub: (x) => `y=3(${x})-4`, xs: [-2, -1, 0, 1, 2], kind: 'line',
     win: { xmin: -6, xmax: 6, ymin: -12, ymax: 12, xlabels: 2, ylabels: 5 }, fwd: 5, back: 8, stampAt: [-3.3, 7] },
   e4: { label: 'Example 4', f: (x) => x * x - 8, tex: 'y=x^2-8', sub: (x) => (x < 0 ? `y=(${x})^2-8` : `y=${x}^2-8`), xs: [4, 3, 2, 1, 0, -1, -2, -3], kind: 'curve',
-    win: { xmin: -6, xmax: 6, ymin: -9, ymax: 9, xlabels: 2, ylabels: 4 }, sym: -4, stampAt: [3.4, -6.5] }
+    win: { xmin: -6, xmax: 6, ymin: -9, ymax: 9, xlabels: 2, ylabels: 4 }, sym: -4, stampAt: [2.4, -6.6] }
 };
 const pairT = (x, y) => `(${x},\\ ${y})`;
 const eqToGraph = {
@@ -572,7 +572,7 @@ const linOrNot = {
   intro: 'Sort the equations. Is the input only to the <b>first power</b>, or is it <b>squared</b>? Press <b>Next</b>.',
   make(stage, v, ex) {
     const W = ex.W, cw = Math.floor((W - 28 - 3 * 10) / 4);
-    const chips = LN.map((e, i) => { const d = add(stage, box(h('div', 'u5l2-lnchip', T(e.t)), cw, 42), 14 + (i % 4) * (cw + 10) + (i >= 4 ? (cw + 10) / 2 : 0), 8 + Math.floor(i / 4) * 50); fit(d, cw - 10); return d; });
+    const chips = LN.map((e, i) => { const d = add(stage, box(h('div', 'u5l2-lnchip', T(e.t)), cw, 42), 14 + (i % 4) * (cw + 10) + (i >= 4 ? (cw + 10) / 2 : 0), 8 + Math.floor(i / 4) * 50); if (e.t.length > 14) d.style.fontSize = '15px'; return d; });
     const bw = Math.floor((W - 42) / 2), by = 112, bh = 366;
     const bins = [panel(stage, 14, by, bw, bh, '<b>Linear</b>: a straight line', 'u5l2-bin u5l2-bin-l'), panel(stage, 28 + bw, by, bw, bh, '<b>Nonlinear</b>: a curve', 'u5l2-bin u5l2-bin-n')];
     const sw = Math.floor((bw - 36) / 2), shh = 146;
@@ -580,7 +580,7 @@ const linOrNot = {
     const slots = LN.map((e) => {
       const b = e.lin ? 0 : 1, j = cnt[b]++, x = (b ? 28 + bw : 14) + 12 + (j % 2) * (sw + 12), y = by + 44 + Math.floor(j / 2) * (shh + 10);
       const s = add(stage, box(h('div', 'u5l2-slot2', `<div class="u5l2-s2eq">${T(e.t)}</div>${miniPlot(e.f, e.r)}<div class="u5l2-s2why">${e.why}</div>`), sw, shh), x, y);
-      fit(s.firstChild, sw - 12); s.style.opacity = 0; return s;
+      if (e.t.length > 14) s.firstChild.style.fontSize = '15px'; s.style.opacity = 0; return s;
     });
     const steps = LN.map((e, i) => ({
       cap: `${T(e.t)}: ${e.why}. ${e.lin ? 'Its graph is a straight line: <b>linear</b>.' : 'Its graph is a curve: <b>nonlinear</b>.'}`,
@@ -669,9 +669,9 @@ function mountWarm() {
     <path class="u5l2-temp" d="${P(temp)}" pathLength="1" fill="none" stroke="${RED}" stroke-width="4" stroke-linecap="round"/>
     <path d="${P(ice)}" fill="none" stroke="#d9708f" stroke-width="5" stroke-linecap="round"/>
     <path d="${P(shark)}" fill="none" stroke="#6e7d8c" stroke-width="5" stroke-dasharray="11 8" stroke-linecap="round"/>
-    <path d="M146 112L190 150" stroke="#b5527a" stroke-width="1.6"/><text x="100" y="104" class="u5l2-bl" fill="#b5527a">ice cream sales</text>
-    <path d="M384 120L350 162" stroke="#556472" stroke-width="1.6"/><text x="340" y="112" class="u5l2-bl" fill="#556472">shark attacks</text>
-    <g class="u5l2-templab"><rect x="250" y="20" width="200" height="26" rx="8" fill="#fff" stroke="${RED}" stroke-width="1.6"/><text x="350" y="39" text-anchor="middle" class="u5l2-bl" fill="${RED}">hot weather drives both</text></g>
+    <path d="M76 26H104" stroke="#d9708f" stroke-width="5" stroke-linecap="round"/><text x="112" y="32" class="u5l2-bl" fill="#b5527a">ice cream sales</text>
+    <path d="M76 48H104" stroke="#6e7d8c" stroke-width="5" stroke-dasharray="11 6"/><text x="112" y="54" class="u5l2-bl" fill="#556472">shark attacks</text>
+    <g class="u5l2-templab"><path d="M76 70H104" stroke="${RED}" stroke-width="4" stroke-linecap="round"/><text x="112" y="76" class="u5l2-bl" fill="${RED}">temperature</text></g>
   </svg>`;
   const poll = document.getElementById('wpoll');
   if (poll) { const s = () => host.classList.toggle('temp-on', poll.classList.contains('revealed')); new MutationObserver(s).observe(poll, { attributes: true, attributeFilter: ['class'] }); s(); }

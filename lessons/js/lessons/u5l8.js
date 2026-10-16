@@ -660,7 +660,7 @@ const cost = {
     ];
     if (k === 'd') return [
       { cap: `${T('C(0)=18\\,400+27(0)=18\\,400')}: the output when the input is 0, where the graph meets the vertical axis.`,
-        run: async (c) => { await pop(c, G.point(0, 18400, { color: 'amber', r: 8 })); await pop(c, pill(G, 0, 18400, T('18\\,400'), 'amber', 'e')); } },
+        run: async (c) => { await pop(c, G.point(0, 18400, { color: 'amber', r: 8 })); await pop(c, pill(G, 0, 18400, T('18\\,400'), 'amber', 'se')); } },
       { cap: `It is the <b>fixed cost</b> (equipment, facility) paid before producing a single pair.`,
         run: (c) => showBar(c, 0, `<span class="u5l8-cfix">fixed cost ${T('\\$18\\,400')}</span>, even when ${T('n=0')}`) }
     ];

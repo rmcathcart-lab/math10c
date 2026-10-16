@@ -51,7 +51,7 @@ h2 .katex, h3 .katex { font-size: .95em; }
 
 /* ---------------- section 1 ---------------- */
 .u5l7b-disp { font-size: 22px; margin: -4px 0 6px; }
-.u5l7b-fm { display: flex; align-items: center; justify-content: center; gap: 0; margin: 6px 0 4px; font-size: 26px; }
+.u5l7b-fm { display: flex; align-items: center; justify-content: center; gap: 0; margin: 40px 0 46px; font-size: 26px; }
 .u5l7b-fm-o { width: 120px; height: 76px; border: 2.5px solid var(--ink); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
 .u5l7b-fm-o.wide { width: 160px; }
 .u5l7b-fm-o small { position: absolute; bottom: -30px; font-size: 17px; color: var(--muted); }

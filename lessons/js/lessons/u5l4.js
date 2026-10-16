@@ -132,11 +132,11 @@ const collect = {
       hiX = (i) => { M.highlight('d', pts[i][0], true); const a = M.arrow(i); if (a) a.classList.add('u5l4-arA'); };
       hiY = (i) => { M.highlight('r', pts[i][1], true, 'u5l4-hotr'); const a = M.arrow(i); if (a) { a.classList.remove('u5l4-arA'); a.classList.add('u5l4-arR'); } };
     }
-    const where = { pairs: 'the <b>first</b> coordinate of each pair', table: 'the <b>top row</b>, the x-row', map: 'where each <b>arrow starts</b> (the left oval)' }[d.form];
+    const where = { pairs: 'the <b>first</b> coordinate of every pair', table: 'the <b>top row</b>, the x-row', map: 'where each <b>arrow starts</b> (the left oval)' }[d.form];
     const whereY = { pairs: 'the <b>second</b> coordinates', table: 'the <b>bottom row</b>', map: 'where each arrow <b>lands</b> (the right oval)' }[d.form];
     const rx = repeats(xs), ry = repeats(ys);
     return [
-      { cap: `<b>Inputs</b> first: read ${where}, one for each pair.`,
+      { cap: `<b>Inputs</b> first: read ${where}.`,
         run: async (c) => { xTok = tokenRow(P, 'inputs', xs, 'dom'); for (let i = 0; i < pts.length; i++) { hiX(i); await pop(c, xTok.els[i], 300); await sleep(c, 140); } } },
       { cap: `Write each value <b>once</b>, in <b>increasing order</b>.` + (rx ? ` Here ${rx}.` : ' No value repeats here.'),
         run: async (c) => { await strike(c, xTok.els); const a = pline(P, `<b>Domain</b> ${T('D=' + listT(D))}`, 'dom u5l4-ans'); await fadeIn(c, a); } },
@@ -440,10 +440,10 @@ const realWorld = {
     : `A bath holds 20 L and fills at 8 L per minute for 15 minutes: ${T('V=20+8t')}. Press <b>Next</b>.`),
   make(stage, k, ex) {
     const d = RW[k], [u, v] = d.v, ys = d.xs.map(d.f), W = ex.W;
-    const tb = new ValueTable(stage, { x: 12, y: 40, headers: [u, v], rows: d.xs.map((x, i) => [x, nT(ys[i])]), hide: 1, tap: false, cellW: 80, cellH: 50 });
+    const tb = new ValueTable(stage, { x: 12, y: 40, headers: [u, v], rows: d.xs.map((x, i) => [x, nT(ys[i])]), hide: 1, tap: false, cellW: 70, cellH: 50 });
     add(stage, h('div', 'u5l4-formtag', T(d.eq)), 14, 8);
-    const G = new TGraph(stage, { x: 186, y: 14, width: 400, height: 440, xmin: d.win[0], xmax: d.win[1], ymin: d.win[2], ymax: d.win[3], xstep: d.steps[0], ystep: d.steps[1], xtitle: u, ytitle: v });
-    const P = panel(stage, 600, 14, W - 614, 440, 'Write it down');
+    const G = new TGraph(stage, { x: 166, y: 14, width: 380, height: 440, xmin: d.win[0], xmax: d.win[1], ymin: d.win[2], ymax: d.win[3], xstep: d.steps[0], ystep: d.steps[1], xtitle: u, ytitle: v });
+    const P = panel(stage, 560, 14, W - 574, 440, 'Write it down');
     const yLo = d.f(d.lo), yHi = d.f(d.hi);
     const all = svgEl('g', { class: 'u5l4-all' }, G.layers.data); G.layers.all = all;
     const zoomWin = { xmin: d.zoom[0], xmax: d.zoom[1], ymin: d.zoom[2], ymax: d.zoom[3] };
@@ -517,7 +517,7 @@ const which = {
     void F;
     const card = add(stage, box(h('div', 'u5l4-acard', `<div class="u5l4-ph">${d.label}</div>`), 372, 124), 10, 262);
     const steps = d.path.map((id, i) => ({ cap: d.caps[i], run: (c) => (i ? F.go(c, d.path[i - 1], id).then(() => F.visit(c, id)) : F.visit(c, id)) }));
-    steps.push({ cap: 'The answer:', run: async (c) => { for (const a of d.ans) await fadeIn(c, pline(card, T(a), 'u5l4-ans')); } });
+    steps.push({ cap: 'So the answer is written like this.', run: async (c) => { for (const a of d.ans) await fadeIn(c, pline(card, T(a), 'u5l4-ans')); } });
     return steps;
   }
 };

@@ -121,8 +121,11 @@ async def dump_page(ctx, pid):
             label = clean(await pg.evaluate(f"document.querySelectorAll('[data-keys]')[{k}].textContent"), 60)
             tip = clean(await pg.evaluate(f"(() => {{ const b = document.querySelectorAll('[data-keys]')[{k}]; const t = b.closest('.tip, .part, .card'); return t ? t.innerText : ''; }})()"), 300)
             await pg.evaluate(f"document.querySelectorAll('[data-keys]')[{k}].click()")
-            presses = sum(len(t) if re.fullmatch(r'[0-9.]+', t) else 2 if t in ('√', 'ˣ√', 'x³', 'd/e') else 1 for t in spec.split())
-            await pg.wait_for_timeout(560 * presses + 900)  # the demo presses each key for ~540 ms
+            # the demo writes its key caption at once and clears it 2.6 s after the last key: wait for that
+            try:
+                await pg.wait_for_function("() => { const c = document.querySelector('.calc-demo-cap'); return c && c.innerHTML === ''; }", timeout=90000, polling=200)
+            except Exception:
+                res['problems'].append(f'calculator demo "{label}" did not finish within 90 s')
             screen = clean(await pg.evaluate("(document.querySelector('.calc-screen') || {}).innerText || ''"), 120)
             res['calc'].append({'button': label, 'keys': spec, 'screen': screen, 'context': tip})
     res['problems'] = errs + res['problems']

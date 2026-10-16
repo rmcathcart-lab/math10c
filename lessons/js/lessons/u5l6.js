@@ -445,16 +445,14 @@ const whichTool = {
 /* ================= static figures: blank grids to sketch on, and the answer graphs ================= */
 /* axis names with units, outside the grid (right of the horizontal axis, above the vertical one) */
 function axisNames(G, xt, yt) {
-  G.label(G.win.xmax, 0, xt, { tex: true, pos: 'e', clip: false, gap: 10 });
-  G.label(0, G.win.ymax, yt, { tex: true, pos: 'n', clip: false, gap: 8 });
-  const [x1, y1] = G.toPx(G.win.xmax, 0), [x0, y0] = G.toPx(0, G.win.ymax);
-  svgEl('path', { d: `M${x1} ${y1}h8M${x0} ${y0}v-8`, stroke: '#1c2230', 'stroke-width': 2.4 }, G.layers.axes);
+  G.label(G.win.xmax, 0, xt, { tex: true, pos: 'e', clip: false, gap: 20 });
+  G.label(0, G.win.ymax, yt, { tex: true, pos: 'ne', clip: false, gap: 14, dx: -12 });
 }
 function mountFigures() {
   const g1 = document.getElementById('ex1-grid');
-  if (g1) axisNames(new Graph(g1, { width: 560, height: 350, xmin: 0, xmax: 24, xstep: 2, xlabels: 4, ymin: 0, ymax: 3500, ystep: 500, ylabels: 500, xtitle: '', ytitle: '', origin: true, pad: [40, 104, 34, 58] }), 't\\text{ (years)}', 'V\\text{ (dollars)}');
+  if (g1) axisNames(new Graph(g1, { width: 560, height: 350, xmin: 0, xmax: 24, xstep: 2, xlabels: 4, ymin: 0, ymax: 3500, ystep: 500, ylabels: 500, xtitle: '', ytitle: '', origin: true, pad: [50, 104, 34, 58] }), 't\\text{ (years)}', 'V\\text{ (dollars)}');
   const g2 = document.getElementById('ex2-grid');
-  if (g2) axisNames(new Graph(g2, { width: 560, height: 350, xmin: 0, xmax: 12, xstep: 1, xlabels: 1, ymin: 0, ymax: 35, ystep: 5, ylabels: 5, xtitle: '', ytitle: '', origin: true, pad: [40, 122, 34, 44] }), 't\\text{ (seconds)}', 'h\\text{ (metres)}');
+  if (g2) axisNames(new Graph(g2, { width: 560, height: 350, xmin: 0, xmax: 12, xstep: 1, xlabels: 1, ymin: 0, ymax: 35, ystep: 5, ylabels: 5, xtitle: '', ytitle: '', origin: true, pad: [50, 122, 34, 44] }), 't\\text{ (seconds)}', 'h\\text{ (metres)}');
   const a1 = document.getElementById('ex1a-fig');
   if (a1) {
     const G = new Graph(a1, { width: 430, height: 290, xmin: 0, xmax: 16, xstep: 1, xlabels: 5, ymin: 0, ymax: 3200, ystep: 250, ylabels: 1000, xtitle: 't', ytitle: 'V', fontSize: 16 });
