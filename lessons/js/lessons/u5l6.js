@@ -70,7 +70,7 @@ const braking = {
       { cap: `At ${v1} km/h: ${T(`d=0.006(${v1})^2=${tn(d1)}`)} m.`,
         run: async (c) => { G.drawIn(G.guides(v1, d1), 500, c); await G.reveal(G.point(v1, d1, { color: 'blue', coords: true, pos: 'nw' }), c); await show(c, pline(P, `${T(`v=${v1}`)}: &nbsp;${T(`d=${tn(d1)}`)} m`)); } },
       { cap: `<b>If</b> the graph were a straight line, doubling the speed would double the distance: ${T(tn(dl))} m. That’s the “double it” guess.`,
-        run: async (c) => { await G.drawIn(G.segment([0, 0], [v2, dl], { color: 'gray', dash: true, width: 3 }), 700, c); await G.reveal(G.point(v2, dl, { color: 'gray', open: true, label: `guess: ${tn(dl)} m?`, pos: 'se' }), c); await show(c, pline(P, `straight-line guess: ${T(tn(dl))} m`, 'dim')); } },
+        run: async (c) => { await G.drawIn(G.segment([0, 0], [v2, dl], { color: 'gray', dash: true, width: 3 }), 700, c); await G.reveal(G.point(v2, dl, { color: 'gray', open: true, label: `guess: ${tn(dl)} m?`, pos: v2 > 100 ? 'sw' : 'se' }), c); await show(c, pline(P, `straight-line guess: ${T(tn(dl))} m`, 'dim')); } },
       { cap: `But the curve bends up: ${T(`d=0.006(${v2})^2=${tn(d2)}`)} m.`,
         run: async (c) => { G.drawIn(G.guides(v2, d2), 500, c); await G.reveal(G.point(v2, d2, { color: 'red', coords: true, pos: 'nw' }), c); await show(c, pline(P, `${T(`v=${v2}`)}: &nbsp;${T(`d=${tn(d2)}`)} m`)); } },
       { cap: `${T(`${tn(d2)}\\div${tn(d1)}=4`)}: <b>four times</b> as far. The speed is <b>squared</b>, and doubling it multiplies ${T('v^2')} by ${T('2^2=4')}.`,
@@ -334,9 +334,9 @@ const symmetry = {
       { cap: `At ${T('h=' + k)}: ${T('t=' + tn(t1))} and ${T('t=' + tn(t2))}. Both are ${T(tn(dist))} s from the vertex: ${T(`5-${tn(dist)}`)} and ${T(`5+${tn(dist)}`)}.` + (k === 8 ? ' Blaze passes the <b>platform height</b> again at 10 s, just before landing.' : ''),
         run: async (c) => {
           await G.drawIn(G.fn(() => k, { color: 'red', dash: true, width: 2.5 }), 600, c);
-          const yy = Math.min(35, k + 2.2);
+          const up = k < 26, yy = up ? k + 2.2 : k - 2.4;
           await Promise.all([G.drawIn(G.segment([5, yy], [t1, yy], { color: 'purple', width: 3, arrowB: true }), 500, c), G.drawIn(G.segment([5, yy], [t2, yy], { color: 'purple', width: 3, arrowB: true }), 500, c)]);
-          G.label((5 + t1) / 2, yy, `${tn(dist)} s`, { pos: 'n', cls: 'u5l6-dist', gap: 4 }); G.label((5 + t2) / 2, yy, `${tn(dist)} s`, { pos: 'n', cls: 'u5l6-dist', gap: 4 });
+          G.label((5 + t1) / 2, yy, `${tn(dist)} s`, { pos: up ? 'n' : 's', cls: 'u5l6-dist', gap: 4 }); G.label((5 + t2) / 2, yy, `${tn(dist)} s`, { pos: up ? 'n' : 's', cls: 'u5l6-dist', gap: 4 });
           await Promise.all([G.reveal(G.point(t1, k, { color: 'red', r: 8 }), c), G.reveal(G.point(t2, k, { color: 'red', r: 8 }), c)]);
           tb.highlight(t1, true); tb.highlight(t2, true);
           await show(c, pline(P, `${T('h=' + k)} at ${T('t=' + tn(t1))} and ${T('t=' + tn(t2))}: ${T(`5\\pm${tn(dist)}`)}.`, 'ok'));
@@ -408,12 +408,13 @@ const QS = {
   '2c': { q: 'Blaze (c): the maximum height', br: 'ext', why: '“Maximum” asks for the <b>highest</b> point.', tool: 'mx', ans: '33 m at 5 s', res: `${mono('4:maximum')} gives ${mono('X=5 Y=33')}: <b>33 m</b>, at <b>5 s</b>.` },
   '2d': { q: 'Blaze (d): how long until Blaze lands?', br: 'zero', why: `Landing means the height is <b>zero</b>: ${T('h=0')}.`, tool: 'zr', ans: '10.74 s', res: `${mono('2:zero')} (right-hand crossing) gives ${mono('X=10.74456')}: <b>10.74 s</b>.` }
 };
+const dot = (q) => (/[?.]$/.test(q) ? q : q + '.');
 const whichTool = {
   title: 'Which tool answers the question?',
   height: 430,
   choices: [{ sep: 'Example 1 check' }, { v: '1b', label: '(b)' }, { v: '1d', label: '(d)' }, { v: '1e', label: '(e)' }, { sep: 'Example 2 check' }, { v: '2b', label: '(b)' }, { v: '2c', label: '(c)' }, { v: '2d', label: '(d)' }],
   value: '1d',
-  intro: (k) => `${QS[k].q}. Press <b>Next</b>.`,
+  intro: (k) => `${dot(QS[k].q)} Press <b>Next</b>.`,
   make(stage, k, ex) {
     const Q = QS[k], W = ex.W - 28, cx = (i) => W * (0.125 + 0.25 * i), bw = Math.min(222, W * 0.235);
     const F = new Flowchart(stage, { x: 14, y: 6, width: W, height: 416, nodes: {
@@ -433,7 +434,7 @@ const whichTool = {
     const ti = ['trace', 'int', 'zr', 'mx'].indexOf(Q.tool);
     const A = add(stage, h('div', 'u5l6-ans', Q.ans), 0, 0); A.style.opacity = 0;
     return [
-      { cap: `${Q.q}. What does the question <b>give</b>, and what does it <b>ask for</b>?`, run: (c) => F.visit(c, 'q') },
+      { cap: `${dot(Q.q)} What does the question <b>give</b>, and what does it <b>ask for</b>?`, run: (c) => F.visit(c, 'q') },
       { cap: Q.why, run: async (c) => { await F.go(c, 'q', Q.br); await F.visit(c, Q.br); } },
       { cap: Q.res,
         run: async (c) => { await F.go(c, Q.br, Q.tool); await F.visit(c, Q.tool); A.style.left = (14 + cx(ti) - A.offsetWidth / 2) + 'px'; A.style.top = '384px'; await pop(c, A); } }

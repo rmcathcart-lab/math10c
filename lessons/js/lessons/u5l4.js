@@ -123,7 +123,7 @@ const collect = {
       hiY = (i) => els[i].querySelector('.u5l4-py').classList.add('on');
       add(stage, h('div', 'u5l4-formtag', 'ordered pairs (x, y)'), 24, 6);
     } else if (d.form === 'table') {
-      const tb = new ValueTable(stage, { x: 30, y: 90, headers: ['x', 'y'], rows: pts.map((p) => [p[0], p[1]]), layout: 'h', cellW: 80, cellH: 60 });
+      const tb = new ValueTable(stage, { x: 30, y: 90, headers: ['x', 'y'], rows: pts.map((p) => [p[0], p[1]]), layout: 'h', cellW: 80, cellH: 64, cls: 'u5l4-vt' });
       hiX = (i) => { tb.cell(i, 0).classList.add('bk-hl'); tb.heads[0].classList.add('bk-hl'); };
       hiY = (i) => { tb.cell(i, 1).classList.add('u5l4-hlr'); tb.heads[1].classList.add('u5l4-hlr'); };
       add(stage, h('div', 'u5l4-formtag', 'table of values'), 30, 40);
@@ -178,7 +178,7 @@ const setRead = {
       ];
     }
     const S = { R: RR, W: 'W', I: 'I' }[d.kind], cnd = cond(v, d.I[0], d.I[1], d.I[2], d.I[3]);
-    const e = add(stage, h('div', 'u5l4-expr', K(`\\htmlClass{u5l4-q1}{\\{${v}}\\htmlClass{u5l4-q2}{\\mid}\\ \\htmlClass{u5l4-q3}{${cnd}},\\ \\htmlClass{u5l4-q4}{${v}\\in ${S}}\\htmlClass{u5l4-q1}{\\}}`)), 0, 30); e.style.width = W + 'px';
+    const e = add(stage, h('div', 'u5l4-expr', K(`\\htmlClass{u5l4-q1}{\\{${v}}\\htmlClass{u5l4-q2}{\\mid}\\htmlClass{u5l4-q3}{${cnd}},\\ \\htmlClass{u5l4-q4}{${v}\\in ${S}}\\htmlClass{u5l4-q1}{\\}}`)), 0, 30); e.style.width = W + 'px';
     const lit = (q) => { e.querySelectorAll('.on').forEach((x) => x.classList.remove('on')); e.querySelectorAll('.u5l4-' + q).forEach((x) => x.classList.add('on')); };
     const condSay = { ge: `${v} is greater than or equal to −3`, lt: `${v} is from −2 up to, but not including, 5`, W: `${v} is less than or equal to 4`, I: `${v} is less than or equal to 4` }[k];
     const condCap = {
@@ -209,7 +209,7 @@ const setRead = {
           else {
             const lo = d.kind === 'W' ? 0 : d.min;
             for (let x = lo; x <= d.I[1]; x++) { await pop(c, N.point(x, { color: d.kind === 'W' ? 'amber' : 'red' }), 220); await sleep(c, 60); }
-            if (d.kind === 'I') await pop(c, N.mark(d.min - 0.55, '…', { cls: 'u5l4-dots3', pos: 's' }), 300);
+            if (d.kind === 'I') await pop(c, N.mark(d.min - 0.5, '…', { cls: 'u5l4-dots3', lift: 4 }), 300);
           }
         } }
     ];
@@ -401,19 +401,19 @@ const circle = {
       : `${k === 'e4d' ? 'Example 4(d): a' : 'A'} circle with centre ${T('(h,k)=' + pairTex(hc, kc))} and radius ${T(nT(d.rx))}. Start at the centre.`;
     const cx = d.ellipse ? `Leftmost ${T(u + '=' + nT(L))}, rightmost ${T(u + '=' + nT(Rt))}.` : `Go the radius left and right: ${T(pm(hc, '-', d.rx))} and ${T(pm(hc, '+', d.rx))}.`;
     const cy = d.ellipse ? `Lowest ${T(v + '=' + nT(Lo))}, highest ${T(v + '=' + nT(Hi))}.` : `Go the radius down and up: ${T(pm(kc, '-', d.ry))} and ${T(pm(kc, '+', d.ry))}.`;
-    const labX = (s) => (d.ellipse ? T(nT(s === '-' ? L : Rt)) : T(pm(hc, s, d.rx)));
-    const labY = (s) => (d.ellipse ? T(nT(s === '-' ? Lo : Hi)) : T(pm(kc, s, d.ry)));
+    const labX = (s) => T(nT(s === '-' ? L : Rt)), labY = (s) => T(nT(s === '-' ? Lo : Hi));
+    const calc = (word, s, val, cls) => pline(P, `<span class="u5l4-tl">${word}</span> ${d.ellipse ? T((cls === 'dom' ? u : v) + '=' + nT(val)) : T(pm(cls === 'dom' ? hc : kc, s, cls === 'dom' ? d.rx : d.ry))}`, cls + ' u5l4-calc');
     return [
-      { cap: c1, run: (c) => G.reveal(G.point(hc, kc, { color: 'ink', label: 'centre', pos: 'ne' }), c) },
+      { cap: c1, run: (c) => G.reveal(G.point(hc, kc, { color: 'ink', label: 'centre', pos: 'sw' }), c) },
       { cap: cx,
         run: async (c) => {
-          await G.drawIn(G.segment([hc, kc], [L, kc], { color: 'amber', width: 3 }), 400, c); await G.reveal(G.point(L, kc, { color: 'amber', label: labX('-'), pos: 'ne' }), c);
-          await G.drawIn(G.segment([hc, kc], [Rt, kc], { color: 'amber', width: 3 }), 400, c); await G.reveal(G.point(Rt, kc, { color: 'amber', label: labX('+'), pos: 'nw' }), c);
+          await G.drawIn(G.segment([hc, kc], [L, kc], { color: 'amber', width: 3 }), 400, c); await G.reveal(G.point(L, kc, { color: 'amber', label: labX('-'), pos: 'w' }), c); await fadeIn(c, calc('leftmost', '-', L, 'dom'));
+          await G.drawIn(G.segment([hc, kc], [Rt, kc], { color: 'amber', width: 3 }), 400, c); await G.reveal(G.point(Rt, kc, { color: 'amber', label: labX('+'), pos: 'e' }), c); await fadeIn(c, calc('rightmost', '+', Rt, 'dom'));
         } },
       { cap: cy,
         run: async (c) => {
-          await G.drawIn(G.segment([hc, kc], [hc, Lo], { color: 'purple', width: 3 }), 400, c); await G.reveal(G.point(hc, Lo, { color: 'purple', label: labY('-'), pos: 'e' }), c);
-          await G.drawIn(G.segment([hc, kc], [hc, Hi], { color: 'purple', width: 3 }), 400, c); await G.reveal(G.point(hc, Hi, { color: 'purple', label: labY('+'), pos: 'e' }), c);
+          await G.drawIn(G.segment([hc, kc], [hc, Lo], { color: 'purple', width: 3 }), 400, c); await G.reveal(G.point(hc, Lo, { color: 'purple', label: labY('-'), pos: 's' }), c); await fadeIn(c, calc('lowest', '-', Lo, 'ran'));
+          await G.drawIn(G.segment([hc, kc], [hc, Hi], { color: 'purple', width: 3 }), 400, c); await G.reveal(G.point(hc, Hi, { color: 'purple', label: labY('+'), pos: 'n' }), c); await fadeIn(c, calc('highest', '+', Hi, 'ran'));
         } },
       { cap: `The ${d.ellipse ? 'ellipse' : 'circle'} passes through all four points: they are its <b>extreme</b> points. It is one closed loop, so every end is <b>included</b>.`,
         run: (c) => G.drawIn(G.polyline(ring, { closed: true }), 1100, c) },
@@ -440,10 +440,10 @@ const realWorld = {
     : `A bath holds 20 L and fills at 8 L per minute for 15 minutes: ${T('V=20+8t')}. Press <b>Next</b>.`),
   make(stage, k, ex) {
     const d = RW[k], [u, v] = d.v, ys = d.xs.map(d.f), W = ex.W;
-    const tb = new ValueTable(stage, { x: 12, y: 40, headers: [u, v], rows: d.xs.map((x, i) => [x, nT(ys[i])]), hide: 1, tap: false, cellW: 88, cellH: 50 });
+    const tb = new ValueTable(stage, { x: 12, y: 40, headers: [u, v], rows: d.xs.map((x, i) => [x, nT(ys[i])]), hide: 1, tap: false, cellW: 80, cellH: 50 });
     add(stage, h('div', 'u5l4-formtag', T(d.eq)), 14, 8);
-    const G = new TGraph(stage, { x: 202, y: 14, width: 430, height: 440, xmin: d.win[0], xmax: d.win[1], ymin: d.win[2], ymax: d.win[3], xstep: d.steps[0], ystep: d.steps[1], xtitle: u, ytitle: v });
-    const P = panel(stage, 646, 14, W - 660, 440, 'Write it down');
+    const G = new TGraph(stage, { x: 186, y: 14, width: 400, height: 440, xmin: d.win[0], xmax: d.win[1], ymin: d.win[2], ymax: d.win[3], xstep: d.steps[0], ystep: d.steps[1], xtitle: u, ytitle: v });
+    const P = panel(stage, 600, 14, W - 614, 440, 'Write it down');
     const yLo = d.f(d.lo), yHi = d.f(d.hi);
     const all = svgEl('g', { class: 'u5l4-all' }, G.layers.data); G.layers.all = all;
     const zoomWin = { xmin: d.zoom[0], xmax: d.zoom[1], ymin: d.zoom[2], ymax: d.zoom[3] };
@@ -470,14 +470,14 @@ const realWorld = {
           await G.setWindow(back, c, 1300);
           if (d.discrete) { await G.reveal(G.point(d.lo, yLo, { color: 'amber', r: 7, label: T(pairTex(d.lo, nT(yLo))), pos: 'se' }), c); await G.reveal(G.point(d.hi, yHi, { color: 'amber', r: 7, label: T(pairTex(d.hi, nT(yHi))), pos: 'w' }), c); }
           else await G.drawIn(G.shadeX(d.lo, d.hi), 600, c);
-          await fadeIn(c, pline(P, `<b>Domain</b> ${T('D=' + ivT(u, [d.lo, d.hi], d.discrete ? 'W' : RR))}`, 'dom u5l4-ans'));
+          await fadeIn(c, pline(P, `<b>Domain</b><br>${T('D=' + ivT(u, [d.lo, d.hi], d.discrete ? 'W' : RR))}`, 'dom u5l4-ans u5l4-sm'));
         } },
       { cap: d.discrete ? `Range: ${T('C')} climbs in steps of 25, from ${T(nT(yLo))} to ${T(nT(yHi))}. List it with “…”.`
         : `Range: every volume from ${T(nT(yLo))} to ${T(nT(yHi))} litres.`,
         run: async (c) => {
           if (!d.discrete) await G.drawIn(G.shadeY(yLo, yHi), 600, c);
-          const r = d.discrete ? 'R=' + listT([yLo, yLo + 25, yLo + 50, '\\dots', yHi]) : 'R=' + ivT(v, [yLo, yHi]);
-          await fadeIn(c, pline(P, `<b>Range</b> ${T(r)}`, 'ran u5l4-ans'));
+          const r = d.discrete ? T(`R=\\{${nT(yLo)},\\ ${nT(yLo + 25)},`) + ' ' + T(`${nT(yLo + 50)},\\ \\dots,\\ ${nT(yHi)}\\}`) : T('R=' + ivT(v, [yLo, yHi]));
+          await fadeIn(c, pline(P, `<b>Range</b><br>${r}`, 'ran u5l4-ans u5l4-sm'));
         } }
     ];
   }
@@ -510,12 +510,12 @@ const which = {
         q1: { x: mid, y: 44, w: 470, h: 66, html: '<b>Can the values be listed one by one?</b>separate points, a table, an arrow diagram', cls: 'bk-round' },
         list: { x: 190, y: 172, w: 330, h: 86, html: '<b>Yes: a list</b>in braces, each value once, in increasing order', color: 'amber' },
         sb: { x: W - 250, y: 172, w: 400, h: 86, html: '<b>No: set-builder notation</b>an unbroken graph, or far too many values', color: 'purple' },
-        signs: { x: W - 395, y: 320, w: 300, h: 100, html: '<b>Which signs?</b>solid end: ≤ ≥<br>hollow end: &lt; &gt;<br>arrow: no bound', color: 'blue' },
+        signs: { x: W - 385, y: 320, w: 280, h: 100, html: '<b>Which signs?</b>solid end: ≤ ≥<br>hollow end: &lt; &gt;<br>arrow: no bound', color: 'blue' },
         nset: { x: W - 115, y: 320, w: 210, h: 100, html: '<b>Which numbers?</b>counted: <i>W</i><br>measured: ℝ', color: 'green' }
       },
       edges: [{ from: 'q1', to: 'list', label: 'yes', route: 'vhv' }, { from: 'q1', to: 'sb', label: 'no', route: 'vhv' }, { from: 'sb', to: 'signs', route: 'vhv' }, { from: 'signs', to: 'nset' }] });
     void F;
-    const card = add(stage, box(h('div', 'u5l4-acard', `<div class="u5l4-ph">${d.label}</div>`), 360, 120), 14, 262);
+    const card = add(stage, box(h('div', 'u5l4-acard', `<div class="u5l4-ph">${d.label}</div>`), 372, 124), 10, 262);
     const steps = d.path.map((id, i) => ({ cap: d.caps[i], run: (c) => (i ? F.go(c, d.path[i - 1], id).then(() => F.visit(c, id)) : F.visit(c, id)) }));
     steps.push({ cap: 'The answer:', run: async (c) => { for (const a of d.ans) await fadeIn(c, pline(card, T(a), 'u5l4-ans')); } });
     return steps;

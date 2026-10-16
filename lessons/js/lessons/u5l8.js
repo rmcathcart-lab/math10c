@@ -42,8 +42,8 @@ async function readFwd(c, G, a, y, o = {}) {
   out.push(G.point(a, ay, { color, r: 6 })); await pop(c, out[0]);
   if (Math.abs(y - ay) > 1e-9) { const s = dash(G, [a, ay], [a, y], color); out.push(s); await G.drawIn(s, 550, c); }
   const p = G.point(a, y, { color, r: 7.5 }); out.push(p); await pop(c, p);
-  if (Math.abs(a - ax) > 1e-9) { const s = dash(G, [a, y], [ax, y], color); out.push(s); await G.drawIn(s, 550, c); }
-  if (o.yLab) { const l = pill(G, ax, y, o.yLab, color, o.yPos || 'w'); out.push(l); await pop(c, l); }
+  if (Math.abs(a - ax) > 1e-9 && Math.abs(y - ay) > 1e-9) { const s = dash(G, [a, y], [ax, y], color); out.push(s); await G.drawIn(s, 550, c); }
+  if (o.yLab) { const l = o.labAt === 'pt' ? pill(G, a, y, o.yLab, color, o.yPos || 'nw') : pill(G, ax, y, o.yLab, color, o.yPos || 'w'); out.push(l); await pop(c, l); }
   return out;
 }
 /** backwards: from (0, b) across to (x, b) for each x, then down/up to the horizontal axis */
@@ -98,7 +98,7 @@ function mountWarm() {
     svgEl('polygon', { points: `${x - 5},${cy - 60} ${x + 5},${cy - 60} ${x},${cy - 52}`, fill: ink }, svg);
   });
   const read = document.getElementById('u5l8-tread');
-  const show = (C) => { const F = Math.round((1.8 * C + 32) * 10) / 10; read.innerHTML = `${T(`F(${nT(C)})=1.8(${C < 0 ? '(' + nT(C) + ')' : nT(C)})+32=${nT(F)}`)}`; };
+  const show = (C) => { const F = Math.round((1.8 * C + 32) * 10) / 10; read.innerHTML = `${T(`F(${nT(C)})=1.8(${nT(C)})+32=${nT(F)}`)}`; };
   let cur = 20, busy = 0;
   show(20);
   const c = liveCtx();
@@ -220,10 +220,8 @@ const swap = {
         run: async (c) => { wrap.classList.add('u5l8-hot'); await Promise.all([R1.b, R2.b].map((e) => pulse(c, e, 1.06))); } },
       { cap: `Inputs (${T(v)}) run along the <b>horizontal axis</b> and make up the <b>domain</b>. Outputs (${T(outT)}) run up the <b>vertical axis</b> and make up the <b>range</b>.`,
         run: async (c) => {
-          const [x0] = G.toPx(G.win.xmin, 0);
           const xa = G.segment([G.win.xmin, G.axisY()], [G.win.xmax, G.axisY()], { color: 'amber', width: 6, opacity: 0.55 });
           const ya = G.segment([G.axisX(), G.win.ymin], [G.axisX(), G.win.ymax], { color: 'purple', width: 6, opacity: 0.55 });
-          void x0;
           await Promise.all([G.drawIn(xa, 600, c), G.drawIn(ya, 600, c)]);
           await G.drawIn(G.fn(d.fn, { color: 'teal' }), 900, c);
           await fadeIn(c, legend);
@@ -236,7 +234,7 @@ const swap = {
  * 2. machine — input → rule → output, a table of values, then the graph
  * ============================================================================================================ */
 const MC = {
-  ex2: { label: 'Example 2 check', name: 'f', rule: '×2, then −3', f: (x) => 2 * x - 3, xs: [-2, -1, 0, 1, 2, 3], sub: (x) => `2(${x < 0 ? '(' + x + ')' : x})-3`.replace('((', '(').replace('))', ')'), linear: true },
+  ex2: { label: 'Example 2 check', name: 'f', rule: '×2, then −3', f: (x) => 2 * x - 3, xs: [-2, -1, 0, 1, 2, 3], sub: (x) => `2(${x})-3`, linear: true },
   sq: { label: T('g(x)=x^2-4'), name: 'g', rule: 'square, then −4', f: (x) => x * x - 4, xs: [-3, -2, -1, 0, 1, 2, 3], sub: (x) => `(${x})^2-4`, linear: false },
   calc: { label: 'graphing calculator', calc: true }
 };
@@ -280,7 +278,7 @@ const machine = {
         run: (c) => tb.diffs(c, { col: 1 }) },
       { cap: d.linear ? `Join them with a straight line, arrows at both ends: every real number is an input. The vertical axis is the ${T('f(x)')}-axis, because ${T('f(x)')} plays the role of ${T('y')}.`
         : `Join them with a smooth curve, not a ruler. ${T('g(x)')} plays the role of ${T('y')} on the vertical axis.`,
-        run: async (c) => { const L = d.linear ? G.line([0, -3], [1, -1], { color: 'teal' }) : G.fn(d.f, { color: 'teal' }); await G.drawIn(L, 900, c); G.label(d.linear ? 3.2 : 2.5, d.linear ? 3.2 : 2.6, T(d.linear ? 'f(x)=2x-3' : 'g(x)=x^2-4'), { pos: d.linear ? 'w' : 'e', color: 'teal', cls: 'bk-ptlab' }); } }
+        run: async (c) => { const L = d.linear ? G.line([0, -3], [1, -1], { color: 'teal' }) : G.fn(d.f, { color: 'teal' }); await G.drawIn(L, 900, c); G.label(d.linear ? 3.2 : 0, d.linear ? 3.2 : 3.6, T(d.linear ? 'f(x)=2x-3' : 'g(x)=x^2-4'), { pos: d.linear ? 'w' : 'c', color: 'teal', cls: 'bk-ptlab' }); } }
     ];
   }
 };
@@ -373,7 +371,7 @@ const sweep = {
   make(stage, v, ex) {
     const G = new LG(stage, { x: 10, y: 10, width: 520, height: 440, xmin: -8, xmax: 8, ymin: -5, ymax: 7, xlabels: 2, ylabels: 2, xtitle: 'x', ytitle: 'p(x)' });
     const P = panel(stage, 546, 10, ex.W - 556, 440, 'Solve p(x) = b');
-    const count = add(stage, h('div', 'u5l8-count', ''), 380, 20); count.style.opacity = 0;
+    const count = line(P, '', 'u5l8-count'); count.style.opacity = 0;
     let vl, hl, dots, cur = [];
     const clearCur = () => { G.remove(...cur); cur = []; };
     const steps = [
@@ -478,7 +476,7 @@ function candleScene(stage, ex, win) {
   const base = 8 + G.toPx(0, 0)[1], uy = G.uy, cx = 120;
   add(stage, box(h('div', 'u5l8-plate'), 120, 10), cx - 60, base);
   const wax = add(stage, h('div', 'u5l8-wax'), cx - 26, 0), wick = add(stage, h('div', 'u5l8-wick'), cx - 1.5, 0), flame = add(stage, h('div', 'u5l8-flame'), cx - 11, 0);
-  const clock = add(stage, h('div', 'u5l8-read'), 20, 14);
+  const clock = add(stage, h('div', 'u5l8-read'), 14, 2);
   // a ruler on the left, in cm, to the graph's scale
   const ruler = add(stage, h('div', 'u5l8-ruler'), 34, base - 14 * uy); box(ruler, 22, 14 * uy);
   for (let k = 0; k <= 14; k += 2) { const t = add(ruler, h('div', 'u5l8-rt', String(k)), 0, 14 * uy - k * uy); void t; }
@@ -502,7 +500,7 @@ const candle = {
   intro: (k) => (k === 'ev' ? `${T('h(4)')}: how tall is the candle after 4 hours? Press <b>Next</b>.` : `${T('h(t)=8')}: when is the candle 8 cm tall? Press <b>Next</b>.`),
   make(stage, k, ex) {
     const S = candleScene(stage, ex, { xmin: 0, xmax: 8, ymin: 0, ymax: 14, ylabels: 2 }), G = S.G;
-    const card = say(stage, 236 + 0.47 * (ex.W - 246), 22, 400, '');
+    const cx0 = 236 + 0.47 * (ex.W - 246), card = say(stage, cx0, 22, ex.W - cx0 - 14, '');
     const draw = { cap: `${T('h(t)=-2t+12')}: the candle starts ${T('12')} cm tall and burns down ${T('2')} cm every hour.`,
       run: async (c) => { await G.drawIn(G.fn(hFn, { from: 0, to: 6, color: 'teal' }), 900, c); G.label(0.6, 11, T('h(t)=-2t+12'), { pos: 'e', color: 'teal', cls: 'bk-ptlab' }); } };
     let tr;
@@ -530,7 +528,7 @@ const limits = {
   intro: `The rule ${T('h(t)=-2t+12')} accepts any number. The candle doesn’t. Press <b>Next</b>.`,
   make(stage, v, ex) {
     const S = candleScene(stage, ex, { xmin: -2, xmax: 8, ymin: -4, ymax: 16, ylabels: 2 }), G = S.G;
-    const card = say(stage, 236 + 0.5 * (ex.W - 246), 18, 380, '');
+    const cx0 = 236 + 0.5 * (ex.W - 246), card = say(stage, cx0, 18, ex.W - cx0 - 14, '');
     let full;
     return [
       { cap: `As a rule, ${T('h(t)=-2t+12')} works for <b>every</b> real number ${T('t')}: its graph is a whole line.`,
@@ -538,7 +536,7 @@ const limits = {
       { cap: `Burn the candle: at ${T('t=6')}, ${T('h(6)=-12+12=0')}. The candle is gone.`,
         run: async (c) => { await S.burn(c, 6, 1800); await pop(c, G.point(6, 0, { color: 'blue', r: 7, label: T('(6,\\ 0)'), pos: 'ne' })); } },
       { cap: `${T('h(7)=-2(7)+12=-2')}. A height of ${T('-2')} cm is impossible: after ${T('t=6')} the rule no longer describes the candle.`,
-        run: async (c) => { const s = G.segment([6, 0], [8, -4], { color: 'red', width: 6, opacity: 0.45 }); await G.drawIn(s, 500, c); await pop(c, G.point(7, -2, { color: 'red', r: 7, label: T('(7,\\ -2)'), pos: 'sw' })); const [px, py] = G.toPx(7, -2); await stampIn(c, stamp(stage, '✗ impossible', { ok: false, x: 236 + px + 60, y: 8 + py - 46, size: 'sm' })); } },
+        run: async (c) => { const s = G.segment([6, 0], [8, -4], { color: 'red', width: 6, opacity: 0.45 }); await G.drawIn(s, 500, c); await pop(c, G.point(7, -2, { color: 'red', r: 7, label: T('(7,\\ -2)'), pos: 'sw' })); const [px, py] = G.toPx(7, -2); await stampIn(c, stamp(stage, '✗ impossible', { ok: false, x: 236 + px - 120, y: 8 + py + 6, size: 'sm' })); } },
       { cap: `${T('h(-1)=14')}? A time <b>before</b> the candle is lit isn’t part of the story either.`,
         run: async (c) => { const s = G.segment([-2, 16], [0, 12], { color: 'red', width: 6, opacity: 0.45 }); await G.drawIn(s, 500, c); await pop(c, G.point(-1, 14, { color: 'red', r: 7, label: T('(-1,\\ 14)'), pos: 'ne' })); } },
       { cap: `Keep only the part that makes sense: from ${T('(0,\\ 12)')} (just lit) to ${T('(6,\\ 0)')} (melted), with both endpoints included.`,
@@ -567,7 +565,7 @@ const pool = {
     // the pool, drawn to the graph's volume scale
     const px0 = 40, tw = 130;
     const tank = add(stage, h('div', 'u5l8-tank'), px0, 0), water = add(tank, h('div', 'u5l8-water'));
-    const read = add(stage, h('div', 'u5l8-read'), 14, 8);
+    const read = add(stage, h('div', 'u5l8-read'), 14, 430);
     const st = { t: 0 };
     const draw = () => {
       const top = 8 + G.toPx(0, 10000)[1], bot = 8 + G.toPx(0, 0)[1], V = Math.max(0, vFn(st.t));
@@ -586,7 +584,7 @@ const pool = {
       { cap: `It loses ${T('450')} L every minute, so it is empty when ${T('t=9\\,000\\div450=20')}. Join ${T('(0,\\ 9\\,000)')} to ${T('(20,\\ 0)')}.`,
         run: async (c) => { await G.drawIn(lineSeg(), 900, c); G.label(20, 0, T('(20,\\ 0)'), { pos: 'n', cls: 'bk-ptlab', color: 'teal', gap: 12 }); } },
       { cap: `(b) ${T('V(6)=-450(6)+9\\,000=-2\\,700+9\\,000=6\\,300')}.`,
-        run: async (c) => { await drain(c, 6, 1500); await readFwd(c, G, 6, 6300, { color: 'blue', yLab: T('6\\,300') }); } },
+        run: async (c) => { await drain(c, 6, 1500); await readFwd(c, G, 6, 6300, { color: 'blue', yLab: T('6\\,300'), yPos: 'ne' }); } },
       { cap: `(c) In words: <b>6 minutes</b> after draining begins, <b>${nH(6300)} litres</b> of water remain in the pool.`,
         run: async (c) => { note.innerHTML = `${T('V(6)=6\\,300')}<br><span class="u5l8-cin">input: <b>6 min</b> after draining begins</span><br><span class="u5l8-cout">output: <b>${nH(6300)} L</b> remain</span>`; await sayIn(c, note); } }
     ];
@@ -594,7 +592,7 @@ const pool = {
       { cap: `i) ${T('V(0)=-450(0)+9\\,000=9\\,000')}: the <b>initial volume</b>, before draining starts.`,
         run: async (c) => { await pop(c, G.point(0, 9000, { color: 'blue', r: 8 })); await pop(c, pill(G, 0, 9000, T('9\\,000'), 'blue', 'e')); } },
       { cap: `ii) ${T('V(15)=-6\\,750+9\\,000=2\\,250')}: after 15 minutes, ${T('2\\,250')} L remain.`,
-        run: async (c) => { await drain(c, 15, 1600); await readFwd(c, G, 15, 2250, { color: 'blue', yLab: T('2\\,250') }); } },
+        run: async (c) => { await drain(c, 15, 1600); await readFwd(c, G, 15, 2250, { color: 'blue', yLab: T('2\\,250'), yPos: 'ne' }); } },
       { cap: `iii) ${T('V(22)=-9\\,900+9\\,000=-900')}. Follow the rule past ${T('t=20')}, below the axis…`,
         run: async (c) => { await drain(c, 20, 700); await G.setWindow({ ymin: -2000 }, c, 800); const s = G.segment([20, 0], [22, -900], { color: 'red', width: 4, dash: true }); await G.drawIn(s, 500, c); await pop(c, G.point(22, -900, { color: 'red', r: 7 })); } },
       { cap: `A <b>negative volume is impossible</b>. The pool is empty at ${T('t=20')} (${T('V(20)=0')}) and stays empty, so the rule no longer describes the pool.`,
@@ -656,7 +654,7 @@ const cost = {
     if (k === 'b') return [
       { cap: `${T('n=120')} is tiny on this scale, so <b>zoom in</b> on the first 500 pairs.`, run: (c) => zoomIn(c) },
       { cap: `Up from ${T('120')}, then across: ${T('C(120)=18\\,400+27(120)=18\\,400+3\\,240=21\\,640')}.`,
-        run: async (c) => { await readFwd(c, Z, 120, cFn(120), { color: 'blue', yLab: T('21\\,640'), yPos: 'e' }); } },
+        run: async (c) => { await readFwd(c, Z, 120, cFn(120), { color: 'blue', yLab: T('21\\,640'), labAt: 'pt', yPos: 'nw' }); } },
       { cap: `The cost is a <b>fixed</b> part plus <b>${T('\\$27')} per pair</b>: ${T('18\\,400+3\\,240')}.`,
         run: (c) => showBar(c, 120, `<span class="u5l8-cfix">fixed ${T('18\\,400')}</span> + <span class="u5l8-cin">${T('27\\times120=3\\,240')}</span> = <b>${T('21\\,640')}</b>`) },
       { cap: `(c) In words: it costs <b>$${nH(21640)}</b> to produce <b>120 pairs</b> of earbuds.`,
@@ -692,14 +690,14 @@ const rocket = {
     const GX = 150, G = new LG(stage, Object.assign({ x: GX, y: 8, width: ex.W - GX - 10, height: 454 }, GRID.ex6));
     const pad = add(stage, box(h('div', 'u5l8-pad'), 90, 8), 30, 0);
     const rk = add(stage, h('div', 'u5l8-rocket', ROCKET_SVG), 58, 0);
-    const read = add(stage, h('div', 'u5l8-read'), 8, 8);
+    const read = add(stage, h('div', 'u5l8-read'), GX + G.toPx(63, 0)[0], 14);
     const link = svgEl('line', { stroke: '#9aa0ab', 'stroke-width': 2, 'stroke-dasharray': '4 5' }, svgEl('svg', { class: 'u5l8-link', width: ex.W, height: 470 }, stage));
     link.ownerSVGElement.style.left = '0px'; link.ownerSVGElement.style.top = '0px'; link.ownerSVGElement.style.pointerEvents = 'none';
     const st = { t: 0, on: false };
     const draw = () => {
       const t = st.t, H = Math.max(0, rFn(t)), gy = 8 + G.toPx(0, 0)[1], y = 8 + G.toPx(0, H)[1], down = t > 40 && t < 80;
       pad.style.top = gy + 'px';
-      rk.style.top = y - (down ? 0 : 60) + 'px'; rk.style.transform = down ? 'rotate(180deg)' : 'none';
+      rk.style.top = y - 60 + 'px'; rk.style.transform = down ? 'rotate(180deg)' : 'none';
       read.innerHTML = `${T('t=' + Math.round(t))} s<br>${T('h=' + nT(Math.round(H)))}`;
       const [px] = G.toPx(Math.min(t, 80), 0);
       link.setAttribute('x1', 96); link.setAttribute('y1', y); link.setAttribute('x2', GX + px); link.setAttribute('y2', y);
@@ -722,7 +720,7 @@ const rocket = {
     }
     if (k === 'bc') return [
       { cap: `(b) ${T('h(20)=-20(20)^2+1\\,600(20)=-8\\,000+32\\,000=24\\,000')}.`,
-        run: async (c) => { await fly(c, 20, 1300); await readFwd(c, G, 20, 24000, { color: 'blue', yLab: T('24\\,000'), yPos: 'e' }); } },
+        run: async (c) => { await fly(c, 20, 1300); await readFwd(c, G, 20, 24000, { color: 'blue', yLab: T('24\\,000'), yPos: 'ne' }); } },
       { cap: `${T('h(60)=-20(60)^2+1\\,600(60)=-72\\,000+96\\,000=24\\,000')}.`,
         run: async (c) => { await fly(c, 60, 1800); await readFwd(c, G, 60, 24000, { color: 'purple' }); } },
       { cap: `(c) Yes, ${T('h(20)=h(60)')}: the same height, ${T('24\\,000')} cm. But <b>not the same meaning</b>: at ${T('20')} s the rocket is <b>rising</b>, at ${T('60')} s it is <b>falling</b>.`,

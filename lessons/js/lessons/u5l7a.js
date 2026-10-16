@@ -142,7 +142,7 @@ const twoRel = {
       const list = yes.map((r) => T(r)), said = list.length > 1 ? list.slice(0, -1).join(', ') + ' and ' + list[list.length - 1] : list[0];
       return {
         cap: k === 'mult'
-          ? `Is ${T(d)} a multiple of 1? of 2? of 3? of 4? Yes for ${said}: <b>${n === 1 ? 'one arrow' : n + ' arrows'}</b> leave ${T(d)}.`
+          ? `Is ${T(d)} a multiple of 1? of 2? of 3? of 4? Yes for ${said}: <b>${n === 1 ? 'one arrow</b> leaves' : n + ' arrows</b> leave'} ${T(d)}.`
           : `Which of 1, 2, 3, 4 cubes to ${T(d)}? Only ${said}: <b>one arrow</b> leaves ${T(d)}.`,
         run: async (c) => {
           [...Q.querySelectorAll('.u5l7a-q, .u5l7a-qrows')].forEach((e) => e.remove());
@@ -221,7 +221,7 @@ const threeViews = {
     const Pa = panel(stage, X[0], 6, pw, 420, '(a) Arrow diagram'), Pb = panel(stage, X[1], 6, pw, 420, '(b) Ordered pairs'), Pc = panel(stage, X[2], 6, pw, 420, '(c) Graph');
     void Pa; void Pc;
     const M = new MappingDiagram(stage, { x: X[0] + 4, y: 40, width: pw - 8, height: 320, domain: D, range: R, pairs, titles: null });
-    const lst = h('div', 'u5l7a-plist'); Pb.appendChild(lst);
+    const lst = h('div', 'u5l7a-plist cols'); Pb.appendChild(lst);
     const chips = pairs.map((p) => { const e = chip(T(pairTex(p[0], p[1]))); lst.appendChild(e); return e; });
     const G = catGraph(stage, { x: X[2] + 4, y: 40, width: pw - 8, height: 320, xs: D.map(String), ys: R.map(String), xtitle: '\\text{domain}', ytitle: '\\text{range}', pad: [26, 24, 40, 36], grid: false });
     const pts = pairs.map((p) => [D.indexOf(p[0]) + 1, p[1]]);
@@ -332,7 +332,7 @@ const vlt = {
       { cap: () => (hres && hres.fail
         ? `It crosses twice${k === 'A' ? ` at ${T('y=2.5')} (${T('x=-1')} and ${T('x=1')})` : ''}: two inputs share an output. Row 2 is <b>F</b>.` + (ans[2] === 'T' ? ' That doesn’t stop it being a function.' : '')
         : 'Every horizontal line crosses <b>at most once</b>: each output comes from one input. Row 2 is <b>T</b>.' + (ans[2] === 'F' ? ' But row 2 doesn’t decide it: still <b>not a function</b>.' : '')),
-      run: async (c) => { await fill(c, 1); await stampIn(c, stamp(G.el, ans[2] === 'T' ? 'Function' : 'Not a function', { ok: ans[2] === 'T', x: 448 - 128, y: 40, size: 'sm', rotate: -5 })); } }
+      run: async (c) => { await fill(c, 1); await stampIn(c, stamp(P, ans[2] === 'T' ? 'Function' : 'Not a function', { ok: ans[2] === 'T', x: (W - 480) / 2, y: 390, size: 'lg', rotate: -3 })); } }
     );
     return steps;
   }
@@ -361,7 +361,7 @@ const sixWays = {
     const tb = new ValueTable(stage, { x: X[1] + (pw - 6 * 44) / 2, y: Y[0] + 62, headers: ['x', 'y'], rows: d.pairs, layout: 'h', cellW: 44, cellH: 46, tap: false });
     const plist = h('div', 'u5l7a-prs'); P[2].appendChild(plist);
     const pchips = d.pairs.map((p) => { const e = chip(T(pairTex(p[0], p[1]))); plist.appendChild(e); return e; });
-    const M = new MappingDiagram(stage, { x: X[0] + 6, y: Y[1] + 30, width: pw - 12, height: ph - 36, domain: d.dom, range: d.ran, pairs: d.pairs, titles: null, arrows: false });
+    const M = new MappingDiagram(stage, { x: X[0] + 6, y: Y[1] + 30, width: pw - 12, height: ph - 36, domain: d.dom, range: d.ran, pairs: d.pairs, titles: null, arrows: false, cls: 'u5l7a-smallmap' });
     const G = new Graph(stage, { x: X[1] + 6, y: Y[1] + 30, width: pw - 12, height: ph - 36, ...d.win, fontSize: 15 });
     const eq = h('div', 'u5l7a-eqbox', `<div class="u5l7a-eqbig">${T(d.eq)}</div>` + d.eqLines.map((s) => `<div>${s}</div>`).join('')); P[5].appendChild(eq);
     [tb.el, M.el, G.el].forEach((e) => (e.style.opacity = 0));
@@ -382,7 +382,7 @@ const sixWays = {
           eq.classList.add(bad ? 'bad' : 'good'); await pulse(c, eq, 1.05);
         } },
       { cap: bad ? `Same verdict in all six forms: ${T('x=y^2')} is <b>not a function</b>.` : `Same verdict in all six forms: ${T('y=x^2')} <b>is a function</b>.`,
-        run: (c) => stampIn(c, stamp(stage, bad ? 'Not a function' : 'Function', { ok: !bad, x: W / 2, y: Y[1] + 2, size: 'lg', rotate: -4 })) }
+        run: (c) => stampIn(c, stamp(stage, bad ? 'Not a function' : 'Function', { ok: !bad, x: X[0] + pw / 2, y: Y[0] + ph - 50, rotate: -4, cls: 'u5l7a-midstamp' })) }
     ];
   }
 };

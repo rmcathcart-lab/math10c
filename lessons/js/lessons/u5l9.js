@@ -33,7 +33,7 @@ function storyGraph(host, o) {
   const ax = G.axesHtml, w = G.win;
   (o.xticks || []).forEach(([v, s]) => {
     const [px, py] = G.toPx(v, w.ymin); svgEl('line', { class: 'bk-tick', x1: px, x2: px, y1: py - 4, y2: py + 4 }, G.layers.axes);
-    G.hlabel(px, py, s, { pos: 's', gap: 6, cls: 'u5l9-tk', parent: ax });
+    if (s) G.hlabel(px, py, s, { pos: 's', gap: 6, cls: 'u5l9-tk', parent: ax });
   });
   (o.yticks || []).forEach(([v, s]) => {
     const [px, py] = G.toPx(w.xmin, v); svgEl('line', { class: 'bk-tick', x1: px - 4, x2: px + 4, y1: py, y2: py }, G.layers.axes);
@@ -117,7 +117,7 @@ function makeTub(host, o = {}) {
   const api = {
     el,
     setDepth(d) {
-      const y = lvl(d); water.setAttribute('y', y); surf.setAttribute('y1', y); surf.setAttribute('y2', y);
+      const y = lvl(d); water.setAttribute('y', y); water.setAttribute('height', Math.max(0, 262 - y)); surf.setAttribute('y1', y); surf.setAttribute('y2', y);
       duck.setAttribute('transform', `translate(0 ${Math.min(y, 244) - 1})`); stream.setAttribute('y2', y);
       swirl.setAttribute('transform', `translate(0 ${y + 10})`);
       surf.style.display = d > 0.3 ? '' : 'none';
@@ -141,7 +141,7 @@ const GAR = [[0, 0], [2, 160], [4, 160], [5, 180], [6, 120], [10, 120], [11, 0]]
 const GAR_N = ['P', 'Q', 'R', 'S', 'T', 'U', 'V'], GAR_POS = ['nw', 'n', 'nw', 'ne', 'se', 'n', 'ne'];
 const clockOf = (x) => { const m = Math.round((7 + x) * 60); return Math.floor(m / 60) + ':' + String(m % 60).padStart(2, '0'); };
 const garAxes = (o) => Object.assign({ xmin: 0, xmax: 11.6, ymin: 0, ymax: 212, xstep: 1, ystep: 40,
-  xticks: Array.from({ length: 12 }, (_, i) => [i, (7 + i) + ':00']), yticks: [40, 80, 120, 160, 200].map((v) => [v, String(v)]),
+  xticks: Array.from({ length: 12 }, (_, i) => [i, o.width < 720 && i % 2 ? '' : (7 + i) + ':00']), yticks: [40, 80, 120, 160, 200].map((v) => [v, String(v)]),
   xt: 'time of day', yt: 'cars in garage' }, o);
 
 function mountStatic() {
@@ -335,24 +335,29 @@ const rate = {
     const P = add(stage, box(h('div', 'u5l9-panel', `<div class="u5l9-ph">rate of change (${d.unit})</div>`), PW, 458), ex.W - PW - 6, 6);
     const rates = d.segs.map(([i, j]) => { const a = pts[i], b = pts[j]; return { a, b, r: (b[1] - a[1]) / (b[0] - a[0]) }; });
     const tl = (x) => (garage ? `${7 + x}` : `${x}`);
+    let prev = null;
     const steps = rates.map((s, n) => ({
       cap: d.caps[n],
       run: async (c) => {
-        const { a, b } = s, kk = kindOf(a, b), corner = [b[0], a[1]];
+        const { a, b } = s, kk = kindOf(a, b), up = kk === 'inc';
+        if (prev) { G.remove(prev); prev = null; }
         const hi = G.segment(a, b, { color: KC[kk], width: 7 });
         await G.drawIn(hi, 500, c);
-        const runEl = G.segment(a, corner, { color: 'amber', width: 3.5, dash: true }), riseEl = G.segment(corner, b, { color: 'purple', width: 3.5, ends: [null, 'arrow'] });
-        await G.drawIn(runEl, 450, c);
-        const rl = G.label((a[0] + b[0]) / 2, a[1], `run ${b[0] - a[0]} ${garage ? 'h' : 'min'}`, { pos: kk === 'inc' ? 's' : 'n', cls: 'u5l9-run' });
-        await fadeIn(c, rl);
-        await G.drawIn(riseEl, 450, c);
-        const dy = b[1] - a[1], ril = G.label(b[0], (a[1] + b[1]) / 2, `rise ${dy > 0 ? '+' : '−'}${Math.abs(dy)}`, { pos: 'e', cls: 'u5l9-rise' });
-        await fadeIn(c, ril);
+        // rise and run: rising pieces run first then rise (corner bottom right); falling pieces drop first then run (corner bottom left)
+        const corner = up ? [b[0], a[1]] : [a[0], b[1]], dy = b[1] - a[1];
+        const runEl = up ? G.segment(a, corner, { color: 'amber', width: 3.5, dash: true }) : G.segment(corner, b, { color: 'amber', width: 3.5, dash: true });
+        const riseEl = up ? G.segment(corner, b, { color: 'purple', width: 3.5, ends: [null, 'arrow'] }) : G.segment(a, corner, { color: 'purple', width: 3.5, ends: [null, 'arrow'] });
+        const rl = G.label((a[0] + b[0]) / 2, corner[1], `run ${b[0] - a[0]} ${garage ? 'h' : 'min'}`, { pos: 'n', cls: 'u5l9-run', gap: 4 });
+        const ril = G.label(corner[0], (a[1] + b[1]) / 2, `rise ${dy > 0 ? '+' : '−'}${Math.abs(dy)}`, { pos: up ? 'e' : 'w', cls: 'u5l9-rise' });
+        prev = [runEl, riseEl, rl, ril];
+        if (up) { await G.drawIn(runEl, 450, c); await fadeIn(c, rl); await G.drawIn(riseEl, 450, c); await fadeIn(c, ril); }
+        else { await G.drawIn(riseEl, 450, c); await fadeIn(c, ril); await G.drawIn(runEl, 450, c); await fadeIn(c, rl); }
         const nm = d.names[n].replace(' to ', '\\to ');
         const head = garage ? T(nm) : d.names[n];
         const r10 = Math.round(s.r * 10) / 10, exact = Math.abs(s.r - r10) < 1e-9;
-        const frac = `\\frac{${b[1]}-${a[1]}}{${tl(b[0])}-${tl(a[0])}}=` + (Math.abs(s.r - Math.round(s.r)) < 1e-9 ? `${Math.round(s.r)}` : `\\frac{${dy}}{${b[0] - a[0]}}${exact ? '=' : '\\approx'}${r10}`);
-        const line = h('div', 'u5l9-rl', `<div class="u5l9-rh" style="color:${KC[kk]}">${head}</div>${T(frac)}`);
+        const frac = `\\dfrac{${b[1]}-${a[1]}}{${tl(b[0])}-${tl(a[0])}}=` + (Math.abs(s.r - Math.round(s.r)) < 1e-9 ? `${Math.round(s.r)}` : exact ? `\\dfrac{${dy}}{${b[0] - a[0]}}=${r10}` : `{}`);
+        const frac2 = exact ? frac : frac.replace(/=\{\}$/, `\\approx${r10}`);
+        const line = h('div', 'u5l9-rl', `<div class="u5l9-rh" style="color:${KC[kk]}">${head}</div>${T(frac2)}`);
         P.appendChild(line); await fadeIn(c, line);
       }
     }));
@@ -413,6 +418,8 @@ const garage = {
     const LW = 380;
     const clock = add(stage, box(h('div', 'u5l9-clock'), LW - 8, null), 4, 4);
     const gar = makeGarage(stage, 4, 56, LW - 8);
+    const tally = add(stage, box(h('div', 'u5l9-tally'), LW - 8, null), 4, 318), rows = {};
+    ['inc', 'con', 'dec'].forEach((kk) => { const r = h('div', 'u5l9-trow ' + kk, `<span class="u5l9-tk-k">${KW[kk]}</span><span class="u5l9-tk-b"></span>`); tally.appendChild(r); rows[kk] = r.lastChild; });
     const G = storyGraph(stage, garAxes({ x: LW + 4, y: 4, width: ex.W - LW - 8, height: 460 }));
     GAR.forEach((p, i) => G.point(p[0], p[1], { color: '#9aa3b2', r: 4, label: T(GAR_N[i]), pos: GAR_POS[i] }));
     const tr = tracer(G, GAR);
@@ -424,8 +431,8 @@ const garage = {
         const a = GAR[i], b = GAR[i + 1], kk = kindOf(a, b);
         await run(c, tr, GAR, a[0], b[0], msFor(b[0] - a[0], 4, 1200, 2400), show);
         const seg = G.segment(a, b, { color: KC[kk], width: 6 });
-        const tag = G.label((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, KW[kk], { pos: kk === 'con' ? 's' : kk === 'inc' ? 'se' : 'sw', cls: 'u5l9-ktag ' + kk, gap: 10 });
-        await Promise.all([appear(c, seg, 300), fadeIn(c, tag)]);
+        const tag = h('span', 'u5l9-chip ' + kk, T(`${GAR_N[i]}\\to ${GAR_N[i + 1]}`)); rows[kk].appendChild(tag);
+        await Promise.all([appear(c, seg, 300), pop(c, tag)]);
       }
     }));
   }
@@ -440,7 +447,7 @@ const VL = {
   }, pass: '', fail: (f) => `At ${T('x=0')} the line meets the circle <b>twice</b>, at ${T('y=2')} and ${T('y=-2')}: one input, two outputs. <b>Not a function.</b>` },
   bath: { name: 'the bath graph', make: (stage, ex) => {
     const G = storyGraph(stage, bathAxes({ x: 4, y: 4, width: 560, height: 460 }));
-    return { G, els: [G.polyline(BATH, { color: TRACE, width: 4.5 })], test: { hits: (x) => (x >= 0 && x <= 30 ? [yAt(BATH, x)] : []), ms: 3200 } };
+    return { G, els: [G.polyline(BATH, { color: TRACE, width: 4.5 })], test: { hits: (x) => (x >= 0 && x <= 30 ? [yAt(BATH, x)] : []), from: 0, to: 30, ms: 3200 } };
   }, pass: `Every vertical line crosses <b>once</b>: at each instant the water has exactly one depth. A <b>function</b> of time, even though segments 3 and 5 are very steep.` },
   jump: { name: 'a vertical jump', make: (stage, ex) => {
     const G = storyGraph(stage, bathAxes({ x: 4, y: 4, width: 560, height: 460 }));
@@ -464,7 +471,7 @@ const vlt = {
         run: async (c) => {
           const bad = !!(res && res.fail);
           P.appendChild(h('div', 'u5l9-vtxt', bad ? `one input, <b>${res.fail.ys.length}</b> outputs` : 'every vertical line: <b>one</b> crossing'));
-          const s = stamp(P, bad ? 'Not a function' : 'Function', { ok: !bad, size: 'lg' }); s.style.alignSelf = 'center'; s.style.marginTop = '40px';
+          const s = stamp(P, bad ? 'Not a function' : 'Function', { ok: !bad }); s.style.alignSelf = 'center'; s.style.marginTop = '40px';
           await stampIn(c, s);
         } }
     ];
@@ -550,7 +557,7 @@ const ex2 = {
     if (k === 'a') {
       const segs = pts.slice(1).map((b, i) => [pts[i], b]);
       const sAt = (x) => { let s = 0; for (const [a, b] of segs) { if (x <= a[0]) break; const xe = Math.min(x, b[0]); s += (xe - a[0]) * (a[1] + yAt(pts, xe)) / 2; } return s; };
-      const S = sAt(9), px = (x) => 60 + sAt(x) / S * (W - 200);
+      const S = sAt(9), px = (x) => 60 + sAt(x) / S * (W - 260);
       const z0 = px(2.6), z1 = px(5.4);
       sc.innerHTML = `<svg viewBox="0 0 ${W} ${SH_}" width="${W}" height="${SH_}">
         <rect x="0" y="0" width="${W}" height="${SH_}" fill="#e8f0fc"/><rect x="0" y="112" width="${W}" height="48" fill="#6b7280"/>
@@ -582,7 +589,7 @@ const ex2 = {
         if (k === 'a') { const kk = kindOf(pts[i], pts[j]); const seg = G.segment(pts[i], pts[j], { color: KC[kk], width: 6 }); const tag = G.label((pts[i][0] + pts[j][0]) / 2, (pts[i][1] + pts[j][1]) / 2, KW[kk], { pos: kk === 'con' ? 'n' : kk === 'inc' ? 'se' : 'sw', cls: 'u5l9-ktag ' + kk, gap: 10 }); await Promise.all([appear(c, seg, 300), fadeIn(c, tag)]); }
       }
     }));
-    steps.push({ cap: d.end, run: async (c) => { const s = stamp(stage, 'one possible story', { ok: null, x: ex.W - 150, y: SH_ + 60, size: 'sm' }); await stampIn(c, s); } });
+    steps.push({ cap: d.end, run: async (c) => { const s = stamp(stage, 'one possible story', { ok: null, x: 150, y: 34, size: 'sm' }); await stampIn(c, s); } });
     return steps;
   }
 };
@@ -667,7 +674,7 @@ const sketch = {
         spans.forEach((s) => { s.classList.remove('on'); s.classList.add('done'); });
         set(d.pieces[d.pieces.length - 1].pts.slice(-1)[0][0], d.pieces[d.pieces.length - 1].pts.slice(-1)[0][1], false);
         if (k === 'a') { const rl = G.hline(1.0, { color: 'gray', width: 2.5 }); const lb = G.label(8.6, 1.0, 'room temperature', { pos: 'n', cls: 'u5l9-note' }); await Promise.all([G.drawIn(rl, 600, c), fadeIn(c, lb)]); }
-        const s = stamp(stage, 'shape, not numbers', { ok: true, x: GX + GW - 130, y: SCH + 70, size: 'sm' }); await stampIn(c, s);
+        const s = stamp(desc, 'shape, not numbers', { ok: true, size: 'sm' }); s.style.display = 'table'; s.style.margin = '18px auto 0'; await stampIn(c, s);
       }
     });
     return steps;

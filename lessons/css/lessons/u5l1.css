@@ -37,6 +37,7 @@
 .u5l1-cap rect { fill: none; stroke-width: 4; }
 .u5l1-cap.u5l1-ok rect { stroke: var(--ok); fill: rgba(18, 128, 90, .1); }
 .u5l1-cap.u5l1-no rect { stroke: var(--red); stroke-dasharray: 8 6; fill: rgba(201, 58, 51, .07); }
+.u5l1-cap.u5l1-old { opacity: .3; }
 .u5l1-x { stroke: var(--red); stroke-width: 5; stroke-linecap: round; }
 .u5l1-sure { fill: none; stroke: #e8a01e; stroke-width: 5; transform-box: fill-box; transform-origin: center; }
 .u5l1-bctl { display: flex; align-items: center; gap: 6px; margin: 6px 4px 0; }
@@ -91,9 +92,9 @@
 .u5l1-brace { fill: none; stroke: var(--amber); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
 .u5l1-bracelab { font-size: 21px; color: var(--amber); }
 .u5l1-eqrow { display: flex; align-items: center; justify-content: center; gap: 26px; flex-wrap: wrap; font-size: 26px; }
-.u5l1-eq.big { font-size: 32px; padding: 4px 16px; border-radius: 12px; background: var(--brand-soft); }
-.u5l1-eq.ans { color: var(--red); }
-.u5l1-eq.chk { font-size: 22px; color: var(--ok); }
+.u5l1-eq.u5l1-eqbig { font-size: 32px; padding: 4px 16px; border-radius: 12px; background: var(--brand-soft); }
+.u5l1-eq.u5l1-eqans { color: var(--red); }
+.u5l1-eq.u5l1-eqchk { font-size: 22px; color: var(--ok); }
 .u5l1-half { display: block; margin: 4px auto 6px; }
 .u5l1-qmark { font: 900 40px var(--round); fill: var(--red); }
 .u5l1-ex2b { grid-template-columns: 1fr 400px; }
@@ -104,6 +105,8 @@
 
 /* ---------------- explainer panels ---------------- */
 .u5l1-panel { background: #fff; border: 1px solid var(--line2); border-radius: 14px; padding: 12px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+.u5l1-th { white-space: nowrap; }
+.u5l1-rule { margin-top: auto; background: #f6f5f1; border-radius: 10px; padding: 10px 12px; font-size: 19px; line-height: 1.5; text-align: center; }
 .u5l1-ph { font: 800 14px var(--round); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
 .u5l1-line { font-size: 21px; line-height: 1.35; }
 .u5l1-line.u5l1-hl { background: var(--amber-soft); border-radius: 8px; padding: 2px 8px; }

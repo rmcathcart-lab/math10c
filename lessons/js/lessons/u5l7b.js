@@ -19,6 +19,7 @@ const PUR = '#7b4fc4', BLU = '#1f5bd6', AMB = '#c27a0e', RED = '#c93a33', OK = '
 const NM = (s) => `\\htmlClass{u5l7b-cn}{${s}}`, IN = (s) => `\\htmlClass{u5l7b-ci}{${s}}`, OUT = (s) => `\\htmlClass{u5l7b-co}{${s}}`;
 const X = '\\htmlClass{u5l7b-slot}{x}';            // an x in a rule: a slot for the input
 const S = (v) => `\\htmlClass{u5l7b-sub}{(${v})}`;  // what went into the slot, in brackets
+const KL = (src) => K(src.replace(/=\\htmlClass/g, '=\\;\\htmlClass')); // keep the space after = before a highlighted group
 
 const panel = (stage, x, y, w, hh, title) => add(stage, box(h('div', 'u5l7b-panel', title ? `<div class="u5l7b-ph">${title}</div>` : ''), w, hh), x, y);
 const line = (p, html, cls = '') => { const d = h('div', 'u5l7b-pl ' + cls, html); p.appendChild(d); return d; };
@@ -43,46 +44,46 @@ const MC = {
   f: {
     label: T('f(x)=3x+1'), name: 'f', rule: 'f(x)=3x+1', v: 'x', graph: { xmin: -4, xmax: 6, ymin: -8, ymax: 16, ystep: 2 }, curve: (x) => 3 * x + 1,
     ins: [
-      { a: '4', o: '13', x: 4, y: 13, pos: 'w', win: K('3(4)+1') + '<br>' + K('=13'), say: `Inside, every ${T('x')} is replaced by ${T('4')}: ${T('3(4)+1=13')}.`, read: '“<b>f of 4 is 13</b>”' },
-      { a: '0', o: '1', x: 0, y: 1, pos: 'e', win: K('3(0)+1') + '<br>' + K('=1') },
-      { a: '-2', o: '-5', x: -2, y: -5, pos: 'e', win: K('3(-2)+1') + '<br>' + K('=-5') }
+      { a: '4', o: '13', x: 4, y: 13, pos: 'w', win: '<div>' + K('3(4)+1') + '</div><div>' + K('=13') + '</div>', say: `Inside, every ${T('x')} is replaced by ${T('4')}: ${T('3(4)+1=13')}.`, read: '“<b>f of 4 is 13</b>”' },
+      { a: '0', o: '1', x: 0, y: 1, pos: 'e', win: '<div>' + K('3(0)+1') + '</div><div>' + K('=1') + '</div>' },
+      { a: '-2', o: '-5', x: -2, y: -5, pos: 'e', win: '<div>' + K('3(-2)+1') + '</div><div>' + K('=-5') + '</div>' }
     ],
     end: `Each input with its output is a point ${T('(x,\\ f(x))')}. All of them lie on the line ${T('y=3x+1')}: the graph of ${T('f')}.`
   },
   K: {
     label: 'the keypad ' + T('K'), name: 'K', rule: 'K(\\text{letter})=\\text{its key}', v: '\\text{letter}',
     ins: [
-      { a: '\\text{M}', o: '6', win: 'M is on the<br><b>MNO</b> key', say: 'M is printed on the MNO key, which is key 6.', read: '“<b>K of M is 6</b>”' },
-      { a: '\\text{H}', o: '4', win: 'H is on the<br><b>GHI</b> key' },
-      { a: '\\text{Z}', o: '9', win: 'Z is on the<br><b>WXYZ</b> key' }
+      { a: '\\text{M}', o: '6', win: 'M is on the <b>MNO</b> key', say: 'M is printed on the MNO key, which is key 6.', read: '“<b>K of M is 6</b>”' },
+      { a: '\\text{H}', o: '4', win: 'H is on the <b>GHI</b> key' },
+      { a: '\\text{Z}', o: '9', win: 'Z is on the <b>WXYZ</b> key' }
     ],
     end: `Every letter goes in and exactly <b>one</b> key comes out, so ${T('K')} is a function. (Going <b>backwards</b> from a key can give several letters.)`
   },
   P: {
     label: T('P(t)=t^2'), name: 'P', rule: 'P(t)=t^2', v: 't', graph: { xmin: -5, xmax: 5, ymin: -2, ymax: 12 }, curve: (x) => x * x,
     ins: [
-      { a: '3', o: '9', x: 3, y: 9, pos: 'e', win: K('(3)^2') + '<br>' + K('=9'), say: `Inside, the ${T('t')} is replaced by ${T('3')}: ${T('(3)^2=9')}.`, read: '“<b>P of 3 is 9</b>”' },
-      { a: '-3', o: '9', x: -3, y: 9, pos: 'w', win: K('(-3)^2') + '<br>' + K('=9') },
-      { a: '0', o: '0', x: 0, y: 0, pos: 'se', win: K('(0)^2') + '<br>' + K('=0') }
+      { a: '3', o: '9', x: 3, y: 9, pos: 'e', win: '<div>' + K('(3)^2') + '</div><div>' + K('=9') + '</div>', say: `Inside, the ${T('t')} is replaced by ${T('3')}: ${T('(3)^2=9')}.`, read: '“<b>P of 3 is 9</b>”' },
+      { a: '-3', o: '9', x: -3, y: 9, pos: 'w', win: '<div>' + K('(-3)^2') + '</div><div>' + K('=9') + '</div>' },
+      { a: '0', o: '0', x: 0, y: 0, pos: 'se', win: '<div>' + K('(0)^2') + '</div><div>' + K('=0') + '</div>' }
     ],
     end: `Two inputs, ${T('3')} and ${T('-3')}, give the same output ${T('9')}. That is allowed: each input still has <b>one</b> output. Any letter can name a function, and the input can be any letter too.`
   }
 };
 const machine = {
   title: 'The function machine',
-  height: 340,
+  height: 356,
   choices: Object.keys(MC).map((k) => ({ v: k, label: MC[k].label })),
   intro: 'An <b>input</b> goes in, the rule acts on it, and exactly <b>one output</b> comes out. Press <b>Next</b>.',
   make(stage, k, ex) {
-    const d = MC[k], W = ex.W, MX = 186, MW = 280, MY = 34, MH = 196, BY = MY + MH / 2 - 36;
+    const d = MC[k], W = ex.W, MX = 186, MW = 280, MY = 18, MH = 222, BY = MY + MH / 2 - 36;
     const mach = add(stage, box(h('div', 'u5l7b-mach', `<div class="u5l7b-mname">${K(NM(d.name))}</div><div class="u5l7b-mrule">${K(d.rule)}</div><div class="u5l7b-mwin"></div>`), MW, MH), MX, MY);
     const win = mach.querySelector('.u5l7b-mwin');
     add(stage, h('div', 'u5l7b-mouth in'), MX - 18, BY + 4); add(stage, h('div', 'u5l7b-mouth out'), MX + MW - 4, BY + 4);
     add(stage, box(h('div', 'u5l7b-io', 'input'), 100, 24), 20, BY + 84); add(stage, box(h('div', 'u5l7b-io', 'output'), 100, 24), MX + MW + 18, BY + 84);
-    const note = add(stage, box(h('div', 'u5l7b-note', ''), 560, 90), MX + MW / 2 - 280, 244);
+    const note = add(stage, box(h('div', 'u5l7b-note', ''), 560, 96), MX + MW / 2 - 280, 256);
     let G = null, log = null;
-    if (d.graph) G = new Graph(stage, Object.assign({ x: W - 324, y: 8, width: 314, height: 322, ytitle: 'y' }, d.graph));
-    else log = panel(stage, W - 324, 8, 314, 322, 'Letter → key');
+    if (d.graph) G = new Graph(stage, Object.assign({ x: W - 324, y: 8, width: 314, height: 338, ytitle: 'y' }, d.graph));
+    else log = panel(stage, W - 324, 8, 314, 338, 'Letter → key');
     const pts = [];
     const notation = (r) => K(`${NM(d.name)}(${IN(r.a)})=${OUT(r.o)}`);
     const drop = async (c, i, q) => {
@@ -98,7 +99,7 @@ const machine = {
       note.innerHTML = `<div class="u5l7b-nbig">${notation(r)}</div>` + (r.read ? `<div class="u5l7b-nread">read ${r.read}</div>` : '');
       await pop(c, note.firstChild, 380);
       if (G) { const p = G.point(r.x, r.y, { color: 'blue', coords: true, pos: r.pos, r: 7 }); pts.push(p); await G.reveal(p, c); }
-      else { const l = line(log, notation(r), 'big'); await fadeIn(c, l); }
+      else { const l = line(log, notation(r), 'u5l7b-bigl'); await fadeIn(c, l); }
     };
     const r0 = d.ins[0];
     return [
@@ -140,21 +141,21 @@ const AN = {
 };
 const anatomy = {
   title: 'Reading function notation',
-  height: 330,
+  height: 334,
   choices: Object.keys(AN).map((k) => ({ v: k, label: AN[k].label })),
   intro: 'Every piece of the notation has a job. Press <b>Next</b>.',
   make(stage, k, ex) {
     const d = AN[k], W = ex.W, cls = ['u5l7b-pn', 'u5l7b-pi', 'u5l7b-po'], colors = [PUR, BLU, AMB];
     const big = add(stage, box(h('div', 'u5l7b-big', K(`\\htmlClass{${cls[0]}}{${d.parts[0]}}\\htmlClass{${cls[1]}}{${d.parts[1]}}=\\htmlClass{${cls[2]}}{${d.parts[2]}}`)), W, 110), 0, 22);
     const svg = add(stage, svgEl('svg', { width: W, height: 330, class: 'u5l7b-ov' }), 0, 0);
-    const readEl = add(stage, box(h('div', 'u5l7b-read', d.read), W - 60, 60), 30, 258); hide(readEl);
+    const readEl = add(stage, box(h('div', 'u5l7b-read', d.read), W - 60, 60), 30, 262); hide(readEl);
     const show = async (c, i) => {
       const part = big.querySelector('.' + cls[i]); part.classList.add('on');
-      const r = rel(stage, part), cx = r.x + r.w / 2, lw = 230, lx = Math.max(8, Math.min(W - lw - 8, cx - lw / 2 + (i - 1) * 40));
-      const lab = add(stage, box(h('div', 'u5l7b-alab', d.labs[i]), lw, 0), lx, 178); lab.style.height = 'auto'; lab.style.borderColor = colors[i]; lab.style.color = colors[i];
-      const g = arrowLine(svg, [[cx, r.y + r.h + 6], [lx + lw / 2, 174]], colors[i], 3);
+      const r = rel(stage, part), cx = r.x + r.w / 2, lw = 270, lx = Math.round(W * (i + 0.5) / 3 - lw / 2);
+      const html = d.labs[i] + (i === 1 && d.not ? `<div class="u5l7b-not">not ${K(d.not)} ✗</div>` : '');
+      const lab = add(stage, box(h('div', 'u5l7b-alab', html), lw, 0), lx, 176); lab.style.height = 'auto'; lab.style.borderColor = colors[i]; lab.style.color = colors[i];
+      const g = arrowLine(svg, [[cx, r.y + r.h + 4], [lx + lw / 2, 170]], colors[i], 3);
       await drawIn(g, 380, c); await fadeIn(c, lab, 320);
-      if (i === 1 && d.not) { const t = add(stage, h('div', 'u5l7b-not', K(d.not) + ' ✗'), Math.min(W - 160, r.x + r.w + 18), 30); await pop(c, t); }
     };
     return [
       { cap: d.caps[0], run: (c) => show(c, 0) },
@@ -191,7 +192,7 @@ const represent = {
     const M = new MappingDiagram(stage, { x: 196, y: 40, width: 250, height: 360, domain: d.dom, range: rng, pairs: d.dom.map((x, i) => [x, ys[i]]), arrows: false, titles: ['domain', 'range'], color: '#1f5bd6' });
     M.itemEls[1].forEach((e) => (e.style.opacity = 0));
     const P = panel(stage, 462, 40, 170, 300, 'Ordered pairs');
-    const pl = d.dom.map((x, i) => { const e = line(P, T(pairTex(x, ys[i])), 'big'); e.style.opacity = 0; return e; });
+    const pl = d.dom.map((x, i) => { const e = line(P, T(pairTex(x, ys[i])), 'u5l7b-bigl'); e.style.opacity = 0; return e; });
     const G = new Graph(stage, Object.assign({ x: W - 318, y: 6, width: 308, height: 456, ytitle: n + '(x)' }, d.graph));
     return [
       { cap: `Evaluate ${T(n + '(x)')} at every number in the domain. For example, ${T(d.eg)}.`, run: (c) => tb.fill(c, { col: 1, stagger: 140 }) },
@@ -200,8 +201,8 @@ const represent = {
       { cap: `<b>Ordered pairs</b> ${T('(x,\\ ' + n + '(x))')}: one for each row of the table.`,
         run: async (c) => { for (let i = 0; i < pl.length; i++) { tb.highlight(i, true); await fadeIn(c, pl[i], 260); await sleep(c, 80); tb.highlight(i, false); } } },
       { cap: '<b>Graph</b>: each ordered pair is a point.',
-        run: async (c) => { for (let i = 0; i < d.dom.length; i++) { pl[i].classList.add('on'); await G.reveal(G.point(d.dom[i], ys[i], { color: 'blue', r: 7 }), c, 300); await sleep(c, 60); pl[i].classList.remove('on'); } } },
-      { cap: d.end, run: async (c) => { const s = stamp(stage, k === 'h' ? 'Function ✓' : 'dots, not a line', { ok: k === 'h' ? true : null, x: W - 164, y: k === 'g' ? 120 : 420, size: 'sm' }); await stampIn(c, s); } }
+        run: async (c) => { for (let i = 0; i < d.dom.length; i++) { pl[i].classList.add('u5l7b-on'); await G.reveal(G.point(d.dom[i], ys[i], { color: 'blue', r: 7 }), c, 300); await sleep(c, 60); pl[i].classList.remove('u5l7b-on'); } } },
+      { cap: d.end, run: async (c) => { const s = stamp(stage, k === 'h' ? 'Function ✓' : 'dots, not a line', { ok: k === 'h' ? true : null, x: W - (k === 'g' ? 200 : 236), y: k === 'h' ? 290 : 62, size: 'sm' }); await stampIn(c, s); } }
     ];
   }
 };
@@ -251,7 +252,7 @@ const machineFB = {
         if (i === 1) await pulse(c, fO2, 1.08);
         if (i === 2) { fOut.innerHTML = K(d.fwd[2]); await pop(c, fOut.firstChild, 420); }
       }
-      for (const s of d.alg1) await fadeIn(c, line(P, K(s), 'fw'), 260);
+      for (const s of d.alg1) await fadeIn(c, line(P, K(s), 'u5l7b-fw'), 260);
     };
     const bwd = async (c) => {
       bOut.innerHTML = K(d.bwd[0]); await pop(c, bOut.firstChild);
@@ -262,7 +263,7 @@ const machineFB = {
         if (i === 1) await pulse(c, bO1, 1.08);
         if (i === 2) { bIn.innerHTML = K(d.bwd[2]); bIn.classList.toggle('two', k === 's'); await pop(c, bIn.firstChild, 420); }
       }
-      for (const s of d.alg2) await fadeIn(c, line(P, K(s), 'bw'), 260);
+      for (const s of d.alg2) await fadeIn(c, line(P, K(s), 'u5l7b-bw'), 260);
     };
     return [
       { cap: d.what, run: async (c) => { await pulse(c, fO1, 1.08); await pulse(c, fO2, 1.08); } },
@@ -270,7 +271,7 @@ const machineFB = {
       { cap: `<b>Solve</b> ${T(d.bq)}: now the <b>output</b> is known. Go <b>backwards</b>, undoing each step in <b>reverse</b> order: ${T(d.undo[1])} first, then ${T(d.undo[0])}.`,
         run: async (c) => { await fadeIn(c, head2); await Promise.all([bOut, bO2, bO1, bIn].map((e, i) => fadeIn(c, e, 300, { delay: i * 90 }))); } },
       { cap: `${T(d.bwd[0])} → ${T(d.bwd[1])} → ${T(d.bwd[2])}. ${d.back}`, run: bwd },
-      { cap: `Check by going forwards: ${T(d.check)} ✓`, run: async (c) => { const l = line(P, K(d.check) + ' ✓', 'ck'); await fadeIn(c, l); const s = stamp(stage, 'checks out', { ok: true, x: 340, y: 372, size: 'sm' }); await stampIn(c, s); } }
+      { cap: `Check by going forwards: ${T(d.check)} ✓`, run: async (c) => { const l = line(P, K(d.check) + ' ✓', 'u5l7b-ck'); await fadeIn(c, l); const s = stamp(stage, 'checks out', { ok: true, x: 340, y: 372, size: 'sm' }); await stampIn(c, s); } }
     ];
   }
 };
@@ -311,9 +312,9 @@ const substitute = {
     const d = SB[k], W = ex.W, LH = 54;
     const fl = d.funcs.map((f, i) => add(stage, h('div', 'u5l7b-fx', K(f)), 26, 14 + i * 50));
     const y0 = 14 + d.funcs.length * 50 + 18;
-    const ls = d.lines.map((l, i) => { const e = add(stage, h('div', 'u5l7b-ln', K(l[0])), 26 + (l[0][0] === '=' ? 40 : 0), y0 + i * LH); hide(e); return e; });
+    const ls = d.lines.map((l, i) => { const e = add(stage, h('div', 'u5l7b-ln', KL(l[0])), 26 + (l[0][0] === '=' ? 40 : 0), y0 + i * LH); hide(e); return e; });
     const P = panel(stage, W - 300, 10, 288, 360, 'Find');
-    line(P, K(d.ask), 'ask'); if (d.read) line(P, d.read, 'small');
+    line(P, K(d.ask), 'u5l7b-ask'); if (d.read) line(P, d.read, 'u5l7b-small');
     const kk = h('div', 'u5l7b-keys', `<div class="u5l7b-ph">TI-30XIIS</div>${keysHTML(d.keys)}`); P.appendChild(kk); hide(kk);
     const slots = d.use.flatMap((i) => [...fl[i].querySelectorAll('.u5l7b-slot')]);
     const steps = [{ cap: (d.read ? d.read + ' ' : '') + `Every ${T('x')} in the rule is a <b>slot</b> for the input.`, run: async (c) => { slots.forEach((s) => s.classList.add('on')); await Promise.all(slots.map((s) => pulse(c, s, 1.3))); } }];
@@ -334,16 +335,16 @@ const substitute = {
 const LE = {
   a: { label: 'Example 4(a)', ask: 'g(a)', inp: 'a',
     lines: [[`g(a)=5${S('a')}-2`, `Replace ${T('x')} with ${T('a')}.`], ['=5a-2', `Tidy up: ${T('5(a)')} is ${T('5a')}.`]],
-    ck: { at: 'a=3', L: ['g(a)', 'g(3)', '5(3)-2', '13'], R: ['5a-2', '5(3)-2', '13'], ok: true }, ckCap: `Check with ${T('a=3')}: ${T('g(3)')} and ${T('5a-2')} must agree.` },
+    ck: { at: 'a=3', L: ['g(a)', 'g(3)', '5(3)-2', '13'], R: ['5a-2', '5(3)-2', '15-2', '13'], ok: true }, ckCap: `Check with ${T('a=3')}: ${T('g(3)')} and ${T('5a-2')} must agree.` },
   b: { label: 'Example 4(b)', ask: 'g(3t)', inp: '3t',
     lines: [[`g(3t)=5${S('3t')}-2`, `The input is an <b>expression</b>, ${T('3t')}. It goes into the slot, in brackets.`], ['=15t-2', `${T('5(3t)=15t')}.`]],
-    ck: { at: 't=2', L: ['g(3t)', 'g(6)', '5(6)-2', '28'], R: ['15t-2', '15(2)-2', '28'], ok: true }, ckCap: `Check with ${T('t=2')}: then ${T('3t=6')}, so the left side is ${T('g(6)')}.` },
+    ck: { at: 't=2', L: ['g(3t)', 'g(6)', '5(6)-2', '28'], R: ['15t-2', '15(2)-2', '30-2', '28'], ok: true }, ckCap: `Check with ${T('t=2')}: then ${T('3t=6')}, so the left side is ${T('g(6)')}.` },
   c: { label: 'Example 4(c)', ask: 'g(a+1)', inp: 'a+1',
     lines: [[`g(a+1)=5${S('a+1')}-2`, `The <b>whole</b> input ${T('a+1')} goes into the slot, in brackets.`], ['=5a+5-2', 'Distribute: the 5 multiplies <b>both</b> terms.'], ['=5a+3', 'Collect like terms.']],
-    ck: { at: 'a=2', L: ['g(a+1)', 'g(3)', '5(3)-2', '13'], R: ['5a+3', '5(2)+3', '13'], ok: true }, ckCap: `Check with ${T('a=2')}: then ${T('a+1=3')}, so the left side is ${T('g(3)')}.` },
+    ck: { at: 'a=2', L: ['g(a+1)', 'g(3)', '5(3)-2', '13'], R: ['5a+3', '5(2)+3', '10+3', '13'], ok: true }, ckCap: `Check with ${T('a=2')}: then ${T('a+1=3')}, so the left side is ${T('g(3)')}.` },
   oops: { label: 'Missing brackets?', ask: 'g(a+1)', inp: 'a+1', bad: true,
     lines: [['g(a+1)=5a+1-2', `A classic slip: no brackets, so the 5 only multiplies the ${T('a')}.`], ['=5a-1', 'Collect like terms…']],
-    ck: { at: 'a=2', L: ['g(a+1)', 'g(3)', '5(3)-2', '13'], R: ['5a-1', '5(2)-1', '9'], ok: false },
+    ck: { at: 'a=2', L: ['g(a+1)', 'g(3)', '5(3)-2', '13'], R: ['5a-1', '5(2)-1', '10-1', '9'], ok: false },
     ckCap: `…and the check with ${T('a=2')} fails: 13 is not 9. With brackets, ${T('5(a+1)-2=5a+3')}.` }
 };
 const linearExpr = {
@@ -355,7 +356,7 @@ const linearExpr = {
     const d = LE[k], W = ex.W, LH = 58;
     const fx = add(stage, h('div', 'u5l7b-fx', K(`g(x)=5${X}-2`)), 26, 16);
     const tag = add(stage, h('div', 'u5l7b-intag', 'input: ' + K(d.inp)), 300, 20); hide(tag);
-    const ls = d.lines.map((l, i) => { const e = add(stage, h('div', 'u5l7b-ln' + (d.bad && i === 0 ? ' bad' : ''), K(l[0])), 26 + (i ? 58 : 0), 86 + i * LH); hide(e); return e; });
+    const ls = d.lines.map((l, i) => { const e = add(stage, h('div', 'u5l7b-ln' + (d.bad && i === 0 ? ' u5l7b-bad' : ''), KL(l[0])), 26 + (i ? 58 : 0), 86 + i * LH); hide(e); return e; });
     const card = checkCard(stage, { at: d.ck.at, left: d.ck.L, right: d.ck.R, ok: d.ck.ok, x: W - 404, y: 14, width: 392, hidden: true });
     const steps = [{ cap: `The rule has one slot for the input. Here the input is ${T(d.inp)}.`, run: async (c) => { fx.querySelector('.u5l7b-slot').classList.add('on'); await pop(c, tag); } }];
     d.lines.forEach((l, i) => steps.push({ cap: l[1], run: async (c) => { await fadeIn(c, ls[i]); if (i === d.lines.length - 1 && !d.bad) ls[i].classList.add('ansline'); } }));
@@ -367,9 +368,9 @@ const linearExpr = {
 /* ======================= explainer 7: forwards and backwards on the graph ======================= */
 const GF = {
   lin: { label: 'Line: Example 4(d) check', n: 'g', f: (x) => 5 * x - 2, tex: 'g(x)=5x-2', win: { xmin: -3, xmax: 6, ymin: -4, ymax: 20, ystep: 2 },
-    a: 2, b: 18, xs: [4], lab: [2.6, 13], back: `${T('x=4')}: one answer.` },
+    a: 2, b: 18, xs: [4], lab: [3.9, 13], lpos: 'e', back: `${T('x=4')}: one answer.` },
   par: { label: 'Parabola: Example 5 check', n: 'f', f: (x) => x * x - 7, tex: 'f(x)=x^2-7', win: { xmin: -8, xmax: 8, ymin: -10, ymax: 42, ystep: 5 },
-    a: 5, b: 29, xs: [-6, 6], lab: [-3.3, 24], back: `${T('x=-6')} <b>or</b> ${T('x=6')}: the line meets the graph <b>twice</b>.`, extra: 38 }
+    a: 5, b: 29, xs: [-6, 6], lab: [-0.4, 11], lpos: 'w', back: `${T('x=-6')} <b>or</b> ${T('x=6')}: the line meets the graph <b>twice</b>.`, extra: 38 }
 };
 const graphFB = {
   title: 'Forwards and backwards on the graph',
@@ -382,11 +383,11 @@ const graphFB = {
     const P = panel(stage, 500, 8, W - 512, 454, 'Read from the graph');
     const r = d.extra ? Math.sqrt(d.extra + 7) : 0;
     const steps = [
-      { cap: `The graph of ${T(d.tex)}.`, run: async (c) => { const L = G.fn(d.f, { color: 'teal' }); await G.drawIn(L, 900, c); G.label(d.lab[0], d.lab[1], T(d.tex), { pos: 'w', color: 'teal', cls: 'bk-ptlab' }); } },
+      { cap: `The graph of ${T(d.tex)}.`, run: async (c) => { const L = G.fn(d.f, { color: 'teal' }); await G.drawIn(L, 900, c); G.label(d.lab[0], d.lab[1], T(d.tex), { pos: d.lpos, color: 'teal', cls: 'bk-ptlab' }); } },
       { cap: `<b>Forwards</b>: evaluate ${T(n + '(' + d.a + ')')}. Start at ${T('x=' + d.a)} and go <b>up</b> to the graph…`,
         run: async (c) => { await G.reveal(G.point(d.a, 0, { color: 'blue', r: 6 }), c); await G.drawIn(G.segment([d.a, 0], [d.a, fa], { color: 'blue', arrowB: true, width: 3.5 }), 600, c); await G.reveal(G.point(d.a, fa, { color: 'blue', r: 7 }), c); } },
       { cap: `…then <b>across</b> to the vertical axis: ${T(n + '(' + d.a + ')=' + fa)}.`,
-        run: async (c) => { await G.drawIn(G.segment([d.a, fa], [0, fa], { color: 'blue', arrowB: true, width: 3.5 }), 600, c); G.label(0, fa, T(String(fa)), { pos: d.a > 0 ? 'w' : 'e', color: 'blue', cls: 'bk-pill' }); await fadeIn(c, line(P, `<b>Forwards</b><br>${T(n + '(' + d.a + ')=' + fa)}`, 'fw')); } },
+        run: async (c) => { await G.drawIn(G.segment([d.a, fa], [0, fa], { color: 'blue', arrowB: true, width: 3.5 }), 600, c); G.label(0, fa, T(String(fa)), { pos: d.a > 0 ? 'w' : 'e', color: 'blue', cls: 'bk-pill' }); await fadeIn(c, line(P, `<b>Forwards</b><br>${T(n + '(' + d.a + ')=' + fa)}`, 'u5l7b-fw')); } },
       { cap: `<b>Backwards</b>: solve ${T(n + '(x)=' + d.b)}. Start at ${T(String(d.b))} on the vertical axis and go <b>across</b> to the graph…`,
         run: async (c) => {
           await G.reveal(G.point(0, d.b, { color: 'amber', r: 6 }), c);
@@ -397,7 +398,7 @@ const graphFB = {
         run: async (c) => {
           await Promise.all(d.xs.map((x) => G.drawIn(G.segment([x, d.b], [x, 0], { color: 'amber', arrowB: true, width: 3.5 }), 700, c)));
           d.xs.forEach((x) => G.label(x, 0, T(String(x)), { pos: 's', color: 'amber', cls: 'bk-pill' }));
-          await fadeIn(c, line(P, `<b>Backwards</b><br>${T(n + '(x)=' + d.b)}<br>${T('x=' + (d.xs.length > 1 ? '\\pm' + Math.abs(d.xs[0]) : d.xs[0]))}`, 'bw'));
+          await fadeIn(c, line(P, `<b>Backwards</b><br>${T(n + '(x)=' + d.b)}<br>${T('x=' + (d.xs.length > 1 ? '\\pm' + Math.abs(d.xs[0]) : d.xs[0]))}`, 'u5l7b-bw'));
         } }
     ];
     if (d.extra) steps.push({
@@ -405,10 +406,10 @@ const graphFB = {
       run: async (c) => {
         await Promise.all([-r, r].map((x) => G.drawIn(G.segment([0, d.extra], [x, d.extra], { color: 'purple', width: 3, dash: true }), 500, c)));
         await Promise.all([-r, r].map((x) => G.reveal(G.point(x, d.extra, { color: x < 0 ? 'gray' : 'purple', r: 7 }), c)));
-        const no = G.label(-r, d.extra, '✗', { pos: 'n', color: 'red', cls: 'u5l7b-x' }); await pop(c, no);
+        const no = G.label(-r, d.extra, '✗', { pos: 'se', color: 'red', cls: 'u5l7b-x' }); await pop(c, no);
         await G.drawIn(G.segment([r, d.extra], [r, 0], { color: 'purple', arrowB: true, width: 3 }), 600, c);
         G.label(r, 0, T('3\\sqrt5'), { pos: 'se', color: 'purple', cls: 'bk-pill' });
-        await fadeIn(c, line(P, `<b>Example 5(c)</b><br>${T('t^2=45')}<br>${T('t=3\\sqrt5')} ${T('(t>0)')}`, 'ex'));
+        await fadeIn(c, line(P, `<b>Example 5(c)</b><br>${T('t^2=45')}<br>${T('t=3\\sqrt5')} ${T('(t>0)')}`, 'u5l7b-exl'));
       }
     });
     return steps;
@@ -445,17 +446,17 @@ const NL = {
   demo: { label: 'Demo: ' + T('f(x+2)') + ' for ' + T('f(x)=x^2'), f: `f(x)=${X}^2`, inp: 'x+2',
     lines: [[`f(x+2)=${S('x+2')}^2`, `Replace ${T('x')} with the <b>whole</b> expression, in brackets.`], ['=(x+2)(x+2)', 'Squaring means multiplying it by itself.'],
       ['=x^2+2x+2x+4', 'Expand.'], ['=x^2+4x+4', 'Collect like terms.']],
-    ck: { at: 'x=1', L: ['f(x+2)', 'f(3)', '9'], R: ['x^2+4x+4', '1+4+4', '9'] }, warn: `Not ${T('x^2+4')}: at ${T('x=1')} that gives 5, not 9.` },
+    ck: { at: 'x=1', L: ['f(x+2)', 'f(3)', '3^2', '9'], R: ['x^2+4x+4', '1^2+4(1)+4', '1+4+4', '9'] }, warn: `Not ${T('x^2+4')}: at ${T('x=1')} that gives 5, not 9.` },
   a6: { label: 'Example 6(a)', f: `f(x)=4${X}^3-3${X}`, inp: 'a',
     lines: [[`f(a)=4${S('a')}^3-3${S('a')}`, `Replace every ${T('x')} with ${T('a')}.`], ['=4a^3-3a', 'Nothing to expand: just tidy up.']],
-    ck: { at: 'a=2', L: ['f(a)', 'f(2)', '32-6', '26'], R: ['4a^3-3a', '4(8)-3(2)', '26'] } },
+    ck: { at: 'a=2', L: ['f(a)', 'f(2)', '4(8)-3(2)', '26'], R: ['4a^3-3a', '4(2)^3-3(2)', '32-6', '26'] } },
   b6: { label: 'Example 6(b)', f: `f(x)=4${X}^3-3${X}`, inp: '3x',
     lines: [[`f(3x)=4${S('3x')}^3-3${S('3x')}`, `Replace every ${T('x')} with ${T('(3x)')}.`], ['=4(27x^3)-9x', `The cube applies to the 3 <b>and</b> the ${T('x')}: ${T('(3x)^3=27x^3')}.`], ['=108x^3-9x', 'Multiply.']],
-    ck: { at: 'x=1', L: ['f(3x)', 'f(3)', '4(27)-9', '99'], R: ['108x^3-9x', '108-9', '99'] }, warn: `Without brackets, ${T('4\\cdot3x^3=12x^3')} would give ${T('12-9=3')}, not 99.` },
+    ck: { at: 'x=1', L: ['f(3x)', 'f(3)', '4(27)-9', '99'], R: ['108x^3-9x', '108(1)^3-9(1)', '108-9', '99'] }, warn: `Without brackets, ${T('4\\cdot3x^3=12x^3')} would give ${T('12-9=3')}, not 99.` },
   e7: { label: 'Example 7', f: `P(x)=3${X}^2-5${X}+2`, inp: 'x+2',
     lines: [[`P(x+2)=3${S('x+2')}^2-5${S('x+2')}+2`, `Replace every ${T('x')} with ${T('(x+2)')}.`], ['=3(x^2+4x+4)-5(x+2)+2', `${T('(x+2)^2=x^2+4x+4')}.`],
       ['=3x^2+12x+12-5x-10+2', 'Distribute the 3 and the −5.'], ['=3x^2+7x+4', 'Collect like terms.']],
-    ck: { at: 'x=1', L: ['P(x+2)', 'P(3)', '27-15+2', '14'], R: ['3x^2+7x+4', '3+7+4', '14'] } }
+    ck: { at: 'x=1', L: ['P(x+2)', 'P(3)', '27-15+2', '14'], R: ['3x^2+7x+4', '3(1)^2+7(1)+4', '3+7+4', '14'] } }
 };
 const nonlinearSub = {
   title: 'Extension: an expression into a non-linear function',
@@ -465,7 +466,7 @@ const nonlinearSub = {
   make(stage, k, ex) {
     const d = NL[k], W = ex.W, LH = 56;
     const fx = add(stage, h('div', 'u5l7b-fx', K(d.f)), 22, 14);
-    const ls = d.lines.map((l, i) => { const e = add(stage, h('div', 'u5l7b-ln sm', K(l[0])), 22 + (i ? 40 : 0), 84 + i * LH); hide(e); return e; });
+    const ls = d.lines.map((l, i) => { const e = add(stage, h('div', 'u5l7b-ln sm', KL(l[0])), 22 + (i ? 40 : 0), 84 + i * LH); hide(e); return e; });
     const card = checkCard(stage, { at: d.ck.at, left: d.ck.L, right: d.ck.R, ok: true, x: W - 356, y: 14, width: 344, hidden: true });
     const warn = d.warn ? add(stage, box(h('div', 'u5l7b-warn', '✗ ' + d.warn), 344, 0), W - 356, 300) : null;
     if (warn) { warn.style.height = 'auto'; hide(warn); }

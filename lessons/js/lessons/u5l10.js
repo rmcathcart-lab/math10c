@@ -61,7 +61,7 @@ function mountStatic() {
     io(host) {
       const G = mini(host, { width: 170, xmin: -1, xmax: 6, ymin: -1, ymax: 5 });
       G.guides(4, 3); G.point(4, 0, { color: AMB, r: 5 }); G.point(0, 3, { color: PUR, r: 5 });
-      G.point(4, 3, { color: 'ink', r: 5.5, label: T(`(\\textcolor{${AMB}}{4},\\ \\textcolor{${PUR}}{3})`), pos: 'ne' });
+      G.point(4, 3, { color: 'ink', r: 5.5, label: T(`(\\textcolor{${AMB}}{4},\\ \\textcolor{${PUR}}{3})`), pos: 'n' });
     },
     dr(host) {
       const G = mini(host, { width: 170, xmin: -4, xmax: 4, ymin: -2, ymax: 3 });
@@ -72,7 +72,7 @@ function mountStatic() {
       const G = mini(host, { width: 170, xmin: -2, xmax: 5, ymin: -2, ymax: 4 });
       G.line([0, 2], [3, 0], { color: 'teal', width: 3 });
       G.point(3, 0, { color: AMB, r: 5.5 }); G.point(0, 2, { color: PUR, r: 5.5 });
-      G.label(3, 0, T('y=0'), { pos: 'se', color: AMB, cls: 'bk-ptlab' }); G.label(0, 2, T('x=0'), { pos: 'e', color: PUR, cls: 'bk-ptlab', dx: 6 });
+      G.label(3, 0, T('y=0'), { pos: 'ne', color: AMB, cls: 'bk-ptlab' }); G.label(0, 2, T('x=0'), { pos: 'ne', color: PUR, cls: 'bk-ptlab' });
     },
     vlt(host) {
       const G = mini(host, { width: 150, xmin: -3, xmax: 3, ymin: -2.6, ymax: 2.6 });
@@ -140,7 +140,7 @@ const wanted = {
       { cap: `<b>Clue 5.</b> Where does it meet the ${T('y')}-axis? At ${T('y=' + d.yi)}.`,
         run: async (c) => { await G.reveal(G.point(0, d.yi, { color: PUR, r: 8 }), c); await mark(c, 4, d.yi === 2, T(String(d.yi))); } },
       { cap: d.broke ? `Suspect ${k} breaks <b>clue ${d.broke}</b>: ${WHY[k]}. Every other clue matches, so you have to check them <b>all</b>.` : `<b>Every clue matches.</b> Suspect C is the graph on the poster.`,
-        run: async (c) => { const s = stamp(stage, d.broke ? 'Not our graph' : 'Match!', { ok: !d.broke, x: 420, y: 46, size: 'lg' }); await stampIn(c, s); } }
+        run: async (c) => { const s = stamp(stage, d.broke ? 'Not our graph' : 'Match!', { ok: !d.broke, x: 290, y: 382, size: 'lg' }); await stampIn(c, s); } }
     ];
   }
 };
@@ -148,8 +148,8 @@ const wanted = {
 /* =============================== explainer: discrete or continuous =============================== */
 const DC = {
   a: { label: 'Ex 1(a) students', name: 'The number of students in a classroom', disc: true, min: 18, max: 30, probe: 23.4, unit: 'students', gap: [23, 24] },
-  b: { label: '1(b) swim time', name: 'The time taken to swim 100 metres', disc: false, min: 58, max: 66, probe: 61.34, unit: 's', zoom: [61.3, 61.4, 0.01, 0.05], more: 61.341, how: 'a stopwatch can read that' },
-  c: { label: '1(c) water volume', name: 'The volume of water in a tank', disc: false, min: 10, max: 20, probe: 14.7, unit: 'L', zoom: [14.6, 14.8, 0.02, 0.1], more: 14.73, how: 'water can fill to that level' },
+  b: { label: '1(b) swim time', name: 'The time taken to swim 100 metres', disc: false, min: 58, max: 66, probe: 61.34, unit: 's', zoom: [61.33, 61.36, 0.005, 0.01], next: 61.35, mid: 61.345, how: 'a stopwatch can read that' },
+  c: { label: '1(c) water volume', name: 'The volume of water in a tank', disc: false, min: 10, max: 20, probe: 14.7, unit: 'L', zoom: [14.65, 14.85, 0.025, 0.05], next: 14.8, mid: 14.75, how: 'water can fill to that level' },
   d: { label: '1(d) pages', name: 'The number of pages in a book', disc: true, min: 200, max: 212, probe: 205.5, unit: 'pages', gap: [205, 206] }
 };
 const discCont = {
@@ -181,8 +181,8 @@ const discCont = {
         } },
       d.disc
         ? { cap: `From ${T(tn(d.gap[0]))} you <b>jump</b> straight to ${T(tn(d.gap[1]))}: there is nothing in between. Separate values: <b>discrete</b>.`,
-          run: async (c) => { await N.hop(c, d.gap[0], d.gap[1], { label: 'jump', below: true, color: 'gray', height: 34 }); const g = add(stage, h('div', 'u5l10-gapnote', 'nothing in between'), nx((d.gap[0] + d.gap[1]) / 2), 258); await fadeIn(c, g); } }
-        : { cap: `Zoom in: between any two values there is always another. ${T(tn(d.probe))}, ${T(tn(d.more))}, … The values never run out: <b>continuous</b>.`,
+          run: async (c) => { await N.hop(c, d.gap[0], d.gap[1], { label: 'jump', below: true, color: 'gray', height: 34 }); const g = add(stage, h('div', 'u5l10-gapnote', 'nothing in between'), nx((d.gap[0] + d.gap[1]) / 2), 226); await fadeIn(c, g); } }
+        : { cap: `Zoom in: between ${T(tn(d.probe))} and ${T(tn(d.next))} sits ${T(tn(d.mid))}, and between any two values there is always another. They never run out: <b>continuous</b>.`,
           run: async (c) => {
             const Z = new NumberLine(stage, { x: 140, y: 240, width: W - 280, height: 110, min: d.zoom[0], max: d.zoom[1], step: d.zoom[2], labelStep: d.zoom[3], arrows: false });
             const zx = (v) => 140 + Z.toPx(v), ay = 96 + N.ay, zy = 240 + Z.ay;
@@ -190,10 +190,11 @@ const discCont = {
             await anim(c, poly, [{ opacity: 0 }, { opacity: 1 }], 400);
             await Z.drawIn(Z.interval(d.zoom[0], d.zoom[1], { color: 'blue' }), 700, c);
             await pop(c, Z.point(d.probe, { color: 'green', label: T(tn(d.probe)) }));
-            await pop(c, Z.point(d.more, { color: 'green', label: T(tn(d.more)), lift: 0 }));
+            await pop(c, Z.point(d.next, { color: 'green', label: T(tn(d.next)) }));
+            await pop(c, Z.point(d.mid, { color: 'red', label: T(tn(d.mid)) }));
           } },
       { cap: d.disc ? `<b>Discrete.</b> On a graph: separate dots, never joined.` : `<b>Continuous.</b> On a graph: an unbroken line or curve.`,
-        run: async (c) => { const s = stamp(stage, d.disc ? 'Discrete' : 'Continuous', { ok: null, x: W - 140, y: 40, size: 'lg' }); await stampIn(c, s); } }
+        run: async (c) => { const s = stamp(stage, d.disc ? 'Discrete' : 'Continuous', { ok: null, x: W - 210, y: 66, size: 'lg' }); await stampIn(c, s); } }
     ];
   }
 };
@@ -288,7 +289,7 @@ const ioAxes = {
     const [a, b] = IO[k].p;
     const pair = add(stage, h('div', 'u5l10-pair', T(`(\\textcolor{${AMB}}{${tn(a)}},\\ \\textcolor{${PUR}}{${tn(b)}})`)), 40, 16);
     pair.style.opacity = 0;
-    const role = (cls, y, l1, l2) => { const r = add(stage, box(h('div', 'u5l10-role ' + cls, `<b>${l1}</b><div>${l2}</div>`), 470, 112), 20, y); r.style.opacity = 0; return r; };
+    const role = (cls, y, l1, l2) => { const r = add(stage, box(h('div', 'u5l10-role ' + cls, `<b>${l1}</b><div>${l2}</div>`), ex.W - 470, 112), 20, y); r.style.opacity = 0; return r; };
     const rIn = role('in', 120, `first coordinate ${T(tn(a))} · the <b>input</b>`, 'independent variable · plotted <b>across</b> (horizontal axis) · all the inputs make the <b>domain</b>');
     const rOut = role('out', 246, `second coordinate ${T(tn(b))} · the <b>output</b>`, 'dependent variable · plotted <b>up</b> (vertical axis) · all the outputs make the <b>range</b>');
     const G = new Graph(stage, { x: ex.W - 440, y: 8, width: 430, height: 384, xmin: -4, xmax: 6, ymin: -2, ymax: 7 });
@@ -299,7 +300,7 @@ const ioAxes = {
       { cap: `The <b>second</b> coordinate is the <b>output</b>, the dependent variable. It goes <b>up</b>.`,
         run: async (c) => { await fadeIn(c, rOut); await G.reveal(G.point(0, b, { color: PUR, r: 8, label: T(tn(b)), pos: a < 0 ? 'e' : 'w' }), c); } },
       { cap: `Across ${T(tn(a))}, up ${T(tn(b))}: one point ${T(pairTex(a, b))}.`,
-        run: async (c) => { await G.drawIn(G.guides(a, b), 600, c); await G.reveal(G.point(a, b, { color: 'ink', r: 8, coords: true, pos: 'ne' }), c); } },
+        run: async (c) => { await G.drawIn(G.guides(a, b), 600, c); await G.reveal(G.point(a, b, { color: 'ink', r: 8, coords: true, pos: a < 0 ? 'nw' : 'ne' }), c); } },
       { cap: `<b>Cause → effect.</b> The output <b>depends on</b> the input: “distance depends on time” makes time the input (across) and distance the output (up).`,
         run: async (c) => { await pulse(c, rIn, 1.04); await pulse(c, rOut, 1.04); } }
     ];
@@ -331,7 +332,7 @@ const shadow = {
     const P = panel(stage, 466, 10, ex.W - 476, 440, 'Write it down');
     let sx;
     const steps = [
-      { cap: `${d.look}`, run: async (c) => { await G.drawIn(d.draw(G), 1000, c); if (d.v) await G.reveal(G.point(d.v[0], d.v[1], { color: 'teal', coords: true, pos: k === 'P' ? 'w' : 'se' }), c); } },
+      { cap: `${d.look}`, run: async (c) => { await G.drawIn(d.draw(G), 1000, c); if (d.v) await G.reveal(G.point(d.v[0], d.v[1], { color: 'teal', coords: true, pos: k === 'P' ? 'nw' : 'se' }), c); } },
       { cap: `<b>Domain:</b> squash the graph straight down onto the ${T('x')}-axis. ${d.dcap}`,
         run: async (c) => { sx = G.shadeX(d.x[0], d.x[1], { openA: d.x[2], openB: d.x[3], band: true }); await G.drawIn(sx, 800, c); } },
       { cap: `Write the domain.`, run: (c) => say(c, P, T(d.D), 'dom') },
@@ -526,17 +527,17 @@ const fwdBack = {
   intro: (k) => (FB[k].dir === 'f' ? `Forwards: the input is known, so substitute. Press <b>Next</b>.` : `Backwards: the output is known, so undo the steps in reverse order. Press <b>Next</b>.`),
   make(stage, k, ex) {
     const d = FB[k];
-    const X = [10, 122, 212, 324, 414], cb = (cls, x, y) => add(stage, h('div', 'u5l10-cbox ' + cls, ''), x, y);
+    const X = [8, 122, 216, 330, 424], cb = (cls, x, y) => add(stage, h('div', 'u5l10-cbox ' + cls, ''), x, y);
     const op = (txt, x, y, back) => add(stage, h('div', 'u5l10-cop' + (back ? ' back' : ''), txt), x, y + 4);
     const arr = (ch, x, y) => add(stage, h('div', 'u5l10-carr', ch), x, y + 10);
     const fwd = [], bk = [];
     add(stage, h('div', 'u5l10-crowlab', 'forwards: do'), 10, 12);
-    fwd.push(cb('in', X[0], 36), arr('→', 108, 36), op('×6', X[1], 36), arr('→', 196, 36), cb('', X[2], 36), arr('→', 310, 36), op('+5', X[3], 36), arr('→', 398, 36), cb('out', X[4], 36));
+    fwd.push(cb('in', X[0], 36), arr('→', 96, 36), op('×6', X[1], 36), arr('→', 192, 36), cb('', X[2], 36), arr('→', 306, 36), op('+5', X[3], 36), arr('→', 400, 36), cb('out', X[4], 36));
     const [fIn, , , , fMid, , , , fOut] = fwd;
     const backRow = d.dir === 'b';
     if (backRow) {
       add(stage, h('div', 'u5l10-crowlab', 'backwards: undo'), 10, 120);
-      bk.push(cb('in', X[0], 144), arr('←', 108, 144), op('÷6', X[1], 144, true), arr('←', 196, 144), cb('', X[2], 144), arr('←', 310, 144), op('−5', X[3], 144, true), arr('←', 398, 144), cb('out', X[4], 144));
+      bk.push(cb('in', X[0], 144), arr('←', 96, 144), op('÷6', X[1], 144, true), arr('←', 192, 144), cb('', X[2], 144), arr('←', 306, 144), op('−5', X[3], 144, true), arr('←', 400, 144), cb('out', X[4], 144));
     }
     const [bIn, , bOp1, , bMid, , bOp2, , bOut] = bk;
     [...fwd, ...bk].forEach((e) => (e.style.opacity = 0));
@@ -561,7 +562,7 @@ const fwdBack = {
       { cap: `Undo ${T('\\times6')} by dividing by 6: ${T(`${midT}\\div6=${d.xT}`)}. So ${T(`${d.v}=${d.xT}`)}.`, run: async (c) => { await pulse(c, bOp1, 1.15); await setBox(c, bIn, d.xT); } },
       { cap: `The algebra does the same undoing: set ${T(`Q(${d.v})=${yT}`)} and solve.`, run: async (c) => { for (const l of d.alg) await say(c, P, T(l)); } },
       { cap: `On the graph: across from ${T(yT)} on the ${T('y')}-axis to the line, then down to ${T(`x=${d.xT}`)}.`,
-        run: async (c) => { const x = (d.y - 5) / 6; await G.drawIn(G.polyline([[0, d.y], [x, d.y], [x, 0]], { color: PUR, width: 3, dash: '7 6', ends: [null, 'arrow'] }), 900, c); await G.reveal(G.point(x, d.y, { color: 'ink', label: T(`(${d.xT},\\ ${yT})`), pos: x < 0 ? 'nw' : 'se' }), c); } }
+        run: async (c) => { const x = (d.y - 5) / 6; await G.drawIn(G.polyline([[0, d.y], [x, d.y], [x, 0]], { color: PUR, width: 3, dash: '7 6', ends: [null, 'arrow'] }), 900, c); await G.reveal(G.point(x, d.y, { color: 'ink', label: T(`(${d.xT},\\ ${yT})`), pos: x < 0 ? 'nw' : 'sw' }), c); } }
     ];
   }
 };

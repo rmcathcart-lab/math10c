@@ -3,7 +3,7 @@
  * outside the window, like the real screen), plus an LCD overlay for the text screens (Y=, WINDOW, TBLSET, TABLE,
  * the CALC / ZOOM / MATH menus, the home screen and ERR:INVALID). Keys pressed appear as keycaps under the screen.
  * The trace cursor, bound markers ▸ ◂ and the zero / intersect / maximum results are computed by the Graph block. */
-import { Graph, h, tex, add, box, pop, fadeIn, sleep, tween, pulse, shake, svgEl, stamp, stampIn, mountExplainers, liveCtx, calcNum, intersect } from '../blocks.js';
+import { Graph, h, tex, add, box, pop, fadeIn, sleep, tween, pulse, shake, svgEl, stamp, stampIn, mountExplainers, liveCtx, calcNum, texNum, intersect } from '../blocks.js';
 
 const T = (s) => tex(s);
 const STD = { xmin: -10, xmax: 10, ymin: -10, ymax: 10, xscl: 1, yscl: 1 };
@@ -66,10 +66,15 @@ const kb = (k) => `<kbd${KCLS[k] ? ` class="${KCLS[k]}"` : ''}>${k}</kbd>`;
 const kk = (...ks) => ks.map(kb).join(' ');
 class Keys {
   constructor(stage, x, y, w) { this.el = add(stage, box(h('div', 'u5l5-keys'), w, 50), x, y); this.clear(); }
-  clear() { this.el.innerHTML = '<b class="u5l5-kl">Keys</b>'; }
+  clear() { this.el.innerHTML = '<b class="u5l5-kl">Keys</b>'; this.el.classList.remove('u5l5-many'); }
+  add(k) { // a keycap; long sequences switch to smaller caps so they stay on one line
+    const e = h('kbd', KCLS[k] || '', k); this.el.appendChild(e);
+    if (this.el.scrollWidth > this.el.clientWidth + 1 || this.el.scrollHeight > this.el.clientHeight + 1) this.el.classList.add('u5l5-many');
+    return e;
+  }
   async set(c, ks, keep) {
     if (!keep) this.clear();
-    for (const k of ks) { const e = h('kbd', KCLS[k] || (k.length > 3 ? 'u5l5-kw' : ''), k); this.el.appendChild(e); await pop(c, e, 220); await sleep(c, 110); }
+    for (const k of ks) { const e = this.add(k); await pop(c, e, 220); await sleep(c, 110); }
   }
 }
 /* side panel */
@@ -80,7 +85,7 @@ async function line(c, P, html, cls = '') { const d = h('div', 'u5l5-pl ' + cls,
 function rig(stage, ex, win, o = {}) {
   const G = new Calc(stage, Object.assign({ x: 26, y: 26, width: 500, height: 330 }, win));
   const L = lcd(G.el), H = hud(G), K = new Keys(stage, 16, 380, 530);
-  const P = panel(stage, o.px ?? 572, 14, ex.W - (o.px ?? 572) - 14, ex.H - 28, o.title ?? 'Check it algebraically');
+  const P = panel(stage, o.px ?? 572, 14, ex.W - (o.px ?? 572) - 14, ex.def.height - 28, o.title ?? 'Check it algebraically');
   return { G, L, H, K, P };
 }
 
@@ -134,13 +139,13 @@ function bound(G, x, dir) {
 /* trace cursor whose coordinates show at the bottom */
 function cursor(G, H, f, x, title) {
   const tr = G.traceMarker(f, x, { readout: false });
-  tr.title = title; tr.show = () => H.bot(tr.title, { x: tr.x, y: tr.y }); tr.show();
+  tr.title = title; tr.show = () => { if (!tr.quiet) H.bot(tr.title, { x: tr.x, y: tr.y }); }; tr.show();
   tr.glide = (c, x2, ms = 900) => { const a = tr.x; return tween(c, ms, (t) => { tr.set(a + (x2 - a) * t); tr.show(); }); };
   tr.steps = async (c, n, ms = 260) => { for (let i = 0; i < n; i++) { tr.set(tr.x + G.dx); tr.show(); await sleep(c, ms); } };
   return tr;
 }
 /* type text into one line of the LCD, one key at a time */
-async function typeKeys(c, K, keys, onKey) { K.clear(); for (const k of keys) { const e = h('kbd', KCLS[k] || (k.length > 3 ? 'u5l5-kw' : ''), k); K.el.appendChild(e); onKey(k); await pop(c, e, 200); await sleep(c, 150); } }
+async function typeKeys(c, K, keys, onKey) { K.clear(); for (const k of keys) { const e = K.add(k); onKey(k); await pop(c, e, 200); await sleep(c, 150); } }
 const snap = (G, x) => G.mid + Math.round((x - G.mid) / G.dx) * G.dx; // nearest pixel column the arrows can reach
 const wTex = (w) => `x:[${w.xmin},\\ ${w.xmax},\\ ${w.xscl}],\\ \\ y:[${w.ymin},\\ ${w.ymax},\\ ${w.yscl}]`;
 
@@ -197,7 +202,7 @@ const windowEx = {
   height: 450,
   intro: `Left: the ${kk('WINDOW')} editor. Right: the graph screen it controls. Press <b>Next</b>.`,
   make(stage, v, ex) {
-    const ed = add(stage, box(h('div', 'u5l5-scr'), 330, 300), 26, 40), E = lcd(ed);
+    const ed = add(stage, box(h('div', 'u5l5-scr'), 310, 300), 26, 40), E = lcd(ed);
     const W0 = { ...STD }, W1 = { ...WIDE };
     E.show(winLines(W0));
     const gx = 520, gw = Math.min(400, ex.W - gx - 30);
@@ -368,7 +373,7 @@ function gtSteps(stage, ex, f, rowsFrom) {
   const wrap = add(stage, box(h('div', 'u5l5-split'), 520, 330), 26, 26);
   const G = new Calc(wrap, { x: 0, y: 0, width: 314, height: 330, ...STD, cls: 'u5l5-flat' });
   const tb = add(wrap, box(h('div', 'u5l5-lcd u5l5-tbl u5l5-side'), 206, 330), 314, 0);
-  const L = lcd(wrap), H = hud(G), K = new Keys(stage, 16, 380, 530), P = panel(stage, 572, 14, ex.W - 586, ex.H - 28, 'What you see');
+  const L = lcd(wrap), H = hud(G), K = new Keys(stage, 16, 380, 530), P = panel(stage, 572, 14, ex.W - 586, ex.def.height - 28, 'What you see');
   tb.style.display = 'none';
   let tr, start = -3;
   const showT = (hlX) => { tb.innerHTML = tableHTML(rowsFrom(start), { hl: hlX - start, bottom: 'X=' + calcNum(hlX) }); };
@@ -378,7 +383,7 @@ function gtSteps(stage, ex, f, rowsFrom) {
     { cap: `${kk('GRAPH')}: the screen splits. Graph on the left, table on the right (TblStart = −3, ΔTbl = 1).`,
       run: async (c) => { await K.set(c, ['GRAPH']); L.hide(); tb.style.display = ''; tb.innerHTML = tableHTML(rowsFrom(-3), {}); await G.drawIn(G.fn(f), 800, c); await line(c, P, 'Graph and table of the <b>same</b> relation, at the same time.'); } },
     { cap: `${kk('TRACE')}: the cursor sits on the line at x = 0, and the table highlights the <b>same</b> point.`,
-      run: async (c) => { await K.set(c, ['TRACE']); H.eq('Y1=0.75X-9'); tr = cursor(G, H, f, 0, ''); H.bot(null); showT(0); await pop(c, tr.el); await line(c, P, T('x=0\\ \\rightarrow\\ y=-9')); } },
+      run: async (c) => { await K.set(c, ['TRACE']); H.eq('Y1=0.75X-9'); tr = cursor(G, H, f, 0, ''); tr.quiet = true; H.bot(null); showT(0); await pop(c, tr.el); await line(c, P, T('x=0\\ \\rightarrow\\ y=-9')); } },
     { cap: `${kk('▶')} ${kk('▶')} ${kk('▶')}: the cursor walks along the line and the table follows, to x = 3, y = −6.75.`,
       run: async (c) => { await K.set(c, ['▶', '▶', '▶']); for (let x = 1; x <= 3; x++) { await tr.glide(c, x, 380); H.bot(null); showT(x); await sleep(c, 200); } await line(c, P, T('x=3\\ \\rightarrow\\ y=-6.75')); } },
     { cap: `${kk('▶')} once more: the table <b>scrolls</b> to keep up: x = 4, y = −6.`,
@@ -443,8 +448,8 @@ const intersectEx = {
         run: async (c) => { await K.set(c, ['ENTER']); tr.remove(); H.eq('Y2=' + yT); tr = cursor(G, H, g, mid, 'Second curve?'); await pop(c, tr.el); } },
       { cap: `<b>Guess?</b> Move close to the crossing (${kk('▶')}), then ${kk('ENTER')}.`,
         run: async (c) => { await K.set(c, ['▶', '▶', '▶', 'ENTER']); tr.title = 'Guess?'; await tr.glide(c, xg, 1000); } },
-      { cap: `<b>Intersection</b> X = ${M(calcNum(it.x))}, Y = ${y2}. So ${T('x=' + calcNum(it.x))} when ${T('y=' + yT)}.`,
-        run: async (c) => { tr.remove(); await G.reveal(G.point(it.x, it.y, { color: 'ink', r: 7, label: T(`(${calcNum(it.x)},\\ ${yT})`), pos: k === 'run' ? 'se' : 'se' }), c); H.bot('Intersection', it); await pulse(c, H.el, 1.12); } },
+      { cap: `<b>Intersection</b> X = ${M(calcNum(it.x))}, Y = ${y2}. So ${T('x=' + texNum(it.x))} when ${T('y=' + yT)}.`,
+        run: async (c) => { tr.remove(); await G.reveal(G.point(it.x, it.y, { color: 'ink', r: 7, label: T(`(${texNum(it.x)},\\ ${yT})`), pos: 'se' }), c); H.bot('Intersection', it); await pulse(c, H.el, 1.12); } },
       { cap: `Check algebraically: ${T(alg.join('\\ \\Rightarrow\\ '))} ✓`,
         run: async (c) => { for (const s of alg) await line(c, P, T(s), s === alg[2] ? 'u5l5-big' : ''); await stampIn(c, stamp(P, '✓ Matches', { ok: true, cls: 'u5l5-pstamp' })); } }
     ];
@@ -469,7 +474,7 @@ const inside = {
         run: async (c) => { H.eq('Y1=0.75X-9'); tr = cursor(G, H, f, 0, ''); let s = ''; await typeKeys(c, K, ['TRACE', '1', '5'], (ch) => { if (ch !== 'TRACE') { s += ch; H.bot('', null, `<i>X=${s}</i>`); } }); } },
       { cap: `${kk('ENTER')}: <b>ERR:INVALID</b>. ${T('x=15')} is outside the window, so trace refuses it.`, run: async (c) => { await K.set(c, ['ENTER']); await err(c); } },
       { cap: `Fix: <b>widen the window</b>. ${kk('WINDOW')}: ${T('x:[-5,\\ 20,\\ 5]')}, ${T('y:[-15,\\ 10,\\ 5]')}, then ${kk('GRAPH')}.`,
-        run: async (c) => { await K.set(c, ['2nd', 'MODE', 'WINDOW', 'GRAPH']); L.show(winLines(WIDE)); await sleep(c, 500); L.hide(); tr.remove(); H.eq(null); H.bot(null); await G.setWindow(WIDE, c, 1200); } },
+        run: async (c) => { await K.set(c, ['ENTER', 'WINDOW', 'GRAPH']); L.show(winLines(WIDE)); await sleep(c, 500); L.hide(); tr.remove(); H.eq(null); H.bot(null); await G.setWindow(WIDE, c, 1200); } },
       { cap: `${kk('TRACE')} ${kk('1', '5')} ${kk('ENTER')} works now: <b>Y = 2.25</b>.`,
         run: async (c) => { await K.set(c, ['TRACE', '1', '5', 'ENTER']); H.eq('Y1=0.75X-9'); tr = cursor(G, H, f, G.mid, ''); await tr.glide(c, 15, 800); await pulse(c, H.el, 1.12); } },
       { cap: `Check: ${T('y=0.75(15)-9=11.25-9=2.25')} ✓`,
@@ -517,7 +522,7 @@ const zeroEx = {
   intro: (k) => `Find the x-intercept${k === 'ex2b' ? 's' : ''} of ${T(ZERO[k].R.t)}. Press <b>Next</b>.`,
   make(stage, k, ex) {
     const Z = ZERO[k], R = Z.R, { G, L, H, K, P } = rig(stage, ex, Z.win);
-    const span = Z.win.xmax - Z.win.xmin, d = snap(G, G.mid + 0.1 * span) - G.mid;
+    const span = Z.win.xmax - Z.win.xmin, d = snap(G, G.mid + (k === 'ex2b' ? 0.05 : 0.1) * span) - G.mid;
     const zs = k === 'ex2b' ? [G.zero(R.f, -5, 1), G.zero(R.f, 1, 7)] : [G.zero(R.f, Z.win.xmin, Z.win.xmax)];
     let tr; const bl = [];
     const steps = [
@@ -544,8 +549,8 @@ const zeroEx = {
             tr.title = 'Guess?'; await tr.glide(c, gs, 500);
           } });
       }
-      steps.push({ cap: `<b>Zero</b> X = ${M(calcNum(z))}, Y = 0: the x-intercept ${T(`(${calcNum(z)},\\ 0)`)}.`,
-        run: async (c) => { tr.remove(); await G.reveal(G.point(z, 0, { color: 'ink', r: 7, label: T(`(${calcNum(z)},\\ 0)`), pos: z < G.mid ? 'nw' : 'ne' }), c); H.bot('Zero', { x: z, y: 0 }); await pulse(c, H.el, 1.12); } });
+      steps.push({ cap: `<b>Zero</b> X = ${M(calcNum(z))}, Y = 0: the x-intercept ${T(`(${texNum(z)},\\ 0)`)}.`,
+        run: async (c) => { tr.remove(); await G.reveal(G.point(z, 0, { color: 'ink', r: 7, label: T(`(${texNum(z)},\\ 0)`), pos: z < G.mid ? 'nw' : 'ne' }), c); H.bot('Zero', { x: z, y: 0 }); await pulse(c, H.el, 1.12); } });
     });
     steps.push({ cap: `Check algebraically: set ${T('y=0')}. ${T(Z.alg.join('\\ \\Rightarrow\\ '))} ✓`,
       run: async (c) => { for (const s of Z.alg) await line(c, P, T(s), s === Z.alg[Z.alg.length - 1] ? 'u5l5-big' : ''); } });
@@ -565,7 +570,7 @@ const yintEx = {
   choices: [{ v: 'run', label: T('y=0.75x-9') }, { v: 'ex2a', label: 'Example 2(a) check' }, { v: 'ex2b', label: 'Example 2(b) check' }],
   intro: (k) => `Three ways to read the y-intercept of ${T(YI[k].t)}. Press <b>Next</b>.`,
   make(stage, k, ex) {
-    const R = YI[k], { G, L, H, K, P } = rig(stage, ex, STD, { title: 'Three ways, one answer' }), b = R.f(0), bs = calcNum(b);
+    const R = YI[k], { G, L, H, K, P } = rig(stage, ex, STD, { title: 'Three ways, one answer' }), b = R.f(0), bs = texNum(b);
     const tiles = ['Trace', 'Value', 'Table'].map((t) => { const d = h('div', 'u5l5-way', `<b>${t}</b><i class="u5l5-wv">?</i>`); P.appendChild(d); return d; });
     const fill = async (c, i) => { tiles[i].querySelector('.u5l5-wv').innerHTML = T(`(0,\\ ${bs})`); tiles[i].classList.add('on'); await pulse(c, tiles[i], 1.05); };
     let tr;
@@ -591,8 +596,8 @@ const yintEx = {
    11. frac — decimal intercept to an exact fraction
    ====================================================================== */
 const FR = {
-  ex3: { R: REL.ex3, xs: '4.333333333', xf: '13/3', yv: -1.625, yf: '-13/8', xt: '\\tfrac{13}{3}', yt: '-\\tfrac{13}{8}', back: ['13/3', '4.333333333'] },
-  fr2: { R: REL.fr2, xs: '-3.5', xf: '-7/2', yv: 7 / 6, yf: '7/6', xt: '-\\tfrac{7}{2}', yt: '\\tfrac{7}{6}', back: ['-7/2', '-3.5'] }
+  ex3: { R: REL.ex3, zs: '4.3333333', xf: '13/3', yv: -1.625, ys: '-1.625', yf: '-13/8', xt: '\\tfrac{13}{3}', yt: '-\\tfrac{13}{8}', back: ['13/3', '4.333333333'], backT: '\\tfrac{13}{3}=4.333333333', backK: ['1', '3', '÷', '3', 'ENTER'] },
+  fr2: { R: REL.fr2, zs: '-3.5', xf: '-7/2', yv: 7 / 6, ys: '1.1666667', yf: '7/6', xt: '-\\tfrac{7}{2}', yt: '\\tfrac{7}{6}', back: ['-7/2', '-3.5'], backT: '-\\tfrac{7}{2}=-3.5', backK: ['(−)', '7', '÷', '2', 'ENTER'] }
 };
 const fracEx = {
   title: 'Exact intercepts: ▸Frac on the home screen',
@@ -605,17 +610,17 @@ const fracEx = {
     const showHome = () => L.html(homeHTML(home), 'u5l5-home');
     return [
       { cap: `Graph ${T(R.t)} in ${T(wTex(R.win))}.`, run: async (c) => { await G.drawIn(G.fn(R.f), 800, c); } },
-      { cap: `<b>2:zero</b> (Left Bound?, Right Bound?, Guess?) gives <b>X = ${M(calcNum(z))}</b>${k === 'ex3' ? ': a repeating decimal' : ''}.`,
-        run: async (c) => { await K.set(c, ['2nd', 'TRACE', '2', 'ENTER', 'ENTER', 'ENTER']); H.eq('Y1=' + R.y1); await G.reveal(G.point(z, 0, { color: 'ink', r: 7 }), c); H.bot('Zero', { x: z, y: 0 }); } },
+      { cap: `<b>2:zero</b> (Left Bound?, Right Bound?, Guess?) gives <b>X = ${M(F.zs)}</b>${k === 'ex3' ? ': a repeating decimal' : ''}.`,
+        run: async (c) => { await K.set(c, ['2nd', 'TRACE', '2', 'ENTER', 'ENTER', 'ENTER']); H.eq('Y1=' + R.y1); await G.reveal(G.point(z, 0, { color: 'ink', r: 7 }), c); H.bot('Zero', { xs: F.zs, ys: '0' }); } },
       { cap: `${kk('2nd', 'QUIT')} (QUIT is above ${kk('MODE')}) goes to the <b>home screen</b>.`, run: async (c) => { await K.set(c, ['2nd', 'QUIT']); home.length = 0; showHome(); L.el.innerHTML += CUR; } },
       { cap: `${kk('X,T,θ,n')} types <b>X</b>, the last x the cursor sat on. ${kk('MATH')} ${kk('ENTER')} picks <b>1:▸Frac</b>.`,
         run: async (c) => { await K.set(c, ['X,T,θ,n', 'MATH']); home.push({ t: 'X' }); showHome(); await sleep(c, 300); await pick(c, L, 'math', 0); await K.set(c, ['ENTER'], true); home[0] = { t: 'X▸Frac' }; showHome(); } },
       { cap: `${kk('ENTER')}: <b>${M(F.xf)}</b>, exactly.`,
         run: async (c) => { await K.set(c, ['ENTER']); home.push({ t: F.xf, r: true }); showHome(); await pulse(c, L.ln(1), 1.15); await line(c, P, `x-intercept: ${T(`\\left(${F.xt},\\ 0\\right)`)}`, 'u5l5-big'); } },
-      { cap: `Check the conversion: ${T(F.back[0].replace('-', '-') + '=' + F.back[1])}${k === 'ex3' ? ', the same repeating decimal' : ''} ✓`,
-        run: async (c) => { await K.set(c, F.back[0].replace('-', '(−)').split('').map((ch) => (ch === '(' ? '(−)' : ch)).filter((ch) => !'−)'.includes(ch)).concat(['ENTER'])); home.push({ t: F.back[0] }, { t: F.back[1], r: true }); showHome(); } },
-      { cap: `y-intercept: <b>1:value</b> at x = 0 gives <b>Y = ${M(calcNum(F.yv))}</b>.`,
-        run: async (c) => { await K.set(c, ['GRAPH', '2nd', 'TRACE', '1', '0', 'ENTER']); L.hide(); await G.reveal(G.point(0, F.yv, { color: 'ink', r: 7 }), c); H.bot('', { x: 0, y: F.yv }); } },
+      { cap: `Check the conversion: divide it back out, ${T(F.backT)}${k === 'ex3' ? ', the same repeating decimal' : ''} ✓`,
+        run: async (c) => { await K.set(c, F.backK); home.push({ t: F.back[0] }, { t: F.back[1], r: true }); showHome(); } },
+      { cap: `y-intercept: <b>1:value</b> at x = 0 gives <b>Y = ${M(F.ys)}</b>.`,
+        run: async (c) => { await K.set(c, ['GRAPH', '2nd', 'TRACE', '1', '0', 'ENTER']); L.hide(); await G.reveal(G.point(0, F.yv, { color: 'ink', r: 7 }), c); H.bot('', { xs: '0', ys: F.ys }); } },
       { cap: `${kk('2nd', 'QUIT')}, then ${kk('ALPHA', '1')} types <b>Y</b>; ${kk('MATH', 'ENTER', 'ENTER')}: <b>${M(F.yf)}</b>.`,
         run: async (c) => { await K.set(c, ['2nd', 'QUIT', 'ALPHA', '1', 'MATH', 'ENTER', 'ENTER']); home.push({ t: 'Y▸Frac' }, { t: F.yf, r: true }); showHome(); await pulse(c, L.ln(home.length - 1), 1.15); await line(c, P, `y-intercept: ${T(`\\left(0,\\ ${F.yt}\\right)`)}`, 'u5l5-big'); } }
     ];
@@ -677,7 +682,7 @@ function mountWarm() {
     const k = b.dataset.wz;
     if (k === 'mark') {
       if (marks) return;
-      marks = [[-1, 'nw'], [2, 'se'], [4, 'w']].map(([g, pos]) => { const r = intersect(sq, p2, g); const pt = C.point(r.x, r.y, { color: 'ink', r: 5, label: T(`(${calcNum(Math.round(r.x * 100) / 100)},\\ ${calcNum(Math.round(r.y * 100) / 100)})`), pos }); return pt; });
+      marks = [[-1, 'nw'], [2, 'se'], [4, 'w']].map(([g, pos]) => { const r = intersect(sq, p2, g); return C.point(r.x, r.y, { color: 'ink', r: 5, label: T(`(${texNum(r.x, 2)},\\ ${texNum(r.y, 2)})`), pos }); });
       const c = liveCtx(); marks.forEach((m) => C.reveal(m, c)); return;
     }
     const w = Object.assign({ xscl: 1, yscl: 1 }, W[k]); setWin(w); C.setWindow(w, liveCtx(), 900);
@@ -691,7 +696,7 @@ function mountFigures() {
   let G;
   if (fig('ex1')) { G = new Graph(fig('ex1'), { width: 270, height: 290, xmin: -2, xmax: 11, ymin: -35, ymax: 15, ystep: 5, xlabels: 2, ylabels: 10, fontSize: 15 }); G.fn(REL.ex1.f, { color: 'ink' }); pt(G, 7.5, 0, '(7.5,\\ 0)', 'nw'); pt(G, 0, -30, '(0,\\ -30)', 'se'); }
   if (fig('ex2a')) { G = new Graph(fig('ex2a'), { width: 230, height: 270, xmin: -7, xmax: 4, ymin: -8, ymax: 16, ystep: 2, xlabels: 2, ylabels: 4, fontSize: 15 }); G.fn(REL.ex2a.f, { color: 'ink' }); pt(G, -3, 0, '(-3,\\ 0)', 'se'); pt(G, 0, 7, '(0,\\ 7)', 'se'); }
-  if (fig('ex2b')) { G = new Graph(fig('ex2b'), { width: 230, height: 270, xmin: -5, xmax: 7, ymin: -12, ymax: 12, ystep: 2, xlabels: 2, ylabels: 4, fontSize: 15 }); G.fn(REL.ex2b.f, { color: 'ink' }); pt(G, -2, 0, '(-2,\\ 0)', 'w'); pt(G, 4, 0, '(4,\\ 0)', 'e'); pt(G, 0, 8, '(0,\\ 8)', 'nw'); }
+  if (fig('ex2b')) { G = new Graph(fig('ex2b'), { width: 230, height: 270, xmin: -5, xmax: 7, ymin: -12, ymax: 12, ystep: 2, xlabels: 2, ylabels: 4, fontSize: 15 }); G.fn(REL.ex2b.f, { color: 'ink' }); pt(G, -2, 0, '(-2,\\ 0)', 'nw'); pt(G, 4, 0, '(4,\\ 0)', 'ne'); pt(G, 0, 8, '(0,\\ 8)', 'nw'); }
   if (fig('ex3')) { G = new Graph(fig('ex3'), { width: 560, height: 240, xmin: -3, xmax: 11, ymin: -3, ymax: 3, fontSize: 15 }); G.fn(REL.ex3.f, { color: 'ink' }); pt(G, 13 / 3, 0, '\\left(\\tfrac{13}{3},\\ 0\\right)', 'se'); pt(G, 0, -13 / 8, '\\left(0,\\ -\\tfrac{13}{8}\\right)', 'se'); }
   if (fig('ex4')) { G = new Graph(fig('ex4'), { width: 420, height: 300, xmin: -3, xmax: 10, ymin: -10, ymax: 30, ystep: 5, ylabels: 10, fontSize: 15 }); G.fn(REL.ex4.f, { color: 'ink' }); pt(G, 3.5, 24.25, '\\left(\\tfrac{7}{2},\\ \\tfrac{97}{4}\\right)', 'e'); }
   document.querySelectorAll('[data-blank]').forEach((el) => new Graph(el, { width: 230, height: 230, xmin: -6, xmax: 6, ymin: -6, ymax: 6, grid: false, numbers: false }));

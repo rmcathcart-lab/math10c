@@ -25,7 +25,7 @@
 .u5l10-wqs .bk-wq { margin: 0; }
 .poll-opts.u5l10-c4 { grid-template-columns: repeat(4, 1fr); }
 .u5l10-bonus { margin-top: 16px; }
-.u5l10-social { font-style: italic; font-size: 19px; text-align: center; color: var(--muted); margin: 14px 0 0; }
+.u5l10-social { font-style: italic; font-size: 19px; text-align: center; color: var(--muted); margin: 22px 0 0; }
 
 /* ---------- rules at a glance ---------- */
 .u5l10-rules { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
@@ -44,7 +44,8 @@
 .u5l10-pq figcaption { font-size: 18px; font-weight: 700; margin-top: 2px; }
 .u5l10-ex8 { display: grid; grid-template-columns: 380px 1fr; gap: 18px; align-items: start; }
 .u5l10-stm .bk-opt { font-size: 18px; }
-.u5l10-figmc .bk-opt { justify-content: center; }
+.u5l10-figmc .bk-opt { justify-content: center; position: relative; }
+.u5l10-figmc .bk-letter { position: absolute; top: 8px; left: 12px; }
 .u5l10-mini { width: 200px; height: 180px; }
 .pl .katex, .q .katex { font-size: 1.06em; }
 .ans .katex { white-space: nowrap; }
@@ -86,7 +87,7 @@
 /* set-builder anatomy */
 .u5l10-anat { display: flex; align-items: flex-start; gap: 4px; margin-top: 4px; }
 .u5l10-ap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.u5l10-apm { font-size: 25px; padding: 2px 6px; border-radius: 8px; background: #f6f5f1; }
+.u5l10-apm { white-space: nowrap; font-size: 23px; padding: 2px 6px; border-radius: 8px; background: #f6f5f1; }
 .u5l10-apl { font: 700 14px/1.15 var(--round); color: var(--muted); text-align: center; max-width: 96px; }
 
 /* ordered pair → axes */
@@ -111,12 +112,12 @@
 .u5l10-evals { position: absolute; display: flex; flex-direction: column; gap: 3px; font-size: 20px; }
 
 /* forwards / backwards chain */
-.u5l10-cbox { position: absolute; width: 96px; height: 58px; border-radius: 12px; display: grid; place-items: center; font-size: 24px; font-weight: 700; box-sizing: border-box; background: #fff; border: 2px solid #c9cfd9; }
+.u5l10-cbox { position: absolute; width: 84px; height: 58px; border-radius: 12px; display: grid; place-items: center; font-size: 24px; font-weight: 700; box-sizing: border-box; background: #fff; border: 2px solid #c9cfd9; }
 .u5l10-cbox.in { border-color: #ebc77d; background: #fffaf0; }
 .u5l10-cbox.out { border-color: #c9b3ea; background: #faf7fe; }
-.u5l10-cop { position: absolute; width: 72px; height: 50px; border-radius: 25px; display: grid; place-items: center; font: 800 22px var(--round); color: #fff; background: var(--brand2); }
+.u5l10-cop { position: absolute; width: 64px; height: 50px; border-radius: 25px; display: grid; place-items: center; font: 800 22px var(--round); color: #fff; background: var(--brand2); }
 .u5l10-cop.back { background: #c93a33; }
-.u5l10-carr { position: absolute; font: 800 26px var(--round); color: #8b909b; }
+.u5l10-carr { position: absolute; width: 24px; text-align: center; font: 800 24px var(--round); color: #8b909b; }
 .u5l10-crowlab { position: absolute; font: 800 14px var(--round); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 
 /* ---------- review grid ("Up next: Unit 5 test") ---------- */

@@ -20,6 +20,7 @@ const where = (x, y) => {
   if (x === 0 && y === 0) return 'at the <b>origin</b>';
   return x === 0 ? `<b>on the ${T('y')}-axis</b> (no quadrant)` : `<b>on the ${T('x')}-axis</b> (no quadrant)`;
 };
+const TH = (html) => ({ html: `<span class="u5l1-th">${html}</span>` });
 const money = (v) => '$' + (Math.round(v * 100 + 1e-9) / 100).toFixed(2);
 
 /* ================= matchsticks ================= */
@@ -61,12 +62,12 @@ const SCENE = {
 const FLEET = [['battleship', 4], ['cruiser', 3], ['submarine', 3], ['destroyer', 2]];
 function mountBattleship() {
   const host = document.getElementById('bship'); if (!host) return;
-  const G = new Graph(host, { width: 470, height: 470, xmin: -5.5, xmax: 5.5, ymin: -5.5, ymax: 5.5, numbers: false, pad: [16, 18, 34, 40], cls: 'u5l1-sea' });
+  const G = new Graph(host, { width: 470, height: 470, xmin: -5.5, xmax: 5.5, ymin: -5.5, ymax: 5.5, numbers: false, pad: [16, 18, 38, 46], cls: 'u5l1-sea' });
   // numbers along the bottom and left edges, like the board
   for (let k = -5; k <= 5; k++) {
     const [px] = G.toPx(k, 0), [, py] = G.toPx(0, k);
-    svgEl('text', { class: 'bk-num u5l1-edge', x: px, y: 470 - 10, 'text-anchor': 'middle' }, G.layers.axes).textContent = mns(k);
-    svgEl('text', { class: 'bk-num u5l1-edge', x: 30, y: py + 6, 'text-anchor': 'end' }, G.layers.axes).textContent = mns(k);
+    svgEl('text', { class: 'bk-num u5l1-edge', x: px, y: 470 - 8, 'text-anchor': 'middle' }, G.layers.axes).textContent = mns(k);
+    svgEl('text', { class: 'bk-num u5l1-edge', x: 26, y: py + 6, 'text-anchor': 'end' }, G.layers.axes).textContent = mns(k);
   }
   const hullL = svgEl('g', { class: 'u5l1-hulls' }, G.layers.data), logicL = svgEl('g', { class: 'u5l1-logic' }, G.layers.data), markL = svgEl('g', { class: 'u5l1-marks' }, G.layers.top);
   const logEl = document.getElementById('bs-log'), cntEl = document.getElementById('bs-count');
@@ -143,6 +144,7 @@ function mountBattleship() {
   const capsule = (cells, ok, dx = 0) => {
     const xs = cells.map((c) => c[0] + dx), ys = cells.map((c) => c[1]), w = 0.3;
     const [x0, y0] = G.toPx(Math.min(...xs) - w, Math.max(...ys) + w), [x1, y1] = G.toPx(Math.max(...xs) + w, Math.min(...ys) - w);
+    logicL.querySelectorAll('.u5l1-cap').forEach((e) => e.classList.add('u5l1-old'));
     const g = svgEl('g', { class: 'u5l1-cap ' + (ok ? 'u5l1-ok' : 'u5l1-no') }, logicL);
     svgEl('rect', { x: x0, y: y0, width: x1 - x0, height: y1 - y0, rx: U * 0.3 }, g);
     if (!ok) { const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, d = U * 0.22; svgEl('path', { class: 'u5l1-x', d: `M${cx - d} ${cy - d}L${cx + d} ${cy + d}M${cx - d} ${cy + d}L${cx + d} ${cy - d}` }, g); }
@@ -155,6 +157,8 @@ function mountBattleship() {
     () => { capsule(SCENE.cruisers[0], true, -0.2); say(`<b>Possible:</b> ${PT(-3, -1)}, ${PT(-3, 0)}, ${PT(-3, 1)}.`); },
     () => { capsule(SCENE.cruisers[1], true, 0.2); say(`<b>Also possible:</b> ${PT(-3, 0)}, ${PT(-3, 1)}, ${PT(-3, 2)}.`); },
     () => {
+      logicL.querySelectorAll('.u5l1-cap.u5l1-no').forEach((e) => e.classList.add('u5l1-old'));
+      logicL.querySelectorAll('.u5l1-cap.u5l1-ok').forEach((e) => e.classList.remove('u5l1-old'));
       const [px, py] = G.toPx(-3, 0), r = svgEl('circle', { class: 'u5l1-sure', cx: px, cy: py, r: U * 0.42 }, logicL);
       r.animate([{ transform: 'scale(1.8)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }], 450);
       say(`${PT(-3, 0)} is in <b>both</b> placements: a <b>sure hit</b>. That’s <b>B</b>. Tap it to fire!`);
@@ -254,8 +258,9 @@ const plotPoint = {
     : 'Start at the origin. The <b>first</b> number moves you <b>across</b>; the <b>second</b> moves you <b>up or down</b>. Press <b>Next</b>.'),
   make(stage, k, ex) {
     const d = PP[k], G = new Graph(stage, { x: 14, y: 10, width: 460, height: 460, xmin: -6, xmax: 6, ymin: -6, ymax: 6, xlabels: 1, ylabels: 1, fontSize: 15 });
-    G.label(0, 0, T('O'), { pos: 'sw', gap: 3, cls: 'bk-ptlab' });
+    G.label(0, 0, T('O'), { pos: 'nw', gap: 3, cls: 'bk-ptlab' });
     const Pn = panel(stage, 500, 14, ex.W - 514, 452, k === 'ex1' ? 'Example 1 (a)' : 'Moves from the origin');
+    if (k !== 'ex1') add(Pn, h('div', 'u5l1-rule', `${T('(x,\\ y)')}<br><b class="u5l1-amb">1st: across</b> · <b class="u5l1-pur">2nd: up or down</b>`), null);
     const tok = G.point(0, 0, { color: 'red', r: 9 }); hide(tok);
     let arrows = [];
     const moveX = async (c, p, keep) => {
@@ -268,12 +273,12 @@ const plotPoint = {
     };
     const moveY = async (c, p) => {
       const [, x, y] = p; if (!y) return;
-      const s = G.segment([x, 0], [x, y], { color: 'purple', width: 5, arrowB: true }), lab = G.label(x, y / 2, UPDOWN(y), { pos: x >= 0 ? 'e' : 'w', cls: 'u5l1-mvlab', color: 'purple' });
+      const s = G.segment([x, 0], [x, y], { color: 'purple', width: 5, arrowB: true }), lab = G.label(x, y / 2, UPDOWN(y), { pos: x >= 0 || x <= -4 ? 'e' : 'w', cls: 'u5l1-mvlab', color: 'purple' });
       arrows.push(s, lab); hide(lab);
       await Promise.all([G.drawIn(s, 700, c), G.move(c, tok, x, y, 700)]); await fadeIn(c, lab, 250);
     };
     const plot = async (c, p, color = 'blue') => {
-      const [n, x, y] = p, pt = G.point(x, y, { color, r: 7, label: n ? T(`${n}(${texNum(x)},\\ ${texNum(y)})`) : T(pairTex(x, y)), pos: x < 0 ? 'nw' : 'ne', labelColor: 'ink' });
+      const [n, x, y] = p, pt = G.point(x, y, { color, r: 7, label: n ? T(`${n}(${texNum(x)},\\ ${texNum(y)})`) : T(pairTex(x, y)), pos: x <= -4 ? (y < 0 ? 's' : 'n') : x < 0 ? 'nw' : 'ne', labelColor: 'ink' });
       tok.style.opacity = 0; await G.reveal(pt, c);
     };
     if (k === 'ex1') {
@@ -315,7 +320,7 @@ const quadrants = {
   make(stage, k, ex) {
     const G = new Graph(stage, { x: 14, y: 10, width: 450, height: 450, xmin: -6, xmax: 6, ymin: -6, ymax: 6, xlabels: 2, ylabels: 2, fontSize: 15 });
     G.label(0, 0, T('O'), { pos: 'sw', gap: 3, cls: 'bk-ptlab' });
-    const tb = new ValueTable(stage, { x: 500, y: 20, headers: [{ html: 'Quadrant' }, { html: T('x') + '-coord.' }, { html: T('y') + '-coord.' }],
+    const tb = new ValueTable(stage, { x: 500, y: 20, headers: [TH('Quadrant'), TH(T('x') + '-coord.'), TH(T('y') + '-coord.')],
       rows: [1, 2, 3, 4].map((q) => [{ html: '<b>' + ROMAN[q] + '</b>' }, { html: word(QD[q].sx) }, { html: word(QD[q].sy) }]),
       hide: (r, c) => c > 0, tap: false, cellW: Math.min(150, (ex.W - 520) / 3), cellH: 56, cls: 'u5l1-qvt' });
     const note = add(stage, box(h('div', 'u5l1-qnote'), ex.W - 514, 120), 500, 330);
@@ -371,10 +376,10 @@ const quadrants = {
 /* ================= explainer: growing the matchstick pattern ================= */
 const matchGrow = {
   title: 'Growing the matchstick pattern',
-  height: 400,
+  height: 370,
   intro: 'Figure 1 is a single square: <b>4 matchsticks</b>. Watch what each new square costs. Press <b>Next</b>.',
   make(stage, v, ex) {
-    const W = ex.W, u = 38, gap = 50, ns = [1, 2, 3, 4, 5];
+    const W = ex.W, u = 44, gap = 46, ns = [1, 2, 3, 4, 5];
     const tot = ns.reduce((a, n) => a + n * u, 0) + gap * 4; let x = (W - tot) / 2;
     const svg = add(stage, svgEl('svg', { class: 'u5l1-msvg', width: W, height: 140, viewBox: `0 0 ${W} 140` }), 0, 10);
     const figs = ns.map((n) => {
@@ -382,7 +387,7 @@ const matchGrow = {
       t.textContent = 'Figure ' + n; g.cap = t; x += n * u + gap; hide(g, t); return g;
     });
     const tw = 270 + 5 * 84;
-    const tb = new ValueTable(stage, { x: (W - tw) / 2, y: 170, layout: 'h', headers: [{ html: 'Number of squares, ' + T('s') }, { html: 'Matchsticks, ' + T('M') }],
+    const tb = new ValueTable(stage, { x: (W - tw) / 2, y: 176, layout: 'h', headers: [TH('Number of squares, ' + T('s')), TH('Matchsticks, ' + T('M'))],
       rows: ns.map((n) => [n, 3 * n + 1]), hide: 1, tap: false, cellW: 84, cellH: 54, headW: 270, diffs: true, diffSpace: 74 });
     const show = async (c, k) => {
       const g = figs[k - 1], news = g.groups[k - 1], olds = g.list.filter((s) => !news.includes(s));
@@ -410,8 +415,8 @@ const matchGraph = {
   make(stage, v, ex) {
     const rows = [1, 2, 3, 4, 5].map((s) => [s, 3 * s + 1]);
     const G = new Graph(stage, { x: 10, y: 6, width: 440, height: 456, xmin: 0, xmax: 6, ymin: 0, ymax: 18, ystep: 1, ylabels: 2, xtitle: 's', ytitle: 'M', fontSize: 16 });
-    const tb = new ValueTable(stage, { x: 480, y: 30, headers: ['s', 'M'], rows, tap: false, cellW: 84, cellH: 50 });
-    const Pn = panel(stage, 680, 30, ex.W - 694, 400, 'Figure 2.5?');
+    const tb = new ValueTable(stage, { x: 466, y: 30, headers: ['s', 'M'], rows, tap: false, cellW: 78, cellH: 50 });
+    const Pn = panel(stage, 638, 30, ex.W - 652, 410, 'Figure 2.5?');
     const fig = add(Pn, svgEl('svg', { width: 200, height: 110, viewBox: '0 0 200 110', class: 'u5l1-half' }), null);
     fig.style.position = 'relative'; hide(fig);
     const u = 46, g = sticks(fig, 2, 14, 22, u);
@@ -435,7 +440,7 @@ const matchGraph = {
         run: async (c) => {
           await Promise.all([anim(c, L, [{ opacity: 1 }, { opacity: 0 }], 500), anim(c, mid, [{ opacity: 1 }, { opacity: 0 }], 500), anim(c, lq, [{ opacity: 1 }, { opacity: 0 }], 500)]);
           await Promise.all(pts.map((p) => pulse(c, p, 1.35)));
-          const s = stamp(Pn, 'Discrete: dots only', { ok: true, size: 'lg' }); s.style.alignSelf = 'center'; s.style.marginTop = '26px'; await stampIn(c, s);
+          const s = stamp(Pn, 'Discrete:<br>dots only', { ok: true, size: 'lg' }); s.style.alignSelf = 'center'; s.style.marginTop = '26px'; s.style.textAlign = 'center'; await stampIn(c, s);
         } }
     ];
   }
@@ -468,7 +473,7 @@ const matchRule = {
       if (!labs.length) { await appear(c, brace, 400); await fadeIn(c, bl, 300); }
     };
     if (!back) {
-      const M = 3 * n + 1, e1 = put(T(`M=${tc(C.amber, '3')}s+${tc(C.teal, '1')}`), 'big'), e2 = put(T(`M=3(${n})+1`)), e3 = put(T(`=${3 * n}+1`)), e4 = put(T(`=\\boldsymbol{${M}}`), 'ans');
+      const M = 3 * n + 1, e1 = put(T(`M=${tc(C.amber, '3')}s+${tc(C.teal, '1')}`), 'u5l1-eqbig'), e2 = put(T(`M=3(${n})+1`)), e3 = put(T(`=${3 * n}+1`)), e4 = put(T(`=\\boldsymbol{${M}}`), 'u5l1-eqans');
       return [
         { cap: `Start with the <b>1</b> matchstick on the far left.`, run: async (c) => { paint(g.first, C.teal); await pulse(c, g.first, 1.25); await pop(c, one); } },
         { cap: `Every square then adds a <b>⊐ of 3</b>: its top, bottom and right side. ${n} squares, ${n} groups of 3.`, run: groups },
@@ -477,7 +482,7 @@ const matchRule = {
           run: async (c) => { await fadeIn(c, e2); await fadeIn(c, e3); await fadeIn(c, e4); head.innerHTML = `${T('s=' + n)} squares · ${T('M=' + M)}`; await pulse(c, head, 1.08); } }
       ];
     }
-    const e1 = put(T(`91=3s+1`), 'big'), e2 = put(T(`3s=90`)), e3 = put(T(`s=\\boldsymbol{30}`), 'ans'), e4 = put(T(`\\text{Check: }3(30)+1=91\\ \\checkmark`), 'chk');
+    const e1 = put(T(`91=3s+1`), 'u5l1-eqbig'), e2 = put(T(`3s=90`)), e3 = put(T(`s=\\boldsymbol{30}`), 'u5l1-eqans'), e4 = put(T(`\\text{Check: }3(30)+1=91\\ \\checkmark`), 'u5l1-eqchk');
     return [
       { cap: `Set the equation equal to 91: ${T('91=3s+1')}. Undo the steps in <b>reverse</b> order.`, run: (c) => fadeIn(c, e1) },
       { cap: `First take away the <b>1</b> starting stick: ${T('91-1=90')} matchsticks left, so ${T('3s=90')}.`,
@@ -499,7 +504,7 @@ const gasLine = {
   intro: 'Example 4 (a) and (b) check: plot the table, then decide whether to join the points. Press <b>Next</b>.',
   make(stage, v, ex) {
     const G = gasGraph(stage, 10, 6, 470, 456);
-    const tb = new ValueTable(stage, { x: 500, y: 24, headers: [{ html: T('V') + ' (L)' }, { html: T('C') + ' ($)' }], rows: GAS.map(([a, b]) => [a, b.toFixed(2)]), tap: false, cellW: 96, cellH: 48 });
+    const tb = new ValueTable(stage, { x: 500, y: 24, headers: [TH(T('V') + ' (L)'), TH(T('C') + ' ($)')], rows: GAS.map(([a, b]) => [a, b.toFixed(2)]), tap: false, cellW: 96, cellH: 48 });
     const pw = ex.W - 714, pump = add(stage, box(h('div', 'u5l1-pump', `<div class="u5l1-ph">Pump</div><div class="u5l1-pl">Litres</div><div class="u5l1-pv" data-v>0.00</div><div class="u5l1-pl">Dollars</div><div class="u5l1-pv" data-c>$0.00</div>`), pw, 230), 714, 24);
     const pv = pump.querySelector('[data-v]'), pc = pump.querySelector('[data-c]');
     const setPump = (V) => { pv.textContent = (Math.round(V * 100) / 100).toFixed(2); pc.textContent = money(1.45 * V); };
@@ -517,7 +522,7 @@ const gasLine = {
       { cap: `Yes: 2.37 L costs ${money(1.45 * 2.37)}. <b>Every</b> in-between amount has a cost, so volume and cost are <b>continuous</b>. Join the points with a line.`,
         run: async (c) => { L = G.segment([0, 0], [11, 15.95], { color: 'blue', width: 3.5 }); await G.drawIn(L, 1100, c); } },
       { cap: `<b>Example 4 (b):</b> yes, it makes sense to join the points: the variables are <b>continuous</b>, so every point on the line means something.`,
-        run: async (c) => { const s = stamp(out, 'Continuous: join them', { ok: true, size: 'lg' }); await stampIn(c, s); } }
+        run: async (c) => { const s = stamp(out, 'Continuous:<br>join them', { ok: true }); s.style.textAlign = 'center'; await stampIn(c, s); } }
     ];
   }
 };
@@ -563,7 +568,7 @@ const gasRate = {
   intro: 'Example 4 (e) and (g) check. Is every litre the same price? Press <b>Next</b>.',
   make(stage, v, ex) {
     const rows = GAS.map(([a, b]) => [a, b.toFixed(2), '1.45']);
-    const tb = new ValueTable(stage, { x: 16, y: 24, layout: 'h', headers: [{ html: T('V') + ' (L)' }, { html: T('C') + ' ($)' }, { html: T('C\\div V') }], rows, hide: 2, tap: false, cellW: 84, cellH: 52, headW: 112 });
+    const tb = new ValueTable(stage, { x: 16, y: 24, layout: 'h', headers: [TH(T('V') + ' (L)'), TH(T('C') + ' ($)'), TH(T('C\\div V'))], rows, hide: 2, tap: false, cellW: 84, cellH: 52, headW: 112 });
     const eq = add(stage, box(h('div', 'u5l1-rate'), 540, 170), 16, 236);
     eq.innerHTML = `<div class="u5l1-rate-eq">${T('C=\\textcolor{#c27a0e}{1.45}\\,V')}</div><div class="u5l1-rate-k"><span class="u5l1-amb">1.45</span> = dollars per litre &nbsp;·&nbsp; ${T('V')} = litres</div>`;
     hide(eq);
@@ -601,6 +606,7 @@ const zoomIn = {
     const zoomBadge = add(stage, h('div', 'u5l1-zoom', '×1'), ex.W - 120, 16);
     const swap = async (c, i, label) => {
       await Promise.all([anim(c, A[i - 1].el, [{ opacity: 1, transform: 'scaleX(1)' }, { opacity: 0, transform: 'scaleX(2.5)' }], 450), anim(c, B[i - 1].el, [{ opacity: 1, transform: 'scaleX(1)' }, { opacity: 0, transform: 'scaleX(2.5)' }], 450)]);
+      [A[i - 1].el, B[i - 1].el].forEach((e) => (e.style.visibility = 'hidden'));
       zoomBadge.textContent = label; await pop(c, zoomBadge, 300);
       await Promise.all([appear(c, A[i].el, 350), appear(c, B[i].el, 350)]);
     };
@@ -621,7 +627,7 @@ const zoomIn = {
           await swap(c, 2, '×100');
           const none = A[2].mark(2.35, 'no whole numbers anywhere here', { color: 'amber' }); hide(none); await fadeIn(c, none);
           await B[2].drawIn(B[2].interval(-Infinity, Infinity, { color: 'blue', width: 9 }), 700, c);
-          for (const x of [2.37, 2.375]) { const m = B[2].mark(x, String(x), { color: 'blue', lift: 6 }); hide(m); await fadeIn(c, m, 220); }
+          for (const [x, lift] of [[2.37, 6], [2.375, 36]]) { const m = B[2].mark(x, String(x), { color: 'blue', lift }); hide(m); await fadeIn(c, m, 220); }
         } },
       { cap: `<b>Discrete:</b> separate values with <b>gaps</b>, so the graph is separate dots. <b>Continuous:</b> <b>no gaps</b>, so the points are joined.`,
         run: async (c) => { await pulse(c, tl, 1.08); await pulse(c, bl, 1.08); } }
@@ -632,7 +638,7 @@ const zoomIn = {
 /* ================= explainer: count or measure? ================= */
 const SORT = {
   try: { label: 'Count or measure?', items: [
-    ['number of goals scored in a hockey game', 'D', 'You <b>count</b> goals: 0, 1, 2, … There is no such thing as 1.5 goals.'],
+    ['goals scored in a hockey game', 'D', 'You <b>count</b> goals: 0, 1, 2, … There is no such thing as 1.5 goals.'],
     ['length of a phone call', 'C', 'Time is <b>measured</b>: a call can last 3 min 12.4 s, or any time in between.'],
     ['number of people on a bus', 'D', 'You <b>count</b> people: whole numbers only.'],
     ['mass of a backpack', 'C', 'Mass is <b>measured</b>: 6.25 kg, 6.251 kg, … any value in a range.']] },
@@ -659,7 +665,7 @@ const sortVars = {
         run: async (c) => { card = add(stage, box(h('div', 'u5l1-card', txt), 420, null), (W - 420) / 2, 30); card.style.transformOrigin = '0 0'; await pop(c, card, 380); } });
       steps.push({ cap: why,
         run: async (c) => {
-          const b = bins.find((q) => q.id === kind), tx = b.x + 14, ty = by + 56 + b.n * 66; b.n++;
+          const b = bins.find((q) => q.id === kind), tx = b.x + 14, ty = by + 54 + b.n * 74; b.n++;
           const dx = tx - (W - 420) / 2, dy = ty - 30;
           await anim(c, card, [{ transform: 'none' }, { transform: `translate(${dx}px, ${dy}px) scale(.78)` }], 650);
           card.classList.add(kind === 'D' ? 'u5l1-cardD' : 'u5l1-cardC');
