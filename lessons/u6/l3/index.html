@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rise Over Run · Math 10C 6.3</title>
+<meta name="description" content="Math 10C Unit 6 Lesson 3: the slope of a line segment. Slope as rise over run counted off a grid with signs, the same slope anywhere along a line, zero and undefined slopes, positive and negative slopes, steepness as the size of the slope, roof pitch and rates of change with units, and working backward from a slope. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u6l3.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 6 Characteristics of Linear Relations · Lesson 3</div>
+  <h1>Rise Over Run: The Slope of a Line Segment</h1>
+  <p class="lede">Steepness as a single signed number: <b>counted off a grid</b>, read as a <b>rate of change</b>, and <b>run backward</b> from a given slope.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>count the <b class="u6l3-c-rise">rise</b> and the <b class="u6l3-c-run">run</b> of a segment off a grid, with their signs, and write the slope <span class="tex">\dfrac{\text{rise}}{\text{run}}</span> in lowest terms</li>
+      <li>explain why the slope is the <b>same between any two points</b> on a line</li>
+      <li>tell <b>positive</b>, <b>negative</b>, <b>zero</b> (horizontal) and <b>undefined</b> (vertical) slopes apart, and compare steepness using the <b>size</b> of the slope</li>
+      <li>find a slope in a real situation (a roof’s <b>pitch</b>, a road’s <b>grade</b>) and read a slope with units as a <b>rate of change</b></li>
+      <li>work <b>backward</b> from a slope: plot more points on a line, or find a missing rise or run</li>
+    </ul>
+  </div>
+  <div class="outcome"><b>RF3</b> Demonstrate an understanding of slope with respect to: rise and run; line segments and lines; rate of change; parallel lines; perpendicular lines.</div>
+  <div class="outcome"><b>RF5</b> Determine the characteristics of the graphs of linear relations, including the: intercepts; slope; domain; range.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: Ramp Rules" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Ramp Rules</h2></div>
+  <p class="big">A common rule: a ramp may rise <b>at most 1 cm for every 12 cm</b> across.</p>
+  <div class="u6l3-wtop">
+    <div class="u6l3-wfig">
+      <div id="u6l3-ramps"></div>
+      <div class="u6l3-wbtns">
+        <button type="button" class="pill" id="u6l3-rcmp">Compare rise ÷ run</button>
+        <button type="button" class="pill" id="u6l3-r12">Give every ramp the same run</button>
+      </div>
+    </div>
+    <div class="u6l3-wqs">
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">1</div><div>Which ramp climbs the <b>highest</b>?</div></div>
+        <div class="u6l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>Ramp C</b> (25 cm). But highest is not steepest!</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">2</div><div>Which ramp is the <b>steepest</b>? <span class="muted">(Hint: compare <span class="tex">\tfrac{\text{rise}}{\text{run}}</span> for each.)</span></div></div>
+        <div class="u6l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>Ramp B.</b> <span class="tex">A:\ \tfrac{10}{120}=\tfrac{1}{12}</span>, <span class="tex">B:\ \tfrac{20}{180}=\tfrac{1}{9}</span>, <span class="tex">C:\ \tfrac{25}{400}=\tfrac{1}{16}</span>. About <span class="tex">0.11</span>, <span class="tex">0.08</span>, <span class="tex">0.06</span>: B is steepest, C is gentlest.</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">3</div><div>Which ramps follow the 1-in-12 rule?</div></div>
+        <div class="u6l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>A</b> (exactly <span class="tex">\tfrac{1}{12}</span>, right at the limit) and <b>C</b> (gentler). B is too steep: it would need a run of <span class="tex">20\times12=240</span> cm.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> A café door is up one <b>60 cm</b> step. To follow the rule, at least how far out from the step must the ramp start? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> 72 cm</div>
+      <div class="opt"><b>B</b> 5 m</div>
+      <div class="opt right"><b>C</b> 7.2 m</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>C: 7.2 m.</b> Every 1 cm of rise needs 12 cm of run, so run <span class="tex">=60\times12=720</span> cm <span class="tex">=7.2</span> m.<br>
+      <span class="muted"><b>A</b> added <span class="tex">60+12</span> instead of multiplying. <b>B</b> divided <span class="tex">60\div12=5</span>, then guessed the unit.</span><br>
+      Most people badly underestimate how long a gentle ramp is. (The sloped surface itself is <span class="tex">\sqrt{720^2+60^2}\approx722</span> cm: still about 7.2 m.)</div>
+  </div>
+
+  <div class="bk-wq u6l3-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> A school has only <b>3.6 m</b> of sidewalk in front of a step. What is the tallest step a ramp there can climb and still follow the rule?</div></div>
+    <div class="u6l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">360\div12=30</span> cm.</div></div>
+  </div>
+  <p class="u6l3-social">Find a ramp at school: pace out its run and estimate its rise. Does it pass?</p>
+</section>
+
+<!-- ================= 1. What is slope? ================= -->
+<section class="card" data-ink="s1" data-section="1. What Is Slope?">
+  <div class="sec-h"><span class="badge">1</span><h2>What Is Slope?</h2></div>
+  <div class="u6l3-defrow">
+    <div class="def">The <b>slope</b> of a line segment is a measure of its <b>steepness</b>. It compares the <b class="u6l3-c-rise">rise</b> (the change in vertical position between the two endpoints) to the <b class="u6l3-c-run">run</b> (the change in horizontal position between the two endpoints).</div>
+    <div class="u6l3-formula"><span class="tex">\text{slope}=\dfrac{\color{#7b4fc4}\text{rise}}{\color{#c27a0e}\text{run}}</span></div>
+  </div>
+  <div class="u6l3-signs">
+    <div class="u6l3-sign u6l3-sg-rise"><div class="u6l3-sg-h">Rise</div><div>count <b>UP</b>: <b>positive</b></div><div>count <b>DOWN</b>: <b>negative</b></div></div>
+    <div class="u6l3-sign u6l3-sg-run"><div class="u6l3-sg-h">Run</div><div>count <b>RIGHT</b>: <b>positive</b></div><div>count <b>LEFT</b>: <b>negative</b></div></div>
+  </div>
+  <p>On a grid the rise and run are counted square by square, moving from one endpoint to the other. Counting from <b>left to right</b> keeps the run positive, so the sign of the slope then comes from the rise. A slope that is not a whole number is left as a <b>fraction in lowest terms</b>. (In Lesson 4 this counting is turned into a formula that works straight from the coordinates.)</p>
+  <div class="explainer" data-explainer="count"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Count squares, from one endpoint to the other.</b> The run is how many squares <b>across</b>, the rise how many squares <b>up or down</b>. Rise goes on <b>top</b>: <span class="tex">\tfrac{\text{rise}}{\text{run}}</span>, not <span class="tex">\tfrac{\text{run}}{\text{rise}}</span>.</div></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Rise, run and slope counted off a grid</h3></div>
+  <p class="q">Each line segment on the grid below has endpoints with integer coordinates. Complete the table.</p>
+  <div class="parts c1">
+    <div class="part">
+      <div class="u6l3-ex1">
+        <div id="u6l3-ex1fig"></div>
+        <table class="u6l3-tab">
+          <thead><tr><th>Segment</th><th class="u6l3-c-rise">Rise</th><th class="u6l3-c-run">Run</th><th>Slope</th></tr></thead>
+          <tbody>
+            <tr><td><span class="tex">AB</span></td><td><span data-reveal><span class="tex">6</span></span></td><td><span data-reveal><span class="tex">6</span></span></td><td><span data-reveal><span class="tex">1</span></span></td></tr>
+            <tr><td><span class="tex">CD</span></td><td><span data-reveal><span class="tex">-4</span></span></td><td><span data-reveal><span class="tex">6</span></span></td><td><span data-reveal><span class="tex">-\tfrac{2}{3}</span></span></td></tr>
+            <tr><td><span class="tex">EF</span></td><td><span data-reveal><span class="tex">3</span></span></td><td><span data-reveal><span class="tex">6</span></span></td><td><span data-reveal><span class="tex">\tfrac{1}{2}</span></span></td></tr>
+            <tr><td><span class="tex">GH</span></td><td><span data-reveal><span class="tex">-6</span></span></td><td><span data-reveal><span class="tex">3</span></span></td><td><span data-reveal><span class="tex">-2</span></span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Counting left to right (tap a cell to reveal it): <span class="tex">AB</span>: <span class="tex">\tfrac{6}{6}=\boldsymbol{1}</span>. <span class="tex">CD</span>: <span class="tex">\tfrac{-4}{6}=\boldsymbol{-\tfrac{2}{3}}</span>. <span class="tex">EF</span>: <span class="tex">\tfrac{3}{6}=\boldsymbol{\tfrac{1}{2}}</span>. <span class="tex">GH</span>: <span class="tex">\tfrac{-6}{3}=\boldsymbol{-2}</span>.</div></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Lowest terms on the calculator.</b> The <kbd>a b/c</kbd> key builds a fraction and <kbd>ENTER</kbd> reduces it: <span class="keys"><kbd>(−)</kbd><kbd>4</kbd><kbd>a b/c</kbd><kbd>6</kbd><kbd>ENTER</kbd></span> shows <b class="u6l3-calcfr">−2┘3</b>, which means <span class="tex">-\tfrac{2}{3}</span>.</div>
+    <div class="pill-col"><button class="pill" data-keys="(−) 4 ab/c 6 =">Show CD</button><button class="pill" data-keys="3 ab/c 6 =">Show EF</button></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<!-- ================= 2. Same slope everywhere ================= -->
+<section class="card" data-ink="s2" data-section="2. The Same Slope Everywhere">
+  <div class="sec-h"><span class="badge">2</span><h2>Slope Is the Same Everywhere Along a Line</h2></div>
+  <div class="def">The slope calculated from <em>any</em> two points on a straight line is always the same. That common value is called <b>the slope of the line</b>.</div>
+  <p>A slope triangle can slide anywhere along a line, and it can grow or shrink: every one is a scaled copy of the others, so <span class="tex">\tfrac{\text{rise}}{\text{run}}</span> never changes.</p>
+  <div class="explainer" data-explainer="slide"></div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>The same line, four different pairs of points</h3></div>
+  <p class="q">Points <span class="tex">A(-5,-4)</span>, <span class="tex">B(-3,-3)</span>, <span class="tex">C(1,-1)</span> and <span class="tex">D(5,1)</span> all lie on the same line. Calculate the slope determined by each pair of points, and state what you notice.</p>
+  <div class="u6l3-ex2">
+    <div id="u6l3-ex2fig"></div>
+    <div class="parts c2">
+      <div class="part"><div class="pl">(a) slope of <span class="tex">AB</span></div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">From <span class="tex">A(-5,-4)</span> to <span class="tex">B(-3,-3)</span>: run 2 right, rise 1 up.<br>slope <span class="tex">=\boldsymbol{\tfrac{1}{2}}</span></div></div></div>
+      <div class="part"><div class="pl">(b) slope of <span class="tex">AC</span></div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">From <span class="tex">A(-5,-4)</span> to <span class="tex">C(1,-1)</span>: run 6 right, rise 3 up.<br>slope <span class="tex">=\tfrac{3}{6}=\boldsymbol{\tfrac{1}{2}}</span></div></div></div>
+      <div class="part"><div class="pl">(c) slope of <span class="tex">AD</span></div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">A(-5,-4)</span> to <span class="tex">D(5,1)</span>: run 10, rise 5.<br><span class="tex">\tfrac{5}{10}=\boldsymbol{\tfrac{1}{2}}</span></div></div></div>
+      <div class="part"><div class="pl">(d) slope of <span class="tex">BC</span></div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">B(-3,-3)</span> to <span class="tex">C(1,-1)</span>: run 4, rise 2.<br><span class="tex">\tfrac{2}{4}=\boldsymbol{\tfrac{1}{2}}</span></div></div></div>
+    </div>
+  </div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(e) What do you notice?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">All four pairs give the same slope, <span class="tex">\tfrac{1}{2}</span>. The slope is a property of the <b>whole line</b>, not of the particular pair of points chosen.</div></div></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<!-- ================= 3. Horizontal and vertical ================= -->
+<section class="card" data-ink="s3" data-section="3. Horizontal and Vertical Segments">
+  <div class="sec-h"><span class="badge">3</span><h2>Horizontal and Vertical Line Segments</h2></div>
+  <p>Two special cases deserve their own attention: segments that run straight <b>across</b> (horizontal) and segments that run straight <b>up and down</b> (vertical).</p>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Horizontal and vertical segments</h3></div>
+  <p class="q">Each segment below has endpoints with integer coordinates.<br><b>(a)</b> Calculate the slope of each segment.</p>
+  <div class="u6l3-ex3">
+    <div id="u6l3-ex3fig"></div>
+    <div class="parts c2">
+      <div class="part"><div class="pl">slope of <span class="tex">MN</span></div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">M(-4,3)</span> to <span class="tex">N(2,3)</span> is horizontal: rise <span class="tex">=0</span>, run <span class="tex">=6</span>.<br><span class="tex">\tfrac{0}{6}=\boldsymbol{0}</span></div></div></div>
+      <div class="part"><div class="pl">slope of <span class="tex">RS</span></div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">R(1,4)</span> down to <span class="tex">S(1,-3)</span> is vertical: rise <span class="tex">=-7</span>, run <span class="tex">=0</span>.<br><span class="tex">\tfrac{-7}{0}</span> is <b>undefined</b></div></div></div>
+      <div class="part"><div class="pl">slope of <span class="tex">PQ</span></div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">P(-3,-2)</span> to <span class="tex">Q(4,-2)</span> is horizontal: rise <span class="tex">=0</span>, run <span class="tex">=7</span>.<br><span class="tex">\tfrac{0}{7}=\boldsymbol{0}</span></div></div></div>
+      <div class="part"><div class="pl">slope of <span class="tex">TU</span></div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">T(-2,4)</span> down to <span class="tex">U(-2,-4)</span> is vertical: rise <span class="tex">=-8</span>, run <span class="tex">=0</span>.<br><span class="tex">\tfrac{-8}{0}</span> is <b>undefined</b></div></div></div>
+    </div>
+  </div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(b) Complete the statements.</div>
+      <div class="u6l3-fill">Horizontal line segments have a slope of <span class="u6l3-blank" data-reveal><b>0</b></span>.<br>Vertical line segments have a(n) <span class="u6l3-blank" data-reveal><b>undefined</b></span> slope.</div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Horizontal: rise <span class="tex">=0</span>, and <span class="tex">0\div\text{run}=0</span>, so the slope is <b>0</b>. Vertical: run <span class="tex">=0</span>, and we cannot divide by zero, so the slope is <b>undefined</b>.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Ask the calculator.</b> <span class="keys"><kbd>0</kbd><kbd>÷</kbd><kbd>6</kbd><kbd>ENTER</kbd></span> gives 0, but <span class="keys"><kbd>(−)</kbd><kbd>7</kbd><kbd>÷</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives <b>DIVIDE BY 0 ERROR</b>: there is no number to give.</div>
+    <div class="pill-col"><button class="pill" data-keys="0 ÷ 6 =">Show 0 ÷ 6</button><button class="pill" data-keys="(−) 7 ÷ 0 =">Show −7 ÷ 0</button></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s3b" data-section="3. Why 0, and why undefined?">
+  <h3 class="sub">Why 0, and why undefined?</h3>
+  <p>Keep the run and flatten the rise to 0, or keep the rise and squeeze the run to 0, and watch what happens to <span class="tex">\tfrac{\text{rise}}{\text{run}}</span>.</p>
+  <div class="explainer" data-explainer="zeroCase"></div>
+</section>
+
+<!-- ================= 4. Positive and negative ================= -->
+<section class="card" data-ink="s4" data-section="4. Positive Slope, Negative Slope">
+  <div class="sec-h"><span class="badge">4</span><h2>Positive Slope, Negative Slope</h2></div>
+  <p>Reading a graph from <b>left to right</b>, a line either climbs, falls, or stays flat. The <b>sign</b> of the slope tells us which.</p>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>The sign of the slope</h3></div>
+  <p class="q"><b>(a)</b> Each line below passes through the two marked points, which have integer coordinates. Calculate the slope of each line.</p>
+  <div class="u6l3-ex3">
+    <div id="u6l3-ex4fig"></div>
+    <div class="parts c2">
+      <div class="part"><div class="pl">slope of Line 1</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Marked points <span class="tex">(-1,2)</span> and <span class="tex">(3,4)</span>: run 4, rise 2.<br><span class="tex">\tfrac{2}{4}=\boldsymbol{\tfrac{1}{2}}</span></div></div></div>
+      <div class="part"><div class="pl">slope of Line 3</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Marked points <span class="tex">(-5,-1)</span> and <span class="tex">(1,-5)</span>: run 6, rise <span class="tex">-4</span>.<br><span class="tex">\tfrac{-4}{6}=\boldsymbol{-\tfrac{2}{3}}</span></div></div></div>
+      <div class="part"><div class="pl">slope of Line 2</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Marked points <span class="tex">(2,-4)</span> and <span class="tex">(4,2)</span>: run 2, rise 6.<br><span class="tex">\tfrac{6}{2}=\boldsymbol{3}</span></div></div></div>
+      <div class="part"><div class="pl">slope of Line 4</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Marked points <span class="tex">(-4,5)</span> and <span class="tex">(-2,-1)</span>: run 2, rise <span class="tex">-6</span>.<br><span class="tex">\tfrac{-6}{2}=\boldsymbol{-3}</span></div></div></div>
+    </div>
+  </div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(b) Complete the statements.</div>
+      <div class="u6l3-fill">A line which rises from left to right has a <span class="u6l3-blank" data-reveal><b>positive</b></span> slope.<br>A line which falls from left to right has a <span class="u6l3-blank" data-reveal><b>negative</b></span> slope.</div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Lines 1 and 2 climb and have positive slopes; Lines 3 and 4 fall and have negative slopes.</div></div></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s4b" data-section="4. The four kinds of slope">
+  <h3 class="sub">Read it left to right</h3>
+  <p>Walk along each line from left to right: uphill, downhill, flat, or a wall you cannot walk at all.</p>
+  <div class="explainer" data-explainer="leftRight"></div>
+  <div class="def u6l3-kinds-box"><b>Summary: the four kinds of slope</b> <span class="muted">(always read a graph from left to right)</span>
+    <div class="u6l3-kinds" id="u6l3-kinds">
+      <div class="u6l3-kind u6l3-k-pos" data-k="pos"><div class="u6l3-kfig"></div><b>Positive slope</b><span class="u6l3-kt">rises from left to right; rise and run have the same sign</span></div>
+      <div class="u6l3-kind u6l3-k-neg" data-k="neg"><div class="u6l3-kfig"></div><b>Negative slope</b><span class="u6l3-kt">falls from left to right; rise and run have opposite signs</span></div>
+      <div class="u6l3-kind u6l3-k-zero" data-k="zero"><div class="u6l3-kfig"></div><b>Zero slope</b><span class="u6l3-kt">horizontal; rise <span class="tex">=0</span>, and <span class="tex">0\div\text{run}=0</span></span></div>
+      <div class="u6l3-kind u6l3-k-und" data-k="und"><div class="u6l3-kfig"></div><b>Undefined slope</b><span class="u6l3-kt">vertical; run <span class="tex">=0</span>, and we cannot divide by zero</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 5. Steepness ================= -->
+<section class="card" data-ink="s5" data-section="5. Steepness: the Size of the Slope">
+  <div class="sec-h"><span class="badge">5</span><h2>Steepness: the Size of the Slope</h2></div>
+  <p>The <b>sign</b> of a slope tells the <b>direction</b> of a line; the <b>size</b> of the slope tells how <b>steep</b> it is. To compare steepness, ignore the signs and compare the sizes.</p>
+  <div class="def">The size of a slope <span class="tex">m</span> is written <span class="tex">|m|</span> (read “the absolute value of <span class="tex">m</span>”), so <span class="tex">|-5|=5</span> and <span class="tex">|2|=2</span>. A line with slope <span class="tex">-5</span> is <b>steeper</b> than a line with slope <span class="tex">2</span>, because <span class="tex">5&gt;2</span>: it simply falls instead of rising.</div>
+  <div class="explainer" data-explainer="dial"></div>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Ordering lines by steepness</h3></div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Four lines have slopes <span class="tex">-5</span>, <span class="tex">2</span>, <span class="tex">-\dfrac{1}{2}</span> and <span class="tex">\dfrac{1}{4}</span>. List the slopes in order from the least steep line to the steepest line.</div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Compare the sizes: <span class="tex">|-5|=5</span>, <span class="tex">|2|=2</span>, <span class="tex">\left|-\tfrac12\right|=\tfrac12</span>, <span class="tex">\left|\tfrac14\right|=\tfrac14</span>.<br>Least steep to steepest: <span class="tex">\boldsymbol{\tfrac14,\ -\tfrac12,\ 2,\ -5}</span>.<br>The line with slope <span class="tex">-5</span> is the steepest even though <span class="tex">-5</span> is the smallest number.</div></div></div>
+    <div class="part"><div class="pl">(b) Which line is steeper: one with slope <span class="tex">-\dfrac{3}{4}</span>, or one with slope <span class="tex">\dfrac{2}{3}</span>? Explain.</div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\left|-\tfrac34\right|=\tfrac34=0.75</span> and <span class="tex">\left|\tfrac23\right|\approx0.67</span>.<br>Since <span class="tex">0.75&gt;0.67</span>, the line with slope <span class="tex">\boldsymbol{-\tfrac34}</span> is steeper (it falls, while the other rises).</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>(b) as decimals.</b> Compare the sizes: <span class="keys"><kbd>3</kbd><kbd>÷</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> and <span class="keys"><kbd>2</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>ENTER</kbd></span>. Leave the negative sign out: steepness ignores it.</div>
+    <div class="pill-col"><button class="pill" data-keys="3 ÷ 4 =">Show 3 ÷ 4</button><button class="pill" data-keys="2 ÷ 3 =">Show 2 ÷ 3</button></div>
+  </div>
+  <div class="explainer u6l3-exgap" data-explainer="order"></div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<!-- ================= 6. Real world ================= -->
+<section class="card" data-ink="s6" data-section="6. Slope in the Real World">
+  <div class="sec-h"><span class="badge">6</span><h2>Slope in the Real World</h2></div>
+  <p>Slope is how a builder describes a roof, how an engineer describes a road or a ramp, and how a graph shows how fast one quantity changes compared with another. A grid laid over a picture gives a slope estimate, provided <b>two points on the sloped surface</b> can be identified precisely.</p>
+  <div class="explainer" data-explainer="roof"></div>
+</section>
+
+<section class="card example" data-ink="ex6" data-section="Example 6">
+  <div class="ex-head"><span class="ex-tag">Example 6</span><h3>The slope of a roofline</h3></div>
+  <p class="q">A grid has been placed over a sketch of a roof. A chimney blocks part of the roofline to the left of the peak.</p>
+  <div class="u6l3-ex6">
+    <div id="u6l3-ex6fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(a) Use the grid to determine the slope of the roofline to the right of the peak.</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Count from the peak <span class="tex">(4,6)</span> to the visible eave <span class="tex">(8,1)</span>: run <span class="tex">=4</span> right, rise <span class="tex">=-5</span> (down 5).<br>slope <span class="tex">=\tfrac{-5}{4}=\boldsymbol{-\tfrac{5}{4}}</span> (the roofline falls from left to right).</div></div></div>
+      <div class="part"><div class="pl">(b) Could this same grid reliably be used to find the slope of the roofline to the left of the peak, behind the chimney? Explain.</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No.</b> A slope read from a grid needs two points whose coordinates can be read exactly. The chimney covers the lower part of the left roofline, so the position where that roofline ends can only be guessed; an error of even one unit changes the calculated slope.</div></div></div>
+      <div class="part"><div class="pl">(c) Builders describe a roof’s <b>pitch</b> as a <em>positive</em> rise for every 12 units of run: for example, a “6 in 12” roof rises 6 for every 12 across. State the pitch of the right-hand roofline this way.</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Pitch ignores the sign: the roof drops 5 for every 4 across, and <span class="tex">\tfrac{5}{4}=\tfrac{15}{12}</span>.<br>The pitch is “<b>15 in 12</b>”: a steep roof.</div></div></div>
+    </div>
+  </div>
+  <div class="space" id="ex6-space"></div>
+  <button class="more" data-more="ex6-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s6b" data-section="6. Slope as a rate of change">
+  <h3 class="sub">Slope as a rate of change</h3>
+  <p>When the axes measure real quantities, the rise and the run have units, so the slope does too: <b>(units on the vertical axis) <em>per</em> (unit on the horizontal axis)</b>. A slope with units is called a <b>rate of change</b>. A positive rate means the quantity is <b>increasing</b>; a negative rate means it is <b>decreasing</b>. Two everyday rates of change:</p>
+  <div class="def-grid u6l3-rates">
+    <div class="def">A road’s <b>grade</b> is its slope written as a percent: an <span class="tex">8\%</span> grade rises (or falls) 8 m for every 100 m of horizontal run, a slope of <span class="tex">\tfrac{8}{100}</span>.</div>
+    <div class="def amber">Building codes require a wheelchair ramp to have a slope of <em>no more than</em> <span class="tex">\tfrac{1}{12}</span>: at least 12 cm of run for every 1 cm of rise.</div>
+  </div>
+  <div class="explainer" data-explainer="rate"></div>
+</section>
+
+<section class="card example" data-ink="ex7" data-section="Example 7">
+  <div class="ex-head"><span class="ex-tag">Example 7</span><h3>Slope as a rate of change</h3></div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) The graph shows a car’s distance from home during a highway trip.</div>
+      <div class="u6l3-ex7fig" id="u6l3-ex7a"></div>
+      <div class="u6l3-sub">(i) Determine the slope of the graph, including its units. (ii) What does the slope tell you?</div>
+      <div class="work" style="--h:140px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">(i) From <span class="tex">(0,0)</span> to <span class="tex">(3,240)</span>: rise <span class="tex">=240</span> km, run <span class="tex">=3</span> h.<br>slope <span class="tex">=\dfrac{240\text{ km}}{3\text{ h}}=\boldsymbol{80\text{ km/h}}</span>.<br>(ii) The car travels 80 km every hour: the slope is its <b>speed</b>.</div></div></div>
+    <div class="part"><div class="pl">(b) The graph shows the volume of water in a tank as it drains.</div>
+      <div class="u6l3-ex7fig" id="u6l3-ex7b"></div>
+      <div class="u6l3-sub">(i) Determine the slope of the graph, including its units. (ii) What does the negative sign mean?</div>
+      <div class="work" style="--h:140px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">(i) From <span class="tex">(0,120)</span> to <span class="tex">(4,60)</span>: rise <span class="tex">=-60</span> L, run <span class="tex">=4</span> min.<br>slope <span class="tex">=\dfrac{-60\text{ L}}{4\text{ min}}=\boldsymbol{-15\text{ L/min}}</span>.<br>(ii) The volume is <b>decreasing</b>: the tank loses 15 L every minute.</div></div></div>
+  </div>
+  <div class="space" id="ex7-space"></div>
+  <button class="more" data-more="ex7-space">+ More space</button>
+</section>
+
+<!-- ================= 7. Working backward ================= -->
+<section class="card" data-ink="s7" data-section="7. Working Backward from a Slope">
+  <div class="sec-h"><span class="badge">7</span><h2>Working Backward from a Given Slope</h2></div>
+  <p>The relationship runs in reverse too. Given a point and a target slope, <b>step off the rise and the run</b> to plot the line; given a slope and one of rise or run, <b>solve for the other</b>.</p>
+  <div class="explainer" data-explainer="stepOff"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>A negative slope has one negative part.</b> <span class="tex">-\tfrac{2}{3}</span> can be stepped as <span class="tex">\tfrac{-2}{3}</span> (down 2, right 3) or as <span class="tex">\tfrac{2}{-3}</span> (up 2, left 3). Both land on the same line.</div></div>
+</section>
+
+<section class="card example" data-ink="ex8" data-section="Example 8">
+  <div class="ex-head"><span class="ex-tag">Example 8</span><h3>From a slope back to a line, and to a missing measure</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(a) Draw a line segment on the grid which passes through the point <span class="tex">(-3,-4)</span> and has a slope of <span class="tex">\dfrac{3}{2}</span>. The segment must be long enough to cross both the <span class="tex">x</span>-axis and the <span class="tex">y</span>-axis. Then write the coordinates of three other points on the segment which have integer coordinates.</div>
+      <div class="u6l3-ex8">
+        <div class="u6l3-ex8g"><div id="u6l3-ex8fig"></div><div class="muted small">Tap the grid to plot points (tap a point again to remove it).</div></div>
+        <div class="u6l3-ex8w"><div class="u6l3-sub">Three other points with integer coordinates:</div><div class="work" style="--h:250px"></div></div>
+      </div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div class="u6l3-ans8">
+        <div id="u6l3-ex8ans"></div>
+        <div>Rise over run: from <span class="tex">(-3,-4)</span> each run of <span class="tex">+2</span> pairs with a rise of <span class="tex">+3</span>.<br><span class="tex">(-3,-4)\to(-1,-1)\to(1,2)\to(3,5)</span><br>Three other integer points: <span class="tex">\boldsymbol{(-1,-1)}</span>, <span class="tex">\boldsymbol{(1,2)}</span>, <span class="tex">\boldsymbol{(3,5)}</span>.</div></div></div></div></div>
+    <div class="part"><div class="pl">(b) A line segment has a slope of <span class="tex">-\dfrac{5}{6}</span> and a rise of <span class="tex">20</span>. Calculate the run as an exact value.</div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\text{slope}=\dfrac{\text{rise}}{\text{run}}</span>, so <span class="tex">\text{run}=\dfrac{\text{rise}}{\text{slope}}</span>:<br><span class="tex">\text{run}=\dfrac{20}{-\frac{5}{6}}=20\times\left(-\dfrac{6}{5}\right)=-\dfrac{120}{5}=-24</span><br>Check: <span class="tex">\dfrac{20}{-24}=-\dfrac{5}{6}</span> ✓. The run is <span class="tex">\boldsymbol{-24}</span>.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>(b) on the calculator:</b> run <span class="tex">=</span> rise <span class="tex">\div</span> slope, with the fraction in brackets: <span class="keys"><kbd>2</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>(</kbd><kbd>(−)</kbd><kbd>5</kbd><kbd>÷</kbd><kbd>6</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives <span class="tex">-24</span>. To check, <span class="keys"><kbd>2</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>(−)</kbd><kbd>2</kbd><kbd>4</kbd><kbd>ENTER</kbd><kbd>F◂▸D</kbd></span> shows <b class="u6l3-calcfr">−5/6</b>.</div>
+    <div class="pill-col"><button class="pill" data-keys="20 ÷ ( (−) 5 ÷ 6 ) =">Show (b)</button><button class="pill" data-keys="20 ÷ (−) 24 = F◂▸D">Check 20 ÷ (−24)</button></div>
+  </div>
+  <div class="space" id="ex8-space"></div>
+  <button class="more" data-more="ex8-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s7b" data-section="7. A missing rise or run">
+  <h3 class="sub">A missing rise or run: scale the slope</h3>
+  <p>The slope is the <b>small</b> triangle; the segment is the <b>big</b> one. Find how many times bigger, and scale the other part by the same amount.</p>
+  <div class="explainer" data-explainer="missing"></div>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Slope <span class="tex">=\dfrac{\text{rise}}{\text{run}}</span>.</b> Rise: up <span class="tex">+</span>, down <span class="tex">-</span>. Run: right <span class="tex">+</span>, left <span class="tex">-</span>. Count squares from one endpoint to the other and write the fraction in lowest terms.</div>
+    <div><b>The same everywhere.</b> Any two points on a line give the same slope: slope triangles slide and scale, and the fraction stays equal. That value is <b>the slope of the line</b>.</div>
+    <div><b>Four kinds</b> (read left to right): rising <b>positive</b>, falling <b>negative</b>, horizontal <b>0</b>, vertical <b>undefined</b>. <b>Steepness</b> is the size <span class="tex">|m|</span>: slope <span class="tex">-5</span> is steeper than slope <span class="tex">2</span>.</div>
+    <div><b>Real world and backward.</b> Slope with units is a <b>rate of change</b> (80 km/h, <span class="tex">-15</span> L/min); pitch is rise per 12 of run. Given a slope, step off rise and run to plot points, or scale it to find a missing rise or run.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u6l3" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 3 — Rise Over Run: The Slope of a Line Segment</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l4/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 4 — Slope Relationships</b><div class="muted">Rise and run become a formula, then slope tests collinear points, parallel lines and perpendicular lines</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u6l3.js';
+  boot({ key: 'u6l3', homeHref: '../../', title: '6.3 Rise Over Run' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>
