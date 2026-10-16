@@ -99,3 +99,4 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u6l4-kro b { font-family: var(--round); color: var(--red); }
 .u6l4-pstamp { align-self: center; margin-top: 10px; }
 .u6l4-sm .u6l4-line { font-size: 19px; }
+.ans .katex { display: inline-block; margin: 2px 0; }

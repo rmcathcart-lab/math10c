@@ -265,7 +265,7 @@ const hidden = {
 const LIFT = {
   sym: { label: 'Any two points', sym: true, A: [2, 2], B: [9, 7], win: { xmin: 0, xmax: 10.5, ymin: 0, ymax: 8.5 } },
   ex1a: { label: 'Example 1(a) check', A: [3, -4], B: [9, 4], nA: 'P', nB: 'Q', win: { xmin: -1, xmax: 12, ymin: -6, ymax: 6 },
-    run: ['x_2-x_1=9-3=6', '6'], rise: ['y_2-y_1=4-(-4)=8', '8'], slots: ['PQ^2=', '6^2', '8^2'], after: ['PQ=\\sqrt{36+64}', '=\\sqrt{100}=10'], stamp: 'PQ = 10' },
+    run: ['x_2-x_1=9-3=6', '6'], rise: ['y_2-y_1=4-(-4)=8', '8'], slots: ['PQ^2=', '6^2', '8^2'], after: ['PQ=\\sqrt{36+64}', '=\\sqrt{100}=10'], stamp: 'PQ = 10', riseT: 0.75 },
   ex1b: { label: 'Example 1(b) check', A: [-15, 6], B: [-9, -6], nA: 'G', nB: 'H', win: { xmin: -17, xmax: 1, ymin: -8, ymax: 8 },
     run: ['x_2-x_1=-9-(-15)=6', '6'], rise: ['y_2-y_1=-6-6=-12', '-12'], slots: ['GH^2=', '6^2', '(-12)^2'], after: ['GH=\\sqrt{36+144}=\\sqrt{180}', '=\\sqrt{36\\times5}=6\\sqrt5'], stamp: 'GH = 6√5', down: true, riseT: 0.25 }
 };
@@ -318,7 +318,7 @@ const lift = {
     const nm = (n, p) => T(n + P2(p[0], p[1]));
     return [
       { cap: `${nm(d.nA, A)} and ${nm(d.nB, B)}. Call ${T(d.nA)} point 1 and ${T(d.nB)} point 2.`,
-        run: async (c) => { const s = G.segment(A, B, { color: SEG, width: 5 }); await G.drawIn(s, 700, c); await G.reveal(G.point(...A, { color: SEG, label: nm(d.nA, A), pos: B[1] > A[1] ? 's' : 'n' }), c); await G.reveal(G.point(...B, { color: SEG, label: nm(d.nB, B), pos: B[1] > A[1] ? 'n' : 's' }), c); } },
+        run: async (c) => { const s = G.segment(A, B, { color: SEG, width: 5 }); await G.drawIn(s, 700, c); await G.reveal(G.point(...A, { color: SEG, label: nm(d.nA, A), pos: 's' }), c); await G.reveal(G.point(...B, { color: SEG, label: nm(d.nB, B), pos: B[1] > A[1] ? 'n' : 's' }), c); } },
       { cap: `The corner: ${T('(x_2,\\ y_1)=' + P2(C[0], C[1]))}, ${B[1] > A[1] ? 'below' : 'above'} ${T(d.nB)} and across from ${T(d.nA)}.`,
         run: async (c) => { await drawLegs(G, c, A, B); await G.reveal(G.point(...C, { color: INK, label: T(P2(C[0], C[1])), pos: B[1] > A[1] ? 's' : 'n' }), c); } },
       { cap: `<b>Run:</b> ${T(d.run[0])}.`,
@@ -364,7 +364,7 @@ const order = {
       { cap: `The segment from ${T(d.nA)} to ${T(d.nB)} and its right triangle.`,
         run: async (c) => {
           await G.drawIn(G.segment(A, B, { color: SEG, width: 5 }), 600, c); await drawLegs(G, c, A, B, { ms: 400 });
-          await G.reveal(G.point(...A, { color: SEG, label: T(d.nA + P2(...A)), pos: B[1] > A[1] ? 's' : 'n' }), c);
+          await G.reveal(G.point(...A, { color: SEG, label: T(d.nA + P2(...A)), pos: 's' }), c);
           await G.reveal(G.point(...B, { color: SEG, label: T(d.nB + P2(...B)), pos: B[1] > A[1] ? 'n' : 's' }), c);
         } },
       { cap: `<b>${T(d.nA)} first:</b> walk from ${T(d.nA)} to ${T(d.nB)}: ${d.w1}.`,
@@ -579,7 +579,7 @@ const count = {
       { cap: `They meet ${T(String(half(n)))} squares in from each end: the midpoint ${T('M' + P2(...M))}.${n % 2 ? ' A midpoint can sit in the middle of a square.' : ''}`,
         run: async (c) => {
           G.remove(w1, w2);
-          const m = G.point(...M, { color: MID, r: 9, label: T('M' + P2(...M)), pos: hz ? 'n' : 'e', labelColor: MID }); await G.reveal(m, c);
+          const m = G.point(...M, { color: MID, r: 9, label: T('M' + P2(...M)), pos: hz ? 'n' : 'e', labelColor: MID, gap: hz ? 30 : 5 }); await G.reveal(m, c);
           const o = -1.15;
           const segs = hz ? [[[A[0], A[1] + o], [M[0], M[1] + o]], [[M[0], M[1] + o], [B[0], B[1] + o]]] : [[[A[0] + o, A[1]], [M[0] + o, M[1]]], [[M[0] + o, M[1]], [B[0] + o, B[1]]]];
           for (const [p, q] of segs) { await G.drawIn(G.segment(p, q, { color: MID, width: 2.5, arrowA: true, arrowB: true }), 400, c); const mm = mid(p, q); await pop(c, G.label(...mm, T(String(half(n))), { pos: hz ? 's' : 'w', color: MID, gap: 3, cls: 'u6l2-hl' })); }
@@ -695,7 +695,7 @@ const average = {
       { cap: sym ? `Put the two averages together: that point lands exactly halfway along the segment.` : `Put them together: ${T('M' + P2(...M))}. It lands right on the segment, halfway along.`,
         run: async (c) => {
           await G.drawIn(G.vline(M[0], { color: RUN, width: 2.5 }), 500, c); await G.drawIn(G.hline(M[1], { color: RISE, width: 2.5 }), 500, c);
-          await G.reveal(G.point(...M, { color: MID, r: 9, label: sym ? T('M') : T('M' + P2(...M)), pos: (B[1] - A[1]) * (B[0] - A[0]) > 0 ? 'se' : 'ne', labelColor: MID }), c);
+          await G.reveal(G.point(...M, { color: MID, r: 9, label: sym ? T('M') : T('M' + P2(...M)), pos: (B[1] - A[1]) * (B[0] - A[0]) > 0 ? 'nw' : 'ne', labelColor: MID }), c);
         } },
       { cap: `The <b>midpoint formula</b>: average the ${T('x')}’s and average the ${T('y')}’s.`,
         run: async (c) => { const f = line(P, T('M\\left(\\dfrac{x_1+x_2}{2},\\ \\dfrac{y_1+y_2}{2}\\right)'), 'u6l2-boxed'); await pop(c, f, 500); } }

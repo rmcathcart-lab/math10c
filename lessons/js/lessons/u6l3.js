@@ -547,11 +547,11 @@ const dial = {
   intro: 'The line turns about the origin. The dial’s needle points along the line, left to right. Press <b>Next</b>.',
   make(stage, k, ex) {
     const d = DIAL[k];
-    const G = new Graph(stage, { x: 14, y: 14, width: 440, height: 440, xmin: -5.5, xmax: 5.5, ymin: -5.5, ymax: 5.5, xlabels: 2, ylabels: 2 });
-    const PW = ex.W - 488;
-    const P = panel(stage, 474, 14, PW, 440, '', 'u6l3-dialp');
+    const G = new Graph(stage, { x: 14, y: 24, width: 400, height: 420, xmin: -5.5, xmax: 5.5, ymin: -5.5, ymax: 5.5, xlabels: 2, ylabels: 2 });
+    const PW = ex.W - 448;
+    const P = panel(stage, 434, 14, PW, 440, '', 'u6l3-dialp');
     // the dial: a half-disc opening to the right; up = steepest rising, down = steepest falling
-    const DW = 270, DH = 410, cx = 34, cy = DH / 2, R = 172;
+    const DW = 270, DH = 410, cx = 80, cy = DH / 2, R = 152;
     const row = h('div', 'u6l3-dialrow'); P.appendChild(row);
     const wrap = h('div', 'u6l3-dialwrap'); box(wrap, DW, DH); row.appendChild(wrap);
     const sv = svgEl('svg', { width: DW, height: DH, viewBox: `0 0 ${DW} ${DH}` }, wrap);
@@ -567,7 +567,7 @@ const dial = {
       dlab(lx, ly, T((sg < 0 ? '-' : '') + (b === 1 ? String(a) : `\\tfrac{${a}}{${b}}`)), 'e', 'u6l3-dtick');
     }));
     { const [x0, y0] = ptA(0, R - 8), [x1, y1] = ptA(0, R + 8); svgEl('line', { x1: x0, y1: y0, x2: x1, y2: y1, stroke: INK, 'stroke-width': 2 }, sv); dlab(cx + R + 14, cy, T('0'), 'e', 'u6l3-dtick'); }
-    dlab(cx + 6, cy - R - 2, 'undefined', 'ne', 'u6l3-dtick u6l3-und'); dlab(cx + 6, cy + R + 2, 'undefined', 'se', 'u6l3-dtick u6l3-und');
+    dlab(cx - 4, cy - R + 6, 'undefined', 'w', 'u6l3-dtick u6l3-und'); dlab(cx - 4, cy + R - 6, 'undefined', 'w', 'u6l3-dtick u6l3-und');
     dlab(cx + R * 0.42, cy - R * 0.5, 'positive', 'c', 'u6l3-dzone u6l3-pos'); dlab(cx + R * 0.42, cy + R * 0.5, 'negative', 'c', 'u6l3-dzone u6l3-neg');
     const needle = svgEl('line', { x1: cx, y1: cy, x2: cx + R - 14, y2: cy, stroke: INK, 'stroke-width': 5, 'stroke-linecap': 'round' }, sv);
     svgEl('circle', { cx, cy, r: 8, fill: INK }, sv);
@@ -661,7 +661,8 @@ const order = {
           for (const s of sl) {
             const L = G.line({ m: s.m, b: 0 }, { color: s.col, width: 4 }); s.L = L; await G.drawIn(L, 500, c);
             const r = Math.min(4.3, 4.3 / Math.abs(s.m)), x = s.m > 0 ? r : -r;
-            const lab = G.label(x, s.m * x, T('m=' + fr(s.a, s.b, true)), { pos: s.m > 0 ? 'nw' : 'ne', cls: 'bk-ptlab', color: s.col }); await fadeIn(c, lab);
+            const steep = Math.abs(s.m) > 1, pos = steep ? (s.m > 0 ? 'ne' : 'nw') : (s.m > 0 ? 'nw' : 'ne');
+            const lab = G.label(x, s.m * x, T('m=' + fr(s.a, s.b, true)), { pos, cls: 'bk-ptlab', color: s.col }); await fadeIn(c, lab);
           }
         } },
       { cap: `Drop the signs: ${sl.map((s) => T(`|${s.tx}|=${fr(Math.abs(s.a), s.b)}`)).join(', ')}. Put each size on the steepness line.`,

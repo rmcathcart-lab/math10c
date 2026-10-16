@@ -138,3 +138,6 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u6l3-nlhost .bk-ptlab { font-size: 19px; }
 .u6l3-ptab .katex { font-size: 1.05em; }
 .u6l3-ptab td { height: 50px; }
+.u6l3-dialrow .u6l3-dm { font-size: 27px; }
+.u6l3-dialrow .u6l3-ds { font-size: 17px; }
+.u6l3-dialrow .u6l3-rulebox { font-size: 17px; padding: 6px 10px; }
