@@ -289,7 +289,7 @@ const collinear = {
     const mName = (i, j) => (d.names ? 'm' : `m_{${d.pts[i][0]}${d.pts[j][0]}}`);
     let t = null;
     const steps = d.pairs.map(([i, j], q) => ({
-      cap: `${d.names ? `${d.pts[i][0]} to ${d.pts[j][0]}` : `${T(d.pts[i][0] + d.pts[j][0])}`}: rise ${S[q].rise}, run ${S[q].run}, slope ${T(S[q].val)}.${q && S[q].val !== S[0].val ? ' <b>Different!</b>' : q ? ' The same slope.' : ''}`,
+      cap: `${d.names ? `${d.pts[i][0]} to ${d.pts[j][0]}` : `${T(d.pts[i][0] + d.pts[j][0])}`}: rise ${T(String(S[q].rise))}, run ${T(String(S[q].run))}, slope ${T(S[q].val)}.${q && S[q].val !== S[0].val ? ' <b>Different!</b>' : q ? ' The same slope.' : ''}`,
       run: async (c) => {
         dropTri(t); t = tri(G, PT[i], PT[j], { runLab: T(`${S[q].run}`), riseLab: T(`${S[q].rise}`) }); await showTri(c, t, 380);
         await show(c, line(P, nm(i, j) + T(`${mName(i, j)}=${S[q].all}`), q && S[q].val !== S[0].val ? 'u6l4-hot' : ''));
@@ -377,7 +377,7 @@ const translate = {
     G.segment(A, B, { color: BLUE, width: 4.5 }); pt(G, an, ax, ay, ap, { name: true }); pt(G, bn, bx, by, bp, { name: true });
     const t0 = tri(G, A, B, { runLab: T(`${s.run}`), riseLab: T(`${s.rise}`) });
     const imgs = [];
-    const steps = [{ cap: `${T(an + bn)} and its slope triangle: run ${s.run}, rise ${s.rise}. ${T(`m_{${an}${bn}}=${s.all}`)}.`,
+    const steps = [{ cap: `${T(an + bn)} and its slope triangle: run ${T(String(s.run))}, rise ${T(String(s.rise))}. ${T(`m_{${an}${bn}}=${s.all}`)}.`,
       run: async (c) => { await showTri(c, t0); await show(c, line(P, T(`m_{${an}${bn}}=${s.all}`))); } }];
     d.moves.forEach((mv) => {
       const C = [ax + mv.dx, ay + mv.dy], D = [bx + mv.dx, by + mv.dy], sc = slopeOf(C, D), [cn, dn] = mv.n;
@@ -430,7 +430,7 @@ const rotate = {
     let cp, l1, l2;
     const [ox, oy] = G.toPx(0, 0);
     return [
-      { cap: `${T('O' + n)}: run ${T(at)}, rise ${T(bt)}. ${T(`m_{O${n}}=\\dfrac{${bt}}{${at}}${g ? '' : '=' + m1}`)}.`,
+      { cap: `${T('O' + n)}: run ${T(at)}, rise ${T(bt)}. ${T(`m_{O${n}}=\\dfrac{${bt}}{${at}}${g || m1 === `\\dfrac{${b}}{${a}}` ? '' : '=' + m1}`)}.`,
         run: async (c) => { await showTri(c, t0); await show(c, line(P, T(`m_{O${n}}=\\dfrac{${bt}-0}{${at}-0}=${g ? m1 : `\\dfrac{${b}}{${a}}` + (frac(b, a) === `\\dfrac{${b}}{${a}}` ? '' : '=' + m1)}`), 'u6l4-big')); } },
       { cap: `Turn the whole triangle <b>90° clockwise</b> about ${T('O')}. ${g ? T('P(a,\\ b)\\to Q(b,\\ -a)') : T(`${n}(${a},\\ ${b})\\to ${n2}(${b},\\ ${-a})`)}: swap the coordinates, then change the sign of the new y.`,
         run: async (c) => {
@@ -616,7 +616,7 @@ const rightAngle = {
         run: async (c) => { await pulse(c, pts[0].label, 1.3); await show(c, line(P, `at ${T('J')}: ${T(`${prodTex(sJK.val, sJL.val)}=1`)}`, 'u6l4-hot')); } },
       { cap: `At ${T('K')}: ${T(`${prodTex(sJK.val, sKL.val)}=-\\dfrac25`)}. At ${T('L')}: ${T(`${prodTex(sJL.val, sKL.val)}=-\\dfrac52`)}. Neither is ${T('-1')}.`,
         run: async (c) => { await show(c, line(P, `at ${T('K')}: ${T(`${prodTex(sJK.val, sKL.val)}=-\\dfrac25`)}`, 'u6l4-hot')); await show(c, line(P, `at ${T('L')}: ${T(`${prodTex(sJL.val, sKL.val)}=-\\dfrac52`)}`, 'u6l4-hot')); } },
-      { cap: `No pair of sides has a product of ${T('-1')}, so ${T('\\triangle JKL')} has <b>no right angle</b>. Eyes can be fooled: the angle at ${T('J')} looks close.`,
+      { cap: `No pair of sides has a product of ${T('-1')}, so ${T('\\triangle JKL')} has <b>no right angle</b>. Testing every corner is the only way to be sure.`,
         run: async (c) => { const s = stamp(stage, 'no right angle', { ok: false, x: G.W / 2 + 14, y: 44 }); await stampIn(c, s); } }
     ];
   }
@@ -633,7 +633,7 @@ const dialK = {
   title: 'Turn the dial: find k',
   height: 490,
   choices: Object.keys(KD).map((k) => ({ v: k, label: KD[k].label })),
-  intro: 'One line has slope −5/6. The other has run 9 and rise <b>k</b>. Change k until the lines are right. Press <b>Next</b>.',
+  intro: `One line has slope ${T('-\\tfrac56')}. The other has run 9 and rise <b>k</b>. Change k until the lines are right. Press <b>Next</b>.`,
   make(stage, k, ex) {
     const d = KD[k];
     const G = sqG(stage, 14, 14, { xmin: -10, xmax: 10, ymin: -10, ymax: 10 }, 21.5, { xlabels: 2, ylabels: 2 });

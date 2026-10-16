@@ -24,6 +24,8 @@ function fr(n, d, f = '\\frac') {
   const g = gcd(Math.abs(n), d) || 1; n /= g; d /= g;
   return d === 1 ? String(n) : (n < 0 ? '-' : '') + `${f}{${Math.abs(n)}}{${d}}`;
 }
+/** "\frac{n}{d}=reduced", or just the fraction when it is already reduced with a positive bottom */
+const frEq = (n, d) => { const r = fr(n, d); return r === `\\frac{${n}}{${d}}` ? r : `\\frac{${n}}{${d}}=${r}`; };
 /** √n simplified, as TeX */
 function rad(n) {
   for (let k = Math.floor(Math.sqrt(n)); k > 1; k--) if (n % (k * k) === 0) { const r = n / (k * k); return r === 1 ? String(k) : `${k}\\sqrt{${r}}`; }
@@ -413,14 +415,14 @@ function perpSteps(G, Pn, O, run, rise, opts = {}) {
         await tween(c, 1500, (t) => { st.a = 90 * t; leg1._bkDraw(); leg2._bkDraw(); hyp._bkDraw(); });
         st.a = 90; leg1._bkDraw(); leg2._bkDraw(); hyp._bkDraw();
       } },
-    { cap: `Rise and run <b>swap</b>, and one sign flips. The old run ${T(String(run))} is now the rise; the old rise ${T(String(rise))} is now the run, ${T(String(nRun))}. ${T('m_2=\\frac{' + nRise + '}{' + nRun + '}=' + m2)}.`,
+    { cap: `Rise and run <b>swap</b>, and one sign flips. The old run ${T(String(run))} is now the rise; the old rise ${T(String(rise))} is now the run, ${T(String(nRun))}. ${T('m_2=' + frEq(nRise, nRun))}.`,
       run: async (c) => {
         leg1.path.setAttribute('stroke', PUR); leg1.style.color = PUR; leg2.path.setAttribute('stroke', AMB); leg2.style.color = AMB;
         const e1 = R([run, 0]), e2 = R([run, rise]);
         l1 = mkLab(PUR); l1.innerHTML = `rise ${T(String(nRise))}`; place(l1, ...G.toPx(O[0], O[1] + nRise / 2), nRun > 0 ? 'w' : 'e', 8);
         l2 = mkLab(AMB); l2.innerHTML = `run ${T(String(nRun))}`; place(l2, ...G.toPx(e1[0] + nRun / 2, e1[1]), 'n', 6);
         await fadeIn(c, l1); await fadeIn(c, l2); void e2;
-        await say(c, Pn, T(`m_2=\\frac{${nRise}}{${nRun}}=${m2}`), 'u6l6-mline');
+        await say(c, Pn, T(`m_2=${frEq(nRise, nRun)}`), 'u6l6-mline');
       } },
     { cap: `The two slopes are <b>negative reciprocals</b>: flip and change the sign. Their product is ${T('-1')}, and the segments meet at a right angle.`,
       run: async (c) => {
@@ -631,7 +633,7 @@ const whichTool = {
     const sideStep = (i) => {
       const s = S[i], sq2 = `\\sqrt{${pn(s.run)}^2+${pn(s.rise)}^2}`;
       return {
-        cap: `${T(s.name)}: run ${T(String(s.run))}, rise ${T(String(s.rise))}. ${T(`m_{${s.name}}=\\frac{${s.rise}}{${s.run}}=${s.m}`)}. Length ${T(`${s.name}=${sq2}=${lenTex(s.len2)}`)}.`,
+        cap: `${T(s.name)}: run ${T(String(s.run))}, rise ${T(String(s.rise))}. ${T(`m_{${s.name}}=${frEq(s.rise, s.run)}`)}. Length ${T(`${s.name}=${sq2}=${lenTex(s.len2)}`)}.`,
         run: async (c) => {
           if (i) stairs[i - 1].dim(0.18);
           const st = stair(G, { x: s.a[0], y: s.a[1], run: s.run, rise: s.rise }, { width: 3.5, labels: false }); stairs.push(st); await st.show(c, 360);
