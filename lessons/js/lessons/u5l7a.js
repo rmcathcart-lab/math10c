@@ -60,9 +60,10 @@ const REL = {
 const relPairs = (k) => { const out = []; D.forEach((d) => R.forEach((r) => { if (REL[k].test(d, r)) out.push([d, r]); })); return out; };
 const PEOPLE = ['Ava', 'Ben', 'Cleo', 'Dev', 'Eli'], DATES = ['Mar 3', 'Jul 14', 'Oct 31', 'Dec 25'], BDAY = [0, 1, 1, 2, 3];
 
-/* closed smooth curve through points (TikZ "smooth cycle": cubic Béziers, tension 0.55 → 0.2775) */
+/* closed smooth curve through points (TikZ "smooth cycle": cubic Béziers; pgf's default plot tension 0.5 → 0.5 × 0.2775 = 0.13875,
+   so the curve matches the booklet's figure and x = 0 crosses it near y ≈ 1.39 and y ≈ −1.68) */
 function smoothCycle(P, n = 60) {
-  const k = 0.2775, m = P.length, out = [];
+  const k = 0.13875, m = P.length, out = [];
   for (let i = 0; i < m; i++) {
     const p0 = P[(i - 1 + m) % m], p1 = P[i], p2 = P[(i + 1) % m], p3 = P[(i + 2) % m];
     const c1 = [p1[0] + k * (p2[0] - p0[0]), p1[1] + k * (p2[1] - p0[1])], c2 = [p2[0] - k * (p3[0] - p1[0]), p2[1] - k * (p3[1] - p1[1])];
