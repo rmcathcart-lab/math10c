@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Relations and Functions Review · Math 10C 5.10</title>
+<meta name="description" content="Math 10C Unit 5 Lesson 10: the relations and functions review. Discrete and continuous variables, domain and range as a graph's shadows, intercepts from y = 0 and x = 0, the vertical line test, and function notation forwards and backwards, with every rule on one card. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u5l10.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 5 Relations and Functions · Lesson 10</div>
+  <h1>Relations and Functions Review: Domain, Range, and Function Notation</h1>
+  <p class="lede">The whole unit in one lesson. Discrete or continuous, domain and range as a graph’s <b>shadows</b>, intercepts where a graph <b>meets the axes</b>, the <b>vertical line test</b>, and function notation used <b>forwards</b> and <b>backwards</b>. All the rules fit on one card. Ten examples put them to work.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>tell a <b>discrete</b> variable from a <b>continuous</b> one, and write a domain or range as a <b>list</b> or in <b>set-builder notation</b></li>
+      <li>read the domain and range of a graph as its shadows on the <span class="tex">x</span>- and <span class="tex">y</span>-axes</li>
+      <li>find intercepts by substituting <span class="tex">y=0</span> and <span class="tex">x=0</span></li>
+      <li>decide whether a relation is a function, using the <b>vertical line test</b></li>
+      <li>evaluate <span class="tex">f(a)</span> forwards and solve <span class="tex">f(x)=b</span> backwards, from a rule or from a graph</li>
+    </ul>
+  </div>
+  <div class="u5l10-outs">
+    <div class="outcome"><b>RF1</b> Interpret and explain the relationships among data, graphs and situations.</div>
+    <div class="outcome"><b>RF2</b> Demonstrate an understanding of relations and functions.</div>
+    <div class="outcome"><b>RF5</b> Determine the characteristics of the graphs of linear relations, including the intercepts, slope, domain and range.</div>
+    <div class="outcome"><b>RF8</b> Represent a linear function, using function notation.</div>
+  </div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: Wanted: One Graph" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Wanted: One Graph</h2></div>
+  <p class="big">Four suspects. Only one matches <b>every</b> clue on the poster.</p>
+  <div class="u5l10-wtop">
+    <div class="u5l10-poster">
+      <div class="u5l10-pin l"></div><div class="u5l10-pin r"></div>
+      <div class="u5l10-wanted">WANTED</div>
+      <div class="u5l10-one">one graph</div>
+      <ul class="u5l10-clues">
+        <li><b>is a function</b></li>
+        <li><b>domain:</b><br><span class="tex">\{x\mid -4\le x\le 4,\ x\in\mathbb{R}\}</span></li>
+        <li><b>range:</b><br><span class="tex">\{y\mid -2\le y\le 2,\ y\in\mathbb{R}\}</span></li>
+        <li><b><span class="tex">x</span>-intercepts:</b> <span class="tex">-2</span> and <span class="tex">2</span></li>
+        <li><b><span class="tex">y</span>-intercept:</b> <span class="tex">2</span></li>
+      </ul>
+    </div>
+    <div class="u5l10-suspects">
+      <div class="u5l10-sus"><div class="u5l10-susfig" data-suspect="A"></div><b class="u5l10-tagl">A</b></div>
+      <div class="u5l10-sus"><div class="u5l10-susfig" data-suspect="B"></div><b class="u5l10-tagl">B</b></div>
+      <div class="u5l10-sus"><div class="u5l10-susfig" data-suspect="C"></div><b class="u5l10-tagl">C</b></div>
+      <div class="u5l10-sus"><div class="u5l10-susfig" data-suspect="D"></div><b class="u5l10-tagl">D</b></div>
+    </div>
+  </div>
+
+  <div class="u5l10-wqs">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Read suspect C’s <span class="tex">x</span>-intercepts.</div></div>
+      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">-2</span> and <span class="tex">2</span>: C crosses the <span class="tex">x</span>-axis at <span class="tex">(-2,\ 0)</span> and <span class="tex">(2,\ 0)</span>.</div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>What is suspect D’s <span class="tex">y</span>-intercept?</div></div>
+      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">1</span>. D crosses the <span class="tex">y</span>-axis at <span class="tex">(0,\ 1)</span>, in the dip between its two peaks.</div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Which one fails the <b>vertical line test</b>?</div></div>
+      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><b>A</b>. Its hook runs back along <span class="tex">y=-2</span> from <span class="tex">x=4</span> to <span class="tex">x=1</span>, so the line <span class="tex">x=3</span> hits it twice: <span class="tex">(3,\ -1)</span> and <span class="tex">(3,\ -2)</span>.</div></div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which suspect matches <b>every</b> clue on the poster? <b>Guess first.</b></div></div>
+    <div class="poll-opts u5l10-c4">
+      <div class="opt"><b>A</b> suspect A</div>
+      <div class="opt"><b>B</b> suspect B</div>
+      <div class="opt right"><b>C</b> suspect C</div>
+      <div class="opt"><b>D</b> suspect D</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>C.</b> It passes all five: a function on <span class="tex">-4\le x\le 4</span> with range <span class="tex">-2\le y\le 2</span>, crossing the axes at <span class="tex">x=\pm2</span> and <span class="tex">y=2</span>. Each decoy breaks <b>exactly one</b> clue.<br>
+      <span class="muted"><b>A</b> is not a function (its domain, range and intercepts all match, which makes it the sneakiest). <b>B</b>’s range is <span class="tex">\{y\mid -3\le y\le 2,\ y\in\mathbb{R}\}</span>: its ends sit one unit too low. <b>D</b>’s <span class="tex">y</span>-intercept is <span class="tex">1</span>, not <span class="tex">2</span>.</span><br>
+      <b>Today’s lesson:</b> the poster is a checklist of the whole unit. Check <b>every</b> clue.</div>
+  </div>
+
+  <h3 class="sub u5l10-gap">Check every clue</h3>
+  <div class="explainer" data-explainer="wanted"></div>
+
+  <div class="bk-wq u5l10-bonus">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Write the rule of suspect C in two pieces. Then find <span class="tex">f(-3)</span> and <span class="tex">f(3)</span>.</div></div>
+    <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">f(x)=x+2</span> for <span class="tex">-4\le x\le 0</span>, and <span class="tex">f(x)=-x+2</span> for <span class="tex">0\le x\le 4</span>. Then <span class="tex">f(-3)=-1</span> and <span class="tex">f(3)=-1</span>.</div>
+  </div>
+  <p class="u5l10-social">Challenge a neighbour: sketch a suspect that breaks <b>exactly one</b> clue. Can they spot which?</p>
+</section>
+
+<!-- ================= rules at a glance ================= -->
+<section class="card u5l10-recap" data-ink="recap" data-section="Rules at a Glance">
+  <div class="sec-h"><span class="badge">★</span><h2>Unit 5 Rules at a Glance</h2></div>
+  <div class="u5l10-rules">
+    <div class="u5l10-rule">
+      <div class="u5l10-rh"><b>Discrete or continuous</b><small>5.1</small></div>
+      <div class="u5l10-rfig" data-mini="disc"></div>
+      <div class="u5l10-rt"><b>Counted</b> (students, pages): <b>discrete</b>, separate dots. <b>Measured</b> (time, volume): <b>continuous</b>, a line or curve.</div>
+    </div>
+    <div class="u5l10-rule">
+      <div class="u5l10-rh"><b>Input → output</b><small>5.2</small></div>
+      <div class="u5l10-rfig" data-mini="io"></div>
+      <div class="u5l10-rt">In <span class="tex">(x,\ y)</span>: <b class="u5l10-am">first</b> = input = independent, across. <b class="u5l10-pu">Second</b> = output = dependent, up.</div>
+    </div>
+    <div class="u5l10-rule">
+      <div class="u5l10-rh"><b>Domain and range</b><small>5.4</small></div>
+      <div class="u5l10-rfig" data-mini="dr"></div>
+      <div class="u5l10-rt"><b class="u5l10-am">Domain</b>: shadow on the <span class="tex">x</span>-axis. <b class="u5l10-pu">Range</b>: shadow on the <span class="tex">y</span>-axis. Few values: a list <span class="tex">\{2,5,9\}</span>. Infinitely many: <span class="tex">\{x\mid x\ge-3,\ x\in\mathbb{R}\}</span>.</div>
+    </div>
+    <div class="u5l10-rule">
+      <div class="u5l10-rh"><b>Intercepts</b><small>5.3</small></div>
+      <div class="u5l10-rfig" data-mini="int"></div>
+      <div class="u5l10-rt"><b class="u5l10-am"><span class="tex">x</span>-intercept</b>: set <span class="tex">y=0</span>. <b class="u5l10-pu"><span class="tex">y</span>-intercept</b>: set <span class="tex">x=0</span>. The intercept is a number; the intercept <b>point</b> is a pair.</div>
+    </div>
+    <div class="u5l10-rule">
+      <div class="u5l10-rh"><b>Function?</b><small>5.7A</small></div>
+      <div class="u5l10-rfig" data-mini="vlt"></div>
+      <div class="u5l10-rt">Every input has <b>exactly one</b> output. <b>Vertical line test</b>: no vertical line hits the graph twice.</div>
+    </div>
+    <div class="u5l10-rule">
+      <div class="u5l10-rh"><b>Function notation</b><small>5.7B · 5.8</small></div>
+      <div class="u5l10-rfig" data-mini="fn"></div>
+      <div class="u5l10-rt"><span class="tex">f(a)</span>: <b>forwards</b>, substitute. <span class="tex">f(x)=b</span>: <b>backwards</b>, solve. <span class="tex">f(x)</span> means “<span class="tex">f</span> of <span class="tex">x</span>”, never <span class="tex">f</span> times <span class="tex">x</span>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 1. Variables, domain, range ================= -->
+<section class="card" data-ink="s1" data-section="1. Variables, Domain, and Range">
+  <div class="sec-h"><span class="badge">1</span><h2>Variables, Domain, and Range</h2></div>
+  <div class="def">A variable is <b>discrete</b> if it can take only separate, countable values, such as a number of items. It is <b>continuous</b> if it can take any value within an interval, such as a measurement of time, length or volume.</div>
+  <div class="def amber">The <b>domain</b> of a relation is the set of values taken by the <b>independent</b> variable: the inputs, the first coordinates, plotted on the <b>horizontal</b> axis. The <b>range</b> is the set of values taken by the <b>dependent</b> variable: the outputs, the second coordinates, plotted on the <b>vertical</b> axis.</div>
+  <div class="explainer" data-explainer="discCont"></div>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. How the answer is written">
+  <h3 class="sub">How the answer is written</h3>
+  <p>A relation with finitely many values gets a <b>list</b> inside braces, each value written <b>once</b> and in <b>increasing order</b>, e.g. <span class="tex">D=\{2,5,9\}</span>. A relation with infinitely many values gets <b>set-builder notation</b>, e.g. <span class="tex">R=\{y\mid y\ge-3,\ y\in\mathbb{R}\}</span> (here <span class="tex">R</span> names the range and <span class="tex">\mathbb{R}</span> the real numbers). A set unbounded in both directions is written <span class="tex">\{x\mid x\in\mathbb{R}\}</span>. For a count, use <span class="tex">W</span> (whole numbers), or <span class="tex">I</span> with a lower bound such as <span class="tex">n\ge0</span>, in place of <span class="tex">\mathbb{R}</span>.</p>
+  <div class="explainer" data-explainer="notation"></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Discrete or continuous</h3></div>
+  <p class="q">Classify each variable as discrete or continuous.</p>
+  <div class="parts u5l10-p4">
+    <div class="part"><div class="pl">(a) The number of students in a classroom.</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A classroom holds a whole number of students; there is no such thing as 23.4 students. Only separate, countable values: <b>discrete</b>.</div></div></div>
+    <div class="part"><div class="pl">(b) The time taken to swim 100 metres.</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A stopwatch reading can be any value in an interval: 61.34 s, 61.341 s, and so on. <b>Continuous</b>.</div></div></div>
+    <div class="part"><div class="pl">(c) The volume of water in a tank.</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Volume can take any value in a range, such as 14.7 L. <b>Continuous</b>.</div></div></div>
+    <div class="part"><div class="pl">(d) The number of pages in a book.</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A book has a whole number of pages, so only separate, countable values occur: <b>discrete</b>.</div></div></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s1c" data-section="1. Inputs across, outputs up">
+  <h3 class="sub">Inputs across, outputs up</h3>
+  <p>Every ordered pair <span class="tex">(x,\ y)</span> is an input and its output. The input is the <b>independent</b> variable (the cause); the output is the <b>dependent</b> variable (the effect, which <b>depends on</b> the input).</p>
+  <div class="explainer" data-explainer="ioAxes"></div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Finding the false statement</h3></div>
+  <p class="q">Exactly one of the following statements is <b>false</b>. Identify it and explain why.</p>
+  <div class="parts c1">
+    <div class="part">
+      <div class="bk-mc u5l10-stm" data-answer="B" data-cols="2" data-pick>
+        <div>(a) The domain of a relation is the set of values taken by the independent variable.</div>
+        <div>(b) The independent variable is represented by the second coordinate of each ordered pair.</div>
+        <div>(c) On a Cartesian plane, the outputs of a relation are graphed on the vertical axis.</div>
+        <div>(d) The range of a relation is the set of values taken by the dependent variable.</div>
+      </div>
+      <div class="work" style="--h:150px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Statement (b) is false.</b> In an ordered pair <span class="tex">(x,\ y)</span> the <b>first</b> coordinate <span class="tex">x</span> is the independent variable (the input) and the <b>second</b> coordinate <span class="tex">y</span> is the dependent variable (the output). Statement (b) reverses this.<br>(a), (c) and (d) are all correct: the domain is the set of independent-variable values, outputs are graphed vertically, and the range is the set of dependent-variable values.</div></div>
+    </div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s1d" data-section="1. Domain and range: the shadows">
+  <h3 class="sub">Domain and range are the graph’s shadows</h3>
+  <p>Squash the graph straight down onto the <span class="tex">x</span>-axis: the shadow is the <b>domain</b>. Squash it sideways onto the <span class="tex">y</span>-axis: the shadow is the <b>range</b>. A closed dot is included, an open dot is not, and an arrow keeps going forever.</p>
+  <div class="explainer" data-explainer="shadow"></div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Domain and range from a graph</h3></div>
+  <p class="q">The graphs of two relations, <span class="tex">P</span> and <span class="tex">Q</span>, are shown below. Both curves continue forever in the directions of the arrows. State the domain and range of each relation, then say whether the two domains are the same or different, and whether the two ranges are the same or different.</p>
+  <div class="u5l10-pq">
+    <figure><div id="u5l10-figP"></div><figcaption>Relation <span class="tex">P</span></figcaption></figure>
+    <figure><div id="u5l10-figQ"></div><figcaption>Relation <span class="tex">Q</span></figcaption></figure>
+  </div>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) Relation <span class="tex">P</span>: domain and range.</div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The curve opens to the right from its leftmost point at <span class="tex">x=-2</span>, and continues up and down forever.<br><span class="tex">D=\{x\mid x\ge-2,\ x\in\mathbb{R}\}</span><br><span class="tex">R=\{y\mid y\in\mathbb{R}\}</span></div></div></div>
+    <div class="part"><div class="pl">(b) Relation <span class="tex">Q</span>: domain and range.</div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The curve opens upward from its lowest point <span class="tex">(0,\ -1)</span>, and continues left and right forever.<br><span class="tex">D=\{x\mid x\in\mathbb{R}\}</span><br><span class="tex">R=\{y\mid y\ge-1,\ y\in\mathbb{R}\}</span></div></div></div>
+    <div class="part"><div class="pl">(c) Same or different?</div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">P</span>’s domain is restricted; <span class="tex">Q</span>’s is all real numbers: the <b>domains are different</b>.<br><span class="tex">P</span>’s range is all real numbers; <span class="tex">Q</span>’s is restricted: the <b>ranges are different</b> as well.</div></div></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<!-- ================= 2. Intercepts ================= -->
+<section class="card" data-ink="s2" data-section="2. Intercepts of a Relation">
+  <div class="sec-h"><span class="badge">2</span><h2>Intercepts of a Relation</h2></div>
+  <div class="def-grid">
+    <div class="def amber">An <b><span class="tex">x</span>-intercept</b> is the value of <span class="tex">x</span> where the graph meets (crosses or touches) the <span class="tex">x</span>-axis: <b>substitute <span class="tex">y=0</span></b> and solve for <span class="tex">x</span>.</div>
+    <div class="def u5l10-defpu">A <b><span class="tex">y</span>-intercept</b> is the value of <span class="tex">y</span> where the graph meets the <span class="tex">y</span>-axis: <b>substitute <span class="tex">x=0</span></b> and solve for <span class="tex">y</span>.</div>
+  </div>
+  <p>As in Lesson 3, the <i>intercept</i> is the value and the <i>intercept point</i> is the ordered pair. A relation may have several <span class="tex">x</span>-intercepts, but a function has <b>at most one</b> <span class="tex">y</span>-intercept, since one input cannot give two outputs.</p>
+  <div class="explainer" data-explainer="intercepts"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>To the nearest hundredth.</b> Leave the fraction until the end, then divide once. <span class="keys"><kbd>1</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>=</kbd></span> shows <span class="tex">3.333333333</span>; the third decimal is 3, so round down to <span class="tex">3.33</span>.</div>
+    <button class="pill" data-keys="10 ÷ 3 =">Show me</button>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>An intercept to the nearest hundredth</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">To the nearest hundredth, determine the <span class="tex">x</span>-intercept of the graph of the line <span class="tex">3x+7y-10=0</span>.</div>
+      <div class="work" style="--h:200px"></div>
+      <div class="bk-nr" data-value="3.33"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Substitute <span class="tex">y=0</span>: <span class="tex">3x+7(0)-10=0</span>, so <span class="tex">3x=10</span> and <span class="tex">x=\dfrac{10}{3}=3.333\ldots</span><br>The <span class="tex">x</span>-intercept is <b>3.33</b> to the nearest hundredth (intercept point <span class="tex">(3.33,\ 0)</span>).</div></div></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Combining both kinds of intercept</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">The graph of the relation <span class="tex">5x^2-4y=20</span> has <span class="tex">x</span>-intercepts <span class="tex">a</span> and <span class="tex">b</span>, and <span class="tex">y</span>-intercept <span class="tex">c</span>. Determine the value of the product <span class="tex">abc</span>.</div>
+      <div class="work" style="--h:230px"></div>
+      <div class="bk-nr" data-value="20"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x</span>-intercepts, <span class="tex">y=0</span>: <span class="tex">5x^2-4(0)=20\Rightarrow x^2=4\Rightarrow x=\pm2</span>, so <span class="tex">a</span> and <span class="tex">b</span> are <span class="tex">2</span> and <span class="tex">-2</span>.<br><span class="tex">y</span>-intercept, <span class="tex">x=0</span>: <span class="tex">5(0)^2-4y=20\Rightarrow -4y=20\Rightarrow y=-5</span>, so <span class="tex">c=-5</span>.<br><span class="tex">abc=(2)(-2)(-5)=(-4)(-5)=\boldsymbol{20}</span></div></div></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<!-- ================= 3. Functions in context ================= -->
+<section class="card" data-ink="s3" data-section="3. Functions in Context">
+  <div class="sec-h"><span class="badge">3</span><h2>Functions in Context</h2></div>
+  <div class="def">A relation is a <b>function</b> only when every input produces <b>exactly one</b> output. On a graph this is checked with the <b>vertical line test</b>: if every vertical line crosses the graph at most once, the relation is a function; if any vertical line crosses it more than once, it is <i>not</i>.</div>
+  <div class="def amber">Function notation <span class="tex">f(x)</span>, read “<span class="tex">f</span> of <span class="tex">x</span>”, names the output that the function <span class="tex">f</span> produces from the input <span class="tex">x</span>; it does <b>not</b> mean <span class="tex">f</span> times <span class="tex">x</span>. To evaluate <span class="tex">f(a)</span>, replace <b>every</b> <span class="tex">x</span> in the rule for <span class="tex">f</span> with <span class="tex">a</span> and simplify.</div>
+  <div class="explainer" data-explainer="machine"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Brackets around a negative input.</b> <span class="tex">f(-3)=2(-3)^2-5=2(9)-5=13</span>. Without brackets, <span class="tex">-3^2</span> means <span class="tex">-(3^2)=-9</span>, and the answer comes out <span class="tex">-23</span>. On the calculator use <kbd>(−)</kbd> inside brackets.</div><button class="pill" data-keys="2 × ( (−) 3 ) x² − 5 =">Show me</button></div>
+</section>
+
+<section class="card" data-ink="s3b" data-section="3. A model in context">
+  <h3 class="sub">A model in context: forwards, then its domain and range</h3>
+  <p>A real-world model is a function too. Use it <b>forwards</b> by substituting the input; read a sensible domain and range from what the variables mean.</p>
+  <div class="explainer" data-explainer="costModel"></div>
+</section>
+
+<section class="card example" data-ink="ex6" data-section="Example 6">
+  <div class="ex-head"><span class="ex-tag">Example 6</span><h3>A cost model, forwards and as a domain and range</h3></div>
+  <p class="q">The cost, in dollars, of publishing a school newsletter is partly fixed and partly depends on the number <span class="tex">n</span> of copies printed: <span class="tex">C=150+0.08n</span>.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Determine the cost of publishing 685 newsletters.</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Substitute <span class="tex">n=685</span>:<br><span class="tex">C=150+0.08(685)=150+54.80=\boldsymbol{204.80}</span><br>The cost of publishing 685 newsletters is <b>$204.80</b>.</div></div></div>
+    <div class="part"><div class="pl">(b) The domain of this relation can be written in the form <span class="tex">n\ge a</span> and the range in the form <span class="tex">C\ge b</span>. State the values of <span class="tex">a</span> and <span class="tex">b</span>.</div><div class="work" style="--h:178px"></div><div class="bk-nr" data-value="150">Record the value of <span class="tex">b</span>.</div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The number of copies cannot be negative, so the smallest <span class="tex">n</span> is 0: <span class="tex">\boldsymbol{a=0}</span>.<br>Cost is least when <span class="tex">n=0</span>: <span class="tex">C=150+0.08(0)=150</span>, so <span class="tex">\boldsymbol{b=150}</span>.<br>Domain <span class="tex">n\ge0</span>, range <span class="tex">C\ge150</span>.<br><span class="muted"><span class="tex">n</span> counts copies, so it is a whole number: in set notation the domain is <span class="tex">\{n\mid n\ge0,\ n\in W\}</span>.</span></div></div></div>
+  </div>
+  <div class="space" id="ex6-space"></div>
+  <button class="more" data-more="ex6-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex7" data-section="Example 7">
+  <div class="ex-head"><span class="ex-tag">Example 7</span><h3>Evaluating over a finite domain</h3></div>
+  <p class="q">The function <span class="tex">f(x)=2x^2-5</span> has domain <span class="tex">\{-5,-3,0,1,4\}</span>. Evaluate <span class="tex">f</span> at each value.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">f(-5)=</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">2(-5)^2-5=2(25)-5</span><br><span class="tex">=50-5=\boldsymbol{45}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">f(-3)=</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">2(-3)^2-5=2(9)-5</span><br><span class="tex">=18-5=\boldsymbol{13}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">f(0)=</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">2(0)^2-5=0-5</span><br><span class="tex">=\boldsymbol{-5}</span></div></div></div>
+    <div class="part"><div class="pl">(d) <span class="tex">f(1)=</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">2(1)^2-5=2-5</span><br><span class="tex">=\boldsymbol{-3}</span></div></div></div>
+    <div class="part"><div class="pl">(e) <span class="tex">f(4)=</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">2(4)^2-5=2(16)-5</span><br><span class="tex">=32-5=\boldsymbol{27}</span></div></div></div>
+    <div class="part"><div class="pl">(f) State the range of the function.</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A finite domain gives a finite range: each output once, in increasing order.<br><span class="tex">R=\{-5,-3,13,27,45\}</span></div></div></div>
+  </div>
+  <div class="space" id="ex7-space"></div>
+  <button class="more" data-more="ex7-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s3c" data-section="3. Reading a function's graph">
+  <h3 class="sub">Reading function values off a graph</h3>
+  <p><span class="tex">f(a)</span> is the <b>height</b> of the graph above (or below) <span class="tex">x=a</span>: go to <span class="tex">a</span> on the <span class="tex">x</span>-axis, up or down to the graph, then across to the <span class="tex">y</span>-axis. Solving <span class="tex">f(x)=b</span> runs the same path backwards.</p>
+  <div class="explainer" data-explainer="readGraph"></div>
+</section>
+
+<section class="card example" data-ink="ex8" data-section="Example 8">
+  <div class="ex-head"><span class="ex-tag">Example 8</span><h3>Reading function values off a graph</h3></div>
+  <div class="u5l10-ex8">
+    <div id="u5l10-fig8"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">The diagram shows the graph of the function <span class="tex">y=f(x)</span>. The function is defined only at the six inputs shown, so the graph is six separate dots, not joined. Use the graph to state the value of <span class="tex">f(-2)+f(2)</span>.</div>
+        <div class="work" style="--h:200px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The dot directly above <span class="tex">x=-2</span> sits at <span class="tex">y=3</span>, so <span class="tex">f(-2)=3</span>.<br>The dot directly below <span class="tex">x=2</span> sits at <span class="tex">y=-5</span>, so <span class="tex">f(2)=-5</span>.<br><span class="tex">f(-2)+f(2)=3+(-5)=\boldsymbol{-2}</span></div></div></div>
+    </div>
+  </div>
+  <div class="space" id="ex8-space"></div>
+  <button class="more" data-more="ex8-space">+ More space</button>
+</section>
+
+<!-- ================= 4. Linear functions ================= -->
+<section class="card" data-ink="s4" data-section="4. Working with Linear Functions">
+  <div class="sec-h"><span class="badge">4</span><h2>Working with Linear Functions</h2></div>
+  <div class="def">A linear function can be used <b>forwards</b>, by substituting a given input to get the output, or <b>backwards</b>, by setting the function equal to a given output and solving the resulting equation for the input. The graph of a linear function such as <span class="tex">Q(x)=6x+5</span> is a straight (non-vertical) line, so it always passes the vertical line test.</div>
+  <div class="explainer" data-explainer="fwdBack"></div>
+</section>
+
+<section class="card example" data-ink="ex9" data-section="Example 9">
+  <div class="ex-head"><span class="ex-tag">Example 9</span><h3>Forwards and backwards through a linear function</h3></div>
+  <p class="q">Consider the function <span class="tex">Q(x)=6x+5</span>.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Determine the value of <span class="tex">Q(4)</span>.</div><div class="work" style="--h:190px"></div><div class="bk-nr" data-value="29"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Substitute <span class="tex">x=4</span>:<br><span class="tex">Q(4)=6(4)+5=24+5=\boldsymbol{29}</span></div></div></div>
+    <div class="part"><div class="pl">(b) If <span class="tex">Q(b)=2</span>, determine the value of <span class="tex">b</span>.</div><div class="work" style="--h:246px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The output is given, so set <span class="tex">Q(b)=2</span> and solve for the input:<br><span class="tex">6b+5=2</span><br><span class="tex">6b=-3</span><br><span class="tex">b=-\dfrac{3}{6}=\boldsymbol{-\dfrac{1}{2}}</span></div></div></div>
+  </div>
+  <div class="space" id="ex9-space"></div>
+  <button class="more" data-more="ex9-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s4b" data-section="4. The vertical line test">
+  <h3 class="sub">The vertical line test</h3>
+  <p>Sweep a vertical line across the graph. If it ever crosses <b>twice</b>, one input has two outputs, so the relation is <b>not a function</b>.</p>
+  <div class="explainer" data-explainer="vlt"></div>
+</section>
+
+<section class="card example" data-ink="ex10" data-section="Example 10">
+  <div class="ex-head"><span class="ex-tag">Example 10</span><h3>The vertical line test</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">Which of the diagrams below shows a relation that is <b>not</b> a function? Justify your answer using the vertical line test.</div>
+      <div class="bk-mc u5l10-figmc" data-answer="C" data-cols="4" data-pick>
+        <div><div class="u5l10-mini" data-ex10="A"></div></div>
+        <div><div class="u5l10-mini" data-ex10="B"></div></div>
+        <div><div class="u5l10-mini" data-ex10="C"></div></div>
+        <div><div class="u5l10-mini" data-ex10="D"></div></div>
+      </div>
+      <div class="work" style="--h:170px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">In <b>A</b> (a downward parabola), <b>B</b> (a horizontal line) and <b>D</b> (a V-shape), every vertical line meets the graph at most once: all three are functions.<br>Graph <b>C</b> is a circle. A vertical line through its middle meets it <b>twice</b>, so one <span class="tex">x</span>-value is paired with two different <span class="tex">y</span>-values. <b>Diagram C</b> is not a function.</div></div></div>
+  </div>
+  <div class="space" id="ex10-space"></div>
+  <button class="more" data-more="ex10-space">+ More space</button>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Counted or measured?</b> Counted values are <b>discrete</b> (dots); measured values are <b>continuous</b> (a line). Few values: a list <span class="tex">\{-5,-3,13\}</span>, once each, in order. Infinitely many: <span class="tex">\{x\mid x\ge-2,\ x\in\mathbb{R}\}</span>.</div>
+    <div><b>Shadows:</b> the <b>domain</b> is the graph’s shadow on the <span class="tex">x</span>-axis (inputs, independent, first coordinates); the <b>range</b> is its shadow on the <span class="tex">y</span>-axis (outputs, dependent, second coordinates).</div>
+    <div><b>Intercepts:</b> <span class="tex">y=0</span> gives the <span class="tex">x</span>-intercepts; <span class="tex">x=0</span> gives the <span class="tex">y</span>-intercept. A function has at most one <span class="tex">y</span>-intercept.</div>
+    <div><b>Functions:</b> one output per input; the vertical line test. <span class="tex">f(a)</span> forwards: substitute. <span class="tex">f(x)=b</span> backwards: solve. On a graph, <span class="tex">f(a)</span> is the height above <span class="tex">x=a</span>.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u5l10" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 10 — Relations and Functions Review</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <div class="u5l10-review">
+    <div class="u5l10-review-h"><span class="kicker">Up next</span><b>Unit 5 test.</b> <span class="muted">Shaky on a question today? Go back to its lesson.</span></div>
+    <div class="u5l10-review-grid">
+      <a href="../l1/"><span class="u5l10-rn">5.1</span>Cartesian plane, patterns, discrete vs continuous <small>Ex 1 · Assignment 11</small></a>
+      <a href="../l2/"><span class="u5l10-rn">5.2</span>Six ways to show a relation; independent vs dependent <small>Ex 2 · Assignment 6</small></a>
+      <a href="../l3/"><span class="u5l10-rn">5.3</span>Where graphs meet the axes: intercepts <small>Ex 4, 5 · Assignment 1, 9</small></a>
+      <a href="../l4/"><span class="u5l10-rn">5.4</span>Domain and range <small>Ex 3, 6(b), 7(f) · Assignment 11(e), 15</small></a>
+      <a href="../l5/"><span class="u5l10-rn">5.5</span>Graphing calculator techniques <small>Assignment 10, 12</small></a>
+      <a href="../l6/"><span class="u5l10-rn">5.6</span>Real-world relations on the graphing calculator <small>Ex 6 · Assignment 12, 16</small></a>
+      <a href="../l7a/"><span class="u5l10-rn">5.7A</span>What is a function? <small>Ex 10 · Assignment 7</small></a>
+      <a href="../l7b/"><span class="u5l10-rn">5.7B</span>Function notation <small>Ex 7, 9 · Assignment 2, 3, 4, 5, 8</small></a>
+      <a href="../l8/"><span class="u5l10-rn">5.8</span>Function notation: graphs and models <small>Ex 8 · Assignment 16</small></a>
+      <a href="../l9/"><span class="u5l10-rn">5.9</span>Interpreting and sketching real-world graphs <small>Assignment 13, 14</small></a>
+      <div class="u5l10-test"><span class="u5l10-rn">Test</span>Unit 5 test: RF1, RF2, RF5, RF8 <small>same question styles as today · then Unit 6</small></div>
+    </div>
+  </div>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u5l10.js';
+  boot({ key: 'u5l10', homeHref: '../../', title: '5.10 Relations and Functions Review' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

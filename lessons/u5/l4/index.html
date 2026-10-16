@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Domain and Range · Math 10C 5.4</title>
+<meta name="description" content="Math 10C Unit 5 Lesson 4: determining the domain and range of a relation from ordered pairs, tables, arrow diagrams, graphs and real situations. The graph's shadow on each axis, solid and hollow endpoints, arrows, lists and set-builder notation. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u5l4.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 5 Relations and Functions · Lesson 4</div>
+  <h1>Determining the Domain and Range of a Relation</h1>
+  <p class="lede">Every relation has a set of <b>inputs</b> and a set of <b>outputs</b>. Today we read both from ordered pairs, tables, arrow diagrams, graphs and real situations. On a graph, the key picture is the <b>shadow</b> the graph casts on each axis.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>state the <b>domain</b> (inputs) and <b>range</b> (outputs) of a relation given as ordered pairs, a table or an arrow diagram, as a <b>list</b> in braces: each value once, in increasing order</li>
+      <li>read the domain and range of a graph as its <b>shadow</b> on the <span class="tex">x</span>-axis and on the <span class="tex">y</span>-axis</li>
+      <li>use <b>solid</b> endpoints (<span class="tex">\le,\ \ge</span>), <b>hollow</b> endpoints (<span class="tex">&lt;,\ &gt;</span>) and <b>arrows</b> (no end) to write <b>set-builder notation</b> such as <span class="tex">\{y\mid y\ge -3,\ y\in\mathbb{R}\}</span></li>
+      <li>find the domain and range of a circle or ellipse from its centre and how far it reaches</li>
+      <li>restrict the domain and range of a <b>real situation</b> to values that make sense, using <span class="tex">W</span> for counts and <span class="tex">\mathbb{R}</span> for measurements</li>
+    </ul>
+  </div>
+  <div class="outcome"><b>RF2</b> Demonstrate an understanding of relations and functions.</div>
+  <div class="outcome u5l4-out2"><b>RF5</b> Determine the characteristics of the graphs of linear relations, including the intercepts, slope, domain and range.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: Ride Restrictions" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Ride Restrictions</h2></div>
+  <div class="u5l4-sign"><b>THE CYCLONE:</b> riders must be <b class="u5l4-acc">at least 120&nbsp;cm</b> and <b class="u5l4-acc">no taller than 195&nbsp;cm</b></div>
+  <div class="u5l4-wtop">
+    <div class="u5l4-kidsbox">
+      <div id="u5l4-kids"></div>
+      <div class="u5l4-tiny">Tap a rider to check them at the gate.</div>
+    </div>
+    <div class="u5l4-trackbox">
+      <div class="u5l4-trh">The Cyclone’s track <span class="u5l4-trsub">height <span class="tex">h</span> (m) against distance along the ride <span class="tex">d</span> (m)</span></div>
+      <div id="u5l4-track"></div>
+      <div class="u5l4-trctl">
+        <button type="button" class="pill small" data-track="ext">Highest &amp; lowest</button>
+        <button type="button" class="pill small" data-track="x">Light from above</button>
+        <button type="button" class="pill small" data-track="y">Light from the side</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="u5l4-wqs">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Which of the four friends may ride?</div></div>
+      <div class="u5l4-wa"><button class="pill small" type="button" data-bk-toggle data-wu="1">Answer</button><div class="bk-ans"><b>Ben and Cleo.</b> Ava (118) is too short. Ben (exactly 120) counts: “at least 120” <b>includes</b> 120. Dev (196) is 1&nbsp;cm too tall.</div></div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>How high is the track’s <b>highest</b> point? Its <b>lowest</b> point?</div></div>
+      <div class="u5l4-wa"><button class="pill small" type="button" data-bk-toggle data-wu="2">Answer</button><div class="bk-ans">Highest: <span class="tex">40</span>&nbsp;m, at the top of the lift hill. Lowest: <span class="tex">-6</span>&nbsp;m, in the tunnel 6&nbsp;m underground.</div></div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>The graph covers distances from <span class="u5l4-blank"></span> to <span class="u5l4-blank"></span>&nbsp;m, and heights from <span class="u5l4-blank"></span> to <span class="u5l4-blank"></span>&nbsp;m.</div></div>
+      <div class="u5l4-wa"><button class="pill small" type="button" data-bk-toggle data-wu="3">Answer</button><div class="bk-ans">Distances from <span class="tex">0</span> to <span class="tex">800</span>&nbsp;m. Heights from <span class="tex">-6</span> to <span class="tex">40</span>&nbsp;m. Those are the graph’s two <b>shadows</b>: try the light buttons.</div></div></div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which set is <b>exactly</b> the rider heights <span class="tex">h</span> (in cm) allowed on The Cyclone? <b>Guess first.</b></div></div>
+    <div class="poll-opts u5l4-p2">
+      <div class="opt"><b>A</b> <span class="tex">\{h\mid 120&lt;h&lt;195,\ h\in\mathbb{R}\}</span></div>
+      <div class="opt right"><b>B</b> <span class="tex">\{h\mid 120\le h\le 195,\ h\in\mathbb{R}\}</span></div>
+      <div class="opt"><b>C</b> <span class="tex">\{h\mid 120\le h\le 195,\ h\in I\}</span></div>
+      <div class="opt"><b>D</b> <span class="tex">\{120,\ 195\}</span></div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>B: <span class="tex">\{h\mid 120\le h\le 195,\ h\in\mathbb{R}\}</span>.</b> “At least” and “no taller than” both <b>include</b> the endpoint, so we need <span class="tex">\le</span>.<br>
+      <span class="muted"><b>A</b> uses <span class="tex">&lt;</span>, which would turn Ben away at exactly 120&nbsp;cm. <b>C</b> uses <span class="tex">I</span> (integers), but height is <b>measured</b>: a rider who is 150.5&nbsp;cm tall may ride, and C leaves them out. <b>D</b> lists only the two boundary heights, not everything in between.</span><br>
+      <b>Today’s lesson:</b> the distances a graph uses are its <b>domain</b> and the heights it produces are its <b>range</b>: <span class="tex">D=\{d\mid 0\le d\le 800,\ d\in\mathbb{R}\}</span>, <span class="tex">R=\{h\mid -6\le h\le 40,\ h\in\mathbb{R}\}</span>.</div>
+  </div>
+
+  <div class="bk-wq u5l4-bonus">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> A Cyclone train holds at most 24 riders and never runs empty. Write the set of possible numbers of riders <span class="tex">n</span>.</div></div>
+    <div class="u5l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">\{n\mid 1\le n\le 24,\ n\in I\}</span>, or the list <span class="tex">\{1,\ 2,\ 3,\ \dots,\ 24\}</span>. Riders are <b>counted</b>, so no fractions and no decimals.</div></div>
+  </div>
+  <p class="u5l4-social">Challenge a neighbour: invent your own ride’s height rule, then trade and write it as a set.</p>
+</section>
+
+<!-- ================= 1. Domain and range defined ================= -->
+<section class="card" data-ink="s1" data-section="1. Domain and Range Defined">
+  <div class="sec-h"><span class="badge">1</span><h2>Domain and Range Defined</h2></div>
+  <div class="def">The <b>domain</b> of a relation is the set of all values taken by the independent variable: the <b>inputs</b>, usually <span class="tex">x</span>. The <b>range</b> is the set of all values the relation actually produces for the dependent variable: the <b>outputs</b>, usually <span class="tex">y</span>.</div>
+  <p>A relation may be presented as a set of ordered pairs, a table of values, an arrow diagram (mapping diagram), an equation, a graph, or in words. Whichever form is given, the same two questions apply:</p>
+  <div class="u5l4-2q">
+    <div class="u5l4-qd"><span class="u5l4-qtag">Domain</span> Which <b>input</b> values are used?</div>
+    <div class="u5l4-qr"><span class="u5l4-qtag">Range</span> Which <b>output</b> values are produced?</div>
+  </div>
+  <div class="explainer" data-explainer="collect"></div>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. How the answer is written">
+  <h3 class="sub">How the answer is written</h3>
+  <div class="u5l4-how">
+    <div class="u5l4-howc"><div class="u5l4-howh">Finitely many values → a <b>list</b></div>
+      Inside braces, each value written <b>once</b> and in <b>increasing order</b>:
+      <div class="u5l4-big"><span class="tex">D=\{2,\ 5,\ 9\}</span></div></div>
+    <div class="u5l4-howc"><div class="u5l4-howh">Infinitely many values → <b>set-builder notation</b></div>
+      <div class="u5l4-big"><span class="tex">R=\{y\mid y\ge -3,\ y\in\mathbb{R}\}</span></div>
+      read “the set of all <span class="tex">y</span> <b>such that</b> <span class="tex">y\ge-3</span> and <span class="tex">y</span> is a real number.”</div>
+  </div>
+  <p>The symbols <span class="tex">N</span>, <span class="tex">W</span>, <span class="tex">I</span>, <span class="tex">Q</span> and <span class="tex">\mathbb{R}</span> name the number set the variable is drawn from (tap a card):</p>
+  <div class="bk-flips" style="--bk-cols:5">
+    <div class="bk-flip"><div class="bk-front"><span class="tex">N</span></div><div class="bk-back"><b>natural</b> numbers <span class="tex">1,\ 2,\ 3,\ \dots</span></div></div>
+    <div class="bk-flip"><div class="bk-front"><span class="tex">W</span></div><div class="bk-back"><b>whole</b> numbers <span class="tex">0,\ 1,\ 2,\ 3,\ \dots</span></div></div>
+    <div class="bk-flip"><div class="bk-front"><span class="tex">I</span></div><div class="bk-back"><b>integers</b> <span class="tex">\dots,-2,-1,</span> <span class="tex">0,1,2,\dots</span></div></div>
+    <div class="bk-flip"><div class="bk-front"><span class="tex">Q</span></div><div class="bk-back"><b>rational</b> numbers: fractions, like <span class="tex">\tfrac{3}{4}</span> or <span class="tex">-2.5</span></div></div>
+    <div class="bk-flip"><div class="bk-front"><span class="tex">\mathbb{R}</span></div><div class="bk-back"><b>real</b> numbers: every point on the number line</div></div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b><span class="tex">\mathbb{R}</span> is not <span class="tex">R</span>.</b> In this unit the real numbers are written <span class="tex">\mathbb{R}</span> (double-struck), so they are never confused with <span class="tex">R</span> for a range. For a <b>count</b>, use <span class="tex">W</span> (whole numbers), or <span class="tex">I</span> together with a lower bound such as <span class="tex">n\ge0</span>, because <span class="tex">I</span> on its own includes negative numbers.</div></div>
+  <div class="explainer" data-explainer="setRead"></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Domain and range from ordered pairs</h3></div>
+  <p class="q">List the domain and range of each set of ordered pairs.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) <span class="tex">(2,3),\ (0,7),\ (4,10),\ (6,11),\ (-2,3)</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x</span>-coordinates: <span class="tex">2,0,4,6,-2</span>; <span class="tex">y</span>-coordinates: <span class="tex">3,7,10,11,3</span> (the value 3 occurs twice, so it is listed once).<br><span class="tex">\boldsymbol{D=\{-2,\ 0,\ 2,\ 4,\ 6\}}</span><br><span class="tex">\boldsymbol{R=\{3,\ 7,\ 10,\ 11\}}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">(5,5),\ (0,5),\ (-5,5),\ (3,11),\ (-9,5)</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x</span>-coordinates: <span class="tex">5,0,-5,3,-9</span>; <span class="tex">y</span>-coordinates: <span class="tex">5,5,5,11,5</span> (the value 5 occurs four times, listed once).<br><span class="tex">\boldsymbol{D=\{-9,\ -5,\ 0,\ 3,\ 5\}}</span><br><span class="tex">\boldsymbol{R=\{5,\ 11\}}</span></div></div></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<!-- ================= 2. Reading from a graph ================= -->
+<section class="card" data-ink="s2" data-section="2. Reading Domain and Range from a Graph">
+  <div class="sec-h"><span class="badge">2</span><h2>Reading Domain and Range from a Graph</h2></div>
+  <div class="def">The <b>domain</b> is the <b>shadow</b> the graph casts on the <span class="tex">x</span>-axis when a light shines <b>straight down</b> onto it; the <b>range</b> is the shadow it casts on the <span class="tex">y</span>-axis when a light shines <b>straight across</b>.</div>
+  <div class="explainer" data-explainer="shadow"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>The range runs from the lowest point to the highest point,</b> wherever those are. They are not always the endpoints.</div></div>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. Three features decide it">
+  <h3 class="sub">Three features of the drawing decide the answer</h3>
+  <div class="u5l4-feats">
+    <div class="u5l4-feat"><div class="u5l4-fic" data-feat="dots"></div><div><b>Isolated (discrete) points</b> give a <b>list</b>: the <span class="tex">x</span>-coordinates plotted are the domain, the <span class="tex">y</span>-coordinates plotted are the range, each value written once.</div></div>
+    <div class="u5l4-feat"><div class="u5l4-fic" data-feat="arrow"></div><div><b>An arrow</b> on an end means the graph continues forever in that direction, so that side is unbounded: an unbounded domain is written <span class="tex">\{x\mid x\in\mathbb{R}\}</span>, and a range bounded on one side only is written <span class="tex">\{y\mid y\le 3,\ y\in\mathbb{R}\}</span> or <span class="tex">\{y\mid y\ge -3,\ y\in\mathbb{R}\}</span>.</div></div>
+    <div class="u5l4-feat"><div class="u5l4-fic" data-feat="ends"></div><div>A <b>solid endpoint</b> belongs to the graph, so its value is <b>included</b> and the inequality uses <span class="tex">\le</span> or <span class="tex">\ge</span>; a <b>hollow endpoint</b> does not belong to the graph, so its value is <b>excluded</b> and the inequality uses <span class="tex">&lt;</span> or <span class="tex">&gt;</span>.</div></div>
+  </div>
+  <div class="explainer" data-explainer="dots"></div>
+</section>
+
+<section class="card" data-ink="s2c" data-section="2. Arrows: no end">
+  <h3 class="sub">Arrows: the graph never stops</h3>
+  <p>An arrow is a promise: the graph keeps going in that direction forever, even past the edge of the grid. So its shadow keeps going too, and that side of the inequality has <b>no bound</b>. If the shadow covers a whole axis, the answer is every real number, <span class="tex">\{x\mid x\in\mathbb{R}\}</span>.</p>
+  <div class="explainer" data-explainer="arrows"></div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Domain and range from a graph</h3></div>
+  <p class="q">State the domain and range of each relation graphed below.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a)<div class="u5l4-fig" data-fig="e2a"></div></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Five isolated points: <span class="tex">(-4,-3),</span> <span class="tex">(-2,-1),</span> <span class="tex">(-1,1),</span> <span class="tex">(0,2),</span> <span class="tex">(2,1)</span>. Discrete, so both are lists; the <span class="tex">y</span>-value 1 occurs twice.<br><span class="tex">\boldsymbol{D=\{-4,\ -2,\ -1,\ 0,\ 2\}}</span><br><span class="tex">\boldsymbol{R=\{-3,\ -1,\ 1,\ 2\}}</span></div></div></div>
+    <div class="part"><div class="pl">(b)<div class="u5l4-fig" data-fig="e2b"></div></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A continuous “tent” with <b>solid</b> endpoints at <span class="tex">(-4,-1)</span> and <span class="tex">(4,-1)</span>, so both ends are included: <span class="tex">\le</span>. The <span class="tex">x</span>-shadow runs <span class="tex">-4</span> to <span class="tex">4</span>; the <span class="tex">y</span>-shadow runs from the lowest point <span class="tex">y=-1</span> to the peak <span class="tex">y=3</span>.<br><span class="tex">\boldsymbol{D=\{x\mid -4\le x\le 4,\ x\in\mathbb{R}\}}</span><br><span class="tex">\boldsymbol{R=\{y\mid -1\le y\le 3,\ y\in\mathbb{R}\}}</span></div></div></div>
+    <div class="part"><div class="pl">(c)<div class="u5l4-fig" data-fig="e2c"></div></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Two rays leaving <span class="tex">(0,3)</span>, both arrowed, so the graph spreads left and right without end and falls forever. The highest point is the vertex, <span class="tex">y=3</span>.<br><span class="tex">\boldsymbol{D=\{x\mid x\in\mathbb{R}\}}</span><br><span class="tex">\boldsymbol{R=\{y\mid y\le 3,\ y\in\mathbb{R}\}}</span></div></div></div>
+    <div class="part think u5l4-span3"><div class="pl"><span class="think-tag">Think</span> Graphs (a) and (b) both stay between <span class="tex">x=-4</span> and <span class="tex">x=4</span>. Why does (a) get a <b>list</b> and (b) an <b>inequality</b>?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">(a) is <b>separate dots</b>: only five <span class="tex">x</span>-values are used, so we can list them. (b) is an <b>unbroken</b> line: every <span class="tex">x</span> from <span class="tex">-4</span> to <span class="tex">4</span> is used, decimals included, which is infinitely many values, so we need an inequality.</div></div></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2d" data-section="2. Solid or hollow?">
+  <h3 class="sub">When an endpoint is open</h3>
+  <p>A <b>solid</b> dot is a point on the graph. A <b>hollow</b> dot marks where the graph stops <b>just before</b> that point: the point itself is missing. There is no “last” point next to the hole, so the best we can say is “up to, but not including”.</p>
+  <div class="explainer" data-explainer="ends"></div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>When an endpoint is open</h3></div>
+  <p class="q">State the domain and range of each relation. Watch for the <b>hollow</b> endpoints.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) A segment from a solid endpoint at <span class="tex">(-3,1)</span> to a hollow endpoint at <span class="tex">(4,5)</span>.<div class="u5l4-fig" data-fig="e3a"></div></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The solid end <span class="tex">(-3,1)</span> is included (<span class="tex">\le</span>); the hollow end <span class="tex">(4,5)</span> is not (<span class="tex">&lt;</span>). The <span class="tex">x</span>-shadow runs from <span class="tex">-3</span> up to, but not including, <span class="tex">4</span>; the <span class="tex">y</span>-shadow from <span class="tex">1</span> up to, but not including, <span class="tex">5</span>.<br><span class="tex">\boldsymbol{D=\{x\mid -3\le x&lt;4,\ x\in\mathbb{R}\}}</span><br><span class="tex">\boldsymbol{R=\{y\mid 1\le y&lt;5,\ y\in\mathbb{R}\}}</span></div></div></div>
+    <div class="part"><div class="pl">(b) A ray that starts at a hollow endpoint at <span class="tex">(1,-2)</span> and continues up to the left forever.<div class="u5l4-fig" data-fig="e3b"></div></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The arrow means the ray goes on forever to the left and upward; the hollow start <span class="tex">(1,-2)</span> is not included, so use <span class="tex">&lt;</span> and <span class="tex">&gt;</span>.<br><span class="tex">\boldsymbol{D=\{x\mid x&lt;1,\ x\in\mathbb{R}\}}</span><br><span class="tex">\boldsymbol{R=\{y\mid y&gt;-2,\ y\in\mathbb{R}\}}</span></div></div></div>
+    <div class="part think u5l4-span2"><div class="pl"><span class="think-tag">Think</span> Could the domain in (a) be written <span class="tex">-3\le x\le 3.999</span>?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">No. <span class="tex">x=3.9999</span> is also on the segment, and so is <span class="tex">3.99999</span>. Whatever number below 4 we pick, a bigger one is still on the graph. Only <span class="tex">x&lt;4</span> catches them all.</div></div></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2e" data-section="2. Curves, circles, ellipses">
+  <h3 class="sub">Closed curves: circles and ellipses</h3>
+  <p>A circle or ellipse has no endpoints and no arrows: it is one closed loop, so every shadow end is <b>included</b>. Its shadows run from its leftmost point to its rightmost, and from its lowest point to its highest. For a circle with centre <span class="tex">(h,k)</span> and radius <span class="tex">r</span>, those are <span class="tex">h-r</span> to <span class="tex">h+r</span> across and <span class="tex">k-r</span> to <span class="tex">k+r</span> up and down.</p>
+  <div class="explainer" data-explainer="circle"></div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Curves, ellipses, arrow diagrams and a circle</h3></div>
+  <p class="q">State the domain and range of each relation described below.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a)<div class="u5l4-fig" data-fig="e4a"></div></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Arrows on both ends: the curve continues outward and upward forever, so every real <span class="tex">x</span> is eventually used. The lowest point is <span class="tex">(0,-3)</span> and there is no upper limit.<br><span class="tex">\boldsymbol{D=\{x\mid x\in\mathbb{R}\}}</span><br><span class="tex">\boldsymbol{R=\{y\mid y\ge -3,\ y\in\mathbb{R}\}}</span></div></div></div>
+    <div class="part"><div class="pl">(b) An ellipse, with horizontal axis <span class="tex">u</span> and vertical <span class="u5l4-nw">axis <span class="tex">v</span>.</span><div class="u5l4-fig" data-fig="e4b"></div></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Centred at the origin with horizontal semi-axis <span class="tex">3</span> and vertical semi-axis <span class="tex">2</span>.<br><span class="tex">\boldsymbol{D=\{u\mid -3\le u\le 3,\ u\in\mathbb{R}\}}</span><br><span class="tex">\boldsymbol{R=\{v\mid -2\le v\le 2,\ v\in\mathbb{R}\}}</span></div></div></div>
+    <div class="part"><div class="pl">(c)<div class="u5l4-fig" data-fig="e4c"></div></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The domain is the set of inputs on the left; the range is the set of outputs actually reached on the right. Both <span class="tex">5</span> and <span class="tex">9</span> map to <span class="tex">1</span>, so <span class="tex">1</span> is listed once.<br><span class="tex">\boldsymbol{D=\{5,\ 7,\ 9\}}</span><br><span class="tex">\boldsymbol{R=\{1,\ 3\}}</span></div></div></div>
+    <div class="part"><div class="pl">(d) A circle with centre <span class="tex">(3,-2)</span> and a radius of <span class="tex">6</span>.</div><div class="work" style="--h:300px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans u5l4-ansfig"><div>For centre <span class="tex">(h,k)</span> and radius <span class="tex">r</span> the domain runs from <span class="tex">h-r</span> to <span class="tex">h+r</span> and the range from <span class="tex">k-r</span> to <span class="tex">k+r</span>. Here <span class="tex">h=3</span>, <span class="tex">k=-2</span>, <span class="tex">r=6</span>:<br><span class="tex">3-6=-3</span> to <span class="tex">3+6=9</span>; <span class="tex">-2-6=-8</span> to <span class="tex">-2+6=4</span>.<br><span class="tex">\boldsymbol{D=\{x\mid -3\le x\le 9,\ x\in\mathbb{R}\}}</span><br><span class="tex">\boldsymbol{R=\{y\mid -8\le y\le 4,\ y\in\mathbb{R}\}}</span></div><div data-fig="e4d"></div></div></div></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<!-- ================= 3. Real-world situations ================= -->
+<section class="card" data-ink="s3" data-section="3. Domain and Range in Real-World Situations">
+  <div class="sec-h"><span class="badge">3</span><h2>Domain and Range in Real-World Situations</h2></div>
+  <div class="def">When a relation models a real situation, its domain and range are cut down to the values that make <b>physical sense</b>: time cannot be negative, and a count of people must be a whole number, so its domain is written with <span class="tex">\in W</span> rather than <span class="tex">\in\mathbb{R}</span>. These practical restrictions make the domain and range of an applied relation <b>narrower</b> than those of the same equation treated as pure mathematics.</div>
+  <div class="u5l4-2q">
+    <div class="u5l4-qd"><span class="u5l4-qtag">Counted</span> people, tickets, cars: separate dots, <span class="tex">\in W</span></div>
+    <div class="u5l4-qr"><span class="u5l4-qtag">Measured</span> time, distance, height: an unbroken line, <span class="tex">\in\mathbb{R}</span></div>
+  </div>
+  <div class="explainer" data-explainer="realWorld"></div>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>A rental cost with a practical domain</h3></div>
+  <p class="q">A community league is renting a hall for a fundraiser dinner. The venue charges a setup fee of $350 plus $25 per guest, so <span class="tex">C=350+25n</span> gives the total rental cost, in dollars, for <span class="tex">n</span> guests. The venue requires at least <span class="tex">50</span> guests and holds at most <span class="tex">300</span>.</p>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(a) Complete the table of values for <span class="tex">n=50,\ 100,\ 150,\ 200,\ 250</span> and <span class="tex">300</span> guests.<div class="u5l4-fig" data-fig="e5t"></div></div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Substitute each <span class="tex">n</span>: <span class="tex">350+25(50)=1\,600</span>, <span class="tex">350+25(100)=2\,850</span>, … , <span class="tex">350+25(300)=7\,850</span>. The costs are in the table above.</div></div></div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(b) Plot the six ordered pairs from part (a) on the grid.<div class="u5l4-fig" data-fig="e5g"></div></div><div class="work" style="--h:60px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The six points lie on a straight line, since <span class="tex">C=350+25n</span> is linear. They are plotted, <b>not joined</b>: only whole numbers of guests are possible.</div></div></div>
+    <div class="part"><div class="pl">(c) If all possible ordered pairs from part (b) were plotted, state the domain and range of the relation, and explain why there are restrictions on both.</div><div class="work" style="--h:340px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">n</span> counts guests, so it must be a whole number, and the venue sets a minimum of 50 and a maximum of 300:<br><span class="tex">\boldsymbol{D=\{n\mid 50\le n\le 300,\ n\in W\}}</span><br>Each extra guest adds exactly $25, so <span class="tex">C</span> climbs in steps of 25 from <span class="tex">350+25(50)=1\,600</span> to <span class="tex">350+25(300)=7\,850</span>:<br><span class="tex">\boldsymbol{R=\{1\,600,\ 1\,625,\ 1\,650,\ \dots,\ 7\,850\}}</span>, the multiples of 25 from 1&#8239;600 to 7&#8239;850.<br><small>Both sets are finite (251 values each) but far too long to write out. The domain uses set-builder with <span class="tex">\in W</span>; the range is a list with “…” because its values go up by 25, so <span class="tex">\{C\mid 1\,600\le C\le 7\,850,\ C\in W\}</span> would wrongly include costs like 1&#8239;601.</small><br>Both are restricted because this is a real booking: the group size has a practical minimum and maximum and can only be a whole number, and the cost is completely determined by that whole-number guest count.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>The ends of the range.</b> The smallest and largest costs come from the smallest and largest numbers of guests. <span class="keys"><kbd>3</kbd><kbd>5</kbd><kbd>0</kbd><kbd>+</kbd><kbd>2</kbd><kbd>5</kbd><kbd>×</kbd><kbd>5</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives 1&#8239;600, and with 300 guests, 7&#8239;850. The calculator multiplies first, just like on paper.</div>
+    <div class="pill-col"><button class="pill" data-keys="350 + 25 × 50 =">Show 50 guests</button><button class="pill" data-keys="350 + 25 × 300 =">Show 300 guests</button></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s3b" data-section="3. Choosing the notation">
+  <h3 class="sub">Putting it together: which notation?</h3>
+  <p>Every question today came down to the same few decisions. Can the values be listed? If not, what happens at each end, and what kind of number is the variable?</p>
+  <div class="explainer" data-explainer="which"></div>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Domain</b> = the inputs used (<span class="tex">x</span>); <b>range</b> = the outputs produced (<span class="tex">y</span>). From pairs, tables and arrow diagrams: a <b>list</b>, each value once, increasing: <span class="tex">D=\{-2,0,2,4,6\}</span>.</div>
+    <div><b>On a graph:</b> the domain is the <b>shadow on the <span class="tex">x</span>-axis</b> (light from above), the range is the <b>shadow on the <span class="tex">y</span>-axis</b> (light from the side). Range: lowest point to highest point.</div>
+    <div><b>Ends:</b> solid dot <span class="tex">\le,\ \ge</span>; hollow dot <span class="tex">&lt;,\ &gt;</span>; arrow: no bound. <span class="tex">\{x\mid -3\le x&lt;4,\ x\in\mathbb{R}\}</span>. A whole axis: <span class="tex">\{x\mid x\in\mathbb{R}\}</span>.</div>
+    <div><b>Real situations:</b> keep only values that make sense. Counts use <span class="tex">W</span> (separate dots); measurements use <span class="tex">\mathbb{R}</span> (unbroken): <span class="tex">\{n\mid 50\le n\le 300,\ n\in W\}</span>.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u5l4" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 4 — Determining the Domain and Range of a Relation</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l5/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 5 — Graphing Calculator Techniques for Relations</b><div class="muted">TI-83/84: window, table, trace, intersect, zero, value and maximum/minimum, each checked algebraically</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u5l4.js';
+  boot({ key: 'u5l4', homeHref: '../../', title: '5.4 Domain and Range' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Where Graphs Meet the Axes · Math 10C 5.3</title>
+<meta name="description" content="Math 10C Unit 5 Lesson 3: x- and y-intercepts. Where a graph meets the axes, substituting y = 0 and x = 0, intercepts of lines, circles and parabolas, lines with one, two or infinitely many intercept points, the meaning of intercepts in context, and interpolation versus extrapolation. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u5l3.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 5 Relations and Functions · Lesson 3</div>
+  <h1>Where Graphs Meet the Axes</h1>
+  <p class="lede">Two places on any graph deserve a closer look: where it meets the <b>horizontal axis</b> and where it meets the <b>vertical axis</b>. Today: what those points are called, how to find them from an equation (<b>substitute <span class="tex">y=0</span></b>, <b>substitute <span class="tex">x=0</span></b>), and what they mean in a real situation.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>identify the <span class="tex">x</span>- and <span class="tex">y</span>-intercepts of a graph, and tell an <b>intercept</b> (a value) from an <b>intercept point</b> (an ordered pair)</li>
+      <li>determine intercepts algebraically: <b>substitute <span class="tex">y=0</span></b> for the <span class="tex">x</span>-intercept(s) and <b>substitute <span class="tex">x=0</span></b> for the <span class="tex">y</span>-intercept(s), whatever form the equation is in</li>
+      <li>find the intercepts of lines, circles and parabolas (factoring when I need to)</li>
+      <li>explain why a line can have <b>one</b>, <b>two</b> or <b>infinitely many</b> intercept points</li>
+      <li>interpret intercepts in context, and tell <b>interpolation</b> from <b>extrapolation</b></li>
+    </ul>
+  </div>
+  <div class="outcome"><b>RF1</b> Interpret and explain the relationships among data, graphs and situations.</div>
+  <div class="outcome"><b>RF5</b> Determine the characteristics of the graphs of linear relations, including the intercepts, slope, domain and range.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: The High Dive" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The High Dive</h2></div>
+  <p class="big">A diver jumps off a tower. The graph shows her height above the water.</p>
+  <div class="u5l3-wtop">
+    <div class="u5l3-wfig">
+      <div id="u5l3-dive"></div>
+      <div class="u5l3-wbtns">
+        <button type="button" class="pill" id="u5l3-play">Play the dive</button>
+        <button type="button" class="pill" id="u5l3-ints">Where does the graph meet each axis?</button>
+      </div>
+    </div>
+    <div class="u5l3-wqs">
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">1</div><div>How high is the diving platform?</div></div>
+        <div class="u5l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>10 m.</b> The graph starts on the vertical axis at <span class="tex">(0,\ 10)</span>.</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">2</div><div>After how many seconds does she hit the water?</div></div>
+        <div class="u5l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>2 s.</b> The graph meets the horizontal axis (the water) at <span class="tex">(2,\ 0)</span>.</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">3</div><div>Fill in the blanks. <span class="muted small">(tap a blank)</span><br>
+          At the <b>splash</b>, height <span class="tex">=</span> <span data-reveal><b class="u5l3-blank">0</b></span> m.<br>
+          At the <b>jump</b>, time <span class="tex">=</span> <span data-reveal><b class="u5l3-blank">0</b></span> s.</div></div>
+        <div class="u5l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Both blanks are <b>0</b>. That is the whole lesson in two blanks: where a graph meets one axis, the <b>other</b> coordinate is zero.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> The graph’s rule is <span class="tex">h=10+5t-5t^2</span>. Setting <span class="tex">h=0</span> gives <b>two</b> answers: <span class="tex">t=2</span> and <span class="tex">t=-1</span>. What does <span class="tex">t=-1</span> mean for the dive? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> She goes 1 m under water.</div>
+      <div class="opt"><b>B</b> She splashes 1 s early.</div>
+      <div class="opt right"><b>C</b> Nothing: it’s before the jump.</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>C: nothing.</b> <span class="tex">0=10+5t-5t^2=-5(t^2-t-2)=-5(t-2)(t+1)</span>, so <span class="tex">t=2</span> or <span class="tex">t=-1</span>. But <span class="tex">t=-1</span> is one second <b>before</b> she jumped. She was standing on the platform, so the rule doesn’t describe her then: the model only fits <span class="tex">0\le t\le 2</span>.<br>
+      <span class="muted"><b>A</b> mixes up the variables: <span class="tex">-1</span> is a <b>time</b>, not a height. <b>B</b> reads the minus sign as “early”, but she can’t splash before she jumps.</span><br>
+      <b>Bonus trap:</b> the highest point is <b>not</b> an intercept. She rises to <span class="tex">11.25</span> m at <span class="tex">t=0.5</span> s before falling.</div>
+  </div>
+
+  <div class="bk-wq u5l3-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> A 3 m springboard diver follows <span class="tex">h=3+2t-5t^2</span>. Find both intercepts and say what each one means.</div></div>
+    <div class="u5l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">t=0</span>: <span class="tex">h=3</span>, the <b>board</b>. <span class="tex">h=0</span>: <span class="tex">0=-(5t+3)(t-1)</span>, so <span class="tex">t=1</span> s is the <b>splash</b>; <span class="tex">t=-0.6</span> has no meaning.</div></div>
+  </div>
+  <p class="u5l3-social">Act it out with your hand: platform, arc, splash! Point to where the graph meets each axis.</p>
+</section>
+
+<!-- ================= 1. Inputs, outputs, graphs ================= -->
+<section class="card" data-ink="s1" data-section="1. Inputs, Outputs, and Graphs">
+  <div class="sec-h"><span class="badge">1</span><h2>Inputs, Outputs, and Graphs</h2></div>
+  <p>Every ordered pair <span class="tex">(x,\ y)</span> of a relation has a first coordinate, the <b>input</b> (a value of the <b>independent variable</b>, usually <span class="tex">x</span>), and a second coordinate, the <b>output</b> (a value of the <b>dependent variable</b>, usually <span class="tex">y</span>, because its value <em>depends on</em> the input chosen). Graphing all the ordered pairs traces out a curve (a line, a parabola, a circle), and two places on that curve are worth special attention: where it crosses the <b>horizontal</b> axis, and where it crosses the <b>vertical</b> axis.</p>
+  <div class="u5l3-s1row">
+    <div data-bk-graph='{"width":400,"height":360,"xmin":-4,"xmax":5,"ymin":-3,"ymax":5,"items":[{"fn":["0.6*x+1.5",{"color":"blue"}]},{"point":[-2.5,0,{"coords":true,"pos":"se","color":"red"}]},{"point":[0,1.5,{"coords":true,"pos":"se","color":"red"}]}]}'></div>
+    <div class="def u5l3-s1def">The line crosses the <span class="tex">x</span>-axis at <span class="tex">(-2.5,\ 0)</span> and the <span class="tex">y</span>-axis at <span class="tex">(0,\ 1.5)</span>. These points are called <b>intercept points</b>.</div>
+  </div>
+  <div class="explainer" data-explainer="meetAxes"></div>
+</section>
+
+<!-- ================= 2. Definitions and the algebraic method ================= -->
+<section class="card" data-ink="s2" data-section="2. Definitions and the Algebraic Method">
+  <div class="sec-h"><span class="badge">2</span><h2>Definitions and the Algebraic Method</h2></div>
+  <div class="def-grid">
+    <div class="def"><b><span class="tex">x</span>-intercept:</b> the <span class="tex">x</span>-coordinate of a point where a graph <b>meets</b> the <span class="tex">x</span>-axis. It may cross the axis or just touch it (the parabola <span class="tex">y=x^2</span> touches the <span class="tex">x</span>-axis at the origin). At every such point the <b><span class="tex">y</span>-coordinate equals zero</b>.</div>
+    <div class="def"><b><span class="tex">y</span>-intercept:</b> the <span class="tex">y</span>-coordinate of a point where a graph meets (crosses or touches) the <span class="tex">y</span>-axis. At every such point the <b><span class="tex">x</span>-coordinate equals zero</b>.</div>
+  </div>
+  <div class="def amber"><b>Value or point?</b> In this unit the <b>intercept</b> is the <em>value</em> and the <b>intercept point</b> is the <em>ordered pair</em>: for the line in Section 1, the <span class="tex">x</span>-intercept is <span class="tex">-2.5</span> and the <span class="tex">x</span>-intercept point is <span class="tex">(-2.5,\ 0)</span>.</div>
+  <div class="bk-flips u5l3-flips" style="--bk-cols:4">
+    <div class="bk-flip"><div class="bk-front"><span class="tex">x</span>-intercept</div><div class="bk-back"><span class="tex">-2.5</span><small>a value</small></div></div>
+    <div class="bk-flip"><div class="bk-front"><span class="tex">x</span>-intercept point</div><div class="bk-back"><span class="tex">(-2.5,\ 0)</span><small>an ordered pair</small></div></div>
+    <div class="bk-flip"><div class="bk-front"><span class="tex">y</span>-intercept</div><div class="bk-back"><span class="tex">1.5</span><small>a value</small></div></div>
+    <div class="bk-flip"><div class="bk-front"><span class="tex">y</span>-intercept point</div><div class="bk-back"><span class="tex">(0,\ 1.5)</span><small>an ordered pair</small></div></div>
+  </div>
+  <div class="def"><b>To determine intercepts algebraically, given the equation of a relation:</b></div>
+  <div class="u5l3-rules">
+    <div class="u5l3-rule"><div class="u5l3-rh"><span class="tex">x</span>-intercept(s)</div><div class="u5l3-rb">substitute <span class="tex">\boldsymbol{y=0}</span><br>and solve for <span class="tex">x</span></div><div class="u5l3-rf">the point is <span class="tex">(\,?,\ 0)</span></div></div>
+    <div class="u5l3-rule"><div class="u5l3-rh"><span class="tex">y</span>-intercept(s)</div><div class="u5l3-rb">substitute <span class="tex">\boldsymbol{x=0}</span><br>and solve for <span class="tex">y</span></div><div class="u5l3-rf">the point is <span class="tex">(0,\ ?\,)</span></div></div>
+  </div>
+  <p>The equation of a relation can be written in several equivalent forms: <span class="tex">y=\tfrac{4}{3}x+8</span> and <span class="tex">4x-3y+24=0</span> describe the very same line. Whatever the form, the same substitution strategy finds the intercepts.</p>
+  <div class="explainer" data-explainer="subst"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>The zero goes in the other spot.</b> An <span class="tex">x</span>-intercept of <span class="tex">5</span> is the point <span class="tex">(5,\ 0)</span>, not <span class="tex">(0,\ 5)</span>. The point is <b>on the <span class="tex">x</span>-axis</b>, so its <span class="tex">y</span>-coordinate is the zero.</div></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>A line with both variables on one side</h3></div>
+  <p class="q">A line has equation <span class="tex">4x-3y+24=0</span>. Algebraically determine the <span class="tex">x</span>-intercept and the <span class="tex">y</span>-intercept of the line. Write each intercept point as an ordered pair.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl"><span class="tex">x</span>-intercept</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Substitute <span class="tex">y=0</span>:<br><span class="tex">4x-3(0)+24=0</span><br><span class="tex">4x=-24</span><br><span class="tex">x=-6</span><br><span class="tex">x</span>-intercept <span class="tex">\boldsymbol{-6}</span>; point <span class="tex">\boldsymbol{(-6,\ 0)}</span></div></div></div>
+    <div class="part"><div class="pl"><span class="tex">y</span>-intercept</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Substitute <span class="tex">x=0</span>:<br><span class="tex">4(0)-3y+24=0</span><br><span class="tex">-3y=-24</span><br><span class="tex">y=8</span><br><span class="tex">y</span>-intercept <span class="tex">\boldsymbol{8}</span>; point <span class="tex">\boldsymbol{(0,\ 8)}</span></div></div></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. Same line, two forms">
+  <h3 class="sub">Same line, two forms</h3>
+  <p>Example 1’s equation <span class="tex">4x-3y+24=0</span> and <span class="tex">y=\tfrac{4}{3}x+8</span> are the <b>same line</b> written two ways. Rearranging, a table of values and the graph all agree, so either form gives the same intercepts.</p>
+  <div class="explainer" data-explainer="sameLine"></div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>A circle has two of each</h3></div>
+  <p class="q">The equation of a circle is <span class="tex">x^2+y^2=36</span>. Calculate the <span class="tex">x</span>-intercept(s) and <span class="tex">y</span>-intercept(s) of its graph. Write each intercept point as an ordered pair.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl"><span class="tex">x</span>-intercept(s)</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Substitute <span class="tex">y=0</span>:<br><span class="tex">x^2+0^2=36</span><br><span class="tex">x^2=36</span>, so <span class="tex">x=\pm6</span>.<br><span class="tex">x</span>-intercepts <span class="tex">\boldsymbol{\pm6}</span>; points <span class="tex">\boldsymbol{(6,\ 0)}</span> and <span class="tex">\boldsymbol{(-6,\ 0)}</span></div></div></div>
+    <div class="part"><div class="pl"><span class="tex">y</span>-intercept(s)</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Substitute <span class="tex">x=0</span>:<br><span class="tex">0^2+y^2=36</span><br><span class="tex">y^2=36</span>, so <span class="tex">y=\pm6</span>.<br><span class="tex">y</span>-intercepts <span class="tex">\boldsymbol{\pm6}</span>; points <span class="tex">\boldsymbol{(0,\ 6)}</span> and <span class="tex">\boldsymbol{(0,\ -6)}</span></div></div></div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Two square roots.</b> <span class="tex">x^2=36</span> has <b>two</b> solutions, <span class="tex">6</span> and <span class="tex">-6</span>, because <span class="tex">(-6)^2=36</span> too. Forget the <span class="tex">\pm</span> and you lose half the intercepts of the circle.</div></div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>A parabola: factor to find the <span class="tex">x</span>-intercepts</h3></div>
+  <p class="q">A parabola has equation <span class="tex">y=x^2-2x-24</span>. Algebraically determine the <span class="tex">x</span>-intercept(s) and the <span class="tex">y</span>-intercept of the parabola. Write each intercept point as an ordered pair.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl"><span class="tex">x</span>-intercept(s)</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Substitute <span class="tex">y=0</span> and factor (Unit 4):<br><span class="tex">0=x^2-2x-24=(x-6)(x+4)</span><br><span class="tex">x=6</span> or <span class="tex">x=-4</span>.<br><span class="tex">x</span>-intercepts <span class="tex">\boldsymbol{6}</span> and <span class="tex">\boldsymbol{-4}</span>; points <span class="tex">\boldsymbol{(6,\ 0)}</span> and <span class="tex">\boldsymbol{(-4,\ 0)}</span></div></div></div>
+    <div class="part"><div class="pl"><span class="tex">y</span>-intercept</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Substitute <span class="tex">x=0</span>:<br><span class="tex">y=0^2-2(0)-24=-24</span><br><span class="tex">y</span>-intercept <span class="tex">\boldsymbol{-24}</span>; point <span class="tex">\boldsymbol{(0,\ -24)}</span></div></div></div>
+    <div class="part think span2"><div class="pl"><span class="think-tag">Think</span> The parabola has <b>two</b> <span class="tex">x</span>-intercepts but only <b>one</b> <span class="tex">y</span>-intercept. Why can’t it have two <span class="tex">y</span>-intercepts?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Substituting <span class="tex">x=0</span> into <span class="tex">y=x^2-2x-24</span> gives <b>exactly one</b> output, <span class="tex">-24</span>: one input, one output. Substituting <span class="tex">y=0</span> asks the question backwards, and two different inputs (6 and −4) can give the same output 0.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check an intercept: it must give <span class="tex">y=0</span>.</b> Put <span class="tex">x=-4</span> into <span class="tex">x^2-2x-24</span>, with brackets around the negative: <span class="keys"><kbd>(</kbd><kbd>(−)</kbd><kbd>4</kbd><kbd>)</kbd><kbd>x²</kbd><kbd>−</kbd><kbd>2</kbd><kbd>×</kbd><kbd>(−)</kbd><kbd>4</kbd><kbd>−</kbd><kbd>2</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> gives 0 ✓</div>
+    <div class="pill-col"><button class="pill" data-keys="( (−) 4 ) x² − 2 × (−) 4 − 24 =">Check x = −4</button><button class="pill" data-keys="6 x² − 2 × 6 − 24 =">Check x = 6</button></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2c" data-section="2. Cross, touch, or miss">
+  <h3 class="sub">Meets means crosses <b>or touches</b></h3>
+  <p>How many <span class="tex">x</span>-intercepts a graph has depends on how it sits against the axis. Slide a parabola down (or a circle across) and watch the count change. Substituting tells the same story: <b>no real solution</b> means the graph misses the axis.</p>
+  <div class="explainer" data-explainer="crossTouch"></div>
+</section>
+
+<!-- ================= 3. Lines with one, two, or infinitely many intercepts ================= -->
+<section class="card" data-ink="s3" data-section="3. One, Two, or Infinitely Many">
+  <div class="sec-h"><span class="badge">3</span><h2>Lines With One, Two, or Infinitely Many Intercepts</h2></div>
+  <p>Most lines cross both axes, so they have two intercept points. Some lines do not.</p>
+  <div class="explainer" data-explainer="lineCount"></div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Horizontal, vertical, and through-the-origin lines</h3></div>
+  <div class="u5l3-ex4">
+    <div id="u5l3-ex4fig"></div>
+    <div>
+      <p class="q">For each line, state the <span class="tex">x</span>-intercept(s) and the <span class="tex">y</span>-intercept(s), if any, and the number of intercept points. (Line (c), <span class="tex">y=0</span>, is the <span class="tex">x</span>-axis itself.)</p>
+      <div class="parts c2">
+        <div class="part"><div class="pl">(a) <span class="tex">y=3</span></div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">y=0</span> gives <span class="tex">0=3</span>: impossible, so <b>no <span class="tex">x</span>-intercept</b> (parallel to the <span class="tex">x</span>-axis). <span class="tex">x=0</span> gives <span class="tex">y=3</span>: <span class="tex">y</span>-intercept 3. <b>One</b> intercept point, <span class="tex">(0,\ 3)</span>.</div></div></div>
+        <div class="part"><div class="pl">(b) <span class="tex">x=-2</span></div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">y=0</span> gives <span class="tex">x=-2</span>: <span class="tex">x</span>-intercept <span class="tex">-2</span>. <span class="tex">x=0</span> gives <span class="tex">0=-2</span>: impossible, so <b>no <span class="tex">y</span>-intercept</b>. <b>One</b> intercept point, <span class="tex">(-2,\ 0)</span>.</div></div></div>
+        <div class="part"><div class="pl">(c) <span class="tex">y=0</span></div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Every point of this line has <span class="tex">y=0</span>, so <b>every</b> point is on the <span class="tex">x</span>-axis: <b>infinitely many</b> <span class="tex">x</span>-intercepts. <span class="tex">x=0</span> gives <span class="tex">y=0</span>: <span class="tex">y</span>-intercept 0.</div></div></div>
+        <div class="part"><div class="pl">(d) <span class="tex">y=2x</span></div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">y=0</span> gives <span class="tex">x=0</span>, and <span class="tex">x=0</span> gives <span class="tex">y=0</span>: both intercepts are 0, at the same point. <b>One</b> intercept point, the origin <span class="tex">(0,\ 0)</span>.</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="def"><b>Summary.</b> A line can have <b>two</b> intercept points; <b>exactly one</b> (a horizontal or vertical line that is not an axis, or a slanted line through the origin); or <b>infinitely many</b> (the line is the <span class="tex">x</span>-axis, <span class="tex">y=0</span>, or the <span class="tex">y</span>-axis, <span class="tex">x=0</span>).</div>
+  <div class="parts c1">
+    <div class="part think"><div class="pl"><span class="think-tag">Think</span> Can a line have <b>no</b> intercepts at all?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No.</b> A line that misses the <span class="tex">x</span>-axis must be parallel to it, so it is horizontal, and every horizontal line crosses the <span class="tex">y</span>-axis. Every line has <b>at least one</b> intercept point.</div></div></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<!-- ================= 4. Interpreting intercepts ================= -->
+<section class="card" data-ink="s4" data-section="4. Intercepts in Applied Situations">
+  <div class="sec-h"><span class="badge">4</span><h2>Interpreting Intercepts in Applied Situations</h2></div>
+  <p>When a relation models a real situation its intercepts carry <b>meaning</b> tied to the context. Usually the vertical-axis intercept is the <b>start</b> (the input is 0) and the horizontal-axis intercept is where the output <b>runs out</b> (reaches 0).</p>
+  <div class="def-grid">
+    <div class="def"><b>Interpolation:</b> reading a value off a graph when it lies <b>between</b> two plotted points.<br><b>Extrapolation:</b> reading a value when the graph must be <b>extended beyond</b> the plotted points.</div>
+    <div class="def amber">Substituting into the formula always gives an <b>exact</b> value. Reading from a graph gives only an <b>estimate</b>.</div>
+  </div>
+  <div class="explainer" data-explainer="context"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Check every answer against the story.</b> Algebra can produce an intercept with no meaning, like <span class="tex">t=-1</span> for the diver: a time before the story starts. Say so, and reject it.</div></div>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>A descending hot-air balloon</h3></div>
+  <p class="q">A hot-air balloon begins a steady descent. Its height above the ground, <span class="tex">h</span> metres, after <span class="tex">t</span> minutes <span class="tex">(t\ge0)</span> is given by <span class="tex">h=800-40t</span>.</p>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(a) Complete the table of values, then plot the ordered pairs on the grid and connect them with a straight line.</div>
+      <div class="u5l3-ex5a">
+        <div class="u5l3-ex5tab" data-bk-table='{"headers":["\\text{Input }(t)","\\text{Output }(h)","(t,\\ h)"],"rows":[[0,800,"(0,\\ 800)"],[5,600,"(5,\\ 600)"],[10,400,"(10,\\ 400)"],[15,200,"(15,\\ 200)"]],"hide":[[0,1],[0,2],[1,1],[1,2],[2,1],[2,2],[3,1],[3,2]],"cellW":150,"cellH":58}'></div>
+        <div data-bk-graph='{"width":470,"height":400,"xmin":0,"xmax":25,"ymin":0,"ymax":800,"xstep":5,"ystep":100,"xtitle":"t","ytitle":"h","origin":true}'></div>
+      </div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">h(0)=800</span>, <span class="tex">h(5)=800-200=600</span>, <span class="tex">h(10)=800-400=400</span>, <span class="tex">h(15)=800-600=200</span> (tap the table cells). The line is extended to the extra point <span class="tex">(20,\ 0)</span>, where it meets the <span class="tex">t</span>-axis.
+        <div class="u5l3-ansfig" data-bk-graph='{"width":360,"height":300,"xmin":0,"xmax":25,"ymin":0,"ymax":800,"xstep":5,"ystep":100,"xtitle":"t","ytitle":"h","origin":true,"fontSize":15,"items":[{"segment":[[0,800],[20,0],{"color":"red"}]},{"point":[0,800,{"color":"red"}]},{"point":[5,600,{"color":"red"}]},{"point":[10,400,{"color":"red"}]},{"point":[15,200,{"color":"red"}]},{"point":[20,0,{"color":"red"}]}]}'></div></div></div></div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(b) What does the ordered pair <span class="tex">(0,\ 800)</span> represent in the context of this problem?</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">At <span class="tex">t=0</span> no time has passed, so <span class="tex">(0,\ 800)</span> says the balloon is <b>800 m above the ground at the instant the descent begins</b>. It is the <span class="tex">h</span>-intercept point of the graph.</div></div></div>
+    <div class="part"><div class="pl">(c) Determine the <span class="tex">t</span>-intercept of the graph algebraically. What does the <span class="tex">t</span>-intercept represent in the context of this problem?</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Substitute <span class="tex">h=0</span>: <span class="tex">0=800-40t\Rightarrow 40t=800\Rightarrow t=20</span>. The <span class="tex">t</span>-intercept is <span class="tex">\boldsymbol{20}</span> (the point <span class="tex">(20,\ 0)</span>): the balloon <b>reaches the ground 20 minutes</b> after the descent begins.</div></div></div>
+  </div>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(d) Use the formula to calculate the exact height of the balloon after 12 minutes.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">h=800-40(12)</span><br><span class="tex">=800-480</span><br><span class="tex">=\boldsymbol{320}</span> m</div></div></div>
+    <div class="part"><div class="pl">(e) Use the formula to determine how many minutes it takes the balloon to reach a height of 160 metres.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">160=800-40t</span><br><span class="tex">40t=640</span><br><span class="tex">t=\boldsymbol{16}</span> minutes</div></div></div>
+    <div class="part"><div class="pl">(f) The table stops at <span class="tex">t=15</span>. Is finding the height at <span class="tex">t=12</span> in (d) an example of interpolation or extrapolation? What about finding the time in (e)?</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">(d) <span class="tex">t=12</span> lies <b>between</b> the plotted points <span class="tex">t=10</span> and <span class="tex">t=15</span>: <b>interpolation</b>. (e) The answer <span class="tex">t=16</span> lies <b>beyond</b> the last plotted point (<span class="tex">t=15</span>): <b>extrapolation</b>.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>(d) on the calculator.</b> <span class="keys"><kbd>8</kbd><kbd>0</kbd><kbd>0</kbd><kbd>−</kbd><kbd>4</kbd><kbd>0</kbd><kbd>×</kbd><kbd>1</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> gives 320 (the calculator multiplies first). For (e), undo the steps: <span class="tex">t=(800-160)\div40</span>.</div>
+    <div class="pill-col"><button class="pill" data-keys="800 − 40 × 12 =">Show (d)</button><button class="pill" data-keys="( 800 − 160 ) ÷ 40 =">Show (e)</button></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s4b" data-section="4. Interpolation or extrapolation?">
+  <h3 class="sub">Interpolation or extrapolation?</h3>
+  <p>The plotted points of Example 5 run from <span class="tex">t=0</span> to <span class="tex">t=15</span>. Inside that stretch we <b>interpolate</b>; outside it we <b>extrapolate</b>, and extrapolating too far can leave the story altogether.</p>
+  <div class="explainer" data-explainer="interp"></div>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Where a graph meets the axes.</b> On the <span class="tex">x</span>-axis, <span class="tex">y=0</span>; on the <span class="tex">y</span>-axis, <span class="tex">x=0</span>. The <b>intercept</b> is the value (<span class="tex">-6</span>); the <b>intercept point</b> is the pair (<span class="tex">(-6,\ 0)</span>).</div>
+    <div><b>Algebraically:</b> <span class="tex">x</span>-intercept(s): <b>substitute <span class="tex">y=0</span></b>. <span class="tex">y</span>-intercept(s): <b>substitute <span class="tex">x=0</span></b>. Any form of the equation works. Squares give <span class="tex">\pm</span>; trinomials factor.</div>
+    <div><b>Lines:</b> two intercept points, exactly one (horizontal or vertical, not an axis, or through the origin), or infinitely many (the line is an axis).</div>
+    <div><b>In context:</b> the vertical intercept is usually the <b>start</b>, the horizontal one where it <b>runs out</b>. Reject answers outside the story. Between plotted points: <b>interpolation</b>; beyond: <b>extrapolation</b>. Formula = exact, graph = estimate.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u5l3" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 3 — Where Graphs Meet the Axes</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l4/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 4 — Determining the Domain and Range of a Relation</b><div class="muted">Which inputs and which outputs actually happen: the diver’s times <span class="tex">0\le t\le 2</span> and heights <span class="tex">0\le h\le 11.25</span></div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u5l3.js';
+  boot({ key: 'u5l3', homeHref: '../../', title: '5.3 Where Graphs Meet the Axes' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

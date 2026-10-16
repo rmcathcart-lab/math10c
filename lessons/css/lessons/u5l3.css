@@ -1,0 +1,84 @@
+/* Math 10C · Unit 5 · Lesson 3 — Where Graphs Meet the Axes: styles used only on this page (prefix u5l3-).
+ * Colours: x-intercepts / substituted zeros red, y-intercepts blue (matching the explainers). */
+
+.ex-cap { min-height: 128px; }
+.ex-cap .katex { font-size: 1.04em; }
+.chip .katex { font-size: 1em; }
+.pl .katex { font-size: 1.1em; }
+.ans .katex { font-size: 1.04em; }
+.part.span2 { grid-column: span 2; }
+.pill-col { display: flex; flex-direction: column; gap: 6px; }
+.lesson .katex { white-space: nowrap; }
+h2 .katex, h3 .katex { font-size: .95em; }
+
+/* ---------------- warm-up ---------------- */
+.u5l3-wtop { display: grid; grid-template-columns: 560px 1fr; gap: 22px; align-items: start; }
+.u5l3-wfig { display: flex; flex-direction: column; gap: 10px; }
+.u5l3-wbtns { display: flex; gap: 10px; flex-wrap: wrap; }
+.u5l3-wqs .q-line { margin-top: 6px; }
+.u5l3-wa { margin: 0 0 8px 50px; }
+.u5l3-wa .pill.small { margin-left: 0; }
+.u5l3-blank { color: var(--red); font-size: 22px; padding: 0 6px; }
+.u5l3-early { margin-top: 14px; }
+.u5l3-social { font-style: italic; color: var(--ink2); font-size: 19px; text-align: center; margin: 16px 0 0; }
+.u5l3-sky { stroke: #d9dee6; stroke-width: 1; }
+.u5l3-tnum { font: 800 18px var(--round); color: var(--ink); }
+.u5l3-tnum-w { color: #fff; }
+.u5l3-axname { font: 700 16px var(--round); color: var(--ink2); }
+.u5l3-rot { rotate: -90deg; }
+
+/* ---------------- static figures ---------------- */
+.u5l3-s1row { display: flex; gap: 28px; align-items: center; margin: 4px 0 16px; }
+.u5l3-s1def { flex: 1; }
+.u5l3-flips { margin: 0 0 16px; }
+.u5l3-flips .bk-back small { display: block; font-size: 14px; color: var(--muted); font-weight: 600; margin-top: 2px; }
+.u5l3-rules { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: -4px 0 16px; }
+.u5l3-rule { border-radius: 14px; padding: 12px 18px; text-align: center; background: #fff1ef; border: 2px solid #f2c9c4; }
+.u5l3-rule + .u5l3-rule { background: #eef3fd; border-color: #c6d6f6; }
+.u5l3-rh { font: 800 18px var(--round); text-transform: uppercase; letter-spacing: .04em; color: var(--red); }
+.u5l3-rule + .u5l3-rule .u5l3-rh { color: #1f5bd6; }
+.u5l3-rb { font-size: 24px; line-height: 1.35; margin: 4px 0; }
+.u5l3-rf { font-size: 18px; color: var(--ink2); }
+.u5l3-ex4 { display: grid; grid-template-columns: 360px 1fr; gap: 20px; align-items: start; margin-bottom: 14px; }
+.u5l3-ex4 .q { margin-top: 0; }
+.u5l3-ex4 .parts { margin-bottom: 0; }
+.u5l3-ex5a { display: grid; grid-template-columns: 460px 1fr; gap: 18px; align-items: start; margin: 8px 0 10px; }
+.u5l3-ex5tab { padding-top: 20px; }
+.u5l3-ansfig { margin-top: 6px; }
+
+/* ---------------- explainer panels ---------------- */
+.u5l3-panel { background: #fff; border: 1px solid var(--line2); border-radius: 14px; padding: 10px 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
+.u5l3-ph { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.u5l3-ph .katex { text-transform: none; font-size: 1.3em; }
+.u5l3-px { border-left: 5px solid var(--red); }
+.u5l3-py { border-left: 5px solid #1f5bd6; }
+.u5l3-line { font-size: 21px; line-height: 1.35; }
+.u5l3-mline { font-size: 22px; }
+.u5l3-mline2 { font-size: 20px; }
+.u5l3-sm { font-size: 19px; }
+.u5l3-res { font-size: 20px; margin-top: 2px; }
+.u5l3-cx { color: var(--red); }
+.u5l3-cy { color: #1f5bd6; }
+.u5l3-cno { color: var(--muted); }
+.u5l3-eqtag { position: absolute; font-size: 26px; font-weight: 700; background: #f6f5f1; border-radius: 12px; padding: 4px 16px; }
+.u5l3-eqsm { position: static; font-size: 22px; align-self: flex-start; padding: 2px 12px; }
+.u5l3-ctbody { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+.u5l3-form { font-size: 22px; background: #f6f5f1; border-radius: 12px; padding: 8px 12px; box-sizing: border-box; text-align: center; }
+.u5l3-form b { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: #1f5bd6; color: #fff; font: 800 16px var(--round); margin-right: 10px; vertical-align: 3px; }
+.u5l3-fb b { background: var(--amber); }
+.u5l3-fa { border-bottom: 4px solid #1f5bd6; }
+.u5l3-fb { border-bottom: 4px solid var(--amber); }
+
+/* meetAxes read-out */
+.u5l3-ro { display: flex; flex-direction: column; gap: 8px; margin: 4px 0 8px; }
+.u5l3-ro-r { display: flex; align-items: baseline; gap: 12px; font-size: 34px; background: #f6f5f1; border-radius: 12px; padding: 4px 16px; transition: background .25s, color .25s; }
+.u5l3-ro-k, .u5l3-ro-eq { font-style: normal; color: var(--ink2); }
+.u5l3-ro-v { font-family: var(--round); min-width: 90px; }
+.u5l3-ro-r.u5l3-hot { background: #fde9e7; color: var(--red); }
+.u5l3-ro-r.u5l3-hot .u5l3-ro-k, .u5l3-ro-r.u5l3-hot .u5l3-ro-eq { color: var(--red); }
+.u5l3-notes { display: flex; flex-direction: column; gap: 4px; }
+.u5l3-rulebox { margin-top: auto; background: var(--brand-soft); border-left: 5px solid var(--brand2); border-radius: 10px; padding: 8px 14px; font-size: 22px; line-height: 1.45; }
+
+/* context scene */
+.u5l3-scene { overflow: visible; }
+.u5l3-sctxt { font: 800 17px var(--round); fill: #1e2d46; }

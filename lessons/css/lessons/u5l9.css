@@ -1,0 +1,99 @@
+/* Math 10C · Unit 5 · Lesson 9 — Interpreting and Sketching Real-World Graphs */
+
+/* segment badges (like the warm-up board) */
+.u5l9-seg { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; border: 2.5px solid var(--red); background: #fff; color: var(--red); font: 800 18px var(--round); line-height: 1; box-sizing: border-box; vertical-align: middle; }
+.u5l9-seg.sm { width: 26px; height: 26px; font-size: 16px; }
+.u5l9-seg.inc { border-color: #12805a; color: #12805a; }
+.u5l9-seg.dec { border-color: #c93a33; color: #c93a33; }
+.u5l9-seg.con { border-color: #5d6574; color: #5d6574; }
+
+/* graph labels */
+.u5l9-tk { font: 600 17px var(--round); color: var(--ink2); }
+.u5l9-axt { font: 700 18px var(--round); color: var(--ink); }
+.u5l9-rot { rotate: -90deg; }
+
+/* warm-up */
+.u5l9-wtop { display: grid; grid-template-columns: 380px 1fr; gap: 18px; align-items: center; margin: 6px 0 10px; }
+.u5l9-wtub { width: 380px; }
+.u5l9-wqs { display: grid; gap: 4px; }
+.u5l9-wqa { margin-left: 50px; }
+.u5l9-c4 { grid-template-columns: repeat(4, 1fr); }
+.u5l9-social { margin: 14px 0 0; font-style: italic; color: var(--muted); font-size: 19px; }
+.q-num.bonus { background: var(--amber); }
+
+/* the three behaviours */
+.u5l9-three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 4px 0 16px; }
+.u5l9-k { display: flex; gap: 12px; align-items: center; border-radius: 12px; padding: 10px 14px; font-size: 19px; line-height: 1.3; }
+.u5l9-k svg { flex: none; width: 74px; height: 50px; }
+.u5l9-k svg path { fill: none; stroke-width: 6; stroke-linecap: round; }
+.u5l9-k.inc { background: #e9f6ef; } .u5l9-k.inc svg path { stroke: #12805a; } .u5l9-k.inc b { color: #12805a; }
+.u5l9-k.dec { background: #fff1ef; } .u5l9-k.dec svg path { stroke: #c93a33; } .u5l9-k.dec b { color: #c93a33; }
+.u5l9-k.con { background: #f1f2f4; } .u5l9-k.con svg path { stroke: #5d6574; } .u5l9-k.con b { color: #5d6574; }
+
+/* figures */
+.u5l9-figbox { display: flex; justify-content: center; margin: 6px 0 14px; }
+.u5l9-mini { display: flex; justify-content: center; margin: 4px 0; }
+.u5l9-axwork { position: relative; }
+.u5l9-ax { position: absolute; left: 50%; top: 6px; translate: -50% 0; pointer-events: none; }
+.u5l9-ansfig { display: flex; justify-content: center; margin: 4px 0 6px; }
+.parts .u5l9-span2 { grid-column: 1 / -1; }
+.u5l9-vlt { display: grid; grid-template-columns: 1fr 240px; gap: 20px; align-items: center; margin-bottom: 12px; }
+.u5l9-vlt p { margin-top: 0; }
+
+/* shape vocabulary */
+.u5l9-shapes { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 6px 0 16px; }
+.u5l9-shape { display: flex; flex-direction: column; align-items: center; gap: 6px; background: #fff; border: 1px solid var(--line2); border-radius: 12px; padding: 8px 4px 10px; }
+.u5l9-shname { font-size: 17px; font-weight: 700; text-align: center; min-height: 2.6em; display: grid; place-items: center; white-space: normal; line-height: 1.25; }
+
+/* sketch steps */
+.u5l9-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 4px 0 16px; }
+.u5l9-steps > div { background: var(--brand-soft); border-radius: 12px; padding: 10px 12px; font-size: 17px; line-height: 1.35; }
+.u5l9-steps .n { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--brand2); color: #fff; margin-right: 6px; font-size: 15px; }
+
+/* explainer pieces */
+.u5l9-clock { font: 600 19px var(--round); color: var(--ink); background: #fff; border: 1px solid var(--line2); border-radius: 10px; padding: 6px 12px; box-sizing: border-box; text-align: center; }
+.u5l9-clock b { font-variant-numeric: tabular-nums; color: #1f5bd6; }
+.u5l9-tally { display: grid; gap: 8px; }
+.u5l9-trow { display: flex; align-items: center; gap: 8px; min-height: 40px; border-radius: 10px; padding: 3px 10px; background: #fff; border: 1px solid var(--line2); }
+.u5l9-tk-k { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .05em; width: 112px; flex: none; }
+.u5l9-tk-b { display: flex; flex-wrap: wrap; gap: 5px; }
+.u5l9-trow.inc .u5l9-tk-k { color: #12805a; } .u5l9-trow.dec .u5l9-tk-k { color: #c93a33; } .u5l9-trow.con .u5l9-tk-k { color: #5d6574; }
+
+.u5l9-panel { background: #fff; border: 1px solid var(--line2); border-radius: 14px; padding: 12px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; }
+.u5l9-ph { font: 800 14px var(--round); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.u5l9-prow { border-left: 5px solid; padding: 2px 0 4px 10px; font-size: 19px; }
+.u5l9-prow.inc { border-color: #12805a; } .u5l9-prow.inc > b { color: #12805a; }
+.u5l9-prow.dec { border-color: #c93a33; } .u5l9-prow.dec > b { color: #c93a33; }
+.u5l9-prow.con { border-color: #5d6574; } .u5l9-prow.con > b { color: #5d6574; }
+.u5l9-pli { font-size: 18px; line-height: 1.4; }
+.u5l9-ptot { margin-top: auto; background: #e9f6ef; border-radius: 10px; padding: 8px 12px; font-size: 19px; color: #0d5f43; }
+.u5l9-dur { font: 800 17px var(--round); color: #0d5f43; background: rgba(255, 255, 255, .9); border-radius: 6px; padding: 0 5px; }
+.u5l9-run { font: 700 17px var(--round); color: #a36a00; background: rgba(255, 255, 255, .9); border-radius: 6px; padding: 0 5px; }
+.u5l9-rise { font: 700 17px var(--round); color: #7b4fc4; background: rgba(255, 255, 255, .9); border-radius: 6px; padding: 0 5px; }
+.u5l9-rl { font-size: 19px; line-height: 1.3; display: flex; align-items: center; gap: 10px; }
+.u5l9-rh { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .03em; width: 84px; flex: none; white-space: normal; }
+.u5l9-bars { margin-top: auto; display: grid; gap: 6px; }
+.u5l9-bh { font: 800 13px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.u5l9-bar { display: flex; align-items: center; gap: 8px; font-size: 18px; }
+.u5l9-bar .u5l9-bn { width: 66px; flex: none; }
+.u5l9-bar i { display: block; height: 16px; border-radius: 5px; background: #9aa3b2; }
+.u5l9-bar.top i { background: #c93a33; }
+.u5l9-bar.top { font-weight: 800; color: #c93a33; }
+.u5l9-ktag { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .04em; background: rgba(255, 255, 255, .92); border-radius: 6px; padding: 1px 6px; }
+.u5l9-ktag.inc { color: #12805a; } .u5l9-ktag.dec { color: #c93a33; } .u5l9-ktag.con { color: #5d6574; }
+.u5l9-vtxt { font-size: 20px; }
+.u5l9-shn { font: 800 22px var(--round); color: var(--brand2); }
+.u5l9-shx { font-size: 19px; line-height: 1.35; padding-left: 14px; border-left: 4px solid var(--amber); }
+.u5l9-scene { border-radius: 10px; overflow: hidden; border: 1px solid var(--line2); }
+.u5l9-scene svg { display: block; }
+.u5l9-desc { background: #fff; border: 1px solid var(--line2); border-radius: 14px; padding: 12px 16px; box-sizing: border-box; font-size: 20px; line-height: 1.55; }
+.u5l9-lead { font-weight: 700; margin-bottom: 6px; }
+.u5l9-ph-t { border-radius: 6px; transition: background .25s, color .25s; }
+.u5l9-ph-t.on { background: #ffe9a8; box-shadow: 0 0 0 3px #ffe9a8; }
+.u5l9-ph-t.done { color: var(--ink2); }
+.u5l9-ptag { display: inline-block; font: 800 13px var(--round); text-transform: uppercase; letter-spacing: .04em; border-radius: 6px; padding: 1px 6px; margin: 0 4px; color: #fff; vertical-align: 2px; }
+.u5l9-ptag.inc { background: #12805a; } .u5l9-ptag.dec { background: #c93a33; } .u5l9-ptag.con { background: #5d6574; }
+.u5l9-note { font: 700 16px var(--round); color: var(--muted); }
+.u5l9-garage svg { display: block; }
+.u5l9-chip { display: inline-block; border: 2px solid; border-radius: 8px; padding: 0 6px; font-size: 17px; background: #fff; }
+.u5l9-chip.inc { border-color: #12805a; color: #12805a; } .u5l9-chip.dec { border-color: #c93a33; color: #c93a33; } .u5l9-chip.con { border-color: #5d6574; color: #5d6574; }
