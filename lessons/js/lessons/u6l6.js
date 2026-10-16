@@ -704,7 +704,7 @@ const collinear = {
       const a = d.pts[f], b = d.pts[n], run = b[0] - a[0], rise = b[1] - a[1];
       const sg = G.segment(a, b, { color: col, width: 3, dash: '7 6' }); await G.drawIn(sg, 450, c);
       const S = stair(G, { x: a[0], y: a[1], run, rise }, { width: 3.5 }); await S.show(c, 350);
-      await say(c, Pn, T(`m_{${f}${n}}=\\frac{${b[1]}-${pn(a[1])}}{${b[0]}-${pn(a[0])}}=\\frac{${rise}}{${run}}=${fr(rise, run)}`), 'u6l6-mline');
+      await say(c, Pn, T(`m_{${f}${n}}=\\frac{${b[1]}-${pn(a[1])}}{${b[0]}-${pn(a[0])}}=${frEq(rise, run)}`), 'u6l6-mline');
       S.dim(0.22); sg.style.opacity = 0.5;
     };
     if (v === 'ex6') {
