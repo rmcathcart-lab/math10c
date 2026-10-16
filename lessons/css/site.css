@@ -407,3 +407,5 @@ body.board-open { overflow: hidden; }
 .mp-zbtns button { width: 38px; height: 34px; border-radius: 10px; border: 1px solid var(--line); background: #fff; font: 800 20px var(--round); color: var(--ink); cursor: pointer; }
 .mp-zbtns b { min-width: 48px; text-align: center; font-variant-numeric: tabular-nums; }
 @media print { .lesson { margin: 0 auto !important; } }
+/* Math keeps its own letters: never inherit a label's uppercase or letter-spacing (KaTeX inside small-caps headings) */
+.katex { text-transform: none; letter-spacing: normal; }
