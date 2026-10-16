@@ -620,7 +620,8 @@ const dial = {
       else {
         const [a, b] = s, m = a / b, txt = fr(a, b);
         const extra = { 0.25: 'a gentle climb', 0.5: 'steeper', 1: `rise equals run`, 2: `rise ${T('2')} for every ${T('1')} across`, 5: 'very steep: the numbers grow fast near vertical' }[Math.abs(m)];
-        cap = neg ? `${T('m=' + txt)}: the line <b>falls</b>. Steepness ${T('|m|=' + fr(Math.abs(a), b))}: ${extra}.` : `${T('m=' + txt)}: run ${T(cU(b))}, rise ${T(cR(a))}. ${extra[0].toUpperCase() + extra.slice(1)}.`;
+        const extraN = { 0.25: 'a gentle fall', 0.5: 'steeper', 1: `as steep as ${T('m=1')}`, 2: `just as steep as ${T('m=2')}`, 5: 'very steep: the size grows fast near vertical' }[Math.abs(m)];
+        cap = neg ? `${T('m=' + txt)}: run ${T(cU(b))}, rise ${T(cR(a))}, so the line <b>falls</b>. Steepness ${T('|m|=' + fr(Math.abs(a), b))}: ${extraN}.` : `${T('m=' + txt)}: run ${T(cU(b))}, rise ${T(cR(a))}. ${extra[0].toUpperCase() + extra.slice(1)}.`;
       }
       steps.push({ cap, run: async (c) => {
         if (Tr) { Tr.remove(); Tr = null; }
