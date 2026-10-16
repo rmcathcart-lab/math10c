@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Building Blocks · Math 10C dev</title>
+<meta name="description" content="Demo and test bed for the shared lesson building blocks (js/blocks.js): graphs, number lines, tables, mapping diagrams, flowcharts, triangles, stamps, polls, multiple choice and numerical response.">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="icon" href="../assets/icon-192.png">
+<link rel="stylesheet" href="../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../css/site.css">
+<link rel="stylesheet" href="../css/calc.css">
+<script src="../../assets/katex/katex.min.js"></script>
+<script src="../../js/calc.js"></script>
+<script src="../js/vendor/qrcode.js"></script>
+<style>
+  .demo-note { font-size: 16px; color: var(--muted); margin: 4px 0 10px; }
+  .demo-note code { background: #f3f1ea; border-radius: 5px; padding: 0 5px; font-size: 15px; }
+  .demo-pts { font-size: 18px; min-height: 1.5em; }
+  .demo-panel { background: #fff; border: 1px solid var(--line2); border-radius: 14px; padding: 12px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; }
+  .demo-ph { font: 800 14px var(--round); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .demo-line { font-size: 22px; line-height: 1.35; }
+  .demo-line.dom { color: var(--amber); } .demo-line.ran { color: #7b4fc4; }
+  .demo-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+</style>
+</head>
+<body>
+<main class="lesson">
+
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Developer page</div>
+  <h1>Building blocks</h1>
+  <p class="lede">Every block in <b>js/blocks.js</b>, drawn statically and inside explainers. This page is also the test bed. The reference for builders is <b>lessons/BLOCKS.md</b>.</p>
+</section>
+
+<!-- ================= warm-up widgets ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up widgets">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Polls, reveals, flip cards</h2></div>
+  <div class="bk-wq">
+    <div class="q-line"><div class="q-num">1</div><div>A relation pairs each student with their birth month. Is <b>month</b> a function of <b>student</b>?</div></div>
+    <div style="margin-left:50px"><button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><b>Yes</b>: every student has exactly <b>one</b> birth month.</div></div>
+  </div>
+  <div class="q-line"><div class="q-num">2</div><div>Tap to reveal: the input <span class="tex">x=3</span> gives <span class="tex">y=2x+1=</span> <span data-reveal><span class="tex">7</span></span> and <span class="tex">x=-1</span> gives <span data-reveal="tap"><span class="tex">-1</span></span>.</div></div>
+  <div class="poll" id="demo-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which of these is <b>not</b> a function? <b>Guess first</b> (tap your guess).</div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> each person → their age</div>
+      <div class="opt right"><b>B</b> each age → the people that age</div>
+      <div class="opt"><b>C</b> each car → its licence plate</div>
+    </div>
+    <button class="pill" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>B</b>: one age (say 15) goes to <b>many</b> people, so one input has several outputs.</div>
+  </div>
+  <div class="bk-flips" style="--bk-cols:3; margin-top:18px">
+    <div class="bk-flip"><div class="bk-front">Domain</div><div class="bk-back">every <b>input</b> value — the <span class="tex">x</span>-values</div></div>
+    <div class="bk-flip"><div class="bk-front">Range</div><div class="bk-back">every <b>output</b> value — the <span class="tex">y</span>-values</div></div>
+    <div class="bk-flip"><div class="bk-front"><span class="tex">\{x\mid -2\le x&lt;5,\ x\in\mathbb{R}\}</span></div><div class="bk-back">all real numbers from <span class="tex">-2</span> (included) up to <span class="tex">5</span> (not included)</div></div>
+  </div>
+</section>
+
+<!-- ================= static figures ================= -->
+<section class="card" data-ink="static" data-section="Static figures">
+  <div class="sec-h"><span class="badge">1</span><h2>Static figures</h2></div>
+  <p class="demo-note">Built in JS with <code>new Graph(host, opts)</code> etc. — the same calls an explainer makes, without <code>c</code>.</p>
+  <div class="bk-row" id="static-graphs"></div>
+  <p class="demo-note" style="margin-top:18px">Declarative: a <code>data-bk-graph</code> / <code>data-bk-numberline</code> / <code>data-bk-table</code> attribute, no JS.</p>
+  <div class="bk-row">
+    <div data-bk-graph='{"width":300,"height":300,"xmin":-5,"xmax":5,"ymin":-5,"ymax":5,"items":[{"fn":["-x^2+4",{"color":"purple"}]},{"point":[0,4,{"label":"vertex","color":"purple"}]},{"point":[-2,0,{"coords":true,"pos":"nw"}]}]}'></div>
+    <div>
+      <div data-bk-numberline='{"width":440,"height":90,"min":-4,"max":6,"items":[{"interval":[-2,3,{"openB":true}]},{"mark":[0.5,"<b>−2 ≤ x &lt; 3</b>"]}]}'></div>
+      <div data-bk-table='{"headers":["x","y"],"rows":[[0,1],[1,4],[2,7],[3,10]],"layout":"h","cellW":70,"cellH":46,"diffs":true,"diffSpace":70}'></div>
+    </div>
+  </div>
+  <div class="bk-row" id="static-more" style="margin-top:16px"></div>
+</section>
+
+<!-- ================= interactive graph ================= -->
+<section class="card" data-ink="ix" data-section="Tap to plot">
+  <div class="sec-h"><span class="badge">2</span><h2>Tap to plot</h2></div>
+  <p class="demo-note">Tap the grid to add a point (finger or Pencil), drag to move, tap a point to remove it. The rest of the card still takes ink.</p>
+  <div class="bk-row"><div id="ix-graph"></div><div><div class="demo-pts" id="ix-pts">No points yet.</div><button class="pill" id="ix-clear" type="button">Clear points</button></div></div>
+</section>
+
+<!-- ================= explainers ================= -->
+<section class="card" data-ink="ex1" data-section="Explainers: graphs">
+  <div class="sec-h"><span class="badge">3</span><h2>Explainers: graphs</h2></div>
+  <div class="explainer" data-explainer="domain"></div>
+  <div class="explainer" data-explainer="vlt"></div>
+  <div class="explainer" data-explainer="table"></div>
+  <div class="explainer" data-explainer="calc"></div>
+</section>
+
+<section class="card" data-ink="ex2" data-section="Explainers: diagrams">
+  <div class="sec-h"><span class="badge">4</span><h2>Explainers: diagrams</h2></div>
+  <div class="explainer" data-explainer="mapping"></div>
+  <div class="explainer" data-explainer="flow"></div>
+  <div class="explainer" data-explainer="hops"></div>
+  <div class="explainer" data-explainer="trig"></div>
+  <div class="explainer" data-explainer="check"></div>
+</section>
+
+<!-- ================= examples ================= -->
+<section class="card example" data-ink="ex-mc" data-section="Example: MC and NR">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Multiple choice and numerical response</h3></div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Which relation is a function?</div>
+      <div class="bk-mc" data-answer="C">
+        <div><span class="tex">\{(1,2),(1,3)\}</span></div>
+        <div><span class="tex">x=y^2</span></div>
+        <div><span class="tex">y=x^2</span></div>
+        <div><span class="tex">x^2+y^2=9</span></div>
+      </div>
+      <div class="work" style="--h:110px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>C</b> — every <span class="tex">x</span> gives exactly one <span class="tex">y=x^2</span>.</div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">f(x)=3x-4</span>. Find <span class="tex">f(2.5)</span>.</div>
+      <div class="work" style="--h:110px"></div>
+      <div class="bk-nr" data-value="3.5"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">3(2.5)-4=7.5-4=</span> <b>3.5</b></div></div></div>
+  </div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(c) Tap your class's pick first: which value is <b>not</b> in the domain of <span class="tex">y=\sqrt{x-2}</span>?</div>
+      <div class="bk-mc" data-answer="A" data-pick>
+        <div><span class="tex">0</span></div><div><span class="tex">2</span></div><div><span class="tex">6</span></div><div><span class="tex">11</span></div>
+      </div>
+      <div class="work" style="--h:90px"></div>
+      <div class="nr-demo">Table check: <span class="tex">x=6</span> gives <span data-reveal><span class="tex">y=2</span></span></div>
+      <div class="bk-nr" data-value="1440">Record the number of minutes in a day.</div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>A</b> — <span class="tex">0-2&lt;0</span>, and there is no real square root of a negative. (A day has <b>1440</b> minutes.)</div></div></div>
+  </div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../js/ui.js';
+  import '../js/dev/blocks-demo.js';
+  boot({ key: 'devblocks', homeHref: '../', title: 'Building blocks (dev)' });
+</script>
+</body>
+</html>

@@ -1,3 +1,4 @@
+@import url('blocks.css'); /* building blocks (js/blocks.js) — must stay the first rule */
 /* Math 10C Teaching — shared styles. Built to be projected from an iPad and written on with an Apple Pencil. */
 :root {
   --bg: #f4f1ea; --card: #ffffff; --ink: #1c2230; --ink2: #3a4254; --muted: #6a7182; --line: #e2ddd1; --line2: #eeeae1;

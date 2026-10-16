@@ -4,7 +4,9 @@
  *   renderTex(root)               → typesets every element with class "tex" (its text is the LaTeX) inside root
  * Use it anywhere radicals, fractions, exponents or repeating bars (\overline{36}) need to look like real math. */
 export function tex(src, display = false) {
-  try { return window.katex.renderToString(String(src), { displayMode: display, throwOnError: false, output: 'html' }); }
+  // data-tex keeps the source on the rendered math (used by tests/explainer_dump.py to report math as LaTeX)
+  const esc = (t) => t.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+  try { return window.katex.renderToString(String(src), { displayMode: display, throwOnError: false, output: 'html' }).replace('<span class="katex"', '<span data-tex="' + esc(String(src)) + '" class="katex"'); }
   catch (e) { return String(src); }
 }
 export function renderTex(root = document) {

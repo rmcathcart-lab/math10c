@@ -1,0 +1,176 @@
+/* Building blocks (js/blocks.js). Loaded for every page by the @import at the top of site.css.
+ * Block classes start with bk-. Shared markup classes used as-is: .poll / .opt / .part / .reveal / .ans.
+ * Never style bare span descendants here: KaTeX is made of spans. */
+
+/* ---------------- shared frame: an SVG with an HTML overlay ---------------- */
+.bk-box { position: relative; flex: none; }
+.bk-svg { position: absolute; left: 0; top: 0; overflow: visible; }
+.bk-svg g, .bk-svg circle, .bk-svg polygon { transform-box: fill-box; transform-origin: center; }
+.bk-html { position: absolute; inset: 0; pointer-events: none; }
+.bk-html > * { position: absolute; }
+.bk-lab { position: absolute; white-space: nowrap; font-size: 20px; line-height: 1.15; color: var(--ink); }
+.bk-lab .katex { font-size: 1.05em; }
+.bk-ptlab { font-size: 19px; font-weight: 700; background: rgba(255, 255, 255, .88); border-radius: 7px; padding: 0 5px; }
+.bk-pill { background: #fff; border: 2px solid currentColor; border-radius: 12px; padding: 1px 9px; font-weight: 700; }
+.bk-tag { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .05em; }
+.bk-row { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
+.bk-fig { display: flex; justify-content: center; margin: 6px 0 14px; }
+.bk-dot.bk-open, .bk-pt.bk-open circle { fill: #fff; }
+.bk-axis { stroke: var(--ink); stroke-width: 2; }
+.bk-axhead { fill: var(--ink); }
+.bk-num { font: 600 17px var(--round); fill: var(--ink2); paint-order: stroke; stroke: #fff; stroke-width: 4px; stroke-linejoin: round; }
+
+/* ---------------- Graph ---------------- */
+.bk-plot { fill: #fff; }
+.bk-gl { stroke: #e7e2d7; stroke-width: 1; }
+.bk-gl-major { stroke: #cdc6b6; stroke-width: 1.4; }
+.bk-tick { stroke: var(--ink); stroke-width: 1.6; }
+.bk-axt { font-size: 21px; color: var(--ink); }
+.bk-graph .bk-hline .bk-stroke, .bk-graph .bk-vline .bk-stroke { stroke-linecap: butt; }
+.bk-vlt.bk-fail { color: var(--red); } .bk-vlt.bk-fail .bk-stroke { stroke: var(--red); }
+.bk-vlt.bk-pass .bk-stroke { stroke: var(--ok); }
+.bk-vlt-dot { fill: var(--blue, #1f5bd6); stroke: #fff; stroke-width: 2.5; }
+.bk-vlt-dots.bk-fail .bk-vlt-dot { fill: var(--red); }
+.bk-trace path { fill: none; }
+.bk-readout { position: absolute; z-index: 3; background: rgba(255, 255, 255, .94); border: 2px solid #2e3c4f; border-radius: 8px; padding: 3px 10px 4px; font: 700 18px ui-monospace, "SF Mono", Menlo, Consolas, monospace; color: #1c2230; line-height: 1.3; pointer-events: none; }
+.bk-ro-t { font-size: 16px; color: #2e3c4f; }
+.bk-ro-v { display: flex; gap: 22px; }
+.bk-ro-v i { font-style: normal; }
+.bk-ix .bk-svg { touch-action: none; cursor: crosshair; }
+.bk-upt circle { cursor: grab; }
+/* calculator look (theme: 'calc') */
+.bk-calc { border-radius: 6px; box-shadow: 0 0 0 9px #2a2f37, 0 0 0 11px #14171c, 0 10px 24px 10px rgba(0, 0, 0, .18); background: #fff; }
+.bk-calc .bk-axis { stroke: #111; stroke-width: 1.5; }
+.bk-calc .bk-tick { stroke: #111; stroke-width: 1.5; }
+.bk-calc .bk-readout { border: none; background: rgba(255, 255, 255, .9); border-radius: 4px; padding: 0 4px; font-size: 18px; }
+
+/* ---------------- NumberLine ---------------- */
+.bk-nl-tk { stroke: var(--ink); stroke-width: 2; }
+.bk-nl-tk.bk-minor { stroke: #9aa0ab; stroke-width: 1.5; }
+.bk-nl-num { font-size: 19px; }
+.bk-nl-lab { font: 700 19px var(--round); }
+.bk-nl-mark { font: 700 19px var(--round); }
+.bk-hoplab { font: 800 18px var(--round); }
+
+/* ---------------- ValueTable ---------------- */
+.bk-tablebox { position: relative; display: inline-block; vertical-align: top; }
+.bk-table { display: grid; border: 2px solid var(--ink2); border-radius: 10px; overflow: hidden; background: #fff; width: max-content; }
+.bk-th, .bk-td { display: grid; place-items: center; font-size: 22px; border-right: 1.5px solid #cfc8b8; border-bottom: 1.5px solid #e2ddd1; transition: background .25s; }
+.bk-th { background: var(--brand-soft); color: var(--brand); font-weight: 700; }
+.bk-tv { display: inline-block; padding: 0 6px; max-width: 100%; line-height: 1.2; text-align: center; color: var(--ink); }
+.bk-tv .katex { white-space: nowrap; }
+.bk-th.bk-hl { background: #fde9b8; color: #7a4d06; }
+.bk-td.bk-hid { cursor: pointer; }
+.bk-q { font: 800 22px var(--round); font-style: normal; color: var(--amber); display: inline-grid; place-items: center; min-width: 40px; height: 34px; border: 2px dashed #e0b860; border-radius: 9px; background: var(--amber-soft); }
+.bk-td.bk-hl { background: #fff1c9; }
+.bk-tsvg { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+.bk-diff-lab { font: 800 19px var(--round); }
+
+/* ---------------- MappingDiagram ---------------- */
+.bk-oval { fill: #f7fbfa; stroke: var(--brand2); stroke-width: 2.5; }
+.bk-map-title { font: 800 17px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--brand); }
+.bk-map-item { font: 700 22px var(--round); padding: 0 6px; border-radius: 9px; transition: background .25s, color .25s; }
+.bk-map-item.bk-hot { background: var(--amber-soft); color: #7a4d06; box-shadow: 0 0 0 2px var(--amber); }
+.bk-map-item.bk-bad { background: #fde3e0; color: var(--red); box-shadow: 0 0 0 2px var(--red); }
+
+/* ---------------- Flowchart ---------------- */
+.bk-fc-node { --bk-fc: var(--brand2); position: absolute; box-sizing: border-box; display: flex; align-items: center; justify-content: center; text-align: center; background: #fff; border: 2.5px solid var(--bk-fc); border-radius: 14px; font-size: 17px; line-height: 1.22; padding: 4px 10px; transition: background .3s, box-shadow .3s; }
+.bk-fc-node b { font-weight: 800; }
+.bk-fc-in > b:first-child { display: block; }
+.bk-fc-node.bk-diamond { border-radius: 4px; border-style: double; border-width: 5px; }
+.bk-fc-node.bk-round { border-radius: 30px; }
+.bk-fc-node.bk-dashed { border-style: dashed; }
+.bk-fc-node.bk-on { background: #fff4dd; box-shadow: 0 0 0 5px rgba(232, 160, 30, .55), 0 6px 18px rgba(0, 0, 0, .12); }
+.bk-fc-node.bk-path { background: #fff8e8; box-shadow: 0 0 0 3px rgba(232, 160, 30, .35); }
+.bk-fc-node.bk-old { background: #eef7f6; box-shadow: 0 0 0 3px rgba(19, 128, 122, .28); }
+.bk-fc-base { fill: none; stroke: #9aa0ab; stroke-width: 2.6; stroke-linejoin: round; }
+.bk-fc-edge.bk-dash .bk-fc-base { stroke-dasharray: 8 6; }
+.bk-fc-hot { fill: none; stroke: #e8a01e; stroke-width: 6; stroke-linejoin: round; stroke-linecap: round; opacity: 0; }
+.bk-fc-head { fill: #9aa0ab; }
+.bk-fc-edge.bk-lit .bk-fc-hot { opacity: 1; }
+.bk-fc-edge.bk-lit .bk-fc-head { fill: #e8a01e; }
+.bk-fc-edge.bk-old .bk-fc-hot { opacity: 1; stroke: #7fbfb8; stroke-dashoffset: 0 !important; }
+.bk-fc-edge.bk-old .bk-fc-head { fill: var(--brand2); }
+.bk-fc-lab { background: #fff; border: 2px solid #c9c3b5; color: var(--ink2); font: 800 15px var(--round); padding: 0 8px; border-radius: 10px; }
+.bk-fc-lab.bk-lit { background: #fff6df; border-color: #e8a01e; color: #8a5a06; }
+
+/* ---------------- right triangle ---------------- */
+.bk-tri-fill { fill: #f2f8f7; }
+.bk-rmark { stroke-linejoin: miter; }
+.bk-tri-v { font: 800 21px var(--round); }
+.bk-tri-lab { font-size: 21px; font-weight: 700; }
+.bk-tri-anglab { font-size: 20px; }
+.bk-tri-tag { font: 800 16px var(--round); text-transform: uppercase; letter-spacing: .05em; background: #fff; border: 2px solid currentColor; border-radius: 9px; padding: 0 7px; }
+.bk-tri-side.bk-hl .bk-stroke { stroke-width: 6; }
+
+/* ---------------- stamps & checks ---------------- */
+.bk-stamp { display: inline-block; font: 900 24px var(--round); letter-spacing: .06em; text-transform: uppercase; padding: 3px 14px 4px; border: 4px solid; border-radius: 12px; background: rgba(255, 255, 255, .93); white-space: nowrap; z-index: 5; }
+.bk-stamp.bk-ok { color: var(--ok); } .bk-stamp.bk-no { color: var(--red); } .bk-stamp.bk-mid { color: var(--amber); }
+.bk-stamp.bk-sm { font-size: 17px; border-width: 3px; padding: 1px 9px; }
+.bk-stamp.bk-lg { font-size: 36px; border-width: 5px; padding: 6px 20px; }
+.bk-check { background: #fff; border: 1px solid var(--line2); border-radius: 14px; padding: 10px 16px 12px; box-shadow: 0 1px 2px rgba(20, 24, 33, .05); }
+.bk-ck-h { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 4px; }
+.bk-ck-h .katex { text-transform: none; font-size: 1.25em; color: var(--ink); }
+.bk-ck-grid { display: grid; grid-template-columns: 1fr 34px 1fr; align-items: center; row-gap: 4px; }
+.bk-ck-sh { font-weight: 800; font-size: 15px; color: var(--brand); text-align: center; border-bottom: 2px solid var(--line2); padding-bottom: 2px; }
+.bk-ck-c { font-size: 21px; text-align: center; white-space: nowrap; }
+.bk-ck-v { font-weight: 700; color: var(--ok); font-size: 24px; background: #e9f6ef; border-radius: 8px; }
+.bk-ck-m { text-align: center; font: 900 26px var(--round); color: var(--ok); }
+.bk-ck-verdict { margin-top: 8px; text-align: center; font: 800 17px var(--round); border-radius: 10px; padding: 3px 10px; }
+.bk-ck-verdict.bk-ok { color: var(--ok); background: #e3f4ea; }
+.bk-ck-verdict.bk-no { color: var(--red); background: #fde3e0; }
+.bk-check:has(.bk-no) .bk-ck-v { color: var(--red); background: #fde3e0; }
+.bk-check:has(.bk-no) .bk-ck-m { color: var(--red); }
+
+/* ---------------- auto-wired widgets ---------------- */
+/* guess-first poll: tap an option to mark the class's guess */
+.poll.bk-poll .opt { cursor: pointer; transition: border-color .2s, background .2s, box-shadow .2s, opacity .3s; position: relative; }
+.poll.bk-poll .opt.bk-guess { border-color: var(--amber); background: var(--amber-soft); box-shadow: 0 0 0 3px rgba(194, 122, 14, .25); }
+.poll.bk-poll .opt.bk-guess::after { content: "guess"; position: absolute; right: 8px; top: -11px; font: 800 12px var(--round); text-transform: uppercase; letter-spacing: .06em; color: #fff; background: var(--amber); border-radius: 8px; padding: 1px 7px; }
+.poll.bk-poll.revealed .opt.bk-guess:not(.right) { opacity: .6; border-color: var(--red); background: #fff1ef; }
+.poll.bk-poll.revealed .opt.bk-guess:not(.right)::after { background: var(--red); }
+.poll.bk-poll.revealed .opt.right.bk-guess::after { content: "✓ guess"; background: var(--ok); }
+
+/* multiple choice: A–D cards */
+.bk-mc { --bk-cols: 4; display: grid; grid-template-columns: repeat(var(--bk-cols), minmax(0, 1fr)); gap: 8px 14px; margin: 10px 0 8px; }
+.bk-opt { display: flex; align-items: baseline; gap: 10px; border: 1.5px solid #e6dfcf; background: #fffdf8; border-radius: 10px; padding: 6px 12px; font-size: 19px; transition: background .3s, border-color .3s, opacity .3s, box-shadow .3s; min-width: 0; }
+.bk-letter { flex: none; color: var(--amber); font: 800 18px var(--round); }
+.bk-opt .katex { font-size: 1.06em; white-space: nowrap; }
+.bk-mc[data-pick] .bk-opt { cursor: pointer; }
+.bk-opt.bk-picked { border-color: var(--amber); background: var(--amber-soft); box-shadow: 0 0 0 3px rgba(194, 122, 14, .22); }
+.part.shown .bk-opt.bk-right, .bk-mc.shown .bk-opt.bk-right { border-color: var(--ok); background: #e9f6ef; box-shadow: 0 0 0 3px rgba(18, 128, 90, .18); }
+.part.shown .bk-opt.bk-right .bk-letter, .bk-mc.shown .bk-opt.bk-right .bk-letter { color: var(--ok); }
+.part.shown .bk-opt:not(.bk-right), .bk-mc.shown .bk-opt:not(.bk-right) { opacity: .5; }
+.part.shown .bk-opt.bk-picked:not(.bk-right), .bk-mc.shown .bk-opt.bk-picked:not(.bk-right) { opacity: .75; border-color: var(--red); background: #fff1ef; box-shadow: none; }
+.part.shown .bk-opt.bk-picked:not(.bk-right) .bk-letter { color: var(--red); }
+
+/* numerical response: 4 boxes, digits appear left to right with the answer */
+.bk-nr { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin: 4px 0 8px; font-size: 16px; color: var(--muted); font-style: italic; }
+.bk-nr-boxes { display: flex; font-style: normal; }
+.bk-nr-b { display: grid; place-items: center; width: 40px; height: 44px; border: 1.5px solid #8b909b; margin-left: -1.5px; background: #fff; font-style: normal; }
+.bk-nr-b:first-child { border-radius: 6px 0 0 6px; } .bk-nr-b:last-child { border-radius: 0 6px 6px 0; }
+.bk-nr-d { font: 800 24px var(--round); color: var(--red); visibility: hidden; }
+.part.shown .bk-nr-d, .bk-nr.shown .bk-nr-d { visibility: visible; animation: bkDigit .3s calc(var(--i) * 130ms) both; }
+@keyframes bkDigit { from { opacity: 0; transform: translateY(-8px) scale(.7); } }
+
+/* tap to reveal: "?" until tapped (or the part's answer is shown) */
+.bk-rv { display: inline-grid; vertical-align: middle; cursor: pointer; }
+.bk-rv > .bk-rv-q, .bk-rv > .bk-rv-v { grid-area: 1 / 1; place-self: center; }
+.bk-rv-q { font: 800 0.9em var(--round); color: var(--amber); background: var(--amber-soft); border: 2px dashed #e0b860; border-radius: 9px; padding: 0 .45em; min-width: 1.8em; text-align: center; }
+.bk-rv-v { visibility: hidden; color: var(--red); font-weight: 700; }
+.bk-rv.bk-on > .bk-rv-v, .part.shown .bk-rv > .bk-rv-v { visibility: visible; }
+.bk-rv.bk-on > .bk-rv-q, .part.shown .bk-rv > .bk-rv-q { visibility: hidden; }
+
+/* flip cards */
+.bk-flip { perspective: 900px; cursor: pointer; display: block; }
+.bk-flip-in { display: grid; height: 100%; transition: transform .55s cubic-bezier(.3, .7, .3, 1); transform-style: preserve-3d; -webkit-transform-style: preserve-3d; }
+.bk-front, .bk-back { grid-area: 1 / 1; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; min-height: 110px; }
+.bk-front { background: #fff; border: 2px solid var(--brand2); font-size: 21px; font-weight: 700; }
+.bk-back { background: var(--brand-soft); border: 2px solid var(--brand2); transform: rotateY(180deg); font-size: 19px; }
+.bk-flip.bk-flipped .bk-flip-in { transform: rotateY(180deg); }
+.bk-flips { display: grid; grid-template-columns: repeat(var(--bk-cols, 3), 1fr); gap: 12px; margin: 8px 0 12px; }
+
+/* warm-up question with its own Answer toggle */
+.bk-wq .bk-ans { visibility: hidden; color: var(--red); font-size: 18px; line-height: 1.4; min-height: 1.4em; margin-top: 4px; }
+.bk-wq.shown .bk-ans { visibility: visible; animation: fadeUp .35s; }
+.bk-wq.shown [data-bk-toggle] { background: #fde9e7; color: var(--red); }

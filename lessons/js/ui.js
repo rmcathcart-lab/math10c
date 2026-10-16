@@ -3,6 +3,7 @@ import * as Ink from './ink.js';
 import { h } from './explain.js';
 import * as Share from './share.js';
 import { renderTex } from './tex.js';
+import { wireBlocks, showAllAnswers } from './blocks.js';
 
 const I = {
   pen: '<path d="M4 20l1.2-4.6L16.4 4.2a2 2 0 0 1 2.8 0l.6.6a2 2 0 0 1 0 2.8L8.6 18.8z"/><path d="M14.5 6l3.5 3.5"/>',
@@ -22,6 +23,7 @@ const icon = (k) => '<svg viewBox="0 0 24 24" aria-hidden="true">' + I[k] + '</s
 export function boot({ key, homeHref = '../../', title = '' }) {
   const sh = Share.setup(key);
   if (window.katex) renderTex(document);
+  wireBlocks(document); // polls, multiple choice, numerical response, reveals, flip cards, declarative figures (blocks.js)
   fitLesson();
   /* ---------- toolbar ---------- */
   const tb = h('header', 'tb no-ink'); tb.id = 'tb';
@@ -106,8 +108,8 @@ export function boot({ key, homeHref = '../../', title = '' }) {
     if (th) th.onchange = (e) => Ink.setHover(e.target.checked);
     shareMenu.wire(menu, () => toggleMenu(false));
     menu.querySelectorAll('[data-z]').forEach((b) => b.onclick = (e) => { e.stopPropagation(); setPageZoom(getPageZoom() + 0.1 * Number(b.dataset.z)); menu.querySelector('.mp-zbtns b').textContent = Math.round(getPageZoom() * 100) + '%'; });
-    menu.querySelector('[data-m=answers]').onclick = () => { document.querySelectorAll('.part').forEach((p) => p.classList.add('shown')); toggleMenu(false); };
-    menu.querySelector('[data-m=hideanswers]').onclick = () => { document.querySelectorAll('.part').forEach((p) => p.classList.remove('shown')); toggleMenu(false); };
+    menu.querySelector('[data-m=answers]').onclick = () => { document.querySelectorAll('.part').forEach((p) => p.classList.add('shown')); showAllAnswers(true); toggleMenu(false); };
+    menu.querySelector('[data-m=hideanswers]').onclick = () => { document.querySelectorAll('.part').forEach((p) => p.classList.remove('shown')); showAllAnswers(false); toggleMenu(false); };
     menu.querySelector('[data-m=print]').onclick = () => { toggleMenu(false); Ink.flush(); setTimeout(() => print(), 50); };
     const c = menu.querySelector('[data-m=clear]');
     if (c) c.onclick = () => {
