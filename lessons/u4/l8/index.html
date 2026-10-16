@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Unit 4 Review: Factoring · Math 10C 4.8</title>
+<meta name="description" content="Math 10C Unit 4 Lesson 8: the factoring review, laid out like the unit test — every tool on one card, the strategy checklist, then Beginning, Progressing and Mastery questions for AN5 and an Extension on solving by factoring. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u4l8.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 4 Factoring · Lesson 8</div>
+  <h1>Unit 4 Review: Factoring (AN5)</h1>
+  <p class="lede">Laid out like the unit test: <b>Beginning</b>, <b>Progressing</b> and <b>Mastery</b> questions for outcome AN5, then a short <b>Extension</b> part on solving by factoring. First, every factoring tool on one card — and the checklist that tells you which one to reach for.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>take out the greatest common factor — a <b>negative</b> one when the leading coefficient is negative</li>
+      <li>factor <span class="tex">x^2+bx+c</span> by inspection and <span class="tex">ax^2+bx+c</span> by decomposition or an area box, and read an algebra-tile rectangle</li>
+      <li>spot a difference of squares, a perfect square trinomial and a trinomial in disguise — and know that a sum of squares does not factor</li>
+      <li>factor <b>completely</b> (check every bracket again), then verify by expanding</li>
+      <li>reason backwards: find a missing coefficient, explain an error, and <i>(Extension)</i> solve an equation by factoring</li>
+    </ul>
+  </div>
+  <div class="outcome"><b>AN5</b> Demonstrate an understanding of common factors and trinomial factoring, concretely, pictorially and symbolically.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: Memory Match">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Memory Match</h2></div>
+  <p class="big">All the cards are face up. Match each expression to its <b>factored form</b>. <span class="muted">Tap two cards to pair them.</span></p>
+
+  <div class="u48-mm" id="mm">
+    <button class="u48-card" type="button" data-n="1"><i>1</i><span class="tex">x^2-6x+9</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="2"><i>2</i><span class="tex">(x-3)(x+2)</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="3"><i>3</i><span class="tex">3x^2+9x</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="4"><i>4</i><span class="tex">(x+3)^2</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="5"><i>5</i><span class="tex">x^2-9</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="6"><i>6</i><span class="tex">2(x-3)(x+3)</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="7"><i>7</i><span class="tex">x^2+x-6</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="8"><i>8</i><span class="tex">(2x-1)(x+3)</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="9"><i>9</i><span class="tex">x^2+6x+9</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="10"><i>10</i><span class="tex">(x-3)^2</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="11"><i>11</i><span class="tex">x^2-x-6</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="12"><i>12</i><span class="tex">3x(x+3)</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="13"><i>13</i><span class="tex">2x^2+5x-3</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="14"><i>14</i><span class="tex">(x-3)(x+3)</span><em></em><small></small></button>
+    <button class="u48-card" type="button" data-n="15"><i>15</i><span class="tex">2x^2-18</span><em></em><small></small></button>
+  </div>
+  <div class="u48-mm-bar">
+    <span class="u48-mm-count" id="mm-count">Pairs found: <b>0</b> / 7</span>
+    <span class="u48-mm-msg" id="mm-msg">Race a neighbour: call out pairs by card number. Who finds the most?</span>
+    <button class="pill small" data-mm="x2">Put x = 2</button>
+    <button class="pill small" data-mm="all">Show all pairs</button>
+    <button class="pill small" data-mm="reset">Reset</button>
+  </div>
+
+  <div class="u48-wq">
+    <div class="q-line"><div class="q-num">1</div><div>Find the partner of card 3. <button class="pill small" data-rv="wq1">Reveal</button>
+      <div class="rv" id="wq1">Card 12: <span class="tex">3x^2+9x=3x(x+3)</span> — take out the GCF <span class="tex">3x</span>.</div></div></div>
+    <div class="q-line"><div class="q-num">2</div><div>Do cards 2 and 11 match? <b>Expand!</b> <button class="pill small" data-rv="wq2">Reveal</button>
+      <div class="rv" id="wq2">Yes. <span class="tex">(x-3)(x+2)</span><br><span class="tex">=x^2+2x-3x-6</span><br><span class="tex">=x^2-x-6</span> ✓</div></div></div>
+    <div class="q-line"><div class="q-num">3</div><div>Cards 6 and 14 look alike. Which one goes with card 15? <button class="pill small" data-rv="wq3">Reveal</button>
+      <div class="rv" id="wq3">Card 6: <span class="tex">2x^2-18=2(x^2-9)</span> <span class="tex">=2(x-3)(x+3)</span>. Card 14 is missing the GCF 2 — it partners card 5, <span class="tex">x^2-9</span>.</div></div></div>
+  </div>
+
+  <div class="poll u48-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> There are 15 cards, so one card has <b>no partner</b>. Which one? And what should its missing partner say? <b>Guess first!</b></div></div>
+    <div class="poll-opts four">
+      <div class="opt"><b>A</b> card 1</div>
+      <div class="opt right"><b>B</b> card 7</div>
+      <div class="opt"><b>C</b> card 9</div>
+      <div class="opt"><b>D</b> card 13</div>
+    </div>
+    <button class="pill" data-poll>Reveal</button>
+    <div class="poll-ans"><b>B — card 7, <span class="tex">x^2+x-6</span>.</b> Its partner should read <span class="tex">(x+3)(x-2)</span>: product <span class="tex">-6</span>, sum <span class="tex">+1</span>.
+      <ul class="u48-traps">
+        <li>The <b>decoy</b> is card 2, <span class="tex">(x-3)(x+2)</span>: the right numbers, but the signs are swapped, so it gives <span class="tex">x^2-x-6</span> (card 11).</li>
+        <li><b>A</b> and <b>C</b> are the perfect squares <span class="tex">(x-3)^2</span> and <span class="tex">(x+3)^2</span> — near-twins, but both have partners (cards 10 and 4).</li>
+        <li><b>D</b> has <span class="tex">a\neq1</span>, so it feels hard, but card 8 is its partner: <span class="tex">(2x-1)(x+3)=2x^2+6x-x-3</span>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="u48-bridge">
+    <div><b>Sort the pairs by tool.</b> Which tool made each pair? <button class="pill small" data-mm="tools">Show tools</button>
+      <div class="rv" id="wq-tools"><b>GCF:</b> <span class="u48-nw">3–12</span> and <span class="u48-nw">15–6</span> — then <b>keep going</b>: <span class="tex">2(x^2-9)</span> isn’t finished. <b>Inspection:</b> <span class="u48-nw">11–2,</span> <span class="u48-nw">1–10,</span> <span class="u48-nw">9–4.</span> <b>Decomposition:</b> <span class="u48-nw">13–8.</span> <b>Difference of squares:</b> <span class="u48-nw">5–14.</span></div></div>
+    <div><b>Follow-up:</b> make a 16th card that partners card 7 — then a <b>decoy</b> for it. <button class="pill small" data-rv="wq5">Reveal</button>
+      <div class="rv" id="wq5">Partner <span class="tex">(x+3)(x-2)</span>. A good decoy: <span class="tex">(x+6)(x-1)</span> — product <span class="tex">-6</span>, but the sum is 5.</div></div>
+  </div>
+</section>
+
+<!-- ================= 1. toolbox ================= -->
+<section class="card" data-ink="tools" data-section="1. The Factoring Toolbox">
+  <div class="sec-h"><span class="badge">1</span><h2>The Factoring Toolbox</h2></div>
+  <div class="u48-big-idea">
+    <div class="u48-bi-l"><span class="tex">x^2+5x+6</span></div>
+    <div class="u48-bi-arrows"><span class="u48-bi-f">factor →</span><span class="u48-bi-e">← expand</span></div>
+    <div class="u48-bi-r"><span class="tex">(x+2)(x+3)</span></div>
+    <div class="u48-bi-t"><b>Factoring is expanding run backwards.</b> So every answer can be checked by expanding it again.</div>
+  </div>
+  <p>Every tool from Lessons 1A–6 on one card. Tap a tool to see a mini example. <button class="pill small" data-deckall>Show all examples</button></p>
+  <div class="u48-deck">
+    <button class="u48-tool" type="button"><span class="u48-tn">Greatest common factor <em>1A</em></span><span class="u48-tf">Every term shares a factor: take out the <b>largest</b>. Negative leading coefficient? Take out a <b>negative</b>.</span><span class="u48-tw"><span class="tex">6x^3-9x^2=3x^2(2x-3)</span><small><span class="tex">-2x^2+8x=-2x(x-4)</span></small></span></button>
+    <button class="u48-tool" type="button"><span class="u48-tn">Grouping <em>1B</em></span><span class="u48-tf"><b>Four terms</b>: pair them up, factor each pair, and a <b>common bracket</b> appears.</span><span class="u48-tw"><span class="tex">x^2+3x+4x+12</span><small><span class="tex">=x(x+3)+4(x+3)=(x+3)(x+4)</span></small></span></button>
+    <button class="u48-tool" type="button"><span class="u48-tn"><span class="tex">x^2+bx+c</span> — inspection <em>2</em></span><span class="u48-tf">Two integers with <b>product</b> <span class="tex">c</span> and <b>sum</b> <span class="tex">b</span>. Tiles: arrange them into a rectangle.</span><span class="u48-tw"><span class="tex">x^2-x-12=(x-4)(x+3)</span><small><span class="tex">-4\times3=-12,\ \ -4+3=-1</span></small></span></button>
+    <button class="u48-tool" type="button"><span class="u48-tn">Difference of squares <em>3</em></span><span class="u48-tf"><span class="tex">A^2-B^2=(A-B)(A+B)</span>. A <b>sum</b> of squares <span class="tex">A^2+B^2</span> does <b>not</b> factor.</span><span class="u48-tw"><span class="tex">9x^2-25=(3x-5)(3x+5)</span><small><span class="tex">(3x)^2-5^2</span></small></span></button>
+    <button class="u48-tool" type="button"><span class="u48-tn">Decomposition or area box <em>4</em></span><span class="u48-tf"><span class="tex">ax^2+bx+c</span>: two integers with product <span class="tex">ac</span> and sum <span class="tex">b</span>. Split the middle term, then group.</span><span class="u48-tw"><span class="tex">6x^2-x-2=6x^2-4x+3x-2</span><small><span class="tex">=2x(3x-2)+1(3x-2)=(2x+1)(3x-2)</span></small></span></button>
+    <button class="u48-tool" type="button"><span class="u48-tn">Perfect square trinomial <em>5</em></span><span class="u48-tf"><span class="tex">A^2\pm2AB+B^2=(A\pm B)^2</span>: first and last terms are squares, middle term is <span class="tex">2AB</span>.</span><span class="u48-tw"><span class="tex">4x^2-12x+9=(2x-3)^2</span><small>middle: <span class="tex">2(2x)(3)=12x</span></small></span></button>
+    <button class="u48-tool" type="button"><span class="u48-tn">Trinomial in disguise <em>5</em></span><span class="u48-tf">Degrees <b>4, 2, 0</b>: treat <span class="tex">x^2</span> as one block (let <span class="tex">u=x^2</span>) and factor as usual.</span><span class="u48-tw"><span class="tex">x^4-5x^2+4=(x^2-1)(x^2-4)</span><small><span class="tex">=(x-1)(x+1)(x-2)(x+2)</span></small></span></button>
+    <button class="u48-tool" type="button"><span class="u48-tn">Factor completely <em>6</em></span><span class="u48-tf">Check <b>every bracket</b> again — then verify by <b>expanding</b> (or put <span class="tex">x=2</span> into both forms).</span><span class="u48-tw"><span class="tex">2x^3-8x=2x(x^2-4)</span><small><span class="tex">=2x(x-2)(x+2)</span> — <span class="tex">x^2-4</span> wasn’t finished</small></span></button>
+  </div>
+</section>
+
+<section class="card" data-ink="flow" data-section="1. Which tool first?">
+  <h3 class="sub">Which tool first? The Lesson 6 checklist</h3>
+  <p>Work down the checklist <b>in order</b>, every time — and loop back for every bracket that might factor again.</p>
+  <div class="explainer" data-explainer="flow"></div>
+  <div class="tip-row">
+    <div class="tip watch"><div class="tip-ic">!</div><div><b>Stopping one step too early.</b> <span class="tex">2(x^2-9)</span> and <span class="tex">(9a^2-4)(9a^2+4)</span> are <b>not</b> finished — a bracket is still a difference of squares.</div></div>
+    <div class="tip watch"><div class="tip-ic">!</div><div><b>Signs in the wrong brackets.</b> <span class="tex">(x-3)(x+2)</span> has the right numbers for <span class="tex">x^2+x-6</span> but gives <span class="tex">x^2-x-6</span>. Expanding catches it.</div></div>
+  </div>
+</section>
+
+<section class="card" data-ink="tiles" data-section="1. Tiles into a rectangle">
+  <h3 class="sub">Recap: arrange the tiles into a rectangle</h3>
+  <div class="u48-legend"><span><i class="u48-t k2"></i><span class="tex">x^2</span></span><span><i class="u48-t k1"></i><span class="tex">x</span></span><span><i class="u48-t k0"></i><span class="tex">1</span></span><span class="u48-lg-neg"><i class="u48-t k1 neg"></i><i class="u48-t k0 neg"></i> white with a minus = <b>negative</b></span></div>
+  <p>The tiles for a trinomial form a rectangle; its <b>side lengths are the factors</b>. When the <span class="tex">x</span>-tiles won’t fill the gaps, add <b>zero pairs</b>.</p>
+  <div class="explainer" data-explainer="tiles"></div>
+</section>
+
+<section class="card" data-ink="box" data-section="1. The area box">
+  <h3 class="sub">Recap: decomposition and the area box for <span class="tex">ax^2+bx+c</span></h3>
+  <p>Find two integers with product <span class="tex">ac</span> and sum <span class="tex">b</span>, split the middle term into a 2 × 2 box, and read the factors off the edges.</p>
+  <div class="explainer" data-explainer="box"></div>
+  <div class="tip-row">
+    <div class="tip calc-tip">
+      <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+      <div><b>Check by substitution.</b> At <span class="tex">x=2</span>, <span class="tex">6x^2-x-2</span> gives <span class="tex">24-2-2=20</span>…</div>
+      <button class="pill" data-keys="6 × 2 x² − 2 − 2 =">Show me</button>
+    </div>
+    <div class="tip calc-tip">
+      <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+      <div>…and <span class="tex">(2x+1)(3x-2)</span> must give 20 too: <span class="tex">5\times4=20</span> ✓</div>
+      <button class="pill" data-keys="( 2 × 2 + 1 ) × ( 3 × 2 − 2 ) =">Show me</button>
+    </div>
+  </div>
+</section>
+
+<section class="card" data-ink="bvals" data-section="1. Which middle terms work?">
+  <h3 class="sub">Recap: which middle terms work?</h3>
+  <p><span class="tex">x^2+bx+c</span> factors over the integers <b>only</b> when <span class="tex">b</span> is the sum of a factor pair of <span class="tex">c</span>. List every pair and you have every <span class="tex">b</span> that works.</p>
+  <div class="explainer" data-explainer="bvals"></div>
+</section>
+
+<!-- ================= 2. how the review works ================= -->
+<section class="card" data-ink="how" data-section="2. How This Review Works">
+  <div class="sec-h"><span class="badge">2</span><h2>How This Review Works</h2></div>
+  <p>The questions are grouped the way the <b>unit test</b> is. Try every level.</p>
+  <div class="u48-levels">
+    <div class="u48-lv beg"><b>BEG</b><span>Beginning</span><small>the basic skills: common factors, <span class="tex">x^2+bx+c</span>, the patterns</small></div>
+    <div class="u48-lv prg"><b>PRG</b><span>Progressing</span><small>trinomials with <span class="tex">a\neq1</span>, tile models, “factor completely”</small></div>
+    <div class="u48-lv mas"><b>MAS</b><span>Mastery</span><small>reason, explain errors, work backwards from a factor, combine several steps</small></div>
+    <div class="u48-lv ext"><b>EXT</b><span>Extension</span><small>solving by factoring — the optional Lesson 7, a Math 20-1 preview</small></div>
+  </div>
+  <div class="u48-mcnote"><span><b>Multiple choice:</b> four options, A–D.</span><span><b>Numerical response:</b> record your answer left to right in the four boxes.</span><span class="u48-nr-demo"><i>1</i><i>4</i><i></i><i></i></span></div>
+</section>
+
+<!-- ================= AN5 Beginning ================= -->
+<section class="card u48-banner beg" data-ink="lvB" data-section="AN5 — Beginning (BEG)">
+  <div class="u48-bn-l">BEG</div>
+  <div class="u48-bn-m"><h2>AN5 — Beginning</h2><div class="u48-bn-s">Questions 1–6: common factors, <span class="tex">x^2+bx+c</span>, patterns</div></div>
+</section>
+
+<section class="card example u48-q beg" data-ink="q1" data-section="BEG · Questions 1–2">
+  <div class="ex-head"><span class="ex-tag">BEG · 1–2</span><h3>Common factors</h3></div>
+  <div class="parts c2">
+    <div class="part"><div class="pl"><span class="u48-qn">1</span> <span class="u48-qt">Multiple choice</span> One factor of <span class="tex">20x^4-15x^3+10x^2</span> is</div>
+      <div class="mc c2"><div class="mo"><b>A</b><span class="tex">20x^4</span></div><div class="mo"><b>B</b><span class="tex">5x^2-3x+2</span></div><div class="mo right"><b>C</b><span class="tex">4x^2-3x+2</span></div><div class="mo"><b>D</b><span class="tex">4x^2-3x+1</span></div></div>
+      <div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>C</b> — GCF <span class="tex">5x^2</span>: <span class="tex">5x^2(4x^2-3x+2)</span>.</div></div></div>
+    <div class="part"><div class="pl"><span class="u48-qn">2</span> <span class="u48-qt">Multiple choice</span> When fully factored, <span class="tex">s^4t^3-s^3t^4</span> is written</div>
+      <div class="mc c2"><div class="mo"><b>A</b><span class="tex">st^2(s-st)</span></div><div class="mo"><b>B</b><span class="tex">s^2t(st-t)</span></div><div class="mo right"><b>C</b><span class="tex">s^3t^3(s-t)</span></div><div class="mo"><b>D</b><span class="tex">s^4t^3(1-t)</span></div></div>
+      <div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>C</b> — lowest powers: GCF <span class="tex">s^3t^3</span>. A, B and D don’t even expand back.</div></div></div>
+  </div>
+  <div class="space" id="q1-space"></div>
+  <button class="more" data-more="q1-space">+ More space</button>
+</section>
+
+<section class="card example u48-q beg" data-ink="q3" data-section="BEG · Questions 3–4">
+  <div class="ex-head"><span class="ex-tag">BEG · 3–4</span><h3>Fully factored, and <span class="tex">x^2+bx+c</span></h3></div>
+  <div class="parts c2">
+    <div class="part"><div class="pl"><span class="u48-qn">3</span> <span class="u48-qt">Multiple choice</span> The expression <span class="tex">6uv^2-12u^3v+6uv</span>, when fully factored, is</div>
+      <div class="mc c2"><div class="mo"><b>A</b><span class="tex">uv(6v-12u^2+6)</span></div><div class="mo"><b>B</b><span class="tex">6u(v^2-2u^2v+v)</span></div><div class="mo right"><b>C</b><span class="tex">6uv(v-2u^2+1)</span></div><div class="mo"><b>D</b>none of these</div></div>
+      <div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>C</b> — GCF <span class="tex">6uv</span>. A still has a 6 inside the bracket, B still has a <span class="tex">v</span>.</div></div></div>
+    <div class="part"><div class="pl"><span class="u48-qn">4</span> <span class="u48-qt">Multiple choice</span> One factor of <span class="tex">p^2-6p-27</span> is</div>
+      <div class="mc c2"><div class="mo"><b>A</b><span class="tex">p-3</span></div><div class="mo right"><b>B</b><span class="tex">p-9</span></div><div class="mo"><b>C</b><span class="tex">p+9</span></div><div class="mo"><b>D</b><span class="tex">p-27</span></div></div>
+      <div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>B</b> — product <span class="tex">-27</span>, sum <span class="tex">-6</span>: <span class="tex">-9</span> and 3, so <span class="tex">(p-9)(p+3)</span>.</div></div></div>
+  </div>
+  <div class="space" id="q3-space"></div>
+  <button class="more" data-more="q3-space">+ More space</button>
+</section>
+
+<section class="card example u48-q beg" data-ink="q5" data-section="BEG · Questions 5–6">
+  <div class="ex-head"><span class="ex-tag">BEG · 5–6</span><h3>Removing the GCF, and factoring completely</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl"><span class="u48-qn">5</span> <span class="u48-qt">Numerical response</span> When the greatest common factor is removed from the binomial <span class="tex">60x-45x^2</span>, the binomial can be written in the form <span class="tex">ax(b+cx)</span>. The value of <span class="tex">a-b-c</span> is ____.</div>
+      <div class="work" style="--h:170px"></div>
+      <div class="nr">Record your answer left to right. <span class="nr-b" data-nr="14"></span></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">GCF <span class="tex">15x</span>: <span class="tex">60x-45x^2=15x(4-3x)</span>, so <span class="tex">a=15,\ b=4,\ c=-3</span>.<br><span class="tex">a-b-c=15-4-(-3)=\boldsymbol{14}</span></div></div></div>
+  </div>
+  <div class="u48-sub"><span class="u48-qn">6</span> Factor completely.</div>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">4cd^2-8c^3d+4cd</span></div>
+      <div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">GCF <span class="tex">4cd</span>:<br><span class="tex">\boldsymbol{4cd(d-2c^2+1)}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">k^2-4k-45</span></div>
+      <div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Product <span class="tex">-45</span>, sum <span class="tex">-4</span>: <span class="tex">-9</span>, 5<br><span class="tex">\boldsymbol{(k-9)(k+5)}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">25m^2-36</span></div>
+      <div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(5m)^2-6^2</span>:<br><span class="tex">\boldsymbol{(5m-6)(5m+6)}</span></div></div></div>
+  </div>
+  <div class="space" id="q5-space"></div>
+  <button class="more" data-more="q5-space">+ More space</button>
+</section>
+
+<!-- ================= AN5 Progressing ================= -->
+<section class="card u48-banner prg" data-ink="lvP" data-section="AN5 — Progressing (PRG)">
+  <div class="u48-bn-l">PRG</div>
+  <div class="u48-bn-m"><h2>AN5 — Progressing</h2><div class="u48-bn-s">Questions 7–14: <span class="tex">ax^2+bx+c</span>, models, factoring completely</div></div>
+</section>
+
+<section class="card example u48-q prg" data-ink="q7" data-section="PRG · Question 7">
+  <div class="ex-head"><span class="ex-tag">PRG · 7</span><h3>Reading a tile model</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl"><span class="u48-qn">7</span> <span class="u48-qt">Multiple choice</span> The algebra tiles below represent an expression (white tiles with a minus sign are negative). The factored form of the expression is</div>
+      <div class="u48-fig" id="fig-q7"></div>
+      <div class="mc c4"><div class="mo right"><b>A</b><span class="tex">(3-x)(8+x)</span></div><div class="mo"><b>B</b><span class="tex">(3-x)(8-x)</span></div><div class="mo"><b>C</b><span class="tex">(8-x)(3+x)</span></div><div class="mo"><b>D</b><span class="tex">24-5x-x^2</span></div></div>
+      <div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>A</b> — the tiles are <span class="tex">-x^2-5x+24=-(x+8)(x-3)=(3-x)(8+x)</span>. D is the expanded form, not a factored form.</div></div></div>
+  </div>
+  <div class="space" id="q7-space"></div>
+  <button class="more" data-more="q7-space">+ More space</button>
+</section>
+
+<section class="card example u48-q prg" data-ink="q8" data-section="PRG · Questions 8–9">
+  <div class="ex-head"><span class="ex-tag">PRG · 8–9</span><h3>Is it a factor?</h3></div>
+  <div class="parts c2">
+    <div class="part"><div class="pl"><span class="u48-qn">8</span> <span class="u48-qt">Multiple choice</span> For which of the following polynomials is <span class="tex">n+4</span> <b>not</b> a factor?</div>
+      <div class="mc c2"><div class="mo"><b>A</b><span class="tex">n^2+4n</span></div><div class="mo"><b>B</b><span class="tex">n^3-16n</span></div><div class="mo"><b>C</b><span class="tex">n^2+n-12</span></div><div class="mo right"><b>D</b><span class="tex">n^2-2n-35</span></div></div>
+      <div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>D</b> — <span class="tex">(n-7)(n+5)</span>. A <span class="tex">n(n+4)</span>, B <span class="tex">n(n-4)(n+4)</span>, C <span class="tex">(n+4)(n-3)</span>.</div></div></div>
+    <div class="part"><div class="pl"><span class="u48-qn">9</span> <span class="u48-qt">Multiple choice</span> One factor of <span class="tex">5a^2-20a^4</span> is</div>
+      <div class="mc c2"><div class="mo right"><b>A</b><span class="tex">1-2a</span></div><div class="mo"><b>B</b><span class="tex">20a^4</span></div><div class="mo"><b>C</b><span class="tex">1-4a</span></div><div class="mo"><b>D</b><span class="tex">1-a</span></div></div>
+      <div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>A</b> — <span class="tex">5a^2(1-4a^2)=5a^2(1-2a)(1+2a)</span>: the bracket is a difference of squares.</div></div></div>
+  </div>
+  <div class="space" id="q8-space"></div>
+  <button class="more" data-more="q8-space">+ More space</button>
+</section>
+
+<section class="card example u48-q prg" data-ink="q10" data-section="PRG · Questions 10–11">
+  <div class="ex-head"><span class="ex-tag">PRG · 10–11</span><h3>Trinomials with <span class="tex">a\neq1</span></h3></div>
+  <div class="parts c2">
+    <div class="part"><div class="pl"><span class="u48-qn">10</span> <span class="u48-qt">Multiple choice</span> Which of the following is a factor of <span class="tex">8y^2-2y-1</span>?</div>
+      <div class="mc c2"><div class="mo"><b>A</b><span class="tex">8y-1</span></div><div class="mo"><b>B</b><span class="tex">4y-1</span></div><div class="mo right"><b>C</b><span class="tex">4y+1</span></div><div class="mo"><b>D</b><span class="tex">2y+1</span></div></div>
+      <div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>C</b> — <span class="tex">ac=-8</span>: <span class="tex">-4</span> and 2, so <span class="tex">(2y-1)(4y+1)</span>.</div></div></div>
+    <div class="part"><div class="pl"><span class="u48-qn">11</span> <span class="u48-qt">Multiple choice</span> Which two binomials are <b>both</b> factors of <span class="tex">3t^2-5t-2</span>?</div>
+      <div class="mc c2"><div class="mo"><b>A</b><span class="tex">3t-1</span>&nbsp;and&nbsp;<span class="tex">t+2</span></div><div class="mo"><b>B</b><span class="tex">3t-1</span>&nbsp;and&nbsp;<span class="tex">t-2</span></div><div class="mo right"><b>C</b><span class="tex">t-2</span>&nbsp;and&nbsp;<span class="tex">3t+1</span></div><div class="mo"><b>D</b><span class="tex">t+2</span>&nbsp;and&nbsp;<span class="tex">3t+1</span></div></div>
+      <div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>C</b> — <span class="tex">ac=-6</span>: <span class="tex">-6</span> and 1, so <span class="tex">(t-2)(3t+1)</span>.</div></div></div>
+  </div>
+  <div class="space" id="q10-space"></div>
+  <button class="more" data-more="q10-space">+ More space</button>
+</section>
+
+<section class="card example u48-q prg" data-ink="q12" data-section="PRG · Question 12">
+  <div class="ex-head"><span class="ex-tag">PRG · 12</span><h3>Working backwards from a factor</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl"><span class="u48-qn">12</span> <span class="u48-qt">Numerical response</span> The expression <span class="tex">3x^2-18x-5x+c</span> can be factored by grouping into the product of two binomials. If one of these binomials is <span class="tex">x-6</span>, then the value of <span class="tex">c</span> is ____.</div>
+      <div class="work" style="--h:190px"></div>
+      <div class="nr">Record your answer left to right. <span class="nr-b" data-nr="30"></span></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">3x(x-6)+(-5x+c)</span>: for the bracket <span class="tex">x-6</span> to appear, <span class="tex">-5x+c=-5(x-6)</span>, so <span class="tex">c=\boldsymbol{30}</span>.<br>Check: <span class="tex">3x(x-6)-5(x-6)=(x-6)(3x-5)</span> ✓</div></div></div>
+  </div>
+  <div class="space" id="q12-space"></div>
+  <button class="more" data-more="q12-space">+ More space</button>
+</section>
+
+<section class="card example u48-q prg" data-ink="q13" data-section="PRG · Question 13">
+  <div class="ex-head"><span class="ex-tag">PRG · 13</span><h3>Factor completely</h3></div>
+  <div class="u48-sub"><span class="u48-qn">13</span> Factor completely. Verify (b) by expanding.</div>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">8x^4-12x^3+4x^2</span></div>
+      <div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">GCF: <span class="tex">4x^2(2x^2-3x+1)</span><br><span class="tex">ac=2</span>: <span class="tex">-2,-1</span><br><span class="tex">\boldsymbol{4x^2(2x-1)(x-1)}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">10x^2-x-3</span></div>
+      <div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">ac=-30</span>: <span class="tex">-6,\ 5</span><br><span class="tex">2x(5x-3)+1(5x-3)=\boldsymbol{(5x-3)(2x+1)}</span><br>Check: <span class="tex">10x^2+5x-6x-3</span> ✓</div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">-3x^2+12x+36</span></div>
+      <div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Take out <span class="tex">-3</span>: <span class="tex">-3(x^2-4x-12)</span><br>pair <span class="tex">-6,\ 2</span><br><span class="tex">\boldsymbol{-3(x-6)(x+2)}</span></div></div></div>
+  </div>
+  <div class="space" id="q13-space"></div>
+  <button class="more" data-more="q13-space">+ More space</button>
+</section>
+
+<section class="card example u48-q prg" data-ink="q14" data-section="PRG · Question 14">
+  <div class="ex-head"><span class="ex-tag">PRG · 14</span><h3>A tile rectangle</h3></div>
+  <div class="u48-sub"><span class="u48-qn">14</span> The algebra tiles below have been arranged into a rectangle.</div>
+  <div class="u48-q14">
+    <div class="u48-fig" id="fig-q14"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(a) What binomial multiplication does the rectangle represent?</div>
+        <div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Top: <span class="tex">x+2</span>. Side: <span class="tex">x+5</span>. The rectangle shows <span class="tex">\boldsymbol{(x+2)(x+5)}</span>.</div></div></div>
+      <div class="part"><div class="pl">(b) Write the polynomial the tiles represent (expanded form) and its factored form.</div>
+        <div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">1 <span class="tex">x^2</span>-tile, <span class="tex">2+5=7</span> <span class="tex">x</span>-tiles, 10 units: <span class="tex">\boldsymbol{x^2+7x+10=(x+2)(x+5)}</span></div></div></div>
+    </div>
+  </div>
+  <div class="space" id="q14-space"></div>
+  <button class="more" data-more="q14-space">+ More space</button>
+</section>
+
+<!-- ================= AN5 Mastery ================= -->
+<section class="card u48-banner mas" data-ink="lvM" data-section="AN5 — Mastery (MAS)">
+  <div class="u48-bn-l">MAS</div>
+  <div class="u48-bn-m"><h2>AN5 — Mastery</h2><div class="u48-bn-s">Questions 15–21: reasoning, unknown coefficients, errors, several steps</div></div>
+</section>
+
+<section class="card example u48-q mas" data-ink="q15" data-section="MAS · Questions 15–16">
+  <div class="ex-head"><span class="ex-tag">MAS · 15–16</span><h3>Which middle terms work?</h3></div>
+  <div class="parts c2">
+    <div class="part"><div class="pl"><span class="u48-qn">15</span> <span class="u48-qt">Multiple choice</span> The expression <span class="tex">x^2+px+24</span> <b>cannot</b> be factored over the integers if <span class="tex">p</span> has the value</div>
+      <div class="mc c4"><div class="mo"><b>A</b><span class="tex">-10</span></div><div class="mo"><b>B</b><span class="tex">-14</span></div><div class="mo"><b>C</b><span class="tex">11</span></div><div class="mo right"><b>D</b><span class="tex">16</span></div></div>
+      <div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>D</b> — <span class="tex">p</span> must be a factor-pair sum of 24: <span class="tex">\pm25,\pm14,\pm11,\pm10</span>. 16 isn’t one.</div></div></div>
+    <div class="part"><div class="pl"><span class="u48-qn">16</span> <span class="u48-qt">Numerical response</span> The largest value of <span class="tex">w</span> for which <span class="tex">x^2-wx+55</span> can be factored over the integers is ____.</div>
+      <div class="work" style="--h:190px"></div>
+      <div class="nr">Record your answer left to right. <span class="nr-b" data-nr="56"></span></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(x-m)(x-n)</span> with <span class="tex">mn=55</span>, <span class="tex">w=m+n</span>: sums 56 and 16.<br>Largest <span class="tex">w=\boldsymbol{56}</span>: <span class="tex">(x-1)(x-55)</span></div></div></div>
+  </div>
+  <div class="space" id="q15-space"></div>
+  <button class="more" data-more="q15-space">+ More space</button>
+</section>
+
+<section class="card example u48-q mas" data-ink="q17" data-section="MAS · Questions 17–18">
+  <div class="ex-head"><span class="ex-tag">MAS · 17–18</span><h3>Perfect squares and differences of squares</h3></div>
+  <div class="parts c2">
+    <div class="part"><div class="pl"><span class="u48-qn">17</span> <span class="u48-qt">Numerical response</span> If <span class="tex">25x^2-kx+16</span> is a perfect square trinomial and <span class="tex">k&gt;0</span>, then the value of <span class="tex">k</span> is ____.</div>
+      <div class="work" style="--h:200px"></div>
+      <div class="nr">Record your answer left to right. <span class="nr-b" data-nr="40"></span></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(5x)^2</span> and <span class="tex">4^2</span>: the middle term is <span class="tex">-2(5x)(4)=-40x</span>, so <span class="tex">k=\boldsymbol{40}</span>.<br><span class="tex">25x^2-40x+16=(5x-4)^2</span></div></div></div>
+    <div class="part"><div class="pl"><span class="u48-qn">18</span> Factor completely: <span class="tex">81a^4-16</span>.</div>
+      <div class="work" style="--h:246px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(9a^2-4)(9a^2+4)</span> — not finished: <span class="tex">9a^2-4</span> factors again; <span class="tex">9a^2+4</span> is a sum of squares.<br><span class="tex">\boldsymbol{(3a-2)(3a+2)(9a^2+4)}</span></div></div></div>
+  </div>
+  <div class="space" id="q17-space"></div>
+  <button class="more" data-more="q17-space">+ More space</button>
+</section>
+
+<section class="card example u48-q mas" data-ink="q19" data-section="MAS · Question 19">
+  <div class="ex-head"><span class="ex-tag">MAS · 19</span><h3>A rectangle in four regions</h3></div>
+  <div class="u48-sub"><span class="u48-qn">19</span> Rectangle <span class="tex">ABCD</span> has been subdivided into four regions, as shown. The areas of two of the regions are <span class="tex">b^2</span> and <span class="tex">81</span>, and the combined area of the other two regions is <span class="tex">18b</span>. Determine the perimeter of rectangle <span class="tex">ABCD</span>, in terms of <span class="tex">b</span>.</div>
+  <div class="parts c1">
+    <div class="part u48-q19">
+      <div class="u48-fig" id="fig-q19"></div>
+      <div class="u48-q19-r">
+        <div class="work" style="--h:290px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Read the <span class="tex">b^2</span> region as a <span class="tex">b</span>-by-<span class="tex">b</span> square. Right column width <span class="tex">w</span>, bottom row height <span class="tex">h</span>: <span class="tex">hw=81</span> and <span class="tex">bw+bh=18b</span>, so <span class="tex">w+h=18</span>.<br><span class="tex">P=2[(b+w)+(b+h)]=4b+2(w+h)=\boldsymbol{4b+36}</span><br>(In fact <span class="tex">w=h=9</span>: the area is <span class="tex">b^2+18b+81=(b+9)^2</span>.)</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="space" id="q19-space"></div>
+  <button class="more" data-more="q19-space">+ More space</button>
+</section>
+
+<section class="card example u48-q mas" data-ink="q20" data-section="MAS · Question 20">
+  <div class="ex-head"><span class="ex-tag">MAS · 20</span><h3>Find the error</h3></div>
+  <div class="u48-sub"><span class="u48-qn">20</span> Identify and explain the error in each factorization. Then write the correct factored form.</div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) <span class="tex">6x^2-x-2=(3x+2)(2x-1)</span></div>
+      <div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Expanding gives <span class="tex">6x^2-3x+4x-2=6x^2+x-2</span>: the <b>signs are in the wrong brackets</b>. Pair for <span class="tex">ac=-12</span>, sum <span class="tex">-1</span>: <span class="tex">-4,\ 3</span>.<br>Correct: <span class="tex">\boldsymbol{(3x-2)(2x+1)}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">x^4-81=(x^2-9)^2</span></div>
+      <div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(x^2-9)^2=x^4-18x^2+81</span> has a middle term. A difference of squares gives one − and one + bracket — and <span class="tex">x^2-9</span> factors again.<br>Correct: <span class="tex">\boldsymbol{(x-3)(x+3)(x^2+9)}</span></div></div></div>
+  </div>
+  <div class="space" id="q20-space"></div>
+  <button class="more" data-more="q20-space">+ More space</button>
+</section>
+
+<section class="card example u48-q mas" data-ink="q21" data-section="MAS · Question 21">
+  <div class="ex-head"><span class="ex-tag">MAS · 21</span><h3>Written response: <span class="tex">x^2+bx+20</span></h3></div>
+  <div class="u48-sub"><span class="u48-qn">21</span> <span class="u48-qt">Written response</span> Students are investigating polynomials of the form <span class="tex">x^2+bx+c</span>, where <span class="tex">b</span> and <span class="tex">c</span> are integers, with <span class="tex">c=20</span>.</div>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) State a polynomial with <span class="tex">c=20</span> which <b>can</b> be factored over the integers.</div>
+      <div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Any factor pair of 20 works, e.g. 4 and 5:<br><span class="tex">\boldsymbol{x^2+9x+20=(x+4)(x+5)}</span></div></div></div>
+    <div class="part"><div class="pl">(b) State one which <b>cannot</b> be factored over the integers. <b>Explain</b> why.</div>
+      <div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">E.g. <span class="tex">\boldsymbol{x^2+3x+20}</span>: the pairs 1 &amp; 20, 2 &amp; 10, 4 &amp; 5 add to 21, 12, 9 (or their negatives). None adds to 3.</div></div></div>
+    <div class="part"><div class="pl">(c) How many polynomials <span class="tex">x^2+bx+20</span> (<span class="tex">b</span> a nonzero integer) can be factored over the integers?</div>
+      <div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">c&gt;0</span>, so the pair has the same sign: <span class="tex">b=\pm21,\pm12,\pm9</span>.<br><b>6</b> polynomials.</div></div></div>
+  </div>
+  <div class="space" id="q21-space"></div>
+  <button class="more" data-more="q21-space">+ More space</button>
+</section>
+
+<!-- ================= Part E Extension ================= -->
+<section class="card u48-banner ext" data-ink="lvE" data-section="Part E — Extension">
+  <div class="u48-bn-l">EXT</div>
+  <div class="u48-bn-m"><h2>Part E — Extension: Solving by Factoring</h2><div class="u48-bn-s">Lesson 7, a Math 20-1 preview · Questions 22–24</div></div>
+  <span class="ext-tag">Extension</span>
+  <div class="def u48-zpl"><b>Zero Product Law:</b> if a product is 0, one of the factors must be 0 — if <span class="tex">AB=0</span>, then <span class="tex">A=0</span> or <span class="u48-nw"><span class="tex">B=0</span>.</span> So: get <b>0 on one side</b>, factor, and set each factor equal to 0.</div>
+</section>
+
+<section class="card example u48-q ext" data-ink="q22" data-section="EXT · Question 22">
+  <div class="ex-head"><span class="ex-tag">EXT · 22</span><h3><i>(Extension)</i> Solve by factoring</h3></div>
+  <div class="u48-sub"><span class="u48-qn">22</span> Solve by factoring.</div>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">x^2-7x+12=0</span></div>
+      <div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Pair <span class="tex">-3,-4</span>: <span class="tex">(x-3)(x-4)=0</span><br><span class="tex">x=\boldsymbol{3}</span> or <span class="tex">x=\boldsymbol{4}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">2x^2+5x=12</span></div>
+      <div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">0 on one side first: <span class="tex">2x^2+5x-12=0</span><br><span class="tex">ac=-24</span>: <span class="tex">8,-3</span>; <span class="tex">(2x-3)(x+4)=0</span><br><span class="tex">x=\boldsymbol{\tfrac32}</span> or <span class="tex">x=\boldsymbol{-4}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">x^2=6x</span></div>
+      <div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x^2-6x=0</span>, <span class="tex">x(x-6)=0</span><br><span class="tex">x=\boldsymbol{0}</span> or <span class="tex">x=\boldsymbol{6}</span> — do <b>not</b> divide by <span class="tex">x</span>.</div></div></div>
+  </div>
+  <div class="space" id="q22-space"></div>
+  <button class="more" data-more="q22-space">+ More space</button>
+</section>
+
+<section class="card example u48-q ext" data-ink="q23" data-section="EXT · Question 23">
+  <div class="ex-head"><span class="ex-tag">EXT · 23</span><h3><i>(Extension)</i> Kiran’s shortcut</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl"><span class="u48-qn">23</span> Kiran solves <span class="tex">x^2=6x</span> by dividing both sides by <span class="tex">x</span> to get <span class="tex">x=6</span>. <b>Explain</b> the error, and state the complete solution.</div>
+      <div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Dividing by <span class="tex">x</span> is only allowed when <span class="tex">x\neq0</span> — but <span class="tex">x=0</span> <b>is</b> a solution (<span class="tex">0^2=6(0)</span>), so that step throws a root away.<br><span class="tex">x^2-6x=0,\ x(x-6)=0</span>, so <span class="tex">x=\boldsymbol{0}</span> or <span class="tex">x=\boldsymbol{6}</span>.</div></div></div>
+  </div>
+  <div class="space" id="q23-space"></div>
+  <button class="more" data-more="q23-space">+ More space</button>
+</section>
+
+<section class="card example u48-q ext" data-ink="q24" data-section="EXT · Question 24">
+  <div class="ex-head"><span class="ex-tag">EXT · 24</span><h3><i>(Extension)</i> A rectangular array of chairs</h3></div>
+  <div class="u48-sub"><span class="u48-qn">24</span> A rectangular array of chairs has 5 more chairs in each row than there are rows, and 84 chairs in total.</div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Write and solve an equation for the number of rows.</div>
+      <div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">r</span> rows of <span class="tex">r+5</span>: <span class="tex">r(r+5)=84</span><br><span class="tex">r^2+5r-84=0,\ (r-7)(r+12)=0</span><br><span class="tex">r=\boldsymbol{7}</span> or <span class="tex">r=\boldsymbol{-12}</span></div></div></div>
+    <div class="part"><div class="pl">(b) State the number of rows and the number of chairs per row, and explain why one root of the equation must be rejected.</div>
+      <div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>7 rows of 12 chairs</b> (<span class="tex">7\times12=84</span> ✓).<br>Reject <span class="tex">r=-12</span>: a number of rows must be a positive whole number.</div></div></div>
+  </div>
+  <div class="space" id="q24-space"></div>
+  <button class="more" data-more="q24-space">+ More space</button>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Factoring is expanding backwards.</b> Every factorization can be checked by expanding it — or by putting <span class="tex">x=2</span> into both forms.</div>
+    <div><b>The checklist:</b> GCF first (a negative one if the lead is negative) → 2 terms: <span class="tex">A^2-B^2</span> → 3 terms: inspection or decomposition, watch for perfect squares and degrees 4, 2, 0 → 4 terms: grouping.</div>
+    <div><b>Factor completely:</b> check every bracket again. <span class="tex">2(x^2-9)</span> isn’t finished, and a sum of squares <span class="tex">A^2+B^2</span> never factors.</div>
+    <div><b>Reason backwards:</b> <span class="tex">b</span> must be a factor-pair sum of <span class="tex">c</span>; a perfect square needs the middle term <span class="tex">2AB</span>; a known factor fixes the missing number.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u4l8" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 8 — Unit 4 Review: Factoring</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <div class="review">
+    <div class="review-h"><span class="kicker">Up next</span><b>Unit 4 test.</b> <span class="muted">Shaky on a question today? Go back to its lesson.</span></div>
+    <div class="review-grid">
+      <a href="../l1a/"><span class="rn">4.1A</span>Common factors: the GCF <small>Q 1, 2, 3, 5, 6(a), 13(a)</small></a>
+      <a href="../l1b/"><span class="rn">4.1B</span>Binomial common factors and grouping <small>Q 12</small></a>
+      <a href="../l2/"><span class="rn">4.2</span>Trinomials <span class="tex">x^2+bx+c</span> <small>Q 4, 6(b), 7, 14, 15, 16, 21</small></a>
+      <a href="../l3/"><span class="rn">4.3</span>Difference of squares <small>Q 6(c), 9, 18, 20(b)</small></a>
+      <a href="../l4/"><span class="rn">4.4</span>Trinomials <span class="tex">ax^2+bx+c</span> <small>Q 10, 11, 13(b), 20(a)</small></a>
+      <a href="../l5/"><span class="rn">4.5</span>Further factoring: perfect squares, disguises <small>Q 17, 19</small></a>
+      <a href="../l6/"><span class="rn">4.6</span>Choosing a factoring strategy <small>Q 8, 13(c), 18</small></a>
+      <a href="../l7/"><span class="rn">4.7</span><i>Extension</i> — solving by factoring <small>Q 22, 23, 24</small></a>
+      <div class="test"><span class="rn">Test</span>Unit 4 test: AN5 <small>same BEG / PRG / MAS layout as today · then Unit 5, Relations and Functions</small></div>
+    </div>
+  </div>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u4l8.js';
+  boot({ key: 'u4l8', homeHref: '../../', title: '4.8 Unit 4 Review: Factoring' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>
