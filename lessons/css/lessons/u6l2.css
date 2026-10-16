@@ -50,7 +50,7 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u6l2-svgt { font: italic 700 24px "KaTeX_Math", Georgia, serif; fill: var(--ink); }
 .u6l2-svgm { fill: var(--red); }
 .u6l2-gridq { margin: 6px 0 4px; display: flex; justify-content: center; }
-.u6l2-ansfig { float: right; margin: 0 0 6px 12px; }
+.u6l2-ansfig { display: flex; justify-content: center; margin: 4px 0 8px; }
 .u6l2-ex6 { display: grid; grid-template-columns: 340px 1fr; gap: 18px; align-items: start; margin-bottom: 10px; }
 .u6l2-ex6 .parts { margin-bottom: 0; }
 

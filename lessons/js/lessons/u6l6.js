@@ -663,7 +663,7 @@ const whichTool = {
     steps.push({ cap: parCap, run: async (c) => { stairs[3].dim(0.18); await goTo(c, 'start', 'par'); colorPair(0, 2, A.p1 ? TEAL : RED); colorPair(1, 3, A.p2 ? GRN : RED); await sleep(c, 200); } });
     if (!A.par) {
       steps.push({ cap: `${T(quad)} has only one pair of parallel sides (a trapezoid), so it is <b>not a parallelogram</b>. The other tests don’t apply.`,
-        run: async (c) => { await goTo(c, 'par', 'no'); const s = stamp(stage, 'not a parallelogram', { ok: false, x: 233, y: 451, size: 'sm' }); await stampIn(c, s); } });
+        run: async (c) => { await goTo(c, 'par', 'no'); const s = stamp(stage, 'not a parallelogram', { ok: false, x: 233, y: 446, size: 'sm', rotate: -4 }); await stampIn(c, s); } });
       return steps;
     }
     const prod = `m_{${s0.name}}\\times m_{${s1.name}}=\\left(${s0.m}\\right)\\left(${s1.m}\\right)=${fr(s0.rise * s1.rise, s0.run * s1.run)}`;
@@ -680,7 +680,7 @@ const whichTool = {
         for (let i = 0; i < 4; i++) { const t = ticks(G, S[i].a, S[i].b, A.eq ? 1 : (i % 2 ? 2 : 1), { color: INK }); await appear(c, t, 160); }
       } });
     steps.push({ cap: `${T(quad)} is a <b>${RESULT[A.res]}</b>.` + (A.res === 'para' ? ' Parallel, equal opposite sides, but no right angles and unequal neighbours.' : A.res === 'sq' ? ' Every test passed: a rhombus with a right angle.' : A.res === 'rect' ? ' Right angles, but not all sides equal.' : ' Four equal sides, but no right angles.'),
-      run: async (c) => { await goTo(c, eqNode, A.res); const s = stamp(stage, RESULT[A.res], { ok: true, x: 233, y: 451, size: 'sm' }); await stampIn(c, s); } });
+      run: async (c) => { await goTo(c, eqNode, A.res); const s = stamp(stage, RESULT[A.res], { ok: true, x: 233, y: 446, size: 'sm', rotate: -4 }); await stampIn(c, s); } });
     return steps;
   }
 };

@@ -184,12 +184,12 @@ function mountStatics() {
     let G = grid5('u6l2-ex5a'); G.segment([-5, 3], [3, 3], { color: INK, width: 4.5 }); G.point(-5, 3, { color: INK, label: T('A'), pos: 'n' }); G.point(3, 3, { color: INK, label: T('B'), pos: 'n' });
     G = grid5('u6l2-ex5b'); G.segment([2, 5], [2, -3], { color: INK, width: 4.5 }); G.point(2, 5, { color: INK, label: T('C'), pos: 'e' }); G.point(2, -3, { color: INK, label: T('D'), pos: 'e' });
     G = grid5('u6l2-ex5aA'); G.segment([-5, 3], [3, 3], { color: INK, width: 4.5 }); G.point(-5, 3, { color: INK, label: T('A'), pos: 'w' }); G.point(3, 3, { color: INK, label: T('B'), pos: 'e' });
-    G.segment([-5, 4.2], [-1, 4.2], { color: MID, width: 2.5, arrowA: true, arrowB: true }); G.segment([-1, 4.2], [3, 4.2], { color: MID, width: 2.5, arrowA: true, arrowB: true });
-    G.label(-3, 4.2, T('4'), { pos: 'n', color: MID, gap: 2 }); G.label(1, 4.2, T('4'), { pos: 'n', color: MID, gap: 2 });
+    G.segment([-5, 4.5], [-1, 4.5], { color: MID, width: 2.5, arrowA: true, arrowB: true }); G.segment([-1, 4.5], [3, 4.5], { color: MID, width: 2.5, arrowA: true, arrowB: true });
+    G.label(-3, 4.5, T('4'), { pos: 'n', color: MID, gap: 2 }); G.label(1.5, 4.5, T('4'), { pos: 'n', color: MID, gap: 2 });
     G.point(-1, 3, { color: MID, label: T('M(-1,\\ 3)'), pos: 's' });
     G = grid5('u6l2-ex5bA'); G.segment([2, 5], [2, -3], { color: INK, width: 4.5 }); G.point(2, 5, { color: INK, label: T('C'), pos: 'w' }); G.point(2, -3, { color: INK, label: T('D'), pos: 'w' });
     G.segment([3.2, 5], [3.2, 1], { color: MID, width: 2.5, arrowA: true, arrowB: true }); G.segment([3.2, 1], [3.2, -3], { color: MID, width: 2.5, arrowA: true, arrowB: true });
-    G.label(3.2, 3, T('4'), { pos: 'e', color: MID, gap: 4 }); G.label(3.2, -1, T('4'), { pos: 'e', color: MID, gap: 4 });
+    G.label(3.2, 3, T('4'), { pos: 'e', color: MID, gap: 4 }); G.label(3.2, -1.6, T('4'), { pos: 'e', color: MID, gap: 4 });
     G.point(2, 1, { color: MID, label: T('M(2,\\ 1)'), pos: 'w' });
   }
   host = document.getElementById('u6l2-ex6fig');
