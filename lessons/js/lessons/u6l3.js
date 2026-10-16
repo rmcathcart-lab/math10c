@@ -101,7 +101,7 @@ async function countLeg(c, G, x, y, axis, v, o = {}) {
 }
 
 /* =============================== warm-up: ramp rules =============================== */
-const RAMPS = [{ k: 'A', run: 120, rise: 10, x: 24, y: 120 }, { k: 'B', run: 180, rise: 20, x: 300, y: 120 }, { k: 'C', run: 400, rise: 25, x: 24, y: 262 }];
+const RAMPS = [{ k: 'A', run: 120, rise: 10, x: 24, y: 120 }, { k: 'B', run: 180, rise: 20, x: 262, y: 120 }, { k: 'C', run: 400, rise: 25, x: 24, y: 262 }];
 function mountRamps() {
   const host = document.getElementById('u6l3-ramps'); if (!host) return;
   const W = 580, H = 300, sx = 1.05, sy = 3 * 1.05;   // heights drawn 3 times taller, like the board
