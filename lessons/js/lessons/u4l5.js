@@ -146,7 +146,7 @@ const SHELF = {
   board: D('3x^2-12', 'common factor 3', S('3', 'prime'), D('x^2-4', 'a difference of squares', S('x-2', 'can’t open'), S('x+2', 'can’t open'))),
   n36: D('36', '36 = 4 × 9', D('4', '4 = 2 × 2', S('2', 'prime'), S('2', 'prime')), D('9', '9 = 3 × 3', S('3', 'prime'), S('3', 'prime'))),
   q2: D('2x^2-50', 'common factor 2', S('2', 'prime'), D('x^2-25', 'a difference of squares', S('x-5', 'can’t open'), S('x+5', 'can’t open'))),
-  q3: D('x^4-81', `a difference of squares: ${tex('(x^2)^2-9^2')}`, D('x^2-9', 'a difference of squares', S('x-3', 'can’t open'), S('x+3', 'can’t open')), S('x^2+9', 'sum of squares')),
+  q3: D('x^4-625', `a difference of squares: ${tex('(x^2)^2-25^2')}`, D('x^2-25', 'a difference of squares', S('x-5', 'can’t open'), S('x+5', 'can’t open')), S('x^2+25', 'sum of squares')),
   big: D('x^8-1', `a difference of squares: ${tex('(x^4)^2-1^2')}`, D('x^4-1', `a difference of squares: ${tex('(x^2)^2-1^2')}`, D('x^2-1', 'a difference of squares', S('x-1', 'can’t open'), S('x+1', 'can’t open')), S('x^2+1', 'sum of squares')), S('x^4+1', 'sum of squares'))
 };
 const WHY_LONG = { prime: 'a prime number: it can’t be split', 'can’t open': 'degree 1, no common factor: nothing opens it', 'sum of squares': 'a <b>sum</b> of squares never factors' };
@@ -156,7 +156,7 @@ function mountShelf() {
       <button class="chip" type="button" data-k="board">${tex('3x^2-12')}</button>
       <button class="chip" type="button" data-k="n36">1. 36</button>
       <button class="chip" type="button" data-k="q2">2. ${tex('2x^2-50')}</button>
-      <button class="chip" type="button" data-k="q3">3. ${tex('x^4-81')}</button>
+      <button class="chip" type="button" data-k="q3">3. ${tex('x^4-625')}</button>
       <button class="chip big1" type="button" data-k="big">The big one: ${tex('x^8-1')}</button>
       <span class="sp"></span><button class="pill small" type="button" data-all>Open all</button><button class="pill small" type="button" data-reset>Reset</button></div>
     <div class="u4l5-shstage"></div><div class="u4l5-shmsg"></div>`;

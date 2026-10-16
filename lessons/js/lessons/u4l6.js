@@ -218,7 +218,7 @@ const FW = 640; // width of the flowchart; the written work sits to its right
 const NODES = {
   top: { x: 324, y: 46, w: 360, h: 70, k: 'k1', n: 1, html: '<b>Common factor? Take it out first.</b><small>(Negative leading coefficient: take out a negative.)</small>' },
   bin: { x: 110, y: 186, w: 196, h: 142, k: 'k2', n: 2, html: `<b>Binomial (2 terms)</b>Difference of squares<br>${T('A^2-B^2')}<small>(sum of squares: does not factor)</small>` },
-  tri: { x: 324, y: 186, w: 200, h: 142, k: 'k3', html: `<b>Trinomial (3 terms)</b>${T('ax^2+bx+c')}<small>(degrees 4, 2, 0: treat ${T('x^2')} as a block)</small>` },
+  tri: { x: 324, y: 186, w: 200, h: 142, k: 'k3', html: `<b>Trinomial (3 terms)</b>${T('ax^2+bx+c')}<small>(degrees 4,&nbsp;2,&nbsp;0 or 6,&nbsp;3,&nbsp;0: treat ${T('x^2')} or ${T('x^3')} as a block)</small>` },
   four: { x: 534, y: 186, w: 150, h: 80, k: 'k4', n: 5, html: '<b>Four terms</b>Try grouping' },
   insp: { x: 236, y: 344, w: 156, h: 68, k: 'k3', n: 3, html: `<b>${T('a=1')}:</b>inspection` },
   dec: { x: 418, y: 344, w: 184, h: 100, k: 'k3', n: 4, html: `<b>${T('a\\neq1')}:</b>decomposition<small>(watch for perfect squares)</small>` },

@@ -147,7 +147,7 @@ const twoWay = {
     const sides = B.map((t, r) => g(gx, gy + hh0 + r * ch, hw, ch, 'hd', `<span>${K(termT(t, true))}</span>`));
     const gc = cells.map((row, r) => row.map((p, k) => { const e = g(gx + hw + k * cw, gy + hh0 + r * ch, cw, ch, 'in' + (p.n < 0 ? ' neg' : ''), `<span>${K(termT(p, true))}</span>`); e.style.setProperty('--pc', PCOL[(r * A.length + k) % 4]); e.firstChild.style.opacity = 0; return e; }));
     const hdrs = [...heads, ...sides], hdrHTML = hdrs.map((e) => e.innerHTML);
-    const tag = add(stage, h('div', 'u4l1a-tbtag', `<span>factoring tool</span>${d.tag.replace(/\\\((.*?)\\\)/g, (m, s) => K(s)).replace(' · ', '<br>')}`), gx + GW + 30, gy + hh0 + 6); tag.style.maxWidth = (W - gx - GW - 46) + 'px'; hide(tag);
+    const tag = add(stage, h('div', 'u4l1a-tbtag', `<span class="u4l1a-tblab">factoring tool</span>${d.tag.replace(/\\\((.*?)\\\)/g, (m, s) => K(s)).replace(' · ', '<br>')}`), gx + GW + 30, gy + hh0 + 6); tag.style.maxWidth = (W - gx - GW - 46) + 'px'; hide(tag);
     const like = flat.length > 2 && likeKeys.size;
     const cellsOf = (pred) => gc.flat().filter((e, i) => pred(flat[i]));
     const steps = [{

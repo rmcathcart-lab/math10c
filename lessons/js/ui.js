@@ -92,6 +92,7 @@ export function boot({ key, homeHref = '../../', title = '' }) {
       <div class="mp-sep"></div>
       ${sh.readonly ? '' : `<label class="mp-item tog"><span>Laser dot when the Pencil hovers</span><input type="checkbox" data-t="hover" ${s.hover ? 'checked' : ''}><i></i></label>
       <label class="mp-item tog"><span>Finger draws too</span><input type="checkbox" data-t="finger" ${s.finger ? 'checked' : ''}><i></i></label>`}
+      <div class="mp-item mp-zoom"><span>Page size</span><span class="mp-zbtns"><button type="button" data-z="-1" aria-label="Smaller">−</button><b>${Math.round(getPageZoom() * 100)}%</b><button type="button" data-z="1" aria-label="Bigger">+</button></span></div>
       <button class="mp-item" data-m="answers">Show all answers</button>
       <button class="mp-item" data-m="hideanswers">Hide all answers</button>
       <button class="mp-item" data-m="print">Print / save as PDF</button>
@@ -104,6 +105,7 @@ export function boot({ key, homeHref = '../../', title = '' }) {
     if (tf) tf.onchange = (e) => Ink.setFinger(e.target.checked);
     if (th) th.onchange = (e) => Ink.setHover(e.target.checked);
     shareMenu.wire(menu, () => toggleMenu(false));
+    menu.querySelectorAll('[data-z]').forEach((b) => b.onclick = (e) => { e.stopPropagation(); setPageZoom(getPageZoom() + 0.1 * Number(b.dataset.z)); menu.querySelector('.mp-zbtns b').textContent = Math.round(getPageZoom() * 100) + '%'; });
     menu.querySelector('[data-m=answers]').onclick = () => { document.querySelectorAll('.part').forEach((p) => p.classList.add('shown')); toggleMenu(false); };
     menu.querySelector('[data-m=hideanswers]').onclick = () => { document.querySelectorAll('.part').forEach((p) => p.classList.remove('shown')); toggleMenu(false); };
     menu.querySelector('[data-m=print]').onclick = () => { toggleMenu(false); Ink.flush(); setTimeout(() => print(), 50); };
@@ -131,6 +133,7 @@ export function boot({ key, homeHref = '../../', title = '' }) {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
     const k = { p: 'pen', h: 'highlighter', e: 'eraser', l: 'laser', v: 'hand' }[e.key.toLowerCase()];
     if (k) Ink.setTool(k); else if (e.key === 'b') toggleBoard(); else if (e.key === 'c') calc().toggle(); else if (e.key === 'Escape') { toggleBoard(false); toggleMenu(false); }
+    else if (e.key === '-') setPageZoom(getPageZoom() - 0.1); else if (e.key === '=' || e.key === '+') setPageZoom(getPageZoom() + 0.1);
   });
 
   /* ---------- answers + more space ---------- */
@@ -187,14 +190,30 @@ function followZoom(hud) {
 /* The lesson is always laid out 1080 px wide and scaled down to fit narrower screens, like a PDF page. That keeps
  * ink lined up with the content on every device — the teacher's iPad in either orientation and students' phones. */
 const LESSON_W = 1080;
+/* Page size (••• menu, or − / = keys): the teacher can shrink the whole lesson below "fit to width" so a tall
+ * explainer fits on the screen at once. It's a scale on top of the fit, so ink stays lined up. Saved per device. */
+const ZOOMS = [1, 0.9, 0.8, 0.7, 0.6, 0.5];
+let pageZoom = 1, refit = () => {};
+try { const z = Number(localStorage.getItem('page:zoom')); if (ZOOMS.indexOf(z) >= 0) pageZoom = z; } catch (e) { /* ignore */ }
+export function getPageZoom() { return pageZoom; }
+export function setPageZoom(z) {
+  z = Math.max(ZOOMS[ZOOMS.length - 1], Math.min(1, Math.round(z * 10) / 10)); if (z === pageZoom) return;
+  const ratio = window.scrollY / Math.max(1, document.documentElement.scrollHeight);
+  pageZoom = z; try { localStorage.setItem('page:zoom', String(z)); } catch (e) { /* ignore */ }
+  refit(); window.scrollTo(0, ratio * document.documentElement.scrollHeight);
+  Ink.toast('Page size ' + Math.round(z * 100) + '%');
+}
 function fitLesson() {
   const lesson = document.querySelector('.lesson'); if (!lesson) return;
   const wrap = h('div', 'fit'); lesson.parentNode.insertBefore(wrap, lesson); wrap.appendChild(lesson);
   const fit = () => {
-    const s = Math.min(1, document.documentElement.clientWidth / LESSON_W);
-    lesson.style.transform = s < 1 ? 'scale(' + s + ')' : '';
+    const W = document.documentElement.clientWidth, s = Math.min(1, W / LESSON_W) * pageZoom;
+    const dx = Math.max(0, (W - LESSON_W * s) / 2);
+    lesson.style.marginLeft = '0';
+    lesson.style.transform = s < 1 || dx ? 'translateX(' + dx + 'px) scale(' + s + ')' : '';
     wrap.style.height = Math.ceil(lesson.offsetHeight * s) + 'px';
   };
+  refit = fit;
   new ResizeObserver(fit).observe(lesson); addEventListener('resize', fit); fit();
 }
 
