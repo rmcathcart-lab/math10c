@@ -203,7 +203,7 @@ const sameLine = {
           await G.drawIn(G.fn((x) => 4 * x / 3 + 8, { color: BLUE, width: 6 }), 800, c);
           await G.drawIn(G.fn((x) => 4 * x / 3 + 8, { color: AMB, width: 3, dash: true }), 800, c);
         } },
-      { cap: `One line, one pair of intercepts, ${T('(-6,\\ 0)')} and ${T('(0,\\ 8)')}, whichever form you substitute into. Pick the form that is easier to work with.`,
+      { cap: `One line, one pair of intercept points, ${T('(-6,\\ 0)')} and ${T('(0,\\ 8)')}, whichever form you substitute into. Pick the form that is easier to work with.`,
         run: async (c) => { tb.highlight(0, true); tb.highlight(2, true); await G.reveal(G.point(-6, 0, { color: RED, coords: true, pos: 'se', r: 8 }), c); await G.reveal(G.point(0, 8, { color: RED, coords: true, pos: 'e', r: 8 }), c); } }
     ];
   }
