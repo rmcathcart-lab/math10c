@@ -418,7 +418,7 @@ const tileRect = {
 /* ============ 3. Pull it out front: divide every term by the GCF, then check by expanding ============ */
 const PO = {
   d: '18a^3b+24a^2b^2', neg: '-4x^2+10x', a2: '15x+25y', b2: '8x^3+20x^2+4x', c2: '6a^2+30a', d2: '24p-16q', e2: '-5mn-15m^2', f2: '21x^2y^2-35xy+7x',
-  d3: '-6x^3+9x^2-3x', a3: '18x-8', b3: '20x^4+5x^2', c3: '12a^3b^2+9ab^3+3ab^4', d3b: '14p^3-7p^2+21p', e3: '35xy^2z^3-28x^2y^4z^2+42x^3y^2z^5'
+  d3: '-6x^3+9x^2-12x', a3: '18x-8', b3: '20x^4+5x^2', c3: '12a^3b^2+9ab^3+3ab^4', d3b: '14p^3-7p^2+21p', e3: '35xy^2z^3-28x^2y^4z^2+42x^3y^2z^5'
 };
 function makePull(title, choices, first) {
   return {
@@ -488,7 +488,7 @@ function makePull(title, choices, first) {
 const pullA = makePull('Pull it out front: divide every term by the GCF',
   [{ v: 'd', label: tex('18a^3b+24a^2b^2') }, { v: 'neg', label: tex('-4x^2+10x') }, { sep: 'Example 2 check:' }, ...['a', 'b', 'c', 'd', 'e', 'f'].map((k) => ({ v: k + '2', label: `(${k})` }))], 'd');
 const pullB = makePull('Factor completely, then check by expanding',
-  [{ v: 'd3', label: tex('-6x^3+9x^2-3x') }, { sep: 'Example 3 check:' }, { v: 'a3', label: '(a)' }, { v: 'b3', label: '(b)' }, { v: 'c3', label: '(c)' }, { v: 'd3b', label: '(d)' }, { v: 'e3', label: '(e)' }], 'd3');
+  [{ v: 'd3', label: tex('-6x^3+9x^2-12x') }, { sep: 'Example 3 check:' }, { v: 'a3', label: '(a)' }, { v: 'b3', label: '(b)' }, { v: 'c3', label: '(c)' }, { v: 'd3b', label: '(d)' }, { v: 'e3', label: '(e)' }], 'd3');
 
 /* ============ 3. Find the error: expanding catches most mistakes ============ */
 const FE = {

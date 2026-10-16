@@ -508,7 +508,7 @@ const RA = {
     flipCap: `Pull out ${T('-2y^2')} instead: ${T('10y^2-6xy^2=-2y^2(3x-5)')}. The block flips and the ${T('+')} becomes ${T('-')}. Now the blocks match.`,
     r1f: 'g1=x B1=(3x-5)#blk s2=-#redsign g2=2y^2 B2=(3x-5)#blk', blk: '3x-5',
     r2: 'B=(3x-5)#blk<B1,B2 lp=( g1=x s2=- g2=2y^2 rp=)', ans: '(3x-5)(x-2y^2)', okL: ['x(3x-5)', '-2y^2(3x-5)'],
-    sub: ['x=3,\\ y=1', '27+10-18-15=4', '(9-5)(3-2)=4'], val: 4 }
+    sub: ['x=3,\\ y=2', '27+40-72-15=-20', '(9-5)(3-8)=-20'], val: -20 }
 };
 const rearrange = {
   title: 'No match? Rearrange and try again',

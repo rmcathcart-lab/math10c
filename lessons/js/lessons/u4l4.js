@@ -195,7 +195,7 @@ const tileRect = {
       cap: `Area = width × height, so ${T(`${triT}=(${Wl})(${Hl})`)}. <b>Check by expanding</b>: ${T(`(${Wl})(${Hl})=${exp4}`)} ✓`,
       run: (cc) => Promise.all([cc.fadeIn(E1, 400), cc.fadeIn(E2, 400, { delay: 300 }), cc.fadeIn(E3, 400, { delay: 500 })])
     }, {
-      cap: `Group the tiles into <b>four blocks</b>: ${regs.map((x, k) => T([mono(a, 'x', 2, '', 0), mono(r * q, 'x', 1, '', 0), mono(p * s, 'x', 1, '', 0), String(c)][k])).join(', ')}. That’s an <b>area box</b> (Section 4). The two middle blocks multiply to ${T(`(${mono(r * q, 'x', 1, '', 0)})(${mono(p * s, 'x', 1, '', 0)})=${mono(a * c, 'x', 2, '', 0)}`)}, the same as the corners ${T(`(${mono(a, 'x', 2, '', 0)})(${paren(c)})`)}.`,
+      cap: `Group the tiles into <b>four blocks</b>: ${regs.map((x, k) => T([mono(a, 'x', 2, '', 0), mono(r * q, 'x', 1, '', 0), mono(p * s, 'x', 1, '', 0), String(c)][k])).join(', ')}. That’s an <b>area box</b> (Section 4). The two middle blocks multiply to ${T(`(${mono(r * q, 'x', 1, '', 0)})(${mono(p * s, 'x', 1, '', 0)})=${mono(a * c, 'x', 2, '', 0)}`)}, the same as the corners ${T(`(${mono(a, 'x', 2, '', 0)})(${c})`)}.`,
       run: (cc) => Promise.all(regs.map((g, k) => Promise.all([cc.fadeIn(g.e, 350, { delay: k * 150, from: 'none' }), cc.pop(g.l, 350, { delay: 150 + k * 150 })])))
     });
     void W;

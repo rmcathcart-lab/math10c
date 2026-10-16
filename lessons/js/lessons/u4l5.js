@@ -362,7 +362,7 @@ const squareTiles = {
     const stamp = add(stage, h('div', 'u4l5-stamp no', 'NOT A SQUARE'), PX + 40, 200); hide(stamp);
     const xName = `${T(L)}-tile`, x2Name = `${T(L + '^2')}-tile`;
     const steps = [{
-      cap: `The tiles for ${T(q)}: ${s * s === 1 ? 'one ' + x2Name : `nine ${x2Name}s`}, ${nX} ${sx < 0 ? '<b>negative</b> ' : ''}${xName}s and ${nU} ${su < 0 ? '<b>negative</b> ' : ''}unit tiles${sx < 0 || su < 0 ? ' (white with a minus sign)' : ''}.`,
+      cap: `The tiles for ${T(q)}: ${s * s === 1 ? 'one ' + x2Name : `nine ${x2Name}s`}, ${nX} ${sx < 0 ? '<b>negative</b> ' : ''}${xName}s${sx < 0 ? ' (white, with a minus sign)' : ''} and ${nU} ${su < 0 ? '<b>negative</b> ' : ''}unit tiles${su < 0 ? ' (white, with a minus sign)' : ''}.`,
       run: (c) => Promise.all([...x2s.map((e, i) => pulse(c, e, 1.12, { delay: i * 50 })), ...xs.map((e, i) => pulse(c, e, 1.2, { delay: 350 + i * 18 })), ...us.map((e, i) => pulse(c, e, 1.3, { delay: 700 + i * 10 }))])
     }, {
       cap: s === 1 ? `Start the square with the ${x2Name} in the top-left corner. Its sides are ${T(L)} by ${T(L)}.`
@@ -587,7 +587,7 @@ const DG = {
   m: { q: 'm^4+7m^2+12', terms: [['m^4', 'degree 4', 'd4'], ['+7m^2', 'degree 2', 'd2'], ['+12', 'degree 0', 'd0']], blk: 'm^2', r1: '(m^2)', r2: 'm^2',
     L1: ['=', 'B', '{}^2+7', 'B', '+12'], b: 7, c: 12, uq: 'u^2+7u+12', L2: ['=(', 'B', '+3)(', 'B', '+4)'], uf: '(u+3)(u+4)', fin: '(m^2+3)(m^2+4)',
     find: `Look at the exponents: <b>4, 2, 0</b>. The first is <b>double</b> the middle one, so the whole expression is built from one block, ${T('m^2')}: ${T('m^4=(m^2)^2')}.`,
-    done: `Can either bracket open? ${T('m^2+3')}: 3 isn’t a perfect square. ${T('m^2+4')}: a <b>sum</b>. Neither factors, so we’re done.`,
+    done: `Can either bracket open? ${T('m^2+3')} and ${T('m^2+4')} are both <b>sums</b>, and a sum never splits into two integer brackets. No common factor either, so we’re done.`,
     chk: '(m^2+3)(m^2+4)=m^4+4m^2+3m^2+12=m^4+7m^2+12' },
   br: { q: '(x+1)^2+5(x+1)+6', terms: [['(x+1)^2', 'block²', 'd4'], ['+5(x+1)', '5 × block', 'd2'], ['+6', 'number', 'd0']], blk: 'x+1', r1: '(x+1)', r2: 'x+1',
     L1: ['=', 'B', '{}^2+5', 'B', '+6'], b: 5, c: 6, uq: 'u^2+5u+6', L2: ['=(', 'B', '+2)(', 'B', '+3)'], uf: '(u+2)(u+3)', fin: '(x+1+2)(x+1+3)',
@@ -681,7 +681,7 @@ const disguiseExt = makeDisguise('Extension: bigger blocks', [{ v: 'x6', label: 
 const DC = {
   n: { q: '6m^4-7m^2-3', blk: 'm^2', a: 6, b: -7, c: -3, U: ['6u^2-7u-3', '6u^2-9u+2u-3', '3u(2u-3)+1(2u-3)', '(2u-3)(3u+1)'], M: ['6m^4-7m^2-3', '6m^4-9m^2+2m^2-3', '3m^2(2m^2-3)+1(2m^2-3)', '(2m^2-3)(3m^2+1)'],
     split: '-7u=-9u+2u', com: '(2u-3)', fin: '(2m^2-3)(3m^2+1)', find: `Exponents 4, 2, 0: the block is ${T('m^2')}.`,
-    done: `Neither bracket opens: 2, 3 and 3 aren’t perfect squares, and ${T('3m^2+1')} is a sum.`, chk: '(2m^2-3)(3m^2+1)=6m^4+2m^2-9m^2-3=6m^4-7m^2-3' },
+    done: `Neither bracket opens: in ${T('2m^2-3')}, 2 and 3 aren’t perfect squares, so it isn’t a difference of squares, and ${T('3m^2+1')} is a sum.`, chk: '(2m^2-3)(3m^2+1)=6m^4+2m^2-9m^2-3=6m^4-7m^2-3' },
   e5a: { q: '10x^4-3x^2-4', blk: 'x^2', a: 10, b: -3, c: -4, U: ['10u^2-3u-4', '10u^2-8u+5u-4', '2u(5u-4)+1(5u-4)', '(5u-4)(2u+1)'], M: ['10x^4-3x^2-4', '10x^4-8x^2+5x^2-4', '2x^2(5x^2-4)+1(5x^2-4)', '(5x^2-4)(2x^2+1)'],
     split: '-3u=-8u+5u', com: '(5u-4)', fin: '(5x^2-4)(2x^2+1)', find: `Exponents 4, 2, 0: the block is ${T('x^2')}.`,
     done: `${T('5x^2-4')} is <b>not</b> a difference of squares (5 isn’t a perfect square), and ${T('2x^2+1')} is a sum. Complete.`, chk: '(5x^2-4)(2x^2+1)=10x^4+5x^2-8x^2-4=10x^4-3x^2-4' },

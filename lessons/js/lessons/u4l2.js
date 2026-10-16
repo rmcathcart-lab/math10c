@@ -362,7 +362,7 @@ function makeExpand(title, choices, value) {
         cap: `<b>O</b>utside and <b>I</b>nside: ${T(`x\\cdot ${par(qT)}=${O}`)} and ${T(`${par(pT)}\\cdot x=${I}`)}. Both are ${T(xw)}-terms, so they are <b>like terms</b>.`,
         run: (c) => Promise.all([fillCell(c, 0, 1), fillCell(c, 1, 0, 250), showSpans(c, es[1], 320, 150), showSpans(c, es[2], 320, 400)])
       }, {
-        cap: `<b>L</b>ast: ${T(`${par(pT)}\\cdot ${par(qT)}=${L}`)}, the only term ${w ? `with no ${T('x')}` : 'with no letter'}.${w ? ` ${T(`${w}\\cdot ${w}=${w}^2`)}: the ${T(w)} rides along.` : ''}`,
+        cap: `<b>L</b>ast: ${T(`${par(pT)}\\cdot ${par(qT)}=${L}`)}, the only term ${w || gen ? `with no ${T('x')}` : 'with no letter'}.${w ? ` ${T(`${w}\\cdot ${w}=${w}^2`)}: the ${T(w)} rides along.` : ''}`,
         run: (c) => Promise.all([fillCell(c, 1, 1), showSpans(c, es[3], 320, 150)])
       }, {
         cap: gen ? `Collect the two middle terms: ${T('qx+px=(p+q)x')}. So ${T(`${prodT}=x^2+(p+q)x+pq`)}, for every ${T('p')} and ${T('q')}.`
@@ -478,10 +478,10 @@ function makeInspect(title, choices) {
           : `<b>Common factor first?</b> ${terms.map((t) => T(termT(t, true))).join(', ')} have no common factor except 1, so go straight to the pair.`,
         run: (c2) => hasG ? Promise.all([...gEls.map((e, i) => c2.fadeIn(e, 320, { delay: i * 160 })), c2.fadeIn(gLine, 380, { delay: 600 })]) : c2.fadeIn(gNote, 350)
       }, {
-        cap: `${hasG ? `Inside the bracket: ${T(tri)}. ` : ''}We need two integers with <b>product</b> ${T(String(c))} and <b>sum</b> ${T(String(b))}. ` + signsCap(b, c),
+        cap: `${hasG ? `Inside the bracket: ${T(tri)}. ` : ''}We need two integers with <b>product</b> ${T(String(c))} and <b>sum</b> ${T(String(b))}. ` + signsCap(b, c, v === 'b' || w === 'b'),
         run: (c2) => Promise.all([c2.fadeIn(tgt, 300), sg.light(c2, b, c)])
       }, {
-        cap: hit ? `List the factor pairs of ${fmt(Math.abs(c))}, sign them, add: ${T(sumT(hit))} ✓.${w ? ` The ${T(w)} doesn’t change the search: the numbers are the same as for ${T(triT(b, c))}.` : ''}`
+        cap: hit ? `List the factor pairs of ${fmt(Math.abs(c))}, sign them, add: ${T(sumT(hit))} ✓.${w ? ` The second variable, ${T(w)}, doesn’t change the search: the numbers are the same as for ${T(triT(b, c, v))}.` : ''}`
           : `List the factor pairs of ${fmt(Math.abs(c))}, sign them, add. None of the sums is ${T(String(b))}.`,
         run: (c2) => sp.run(c2)
       }];

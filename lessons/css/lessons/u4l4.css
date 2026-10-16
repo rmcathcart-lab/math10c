@@ -148,8 +148,6 @@
 .u4l4-steps > div { background: #f6f5f1; border-radius: 12px; padding: 8px 12px 10px; font-size: 17px; line-height: 1.35; }
 .u4l4-steps b.n { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--brand2); color: #fff; font: 800 17px var(--round); margin-bottom: 4px; }
 .u4l4-steps .h { display: block; font: 800 18px var(--round); color: var(--ink); }
-.u4l4-ti84 { font-size: 18px; }
-.u4l4-ti84 code { font: 700 16px ui-monospace, Menlo, monospace; background: #fff; border: 1px solid var(--line); border-radius: 5px; padding: 0 5px; }
 
 /* static area boxes (examples and answers) */
 .u4l4-sbox { display: inline-grid; grid-template-columns: auto auto auto; align-items: center; margin: 6px 0 4px; }

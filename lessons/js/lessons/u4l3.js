@@ -623,7 +623,7 @@ const ring = {
       cap: `The bracket is a difference of squares: ${T('A=\\pi(R-r)(R+r)')}.`,
       run: (c) => Promise.all([c.fadeIn(lines[2], 400), notes[2] && c.fadeIn(notes[2], 300)])
     }, {
-      cap: `Substitute: ${T(`R-r=${R - r}`)} and ${T(`R+r=${R + r}`)}. So ${T(`A=\\pi(${R - r})(${R + r})=${val}\\pi`)}, about ${approx}. No decimals squared!`,
+      cap: `Substitute: ${T(`R-r=${R - r}`)} and ${T(`R+r=${R + r}`)}. So ${T(`A=\\pi(${R - r})(${R + r})=${val}\\pi`)}, about ${approx}.${R % 1 || r % 1 ? ' No decimals squared!' : ' No squaring needed.'}`,
       run: async (c) => { await c.fadeIn(lines[3], 400); await c.pop(lines[4], 420); }
     }, {
       cap: `Why the factored form makes sense: cut the ring and straighten it out. It is close to a trapezoid, ${T('R-r')} tall, with parallel sides ${T('2\\pi r')} and ${T('2\\pi R')}.`,
