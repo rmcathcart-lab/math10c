@@ -437,7 +437,7 @@ const realWorld = {
   height: 470,
   choices: [{ v: 'bath', label: 'Filling a bath' }, { sep: 'Check:' }, { v: 'e5', label: 'Example 5' }],
   intro: (k) => (k === 'e5' ? `Example 5: ${T('C=350+25n')} for ${T('n')} guests, from 50 to 300. Press <b>Next</b>.`
-    : `A bath holds 20 L and fills at 8 L per minute for 15 minutes: ${T('V=20+8t')}. Press <b>Next</b>.`),
+    : `A bath already has 20 L in it and fills at 8 L per minute for 15 minutes: ${T('V=20+8t')}. Press <b>Next</b>.`),
   make(stage, k, ex) {
     const d = RW[k], [u, v] = d.v, ys = d.xs.map(d.f), W = ex.W;
     const tb = new ValueTable(stage, { x: 12, y: 40, headers: [u, v], rows: d.xs.map((x, i) => [x, nT(ys[i])]), hide: 1, tap: false, cellW: 70, cellH: 50 });
