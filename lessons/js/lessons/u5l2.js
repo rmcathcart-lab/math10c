@@ -61,7 +61,7 @@ const SIX = {
     xs: ['0', '1', '2', '3', '4'], ys: ['10', '30', '50', '70', '90'],
     eqL: 'b', eqR: `10+20${ivT('t')}`, sub: ['b=10+20(', 'X', ')=', 'Y'], pick: 2,
     win: { xmin: 0, xmax: 5, ymin: 0, ymax: 100, ystep: 10, ylabels: 20 },
-    join: 'seg', stamp: ['Linear', true],
+    join: 'seg', stamp: ['Linear', true, 'br'],
     joinCap: `Charging time can be <b>any</b> value from 0 to 4.5 h (when it reaches 100%), so join the points. A straight line: the relation is <b>linear</b>.`
   },
   van: {
@@ -71,7 +71,7 @@ const SIX = {
     xs: ['20', '40', '60', '80', '100', '120', '140'], ys: ['13.2', '9.2', '6.8', '6.0', '6.8', '9.2', '13.2'],
     eqL: 'F', eqR: `0.002${ivT('s')}^2-0.32${ivT('s')}+18.8`, sub: ['F=0.002(', 'X', ')^2-0.32(', 'X', ')+18.8=', 'Y'], pick: 2,
     win: { xmin: 0, xmax: 150, ymin: 0, ymax: 15, xstep: 10, xlabels: 20, ystep: 1, ylabels: 5 },
-    join: 'curve', f: (s) => 0.002 * s * s - 0.32 * s + 18.8, stamp: ['Nonlinear', null],
+    join: 'curve', f: (s) => 0.002 * s * s - 0.32 * s + 18.8, stamp: ['Nonlinear', null, 't'],
     share: `Two speeds can share an output: 40 and 120 km/h both give 9.2. Each output is written <b>once</b>.`,
     joinCap: `Every speed from 20 to 140 km/h has an output, so join the points with a smooth <b>curve</b>. Not a straight line: <b>nonlinear</b>.`
   },
@@ -82,7 +82,7 @@ const SIX = {
     xs: ['-2', '-1', '0', '1', '2'], ys: ['4', '1', '0', '1', '4'],
     eqL: 'y', eqR: `${ivT('x')}^2`, sub: ['y=(', 'X', ')^2=', 'Y'], pick: 0,
     win: { xmin: -3, xmax: 3, ymin: -1, ymax: 5 },
-    join: 'none', stamp: ['Not joined', null],
+    join: 'none', stamp: ['Not joined', null, 'br'],
     share: `Two inputs can share an output: ${T('-2')} and ${T('2')} both give ${T('4')}. Each output is written <b>once</b>.`,
     joinCap: `Only the five integers are inputs, so the points are <b>not joined</b>. They don’t lie on a line: the pattern is <b>nonlinear</b>.`
   }
@@ -98,7 +98,7 @@ const sixViews = {
     const tw = (W - 32 - 5 * 8) / 6;
     const tabs = TABS.map((t, i) => add(stage, box(h('div', 'u5l2-tab6', `<b>${i + 1}</b>${t}`), tw, 38), 16 + i * (tw + 8), 10));
     const setTab = (i) => tabs.forEach((t, j) => { t.classList.toggle('on', j === i); t.classList.toggle('done', j < i || i > 5); });
-    const words = add(stage, box(h('div', 'u5l2-words', d.words), W - 32, 62), 16, 58); words.style.opacity = 0;
+    const words = add(stage, box(h('div', 'u5l2-words', `<div>${d.words}</div>`), W - 32, 62), 16, 58); words.style.opacity = 0;
     const y0 = 132, wv = Math.floor((W - 48) / 2), hv = H - y0 - 10, xL = 16, xR = 32 + wv, dx = xR - xL;
     const mk = (x, title) => { const el = add(stage, box(h('div', 'u5l2-view', `<div class="u5l2-vt">${title}</div>`), wv, hv), x, y0); el.style.opacity = 0; const body = el.appendChild(h('div', 'u5l2-vb')); return { el, body }; };
     // table (starts on the left)
@@ -186,7 +186,7 @@ const sixViews = {
           setTab(6);
           if (d.join === 'seg') await G.drawIn(G.segment([0, 10], [4.5, 100], { closedA: true, closedB: true, color: TEAL }), 900, c);
           if (d.join === 'curve') await G.drawIn(G.fn(d.f, { from: 20, to: 140, color: TEAL }), 1000, c);
-          const s = stamp(vG.el, d.stamp[0], { ok: d.stamp[1], x: wv - 110, y: 70, size: 'sm' }); await stampIn(c, s);
+          const s = stamp(vG.el, d.stamp[0], d.stamp[2] === 't' ? { ok: d.stamp[1], x: wv / 2 + 10, y: 66 } : { ok: d.stamp[1], x: wv - 100, y: hv - 84 }); await stampIn(c, s);
         } }
     ];
   }
@@ -195,16 +195,16 @@ const sixViews = {
 /* =====================================================================================
  * 2. causeEffect — which quantity depends on which? Test the sentence both ways, then put the input first. */
 const CE = {
-  phone: { label: 'Phone charging', A: { n: 'minutes charging', ic: 'phone', ax: 'minutes charging' }, B: { n: 'battery level (%)', ic: 'battery', ax: 'battery level' }, dep: 'B',
+  phone: { label: 'Phone charging', A: { n: 'minutes charging', s: 'the minutes charging', ic: 'phone', ax: 'minutes charging' }, B: { n: 'battery level (%)', s: 'the battery level', ic: 'battery', ax: 'battery level' }, dep: 'B',
     tests: [['Does the number of minutes charging depend on the battery level?', false, 'No: you decide how long to charge it.'], ['Does the battery level depend on the minutes charging?', true, 'Yes: the longer it charges, the fuller it gets.']],
     f: (u) => 0.12 + 0.8 * u },
-  van: { label: 'Van: fuel and speed', A: { n: `fuel consumption rate, ${T('F')}`, ic: 'pump', ax: 'fuel consumption' }, B: { n: `speed, ${T('s')}`, ic: 'speedo', ax: 'speed' }, dep: 'A',
+  van: { label: 'Van: fuel and speed', A: { n: `fuel consumption rate, ${T('F')}`, s: `the fuel consumption rate ${T('F')}`, ic: 'pump', ax: 'fuel consumption' }, B: { n: `speed, ${T('s')}`, s: `the speed ${T('s')}`, ic: 'speedo', ax: 'speed' }, dep: 'A',
     tests: [['Does the fuel consumption rate depend on the speed?', true, 'Yes: how fast the van goes changes how much fuel it burns.'], ['Does the speed depend on the fuel consumption rate?', false, 'No: the driver chooses the speed.']],
     f: (u) => { const s = 20 + 120 * u; return (0.002 * s * s - 0.32 * s + 18.8) / 15; } },
-  ice: { label: 'Ice cream (warm-up)', A: { n: 'temperature (°C)', ic: 'thermo', ax: 'temperature' }, B: { n: 'ice cream sales', ic: 'cone', ax: 'ice cream sales' }, dep: 'B',
+  ice: { label: 'Ice cream (warm-up)', A: { n: 'temperature (°C)', s: 'the temperature', ic: 'thermo', ax: 'temperature' }, B: { n: 'ice cream sales', s: 'ice cream sales', ic: 'cone', ax: 'ice cream sales' }, dep: 'B',
     tests: [['Does the temperature depend on ice cream sales?', false, 'No: selling cones doesn’t heat up the day.'], ['Do ice cream sales depend on the temperature?', true, 'Yes: hot days sell more cones.']],
     f: (u) => 0.1 + 0.78 * u * u },
-  museum: { label: 'Example 2(c)', A: { n: `number of visitors, ${T('v')}`, ic: 'people', ax: 'visitors' }, B: { n: `price of admission, ${T('p')}`, ic: 'ticket', ax: 'price' }, dep: 'A',
+  museum: { label: 'Example 2(c)', A: { n: `number of visitors, ${T('v')}`, s: `the number of visitors ${T('v')}`, ic: 'people', ax: 'visitors' }, B: { n: `price of admission, ${T('p')}`, s: `the price ${T('p')}`, ic: 'ticket', ax: 'price' }, dep: 'A',
     tests: [['Does the number of visitors depend on the price?', true, 'Yes: a higher price keeps some people away.'], ['Does the price depend on the number of visitors?', false, 'No: the museum sets the price for the day.']],
     f: (u) => 0.88 - 0.68 * u }
 };
@@ -214,7 +214,7 @@ const causeEffect = {
   choices: [{ v: 'phone', label: CE.phone.label }, { v: 'van', label: CE.van.label }, { v: 'ice', label: CE.ice.label }, { sep: 'Example check:' }, { v: 'museum', label: CE.museum.label }],
   intro: (k) => `Two quantities, named in the order the sentence gives them. Which one <b>depends on</b> the other? Press <b>Next</b>.`,
   make(stage, k, ex) {
-    const d = CE[k], W = ex.W, cw = 220, chh = 196, xA = 18, xB = 330, yC = 46;
+    const d = CE[k], W = ex.W, cw = 220, chh = 172, xA = 18, xB = 330, yC = 44;
     const card = (q, x) => {
       const el = add(stage, box(h('div', 'u5l2-qcard', `<div class="u5l2-qic">${icon(q.ic, 72)}</div><div class="u5l2-qname">${q.n}</div><div class="u5l2-meter"><i class="u5l2-mfill"></i><i class="u5l2-mknob"></i></div>`), cw, chh), x, yC);
       el.style.opacity = 0; return el;
@@ -225,9 +225,9 @@ const causeEffect = {
     const u0 = 0.1; setM(ind, u0); setM(dep, d.f(u0));
     dep.classList.add('u5l2-q-dep'); ind.classList.add('u5l2-q-ind');
     // the arrow between the cards (input → output once known)
-    const arr = add(stage, h('div', 'u5l2-ce-arrow', `<svg viewBox="0 0 80 40" width="80" height="40"><path d="M4 20H62" stroke="${TEAL}" stroke-width="5" stroke-linecap="round"/><path d="M76 20L60 10V30Z" fill="${TEAL}"/></svg><b>affects</b>`), xA + cw + 6, yC + 64); arr.style.opacity = 0;
+    const arr = add(stage, h('div', 'u5l2-ce-arrow', `<svg viewBox="0 0 80 40" width="80" height="40"><path d="M4 20H62" stroke="${TEAL}" stroke-width="5" stroke-linecap="round"/><path d="M76 20L60 10V30Z" fill="${TEAL}"/></svg><b>affects</b>`), xA + cw + 6, yC + 52); arr.style.opacity = 0;
     // the two tests
-    const P = panel(stage, 18, 262, 532, 150, 'Test it both ways', 'u5l2-tests');
+    const P = panel(stage, 18, 226, 532, 190, 'Test it both ways', 'u5l2-tests');
     // graph
     const gx = W - 410, indQ = d.dep === 'A' ? d.B : d.A, depQ = d.dep === 'A' ? d.A : d.B;
     const G = new Graph(stage, { x: gx, y: 12, width: 396, height: 400, xmin: 0, xmax: 10, ymin: 0, ymax: 10, grid: false, numbers: false, xtitle: `\\textcolor{${IV}}{\\text{${indQ.ax}}}`, ytitle: `\\textcolor{${DV}}{\\text{${depQ.ax}}}` });
@@ -236,15 +236,15 @@ const causeEffect = {
     const X = (u) => 1 + 8 * (u - 0.1) / 0.8, Y = (u) => 10 * d.f(u);
     const dot = G.point(X(u0), Y(u0), { color: TEAL, r: 7 }); dot.style.opacity = 0;
     const testLine = (t) => { const row = line(P, `<span class="u5l2-tq">${t[0]}</span><span class="u5l2-tw">${t[2]}</span>`, 'u5l2-test'); const s = stamp(row, t[1] ? '✓' : '✗', { ok: t[1], size: 'sm', rotate: -4 }); s.classList.add('u5l2-tst'); return { row, s }; };
-    const indName = indQ.n.replace(/ \(.*\)$/, ''), depName = depQ.n.replace(/ \(.*\)$/, '');
+    const sn = (q) => q.s || q.n.replace(/ \(.*\)$/, ''), indName = sn(indQ), depName = sn(depQ);
     return [
-      { cap: `Two quantities that change together: <b>${d.A.n}</b> and <b>${d.B.n}</b>.`,
+      { cap: `Two quantities that change together: <b>${sn(d.A)}</b> and <b>${sn(d.B)}</b>.`,
         run: async (c) => { await Promise.all([pop(c, cA), pop(c, cB, 380, { delay: 120 })]); } },
       { cap: `Test it one way: ${d.tests[0][0].replace('?', '')}? ${d.tests[0][2]}`,
         run: async (c) => { const t = testLine(d.tests[0]); await fadeIn(c, t.row); await stampIn(c, t.s); } },
       { cap: `Now the other way: ${d.tests[1][0].replace('?', '')}? ${d.tests[1][2]}`,
         run: async (c) => { const t = testLine(d.tests[1]); await fadeIn(c, t.row); await stampIn(c, t.s); } },
-      { cap: `So <b>${depName}</b> is the ${dvB('dependent variable')} (output) and <b>${indName}</b> is the ${ivB('independent variable')} (input).` + (swap ? ' The input goes <b>first</b>: swap them.' : ''),
+      { cap: `So <b>${depName}</b> is the ${dvB('dependent variable')} (output), and <b>${indName}</b> is the ${ivB('independent variable')} (input).` + (swap ? ' The input goes <b>first</b>: swap them.' : ''),
         run: async (c) => {
           if (swap) await Promise.all([anim(c, cA, [{ transform: 'translateX(0px)' }, { transform: `translateX(${xB - xA}px)` }], 700), anim(c, cB, [{ transform: 'translateX(0px)' }, { transform: `translateX(${xA - xB}px)` }], 700)]);
           ind.classList.add('on'); dep.classList.add('on');
@@ -276,8 +276,8 @@ const fuelStory = {
   make(stage, v, ex) {
     const W = ex.W;
     const G = new Graph(stage, { x: 10, y: 8, width: 580, height: 430, xmin: 0, xmax: 150, xstep: 10, xlabels: 20, ymin: 0, ymax: 15, ystep: 1, ylabels: 5, xtitle: ivT('s') + '\\ (\\text{km/h})', ytitle: dvT('F') });
-    const tb = new ValueTable(stage, { x: 620, y: 12, headers: [ivT('s'), dvT('F')], rows: VAN.xs.map((x, i) => [x, VAN.ys[i]]), cellW: 100, cellH: 31, tap: false });
-    const P = panel(stage, 620, 270, W - 634, 166, '', 'u5l2-notes');
+    const tb = new ValueTable(stage, { x: 620, y: 12, headers: [ivT('s'), dvT('F')], rows: VAN.xs.map((x, i) => [x, VAN.ys[i]]), cellW: 100, cellH: 29, tap: false });
+    const P = panel(stage, 620, 254, W - 634, 184, '', 'u5l2-notes');
     const pts = [];
     const f50 = VAN.f(50), fm40 = VAN.f(-40);
     let q50;
@@ -291,11 +291,11 @@ const fuelStory = {
       { cap: `Read the curve at ${T('s=50')}: about ${T('7.8')}. The equation agrees: ${T(`0.002(50)^2-0.32(50)+18.8=${f50.toFixed(1)}`)}.`,
         run: async (c) => { G.remove(q50, q50.q); const g = G.guides(50, f50); await G.drawIn(g, 600, c); await G.reveal(G.point(50, f50, { color: IV, r: 7, label: T('(50,\\ 7.8)'), pos: 'ne' }), c); await showLine(c, P, `${T('s=50')} → ${T('F=7.8')} L/100 km`); } },
       { cap: `The <b>domain</b> is the speeds that make sense here: the curve’s shadow on the ${T(ivT('s'))}-axis runs from 20 to 140 km/h.`,
-        run: async (c) => { await G.drawIn(G.shadeX(20, 140, { band: true }), 800, c); await showLine(c, P, `<b class="u5l2-ivt">Domain:</b> speeds from 20 to 140 km/h`); } },
+        run: async (c) => { await G.drawIn(G.shadeX(20, 140, { band: true }), 800, c); await showLine(c, P, `<b class="u5l2-ivt">Domain:</b> 20 to 140 km/h`); } },
       { cap: `What about ${T('s=-40')}? The equation gives ${T(`F=${fm40.toFixed(1)}`)}, but a speed of ${T('-40')} km/h makes no sense: ${T('-40')} is <b>not in the domain</b>.`,
         run: async (c) => { const l = await showLine(c, P, `${T('s=-40')}: ${T(`F=${fm40.toFixed(1)}`)}?`); const s = stamp(l, 'not in the domain', { ok: false, size: 'sm', rotate: -4 }); s.style.marginLeft = '10px'; await stampIn(c, s); } },
       { cap: `The <b>range</b> is the set of all outputs: the shadow on the ${T(dvT('F'))}-axis, from ${T('6.0')} (the lowest point, at 80 km/h) up to ${T('13.2')}.`,
-        run: async (c) => { await G.reveal(G.point(80, 6, { color: DV, r: 7, label: 'lowest', pos: 's' }), c); await G.drawIn(G.shadeY(6, 13.2, { band: true }), 800, c); await showLine(c, P, `<b class="u5l2-dvt">Range:</b> outputs from 6.0 to 13.2`); } }
+        run: async (c) => { await G.reveal(G.point(80, 6, { color: DV, r: 7, label: 'lowest', pos: 's' }), c); await G.drawIn(G.shadeY(6, 13.2, { band: true }), 800, c); await showLine(c, P, `<b class="u5l2-dvt">Range:</b> 6.0 to 13.2`); } }
     ];
   }
 };
@@ -311,7 +311,7 @@ const spotRule = {
     const W = ex.W;
     if (k === 'gen') return spotGen(stage, W);
     const xs = [1, 2, 3, 4], f = (x) => -2 * x + 9, pw = Math.floor((W - 28 - 28) / 3), ph = 212, X = (i) => 14 + i * (pw + 14);
-    const mkP = (i, row, title) => { const p = panel(stage, X(i), row ? 232 : 8, pw, ph, title, 'u5l2-sp'); p.style.opacity = 0; return p; };
+    const mkP = (i, row, title, cls = '') => { const p = panel(stage, X(i), row ? 232 : 8, pw, ph, title, 'u5l2-sp ' + cls); p.style.opacity = 0; return p; };
     const p1 = mkP(0, 0, 'Ordered pairs'), p2 = mkP(1, 0, 'Table of values'), p3 = mkP(2, 0, 'Arrow diagram'), p4 = mkP(0, 1, 'Graph'), p5 = mkP(1, 1, 'Equation'), p6 = mkP(2, 1, 'The independent variable is…', 'u5l2-sp6');
     // pairs
     const pl = p1.appendChild(h('div', 'u5l2-sp-pairs'));
@@ -326,28 +326,28 @@ const spotRule = {
     xs.forEach((x) => G.point(x, f(x), { color: TEAL, r: 5 }));
     // equation
     const e1 = p5.appendChild(h('div', 'u5l2-sp-eq', T('y=-2x+9')));
-    const e2 = p5.appendChild(h('div', 'u5l2-sp-eq u5l2-sp-eq2', T(`\\overbrace{${dvT('y')}}^{\\text{solved for: dependent}}=\\underbrace{-2${ivT('x')}+9}_{\\text{input inside}}`))); e2.style.opacity = 0;
+    const e2 = p5.appendChild(h('div', 'u5l2-sp-eq u5l2-sp-eq2', T(`\\overbrace{${dvT('y')}}^{\\text{dependent}}=\\underbrace{-2${ivT('x')}+9}_{\\text{input inside}}`))); e2.style.opacity = 0;
     const add6 = (c, html) => showLine(c, p6, html, 'u5l2-l6');
     return [
       { cap: `One relation, ${T('y=-2x+9')}, in five views. Where does the <b>independent</b> variable ${T('x')} sit in each one?`,
         run: async (c) => { await Promise.all([p1, p2, p3, p4, p5, p6].map((p, i) => fadeIn(c, p, 350, { delay: i * 80 }))); } },
       { cap: `<b>Ordered pairs:</b> the <b>first</b> coordinate is the independent variable.`,
-        run: async (c) => { firsts.forEach((e) => e.classList.add('on')); await Promise.all(firsts.map((e) => pulse(c, e, 1.3))); await add6(c, '<b>1st</b> coordinate of a pair'); } },
+        run: async (c) => { firsts.forEach((e) => e.classList.add('on')); await Promise.all(firsts.map((e) => pulse(c, e, 1.3))); await add6(c, 'the <b>1st</b> coordinate'); } },
       { cap: `<b>Table:</b> the independent variable is listed <b>first</b>: the left column (or the top row of a sideways table).`,
-        run: async (c) => { tb.highlightCol(0, true); await pulse(c, tb.el, 1.05); await add6(c, '<b>left</b> column (or top row)'); } },
+        run: async (c) => { tb.highlightCol(0, true); await pulse(c, tb.el, 1.05); await add6(c, 'the <b>left</b> column (or top row)'); } },
       { cap: `<b>Arrow diagram:</b> arrows point <b>from</b> the independent variable <b>to</b> the dependent variable.`,
         run: async (c) => { M.ovals[0].style.stroke = IV; M.ovals[0].style.strokeWidth = 4; M.ovals[1].style.stroke = DV; M.arrowEls.forEach((a) => (a.style.color = IV)); for (const a of M.arrowEls) await drawIn(a, 340, c); await add6(c, 'where the <b>arrows start</b>'); } },
       { cap: `<b>Graph:</b> the independent variable is on the <b>horizontal</b> axis; the dependent variable on the vertical axis.`,
         run: async (c) => { const a = G.segment([0, 0], [5, 0], { color: IV, width: 7 }), b = G.segment([0, 0], [0, 8], { color: DV, width: 7 }); a.style.opacity = 0.75; b.style.opacity = 0.75; await G.drawIn(a, 500, c); await G.drawIn(b, 500, c); await add6(c, 'the <b>horizontal</b> axis'); } },
       { cap: `<b>Equation:</b> it is solved for ${T('y')}, so ${T('y')} is the dependent variable; ${T('x')} sits inside the expression.`,
-        run: async (c) => { await fadeOut(c, e1, 250); await fadeIn(c, e2); await add6(c, 'inside the expression (the equation is solved for the <b>dependent</b>)'); } }
+        run: async (c) => { await fadeOut(c, e1, 250); await fadeIn(c, e2); await add6(c, '<b>inside</b> the expression'); } }
     ];
   }
 };
 function spotGen(stage, W) {
   const top = add(stage, h('div', 'u5l2-gen-eq', T('4x-3y+24=0')), W / 2, 30); top.style.translate = '-50% 0'; top.style.opacity = 0;
   const cw = Math.floor((W - 60) / 2);
-  const L = panel(stage, 20, 120, cw, 240, `If ${T(dvT('y'))} depends on ${T(ivT('x'))}: solve for ${T('y')}`), R = panel(stage, 40 + cw, 120, cw, 240, `If ${T(dvT('x'))} depends on ${T(ivT('y'))}: solve for ${T('x')}`);
+  const L = panel(stage, 20, 120, cw, 240, `If ${T(dvT('y'))} depends on ${T(ivT('x'))}: solve for ${T('y')}`, 'u5l2-genp'), R = panel(stage, 40 + cw, 120, cw, 240, `If ${T(dvT('x'))} depends on ${T(ivT('y'))}: solve for ${T('x')}`, 'u5l2-genp');
   L.style.opacity = 0; R.style.opacity = 0;
   const lines = (P, arr) => arr.map((s) => { const d = line(P, T(s), 'u5l2-alg'); d.style.opacity = 0; return d; });
   const la = lines(L, ['4x-3y+24=0', '-3y=-4x-24', `${dvT('y')}=\\tfrac{4}{3}${ivT('x')}+8`]);
@@ -409,7 +409,7 @@ const exCheck = {
       listSteps(async (c) => { rows.forEach((r) => r[0].classList.add('on')); await Promise.all(rows.map((r) => pulse(c, r[0], 1.3))); }, async (c) => { rows.forEach((r) => r[1].classList.add('on')); await Promise.all(rows.map((r) => pulse(c, r[1], 1.3))); });
     } else if (d.kind === 'eq') {
       const e1 = add(stage, h('div', 'u5l2-exc-eq', T('d=4.9t^2')), 245, 150); e1.style.translate = '-50% -50%';
-      const e2 = add(stage, h('div', 'u5l2-exc-eq', T(`\\overbrace{${dvT('d')}}^{\\text{isolated: the output}}=\\underbrace{4.9${ivT('t')}^2}_{\\text{the input is in here}}`)), 245, 170); e2.style.translate = '-50% -50%'; e2.style.opacity = 0;
+      const e2 = add(stage, h('div', 'u5l2-exc-eq', T(`\\overbrace{${dvT('d')}}^{\\text{isolated}}=\\underbrace{4.9${ivT('t')}^2}_{\\text{input inside}}`)), 245, 170); e2.style.translate = '-50% -50%'; e2.style.opacity = 0;
       steps.push({ cap: `${T('d')} is isolated on the left, so it is the output: the dependent variable. The input ${T('t')} sits inside the expression.`, run: async (c) => { await fadeOut(c, e1, 250); await fadeIn(c, e2); } });
       steps.push({ cap: `(i) independent: ${T('t')} &nbsp; (ii) dependent: ${T('d')}.`, run: writeID });
     } else if (d.kind === 'graph') {
@@ -434,11 +434,11 @@ const exCheck = {
  * 6. eqToGraph — equation → table → points → graph, then read it forwards and backwards. */
 const EG = {
   c: { label: T('y=-2x+9'), f: (x) => -2 * x + 9, tex: 'y=-2x+9', sub: (x) => `y=-2(${x})+9`, xs: [0, 1, 2, 3, 4], kind: 'line',
-    win: { xmin: -2, xmax: 7, ymin: -4, ymax: 12, ylabels: 2 }, fwd: 5, back: 11 },
+    win: { xmin: -2, xmax: 7, ymin: -4, ymax: 12, ylabels: 2 }, fwd: 5, back: 11, stampAt: [4.6, 9] },
   e3: { label: 'Example 3', f: (x) => 3 * x - 4, tex: 'y=3x-4', sub: (x) => `y=3(${x})-4`, xs: [-2, -1, 0, 1, 2], kind: 'line',
-    win: { xmin: -6, xmax: 6, ymin: -12, ymax: 12, xlabels: 2, ylabels: 5 }, fwd: 5, back: 8 },
+    win: { xmin: -6, xmax: 6, ymin: -12, ymax: 12, xlabels: 2, ylabels: 5 }, fwd: 5, back: 8, stampAt: [-3.3, 7] },
   e4: { label: 'Example 4', f: (x) => x * x - 8, tex: 'y=x^2-8', sub: (x) => (x < 0 ? `y=(${x})^2-8` : `y=${x}^2-8`), xs: [4, 3, 2, 1, 0, -1, -2, -3], kind: 'curve',
-    win: { xmin: -6, xmax: 6, ymin: -9, ymax: 9, xlabels: 2, ylabels: 4 }, sym: -4 }
+    win: { xmin: -6, xmax: 6, ymin: -9, ymax: 9, xlabels: 2, ylabels: 4 }, sym: -4, stampAt: [3.4, -6.5] }
 };
 const pairT = (x, y) => `(${x},\\ ${y})`;
 const eqToGraph = {
@@ -451,8 +451,7 @@ const eqToGraph = {
     const G = new Graph(stage, Object.assign({ x: W - 458, y: 8, width: 448, height: 468 }, d.win));
     const sub = add(stage, box(h('div', 'u5l2-subbox', T(d.tex)), W - 492, 56), 14, 10);
     const cellH = k === 'e4' ? 36 : 44;
-    const tb = new ValueTable(stage, { x: 14, y: 78, headers: ['x', 'y', '(x,\\ y)'], rows: d.xs.map((x) => [x, d.f(x), pairT(x, d.f(x))]), hide: (r, c) => c > 0, tap: false, cellW: 108, cellH, cls: 'u5l2-eg-tb' });
-    const sx = 14 + 3 * 108 + 24, sw = W - 458 - sx - 10;
+    const tb = new ValueTable(stage, { x: 14, y: 78, headers: ['x', 'y', '(x,\\ y)'], rows: d.xs.map((x) => [x, d.f(x), pairT(x, d.f(x))]), hide: (r, c) => c > 0 && r < n, tap: false, cellW: 108, cellH, cls: 'u5l2-eg-tb' });
     const setSub = (html, c) => { sub.innerHTML = html; return pulse(c, sub, 1.04, 300); };
     const steps = [
       { cap: `Substitute each input into ${T(d.tex)} to get its output.`,
@@ -462,12 +461,12 @@ const eqToGraph = {
         run: async (c) => { for (let i = 0; i < n; i++) { tb.highlight(i, true); await G.reveal(G.point(d.xs[i], d.f(d.xs[i]), { color: TEAL, r: 6 }), c, 240); await sleep(c, 60); tb.highlight(i, false); } } }
     ];
     const addRow = async (c, x) => { await tb.addRow([x, d.f(x), pairT(x, d.f(x))], c); tb.highlight(tb.rows.length - 1, true); };
-    const st = (c, txt, ok) => { const s = stamp(stage, txt, { ok, x: sx + sw / 2, y: 420, size: 'lg' }); return stampIn(c, s); };
+    const st = (c, txt, ok) => { const [px, py] = G.toPx(d.stampAt[0], d.stampAt[1]); const s = stamp(stage, txt, { ok, x: W - 458 + px, y: 8 + py, size: 'lg' }); return stampIn(c, s); };
     if (d.kind === 'line') {
       const yF = d.f(d.fwd), xB = (d.back - (d.f(0))) / (d.f(1) - d.f(0));
       steps.push({ cap: `The points line up: join them with a straight line, with <b>arrows</b> at both ends (the pattern keeps going).`,
         run: (c) => G.drawIn(G.line([d.xs[0], d.f(d.xs[0])], [d.xs[n - 1], d.f(d.xs[n - 1])], { color: TEAL }), 900, c) });
-      steps.push({ cap: `<b>Forwards:</b> from ${T('x=' + d.fwd)} go up to the line, then across to the ${T('y')}-axis: ${T('y=' + yF)}.`,
+      steps.push({ cap: `<b>Forwards:</b> from ${T('x=' + d.fwd)} go ${yF < 0 ? 'down' : 'up'} to the line, then across to the ${T('y')}-axis: ${T('y=' + yF)}.`,
         run: async (c) => { const a = G.segment([d.fwd, 0], [d.fwd, yF], { color: IV, width: 3, dash: true }), b = G.segment([d.fwd, yF], [0, yF], { color: DV, width: 3, dash: true, arrowB: true }); await G.drawIn(a, 500, c); await G.reveal(G.point(d.fwd, yF, { color: RED, r: 7 }), c); await G.drawIn(b, 500, c); await G.reveal(G.label(0, yF, T(String(yF)), { pos: 'w', cls: 'bk-ptlab', color: DV }), c); } });
       steps.push({ cap: `Check with the equation: ${T(`${d.sub(d.fwd)}=${yF}`)} ✓. Record the pair ${T(pairT(d.fwd, yF))} in the table.`,
         run: async (c) => { await setSub(T(`${d.sub(d.fwd)}=${yF}`) + ' <b class="u5l2-ok">✓</b>', c); await addRow(c, d.fwd); } });
@@ -512,7 +511,7 @@ const linTest = {
     const lin = k !== 'e4';
     const tb = new ValueTable(stage, { x: 20, y: 56, headers: ['x', 'y'], rows: d.xs.map((x, i) => [x, ys[i]]), layout: 'h', cellW: 76, cellH: 50, headW: 60, diffs: true, diffSpace: 70, tap: false });
     const G = new Graph(stage, Object.assign({ x: W - 446, y: 8, width: 436, height: 430 }, d.win));
-    const P = panel(stage, 20, 262, W - 490, 172, '', 'u5l2-notes');
+    const P = panel(stage, 20, 244, W - 490, 194, '', 'u5l2-notes');
     const xlabs = [];
     const perX = dy.map((v, i) => v / dx[i]);
     return [
@@ -543,7 +542,7 @@ const linTest = {
           if (lin) await G.drawIn(G.line([d.xs[0], ys[0]], [d.xs[n - 1], ys[n - 1]], { color: TEAL, width: 3 }), 800, c);
           else await G.drawIn(G.fn(d.f, { from: -0.6, to: 4.2, color: TEAL, width: 3 }), 900, c);
           if (k === 'un') await showLine(c, P, `per 1 step in ${T('x')}: ${perX.map(sgnN).join(', ')} <b class="u5l2-ok">constant</b>`);
-          const s = stamp(P, lin ? 'Linear' : 'Nonlinear', { ok: lin ? true : null, size: 'lg', rotate: -5 }); s.classList.add('u5l2-pst'); await stampIn(c, s);
+          const s = stamp(P, lin ? 'Linear' : 'Nonlinear', { ok: lin ? true : null, rotate: -5 }); s.classList.add('u5l2-pst'); await stampIn(c, s);
         } }
     ];
   }
@@ -569,12 +568,12 @@ function miniPlot(f, r, w = 132, hh = 70) {
 }
 const linOrNot = {
   title: 'From the equation: linear or nonlinear?',
-  height: 440,
+  height: 486,
   intro: 'Sort the equations. Is the input only to the <b>first power</b>, or is it <b>squared</b>? Press <b>Next</b>.',
   make(stage, v, ex) {
-    const W = ex.W, cw = Math.floor((W - 28 - 6 * 8) / 7);
-    const chips = LN.map((e, i) => { const d = add(stage, box(h('div', 'u5l2-lnchip', T(e.t)), cw, 46), 14 + i * (cw + 8), 10); fit(d, cw - 8); return d; });
-    const bw = Math.floor((W - 42) / 2), by = 72, bh = 360;
+    const W = ex.W, cw = Math.floor((W - 28 - 3 * 10) / 4);
+    const chips = LN.map((e, i) => { const d = add(stage, box(h('div', 'u5l2-lnchip', T(e.t)), cw, 42), 14 + (i % 4) * (cw + 10) + (i >= 4 ? (cw + 10) / 2 : 0), 8 + Math.floor(i / 4) * 50); fit(d, cw - 10); return d; });
+    const bw = Math.floor((W - 42) / 2), by = 112, bh = 366;
     const bins = [panel(stage, 14, by, bw, bh, '<b>Linear</b>: a straight line', 'u5l2-bin u5l2-bin-l'), panel(stage, 28 + bw, by, bw, bh, '<b>Nonlinear</b>: a curve', 'u5l2-bin u5l2-bin-n')];
     const sw = Math.floor((bw - 36) / 2), shh = 146;
     const cnt = [0, 0];

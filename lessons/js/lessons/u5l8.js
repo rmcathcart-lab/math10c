@@ -94,8 +94,8 @@ function mountWarm() {
   // landmarks
   [[-30, 'Prairie cold snap'], [0, 'water freezes'], [20, 'room temperature']].forEach(([C, s]) => {
     const x = X(C), lab = svgEl('text', { x, y: 18, 'text-anchor': 'middle', class: 'u5l8-tland' }, svg); lab.textContent = s;
-    svgEl('path', { d: `M${x} 25V${cy - 58}`, stroke: ink, 'stroke-width': 1.6, 'marker-end': '' }, svg);
-    svgEl('polygon', { points: `${x - 5},${cy - 60} ${x + 5},${cy - 60} ${x},${cy - 52}`, fill: ink }, svg);
+    svgEl('path', { d: `M${x} 25V${cy - 70}`, stroke: ink, 'stroke-width': 1.6 }, svg);
+    svgEl('polygon', { points: `${x - 5},${cy - 72} ${x + 5},${cy - 72} ${x},${cy - 63}`, fill: ink }, svg);
   });
   const read = document.getElementById('u5l8-tread');
   const show = (C) => { const F = Math.round((1.8 * C + 32) * 10) / 10; read.innerHTML = `${T(`F(${nT(C)})=1.8(${nT(C)})+32=${nT(F)}`)}`; };
@@ -114,7 +114,7 @@ function mountWarm() {
     G.fn((x) => 1.8 * x + 32, { color: 'teal' });
     G.fn((x) => x, { color: 'amber', dash: true });
     G.point(-40, -40, { color: 'red', label: T('(-40,\\ -40)'), pos: 'se' });
-    G.label(10, 70, T('F=1.8C+32'), { pos: 'w', color: 'teal', cls: 'bk-ptlab' });
+    G.label(-32, 62, T('F=1.8C+32'), { pos: 'c', color: 'teal', cls: 'bk-ptlab' });
     G.label(22, 22, T('F=C'), { pos: 'se', color: 'amber', cls: 'bk-ptlab' });
   }
 }
@@ -157,7 +157,7 @@ function mountFigures() {
   }
   if ($('u5l8-g-ex5')) grid($('u5l8-g-ex5'), 'ex5', 430, 340);
   if ($('u5l8-a-ex5')) {
-    const G = grid($('u5l8-a-ex5'), 'ex5', 300, 250, { fontSize: 13 });
+    const G = grid($('u5l8-a-ex5'), 'ex5', 300, 250, { fontSize: 13, xlabels: 2000 });
     G.segment([0, 18400], [5000, 153400], { color: 'red', width: 3, ends: ['closed', 'closed'] });
     G.label(0, 18400, T('(0,\\ 18\\,400)'), { pos: 'se', color: 'red', cls: 'bk-ptlab', gap: 6 });
     G.label(5000, 153400, T('(5\\,000,\\ 153\\,400)'), { pos: 'nw', color: 'red', cls: 'bk-ptlab', gap: 2 });
@@ -167,7 +167,6 @@ function mountFigures() {
     const G = grid($('u5l8-a-ex6'), 'ex6', 300, 250, { fontSize: 13 });
     G.fn(rFn, { from: 0, to: 80, color: 'red', width: 3, ends: ['closed', 'closed'] });
     G.point(40, 32000, { color: 'red', r: 5, label: T('(40,\\ 32\\,000)'), pos: 'n' });
-    G.label(80, 0, T('(80,\\ 0)'), { pos: 'ne', color: 'red', cls: 'bk-ptlab', gap: 6 });
   }
 }
 

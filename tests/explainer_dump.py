@@ -121,7 +121,8 @@ async def dump_page(ctx, pid):
             label = clean(await pg.evaluate(f"document.querySelectorAll('[data-keys]')[{k}].textContent"), 60)
             tip = clean(await pg.evaluate(f"(() => {{ const b = document.querySelectorAll('[data-keys]')[{k}]; const t = b.closest('.tip, .part, .card'); return t ? t.innerText : ''; }})()"), 300)
             await pg.evaluate(f"document.querySelectorAll('[data-keys]')[{k}].click()")
-            await pg.wait_for_timeout(600 * (len(spec.split()) + 3))
+            presses = sum(len(t) if re.fullmatch(r'[0-9.]+', t) else 2 if t in ('√', 'ˣ√', 'x³', 'd/e') else 1 for t in spec.split())
+            await pg.wait_for_timeout(560 * presses + 900)  # the demo presses each key for ~540 ms
             screen = clean(await pg.evaluate("(document.querySelector('.calc-screen') || {}).innerText || ''"), 120)
             res['calc'].append({'button': label, 'keys': spec, 'screen': screen, 'context': tip})
     res['problems'] = errs + res['problems']

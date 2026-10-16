@@ -50,6 +50,8 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u5l8-ansfig { display: flex; gap: 18px; align-items: flex-start; }
 .u5l8-ansfig > div:first-child { flex: 1; }
 .u5l8-ansfig .bk-tablebox { margin: 6px 0; }
+.u5l8-ansfig.u5l8-col { flex-direction: column; gap: 6px; }
+.part > [id^="u5l8-g-"], .u5l8-ex2 > [id^="u5l8-g-"], .u5l8-ansfig [id^="u5l8-a-"] { margin-top: 14px; }
 .u5l8-ex3top { display: grid; grid-template-columns: 430px 1fr; gap: 16px; align-items: start; margin-bottom: 14px; }
 .u5l8-ex3ab { margin: 0; }
 .u5l8-blanks { font-weight: 600; font-size: 19px; margin-top: 4px; line-height: 1.7; }

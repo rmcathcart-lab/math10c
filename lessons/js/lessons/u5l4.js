@@ -351,7 +351,7 @@ const ends = {
     const G = new Graph(stage, { x: 14, y: 14, width: 440, height: 440, xmin: -6, xmax: 6, ymin: -6, ymax: 6 });
     const P = panel(stage, 474, 14, ex.W - 488, 440, 'Write it down');
     const D = [a[0], b[0], false, true], R = [a[1], b[1], false, true];
-    const walkT = d.walk.map((x) => T(nT(x))).join(', ');
+    const walkT = T('x=' + d.walk.map((x) => nT(x)).join(',\\ ') + ',\\ \\dots');
     let walker;
     return [
       { cap: `A segment: <b>solid</b> dot at ${ptT(a)}, <b>hollow</b> dot at ${ptT(b)}.`,
@@ -360,7 +360,7 @@ const ends = {
         run: async (c) => { const r = G.point(a[0], a[1], { color: 'green', r: 13, cls: 'u5l4-ring' }); await pop(c, r, 400); } },
       { cap: `Hollow dot: the point ${ptT(b)} is <b>not</b> on the graph. Zoom in on it…`,
         run: async (c) => { await G.setWindow({ xmin: d.zoom[0], xmax: d.zoom[1], ymin: d.zoom[2], ymax: d.zoom[3] }, c, 1500); G.win.xstep = 0.1; G.win.ystep = 0.1; G.redraw(); } },
-      { cap: `Walk toward the hole: ${T('x=')}${walkT}, … As close to ${T(nT(b[0]))} as we like, but <b>never</b> ${T(nT(b[0]))}. There is no “last” ${T('x')}, so we write ${T('x<' + nT(b[0]))}.`,
+      { cap: `Walk toward the hole: ${walkT} As close to ${T(nT(b[0]))} as we like, but <b>never</b> ${T(nT(b[0]))}. There is no “last” ${T('x')}, so we write ${T('x<' + nT(b[0]))}.`,
         run: async (c) => {
           walker = G.point(d.zoom[0] + 0.05, yAt(d.zoom[0] + 0.05), { color: 'red', r: 7, label: T('x=' + nT(d.zoom[0] + 0.05)), pos: 'se' });
           await pop(c, walker, 300);
@@ -552,7 +552,7 @@ function mountWarm() {
   const G = new Graph(tr, { width: 500, height: 330, xmin: 0, xmax: 800, ymin: -14, ymax: 46, xstep: 100, ystep: 10, xlabels: 200, ylabels: 10, xtitle: 'd', ytitle: 'h', fontSize: 17 });
   const [ux0, uy0] = G.toPx(0, 0), [ux1, uy1] = G.toPx(800, -14);
   svgEl('rect', { x: ux0, y: uy0, width: ux1 - ux0, height: uy1 - uy0, fill: '#966e46', 'fill-opacity': 0.18 }, G.layers.bg);
-  G.label(560, -8, '<i>underground</i>', { cls: 'u5l4-under' });
+  G.label(660, -8, '<i>underground</i>', { cls: 'u5l4-under' });
   const bz = (p0, p1, p2, p3, n = 30) => { const o = []; for (let i = 1; i <= n; i++) { const t = i / n, m = 1 - t; o.push([0, 1].map((j) => m * m * m * p0[j] + 3 * m * m * t * p1[j] + 3 * m * t * t * p2[j] + t * t * t * p3[j])); } return o; };
   const trk = [[0, 5], [60, 5]];
   [[[60, 5], [105, 5], [105, 40], [150, 40]], [[150, 40], [205, 40], [205, -6], [260, -6]], [[260, -6], [320, -6], [320, 25], [380, 25]], [[380, 25], [425, 25], [425, 8], [470, 8]],
@@ -564,7 +564,7 @@ function mountWarm() {
   const act = async (k) => {
     if (done[k]) return; done[k] = true; const c = liveCtx();
     if (k === 'ext') { await G.reveal(G.point(150, 40, { color: 'purple', label: 'highest 40 m', pos: 'e' }), c); await G.reveal(G.point(260, -6, { color: 'purple', label: 'lowest −6 m', pos: 'sw' }), c); }
-    if (k === 'x') { await G.drawIn(G.shadeX(0, 800, { band: true }), 900, c); G.label(400, -14, '<b>0 to 800 m</b>', { pos: 'n', cls: 'bk-ptlab u5l4-dlab' }); }
+    if (k === 'x') { await G.drawIn(G.shadeX(0, 800, { band: true }), 900, c); G.label(330, -14, '<b>0 to 800 m</b>', { pos: 'n', cls: 'bk-ptlab u5l4-dlab' }); }
     if (k === 'y') { if (!done.ext) await act('ext'); await G.drawIn(G.shadeY(-6, 40, { band: true }), 900, c); }
   };
   document.querySelectorAll('[data-track]').forEach((b) => b.addEventListener('click', () => act(b.dataset.track)));

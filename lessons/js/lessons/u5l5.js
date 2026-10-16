@@ -488,17 +488,17 @@ const inside = {
         run: async (c) => { await K.set(c, ['2nd', 'GRAPH', '5', '0', '0', 'ENTER']); L.html(tableHTML([[500, f(500)]], { bottom: 'Y1=366', hl: 0 }), 'u5l5-tbl'); await line(c, P, 'The table works for <b>any</b> input.'); } },
       { cap: `Check: ${T('y=0.75(500)-9=375-9=366')} ✓`, run: async (c) => { await line(c, P, T('0.75(500)-9=366') + ' ✓', 'u5l5-big'); } }
     ];
-    const g = () => 3, it = intersect(f, g, 10);
+    const g = () => 3, it = intersect(f, g, 10); let off;
     return [
       { cap: `${kk('Y=')}: Y2 = 3. ${kk('GRAPH')}: the horizontal line at ${T('y=3')}.`,
         run: async (c) => { await K.set(c, ['Y=', '3', 'GRAPH']); await G.drawIn(G.fn(g, { color: 'red' }), 600, c); } },
       { cap: `They don’t meet on screen: ${T('3=0.75x-9')} gives ${T('x=16')}, past ${T('X_{\\max}=10')}. The cursor <b>stops at the edge</b>, so intersect can’t reach it.`,
         run: async (c) => {
           await K.set(c, ['2nd', 'TRACE', '5', '▶', '▶', '▶']); H.eq('Y2=3'); tr = cursor(G, H, g, 0, 'Guess?'); await tr.glide(c, 10, 1000); await shake(c, H.el);
-          await fadeIn(c, G.label(10, 3, 'they meet out here →', { pos: 'nw', cls: 'u5l5-off', gap: 8 }));
+          off = G.label(10, 3, 'they meet out here →', { pos: 'nw', cls: 'u5l5-off', gap: 8 }); await fadeIn(c, off);
         } },
       { cap: `Widen the window to ${T('x:[-5,\\ 20,\\ 5]')}, ${T('y:[-15,\\ 10,\\ 5]')}: now the crossing is visible.`,
-        run: async (c) => { await K.set(c, ['WINDOW', 'GRAPH']); tr.remove(); H.eq(null); H.bot(null); await G.setWindow(WIDE, c, 1200); } },
+        run: async (c) => { await K.set(c, ['WINDOW', 'GRAPH']); tr.remove(); if (off) off.remove(); H.eq(null); H.bot(null); await G.setWindow(WIDE, c, 1200); } },
       { cap: `<b>5:intersect</b> (First curve?, Second curve?, Guess?) finds <b>(16, 3)</b>: ${T('x=16')} when ${T('y=3')}.`,
         run: async (c) => { await K.set(c, ['2nd', 'TRACE', '5', 'ENTER', 'ENTER', 'ENTER']); await G.reveal(G.point(it.x, it.y, { color: 'ink', r: 7, label: T('(16,\\ 3)'), pos: 'nw' }), c); H.bot('Intersection', it); } },
       { cap: `Check: ${T('3=0.75x-9\\ \\Rightarrow\\ 12=0.75x\\ \\Rightarrow\\ x=16')} ✓`,
