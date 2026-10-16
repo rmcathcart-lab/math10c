@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Real-World Relations · Math 10C 5.6</title>
+<meta name="description" content="Math 10C Unit 5 Lesson 6: exploring real-world relations with a graphing calculator. Linear and quadratic models: choosing a window that fits the situation, intercepts as the start and end of the story, trace for an output, intersect for an input, the vertex with maximum, a landing time with zero, symmetry, and a domain and range that make sense in context. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u5l6.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 5 Relations and Functions · Lesson 6</div>
+  <h1>Exploring Real-World Relations With a Graphing Calculator</h1>
+  <p class="lede">A formula from real life (a kayak losing value, a stunt performer flying through the air) graphs as a <b>line</b> or a <b>parabola</b> that goes on forever. The calculator gives the <b>math answer</b>; the situation decides which part of it <b>makes sense</b>. Today: choose a window that fits, read the intercepts, trace, intersect and the vertex, and trim the domain and range to the story.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>choose a <b>viewing window</b> (<code class="u5l6-m">Xmin</code>, <code class="u5l6-m">Xmax</code>, <code class="u5l6-m">Ymin</code>, <code class="u5l6-m">Ymax</code>) that fits the quantities in a situation</li>
+      <li>find the <b>intercepts</b> of a real-world graph and explain what each one means (usually the <b>start</b> or the <b>end</b> of the story)</li>
+      <li>use <b>trace</b> (or <code class="u5l6-m">1:value</code>) for the output at a given input, and <b>intersect</b> for the input that gives a given output</li>
+      <li>find the <b>vertex</b> of a parabola with <code class="u5l6-m">4:maximum</code>, a landing time with <code class="u5l6-m">2:zero</code>, and use the <b>axis of symmetry</b></li>
+      <li>state a <b>domain and range that make sense in context</b>, and reject math answers that don’t (negative time, negative height)</li>
+    </ul>
+  </div>
+  <div class="outcome"><b>RF1</b> Interpret and explain the relationships among data, graphs and situations.<br><b>RF5</b> Determine the characteristics of the graphs of linear relations, including the intercepts, slope, domain and range.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: Stopping Distance" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Stopping Distance</h2></div>
+  <p class="big">Two cars slam on the brakes at the same line. How far until they stop?</p>
+  <div class="u5l6-road">
+    <svg viewBox="0 0 1000 262" aria-label="A two-lane road seen from above. Both cars brake at the same line. The blue car at 50 km/h skids 15 m. The orange car at 100 km/h stops after an unknown distance. A ruler from 0 to 70 m runs under the road.">
+      <defs>
+        <linearGradient id="u5l6-fade" x1="0" x2="1"><stop offset="0" stop-color="#1e2d46"/><stop offset="1" stop-color="#5f646e"/></linearGradient>
+        <g id="u5l6-car">
+          <rect x="-79" y="-36" width="17" height="7" fill="#1e2d46"/><rect x="-35" y="-36" width="17" height="7" fill="#1e2d46"/>
+          <rect x="-79" y="29" width="17" height="7" fill="#1e2d46"/><rect x="-35" y="29" width="17" height="7" fill="#1e2d46"/>
+          <rect x="-94" y="-31" width="94" height="62" rx="12" fill="currentColor" stroke="#1e2d46" stroke-width="2.5"/>
+          <rect x="-36" y="-24" width="16" height="48" rx="4" fill="#c9d2e0"/>
+          <rect x="-85" y="-22" width="12" height="44" rx="3" fill="#c9d2e0"/>
+          <circle cx="-6" cy="-16" r="5" fill="#ffecb3"/><circle cx="-6" cy="16" r="5" fill="#ffecb3"/>
+        </g>
+      </defs>
+      <rect x="0" y="34" width="1000" height="170" fill="#5f646e"/>
+      <path d="M0 119H1000" stroke="#fff" stroke-width="3" stroke-dasharray="18 15"/>
+      <path d="M0 35H1000M0 203H1000" stroke="#fff" stroke-width="3"/>
+      <!-- top lane: 50 km/h, skid marks 15 m (to scale: 12.6 px per metre from x = 80) -->
+      <path d="M80 62H269M80 92H269" stroke="#1e2d46" stroke-width="7" stroke-linecap="round"/>
+      <use href="#u5l6-car" x="269" y="77" style="color:#2878c8"/>
+      <text x="300" y="86" class="u5l6-rt">50 km/h</text>
+      <!-- bottom lane: 100 km/h -->
+      <g id="u5l6-skidB" style="opacity:0"><path d="M80 146H836M80 176H836" stroke="url(#u5l6-fade)" stroke-width="7" stroke-linecap="round"/></g>
+      <g id="u5l6-carB" class="u5l6-carB"><use href="#u5l6-car" x="80" y="161" style="color:#e6781e"/></g>
+      <text x="300" y="170" class="u5l6-rt">100 km/h <tspan dx="14">stops after</tspan> <tspan id="u5l6-q" class="u5l6-rq">?</tspan> m</text>
+      <!-- braking line -->
+      <path d="M80 35V203" stroke="#ffecb3" stroke-width="6"/>
+      <text x="80" y="26" text-anchor="middle" class="u5l6-rb">brakes on</text>
+      <!-- ruler: 0 to 70 m -->
+      <g stroke="#1e2d46" stroke-width="2">
+        <path d="M80 204v12M206 204v12M332 204v12M458 204v12M584 204v12M710 204v12M836 204v12M962 204v12"/>
+        <path d="M143 204v7M269 204v7M395 204v7M521 204v7M647 204v7M773 204v7M899 204v7" stroke-width="1.4"/>
+      </g>
+      <g class="u5l6-rn" text-anchor="middle">
+        <text x="80" y="240">0</text><text x="206" y="240">10</text><text x="332" y="240">20</text><text x="458" y="240">30</text>
+        <text x="584" y="240">40</text><text x="710" y="240">50</text><text x="836" y="240">60</text><text x="962" y="240">70</text>
+      </g>
+      <text x="985" y="240" class="u5l6-rn">m</text>
+    </svg>
+  </div>
+  <div class="u5l6-model">Braking-distance model (dry road): <span class="tex">\boldsymbol{d=0.006\,v^{2}}</span> <span class="muted">&nbsp;<span class="tex">d</span> in metres, <span class="tex">v</span> in km/h</span></div>
+
+  <div class="u5l6-wgrid">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Use the model: how far does the <b>50 km/h</b> car skid? Check the ruler.</div></div>
+      <button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">d=0.006(50)^2=0.006(2500)=15</span> m. Yes: the skid marks end at 15 m on the ruler.</div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>How far does a car skid from <b>30 km/h</b> (a school zone)?</div></div>
+      <button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">d=0.006(30)^2=0.006(900)=5.4</span> m.</div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Graphing <span class="tex">d=0.006v^2</span> on a graphing calculator, should <code class="u5l6-m">Xmin</code> be negative? Why?</div></div>
+      <button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>No.</b> A speed can’t be negative, so <code class="u5l6-m">Xmin=0</code>. A sensible window: <span class="tex">x{:}\,[0,\,120,\,10]</span>, <span class="tex">y{:}\,[0,\,100,\,10]</span>.</div></div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> The orange car goes <b>twice as fast</b>. About how far does it skid before it stops? <b>Guess first.</b></div></div>
+    <div class="poll-opts c4">
+      <div class="opt"><b>A</b> about 30 m</div>
+      <div class="opt"><b>B</b> about 40 m</div>
+      <div class="opt right"><b>C</b> about 60 m</div>
+      <div class="opt"><b>D</b> about 100 m</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal id="u5l6-pollbtn">Reveal</button>
+    <div class="poll-ans"><b>C: about 60 m.</b> <span class="tex">d=0.006(100)^2=0.006(10\,000)=60</span> m, which is <b>4 times</b> the 15 m at 50 km/h. Why: the speed is <b>squared</b>. Doubling <span class="tex">v</span> multiplies <span class="tex">v^2</span> by <span class="tex">2^2=4</span>.<br>
+      <span class="muted"><b>A</b> (30 m) is the “double the speed, double the distance” trap: it treats the relation as a straight line. <b>B</b> is a “bit more than double” hedge. <b>D</b> overshoots, usually from “100 km/h means 100 m”.</span><br>
+      <span class="muted">A simplified dry-road model: real braking distances depend on the car, tires and road, but they do grow roughly with the square of the speed. Total stopping distance also adds the reaction distance before the brakes go on.</span></div>
+  </div>
+
+  <div class="explainer" data-explainer="braking"></div>
+
+  <div class="bk-wq" style="margin-top:14px">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> What speed gives a braking distance of <b>24 m</b>?</div></div>
+    <button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">0.006v^2=24\Rightarrow v^2=4000\Rightarrow v\approx63</span> km/h.</div>
+  </div>
+  <p class="u5l6-social">Hands up for A, B, C or D. Then find someone who voted differently and convince them.</p>
+</section>
+
+<!-- ================= 1. Setting a useful window ================= -->
+<section class="card" data-ink="s1" data-section="1. Setting a Useful Window">
+  <div class="sec-h"><span class="badge">1</span><h2>Setting a Useful Window</h2></div>
+  <div class="u5l6-gcnote">
+    <div class="u5l6-gcic"><svg viewBox="0 0 32 44"><rect x="3" y="2" width="26" height="40" rx="5"/><rect x="7" y="6" width="18" height="13" rx="1.5" class="scr"/><path d="M9 16q4-9 7-2t7-5" class="cv"/><path d="M8 25h4M14 25h4M20 25h4M8 30h4M14 30h4M20 30h4M8 35h4M14 35h4M20 35h4"/></svg></div>
+    <div><b>Today’s keystrokes are for the graphing calculator (TI-83/84).</b> The keys look like <kbd class="u5l6-k t">Y=</kbd> <kbd class="u5l6-k t">WINDOW</kbd> <kbd class="u5l6-k s">2ND</kbd> <kbd class="u5l6-k t">TRACE</kbd>, and the screens on this page are drawn like its screen. Your TI-30XIIS can’t graph, but it can still <b>check</b> any answer by substitution (the grey “Show me” tips).</div>
+  </div>
+  <p>The <b>viewing window</b> is the visible span along each axis, set by <code class="u5l6-m">Xmin</code>, <code class="u5l6-m">Xmax</code>, <code class="u5l6-m">Ymin</code> and <code class="u5l6-m">Ymax</code>. Adjust it until the part of the graph that matters for the situation is on screen. A <code class="u5l6-m">ZoomFit</code>-style feature (<kbd class="u5l6-k t">ZOOM</kbd> <kbd class="u5l6-k n">0</kbd>) can suggest a starting window, but nudge it so the bounds suit the quantities involved: if the input is time in seconds, a negative <code class="u5l6-m">Xmin</code> rarely makes sense.</p>
+  <div class="def">A window is written <span class="tex">x{:}\,[\text{Xmin},\,\text{Xmax},\,\text{Xscl}]</span>, <span class="tex">y{:}\,[\text{Ymin},\,\text{Ymax},\,\text{Yscl}]</span>; <code class="u5l6-m">Xscl</code> and <code class="u5l6-m">Yscl</code> are the spacing of the tick marks. In context, start each axis at <b>0</b> unless the quantity can really be negative, and stop a little past the biggest value that matters.</div>
+  <div class="tip u5l6-gtip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="1.5" width="14" height="21" rx="2.5"/><rect x="7.5" y="4" width="9" height="6" rx="1"/><path d="M8.5 9q2-4 3.5-1t3.5-2"/></svg></div>
+    <div><b>Graphing calculator.</b> <kbd class="u5l6-k t">Y=</kbd> type the rule (the input is always <code class="u5l6-m">X</code>) · <kbd class="u5l6-k t">ZOOM</kbd> <kbd class="u5l6-k n">6</kbd> standard window <span class="tex">x{:}\,[-10,10,1]</span>, <span class="tex">y{:}\,[-10,10,1]</span> · <kbd class="u5l6-k t">ZOOM</kbd> <kbd class="u5l6-k n">0</kbd> ZoomFit · <kbd class="u5l6-k t">WINDOW</kbd> type your own values, then <kbd class="u5l6-k t">GRAPH</kbd>.</div>
+  </div>
+  <div class="explainer" data-explainer="window"></div>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. Intercepts in context">
+  <h3 class="sub">Intercepts: the start and the end of the story</h3>
+  <p>Locate the <b>intercepts</b>, where the graph crosses each axis, right away. For a relation with input <span class="tex">t</span> and output <span class="tex">y</span>, the <b><span class="tex">t</span>-intercept</b> occurs where <span class="tex">y=0</span> and the <b><span class="tex">y</span>-intercept</b> occurs where <span class="tex">t=0</span>. In context these are renamed to match the variables in the problem (a <span class="tex">V</span>-intercept, an <span class="tex">h</span>-intercept), and each usually represents the <b>starting point</b> or the <b>ending point</b> of the scenario.</p>
+  <div class="u5l6-sbs">
+    <div><div class="u5l6-sbh">On the output axis</div>the <b>input is 0</b>: substitute <span class="tex">t=0</span><div class="muted">usually the <b>start</b>: the value when new, the launch height</div></div>
+    <div><div class="u5l6-sbh">On the input axis</div>the <b>output is 0</b>: substitute <span class="tex">V=0</span> and solve<div class="muted">often the <b>end</b>: worth $0, landing on the ground</div></div>
+  </div>
+  <div class="explainer" data-explainer="intercepts"></div>
+</section>
+
+<section class="card" data-ink="s1c" data-section="1. Trace and intersect">
+  <h3 class="sub">Given the input, or given the output?</h3>
+  <p>The calculator tools are the ones from Lesson 5. <b>Trace</b> (or <code class="u5l6-m">1:value</code>, or the table) reads the <b>output at a given input</b>. Use <b>intersect</b> (with <span class="tex">Y_2</span> set to the target value) for a <b>given output</b>: it answers “<b>when</b> does the quantity reach this value?”</p>
+  <div class="u5l6-sbs">
+    <div><div class="u5l6-sbh">Forwards: input → output</div><kbd class="u5l6-k t">TRACE</kbd>, type the input, <kbd class="u5l6-k">ENTER</kbd><div class="muted">or <kbd class="u5l6-k s">2ND</kbd> <kbd class="u5l6-k t">TRACE</kbd> <code class="u5l6-m">1:value</code></div></div>
+    <div><div class="u5l6-sbh">Backwards: output → input</div><kbd class="u5l6-k t">Y=</kbd> <span class="tex">Y_2=</span> the target, then <kbd class="u5l6-k s">2ND</kbd> <kbd class="u5l6-k t">TRACE</kbd> <code class="u5l6-m">5:intersect</code><div class="muted"><code class="u5l6-m">First curve?</code> <kbd class="u5l6-k">ENTER</kbd> <code class="u5l6-m">Second curve?</code> <kbd class="u5l6-k">ENTER</kbd> <code class="u5l6-m">Guess?</code> <kbd class="u5l6-k">ENTER</kbd></div></div>
+  </div>
+  <div class="explainer" data-explainer="traceInt"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>No graphing calculator? Check by substituting (TI-30XIIS).</b> The kayak after 4 years: <span class="keys"><kbd>3</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>−</kbd><kbd>2</kbd><kbd>0</kbd><kbd>0</kbd><kbd>×</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> gives 2200. Check the intersect answer the same way: <span class="tex">t=7.5</span> should give 1500.</div>
+    <div class="pill-col"><button class="pill" data-keys="3000 − 200 × 4 =">Show t = 4</button><button class="pill" data-keys="3000 − 200 × 7.5 =">Show t = 7.5</button></div>
+  </div>
+</section>
+
+<section class="card" data-ink="s1d" data-section="1. Domain and range in context">
+  <h3 class="sub">The math answer vs the answer that makes sense</h3>
+  <p>An equation doesn’t know what it describes. <span class="tex">V=3000-200t</span> graphs as a whole line, for every real <span class="tex">t</span>: that is the <b>math answer</b>. The situation only uses a piece of it, from the <b>start</b> of the story to its <b>end</b>. That piece decides a <b>domain and range that make sense</b>.</p>
+  <div class="u5l6-mvc">
+    <div class="u5l6-mvch">Math answer</div><div class="u5l6-mvch ok">Makes sense in context</div>
+    <div>the whole line: <span class="tex">t</span> can be any real number, even <span class="tex">-3</span> or <span class="tex">40</span></div>
+    <div>only from <b>purchase</b> (<span class="tex">t=0</span>) to <b>worth $0</b> (<span class="tex">t=15</span>): no negative ages, no negative values</div>
+  </div>
+  <div class="explainer" data-explainer="context"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Dots or a line?</b> Age and value change <b>continuously</b> (any decimal makes sense), so the graph is a solid segment and we write <span class="tex">t\in\mathbb{R}</span>. If the input could only be whole numbers (jerseys, tickets), the graph would be <b>separate dots</b>.</div></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>A depreciating value: intercepts, trace and intersect</h3></div>
+  <p class="q">An outfitter purchases a new kayak for $3000. The value of the kayak depreciates according to the formula <span class="tex">V=3000-200t</span>, where <span class="tex">V</span> is the value of the kayak in dollars and <span class="tex">t</span> is its age in years.</p>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(a) Graph <span class="tex">V=3000-200t</span> using a graphing calculator. State a window setting appropriate for this scenario, and sketch the graph on the grid below.</div>
+      <div class="u5l6-win"><span><code class="u5l6-m">Xmin=</code><i class="u5l6-bl"></i></span><span><code class="u5l6-m">Xmax=</code><i class="u5l6-bl"></i></span><span><code class="u5l6-m">Ymin=</code><i class="u5l6-bl"></i></span><span><code class="u5l6-m">Ymax=</code><i class="u5l6-bl"></i></span></div>
+      <div class="u5l6-gridrow"><div class="u5l6-grid" id="ex1-grid"></div><div class="work" style="--h:340px"></div></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div class="u5l6-ansrow"><div><span class="tex">t</span> is an age in years and <span class="tex">V</span> a value in dollars, so both are non-negative, and the value never exceeds the $3000 purchase price:<br><b><code class="u5l6-m">Xmin=0</code>, <code class="u5l6-m">Xmax=16</code>, <code class="u5l6-m">Ymin=0</code>, <code class="u5l6-m">Ymax=3200</code></b><br><span class="u5l6-small">(windows may vary: anything that shows both intercepts and no negatives works)</span></div><div class="u5l6-fig" id="ex1a-fig"></div></div></div></div></div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(b) Determine the <span class="tex">t</span>-intercept of the graph, and describe what it represents in the context of this scenario.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The <span class="tex">t</span>-intercept occurs where <span class="tex">V=0</span>:<br><span class="tex">0=3000-200t\Rightarrow 200t=3000\Rightarrow t=15</span><br>The <span class="tex">t</span>-intercept is <span class="tex">\boldsymbol{(15,\ 0)}</span>: after 15 years this model predicts the kayak has depreciated to a value of $0.</div></div></div>
+    <div class="part"><div class="pl">(c) Determine the <span class="tex">V</span>-intercept of the graph, and describe what it represents in the context of this scenario.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The <span class="tex">V</span>-intercept occurs where <span class="tex">t=0</span>:<br><span class="tex">V=3000-200(0)=3000</span><br>The <span class="tex">V</span>-intercept is <span class="tex">\boldsymbol{(0,\ 3000)}</span>: the kayak’s original purchase price was $3000.</div></div></div>
+    <div class="part"><div class="pl">(d) Use the trace feature (or direct substitution) to determine the value of the kayak after 4 years.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Trace to <span class="tex">t=4</span> (or substitute):<br><span class="tex">V=3000-200(4)=3000-800=\boldsymbol{\$2200}</span></div></div></div>
+    <div class="part"><div class="pl">(e) Use the intersect feature (or algebra) to determine after how many years the kayak will be worth half of its original price.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Half the original price is <span class="tex">3000\div2=1500</span>. With <span class="tex">Y_2=1500</span>, <code class="u5l6-m">5:intersect</code> gives <span class="tex">(7.5,\ 1500)</span>.<br>Algebraically: <span class="tex">1500=3000-200t\Rightarrow 200t=1500\Rightarrow t=\boldsymbol{7.5}</span> years.</div></div></div>
+  </div>
+  <div class="parts c2">
+    <div class="part u5l6-s2"><div class="pl">(f) State an appropriate domain and range for this relation.</div><div class="work" style="--h:130px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The model is meaningful from the purchase date, <span class="tex">t=0</span>, until the value reaches $0 at <span class="tex">t=15</span>, and both quantities vary continuously:<br><span class="tex">D=\{t\mid 0\le t\le15,\ t\in\mathbb{R}\}</span>, &nbsp;&nbsp; <span class="tex">R=\{V\mid 0\le V\le3000,\ V\in\mathbb{R}\}</span></div></div></div>
+    <div class="part think u5l6-s2"><div class="pl"><span class="think-tag">Think</span> The equation gives <span class="tex">V=3000-200(17)=-400</span>. What does that tell you about the kayak?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Nothing real: a kayak can’t be worth <span class="tex">-\$400</span>. It’s a <b>math answer</b> from a part of the line the situation doesn’t use. The model stops making sense at <span class="tex">t=15</span>, which is why the domain stops there.</div></div></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<!-- ================= 2. Quadratic relations ================= -->
+<section class="card" data-ink="s2" data-section="2. Quadratic Relations">
+  <div class="sec-h"><span class="badge">2</span><h2>Quadratic Relations: Vertex, Maximum, and Symmetry</h2></div>
+  <p>Many real quantities (the height of a thrown or launched object, for example) change according to a <b>quadratic</b> relation, whose graph is a <b>parabola</b>. A parabola has a single turning point, the <b>vertex</b>, which is either the highest point (a <b>maximum</b>) or the lowest point (a <b>minimum</b>) on the graph.</p>
+  <div class="def">The parabola is symmetric about a vertical line through the vertex, the <b>axis of symmetry</b>. That’s why two different inputs on either side of the vertex produce the <b>same output</b>.</div>
+  <div class="explainer" data-explainer="symmetry"></div>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. Maximum and zero on the calculator">
+  <h3 class="sub">On the graphing calculator: maximum and zero</h3>
+  <p>The intercepts, a value found by trace, and an appropriate domain and range are all still meaningful. The vertex, located with <code class="u5l6-m">4:maximum</code> or <code class="u5l6-m">3:minimum</code> exactly as in Lesson 5, Section 9, now answers a question of its own, such as “what is the greatest height reached?” A landing time is an <span class="tex">x</span>-intercept: use <code class="u5l6-m">2:zero</code>.</p>
+  <div class="tip u5l6-gtip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="1.5" width="14" height="21" rx="2.5"/><rect x="7.5" y="4" width="9" height="6" rx="1"/><path d="M8.5 9q2-4 3.5-1t3.5-2"/></svg></div>
+    <div><b>Graphing calculator.</b> <kbd class="u5l6-k s">2ND</kbd> <kbd class="u5l6-k t">TRACE</kbd> opens <code class="u5l6-m">CALC</code>. Choose <code class="u5l6-m">4:maximum</code> (or <code class="u5l6-m">2:zero</code>), then answer three questions: <code class="u5l6-m">Left Bound?</code> move left of the point, <kbd class="u5l6-k">ENTER</kbd> · <code class="u5l6-m">Right Bound?</code> move right of it, <kbd class="u5l6-k">ENTER</kbd> · <code class="u5l6-m">Guess?</code> <kbd class="u5l6-k">ENTER</kbd>.</div>
+  </div>
+  <div class="explainer" data-explainer="calcMax"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>The calculator doesn’t know the story.</b> <span class="tex">8+10t-t^2=0</span> has <b>two</b> solutions, <span class="tex">t\approx-0.74</span> and <span class="tex">t\approx10.74</span>. Only the second makes sense: <span class="tex">t\approx-0.74</span> is before Blaze was launched. Always ask “does this answer fit the situation?”</div></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check the vertex (TI-30XIIS).</b> <span class="keys"><kbd>8</kbd><kbd>+</kbd><kbd>1</kbd><kbd>0</kbd><kbd>×</kbd><kbd>5</kbd><kbd>−</kbd><kbd>5</kbd><kbd>x²</kbd><kbd>ENTER</kbd></span> gives 33. At the landing time, <span class="tex">h(10.74)</span> should be very close to 0.</div>
+    <div class="pill-col"><button class="pill" data-keys="8 + 10 × 5 − 5 x² =">Show h(5)</button><button class="pill" data-keys="8 + 10 × 10.74 − 10.74 x² =">Show h(10.74)</button></div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>A launched stunt performer: vertex, landing time and symmetry</h3></div>
+  <p class="q">A stunt performer named Blaze is launched from a spring-loaded platform on top of a tower. Blaze’s height above the ground, in metres, can be modelled by <span class="tex">h=8+10t-t^2</span>, where <span class="tex">t</span> is the time in seconds after launch. Blaze lands in an airbag whose top surface is level with the ground.</p>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(a) Graph <span class="tex">h=8+10t-t^2</span> using a graphing calculator. State a window setting appropriate for this scenario, and sketch the graph on the grid below.</div>
+      <div class="u5l6-win"><span><code class="u5l6-m">Xmin=</code><i class="u5l6-bl"></i></span><span><code class="u5l6-m">Xmax=</code><i class="u5l6-bl"></i></span><span><code class="u5l6-m">Ymin=</code><i class="u5l6-bl"></i></span><span><code class="u5l6-m">Ymax=</code><i class="u5l6-bl"></i></span></div>
+      <div class="u5l6-gridrow"><div class="u5l6-grid" id="ex2-grid"></div><div class="work" style="--h:340px"></div></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div class="u5l6-ansrow"><div>Time and height are both non-negative, and the graph only matters until Blaze lands:<br><b><code class="u5l6-m">Xmin=0</code>, <code class="u5l6-m">Xmax=11</code>, <code class="u5l6-m">Ymin=0</code>, <code class="u5l6-m">Ymax=35</code></b><br><span class="u5l6-small">(windows may vary)</span></div><div class="u5l6-fig" id="ex2a-fig"></div></div></div></div></div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(b) What is the height of the platform above the ground?</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The platform height is the height at <span class="tex">t=0</span> (the <span class="tex">h</span>-intercept):<br><span class="tex">h=8+10(0)-(0)^2=\boldsymbol{8}</span> m.</div></div></div>
+    <div class="part"><div class="pl">(c) What is the maximum height Blaze reaches above the ground, and how many seconds after launch does this occur?</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><code class="u5l6-m">4:maximum</code> (<kbd class="u5l6-k s">2ND</kbd> <kbd class="u5l6-k t">TRACE</kbd>), with bounds on either side of the top, gives <span class="tex">t\approx5</span>, <span class="tex">h=33</span>.<br>Check: <span class="tex">h(5)=8+10(5)-5^2=8+50-25=33</span> ✓<br>Maximum height <b>33 m</b>, reached <b>5 s</b> after launch.</div></div></div>
+    <div class="part"><div class="pl">(d) To the nearest hundredth of a second, how long does it take Blaze to land in the airbag?</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Blaze lands when <span class="tex">h=0</span>: the <span class="tex">t</span>-intercept. <code class="u5l6-m">2:zero</code>, with bounds on either side of the <b>right-hand</b> crossing, gives <span class="tex">t\approx10.7446</span>, so <span class="tex">t\approx\boldsymbol{10.74}</span> s.<br>Check: <span class="tex">h(10.74)=8+107.4-115.35\approx0.05\approx0</span> ✓<br><span class="u5l6-small">(The other zero, <span class="tex">t\approx-0.74</span>, is before launch: rejected.)</span></div></div></div>
+    <div class="part"><div class="pl">(e) How high above the ground is Blaze 2 seconds after launch? At what other time is Blaze at this same height again?</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">At <span class="tex">t=2</span>: <span class="tex">h=8+20-4=\boldsymbol{24}</span> m.<br>Solve <span class="tex">8+10t-t^2=24</span>: <span class="tex">t^2-10t+16=0\Rightarrow(t-2)(t-8)=0</span>, so <span class="tex">t=2</span> or <span class="tex">t=8</span>.<br>Blaze is back at 24 m at <b><span class="tex">t=8</span> s</b>: the two times are symmetric about the vertex at <span class="tex">t=5</span>.</div></div></div>
+  </div>
+  <div class="parts c2">
+    <div class="part u5l6-s2"><div class="pl">(f) State an appropriate domain and range for this relation.</div><div class="work" style="--h:130px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Using the landing time from (d), with time and height both continuous:<br><span class="tex">D=\{t\mid 0\le t\le10.74,\ t\in\mathbb{R}\}</span>, &nbsp;&nbsp; <span class="tex">R=\{h\mid 0\le h\le33,\ h\in\mathbb{R}\}</span></div></div></div>
+    <div class="part think u5l6-s2"><div class="pl"><span class="think-tag">Think</span> Blaze starts at 8 m. Why does the range start at 0 and not at 8?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The range is every height Blaze <b>actually reaches</b>, lowest to highest. After the top (33 m), Blaze falls past the platform height all the way down to the airbag at ground level, 0 m. The starting value isn’t the smallest value.</div></div></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2c" data-section="2. Which tool?">
+  <h3 class="sub">Which calculator tool answers the question?</h3>
+  <p>Read what the question <b>gives</b> and what it <b>asks for</b>. An input given means trace or value; an output given means intersect; “zero”, “lands” or “worth $0” means zero; “greatest” or “least” means maximum or minimum.</p>
+  <div class="explainer" data-explainer="whichTool"></div>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>A window that fits:</b> no negative time or height unless it’s real, and stop just past the biggest value that matters. <code class="u5l6-m">ZoomFit</code> is a start; then nudge. Kayak: <span class="tex">x{:}\,[0,16]</span>, <span class="tex">y{:}\,[0,3200]</span>.</div>
+    <div><b>Intercepts tell the story:</b> set the other variable to 0. <span class="tex">V</span>-intercept <span class="tex">(0,\ 3000)</span>, the purchase price (start); <span class="tex">t</span>-intercept <span class="tex">(15,\ 0)</span>, worth $0 (end). A landing time is a zero.</div>
+    <div><b>Pick the tool:</b> given an input → <code class="u5l6-m">TRACE</code> / <code class="u5l6-m">1:value</code>; given an output → <span class="tex">Y_2</span> + <code class="u5l6-m">5:intersect</code>; output 0 → <code class="u5l6-m">2:zero</code>; highest → <code class="u5l6-m">4:maximum</code>. A parabola is symmetric about its vertex: <span class="tex">h(2)=h(8)=24</span>.</div>
+    <div><b>Math answer vs makes sense:</b> the equation goes on forever; keep the piece the situation uses. <span class="tex">D=\{t\mid 0\le t\le10.74,\ t\in\mathbb{R}\}</span>, <span class="tex">R=\{h\mid 0\le h\le33,\ h\in\mathbb{R}\}</span>, lowest to highest output. Reject <span class="tex">t\approx-0.74</span>.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u5l6" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 6 — Exploring Real-World Relations With a Graphing Calculator</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l7a/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 7A — What Is a Function?</b><div class="muted">Each speed gives exactly <b>one</b> braking distance: the function test in every representation, and the vertical line test</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u5l6.js';
+  boot({ key: 'u5l6', homeHref: '../../', title: '5.6 Real-World Relations' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

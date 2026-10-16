@@ -1,0 +1,131 @@
+/* Math 10C · Unit 5 · Lesson 10 — Relations and Functions Review. Lesson-only styles (prefix u5l10-).
+ * Colour code for the whole page: x-axis things (inputs, domain, x-intercepts) amber; y-axis things (outputs, range,
+ * y-intercepts) purple. */
+
+.u5l10-outs { display: grid; gap: 6px; }
+.u5l10-outs .outcome { margin: 0; }
+.u5l10-am { color: var(--amber); }
+.u5l10-pu { color: #7b4fc4; }
+.u5l10-defpu { background: #f2edfb; border-left-color: #7b4fc4; }
+.u5l10-gap { margin-top: 22px; }
+
+/* ---------- warm-up: the poster and the four suspects ---------- */
+.u5l10-wtop { display: grid; grid-template-columns: 300px 1fr; gap: 18px; align-items: start; margin: 4px 0 16px; }
+.u5l10-poster { position: relative; background: #ffecb3; border: 2.5px solid #c88c14; box-shadow: 4px 5px 0 #c9b08a; padding: 16px 18px 14px; transform: rotate(-1deg); }
+.u5l10-pin { position: absolute; top: 8px; width: 11px; height: 11px; border-radius: 50%; background: #4a5568; }
+.u5l10-pin.l { left: 9px; } .u5l10-pin.r { right: 9px; }
+.u5l10-wanted { font: 900 46px/1 var(--round); letter-spacing: .04em; color: #d23c32; text-align: center; }
+.u5l10-one { font: 800 22px var(--round); text-align: center; margin: 2px 0 8px; border-bottom: 2px solid #c88c14; padding-bottom: 8px; }
+.u5l10-clues { margin: 0; padding-left: 20px; font-size: 19px; line-height: 1.35; }
+.u5l10-clues li { margin: 7px 0; }
+.u5l10-suspects { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.u5l10-sus { position: relative; background: #fff; border: 1.5px solid #c9cfd9; border-radius: 10px; padding: 4px; display: flex; justify-content: center; }
+.u5l10-tagl { position: absolute; top: 6px; right: 8px; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: #ffecb3; border: 2px solid #c88c14; font: 900 20px var(--round); color: var(--ink); }
+.u5l10-wqs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.u5l10-wqs .bk-wq { margin: 0; }
+.poll-opts.u5l10-c4 { grid-template-columns: repeat(4, 1fr); }
+.u5l10-bonus { margin-top: 16px; }
+.u5l10-social { font-style: italic; font-size: 19px; text-align: center; color: var(--muted); margin: 14px 0 0; }
+
+/* ---------- rules at a glance ---------- */
+.u5l10-rules { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.u5l10-rule { background: #f7f6f2; border: 1.5px solid #e4e0d4; border-radius: 14px; padding: 10px 14px 12px; display: flex; flex-direction: column; gap: 6px; }
+.u5l10-rh { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; font-size: 19px; }
+.u5l10-rh small { font: 800 13px var(--round); color: var(--brand2); background: var(--brand-soft); border-radius: 6px; padding: 2px 7px; white-space: nowrap; }
+.u5l10-rfig { display: flex; justify-content: center; gap: 8px; min-height: 120px; }
+.u5l10-rt { font-size: 17px; line-height: 1.38; }
+.u5l10-rt .katex { white-space: nowrap; }
+.u5l10-minicap { font: 700 13px var(--round); color: var(--muted); text-align: center; margin-top: -2px; }
+
+/* ---------- example figures ---------- */
+.u5l10-p4 { grid-template-columns: repeat(4, 1fr); }
+.u5l10-pq { display: flex; justify-content: center; gap: 40px; margin: 4px 0 14px; }
+.u5l10-pq figure { margin: 0; text-align: center; }
+.u5l10-pq figcaption { font-size: 18px; font-weight: 700; margin-top: 2px; }
+.u5l10-ex8 { display: grid; grid-template-columns: 380px 1fr; gap: 18px; align-items: start; }
+.u5l10-stm .bk-opt { font-size: 18px; }
+.u5l10-figmc .bk-opt { justify-content: center; }
+.u5l10-mini { width: 200px; height: 180px; }
+.pl .katex, .q .katex { font-size: 1.06em; }
+.ans .katex { white-space: nowrap; }
+
+/* ---------- explainer pieces ---------- */
+.u5l10-panel { background: #fff; border: 1px solid var(--line2); border-radius: 14px; padding: 10px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 7px; overflow: hidden; }
+.u5l10-ph { font: 800 14px var(--round); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.u5l10-line { font-size: 21px; line-height: 1.35; }
+.u5l10-line.dom { color: var(--amber); } .u5l10-line.ran { color: #7b4fc4; }
+.u5l10-line.sm { font-size: 18px; color: var(--muted); }
+.u5l10-line.big { font-size: 24px; font-weight: 700; }
+.u5l10-line.ok { color: var(--ok); font-weight: 700; } .u5l10-line.bad { color: var(--red); font-weight: 700; }
+.u5l10-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
+.u5l10-col { display: flex; flex-direction: column; gap: 5px; }
+.u5l10-colh { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .05em; border-bottom: 2px solid currentColor; padding-bottom: 3px; margin-bottom: 2px; }
+.u5l10-col.xi { color: var(--amber); } .u5l10-col.yi { color: #7b4fc4; }
+.u5l10-col .u5l10-line { color: var(--ink); font-size: 20px; }
+.u5l10-tag { position: absolute; font: 800 22px var(--round); color: var(--ink); background: #f6f5f1; border-radius: 10px; padding: 6px 14px; white-space: nowrap; }
+.u5l10-tag.sm { font-size: 18px; padding: 4px 12px; }
+
+/* clue checklist (warm-up explainer) */
+.u5l10-crow { display: grid; grid-template-columns: 30px 1fr; gap: 2px 8px; align-items: start; font-size: 18px; padding: 4px 0 6px; border-bottom: 1px dashed #e2ded3; }
+.u5l10-crow .u5l10-mk { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font: 900 17px var(--round); background: #eceae4; color: var(--muted); }
+.u5l10-crow.ok .u5l10-mk { background: var(--ok); color: #fff; }
+.u5l10-crow.no .u5l10-mk { background: var(--red); color: #fff; }
+.u5l10-crow .u5l10-got { grid-column: 2; font-size: 17px; color: var(--muted); min-height: 1.2em; }
+.u5l10-crow.no .u5l10-got { color: var(--red); font-weight: 700; }
+.u5l10-crow.ok .u5l10-got { color: var(--ok); }
+
+/* discrete / continuous */
+.u5l10-var { position: absolute; font: 800 25px var(--round); color: var(--ink); }
+.u5l10-q { position: absolute; font-size: 21px; color: var(--muted); }
+.u5l10-q b { color: var(--ink); }
+.u5l10-probe { position: absolute; font: 800 20px var(--round); padding: 4px 12px; border-radius: 10px; white-space: nowrap; transform: translateX(-50%); }
+.u5l10-probe.no { background: #fdeceb; color: var(--red); border: 2px solid #f2c9c4; }
+.u5l10-probe.yes { background: #e9f6ef; color: var(--ok); border: 2px solid #a9d8bf; }
+.u5l10-gapnote { position: absolute; font: 700 17px var(--round); color: var(--muted); transform: translateX(-50%); white-space: nowrap; }
+
+/* set-builder anatomy */
+.u5l10-anat { display: flex; align-items: flex-start; gap: 4px; margin-top: 4px; }
+.u5l10-ap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.u5l10-apm { font-size: 25px; padding: 2px 6px; border-radius: 8px; background: #f6f5f1; }
+.u5l10-apl { font: 700 14px/1.15 var(--round); color: var(--muted); text-align: center; max-width: 96px; }
+
+/* ordered pair → axes */
+.u5l10-pair { position: absolute; font-size: 54px; }
+.u5l10-role { position: absolute; display: flex; flex-direction: column; gap: 4px; font-size: 19px; border-radius: 12px; padding: 8px 14px; box-sizing: border-box; }
+.u5l10-role.in { background: #fff4dd; border: 2px solid #ebc77d; }
+.u5l10-role.out { background: #f2edfb; border: 2px solid #c9b3ea; }
+.u5l10-role b { font-size: 20px; }
+.u5l10-stmt { position: absolute; display: grid; grid-template-columns: 1fr 120px; align-items: center; gap: 10px; font-size: 19px; background: #fbfaf6; border: 1.5px solid #e6e1d4; border-radius: 12px; padding: 8px 14px; box-sizing: border-box; }
+.u5l10-stmt.bad { border-color: #f2c9c4; background: #fff8f7; }
+.u5l10-stmt .u5l10-fix { grid-column: 1 / -1; color: var(--red); font-weight: 700; font-size: 18px; }
+.u5l10-stmt .bk-stamp { justify-self: center; }
+
+/* function machine */
+.u5l10-mach { position: absolute; background: linear-gradient(#2d6f6a, #13504c); color: #fff; border-radius: 16px; display: grid; place-items: center; box-shadow: 0 5px 0 #0c3532; font-size: 24px; }
+.u5l10-mach .u5l10-mlab { font: 800 13px var(--round); letter-spacing: .08em; text-transform: uppercase; opacity: .8; }
+.u5l10-mach .katex { color: #fff; }
+.u5l10-chute { position: absolute; background: #dfe7e6; border: 2px solid #9bb8b5; border-radius: 6px; }
+.u5l10-tok { position: absolute; min-width: 54px; height: 46px; padding: 0 10px; box-sizing: border-box; border-radius: 23px; display: grid; place-items: center; font-size: 23px; font-weight: 700; }
+.u5l10-tok.in { background: #fff4dd; border: 2.5px solid var(--amber); }
+.u5l10-tok.out { background: #f2edfb; border: 2.5px solid #7b4fc4; }
+.u5l10-evals { position: absolute; display: flex; flex-direction: column; gap: 3px; font-size: 20px; }
+
+/* forwards / backwards chain */
+.u5l10-cbox { position: absolute; width: 96px; height: 58px; border-radius: 12px; display: grid; place-items: center; font-size: 24px; font-weight: 700; box-sizing: border-box; background: #fff; border: 2px solid #c9cfd9; }
+.u5l10-cbox.in { border-color: #ebc77d; background: #fffaf0; }
+.u5l10-cbox.out { border-color: #c9b3ea; background: #faf7fe; }
+.u5l10-cop { position: absolute; width: 72px; height: 50px; border-radius: 25px; display: grid; place-items: center; font: 800 22px var(--round); color: #fff; background: var(--brand2); }
+.u5l10-cop.back { background: #c93a33; }
+.u5l10-carr { position: absolute; font: 800 26px var(--round); color: #8b909b; }
+.u5l10-crowlab { position: absolute; font: 800 14px var(--round); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+
+/* ---------- review grid ("Up next: Unit 5 test") ---------- */
+.u5l10-review { margin-top: 16px; border: 2px dashed #cfc7b5; border-radius: 14px; padding: 12px 16px 14px; }
+.u5l10-review-h { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; margin-bottom: 10px; font-size: 19px; }
+.u5l10-review-h .muted { font-size: 16px; }
+.u5l10-review-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.u5l10-review-grid a { display: block; text-decoration: none; color: var(--ink); background: #f6f5f1; border-radius: 10px; padding: 8px 12px; font-size: 16px; font-weight: 600; line-height: 1.3; }
+.u5l10-rn { display: block; font-weight: 800; color: var(--brand2); font-size: 14px; }
+.u5l10-review-grid small { display: block; color: var(--muted); font-weight: 500; font-size: 13px; }
+.u5l10-test { display: block; background: #fff8e6; border: 1.5px solid #e9cf8f; border-radius: 10px; padding: 8px 12px; font-size: 16px; font-weight: 600; line-height: 1.3; }
+.u5l10-test .u5l10-rn { color: var(--amber); }

@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Cartesian Plane · Math 10C 5.1</title>
+<meta name="description" content="Math 10C Unit 5 Lesson 1: the Cartesian plane, growing patterns and types of variables. Plotting and naming points, the four quadrants, a matchstick pattern described by a table, a graph and an equation, and discrete versus continuous variables. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u5l1.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 5 Relations and Functions · Lesson 1</div>
+  <h1>The Cartesian Plane, Growing Patterns, and Types of Variables</h1>
+  <p class="lede">Two numbers are enough to pin down any point on a flat surface. Today: the <b>Cartesian plane</b> and its four <b>quadrants</b>, a matchstick pattern described three ways (a <b>table</b>, a <b>graph</b> and an <b>equation</b>), and the question behind every graph in this unit: <b>join the dots, or not?</b></p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>plot a point from its <b>ordered pair</b> <span class="tex">(x,\ y)</span>, and name the coordinates of a plotted point</li>
+      <li>name the <b>quadrant</b> a point is in from the signs of its coordinates, and recognize a point that lies <b>on an axis</b></li>
+      <li>describe a growing pattern with a <b>table of values</b>, a <b>graph</b> and an <b>equation</b>, and use the equation forwards and backwards</li>
+      <li>read values from a graph, and check my estimates with the equation</li>
+      <li>classify a variable as <b>discrete</b> or <b>continuous</b>, and decide whether the points on a graph should be <b>joined</b></li>
+    </ul>
+  </div>
+  <div class="outcome"><b>RF1</b> Interpret and explain the relationships among data, graphs and situations.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: Battleship" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Battleship</h2></div>
+  <p class="big">The enemy fleet hides on a grid. Every shot is an ordered pair <span class="tex">(x,\ y)</span>. <b>Tap a point to fire.</b></p>
+  <div class="u5l1-wtop">
+    <div class="u5l1-bwrap">
+      <div class="u5l1-board" id="bship" data-tap></div>
+      <div class="u5l1-bctl no-ink">
+        <button type="button" class="pill small on" data-bs="scene">Our game</button>
+        <button type="button" class="pill small" data-bs="new">New fleet</button>
+        <button type="button" class="pill small" data-bs="show">Show ships</button>
+        <span class="u5l1-bcount" id="bs-count">Shots: 0</span>
+      </div>
+      <div class="u5l1-blog" id="bs-log">One ship is sunk. We’ve hit the <b>cruiser</b> once. Your shot!</div>
+    </div>
+    <div class="u5l1-wqs">
+      <div class="u5l1-legend"><span class="u5l1-lg-miss"></span> miss <span class="u5l1-lg-hit"></span> hit</div>
+      <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Name the point of our <b class="u5l1-red">hit</b>. Which quadrant is it in?</div></div>
+        <button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">(-3,\ 1)</span>: 3 left, 1 up, so <b>Quadrant II</b>.</div></div>
+      <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>Next shots: <span class="tex">(4,\ -2)</span> and <span class="tex">(0,\ -5)</span>. Which quadrant is each in?</div></div>
+        <button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">(4,\ -2)</span> is in <b>Quadrant IV</b>. <span class="tex">(0,\ -5)</span> is <b>on the <span class="tex">y</span>-axis</b>, so it is in <b>no quadrant</b>: the axes are borders, not regions.</div></div>
+      <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Shots must land on whole-number points. Are the coordinates <b>discrete</b> or <b>continuous</b>? A submarine’s depth?</div></div>
+        <button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Shot coordinates are <b>discrete</b>: there is no shot at <span class="tex">(2.5,\ -3)</span>. A submarine’s depth is <b>continuous</b>: it can be 41.37 m, or any value in between.</div></div>
+    </div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> The last ship, a <b>cruiser</b>, is 3 points in a straight line (across or up-down). We’ve hit it <b>once</b>. Which shot is <b>sure</b> to hit it again? <b>Guess first.</b></div></div>
+    <div class="poll-opts c4">
+      <div class="opt"><b>A</b> <span class="tex">(-3,\ 2)</span></div>
+      <div class="opt right"><b>B</b> <span class="tex">(-3,\ 0)</span></div>
+      <div class="opt"><b>C</b> <span class="tex">(-3,\ -1)</span></div>
+      <div class="opt"><b>D</b> <span class="tex">(-2,\ 0)</span></div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>B: <span class="tex">(-3,\ 0)</span>.</b> <b>Across</b> is impossible: the misses at <span class="tex">(-4,\ 1)</span> and <span class="tex">(-2,\ 1)</span> sit on both sides of the hit. <b>Up-and-down:</b> the miss at <span class="tex">(-3,\ 3)</span> rules out the highest spot, so two placements are left: <span class="tex">(-3,-1),(-3,0),(-3,1)</span> or <span class="tex">(-3,0),(-3,1),(-3,2)</span>. Only <span class="tex">(-3,\ 0)</span> is in <b>both</b>.
+      <button type="button" class="pill small no-ink" data-bs="logic">Show why on the board ▸</button><br>
+      <span class="muted"><b>A</b> and <b>C</b> each hit in only one of the two placements: 50–50 guesses. <b>D</b> is “next to” the hit, but diagonally, and ships can’t bend.</span></div>
+  </div>
+
+  <div class="bk-wq u5l1-bonus">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Our next shot at <span class="tex">(-3,\ 0)</span> hits. In the worst case, how many <b>more</b> shots to sink the cruiser?</div></div>
+    <button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>2 more shots at most.</b> Fire at <span class="tex">(-3,\ 2)</span>. A hit sinks it. A miss means the ship is at <span class="tex">(-3,\ -1)</span>, so one more shot sinks it.</div>
+  </div>
+  <p class="u5l1-social">Challenge a neighbour: hide your own cruiser, then call out ordered pairs to sink theirs.</p>
+</section>
+
+<!-- ================= 1. The Cartesian coordinate system ================= -->
+<section class="card" data-ink="s1" data-section="1. The Cartesian Plane">
+  <div class="sec-h"><span class="badge">1</span><h2>The Cartesian Coordinate System</h2></div>
+  <p>The word “Cartesian” honours the French mathematician and philosopher <b>René Descartes</b> (1596–1650), who in 1637 introduced the idea of locating a point on a flat surface using two perpendicular reference lines.</p>
+  <div class="u5l1-s1">
+    <div class="u5l1-s1fig" id="fig-plane"></div>
+    <div>
+      <div class="def">A <b>Cartesian coordinate system</b> is two number lines, called <b>axes</b>, that cross at right angles. The horizontal axis is the <span class="tex">x</span>-<b>axis</b> and the vertical axis is the <span class="tex">y</span>-<b>axis</b>; together they form the <span class="tex">xy</span>-plane, also called the <b>Cartesian plane</b>. The axes cross at the <b>origin</b>, usually labelled <span class="tex">O</span>.</div>
+      <div class="def amber">Every point has a unique <b>ordered pair</b> of numbers, its <b>coordinates</b>. The first number, the <b><span class="tex">x</span>-coordinate</b>, tells how far to move <b>horizontally</b> from the origin; the second, the <b><span class="tex">y</span>-coordinate</b>, tells how far to move <b>vertically</b>. The point <span class="tex">P(5,\ 2)</span> is 5 units right and 2 units up from the origin.</div>
+      <div class="def gray">The axes divide the plane into four <b>quadrants</b>, numbered <b>I</b> to <b>IV</b>, starting at the top right and moving <b>counter-clockwise</b>.</div>
+    </div>
+  </div>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. Plotting a point">
+  <h3 class="sub">Plotting a point: two moves from the origin</h3>
+  <p>Read an ordered pair as directions. Start at the origin, move <b>across</b> by the <span class="tex">x</span>-coordinate (right if positive, left if negative), then move <b>up or down</b> by the <span class="tex">y</span>-coordinate.</p>
+  <div class="explainer" data-explainer="plotPoint"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Across first, then up or down.</b> <span class="tex">(2,\ 5)</span> and <span class="tex">(5,\ 2)</span> are <b>different points</b>: that is why it’s called an <b>ordered</b> pair. A coordinate of 0 means no move in that direction: <span class="tex">(0,\ -3)</span> sits on the <span class="tex">y</span>-axis.</div></div>
+</section>
+
+<section class="card" data-ink="s1c" data-section="1. The four quadrants">
+  <h3 class="sub">The four quadrants and their signs</h3>
+  <p>The quadrant a point lands in depends only on the <b>signs</b> of its coordinates: right means a positive <span class="tex">x</span>, up means a positive <span class="tex">y</span>.</p>
+  <div class="explainer" data-explainer="quadrants"></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Reading coordinates and identifying quadrants</h3></div>
+  <p class="q">Refer to the grid below.</p>
+  <div class="u5l1-ex1">
+    <div id="fig-ex1"></div>
+    <div class="parts c1" style="margin:0">
+      <div class="part"><div class="pl">(a) Complete the following by writing the coordinates of each labelled point.</div>
+        <div class="u5l1-blanks"><div><b>A(</b><i></i><b>)</b></div><div><b>B(</b><i></i><b>)</b></div><div><b>C(</b><i></i><b>)</b></div><div><b>D(</b><i></i><b>)</b></div><div><b>E(</b><i></i><b>)</b></div><div><b>F(</b><i></i><b>)</b></div></div>
+        <div class="work" style="--h:40px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Horizontal position first, then vertical:<br><span class="tex">A(4,\ 3)</span>, <span class="tex">B(-3,\ 5)</span>, <span class="tex">C(-5,\ -2)</span>, <span class="tex">D(2,\ -4)</span>, <span class="tex">E(0,\ -3)</span>, <span class="tex">F(-4,\ 0)</span></div></div></div>
+      <div class="part"><div class="pl">(b) State the coordinates of the point in Quadrant II.</div><div class="work" style="--h:56px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Quadrant II is the upper left (<span class="tex">x&lt;0,\ y&gt;0</span>): <span class="tex">\boldsymbol{B(-3,\ 5)}</span></div></div></div>
+      <div class="part"><div class="pl">(c) State the coordinates of the point in Quadrant IV.</div><div class="work" style="--h:56px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Quadrant IV is the lower right (<span class="tex">x&gt;0,\ y&lt;0</span>): <span class="tex">\boldsymbol{D(2,\ -4)}</span></div></div></div>
+    </div>
+  </div>
+  <div class="parts c1" style="margin-top:14px">
+    <div class="part"><div class="pl">(d) Complete the table below using “positive” or “negative”.</div>
+      <table class="u5l1-tbl u5l1-qtbl">
+        <tr><th>Quadrant</th><th><span class="tex">x</span>-coordinate</th><th><span class="tex">y</span>-coordinate</th></tr>
+        <tr><th>I</th><td><span data-reveal=" ">positive</span></td><td><span data-reveal=" ">positive</span></td></tr>
+        <tr><th>II</th><td><span data-reveal=" ">negative</span></td><td><span data-reveal=" ">positive</span></td></tr>
+        <tr><th>III</th><td><span data-reveal=" ">negative</span></td><td><span data-reveal=" ">negative</span></td></tr>
+        <tr><th>IV</th><td><span data-reveal=" ">positive</span></td><td><span data-reveal=" ">negative</span></td></tr>
+      </table>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Right of the <span class="tex">y</span>-axis: <span class="tex">x</span> positive. Above the <span class="tex">x</span>-axis: <span class="tex">y</span> positive. (Tap a cell to show one answer at a time.)</div></div></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<!-- ================= 2. Growing pattern ================= -->
+<section class="card" data-ink="s2" data-section="2. A Growing Pattern">
+  <div class="sec-h"><span class="badge">2</span><h2>Describing a Growing Pattern With a Relation</h2></div>
+  <p>Many real situations produce a pattern of numbers that grows by the <b>same amount at every step</b>. A pattern like this can always be described in three equivalent ways: a <b>table of values</b>, a <b>graph</b>, and an <b>equation</b>.</p>
+  <div class="u5l1-mrow">
+    <p>A single square is built using <b>4 matchsticks</b>, one for each side. Each additional square is attached along one full side of the previous square, so it needs only <b>3 new matchsticks</b> to complete its remaining three sides. The pattern continues in this way, forming a row of adjoining squares.</p>
+    <div class="u5l1-mfigbox" data-match="1,2,3" data-u="40"></div>
+  </div>
+  <div class="explainer" data-explainer="matchGrow"></div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>The matchstick pattern: diagrams, table, graph</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(a) Draw the next two diagrams (Figure 4 and Figure 5) in the pattern.</div><div class="work" style="--h:130px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Each new figure attaches one more square to the right-hand end of the row.<div class="u5l1-mfigbox" data-match="4,5" data-u="32"></div></div></div></div>
+  </div>
+  <div class="parts u5l1-ex2b">
+    <div class="part"><div class="pl">(b) Complete the table relating the number of matchsticks, <span class="tex">M</span>, to the number of squares, <span class="tex">s</span>.</div>
+      <table class="u5l1-tbl u5l1-htbl">
+        <tr><th>Number of Squares, <span class="tex">s</span></th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td></tr>
+        <tr><th>Number of Matchsticks, <span class="tex">M</span></th><td>4</td><td><span data-reveal=" ">7</span></td><td><span data-reveal=" ">10</span></td><td><span data-reveal=" ">13</span></td><td><span data-reveal=" ">16</span></td></tr>
+      </table>
+      <div class="work" style="--h:120px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Add 3 for each new square: <span class="tex">4,\ 7,\ 10,\ 13,\ 16</span></div></div></div>
+    <div class="part"><div class="pl">(c) Represent the data from the table of values on the grid.</div>
+      <div class="u5l1-gridbox" id="fig-ex2c"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Plot <span class="tex">(1,4),\ (2,7),\ (3,10),\ (4,13),\ (5,16)</span>: <b>dots only</b>.</div></div></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. Join the dots?">
+  <h3 class="sub">From the table to the graph: join the dots?</h3>
+  <p>Each column of the table is an ordered pair <span class="tex">(s,\ M)</span>, so each one is a point on the grid. Before drawing a line through points, always ask: <b>does a point in between mean anything?</b></p>
+  <div class="explainer" data-explainer="matchGraph"></div>
+  <div class="tip u5l1-ahead"><div class="tip-ic">→</div><div><b>Which number goes first?</b> We choose the number of squares; the number of matchsticks <b>depends</b> on that choice. So <span class="tex">s</span> comes first in the ordered pair and goes on the <b>horizontal</b> axis, and <span class="tex">M</span> goes on the vertical axis. Lesson 2 names these the <b>independent</b> and <b>dependent</b> variables.</div></div>
+</section>
+
+<section class="card" data-ink="s2c" data-section="2. The equation">
+  <h3 class="sub">From the pattern to an equation</h3>
+  <p>The table and the graph only go as far as we draw them. An <b>equation</b> works for any number of squares, including ones too big to draw. Counting the matchsticks in a clever way gives the equation.</p>
+  <div class="explainer" data-explainer="matchRule"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Forwards and backwards.</b> Forwards (squares → matchsticks): multiply by 3, then add 1. Backwards (matchsticks → squares): <b>undo</b> in reverse order: subtract 1, then divide by 3. <span class="keys"><kbd>(</kbd><kbd>9</kbd><kbd>1</kbd><kbd>−</kbd><kbd>1</kbd><kbd>)</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>ENTER</kbd></span></div>
+    <div class="pill-col"><button class="pill" data-keys="3 × 34 + 1 =">Forwards: 34 squares</button><button class="pill" data-keys="( 91 − 1 ) ÷ 3 =">Backwards: 91 sticks</button></div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>The same pattern: why not to join, and the equation</h3></div>
+  <p class="q">Continue working with the matchstick pattern from Example 2.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(d) Explain why it does not make sense to join the plotted points with a straight line.</div><div class="work" style="--h:150px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The number of squares can only be a whole number: there is no “square number 2.5.” The in-between values have no meaning, so the points stay unconnected. Both variables are <b>discrete</b>.</div></div></div>
+    <div class="part"><div class="pl">(e) Describe in words the relationship between the number of matchsticks and the number of squares.</div><div class="work" style="--h:150px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Each new square adds 3 matchsticks, and the first square uses 4. The number of matchsticks is <b>1 more than 3 times</b> the number of squares.</div></div></div>
+  </div>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(f) Write an equation that can be used to determine the number of matchsticks, <span class="tex">M</span>, if we know the number of squares, <span class="tex">s</span>.</div><div class="work" style="--h:170px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">From (e): <span class="tex">\boldsymbol{M=3s+1}</span><br>Check: <span class="tex">s=1\Rightarrow M=4</span>; <span class="tex">s=5\Rightarrow M=16</span> ✓</div></div></div>
+    <div class="part"><div class="pl">(g) Use the equation to determine the number of matchsticks needed for 34 squares.</div><div class="work" style="--h:170px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">M=3(34)+1=102+1</span><br><span class="tex">=\boldsymbol{103}</span> matchsticks</div></div></div>
+    <div class="part"><div class="pl">(h) Use the equation to determine the number of squares if there are 91 matchsticks.</div><div class="work" style="--h:170px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">91=3s+1</span><br><span class="tex">3s=90</span><br><span class="tex">s=\boldsymbol{30}</span> squares</div></div></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<!-- ================= 3. Continuous data ================= -->
+<section class="card" data-ink="s3" data-section="3. Continuous Data">
+  <div class="sec-h"><span class="badge">3</span><h2>Continuous Data and Linear Relations</h2></div>
+  <p>Not every relation between two variables behaves like the matchstick pattern. Some relations involve variables that can take on <b>any</b> value in between two given values. Their graphs are made of <b>connected</b> points, a line or a curve, rather than separate dots.</p>
+  <div class="explainer" data-explainer="gasLine"></div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Cost of gasoline</h3></div>
+  <p class="q">A gas station sells gasoline for a fixed price per litre. The table below shows the cost, <span class="tex">C</span> dollars, of purchasing <span class="tex">V</span> litres of gasoline.</p>
+  <table class="u5l1-tbl u5l1-htbl u5l1-center">
+    <tr><th>Volume, <span class="tex">V</span> (L)</th><td>2</td><td>4</td><td>6</td><td>8</td><td>10</td></tr>
+    <tr><th>Cost, <span class="tex">C</span> ($)</th><td>2.90</td><td>5.80</td><td>8.70</td><td>11.60</td><td>14.50</td></tr>
+  </table>
+  <div class="parts u5l1-ex4a">
+    <div class="part"><div class="pl">(a) Represent the data from the table on the grid.</div>
+      <div class="u5l1-gridbox" id="fig-ex4a"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Plot <span class="tex">(2,\ 2.90)</span>, <span class="tex">(4,\ 5.80)</span>, …, <span class="tex">(10,\ 14.50)</span> and join them (see (b)).</div></div></div>
+    <div class="u5l1-stack">
+      <div class="part"><div class="pl">(b) Does it make sense to join the points together with a straight line? Explain.</div><div class="work" style="--h:150px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Yes.</b> You can buy any volume of gas, for example 2.37 L, so the variables are <b>continuous</b> and every in-between value has meaning. Join the points with a straight line.</div></div></div>
+      <div class="part"><div class="pl">(c) Use the graph to estimate the cost of purchasing 5 L of gasoline.</div><div class="work" style="--h:110px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">V=5</span> is halfway between <span class="tex">V=4</span> ($5.80) and <span class="tex">V=6</span> ($8.70), so <span class="tex">C\approx\boldsymbol{\$7.25}</span></div></div></div>
+    </div>
+  </div>
+  <div class="parts c4">
+    <div class="part"><div class="pl">(d) Use the graph to estimate the volume of gasoline purchased if the cost was $10.15.</div><div class="work" style="--h:170px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">$10.15 is between $8.70 (<span class="tex">V=6</span>) and $11.60 (<span class="tex">V=8</span>), so <span class="tex">V\approx\boldsymbol{7}</span> L</div></div></div>
+    <div class="part"><div class="pl">(e) Write an equation expressing <span class="tex">C</span> in terms of <span class="tex">V</span>.</div><div class="work" style="--h:170px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Cost per litre: <span class="tex">2.90\div2=1.45</span>, <span class="tex">5.80\div4=1.45</span>, …<br><span class="tex">\boldsymbol{C=1.45V}</span></div></div></div>
+    <div class="part"><div class="pl">(f) Use the equation to check the accuracy of your estimates in (c) and (d).</div><div class="work" style="--h:170px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">V=5</span>: <span class="tex">C=1.45(5)=7.25</span> ✓<br><span class="tex">C=10.15</span>: <span class="tex">V=\frac{10.15}{1.45}=7</span> ✓<br>Both estimates were exact.</div></div></div>
+    <div class="part"><div class="pl">(g) In the context of the question, what does the value 1.45 represent in your equation?</div><div class="work" style="--h:170px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The <b>price per litre</b> of gasoline: $1.45 is the cost of 1 L.</div></div></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s3b" data-section="3. Reading the graph">
+  <h3 class="sub">Reading a graph forwards and backwards</h3>
+  <p>A graph answers questions in both directions. <b>Forwards:</b> from a value on the horizontal axis, go up to the line, then across. <b>Backwards:</b> from a value on the vertical axis, go across to the line, then down. The equation then checks the estimate.</p>
+  <div class="explainer" data-explainer="gasRead"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check (c) and (d) with the equation.</b> Forwards: <span class="keys"><kbd>1</kbd><kbd>.</kbd><kbd>4</kbd><kbd>5</kbd><kbd>×</kbd><kbd>5</kbd><kbd>ENTER</kbd></span> gives 7.25. Backwards, divide: <span class="keys"><kbd>1</kbd><kbd>0</kbd><kbd>.</kbd><kbd>1</kbd><kbd>5</kbd><kbd>÷</kbd><kbd>1</kbd><kbd>.</kbd><kbd>4</kbd><kbd>5</kbd><kbd>ENTER</kbd></span> gives 7.</div>
+    <div class="pill-col"><button class="pill" data-keys="1.45 × 5 =">Show (c)</button><button class="pill" data-keys="10.15 ÷ 1.45 =">Show (d)</button></div>
+  </div>
+</section>
+
+<section class="card" data-ink="s3c" data-section="3. The rate: 1.45">
+  <h3 class="sub">Where the equation comes from: the price per litre</h3>
+  <p>For gasoline, every litre costs the same. Dividing each cost by its volume finds that price, and the price becomes the number in front of <span class="tex">V</span>.</p>
+  <div class="explainer" data-explainer="gasRate"></div>
+</section>
+
+<!-- ================= 4. Discrete and continuous ================= -->
+<section class="card" data-ink="s4" data-section="4. Discrete or Continuous?">
+  <div class="sec-h"><span class="badge">4</span><h2>Discrete and Continuous Variables</h2></div>
+  <div class="u5l1-dc">
+    <div class="def"><b>Continuous variables</b> can take <b>any</b> value: between any two values there is always another. In Example 4 you can buy 2.37 L of gasoline, so volume and cost are continuous. Graph them with the points <b>connected</b> by a line or curve: every in-between value has meaning.
+      <div class="u5l1-dcfig" data-dc="cont"></div></div>
+    <div class="def amber"><b>Discrete variables</b> take only <b>separate, countable values with gaps between them</b>. In Examples 2 and 3 there is no “square number 2.5”, so the number of squares and the number of matchsticks are discrete. Graph them as <b>separate dots</b>: the in-between values mean nothing.
+      <div class="u5l1-dcfig" data-dc="disc"></div></div>
+  </div>
+  <p class="u5l1-note">A discrete variable need not have a largest value (a book can have any whole number of pages), but between two allowed values there are <b>gaps</b>.</p>
+  <div class="explainer" data-explainer="zoomIn"></div>
+</section>
+
+<section class="card" data-ink="s4b" data-section="4. Count or measure?">
+  <h3 class="sub">Count it or measure it?</h3>
+  <p>A quick test: if you get the value by <b>counting</b>, the variable is usually <b>discrete</b>. If you get it by <b>measuring</b> (time, length, mass, volume), it is <b>continuous</b>.</p>
+  <div class="explainer" data-explainer="sortVars"></div>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Classifying variables</h3></div>
+  <p class="q">Classify each of the following variables as discrete or continuous.</p>
+  <div class="parts c4">
+    <div class="part"><div class="pl">(a) number of pages in a book</div><div class="work" style="--h:130px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">A whole number of pages, nothing in between: <b>discrete</b>.</div></div></div>
+    <div class="part"><div class="pl">(b) time taken to run a marathon</div><div class="work" style="--h:130px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Time can be any value, down to fractions of a second (3 h 17 min 42.6 s): <b>continuous</b>.</div></div></div>
+    <div class="part"><div class="pl">(c) number of siblings a person has</div><div class="work" style="--h:130px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">A whole-number count; no one has 2.5 siblings: <b>discrete</b>.</div></div></div>
+    <div class="part"><div class="pl">(d) volume of water in a bathtub</div><div class="work" style="--h:130px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The volume can be any value in a range (73.4 L): <b>continuous</b>.</div></div></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Ordered pairs:</b> <span class="tex">(x,\ y)</span> means move <b>across</b> by <span class="tex">x</span>, then <b>up or down</b> by <span class="tex">y</span>, starting at the origin <span class="tex">O(0,\ 0)</span>. Order matters: <span class="tex">(2,\ 5)\ne(5,\ 2)</span>.</div>
+    <div><b>Quadrants</b> I to IV, counter-clockwise from the top right: <span class="tex">(+,+)</span>, <span class="tex">(-,+)</span>, <span class="tex">(-,-)</span>, <span class="tex">(+,-)</span>. A point <b>on an axis</b> is in no quadrant.</div>
+    <div><b>Three descriptions:</b> table (<span class="tex">M</span> goes up 3 each time), graph (the points), equation <span class="tex">M=3s+1</span>. Use the equation <b>forwards</b> (substitute) and <b>backwards</b> (solve).</div>
+    <div><b>Discrete</b> (count it): separate dots, never joined. <b>Continuous</b> (measure it): join the points, because every in-between value means something.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u5l1" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 1 — The Cartesian Plane, Growing Patterns, and Types of Variables</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l2/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 2 — Describing Relationships Between Two Quantities</b><div class="muted">One relation six ways (words, table, ordered pairs, arrow diagram, equation, graph), and the independent and dependent variables behind them</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u5l1.js';
+  boot({ key: 'u5l1', homeHref: '../../', title: '5.1 The Cartesian Plane' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

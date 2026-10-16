@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Describing Relationships Between Two Quantities · Math 10C 5.2</title>
+<meta name="description" content="Math 10C Unit 5 Lesson 2: relations and their six representations (words, table of values, ordered pairs, arrow diagram, equation, graph), independent and dependent variables, inputs and outputs, from an equation to a table and a graph, and linear vs nonlinear relations. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u5l2.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson u5l2">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 5 Relations and Functions · Lesson 2</div>
+  <h1>Describing Relationships Between Two Quantities</h1>
+  <p class="lede">A <b>relation</b> compares two quantities that change together. One relation can be shown <b>six ways</b>: in words, as a table of values, as ordered pairs, as an arrow diagram, as an equation and as a graph. Behind all six is the same question: which quantity <b>depends on</b> the other?</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>describe a relation in words, with a <b>table of values</b>, a set of <b>ordered pairs</b>, an <b>arrow diagram</b>, an <b>equation</b> and a <b>graph</b></li>
+      <li>identify the <b class="u5l2-ivt">independent variable</b> (input) and the <b class="u5l2-dvt">dependent variable</b> (output) in each of those six representations</li>
+      <li>list the <b>inputs</b> and the <b>outputs</b> of a relation</li>
+      <li>build a table of values and a graph from an equation, and read the graph <b>forwards</b> (<span class="tex">y</span> from <span class="tex">x</span>) and <b>backwards</b> (<span class="tex">x</span> from <span class="tex">y</span>)</li>
+      <li>tell a <b>linear</b> relation from a <b>nonlinear</b> one by its graph, its equation or its table</li>
+    </ul>
+  </div>
+  <div class="outcome"><b>RF1</b> Interpret and explain the relationships among data, graphs and situations.<br><b>RF2</b> Demonstrate an understanding of relations and functions.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: Does It Depend?" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Does It Depend?</h2></div>
+  <p class="big">Two quantities change together. Does one <b>cause</b> the other?</p>
+  <div class="u5l2-wtop">
+    <div class="u5l2-pcs">
+      <div class="u5l2-pc" id="pc1">
+        <button type="button" class="u5l2-q" data-side="l"><span class="u5l2-ic" data-icon="thermo"></span><span class="u5l2-qn">temperature<br>(°C)</span><span class="u5l2-qt"></span></button>
+        <div class="u5l2-mid"><svg viewBox="0 0 90 40" aria-hidden="true"><path class="u5l2-shaft" d="M14 20H76"/><path class="u5l2-hl" d="M4 20L18 11V29Z"/><path class="u5l2-hr" d="M86 20L72 11V29Z"/></svg><b class="u5l2-mq">?</b></div>
+        <button type="button" class="u5l2-q" data-side="r"><span class="u5l2-ic" data-icon="cone"></span><span class="u5l2-qn">ice cream<br>sales</span><span class="u5l2-qt"></span></button>
+      </div>
+      <div class="u5l2-pc" id="pc2">
+        <button type="button" class="u5l2-q" data-side="l"><span class="u5l2-ic" data-icon="phone"></span><span class="u5l2-qn">minutes<br>charging</span><span class="u5l2-qt"></span></button>
+        <div class="u5l2-mid"><svg viewBox="0 0 90 40" aria-hidden="true"><path class="u5l2-shaft" d="M14 20H76"/><path class="u5l2-hl" d="M4 20L18 11V29Z"/><path class="u5l2-hr" d="M86 20L72 11V29Z"/></svg><b class="u5l2-mq">?</b></div>
+        <button type="button" class="u5l2-q" data-side="r"><span class="u5l2-ic" data-icon="battery"></span><span class="u5l2-qn">battery<br>level (%)</span><span class="u5l2-qt"></span></button>
+      </div>
+      <div class="u5l2-tiptxt">Tap the quantity you think is the <b>cause</b>.</div>
+    </div>
+    <div class="u5l2-beach" id="beach"></div>
+  </div>
+
+  <div class="u5l2-wqs">
+    <div class="bk-wq" id="wq1"><div class="q-line"><div class="q-num">1</div><div>Temperature and ice cream sales: which one <b>depends on</b> the other?</div></div>
+      <div class="u5l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Ice cream sales <b>depend on</b> temperature. Hot days sell more cones, but selling cones doesn’t heat up the day.</div></div></div>
+    <div class="bk-wq" id="wq2"><div class="q-line"><div class="q-num">2</div><div>Minutes charging and battery level: which one do you <b>control</b>?</div></div>
+      <div class="u5l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">You control the <b>minutes charging</b>. The battery level is the result.</div></div></div>
+    <div class="bk-wq" id="wq3"><div class="q-line"><div class="q-num">3</div><div>Graphing the charging data, which quantity goes on the <b>horizontal</b> axis?</div></div>
+      <div class="u5l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>Minutes charging</b> on the horizontal axis; battery level on the vertical axis.</div></div></div>
+  </div>
+
+  <div class="poll" id="wpoll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> In the beach town, ice cream sales and shark attacks rise and fall <b>together</b>. So… <b>Guess first.</b></div></div>
+    <div class="poll-opts u5l2-c2">
+      <div class="opt"><b>A</b> Ice cream causes shark attacks.</div>
+      <div class="opt"><b>B</b> Shark attacks sell ice cream.</div>
+      <div class="opt right"><b>C</b> Neither: something else drives both.</div>
+      <div class="opt"><b>D</b> Pure coincidence.</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>C, neither.</b> The hidden variable is <b>hot weather</b> (summer). Heat brings crowds to the beach: more people buy ice cream, and more people are in the water where the sharks are. Both quantities depend on the temperature, not on each other (watch the graph).<br>
+      <span class="muted"><b>A</b> and <b>B</b> are the classic trap: “they rise together, so one must cause the other.” Rising together is <i>correlation</i>, not <i>causation</i>. <b>D</b> is tempting, but there is a real reason they match, just not a direct one. (The graph uses made-up data.)</span><br>
+      <b>Today’s lesson:</b> the quantity that <b>depends on</b> the other is the <b class="u5l2-dvt">dependent variable</b>; the one it depends on is the <b class="u5l2-ivt">independent variable</b>.</div>
+  </div>
+
+  <div class="bk-wq u5l2-early"><div class="q-line"><div class="q-num u5l2-bonus">+</div><div><b>Early finishers.</b> In a K–12 school, students with bigger shoes read at higher levels. Should the school buy everyone bigger shoes?</div></div>
+    <div class="u5l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">No. The hidden variable is <b>age</b>: older students have bigger feet <b>and</b> read at higher levels.</div></div></div>
+  <p class="u5l2-social">Poll the room: name two other things that rise together, but where neither one causes the other.</p>
+</section>
+
+<!-- ================= 1. Six representations ================= -->
+<section class="card" data-ink="s1" data-section="1. Six Representations">
+  <div class="sec-h"><span class="badge">1</span><h2>Relations and Their Six Representations</h2></div>
+  <div class="def">A comparison between two sets of elements is called a <b>relation</b>.</div>
+  <p>The fuel remaining in a lawn mower’s tank is related to how long it has been running; the monthly cost of a streaming service is related to the number of screens it allows; the resale value of a bicycle is related to its age. Throughout this unit a relation is described in <b>six ways</b>:</p>
+  <div class="u5l2-six">
+    <div><span class="u5l2-six-ic u5l2-six-w">“…”</span><b>in words</b></div>
+    <div><span class="u5l2-six-ic"><svg viewBox="0 0 60 44"><rect x="6" y="4" width="48" height="36" rx="4"/><path d="M30 4V40M6 13H54M6 22H54M6 31H54"/></svg></span><b>a table of values</b></div>
+    <div><span class="u5l2-six-ic u5l2-six-t"><span class="tex">(x,\ y)</span></span><b>a set of ordered pairs</b></div>
+    <div><span class="u5l2-six-ic"><svg viewBox="0 0 60 44"><ellipse cx="13" cy="22" rx="9" ry="18"/><ellipse cx="47" cy="22" rx="9" ry="18"/><path d="M17 13L40 16M17 30L40 25"/><path class="u5l2-fill" d="M43 16.5L36 12.5L36.5 19.5ZM43 24.5L36 21L37.5 28Z"/></svg></span><b>an arrow diagram</b> <span class="muted">(mapping diagram)</span></div>
+    <div><span class="u5l2-six-ic u5l2-six-t"><span class="tex">y=\dots</span></span><b>an equation</b></div>
+    <div><span class="u5l2-six-ic"><svg viewBox="0 0 60 44"><path d="M8 4V38H56"/><path class="u5l2-teal" d="M12 34L50 8"/></svg></span><b>a graph</b></div>
+  </div>
+  <p>The explainer follows one relation through all six. Watch the <b>same numbers</b> travel from one view to the next.</p>
+  <div class="explainer" data-explainer="sixViews"></div>
+</section>
+
+<!-- ================= 2. Investigating a relation ================= -->
+<section class="card" data-ink="s2" data-section="2. Investigating a Relation">
+  <div class="sec-h"><span class="badge">2</span><h2>Investigating a Relation</h2></div>
+  <p>Consider the relation <b>“the fuel consumption rate, <span class="tex">F</span> (litres per 100 km), of a delivery van is related to its speed, <span class="tex">s</span> (km/h).”</b></p>
+  <div class="def">Fuel consumption <b>depends on</b> speed, so <span class="tex">F</span> is the <b class="u5l2-dvt">dependent variable</b> and <span class="tex">s</span> is the <b class="u5l2-ivt">independent variable</b>. Values of the independent variable are the <b>inputs</b>; values of the dependent variable are the <b>outputs</b>.</div>
+  <p>To decide which is which, test the sentence both ways: “<i>A</i> depends on <i>B</i>” and “<i>B</i> depends on <i>A</i>”. Only one of them makes sense. The quantity you <b>choose or control</b> is the input; the one that <b>responds</b> is the output.</p>
+  <div class="explainer" data-explainer="causeEffect"></div>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. The van’s test data">
+  <h3 class="sub">The van’s test data</h3>
+  <p>Test data collected at <span class="tex">20,\ 40,\ 60,\ \dots,\ 140</span> km/h gives the table and graph below.</p>
+  <div class="u5l2-vanrow"><div id="vanfig-t"></div><div id="vanfig-g"></div></div>
+  <p><b>Ordered pairs</b> <span class="tex">(s,\ F)</span>: <span class="tex">(20,\ 13.2),\ (40,\ 9.2),\ (60,\ 6.8),\ (80,\ 6.0),\ (100,\ 6.8),\ (120,\ 9.2),\ (140,\ 13.2)</span>.</p>
+  <p>An output exists for <b>every</b> speed between the smallest and largest tested, not just the seven chosen, so the plotted points are joined with a <b>smooth curve</b>. An equation that closely fits the data is</p>
+  <div class="u5l2-disp"><span class="tex">F=0.002s^2-0.32s+18.8</span></div>
+  <div class="def">The equation is only meaningful for the speeds that make up the <b>domain</b> of the relation: it would not make sense to use it for, say, <span class="tex">s=-40</span>. The set of all output values is the <b>range</b> of the relation.</div>
+  <div class="explainer" data-explainer="fuelStory"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>A speed that wasn’t tested: <span class="tex">s=50</span>.</b> Substitute into the equation: <span class="keys"><kbd>0</kbd><kbd>.</kbd><kbd>0</kbd><kbd>0</kbd><kbd>2</kbd><kbd>×</kbd><kbd>5</kbd><kbd>0</kbd><kbd>x²</kbd><kbd>−</kbd><kbd>0</kbd><kbd>.</kbd><kbd>3</kbd><kbd>2</kbd><kbd>×</kbd><kbd>5</kbd><kbd>0</kbd><kbd>+</kbd><kbd>1</kbd><kbd>8</kbd><kbd>.</kbd><kbd>8</kbd><kbd>ENTER</kbd></span> gives <b>7.8</b> L/100 km, right on the curve.</div>
+    <button class="pill" data-keys="0.002 × 50 x² − 0.32 × 50 + 18.8 =">Show me</button>
+  </div>
+</section>
+
+<!-- ================= 3. Locating the variables ================= -->
+<section class="card" data-ink="s3" data-section="3. Locating the Variables">
+  <div class="sec-h"><span class="badge">3</span><h2>Locating the Independent and Dependent Variable</h2></div>
+  <div class="u5l2-where">
+    <div><b>Ordered pair</b>the <b>first</b> coordinate is a value of the independent variable; the second is a value of the dependent variable.</div>
+    <div><b>Table of values</b>the independent variable is listed <b>first</b>: to the left of, or above, the dependent variable.</div>
+    <div><b>Arrow diagram</b>arrows point <b>from</b> the independent variable <b>to</b> the dependent variable.</div>
+    <div><b>Graph</b>the independent variable is on the <b>horizontal</b> axis; the dependent variable is on the vertical axis.</div>
+    <div class="u5l2-wide"><b>Equation</b>when the equation is solved for one variable, that variable is usually the <b>dependent</b> one, but the context decides. (An equation such as <span class="tex">4x-3y+24=0</span> is not solved for either variable.)</div>
+  </div>
+  <div class="u5l2-disp u5l2-brace"><span class="tex">\overbrace{\textcolor{#7b4fc4}{y}}^{\substack{\text{dependent variable}\\ \text{(the output)}}}\;=\;\underbrace{-2\textcolor{#c27a0e}{x}+9}_{\substack{\text{independent variable } x \text{ sits}\\ \text{inside this expression (the input)}}}</span></div>
+  <div class="explainer" data-explainer="spotRule"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>It isn’t always <span class="tex">x</span> and <span class="tex">y</span>.</b> Any letters can name the variables. Don’t go by the letter: go by the <b>position</b> (first coordinate, left column, horizontal axis, start of the arrows) or, in words, by which quantity <b>depends on</b> the other.</div></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Variables and lists from a diagram, a table and a set of pairs</h3></div>
+  <p class="q">For each relation, state <b>(i)</b> the independent variable, <b>(ii)</b> the dependent variable, <b>(iii)</b> the list of inputs, and <b>(iv)</b> the list of outputs.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a)</div><div class="u5l2-fig" id="ex1a-fig"></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">(i) independent: <span class="tex">X</span>&nbsp; (ii) dependent: <span class="tex">Y</span><br>(iii) inputs: <span class="tex">4,\ 7,\ 9</span><br>(iv) outputs: <span class="tex">13,\ 21</span><br>Arrows start in <span class="tex">X</span>, so <span class="tex">X</span> holds the inputs; <span class="tex">13</span> is hit twice but listed once.</div></div></div>
+    <div class="part"><div class="pl">(b)</div><div class="u5l2-fig" id="ex1b-fig"></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The independent variable is listed first (left column).<br>(i) <span class="tex">n</span>&nbsp; (ii) <span class="tex">d</span><br>(iii) inputs: <span class="tex">5,\ 12,\ 30</span><br>(iv) outputs: <span class="tex">18,\ 24,\ 9</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">(D,\ m)</span>:</div><div class="u5l2-pairs-q"><span class="tex">(2,\ 9),\ (5,\ 21),\ (8,\ 33),\ (11,\ 45)</span></div><div class="work" style="--h:260px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">In <span class="tex">(D,\ m)</span> the first coordinate is the independent variable.<br>(i) <span class="tex">D</span>&nbsp; (ii) <span class="tex">m</span><br>(iii) inputs: <span class="tex">2,\ 5,\ 8,\ 11</span><br>(iv) outputs: <span class="tex">9,\ 21,\ 33,\ 45</span></div></div></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Variables from an equation, a graph and a sentence</h3></div>
+  <p class="q">For each relation, state <b>(i)</b> the independent variable and <b>(ii)</b> the dependent variable.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">d=4.9t^2</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">d</span> is isolated on the left, so it is the output.<br>(i) independent: <span class="tex">t</span>&nbsp; (ii) dependent: <span class="tex">d</span></div></div></div>
+    <div class="part"><div class="pl">(b)</div><div class="u5l2-fig" id="ex2b-fig"></div><div class="work" style="--h:60px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">(i) independent: <b>time</b> (horizontal axis)<br>(ii) dependent: <b>temperature</b> (vertical axis)</div></div></div>
+    <div class="part"><div class="pl">(c) The number of visitors, <span class="tex">v</span>, to a museum on a given day is related to the price, <span class="tex">p</span>, of admission that day.</div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The number of visitors depends on the admission price.<br>(i) independent: <span class="tex">p</span>&nbsp; (ii) dependent: <span class="tex">v</span></div></div></div>
+    <div class="part think u5l2-span3"><div class="pl"><span class="think-tag">Think</span> In (c) the price is the <b>independent</b> variable. Describe a relation in words where a price is the <b>dependent</b> variable.</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">For example: “the price of a pizza depends on the number of toppings.” Now the price is the output. The same quantity can play either role: the <b>situation</b> decides.</div></div></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s3b" data-section="3. Check Examples 1 and 2">
+  <h3 class="sub">Check Examples 1 and 2</h3>
+  <p>Pick a part to replay it: where the independent variable sits, then the lists of inputs and outputs.</p>
+  <div class="explainer" data-explainer="exCheck"></div>
+</section>
+
+<!-- ================= 4. Equation → table → graph ================= -->
+<section class="card" data-ink="s4" data-section="4. Equation to Table and Graph">
+  <div class="sec-h"><span class="badge">4</span><h2>From an Equation to a Table and a Graph</h2></div>
+  <p>An equation is a recipe for outputs: <b>substitute each input</b> to get its output. Each row of the table is an <b>ordered pair</b>, and each pair is a <b>point</b>. Once the graph is drawn it can be read both ways: <b>forwards</b> (go up from an <span class="tex">x</span>-value to the graph, then across to read <span class="tex">y</span>) and <b>backwards</b> (go across from a <span class="tex">y</span>-value to the graph, then down to read <span class="tex">x</span>).</p>
+  <div class="explainer" data-explainer="eqToGraph"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Squaring a negative input? Brackets!</b> For <span class="tex">y=x^2-8</span> at <span class="tex">x=-5</span>: <span class="keys"><kbd>(</kbd><kbd>(−)</kbd><kbd>5</kbd><kbd>)</kbd><kbd>x²</kbd><kbd>−</kbd><kbd>8</kbd><kbd>ENTER</kbd></span> gives <span class="tex">25-8=17</span>. Without the brackets the calculator squares only the 5 and then makes it negative: <span class="tex">-25-8=-33</span>.</div>
+    <div class="pill-col"><button class="pill" data-keys="( (−) 5 ) x² − 8 =">With brackets</button><button class="pill" data-keys="(−) 5 x² − 8 =">Without</button></div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>A relation whose graph is a straight line</h3></div>
+  <p class="q">Consider the relation described by the equation <span class="tex">y=3x-4</span>.</p>
+  <div class="parts c1">
+    <div class="part" data-part="ex3ab"><div class="pl">(a) Complete the table of values. &nbsp; (b) Plot the ordered pairs from (a) on the grid, then connect the points and extend the line with arrows at both ends.</div>
+      <div class="u5l2-tg">
+        <div class="u5l2-tab" style="--rh:52px">
+          <div class="u5l2-th">Input (<span class="tex">x</span>)</div><div class="u5l2-th">Output (<span class="tex">y</span>)</div><div class="u5l2-th">Pair (<span class="tex">x,\ y</span>)</div>
+          <div><span class="tex">-2</span></div><div data-show="ex3ab"><span class="tex">-10</span></div><div data-show="ex3ab"><span class="tex">(-2,\ -10)</span></div>
+          <div><span class="tex">-1</span></div><div data-show="ex3ab"><span class="tex">-7</span></div><div data-show="ex3ab"><span class="tex">(-1,\ -7)</span></div>
+          <div><span class="tex">0</span></div><div data-show="ex3ab"><span class="tex">-4</span></div><div data-show="ex3ab"><span class="tex">(0,\ -4)</span></div>
+          <div><span class="tex">1</span></div><div data-show="ex3ab"><span class="tex">-1</span></div><div data-show="ex3ab"><span class="tex">(1,\ -1)</span></div>
+          <div><span class="tex">2</span></div><div data-show="ex3ab"><span class="tex">2</span></div><div data-show="ex3ab"><span class="tex">(2,\ 2)</span></div>
+          <div data-show="ex3e"><span class="tex">5</span></div><div data-show="ex3e"><span class="tex">11</span></div><div data-show="ex3e"><span class="tex">(5,\ 11)</span></div>
+          <div data-show="ex3f"><span class="tex">4</span></div><div data-show="ex3f"><span class="tex">8</span></div><div data-show="ex3f"><span class="tex">(4,\ 8)</span></div>
+        </div>
+        <div id="ex3-grid"></div>
+      </div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Substitute each input: <span class="tex">y=3(-2)-4=-10</span>, and so on. The outputs are <span class="tex">-10,\ -7,\ -4,\ -1,\ 2</span>; the points line up, so join them with a line and arrows.</div></div></div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(c) Use the graph to determine the value of <span class="tex">y</span> when <span class="tex">x=5</span>.</div><div class="work" style="--h:130px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Follow the line to <span class="tex">x=5</span>: it passes through <span class="tex">\boldsymbol{y=11}</span>.</div></div></div>
+    <div class="part"><div class="pl">(d) Use the equation to determine the value of <span class="tex">y</span> when <span class="tex">x=5</span>, and verify your answer in (c).</div><div class="work" style="--h:130px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">y=3(5)-4=15-4=\boldsymbol{11}</span>, which matches the graph reading in (c).</div></div></div>
+    <div class="part" data-part="ex3e"><div class="pl">(e) Write the value of <span class="tex">y</span> when <span class="tex">x=5</span> in the table of values, using the first blank row in (a).</div><div class="work" style="--h:70px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">First blank row: <span class="tex">5\ \big|\ 11\ \big|\ (5,\ 11)</span></div></div></div>
+    <div class="part" data-part="ex3f"><div class="pl">(f) Use the graph to determine the value of <span class="tex">x</span> when <span class="tex">y=8</span>. Record this ordered pair in the last blank row in (a).</div><div class="work" style="--h:70px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The line reaches <span class="tex">y=8</span> at <span class="tex">\boldsymbol{x=4}</span>; check <span class="tex">3(4)-4=8</span>. Last blank row: <span class="tex">4\ \big|\ 8\ \big|\ (4,\ 8)</span></div></div></div>
+  </div>
+  <div class="parts c1">
+    <div class="part" data-part="ex3g"><div class="pl">(g) Complete the statement: this relation is called a <span class="u5l2-blank"><span class="u5l2-bv" data-show="ex3g">linear</span></span> relation because its graph is a straight line.</div><div class="work" style="--h:40px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>linear</b></div></div></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>A relation whose graph is a curve</h3></div>
+  <p class="q">Consider the relation described by the equation <span class="tex">y=x^2-8</span>.</p>
+  <div class="parts c1">
+    <div class="part" data-part="ex4ab"><div class="pl">(a) Complete the table of values. &nbsp; (b) Plot the ordered pairs from (a) on the grid.</div>
+      <div class="u5l2-tg">
+        <div class="u5l2-tab" style="--rh:46px">
+          <div class="u5l2-th">Input (<span class="tex">x</span>)</div><div class="u5l2-th">Output (<span class="tex">y</span>)</div><div class="u5l2-th">Pair (<span class="tex">x,\ y</span>)</div>
+          <div><span class="tex">4</span></div><div data-show="ex4ab"><span class="tex">8</span></div><div data-show="ex4ab"><span class="tex">(4,\ 8)</span></div>
+          <div><span class="tex">3</span></div><div data-show="ex4ab"><span class="tex">1</span></div><div data-show="ex4ab"><span class="tex">(3,\ 1)</span></div>
+          <div><span class="tex">2</span></div><div data-show="ex4ab"><span class="tex">-4</span></div><div data-show="ex4ab"><span class="tex">(2,\ -4)</span></div>
+          <div><span class="tex">1</span></div><div data-show="ex4ab"><span class="tex">-7</span></div><div data-show="ex4ab"><span class="tex">(1,\ -7)</span></div>
+          <div><span class="tex">0</span></div><div data-show="ex4ab"><span class="tex">-8</span></div><div data-show="ex4ab"><span class="tex">(0,\ -8)</span></div>
+          <div><span class="tex">-1</span></div><div data-show="ex4ab"><span class="tex">-7</span></div><div data-show="ex4ab"><span class="tex">(-1,\ -7)</span></div>
+          <div><span class="tex">-2</span></div><div data-show="ex4ab"><span class="tex">-4</span></div><div data-show="ex4ab"><span class="tex">(-2,\ -4)</span></div>
+          <div><span class="tex">-3</span></div><div data-show="ex4ab"><span class="tex">1</span></div><div data-show="ex4ab"><span class="tex">(-3,\ 1)</span></div>
+          <div data-show="ex4e"><span class="tex">-4</span></div><div data-show="ex4e"><span class="tex">8</span></div><div data-show="ex4e"><span class="tex">(-4,\ 8)</span></div>
+        </div>
+        <div id="ex4-grid"></div>
+      </div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Square the input, then subtract 8: <span class="tex">y=4^2-8=8</span>, <span class="tex">y=(-1)^2-8=-7</span>, and so on. The outputs are <span class="tex">8,\ 1,\ -4,\ -7,\ -8,\ -7,\ -4,\ 1</span>.</div></div></div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(c) Use the symmetry of the graph or table to predict the value of <span class="tex">y</span> when <span class="tex">x=-4</span>.</div><div class="work" style="--h:130px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The table is symmetric about <span class="tex">x=0</span> (<span class="tex">x=\pm1\to y=-7</span>, <span class="tex">\pm2\to-4</span>, <span class="tex">\pm3\to1</span>), so <span class="tex">x=-4</span> gives the same output as <span class="tex">x=4</span>: <span class="tex">\boldsymbol{y=8}</span>.</div></div></div>
+    <div class="part"><div class="pl">(d) Use the equation to determine the value of <span class="tex">y</span> when <span class="tex">x=-4</span>, and verify your answer in (c).</div><div class="work" style="--h:130px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">y=(-4)^2-8=16-8=\boldsymbol{8}</span>, matching the prediction in (c).</div></div></div>
+    <div class="part" data-part="ex4e"><div class="pl">(e) Write the value of <span class="tex">y</span> when <span class="tex">x=-4</span> in the blank row in (a), then connect the points on the grid with a smooth curve.</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Blank row: <span class="tex">-4\ \big|\ 8\ \big|\ (-4,\ 8)</span>; the plotted points join into a smooth curve (a parabola).</div></div></div>
+    <div class="part"><div class="pl">(f) Why do you think this type of relation is called a <b>nonlinear relation</b>?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Its graph is a <b>curve</b>, not a straight line: the <span class="tex">x^2</span> term means equal steps in <span class="tex">x</span> do not produce equal steps in <span class="tex">y</span>.</div></div></div>
+    <div class="part think u5l2-span2"><div class="pl"><span class="think-tag">Think</span> <span class="tex">x=3</span> and <span class="tex">x=-3</span> both give the output 1. Can two inputs share an output? Can one input have two outputs here?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Two inputs <b>can</b> share an output (like 13 in Example 1(a)). But each input here has only <b>one</b> output: squaring a number gives one answer. (Lesson 7 makes this idea official.)</div></div></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<!-- ================= linear vs nonlinear ================= -->
+<section class="card" data-ink="s5" data-section="4. Linear or nonlinear?">
+  <h3 class="sub">Linear or nonlinear? Three ways to tell</h3>
+  <div class="def"><b>The table test for linearity.</b> When the inputs in a table go up in <b>equal steps</b>, look at how the outputs change from one row to the next. If the outputs change by the <b>same amount</b> every step (a constant difference), the relation is <b>linear</b>. If they do not, it is <b>nonlinear</b>.</div>
+  <p>In Example 3 (<span class="tex">x=-2,\ -1,\ 0,\ 1,\ 2</span>) the outputs <span class="tex">-10,\ -7,\ -4,\ -1,\ 2</span> go up by 3 every step: linear. In Example 4 (<span class="tex">x=0,\ 1,\ 2,\ 3,\ 4</span>) the outputs <span class="tex">-8,\ -7,\ -4,\ 1,\ 8</span> go up by <span class="tex">1,\ 3,\ 5,\ 7</span>: nonlinear.</p>
+  <div class="explainer" data-explainer="linTest"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Equal steps in the inputs first.</b> If the inputs jump unevenly (say <span class="tex">0,\ 1,\ 3,\ 4</span>), the output changes can look uneven even for a straight line. Check the input column before you judge the output column.</div></div>
+  <div class="u5l2-three">
+    <div><b>Graph</b>a straight line → linear; a curve → nonlinear.</div>
+    <div><b>Table</b>equal input steps give equal output changes → linear.</div>
+    <div><b>Equation</b>the input only to the first power (no <span class="tex">x^2</span>) → linear.</div>
+  </div>
+  <div class="explainer" data-explainer="linOrNot"></div>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>A relation</b> compares two quantities. Six views of one relation: <b>words</b>, a <b>table of values</b>, <b>ordered pairs</b>, an <b>arrow diagram</b>, an <b>equation</b> and a <b>graph</b>.</div>
+    <div>The <b class="u5l2-dvt">dependent</b> variable (output) <b>depends on</b> the <b class="u5l2-ivt">independent</b> variable (input). Test the sentence both ways: only one makes sense.</div>
+    <div><b>Where is the independent variable?</b> First coordinate · left column (or top row) · start of the arrows · horizontal axis. An equation is usually solved for the <b>dependent</b> variable.</div>
+    <div><b>Linear:</b> a straight-line graph; equal input steps give equal output changes; no <span class="tex">x^2</span>. <b>Nonlinear:</b> a curve, like <span class="tex">y=x^2-8</span>.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u5l2" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 2 — Describing Relationships Between Two Quantities</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l3/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 3 — Where Graphs Meet the Axes</b><div class="muted"><span class="tex">x</span>- and <span class="tex">y</span>-intercepts: substitute <span class="tex">y=0</span>, substitute <span class="tex">x=0</span>, and read the meaning in context</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u5l2.js';
+  boot({ key: 'u5l2', homeHref: '../../', title: '5.2 Describing Relationships' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>
