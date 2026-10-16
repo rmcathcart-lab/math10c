@@ -134,6 +134,7 @@
 /* multiple choice: A–D cards */
 .bk-mc { --bk-cols: 4; display: grid; grid-template-columns: repeat(var(--bk-cols), minmax(0, 1fr)); gap: 8px 14px; margin: 10px 0 8px; }
 .bk-opt { display: flex; align-items: baseline; gap: 10px; border: 1.5px solid #e6dfcf; background: #fffdf8; border-radius: 10px; padding: 6px 12px; font-size: 19px; transition: background .3s, border-color .3s, opacity .3s, box-shadow .3s; min-width: 0; }
+.bk-otxt { flex: 1; min-width: 0; }
 .bk-letter { flex: none; color: var(--amber); font: 800 18px var(--round); }
 .bk-opt .katex { font-size: 1.06em; white-space: nowrap; }
 .bk-mc[data-pick] .bk-opt { cursor: pointer; }

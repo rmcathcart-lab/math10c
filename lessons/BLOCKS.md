@@ -181,3 +181,6 @@ gives <span data-reveal><span class="tex">7</span></span>
   mixing in a block wherever it saves time. Variety and the number of animations per lesson should not drop.
 
 Explainer tip: the stage height is `ex.def.height` (there is no `ex.H`); width is `ex.W`.
+MC options: everything after the letter is wrapped in `.bk-otxt` automatically, so words and math flow on one line.
+Rotating/sliding SVG groups: blocks.css gives `g` `transform-box: fill-box; transform-origin: center`; to rotate about a
+point with `rotate(θ cx cy)` set `style.transformBox = 'view-box'; style.transformOrigin = '0 0'` on that group.

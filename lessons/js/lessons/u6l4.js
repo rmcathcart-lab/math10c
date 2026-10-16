@@ -499,7 +499,7 @@ const negRecip = {
     return [
       { cap: d.calc ? `First the slope of ${T('PQ')}: ${T(d.givenCap)}.` : `The given segment has slope ${T(d.given.split('=').pop())}${d.zero ? ': it is horizontal' : ''}.`,
         run: async (c) => { await S1.show(c); if (!d.zero) await showTri(c, t1, 380); rG.querySelector('.u6l4-nrv').innerHTML = T(d.given); unhide(rG); await show(c, rG); } },
-      { cap: `<b>Parallel:</b> slide a copy of the same slope triangle somewhere else. Same rise, same run: ${T(d.parT)}.`,
+      { cap: d.zero ? `<b>Parallel:</b> slide a copy of the horizontal segment up or down. Still a rise of ${T('0')}: ${T(d.parT)}.` : `<b>Parallel:</b> slide a copy of the same slope triangle somewhere else. Same rise, same run: ${T(d.parT)}.`,
         run: async (c) => { await S2.show(c); if (t2) await showTri(c, t2, 380); rP.querySelector('.u6l4-nrv').innerHTML = T(d.parT); unhide(rP); await show(c, rP); } },
       { cap: d.zero ? `<b>Perpendicular:</b> write ${T('0=\\dfrac01')} and flip it: ${T('\\dfrac10')}, division by zero. The slope is <b>undefined</b>.` : `<b>Perpendicular:</b> turning the triangle 90° swaps rise and run, so <b>flip the fraction</b>: ${T(d.f0)} becomes ${T(d.f1)}.`,
         run: async (c) => { const v = rQ.querySelector('.u6l4-nrv'); v.innerHTML = ''; v.appendChild(card); unhide(rQ); await show(c, rQ); await sleep(c, 250); await flip(c, card, T(d.f1)); } },

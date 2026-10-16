@@ -392,7 +392,7 @@ const ST = {
       `The staff drink at a steady rate. Watch the jug and the graph together.`,
       `Day 6: the jug is empty. The graph meets the horizontal axis at ${T('(6,\\ 0)')}: <b>horizontal intercept 6</b>, empty after 6 days.`,
       `Slope: rise ${T('-18')} L over run ${T('6')} days, so ${T('m=\\dfrac{-18\\text{ L}}{6\\text{ days}}=-3')} <b>L per day</b>: the staff drink 3 L each day.`,
-      `The graph only runs from day 0 to day 6, and from 18 L down to 0 L: a <b>restricted</b> domain and range.`],
+      `The graph only runs from day 0 to day 6, and from 18 L down to 0 L: a <b>restricted</b> domain and range. Write ${T('d')} for the day and ${T('V')} for the litres of water left.`],
     res: ['vertical intercept <b>18</b>: full at the start', 'horizontal intercept <b>6</b>: empty after 6 days', `slope ${T('-3')} L per day`,
       `D: ${T('\\{d\\mid 0\\le d\\le 6,\\ d\\in\\mathbb{R}\\}')}`, `R: ${T('\\{V\\mid 0\\le V\\le 18,\\ V\\in\\mathbb{R}\\}')}`],
     run: '\\text{run } 6\\text{ days}', rise: '\\text{rise } -18\\text{ L}', read: (x, y) => `Day ${x.toFixed(1)} · ${y.toFixed(1)} L` },
