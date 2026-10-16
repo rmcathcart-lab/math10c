@@ -1,0 +1,143 @@
+/* Math 10C · Unit 6 · Lesson 3 — Rise Over Run: styles used only on this page (prefix u6l3-).
+ * Colours: run amber (horizontal), rise purple (vertical), segments blue; positive green, negative red. */
+
+.ex-cap { min-height: 128px; }
+.ex-cap .katex { font-size: 1.04em; }
+.chip .katex { font-size: 1em; }
+.pl .katex { font-size: 1.1em; }
+.ans .katex { font-size: 1.04em; }
+.pill-col { display: flex; flex-direction: column; gap: 6px; }
+.lesson .katex { white-space: nowrap; }
+h2 .katex, h3 .katex { font-size: .95em; }
+.u6l3-c-rise { color: #7b4fc4; }
+.u6l3-c-run { color: #c27a0e; }
+.u6l3-pos { color: var(--ok); }
+.u6l3-neg { color: var(--red); }
+.u6l3-zero { color: #1f5bd6; }
+.u6l3-und { color: #7b4fc4; }
+.u6l3-small { font-size: 15px !important; }
+.u6l3-sub { font-size: 18px; margin: 6px 0 2px; }
+
+/* ---------------- warm-up ---------------- */
+.u6l3-wtop { display: grid; grid-template-columns: 580px 1fr; gap: 22px; align-items: start; }
+.u6l3-wfig { display: flex; flex-direction: column; gap: 10px; }
+.u6l3-wbtns { display: flex; gap: 10px; flex-wrap: wrap; }
+.u6l3-wqs .q-line { margin-top: 6px; }
+.u6l3-wa { margin: 0 0 8px 50px; }
+.u6l3-wa .pill.small { margin-left: 0; }
+.u6l3-early { margin-top: 14px; }
+.u6l3-social { font-style: italic; color: var(--ink2); font-size: 19px; text-align: center; margin: 16px 0 0; }
+.u6l3-rampwrap { position: relative; background: #fff; border: 1px solid var(--line2); border-radius: 14px; }
+.u6l3-rampwrap svg, .u6l3-rcmp svg { position: absolute; left: 0; top: 0; }
+.u6l3-rcmp { position: absolute; left: 0; top: 0; }
+.u6l3-rname { font: 800 19px var(--round); color: var(--ink); }
+.u6l3-rrise { font: 700 17px var(--round); color: #7b4fc4; }
+.u6l3-rrun { font: 700 17px var(--round); color: #c27a0e; }
+.u6l3-rfrac { font-size: 19px; background: rgba(255, 255, 255, .92); border: 2px solid #1f5bd6; border-radius: 9px; padding: 0 6px; }
+.u6l3-rnote { font-size: 14px; font-style: italic; color: var(--muted); }
+.u6l3-rcl { font: 800 18px var(--round); }
+.u6l3-rcap { font-size: 17px; color: var(--ink2); max-width: 520px; white-space: normal; }
+
+/* ---------------- section 1 ---------------- */
+.u6l3-defrow { display: grid; grid-template-columns: 1fr 300px; gap: 18px; align-items: center; margin-bottom: 14px; }
+.u6l3-defrow .def { margin: 0; }
+.u6l3-formula { font-size: 30px; text-align: center; background: #f6f5f1; border-radius: 14px; padding: 14px 10px; }
+.u6l3-signs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 0 0 14px; }
+.u6l3-sign { border-radius: 12px; padding: 10px 16px; font-size: 19px; border: 2px solid; display: grid; grid-template-columns: 90px 1fr 1fr; gap: 8px; align-items: center; }
+.u6l3-sg-h { font: 800 20px var(--round); text-transform: uppercase; letter-spacing: .04em; }
+.u6l3-sg-rise { background: #f4effc; border-color: #d5c6f0; } .u6l3-sg-rise .u6l3-sg-h { color: #7b4fc4; }
+.u6l3-sg-run { background: #fdf4e6; border-color: #f0d6a8; } .u6l3-sg-run .u6l3-sg-h { color: #c27a0e; }
+
+/* ---------------- example figures ---------------- */
+.u6l3-ex1 { display: grid; grid-template-columns: 400px 1fr; gap: 24px; align-items: start; margin-bottom: 10px; }
+.u6l3-tab { border-collapse: collapse; width: 100%; font-size: 21px; margin-top: 20px; }
+.u6l3-tab th, .u6l3-tab td { border: 2px solid #cfc7b5; text-align: center; padding: 6px 8px; }
+.u6l3-tab th { background: #f6f5f1; font: 800 18px var(--round); }
+.u6l3-tab td { height: 64px; }
+.u6l3-tab td:first-child { width: 110px; font-weight: 700; }
+.u6l3-ex2, .u6l3-ex3 { display: grid; grid-template-columns: 380px 1fr; gap: 20px; align-items: start; margin-bottom: 14px; }
+.u6l3-ex2 .parts, .u6l3-ex3 .parts { margin: 0; }
+.u6l3-fill { font-size: 21px; line-height: 2.1; margin: 4px 0 8px; }
+.u6l3-blank { display: inline-block; min-width: 150px; border-bottom: 2px solid var(--ink2); text-align: center; color: var(--red); }
+.u6l3-ex6 { display: grid; grid-template-columns: 400px 1fr; gap: 20px; align-items: start; margin-bottom: 14px; }
+.u6l3-ex6 .parts { margin: 0; }
+.u6l3-ex7fig { margin: 8px 0 4px; }
+.u6l3-ex8 { display: grid; grid-template-columns: 400px 1fr; gap: 20px; align-items: start; margin: 8px 0; }
+.u6l3-ex8g .muted { margin-top: 4px; font-size: 15px; }
+.u6l3-ex8w { display: flex; flex-direction: column; height: 100%; }
+.u6l3-ans8 { display: grid; grid-template-columns: 300px 1fr; gap: 16px; align-items: start; }
+.u6l3-lname { font-size: 16px; }
+.u6l3-calcfr { font-family: var(--round); }
+.u6l3-exgap { margin-top: 18px; }
+.u6l3-rates { margin-bottom: 16px; }
+.u6l3-rates .def { margin: 0; }
+
+/* the four kinds of slope */
+.u6l3-kinds-box { margin-top: 18px; }
+.u6l3-kinds { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 10px; }
+.u6l3-kind { background: #fff; border-radius: 12px; padding: 8px 10px 10px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 2px; border-top: 5px solid; }
+.u6l3-kind b { font-size: 19px; }
+.u6l3-kt { font-size: 16px; color: var(--ink2); line-height: 1.3; }
+.u6l3-k-pos { border-color: var(--ok); } .u6l3-k-neg { border-color: var(--red); } .u6l3-k-zero { border-color: #1f5bd6; } .u6l3-k-und { border-color: #7b4fc4; }
+
+/* ---------------- explainer pieces ---------------- */
+.u6l3-panel { background: #fff; border: 1px solid var(--line2); border-radius: 14px; padding: 10px 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
+.u6l3-ph { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.u6l3-line { font-size: 20px; line-height: 1.35; }
+.u6l3-mline { font-size: 22px; }
+.u6l3-soft { color: var(--ink2); }
+.u6l3-big { font-size: 26px; text-align: center; margin-top: 8px; }
+.u6l3-ro { display: flex; flex-direction: column; gap: 8px; margin: 4px 0 6px; }
+.u6l3-ro-r { display: flex; align-items: baseline; gap: 14px; font-size: 28px; background: #f6f5f1; border-radius: 12px; padding: 4px 16px; border-left: 6px solid; }
+.u6l3-ro-run { border-color: #c27a0e; } .u6l3-ro-rise { border-color: #7b4fc4; }
+.u6l3-ro-k { font: 800 20px var(--round); color: var(--ink2); min-width: 54px; }
+.u6l3-ro-v { font-family: var(--round); }
+.u6l3-frbox { font-size: 24px; text-align: center; background: #f6f5f1; border-radius: 12px; padding: 8px 10px; min-height: 64px; display: grid; place-items: center; }
+.u6l3-log { display: flex; flex-direction: column; gap: 3px; font-size: 19px; }
+.u6l3-stampb { align-self: center; margin-top: auto; margin-bottom: 8px; }
+.u6l3-rulebox { margin-top: auto; background: var(--brand-soft); border-left: 5px solid var(--brand2); border-radius: 10px; padding: 8px 14px; font-size: 21px; line-height: 1.45; }
+.u6l3-ptab { border-collapse: collapse; font-size: 20px; width: 100%; }
+.u6l3-ptab th, .u6l3-ptab td { border-bottom: 1px solid var(--line2); padding: 4px 6px; text-align: center; height: 40px; }
+.u6l3-ptab th { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.u6l3-ptab th.u6l3-c-rise { color: #7b4fc4; } .u6l3-ptab th.u6l3-c-run { color: #c27a0e; }
+.u6l3-ptab td:first-child { font-weight: 700; }
+
+/* slope triangle labels and count bubbles */
+.u6l3-tlab { font: 700 18px var(--round); background: rgba(255, 255, 255, .9); border-radius: 7px; padding: 0 5px; white-space: nowrap; }
+.u6l3-trun { color: #c27a0e; } .u6l3-trise { color: #7b4fc4; }
+.u6l3-bub { font: 800 14px var(--round); color: #fff; border-radius: 10px; padding: 0 6px; min-width: 20px; text-align: center; line-height: 20px; }
+.u6l3-bub-run { background: #c27a0e; } .u6l3-bub-rise { background: #7b4fc4; }
+.u6l3-qmark { font: 900 34px var(--round); color: var(--red); }
+
+/* leftRight tiles */
+.u6l3-tiles { display: flex; flex-direction: column; gap: 8px; }
+.u6l3-tile { font-size: 21px; border-radius: 10px; padding: 6px 14px; background: #f6f5f1; border-left: 6px solid; }
+.u6l3-tile-pos { border-color: var(--ok); } .u6l3-tile-neg { border-color: var(--red); } .u6l3-tile-zero { border-color: #1f5bd6; } .u6l3-tile-und { border-color: #7b4fc4; }
+
+/* the dial */
+.u6l3-dialwrap { position: relative; }
+.u6l3-dialwrap svg { position: absolute; left: 0; top: 0; }
+.u6l3-dtick { font-size: 17px; font-weight: 700; }
+.u6l3-dzone { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .05em; }
+.u6l3-dialro { margin-top: auto; background: #f6f5f1; border-radius: 12px; padding: 8px 14px; min-height: 104px; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+.u6l3-dm { font-size: 28px; }
+.u6l3-ds { font-size: 19px; color: var(--ink2); }
+
+/* order, roof, rate, missing */
+.u6l3-nlhost { position: relative; flex: none; }
+.u6l3-scale { font-size: 26px; text-align: center; background: #f6f5f1; border-radius: 12px; padding: 8px 10px; }
+.u6l3-pitch { position: relative; align-self: center; }
+.u6l3-pitch svg { position: absolute; left: 0; top: 0; }
+.u6l3-pitchlab { font: 800 20px var(--round); color: #1f5bd6; }
+.u6l3-eqs { display: flex; flex-direction: column; gap: 10px; }
+.u6l3-ptl { font-size: 17px !important; }
+.u6l3-leg { font-size: 18px; background: #f6f5f1; border-radius: 10px; padding: 4px 12px; }
+.u6l3-dialrow { display: flex; gap: 10px; height: 100%; }
+.u6l3-dialrow .u6l3-dialro { flex: 1; margin: 0; justify-content: flex-start; padding-top: 30px; gap: 10px; }
+.u6l3-dialrow .u6l3-rulebox { margin-top: auto; font-size: 19px; }
+.u6l3-nlhost .bk-ptlab { font-size: 19px; }
+.u6l3-ptab .katex { font-size: 1.05em; }
+.u6l3-ptab td { height: 50px; }
+.u6l3-dialrow .u6l3-dm { font-size: 27px; }
+.u6l3-dialrow .u6l3-ds { font-size: 17px; }
+.u6l3-dialrow .u6l3-rulebox { font-size: 17px; padding: 6px 10px; }

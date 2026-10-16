@@ -1,0 +1,133 @@
+/* Math 10C · Unit 6 · Lesson 2 — The Distance and Midpoint Formulas: styles used only on this page (prefix u6l2-).
+ * Colours: run amber, rise purple (matching Unit 5's x/domain amber and y/range purple), segments blue, midpoints red.
+ * Extension/Foundation styling follows Unit 4 Lesson 7 (purple). */
+:root { --u6l2-ext: #7b4fc4; --u6l2-ext-soft: #f3eefb; --u6l2-run: #c27a0e; --u6l2-rise: #7b4fc4; --u6l2-seg: #1f5bd6; }
+
+.ex-cap { min-height: 128px; }
+.ex-cap .katex { font-size: 1.04em; }
+.chip .katex { font-size: 1em; }
+.pl .katex { font-size: 1.1em; }
+.ans .katex { font-size: 1.04em; }
+.part.span2 { grid-column: span 2; }
+.pill-col { display: flex; flex-direction: column; gap: 6px; }
+.lesson .katex { white-space: nowrap; }
+h2 .katex, h3 .katex { font-size: .95em; }
+.u6l2-crun { color: var(--u6l2-run); }
+.u6l2-crise { color: var(--u6l2-rise); }
+
+/* ---------------- hero: Extension / Foundation ---------------- */
+.u6l2-hero { border-top: 6px solid var(--u6l2-ext); }
+.u6l2-extbox { margin-top: 14px; padding: 12px 18px 12px; border-radius: 14px; background: var(--u6l2-ext-soft); border: 1.5px solid #cdb9ef; color: #3d2a66; font-size: 18px; }
+.u6l2-extbox p { margin: 8px 0 8px; }
+.u6l2-exthead { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.u6l2-extpill { display: inline-block; background: var(--u6l2-ext); color: #fff; font: 800 16px var(--font); letter-spacing: .07em; text-transform: uppercase; padding: 5px 14px; border-radius: 9px; }
+.u6l2-extsub { font-weight: 600; color: #5b4a7f; }
+.u6l2-rf3 { font-size: 15px; color: #5b4a7f; }
+.u6l2-rf3 b { display: inline-block; background: var(--brand); color: #fff; border-radius: 6px; padding: 0 7px; margin-right: 6px; font-size: 13px; }
+
+/* ---------------- warm-up ---------------- */
+.u6l2-wtop { display: grid; grid-template-columns: 560px 1fr; gap: 22px; align-items: start; }
+.u6l2-wfig { display: flex; flex-direction: column; gap: 10px; }
+.u6l2-wbtns { display: flex; gap: 8px; flex-wrap: wrap; }
+.u6l2-wqs .q-line { margin-top: 6px; }
+.u6l2-wa { margin: 0 0 8px 50px; }
+.u6l2-wa .pill.small { margin-left: 0; }
+.u6l2-poll4 .poll-opts { grid-template-columns: repeat(4, 1fr); }
+.u6l2-early { margin-top: 14px; }
+.u6l2-social { font-style: italic; color: var(--ink2); font-size: 19px; text-align: center; margin: 16px 0 0; }
+.u6l2-hlab { font: 800 22px var(--round); color: var(--ink); background: rgba(255, 255, 255, .9); border-radius: 6px; padding: 0 5px; }
+.u6l2-edgelab { font: 800 17px var(--round); color: var(--brand2); background: rgba(255, 255, 255, .9); border-radius: 6px; padding: 0 5px; }
+
+/* ---------------- static figures and cards ---------------- */
+.u6l2-s1row { display: grid; grid-template-columns: 1fr 470px; gap: 22px; align-items: center; }
+.u6l2-s1row p:first-child { margin-top: 0; }
+.u6l2-calc { background: #f6f5f1; border-radius: 12px; padding: 10px 18px; margin: 10px 0 16px; font-size: 20px; line-height: 2; }
+.u6l2-formula { font-size: 20px; }
+.u6l2-disp { text-align: center; font-size: 26px; margin: 8px 0 6px; }
+.u6l2-ansrow { display: grid; grid-template-columns: 1fr 280px; gap: 16px; align-items: start; }
+.u6l2-s2row { display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: center; }
+.u6l2-s2row .def { margin: 0; }
+.u6l2-svgt { font: italic 700 24px "KaTeX_Math", Georgia, serif; fill: var(--ink); }
+.u6l2-svgm { fill: var(--red); }
+.u6l2-gridq { margin: 6px 0 4px; display: flex; justify-content: center; }
+.u6l2-ansfig { display: flex; justify-content: center; margin: 4px 0 8px; }
+.u6l2-ex6 { display: grid; grid-template-columns: 340px 1fr; gap: 18px; align-items: start; margin-bottom: 10px; }
+.u6l2-ex6 .parts { margin-bottom: 0; }
+
+/* Example 4 answer: lengths laid end to end */
+.u6l2-strip { --u: 13px; position: relative; margin: 12px 0 10px; width: calc(39 * var(--u)); }
+.u6l2-sbar { display: inline-flex; align-items: center; justify-content: center; height: 30px; width: calc(var(--w) * var(--u)); color: #fff; font-weight: 800; box-sizing: border-box; border: 2px solid #fff; border-radius: 6px; }
+.u6l2-sb1 { background: var(--brand2); } .u6l2-sb2 { background: var(--u6l2-seg); } .u6l2-sb3 { background: var(--red); width: calc(39 * var(--u)); display: flex; }
+.u6l2-sdots { position: relative; height: 34px; }
+.u6l2-sdot { position: absolute; top: 4px; left: calc(var(--at) * var(--u) - 6px); width: 12px; height: 12px; border-radius: 50%; background: var(--ink); }
+.u6l2-sname { position: absolute; top: 12px; left: calc(var(--at) * var(--u) - 6px); font: italic 700 18px Georgia, serif; }
+.u6l2-sname:last-of-type { left: calc(var(--at) * var(--u) - 12px); }
+
+/* Example 8: the coffee-stained notes */
+.u6l2-notes { display: flex; gap: 26px; justify-content: center; margin: 4px 0 16px; font-size: 26px; }
+.u6l2-note { background: #fffdf4; border: 1px solid #e6dcc0; border-radius: 10px; padding: 6px 18px; box-shadow: 0 2px 6px rgba(0, 0, 0, .06); }
+.u6l2-blot { display: inline-block; position: relative; padding: 0 8px; border-radius: 50% 42% 55% 45%; background: radial-gradient(circle at 40% 45%, #8a5a2b 0 45%, #a8743f 60%, rgba(168, 116, 63, .55) 75%, transparent 77%); color: #fff; }
+.u6l2-blot2 { border-radius: 45% 55% 40% 60%; }
+
+/* ---------------- explainers ---------------- */
+.u6l2-panel { background: #fff; border: 1px solid var(--line2); border-radius: 14px; padding: 10px 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
+.u6l2-ph { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.u6l2-ph:empty { display: none; }
+.u6l2-ph .katex { text-transform: none; font-size: 1.25em; }
+.u6l2-line { font-size: 21px; line-height: 1.35; }
+.u6l2-big { font-size: 25px; font-weight: 700; }
+.u6l2-sm { font-size: 18px; }
+.u6l2-no { color: var(--red); }
+.u6l2-mute { color: var(--muted); font-size: 19px; }
+.u6l2-note { font-size: 18px; color: var(--ink2); }
+.u6l2-trun { color: var(--u6l2-run); }
+.u6l2-trise { color: var(--u6l2-rise); }
+.u6l2-boxed { align-self: center; margin-top: 8px; font-size: 23px; border: 3px solid var(--brand2); border-radius: 12px; padding: 6px 14px; background: var(--brand-soft); }
+.u6l2-nlh { font-size: 18px; margin-top: 2px; }
+
+/* leg labels, count bubbles, flying labels and slots */
+.u6l2-legl { font: 800 20px var(--round); background: #fff; border: 2.5px solid currentColor; border-radius: 11px; padding: 0 8px; }
+.u6l2-lrun { color: var(--u6l2-run); }
+.u6l2-lrise { color: var(--u6l2-rise); }
+.u6l2-lhyp { color: var(--u6l2-seg); }
+.u6l2-tick { font: 800 14px var(--round); color: #fff; width: 22px; height: 22px; line-height: 22px; text-align: center; border-radius: 50%; padding: 0; }
+.u6l2-tick-r { background: var(--u6l2-run); }
+.u6l2-tick-u { background: var(--u6l2-rise); }
+.u6l2-fly { position: absolute; z-index: 20; font: 800 20px var(--round); background: #fff; border: 2.5px solid currentColor; border-radius: 11px; padding: 0 8px; white-space: nowrap; box-shadow: 0 6px 16px rgba(0, 0, 0, .18); }
+.u6l2-fline { font-size: 23px; }
+.u6l2-slot { display: inline-block; border: 2px dashed #b8b2a4; border-radius: 8px; padding: 0 4px; margin: 0 2px; transition: border-color .3s; }
+.u6l2-slot > .katex { opacity: 0; transition: opacity .3s; }
+.u6l2-slot.u6l2-filled { border-color: transparent; }
+.u6l2-slot.u6l2-filled > .katex { opacity: 1; }
+.u6l2-srun { color: var(--u6l2-run); }
+.u6l2-srise { color: var(--u6l2-rise); }
+.u6l2-axl { font-size: 22px; font-weight: 700; background: rgba(255, 255, 255, .9); border-radius: 6px; padding: 0 4px; }
+.u6l2-side { font-size: 18px; }
+.u6l2-area { font: 800 24px var(--round); background: rgba(255, 255, 255, .85); border-radius: 8px; padding: 0 6px; }
+.u6l2-hl { font: 800 19px var(--round); }
+.u6l2-mapl { font: 700 italic 16px var(--font); color: #5f7f56; }
+.u6l2-mapr { color: #3f7fb3; }
+
+/* "either order" table */
+.u6l2-otab { display: grid; grid-template-columns: 96px 1fr 1fr; gap: 8px 10px; align-items: center; margin-top: 4px; }
+.u6l2-oc { font-size: 20px; text-align: center; }
+.u6l2-oh { font: 800 18px var(--round); text-transform: uppercase; letter-spacing: .04em; border-radius: 10px; padding: 4px 0; }
+.u6l2-oh .katex { text-transform: none; font-size: 1.2em; }
+.u6l2-oh1 { background: #e9f1fd; color: var(--u6l2-seg); }
+.u6l2-oh2 { background: #f1eefa; color: #4b3a7a; }
+.u6l2-or { text-align: left; font-size: 17px; line-height: 1.25; }
+.u6l2-oend { align-self: center; margin-top: 14px; }
+
+/* collinear: lengths laid end to end */
+.u6l2-strip2 { position: absolute; }
+.u6l2-bar { position: absolute; height: 40px; border: 2px solid #fff; border-radius: 8px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; color: #fff; font: 800 22px var(--round); }
+.u6l2-stag { position: absolute; font: 700 17px var(--round); color: var(--ink2); white-space: nowrap; }
+.u6l2-stag-x { color: var(--red); font-weight: 800; }
+.u6l2-sline { position: absolute; top: 8px; height: 136px; border-left: 3px dashed var(--ink2); }
+
+/* Example 8 explainer note */
+.u6l2-pnote { display: flex; gap: 18px; justify-content: center; font-size: 22px; background: #fffdf4; border: 1px solid #e6dcc0; border-radius: 10px; padding: 6px 10px; }
+.u6l2-pnote .u6l2-blot { font-weight: normal; transition: background .4s; }
+.u6l2-blot.u6l2-wiped { background: #ffe9a8; color: var(--red); border-radius: 8px; }
+.u6l2-wbody { transform-box: fill-box; transform-origin: 50% 100%; }
+.u6l2-wdot, .u6l2-tower { transform-box: fill-box; transform-origin: center; }

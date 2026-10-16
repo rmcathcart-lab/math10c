@@ -8,7 +8,8 @@ BASE = 'http://localhost:8811/'
 IDS = ['u1/l1', 'u1/l2', 'u1/l3', 'u1/l4', 'u1/l5', 'u1/l6a', 'u1/l6b', 'u1/l7',
        'u2/l1', 'u2/l2', 'u2/l3', 'u2/l4', 'u2/l5a', 'u2/l5b', 'u2/l6', 'u3/l1', 'u3/l2', 'u3/l3', 'u3/l4', 'u3/l5', 'u3/l6',
        'u4/l1a', 'u4/l1b', 'u4/l2', 'u4/l3', 'u4/l4', 'u4/l5', 'u4/l6', 'u4/l7', 'u4/l8',
-       'u5/l1', 'u5/l2', 'u5/l3', 'u5/l4', 'u5/l5', 'u5/l6', 'u5/l7a', 'u5/l7b', 'u5/l8', 'u5/l9', 'u5/l10']
+       'u5/l1', 'u5/l2', 'u5/l3', 'u5/l4', 'u5/l5', 'u5/l6', 'u5/l7a', 'u5/l7b', 'u5/l8', 'u5/l9', 'u5/l10',
+       'u6/l1', 'u6/l2', 'u6/l3', 'u6/l4', 'u6/l5', 'u6/l6']
 async def probe(ctx, url):
     page = await ctx.new_page(); errs, bad = [], []
     page.on('pageerror', lambda e: errs.append(str(e)))

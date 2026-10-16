@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Measuring the Length of a Line Segment · Math 10C 6.1</title>
+<meta name="description" content="Math 10C Unit 6 Lesson 1 (Extension/Foundation): the length of a line segment. Segments and endpoints, horizontal and vertical lengths by counting squares and by subtracting coordinates (and why the absolute value), and diagonal lengths from the right triangle hidden under every slanted segment and the Pythagorean theorem, as exact radicals and decimals. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u6l1.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 6 Characteristics of Linear Relations · Lesson 1</div>
+  <h1>Measuring the Length of a Line Segment</h1>
+  <p class="lede">How long is a piece of a line? On a grid, a <b>horizontal</b> or <b>vertical</b> segment can be measured by counting squares or by subtracting coordinates. A <b>slanted</b> segment hides a right triangle underneath it, and the <b>Pythagorean theorem</b> does the rest.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>name a line segment by its endpoints, write it as <span class="tex">\overline{AB}</span>, and write its length as <span class="tex">AB</span></li>
+      <li>find the length of a <b>horizontal</b> segment by counting squares and by <span class="tex">|x_2-x_1|</span>, and explain why the absolute value is there</li>
+      <li>find the length of a <b>vertical</b> segment by counting squares and by <span class="tex">|y_2-y_1|</span></li>
+      <li>find the length of a <b>diagonal</b> segment from the right triangle under it, <span class="tex">c=\sqrt{a^2+b^2}</span>, as an exact radical in simplest form and as a decimal</li>
+    </ul>
+  </div>
+  <div class="u6l1-xf">
+    <div class="u6l1-xf-tag">Extension /<br>Foundation</div>
+    <div>
+      <p>Lengths of segments, the distance formula and the midpoint formula (Lessons 1 and 2, and the marked parts of Lesson 6) are not Math 10C outcomes. They are kept because they review the <b>Pythagorean theorem</b> on a grid (used again in the trigonometry unit) and because the <b>run</b> and <b>rise</b> of a segment are exactly what slope is built from in Lesson 3. Your teacher may assign them as review or move straight on to Lesson 3.</p>
+      <p>Prepares <span class="u6l1-rf">RF3</span> slope with respect to <b>rise and run</b>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: The Spider and the Fly" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Spider and the Fly</h2></div>
+  <p class="big">The spider wants the fly. It can only <b>crawl</b>: on walls, floor and ceiling. The room is 30 m long, 12 m wide and 12 m high, and each bug is in the middle of its end wall.</p>
+  <div class="u6l1-wfig" id="u6l1-wfig"></div>
+  <div class="u6l1-wbtns">
+    <button type="button" class="pill" id="u6l1-wwall">Straight crawl on the flat wall</button>
+    <button type="button" class="pill" id="u6l1-wflat">Open the room out flat</button>
+    <button type="button" class="pill" id="u6l1-wtri">Show the hidden right triangle</button>
+  </div>
+  <div class="u6l1-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>The obvious route: up, across the ceiling, down. How long is it?</div></div>
+      <div class="u6l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">1+30+11=\boldsymbol{42}</span> m: a vertical piece, a horizontal piece and a vertical piece, each just counted or subtracted.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>On the flat wall, how long is the <b>straight</b> crawl from corner to corner?</div></div>
+      <div class="u6l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>5 m.</b> It is the hypotenuse of a right triangle with legs 4 and 3: <span class="tex">\sqrt{4^2+3^2}=\sqrt{25}=5</span>. It saves 2 m over the edges.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>Open the room out flat, like a box. What does the shortest crawl look like?</div></div>
+      <div class="u6l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">A <b>straight line</b> on the flat net: the hypotenuse of a right triangle whose legs are a horizontal and a vertical segment.</div></div>
+    </div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Can the spider beat the obvious route? How long is the <b>shortest</b> possible crawl to the fly? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> 42 m</div>
+      <div class="opt right"><b>B</b> 40 m</div>
+      <div class="opt"><b>C</b> about 32 m</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>B: 40 m.</b> Crawl up onto the ceiling, slant down across a side wall, then across the floor and onto the far end wall: <b>5 of the 6 faces</b>. Opened out flat, that path is one straight segment with run <span class="tex">1+30+1=32</span> and rise <span class="tex">6+12+6=24</span>, so it is <span class="tex">\sqrt{32^2+24^2}=\sqrt{1600}=40</span> m.<br>
+      <span class="muted"><b>A</b> is the gut feeling: crossing more walls “must” be longer. <b>C</b> is the straight line through the <b>air</b>, <span class="tex">\sqrt{30^2+10^2}\approx31.6</span> m: only if the spider could fly.</span> (Henry Dudeney’s puzzle, about 1903.)</div>
+  </div>
+
+  <div class="bk-wq u6l1-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Try a 4-face route: up onto the ceiling, slant across it and down a side wall, then onto the far end wall. On that net the legs are 37 and 17. Does it still beat 42 m?</div></div>
+    <div class="u6l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">\sqrt{37^2+17^2}=\sqrt{1658}\approx40.7</span> m. Yes, it beats 42 m, but not 40 m.</div></div>
+  </div>
+  <p class="u6l1-social">Poll the room: A, B or C? Then test it with a shoebox and a piece of string.</p>
+</section>
+
+<!-- ================= 1. What is a line segment? ================= -->
+<section class="card" data-ink="s1" data-section="1. What Is a Line Segment?">
+  <div class="sec-h"><span class="badge">1</span><h2>What Is a Line Segment?</h2></div>
+  <div class="def">A <b>line segment</b> is the piece of a line lying between two specific points on that line, called its <b>endpoints</b>. If the endpoints are named <span class="tex">A</span> and <span class="tex">B</span>, the segment is called segment <span class="tex">AB</span>, and it may also be written with a bar on top as <span class="tex">\overline{AB}</span>. Unlike a full line, a segment has a <b>definite length</b>, since it stops at each endpoint.</div>
+  <div class="explainer" data-explainer="segment"></div>
+</section>
+
+<!-- ================= 2. Horizontal ================= -->
+<section class="card" data-ink="s2" data-section="2. Length of a Horizontal Segment">
+  <div class="sec-h"><span class="badge">2</span><h2>Length of a Horizontal Line Segment</h2></div>
+  <p>A line segment is <b>horizontal</b> when both of its endpoints share the same <span class="tex">y</span>-coordinate. Because the segment never rises or falls, its length can be found simply by <b>counting grid squares</b>, or, without a grid, by <b>subtracting the <span class="tex">x</span>-coordinates</b> of the endpoints and taking the <em>positive</em> value of the result, since a length can never be negative.</p>
+  <div class="def-grid">
+    <div class="def"><b>Absolute value.</b> Bars around a number mean “the positive size of”: <span class="tex">|a|</span> is the size of <span class="tex">a</span> with its sign dropped, so <span class="tex">|-9|=9</span> and <span class="tex">|9|=9</span>.</div>
+    <div class="def amber"><b>Horizontal segment:</b><div class="u6l1-thm-eq">length <span class="tex">=|x_2-x_1|</span></div></div>
+  </div>
+  <div class="explainer" data-explainer="countH"></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Horizontal segments on a grid</h3></div>
+  <p class="q">Segments <span class="tex">AB</span>, <span class="tex">CD</span> and <span class="tex">EF</span> are graphed below.</p>
+  <div class="u6l1-exrow">
+    <div id="u6l1-ex1fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(a) Find the length of each segment by counting grid squares.</div><div class="work" style="--h:70px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">AB=6</span> units, <span class="tex">CD=7</span> units, <span class="tex">EF=8</span> units.</div></div></div>
+      <div class="part"><div class="pl">(b) State the coordinates of the endpoints of each segment.</div><div class="work" style="--h:70px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">A(-5,\ 5)</span>, <span class="tex">B(1,\ 5)</span>; <span class="tex">C(-4,\ 2)</span>, <span class="tex">D(3,\ 2)</span>; <span class="tex">E(-5,\ -4)</span>, <span class="tex">F(3,\ -4)</span>.</div></div></div>
+      <div class="part"><div class="pl">(c) For each segment, subtract the <span class="tex">x</span>-coordinate of the left endpoint from the <span class="tex">x</span>-coordinate of the right endpoint.</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x_B-x_A=1-(-5)=6</span>; <span class="tex">x_D-x_C=3-(-4)=7</span>; <span class="tex">x_F-x_E=3-(-5)=8</span>. Each difference matches the length counted in (a).</div></div></div>
+    </div>
+  </div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(d) Based on parts (a)–(c), describe a rule for finding the length of a horizontal line segment directly from the coordinates of its endpoints.</div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The length is the <b>positive difference</b> of the <span class="tex">x</span>-coordinates of the endpoints: length <span class="tex">=|x_2-x_1|</span>. The <span class="tex">y</span>-coordinates play no part, since they are equal. The absolute value is needed because subtracting in the other order gives the same size with the opposite sign, and a length can never be negative.</div></div></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. Why the absolute value?">
+  <h3 class="sub">Why the absolute value?</h3>
+  <p>Subtract the <span class="tex">x</span>-coordinates in one order and you get a positive number; subtract them in the other order and you get its negative. The sign only tells you <b>which way</b> you walked. A length is just <b>how far</b>.</p>
+  <div class="explainer" data-explainer="whyAbs"></div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Horizontal length from the coordinates</h3></div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Line segment <span class="tex">PQ</span> has endpoints <span class="tex">P(5,\ -2)</span> and <span class="tex">Q(-4,\ -2)</span>. Determine the length of <span class="tex">PQ</span>.</div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Both endpoints have <span class="tex">y=-2</span>, so <span class="tex">PQ</span> is horizontal.<br><span class="tex">PQ=|x_Q-x_P|=|-4-5|=|-9|=\boldsymbol{9}</span> units</div></div></div>
+    <div class="part"><div class="pl">(b) Determine the length of the line segment from <span class="tex">M(a-3,\ b)</span> to <span class="tex">N(a+5,\ b)</span>.</div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Both endpoints have <span class="tex">y</span>-coordinate <span class="tex">b</span>, so <span class="tex">MN</span> is horizontal.<br><span class="tex">MN=|x_N-x_M|=|(a+5)-(a-3)|=|8|=\boldsymbol{8}</span> units<br>The length does not depend on <span class="tex">a</span> or <span class="tex">b</span>.</div></div></div>
+    <div class="part think span2"><div class="pl"><span class="think-tag">Think</span> In (a), does it matter which endpoint you call <span class="tex">x_1</span> and which you call <span class="tex">x_2</span>?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No.</b> <span class="tex">|5-(-4)|=|9|=9</span> and <span class="tex">|-4-5|=|-9|=9</span>. The order only changes the sign, and the absolute value drops the sign.</div></div></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2c" data-section="2. Letters for coordinates">
+  <h3 class="sub">Letters for coordinates</h3>
+  <p>In Example 2(b) the endpoints are written with letters, so the segment could be anywhere on the grid. Try a few values of <span class="tex">a</span> and <span class="tex">b</span>: the segment slides around, but its length never changes.</p>
+  <div class="explainer" data-explainer="letters"></div>
+</section>
+
+<!-- ================= 3. Vertical ================= -->
+<section class="card" data-ink="s3" data-section="3. Length of a Vertical Segment">
+  <div class="sec-h"><span class="badge">3</span><h2>Length of a Vertical Line Segment</h2></div>
+  <p>A line segment is <b>vertical</b> when both endpoints share the same <span class="tex">x</span>-coordinate. The same idea applies, just turned <span class="tex">90^\circ</span>: the length is found by subtracting the <span class="tex">y</span>-coordinates of the endpoints and taking the positive value of the result.</p>
+  <div class="def" style="border-left-color:#7b4fc4;background:#f3effb"><b>Vertical segment:</b> length <span class="tex">=|y_2-y_1|</span></div>
+  <div class="explainer" data-explainer="countV"></div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Vertical segments on a grid</h3></div>
+  <p class="q">Segments <span class="tex">GH</span>, <span class="tex">IJ</span> and <span class="tex">KL</span> are graphed below.</p>
+  <div class="u6l1-exrow">
+    <div id="u6l1-ex3fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(a) Find the length of each segment by counting grid squares.</div><div class="work" style="--h:70px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">GH=8</span> units, <span class="tex">IJ=6</span> units, <span class="tex">KL=7</span> units.</div></div></div>
+      <div class="part"><div class="pl">(b) State the coordinates of the endpoints of each segment.</div><div class="work" style="--h:70px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">G(-4,\ 5)</span>, <span class="tex">H(-4,\ -3)</span>; <span class="tex">I(1,\ 4)</span>, <span class="tex">J(1,\ -2)</span>; <span class="tex">K(4,\ 3)</span>, <span class="tex">L(4,\ -4)</span>.</div></div></div>
+      <div class="part"><div class="pl">(c) For each segment, subtract the <span class="tex">y</span>-coordinate of the lower endpoint from the <span class="tex">y</span>-coordinate of the upper endpoint.</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">y_G-y_H=5-(-3)=8</span>; <span class="tex">y_I-y_J=4-(-2)=6</span>; <span class="tex">y_K-y_L=3-(-4)=7</span>. Each matches the count in (a). The other order gives <span class="tex">-8</span>, <span class="tex">-6</span>, <span class="tex">-7</span>: the same sizes with the opposite sign.</div></div></div>
+    </div>
+  </div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(d) Based on parts (a)–(c), describe a rule for finding the length of a vertical line segment directly from the coordinates of its endpoints.</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The length is the <b>positive difference</b> of the <span class="tex">y</span>-coordinates of the endpoints: length <span class="tex">=|y_2-y_1|</span>. The <span class="tex">x</span>-coordinates play no part, since they are equal.</div></div></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Vertical length from the coordinates</h3></div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Line segment <span class="tex">UV</span> has endpoints <span class="tex">U(3,\ -2)</span> and <span class="tex">V(3,\ -11)</span>. Determine the length of <span class="tex">UV</span>.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Both endpoints have <span class="tex">x=3</span>, so <span class="tex">UV</span> is vertical.<br><span class="tex">UV=|y_V-y_U|=|-11-(-2)|</span><br><span class="tex">=|-11+2|=|-9|=\boldsymbol{9}</span> units</div></div></div>
+    <div class="part"><div class="pl">(b) Determine the length of the line segment from <span class="tex">S(a,\ b)</span> to <span class="tex">T(a,\ b-12)</span>.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Both endpoints have <span class="tex">x</span>-coordinate <span class="tex">a</span>, so <span class="tex">ST</span> is vertical.<br><span class="tex">ST=|y_T-y_S|=|(b-12)-b|=|-12|=\boldsymbol{12}</span> units</div></div></div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Brackets around a negative.</b> Subtracting a negative coordinate is where most mistakes happen: <span class="tex">-11-(-2)=-11+2=-9</span>, not <span class="tex">-13</span>. Write the brackets first, then simplify.</div></div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<!-- ================= 4. Diagonal ================= -->
+<section class="card" data-ink="s4" data-section="4. Diagonal Segments and Pythagoras">
+  <div class="sec-h"><span class="badge">4</span><h2>Diagonal Segments and the Pythagorean Theorem</h2></div>
+  <p>Most line segments on a grid are neither horizontal nor vertical: they run <em>diagonally</em>. To find the length of a diagonal segment, build a right triangle underneath it (or on top of it: either corner works): a horizontal leg (the <b class="u6l1-ca">run</b>), a vertical leg (the <b class="u6l1-cp">rise</b>), and the diagonal segment itself as the <b class="u6l1-cb">hypotenuse</b>.</p>
+  <div class="u6l1-thm">
+    <div id="u6l1-thmfig"></div>
+    <div><b>Pythagorean Theorem.</b> In a right triangle, the square of the hypotenuse <span class="tex">c</span> equals the sum of the squares of the two legs <span class="tex">a</span> and <span class="tex">b</span>:
+      <div class="u6l1-thm-eq"><span class="tex">a^2+b^2=c^2\qquad\Longrightarrow\qquad c=\sqrt{a^2+b^2}</span></div>
+      On a grid, a diagonal segment’s run and rise become the legs <span class="tex">a</span> and <span class="tex">b</span>, and solving for <span class="tex">c</span> gives its length.</div>
+  </div>
+  <div class="explainer" data-explainer="pythag"></div>
+</section>
+
+<section class="card" data-ink="s4b" data-section="4. The hidden right triangle">
+  <h3 class="sub">Every slanted segment hides a right triangle</h3>
+  <p>Slide across from one endpoint (the <b class="u6l1-ca">run</b>), then up or down to the other (the <b class="u6l1-cp">rise</b>). Count both legs, build a square on each side, and let <span class="tex">a^2+b^2=c^2</span> do the rest.</p>
+  <div class="explainer" data-explainer="hidden"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Don’t add the run and the rise.</b> Walking the two legs is the long way round (like the spider’s 7 m along the edges of the flat wall). The slanted segment is the short cut, so it is always <b>shorter</b> than run + rise and <b>longer</b> than either leg.</div></div>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Diagonal lengths by the Pythagorean theorem</h3></div>
+  <p class="q">Determine the length of each segment shown on the grid. Give each answer as <b>(i)</b> an exact value in simplest radical form, and <b>(ii)</b> a decimal approximation to the nearest hundredth.</p>
+  <div class="u6l1-exrow">
+    <div id="u6l1-ex5fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(a) Segment <span class="tex">AB</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">A(-5,\ -2)</span>, <span class="tex">B(-2,\ 7)</span>. Run <span class="tex">=|-2-(-5)|=3</span>; rise <span class="tex">=|7-(-2)|=9</span>.<br><span class="tex">AB^2=3^2+9^2=9+81=90</span><br>(i) <span class="tex">AB=\sqrt{90}=\sqrt{9\times10}=\boldsymbol{3\sqrt{10}}</span> units<br>(ii) <span class="tex">AB\approx\boldsymbol{9.49}</span> units</div></div></div>
+      <div class="part"><div class="pl">(b) Segment <span class="tex">CD</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">C(3,\ 6)</span>, <span class="tex">D(7,\ -4)</span>. Run <span class="tex">=|7-3|=4</span>; rise <span class="tex">=|-4-6|=10</span>.<br><span class="tex">CD^2=4^2+10^2=16+100=116</span><br>(i) <span class="tex">CD=\sqrt{116}=\sqrt{4\times29}=\boldsymbol{2\sqrt{29}}</span> units<br>(ii) <span class="tex">CD\approx\boldsymbol{10.77}</span> units</div></div></div>
+    </div>
+  </div>
+  <div class="parts c1">
+    <div class="part think"><div class="pl"><span class="think-tag">Think</span> Before calculating: which is longer, <span class="tex">AB</span> or <span class="tex">CD</span>? How can you tell from the triangles?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">CD</span>. Its run (4) and its rise (10) are both longer than <span class="tex">AB</span>’s (3 and 9), so its whole triangle is bigger: <span class="tex">10.77&gt;9.49</span>.<div class="u6l1-ansfig" id="u6l1-ex5ans"></div></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Decimals of the radicals.</b> <span class="keys"><kbd>2nd</kbd><kbd>x²</kbd></span> is <span class="tex">\sqrt{\phantom{x}}</span>: <span class="keys"><kbd>√</kbd><kbd>9</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives 9.486832981 → <b>9.49</b>. Check the simplified form gives the same decimal: <span class="keys"><kbd>3</kbd><kbd>×</kbd><kbd>√</kbd><kbd>1</kbd><kbd>0</kbd><kbd>ENTER</kbd></span>.</div>
+    <div class="pill-col"><button class="pill" data-keys="√ 90 =">√90</button><button class="pill" data-keys="3 × √ 10 =">3√10</button><button class="pill" data-keys="√ 116 =">√116</button><button class="pill" data-keys="2 × √ 29 =">2√29</button></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s4c" data-section="4. Simplest radical form">
+  <h3 class="sub">Exact answers: simplest radical form</h3>
+  <p>The exact length is a square root. To simplify it, look for the <b>biggest perfect square</b> that divides the number under the root, and take its square root out front. If no perfect square (other than 1) divides it, the root is already in simplest form.</p>
+  <div class="explainer" data-explainer="simplify"></div>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Segment:</b> the piece of a line between two <b>endpoints</b>. Segment <span class="tex">\overline{AB}</span> has a definite length, written <span class="tex">AB</span>. A length is never negative.</div>
+    <div><b>Horizontal</b> (same <span class="tex">y</span>): count squares, or length <span class="tex">=|x_2-x_1|</span>. The bars drop the sign, so the order of subtraction doesn’t matter.</div>
+    <div><b>Vertical</b> (same <span class="tex">x</span>): count squares, or length <span class="tex">=|y_2-y_1|</span>. The same idea, turned <span class="tex">90^\circ</span>.</div>
+    <div><b>Diagonal:</b> the hidden right triangle. <b>Run</b> and <b>rise</b> are the legs: <span class="tex">c=\sqrt{a^2+b^2}</span>. Exact: simplest radical (<span class="tex">\sqrt{90}=3\sqrt{10}</span>); decimal: round at the end.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u6l1" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 1 — Measuring the Length of a Line Segment</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l2/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 2 — The Distance and Midpoint Formulas</b><div class="muted">The hidden triangle lifted off the grid: one formula for the length between any two points, and the point exactly halfway</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u6l1.js';
+  boot({ key: 'u6l1', homeHref: '../../', title: '6.1 Length of a Line Segment' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

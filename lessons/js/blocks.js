@@ -1007,6 +1007,9 @@ export function wireBlocks(root = document) {
     opts.forEach((o, i) => {
       const L = String.fromCharCode(65 + i); o.classList.add('bk-opt'); o.dataset.letter = L;
       if (!o.querySelector(':scope > .bk-letter')) o.insertBefore(h('b', 'bk-letter', L), o.firstChild);
+      if (!o.querySelector(':scope > .bk-otxt')) { // keep words and math flowing together (the option is a flex row)
+        const t = h('div', 'bk-otxt'); [...o.childNodes].filter((n) => !(n.nodeType === 1 && n.classList.contains('bk-letter'))).forEach((n) => t.appendChild(n)); o.appendChild(t);
+      }
       if (ans.split(/[\s,]+/).includes(L)) o.classList.add('bk-right');
       if (m.hasAttribute('data-pick')) { tappable(o); o.addEventListener('click', () => { const on = !o.classList.contains('bk-picked'); opts.forEach((x) => x.classList.remove('bk-picked')); o.classList.toggle('bk-picked', on); }); }
     });

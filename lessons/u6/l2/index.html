@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Distance and Midpoint Formulas · Math 10C 6.2</title>
+<meta name="description" content="Math 10C Unit 6 Lesson 2 (Extension/Foundation): the distance and midpoint formulas. Turning a segment into a right triangle, the distance formula, distance on a map grid, the converse of the Pythagorean theorem, collinear points, midpoints by counting, by walking half the run and half the rise, and by averaging, and working backwards to a missing endpoint. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u6l2.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero u6l2-hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 6 Characteristics of Linear Relations · Lesson 2</div>
+  <h1>The Distance and Midpoint Formulas</h1>
+  <p class="lede">Every segment hides a <b>right triangle</b>, and a point sitting exactly <b>halfway</b> along it. Today: measure any segment from its endpoints’ coordinates, test for right angles and straight lines, and find (or work backwards from) a midpoint.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>turn a slanted segment into a right triangle and find its length with the Pythagorean theorem</li>
+      <li>use the <b>distance formula</b> <span class="tex">d=\sqrt{(x_2-x_1)^2+(y_2-y_1)^2}</span>, giving exact (radical) or rounded answers</li>
+      <li>use side lengths to prove a <b>right angle</b> (the converse of the Pythagorean theorem) or that three points are <b>collinear</b></li>
+      <li>locate a <b>midpoint</b> by counting, by walking half the run and half the rise, and with the <b>midpoint formula</b></li>
+      <li>work backwards from a midpoint to a missing endpoint coordinate</li>
+    </ul>
+  </div>
+  <div class="u6l2-extbox">
+    <div class="u6l2-exthead"><span class="u6l2-extpill">Extension / Foundation</span><span class="u6l2-extsub">Not a Math 10C outcome · prepares <b>RF3</b> (rise and run)</span></div>
+    <p>Lengths of segments, the distance formula and the midpoint formula (Lessons 1 and 2, and the marked parts of Lesson 6) are not Math 10C outcomes. They are kept because they review the <b>Pythagorean theorem</b> on a grid (used again in the trigonometry unit) and because the <b>run</b> and <b>rise</b> of a segment are exactly what slope is built from in Lesson 3. Your teacher may assign them as review or move straight on to Lesson 3.</p>
+    <div class="u6l2-rf3"><b>RF3</b> Demonstrate an understanding of slope with respect to: rise and run; line segments and lines; rate of change; parallel lines; perpendicular lines.</div>
+  </div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: Can You Get Wi-Fi?" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Can You Get Wi-Fi?</h2></div>
+  <p class="big">The router at <span class="tex">(0,\ 0)</span> reaches <b>up to 5 units</b> in a <b>straight line</b>, in every direction. Each house sits on a grid point; 1 square = 1 unit.</p>
+  <div class="u6l2-wtop">
+    <div class="u6l2-wfig">
+      <div id="u6l2-wifi"></div>
+      <div class="u6l2-wbtns">
+        <button type="button" class="pill" id="u6l2-wc">Measure house C</button>
+        <button type="button" class="pill" id="u6l2-wedge">Show the signal edge</button>
+        <button type="button" class="pill" id="u6l2-w12">All the edge points</button>
+      </div>
+    </div>
+    <div class="u6l2-wqs">
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">1</div><div>How far is house <b>A</b> from the router? Does it get Wi-Fi?</div></div>
+        <div class="u6l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">A is at <span class="tex">(-4,\ 0)</span>: a horizontal segment, <b>4 units</b>. <b>Yes.</b></div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">2</div><div>House <b>B</b> is 3 right and 4 up. Wi-Fi?</div></div>
+        <div class="u6l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">A right triangle with legs 3 and 4: <span class="tex">\sqrt{9+16}=\sqrt{25}=5</span>. <b>Yes</b>, exactly on the edge.</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">3</div><div>House <b>C</b> is only 4 left and 4 up. Both are less than 5. Does C get Wi-Fi?</div></div>
+        <div class="u6l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>No!</b> <span class="tex">\sqrt{16+16}=\sqrt{32}\approx5.66&gt;5</span>. The straight-line distance is the <b>hypotenuse</b>, longer than either leg. (D at <span class="tex">(-3,\ -4)</span> is exactly 5: yes. E at <span class="tex">(5,\ -3)</span>: <span class="tex">\sqrt{34}\approx5.83</span>, no.)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="poll u6l2-poll4">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> How many grid points are <b>exactly 5 units</b> from the router, right on the edge of the signal? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> 4</div>
+      <div class="opt"><b>B</b> 8</div>
+      <div class="opt right"><b>C</b> 12</div>
+      <div class="opt"><b>D</b> infinitely many</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>C: 12.</b> We need whole numbers with <span class="tex">x^2+y^2=25</span>: <span class="tex">(\pm5,\ 0)</span>, <span class="tex">(0,\ \pm5)</span>, <span class="tex">(\pm3,\ \pm4)</span>, <span class="tex">(\pm4,\ \pm3)</span>. That’s <span class="tex">2+2+4+4=12</span> points (B and D are two of them). Tap <b>All the edge points</b> to see them.<br>
+      <span class="muted"><b>A</b> only goes straight up, down, left and right. <b>B</b> adds the “diagonal” corners but misses that <span class="tex">(3,\ 4)</span> and <span class="tex">(4,\ 3)</span> are different points. <b>D</b> is true for the whole circle, but it passes through only 12 <b>grid</b> points.</span></div>
+  </div>
+
+  <div class="u6l2-early">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> House C wants a signal booster exactly <b>halfway</b> between the router and the house. Where should it go?</div></div>
+      <div class="u6l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">(-2,\ 2)</span>: halfway across (2 left) and halfway up (2 up). That point is the <b>midpoint</b>, later today.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num bonus">+</div><div><b>Extra challenge.</b> How many grid points are <b>within</b> 5 units (on or inside the edge)?</div></div>
+      <div class="u6l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>81.</b> Count column by column: <span class="tex">x=0</span> has 11 points; <span class="tex">x=\pm1</span>, <span class="tex">\pm2</span> and <span class="tex">\pm3</span> have 9 each; <span class="tex">x=\pm4</span> have 7; <span class="tex">x=\pm5</span> have 1: <span class="tex">11+2(9+9+9+7+1)=81</span>.</div></div>
+    </div>
+  </div>
+  <p class="u6l2-social">Challenge your neighbour: find an edge point nobody else has found.</p>
+</section>
+
+<!-- ================= 1. Segment → right triangle ================= -->
+<section class="card" data-ink="s1" data-section="1. Turning a Segment into a Right Triangle">
+  <div class="sec-h"><span class="badge">1</span><h2>Turning a Segment into a Right Triangle</h2></div>
+  <div class="u6l2-s1row">
+    <div>
+      <p>To measure the segment joining <span class="tex">A(-4,\ -2)</span> and <span class="tex">B(8,\ 3)</span>, add a third point <span class="tex">C(8,\ -2)</span> directly <b>below <span class="tex">B</span></b> and directly <b>across from <span class="tex">A</span></b>. That builds a right triangle with the segment itself as the <b>hypotenuse</b>.</p>
+      <p>Triangle <span class="tex">ACB</span> has its right angle at <span class="tex">C</span>, so the Pythagorean theorem applies. The horizontal leg <span class="tex">AC</span> (the <b class="u6l2-crun">run</b>) is the difference in <span class="tex">x</span>-coordinates, and the vertical leg <span class="tex">CB</span> (the <b class="u6l2-crise">rise</b>) is the difference in <span class="tex">y</span>-coordinates.</p>
+    </div>
+    <div id="u6l2-s1fig"></div>
+  </div>
+  <div class="u6l2-calc">
+    <div><span class="tex">AC=8-(-4)=12</span>, <span class="tex">\qquad CB=3-(-2)=5</span></div>
+    <div><span class="tex">(AB)^2=(AC)^2+(CB)^2=12^2+5^2=144+25=169\quad\Longrightarrow\quad AB=\sqrt{169}=13</span></div>
+  </div>
+  <div class="explainer" data-explainer="hidden"></div>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. The Distance Formula">
+  <h3 class="sub">The distance formula</h3>
+  <p>Nothing in this depended on the points chosen. For <b>any</b> two points <span class="tex">P(x_1,\ y_1)</span> and <span class="tex">Q(x_2,\ y_2)</span> the horizontal leg has length <span class="tex">x_2-x_1</span> and the vertical leg has length <span class="tex">y_2-y_1</span>, so the Pythagorean theorem always produces the same pattern.</p>
+  <div class="def u6l2-formula"><b>The Distance Formula.</b> The distance <span class="tex">d</span> between <span class="tex">P(x_1,\ y_1)</span> and <span class="tex">Q(x_2,\ y_2)</span> is
+    <div class="u6l2-disp"><span class="tex">d_{PQ}=\sqrt{(\textcolor{#c27a0e}{x_2-x_1})^2+(\textcolor{#7b4fc4}{y_2-y_1})^2}</span></div>
+    <div class="eg"><span class="u6l2-crun"><b>run</b></span> squared plus <span class="u6l2-crise"><b>rise</b></span> squared, then the square root: it is just <span class="tex">a^2+b^2=c^2</span> written with coordinates.</div>
+  </div>
+  <div class="explainer" data-explainer="lift"></div>
+  <p>Because both differences are <b>squared</b>, it does not matter which point is called <span class="tex">P</span> and which is called <span class="tex">Q</span>: subtracting in the opposite order flips the sign of each difference, and squaring erases the sign either way.</p>
+  <div class="explainer" data-explainer="order"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Brackets around a negative before you square it.</b> <span class="tex">(-12)^2=144</span>, but the calculator reads <kbd>(−)</kbd><kbd>1</kbd><kbd>2</kbd><kbd>x²</kbd> as <span class="tex">-(12^2)=-144</span>. A distance can never come out negative or undefined; if it does, look for a missing bracket.</div></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Squaring a negative.</b> <span class="keys"><kbd>(</kbd><kbd>(−)</kbd><kbd>1</kbd><kbd>2</kbd><kbd>)</kbd><kbd>x²</kbd><kbd>ENTER</kbd></span> gives 144. Without the brackets you get −144.</div>
+    <div class="pill-col"><button class="pill" data-keys="( (−) 12 ) x² =">With brackets</button><button class="pill" data-keys="(−) 12 x² =">Without brackets</button></div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Exact length from coordinates</h3></div>
+  <p class="q">Find the exact length of each line segment.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) <span class="tex">P(3,\ -4)</span> to <span class="tex">Q(9,\ 4)</span></div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x_2-x_1=9-3=6</span>, <span class="tex">\ y_2-y_1=4-(-4)=8</span><br><span class="tex">PQ=\sqrt{6^2+8^2}=\sqrt{36+64}=\sqrt{100}=\boldsymbol{10}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">G(-15,\ 6)</span> to <span class="tex">H(-9,\ -6)</span></div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x_2-x_1=-9-(-15)=6</span>, <span class="tex">\ y_2-y_1=-6-6=-12</span><br><span class="tex">GH=\sqrt{6^2+(-12)^2}=\sqrt{36+144}=\sqrt{180}</span><br><span class="tex">=\sqrt{36\times5}=\boldsymbol{6\sqrt5}</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check a simplified radical.</b> <span class="keys"><kbd>√</kbd><kbd>1</kbd><kbd>8</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> and <span class="keys"><kbd>6</kbd><kbd>×</kbd><kbd>√</kbd><kbd>5</kbd><kbd>ENTER</kbd></span> should give the same decimal. They do, so <span class="tex">\sqrt{180}=6\sqrt5</span>. The radical is the <b>exact</b> answer.</div>
+    <div class="pill-col"><button class="pill" data-keys="√ 180 =">√180</button><button class="pill" data-keys="6 × √ 5 =">6√5</button></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Distance on a map grid</h3></div>
+  <p class="q">A city places a coordinate grid over a map so that emergency crews can estimate distances. One cell tower is at <span class="tex">(-52,\ 134)</span> and a second is at <span class="tex">(89,\ 61)</span>, with each grid unit representing <span class="tex">1</span> km. Determine the distance between the two towers, to the nearest kilometre.</p>
+  <div class="parts c1">
+    <div class="part"><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x_2-x_1=89-(-52)=141</span>, <span class="tex">\ y_2-y_1=61-134=-73</span><br><span class="tex">d=\sqrt{141^2+(-73)^2}=\sqrt{19\,881+5329}=\sqrt{25\,210}\approx158.78</span><br>The towers are <b>159 km</b> apart.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>All in one line.</b> <span class="keys"><kbd>√</kbd><kbd>(</kbd><kbd>1</kbd><kbd>4</kbd><kbd>1</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>(</kbd><kbd>(−)</kbd><kbd>7</kbd><kbd>3</kbd><kbd>)</kbd><kbd>x²</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 158.7765726, so about <b>159 km</b>. Close the brackets: the square root covers the <b>whole</b> sum.</div>
+    <div class="pill-col"><button class="pill" data-keys="√ ( 141 x² + ( (−) 73 ) x² ) =">Show me</button></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s1c" data-section="1. Example 2 on the map">
+  <h3 class="sub">Example 2 on the map</h3>
+  <p>The grid is far too big to count squares on, but the triangle is still there: <b class="u6l2-crun">141 km across</b> and <b class="u6l2-crise">73 km down</b>.</p>
+  <div class="explainer" data-explainer="map"></div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>The converse of the Pythagorean theorem</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(a) Explain how the lengths of the three sides of a triangle can be used to determine whether the triangle has a right angle.</div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Use the <b>converse</b> of the Pythagorean theorem. If <span class="tex">a</span>, <span class="tex">b</span> and <span class="tex">c</span> are the three side lengths with <span class="tex">c</span> the longest, and <span class="tex">a^2+b^2=c^2</span>, then the triangle must have a right angle, and that right angle lies <b>opposite</b> the longest side <span class="tex">c</span> (between the two shorter sides <span class="tex">a</span> and <span class="tex">b</span>). If <span class="tex">a^2+b^2\ne c^2</span>, the triangle has no right angle.</div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">L</span> is the point <span class="tex">(1,\ 1)</span>, <span class="tex">M</span> is <span class="tex">(-3,\ 4)</span>, and <span class="tex">N</span> is <span class="tex">(3,\ 12)</span>. Prove that <span class="tex">\angle LMN</span> is a right angle.</div><div class="work" style="--h:360px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">
+      <div class="u6l2-ansrow">
+        <div>Find the three side lengths with the distance formula.<br>
+          <span class="tex">LM=\sqrt{(-3-1)^2+(4-1)^2}=\sqrt{16+9}=\sqrt{25}=5</span><br>
+          <span class="tex">MN=\sqrt{(3-(-3))^2+(12-4)^2}=\sqrt{36+64}=\sqrt{100}=10</span><br>
+          <span class="tex">LN=\sqrt{(3-1)^2+(12-1)^2}=\sqrt{4+121}=\sqrt{125}=5\sqrt5</span><br>
+          <span class="tex">LN</span> is the longest side, so test <span class="tex">LM^2+MN^2</span> against <span class="tex">LN^2</span>:<br>
+          <span class="tex">LM^2+MN^2=5^2+10^2=25+100=125</span> and <span class="tex">LN^2=(5\sqrt5)^2=125</span>.<br>
+          They are equal, so the right angle lies opposite <span class="tex">LN</span>, at vertex <span class="tex">M</span>. Therefore <span class="tex">\angle LMN</span> is a right angle. <span class="tex">\blacksquare</span></div>
+        <div id="u6l2-ex3fig"></div>
+      </div></div></div></div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Test the longest side as <span class="tex">c</span>.</b> The hypotenuse is always the longest side, so it is the only side that can be <span class="tex">c</span>. The right angle (if there is one) is at the vertex <b>not</b> on that side.</div></div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s1d" data-section="1. Squares on the sides">
+  <h3 class="sub">Squares on the sides</h3>
+  <p><span class="tex">a^2</span> really is the area of a square built on side <span class="tex">a</span>. If the squares on the two shorter sides exactly add up to the square on the longest side, the triangle has a right angle.</p>
+  <div class="explainer" data-explainer="converse"></div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Collinear points</h3></div>
+  <p class="q"><span class="tex">X</span> is the point <span class="tex">(-6,\ -2)</span>, <span class="tex">Y</span> is <span class="tex">(-1,\ 10)</span>, and <span class="tex">Z</span> is <span class="tex">(9,\ 34)</span>.</p>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(a) Calculate the exact lengths of <span class="tex">XY</span>, <span class="tex">YZ</span>, and <span class="tex">XZ</span>.</div><div class="work" style="--h:270px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">
+      <span class="tex">XY=\sqrt{(-1-(-6))^2+(10-(-2))^2}=\sqrt{5^2+12^2}=\sqrt{169}=13</span><br>
+      <span class="tex">YZ=\sqrt{(9-(-1))^2+(34-10)^2}=\sqrt{10^2+24^2}=\sqrt{676}=26</span><br>
+      <span class="tex">XZ=\sqrt{(9-(-6))^2+(34-(-2))^2}=\sqrt{15^2+36^2}=\sqrt{1521}=39</span>
+      <div class="u6l2-strip"><div class="u6l2-sbar u6l2-sb1" style="--w:13"><span class="tex">13</span></div><div class="u6l2-sbar u6l2-sb2" style="--w:26"><span class="tex">26</span></div>
+        <div class="u6l2-sdots"><span class="u6l2-sdot" style="--at:0"></span><span class="u6l2-sdot" style="--at:13"></span><span class="u6l2-sdot" style="--at:39"></span><i class="u6l2-sname" style="--at:0">X</i><i class="u6l2-sname" style="--at:13">Y</i><i class="u6l2-sname" style="--at:39">Z</i></div>
+        <div class="u6l2-sbar u6l2-sb3" style="--w:39"><span class="tex">39</span></div></div>
+      Notice <span class="tex">XY+YZ=13+26=39=XZ</span>.</div></div></div>
+    <div class="part"><div class="pl">(b) What do the results of part (a) tell you about the points <span class="tex">X</span>, <span class="tex">Y</span>, and <span class="tex">Z</span>?</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Because <span class="tex">XY+YZ=XZ</span> <b>exactly</b>, <span class="tex">Y</span> lies directly between <span class="tex">X</span> and <span class="tex">Z</span> on one straight path: the three points are <b>collinear</b>, and segment <span class="tex">XZ</span> passes through <span class="tex">Y</span>. (Any detour off the line would make <span class="tex">XY+YZ</span> longer than <span class="tex">XZ</span>.)</div></div></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s1e" data-section="1. Straight through or a detour?">
+  <h3 class="sub">Straight through, or a detour?</h3>
+  <p>The straight path is the shortest way between two points. If going through a third point costs <b>nothing extra</b>, that point must be on the straight path.</p>
+  <div class="explainer" data-explainer="collinear"></div>
+</section>
+
+<!-- ================= 2. Midpoint ================= -->
+<section class="card" data-ink="s2" data-section="2. What Is a Midpoint?">
+  <div class="sec-h"><span class="badge">2</span><h2>What Is a Midpoint?</h2></div>
+  <div class="u6l2-s2row">
+    <div class="def">If a line segment has endpoints <span class="tex">P</span> and <span class="tex">Q</span>, its <b>midpoint</b>, usually labelled <span class="tex">M</span>, is the single point on the segment that is the same distance from <span class="tex">P</span> as it is from <span class="tex">Q</span>: the point exactly in the centre. Because <span class="tex">M</span> sits at the centre, it divides <span class="tex">\overline{PQ}</span> into two shorter segments, <span class="tex">\overline{PM}</span> and <span class="tex">\overline{MQ}</span>, of equal length.
+      <div class="eg">The bar in <span class="tex">\overline{PQ}</span> is shorthand for “the line segment joining <span class="tex">P</span> and <span class="tex">Q</span>.”</div></div>
+    <div class="u6l2-s2fig"><svg viewBox="0 0 330 150" width="330" height="150" aria-hidden="true">
+      <line x1="30" y1="122" x2="300" y2="28" stroke="#1f5bd6" stroke-width="5" stroke-linecap="round"/>
+      <path d="M95.6 92 l-7 -20 M101.2 90 l-7 -20" stroke="#c93a33" stroke-width="3"/>
+      <path d="M230.6 45 l-7 -20 M236.2 43 l-7 -20" stroke="#c93a33" stroke-width="3"/>
+      <circle cx="30" cy="122" r="8" fill="#1f5bd6" stroke="#fff" stroke-width="2"/><circle cx="300" cy="28" r="8" fill="#1f5bd6" stroke="#fff" stroke-width="2"/>
+      <circle cx="165" cy="75" r="9" fill="#c93a33" stroke="#fff" stroke-width="2"/>
+      <text x="22" y="146" class="u6l2-svgt">P</text><text x="306" y="22" class="u6l2-svgt">Q</text><text x="168" y="108" class="u6l2-svgt u6l2-svgm">M</text>
+    </svg></div>
+  </div>
+</section>
+
+<!-- ================= 3. Counting ================= -->
+<section class="card" data-ink="s3" data-section="3. Locating a Midpoint by Counting">
+  <div class="sec-h"><span class="badge">3</span><h2>Locating a Midpoint by Counting</h2></div>
+  <p>When a segment is graphed on a grid its midpoint can often be found by counting squares. This works especially well for a <b>horizontal</b> or a <b>vertical</b> segment, since every point on such a segment already shares one coordinate with both endpoints.</p>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Midpoint of a horizontal and of a vertical segment</h3></div>
+  <p class="q">On each grid, count squares to locate the midpoint <span class="tex">M</span> of the segment and label it. Then record the coordinates of the endpoints and of <span class="tex">M</span>, and describe how the endpoints’ coordinates combine to produce the coordinate of <span class="tex">M</span>.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Horizontal segment <span class="tex">\boldsymbol{AB}</span>: use the <span class="tex">x</span>-coordinates.</div>
+      <div class="u6l2-gridq" id="u6l2-ex5a"></div>
+      <div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div id="u6l2-ex5aA" class="u6l2-ansfig"></div><span class="tex">A(-5,\ 3)</span> and <span class="tex">B(3,\ 3)</span>. Counting gives <span class="tex">8</span> squares from <span class="tex">A</span> to <span class="tex">B</span>, so <span class="tex">M</span> is <span class="tex">4</span> squares in from either end: <span class="tex">M(-1,\ 3)</span>.<br><span class="tex">A</span> and <span class="tex">B</span> share the same <span class="tex">y</span>-coordinate, so <span class="tex">M</span> keeps it. The <span class="tex">x</span>-coordinate of <span class="tex">M</span> is the <b>average</b> of the endpoints’ <span class="tex">x</span>-coordinates: <span class="tex">\dfrac{-5+3}{2}=\dfrac{-2}{2}=-1</span>. <span class="tex">\boldsymbol{M(-1,\ 3)}</span></div></div></div>
+    <div class="part"><div class="pl">(b) Vertical segment <span class="tex">\boldsymbol{CD}</span>: use the <span class="tex">y</span>-coordinates.</div>
+      <div class="u6l2-gridq" id="u6l2-ex5b"></div>
+      <div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div id="u6l2-ex5bA" class="u6l2-ansfig"></div><span class="tex">C(2,\ 5)</span> and <span class="tex">D(2,\ -3)</span>. Counting gives <span class="tex">8</span> squares from <span class="tex">C</span> down to <span class="tex">D</span>, so <span class="tex">M</span> is <span class="tex">4</span> squares below <span class="tex">C</span>: <span class="tex">M(2,\ 1)</span>.<br><span class="tex">C</span> and <span class="tex">D</span> share the same <span class="tex">x</span>-coordinate, so <span class="tex">M</span> keeps it. The <span class="tex">y</span>-coordinate of <span class="tex">M</span> is the average of the endpoints’ <span class="tex">y</span>-coordinates: <span class="tex">\dfrac{5+(-3)}{2}=\dfrac{2}{2}=1</span>. <span class="tex">\boldsymbol{M(2,\ 1)}</span></div></div></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s3b" data-section="3. Count from both ends">
+  <h3 class="sub">Count from both ends</h3>
+  <p>Two walkers start at the two ends and step toward each other at the same speed. Where they meet is the midpoint, and as a number it is the <b>average</b> of the two ends.</p>
+  <div class="explainer" data-explainer="count"></div>
+</section>
+
+<!-- ================= 4. Oblique ================= -->
+<section class="card" data-ink="s4" data-section="4. Midpoints of Oblique Segments">
+  <div class="sec-h"><span class="badge">4</span><h2>Midpoints of Oblique Segments</h2></div>
+  <p>An <b>oblique</b> (slanted) segment has no shared coordinate to count along, but the pattern from Example 5 still applies: it simply has to be applied to the <span class="tex">x</span>-coordinates and to the <span class="tex">y</span>-coordinates <b>separately</b>.</p>
+</section>
+
+<section class="card example" data-ink="ex6" data-section="Example 6">
+  <div class="ex-head"><span class="ex-tag">Example 6</span><h3>Midpoint of an oblique segment</h3></div>
+  <p class="q">Consider the oblique segment <span class="tex">EF</span> graphed below, with <span class="tex">E(4,\ 5)</span> and <span class="tex">F(-2,\ -3)</span>.</p>
+  <div class="u6l2-ex6">
+    <div id="u6l2-ex6fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(a) Apply the pattern from Example 5 to the <span class="tex">x</span>-coordinates and to the <span class="tex">y</span>-coordinates of <span class="tex">E</span> and <span class="tex">F</span> separately to predict the coordinates of the midpoint <span class="tex">M</span> of <span class="tex">\overline{EF}</span>. Then check your prediction by counting squares on the grid.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Average each coordinate separately:<br><span class="tex">x_M=\dfrac{4+(-2)}{2}=\dfrac{2}{2}=1</span>, <span class="tex">\quad y_M=\dfrac{5+(-3)}{2}=\dfrac{2}{2}=1</span>.<br>Prediction <span class="tex">\boldsymbol{M(1,\ 1)}</span>. Counting along the segment: <span class="tex">3</span> right and <span class="tex">4</span> up from <span class="tex">F(-2,\ -3)</span> reaches <span class="tex">(1,\ 1)</span>, and another <span class="tex">3</span> right and <span class="tex">4</span> up reaches <span class="tex">E(4,\ 5)</span>. Confirmed.</div></div></div>
+      <div class="part"><div class="pl">(b) In words, describe a rule for finding the midpoint of <b>any</b> segment joining two points <span class="tex">(x_1,\ y_1)</span> and <span class="tex">(x_2,\ y_2)</span>.</div><div class="work" style="--h:130px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Rule:</b> the midpoint’s <span class="tex">x</span>-coordinate is the average of the two endpoints’ <span class="tex">x</span>-coordinates, and the midpoint’s <span class="tex">y</span>-coordinate is the average of the two endpoints’ <span class="tex">y</span>-coordinates. It is the same averaging pattern as Example 5, applied to both coordinates at once instead of only one.</div></div></div>
+    </div>
+  </div>
+  <div class="space" id="ex6-space"></div>
+  <button class="more" data-more="ex6-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s4b" data-section="4. Half the run, half the rise">
+  <h3 class="sub">Half the run, half the rise</h3>
+  <p>A walker heading from one end to the other goes <b class="u6l2-crun">across</b> and <b class="u6l2-crise">up</b>. Stop after <b>half</b> of each, and you are standing on the midpoint.</p>
+  <div class="explainer" data-explainer="walker"></div>
+</section>
+
+<!-- ================= 5. Midpoint formula ================= -->
+<section class="card" data-ink="s5" data-section="5. The Midpoint Formula">
+  <div class="sec-h"><span class="badge">5</span><h2>The Midpoint Formula</h2></div>
+  <div class="def u6l2-formula"><b>The Midpoint Formula.</b> For a line segment joining <span class="tex">P(x_1,\ y_1)</span> and <span class="tex">Q(x_2,\ y_2)</span>, the midpoint <span class="tex">M</span> has coordinates
+    <div class="u6l2-disp"><span class="tex">M\left(\dfrac{x_1+x_2}{2},\ \dfrac{y_1+y_2}{2}\right)</span></div>
+    <div class="eg">In words: the midpoint’s <span class="tex">x</span>-coordinate is the <b>average</b> of the two endpoints’ <span class="tex">x</span>-coordinates, and the midpoint’s <span class="tex">y</span>-coordinate is the average of the two endpoints’ <span class="tex">y</span>-coordinates.</div>
+  </div>
+  <div class="explainer" data-explainer="average"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Add, don’t subtract.</b> The distance formula <b>subtracts</b> coordinates (how far apart); the midpoint formula <b>adds</b> them and halves (the average). Mixing them up is the most common slip in this lesson.</div></div>
+</section>
+
+<!-- ================= 6. Applying ================= -->
+<section class="card" data-ink="s6" data-section="6. Applying the Midpoint Formula">
+  <div class="sec-h"><span class="badge">6</span><h2>Applying the Midpoint Formula</h2></div>
+  <p>With the formula in hand a grid is no longer needed: substitute directly, even when the coordinates are negative or decimals.</p>
+</section>
+
+<section class="card example" data-ink="ex7" data-section="Example 7">
+  <div class="ex-head"><span class="ex-tag">Example 7</span><h3>Midpoints from the formula</h3></div>
+  <p class="q">Determine the coordinates of the midpoint of the line segment with each given pair of endpoints.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) <span class="tex">P(6,\ 9),\ Q(14,\ 1)</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x_M=\dfrac{6+14}{2}=\dfrac{20}{2}=10</span>, <span class="tex">\quad y_M=\dfrac{9+1}{2}=\dfrac{10}{2}=5</span><br><span class="tex">\boldsymbol{M(10,\ 5)}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">E(-7,\ 5),\ F(-15,\ -3)</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x_M=\dfrac{-7+(-15)}{2}=\dfrac{-22}{2}=-11</span>, <span class="tex">\quad y_M=\dfrac{5+(-3)}{2}=\dfrac{2}{2}=1</span><br><span class="tex">\boldsymbol{M(-11,\ 1)}</span></div></div></div>
+    <div class="part think span2"><div class="pl"><span class="think-tag">Think</span> Does it matter which endpoint you call <span class="tex">P</span>? What about in the distance formula?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No, in both.</b> Addition doesn’t care about order (<span class="tex">6+14=14+6</span>), so the average is the same. In the distance formula the differences flip sign, but squaring erases the sign.</div></div></div>
+  </div>
+  <div class="space" id="ex7-space"></div>
+  <button class="more" data-more="ex7-space">+ More space</button>
+</section>
+
+<!-- ================= 7. Working backward ================= -->
+<section class="card" data-ink="s7" data-section="7. Working Backward">
+  <div class="sec-h"><span class="badge">7</span><h2>Working Backward: Finding a Missing Endpoint</h2></div>
+  <p>Sometimes the midpoint (or part of it) is known and a missing endpoint coordinate has to be recovered. Since</p>
+  <div class="u6l2-disp"><span class="tex">x_M=\dfrac{x_1+x_2}{2}\qquad\text{and}\qquad y_M=\dfrac{y_1+y_2}{2},</span></div>
+  <p>each coordinate of <span class="tex">M</span> supplies an equation that can be solved. Or think of the walk: <b>the midpoint is halfway, so go the same again.</b></p>
+  <div class="explainer" data-explainer="backward"></div>
+</section>
+
+<section class="card example" data-ink="ex8" data-section="Example 8">
+  <div class="ex-head"><span class="ex-tag">Example 8</span><h3>Recovering a blotted coordinate</h3></div>
+  <p class="q">Devon recorded the coordinates of a trailhead <span class="tex">P</span>, a checkpoint <span class="tex">M</span> (the midpoint of the trail), and the campsite <span class="tex">Q</span> at the far end of the trail. Coffee spilled on the page and blotted out part of the trailhead’s coordinates and part of the checkpoint’s coordinates:</p>
+  <div class="u6l2-notes">
+    <div class="u6l2-note"><span class="tex">P(</span><span class="u6l2-blot"><span class="tex">x_1</span></span><span class="tex">,\ 12)</span></div>
+    <div class="u6l2-note"><span class="tex">Q(-8,\ -6)</span></div>
+    <div class="u6l2-note"><span class="tex">M(3,\ </span><span class="u6l2-blot u6l2-blot2"><span class="tex">y_M</span></span><span class="tex">)</span></div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(i) Determine the missing <span class="tex">x</span>-coordinate of the trailhead, <span class="tex">P</span>.</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The midpoint’s <span class="tex">x</span>-coordinate is the average of the <span class="tex">x</span>-coordinates of <span class="tex">P</span> and <span class="tex">Q</span>:<br><span class="tex">\dfrac{x_1+(-8)}{2}=3\ \Longrightarrow\ x_1-8=6\ \Longrightarrow\ x_1=14</span><br>The trailhead is <span class="tex">\boldsymbol{P(14,\ 12)}</span>.</div></div></div>
+    <div class="part"><div class="pl">(ii) Determine the missing <span class="tex">y</span>-coordinate of the checkpoint, <span class="tex">M</span>.</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The midpoint’s <span class="tex">y</span>-coordinate is the average of the <span class="tex">y</span>-coordinates of <span class="tex">P</span> and <span class="tex">Q</span>:<br><span class="tex">y_M=\dfrac{12+(-6)}{2}=\dfrac{6}{2}=3</span><br>The checkpoint is <span class="tex">\boldsymbol{M(3,\ 3)}</span>.<br><b>Check:</b> the midpoint of <span class="tex">P(14,\ 12)</span> and <span class="tex">Q(-8,\ -6)</span> is <span class="tex">\left(\dfrac{14-8}{2},\ \dfrac{12-6}{2}\right)=(3,\ 3)</span> ✓</div></div></div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>The midpoint is not an endpoint.</b> To find a missing <b>endpoint</b>, don’t average the endpoint you know with the midpoint: that gives a point a quarter of the way along. Go <b>past</b> the midpoint by the same amount again.</div></div>
+  <div class="space" id="ex8-space"></div>
+  <button class="more" data-more="ex8-space">+ More space</button>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Every segment hides a right triangle.</b> <span class="u6l2-crun"><b>Run</b></span> <span class="tex">x_2-x_1</span>, <span class="u6l2-crise"><b>rise</b></span> <span class="tex">y_2-y_1</span>, and the segment is the hypotenuse: <span class="tex">d=\sqrt{(x_2-x_1)^2+(y_2-y_1)^2}</span>. Either point can go first. Exact answers stay as simplified radicals.</div>
+    <div><b>Lengths prove things.</b> If <span class="tex">a^2+b^2=c^2</span> (with <span class="tex">c</span> the longest side), the triangle has a <b>right angle</b> opposite <span class="tex">c</span>. If <span class="tex">AB+BC=AC</span> exactly, then <span class="tex">A</span>, <span class="tex">B</span>, <span class="tex">C</span> are <b>collinear</b>.</div>
+    <div><b>Midpoint = halfway.</b> Count in from both ends, or walk <b>half the run and half the rise</b>. As a formula, average each coordinate: <span class="tex">M\left(\frac{x_1+x_2}{2},\ \frac{y_1+y_2}{2}\right)</span>.</div>
+    <div><b>Working backward.</b> The midpoint is halfway, so <b>go the same again</b> to reach the missing endpoint, or set <span class="tex">\frac{x_1+x_2}{2}=x_M</span> and solve. Check by finding the midpoint of your answer.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u6l2" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 2 — The Distance and Midpoint Formulas</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l3/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 3 — Rise Over Run: The Slope of a Line Segment</b><div class="muted">The same run and rise, compared instead of combined: how steep is the segment?</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u6l2.js';
+  boot({ key: 'u6l2', homeHref: '../../', title: '6.2 Distance and Midpoint' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

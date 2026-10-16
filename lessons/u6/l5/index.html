@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Characteristics of Linear Graphs · Math 10C 6.5</title>
+<meta name="description" content="Math 10C Unit 6 Lesson 5: characteristics of linear graphs. Is a table of values linear (equal steps, constant changes, the uneven-steps trap)? Intercepts from a graph and from a table, domain and range of lines and of a real situation in set notation, how many intercepts a line can have, and matching graphs to descriptions. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u6l5.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 6 Characteristics of Linear Relations · Lesson 5</div>
+  <h1>Characteristics of Linear Graphs</h1>
+  <p class="lede">A <b>linear relation</b> is a relation whose graph is a straight line. Today we read the key characteristics of such a graph (its <b>slope</b>, its <b>intercepts</b>, and its <b>domain and range</b>) and decide from a table of values whether a relation is linear at all.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>decide from a table of values whether a relation is <b>linear</b>, and state its slope (with unequal <span class="tex">x</span>-steps, I divide first)</li>
+      <li>state the <span class="tex">x</span>- and <span class="tex">y</span>-intercepts of a line from its <b>graph</b> or from a <b>table</b>, and explain what they mean in a real situation</li>
+      <li>state the <b>domain and range</b> of a line, a horizontal or vertical line, a segment and a real situation, in set notation</li>
+      <li>explain why a line has <b>one</b>, <b>two</b> or <b>infinitely many</b> intercepts, and sketch a line with given characteristics</li>
+      <li>match graphs with descriptions using the <b>sign of the slope</b> and the <b>intercepts</b></li>
+    </ul>
+  </div>
+  <div class="outcome"><b>RF4</b> Describe and represent linear relations, using: words; ordered pairs; tables of values; graphs; equations.</div>
+  <div class="outcome"><b>RF5</b> Determine the characteristics of the graphs of linear relations, including the: intercepts; slope; domain; range.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: Low Battery" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Low Battery</h2></div>
+  <p class="big">At noon, Mia and Leo forget their chargers. Each phone drains <b>steadily</b>. <span class="muted small">(tap a ? to fill it in)</span></p>
+  <div id="u6l5-phones" class="u6l5-phones"></div>
+  <div class="u6l5-clockrow">
+    <button type="button" class="pill" id="u6l5-run">Run the clock ▸</button>
+    <button type="button" class="pill" id="u6l5-reset">Back to noon</button>
+    <span class="u6l5-clockmsg" id="u6l5-clockmsg"></span>
+  </div>
+
+  <div class="u6l5-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>What will each phone read at <b>3:00</b>?</div></div>
+      <div class="u6l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Mia <b>45%</b> (down 15 each hour); Leo <b>25%</b> (down 5 each hour).</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>How many percent does each phone lose <b>every hour</b>? Is it the same every hour?</div></div>
+      <div class="u6l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Mia loses <b>15%</b> per hour and Leo <b>5%</b> per hour: the <b>same</b> drop every hour, so each pattern is <b>linear</b>.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>At what time was Mia’s phone at <b>100%</b>?</div></div>
+      <div class="u6l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>11:20 am.</b> From 100% to 90% is 10 points, and at 15 points per hour that takes <span class="tex">\tfrac{10}{15}=\tfrac23</span> h <span class="tex">=40</span> min before noon.</div></div>
+    </div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Mia’s phone has more than <b>twice</b> the charge of Leo’s. If neither stops, whose phone hits <b>0%</b> first? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt right"><b>A</b> Mia’s</div>
+      <div class="opt"><b>B</b> Leo’s</div>
+      <div class="opt"><b>C</b> They die at the same moment</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>A: Mia’s phone.</b> Mia: <span class="tex">90\div15=6</span> hours, so it dies at <b>6:00 pm</b>. Leo: <span class="tex">40\div5=8</span> hours, so <b>8:00 pm</b>. The fuller phone dies first because it drains <b>3 times as fast</b>.<br>
+      <span class="muted"><b>B</b> looks only at the starting value (“less charge dies first”) and ignores the rate. <b>C</b> guesses that the bigger charge and the faster drain cancel out. They don’t: 6 h for Mia, 8 h for Leo.</span></div>
+  </div>
+
+  <div class="bk-wq u6l5-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> At what time do the two phones show the <b>same</b> charge?</div></div>
+    <div class="u6l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>5:00 pm</b>, both at 15%: <span class="tex">90-15(5)=40-5(5)=15</span>.</div></div>
+  </div>
+  <p class="u6l5-social">Check your own phone: how much battery has it lost since you woke up?</p>
+</section>
+
+<!-- ================= 1. Is it linear? ================= -->
+<section class="card" data-ink="s1" data-section="1. Is It Linear?">
+  <div class="sec-h"><span class="badge">1</span><h2>Is It Linear? Tables of Values</h2></div>
+  <p>On a straight line the slope is the same everywhere (Lesson 3), so <b>equal steps</b> in <span class="tex">x</span> always produce <b>equal changes</b> in <span class="tex">y</span>. To test a table of values:</p>
+  <div class="u6l5-rules">
+    <div class="u6l5-rule"><div class="u6l5-rh">Equal <span class="tex">x</span>-steps</div><div class="u6l5-rb">Find the change in <span class="tex">y</span> from each entry to the next.</div><div class="u6l5-rf">Linear when all of these changes are <b>the same</b>.</div></div>
+    <div class="u6l5-rule u6l5-rule2"><div class="u6l5-rh">Unequal <span class="tex">x</span>-steps</div><div class="u6l5-rb">Divide each change in <span class="tex">y</span> by the matching change in <span class="tex">x</span>.</div><div class="u6l5-rf">Linear when this quotient is <b>always the same</b>.</div></div>
+  </div>
+  <div class="def">Either way, the constant value <span class="tex">\dfrac{\text{change in }y}{\text{change in }x}</span> is the <b>slope</b> of the line: its <b>rate of change</b>.</div>
+  <div class="explainer" data-explainer="linTest"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Check the <span class="tex">x</span>-row first.</b> When the <span class="tex">x</span>-steps are unequal, the changes in <span class="tex">y</span> are unequal even on a straight line. Divide before you decide.</div></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Linear or not?</h3></div>
+  <p class="q">Decide whether each table of values represents a linear relation. If it does, state the slope.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a)</div>
+      <div class="u6l5-tfig" data-bk-table='{"rows":[[0,-3],[1,-1],[2,1],[3,3],[4,5]],"layout":"h","cellW":46,"cellH":46,"headW":46,"tap":false}'></div>
+      <div class="work" style="--h:190px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x</span> goes up in steps of 1. Changes in <span class="tex">y</span>: <span class="tex">+2,\ +2,\ +2,\ +2</span>: all equal.<br><b>Linear</b>, slope <span class="tex">=\dfrac{2}{1}=\boldsymbol{2}</span>.</div></div></div>
+    <div class="part"><div class="pl">(b)</div>
+      <div class="u6l5-tfig" data-bk-table='{"rows":[[0,1],[1,2],[2,5],[3,10],[4,17]],"layout":"h","cellW":46,"cellH":46,"headW":46,"tap":false}'></div>
+      <div class="work" style="--h:190px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x</span> goes up in steps of 1. Changes in <span class="tex">y</span>: <span class="tex">+1,\ +3,\ +5,\ +7</span>: not equal.<br><b>Not linear</b> (the graph curves upward).</div></div></div>
+    <div class="part"><div class="pl">(c)</div>
+      <div class="u6l5-tfig" data-bk-table='{"rows":[[-2,11],[0,7],[3,1],[7,-7]],"layout":"h","cellW":52,"cellH":46,"headW":46,"tap":false}'></div>
+      <div class="work" style="--h:190px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The <span class="tex">x</span>-steps are <b>not</b> equal (<span class="tex">+2,\ +3,\ +4</span>), so divide: <span class="tex">\tfrac{-4}{2}=-2,\ \tfrac{-6}{3}=-2,\ \tfrac{-8}{4}=-2</span>.<br><b>Linear</b>, slope <span class="tex">\boldsymbol{-2}</span>. (The <span class="tex">y</span>-changes alone, <span class="tex">-4,\ -6,\ -8</span>, look unequal: a trap.)</div></div></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. The uneven-steps trap">
+  <h3 class="sub">The uneven-steps trap</h3>
+  <p>Bigger steps in <span class="tex">x</span> make bigger changes in <span class="tex">y</span>, even on a straight line. Every step hides a slope triangle: what has to match is <b>rise ÷ run</b>, not the rise alone.</p>
+  <div class="explainer" data-explainer="uneven"></div>
+</section>
+
+<!-- ================= 2. Intercepts ================= -->
+<section class="card" data-ink="s2" data-section="2. Intercepts">
+  <div class="sec-h"><span class="badge">2</span><h2>Intercepts</h2></div>
+  <div class="def-grid">
+    <div class="def u6l5-dx">The <b><span class="tex">x</span>-intercept</b> is the <span class="tex">x</span>-coordinate of the point where a graph crosses the <span class="tex">x</span>-axis; there, <span class="tex">\boldsymbol{y=0}</span>.</div>
+    <div class="def u6l5-dy">The <b><span class="tex">y</span>-intercept</b> is the <span class="tex">y</span>-coordinate of the point where a graph crosses the <span class="tex">y</span>-axis; there, <span class="tex">\boldsymbol{x=0}</span>.</div>
+  </div>
+  <div class="def amber">An intercept may be reported as a single number or as a point: “<span class="tex">x</span>-intercept <span class="tex">4</span>” or “the point <span class="tex">(4,\ 0)</span>”. In a table of values, look for the entry where <span class="tex">y=0</span> (the <span class="tex">x</span>-intercept) and the entry where <span class="tex">x=0</span> (the <span class="tex">y</span>-intercept). In a real situation the intercepts usually have a meaning: the <b>vertical intercept</b> is often the <b>starting value</b>, and the <b>horizontal intercept</b> is often the moment the quantity <b>reaches zero</b>.</div>
+  <div class="explainer" data-explainer="graphInts"></div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Intercepts from a graph and from a table</h3></div>
+  <div class="u6l5-ex2">
+    <div data-bk-graph='{"width":330,"height":330,"xmin":-5.5,"xmax":5.5,"ymin":-5.5,"ymax":5.5,"xlabels":2,"ylabels":2,"fontSize":16,"items":[{"line":[[-3,0],[0,2],{"color":"blue"}]},{"point":[-3,0,{"color":"ink"}]},{"point":[0,2,{"color":"ink"}]}]}'></div>
+    <div class="parts c2">
+      <div class="part"><div class="pl">(a) For the line graphed at the left, state the <span class="tex">x</span>-intercept, the <span class="tex">y</span>-intercept and the slope.</div>
+        <div class="work" style="--h:190px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Crosses the <span class="tex">x</span>-axis at <span class="tex">(-3,\ 0)</span>: <span class="tex">x</span>-intercept <span class="tex">\boldsymbol{-3}</span>.<br>Crosses the <span class="tex">y</span>-axis at <span class="tex">(0,\ 2)</span>: <span class="tex">y</span>-intercept <span class="tex">\boldsymbol{2}</span>.<br>From <span class="tex">(-3,\ 0)</span> to <span class="tex">(0,\ 2)</span>: run 3, rise 2, slope <span class="tex">\boldsymbol{\tfrac23}</span>.</div></div></div>
+      <div class="part"><div class="pl">(b) Show that this table represents a linear relation, then state its intercepts.</div>
+        <div class="u6l5-tfig" data-bk-table='{"rows":[[-4,9],[-2,6],[0,3],[2,0],[4,-3]],"layout":"h","cellW":46,"cellH":46,"headW":44,"tap":false}'></div>
+        <div class="work" style="--h:130px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x</span> steps by 2; <span class="tex">y</span> changes by <span class="tex">-3</span> every time, so it is <b>linear</b> (slope <span class="tex">-\tfrac32</span>).<br>Entry with <span class="tex">x=0</span>: <span class="tex">y</span>-intercept <span class="tex">\boldsymbol{3}</span>. Entry with <span class="tex">y=0</span>: <span class="tex">x</span>-intercept <span class="tex">\boldsymbol{2}</span>.</div></div></div>
+    </div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. Intercepts in a table">
+  <h3 class="sub">Intercepts hiding in a table</h3>
+  <p>A table shows the intercepts when it contains an entry with <span class="tex">x=0</span> or <span class="tex">y=0</span>. When it doesn’t, a linear table can be <b>continued</b>: keep the same change going until you reach the zero.</p>
+  <div class="explainer" data-explainer="tableInts"></div>
+</section>
+
+<!-- ================= 3. Domain and range ================= -->
+<section class="card" data-ink="s3" data-section="3. Domain and Range">
+  <div class="sec-h"><span class="badge">3</span><h2>Domain and Range of a Linear Relation</h2></div>
+  <p>Recall from the relations unit: the <b>domain</b> is the set of all <span class="tex">x</span>-values of a relation and the <b>range</b> is the set of all <span class="tex">y</span>-values.</p>
+  <div class="u6l5-drgrid">
+    <div class="u6l5-dr"><div class="u6l5-drh">Slanted line</div><div>Continues forever in both directions, so every real number is used.</div><div class="u6l5-drs"><span class="u6l5-D">D</span> <span class="tex">\{x\mid x\in\mathbb{R}\}</span></div><div class="u6l5-drs"><span class="u6l5-R">R</span> <span class="tex">\{y\mid y\in\mathbb{R}\}</span></div></div>
+    <div class="u6l5-dr"><div class="u6l5-drh">Horizontal, <span class="tex">y=3</span></div><div>Every <span class="tex">x</span>, but only one <span class="tex">y</span>-value.</div><div class="u6l5-drs"><span class="u6l5-D">D</span> <span class="tex">\{x\mid x\in\mathbb{R}\}</span></div><div class="u6l5-drs"><span class="u6l5-R">R</span> <span class="tex">\{3\}</span></div></div>
+    <div class="u6l5-dr"><div class="u6l5-drh">Vertical, <span class="tex">x=-2</span></div><div>Only one <span class="tex">x</span>-value, but every <span class="tex">y</span>.</div><div class="u6l5-drs"><span class="u6l5-D">D</span> <span class="tex">\{-2\}</span></div><div class="u6l5-drs"><span class="u6l5-R">R</span> <span class="tex">\{y\mid y\in\mathbb{R}\}</span></div></div>
+    <div class="u6l5-dr"><div class="u6l5-drh">Segment or real situation</div><div><b>Restricted</b> domain and range, read from the endpoints, e.g.</div><div class="u6l5-drs"><span class="tex">\{x\mid 0\le x\le 6,\ x\in\mathbb{R}\}</span></div></div>
+  </div>
+  <div class="explainer" data-explainer="domRange"></div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Domain and range of lines and of a real situation</h3></div>
+  <p class="q">State the domain and range of each line. (The arrows show that each line continues forever.)</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a)</div>
+      <div class="u6l5-gfig" data-bk-graph='{"width":250,"height":250,"xmin":-4.5,"xmax":4.5,"ymin":-4.5,"ymax":4.5,"xlabels":2,"ylabels":2,"fontSize":15,"items":[{"line":[[0,0],[2,3],{"color":"blue"}]}]}'></div>
+      <div class="work" style="--h:120px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Slanted line: every <span class="tex">x</span> and every <span class="tex">y</span> is used.<br>Domain <span class="tex">\{x\mid x\in\mathbb{R}\}</span><br>Range <span class="tex">\{y\mid y\in\mathbb{R}\}</span></div></div></div>
+    <div class="part"><div class="pl">(b)</div>
+      <div class="u6l5-gfig" data-bk-graph='{"width":250,"height":250,"xmin":-4.5,"xmax":4.5,"ymin":-4.5,"ymax":4.5,"xlabels":2,"ylabels":2,"fontSize":15,"items":[{"line":[{"m":0,"b":-2},{"color":"blue"}]}]}'></div>
+      <div class="work" style="--h:120px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Horizontal line <span class="tex">y=-2</span>.<br>Domain <span class="tex">\{x\mid x\in\mathbb{R}\}</span><br>Range <span class="tex">\{-2\}</span></div></div></div>
+    <div class="part"><div class="pl">(c)</div>
+      <div class="u6l5-gfig" data-bk-graph='{"width":250,"height":250,"xmin":-4.5,"xmax":4.5,"ymin":-4.5,"ymax":4.5,"xlabels":2,"ylabels":2,"fontSize":15,"items":[{"line":[{"x":3},{"color":"blue"}]}]}'></div>
+      <div class="work" style="--h:120px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Vertical line <span class="tex">x=3</span>.<br>Domain <span class="tex">\{3\}</span><br>Range <span class="tex">\{y\mid y\in\mathbb{R}\}</span></div></div></div>
+  </div>
+  <div class="u6l5-ex3d">
+    <div data-bk-graph='{"width":340,"height":360,"xmin":0,"xmax":7.6,"ymin":0,"ymax":22.5,"xstep":1,"ystep":3,"ylabels":3,"origin":true,"fontSize":16,"xtitle":"\\text{Day}","ytitle":"\\text{Water (L)}","items":[{"segment":[[0,18],[6,0],{"color":"blue","width":4}]},{"point":[0,18,{"color":"ink"}]},{"point":[6,0,{"color":"ink"}]}]}'></div>
+    <div>
+      <p class="q u6l5-q0"><b>(d)</b> An office water cooler starts the week with a full <b>18 L</b> jug. The graph shows the amount of water left as staff drink it at a steady rate.</p>
+      <div class="parts c1">
+        <div class="part"><div class="pl">(i) State the two intercepts and explain what each one means.</div><div class="work" style="--h:90px"></div>
+          <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Vertical intercept <span class="tex">\boldsymbol{18}</span>: the jug holds 18 L at the start (day 0).<br>Horizontal intercept <span class="tex">\boldsymbol{6}</span>: the jug is empty after 6 days.</div></div></div>
+        <div class="part"><div class="pl">(ii) Determine the slope, with units, and explain what it means.</div><div class="work" style="--h:90px"></div>
+          <div class="ansrow"><button class="reveal">Answer</button><div class="ans">From <span class="tex">(0,\ 18)</span> to <span class="tex">(6,\ 0)</span>: <span class="tex">\dfrac{-18\text{ L}}{6\text{ days}}=\boldsymbol{-3}</span> <b>L per day</b>: the staff drink 3 L each day.</div></div></div>
+        <div class="part"><div class="pl">(iii) State the domain and range.</div><div class="work" style="--h:90px"></div>
+          <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The graph only runs from day 0 to day 6, and from 18 L down to 0 L. Let <span class="tex">d</span> be the day and <span class="tex">V</span> the litres of water left.<br>Domain <span class="tex">\{d\mid 0\le d\le 6,\ d\in\mathbb{R}\}</span>, Range <span class="tex">\{V\mid 0\le V\le 18,\ V\in\mathbb{R}\}</span>.</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s3b" data-section="3. A real situation">
+  <h3 class="sub">Reading a graph of a real situation</h3>
+  <p>In a story the graph has a <b>start</b> and an <b>end</b>. The intercepts are where the story starts and where it runs out, the slope is the rate (with units), and the domain and range stop at the endpoints.</p>
+  <div class="explainer" data-explainer="story"></div>
+</section>
+
+<!-- ================= 4. How many intercepts? ================= -->
+<section class="card" data-ink="s4" data-section="4. How Many Intercepts?">
+  <div class="sec-h"><span class="badge">4</span><h2>How Many Intercepts Can a Line Have?</h2></div>
+  <div class="u6l5-note">
+    <div class="u6l5-note-h">Summary: the number of intercepts of a line</div>
+    <div class="u6l5-five">
+      <div class="u6l5-mini"><div data-bk-graph='{"width":168,"height":168,"xmin":-3.5,"xmax":3.5,"ymin":-3.5,"ymax":3.5,"numbers":false,"fontSize":14,"items":[{"line":[[-1.5,0],[0,2],{"color":"blue"}]}]}'></div><b>Two intercepts</b><span>slanted, not through the origin: one <span class="tex">x</span>- and one <span class="tex">y</span>-intercept</span></div>
+      <div class="u6l5-mini"><div data-bk-graph='{"width":168,"height":168,"xmin":-3.5,"xmax":3.5,"ymin":-3.5,"ymax":3.5,"numbers":false,"fontSize":14,"items":[{"line":[{"m":0,"b":1.5},{"color":"blue"}]}]}'></div><b>One intercept</b><span>horizontal, not the <span class="tex">x</span>-axis: a <span class="tex">y</span>-intercept only</span></div>
+      <div class="u6l5-mini"><div data-bk-graph='{"width":168,"height":168,"xmin":-3.5,"xmax":3.5,"ymin":-3.5,"ymax":3.5,"numbers":false,"fontSize":14,"items":[{"line":[{"x":-1.5},{"color":"blue"}]}]}'></div><b>One intercept</b><span>vertical, not the <span class="tex">y</span>-axis: an <span class="tex">x</span>-intercept only</span></div>
+      <div class="u6l5-mini"><div data-bk-graph='{"width":168,"height":168,"xmin":-3.5,"xmax":3.5,"ymin":-3.5,"ymax":3.5,"numbers":false,"fontSize":14,"items":[{"line":[[0,0],[1,1.5],{"color":"blue"}]}]}'></div><b>One intercept</b><span>slanted through the origin: both intercepts are 0, one point <span class="tex">(0,\ 0)</span></span></div>
+      <div class="u6l5-mini"><div data-bk-graph='{"width":168,"height":168,"xmin":-3.5,"xmax":3.5,"ymin":-3.5,"ymax":3.5,"numbers":false,"fontSize":14,"items":[{"line":[{"m":0,"b":0},{"color":"blue","width":7,"opacity":0.7}]}]}'></div><b>Infinitely many</b><span>the <span class="tex">x</span>-axis (<span class="tex">y=0</span>) or the <span class="tex">y</span>-axis (<span class="tex">x=0</span>)</span></div>
+    </div>
+    <div class="u6l5-note-f">Every line crosses at least one axis, so every line has <b>at least one</b> intercept.</div>
+  </div>
+  <p>Rotate a line and slide it around the grid, and watch what its intercepts, slope, domain and range do.</p>
+  <div class="explainer" data-explainer="lineLab"></div>
+  <div class="parts c1">
+    <div class="part think"><div class="pl"><span class="think-tag">Think</span> Could a line have <b>zero</b> intercepts? Try to draw one.</div><div class="work" style="--h:100px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No.</b> To miss the <span class="tex">x</span>-axis a line must be horizontal, and every horizontal line crosses the <span class="tex">y</span>-axis. To miss the <span class="tex">y</span>-axis it must be vertical, and every vertical line crosses the <span class="tex">x</span>-axis. A line can’t be both, so it always meets at least one axis.</div></div></div>
+  </div>
+</section>
+
+<section class="card" data-ink="s4b" data-section="4. Counting intercepts">
+  <h3 class="sub">Counting intercepts: three questions</h3>
+  <p>Ask the questions in this order and the count falls out. Each chip is one of the five summary lines.</p>
+  <div class="explainer" data-explainer="countFlow"></div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Sketching lines with a given number of intercepts</h3></div>
+  <p class="q">On each grid, sketch a line with the given characteristics.</p>
+  <div class="parts u6l5-c4">
+    <div class="part"><div class="pl">(a) <span class="tex">x</span>-intercept 3 and <span class="tex">y</span>-intercept <span class="tex">-2</span>. State its slope.</div>
+      <div class="u6l5-sk" data-bk-graph='{"width":196,"height":196,"xmin":-4.5,"xmax":4.5,"ymin":-4.5,"ymax":4.5,"xlabels":2,"ylabels":2,"fontSize":14,"items":[{"line":[[3,0],[0,-2],{"color":"red","cls":"u6l5-ansline"}]}]}'></div>
+      <div class="work" style="--h:60px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Through <span class="tex">(3,\ 0)</span> and <span class="tex">(0,\ -2)</span>: run 3, rise 2, slope <span class="tex">\boldsymbol{\tfrac23}</span>.</div></div></div>
+    <div class="part"><div class="pl">(b) Exactly one intercept, at the point <span class="tex">(0,\ 4)</span>.</div>
+      <div class="u6l5-sk" data-bk-graph='{"width":196,"height":196,"xmin":-4.5,"xmax":4.5,"ymin":-4.5,"ymax":4.5,"xlabels":2,"ylabels":2,"fontSize":14,"items":[{"line":[{"m":0,"b":4},{"color":"red","cls":"u6l5-ansline"}]}]}'></div>
+      <div class="work" style="--h:60px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">A line with a <span class="tex">y</span>-intercept but no <span class="tex">x</span>-intercept must be <b>horizontal</b>: <span class="tex">y=4</span> (slope 0).</div></div></div>
+    <div class="part"><div class="pl">(c) Exactly one intercept, and a negative slope.</div>
+      <div class="u6l5-sk" data-bk-graph='{"width":196,"height":196,"xmin":-4.5,"xmax":4.5,"ymin":-4.5,"ymax":4.5,"xlabels":2,"ylabels":2,"fontSize":14,"items":[{"line":[[0,0],[1,-2],{"color":"red","cls":"u6l5-ansline"}]}]}'></div>
+      <div class="work" style="--h:60px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">A slanted line with only one intercept must pass through the <b>origin</b>; e.g. through <span class="tex">(0,\ 0)</span> and <span class="tex">(1,\ -2)</span>.</div></div></div>
+    <div class="part"><div class="pl">(d) Infinitely many intercepts.</div>
+      <div class="u6l5-sk" data-bk-graph='{"width":196,"height":196,"xmin":-4.5,"xmax":4.5,"ymin":-4.5,"ymax":4.5,"xlabels":2,"ylabels":2,"fontSize":14,"items":[{"line":[{"x":0},{"color":"red","width":6,"cls":"u6l5-ansline"}]}]}'></div>
+      <div class="work" style="--h:60px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The <span class="tex">y</span>-axis itself (shown), or the <span class="tex">x</span>-axis: every point on it is an intercept.</div></div></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s4c" data-section="4. Example 4 check">
+  <h3 class="sub">Example 4 check: try a line, then fix it</h3>
+  <p>A first try often has one intercept too many. Rotate or slide it until it fits every condition.</p>
+  <div class="explainer" data-explainer="sketch"></div>
+</section>
+
+<!-- ================= 5. Matching ================= -->
+<section class="card" data-ink="s5" data-section="5. Matching Graphs">
+  <div class="sec-h"><span class="badge">5</span><h2>Matching Graphs to Their Characteristics</h2></div>
+  <p>The <b>sign of the slope</b> (rising, falling, flat or vertical) and the <b>intercepts</b> together pin down which line a description fits. Check each characteristic <b>one at a time</b>.</p>
+  <div class="u6l5-signs">
+    <div class="u6l5-sign"><svg viewBox="0 0 80 60"><path d="M10 52 L70 8"/></svg><b>rising</b><span>positive slope</span></div>
+    <div class="u6l5-sign"><svg viewBox="0 0 80 60"><path d="M10 8 L70 52"/></svg><b>falling</b><span>negative slope</span></div>
+    <div class="u6l5-sign"><svg viewBox="0 0 80 60"><path d="M8 30 L72 30"/></svg><b>flat</b><span>slope 0</span></div>
+    <div class="u6l5-sign"><svg viewBox="0 0 80 60"><path d="M40 4 L40 56"/></svg><b>vertical</b><span>undefined slope</span></div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Match each graph with its description</h3></div>
+  <div class="u6l5-four">
+    <div class="u6l5-gcard"><b>Graph A</b><div data-bk-graph='{"width":214,"height":214,"xmin":-4.5,"xmax":4.5,"ymin":-4.5,"ymax":4.5,"xlabels":2,"ylabels":2,"fontSize":14,"items":[{"line":[[1,0],[0,-2],{"color":"blue"}]}]}'></div></div>
+    <div class="u6l5-gcard"><b>Graph B</b><div data-bk-graph='{"width":214,"height":214,"xmin":-4.5,"xmax":4.5,"ymin":-4.5,"ymax":4.5,"xlabels":2,"ylabels":2,"fontSize":14,"items":[{"line":[[3,0],[0,3],{"color":"blue"}]}]}'></div></div>
+    <div class="u6l5-gcard"><b>Graph C</b><div data-bk-graph='{"width":214,"height":214,"xmin":-4.5,"xmax":4.5,"ymin":-4.5,"ymax":4.5,"xlabels":2,"ylabels":2,"fontSize":14,"items":[{"line":[{"m":0,"b":-3},{"color":"blue"}]}]}'></div></div>
+    <div class="u6l5-gcard"><b>Graph D</b><div data-bk-graph='{"width":214,"height":214,"xmin":-4.5,"xmax":4.5,"ymin":-4.5,"ymax":4.5,"xlabels":2,"ylabels":2,"fontSize":14,"items":[{"line":[[0,0],[2,-1],{"color":"blue"}]}]}'></div></div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">1. Graph <span class="u6l5-blank" data-reveal><b>C</b></span> Slope 0; <span class="tex">y</span>-intercept <span class="tex">-3</span>; no <span class="tex">x</span>-intercept.</div><div class="work" style="--h:70px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>C</b>: the horizontal line <span class="tex">y=-3</span>.</div></div></div>
+    <div class="part"><div class="pl">2. Graph <span class="u6l5-blank" data-reveal><b>D</b></span> Negative slope; both intercepts are 0.</div><div class="work" style="--h:70px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>D</b>: it falls through the origin.</div></div></div>
+    <div class="part"><div class="pl">3. Graph <span class="u6l5-blank" data-reveal><b>A</b></span> Positive slope; <span class="tex">x</span>-intercept 1; <span class="tex">y</span>-intercept <span class="tex">-2</span>.</div><div class="work" style="--h:70px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>A</b>: it rises, crossing at <span class="tex">(1,\ 0)</span> and <span class="tex">(0,\ -2)</span>.</div></div></div>
+    <div class="part"><div class="pl">4. Graph <span class="u6l5-blank" data-reveal><b>B</b></span> Negative slope; <span class="tex">x</span>-intercept 3; <span class="tex">y</span>-intercept 3.</div><div class="work" style="--h:70px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>B</b>: it falls, crossing at <span class="tex">(3,\ 0)</span> and <span class="tex">(0,\ 3)</span>.</div></div></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s5b" data-section="5. Example 5 check">
+  <h3 class="sub">Example 5 check: one characteristic at a time</h3>
+  <p>The slope sign rules out most graphs at once; the intercepts settle the rest.</p>
+  <div class="explainer" data-explainer="match"></div>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Is it linear?</b> Equal <span class="tex">x</span>-steps: the changes in <span class="tex">y</span> must all be the same. Unequal steps: divide, <span class="tex">\tfrac{\text{change in }y}{\text{change in }x}</span> must be constant. That constant is the <b>slope</b>, the rate of change.</div>
+    <div><b>Intercepts.</b> <span class="tex">x</span>-intercept where <span class="tex">y=0</span>; <span class="tex">y</span>-intercept where <span class="tex">x=0</span>. In a table, find (or continue to) the entry with a 0. In a story: the <b>start</b> and the moment it <b>runs out</b>.</div>
+    <div><b>Domain and range.</b> Slanted line: <span class="tex">\{x\mid x\in\mathbb{R}\}</span>, <span class="tex">\{y\mid y\in\mathbb{R}\}</span>. Horizontal <span class="tex">y=3</span>: range <span class="tex">\{3\}</span>. Vertical <span class="tex">x=-2</span>: domain <span class="tex">\{-2\}</span>. Segments and stories: read the endpoints.</div>
+    <div><b>How many intercepts?</b> Two (slanted, not through the origin), one (horizontal, vertical, or through the origin), or infinitely many (an axis). Never zero. Match graphs using the slope sign first, then the intercepts.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u6l5" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 5 — Characteristics of Linear Graphs</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l6/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 6 — Coordinate Geometry Review</b><div class="muted">Slope, intercepts, domain and range, length and midpoint: the whole unit in one lesson</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u6l5.js';
+  boot({ key: 'u6l5', homeHref: '../../', title: '6.5 Characteristics of Linear Graphs' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>
