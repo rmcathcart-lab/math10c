@@ -602,7 +602,7 @@ const SK = {
       { t: 'then quickly while you play a game at lunch.', pts: [[5, 7.2], [6.5, 2.2]], cap: '“Quickly”: <b>decreasing</b> again, but <b>steep</b>. Faster means steeper.' },
       { t: 'You plug it in and it charges fast,', pts: [[6.5, 2.2], [8.3, 9.2]], cap: '“Charges fast”: a steep <b>increase</b>.' },
       { t: 'then it stays full.', pts: [[8.3, 9.2], [10, 9.2]], cap: '“Stays full”: <b>constant</b>, a flat piece at the top.' }],
-    end: 'Check the ends: it starts full, it never drops below 0 (the battery never died), and it ends full.' },
+    end: 'Check the ends: it starts full, it never reaches 0 (the battery never died), and it ends full.' },
   a: { lead: 'The temperature inside a kiln while pottery is fired:', xt: 'time (hours)', yt: 'kiln temp. (°C)',
     pieces: [{ t: 'the kiln heats up steadily,', pts: [[0.3, 1.0], [3.2, 8.8]], cap: '“Heats up steadily”: a straight <b>increase</b> (steady means a constant rate).' },
       { t: 'holds at a high temperature for a long soak,', pts: [[3.2, 8.8], [7, 8.8]], cap: '“Holds … for a long soak”: <b>constant</b>, a long flat piece up high.' },
