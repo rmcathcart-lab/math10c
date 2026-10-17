@@ -75,7 +75,7 @@
       for (var j = 0; j < f.k; j++) c = norm(c[0] * cn.c[0], c[1] * cn.c[1]);
       Object.keys(cn.v).forEach(function (x) { v[x] = (v[x] || 0) + cn.v[x] * f.k; });
       keys[key] = (keys[key] || 0) + f.k; prims[key] = cn.prim;
-      raw.push({ p: f.p, k: f.k, cn: cn, key: key });
+      raw.push({ p: f.p, k: f.k, cn: cn, key: key, ast: f.ast });
     });
     return { c: c, v: v, keys: keys, prims: prims, raw: raw };
   };
@@ -89,6 +89,16 @@
     if (!br.length) return mt;
     return s + br.map(function (f) { return '(' + P.tex(f.p) + ')' + (f.k > 1 ? '^{' + f.k + '}' : ''); }).join('');
   };
+  /* a factor's terms in the order the student typed them (falls back to descending order) */
+  function writtenTex(f) {
+    try {
+      var order = f.ast ? P.writtenOrder(f.ast) : null, p = f.p, seen = {};
+      if (!order || order.some(function (k) { return k == null || !p[k]; })) return P.tex(p);
+      var out = '';
+      order.forEach(function (k) { if (seen[k]) return; seen[k] = 1; var o = {}; o[k] = p[k]; var s = P.tex(o); out += out && s.charAt(0) !== '-' ? '+' + s : s; });
+      return Object.keys(seen).length === P.count(p) ? out : P.tex(p);
+    } catch (e) { return P.tex(f.p); }
+  }
   function sameKeys(a, b) { var ka = Object.keys(a), kb = Object.keys(b); return ka.length === kb.length && ka.every(function (k) { return a[k] === b[k]; }); }
   function countKeys(a) { return Object.keys(a).reduce(function (s, k) { return s + a[k]; }, 0); }
 
@@ -110,7 +120,7 @@
           var r = SN.raw[i], cv = r.cn;
           if (Math.abs(cv.c[0]) !== 1 || Object.keys(cv.v).length) { // a fraction alone (½x + 2y) is fine
             var g = P.tex(P.mono([Math.abs(cv.c[0]), 1], cv.v));
-            if (g !== '1') return form('gcf-inside', 'Equal, but not factored completely: ' + t('(' + P.tex(r.p) + ')') + ' still has a common factor of ' + t(g) + '. Take it out in front.');
+            if (g !== '1') return form('gcf-inside', 'Equal, but not factored completely: ' + t('(' + writtenTex(r) + ')') + ' still has a common factor of ' + t(g) + '. Take it out in front.');
           }
         }
         for (var q = 0; q < sp.factors.length; q++) {
@@ -121,7 +131,8 @@
         }
         if (!opt.gcfOnly && !sameKeys(SN.keys, TN.keys)) {
           var more = Object.keys(SN.keys).filter(function (k) { return !TN.keys[k]; })[0];
-          return form('factor-more', 'Equal, but not factored completely: ' + (more ? t('(' + more + ')') + ' can still be factored.' : 'one of your factors can still be factored.'));
+          var mine = more && SN.raw.filter(function (r) { return r.key === more; })[0];
+          return form('factor-more', 'Equal, but not factored completely: ' + (more ? t('(' + (mine ? writtenTex(mine) : more) + ')') + ' can still be factored.' : 'one of your factors can still be factored.'));
         }
         if (opt.gcfOnly) {
           var tm = P.tex(P.mono([Math.abs(TN.c[0]), TN.c[1]], TN.v)), sm = P.tex(P.mono([Math.abs(SN.c[0]), SN.c[1]], SN.v));
