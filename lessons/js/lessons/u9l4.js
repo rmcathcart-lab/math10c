@@ -354,7 +354,7 @@ const readBack = {
     const P = panel(stage, GW + 18, 6, ex.W - GW - 24, H - 12, `${fn} forwards and backwards`);
     const fv = f(d.f.a), fvs = texNum(fv, 4), word = { sin: 'climbs from 0 to 1', cos: 'falls from 1 to 0', tan: 'climbs from 0 with no ceiling' }[fn];
     const bs = d.b.map((b) => Object.assign({ ang: inv(fn, b.k) }, b));
-    const guide = (a, b, color) => G.segment(a, b, { color, width: 3, dash: true, ends: [null, 'arrow'] });
+    const guide = (a, b, color) => G.polyline([a, b], { color, width: 3, dash: true, ends: [null, 'arrow'] });
     let curve;
     const steps = [
       { cap: `The graph of ${T(`\\${fn}\\theta`)} for acute angles: as the angle opens, it <b>${word}</b>.`,
@@ -364,7 +364,7 @@ const readBack = {
           await G.drawIn(guide([d.f.a, 0], [d.f.a, fv], INK), 600, c); await G.reveal(G.point(d.f.a, fv, { color: INK, r: 6 }), c);
           await G.drawIn(guide([d.f.a, fv], [0, fv], INK), 600, c);
           await pop(c, G.label(d.f.a / 2, fv, T(fvs), { pos: 'n', cls: 'bk-ptlab' }));
-          await show(c, line(P, `<b>forwards</b> ${T(`\\${fn}${d.f.a}^\\circ\\approx${fvs}`)}`));
+          await show(c, line(P, `<b>→</b> ${T(`\\${fn}${d.f.a}^\\circ\\approx${fvs}`)}`));
         } }
     ];
     bs.forEach((b) => steps.push({
@@ -373,7 +373,7 @@ const readBack = {
         await G.drawIn(guide([0, b.k], [b.ang, b.k], ANG), 700, c); await G.reveal(G.point(b.ang, b.k, { color: ANG, r: 6 }), c);
         await G.drawIn(guide([b.ang, b.k], [b.ang, 0], ANG), 600, c);
         await pop(c, G.label(b.ang, 0, T(dg(b.ang)), { pos: 'ne', cls: 'bk-ptlab', color: ANG, dy: -6 }));
-        await show(c, line(P, `<b style="color:${ANG}">backwards</b> ${T(`\\${fn}^{-1}(${b.k})=${dg(b.ang)}`)}`));
+        await show(c, line(P, `<b style="color:${ANG}">←</b> ${T(`\\${fn}^{-1}(${b.k})=${dg(b.ang)}`)}`));
       }
     }));
     if (d.end === 'over') steps.push({
@@ -404,11 +404,11 @@ const NF = {
 };
 const nameFirst = {
   title: 'Name the sides first, then choose the ratio',
-  height: 470,
+  height: 500,
   choices: Object.keys(NF).map((k) => ({ v: k, label: NF[k].label })),
   intro: 'Two sides are known and the angle is not. Press <b>Next</b>.',
   make(stage, key, ex) {
-    const d = NF[key], H = 470, TW = 460, fn = fnOf(d.known), [pk, qk] = PAIR[fn], num = d.known[pk], den = d.known[qk];
+    const d = NF[key], H = 500, TW = 460, fn = fnOf(d.known), [pk, qk] = PAIR[fn], num = d.known[pk], den = d.known[qk];
     const ratio = num / den, th = inv(fn, ratio), rnd = Math.round(th), rs = texNum(ratio, 4);
     const roles = ['opp', 'adj', 'hyp'], unk = roles.find((k) => d.known[k] == null);
     const Tr = new RightTriangle(stage, { x: 6, y: 6, width: TW, height: H - 12, base: d.base, rise: d.rise, right: d.right, names: d.names, sides: d.sides, pad: 62 });
@@ -420,7 +420,7 @@ const nameFirst = {
       const [a, b] = PAIR[f];
       cards[f] = add(stage, box(h('div', 'u9l4-soh', `<div class="u9l4-soht">${SCH[f]}</div>${T(`\\${f}\\theta=\\dfrac{\\color{${SC[a]}}{\\text{${a}}}}{\\color{${SC[b]}}{\\text{${b}}}}`)}`), cardW, 100), px + i * (cardW + 10), 8);
     }
-    const L1 = hide0(lab(stage, px + pw / 2, 150, '', 'u9l4-eq')), L2 = hide0(lab(stage, px + pw / 2, 214, '', 'u9l4-eq')), L3 = hide0(lab(stage, px + pw / 2, 268, '', 'u9l4-keyrow'));
+    const L1 = hide0(lab(stage, px + pw / 2, 146, '', 'u9l4-eq')), L2 = hide0(lab(stage, px + pw / 2, 204, '', 'u9l4-eq')), L3 = hide0(lab(stage, px + pw / 2, 252, '', 'u9l4-keyrow'));
     const sideKey = { hyp: d.names.right.toLowerCase(), opp: d.v.toLowerCase() };
     sideKey.adj = Object.values(d.names).map((n) => n.toLowerCase()).find((k) => k !== sideKey.hyp && k !== sideKey.opp);
     const knownTxt = roles.filter((k) => d.known[k] != null).map((k) => `${T(String(d.known[k]))} is ${cw(k, LONG[k].toUpperCase())}`).join(' and ');
@@ -450,7 +450,7 @@ const nameFirst = {
         } },
       { cap: `Check by running it <b>forwards</b> again: the ${fn} of ${T(dg(th, 4) + '\\ldots')} gives back ${T(`\\tfrac{${num}}{${den}}`)}. ✓`,
         run: async (c) => {
-          const k = checkCard(stage, { title: 'Check: forwards again', left: [`${F}\\,${fx(th, 4)}\\ldots^\\circ`, fx(fwd(fn, th), 4)], right: [`\\tfrac{${num}}{${den}}`, fx(ratio, 4)], ok: true, x: px, y: 300, width: pw, hidden: true });
+          const k = checkCard(stage, { title: 'Check: forwards again', left: [`${F}\\,${fx(th, 4)}\\ldots^\\circ`, fx(fwd(fn, th), 4)], right: [`\\tfrac{${num}}{${den}}`, fx(ratio, 4)], ok: true, x: px, y: 282, width: pw, hidden: true });
           await k.play(c);
         } }
     ];
@@ -531,18 +531,18 @@ const sunElev = {
 const CZ = { demo: { label: 'Demo: the Z, paddling in', ex: false }, ex4: { label: 'Example 4 check', ex: true } };
 const cliffZ = {
   title: 'Angle of depression = angle of elevation: the Z',
-  height: 480,
+  height: 430,
   choices: Object.keys(CZ).map((k) => ({ v: k, label: CZ[k].label })),
   intro: 'A cliff 68 m high, and a kayak on the water 155 m from its base. Press <b>Next</b>.',
   make(stage, key, ex) {
-    const d = CZ[key], H = 480, FW = 640, ht = 68, d0 = 155, d1 = 60, a0 = Math.atan(ht / d0) / DEG, a1 = Math.atan(ht / d1) / DEG, ratio = ht / d0;
-    const F = new Fig(stage, { x: 6, y: 6, width: FW, height: H - 12, win: [-30, 180, -14, 84], pad: 8 });
+    const d = CZ[key], H = 430, FW = 640, ht = 68, d0 = 155, d1 = 60, a0 = Math.atan(ht / d0) / DEG, a1 = Math.atan(ht / d1) / DEG, ratio = ht / d0;
+    const F = new Fig(stage, { x: 6, y: 6, width: FW, height: H - 12, win: [-24, 174, -13, 82], pad: 8 });
     const B = [0, 0], Tp = [0, ht];
-    F.poly([[0, 0], [180, 0], [180, -14], [0, -14]], { fill: '#cfe4f5', layer: F.gBg });
-    for (let x = 12; x < 178; x += 22) F.path([[x, -5], [x + 4, -3.6], [x + 8, -5]], { color: '#7fb1da', width: 2, layer: F.gBg });
-    F.poly([[-30, -14], [-30, ht], [0, ht], [0, -14]], { fill: '#c9b48e', layer: F.gBg });
-    for (const [x, y] of [[-20, 50], [-12, 30], [-24, 18], [-8, 8], [-18, 62]]) F.path([[x, y], [x + 6, y - 3]], { color: '#8d7650', width: 2, layer: F.gBg });
-    F.seg([-30, ht], [0, ht], { color: '#5d9b45', width: 5, layer: F.gBg });
+    F.poly([[0, 0], [174, 0], [174, -13], [0, -13]], { fill: '#cfe4f5', layer: F.gBg });
+    for (let x = 12; x < 170; x += 22) F.path([[x, -5], [x + 4, -3.6], [x + 8, -5]], { color: '#7fb1da', width: 2, layer: F.gBg });
+    F.poly([[-24, -13], [-24, ht], [0, ht], [0, -13]], { fill: '#c9b48e', layer: F.gBg });
+    for (const [x, y] of [[-18, 50], [-12, 30], [-20, 16], [-8, 6], [-16, 62]]) F.path([[x, y], [x + 6, y - 3]], { color: '#8d7650', width: 2, layer: F.gBg });
+    F.seg([-24, ht], [0, ht], { color: '#5d9b45', width: 5, layer: F.gBg });
     F.seg(B, Tp, { width: 3.5, layer: F.gBg });
     F.dot(Tp, { r: 6 }); F.lab(Tp, 'observer', { pos: 'nw', cls: 'u9l4-flab u9l4-sm' });
     const dyn = svgEl('g', {}, F.gMain), dynT = svgEl('g', {}, F.gTop), dynH = h('div', 'u9l4-dyn'); F.html.appendChild(dynH);
@@ -554,7 +554,7 @@ const cliffZ = {
       els.water = F.seg(B, K, { color: st.vis.name ? ADJ : INK, width: st.vis.name ? 6 : 3.5, layer: dyn });
       if (st.vis.name) els.cliff = F.seg(B, Tp, { color: OPP, width: 6, layer: dyn });
       F.right(B, Tp, K, { layer: dyn, s: 13 });
-      if (st.vis.hor) els.hor = F.seg(Tp, [178, ht], { dash: true, width: 2.6, layer: dyn });
+      if (st.vis.hor) els.hor = F.seg(Tp, [172, ht], { dash: true, width: 2.6, layer: dyn });
       if (st.vis.los) els.los = F.seg(Tp, K, { color: HYP, width: 3.5, layer: dyn });
       if (st.vis.dep) els.dep = F.wedge(Tp, [10, ht], K, 64, { label: aLab, parent: dynH, layer: dynT, off: 26 });
       if (st.vis.elev) els.elev = F.wedge(K, [st.d - 10, 0], Tp, 64, { label: aLab, parent: dynH, layer: dynT, off: 26 });
@@ -563,10 +563,9 @@ const cliffZ = {
       svgEl('path', { d: `M${k[0] - 22} ${k[1] - 3}Q${k[0]} ${k[1] + 9} ${k[0] + 22} ${k[1] - 3}Z`, fill: '#e8503a', stroke: INK, 'stroke-width': 1.5 }, kg);
       svgEl('circle', { cx: k[0] + 2, cy: k[1] - 17, r: 4.5, fill: INK }, kg); svgEl('path', { d: `M${k[0] + 2} ${k[1] - 12}V${k[1] - 3}M${k[0] - 12} ${k[1] - 16}L${k[0] + 16} ${k[1] - 2}`, stroke: INK, 'stroke-width': 2.4 }, kg);
       F.dot(K, { r: 5, layer: dynT });
-      F.lab([0, ht / 2], (st.vis.name ? `<b style="color:${OPP}">OPP</b> ` : '') + T('68') + ' m', { pos: 'w', cls: 'u9l4-slab', parent: dynH, dx: -6 });
+      F.lab([0, ht * 0.42], (st.vis.name ? `<b style="color:${OPP}">OPP</b> ` : '') + T('68') + ' m', { pos: 'e', cls: 'u9l4-slab', parent: dynH, dx: 4 });
       F.lab([st.d / 2, 0], (st.vis.name ? `<b style="color:${ADJ}">ADJ</b> ` : '') + T(fx(st.d, 0)) + ' m', { pos: 's', cls: 'u9l4-slab', parent: dynH, dy: 4 });
-      if (st.vis.hor) F.lab([178, ht], 'horizontal', { pos: 'n', dx: -46, cls: 'u9l4-flab u9l4-sm', parent: dynH });
-      if (st.vis.z) F.lab([Math.max(30, st.d * 0.42), 0], 'horizontal', { pos: 'n', dx: 40, dy: -2, cls: 'u9l4-flab u9l4-sm', parent: dynH });
+      if (st.vis.hor) F.lab([172, ht], 'horizontal', { pos: 'n', dx: -46, cls: 'u9l4-flab u9l4-sm', parent: dynH });
     }
     redraw();
     const P = panel(stage, FW + 18, 6, ex.W - FW - 24, H - 12, d.ex ? 'Example 4' : 'The Z');
@@ -630,10 +629,10 @@ const isoSplit = {
     F.tick(Pp, Q); F.tick(Q, R);
     F.lab(Q, T('Q'), { pos: 'n', cls: 'u9l4-vlab' }); F.lab(Pp, T('P'), { pos: 'sw', cls: 'u9l4-vlab' }); F.lab(R, T('R'), { pos: 'se', cls: 'u9l4-vlab' });
     if (ex5) { F.sideLab(Pp, Q, T('18') + ' cm', { away: [0, 1], off: 34 }); F.sideLab(Q, R, T('18') + ' cm', { away: [0, 1], off: 34 }); }
-    const baseL = F.lab([0, 0], T(String(2 * d.half)) + d.unit, { pos: 's', dy: 18 });
+    const baseL = F.lab([0, 0], T(String(2 * d.half)) + d.unit, { pos: 's', dy: 30 });
     const apex = F.wedge(Q, Pp, R, 40, { label: '?', off: 18 }); hide0(apex); hide0(apex.label);
     // the perpendicular and the fold
-    const QM = hide0(F.seg(Q, M, { dash: true, width: 3 })), rm = hide0(F.right(M, R, Q, { s: 14 })), mL = hide0(F.lab(M, T('M'), { pos: 's', cls: 'u9l4-vlab', dy: -2 }));
+    const QM = hide0(F.seg(Q, M, { dash: true, width: 3 })), rm = hide0(F.right(M, R, Q, { s: 14 })), mL = hide0(F.lab(M, T('M'), { pos: 's', cls: 'u9l4-vlab', dy: -4 }));
     const half13 = [hide0(F.lab([-d.half / 2, 0], T(String(d.half)), { pos: 'n', cls: 'u9l4-slab', dy: -2 })), hide0(F.lab([d.half / 2, 0], T(String(d.half)), { pos: 'n', cls: 'u9l4-slab', dy: -2 }))];
     const riseL = ex5 ? null : hide0(F.lab([0, ht / 2], T('6'), { pos: 'e', cls: 'u9l4-slab' }));
     const flap = svgEl('g', {}, F.gMain); flap.style.opacity = 0;
@@ -707,6 +706,7 @@ const chain = {
     F.lab([-4.5, 0], T('9'), { pos: 's', cls: 'u9l4-slab' }); F.sideLab(A, B, T('41'), { away: [10, 0], off: 18 }); F.sideLab(A, C, T('85'), { away: [0, 0], off: 20 });
     const adL = hide0(F.lab([0, 20], T('AD=40'), { pos: 'e', cls: 'u9l4-slab', dx: 4 })), dcL = hide0(F.lab([37.5, 0], T('DC=75'), { pos: 's', cls: 'u9l4-slab' }));
     const wa = F.wedge(A, B, D, 70, { color: ANG, label: T('\\angle BAD'), off: 30 }), wb = F.wedge(A, D, C, 52, { color: ZC, label: T('\\angle DAC'), off: 26 });
+    { const q = F.P(A); place(wa.label, q[0] - 70, q[1] + 70); }
     for (const w of [wa, wb]) { hide0(w); hide0(w.label); }
     const P = panel(stage, FW + 18, 6, ex.W - FW - 24, FH, 'Example 6');
     const P2 = panel(stage, 6, FH + 16, ex.W - 12, H - FH - 22, 'Check another way: the angles of △ABC');

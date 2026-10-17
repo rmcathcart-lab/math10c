@@ -23,7 +23,7 @@ const T = (s) => tex(s);
 const OPP = '#7b4fc4', ADJ = '#c27a0e', ADJT = '#a86605', HYP = '#1f5bd6', ANG = '#d6336c', EYE = '#12805a', TEAL = '#13807a', INK = '#1c2230', SLATE = '#3a4254', GRAY = '#9aa0ab';
 const RAD = Math.PI / 180;
 const cO = (s) => `\\textcolor{${OPP}}{${s}}`, cA = (s) => `\\textcolor{${ADJT}}{${s}}`, cH = (s) => `\\textcolor{${HYP}}{${s}}`, cE = (s) => `\\textcolor{${EYE}}{${s}}`, cR = (s) => `\\textcolor{${ANG}}{${s}}`;
-const f1 = (v) => v.toFixed(1), f2 = (v) => v.toFixed(2), f4 = (v) => v.toFixed(4), f6 = (v) => v.toFixed(6);
+const f1 = (v) => v.toFixed(1), f2 = (v) => v.toFixed(2), f4 = (v) => String(+v.toFixed(4)), f6 = (v) => v.toFixed(6);
 const deg = (v) => `${v}^\\circ`;
 const brg = (b) => String(Math.round(b) % 360).padStart(3, '0') + '^\\circ';
 const panel = (stage, x, y, w, hh, title) => add(stage, box(h('div', 'u9l6-panel', title ? `<div class="u9l6-ph">${title}</div>` : ''), w, hh), x, y);
@@ -758,7 +758,7 @@ const compass = {
         run: async (c) => {
           await show(c, tb); tb.children[rf.col].classList.add('on');
           const base = rf.from === 'north' ? 90 : 270, wa = 90 - b; let a1 = base, a2 = wa; while (a2 - a1 > 180) a2 -= 360; while (a1 - a2 > 180) a2 += 360;
-          const ar = S.arc([0, 0], a1, a2, 0.62 * R, { color: ANG, width: 4, label: T(deg(rf.r)), lr: 22 }); await drawIn(ar, 400, c); await show(c, ar.label);
+          const ar = S.arc([0, 0], a1, a2, 0.42 * R, { color: ANG, width: 4, label: T(deg(rf.r)), lr: 16, la: a1 + (a2 - a1) * 0.3 }); await drawIn(ar, 400, c); await show(c, ar.label);
           const ns = S.line([0, 0], [0, rf.from === 'north' ? 1 : -1], { color: ADJ, width: 2.5, dash: '8 6' }); await drawIn(ns, 300, c);
         } },
       { cap: `Drop a line from the tip to the north–south line. The leg ${T('d')} is the <b class="u9l6-ch">hypotenuse</b>; the east–west part is <b class="u9l6-co">opposite</b> ${T(deg(rf.r))}, the north–south part is <b class="u9l6-ca">adjacent</b>.`,

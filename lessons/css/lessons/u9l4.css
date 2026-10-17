@@ -86,7 +86,8 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u9l4-read { font-size: 20px; text-align: center; }
 
 /* SOH CAH TOA cards */
-.u9l4-soh { box-sizing: border-box; background: #fff; border: 2px solid var(--line2); border-radius: 12px; text-align: center; padding: 4px 4px; font-size: 18px; transition: opacity .3s, box-shadow .3s, background .3s; }
+.u9l4-soh { box-sizing: border-box; background: #fff; border: 2px solid var(--line2); border-radius: 12px; text-align: center; padding: 4px 4px; font-size: 20px; transition: opacity .3s, box-shadow .3s, background .3s; }
 .u9l4-soht { font: 900 22px var(--round); letter-spacing: .08em; }
 .u9l4-soh.u9l4-on { background: #fff4dd; border-color: #e8a01e; box-shadow: 0 0 0 4px rgba(232, 160, 30, .45); }
 .u9l4-soh.u9l4-dim { opacity: .35; }
+.u9l4-panel .u9l4-keys { white-space: normal; line-height: 1.9; }
