@@ -28,6 +28,7 @@ const line = (p, html, cls = '') => { const d = h('div', 'u9l1-line ' + cls, htm
 const show = (c, el) => fadeIn(c, el, 320);
 const hide0 = (el) => { el.style.opacity = 0; return el; };
 const fr = (a, b) => `\\dfrac{${a}}{${b}}`;
+const tn = (n) => (Math.abs(n) >= 1000 ? String(n).replace(/\B(?=(\d{3})+$)/g, '\\,') : String(n)); // 4\,225
 /** a/b written out and simplified: "\dfrac{9}{15}=\dfrac{3}{5}" */
 const simpT = (a, b) => { const g = gcd(a, b); return g > 1 ? `${fr(a, b)}=${fr(a / g, b / g)}` : fr(a, b); };
 const ctxt = (r) => `{\\color{${RC[r]}}\\text{${r}}}`;               // coloured "opp" inside TeX
@@ -256,8 +257,8 @@ function mountFigs() {
   fig('u9l1-ex2b', { width: 340, height: 250, pad: 40, P: { S: [0, 0], T: [3.4, 0.85], U: [-0.68, 2.72] }, right: 'S', ref: 'T', refLab: 'x^\\circ', arcR: 34 });
   fig('u9l1-ex3fig', { width: 400, height: 320, pad: 48, P: { Q: [0, 0], R: [3.6, 0], P: [0, 2.7] }, right: 'Q', ref: 'R', arcR: 38, lens: { PQ: 9, QR: 12, PR: 15 } });
   fig('u9l1-ex4fig', { width: 400, height: 260, pad: 46, P: { N: [0, 0], M: [0, 2.8], L: [5.25, 0] }, right: 'N', ref: 'L', refLab: 'x^\\circ', arcR: 42, lens: { NM: 8, NL: 15 } });
-  fig('u9l1-ex5a', { width: 440, height: 230, pad: 46, P: { C: [0, 0], A: [3.6, 0], B: [0, 1.5] }, right: 'C', ref: 'A', arcR: 46, lens: { CA: 12, CB: 5, AB: 13 } });
-  fig('u9l1-ex5b', { width: 230, height: 330, pad: 46, P: { Y: [0, 0], Z: [1.05, 0], X: [0, 3.6] }, right: 'Y', ref: 'Z', arcR: 24, lens: { YZ: 7, XY: 24, XZ: 25 } });
+  fig('u9l1-ex5a', { width: 350, height: 200, pad: 46, unit: 70, P: { C: [0, 0], A: [3.6, 0], B: [0, 1.5] }, right: 'C', ref: 'A', arcR: 46, lens: { CA: 12, CB: 5, AB: 13 } });
+  fig('u9l1-ex5b', { width: 170, height: 344, pad: 46, unit: 70, P: { Y: [0, 0], Z: [1.05, 0], X: [0, 3.6] }, right: 'Y', ref: 'Z', arcR: 24, lens: { YZ: 7, XY: 24, XZ: 25 } });
 }
 
 /* ======================================================================================
@@ -326,7 +327,7 @@ const why = {
     const u = 320 / aB, OY = 316, sX = 36, bX = 262, pad = [40, 70, 60, 40];
     const mk = (x, a, o, n) => new Tri(stage, { x: x - pad[3], y: OY - o * u - pad[0], width: a * u + pad[1] + pad[3], height: o * u + pad[0] + pad[2], pad, unit: u, fill: true,
       P: { O: [0, 0], A: [a, 0], B: [a, o] }, right: 'A', vlab: false, lens: { OA: a, AB: o }, ref: 'O', refLab: '31^\\circ', arcR: 28 });
-    const sm = mk(sX, aS, oS, i), bg = mk(bX, aB, oB, j);
+    const bg = mk(bX, aB, oB, j), sm = mk(sX, aS, oS, i);   // the small one on top, so it shows once it slides inside
     const vl = (t, n) => { t.oLab = t.hlabel(t.V.O[0] - 4, t.V.O[1] + 20, T('O'), { cls: 'u9l1-v' }); t.hlabel(t.V.A[0] + 6, t.V.A[1] + 20, T(`A_${n}`), { cls: 'u9l1-v' }); t.hlabel(t.V.B[0] - 6, t.V.B[1] - 18, T(`B_${n}`), { cls: 'u9l1-v' }); };
     vl(sm, i); vl(bg, j); bg.len('OA', aB, { gap: 34 });
     const P = panel(stage, 650, 10, ex.W - 660, 380, 'Why the ratio is fixed');
@@ -749,10 +750,10 @@ const hypFirst = {
     return [
       { cap: `Two legs are given: ${T(`${an}=${a}`)} and ${T(`${bn}=${b}`)}. The hypotenuse ${T(d.hyp)}, across from the right angle at ${T(d.right)}, is missing.`,
         run: async (c) => { await pulse(c, t.S(d.hyp).lenEl, 1.5, 600); } },
-      { cap: `Pythagoras: ${T(`${d.hyp}^2=${an}^2+${bn}^2=${a}^2+${b}^2=${a * a}+${b * b}=${c2}`)}.`,
-        run: async (c) => { for (const s of [`${d.hyp}^2=${an}^2+${bn}^2`, `${d.hyp}^2=${a}^2+${b}^2`, `${d.hyp}^2=${a * a}+${b * b}=${c2}`]) await show(c, line(P, T(s))); } },
-      { cap: `${T(`${d.hyp}=\\sqrt{${c2}}=${hy}`)}. It is longer than both legs, as a hypotenuse must be ✓.`,
-        run: async (c) => { await show(c, line(P, T(`${d.hyp}=\\sqrt{${c2}}=${hy}`), 'u9l1-big u9l1-ch')); t.len(d.hyp, hy); t.paint(d.hyp, 'hyp'); await pop(c, t.S(d.hyp).lenEl); } },
+      { cap: `Pythagoras: ${T(`${d.hyp}^2=${an}^2+${bn}^2=${a}^2+${b}^2=${tn(a * a)}+${tn(b * b)}=${tn(c2)}`)}.`,
+        run: async (c) => { for (const s of [`${d.hyp}^2=${an}^2+${bn}^2`, `${d.hyp}^2=${a}^2+${b}^2`, `${d.hyp}^2=${tn(a * a)}+${tn(b * b)}=${tn(c2)}`]) await show(c, line(P, T(s))); } },
+      { cap: `${T(`${d.hyp}=\\sqrt{${tn(c2)}}=${hy}`)}. It is longer than both legs, as a hypotenuse must be ✓.`,
+        run: async (c) => { await show(c, line(P, T(`${d.hyp}=\\sqrt{${tn(c2)}}=${hy}`), 'u9l1-big u9l1-ch')); t.len(d.hyp, hy); t.paint(d.hyp, 'hyp'); await pop(c, t.S(d.hyp).lenEl); } },
       { cap: `From ${T('x^\\circ')} at ${T(d.ref)}: ${RB('opp')} ${T(`=${t.nm(R.opp)}=${n.opp}`)}, ${RB('adj')} ${T(`=${t.nm(R.adj)}=${n.adj}`)}, ${RB('hyp')} ${T(`=${d.hyp}=${hy}`)}.`,
         run: async (c) => { await t.mark(c, d.ref); } },
       { cap: `${T(`\\sin x^\\circ=${simpT(n.opp, hy)}\\approx${dec(n.opp, hy)}`)}, ${T(`\\cos x^\\circ=${simpT(n.adj, hy)}\\approx${dec(n.adj, hy)}`)}, ${T(`\\tan x^\\circ=${simpT(n.opp, n.adj)}\\approx${dec(n.opp, n.adj)}`)} (to the nearest thousandth).`,

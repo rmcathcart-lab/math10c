@@ -86,7 +86,7 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u9l2-scr .u9l2-s2 { font-size: 28px; text-align: right; font-weight: 700; letter-spacing: .02em; }
 .u9l2-scr .u9l2-deg { font-size: 12px; font-weight: 800; }
 .u9l2-dig-hl { background: #ffe08a; border-radius: 3px; }
-.u9l2-barlab { position: absolute; translate: -50% 0; text-align: center; font-size: 17px; line-height: 1.15; white-space: nowrap; }
+.u9l2-barlab { position: absolute; translate: -50% 0; text-align: center; font-size: 16px; line-height: 1.15; white-space: nowrap; }
 .u9l2-barval { position: absolute; translate: -50% -100%; font: 800 20px var(--round); white-space: nowrap; }
 .u9l2-hbar { position: absolute; height: 30px; border-radius: 6px; }
 .u9l2-hbl { position: absolute; font-size: 18px; white-space: nowrap; translate: 0 -50%; }

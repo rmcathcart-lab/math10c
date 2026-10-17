@@ -202,7 +202,7 @@ function mountFigures() {
     G.line({ m: 3, b: -2 }, { color: LINE, width: 4 }); G.line({ m: -1.5, b: 4 }, { color: RED, width: 4 });
     G.point(0, -2, { color: INK, r: 5.5 }); G.point(0, 4, { color: INK, r: 5.5 });
     G.label(0.8, 6.3, T('y=3x-2'), { pos: 'c', cls: 'bk-ptlab u7l1-glab', color: LINE });
-    G.label(-3.95, -1.2, T('y=-\\tfrac{3}{2}x+4'), { pos: 'e', cls: 'bk-ptlab u7l1-glab', color: RED });
+    G.label(4.0, -3.1, T('y=-\\tfrac{3}{2}x+4'), { pos: 'w', cls: 'bk-ptlab u7l1-glab', color: RED });
   }
   const g4 = document.getElementById('u7l1-ex4fig');
   if (g4) {

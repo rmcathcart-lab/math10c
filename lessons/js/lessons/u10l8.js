@@ -48,7 +48,6 @@ function figure(id, w, hh) {
   const svg = svgEl('svg', { width: w, height: hh, viewBox: `0 0 ${w} ${hh}`, class: 'u10l8-svg' }, wrap);
   return { wrap, svg };
 }
-function stampAt(host, text, x, y, o = {}) { const s = stamp(host, text, o); s.style.left = x + 'px'; s.style.top = y + 'px'; s.style.position = 'absolute'; return s; }
 
 /* ---------- SVG drawing: solids in a slightly-from-above view, hidden edges dashed ---------- */
 function P(d, attrs, parent) { return svgEl('path', Object.assign({ d, fill: 'none', stroke: INK, 'stroke-width': SW, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, attrs), parent); }
@@ -558,7 +557,7 @@ const slice = {
     const R = 80, dx = 130, dy = 270, cy = 150, xs = [330, 510, 730];
     const D = dome(g, dx, dy, R, { floor: true, op: 1, fill: PEEL });
     D.shell.setAttribute('fill-opacity', 0.9); D.floor.setAttribute('fill-opacity', 1);
-    const pith = svgEl('path', { d: D.shell.getAttribute('d'), fill: PITH }, g); hide(pith); g.insertBefore(pith, D.top);
+    const pith = svgEl('path', { d: D.shell.getAttribute('d'), fill: PITH }, g); hide(pith);
     D.insertBefore(pith, D.top);
     const lCur = lab(stage, dx, dy - R - 8, 'curved', 'n', 'u10l8-tl u10l8-or'), lFl = lab(stage, dx, dy + R * EQ + 6, 'floor', 's', 'u10l8-tl u10l8-bl');
     const circ = xs.map((x, i) => traced(g, x, cy, R, i < 2 ? PEEL_D : FLR)); circ.forEach(hide);
@@ -658,7 +657,7 @@ const domes = {
     const xa = W * 0.26, xb = W * 0.74, by = 196, r = 104, tr = 30, ty = 290;
     const A = dome(g, xa, by, r, { floor: true }), B = dome(g, xb, by, r, { floor: false });
     A.floor.style.opacity = 0;
-    lab(stage, xa, 18, '<b>Sana</b>: with a floor', 'n', 'u10l8-tl', -26); lab(stage, xb, 18, '<b>Tavi</b>: no floor', 'n', 'u10l8-tl', -26);
+    lab(stage, xa, 30, '<b>Sana</b>: with a floor', 'c', 'u10l8-tl'); lab(stage, xb, 30, '<b>Tavi</b>: no floor', 'c', 'u10l8-tl');
     const rA = seg(g, [xa, by], [xa + r, by], { stroke: RAD, 'stroke-width': 3.5 }), rB = seg(g, [xb, by], [xb + r, by], { stroke: RAD, 'stroke-width': 3.5 });
     const lrs = [xa, xb].map((x) => hide(lab(stage, x + r / 2, by - 4, T('r=6'), 'n', 'u10l8-rl u10l8-wbg')));
     const lds = [xa, xb].map((x) => lab(stage, x, by + r * EQ + 4, T('d=12\\text{ ft}'), 's', 'u10l8-dl'));
@@ -737,15 +736,13 @@ const backwards = {
     const xs = [W * 0.14, W * 0.5, W * 0.86], y = 140, bw = 190, bh = 66;
     const boxes = [T('r'), T('r^3'), T('V')].map((s, i) => add(stage, box(h('div', 'u10l8-mbox', `<div class="u10l8-mname">${s}</div><div class="u10l8-mval"></div>`), bw, bh), xs[i] - bw / 2, y - bh / 2));
     const vals = boxes.map((b) => b.querySelector('.u10l8-mval'));
-    const curve = (x1, x2, up, color) => { const yy = up ? y - bh / 2 - 6 : y + bh / 2 + 6, ym = up ? yy - 46 : yy + 46, a = x1 + (up ? 30 : -30), b2 = x2 + (up ? -30 : 30);
-      const p = P(`M${a} ${yy} Q${(a + b2) / 2} ${ym} ${b2} ${yy}`, { stroke: color, 'stroke-width': 3.5, class: 'bk-stroke' }, g);
-      const dir = up ? 1 : -1; P(`M${b2 - dir * 12} ${yy + (up ? -10 : 10)} L${b2} ${yy} L${b2 - dir * 2} ${yy + (up ? -16 : 16)}`, { stroke: color, 'stroke-width': 3.5 }, g);
-      return p; };
-    const fw = G(g); const f1 = curve(xs[0] + bw / 2 - 40, xs[1] - bw / 2 + 40, true, CYL); const f2 = curve(xs[1] + bw / 2 - 40, xs[2] - bw / 2 + 40, true, CYL);
-    fw.appendChild(f1.nextSibling); fw.appendChild(f2.nextSibling); fw.appendChild(f1); fw.appendChild(f2); hide(fw);
+    const curve = (parent, x1, x2, up, color) => { const yy = up ? y - bh / 2 - 6 : y + bh / 2 + 6, ym = up ? yy - 46 : yy + 46;
+      P(`M${x1} ${yy} Q${(x1 + x2) / 2} ${ym} ${x2} ${yy}`, { stroke: color, 'stroke-width': 3.5 }, parent);
+      const dx = x2 > x1 ? 1 : -1; P(`M${x2 - dx * 4} ${yy + (up ? -15 : 15)} L${x2} ${yy} L${x2 - dx * 15} ${yy + (up ? -3 : 3)}`, { stroke: color, 'stroke-width': 3.5 }, parent); };
+    const fw = G(g); curve(fw, xs[0] + 40, xs[1] - 40, true, CYL); curve(fw, xs[1] + 40, xs[2] - 40, true, CYL); hide(fw);
     const lf1 = hide(lab(stage, (xs[0] + xs[1]) / 2, y - bh / 2 - 46, 'cube it ' + T('x^3'), 'n', 'u10l8-tl u10l8-teal')), lf2 = hide(lab(stage, (xs[1] + xs[2]) / 2, y - bh / 2 - 46, T('\\times\\tfrac43\\pi'), 'n', 'u10l8-tl u10l8-teal'));
-    const bw1 = G(g); const b1 = curve(xs[2] - bw / 2 + 40, xs[1] + bw / 2 - 40, false, RAD); bw1.appendChild(b1.nextSibling); bw1.appendChild(b1); hide(bw1);
-    const bw2 = G(g); const b2 = curve(xs[1] - bw / 2 + 40, xs[0] + bw / 2 - 40, false, RAD); bw2.appendChild(b2.nextSibling); bw2.appendChild(b2); hide(bw2);
+    const bw1 = G(g); curve(bw1, xs[2] - 40, xs[1] + 40, false, RAD); hide(bw1);
+    const bw2 = G(g); curve(bw2, xs[1] - 40, xs[0] + 40, false, RAD); hide(bw2);
     const lb1 = hide(lab(stage, (xs[1] + xs[2]) / 2, y + bh / 2 + 46, `undo: ${T('\\times3\\div4\\pi')}`, 's', 'u10l8-tl u10l8-red')), lb2 = hide(lab(stage, (xs[0] + xs[1]) / 2, y + bh / 2 + 46, `undo: ${T('\\sqrt[3]{\\ \\ }')} cube root`, 's', 'u10l8-tl u10l8-red'));
     const Pn = panel(stage, 14, 268, W - 28, Hh - 282, '');
     const w1 = hide(line(Pn, T(`r^3=\\dfrac{3V}{4\\pi}=${d.calc[0]}=${d.calc[1]}\\approx${d.r3}`)));

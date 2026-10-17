@@ -323,7 +323,7 @@ const whichTool = {
           await anim(c, talt, [{ opacity: 0 }, { opacity: 1 }], 300); await goTo(c, 'split', 'want');
         } });
     } else {
-      steps.push({ cap: 'Is there a right triangle? <b>Yes</b>: the right angle is marked.', run: async (c) => { await pulse(c, S.rm.parentNode ? tok : tok, 1.15); await goTo(c, 'start', 'want'); } });
+      steps.push({ cap: 'Is there a right triangle? <b>Yes</b>: the right angle is marked.', run: async (c) => { await pulse(c, tok, 1.15); await goTo(c, 'start', 'want'); } });
     }
     steps.push({ cap: `Want a side or an angle? ${q.want === 'side' ? 'A <b>side</b>' : 'An <b>angle</b>'}.`, run: (c) => goTo(c, 'want', mid) });
     steps.push({ cap: `What do we know? ${q.say[1]}. ${q.say[2]}`,
@@ -476,7 +476,7 @@ function balance(stage, cx, y) {
       const a = add(stage, h('div', 'u9l8-op', text), cx - 130 - 34, y - 160), b = add(stage, h('div', 'u9l8-op', text), cx + 130 - 34, y - 160);
       await Promise.all([pop(c, a), pop(c, b)]);
       await Promise.all([anim(c, a, [{ transform: 'translateY(0)' }, { transform: 'translateY(52px)' }], 420), anim(c, b, [{ transform: 'translateY(0)' }, { transform: 'translateY(52px)' }], 420)]);
-      await Promise.all([anim(c, [beam, L, R].length ? beam : beam, [{ transform: 'rotate(0deg)' }, { transform: 'rotate(1.5deg)' }, { transform: 'rotate(-1.5deg)' }, { transform: 'rotate(0deg)' }], 420)]);
+      await anim(c, beam, [{ transform: 'rotate(0deg)' }, { transform: 'rotate(1.5deg)' }, { transform: 'rotate(-1.5deg)' }, { transform: 'rotate(0deg)' }], 420);
       a.remove(); b.remove();
     }
   };
@@ -602,7 +602,7 @@ const solveAngle = {
 
 /* =============================== explainer: elevation (Section 4) =============================== */
 function boat(G, x) { const [px, py] = G.P([x, 0]); const g = svgEl('g', {}, G.Ltop); svgEl('path', { d: `M${px - 22} ${py - 12}L${px + 22} ${py - 12}L${px + 14} ${py}L${px - 14} ${py}Z`, fill: '#8a5a2b' }, g); svgEl('path', { d: `M${px} ${py - 12}L${px} ${py - 40}L${px + 16} ${py - 16}Z`, fill: '#f4f1ea', stroke: INK, 'stroke-width': 1.5 }, g); return g; }
-function person(G, x, eye) { const [px, py] = G.P([x, 0]), [, ey] = G.P([x, eye]); const g = svgEl('g', { stroke: INK, 'stroke-width': 3, fill: 'none', 'stroke-linecap': 'round' }, G.Ltop); svgEl('circle', { cx: px, cy: ey - 2, r: 8, fill: '#fff' }, g); svgEl('path', { d: `M${px} ${ey + 6}L${px} ${py - 24}M${px} ${py - 24}L${px - 9} ${py}M${px} ${py - 24}L${px + 9} ${py}M${px} ${ey + 16}L${px + 12} ${ey + 8}` }, g); return g; }
+function person(G, x, eye, base = 0) { const [px, py] = G.P([x, base]), [, ey] = G.P([x, eye]); const g = svgEl('g', { stroke: INK, 'stroke-width': 3, fill: 'none', 'stroke-linecap': 'round' }, G.Ltop); svgEl('circle', { cx: px, cy: ey - 2, r: 8, fill: '#fff' }, g); svgEl('path', { d: `M${px} ${ey + 6}L${px} ${py - 24}M${px} ${py - 24}L${px - 9} ${py}M${px} ${py - 24}L${px + 9} ${py}M${px} ${ey + 16}L${px + 12} ${ey + 8}` }, g); return g; }
 const EL = { cliff: { label: 'Elevation = depression' }, eye: { label: 'Eye level' }, ex4: { label: 'Example 4 check' } };
 const elevation = {
   title: 'Elevation, depression, and the eye-level triangle',
@@ -614,18 +614,18 @@ const elevation = {
     if (v === 'cliff') {
       const hgt = 30, ang = 25, d = hgt / Math.tan(ang * RAD), k = 7.2;
       const G = new Geo(stage, { x: 0, y: 0, w: 640, h: 420, k, ox: 96, oy: 330 });
-      G.fill([[-12, 0], [80, 0], [80, -12], [-12, -12]], '#cfe3f3'); G.fill([[-12, 0], [0, 0], [0, hgt], [-12, hgt]], '#d9cfb8');
+      G.fill([[-12, 0], [74, 0], [74, -12], [-12, -12]], '#cfe3f3'); G.fill([[-12, 0], [0, 0], [0, hgt], [-12, hgt]], '#d9cfb8');
       const top = [0, hgt], base = [0, 0], bt = [d, 0];
-      const cliffS = G.seg(base, top, { width: 3.5 }), sea = G.seg([-12, 0], [78, 0], { color: '#4a86b8', width: 2.5 });
-      boat(G, d); person(G, -3, hgt + 2.2);
+      const cliffS = G.seg(base, top, { width: 3.5 }), sea = G.seg([-12, 0], [73, 0], { color: '#4a86b8', width: 2.5 });
+      boat(G, d); person(G, -4, hgt + 1.6, hgt);
       G.lab([0, hgt / 2], T('30\\text{ m}'), { pos: 'w', dx: -6 });
-      const hor = G.seg(top, [78, hgt], { dash: true, color: GRAY, width: 2.5 }), sight = G.seg(top, bt, { color: HYP }), seaL = G.seg(base, bt, { width: 3.5 });
+      const hor = G.seg(top, [72, hgt], { dash: true, color: GRAY, width: 2.5 }), sight = G.seg(top, bt, { color: HYP }), seaL = G.seg(base, bt, { width: 3.5 });
       [hor, sight, seaL].forEach(hide);
       let aTop, aBoat, Z;
       return [
         { cap: `A lookout stands on a cliff ${T('30')} m above the sea and spots a boat. How far out is it?`, run: async (c) => { await G.draw(c, cliffS, 300); } },
         { cap: `<b>Angle of depression</b>: from the <b>horizontal</b> at the lookout, <b>down</b> to the boat: ${T('25^\\circ')}.`,
-          run: async (c) => { hor.style.opacity = 1; await G.draw(c, hor, 400); sight.style.opacity = 1; await G.draw(c, sight, 500); aTop = G.arc(top, [78, hgt], bt, 70, { label: T('25^\\circ'), ld: 22 }); await G.draw(c, aTop, 300); await fadeIn(c, aTop.label); await say(c, p, '<b>depression</b> ' + T('25^\\circ') + ' from the horizontal'); } },
+          run: async (c) => { hor.style.opacity = 1; await G.draw(c, hor, 400); sight.style.opacity = 1; await G.draw(c, sight, 500); aTop = G.arc(top, [72, hgt], bt, 70, { label: T('25^\\circ'), ld: 22 }); await G.draw(c, aTop, 300); await fadeIn(c, aTop.label); await say(c, p, '<b>depression</b> ' + T('25^\\circ') + ' from the horizontal'); } },
         { cap: `The sea is horizontal too, and the two horizontals are <b>parallel</b>. The <b>Z</b> makes alternate angles equal: the angle of <b>elevation</b> from the boat is also ${T('25^\\circ')}.`,
           run: async (c) => { seaL.style.opacity = 1; Z = G.poly([[d, hgt], top, bt, base], { color: COLORS.orange, width: 9 }); Z.style.opacity = 0.45; Z.path.setAttribute('stroke-linejoin', 'round'); await G.draw(c, Z, 900); aBoat = G.arc(bt, base, top, 70, { label: T('25^\\circ'), ld: 22 }); await G.draw(c, aBoat, 300); await fadeIn(c, aBoat.label); await say(c, p, '<b>elevation</b> ' + T('25^\\circ') + ' from the boat'); } },
         { cap: `In the right triangle, ${T('25^\\circ')} sits at the boat: 30 m is ${OPPw}, the distance ${T('d')} is ${ADJw}. TOA: ${T('\\tan25^\\circ=\\dfrac{30}{d}')}.`,
@@ -700,7 +700,7 @@ const split = {
     const vD = GL.lab(D, T('D'), { pos: 's', dy: 2, cls: 'u9l8-v' });
     const rmL = GL.rm(D, A, Bv, 14), rmR = GR.rm(D, C, Bv, 14); [rmL, rmR, vD].forEach(hide);
     const hL = GL.lab([ad, q.h / 2], T(q.h + '\\text{ m}'), { pos: 'w', dx: -6, color: OPP }), hR = GR.lab([ad, q.h / 2], T(q.h + '\\text{ m}'), { pos: 'e', dx: 6, color: OPP }); [hL, hR].forEach(hide);
-    const res = add(stage, box(h('div', 'u9l8-res u9l8-resc'), ex.W - 40, 64), 20, 378); hide(res);
+    const res = add(stage, box(h('div', 'u9l8-res u9l8-resc'), ex.W - 40, 52), 20, 392); hide(res);
     const slide = (c, dx) => Promise.all([anim(c, GL.el, [{ transform: `translateX(${GL.dx || 0}px)` }, { transform: `translateX(${-dx}px)` }], 650), anim(c, GR.el, [{ transform: `translateX(${GR.dx || 0}px)` }, { transform: `translateX(${dx}px)` }], 650)]).then(() => { GL.dx = -dx; GR.dx = dx; });
     let lAD, lDC;
     return [
@@ -779,12 +779,12 @@ const bearings = {
   intro: (v) => `A boat leaves harbour ${T('H')} on a bearing of ${T(String(BR[v].b).padStart(3, '0') + '^\\circ')} and sails ${T(String(BR[v].d))} km. Press <b>Next</b>.`,
   make(stage, v, ex) {
     const q = BR[v], br = q.b, d = q.d, k = 17, south = br > 90;
-    const G = new Geo(stage, { x: 0, y: 0, w: 560, h: 430, k, ox: 230, oy: south ? 140 : 300 });
+    const G = new Geo(stage, { x: 0, y: 0, w: 560, h: 430, k, ox: 230, oy: south ? 160 : 300 });
     const H = [0, 0], M = [d * Math.sin(br * RAD), d * Math.cos(br * RAD)], foot = [0, M[1]];
     const ref = south ? 180 - br : br, ns = Math.abs(M[1]), ew = M[0];
-    const nsL = G.seg([0, south ? 7 : -5], [0, south ? -11 : 13], { color: GRAY, width: 2 });
-    const [nx, ny] = G.P([0, south ? 7 : 13]); svgEl('polygon', { points: `${nx},${ny - 12} ${nx - 7},${ny + 2} ${nx + 7},${ny + 2}`, fill: INK }, G.Ltop);
-    G.lab([0, south ? 7 : 13], '<b>N</b>', { pos: 'n', gap: 12 });
+    const nsL = G.seg([0, south ? 6 : -5], [0, south ? -11 : 13], { color: GRAY, width: 2 });
+    const [nx, ny] = G.P([0, south ? 6 : 13]); svgEl('polygon', { points: `${nx},${ny - 12} ${nx - 7},${ny + 2} ${nx + 7},${ny + 2}`, fill: INK }, G.Ltop);
+    G.lab([0, south ? 6 : 13], '<b>N</b>', { pos: 'n', gap: 12 });
     const ewL = G.seg([-5, 0], [12, 0], { color: '#dde0e6', width: 1.5, layer: G.Lbg }); void ewL; void nsL;
     G.lab([12, 0], '<b class="u9l8-muted">E</b>', { pos: 'e' });
     if (south) G.lab([0, -11], '<b>S</b>', { pos: 's' });
@@ -805,7 +805,7 @@ const bearings = {
       { cap: `Turn ${T(br + '^\\circ')} clockwise from north${south ? `, past east (${T('090^\\circ')}): the boat heads <b>south of east</b>` : ''}. Then sail ${T(String(d))} km.`,
         run: async (c) => { [sw, swf, ray, swl].forEach((e) => (e.style.opacity = 1)); await tween(c, 1100, (t) => setSweep(br * t)); path.style.opacity = 1; await G.draw(c, path, 600); await fadeIn(c, G.lab(M, T('M'), { pos: south ? 'se' : 'ne', cls: 'u9l8-v' })); await fadeIn(c, G.lab([M[0] / 2, M[1] / 2], T(d + '\\text{ km}'), { pos: south ? 'sw' : 'nw', dx: south ? -4 : -4, color: HYP })); } },
       { cap: south ? `Use the north–south line. The acute angle at ${T('H')} is measured from <b>south</b>: ${T(`180^\\circ-${br}^\\circ=${ref}^\\circ`)}. Drop from ${T('M')} to that line: a right triangle.`
-          : `Drop from ${T('M')} to the north line: a right triangle. The ${T(d)} km path is the ${HYPw}, and ${T(br + '^\\circ')} sits at ${T('H')} between north and the path.`,
+          : `Drop from ${T('M')} to the north line: a right triangle. The ${T(String(d))} km path is the ${HYPw}, and ${T(br + '^\\circ')} sits at ${T('H')} between north and the path.`,
         run: async (c) => {
           await fade(c, swf, 0.05); await fade(c, sw, 0.25); await fade(c, swl, 0.4); await fade(c, ray, 0);
           drop.style.opacity = 1; leg.style.opacity = 1; await G.draw(c, leg, 400); await G.draw(c, drop, 400); await appear(c, G.rm(foot, H, M, 13), 200);

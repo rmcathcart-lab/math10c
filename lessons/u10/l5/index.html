@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Converting Square and Cubic Units: SI and Imperial Systems · Math 10C 10.5</title>
+<meta name="description" content="Math 10C Unit 10 Lesson 5: converting square and cubic units in the SI and imperial systems. A 1 m square filling with 100 × 100 square centimetres and a 1 m cube filling with layers of cubic centimetres (why the linear factor is squared for area and cubed for volume), the metric number line shortcut, imperial square and cubic factors by unit analysis, and comparing a metric bin with an imperial bin. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u10l5.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 10 Measurement · Lesson 5</div>
+  <h1>Converting Square and Cubic Units: SI and Imperial Systems</h1>
+  <p class="lede">Area is <b>two</b> dimensions and volume is <b>three</b>, so a linear conversion factor is <b>squared</b> for square units and <b>cubed</b> for cubic units. Today: see why <span class="tex">1\text{ m}^2</span> is <span class="tex">10\,000\text{ cm}^2</span> (not 100), convert areas and volumes in metric and imperial units, and compare objects measured in different systems.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>build a square-unit relationship from a unit square (<span class="tex">1\text{ m}^2=100^2=10\,000\text{ cm}^2</span>) and a cubic-unit relationship from a unit cube (<span class="tex">1\text{ m}^3=100^3=1\,000\,000\text{ cm}^3</span>)</li>
+      <li>convert metric areas and volumes with the metric number line: <span class="tex">n</span> steps apart means <span class="tex">10^{2n}</span> for area and <span class="tex">10^{3n}</span> for volume</li>
+      <li>convert imperial areas and volumes (<span class="tex">\text{ft}^2\leftrightarrow\text{in}^2</span>, <span class="tex">\text{yd}^3\leftrightarrow\text{ft}^3</span>, …) by unit analysis</li>
+      <li>convert two measurements to a common unit so I can compare an SI object with an imperial one</li>
+    </ul>
+  </div>
+  <div class="outcome"><b>M2</b> Apply proportional reasoning to problems that involve conversions between SI and imperial units of measure.</div>
+  <div class="outcome"><b>M3</b> Solve problems, using SI and imperial units, that involve the surface area and volume of 3-D objects, including: right cones; right cylinders; right prisms; right pyramids; spheres.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: The Carpet Deal" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Carpet Deal</h2></div>
+  <p class="big">You need new carpet for your bedroom. Two stores sell the <b>same</b> carpet.</p>
+  <div class="u10l5-wtop">
+    <div class="u10l5-tags">
+      <div class="u10l5-tag u10l5-tagA"><div class="u10l5-tagS">Store A</div><div class="u10l5-tagP">$3.00</div><div class="u10l5-tagU">per square foot</div></div>
+      <div class="u10l5-tag u10l5-tagB"><div class="u10l5-tagS">Store B</div><div class="u10l5-tagP">$25.00</div><div class="u10l5-tagU">per square yard</div></div>
+    </div>
+    <div class="u10l5-wfig">
+      <div id="u10l5-carpet"></div>
+      <div class="u10l5-wbtns">
+        <button type="button" class="pill" id="u10l5-wsplit">Split it into square feet</button>
+        <button type="button" class="pill" id="u10l5-wslip">The slip: only 3?</button>
+        <button type="button" class="pill" id="u10l5-wprice">Price it at Store A</button>
+      </div>
+    </div>
+  </div>
+  <div class="u10l5-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>How many feet are in <b>1 yard</b>?</div></div>
+      <div class="u10l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">1\text{ yd}=\mathbf{3}\text{ ft}</span>.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>How many small 1 ft by 1 ft squares fit inside <b>1 square yard</b>?</div></div>
+      <div class="u10l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>9</b> squares: 3 rows of 3. Tap <b>Split it into square feet</b>.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>So <span class="tex">1\text{ yd}^2=\ ?\ \text{ft}^2</span>. Why isn’t it 3?</div></div>
+      <div class="u10l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">1\text{ yd}^2=3\times3=\mathbf{9}\text{ ft}^2</span>. Area has <b>two</b> dimensions: the square is 3 ft wide <b>and</b> 3 ft tall, so the factor 3 is used twice. Three square feet is only one row.</div></div>
+    </div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Same carpet, two prices. Which store is <b>cheaper</b>? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> Store A ($3.00 per <span class="tex">\text{ft}^2</span>)</div>
+      <div class="opt right"><b>B</b> Store B ($25.00 per <span class="tex">\text{yd}^2</span>)</div>
+      <div class="opt"><b>C</b> They cost exactly the same</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>B: Store B.</b> Put both prices in the same unit: <span class="tex">\$3.00\text{ per ft}^2\times9\text{ ft}^2\text{ per yd}^2=\$27.00\text{ per yd}^2</span>. Store B charges $25.00 per <span class="tex">\text{yd}^2</span>, so it is <b>$2.00 cheaper</b> on every square yard. Tap <b>Price it at Store A</b>.<br>
+      <span class="muted"><b>A</b> comes from the classic slip <span class="tex">1\text{ yd}^2=3\text{ ft}^2</span>: then Store A looks like only $9 per <span class="tex">\text{yd}^2</span>. <b>C</b> comes from “$3 is about $25 split into 9 pieces”: close, but <span class="tex">25\div9\approx\$2.78</span> per <span class="tex">\text{ft}^2</span>, not $3.</span></div>
+  </div>
+
+  <div class="u10l5-early">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num bonus">+</div><div><b>A real room.</b> Your bedroom is 12 ft by 15 ft. How much does carpet cost at each store?</div></div>
+      <div class="u10l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">12\times15=180\text{ ft}^2=180\div9=20\text{ yd}^2</span>. Store A: <span class="tex">180\times\$3=\$540</span>. Store B: <span class="tex">20\times\$25=\$500</span>. You save <b>$40</b> at Store B.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num bonus">+</div><div><b>Extra challenge.</b> Gravel costs $40 per <b>cubic</b> yard or $1.75 per <b>cubic</b> foot. Which is cheaper?</div></div>
+      <div class="u10l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">A cubic yard is <span class="tex">3\times3\times3=27\text{ ft}^3</span>, so the cubic-foot price is <span class="tex">1.75\times27=\$47.25</span> per <span class="tex">\text{yd}^3</span>. The <b>$40 cubic-yard price</b> wins.</div></div>
+    </div>
+  </div>
+  <p class="u10l5-social">Convince your neighbour: draw the square yard and count the square feet.</p>
+</section>
+
+<!-- ================= 1. Area, metric ================= -->
+<section class="card" data-ink="s1" data-section="1. Converting Units of Area in the Metric System">
+  <div class="sec-h"><span class="badge">1</span><h2>Converting Units of Area in the Metric System</h2></div>
+  <p>A length conversion has one dimension, so the linear factor is applied once. An area is a product of <b>two</b> lengths, so both lengths are scaled and the factor is applied twice: the area conversion factor is the <b>square</b> of the linear one. Since <span class="tex">1\text{ m}=100\text{ cm}</span>, a 1 m square is a 100 cm by 100 cm square, so <span class="tex">1\text{ m}^2=100^2=10\,000\text{ cm}^2</span>, <b>not</b> <span class="tex">100\text{ cm}^2</span>.</p>
+  <div class="u10l5-why">
+    <div id="u10l5-f-s1" class="u10l5-fig"></div>
+    <div class="def"><b>Why the factor squares.</b> Each side of the square holds 100 cm, so the square holds <span class="tex">10\times10=100</span> cells (one is shaded), each 10 cm by 10 cm. One cell is <span class="tex">10\times10=100\text{ cm}^2</span>, so the whole square is <span class="tex">100\times100=10\,000\text{ cm}^2</span>. Counting in centimetre squares instead of ten-centimetre cells gives the same total: <span class="tex">100</span> columns <span class="tex">\times\ 100</span> rows <span class="tex">=10\,000</span> squares of <span class="tex">1\text{ cm}^2</span>.</div>
+  </div>
+  <div class="explainer" data-explainer="grid"></div>
+  <div class="def"><b>Metric shortcut.</b> If two prefixes are <span class="tex">n</span> steps apart on the metric number line, the <b>length</b> factor is <span class="tex">10^{n}</span>, the <b>area</b> factor is <span class="tex">10^{2n}</span>, and the <b>volume</b> factor is <span class="tex">10^{3n}</span>.
+    <div class="eg">Millimetres to metres is 3 steps, so <span class="tex">1\text{ m}^2=10^{6}\text{ mm}^2</span> and <span class="tex">1\text{ m}^3=10^{9}\text{ mm}^3</span>.</div>
+  </div>
+  <div class="explainer" data-explainer="shortcut"></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Building the square-unit relationship from a unit square</h3></div>
+  <div class="u10l5-exrow">
+    <div id="u10l5-f-ex1" class="u10l5-fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(a) State the area of the square in <span class="tex">\text{m}^2</span>.</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">A=1\text{ m}\times1\text{ m}=\mathbf{1}\text{ m}^2</span></div></div></div>
+    </div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(b) Convert the side length of the square to cm, and then to mm. Use these converted side lengths to calculate the area of the same square in <span class="tex">\text{cm}^2</span> and in <span class="tex">\text{mm}^2</span>.</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">1\text{ m}=100\text{ cm}</span> and <span class="tex">1\text{ m}=1000\text{ mm}</span>.<br>In cm: <span class="tex">A=100\times100=\mathbf{10\,000}\text{ cm}^2</span>.<br>In mm: <span class="tex">A=1000\times1000=\mathbf{1\,000\,000}\text{ mm}^2</span>.</div></div></div>
+    <div class="part"><div class="pl">(c) Complete the statement:<br><span class="tex">1\text{ m}^2=</span> <span class="u10l5-blank"><span data-reveal><span class="tex">10\,000</span></span></span> <span class="tex">\text{cm}^2=</span> <span class="u10l5-blank"><span data-reveal><span class="tex">1\,000\,000</span></span></span> <span class="tex">\text{mm}^2</span>.</div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The linear factors are 100 and 1000; squaring them gives <span class="tex">100^2=\mathbf{10\,000}</span> and <span class="tex">1000^2=\mathbf{1\,000\,000}</span>.</div></div></div>
+  </div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(d) Explain why converting <span class="tex">\text{km}^2</span> to <span class="tex">\text{m}^2</span> requires multiplying by <span class="tex">1000^2=1\,000\,000</span>, rather than by <span class="tex">1000</span>.</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Area is length <span class="tex">\times</span> width. Going from km to m multiplies the length by 1000 <b>and</b> the width by 1000, so the product is multiplied by <span class="tex">1000\times1000=1000^2=1\,000\,000</span>. Multiplying by 1000 only once would scale a single dimension, which converts a length, not an area.</div></div></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Applying the square-unit ratio to a rectangle</h3></div>
+  <p class="q">A rectangle measures 7 m by 4 m.</p>
+  <div class="u10l5-exrow">
+    <div id="u10l5-f-ex2" class="u10l5-fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(a) Calculate the area of the rectangle in <span class="tex">\text{m}^2</span>.</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">A=7\times4=\mathbf{28}\text{ m}^2</span></div></div></div>
+    </div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(b) Convert both side lengths to cm and calculate the area in <span class="tex">\text{cm}^2</span>. Confirm your answer using the ratio from Example 1.</div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Sides: 700 cm and 400 cm.<br><span class="tex">A=700\times400=\mathbf{280\,000}\text{ cm}^2</span><br>Check: <span class="tex">28\times10\,000=280\,000\text{ cm}^2</span> ✓</div></div></div>
+    <div class="part"><div class="pl">(c) Convert both side lengths to mm and calculate the area in <span class="tex">\text{mm}^2</span>. Confirm your answer using the ratio from Example 1.</div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Sides: 7000 mm and 4000 mm.<br><span class="tex">A=7000\times4000=\mathbf{28\,000\,000}\text{ mm}^2</span><br>Check: <span class="tex">28\times1\,000\,000=28\,000\,000\text{ mm}^2</span> ✓</div></div></div>
+    <div class="part think span2"><div class="pl"><span class="think-tag">Think</span> A classmate writes <span class="tex">28\times100=2800\text{ cm}^2</span>. What did they forget?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">They scaled only <b>one</b> side. <span class="tex">2800\text{ cm}^2</span> is a strip 700 cm long and only 4 cm wide. Both sides become 100 times longer, so the area is <span class="tex">100^2=10\,000</span> times bigger.</div></div></div>
+  </div>
+  <div class="explainer" data-explainer="rect"></div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Metric area conversions</h3></div>
+  <p class="q">Convert each of the following, expressing your answer in both standard notation and scientific notation.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) <span class="tex">42\text{ m}^2</span> to <span class="tex">\text{cm}^2</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">m <span class="tex">\to</span> cm is 2 steps, so the area factor is <span class="tex">10^{4}</span>.<br><span class="tex">42\times10\,000=\mathbf{420\,000}\text{ cm}^2=\mathbf{4.2\times10^{5}}\text{ cm}^2</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">156\,000\text{ cm}^2</span> to <span class="tex">\text{m}^2</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Divide by <span class="tex">10^{4}</span>.<br><span class="tex">156\,000\div10\,000=\mathbf{15.6}\text{ m}^2=\mathbf{1.56\times10^{1}}\text{ m}^2</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">0.0037\text{ km}^2</span> to <span class="tex">\text{m}^2</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">km <span class="tex">\to</span> m is 3 steps, so the area factor is <span class="tex">10^{6}</span>.<br><span class="tex">0.0037\times10^{6}=\mathbf{3700}\text{ m}^2=\mathbf{3.7\times10^{3}}\text{ m}^2</span></div></div></div>
+    <div class="part"><div class="pl">(d) <span class="tex">8\,400\,000\text{ m}^2</span> to <span class="tex">\text{km}^2</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Divide by <span class="tex">10^{6}</span>.<br><span class="tex">8\,400\,000\div10^{6}=\mathbf{8.4}\text{ km}^2=\mathbf{8.4\times10^{0}}\text{ km}^2</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Powers of ten with <kbd>EE</kbd>.</b> <span class="keys"><kbd>1</kbd><kbd>EE</kbd><kbd>6</kbd></span> means <span class="tex">1\times10^{6}</span>, so there are no zeros to miscount. For (c): <span class="keys"><kbd>0</kbd><kbd>.</kbd><kbd>0</kbd><kbd>0</kbd><kbd>3</kbd><kbd>7</kbd><kbd>×</kbd><kbd>1</kbd><kbd>EE</kbd><kbd>6</kbd><kbd>ENTER</kbd></span> gives 3700.</div>
+    <div class="pill-col"><button class="pill" data-keys="0.0037 × 1 EE 6 =">Show (c)</button><button class="pill" data-keys="8400000 ÷ 1 EE 6 =">Show (d)</button></div>
+  </div>
+  <div class="explainer" data-explainer="shiftA"></div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<!-- ================= 2. Volume, metric ================= -->
+<section class="card" data-ink="s2" data-section="2. Converting Units of Volume in the Metric System">
+  <div class="sec-h"><span class="badge">2</span><h2>Converting Units of Volume in the Metric System</h2></div>
+  <p>A volume is a product of <b>three</b> lengths, so all three are scaled and the linear factor is applied three times: the volume conversion factor is the <b>cube</b> of the linear one. A 1 m cube is a 100 cm by 100 cm by 100 cm cube, so <span class="tex">1\text{ m}^3=100^3=1\,000\,000\text{ cm}^3</span>.</p>
+  <div class="u10l5-why">
+    <div id="u10l5-f-s2" class="u10l5-fig"></div>
+    <div class="def"><b>Why the factor cubes.</b> The cube is 10 blocks long, 10 blocks wide and 10 blocks deep, so it holds <span class="tex">10\times10\times10=1000</span> blocks. Each block is a 10 cm cube, with volume <span class="tex">10\times10\times10=1000\text{ cm}^3</span>, so the whole cube is <span class="tex">1000\times1000=1\,000\,000\text{ cm}^3</span>. Counting in centimetre cubes directly gives the same total: <span class="tex">100\times100\times100=10^{6}</span> cubes of <span class="tex">1\text{ cm}^3</span>.</div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>The classic error</b> is to apply the linear factor once and write <span class="tex">1\text{ m}^3=100\text{ cm}^3</span>. A <span class="tex">100\text{ cm}^3</span> volume is a cube barely 4.6 cm on an edge: nothing like a cubic metre.</div></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>How big is <span class="tex">100\text{ cm}^3</span>?</b> Its edge is <span class="tex">\sqrt[3]{100}</span>: <span class="keys"><kbd>3</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives about 4.64 cm.</div>
+    <div class="pill-col"><button class="pill" data-keys="3 ˣ√ 100 =">Show me</button></div>
+  </div>
+  <div class="explainer" data-explainer="cube"></div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Building the cubic-unit relationship from a unit cube</h3></div>
+  <div class="u10l5-exrow">
+    <div id="u10l5-f-ex4" class="u10l5-fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(a) State the volume of the cube in <span class="tex">\text{m}^3</span>.</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">V=1\times1\times1=\mathbf{1}\text{ m}^3</span></div></div></div>
+    </div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(b) Convert each edge of the cube to cm. Calculate the volume of the cube in <span class="tex">\text{cm}^3</span>.</div><div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Each edge <span class="tex">=100\text{ cm}</span>.<br><span class="tex">V=100\times100\times100=100^3=\mathbf{1\,000\,000}\text{ cm}^3</span></div></div></div>
+    <div class="part"><div class="pl">(c) Complete the statement: <span class="tex">1\text{ m}^3=</span> <span class="u10l5-blank"><span data-reveal><span class="tex">1\,000\,000</span></span></span> <span class="tex">\text{cm}^3</span>. Then, by reasoning about the conversion factor (without drawing a new diagram), determine <span class="tex">1\text{ m}^3</span> in <span class="tex">\text{mm}^3</span>.</div><div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">1\text{ m}=1000\text{ mm}</span>, so each of the three edges scales by 1000 and the volume scales by <span class="tex">1000^3=10^{9}</span>.<br><span class="tex">1\text{ m}^3=\mathbf{1\,000\,000\,000}\text{ mm}^3\ (10^{9}\text{ mm}^3)</span></div></div></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Applying the cubic-unit ratio to a rectangular prism</h3></div>
+  <p class="q">A rectangular prism measures 5 m by 2 m by 3 m.</p>
+  <div class="u10l5-exrow">
+    <div id="u10l5-f-ex5" class="u10l5-fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(a) Calculate the volume of the prism in <span class="tex">\text{m}^3</span>.</div><div class="work" style="--h:130px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">V=5\times2\times3=\mathbf{30}\text{ m}^3</span></div></div></div>
+    </div>
+  </div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(b) Convert all three edge lengths to cm and calculate the volume in <span class="tex">\text{cm}^3</span>. Confirm your answer using the ratio from Example 4.</div><div class="work" style="--h:180px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Edges: 500 cm, 200 cm and 300 cm. <span class="tex">V=500\times200\times300=\mathbf{30\,000\,000}\text{ cm}^3</span>.<br>Check with the ratio <span class="tex">1\text{ m}^3=1\,000\,000\text{ cm}^3</span>: <span class="tex">30\times1\,000\,000=30\,000\,000\text{ cm}^3</span> ✓</div></div></div>
+  </div>
+  <div class="explainer" data-explainer="prism"></div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex6" data-section="Example 6">
+  <div class="ex-head"><span class="ex-tag">Example 6</span><h3>Metric volume conversions</h3></div>
+  <p class="q">Convert each of the following.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) <span class="tex">5.2\text{ m}^3</span> to <span class="tex">\text{cm}^3</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">m <span class="tex">\to</span> cm is 2 steps, so the volume factor is <span class="tex">10^{6}</span>.<br><span class="tex">5.2\times10^{6}=\mathbf{5\,200\,000}\text{ cm}^3</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">940\,000\text{ cm}^3</span> to <span class="tex">\text{m}^3</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Divide by <span class="tex">10^{6}</span>.<br><span class="tex">940\,000\div10^{6}=\mathbf{0.94}\text{ m}^3</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">0.000\,008\,2\text{ km}^3</span> to <span class="tex">\text{m}^3</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">km <span class="tex">\to</span> m is 3 steps, so the volume factor is <span class="tex">10^{9}</span>.<br><span class="tex">0.000\,008\,2\times10^{9}=\mathbf{8200}\text{ m}^3</span></div></div></div>
+    <div class="part"><div class="pl">(d) <span class="tex">63\,000\text{ mm}^3</span> to <span class="tex">\text{cm}^3</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">cm <span class="tex">\to</span> mm is 1 step, so <span class="tex">1\text{ cm}^3=10^{3}=1000\text{ mm}^3</span>.<br><span class="tex">63\,000\div1000=\mathbf{63}\text{ cm}^3</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Tiny numbers, safely.</b> Typing <span class="tex">0.000\,008\,2</span> is easy to get wrong. Enter it as <span class="tex">8.2\times10^{-6}</span>: <span class="keys"><kbd>8</kbd><kbd>.</kbd><kbd>2</kbd><kbd>EE</kbd><kbd>(−)</kbd><kbd>6</kbd><kbd>×</kbd><kbd>1</kbd><kbd>EE</kbd><kbd>9</kbd><kbd>ENTER</kbd></span> gives 8200.</div>
+    <div class="pill-col"><button class="pill" data-keys="8.2 EE (−) 6 × 1 EE 9 =">Show (c)</button><button class="pill" data-keys="5.2 × 1 EE 6 =">Show (a)</button></div>
+  </div>
+  <div class="explainer" data-explainer="shiftV"></div>
+  <div class="space" id="ex6-space"></div>
+  <button class="more" data-more="ex6-space">+ More space</button>
+</section>
+
+<!-- ================= 3. Imperial ================= -->
+<section class="card" data-ink="s3" data-section="3. Area and Volume in the Imperial System">
+  <div class="sec-h"><span class="badge">3</span><h2>Converting Units of Area and Volume in the Imperial System</h2></div>
+  <p>The same rule applies in the imperial system: <b>square</b> each linear factor for square units, <b>cube</b> it for cubic units. The table below is built from the linear facts of Lesson 4B (<span class="tex">1\text{ ft}=12\text{ in}</span>, <span class="tex">1\text{ yd}=3\text{ ft}</span>, <span class="tex">1\text{ mi}=5280\text{ ft}=1760\text{ yd}</span>) and nothing else.</p>
+  <table class="u10l5-tbl">
+    <thead><tr><th>Linear</th><th>Square</th><th>Cubic</th></tr></thead>
+    <tbody>
+      <tr><td><span class="tex">1\text{ ft}=12\text{ in}</span></td><td><span class="tex">1\text{ ft}^2=12^2=144\text{ in}^2</span></td><td><span class="tex">1\text{ ft}^3=12^3=1728\text{ in}^3</span></td></tr>
+      <tr><td><span class="tex">1\text{ yd}=3\text{ ft}</span></td><td><span class="tex">1\text{ yd}^2=3^2=9\text{ ft}^2</span></td><td><span class="tex">1\text{ yd}^3=3^3=27\text{ ft}^3</span></td></tr>
+      <tr><td><span class="tex">1\text{ yd}=36\text{ in}</span></td><td><span class="tex">1\text{ yd}^2=36^2=1296\text{ in}^2</span></td><td><span class="tex">1\text{ yd}^3=36^3=46\,656\text{ in}^3</span></td></tr>
+      <tr><td><span class="tex">1\text{ mi}=5280\text{ ft}</span></td><td><span class="tex">1\text{ mi}^2=5280^2=27\,878\,400\text{ ft}^2</span></td><td><span class="tex">1\text{ mi}^3=5280^3=1.47\times10^{11}\text{ ft}^3</span></td></tr>
+      <tr><td><span class="tex">1\text{ mi}=1760\text{ yd}</span></td><td><span class="tex">1\text{ mi}^2=1760^2=3\,097\,600\text{ yd}^2</span></td><td><span class="tex">1\text{ mi}^3=1760^3=5\,451\,776\,000\text{ yd}^3</span></td></tr>
+      <tr><td><span class="tex">1\text{ mi}=63\,360\text{ in}</span></td><td><span class="tex">1\text{ mi}^2=63\,360^2=4\,014\,489\,600\text{ in}^2</span></td><td></td></tr>
+    </tbody>
+  </table>
+  <p>Across the systems the anchor is <span class="tex">1\text{ in}=2.54\text{ cm}</span> exactly, so <span class="tex">1\text{ ft}=30.48\text{ cm}</span>. Squaring and cubing gives the cross-system facts used later in this lesson:</p>
+  <table class="u10l5-tbl u10l5-tbl2">
+    <tbody>
+      <tr><td><span class="tex">1\text{ in}^2=2.54^2=6.4516\text{ cm}^2</span></td><td><span class="tex">1\text{ ft}^2=30.48^2=929.030\,4\text{ cm}^2</span></td><td><span class="tex">1\text{ m}^2=1550.003\,1\text{ in}^2</span></td></tr>
+      <tr><td><span class="tex">1\text{ in}^3=2.54^3=16.387\,064\text{ cm}^3</span></td><td><span class="tex">1\text{ ft}^3=30.48^3=28\,316.846\,592\text{ cm}^3</span></td><td><span class="tex">1\text{ m}^3=35.314\,667\text{ ft}^3</span></td></tr>
+    </tbody>
+  </table>
+  <div class="explainer" data-explainer="imperial"></div>
+</section>
+
+<section class="card example" data-ink="ex7" data-section="Example 7">
+  <div class="ex-head"><span class="ex-tag">Example 7</span><h3>Building <span class="tex">1\text{ ft}^2</span> and <span class="tex">1\text{ ft}^3</span> from <span class="tex">1\text{ ft}=12\text{ in}</span></h3></div>
+  <div class="u10l5-exrow">
+    <div id="u10l5-f-ex7a" class="u10l5-fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(a) Convert the side length of the square to inches and calculate the area of the square in <span class="tex">\text{in}^2</span>. State the relationship <span class="tex">1\text{ ft}^2=</span> <span class="u10l5-blank"><span data-reveal><span class="tex">144</span></span></span> <span class="tex">\text{in}^2</span>.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Side <span class="tex">=12\text{ in}</span>, so <span class="tex">A=12\times12=12^2=\mathbf{144}\text{ in}^2</span>.<br><span class="tex">1\text{ ft}^2=\mathbf{144}\text{ in}^2</span>: the linear factor 12, squared.</div></div></div>
+    </div>
+  </div>
+  <div class="u10l5-exrow">
+    <div id="u10l5-f-ex7b" class="u10l5-fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(b) Convert each edge of the cube to inches and calculate the volume of the cube in <span class="tex">\text{in}^3</span>. State the relationship <span class="tex">1\text{ ft}^3=</span> <span class="u10l5-blank"><span data-reveal><span class="tex">1728</span></span></span> <span class="tex">\text{in}^3</span>.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Each edge <span class="tex">=12\text{ in}</span>, so <span class="tex">V=12\times12\times12=12^3=\mathbf{1728}\text{ in}^3</span>.<br><span class="tex">1\text{ ft}^3=\mathbf{1728}\text{ in}^3</span>: the linear factor 12, cubed.</div></div></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Squares and cubes.</b> <span class="keys"><kbd>1</kbd><kbd>2</kbd><kbd>x²</kbd><kbd>ENTER</kbd></span> gives 144, and <span class="keys"><kbd>1</kbd><kbd>2</kbd><kbd>2nd</kbd><kbd>|x|</kbd><kbd>ENTER</kbd></span> (the <span class="tex">x^3</span> key) gives 1728.</div>
+    <div class="pill-col"><button class="pill" data-keys="12 x² =">Show 12²</button><button class="pill" data-keys="12 x³ =">Show 12³</button></div>
+  </div>
+  <div class="space" id="ex7-space"></div>
+  <button class="more" data-more="ex7-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex8" data-section="Example 8">
+  <div class="ex-head"><span class="ex-tag">Example 8</span><h3>Imperial area and volume conversions by unit analysis</h3></div>
+  <p class="q">Convert each of the following.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">8\text{ yd}^2</span> to <span class="tex">\text{ft}^2</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\dfrac{8\text{ yd}^2}{1}\times\dfrac{9\text{ ft}^2}{1\text{ yd}^2}</span> (<span class="tex">\text{yd}^2</span> cancels)<br><span class="tex">=8\times9=\mathbf{72}\text{ ft}^2</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">2592\text{ in}^2</span> to <span class="tex">\text{yd}^2</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\dfrac{2592\text{ in}^2}{1}\times\dfrac{1\text{ yd}^2}{1296\text{ in}^2}</span> (<span class="tex">\text{in}^2</span> cancels)<br><span class="tex">=2592\div1296=\mathbf{2}\text{ yd}^2</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">0.75\text{ mi}^2</span> to <span class="tex">\text{yd}^2</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">1\text{ mi}^2=1760^2=3\,097\,600\text{ yd}^2</span>.<br><span class="tex">0.75\times3\,097\,600=\mathbf{2\,323\,200}\text{ yd}^2</span></div></div></div>
+    <div class="part"><div class="pl">(d) <span class="tex">3.5\text{ ft}^3</span> to <span class="tex">\text{in}^3</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\dfrac{3.5\text{ ft}^3}{1}\times\dfrac{1728\text{ in}^3}{1\text{ ft}^3}</span> (<span class="tex">\text{ft}^3</span> cancels)<br><span class="tex">=3.5\times1728=\mathbf{6048}\text{ in}^3</span></div></div></div>
+    <div class="part"><div class="pl">(e) <span class="tex">58\,320\text{ in}^3</span> to <span class="tex">\text{ft}^3</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\dfrac{58\,320\text{ in}^3}{1}\times\dfrac{1\text{ ft}^3}{1728\text{ in}^3}</span><br><span class="tex">=58\,320\div1728=\mathbf{33.75}\text{ ft}^3</span></div></div></div>
+    <div class="part"><div class="pl">(f) <span class="tex">0.02\text{ mi}^3</span> to <span class="tex">\text{yd}^3</span> (scientific notation, 2 d.p.)</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">1\text{ mi}^3=1760^3=5\,451\,776\,000\text{ yd}^3</span>.<br><span class="tex">0.02\times5\,451\,776\,000=109\,035\,520</span><br><span class="tex">=\mathbf{1.09\times10^{8}}\text{ yd}^3</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Square or cube the linear factor right on the calculator.</b> For (c): <span class="keys"><kbd>0</kbd><kbd>.</kbd><kbd>7</kbd><kbd>5</kbd><kbd>×</kbd><kbd>1</kbd><kbd>7</kbd><kbd>6</kbd><kbd>0</kbd><kbd>x²</kbd><kbd>ENTER</kbd></span>. For (e), divide by <span class="tex">12^3</span>. For (f), multiply by <span class="tex">1760^3</span>.</div>
+    <div class="pill-col u10l5-pills3"><button class="pill" data-keys="0.75 × 1760 x² =">Show (c)</button><button class="pill" data-keys="3.5 × 12 x³ =">Show (d)</button><button class="pill" data-keys="58320 ÷ 12 x³ =">Show (e)</button><button class="pill" data-keys="0.02 × 1760 x³ =">Show (f)</button></div>
+  </div>
+  <div class="explainer" data-explainer="cancel"></div>
+  <div class="space" id="ex8-space"></div>
+  <button class="more" data-more="ex8-space">+ More space</button>
+</section>
+
+<!-- ================= 4. Real problems ================= -->
+<section class="card" data-ink="s4" data-section="4. Applying These Conversions to Real Problems">
+  <div class="sec-h"><span class="badge">4</span><h2>Applying These Conversions to Real Problems</h2></div>
+  <p>When a problem gives measurements in two different systems, converting both to a <b>common unit</b> allows a direct comparison. Two questions decide every conversion: <b>what kind of unit</b> is it (length, area or volume), and is it going to a <b>smaller</b> or a <b>bigger</b> unit?</p>
+  <div class="explainer" data-explainer="which"></div>
+</section>
+
+<section class="card example" data-ink="ex9" data-section="Example 9">
+  <div class="ex-head"><span class="ex-tag">Example 9</span><h3>Comparing a metric bin with an imperial bin</h3></div>
+  <p class="q">A metric storage bin measures 1.2 m by 0.9 m by 0.7 m. An imperial storage bin measures 4 ft by 3 ft by 2.5 ft. Use <span class="tex">2.54\text{ cm}=1\text{ in}</span>, so <span class="tex">1\text{ ft}=30.48\text{ cm}</span>.</p>
+  <div class="u10l5-bins">
+    <div id="u10l5-f-ex9a" class="u10l5-fig"></div>
+    <div id="u10l5-f-ex9b" class="u10l5-fig"></div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Determine, to the nearest <span class="tex">\text{cm}^3</span>, which bin has the greater volume, and by how much.</div><div class="work" style="--h:330px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Bin A:</b> <span class="tex">V=1.2\times0.9\times0.7=0.756\text{ m}^3</span>.<br><span class="tex">1\text{ m}^3=100^3=10^{6}\text{ cm}^3</span>, so <span class="tex">V=756\,000\text{ cm}^3</span>.<br><b>Bin B:</b> <span class="tex">1\text{ ft}^3=30.48^3=28\,316.846\,592\text{ cm}^3</span>.<br><span class="tex">V=4\times3\times2.5=30\text{ ft}^3</span>, so<br><span class="tex">V=30\times28\,316.846\,592=849\,505.4\approx\mathbf{849\,505}\text{ cm}^3</span>.<br><b>Bin B</b> is greater, by <span class="tex">849\,505-756\,000=\mathbf{93\,505}\text{ cm}^3</span>.</div></div></div>
+    <div class="part"><div class="pl">(b) Determine, to the nearest <span class="tex">\text{in}^2</span>, which bin has the greater surface area, and by how much.</div><div class="work" style="--h:330px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Bin A:</b> <span class="tex">SA=2(lw+lh+wh)</span><br><span class="tex">=2[(1.2)(0.9)+(1.2)(0.7)+(0.9)(0.7)]</span><br><span class="tex">=2(1.08+0.84+0.63)=5.10\text{ m}^2</span>.<br><span class="tex">1\text{ m}^2=1550.003\,1\text{ in}^2</span>, so <span class="tex">SA=5.10\times1550.003\,1=7905.02\approx\mathbf{7905}\text{ in}^2</span>.<br><b>Bin B:</b> <span class="tex">SA=2[(4)(3)+(4)(2.5)+(3)(2.5)]=2(29.5)=59\text{ ft}^2</span>. Since <span class="tex">1\text{ ft}^2=144\text{ in}^2</span>, <span class="tex">SA=59\times144=\mathbf{8496}\text{ in}^2</span>.<br><b>Bin B</b> is greater, by <span class="tex">8496-7905=\mathbf{591}\text{ in}^2</span>.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Keep full precision until the end.</b> Cube 30.48 on the calculator instead of rounding it: <span class="keys"><kbd>3</kbd><kbd>0</kbd><kbd>×</kbd><kbd>3</kbd><kbd>0</kbd><kbd>.</kbd><kbd>4</kbd><kbd>8</kbd><kbd>x³</kbd><kbd>ENTER</kbd></span> gives 849 505.3978. For the surface area, put the three face areas in brackets.</div>
+    <div class="pill-col u10l5-pills3"><button class="pill" data-keys="1.2 × 0.9 × 0.7 =">Bin A volume</button><button class="pill" data-keys="30 × 30.48 x³ =">Bin B in cm³</button><button class="pill" data-keys="2 × ( 1.2 × 0.9 + 1.2 × 0.7 + 0.9 × 0.7 ) × 1550.0031 =">Bin A in in²</button><button class="pill" data-keys="2 × ( 4 × 3 + 4 × 2.5 + 3 × 2.5 ) × 144 =">Bin B in in²</button></div>
+  </div>
+  <div class="explainer" data-explainer="bins"></div>
+  <div class="space" id="ex9-space"></div>
+  <button class="more" data-more="ex9-space">+ More space</button>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Square it for area, cube it for volume.</b> Area has two dimensions and volume has three, so the linear factor is used twice or three times: <span class="tex">1\text{ m}^2=100^2=10\,000\text{ cm}^2</span> and <span class="tex">1\text{ m}^3=100^3=1\,000\,000\text{ cm}^3</span>. Never just “×100”.</div>
+    <div><b>Metric shortcut.</b> <span class="tex">n</span> steps apart on the metric number line: length <span class="tex">10^{n}</span>, area <span class="tex">10^{2n}</span>, volume <span class="tex">10^{3n}</span>. To a smaller unit, multiply; to a bigger unit, divide.</div>
+    <div><b>Imperial.</b> <span class="tex">1\text{ ft}^2=144\text{ in}^2</span>, <span class="tex">1\text{ ft}^3=1728\text{ in}^3</span>, <span class="tex">1\text{ yd}^2=9\text{ ft}^2</span>, <span class="tex">1\text{ yd}^3=27\text{ ft}^3</span>. In unit analysis, put the unit to cancel on the bottom of the conversion fraction.</div>
+    <div><b>Compare in one unit.</b> Convert both objects to a common unit before comparing. Across systems use <span class="tex">1\text{ in}=2.54\text{ cm}</span> (so <span class="tex">1\text{ ft}=30.48\text{ cm}</span>), squared or cubed, and round only at the end.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u10l5" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 5 — Converting Square and Cubic Units</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l6/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 6 — Surface Area and Volume of Prisms and Cylinders</b><div class="muted">Carpet covers one face. Covering every face of a box is surface area; filling it is volume.</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u10l5.js';
+  boot({ key: 'u10l5', homeHref: '../../', title: '10.5 Square and Cubic Units' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

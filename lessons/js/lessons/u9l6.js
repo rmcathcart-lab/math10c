@@ -69,7 +69,7 @@ class Scene extends Box {
     const g = svgEl('g', { class: 'bk-curve' }, o.layer || this.mid); g.style.color = color;
     svgEl('path', { class: 'bk-stroke', d: `M${s[0].toFixed(1)} ${s[1].toFixed(1)}A${r} ${r} 0 ${large} ${sweep} ${e[0].toFixed(1)} ${e[1].toFixed(1)}`, fill: 'none', stroke: color, 'stroke-width': o.width || 3 }, g);
     if (o.arrow) { const sg = a2 > a1 ? 1 : -1, t = [-Math.sin(a2 * RAD) * sg, -Math.cos(a2 * RAD) * sg]; arrowHead(g, e[0], e[1], t[0], t[1], { color, width: 2.5 }); }
-    if (o.label != null) { const m = (a1 + a2) / 2, R = r + (o.lr ?? 24); g.label = this.hlabel(vx + R * Math.cos(m * RAD), vy - R * Math.sin(m * RAD), o.label, { cls: 'u9l6-alab', color }); }
+    if (o.label != null) { const m = o.la ?? (a1 + a2) / 2, R = r + (o.lr ?? 24); g.label = this.hlabel(vx + R * Math.cos(m * RAD), vy - R * Math.sin(m * RAD), o.label, { cls: 'u9l6-alab', color }); }
     return g;
   }
   /** right-angle mark at world V between world directions d1, d2 (degrees) */
@@ -174,7 +174,7 @@ function mountWarm() {
     svgEl('path', { d: `M${bx - 16} ${by - 2}L${bx + 16} ${by - 2}L${bx + 21} ${by - 10}L${bx - 21} ${by - 10}Z`, fill: '#fbe7a8', stroke: INK, 'stroke-width': 1.5 }, S.fg);
     svgEl('path', { d: `M${bx + 2} ${by - 10}L${bx + 2} ${by - 32}L${bx + 15} ${by - 13}Z`, fill: '#fff', stroke: INK, 'stroke-width': 1.3 }, S.fg);
     S.hlabel(bx, by - 46, n, { cls: 'u9l6-boatn' });
-    S.arc([0, 40], 0, -a, r, { color: ANG, width: 2.5, label: T(deg(a)), lr: a === 45 ? 30 : 22 });
+    S.arc([0, 40], 0, -a, r, { color: ANG, width: 2.5, label: T(deg(a)), la: -a - (a === 45 ? 14 : 7), lr: 4 });
   });
   // toggles: alternate angle at C, and C's triangle
   const zg = svgEl('g', { class: 'u9l6-tog' }, S.fg), tg = svgEl('g', { class: 'u9l6-tog' }, S.bg);
@@ -185,7 +185,7 @@ function mountWarm() {
   const zl = za.label; zl.classList.add('u9l6-tog');
   S.poly([[0, 0], [0, 40], [149.28, 0]], { fill: OPP, opacity: 0.1, layer: tg });
   S.line([0, 0], [0, 40], { color: OPP, width: 5, layer: tg }); S.line([0, 0], [149.28, 0], { color: ADJ, width: 5, layer: tg });
-  const tl = [S.lab(4, 22, `${T('40')} m <span class="u9l6-tagi" style="color:${OPP}">opp</span>`, { pos: 'e', cls: 'u9l6-lab u9l6-halo' }),
+  const tl = [S.lab(3, 9, `${T('40')} m <span class="u9l6-tagi" style="color:${OPP}">opp</span>`, { pos: 'e', cls: 'u9l6-lab u9l6-halo' }),
     S.lab(105, 0, `${T('d=?')} <span class="u9l6-tagi" style="color:${ADJT}">adj</span>`, { pos: 's', cls: 'u9l6-lab u9l6-halo' })];
   tl.forEach((e) => e.classList.add('u9l6-tog'));
   const tog = (btn, els) => { if (!btn) return; btn.onclick = () => { const on = btn.classList.toggle('on'); els.forEach((e) => e.classList.toggle('on', on)); }; };
@@ -345,7 +345,7 @@ const twoCalcs = {
           await say(c, pB, T(`\\theta=\\tan^{-1}(${f6(ratio)})=${f2(th)}^\\circ\\approx\\boldsymbol{${Math.round(th)}^\\circ}`));
         } },
       { cap: `Check: from lower down you must look up <b>more steeply</b>, so ${T(`${Math.round(th)}^\\circ>${deg(a)}`)} makes sense.`,
-        run: async (c) => { const s = stamp(pB, `${Math.round(th)}° > ${a}° ✓`, { ok: true, x: pw - 90, y: 30, size: 'sm' }); await stampIn(c, s); } }
+        run: async (c) => { const s = stamp(pB, `${Math.round(th)}° > ${a}° ✓`, { ok: true, x: pw - 80, y: 106, size: 'sm' }); await stampIn(c, s); } }
     ];
   }
 };
@@ -493,7 +493,7 @@ const twoEyes = {
   intro: 'Malik looks up at his friend in a window. Press <b>Next</b>.',
   make(stage, key, ex) {
     const q = TE[key], { d, a, e1, e2 } = q, tA = Math.tan(a * RAD), rise = d * tA, fe = e1 + rise, H = fe + e2, bw = 7;
-    const S = new Scene(stage, { x: 0, y: 0, width: 560, height: 460, win: [-6, d + bw + 9, -2.6, H + 1.5], pad: [10, 10, 8, 10] });
+    const S = new Scene(stage, { x: 0, y: 0, width: 560, height: 460, win: [-6, d + bw + 9, -4.2, H + 1.5], pad: [10, 10, 8, 10] });
     S.ground(-4, d + bw + 8); S.building(d, d + bw, H); S.person(0, e1, { clino: false });
     const [fx, fy] = S.P(d - 0.6, fe); svgEl('circle', { cx: fx, cy: fy, r: 9, fill: '#fff', stroke: SLATE, 'stroke-width': 2.5 }, S.mid);
     S.dim([0, 0], [d, 0], T(String(d)) + ' ft', { off: 20 });
@@ -520,7 +520,7 @@ const twoEyes = {
       { cap: `Stack the building. First, the piece <b class="u9l6-ce">below Malik’s eye level</b>: ${T(String(e1))} ft.`,
         run: (c) => piece(c, 0, e1, EYE, T(String(e1))) },
       { cap: `Then the <b class="u9l6-co">rise</b>: ${T(`${e1}+${f4(rise)}=${f4(fe)}`)} ft gets you to his friend’s eyes.`,
-        run: async (c) => { await piece(c, e1, fe, OPP, T(f4(rise))); await say(c, pR, T(`\\text{friend's eyes}=${cE(e1)}+${cO(f4(rise))}=${f4(fe)}`)); } },
+        run: async (c) => { await piece(c, e1, fe, OPP, T(f4(rise))); await say(c, pR, `friend’s eyes:<br>${T(`${cE(e1)}+${cO(f4(rise))}=${f4(fe)}`)}`); } },
       { cap: `Then the ${T(String(e2))} ft <b class="u9l6-ct">above his friend’s eyes</b>, up to the very top.`,
         run: (c) => piece(c, fe, H, TEAL, T(String(e2))) },
       { cap: `Height ${T(`=${e1}+${f4(rise)}+${e2}=${f4(H)}\\approx\\boldsymbol{${f1(H)}}`)} <b>ft</b>.`,
@@ -566,9 +566,9 @@ const clinometer = {
         svgEl('path', { d: `M${p[0]} ${p[1]}L${p2[0]} ${p2[1]}`, stroke: '#8a6a22', 'stroke-width': n % 30 ? 1.2 : 2 }, prot);
         if (n % 30 === 0) { const lp = pt(ang, R - 34), tx = svgEl('text', { x: lp[0], y: lp[1] + 6, 'text-anchor': 'middle', class: 'u9l6-pt' }, prot); tx.textContent = q.flip ? 180 - n : n; }
       }
-      const s0 = pt(back, R + 70), s1 = pt(fwd, R + 70);
+      const s0 = pt(back, R + 38), s1 = pt(fwd, R + 38);
       svgEl('path', { d: `M${s0[0]} ${s0[1]}L${s1[0]} ${s1[1]}`, stroke: '#7fb3e6', 'stroke-width': 12, 'stroke-linecap': 'round', opacity: 0.85 }, prot);
-      const e = pt(back, R + 92); svgEl('circle', { cx: e[0], cy: e[1], r: 10, fill: '#fff', stroke: SLATE, 'stroke-width': 2.5 }, prot); svgEl('circle', { cx: e[0], cy: e[1], r: 4, fill: SLATE }, prot);
+      const e = pt(back, R + 58); svgEl('circle', { cx: e[0], cy: e[1], r: 10, fill: '#fff', stroke: SLATE, 'stroke-width': 2.5 }, prot); svgEl('circle', { cx: e[0], cy: e[1], r: 4, fill: SLATE }, prot);
       str.innerHTML = '';
       svgEl('path', { d: `M${cx} ${cy}L${cx} ${cy + R + 30}`, stroke: INK, 'stroke-width': 2 }, str);
       svgEl('circle', { cx, cy: cy + R + 38, r: 9, fill: '#c9ccd3', stroke: INK, 'stroke-width': 2 }, str);

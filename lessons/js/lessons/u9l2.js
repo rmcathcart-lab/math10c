@@ -64,7 +64,7 @@ class Dial {
       if (o.ticks !== false) for (let a = 0; a <= 90; a += 15) {
         const P = this.px(Math.cos(a * RAD), Math.sin(a * RAD)), Q = [ox + (R + 9) * Math.cos(a * RAD), oy - (R + 9) * Math.sin(a * RAD)];
         ln(g, P, Q, { color: GRAY, width: 2 });
-        if (a % 30 === 0 || a === 45) lab(stage, ox + (R + 26) * Math.cos(a * RAD), oy - (R + 24) * Math.sin(a * RAD), a + '°', 'sm u9l2-dtick').style.color = '#8a909b';
+        if (a === 30 || a === 45 || a === 60) lab(stage, ox + (R + 26) * Math.cos(a * RAD), oy - (R + 24) * Math.sin(a * RAD), a + '°', 'sm u9l2-dtick').style.color = '#8a909b';
       }
     }
     ln(g, [ox - 6, oy], [ox + L, oy], { color: INK, width: 2 }); arrowHead(g, ox + L + 2, oy, 1, 0, { width: 2, color: INK });
@@ -143,11 +143,11 @@ class Bars {
   }
   set(key, v) {
     const it = this.items[key], o = this.o; it.v = v;
-    const und = !Number.isFinite(v), off = und || v > o.max, hp = off ? o.h + 4 : Math.max(0, v) * this.u;
+    const und = !Number.isFinite(v), off = !und && v > o.max, hp = und ? 0 : off ? o.h + 4 : Math.max(0, v) * this.u;
     it.rect.setAttribute('y', this.y0 - hp); it.rect.setAttribute('height', hp);
     it.head.setAttribute('opacity', off ? 1 : 0);
     setHTML(it.val, und ? 'undefined' : off ? thinTxt(f2(v)) + ' ↑' : f4(v));
-    mv(it.val, it.cx, off ? o.y - 26 : this.y0 - hp - 6);
+    mv(it.val, it.cx, und ? this.y0 - this.u * 0.5 : off ? o.y - 26 : this.y0 - hp - 6);
     return this;
   }
   label(key, html) { setHTML(this.items[key].lb, html); }
@@ -155,9 +155,9 @@ class Bars {
   unghost() { Object.values(this.items).forEach((it) => { it.ghost.setAttribute('opacity', 0); it.gv.style.opacity = 0; }); }
 }
 const BAR3 = [
-  { key: 's', color: OPP, label: `${T('\\sin x^\\circ')}<br>${T('\\frac{\\text{opp}}{\\text{hyp}}')}` },
-  { key: 'c', color: ADJ, label: `${T('\\cos x^\\circ')}<br>${T('\\frac{\\text{adj}}{\\text{hyp}}')}` },
-  { key: 't', color: TAN, label: `${T('\\tan x^\\circ')}<br>${T('\\frac{\\text{opp}}{\\text{adj}}')}` }
+  { key: 's', color: OPP, label: `${T('\\sin x^\\circ')}<br>${T('\\dfrac{\\text{opp}}{\\text{hyp}}')}` },
+  { key: 'c', color: ADJ, label: `${T('\\cos x^\\circ')}<br>${T('\\dfrac{\\text{adj}}{\\text{hyp}}')}` },
+  { key: 't', color: TAN, label: `${T('\\tan x^\\circ')}<br>${T('\\dfrac{\\text{opp}}{\\text{adj}}')}` }
 ];
 const setBars3 = (B, a) => { B.set('s', sn(a)); B.set('c', cs(a)); B.set('t', a >= 89.9999 ? NaN : tn(a)); };
 
@@ -361,10 +361,10 @@ const calc = {
           }
         } },
       { cap: `The screen shows ${T(screen)}. To four decimal places: ${roundTxt}`,
-        run: async (c) => { sOut.innerHTML = shown; rd.innerHTML = T(`\\${d.fn} ${deg(a)}\\approx\\boldsymbol{${r4}}`); await show(c, rd); } },
+        run: async (c) => { sOut.innerHTML = shown; rd.innerHTML = T(`\\${d.fn} ${deg(a)}${exact ? '=' : '\\approx'}\\boldsymbol{${r4}}`); await show(c, rd); } },
       { cap: meanCap,
         run: async (c) => {
-          mean.innerHTML = T(ratioTex.replace('=\\dfrac', '=\\dfrac') + `\\approx${r4}`); await show(c, mean);
+          mean.innerHTML = T(ratioTex + `${exact ? '=' : '\\approx'}${exact ? r4.replace(/0+$/, '').replace(/\.$/, '') : r4}`); await show(c, mean);
           bars.style.opacity = 1;
           await anim(c, bd, [{ width: '0px' }, { width: BL + 'px' }], 500); td.style.left = (BL + 8) + 'px';
           await anim(c, bn, [{ width: '0px' }, { width: (BL * Math.min(v, 1.1)) + 'px' }], 700); tnum.style.left = (BL * Math.min(v, 1.1) + 8) + 'px';
@@ -501,13 +501,12 @@ function swapSteps(stage, ex) {
   draw([c, 0], [c, s]);
   const R = D.R;
   const diag = hide0(ln(svg, O, [O[0] + (R + 24) * Math.SQRT1_2, O[1] - (R + 24) * Math.SQRT1_2], { color: '#6a7182', width: 2, dash: '8 6' }));
-  const dl = hide0(lab(stage, O[0] + (R + 46) * Math.SQRT1_2, O[1] - (R + 46) * Math.SQRT1_2, T('45^\\circ'), 'sm'));
   return [
     { cap: `A ${T('24^\\circ')} triangle with hypotenuse ${T('1')}: ${T(`\\sin 24^\\circ=${cO(f4(s))}`)} (the ${bO('opposite')} leg), ${T(`\\cos 24^\\circ=${cA(f4(c))}`)} (the ${bA('adjacent')} leg).`,
       run: async (cx) => { await pulse(cx, lo, 1.3); await pulse(cx, lad, 1.3); } },
     { cap: `Flip the triangle over the ${T('45^\\circ')} line. Its hypotenuse now makes ${T('90^\\circ-24^\\circ=66^\\circ')} with the ground: the two angles are <b>complementary</b>.`,
       run: async (cx) => {
-        await appear(cx, diag, 300); await appear(cx, dl, 200);
+        await appear(cx, diag, 300);
         await tween(cx, 1600, (u) => draw(lerp([c, 0], [0, c], u), lerp([c, s], [s, c], u)));
         const aB = 66; arc2.setAttribute('d', arcPath(O, 104, 0, aB)); mv(la2, O[0] + 130 * Math.cos(33 * RAD), O[1] - 130 * Math.sin(33 * RAD));
         await appear(cx, arc2, 300); await pop(cx, la2); rd.innerHTML = '24° ↔ 66°';
@@ -519,7 +518,7 @@ function swapSteps(stage, ex) {
         await tween(cx, 1300, (u) => draw([0, c], [s, c], [lerp(A0, OO, u), lerp(B0, S0, u)], [lerp(OO, S0, u), lerp(A0, B0, u)]));
         const m = 14; mark.setAttribute('d', `M${S0[0] - m} ${S0[1]}L${S0[0] - m} ${S0[1] - m}L${S0[0]} ${S0[1] - m}`);
         opp.setAttribute('stroke', ADJ); adj.setAttribute('stroke', OPP); lo.style.color = ADJ; lad.style.color = OPP;
-        t1.textContent = 'adj of 66°'; t1.style.background = ADJ; mv(t1, (OO[0] + S0[0]) / 2, OO[1] + 52);
+        t1.textContent = 'adj of 66°'; t1.style.background = ADJ; mv(t1, (OO[0] + S0[0]) / 2, OO[1] + 34);
         t2.textContent = 'opp of 66°'; t2.style.background = OPP; mv(t2, S0[0] + 76, (S0[1] + B0[1]) / 2 + 34);
         await pop(cx, t1); await pop(cx, t2);
       } },
@@ -641,7 +640,7 @@ const extremes = {
       { cap: `Substitute ${T('x=0')}, ${T('y=r')}: ${T('\\sin 90^\\circ=\\frac{r}{r}=1')} and ${T('\\cos 90^\\circ=\\frac{0}{r}=0')}.`,
         run: async (c) => { await fill(c, 2, 1, T('\\frac{r}{r}=\\mathbf{1}')); await fill(c, 2, 2, T('\\frac{0}{r}=\\mathbf{0}')); } },
       { cap: `${T('\\tan 90^\\circ=\\frac{r}{0}')}: you cannot divide by ${T('0')}, so ${T('\\tan 90^\\circ')} is <b>undefined</b>. The calculator gives an error.`,
-        run: async (c) => { await fill(c, 2, 3, `${T('\\frac{r}{0}')} <b class="u9l2-err">undefined</b>`); note.innerHTML = `<div class="u9l2-scr" style="max-width:260px"><div class="u9l2-s1"><span>tan(90)</span><span class="u9l2-deg">DEG</span></div><div class="u9l2-s2" style="font-size:22px">ERROR</div></div>`; await show(c, note); } }
+        run: async (c) => { await fill(c, 2, 3, `${T('\\frac{r}{0}')} <b class="u9l2-err">undefined</b>`); note.innerHTML = `<div class="u9l2-scr" style="max-width:260px"><div class="u9l2-s1"><span>tan(90)</span><span class="u9l2-deg">DEG</span></div><div class="u9l2-s2" style="font-size:22px">DOMAIN ERROR</div></div>`; await show(c, note); } }
     ];
   }
 };
@@ -688,7 +687,7 @@ const tan90 = {
   intro: 'Tangent is opp ÷ adj. What happens when adj gets really small? Press <b>Next</b>.',
   make(stage, v, ex) {
     const W = ex.W, H = 470;
-    const G = new Graph(stage, { x: 6, y: 10, width: 470, height: 450, xmin: -4, xmax: 96, ymin: -0.6, ymax: 6.6, xstep: 15, ystep: 1, xlabels: 30, ylabels: 1, xtitle: 'x^\\circ', ytitle: '\\tan x^\\circ', fontSize: 15, grid: true });
+    const G = new Graph(stage, { x: 6, y: 10, width: 470, height: 450, xmin: -16, xmax: 96, ymin: -0.6, ymax: 6.6, xstep: 15, ystep: 1, xlabels: 30, xtitle: 'x^\\circ', ytitle: '\\tan x^\\circ', fontSize: 15, grid: true });
     const tanF = (x) => (x >= 90 ? NaN : Math.tan(x * RAD));
     const px = 500, P = panel(stage, px, 10, W - px - 8, H - 20, 'tan x = opp ÷ adj (hyp 1)');
     const tbl = h('table', 'u9l2-tbl'); tbl.style.margin = '2px 0'; tbl.style.fontSize = '18px'; P.appendChild(tbl);
@@ -734,8 +733,8 @@ const cofn = {
     const aF = angleArc(svg, Fp, Dp, Ep, 44, { color: ANG, width: 3 }), aE = hide0(angleArc(svg, Ep, Dp, Fp, 44, { color: ANG, width: 3 }));
     const bis = (V, P, Q, r) => { const u = norm2(P[0] - V[0], P[1] - V[1]), v = norm2(Q[0] - V[0], Q[1] - V[1]), b = norm2(u[0] + v[0], u[1] + v[1]); return [V[0] + b[0] * r, V[1] + b[1] * r]; };
     const xT = x == null ? 'x^\\circ' : deg(x), eT = x == null ? '(90-x)^\\circ' : deg(90 - x);
-    const lF = lab(stage, ...bis(Fp, Dp, Ep, 76), T(xT), 'b u9l2-r');
-    const lE = hide0(lab(stage, ...bis(Ep, Dp, Fp, x != null && x < 20 ? 64 : 84).map((v2, i) => v2 + (i === 0 ? 26 : 0)), T(eT), 'b u9l2-r halo'));
+    const lF = lab(stage, ...(ang < 20 ? [Fp[0] - 74, Fp[1] - 30] : bis(Fp, Dp, Ep, 76)), T(xT), 'b u9l2-r');
+    const lE = hide0(lab(stage, ...bis(Ep, Dp, Fp, x != null && x < 20 ? 64 : 96), T(eT), 'b u9l2-r halo'));
     lab(stage, Dp[0] - 16, Dp[1] + 14, T('D'), 'b'); lab(stage, Fp[0] + 16, Fp[1] + 14, T('F'), 'b'); lab(stage, Ep[0], Ep[1] - 18, T('E'), 'b');
     const mDE = lerp(Dp, Ep, 0.5), mDF = lerp(Dp, Fp, 0.5), mEF = lerp(Ep, Fp, 0.5), nEF = norm2(Ep[1] - Fp[1], Fp[0] - Ep[0]);
     const tgDE = hide0(tag(stage, mDE[0] - 40, mDE[1], 'opp', OPP)), tgDF = hide0(tag(stage, mDF[0], mDF[1] + 26, 'adj', ADJ)), tgEF = hide0(tag(stage, mEF[0] - nEF[0] * 30, mEF[1] - nEF[1] * 30, 'hyp', HYP));
