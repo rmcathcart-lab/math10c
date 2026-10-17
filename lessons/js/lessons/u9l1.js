@@ -366,7 +366,7 @@ const why = {
 const GROW = {
   ex1: { label: 'Example 1 check: 31°', adj: 3, opp: 1.8, a: '31^\\circ', b: '59^\\circ', ks: [2, 3, 4], th2: 46, ex1: true },
   d345: { label: 'Demo: a 3-4-5 triangle', adj: 4, opp: 3, a: '\\theta', b: '\\beta', ks: [2, 3, 4], th2: 52 },
-  d815: { label: 'Demo: a steep 8-15-17', adj: 8, opp: 15, a: '\\theta', b: '\\beta', ks: [2, 3], th2: 45 }
+  d815: { label: 'Demo: a steep 8-15-17', adj: 8, opp: 15, a: '\\theta', b: '\\beta', ks: [3, 4], kh: 3, th2: 45 }
 };
 const fmtL = (v) => (Math.abs(v * 100 - Math.round(v * 100)) < 1e-6 ? String(+v.toFixed(2)) : v.toFixed(2));
 const grow = {
@@ -450,7 +450,7 @@ const grow = {
         run: async (c) => { mood(null); note.textContent = ''; await toK(c, 0.5, 1700); mood('u9l1-same'); note.textContent = 'every ratio unchanged ✓'; await pop(c, note); } },
       { cap: `Now keep the size and change the <b>angle</b> to ${T(d.th2 + '^\\circ')}. This time every ratio <b>changes</b>.`,
         run: async (c) => {
-          mood(null); note.textContent = ''; await toK(c, 2, 900); await appear(c, gGh, 1); await anim(c, gGh, [{ opacity: 1 }, { opacity: 0 }], 300);
+          mood(null); note.textContent = ''; await toK(c, d.kh || 2, 900); await appear(c, gGh, 1); await anim(c, gGh, [{ opacity: 1 }, { opacity: 0 }], 300);
           angLab.innerHTML = T(d.th2 + '^\\circ'); angEl.innerHTML = T(d.th2 + '^\\circ'); await toAng(c, th2, 1600); mood('u9l1-diff'); note.textContent = 'new angle, new ratios'; note.style.color = COLORS.red; await pop(c, note);
         } },
       { cap: `Back to ${T(d.a)}: the ratios come back. Each ratio depends <b>only on the angle</b>, never on the size.`,
