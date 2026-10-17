@@ -489,18 +489,19 @@ const perpTest = {
     const G = new Graph(stage, { x: 14, y: 6, width: 456, height: 456, ...W, xlabels: v === 'why' ? 2 : 1, ylabels: v === 'why' ? 2 : 1 });
     const Pn = panel(stage, 492, 6, ex.W - 504, 456, v === 'why' ? 'Turn it' : 'Compare the slopes');
     if (v === 'why') {
-      const O = [-1, -2], tri = turnTri(G, 4, 2, { ox: O[0], oy: O[1], a: 0 }, { hypColor: BLUE });
+      // corner on Main St itself (y = x/2 + 2): (-2, 1)
+      const O = [-2, 1], tri = turnTri(G, 4, 2, { ox: O[0], oy: O[1], a: 0 }, { hypColor: BLUE });
       tri.els.forEach(hide);
       let l1, l2;
       return [
         { cap: `Main St has slope ${T('\\frac12')}. A slope triangle on it: run 4, rise 2.`,
-          run: async (c) => { await G.drawIn(G.line(O, [3, 0], { color: BLUE, width: 3.5 }), 600, c); tri.els.forEach((e) => (e.style.opacity = 1)); await tri.show(c); l1 = legLab(G, AMB, 'run 4', 1, -2, 's'); l2 = legLab(G, PUR, 'rise 2', 3, -1, 'e'); await fadeIn(c, l1); await fadeIn(c, l2); await say(c, Pn, T('m_1=\\frac{2}{4}=\\frac12'), 'u7l7-mline'); } },
-        { cap: `Turn the whole triangle a <b>quarter turn</b> (90°) about its corner at ${T('(-1,\\ -2)')}.`,
+          run: async (c) => { await G.drawIn(G.line(O, [2, 3], { color: BLUE, width: 3.5 }), 600, c); tri.els.forEach((e) => (e.style.opacity = 1)); await tri.show(c); l1 = legLab(G, AMB, 'run 4', 0, 1, 's'); l2 = legLab(G, PUR, 'rise 2', 2, 2, 'e'); await fadeIn(c, l1); await fadeIn(c, l2); await say(c, Pn, T('m_1=\\frac{2}{4}=\\frac12'), 'u7l7-mline'); } },
+        { cap: `Turn the whole triangle a <b>quarter turn</b> (90°) about its corner at ${T('(-2,\\ 1)')}.`,
           run: async (c) => { G.remove(l1, l2); await tri.turn(c, 90); } },
         { cap: `The old run (4) now points <b>up</b>: rise 4. The old rise (2) now points <b>left</b>: run ${T('-2')}. ${T('m_2=\\frac{4}{-2}=-2')}.`,
-          run: async (c) => { tri.swap(); await fadeIn(c, legLab(G, PUR, 'rise 4', -1, 0, 'e')); await fadeIn(c, legLab(G, AMB, 'run −2', -2, 2, 'n')); await say(c, Pn, T('m_2=\\frac{4}{-2}=-2'), 'u7l7-mline'); } },
+          run: async (c) => { tri.swap(); await fadeIn(c, legLab(G, PUR, 'rise 4', -2, 3, 'e')); await fadeIn(c, legLab(G, AMB, 'run −2', -3, 5, 'n')); await say(c, Pn, T('m_2=\\frac{4}{-2}=-2'), 'u7l7-mline'); } },
         { cap: `${T('\\frac12')} became ${T('-2')}: <b>flipped</b> and <b>sign changed</b>. Their product is ${T('\\frac12\\times(-2)=-1')}, and the lines meet at 90°.`,
-          run: async (c) => { await G.drawIn(G.line(O, [-3, 2], { color: TEAL, width: 3.5 }), 600, c); await appear(c, rmark(G, O, [3, 0], [-3, 2], { s: 16, color: TEAL }), 300); await say(c, Pn, T('m_1\\times m_2=\\tfrac12\\times(-2)=-1'), 'u7l7-good'); } }
+          run: async (c) => { await G.drawIn(G.line(O, [-4, 5], { color: TEAL, width: 3.5 }), 600, c); await appear(c, rmark(G, O, [2, 3], [-4, 5], { s: 16, color: TEAL }), 300); await say(c, Pn, T('m_1\\times m_2=\\tfrac12\\times(-2)=-1'), 'u7l7-good'); } }
       ];
     }
     if (v === 'ex3a') {

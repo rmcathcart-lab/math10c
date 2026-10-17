@@ -515,10 +515,10 @@ const cover = {
           for (const L of xLines) await show(c, trailLine(colX, L));
           const p = G.point(xv, 0, { color: XI, r: 8, label: T(ptX), pos: xv > 0 ? (A * B > 0 ? 'ne' : 'se') : 'nw', labelColor: XI }); await pop(c, p);
         } },
-      { cap: `Two points fix the line: <b>join the intercepts</b>.${d.story ? ' (All lawn: 16 tickets. All floor: 10 tickets.)' : ''}`,
+      { cap: `Two points fix the line: <b>join the intercepts</b>.${d.story ? ' (All lawn: 16 tickets. All floor: 10 tickets. Dashed: only whole tickets count, so the real combos are dots on it.)' : ''}`,
         run: async (c) => {
           await fadeOut(c, card, 300); E.tiles[ty.id].style.opacity = 1; E.tiles[tx.id].style.opacity = 1;
-          await G.drawIn(lineGF(G, A, B, C, { color: LINE }), 900, c);
+          await G.drawIn(d.story ? G.segment([0, yv], [xv, 0], { color: LINE, width: 3.5, dash: true }) : lineGF(G, A, B, C, { color: LINE }), 900, c);
         } }
     ];
     if (Number.isInteger(xv) && Number.isInteger(yv)) {

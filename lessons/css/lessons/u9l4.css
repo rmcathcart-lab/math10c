@@ -1,0 +1,92 @@
+/* Math 10C · Unit 9 · Lesson 4 — Finding the Measure of an Angle in a Right Triangle: styles used only on this page (prefix u9l4-).
+ * Colours: opposite purple, adjacent amber, hypotenuse blue, the reference angle red. */
+
+.ex-cap { min-height: 120px; }
+.ex-cap .katex { font-size: 1.04em; }
+.ex-cap kbd { font-size: 13px; }
+.chip .katex { font-size: 1em; }
+.pl .katex { font-size: 1.1em; }
+.ans .katex { font-size: 1.04em; }
+.pill-col { display: flex; flex-direction: column; gap: 6px; }
+.lesson .katex { white-space: nowrap; }
+h2 .katex, h3 .katex { font-size: .95em; }
+
+.u9l4-co { color: #7b4fc4; }
+.u9l4-ca { color: #c27a0e; }
+.u9l4-ch { color: #1f5bd6; }
+.u9l4-qgap { margin-top: 18px; }
+.u9l4-c4 { grid-template-columns: repeat(4, 1fr); }
+.u9l4-pills2 { flex-direction: row; flex-wrap: wrap; max-width: 230px; justify-content: flex-end; }
+
+/* ---------------- warm-up ---------------- */
+.u9l4-wfig { position: relative; width: 100%; height: 372px; border-radius: 14px; background: #f4f8fd; border: 1px solid var(--line2); overflow: hidden; }
+.u9l4-wbtns { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0 6px; }
+.u9l4-rise { font: 800 20px var(--round); fill: #fff; }
+.u9l4-run { font: 800 18px var(--round); fill: #1e2d46; text-anchor: middle; }
+.u9l4-pitch { font: 800 21px var(--round); background: #fff; border: 2px solid #c93a33; border-radius: 8px; padding: 0 8px; color: #1e2d46; }
+.u9l4-rangl { font: 800 19px var(--round); color: #c93a33; background: rgba(255, 255, 255, .9); border-radius: 7px; padding: 0 5px; }
+.u9l4-qmark { font: 900 80px var(--round); fill: #c93a33; text-anchor: middle; }
+.u9l4-wqs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-top: 8px; }
+.u9l4-wqs .bk-wq { background: #fff; border: 1px solid var(--line2); border-radius: 12px; padding: 4px 12px 10px; }
+.u9l4-wa { margin: 4px 0 0 0; }
+.u9l4-early { margin-top: 14px; }
+.u9l4-social { font-style: italic; color: var(--ink2); font-size: 19px; text-align: center; margin: 16px 0 0; }
+
+/* ---------------- cards ---------------- */
+.u9l4-exrow { display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start; margin-bottom: 14px; }
+.u9l4-exrow .parts { margin-bottom: 0; }
+.u9l4-exrow.u9l4-ed { grid-template-columns: 1fr 470px; margin-top: 4px; }
+.u9l4-exrow.u9l4-r2 { grid-template-columns: 380px 1fr; }
+.u9l4-exrow.u9l4-r5 { grid-template-columns: 400px 1fr; }
+.u9l4-exrow.u9l4-r6 { grid-template-columns: 440px 1fr; }
+.u9l4-figc { display: flex; justify-content: center; }
+.parts .u9l4-figc { margin: 4px 0 6px; }
+.u9l4-ansgrid { display: grid !important; grid-template-columns: 330px 1fr; gap: 14px; align-items: start; }
+.u9l4-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 4px 0 6px; }
+.u9l4-steps > div { background: var(--brand-soft); border-radius: 12px; padding: 10px 14px; font-size: 19px; }
+.u9l4-sn { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--brand); color: #fff; font-weight: 800; margin-right: 8px; }
+.u9l4-big-rule { font: 800 21px var(--round); color: #c93a33; background: #fff4f2; border: 2px solid #f2c9c4; border-radius: 12px; padding: 10px 14px; text-align: center; margin: 4px 0 10px; }
+
+/* ---------------- figures ---------------- */
+.u9l4-flab { font-size: 19px; font-weight: 600; }
+.u9l4-sm { font-size: 16px; text-align: center; line-height: 1.15; }
+.u9l4-slab { font-size: 20px; font-weight: 700; background: rgba(255, 255, 255, .85); border-radius: 6px; padding: 0 4px; }
+.u9l4-vlab { font: 800 21px var(--round); }
+.u9l4-anglab { font-size: 20px; font-weight: 700; background: rgba(255, 255, 255, .85); border-radius: 6px; padding: 0 4px; }
+
+/* ---------------- explainer pieces ---------------- */
+.u9l4-abs { position: absolute; translate: -50% -50%; white-space: nowrap; }
+.u9l4-dyn, .u9l4-tlabs { position: absolute; inset: 0; pointer-events: none; }
+.u9l4-panel { background: #fff; border: 1px solid var(--line2); border-radius: 14px; padding: 10px 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+.u9l4-ph { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.u9l4-line { font-size: 20px; line-height: 1.35; }
+.u9l4-keys { white-space: nowrap; }
+.u9l4-keys kbd { font-size: 15px; margin: 0 1px; }
+.u9l4-eq { font-size: 23px; }
+
+/* the calculator machine */
+.u9l4-tribox { background: #fff; border: 1px solid var(--line2); border-radius: 14px; }
+.u9l4-ttag { font: 800 17px var(--round); }
+.u9l4-tread { font-size: 20px; }
+.u9l4-sloth { font: 800 16px var(--round); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.u9l4-card { box-sizing: border-box; display: grid; place-items: center; background: #fff; border: 3px solid #1e2d46; border-radius: 14px; font-size: 30px; font-weight: 700; }
+.u9l4-card .katex { font-size: 1em; }
+.u9l4-card.u9l4-empty { border-style: dashed; border-color: #b8bcc6; color: #9aa0ab; }
+.u9l4-tok { background: #fff6df; border-color: #e8a01e; pointer-events: none; z-index: 3; }
+.u9l4-mach { box-sizing: border-box; background: #2e3c4f; border-radius: 18px; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 6px 16px rgba(0, 0, 0, .18); z-index: 2; }
+.u9l4-mach.u9l4-inv { background: #4a2f63; }
+.u9l4-m2 { font: 800 14px var(--round); background: #e8a01e; color: #2e3c4f; border-radius: 6px; padding: 0 8px; }
+.u9l4-mkey { font: 900 30px var(--round); background: #5b6a80; border-radius: 10px; padding: 2px 16px; box-shadow: 0 3px 0 rgba(0, 0, 0, .35); }
+.u9l4-msub { font: 700 13px var(--round); opacity: .7; letter-spacing: .05em; }
+.u9l4-dir { font-size: 22px; }
+.u9l4-arr { font-size: 30px; color: #c93a33; vertical-align: -3px; }
+.u9l4-keyrow { font-size: 19px; }
+.u9l4-keyrow kbd { font-size: 16px; }
+.u9l4-screen { display: inline-block; font: 700 19px ui-monospace, Menlo, monospace; background: #c9d6c0; color: #1e2d1e; border-radius: 6px; padding: 1px 8px; margin-left: 8px; }
+.u9l4-read { font-size: 20px; text-align: center; }
+
+/* SOH CAH TOA cards */
+.u9l4-soh { box-sizing: border-box; background: #fff; border: 2px solid var(--line2); border-radius: 12px; text-align: center; padding: 4px 4px; font-size: 18px; transition: opacity .3s, box-shadow .3s, background .3s; }
+.u9l4-soht { font: 900 22px var(--round); letter-spacing: .08em; }
+.u9l4-soh.u9l4-on { background: #fff4dd; border-color: #e8a01e; box-shadow: 0 0 0 4px rgba(232, 160, 30, .45); }
+.u9l4-soh.u9l4-dim { opacity: .35; }

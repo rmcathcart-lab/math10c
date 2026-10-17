@@ -623,9 +623,9 @@ const ti84 = {
       { cap: `${kk('GRAPH')}: now all four intercepts are on the screen.`,
         run: async (c) => { await K.set(c, ['GRAPH']); L.hide(); await G.setWindow(d.win, c, 1100); for (const p of d.ints) await G.reveal(G.point(p[0], p[1], { color: INK, r: 5 }), c, 200); } });
     const t = d.trace, fy = d.f[t.i], Y = (x) => calcNum(fy(x));
-    steps.push({ cap: `Check with ${kk('TRACE')}: ${kk('▼')} to ${T('Y_' + (t.i + 1))}, type ${t.xs[0]} ${kk('ENTER')}: ${T('Y=' + texNum(fy(t.xs[0])))}. Type ${n(t.xs[1])} ${kk('ENTER')}: ${T('Y=' + texNum(fy(t.xs[1])))}.`,
+    steps.push({ cap: `Check with ${kk('TRACE')}: ${t.i ? `${kk('▼')} to ${T('Y_' + (t.i + 1))}` : `it starts on ${T('Y_1')}`}, type ${t.xs[0]} ${kk('ENTER')}: ${T('Y=' + texNum(fy(t.xs[0])))}. Type ${n(t.xs[1])} ${kk('ENTER')}: ${T('Y=' + texNum(fy(t.xs[1])))}.`,
       run: async (c) => {
-        await K.set(c, ['TRACE', '▼', ...(String(t.xs[0]).split('')), 'ENTER']);
+        await K.set(c, ['TRACE', ...Array(t.i).fill('▼'), ...(String(t.xs[0]).split('')), 'ENTER']);
         tr = G.traceMarker(fy, t.xs[0], { title: `Y${t.i + 1}=${M(d.y[t.i])}` }); await pop(c, tr.el); await sleep(c, 700);
         await K.set(c, [...(t.xs[1] < 0 ? ['(−)'] : []), ...String(Math.abs(t.xs[1])).split(''), 'ENTER'], true);
         await tr.move(c, t.xs[1], 900);

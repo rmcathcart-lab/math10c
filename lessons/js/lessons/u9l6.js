@@ -296,7 +296,7 @@ const twoCalcs = {
   choices: Object.keys(TC).map((k) => ({ v: k, label: TC[k].label })),
   intro: 'A transit sights the top of a pole. Part (a) and part (b) use <b>different triangles</b>. Press <b>Next</b>.',
   make(stage, key, ex) {
-    const q = TC[key], { d, a, eye } = q, tA = Math.tan(a * RAD), rise = d * tA, Ht = eye + rise, ratio = Ht / d, th = Math.atan(ratio) / RAD;
+    const q = TC[key], { d, a, eye } = q, tA = Math.tan(a * RAD), rise = d * tA, Ht = eye + rise, ratio = Number(f4(Ht)) / d, th = Math.atan(ratio) / RAD;
     const S = new Scene(stage, { x: 0, y: 0, width: ex.W, height: 300, win: [-7, d + 7, -4.2, Ht + 1.2], pad: [14, 30, 6, 30] });
     S.ground(-4, d + 5); S.transit(0, eye); S.pole(d, Ht);
     S.dim([0, 0], [0, eye], T(String(eye)) + ' m', { off: -24, color: EYE });
@@ -526,7 +526,7 @@ const twoEyes = {
       { cap: `Height ${T(`=${e1}+${f4(rise)}+${e2}=${f4(H)}\\approx\\boldsymbol{${f1(H)}}`)} <b>ft</b>.`,
         run: async (c) => {
           const dm = S.dim([xb, 0], [xb, H], null, { off: -26, color: INK, width: 2.5 }); await drawIn(dm, 500, c);
-          await say(c, pR, T(`\\text{height}=${f4(fe)}+${cR(String(e2)).replace(ANG, TEAL)}`));
+          await say(c, pR, T(`\\text{height}=${f4(fe)}+\\textcolor{${TEAL}}{${e2}}`));
           await say(c, pR, T(`=${f4(H)}\\approx\\boldsymbol{${f1(H)}\\text{ ft}}`));
         } }
     ];
@@ -548,8 +548,8 @@ const clinometer = {
   intro: 'A protractor, a straw, a string and a washer. Press <b>Next</b>.',
   make(stage, key, ex) {
     const q = CL[key], TH = q.th, read = q.flip ? 90 + TH : 90 - TH, R = 165, cx = 330, cy = 205;
-    const svg = svgEl('svg', { width: 640, height: 450, viewBox: '0 0 640 450', class: 'u9l6-csvg' }, stage);
-    const html = h('div', 'u9l6-chtml'); box(html, 640, 450); stage.appendChild(html);
+    const svg = svgEl('svg', { width: 640, height: 450, viewBox: '0 0 640 450', class: 'u9l6-csvg' }, stage); svg.style.left = '0px'; svg.style.top = '0px';
+    const html = add(stage, box(h('div', 'u9l6-chtml'), 640, 450), 0, 0);
     svgEl('path', { d: `M${cx - 250} ${cy}L${cx + 250} ${cy}`, stroke: GRAY, 'stroke-width': 2, 'stroke-dasharray': '8 7' }, svg);
     const hz = h('div', 'u9l6-lab sm u9l6-muted', 'horizontal'); html.appendChild(hz); hz.style.left = (cx + 190) + 'px'; hz.style.top = (cy + 4) + 'px';
     const prot = svgEl('g', {}, svg), str = svgEl('g', {}, svg), over = svgEl('g', {}, svg);
@@ -579,7 +579,7 @@ const clinometer = {
     const pR = panel(stage, 660, 16, ex.W - 676, 418, 'Clinometer');
     const r1 = h('div', 'u9l6-line', `string reading: <b>90°</b>`); pR.appendChild(r1);
     return [
-      { cap: `Held <b>level</b>, the string hangs across the <b>${q.flip ? '90' : '90'}°</b> mark: the angle of elevation is ${T('0^\\circ')}.`,
+      { cap: `Held <b>level</b>, the string hangs across the <b>90°</b> mark: the angle of elevation is ${T('0^\\circ')}.`,
         run: async (c) => { await pulse(c, rd, 1.3); } },
       { cap: `Tilt the straw up to sight the top. The protractor turns with it, but the string still hangs <b>straight down</b>.`,
         run: (c) => tween(c, 1600, (t) => { draw(TH * t); r1.innerHTML = `string reading: <b>${Math.round(q.flip ? 90 + TH * t : 90 - TH * t)}°</b>`; }) },
@@ -591,7 +591,7 @@ const clinometer = {
           const m90 = pt(th - 90, R - 15), ln = svgEl('path', { d: `M${cx} ${cy}L${m90[0]} ${m90[1]}`, stroke: ANG, 'stroke-width': 2.5, 'stroke-dasharray': '7 5' }, over);
           await appear(c, ln, 300);
           const [g1, l1] = arc(70, 0, TH, deg(TH)); await drawIn(g1, 400, c); await show(c, l1);
-          const [g2, l2] = arc(110, 270, 270 + TH - 360 < -90 ? 270 : th - 90 + 360, deg(TH)); await drawIn(g2, 400, c); await show(c, l2);
+          const [g2, l2] = arc(110, -90, -90 + TH, deg(TH)); await drawIn(g2, 400, c); await show(c, l2);
         } },
       { cap: q.flip ? `Angle of elevation ${T(`=|90^\\circ-${read}^\\circ|=|-${TH}^\\circ|=\\boldsymbol{${TH}^\\circ}`)}. The bars take care of a protractor held the other way round.`
         : `Angle of elevation ${T(`=|90^\\circ-${read}^\\circ|=\\boldsymbol{${TH}^\\circ}`)}.`,
@@ -619,7 +619,7 @@ const wobble = {
     S.line([0, eye], [d, eye], { color: SLATE, dash: 'dot', width: 2.5 });
     const zx0 = 16.9, zx1 = 18.7, zy0 = 12.05, zy1 = 13.55;
     S.poly([[zx0, zy0], [zx1, zy0], [zx1, zy1], [zx0, zy1]], { fill: '#fff', opacity: 0, stroke: SLATE, sw: 1.5 });
-    const Z = new Scene(stage, { x: 490, y: 14, width: ex.W - 506, height: 420, win: [zx0, zx1, zy0, zy1], pad: [10, 150, 10, 10] });
+    const Z = new Scene(stage, { x: 490, y: 8, width: ex.W - 506, height: 290, win: [zx0, zx1, zy0, zy1], pad: [6, 150, 6, 10] });
     const [zl, zt] = Z.P(zx0, zy1), [zr, zb] = Z.P(zx1, zy0);
     svgEl('rect', { x: zl, y: zt, width: zr - zl, height: zb - zt, fill: '#f7f9fc', stroke: SLATE, 'stroke-width': 1.5 }, Z.bg);
     Z.hlabel(zl + 6, zt + 4, 'zoom on the top of the pole', { pos: 'se', cls: 'u9l6-lab sm u9l6-muted', gap: 0 });
@@ -641,11 +641,11 @@ const wobble = {
           const [x0, y0] = Z.P(d - 0.35, hs[2]), [x1, y1] = Z.P(d + 0.35, hs[0]);
           const band = svgEl('rect', { x: x0, y: y0, width: x1 - x0, height: y1 - y0, fill: ADJ, 'fill-opacity': 0.18, stroke: ADJ, 'stroke-dasharray': '6 4' }, Z.bg); await appear(c, band, 400);
           const cm = Z.line([d - 0.5, 12.5], [d + 0.06, 12.5], { color: EYE, width: 4, arrow: true }); await drawIn(cm, 400, c);
-          const cl = Z.lab(d - 0.5, 12.5, 'caretaker 12.5 m', { pos: 'w', gap: 6, cls: 'u9l6-lab sm u9l6-halo', color: EYE }); await show(c, cl);
+          const cl = Z.lab(d - 0.5, 12.5, 'caretaker<br>12.5 m', { pos: 'w', gap: 6, cls: 'u9l6-lab sm u9l6-halo', color: EYE }); await show(c, cl);
         } },
       { cap: `Other reasons: the string <b>swinging</b>, the ground <b>not level</b>, the distance not measured to the point <b>directly below the top</b>, the eye height <b>changing</b> (tilting the head).`,
         run: async (c) => {
-          const p = add(stage, box(h('div', 'u9l6-panel u9l6-reasons', '<div class="u9l6-ph">Sources of error</div><ul><li>a 1° misreading</li><li>the string swinging</li><li>ground not level</li><li>distance not to the point below the top</li><li>eye height changes</li></ul>'), 300, 214), 16, 14);
+          const p = add(stage, box(h('div', 'u9l6-panel u9l6-reasons', '<div class="u9l6-ph">Sources of error</div><ul><li>a 1° misreading</li><li>the string swinging</li><li>ground not level</li><li>distance not to the point below the top</li><li>eye height changes (head tilted)</li></ul>'), ex.W - 506, 136), 490, 304);
           await fadeIn(c, p, 400);
         } }
     ];
@@ -690,7 +690,7 @@ const tangent = {
         } },
       { cap: `So ${T('OC')} <b>bisects</b> angle ${T('POQ')}: ${T(`${a}^\\circ\\div2=${deg(hb)}`)} on each side.`,
         run: async (c) => {
-          await appear(c, a0, 1); a0.style.opacity = 0.25; if (a0.label) a0.label.style.opacity = 0;
+          await anim(c, a0, [{ opacity: 1 }, { opacity: 0.2 }], 300); if (a0.label) a0.label.style.opacity = 0;
           const oc = S.line([0, 0], C, { color: HYP, width: 3.5 }); await drawIn(oc, 500, c);
           const b1 = S.arc([0, 0], 0, hb, 90, { label: T(deg(hb)), lr: 22 }), b2 = S.arc([0, 0], hb, a, 74, { label: T(deg(hb)), lr: 20 }); fade.push(b2, b2.label);
           await drawIn(b1, 300, c); await show(c, b1.label); await drawIn(b2, 300, c); await show(c, b2.label);
@@ -745,7 +745,7 @@ const compass = {
     };
     let head;
     return [
-      { cap: `Every bearing starts at <b>north</b>.`, run: async (c) => { await appear(c, ray, 300); await pop(c, ray); await show(c, rd); } },
+      { cap: `Every bearing starts at <b>north</b>.`, run: async (c) => { await appear(c, ray, 400); await show(c, rd); } },
       { cap: `Turn <b>clockwise</b> from north until you face the direction…`,
         run: async (c) => {
           await tween(c, 600 + b * 8, (t) => setB(b * t));
@@ -796,7 +796,7 @@ const ferry = {
     const S = new Scene(stage, { x: 0, y: 0, width: 420, height: 470, win: [-2.6, e + 3, -s - 1.4, W2 + 1.6], pad: [14, 14, 10, 14] });
     S.line(D, [0, Math.min(3.2, W2 * 0.5)], { width: 2.5, arrow: true }); S.lab(0, Math.min(3.2, W2 * 0.5), 'N', { pos: 'n', gap: 2, cls: 'u9l6-lab sm' });
     S.dot(D, { r: 5 }); S.lab(...D, T('D'), { pos: 'w', gap: 10 });
-    const pR = panel(stage, 440, 16, ex.W - 456, 438, 'Example 5'.replace('Example 5', key === 'ex5' ? 'Example 5' : 'Demo'));
+    const pR = panel(stage, 440, 16, ex.W - 456, 438, key === 'ex5' ? 'Example 5' : 'Demo');
     return [
       { cap: `From ${T('D')}, start at north and turn <b>clockwise</b> ${T(deg(b1))}. Sail ${T(String(d1))} km to ${T('M')}.`,
         run: async (c) => {

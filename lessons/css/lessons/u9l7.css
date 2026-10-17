@@ -47,7 +47,7 @@
 .u9l7-frame .u9l7-blank.w { min-width: 150px; }
 
 /* ---------------- figures ---------------- */
-.u9l7-scene .bk-html, .u9l7-3d { position: relative; }
+.u9l7-3d { position: relative; }
 .u9l7-hl { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; }
 .u9l7-3d > svg { position: absolute; left: 0; top: 0; overflow: visible; }
 .u9l7-scene svg, .u9l7-scene .bk-svg { overflow: visible; }
