@@ -359,7 +359,7 @@ math-field.mf::part(menu-toggle), math-field.mf::part(virtual-keyboard-toggle) {
 .grid-tbl { border-collapse: separate; border-spacing: 0; font-size: 16px; }
 .grid-tbl th, .grid-tbl td { padding: 6px 8px; text-align: center; border-bottom: 1px solid var(--line2); }
 .grid-tbl thead th { font-size: 14px; font-weight: 700; color: var(--ink2); vertical-align: bottom; }
-.grid-tbl .grid-rowh { text-align: left; font-weight: 500; padding-right: 14px; white-space: nowrap; }
+.grid-tbl .grid-rowh { text-align: left; font-weight: 500; padding-right: 14px; white-space: normal; min-width: 6.5em; overflow-wrap: anywhere; }
 .grid-btn { width: 40px; height: 36px; border: 1.5px solid #d6cfbf; border-radius: 9px; background: #fff; cursor: pointer; font-size: 18px; font-weight: 700; color: var(--brand); }
 .grid-btn:not(.multi) { border-radius: 50%; width: 36px; }
 .grid-btn.on { border-color: var(--brand2); background: var(--brand-soft); }

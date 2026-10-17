@@ -1242,7 +1242,8 @@
         } }] },
       { num: '4c', stem: function (sh) { return 'For the graph below state (i) the domain and range, (ii) whether the relation is a function, and (iii) every intercept as ordered pairs. If an intercept does not exist, say so.' + fig(G({ x: [-5, 5], y: [-5, 5], labels: 1, max: 260, points: sh.pts.map(function (p) { return { x: p[0], y: p[1] }; }), aria: 'six dots' })); }, shared: ep4cShared, parts: [
         { id: 'e4c1', sub: 'i', level: 'BEG', outcome: 'RF2', make: function (r, sh) {
-          return drPart('(i) State the domain and the range.', sh.D, sh.R, { bad: [[sh.D, '\\{' + sh.pts.map(function (p) { return p[1]; }).join(', ') + '\\}']] },
+          var raw = '\\{' + sh.pts.map(function (p) { return p[1]; }).join(', ') + '\\}';
+          return drPart('(i) State the domain and the range.', sh.D, sh.R, { bad: raw === sh.R ? [] : [[sh.D, raw]] },
             'Inputs, each once: ' + t('D=' + sh.D) + '.<br>Outputs, each once, in increasing order: ' + t('R=' + sh.R) + '.', [HINT_DR, HINT_LIST], 'D and R of six dots');
         } },
         { id: 'e4c2', sub: 'ii', level: 'BEG', outcome: 'RF2', make: function (r, sh) {

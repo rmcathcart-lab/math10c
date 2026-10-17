@@ -48,6 +48,7 @@
   function pT(p) { return '(' + nT(p[0]) + ',\\ ' + nT(p[1]) + ')'; }
   function psT(ps) { return ps.map(pT).join(',\\ '); }
   function setT(ps) { return '\\{' + psT(ps) + '\\}'; }
+  function psH(ps) { return ps.map(function (p) { return '<span class="nw">' + t(pT(p)) + '</span>'; }).join(', '); } // one span per pair so long lists wrap on phones
   function andT(a) { var s = a.map(function (x) { return t(nT(x)); }); return s.length < 2 ? s.join('') : s.slice(0, -1).join(', ') + ' and ' + s[s.length - 1]; }
   function sq(y) { return y < 0 ? '(' + nT(y) + ')^{2}' : nT(y) + '^{2}'; }
   function pickWhere(gen, okf) { for (var i = 0; i < 3000; i++) { var o = gen(); if (okf(o)) return o; } throw new Error('u5l7a: no valid numbers'); }
@@ -378,7 +379,7 @@
         { id: '1a', level: 'EMG', make: function (r) {
           var pairs = r.chance(0.6) ? fnShared(r, r.sample(range(-6, 8), 4), range(1, 9)) : notFn(r, r.sample(range(-6, 8), 3), range(1, 9));
           pairs = shuffleApart(r, pairs);
-          return discReasonMC(r, '<p>' + t(psT(pairs)) + '</p>', pairs, 'pairs', psT(pairs));
+          return discReasonMC(r, '<p>' + psH(pairs) + '</p>', pairs, 'pairs', psT(pairs));
         } },
         { id: '1b', level: 'BEG', make: function (r) { return graphReasonMC(r, r.chance(0.65) ? gParabola(r) : gSideways(r)); } },
         { id: '1c', level: 'EMG', make: function (r) {
@@ -405,7 +406,7 @@
           var o = pickWhere(function () { return { s: r.int(-4, 0), d: r.pick([1, 2, 3]) }; }, function (o) { return o.s + 4 * o.d <= 9; });
           var xs = range(0, 4).map(function (i) { return o.s + i * o.d; }), pairs = fnShared(r, xs, range(0, 9));
           if (r.chance(0.4)) { var i = r.int(0, 2), j = r.int(i + 2, 4); pairs[j] = [pairs[i][0], r.pick(range(0, 9).filter(function (y) { return y !== pairs[i][1]; }))]; }
-          return discPick(r, '<p>' + t(psT(pairs)) + '</p>', pairs, 'pairs', psT(pairs));
+          return discPick(r, '<p>' + psH(pairs) + '</p>', pairs, 'pairs', psT(pairs));
         } },
         { id: '2b', level: 'BEG', make: function (r) { return graphPick(r, gWideEllipse(r)); } },
         { id: '2c', level: 'BEG', make: function (r) { return graphPick(r, gTallEllipse(r)); } },
@@ -538,20 +539,20 @@
       { num: '1', section: 'Extra practice A — The function test in five representations', stem: 'State whether each set of ordered pairs is a function.', parts: [
         { id: 'e1a', level: 'EMG', make: function (r) {
           var s = r.int(-5, -2), d = r.pick([2, 3]), c = r.int(1, 9), pairs = range(0, 3).map(function (i) { return [s + d * i, c]; });
-          return breakerPart('<p>' + t(psT(pairs)) + '</p>', pairs, 'x', 'y', 'The inputs ' + andT(pairs.map(function (p) { return p[0]; })) + ' are all different. Sharing the output ' + t(c) + ' is allowed. <b>Function.</b>', 'breaker: ' + psT(pairs));
+          return breakerPart('<p>' + psH(pairs) + '</p>', pairs, 'x', 'y', 'The inputs ' + andT(pairs.map(function (p) { return p[0]; })) + ' are all different. Sharing the output ' + t(c) + ' is allowed. <b>Function.</b>', 'breaker: ' + psT(pairs));
         } },
         { id: 'e1b', level: 'BEG', make: function (r) {
           var c = r.int(-6, 9), s = r.int(-2, 2), pairs = range(0, 3).map(function (i) { return [c, s + i]; });
-          return breakerPart('<p>' + t(psT(pairs)) + '</p>', pairs, 'x', 'y', 'The input ' + t(c) + ' is paired with ' + andT(pairs.map(function (p) { return p[1]; })) + '. <b>Not a function.</b>', 'breaker: ' + psT(pairs));
+          return breakerPart('<p>' + psH(pairs) + '</p>', pairs, 'x', 'y', 'The input ' + t(c) + ' is paired with ' + andT(pairs.map(function (p) { return p[1]; })) + '. <b>Not a function.</b>', 'breaker: ' + psT(pairs));
         } },
         { id: 'e1c', level: 'EMG', make: function (r) {
           var o = pickWhere(function () { return { b: r.chance(0.6) ? 0 : r.int(-4, 4), m: r.int(1, 6), n: r.int(1, 6), k: r.int(1, 9) }; }, function (o) { return o.b !== o.n && o.b !== -o.n; });
           var pairs = [[o.b, -o.m], [o.n, o.k], [-o.n, o.k], [o.b, o.m]];
-          return breakerPart('<p>' + t(psT(pairs)) + '</p>', pairs, 'x', 'y', 'The input ' + t(o.b) + ' is paired with both ' + t(-o.m) + ' and ' + t(o.m) + '. (The inputs ' + t(o.n) + ' and ' + t(-o.n) + ' sharing ' + t(o.k) + ' is fine.) <b>Not a function.</b>', 'breaker: ' + psT(pairs));
+          return breakerPart('<p>' + psH(pairs) + '</p>', pairs, 'x', 'y', 'The input ' + t(o.b) + ' is paired with both ' + t(-o.m) + ' and ' + t(o.m) + '. (The inputs ' + t(o.n) + ' and ' + t(-o.n) + ' sharing ' + t(o.k) + ' is fine.) <b>Not a function.</b>', 'breaker: ' + psT(pairs));
         } },
         { id: 'e1d', level: 'EMG', make: function (r) {
           var a = r.pick([0.5, 1.5, 2.5, 3.5]), b = r.pick(range(2, 6).filter(function (x) { return Math.abs(x - a) > 0.6; })), pairs = [[a, b], [-a, b], [b, a], [-b, a]];
-          return breakerPart('<p>' + t(psT(pairs)) + '</p>', pairs, 'x', 'y', 'The inputs ' + andT([a, -a, b, -b]) + ' are all different, so each has one output. (The number ' + t(nT(a)) + ' appearing as an input in one pair and an output in another doesn’t matter.) <b>Function.</b>', 'breaker: ' + psT(pairs));
+          return breakerPart('<p>' + psH(pairs) + '</p>', pairs, 'x', 'y', 'The inputs ' + andT([a, -a, b, -b]) + ' are all different, so each has one output. (The number ' + t(nT(a)) + ' appearing as an input in one pair and an output in another doesn’t matter.) <b>Function.</b>', 'breaker: ' + psT(pairs));
         } }] },
       { num: '2', stem: 'State whether the relation in each table is a function.', parts: [
         { id: 'e2a', level: 'EMG', make: function (r) {
@@ -692,7 +693,7 @@
             else if (ty === 'const') { var c = r.int(2, 9); pairs = range(s, s + 3).map(function (x) { return [x, c]; }); }
             else if (ty === '1m') { var d = r.int(2, 4); pairs = [[s, d], [s, 2 * d], [s + 1, 3 * d], [s + 2, 4 * d]]; }
             else { var pq = r.sample(range(1, 5), 2).sort(num); pairs = [[-pq[0], pq[0] * pq[0]], [pq[0], pq[0] * pq[0]], [-pq[1], pq[1] * pq[1]], [pq[1], pq[1] * pq[1]]]; }
-            return typeMC(r, '<p>' + t(psT(pairs)) + '</p>', pairs, 'pairs', psT(pairs));
+            return typeMC(r, '<p>' + psH(pairs) + '</p>', pairs, 'pairs', psT(pairs));
           } };
         }) },
       { num: '9', stem: function (sh) { return 'Build your own relations. Every relation must use the domain ' + t('\\{' + sh.D.join(',\\ ') + '\\}') + ': each of these numbers is an input, and no other number is. Type each relation as a set of ordered pairs.'; },
