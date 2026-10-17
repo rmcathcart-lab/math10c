@@ -105,6 +105,7 @@
   K.factored = function (target, opt) {
     opt = opt || {};
     var TF = lift(target), T = F.product(TF), TN = F.normal(TF);
+    var TInt = P.terms(T).every(function (x) { return x.c[1] === 1; });
     var wrongs = (opt.wrong || []).map(function (w) { return { p: Array.isArray(w.is) ? F.product(w.is) : P.lift(w.is), code: w.code || 'diag', hint: w.hint }; });
     return function (resp) {
       var a = K.read(resp); if (a.res) return a.res;
@@ -118,7 +119,8 @@
           return form('not-factored', 'That’s equal to the expression, but it isn’t factored — write it as a <b>product</b> of factors.');
         for (var i = 0; i < SN.raw.length; i++) {
           var r = SN.raw[i], cv = r.cn;
-          if (Math.abs(cv.c[0]) !== 1 || Object.keys(cv.v).length) { // a fraction alone (½x + 2y) is fine
+          if (cv.c[1] !== 1 && TInt) return form('frac-bracket', 'Equal, but write each bracket with whole-number coefficients — take the fraction (or decimal) out in front.');
+          if (Math.abs(cv.c[0]) !== 1 || Object.keys(cv.v).length) { // a fraction alone (½x + 2y) is fine when the expression itself has fractions
             var g = P.tex(P.mono([Math.abs(cv.c[0]), 1], cv.v));
             if (g !== '1') return form('gcf-inside', 'Equal, but not factored completely: ' + t('(' + writtenTex(r) + ')') + ' still has a common factor of ' + t(g) + '. Take it out in front.');
           }
@@ -159,7 +161,7 @@
       return wrong('value', multiply || null);
     };
   };
-  HW.addCodes({ 'simplify-bracket': 'Bracket not simplified', 'not-factored': 'Not written as a product', 'gcf-inside': 'Common factor left inside a bracket', 'factor-more': 'Not factored completely', middle: 'Factor pair gives the wrong middle term', constant: 'Last terms don’t multiply to the constant' });
+  HW.addCodes({ 'frac-bracket': 'Fraction or decimal left inside a bracket', 'simplify-bracket': 'Bracket not simplified', 'not-factored': 'Not written as a product', 'gcf-inside': 'Common factor left inside a bracket', 'factor-more': 'Not factored completely', middle: 'Factor pair gives the wrong middle term', constant: 'Last terms don’t multiply to the constant' });
 
   K.P.factored = function (prompt, target, opt, sol, hints, text) {
     opt = opt || {};

@@ -503,7 +503,7 @@
         } },
         { id: '13b', sub: 'a(ii)', level: 'EMG', make: function (r) {
           var n = r.int(3, 12);
-          return B.fraction('Evaluate ' + t('C\\left(\\dfrac{1}{' + n * n + '}\\right)') + '.', [1, n], { diag: function (v) {
+          return B.fraction('Evaluate ' + t('C\\left(\\dfrac{1}{' + n * n + '}\\right)') + ' (as a fraction).', [1, n], { diag: function (v) {
             if (same(v, 1 / (n * n))) return { code: 'fn-sqrt-not', hint: 'Take the square root: ' + t('\\sqrt{\\tfrac{1}{' + n * n + '}}=\\tfrac{\\sqrt{1}}{\\sqrt{' + n * n + '}}') + '.' };
             if (same(v, 1 / (2 * n * n)) || same(v, 0.5 / n)) return { code: 'fn-sqrt-half', hint: 'The square root of a fraction is the root of the top over the root of the bottom.' };
             return null;
@@ -994,7 +994,7 @@
           } },
           { id: 'e18b', level: 'PRG', make: function (r, sh) {
             var m = sh.m, b = sh.b;
-            return B.fraction(t('f(x)=0'), [b, m], { before: t('x='), diag: function (v) { if (same(v, b)) return { code: 'fn-solve-divide', hint: t(m + 'x=' + b) + ' — now divide by ' + t(m) + '.' }; if (same(v, -b)) return { code: 'fn-solve-inverse', hint: 'Add ' + t(b) + ' to both sides: ' + t(m + 'x=' + b) + '.' }; return null; } },
+            return B.fraction(t('f(x)=0') + ' (give ' + t('x') + ' as a fraction)', [b, m], { before: t('x='), diag: function (v) { if (same(v, b)) return { code: 'fn-solve-divide', hint: t(m + 'x=' + b) + ' — now divide by ' + t(m) + '.' }; if (same(v, -b)) return { code: 'fn-solve-inverse', hint: 'Add ' + t(b) + ' to both sides: ' + t(m + 'x=' + b) + '.' }; return null; } },
               t(m + 'x-' + b + '=0') + '<br>' + t(m + 'x=' + b) + '<br>' + t('x=\\tfrac{' + b + '}{' + m + '}') + ' (the ' + t('x') + '-intercept of the graph).', ['Set the formula equal to ' + t('0') + ' and solve.', 'Leave the answer as a fraction.'], 'f(x)=0');
           } },
           { id: 'e18c', level: 'ADV', make: function (r, sh) {
