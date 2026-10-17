@@ -592,9 +592,9 @@ const sightings = {
     }
     S.lab([X4 / 2, 0], T('x'), { pos: 's', gap: 8 }); S.lab([X4 + 12.5, 0], '25 m', { pos: 's', gap: 8 });
     const sA = S.seg('A', 'T'), sB = S.seg('B', 'T'); S.arc('A', 'C', 'T', 40); S.angLab('A', 'C', 'T', 66, T('32^\\circ')); S.arc('B', 'C', 'T', 34); S.angLab('B', 'C', 'T', 58, T('47^\\circ'));
-    const tgh = S.tag('C', 'T', 'opp', 'B', { off: 30 }), tB = S.tag('C', 'B', 'adj', 'T', { off: 64 });
+    const tgh = S.tag('C', 'T', 'opp', 'B', { off: 30 }), tB = S.tag('C', 'B', 'adj', 'T', { off: 46, dx: 44 });
     // bar model below the ground
-    const by = (k) => S.P([0, 0])[1] + 64 + k * 40, P0 = S.P('C')[0], PB = S.P('B')[0], PA = S.P('A')[0];
+    const by = (k) => S.P([0, 0])[1] + 82 + k * 40, P0 = S.P('C')[0], PB = S.P('B')[0], PA = S.P('A')[0];
     const bar = (x1, y, color, html) => { const r = svgEl('rect', { x: P0, y: y - 13, width: x1 - P0, height: 26, rx: 6, fill: color, 'fill-opacity': 0.22, stroke: color, 'stroke-width': 2 }, S.svg); r.style.opacity = 0; const l = S.hlabel((P0 + x1) / 2, y, html, { cls: 'u9l7-barlab' }); l.style.opacity = 0; return [r, l]; };
     const bB = bar(PB, by(0), ADJ, T(`x=\\tfrac{h}{\\tan 47^\\circ}`)), bA = bar(PA, by(1), ADJ, T(`x+25=\\tfrac{h}{\\tan 32^\\circ}`));
     const gap = hide(S.hlabel((PB + PA) / 2, by(0), T(cG('25')), { cls: 'u9l7-gapl' })), gr = svgEl('rect', { x: PB, y: by(0) - 13, width: PA - PB, height: 26, rx: 6, fill: GOLD, 'fill-opacity': 0.35, stroke: GOLDD, 'stroke-width': 2, 'stroke-dasharray': '5 4' }, S.svg); gr.style.opacity = 0;
@@ -612,3 +612,195 @@ const sightings = {
     ];
   }
 };
+
+/* =============================== ★ Extension: the box and its space diagonal =============================== */
+const BOXF = [['A', 'B', 'C', 'D'], ['E', 'F', 'G', 'H'], ['A', 'B', 'F', 'E'], ['B', 'C', 'G', 'F'], ['C', 'D', 'H', 'G'], ['D', 'A', 'E', 'H']];
+const boxVerts = (l, w, hh) => ({ A: [0, 0, 0], B: [l, 0, 0], C: [l, w, 0], D: [0, w, 0], E: [0, 0, hh], F: [l, 0, hh], G: [l, w, hh], H: [0, w, hh] });
+const BX = { ex5: { label: 'Example 5 check', l: 4, w: 3, hh: 12, s: 25 }, spin: { label: 'Any box: l × w × h', l: 6, w: 2, hh: 3, s: 46 } };
+const box3d = {
+  title: 'A box hides two right triangles that share the base diagonal',
+  height: 480,
+  choices: Object.keys(BX).map((k) => ({ v: k, label: BX[k].label })),
+  intro: (v) => (v === 'ex5' ? 'Example 5: a box 4 cm by 3 cm by 12 cm. Press <b>Next</b>.' : 'A box 6 by 2 by 3: find the diagonal through the inside. Press <b>Next</b>.'),
+  make(stage, v, ex) {
+    const o = BX[v], W = 520, ex5 = v === 'ex5', AC = Math.hypot(o.l, o.w), AG = Math.hypot(AC, o.hh), ang = atanD(o.hh / AC);
+    const hostEl = add(stage, box(h('div', 'u9l7-3d'), W, 470), 4, 4), svg = svgEl('svg', { width: W, height: 470 }, hostEl), hp = h('div', 'u9l7-hl'); hostEl.appendChild(hp);
+    const yaw0 = -28, pit0 = 22, faceOn = Math.atan2(-o.w, o.l) / RAD;
+    const B = new Solid3(svg, hp, { verts: boxVerts(o.l, o.w, o.hh), faces: BOXF, c: [o.l / 2, o.w / 2, o.hh / 2], s: o.s, ox: W / 2, oy: 240, view: { yaw: yaw0, pitch: pit0 } });
+    ['F', 'E', 'H'].forEach((n) => { if (ex5) B.vl[n].style.opacity = 0; });
+    const V = B.verts;
+    B.label(lerp3(V.A, V.B, 0.5), T(String(o.l)), { out: 22 }); B.label(lerp3(V.B, V.C, 0.5), T(String(o.w)), { out: 22 }); B.label(lerp3(V.C, V.G, 0.5), T(String(o.hh)), { out: 22 });
+    const base = B.add('poly', ['A', 'B', 'C'], { fill: '#fff1d6', 'fill-opacity': 0.9, stroke: 'none' }, B.faceG), vert = B.add('poly', ['A', 'C', 'G'], { fill: '#dbe7fb', 'fill-opacity': 0.85, stroke: 'none' }, B.faceG);
+    [base, vert].forEach(hide);
+    const acDot = B.add('path', ['A', 'C'], { stroke: INK, 'stroke-width': 2.4, 'stroke-dasharray': '2 6' }), agDot = B.add('path', ['A', 'G'], { stroke: INK, 'stroke-width': 2.4, 'stroke-dasharray': '2 6' });
+    const ux = unit3([1, 0, 0]), uy = unit3([0, 1, 0]), uAC = unit3([o.l, o.w, 0]), z = [0, 0, 1], k = Math.min(o.l, o.w) * 0.22;
+    const rmB = hide(B.add('path', [add3(V.B, ux, -k), add3(add3(V.B, ux, -k), uy, k), add3(V.B, uy, k)], { stroke: INK, 'stroke-width': 2 }));
+    const rmC = hide(B.add('path', [add3(V.C, uAC, -k * 1.4), add3(add3(V.C, uAC, -k * 1.4), z, k * 1.4), add3(V.C, z, k * 1.4)], { stroke: INK, 'stroke-width': 2 }));
+    const acGlow = hide(B.add('path', ['A', 'C'], { stroke: GOLD, 'stroke-width': 15, 'stroke-opacity': 0.55 }, B.faceG));
+    const acL = B.add('path', ['A', 'C'], { stroke: ADJ, 'stroke-width': 4.5 }), cgL = B.add('path', ['C', 'G'], { stroke: OPP, 'stroke-width': 4.5 }), agL = B.add('path', ['A', 'G'], { stroke: HYP, 'stroke-width': 5 });
+    [acL, cgL, agL].forEach(hide);
+    const acLab = hide(B.label(lerp3(V.A, V.C, 0.55), T(cG(ex5 ? '5' : '\\sqrt{40}')), { dy: 18, cls: 'u9l7-lab u9l7-goldlab' }));
+    const agLab = hide(B.label(lerp3(V.A, V.G, 0.5), T(cH(String(AG))), { dx: -22, dy: -6, cls: 'u9l7-lab u9l7-big' }));
+    const arcPts = arc3(V.A, uAC, z, ang, AC * 0.26), arcEl = hide(B.add('path', arcPts, { stroke: REF, 'stroke-width': 3.5 }));
+    const arcLab = hide(B.label(add3(add3(V.A, uAC, AC * 0.42), z, AC * 0.2), T(`${ang.toFixed(0)}^\\circ`), { color: REF, cls: 'u9l7-lab u9l7-alab big' }));
+    const Pn = panel(stage, W + 14, 8, ex.W - W - 20, 464, ex5 ? 'Example 5' : 'Any box');
+    const steps = [
+      { cap: ex5 ? `A box: base ${T('ABCD')} is 4 cm by 3 cm, and ${T('G')} is 12 cm directly above ${T('C')}. Watch it turn: the dotted ${T('AG')} runs through the <b>inside</b>.` : `A box 6 by 2 by 3. The dotted ${T('AG')} is a <b>space diagonal</b>: it runs through the inside of the box.`,
+        run: async (c) => { await B.turn(c, yaw0 + 360, pit0, 4200); B.view.yaw = yaw0; B.render(); } },
+      { cap: `${ex5 ? '(a) ' : ''}The base hides a right triangle: ${T('\\triangle ABC')}, with the right angle at ${T('B')}.`,
+        run: async (c) => { await appear(c, base, 400); await appear(c, rmB, 300); } },
+      { cap: `${T(`AC=\\sqrt{${o.l}^2+${o.w}^2}=\\sqrt{${o.l * o.l + o.w * o.w}}${ex5 ? '=5' : '\\approx' + AC.toFixed(2)}`)}${ex5 ? ' cm' : ''}. ${T('AC')} glows: it is the side the two triangles <b>share</b>.`,
+        run: async (c) => { await appear(c, acL, 300); await appear(c, acGlow, 400); await pop(c, acLab); await say(c, Pn, T(`AC=\\sqrt{${o.l}^2+${o.w}^2}=${ex5 ? cG('5') + '\\text{ cm}' : cG('\\sqrt{40}')}`)); } },
+      { cap: `${T('\\triangle ACG')} stands <b>vertically</b> on ${T('AC')}: ${T('CG')} is vertical, so the right angle is at ${T('C')}.`,
+        run: async (c) => { await appear(c, vert, 400); await appear(c, rmC, 300); await appear(c, cgL, 300); } },
+      { cap: `Turn the box until ${T('\\triangle ACG')} faces us: a flat right triangle with legs ${T(ex5 ? '5' : '\\sqrt{40}')} and ${T(String(o.hh))}.`,
+        run: async (c) => { await Promise.all([B.turn(c, faceOn, 4, 1800), B.dimEdges(c, 0.28)]); } },
+      { cap: ex5 ? `${T('AG=\\sqrt{5^2+12^2}=\\sqrt{169}=13')} cm. The box’s diagonal is the <b>hypotenuse</b> of the second right triangle.` : `${T(`AG=\\sqrt{AC^2+CG^2}=\\sqrt{40+9}=\\sqrt{49}=7`)}. In one line: ${T('d=\\sqrt{l^2+w^2+h^2}')}.`,
+        run: async (c) => { agDot.style.opacity = 0; agL.style.opacity = 1; await drawIn(agL, 700, c); await pop(c, agLab); await say(c, Pn, T(ex5 ? `AG=\\sqrt{${cA('5')}^2+${cO('12')}^2}=\\sqrt{169}=${cH('13')}\\text{ cm}` : `AG=\\sqrt{${cA('40')}+${cO('3')}^2}=\\sqrt{49}=${cH('7')}`)); if (!ex5) await say(c, Pn, T('d=\\sqrt{l^2+w^2+h^2}'), 'u9l7-res'); } }
+    ];
+    if (ex5) steps.push(
+      { cap: `${T('\\tan(\\angle GAC)=\\tfrac{12}{5}')}, so ${T('\\angle GAC=\\tan^{-1}(2.4)=67.38^\\circ\\approx 67^\\circ')}.`,
+        run: async (c) => { arcEl.style.opacity = 1; await drawIn(arcEl, 500, c); await pop(c, arcLab); await say(c, Pn, T(`\\tan(\\angle GAC)=\\dfrac{${cO('12')}}{${cA('5')}}`)); await say(c, Pn, T('\\angle GAC=\\tan^{-1}(2.4)=67.38^\\circ\\approx67^\\circ'), 'u9l7-res'); } },
+      { cap: `Turn back: ${T('67^\\circ')} is the angle the diagonal ${T('AG')} makes with the base. Two right triangles, chained by ${T('AC')}.`,
+        run: async (c) => { await Promise.all([B.turn(c, yaw0, pit0, 1800), B.dimEdges(c, 1)]); } });
+    else steps.push({ cap: `Turn back. The base diagonal was handed up from the floor triangle to the vertical one: the same chain in 3-D.`, run: async (c) => { await Promise.all([B.turn(c, yaw0, pit0, 1800), B.dimEdges(c, 1)]); } });
+    void acDot;
+    return steps;
+  }
+};
+
+/* =============================== Extension: the wedge =============================== */
+const WV = { A: [0, 0, 0], B: [11, 0, 0], C: [11, 6, 0], D: [0, 6, 0], E: [0, 0, 2], F: [11, 0, 2], G: [11, 6, 9], H: [0, 6, 9] };
+const WF = [['A', 'B', 'C', 'D'], ['A', 'B', 'F', 'E'], ['D', 'C', 'G', 'H'], ['E', 'F', 'G', 'H'], ['A', 'D', 'H', 'E'], ['B', 'C', 'G', 'F']];
+const HEE = atanD(7 / 6);
+const wedge = {
+  title: 'The wedge: rectangles, and a right triangle hiding in a side face',
+  height: 470,
+  choices: [{ v: 'a', label: '(a) The four rectangles' }, { v: 'bc', label: '(b)–(c) The side face' }],
+  intro: (v) => (v === 'a' ? 'Example 6 (a): which faces are rectangles? Press <b>Next</b>.' : 'Example 6 (b) and (c): work in the side face ' + T('ADHE') + '. Press <b>Next</b>.'),
+  make(stage, v, ex) {
+    const W = 560, yaw0 = -22, pit0 = 16;
+    const hostEl = add(stage, box(h('div', 'u9l7-3d'), W, 460), 4, 4), svg = svgEl('svg', { width: W, height: 460 }, hostEl), hp = h('div', 'u9l7-hl'); hostEl.appendChild(hp);
+    const S3 = new Solid3(svg, hp, { verts: WV, faces: WF, c: [5.5, 3, 4.5], s: 34, ox: W / 2, oy: 240, view: { yaw: yaw0, pitch: pit0 } });
+    const V = WV, mid = (a, b) => lerp3(V[a], V[b], 0.5);
+    S3.label(mid('A', 'B'), '11', { out: 24 }); S3.label(mid('A', 'D'), '6', { out: 22 }); S3.label(mid('A', 'E'), '2', { out: 24 }); S3.label(mid('C', 'G'), '9', { out: 24 });
+    const Pn = panel(stage, W + 14, 8, ex.W - W - 20, 454, v === 'a' ? 'Rectangles?' : 'Side face ADHE');
+    const face = (f, color) => hide(S3.add('poly', f, { fill: color, 'fill-opacity': 0.45, stroke: 'none' }, S3.faceG));
+    if (v === 'a') {
+      const R = [['A', 'B', 'C', 'D'], ['A', 'B', 'F', 'E'], ['D', 'C', 'G', 'H'], ['E', 'F', 'G', 'H']].map((f) => face(f, '#a8d8c2'));
+      const Tz = [face(['A', 'D', 'H', 'E'], '#f3b3ad'), face(['B', 'C', 'G', 'F'], '#f3b3ad')];
+      const txt = [`Base ${T('ABCD')}: 11 by 6, a rectangle.`, `Front ${T('ABFE')}: ${T('EA=FB=2')}, so a rectangle.`, `Back ${T('DCGH')}: ${T('HD=GC=9')}, so a rectangle.`, `Top ${T('EFGH')}: ${T('EF')} and ${T('HG')} run along ${T('AB')}; ${T('EH')} and ${T('FG')} lie in faces perpendicular to ${T('AB')}. The corners are ${T('90^\\circ')}: a rectangle.`];
+      const show = (i) => async (c) => { R.forEach((g, j) => { if (j !== i) g.setAttribute('fill-opacity', 0.16); }); R[i].setAttribute('fill-opacity', 0.45); await appear(c, R[i], 400); await say(c, Pn, `<span class="u9l7-step ok">${i + 1}</span> ${txt[i].split(':')[0]}`); };
+      const steps = [
+        { cap: txt[0], run: show(0) }, { cap: txt[1], run: show(1) },
+        { cap: `Turn the solid around to look at the back.`, run: async (c) => { await S3.turn(c, 205, 24, 1700); } },
+        { cap: txt[2], run: show(2) },
+        { cap: `Turn back to the front, and look at the slanted top.`, run: async (c) => { await S3.turn(c, yaw0, pit0, 1700); } },
+        { cap: txt[3], run: show(3) }
+      ];
+      return steps;
+    }
+    const sf = face(['A', 'D', 'H', 'E'], '#dbe7fb');
+    const Ep = [0, 6, 2], eh = hide(S3.add('path', [Ep, 'E'], { stroke: ADJ, 'stroke-width': 4.5, 'stroke-dasharray': '9 6' })), hE = hide(S3.add('path', [Ep, 'H'], { stroke: OPP, 'stroke-width': 4.5 })), EH = hide(S3.add('path', ['E', 'H'], { stroke: HYP, 'stroke-width': 5 }));
+    const rmE = hide(S3.add('path', [add3(Ep, [0, -1, 0], 0.7), add3(add3(Ep, [0, -1, 0], 0.7), [0, 0, 1], 0.7), add3(Ep, [0, 0, 1], 0.7)], { stroke: INK, 'stroke-width': 2 }));
+    const Elab = hide(S3.label(Ep, T("E'"), { dx: -20, dy: 14, cls: 'bk-lab u9l7-v' }));
+    const l6 = hide(S3.label(lerp3(Ep, V.E, 0.5), T(cA('6')), { dy: 18 })), l7 = hide(S3.label(lerp3(Ep, V.H, 0.5), T(cO('7')), { dx: -18 })), lEH = hide(S3.label(lerp3(V.E, V.H, 0.5), T(cH('\\sqrt{85}')), { dx: 30, dy: 6 }));
+    const a1 = hide(S3.add('path', arc3(V.E, [0, 1, 0], [0, 0, 1], HEE, 1.6), { stroke: REF, 'stroke-width': 3.5 })), a1l = hide(S3.label(add3(add3(V.E, [0, 1, 0], 2.3), [0, 0, 1], 1.1), T('49.40^\\circ'), { color: REF, cls: 'u9l7-lab u9l7-alab' }));
+    const a2 = hide(S3.add('path', arc3(V.E, [0, 0, -1], [0, 1, 0], 90 + HEE, 0.9), { stroke: RED, 'stroke-width': 3.5 })), a2l = hide(S3.label(add3(V.E, [0, -1, 0.2], 0.4), T('139^\\circ'), { color: RED, dx: 34, dy: 18, cls: 'u9l7-lab u9l7-alab' }));
+    return [
+      { cap: `Work in the side face ${T('ADHE')}: a right trapezoid. ${T('EA=2')} and ${T('HD=9')} are vertical; ${T('AD=6')} is horizontal.`, run: async (c) => { await appear(c, sf, 400); await say(c, Pn, `${T('EA=2')}, ${T('HD=9')}, ${T('AD=6')}`); } },
+      { cap: `Turn the solid so face ${T('ADHE')} faces us.`, run: async (c) => { await Promise.all([S3.turn(c, 90, 4, 1800), S3.dimEdges(c, 0.35)]); } },
+      { cap: `Draw the horizontal from ${T('E')} across to ${T('DH')}, meeting it at ${T("E'")}: level with ${T('E')}, directly above ${T('D')}. ${T("EE'")} splits the face.`,
+        run: async (c) => { eh.style.opacity = 1; await drawIn(eh, 600, c); await appear(c, rmE, 250); await pop(c, Elab); } },
+      { cap: `${T("EE'=AD=6")} cm and ${T("E'H=9-2=7")} cm (the <b>difference</b> in heights): the legs of right triangle ${T("EE'H")}.`,
+        run: async (c) => { await pop(c, l6); hE.style.opacity = 1; await drawIn(hE, 500, c); await pop(c, l7); await say(c, Pn, T("EE'=" + cA('6') + ",\\quad E'H=9-2=" + cO('7'))); } },
+      { cap: `(b) From the angle at ${T('E')}: ${T("E'H")} is opposite, ${T("EE'")} adjacent. ${T("\\tan(\\angle HEE')=\\tfrac{7}{6}")}, so ${T("\\angle HEE'=\\tan^{-1}(7/6)=49.40^\\circ")}.`,
+        run: async (c) => { EH.style.opacity = 1; await drawIn(EH, 500, c); a1.style.opacity = 1; await drawIn(a1, 400, c); await pop(c, a1l); await say(c, Pn, T("\\angle HEE'=\\tan^{-1}\\!\\left(\\tfrac{" + cO('7') + '}{' + cA('6') + "}\\right)=49.40^\\circ")); } },
+      { cap: `${T('EA')} is vertical and ${T("EE'")} horizontal, so ${T("\\angle AEE'=90^\\circ")}. Then ${T("\\angle HEA=90^\\circ+49.40^\\circ=139.40^\\circ\\approx139^\\circ")}: obtuse.`,
+        run: async (c) => { a2.style.opacity = 1; await drawIn(a2, 600, c); await pop(c, a2l); await say(c, Pn, T('\\angle HEA=90^\\circ+49.40^\\circ\\approx' + '139^\\circ'), 'u9l7-res'); } },
+      { cap: `(c) ${T('EH')} is the hypotenuse: ${T('EH=\\sqrt{6^2+7^2}=\\sqrt{85}=9.2195\\ldots\\approx 9.2')} cm.`,
+        run: async (c) => { await pop(c, lEH); await say(c, Pn, T('EH=\\sqrt{' + cA('6') + '^2+' + cO('7') + '^2}=\\sqrt{85}\\approx9.2\\text{ cm}'), 'u9l7-res'); } },
+      { cap: `Turn back: ${T('E')} is the notch corner of the wedge, which is why ${T('\\angle HEA')} is obtuse.`, run: async (c) => { await Promise.all([S3.turn(c, yaw0, pit0, 1800), S3.dimEdges(c, 1)]); } }
+    ];
+  }
+};
+
+/* =============================== static figures (the booklet’s own coordinates and labels) =============================== */
+/** a Scene in TikZ units: k px per unit, window [x0, x1, y0, y1] */
+function fig(id, k, win, pad = 30) {
+  const host = document.getElementById(id); if (!host) return null;
+  const [x0, x1, y0, y1] = win, p = Array.isArray(pad) ? pad : [pad, pad, pad, pad];
+  return new Scene(host, { width: (x1 - x0) * k + p[1] + p[3], height: (y1 - y0) * k + p[0] + p[2], xmin: x0, xmax: x1, ymin: y0, ymax: y1, pad: p });
+}
+const FS = 'u9l7-lab u9l7-fs';
+function mountStatic() {
+  let S = fig('u9l7-f1', 62, [-0.4, 4.3, 0, 6.2], [26, 120, 46, 110]);
+  if (S) {
+    S.seg([-0.4, 0], [4.3, 0], { width: 2 }); S.seg([0, 0], [0, 4.7], { width: 4.5 }); S.seg([3.8, 0], [3.8, 6.2], { width: 4.5 });
+    S.seg([0, 4.7], [4.3, 4.7], { dash: '8 6', width: 2 }); S.seg([0, 4.7], [3.8, 6.2], { dash: '2 5', width: 2.4 }); S.seg([0, 4.7], [3.8, 0], { dash: '2 5', width: 2.4 });
+    S.arcC([0, 4.7], 1.2 * S.s, 0, 21.5); S.arcC([0, 4.7], 0.85 * S.s, 0, -51);
+    S.lab([2.6, 5.15], T('22^\\circ'), { cls: FS }); S.lab([1.44, 4.01], T('51^\\circ'), { cls: FS }); S.lab([1.9, -0.05], '38 m', { pos: 's', cls: FS });
+    S.lab([0, 2.35], 'Ashgrove', { pos: 'w', cls: FS }); S.lab([3.8, 3.1], 'Birchwood', { pos: 'e', cls: FS });
+  }
+  S = fig('u9l7-ffr', 78, [-2.6, 1.6, 0, 2.6], [40, 40, 44, 40]);
+  if (S) {
+    S.pt('Y', -2.6, 0).pt('W', 0, 0).pt('Z', 1.6, 0).pt('X', 0, 2.6);
+    S.path(['Y', 'Z', 'X', 'Y'], { width: 2.5, closed: true }); S.seg('X', 'W', { width: 2.5 }); S.rmark('W', 'Y', 'X');
+    S.vname('Y', 'Y', 'sw'); S.vname('W', 'W', 's'); S.vname('Z', 'Z', 'se'); S.vname('X', 'X', 'n');
+  }
+  S = fig('u9l7-f2', 70, [-4.1, 2.4, 0, 2.665], [40, 40, 50, 40]);
+  if (S) {
+    S.pt('R', -4.1, 0).pt('S', 0, 0).pt('Q', 2.4, 0).pt('P', 0, 2.665);
+    S.path(['R', 'Q', 'P', 'R'], { width: 2.5, closed: true }); S.seg('P', 'S', { width: 2.5 }); S.rmark('S', 'R', 'P');
+    S.arcC('Q', 0.9 * S.s, 180, 132); S.arcC('P', 0.9 * S.s, 270, 213);
+    S.vname('R', 'R', 's'); S.vname('S', 'S', 's'); S.vname('Q', 'Q', 'se'); S.vname('P', 'P', 'n');
+    S.lab([1.2, -0.02], '24 mm', { pos: 's', cls: FS }); S.lab([1.03, 0.61], T('48^\\circ'), { cls: FS }); S.lab([-0.72, 1.35], T('57^\\circ'), { cls: FS });
+  }
+  S = fig('u9l7-f3', 70, [-3.71, 2.63, 0, 1.84], [40, 40, 50, 40]);
+  if (S) {
+    S.pt('B', -3.71, 0).pt('C', 0, 0).pt('A', 2.63, 0).pt('E', 0, 1.84);
+    S.path(['B', 'A', 'E', 'B'], { width: 2.5, closed: true }); S.seg('E', 'C', { width: 2.5 }); S.rmark('C', 'B', 'E');
+    S.arcC('A', 1.1 * S.s, 180, 145);
+    S.vname('B', 'B', 's'); S.vname('C', 'C', 's'); S.vname('A', 'A', 's'); S.vname('E', 'E', 'n');
+    S.lab([-1.95, 1.0], '5.8 m', { pos: 'nw', gap: 2, cls: FS }); S.lab([1.25, 0.98], '4.5 m', { pos: 'ne', gap: 2, cls: FS }); S.lab([0.91, 0.54], T('35^\\circ'), { cls: FS });
+  }
+  S = fig('u9l7-f4', 105, [-0.2, 3.9, 0, 2.25], [40, 24, 60, 40]);
+  if (S) {
+    S.pt('C', 0, 0).pt('T', 0, 2.25).pt('B', 2.09, 0).pt('A', 3.59, 0);
+    S.seg([-0.2, 0], [3.9, 0], { width: 2.5 }); S.seg('C', 'T', { width: 5.5 }); S.seg('T', 'B', { width: 2.5 }); S.seg('T', 'A', { width: 2.5 });
+    S.path([[0, 0.22], [0.22, 0.22], [0.22, 0]], { width: 2 });
+    S.arc('A', 'T', 'C', 0.5 * S.s, { width: 2 }); S.arc('B', 'T', 'C', 0.5 * S.s, { width: 2 });
+    S.lab([3.59 - 0.85 * cosD(16), 0.85 * sinD(16)], T('32^\\circ'), { cls: FS }); S.lab([2.09 - 0.85 * cosD(23.5), 0.85 * sinD(23.5)], T('47^\\circ'), { cls: FS });
+    S.vname('A', 'A', 's'); S.vname('B', 'B', 's'); S.vname('C', 'C', 'sw'); S.vname('T', 'T', 'n');
+    S.lab([0, 1.12], T('h'), { pos: 'w', cls: 'u9l7-lab' }); S.lab([2.84, -0.25], '25 m', { pos: 's', cls: FS }); S.lab([1.05, -0.05], T('x'), { pos: 's', cls: FS });
+  }
+  S = fig('u9l7-f5', 78, [0, 3.3, 0, 3.9], [30, 50, 40, 40]);
+  if (S) {
+    const P = { A: [0, 0], B: [2.4, 0], C: [3.3, 0.9], D: [0.9, 0.9], E: [0, 3], F: [2.4, 3], G: [3.3, 3.9], H: [0.9, 3.9] };
+    for (const n in P) S.pt(n, ...P[n]);
+    S.path(['A', 'B', 'F', 'E', 'A'], { width: 2.4 }); S.path(['B', 'C', 'G', 'F'], { width: 2.4 }); S.path(['E', 'H', 'G'], { width: 2.4 });
+    S.path(['A', 'D', 'C'], { width: 1.8, dash: '7 5' }); S.seg('D', 'H', { width: 1.8, dash: '7 5' });
+    S.seg('A', 'C', { width: 2.6, dash: '2 5' }); S.seg('A', 'G', { width: 2.6, dash: '2 5' });
+    S.vname('A', 'A', 'sw'); S.vname('B', 'B', 'se'); S.vname('C', 'C', 'e'); S.lab('D', T('D'), { pos: 'nw', cls: 'u9l7-v u9l7-fs', gap: 3 }); S.vname('G', 'G', 'e');
+    S.lab([1.2, 0], '4', { pos: 's', cls: FS }); S.lab([2.85, 0.4], '3', { pos: 'e', cls: FS }); S.lab([3.3, 2.4], '12', { pos: 'e', cls: FS });
+  }
+  S = fig('u9l7-f6', 64, [-0.4, 7.6, -0.9, 4.4], [34, 130, 36, 120]);
+  if (S) {
+    S.path([[0, 0], [5, 0], [5, 0.9], [0, 0.9], [0, 0]], { width: 2.4 });
+    S.path([[0, 0.9], [2.6, 4.4], [7.6, 4.4], [5, 0.9]], { width: 2.4 });
+    for (const [a, b] of [[[0, 0], [2.6, 0.35]], [[2.6, 0.35], [7.6, 0.35]], [[7.6, 0.35], [5, 0]], [[2.6, 0.35], [2.6, 4.4]], [[7.6, 0.35], [7.6, 4.4]]]) S.seg(a, b, { width: 1.8, dash: '7 5' });
+    S.lab([0, 0], T('A'), { pos: 'sw', cls: 'u9l7-v', gap: 3 }); S.lab([5, -0.02], T('B'), { pos: 's', cls: 'u9l7-v', gap: 3 });
+    S.lab([2.6, 4.4], T('H'), { pos: 'nw', cls: 'u9l7-v', gap: 3 }); S.lab([7.6, 4.4], T('G'), { pos: 'ne', cls: 'u9l7-v', gap: 3 });
+    S.lab([0, 0.9], T('E'), { pos: 'nw', cls: 'u9l7-v', gap: 3 }); S.lab([5.05, 0.72], T('F'), { pos: 'e', cls: 'u9l7-v', gap: 3 });
+    S.lab([2.6, 0.35], T('D'), { pos: 'ne', cls: 'u9l7-v u9l7-fs', gap: 3 }); S.lab([7.6, 0.3], T('C'), { pos: 's', cls: 'u9l7-v u9l7-fs', gap: 3 });
+    S.lab([2.5, -0.4], `${T('AB=11')} cm`, { pos: 's', cls: FS, gap: 2 }); S.lab([-0.15, 0.45], `${T('EA=2')} cm`, { pos: 'w', cls: FS });
+    S.lab([7.7, 2.4], `${T('GC=9')} cm`, { pos: 'e', cls: FS });
+    S.lab([0.55, -0.75], `${T('AD=6')} cm`, { pos: 's', cls: FS, gap: 2 });
+    const a = S.P([0.55, -0.62]), b = S.P([1.05, 0.13]); svgEl('path', { d: `M${a[0]} ${a[1]}L${b[0]} ${b[1]}`, stroke: INK, 'stroke-width': 1.4 }, S.svg); arrowHead(S.svg, b[0], b[1], b[0] - a[0], b[1] - a[1], { width: 1.4, color: INK });
+  }
+}
+
+/* =============================== mount =============================== */
+mountStatic();
+export const explainers = mountExplainers({ cliff, towers, noround, chain, frame, which, sightings, box3d, wedge });
+export const _test = { PS2, RS2, EC3, BEC, H4, X4, HEE };

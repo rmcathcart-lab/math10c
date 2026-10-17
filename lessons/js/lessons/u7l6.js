@@ -608,9 +608,9 @@ const trip = {
       await pop(c, r.children[2]);
     };
     const legStep = (i) => {
-      const L = LEGS[i], vT = L.whole ? '\\approx45.7' : String(L.v);
+      const L = LEGS[i], vT = L.whole ? '\\approx45.7' : '=' + L.v;
       return {
-        cap: `${L.k} ${T(L.name[0])} to ${T(L.name[1])}: rise ${T(cR(L.rise + '\\text{ km}'))} over run ${T(cU(L.run + '\\text{ h}'))}: ${T(`\\dfrac{${L.rise}}{${L.run}}=${vT}`)} km/h.${L.whole ? ` The segment joining ${T('O')} and ${T('R')} is dashed: it is not the road the car drove.` : ''}`,
+        cap: `${L.k} ${T(L.name[0])} to ${T(L.name[1])}: rise ${T(cR(L.rise + '\\text{ km}'))} over run ${T(cU(L.run + '\\text{ h}'))}: ${T(`\\dfrac{${L.rise}}{${L.run}}${vT}`)} km/h.${L.whole ? ` The segment joining ${T('O')} and ${T('R')} is dashed: it is not the road the car drove.` : ''}`,
         run: async (c) => {
           tr.hideDot(); tr.guides(false); if (last) last.ghost();
           if (L.whole) await G.drawIn(G.segment([0, 0], [7, 320], { color: RED, width: 3.5, dash: '9 7' }), 800, c);

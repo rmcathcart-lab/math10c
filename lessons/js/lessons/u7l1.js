@@ -345,8 +345,8 @@ const cups = {
         run: async (c) => { for (const d of diffs.slice(1)) await pop(c, d, 260); const t = new SlopeTri(G, { x: 2, y: 14, run: 1, rise: 2 }); await t.drawIn(c, 350); } },
       { cap: `Run it <b>backwards</b>: take away one lip. ${T('0')} cups gives ${T('10')} cm, where the line meets the ${T('h')}-axis: ${T(cB('b=10'))}.`,
         run: async (c) => { setN(0); [...stack.children].forEach((g) => (g.style.opacity = 0.18)); setDim(10, BC); await show(c, rows[0]); await pop(c, diffs[0], 260); await G.reveal(G.point(0, 10, { color: BC, r: 8, label: T('(0,\\,10)'), pos: 'e', labelCls: 'u7l1-bint' }), c); } },
-      { cap: `Join them: ${T(eqTex(2, 10, { y: 'h', x: 'n' }))}. The same shape as ${T('y=mx+b')}, with slope ${T(cM('2'))} and intercept ${T(cB('10'))}.`,
-        run: async (c) => { await G.drawIn(dynLine(G, () => ({ m: 2, b: 10 }), { width: 3.5 }), 700, c); const e = G.label(4.2, 7, T(eqTex(2, 10, { y: 'h', x: 'n' })), { cls: 'u7l1-cupeq' }); await pop(c, e); } },
+      { cap: `Every dot sits on one line: ${T(eqTex(2, 10, { y: 'h', x: 'n' }))} (dashed: there are no half cups). The same shape as ${T('y=mx+b')}, with slope ${T(cM('2'))} and intercept ${T(cB('10'))}.`,
+        run: async (c) => { await G.drawIn(dynLine(G, () => ({ m: 2, b: 10 }), { dash: true, width: 3 }), 700, c); const e = G.label(4.2, 7, T(eqTex(2, 10, { y: 'h', x: 'n' })), { cls: 'u7l1-cupeq' }); await pop(c, e); } },
       { cap: `The door: ${T('2n+10=200')}, so ${T('2n=190')} and ${T('n=95')} cups.`,
         run: async (c) => { doors.innerHTML = `<div class="u7l1-ph">The big one</div><div class="u7l1-line">${T('2n+10=200')}</div><div class="u7l1-line">${T('2n=190')}</div><div class="u7l1-line">${T('n=95')} cups</div>`; await show(c, doors); } }
     ];
