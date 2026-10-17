@@ -59,11 +59,13 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u9l3-thin { justify-content: center; }
 .u9l3-live { line-height: 1.6; }
 .u9l3-res { gap: 4px; justify-content: center; }
-.u9l3-chk { gap: 4px; }
+.u9l3-chk { gap: 4px; padding-right: 64px; }
+.u9l3-panel .u9l3-rule { white-space: normal; align-self: flex-start; }
 
 /* known / unknown side labels */
-.bk-tri-lab.u9l3-known, .u9l3-slab.u9l3-known { background: #e7f4ec; border-radius: 8px; padding: 0 6px; }
-.bk-tri-lab.u9l3-find, .u9l3-slab.u9l3-find { outline: 3px dashed #d6336c; outline-offset: 2px; border-radius: 6px; background: #fff; padding: 0 4px; }
+.bk-tri-lab { padding: 0 5px; border-radius: 8px; }
+.u9l3-known { background: #e7f4ec; border-radius: 8px; }
+.u9l3-find { outline: 3px dashed #d6336c; outline-offset: 1px; border-radius: 6px; background: #fff; }
 
 /* ratio cards (SOH CAH TOA) */
 .u9l3-rcd { background: #fff; border: 2px solid var(--line2); border-radius: 14px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; transition: opacity .3s; }
@@ -73,7 +75,6 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u9l3-rcd-on { border-color: #12805a; box-shadow: 0 0 0 4px rgba(18,128,90,.18); }
 .u9l3-rcd-off { opacity: .45; }
 .u9l3-rcdx { position: absolute; right: 8px; top: 6px; font: 800 15px var(--round); color: #c93a33; }
-.u9l3-rcd { position: relative; }
 .u9l3-rcard { display: flex; align-items: center; justify-content: center; gap: 18px; background: #fff; border: 1px solid var(--line2); border-radius: 14px; }
 .u9l3-rcm { font-size: 26px; }
 .u9l3-rule { display: inline-block; font: 700 18px var(--round); border-radius: 999px; padding: 4px 14px; color: #fff; white-space: nowrap; }
@@ -100,7 +101,7 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u9l3-ctc.u9l3-ctv { font-size: 26px; }
 .u9l3-ct-on > svg polygon { stroke: #12805a; stroke-width: 5; }
 .u9l3-cover { position: absolute; background: #5a6375; color: #fff; border-radius: 12px; font: 800 18px var(--round); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,.25); }
-.u9l3-ctop { position: absolute; font: 900 34px var(--round); color: #12805a; }
+.u9l3-ctop { position: absolute; font: 900 30px var(--round); color: #12805a; background: #fff; border: 3px solid currentColor; border-radius: 50%; width: 40px; height: 40px; line-height: 34px; text-align: center; box-sizing: border-box; }
 .u9l3-ctdiv { color: #c93a33; }
 
 /* reading letters */

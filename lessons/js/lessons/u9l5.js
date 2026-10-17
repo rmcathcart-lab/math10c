@@ -254,7 +254,7 @@ const tools = {
  * ====================================================================================== */
 const U = { cls: 'u9l5-unk' };
 const WT = {
-  demo: { label: 'Demo: two legs → hypotenuse', pts: { C: [0, 0], A: [4, 0], B: [0, 3] }, right: 'C', names: false, pad: [40, 40, 44, 54],
+  demo: { label: 'Demo: two legs → hypotenuse', pts: { C: [0, 0], A: [4, 0], B: [0, 3] }, right: 'C', names: false, pad: [50, 50, 50, 84],
     sides: { AC: '12', BC: '9', AB: Object.assign({ label: 'x' }, U) }, angles: {}, unk: { side: 'AB', val: 'x=15' }, ref: null,
     given: `two sides, ${T('9')} and ${T('12')}`, want: `the side ${T('x')}`,
     rolesCap: `No angle is involved. ${T('x')} is across from the right angle: the <b class="u9l5-ch">hypotenuse</b>. 9 and 12 are the legs.`,
@@ -326,16 +326,16 @@ const TR = {
     sides: { AF: '14', AS: '22', FS: Object.assign({ label: '?' }, U) }, angles: { S: { label: '\\theta', r: 30 } }, unit: '\\text{ m}', unk: 'FS',
     cap0: 'Example 2: antenna 14 m, wire 22 m. Wanted: the base, from the stake to the foot of the antenna.',
     r1: { h: 'Route 1: Pythagoras', lines: ['\\sqrt{22^2-14^2}=\\sqrt{288}'], v: 16.97056, s: '16.9706\\ldots', r: '17.0', cap: 'Route 1, <b>Pythagoras</b>, uses only the given 14 and 22: ' + T('16.9706\\ldots') + ' m.' },
-    r2: { h: 'Route 2: trig, rounded angle', lines: ['\\theta=39.52\\ldots^\\circ\\to\\boldsymbol{40^\\circ}', '22\\cos40^\\circ'], v: 16.85298, s: '16.8530\\ldots', r: '16.9', cap: 'Route 2 rounds ' + T('\\theta') + ' to ' + T('40^\\circ') + ' first, then uses CAH: ' + T('22\\cos40^\\circ=16.8530\\ldots') + ' m.' },
-    r3: { lines: ['22\\cos39.5212\\ldots^\\circ'], cap: 'Feed route 2 the <b>unrounded</b> angle, ' + T('39.5212\\ldots^\\circ') + ': ' + T('22\\cos39.5212\\ldots^\\circ=16.9706\\ldots') + '. The routes agree.' },
-    cmp: { ok: false, cap: 'Rounded: <b>17.0 m</b> against <b>16.9 m</b>. About 12 cm apart, and only one can be right.', gap: '0.12\\text{ m}' },
+    r2: { h: 'Route 2: trig, angle rounded', lines: ['\\theta=39.52\\ldots^\\circ\\to\\boldsymbol{40^\\circ}', '22\\cos40^\\circ'], v: 16.85298, s: '16.8530\\ldots', r: '16.9', cap: 'Route 2 rounds ' + T('\\theta') + ' to ' + T('40^\\circ') + ' first, then uses CAH: ' + T('22\\cos40^\\circ=16.8530\\ldots') + ' m.' },
+    r3: { lines: ['22\\cos39.5212\\ldots^\\circ'], v: '16.9706\\ldots', cap: 'Feed route 2 the <b>unrounded</b> angle, ' + T('39.5212\\ldots^\\circ') + ': ' + T('22\\cos39.5212\\ldots^\\circ=16.9706\\ldots') + '. The routes agree.' },
+    cmp: { ok: false, cap: 'Rounded: <b>17.0 m</b> against <b>16.9 m</b>. Unrounded, they are about 12 cm apart, and only one can be right.', gap: '0.12\\text{ m}' },
     nl: { min: 16.8, max: 17.0, step: 0.05, minor: 0.01, dec: 2 } },
   tower: { label: 'Demo: the tower’s height', pts: { B: [0, 0], H: [0, 5], T: [1.5, 5] }, right: 'H', names: false, pad: [34, 60, 40, 60], ntsc: true,
     sides: { BT: '56', HT: '\\text{shift}', BH: Object.assign({ label: '?' }, U) }, angles: { B: { label: '4^\\circ', r: 46 } }, unit: '\\text{ m}', unk: 'BH',
     cap0: 'The warm-up tower: 56 m long, leaning 4°. Wanted: the height of the top.',
-    r1: { h: 'Route 1: CAH, from the given', lines: ['56\\cos4^\\circ'], v: 55.863587, s: '55.8636\\ldots', r: '55.9', cap: 'Route 1, <b>CAH</b>, uses only the given 56 and ' + T('4^\\circ') + ': ' + T('55.8636\\ldots') + ' m.' },
-    r2: { h: 'Route 2: Pythagoras, rounded shift', lines: ['\\text{shift}=3.906\\ldots\\to\\boldsymbol{3.9}', '\\sqrt{56^2-3.9^2}'], v: 55.864031, s: '55.8640\\ldots', r: '55.9', cap: 'Route 2 rounds the shift to 3.9 m first, then uses Pythagoras: ' + T('55.8640\\ldots') + ' m.' },
-    r3: { lines: ['\\sqrt{56^2-3.9063\\ldots^2}'], cap: 'Feed route 2 the <b>unrounded</b> shift, ' + T('3.9063\\ldots') + ': ' + T('55.8636\\ldots') + '. The routes agree exactly.' },
+    r1: { h: 'Route 1: CAH, given data', lines: ['56\\cos4^\\circ'], v: 55.863587, s: '55.8636\\ldots', r: '55.9', cap: 'Route 1, <b>CAH</b>, uses only the given 56 and ' + T('4^\\circ') + ': ' + T('55.8636\\ldots') + ' m.' },
+    r2: { h: 'Route 2: shift rounded', lines: ['\\text{shift}=3.906\\ldots\\to\\boldsymbol{3.9}', '\\sqrt{56^2-3.9^2}'], v: 55.864031, s: '55.8640\\ldots', r: '55.9', cap: 'Route 2 rounds the shift to 3.9 m first, then uses Pythagoras: ' + T('55.8640\\ldots') + ' m.' },
+    r3: { lines: ['\\sqrt{56^2-3.9063\\ldots^2}'], v: '55.8636\\ldots', cap: 'Feed route 2 the <b>unrounded</b> shift, ' + T('3.9063\\ldots') + ': ' + T('55.8636\\ldots') + '. The routes agree exactly.' },
     cmp: { ok: null, cap: 'Rounded, both give <b>55.9 m</b>. But zoom in: the digits behind differ. Rounding early always leaves a mark.', gap: '0.0004\\text{ m}' },
     nl: { min: 55.862, max: 55.866, step: 0.001, minor: 0.0005, dec: 3 } }
 };
@@ -372,7 +372,7 @@ const twoRoutes = {
       } },
       { cap: d.r3.cap, run: async (c) => {
         p2.ls.forEach((e) => (e.style.opacity = 0.35));
-        fixLine = line(p2, T(d.r3.lines[0] + '=' + d.r1.s), 'u9l5-eq'); fixLine.style.color = '#12805a'; hide0(fixLine);
+        fixLine = line(p2, T(d.r3.lines[0]) + '<br>' + T('=' + d.r3.v), 'u9l5-eq'); fixLine.style.color = '#12805a'; hide0(fixLine);
         p2.val.style.display = 'none';
         await show(c, fixLine);
         await Promise.all([anim(c, pt2, [{ transform: 'translateX(0)' }, { transform: `translateX(${dx}px)` }], 800), anim(c, pt2.label, [{ opacity: 1 }, { opacity: 0 }], 600)]);
@@ -530,7 +530,7 @@ const fromGiven = {
  * Explainer 6 (the star): solve it — a six-piece checklist triangle, the which-tool flowchart, and the checks
  * ====================================================================================== */
 const SV = {
-  tower: { label: 'Demo: the leaning tower', pts: { B: [0, 0], H: [0, 5], T: [1.5, 5] }, right: 'H', pad: [50, 70, 44, 70], ntsc: true,
+  tower: { label: 'Demo: the leaning tower', pts: { B: [0, 0], H: [0, 5], T: [2.4, 5] }, right: 'H', pad: [62, 60, 44, 70], ntsc: true,
     intro: 'The tower: base ' + T('B') + ', top ' + T('T') + ', and ' + T('H') + ' on the plumb line level with the top. Given: ' + T('BT=56') + ' m and ' + T('\\angle B=4^\\circ') + '.',
     angles: ['B', 'H', 'T'], sides: ['BT', 'HT', 'BH'], given: { BT: '56', B: '4^\\circ' }, arcR: { B: 50 },
     steps: [
@@ -635,7 +635,7 @@ const solveIt = {
     steps.push({ cap: '<b>Check 2:</b> the three angles add to ' + T('180^\\circ') + '. Every side and every angle: <b>solved</b>.', run: async (c) => {
       const hh = hide0(line(wLines, '<b>Angle sum</b>', 'u9l5-sm')); hh.style.marginTop = '6px'; await show(c, hh);
       for (const w of d.sum) { const e = hide0(line(wLines, T(w), 'u9l5-eq')); await show(c, e); }
-      stp = stamp(stage, 'solved', { ok: true, x: TW - 70, y: 40, size: 'lg' }); await stampIn(c, stp);
+      stp = stamp(stage, 'solved', { ok: true, x: ex.W - 110, y: 556, size: 'lg' }); await stampIn(c, stp);
     } });
     return steps;
   }
@@ -676,7 +676,7 @@ const ladder = {
     const lW = L(W[0] - 22, W[1] + 16, T('W'), 'u9l5-vlab'), lF = L(Fp[0] + 10, Fp[1] + 18, T('F'), 'u9l5-vlab'), lT = L(Tp[0] - 22, Tp[1] - 6, T('T'), 'u9l5-vlab');
     const mid = [(Fp[0] + Tp[0]) / 2, (Fp[1] + Tp[1]) / 2];
     const l65 = L(mid[0] + 46, mid[1], T('6.5\\text{ m}'), 'u9l5-slab', HYP), l21 = L((W[0] + Fp[0]) / 2, gy + 16, T('2.1\\text{ m}'), 'u9l5-slab', ADJ), lWT = L(wx + 26, (gy + Tp[1]) / 2 + 40, T('?'), 'u9l5-slab', UNK);
-    const lAF = L(Fp[0] - 44, Fp[1] - 22, T('?'), 'u9l5-alab', REF), lAT = L(Tp[0] + 22, Tp[1] + 72, T('?'), 'u9l5-alab', REF);
+    const lAF = L(Fp[0] - 50, Fp[1] - 34, T('?'), 'u9l5-alab', REF), lAT = L(Tp[0] + 14, Tp[1] + 82, T('?'), 'u9l5-alab', REF);
     const P = panel(stage, SW + 20, 0, ex.W - SW - 20, 466, 'The triangle in the words');
     const pl = [
       `<b>Right angle</b> at ${T('W')}: the wall meets the ground.`,
@@ -692,7 +692,7 @@ const ladder = {
         run: async (c) => { await tween(c, 1500, (t) => { pts = drawLadder(0.8 + 1.3 * t); }); pts = drawLadder(2.1); } },
       { cap: 'The wall meets the ground at a <b>right angle</b>: call that corner ' + T('W') + '.', run: async (c) => { await on(c, rmk, lW); await show(c, pl[0]); } },
       { cap: T('F') + ' is the foot and ' + T('T') + ' the top. The ladder ' + T('FT') + ' is across from the right angle: the <b>hypotenuse</b>.',
-        run: async (c) => { await on(c, lF, lT); sHyp.style.opacity = 1; await Promise.all([this_draw(c, sHyp), on(c, l65)]); await show(c, pl[1]); } },
+        run: async (c) => { await Promise.all([on(c, lF, lT), anim(c, lad, [{ opacity: 1 }, { opacity: 0.28 }], 400)]); sHyp.style.opacity = 1; await Promise.all([this_draw(c, sHyp), on(c, l65)]); await show(c, pl[1]); } },
       { cap: T('WF=2.1') + ' m is along the ground. The height ' + T('WT') + ' up the wall is what we want.',
         run: async (c) => { sOpp.style.opacity = 1; await this_draw(c, sOpp); await on(c, lWT); await show(c, pl[2]); } },
       { cap: '“The angle with the <b>ground</b>” is at ' + T('F') + ', between the ladder and the ground.',

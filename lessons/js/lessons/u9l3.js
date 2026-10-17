@@ -56,7 +56,7 @@ const TRI = {
   e3: { base: 1.40, rise: 3.47, right: 'bl', ang: 'base', deg: 68, lab: { vert: 'h', bot: 'd', hyp: '6.8\\text{ m}' } },
   e4: { base: 3.74, rise: 2.82, right: 'bl', ang: 'base', deg: 37, lab: { vert: '9.4\\text{ cm}', hyp: 'c' } },
   e5: { base: 2.46, rise: 3.65, right: 'bl', ang: 'top', deg: 34, names: { right: 'L', base: 'K', top: 'J' }, show: true, lab: { bot: '11.2\\text{ mm}' } },
-  e6: { base: 3.57, rise: 1.9, right: 'br', ang: 'base', deg: 28, names: { right: 'C', base: 'A', top: 'B' }, show: true, lab: { vert: '9.5\\text{ cm}', bot: 'AC' } },
+  e6: { base: 3.57, rise: 1.9, right: 'br', ang: 'base', deg: 28, names: { right: 'C', base: 'A', top: 'B' }, show: true, padK: 1.35, lab: { vert: '9.5\\text{ cm}', bot: 'AC' } },
   e7: { base: 1.562, rise: 3.203, right: 'br', ang: 'base', deg: 64, names: { right: 'E', base: 'F', top: 'D' }, show: true, lab: { bot: '71\\text{ m}', vert: 'DE', hyp: 'DF' } },
   pqr: { base: Math.cos(40 * RAD), rise: Math.sin(40 * RAD), right: 'bl', ang: 'base', deg: 40, names: { right: 'Q', base: 'P', top: 'R' }, show: true, lab: {} }
 };
@@ -76,13 +76,14 @@ function sideLabel(t, k, html, cls = '') {
   if (t.sideLabs[k]) t.sideLabs[k].remove();
   const { m, n } = sideGeo(t, k), el = t.hlabel(m[0], m[1], html, { cls: 'bk-tri-lab ' + cls });
   const w = el.offsetWidth, hh = el.offsetHeight, off = 6 + Math.abs(n[0]) * w / 2 + Math.abs(n[1]) * hh / 2;
-  place(el, clamp(m[0] + n[0] * off, w / 2, t.W - w / 2), clamp(m[1] + n[1] * off, hh / 2, t.H - hh / 2));
+  el.cx = clamp(m[0] + n[0] * off, w / 2, t.W - w / 2); el.cy = clamp(m[1] + n[1] * off, hh / 2, t.H - hh / 2);
+  place(el, el.cx, el.cy);
   el.ext = 6 + Math.abs(n[0]) * w + Math.abs(n[1]) * hh;
   t.sideLabs[k] = el; return el;
 }
 function mkTri(host, key, o = {}) {
   const d = Object.assign({}, TRI[key]), N = d.names || { right: 'P', base: 'Q', top: 'R' };
-  const t = new RightTriangle(host, { x: o.x, y: o.y, width: o.w || 320, height: o.h || 280, pad: o.pad || 58, base: d.base, rise: d.rise, right: d.right, names: N, tex: true });
+  const t = new RightTriangle(host, { x: o.x, y: o.y, width: o.w || 320, height: o.h || 280, pad: (o.pad || 58) * (d.padK || 1), base: d.base, rise: d.rise, right: d.right, names: N, tex: true });
   t.d = d; t.N = N; t.tags = {};
   if (!d.show) Object.values(t.vLabs).forEach((e) => e.remove());
   t.av = () => (t.d.ang === 'base' ? N.base : N.top);
@@ -99,12 +100,23 @@ async function tagRoles(c, t, o = {}) {
     g.style.color = col; g.classList.add('bk-hl');
     if (t.tags[role]) t.tags[role].remove();
     const tg = t.hlabel(m[0], m[1], o.long ? LONG[role] : role, { cls: 'bk-tri-tag' }); tg.style.color = col;
-    const tw = tg.offsetWidth / 2 + 2, th = tg.offsetHeight / 2 + 2;
-    const off = (lab ? lab.ext + 6 : 8) + Math.abs(n[0]) * tw + Math.abs(n[1]) * th;
-    place(tg, clamp(m[0] + n[0] * off, tw, t.W - tw), clamp(m[1] + n[1] * off, th, t.H - th));
-    t.tags[role] = tg;
+    t.tags[role] = tg; placeTag(t, role);
     if (c) { tg.style.opacity = 0; await anim(c, g, [{ opacity: 0.3 }, { opacity: 1 }], 260); await pop(c, tg, 300); await sleep(c, o.stagger ?? 140); }
   }
+}
+/** a role tag beyond its side label; when there is no room out there, beside the label along the side */
+function placeTag(t, role) {
+  const tg = t.tags[role]; if (!tg) return;
+  const k = t.roleKey(role), { m, n } = sideGeo(t, k), lab = t.sideLabs[k];
+  const tw = tg.offsetWidth / 2 + 2, th = tg.offsetHeight / 2 + 2;
+  const off = (lab ? lab.ext + 6 : 8) + Math.abs(n[0]) * tw + Math.abs(n[1]) * th;
+  const x = m[0] + n[0] * off, y = m[1] + n[1] * off, cx = clamp(x, tw, t.W - tw), cy = clamp(y, th, t.H - th);
+  if (!lab || Math.hypot(cx - x, cy - y) < 3) { place(tg, cx, cy); return; }
+  const d = [n[1], -n[0]], along = Math.abs(d[0]) * (lab.offsetWidth / 2 + tw) + Math.abs(d[1]) * (lab.offsetHeight / 2 + th) + 4;
+  const A = t.d.ang ? t.V[t.av()] : null;
+  const opts = [1, -1].map((s) => { const px = lab.cx + d[0] * along * s, py = lab.cy + d[1] * along * s, q = [clamp(px, tw, t.W - tw), clamp(py, th, t.H - th)];
+    return { q, err: Math.hypot(q[0] - px, q[1] - py) - (A ? Math.hypot(q[0] - A[0], q[1] - A[1]) * 0.01 : 0) }; });
+  opts.sort((a, b) => a.err - b.err); place(tg, ...opts[0].q);
 }
 function clearRoles(t) {
   Object.values(t.sideEls).forEach((g) => { g.style.color = INK; g.classList.remove('bk-hl'); g.style.opacity = ''; });
@@ -211,7 +223,7 @@ const kite = {
   make(stage, v, ex) {
     const W = ex.W, S = kiteScene(stage, { x: 0, y: 0, w: 590, h: 470, L: 280, th: 60, hTxt: '' });
     const tb = kiteTable(stage, 606, 8, W - 616, [90, 0, 30, 40]);
-    const P = panel(stage, 330, 10, 250, 128, '', 'u9l3-kpanel'); P.style.opacity = 0;
+    const P = panel(stage, 318, 10, 266, 150, '', 'u9l3-kpanel'); P.style.opacity = 0;
     const go = (c, th, txt) => { const a0 = S.th; return tween(c, 900, (t) => S.set(a0 + (th - a0) * t, t > 0.98 ? txt : '')); };
     const fill = async (c, i, html) => { tb.cells[i].innerHTML = html; await pop(c, tb.cells[i]); };
     const h40 = 50 * Math.sin(40 * RAD), x40 = 40 / Math.sin(40 * RAD);
@@ -238,7 +250,7 @@ const kite = {
           await pop(c, G.point(40, 25 + 25 * 10 / 60, { color: 'gray', open: true, r: 5.5 }), 200);
         } },
       { cap: `Follow-up: at 40°, how much string puts the kite <b>40 m</b> up? ${T(`\\sin40^\\circ=\\dfrac{40}{x}`)}: the unknown is on the <b>bottom</b>, so <b>divide</b>: ${T(`x=40\\div\\sin40^\\circ\\approx${x40.toFixed(1)}`)} m.`,
-        run: (c) => say(c, P, T(`x=\\dfrac{40}{\\sin40^\\circ}\\approx${x40.toFixed(1)}\\text{ m}`)) }
+        run: (c) => say(c, P, T(`x=40\\div\\sin40^\\circ\\approx${x40.toFixed(1)}\\text{ m}`)) }
     ];
   }
 };
@@ -488,7 +500,7 @@ function solveSteps(stage, k, ex) {
       await say(c, R, T(`${I.uT}=${I.top ? `${I.kT}${fnT}` : `\\dfrac{${I.kT}}{${fnT}}`}`), 'u9l3-lnbig');
       await say(c, R, kbd(I.keys), 'u9l3-lnsm');
       await say(c, R, T(`${I.uT}=${I.valT}${I.unit}`), 'u9l3-lnbig');
-      const L = t.sideLabs[t.roleKey(p.unk)]; if (L) { L.innerHTML = T(`${p.u}\\approx${I.ans}${I.unit}`); L.classList.remove('u9l3-find'); L.classList.add('u9l3-known'); await pop(c, L); }
+      const L = sideLabel(t, t.roleKey(p.unk), T(`${p.u}\\approx${I.ans}${I.unit}`), 'u9l3-known'); placeTag(t, p.unk); await pop(c, L);
     } });
   steps.push({ cap: 'Sense check. ' + I.chk + (I.bad ? ' ' + I.bad : ''),
     run: async (c) => {
@@ -701,7 +713,7 @@ const letters = {
       if (q.a && q.val === 90) return { cap: q.a.length === 3 ? `${T(angT(q.a))}: the <b>middle letter</b> is the vertex. The right angle is at ${T(q.v)}.` : `${T(angT(q.a))}: the right angle is at ${T(q.v)}.`,
         run: async (c) => { chunks[i].innerHTML = T(chunkT(q, true)); chunks[i].classList.add('u9l3-chunk-on'); await pulse(c, t.vLabs[q.v], 1.5); await pop(c, rmk); await say(c, P, `${T(chunkT(q, true))} → right angle at ${T(q.v)}`); } };
       if (q.a) return { cap: `${T(angT(q.a))}: the angle is at the middle letter, ${T(q.v)}. Mark ${T(dg(q.val))} there.`,
-        run: async (c) => { chunks[i].innerHTML = T(chunkT(q, true)); chunks[i].classList.add('u9l3-chunk-on'); const g = t.angle(q.v, dg(q.val), { color: ANG, r: 30 }); await fadeIn(c, g); if (g.label) await pop(c, g.label); await say(c, P, `${T(chunkT(q, true))} → ${T(dg(q.val))} at ${T(q.v)}`); } };
+        run: async (c) => { chunks[i].innerHTML = T(chunkT(q, true)); chunks[i].classList.add('u9l3-chunk-on'); const g = t.angle(q.v, dg(q.val), { color: ANG, r: 36 }); await fadeIn(c, g); if (g.label) await pop(c, g.label); await say(c, P, `${T(chunkT(q, true))} → ${T(dg(q.val))} at ${T(q.v)}`); } };
       const kk = lc(Object.keys(t.V).find((v) => !(q.s || q.f).includes(v)));
       if (q.s) return { cap: `${T(q.s)}: a side is named by its <b>two endpoints</b>, ${T(q.s[0])} and ${T(q.s[1])}. ${T(`${q.s}=${q.val}`)}.`,
         run: async (c) => { chunks[i].classList.add('u9l3-chunk-on'); const L = sideLabel(t, kk, T(q.val)); await pop(c, L); await pulse(c, t.sideEls[kk], 1.0); await say(c, P, `${T(q.s)} → the side from ${T(q.s[0])} to ${T(q.s[1])}`); } };
@@ -727,7 +739,7 @@ const letters = {
 
 /* =============================== summary flowchart =============================== */
 const FL = {
-  e1a: { path: ['start', 'pyth'], given: `Given: ${T('6.3')} cm and ${T('8.4')} cm (two legs), no angle.`, lines: [T('r=\\sqrt{6.3^2+8.4^2}=\\mathbf{10.5}\\text{ cm}')] },
+  e1a: { path: ['start', 'pyth'], given: `Given: ${T('6.3')} cm and ${T('8.4')} cm (two legs), no angle.`, lines: [T('r=\\sqrt{6.3^2+8.4^2}'), T('r=\\mathbf{10.5}\\text{ cm}')] },
   e2: { path: ['start', 'trig', 'where', 'mult'], given: `Given: ${T('58^\\circ')} and the hyp ${T('16.4')} cm. Want: ${T('x')}, the opp.`, lines: [T('\\sin58^\\circ=\\dfrac{x}{16.4}'), T('x=16.4\\sin58^\\circ\\approx\\mathbf{13.9}\\text{ cm}')] },
   e4: { path: ['start', 'trig', 'where', 'div'], given: `Given: ${T('37^\\circ')} and the opp ${T('9.4')} cm. Want: ${T('c')}, the hyp.`, lines: [T('\\sin37^\\circ=\\dfrac{9.4}{c}'), T('c=\\dfrac{9.4}{\\sin37^\\circ}\\approx\\mathbf{15.6}\\text{ cm}')] },
   e6: { path: ['start', 'trig', 'where', 'div'], given: `Given: ${T('28^\\circ')} and the opp ${T('9.5')} cm. Want: ${T('AC')}, the adj.`, lines: [T('\\tan28^\\circ=\\dfrac{9.5}{AC}'), T('AC=\\dfrac{9.5}{\\tan28^\\circ}\\approx\\mathbf{17.9}\\text{ cm}')] },
@@ -762,7 +774,7 @@ const tool = {
       steps.push({ cap: top ? 'The unknown is on <b>top</b> of the ratio: <b>multiply</b>.' : 'The unknown is <b>underneath</b>: cross-multiply, then <b>divide</b>.',
         run: async (c) => { await F.go(c, 'trig', 'where'); await F.visit(c, 'where'); await F.go(c, 'where', pth[3]); await F.visit(c, pth[3]); await say(c, P, d.lines[1], 'u9l3-lnbig'); } });
     }
-    steps.push({ cap: 'Sense check every answer: the hypotenuse is the <b>longest</b> side, and the larger acute angle faces the longer leg.',
+    if (k !== 'none') steps.push({ cap: 'Sense check every answer: the hypotenuse is the <b>longest</b> side, and the larger acute angle faces the longer leg.',
       run: async (c) => { const st = stamp(P, 'Sense check ✓', { ok: true, size: 'sm', rotate: -4 }); st.classList.add('u9l3-pst'); await stampIn(c, st); } });
     return steps;
   }

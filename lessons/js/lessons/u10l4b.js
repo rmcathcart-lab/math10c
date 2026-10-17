@@ -314,7 +314,7 @@ const bench = {
 };
 
 /* =============================== explainer: the imperial staircase =============================== */
-const STEPS = { mi: [40, 40], yd: [270, 128], ft: [500, 216], in: [730, 304] };
+const STEPS = { mi: [30, 24], yd: [250, 112], ft: [470, 200], in: [690, 288] };
 const LAD = {
   down: { label: 'Down the stairs: 2 mi → in' },
   routes: { label: 'Two routes to a mile' },
@@ -322,79 +322,72 @@ const LAD = {
 };
 function staircase(stage, W) {
   const svg = add(stage, svgEl('svg', { width: W, height: 420, viewBox: `0 0 ${W} 420` }), 0, 0);
-  const bw = 150, bh = 58, nodes = {};
-  // stair outline
-  const pts = ['mi', 'yd', 'ft', 'in'].map((u) => STEPS[u]);
-  let d = `M${pts[0][0] - 10} ${pts[0][1] + bh + 6}`;
-  pts.forEach((p, i) => { d += ` H${p[0] + bw + (i < 3 ? 80 : 10)}`; if (i < 3) d += ` V${pts[i + 1][1] + bh + 6}`; });
-  svgEl('path', { d, fill: 'none', stroke: '#c9c3b2', 'stroke-width': 5, 'stroke-linejoin': 'round' }, svg);
-  const names = { mi: 'mile', yd: 'yard', ft: 'foot', in: 'inch' };
-  for (const u in STEPS) { const [x, y] = STEPS[u]; nodes[u] = add(stage, box(h('div', 'u10l4b-step', `<b>${u}</b><small>${names[u]}</small>`), bw, bh), x, y); }
-  const arrows = {};
-  const pairs = [['mi', 'yd', '\\times1760'], ['yd', 'ft', '\\times3'], ['ft', 'in', '\\times12']];
-  pairs.forEach(([a, b, l]) => {
-    const [x1, y1] = STEPS[a], [x2, y2] = STEPS[b];
-    const p = svgEl('path', { d: `M${x1 + bw + 8} ${y1 + bh / 2} C${x2 + 40} ${y1 + bh / 2} ${x2 + bw / 2} ${y1 + bh / 2} ${x2 + bw / 2} ${y2 - 8}`, fill: 'none', stroke: IMP, 'stroke-width': 3, 'marker-end': 'url(#u10l4b-ah)' }, svg);
-    arrows[a + b] = p;
-    add(stage, h('div', 'u10l4b-mult', T(l)), x2 + bw / 2 + 10, y1 + bh / 2 - 34);
-  });
-  // shortcut mi → ft
-  const sc = svgEl('path', { d: `M${STEPS.mi[0] + bw / 2} ${STEPS.mi[1] + bh + 8} C${STEPS.mi[0] + 60} 330 ${STEPS.ft[0] - 120} ${STEPS.ft[1] + bh / 2} ${STEPS.ft[0] - 8} ${STEPS.ft[1] + bh / 2}`, fill: 'none', stroke: COLORS.purple, 'stroke-width': 3, 'stroke-dasharray': '9 6', 'marker-end': 'url(#u10l4b-ahp)' }, svg);
-  add(stage, h('div', 'u10l4b-mult u10l4b-multp', T('\\times5280')), 120, 250);
+  const bw = 180, bh = 80, nodes = {};
   const defs = svgEl('defs', {}, svg);
   for (const [id, col] of [['u10l4b-ah', IMP], ['u10l4b-ahp', COLORS.purple]]) {
     const m = svgEl('marker', { id, viewBox: '0 0 10 10', refX: 8, refY: 5, markerWidth: 6, markerHeight: 6, orient: 'auto-start-reverse' }, defs);
     svgEl('path', { d: 'M0 0 L10 5 L0 10 z', fill: col }, m);
   }
-  add(stage, h('div', 'u10l4b-dirtag u10l4b-down', 'down to a smaller unit: <b>multiply</b>'), 40, 380);
+  const pts = ['mi', 'yd', 'ft', 'in'].map((u) => STEPS[u]);
+  let d = `M${pts[0][0] - 10} ${pts[0][1] + bh + 6}`;
+  pts.forEach((p, i) => { d += ` H${i < 3 ? pts[i + 1][0] - 10 : p[0] + bw + 10}`; if (i < 3) d += ` V${pts[i + 1][1] + bh + 6}`; });
+  svgEl('path', { d, fill: 'none', stroke: '#d6d0bf', 'stroke-width': 6, 'stroke-linejoin': 'round' }, svg);
+  const names = { mi: 'mile', yd: 'yard', ft: 'foot', in: 'inch' };
+  for (const u in STEPS) {
+    const [x, y] = STEPS[u], n = add(stage, box(h('div', 'u10l4b-step', `<div class="u10l4b-stepn"><b>${u}</b> <small>${names[u]}</small></div>`), bw, bh), x, y);
+    n.val = h('div', 'u10l4b-stepv'); n.appendChild(n.val); nodes[u] = n;
+  }
+  const arrows = {};
+  [['mi', 'yd', '1760'], ['yd', 'ft', '3'], ['ft', 'in', '12']].forEach(([a, b, k]) => {
+    const [x1, y1] = STEPS[a], [x2, y2] = STEPS[b];
+    arrows[a + b] = svgEl('path', { d: `M${x1 + bw + 6} ${y1 + bh / 2} C${x2 + 40} ${y1 + bh / 2} ${x2 + bw / 2} ${y1 + bh / 2} ${x2 + bw / 2} ${y2 - 6}`, fill: 'none', stroke: IMP, 'stroke-width': 3, 'marker-end': 'url(#u10l4b-ah)' }, svg);
+    add(stage, h('div', 'u10l4b-mult', T(`\\times${k}`) + ' <small>/ ' + T(`\\div${k}`) + '</small>'), x2 + bw / 2 + 12, y2 - 40);
+  });
+  const sc = svgEl('path', { d: `M${STEPS.mi[0] + 90} ${STEPS.mi[1] + bh + 6} C110 330 330 240 ${STEPS.ft[0] - 8} ${STEPS.ft[1] + bh / 2}`, fill: 'none', stroke: COLORS.purple, 'stroke-width': 3, 'stroke-dasharray': '9 6', 'marker-end': 'url(#u10l4b-ahp)' }, svg);
+  add(stage, h('div', 'u10l4b-mult u10l4b-multp', T('\\times5280') + ' <small>/ ' + T('\\div5280') + '</small>'), 14, 236);
+  add(stage, h('div', 'u10l4b-dirtag', '<b>down</b> (smaller unit): multiply · <b>up</b> (bigger unit): divide'), 30, 384);
   return { nodes, arrows, sc, bw, bh };
 }
-function token(stage, html) { const t = add(stage, h('div', 'u10l4b-tok', html), 0, 0); t.pos = [0, 0]; t.style.opacity = 0; return t; }
-const tokAt = (u, S) => [STEPS[u][0] + S.bw / 2 - 70, STEPS[u][1] - 38];
-async function moveTok(c, t, to, via) {
-  const f = t.pos, kf = [{ transform: `translate(${f[0]}px, ${f[1]}px)` }];
-  if (via) kf.push({ transform: `translate(${via[0]}px, ${via[1]}px)`, offset: 0.5 });
-  kf.push({ transform: `translate(${to[0]}px, ${to[1]}px)` });
-  t.pos = to; await anim(c, t, kf, 900);
+/** light a path, then show the value in the step box it reaches */
+async function reach(c, S, path, u, html, from) {
+  if (from) S.nodes[from].classList.replace('u10l4b-on', 'u10l4b-was');
+  if (path) await anim(c, path, [{ strokeWidth: 3 }, { strokeWidth: 9 }, { strokeWidth: 4 }], 650);
+  const n = S.nodes[u]; n.classList.remove('u10l4b-was'); n.classList.add('u10l4b-on'); n.val.innerHTML = html; await pop(c, n.val);
 }
-async function setTok(c, t, html) { t.innerHTML = html; await pulse(c, t, 1.15); }
 const ladder = {
   title: 'The imperial staircase: four multipliers',
   height: 420,
   choices: Object.keys(LAD).map((k) => ({ v: k, label: LAD[k].label })),
   intro: 'Each step down the staircase is a smaller unit, with its own multiplier. Press <b>Next</b>.',
   make(stage, k, ex) {
-    const S = staircase(stage, ex.W);
-    const P = panel(stage, ex.W - 300, 16, 284, 196, 'Work');
-    const tk = token(stage, '');
-    const place = (u, html) => { tk.innerHTML = html; tk.pos = tokAt(u, S); tk.style.transform = `translate(${tk.pos[0]}px, ${tk.pos[1]}px)`; };
+    const S = staircase(stage, ex.W), A = S.arrows;
+    const P = panel(stage, ex.W - 290, 16, 274, 190, 'Work');
     if (k === 'down') return [
       { cap: 'Going <b>down</b> the stairs (to a smaller unit) means <b>multiply</b>: more of the smaller units fit.',
-        run: async (c) => { place('mi', T(q(2, 'mi'))); await pop(c, tk); await say(c, P, T('2\\text{ mi}\\to\\ ?\\text{ in}')); } },
+        run: async (c) => { await reach(c, S, null, 'mi', T(q(2, 'mi'))); await say(c, P, T('2\\text{ mi}\\to\\ ?\\text{ in}')); } },
       { cap: `Fact: 1 mi = 5280 ft. Take the shortcut: ${T('2\\times5280=10\\,560')} ft.`,
-        run: async (c) => { await moveTok(c, tk, tokAt('ft', S), [120, 230]); await setTok(c, tk, T(q(10560, 'ft'))); await say(c, P, T('2\\times5280=10\\,560\\text{ ft}')); } },
+        run: async (c) => { await reach(c, S, S.sc, 'ft', T(q(10560, 'ft')), 'mi'); await say(c, P, T('2\\times5280=10\\,560\\text{ ft}')); } },
       { cap: `Fact: 1 ft = 12 in. ${T('10\\,560\\times12=126\\,720')} in.`,
-        run: async (c) => { await moveTok(c, tk, tokAt('in', S)); await setTok(c, tk, T(q(126720, 'in'))); await say(c, P, T('10\\,560\\times12=126\\,720\\text{ in}'), 'u10l4b-big'); } },
+        run: async (c) => { await reach(c, S, A.ftin, 'in', T(q(126720, 'in')), 'ft'); await say(c, P, T('10\\,560\\times12=126\\,720\\text{ in}'), 'u10l4b-big'); } },
       { cap: 'Two steps, two facts, both <b>written down</b>. A mile is a long way in inches!',
         run: async (c) => { const s = sstamp(P, '2 mi = 126 720 in'); await stampIn(c, s); } }
     ];
     if (k === 'routes') return [
-      { cap: 'Start with <b>1 mile</b> at the top of the stairs.', run: async (c) => { place('mi', T(q(1, 'mi'))); await pop(c, tk); } },
-      { cap: `Step down to yards: 1 mi = 1760 yd.`, run: async (c) => { await moveTok(c, tk, tokAt('yd', S)); await setTok(c, tk, T(q(1760, 'yd'))); await say(c, P, T('1\\times1760=1760\\text{ yd}')); } },
-      { cap: `Step down to feet: ${T('1760\\times3=5280')} ft.`, run: async (c) => { await moveTok(c, tk, tokAt('ft', S)); await setTok(c, tk, T(q(5280, 'ft'))); await say(c, P, T('1760\\times3=5280\\text{ ft}')); } },
+      { cap: 'Start with <b>1 mile</b> at the top of the stairs.', run: async (c) => { await reach(c, S, null, 'mi', T(q(1, 'mi'))); } },
+      { cap: 'Step down to yards: 1 mi = 1760 yd.', run: async (c) => { await reach(c, S, A.miyd, 'yd', T(q(1760, 'yd')), 'mi'); await say(c, P, T('1\\times1760=1760\\text{ yd}')); } },
+      { cap: `Step down to feet: ${T('1760\\times3=5280')} ft.`, run: async (c) => { await reach(c, S, A.ydft, 'ft', T(q(5280, 'ft')), 'yd'); await say(c, P, T('1760\\times3=5280\\text{ ft}')); } },
       { cap: 'The shortcut says the same: <b>1 mi = 5280 ft</b>. The facts agree, so use whichever route is shorter.',
-        run: async (c) => { await anim(c, S.sc, [{ strokeWidth: 3 }, { strokeWidth: 8 }, { strokeWidth: 4 }], 900); await say(c, P, T('1\\text{ mi}=1760\\text{ yd}=5280\\text{ ft}'), 'u10l4b-big'); } }
+        run: async (c) => { await anim(c, S.sc, [{ strokeWidth: 3 }, { strokeWidth: 9 }, { strokeWidth: 4 }], 900); await say(c, P, T('1\\text{ mi}=1760\\text{ yd}=5280\\text{ ft}'), 'u10l4b-big'); } }
     ];
     return [
       { cap: 'Going <b>up</b> the stairs (to a bigger unit) means <b>divide</b>: fewer of the bigger units fit.',
-        run: async (c) => { place('ft', T(q(7920, 'ft'))); await pop(c, tk); await say(c, P, T('7920\\text{ ft}\\to\\ ?\\text{ mi}')); } },
+        run: async (c) => { await reach(c, S, null, 'ft', T(q(7920, 'ft'))); await say(c, P, T('7920\\text{ ft}\\to\\ ?\\text{ mi}')); } },
       { cap: `Shortcut up: ${T('7920\\div5280=1.5')} mi.`,
-        run: async (c) => { await moveTok(c, tk, tokAt('mi', S), [120, 230]); await setTok(c, tk, T(q(1.5, 'mi'))); await say(c, P, T('7920\\div5280=1.5\\text{ mi}'), 'u10l4b-big'); } },
+        run: async (c) => { await reach(c, S, S.sc, 'mi', T(q(1.5, 'mi')), 'ft'); await say(c, P, T('7920\\div5280=1.5\\text{ mi}'), 'u10l4b-big'); } },
       { cap: `Check by the other route: ${T('7920\\div3=2640')} yd, then ${T('2640\\div1760=1.5')} mi ✓`,
         run: async (c) => {
-          place('ft', T(q(7920, 'ft')));
-          await moveTok(c, tk, tokAt('yd', S)); await setTok(c, tk, T(q(2640, 'yd'))); await say(c, P, T('7920\\div3=2640\\text{ yd}'));
-          await moveTok(c, tk, tokAt('mi', S)); await setTok(c, tk, T(q(1.5, 'mi'))); await say(c, P, T('2640\\div1760=1.5\\text{ mi}'));
+          await reach(c, S, A.ydft, 'yd', T(q(2640, 'yd')), 'mi'); await say(c, P, T('7920\\div3=2640\\text{ yd}'));
+          await reach(c, S, A.miyd, 'mi', T(q(1.5, 'mi') + '\\ \\checkmark'), 'yd'); await say(c, P, T('2640\\div1760=1.5\\text{ mi}'));
         } },
       { cap: '<b>Direction check:</b> a bigger unit gives a smaller number (7920 → 1.5) ✓',
         run: async (c) => { const s = sstamp(P, '7920 ft = 1.5 mi'); await stampIn(c, s); } }
@@ -421,7 +414,7 @@ const mixed = {
     const d = MIX[key], x0 = 40, wid = ex.W - 80, sc = wid / d.total, bw = d.k * sc, y = 120;
     const head = add(stage, box(h('div', 'u10l4b-qbar', d.pack ? `Convert <b>${hn(d.total)} ${d.small}</b> to ${d.big} and ${d.small}.` : `Convert <b>${d.qq} ${d.big} ${hn(d.r)} ${d.small}</b> to ${d.small}.`), ex.W - 36, 46), 18, 14);
     head.style.opacity = 1;
-    const P = panel(stage, 40, 260, ex.W - 80, 196, 'Work');
+    const P = panel(stage, 40, 282, ex.W - 80, 176, 'Work');
     const blocks = [], labs = [];
     for (let i = 0; i < d.qq; i++) {
       const b = hide(add(stage, box(h('div', 'u10l4b-blk' + (i % 2 ? ' u10l4b-alt' : ''), bw > 46 ? T('1' + U(d.big)) : bw > 18 ? `<small>${i + 1}</small>` : ''), bw, 56), x0 + i * bw, y));
@@ -457,6 +450,7 @@ const mixed = {
     const tsvg = add(stage, svgEl('svg', { width: wid, height: 56, viewBox: `0 0 ${wid} 56` }), x0, y);
     if (sc >= 4) for (let i = 1; i < d.total; i++) svgEl('line', { x1: i * sc, x2: i * sc, y1: 0, y2: 10, stroke: INK, 'stroke-width': 1 }, tsvg);
     tsvg.style.opacity = 0;
+    [...blocks, rest].forEach((b) => stage.appendChild(b));
     return [
       { cap: `${hn(d.total)} ${d.small} in one long piece. How many whole ${d.big === 'ft' ? 'feet' : d.big === 'yd' ? 'yards' : 'miles'} are in it?`,
         run: async (c) => { await anim(c, long, [{ opacity: 0, transform: 'scaleX(0)', transformOrigin: 'left' }, { opacity: 1, transform: 'scaleX(1)', transformOrigin: 'left' }], 700); await appear(c, tsvg); } },
@@ -538,7 +532,7 @@ const CH = {
 };
 const chain = {
   title: 'Unit analysis: snap on a factor, cancel a unit',
-  height: 520,
+  height: 450,
   choices: Object.keys(CH).map((k) => ({ v: k, label: CH[k].label })),
   intro: 'Each conversion factor is worth 1. Choose it so the unit you want gone is on the bottom. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -778,7 +772,7 @@ const roundup = {
     for (let f = 0; f <= 6000; f += 500) { const x = f * sc; svgEl('line', { x1: x, x2: x, y1: 0, y2: f % 1000 ? 7 : 13, stroke: INK, 'stroke-width': 1.4 }, ruler); if (f % 1000 === 0) { const t = svgEl('text', { x: x + 2, y: 27, class: 'u10l4b-rtx' }, ruler); t.textContent = hn(f) + (f ? ' ft' : ''); } }
     const loads = [], discs = [];
     for (let i = 0; i < need; i++) {
-      const w = Math.min(1200, ft - i * 1200) * sc;
+      const w = Math.max(6, Math.min(1200, ft - i * 1200) * sc);
       loads.push(hide(add(stage, box(h('div', 'u10l4b-load' + (i % 2 ? ' u10l4b-alt' : '') + (i === full ? ' u10l4b-lastl' : ''), ''), w, 54), x0 + i * 1200 * sc, y)));
       const dk = hide(add(stage, h('div', 'u10l4b-disc', `<div class="u10l4b-fill"></div><b>DVD ${i + 1}</b>`), x0 + i * 1200 * sc + 1200 * sc / 2 - 52, y + 104));
       dk.fill = dk.firstChild; dk.fill.style.height = '0%'; discs.push(dk);

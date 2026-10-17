@@ -754,7 +754,7 @@ const compass = {
         } },
       { cap: `…and write the angle with <b>three digits</b>: ${T(bs + '^\\circ')}${b < 100 ? `, not ${T(b + '^\\circ')}` : ''}.`,
         run: (c) => pulse(c, rd, 1.2) },
-      { cap: `For a right triangle, use the <b>reference angle</b>: the acute angle to the <b>north–south line</b>. ${T(bs + '^\\circ')} is in the ${['first', 'second', 'third', 'fourth'][rf.col]} column, so it is ${T(`${rf.how}=${rf.r}^\\circ`)} from <b>${rf.from}</b>, toward ${rf.to}.`,
+      { cap: `For a right triangle, use the <b>reference angle</b>: the acute angle to the <b>north–south line</b>. ${T(bs + '^\\circ')} is in the ${['first', 'second', 'third', 'fourth'][rf.col]} column, so it is ${rf.col ? T(`${rf.how}=${rf.r}^\\circ`) : T(deg(rf.r)) + ' (the bearing itself)'} from <b>${rf.from}</b>, toward ${rf.to}.`,
         run: async (c) => {
           await show(c, tb); tb.children[rf.col].classList.add('on');
           const base = rf.from === 'north' ? 90 : 270, wa = 90 - b; let a1 = base, a2 = wa; while (a2 - a1 > 180) a2 -= 360; while (a1 - a2 > 180) a2 += 360;
@@ -854,7 +854,7 @@ const twoLegs = {
   make(stage, key, ex) {
     const q = TL[key], { d1, b1, d2, b2 } = q, r1 = refOf(b1), r2 = refOf(b2);
     const e1 = d1 * Math.sin(b1 * RAD), n1 = d1 * Math.cos(b1 * RAD), e2 = d2 * Math.sin(b2 * RAD), n2 = d2 * Math.cos(b2 * RAD);
-    const E = e1 + e2, N = n1 + n2, dist = Math.hypot(E, N), bb = ((Math.atan2(E, N) / RAD) + 360) % 360, rb = refOf(bb);
+    const E = e1 + e2, N = n1 + n2, rnd = (v) => Number(f4(v)), Ed = rnd(e1) + rnd(e2), Nd = rnd(n1) + rnd(n2), dist = Math.hypot(Ed, Nd), bb = ((Math.atan2(Ed, Nd) / RAD) + 360) % 360, rb = refOf(bb);
     const Tp = [0, 0], R = [e1, n1], L = [E, N], na = d1 * 0.32;
     const xs = [0, e1, E], ys = [0, n1, N, n1 + na];
     const S = new Scene(stage, { x: 0, y: 0, width: 560, height: 480, win: [Math.min(...xs) - 2.2, Math.max(...xs) + 3.6, Math.min(...ys) - 2.8, Math.max(...ys) + 1.4], pad: [14, 12, 8, 12] });
@@ -889,25 +889,25 @@ const twoLegs = {
           const ar = S.arc(R, base, a2, 30, { color: ANG, width: 3.5, label: T(deg(r2.r)), lr: 14 }); await drawIn(ar, 300, c); await show(c, ar.label);
           await say(c, pR, `<b>Leg 2</b> ${comp(d2, r2, e2, n2)}`, 'sm');
         } },
-      { cap: `(b) ${sameE ? 'Both legs go the same way east–west: <b>add</b>' : 'The legs go opposite ways east–west: <b>subtract</b>'}. ${T(`${f4(Math.abs(e1))}${sameE ? '+' : '-'}${f4(Math.abs(e2))}=${f4(Math.abs(E))}\\approx\\boldsymbol{${f1(Math.abs(E))}}`)} <b>km ${sgn(E, 'east', 'west')}</b>.`,
+      { cap: `(b) ${sameE ? 'Both legs go the same way east–west: <b>add</b>' : 'The legs go opposite ways east–west: <b>subtract</b>'}. ${T(`${f4(Math.abs(e1))}${sameE ? '+' : '-'}${f4(Math.abs(e2))}=${f4(Math.abs(Ed))}\\approx\\boldsymbol{${f1(Math.abs(Ed))}}`)} <b>km ${sgn(E, 'east', 'west')}</b>.`,
         run: async (c) => {
-          const dm = S.dim([0, ys0], [E, ys0], `<b>${f1(Math.abs(E))} km ${sgn(E, 'E', 'W')}</b>`, { color: OPP, width: 2.5, pos: 's' }); await drawIn(dm, 500, c); await show(c, dm.label);
-          await say(c, pR, `(b) ${T(`${f4(Math.abs(e1))}${sameE ? '+' : '-'}${f4(Math.abs(e2))}=${cO(f4(Math.abs(E)))}`)}`);
+          const dm = S.dim([0, ys0], [E, ys0], `<b>${f1(Math.abs(Ed))} km ${sgn(E, 'E', 'W')}</b>`, { color: OPP, width: 2.5, pos: 's' }); await drawIn(dm, 500, c); await show(c, dm.label);
+          await say(c, pR, `(b) ${T(`${f4(Math.abs(e1))}${sameE ? '+' : '-'}${f4(Math.abs(e2))}=${cO(f4(Math.abs(Ed)))}`)}`);
         } },
-      { cap: `(c) ${sameN ? 'Both legs go the same way north–south: <b>add</b>' : `Leg 1 goes ${sgn(n1, 'north', 'south')}, leg 2 goes <b>${sgn(n2, 'north', 'south')}</b>: <b>subtract</b>`}. ${T(`${f4(Math.abs(n1))}${sameN ? '+' : '-'}${f4(Math.abs(n2))}=${f4(Math.abs(N))}\\approx\\boldsymbol{${f1(Math.abs(N))}}`)} <b>km ${sgn(N, 'north', 'south')}</b>.`,
+      { cap: `(c) ${sameN ? 'Both legs go the same way north–south: <b>add</b>' : `Leg 1 goes ${sgn(n1, 'north', 'south')}, leg 2 goes <b>${sgn(n2, 'north', 'south')}</b>: <b>subtract</b>`}. ${T(`${f4(Math.abs(n1))}${sameN ? '+' : '-'}${f4(Math.abs(n2))}=${f4(Math.abs(Nd))}\\approx\\boldsymbol{${f1(Math.abs(Nd))}}`)} <b>km ${sgn(N, 'north', 'south')}</b>.`,
         run: async (c) => {
-          const dm = S.dim([xr, 0], [xr, N], `<b>${f1(Math.abs(N))} km ${sgn(N, 'N', 'S')}</b>`, { color: ADJT, width: 2.5, pos: 'e' }); await drawIn(dm, 500, c); await show(c, dm.label);
-          await say(c, pR, `(c) ${T(`${f4(Math.abs(n1))}${sameN ? '+' : '-'}${f4(Math.abs(n2))}=${cA(f4(Math.abs(N)))}`)}`);
+          const dm = S.dim([xr, 0], [xr, N], `<b>${f1(Math.abs(Nd))} km ${sgn(N, 'N', 'S')}</b>`, { color: ADJT, width: 2.5, pos: 'e' }); await drawIn(dm, 500, c); await show(c, dm.label);
+          await say(c, pR, `(c) ${T(`${f4(Math.abs(n1))}${sameN ? '+' : '-'}${f4(Math.abs(n2))}=${cA(f4(Math.abs(Nd)))}`)}`);
         } },
-      { cap: `(d) Pythagoras on the <b>unrounded</b> parts: ${T(`${q.n[0]}${q.n[2]}=\\sqrt{${f4(Math.abs(E))}^2+${f4(Math.abs(N))}^2}=${f2(dist)}\\approx\\boldsymbol{${f1(dist)}}`)} <b>km</b>.`,
+      { cap: `(d) Pythagoras on the <b>unrounded</b> parts: ${T(`${q.n[0]}${q.n[2]}=\\sqrt{${f4(Math.abs(Ed))}^2+${f4(Math.abs(Nd))}^2}=${f2(dist)}\\approx\\boldsymbol{${f1(dist)}}`)} <b>km</b>.`,
         run: async (c) => {
           const tl = S.line(Tp, L, { color: HYP, width: 3.5, dash: '12 7' }); await drawIn(tl, 600, c);
-          await say(c, pR, `(d) ${T(`\\sqrt{${f4(Math.abs(E))}^2+${f4(Math.abs(N))}^2}=${cH(f2(dist))}\\approx\\boldsymbol{${f1(dist)}\\text{ km}}`)}`);
+          await say(c, pR, `(d) ${T(`\\sqrt{${f4(Math.abs(Ed))}^2+${f4(Math.abs(Nd))}^2}`)}`); await say(c, pR, T(`=${cH(f2(dist))}\\approx\\boldsymbol{${f1(dist)}\\text{ km}}`));
         } },
-      { cap: `(e) ${T(q.n[2])} is ${sgn(N, 'north', 'south')} and ${sgn(E, 'east', 'west')} of ${T(q.n[0])}. Angle from ${rb.from}: ${T(`\\tan\\theta=\\dfrac{${f4(Math.abs(E))}}{${f4(Math.abs(N))}}`)}, ${T(`\\theta=${f2(rb.r)}^\\circ`)}. Bearing ${T(`\\boldsymbol{${brg(bb)}}`)}.`,
+      { cap: `(e) ${T(q.n[2])} is ${sgn(N, 'north', 'south')} and ${sgn(E, 'east', 'west')} of ${T(q.n[0])}. Angle from ${rb.from}: ${T(`\\tan\\theta=\\dfrac{${f4(Math.abs(Ed))}}{${f4(Math.abs(Nd))}}`)}, ${T(`\\theta=${f2(rb.r)}^\\circ`)}. Bearing ${T(`\\boldsymbol{${brg(bb)}}`)}.`,
         run: async (c) => {
           const ar = S.arc(Tp, 90, 90 - bb, 80, { color: ANG, width: 3.5, label: T('\\theta'), lr: 14 }); await drawIn(ar, 400, c); await show(c, ar.label);
-          await say(c, pR, `(e) ${T(`\\theta=\\tan^{-1}\\!\\left(\\dfrac{${f4(Math.abs(E))}}{${f4(Math.abs(N))}}\\right)=${f2(rb.r)}^\\circ`)}`);
+          await say(c, pR, `(e) ${T(`\\theta=\\tan^{-1}\\!\\left(\\dfrac{${f4(Math.abs(Ed))}}{${f4(Math.abs(Nd))}}\\right)=${f2(rb.r)}^\\circ`)}`);
           await say(c, pR, `bearing ${T(`\\boldsymbol{${brg(bb)}}`)}`);
         } }
     ];

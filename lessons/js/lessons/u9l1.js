@@ -209,7 +209,7 @@ function mountWarm() {
   document.getElementById('u9l1-wgrow').onclick = async () => {
     if (busy) return; busy = true; grow.innerHTML = '';
     const v1 = [-2 * mP, 0], v2 = [-2 * mP, -1.6 * mP];
-    const poly = svgEl('polygon', { fill: '#7b4fc4', 'fill-opacity': 0.22, stroke: OPP, 'stroke-width': 3 }, grow);
+    const poly = svgEl('polygon', { fill: '#7b4fc4', 'fill-opacity': 0.12, stroke: OPP, 'stroke-width': 3, 'stroke-dasharray': '9 5' }, grow);
     const lab = svgEl('text', { x: 300, y: 54, class: 'u9l1-wt', 'text-anchor': 'middle' }, grow);
     const set = (k) => {
       poly.setAttribute('points', [[TIP, GY], [TIP + v1[0] * k, GY], [TIP + v2[0] * k, GY + v2[1] * k]].map((p) => p.join(',')).join(' '));
@@ -278,7 +278,7 @@ function mountGame() {
   function newTri() {
     figWrap.innerHTML = ''; step = 0; say('');
     const L = LET.split('').sort(() => Math.random() - 0.5).slice(0, 3), [r, p, q] = L;
-    let a = rnd(2, 5), b = rnd(1.6, 4.4); if (a / b > 2.6 || b / a > 2.6) b = a * rnd(0.5, 1.4);
+    const a = rnd(2.4, 4.6), b = a * rnd(0.55, 1.8);   // acute angles between about 29° and 61°
     tri = new Tri(figWrap, { width: 560, height: 380, pad: 64, P: { [r]: [0, 0], [p]: [a, 0], [q]: [0, b] }, right: r, rot: rnd(0, 360), flip: Math.random() < 0.5, arcR: 34 });
     ref = Math.random() < 0.5 ? p : q; tri.arc(ref, 'x^\\circ');
     R = tri.roles(ref);
