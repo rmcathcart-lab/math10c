@@ -777,7 +777,7 @@
       { num: '14', shared: shirtShared,
         stem: function (sh) { return 'Fresh Print Co. produces custom t-shirts for local sports teams. The cost of production is modelled by ' + t('C(n)=' + F(sh.Fc) + '+' + sh.rate + 'n') + ', where ' + t('C(n)') + ' is the cost, in dollars, of printing ' + t('n') + ' t-shirts.'; }, parts: [
         { id: '14a', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
-          var N = sh.max, top = sh.C(N), o = { x: [0, 900], y: [0, 9000], gx: 100, gy: 1000, lx: 200, ly: 2000, xName: 'n', yName: 'C' };
+          var N = sh.max, top = sh.C(N), o = { x: [0, 900], y: [0, 9000], gx: 100, gy: 1000, lx: 400, ly: 4000, xName: 'n', yName: 'C' };
           var G = function (segs) { return ctxGraph(o, segs); };
           return graphMC(r, '(a) Which graph shows the function for a maximum of ' + t(N) + ' t-shirts?', [
             { html: G([{ pts: [[0, sh.Fc], [N, top]], start: 'closed', end: 'closed' }]), right: true },
@@ -909,7 +909,7 @@
         stem: function (sh) { return 'As part of a design test, a ' + t('12') + ' kg equipment case is dropped from a hovering helicopter. The height of the case above the ground is described by part of the graph of ' + t('h(t)=' + F(sh.H0) + '-4.9t^{2}') + ', where ' + t('h(t)') + ' is the height, in metres, of the case ' + t('t') + ' seconds after it is released.'; }, parts: [
         { id: '16a', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
           var T = sh.T, H0 = sh.H0, ym = Math.ceil(H0 * 1.1 / 100) * 100, gy = ym > 1500 ? 200 : 100;
-          var o = { x: [0, T * 1.25], y: [0, ym], gx: T / 10, gy: gy, lx: T / 5, ly: 2 * gy, xName: 't', yName: 'h' };
+          var o = { x: [0, T * 1.25], y: [0, ym], gx: T / 10, gy: gy, lx: T / 2, ly: 4 * gy, xName: 't', yName: 'h' };
           var G = function (segs, fns) { return ctxGraph(o, segs, fns); };
           return graphMC(r, '(a) Which graph shows the height of the case from its release until it reaches the ground?', [
             { html: G([], [{ f: sh.h, from: 0, to: T, start: 'closed', end: 'closed' }]), right: true },
