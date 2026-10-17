@@ -76,14 +76,24 @@ function sideLabel(t, k, html, cls = '') {
   if (t.sideLabs[k]) t.sideLabs[k].remove();
   const { m, n } = sideGeo(t, k), el = t.hlabel(m[0], m[1], html, { cls: 'bk-tri-lab ' + cls });
   const w = el.offsetWidth, hh = el.offsetHeight, off = 6 + Math.abs(n[0]) * w / 2 + Math.abs(n[1]) * hh / 2;
-  el.cx = clamp(m[0] + n[0] * off, w / 2, t.W - w / 2); el.cy = clamp(m[1] + n[1] * off, hh / 2, t.H - hh / 2);
+  const x = m[0] + n[0] * off, y = m[1] + n[1] * off;
+  el.cx = clamp(x, w / 2, t.W - w / 2); el.cy = clamp(y, hh / 2, t.H - hh / 2); el.clampBy = Math.hypot(el.cx - x, el.cy - y);
   place(el, el.cx, el.cy);
   el.ext = 6 + Math.abs(n[0]) * w + Math.abs(n[1]) * hh;
   t.sideLabs[k] = el; return el;
 }
+/** a booklet triangle; if a side label would be squeezed against the edge, it is redrawn smaller (more padding) */
 function mkTri(host, key, o = {}) {
+  let pad = (o.pad || 58) * (TRI[key].padK || 1);
+  for (let i = 0; ; i++) {
+    const t = mkTri1(host, key, o, pad), over = Math.max(0, ...Object.values(t.sideLabs).map((e) => e.clampBy || 0));
+    if (over < 1 || i === 3) return t;
+    t.el.remove(); pad += over + 4;
+  }
+}
+function mkTri1(host, key, o, pad) {
   const d = Object.assign({}, TRI[key]), N = d.names || { right: 'P', base: 'Q', top: 'R' };
-  const t = new RightTriangle(host, { x: o.x, y: o.y, width: o.w || 320, height: o.h || 280, pad: (o.pad || 58) * (d.padK || 1), base: d.base, rise: d.rise, right: d.right, names: N, tex: true });
+  const t = new RightTriangle(host, { x: o.x, y: o.y, width: o.w || 320, height: o.h || 280, pad, base: d.base, rise: d.rise, right: d.right, names: N, tex: true });
   t.d = d; t.N = N; t.tags = {};
   if (!d.show) Object.values(t.vLabs).forEach((e) => e.remove());
   t.av = () => (t.d.ang === 'base' ? N.base : N.top);
@@ -142,11 +152,11 @@ function figures() {
   const F = (id, key, o) => { const host = document.getElementById(id); if (host) mkTri(host, key, o); };
   F('u9l3-fsec1', 'sec1', { w: 250, h: 200, pad: 40 });
   F('u9l3-f1a', 'e1a', { w: 330, h: 240, pad: 50 });
-  F('u9l3-f1b', 'e1b', { w: 380, h: 200, pad: 46 });
+  F('u9l3-f1b', 'e1b', { w: 420, h: 200, pad: 46 });
   F('u9l3-f2', 'e2', { w: 280, h: 300, pad: 50 });
   F('u9l3-f3', 'e3', { w: 250, h: 310, pad: 46, r: 24 });
   F('u9l3-f4', 'e4', { w: 330, h: 260, pad: 50 });
-  F('u9l3-f5', 'e5', { w: 270, h: 320, pad: 50 });
+  F('u9l3-f5', 'e5', { w: 270, h: 320, pad: 50, r: 40 });
   F('u9l3-f6', 'e6', { w: 380, h: 230, pad: 52 });
   F('u9l3-f7', 'e7', { w: 270, h: 330, pad: 52, r: 26 });
 }

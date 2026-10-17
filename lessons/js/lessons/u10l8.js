@@ -724,8 +724,8 @@ const floor = {
 
 /* =============================== explainer: Example 5, run the formula backwards =============================== */
 const BK = {
-  ex5: { label: 'Example 5 check', V: '3053.6', unit: 'ft', r3: '728.99', r: '9.0', calc: ['\\dfrac{3(3053.6)}{4\\pi}', '\\dfrac{9160.8}{12.56637}'], lo: 8, hi: 10, near: '9^3=729', chk: '\\tfrac43\\pi(9.0)^3=972\\pi\\approx3053.6\\text{ ft}^3' },
-  mika: { label: 'Mika’s ball: 320 mL', V: '320', unit: 'cm', r3: '76.39', r: '4.2', calc: ['\\dfrac{3(320)}{4\\pi}', '\\dfrac{960}{12.56637}'], lo: 4, hi: 5, near: '4^3=64,\\ 5^3=125', chk: '\\tfrac43\\pi(4.2431\\ldots)^3=320\\text{ cm}^3' }
+  ex5: { label: 'Example 5 check', V: '3053.6', unit: 'ft', r3: '728.99', r: '9.0', calc: ['\\dfrac{3(3053.6)}{4\\pi}', '\\dfrac{9160.8}{12.56637}'], lo: 8, hi: 9, note: 'just under 9', near: '9^3=729', chk: '\\tfrac43\\pi(9.0)^3=972\\pi\\approx3053.6\\text{ ft}^3' },
+  mika: { label: 'Mika’s ball: 320 mL', V: '320', unit: 'cm', r3: '76.39', r: '4.2', calc: ['\\dfrac{3(320)}{4\\pi}', '\\dfrac{960}{12.56637}'], lo: 4, hi: 5, note: 'between 4 and 5', near: '4^3=64,\\ 5^3=125', chk: '\\tfrac43\\pi(4.2431\\ldots)^3=320\\text{ cm}^3' }
 };
 const backwards = {
   title: 'Example 5 check: from the volume back to the radius',
@@ -756,7 +756,7 @@ const backwards = {
         run: async (c) => { vals[2].innerHTML = T(d.V); await pulse(c, boxes[2], 1.08); } },
       { cap: `Undo ${T('\\times\\tfrac43\\pi')}: multiply by 3 and divide by ${T('4\\pi')}. ${T(`r^3=\\dfrac{3V}{4\\pi}\\approx${d.r3}`)}.`,
         run: async (c) => { await appear(c, bw1); await pop(c, lb1); vals[1].innerHTML = T(d.r3); await pulse(c, boxes[1], 1.08); await show(c, w1); } },
-      { cap: `Undo the cubing with a <b>cube root</b>: ${T(`r=\\sqrt[3]{${d.r3}}\\approx${d.r}`)} ${d.unit}. It sits between ${d.lo} and ${d.hi}, since ${T(`${d.lo}^3<${d.r3}<${d.hi}^3`)}.`,
+      { cap: `Undo the cubing with a <b>cube root</b>: ${T(`r=\\sqrt[3]{${d.r3}}\\approx${d.r}`)} ${d.unit}. It is ${d.note}, since ${T(`${d.lo}^3<${d.r3}<${d.hi}^3`)}.`,
         run: async (c) => { await appear(c, bw2); await pop(c, lb2); vals[0].innerHTML = T(d.r); await pulse(c, boxes[0], 1.08); await show(c, w2); } },
       { cap: `Check by running it forwards: ${T(d.chk)}.`,
         run: async (c) => { await show(c, w3); const s = stamp(Pn, 'checks ✓'); s.style.alignSelf = 'flex-end'; s.style.marginTop = '-34px'; await stampIn(c, s); } }

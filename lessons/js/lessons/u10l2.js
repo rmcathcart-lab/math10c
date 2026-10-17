@@ -626,9 +626,9 @@ const fit = {
 /* =============================== explainer: ladder of everyday referents =============================== */
 const LADDER = {
   imp: [{ n: 'thumb', v: '1 in', cm: 2.54 }, { n: 'adult foot', v: '1 ft', cm: 30.48 }, { n: 'pace', v: '1 yd', cm: 91.44 }],
-  si: [{ n: 'dime (thick)', v: '1 mm', cm: 0.1, lv: 0 }, { n: 'pinky nail', v: '1 cm', cm: 1, lv: 0 }, { n: 'hockey puck', v: '7.6 cm', cm: 7.6, lv: 0 },
-    { n: 'five toes', v: '1 dm', cm: 10, lv: 1 }, { n: 'workbook', v: '20 cm', cm: 20, lv: 2 }, { n: '4-year-old', v: '1 m', cm: 100, lv: 0 },
-    { n: 'doorway', v: 'almost 2 m', cm: 200, lv: 1 }, { n: 'Olympic pool', v: '50 m', cm: 5000, lv: 0 }]
+  si: [{ n: 'dime (thick)', v: '1 mm', cm: 0.1, lv: 0 }, { n: 'pinky nail', v: '1 cm', cm: 1, lv: 0 }, { n: 'hockey puck', v: '7.6 cm', cm: 7.6, lv: 0, up: true },
+    { n: 'five toes', v: '1 dm', cm: 10, lv: 0 }, { n: 'workbook', v: '20 cm', cm: 20, lv: 1, dx: 22 }, { n: '4-year-old', v: '1 m', cm: 100, lv: 0 },
+    { n: 'doorway', v: 'almost 2 m', cm: 200, lv: 1, dx: 34 }, { n: 'Olympic pool', v: '50 m', cm: 5000, lv: 0 }]
 };
 const ladder = {
   title: 'A ladder of everyday referents',
@@ -636,16 +636,16 @@ const ladder = {
   choices: [{ v: 'all', label: 'Everyday referents' }, { v: 'towel', label: 'Example 2: the bath towel' }],
   intro: (v) => (v === 'all' ? 'Put every referent on one ladder of sizes. Press <b>Next</b>.' : 'Which referents suit a bath towel? Press <b>Next</b>.'),
   make(stage, v, ex) {
-    const W = ex.W, S = SV(stage, W, ex.def.height), x0 = 56, Wd = W - 112, ay = 196;
+    const W = ex.W, S = SV(stage, W, ex.def.height), x0 = 56, Wd = W - 112, ay = 214;
     const X = (cm) => x0 + (Math.log10(cm) + 1) / 5 * Wd;
     const items = {};
     const put = (it, side) => {
-      const x = X(it.cm), g = G(S), up = side === 'imp', col = up ? IMP : SI;
-      const ly = up ? ay - 64 : ay + 42 + (it.lv || 0) * 62;
-      svgEl('line', { x1: x, x2: x, y1: ay, y2: up ? ly + 4 : ly - 2, stroke: col, 'stroke-width': 1.6, 'stroke-dasharray': '3 3' }, g);
+      const x = X(it.cm), g = G(S), si = side === 'si', up = !si || it.up, col = si ? SI : IMP;
+      const ly = up ? ay - 56 - (it.up ? 62 : 0) : ay + 46 + (it.lv || 0) * 62;
+      const lx = Math.min(Math.max(x + (it.dx || 0), x0 + 30), W - 60);
+      svgEl('line', { x1: x, x2: lx, y1: ay, y2: up ? ly : ly, stroke: col, 'stroke-width': 1.6, 'stroke-dasharray': '3 3' }, g);
       svgEl('circle', { cx: x, cy: ay, r: 7, fill: col, stroke: '#fff', 'stroke-width': 2 }, g);
-      const lx = Math.min(Math.max(x, x0 + 30), W - 60);
-      const L = lab(stage, lx, ly, `<b>${it.n}</b><br>${it.v}`, up ? 'n' : 's', 'u10l2-ll ' + (up ? 'u10l2-llimp' : 'u10l2-llsi'), 0);
+      const L = lab(stage, lx, ly, `<b>${it.n}</b><br>${it.v}`, up ? 'n' : 's', 'u10l2-ll ' + (si ? 'u10l2-llsi' : 'u10l2-llimp'), 0);
       items[it.n] = { g, L, x };
       return { g, L };
     };
@@ -657,17 +657,16 @@ const ladder = {
           ['1 mm', '1 cm', '10 cm', '1 m', '10 m', '100 m'].forEach((t, i) => {
             const x = x0 + i * Wd / 5;
             svgEl('line', { x1: x, x2: x, y1: ay - 12, y2: ay + 12, stroke: INK, 'stroke-width': 2.4 }, g);
-            if (i < 5) for (let m = 2; m < 10; m++) { const xm = x + Math.log10(m) * Wd / 5; svgEl('line', { x1: xm, x2: xm, y1: ay - 5, y2: ay + 5, stroke: INK, 'stroke-width': 1 }, g); }
-            svgEl('text', { x, y: ay + 30, class: 'u10l2-svgs u10l2-svgb', 'text-anchor': 'middle' }, g).textContent = t;
+            if (i < 5) {
+              for (let m = 2; m < 10; m++) { const xm = x + Math.log10(m) * Wd / 5; svgEl('line', { x1: xm, x2: xm, y1: ay - 5, y2: ay + 5, stroke: INK, 'stroke-width': 1 }, g); }
+              svgEl('text', { x: x + Wd / 10, y: ay + 32, class: 'u10l2-svgxs', 'text-anchor': 'middle', fill: COLORS.slate }, g).textContent = '×10 →';
+            }
+            svgEl('text', { x, y: ay + 32, class: 'u10l2-svgs u10l2-svgb', 'text-anchor': 'middle' }, g).textContent = t;
           });
-          for (let i = 0; i < 5; i++) { const a = x0 + i * Wd / 5 + 10, b = x0 + (i + 1) * Wd / 5 - 10; svgEl('path', { d: `M${a} ${ay - 18} Q${(a + b) / 2} ${ay - 44} ${b} ${ay - 18}`, fill: 'none', stroke: COLORS.gray, 'stroke-width': 1.5 }, g); svgEl('text', { x: (a + b) / 2, y: ay - 36, class: 'u10l2-svgxs', 'text-anchor': 'middle', fill: COLORS.slate }, g).textContent = '×10'; }
           await appear(c, g, 500);
         } },
       { cap: '<b>Imperial</b> referents: thumb ≈ 1 in, adult foot ≈ 1 ft, adult pace ≈ 1 yd.',
-        run: async (c) => {
-          S.querySelectorAll('path, text').forEach((e) => { if (e.textContent === '×10' || (e.tagName === 'path' && e.getAttribute('stroke') === COLORS.gray)) e.style.opacity = 0; });
-          for (const it of LADDER.imp) { const { g, L } = put(it, 'imp'); await appear(c, g, 250); await show(c, L, 250); }
-        } },
+        run: async (c) => { for (const it of LADDER.imp) { const { g, L } = put(it, 'imp'); await appear(c, g, 250); await show(c, L, 250); } } },
       { cap: '<b>SI</b> referents, from the thickness of a dime (≈ 1 mm) to an Olympic pool (50 m).',
         run: async (c) => { for (const it of LADDER.si) { const { g, L } = put(it, 'si'); await appear(c, g, 200); await show(c, L, 200); } } }
     ];
@@ -676,28 +675,26 @@ const ladder = {
         run: async (c) => {
           for (const [nm, cm, ref] of [['phone', 7, 'pinky nail'], ['gym', 3000, 'pace']]) {
             const x = X(cm), g = G(S);
-            svgEl('polygon', { points: `${x - 9},${ay - 30} ${x + 9},${ay - 30} ${x},${ay - 12}`, fill: COLORS.purple }, g);
-            const to = items[ref].x;
-            svgEl('path', { d: `M${x} ${ay - 34} Q${(x + to) / 2} ${ay - 120} ${to} ${ay - 14}`, fill: 'none', stroke: COLORS.purple, 'stroke-width': 2.2, 'stroke-dasharray': '6 4' }, g);
-            AH(g, to, ay - 12, to > x ? 0.4 : -0.4, 1, COLORS.purple);
-            await appear(c, g, 400);
-            await pop(c, lab(stage, x, ay - 38, nm, 'n', 'u10l2-tag', 2));
+            svgEl('rect', { x: x - 8, y: ay - 8, width: 16, height: 16, fill: COLORS.purple, transform: `rotate(45 ${x} ${ay})` }, g);
+            await pop(c, g); await pop(c, lab(stage, x, ay - 16, nm, 'n', 'u10l2-tag', 0));
+            items[ref].L.classList.add('u10l2-llpick'); await pulse(c, items[ref].L, 1.12);
           }
         } }
     ]);
     return base.concat([
       { cap: 'Example 2: a bath towel is roughly <b>1 to 1.5 m</b> long (the purple band).',
         run: async (c) => {
-          const g = svgEl('rect', { x: X(100), y: 20, width: X(150) - X(100), height: 410, fill: COLORS.purple, 'fill-opacity': 0.14, stroke: COLORS.purple, 'stroke-width': 1.5 }, S);
+          const g = svgEl('rect', { x: X(100), y: 40, width: X(150) - X(100), height: 390, fill: COLORS.purple, 'fill-opacity': 0.16, stroke: COLORS.purple, 'stroke-width': 1.5 }, S);
           S.insertBefore(g, S.firstChild); await appear(c, g, 400);
-          await pop(c, lab(stage, X(122), 24, 'towel', 's', 'u10l2-tag', 0));
+          await pop(c, lab(stage, X(122), 36, 'towel', 'n', 'u10l2-tag', 0));
         } },
-      { cap: `How many of each fit? <b>SI</b>: the <b>workbook</b>, ${T('5')} to ${T('7.5')} widths. <b>Imperial</b>: the <b>pace</b>, ${T('1')} to ${T('1\\tfrac12')}. Pinky nails or thumbs: far too many.`,
+      { cap: `How many copies cover it? <b>SI</b>: the <b>workbook</b>, ${T('5')} to ${T('7.5')} widths. <b>Imperial</b>: the <b>pace</b>, ${T('1')} to ${T('1\\tfrac12')}. Pinky nails or thumbs: far too many.`,
         run: async (c) => {
-          const P = panel(stage, W - 330, 300, 316, null, 'Copies to cover the towel', 'u10l2-cnt');
+          const P = panel(stage, 10, 8, 236, null, 'Copies to cover the towel', 'u10l2-cnt');
           for (const [n, t, cls] of [['pinky nail', '100 to 150', 'u10l2-vno'], ['thumb', '40 to 60', 'u10l2-vno'], ['adult foot', '3 to 5', 'u10l2-vmid'], ['workbook', '5 to 7.5 ✓', 'u10l2-vok'], ['pace', `1 to ${T('1\\tfrac12')} ✓`, 'u10l2-vok']]) {
-            await show(c, line(P, `<b>${n}</b> <span class="u10l2-verd ${cls}">${t}</span>`), 200);
+            await show(c, line(P, `${n} <span class="u10l2-verd ${cls}">${t}</span>`), 200);
           }
+          for (const n of ['workbook', 'pace']) items[n].L.classList.add('u10l2-llpick');
         } }
     ]);
   }
@@ -785,11 +782,11 @@ const shed = {
       { cap: 'Walk the long side heel-to-toe and count: <b>12</b> foot lengths.',
         run: async (c) => { await appear(c, cnt.el, 200); await walk(c, L, sx, sy - 16, 1, 0, 0); await show(c, lab(stage, sx + L * u / 2, sy + 10, '12', 's', 'u10l2-side', 2)); await show(c, line(P, 'long side: <b>12</b> ft')); } },
       { cap: 'Walk the short side: <b>8</b> foot lengths.',
-        run: async (c) => { cnt.set(0); await walk(c, Wd, sx + L * u + 16, sy, 0, 1, 90); await show(c, lab(stage, sx + L * u + 30, sy + Wd * u / 2, '8', 'e', 'u10l2-side', 2)); await show(c, line(P, 'short side: <b>8</b> ft')); } },
+        run: async (c) => { cnt.set(0); await walk(c, Wd, sx + L * u + 16, sy, 0, 1, 90); await show(c, lab(stage, sx + L * u - 10, sy + Wd * u / 2, '8', 'w', 'u10l2-side', 2)); await show(c, line(P, 'short side: <b>8</b> ft')); } },
       { cap: 'A rectangle’s <b>opposite sides are equal</b>, so the other two sides are 12 and 8 again: no need to walk them.',
         run: async (c) => {
           await walk(c, L, sx + L * u, sy + Wd * u + 16, -1, 0, 180, true); await walk(c, Wd, sx - 16, sy + Wd * u, 0, -1, -90, true);
-          await show(c, lab(stage, sx + L * u / 2, sy + Wd * u + 30, '12', 's', 'u10l2-side u10l2-ghost', 2)); await show(c, lab(stage, sx - 30, sy + Wd * u / 2, '8', 'w', 'u10l2-side u10l2-ghost', 2));
+          await show(c, lab(stage, sx + L * u / 2, sy + Wd * u - 10, '12', 'n', 'u10l2-side u10l2-ghost', 2)); await show(c, lab(stage, sx + 10, sy + Wd * u / 2, '8', 'e', 'u10l2-side u10l2-ghost', 2));
         } },
       { cap: `${T('P\\approx12+8+12+8=2(8+12)=40')} ft.`,
         run: async (c) => { await show(c, line(P, T('P\\approx12+8+12+8'))); await show(c, line(P, T('=2(8+12)=\\boldsymbol{40\\text{ ft}}'), 'u10l2-lest')); } },

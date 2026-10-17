@@ -288,11 +288,11 @@ function figShed() {
 function ansFigs() {
   let host = document.getElementById('u10l7-a1a');
   if (host) {
-    const S = new Scene3(host, { w: 330, h: 220, cx: 150, cy: 170, scale: 8.6, yaw: -24, tilt: 14 });
+    const S = new Scene3(host, { w: 330, h: 220, cx: 135, cy: 170, scale: 8.6, yaw: -24, tilt: 14 });
     S.draw = (S) => {
       const [V, F] = pyramidVF(rect(16, 16), [0, 6, 0]); solid(S, S.g, V, F, { fill: '#fff' });
       seg(S.g, S.P([0, 6, 0]), S.P([0, 0, 0]), { stroke: HC, w: 2.2, dash: DASH });
-      const top = S.P([0, 6, 0]), bot = S.P([0, 0, 0]); const x = S.P([8, 0, 8])[0] + 26;
+      const top = S.P([0, 6, 0]), bot = S.P([0, 0, 0]); const x = Math.max(...rect(16, 16).map((p) => S.P(p)[0])) + 22;
       dim(S.g, [x, top[1]], [x, bot[1]], HC); seg(S.g, top, [x + 6, top[1]], { w: 1.2, dash: '3 4', op: 0.6 }); seg(S.g, bot, [x + 6, bot[1]], { w: 1.2, dash: '3 4', op: 0.6 });
       S.lab('h', `${T('h=6')} m`, [x + 4, (top[1] + bot[1]) / 2], 'e', { color: HC });
       S.lab('a', `${T('16')} m`, S.P([0, 0, 8]), 's'); S.lab('b', `${T('16')} m`, S.P([8, 0, 0]), 'se', { gap: 2 });
@@ -311,7 +311,7 @@ function ansFigs() {
   }
   host = document.getElementById('u10l7-a2');
   if (host) {
-    const S = new Scene3(host, { w: 260, h: 260, cx: 150, cy: 200, scale: 12.5, yaw: -20, tilt: 14 });
+    const S = new Scene3(host, { w: 300, h: 260, cx: 160, cy: 200, scale: 12.5, yaw: -20, tilt: 14 });
     S.draw = (S) => {
       drawCone(S, S.g, { base: [0, 0, 0], r: 5, H: 12, fill: '#fff' });
       seg(S.g, S.P([0, 0, 0]), S.P([0, 12, 0]), { stroke: HC, w: 2.2, dash: DASH }); seg(S.g, S.P([0, 0, 0]), S.P([5, 0, 0]), { stroke: RC, w: 2.6 });
@@ -351,8 +351,8 @@ function puffs(g, El, seed = 1) {
 function mountPopcorn() {
   const host = document.getElementById('u10l7-pop'); if (!host) return;
   const st = { level: 0, n: 0 }, r = 10, Hh = 20;
-  const S = new Scene3(host, { w: 560, h: 340, cx: 0, cy: 0, scale: 6.4, yaw: 0, tilt: 17 });
-  const coneOrg = [130, 70], tubOrg = [400, 305];
+  const S = new Scene3(host, { w: 560, h: 380, cx: 0, cy: 0, scale: 6.4, yaw: 0, tilt: 17 });
+  const coneOrg = [140, 205], tubOrg = [420, 327];
   S.draw = (S) => {
     const g = S.g, cl = S.uid + 'k', cl2 = S.uid + 't';
     // cone (point down), always full
@@ -380,8 +380,8 @@ function mountPopcorn() {
     S.lab('ch', '<b>20 cm</b>', [xa - 4, (cn.El.y + cn.A[1]) / 2], 'w');
     const xb = E0.x + E0.a + 22; dim(g, [xb, E1.y], [xb, E0.y]); S.lab('th', '<b>20 cm</b>', [xb + 4, (E0.y + E1.y) / 2], 'e');
     S.lab('cn', '<b>Cone</b>', [cn.A[0], cn.A[1] + 6], 's'); S.lab('tb', '<b>Tub</b>', [E0.x, E0.y + E0.b + 4], 's');
-    S.lab('rr', 'both: radius <b>10 cm</b>', [268, 52], 'c', { cls: 'u10l7-sm' });
-    burst(g, 236, 250, '$4'); burst(g, 260 + 58, 140, '$9');
+    S.lab('rr', 'both: radius <b>10 cm</b>', [280, 28], 'c', { cls: 'u10l7-sm' });
+    burst(g, 240, 300, '$4'); burst(g, 318, 236, '$9');
     if (st.n) S.lab('n', st.n >= 3 ? '<b>3 cones: full!</b>' : `<b>${st.n} cone${st.n > 1 ? 's' : ''}</b>`, [E1.x, E1.y - E1.b - 26], 'n', { cls: 'u10l7-pill' + (st.n >= 3 ? ' u10l7-ok' : '') });
   };
   S.render();
@@ -414,7 +414,7 @@ function crossDef(DATA, title) {
     intro: 'Where are <b>h</b> and <b>s</b>, and how are they connected? Press <b>Next</b>.',
     make(stage, k, ex) {
       const d = DATA[k], Hs = ex.def.height, cone = !!d.cone, body = d.body || 0;
-      const R = cone ? d.r : d.R || d.side / (2 * Math.sin(PI / d.n)), a = cone ? d.r : R * Math.cos(PI / d.n);
+      const R = cone ? d.r : d.R || d.side / (2 * Math.sin(PI / d.n)), a = cone ? d.r : +(R * Math.cos(PI / d.n)).toFixed(6);
       const sLen = Math.hypot(d.h, a), tot = d.h + body, SW = 500;
       const sc = Math.min(330 / (2 * R), 300 / (tot * 0.95));
       const S = new Scene3(stage, { x: 0, y: 0, w: ex.W, h: Hs, cx: SW / 2, cy: Hs - 70 - (R * sc * Math.sin(16 * RAD)), scale: sc, yaw: -28, tilt: 16 });
@@ -422,8 +422,8 @@ function crossDef(DATA, title) {
       const st = { rise: 0, hT: 0, aT: 0, sT: 0, tri: false, lift: 0, spin: 0, lab: { h: 0, a: 0, s: 0 } };
       // the flat triangle on the right
       const RX = SW + 50, RW = ex.W - RX - 30, K = Math.min((RW - 70) / a, 200 / d.h);
-      const O2 = [RX + 30, 236], M2 = [O2[0] + a * K, O2[1]], A2 = [O2[0], O2[1] - d.h * K];
-      const P = panel(stage, RX - 10, 270, ex.W - RX - 4, Hs - 284, '');
+      const O2 = [RX + 30, 222], M2 = [O2[0] + a * K, O2[1]], A2 = [O2[0], O2[1] - d.h * K];
+      const P = panel(stage, RX - 10, 280, ex.W - RX - 4, Hs - 294, '');
       const hTx = d.sym ? 'h' : `h=${d.h}`, aTx = d.sym ? (cone ? 'r' : d.n === 4 ? '\\tfrac12\\text{side}' : 'a') : cone ? `r=${d.r}` : `${a}`;
       S.draw = (S) => {
         const g = S.g, yawNow = -28 + st.spin * 360; S.yaw = yawNow;
@@ -481,12 +481,12 @@ function crossDef(DATA, title) {
             await show(c, line(P, `<b>Volume</b> uses ${T('h')}; <b>surface area</b> uses ${T('s')}.`));
           } });
       } else {
-        steps.push({ cap: `Pythagoras finds the missing side: ${T(d.sTex)}${d.sVal.includes('.') ? '' : ''} ${d.unit}.`,
+        steps.push({ cap: `Pythagoras finds the missing side: ${T(d.sTex)} ${d.unit}.`,
           run: async (c) => {
             await show(c, line(P, T(`s^2=${d.h}^2+${a}^2`)));
             await show(c, line(P, T(d.sTex) + ' ' + d.unit, 'u10l7-big'));
             st.sKnown = true; S.render(); await pulse(c, S.L('s2'));
-            await stampIn(c, stampAt(P, `s ≈ ${d.sVal} ${d.unit}`));
+            await stampIn(c, stampAt(P, `s ${d.sVal.includes('.') ? '≈' : '='} ${d.sVal} ${d.unit}`));
           } });
       }
       return steps;
@@ -658,7 +658,7 @@ const pour = {
   intro: 'Same base, same height. How many cones of water? Press <b>Next</b>.',
   make(stage, k, ex) {
     const popc = k === 'pop';
-    const cfg = popc ? { kind: 'cone', r: 10, H: 20, S: 6.2, c0: '#c88c14', c1: POP, c2: POP2, name1: 'tub (cylinder)', name2: 'cone' }
+    const cfg = popc ? { kind: 'cone', r: 10, H: 20, S: 7.6, c0: '#c88c14', c1: POP, c2: POP2, name1: 'tub (cylinder)', name2: 'cone' }
       : { kind: 'cone', r: 1.9, H: 3.6, S: 34, c0: '#2c78b8', c1: WATER, c2: WATER2, name1: 'cylinder', name2: 'cone' };
     const p = pourScene(stage, ex, cfg), { S, st } = p;
     const P = panel(stage, ex.W - 330, 14, 316, popc ? 250 : 150, '');
@@ -720,7 +720,7 @@ const net = {
         seg(g, S.P([0, d.h, 0]), S.P([0, 0, 0]), { stroke: HC, w: 2.4, dash: DASH });
         S.lab('h', `${T('h=' + d.h)} ${u}`, S.P([0, d.h * 0.45, 0]), 'w', { color: HC, cls: 'u10l7-halo' });
       }
-      S.lab('sd', `${T(String(d.side))} ${u}`, S.P(lerp3(B[0], B[1], 0.5)), st.u > 0.5 ? 'c' : 's', { gap: 8, cls: st.u > 0.5 ? 'u10l7-halo u10l7-hid' : '' });
+      if (st.u < 0.5) S.lab('sd', `${T(String(d.side))} ${u}`, S.P(lerp3(B[0], B[1], 0.5)), 's', { gap: 8 });
       if (st.sOn) { const t0 = tris.find((t) => t.i === 0); S.lab('s', `${T('s=' + d.s)} ${u}`, S.P(lerp3(t0.ap, t0.M, 0.45)), 'e', { color: SC, cls: 'u10l7-halo', gap: 8 }); }
     };
     S.render();
@@ -881,7 +881,7 @@ const hex = {
         }
         if (st.apo) { const M = lerp2(bp[0], bp[1], 0.5); seg(g, O, lerp2(O, M, st.apo), { stroke: TRI, w: 3, dash: '6 5' }); S.lab('ap', T('3\\sqrt3'), lerp2(O, M, 0.55), 'nw', { color: TRI, cls: 'u10l7-halo' }); S.lab('hf', T('3'), lerp2(bp[0], M, 0.5), 'e', { cls: 'u10l7-halo u10l7-sm' }); }
         if (st.sp >= 1) S.lab('r', T('6'), lerp2(O, bp[3], 0.5), 'n', { cls: 'u10l7-halo u10l7-sm' });
-        S.lab('side', `${T('6')} cm`, lerp2(bp[1], bp[2], 0.5), 'n', { gap: 6 });
+        S.lab('side', `${T('6')} cm`, lerp2(bp[1], bp[2], 0.5), 's', { gap: 6 });
         poly(g, bp, { stroke: INK, w: 2.8 });
         if (st.one && !st.all) S.lab('t0', T('9\\sqrt3'), avg2([O, bp[0], bp[1]]), 'c', { cls: 'u10l7-tag u10l7-sm' });
         return;
@@ -944,7 +944,9 @@ const scale = {
       }
       const lab = (key, o, r, hh, txt, color) => {
         const top = S.P([0, hh, 0], o), bot = S.P([r, 0, 0], o);
-        if (u < 0.5) S.lab(key, txt, [o[0], Math.min(top[1], S.P([0, 0, -r], o)[1]) - 8], 'n', { cls: 'u10l7-sm u10l7-halo u10l7-ctr', color });
+        const ty = Math.min(top[1], S.P([0, 0, -r], o)[1]);
+        if (u < 0.5 && ty > 70) S.lab(key, txt, [o[0], ty - 8], 'n', { cls: 'u10l7-sm u10l7-halo u10l7-ctr', color });
+        else if (u < 0.5) S.lab(key, txt, [o[0] + r * cfg.sc + 14, (top[1] + bot[1]) / 2], 'e', { cls: 'u10l7-sm u10l7-halo', color });
         else S.lab(key, txt, [o[0], bot[1] + r * cfg.sc + 8], 's', { cls: 'u10l7-sm u10l7-halo u10l7-ctr', color });
       };
       const v1 = k === 'p1' ? '15' : k === 'p2' ? '20' : '10';

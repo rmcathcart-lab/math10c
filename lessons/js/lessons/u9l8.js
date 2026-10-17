@@ -196,7 +196,7 @@ const pyramid = {
         run: async (c) => {
           sides.opp.path.removeAttribute('stroke-dasharray'); colour(sides.opp, OPP); colour(sides.adj, ADJ); colour(sides.hyp, HYP);
           arcC = G.arc(C, Tp, F, 40, { label: T('\\theta') }); await G.draw(c, arcC, 400); await fadeIn(c, arcC.label);
-          for (const [a, b, t, cl] of [[F, Tp, 'opp', OPP], [F, C, 'adj', ADJ], [C, Tp, 'hyp', HYP]]) { const d = G.tag(a, b, t, cl, [150, 50]); tags.push(d); await pop(c, d, 280); }
+          for (const [a, b, t, cl, o] of [[F, Tp, 'opp', OPP, 26], [F, C, 'adj', ADJ, 48], [C, Tp, 'hyp', HYP, 26]]) { const d = G.tag(a, b, t, cl, [150, 50], o); tags.push(d); await pop(c, d, 280); }
         } },
       { cap: `${T('\\tan\\theta=\\frac{146}{115}\\approx' + f(146 / 115, 3))}, so ${T(`\\theta=\\tan^{-1}\\!\\left(\\frac{146}{115}\\right)\\approx${f(thA, 1)}^\\circ`)}. Steeper than ${T('45^\\circ')}: <b>D</b>.`,
         run: async (c) => {
@@ -215,7 +215,7 @@ const pyramid = {
       { cap: `<b>B</b> (${T('38^\\circ')}) flipped the ratio: ${T(`\\tan^{-1}\\!\\left(\\frac{115}{146}\\right)\\approx${f(thTip, 1)}^\\circ`)} is the angle at the <b>tip</b>. ${T(`${f(thA, 1)}^\\circ+${f(thTip, 1)}^\\circ=90^\\circ`)}.`,
         run: async (c) => {
           ghostA.forEach((g) => g.remove());
-          arcT = G.arc(Tp, F, C, 34, { color: TEAL, label: T(f(thTip, 1) + '^\\circ'), ld: 30 }); await G.draw(c, arcT, 400); await fadeIn(c, arcT.label);
+          arcT = G.arc(Tp, F, C, 58, { color: TEAL, label: T(f(thTip, 1) + '^\\circ'), ld: 26 }); await G.draw(c, arcT, 400); await fadeIn(c, arcT.label);
           await say(c, p, `<span class="u9l8-x">B</span> ${T(`\\tan^{-1}\\!\\left(\\dfrac{115}{146}\\right)\\approx${f(thTip, 1)}^\\circ`)}: the tip angle`, 'sm');
         } },
       { cap: `<b>C</b> (${T('45^\\circ')}) needs height = half-base. Here ${T('146>115')}, so ${T('\\tan\\theta>1')} and ${T('\\theta>45^\\circ')}. A climb, not a walk!`,
@@ -249,7 +249,7 @@ const WT = {
 };
 const whichTool = {
   title: '★ Which tool? Follow the triangle',
-  height: 470,
+  height: 500,
   choices: Object.keys(WT).map((k) => ({ v: k, label: WT[k].label })),
   intro: (v) => `${WT[v].label.replace(' check', '')}: the triangle travels through the chart, one question at a time. Press <b>Next</b>.`,
   make(stage, v, ex) {
@@ -257,7 +257,7 @@ const whichTool = {
     // ---- the flowchart (right) ----
     const FW = ex.W - 352, sx = FW / 610, X = (x) => x * sx, fx = ex.W - FW - 6;
     const F = new Flowchart(stage, {
-      x: fx, y: 6, width: FW, height: 458,
+      x: fx, y: 6, width: FW, height: 446,
       nodes: {
         start: { x: X(225), y: 32, w: X(310), h: 50, html: '<b>Is there a right triangle?</b>', cls: 'bk-round' },
         split: { x: X(518), y: 128, w: X(170), h: 76, html: '<b>No: drop an altitude</b>two right triangles', color: OPP, cls: 'bk-dashed' },
@@ -284,7 +284,7 @@ const whichTool = {
     const talt = svgEl('path', { d: 'M19 4L19 39', fill: 'none', stroke: OPP, 'stroke-width': 2.4, 'stroke-dasharray': '4 3' }, tsv); talt.style.opacity = 0;
     F.html.appendChild(tok); tok.style.opacity = 0;
     const LEAF = ['soh', 'pyth', 'comp', 'inv'];
-    const tpos = (id) => { const n = F.node(id).n; return LEAF.includes(id) ? [n.x, n.y - n.h / 2 - 24] : id === 'split' ? [n.x, n.y + n.h / 2 + 26] : [Math.max(28, n.x - n.w / 2 - 30), n.y]; };
+    const tpos = (id) => { const n = F.node(id).n; return LEAF.includes(id) ? [n.x, n.y + n.h / 2 + 26] : id === 'split' ? [n.x, n.y + n.h / 2 + 26] : [Math.max(28, n.x - n.w / 2 - 30), n.y]; };
     let tcur = null;
     const tokTo = async (c, id) => { const [x2, y2] = tpos(id); if (!tcur) { tcur = [x2, y2]; place(tok, x2, y2, 'c'); await pop(c, tok, 300); return; } const [xa, ya] = tcur; await tween(c, 520, (t) => place(tok, xa + (x2 - xa) * t, ya + (y2 - ya) * t, 'c')); tcur = [x2, y2]; };
     const goTo = async (c, a, b) => { await Promise.all([F.go(c, a, b), tokTo(c, b)]); await F.visit(c, b); };
@@ -292,7 +292,7 @@ const whichTool = {
     const pts = Object.values(q.P), xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
     const bw = Math.max(...xs) - Math.min(...xs), bh = Math.max(...ys) - Math.min(...ys), k = Math.min(220 / bw, 165 / bh);
     const G = new Geo(stage, { x: 0, y: 0, w: 340, h: 250, k, ox: 188 - (Math.min(...xs) + bw / 2) * k, oy: 125 + (bh / 2) * k + 8 });
-    const p = panel(stage, 10, 262, 326, 200);
+    const p = panel(stage, 10, 262, 326, 226);
     const S = {}, P = q.P;
     const tri = async (c) => {
       if (q.kind === 'rt') {
@@ -338,7 +338,7 @@ const whichTool = {
         if (q.rs) for (const key in q.rs) { S.labs[key].innerHTML = T(q.rs[key]); S.labs[key].style.color = q.col[key]; await pop(c, S.labs[key]); }
         if (q.ra) { S.arc.label.innerHTML = T(q.ra); await pop(c, S.arc.label); }
         if (q.ra2) { S.arc2.label.innerHTML = T(q.ra2); await pop(c, S.arc2.label); }
-        const s = stamp(stage, q.res, { ok: true, x: 172, y: 432, size: 'sm', rotate: -4 }); await stampIn(c, s);
+        const s = stamp(stage, q.res, { ok: true, x: 172, y: 452, size: 'sm', rotate: -4 }); await stampIn(c, s);
       } });
     return steps;
   }
@@ -356,13 +356,13 @@ const names = {
   intro: (v) => `${v === 'ex1' ? 'Example 1: ' : ''}${T(NM[v].V1 + NM[v].V2 + NM[v].R)}, right angle at ${T(NM[v].R)}. Press <b>Next</b>.`,
   make(stage, v, ex) {
     const q = NM[v], { R, V1, V2, base, rise, hyp } = q;
-    const k = Math.min(260 / base, 300 / rise), G = new Geo(stage, { x: 0, y: 0, w: 420, h: 410, k, ox: 228 - base * k / 2, oy: 205 + rise * k / 2 });
+    const k = Math.min(260 / base, 300 / rise), G = new Geo(stage, { x: 0, y: 0, w: 420, h: 410, k, ox: 228 - base * k / 2, oy: 185 + rise * k / 2 });
     const pR = [0, 0], p1 = [base, 0], p2 = [0, rise], ins = [base / 3, rise / 3];
     const s1 = R + V1, s2 = R + V2, sh = V1 + V2; // base leg, vertical leg, hypotenuse names
     const p = panel(stage, 432, 16, ex.W - 446, 378);
     const A1 = Math.atan(rise / base) / RAD, A2 = 90 - A1;
     let sb, sv, shy, arc1, arc2, tags = [];
-    const swapTags = async (c, list) => { tags.forEach((t) => t.remove()); tags = []; for (const [a, b, t, cl] of list) { const d = G.tag(a, b, t, cl, ins, 34); tags.push(d); await pop(c, d, 260); } };
+    const swapTags = async (c, list) => { tags.forEach((t) => t.remove()); tags = []; for (const [a, b, t, cl] of list) { const d = G.tag(a, b, t, cl, ins, 44); tags.push(d); await pop(c, d, 260); } };
     return [
       { cap: `Right angle at ${T(R)}. The side across from it, ${T(sh + '=' + hyp)}, is the ${HYPw}: the longest side, from <b>either</b> acute angle.`,
         run: async (c) => {
@@ -498,7 +498,7 @@ const solveSide = {
     G.rm(R, X, Y, 14);
     const arc = G.arc(X, Y, R, 44, { label: T('42^\\circ') });
     const l11 = G.lab([5.5, 0], T('11\\text{ cm}'), { pos: 's', dy: 4 });
-    const lq = G.lab(v === 'a' ? [0, opp / 2] : [5.5, opp / 2], T('?'), { pos: v === 'a' ? 'w' : 'ne', dx: v === 'a' ? -4 : 6, cls: 'u9l8-q' });
+    const lq = G.lab(v === 'a' ? [0, opp / 2] : [3.4, 2.9], T('?'), { pos: v === 'a' ? 'e' : 'c', dx: v === 'a' ? 8 : 0, cls: 'u9l8-q' });
     const BAL = balance(stage, 380 + (ex.W - 380) / 2, 200);
     BAL.all.forEach(hide);
     const res = add(stage, box(h('div', 'u9l8-res'), ex.W - 400, 90), 390, 300); hide(res);
@@ -561,11 +561,11 @@ const solveAngle = {
     if (!e3) G.lab([base / 2, rise / 2], T('15'), { pos: 'ne', dx: 6, cls: 'u9l8-fn' });
     const arc = G.arc(X, Y, R, 44, { label: T(e3 ? '\\theta' : 'B') });
     const th = Math.atan(rise / base) / RAD, fn = e3 ? '\\tan' : '\\sin', ratio = e3 ? 5.3 / 7.8 : 0.8;
-    const MW = ex.W - 420, M1 = machine(stage, 400, 50, fn, MW), M2 = machine(stage, 400, 200, fn + '^{-1}', MW);
-    const t1 = add(stage, h('div', 'u9l8-mt', '<b>Forwards</b>: angle → ratio'), 400, 18), t2 = add(stage, h('div', 'u9l8-mt', '<b>Backwards</b>: ratio → angle'), 400, 168);
+    const MW = ex.W - 420, M1 = machine(stage, 400, 42, fn, MW), M2 = machine(stage, 400, 170, fn + '^{-1}', MW);
+    const t1 = add(stage, h('div', 'u9l8-mt', '<b>Forwards</b>: angle → ratio'), 400, 12), t2 = add(stage, h('div', 'u9l8-mt', '<b>Backwards</b>: ratio → angle'), 400, 140);
     M2.ar.forEach((a) => a.classList.add('back'));
     [...M1.all, ...M2.all, t1, t2].forEach(hide);
-    const p = panel(stage, 400, 290, MW, 124);
+    const p = panel(stage, 400, 250, MW, 168);
     const demo = e3 ? 30 : 30, demoV = e3 ? Math.tan(demo * RAD) : Math.sin(demo * RAD);
     const hy = Math.hypot(5.3, 7.8);
     const travel = async (c, M, from, to) => { const chip = add(stage, h('div', 'u9l8-chipv', from), parseFloat(M.A.style.left) + 30, parseFloat(M.A.style.top) + 14); await pop(c, chip); const x1 = parseFloat(M.R.style.left) + 30, x0 = parseFloat(chip.style.left); await tween(c, 900, (t) => { chip.style.left = (x0 + (x1 - x0) * t) + 'px'; }); chip.remove(); };
@@ -779,23 +779,23 @@ const bearings = {
   choices: Object.keys(BR).map((k) => ({ v: k, label: BR[k].label })),
   intro: (v) => `A boat leaves harbour ${T('H')} on a bearing of ${T(String(BR[v].b).padStart(3, '0') + '^\\circ')} and sails ${T(String(BR[v].d))} km. Press <b>Next</b>.`,
   make(stage, v, ex) {
-    const q = BR[v], br = q.b, d = q.d, k = 17, south = br > 90;
-    const G = new Geo(stage, { x: 0, y: 0, w: 560, h: 430, k, ox: 230, oy: south ? 160 : 300 });
+    const q = BR[v], br = q.b, d = q.d, k = 26, south = br > 90;
+    const G = new Geo(stage, { x: 0, y: 0, w: 560, h: 430, k, ox: 200, oy: south ? 150 : 335 });
     const H = [0, 0], M = [d * Math.sin(br * RAD), d * Math.cos(br * RAD)], foot = [0, M[1]];
     const ref = south ? 180 - br : br, ns = Math.abs(M[1]), ew = M[0];
-    const nsL = G.seg([0, south ? 6 : -5], [0, south ? -11 : 13], { color: GRAY, width: 2 });
-    const [nx, ny] = G.P([0, south ? 6 : 13]); svgEl('polygon', { points: `${nx},${ny - 12} ${nx - 7},${ny + 2} ${nx + 7},${ny + 2}`, fill: INK }, G.Ltop);
-    G.lab([0, south ? 6 : 13], '<b>N</b>', { pos: 'n', gap: 12 });
-    const ewL = G.seg([-5, 0], [12, 0], { color: '#dde0e6', width: 1.5, layer: G.Lbg }); void ewL; void nsL;
+    const nsL = G.seg([0, south ? 4 : -3], [0, south ? -7.6 : 10.5], { color: GRAY, width: 2 });
+    const [nx, ny] = G.P([0, south ? 4 : 10.5]); svgEl('polygon', { points: `${nx},${ny - 12} ${nx - 7},${ny + 2} ${nx + 7},${ny + 2}`, fill: INK }, G.Ltop);
+    G.lab([0, south ? 4 : 10.5], '<b>N</b>', { pos: 'n', gap: 12 });
+    const ewL = G.seg([-4, 0], [12, 0], { color: '#dde0e6', width: 1.5, layer: G.Lbg }); void ewL; void nsL;
     G.lab([12, 0], '<b class="u9l8-muted">E</b>', { pos: 'e' });
-    if (south) G.lab([0, -11], '<b>S</b>', { pos: 's' });
+    if (south) G.lab([0, -7.6], '<b>S</b>', { pos: 's' });
     const hp = svgEl('circle', { cx: G.P(H)[0], cy: G.P(H)[1], r: 6, fill: INK }, G.Ltop); void hp;
     G.lab(H, T('H'), { pos: 'w', dx: -6, cls: 'u9l8-v' });
     // sweeping bearing arc
     const sw = svgEl('path', { fill: 'none', stroke: REF, 'stroke-width': 3.2 }, G.Ltop), swf = svgEl('path', { fill: REF, 'fill-opacity': 0.12 }, G.Lbg);
     const ray = svgEl('path', { stroke: REF, 'stroke-width': 2.5, 'stroke-dasharray': '6 5', fill: 'none' }, G.Ltop);
     const swl = G.lab(H, '', { color: REF, cls: 'u9l8-anglab' });
-    const [hx, hy] = G.P(H), r = 62;
+    const [hx, hy] = G.P(H), r = 70;
     const setSweep = (a) => { const e = [hx + r * Math.sin(a * RAD), hy - r * Math.cos(a * RAD)], big = a > 180 ? 1 : 0; sw.setAttribute('d', a > 0.5 ? `M${hx} ${hy - r}A${r} ${r} 0 ${big} 1 ${e[0]} ${e[1]}` : ''); swf.setAttribute('d', a > 0.5 ? `M${hx} ${hy}L${hx} ${hy - r}A${r} ${r} 0 ${big} 1 ${e[0]} ${e[1]}Z` : ''); ray.setAttribute('d', `M${hx} ${hy}L${hx + (r + 40) * Math.sin(a * RAD)} ${hy - (r + 40) * Math.cos(a * RAD)}`); swl.innerHTML = T(String(Math.round(a)).padStart(3, '0') + '^\\circ'); place(swl, hx + (r + 30) * Math.sin(a * RAD / 2), hy - (r + 30) * Math.cos(a * RAD / 2), 'c'); };
     setSweep(0); [sw, swf, ray, swl].forEach(hide);
     const path = G.seg(H, M, { color: HYP }), drop = G.seg(M, foot, { color: OPP }), leg = G.seg(H, foot, { color: ADJ }); [path, drop, leg].forEach(hide);
@@ -804,7 +804,7 @@ const bearings = {
     return [
       { cap: `A bearing is an angle measured <b>clockwise from north</b>, written with <b>three digits</b>. Start at ${T('H')}, facing north.`, run: async (c) => { await say(c, p, `bearing ${T(bs + '^\\circ')}: clockwise from N`); } },
       { cap: `Turn ${T(br + '^\\circ')} clockwise from north${south ? `, past east (${T('090^\\circ')}): the boat heads <b>south of east</b>` : ''}. Then sail ${T(String(d))} km.`,
-        run: async (c) => { [sw, swf, ray, swl].forEach((e) => (e.style.opacity = 1)); await tween(c, 1100, (t) => setSweep(br * t)); path.style.opacity = 1; await G.draw(c, path, 600); await fadeIn(c, G.lab(M, T('M'), { pos: south ? 'se' : 'ne', cls: 'u9l8-v' })); await fadeIn(c, G.lab([M[0] / 2, M[1] / 2], T(d + '\\text{ km}'), { pos: south ? 'sw' : 'nw', dx: south ? -4 : -4, color: HYP })); } },
+        run: async (c) => { [sw, swf, ray, swl].forEach((e) => (e.style.opacity = 1)); await tween(c, 1100, (t) => setSweep(br * t)); path.style.opacity = 1; await G.draw(c, path, 600); await fadeIn(c, G.lab(M, T('M'), { pos: south ? 'se' : 'ne', cls: 'u9l8-v' })); await fadeIn(c, G.lab([M[0] / 2, M[1] / 2], T(d + '\\text{ km}'), { pos: south ? 'ne' : 'se', dx: 6, color: HYP })); } },
       { cap: south ? `Use the north–south line. The acute angle at ${T('H')} is measured from <b>south</b>: ${T(`180^\\circ-${br}^\\circ=${ref}^\\circ`)}. Drop from ${T('M')} to that line: a right triangle.`
           : `Drop from ${T('M')} to the north line: a right triangle. The ${T(String(d))} km path is the ${HYPw}, and ${T(br + '^\\circ')} sits at ${T('H')} between north and the path.`,
         run: async (c) => {
