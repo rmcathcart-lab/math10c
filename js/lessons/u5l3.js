@@ -25,7 +25,7 @@
     'ctx-mult': 'Multiplied instead of dividing', 'ctx-used': 'Gave the amount used instead of the amount left', 'ctx-rate': 'Gave the rate',
     'ctx-square-coef': 'Squared the coefficient too: (−5t)²', 'ctx-sign-sq': 'Lost the minus sign of −5t²', 'ctx-no-c': 'Left out the constant term',
     'ctx-neg-time': 'Kept the negative time', 'ctx-max-time': 'Gave the time of the maximum', 'ctx-platform': 'Gave the time back at platform height',
-    'ctx-hundreds': 'Forgot the units are hundreds', 'ctx-loss-sign': 'Sign of a loss',
+    'ctx-hundreds': 'Forgot the units are hundreds', 'ctx-loss-sign': 'Sign of a loss', 'ctx-diff': 'Combined the two solutions', 'ctx-dist': 'Didn’t expand the brackets correctly',
     'eq-no-equals': 'Not written as an equation', 'eq-unreadable': 'Equation unreadable', 'eq-not-line': 'Not a straight line',
     'eq-h-v': 'Mixed up horizontal and vertical lines', 'eq-slanted': 'Wrote a slanted line', 'eq-const': 'Wrong constant in the equation',
     'eq-int-coef': 'Coefficients not integers', 'eq-reduce': 'Common factor left in the coefficients', 'eq-lead-neg': 'Leading coefficient negative',
@@ -70,7 +70,7 @@
   /* ---------------- answer readers ---------------- */
   function strip(s) { return String(s == null ? '' : s).replace(/\\(left|right)/g, '').replace(/\\lparen/g, '(').replace(/\\rparen/g, ')').replace(/\\\{|\\\}|\\lbrace|\\rbrace/g, ' ').trim(); }
   function looksPoint(s) { return /\([^()]*,[^()]*\)/.test(strip(s)); }
-  function isNone(s) { var z = String(s == null ? '' : s).replace(/\\text\{\s*([^}]*)\}/g, '$1').replace(/\s+/g, '').toLowerCase(); return /^(none|no|nointercept|nointercepts|dne|noxintercept|noyintercept|nosolution)$/.test(z); }
+  function isNone(s) { var z = String(s == null ? '' : s).replace(/\\text\{\s*([^}]*)\}/g, '$1').replace(/[\s-]+/g, '').toLowerCase(); return /^(none|no|nointercepts?|dne|no[xy]intercepts?|nosolutions?)$/.test(z); }
   function pairList(resp) {
     var s = strip(resp).trim(); // (only outer braces are removed: the ones inside \frac{}{} must stay)
     if (/^\{[\s\S]*\}$/.test(s) && !/^\{[^{}]*\}\{/.test(s)) s = s.slice(1, -1).trim();
@@ -133,8 +133,9 @@
       if (!want) return wrong('int-missed-none', o.noneWhy || 'Check: when you substitute ' + t(other + '=0') + ', the equation has no solution — so there is no ' + name + '. Press <b>none</b>.');
       if (samePts(A, want)) return ok();
       if (o.diag) { var h = o.diag(A); if (h) return wrong(h.code, h.hint); }
-      if (o.other && samePts(A, o.other)) return wrong('int-pt-swap', 'Those are the ' + t(other) + '-intercept points (they have ' + t(axis + '=0') + '). This box is for where the graph meets the ' + t(axis) + '-axis.');
-      if (A.every(function (p) { return same(p[keep], 0) && vals.some(function (v) { return same(v, p[zero]); }); }) && !vals.every(function (v) { return same(v, 0); }))
+      var sub = A.every(function (p) { return want.some(function (q) { return same(p[0], q[0]) && same(p[1], q[1]); }); }); // only correct points, some missing
+      if (o.other && samePts(A, o.other) && !sub) return wrong('int-pt-swap', 'Those are the ' + t(other) + '-intercept points (they have ' + t(axis + '=0') + '). This box is for where the graph meets the ' + t(axis) + '-axis.');
+      if (!sub && A.every(function (p) { return same(p[keep], 0) && vals.some(function (v) { return same(v, p[zero]); }); }) && !vals.every(function (v) { return same(v, 0); }))
         return wrong('int-pt-flip', 'Your coordinates are in the wrong order. ' + An + ' ' + name + ' point lies on the ' + t(axis) + '-axis, so its ' + t(other) + '-coordinate is ' + t('0') + ': ' + (axis === 'x' ? t('(a,\\ 0)') : t('(0,\\ b)')) + '.');
       var off = A.filter(function (p) { return !same(p[zero], 0); });
       if (off.length) return wrong('int-off-axis', t(ptT(off[0])) + ' isn’t on the ' + t(axis) + '-axis: every ' + name + ' point has ' + t(other) + '-coordinate ' + t('0') + '.');
@@ -699,6 +700,7 @@
             var v = same(c.B, 0), h = same(c.A, 0);
             if ((yInts && h && same(c.C, 0)) || (!yInts && v && same(c.C, 0))) return { code: 'eq-h-v', hint: t(eqTexOf(c)) + ' is the <b>' + oth + '-axis</b>: it has infinitely many ' + t(oth) + '-intercepts. Which line lies along the ' + t(ax) + '-axis?' };
             if ((yInts && v) || (!yInts && h)) return { code: 'eq-const', hint: t(eqTexOf(c)) + ' is parallel to the ' + t(ax) + '-axis, so it never meets it. To meet it at infinitely many points the line must lie <b>on</b> the ' + t(ax) + '-axis.' };
+            if ((yInts && h) || (!yInts && v)) return { code: 'eq-h-v', hint: t(eqTexOf(c)) + ' crosses the ' + t(ax) + '-axis only <b>once</b>. To meet the ' + t(ax) + '-axis at infinitely many points the line must lie <b>along</b> it.' };
             return null;
           } }, 'To meet the ' + t(ax) + '-axis at infinitely many points, the line must <b>be</b> the ' + t(ax) + '-axis. Every point on the ' + t(ax) + '-axis has ' + t(oth + '=0') + ', so the equation is ' + t(key) + '.',
           ['A line can only meet an axis at more than one point if it lies along that axis.', 'Which coordinate is ' + t('0') + ' at every point on the ' + t(ax) + '-axis?'], 'infinitely many ' + ax + '-intercepts');
@@ -727,10 +729,10 @@
           var ab = r.chance(0.25) ? [8, 6] : pickWhere(function () { return [r.int(2, 9), r.int(2, 9)]; }, function (z) { return z[0] !== z[1]; }), a1 = ab[0], b = ab[1];
           var T = reduceT([b, -a1, a1 * b]), eq = stdTex(T) + '=0', ans = b + a1;
           return B.nr('The line ' + t(eq) + ' has ' + t('x') + '-intercept ' + t('a') + ' and ' + t('y') + '-intercept ' + t('b') + '. The value of ' + t('b-a') + ' is ________.', ans, function (v) {
-            if (v === Math.abs(b - a1)) return { code: 'nr-one-sign', hint: 'Check the sign of ' + t('a') + ': ' + t('y=0') + ' gives ' + t(T[0] + 'x' + sg(T[2]) + '=0') + ', so ' + t('a') + ' is negative. Subtracting a negative adds.' };
+            if (v === Math.abs(b - a1)) return { code: 'nr-one-sign', hint: 'Check the sign of ' + t('a') + ': ' + t('y=0') + ' gives ' + t(lin([[T[0], 'x'], [T[2], '']]) + '=0') + ', so ' + t('a') + ' is negative. Subtracting a negative adds.' };
             if (v === a1 * b) return { code: 'nr-sum', hint: 'The question asks for ' + t('b-a') + ', a difference, not a product.' };
             return null;
-          }, t('y=0') + ': ' + t(T[0] + 'x' + sg(T[2]) + '=0') + ', ' + t('x=' + (-a1)) + ', so ' + t('a=' + (-a1)) + '.<br>' + t('x=0') + ': ' + t(lin([[T[1], 'y'], [T[2], '']]) + '=0') + ', ' + t('y=' + b) + ', so ' + t('b=' + b) + '.<br>' + t('b-a=' + b + '-(' + (-a1) + ')=' + ans) + '.',
+          }, t('y=0') + ': ' + t(lin([[T[0], 'x'], [T[2], '']]) + '=0') + ', ' + t('x=' + (-a1)) + ', so ' + t('a=' + (-a1)) + '.<br>' + t('x=0') + ': ' + t(lin([[T[1], 'y'], [T[2], '']]) + '=0') + ', ' + t('y=' + b) + ', so ' + t('b=' + b) + '.<br>' + t('b-a=' + b + '-(' + (-a1) + ')=' + ans) + '.',
           ['Find ' + t('a') + ' with ' + t('y=0') + ' and ' + t('b') + ' with ' + t('x=0') + '.', 'One of the intercepts is negative — use brackets when you subtract it.'], 'b - a for ' + eq);
         } }] },
       /* ---------------- Extension ---------------- */
@@ -843,8 +845,8 @@
           var o = r.chance(0.25) ? [3, 4, 2, 1] : pickWhere(function () { return [r.int(2, 5), r.int(2, 5), r.int(1, 4), r.int(1, 4)]; }, function (z) { return z[0] !== z[1]; });
           var a = o[0], b = o[1], h = o[2], k = o[3], C = a * h + b * k, eq = a + '(x-' + h + ')=' + b + '(y+' + k + ')';
           return valuesPart(t(eq), C / a, -C / b, { text: 'values of intercepts of ' + eq,
-            xdl: [[(a * h - k) / a, 'ctx-dist', 'Multiply ' + t(b) + ' into <b>both</b> terms of ' + t('(y+' + k + ')') + '.'], [h, 'ctx-dist', 'Expand both sides first: the bracket ' + t('(y+' + k + ')') + ' does not disappear when ' + t('y=0') + '.']],
-            ydl: [[(b * k - a * h) / b, 'ctx-dist', 'Multiply ' + t(a) + ' into <b>both</b> terms of ' + t('(x-' + h + ')') + '.'], [-k, 'ctx-dist', 'Expand both sides first: the bracket ' + t('(x-' + h + ')') + ' does not disappear when ' + t('x=0') + '.']],
+            xdl: [[(a * h + k) / a, 'ctx-dist', 'Multiply ' + t(b) + ' into <b>both</b> terms of ' + t('(y+' + k + ')') + '.'], [h, 'ctx-dist', 'Expand both sides first: the bracket ' + t('(y+' + k + ')') + ' does not disappear when ' + t('y=0') + '.']],
+            ydl: [[(-h - b * k) / b, 'ctx-dist', 'Multiply ' + t(a) + ' into <b>both</b> terms of ' + t('(x-' + h + ')') + '.'], [-k, 'ctx-dist', 'Expand both sides first: the bracket ' + t('(x-' + h + ')') + ' does not disappear when ' + t('x=0') + '.']],
             sol: 'Expand: ' + t(a + 'x-' + a * h + '=' + b + 'y+' + b * k) + ', so ' + t(a + 'x-' + b + 'y-' + C + '=0') + '.<br>' + t('y=0') + ': ' + t(a + 'x=' + C) + ', ' + t('x=' + rT(C, a)) + '.<br>' + t('x=0') + ': ' + t('-' + b + 'y=' + C) + ', ' + t('y=' + rT(-C, b)) + '.' });
         } }] },
       { num: '2', stem: 'Determine the ' + t('x') + '-intercept(s) and the ' + t('y') + '-intercept of each parabola. <b>Answer as ordered pairs.</b> If a graph has no ' + t('x') + '-intercept, press <b>none</b>.', parts: [
@@ -960,7 +962,7 @@
         parts: [
           { id: 'e6a', level: 'BEG', make: function (r, o) {
             return valuesPart('Read the <b>value</b> of the ' + t('x') + '-intercept and the <b>value</b> of the ' + t('y') + '-intercept off the graph.', o.p, o.q, { text: 'read values of ' + o.eq,
-              sol: 'The line meets the ' + t('x') + '-axis at ' + t(o.p) + ' and the ' + t('y') + '-axis at ' + t(o.q) + '. Check: ' + t('y=0') + ' gives ' + t(o.T[0] + 'x=' + (-o.T[2])) + ', ' + t('x=' + o.p) + ' ✓; ' + t('x=0') + ' gives ' + t(o.T[1] + 'y=' + (-o.T[2])) + ', ' + t('y=' + o.q) + ' ✓.',
+              sol: 'The line meets the ' + t('x') + '-axis at ' + t(o.p) + ' and the ' + t('y') + '-axis at ' + t(o.q) + '. Check: ' + t('y=0') + ' gives ' + t(lin([[o.T[0], 'x']]) + '=' + (-o.T[2])) + ', ' + t('x=' + o.p) + ' ✓; ' + t('x=0') + ' gives ' + t(lin([[o.T[1], 'y']]) + '=' + (-o.T[2])) + ', ' + t('y=' + o.q) + ' ✓.',
               hints: ['Find where the line meets each axis on the grid.', 'You can check with the equation: substitute ' + t('y=0') + ', then ' + t('x=0') + '.'] });
           } },
           { id: 'e6c', level: 'BEG', make: function (r, o) {
@@ -1118,7 +1120,7 @@
           } },
           { id: 'e10d', level: 'EMG', make: function (r, o) {
             var v = o.v;
-            return numPart('The maximum profit occurs at ' + t('x=' + v) + '. Calculate it, in dollars.', o.Pmax * 100, [[o.Pmax, 'ctx-hundreds', t('P') + ' is in <b>hundreds</b> of dollars: multiply by ' + t('100') + '.'], [(o.a * v * v * 2 - o.Pmax) * 100, 'ctx-sign-sq', 'The ' + t('x^{2}') + '-term is negative: ' + t('-' + o.a + '(' + v + ')^{2}=' + (-o.a * v * v)) + '.']],
+            return numPart('The maximum profit occurs at ' + t('x=' + v) + '. Calculate it, in dollars.', o.Pmax * 100, [[o.Pmax, 'ctx-hundreds', t('P') + ' is in <b>hundreds</b> of dollars: multiply by ' + t('100') + '.'], [(o.Pmax + 2 * o.a * v * v) * 100, 'ctx-sign-sq', 'The ' + t('x^{2}') + '-term is negative: ' + t('-' + o.a + '(' + v + ')^{2}=' + (-o.a * v * v)) + '.']],
               t('P=-' + o.a + '(' + v + ')^{2}+' + o.b + '(' + v + ')' + sg(o.c) + '=' + (-o.a * v * v) + '+' + o.b * v + sg(o.c) + '=' + o.Pmax) + ' hundred dollars ' + t('=\\$' + F(o.Pmax * 100)) + '.', ['Substitute ' + t('x=' + v) + ', then multiply by ' + t('100') + ' to get dollars.'], 'max profit', { before: '$' });
           } },
           { id: 'e10e', level: 'PRG', make: function (r, o) {

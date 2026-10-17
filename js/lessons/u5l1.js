@@ -105,7 +105,7 @@
     extra = extra || {};
     var v = P.vars(target)[0];
     var ws = (wrongs || []).filter(function (w) { return w && !P.eq(w.is, target); });
-    var base = K.poly(target, { wrong: ws });
+    var base = K.poly(target, { wrong: ws, expanded: false }); // an equation like A = 3(n + 5) is a correct equation
     var check = function (resp) {
       var s = String(resp == null ? '' : resp).replace(new RegExp('^\\s*' + lhs + '\\s*='), '').replace(new RegExp('^\\s*' + lhs.toLowerCase() + '\\s*='), '');
       var r = base(s);

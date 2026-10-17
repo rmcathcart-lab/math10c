@@ -466,21 +466,24 @@
   };
   HW.arrowDiagram = function (left, right, pairs, opt) {
     opt = opt || {};
-    var n = Math.max(left.length, right.length), rowH = 30, H = n * rowH + 44, W = 300, lx = 70, rx = 230;
+    var n = Math.max(left.length, right.length), rowH = 30, H = n * rowH + 44;
+    var half = function (arr) { return Math.max(14, Math.max.apply(null, arr.map(function (v) { return String(fmtN(v)).length; }).concat([1])) * 4.6 + 4); };
+    var hl = half(left), hr = half(right), eL = Math.max(42, hl + 14), eR = Math.max(42, hr + 14);
+    var lx = Math.max(70, eL + 8), W = Math.max(300, lx + eL + 100 + eR + 8), rx = W - Math.max(70, eR + 8);
     var ly = function (i) { return 34 + (i + 0.5) * (n * rowH / left.length); }, ry = function (i) { return 34 + (i + 0.5) * (n * rowH / right.length); };
     var s = '<rect width="' + W + '" height="' + H + '" fill="#fff"/>';
-    s += '<ellipse cx="' + lx + '" cy="' + (34 + n * rowH / 2) + '" rx="42" ry="' + (n * rowH / 2 + 8) + '" fill="#f6f4ef" stroke="#2b3340" stroke-width="1.4"/>';
-    s += '<ellipse cx="' + rx + '" cy="' + (34 + n * rowH / 2) + '" rx="42" ry="' + (n * rowH / 2 + 8) + '" fill="#f6f4ef" stroke="#2b3340" stroke-width="1.4"/>';
+    s += '<ellipse cx="' + lx + '" cy="' + (34 + n * rowH / 2) + '" rx="' + eL + '" ry="' + (n * rowH / 2 + 8) + '" fill="#f6f4ef" stroke="#2b3340" stroke-width="1.4"/>';
+    s += '<ellipse cx="' + rx + '" cy="' + (34 + n * rowH / 2) + '" rx="' + eR + '" ry="' + (n * rowH / 2 + 8) + '" fill="#f6f4ef" stroke="#2b3340" stroke-width="1.4"/>';
     if (opt.leftTitle) s += '<text x="' + lx + '" y="16" font-size="13" text-anchor="middle" fill="#2b3340">' + esc(opt.leftTitle) + '</text>';
     if (opt.rightTitle) s += '<text x="' + rx + '" y="16" font-size="13" text-anchor="middle" fill="#2b3340">' + esc(opt.rightTitle) + '</text>';
     left.forEach(function (v, i) { s += '<text x="' + lx + '" y="' + (ly(i) + 5) + '" font-size="15" text-anchor="middle" fill="#1c2230">' + esc(fmtN(v)) + '</text>'; });
     right.forEach(function (v, i) { s += '<text x="' + rx + '" y="' + (ry(i) + 5) + '" font-size="15" text-anchor="middle" fill="#1c2230">' + esc(fmtN(v)) + '</text>'; });
     pairs.forEach(function (p) {
       var i = left.findIndex(function (v) { return String(v) === String(p[0]); }), j = right.findIndex(function (v) { return String(v) === String(p[1]); }); if (i < 0 || j < 0) return;
-      s += '<line x1="' + (lx + 18) + '" y1="' + ly(i) + '" x2="' + (rx - 20) + '" y2="' + ry(j) + '" stroke="#13807a" stroke-width="1.6" marker-end="url(#adArr)"/>';
+      s += '<line x1="' + (lx + hl) + '" y1="' + ly(i) + '" x2="' + (rx - hr - 2) + '" y2="' + ry(j) + '" stroke="#13807a" stroke-width="1.6" marker-end="url(#adArr)"/>';
     });
     var defs = '<defs><marker id="adArr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#13807a"/></marker></defs>';
-    return '<svg class="fig-svg" viewBox="0 0 ' + W + ' ' + H + '" style="max-width:300px" role="img" aria-label="arrow diagram">' + defs + s + '</svg>';
+    return '<svg class="fig-svg" viewBox="0 0 ' + W + ' ' + H + '" style="max-width:' + W + 'px" role="img" aria-label="arrow diagram">' + defs + s + '</svg>';
   };
   HW.valueTable = function (rows, opt) {
     opt = opt || {};

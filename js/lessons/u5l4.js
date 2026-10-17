@@ -161,7 +161,7 @@
     var lo = Math.max(-w, h - dx), hi = Math.min(w, h + dx);
     return { f: function (x) { return k + a * (x - h) * (x - h); }, from: lo, to: hi, start: 'arrow', end: 'arrow' };
   }
-  function flexFigs(list) { return '<div style="display:flex;flex-wrap:wrap;gap:6px 14px">' + list.map(function (f) { return '<div style="flex:1 1 150px;max-width:220px">' + f + '</div>'; }).join('') + '</div>'; }
+  function flexFigs(list, w) { w = w || 150; return '<div style="display:flex;flex-wrap:wrap;gap:6px 14px">' + list.map(function (f) { return '<div style="flex:1 1 ' + w + 'px;max-width:' + (w > 200 ? 300 : 220) + 'px">' + f + '</div>'; }).join('') + '</div>'; }
 
   var HINT_D = 'The <b>domain</b> is every ' + t('x') + '-value the relation uses (look left to right); the <b>range</b> is every ' + t('y') + '-value it produces (look bottom to top).';
   var HINT_DOTS = 'Solid dot → that value is included (' + t('\\le') + '). Hollow dot → excluded (' + t('<') + '). Arrow → no end on that side.';
@@ -633,7 +633,7 @@
           { id: 'e7c', sub: 'b, range', level: 'PRG', make: function (r, sh) {
             var max = sh.p * sh.N;
             return B.mc(r, '(b, continued) Which is the correct range?', [
-              { html: t('\\{0,\\ ' + sh.p + ',\\ ' + 2 * sh.p + ',\\ \\ldots,\\ ' + max + '\\}') + ', the multiples of ' + t(sh.p) + ' from ' + t('0') + ' to ' + t(max), right: true },
+              { html: t('\\{0,\\ ' + sh.p + ',\\ ' + 2 * sh.p + ',\\ \\ldots,\\ ' + max + '\\}'), right: true },
               { html: t('\\{R\\mid 0\\le R\\le ' + max + ',\\ R\\in\\mathbb{R}\\}'), why: 'That includes amounts like $' + (sh.p + 0.5) + ' or $' + (sh.p + 1) + ', which no whole number of tickets gives.' },
               { html: t('\\{0,\\ 1,\\ 2,\\ \\ldots,\\ ' + max + '\\}'), why: 'Not every whole number of dollars occurs: the revenue jumps by $' + sh.p + ' for each ticket.' },
               { html: t('\\{' + sh.p + ',\\ ' + 2 * sh.p + ',\\ \\ldots,\\ ' + max + '\\}'), why: 'Selling ' + t('0') + ' tickets is possible, which gives $0. Start the list at ' + t('0') + '.' }],
@@ -758,7 +758,7 @@
       { num: '11', stem: 'Answer each question with an example: give a set of ordered pairs.', parts: [
         { id: 'e11a', level: 'EMG', make: function (r) { return countPairsPart(r, r.pick([3, 4, 4, 5]), 1); } },
         { id: 'e11b', level: 'PRG', make: function (r) { return countPairsPart(r, 1, r.pick([3, 4, 4, 5])); } },
-        { id: 'e11c', level: 'PRG', make: function (r) { var d = r.pick([2, 3, 3]); return countPairsPart(r, d, d + 2); } }] },
+        { id: 'e11c', level: 'ADV', make: function (r) { var d = r.pick([2, 3, 3]); return countPairsPart(r, d, d + 2); } }] },
       /* ---------- EP Part E ---------- */
       { num: '12', section: 'Extra practice E — Error analysis', stem: function (sh) { return 'Asked for the domain of the relation graphed below, a student writes ' + t('D=' + bld('y', sh.P[1], sh.Q[1])) + '.' + G({ segs: [{ pts: [sh.P, sh.Q], start: 'closed', end: 'closed' }] }); },
         shared: function (r) { var P = [r.int(-5, -3), r.int(-3, -1)], Q = [r.int(0, 2), r.int(2, 4)]; while (P[0] === P[1] || Q[0] === Q[1]) { P = [r.int(-5, -3), r.int(-3, -1)]; Q = [r.int(0, 2), r.int(2, 4)]; } return { P: P, Q: Q }; },
@@ -816,7 +816,7 @@
       /* ---------- EP Part F ---------- */
       { num: '14', section: 'Extra practice F — A stretch, and two for the test', stem: function (sh) {
           return 'Domain and range are independent of one another. Both relations below have domain ' + t(bld('x', -sh.a, sh.a)) + '.' +
-            flexFigs(['<b>Graph 1</b>' + Gs({ segs: [{ pts: [[-sh.a, sh.y1], [sh.a, sh.y2]], start: 'closed', end: 'closed' }] }), '<b>Graph 2</b>' + Gs({ segs: [{ pts: [[-sh.a, sh.c], [sh.a, sh.c]], start: 'closed', end: 'closed' }] })]);
+            flexFigs(['<b>Graph 1</b>' + G({ max: 280, segs: [{ pts: [[-sh.a, sh.y1], [sh.a, sh.y2]], start: 'closed', end: 'closed' }] }), '<b>Graph 2</b>' + G({ max: 280, segs: [{ pts: [[-sh.a, sh.c], [sh.a, sh.c]], start: 'closed', end: 'closed' }] })], 250);
         },
         shared: function (r) { var a = r.pick([2, 3, 3, 4]), y1 = r.int(-4, -1), y2 = r.int(1, 4), c = r.pick(nz(-4, 4)); return { a: a, y1: y1, y2: y2, c: c }; },
         parts: [

@@ -1,6 +1,6 @@
 /* Math 10C · Unit 5 · Lesson 7B — Function Notation (RF8)
  * Assignment questions 1–21 (u5_L07B.tex; 19–21 are the booklet's Extension) and the function-notation questions of
- * the shared Extra Practice 7 (u5_EP07.tex: Q10–19, Q22 a/b/e/f, Q23–25 — Q1–9, 20, 21 and 22 c/d belong to 7A),
+ * the shared Extra Practice 7 (u5_EP07.tex: Q10–19 and Q22–25 — Q1–9, 20 and 21 belong to 7A),
  * plus three short mapping-notation items from the lesson's Extension section.
  * Every part is a generator: it keeps the booklet question's structure (which input is negative, a squared or cubed
  * input, a radical or decimal input, an expression input, two solutions, the context) and changes the numbers; the
@@ -232,7 +232,7 @@
           } },
           { id: '4b', level: 'BEG', make: function (r, sh) {
             var k = sh.k, D = sh.D, pts = D.map(function (x) { return [x, k]; });
-            var win = { x: [-1, 16], y: [-1, 16], labels: 5, xName: 'x', yName: 'h(x)' };
+            var win = { x: [-1, 16], y: [-1, 16], labels: 5, unit: 10.5, xName: 'x', yName: 'h(x)' };
             var pic = function (ps, segs) { return G(Object.assign({ points: dots(ps), segs: segs || [], aria: 'graph option' }, win)); };
             return graphMC(r, 'Which graph shows the function ' + t('h') + '?', [
               { html: pic(pts), right: true },
@@ -838,7 +838,7 @@
           } }] },
       /* ---------- EP14: g(x) = c - mx ---------- */
       { num: '14', stem: function (sh) { return 'A function is defined by ' + t('g(x)=' + sh.c + '-' + sh.m + 'x') + '. Determine each of the following, simplified.'; },
-        shared: function (r) { return { c: r.int(3, 9), m: r.int(2, 4), p: r.int(2, 5), k: r.pick([2, 2, 3]) }; },
+        shared: function (r) { return pickWhere(function () { return { c: r.int(3, 9), m: r.int(2, 4), p: r.int(2, 5), k: r.pick([2, 2, 3]) }; }, function (o) { return o.c > o.m; }); },
         parts: [
           { id: 'e14a', level: 'BEG', make: function (r, sh) {
             var c = sh.c, m = sh.m, a = -sh.p, ans = c - m * a;
@@ -1057,6 +1057,16 @@
           var p = r.pick(nz(-5, 6)), q = pickWhere(function () { return r.pick(nz(-9, 9)); }, function (q) { return q !== p && q !== -p; }), truth = r.chance(0.5), pt = truth ? '(' + p + ',\\ ' + q + ')' : '(' + q + ',\\ ' + p + ')';
           return B.tf(r, 'If ' + t('f(' + p + ')=' + q) + ', the point ' + t(pt) + ' lies on the graph of ' + t('y=f(x)') + '.', truth, truth ? 'Input ' + t(p) + ', output ' + t(q) + ': the point is ' + t('(' + p + ',\\ ' + q + ')') + '.' : 'The input comes first in an ordered pair: ' + t('f(' + p + ')=' + q) + ' gives ' + t('(' + p + ',\\ ' + q + ')') + '.',
             '<b>' + (truth ? 'True' : 'False') + '.</b> Input ' + t(p) + ', output ' + t(q) + ': the point ' + t('(' + p + ',\\ ' + q + ')') + ' is on the graph' + (truth ? '' : ', not ' + t(pt)) + '.', [], 'f(p)=q point');
+        } },
+        { id: 'e22c', sub: 'c', level: 'EMG', outcome: 'RF2', make: function (r) {
+          var p = r.int(1, 5), s = p + r.int(2, 6), q = r.pick(nz(-9, 12));
+          return B.tf(r, 'If ' + t('f(' + p + ')=' + q) + ' and ' + t('f(' + s + ')=' + q) + ', then ' + t('f') + ' is not a function.', false, 'Two different inputs may share an output (many-to-one). A function only forbids one input having two outputs.',
+            '<b>False.</b> The inputs ' + t(p) + ' and ' + t(s) + ' share the output ' + t(q) + ' (many-to-one), which is allowed; ' + t('f') + ' can still be a function.', [], 'shared output still a function');
+        } },
+        { id: 'e22d', sub: 'd', level: 'BEG', outcome: 'RF2', make: function (r) {
+          var p = r.int(1, 6), q = r.pick(nz(-9, 12)), s = pickWhere(function () { return r.pick(nz(-9, 12)); }, function (v) { return v !== q; });
+          return B.tf(r, 'If ' + t('f(' + p + ')=' + q) + ' and ' + t('f(' + p + ')=' + s) + ', then ' + t('f') + ' is not a function.', true, 'The single input ' + t(p) + ' would have two different outputs, ' + t(q) + ' and ' + t(s) + ' — exactly what a function forbids.',
+            '<b>True.</b> The input ' + t(p) + ' would have two outputs, ' + t(q) + ' and ' + t(s) + ', so ' + t('f') + ' is not a function.', [], 'one input two outputs');
         } },
         { id: 'e22e', sub: 'e', level: 'BEG', make: function (r) {
           return B.tf(r, t('f') + ' and ' + t('f(x)') + ' mean the same thing.', false, t('f') + ' names the function; ' + t('f(x)') + ' is its output value at the input ' + t('x') + '.', '<b>False.</b> ' + t('f') + ' names the function; ' + t('f(x)') + ' is its output value at the input ' + t('x') + '.', [], 'f vs f(x)');

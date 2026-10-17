@@ -134,8 +134,8 @@
   /* a calculator-screen style picture of the model in a window */
   function screen(win, o) {
     var xs = win[1] - win[0], ys = win[3] - win[2], gx = niceStep(xs / 8), gy = niceStep(ys / 6);
-    return HW.graph({ x: [win[0], win[1]], y: [win[2], win[3]], unitX: 260 / xs, unitY: 160 / ys, grid: gx, gridY: gy, labels: 1, labelsX: gx * 2, labelsY: gy * 2,
-      firstQuadrant: true, xName: o.xv, yName: o.yv, max: 330, fns: o.fns, points: o.points, segs: o.segs, aria: o.aria || 'graph of the model' });
+    return HW.graph({ x: [win[0], win[1]], y: [win[2], win[3]], unitX: 260 / xs, unitY: 160 / ys, grid: gx, gridY: gy, labels: 1, labelsX: gx * 2, labelsY: ys / gy > 6 ? gy * 2 : gy,
+      firstQuadrant: true, xName: o.xv, yName: o.yv, yTitle: Math.max(Math.abs(win[2]), Math.abs(win[3])) >= 1000 ? '\u00a0' : undefined, max: 330, fns: o.fns, points: o.points, segs: o.segs, aria: o.aria || 'graph of the model' });
   }
   function mc(r, prompt, opts, sol, hints, text, keep) { return B.mc(r, prompt, opts, sol, hints || [], text, keep); }
   function setPart(prompt, target, opt, sol, hints, text) { return B.set(prompt, target, opt, sol, hints, text); }
@@ -910,15 +910,14 @@
       { num: '9', stem: 'Every calculator draws more of a curve than the situation allows.', parts: [
         { id: 'e9a', sub: 'a–c', level: 'EMG', make: function (r) {
           var Z = r.pick([20, 25, 30]), Bc = r.pick([4, 5]), b = r.pick([20, 25, 30]), c = r.pick([1, 2, 3]), F0 = r.pick([72, 84, 90]), k = { 72: 0.12, 84: 0.14, 90: 0.15 }[F0], dI = Math.round(F0 / k);
-          var rows = [{ id: 'rev', html: t('V=' + (Bc * Z) + 'p-' + Bc + 'p^{2}') + ' (revenue from a price of ' + t('p') + ' dollars, selling ' + t((Bc * Z) + '-' + Bc + 'p') + ' cases) for ' + t('p>' + Z) },
-            { id: 'shell', html: t('h=' + quadT(-5, b, c, 't')) + ' (a fireworks shell, ' + t('t') + ' seconds after firing) for ' + t('t<0') },
-            { id: 'fuel', html: t('F=' + F0 + '-' + nT(k) + 'd') + ' (fuel left after ' + t('d') + ' km) for ' + t('d>' + dI) }];
-          var cols = [{ id: 'before', html: 'a time before the situation began' }, { id: 'neg', html: 'a negative amount of something that can’t be negative' }];
+          var list = '<ol type="a"><li>' + t('V=' + (Bc * Z) + 'p-' + Bc + 'p^{2}') + ', the weekly revenue when a phone case costs ' + t('p') + ' dollars and ' + t((Bc * Z) + '-' + Bc + 'p') + ' cases sell, for ' + t('p>' + Z) + '</li><li>' + t('h=' + quadT(-5, b, c, 't')) + ', a fireworks shell ' + t('t') + ' seconds after firing, for ' + t('t<0') + '</li><li>' + t('F=' + F0 + '-' + nT(k) + 'd') + ', the fuel left after ' + t('d') + ' km, for ' + t('d>' + dI) + '</li></ol>';
+          var rows = [{ id: 'rev', html: '(a) revenue' }, { id: 'shell', html: '(b) shell' }, { id: 'fuel', html: '(c) fuel' }];
+          var cols = [{ id: 'before', html: 'time before it began' }, { id: 'neg', html: 'impossible negative amount' }];
           var want = { rev: 'neg', shell: 'before', fuel: 'neg' };
-          var why = { rev: 'For ' + t('p>' + Z) + ', ' + t((Bc * Z) + '-' + Bc + 'p<0') + ': a negative number of cases sold (and negative revenue). A price of ' + t(money(Z + 1)) + ' is fine — the shop simply sells nothing.',
-            shell: '', fuel: 'For ' + t('d>' + dI) + ', ' + t('F<0') + ': a negative volume of fuel. The truck stops when the tank is empty.' };
-          why.shell = t('t<0') + ' is time <b>before</b> the shell was fired; it was still in the tube.';
-          return B.grid('For each piece the calculator draws, choose why the situation throws it away.', rows, cols, want, { why: function (row) { return { code: 'row', hint: why[row] }; } },
+          var why = { rev: '(a) For ' + t('p>' + Z) + ', ' + t((Bc * Z) + '-' + Bc + 'p<0') + ': a negative number of cases sold (and negative revenue). A price of ' + t(money(Z + 1)) + ' is fine — the shop simply sells nothing.',
+            shell: '', fuel: '(c) For ' + t('d>' + dI) + ', ' + t('F<0') + ': a negative volume of fuel. The truck stops when the tank is empty.' };
+          why.shell = '(b) ' + t('t<0') + ' is time <b>before</b> the shell was fired; it was still in the tube.';
+          return B.grid('The calculator draws each of these pieces, but the situation throws them away:' + list + 'For each piece, choose the reason.', rows, cols, want, { why: function (row) { return { code: 'row', hint: why[row] }; } },
             rows.map(function (x) { return why[x.id]; }).join('<br>'), ['For each piece, ask: is the problem the input (when) or the output (how much)?'], 'pieces the situation throws away');
         } },
         { id: 'e9b', sub: 'd', level: 'PRG', make: function (r) {

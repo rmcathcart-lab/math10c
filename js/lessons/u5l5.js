@@ -165,7 +165,7 @@
 
   /* ---------------- windows ---------------- */
   var WL = ['Xmin', 'Xmax', 'Ymin', 'Ymax'], WT = { Xmin: t('X_{\\min}'), Xmax: t('X_{\\max}'), Ymin: t('Y_{\\min}'), Ymax: t('Y_{\\max}') };
-  function niceStep(span) { var c = [1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000]; for (var i = 0; i < c.length; i++) if (span / c[i] <= 8) return c[i]; return 2000; }
+  function niceStep(span) { var c = [1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000]; for (var i = 0; i < c.length; i++) if (span / c[i] <= 5) return c[i]; return 2000; }
   /* a tidy window around the features (and the origin, so both axes show) */
   function niceWin(feat) {
     var xs = feat.map(function (p) { return p.x; }).concat([0]), ys = feat.map(function (p) { return p.y; }).concat([0]);
@@ -257,7 +257,7 @@
     if (extra) { if (extra.good) p.good = extra.good; if (extra.bad) p.bad = extra.bad; }
     return p;
   }
-  function mbox(label, keys) { return { label: label, mode: 'math', keys: keys || 'fraction' }; }
+  function mbox(label, keys) { return { label: label, mode: 'math', keys: keys || 'fraction', placeholder: keys === 'solutions' ? 'e.g. x = 3, x = -5' : 'e.g. 3/4' }; }
   function nbox(label) { return { label: label }; }
   function mc(r, prompt, opts, sol, hints, text, keepOrder) { return B.mc(r, prompt, opts, sol, hints, text, keepOrder); }
 
@@ -642,7 +642,7 @@
     return fieldsPart(t('y=' + rel), [mbox(t('x') + '-coordinate'), mbox(t('y') + '-coordinate')], [cx, cy], [hT, kT],
       (up ? 'Minimum' : 'Maximum') + ' point ' + t('\\left(' + hT + ',\\ ' + kT + '\\right)'),
       'The ' + t('x^{2}') + ' coefficient is ' + (up ? 'positive, so the parabola opens <b>up</b> and has a <b>minimum</b>: use ' + C.min : 'negative, so the parabola opens <b>down</b> and has a <b>maximum</b>: use ' + C.max) + ' in a window such as ' + winTex(w) + '. It shows about ' + t('X\\approx ' + nT(rnd(h, 4)) + ',\\ Y\\approx ' + nT(rnd(k, 4))) + (Number.isInteger(h) && Number.isInteger(k) ? '' : '; ▸Frac gives ' + t('\\left(' + hT + ',\\ ' + kT + '\\right)')) + '.<br>' +
-      'Check: ' + t('x=-\\frac{b}{2a}=-\\frac{' + nT(b) + '}{2' + sgp(a) + '}=' + hT) + ', and ' + sub + ' ✓. ' + (up ? 'Minimum' : 'Maximum') + ' point ' + t('\\left(' + hT + ',\\ ' + kT + '\\right)') + '.' + screen([f], w, [{ x: h, y: k, label: '(' + nT(rnd(h, 2)) + ', ' + nT(rnd(k, 2)) + ')' }]),
+      'Check: ' + t('x=-\\frac{b}{2a}=-\\frac{' + nT(b) + '}{2(' + nT(a) + ')}=' + hT) + ', and ' + sub + ' ✓. ' + (up ? 'Minimum' : 'Maximum') + ' point ' + t('\\left(' + hT + ',\\ ' + kT + '\\right)') + '.' + screen([f], w, [{ x: h, y: k, label: '(' + nT(rnd(h, 2)) + ', ' + nT(rnd(k, 2)) + ')' }]),
       ['Opens up → ' + code('3:minimum') + '; opens down → ' + code('4:maximum') + '. Then round the calculator’s coordinates to sensible exact values.', 'Check by substituting: the ' + t('x') + '-coordinate is ' + t('-\\frac{b}{2a}') + '.'], 'turning point ' + rel,
       { bad: bad, good: [[termDec(h) || hT, termDec(k) || kT]] });
   }
@@ -970,7 +970,8 @@
           { id: 'e8g', level: 'EMG', make: function (r, s) {
             var opts = [['a', s.A.tex, rT(s.A.q, s.A.p)], ['b', s.Bq.tex, rT(-s.Bq.n, s.Bq.m)], ['c', s.Cq.tex, '\\pm' + rT(s.Cq.w, s.Cq.u)], ['d', s.D.tex, rT(-s.D.p, s.D.a) + ',\\ ' + s.D.q]].map(function (o) { return { html: '(' + o[0] + ') ' + t('y=' + o[1]), why: 'Its intercept ' + t(o[2]) + ' is rational, so ▸Frac converts it.' }; });
             opts.push({ html: '(e) ' + t('y=' + s.E.tex), right: true });
-            return mc(r, 'In exactly one of (a)–(e) the ▸Frac conversion hands the decimal straight back instead of a fraction. Which one?', opts.slice(1).concat([opts[0]]).filter(function (o, i) { return i < 3 || o.right; }).concat([]),
+            var keep = r.sample([0, 1, 2, 3], 3).sort(); opts = keep.map(function (i) { return opts[i]; }).concat([opts[4]]);
+            return mc(r, 'In exactly one of (a)–(e) the ▸Frac conversion hands the decimal straight back instead of a fraction. Which one?', opts,
               'Part (e): its intercepts are ' + t('\\pm\\sqrt{' + s.E.n + '}') + ', which is <b>irrational</b> — no fraction equals it, so ▸Frac has nothing to convert. The others are rational.', ['Which intercept can’t be written as a fraction?'], 'which is irrational', true);
           } }] },
       { num: '9', stem: function (s) { return 'Decide first whether each parabola opens up or down, so you know to choose ' + code('3:minimum') + ' or ' + code('4:maximum') + '. Then give the turning point as an <b>exact</b> ordered pair.'; },
@@ -987,7 +988,7 @@
           { id: 'e9a', level: 'BEG', make: function (r, s) {
             var rows = s.order.map(function (i) { return { id: s.Q[i].id, html: t('y=' + s.Q[i].tex) }; }), want = {}, sg = {};
             s.Q.forEach(function (q) { want[q.id] = q.a > 0 ? 'min' : 'max'; sg[q.id] = q.a; });
-            return B.grid('Which feature finds the turning point of each parabola?', rows, [{ id: 'min', html: code('3:minimum') }, { id: 'max', html: code('4:maximum') }], want,
+            return B.grid('Which feature finds the turning point of each parabola?', rows, [{ id: 'min', html: 'min ' + code('3') }, { id: 'max', html: 'max ' + code('4') }], want,
               { why: function (rid) { return { code: 'row', hint: 'Look at the ' + t('x^{2}') + ' coefficient of ' + t('y=' + s.Q.filter(function (q) { return q.id === rid; })[0].tex) + ': ' + (sg[rid] > 0 ? 'positive → opens up → a lowest point.' : 'negative → opens down → a highest point.') }; } },
               'Positive ' + t('x^{2}') + ' coefficient → opens up → ' + code('3:minimum') + '; negative → opens down → ' + code('4:maximum') + '.<br>' + s.Q.map(function (q) { return t('y=' + q.tex) + ': ' + t('a=' + nT(q.a)) + ' → ' + (q.a > 0 ? 'minimum' : 'maximum'); }).join('<br>'),
               ['The sign of the ' + t('x^{2}') + ' coefficient tells you which way the parabola opens.'], 'min or max');

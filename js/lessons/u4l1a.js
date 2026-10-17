@@ -583,7 +583,7 @@
         } }] },
       { num: '15', stem: '<i>(Multiple Choice)</i>', parts: [
         { id: '15', level: 'BEG', make: function (r) {
-          var g = r.int(2, 6), a = r.int(2, 5), b = pickWhere(function () { return r.int(2, 5); }, function (b) { return b !== a && b !== g; }), v = r.pick(['x', 'x', 'y', 'm']);
+          var g = r.int(2, 6), a = r.int(2, 5), b = pickWhere(function () { return r.int(2, 5); }, function (b) { return b !== a && b !== g && b * b * (g - a) !== g * g; }), v = r.pick(['x', 'x', 'y', 'm']); // last test: option B (gx²−bx) must not divide the polynomial (g=6, a=2, b=3 made it a second factor)
           var terms = [M(g * a, { [v]: 4 }), M(-g * b, { [v]: 3 }), M(g, { [v]: 2 })], poly = seq(terms), br = seq([M(a, { [v]: 2 }), M(-b, { [v]: 1 }), N(1)]);
           return mcPart(r, 'One factor of ' + t(poly) + ' is', [
             { html: t(tx(terms[0])), why: t(tx(terms[0])) + ' is one <b>term</b> of the polynomial, not a factor of the whole thing: it doesn’t divide ' + t(tx(terms[2])) + '.' },
