@@ -403,8 +403,8 @@ const EX6 = {
   c: { label: 'Example 6(c)', v: '0.0000082', vt: '0.000\\,008\\,2', from: -3, to: 0, std: '8200' },
   d: { label: 'Example 6(d)', v: '63000', vt: '63\\,000', from: 3, to: 2, std: '63' }
 };
-const shiftA = shiftDef(2, EX3, 'Area: two decimal places per step');
-const shiftV = shiftDef(3, EX6, 'Volume: three decimal places per step');
+const shiftA = shiftDef(2, EX3, 'Area: the point moves two places per step');
+const shiftV = shiftDef(3, EX6, 'Volume: the point moves three places per step');
 
 /* =============================== explainer: Example 2, the rectangle =============================== */
 const RC = {
@@ -757,7 +757,7 @@ const bins = {
       { cap: `Bin A’s faces: top ${T('1.2\\times0.9=1.08')}, front ${T('1.2\\times0.7=0.84')}, end ${T('0.9\\times0.7=0.63')} (all in ${T('\\text{m}^2')}).`,
         run: async (c) => { const b = [0, BA.L, 0, BA.H, 0, BA.D]; await faceHL(c, PA, b, 'top', AMB, '1.08'); await faceHL(c, PA, b, 'front', TEAL, '0.84'); await faceHL(c, PA, b, 'side', PUR, '0.63'); } },
       { cap: `Each face has a matching one on the hidden side: ${T('SA=2(1.08+0.84+0.63)=5.10\\text{ m}^2')}.`, run: (c) => say(c, Pn, T('SA=2(1.08+0.84+0.63)'), 'u10l5-la').then(() => say(c, Pn, T('\\phantom{SA}=5.10\\text{ m}^2'), 'u10l5-la')) },
-      { cap: `${T('1\\text{ m}^2=1550.003\\,1\\text{ in}^2')}, so Bin A is ${T('5.10\\times1550.003\\,1\\approx7905\\text{ in}^2')}.`,
+      { cap: `${T('1\\text{ m}^2\\approx1550.003\\,1\\text{ in}^2')}, so Bin A is ${T('5.10\\times1550.003\\,1\\approx7905\\text{ in}^2')}.`,
         run: async (c) => { await say(c, Pn, T('5.10\\times1550.003\\,1\\approx7905\\text{ in}^2'), 'u10l5-la'); await grow(c, 0, T('7905\\text{ in}^2')); } },
       { cap: `Bin B’s faces: ${T('4\\times3=12')}, ${T('4\\times2.5=10')}, ${T('3\\times2.5=7.5')}, so ${T('SA=2(29.5)=59\\text{ ft}^2')}.`,
         run: async (c) => { const b = [0, BB.L, 0, BB.H, 0, BB.D]; await faceHL(c, PB, b, 'top', AMB, '12'); await faceHL(c, PB, b, 'front', TEAL, '10'); await faceHL(c, PB, b, 'side', PUR, '7.5'); await say(c, Pn, T('SA=2(12+10+7.5)=59\\text{ ft}^2'), 'u10l5-lb'); } },

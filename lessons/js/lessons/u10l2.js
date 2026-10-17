@@ -628,7 +628,7 @@ const LADDER = {
   imp: [{ n: 'thumb', v: '1 in', cm: 2.54 }, { n: 'adult foot', v: '1 ft', cm: 30.48 }, { n: 'pace', v: '1 yd', cm: 91.44 }],
   si: [{ n: 'dime (thick)', v: '1 mm', cm: 0.1, lv: 0 }, { n: 'pinky nail', v: '1 cm', cm: 1, lv: 0 }, { n: 'hockey puck', v: '7.6 cm', cm: 7.6, lv: 0, up: true },
     { n: 'five toes', v: '1 dm', cm: 10, lv: 0 }, { n: 'workbook', v: '20 cm', cm: 20, lv: 1, dx: 22 }, { n: '4-year-old', v: '1 m', cm: 100, lv: 0 },
-    { n: 'doorway', v: 'almost 2 m', cm: 200, lv: 1, dx: 34 }, { n: 'Olympic pool', v: '50 m', cm: 5000, lv: 0 }]
+    { n: 'doorway', v: 'about 2 m', cm: 200, lv: 1, dx: 34 }, { n: 'Olympic pool', v: '50 m', cm: 5000, lv: 0 }]
 };
 const ladder = {
   title: 'A ladder of everyday referents',

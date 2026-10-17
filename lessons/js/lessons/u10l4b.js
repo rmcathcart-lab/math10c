@@ -301,7 +301,7 @@ const bench = {
         run: async (c) => { await say(c, P, `${T(d.fact)}${d.L === 1.609344 ? '' : ' <span class="u10l4b-tag u10l4b-tagx">exact</span>'}`, 'u10l4b-big'); await say(c, P, `Benchmark: ${T(d.bench)}`, 'u10l4b-bmk'); } },
       { cap: d.dir, run: async (c) => { await say(c, P, d.dir); } }
     ];
-    if (d.five) steps.push({ cap: 'Scale it up: <b>5 mi ≈ 8 km</b> (exactly about 8.05 km). Worth memorizing.',
+    if (d.five) steps.push({ cap: 'Scale it up: <b>5 mi ≈ 8 km</b> (more precisely, about 8.05 km). Worth memorizing.',
       run: async (c) => {
         [...B.imp, ...B.si].forEach((e) => e.remove());
         B = bars(stage, d, 5, 108, x0, yI, yS);
