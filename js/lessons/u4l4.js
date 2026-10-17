@@ -246,11 +246,20 @@
       var all = [R].concat(D), okD = D.every(function (d) { return !isFactorOf(T.full, d); }) && all.every(function (x, i) { return all.every(function (y, j) { return i === j || !PL.eq(x, y); }); });
       if (okD) break;
     }
+    var why2 = null;
+    if (!okD) { // e.g. (4x+5)(5x-4): the "swapped" bracket repeats a sign-flipped one, so use another non-factor
+      var cands = [lin(Math.abs(oc), (oc < 0 ? -1 : 1) * ol), lin(rl, oc), lin(ol, rc), lin(rl, -oc), lin(ol, -rc), lin(rl + ol, rc)];
+      for (var ci = 0; ci < cands.length; ci++) {
+        var cd = cands[ci], cc = PL.constant(cd)[0], cl = PL.coef(cd, { x: 1 })[0];
+        if (!cc || !cl || gcd(cc, cl) !== 1 || isFactorOf(T.full, cd) || [R, D[0], D[1]].some(function (y) { return PL.eq(cd, y); })) continue;
+        D[2] = cd; why2 = 'Factor it by decomposition first. ' + t(tx(cd)) + ' is not one of the brackets.'; break;
+      }
+    }
     var gcfNote = T.hasG ? 'Take out the common factor ' + t(tx(T.gm)) + ' first, then factor ' + t(T.innerTex) + '. ' : 'Factor it by decomposition first. ';
     var opts = [{ html: t(tx(R)), right: true },
       { html: t(tx(D[0])), why: gcfNote + 'Check the signs: the constants in the brackets must multiply to ' + t(T.c) + '.' },
       { html: t(tx(D[1])), why: gcfNote + 'Then check the sign of each constant term.' },
-      { html: t(tx(D[2])), why: k > 1 ? t(tx(D[2]) + '=' + k + br(D[0])) + ', and ' + t(tx(D[0])) + ' is not a factor. ' + gcfNote : gcfNote + 'This bracket has its coefficients the wrong way round.' }];
+      { html: t(tx(D[2])), why: why2 || (k > 1 ? t(tx(D[2]) + '=' + k + br(D[0])) + ', and ' + t(tx(D[0])) + ' is not a factor. ' + gcfNote : gcfNote + 'This bracket has its coefficients the wrong way round.') }];
     return mcPart(r, prompt, opts, (T.hasG ? 'Common factor first: ' + t(T.tex + '=' + gpre(T) + '(' + T.innerTex + ')') + '.<br>For ' + t(T.innerTex) + ': ' : '') + pairLine(T) + '<br>' + t(T.innerTex + '=' + splitTex(T) + '=' + groupTex(T) + '=' + br(T.F2) + br(T.F1)) + '<br>So ' + t(T.tex + '=' + T.key) + ', and ' + t(tx(R)) + ' is a factor.',
       [gcfNote + 'Then compare with the options.'], text);
   }
@@ -401,7 +410,7 @@
               t(FX.tex(stu) + '=' + tx(sp)) + ': the ' + t('x') + '-term has the wrong sign. For ' + t('ac=' + T.ac) + ' and sum ' + t(T.b) + ' the pair is ' + t(T.m) + ' and ' + t(T.n) + ', which switches both signs: ' + t(T.tex + '=' + FX.tex([T.F1, T.F2])) + '.',
               ['Expand the student’s answer and compare it, term by term, with ' + t(T.tex) + '.'], 'error: switched signs');
           } },
-          { id: '10a2', sub: 'a fix', level: 'PRG', make: function (r, sh) { return factorPart(sh.A, { prompt: 'Write the correct factored form of ' + t(sh.A.tex) + '.' }); } },
+          { id: '10a2', sub: 'a fix', level: 'EMG', make: function (r, sh) { return factorPart(sh.A, { prompt: 'Write the correct factored form of ' + t(sh.A.tex) + '.' }); } },
           { id: '10b1', sub: 'b error', level: 'EMG', make: function (r, sh) {
             var T = sh.B, k = PL.terms(T.gm)[0].c[0], kF = PL.scale(T.F1, k), stu = '(' + tx(kF) + ')' + br(T.F2), o3 = mulAll([lin(k * T.p, T.s), lin(T.r, k * T.q)]);
             var opts = [{ html: t(tx(kF)) + ' still has a common factor of ' + t(k) + ', so it is not factored completely.', right: true },
@@ -840,7 +849,7 @@
         },
         parts: [
           { id: 'e18a', level: 'PRG', make: function (r, sh) { return factorPart(sh.T, { prompt: 'Let ' + t('u=m' + sg(-sh.h)) + ' and factor ' + t(sh.T.tex) + ' by decomposition.' }); } },
-          { id: 'e18b', level: 'ADV', make: function (r, sh) {
+          { id: 'e18b', level: 'PRG', make: function (r, sh) {
             var T = sh.T, base = K.factored([sh.G2, sh.G1]);
             var chk = function (resp) {
               var res = base(resp); if (res.v !== 'correct') return res;
