@@ -368,7 +368,7 @@ function shiftDef(p, data, title) {
           run: async (c) => { await pop(c, NL.point(d.from, { color: INK })); await pop(c, NL.point(d.to, { color: BLUE })); } },
         { cap: `${fromU} to ${toU} is <b>${n} step${n > 1 ? 's' : ''} ${right ? 'right' : 'left'}</b>: to a ${right ? '<b>smaller</b> unit, so the number gets bigger (multiply)' : '<b>bigger</b> unit, so the number gets smaller (divide)'}.`,
           run: async (c) => { for (let i = 0; i < n; i++) { const a = d.from + (right ? i : -i), b = a + (right ? 1 : -1); await NL.hop(c, a, b, { label: T((right ? '\\times' : '\\div') + per), color: STEPC[i % 3], height: 28 }); } } },
-        { cap: `For ${p === 2 ? 'area' : 'volume'} each step is ${T('\\times10')} in each of <b>${p} dimensions</b>: ${T(per + '=' + (p === 2 ? '100' : '1000'))} per step. ${n} step${n > 1 ? 's' : ''}: ${T(`(${per})^{${n}}=${fac}`)}.`,
+        { cap: `For ${p === 2 ? 'area' : 'volume'} each step is ${T('\\times10')} in each of <b>${p} dimensions</b>: ${T(per + '=' + (p === 2 ? '100' : '1000'))} per step. ${n} step${n > 1 ? 's' : ''}: ${T(n > 1 ? `(${per})^{${n}}=${fac}` : fac)}.`,
           run: (c) => say(c, P, T(`${right ? '\\times' : '\\div'}${n > 1 ? `(${per})^{${n}}=${right ? '\\times' : '\\div'}${fac}` : per}=${right ? '\\times' : '\\div'}${tn(String(10 ** (p * n)))}`)) },
         { cap: `Move the decimal point <b>${Math.abs(m)} places ${right ? 'right' : 'left'}</b>: ${p} places for each step.`,
           run: async (c) => {

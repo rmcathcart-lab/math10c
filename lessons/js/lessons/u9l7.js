@@ -27,7 +27,7 @@ const tanD = (a) => Math.tan(a * RAD), sinD = (a) => Math.sin(a * RAD), cosD = (
 const atanD = (v) => Math.atan(v) / RAD, acosD = (v) => Math.acos(v) / RAD;
 /** a TeX number with trailing dots: 26.6547… */
 const dots = (v, d = 4) => `${v.toFixed(d)}\\ldots`;
-const r0 = (v) => String(Math.round(v)), r1 = (v) => (Math.round(v * 10) / 10).toFixed(1), r2 = (v) => v.toFixed(2);
+const nice = (v) => String(parseFloat(v.toFixed(2))), r0 = (v) => String(Math.round(v)), r1 = (v) => (Math.round(v * 10) / 10).toFixed(1), r2 = (v) => v.toFixed(2);
 const panel = (stage, x, y, w, hh, title) => add(stage, box(h('div', 'u9l7-panel', title ? `<div class="u9l7-ph">${title}</div>` : ''), w, hh), x, y);
 const line = (p, html, cls = '') => { const d = h('div', 'u9l7-line ' + cls, html); p.appendChild(d); return d; };
 const say = async (c, p, html, cls) => { const d = line(p, html, cls); await fadeIn(c, d, 300); return d; };
@@ -250,8 +250,8 @@ const cliff = {
         } },
       { cap: `SOH: ${T(`\\sin ${b}^\\circ=\\dfrac{h}{40}`)}, so ${T(`h=40\\sin ${b}^\\circ\\approx${r1(hh)}`)} m. ${v === 'walk' ? 'The big one is <b>B, about 35 m</b>.' : 'Same trick, any angle that doubles.'}`,
         run: async (c) => { await say(c, Pn, T(`\\sin ${b}^\\circ=\\dfrac{${cO('h')}}{${cH('40')}}`)); await say(c, Pn, T(`h=40\\sin ${b}^\\circ=${cO(r2(hh))}\\text{ m}`)); K.q.innerHTML = `${T('h\\approx' + r1(hh))} m`; K.q.classList.remove('u9l7-red'); K.q.style.color = OPP; await pulse(c, K.q, 1.2); } },
-      { cap: `Check from A: ${T('BF=40\\cos ' + b + '^\\circ=' + r2(xB))}, so the base is ${T(r2(xB) + '+40=' + r2(F))} m from A, and ${T(`\\tan^{-1}\\!\\left(\\dfrac{${r2(hh)}}{${r2(F)}}\\right)=${a}^\\circ`)} ✓`,
-        run: async (c) => { await say(c, Pn, T(`BF=40\\cos ${b}^\\circ=${r2(xB)}`)); await say(c, Pn, T(`\\tan^{-1}\\!\\left(\\tfrac{${r2(hh)}}{${r2(F)}}\\right)=${a}^\\circ`) + ' <span class="u9l7-good">✓</span>'); await stampIn(c, stamp(stage, '✓', { x: 50, y: 50 })); } }
+      { cap: `Check from ${T('A')}: ${T('BF=40\\cos ' + b + '^\\circ=' + nice(xB))}, so the base is ${T(nice(xB) + '+40=' + nice(F))} m from ${T('A')}, and ${T(`\\tan^{-1}\\!\\left(\\dfrac{${r2(hh)}}{${nice(F)}}\\right)=${a}^\\circ`)} ✓`,
+        run: async (c) => { await say(c, Pn, T(`BF=40\\cos ${b}^\\circ=${nice(xB)}`)); await say(c, Pn, T(`\\tan^{-1}\\!\\left(\\tfrac{${r2(hh)}}{${nice(F)}}\\right)=${a}^\\circ`) + ' <span class="u9l7-good">✓</span>'); await stampIn(c, stamp(stage, '✓', { x: 50, y: 50 })); } }
     ];
   }
 };
@@ -512,7 +512,7 @@ const WH = {
   ex1: { label: 'Example 1', yes: true, n: ['The triangle at Birchwood’s base has 38 m and 51°: <b>yes</b>.', `${T('\\text{Ashgrove}=38\\tan 51^\\circ')} (TOA)`, `Upper triangle shares the 38 m: ${T('x=38\\tan 22^\\circ')} (TOA)`, `Add the pieces: Birchwood ${T('\\approx 62')} m`] },
   ex2: { label: 'Example 2', yes: true, n: [`${T('\\triangle PSQ')} has 24 mm and 48°: <b>yes</b>.`, `${T('PS=24\\tan 48^\\circ')} (TOA)`, `In ${T('\\triangle PSR')}: ${T('RS=PS\\tan 57^\\circ')} (TOA)`, `Add: ${T('QR=24+RS\\approx 65')} mm`] },
   ex3: { label: 'Example 3', yes: true, n: [`${T('\\triangle EAC')} has 4.5 m and 35°: <b>yes</b>.`, `${T('EC=4.5\\sin 35^\\circ')} (SOH)`, `In ${T('\\triangle EBC')}: ${T('\\cos(\\angle BEC)=\\tfrac{EC}{5.8}')} (CAH)`, `Read the angle: ${T('\\angle BEC\\approx 64^\\circ')}`] },
-  ex4: { label: 'Example 4', yes: false, n: ['Both triangles have only an angle: <b>no</b>. The only length is the 25 m between A and B.', `${T('x=\\tfrac{h}{\\tan 47^\\circ}')}, ${T('x+25=\\tfrac{h}{\\tan 32^\\circ}')} (TOA twice)`, `Subtract: ${T('25=h\\left(\\tfrac{1}{\\tan 32^\\circ}-\\tfrac{1}{\\tan 47^\\circ}\\right)')}`, `Solve: ${T('h\\approx 37')} m`] }
+  ex4: { label: 'Example 4', yes: false, n: [`Both triangles have only an angle: <b>no</b>. The only length is the 25 m between ${T('A')} and ${T('B')}.`, `${T('x=\\tfrac{h}{\\tan 47^\\circ}')}, ${T('x+25=\\tfrac{h}{\\tan 32^\\circ}')} (TOA twice)`, `Subtract: ${T('25=h\\left(\\tfrac{1}{\\tan 32^\\circ}-\\tfrac{1}{\\tan 47^\\circ}\\right)')}`, `Solve: ${T('h\\approx 37')} m`] }
 };
 const which = {
   title: 'Which triangle first? Which ratio? How to finish?',
@@ -534,7 +534,7 @@ const which = {
     const Pn = panel(stage, FW + 16, 8, ex.W - FW - 22, 424, o.label);
     const path = o.yes ? ['q', 'solve', 'carry', 'fin'] : ['q', 'alg', 'alg', 'fin'];
     const caps = o.yes ? ['Does one triangle have a known side and a known angle?', 'Solve that triangle first: the shared side comes out of it.', 'Carry the shared side across and choose the ratio there.', 'Finish the question.']
-      : ['Does one triangle have a known side and a known angle?', 'No: write each horizontal distance in terms of h.', 'Subtract to eliminate the unknown distance.', 'Finish the question.'];
+      : ['Does one triangle have a known side and a known angle?', `No: write each horizontal distance in terms of ${T('h')}.`, 'Subtract to eliminate the unknown distance.', 'Finish the question.'];
     return path.map((id, i) => ({
       cap: `${caps[i]} ${o.n[i]}`,
       run: async (c) => {

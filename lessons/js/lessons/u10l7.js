@@ -421,9 +421,9 @@ function crossDef(DATA, title) {
       const base = cone ? null : regPoly(d.n, R), O = [0, body, 0], A = [0, body + d.h, 0], M = [a, body, 0];
       const st = { rise: 0, hT: 0, aT: 0, sT: 0, tri: false, lift: 0, spin: 0, lab: { h: 0, a: 0, s: 0 } };
       // the flat triangle on the right
-      const RX = SW + 50, RW = ex.W - RX - 30, K = Math.min((RW - 70) / a, 200 / d.h);
-      const O2 = [RX + 30, 222], M2 = [O2[0] + a * K, O2[1]], A2 = [O2[0], O2[1] - d.h * K];
-      const P = panel(stage, RX - 10, 280, ex.W - RX - 4, Hs - 294, '');
+      const RX = SW + 50, RW = ex.W - RX - 30, K = Math.min((RW - 70) / a, 170 / d.h);
+      const O2 = [RX + 30, 196], M2 = [O2[0] + a * K, O2[1]], A2 = [O2[0], O2[1] - d.h * K];
+      const P = panel(stage, RX - 10, 252, ex.W - RX - 4, Hs - 266, '');
       const hTx = d.sym ? 'h' : `h=${d.h}`, aTx = d.sym ? (cone ? 'r' : d.n === 4 ? '\\tfrac12\\text{side}' : 'a') : cone ? `r=${d.r}` : `${a}`;
       S.draw = (S) => {
         const g = S.g, yawNow = -28 + st.spin * 360; S.yaw = yawNow;
@@ -484,7 +484,7 @@ function crossDef(DATA, title) {
         steps.push({ cap: `Pythagoras finds the missing side: ${T(d.sTex)} ${d.unit}.`,
           run: async (c) => {
             await show(c, line(P, T(`s^2=${d.h}^2+${a}^2`)));
-            await show(c, line(P, T(d.sTex) + ' ' + d.unit, 'u10l7-big'));
+            await show(c, line(P, T(d.sTex) + ' ' + d.unit));
             st.sKnown = true; S.render(); await pulse(c, S.L('s2'));
             await stampIn(c, stampAt(P, `s ${d.sVal.includes('.') ? '≈' : '='} ${d.sVal} ${d.unit}`));
           } });
