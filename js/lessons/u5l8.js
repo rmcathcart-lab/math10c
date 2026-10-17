@@ -271,7 +271,7 @@
   /* a small context graph for the sketch multiple choice */
   function ctxGraph(o, segs, fns) {
     var sx = o.x[1] - o.x[0], sy = o.y[1] - o.y[0];
-    return HW.graph({ x: o.x, y: o.y, grid: o.gx, gridY: o.gy, labels: o.lx, labelsX: o.lx, labelsY: o.ly, unitX: 170 / sx, unitY: 140 / sy, firstQuadrant: o.fq !== false,
+    return HW.graph({ x: o.x, y: o.y, grid: o.gx, gridY: o.gy, labels: o.lx, labelsX: o.lx, labelsY: o.ly, unitX: 105 / sx, unitY: 85 / sy, firstQuadrant: o.fq !== false,
       xName: o.xName, yName: o.yName, max: 210, segs: segs || [], fns: fns || [], aria: 'sketch option' });
   }
 

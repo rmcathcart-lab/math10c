@@ -1031,7 +1031,7 @@
           var p = K.P.pairs(t('Y_1=x^{2}' + term(o.c1, '', false)) + ', ' + t('Y_2=' + linT(m, b)) + '. State both intersection points.', pts, {},
             t('x^{2}' + term(o.c1, '', false) + '=' + linT(m, b) + '\\Rightarrow ' + quadT(1, -m, o.c1 - b) + '=0\\Rightarrow (x-' + o.r1 + ')(x+' + (-o.r2) + ')=0') + ', so ' + t('x=' + o.r1) + ' or ' + t('x=' + o.r2) + '. Then ' + t('y=' + linT(m, b)) + ': ' + t('(' + pts[0][0] + ',\\ ' + pts[0][1] + ')') + ' and ' + t('(' + pts[1][0] + ',\\ ' + pts[1][1] + ')') + '. On the calculator, run ' + code('5:intersect') + ' twice, moving the Guess? to each crossing.',
             ['Set ' + t('Y_1=Y_2') + ', move everything to one side and factor; then find each ' + t('y') + ' from either relation.'], 'parabola meets line');
-          p.bad = ['\\{(' + pts[0][0] + ', ' + pts[0][1] + ')\\}', '\\{(' + pts[0][1] + ', ' + pts[0][0] + '), (' + pts[1][1] + ', ' + pts[1][0] + ')\\}'];
+          p.bad = ['\\{(' + pts[0][0] + ', ' + pts[0][1] + ')\\}'].concat(pts.every(function (q) { return q[0] === q[1]; }) ? [] : ['\\{(' + pts[0][1] + ', ' + pts[0][0] + '), (' + pts[1][1] + ', ' + pts[1][0] + ')\\}']);
           return p;
         } },
         { id: 'e10e', level: 'BEG', make: function (r) {
