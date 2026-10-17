@@ -250,7 +250,7 @@
     opt = opt || {};
     var tp = parseSet(targetTex); if (!tp.ok) throw new Error('bad set target ' + targetTex + ' (' + tp.why + ')');
     var T = tp.set, V = opt.v || tp.v || 'x', other = opt.other ? parseSet(opt.other) : null;
-    var wrongs = (opt.wrong || []).map(function (w) { return { s: parseSet(w.is).set, code: w.code || 'diag', hint: w.hint }; });
+    var wrongs = (opt.wrong || []).map(function (w) { var ps = parseSet(w.is); return ps.ok && !setEq(ps.set, T) ? { s: ps.set, code: w.code || 'diag', hint: w.hint } : null; }).filter(Boolean);
     var forms = opt.forms || null, tagNeeded = opt.tag !== false;
     return function (resp) {
       var r = parseSet(resp);
@@ -262,7 +262,7 @@
         return ok();
       }
       for (var i = 0; i < wrongs.length; i++) if (setEq(r.set, wrongs[i].s)) return wrong(wrongs[i].code, wrongs[i].hint);
-      if (other && other.ok && setEq(r.set, other.set)) return wrong('set-swap', 'That’s the ' + (opt.otherName || 'other set') + '. The <b>domain</b> is the set of first coordinates (inputs, ' + t('x') + '); the <b>range</b> is the set of second coordinates (outputs, ' + t('y') + ').');
+      if (other && other.ok && setEq(r.set, other.set)) return wrong('set-swap', 'That’s the ' + (opt.otherName || 'other set') + '. The <b>domain</b> is the set of inputs (first coordinates); the <b>range</b> is the set of outputs (second coordinates).' + ((opt.v || tp.v) && other.v && other.v !== V ? ' This one is about ' + t(V) + ', not ' + t(other.v) + '.' : ''));
       var A = canon(r.set), B = canon(T);
       if (A.kind === 'int' && B.kind === 'list') return wrong('set-discrete', 'Here there are only separate values (points, not a solid line), so <b>list</b> them in braces, e.g. ' + t('\\{1, 3, 5\\}') + '.');
       if (A.kind === 'list' && B.kind === 'int') return wrong('set-continuous', 'Here every value in between is included too (a solid line or curve), so use an inequality or interval, not a list.');
