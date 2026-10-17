@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Solving Systems by Substitution · Math 10C 8.2</title>
+<meta name="description" content="Math 10C Unit 8 Lesson 2: solving systems of linear equations by substitution. Isolate one variable, substitute the expression into the other equation, solve, back-substitute; one system solved two ways, a rearrangement that gives a fraction, exact values versus the graphing calculator, expanding brackets first, what 0 = 0 and 0 = k mean, and (Extension) three equations in three unknowns. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u8l2.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 8 Systems of Linear Equations · Lesson 2</div>
+  <h1>Solving Systems of Equations by Substitution</h1>
+  <p class="lede">An exact algebraic method: <b>isolate</b> one variable, <b>substitute</b> it into the other equation, <b>solve</b>, then <b>back-substitute</b>. Two equations in two unknowns collapse into one equation in one unknown, and the answer comes out exactly, fractions and all.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>solve a system of two linear equations by <b>substitution</b>, using the four steps, and verify the solution in <b>both</b> equations</li>
+      <li>choose which equation and which variable to isolate (a coefficient of <span class="tex">1</span> or <span class="tex">-1</span> avoids fractions), and get the same solution either way</li>
+      <li>handle a rearrangement that gives a <b>fraction</b>, and give the solution as <b>exact values</b> instead of a calculator decimal</li>
+      <li><b>expand</b> brackets before substituting, and explain what <span class="tex">0=0</span> or <span class="tex">0=k</span> means for the number of solutions</li>
+      <li><span class="u8l2-ext sm">Extension</span> solve three equations in three unknowns by substitution</li>
+    </ul>
+  </div>
+  <div class="outcome"><b>RF9</b> Solve problems that involve systems of linear equations in two variables, graphically and algebraically.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: The Coin Jar" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Coin Jar</h2></div>
+  <p class="big">A jar holds only <b>nickels</b> and <b>dimes</b>. The label tells you everything you know.</p>
+  <div class="u8l2-wgrid">
+    <div class="u8l2-jar">
+      <svg viewBox="0 0 260 300" aria-label="A jar of coins with a label: 20 coins worth $1.40">
+        <path class="u8l2-jglass" d="M24 52 Q24 40 36 40 L224 40 Q236 40 236 52 L236 278 Q236 292 222 292 L38 292 Q24 292 24 278 Z"/>
+        <g class="u8l2-jcoins">
+          <ellipse cx="60" cy="276" rx="22" ry="8"/><ellipse cx="104" cy="278" rx="18" ry="7"/><ellipse cx="146" cy="276" rx="22" ry="8"/><ellipse cx="190" cy="278" rx="18" ry="7"/>
+          <ellipse cx="80" cy="262" rx="18" ry="7"/><ellipse cx="124" cy="260" rx="22" ry="8"/><ellipse cx="168" cy="262" rx="18" ry="7"/><ellipse cx="208" cy="262" rx="18" ry="7"/>
+          <ellipse cx="54" cy="252" rx="18" ry="7"/><ellipse cx="100" cy="246" rx="22" ry="8"/><ellipse cx="146" cy="245" rx="18" ry="7"/><ellipse cx="188" cy="247" rx="22" ry="8"/>
+          <ellipse cx="78" cy="232" rx="22" ry="8"/><ellipse cx="124" cy="230" rx="18" ry="7"/><ellipse cx="166" cy="231" rx="22" ry="8"/>
+        </g>
+        <rect class="u8l2-jlabel" x="40" y="110" width="180" height="92" rx="10"/>
+        <text class="u8l2-jt1" x="130" y="148" text-anchor="middle">20 coins</text>
+        <text class="u8l2-jt2" x="130" y="184" text-anchor="middle">worth $1.40</text>
+        <path class="u8l2-jshine" d="M38 70 L38 240"/>
+        <rect class="u8l2-jlid" x="34" y="14" width="192" height="30" rx="7"/>
+      </svg>
+      <div class="u8l2-coins"><span class="u8l2-coin u8l2-nk">5¢</span><b>nickel</b><span class="u8l2-coin u8l2-dm">10¢</span><b>dime</b></div>
+    </div>
+    <div class="u8l2-wqs">
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">1</div><div>What are <b>3</b> nickels + <b>2</b> dimes worth?</div></div>
+        <div class="u8l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">3(5)+2(10)=15+20=</span> <b>35¢</b>.</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">2</div><div>If all <b>20</b> coins were nickels, what would the jar hold?</div></div>
+        <div class="u8l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">20\times5=100</span>¢ <span class="tex">=</span> <b>$1.00</b>.</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">3</div><div>Swap <b>one</b> nickel for a dime. How does the total change?</div></div>
+        <div class="u8l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">It goes <b>up 5¢</b> (lose 5¢, gain 10¢). The coin count stays 20.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="poll u8l2-p4">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> How many of the 20 coins are <b>dimes</b>? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt right"><b>A</b> 8</div>
+      <div class="opt"><b>B</b> 10</div>
+      <div class="opt"><b>C</b> 12</div>
+      <div class="opt"><b>D</b> 14</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>A: 8 dimes</b> (and 12 nickels). All nickels gives $1.00 (Q2). The jar needs 40¢ more, and each swap adds 5¢ (Q3), so <span class="tex">40\div5=8</span> swaps: 8 dimes. Check: <span class="tex">12+8=20</span> coins and <span class="tex">60+80=140</span>¢ ✓<br>
+      <span class="muted"><b>B</b> splits the coins half and half, but 10 of each is $1.50. <b>D</b> reads $1.40 as “14 dimes” and forgets there must be 20 coins. <b>C</b> is the right number for the <b>wrong</b> coin: that’s the nickels. Always say what your variable stands for!</span></div>
+  </div>
+
+  <div class="u8l2-swap">
+    <div class="u8l2-swap-h"><b>Test the guesses.</b> Start with all nickels and swap one coin at a time.</div>
+    <div class="u8l2-tray" id="u8l2-tray"></div>
+    <div class="u8l2-swap-row">
+      <button type="button" class="pill" id="u8l2-swap1">Swap a nickel for a dime ▸</button>
+      <button type="button" class="pill" id="u8l2-unswap">◂ Undo a swap</button>
+      <button type="button" class="pill" id="u8l2-reset">All nickels</button>
+      <div class="u8l2-swap-read" id="u8l2-read"></div>
+    </div>
+  </div>
+  <div class="bk-wq u8l2-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> A jar holds <b>30</b> coins, only nickels and quarters, worth <b>$3.50</b>. How many quarters?</div></div>
+    <div class="u8l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>10 quarters</b> (and 20 nickels). All nickels is $1.50; each swap to a quarter adds 20¢, and <span class="tex">200\div20=10</span>. Check: <span class="tex">20(5)+10(25)=350</span>¢ ✓</div></div>
+  </div>
+  <p class="u8l2-social">Challenge a neighbour: write your own jar label (coins and total). Can they crack it?</p>
+</section>
+
+<!-- ================= 1. The idea ================= -->
+<section class="card" data-ink="s1" data-section="1. The Idea Behind Substitution">
+  <div class="sec-h"><span class="badge">1</span><h2>The Idea Behind Substitution</h2></div>
+  <p>Reading a solution off a grid is only as precise as the grid, and it breaks down when the solution involves fractions. If one equation can be rearranged so that a single variable stands alone on one side, that expression can be dropped directly into the <b>other</b> equation in place of that variable, collapsing two equations in two unknowns into <b>one equation in a single unknown</b>.</p>
+  <div class="u8l2-steps">
+    <div class="u8l2-step"><div class="u8l2-sn">Step 1</div><div class="u8l2-st">Isolate</div><div>Choose whichever equation is easier to rearrange, and solve it for one variable in terms of the other.</div></div>
+    <div class="u8l2-step"><div class="u8l2-sn">Step 2</div><div class="u8l2-st">Substitute</div><div>Substitute that expression into the <b>other</b> equation. This produces one equation in a single variable.</div></div>
+    <div class="u8l2-step"><div class="u8l2-sn">Step 3</div><div class="u8l2-st">Solve</div><div>Solve the equation from Step 2 for the remaining variable.</div></div>
+    <div class="u8l2-step"><div class="u8l2-sn">Step 4</div><div class="u8l2-st">Back-substitute</div><div>Substitute the value from Step 3 back into the expression from Step 1 to find the other variable.</div></div>
+  </div>
+  <div class="def">Substitution means <b>“replace a variable with what it equals.”</b> Put the expression in <b>brackets</b> when it goes in: the whole expression gets multiplied.</div>
+  <div class="explainer" data-explainer="lift"></div>
+  <div class="parts c1">
+    <div class="part think"><div class="pl"><span class="think-tag">Think</span> In Example 1, what happens if you substitute <span class="tex">x=13-3y</span> back into the <b>same</b> equation, <span class="tex">x+3y=13</span>?</div><div class="work" style="--h:110px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(13-3y)+3y=13</span> gives <span class="tex">13=13</span>. True, but useless: the <span class="tex">y</span>-terms cancel because the expression <b>came from</b> that equation. Always substitute into the <b>other</b> equation.</div></div></div>
+  </div>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. Which variable to isolate?">
+  <h3 class="sub">Which variable should I isolate?</h3>
+  <p>Any variable in either equation works, and every choice leads to the <b>same</b> solution. Some choices are just tidier: look for a coefficient of <span class="tex">1</span> or <span class="tex">-1</span>, because then nothing has to be divided and no fractions appear.</p>
+  <div class="explainer" data-explainer="choose"></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>One system, solved two different ways</h3></div>
+  <p class="q">Consider the following system of equations: <span class="tex u8l2-sys">\textcolor{#1f5bd6}{x+3y=13}\qquad\textcolor{#c27a0e}{2x-y=5}</span></p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Solve the system using the method of substitution by rewriting the first equation in the form <span class="tex">x=\ldots</span></div>
+      <div class="work" style="--h:330px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Step 1:</b> <span class="tex">x+3y=13\Rightarrow x=13-3y</span><br><b>Step 2:</b> substitute into <span class="tex">2x-y=5</span>: <span class="tex">2(13-3y)-y=5</span><br><b>Step 3:</b> <span class="tex">26-6y-y=5</span>, <span class="tex">26-7y=5\Rightarrow -7y=-21\Rightarrow y=3</span><br><b>Step 4:</b> <span class="tex">x=13-3(3)=13-9=4</span><br>The solution is <span class="tex">x=4,\ y=3</span>, the point <span class="tex">\boldsymbol{(4,\ 3)}</span>.</div></div></div>
+    <div class="part"><div class="pl">(b) Solve the <b>same</b> system again, this time rewriting the first equation in the form <span class="tex">y=\ldots</span> You should arrive at the same solution.</div>
+      <div class="work" style="--h:330px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Step 1:</b> <span class="tex">x+3y=13\Rightarrow 3y=13-x\Rightarrow y=\dfrac{13-x}{3}</span><br><b>Step 2:</b> <span class="tex">2x-\dfrac{13-x}{3}=5</span><br><b>Step 3:</b> multiply every term by 3: <span class="tex">6x-(13-x)=15</span>, <span class="tex">6x-13+x=15\Rightarrow 7x=28\Rightarrow x=4</span><br><b>Step 4:</b> <span class="tex">y=\dfrac{13-4}{3}=\dfrac{9}{3}=3</span><br>Both routes give the same solution, <span class="tex">\boldsymbol{(4,\ 3)}</span>.</div></div></div>
+  </div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(c) Verify that your solution satisfies both original equations.</div>
+      <div class="work" style="--h:120px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">In <span class="tex">x+3y=13</span>: <span class="tex">4+3(3)=4+9=13</span> ✓ &nbsp;&nbsp; In <span class="tex">2x-y=5</span>: <span class="tex">2(4)-3=8-3=5</span> ✓</div></div></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s1c" data-section="1. Check in BOTH equations">
+  <h3 class="sub">Example 1 (c) check: a solution works in <b>both</b> equations</h3>
+  <p>A point that works in only one equation lies on only one line. The solution of a system is the <b>one point on both lines</b>, so it has to balance <b>both</b> equations.</p>
+  <div class="explainer" data-explainer="checkBoth"></div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>A rearrangement that produces a fraction</h3></div>
+  <p class="q">Consider the following system of equations: <span class="tex u8l2-sys">\textcolor{#1f5bd6}{2x+3y=0}\qquad\textcolor{#c27a0e}{4x-5y=22}</span></p>
+  <p class="q">Solve the system using the method of substitution, and verify that your solution satisfies both equations. <span class="muted">(Notice that the first equation has no constant term: rearranging it will produce a fraction, and that is perfectly normal.)</span></p>
+  <div class="parts c1">
+    <div class="part"><div class="pl">Solve and verify.</div>
+      <div class="work" style="--h:330px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Step 1:</b> <span class="tex">2x+3y=0\Rightarrow 2x=-3y\Rightarrow x=-\dfrac{3y}{2}</span><br><b>Step 2:</b> substitute into <span class="tex">4x-5y=22</span>: <span class="tex">4\left(-\dfrac{3y}{2}\right)-5y=22</span><br><b>Step 3:</b> <span class="tex">-6y-5y=22\Rightarrow -11y=22\Rightarrow y=-2</span><br><b>Step 4:</b> <span class="tex">x=-\dfrac{3(-2)}{2}=\dfrac{6}{2}=3</span>. The solution is <span class="tex">\boldsymbol{x=3,\ y=-2}</span>.<br>Check in <span class="tex">2x+3y=0</span>: <span class="tex">2(3)+3(-2)=6-6=0</span> ✓ &nbsp; Check in <span class="tex">4x-5y=22</span>: <span class="tex">4(3)-5(-2)=12+10=22</span> ✓</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check <span class="tex">(3,\ -2)</span> in <span class="tex">4x-5y=22</span> on the TI-30XIIS.</b> <span class="keys"><kbd>4</kbd><kbd>×</kbd><kbd>3</kbd><kbd>−</kbd><kbd>5</kbd><kbd>×</kbd><kbd>(−)</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> gives 22 ✓. Use <kbd>(−)</kbd> for the negative, not <kbd>−</kbd>.</div>
+    <button class="pill" data-keys="4 × 3 − 5 × (−) 2 =">Show me</button>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s1d" data-section="1. Fractions that clear">
+  <h3 class="sub">Fractions that clear</h3>
+  <p>A fraction in Step 2 is nothing to fear. Either <b>multiply every term</b> by the denominator, or let a coefficient <b>cancel</b> it. Keep the brackets until the very end: a minus sign in front of a bracket changes the sign of <b>every</b> term inside.</p>
+  <div class="explainer" data-explainer="fracs"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Watch the minus in front of a fraction.</b> <span class="tex">-\dfrac{13-x}{3}</span> times 3 is <span class="tex">-(13-x)=-13+x</span>, not <span class="tex">-13-x</span>.</div></div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Exact values: the calculator answer from Lesson 1A</h3></div>
+  <p class="q">In Lesson 1A, Example 4, a graphing calculator gave the solution of the system <span class="tex">\textcolor{#1f5bd6}{4x+3y=2}</span> and <span class="tex">\textcolor{#c27a0e}{2x-y=5}</span> as <span class="tex">(1.7,\ -1.6)</span>. Substitution gives the solution as exact values.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Rewrite <span class="tex">2x-y=5</span> in the form <span class="tex">y=\ldots</span></div>
+      <div class="work" style="--h:110px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">2x-y=5\Rightarrow -y=-2x+5\Rightarrow \boldsymbol{y=2x-5}</span></div></div></div>
+    <div class="part"><div class="pl">(c) Verify the solution by substituting into both original equations.</div>
+      <div class="work" style="--h:110px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">4\left(\tfrac{17}{10}\right)+3\left(-\tfrac{8}{5}\right)=\tfrac{68}{10}-\tfrac{48}{10}=\tfrac{20}{10}=2</span> ✓<br><span class="tex">2\left(\tfrac{17}{10}\right)-\left(-\tfrac{8}{5}\right)=\tfrac{34}{10}+\tfrac{16}{10}=\tfrac{50}{10}=5</span> ✓<br>Both equations balance, confirming the solution.</div></div></div>
+  </div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(b) Solve the system by substitution, and express the solution using exact values (fractions, not decimals).</div>
+      <div class="work" style="--h:230px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Substitute <span class="tex">y=2x-5</span> into <span class="tex">4x+3y=2</span>: <span class="tex">4x+3(2x-5)=2\Rightarrow 4x+6x-15=2\Rightarrow 10x=17\Rightarrow x=\tfrac{17}{10}</span><br><span class="tex">y=2\left(\tfrac{17}{10}\right)-5=\tfrac{34}{10}-\tfrac{50}{10}=-\tfrac{16}{10}=-\tfrac{8}{5}</span><br>The exact solution is <span class="tex">\boldsymbol{x=\tfrac{17}{10},\ y=-\tfrac{8}{5}}</span>, which is exactly <span class="tex">(1.7,\ -1.6)</span>.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check the fractions on the TI-30XIIS</b> with the fraction key <kbd>a b/c</kbd>. In <span class="tex">4x+3y</span>: <span class="keys"><kbd>4</kbd><kbd>×</kbd><kbd>1</kbd><kbd>7</kbd><kbd>a b/c</kbd><kbd>1</kbd><kbd>0</kbd><kbd>+</kbd><kbd>3</kbd><kbd>×</kbd><kbd>(−)</kbd><kbd>8</kbd><kbd>a b/c</kbd><kbd>5</kbd><kbd>ENTER</kbd></span> gives 2 ✓. In <span class="tex">2x-y</span>: gives 5 ✓.</div>
+    <div class="pill-col"><button class="pill" data-keys="4 × 17 ab/c 10 + 3 × (−) 8 ab/c 5 =">Show 4x + 3y</button><button class="pill" data-keys="2 × 17 ab/c 10 − (−) 8 ab/c 5 =">Show 2x − y</button></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s1e" data-section="1. Exact vs calculator">
+  <h3 class="sub">Exact values vs the calculator screen</h3>
+  <p>The graphing calculator’s <b>intersect</b> shows a decimal, and the screen can’t tell you whether that decimal is exact or <b>rounded</b>. Substitution gives the exact value every time. <span class="muted">(The keys in this animation are for the TI-83/84 graphing calculator from Lesson 1A, not the TI-30XIIS.)</span></p>
+  <div class="explainer" data-explainer="exact"></div>
+</section>
+
+<!-- ================= 2. Expanding first ================= -->
+<section class="card" data-ink="s2" data-section="2. Expanding First">
+  <div class="sec-h"><span class="badge">2</span><h2>Substitution When an Equation Must Be Expanded First</h2></div>
+  <p>Sometimes brackets have to be expanded and like terms collected <b>before</b> either equation can be solved for one variable in terms of the other. Always clear the brackets first, then proceed with the same four steps.</p>
+  <div class="explainer" data-explainer="expand"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>The sign goes with the number in front of the bracket.</b> In <span class="tex">a-2(b-3)</span> the multiplier is <span class="tex">-2</span>, so the last term is <span class="tex">(-2)(-3)=+6</span>.</div></div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Expanding before substituting</h3></div>
+  <p class="q">Consider the following system of equations: <span class="tex u8l2-sys">\textcolor{#1f5bd6}{a-2(b-3)=8}\qquad\textcolor{#c27a0e}{4a+3(b-2)=13}</span></p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Expand both equations, then solve the system using the method of substitution.</div>
+      <div class="work" style="--h:340px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Expand the first: <span class="tex">a-2b+6=8\Rightarrow a-2b=2</span><br>Expand the second: <span class="tex">4a+3b-6=13\Rightarrow 4a+3b=19</span><br><b>Step 1:</b> <span class="tex">a=2b+2</span><br><b>Step 2:</b> <span class="tex">4(2b+2)+3b=19</span><br><b>Step 3:</b> <span class="tex">8b+8+3b=19\Rightarrow 11b=11\Rightarrow b=1</span><br><b>Step 4:</b> <span class="tex">a=2(1)+2=4</span>. So <span class="tex">\boldsymbol{a=4,\ b=1}</span>.</div></div></div>
+    <div class="part"><div class="pl">(b) Verify algebraically that your solution satisfies both of the <b>original</b> (unexpanded) equations.</div>
+      <div class="work" style="--h:340px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">In <span class="tex">a-2(b-3)=8</span>:<br><span class="tex">4-2(1-3)=4-2(-2)=4+4=8</span> ✓<br>In <span class="tex">4a+3(b-2)=13</span>:<br><span class="tex">4(4)+3(1-2)=16+3(-1)=16-3=13</span> ✓</div></div></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. When both variables disappear">
+  <h3 class="sub">When both variables disappear: <span class="tex">0=0</span> or <span class="tex">0=k</span></h3>
+  <p>Sometimes substituting makes <b>both</b> variables cancel. What is left tells you the number of solutions: the same three cases as the Lesson 1B chart.</p>
+  <div class="u8l2-vgrid">
+    <div class="u8l2-vcase">
+      <div class="u8l2-vh"><b>(i)</b> <span class="tex">y=3x-1</span> and <span class="tex">6x-2y=2</span></div>
+      <div class="u8l2-vm"><span class="tex">6x-2(3x-1)=2</span><br><span class="tex">6x-6x+2=2</span><br><span class="tex">2=2</span>, i.e. <span class="tex">0=0</span>: <b>always true</b>.</div>
+      <div>Every <span class="tex">x</span> works: <b>infinitely many solutions</b>. <span class="tex">6x-2y=2</span> is <span class="tex">y=3x-1</span> again: the <b>same line</b> (equal slopes, equal intercepts).</div>
+    </div>
+    <div class="u8l2-vcase u8l2-vno">
+      <div class="u8l2-vh"><b>(ii)</b> <span class="tex">y=3x-1</span> and <span class="tex">6x-2y=8</span></div>
+      <div class="u8l2-vm"><span class="tex">6x-2(3x-1)=8</span><br><span class="tex">6x-6x+2=8</span><br><span class="tex">2=8</span>, i.e. <span class="tex">0=6</span>: <b>never true</b>.</div>
+      <div>No <span class="tex">x</span> works: <b>no solution</b>. <span class="tex">6x-2y=8</span> is <span class="tex">y=3x-4</span>: <b>parallel lines</b> (equal slopes <span class="tex">3</span>, different intercepts <span class="tex">-1</span> and <span class="tex">-4</span>).</div>
+    </div>
+  </div>
+  <div class="explainer" data-explainer="vanish"></div>
+</section>
+
+<!-- ================= 3. Extension ================= -->
+<section class="card u8l2-extcard" data-ink="s3" data-section="3. Extension: Three Unknowns">
+  <div class="sec-h"><span class="badge">3</span><h2>Three Equations in Three Unknowns</h2><span class="u8l2-ext-tag">Extension</span></div>
+  <div class="u8l2-extbox"><span class="u8l2-ext">Extension</span><span>Systems of three equations go beyond the Math 10C outcomes. The idea is the same: substitute until only <b>one</b> unknown is left, solve, then back-substitute.</span></div>
+</section>
+
+<section class="card example u8l2-extcard" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Three equations in three unknowns</h3><span class="u8l2-ext-tag">Extension</span></div>
+  <p class="q">Solve the following system using substitution. <span class="tex u8l2-sys">\textcolor{#1f5bd6}{4p-3q-2r=-9}\qquad\textcolor{#c27a0e}{r=2p}\qquad\textcolor{#12805a}{3q-p-5=0}</span></p>
+  <p class="q muted"><i>Hint:</i> the second and third equations already give <span class="tex">r</span> and <span class="tex">q</span> each in terms of <span class="tex">p</span> alone. Substitute both into the first equation to obtain a single equation in <span class="tex">p</span>.</p>
+  <div class="parts c1">
+    <div class="part"><div class="pl">Solve and check.</div>
+      <div class="work" style="--h:320px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Step 1:</b> from the third equation, <span class="tex">3q=p+5\Rightarrow q=\dfrac{p+5}{3}</span>. The second already gives <span class="tex">r=2p</span>.<br><b>Step 2:</b> substitute both into <span class="tex">4p-3q-2r=-9</span>: <span class="tex">4p-3\left(\dfrac{p+5}{3}\right)-2(2p)=-9</span><br><b>Step 3:</b> <span class="tex">4p-(p+5)-4p=-9\Rightarrow -p-5=-9\Rightarrow -p=-4\Rightarrow p=4</span><br><b>Step 4:</b> <span class="tex">r=2(4)=8</span> and <span class="tex">q=\dfrac{4+5}{3}=\dfrac{9}{3}=3</span>. So <span class="tex">\boldsymbol{p=4,\ q=3,\ r=8}</span>.<br>Check: <span class="tex">4(4)-3(3)-2(8)=16-9-16=-9</span> ✓ &nbsp; <span class="tex">r=8=2(4)</span> ✓ &nbsp; <span class="tex">3(3)-4-5=9-9=0</span> ✓</div></div></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<section class="card u8l2-extcard" data-ink="s3b" data-section="3. Example 5 check">
+  <h3 class="sub">Example 5 check: three unknowns down to one</h3>
+  <p>Two expressions lift at once, and three unknowns collapse to one.</p>
+  <div class="explainer" data-explainer="three"></div>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>The four steps.</b> <b>Isolate</b> a variable; <b>substitute</b> its expression, in brackets, into the <b>other</b> equation; <b>solve</b> the one-variable equation; <b>back-substitute</b>. Verify in <b>both</b> equations.</div>
+    <div><b>Choose wisely.</b> A coefficient of <span class="tex">1</span> or <span class="tex">-1</span> means no fractions. Any choice gives the same solution. A fraction is normal: multiply every term by the denominator, or let a coefficient cancel it.</div>
+    <div><b>Exact values.</b> Substitution gives fractions like <span class="tex">\left(\tfrac{17}{10},\ -\tfrac{8}{5}\right)</span> exactly; a calculator decimal may be rounded. <b>Expand brackets first</b>, then use the same four steps.</div>
+    <div><b>When both variables vanish.</b> <span class="tex">0=0</span> (always true): <b>infinitely many solutions</b>, the same line. <span class="tex">0=k</span> with <span class="tex">k\ne0</span> (never true): <b>no solution</b>, parallel lines.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u8l2" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 2 — Solving Systems by Substitution</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l3/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 3 — Combining Equations: The Elimination Method</b><div class="muted">Add or subtract two equations so one variable cancels</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u8l2.js';
+  boot({ key: 'u8l2', homeHref: '../../', title: '8.2 Solving Systems by Substitution' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

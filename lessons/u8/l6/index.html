@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Systems of Linear Equations: Cumulative Review · Math 10C 8.6</title>
+<meta name="description" content="Math 10C Unit 8 Lesson 6: the systems of linear equations review. How many solutions, graphing, substitution and elimination, choosing a method, two tables to one crossing point, a trip out and back, comparing three plans, plus the unit review questions. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u8l6.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 8 Systems of Linear Equations · Lesson 6</div>
+  <h1>Systems of Linear Equations: Cumulative Review</h1>
+  <p class="lede">Every method of the unit on one page: <b>classifying</b>, <b>graphing</b>, <b>substitution</b>, <b>elimination</b>, and <b>choosing</b> among them. Then mixed examples: two tables that meet, a trip out and back, and three plans whose lines cross.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>tell how many solutions a system has from its graph, from its slopes and <span class="tex">y</span>-intercepts, or from what the algebra gives (<span class="tex">0=5</span> or <span class="tex">0=0</span>)</li>
+      <li>solve a system by graphing (by hand or with a graphing calculator), by substitution, or by elimination, and verify the solution in <b>both</b> equations</li>
+      <li>choose a method for a system and <b>justify</b> the choice</li>
+      <li>build the equations from tables, a trip and a price list, and find where they meet</li>
+      <li>use the crossing points to decide which option is best</li>
+    </ul>
+  </div>
+  <div class="u8l6-outs">
+    <div class="outcome"><b>RF9</b> Solve problems that involve systems of linear equations in two variables, graphically and algebraically.</div>
+    <div class="outcome"><b>RF7</b> Determine the equation of a linear relation, given a table of values or a situation (Example 1(a), Example 4(b)).</div>
+  </div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: Balance the Mobile" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Balance the Mobile</h2></div>
+  <p class="big">A <b>level</b> bar means both sides weigh the <b>same</b>. Bars and strings weigh nothing.</p>
+  <div id="u8l6-mobiles" class="u8l6-mobfig"></div>
+
+  <div class="u8l6-wqs">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Mobile A: which weighs more, a <b>star</b> or a <b>moon</b>? How do you know?</div></div>
+      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">A <b>star</b>. The bar is level, so 1 star balances 2 moons: a star weighs as much as <b>2 moons</b>.</div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>Swap the star for moons. The whole mobile now weighs as much as how many moons?</div></div>
+      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><b>4 moons</b>: 2 in place of the star, plus the 2 already hanging.</div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>How heavy is one moon? One star?</div></div>
+      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">Moon <span class="tex">=20\div4=\mathbf{5}</span> g; star <span class="tex">=2\times5=\mathbf{10}</span> g. Check: <span class="tex">10=5+5</span> and <span class="tex">10+10=20</span> ✓</div></div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Mobile B weighs <b>48 g</b> in total. How heavy is the <b>square</b>? <b>Guess first.</b> Then find the triangle and the circle too.</div></div>
+    <div class="poll-opts u8l6-c4">
+      <div class="opt"><b>A</b> 8 g</div>
+      <div class="opt"><b>B</b> 12 g</div>
+      <div class="opt right"><b>C</b> 18 g</div>
+      <div class="opt"><b>D</b> 24 g</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>C: the square is 18 g</b> (triangle 6 g, circle 12 g). The top bar is level, so each side is <span class="tex">48\div2=24</span> g. The small bar is level, so circle <span class="tex">=</span> 2 triangles and the left side is 4 triangles <span class="tex">=24</span> g: triangle 6 g, circle 12 g. Right side: square <span class="tex">+</span> triangle <span class="tex">=24</span>, so square <span class="tex">=24-6=18</span> g. Check: <span class="tex">6+6+12+18+6=48</span> ✓<br>
+      <span class="muted"><b>D (24)</b> is half the total: it forgets the triangle hanging under the square. <b>A (8)</b> spreads 48 g evenly over 6 shapes, ignoring the balance clues. <b>B (12)</b> guesses the square matches the circle because they hang at the same height.</span><br>
+      <b>Today’s lesson:</b> every level bar is an <b>equation</b>. Solving the mobile used substitution (swap the circle for 2 triangles) — the whole unit is about tools like that.</div>
+  </div>
+
+  <h3 class="sub u8l6-gap">Each level bar is an equation</h3>
+  <div class="explainer" data-explainer="mobile"></div>
+
+  <div class="bk-wq u8l6-bonus">
+    <div class="q-line"><div class="q-num u8l6-bonus">+</div><div><b>Early finishers.</b> On Mobile A, hang a heart opposite a star and a moon. How heavy is the heart? Could Mobile B still balance if the square weighed 20 g?</div></div>
+    <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">Heart <span class="tex">=10+5=15</span> g. For Mobile B, a 20 g square needs a 4 g triangle to make the right side 24 g, but then the left side is 4 triangles <span class="tex">=16</span> g, not 24. <b>No.</b></div>
+  </div>
+  <p class="u8l6-social">Your turn: design a two-bar mobile puzzle with one total weight. Can a neighbour balance it?</p>
+</section>
+
+<!-- ================= 1. Method summary ================= -->
+<section class="card" data-ink="s1" data-section="1. How Many Solutions?">
+  <div class="sec-h"><span class="badge">1</span><h2>Method Summary: How Many Solutions?</h2></div>
+  <p class="muted">Lesson 1B, plus what the algebra shows in Lessons 2–3.</p>
+  <table class="u8l6-hm">
+    <tr><th></th><th>One solution</th><th>No solution</th><th>Infinitely many</th></tr>
+    <tr><td>Graph</td>
+      <td><div class="u8l6-hmfig"><div data-u8l6-mini="one"></div><span>lines cross</span></div></td>
+      <td><div class="u8l6-hmfig"><div data-u8l6-mini="none"></div><span>parallel</span></div></td>
+      <td><div class="u8l6-hmfig"><div data-u8l6-mini="inf"></div><span>same line</span></div></td></tr>
+    <tr><td>Slopes / <span class="tex">y</span>-intercepts</td><td>different slopes</td><td>equal slopes, different intercepts</td><td>equal slopes, equal intercepts</td></tr>
+    <tr><td>Substitution or elimination gives</td><td>one value for each variable</td><td>a false statement, e.g. <span class="tex">0=5</span></td><td>a true statement, e.g. <span class="tex">0=0</span></td></tr>
+  </table>
+  <div class="explainer" data-explainer="howMany"></div>
+  <div class="parts c1 u8l6-think">
+    <div class="part think"><div class="pl"><span class="think-tag">Think</span> Elimination ends with <span class="tex">0=0</span>. A classmate writes “<span class="tex">x=0</span>”. What does <span class="tex">0=0</span> really tell you?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Both variables vanished and what is left is <b>always true</b>, whatever <span class="tex">x</span> and <span class="tex">y</span> are. So every point that satisfies one equation satisfies the other: the two equations are the <b>same line</b>, with <b>infinitely many</b> solutions. It says nothing about <span class="tex">x</span> being 0. (A false leftover such as <span class="tex">0=5</span> means no point works: parallel lines.)</div></div></div>
+  </div>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. Three Methods">
+  <h3 class="sub">Three methods, one crossing point</h3>
+  <div class="u8l6-meths">
+    <div class="u8l6-meth"><h4>Graphing <small>Lesson 1A</small></h4>
+      <div><span class="u8l6-sub">By hand:</span> rearrange to <span class="tex">y=mx+b</span>, plot <span class="tex">b</span>, use the slope; read the crossing point.</div>
+      <div><span class="u8l6-sub">Graphing calculator</span> <span class="u8l6-ti">TI-83/84</span>: <kbd>Y=</kbd> both equations, choose a <kbd>WINDOW</kbd>, then <kbd class="u8l6-k2">2nd</kbd> <kbd>TRACE</kbd> <code class="u8l6-c">5:intersect</code>.</div>
+      <div>Verify in both equations.</div></div>
+    <div class="u8l6-meth"><h4>Substitution <small>Lesson 2</small></h4>
+      <ol><li>Solve one equation for one variable.</li><li>Substitute into the <i>other</i> equation.</li><li>Solve for the remaining variable.</li><li>Back-substitute; verify in both.</li></ol></div>
+    <div class="u8l6-meth"><h4>Elimination <small>Lesson 3</small></h4>
+      <ol><li>Scale one or both equations (every term) so one variable has matching or opposite coefficients.</li><li>Subtract (matching) or add (opposite).</li><li>Solve; back-substitute; verify in both.</li></ol></div>
+  </div>
+  <div class="explainer" data-explainer="methods"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Verify in BOTH equations.</b> A point that works in only one equation is on only one line. The solution is the one point on both.</div></div>
+</section>
+
+<section class="card" data-ink="s1c" data-section="1. Choosing a Method">
+  <h3 class="sub">Choosing a method <span class="muted small">(Lesson 3, Section 6)</span></h3>
+  <table class="u8l6-choose">
+    <tr><th>Method</th><th>Use it when …</th><th>Example</th></tr>
+    <tr><td>Graphing</td><td>you need a picture or an estimate, or a graphing calculator is allowed (by hand: exact only for integer solutions)</td><td><span class="tex">y=2x-1,\ \ y=-x+5</span></td></tr>
+    <tr><td>Substitution</td><td>a variable already has coefficient <span class="tex">1</span> or <span class="tex">-1</span>, or is already isolated</td><td><span class="tex">y=3x-2,\ \ 5x-2y=1</span></td></tr>
+    <tr><td>Elimination</td><td>the coefficients of one variable already match or are opposites, or are easy multiples</td><td><span class="tex">4x+3y=10,\ \ 4x-5y=-6</span></td></tr>
+  </table>
+  <div class="explainer" data-explainer="choose"></div>
+</section>
+
+<!-- ================= 2. Mixed examples ================= -->
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="sec-h"><span class="badge">2</span><h2>Mixed Examples</h2></div>
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>From two tables to the point of intersection</h3></div>
+  <p class="q">Two hikers each recorded a table of values while tracking their own straight-line trail marker on a coordinate grid.</p>
+  <div class="u8l6-ex1">
+    <div class="u8l6-tabs">
+      <figure><figcaption class="u8l6-b">Priya’s line</figcaption><div data-bk-table='{"rows":[[-3,-7],[-1,-3],[1,1],[3,5],[5,9]],"cellW":66,"cellH":44}'></div></figure>
+      <figure><figcaption class="u8l6-a">Devon’s line</figcaption><div data-bk-table='{"rows":[[-2,10],[0,8],[2,6],[4,4],[6,2]],"cellW":66,"cellH":44}'></div></figure>
+    </div>
+    <div class="parts c2">
+      <div class="part"><div class="pl">(a) Use each table to determine that hiker’s equation, in the form <span class="tex">y=mx+b</span>.</div>
+        <div class="work" style="--h:250px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b class="u8l6-b">Priya:</b> <span class="tex">m=\dfrac{-3-(-7)}{-1-(-3)}=\dfrac{4}{2}=2</span>. Using <span class="tex">(-3,-7)</span>: <span class="tex">-7=2(-3)+b\Rightarrow b=-1</span>.<br><span class="tex">\textcolor{#1f5bd6}{\boldsymbol{y=2x-1}}</span><br><b class="u8l6-a">Devon:</b> <span class="tex">m=\dfrac{8-10}{0-(-2)}=\dfrac{-2}{2}=-1</span>. The table contains <span class="tex">(0,8)</span>, so <span class="tex">b=8</span>.<br><span class="tex">\textcolor{#b06a07}{\boldsymbol{y=-x+8}}</span></div></div></div>
+      <div class="part"><div class="pl">(b) The two tables share no ordered pair. Determine the point where the two lines intersect, and state the value of <span class="tex">x+y</span> at that point.</div>
+        <div class="work" style="--h:250px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Both equations are <span class="tex">y=\ldots</span>, so set them equal (or substitute):<br><span class="tex">\textcolor{#1f5bd6}{2x-1}=\textcolor{#b06a07}{-x+8}</span><br><span class="tex">3x=9\Rightarrow x=3</span>, <span class="tex">y=2(3)-1=5</span><br>Check in Devon’s line: <span class="tex">-3+8=5</span> ✓<br><span class="tex">\textcolor{#7b4fc4}{(3,5)}</span> is in Priya’s table but not Devon’s (his <span class="tex">x</span>-values are even), which is why the point had to be calculated.<br><span class="tex">x+y=3+5=\mathbf{8}</span></div></div></div>
+    </div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="ex1b" data-section="Example 1 check">
+  <h3 class="sub">Two tables, one crossing</h3>
+  <div class="explainer" data-explainer="tables"></div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Choose a method, justify it, solve</h3></div>
+  <p class="q">For each system, name the method you would use and give a reason, then solve the system and verify.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">\textcolor{#1f5bd6}{y=3x-2},\ \ \textcolor{#b06a07}{5x-2y=1}</span></div>
+      <div class="work" style="--h:290px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Substitution:</b> <span class="tex">y</span> is already isolated.<br><span class="tex">5x-2(3x-2)=1</span><br><span class="tex">\Rightarrow -x+4=1\Rightarrow x=3</span><br><span class="tex">y=3(3)-2=7</span><br>Check: <span class="tex">5(3)-2(7)=1</span> ✓<br><span class="tex">\textcolor{#7b4fc4}{\boldsymbol{(3,7)}}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">\textcolor{#1f5bd6}{4x+3y=10},\ \ \textcolor{#b06a07}{4x-5y=-6}</span></div>
+      <div class="work" style="--h:290px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Elimination:</b> the <span class="tex">x</span>-coefficients already match (<span class="tex">4</span>).<br>Subtract: <span class="tex">(4x+3y)-(4x-5y)=10-(-6)</span><br><span class="tex">8y=16\Rightarrow y=2</span>; <span class="tex">4x+6=10\Rightarrow x=1</span><br>Check: <span class="tex">4-10=-6</span> ✓<br><span class="tex">\textcolor{#7b4fc4}{\boldsymbol{(1,2)}}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">\textcolor{#1f5bd6}{y=0.8x+1.2},\ \ \textcolor{#b06a07}{y=-1.5x+6.95}</span></div>
+      <div class="work" style="--h:290px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Graphing calculator</b> (decimal coefficients; both already <span class="tex">y=\ldots</span>), or set the expressions equal.<br><span class="tex">0.8x+1.2=-1.5x+6.95</span><br><span class="tex">\Rightarrow 2.3x=5.75\Rightarrow x=2.5</span><br><span class="tex">y=0.8(2.5)+1.2=3.2</span><br><code class="u8l6-c">5:intersect</code> shows <code class="u8l6-c">X=2.5</code>, <code class="u8l6-c">Y=3.2</code> ✓<br><span class="tex">\textcolor{#7b4fc4}{\boldsymbol{(2.5,\ 3.2)}}</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Part (c) on the TI-30XIIS.</b> After setting the expressions equal, divide: <span class="keys"><kbd>5</kbd><kbd>.</kbd><kbd>7</kbd><kbd>5</kbd><kbd>÷</kbd><kbd>2</kbd><kbd>.</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> gives <span class="tex">x=2.5</span>.</div>
+    <button class="pill" data-keys="5.75 ÷ 2.3 =">Show me</button>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="ex2b" data-section="Example 2(c) on the TI-84">
+  <h3 class="sub">On the graphing calculator <span class="u8l6-ti">TI-83/84</span></h3>
+  <p class="muted">These steps are for the <b>graphing calculator</b>. The TI-30XIIS built into this page can’t graph; use it for the algebraic check.</p>
+  <div class="explainer" data-explainer="ti84"></div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>A trip out and a trip back</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl"><i>(Multiple Choice)</i> Sam walks at <span class="tex">6</span> km/h and runs at <span class="tex">10</span> km/h. Going from his house to school he walks part of the way and runs the rest, and the trip takes <span class="tex">42</span> minutes. Coming home he runs <i>twice</i> as far as he ran going to school (and walks the remainder); this trip takes <span class="tex">34</span> minutes. The distance between Sam’s house and school is</div>
+      <div class="bk-mc" data-answer="B" data-pick><div>4 km</div><div>5 km</div><div>6 km</div><div>7 km</div></div>
+      <div class="work" style="--h:300px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Let <span class="tex">w</span> be the distance walked going to school and <span class="tex">r</span> the distance run going to school, both in km. The distance between house and school is then <span class="tex">w+r</span>, and the times must be written in <b>hours</b>.<br>
+        <b class="u8l6-b">Going:</b> <span class="tex">\dfrac{w}{6}+\dfrac{r}{10}=\dfrac{42}{60}=0.7</span>. Multiply every term by <span class="tex">30</span>: <span class="tex">\textcolor{#1f5bd6}{\boldsymbol{5w+3r=21}}</span>.<br>
+        <b class="u8l6-a">Coming home:</b> he runs <span class="tex">2r</span>, so he walks the rest of the same total distance, <span class="tex">(w+r)-2r=w-r</span>. <span class="tex">\dfrac{w-r}{6}+\dfrac{2r}{10}=\dfrac{34}{60}</span>. Multiply every term by <span class="tex">30</span>: <span class="tex">5(w-r)+6r=17\Rightarrow\textcolor{#b06a07}{\boldsymbol{5w+r=17}}</span>.<br>
+        The <span class="tex">w</span>-coefficients match, so subtract: <span class="tex">(5w+3r)-(5w+r)=21-17\Rightarrow 2r=4\Rightarrow r=2</span>. Then <span class="tex">5w+2=17\Rightarrow 5w=15\Rightarrow w=3</span>.<br>
+        Check against the words: going <span class="tex">\frac{3}{6}+\frac{2}{10}=0.5+0.2=0.7</span> h <span class="tex">=42</span> min ✓; home <span class="tex">\frac{3-2}{6}+\frac{4}{10}=0.1\overline{6}+0.4=0.5\overline{6}</span> h <span class="tex">=34</span> min ✓<br>
+        Distance <span class="tex">=w+r=3+2=\mathbf{5}</span> <b>km</b>. <b>Answer: B</b></div></div></div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Minutes or hours?</b> The speeds are in km/<b>h</b>, so the times must be in hours: <span class="tex">42\text{ min}=\frac{42}{60}\text{ h}=0.7\text{ h}</span>. Writing <span class="tex">\frac{w}{6}+\frac{r}{10}=42</span> mixes units.</div></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Minutes to hours.</b> <span class="keys"><kbd>4</kbd><kbd>2</kbd><kbd>÷</kbd><kbd>6</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives <span class="tex">0.7</span> h; <span class="keys"><kbd>3</kbd><kbd>4</kbd><kbd>÷</kbd><kbd>6</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives <span class="tex">0.5\overline{6}</span> h, which is why multiplying by 30 (to clear the 6, the 10 and the 60) is easier.</div>
+    <div class="pill-col"><button class="pill" data-keys="42 ÷ 60 =">Show 42 min</button><button class="pill" data-keys="34 ÷ 60 =">Show 34 min</button></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="ex3b" data-section="Example 3 check">
+  <h3 class="sub">Two trips, two equations</h3>
+  <div class="explainer" data-explainer="trip"></div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Comparing three plans</h3></div>
+  <p class="q">A phone carrier offers three data plans. <b class="u8l6-b">Plan 1</b> costs $25 per month plus $0.50 per GB. <b class="u8l6-a">Plan 2</b> costs $18 per month plus $0.90 per GB. <b class="u8l6-g">Plan 3</b> costs $70 per month for unlimited data. Let <span class="tex">y=</span> total cost per month in dollars and <span class="tex">x=</span> number of GB of data used per month.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) What factor determines which plan is most economical for a given customer?</div>
+      <div class="work" style="--h:110px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The <b>number of GB of data used per month</b>, <span class="tex">x</span>. Each plan charges a different rate per GB, so which plan costs least depends entirely on how much data is used.</div></div></div>
+    <div class="part"><div class="pl">(b) Write a linear equation for each of the three plans.</div>
+      <div class="work" style="--h:110px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Plan 1: <span class="tex">\textcolor{#1f5bd6}{\boldsymbol{y=25+0.5x}}</span> &nbsp; Plan 2: <span class="tex">\textcolor{#b06a07}{\boldsymbol{y=18+0.9x}}</span><br>Plan 3: <span class="tex">\textcolor{#12805a}{\boldsymbol{y=70}}</span> (a horizontal line: the cost does not depend on <span class="tex">x</span>)</div></div></div>
+    <div class="part"><div class="pl">(c) Determine algebraically the number of GB at which Plans 1 and 2 cost the same amount, and state that common cost.</div>
+      <div class="work" style="--h:180px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Set the two costs equal: <span class="tex">25+0.5x=18+0.9x\Rightarrow 7=0.4x\Rightarrow x=17.5</span> GB<br><span class="tex">y=25+0.5(17.5)=\$33.75</span>; check Plan 2: <span class="tex">18+0.9(17.5)=\$33.75</span> ✓<br>The plans cost the same, <b>$33.75</b>, at <b>17.5 GB</b>.</div></div></div>
+    <div class="part"><div class="pl">(d) For each of Plans 1 and 2, determine the number of GB that could be purchased for $70.</div>
+      <div class="work" style="--h:180px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Plan 1: <span class="tex">70=25+0.5x\Rightarrow 0.5x=45\Rightarrow \boldsymbol{x=90}</span> <b>GB</b><br>Plan 2: <span class="tex">70=18+0.9x\Rightarrow 0.9x=52\Rightarrow x\approx\boldsymbol{57.8}</span> <b>GB</b><br>So $70, the price of unlimited data, buys 90 GB on Plan 1 but only about 57.8 GB on Plan 2.</div></div></div>
+  </div>
+  <div class="u8l6-ex4f">
+    <div class="parts c1">
+      <div class="part"><div class="pl">(f) Graph all three plans on the grid and mark the two crossover points where the cheapest plan changes.</div>
+        <div id="u8l6-ex4grid"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div id="u8l6-ex4ans" class="u8l6-ansfig"></div>Crossovers <span class="tex">\textcolor{#7b4fc4}{(17.5,\ 33.75)}</span> (Plans 1 and 2) and <span class="tex">\textcolor{#7b4fc4}{(90,\ 70)}</span> (Plans 1 and 3).</div></div></div>
+    </div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(e) Devise a simple rule that determines which plan is most economical, depending on the expected number of GB of data used per month. Use the graph in (f).</div>
+        <div class="work" style="--h:300px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans">On the graph the cheapest plan is the <b>lowest</b> line. Plan 2 has the lower monthly fee, so it is lowest while usage is small; Plan 1’s cheaper per-GB rate takes over at the crossover <span class="tex">(17.5,\ 33.75)</span> (part (c)); Plan 1 in turn reaches $70 at 90 GB (part (d)), beyond which the flat $70 of Plan 3 is lowest.<br><b>Rule:</b> <b class="u8l6-a">Plan 2</b> for 0–17.5 GB, <b class="u8l6-b">Plan 1</b> for 17.5–90 GB, <b class="u8l6-g">Plan 3</b> for more than 90 GB.</div></div></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Part (d), Plan 2.</b> <span class="keys"><kbd>5</kbd><kbd>2</kbd><kbd>÷</kbd><kbd>.</kbd><kbd>9</kbd><kbd>ENTER</kbd></span> gives <span class="tex">57.777\ldots</span>, about <b>57.8 GB</b>.</div>
+    <button class="pill" data-keys="52 ÷ .9 =">Show me</button>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="ex4b" data-section="Example 4 check">
+  <h3 class="sub">★ Three lines, one cheapest plan at a time</h3>
+  <div class="explainer" data-explainer="plans"></div>
+</section>
+
+<!-- ================= review questions ================= -->
+<section class="card u8l6-rev" data-ink="r1" data-section="Review: Questions 1–4">
+  <div class="sec-h"><span class="badge">R</span><h2>Unit 8 Review Questions</h2></div>
+  <p class="muted u8l6-revnote">Multiple choice and numerical response (1–12), then written response (13–18).</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl"><b>1.</b> <i>(Multiple Choice)</i> Solve the system of equations <span class="tex">2x+y=11,\ \ x-y=1</span> and select the ordered pair <span class="tex">(x,y)</span> that satisfies both equations.</div>
+      <div class="bk-mc" data-answer="A" data-pick><div><span class="tex">(4,3)</span></div><div><span class="tex">(3,4)</span></div><div><span class="tex">(-4,3)</span></div><div><span class="tex">(4,-3)</span></div></div>
+      <div class="work" style="--h:190px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The <span class="tex">y</span>-coefficients are opposites, so add:<br><span class="tex">(2x+y)+(x-y)=11+1\Rightarrow 3x=12\Rightarrow x=4</span><br>Into Eq. 1: <span class="tex">8+y=11\Rightarrow y=3</span><br>Check Eq. 2: <span class="tex">4-3=1</span> ✓ &nbsp; <span class="tex">(x,y)=(4,3)</span>. <b>Answer: A</b></div></div></div>
+    <div class="part"><div class="pl"><b>2.</b> <i>(Multiple Choice)</i> The system <span class="tex">2x-y=6,\ \ 4y=8x-24</span> has</div>
+      <div class="bk-mc" data-answer="D" data-cols="2" data-pick><div>no solution</div><div>one solution, <span class="tex">(3,0)</span></div><div>one solution, <span class="tex">(0,-6)</span></div><div>infinitely many solutions</div></div>
+      <div class="work" style="--h:190px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">2x-y=6\Rightarrow -y=-2x+6\Rightarrow y=2x-6</span><br><span class="tex">4y=8x-24\Rightarrow y=2x-6</span><br>Equal slopes and equal <span class="tex">y</span>-intercepts: the lines are coincident. <b>Answer: D</b> (infinitely many solutions)<br><span class="tex">(3,0)</span> and <span class="tex">(0,-6)</span> do satisfy both equations, but so does every other point on the line, so the system does not have just one solution.</div></div></div>
+    <div class="part"><div class="pl"><b>3.</b> <i>(Numerical Response)</i> Solve the system <span class="tex">3x+y=8,\ \ 2x-5y=1</span> by substitution or elimination. The <span class="tex">y</span>-coordinate of the point of intersection, to the nearest hundredth, is ____.</div>
+      <div class="work" style="--h:210px"></div><div class="bk-nr" data-value=".76"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Step 1:</b> <span class="tex">3x+y=8\Rightarrow y=8-3x</span><br><b>Step 2:</b> <span class="tex">2x-5(8-3x)=1</span><br><b>Step 3:</b> <span class="tex">2x-40+15x=1\Rightarrow 17x=41\Rightarrow x=\dfrac{41}{17}</span><br><b>Step 4:</b> <span class="tex">y=8-3\left(\dfrac{41}{17}\right)=\dfrac{136}{17}-\dfrac{123}{17}=\dfrac{13}{17}\approx0.7647</span><br>Check Eq. 2: <span class="tex">\dfrac{82}{17}-\dfrac{65}{17}=\dfrac{17}{17}=1</span> ✓ &nbsp; <span class="tex">y\approx\mathbf{0.76}</span></div></div></div>
+    <div class="part"><div class="pl"><b>4.</b> <i>(Multiple Choice)</i> The system <span class="tex">y=3x-9,\ \ x=by+c</span> has infinitely many solutions if</div>
+      <div class="bk-mc" data-answer="A" data-cols="2" data-pick><div><span class="tex">b=\tfrac{1}{3}</span> and <span class="tex">c=3</span></div><div><span class="tex">b=\tfrac{1}{3}</span> and <span class="tex">c=-3</span></div><div><span class="tex">b=3</span> and <span class="tex">c=9</span></div><div><span class="tex">b=0</span> and <span class="tex">c=0</span></div></div>
+      <div class="work" style="--h:190px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The two equations must describe the same line, so solve <span class="tex">y=3x-9</span> for <span class="tex">x</span>:<br><span class="tex">3x=y+9\Rightarrow x=\dfrac{1}{3}y+3</span><br>Matching <span class="tex">x=by+c</span>: <span class="tex">b=\dfrac{1}{3}</span> and <span class="tex">c=3</span>. <b>Answer: A</b></div></div></div>
+  </div>
+</section>
+
+<section class="card u8l6-rev" data-ink="r2" data-section="Review: Questions 5–8">
+  <div class="parts c2">
+    <div class="part"><div class="pl"><b>5.</b> <i>(Multiple Choice)</i> The graphs of <span class="tex">y=ax+b</span> and <span class="tex">y=cx+d</span> intersect at exactly one point. Which statement must be true?</div>
+      <div class="bk-mc" data-answer="B" data-pick><div><span class="tex">a=c</span></div><div><span class="tex">a\neq c</span></div><div><span class="tex">b=d</span></div><div><span class="tex">b\neq d</span></div></div>
+      <div class="work" style="--h:170px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Two lines meet at exactly one point precisely when they are not parallel, that is, when their slopes differ. The slopes here are <span class="tex">a</span> and <span class="tex">c</span>. <b>Answer: B</b> (<span class="tex">a\neq c</span>)<br>(Equal <span class="tex">y</span>-intercepts are neither required nor forbidden, so C and D say nothing.)</div></div></div>
+    <div class="part"><div class="pl"><b>6.</b> <i>(Multiple Choice)</i> When solving a system of equations, one of which is <span class="tex">\dfrac{x}{3}-\dfrac{y}{6}=4</span>, a substitution which can be made is</div>
+      <div class="bk-mc" data-answer="C" data-cols="2" data-pick><div><span class="tex">x=\dfrac{1}{2}(y+4)</span></div><div><span class="tex">x=\dfrac{1}{3}(y+24)</span></div><div><span class="tex">x=\dfrac{1}{2}(y+24)</span></div><div><span class="tex">x=\dfrac{1}{6}(y+24)</span></div></div>
+      <div class="work" style="--h:170px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Multiply every term by the LCD, <span class="tex">6</span>:<br><span class="tex">2x-y=24\Rightarrow 2x=y+24</span><br><span class="tex">x=\dfrac{y+24}{2}=\dfrac{1}{2}(y+24)</span> <b>Answer: C</b></div></div></div>
+    <div class="part"><div class="pl"><b>7.</b> <i>(Multiple Choice)</i> In solving the system <span class="tex">5a+2b=16,\ \ a-3b=-2</span> by elimination, an equation which arises could be</div>
+      <div class="bk-mc" data-answer="A" data-cols="2" data-pick><div><span class="tex">17a=44</span></div><div><span class="tex">17a=48</span></div><div><span class="tex">13a=44</span></div><div><span class="tex">-17a=44</span></div></div>
+      <div class="work" style="--h:190px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Eliminate <span class="tex">b</span>: multiply every term of Eq. 1 by <span class="tex">3</span> and every term of Eq. 2 by <span class="tex">2</span>, making the <span class="tex">b</span>-terms <span class="tex">+6b</span> and <span class="tex">-6b</span>:<br><span class="tex">15a+6b=48</span><br><span class="tex">2a-6b=-4</span><br>Add: <span class="tex">17a=44</span>. <b>Answer: A</b></div></div></div>
+    <div class="part"><div class="pl"><b>8.</b> <i>(Multiple Choice)</i> If <span class="tex">x+y=20</span> and <span class="tex">x-y=6</span>, then <span class="tex">2x+y</span> is equal to</div>
+      <div class="bk-mc" data-answer="B" data-pick><div><span class="tex">26</span></div><div><span class="tex">33</span></div><div><span class="tex">14</span></div><div><span class="tex">40</span></div></div>
+      <div class="work" style="--h:190px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Add the equations: <span class="tex">2x=26\Rightarrow x=13</span>. Then <span class="tex">13+y=20\Rightarrow y=7</span>.<br>Check Eq. 2: <span class="tex">13-7=6</span> ✓<br><span class="tex">2x+y=2(13)+7=26+7=\mathbf{33}</span> <b>Answer: B</b></div></div></div>
+  </div>
+</section>
+
+<section class="card u8l6-rev" data-ink="r3" data-section="Review: Questions 9–12">
+  <div class="parts c2">
+    <div class="part"><div class="pl"><b>9.</b> <i>(Multiple Choice)</i> If <span class="tex">3(x-1)-y=10</span> and <span class="tex">(x+2)+4y=15</span>, then <span class="tex">x</span> is equal to</div>
+      <div class="bk-mc" data-answer="A" data-pick><div><span class="tex">5</span></div><div><span class="tex">3</span></div><div><span class="tex">\dfrac{13}{3}</span></div><div><span class="tex">-5</span></div></div>
+      <div class="work" style="--h:210px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Expand both equations first:<br><span class="tex">3x-3-y=10\Rightarrow 3x-y=13\Rightarrow y=3x-13</span><br><span class="tex">x+2+4y=15\Rightarrow x+4y=13</span><br>Substitute: <span class="tex">x+4(3x-13)=13</span><br><span class="tex">x+12x-52=13\Rightarrow 13x=65\Rightarrow x=\mathbf{5}</span><br>Then <span class="tex">y=3(5)-13=2</span>; check: <span class="tex">5+4(2)=13</span> ✓ <b>Answer: A</b></div></div></div>
+    <div class="part"><div class="pl"><b>10.</b> <i>(Numerical Response)</i> If <span class="tex">m-4n-15=3m-2n-25=0</span>, then the value of <span class="tex">m-n</span> is ____.</div>
+      <div class="work" style="--h:230px"></div><div class="bk-nr" data-value="9"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The chain gives <span class="tex">m-4n=15</span> and <span class="tex">3m-2n=25</span>.<br><span class="tex">m=15+4n</span><br><span class="tex">3(15+4n)-2n=25</span><br><span class="tex">45+12n-2n=25\Rightarrow 10n=-20\Rightarrow n=-2</span><br><span class="tex">m=15+4(-2)=7</span><br>Check: <span class="tex">3(7)-2(-2)=21+4=25</span> ✓<br><span class="tex">m-n=7-(-2)=\mathbf{9}</span></div></div></div>
+    <div class="part"><div class="pl"><b>11.</b> <i>(Numerical Response)</i> The line <span class="tex">ax+y=b</span> passes through the points <span class="tex">(1,3)</span> and <span class="tex">(4,-4)</span>. The value of <span class="tex">ab</span>, to the nearest tenth, is ____.</div>
+      <div class="work" style="--h:230px"></div><div class="bk-nr" data-value="12.4"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Rewrite as <span class="tex">y=-ax+b</span>: the slope is <span class="tex">-a</span>, the <span class="tex">y</span>-intercept is <span class="tex">b</span>.<br><span class="tex">\text{slope}=\dfrac{-4-3}{4-1}=-\dfrac{7}{3}\Rightarrow a=\dfrac{7}{3}</span><br>Using <span class="tex">(1,3)</span>: <span class="tex">3=-\dfrac{7}{3}(1)+b\Rightarrow b=3+\dfrac{7}{3}=\dfrac{16}{3}</span><br>Check with <span class="tex">(4,-4)</span>: <span class="tex">\dfrac{7}{3}(4)+(-4)=\dfrac{28}{3}-4=\dfrac{16}{3}=b</span> ✓<br><span class="tex">ab=\dfrac{7}{3}\cdot\dfrac{16}{3}=\dfrac{112}{9}\approx12.44\approx\mathbf{12.4}</span></div></div></div>
+    <div class="part"><div class="pl"><b>12.</b> <i>(Multiple Choice)</i> A rowing club rowed <span class="tex">60</span> km to a campsite. Part of the route crossed a lake into a headwind, where their speed was <span class="tex">5</span> km/h; the rest was down a river with the current, where their speed was <span class="tex">15</span> km/h. The whole trip took <span class="tex">6</span> hours. If <span class="tex">x</span> km were rowed into the headwind and <span class="tex">y</span> km with the current, which system could be used to determine <span class="tex">x</span> and <span class="tex">y</span>?</div>
+      <div class="bk-mc" data-answer="B" data-cols="2" data-pick><div><span class="tex">x+y=60,\ \ 5x+15y=6</span></div><div><span class="tex">x+y=60,\ \ \tfrac{x}{5}+\tfrac{y}{15}=6</span></div><div><span class="tex">x+y=6,\ \ 5x+15y=60</span></div><div><span class="tex">x+y=6,\ \ \tfrac{x}{5}+\tfrac{y}{15}=60</span></div></div>
+      <div class="work" style="--h:150px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x</span> and <span class="tex">y</span> are <i>distances</i>, so they add to the total distance: <span class="tex">x+y=60</span>. That rules out C and D.<br>Each leg’s time is <span class="tex">t=\dfrac{d}{s}</span>, so the times are <span class="tex">\dfrac{x}{5}</span> and <span class="tex">\dfrac{y}{15}</span> hours and they add to the total time: <span class="tex">\dfrac{x}{5}+\dfrac{y}{15}=6</span>. (Option A adds speeds <span class="tex">\times</span> distances, which is not a time.) <b>Answer: B</b> (Solving gives <span class="tex">x=15</span>, <span class="tex">y=45</span>.)</div></div></div>
+  </div>
+</section>
+
+<section class="card u8l6-rev" data-ink="r4" data-section="Review: Written Response 13–14">
+  <div class="sec-h"><span class="badge">WR</span><h2>Written Response</h2></div>
+  <p class="q"><b>13.</b> For each system, choose a method (graphing, substitution or elimination) and <b>justify</b> your choice. Then solve the system.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">5m-n=13,\ \ 2m+n=8</span></div>
+      <div class="work" style="--h:260px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Elimination:</b> the <span class="tex">n</span>-coefficients are already opposites (<span class="tex">-1</span> and <span class="tex">+1</span>).<br>Add: <span class="tex">(5m-n)+(2m+n)=13+8</span><br><span class="tex">7m=21\Rightarrow m=3</span>, <span class="tex">n=8-2(3)=2</span><br>Check: <span class="tex">5(3)-2=13</span> ✓, <span class="tex">2(3)+2=8</span> ✓<br><span class="tex">m=3,\ n=2</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">y=2x-7,\ \ 3x+4y=5</span></div>
+      <div class="work" style="--h:260px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Substitution:</b> <span class="tex">y</span> is already isolated.<br><span class="tex">3x+4(2x-7)=5\Rightarrow 11x-28=5\Rightarrow x=3</span><br><span class="tex">y=2(3)-7=-1</span><br>Check: <span class="tex">9-4=5</span> ✓<br><span class="tex">(3,-1)</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">y=0.35x+1.2,\ \ y=-0.9x+6.2</span></div>
+      <div class="work" style="--h:260px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Graphing calculator</b> (decimal coefficients, both in <span class="tex">y=\ldots</span> form), or set the expressions equal.<br><span class="tex">0.35x+1.2=-0.9x+6.2\Rightarrow 1.25x=5\Rightarrow x=4</span><br><span class="tex">y=0.35(4)+1.2=2.6</span><br><span class="tex">(4,\ 2.6)</span></div></div></div>
+  </div>
+  <p class="q u8l6-gap"><b>14.</b> Two parking garages charge as follows: Garage A charges $8 flat plus $1.50 per hour. Garage B charges $3 flat plus $2.50 per hour.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) Write a linear cost equation for each garage, using <span class="tex">y</span> for total cost and <span class="tex">x</span> for hours parked.</div>
+      <div class="work" style="--h:200px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The flat charge is the <span class="tex">y</span>-intercept and the hourly charge is the slope:<br>Garage A: <span class="tex">\boldsymbol{y=8+1.5x}</span><br>Garage B: <span class="tex">\boldsymbol{y=3+2.5x}</span></div></div></div>
+    <div class="part"><div class="pl">(b) Determine algebraically the number of hours at which both garages cost the same amount.</div>
+      <div class="work" style="--h:200px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Set the two costs equal:<br><span class="tex">8+1.5x=3+2.5x</span><br><span class="tex">5=x\Rightarrow \boldsymbol{x=5}</span> <b>hours</b><br>Common cost: <span class="tex">8+1.5(5)=\$15.50</span>, and <span class="tex">3+2.5(5)=\$15.50</span> ✓</div></div></div>
+    <div class="part"><div class="pl">(c) State which garage is cheaper for a stay of <span class="tex">6</span> hours, and by how much.</div>
+      <div class="work" style="--h:200px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">At <span class="tex">x=6</span>:<br>A: <span class="tex">8+1.5(6)=8+9=\$17</span><br>B: <span class="tex">3+2.5(6)=3+15=\$18</span><br><b>Garage A is cheaper by $1.</b> (Past the 5-hour break-even point, A’s lower hourly rate wins.)</div></div></div>
+  </div>
+  <div class="space" id="r4-space"></div>
+  <button class="more" data-more="r4-space">+ More space</button>
+</section>
+
+<section class="card u8l6-rev" data-ink="r5" data-section="Review: Question 15">
+  <p class="q"><b>15.</b> Consider the system of equations <span class="tex">x+y=6,\ \ 2x-y=3</span>.</p>
+  <div class="u8l6-q15">
+    <div class="parts c1">
+      <div class="part"><div class="pl">(a) Graph both equations on the grid below without using technology, and state the solution.</div>
+        <div id="u8l6-q15grid"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div id="u8l6-q15ans" class="u8l6-ansfig"></div><span class="tex">x+y=6</span> has intercepts <span class="tex">(6,0)</span> and <span class="tex">(0,6)</span>.<br><span class="tex">2x-y=3\Rightarrow y=2x-3</span>: start at <span class="tex">(0,-3)</span> and rise 2, run 1.<br>The lines cross at <span class="tex">\mathbf{(3,3)}</span>, so <span class="tex">x=3,\ y=3</span>.</div></div></div>
+    </div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">Solution: ________</div><div class="work" style="--h:60px"></div></div>
+      <div class="part"><div class="pl">(b) Verify the solution algebraically in both original equations.</div>
+        <div class="work" style="--h:120px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Eq. 1: <span class="tex">3+3=6</span> ✓ &nbsp;&nbsp; Eq. 2: <span class="tex">2(3)-3=6-3=3</span> ✓</div></div></div>
+      <div class="part"><div class="pl">(c) Without graphing, state the number of solutions of the system <span class="tex">3x-y=5,\ \ y=3x+2</span>, and justify your answer.</div>
+        <div class="work" style="--h:150px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">3x-y=5\Rightarrow y=3x-5</span>; the other equation is <span class="tex">y=3x+2</span>.<br>Equal slopes (<span class="tex">3</span>) but different <span class="tex">y</span>-intercepts (<span class="tex">-5</span> and <span class="tex">2</span>): the lines are parallel and distinct, so the system has <b>no solution</b>.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="card u8l6-rev" data-ink="r6" data-section="Review: Questions 16–18">
+  <p class="q"><b>16.</b> A chemist mixes a <span class="tex">20\%</span> acid solution with a <span class="tex">50\%</span> acid solution to obtain <span class="tex">300</span> mL of a <span class="tex">30\%</span> acid solution. Let <span class="tex">x</span> be the number of mL of the <span class="tex">20\%</span> solution used and <span class="tex">y</span> the number of mL of the <span class="tex">50\%</span> solution used.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) Write a system of two equations modelling this situation: one for the total volume, one for the total amount of acid.</div>
+      <div class="work" style="--h:220px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Total volume:</b> <span class="tex">\boldsymbol{x+y=300}</span><br><b>Total acid:</b> each mL of the <span class="tex">20\%</span> solution carries <span class="tex">0.20</span> mL of acid and each mL of the <span class="tex">50\%</span> solution carries <span class="tex">0.50</span> mL; the mixture must carry <span class="tex">0.30(300)=90</span> mL:<br><span class="tex">\boldsymbol{0.20x+0.50y=90}</span></div></div></div>
+    <div class="part"><div class="pl">(b) Solve the system.</div>
+      <div class="work" style="--h:220px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Clear the decimals by multiplying Eq. 2 by <span class="tex">10</span>: <span class="tex">2x+5y=900</span>.<br>From Eq. 1, <span class="tex">x=300-y</span>:<br><span class="tex">2(300-y)+5y=900</span><br><span class="tex">600-2y+5y=900</span><br><span class="tex">3y=300\Rightarrow y=100</span><br><span class="tex">x=300-100=200</span></div></div></div>
+    <div class="part"><div class="pl">(c) State how many mL of each stock solution are required, and check your answer against the words of the question.</div>
+      <div class="work" style="--h:220px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>200 mL of the 20% solution and 100 mL of the 50% solution.</b><br>Check: <span class="tex">200+100=300</span> mL ✓<br>Acid: <span class="tex">0.20(200)+0.50(100)=40+50=90</span> mL, and <span class="tex">\dfrac{90}{300}=0.30=30\%</span> ✓</div></div></div>
+  </div>
+  <div class="parts c2 u8l6-gap">
+    <div class="part"><div class="pl"><b>17.</b> A concession stand sold <span class="tex">240</span> items in total (hot dogs at $4.50 each and drinks at $2.00 each) and took in $810. Determine how many of each were sold.</div>
+      <div class="work" style="--h:300px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Let <span class="tex">h</span> be the number of hot dogs sold and <span class="tex">d</span> the number of drinks sold (counts of items).<br>Counting items: <span class="tex">h+d=240</span>. Totalling value, in dollars: <span class="tex">4.50h+2.00d=810</span>.<br>From the first equation, <span class="tex">d=240-h</span>. Substituting:<br><span class="tex">4.50h+2(240-h)=810</span><br><span class="tex">4.5h+480-2h=810</span><br><span class="tex">2.5h=330\Rightarrow h=132</span>, so <span class="tex">d=240-132=108</span><br>Check the equations: <span class="tex">132+108=240</span> ✓; <span class="tex">4.50(132)+2.00(108)=594+216=\$810</span> ✓<br>Check the words: both counts are whole, positive numbers, as counts of items must be ✓<br><b>The stand sold 132 hot dogs and 108 drinks.</b></div></div></div>
+    <div class="part"><div class="pl"><b>18.</b> A rectangular dog run has a perimeter of <span class="tex">84</span> m. Its length is <span class="tex">6</span> m more than twice its width. Determine the dimensions of the dog run.</div>
+      <div class="work" style="--h:300px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Let <span class="tex">l</span> be the length of the dog run and <span class="tex">w</span> its width, both in metres.<br>Perimeter: <span class="tex">2(l+w)=84</span>, i.e. <span class="tex">l+w=42</span>. Length condition: <span class="tex">l=2w+6</span>.<br>Substituting the second equation into the first: <span class="tex">(2w+6)+w=42\Rightarrow 3w+6=42\Rightarrow 3w=36\Rightarrow w=12</span>, so <span class="tex">l=2(12)+6=30</span>.<br>Check the equations: <span class="tex">l+w=30+12=42</span>, so the perimeter is <span class="tex">2(42)=84</span> ✓; <span class="tex">2(12)+6=30</span> ✓<br>Check the words: both dimensions are positive, and 30 m is indeed 6 m more than twice 12 m ✓<br><b>The dog run is 30 m long and 12 m wide.</b></div></div></div>
+  </div>
+  <div class="space" id="r6-space"></div>
+  <button class="more" data-more="r6-space">+ More space</button>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>How many solutions?</b> Different slopes: <b>one</b>. Equal slopes, different intercepts: <b>none</b> (algebra gives a false statement like <span class="tex">0=5</span>). Same line: <b>infinitely many</b> (<span class="tex">0=0</span>).</div>
+    <div><b>Choose the method from the system.</b> Decimals or a picture: <b>graph</b>. A variable isolated or with coefficient <span class="tex">\pm1</span>: <b>substitution</b>. Matching, opposite or easy-multiple coefficients: <b>elimination</b>.</div>
+    <div><b>Always verify in both</b> original equations, then check the answer against the <b>words</b>: units (hours, not minutes), whole counts, positive lengths.</div>
+    <div><b>Crossing points decide.</b> Where two cost lines cross, the cheaper option changes. The best plan is the <b>lowest line</b> between crossings.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u8l6" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 6 — Systems of Linear Equations: Cumulative Review</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <div class="u8l6-review">
+    <div class="u8l6-review-h"><span class="kicker">Up next</span><b>Unit 8 test.</b> <span class="muted">Shaky on a question today? Go back to its lesson.</span></div>
+    <div class="u8l6-review-grid">
+      <a href="../l1a/"><span class="u8l6-rn">8.1A</span>Graphing systems of linear equations <small>Ex 2(c), 4(f) · Review 13(c), 15(a)(b)</small></a>
+      <a href="../l1b/"><span class="u8l6-rn">8.1B</span>Classifying systems: how many solutions? <small>Section 1 · Review 2, 4, 5, 15(c)</small></a>
+      <a href="../l2/"><span class="u8l6-rn">8.2</span>Solving systems by substitution <small>Ex 1(b), 2(a) · Review 3, 6, 9, 10, 11, 13(b)</small></a>
+      <a href="../l3/"><span class="u8l6-rn">8.3</span>The elimination method <small>Ex 2(b), 3 · Review 1, 7, 8, 13(a)</small></a>
+      <a href="../l4/"><span class="u8l6-rn">8.4</span>Solving word problems with systems <small>Ex 1(a), 4 · Review 14, 17, 18</small></a>
+      <a href="../l5/"><span class="u8l6-rn">8.5</span>Mixture and motion problems <small>Ex 3 · Review 12, 16</small></a>
+      <div class="u8l6-test"><span class="u8l6-rn">Test</span>Unit 8 test: RF9 (and RF7) <small>same question styles as today</small></div>
+    </div>
+  </div>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u8l6.js';
+  boot({ key: 'u8l6', homeHref: '../../', title: '8.6 Systems Review' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

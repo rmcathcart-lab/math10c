@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mixture and Motion · Math 10C 8.5</title>
+<meta name="description" content="Math 10C Unit 8 Lesson 5: mixture and motion applications of linear systems. Mixture problems organized as amount × rate = value (blending by cost per kilogram and by percent concentration), and distance–speed–time problems with two legs, stopped time, and a current or wind that adds to or subtracts from the speed. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u8l5.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 8 Systems of Linear Equations · Lesson 5</div>
+  <h1>Mixture and Motion: More Applications of Linear Systems</h1>
+  <p class="lede">Blending two ingredients that differ in <b>cost</b> or <b>concentration</b>, and journeys made of <b>two legs</b> or helped and hindered by a <b>current</b> or <b>wind</b>. Every problem today becomes a system of two equations, organized in a table first.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>organize a mixture problem in an <b>amount × rate = value</b> table, and write one equation from the <b>Amount</b> column and one from the <b>Value</b> column</li>
+      <li>define each variable <b>with its unit</b>, and clear percent decimals before solving</li>
+      <li>use <span class="tex">d=st</span> to organize a journey with two legs, subtracting <b>stopped time</b> from the total</li>
+      <li>write the ground speed as <span class="tex">b+c</span> <b>with</b> a current or wind and <span class="tex">b-c</span> <b>against</b> it, then solve for both speeds</li>
+      <li>check the solution against <b>both</b> original conditions and answer in a sentence</li>
+    </ul>
+  </div>
+  <div class="outcome"><b>RF9</b> Solve problems that involve systems of linear equations in two variables, graphically and algebraically.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: Upstream, Downstream" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Upstream, Downstream</h2></div>
+  <p class="big">Moving water and moving air can <b>help</b> you or <b>fight</b> you.</p>
+  <div id="u8l5-scene" class="u8l5-scene"></div>
+  <div class="u8l5-scenebtns">
+    <button type="button" class="pill" id="u8l5-down">Paddle downstream ▸</button>
+    <button type="button" class="pill" id="u8l5-up">◂ Paddle upstream</button>
+    <span class="u8l5-scenemsg" id="u8l5-scenemsg"></span>
+  </div>
+
+  <div class="u8l5-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>How fast does the kayak really go <b>downstream</b>?</div></div>
+      <div class="u8l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">6+2=\boldsymbol{8}</span> <b>km/h</b>: the current carries the kayak along.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>How fast going <b>upstream</b>?</div></div>
+      <div class="u8l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">6-2=\boldsymbol{4}</span> <b>km/h</b>: the current pushes back.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>A new kayaker clocks <b>10 km/h</b> downstream and <b>6 km/h</b> upstream. How fast is <i>that</i> current?</div></div>
+      <div class="u8l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>2 km/h.</b> Downstream is “boat <span class="tex">+</span> current”, upstream is “boat <span class="tex">-</span> current”; the two differ by <b>two</b> currents: <span class="tex">10-6=4=2c</span>, so <span class="tex">c=2</span> (and the boat does 8 km/h in still water).</div></div>
+    </div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> In still air the plane flies <b>300 km/h</b>: there and back takes <b>4 h</b>. Today a <b>60 km/h</b> wind helps one way and fights the other. The round trip takes… <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> less than 4 h</div>
+      <div class="opt"><b>B</b> exactly 4 h</div>
+      <div class="opt right"><b>C</b> more than 4 h</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>C: 4 h 10 min, longer than calm air.</b> Out with the wind: <span class="tex">300+60=360</span> km/h, so <span class="tex">600\div360=1\tfrac23</span> h <span class="tex">=</span> 1 h 40 min. Back into the wind: <span class="tex">300-60=240</span> km/h, so <span class="tex">600\div240=2.5</span> h <span class="tex">=</span> 2 h 30 min.<br>
+      <span class="muted"><b>B</b> is the popular answer: “the wind helps as much as it hurts.” The <b>speeds</b> cancel, but the <b>times</b> don’t: the plane spends longer on the slow headwind leg, so the wind gets more time to hurt than to help. <b>A</b> comes from focusing on the exciting fast leg.</span></div>
+  </div>
+  <div class="explainer" data-explainer="roundTrip"></div>
+
+  <div class="bk-wq u8l5-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> How strong a wind would make the round trip <b>impossible</b>?</div></div>
+    <div class="u8l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">A <b>300 km/h</b> headwind: the plane’s ground speed would be <span class="tex">300-300=0</span>, so it would hang in place.</div></div>
+  </div>
+  <p class="u8l5-social">Stand up for A, sit for B, hands on head for C, then defend your pick to a neighbour.</p>
+</section>
+
+<!-- ================= 1. Mixtures ================= -->
+<section class="card" data-ink="s1" data-section="1. Mixture Applications">
+  <div class="sec-h"><span class="badge">1</span><h2>Mixture Applications</h2></div>
+  <p>A mixture problem combines two ingredients (candies, chemical solutions, metals) that differ in some <b>rate</b>, such as price per kilogram or percent concentration. Two equations are always available:</p>
+  <div class="u8l5-two">
+    <div class="u8l5-twoc u8l5-e1b"><div class="u8l5-twoh">Total amount</div>adds up the <b>amount</b> of the mixture: its mass, volume, or number of items.</div>
+    <div class="u8l5-twoc u8l5-e2b"><div class="u8l5-twoh">Total value</div>adds up the <b>value</b> that amount carries: the total cost, or the total salt, gold, or alcohol content.</div>
+  </div>
+  <p>Write both equations down before solving; the system then yields to substitution or elimination exactly as in earlier lessons.</p>
+  <div class="u8l5-org-wrap">
+    <table class="u8l5-org u8l5-org-gen">
+      <tr><th>Mixture organizer</th><th>Amount</th><th><span class="u8l5-op">×</span> Rate</th><th><span class="u8l5-op">=</span> Value</th></tr>
+      <tr><td>Ingredient A</td><td><span class="tex">x</span></td><td>rate A</td><td>(rate A)<span class="tex">\,x</span></td></tr>
+      <tr><td>Ingredient B</td><td><span class="tex">y</span></td><td>rate B</td><td>(rate B)<span class="tex">\,y</span></td></tr>
+      <tr class="u8l5-tot"><td>Mixture</td><td>total amount</td><td>mixture rate</td><td>total value</td></tr>
+    </table>
+    <div class="u8l5-orgnote">The <b class="u8l5-c1">Amount</b> column gives one equation (the two amounts add to the total amount); the <b class="u8l5-c2">Value</b> column gives the other (the two values add to the total value). <b>Rates are never added.</b></div>
+  </div>
+  <div class="explainer" data-explainer="mixPour"></div>
+  <div class="u8l5-habits">
+    <div class="tip"><div class="tip-ic">1</div><div><b>Define each variable with its unit</b> (“<span class="tex">x=</span> mL of the 30% solution”), so that litres of <b>solution</b> are never confused with litres of <b>pure acid</b>.</div></div>
+    <div class="tip"><div class="tip-ic">2</div><div><b>Clear percent rates to integers</b> before solving: multiplying every term of <span class="tex">0.30x+0.80y=125</span> by <span class="tex">10</span> gives <span class="tex">3x+8y=1\,250</span>, which is easier to eliminate with.</div></div>
+  </div>
+  <div class="u8l5-steps">
+    <div class="u8l5-steps-h">The four steps (Lesson 4)</div>
+    <div><b>Step 1:</b> Introduce variables to represent the unknown quantities. Say what each one stands for <i>and in what units</i>.</div>
+    <div><b>Step 2:</b> Use the given information to form a system of two equations in those variables.</div>
+    <div><b>Step 3:</b> Solve the system, using graphing, substitution, or elimination.</div>
+    <div><b>Step 4:</b> Answer the original question in words, and check that your solution makes sense in the context of the problem.</div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Blending by cost per kilogram</h3></div>
+  <p class="q">A café blends premium coffee beans costing <b>$24/kg</b> with standard coffee beans costing <b>$14/kg</b>. The blend weighs <b>60 kg</b> in total and sells for <b>$17/kg</b>.</p>
+  <table class="u8l5-org">
+    <tr><th></th><th>Amount (kg)</th><th><span class="u8l5-op">×</span> Rate ($/kg)</th><th><span class="u8l5-op">=</span> Value ($)</th></tr>
+    <tr><td>Premium beans</td><td><span data-reveal><span class="tex">p</span></span></td><td><span data-reveal><span class="tex">24</span></span></td><td><span data-reveal><span class="tex">24p</span></span></td></tr>
+    <tr><td>Standard beans</td><td><span data-reveal><span class="tex">s</span></span></td><td><span data-reveal><span class="tex">14</span></span></td><td><span data-reveal><span class="tex">14s</span></span></td></tr>
+    <tr class="u8l5-tot"><td>Blend</td><td><span data-reveal><span class="tex">60</span></span></td><td><span data-reveal><span class="tex">17</span></span></td><td><span data-reveal><span class="tex">17(60)=1\,020</span></span></td></tr>
+  </table>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) Let <span class="tex">p</span> be the kg of premium beans and <span class="tex">s</span> the kg of standard beans. Complete the organizer, then write a system of two equations: one from the Amount column (total mass), one from the Value column (total value).</div>
+      <div class="work" style="--h:230px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Let <span class="tex">p</span> be the mass of premium beans and <span class="tex">s</span> the mass of standard beans, in kg.<br><b class="u8l5-c1">Mass:</b> <span class="tex">\textcolor{#1f5bd6}{p+s=60}</span><br><b class="u8l5-c2">Value:</b> the blend is worth <span class="tex">17(60)=\$1\,020</span>, so <span class="tex">\textcolor{#c27a0e}{24p+14s=1\,020}</span></div></div></div>
+    <div class="part"><div class="pl">(b) Solve the system from part (a) to find <span class="tex">p</span> and <span class="tex">s</span>.</div>
+      <div class="work" style="--h:230px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">From the mass equation, <span class="tex">s=60-p</span>. Substitute into the value equation:<br><span class="tex">24p+14(60-p)=1\,020</span><br><span class="tex">24p+840-14p=1\,020</span><br><span class="tex">10p=180\Rightarrow p=18</span><br><span class="tex">s=60-18=42</span></div></div></div>
+    <div class="part"><div class="pl">(c) State how many kilograms of each bean are in the blend, and verify the solution in both original equations.</div>
+      <div class="work" style="--h:230px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The blend uses <b>18 kg of premium beans and 42 kg of standard beans</b>.<br>Mass: <span class="tex">18+42=60</span> kg ✓<br>Value: <span class="tex">24(18)+14(42)=432+588=\$1\,020</span>, and <span class="tex">1\,020\div60=\$17</span>/kg ✓</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check the value in one line.</b> The calculator does × before +: <span class="keys"><kbd>2</kbd><kbd>4</kbd><kbd>×</kbd><kbd>1</kbd><kbd>8</kbd><kbd>+</kbd><kbd>1</kbd><kbd>4</kbd><kbd>×</kbd><kbd>4</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> gives <b>1&#8239;020</b>; then <span class="keys"><kbd>÷</kbd><kbd>6</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives the blend’s <b>$17</b>/kg.</div>
+    <div class="pill-col"><button class="pill" data-keys="24 × 18 + 14 × 42 =">Total value</button><button class="pill" data-keys="24 × 18 + 14 × 42 = ÷ 60 =">Price per kg</button></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Blending by percent concentration</h3></div>
+  <p class="q">A lab technician needs <b>250 mL</b> of a <b>50%</b> saline solution. She has a stock solution that is <b>30%</b> saline and another that is <b>80%</b> saline.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) Let <span class="tex">x</span> be the mL of 30% solution and <span class="tex">y</span> the mL of 80% solution. Write a system of two equations: one for the total volume, one for the total amount of salt.</div>
+      <div class="work" style="--h:240px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Let <span class="tex">x</span> be the volume of 30% solution and <span class="tex">y</span> the volume of 80% solution, in mL.<br><b class="u8l5-c1">Volume:</b> <span class="tex">\textcolor{#1f5bd6}{x+y=250}</span><br><b class="u8l5-c2">Salt:</b> the mixture holds <span class="tex">0.50(250)=125</span> mL of salt, so <span class="tex">\textcolor{#c27a0e}{0.30x+0.80y=125}</span></div></div></div>
+    <div class="part"><div class="pl">(b) Solve the system from part (a) to find <span class="tex">x</span> and <span class="tex">y</span>.</div>
+      <div class="work" style="--h:240px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Clear the decimals: multiply the salt equation by <span class="tex">10</span>:<br><span class="tex">3x+8y=1\,250</span><br>From <span class="tex">x+y=250</span>, <span class="tex">y=250-x</span>. Substitute:<br><span class="tex">3x+8(250-x)=1\,250</span><br><span class="tex">3x+2\,000-8x=1\,250</span><br><span class="tex">-5x=-750\Rightarrow x=150</span><br><span class="tex">y=250-150=100</span></div></div></div>
+    <div class="part"><div class="pl">(c) State how many mL of each stock solution are required, and verify the solution.</div>
+      <div class="work" style="--h:240px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">She needs <b>150 mL of the 30% solution and 100 mL of the 80% solution</b>.<br>Volume: <span class="tex">150+100=250</span> mL ✓<br>Salt: <span class="tex">0.30(150)+0.80(100)=45+80=125</span> mL<br>Concentration: <span class="tex">125\div250=0.50=50\%</span> ✓</div></div></div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Salt, not solution.</b> The Value column counts mL of <b>salt</b>; the Amount column counts mL of <b>solution</b>. Adding <span class="tex">30+80</span> (the rates) gives nothing useful: rates are never added.</div></div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. Solving the mixture systems">
+  <h3 class="sub">Examples 1 and 2 check: solve, graph, check both</h3>
+  <p>Each mixture system has a variable with coefficient 1, so <b>substitution</b> is quick: replace one variable with what it equals. The <span class="u8l5-c1"><b>amount</b> equation</span> is blue and the <span class="u8l5-c2"><b>value</b> equation</span> amber; the solution is where both lines meet.</p>
+  <div class="explainer" data-explainer="mixSolve"></div>
+</section>
+
+<section class="card" data-ink="s1c" data-section="1. Does the mix make sense?">
+  <h3 class="sub">Does the answer make sense? The balance point</h3>
+  <p>The mixture rate is always <b>between</b> the two ingredient rates, and it sits <b>closer to the ingredient you used more of</b>. Picture the amounts as weights on a beam: the mixture rate is where the beam balances.</p>
+  <div class="explainer" data-explainer="mixLever"></div>
+  <div class="parts c1">
+    <div class="part think"><div class="pl"><span class="think-tag">Think</span> A shop mixes $8/kg cashews with $20/kg pecans and sells the mix for $11/kg. Without solving: is there more cashew or more pecan in the mix? Could the mix ever sell for $25/kg?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>More cashews.</b> $11 is much closer to $8 than to $20 (3 away versus 9 away), so the cashews outweigh the pecans, 3 to 1. <b>Never $25</b>: a mix can’t cost more than its most expensive ingredient.</div></div></div>
+  </div>
+</section>
+
+<!-- ================= 2. Distance, speed, time ================= -->
+<section class="card" data-ink="s2" data-section="2. Distance, Speed, and Time">
+  <div class="sec-h"><span class="badge">2</span><h2>Distance, Speed, and Time Applications</h2></div>
+  <div class="u8l5-dst">
+    <div>
+      <p>Distance, speed, and time are related by <span class="tex">d=s\,t</span>, which rearranges to <span class="tex">s=\dfrac{d}{t}</span> and <span class="tex">t=\dfrac{d}{s}</span>. The triangle is a memory aid: <b>cover the quantity you want</b>, and what is left shows how to build it from the other two.</p>
+      <div class="def">Keep the units matched: km, km/h and hours together. A 30-minute break is <span class="tex">0.5</span> h.</div>
+    </div>
+    <svg class="u8l5-tri" viewBox="0 0 220 180" aria-label="d s t triangle"><path d="M110 8 L212 172 L8 172 Z"/><path d="M59 90 L161 90 M110 90 L110 172"/><text x="110" y="70">d</text><text x="74" y="146">s</text><text x="146" y="146">t</text></svg>
+  </div>
+  <div class="explainer" data-explainer="dstTri"></div>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. Two legs">
+  <h3 class="sub">Journeys in two legs</h3>
+  <p>Most applications split a journey into two <b>legs</b> (two different speeds, or a trip out and a trip back), and the two equations come from a relationship between the two distances, the two times, or the two speeds.</p>
+  <div class="def">A current or a wind that helps on one leg and hinders on the other is the standard case: if <span class="tex">b</span> is the speed in still water or still air and <span class="tex">c</span> is the speed of the current or wind, the ground speed is <span class="tex">\textcolor{#1f5bd6}{b+c}</span> going <b>with</b> it and <span class="tex">\textcolor{#c27a0e}{b-c}</span> going <b>against</b> it.</div>
+  <div class="u8l5-org-wrap">
+    <table class="u8l5-org u8l5-org-gen">
+      <tr><th>Motion organizer</th><th>Distance</th><th><span class="u8l5-op">=</span> Speed</th><th><span class="u8l5-op">×</span> Time</th></tr>
+      <tr><td>Leg 1</td><td></td><td></td><td></td></tr>
+      <tr><td>Leg 2</td><td></td><td></td><td></td></tr>
+      <tr class="u8l5-tot"><td>Total</td><td>total distance</td><td>—</td><td>total time</td></tr>
+    </table>
+    <div class="u8l5-orgnote">Each leg’s row must satisfy <span class="tex">d=s\times t</span>. In the Total row, <b>distances add</b> and <b>times add</b>: <b>speeds do not.</b></div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Stopped time is not driving time.</b> Subtract any breaks from the total before writing the time equation.</div></div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Two speeds on one trip</h3></div>
+  <p class="q">A trucker drove <b>810 km</b> from Edmonton to Regina in <b>11.5 hours</b> total, including a <b>1-hour</b> fuel stop and a <b>30-minute</b> rest break. While actually driving she averaged <b>95 km/h</b> on the highway and <b>60 km/h</b> on secondary roads.</p>
+  <table class="u8l5-org">
+    <tr><th></th><th>Distance (km)</th><th><span class="u8l5-op">=</span> Speed (km/h)</th><th><span class="u8l5-op">×</span> Time (h)</th></tr>
+    <tr><td>Highway</td><td><span data-reveal><span class="tex">95h</span></span></td><td><span data-reveal><span class="tex">95</span></span></td><td><span data-reveal><span class="tex">h</span></span></td></tr>
+    <tr><td>Secondary roads</td><td><span data-reveal><span class="tex">60r</span></span></td><td><span data-reveal><span class="tex">60</span></span></td><td><span data-reveal><span class="tex">r</span></span></td></tr>
+    <tr class="u8l5-tot"><td>Total</td><td><span data-reveal><span class="tex">810</span></span></td><td>—</td><td><span data-reveal><span class="tex">11.5-1.5=10</span></span></td></tr>
+  </table>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) Let <span class="tex">h</span> be the hours driven on the highway and <span class="tex">r</span> the hours driven on secondary roads. Complete the organizer, then write a system of two equations. (Hint: find the total <i>driving</i> time first by subtracting the stops.)</div>
+      <div class="work" style="--h:220px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Stopped time is <span class="tex">1+0.5=1.5</span> h, so driving time is <span class="tex">11.5-1.5=10</span> h.<br>Let <span class="tex">h</span> be the highway driving time and <span class="tex">r</span> the secondary-road driving time, in hours.<br><b class="u8l5-c1">Time:</b> <span class="tex">\textcolor{#1f5bd6}{h+r=10}</span><br><b class="u8l5-c2">Distance:</b> <span class="tex">\textcolor{#c27a0e}{95h+60r=810}</span></div></div></div>
+    <div class="part"><div class="pl">(b) Solve the system from part (a) to find <span class="tex">h</span> and <span class="tex">r</span>.</div>
+      <div class="work" style="--h:220px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">From the time equation, <span class="tex">r=10-h</span>. Substitute into the distance equation:<br><span class="tex">95h+60(10-h)=810</span><br><span class="tex">95h+600-60h=810</span><br><span class="tex">35h=210\Rightarrow h=6</span><br><span class="tex">r=10-6=4</span></div></div></div>
+    <div class="part"><div class="pl">(c) State how much time she spent driving on the highway, and verify the solution.</div>
+      <div class="work" style="--h:220px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">She drove <b>6 hours on the highway</b> (and 4 hours on secondary roads).<br>Time: <span class="tex">6+4=10</span> h driving, plus <span class="tex">1.5</span> h stopped <span class="tex">=11.5</span> h ✓<br>Distance: <span class="tex">95(6)=570</span> km and <span class="tex">60(4)=240</span> km; <span class="tex">570+240=810</span> km ✓</div></div></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2c" data-section="2. Example 3 check">
+  <h3 class="sub">Example 3 check: take out the stops, then fill the organizer</h3>
+  <p>The clock ran for 11.5 h, but the truck only moved for part of it. Times add and distances add; the two speeds stay in their own rows.</p>
+  <div class="explainer" data-explainer="trip"></div>
+</section>
+
+<section class="card" data-ink="s2d" data-section="2. With and against">
+  <h3 class="sub">With the current, against the current</h3>
+  <p>The boat (or plane) has its own speed <span class="tex">b</span>. The current (or wind) adds its speed <span class="tex">c</span> when it pushes the same way, and takes it away when it pushes the other way. Each trip gives a speed, <span class="tex">\text{speed}=\tfrac{\text{distance}}{\text{time}}</span>, and each speed gives one equation.</p>
+  <div class="explainer" data-explainer="current"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Each trip’s speed: distance ÷ time.</b> <span class="keys"><kbd>9</kbd><kbd>6</kbd><kbd>÷</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> gives 24 km/h downstream; <span class="keys"><kbd>6</kbd><kbd>0</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>2</kbd><kbd>.</kbd><kbd>5</kbd><kbd>ENTER</kbd></span> gives the plane’s 240 km/h into the headwind.</div>
+    <div class="pill-col"><button class="pill" data-keys="96 ÷ 4 =">96 ÷ 4</button><button class="pill" data-keys="96 ÷ 6 =">96 ÷ 6</button><button class="pill" data-keys="600 ÷ 2.5 =">600 ÷ 2.5</button><button class="pill" data-keys="600 ÷ 2 =">600 ÷ 2</button></div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Downstream and upstream</h3></div>
+  <p class="q">A ferry takes <b>4 hours</b> to travel <b>96 km downstream</b> (with the current) and <b>6 hours</b> to travel the same <b>96 km upstream</b> (against the current).</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) Let <span class="tex">b</span> be the ferry’s speed in still water (km/h) and <span class="tex">c</span> the speed of the current (km/h). Using speed <span class="tex">=</span> distance <span class="tex">\div</span> time, write a system of two equations.</div>
+      <div class="work" style="--h:230px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Let <span class="tex">b</span> be the ferry’s speed in still water and <span class="tex">c</span> the speed of the current, in km/h.<br>Downstream the current adds to <span class="tex">b</span>: <span class="tex">\textcolor{#1f5bd6}{b+c=\tfrac{96}{4}=24}</span><br>Upstream the current subtracts from <span class="tex">b</span>: <span class="tex">\textcolor{#c27a0e}{b-c=\tfrac{96}{6}=16}</span></div></div></div>
+    <div class="part"><div class="pl">(b) Solve the system from part (a) to find <span class="tex">b</span> and <span class="tex">c</span>.</div>
+      <div class="work" style="--h:230px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The <span class="tex">c</span> terms are opposites, so add the equations:<br><span class="tex">2b=40\Rightarrow b=20</span><br>Substitute into <span class="tex">b+c=24</span>:<br><span class="tex">20+c=24\Rightarrow c=4</span></div></div></div>
+    <div class="part"><div class="pl">(c) State the speed of the current and the ferry’s speed in still water, and verify the solution.</div>
+      <div class="work" style="--h:230px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The current runs at <b>4 km/h</b> and the ferry makes <b>20 km/h in still water</b>.<br>Downstream: <span class="tex">20+4=24</span> km/h, and <span class="tex">24(4)=96</span> km ✓<br>Upstream: <span class="tex">20-4=16</span> km/h, and <span class="tex">16(6)=96</span> km ✓</div></div></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Headwind and tailwind</h3></div>
+  <p class="q">A small plane flying against a <b>headwind</b> takes <b>2.5 hours</b> to fly the <b>600 km</b> from Calgary to Saskatoon. On the return trip, with the same wind now <b>behind</b> it, the plane takes only <b>2 hours</b> to cover the same distance.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) Let <span class="tex">p</span> be the plane’s speed in still air (km/h) and <span class="tex">w</span> the speed of the wind (km/h). Write a system of two equations.</div>
+      <div class="work" style="--h:230px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Let <span class="tex">p</span> be the plane’s speed in still air and <span class="tex">w</span> the speed of the wind, in km/h.<br>Against the headwind the ground speed is <span class="tex">p-w</span>: <span class="tex">(p-w)(2.5)=600\Rightarrow \textcolor{#c27a0e}{p-w=240}</span><br>With the tailwind the ground speed is <span class="tex">p+w</span>: <span class="tex">(p+w)(2)=600\Rightarrow \textcolor{#1f5bd6}{p+w=300}</span></div></div></div>
+    <div class="part"><div class="pl">(b) Solve the system from part (a) to find <span class="tex">p</span> and <span class="tex">w</span>.</div>
+      <div class="work" style="--h:230px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The <span class="tex">w</span> terms are opposites, so add the equations:<br><span class="tex">2p=540\Rightarrow p=270</span><br>Substitute into <span class="tex">p+w=300</span>:<br><span class="tex">270+w=300\Rightarrow w=30</span></div></div></div>
+    <div class="part"><div class="pl">(c) State the speed of the wind and the plane’s speed in still air, and verify the solution.</div>
+      <div class="work" style="--h:230px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The wind blows at <b>30 km/h</b> and the plane flies <b>270 km/h in still air</b>.<br>Outbound: <span class="tex">270-30=240</span> km/h, and <span class="tex">240(2.5)=600</span> km ✓<br>Return: <span class="tex">270+30=300</span> km/h, and <span class="tex">300(2)=600</span> km ✓</div></div></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2e" data-section="2. Examples 4 and 5 check">
+  <h3 class="sub">Examples 4 and 5 check: add the equations and the current cancels</h3>
+  <p>With <span class="tex">+c</span> in one equation and <span class="tex">-c</span> in the other, <b>elimination</b> by adding is instant. On a number line, the still-water speed <span class="tex">b</span> sits exactly <b>halfway</b> between the two ground speeds, and the current is the distance from <span class="tex">b</span> to either one.</p>
+  <div class="explainer" data-explainer="speedSolve"></div>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Mixtures.</b> Amount <span class="tex">\times</span> rate <span class="tex">=</span> value in every row. The <b>Amount</b> column gives one equation (amounts add to the total), the <b>Value</b> column the other (values add to the total value). Rates are never added.</div>
+    <div><b>Habits.</b> Define each variable <b>with its unit</b> (mL of solution, not mL of salt). Clear decimals: <span class="tex">0.30x+0.80y=125</span> becomes <span class="tex">3x+8y=1\,250</span>. The mixture rate always lies <b>between</b> the two rates.</div>
+    <div><b>Motion.</b> <span class="tex">d=st</span>, <span class="tex">s=\tfrac{d}{t}</span>, <span class="tex">t=\tfrac{d}{s}</span>: cover the one you want. Two legs: <b>distances add</b>, <b>times add</b>, speeds don’t. Subtract stopped time before writing the time equation.</div>
+    <div><b>Current or wind.</b> With it: <span class="tex">b+c</span>; against it: <span class="tex">b-c</span>. Find each trip’s speed with <span class="tex">\tfrac{d}{t}</span>, then <b>add</b> the equations: <span class="tex">c</span> cancels. Check against <b>both</b> trips and answer in a sentence.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u8l5" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 5 — Mixture and Motion</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l6/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 6 — Cumulative Review</b><div class="muted">Graphing, substitution, elimination and word problems: every method of the unit on one page</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u8l5.js';
+  boot({ key: 'u8l5', homeHref: '../../', title: '8.5 Mixture and Motion' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>
