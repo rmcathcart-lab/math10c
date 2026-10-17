@@ -424,3 +424,9 @@ math-field.mf::part(menu-toggle), math-field.mf::part(virtual-keyboard-toggle) {
 .vtab th, .vtab td { border: 1.5px solid #9aa3ad; padding: 4px 10px; text-align: center; min-width: 30px; }
 .vtab th { background: #f1efe9; font-weight: 600; }
 .graph-svg { margin: 8px 0; }
+@media (max-width: 420px) {
+  .grid-tbl th, .grid-tbl td { padding: 6px 3px; }
+  .grid-tbl .grid-rowh { min-width: 4.5em; padding-right: 6px; }
+  .grid-tbl thead th { font-size: 12.5px; }
+  .grid-btn, .grid-btn:not(.multi) { width: 32px; height: 32px; }
+}
