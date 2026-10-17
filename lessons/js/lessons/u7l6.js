@@ -451,7 +451,7 @@ const van = {
         run: async (c) => {
           const e = h('div', 'u7l6-bigeq', T(`N=${cM('-0.4')}D+${cB('92')}`)); P.appendChild(e); await pop(c, e);
           const lb = G.label(7, 92, `<b>b = 92</b>: 92 L at the start`, { pos: 'e', cls: 'u7l6-call u7l6-call-b' }); await pop(c, lb);
-          const lm = G.label(112, 44, `<b>m = −0.4</b>: 0.4 L used per km`, { pos: 'sw', cls: 'u7l6-call u7l6-call-m' }); await pop(c, lm);
+          const lm = G.label(156, 70, `<b>m = −0.4</b> L/km`, { pos: 'e', cls: 'u7l6-call u7l6-call-m' }); await pop(c, lm);
         } },
       { cap: `Check with the other point, ${T('(150,\\ 32)')}: ${T('-0.4(150)+92=-60+92=32')} ✓.`,
         run: async (c) => { await show(c, line(P, `check: ${T('-0.4(150)+92=32')} ✓`, 'u7l6-line u7l6-ok')); } },

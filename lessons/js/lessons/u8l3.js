@@ -399,9 +399,9 @@ const balance = {
 /* =============================== explainer: subtracting flips every sign =============================== */
 const SG = {
   ex2: { label: 'Example 2', vars: ['x', 'y'], r1: [3, 4, 7], r2: [3, -2, 19], n1: 'Eq. 1', n2: 'Eq. 2',
-    slip: ['Watch out: flipping only the <b>first</b> sign gives', '4y-2y=2y', '2y=-12\\ \\Rightarrow\\ y=-6', 'Then Eq. 1 gives 3x-24=7: x is not even a whole number, and Eq. 2 fails.'] },
+    slip: ['Watch out: flipping only the <b>first</b> sign gives', '4y-2y=2y', '2y=-12\\ \\Rightarrow\\ y=-6', `Then Eq. 1 gives ${T('3x-24=7')}: ${T('x')} is not even a whole number, and Eq. 2 fails.`] },
   ex6: { label: 'Example 6 (a): a negative constant', vars: ['x', 'y'], r1: [15, -6, 21], r2: [4, -6, -12], n1: 'Eq. 1 × 3', n2: 'Eq. 2 × 2',
-    slip: ['Watch out: subtracting −12 <b>adds</b> 12.', '21-(-12)=21+12=33', '\\text{not } 21-12=9', 'With 9 you would get 11x = 9, and x is not 3.'] },
+    slip: [`Watch out: subtracting ${T('-12')} <b>adds</b> 12.`, '21-(-12)=21+12=33', '\\text{not } 21-12=9', `With 9 you would get ${T('11x=9')}, and ${T('x')} is not 3.`] },
   pets: { label: 'Warm-up: Scale B − Scale C', vars: ['d', 'c', 'r'], r1: [1, 0, 1, 12], r2: [0, 1, 1, 6], n1: 'Scale B', n2: 'Scale C' }
 };
 const signs = {
@@ -657,7 +657,7 @@ const lcm = {
       const cells = []; for (let i = 1; i <= L / n; i++) { const ce = add(stage, box(h('div', 'u8l3-lad', `<b>${n * i}</b><span>×${i}</span>`), 70, 58), 190 + (i - 1) * 80, y); ce.style.color = col; ce.style.opacity = 0; ce.val = n * i; cells.push(ce); }
       return cells;
     };
-    const c1 = lad(92, A, B1, `multiples of <b>${A}</b>`), c2 = lad(176, Bq, A2, `multiples of <b>${Bq}</b>`);
+    const c1 = lad(92, A, B1, `multiples of&nbsp;<b>${A}</b>`), c2 = lad(176, Bq, A2, `multiples of&nbsp;<b>${Bq}</b>`);
     const P = panel(stage, 14, 256, W - 28, 196, '');
     const order = [...c1, ...c2].sort((p, q) => p.val - q.val || (c1.includes(p) ? -1 : 1));
     const pl = (x) => (x === 1 ? 'stays as it is (× 1)' : '× ' + x);
@@ -686,37 +686,37 @@ const lcm = {
 /* =============================== explainer: the four steps, line by line =============================== */
 const WK = {
   ex3: { label: 'Example 3', sol: [6, 1], checks: [['Eq. 1', '3(6)+2(1)=18+2=20'], ['Eq. 2', '5(6)-1=30-1=29']], steps: [
-    { s: 1, cap: 'Step 1: the <i>y</i>-coefficients are 2 and −1. Multiply <b>every</b> term of Eq. 2 by 2.', lines: [[tag(2, 'Eq. 2 × 2'), k2('10x-2y=58')]] },
-    { s: 2, cap: 'Step 2: +2y and −2y are opposites, so <b>add</b>.', lines: [`${k1('(3x+2y)')}+${k2('(10x-2y)')}=${k1('20')}+${k2('58')}`, kr('13x=78')] },
+    { s: 1, cap: `Step 1: the ${T('y')}-coefficients are ${T('2')} and ${T('-1')}. Multiply <b>every</b> term of Eq. 2 by 2.`, lines: [[tag(2, 'Eq. 2 × 2'), k2('10x-2y=58')]] },
+    { s: 2, cap: `Step 2: ${T('+2y')} and ${T('-2y')} are opposites, so <b>add</b>.`, lines: [`${k1('(3x+2y)')}+${k2('(10x-2y)')}=${k1('20')}+${k2('58')}`, kr('13x=78')] },
     { s: 3, cap: 'Step 3: solve.', lines: [kr('x=6')] },
-    { s: 4, cap: 'Step 4: substitute into Eq. 2, then verify in <b>both</b> equations.', lines: ['5(6)-y=29\\ \\Rightarrow\\ 30-y=29\\ \\Rightarrow\\ y=1'] }] },
+    { s: 4, cap: `Step 4: substitute ${T('x=6')} into Eq. 2, then verify in <b>both</b> equations.`, lines: ['5(6)-y=29\\ \\Rightarrow\\ 30-y=29\\ \\Rightarrow\\ y=1'] }] },
   ex4: { label: 'Example 4', sol: [6, 1], checks: [['Eq. 1', '3(6)+2(1)=18+2=20'], ['Eq. 2', '5(6)-1=30-1=29']], steps: [
-    { s: 1, cap: 'Step 1: the <i>x</i>-coefficients are 3 and 5, LCM 15. Eq. 1 × 5 and Eq. 2 × 3.', lines: [[tag(1, 'Eq. 1 × 5'), k1('15x+10y=100')], [tag(2, 'Eq. 2 × 3'), k2('15x-3y=87')]] },
-    { s: 2, cap: 'Step 2: 15x and 15x match, so <b>subtract</b> (every sign of the second flips).', lines: [`${k1('(15x+10y)')}-${k2('(15x-3y)')}=${k1('100')}-${k2('87')}`, kr('13y=13')] },
+    { s: 1, cap: `Step 1: the ${T('x')}-coefficients are ${T('3')} and ${T('5')}, LCM 15. Eq. 1 × 5 and Eq. 2 × 3.`, lines: [[tag(1, 'Eq. 1 × 5'), k1('15x+10y=100')], [tag(2, 'Eq. 2 × 3'), k2('15x-3y=87')]] },
+    { s: 2, cap: `Step 2: ${T('15x')} and ${T('15x')} match, so <b>subtract</b> (every sign of the second flips).`, lines: [`${k1('(15x+10y)')}-${k2('(15x-3y)')}=${k1('100')}-${k2('87')}`, kr('13y=13')] },
     { s: 3, cap: 'Step 3: solve. It matches Example 3 (c).', lines: [kr('y=1')] },
-    { s: 4, cap: 'Step 4: into Eq. 1 for <i>x</i>, then verify in both.', lines: ['3x+2(1)=20\\ \\Rightarrow\\ 3x=18\\ \\Rightarrow\\ x=6'] }] },
+    { s: 4, cap: `Step 4: put ${T('y=1')} into Eq. 1 for ${T('x')}, then verify in both.`, lines: ['3x+2(1)=20\\ \\Rightarrow\\ 3x=18\\ \\Rightarrow\\ x=6'] }] },
   ex5b: { label: 'Example 5 (a)(b)', sol: [4, -3], checks: [['Eq. 1', '4(4)+5(-3)=16-15=1'], ['Eq. 2', '3(4)-2(-3)=12+6=18']], steps: [
-    { s: 1, cap: 'Step 1: the <i>y</i>-coefficients are 5 and −2, LCM 10. Eq. 1 × 2 and Eq. 2 × 5.', lines: [[tag(1, 'Eq. 1 × 2'), k1('8x+10y=2')], [tag(2, 'Eq. 2 × 5'), k2('15x-10y=90')]] },
-    { s: 2, cap: 'Step 2: +10y and −10y are opposites, so <b>add</b>.', lines: [`${k1('(8x+10y)')}+${k2('(15x-10y)')}=${k1('2')}+${k2('90')}`, kr('23x=92')] },
+    { s: 1, cap: `Step 1: the ${T('y')}-coefficients are ${T('5')} and ${T('-2')}, LCM 10. Eq. 1 × 2 and Eq. 2 × 5.`, lines: [[tag(1, 'Eq. 1 × 2'), k1('8x+10y=2')], [tag(2, 'Eq. 2 × 5'), k2('15x-10y=90')]] },
+    { s: 2, cap: `Step 2: ${T('+10y')} and ${T('-10y')} are opposites, so <b>add</b>.`, lines: [`${k1('(8x+10y)')}+${k2('(15x-10y)')}=${k1('2')}+${k2('90')}`, kr('23x=92')] },
     { s: 3, cap: 'Step 3: solve.', lines: [kr('x=4')] },
-    { s: 4, cap: 'Step 4: into 4x + 5y = 1, then verify in both.', lines: ['4(4)+5y=1\\ \\Rightarrow\\ 16+5y=1\\ \\Rightarrow\\ 5y=-15\\ \\Rightarrow\\ y=-3'] }] },
+    { s: 4, cap: `Step 4: put ${T('x=4')} into ${T('4x+5y=1')}, then verify in both.`, lines: ['4(4)+5y=1\\ \\Rightarrow\\ 16+5y=1\\ \\Rightarrow\\ 5y=-15\\ \\Rightarrow\\ y=-3'] }] },
   ex5d: { label: 'Example 5 (c)(d)', sol: [4, -3], checks: [['Eq. 1', '4(4)+5(-3)=16-15=1'], ['Eq. 2', '3(4)-2(-3)=12+6=18']], steps: [
-    { s: 1, cap: 'Step 1: the <i>x</i>-coefficients are 4 and 3, LCM 12. Eq. 1 × 3 and Eq. 2 × 4.', lines: [[tag(1, 'Eq. 1 × 3'), k1('12x+15y=3')], [tag(2, 'Eq. 2 × 4'), k2('12x-8y=72')]] },
-    { s: 2, cap: 'Step 2: 12x and 12x match, so <b>subtract</b>: −8y becomes +8y.', lines: [`${k1('(12x+15y)')}-${k2('(12x-8y)')}=${k1('3')}-${k2('72')}`, `15y+8y=-69\\ \\Rightarrow\\ ${kr('23y=-69')}`] },
+    { s: 1, cap: `Step 1: the ${T('x')}-coefficients are ${T('4')} and ${T('3')}, LCM 12. Eq. 1 × 3 and Eq. 2 × 4.`, lines: [[tag(1, 'Eq. 1 × 3'), k1('12x+15y=3')], [tag(2, 'Eq. 2 × 4'), k2('12x-8y=72')]] },
+    { s: 2, cap: `Step 2: ${T('12x')} and ${T('12x')} match, so <b>subtract</b>: ${T('-8y')} becomes ${T('+8y')}.`, lines: [`${k1('(12x+15y)')}-${k2('(12x-8y)')}=${k1('3')}-${k2('72')}`, `15y+8y=-69\\ \\Rightarrow\\ ${kr('23y=-69')}`] },
     { s: 3, cap: 'Step 3: solve. It matches part (b).', lines: [kr('y=-3')] },
-    { s: 4, cap: 'Step 4: <i>x</i> from either equation, then verify in both.', lines: ['4x+5(-3)=1\\ \\Rightarrow\\ 4x=16\\ \\Rightarrow\\ x=4'] }] },
+    { s: 4, cap: `Step 4: ${T('x')} from either equation, then verify in both.`, lines: ['4x+5(-3)=1\\ \\Rightarrow\\ 4x=16\\ \\Rightarrow\\ x=4'] }] },
   ex6a: { label: 'Example 6 (a)', sol: [3, 4], prep: true, checks: [['Eq. 1', '5(3)-2(4)-7=15-8-7=0'], ['Eq. 2', '2(3)=6,\\quad 3(4)-6=6']], steps: [
-    { s: 0, cap: 'Prepare: write both equations in the form <i>Ax</i> + <i>By</i> = <i>C</i>.', lines: [[tag(1, 'Eq. 1'), `${k1('5x-2y-7=0')}\\ \\Rightarrow\\ ${k1('5x-2y=7')}`], [tag(2, 'Eq. 2'), `${k2('2x=3y-6')}\\ \\Rightarrow\\ ${k2('2x-3y=-6')}`]] },
-    { s: 1, cap: 'Step 1: to eliminate <i>y</i> (−2 and −3, LCM 6): Eq. 1 × 3 and Eq. 2 × 2.', lines: [[tag(1, 'Eq. 1 × 3'), k1('15x-6y=21')], [tag(2, 'Eq. 2 × 2'), k2('4x-6y=-12')]] },
-    { s: 2, cap: 'Step 2: −6y matches −6y, so <b>subtract</b>, and subtract the constant too: 21 − (−12) = 33.', lines: [`${k1('(15x-6y)')}-${k2('(4x-6y)')}=${k1('21')}-${k2('(-12)')}`, kr('11x=33')] },
+    { s: 0, cap: `Prepare: write both equations in the form ${T('Ax+By=C')}.`, lines: [[tag(1, 'Eq. 1'), `${k1('5x-2y-7=0')}\\ \\Rightarrow\\ ${k1('5x-2y=7')}`], [tag(2, 'Eq. 2'), `${k2('2x=3y-6')}\\ \\Rightarrow\\ ${k2('2x-3y=-6')}`]] },
+    { s: 1, cap: `Step 1: to eliminate ${T('y')} (${T('-2')} and ${T('-3')}, LCM 6): Eq. 1 × 3 and Eq. 2 × 2.`, lines: [[tag(1, 'Eq. 1 × 3'), k1('15x-6y=21')], [tag(2, 'Eq. 2 × 2'), k2('4x-6y=-12')]] },
+    { s: 2, cap: `Step 2: ${T('-6y')} matches ${T('-6y')}, so <b>subtract</b>, and subtract the constant too: ${T('21-(-12)=33')}.`, lines: [`${k1('(15x-6y)')}-${k2('(4x-6y)')}=${k1('21')}-${k2('(-12)')}`, kr('11x=33')] },
     { s: 3, cap: 'Step 3: solve.', lines: [kr('x=3')] },
-    { s: 4, cap: 'Step 4: into 2x − 3y = −6, then verify in both <b>original</b> equations.', lines: ['2(3)-3y=-6\\ \\Rightarrow\\ 6-3y=-6\\ \\Rightarrow\\ -3y=-12\\ \\Rightarrow\\ y=4'] }] },
+    { s: 4, cap: `Step 4: put ${T('x=3')} into ${T('2x-3y=-6')}, then verify in both <b>original</b> equations.`, lines: ['2(3)-3y=-6\\ \\Rightarrow\\ 6-3y=-6\\ \\Rightarrow\\ -3y=-12\\ \\Rightarrow\\ y=4'] }] },
   ex6b: { label: 'Example 6 (b)', sol: [4, 2], prep: true, checks: [['Eq. 1', '\\dfrac{3(4)-5(2)}{4}=\\dfrac{2}{4}=\\dfrac12'], ['Eq. 2', '\\dfrac43+\\dfrac22=\\dfrac43+1=\\dfrac73']], steps: [
     { s: 0, cap: 'Prepare: clear the fractions. Eq. 1 × 4 and Eq. 2 × 6 (the LCDs).', lines: [[tag(1, 'Eq. 1 × 4'), k1('3x-5y=2')], [tag(2, 'Eq. 2 × 6'), k2('2x+3y=14')]] },
-    { s: 1, cap: 'Step 1: to eliminate <i>y</i> (−5 and 3, LCM 15): × 3 and × 5.', lines: [[tag(1, '× 3'), k1('9x-15y=6')], [tag(2, '× 5'), k2('10x+15y=70')]] },
-    { s: 2, cap: 'Step 2: −15y and +15y are opposites, so <b>add</b>.', lines: [`${k1('(9x-15y)')}+${k2('(10x+15y)')}=${k1('6')}+${k2('70')}`, kr('19x=76')] },
+    { s: 1, cap: `Step 1: to eliminate ${T('y')} (${T('-5')} and ${T('3')}, LCM 15): × 3 and × 5.`, lines: [[tag(1, '× 3'), k1('9x-15y=6')], [tag(2, '× 5'), k2('10x+15y=70')]] },
+    { s: 2, cap: `Step 2: ${T('-15y')} and ${T('+15y')} are opposites, so <b>add</b>.`, lines: [`${k1('(9x-15y)')}+${k2('(10x+15y)')}=${k1('6')}+${k2('70')}`, kr('19x=76')] },
     { s: 3, cap: 'Step 3: solve.', lines: [kr('x=4')] },
-    { s: 4, cap: 'Step 4: into 2x + 3y = 14, then verify in both <b>original</b> equations.', lines: ['2(4)+3y=14\\ \\Rightarrow\\ 8+3y=14\\ \\Rightarrow\\ 3y=6\\ \\Rightarrow\\ y=2'] }] }
+    { s: 4, cap: `Step 4: put ${T('x=4')} into ${T('2x+3y=14')}, then verify in both <b>original</b> equations.`, lines: ['2(4)+3y=14\\ \\Rightarrow\\ 8+3y=14\\ \\Rightarrow\\ 3y=6\\ \\Rightarrow\\ y=2'] }] }
 };
 const STEPN = ['Prepare', 'Step 1 · Scale', 'Step 2 · Add or subtract', 'Step 3 · Solve', 'Step 4 · Substitute, verify'];
 function walkDef(keys, title) {
@@ -733,7 +733,7 @@ function walkDef(keys, title) {
       const solBox = add(stage, box(h('div', 'u8l3-solbox', `<div class="u8l3-ph">Solution</div>${solPill(...d.sol)}`), 214, 100), 12, 408); solBox.style.opacity = 0;
       const lines = add(stage, box(h('div', 'u8l3-wl'), W - 252, 360), 240, 12);
       const chk = add(stage, box(h('div', 'u8l3-chks'), W - 252, 122), 240, 386);
-      const cks = d.checks.map(([lab, t], i) => { const q = h('div', 'u8l3-chk', `<div class="u8l3-chkh">${tag(i + 1, 'Check in ' + lab)}</div><div>${T(t)} ✓</div>`); q.style.opacity = 0; chk.appendChild(q); return q; });
+      const cks = d.checks.map(([lab, t], i) => { const q = h('div', 'u8l3-chk', `<div class="u8l3-chkh">${tag(i + 1, 'Check in ' + lab)}</div><div>${T(t + '\\ ' + kr('\\checkmark'))}</div>`); q.style.opacity = 0; chk.appendChild(q); return q; });
       const on = (i) => tb.forEach((b, j) => { b.classList.toggle('on', j === i); if (j < i) b.classList.add('done'); });
       const steps = d.steps.map((st) => ({ cap: st.cap,
         run: async (c) => {
@@ -756,18 +756,18 @@ const walk6 = walkDef(['ex6a', 'ex6b'], 'Prepare, then the four steps');
 const PR = {
   a1: { label: '6 (a) Eq. 1', n: 1, done: [5, -2, 7], rows: [
     { lab: 'given', toks: [['a', '5x'], ['b', '-2y'], ['c', '-7'], ['eq', '='], ['z', '0']] },
-    { lab: 'move', toks: [['a', '5x'], ['b', '-2y'], ['eq', '='], ['c', '7']], move: 'c', cap: 'Move the constant to the right side: <b>−7 becomes +7</b> (add 7 to both sides). The 0 is no longer needed.' }] },
+    { lab: 'move', toks: [['a', '5x'], ['b', '-2y'], ['eq', '='], ['c', '7']], move: 'c', cap: `Move the constant to the right side: <b>${T('-7')} becomes ${T('+7')}</b> (add 7 to both sides). The ${T('0')} is no longer needed.` }] },
   a2: { label: '6 (a) Eq. 2', n: 2, done: [2, -3, -6], rows: [
     { lab: 'given', toks: [['a', '2x'], ['eq', '='], ['b', '3y'], ['c', '-6']] },
-    { lab: 'move', toks: [['a', '2x'], ['b', '-3y'], ['eq', '='], ['c', '-6']], move: 'b', cap: 'Move the <i>y</i>-term to the left side: <b>+3y becomes −3y</b> (subtract 3y from both sides).' }] },
+    { lab: 'move', toks: [['a', '2x'], ['b', '-3y'], ['eq', '='], ['c', '-6']], move: 'b', cap: `Move the ${T('y')}-term to the left side: <b>${T('+3y')} becomes ${T('-3y')}</b> (subtract ${T('3y')} from both sides).` }] },
   b1: { label: '6 (b) Eq. 1', n: 1, done: [3, -5, 2], rows: [
     { lab: 'given', toks: [['l', '\\dfrac{3x-5y}{4}'], ['eq', '='], ['r', '\\dfrac{1}{2}']] },
     { lab: '× LCD', toks: [['m1', '4\\times'], ['l', '\\dfrac{3x-5y}{4}'], ['eq', '='], ['m2', '4\\times'], ['r', '\\dfrac{1}{2}']], cap: 'The denominators are 4 and 2, so the LCD is 4. Multiply <b>every</b> term by 4.' },
-    { lab: 'simplify', toks: [['l', '3x-5y'], ['eq', '='], ['r', '2']], cap: 'Simplify: 4 × (3x − 5y)/4 = 3x − 5y, and 4 × 1/2 = 2.' }] },
+    { lab: 'simplify', toks: [['l', '3x-5y'], ['eq', '='], ['r', '2']], cap: `Simplify: ${T('4\\times\\tfrac{3x-5y}{4}=3x-5y')} and ${T('4\\times\\tfrac12=2')}.` }] },
   b2: { label: '6 (b) Eq. 2', n: 2, done: [2, 3, 14], rows: [
     { lab: 'given', toks: [['p', '\\dfrac{x}{3}'], ['o', '+'], ['q', '\\dfrac{y}{2}'], ['eq', '='], ['r', '\\dfrac{7}{3}']] },
     { lab: '× LCD', toks: [['m1', '6\\times'], ['p', '\\dfrac{x}{3}'], ['o', '+'], ['m2', '6\\times'], ['q', '\\dfrac{y}{2}'], ['eq', '='], ['m3', '6\\times'], ['r', '\\dfrac{7}{3}']], cap: 'The denominators are 3, 2 and 3, so the LCD is 6. Multiply <b>every</b> term by 6.' },
-    { lab: 'simplify', toks: [['p', '2x'], ['o', '+'], ['q', '3y'], ['eq', '='], ['r', '14']], cap: 'Simplify: 6 × x/3 = 2x, 6 × y/2 = 3y and 6 × 7/3 = 14.' }] }
+    { lab: 'simplify', toks: [['p', '2x'], ['o', '+'], ['q', '3y'], ['eq', '='], ['r', '14']], cap: `Simplify: ${T('6\\times\\tfrac{x}{3}=2x')}, ${T('6\\times\\tfrac{y}{2}=3y')} and ${T('6\\times\\tfrac73=14')}.` }] }
 };
 const prep = {
   title: 'Getting each equation ready: Ax + By = C',
@@ -794,7 +794,7 @@ const prep = {
     const steps = d.rows.slice(1).map((r, j) => ({ cap: r.cap,
       run: async (c) => {
         const A = rows[j], B = rows[j + 1];
-        Object.values(A.toks).forEach((e) => e.classList.add('u8l3-old'));
+        Object.values(A.toks).forEach((e) => { e.style.opacity = 0.45; });
         const moves = [];
         for (const [id, el] of Object.entries(B.toks)) {
           const src = A.toks[id];
@@ -846,7 +846,7 @@ const special = {
         : `${T('0=' + z)} is <b>never true</b>: no point works. <b>No solution</b>; the lines are parallel and never meet.`,
         run: async (c) => {
           const v = lineEl(P, same ? '<b>true</b> → infinitely many solutions' : '<b>false</b> → no solution', same ? 'u8l3-good' : 'u8l3-bad'); await show(c, v);
-          await stampIn(c, stamp(P, same ? 'same line' : 'parallel', { ok: same, size: 'sm' }));
+          const sp = stamp(P, same ? 'same line' : 'parallel', { ok: same, size: 'sm' }); sp.style.alignSelf = 'flex-start'; sp.style.marginTop = '10px'; await stampIn(c, sp);
         } }
     ];
   }
@@ -855,13 +855,13 @@ const special = {
 /* =============================== explainer: choosing a method =============================== */
 const CH = {
   g: { label: 'y = 2x − 1, y = −x + 5', s1: 'y=2x-1', s2: 'y=-x+5', path: ['start', 'q0', 'graph'], sol: [2, 3],
-    why: 'Both are in <b>slope–intercept form</b>, quick to graph, and you want a picture. Graph by hand: exact here because the crossing has integer coordinates.' },
+    why: `Both are in <b>slope–intercept form</b> ${T('y=mx+b')}, quick to graph, and you want a picture. By hand it is exact here because the crossing has integer coordinates.`, q: 'Need a picture? <b>Yes</b> → <b>Graphing</b>.' },
   s: { label: 'y = 3x − 2, 5x − 2y = 1', s1: 'y=3x-2', s2: '5x-2y=1', path: ['start', 'q0', 'q1', 'sub'], sol: [3, 7],
-    why: '<i>y</i> is already <b>isolated</b>: replace <i>y</i> with 3x − 2.', lines: ['5x-2(3x-2)=1', '5x-6x+4=1', '-x=-3\\ \\Rightarrow\\ x=3', 'y=3(3)-2=7'] },
+    why: `${T('y')} is already <b>isolated</b>: replace ${T('y')} with ${T('3x-2')}.`, q: 'Need a picture? <b>No</b>. A variable isolated? <b>Yes</b> → <b>Substitution</b>.', lines: ['5x-2(3x-2)=1', '5x-6x+4=1', '-x=-3\\ \\Rightarrow\\ x=3', 'y=3(3)-2=7'] },
   e: { label: '4x + 3y = 10, 4x − 5y = −6', s1: '4x+3y=10', s2: '4x-5y=-6', path: ['start', 'q0', 'q1', 'elim'], sol: [1, 2],
-    why: 'No variable is isolated, but the <i>x</i>-coefficients already <b>match</b> (4 and 4): subtract.', lines: ['(4x+3y)-(4x-5y)=10-(-6)', '8y=16\\ \\Rightarrow\\ y=2', '4x+3(2)=10\\ \\Rightarrow\\ x=1'] },
+    why: `No variable is isolated, but the ${T('x')}-coefficients already <b>match</b> (${T('4')} and ${T('4')}): subtract.`, q: 'Need a picture? <b>No</b>. A variable isolated, or a coefficient of 1 or −1? <b>No</b> → <b>Elimination</b>.', lines: ['(4x+3y)-(4x-5y)=10-(-6)', '8y=16\\ \\Rightarrow\\ y=2', '4x+3(2)=10\\ \\Rightarrow\\ x=1'] },
   ex3: { label: 'Example 3’s system', s1: '3x+2y=20', s2: '5x-y=29', path: ['start', 'q0', 'q1', 'sub'], sol: [6, 1],
-    why: 'In 5x − y = 29, <i>y</i> has coefficient −1, so substitution is easy too: y = 5x − 29. (Elimination, as in Example 3, works just as well.)', lines: ['3x+2(5x-29)=20', '13x-58=20', '13x=78\\ \\Rightarrow\\ x=6', 'y=5(6)-29=1'] }
+    why: `In ${T('5x-y=29')}, ${T('y')} has coefficient ${T('-1')}, so substitution is easy too: ${T('y=5x-29')}. (Elimination, as in Example 3, works just as well.)`, q: 'Need a picture? <b>No</b>. A coefficient of 1 or −1? <b>Yes</b> → <b>Substitution</b>.', lines: ['3x+2(5x-29)=20', '13x-58=20', '13x=78\\ \\Rightarrow\\ x=6', 'y=5(6)-29=1'] }
 };
 const choose = {
   title: 'Which method?',
@@ -884,13 +884,13 @@ const choose = {
     lineEl(P, `${T(k1(d.s1))} &nbsp; ${T(k2(d.s2))}`, 'u8l3-lnbig');
     const meth = { graph: 'Graphing', sub: 'Substitution', elim: 'Elimination' }[d.path[d.path.length - 1]];
     const steps = [
-      { cap: 'Follow the questions from the top.', run: (c) => F.light(c, d.path) },
+      { cap: d.q, run: (c) => F.light(c, d.path) },
       { cap: `<b>${meth}.</b> ${d.why}`, run: (c) => show(c, lineEl(P, `<b>${meth}</b>: ${d.why}`, 'u8l3-lnsm')) }
     ];
     if (k === 'g') {
       steps.push({ cap: `Graph both lines: they cross at ${T(ks('(2,\\ 3)'))}.`,
         run: async (c) => {
-          const G = new Graph(stage, { x: 600, y: 212, width: 254, height: 254, xmin: -1, xmax: 6, ymin: -1, ymax: 6, fontSize: 14 });
+          const G = new Graph(stage, { x: 600, y: 230, width: 238, height: 238, xmin: -1, xmax: 6, ymin: -1, ymax: 6, fontSize: 14 });
           await G.drawIn(G.line({ m: 2, b: -1 }, { color: B1, width: 3.5 }), 500, c); await G.drawIn(G.line({ m: -1, b: 5 }, { color: A2, width: 3.5 }), 500, c);
           await pop(c, G.point(2, 3, { color: SOL, r: 7, label: T('(2,\\ 3)'), pos: 'e', cls: 'bk-ptlab' }));
         } });

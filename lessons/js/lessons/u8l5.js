@@ -234,6 +234,7 @@ const MX = {
   ex2: { label: 'Example 2 check: saline', unit: 'mL', rateU: 'salt', valU: 'mL salt', mixName: 'Mixture',
     A: { name: '30% stock', v: 'x', tag: '30% salt', rate: '0.30', val: '0.30x', col: saltCol(0.3), amt: 150 },
     B: { name: '80% stock', v: 'y', tag: '80% salt', rate: '0.80', val: '0.80y', col: saltCol(0.8), amt: 100 },
+    cap1: `Two stock solutions: <b>30%</b> salt and <b>80%</b> salt. We don’t know how much of each: call them ${T('x')} and ${T('y')} mL.`,
     tot: 250, mtag: '50% salt', mrate: '0.50', mval: '0.50(250)=125', eq1: 'x+y=250', eq2: '0.30x+0.80y=125', rsum: '30\\%+80\\%\\ne50\\%', pct: 0.5 }
 };
 class Mixer {
@@ -302,7 +303,7 @@ const mixPour = {
     const n3 = line(P, `<span class="u8l5-tag u8l5-tx">Rate</span> ${T(d.rsum)} <span class="u8l5-muted">never add rates</span>`);
     [n1, n2, n3].forEach(hide0);
     return [
-      { cap: `${d.A.name} at <b>${d.A.tag}</b>, ${d.B.name.toLowerCase()} at <b>${d.B.tag}</b>. We don’t know how much of each: call them ${T(d.A.v)} and ${T(d.B.v)} ${d.unit}.`,
+      { cap: d.cap1 || `${d.A.name} at <b>${d.A.tag}</b>, ${d.B.name.toLowerCase()} at <b>${d.B.tag}</b>. We don’t know how much of each: call them ${T(d.A.v)} and ${T(d.B.v)} ${d.unit}.`,
         run: async (c) => { await Promise.all([pop(c, M.aA), pop(c, M.aB)]); for (const r of [0, 1]) { await tb.reveal(r, 1, c); await tb.reveal(r, 2, c); } } },
       { cap: `Pour them together: <b>${d.tot} ${d.unit}</b> of ${d.mixName.toLowerCase()} at <b>${d.mtag}</b>.`,
         run: async (c) => { await M.pour(c); await tb.reveal(2, 1, c); await tb.reveal(2, 2, c); } },
@@ -489,10 +490,10 @@ const dstTri = {
 
 /* =============================== explainer: Example 3, the trip =============================== */
 const TR = {
-  ex3: { label: 'Example 3 check', from: 'Edmonton', to: 'Regina', D: 810, total: 11.5, stops: [{ at: 4, len: 1, name: 'fuel stop 1 h' }, { at: 8.5, len: 0.5, name: 'rest 0.5 h' }],
+  ex3: { label: 'Example 3 check', from: 'Edmonton', to: 'Regina', D: 810, total: 11.5, veh: 'truck', stops: [{ at: 4, len: 1, name: 'fuel stop 1 h' }, { at: 8.5, len: 0.5, name: 'rest 0.5 h' }],
     s1: 95, s2: 60, n1: 'Highway', n2: 'Secondary roads', t1: 6, t2: 4, drive: 10, stopSum: '1+0.5=1.5',
     solve: ['r=10-h', '95h+60(10-h)=810', '95h+600-60h=810', '35h=210\\Rightarrow h=6', 'r=10-6=4'] },
-  bus: { label: 'A bus trip', from: 'Home', to: 'Camp', D: 500, total: 7, stops: [{ at: 3, len: 1, name: 'lunch 1 h' }],
+  bus: { label: 'A bus trip', from: 'Home', to: 'Camp', D: 500, total: 7, veh: 'bus', stops: [{ at: 3, len: 1, name: 'lunch 1 h' }],
     s1: 100, s2: 50, n1: 'Highway', n2: 'Town roads', t1: 4, t2: 2, drive: 6, stopSum: '1',
     solve: ['r=6-h', '100h+50(6-h)=500', '100h+300-50h=500', '50h=200\\Rightarrow h=4', 'r=6-4=2'] }
 };
@@ -541,7 +542,7 @@ const trip = {
     const sl = d.solve.map((s, i) => hide0(line(P, `<span class="u8l5-tag"></span> ${T(i === 3 || i === 4 ? tc(PUR, s) : s)}`, 'u8l5-sm')));
     const d1 = d.s1 * d.t1, d2 = d.s2 * d.t2;
     return [
-      { cap: `The clock ran for <b>${d.total} h</b>, but the truck stood still for ${d.stops.map((s) => s.name).join(' and ')}.`,
+      { cap: `The clock ran for <b>${d.total} h</b>, but the ${d.veh} stood still for ${d.stops.map((s) => s.name).join(' and ')}.`,
         run: async (c) => { for (const s of stops) { await pulse(c, s.e, 1.15); await show(c, s.l); } } },
       { cap: `Stopped time is not driving time: ${T(`${d.total}-${d.stopSum.split('=').pop()}=${d.drive}`)} hours of <b>driving</b>.`,
         run: async (c) => {
@@ -683,7 +684,7 @@ const current = {
 /* =============================== explainer: halfway, add, graph, check =============================== */
 const SS = {
   kayak: { label: 'Warm-up Q3', vb: 'b', vc: 'c', with: 10, ag: 6, b: 8, c: 2, order: ['with', 'against'], nl: { min: 4, max: 12, step: 1 },
-    g: { xmin: 0, xmax: 12, ymin: 0, ymax: 12, xtitle: 'b', ytitle: 'c', xlabels: 2, ylabels: 2 }, words: 'The current is 2 km/h; the kayak does 8 km/h in still water.',
+    g: { xmin: 0, xmax: 12, ymin: 0, ymax: 12, xtitle: 'b', ytitle: 'c', xlabels: 2, ylabels: 2 }, words: 'The current is 2 km/h; the kayak does 8 km/h in still water.', chk: 'Check in both equations.',
     checks: [{ title: 'With the current', left: ['8+2', '10'], right: ['10', '10'] }, { title: 'Against the current', left: ['8-2', '6'], right: ['6', '6'] }] },
   ex4: { label: 'Example 4 check', vb: 'b', vc: 'c', with: 24, ag: 16, b: 20, c: 4, order: ['with', 'against'], nl: { min: 12, max: 28, step: 1, labelStep: 2 },
     g: { xmin: 0, xmax: 28, ymin: 0, ymax: 28, xstep: 2, ystep: 2, xtitle: 'b', ytitle: 'c', xlabels: 4, ylabels: 4 }, words: 'The current runs at 4 km/h; the ferry makes 20 km/h in still water.',
@@ -742,7 +743,7 @@ const speedSolve = {
           await G.drawIn(G.fn((x) => d.with - x, { color: BLUE, width: 4 }), 700, c); await G.drawIn(G.fn((x) => x - d.ag, { color: AMB, width: 4 }), 700, c);
           await G.reveal(G.point(d.b, d.c, { color: PUR, r: 8, label: T(`(${d.b},\\ ${d.c})`), pos: 'n' }), c);
         } },
-      { cap: `<b>Check against both trips.</b> ${d.words}`,
+      { cap: `<b>${d.chk || 'Check against both trips.'}</b> ${d.words}`,
         run: async (c) => {
           await anim(c, work, [{ opacity: 1 }, { opacity: 0 }], 300); work.style.display = 'none';
           line(checks, T(tc(PUR, `${b}=${d.b},\\ ${cc}=${d.c}`)), 'u8l5-big u8l5-span2');
