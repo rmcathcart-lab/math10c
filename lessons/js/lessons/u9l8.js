@@ -188,7 +188,7 @@ const pyramid = {
   height: 400,
   intro: 'Guess first in the poll above, then press <b>Next</b>.',
   make(stage, v, ex) {
-    const k = 1.8, G = new Geo(stage, { x: 0, y: 0, w: 500, h: 400, k, ox: 40, oy: 335 });
+    const k = 1.8, G = new Geo(stage, { x: 0, y: 0, w: 500, h: 400, k, ox: 40, oy: 318 });
     const L = [0, 0], C = [230, 0], F = [115, 0], Tp = [115, 146], Lt = [0, 146];
     const p = panel(stage, 512, 18, ex.W - 526, 364);
     const thA = Math.atan(146 / 115) / RAD, thWrong = Math.atan(146 / 230) / RAD, thTip = 90 - thA;
@@ -213,7 +213,7 @@ const pyramid = {
         run: async (c) => {
           sides.opp.path.removeAttribute('stroke-dasharray'); colour(sides.opp, OPP); colour(sides.adj, ADJ); colour(sides.hyp, HYP);
           arcC = G.arc(C, Tp, F, 40, { label: T('\\theta') }); await G.draw(c, arcC, 400); await fadeIn(c, arcC.label);
-          for (const [a, b, t, cl, o] of [[F, Tp, 'opp', OPP, 26], [F, C, 'adj', ADJ, 48], [C, Tp, 'hyp', HYP, 26]]) { const d = G.tag(a, b, t, cl, [150, 50], o); tags.push(d); await pop(c, d, 280); }
+          for (const [a, b, t, cl, o] of [[F, Tp, 'opp', OPP, 26], [F, C, 'adj', ADJ, 40], [C, Tp, 'hyp', HYP, 26]]) { const d = G.tag(a, b, t, cl, [150, 50], o); tags.push(d); await pop(c, d, 280); }
         } },
       { cap: `${T('\\tan\\theta=\\frac{146}{115}\\approx' + f(146 / 115, 3))}, so ${T(`\\theta=\\tan^{-1}\\!\\left(\\frac{146}{115}\\right)\\approx${f(thA, 1)}^\\circ`)}. Steeper than ${T('45^\\circ')}: <b>D</b>.`,
         run: async (c) => {

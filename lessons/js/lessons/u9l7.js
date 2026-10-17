@@ -685,7 +685,7 @@ const wedge = {
     const hostEl = add(stage, box(h('div', 'u9l7-3d'), W, 460), 4, 4), svg = svgEl('svg', { width: W, height: 460 }, hostEl), hp = h('div', 'u9l7-hl'); hostEl.appendChild(hp);
     const S3 = new Solid3(svg, hp, { verts: WV, faces: WF, c: [5.5, 3, 4.5], s: 30, ox: W / 2, oy: 240, view: { yaw: yaw0, pitch: pit0 } });
     const V = WV, mid = (a, b) => lerp3(V[a], V[b], 0.5);
-    S3.label(mid('A', 'B'), '11', { out: 24 }); S3.label(mid('A', 'D'), '6', { out: 22 }); S3.label(mid('A', 'E'), '2', { out: 24 }); S3.label(mid('C', 'G'), '9', { out: 24 });
+    const l11 = S3.label(mid('A', 'B'), '11', { out: 24 }); S3.label(mid('A', 'D'), '6', { out: 22 }); S3.label(mid('A', 'E'), '2', { out: 24 }); S3.label(mid('C', 'G'), '9', { out: 24 });
     const Pn = panel(stage, W + 14, 8, ex.W - W - 20, 454, v === 'a' ? 'Rectangles?' : 'Side face ADHE');
     const face = (f, color) => hide(S3.add('poly', f, { fill: color, 'fill-opacity': 0.45, stroke: 'none' }, S3.faceG));
     if (v === 'a') {
@@ -704,7 +704,7 @@ const wedge = {
       ];
       return steps;
     }
-    const sf = face(['A', 'D', 'H', 'E'], '#dbe7fb');
+    const sf = face(['A', 'D', 'H', 'E'], '#dbe7fb'), back = [l11, S3.vl.B, S3.vl.C, S3.vl.F, S3.vl.G];
     const Ep = [0, 6, 2], eh = hide(S3.add('path', [Ep, 'E'], { stroke: ADJ, 'stroke-width': 4.5, 'stroke-dasharray': '9 6' })), hE = hide(S3.add('path', [Ep, 'H'], { stroke: OPP, 'stroke-width': 4.5 })), EH = hide(S3.add('path', ['E', 'H'], { stroke: HYP, 'stroke-width': 5 }));
     const rmE = hide(S3.add('path', [add3(Ep, [0, -1, 0], 0.7), add3(add3(Ep, [0, -1, 0], 0.7), [0, 0, 1], 0.7), add3(Ep, [0, 0, 1], 0.7)], { stroke: INK, 'stroke-width': 2 }));
     const Elab = hide(S3.label(Ep, T("E'"), { dx: -20, dy: 14, cls: 'bk-lab u9l7-v' }));
@@ -713,7 +713,7 @@ const wedge = {
     const a2 = hide(S3.add('path', arc3(V.E, [0, 0, -1], [0, 1, 0], 90 + HEE, 0.9), { stroke: RED, 'stroke-width': 3.5 })), a2l = hide(S3.label(add3(V.E, [0, -1, 0.2], 0.4), T('139^\\circ'), { color: RED, dx: 34, dy: 18, cls: 'u9l7-lab u9l7-alab' }));
     return [
       { cap: `Work in the side face ${T('ADHE')}: a right trapezoid. ${T('EA=2')} and ${T('HD=9')} are vertical; ${T('AD=6')} is horizontal.`, run: async (c) => { await appear(c, sf, 400); await say(c, Pn, `${T('EA=2')}, ${T('HD=9')}, ${T('AD=6')}`); } },
-      { cap: `Turn the solid so face ${T('ADHE')} faces us.`, run: async (c) => { await Promise.all([S3.turn(c, 90, 4, 1800), S3.dimEdges(c, 0.35)]); } },
+      { cap: `Turn the solid so face ${T('ADHE')} faces us.`, run: async (c) => { await Promise.all([S3.turn(c, 90, 4, 1800), S3.dimEdges(c, 0.35), ...back.map((e) => anim(c, e, [{ opacity: 1 }, { opacity: 0 }], 300))]); } },
       { cap: `Draw the horizontal from ${T('E')} across to ${T('DH')}, meeting it at ${T("E'")}: level with ${T('E')}, directly above ${T('D')}. ${T("EE'")} splits the face.`,
         run: async (c) => { eh.style.opacity = 1; await drawIn(eh, 600, c); await appear(c, rmE, 250); await pop(c, Elab); } },
       { cap: `${T("EE'=AD=6")} cm and ${T("E'H=9-2=7")} cm (the <b>difference</b> in heights): the legs of right triangle ${T("EE'H")}.`,
@@ -724,7 +724,7 @@ const wedge = {
         run: async (c) => { a2.style.opacity = 1; await drawIn(a2, 600, c); await pop(c, a2l); await say(c, Pn, T('\\angle HEA=90^\\circ+49.40^\\circ\\approx' + '139^\\circ'), 'u9l7-res'); } },
       { cap: `(c) ${T('EH')} is the hypotenuse: ${T('EH=\\sqrt{6^2+7^2}=\\sqrt{85}=9.2195\\ldots\\approx 9.2')} cm.`,
         run: async (c) => { await pop(c, lEH); await say(c, Pn, T('EH=\\sqrt{' + cA('6') + '^2+' + cO('7') + '^2}=\\sqrt{85}\\approx9.2\\text{ cm}'), 'u9l7-res'); } },
-      { cap: `Turn the solid to see it whole: ${T('E')} is the notch corner of the wedge, which is why ${T('\\angle HEA')} is obtuse.`, run: async (c) => { await Promise.all([S3.turn(c, 50, 18, 1800), S3.dimEdges(c, 1)]); } }
+      { cap: `Turn the solid to see it whole: ${T('E')} is the notch corner of the wedge, which is why ${T('\\angle HEA')} is obtuse.`, run: async (c) => { await Promise.all([S3.turn(c, 50, 18, 1800), S3.dimEdges(c, 1), ...back.map((e) => anim(c, e, [{ opacity: 0 }, { opacity: 1 }], 300))]); } }
     ];
   }
 };
