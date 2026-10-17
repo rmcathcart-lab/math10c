@@ -955,6 +955,681 @@
             ['The model describes the case only from release until it lands.'], 'domain/range drop');
         } }] }
     ],
-    extra: []
+    extra: [
+      /* ---------------- Extra Part A ---------------- */
+      { num: '1', section: 'Extra practice A — Two notations, one rule', stem: 'Express each relation given in function notation as an equation in two variables. Watch the letter: the independent variable never changes when you convert.', parts: [
+        { id: 'e1a', level: 'EMG', make: function (r) {
+          var a = r.pick([9, 9, 4, 6, 8, 11, 13]), b = r.int(2, 8), rhs = lin([[a, ''], [-b, 'x']]);
+          return convPart('xy', t('f(x)=' + rhs), { T: P(rhs), v: 'x', keyRhs: rhs, bad: ['f(x)=' + rhs] }, 'Replace ' + t('f(x)') + ' with ' + t('y') + ': ' + t('y=' + rhs), ['Swap ' + t('f(x)') + ' for ' + t('y') + '.'], 'EP f(x) to y');
+        } },
+        { id: 'e1b', level: 'PRG', make: function (r) {
+          var b = r.pick([5, 5, 2, 3, 4, 6, 7]), rhs = lin([[1, 't^{2}'], [-b, 't']]);
+          return convPart('xy', t('g(t)=' + rhs), { T: P(rhs), v: 't', keyRhs: rhs, vars: ['x'], bad: ['y=' + lin([[1, 'x^{2}'], [-b, 'x']])] }, 'Replace ' + t('g(t)') + ' with ' + t('y') + '; the input stays ' + t('t') + ': ' + t('y=' + rhs), ['The input letter is ' + t('t') + '. Keep it.'], 'EP g(t) to y');
+        } },
+        { id: 'e1c', level: 'PRG', make: function (r) {
+          var a = r.pick([0.5, 0.5, 0.25, 0.75, 1.5]), b = r.pick([3.25, 3.25, 1.75, 2.5, 4.75]), rhs = lin([[a, 'n'], [b, '']]);
+          return convPart('xy', t('P(n)=' + rhs), { T: P(rhs), v: 'n', keyRhs: rhs, vars: ['x'], bad: ['y=' + lin([[a, 'x'], [b, '']]), 'P=' + rhs + '+1'] }, 'Replace ' + t('P(n)') + ' with ' + t('y') + '; the input stays ' + t('n') + ': ' + t('y=' + rhs), ['Only the output’s name changes.'], 'EP P(n) to y');
+        } },
+        { id: 'e1d', level: 'PRG', make: function (r) {
+          var a = r.pick([2, 2, 3, 4, 5]), c = r.pick([7, 7, 1, 5, 8, 11]), d = r.pick([3, 3, 2, 5].filter(function (x) { return gcd(x, a) === 1 || gcd(x, c) === 1; })), rhs = '\\frac{' + lin([[a, 'a'], [-c, '']]) + '}{' + d + '}';
+          return convPart('xy', t('h(a)=' + rhs.replace('\\frac', '\\dfrac')), { T: P(rhs), v: 'a', keyRhs: rhs, expanded: false, vars: ['x'], bad: ['y=\\frac{' + lin([[a, 'x'], [-c, '']]) + '}{' + d + '}'] },
+            'Replace ' + t('h(a)') + ' with ' + t('y') + '; the input stays ' + t('a') + ': ' + t('y=' + rhs.replace('\\frac', '\\dfrac')), ['The input letter is ' + t('a') + ' here.'], 'EP h(a) to y');
+        } }] },
+      { num: '2', stem: 'Express each relation in function notation. Some of these must be rearranged first, and one of them cannot be done at all.', parts: [
+        { id: 'e2a', level: 'PRG', make: function (r) {
+          var c = r.pick([7, 7, 3, 5, 9]), d = r.pick([2, 2, 3, 4]), v = r.pick(['w', 'w', 't', 'n']), rhs = c + '-\\frac{' + v + '}{' + d + '}';
+          return convPart('fn', t('y=' + rhs), { T: P(c + '-\\frac{1}{' + d + '}' + v), v: v, keyRhs: rhs, vars: ['x'], bad: ['f(x)=' + rhs] }, 'Already solved for ' + t('y') + '. The input is ' + t(v) + ', so replace ' + t('y') + ' with ' + t('f(' + v + ')') + ': ' + t('f(' + v + ')=' + rhs), ['Which letter is the input? It goes in the brackets.'], 'EP y to f(w)');
+        } },
+        { id: 'e2b', level: 'EMG', make: function (r) {
+          var a = r.pick([6, 6, 2, 3, 4, 5]), rhs = lin([[a, 'x^{2}'], [-1, 'x']]);
+          return convPart('fn', t('y=' + rhs), { T: P(rhs), v: 'x', keyRhs: rhs, bad: ['y=' + rhs] }, 'Replace ' + t('y') + ' with ' + t('f(x)') + ': ' + t('f(x)=' + rhs), ['Swap ' + t('y') + ' for ' + t('f(x)') + '.'], 'EP y to f(x) quadratic');
+        } },
+        { id: 'e2c', level: 'PRG', make: function (r) {
+          var A = r.pick([5, 5, 3, 7]), k = r.pick([7, 7, 3, 4, 5, 6]), C = 2 * k, rhs = lin([[[A, 2], 'x'], [-k, '']]), eq = A + 'x-2y=' + C;
+          var W = [{ is: P(lin([[[-A, 2], 'x'], [k, '']])), code: 'conv-move-sign', hint: 'Dividing by ' + t('-2') + ' changes the sign of <b>every</b> term: ' + t('-2y=' + C + '-' + A + 'x') + ' gives ' + t('y=' + rhs) + '.' },
+            { is: P(lin([[A, 'x'], [-C, '']])), code: 'conv-no-divide', hint: 'Divide every term by ' + t('-2') + ', the coefficient of ' + t('y') + '.' }];
+          return convPart('fn', t(eq), { T: P(rhs), v: 'x', keyRhs: rhs, wrong: W, bad: ['y=' + rhs] }, 'Solve for ' + t('y') + ' first:<br>' + t('-2y=' + C + '-' + A + 'x') + '<br>' + t('y=' + rhs) + '<br>' + t('f(x)=' + rhs), ['Move ' + t(A + 'x') + ' across, then divide by ' + t('-2') + '.'], 'EP rearrange Ax-2y=C');
+        } },
+        { id: 'e2d', level: 'PRG', make: function (r) {
+          var Bq = r.pick([3, 3, 2, 5]), A = r.pick([4, 4, 1, 2, 7].filter(function (x) { return gcd(x, Bq) === 1; })), k = r.pick([6, 6, 2, 3, 4, 5]), C = Bq * k, rhs = lin([[[-A, Bq], 'x'], [-k, '']]), eq = lin([[A, 'x'], [Bq, 'y'], [C, '']]) + '=0';
+          var W = [{ is: P(lin([[[A, Bq], 'x'], [k, '']])), code: 'conv-move-sign', hint: 'Both terms change sign when they move across: ' + t(Bq + 'y=-' + A + 'x-' + C) + '.' }, { is: P(lin([[-A, 'x'], [-C, '']])), code: 'conv-no-divide', hint: 'Divide every term by ' + t(Bq) + '.' }];
+          return convPart('fn', t(eq), { T: P(rhs), v: 'x', keyRhs: rhs, wrong: W, bad: ['y=' + rhs] }, 'Solve for ' + t('y') + ':<br>' + t(Bq + 'y=-' + A + 'x-' + C) + '<br>' + t('y=' + rhs) + '<br>' + t('f(x)=' + rhs), ['Get the ' + t('y') + '-term by itself, then divide by ' + t(Bq) + '.'], 'EP rearrange Ax+By+C=0');
+        } },
+        { id: 'e2e', level: 'PRG', make: function (r) {
+          var a = r.pick([2, 2, 4, 5]), b = r.pick([9, 9, 3, 7, 11].filter(function (x) { return x % a !== 0; }));
+          return convPart('fn', t(a + 'y-' + b + '=0'), { T: PL.num([b, a]), v: 'x', keyRhs: frT(b, a), vars: [], good: ['f(x)=' + cl(b / a)], bad: ['f(x)=' + b, 'y=' + frT(b, a)] },
+            t(a + 'y=' + b) + ', so ' + t('y=' + frT(b, a)) + '.<br>' + t('f(x)=' + frT(b, a)) + ' — a <b>constant function</b>. The rule uses no ' + t('x') + ', which is allowed: every input still gives exactly one output.', ['Solve for ' + t('y') + '. The answer has no ' + t('x') + ' in it — that’s fine.'], 'EP constant function');
+        } },
+        { id: 'e2f', level: 'PRG', outcome: 'RF2', make: function (r) {
+          var h = r.pick([5, 5, -3, 2, 4]);
+          return mc(r, 'Can ' + t('x=' + h) + ' be written in function notation?', [
+            { html: 'No: ' + t('x=' + h) + ' is a vertical line. The one input ' + t(h) + ' is paired with every ' + t('y') + ', so it is not a function.', right: true },
+            { html: 'Yes: ' + t('f(x)=' + h) + '.', why: t('f(x)=' + h) + ' means ' + t('y=' + h) + ', a <b>horizontal</b> line. That is a different relation.' },
+            { html: 'Yes: ' + t('f(' + h + ')=x') + '.', why: 'Function notation needs one output for each input. Here the input ' + t(h) + ' has infinitely many outputs.' },
+            { html: 'Yes: ' + t('f(y)=' + h) + '.', why: 'The brackets hold the input. And ' + t('x=' + h) + ' fails the vertical line test, so no rule ' + t('f(x)=\\ldots') + ' can describe it.' }],
+            t('x=' + h) + ' is a vertical line: the single input ' + t(h) + ' goes with every real ' + t('y') + '. It is not a function, so it cannot be written as ' + t('f(x)=\\ldots') + '.', ['Sketch ' + t('x=' + h) + '. Does it pass the vertical line test?'], 'EP x=h not a function');
+        } }] },
+      { num: '3', stem: 'Each table gives every ordered pair of a function. Write the rule first in ' + t('x') + '-' + t('y') + ' notation and then in function notation (use the name ' + t('f') + '), keeping the letters used in the table.', parts: [
+        { id: 'e3a', level: 'PRG', make: function (r) {
+          var m = r.pick([-3, -3, -2, 2, 3, 4]), b = r.pick([5, 5, 1, 2, 3, -1, 4]), xs = [-2, -1, 0, 1, 2], rhs = m < 0 ? lin([[b, ''], [m, 'x']]) : lin([[m, 'x'], [b, '']]);
+          return bothPart(HW.valueTable([['x'].concat(xs), ['y'].concat(xs.map(function (x) { return m * x + b; }))]), { T: P(rhs), v: 'x', keyRhs: rhs },
+            t('x') + ' up ' + t('1') + ' ' + t('\\Rightarrow') + ' ' + t('y') + (m < 0 ? ' down ' + t(-m) : ' up ' + t(m)) + '; at ' + t('x=0') + ', ' + t('y=' + b) + '.<br>' + t('y=' + rhs) + '<br>' + t('f(x)=' + rhs),
+            ['How much does ' + t('y') + ' change when ' + t('x') + ' goes up by ' + t('1') + '? What is ' + t('y') + ' when ' + t('x=0') + '?'], 'EP rule from table');
+        } },
+        { id: 'e3b', level: 'ADV', make: function (r) {
+          var m = r.pick([4.5, 4.5, 1.5, 2.5, 3.5]), b = r.pick([7, 7, 2, 3, 5]), ts = [0, 2, 4, 6], rhs = lin([[m, 't'], [b, '']]);
+          return bothPart(HW.valueTable([['t'].concat(ts), ['d'].concat(ts.map(function (x) { return cl(m * x + b); }))]), { T: P(rhs), v: 't', out: 'd', keyRhs: rhs },
+            t('t') + ' up ' + t('2') + ' ' + t('\\Rightarrow') + ' ' + t('d') + ' up ' + t(2 * m) + ', so ' + t('d') + ' rises ' + t(m) + ' per unit of ' + t('t') + '; at ' + t('t=0') + ', ' + t('d=' + b) + '.<br>' + t('d=' + rhs) + '<br>' + t('f(t)=' + rhs) + ' (the input stays ' + t('t') + ')',
+            ['The ' + t('t') + '-values go up by ' + t('2') + ', not ' + t('1') + '. Find the change in ' + t('d') + ' for one unit of ' + t('t') + '.'], 'EP rule from table t,d');
+        } },
+        { id: 'e3c', level: 'EMG', make: function (r) {
+          var k = r.pick([1, 1, 2, 3]), ns = [1, 2, 3, 4], rhs = lin([[k, 'n^{2}']]);
+          return bothPart(HW.valueTable([['n'].concat(ns), ['A'].concat(ns.map(function (x) { return k * x * x; }))]), { T: P(rhs), v: 'n', out: 'A', keyRhs: rhs, wrong: [{ is: P(lin([[2 * k, 'n']])), code: 'diag', hint: 'Check ' + t('n=3') + ': ' + t(2 * k + '(3)=' + 6 * k) + ', but the table says ' + t(9 * k) + '. Look for squares.' }] },
+            'Each ' + t('A') + ' is ' + (k === 1 ? 'the square of ' + t('n') : t(k) + ' times the square of ' + t('n')) + ': ' + ns.map(function (x) { return t((k === 1 ? '' : k + '\\cdot ') + x + '^{2}'); }).join(', ') + '.<br>' + t('A=' + rhs) + '<br>' + t('f(n)=' + rhs),
+            ['The differences are not constant, so it isn’t linear. Compare each ' + t('A') + ' with ' + t('n^{2}') + '.'], 'EP rule from table squares');
+        } }] },
+      { num: '4', stem: 'Each graph below is the graph of a function ' + t('f') + '. Write its equation in ' + t('x') + '-' + t('y') + ' notation and then in function notation. Read two lattice points off the graph first.', parts: [
+        { id: 'e4a', level: 'PRG', make: function (r) {
+          var m = r.pick([[1, 2], [1, 2], [-1, 2], [1, 3], [-1, 3]]), b = r.pick([2, 2, 1, -1, -2]), mv = m[0] / m[1], rhs = lin([[m, 'x'], [b, '']]);
+          return bothPart('(a)' + lineFig(mv, b), { T: P(rhs), v: 'x', keyRhs: rhs, wrong: [{ is: P(lin([[[m[1] * m[0], 1], 'x'], [b, '']])), code: 'diag', hint: 'Slope is rise over run: the line rises ' + t(m[0]) + ' for every ' + t(m[1]) + ' across, so the slope is ' + t(frT(m[0], m[1])) + '.' }] },
+            'Lattice points ' + t(ptT([0, b])) + ' and ' + t(ptT([m[1], b + m[0]])) + '. Slope ' + t('=' + frT(m[0], m[1])) + '; ' + t('y') + '-intercept ' + t(b) + '.<br>' + t('y=' + rhs) + '<br>' + t('f(x)=' + rhs),
+            ['Find the ' + t('y') + '-intercept, then count the rise and the run between two lattice points.'], 'EP line from graph, fraction slope');
+        } },
+        { id: 'e4b', level: 'EMG', make: function (r) {
+          var m = r.pick([-1, -1, 1, -2, 2]), b = r.pick([1, 1, -1, 2, -2, 3]), rhs = m < 0 ? lin([[b, ''], [m, 'x']]) : lin([[m, 'x'], [b, '']]);
+          return bothPart('(b)' + lineFig(m, b), { T: P(rhs), v: 'x', keyRhs: rhs, wrong: [{ is: P(lin([[-m, 'x'], [b, '']])), code: 'sign', hint: 'Is the line going up or down from left to right? That decides the sign of the slope.' }] },
+            'Lattice points ' + t(ptT([0, b])) + ' and ' + t(ptT([1, b + m])) + '. Slope ' + t(m) + '; ' + t('y') + '-intercept ' + t(b) + '.<br>' + t('y=' + rhs) + '<br>' + t('f(x)=' + rhs), ['Start at the ' + t('y') + '-intercept; go ' + t('1') + ' to the right and count the change.'], 'EP line from graph');
+        } },
+        { id: 'e4c', level: 'EMG', make: function (r) {
+          var c = r.pick([-3, -3, -2, 2, 4]);
+          return bothPart('(c)' + lineFig(0, c), { T: PL.num(c), v: 'x', keyRhs: String(c), bad: [['x=' + c, 'f(x)=' + c]] },
+            'Lattice points ' + t(ptT([0, c])) + ' and ' + t(ptT([2, c])) + ': a horizontal line, so every input gives ' + t(c) + '.<br>' + t('y=' + c) + '<br>' + t('f(x)=' + c), ['Every point on a horizontal line has the same ' + t('y') + '-value.'], 'EP horizontal line');
+        } }] },
+      { num: '5', stem: 'Each conversion below is wrong. Write the correct version.', parts: [
+        { id: 'e5a', level: 'EMG', make: function (r) {
+          var b = r.pick([3, 3, 2, 4, 5]), c = r.pick([8, 8, 1, 5, 6]), rhs = lin([[1, 't^{2}'], [b, 't'], [-c, '']]);
+          return convPart('xy', 'A student wrote: “' + t('h(t)=' + rhs) + ' becomes ' + t('y=' + lin([[1, 'x^{2}'], [b, 'x'], [-c, '']])) + '.” Write the correct equation in two variables.', { T: P(rhs), v: 't', keyRhs: rhs, vars: ['x'], bad: ['y=' + lin([[1, 'x^{2}'], [b, 'x'], [-c, '']])] },
+            'The student changed the input variable from ' + t('t') + ' to ' + t('x') + ' — only the name of the output may change.<br>Correct: ' + t('y=' + rhs), ['What may change in a conversion, and what may not?'], 'EP fix changed variable');
+        } },
+        { id: 'e5b', level: 'EMG', make: function (r) {
+          var a = r.pick([9, 9, 3, 5, 7]), b = r.pick([4, 4, 2, 6, 8]), rhs = lin([[a, 'x'], [-b, '']]);
+          return convPart('fn', 'A student wrote: “' + t('y=' + rhs) + ' becomes ' + t('f(y)=' + rhs) + '.” Write the correct function notation.', { T: P(rhs), v: 'x', keyRhs: rhs, bad: ['f(y)=' + rhs] },
+            'The brackets must hold the <b>input</b>, ' + t('x') + '; ' + t('y') + ' is the output being replaced.<br>Correct: ' + t('f(x)=' + rhs), ['What goes inside the brackets of ' + t('f(\\ )') + '?'], 'EP fix f(y)');
+        } },
+        { id: 'e5c', level: 'PRG', make: function (r) {
+          var Bq = r.pick([4, 4, 2, 3]), A = r.pick([3, 3, 1, 5].filter(function (x) { return gcd(x, Bq) === 1; })), k = r.pick([6, 6, 2, 3, 5]), C = Bq * k, rhs = lin([[k, ''], [[-A, Bq], 'x']]);
+          return convPart('fn', 'A student wrote: “' + t(A + 'x+' + Bq + 'y=' + C) + ' becomes ' + t('f(x)=' + C + '-' + A + 'x-' + Bq) + '.” Write the correct function notation.', { T: P(rhs), v: 'x', keyRhs: rhs, bad: ['f(x)=' + C + '-' + A + 'x-' + Bq], wrong: [{ is: P(C - Bq + '-' + A + 'x'), code: 'conv-no-divide', hint: t(Bq + 'y') + ' means ' + t(Bq + '\\times y') + ': you can’t just drop the letter ' + t('y') + ' and subtract ' + t(Bq) + '. Divide by ' + t(Bq) + ' instead.' }, { is: P(lin([[C, ''], [-A, 'x']])), code: 'conv-no-divide', hint: 'Divide every term by ' + t(Bq) + '.' }] },
+            'Only the letter ' + t('y') + ' was dropped; the whole term ' + t(Bq + 'y') + ' must be isolated and then divided by ' + t(Bq) + ':<br>' + t(Bq + 'y=' + C + '-' + A + 'x') + '<br>' + t('y=' + rhs) + '<br>Correct: ' + t('f(x)=' + rhs), ['Solve for ' + t('y') + ' properly first.'], 'EP fix dropped y');
+        } },
+        { id: 'e5d', level: 'EMG', make: function (r) {
+          var a = r.pick([2, 2, 3, 4, 5]), b = r.pick([3, 3, 1, 5, 7]), rhs = lin([[a, 'x'], [-b, '']]);
+          return convPart('xy', 'A student wrote: “' + t('f(x)=' + rhs) + ' becomes ' + t('y=' + lin([[a, 'y'], [-b, '']])) + '.” Write the correct equation in two variables.', { T: P(rhs), v: 'x', keyRhs: rhs, bad: ['y=' + lin([[a, 'y'], [-b, '']])] },
+            t('y') + ' was written on both sides. ' + t('f(x)') + ' is replaced by ' + t('y') + ' on the <b>left</b> only; the right side keeps its ' + t('x') + '.<br>Correct: ' + t('y=' + rhs), ['Which part of ' + t('f(x)=' + rhs) + ' becomes ' + t('y') + '?'], 'EP fix y on both sides');
+        } },
+        { id: 'e5e', level: 'EMG', make: function (r) {
+          return mc(r, 'Which sentence correctly states what changes and what does <b>not</b> change when a rule is rewritten in function notation?', [
+            { html: 'Only the name of the output changes (' + t('y') + ' becomes ' + t('f(x)') + '); the rule, the input variable and every ordered pair stay the same.', right: true },
+            { html: 'The input variable always becomes ' + t('x') + ', and the rule stays the same.', why: 'The input letter never changes: ' + t('h(t)=t^{2}+3t-8') + ' becomes ' + t('y=t^{2}+3t-8') + '.' },
+            { html: 'Every ' + t('y') + ' in the equation, on both sides, becomes ' + t('f(x)') + '.', why: 'First solve for ' + t('y') + '; then only the single ' + t('y') + ' on the left is renamed.' },
+            { html: 'The ordered pairs change, because ' + t('f(x)') + ' is a new output.', why: t('f(x)') + ' is just another name for the same output, so every ordered pair is unchanged.' }],
+            'Only the name of the output changes (' + t('y') + ' becomes ' + t('f(x)') + '); the rule, the independent variable and every ordered pair stay exactly the same.', ['Think about Example 1: ' + t('h(t)=t^{2}+3t-8') + ' becomes ' + t('y=t^{2}+3t-8') + '.'], 'EP what changes');
+        } }] },
+      /* ---------------- Extra Part B ---------------- */
+      { num: '6', section: 'Extra practice B — Reading a graph in both directions', shared: flatShared, stem: function (sh) { return 'The graph of a function ' + t('f') + ' is shown. Read every answer off the graph, and count <i>every</i> point at the height you are given.' + sh.fig; }, parts: [
+        { id: 'e6a', level: 'BEG', make: function (r, sh) {
+          var xs = [-5, -3, 0, 3, 6].map(function (x) { return x * sh.sx; }).sort(function (a, b) { return a - b; });
+          var items = xs.map(function (x) { var v = pwAt(sh.V, x); return { f: { label: t('f(' + x + ')='), name: 'f(' + x + ')' }, k: nf(v), c: K.number(v, function (u) { if (pwSols(sh.V, x).pts.some(function (z) { return same(z, u); })) return { code: 'read-reverse', hint: t('f(' + x + ')') + ': start at ' + t(x) + ' on the <b>horizontal</b> axis and read up or down.' }; return null; }) }; });
+          return fieldsOf('(a) State each value.', items, xs.map(function (x) { return t('f(' + x + ')=' + pwAt(sh.V, x)); }).join(', '), 'Start on the ' + t('x') + '-axis and read up or down to the graph:<br>' + xs.map(function (x) { return t('f(' + x + ')=' + pwAt(sh.V, x)); }).join(', '), ['Each input gives exactly one output.'], 'EP read f(a)');
+        } },
+        { id: 'e6b', level: 'EMG', make: function (r, sh) {
+          var bs = [0, 4 * sh.sy, -5 * sh.sy], lab = ['(b)', '(c)', '(d)'];
+          return B.fields('Solve each equation. (Press <b>none</b> if there is no solution.)', bs.map(function (b, i) { return solField(lab[i] + ' ' + t('f(x)=' + b), 'x'); }),
+            bs.map(function (b) { return solsChk(pwSols(sh.V, b).pts, { b: b, graph: true, noneHint: 'The graph only reaches from ' + t(pwMin(sh.V)) + ' to ' + t(pwMax(sh.V)) + '. Does it ever reach height ' + t(b) + '?' }); }),
+            bs.map(function (b) { var s0 = pwSols(sh.V, b).pts; return s0.length ? solsKey(s0) : 'none'; }), bs.map(function (b, i) { var s0 = pwSols(sh.V, b).pts; return lab[i] + ' ' + (s0.length ? t(solsKey(s0)) : 'no solution'); }).join('<br>'),
+            bs.map(function (b, i) { var s0 = pwSols(sh.V, b).pts; return lab[i] + ' Read across at height ' + t(b) + ': ' + (s0.length ? t(solsKey(s0)) + (s0.length === 1 ? ' only' : '') : '<b>no solution</b> — the line ' + t('y=' + b) + ' passes entirely ' + (b < 0 ? 'below' : 'above') + ' the graph'); }).join('<br>'),
+            ['Start on the vertical axis and read across. Count every crossing.'], 'EP solve f(x)=b');
+        } },
+        { id: 'e6c', level: 'PRG', make: function (r, sh) {
+          var b = 2 * sh.sy, s0 = pwSols(sh.V, b), p0 = s0.pts[0], I = s0.ints[0];
+          return mc(r, '(e) Solve ' + t('f(x)=' + b) + '. Which answer describes the solution exactly?', [
+            { html: t('x=' + p0) + ' or ' + t(I[0] + '\\le x\\le ' + I[1]), right: true },
+            { html: t('x=' + p0) + ', ' + t('x=' + I[0]) + ' and ' + t('x=' + I[1]), why: 'The graph lies <b>along</b> the line ' + t('y=' + b) + ' for every ' + t('x') + ' from ' + t(I[0]) + ' to ' + t(I[1]) + ', not just at the ends.' },
+            { html: t(I[0] + '\\le x\\le ' + I[1]), why: 'Look further: the line ' + t('y=' + b) + ' also crosses another piece of the graph.' },
+            { html: t('x=' + p0) + ' only', why: 'The flat piece is at height ' + t(b) + ' too — every point on it is a solution.' }],
+            'The line ' + t('y=' + b) + ' crosses one piece at ' + t('x=' + p0) + ', then lies <b>along</b> the flat piece from ' + t('x=' + I[0]) + ' to ' + t('x=' + I[1]) + ': ' + t('x=' + p0) + ' or ' + t(I[0] + '\\le x\\le ' + I[1]) + ' — infinitely many solutions.', ['Draw the horizontal line at height ' + t(b) + ' and look along the whole graph.'], 'EP flat-piece solution');
+        } },
+        { id: 'e6d', level: 'EMG', make: function (r, sh) {
+          var z = pwSols(sh.V, 0).pts, y0 = pwAt(sh.V, 0);
+          return B.fields('(f) Write the ' + t('x') + '-intercepts and the ' + t('y') + '-intercept of the graph using function notation.', [solField(t('x') + '-intercepts: ' + t('f(x)=0') + ' when', 'x'), { label: t('y') + '-intercept: ' + t('f(0)='), name: 'f(0)', mode: 'math', keys: 'solutions', vars: ['x'] }],
+            [solsChk(z, { b: 0, graph: true }), K.value(y0)], [solsKey(z), nf(y0)], z.map(function (x) { return t('f(' + x + ')=0'); }).join(', ') + '; ' + t('f(0)=' + y0),
+            t('x') + '-intercepts (output ' + t('0') + '): ' + z.map(function (x) { return t('f(' + x + ')=0'); }).join(', ') + '.<br>' + t('y') + '-intercept (input ' + t('0') + '): ' + t('f(0)=' + y0) + ' — the graph passes through the origin, so one point is both.', ['Solve ' + t('f(x)=0') + ', then find ' + t('f(0)') + '.'], 'EP intercepts fn notation');
+        } },
+        { id: 'e6e', level: 'EMG', outcome: 'RF2', make: function (r, sh) {
+          return drPart('(g) State the domain and the range of ' + t('f') + '.', { dv: 'x', fname: 'f', D: [-6, 6], R: [pwMin(sh.V), pwMax(sh.V)] },
+            'The graph runs from ' + t('x=-6') + ' to ' + t('x=6') + '; its lowest point is at ' + t(pwMin(sh.V)) + ' and its highest at ' + t(pwMax(sh.V)) + '.<br>' + t(bld('x', -6, 6)) + '<br>' + t('\\{f(x)\\mid ' + cond('f(x)', pwMin(sh.V), pwMax(sh.V)) + ',\\ f(x)\\in\\mathbb{R}\\}'), ['Left to right for the domain; bottom to top for the range.'], 'EP domain/range');
+        } },
+        { id: 'e6f', level: 'PRG', make: function (r, sh) {
+          return mc(r, '(h) Your answers to (a) each contained one number, while the “solve” answers contained different amounts. Why did that have to happen?', [
+            { html: 'A function pairs each input with exactly one output, so asking for an output gives one number. Nothing limits how many inputs share an output, so “solve” can give none, one, several or infinitely many.', right: true },
+            { html: 'Because the graph is made of straight pieces.', why: 'A curved graph behaves the same way. Think about the definition of a function.' },
+            { html: 'Because ' + t('f(a)') + ' is read on the vertical axis and ' + t('f(x)=b') + ' on the horizontal axis.', why: 'It is the other way round: ' + t('f(a)') + ' starts on the horizontal axis. And the axis alone does not explain the number of answers.' },
+            { html: 'A function pairs each output with exactly one input, so ' + t('f(a)') + ' can only have one answer.', why: 'A function restricts <b>inputs</b> (one output each), not outputs.' }],
+            'A function pairs each input with <b>exactly one</b> output, so asking for an output, as in (a), can only return one number. Nothing limits how many inputs share an output, so “solve” questions can return one, several, a whole interval — or none.', ['What does the definition of a function say about inputs and outputs?'], 'EP why one vs many');
+        } }] },
+      { num: '7', shared: scaled2Shared, stem: function (sh) { return 'The graph of a function ' + t('g') + ' is shown below. <i>Each grid line represents ' + t(sh.sx) + ' units on the horizontal axis and ' + t(sh.sy) + ' units on the vertical axis.</i> Check the scale before every read.' + sh.fig; }, parts: [
+        { id: 'e7a', level: 'EMG', make: function (r, sh) {
+          var xs = [-6, -4, 0, 2].map(function (x) { return (sh.mi ? -x : x) * sh.sx; }).sort(function (a, b) { return a - b; });
+          var items = xs.map(function (x) { var v = pwAt(sh.V, x); return { f: { label: t('g(' + x + ')='), name: 'g(' + x + ')' }, k: nf(v), c: K.number(v, function (u) { if (same(u * sh.sy, v) && sh.sy !== 1) return { code: 'read-scale', hint: 'Each grid line on the vertical axis is ' + t(sh.sy) + ' units.' }; if (same(u, cl(v * sh.sx / sh.sy))) return { code: 'read-scale', hint: 'The two axes have different scales: vertical grid lines are ' + t(sh.sy) + ' each.' }; return null; }) }; });
+          return fieldsOf('(a) State each value.', items, xs.map(function (x) { return t('g(' + x + ')=' + pwAt(sh.V, x)); }).join(', '),
+            'Horizontal: ' + t('1') + ' square ' + t('=' + sh.sx) + '; vertical: ' + t('1') + ' square ' + t('=' + sh.sy) + '.<br>' + xs.map(function (x) { return t('g(' + x + ')=' + pwAt(sh.V, x)); }).join(', '), ['Count squares, then multiply by the scale on that axis.'], 'EP scaled read');
+        } },
+        { id: 'e7b', level: 'LIM', make: function (r, sh) {
+          var xs = [-6, -4, 0, 2].map(function (x) { return (sh.mi ? -x : x) * sh.sx; }).sort(function (a, b) { return a - b; }), pr = xs.map(function (x) { return [x, pwAt(sh.V, x)]; });
+          return B.pairs('(b) Write the ordered pairs belonging to the four values in (a).', pr, {}, pr.map(function (p) { return t(ptT(p)); }).join(', '), ['(input, output)'], 'EP pairs scaled');
+        } },
+        { id: 'e7c', level: 'PRG', make: function (r, sh) {
+          var bs = [2 * sh.sy, 4 * sh.sy, -5 * sh.sy], lab = ['(c)', '(d)', '(e)'];
+          return B.fields('Solve each equation. (Press <b>none</b> if there is no solution.)', bs.map(function (b, i) { return solField(lab[i] + ' ' + t('g(x)=' + b), 'x'); }),
+            bs.map(function (b) { return solsChk(pwSols(sh.V, b).pts, { b: b, graph: true, scale: sh.sx, noneHint: 'The lowest point of the graph is at ' + t(pwMin(sh.V)) + '. Is ' + t(b) + ' ever reached?' }); }),
+            bs.map(function (b) { var s0 = pwSols(sh.V, b).pts; return s0.length ? solsKey(s0) : 'none'; }), bs.map(function (b, i) { var s0 = pwSols(sh.V, b).pts; return lab[i] + ' ' + (s0.length ? t(solsKey(s0)) : 'no solution'); }).join('<br>'),
+            bs.map(function (b, i) { var s0 = pwSols(sh.V, b).pts; return lab[i] + ' ' + t(b) + ' is ' + t(Math.abs(b / sh.sy)) + ' squares ' + (b < 0 ? 'down' : 'up') + ': ' + (s0.length ? t(solsKey(s0)) : '<b>no solution</b> — it lies below the lowest point'); }).join('<br>'),
+            ['Convert the height to squares first, read across, then convert each crossing back with the horizontal scale.'], 'EP solve on scaled graph');
+        } },
+        { id: 'e7d', level: 'EMG', make: function (r, sh) {
+          var z = pwSols(sh.V, 0).pts;
+          return B.fields('(f) Write the ' + t('x') + '-intercepts of the graph in function notation.', [solField(t('g(x)=0') + ' when', 'x')], [solsChk(z, { b: 0, graph: true, scale: sh.sx })], [solsKey(z)],
+            z.map(function (x) { return t('g(' + x + ')=0'); }).join(', '), t('x') + '-intercepts: ' + z.map(function (x) { return t('g(' + x + ')=0'); }).join(', ') + '.', ['Where does the graph cross the ' + t('x') + '-axis? Use the horizontal scale.'], 'EP x-ints scaled');
+        } },
+        { id: 'e7e', level: 'EMG', outcome: 'RF2', make: function (r, sh) {
+          var L = sh.V[0][0], Rr = sh.V[sh.V.length - 1][0];
+          return drPart('(f) State the domain and range of ' + t('g') + '.', { dv: 'x', fname: 'g', D: [L, Rr], R: [pwMin(sh.V), pwMax(sh.V)], dW: [{ is: bld('x', L / sh.sx, Rr / sh.sx), code: 'read-scale', hint: 'Use the horizontal scale: each grid line is ' + t(sh.sx) + '.' }] },
+            t(bld('x', L, Rr)) + '<br>' + t('\\{g(x)\\mid ' + cond('g(x)', pwMin(sh.V), pwMax(sh.V)) + ',\\ g(x)\\in\\mathbb{R}\\}'), ['Use each axis’s own scale.'], 'EP D/R scaled');
+        } },
+        { id: 'e7f', level: 'PRG', make: function (r, sh) {
+          var pk = sh.G[1], real = [pk[0] * sh.sx, pk[1] * sh.sy];
+          var p = B.math('(g) A student read ' + t('g(' + pk[0] + ')=' + pk[1]) + ' for the peak straight off the grid squares. Write the correct statement in function notation.', stmtChk('g', real[0], real[1], { grid: pk, scale: sh.sx + '\\text{ (across) and }' + sh.sy + '\\text{ (up)}' }), 'g(' + real[0] + ')=' + real[1],
+            'The student counted grid squares instead of applying the scales. The peak is ' + t(Math.abs(pk[0])) + ' squares ' + (pk[0] < 0 ? 'left' : 'right') + ' and ' + t(pk[1]) + ' squares up: ' + t(Math.abs(pk[0]) + '\\times ' + sh.sx + '=' + Math.abs(real[0])) + ' and ' + t(pk[1] + '\\times ' + sh.sy + '=' + real[1]) + '.<br>Correct: ' + t('g(' + real[0] + ')=' + real[1]) + ', and the point ' + t(ptT(real)) + ' lies on the graph.',
+            ['Multiply the horizontal count by ' + t(sh.sx) + ' and the vertical count by ' + t(sh.sy) + '.'], 'EP correct scaled statement', { keys: EQK, vars: ['g'] });
+          p.bad = ['g(' + pk[0] + ')=' + pk[1], 'g(' + real[1] + ')=' + real[0]];
+          return p;
+        } }] },
+      { num: '8', stem: 'No graph is given. For each item, decide whether you have been given an <b>input</b> or an <b>output</b>.', parts: [
+        { id: 'e8a', level: 'PRG', make: function (r) {
+          var a = r.pick([6, 6, 3, 4, 7]), c = r.pick([-2, -2, -1, -3, -5]);
+          var rows = [{ id: 'r1', html: 'Find ' + t('f(' + a + ')') }, { id: 'r2', html: 'Solve ' + t('f(x)=' + a) }, { id: 'r3', html: 'Find ' + t('f(0)') }, { id: 'r4', html: 'Solve ' + t('f(x)=0') }, { id: 'r5', html: 'Given ' + t('f(k)=' + c) + ', find ' + t('k') }, { id: 'r6', html: 'Given ' + t('f(' + c + ')=k') + ', find ' + t('k') }];
+          var cols = [{ id: 'in', html: 'Input given: start on the horizontal axis, exactly one answer' }, { id: 'out', html: 'Output given: start on the vertical axis, none, one or many answers' }];
+          var want = { r1: 'in', r2: 'out', r3: 'in', r4: 'out', r5: 'out', r6: 'in' };
+          return B.grid('Classify each item.', rows, cols, want, { why: function (row, got) {
+            if (row === 'r5') return { code: 'row', hint: 'In ' + t('f(k)=' + c) + ' the number ' + t(c) + ' is after the equals sign — it is an <b>output</b>; the input ' + t('k') + ' is unknown.' };
+            if (row === 'r6') return { code: 'row', hint: 'In ' + t('f(' + c + ')=k') + ' the number ' + t(c) + ' is in the brackets — it is an <b>input</b>; the output ' + t('k') + ' is unknown.' };
+            return { code: 'row', hint: 'The number inside the brackets is the input; a number after ' + t('f(x)=') + ' is an output.' };
+          } }, t('f(' + a + ')') + ', ' + t('f(0)') + ', ' + t('f(' + c + ')=k') + ': the input is given — start on the horizontal axis; exactly one answer.<br>' + t('f(x)=' + a) + ', ' + t('f(x)=0') + ', ' + t('f(k)=' + c) + ': the output is given — start on the vertical axis; none, one or many answers.',
+            ['Look at where the known number sits: inside the brackets (input) or after the equals sign (output).'], 'EP input or output');
+        } },
+        { id: 'e8b', level: 'PRG', make: function (r) {
+          var a = r.pick([6, 6, 2, 5, 9]);
+          return mc(r, '(g) Why can “find ' + t('f(' + a + ')') + '” never produce two answers, while “solve ' + t('f(x)=' + a) + '” often does?', [
+            { html: t('f(' + a + ')') + ' asks for the output at the single input ' + t(a) + ', and a function allows each input only one output. ' + t('f(x)=' + a) + ' asks which inputs share the output ' + t(a) + ' — any number may.', right: true },
+            { html: 'Because ' + t(a) + ' is positive.', why: 'The sign of ' + t(a) + ' has nothing to do with it.' },
+            { html: 'Because ' + t('f(x)=' + a) + ' is a quadratic equation and ' + t('f(' + a + ')') + ' is not.', why: 'The rule for ' + t('f') + ' is the same in both. What is given — an input or an output?' },
+            { html: 'Because a function allows each output only one input.', why: 'That is backwards: a function allows each <b>input</b> only one output.' }],
+            t('f(' + a + ')') + ' asks for the output at one input, and the definition of a function allows each input <b>only one</b> output. ' + t('f(x)=' + a) + ' asks which inputs share the output ' + t(a) + '; sharing an output is allowed, so any number of inputs may qualify.', ['Recall the definition of a function.'], 'EP why f(a) one answer');
+        } }] },
+      /* ---------------- Extra Part C ---------------- */
+      { num: '9', section: 'Extra practice C — Models in function notation', shared: function (r) {
+          var rate = r.pick([8.5, 8.5, 6.5, 7.5, 9.5]), fix = r.pick([22, 22, 15, 18, 25]), m1 = r.pick([12, 12, 6, 8, 10]), m2 = r.pick([8, 8, 4, 6, 10].filter(function (x) { return x !== m1; })), low = r.pick([15, 15, 10, 12].filter(function (x) { return x < fix; }));
+          return { rate: rate, fix: fix, m1: m1, m2: m2, low: low, C: function (m) { return cl(rate * m + fix); } };
+        }, stem: function (sh) { return 'A courier charges by mass. The cost of shipping a parcel is modelled by ' + t('C(m)=' + sh.rate + 'm+' + sh.fix) + ', where ' + t('C(m)') + ' is the cost, in dollars, of shipping a parcel of mass ' + t('m') + ' kilograms.'; }, parts: [
+        { id: 'e9a', level: 'BEG', make: function (r, sh) {
+          var v = sh.C(sh.m1);
+          return B.number('(a) Determine ' + t('C(' + sh.m1 + ')') + '.', v, function (u) { if (same(u, cl(sh.rate * sh.m1))) return { code: 'no-fixed', hint: 'Add the fixed charge ' + t(sh.fix) + '.' }; return null; },
+            t('C(' + sh.m1 + ')=' + sh.rate + '(' + sh.m1 + ')+' + sh.fix + '=' + cl(sh.rate * sh.m1) + '+' + sh.fix + '=' + v), ['Substitute ' + t('m=' + sh.m1) + '.'], 'EP C(m1)', { before: t('\\$') });
+        } },
+        { id: 'e9b', level: 'PRG', make: function (r, sh) {
+          var v = sh.C(sh.m1);
+          return meaningMC(r, '(b) Which sentence gives the meaning of your answer to (a)?', 'Shipping a ' + t(sh.m1) + ' kg parcel costs ' + t('\\$' + v) + '.', [
+            { html: 'A parcel that costs ' + t('\\$' + sh.m1) + ' has a mass of ' + t(v) + ' kg.', why: 'Input and output are swapped: the input ' + t(sh.m1) + ' is a mass in kilograms.' },
+            { html: 'Each kilogram costs ' + t('\\$' + v) + ' to ship.', why: t(v) + ' is the cost of the whole ' + t(sh.m1) + ' kg parcel.' },
+            { html: t(v) + ' parcels of ' + t(sh.m1) + ' kg can be shipped.', why: 'The output of ' + t('C') + ' is a cost in dollars.' }],
+            'Input ' + t(sh.m1) + ' kg, output ' + t('\\$' + v) + ': shipping a ' + t(sh.m1) + ' kg parcel costs ' + t('\\$' + v) + '.', ['Input: mass (kg). Output: cost ($).'], 'EP meaning C(m1)');
+        } },
+        { id: 'e9c', level: 'PRG', make: function (r, sh) {
+          return meaningMC(r, '(c) Determine ' + t('C(0)') + ' and say what it represents.', t('C(0)=' + sh.fix) + ': the fixed charge paid before any mass is added (the ' + t('C') + '-intercept of the graph).', [
+            { html: t('C(0)=0') + ': a parcel with no mass costs nothing.', why: 'Substitute ' + t('m=0') + ': ' + t(sh.rate + '(0)+' + sh.fix + '=' + sh.fix) + '.' },
+            { html: t('C(0)=' + sh.rate) + ': the charge per kilogram.', why: t(sh.rate) + ' is the rate. ' + t('C(0)') + ' is the output when ' + t('m=0') + '.' },
+            { html: t('C(0)=' + sh.fix) + ': the cost of a 1 kg parcel.', why: 'A 1 kg parcel costs ' + t('C(1)=' + sh.C(1)) + '. ' + t('C(0)') + ' is what is charged before any mass counts.' }],
+            t('C(0)=' + sh.rate + '(0)+' + sh.fix + '=' + sh.fix) + ': the ' + t('\\$' + sh.fix) + ' fixed charge paid before any mass is added — the ' + t('C') + '-intercept.', ['Substitute ' + t('m=0') + '.'], 'EP meaning C(0)');
+        } },
+        { id: 'e9d', level: 'ADV', make: function (r, sh) {
+          var y = sh.C(sh.m2);
+          return B.number('(d) Solve ' + t('C(m)=' + y) + '. (A parcel that costs ' + t('\\$' + y) + ' to ship has what mass?)', sh.m2, function (u) {
+            if (same(u, sh.C(y))) return { code: 'ev-instead', hint: 'You found ' + t('C(' + y + ')') + '. ' + t(y) + ' is the cost (the output): solve ' + t(sh.rate + 'm+' + sh.fix + '=' + y) + '.' };
+            if (Math.abs(u - y / sh.rate) < 0.01) return { code: 'no-fixed', hint: 'Subtract the fixed charge ' + t(sh.fix) + ' first.' };
+            return null;
+          }, t(sh.rate + 'm+' + sh.fix + '=' + y) + '<br>' + t(sh.rate + 'm=' + cl(y - sh.fix)) + '<br>' + t('m=' + sh.m2) + '<br>A parcel that costs ' + t('\\$' + y) + ' to ship has a mass of ' + t(sh.m2) + ' kg.', ['The cost is the output.'], 'EP solve C(m)=b', { after: 'kg' });
+        } },
+        { id: 'e9e', level: 'PRG', make: function (r, sh) {
+          var mv = cl((sh.low - sh.fix) / sh.rate);
+          return mc(r, '(e) Solving ' + t('C(m)=' + sh.low) + ' gives ' + t('m=' + frT((sh.low - sh.fix) * 10, sh.rate * 10) + '\\approx ' + mv.toFixed(2)) + '. What does this tell you?', [
+            { html: 'No parcel ships for ' + t('\\$' + sh.low) + ': a negative mass is impossible, because the fixed charge alone is ' + t('\\$' + sh.fix) + '.', right: true },
+            { html: 'A very light parcel of about ' + t(Math.abs(mv).toFixed(2)) + ' kg ships for ' + t('\\$' + sh.low) + '.', why: 'The answer is <b>negative</b>. Even a parcel with no mass costs ' + t('C(0)=' + sh.fix) + '.' },
+            { html: 'The courier gives a refund of ' + t('\\$' + Math.abs(mv).toFixed(2)) + '.', why: 'The solution is a mass, not money — and a negative mass makes no sense.' },
+            { html: 'I made an error: every equation in a model must have a sensible answer.', why: 'The algebra is right. A model can give answers outside the situation; you have to check them.' }],
+            t(sh.rate + 'm+' + sh.fix + '=' + sh.low) + ' gives ' + t('m\\approx ' + mv.toFixed(2)) + '. A negative mass is impossible: <b>no parcel</b> ships for ' + t('\\$' + sh.low) + ', since the fixed charge alone is ' + t('\\$' + sh.fix) + '.', ['Is the answer a possible mass?'], 'EP impossible solution');
+        } },
+        { id: 'e9f', level: 'PRG', make: function (r, sh) {
+          var n = r.pick([90, 90, 60, 75]);
+          return mc(r, '(f) “' + t('C(' + n + ')') + '” and “' + t('C(m)=' + n) + '” are different questions. Which describes them correctly?', [
+            { html: t('C(' + n + ')') + ': what does it cost to ship a ' + t(n) + ' kg parcel? ' + t('C(m)=' + n) + ': what mass of parcel costs ' + t('\\$' + n) + ' to ship?', right: true },
+            { html: t('C(' + n + ')') + ': what mass costs ' + t('\\$' + n) + '? ' + t('C(m)=' + n) + ': what does a ' + t(n) + ' kg parcel cost?', why: 'Swapped: in ' + t('C(' + n + ')') + ' the ' + t(n) + ' is in the brackets, so it is the input (a mass).' },
+            { html: 'They ask the same thing, written two ways.', why: 'One gives the input and asks for the output; the other gives the output and asks for the input.' },
+            { html: t('C(' + n + ')') + ' means ' + t('C\\times ' + n) + '; ' + t('C(m)=' + n) + ' means ' + t('C\\times m=' + n) + '.', why: t('C') + ' is the name of the function, not a number. The brackets hold the input.' }],
+            '“' + t('C(' + n + ')') + '” gives the <b>input</b>: the cost of a ' + t(n) + ' kg parcel. “' + t('C(m)=' + n) + '” gives the <b>output</b>: the mass of a parcel that costs ' + t('\\$' + n) + '.', ['Where does ' + t(n) + ' sit in each one?'], 'EP C(a) vs C(m)=a');
+        } }] },
+      { num: '10', shared: function (r) {
+          var c = r.pick([[21, 0.4, 40], [21, 0.4, 40], [18, 0.5, 30], [20, 0.25, 48], [22, 0.5, 36]]), T0 = c[0], k = c[1], Dp = c[2];
+          var f = function (d) { return cl(T0 - k * d); }, d1 = r.pick([25, 25, 10, 20].filter(function (x) { return x < Dp; })), y3 = f(Dp);
+          return { T0: T0, k: k, Dp: Dp, f: f, d1: d1, y3: y3 };
+        }, stem: function (sh) { return 'In a deep mountain lake the water temperature drops steadily with depth. It is modelled by ' + t('T(d)=' + sh.T0 + '-' + sh.k + 'd') + ', where ' + t('T(d)') + ' is the temperature, in degrees Celsius, at a depth of ' + t('d') + ' metres. The lake is ' + t(sh.Dp) + ' m deep at its deepest point.'; }, parts: [
+        { id: 'e10a', level: 'BEG', make: function (r, sh) {
+          var items = [{ f: { label: '(a) ' + t('T(' + sh.d1 + ')='), name: 'T(' + sh.d1 + ')', after: '°C' }, k: nf(sh.f(sh.d1)), c: K.number(sh.f(sh.d1)) }, { f: { label: '(b) ' + t('T(0)='), name: 'T(0)', after: '°C' }, k: nf(sh.T0), c: K.number(sh.T0) }];
+          return fieldsOf('Determine each value.', items, t('T(' + sh.d1 + ')=' + sh.f(sh.d1)) + ', ' + t('T(0)=' + sh.T0),
+            t('T(' + sh.d1 + ')=' + sh.T0 + '-' + sh.k + '(' + sh.d1 + ')=' + sh.f(sh.d1)) + ': at a depth of ' + t(sh.d1) + ' m the water is ' + t(sh.f(sh.d1) + '\\,^{\\circ}\\text{C}') + '.<br>' + t('T(0)=' + sh.T0) + ': the surface temperature — the ' + t('T') + '-intercept of the graph.', ['Substitute each depth.'], 'EP lake values');
+        } },
+        { id: 'e10b', level: 'ADV', make: function (r, sh) {
+          var y = sh.y3;
+          return B.number('(c) Solve ' + t('T(d)=' + y) + '. At what depth is the water ' + t(y + '\\,^{\\circ}\\text{C}') + '?', sh.Dp, function (u) {
+            if (same(u, sh.f(y))) return { code: 'ev-instead', hint: 'You found ' + t('T(' + y + ')') + '. ' + t(y) + ' is a temperature (the output): solve ' + t(sh.T0 + '-' + sh.k + 'd=' + y) + '.' };
+            if (same(u, -sh.Dp)) return { code: 'sign', hint: 'Dividing a negative by a negative gives a positive depth.' };
+            return null;
+          }, t(sh.T0 + '-' + sh.k + 'd=' + y) + '<br>' + t('-' + sh.k + 'd=' + cl(y - sh.T0)) + '<br>' + t('d=' + sh.Dp) + ': the water is ' + t(y + '\\,^{\\circ}\\text{C}') + ' at a depth of ' + t(sh.Dp) + ' m, the deepest point of the lake.', ['The temperature is the output.'], 'EP solve T(d)=b', { after: 'm' });
+        } },
+        { id: 'e10c', level: 'PRG', make: function (r, sh) {
+          var y = cl(sh.T0 + sh.k * 10);
+          return mc(r, '(d) Solving ' + t('T(d)=' + y) + ' gives ' + t('d=-10') + '. Why is this not an answer to “at what depth is the water ' + t(y + '\\,^{\\circ}\\text{C}') + '?”', [
+            { html: 'A depth of ' + t('-10') + ' m is not in the lake: the water is ' + t(sh.T0 + '\\,^{\\circ}\\text{C}') + ' at the surface and only gets colder going down, so it is never ' + t(y + '\\,^{\\circ}\\text{C}') + '.', right: true },
+            { html: 'It means the water is ' + t(y + '\\,^{\\circ}\\text{C}') + ' at a depth of ' + t('10') + ' m.', why: 'Check: ' + t('T(10)=' + sh.f(10)) + ', not ' + t(y) + '.' },
+            { html: 'It means 10 m above the lake the air is ' + t(y + '\\,^{\\circ}\\text{C}') + '.', why: 'The model is only about water in the lake; it says nothing about the air.' },
+            { html: 'The equation was solved incorrectly.', why: 'Check by substituting: ' + t('T(-10)=' + y) + '. The algebra is right — the answer is outside the domain.' }],
+            t(sh.T0 + '-' + sh.k + 'd=' + y) + ' gives ' + t('d=-10') + ', but depths in the lake run from ' + t('0') + ' to ' + t(sh.Dp) + ' m. The water is warmest at the surface, so it is <b>never</b> ' + t(y + '\\,^{\\circ}\\text{C}') + '.', ['Is ' + t('-10') + ' m a depth in the lake?'], 'EP outside domain (negative)');
+        } },
+        { id: 'e10d', level: 'PRG', make: function (r, sh) {
+          var dd = sh.Dp + 5, y = sh.f(dd);
+          return mc(r, '(e) Solving ' + t('T(d)=' + y) + ' gives ' + t('d=' + dd) + '. Why is there no answer in this lake?', [
+            { html: 'The lake is only ' + t(sh.Dp) + ' m deep, so ' + t(dd) + ' m is outside the domain: the equation has a solution, but the situation has none.', right: true },
+            { html: 'Because ' + t(y + '\\,^{\\circ}\\text{C}') + ' water would freeze.', why: 'Water at ' + t(y + '\\,^{\\circ}\\text{C}') + ' is not frozen. Compare ' + t(dd) + ' m with the depth of the lake.' },
+            { html: 'There is an answer: ' + t(dd) + ' m.', why: 'How deep is the lake?' },
+            { html: 'Because the answer should have been negative.', why: 'The answer ' + t(dd) + ' is correct algebra. The problem is the size of the lake.' }],
+            t('d=' + dd) + ', but the lake is only ' + t(sh.Dp) + ' m deep, so ' + t(dd) + ' is outside the domain. The <i>equation</i> has a solution; the <i>situation</i> has <b>none</b>.', ['Compare the answer with the depth of the lake.'], 'EP outside domain (too deep)');
+        } },
+        { id: 'e10e', level: 'PRG', outcome: 'RF2', make: function (r, sh) {
+          return drPart('(f) State a domain and a range for ' + t('T') + ' that fit the lake.', { dv: 'd', fname: 'T', D: [0, sh.Dp], R: [sh.y3, sh.T0], rW: [{ is: bld('y', 0, sh.T0), code: 'dr-from-zero', hint: 'The coldest water is at the bottom: ' + t('T(' + sh.Dp + ')=' + sh.y3) + '.' }] },
+            t(bld('d', 0, sh.Dp)) + '<br>' + t('T(0)=' + sh.T0) + ' and ' + t('T(' + sh.Dp + ')=' + sh.y3) + ', so ' + t('\\{T(d)\\mid ' + cond('T(d)', sh.y3, sh.T0) + ',\\ T(d)\\in\\mathbb{R}\\}'), ['Depth runs from the surface to the bottom. Find ' + t('T') + ' at both.'], 'EP D/R lake');
+        } }] },
+      { num: '11', shared: function (r) {
+          var a = r.pick([240, 240, 150, 200, 320]), s = r.pick([70, 70, 40, 50, 60]), top = a + 2 * s + r.pick([70, 30, 50]);
+          return { V: [a, a + s, a + 2 * s, a + s, a, top], a: a, s: s };
+        }, stem: function (sh) { return 'A ski hill records ' + t('V(t)') + ', the number of visitors on day ' + t('t') + ' of a six-day festival. The function is given entirely by the table below — there is no formula.' + HW.valueTable([['t\\text{ (day)}', 1, 2, 3, 4, 5, 6], ['V(t)'].concat(sh.V)]); }, parts: [
+        { id: 'e11a', level: 'BEG', make: function (r, sh) {
+          return B.number('(a) State ' + t('V(3)') + '.', sh.V[2], function (u) { if (sh.V.indexOf(u) >= 0) return { code: 'diag', hint: 'Find ' + t('t=3') + ' in the top row and read the number below it.' }; return null; }, t('V(3)=' + sh.V[2]) + ': on day 3 of the festival, the hill had ' + t(sh.V[2]) + ' visitors.', ['Day 3 is in the top row.'], 'EP V(3) table', { after: 'visitors' });
+        } },
+        { id: 'e11b', level: 'EMG', make: function (r, sh) {
+          var b1 = sh.a + sh.s, b2 = sh.a + sh.s - 10;
+          return B.fields('Solve each equation. (Press <b>none</b> if there is no solution.)', [solField('(b) ' + t('V(t)=' + b1), 't'), solField('(c) ' + t('V(t)=' + b2), 't')],
+            [solsChk([2, 4], { v: 't', b: b1, diag: function (A) { return A.length === 1 ? { code: 'sol-graph-missing', hint: t(b1) + ' appears more than once in the bottom row.' } : null; } }), solsChk([], { v: 't', b: b2, noneHint: t(b2) + ' never appears in the ' + t('V(t)') + ' row.' })],
+            ['t=2,\\ t=4', 'none'], t('t=2,\\ t=4') + '; no solution',
+            '(b) ' + t(b1) + ' sits under ' + t('t=2') + ' and ' + t('t=4') + ': the hill had ' + t(b1) + ' visitors on two separate days.<br>(c) ' + t(b2) + ' never appears in the ' + t('V(t)') + ' row: <b>no solution</b> — no day had exactly ' + t(b2) + ' visitors.', ['Look for the number in the bottom row; read the day above it.'], 'EP solve V(t)=b from table');
+        } },
+        { id: 'e11c', level: 'PRG', outcome: 'RF2', make: function (r, sh) {
+          return mc(r, '(d) Why does the repeated output ' + t(sh.a) + ' not stop ' + t('V') + ' from being a function?', [
+            { html: 'A function restricts <b>inputs</b>: each day appears once in the top row and has one visitor count. Two days sharing an output is allowed.', right: true },
+            { html: 'It does stop it: ' + t('V') + ' is not a function.', why: 'Check the definition: is any <b>day</b> paired with two different visitor counts?' },
+            { html: 'Because the table has no formula.', why: 'A function does not need a formula. What matters is one output for each input.' },
+            { html: 'Because ' + t(sh.a) + ' is the smallest value.', why: 'Its size doesn’t matter. Look at the inputs: each day has exactly one count.' }],
+            'A function restricts <i>inputs</i>: each day 1 to 6 appears exactly once in the top row, so each day has one visitor count. Two days sharing the output ' + t(sh.a) + ' is permitted.', ['Which row has to have no repeats for a function?'], 'EP repeated output ok');
+        } },
+        { id: 'e11d', level: 'EMG', outcome: 'RF2', make: function (r, sh) {
+          return drPart('(e) State the domain and range of ' + t('V') + '. (Days are counted.)', { dv: 't', fname: 'V', disc: true, D: [1, 2, 3, 4, 5, 6], R: sh.V },
+            'Days are counted, so ' + t('D=\\{1,2,3,4,5,6\\}') + ' (or ' + t('\\{t\\mid 1\\le t\\le 6,\\ t\\in I\\}') + ').<br>List each output once, increasing: ' + t('R=' + lst(sh.V)), ['List the values; each one once.'], 'EP D/R discrete table');
+        } },
+        { id: 'e11e', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
+          return mc(r, '(f) Would it be reasonable to join the six points on a graph with a line?', [
+            { html: 'No: the data are discrete — there is no day 2.5, and visitors are counted per day.', right: true },
+            { html: 'Yes: joining the points shows the trend between days.', why: 'A line would claim values for times like day 2.5, which the table does not have.' },
+            { html: 'Yes: time is always continuous.', why: 'Here the input is a day number, and each day has one total.' },
+            { html: 'No: because some outputs repeat.', why: 'Repeats have nothing to do with it. Think about which inputs are possible.' }],
+            '<b>No.</b> The data are discrete — there is no day 2.5, and visitors are counted per day — so the six points are left unjoined.', ['Can ' + t('t') + ' be 2.5 here?'], 'EP discrete, do not join');
+        } }] },
+      { num: '12', shared: tankShared, stem: function (sh) { return 'A holding tank is filled, held, then drained. The graph shows ' + t('W(t)') + ', the volume of water in the tank, in litres, ' + t('t') + ' minutes after filling begins.' + sh.fig; }, parts: [
+        { id: 'e12a', level: 'EMG', make: function (r, sh) {
+          var xs = [0, sh.a - 1, sh.b - 1, 10].filter(function (x, i, a) { return a.indexOf(x) === i; });
+          var items = xs.map(function (x) { var v = pwAt(sh.V, x); return { f: { label: t('W(' + x + ')='), name: 'W(' + x + ')', after: 'L' }, k: nf(v), c: K.number(v, function (u) { if (same(u * 50, v)) return { code: 'read-scale', hint: 'Each grid line on the vertical axis is ' + t('50') + ' L.' }; return null; }) }; });
+          return fieldsOf('(a) State each value.', items, xs.map(function (x) { return t('W(' + x + ')=' + pwAt(sh.V, x)); }).join(', '), 'Vertical scale: 1 square ' + t('=50') + ' L.<br>' + xs.map(function (x) { return t('W(' + x + ')=' + pwAt(sh.V, x)) + ' L'; }).join(', '), ['Read up from each time to the graph.'], 'EP tank values');
+        } },
+        { id: 'e12b', level: 'PRG', make: function (r, sh) {
+          var x = 9, v = pwAt(sh.V, x);
+          return meaningMC(r, '(b) What is the meaning of ' + t('W(' + x + ')=' + v) + '?', t(x) + ' minutes after filling begins, the tank holds ' + t(v) + ' L of water.', [
+            { html: 'After ' + t(v) + ' minutes the tank holds ' + t(x) + ' L of water.', why: 'Input and output are swapped: ' + t(x) + ' is the time.' },
+            { html: 'The tank drains ' + t(v) + ' L in ' + t(x) + ' minutes.', why: t('W(' + x + ')') + ' is the amount in the tank at one moment, not an amount drained.' },
+            { html: 'It takes ' + t(x) + ' minutes to fill the tank with ' + t(v) + ' L.', why: 'At ' + t('t=' + x) + ' the tank is draining, not filling. ' + t('W(' + x + ')') + ' is just how much is in it then.' }],
+            t(x) + ' minutes after filling begins, the tank holds ' + t(v) + ' L of water.', ['Input: time (min). Output: volume (L).'], 'EP meaning W(9)');
+        } },
+        { id: 'e12c', level: 'PRG', make: function (r, sh) {
+          var b = pwAt(sh.V, 9), s0 = pwSols(sh.V, b).pts;
+          return solsPart('(c) Solve ' + t('W(t)=' + b) + '.', s0, { v: 't', b: b, graph: true },
+            'Read across at ' + t(b) + ' L — one crossing while filling, one while draining: ' + t(solsKey(s0, 't')) + '. The tank holds ' + t(b) + ' L twice.', ['Read across from ' + t(b) + ' on the vertical axis.'], 'EP solve W(t)=b');
+        } },
+        { id: 'e12d', level: 'PRG', make: function (r, sh) {
+          var Tg = bld('t', sh.a, sh.b);
+          var p = B.math('(d) Solve ' + t('W(t)=' + sh.F) + '. Describe the answer exactly (as an inequality or a set).', K.set(Tg, { v: 't', wrong: [{ is: '\\{' + sh.a + ', ' + sh.b + '\\}', code: 'sol-graph-missing', hint: 'The graph is flat at ' + t(sh.F) + ' L for <b>every</b> ' + t('t') + ' from ' + t(sh.a) + ' to ' + t(sh.b) + ', not just at the ends.' }] }), cond('t', sh.a, sh.b),
+            'The graph is flat at ' + t(sh.F) + ' L from ' + t('t=' + sh.a) + ' to ' + t('t=' + sh.b) + ': ' + t(cond('t', sh.a, sh.b)) + ' (every ' + t('t') + ' in the interval). The tank is full and being held.', ['Where is the graph at height ' + t(sh.F) + '? Is it a point or a stretch?'], 'EP interval solution', { keys: 'set', vars: ['t'], placeholder: 'e.g. 2 <= t <= 5' });
+          p.good = ['[' + sh.a + ', ' + sh.b + ']', Tg]; p.bad = ['\\{' + sh.a + ', ' + sh.b + '\\}', '(' + sh.a + ', ' + sh.b + ')'];
+          return p;
+        } },
+        { id: 'e12e', level: 'EMG', make: function (r, sh) {
+          var hi = sh.F + 100, lo = sh.S;
+          return B.fields('(e) Solve each equation.', [solField(t('W(t)=' + hi), 't'), solField(t('W(t)=' + lo), 't')],
+            [solsChk([], { v: 't', b: hi, noneHint: 'The tank never holds more than ' + t(sh.F) + ' L.' }), solsChk([0], { v: 't', b: lo, diag: function (A) { return null; } })], ['none', 't=0'], 'no solution; ' + t('t=0'),
+            t('W(t)=' + hi) + ': <b>no solution</b> — the tank never rises above ' + t(sh.F) + ' L.<br>' + t('W(t)=' + lo) + ': <b>one</b>, ' + t('t=0') + ' — the starting volume; draining stops at ' + t(sh.E) + ' L, so ' + t(lo) + ' L is never reached again.', ['Read across at each height; count every crossing.'], 'EP none and one');
+        } },
+        { id: 'e12f', level: 'EMG', outcome: 'RF2', make: function (r, sh) {
+          return drPart('(f) State the domain and range of ' + t('W') + '.', { dv: 't', fname: 'W', D: [0, 12], R: [sh.S, sh.F], rW: [{ is: bld('y', sh.E, sh.F), code: 'dr-peak', hint: 'Use the lowest point of the whole graph: the tank starts at ' + t(sh.S) + ' L.' }] },
+            t(bld('t', 0, 12)) + '<br>' + t('\\{W(t)\\mid ' + cond('W(t)', sh.S, sh.F) + ',\\ W(t)\\in\\mathbb{R}\\}'), ['Left to right, then lowest to highest.'], 'EP D/R tank');
+        } },
+        { id: 'e12g', level: 'PRG', outcome: 'RF1', make: function (r, sh) {
+          var fr = cl((sh.F - sh.S) / sh.a), dr = cl((sh.F - sh.E) / (12 - sh.b));
+          return mc(r, '(g) Is the tank filling faster than it drains, or the other way round?', [
+            { html: 'Filling is faster: ' + t(sh.F - sh.S) + ' L in ' + t(sh.a) + ' min (' + t(fr) + ' L/min) versus draining ' + t(sh.F - sh.E) + ' L in ' + t(12 - sh.b) + ' min (' + t(dr) + ' L/min).', right: true },
+            { html: 'Draining is faster: the draining piece of the graph is longer.', why: 'A longer piece means it takes <b>more</b> time. Compare litres per minute.' },
+            { html: 'They are the same, because the tank ends up partly full.', why: 'Work out the litres per minute for each piece.' },
+            { html: 'Draining is faster, because ' + t('W') + ' goes down.', why: 'Going down shows draining, not speed. Compare the steepness (L per minute).' }],
+            'Filling: ' + t('W(0)=' + sh.S) + ' to ' + t('W(' + sh.a + ')=' + sh.F) + ' is ' + t(sh.F - sh.S) + ' L in ' + t(sh.a) + ' min, or ' + t(fr) + ' L/min. Draining: ' + t('W(' + sh.b + ')=' + sh.F) + ' to ' + t('W(12)=' + sh.E) + ' is ' + t(sh.F - sh.E) + ' L in ' + t(12 - sh.b) + ' min, or ' + t(dr) + ' L/min.', ['Compare litres per minute for the two pieces.'], 'EP compare rates');
+        } }] },
+      { num: '13', shared: function (r) { var rate = r.pick([15, 15, 10, 12, 20]), fix = r.pick([40, 40, 20, 25, 30]), mx = r.pick([8, 8, 6]); return { rate: rate, fix: fix, mx: mx, C: function (h) { return cl(rate * h + fix); }, h1: r.pick([3, 3, 2, 4]), h2: r.pick([5, 5, 4]) }; },
+        stem: function (sh) { return 'A guide service rents sea kayaks. The charge is modelled by ' + t('C(h)=' + sh.rate + 'h+' + sh.fix) + ', where ' + t('C(h)') + ' is the cost, in dollars, of a rental lasting ' + t('h') + ' hours. Rentals are limited to ' + t(sh.mx) + ' hours.'; }, parts: [
+        { id: 'e13a', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
+          var top = sh.C(sh.mx), o = { x: [0, 10], y: [0, Math.ceil((top + 40) / 40) * 40], gx: 1, gy: 20, lx: 2, ly: 40, xName: 'h', yName: 'C' };
+          var G = function (segs) { return ctxGraph(o, segs); };
+          return graphMC(r, '(a) Which graph shows the rental cost?', [
+            { html: G([{ pts: [[0, sh.fix], [sh.mx, top]], start: 'closed', end: 'closed' }]), right: true },
+            { html: G([{ pts: [[0, 0], [sh.mx, sh.rate * sh.mx]], start: 'closed', end: 'closed' }]), why: 'There is a base charge: ' + t('C(0)=' + sh.fix) + '.' },
+            { html: G([{ pts: [[0, sh.fix], [10, sh.C(10)]], start: 'closed', end: 'arrow' }]), why: 'Rentals stop at ' + t(sh.mx) + ' hours, so the graph ends there.' },
+            { html: G([{ pts: [[0, sh.fix], [sh.mx, sh.fix + sh.rate * sh.mx / 2]], start: 'closed', end: 'closed' }]), why: 'Check the end: ' + t('C(' + sh.mx + ')=' + top) + '.' }],
+            t('C(0)=' + sh.fix) + ' and ' + t('C(' + sh.mx + ')=' + top) + ': a segment from ' + t(ptT([0, sh.fix])) + ' to ' + t(ptT([sh.mx, top])) + '.', ['Find the cost at ' + t('0') + ' and at ' + t(sh.mx) + ' hours.'], 'EP sketch kayak');
+        } },
+        { id: 'e13b', level: 'BEG', make: function (r, sh) {
+          var v = sh.C(sh.h1);
+          return B.number('(b) Determine ' + t('C(' + sh.h1 + ')') + '.', v, null, t('C(' + sh.h1 + ')=' + sh.rate + '(' + sh.h1 + ')+' + sh.fix + '=' + v) + ': a ' + t(sh.h1) + '-hour rental costs ' + t('\\$' + v) + '.', ['Substitute ' + t('h=' + sh.h1) + '.'], 'EP C(h1)', { before: t('\\$') });
+        } },
+        { id: 'e13c', level: 'ADV', make: function (r, sh) {
+          var y = sh.C(sh.h2);
+          return B.number('(d) Solve ' + t('C(h)=' + y) + '. How long is a rental that costs ' + t('\\$' + y) + '?', sh.h2, function (u) { if (same(u, sh.C(y))) return { code: 'ev-instead', hint: t(y) + ' is the cost (the output): solve ' + t(sh.rate + 'h+' + sh.fix + '=' + y) + '.' }; if (Math.abs(u - y / sh.rate) < 0.01) return { code: 'no-fixed', hint: 'Subtract the base charge first.' }; return null; },
+            t(sh.rate + 'h+' + sh.fix + '=' + y) + '<br>' + t(sh.rate + 'h=' + (y - sh.fix)) + '<br>' + t('h=' + sh.h2) + ': a rental that costs ' + t('\\$' + y) + ' lasts ' + t(sh.h2) + ' hours.', ['The cost is the output.'], 'EP solve C(h)=b', { after: 'hours' });
+        } },
+        { id: 'e13d', level: 'PRG', make: function (r, sh) {
+          var y = sh.C(sh.mx) + 40, hv = cl((y - sh.fix) / sh.rate);
+          return mc(r, '(e) Solving ' + t('C(h)=' + y) + ' gives ' + t('h\\approx ' + hv.toFixed(1)) + '. Why can’t the guide service fill an order for a ' + t('\\$' + y) + ' rental?', [
+            { html: 'That is beyond the ' + t(sh.mx) + '-hour limit: the most a rental can cost is ' + t('C(' + sh.mx + ')=\\$' + sh.C(sh.mx)) + '.', right: true },
+            { html: 'Because ' + t(hv.toFixed(1)) + ' is not a whole number of hours.', why: 'Part hours would be fine. Compare ' + t(hv.toFixed(1)) + ' with the limit.' },
+            { html: 'Because ' + t('\\$' + y) + ' is less than the base charge.', why: 'It is more. Look at the time limit.' },
+            { html: 'It can: the rental lasts about ' + t(hv.toFixed(1)) + ' hours.', why: 'Rentals are limited to ' + t(sh.mx) + ' hours.' }],
+            t('h\\approx ' + hv.toFixed(1)) + ' is beyond the ' + t(sh.mx) + '-hour limit: the most a rental can cost is ' + t('C(' + sh.mx + ')=\\$' + sh.C(sh.mx)) + ', so <b>no rental</b> costs ' + t('\\$' + y) + '.', ['Compare the answer with the time limit.'], 'EP beyond limit');
+        } },
+        { id: 'e13e', level: 'PRG', outcome: 'RF2', make: function (r, sh) {
+          return drPart('(f) State the domain and range of ' + t('C') + ' for this rental.', { dv: 'h', fname: 'C', D: [0, sh.mx], R: [sh.fix, sh.C(sh.mx)], rW: [{ is: bld('y', 0, sh.C(sh.mx)), code: 'dr-from-zero', hint: 'The cost starts at the base charge, ' + t('C(0)=' + sh.fix) + '.' }] },
+            t(bld('h', 0, sh.mx)) + '<br>' + t('C(0)=' + sh.fix) + ' and ' + t('C(' + sh.mx + ')=' + sh.C(sh.mx)) + ', so ' + t('\\{C(h)\\mid ' + cond('C(h)', sh.fix, sh.C(sh.mx)) + ',\\ C(h)\\in\\mathbb{R}\\}'), ['Domain: 0 to the limit. Range: cost at both ends.'], 'EP D/R kayak');
+        } }] },
+      { num: '14', stem: 'Which sentence gives the meaning of each statement? (A number on its own is not an answer to any part of this question.)', parts: [
+        { id: 'e14a', level: 'EMG', make: function (r) {
+          var n = r.pick([140, 140, 120, 200]), v = r.pick([95, 95, 60, 150]);
+          return meaningMC(r, '(a) ' + t('P(n)') + ' is a bakery’s profit, in dollars, from selling ' + t('n') + ' loaves, and ' + t('P(' + n + ')=' + v) + '.', 'Selling ' + t(n) + ' loaves gives the bakery a profit of ' + t('\\$' + v) + '.', [
+            { html: 'Selling ' + t(v) + ' loaves gives a profit of ' + t('\\$' + n) + '.', why: 'Input and output are swapped: the input ' + t(n) + ' is the number of loaves.' },
+            { html: 'Each loaf gives a profit of ' + t('\\$' + v) + '.', why: t('\\$' + v) + ' is the total profit from ' + t(n) + ' loaves.' },
+            { html: 'The bakery needs ' + t(v) + ' loaves to make a profit.', why: t(v) + ' is the profit in dollars, not a number of loaves.' }],
+            'Input ' + t(n) + ' loaves, output ' + t('\\$' + v) + ' profit: selling ' + t(n) + ' loaves gives a profit of ' + t('\\$' + v) + '.', ['Which is the input?'], 'EP meaning P(n)=b');
+        } },
+        { id: 'e14b', level: 'PRG', make: function (r) {
+          var n = r.pick([60, 60, 45, 80]);
+          return meaningMC(r, '(b) For the same bakery, the equation ' + t('P(n)=0') + ' has the solution ' + t('n=' + n) + '.', 'Selling ' + t(n) + ' loaves gives a profit of ' + t('\\$0') + ' — the bakery breaks even at ' + t(n) + ' loaves.', [
+            { html: 'The bakery sells no loaves on ' + t(n) + ' days.', why: 'The input is a number of loaves; the output ' + t('0') + ' is the profit.' },
+            { html: 'Selling no loaves gives a profit of ' + t('\\$' + n) + '.', why: 'Swapped: ' + t('n=' + n) + ' is the input that makes the profit ' + t('0') + '.' },
+            { html: 'The bakery loses ' + t('\\$' + n) + '.', why: 'A profit of ' + t('0') + ' is neither a loss nor a gain.' }],
+            t('P(' + n + ')=0') + ': selling ' + t(n) + ' loaves gives a profit of ' + t('\\$0') + ' — the bakery <b>breaks even</b>.', ['What does a profit of 0 mean?'], 'EP meaning P(n)=0');
+        } },
+        { id: 'e14c', level: 'PRG', make: function (r) {
+          var a = r.pick([2, 2, 1, 3]), b = r.pick([5, 5, 4, 6]);
+          return meaningMC(r, '(c) ' + t('D(t)') + ' is a driver’s distance from home, in kilometres, ' + t('t') + ' hours into a trip, and ' + t('D(' + a + ')=D(' + b + ')') + '.', 'The driver is the same distance from home ' + t(a) + ' hours into the trip as ' + t(b) + ' hours into the trip.', [
+            { html: 'The driver travels the same distance in hour ' + t(a) + ' as in hour ' + t(b) + '.', why: t('D') + ' is the distance from home at a moment, not the distance travelled in an hour.' },
+            { html: 'The driver is ' + t(a) + ' km from home after ' + t(b) + ' hours.', why: 'Both ' + t(a) + ' and ' + t(b) + ' are times (inputs). The statement compares two outputs.' },
+            { html: 'The driver stopped between hour ' + t(a) + ' and hour ' + t(b) + '.', why: 'Not necessarily — the driver could have gone away and come back. The statement only compares two moments.' }],
+            'Two inputs, ' + t(a) + ' h and ' + t(b) + ' h, have the same output: the driver is the <b>same distance</b> from home at both times.', ['Both numbers are times. What is equal?'], 'EP meaning D(a)=D(b)');
+        } },
+        { id: 'e14d', level: 'EMG', make: function (r) {
+          var c = r.pick([3, 3, 2, 4]), y = r.pick([12, 12, 9, 10]);
+          return meaningMC(r, '(d) ' + t('F(c)') + ' is the cost, in dollars, of ' + t('c') + ' cups of coffee, and solving ' + t('F(c)=' + y) + ' gives ' + t('c=' + c) + '.', t(c) + ' cups of coffee cost ' + t('\\$' + y) + '.', [
+            { html: t(y) + ' cups of coffee cost ' + t('\\$' + c) + '.', why: 'Swapped: ' + t(y) + ' is the output (cost).' },
+            { html: 'Each cup costs ' + t('\\$' + y) + '.', why: t('\\$' + y) + ' is the cost of all ' + t(c) + ' cups.' },
+            { html: 'You can buy ' + t(y) + ' cups for ' + t('\\$' + c) + ' each.', why: 'Read it again: the output ' + t(y) + ' is in dollars.' }],
+            t('F(' + c + ')=' + y) + ': ' + t(c) + ' cups of coffee cost ' + t('\\$' + y) + '.', ['Rewrite it as ' + t('F(\\ldots)=\\ldots') + '.'], 'EP meaning F(c)=b');
+        } },
+        { id: 'e14e', level: 'PRG', make: function (r) {
+          var a = r.pick([4, 4, 3, 5]), b = r.pick([11, 11, 9, 12]), h = r.pick([20, 20, 15, 30]);
+          return meaningMC(r, '(e) ' + t('H(t)') + ' is a drone’s height, in metres, ' + t('t') + ' seconds after launch, and ' + t('H(t)=' + h) + ' has the two solutions ' + t('t=' + a) + ' and ' + t('t=' + b) + '.', 'The drone is ' + t(h) + ' m above the ground twice: ' + t(a) + ' s after launch and again ' + t(b) + ' s after launch.', [
+            { html: 'The drone climbs ' + t(h) + ' m between ' + t(a) + ' s and ' + t(b) + ' s.', why: 'At both times it is at the <b>same</b> height, ' + t(h) + ' m.' },
+            { html: 'The drone stays at ' + t(h) + ' m from ' + t(a) + ' s to ' + t(b) + ' s.', why: 'Only those two times are solutions — in between it is at other heights.' },
+            { html: 'The drone is ' + t(a) + ' m high after ' + t(h) + ' s and ' + t(b) + ' m high after ' + t(h) + ' s.', why: t(h) + ' is the height (output); ' + t(a) + ' and ' + t(b) + ' are times.' }],
+            'The drone is ' + t(h) + ' m above the ground <b>twice</b>: ' + t(a) + ' s after launch (going up) and again ' + t(b) + ' s after launch (coming down).', ['Two times, one height.'], 'EP meaning two solutions');
+        } },
+        { id: 'e14f', level: 'PRG', make: function (r) {
+          var h = r.pick([65, 65, 50, 80]);
+          return meaningMC(r, '(f) For the same drone, ' + t('H(t)=' + h) + ' has no solution.', 'The drone never reaches a height of ' + t(h) + ' m.', [
+            { html: 'The drone reaches ' + t(h) + ' m but we don’t know when.', why: 'No solution means no time at all gives that height.' },
+            { html: 'The drone is ' + t(h) + ' m high at ' + t('t=0') + '.', why: 'That would be a solution, ' + t('t=0') + '.' },
+            { html: 'The drone flies for ' + t(h) + ' seconds.', why: t(h) + ' is a height in metres (the output).' }],
+            'No input gives the output ' + t(h) + ': the drone <b>never</b> reaches ' + t(h) + ' m.', ['What does “no solution” mean for a height?'], 'EP meaning no solution');
+        } }] },
+      /* ---------------- Extra Part D ---------------- */
+      { num: '15', section: 'Extra practice D — Find the mistake', shared: function (r) { var a = r.pick([3, 3, 2, 4, 5]), b = r.pick([4, 4, 1, 3, 7]), k; do { k = r.int(2, 6); } while ((k + b) % a !== 0 || (k + b) / a === k); return { a: a, b: b, k: k }; },
+        stem: function (sh) { return '<i>(Error analysis)</i> A function is defined by ' + t('f(x)=' + sh.a + 'x-' + sh.b) + '. Asked to <b>solve ' + t('f(x)=' + sh.k) + '</b>, a student writes: “' + t('f(' + sh.k + ')=' + sh.a + '(' + sh.k + ')-' + sh.b + '=' + (sh.a * sh.k - sh.b)) + ', so the answer is ' + t(sh.a * sh.k - sh.b) + '.”'; }, parts: [
+        { id: 'e15a', level: 'EMG', make: function (r, sh) {
+          return mc(r, '(a) What is the student’s error?', [
+            { html: 'The student used ' + t(sh.k) + ' as the <b>input</b>. In ' + t('f(x)=' + sh.k) + ' the ' + t(sh.k) + ' is the <b>output</b>; the input ' + t('x') + ' is the unknown.', right: true },
+            { html: 'An arithmetic slip: ' + t(sh.a + '(' + sh.k + ')-' + sh.b) + ' is not ' + t(sh.a * sh.k - sh.b) + '.', why: 'Check it: the arithmetic is right. The problem is which number was substituted.' },
+            { html: 'The student should have substituted ' + t('x=0') + ' first.', why: 'That would give ' + t('f(0)') + ', which has nothing to do with this question.' },
+            { html: 'There is no error.', why: 'Check the answer: is ' + t('f(' + (sh.a * sh.k - sh.b) + ')') + ' equal to ' + t(sh.k) + '?' }],
+            'The student treated ' + t(sh.k) + ' as the input. In ' + t('f(x)=' + sh.k) + ', ' + t(sh.k) + ' is the output, and ' + t('x') + ' is what we must find.', ['Where is the ' + t(sh.k) + ' in ' + t('f(x)=' + sh.k) + '?'], 'EP solve vs evaluate error');
+        } },
+        { id: 'e15b', level: 'PRG', make: function (r, sh) {
+          var x = (sh.k + sh.b) / sh.a;
+          return B.number('(b) Solve ' + t('f(x)=' + sh.k) + ' correctly.', x, function (u) { if (same(u, sh.a * sh.k - sh.b)) return { code: 'ev-instead', hint: 'That is ' + t('f(' + sh.k + ')') + ' again. Set ' + t(sh.a + 'x-' + sh.b + '=' + sh.k) + ' and solve for ' + t('x') + '.' }; if (same(u, (sh.k - sh.b) / sh.a)) return { code: 'conv-move-sign', hint: 'Add ' + t(sh.b) + ' to both sides, don’t subtract.' }; return null; },
+            t(sh.a + 'x-' + sh.b + '=' + sh.k) + '<br>' + t(sh.a + 'x=' + (sh.k + sh.b)) + '<br>' + t('x=' + x) + '<br>Check: ' + t('f(' + x + ')=' + sh.a * x + '-' + sh.b + '=' + sh.k) + ' ✓', ['Set the rule equal to ' + t(sh.k) + '.'], 'EP solve f(x)=k', { before: t('x=') });
+        } },
+        { id: 'e15c', level: 'EMG', make: function (r, sh) {
+          var v = sh.a * sh.k - sh.b;
+          var p = B.math('(c) The student’s ' + t(v) + ' is the correct answer to a different question. Write that question’s answer as a statement in function notation.', stmtChk('f', sh.k, v), 'f(' + sh.k + ')=' + v,
+            '“What is the output when the input is ' + t(sh.k) + '?” — ' + t('f(' + sh.k + ')=' + v) + '.', ['The student substituted ' + t(sh.k) + ' as the input.'], 'EP statement f(k)=v', { keys: EQK, vars: ['f', 'x'] });
+          p.bad = ['f(' + v + ')=' + sh.k, 'f(x)=' + sh.k];
+          return p;
+        } },
+        { id: 'e15d', level: 'PRG', make: function (r, sh) {
+          return mc(r, '(d) For the function ' + t('f(x)=x') + ', the student’s method gives the right answer to “solve ' + t('f(x)=' + sh.k) + '”. Does that rescue the method?', [
+            { html: 'No: they agree only because ' + t('f(x)=x') + ' sends every input to itself. As soon as the rule changes its input, the method fails, as in (b).', right: true },
+            { html: 'Yes: if it works once, it is a valid method.', why: 'One example can’t prove a method. Part (b) shows it fails for ' + t('f(x)=' + sh.a + 'x-' + sh.b) + '.' },
+            { html: 'Yes: for linear functions the input and output are always equal.', why: 'Check ' + t('f(x)=' + sh.a + 'x-' + sh.b) + ': ' + t('f(' + sh.k + ')') + ' is not ' + t(sh.k) + '.' },
+            { html: 'No: the method never gives a right answer.', why: 'It does here, by coincidence. The point is that a coincidence doesn’t make it a method.' }],
+            'For ' + t('f(x)=x') + ': the student’s method gives ' + t('f(' + sh.k + ')=' + sh.k) + ', and the correct method gives ' + t('x=' + sh.k) + '. They agree only because this rule sends every input to itself. The method is still wrong, as (b) shows.', ['Try the method on the function in (b).'], 'EP coincidence');
+        } }] },
+      { num: '16', shared: function (r) {
+          var h = r.pick([-1, -1, 1, -2, 2, 0]), k = r.pick([-4, -4, -1]), w = 3, g = function (x) { return (x - h) * (x - h) + k; };
+          var fig = '<div class="fig">' + HW.graph({ x: [h - 4, h + 4], y: [k - 1, k + 11], grid: 1, labels: 2, xName: 'x', yName: 'g(x)', max: 300, fns: [{ f: g, from: h - w, to: h + w, start: 'closed', end: 'closed' }], aria: 'graph of the parabola g' }) + '</div>';
+          return { h: h, k: k, w: w, g: g, top: k + 9, z: [h - Math.sqrt(-k), h + Math.sqrt(-k)], fig: fig };
+        }, stem: function (sh) { return '<i>(Error analysis)</i> The graph of a function ' + t('g') + ' is shown. Asked to solve ' + t('g(x)=0') + ', a student answers “' + t('x=' + sh.z[1]) + '”. Asked to solve ' + t('g(x)=' + sh.top) + ', the same student answers “' + t('x=' + (sh.h + sh.w)) + '”.' + sh.fig; }, parts: [
+        { id: 'e16a', level: 'EMG', make: function (r, sh) {
+          var s1 = sh.z, s2 = [sh.h - sh.w, sh.h + sh.w];
+          return B.fields('(a) Give the complete solution to each equation.', [solField(t('g(x)=0'), 'x'), solField(t('g(x)=' + sh.top), 'x')], [solsChk(s1, { b: 0, graph: true }), solsChk(s2, { b: sh.top, graph: true })], [solsKey(s1), solsKey(s2)],
+            t(solsKey(s1)) + '; ' + t(solsKey(s2)), t('g(x)=0') + ': read along the ' + t('x') + '-axis — two crossings, ' + t(solsKey(s1)) + '.<br>' + t('g(x)=' + sh.top) + ': that height is reached at both endpoints, ' + t(solsKey(s2)) + '.', ['Keep reading across the whole graph.'], 'EP complete solutions parabola');
+        } },
+        { id: 'e16b', level: 'EMG', make: function (r, sh) {
+          return mc(r, '(b) Which rule should the student follow after finding the first crossing?', [
+            { html: 'Keep following the horizontal line across the <b>whole</b> graph and mark every further crossing — never stop at the first one.', right: true },
+            { html: 'Stop: a function has only one answer.', why: 'A function has one output per <b>input</b>. Here you are given an output, and several inputs can share it.' },
+            { html: 'Check the vertical line through the first crossing.', why: 'A vertical line finds outputs. To solve ' + t('g(x)=b') + ' you read across.' },
+            { html: 'Use only the positive answer.', why: 'Negative inputs are just as valid if the graph is there.' }],
+            'After the first crossing, keep following the horizontal line across the whole graph and mark every further crossing.', ['How many times can a horizontal line meet this curve?'], 'EP keep reading');
+        } },
+        { id: 'e16c', level: 'PRG', outcome: 'RF2', make: function (r, sh) {
+          return mc(r, '(c) A second student says: “two different ' + t('x') + '-values give the same ' + t('y') + '-value, so ' + t('g') + ' is not a function.” Which correction is right?', [
+            { html: 'A function restricts inputs, not outputs: two inputs may share an output. Every <b>vertical</b> line meets this graph at most once, so ' + t('g') + ' is a function.', right: true },
+            { html: 'The student is right: ' + t('g') + ' fails the horizontal line test, so it is not a function.', why: 'The test for a function is the <b>vertical</b> line test.' },
+            { html: 'The student is right, but only because the graph is curved.', why: 'Curves can be functions. Use the vertical line test.' },
+            { html: t('g') + ' is a function because it has two ' + t('x') + '-intercepts.', why: 'Intercepts have nothing to do with it. Check vertical lines.' }],
+            'A function restricts <i>inputs</i>: two different inputs may share an output. Every vertical line meets this graph at most once, so ' + t('g') + ' <b>is</b> a function. The two crossings lie on a <i>horizontal</i> line.', ['What does the vertical line test check?'], 'EP horizontal vs vertical');
+        } },
+        { id: 'e16d', level: 'ADV', make: function (r, sh) {
+          var fl = [{ label: 'A value of ' + t('b') + ' with exactly <b>one</b> solution: ' + t('b='), name: 'one solution', mode: 'math', keys: 'fraction' }, { label: 'A value of ' + t('b') + ' with <b>no</b> solution: ' + t('b='), name: 'no solution', mode: 'math', keys: 'fraction' }];
+          var cnt = function (b) { if (b < sh.k - 1e-9 || b > sh.top + 1e-9) return 0; if (same(b, sh.k)) return 1; return 2; };
+          var mk = function (want) { return function (resp) { var a = K.read(resp); if (a.res) return a.res; var c = cnt(a.val); if (c === want) return ok(); return wrong('two-b', t('g(x)=' + nf(a.val)) + ' has ' + (c === 0 ? 'no solution' : c === 1 ? 'exactly one solution' : 'two solutions') + '. Draw the horizontal line at height ' + t(nf(a.val)) + ' and count.' + (want === 1 ? ' Look at the lowest point.' : '')); }; };
+          var p = B.fields('(d) ' + t('g(x)=b') + ' for different values of ' + t('b') + ':', fl, [mk(1), mk(0)], [String(sh.k), String(sh.k - 2)], t('b=' + sh.k) + ' (only); for no solution any ' + t('b<' + sh.k) + ' or ' + t('b>' + sh.top) + ', e.g. ' + t('b=' + (sh.k - 2)),
+            'The lowest point is ' + t(ptT([sh.h, sh.k])) + '.<br>' + t('b=' + sh.k) + ': exactly one solution, ' + t('x=' + sh.h) + '.<br>Any ' + t('b<' + sh.k) + ' (e.g. ' + t(sh.k - 2) + '), or any ' + t('b>' + sh.top) + ' (above both endpoints): no solution.', ['Look at the lowest point, and at the highest points of the graph.'], 'EP b for one / none');
+          p.good = [[String(sh.k), String(sh.top + 3)]]; p.bad = [[String(sh.k + 1), String(sh.k - 2)], [String(sh.k), '0']];
+          return p;
+        } },
+        { id: 'e16e', level: 'BEG', make: function (r, sh) {
+          var xs = [0, sh.h === 0 ? 1 : sh.h].filter(function (x, i, a) { return a.indexOf(x) === i; });
+          if (xs.length < 2) xs = [0, -1];
+          var items = xs.map(function (x) { return { f: { label: t('g(' + x + ')='), name: 'g(' + x + ')', mode: 'math', keys: 'fraction' }, k: nf(sh.g(x)), c: K.value(sh.g(x)) }; });
+          return fieldsOf('(e) State each value. (Each one gives an input, so there is only one answer.)', items, xs.map(function (x) { return t('g(' + x + ')=' + sh.g(x)); }).join(', '),
+            xs.map(function (x) { return t('g(' + x + ')=' + sh.g(x)); }).join(', ') + '. Each gives an <i>input</i> and asks for the output; a function pairs each input with exactly one output.', ['Start on the horizontal axis.'], 'EP g at inputs');
+        } }] },
+      { num: '17', shared: function (r) { var k = r.pick([12, 12, 5, 8, 10]), c = r.pick([47, 47, 23, 31, 39]); return { k: k, c: c, k2: r.pick([8, 8, 3, 4, 6].filter(function (x) { return x !== k; })), c2: r.pick([32, 32, 15, 18, 24]) }; },
+        stem: function (sh) { return '<i>(Error analysis)</i> A market sells apples by mass, and ' + t('C(k)') + ' is the cost, in dollars, of ' + t('k') + ' kilograms. It is known that ' + t('C(' + sh.k + ')=' + sh.c) + '. Three students interpret this.'; }, parts: [
+        { id: 'e17a', level: 'EMG', make: function (r, sh) {
+          return mc(r, '(a) Ava writes: “' + t('\\$' + sh.k) + ' buys ' + t(sh.c) + ' kg of apples.” What is the correct sentence?', [
+            { html: t(sh.k) + ' kg of apples cost ' + t('\\$' + sh.c) + '.', right: true },
+            { html: 'Ava is right.', why: 'In ' + t('C(' + sh.k + ')') + ' the ' + t(sh.k) + ' is in the brackets: it is the input, a mass.' },
+            { html: t(sh.c) + ' kg of apples cost ' + t('\\$' + sh.k) + ' each.', why: 'The input ' + t(sh.k) + ' is the mass, and ' + t(sh.c) + ' is the total cost.' },
+            { html: 'Each kilogram costs ' + t('\\$' + sh.c) + '.', why: t('\\$' + sh.c) + ' is the cost of all ' + t(sh.k) + ' kg.' }],
+            'Ava swapped input and output. The input ' + t(sh.k) + ' is a mass in kilograms; the output ' + t(sh.c) + ' is a cost in dollars: ' + t(sh.k) + ' kg of apples cost ' + t('\\$' + sh.c) + '.', ['Which number is in the brackets?'], 'EP Ava swap');
+        } },
+        { id: 'e17b', level: 'BEG', make: function (r, sh) {
+          return B.pairs('(b) Ben writes: “the point ' + t(ptT([sh.c, sh.k])) + ' lies on the graph of ' + t('y=C(k)') + '.” Write the correct point.', [[sh.k, sh.c]], {}, 'In ' + t('C(' + sh.k + ')=' + sh.c) + ' the input is ' + t(sh.k) + ', and an ordered pair lists the input first: ' + t(ptT([sh.k, sh.c])) + '.', ['(input, output)'], 'EP Ben point');
+        } },
+        { id: 'e17c', level: 'EMG', make: function (r, sh) {
+          return mc(r, '(c) Cam writes: “' + t('C') + ' multiplied by ' + t(sh.k) + ' is ' + t(sh.c) + '.” What is his error?', [
+            { html: t('C') + ' is the <b>name</b> of the function, not a number; the brackets in ' + t('C(' + sh.k + ')') + ' mark the input (“' + t('C') + ' of ' + t(sh.k) + '”), not multiplication.', right: true },
+            { html: 'He should have divided: ' + t('C=' + sh.c + '\\div ' + sh.k) + '.', why: t('C') + ' is not an unknown number to solve for; it names the function.' },
+            { html: 'He swapped ' + t(sh.k) + ' and ' + t(sh.c) + '.', why: 'The order is right. The problem is reading the brackets as multiplication.' },
+            { html: 'There is no error: ' + t('C(' + sh.k + ')') + ' means ' + t('C\\times ' + sh.k) + '.', why: 'In function notation, brackets after a function name hold the input.' }],
+            t('C') + ' is the name of the function, so it cannot be multiplied. ' + t('C(' + sh.k + ')') + ' is read “' + t('C') + ' of ' + t(sh.k) + '”: the output when the input is ' + t(sh.k) + '.', ['How is ' + t('C(' + sh.k + ')') + ' read aloud?'], 'EP Cam multiply');
+        } },
+        { id: 'e17d', level: 'PRG', make: function (r, sh) {
+          var c2 = sh.c2, k2 = sh.k2;
+          var eqChk = function (resp) {
+            var s = clean(resp).replace(/\s+/g, ''); if (!s) return form('empty', 'Type the equation.');
+            var parts = s.split('='); if (parts.length !== 2) return form('unreadable', 'Write an equation such as ' + t('C(k)=10') + '.');
+            var m = /^([A-Za-z])\(([A-Za-z])\)$/.exec(parts[0]), R = parts[1];
+            if (!m) { m = /^([A-Za-z])\(([A-Za-z])\)$/.exec(parts[1]); R = parts[0]; }
+            if (!m) { var st = stmtRead(resp); if (st && same(st.b, c2)) return wrong('stmt-swap', 'The mass is unknown, so the brackets hold the variable ' + t('k') + ': ' + t('C(k)=' + c2) + '.'); if (st && same(st.a, c2)) return wrong('stmt-swap', t(c2) + ' is a cost — the output. It goes after the equals sign, and the unknown mass ' + t('k') + ' goes in the brackets.'); return form('unreadable', 'Write the equation to solve, with the unknown mass in the brackets: ' + t('C(\\ldots)=\\ldots') + '.'); }
+            if (m[1] !== 'C') return wrong('stmt-name', 'The function is named ' + t('C') + '.');
+            var v = numVal(R); if (v == null) return form('unreadable', 'The right side should be a number.');
+            if (same(v, c2)) return ok();
+            return wrong('value', null);
+          };
+          var fl = [{ label: 'Statement: “' + t(k2) + ' kg of apples cost ' + t('\\$' + c2) + '”', name: 'statement', mode: 'math', keys: EQK, vars: ['C', 'k'] }, { label: 'Question: “how many kilograms can be bought for ' + t('\\$' + c2) + '?” Solve', name: 'question', mode: 'math', keys: EQK, vars: ['C', 'k'] }];
+          var p = B.fields('(d) Write each in function notation.', fl, [stmtChk('C', k2, c2), eqChk], ['C(' + k2 + ')=' + c2, 'C(k)=' + c2], t('C(' + k2 + ')=' + c2) + '; solve ' + t('C(k)=' + c2),
+            'Input ' + t(k2) + ' kg, output ' + t('\\$' + c2) + ': ' + t('C(' + k2 + ')=' + c2) + '.<br>The question gives the output ' + t('\\$' + c2) + ' and asks for the input: solve ' + t('C(k)=' + c2) + '.', ['Mass goes in the brackets; cost goes after the equals sign.'], 'EP write statement and equation');
+          p.bad = [['C(' + c2 + ')=' + k2, 'C(k)=' + c2], ['C(' + k2 + ')=' + c2, 'C(' + c2 + ')=k']];
+          return p;
+        } },
+        { id: 'e17e', level: 'PRG', make: function (r, sh) {
+          var s = sh.k + sh.c;
+          return mc(r, '(e) Which statement about ' + t('C(' + sh.k + ')=' + sh.c) + ' and ' + t('C(' + sh.c + ')=' + sh.k) + ' is true?', [
+            { html: 'They are different claims, about the points ' + t(ptT([sh.k, sh.c])) + ' and ' + t(ptT([sh.c, sh.k])) + '; both hold for ' + t('f(x)=' + s + '-x') + ' (though that is not a sensible price list).', right: true },
+            { html: 'They say the same thing, written two ways.', why: 'In one, ' + t(sh.k) + ' kg cost ' + t('\\$' + sh.c) + '; in the other ' + t(sh.c) + ' kg cost ' + t('\\$' + sh.k) + '. Different points.' },
+            { html: 'They can never both be true for a function.', why: 'Try ' + t('f(x)=' + s + '-x') + ': ' + t('f(' + sh.k + ')=' + sh.c) + ' and ' + t('f(' + sh.c + ')=' + sh.k) + '.' },
+            { html: 'Both hold for ' + t('f(x)=x+' + (sh.c - sh.k)) + '.', why: 'Check: ' + t('f(' + sh.c + ')=' + (2 * sh.c - sh.k)) + ', not ' + t(sh.k) + '.' }],
+            t('C(' + sh.k + ')=' + sh.c) + ': ' + t(sh.k) + ' kg cost ' + t('\\$' + sh.c) + '. ' + t('C(' + sh.c + ')=' + sh.k) + ': ' + t(sh.c) + ' kg cost ' + t('\\$' + sh.k) + '. They are about two different points. Both hold for any function through both points, e.g. ' + t('f(x)=' + s + '-x') + ' — not sensible for apples, since more apples should cost more.', ['Write each claim as an ordered pair.'], 'EP C(a)=b vs C(b)=a');
+        } }] },
+      /* ---------------- Extra Part E ---------------- */
+      { num: '18', section: 'Extra practice E — A stretch, and three for the test', shared: stretchShared, stem: function (sh) { return '<i>(Stretch)</i> The graph of a function ' + t('f') + ' is made of three straight pieces joined end to end, through ' + sh.V.map(ptT).map(t).join(', ') + '.' + sh.fig; }, parts: [
+        { id: 'e18a', level: 'EMG', make: function (r, sh) {
+          var xs = [-4, 0, 4], items = xs.map(function (x) { return { f: { label: t('f(' + x + ')='), name: 'f(' + x + ')' }, k: nf(pwAt(sh.V, x)), c: K.number(pwAt(sh.V, x)) }; });
+          return fieldsOf('(a) State each value.', items, xs.map(function (x) { return t('f(' + x + ')=' + pwAt(sh.V, x)); }).join(', '), xs.map(function (x) { return t('f(' + x + ')=' + pwAt(sh.V, x)); }).join(', ') + ': three different inputs share one output, which a function is allowed to do.', ['Read up or down from each input.'], 'EP stretch values');
+        } },
+        { id: 'e18b', level: 'EMG', make: function (r, sh) {
+          var bs = [sh.sy, 5 * sh.sy];
+          return B.fields('(b) Solve each equation.', bs.map(function (b) { return solField(t('f(x)=' + b), 'x'); }), bs.map(function (b) { return solsChk(pwSols(sh.V, b).pts, { b: b, graph: true }); }), bs.map(function (b) { return solsKey(pwSols(sh.V, b).pts); }),
+            bs.map(function (b) { return t(solsKey(pwSols(sh.V, b).pts)); }).join('; '), bs.map(function (b) { return t('f(x)=' + b) + ': ' + t(solsKey(pwSols(sh.V, b).pts)); }).join('<br>'), ['Read across; count every crossing.'], 'EP stretch solve');
+        } },
+        { id: 'e18c', level: 'PRG', make: function (r, sh) {
+          var b = -2 * sh.sy, s0 = pwSols(sh.V, b).pts;
+          return solsPart('(c) Solve ' + t('f(x)=' + b) + '. There are two answers and neither lands on a grid line.', s0, { b: b, graph: true },
+            'From the low point, height ' + t(b) + ' is ' + t('1') + ' unit ' + (sh.fl ? 'down' : 'up') + '. Each piece there changes ' + t('2') + ' per ' + t('1') + ' across, so that is ' + t('\\tfrac{1}{2}') + ' unit sideways: ' + t(solsKey(s0)) + '. The third piece never reaches ' + t(b) + '.', ['Use the slope of each piece near the low point.'], 'EP stretch half-unit');
+        } },
+        { id: 'e18d', level: 'EMG', make: function (r, sh) {
+          var bs = [6 * sh.sy, -3 * sh.sy];
+          return B.fields('(d) Solve each equation. (Press <b>none</b> if there is no solution.)', bs.map(function (b) { return solField(t('f(x)=' + b), 'x'); }), bs.map(function (b) { return solsChk(pwSols(sh.V, b).pts, { b: b, graph: true }); }),
+            bs.map(function (b) { var s0 = pwSols(sh.V, b).pts; return s0.length ? solsKey(s0) : 'none'; }), bs.map(function (b) { var s0 = pwSols(sh.V, b).pts; return s0.length ? t(solsKey(s0)) : 'no solution'; }).join('; '),
+            t('f(x)=' + bs[0]) + ': <b>no solution</b> — the graph never goes beyond ' + t(5 * sh.sy) + '.<br>' + t('f(x)=' + bs[1]) + ': <b>exactly one</b>, ' + t(solsKey(pwSols(sh.V, bs[1]).pts)) + ', where pieces 1 and 2 meet.', ['Find the highest and lowest points.'], 'EP stretch none / one');
+        } },
+        { id: 'e18e', level: 'MAS', make: function (r, sh) {
+          var tg = sh.fl ? '\\{b\\mid -5<b\\le 1,\\ b\\in\\mathbb{R}\\}' : '\\{b\\mid -1\\le b<5,\\ b\\in\\mathbb{R}\\}';
+          var p = B.math('(e) For which values of ' + t('b') + ' does ' + t('f(x)=b') + ' have exactly <b>three</b> solutions? (Write an inequality or a set.)', K.set(tg, { v: 'b', wrong: [
+            { is: sh.fl ? '\\{b\\mid -5\\le b\\le 1,\\ b\\in\\mathbb{R}\\}' : '\\{b\\mid -1\\le b\\le 5,\\ b\\in\\mathbb{R}\\}', code: 'stretch-b', hint: 'Check ' + t('b=' + 5 * sh.sy) + ': the peak is a single point shared by two pieces, so that height gives only two solutions.' },
+            { is: sh.fl ? '\\{b\\mid -5<b<1,\\ b\\in\\mathbb{R}\\}' : '\\{b\\mid -1<b<5,\\ b\\in\\mathbb{R}\\}', code: 'stretch-b', hint: 'Check ' + t('b=' + -sh.sy) + ': the endpoint of the third piece counts — that height gives three solutions.' },
+            { is: sh.fl ? '\\{b\\mid -5<b<3,\\ b\\in\\mathbb{R}\\}' : '\\{b\\mid -3<b<5,\\ b\\in\\mathbb{R}\\}', code: 'stretch-b', hint: 'The third piece only reaches ' + t(-sh.sy) + '. Below that, only two pieces are crossed.' }] }), sh.fl ? '-5<b\\le 1' : '-1\\le b<5',
+            'Pieces 1 and 2 cover heights from ' + t(-3 * sh.sy) + ' to ' + t(5 * sh.sy) + '; piece 3 only covers ' + t(-sh.sy) + ' to ' + t(5 * sh.sy) + '. Each piece is crossed once for heights strictly between the extremes it covers, and at ' + t('b=' + -sh.sy) + ' the endpoint of piece 3 counts too (three solutions). At ' + t('b=' + 5 * sh.sy) + ' pieces 2 and 3 share the peak — only two.<br>' + t(sh.fl ? '-5<b\\le 1' : '-1\\le b<5'),
+            ['For each piece, write the range of heights it covers. Then check the edges one at a time.'], 'EP stretch three solutions', { keys: 'set', vars: ['b'], placeholder: 'e.g. -2 < b <= 3' });
+          p.good = [tg, sh.fl ? '(-5, 1]' : '[-1, 5)'];
+          return p;
+        } },
+        { id: 'e18f', level: 'PRG', make: function (r, sh) {
+          var s = sh.sy, lo = -3 * s, mid = -s, hi = 5 * s;
+          var iv = s > 0 ? t(lo + '<b<' + mid) : t(mid + '<b<' + lo);
+          return mc(r, '(f) Which describes every value of ' + t('b') + ' for which ' + t('f(x)=b') + ' has exactly <b>two</b> solutions?', [
+            { html: iv + ' or ' + t('b=' + hi), right: true },
+            { html: iv + ' only', why: 'Check ' + t('b=' + hi) + ': the left end and the peak are both at that height — two solutions.' },
+            { html: s > 0 ? t(lo + '\\le b\\le ' + mid) : t(mid + '\\le b\\le ' + lo), why: 'Check the edges: ' + t('b=' + lo) + ' gives one solution and ' + t('b=' + mid) + ' gives three.' },
+            { html: t('b=' + hi) + ' only', why: 'Heights between ' + t(lo) + ' and ' + t(mid) + ' are reached by only two pieces — the third piece stops at ' + t(mid) + '.' }],
+            iv + ': only pieces 1 and 2 reach these heights, one crossing each. <b>And</b> ' + t('b=' + hi) + ': the left end and the peak. Edges: ' + t('b=' + lo) + ' gives one solution and ' + t('b=' + mid) + ' gives three, so both are excluded.', ['Check the top and the bottom of every piece.'], 'EP stretch two solutions');
+        } },
+        { id: 'e18g', level: 'PRG', make: function (r, sh) {
+          var s = sh.sy;
+          return mc(r, '(g) If the last piece ended at height ' + t(-3 * s) + ' instead of ' + t(-s) + ', when would ' + t('f(x)=b') + ' have exactly two solutions?', [
+            { html: 'Only at ' + t('b=' + 5 * s) + ' and ' + t('b=' + -3 * s) + ': all three pieces would reach every height in between.', right: true },
+            { html: 'The same values as in (f).', why: 'The interval in (f) came from the third piece stopping short. If it reaches ' + t(-3 * s) + ', that gap closes.' },
+            { html: 'Never.', why: 'Check the top: the left end and the peak share a height.' },
+            { html: 'For every ' + t('b') + ' between ' + t(-3 * s) + ' and ' + t(5 * s) + '.', why: 'In between, all three pieces are crossed — three solutions.' }],
+            'Pieces 1 and 2 reach ' + t(-3 * s) + ' but piece 3 stopped at ' + t(-s) + ': that gap is exactly the interval in (f). If piece 3 reached ' + t(-3 * s) + ' too, every height strictly between the extremes would give three solutions, and exactly two would occur only at ' + t('b=' + 5 * s) + ' and ' + t('b=' + -3 * s) + '.', ['Which pieces reach which heights?'], 'EP stretch what-if');
+        } }] },
+      { num: '19', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: 'e19', level: 'EMG', make: function (r) {
+          var a = r.pick([4, 4, 2, 3, 6]), b = r.pick([31, 31, 18, 22, 40]);
+          return mc(r, 'A courier’s cost function satisfies ' + t('C(' + a + ')=' + b) + ', where ' + t('C(m)') + ' is the cost, in dollars, of shipping a parcel of mass ' + t('m') + ' kilograms. Which statement must be true?', [
+            { html: 'A parcel costing ' + t('\\$' + a) + ' has a mass of ' + t(b) + ' kg.', why: 'That swaps input and output.' },
+            { html: 'Shipping a ' + t(a) + ' kg parcel costs ' + t('\\$' + b) + '.', right: true },
+            { html: t('C') + ' multiplied by ' + t(a) + ' equals ' + t(b) + '.', why: t('C') + ' names the function; the brackets hold the input.' },
+            { html: t('C(' + b + ')=' + a) + '.', why: 'That is a different claim, which need not be true.' }],
+            t('C(' + a + ')=' + b) + ': input ' + t(a) + ' kg, output ' + t('\\$' + b) + '. Only B reads ' + t(a) + ' as the mass and ' + t(b) + ' as the cost.', ['Input in the brackets; output after the equals sign.'], 'EP MC C(a)=b', true);
+        } }] },
+      { num: '20', shared: flatShared, stem: function (sh) { return '<i>(Multiple Choice)</i> For the function ' + t('f') + ' graphed below (the graph from Extra 6),' + sh.fig; }, parts: [
+        { id: 'e20', level: 'PRG', make: function (r, sh) {
+          var b = 2 * sh.sy;
+          return mc(r, 'the equation ' + t('f(x)=' + b) + ' has', [
+            { html: 'one solution', why: 'Look again at the flat piece.' }, { html: 'two solutions', why: 'The flat piece is at that height for a whole interval of ' + t('x') + '-values.' },
+            { html: 'three solutions', why: 'The ends of the flat piece aren’t the only points there — every point on it counts.' }, { html: 'infinitely many solutions', right: true }],
+            'The line ' + t('y=' + b) + ' crosses one piece, then lies <b>along</b> the flat piece for every ' + t('x') + ' in an interval — infinitely many points.', ['Draw the horizontal line at height ' + t(b) + '.'], 'EP MC flat piece', true);
+        } }] },
+      { num: '21', stem: '<i>(Numerical Response)</i>', parts: [
+        { id: 'e21', level: 'ADV', make: function (r) {
+          var p = r.pick([9, 9, 5, 6, 7, 8, 10]), q = r.pick([-3, -3, -1, -2, -4, -5].filter(function (x) { return p + x > 0; })), b = p + q, c = -p * q;
+          return B.nr('A function is defined by ' + t('f(x)=x^{2}-' + (b === 1 ? '' : b) + 'x') + '. The equation ' + t('f(x)=' + c) + ' has two solutions, ' + t('p') + ' and ' + t('q') + ', with ' + t('p>q') + '. The value of ' + t('p-q') + ' is ________.', p - q, function (u) {
+            if (same(u, b)) return { code: 'diag', hint: 'That is ' + t('p+q') + '. The question asks for ' + t('p-q') + '.' };
+            if (same(u, p + Math.abs(q) - 2 * Math.abs(q)) || same(u, q - p)) return { code: 'sign', hint: t('q') + ' is negative: ' + t('p-q=' + p + '-(' + q + ')') + '.' };
+            return null;
+          }, t('x^{2}-' + (b === 1 ? '' : b) + 'x=' + c) + '<br>' + t('x^{2}-' + (b === 1 ? '' : b) + 'x-' + c + '=0') + '<br>' + t('(x-' + p + ')(x+' + (-q) + ')=0') + '<br>' + t('x=' + p) + ' or ' + t('x=' + q) + ', so ' + t('p=' + p) + ', ' + t('q=' + q) + '<br>' + t('p-q=' + p + '-(' + q + ')=' + (p - q)),
+            ['Move ' + t(c) + ' to the left side and factor.'], 'EP NR p-q');
+        } }] }
+    ]
   });
 })(window);

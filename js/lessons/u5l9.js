@@ -397,7 +397,7 @@
           '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:4px">' + G1.svg + G2.svg + '</div>' };
       }, parts: [
       { id: '4', level: 'BEG', make: function (r, s) {
-        var rows = [{ id: 'old', html: 'Is older' }, { id: 'val', html: 'Has the higher resale value' }, { id: 'eff', html: 'Is more fuel efficient' }, { id: 'tow', html: 'Can tow more' }];
+        var rows = [{ id: 'old', html: 'Older' }, { id: 'val', html: 'Worth more' }, { id: 'eff', html: 'More efficient' }, { id: 'tow', html: 'Tows more' }];
         var cols = [{ id: s.A, html: s.A }, { id: s.B, html: s.B }];
         var expl = { old: 'Age is on the horizontal axis of the first graph: the point farther <b>right</b> is older.', val: 'Resale value is on the vertical axis of the first graph: the <b>higher</b> point is worth more.', eff: 'Fuel efficiency is on the horizontal axis of the second graph: farther <b>right</b> means more km per litre — more efficient.', tow: 'Towing capacity is on the vertical axis of the second graph: the <b>higher</b> point tows more.' };
         var p = K.P.grid('Describe the comparison: for each statement, choose the vehicle it describes.', rows, cols, s.want, { why: function (row) { return { code: 'swap-axes', hint: expl[row] }; } },
