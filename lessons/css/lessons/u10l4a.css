@@ -1,0 +1,130 @@
+/* Math 10C · Unit 10 · Lesson 4A — Converting Units Within the Metric (SI) System. Styles used only on this page (prefix u10l4a-).
+ * Colours: moving right / multiplying blue, moving left / dividing purple, the decimal point red, cancelled units red,
+ * the unit that is left green. Extension parts use the slate "Extension" pill of Unit 6 Lesson 6. */
+:root { --u10l4a-ext: #5d6475; --u10l4a-r: #1f5bd6; --u10l4a-l: #7b4fc4; --u10l4a-pt: #c93a33; --u10l4a-keep: #12805a; }
+
+/* captions may run to four lines; reserve the room so nothing below an explainer moves while it plays */
+.ex-cap { min-height: 128px; }
+.ex-cap .katex { font-size: 1.04em; }
+.chip .katex { font-size: 1em; }
+.pl .katex { font-size: 1.08em; }
+.ans .katex { font-size: 1.04em; }
+.lesson .katex { white-space: nowrap; }
+h2 .katex, h3 .katex { font-size: .95em; }
+.pill-col { display: flex; flex-direction: column; gap: 6px; }
+
+/* ---------------- Extension ---------------- */
+.u10l4a-ext { display: inline-block; background: var(--u10l4a-ext); color: #fff; font: 800 13px var(--round); letter-spacing: .06em; text-transform: uppercase; padding: 2px 9px; border-radius: 6px; vertical-align: 2px; margin-right: 4px; }
+.u10l4a-ext.sm { font-size: 11px; padding: 1px 6px; vertical-align: 1px; }
+.u10l4a-extbox { display: flex; align-items: flex-start; gap: 12px; margin-top: 12px; padding: 10px 16px; border-radius: 12px; background: #f1f2f5; border: 1.5px solid #c6cad3; font-size: 16px; color: #3a4254; }
+.u10l4a-extbox .u10l4a-ext { flex: none; margin-top: 2px; }
+.u10l4a-extcard { border-left: 6px solid #a5a9b3; }
+.u10l4a-ext-tag { margin-left: auto; font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--u10l4a-ext); background: #f1f2f5; border: 1.5px solid #c6cad3; border-radius: 8px; padding: 3px 10px; white-space: nowrap; align-self: center; }
+.hero .outcome + .outcome { margin-top: 4px; }
+
+/* ---------------- warm-up ---------------- */
+.u10l4a-road { margin: 4px 0 6px; }
+.u10l4a-road svg { display: block; width: 100%; height: auto; }
+.u10l4a-roadbtns { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0 2px; align-items: center; }
+.u10l4a-roadout { min-height: 64px; font-size: 21px; display: flex; align-items: center; gap: 14px; }
+.u10l4a-wtop { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: start; }
+.u10l4a-wqs .q-line { margin-top: 6px; }
+.u10l4a-wa { margin: 0 0 8px 50px; }
+.u10l4a-wa .pill.small { margin-left: 0; }
+.u10l4a-poll .poll-opts { grid-template-columns: 1fr; margin-left: 50px; }
+.u10l4a-early { margin-top: 10px; }
+.u10l4a-social { font-style: italic; color: var(--ink2); font-size: 19px; text-align: center; margin: 14px 0 0; }
+
+/* ---------------- prefix chart ---------------- */
+.u10l4a-chartwrap { overflow: hidden; margin: 6px 0 14px; }
+.u10l4a-chart { border-collapse: collapse; width: 100%; font-size: 18px; text-align: center; }
+.u10l4a-chart th, .u10l4a-chart td { border: 1.5px solid #cfc9bb; padding: 6px 4px; }
+.u10l4a-chart th { background: #f3f1ea; text-align: left; padding-left: 10px; font-weight: 800; width: 92px; }
+.u10l4a-chart td { font-weight: 600; }
+.u10l4a-chart td.b { background: var(--brand-soft); color: var(--brand); font-weight: 800; }
+.u10l4a-chart td.x { background: #f1f2f5; color: #6b7183; }
+.u10l4a-chart tr.u10l4a-chartext th, .u10l4a-chart tr.u10l4a-chartext td { border: none; background: none; padding-top: 2px; }
+
+/* ---------------- number line figure ---------------- */
+.u10l4a-nlfig { display: flex; justify-content: center; margin: 4px 0 10px; }
+.u10l4a-nlab { font: 800 21px var(--round); color: var(--ink); }
+.u10l4a-nlab.x { color: #8a90a0; }
+.u10l4a-nlab.x .katex { color: #8a90a0; }
+.u10l4a-unitlab { font: 800 17px var(--round); color: var(--brand); background: var(--brand-soft); border-radius: 7px; padding: 0 7px; }
+.u10l4a-disp { text-align: center; margin: 6px 0 14px; font-size: 21px; }
+
+/* ---------------- examples ---------------- */
+.u10l4a-given { font-size: 20px; line-height: 2.1; margin: 4px 0 2px; }
+.u10l4a-prow { display: flex; gap: 26px; align-items: center; line-height: 2.1; }
+.u10l4a-htab { border-collapse: collapse; font-size: 20px; }
+.u10l4a-htab th, .u10l4a-htab td { padding: 2px 16px; text-align: center; }
+.u10l4a-htab th { border-bottom: 2px solid var(--ink); }
+.u10l4a-htab th + th, .u10l4a-htab td + td { border-left: 2px solid var(--ink); }
+.u10l4a-agree { font-size: 20px; margin: 0 0 14px; }
+
+/* ---------------- explainer pieces ---------------- */
+.u10l4a-panel { background: #fff; border: 1px solid var(--line2); border-radius: 14px; padding: 10px 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
+.u10l4a-ph { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.u10l4a-ph:empty { display: none; }
+.u10l4a-line { font-size: 21px; line-height: 1.4; }
+.u10l4a-line.big { font-size: 25px; }
+.u10l4a-pill { font: 800 17px var(--round); border-radius: 9px; padding: 2px 9px; white-space: nowrap; background: #fff; border: 2.5px solid currentColor; }
+.u10l4a-pill.st { color: var(--brand); }
+.u10l4a-pill.en { color: var(--u10l4a-pt); }
+.u10l4a-count { font: 800 20px var(--round); color: var(--ink); background: #fff; border: 2px solid #d9d4c7; border-radius: 10px; padding: 3px 12px; white-space: nowrap; }
+.u10l4a-count.r { color: var(--u10l4a-r); border-color: #b9cdf3; }
+.u10l4a-count.l { color: var(--u10l4a-l); border-color: #d6c7f0; }
+
+/* the decimal tape: fixed-width digit slots and a hopping point */
+.u10l4a-tape { height: 92px; }
+.u10l4a-dg { position: absolute; top: 0; width: 52px; height: 74px; display: grid; place-items: center; font: 800 52px/1 var(--round); color: var(--ink); border-bottom: 3px solid #e2ddd1; }
+.u10l4a-dg.new { color: var(--u10l4a-r); }
+.u10l4a-dg.newl { color: var(--u10l4a-l); }
+.u10l4a-dot { position: absolute; width: 15px; height: 15px; margin-left: -7.5px; border-radius: 50%; background: var(--u10l4a-pt); box-shadow: 0 0 0 3px #fff; z-index: 3; }
+.u10l4a-tunit { position: absolute; font: 700 34px var(--round); color: var(--muted); white-space: nowrap; }
+.u10l4a-hide { opacity: 0; }
+
+/* fractions for unit analysis */
+.u10l4a-frow { display: flex; align-items: center; gap: 12px; }
+.u10l4a-fr { display: inline-flex; flex-direction: column; align-items: center; font-size: 30px; line-height: 1.15; }
+.u10l4a-fr > div { padding: 2px 8px; white-space: nowrap; }
+.u10l4a-fr > .num { border-bottom: 3px solid var(--ink); }
+.u10l4a-op { font-size: 30px; color: var(--ink2); font-weight: 700; }
+.u10l4a-u { position: relative; display: inline-block; font-weight: 700; padding: 0 2px; border-radius: 6px; transition: background .2s; }
+.u10l4a-u.hl { background: #fde3e0; }
+.u10l4a-u.hl2 { background: #e2ebfb; }
+.u10l4a-u.keep { color: var(--u10l4a-keep); background: #def2e8; }
+.u10l4a-u.gone { opacity: .45; }
+.u10l4a-strike { position: absolute; left: -3px; right: -3px; top: 50%; height: 4px; margin-top: -2px; background: var(--u10l4a-pt); border-radius: 2px; transform-origin: 0 50%; transform: rotate(-18deg) scaleX(0); }
+.u10l4a-strike.b { background: var(--u10l4a-r); }
+.u10l4a-res { font-size: 30px; }
+
+/* proportion panels */
+.u10l4a-eqrow { position: relative; height: 112px; }
+.u10l4a-pfr { position: absolute; display: flex; flex-direction: column; align-items: center; width: 150px; font-size: 25px; line-height: 1.2; }
+.u10l4a-pfr > div { padding: 3px 4px; white-space: nowrap; border-radius: 6px; }
+.u10l4a-pfr > .num { border-bottom: 3px solid var(--ink); align-self: stretch; text-align: center; }
+.u10l4a-pfr > .den { align-self: stretch; text-align: center; }
+.u10l4a-pfr .a { background: #fff1d6; }
+.u10l4a-pfr .b2 { background: #e2ebfb; }
+.u10l4a-peq { position: absolute; font-size: 28px; font-weight: 700; }
+.u10l4a-ptab { border-collapse: collapse; font-size: 24px; }
+.u10l4a-ptab th, .u10l4a-ptab td { padding: 3px 22px; text-align: center; border-radius: 6px; }
+.u10l4a-ptab th { border-bottom: 2.5px solid var(--ink); font-weight: 800; }
+.u10l4a-ptab th + th, .u10l4a-ptab td + td { border-left: 2.5px solid var(--ink); }
+.u10l4a-ptab td.a { background: #fff1d6; }
+.u10l4a-ptab td.b2 { background: #e2ebfb; }
+
+/* double number line, tape diagram, map */
+.u10l4a-blk { position: absolute; height: 46px; border: 2.5px solid; border-radius: 6px; display: grid; place-items: center; font: 800 17px var(--round); box-sizing: border-box; }
+.u10l4a-blk.y { background: #fff4dd; border-color: #e0a640; color: #8a5a06; }
+.u10l4a-blk.j { background: #fde3e0; border-color: #e28a80; color: #9b2c25; }
+.u10l4a-blk.add { background: #fff8e8; border-style: dashed; }
+.u10l4a-tlab { position: absolute; font: 800 19px var(--round); white-space: nowrap; }
+.u10l4a-maplab { font: 800 16px var(--round); color: #2c3a2a; background: rgba(255, 255, 255, .85); border-radius: 6px; padding: 0 5px; white-space: nowrap; }
+.u10l4a-scalebox { font: 800 19px var(--round); background: #fff; border: 2px solid #9aa0ab; border-radius: 8px; padding: 2px 10px; white-space: nowrap; }
+
+/* zoom bars */
+.u10l4a-zlab { font: 800 19px var(--round); white-space: nowrap; }
+.u10l4a-zsub { font: 700 15px var(--round); color: var(--muted); white-space: nowrap; }
+.u10l4a-zeq { font-size: 22px; white-space: nowrap; }

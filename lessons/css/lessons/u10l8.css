@@ -63,7 +63,9 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u10l8-panel { background: #fff; border: 1px solid var(--line2); border-radius: 14px; padding: 10px 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 7px; overflow: hidden; }
 .u10l8-ph { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
 .u10l8-ph:empty { display: none; }
-.u10l8-line { font-size: 20px; line-height: 1.35; }
+.u10l8-line { font-size: 22px; line-height: 1.35; }
+.u10l8-lg .u10l8-line { font-size: 25px; }
+.u10l8-mid { text-align: center; }
 .u10l8-ind { padding-left: 10px; }
 .u10l8-big { font-size: 23px; font-weight: 700; }
 .u10l8-boxed { align-self: flex-start; border: 2.5px solid var(--brand2); border-radius: 10px; padding: 4px 12px; background: var(--brand-soft); font-size: 23px; }
@@ -76,5 +78,5 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u10l8-scen-t { font-size: 20px; line-height: 1.4; background: #fffdf4; border: 1px solid #e6dcc0; border-radius: 10px; padding: 10px 12px; }
 .u10l8-scen-t b { color: var(--u10l8-rad); }
 .u10l8-mbox { box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fff; border: 2.5px solid var(--ink2); border-radius: 14px; }
-.u10l8-mname { font-size: 17px; color: var(--muted); line-height: 1.1; }
+.u10l8-mname { font-size: 21px; color: var(--muted); line-height: 1.1; }
 .u10l8-mval { font-size: 25px; font-weight: 700; min-height: 30px; line-height: 1.2; }

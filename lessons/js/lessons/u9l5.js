@@ -174,7 +174,7 @@ function mountWarm() {
   angleArc(svg, [bx, gy], [bx, gy - 10], [bx + Math.sin(lean) * 10, gy - Math.cos(lean) * 10], ra, { color: INK, width: 2.6 });
   svgEl('line', { x1: bx - 2, y1: gy - ra, x2: bx - 60, y2: gy - ra + 14, stroke: INK, 'stroke-width': 1.4 }, svg);
   const t4 = svgEl('text', { x: bx - 64, y: gy - ra + 22, class: 'u9l5-wt', 'text-anchor': 'end', fill: INK }, svg); t4.textContent = '4°';
-  const tp = svgEl('text', { x: bx - 12, y: Tp[1] - 32, class: 'u9l5-wt-s', 'text-anchor': 'end' }, svg); tp.textContent = 'plumb line (straight up)';
+  const tp = svgEl('text', { x: bx + 10, y: Tp[1] - 40, class: 'u9l5-wt-s', 'text-anchor': 'start' }, svg); tp.textContent = 'plumb line (straight up)';
 
   // the right triangle (toggle)
   const tri = svgEl('g', { class: 'u9l5-wfade' }, svg); tri.style.opacity = 0;

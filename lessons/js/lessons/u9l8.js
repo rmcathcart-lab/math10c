@@ -290,8 +290,8 @@ const whichTool = {
     const goTo = async (c, a, b) => { await Promise.all([F.go(c, a, b), tokTo(c, b)]); await F.visit(c, b); };
     // ---- the triangle (left) and the work panel ----
     const pts = Object.values(q.P), xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
-    const bw = Math.max(...xs) - Math.min(...xs), bh = Math.max(...ys) - Math.min(...ys), k = Math.min(250 / bw, 170 / bh);
-    const G = new Geo(stage, { x: 0, y: 0, w: 340, h: 250, k, ox: 170 - (Math.min(...xs) + bw / 2) * k, oy: 125 + (bh / 2) * k + 8 });
+    const bw = Math.max(...xs) - Math.min(...xs), bh = Math.max(...ys) - Math.min(...ys), k = Math.min(220 / bw, 165 / bh);
+    const G = new Geo(stage, { x: 0, y: 0, w: 340, h: 250, k, ox: 188 - (Math.min(...xs) + bw / 2) * k, oy: 125 + (bh / 2) * k + 8 });
     const p = panel(stage, 10, 262, 326, 200);
     const S = {}, P = q.P;
     const tri = async (c) => {
@@ -356,7 +356,7 @@ const names = {
   intro: (v) => `${v === 'ex1' ? 'Example 1: ' : ''}${T(NM[v].V1 + NM[v].V2 + NM[v].R)}, right angle at ${T(NM[v].R)}. Press <b>Next</b>.`,
   make(stage, v, ex) {
     const q = NM[v], { R, V1, V2, base, rise, hyp } = q;
-    const k = Math.min(300 / base, 300 / rise), G = new Geo(stage, { x: 0, y: 0, w: 420, h: 410, k, ox: 210 - base * k / 2 - 10, oy: 205 + rise * k / 2 });
+    const k = Math.min(260 / base, 300 / rise), G = new Geo(stage, { x: 0, y: 0, w: 420, h: 410, k, ox: 228 - base * k / 2, oy: 205 + rise * k / 2 });
     const pR = [0, 0], p1 = [base, 0], p2 = [0, rise], ins = [base / 3, rise / 3];
     const s1 = R + V1, s2 = R + V2, sh = V1 + V2; // base leg, vertical leg, hypotenuse names
     const p = panel(stage, 432, 16, ex.W - 446, 378);
@@ -491,8 +491,8 @@ const solveSide = {
   choices: Object.keys(SS).map((k) => ({ v: k, label: SS[k].label })),
   intro: (v) => `Example 2${v === 'a' ? '(a)' : '(b)'}: the ${v === 'a' ? 'opposite side' : 'hypotenuse'} from ${T('42^\\circ')} and 11 cm adjacent. Press <b>Next</b>.`,
   make(stage, v, ex) {
-    const opp = 11 * t42, hyp = 11 / Math.cos(42 * RAD), k = 25;
-    const G = new Geo(stage, { x: 0, y: 0, w: 380, h: 420, k, ox: 50, oy: 330 });
+    const opp = 11 * t42, hyp = 11 / Math.cos(42 * RAD), k = 22;
+    const G = new Geo(stage, { x: 0, y: 0, w: 380, h: 420, k, ox: 100, oy: 330 });
     const R = [0, 0], X = [11, 0], Y = [0, opp];
     const sRX = G.seg(R, X), sRY = G.seg(R, Y), sXY = G.seg(X, Y);
     G.rm(R, X, Y, 14);
@@ -551,8 +551,8 @@ const solveAngle = {
   intro: (v) => (v === 'ex3' ? `Example 3: legs 5.3 cm and 7.8 cm, angle ${T('\\theta^\\circ')} wanted.` : `Example 1(c): ${T('\\sin B=\\frac45')}, angle ${T('B')} wanted.`) + ' Press <b>Next</b>.',
   make(stage, v, ex) {
     const e3 = v === 'ex3';
-    const base = e3 ? 7.8 : 9, rise = e3 ? 5.3 : 12, k = e3 ? 40 : 24;
-    const G = new Geo(stage, { x: 0, y: 0, w: 390, h: 430, k, ox: 40, oy: e3 ? 300 : 360 });
+    const base = e3 ? 7.8 : 9, rise = e3 ? 5.3 : 12, k = e3 ? 34 : 24;
+    const G = new Geo(stage, { x: 0, y: 0, w: 390, h: 430, k, ox: e3 ? 92 : 70, oy: e3 ? 300 : 360 });
     const R = [0, 0], X = [base, 0], Y = [0, rise];
     const sRX = G.seg(R, X), sRY = G.seg(R, Y), sXY = G.seg(X, Y); G.rm(R, X, Y, 14);
     if (!e3) [['A', R, 'sw'], ['B', X, 'se'], ['C', Y, 'nw']].forEach(([n, pt, pos]) => G.lab(pt, T(n), { pos, cls: 'u9l8-v' }));
@@ -691,7 +691,8 @@ const split = {
   make(stage, v, ex) {
     const q = SP[v], ad = q.h / Math.tan(q.A * RAD), dc = q.h / Math.tan(q.C * RAD), ac = ad + dc;
     const k = Math.min(680 / ac, 270 / q.h), ox = (ex.W - ac * k) / 2, oy = 330;
-    const GL = new Geo(stage, { x: 0, y: 0, w: ex.W, h: 450, k, ox, oy }), GR = new Geo(stage, { x: 0, y: 0, w: ex.W, h: 450, k, ox, oy });
+    const SL = 70, xm = ox + ad * k, gr0 = xm - 40;
+    const GL = new Geo(stage, { x: SL, y: 0, w: xm + 40 - SL, h: 450, k, ox: ox - SL, oy }), GR = new Geo(stage, { x: gr0, y: 0, w: ex.W - SL - gr0, h: 450, k, ox: ox - gr0, oy });
     const A = [0, 0], D = [ad, 0], C = [ac, 0], Bv = [ad, q.h];
     const L = { AB: GL.seg(A, Bv), AD: GL.seg(A, D), BD: GL.seg(Bv, D) }, R = { BC: GR.seg(Bv, C), DC: GR.seg(D, C), BD: GR.seg(Bv, D) };
     hide(L.BD); hide(R.BD);

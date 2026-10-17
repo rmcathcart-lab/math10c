@@ -331,13 +331,13 @@ const overflow = {
       { cap: `Lift the ball out. The water that is left fills only part of the cylinder: <b>${left} mL</b>.`,
         run: async (c) => {
           lCyl.style.opacity = 0;
-          await tween(c, 1400, (t) => { setBall(by1 + (by0 - by1) * t); setWater(yt + (2 * r / 3) * Math.min(1, t * 1.6)); });
+          await tween(c, 1400, (t) => { setBall(by1 + (by0 - by1) * t); setWater(yt + (4 * r / 3) * Math.min(1, t * 1.6)); });
           await pop(c, lLeft); await show(c, p3);
         } },
       { cap: `${T(`${out}`)} is ${T('\\tfrac23')} of ${T(`${tot}`)}, and the ${T(`${left}`)} left behind is the other ${T('\\tfrac13')}.`,
         run: async (c) => { await pop(c, p4); await show(c, bar); } },
       { cap: `<b>A sphere’s volume is ${T('\\tfrac23')} of its snug cylinder</b> (same radius, height = diameter), whatever the size.`,
-        run: async (c) => { const s = stamp(Pn, 'sphere = ⅔ of the cylinder ✓'); s.style.alignSelf = 'center'; s.style.marginTop = '6px'; await stampIn(c, s); } }
+        run: async (c) => { const s = stamp(Pn, '⅔ of the cylinder ✓'); s.style.alignSelf = 'center'; s.style.marginTop = '6px'; await stampIn(c, s); } }
     ];
   }
 };
@@ -362,7 +362,7 @@ const derive = {
     const lR = hide(lab(stage, cx + r / 2, yb - r - 4, num ? T('3.35') : T('r'), 'n', 'u10l8-rl'));
     const hA = G(g); arrow2(hA, [cx + r + 28, yt], [cx + r + 28, yb], DIA, 2.6); hide(hA);
     const lH = hide(lab(stage, cx + r + 34, yb - r, num ? T('6.7') : T('2r'), 'e', 'u10l8-dl'));
-    const Pn = panel(stage, 400, 14, ex.W - 414, Hh - 28, num ? 'One tennis ball, cm' : 'Volume');
+    const Pn = panel(stage, 400, 14, ex.W - 414, Hh - 28, num ? 'One tennis ball, cm' : 'Volume', 'u10l8-lg');
     const L = num ? [
       'V_{\\text{cylinder}}=\\pi r^2h',
       'h=2r=2(3.35)=6.7',
@@ -453,7 +453,7 @@ const peel = {
       { cap: `Lay the peel inside the circles. <b>One</b> circle full…`,
         run: async (c) => { await flyPieces(c, sets[0], 900, 70, 120); } },
       { cap: `…<b>two</b>, <b>three</b>, <b>four</b>. The peel fills almost exactly <b>four</b> circles of radius ${T('r')}.`,
-        run: async (c) => { for (let i = 1; i < 4; i++) await flyPieces(c, sets[i], 750, 60, 70); } },
+        run: async (c) => { cr.style.opacity = 0; lcr.style.opacity = 0; for (let i = 1; i < 4; i++) await flyPieces(c, sets[i], 750, 60, 70); } },
       { cap: `Each circle is ${T('\\pi r^2')}, so the surface of a sphere is ${T('SA_{\\text{sphere}}=4\\pi r^2')}: <b>four great circles</b>.`,
         run: async (c) => { for (const p of pis) await pop(c, p, 260); await show(c, fl); } }
     ];
@@ -526,7 +526,7 @@ const slice = {
   make(stage, k, ex) {
     const W = ex.W, Hh = ex.def.height, svg = svgOn(stage, 0, 0, W, Hh), g = G(svg);
     if (k === 'vol') {
-      const cx = 200, cy = 220, r = 120, ry = r * EQ;
+      const cx = 165, cy = 220, r = 110, ry = r * EQ;
       const bot = G(g), top = G(g);
       svgEl('path', { d: `M${cx - r} ${cy} A${r} ${r} 0 0 0 ${cx + r} ${cy} A${r} ${ry} 0 0 0 ${cx - r} ${cy} Z`, fill: BALL }, bot);
       P(`M${cx - r} ${cy} A${r} ${r} 0 0 0 ${cx + r} ${cy}`, {}, bot);
@@ -537,7 +537,7 @@ const slice = {
       const knife = seg(g, [cx - r - 40, cy], [cx + r + 40, cy], { stroke: RAD, 'stroke-width': 3, 'stroke-dasharray': '10 6', class: 'bk-stroke' }); hide(knife);
       const lr = lab(stage, cx + r / 2, cy - 4, T('r'), 'n', 'u10l8-rl'), rl = seg(g, [cx, cy], [cx + r, cy], { stroke: RAD, 'stroke-width': 3 });
       const lH1 = hide(lab(stage, cx + r + 14, cy - 80, 'hemisphere', 'e', 'u10l8-tl')), lH2 = hide(lab(stage, cx + r + 14, cy + 90, 'hemisphere', 'e', 'u10l8-tl'));
-      const Pn = panel(stage, 420, 14, W - 434, Hh - 28, 'Volume');
+      const Pn = panel(stage, 440, 14, W - 454, Hh - 28, 'Volume', 'u10l8-lg');
       const ls = ['V_{\\text{sphere}}=\\tfrac43\\pi r^3', 'V_{\\text{hemi}}=\\tfrac12\\left(\\tfrac43\\pi r^3\\right)', 'V_{\\text{hemi}}=\\dfrac23\\pi r^3'].map((s, i) => hide(line(Pn, T(s), i === 2 ? 'u10l8-boxed' : '')));
       const sepr = (t) => { top.setAttribute('transform', `translate(0 ${-36 * t})`); bot.setAttribute('transform', `translate(0 ${44 * t})`); };
       return [
@@ -625,7 +625,7 @@ const string = {
         { cap: `Keep all the digits of ${T('r')} (one line on the calculator): ${T('V\\approx5792.2')} cm³.`,
           run: async (c) => { await show(c, cc); } },
         { cap: `The early-rounded answer is off by about 63.5 cm³. <b>Round only at the very end.</b>`,
-          run: async (c) => { await show(c, d); const s = stamp(Pn, 'round at the end ✓'); s.style.alignSelf = 'center'; await stampIn(c, s); } }
+          run: async (c) => { await show(c, d); const s = stamp(Pn, 'round at the end ✓'); s.style.alignSelf = 'center'; s.style.marginTop = '14px'; await stampIn(c, s); } }
       ];
     }
     const ls = ['C=2\\pi r=70', 'r=\\dfrac{70}{2\\pi}=\\dfrac{35}{\\pi}\\approx11.1408\\text{ cm}', 'V=\\tfrac43\\pi r^3=\\tfrac43\\pi\\left(\\dfrac{35}{\\pi}\\right)^3\\approx\\boldsymbol{5792.2}\\text{ cm}^3', 'V=\\dfrac{C^3}{6\\pi^2}=\\dfrac{70^3}{6\\pi^2}=\\dfrac{343\\,000}{59.2176\\ldots}\\approx5792.2']
@@ -666,11 +666,11 @@ const domes = {
     const tA = [tile(xa - 74, PEEL_D, PEEL), tile(xa, PEEL_D, PEEL)], tAf = tile(xa + 74, FLR, FLOOR_F), tB = [tile(xb - 37, PEEL_D, PEEL), tile(xb + 37, PEEL_D, PEEL)];
     const cA = hide(lab(stage, xa - 37, ty + tr + 4, T('2\\pi r^2=72\\pi'), 's', 'u10l8-sm u10l8-or')), cB = hide(lab(stage, xb, ty + tr + 4, T('2\\pi r^2=72\\pi'), 's', 'u10l8-sm u10l8-or'));
     const fA = hide(lab(stage, xa + 74, ty + tr + 4, T('\\pi r^2=36\\pi'), 's', 'u10l8-sm u10l8-bl'));
-    const sA = hide(lab(stage, xa, Hh - 52, T('SA=3\\pi r^2=3\\pi(36)=\\boldsymbol{108\\pi}\\text{ ft}^2') + '<div class="u10l8-sm">' + T('\\approx339.3\\text{ ft}^2') + '</div>', 'c', 'u10l8-big'));
-    const sB = hide(lab(stage, xb, Hh - 52, T('SA=2\\pi r^2=2\\pi(36)=\\boldsymbol{72\\pi}\\text{ ft}^2') + '<div class="u10l8-sm">' + T('\\approx226.2\\text{ ft}^2') + '</div>', 'c', 'u10l8-big'));
+    const sA = hide(lab(stage, xa, Hh - 52, T('SA=3\\pi r^2=3\\pi(36)=\\boldsymbol{108\\pi}\\text{ ft}^2') + '<div class="u10l8-sm u10l8-mid">' + T('\\approx339.3\\text{ ft}^2') + '</div>', 'c', 'u10l8-big'));
+    const sB = hide(lab(stage, xb, Hh - 52, T('SA=2\\pi r^2=2\\pi(36)=\\boldsymbol{72\\pi}\\text{ ft}^2') + '<div class="u10l8-sm u10l8-mid">' + T('\\approx226.2\\text{ ft}^2') + '</div>', 'c', 'u10l8-big'));
     return [
       { cap: `Same dome, ${T('d=12')} ft. Halve it: ${T('r=6')} ft, so ${T('r^2=36')} ft².`,
-        run: async (c) => { lds.forEach(hide); await Promise.all([appear(c, rA), appear(c, rB)]); await Promise.all(lrs.map((l) => pop(c, l))); } },
+        run: async (c) => { await Promise.all([appear(c, rA), appear(c, rB)]); await Promise.all(lrs.map((l) => pop(c, l))); } },
       { cap: `Both sheds need the <b>curved</b> dome: 2 great circles, ${T('2\\pi r^2=2\\pi(36)=72\\pi')} ft².`,
         run: async (c) => { for (const t of [...tA, ...tB]) await pop(c, t, 260); await show(c, cA); await show(c, cB); } },
       { cap: `Only Sana builds a <b>floor</b>: one more great circle, ${T('\\pi r^2=36\\pi')} ft².`,

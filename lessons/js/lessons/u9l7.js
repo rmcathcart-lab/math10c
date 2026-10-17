@@ -203,8 +203,8 @@ function drawCliff(S, a, d) {
   const g = S.layer(); // ground, river, cliff
   S.poly([[-4, 0], [d + 0.35 * xB, 0], [d + 0.35 * xB, -2.2], [-4, -2.2]], { fill: '#cfe5bd', L: g });
   S.poly([[d + 0.35 * xB, 0], [F, 0], [F, -2.2], [d + 0.35 * xB, -2.2]], { fill: '#a9cdee', L: g });
-  S.poly([[F, -2.2], [F, hh], [F + 4, hh + 0.6], [F + 12, hh], [F + 16, hh - 2], [F + 16, -2.2]], { fill: '#b3a698', stroke: INK, sw: 2, L: g });
-  S.poly([[F, hh], [F + 4, hh + 0.6], [F + 12, hh], [F + 12, hh - 0.5], [F + 4, hh + 0.1], [F, hh - 0.5]], { fill: '#6f9a4e', L: g });
+  S.poly([[F, -2.2], [F, hh], [F + 3, hh + 0.6], [F + 7, hh], [F + 9, hh - 2], [F + 9, -2.2]], { fill: '#b3a698', stroke: INK, sw: 2, L: g });
+  S.poly([[F, hh], [F + 3, hh + 0.6], [F + 7, hh], [F + 7, hh - 0.5], [F + 3, hh + 0.1], [F, hh - 0.5]], { fill: '#6f9a4e', L: g });
   S.seg([-4, 0], [d + 0.35 * xB, 0], { width: 2.5, L: g }); S.seg([d + 0.35 * xB, 0], [F, 0], { width: 2.5, color: '#4f86b8', L: g });
   S.lab([d + 0.68 * xB, -1.1], 'river', { cls: 'u9l7-river' });
   const shade = S.poly(['A', 'B', 'T'], { fill: '#ffecb3', op: 0.85 });
@@ -213,7 +213,7 @@ function drawCliff(S, a, d) {
   S.arc('A', 'B', 'T', 58); S.angLab('A', 'B', 'T', 82, T(a + '^\\circ'), { cls: 'u9l7-alab big' });
   S.arc('B', 'F', 'T', 34); S.angLab('B', 'F', 'T', 58, T(b + '^\\circ'), { cls: 'u9l7-alab big', dx: 0 });
   S.arc('B', 'A', 'T', 26, { color: '#b5810f', width: 3 }); const l1 = S.angLab('B', 'A', 'T', 46, '<b>1</b>', { cls: 'u9l7-alab u9l7-num' });
-  S.arc('T', 'A', 'B', 46, { color: '#b5810f', width: 3 }); const l2 = S.angLab('T', 'A', 'B', 70, '<b>2</b>', { cls: 'u9l7-alab u9l7-num' });
+  S.arc('T', 'A', 'B', 56, { color: '#b5810f', width: 3 }); const l2 = S.angLab('T', 'A', 'B', 86, '<b>2</b>', { cls: 'u9l7-alab u9l7-num' });
   for (const n of ['A', 'B']) { svgEl('circle', { cx: S.P(n)[0], cy: S.P(n)[1], r: 6, fill: INK }, S.svg); S.lab(n, `<b>${n}</b>`, { pos: 's', gap: 12, cls: 'u9l7-who' }); }
   svgEl('circle', { cx: S.P('T')[0], cy: S.P('T')[1], r: 6, fill: RED }, S.svg);
   S.lab([d / 2, 0], '40 m', { pos: 's', gap: 40, cls: 'u9l7-lab u9l7-chip' });
@@ -228,9 +228,9 @@ const cliff = {
   make(stage, v, ex) {
     const a = CLIFF[v].a, d = 40, b = 2 * a, W = 620;
     const xB = d * cosD(b), F = d + xB, hh = d * sinD(b);
-    const S = new Scene(stage, { x: 4, y: 6, width: W, height: 410, xmin: -4, xmax: F + 16, ymin: -2.2, ymax: hh + 1, pad: [22, 8, 58, 8] });
+    const S = new Scene(stage, { x: 4, y: 6, width: W, height: 410, xmin: -4, xmax: F + 9, ymin: -2.2, ymax: hh + 1, pad: [22, 8, 58, 8] });
     const K = drawCliff(S, a, d), Pn = panel(stage, W + 16, 8, ex.W - W - 22, 404, 'Work');
-    const g = S.glow('B', 'T'), roleBT = S.tag('B', 'T', 'hyp', 'F', { off: 22 }), roleFT = S.tag('F', 'T', 'opp', 'B', { off: 30 }), roleBF = S.tag('B', 'F', 'adj', 'T', { off: 26 });
+    const g = S.glow('B', 'T'), roleBT = S.tag('B', 'T', 'hyp', 'F', { off: 22 }), roleFT = S.tag('F', 'T', 'opp', [F + 20, hh / 2], { off: 30 }), roleBF = S.tag('B', 'F', 'adj', 'T', { off: 26 });
     const tick = (p, q) => { const P = S.P(p), Q = S.P(q), M = [(P[0] + Q[0]) / 2, (P[1] + Q[1]) / 2], [ux, uy] = norm(Q[0] - P[0], Q[1] - P[1]); return svgEl('path', { d: `M${M[0] - uy * 9} ${M[1] + ux * 9}L${M[0] + uy * 9} ${M[1] - ux * 9}`, stroke: GOLDD, 'stroke-width': 3.5, opacity: 0 }, S.svg); };
     const t1 = tick('A', 'B'), t2 = tick('B', 'T'), bt = hide(S.sideLab('B', 'T', '40 m', 'A', { off: 24, cls: 'u9l7-lab u9l7-gold' }));
     const ang1 = 180 - b, ang2 = 180 - a - ang1;
@@ -283,12 +283,12 @@ const towers = {
     const aTarc = hide(S.arc('M', 'E', 'T2', 86)), aTl = hide(S.angLab('M', 'E', 'T2', 112, T(o.aT + '^\\circ')));
     const z = hide(S.path([[d * 1.2, H1], 'M', 'N', [-0.2 * d, 0]], { color: REF, width: 5, cls: 'u9l7-z' }));
     const zArc = hide(S.arc('N', 'O', 'M', 46, { color: REF, width: 3.5 })), zl = hide(S.angLab('N', 'O', 'M', 72, T(o.aB + '^\\circ'), { color: REF }));
-    const g0 = S.glow('O', 'N'), mk = hide(S.seg('M', 'K', { width: 4.5, color: ADJ })), mkl = hide(S.lab([d / 2, H1], `${d} m`, { pos: o.up ? 's' : 'n', gap: 8, cls: 'u9l7-lab u9l7-gold' }));
+    const g0 = S.glow('O', 'N'), mk = hide(S.seg('M', 'K', { width: 4.5, color: ADJ })), mkl = hide(S.lab([d * 0.72, H1], `${d} m`, { pos: o.up ? 's' : 'n', gap: 8, cls: 'u9l7-lab u9l7-gold' }));
     const rk = hide(S.rmark('K', 'M', 'T2')), ro = hide(S.rmark('O', 'N', 'M'));
     const tg = { OM: S.tag('O', 'M', 'opp', [-d, H1 / 2], { off: 30 }), ON: S.tag('O', 'N', 'adj', 'M', { off: 52 }), NM: S.tag('N', 'M', 'hyp', 'O', { off: 26 }), KT: S.tag('K', 'T2', 'opp', 'M', { off: 34 }), MT: S.tag('M', 'T2', 'hyp', 'K', { off: 24 }) };
     const on = S.seg('O', 'N', { width: 0.01 });
     const hd = (x, f) => `${x}=${f}`;
-    const N1 = o.n1.split(' ')[0], vH = 'H';
+    const N1 = o.n1, vH = 'H';
     const stackL = S.layer(), copy = S.seg('O', 'M', { width: 7, color: GOLD, L: stackL }); void copy; hide(stackL.g);
     return [
       { cap: `From the top of ${o.n1}, look along the dashed horizontal: <b>down</b> ${T(o.aB + '^\\circ')} to ${o.n2}’s base, ${o.up ? '<b>up</b>' : 'and <b>down</b>'} ${T(o.aT + '^\\circ')} to its top. Two sight lines make <b>two right triangles</b>.`,
@@ -334,7 +334,7 @@ const NR = {
     R: [`${T('EC=4.5\\sin 35^\\circ\\approx' + cG('2.6'))} <span class="u9l7-small">(rounded)</span>`, `${T('\\cos\\angle BEC=\\dfrac{2.6}{5.8}=0.448275\\ldots')}`, `${T('\\angle BEC=63.37^\\circ')}`],
     ga: '64^\\circ', ba: '63^\\circ' },
   ex4: { label: 'Example 4: round the quotients?', nl: [35, 38], cut: [35.5, 36.5, 37.5], band: [36.5, 37.5], good: 25 / (1 / tanD(32) - 1 / tanD(47)), bad: 25 / 0.7,
-    L: [`${T('\\tfrac{1}{\\tan 32^\\circ}-\\tfrac{1}{\\tan 47^\\circ}')}`, `${T('=1.60033\\ldots-0.93251\\ldots=0.66781\\ldots')}`, `${T('h=25\\div0.66781\\ldots=37.44')}`],
+    L: [`${T('\\tfrac{1}{\\tan 32^\\circ}-\\tfrac{1}{\\tan 47^\\circ}')}`, `${T('=1.6003345\\ldots-0.9325151\\ldots')}`, `${T('=0.6678194\\ldots')}`, `${T('h=25\\div0.6678194\\ldots=37.44')}`],
     R: [`<span class="u9l7-small">to one decimal place:</span>`, `${T('1.6-0.9=0.7')}`, `${T('h=25\\div0.7=35.71')}`],
     ga: '37\\text{ m}', ba: '36\\text{ m}' }
 };
@@ -353,7 +353,7 @@ const noround = {
     const pg = hide(N.point(o.good, { color: GRN, r: 9 })), pb = hide(N.point(o.bad, { color: RED, r: 9 }));
     const lg = hide(N.mark(o.good, T(o.good.toFixed(2)), { color: GRN, lift: 10, cls: 'u9l7-nlv' })), lb = hide(N.mark(o.bad, T(o.bad.toFixed(2)), { color: RED, lift: 10, cls: 'u9l7-nlv' }));
     return [
-      { cap: v === 'ex3' ? `Find ${T('EC')} in the first triangle and carry <b>every digit</b> into the second: ${T('\\angle BEC=63.58^\\circ')}.` : `Keep both quotients unrounded: ${T('h=25\\div0.66781\\ldots=37.44')} m.`,
+      { cap: v === 'ex3' ? `Find ${T('EC')} in the first triangle and carry <b>every digit</b> into the second: ${T('\\angle BEC=63.58^\\circ')}.` : `Keep both quotients unrounded: ${T('h=25\\div0.6678194\\ldots=37.44')} m.`,
         run: async (c) => { for (const s of o.L) await say(c, Lp, s); } },
       { cap: v === 'ex3' ? `Now round ${T('EC')} to ${T('2.6')} first. The second triangle starts from the wrong number: ${T('\\cos^{-1}(2.6\\div5.8)=63.37^\\circ')}.` : `Now round each quotient to one decimal place first: ${T('1.6-0.9=0.7')}, and ${T('25\\div0.7=35.71')}.`,
         run: async (c) => { for (const s of o.R) await say(c, Rp, s); } },
@@ -368,8 +368,8 @@ const noround = {
 /* =============================== ★ the chain: two right triangles sharing a side =============================== */
 const EC3 = 4.5 * sinD(35), PS2 = 24 * tanD(48), RS2 = PS2 * tanD(57), BEC = acosD(EC3 / 5.8), BC3 = Math.sqrt(5.8 * 5.8 - EC3 * EC3), AC3 = 4.5 * cosD(35);
 const CH = {
-  ex2: { label: 'Example 2 check', L: 'R', F: 'S', R: 'Q', Tp: 'P', xl: -RS2, xr: 24, ht: PS2, unit: 'mm' },
-  ex3: { label: 'Example 3 check', L: 'B', F: 'C', R: 'A', Tp: 'E', xl: -BC3, xr: AC3, ht: EC3, unit: 'm' }
+  ex2: { label: 'Example 2 check', L: 'R', F: 'S', R: 'Q', Tp: 'P', xl: -RS2, xr: 24, ht: PS2, unit: 'mm', n1: 'PSQ', n2: 'PSR' },
+  ex3: { label: 'Example 3 check', L: 'B', F: 'C', R: 'A', Tp: 'E', xl: -BC3, xr: AC3, ht: EC3, unit: 'm', n1: 'EAC', n2: 'EBC' }
 };
 const chain = {
   title: 'The chain: solve one triangle, hand the shared side to the other',
@@ -378,7 +378,7 @@ const chain = {
   intro: (v) => (v === 'ex2' ? 'Example 2: find ' + T('QR') + '. Press <b>Next</b>.' : 'Example 3: find ' + T('\\angle BEC') + '. Press <b>Next</b>.'),
   make(stage, v, ex) {
     const o = CH[v], sep = 66, W = ex.W - 12, is2 = v === 'ex2';
-    const S = new Scene(stage, { x: 6, y: 0, width: W, height: 300, xmin: o.xl, xmax: o.xr, ymin: 0, ymax: o.ht, pad: [42, 40 + sep, 64, 40 + sep] });
+    const S = new Scene(stage, { x: 6, y: 0, width: W, height: 312, xmin: o.xl, xmax: o.xr, ymin: 0, ymax: o.ht, pad: [40, 40 + sep, 84, 40 + sep] });
     S.pt('L', o.xl, 0).pt('F', 0, 0).pt('R', o.xr, 0).pt('Tp', 0, o.ht);
     const L2 = S.layer(), L1 = S.layer();
     const f2 = S.poly(['L', 'F', 'Tp'], { fill: '#eef1f6', L: L2 }), f1 = S.poly(['F', 'R', 'Tp'], { fill: '#eef1f6', L: L1 });
@@ -406,12 +406,12 @@ const chain = {
     const shV1 = hide(S.sideLab('F', 'Tp', T(cG(dots(o.ht))), 'R', { L: L1, off: 0, dx: 74, cls: 'u9l7-lab u9l7-goldlab' }));
     const shV2 = hide(S.sideLab('F', 'Tp', T(cG(dots(o.ht))), 'L', { L: L2, off: 0, dx: -74, cls: 'u9l7-lab u9l7-goldlab' }));
     const pick1 = hide(S.lab([o.xr * 0.42, o.ht * 0.32], 'start here', { L: L1, cls: 'u9l7-pickon' })), pick2 = hide(S.lab([o.xl * 0.4, o.ht * 0.3], 'not yet', { L: L2, cls: 'u9l7-pickoff' }));
-    const pw = (ex.W - 26) / 2, P2 = panel(stage, 8, 304, pw, 180, `Second: ${T('\\triangle ' + o.Tp + o.F + o.L)}`), P1 = panel(stage, pw + 18, 304, pw, 180, `First: ${T('\\triangle ' + o.Tp + o.F + o.R)}`);
+    const pw = (ex.W - 26) / 2, P2 = panel(stage, 8, 314, pw, 170, `Second: ${T('\\triangle ' + o.n2)}`), P1 = panel(stage, pw + 18, 314, pw, 170, `First: ${T('\\triangle ' + o.n1)}`);
     const link = chainIcon(S, S.P('F')[0], S.P([0, o.ht * 0.55])[1]);
     const n = (x) => T(o.F === 'S' ? x : x);
     void n;
     const steps = [];
-    const T1 = `\\triangle ${o.Tp}${o.F}${o.R}`, T2 = `\\triangle ${o.Tp}${o.F}${o.L}`, sh = o.Tp + o.F === 'PS' ? 'PS' : o.F === 'S' ? 'PS' : 'EC';
+    const T1 = `\\triangle ${o.n1}`, T2 = `\\triangle ${o.n2}`, sh = o.Tp + o.F === 'PS' ? 'PS' : o.F === 'S' ? 'PS' : 'EC';
     steps.push({ cap: is2 ? `Two right triangles share the altitude ${T('PS')}. Which one has <b>enough</b>? ${T(T1)} has a side (24 mm) <b>and</b> an angle (48°). ${T(T2)} has only an angle. Start with ${T(T1)}.`
       : `Two right triangles share the altitude ${T('EC')}. ${T(T1)} has a side (the hypotenuse 4.5 m) <b>and</b> an angle (35°). ${T(T2)} has only a side. Start with ${T(T1)}.`,
     run: async (c) => { f1.setAttribute('fill', '#dff3e8'); await anim(c, f1, [{ opacity: 0.3 }, { opacity: 1 }], 350); await pop(c, pick1); await pop(c, pick2); } });
@@ -442,10 +442,10 @@ const chain = {
       } });
     steps.push({ cap: is2 ? `Slide them back together. ${T('S')} lies between ${T('R')} and ${T('Q')}: ${T(`QR=24+${dots(RS2)}=${dots(24 + RS2, 2)}\\approx 65`)} mm.` : `Slide them back together: ${T(`\\angle BEC\\approx 64^\\circ`)}. Rounding ${T('EC')} to 2.6 first would give ${T('63^\\circ')}: the wrong answer.`,
       run: async (c) => {
-        await Promise.all([anim(c, link, [{ opacity: 1 }, { opacity: 0 }], 250), anim(c, dupF, [{ opacity: 1 }, { opacity: 0 }], 250), anim(c, dupT, [{ opacity: 1 }, { opacity: 0 }], 250), anim(c, tg1.base, [{ opacity: 1 }, { opacity: 0 }], 250), anim(c, tg2.base, [{ opacity: 1 }, { opacity: 0 }], 250)]);
+        await Promise.all([anim(c, link, [{ opacity: 1 }, { opacity: 0 }], 250), anim(c, dupF, [{ opacity: 1 }, { opacity: 0 }], 250), anim(c, dupT, [{ opacity: 1 }, { opacity: 0 }], 250), ...[tg1.base, tg2.base, tg1.sh, tg2.sh, shV2, tg1.hyp, tg2.hyp].map((e) => anim(c, e, [{ opacity: 1 }, { opacity: 0 }], 250))]);
         await Promise.all([S.slide(c, L2, 0, 0, 800), S.slide(c, L1, 0, 0, 800)]);
         if (is2) {
-          const yb = -14 / S.s * 0 - 0, A = S.P('L'), B = S.P('R'), y = A[1] + 54; void yb;
+          const A = S.P('L'), B = S.P('R'), y = A[1] + 46;
           const br = svgEl('path', { class: 'bk-stroke', d: `M${A[0]} ${y - 8}L${A[0]} ${y}L${B[0]} ${y}L${B[0]} ${y - 8}`, stroke: INK, 'stroke-width': 2.5, fill: 'none' }, S.svg); await drawIn(br, 600, c);
           const l = S.hlabel((A[0] + B[0]) / 2, y + 4, T(`QR\\approx 65\\text{ mm}`), { pos: 's', gap: 2, cls: 'u9l7-res' }); await pop(c, l);
           await say(c, P2, T(`QR=24+${dots(RS2)}=${dots(24 + RS2, 2)}\\approx${cG('65')}`) + ' mm', 'u9l7-res');
@@ -478,9 +478,9 @@ const frame = {
     const aY = S.arc('Y', 'W', 'X', 40, { L: LY, color: REF, width: 3.5 }), aZ = S.arc('Z', 'W', 'X', 40, { L: LZ, color: REF, width: 3.5 });
     S.angLab('Y', 'W', 'X', 64, nums ? T(o.Y + '^\\circ') : T('\\angle Y'), { L: LY, color: REF }); S.angLab('Z', 'W', 'X', 64, nums ? T(o.Z + '^\\circ') : T('\\angle Z'), { L: LZ, color: REF });
     [aY, aZ].forEach(hide);
-    if (nums) { S.sideLab('W', 'X', T(XW + '\\text{ cm}'), 'Y', { L: LZ, off: 34 }); }
+    if (nums) { S.sideLab('W', 'X', T(XW + '\\text{ cm}'), 'Y', { L: LZ, off: 36, dy: 56 }); }
     const gY = S.glow('W', 'X', { L: LY }), gZ = S.glow('W', 'X', { L: LZ });
-    const tY = { s: S.tag('W', 'X', 'opp', 'Z', { L: LY, off: 28 }), b: S.tag('Y', 'W', 'adj', 'X', { L: LY, off: 52 }) }, tZ = { s: S.tag('W', 'X', 'opp', 'Y', { L: LZ, off: nums ? 64 : 28 }), b: S.tag('W', 'Z', 'adj', 'X', { L: LZ, off: 52 }) };
+    const tY = { s: S.tag('W', 'X', 'opp', 'Z', { L: LY, off: 28 }), b: S.tag('Y', 'W', 'adj', 'X', { L: LY, off: 52 }) }, tZ = { s: S.tag('W', 'X', 'opp', 'Y', { L: LZ, off: 28 }), b: S.tag('W', 'Z', 'adj', 'X', { L: LZ, off: 52 }) };
     const Pn = panel(stage, W + 14, 8, ex.W - W - 20, 424, 'The frame');
     const yw = nums ? dots(YW) : 'YW', wz = nums ? dots(WZ) : 'WZ', xw = nums ? String(XW) : 'XW', tyY = nums ? `\\tan ${o.Y}^\\circ` : '\\tan(\\angle Y)', tyZ = nums ? `\\tan ${o.Z}^\\circ` : '\\tan(\\angle Z)';
     return [
@@ -527,7 +527,7 @@ const which = {
         q: { x: 300, y: 122, w: 470, h: 74, html: '<b>Does one triangle have a side AND an angle?</b>(or two sides)', color: 'amber' },
         solve: { x: 160, y: 228, w: 290, h: 70, html: '<b>Solve it first</b>find the shared side; keep every digit', color: 'blue' },
         carry: { x: 160, y: 318, w: 290, h: 64, html: '<b>Carry it across</b>SOH, CAH or TOA in the other', color: 'blue' },
-        alg: { x: 470, y: 268, w: 250, h: 92, html: '<b>Neither has a side</b>write both distances in terms of h; subtract', color: 'purple' },
+        alg: { x: 470, y: 268, w: 250, h: 92, html: `<b>Neither has a side</b>write both distances in terms of ${T('h')}; subtract`, color: 'purple' },
         fin: { x: 300, y: 398, w: 330, h: 50, html: '<b>Finish:</b> add, subtract, or read the angle', cls: 'bk-round', color: 'green' }
       },
       edges: [{ from: 'start', to: 'q' }, { from: 'q', to: 'solve', label: 'yes', route: 'vhv' }, { from: 'q', to: 'alg', label: 'no', route: 'vhv' }, { from: 'solve', to: 'carry' }, { from: 'carry', to: 'fin', route: 'vh' }, { from: 'alg', to: 'fin', route: 'vh' }] });
@@ -556,7 +556,7 @@ const sightings = {
   intro: (v) => (v === 'walk' ? 'Watch the angle of elevation as you walk from A to B. Press <b>Next</b>.' : 'Example 4 (a), (b) and (c), after the class has tried them. Press <b>Next</b>.'),
   make(stage, v, ex) {
     const W = 600, walk = v === 'walk';
-    const S = new Scene(stage, { x: 0, y: 4, width: W, height: 460, xmin: 0, xmax: X4 + 25, ymin: 0, ymax: H4, pad: [40, 40, 150, 70] });
+    const S = new Scene(stage, { x: 0, y: 4, width: W, height: 460, xmin: 0, xmax: X4 + 25, ymin: 0, ymax: H4, pad: [40, 40, walk ? 60 : 160, 70] });
     S.pt('C', 0, 0).pt('T', 0, H4).pt('B', X4, 0).pt('A', X4 + 25, 0);
     S.seg([-3, 0], [X4 + 29, 0], { width: 2.5 });
     S.poly([[-4.5, 0], [0, 0], [0, H4], [-4.5, H4]], { fill: '#d9dee8', stroke: INK, sw: 1.5 });
@@ -592,21 +592,21 @@ const sightings = {
     }
     S.lab([X4 / 2, 0], T('x'), { pos: 's', gap: 8 }); S.lab([X4 + 12.5, 0], '25 m', { pos: 's', gap: 8 });
     const sA = S.seg('A', 'T'), sB = S.seg('B', 'T'); S.arc('A', 'C', 'T', 40); S.angLab('A', 'C', 'T', 66, T('32^\\circ')); S.arc('B', 'C', 'T', 34); S.angLab('B', 'C', 'T', 58, T('47^\\circ'));
-    const tgh = S.tag('C', 'T', 'opp', 'B', { off: 30 }), tB = S.tag('C', 'B', 'adj', 'T', { off: 46, dx: 44 });
+    const tgh = S.tag('C', 'T', 'opp', [-10, H4 / 2], { off: 30 }), tB = S.tag('C', 'B', 'adj', 'T', { off: 46, dx: 44 });
     // bar model below the ground
-    const by = (k) => S.P([0, 0])[1] + 82 + k * 40, P0 = S.P('C')[0], PB = S.P('B')[0], PA = S.P('A')[0];
-    const bar = (x1, y, color, html) => { const r = svgEl('rect', { x: P0, y: y - 13, width: x1 - P0, height: 26, rx: 6, fill: color, 'fill-opacity': 0.22, stroke: color, 'stroke-width': 2 }, S.svg); r.style.opacity = 0; const l = S.hlabel((P0 + x1) / 2, y, html, { cls: 'u9l7-barlab' }); l.style.opacity = 0; return [r, l]; };
+    const by = (k) => S.P([0, 0])[1] + 84 + k * 46, P0 = S.P('C')[0], PB = S.P('B')[0], PA = S.P('A')[0];
+    const bar = (x1, y, color, html) => { const r = svgEl('rect', { x: P0, y: y - 17, width: x1 - P0, height: 34, rx: 6, fill: color, 'fill-opacity': 0.22, stroke: color, 'stroke-width': 2 }, S.svg); r.style.opacity = 0; const l = S.hlabel((P0 + x1) / 2, y, html, { cls: 'u9l7-barlab' }); l.style.opacity = 0; return [r, l]; };
     const bB = bar(PB, by(0), ADJ, T(`x=\\tfrac{h}{\\tan 47^\\circ}`)), bA = bar(PA, by(1), ADJ, T(`x+25=\\tfrac{h}{\\tan 32^\\circ}`));
-    const gap = hide(S.hlabel((PB + PA) / 2, by(0), T(cG('25')), { cls: 'u9l7-gapl' })), gr = svgEl('rect', { x: PB, y: by(0) - 13, width: PA - PB, height: 26, rx: 6, fill: GOLD, 'fill-opacity': 0.35, stroke: GOLDD, 'stroke-width': 2, 'stroke-dasharray': '5 4' }, S.svg); gr.style.opacity = 0;
+    const gap = hide(S.hlabel((PB + PA) / 2, by(0), T(cG('25')), { cls: 'u9l7-gapl' })), gr = svgEl('rect', { x: PB, y: by(0) - 17, width: PA - PB, height: 34, rx: 6, fill: GOLD, 'fill-opacity': 0.35, stroke: GOLDD, 'stroke-width': 2, 'stroke-dasharray': '5 4' }, S.svg); gr.style.opacity = 0;
     return [
       { cap: `(a) In ${T('\\triangle TBC')}, from ${T('47^\\circ')}: ${T('h')} is <b>opposite</b>, ${T('x')} is <b>adjacent</b>. ${T('\\tan 47^\\circ=\\tfrac{h}{x}')}, so ${T('x=\\tfrac{h}{\\tan 47^\\circ}')}.`,
         run: async (c) => { const bc = S.seg('C', 'B', { width: 0.01 }); await role(c, TC, tgh, 'opp'); await role(c, bc, tB, 'adj'); sB.setAttribute('stroke', HYP); await say(c, Pn, `(a) ${T(`\\tan 47^\\circ=\\dfrac{${cO('h')}}{${cA('x')}}`)}`); await say(c, Pn, T(`${cA('x')}=\\dfrac{h}{\\tan 47^\\circ}`)); await appear(c, bB[0], 300); await fadeIn(c, bB[1]); } },
       { cap: `(b) In ${T('\\triangle TAC')}, from ${T('32^\\circ')}: ${T('\\tan 32^\\circ=\\tfrac{h}{x+25}')}, so ${T('x+25=\\tfrac{h}{\\tan 32^\\circ}')}.`,
         run: async (c) => { sA.setAttribute('stroke', HYP); await say(c, Pn, `(b) ${T(`\\tan 32^\\circ=\\dfrac{${cO('h')}}{${cA('x+25')}}`)}`); await say(c, Pn, T(`${cA('x+25')}=\\dfrac{h}{\\tan 32^\\circ}`)); await appear(c, bA[0], 300); await fadeIn(c, bA[1]); } },
-      { cap: `(c) The long bar minus the short bar is the ${T('25')} m. Subtract (a) from (b): ${T(`25=\\tfrac{h}{\\tan 32^\\circ}-\\tfrac{h}{\\tan 47^\\circ}=h(1.60033\\ldots-0.93251\\ldots)=h(0.66781\\ldots)`)}.`,
-        run: async (c) => { await appear(c, gr, 400); await pop(c, gap); await say(c, Pn, `(c) ${T(`25=h\\left(\\tfrac{1}{\\tan 32^\\circ}-\\tfrac{1}{\\tan 47^\\circ}\\right)`)}`); await say(c, Pn, T(`25=h(${dots(1 / tanD(32), 5)}-${dots(1 / tanD(47), 5)})=h(${dots(1 / tanD(32) - 1 / tanD(47), 5)})`), 'u9l7-small'); } },
-      { cap: `${T(`h=25\\div ${dots(1 / tanD(32) - 1 / tanD(47), 5)}=${dots(H4)}\\approx 37`)} m. Keep the two quotients unrounded: their difference is small.`,
-        run: async (c) => { await say(c, Pn, T(`h=\\dfrac{25}{0.66781\\ldots}=${dots(H4)}\\approx${cG('37')}\\text{ m}`), 'u9l7-res'); hl.innerHTML = T('h\\approx37\\text{ m}'); hl.style.color = OPP; await pulse(c, hl, 1.2); } },
+      { cap: `(c) The long bar minus the short bar is the ${T('25')} m. Subtract (a) from (b): ${T(`25=\\tfrac{h}{\\tan 32^\\circ}-\\tfrac{h}{\\tan 47^\\circ}=h(1.6003345\\ldots-0.9325151\\ldots)=h(0.6678194\\ldots)`)}.`,
+        run: async (c) => { await appear(c, gr, 400); await pop(c, gap); await say(c, Pn, `(c) ${T(`25=h\\left(\\tfrac{1}{\\tan 32^\\circ}-\\tfrac{1}{\\tan 47^\\circ}\\right)`)}`); await say(c, Pn, T(`=h(${dots(1 / tanD(32), 7)}-${dots(1 / tanD(47), 7)})`), 'u9l7-small'); await say(c, Pn, T(`=h(${dots(1 / tanD(32) - 1 / tanD(47), 7)})`), 'u9l7-small'); } },
+      { cap: `${T(`h=25\\div ${dots(1 / tanD(32) - 1 / tanD(47), 7)}=${dots(H4)}\\approx 37`)} m. Keep the two quotients unrounded: their difference is small.`,
+        run: async (c) => { await say(c, Pn, T(`h=\\dfrac{25}{0.6678194\\ldots}=${dots(H4)}\\approx${cG('37')}\\text{ m}`), 'u9l7-res'); hl.innerHTML = T('h\\approx37\\text{ m}'); hl.style.color = OPP; await pulse(c, hl, 1.2); } },
       { cap: `Check: ${T(`x=37.4353\\div\\tan 47^\\circ=${X4.toFixed(3)}`)} m, so ${T('AC=' + (X4 + 25).toFixed(3))} and ${T(`\\tan^{-1}\\!\\left(\\tfrac{37.4353}{${(X4 + 25).toFixed(3)}}\\right)=32^\\circ`)} ✓`,
         run: async (c) => { await say(c, Pn, `${T(`\\tan^{-1}\\!\\left(\\tfrac{37.4353}{${(X4 + 25).toFixed(3)}}\\right)=32^\\circ`)} <span class="u9l7-good">✓</span>`, 'u9l7-small'); await stampIn(c, stamp(stage, '✓', { x: W - 40, y: 50 })); } }
     ];
@@ -616,7 +616,7 @@ const sightings = {
 /* =============================== ★ Extension: the box and its space diagonal =============================== */
 const BOXF = [['A', 'B', 'C', 'D'], ['E', 'F', 'G', 'H'], ['A', 'B', 'F', 'E'], ['B', 'C', 'G', 'F'], ['C', 'D', 'H', 'G'], ['D', 'A', 'E', 'H']];
 const boxVerts = (l, w, hh) => ({ A: [0, 0, 0], B: [l, 0, 0], C: [l, w, 0], D: [0, w, 0], E: [0, 0, hh], F: [l, 0, hh], G: [l, w, hh], H: [0, w, hh] });
-const BX = { ex5: { label: 'Example 5 check', l: 4, w: 3, hh: 12, s: 25 }, spin: { label: 'Any box: l × w × h', l: 6, w: 2, hh: 3, s: 46 } };
+const BX = { ex5: { label: 'Example 5 check', l: 4, w: 3, hh: 12, s: 31 }, spin: { label: 'Any box: l × w × h', l: 6, w: 2, hh: 3, s: 46 } };
 const box3d = {
   title: 'A box hides two right triangles that share the base diagonal',
   height: 480,
@@ -629,7 +629,9 @@ const box3d = {
     const B = new Solid3(svg, hp, { verts: boxVerts(o.l, o.w, o.hh), faces: BOXF, c: [o.l / 2, o.w / 2, o.hh / 2], s: o.s, ox: W / 2, oy: 240, view: { yaw: yaw0, pitch: pit0 } });
     ['F', 'E', 'H'].forEach((n) => { if (ex5) B.vl[n].style.opacity = 0; });
     const V = B.verts;
-    B.label(lerp3(V.A, V.B, 0.5), T(String(o.l)), { out: 22 }); B.label(lerp3(V.B, V.C, 0.5), T(String(o.w)), { out: 22 }); B.label(lerp3(V.C, V.G, 0.5), T(String(o.hh)), { out: 22 });
+    const edgeL = [B.label(lerp3(V.A, V.B, 0.5), T(String(o.l)), { out: 22 }), B.label(lerp3(V.B, V.C, 0.5), T(String(o.w)), { out: 22 })]; B.label(lerp3(V.C, V.G, 0.5), T(String(o.hh)), { out: 22 });
+    const fadeSet = [...edgeL, B.vl.B, B.vl.D].concat(ex5 ? [] : [B.vl.E, B.vl.F, B.vl.H]);
+    const fadeTo = (c, op) => Promise.all(fadeSet.map((e) => anim(c, e, [{ opacity: e.style.opacity || 1 }, { opacity: op }], 300)));
     const base = B.add('poly', ['A', 'B', 'C'], { fill: '#fff1d6', 'fill-opacity': 0.9, stroke: 'none' }, B.faceG), vert = B.add('poly', ['A', 'C', 'G'], { fill: '#dbe7fb', 'fill-opacity': 0.85, stroke: 'none' }, B.faceG);
     [base, vert].forEach(hide);
     const acDot = B.add('path', ['A', 'C'], { stroke: INK, 'stroke-width': 2.4, 'stroke-dasharray': '2 6' }), agDot = B.add('path', ['A', 'G'], { stroke: INK, 'stroke-width': 2.4, 'stroke-dasharray': '2 6' });
@@ -639,10 +641,10 @@ const box3d = {
     const acGlow = hide(B.add('path', ['A', 'C'], { stroke: GOLD, 'stroke-width': 15, 'stroke-opacity': 0.55 }, B.faceG));
     const acL = B.add('path', ['A', 'C'], { stroke: ADJ, 'stroke-width': 4.5 }), cgL = B.add('path', ['C', 'G'], { stroke: OPP, 'stroke-width': 4.5 }), agL = B.add('path', ['A', 'G'], { stroke: HYP, 'stroke-width': 5 });
     [acL, cgL, agL].forEach(hide);
-    const acLab = hide(B.label(lerp3(V.A, V.C, 0.55), T(cG(ex5 ? '5' : '\\sqrt{40}')), { dy: 18, cls: 'u9l7-lab u9l7-goldlab' }));
+    const acLab = hide(B.label(lerp3(V.A, V.C, 0.6), T(cG(ex5 ? '5' : '\\sqrt{40}')), { dy: 20, cls: 'u9l7-lab u9l7-goldlab' }));
     const agLab = hide(B.label(lerp3(V.A, V.G, 0.5), T(cH(String(AG))), { dx: -22, dy: -6, cls: 'u9l7-lab u9l7-big' }));
     const arcPts = arc3(V.A, uAC, z, ang, AC * 0.26), arcEl = hide(B.add('path', arcPts, { stroke: REF, 'stroke-width': 3.5 }));
-    const arcLab = hide(B.label(add3(add3(V.A, uAC, AC * 0.42), z, AC * 0.2), T(`${ang.toFixed(0)}^\\circ`), { color: REF, cls: 'u9l7-lab u9l7-alab big' }));
+    const bis = ang / 2 * RAD, arcLab = hide(B.label(add3(add3(V.A, uAC, AC * 0.5 * Math.cos(bis)), z, AC * 0.5 * Math.sin(bis)), T(`${ang.toFixed(0)}^\\circ`), { color: REF, cls: 'u9l7-lab u9l7-alab big' }));
     const Pn = panel(stage, W + 14, 8, ex.W - W - 20, 464, ex5 ? 'Example 5' : 'Any box');
     const steps = [
       { cap: ex5 ? `A box: base ${T('ABCD')} is 4 cm by 3 cm, and ${T('G')} is 12 cm directly above ${T('C')}. Watch it turn: the dotted ${T('AG')} runs through the <b>inside</b>.` : `A box 6 by 2 by 3. The dotted ${T('AG')} is a <b>space diagonal</b>: it runs through the inside of the box.`,
@@ -654,7 +656,7 @@ const box3d = {
       { cap: `${T('\\triangle ACG')} stands <b>vertically</b> on ${T('AC')}: ${T('CG')} is vertical, so the right angle is at ${T('C')}.`,
         run: async (c) => { await appear(c, vert, 400); await appear(c, rmC, 300); await appear(c, cgL, 300); } },
       { cap: `Turn the box until ${T('\\triangle ACG')} faces us: a flat right triangle with legs ${T(ex5 ? '5' : '\\sqrt{40}')} and ${T(String(o.hh))}.`,
-        run: async (c) => { await Promise.all([B.turn(c, faceOn, 4, 1800), B.dimEdges(c, 0.28)]); } },
+        run: async (c) => { await Promise.all([B.turn(c, faceOn, 4, 1800), B.dimEdges(c, 0.28), fadeTo(c, 0)]); } },
       { cap: ex5 ? `${T('AG=\\sqrt{5^2+12^2}=\\sqrt{169}=13')} cm. The box’s diagonal is the <b>hypotenuse</b> of the second right triangle.` : `${T(`AG=\\sqrt{AC^2+CG^2}=\\sqrt{40+9}=\\sqrt{49}=7`)}. In one line: ${T('d=\\sqrt{l^2+w^2+h^2}')}.`,
         run: async (c) => { agDot.style.opacity = 0; agL.style.opacity = 1; await drawIn(agL, 700, c); await pop(c, agLab); await say(c, Pn, T(ex5 ? `AG=\\sqrt{${cA('5')}^2+${cO('12')}^2}=\\sqrt{169}=${cH('13')}\\text{ cm}` : `AG=\\sqrt{${cA('40')}+${cO('3')}^2}=\\sqrt{49}=${cH('7')}`)); if (!ex5) await say(c, Pn, T('d=\\sqrt{l^2+w^2+h^2}'), 'u9l7-res'); } }
     ];
@@ -662,8 +664,8 @@ const box3d = {
       { cap: `${T('\\tan(\\angle GAC)=\\tfrac{12}{5}')}, so ${T('\\angle GAC=\\tan^{-1}(2.4)=67.38^\\circ\\approx 67^\\circ')}.`,
         run: async (c) => { arcEl.style.opacity = 1; await drawIn(arcEl, 500, c); await pop(c, arcLab); await say(c, Pn, T(`\\tan(\\angle GAC)=\\dfrac{${cO('12')}}{${cA('5')}}`)); await say(c, Pn, T('\\angle GAC=\\tan^{-1}(2.4)=67.38^\\circ\\approx67^\\circ'), 'u9l7-res'); } },
       { cap: `Turn back: ${T('67^\\circ')} is the angle the diagonal ${T('AG')} makes with the base. Two right triangles, chained by ${T('AC')}.`,
-        run: async (c) => { await Promise.all([B.turn(c, yaw0, pit0, 1800), B.dimEdges(c, 1)]); } });
-    else steps.push({ cap: `Turn back. The base diagonal was handed up from the floor triangle to the vertical one: the same chain in 3-D.`, run: async (c) => { await Promise.all([B.turn(c, yaw0, pit0, 1800), B.dimEdges(c, 1)]); } });
+        run: async (c) => { await Promise.all([B.turn(c, yaw0, pit0, 1800), B.dimEdges(c, 1), fadeTo(c, 1)]); } });
+    else steps.push({ cap: `Turn back. The base diagonal was handed up from the floor triangle to the vertical one: the same chain in 3-D.`, run: async (c) => { await Promise.all([B.turn(c, yaw0, pit0, 1800), B.dimEdges(c, 1), fadeTo(c, 1)]); } });
     void acDot;
     return steps;
   }
@@ -696,7 +698,9 @@ const wedge = {
         { cap: `Turn the solid around to look at the back.`, run: async (c) => { await S3.turn(c, 205, 24, 1700); } },
         { cap: txt[2], run: show(2) },
         { cap: `Turn back to the front, and look at the slanted top.`, run: async (c) => { await S3.turn(c, yaw0, pit0, 1700); } },
-        { cap: txt[3], run: show(3) }
+        { cap: txt[3], run: show(3) },
+        { cap: `The side faces ${T('ADHE')} and ${T('BCGF')} are <b>trapezoids</b>, not rectangles: ${T('EA=2')} but ${T('HD=9')}.`,
+          run: async (c) => { R.forEach((g) => g.setAttribute('fill-opacity', 0.16)); await S3.turn(c, 40, 20, 1500); for (const t of Tz) await appear(c, t, 350); await say(c, Pn, `<span class="u9l7-step no">✗</span> ${T('ADHE')}, ${T('BCGF')}: trapezoids`); } }
       ];
       return steps;
     }
@@ -720,7 +724,7 @@ const wedge = {
         run: async (c) => { a2.style.opacity = 1; await drawIn(a2, 600, c); await pop(c, a2l); await say(c, Pn, T('\\angle HEA=90^\\circ+49.40^\\circ\\approx' + '139^\\circ'), 'u9l7-res'); } },
       { cap: `(c) ${T('EH')} is the hypotenuse: ${T('EH=\\sqrt{6^2+7^2}=\\sqrt{85}=9.2195\\ldots\\approx 9.2')} cm.`,
         run: async (c) => { await pop(c, lEH); await say(c, Pn, T('EH=\\sqrt{' + cA('6') + '^2+' + cO('7') + '^2}=\\sqrt{85}\\approx9.2\\text{ cm}'), 'u9l7-res'); } },
-      { cap: `Turn back: ${T('E')} is the notch corner of the wedge, which is why ${T('\\angle HEA')} is obtuse.`, run: async (c) => { await Promise.all([S3.turn(c, yaw0, pit0, 1800), S3.dimEdges(c, 1)]); } }
+      { cap: `Turn the solid to see it whole: ${T('E')} is the notch corner of the wedge, which is why ${T('\\angle HEA')} is obtuse.`, run: async (c) => { await Promise.all([S3.turn(c, 50, 18, 1800), S3.dimEdges(c, 1)]); } }
     ];
   }
 };

@@ -697,7 +697,7 @@ const chain = {
     const H = 490, FW = 600, FH = 340;
     const AD = Math.sqrt(41 * 41 - 81), DC = Math.sqrt(85 * 85 - AD * AD), a1 = Math.atan(9 / AD) / DEG, a2 = Math.atan(DC / AD) / DEG, sum = a1 + a2;
     const angB = Math.acos(9 / 41) / DEG, angC = Math.asin(AD / 85) / DEG;
-    const F = new Fig(stage, { x: 6, y: 6, width: FW, height: FH, win: [-12, 79, -5, 44], pad: 14 });
+    const F = new Fig(stage, { x: 6, y: 6, width: FW, height: FH, win: [-20, 79, -5, 44], pad: 14 });
     const B = [-9, 0], D = [0, 0], C = [75, 0], A = [0, 40];
     const fL = F.poly([A, B, D], { fill: OPP, fo: 0.1, layer: F.gBg }), fR = F.poly([A, D, C], { fill: HYP, fo: 0.08, layer: F.gBg });
     hide0(fL); hide0(fR);
@@ -706,7 +706,7 @@ const chain = {
     F.lab([-4.5, 0], T('9'), { pos: 's', cls: 'u9l4-slab' }); F.sideLab(A, B, T('41'), { away: [10, 0], off: 18 }); F.sideLab(A, C, T('85'), { away: [0, 0], off: 20 });
     const adL = hide0(F.lab([0, 20], T('AD=40'), { pos: 'e', cls: 'u9l4-slab', dx: 4 })), dcL = hide0(F.lab([37.5, 0], T('DC=75'), { pos: 's', cls: 'u9l4-slab' }));
     const wa = F.wedge(A, B, D, 70, { color: ANG, label: T('\\angle BAD'), off: 30 }), wb = F.wedge(A, D, C, 52, { color: ZC, label: T('\\angle DAC'), off: 26 });
-    { const q = F.P(A); place(wa.label, q[0] - 70, q[1] + 70); }
+    { const q = F.P(A); place(wa.label, q[0] - 66, q[1] + 66); }
     for (const w of [wa, wb]) { hide0(w); hide0(w.label); }
     const P = panel(stage, FW + 18, 6, ex.W - FW - 24, FH, 'Example 6');
     const P2 = panel(stage, 6, FH + 16, ex.W - 12, H - FH - 22, 'Check another way: the angles of △ABC');
