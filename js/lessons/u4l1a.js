@@ -790,7 +790,7 @@
           { id: 'e14c', level: 'BEG', make: function (r, sh) { var p = gcfPart(sh.terms, { prompt: '(c) State the greatest common factor the student should have removed.' }); return p; } },
           { id: 'e14d', level: 'BEG', make: function (r, sh) { return factorPart(sh.terms, { prompt: '(c) Write the complete factorization of ' + t(sh.poly) + '.', wrong: [] }); } }] },
       { num: '15', stem: function (sh) { return 'Three students factor ' + t(sh.poly) + '.<br>' + sh.names.map(function (n, i) { return n + ': ' + t(sh.ans[i]); }).join(', &nbsp; '); },
-        shared: function (r) { var g = r.pick([3, 4, 5, 6, 8, 12]), b = 2, v = r.pick(['p', 'x', 'y']) // b = 2 as in the booklet: the bracket is then (v+1)², which is what (c) is about, names = ['Amira', 'Ben', 'Cass'], roles = r.shuffle(['right', 'sign', 'drop']);
+        shared: function (r) { var g = r.pick([3, 4, 5, 6, 8, 12]), b = 2, v = r.pick(['p', 'x', 'y']), names = ['Amira', 'Ben', 'Cass'], roles = r.shuffle(['right', 'sign', 'drop']); // b = 2 as in the booklet: the bracket is then (v+1)², which is what (c) is about
           var terms = [M(-g, { [v]: 3 }), M(-g * b, { [v]: 2 }), M(-g, { [v]: 1 })], G = '-' + g + v, A = { right: G + '(' + v + '^{2}+' + b + v + '+1)', sign: G + '(' + v + '^{2}+' + b + v + '-1)', drop: G + '(' + v + '^{2}+' + b + v + ')' };
           return { g: g, b: b, v: v, names: names, roles: roles, ans: roles.map(function (k) { return A[k]; }), terms: terms, poly: seq(terms), who: function (k) { return names[roles.indexOf(k)]; } }; },
         parts: [

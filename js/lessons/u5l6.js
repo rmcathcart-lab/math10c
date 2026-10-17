@@ -115,7 +115,8 @@
       if (y0 >= y1) return wrong('win-order', cd('Ymin') + ' must be less than ' + cd('Ymax') + ' — the bottom edge of the screen comes first.');
       if (x0 < -1e-9) return wrong('win-neg-x', t(o.xv) + ' ' + o.xNeg + ', so negative values of ' + t(o.xv) + ' never happen in this situation. Start the window at ' + cd('Xmin') + ' = 0.');
       if (x0 > o.x[0] + 1e-9) return wrong('win-cut-left', 'With ' + cd('Xmin') + ' = ' + t(nT(x0)) + ' the start of the situation (' + t(o.xv + '=0') + ') is off the screen.');
-      if (x1 < Math.min(o.x[1], rd(o.x[1], 2)) - 1e-9) return wrong('win-cut-x',   // Xmax = the landing time to the hundredth (e.g. 4.12 for 4.1213) is fine cd('Xmax') + ' = ' + t(nT(x1)) + ' cuts off ' + o.xHi + '. ' + o.xHiHow);
+      // Xmax = the end value to the hundredth (e.g. a landing at 4.12 for 4.1213) is fine
+      if (x1 < Math.min(o.x[1], rd(o.x[1], 2)) - 1e-9) return wrong('win-cut-x', cd('Xmax') + ' = ' + t(nT(x1)) + ' cuts off ' + o.xHi + '. ' + o.xHiHow);
       if (y1 < o.y[1] - 1e-9) return wrong('win-cut-top', cd('Ymax') + ' = ' + t(nT(y1)) + ' cuts off ' + o.yHi + '. ' + o.yHiHow);
       if (y0 > o.y[0] + 1e-9) return wrong('win-cut-bottom', cd('Ymin') + ' = ' + t(nT(y0)) + ' hides ' + o.yLo + '.');
       if (x1 - x0 > 10 * xs) return wrong('win-huge', 'That window is so wide that the graph is squeezed into a thin strip at the left. Bring ' + cd('Xmax') + ' down to just past the values the question needs.');

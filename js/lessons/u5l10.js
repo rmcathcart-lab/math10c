@@ -563,7 +563,7 @@
           sh.pts.forEach(function (q, i) { want['p' + i] = quad(q); });
           return B.grid('(c) Name the quadrant each plotted point lies in. (One point lies on an axis.)', rows, cols, want, { why: function (rid, got) {
             var q = sh.pts[Number(rid.slice(1))];
-            if (q[0] === 0) return { code: 'row', hint: t(ptT(q)) + ' has ' + t('x=0'): it lies <b>on the ' + t('y') + '-axis</b>, which is not in any quadrant.' };
+            if (q[0] === 0) return { code: 'row', hint: t(ptT(q)) + ' has ' + t('x=0') + ': it lies <b>on the ' + t('y') + '-axis</b>, which is not in any quadrant.' };
             return { code: 'row', hint: 'Check ' + t(ptT(q)) + ': ' + t('x') + ' is ' + (q[0] > 0 ? 'positive' : 'negative') + ' and ' + t('y') + ' is ' + (q[1] > 0 ? 'positive' : 'negative') + '. QI ' + t('(+,+)') + ', QII ' + t('(-,+)') + ', QIII ' + t('(-,-)') + ', QIV ' + t('(+,-)') + '.' };
           } }, sh.pts.map(function (q) { var z = quad(q); return t(ptT(q)) + ': ' + (z === 'axis' ? 'on the ' + t('y') + '-axis (no quadrant)' : 'Q' + { Q1: 'I', Q2: 'II', Q3: 'III', Q4: 'IV' }[z]); }).join('<br>'),
             ['QI is top right, then QII, QIII, QIV going counterclockwise.', 'A point with a coordinate of ' + t('0') + ' is on an axis.'], 'quadrants of points');
@@ -588,7 +588,7 @@
             { is: P(lin([[b, 'x'], [m, '']])), code: 'diag', hint: 'The slope and the ' + t('y') + '-intercept are swapped. The ' + t('y') + '-intercept is the output when ' + t('x=0') + ': ' + t(b) + '.' },
             { is: P(lin([[m, 'x'], [-b, '']])), code: 'diag', hint: 'Check the constant: when ' + t('x=0') + ', ' + t('y=' + b) + '.' }];
           if (Math.abs(m) !== 1) W.push({ is: P(lin([[[1, m], 'x'], [b, '']])), code: 'rate-flip', hint: 'Slope is change in ' + t('y') + ' divided by change in ' + t('x') + ', not the other way round.' });
-          var p = PL && K.P.poly('(f) The points lie on a straight line. Write its equation in function notation.', T, { before: 'f(x)=', wrong: W },
+          var p = K.P.poly('(f) The points lie on a straight line. Write its equation in function notation.', T, { before: 'f(x)=', wrong: W },
             'Pattern: from ' + t('x=' + x1) + ' to ' + t('x=' + x2) + ', ' + t('y') + ' changes by ' + t(sh.ys[2] - sh.ys[1]) + ' in ' + t(x2 - x1) + ' step' + (x2 - x1 === 1 ? '' : 's') + ', so ' + t('y') + ' changes by ' + t(m) + ' for each unit of ' + t('x') + '. When ' + t('x=0') + ', ' + t('y=' + b) + '.<br>' + t('f(x)=' + lin([[m, 'x'], [b, '']])) + '<br><i>Check</i> ' + t(ptT(sh.pts[4])) + ': ' + t(m + '(' + sh.xs[4] + ')' + (b < 0 ? b : '+' + b) + '=' + sh.ys[4]) + ' ✓',
             ['How much does ' + t('y') + ' change for each step of ' + t('1') + ' in ' + t('x') + '? That is the coefficient of ' + t('x') + '.', 'The constant is the output when ' + t('x=0') + ' — it’s in the table.'], 'equation from a table');
           p.bad = W.map(function (w) { return PL.tex(w.is); });
@@ -611,7 +611,7 @@
             solution: 'The ball starts at ' + t(ptT([0, sh.h0])) + ', peaks at ' + t(ptT([sh.p, sh.M])) + ' and lands a little after ' + t('t=' + Math.floor(sh.T)) + ' (about ' + t(sh.T2) + ' s), so e.g. ' + t('x:[0,\\ ' + xmax + ',\\ 1],\\ y:[0,\\ ' + ymax + ',\\ 5]') + '. Any window that shows ' + t('0\\le t\\le ' + sh.T2) + ' and the highest point works.' +
               fig(G({ x: [0, xmax], y: [0, ymax], unitX: 260 / xmax, unitY: 180 / ymax, grid: 1, gridY: 5, labels: 1, labelsY: 5, firstQuadrant: true, xName: 't', yName: 'h', fns: [{ f: sh.f, from: 0, to: sh.T }], max: 300, aria: 'calculator screen' })),
             hints: ['Estimate the features first: the start ' + t('(0,\\ ' + sh.h0 + ')') + ', the highest point, and where ' + t('h=0') + '.', 'Make ' + wT('Xmax') + ' a little past the landing time and ' + wT('Ymax') + ' a little above the greatest height.'],
-            text: 'window for the ball', good: good, bad: [['-10', '10', '1', '-10', '10', '1'], ['0', '2', '1', '0', String(ymax), '5'], ['0', String(xmax), '1', '0', '10', '1']] };
+            text: 'window for the ball', good: good, bad: [['-10', '10', '1', '-10', '10', '1'], ['0', '2', '1', '0', String(ymax), '5'], ['0', String(xmax), '1', '0', '10', '1'], ['0', String(xmax), '0', '0', String(ymax), '5']].filter(function (b) { return chk(b).v !== 'correct'; }) };
         } },
         { id: '12b', level: 'EMG', make: function (r, sh) {
           var items = [numF('greatest height ' + t('='), sh.M, function (u) {
@@ -816,7 +816,7 @@
             if (same(u, K.roundTo(Math.sqrt(C / Bq), 2))) return { code: 'used-y', hint: 'That is the ' + t('y') + '-intercept. For the ' + t('x') + '-intercept set ' + t('y=0') + '.' };
             if (same(u, K.roundTo(C / A, 2))) return { code: 'no-root', hint: 'That is ' + t('x^{2}') + '. Take the square root.' };
             return null;
-          } }, 'Substitute ' + t('y=0') + ': ' + t(A + 'x^{2}=' + C) + ', so ' + t('x^{2}=' + nf(C / A === Math.round(C / A) ? C / A : 0) .replace(/^0$/, frT(C, A))) + ' and ' + t('x=\\pm\\sqrt{' + frT(C, A) + '}') + '. The positive ' + t('x') + '-intercept is ' + t('\\approx ' + K.roundTo(x, 2).toFixed(2)) + '.',
+          } }, 'Substitute ' + t('y=0') + ': ' + t(A + 'x^{2}=' + C) + ', so ' + t('x^{2}=' + frT(C, A)) + ' and ' + t('x=\\pm\\sqrt{' + frT(C, A) + '}') + '. The positive ' + t('x') + '-intercept is ' + t('\\approx ' + K.roundTo(x, 2).toFixed(2)) + '.',
             ['On the ' + t('x') + '-axis, ' + t('y=0') + '.'], 'x-intercept of an ellipse');
         } }] }
     ],

@@ -36,14 +36,14 @@
   }
 
   /* ---------- drawings: HW.graph plus custom ticks, text notes and numbered badges ---------- */
-  function geo(g) { // the same geometry HW.graph uses
-    var xr = g.x, yr = g.y, padL = g.yTitle ? 40 : 22, padT = 14;
-    var U = g.unit || Math.max(14, Math.min(32, 300 / Math.max(xr[1] - xr[0], yr[1] - yr[0]))), ux = g.unitX || U, uy = g.unitY || U;
-    return { X: function (x) { return padL + (x - xr[0]) * ux; }, Y: function (y) { return padT + (yr[1] - y) * uy; },
+  function geo(g, svg) { // read HW.graph's own mapping off its two axis lines (robust to padding changes)
+    var re = /<line x1="([-\d.]+)" y1="([-\d.]+)" x2="([-\d.]+)" y2="([-\d.]+)"[^>]*marker-end="url\(#gArr\)"/g, ax = re.exec(svg), ay = re.exec(svg);
+    var xr = g.x, yr = g.y, x0 = +ax[1], x1 = +ax[3] - 8, y0 = +ay[2], y1 = +ay[4] + 8;
+    return { X: function (x) { return x0 + (x - xr[0]) * (x1 - x0) / (xr[1] - xr[0]); }, Y: function (y) { return y0 + (y - yr[0]) * (y1 - y0) / (yr[1] - yr[0]); },
       ax0: Math.max(xr[0], Math.min(xr[1], 0)), ay0: Math.max(yr[0], Math.min(yr[1], 0)) };
   }
   function fig(g) {
-    var svg = HW.graph(g), G = geo(g), s = '', fs = g.tickSize || 11;
+    var svg = HW.graph(g), G = geo(g, svg), s = '', fs = g.tickSize || 11;
     (g.xt || []).forEach(function (p) { var x = G.X(p[0]), y = G.Y(G.ay0); s += '<line x1="' + x + '" y1="' + (y - 3) + '" x2="' + x + '" y2="' + (y + 3) + '" stroke="' + INK + '" stroke-width="1.2"/><text x="' + x + '" y="' + (y + 14) + '" font-size="' + fs + '" text-anchor="middle" fill="#4a5262">' + esc(p[1]) + '</text>'; });
     (g.yt || []).forEach(function (p) { var x = G.X(G.ax0), y = G.Y(p[0]); s += '<line x1="' + (x - 3) + '" y1="' + y + '" x2="' + (x + 3) + '" y2="' + y + '" stroke="' + INK + '" stroke-width="1.2"/><text x="' + (x - 5) + '" y="' + (y + 4) + '" font-size="' + fs + '" text-anchor="end" fill="#4a5262">' + esc(p[1]) + '</text>'; });
     (g.notes || []).forEach(function (n) {

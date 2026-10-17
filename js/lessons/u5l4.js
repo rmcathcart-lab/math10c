@@ -615,7 +615,7 @@
             var target = '\\{n\\mid 0\\le n\\le ' + sh.N + ',\\ n\\in W\\}';
             return setPart('(a) State the domain. Use the number set that a count of tickets belongs to, not ' + t('\\mathbb{R}') + '.', target,
               { v: 'n', before: t('D='), good: ['\\{n\\mid 0\\le n\\le ' + sh.N + ',\\ n\\in I\\}', '{n | 0 <= n <= ' + sh.N + ', n in W}'], bad: ['\\{n\\mid 0\\le n\\le ' + sh.N + ',\\ n\\in\\mathbb{R}\\}', '\\{n\\mid 1\\le n\\le ' + sh.N + ',\\ n\\in W\\}', '\\{n\\mid 0\\le n\\le ' + sh.N + ',\\ n\\in N\\}'],
-                wrong: [{ is: '\\{n\\mid 1\\le n\\le ' + sh.N + ',\\ n\\in W\\}', code: 'set-missing', hint: 'Selling ' + t('0') + ' tickets is possible too (the lowest count). Note ' + t('N') + ' starts at ' + t('1') + ' but ' + t('W') + ' starts at ' + t('0') + '.' }],
+                wrong: [{ is: '\\{n\\mid 1\\le n\\le ' + sh.N + ',\\ n\\in W\\}', code: 'cnt-zero', hint: 'Selling ' + t('0') + ' tickets is possible too (the lowest count). Note ' + t('N') + ' starts at ' + t('1') + ' but ' + t('W') + ' starts at ' + t('0') + '.' }],
                 ctx: { 'set-discrete': 'Tickets are <b>counted</b>: nobody buys ' + t('2.5') + ' tickets. Use whole numbers: ' + t('n\\in W') + ' instead of ' + t('n\\in\\mathbb{R}') + '.',
                   'set-missing': 'Some ticket counts are missing. Check both ends: the fewest tickets that can be sold is ' + t('0') + ' and the most is ' + t(sh.N) + ' (one per seat), both included.' } },
               'The number of tickets is a whole number (a count), at least ' + t('0') + ' and at most the ' + t(sh.N) + ' seats.<br>' + t('D=' + target) + ' (or ' + t('n\\in I') + ' with the bound ' + t('0\\le n') + ').',
