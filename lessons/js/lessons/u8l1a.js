@@ -313,13 +313,13 @@ const SY = {
     say: 'after <b>15 min</b> both drinks are at <b>20 °C</b>' },
   ex5: { label: 'Example 5 (c) check', f1: (x) => 450 + 3 * x, f2: (x) => 9 * x, t1: '450+3n', t2: '9n', n1: 'C', n2: 'R', v: 'n', x0: 0, xs: 75, ys: 675,
     win: { xmin: 0, xmax: 125, ymin: 0, ymax: 1260, xstep: 10, ystep: 100, xlabels: 20, ylabels: 200, origin: true, xtitle: 'n', ytitle: '\\text{dollars}', pad: [18, 18, 34, 52] },
-    alg: ['450=6n', 'n=75'], back: 'R=9(75)=675', sol: '(75,\\ 675)', d: 0, say: '<b>75 mugs</b> break even at <b>$675</b>' }
+    alg: ['450=6n', 'n=75'], back: 'R=9(75)=675', sol: '(75,\\ 675)', d: 0, say: '<b>75 mugs</b> break even at <b>$675</b>', form: 'dollars' }
 };
 const sameY = {
   title: 'Same y at the crossing: set the expressions equal',
   height: 470,
   choices: [{ v: 'bk', label: SY.bk.label }, { v: 'tea', label: SY.tea.label }, { v: 'ex5', label: SY.ex5.label }],
-  intro: (k) => `${T(k1(SY[k].n1 + '=' + SY[k].t1))} and ${T(k2(SY[k].n2 + '=' + SY[k].t2))}. Both are in the form "${T(SY[k].n1)} = …". Press <b>Next</b>.`,
+  intro: (k) => `${T(k1(SY[k].n1 + '=' + SY[k].t1))} and ${T(k2(SY[k].n2 + '=' + SY[k].t2))}. Both are in the form "${SY[k].form || T(SY[k].n1)} = …". Press <b>Next</b>.`,
   make(stage, k, ex) {
     const d = SY[k], v = d.v, st = { x: d.x0 };
     const G = new Graph(stage, Object.assign({ x: 14, y: 14, width: 442, height: 442 }, d.win));
