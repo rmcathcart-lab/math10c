@@ -187,3 +187,4 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u10l4b-disc b { position: relative; font-size: 15px; background: rgba(255, 255, 255, .85); border-radius: 5px; padding: 0 4px; margin-top: 46px; }
 .u10l4b-fill { position: absolute; left: 0; right: 0; bottom: 0; height: 0; background: linear-gradient(#7aa0ee, #1f5bd6); opacity: .65; }
 .u10l4b-rtx { font: 700 13px var(--round); fill: var(--ink2); }
+.u10l4b-pbig .u10l4b-line.u10l4b-frl { font-size: 24px; }

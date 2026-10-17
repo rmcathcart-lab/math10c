@@ -428,6 +428,10 @@ function crossDef(DATA, title) {
       S.draw = (S) => {
         const g = S.g, yawNow = -28 + st.spin * 360; S.yaw = yawNow;
         const Ar = [0, body + d.h * Math.max(st.rise, 0.002), 0];
+        if (st.rise < 0.02 && !body) {
+          if (cone) poly(g, eArc(ellipse(S, O, d.r), 0, 2 * PI, 64), { fill: '#fff', stroke: INK, w: 2.6 }); else poly(g, base.map((p) => S.P(p)), { fill: '#fff', stroke: INK, w: 2.6 });
+          svgEl('circle', { cx: S.P(O)[0], cy: S.P(O)[1], r: 4, fill: INK }, g); return;
+        }
         if (cone) drawCone(S, g, { base: O, r: d.r, H: d.h * Math.max(st.rise, 0.002), fill: '#fff', fo: 0.85 });
         else if (body) { const [V, F] = houseVF(base, body, d.h * Math.max(st.rise, 0.002)); solid(S, g, V, F, { fill: '#fff', fo: 0.85 }); }
         else { const [V, F] = pyramidVF(base, Ar); solid(S, g, V, F, { fill: '#fff', fo: 0.85 }); }

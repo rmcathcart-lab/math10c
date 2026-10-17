@@ -94,7 +94,7 @@ function figSquare(host, o) {
 function figBox(host, o) {
   const s = o.s, W = (o.L + o.D * KX) * s + 150, H = (o.H + o.D * KY) * s + 70 + (o.title ? 30 : 0);
   const S = svgEl('svg', { class: 'u10l5-fsvg', width: W, height: H, viewBox: `0 0 ${W} ${H}` }, host);
-  const P = oblique(70, H - 40, s), b = [0, o.L, 0, o.H, 0, o.D];
+  const P = oblique(78, H - 40, s), b = [0, o.L, 0, o.H, 0, o.D];
   drawBox(S, P, b, { fill: { front: '#fff', top: '#f4f6fa', side: '#e9edf4' }, sw: 2.4 });
   if (o.grid) {
     const n = o.grid, g = svgEl('g', { stroke: '#9aa0ab', 'stroke-width': 0.9, fill: 'none' }, S); let d = '';
@@ -147,7 +147,7 @@ function mountCarpet() {
     const n = lab(host, x0 + (q + 0.5) * Q / 3, y0 + (r + 0.5) * Q / 3, String(r * 3 + q + 1), 'u10l5-wnum'); n.style.opacity = 0; nums.push(n);
   }
   svgEl('rect', { x: x0, y: y0 + 2 * Q / 3, width: Q, height: Q / 3, fill: RED, 'fill-opacity': 0.45, stroke: RED, 'stroke-width': 4 }, gSlip);
-  const slipLab = lab(host, x0 + Q / 2, y0 + Q * 0.5, '3 ft² is only <b>one row</b> ✗', 'u10l5-wslip'); slipLab.style.opacity = 0;
+  const slipLab = lab(host, x0 + Q / 2, y0 + Q * 5 / 6 + 30, '3 ft² is only <b>one row</b> ✗', 'u10l5-wslip'); slipLab.style.opacity = 0;
   const prices = [];
   for (let r = 0; r < 3; r++) for (let q = 0; q < 3; q++) { const p = lab(host, x0 + (q + 0.5) * Q / 3, y0 + (r + 0.5) * Q / 3 + 26, '$3', 'u10l5-wprice'); p.style.opacity = 0; prices.push(p); }
   const tot = lab(host, x0 + Q / 2, y0 + Q + 58, 'Store A: 9 × $3 = <b>$27</b> per yd² &nbsp;vs&nbsp; Store B: <b>$25</b>', 'u10l5-wtot'); tot.style.opacity = 0;

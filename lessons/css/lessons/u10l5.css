@@ -42,9 +42,9 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u10l5-fsvg { display: block; overflow: visible; }
 .u10l5-svgt { font: 600 18px var(--font); fill: var(--ink); }
 .u10l5-svgb { font-weight: 800; font-size: 20px; }
-.u10l5-why { display: grid; grid-template-columns: 320px 1fr; gap: 22px; align-items: center; margin: 4px 0 6px; }
+.u10l5-why { display: grid; grid-template-columns: auto 1fr; gap: 22px; align-items: center; margin: 4px 0 6px; }
 .u10l5-why .def { margin: 0; }
-.u10l5-exrow { display: grid; grid-template-columns: 300px 1fr; gap: 18px; align-items: start; margin-bottom: 14px; }
+.u10l5-exrow { display: grid; grid-template-columns: minmax(300px, auto) 1fr; gap: 18px; align-items: start; margin-bottom: 14px; }
 .u10l5-exrow .parts { margin-bottom: 0; }
 .u10l5-bins { display: flex; justify-content: center; gap: 60px; margin: 4px 0 12px; }
 .u10l5-blank { display: inline-block; min-width: 120px; border-bottom: 2px solid var(--ink); text-align: center; padding: 0 6px; }
