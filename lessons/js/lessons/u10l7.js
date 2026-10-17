@@ -954,8 +954,8 @@ const scale = {
         else S.lab(key, txt, [o[0], bot[1] + r * cfg.sc + 8], 's', { cls: 'u10l7-sm u10l7-halo u10l7-ctr', color });
       };
       const v1 = k === 'p1' ? '15' : k === 'p2' ? '20' : '10';
-      lab('l1', o1, cfg.r1, cfg.h1, `${k === 'both' ? `${T('r=2.5,\\ h=5')}` : k === 'p1' ? T('h=6') : T('r=4')}<br>${T('V=' + v1)}`, INK);
-      if (st.show2) lab('l2', o2, st.r2, st.h2, `${k === 'p1' ? T('h=' + Math.round(st.h2)) : k === 'p2' ? T('r=' + Math.round(st.r2)) : T(`r=${(+st.r2.toFixed(1))},\\ h=${Math.round(st.h2)}`)}<br>${T('V=\\,?')}`, HC);
+      lab('l1', o1, cfg.r1, cfg.h1, `${k === 'both' ? `${T('r,\\ h')}` : k === 'p1' ? T('h=6') : T('r=4')}<br>${T('V=' + v1)}`, INK);
+      if (st.show2) lab('l2', o2, st.r2, st.h2, `${k === 'p1' ? T('h=' + Math.round(st.h2)) : k === 'p2' ? T('r=' + Math.round(st.r2)) : T(`${st.r2 > cfg.r1 + 1e-6 ? '2r' : 'r'},\\ ${st.h2 > cfg.h1 + 1e-6 ? '2h' : 'h'}`)}<br>${T('V=\\,?')}`, HC);
     };
     S.render();
     if (k === 'p1') return [
@@ -976,7 +976,7 @@ const scale = {
         run: async (c) => { await show(c, line(P, T('V_2=9(20)=180') + ' cm³', 'u10l7-big')); await stampIn(c, stampAt(P, '180 cm³')); } }
     ];
     return [
-      { cap: `A cone with radius ${T('2.5')} cm and height ${T('5')} cm holds ${T('10')} cm³.`, run: (c) => appear(c, S.L('l1')) },
+      { cap: `A cone with radius ${T('r')} and height ${T('h')} holds ${T('10')} cm³.`, run: (c) => appear(c, S.L('l1')) },
       { cap: `Double the radius: the base area is ${T('\\times2^2=\\times4')}.`, run: async (c) => { st.show2 = 1; await tw(c, 1300, S, (t) => (st.r2 = lerp(2.5, 5, t))); await show(c, line(P, `radius ${T('\\times2')}: base ${T('\\times4')}`)); } },
       { cap: `Double the height too: ${T('\\times2')} again.`, run: async (c) => { await tw(c, 1300, S, (t) => (st.h2 = lerp(5, 10, t))); await show(c, line(P, `height ${T('\\times2')}`)); } },
       { cap: `Altogether ${T('\\times4\\times2=\\times8')}: ${T('10\\times8=80')} cm³. Double every length and a cone holds <b>8 times</b> as much.`,

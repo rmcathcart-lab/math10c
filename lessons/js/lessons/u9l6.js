@@ -833,7 +833,7 @@ const ferry = {
           const ar = S.arc(D, 90, 90 - th, 70, { color: ANG, width: 3.5, label: T('\\theta'), lr: 16 }); await drawIn(ar, 400, c); await show(c, ar.label);
           await say(c, pR, `(b) ${T(`\\theta=\\tan^{-1}\\!\\left(\\dfrac{${cO(f4(e))}}{${cA(W2)}}\\right)=${f2(th)}^\\circ`)}`); await say(c, pR, `bearing ${T(`\\boldsymbol{${brg(th)}}`)}`);
         } },
-      { cap: `(c) Distance sailed ${T(`=${d1}+${f4(s)}+${W2}=${f4(tot)}`)} km. Time ${T(`=\\dfrac{${f4(tot)}}{${v}}=${f4(t)}\\approx\\boldsymbol{${f1(t)}}`)} <b>h</b>.`,
+      { cap: `(c) Distance sailed ${T(`=${d1}+${f4(s)}+${W2}=${f4(tot)}`)} km. At ${T(String(v))} km/h, time ${T(`=\\dfrac{${f4(tot)}}{${v}}=${f4(t)}\\approx\\boldsymbol{${f1(t)}}`)} <b>h</b>.`,
         run: async (c) => { await say(c, pR, `(c) ${T(`${f4(tot)}\\div${v}=${f4(t)}\\approx\\boldsymbol{${f1(t)}\\text{ h}}`)}`); } }
     ];
   }

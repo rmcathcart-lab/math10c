@@ -904,7 +904,7 @@ const solveh = {
       { cap: `Grow its height until the area reaches 173.03: ${T('h=\\dfrac{173.030\\ldots}{21.991\\ldots}=7.868\\ldots\\approx7.9')} cm.`,
         run: async (c) => {
           live.style.opacity = 1;
-          await tween(c, 1800, (t) => { const hh = hT * t; rect.setAttribute('y', yBot - hh * u); rect.setAttribute('height', hh * u); live.innerHTML = T(fx(Cw * hh, 2)); }, (t) => t);
+          await tween(c, 1800, (t) => { const hh = hT * Math.max(0, t); rect.setAttribute('y', yBot - hh * u); rect.setAttribute('height', Math.max(0, hh * u)); live.innerHTML = T(fx(Cw * hh, 2)); }, (t) => t);
           ghost.style.opacity = 0; q.innerHTML = T('h\\approx7.868'); await pulse(c, q, 1.15);
           await say(c, P, T('h=7.868\\ldots\\approx7.9\\ \\text{cm}'), 'u10l6-big u10l6-ok');
         } },
