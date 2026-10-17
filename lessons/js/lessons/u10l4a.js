@@ -266,7 +266,7 @@ const hop = {
     const ans = tape.answer(), one = d.D === '1';
     const eqT = one ? `1${U0}=10^{${k}}${U1}=${nT(ans)}${U1}` : `${nT(val)}${U0}=${nT(ans)}${U1}`;
     const calcT = one ? '' : right ? `${nT(val)}\\times10^{${n}}=${nT(ans)}` : `${nT(val)}\\div10^{${n}}=${nT(ans)}`;
-    const fin = hide(add(stage, h('div', 'u10l4a-line big', T(eqT))), 0, 314)); centerX(fin, W / 2);
+    const fin = hide(add(stage, h('div', 'u10l4a-line big', T(eqT)), 0, 314)); centerX(fin, W / 2);
     const tidyNote = (() => {
       const { out, pointGone } = tape.tidyIdx(), tz = out.filter((i) => i >= tape.e).length, lz = out.filter((i) => i < tape.e).length;
       const bits = [];

@@ -238,7 +238,7 @@ const pyramid = {
       { cap: `<b>C</b> (${T('45^\\circ')}) needs height = half-base. Here ${T('146>115')}, so ${T('\\tan\\theta>1')} and ${T('\\theta>45^\\circ')}. A climb, not a walk!`,
         run: async (c) => {
           ghostC = [G.seg(C, [115, 115], { color: GRAY, dash: true, width: 3 })]; await G.draw(c, ghostC[0], 450);
-          const d = G.lab([140, 104], T('45^\\circ\\text{ line}'), { pos: 'nw', color: '#6b7280', cls: 'u9l8-fsm' }); await fadeIn(c, d);
+          const d = G.lab([112, 112], T('45^\\circ\\text{ line}'), { pos: 'w', color: '#6b7280', cls: 'u9l8-fsm' }); await fadeIn(c, d);
           await say(c, p, `<span class="u9l8-x">C</span> ${T('45^\\circ')} only if height ${T('=')} half-base`, 'sm');
         } }
     ];
@@ -249,16 +249,16 @@ const pyramid = {
 const t42 = Math.tan(42 * RAD), th3 = Math.atan(5.3 / 7.8) / RAD, ad5 = 22 / Math.tan(48 * RAD);
 const WT = {
   ex2a: { label: 'Ex 2(a) check', kind: 'rt', P: { R: [0, 0], X: [11, 0], Y: [0, 11 * t42] }, ang: ['X', '42^\\circ'], sides: { RX: '11\\text{ cm}', RY: '?' }, want: 'side', know: 'soh',
-    say: [`One angle (${T('42^\\circ')}) and the ${ADJw} side (11 cm) are known; the ${OPPw} side is wanted.`, 'a side <b>and</b> an angle', `From ${T('42^\\circ')}: 11 is ${ADJw}, the unknown is ${OPPw}: <b>TOA</b>.`],
+    say: [`One angle (${T('42^\\circ')}) and the ${ADJw} side (11 cm) are known; the ${OPPw} side is wanted.`, 'A side <b>and</b> an angle', `From ${T('42^\\circ')}: 11 is ${ADJw}, the unknown is ${OPPw}: <b>TOA</b>.`],
     work: ['\\tan42^\\circ=\\dfrac{\\text{opp}}{11}', `\\text{opp}=11\\tan42^\\circ\\approx${f(11 * t42, 1)}\\text{ cm}`], res: `opp ≈ ${f(11 * t42, 1)} cm`, rs: { RY: f(11 * t42, 1) + '\\text{ cm}' }, col: { RY: OPP, RX: ADJ, XY: HYP } },
   ex3a: { label: 'Ex 3(a) check', kind: 'rt', P: { R: [0, 0], X: [7.8, 0], Y: [0, 5.3] }, ang: ['X', '\\theta^\\circ'], sides: { RX: '7.8\\text{ cm}', RY: '5.3\\text{ cm}' }, want: 'angle', know: 'inv',
-    say: [`Two legs are known (5.3 cm and 7.8 cm); the angle ${T('\\theta^\\circ')} is wanted.`, '<b>two sides</b>', `From ${T('\\theta')}: 5.3 is ${OPPw}, 7.8 is ${ADJw}: <b>TOA backwards</b>, ${T('\\tan^{-1}')}.`],
+    say: [`Two legs are known (5.3 cm and 7.8 cm); the angle ${T('\\theta^\\circ')} is wanted.`, '<b>Two sides</b>', `From ${T('\\theta')}: 5.3 is ${OPPw}, 7.8 is ${ADJw}: <b>TOA backwards</b>, ${T('\\tan^{-1}')}.`],
     work: ['\\tan\\theta^\\circ=\\dfrac{5.3}{7.8}', `\\theta^\\circ=\\tan^{-1}\\!\\left(\\dfrac{5.3}{7.8}\\right)\\approx${f(th3, 1)}^\\circ`], res: `θ ≈ ${f(th3, 1)}°`, ra: f(th3, 1) + '^\\circ', col: { RY: OPP, RX: ADJ, XY: HYP } },
   ex3b: { label: 'Ex 3(b) check', kind: 'rt', P: { R: [0, 0], X: [7.8, 0], Y: [0, 5.3] }, ang: ['X', f(th3, 1) + '^\\circ'], ang2: ['Y', '?'], sides: {}, want: 'angle', know: 'comp',
-    say: [`From (a), ${T('\\theta\\approx' + f(th3, 1) + '^\\circ')}. The <b>other</b> acute angle is wanted.`, 'the <b>other acute angle</b>', 'The acute angles of a right triangle add to <b>90°</b>: no calculator.'],
+    say: [`From (a), ${T('\\theta\\approx' + f(th3, 1) + '^\\circ')}. The <b>other</b> acute angle is wanted.`, 'The <b>other acute angle</b>', 'The acute angles of a right triangle add to <b>90°</b>: no calculator.'],
     work: [`90^\\circ-${f(th3, 1)}^\\circ=${f(90 - th3, 1)}^\\circ`], res: `${f(90 - th3, 1)}°`, ra2: f(90 - th3, 1) + '^\\circ', col: {} },
   ex3c: { label: 'Ex 3(c) check', kind: 'rt', P: { R: [0, 0], X: [7.8, 0], Y: [0, 5.3] }, ang: null, sides: { RX: '7.8\\text{ cm}', RY: '5.3\\text{ cm}', XY: '?' }, want: 'side', know: 'pyth',
-    say: ['Two legs are known; the <b>hypotenuse</b> is wanted.', '<b>two sides</b>', 'Two sides give the third with <b>Pythagoras</b>: no angle needed.'],
+    say: ['Two legs are known; the <b>hypotenuse</b> is wanted.', '<b>Two sides</b>', 'Two sides give the third with <b>Pythagoras</b>: no angle needed.'],
     work: ['\\text{hyp}=\\sqrt{5.3^2+7.8^2}', `=\\sqrt{88.93}\\approx${f(Math.hypot(5.3, 7.8), 1)}\\text{ cm}`], res: `hyp ≈ ${f(Math.hypot(5.3, 7.8), 1)} cm`, rs: { XY: f(Math.hypot(5.3, 7.8), 1) + '\\text{ cm}' }, col: { XY: HYP } },
   ex5: { label: 'Ex 5(a) check', kind: 'ob', P: { A: [0, 0], C: [ad5 + 22 / Math.tan(34 * RAD), 0], B: [ad5, 22], D: [ad5, 0] }, want: 'side', know: 'soh',
     say: [`Triangle ${T('ABC')}: ${T('\\angle A=48^\\circ')}, ${T('\\angle C=34^\\circ')}, ${T('BD=22')} m. ${T('AD')} is wanted.`, `${T('BD')} <b>and</b> ${T('\\angle A')}`, `In ${T('\\triangle ABD')}, from ${T('48^\\circ')}: ${T('BD')} is ${OPPw}, ${T('AD')} is ${ADJw}: <b>TOA</b>.`],
@@ -390,7 +390,7 @@ const names = {
           for (const [a, b, t, pos] of [[pR, p1, base, 's'], [pR, p2, rise, 'w'], [p1, p2, hyp, 'ne']]) G.lab([(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], T(String(t)), { pos, cls: 'u9l8-fn' });
           colour(shy, HYP); await swapTags(c, [[p1, p2, 'hyp', HYP]]);
         } },
-      { cap: `Stand at ${T(V1)}. ${OPPw}: the leg that doesn’t touch ${T(V1)}, ${T(`${s2}=${rise}`)}. ${ADJw}: the leg that touches ${T(V1)}, ${T(`${s1}=${base}`)}.`,
+      { cap: `Stand at ${T(V1)}. The ${OPPw} leg doesn’t touch ${T(V1)}: ${T(`${s2}=${rise}`)}. The ${ADJw} leg touches ${T(V1)}: ${T(`${s1}=${base}`)}.`,
         run: async (c) => {
           arc1 = G.arc(p1, p2, pR, 40, { label: T(V1) }); await G.draw(c, arc1, 400); await fadeIn(c, arc1.label);
           colour(sv, OPP); colour(sb, ADJ); await swapTags(c, [[p1, p2, 'hyp', HYP], [pR, p2, 'opp', OPP], [pR, p1, 'adj', ADJ]]);
@@ -746,7 +746,7 @@ const iso = {
   title: 'Isosceles: area → height → two congruent halves',
   height: 430,
   choices: Object.keys(IS).map((k) => ({ v: k, label: IS[k].label })),
-  intro: (v) => `${v === 'ex6' ? 'Example 6: ' : ''}isosceles ${T('KLM')}, base ${T(`LM=${IS[v].b}`)} cm, area ${T(`${IS[v].A}\\text{ cm}^2`)}. Press <b>Next</b>.`,
+  intro: (v) => `${v === 'ex6' ? 'Example 6: i' : 'I'}sosceles ${T('KLM')}, base ${T(`LM=${IS[v].b}`)} cm, area ${T(`${IS[v].A}\\text{ cm}^2`)}. Press <b>Next</b>.`,
   make(stage, v, ex) {
     const q = IS[v], hb = q.b / 2, ht = 2 * q.A / q.b, side = Math.hypot(hb, ht), half = Math.atan(hb / ht) / RAD;
     const k = Math.min(210 / hb, 250 / ht), ox = 240, oy = 320;

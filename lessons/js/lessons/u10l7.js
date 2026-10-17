@@ -288,7 +288,7 @@ function figShed() {
 function ansFigs() {
   let host = document.getElementById('u10l7-a1a');
   if (host) {
-    const S = new Scene3(host, { w: 330, h: 220, cx: 135, cy: 170, scale: 8.6, yaw: -24, tilt: 14 });
+    const S = new Scene3(host, { w: 330, h: 140, cx: 135, cy: 84, scale: 8.6, yaw: -24, tilt: 14 });
     S.draw = (S) => {
       const [V, F] = pyramidVF(rect(16, 16), [0, 6, 0]); solid(S, S.g, V, F, { fill: '#fff' });
       seg(S.g, S.P([0, 6, 0]), S.P([0, 0, 0]), { stroke: HC, w: 2.2, dash: DASH });
@@ -325,13 +325,13 @@ function ansFigs() {
   }
   host = document.getElementById('u10l7-a3');
   if (host) {
-    const sv = svgEl('svg', { width: 240, height: 220, viewBox: '0 0 240 220', class: 'u10l7-svg' }, host), R = 88, O = [120, 110];
+    const sv = svgEl('svg', { width: 300, height: 200, viewBox: '0 0 300 200', class: 'u10l7-svg' }, host), R = 82, O = [110, 100];
     const V = Array.from({ length: 6 }, (_, i) => [O[0] + R * Math.cos((i * PI) / 3), O[1] - R * Math.sin((i * PI) / 3)]);
     poly(sv, V, { fill: '#fff', stroke: INK, w: 2.4 }); V.forEach((p) => seg(sv, O, p, { w: 1.6 }));
     const M = lerp2(V[0], V[1], 0.5); seg(sv, O, M, { stroke: TRI, w: 2.4, dash: '6 5' });
     svgEl('circle', { cx: O[0], cy: O[1], r: 3.5, fill: INK }, sv);
     const lab = (html, x, y, pos = 'c') => { const d = h('div', 'u10l7-lab u10l7-sm', html); host.appendChild(d); place(d, x, y, pos, 4); };
-    lab(`${T('6')} cm`, M[0] + 14, M[1] - 12, 'ne'); lab('apothem', O[0] + 26, O[1] - 10, 'se');
+    lab(`${T('6')} cm`, M[0] + 14, M[1] - 12, 'ne'); const Q = lerp2(O, M, 0.62); seg(sv, Q, [V[0][0] + 14, V[0][1] + 26], { w: 1.2, op: 0.7 }); lab('apothem', V[0][0] + 16, V[0][1] + 26, 'e');
   }
 }
 
