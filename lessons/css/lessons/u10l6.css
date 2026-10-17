@@ -1,0 +1,91 @@
+/* Math 10C · Unit 10 · Lesson 6 — Surface Area and Volume of Prisms and Cylinders: styles used only on this page (prefix u10l6-).
+ * Colours: bases teal, side faces amber, curved surfaces blue, highlights red. */
+.ex-cap { min-height: 132px; }
+.ex-cap .katex { font-size: 1.04em; }
+.chip .katex { font-size: 1em; }
+.pl .katex { font-size: 1.08em; }
+.ans .katex { font-size: 1.04em; }
+.pill-col { display: flex; flex-direction: column; gap: 6px; }
+.lesson .katex { white-space: nowrap; }
+h2 .katex, h3 .katex { font-size: .95em; }
+
+/* ---------------- warm-up ---------------- */
+.u10l6-wtop { display: grid; grid-template-columns: 540px 1fr; gap: 22px; align-items: start; }
+.u10l6-wfig { display: flex; justify-content: center; }
+.u10l6-wfig .u10l6-scene { position: relative; }
+.u10l6-wqs .q-line { margin-top: 6px; }
+.u10l6-wa { margin: 0 0 8px 50px; }
+.u10l6-wa .pill.small { margin-left: 0; }
+.u10l6-poll3 .poll-opts { grid-template-columns: repeat(3, 1fr); }
+.u10l6-try { font-style: italic; color: var(--ink2); font-size: 19px; margin: 14px 0 0; }
+.u10l6-early { margin-top: 14px; }
+.u10l6-social { font-style: italic; color: var(--ink2); font-size: 19px; text-align: center; margin: 16px 0 0; }
+.u10l6-cap { font: 700 17px var(--round); color: var(--amber); background: rgba(255, 255, 255, .9); border-radius: 6px; padding: 0 6px; }
+
+/* ---------------- static figures ---------------- */
+.u10l6-fig { display: flex; justify-content: center; align-items: center; }
+.u10l6-tk { position: relative; flex: none; }
+.u10l6-tk svg { display: block; }
+.u10l6-tkl { position: absolute; white-space: nowrap; font-size: 19px; line-height: 1.2; color: var(--ink); }
+.u10l6-tkf { background: #fff; padding: 0 3px; border-radius: 4px; }
+.u10l6-gallery { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 4px 0 18px; text-align: center; }
+.u10l6-gt { font: 800 19px var(--round); margin-bottom: 4px; }
+.u10l6-gc { font-size: 17px; color: var(--ink2); margin-top: 4px; }
+.u10l6-formula { font-size: 20px; }
+.u10l6-disp { text-align: center; font-size: 26px; margin: 8px 0 8px; }
+.u10l6-exrow { display: grid; grid-template-columns: 380px 1fr; gap: 20px; align-items: start; }
+.u10l6-exrow-s { grid-template-columns: 330px 1fr; }
+.u10l6-exrow .parts { margin-bottom: 0; }
+.u10l6-netfig { margin: 6px 0 12px; }
+.u10l6-blank { font-weight: 700; }
+.u10l6-blank.bk-rv { color: var(--red); }
+
+/* capacity table and conversions */
+.u10l6-tbl { border-collapse: collapse; margin: 6px auto 16px; font-size: 19px; }
+.u10l6-tbl th, .u10l6-tbl td { border: 1.5px solid #cfc9bb; padding: 7px 18px; text-align: center; }
+.u10l6-tbl thead th { background: var(--brand-soft); color: var(--brand); }
+.u10l6-tbl tbody th { background: #f6f5f1; font-weight: 700; }
+.u10l6-conv { font-size: 19px; }
+.u10l6-convgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px 18px; margin: 8px 0 6px; font-size: 20px; }
+
+/* ---------------- 3-D scenes and explainer pieces ---------------- */
+.u10l6-scene { overflow: hidden; }
+.u10l6-scene svg { position: absolute; left: 0; top: 0; overflow: visible; }
+.u10l6-labs { position: absolute; inset: 0; pointer-events: none; }
+.u10l6-lab { position: absolute; white-space: nowrap; line-height: 1.15; }
+.u10l6-dim { font-size: 18px; font-weight: 700; color: var(--ink); background: rgba(255, 255, 255, .88); border-radius: 7px; padding: 0 5px; }
+.u10l6-area { font-size: 21px; font-weight: 800; color: var(--red); background: rgba(255, 255, 255, .92); border-radius: 8px; padding: 1px 7px; box-shadow: 0 1px 2px rgba(0, 0, 0, .12); }
+.u10l6-tag { font: 800 16px var(--round); color: var(--brand); background: rgba(255, 255, 255, .9); border-radius: 7px; padding: 0 6px; text-transform: uppercase; letter-spacing: .05em; }
+.u10l6-rl { font-size: 18px; font-weight: 800; color: var(--red); background: rgba(255, 255, 255, .9); border-radius: 7px; padding: 0 5px; }
+.u10l6-bl { font-size: 18px; font-weight: 800; color: var(--blue, #1f5bd6); background: rgba(255, 255, 255, .9); border-radius: 7px; padding: 0 5px; }
+.u10l6-vol { font-size: 18px; font-weight: 800; color: var(--brand); background: rgba(255, 255, 255, .92); border-radius: 7px; padding: 1px 6px; }
+.u10l6-panel { background: #fff; border: 1px solid var(--line2); border-radius: 14px; padding: 10px 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
+.u10l6-ph { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.u10l6-ph:empty { display: none; }
+.u10l6-line { font-size: 20px; line-height: 1.35; }
+.u10l6-big { font-size: 23px; font-weight: 700; }
+.u10l6-ok { color: var(--ok); }
+.u10l6-no { color: var(--red); }
+.u10l6-count { font-size: 20px; color: var(--ink2); }
+.u10l6-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; align-content: start; }
+.u10l6-col { display: flex; flex-direction: column; gap: 6px; }
+
+/* US gallon jug bar (capacity) */
+.u10l6-jug { margin-top: 4px; }
+.u10l6-jugbar { height: 22px; border: 2px solid #3f7fd0; border-radius: 6px; background: #f2f7fe; overflow: hidden; }
+.u10l6-jugfill { height: 100%; width: 0; background: #6ea8ee; }
+.u10l6-jugl { font-size: 17px; color: var(--ink2); margin-top: 2px; }
+
+/* volume meter (working backwards) */
+.u10l6-meter { position: relative; border: 2px solid #b9b3a5; border-radius: 9px; background: #fff; }
+.u10l6-mfill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: #ffd58f; border-radius: 7px 0 0 7px; }
+.u10l6-mfill.over { background: #ffb1a8; }
+.u10l6-mtgt { position: absolute; top: -8px; bottom: -8px; width: 0; border-left: 3px solid var(--ok); }
+.u10l6-mtl { position: absolute; top: -27px; left: -40px; width: 80px; text-align: center; font-size: 16px; font-weight: 700; color: var(--ok); }
+.u10l6-mval { position: absolute; top: 4px; translate: 6px 0; font-size: 17px; font-weight: 700; color: var(--ink); white-space: nowrap; }
+
+/* share bar (Example 8) */
+.u10l6-share { display: flex; height: 26px; border-radius: 7px; overflow: hidden; border: 2px solid #b9b3a5; margin: 2px 0 4px; }
+.u10l6-sh1 { background: var(--brand-soft); border-right: 2px solid #fff; background: #a9dcd5; }
+.u10l6-sh2 { background: #eef1f6; transition: background .4s; }
+.u10l6-share.u10l6-sh-on .u10l6-sh2 { background: #bcd2fb; }

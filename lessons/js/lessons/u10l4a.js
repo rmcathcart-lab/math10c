@@ -316,7 +316,7 @@ const sci = {
     const unitEl = add(tape.el, h('div', 'u10l4a-tunit', T(uTex(d.to, d.base))), tape.full.length * tape.slot + 190, 18);
     tape.el.style.width = tape.full.length * tape.slot + 300 + 'px';
     const mant = tape.answer(), mT = mant;
-    const fin = hide(add(stage, h('div', 'u10l4a-line big', T(`${val}${U0}=${val}\\times10^{${k}}${U1}=${mT}\\times10^{${e1}}${U1}`))), 0, 318)); centerX(fin, W / 2);
+    const fin = hide(add(stage, h('div', 'u10l4a-line big', T(`${val}${U0}=${val}\\times10^{${k}}${U1}=${mT}\\times10^{${e1}}${U1}`)), 0, 318)); centerX(fin, W / 2);
     const std = hide(add(stage, h('div', 'u10l4a-line muted', `in standard notation, ${T(d.std + U1)}`), 0, 364)); centerX(std, W / 2);
     const big = { el: null };
     return [
@@ -455,7 +455,7 @@ function smoothieSteps(stage, ex) {
   const e2 = eqs.appendChild(h('div', 'u10l4a-line big', T('\\dfrac{3}{7}=\\dfrac{330}{j}')));
   const e3 = eqs.appendChild(h('div', 'u10l4a-line big', T('3j=2310,\\ \\ j=770\\text{ mL}')));
   centerX(eqs, W / 2); [e1, e2, e3].forEach(hide);
-  const e4 = hide(add(stage, h('div', 'u10l4a-line big', T('\\text{extra juice}=770-560=210\\text{ mL}'))), 0, 316)); centerX(e4, W / 2);
+  const e4 = hide(add(stage, h('div', 'u10l4a-line big', T('\\text{extra juice}=770-560=210\\text{ mL}')), 0, 316)); centerX(e4, W / 2);
   const setW = (bw, t) => {
     Y.forEach((b, i) => { b.style.width = bw + 'px'; b.style.left = x0 + i * bw + 'px'; });
     J.forEach((b, i) => { b.style.width = bw + 'px'; b.style.left = x0 + i * bw + 'px'; });

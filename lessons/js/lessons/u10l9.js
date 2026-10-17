@@ -128,7 +128,9 @@ class Micrometer extends Box {
     const W = o.width, H = o.height || 196;
     super(host, o, 'u10l9-micro', W, H);
     this.m = Object.assign({ lo: 0, mmPx: 40, y0: 86, x0: 26, thW: 150, captions: false }, o);
-    this.L = this.layer('m'); this.Lt = this.layer('mt'); this.set(o.R ?? 0);
+    this.L = this.layer('m'); this.Lt = this.layer('mt');
+    if (o.zoom) [this.L, this.Lt].forEach((g) => { g.setAttribute('transform', `scale(${o.zoom})`); g.style.transformBox = 'view-box'; g.style.transformOrigin = '0 0'; });
+    this.set(o.R ?? 0);
   }
   X(mm) { const m = this.m; return m.x0 + (mm - m.lo) * m.mmPx; }
   set(R) {
@@ -344,10 +346,10 @@ const fill = {
   choices: [{ v: 'grid', label: 'Stack them in a grid' }, { v: 'box', label: 'Cube boxes' }, { v: 'oops', label: 'The two traps' }],
   intro: (v) => (v === 'grid' ? 'Count the balls row by row, layer by layer. Press <b>Next</b>.' : v === 'box' ? 'A second way: give every ball its own box. Press <b>Next</b>.' : 'Why answer D, and why not divide by a ball’s volume? Press <b>Next</b>.'),
   make(stage, v, ex) {
-    const W = ex.W, PX = W - 350;
-    const p = panel(stage, PX, 14, 336, 410);
+    const W = ex.W, PX = W - 314;
+    const p = panel(stage, PX, 14, 300, 410);
     if (v === 'grid') {
-      const s = 58, x0 = 28, yF = 300, br = 0.12 * s, B = fbox(stage, PX - 12, 420, 0, 6), L = B.L;
+      const s = 50, x0 = 58, yF = 300, br = 0.12 * s, B = fbox(stage, PX - 12, 420, 0, 6), L = B.L;
       const wall = svgEl('rect', { x: x0, y: yF - 3 * s, width: 9 * s, height: 3 * s, fill: '#fff8ea', stroke: INK, 'stroke-width': 3 }, L);
       const dz = 64, dyz = 40; // depth hint
       const back = svgEl('g', {}, L); sline(back, [x0, yF - 3 * s], [x0 + dz, yF - 3 * s - dyz], { w: 1.6 }); sline(back, [x0 + 9 * s, yF - 3 * s], [x0 + 9 * s + dz, yF - 3 * s - dyz], { w: 1.6 }); sline(back, [x0 + 9 * s, yF], [x0 + 9 * s + dz, yF - dyz], { w: 1.6 }); sline(back, [x0 + dz, yF - 3 * s - dyz], [x0 + 9 * s + dz, yF - 3 * s - dyz], { w: 1.6 }); sline(back, [x0 + 9 * s + dz, yF - 3 * s - dyz], [x0 + 9 * s + dz, yF - dyz], { w: 1.6 });
@@ -457,7 +459,7 @@ const whichWay = {
       ]
     });
     F.el.classList.add('u10l9-flow');
-    const qb = add(stage, box(h('div', 'u10l9-qcard', `<div class="u10l9-ph">The question</div>${Q.q}`), Math.max(160, X(0.5) - 190), null), 6, 4);
+    const qb = add(stage, box(h('div', 'u10l9-qcard', `<div class="u10l9-ph">The question</div>${Q.q}`), Math.max(160, X(0.5) - 200), null), 6, 4);
     const steps = [];
     Q.passes.forEach((ps, pi) => {
       ps.path.forEach((id, i) => {
@@ -512,6 +514,7 @@ const ladder = {
     const hops = async (c, a, b, color = AMB) => { const st = Math.sign(b - a); for (let p = a; p !== b; p += st) await N.hop(c, p, p + st, { label: st > 0 ? '×10' : '÷10', color, height: 34 }); };
     const strip = (D, e, unit, range) => numStrip(stage, Math.max(10, W / 2 - (range[1] - range[0] + 1) * 18 - 30), 12, D, e, unit, range);
     const here = (p, col = TEAL) => N.point(p, { color: col, r: 9 });
+    const wipe = (keep = []) => { N.clear(); keep.forEach(([q, col]) => here(q, col)); };
     const ans = (html, cls = '') => { const d = add(stage, h('div', 'u10l9-ansbox ' + cls, html), 20, 258); hide(d); return d; };
     if (v === 'how') {
       let S; const a1 = ans(''), a2 = ans('');
@@ -521,7 +524,7 @@ const ladder = {
           run: async (c) => { for (let k = 0; k < 3; k++) { await Promise.all([N.hop(c, -3 + k, -2 + k, { label: '×10', height: 34 }), S.to(c, 2 + k)]); } S.unit('m'); await pop(c, here(0, GRN)); } },
         { cap: `${T('3.2\\text{ km}=3200\\text{ m}')}. A <b>smaller</b> unit gives a <b>bigger</b> number: more of them fit.`, run: async (c) => { a1.innerHTML = `${T('3.2\\text{ km}=3200\\text{ m}')} ✓ smaller unit, bigger number`; await fadeIn(c, a1); } },
         { cap: `Going left <b>divides by 10</b> per step: ${T('3200\\text{ m}\\to3.2\\text{ km}')} is 3 steps left. Count the steps, and check the direction.`,
-          run: async (c) => { for (let k = 0; k < 3; k++) { await Promise.all([N.hop(c, -k, -k - 1, { label: '÷10', below: true, color: PUR, height: 30 }), S.to(c, 3 - k)]); } S.unit('km'); a1.style.opacity = 0; a2.innerHTML = `${T('3200\\text{ m}=3.2\\text{ km}')}: larger unit, smaller number`; await fadeIn(c, a2); } }
+          run: async (c) => { wipe([[0, GRN]]); for (let k = 0; k < 3; k++) { await Promise.all([N.hop(c, -k, -k - 1, { label: '÷10', color: PUR, height: 34 }), S.to(c, 3 - k)]); } S.unit('km'); a1.style.opacity = 0; a2.innerHTML = `${T('3200\\text{ m}=3.2\\text{ km}')}: larger unit, smaller number`; await fadeIn(c, a2); } }
       ];
     }
     if (v === 'e1a') {
@@ -531,7 +534,7 @@ const ladder = {
         { cap: `m → mm is <b>3 steps right</b>: ${T('\\times1000')}. ${T('1.46\\to14.6\\to146\\to1460')}.`,
           run: async (c) => { for (let k = 0; k < 3; k++) await Promise.all([N.hop(c, k, k + 1, { label: '×10', height: 34 }), S.to(c, 2 + k)]); S.unit('mm'); await pop(c, here(3, GRN)); } },
         { cap: `${T('1.46\\text{ m}=1460\\text{ mm}')}. Now ${T('54\\text{ cm}')}: centi → milli is <b>1 step right</b>, ${T('54\\to540\\text{ mm}')}.`,
-          run: async (c) => { a1.innerHTML = `${T('1.46\\text{ m}=1460\\text{ mm}')}`; await fadeIn(c, a1); S.el.style.opacity = 0.0; S2 = strip('54', 2, 'cm', [0, 4]); await fadeIn(c, S2.el); await pop(c, here(2, BLUE)); await Promise.all([N.hop(c, 2, 3, { label: '×10', color: BLUE, height: 34 }), S2.to(c, 3)]); S2.unit('mm'); } },
+          run: async (c) => { a1.innerHTML = `${T('1.46\\text{ m}=1460\\text{ mm}')}`; await fadeIn(c, a1); S.el.style.opacity = 0.0; wipe(); S2 = strip('54', 2, 'cm', [0, 4]); await fadeIn(c, S2.el); await pop(c, here(2, BLUE)); await Promise.all([N.hop(c, 2, 3, { label: '×10', color: BLUE, height: 34 }), S2.to(c, 3)]); S2.unit('mm'); } },
         { cap: `Same unit now, so subtract: ${T('1460-540=920\\text{ mm}')}.`, run: async (c) => { a1.innerHTML = `${T('1460\\text{ mm}-540\\text{ mm}=\\mathbf{920\\ mm}')}`; a1.classList.add('u10l9-good'); await pulse(c, a1, 1.06); } }
       ];
     }
@@ -588,7 +591,8 @@ function instIcon(L, k, cx, cy) {
   else { svgEl('circle', { cx: -14, cy: 10, r: 18, fill: '#eceef2', stroke: INK, 'stroke-width': 2.4 }, g); S('M-14 10 L-14 -8', 'none', 1.6); S('M-14 10 L30 -30 L40 -30', 'none', 3); }
   return g;
 }
-const HORSE = [[0.05, 0], [0.09, 0], [0.11, 0.42], [0.14, 0.5], [0.16, 0], [0.2, 0], [0.24, 0.52], [0.7, 0.53], [0.84, 0.46], [0.86, 0], [0.9, 0], [0.93, 0.36], [0.96, 0.44], [0.98, 0], [1.02, 0], [1.04, 0.5], [1.07, 0.74], [1.12, 0.62], [1.17, 0.44], [1.13, 0.68], [1.08, 0.84], [1.02, 0.95], [0.82, 0.93], [0.42, 0.95], [0.2, 1.0], [0.1, 1.2], [0.0, 1.36], [-0.04, 1.42], [-0.06, 1.34], [-0.25, 1.12], [-0.29, 1.04], [-0.25, 1.0], [-0.06, 1.08], [0.02, 0.9], [0.03, 0.66], [0.06, 0.5]];
+const HORSE = [[0.1, 0], [0.11, 0.3], [0.1, 0.36], [0.12, 0.55], [0.06, 0.66], [0.05, 0.78], [0.0, 0.92], [-0.08, 1.05], [-0.11, 1.07], [-0.3, 0.89], [-0.36, 0.86], [-0.38, 0.91], [-0.34, 0.98], [-0.15, 1.22], [-0.09, 1.34], [-0.05, 1.27], [0.06, 1.16], [0.18, 1.04], [0.26, 1.0], [0.45, 0.94], [0.7, 0.94], [0.85, 0.98], [0.97, 0.94], [1.0, 0.9], [1.06, 0.8], [1.08, 0.55], [1.04, 0.45], [1.02, 0.62], [0.99, 0.74], [0.98, 0.58], [0.96, 0.38], [0.95, 0.3], [0.95, 0.04], [0.97, 0], [0.89, 0], [0.89, 0.28], [0.87, 0.4], [0.83, 0.54], [0.7, 0.53], [0.4, 0.52], [0.24, 0.53], [0.2, 0.45], [0.18, 0.32], [0.17, 0.04], [0.18, 0]];
+const HORSE_LEGS = [[[0.2, 0.5], [0.23, 0.3], [0.22, 0.04], [0.24, 0], [0.31, 0], [0.29, 0.3], [0.3, 0.5]], [[0.78, 0.5], [0.8, 0.36], [0.79, 0.04], [0.8, 0], [0.86, 0], [0.86, 0.3], [0.85, 0.5]]];
 const sizeUp = {
   title: 'Sizing up: units, instruments, referents',
   height: 420,
@@ -622,9 +626,9 @@ const sizeUp = {
     }
     if (v === 'tool') {
       const n = INST.length, cw2 = (W - 20) / n;
-      const B = fbox(stage, W, 420, 0, 0), L = B.L;
       const cards = INST.map((it, i) => { const d = add(stage, box(h('div', 'u10l9-inst', `<div class="u10l9-isp"></div><b>${it.name}</b><span>reads to ${it.pr}</span><small>${it.rg}</small>`), cw2 - 12, 190), 10 + i * cw2, 200); return d; });
-      INST.forEach((it, i) => instIcon(L, it.k, 10 + i * cw2 + (cw2 - 12) / 2, 250));
+      const B = fbox(stage, W, 420, 0, 0), L = B.L; B.el.style.pointerEvents = 'none';
+      INST.forEach((it, i) => instIcon(L, it.k, 10 + i * cw2 + (cw2 - 12) / 2, 252));
       const jobs = [
         { t: 'thickness of a credit card', s: 'under 1 mm', to: 0, why: 'Under a millimetre thick, so it needs <b>0.01 mm</b> precision: the <b>micrometer</b>.' },
         { t: 'width of a doorway', s: 'about 0.9 m', to: 3, why: 'About a metre: too long for a ruler, a job for the <b>tape measure</b>.' },
@@ -635,16 +639,16 @@ const sizeUp = {
         cap: jobs[i].why,
         run: async (c) => {
           const p = pills[i], j = jobs[i]; await fadeIn(c, p);
-          const x1 = 20 + i * (W / 3), x2 = 10 + j.to * cw2 + (cw2 - 12) / 2 - p.offsetWidth / 2;
+          const x1 = 20 + i * (W / 3), x2 = Math.max(4, Math.min(W - p.offsetWidth - 4, 10 + j.to * cw2 + (cw2 - 12) / 2 - p.offsetWidth / 2));
           await tween(c, 600, (t) => { p.style.left = lerp(x1, x2, t) + 'px'; p.style.top = lerp(30, 120 - i * 0, t) + 'px'; });
           cards[j.to].classList.add('u10l9-hot'); await pulse(c, cards[j.to], 1.05);
-          p.style.opacity = 0.0; const tag = add(stage, h('div', 'u10l9-jtag', j.t), 10 + j.to * cw2 + 6, 158); await fadeIn(c, tag);
+          p.style.display = 'none'; const tag = add(stage, h('div', 'u10l9-jtag', j.t), 10 + j.to * cw2 + 6, 158); await fadeIn(c, tag);
         }
       });
       return [step(0), step(1), step(2), { cap: 'Match the <b>precision</b> the job needs (and the <b>reach</b>) to the tool. The vernier caliper and ruler wait for small objects and gaps.', run: (c) => sleep(c, 200) }];
     }
     // hands
-    const B = fbox(stage, W, 420, 0, 0), L = B.L, pin = 5.6, yG = 392, xS = 330, hw = 70;
+    const B = fbox(stage, W, 420, 0, 0), L = B.L, pin = 5.6, yG = 392, xS = 440, hw = 70;
     const Y = (inch) => yG - inch * pin;
     // inch scale
     sline(L, [xS - 16, Y(0)], [xS - 16, Y(62)], { w: 2 });
@@ -652,9 +656,11 @@ const sizeUp = {
     lab(B, xS - 50, Y(62) - 6, 'inches', 'n', 'u10l9-flab u10l9-sm');
     sline(L, [20, yG], [W - 20, yG], { w: 3 });
     // horse
-    const hs = 57 * pin, hx = 70, hp = HORSE.map(([x, y]) => [hx + (x + 0.29) * hs * 0.82, yG - y * hs]);
-    svgEl('path', { d: pD(hp, true), fill: '#c9a27a', stroke: '#5a3b1e', 'stroke-width': 2.2, 'stroke-linejoin': 'round', opacity: 0.9 }, L);
-    const wx = hx + (0.2 + 0.29) * hs * 0.82;
+    const hs = 57 * pin, sx = hs * 0.78, hx = 34 + 0.38 * sx, HP = (pts) => pts.map(([x, y]) => [hx + x * sx, yG - y * hs]);
+    HORSE_LEGS.forEach((lg) => svgEl('path', { d: pD(HP(lg), true), fill: '#8a5a33', stroke: '#4a2f17', 'stroke-width': 1.6, 'stroke-linejoin': 'round' }, L));
+    svgEl('path', { d: pD(HP(HORSE), true), fill: '#b9844f', stroke: '#4a2f17', 'stroke-width': 2.2, 'stroke-linejoin': 'round' }, L);
+    svgEl('circle', { cx: hx - 0.2 * sx, cy: yG - 1.08 * hs, r: 3.5, fill: '#2a1a0c' }, L);
+    const wx = hx + 0.26 * sx;
     sline(L, [wx, Y(57)], [xS + hw + 30, Y(57)], { dash: '6 5', color: RED, w: 2 });
     lab(B, wx - 6, Y(57) - 4, 'withers', 'nw', 'u10l9-flab u10l9-sm');
     const handG = svgEl('g', {}, L); const hands = [];
@@ -684,7 +690,7 @@ const micro = {
   choices: [{ v: 'how', label: 'How it works' }, { v: 'e3', label: 'Example 3 check' }],
   intro: (v) => (v === 'how' ? 'Turn the thimble and watch both scales. Press <b>Next</b>.' : 'Open the micrometer to the Example 3 reading. Press <b>Next</b>.'),
   make(stage, v, ex) {
-    const W = ex.W, MW = 620, M = new Micrometer(stage, { x: 4, y: 40, width: MW, height: 200, lo: 0, mmPx: 44, x0: 30, R: v === 'how' ? 2 : 0 });
+    const W = ex.W, MW = 620, how = v === 'how', M = new Micrometer(stage, { x: 4, y: how ? 20 : 30, width: MW, height: 250, lo: 0, mmPx: how ? 64 : 44, x0: 30, R: how ? 2 : 0, zoom: how ? 1.3 : 1.08 });
     const p = panel(stage, MW + 20, 20, W - MW - 30, 260, v === 'how' ? 'The reading' : 'Example 3');
     const turn = (c, a, b, ms) => tween(c, ms, (t) => M.set(lerp(a, b, t)));
     const ring = (x, y, col = RED) => { const e = svgEl('circle', { cx: x, cy: y, r: 13, fill: 'none', stroke: col, 'stroke-width': 3 }, M.Lt); return e; };
@@ -720,25 +726,27 @@ const ratioMap = {
       slab(stage, 50, 184, '<b>km</b>', 'w', 'u10l9-amb'); slab(stage, 50, 284, '<b>mi</b>', 'w', 'u10l9-blue');
       const bk = NK.interval(0, 1032, { color: AMB, width: 9, openA: false }), bm = NM.interval(0, 645, { color: BLUE, width: 9 });
       [bk, bm].forEach(hide);
+      const xe = 20 + NK.toPx(1032), link = sline(svgEl('svg', { width: W, height: 400, style: 'position:absolute;left:0;top:0;overflow:visible' }, stage), [xe, 184], [xe, 284], { dash: '5 5', w: 2, color: GRN }); hide(link);
+      const ek = hide(slab(stage, xe, 160, T('1032'), 'n', 'u10l9-amb')), em = hide(slab(stage, xe, 260, T('645'), 'n', 'u10l9-blue'));
       const st = add(stage, h('div', 'u10l9-ansbox', ''), W - 330, 330); hide(st);
       return [
         { cap: 'Write the distance over 1, then multiply by a conversion fraction with <b>km on the bottom</b>, so km cancels.', run: async (c) => { eq.innerHTML = T('\\dfrac{1032\\text{ km}}{1}\\times\\dfrac{5\\text{ mi}}{8\\text{ km}}'); await fadeIn(c, eq); } },
         { cap: 'km on top and km on the bottom <b>cancel</b>, leaving mi.', run: async (c) => { eq.innerHTML = T('\\dfrac{1032\\,{\\color{#c93a33}\\cancel{\\text{km}}}}{1}\\times\\dfrac{5\\text{ mi}}{8\\,{\\color{#c93a33}\\cancel{\\text{km}}}}=\\dfrac{1032\\times5}{8}\\text{ mi}'); await pulse(c, eq, 1.04); } },
         { cap: `${T('1032\\div8=129')} groups of 8 km, and each group is 5 mi: ${T('129\\times5=645')} mi.`, run: async (c) => { eq.innerHTML = T('\\dfrac{1032\\,{\\color{#c93a33}\\cancel{\\text{km}}}}{1}\\times\\dfrac{5\\text{ mi}}{8\\,{\\color{#c93a33}\\cancel{\\text{km}}}}=129\\times5=\\mathbf{645\\ mi}'); bk.style.opacity = 1; await NK.drawIn(bk, 800, c); } },
-        { cap: 'The same road on both scales: 1032 km is 645 mi. Miles are longer, so there are fewer of them ✓', run: async (c) => { bm.style.opacity = 1; await NM.drawIn(bm, 800, c); st.innerHTML = `${T('1032\\text{ km}\\approx645\\text{ mi}')} ✓`; await fadeIn(c, st); } }
+        { cap: 'The same road on both scales: 1032 km is 645 mi. Miles are longer, so there are fewer of them ✓', run: async (c) => { bm.style.opacity = 1; await NM.drawIn(bm, 800, c); await appear(c, link, 300); await fadeIn(c, ek, 200); await fadeIn(c, em, 200); st.innerHTML = `${T('1032\\text{ km}\\approx645\\text{ mi}')} ✓`; await fadeIn(c, st); } }
       ];
     }
     // map
-    const B = fbox(stage, W, 400, 0, 0), L = B.L, k = 16, mx = 40, my = 60, mw = 40 * k + 20, mh = 190;
+    const B = fbox(stage, W, 400, 0, 0), L = B.L, k = 15, mx = 40, my = 60, mw = 42 * k + 20, mh = 190;
     svgEl('rect', { x: mx - 10, y: my, width: mw, height: mh, rx: 10, fill: '#eef5e6', stroke: '#8fae78', 'stroke-width': 2 }, L);
     svgEl('path', { d: `M${mx + 40} ${my + 150} C ${mx + 160} ${my + 90}, ${mx + 260} ${my + 170}, ${mx + 420} ${my + 120} S ${mx + 560} ${my + 60}, ${mx + 620} ${my + 90}`, fill: 'none', stroke: '#8ab6e8', 'stroke-width': 7, 'stroke-linecap': 'round' }, L);
     const tA = [mx + 2 * k, my + 80], tB = [mx + 38 * k, my + 80];
     [tA, tB].forEach((t, i) => { svgEl('circle', { cx: t[0], cy: t[1], r: 8, fill: INK }, L); lab(B, t[0], t[1] - 10, i ? 'Town B' : 'Town A', 'n', 'u10l9-flab'); });
     const ry = my + mh + 22; svgEl('rect', { x: mx - 10, y: ry, width: mw, height: 46, fill: '#fbe6a8', stroke: INK, 'stroke-width': 1.6 }, L);
     for (let i = 0; i <= 40; i++) { const x = mx + 2 * k + (i - 0) * k - 2 * k; sline(L, [x, ry], [x, ry + (i % 5 === 0 ? 18 : 10)], { w: i % 5 === 0 ? 1.8 : 1.1 }); if (i % 5 === 0) { const t = svgEl('text', { x, y: ry + 36, 'text-anchor': 'middle', class: 'u10l9-mnum' }, L); t.textContent = i; } }
-    lab(B, mx + mw - 14, ry + 30, 'cm', 'w', 'u10l9-flab u10l9-sm');
+    lab(B, mx + 41.3 * k, ry + 23, 'cm', 'c', 'u10l9-flab u10l9-sm');
     const one = svgEl('rect', { x: mx, y: ry - 4, width: k, height: 54, fill: AMB, 'fill-opacity': 0.25, stroke: AMB, 'stroke-width': 2 }, L); hide(one);
-    const oneL = hide(lab(B, mx + k / 2, ry + 54, `${T('1\\text{ cm}')} = ${T('1\\,500\\,000\\text{ cm}')} = 15 km`, 's', 'u10l9-flab u10l9-amb'));
+    const oneL = hide(lab(B, mx - 8, ry + 52, `${T('1\\text{ cm}')} on the map = ${T('1\\,500\\,000\\text{ cm}')} = 15 km`, 'se', 'u10l9-flab u10l9-amb'));
     const seg = svgEl('line', { x1: tA[0], y1: tA[1], x2: tB[0], y2: tB[1], stroke: GRN, 'stroke-width': 5, 'stroke-linecap': 'round' }, L); hide(seg);
     const dropA = sline(L, [tA[0], tA[1]], [tA[0], ry], { dash: '4 4', w: 1.4, color: GRN }), dropB = sline(L, [tB[0], tB[1]], [tB[0], ry], { dash: '4 4', w: 1.4, color: GRN }); hide(dropA); hide(dropB);
     const p = panel(stage, mx + mw + 20, 20, W - mx - mw - 30, 360);
@@ -760,7 +768,7 @@ const applied = {
   make(stage, v, ex) {
     const W = ex.W, PW = 300, p = panel(stage, W - PW - 6, 14, PW, 400);
     if (v === 'tile') {
-      const sc = 2.4, fw = 252 * sc, fh = 126 * sc, x0 = 30, y0 = 54, t = 10.5 * sc, B = fbox(stage, W - PW - 16, 430, 0, 0), L = B.L;
+      const sc = 2.2, fw = 252 * sc, fh = 126 * sc, x0 = 84, y0 = 60, t = 10.5 * sc, B = fbox(stage, W - PW - 16, 430, 0, 0), L = B.L;
       svgEl('rect', { x: x0, y: y0, width: fw, height: fh, fill: '#f6f1e7', stroke: INK, 'stroke-width': 3 }, L);
       const dl = lab(B, x0 + fw / 2, y0 - 6, `${T('7\\text{ yd}')}`, 'n', 'u10l9-flab u10l9-big'), wl = lab(B, x0 - 6, y0 + fh / 2, `${T('3\\tfrac12\\text{ yd}')}`, 'w', 'u10l9-flab u10l9-big u10l9-tight');
       const G = svgEl('g', {}, L), mk = (i, j, col = '#9cc3e8') => { const r = svgEl('rect', { x: x0 + i * t + 1, y: y0 + j * t + 1, width: t - 2, height: t - 2, fill: col, stroke: '#4d7fb5', 'stroke-width': 0.8 }, G); hide(r); return r; };
@@ -776,7 +784,7 @@ const applied = {
       ];
     }
     // aquarium
-    const B = fbox(stage, W - PW - 16, 430, 0, 0), L = B.L, s = 5.2, a = 55 * s, b = 25 * s, d = 40 * s * 0.42, x0 = 40, yb = 210;
+    const B = fbox(stage, W - PW - 16, 430, 0, 0), L = B.L, s = 5.2, a = 55 * s, b = 25 * s, d = 40 * s * 0.42, x0 = 96, yb = 210;
     const P = (x, y, z) => [x0 + x + z * 0.86, yb - y - z * 0.5];
     const face = (pts, f, op = 1) => svgEl('path', { d: pD(pts, true), fill: f, 'fill-opacity': op, stroke: INK, 'stroke-width': 2 }, L);
     face([P(0, 0, 0), P(a, 0, 0), P(a, 0, d), P(0, 0, d)], '#e8f0fc', 0.4);
@@ -815,7 +823,8 @@ const wrench = {
     const W = ex.W, lo = 5.5, hi = 17;
     const NMM = new NumberLine(stage, { x: 10, y: 54, width: W - 20, height: 90, min: lo, max: hi, step: 1, arrows: false, axisY: 30 });
     const NIN = new NumberLine(stage, { x: 10, y: 214, width: W - 20, height: 110, min: lo / 25.4, max: hi / 25.4, step: 1 / 16, minor: 1 / 32, arrows: false, axisY: 30,
-      labels: IMP.map(([n, d]) => ({ v: n / d, html: T(`\\tfrac{${n}}{${d}}`) })) });
+      labels: IMP.map(([n, d]) => ({ v: n / d, html: T(`\\frac{${n}}{${d}}`) })) });
+    NIN.el.classList.add('u10l9-inl');
     slab(stage, 40, 84, '<b>mm</b>', 'w', 'u10l9-amb'); slab(stage, 40, 244, '<b>in</b>', 'w', 'u10l9-blue');
     const B = fbox(stage, W, 380, 0, 0); B.el.style.pointerEvents = 'none'; const L = B.L;
     const xOf = (mm) => 10 + NMM.toPx(mm);
@@ -867,9 +876,9 @@ const morph = {
   choices: [{ v: 'tour', label: 'Tour all five (and a half)' }, { v: 'third', label: 'Pointed = one third' }, { v: 'arch', label: 'Sphere in a cylinder' }],
   intro: (v) => (v === 'tour' ? 'Watch one solid change shape and its formula change with it. Press <b>Next</b>.' : v === 'third' ? 'The same base and height, with and without a point. Press <b>Next</b>.' : 'A sphere packed exactly into a cylinder. Press <b>Next</b>.'),
   make(stage, v, ex) {
-    const W = ex.W, SW = 470, R = 120, H0 = 230, B = fbox(stage, SW, 450, 0, 0), ghostL = B.layer('gh'), solidL = B.layer('so'), dimL = B.layer('dim');
+    const W = ex.W, SW = 470, R = 138, H0 = 272, B = fbox(stage, SW, 450, 0, 0), ghostL = B.layer('gh'), solidL = B.layer('so'), dimL = B.layer('dim');
     B.svg.insertBefore(ghostL, B.L); B.svg.insertBefore(solidL, B.L);
-    const cx = SW / 2 - 6, cy = 410;
+    const cx = SW / 2 - 10, cy = 404;
     const st = Object.assign({}, SHAPES[v === 'arch' ? 'sph' : 'prism'].st);
     const Hof = (s) => (s.Hk === 1 ? H0 : s.Hk === 0 ? 2 * R : s.Hk === -1 ? R : H0);
     let Hcur = Hof(st);
@@ -936,7 +945,7 @@ const coneSphere = {
     const W = ex.W, B = fbox(stage, W, 420, 0, 0), L = B.L, L2 = B.layer('x');
     const res = add(stage, h('div', 'u10l9-ansbox', ''), W - 380, 360); hide(res);
     if (v === 'cone') {
-      const k = 12, R = 8 * k, Hh = 15 * k, cx = 160, cy = 330, G = drawSolid(L, { cx, cy, R, H: Hh, wp: 1 }), apex = G.axisTop;
+      const k = 14, R = 8 * k, Hh = 15 * k, cx = 160, cy = 340, G = drawSolid(L, { cx, cy, R, H: Hh, wp: 1 }), apex = G.axisTop;
       svgEl('circle', { cx, cy, r: 3, fill: INK }, L);
       const tri = svgEl('path', { d: pD([[cx, cy], [cx + R, cy], apex], true), fill: PUR, 'fill-opacity': 0.14, stroke: 'none' }, L2); hide(tri);
       const hL = sline(L2, [cx, cy], apex, { dash: '7 6', w: 2.4, color: BLUE }), rL = sline(L2, [cx, cy], [cx + R, cy], { w: 3, color: RED }), sL = sline(L2, [cx + R, cy], apex, { w: 4, color: PUR });
@@ -1010,6 +1019,7 @@ const backwards = {
       sline(gB, [x2, 257], [x1 + 4, 257], { w: 2.4, color: PUR }); arrowHead(gB, x1, 257, -1, 0, { color: PUR, width: 2.4 });
       arrF.push([gF, lab(B, (x1 + x2) / 2, 60, T(opsF[i]), 'n', 'u10l9-flab u10l9-teal')]); arrB.push([gB, hide(lab(B, (x1 + x2) / 2, 266, T(opsB[i]), 's', 'u10l9-flab u10l9-pur'))]); hide(gB);
     }
+    res.style.top = '318px';
     const hint = add(stage, h('div', 'u10l9-hint', 'forwards: the formula'), 20, 4), hint2 = hide(add(stage, h('div', 'u10l9-hint u10l9-pur', 'backwards: undo each step, last first'), 20, 186));
     return [
       { cap: `Forwards, ${T('V=\\tfrac23\\pi r^3')} does three things to ${T('r')}: <b>cube</b> it, <b>× 2π</b>, then <b>÷ 3</b>.`, run: async (c) => { for (const e of fb) await pop(c, e, 200); } },
@@ -1024,7 +1034,7 @@ const backwards = {
 /* =============================== explainer: tank (Example 9) =============================== */
 const tank = {
   title: 'One tank, five trucks, two bids',
-  height: 430,
+  height: 450,
   choices: [{ v: 'ab', label: 'Ex 9(a)(b) check' }, { v: 'c', label: 'Ex 9(c) check' }, { v: 'd', label: 'Ex 9(d) check' }],
   intro: (v) => (v === 'ab' ? 'The tank’s diameter is three times its 5.4 m height. Press <b>Next</b>.' : v === 'c' ? 'The same volume poured into a narrower cone. Press <b>Next</b>.' : 'Two bids: one in C$ per m³, one in US$ per ft³. Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -1052,7 +1062,7 @@ const tank = {
       ];
     }
     if (v === 'c') {
-      const cx = 260, cy = 400, sp = { cx, cy, R: 8.1 * k, H: 5.4 * k, wp: 1 };
+      const cx = 260, cy = 372, sp = { cx, cy, R: 8.1 * k, H: 5.4 * k, wp: 1 };
       let G = drawSolid(L, sp, { fill: '#cfe9d9' });
       const dimL = B.layer('d');
       const dims = (r, hh, hl) => { dimL.innerHTML = ''; B.html.querySelectorAll('.u10l9-dlab').forEach((e) => e.remove()); const top = [cx, cy - hh * k * COSE]; sline(dimL, [cx, cy], top, { dash: '7 6', w: 2 }); sline(dimL, [cx - r * k, cy], [cx + r * k, cy], { w: 2 }); lab(B, cx + 6, (cy + top[1]) / 2, hl, 'e', 'u10l9-flab u10l9-wbg u10l9-dlab'); lab(B, cx, cy + r * k * SINE + 2, T(`d=${tN(2 * r)}\\text{ m}`), 's', 'u10l9-flab u10l9-dlab'); };
