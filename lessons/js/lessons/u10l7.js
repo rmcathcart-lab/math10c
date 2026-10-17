@@ -247,7 +247,7 @@ function figCone(id, inCyl) {
 /** the cone cut along a slant edge and unrolled (the booklet's picture: r/s = 0.4, a 144° sector) */
 function figUnroll() {
   const host = document.getElementById('u10l7-f5'); if (!host) return;
-  const S = new Scene3(host, { w: 500, h: 270, cx: 80, cy: 190, scale: 52, yaw: 0, tilt: 16 });
+  const S = new Scene3(host, { w: 500, h: 350, cx: 80, cy: 190, scale: 52, yaw: 0, tilt: 16 });
   const r = 1, Hh = 2.45;
   S.draw = (S) => {
     const g = S.g, cn = drawCone(S, g, { base: [0, 0, 0], r, H: Hh, fill: '#fff', hidden: false });
@@ -711,17 +711,17 @@ const net = {
       poly(g, bp, d.base ? { fill: '#fff4dd', stroke: INK, w: 2.6 } : { fill: '#f6f6f6', stroke: INK, w: 2, dash: st.u > 0.5 ? '7 6' : null });
       if (st.baseX) S.lab('bx', d.base ? `base ${T(`${d.side}\\times${d.side}=${d.side * d.side}`)}` : 'base: no glass<br>not counted', avg2(bp), 'c', { cls: 'u10l7-sm u10l7-ctr ' + (d.base ? 'u10l7-tag' : 'u10l7-no') });
       tris.sort((x, y) => x.d - y.d).forEach((t) => {
-        const pp = t.pts.map((p) => S.P(p)), lit = (st.one && t.i === 0) || st.all;
+        const pp = t.pts.map((p) => S.P(p)), lit = (st.one && t.i === 3) || st.all;
         poly(g, pp, { fill: lit ? '#9fd0f0' : GLASS, fo: st.u > 0.3 ? 0.9 : 0.55, stroke: INK, w: 2.4 });
-        if (st.sOn && t.i === 0) seg(g, S.P(t.ap), S.P(t.M), { stroke: SC, w: 3.2 });
-        if ((st.one && t.i === 0) || st.all) S.lab('t' + t.i, T(String(triA)), S.P(avg3([t.M, t.pts[0], t.ap])), 'c', { cls: 'u10l7-tag' });
+        if (st.sOn && t.i === 3) seg(g, S.P(t.ap), S.P(t.M), { stroke: SC, w: 3.2 });
+        if ((st.one && t.i === 3) || st.all) S.lab('t' + t.i, T(String(triA)), S.P(avg3([t.M, t.pts[0], t.ap])), 'c', { cls: 'u10l7-tag' });
       });
       if (st.u === 0) {
         seg(g, S.P([0, d.h, 0]), S.P([0, 0, 0]), { stroke: HC, w: 2.4, dash: DASH });
         S.lab('h', `${T('h=' + d.h)} ${u}`, S.P([0, d.h * 0.45, 0]), 'w', { color: HC, cls: 'u10l7-halo' });
       }
       if (st.u < 0.5) S.lab('sd', `${T(String(d.side))} ${u}`, S.P(lerp3(B[0], B[1], 0.5)), 's', { gap: 8 });
-      if (st.sOn) { const t0 = tris.find((t) => t.i === 0); S.lab('s', `${T('s=' + d.s)} ${u}`, S.P(lerp3(t0.ap, t0.M, 0.45)), 'e', { color: SC, cls: 'u10l7-halo', gap: 8 }); }
+      if (st.sOn) { const t0 = tris.find((t) => t.i === 3); S.lab('s', `${T('s=' + d.s)} ${u}`, S.P(lerp3(t0.ap, t0.M, 0.45)), 'e', { color: SC, cls: 'u10l7-halo', gap: 8 }); }
     };
     S.render();
     const steps = [
@@ -733,10 +733,10 @@ const net = {
           run: async (c) => { st.baseX = 1; S.render(); await pop(c, S.L('bx')); await show(c, line(P, `base: ${T(`${d.side * d.side}`)} ${u}²`)); } }
         : { cap: `The base is <b>not</b> glass: it sits on the atrium roof and is never seen. Don’t count it.`,
           run: async (c) => { st.baseX = 1; S.render(); await pop(c, S.L('bx')); } },
-      { cap: `One triangle: ${T(`\\tfrac12(${d.side})(${d.s})=${triA}`)} ${u}².`, run: async (c) => { st.one = 1; S.render(); await pop(c, S.L('t0')); await show(c, line(P, `one triangle: ${T(`\\tfrac12(${d.side})(${d.s})=${triA}`)}`)); } },
+      { cap: `One triangle: ${T(`\\tfrac12(${d.side})(${d.s})=${triA}`)} ${u}².`, run: async (c) => { st.one = 1; S.render(); await pop(c, S.L('t3')); await show(c, line(P, `one triangle: ${T(`\\tfrac12(${d.side})(${d.s})=${triA}`)}`)); } },
       { cap: d.base ? `Four triangles: ${T(`4(${triA})=${4 * triA}`)}. Total ${T(`SA=${d.side * d.side}+${4 * triA}=${d.side * d.side + 4 * triA}`)} ${u}².` : `Four triangles: ${T(`SA=4(${triA})=${4 * triA}`)} ${u}² of glass.`,
         run: async (c) => {
-          st.all = 1; S.render(); for (const i of [1, 2, 3]) await pop(c, S.L('t' + i));
+          st.all = 1; S.render(); for (const i of [0, 1, 2]) await pop(c, S.L('t' + i));
           const tot = d.base ? d.side * d.side + 4 * triA : 4 * triA;
           await show(c, line(P, T(d.base ? `SA=${d.side * d.side}+4(${triA})=${tot}` : `SA=4(${triA})=${tot}`) + ` ${u}²`, 'u10l7-big'));
           await stampIn(c, stampAt(P, `SA = ${tot} ${u}²`));
@@ -786,7 +786,7 @@ const unroll = {
       }
       if (st.cut) seg(g, apex, lerp2(apex, bnd[0], st.cut), { stroke: SC, w: 4 });
       seg(g, S.P([0, 0, 0]), S.P([r, 0, 0]), { stroke: RC, w: 2.6 }); S.lab('r', T('r' + (d.unit ? '=' + r : '')), S.P([r / 2, 0, 0]), 's', { color: RC, cls: 'u10l7-halo' });
-      if (!st.sLab) S.lab('s0', T('s' + (d.unit ? '=' + s : '')), lerp2(A, S.P([-r, 0, 0]), 0.5), 'w', { color: SC, cls: 'u10l7-halo' });
+      if (!st.sLab && st.u === 0) S.lab('s0', T('s' + (d.unit ? '=' + s : '')), lerp2(A, S.P([-r, 0, 0]), 0.5), 'w', { color: SC, cls: 'u10l7-halo' });
       else S.lab('s1', T('s'), lerp2(O, bnd[0], 0.5), 'w', { color: SC, cls: 'u10l7-halo u10l7-big' });
       if (st.sLab) S.lab('s2', T('s'), lerp2(O, bnd[N], 0.5), 'e', { cls: 'u10l7-halo u10l7-big' });
       if (st.arc) S.lab('arc', `arc ${T('=2\\pi r')}`, [O[0], O[1] - Rs - 4], 'n', { color: HC, cls: 'u10l7-halo u10l7-big' });

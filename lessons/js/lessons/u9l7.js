@@ -217,7 +217,7 @@ function drawCliff(S, a, d) {
   for (const n of ['A', 'B']) { svgEl('circle', { cx: S.P(n)[0], cy: S.P(n)[1], r: 6, fill: INK }, S.svg); S.lab(n, `<b>${n}</b>`, { pos: 's', gap: 12, cls: 'u9l7-who' }); }
   svgEl('circle', { cx: S.P('T')[0], cy: S.P('T')[1], r: 6, fill: RED }, S.svg);
   S.lab([d / 2, 0], '40 m', { pos: 's', gap: 40, cls: 'u9l7-lab u9l7-chip' });
-  const q = S.lab([F, hh / 2], '? m', { pos: 'e', gap: 10, cls: 'u9l7-lab u9l7-red' });
+  const q = S.lab([F + 9, hh * 0.62], '? m', { pos: 'e', gap: 10, cls: 'u9l7-lab u9l7-red' });
   return { b, xB, hh, F, shade, FT, rm, AT, BTs, BF, l1, l2, q };
 }
 const cliff = {
@@ -228,9 +228,9 @@ const cliff = {
   make(stage, v, ex) {
     const a = CLIFF[v].a, d = 40, b = 2 * a, W = 620;
     const xB = d * cosD(b), F = d + xB, hh = d * sinD(b);
-    const S = new Scene(stage, { x: 4, y: 6, width: W, height: 410, xmin: -4, xmax: F + 9, ymin: -2.2, ymax: hh + 1, pad: [22, 8, 58, 8] });
+    const S = new Scene(stage, { x: 4, y: 6, width: W, height: 410, xmin: -4, xmax: F + 9, ymin: -2.2, ymax: hh + 1, pad: [22, 112, 58, 8] });
     const K = drawCliff(S, a, d), Pn = panel(stage, W + 16, 8, ex.W - W - 22, 404, 'Work');
-    const g = S.glow('B', 'T'), roleBT = S.tag('B', 'T', 'hyp', 'F', { off: 22 }), roleFT = S.tag('F', 'T', 'opp', [F + 20, hh / 2], { off: 30 }), roleBF = S.tag('B', 'F', 'adj', 'T', { off: 26 });
+    const g = S.glow('B', 'T'), roleBT = S.tag('B', 'T', 'hyp', 'F', { off: 22 }), roleFT = S.tag('F', 'T', 'opp', 'B', { off: 30 }), roleBF = S.tag('B', 'F', 'adj', 'T', { off: 26 });
     const tick = (p, q) => { const P = S.P(p), Q = S.P(q), M = [(P[0] + Q[0]) / 2, (P[1] + Q[1]) / 2], [ux, uy] = norm(Q[0] - P[0], Q[1] - P[1]); return svgEl('path', { d: `M${M[0] - uy * 9} ${M[1] + ux * 9}L${M[0] + uy * 9} ${M[1] - ux * 9}`, stroke: GOLDD, 'stroke-width': 3.5, opacity: 0 }, S.svg); };
     const t1 = tick('A', 'B'), t2 = tick('B', 'T'), bt = hide(S.sideLab('B', 'T', '40 m', 'A', { off: 24, cls: 'u9l7-lab u9l7-gold' }));
     const ang1 = 180 - b, ang2 = 180 - a - ang1;
@@ -251,7 +251,7 @@ const cliff = {
       { cap: `SOH: ${T(`\\sin ${b}^\\circ=\\dfrac{h}{40}`)}, so ${T(`h=40\\sin ${b}^\\circ\\approx${r1(hh)}`)} m. ${v === 'walk' ? 'The big one is <b>B, about 35 m</b>.' : 'Same trick, any angle that doubles.'}`,
         run: async (c) => { await say(c, Pn, T(`\\sin ${b}^\\circ=\\dfrac{${cO('h')}}{${cH('40')}}`)); await say(c, Pn, T(`h=40\\sin ${b}^\\circ=${cO(r2(hh))}\\text{ m}`)); K.q.innerHTML = `${T('h\\approx' + r1(hh))} m`; K.q.classList.remove('u9l7-red'); K.q.style.color = OPP; await pulse(c, K.q, 1.2); } },
       { cap: `Check from A: ${T('BF=40\\cos ' + b + '^\\circ=' + r2(xB))}, so the base is ${T(r2(xB) + '+40=' + r2(F))} m from A, and ${T(`\\tan^{-1}\\!\\left(\\dfrac{${r2(hh)}}{${r2(F)}}\\right)=${a}^\\circ`)} ✓`,
-        run: async (c) => { await say(c, Pn, T(`BF=40\\cos ${b}^\\circ=${r2(xB)}`)); await say(c, Pn, T(`\\tan^{-1}\\!\\left(\\tfrac{${r2(hh)}}{${r2(F)}}\\right)=${a}^\\circ`) + ' <span class="u9l7-good">✓</span>'); await stampIn(c, stamp(stage, '✓', { x: W - 50, y: 56 })); } }
+        run: async (c) => { await say(c, Pn, T(`BF=40\\cos ${b}^\\circ=${r2(xB)}`)); await say(c, Pn, T(`\\tan^{-1}\\!\\left(\\tfrac{${r2(hh)}}{${r2(F)}}\\right)=${a}^\\circ`) + ' <span class="u9l7-good">✓</span>'); await stampIn(c, stamp(stage, '✓', { x: 50, y: 50 })); } }
     ];
   }
 };
@@ -606,7 +606,7 @@ const sightings = {
       { cap: `(c) The long bar minus the short bar is the ${T('25')} m. Subtract (a) from (b): ${T(`25=\\tfrac{h}{\\tan 32^\\circ}-\\tfrac{h}{\\tan 47^\\circ}=h(1.6003345\\ldots-0.9325151\\ldots)=h(0.6678194\\ldots)`)}.`,
         run: async (c) => { await appear(c, gr, 400); await pop(c, gap); await say(c, Pn, `(c) ${T(`25=h\\left(\\tfrac{1}{\\tan 32^\\circ}-\\tfrac{1}{\\tan 47^\\circ}\\right)`)}`); await say(c, Pn, T(`=h(${dots(1 / tanD(32), 7)}-${dots(1 / tanD(47), 7)})`), 'u9l7-small'); await say(c, Pn, T(`=h(${dots(1 / tanD(32) - 1 / tanD(47), 7)})`), 'u9l7-small'); } },
       { cap: `${T(`h=25\\div ${dots(1 / tanD(32) - 1 / tanD(47), 7)}=${dots(H4)}\\approx 37`)} m. Keep the two quotients unrounded: their difference is small.`,
-        run: async (c) => { await say(c, Pn, T(`h=\\dfrac{25}{0.6678194\\ldots}=${dots(H4)}\\approx${cG('37')}\\text{ m}`), 'u9l7-res'); hl.innerHTML = T('h\\approx37'); hl.style.color = OPP; await pulse(c, hl, 1.2); } },
+        run: async (c) => { await say(c, Pn, T(`h=\\dfrac{25}{0.6678194\\ldots}`)); await say(c, Pn, T(`=${dots(H4)}\\approx${cG('37')}\\text{ m}`), 'u9l7-res'); hl.innerHTML = T('h\\approx37'); hl.style.color = OPP; await pulse(c, hl, 1.2); } },
       { cap: `Check: ${T(`x=37.4353\\div\\tan 47^\\circ=${X4.toFixed(3)}`)} m, so ${T('AC=' + (X4 + 25).toFixed(3))} and ${T(`\\tan^{-1}\\!\\left(\\tfrac{37.4353}{${(X4 + 25).toFixed(3)}}\\right)=32^\\circ`)} ✓`,
         run: async (c) => { await say(c, Pn, `${T(`\\tan^{-1}\\!\\left(\\tfrac{37.4353}{${(X4 + 25).toFixed(3)}}\\right)=32^\\circ`)} <span class="u9l7-good">✓</span>`, 'u9l7-small'); await stampIn(c, stamp(stage, '✓', { x: W - 40, y: 50 })); } }
     ];
