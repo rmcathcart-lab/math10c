@@ -318,7 +318,7 @@
 
   /* ================= context models ================= */
   function seedShared(r) {
-    var q = r.pick([4, 4, 2, 3]), p = r.pick({ 2: [3, 5, 7], 3: [4, 5, 7, 8], 4: [5, 7, 7, 9] }[q]), c = r.pick([5, 5, 2, 3, 4, 6, 8]);
+    var q = r.pick([4, 4, 2, 3]), p = r.pick({ 2: [3, 5, 7], 3: [4, 5, 7, 8], 4: [5, 7, 7, 9] }[q]), c = r.pick([5, 5, 6, 7, 8, 10]);
     var H = function (x) { return cl(p * x / q + c); };
     return { p: p, q: q, c: c, T: 6 * q, H: H, rule: 'H(t)=\\dfrac{' + p + '}{' + q + '}t+' + c };
   }
@@ -833,7 +833,7 @@
         stem: function (sh) { return 'A ski resort tracks how the number of hot cocoa packets sold in its lodge depends on the average daily temperature. The relationship is modelled by ' + t('P(t)=' + sh.A + '-' + sh.Bc + 't') + ', where ' + t('P(t)') + ' is the number of packets sold when the average daily temperature is ' + t('t\\,^{\\circ}\\text{C}') + '.'; }, parts: [
         { id: '15a', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
           var L = -20, top = sh.P(L), z = sh.z, ym = Math.ceil((top + 2 * sh.Bc * 20) / 100) * 100;
-          var o = { x: [-25, 30], y: [0, Math.max(ym, 400)], gx: 5, gy: 50, lx: 10, ly: 100, xName: 't', yName: 'P', fq: false };
+          var o = { x: [-25, 30], y: [0, Math.max(ym, 400)], gx: 5, gy: 100, lx: 20, ly: 200, xName: 't', yName: 'P', fq: false };
           var G = function (segs) { return ctxGraph(o, segs); };
           return graphMC(r, '(a) Which graph shows the function, from a cold day of ' + t('-20\\,^{\\circ}\\text{C}') + ' until sales drop to zero?', [
             { html: G([{ pts: [[L, top], [z, 0]], start: 'closed', end: 'closed' }]), right: true },
