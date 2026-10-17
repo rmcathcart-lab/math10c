@@ -464,11 +464,13 @@
       if (t === 'order') { var byO = {}; inst.input.items.forEach(function (x) { byO[x.id] = stripTags(x.html) || x.id; }); return (resp || []).map(function (id) { return byO[id] || id; }).join(' , '); }
       if (t === 'grid') { var colN = {}; inst.input.cols.forEach(function (c) { colN[c.id] = c.label || stripTags(c.html); }); return inst.input.rows.map(function (r) { var g = (resp || {})[r.id]; return (r.label || stripTags(r.html)) + ': ' + (Array.isArray(g) ? g.map(function (c) { return colN[c]; }).join('+') || '–' : g == null ? '–' : colN[g]); }).join('; '); }
       if (t === 'fields') return (resp || []).join(' | ');
+      if (HW.widgets[t] && HW.widgets[t].text) return HW.widgets[t].text(resp, inst.input);
       return String(resp == null ? '' : resp);
     } catch (e) { return ''; }
   }
   function answerHtml(inst, resp) {
     var t = inst.input.type, txt = answerText(inst, resp);
+    if (HW.widgets[t] && HW.widgets[t].html) { try { return HW.widgets[t].html(resp, inst.input); } catch (e) {} }
     if (t === 'math' || t === 'ladder' || t === 'tree') { var v = t === 'math' ? resp : resp.final; var latex = /\\/.test(v) ? v : HW.parse.plain(v).replace(/\^\(?(\d+)\)?/g, '^{$1}').replace(/\*/g, '\\times '); return HW.k((inst.input.before ? stripTags(inst.input.before) : '') + latex); }
     if (t === 'number') return HW.k(String(resp).trim());
     if (t === 'mc') { var o = inst.input.options.filter(function (x) { return x.key === resp; })[0]; return o ? '<b>' + o.key + '.</b> ' + HW.tex(o.html) : esc(txt); }

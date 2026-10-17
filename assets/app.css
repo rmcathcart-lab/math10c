@@ -430,3 +430,26 @@ math-field.mf::part(menu-toggle), math-field.mf::part(virtual-keyboard-toggle) {
   .grid-tbl thead th { font-size: 12.5px; }
   .grid-btn, .grid-btn:not(.multi) { width: 32px; height: 32px; }
 }
+
+/* ---------- drawing inputs (js/draw.js) ---------- */
+.w-graphpad, .w-numline, .w-arrowpad, .w-tilepad { margin: 6px 0 4px; }
+.dr-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.dr-btn { font: inherit; font-size: 13.5px; font-weight: 600; padding: 6px 11px; border-radius: 999px; border: 1.5px solid #d6cfbf; background: #fff; color: var(--ink2); cursor: pointer; }
+.dr-btn.on { border-color: var(--brand2); background: var(--brand-soft); color: var(--brand); }
+.dr-btn.dr-act { color: var(--muted); }
+.dr-btn:disabled { opacity: .45; cursor: default; }
+.dr-board { position: relative; display: block; }
+.dr-board svg { display: block; width: 100%; height: auto; }
+.dr-svg { cursor: crosshair; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+.dr-coord { display: none; position: absolute; top: 4px; right: 4px; background: rgba(28, 34, 48, .85); color: #fff; font-size: 13px; font-weight: 600; padding: 2px 8px; border-radius: 6px; pointer-events: none; }
+.off .dr-svg { cursor: default; }
+.off .dr-btn { opacity: .45; pointer-events: none; }
+.tp-ctrls { display: grid; gap: 6px; margin-bottom: 8px; }
+.tp-head { font-size: 13px; font-weight: 700; color: var(--ink2); margin-top: 4px; }
+.tp-row { display: flex; align-items: center; gap: 8px; }
+.tp-lab { min-width: 74px; }
+.tp-b { width: 40px; height: 36px; border-radius: 9px; border: 1.5px solid #d6cfbf; background: #fff; font-size: 20px; font-weight: 700; color: var(--brand); cursor: pointer; }
+.tp-val { min-width: 30px; text-align: center; font-weight: 700; font-size: 17px; }
+.tp-val.neg { color: #c4532a; }
+.tp-view { margin: 6px 0; }
+.tp-cap { margin-top: 4px; }

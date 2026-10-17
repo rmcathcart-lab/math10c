@@ -8,7 +8,7 @@ ctx.window = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
 var only = process.argv[3] || null;
 var lessonFiles = fs.readdirSync(path.join(root, 'js/lessons')).filter(function (f) { return /\.js$/.test(f); }).sort().map(function (f) { return 'js/lessons/' + f; });
-['assets/katex/katex.min.js', 'js/core.js', 'js/expr.js', 'js/kit.js', 'js/kitx.js', 'js/poly.js', 'js/factor.js', 'js/relfn.js'].forEach(function (f) { vm.runInContext(fs.readFileSync(path.join(root, f), 'utf8'), ctx, { filename: f }); });
+['assets/katex/katex.min.js', 'js/core.js', 'js/expr.js', 'js/kit.js', 'js/kitx.js', 'js/poly.js', 'js/factor.js', 'js/relfn.js', 'js/draw.js'].forEach(function (f) { vm.runInContext(fs.readFileSync(path.join(root, f), 'utf8'), ctx, { filename: f }); });
 var loadErrors = 0;
 lessonFiles.forEach(function (f) { try { vm.runInContext(fs.readFileSync(path.join(root, f), 'utf8'), ctx, { filename: f }); } catch (e) { loadErrors++; console.log('LOAD ERROR', f, e.message); } });
 var HW = ctx.HW, RUNS = Number(process.argv[2] || 400), errors = 0, total = 0, seenNums = {};
@@ -41,10 +41,14 @@ Object.keys(HW.lessons).forEach(function (lid) {
         else if (t === 'order') bad = inst.key.slice().reverse();
         else if (t === 'grid') bad = {};
         else if (t === 'fields') bad = inst.key.map(function () { return '987654'; });
+        else if (t === 'graphpad') bad = { pts: [], pieces: [] };
+        else if (t === 'numline') bad = { dots: [], shade: [] };
+        else if (t === 'arrowpad') bad = [];
+        else if (t === 'tilepad') bad = inst.input.mode === 'rect' ? { top: { x: 0, one: 0 }, side: { x: 0, one: 0 } } : { x2: 0, x: 0, one: 0 };
         var bads = (bad != null ? [bad] : []).concat(inst.bad || []);
         bads.forEach(function (b) { var rb = inst.check(b); if (rb.v === 'correct') throw new Error('wrong answer accepted: ' + JSON.stringify(b)); if (rb.hint && /katex-error/.test(HW.tex(rb.hint))) throw new Error('KaTeX error in diagnosis hint ' + rb.hint); });
         (inst.good || []).forEach(function (g) { var rg = inst.check(g); if (rg.v !== 'correct') throw new Error('alternative answer not accepted: ' + JSON.stringify(g) + ' -> ' + JSON.stringify(rg)); });
-        if (['number', 'list', 'math', 'mc', 'select', 'classify', 'pairs', 'ladder', 'tree', 'order', 'grid', 'fields'].indexOf(t) < 0) throw new Error('unknown input type ' + t);
+        if (['number', 'list', 'math', 'mc', 'select', 'classify', 'pairs', 'ladder', 'tree', 'order', 'grid', 'fields', 'graphpad', 'numline', 'arrowpad', 'tilepad'].indexOf(t) < 0) throw new Error('unknown input type ' + t);
         if (t === 'mc' && inst.input.options.filter(function (o) { return o.right; }).length !== 1) throw new Error('mc needs exactly one right option');
       } catch (e) { errors++; if (errors < 30) console.log(lid, it.id, 'run', i, e.message); }
     }

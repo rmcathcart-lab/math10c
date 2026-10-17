@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drawing Answers Demo</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f5f5a'/%3E%3Ctext x='32' y='42' font-family='Arial' font-weight='700' font-size='26' fill='white' text-anchor='middle'%3E10C%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../assets/app.css">
+<style>
+  .demo-wrap { max-width: 640px; margin: 0 auto; padding: 18px 16px 60px; }
+  .demo-intro { color: var(--ink2); margin: 4px 0 18px; line-height: 1.5; }
+  .demo-card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 16px; margin-bottom: 18px; box-shadow: 0 1px 2px rgba(0,0,0,.03); }
+  .demo-tag { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--brand2); margin-bottom: 4px; }
+  .demo-q { font-size: 17px; margin-bottom: 8px; line-height: 1.5; }
+  .demo-row { display: flex; gap: 8px; align-items: center; margin-top: 10px; flex-wrap: wrap; }
+  .demo-fb { margin-top: 10px; }
+  .demo-fb .ok { color: #14794a; font-weight: 700; }
+  .demo-fb .form { color: #8a5a00; }
+  .demo-fb .bad { color: #b33a1d; }
+  .demo-ans { margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="demo-wrap">
+  <h1 style="margin:6px 0 2px">Drawing answers — try them out</h1>
+  <p class="demo-intro">A preview of the new drawing inputs for the practice site. Draw an answer and press <b>Check</b>; a wrong answer gets a hint the way the site would. On a phone, press and slide your finger to aim — the point snaps to the grid and shows its coordinates — then lift to place it.</p>
+  <div id="demos"></div>
+</div>
+<script src="../assets/katex/katex.min.js"></script>
+<script src="../js/core.js"></script>
+<script src="../js/expr.js"></script>
+<script src="../js/kit.js"></script>
+<script src="../js/kitx.js"></script>
+<script src="../js/widgets.js"></script>
+<script src="../js/widgets2.js"></script>
+<script src="../js/poly.js"></script>
+<script src="../js/factor.js"></script>
+<script src="../js/relfn.js"></script>
+<script src="../js/draw.js"></script>
+<script>
+(function () {
+  var HW = window.HW, K = HW.kit, W = HW.widgets, D = HW.draw, t = K.t;
+  var host = document.getElementById('demos');
+  function demo(tag, q, input, check, answerHtml) {
+    var card = document.createElement('div'); card.className = 'demo-card';
+    card.innerHTML = '<div class="demo-tag">' + tag + '</div><div class="demo-q">' + HW.tex(q) + '</div>';
+    var w = W[input.type](input); card.appendChild(w.node);
+    var row = document.createElement('div'); row.className = 'demo-row';
+    var b = document.createElement('button'); b.className = 'btn btn-primary'; b.type = 'button'; b.textContent = 'Check';
+    var s = document.createElement('button'); s.className = 'btn btn-ghost'; s.type = 'button'; s.textContent = 'Show answer';
+    row.appendChild(b); row.appendChild(s); card.appendChild(row);
+    var fb = document.createElement('div'); fb.className = 'demo-fb'; card.appendChild(fb);
+    b.addEventListener('click', function () {
+      var r = check(w.value());
+      fb.innerHTML = r.v === 'correct' ? '<span class="ok">✓ Correct</span>' : r.v === 'form' ? '<span class="form">Almost — ' + HW.tex(r.hint || '') + '</span>' : '<span class="bad">Not quite.</span> ' + HW.tex(r.hint || 'Look again at the question.');
+    });
+    s.addEventListener('click', function () { fb.innerHTML = '<div class="demo-ans">' + answerHtml + '</div>'; });
+    host.appendChild(card);
+  }
+  var g = function (pieces, pts, join) { return { pieces: pieces || [], pts: pts || [], join: join || 'none' }; };
+  var seg = function (a, b, s, e) { return { v: [a, b], s: s || 'closed', e: e || 'closed' }; };
+
+  // 1 plot points
+  var t1 = g([], [[2, 3], [-4, 1], [0, -5], [3, -2]]), in1 = { type: 'graphpad', x: [-6, 6], y: [-6, 6], mode: 'points' };
+  demo('Graph tool · plot points', 'Plot the points ' + t('A(2,\\ 3)') + ', ' + t('B(-4,\\ 1)') + ', ' + t('C(0,\\ -5)') + ' and ' + t('D(3,\\ -2)') + '.', in1, K.graphExact(t1), D.graphOf(in1, t1, { max: 300 }));
+  // 2 graph a line
+  var t2 = g([seg([-2, -5], [3, 5], 'arrow', 'arrow')]), in2 = { type: 'graphpad', x: [-6, 6], y: [-6, 6], defaultEnd: 'arrow' };
+  demo('Graph tool · graph a function', 'Graph ' + t('f(x)=2x-1') + ' for all real numbers ' + t('x') + '. (Draw a line through two points; the ends start as arrows.)', in2, K.graphExact(t2), D.graphOf(in2, t2, { max: 300 }));
+  // 3 sketch with given domain and range (many right answers)
+  var in3 = { type: 'graphpad', x: [-6, 6], y: [-6, 6] };
+  var r3 = K.graphRules({ fn: true, domain: '\\{x\\mid -3\\le x<4\\}', range: '\\{y\\mid 1\\le y\\le 5\\}' });
+  var ex3 = g([seg([-3, 1], [1, 5]), seg([1, 5], [4, 3], 'closed', 'open')]);
+  demo('Graph tool · open sketch', 'Sketch a <b>function</b> with domain ' + t('\\{x\\mid -3\\le x<4,\\ x\\in\\mathbb{R}\\}') + ' and range ' + t('\\{y\\mid 1\\le y\\le 5,\\ y\\in\\mathbb{R}\\}') + '. Many answers are right. (Use <b>●○ Ends</b> to make an end open or solid.)', in3, r3, 'One possible answer: ' + D.graphOf(in3, ex3, { max: 300 }));
+  // 4 story graph
+  var in4 = { type: 'graphpad', x: [0, 40], y: [0, 8], grid: 5, gridY: 1, labelsX: 10, labelsY: 2, unitX: 7.5, unitY: 30, firstQuadrant: true, xName: 't', yName: 'd', xTitle: 'Time (min)', yTitle: 'Distance from home (km)', defaultEnd: 'none', tools: ['line'], snapX: 5, snapY: 1 };
+  var s4 = K.graphStory({ phases: [{ dir: 'up', text: 'walks to the store' }, { dir: 'flat', text: 'shops' }, { dir: 'down', text: 'walks home, faster than on the way there', steeper: 0 }], start: 0, end: 0, startHint: 'She starts at home: distance 0.', endHint: 'She ends at home: distance 0.' });
+  var ex4 = g([{ v: [[0, 0], [15, 3], [25, 3], [35, 0]], s: 'none', e: 'none' }]);
+  demo('Story graph · checked by shape', 'Maya walks from home to the store, shops for a while, then walks home <b>faster</b> than she walked there. Sketch her distance from home over time.', in4, s4, 'One possible answer: ' + D.graphOf(in4, ex4, { max: 320 }));
+  // 5 plot from a table, join or not
+  var t5 = g([], [[-2, 5], [-1, 2], [0, 1], [1, 2], [2, 5]], 'curve'), in5 = { type: 'graphpad', x: [-4, 4], y: [-1, 7], mode: 'points', join: true };
+  demo('Graph tool · plot and join', 'Plot ' + t('y=x^{2}+1') + ' for ' + t('x=-2,\\ -1,\\ 0,\\ 1,\\ 2') + '. Then decide: the domain is all real numbers — should the points be joined?', in5, K.graphExact(t5, { joinMatters: true }), D.graphOf(in5, t5, { max: 300 }));
+  // 6 number line
+  var in6 = { type: 'numline', min: -6, max: 6 }, k6 = D.numlineKey(D.setParts(HW.sets.parse('\\{x\\mid -2\\le x<3\\}').set));
+  demo('Number line', 'Show ' + t('\\{x\\mid -2\\le x<3,\\ x\\in\\mathbb{R}\\}') + ' on the number line.', in6, K.numline('\\{x\\mid -2\\le x<3\\}'), D.numlineSvg(in6, k6));
+  // 7 arrow diagram
+  var in7 = { type: 'arrowpad', left: ['1', '2', '3'], right: ['4', '7', '9'], leftTitle: 'Input', rightTitle: 'Output' }, p7 = [['1', '4'], ['2', '7'], ['3', '4']];
+  demo('Arrow diagram', 'Draw the arrow diagram for ' + t('\\{(1,\\ 4),\\ (2,\\ 7),\\ (3,\\ 4)\\}') + '.', in7, K.arrows(p7), HW.arrowDiagram(in7.left, in7.right, p7, { leftTitle: 'Input', rightTitle: 'Output' }));
+  // 8 tiles: rectangle
+  var in8 = { type: 'tilepad', mode: 'rect' };
+  demo('Algebra tiles · build the rectangle', 'Arrange ' + t('2x^{2}+5x+2') + ' as a rectangle: ' + HW.tiles.row(HW.tiles.count({ x2: 2, x: 5, one: 2 })) + 'What goes along the top and down the side?', in8, K.tileRect('2x^2+5x+2'), D.tileSvg(in8, { top: { x: 2, one: 1 }, side: { x: 1, one: 2 } }));
+  // 9 tiles: polynomial
+  var in9 = { type: 'tilepad' };
+  demo('Algebra tiles · model a polynomial', 'Model ' + t('x^{2}-3x+2') + ' with algebra tiles.', in9, K.tilePoly('x^2-3x+2'), D.tileSvg(in9, { x2: 1, x: -3, one: 2 }));
+})();
+</script>
+</body>
+</html>

@@ -433,6 +433,7 @@
     var ux = g.unitX || U, uy = g.unitY || U;
     var W = padL + (xr[1] - xr[0]) * ux + padR, H = padT + (yr[1] - yr[0]) * uy + padB;
     var X = function (x) { return padL + (x - xr[0]) * ux; }, Y = function (y) { return padT + (yr[1] - y) * uy; };
+    HW.graph.last = { X: X, Y: Y, W: W, H: H, padL: padL, padT: padT, ux: ux, uy: uy, xr: xr, yr: yr }; // the layout of the graph just drawn (used by the drawing inputs)
     var s = '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="#fff"/>';
     if (grid) {
       for (var gx = Math.ceil(xr[0] / grid) * grid; gx <= xr[1] + 1e-9; gx += grid) s += '<line x1="' + X(gx) + '" y1="' + Y(yr[0]) + '" x2="' + X(gx) + '" y2="' + Y(yr[1]) + '" stroke="#e3e0d8" stroke-width="1"/>';
