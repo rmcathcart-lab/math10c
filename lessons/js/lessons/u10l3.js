@@ -108,7 +108,8 @@ class MicroScale {
   async hiFine(c, F) {
     const m = this.thMap.cur; if (!m) return null;
     m.ln.classList.add('u10l3-hiF'); if (m.t) m.t.classList.add('u10l3-hiFt');
-    const p = hidden(this.pill(this.mE + (m.t ? 1.25 : 0.98), 0, String(F), 'u10l3-pF'));
+    if (m.t) { await pulse(c, m.t, 1.25); return null; }
+    const p = hidden(this.pill(this.mE + 0.98, 0, String(F), 'u10l3-pF'));
     await pop(c, p); return p;
   }
 }
@@ -288,7 +289,6 @@ class Caliper {
     for (let m = 0; m <= o.L - this.Z - 3; m += 10) { const [px, py] = this.P(this.Z + m, 2.3); txt(svg, px, py, String(m), { class: 'u10l3-cst' }); }
     if (o.rod) this.rodEl = S('rect', Object.assign({ x: o.L, y: 5.6, height: 1.8, width: 0, class: 'u10l3-rod' }, ns), g);
     const sl = this.sl = S('g', {}, g);
-    S('path', Object.assign({ d: 'M0,-2 H-0.6 L-4,-7 L-0.6,-11.2 H0 Z M-0.6,-2 L-7,-2 L-0.6,-11.2', class: 'u10l3-slid' }, ns), sl);
     S('path', Object.assign({ d: 'M0,-2 V-11.2 H-0.6 L-2.4,-8.6 L-6.2,-2 Z', class: 'u10l3-slid' }, ns), sl);
     S('path', Object.assign({ d: 'M2,-2 H44 V19.5 H2 Z M5,0.6 V9 H42 V0.6 Z', 'fill-rule': 'evenodd', class: 'u10l3-slid' }, ns), sl);
     S('path', Object.assign({ d: 'M0,19 H16 V21 L6.5,32 L2.6,35.6 L0,32.5 Z', class: 'u10l3-slid' }, ns), sl);
@@ -436,8 +436,8 @@ const mtour = {
   make(stage, v, ex) {
     const W = ex.W, M = new Micrometer(stage, { s: 5.5, x: 6, y: 58, r: 3, rmax: 4.2 });
     const k = Math.min(60, (W - M.W - 30) / (4.2 * 0.55 + 3.62)), MS = new MicroScale(stage, { R: 1.75, r0: 3, rmax: 4.2, mlo: 0, k, x: W - 10 - (4.2 * 0.55 + 3.62) * k, y: 18 });
-    const P = panel(stage, M.W + 24, 300, W - M.W - 34, 108, 'Reading');
-    let labels = [], coin = null, turnPill = null, l1, l2, l3;
+    const P = panel(stage, M.W + 24, MS.H + 26, W - M.W - 34, 420 - MS.H - 36, '');
+    let labels = [], coin = null, l1, l2, l3;
     const sync = (c, r, ms) => Promise.all([M.turn(c, r, ms), MS.turn(c, r, ms)]);
     return [
       { cap: 'The parts: a <b>frame</b> holds the <b>anvil</b>; turning the <b>thimble</b> (or the <b>ratchet</b> on its end) screws the <b>spindle</b> in or out of the <b>sleeve</b>.',
@@ -447,11 +447,10 @@ const mtour = {
         } },
       { cap: 'Turn the thimble <b>one full turn</b>: the spindle moves <b>0.5 mm</b> and one more sleeve mark shows. Whole millimetres are above the line, half millimetres below.',
         run: async (c) => {
-          turnPill = hidden(pillAt(stage, M.W + 24 + 10, 250, `1 turn ${T('=0.5\\text{ mm}')}`, 'u10l3-pT')); await pop(c, turnPill);
-          await sync(c, 3.5, 2200); l1 = line(P, `gap ${T('3.0\\text{ mm}\\to3.5\\text{ mm}')}`); await show(c, l1);
+          await sync(c, 3.5, 2200); l1 = line(P, `1 turn: ${T('3.0\\text{ mm}\\to3.5\\text{ mm}')}`); await show(c, l1);
         } },
       { cap: `The thimble has <b>50 divisions</b> around it, so one division moves the spindle ${T('0.5\\div50=0.01\\text{ mm}')}.`,
-        run: async (c) => { await sync(c, 3.51, 1200); l2 = line(P, `1 division ${T('=0.01\\text{ mm}')}: ${T('3.51\\text{ mm}')}`); await show(c, l2); } },
+        run: async (c) => { await sync(c, 3.51, 1200); l2 = line(P, `1 division: ${T('3.5\\text{ mm}\\to3.51\\text{ mm}')}`); await show(c, l2); } },
       { cap: 'Open it a little, slip a <b>loonie</b> between the anvil and the spindle, and turn the ratchet until it clicks.',
         run: async (c) => {
           await sync(c, 4.0, 900);
@@ -460,7 +459,7 @@ const mtour = {
         } },
       { cap: `Read it: sleeve <b>1.5 mm</b> + thimble ${T('25\\times0.01=0.25\\text{ mm}')} = <b>1.75 mm</b>, the warm-up’s loonie.`,
         run: async (c) => {
-          await MS.count(c, 1.5); MS.hiCoarse(1.5); await MS.hiFine(c, 25);
+          l1.remove(); l2.remove(); await MS.count(c, 1.5); MS.hiCoarse(1.5); await MS.hiFine(c, 25);
           l3 = line(P, `${T('1.5+0.25=\\boldsymbol{1.75\\text{ mm}}')}`, 'u10l3-big'); await show(c, l3);
         } }
     ];
@@ -532,7 +531,7 @@ const vtour = {
     return [
       { cap: 'The <b>main scale</b> is fixed along the beam. The <b>vernier scale</b> rides on the slider, which also carries the moving jaws and the depth rod.',
         run: async (c) => {
-          const L = [[[C.Z + 45, -8], [C.Z + 45, 3.5], 'main scale (beam)'], [[23, 28], [17, 11], 'vernier scale'], [[-12, 41], [-4, 30], 'outside jaws'], [[-12, -10.5], [-1, -8], 'inside jaws'], [[118, 15], [113, 7], 'depth rod']];
+          const L = [[[C.Z + 45, -8], [C.Z + 45, 3.5], 'main scale (beam)'], [[23, 28], [17, 11], 'vernier scale'], [[-3, 40.5], [-3, 33], 'outside jaws'], [[-3, -10], [-0.5, -8], 'inside jaws'], [[118, 15], [113, 7], 'depth rod']];
           for (const [at, to, t] of L) { const p = hidden(C.label(at, to, t)); labs.push(p); await pop(c, p, 260); }
         } },
       { cap: 'Slide it open: the jaws, the vernier and the depth rod all move <b>together</b>, by the same amount.',
@@ -580,21 +579,21 @@ const vread = {
   intro: 'Close the jaws, then read the <b>main scale</b>, then the <b>vernier</b>, then add. Press <b>Next</b>.',
   make(stage, key, ex) {
     const d = VREAD[key], W = ex.W, R = d.M + 0.05 * d.N, fine = 0.05 * d.N, start = R + 6;
-    const C = new Caliper(stage, { s: 4.9, x: 8, y: 2, L: 122, open: start });
+    const C = new Caliper(stage, { s: 4.55, x: 8, y: 8, L: 122, open: start });
     if (d.coin) C.object(R, 'coin'); else C.object(R);
     const V = vmm(stage, d.M, d.N, { u: 36 }); V.el.style.left = ((W - V.W) / 2) + 'px'; V.el.style.top = '272px';
     const startP = start; V.set(startP);
     const ov = overlay(stage, W, 440);
     const [ax, ay] = C.P(C.Z + V.lo, -1), [bx, by] = C.P(C.Z + V.hi, 15);
-    S('rect', { x: 8 + ax, y: 2 + ay, width: bx - ax, height: by - ay, rx: 4, class: 'u10l3-zbox' }, ov);
-    S('path', { d: `M${8 + ax} ${2 + by} L${(W - V.W) / 2 + 2} 274 M${8 + bx} ${2 + by} L${(W + V.W) / 2 - 2} 274`, class: 'u10l3-zline' }, ov);
+    S('rect', { x: 8 + ax, y: 8 + ay, width: bx - ax, height: by - ay, rx: 4, class: 'u10l3-zbox' }, ov);
+    S('path', { d: `M${8 + ax} ${8 + by} L${(W - V.W) / 2 + 2} 274 M${8 + bx} ${8 + by} L${(W + V.W) / 2 - 2} 274`, class: 'u10l3-zline' }, ov);
     const P = panel(stage, C.W + 22, 8, W - C.W - 30, 240, 'Reading');
     const fT = f2(fine), rT = f2(R), match = d.M + d.N;
     return [
       { cap: `Close the jaws on the ${d.coin ? 'loonie' : 'object'}. The vernier slides along the main scale with them.`,
         run: (c) => Promise.all([C.slide(c, R, 1600), V.slide(c, R, 1600)]) },
       { cap: `The <b>index</b> is the vernier’s own 0 mark (red). It sits just past the ${d.M} mm mark.`,
-        run: async (c) => { await pulse(c, V.idxLab, 1.3); const p = hidden(V.pill(V.X(R), V.y0 + 0.55 * V.k + 34, 'index', 'u10l3-pI')); await pop(c, p); } },
+        run: async (c) => { V.idx.classList.add('u10l3-idxOn'); V.idxLab.classList.add('u10l3-idxOnT'); await pulse(c, V.idxLab, 1.3); } },
       { cap: `<b>Coarse reading</b>: the last main-scale mark at or left of the index: <b>${d.M} mm</b>.`,
         run: async (c) => {
           V.hiMain(d.M, 'u10l3-hiC'); const p = hidden(V.pill(V.X(d.M), V.y0 - 0.55 * V.k - 11, String(d.M), 'u10l3-pC')); await pop(c, p);
@@ -632,7 +631,7 @@ const why = {
     let lit = [];
     const light = (c, n) => { lit.forEach(([a, m]) => { A.unVer(a, 'u10l3-hiM'); B.unVer(a, 'u10l3-hiM'); A.main[m] && A.main[m].ln.classList.remove('u10l3-hiM'); B.main[m] && B.main[m].ln.classList.remove('u10l3-hiM'); }); lit = [[n, n]]; A.hiVer(n, 'u10l3-hiM'); A.hiMain(n, 'u10l3-hiM'); B.hiVer(n, 'u10l3-hiM'); B.hiMain(n, 'u10l3-hiM'); return sleep(c, 300); };
     const both = (c, p, ms) => Promise.all([A.slide(c, p, ms), B.slide(c, p, ms)]);
-    const readout = hidden(pillAt(stage, W - 120, 414, '', 'u10l3-pT'));
+    const readout = hidden(pillAt(stage, W - 230, 408, '', 'u10l3-pT'));
     return [
       { cap: 'Jaws closed: the vernier’s 0 is on the main 0, and its <b>20</b> lines up with the <b>19 mm</b> mark.',
         run: async (c) => { A.hiVer(0, 'u10l3-hiM'); A.hiMain(0, 'u10l3-hiM'); A.hiVer(20, 'u10l3-hiM'); A.hiMain(19, 'u10l3-hiM'); await sleep(c, 400); } },
@@ -751,10 +750,10 @@ const choose = {
         q1: { x: 330, y: 50, w: 330, h: 64, html: '<b>How big is it?</b>', cls: 'bk-round', color: 'brand' },
         trundle: { x: 110, y: 180, w: 196, h: 74, html: `${icon('trundle', 'sm')}<b>Trundle wheel</b>`, color: 'red' },
         tape: { x: 340, y: 180, w: 196, h: 74, html: `${icon('tape', 'sm')}<b>Tape measure</b>`, color: 'green' },
-        q2: { x: 690, y: 180, w: 300, h: 64, html: '<b>How precise must it be?</b>', cls: 'bk-round', color: 'brand' },
-        ruler: { x: 500, y: 340, w: 190, h: 74, html: `${icon('ruler', 'sm')}<b>Ruler</b>`, color: 'amber' },
-        caliper: { x: 700, y: 340, w: 190, h: 74, html: `${icon('caliper', 'sm')}<b>Vernier caliper</b>`, color: 'blue' },
-        micro: { x: W - 104, y: 340, w: 190, h: 74, html: `${icon('micrometer', 'sm')}<b>Micrometer</b>`, color: 'purple' }
+        q2: { x: 650, y: 180, w: 300, h: 64, html: '<b>How precise must it be?</b>', cls: 'bk-round', color: 'brand' },
+        ruler: { x: 470, y: 340, w: 176, h: 74, html: `${icon('ruler', 'sm')}<b>Ruler</b>`, color: 'amber' },
+        caliper: { x: 662, y: 340, w: 176, h: 74, html: `${icon('caliper', 'sm')}<b>Vernier caliper</b>`, color: 'blue' },
+        micro: { x: 854, y: 340, w: 176, h: 74, html: `${icon('micrometer', 'sm')}<b>Micrometer</b>`, color: 'purple' }
       },
       edges: [
         { from: 'q1', to: 'trundle', label: 'track or field' }, { from: 'q1', to: 'tape', label: 'room' }, { from: 'q1', to: 'q2', label: 'fits on a desk' },
@@ -807,7 +806,7 @@ const bearing = {
       { cap: `Thimble: the index line is on <b>13</b>: ${T('13\\times0.01=0.13\\text{ mm}')}.`,
         run: async (c) => { await MS.hiFine(c, 13); await show(c, line(P, `<span class="u10l3-fi">Fine (thimble)</span> ${T('13\\times0.01=0.13\\text{ mm}')}`)); } },
       { cap: `Diameter: ${T('4.5+0.13=4.63\\text{ mm}')}.`,
-        run: async (c) => { await show(c, line(P, T('4.5+0.13=\\boldsymbol{4.63\\text{ mm}}'), 'u10l3-big')); const s = stamp(P, '4.63 mm', { ok: true, size: 'sm' }); s.classList.add('u10l3-stampP'); await stampIn(c, s); } }
+        run: async (c) => { await show(c, line(P, T('4.5+0.13=\\boldsymbol{4.63\\text{ mm}}'), 'u10l3-big')); const s = stamp(stage, '4.63 mm', { ok: true, x: W - 120, y: 385 }); await stampIn(c, s); } }
     ];
   }
 };

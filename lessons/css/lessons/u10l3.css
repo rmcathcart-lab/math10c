@@ -166,3 +166,7 @@
 .ex-stage > .u10l3-fhost, .u10l3-mag > .u10l3-fhost { position: absolute; }
 .u10l3-svg.u10l3-clip { overflow: hidden; }
 .u10l3-wcal { margin-right: 150px; margin-bottom: 20px; }
+.u10l3-idxOn { stroke-width: 6 !important; }
+.u10l3-idxOnT { font-weight: 800; font-size: 18px; }
+.u10l3-hiFt { font-size: 19px; }
+.u10l3-svg text { transform-box: fill-box; transform-origin: center; }

@@ -102,9 +102,9 @@ function dblArrow(parent, x1, y, x2, color = INK) {
 /* =============================== warm-up: arm span =============================== */
 function mountWarm() {
   const host = document.getElementById('u10l2-wfig'); if (!host) return;
-  const W = 690, H = 300, S = svgEl('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}`, class: 'u10l2-svg' }, host);
-  const gy = 282, ht = 200, px = 122, sy = gy - 165;
-  svgEl('rect', { x: 30, y: gy, width: 190, height: 9, fill: '#c8c2b4', rx: 2 }, S);
+  const W = 700, H = 300, S = svgEl('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}`, class: 'u10l2-svg' }, host);
+  const gy = 282, ht = 200, px = 142, sy = gy - 165;
+  svgEl('rect', { x: 50, y: gy, width: 190, height: 9, fill: '#c8c2b4', rx: 2 }, S);
   const body = G(S, { stroke: INK, 'stroke-width': 5, 'stroke-linecap': 'round', fill: 'none' });
   svgEl('line', { x1: px, y1: gy - 172, x2: px, y2: gy - 92 }, body);
   svgEl('line', { x1: px, y1: gy - 92, x2: px - 22, y2: gy - 2 }, body);
@@ -112,16 +112,16 @@ function mountWarm() {
   const armL = svgEl('line', { x1: px, y1: sy, x2: px - 25, y2: sy + 97 }, body), armR = svgEl('line', { x1: px, y1: sy, x2: px + 25, y2: sy + 97 }, body);
   svgEl('circle', { cx: px, cy: gy - 186, r: 14, fill: '#ffecb3', stroke: INK, 'stroke-width': 2.5 }, S);
   const hd = dim(S, 10, gy - ht, 10, gy, INK, 2);
-  svgEl('text', { x: 0, y: 0, class: 'u10l2-svgt', transform: `translate(26 ${gy - 100}) rotate(-90)`, 'text-anchor': 'middle' }, S).textContent = 'height';
+  svgEl('text', { x: 0, y: 0, class: 'u10l2-svgt', transform: `translate(29 ${gy - 100}) rotate(-90)`, 'text-anchor': 'middle' }, S).textContent = 'height';
   hd.setAttribute('opacity', 1);
-  svgEl('text', { x: 236, y: 34, class: 'u10l2-svgt u10l2-svgb' }, S).textContent = 'Arms out wide, fingertip to fingertip:';
+  svgEl('text', { x: 256, y: 34, class: 'u10l2-svgt u10l2-svgb' }, S).textContent = 'Arms out wide, fingertip to fingertip:';
   const bars = [['A', 100, 'half your height'], ['B', 200, 'your height'], ['C', 400, 'double your height']].map(([L, w, t], i) => {
     const y = 82 + i * 74, g = G(S);
-    svgEl('rect', { x: 268, y: y - 15, width: w, height: 30, fill: '#e8f0fc', rx: 3 }, g);
-    dblArrow(g, 268, y, 268 + w, TRUE);
-    svgEl('circle', { cx: 246, cy: y, r: 15, fill: TRUE }, g);
-    svgEl('text', { x: 246, y: y + 6, class: 'u10l2-svgt u10l2-svgw', 'text-anchor': 'middle' }, g).textContent = L;
-    svgEl('text', { x: 268, y: y + 36, class: 'u10l2-svgs' }, g).textContent = t;
+    svgEl('rect', { x: 288, y: y - 15, width: w, height: 30, fill: '#e8f0fc', rx: 3 }, g);
+    dblArrow(g, 288, y, 288 + w, TRUE);
+    svgEl('circle', { cx: 266, cy: y, r: 15, fill: TRUE }, g);
+    svgEl('text', { x: 266, y: y + 6, class: 'u10l2-svgt u10l2-svgw', 'text-anchor': 'middle' }, g).textContent = L;
+    svgEl('text', { x: 288, y: y + 36, class: 'u10l2-svgs' }, g).textContent = t;
     return g;
   });
   const sq = svgEl('rect', { x: px - 100, y: gy - ht, width: 200, height: ht, fill: 'none', stroke: GRN, 'stroke-width': 2.5, 'stroke-dasharray': '8 6', opacity: 0 }, S);
