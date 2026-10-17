@@ -414,3 +414,9 @@ math-field.mf::part(menu-toggle), math-field.mf::part(virtual-keyboard-toggle) {
 .am-cell { border: 2px solid var(--ink); margin: 0 -1px -2px 0; display: flex; align-items: center; justify-content: center; padding: 8px 6px; font-size: 16px; background: #fff; min-width: 0; }
 .am-cell b { color: var(--brand); font-size: 20px; }
 .fig-svg { display: block; width: 100%; height: auto; margin: 8px 0; }
+
+/* ---------- Units 4–5: tables of values, graphs ---------- */
+.vtab { border-collapse: collapse; margin: 8px 0; font-size: 15px; max-width: 100%; }
+.vtab th, .vtab td { border: 1.5px solid #9aa3ad; padding: 4px 10px; text-align: center; min-width: 30px; }
+.vtab th { background: #f1efe9; font-weight: 600; }
+.graph-svg { margin: 8px 0; }
