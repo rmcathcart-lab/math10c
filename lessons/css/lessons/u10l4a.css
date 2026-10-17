@@ -9,6 +9,7 @@
 .chip .katex { font-size: 1em; }
 .pl .katex { font-size: 1.08em; }
 .ans .katex { font-size: 1.04em; }
+.ans { line-height: 2; }
 .lesson .katex { white-space: nowrap; }
 h2 .katex, h3 .katex { font-size: .95em; }
 .pill-col { display: flex; flex-direction: column; gap: 6px; }
@@ -125,6 +126,6 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u10l4a-scalebox { font: 800 19px var(--round); background: #fff; border: 2px solid #9aa0ab; border-radius: 8px; padding: 2px 10px; white-space: nowrap; }
 
 /* zoom bars */
-.u10l4a-zlab { font: 800 19px var(--round); white-space: nowrap; }
-.u10l4a-zsub { font: 700 15px var(--round); color: var(--muted); white-space: nowrap; }
+.u10l4a-zlab { font: 800 22px var(--round); white-space: nowrap; }
+.u10l4a-zsub { font: 700 16px var(--round); color: var(--muted); white-space: nowrap; }
 .u10l4a-zeq { font-size: 22px; white-space: nowrap; }

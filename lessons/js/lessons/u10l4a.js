@@ -140,8 +140,8 @@ function mountRoad() {
   };
   sign(90, [['SPEED', 46, 17], ['LIMIT', 66, 17], ['65', 120, 50]]);
   sign(910, [['MAXIMUM', 46, 16], ['110', 106, 48], ['km/h', 138, 19]]);
-  txt(90, 176, 'U.S.: mph', { 'font-size': 15, 'font-style': 'italic', 'font-weight': 600 });
-  txt(910, 176, 'Alberta: km/h', { 'font-size': 15, 'font-style': 'italic', 'font-weight': 600 });
+  txt(104, 178, 'U.S.: mph', { 'text-anchor': 'start', 'font-size': 15, 'font-style': 'italic', 'font-weight': 600 });
+  txt(896, 178, 'Alberta: km/h', { 'text-anchor': 'end', 'font-size': 15, 'font-style': 'italic', 'font-weight': 600 });
   // car
   const car = svgEl('g', {}, svg);
   svgEl('path', { d: 'M0 0 L0 -16 L18 -18 L32 -34 L72 -34 L88 -18 L104 -15 L104 0 Z', fill: '#3c78c8', stroke: INK, 'stroke-width': 2, 'stroke-linejoin': 'round' }, car);
@@ -273,6 +273,7 @@ const hop = {
       if (pointGone && tape.e === tape.full.length) bits.push('a point at the very end isn’t written');
       else if (tz) bits.push('zeros at the end of a decimal can go');
       if (lz) bits.push('extra zeros in front can go');
+      if (!right && tape.lp) bits.push('write a 0 in front of the point');
       return bits.length ? bits.join('; ') : 'nothing to tidy';
     })();
     const zeros = tape.lp + tape.rp;
@@ -323,7 +324,7 @@ const sci = {
       { cap: `${T(val + U0)} to ${uCap(d.to, d.base)}: from ${pName(d.from)} to ${pName(d.to)} is <b>${n} steps ${right ? 'right' : 'left'}</b>. Too many to hop one at a time.`,
         run: async (c) => { await show(c, pA); await show(c, pB); await N.drawIn(N.interval(Math.min(a, b), Math.max(a, b), { color: right ? RT : LT, width: 7 }), 500, c); } },
       { cap: `${n} steps ${right ? 'right' : 'left'} is ${T(`\\times10^{${k}}`)} in one jump: ${T(`${val}${U0}=${val}\\times10^{${k}}${U1}`)}.`,
-        run: async (c) => { big.el = await N.hop(c, a, b, { label: T(`\\times10^{${k}}`), color: right ? RT : LT, height: 30, ms: 700 }); await fadeIn(c, tape.el, 380); } },
+        run: async (c) => { big.el = await N.hop(c, a, b, { label: T(`\\times10^{${k}}`), color: right ? RT : LT, height: 20, ms: 700 }); await fadeIn(c, tape.el, 380); } },
       { cap: `Scientific notation wants <b>one</b> non-zero digit in front of the point. Slide the point <b>${-shift} place${-shift > 1 ? 's' : ''} left</b>: the front number gets ${-shift > 1 ? T('10^{' + -shift + '}') : '10'} times smaller, so the exponent goes <b>up ${-shift}</b> to balance.`,
         run: async (c) => {
           let e = k;
@@ -364,10 +365,10 @@ const prop = {
     const d = PROP[key], W = ex.W, pw = (W - 42) / 2, H = ex.def.height;
     const S = panel(stage, 14, 12, pw, H - 24, 'Sam · cross multiplication'), P = panel(stage, 28 + pw, 12, pw, H - 24, 'Priya · table of headers');
     const row = h('div', 'u10l4a-eqrow'); S.appendChild(row);
-    const fA = pFrac(row, 20, 0, d.A[0], d.A[1]), eq = add(row, h('div', 'u10l4a-peq', '='), 186, 34), fB = pFrac(row, 222, 0, d.B[0], d.B[1]);
+    const fA = pFrac(row, 6, 0, d.A[0], d.A[1]), eq = add(row, h('div', 'u10l4a-peq', '='), 190, 34), fB = pFrac(row, 250, 0, d.B[0], d.B[1]);
     const X = svgEl('svg', { width: 400, height: 112, style: 'position:absolute;left:0;top:0;overflow:visible' }, row);
-    const xl1 = svgEl('line', { x1: 130, y1: 22, x2: 248, y2: 86, stroke: AMB, 'stroke-width': 3.5, 'stroke-linecap': 'round' }, X);
-    const xl2 = svgEl('line', { x1: 130, y1: 86, x2: 248, y2: 22, stroke: RT, 'stroke-width': 3.5, 'stroke-linecap': 'round' }, X);
+    const xl1 = svgEl('line', { x1: 146, y1: 24, x2: 252, y2: 84, stroke: AMB, 'stroke-width': 3.5, 'stroke-linecap': 'round' }, X);
+    const xl2 = svgEl('line', { x1: 146, y1: 84, x2: 252, y2: 24, stroke: RT, 'stroke-width': 3.5, 'stroke-linecap': 'round' }, X);
     [fA, eq, fB, xl1, xl2].forEach(hide);
     const s1 = hide(line(S, T(d.cross))), s2 = hide(line(S, T(d.solve))), s3 = hide(line(S, T(d.ans), 'big'));
     const tb = h('table', 'u10l4a-ptab'); P.appendChild(tb);
@@ -656,7 +657,7 @@ const rate = {
       hide(R.fr[1]); hide(R.ops[0]);
       const res = hide(add(stage, h('div', 'u10l4a-line big', T('=110\\times1000=110\\,000\\ \\dfrac{\\text{m}}{\\text{h}}')), 0, 210)); centerX(res, W / 2);
       return [
-        { cap: `${T('110\\text{ km/h}')}: km on top, h on the bottom. We want m/h, so only the <b>distance</b> changes; the hours are fine.`, run: async (c) => { hl(R.fr[0].nu); R.fr[0].du.classList.add('keep'); } },
+        { cap: `${T('110\\text{ km/h}')}: km on top, h on the bottom. We want m/h, so only the <b>distance</b> changes; the hours are fine.`, run: async (c) => { hl(R.fr[0].nu); R.fr[0].du.classList.add('keep'); await pulse(c, R.fr[0], 1.12, 420); } },
         { cap: `km is on top, so ${T('\\dfrac{1000\\text{ m}}{1\\text{ km}}')} puts km on the bottom. km cancels.`, run: async (c) => { await appear(c, R.ops[0], 200); await pop(c, R.fr[1]); hl(R.fr[1].du); await Promise.all([strike(c, R.fr[0].nu), strike(c, R.fr[1].du)]); } },
         { cap: `Left: m on top, h on the bottom. ${T('110\\times1000=110\\,000')} m/h. One unit changing needs one conversion fraction.`, run: async (c) => { R.fr[1].nu.classList.add('keep'); await pop(c, res); } }
       ];
@@ -687,7 +688,7 @@ const rate = {
     hide(R.fr[1]); hide(R.fr[2]); R.ops.forEach(hide);
     const res = hide(add(stage, h('div', 'u10l4a-line big', T('=\\dfrac{64\\times60}{1000}=\\dfrac{3840}{1000}=3.84\\ \\dfrac{\\text{km}}{\\text{min}}')), 0, 162)); centerX(res, W / 2);
     // the sense check: one minute of 64 m every second
-    const tx0 = 90, tw = W - 260, ty = 300;
+    const tx0 = 60, tw = W - 340, ty = 300;
     const trk = svgEl('svg', { width: W, height: 110, style: `position:absolute;left:0;top:${ty - 40}px;overflow:visible` }, stage);
     svgEl('line', { x1: tx0, x2: tx0 + tw, y1: 40, y2: 40, stroke: '#cfc9bb', 'stroke-width': 10, 'stroke-linecap': 'round' }, trk);
     for (let i = 0; i <= 60; i++) svgEl('line', { x1: tx0 + tw * i / 60, x2: tx0 + tw * i / 60, y1: i % 10 ? 50 : 46, y2: i % 10 ? 58 : 66, stroke: INK, 'stroke-width': i % 10 ? 1 : 2 }, trk);
@@ -717,10 +718,10 @@ const rate = {
 
 /* =============================== explainer: which (flowchart) =============================== */
 const WHICH = {
-  e2b: { label: `Example 2(b): ${T('58\\,400\\text{ mg}\\to\\text{kg}')}`, cat: 'n1', m: 'm1', caps: ['One metric prefix changes to another: mg to kg.', 'The <b>number line</b>: 6 steps left, move the point 6 places: <b>0.0584 kg</b>.'] },
+  e2b: { label: `Example 2(b): ${T('58\\,400\\text{ mg}\\to\\text{kg}')}`, cat: 'n1', m: 'm1', caps: ['One metric prefix changes to another: mg to kg.', 'The <b>number line</b>: 6 steps left, move the point 6 places: <b>0.0584 kg</b>. (A proportion or unit analysis works too; this is quickest.)'] },
   e5: { label: 'Example 5: the whale photo', cat: 'n2', m: 'm2', caps: ['The question gives its own ratio: 1 cm on the photo stands for 2.4 m.', 'A <b>proportion</b>: ' + T('\\frac{1\\text{ cm}}{2.4\\text{ m}}=\\frac{2.5\\text{ cm}}{x}') + ', so <b>6 m</b>.'] },
   e7: { label: `Example 7: a ${T('1:250\\,000')} map`, cat: 'n2', m: 'm2', caps: ['A map scale is a ratio given by the question.', 'A <b>proportion</b> first (4 600 000 cm), then a prefix change at the end to get <b>46 km</b>.'] },
-  e10: { label: `Example 10: ${T('64\\text{ m/s}\\to\\text{km/min}')}`, cat: 'n3', m: 'm3', caps: ['A rate: the distance unit <b>and</b> the time unit both change.', '<b>Unit analysis</b>: one fraction for each unit, cancel both, <b>3.84 km/min</b>.'] }
+  e10: { label: `Example 10: ${T('64\\text{ m/s}\\to\\text{km/min}')}`, cat: 'n3', m: 'm3', caps: ['A rate: the distance unit <b>and</b> the time unit both change.', '<b>Unit analysis</b>: one fraction for each unit, cancel both, <b>3.84 km/min</b>. (The number line can only change one unit at a time.)'] }
 };
 const which = {
   title: 'Which method fits the question?',
@@ -743,7 +744,7 @@ const which = {
     return [
       { cap: 'Start with the question itself: <b>what does it give you?</b>', run: (c) => F.visit(c, 'start') },
       { cap: d.caps[0], run: async (c) => { await F.go(c, 'start', d.cat); await F.visit(c, d.cat); } },
-      { cap: d.caps[1] + ' (Any of the three methods would work; this one is quickest here.)', run: async (c) => { await F.go(c, d.cat, d.m); await F.visit(c, d.m); } }
+      { cap: d.caps[1], run: async (c) => { await F.go(c, d.cat, d.m); await F.visit(c, d.m); } }
     ];
   }
 };
