@@ -454,7 +454,7 @@
             { html: t('x=-' + s.p + '\\text{ and }x=' + s.q), right: true },
             { html: t('x=-' + s.p + '\\text{ and }x=-' + s.q), why: 'Substitute ' + t('x=-' + s.q) + ': ' + t('-' + s.q + '(' + (b - s.q) + ')=' + (-s.q * (b - s.q))) + ', not ' + t(c) + '. Check the signs.', code: 'neg' }],
             steps(['\\text{Rearrange: }x^{2}+' + (b === 1 ? '' : b) + 'x-' + c + '=0', '\\text{Product } -' + c + ',\\ \\text{sum } ' + b + ':\\ \\ ' + s.p + '\\text{ and }-' + s.q, '(x+' + s.p + ')(x-' + s.q + ')=0' + IMP + 'x=-' + s.p + ',\\ ' + s.q]) + '<br>Both roots are wanted, since the question asks for the <b>complete</b> solution.',
-            ['Rearrange so one side is 0, then factor.'], 'MC x(x+b)=c', true);
+            ['Rearrange so one side is 0, then factor.'], 'MC x(x+b)=c');
         } }] },
       /* ================= Q9: numerical response ================= */
       { num: '9', stem: '<i>(Numerical Response)</i>', parts: [
@@ -999,8 +999,8 @@
             { html: t('x=\\pm' + n), why: 'Dividing by ' + t(a + 'x') + ' lost ' + t('x=0') + '. Factor it out instead.', code: 'pm' },
             { html: t('x=0,\\ ' + n), why: t('x^{2}-' + n * n) + ' factors again and gives two solutions.', code: 'stop' },
             { html: t('x=0,\\ \\pm' + n), right: true }],
-            steps([a + 'x^{3}-' + a * n * n + 'x=0', a + 'x(x^{2}-' + n * n + ')=0', a + 'x(x-' + n + ')(x+' + n + ')=0']) + '<br>So ' + t('x=0,\\ \\pm' + n) + '. A and B come from dividing by ' + t(a + 'x') + '; C stops before factoring ' + t('x^{2}-' + n * n) + '.',
-            ['Move everything to one side and factor completely.'], 'MC ax^3=bx', true);
+            steps([a + 'x^{3}-' + a * n * n + 'x=0', a + 'x(x^{2}-' + n * n + ')=0', a + 'x(x-' + n + ')(x+' + n + ')=0']) + '<br>So ' + t('x=0,\\ \\pm' + n) + '. The answers ' + t('x=' + n) + ' and ' + t('x=\\pm' + n) + ' come from dividing by ' + t(a + 'x') + '; ' + t('x=0,\\ ' + n) + ' stops before factoring ' + t('x^{2}-' + n * n) + '.',
+            ['Move everything to one side and factor completely.'], 'MC ax^3=bx');
         } }] },
       { num: '21', stem: '<i>(Numerical Response)</i>', parts: [
         { id: 'e21', level: 'PRG', make: function (r) {

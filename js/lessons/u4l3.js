@@ -882,7 +882,7 @@
             { html: t('x^{2}+' + n2), right: true },
             { html: t('x^{2}-' + n2), why: t('x^{2}-' + n2) + ' still factors into ' + t('(x-' + n + ')(x+' + n + ')') + ', so it isn’t one of the factors when the factoring is complete.' }],
             t(e + '=' + k + '(x^{4}-' + n4 + ')=' + k + '(x^{2}-' + n2 + ')(x^{2}+' + n2 + ')=' + k + '(x-' + n + ')(x+' + n + ')(x^{2}+' + n2 + ')') + '. Only ' + t('x^{2}+' + n2) + ' is a factor of the <b>completed</b> answer.',
-            ['Factor completely first, then look for the option among the final brackets.'], 'MC: factor of ' + plain(e), true);
+            ['Factor completely first, then look for the option among the final brackets.'], 'MC: factor of ' + plain(e));
         } }] },
       { num: '18', stem: '<i>(Numerical Response)</i>', parts: [
         { id: 'e18', level: 'ADV', make: function (r) {

@@ -729,7 +729,7 @@
               { html: t('b') + '; the same; ' + t('c'), why: 'A negative product needs one positive and one negative number, so the signs are opposite.' },
               { html: t('c') + '; opposite; ' + t('b'), why: 'Row 2 has ' + t('c>0') + ' but both integers negative — they follow the sign of ' + t('b') + ', not ' + t('c') + '.' }],
               'If ' + t('c>0') + ' the product is positive, so the integers have the <b>same</b> sign, and their sum ' + t('b') + ' has that sign too. If ' + t('c<0') + ' the signs are <b>opposite</b>; the sum takes the sign of the integer further from zero, so that one carries the sign of ' + t('b') + '.',
-              ['Test the rule on the four rows of the table.'], 'sign rule', true);
+              ['Test the rule on the four rows of the table.'], 'sign rule');
           } },
           { id: 'e1b', sub: 'b', level: 'PRG', make: function (r, sh) {
             var c = sh.u * sh.v, d = sh.v - sh.u;
@@ -780,7 +780,7 @@
               { html: 'Yes: swapping the order of the brackets gives new trinomials.', why: 'The order of the brackets doesn’t change the product, so it gives the same trinomial.' },
               { html: 'Yes: you can also use ' + t('\\pm' + c) + ' as the middle coefficient.', why: 'The middle coefficient is the sum of the pair, which can only be ' + t('\\pm' + (sh.u + sh.v)) + ' or ' + t('\\pm' + (sh.v - sh.u)) + '.' }],
               'Each of ' + t(sh.u) + ' and ' + t(sh.v) + ' can be ' + t('+') + ' or ' + t('-') + ': four sign choices. ' + t('+,+') + ' and ' + t('-,-') + ' give product ' + t(c) + ' and ' + t('b=\\pm' + (sh.u + sh.v)) + '; the mixed ones give ' + t(-c) + ' and ' + t('b=\\pm' + (sh.v - sh.u)) + '. That is exactly (a)–(d).',
-              ['Count the ways to put signs on the two numbers.'], 'only four trinomials', true);
+              ['Count the ways to put signs on the two numbers.'], 'only four trinomials');
           } }] },
       { num: '4', section: 'Extra practice B — Take the Common Factor Out First', stem: 'Each of these becomes ' + t('x^{2}+bx+c') + ' once the common factor is removed. Factor completely.', parts: [
         { id: 'e4a', level: 'EMG', make: function (r) { var p = r.int(1, 4), q = r.int(p + 1, 6); return facPart(spec({ G: P.num(r.pick([2, 3, 4, 5])), p: p, q: q })); } },
@@ -1050,7 +1050,7 @@
               { html: '<b>Yes</b>: ' + t('k=' + 2 * c) + '.', why: 'A square ' + t('(x+n)^{2}') + ' needs ' + t('n^{2}=' + c) + '. Is ' + t(c) + ' a perfect square?' },
               { html: 'It depends on the value of ' + t('x') + '.', why: 'Being a perfect-square trinomial is about the expression, not a value of ' + t('x') + '. Use the rule from (b).' }],
               t((sh.n - 1) + '^{2}=' + (sh.n - 1) * (sh.n - 1)) + ', ' + t(sh.n + '^{2}=' + sh.n * sh.n) + ', ' + t((sh.n + 1) + '^{2}=' + (sh.n + 1) * (sh.n + 1)) + ': ' + t(c) + ' is not a perfect square, so ' + t('\\sqrt{' + c + '}') + ' is not an integer and no integer ' + t('k') + ' works.',
-              ['Use the rule from (b): is ' + t(c) + ' a perfect square?'], 'non-square c', true);
+              ['Use the rule from (b): is ' + t(c) + ' a perfect square?'], 'non-square c');
           } }] },
       { num: '18', stem: function (sh) { return 'Look at this family: ' + [2, 5, 8].map(function (n) { var s = spec({ p: n, q: n + 1 }); return t(s.key + '=' + tx(s.full)); }).join(', ') + '.'; },
         shared: function (r) { return { n: r.int(9, 15) }; },

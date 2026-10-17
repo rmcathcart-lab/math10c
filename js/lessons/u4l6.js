@@ -863,8 +863,8 @@
             { html: t(Bt), why: t('2x-' + 2 * q) + ' has a common factor of ' + t('2') + ': ' + t(Bt + '=2(x+' + p + ')(x-' + q + ')') + '.' },
             { html: t(C), right: true },
             { html: t(D), why: t('x^{2}-' + d * d) + ' is a difference of squares: ' + t(D + '=(x-' + d + ')^{2}(x+' + d + ')') + '.' }],
-            'A: ' + t(A + '=' + k + '(x-' + n + ')(x+' + n + ')') + ' — not complete.<br>B: ' + t(Bt + '=2(x+' + p + ')(x-' + q + ')') + ' — not complete.<br>C: ' + t('x^{2}+' + m) + ' is a <b>sum</b>, not a difference, and has no common factor — <b>complete</b>.<br>D: ' + t(D + '=(x-' + d + ')(x-' + d + ')(x+' + d + ')=(x-' + d + ')^{2}(x+' + d + ')') + ' — not complete.',
-            ['For each option, check every bracket: a common factor? a difference of squares?'], 'which is factored completely', true);
+            t(A + '=' + k + '(x-' + n + ')(x+' + n + ')') + ' — not complete.<br>' + t(Bt + '=2(x+' + p + ')(x-' + q + ')') + ' — not complete.<br>' + t(C) + ': ' + t('x^{2}+' + m) + ' is a <b>sum</b>, not a difference, and has no common factor — <b>complete</b>.<br>' + t(D + '=(x-' + d + ')(x-' + d + ')(x+' + d + ')=(x-' + d + ')^{2}(x+' + d + ')') + ' — not complete.',
+            ['For each option, check every bracket: a common factor? a difference of squares?'], 'which is factored completely');
         } }] },
 
       { num: '19', stem: '<i>(Numerical Response)</i>', parts: [

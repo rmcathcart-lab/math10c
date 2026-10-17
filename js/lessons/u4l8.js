@@ -324,7 +324,7 @@
             { html: pr(X, Y), right: true },
             { html: pr(Xn, Y), why: 'Expand: the constants multiply to ' + t(-z.s * z.u) + ', but the constant term is ' + t(z.s * z.u) + '.' }],
             t('ac=' + z.a * z.s * z.u) + '; the pair with sum ' + t(z.a * z.s + z.u) + ' is ' + t(z.a * z.s) + ' and ' + t(z.u) + '.<br>' + t(poly + '=' + br(X) + br(Y)),
-            ['Expand each pair and compare with the trinomial — the middle term and the constant both have to match.'], 'both factors of ' + plain(poly), true);
+            ['Expand each pair and compare with the trinomial — the middle term and the constant both have to match.'], 'both factors of ' + plain(poly));
         } }] },
       { num: '12', stem: '<i>(Numerical Response)</i>', parts: [
         { id: '12', level: 'PRG', make: function (r) {
@@ -1050,30 +1050,44 @@
       { num: '14', section: 'Extra practice E — Reasoning and error analysis', stem: 'Decide whether each statement is <b>true</b> or <b>false</b>.', parts: [
         { id: 'e14a', level: 'EMG', make: function (r) {
           var c = r.pick([20, 12, 18, 28, 30]), S = sumsOf(c), mx = Math.max.apply(null, S), cand = []; for (var k = 1; k < mx; k++) if (S.indexOf(k) < 0) cand.push(k); var b = r.pick(cand);
-          return KP.tf(r, 'Every quadratic trinomial can be factored over the integers.', false, 'Try ' + t('x^{2}+' + lc(b) + 'x+' + c) + ': the factor pairs of ' + t(c) + ' have sums ' + t(S.map(function (s) { return '\\pm' + s; }).join(',\\ ')) + ' — never ' + t(b) + '.',
-            '<b>False.</b> Counterexample: ' + t('x^{2}+' + lc(b) + 'x+' + c) + '. The factor pairs of ' + t(c) + ' have sums ' + t(S.map(function (s) { return '\\pm' + s; }).join(',\\ ')) + ' — never ' + t(b) + '.', ['Can you find a trinomial where no pair works?'], 'TF every trinomial factors');
+          var sums = t(S.map(function (s) { return '\\pm' + s; }).join(',\\ ')), ex = t('x^{2}+' + lc(b) + 'x+' + c);
+          if (r.chance(0.5)) return KP.tf(r, '<b>Not</b> every quadratic trinomial can be factored over the integers.', true, 'Try ' + ex + ': the factor pairs of ' + t(c) + ' have sums ' + sums + ' — never ' + t(b) + '.',
+            '<b>True.</b> Example: ' + ex + '. The factor pairs of ' + t(c) + ' have sums ' + sums + ' — never ' + t(b) + ' — so it cannot be factored over the integers.', ['Can you find a trinomial where no pair works?'], 'TF not every trinomial factors');
+          return KP.tf(r, 'Every quadratic trinomial can be factored over the integers.', false, 'Try ' + ex + ': the factor pairs of ' + t(c) + ' have sums ' + sums + ' — never ' + t(b) + '.',
+            '<b>False.</b> Counterexample: ' + ex + '. The factor pairs of ' + t(c) + ' have sums ' + sums + ' — never ' + t(b) + '.', ['Can you find a trinomial where no pair works?'], 'TF every trinomial factors');
         } },
         { id: 'e14b', level: 'LIM', make: function (r) {
+          if (r.chance(0.5)) { var k = r.int(2, 9);
+            return KP.tf(r, 'If a product of two factors equals ' + t('0') + ', then <b>both</b> of those factors must be ' + t('0') + '.', false, 'Counterexample: ' + t('0\\times ' + k + '=0') + ', but ' + t(k) + ' is not ' + t('0') + '. The Zero Product Law only says <b>at least one</b> factor is ' + t('0') + '.',
+              '<b>False.</b> ' + t('0\\times ' + k + '=0') + ', and ' + t(k) + ' is not ' + t('0') + '. The Zero Product Law says that <b>at least one</b> factor is ' + t('0') + ' — not necessarily both.', ['Try a product where only one factor is ' + t('0') + '.'], 'TF zero product: both factors zero?'); }
           return KP.tf(r, 'If a product of two factors equals ' + t('0') + ', then at least one of those factors is ' + t('0') + '.', true, 'This is the Zero Product Law: a product can be ' + t('0') + ' only if a factor is ' + t('0') + '.',
             '<b>True.</b> This is the Zero Product Law: a product can equal ' + t('0') + ' only if at least one of its factors is ' + t('0') + '.', ['Try to find two nonzero numbers whose product is ' + t('0') + '.'], 'TF zero product law');
         } },
         { id: 'e14c', level: 'EMG', make: function (r) {
           var n = r.pick([12, 18, 20, 24, 30, 36]), pq = pairsOf(n).filter(function (q) { return q[0] > 1; }), q = r.pick(pq);
+          if (r.chance(0.5)) return KP.tf(r, 'A product of two factors can equal ' + t(n) + ' even when <b>neither</b> factor is ' + t(n) + '.', true, 'Example: ' + t(q[0] + '\\times ' + q[1] + '=' + n) + ', and neither factor is ' + t(n) + '.',
+            '<b>True.</b> For example, ' + t(q[0] + '\\times ' + q[1] + '=' + n) + ', and neither factor is ' + t(n) + '. Only ' + t('0') + ' forces one of the factors to be itself (the Zero Product Law).', ['Think of two numbers that multiply to ' + t(n) + '.'], 'TF product ' + n + ' without factor ' + n);
           return KP.tf(r, 'If a product of two factors equals ' + t(n) + ', then at least one of those factors is ' + t(n) + '.', false, 'Counterexample: ' + t(q[0] + '\\times ' + q[1] + '=' + n) + ', and neither factor is ' + t(n) + '.',
             '<b>False.</b> Counterexample: ' + t(q[0] + '\\times ' + q[1] + '=' + n) + ', and neither factor is ' + t(n) + '. Only ' + t('0') + ' has this special property.', ['Think of two numbers that multiply to ' + t(n) + '.'], 'TF product equals ' + n);
         } },
         { id: 'e14d', level: 'PRG', make: function (r) {
           var k = r.pick([2, 3, 4, 5]), m = r.int(1, 4);
+          if (r.chance(0.5)) return KP.tf(r, 'An expression made of one square <b>plus</b> another square can sometimes still be factored.', true, 'Example: ' + t(k * k + 'x^{2}+' + k * k * m * m + '=(' + k + 'x)^{2}+' + k * m + '^{2}') + ' is a sum of squares, and it has a common factor: ' + t(k * k + '(x^{2}+' + m * m + ')') + '.',
+            '<b>True.</b> ' + t(k * k + 'x^{2}+' + k * k * m * m + '=(' + k + 'x)^{2}+' + k * m + '^{2}') + ' is a sum of squares, yet ' + t(k * k + 'x^{2}+' + k * k * m * m + '=' + k * k + '(x^{2}+' + m * m + ')') + '. What a sum of squares can’t do is factor as a difference of squares: the bracket ' + t('x^{2}+' + m * m) + ' does not factor.', ['Could a sum of squares have a common factor?'], 'TF sum of squares can factor');
           return KP.tf(r, 'An expression made of one square <b>plus</b> another square can never be factored at all.', false, 'Counterexample: ' + t(k * k + 'x^{2}+' + k * k * m * m + '=(' + k + 'x)^{2}+' + k * m + '^{2}') + ' is a sum of squares, but it has a common factor: ' + t(k * k + '(x^{2}+' + m * m + ')') + '.',
             '<b>False.</b> ' + t(k * k + 'x^{2}+' + k * k * m * m + '=(' + k + 'x)^{2}+' + k * m + '^{2}') + ' is a sum of squares, yet ' + t(k * k + 'x^{2}+' + k * k * m * m + '=' + k * k + '(x^{2}+' + m * m + ')') + '. What is true is that the bracket ' + t('x^{2}+' + m * m) + ' does not factor.', ['Could a sum of squares have a common factor?'], 'TF sum of squares never factors');
         } },
         { id: 'e14e', level: 'EMG', make: function (r) {
           var a = r.int(2, 9);
+          if (r.chance(0.5)) return KP.tf(r, t('-(x-' + a + ')(x+' + a + ')') + ' and ' + t('(' + a + '-x)(' + a + '+x)') + ' are factorings of the same polynomial.', true, 'Expand both: ' + t('-(x-' + a + ')(x+' + a + ')=-(x^{2}-' + a * a + ')=' + a * a + '-x^{2}') + ' and ' + t('(' + a + '-x)(' + a + '+x)=' + a * a + '-x^{2}') + '.',
+            '<b>True.</b> ' + t('-(x-' + a + ')(x+' + a + ')=-(x^{2}-' + a * a + ')=' + a * a + '-x^{2}') + ', and ' + t('(' + a + '-x)(' + a + '+x)=' + a * a + '-x^{2}') + '. Both give ' + t(a * a + '-x^{2}') + '. (Without the minus sign in front, ' + t('(x-' + a + ')(x+' + a + ')') + ' would be the opposite polynomial.)', ['Expand both products.'], 'TF −(x−a)(x+a) vs (a−x)(a+x)');
           return KP.tf(r, t('(x-' + a + ')(x+' + a + ')') + ' and ' + t('(' + a + '-x)(' + a + '+x)') + ' are factorings of the same polynomial.', false, 'Expand both: ' + t('(x-' + a + ')(x+' + a + ')=x^{2}-' + a * a) + ' but ' + t('(' + a + '-x)(' + a + '+x)=' + a * a + '-x^{2}') + '.',
             '<b>False.</b> ' + t('(x-' + a + ')(x+' + a + ')=x^{2}-' + a * a) + ', but ' + t('(' + a + '-x)(' + a + '+x)=' + a * a + '-x^{2}=-(x^{2}-' + a * a + ')') + '. They are opposites, not the same polynomial.', ['Expand both products.'], 'TF (x−a)(x+a) vs (a−x)(a+x)');
         } },
         { id: 'e14f', level: 'EMG', make: function (r) {
           var a = r.int(2, 5), s = pick(function () { return r.int(1, 9); }, function (s) { return gcd(a, s) === 1; });
+          if (r.chance(0.5)) return KP.tf(r, 'A quadratic equation can have just one solution.', true, 'Example: ' + t(seq([M(a * a, 'x', 2), M(-2 * a * s, 'x'), N(s * s)]) + '=0') + ' is ' + t('(' + a + 'x-' + s + ')^{2}=0') + ', with only one solution.',
+            '<b>True.</b> Example: ' + t(seq([M(a * a, 'x', 2), M(-2 * a * s, 'x'), N(s * s)]) + '=0') + ' is ' + t('(' + a + 'x-' + s + ')^{2}=0') + ', with only one solution, ' + t('x=' + frac(s, a)) + '.', ['Think about a perfect square trinomial set equal to ' + t('0') + '.'], 'TF quadratic one solution');
           return KP.tf(r, 'A quadratic equation always has exactly two different solutions.', false, 'Counterexample: ' + t(seq([M(a * a, 'x', 2), M(-2 * a * s, 'x'), N(s * s)]) + '=0') + ' is ' + t('(' + a + 'x-' + s + ')^{2}=0') + ', with only one solution.',
             '<b>False.</b> Counterexample: ' + t(seq([M(a * a, 'x', 2), M(-2 * a * s, 'x'), N(s * s)]) + '=0') + ' is ' + t('(' + a + 'x-' + s + ')^{2}=0') + ', with only one solution, ' + t('x=' + frac(s, a)) + '.', ['Think about a perfect square trinomial set equal to ' + t('0') + '.'], 'TF quadratic two solutions');
         } }] },
@@ -1257,7 +1271,7 @@
             { html: t('x=-' + z.q) + ', ' + t('x=' + z.q) + ' and ' + t('x=' + z.p), right: true },
             { html: t('x=-' + z.p) + ', ' + t('x=-' + z.q) + ' and ' + t('x=' + z.q), why: 'Check the sign: ' + t('x-' + z.p + '=0') + ' gives ' + t('x=' + z.p) + '.' }],
             'Grouping: ' + t('x^{2}(x-' + z.p + ')-' + z.q * z.q + '(x-' + z.p + ')=0') + '<br>' + t('(x-' + z.p + ')(x^{2}-' + z.q * z.q + ')=0') + '<br>' + t('(x-' + z.p + ')(x-' + z.q + ')(x+' + z.q + ')=0') + '<br>' + t('x=' + z.p) + ', ' + t('x=' + z.q) + ' or ' + t('x=-' + z.q),
-            ['Group the four terms two and two, then factor completely.'], 'solve cubic by grouping', true);
+            ['Group the four terms two and two, then factor completely.'], 'solve cubic by grouping');
         } }] },
       { num: '22', stem: '<i>(Numerical Response)</i>', parts: [
         { id: 'e22', level: 'PRG', make: function (r) {

@@ -579,18 +579,18 @@
             { html: t(g + '\\pi(' + rm + '+' + q + 'r)'), why: 'Expand it: ' + t(g + '\\pi ' + rm + '+' + (g * q) + '\\pi r') + ' — the first term should have ' + t(rn) + '. Also ' + t('r') + ' is common to both terms, so it belongs in the GCF.' },
             { html: t(g + '\\pi r(' + rm + '+' + q + ')'), right: true },
             { html: t(g + '\\pi r(' + rm + '+' + q + 'r)'), why: 'Expand it: the second term becomes ' + t((g * q) + '\\pi r^{2}') + '. Once ' + t(g + '\\pi r') + ' is removed, ' + t((g * q) + '\\pi r\\div ' + g + '\\pi r=' + q) + '.' }],
-            'The GCF of ' + t(g + '\\pi ' + rn) + ' and ' + t((g * q) + '\\pi r') + ' is ' + t(g + '\\pi r') + ': ' + t(poly + '=' + g + '\\pi r(' + rm + '+' + q + ')') + '.', ['Find the GCF of the two terms (' + t('\\pi') + ' is common too), then divide each term by it.'], 'MC equivalent of ' + plain(poly), true);
+            'The GCF of ' + t(g + '\\pi ' + rn) + ' and ' + t((g * q) + '\\pi r') + ' is ' + t(g + '\\pi r') + ': ' + t(poly + '=' + g + '\\pi r(' + rm + '+' + q + ')') + '.', ['Find the GCF of the two terms (' + t('\\pi') + ' is common too), then divide each term by it.'], 'MC equivalent of ' + plain(poly));
         } }] },
       { num: '15', stem: '<i>(Multiple Choice)</i>', parts: [
         { id: '15', level: 'BEG', make: function (r) {
-          var g = r.int(2, 6), a = r.int(2, 5), b = pickWhere(function () { return r.int(2, 5); }, function (b) { return b !== a && b !== g && b * b * (g - a) !== g * g; }), v = r.pick(['x', 'x', 'y', 'm']); // last test: option B (gx²−bx) must not divide the polynomial (g=6, a=2, b=3 made it a second factor)
+          var g = r.int(2, 6), a = r.int(2, 5), b = pickWhere(function () { return r.int(2, 5); }, function (b) { return b !== a && b !== g && b * b * (g - a) !== g * g; }), v = r.pick(['x', 'x', 'y', 'm']); // last test: the option gx²−bx must not divide the polynomial (g=6, a=2, b=3 made it a second factor)
           var terms = [M(g * a, { [v]: 4 }), M(-g * b, { [v]: 3 }), M(g, { [v]: 2 })], poly = seq(terms), br = seq([M(a, { [v]: 2 }), M(-b, { [v]: 1 }), N(1)]);
           return mcPart(r, 'One factor of ' + t(poly) + ' is', [
             { html: t(tx(terms[0])), why: t(tx(terms[0])) + ' is one <b>term</b> of the polynomial, not a factor of the whole thing: it doesn’t divide ' + t(tx(terms[2])) + '.' },
             { html: t(seq([M(g, { [v]: 2 }), M(-b, { [v]: 1 })])), why: 'Multiply it by anything simple — you can’t get back three terms like these. Factor the polynomial: GCF ' + t(tx(M(g, { [v]: 2 }))) + ' times a bracket.' },
             { html: t(seq([M(g, { [v]: 2 }), M(-g * b, { [v]: 1 }), N(g)])), why: 'This is ' + t(g + '(' + v + '^{2}-' + b + v + '+1)') + ', not a factor of the polynomial. Divide each term by the GCF ' + t(tx(M(g, { [v]: 2 }))) + '.' },
             { html: t(br), right: true }],
-            t(poly + '=' + tx(M(g, { [v]: 2 })) + '(' + br + ')') + ', so the two factors are ' + t(tx(M(g, { [v]: 2 }))) + ' and ' + t(br) + '.', ['Factor out the GCF first. What are the two factors?'], 'MC factor of ' + plain(poly), true);
+            t(poly + '=' + tx(M(g, { [v]: 2 })) + '(' + br + ')') + ', so the two factors are ' + t(tx(M(g, { [v]: 2 }))) + ' and ' + t(br) + '.', ['Factor out the GCF first. What are the two factors?'], 'MC factor of ' + plain(poly));
         } }] },
       { num: '16', stem: '<i>(Multiple Choice)</i>', parts: [
         { id: '16', level: 'PRG', make: function (r) {
@@ -843,7 +843,7 @@
             { html: t(tx(G)), right: true },
             { html: t(tx(half)), why: t(tx(half)) + ' is a common factor, but not the <b>greatest</b>: the coefficients still share ' + t('2') + '.' },
             { html: t(tx(hiY)), why: t(y + '^{3}') + ' doesn’t divide ' + t(y + '^{2}') + ': use the <b>lowest</b> power of ' + t(y) + '.' }],
-            'The first term is negative, so remove a negative factor. ' + t('\\gcd(' + c.map(function (k) { return g * k; }).join(',') + ')=' + g) + '; lowest powers ' + t(x + '^{2}') + ', ' + t(y + '^{2}') + ', so the factor is ' + t(tx(G)) + ':<br>' + t(seq(terms) + '=' + tx(G) + '(' + br + ')') + '.', ['Find the GCF of the coefficients and the lowest power of each letter. Then decide the sign.'], 'MC negative GCF', true);
+            'The first term is negative, so remove a negative factor. ' + t('\\gcd(' + c.map(function (k) { return g * k; }).join(',') + ')=' + g) + '; lowest powers ' + t(x + '^{2}') + ', ' + t(y + '^{2}') + ', so the factor is ' + t(tx(G)) + ':<br>' + t(seq(terms) + '=' + tx(G) + '(' + br + ')') + '.', ['Find the GCF of the coefficients and the lowest power of each letter. Then decide the sign.'], 'MC negative GCF');
         } }] },
       { num: '20', stem: '<i>(Numerical Response)</i>', parts: [
         { id: 'e20', level: 'EMG', make: function (r) {

@@ -521,7 +521,7 @@
               { html: t('(x+1)(x+' + k * k + ')'), why: t('1') + ' and ' + t(k * k) + ' multiply to ' + t(k * k) + ' but add to ' + t(k * k + 1) + ', not ' + t(k) + '.' },
               { html: t('(x+1)(x+' + (k - 1) + ')'), why: t('1') + ' and ' + t(k - 1) + ' add to ' + t(k) + ' but multiply to ' + t(k - 1) + ', not ' + t(k * k) + '.' },
               { html: t('(x+' + k + ')^{2}'), why: 'That’s the student’s answer: ' + t('(x+' + k + ')^{2}=x^{2}+' + 2 * k + 'x+' + k * k) + '.' }],
-              'We need two integers with product ' + t(k * k) + ' and sum ' + t(k) + '. Every factor pair of ' + t(k * k) + ' with both numbers positive adds to more than ' + t(k) + ' (the smallest sum is ' + t(k + '+' + k + '=' + 2 * k) + '), so ' + t('x^{2}+' + k + 'x+' + k * k) + ' <b>does not factor</b>.', ['List the factor pairs of ' + t(k * k) + '. Does any pair add to ' + t(k) + '?'], 'does it factor: x^2+' + k + 'x+' + k * k, true);
+              'We need two integers with product ' + t(k * k) + ' and sum ' + t(k) + '. Every factor pair of ' + t(k * k) + ' with both numbers positive adds to more than ' + t(k) + ' (the smallest sum is ' + t(k + '+' + k + '=' + 2 * k) + '), so ' + t('x^{2}+' + k + 'x+' + k * k) + ' <b>does not factor</b>.', ['List the factor pairs of ' + t(k * k) + '. Does any pair add to ' + t(k) + '?'], 'does it factor: x^2+' + k + 'x+' + k * k);
           } }] },
       /* ---------- Part B ---------- */
       { num: '9', section: 'Part B — Multiple Choice and Numerical Response', stem: '<i>(Multiple Choice)</i>', parts: [
@@ -547,7 +547,7 @@
             { html: t('(n^{2}+' + p2 + ')(n^{2}+' + q2 + ')'), why: 'Expand: the middle term would be ' + t('+' + (p2 + q2) + 'n^{2}') + '. The signs are wrong.' },
             { html: t('n^{2}(n+' + p2 + ')(n+' + q2 + ')'), why: 'There is no common factor of ' + t('n^{2}') + ' (the constant term ' + t(p2 * q2) + ' has no ' + t('n') + '), and the brackets don’t multiply back.' },
             { html: t('(n+' + g.p + ')(n-' + g.p + ')(n+' + g.q + ')(n-' + g.q + ')'), right: true }],
-            bt.sol + '<br>A is only partly factored, B has the wrong signs and C is not a factorization.', ['Rewrite in descending order first, then let ' + t('u=n^{2}') + '.', 'Check whether the brackets factor again.'], 'complete factorization of ' + plain(expr), true);
+            bt.sol + '<br>' + t('(n^{2}-' + p2 + ')(n^{2}-' + q2 + ')') + ' is only partly factored, ' + t('(n^{2}+' + p2 + ')(n^{2}+' + q2 + ')') + ' has the wrong signs and ' + t('n^{2}(n+' + p2 + ')(n+' + q2 + ')') + ' is not a factorization.', ['Rewrite in descending order first, then let ' + t('u=n^{2}') + '.', 'Check whether the brackets factor again.'], 'complete factorization of ' + plain(expr));
         } }] },
       { num: '11', stem: '<i>(Multiple Choice)</i>', parts: [
         { id: '11', level: 'EMG', make: function (r) {
@@ -881,7 +881,7 @@
               { html: 'A difference of squares', why: 'A difference of squares has exactly <b>two</b> terms joined by a <b>minus</b> sign. This has three terms.' },
               { html: 'A trinomial that does not factor', why: 'Run the test: ' + t('x^{2}=(x)^{2}') + ', ' + t(k * k + '=' + k + '^{2}') + ', and ' + t('2(x)(' + k + ')=' + 2 * k + 'x') + ' — all three conditions hold.' },
               { html: 'A sum of squares', why: 'It has a middle term, so it isn’t just a sum of two squares. Check the three conditions.' }],
-              '(1) ' + t('x^{2}=(x)^{2}') + ' ✓ (2) ' + t(k * k + '=' + k + '^{2}') + ', positive ✓ (3) ' + t('2(x)(' + k + ')=' + 2 * k + 'x') + ' ✓ — a <b>perfect square trinomial</b>, not a difference of squares.', H.pst, 'what kind of expression', true);
+              '(1) ' + t('x^{2}=(x)^{2}') + ' ✓ (2) ' + t(k * k + '=' + k + '^{2}') + ', positive ✓ (3) ' + t('2(x)(' + k + ')=' + 2 * k + 'x') + ' ✓ — a <b>perfect square trinomial</b>, not a difference of squares.', H.pst, 'what kind of expression');
           } },
           { id: 'e12b', sub: 'b', level: 'BEG', make: function (r, sh) {
             var k = sh.k, o1 = (1 + k) * (1 + k), s1 = 1 - k * k;
@@ -1024,7 +1024,7 @@
             { html: t('(x-' + k + ')^{2}(x+' + k + ')^{2}'), right: true },
             { html: t('(x-' + k + ')^{4}'), why: t('(x-' + k + ')^{4}=\\big((x-' + k + ')^{2}\\big)^{2}=(x^{2}-' + 2 * k + 'x+' + k2 + ')^{2}') + ', which has odd powers of ' + t('x') + '.' },
             { html: t('(x^{2}-' + k2 + ')(x^{2}+' + k2 + ')'), why: 'That multiplies to ' + t('x^{4}-' + k2 * k2) + ' — no middle term.' }],
-            t('\\sqrt{x^{4}}=x^{2}') + ', ' + t('\\sqrt{' + k2 * k2 + '}=' + k2) + ', ' + t('2(x^{2})(' + k2 + ')=' + 2 * k2 + 'x^{2}') + ' ✓, so ' + t(expr + '=(x^{2}-' + k2 + ')^{2}') + '.<br>' + t('x^{2}-' + k2 + '=(x-' + k + ')(x+' + k + ')') + ', so ' + t('=\\big[(x-' + k + ')(x+' + k + ')\\big]^{2}=(x-' + k + ')^{2}(x+' + k + ')^{2}') + '.', ['It is a perfect square trinomial in ' + t('x^{2}') + '. Then check the bracket inside the square.'], 'complete factorization of ' + plain(expr), true);
+            t('\\sqrt{x^{4}}=x^{2}') + ', ' + t('\\sqrt{' + k2 * k2 + '}=' + k2) + ', ' + t('2(x^{2})(' + k2 + ')=' + 2 * k2 + 'x^{2}') + ' ✓, so ' + t(expr + '=(x^{2}-' + k2 + ')^{2}') + '.<br>' + t('x^{2}-' + k2 + '=(x-' + k + ')(x+' + k + ')') + ', so ' + t('=\\big[(x-' + k + ')(x+' + k + ')\\big]^{2}=(x-' + k + ')^{2}(x+' + k + ')^{2}') + '.', ['It is a perfect square trinomial in ' + t('x^{2}') + '. Then check the bracket inside the square.'], 'complete factorization of ' + plain(expr));
         } }] },
       { num: '18', stem: '<i>(Numerical Response)</i>', parts: [
         { id: 'e18', level: 'PRG', make: function (r) {
