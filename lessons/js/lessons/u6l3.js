@@ -176,12 +176,12 @@ const ex4Fig = (G, color) => EX4.forEach((L) => {
   G.label(L.lab[0], L.lab[1], `Line ${L.k}`, { pos: L.lab[2], cls: 'bk-ptlab u6l3-lname' });
 });
 function drawRoof(G, o = {}) {
-  const peak = o.peak || [4, 6], R = o.right || [8, 1], Lf = o.left || [0, 2];
+  const peak = o.peak || [4, 6], R = o.right || [8, 1], Lf = o.left || [0, 2.5];
   G.segment(Lf, peak, { color: INK, width: 4.5 }); G.segment(peak, R, { color: INK, width: 4.5 });
   if (o.chimney !== false) {
-    const [x0, y0] = G.toPx(1, 3.3), [x1, y1] = G.toPx(2.3, 0.4);
+    const [x0, y0] = G.toPx(0, 4.3), [x1, y1] = G.toPx(1.4, 0.4);
     const ch = svgEl('rect', { x: x0, y: y0, width: x1 - x0, height: y1 - y0, fill: '#a9adb6', stroke: '#8a8f99', 'stroke-width': 1 }, G.layers.top);
-    G.label(2.4, 1.4, 'chimney', { pos: 'e', cls: 'bk-ptlab u6l3-small' });
+    G.label(1.5, 1.4, 'chimney', { pos: 'e', cls: 'bk-ptlab u6l3-small' });
     return ch;
   }
   return null;
@@ -691,7 +691,7 @@ const order = {
 /* =============================== explainer 7: roofline and pitch =============================== */
 const RF = {
   six: { label: 'A “6 in 12” roof', peak: [4, 5], right: [8, 3], left: [0, 1], chimney: false },
-  ex6: { label: 'Example 6 check', peak: [4, 6], right: [8, 1], left: [0, 2], chimney: true }
+  ex6: { label: 'Example 6 check', peak: [4, 6], right: [8, 1], left: [0, 2.5], chimney: true }
 };
 const roof = {
   title: 'Slope of a roofline, and its pitch',
@@ -713,8 +713,8 @@ const roof = {
       { cap: `${T('\\text{slope}=' + slopeTex(rise, run))}: negative, because the roofline <b>falls</b> from left to right.`,
         run: async (c) => { await show(c, line(P, T('\\text{slope}=' + slopeTex(rise, run)), 'u6l3-mline')); } }
     ];
-    if (d.chimney) steps.push({ cap: `(b) Left side: the chimney covers part of the left roofline, so where that roofline ends can only be <b>guessed</b>. A grid slope needs two points you can read exactly: <b>no</b>.`,
-      run: async (c) => { const q = G.label(1.65, 2.6, '?', { cls: 'u6l3-qmark' }); await pop(c, q); await show(c, line(P, '(b) hidden end: <b>not reliable</b>', 'u6l3-line u6l3-soft')); } });
+    if (d.chimney) steps.push({ cap: `(b) Left side: the chimney covers part of the left roofline, so where that roofline ends can only be <b>guessed</b>, and the visible part crosses no grid corner except the peak. A grid slope needs two points you can read exactly: <b>no</b>.`,
+      run: async (c) => { const q = G.label(0.7, 2.4, '?', { cls: 'u6l3-qmark' }); await pop(c, q); await show(c, line(P, '(b) hidden end: <b>not reliable</b>', 'u6l3-line u6l3-soft')); } });
     steps.push({ cap: `Pitch is a <b>positive</b> rise for every ${T('12')} of run. ${T(`\\tfrac{${Math.abs(rise)}}{${run}}=\\tfrac{${up12}}{12}`)}: multiply top and bottom by ${T(texNum(k12))}.`,
       run: async (c) => {
         const b = h('div', 'u6l3-scale', T(`\\dfrac{${Math.abs(rise)}}{${run}}\\ \\xrightarrow{\\ \\times ${texNum(k12)}\\ }\\ \\dfrac{${up12}}{12}`)); P.appendChild(b); await pop(c, b);
