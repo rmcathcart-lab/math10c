@@ -131,7 +131,7 @@
       try { mf.inlineShortcuts = Object.assign({}, mf.inlineShortcuts || {}, { '*': '\\times' }); } catch (e) {}
       function noPhoneKb() { try { var sink = mf.shadowRoot && mf.shadowRoot.querySelector('[part="keyboard-sink"]'); if (sink) sink.setAttribute('inputmode', coarse() ? 'none' : 'text'); } catch (e) {} }
       mf.addEventListener('focusin', noPhoneKb); mf.addEventListener('pointerdown', noPhoneKb);
-      mf.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); if (enter) enter(); } });
+      mf.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); if (enter) enter(); } else if (e.key === '|' && opt.keys === 'set') { e.preventDefault(); e.stopPropagation(); try { mf.executeCommand(['insert', '\\mid', { focus: true, feedback: false, mode: 'math', format: 'latex' }]); } catch (x) {} } }, true);
       mf.addEventListener('mount', function () { if (api.wantFocus) api.focus(); noPhoneKb(); });
       var row = el('div', 'ans-row'); if (opt.before) row.appendChild(el('span', 'ans-affix', HW.tex(opt.before)));
       row.appendChild(mf); wrap.appendChild(row);

@@ -380,7 +380,7 @@
       lb: { label: '[', tex: '\\lbrack ', plain: '[' }, rb: { label: ']', tex: '\\rbrack ', plain: ']' }, lp: { label: '(', tex: '(', plain: '(' }, rp: { label: ')', tex: ')', plain: ')' },
       inf: { label: '∞', tex: '\\infty ', plain: 'inf', title: 'infinity' }, cup: { label: '∪', tex: '\\cup ', plain: ' U ', title: 'union' },
       pm: { label: '±', tex: '\\pm ', plain: '±' }, eq: { label: '=', tex: '=', plain: ' = ' }, sqrt: { label: '√', tex: '\\sqrt{#0}', plain: 'sqrt(' },
-      par: { label: '( , )', tex: '\\left(#0\\right)', plain: '(', title: 'Ordered pair' }
+      par: { label: '( )', tex: '\\left(#0\\right)', plain: '(', title: 'Ordered pair: type x, y inside' }
     };
     W.KEYSETS.set = function (opt) {
       var vs = (opt && opt.vars && opt.vars.length ? opt.vars : ['x']).slice(0, 3).map(function (v) { return { label: '<i>' + v + '</i>', tex: v, plain: v }; });
@@ -397,7 +397,7 @@
     W.KEYHELP.set = ['Use <b>{ }</b>, <b>|</b>, <b>≤ &lt;</b> and <b>∈ ℝ</b> for set notation, or <b>[ ( ) ]</b> and <b>∞</b> for interval notation. Press <b>▶</b> to step out of the braces.',
       'Type e.g. <code>{x | -2 &lt;= x &lt; 5, x in R}</code>, <code>[-2, 5)</code> or a list <code>{1, 3, 5}</code>.'];
     W.KEYHELP.solutions = ['Separate solutions with a comma, e.g. ' + HW.k('x=3,\\ x=-5') + ', or use <b>±</b>.', 'Type e.g. <code>x = 3, x = -5</code>.'];
-    W.KEYHELP.pairs = ['Use <b>( , )</b> for each ordered pair and separate the pairs with commas.', 'Type e.g. <code>{(1, 4), (2, 7)}</code>.'];
+    W.KEYHELP.pairs = ['Press <b>( )</b> for each ordered pair, type <i>x</i> <b>,</b> <i>y</i> inside, press <b>▶</b> to step out, then a comma before the next pair.', 'Type e.g. <code>{(1, 4), (2, 7)}</code>.'];
   }
   if (W) { /* placeholders for the plain-text fallback are passed by the part builders */ }
 
