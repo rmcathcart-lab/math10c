@@ -115,15 +115,32 @@ const FIG = {
   q18: { k: 64, l: [[[0, 0], [4.8, 0], [6.6, 1.6], [1.8, 1.6], 'z'], [[0, 0], [0, 3.2]], [[0, 3.2], [6.6, 1.6]], { p: [[0, 0], [6.6, 1.6]], dash: true }, [[0, .24], [.24, .24], [.24, 0]]],
     t: [['A', 0, -.05, 'sw'], ['B', 4.8, -.05, 'se'], ['C', 6.6, 1.6, 'e'], ['D', 1.85, 1.63, 'ne'], ['P', 0, 3.2, 'n'], ['12.0\\text{ m}', 2.4, -.08, 's'], ['5.0\\text{ m}', .85, .85, 'w'], ['8.0\\text{ m}', .05, 2.40, 'e']] }
 };
+/** draw S, crop the box to its content (labels included) and shrink k until it fits the host column */
 function tikzFig(host, S) {
-  const k = S.k, pad = 46, pts = [];
+  let k = S.k, G = null;
+  for (let it = 0; it < 4; it++) {
+    if (G) G.el.remove();
+    G = tikzDraw(host, S, k);
+    const r0 = G.el.getBoundingClientRect(), bb = G.svg.getBBox();
+    let x0 = bb.x, y0 = bb.y, x1 = bb.x + bb.width, y1 = bb.y + bb.height;
+    for (const d of G.html.children) { const r = d.getBoundingClientRect(); if (!r.width) continue; x0 = Math.min(x0, r.left - r0.left); y0 = Math.min(y0, r.top - r0.top); x1 = Math.max(x1, r.right - r0.left); y1 = Math.max(y1, r.bottom - r0.top); }
+    const m = 6, w = x1 - x0 + 2 * m, hh = y1 - y0 + 2 * m, avail = host.clientWidth;
+    if (avail && w > avail + 1 && it < 3) { k *= Math.max(0.6, (avail - 4) / w); continue; }
+    box(G.el, w, hh); G.svg.setAttribute('width', w); G.svg.setAttribute('height', hh); G.svg.setAttribute('viewBox', `${x0 - m} ${y0 - m} ${w} ${hh}`);
+    G.html.style.transform = `translate(${m - x0}px, ${m - y0}px)`;
+    break;
+  }
+  return G;
+}
+function tikzDraw(host, S, k) {
+  const pad = 70, pts = [];
   const lines = (S.l || []).map((L) => (Array.isArray(L) ? { p: L.filter((q) => q !== 'z'), z: L.includes('z') } : L));
   lines.forEach((L) => pts.push(...L.p));
   (S.t || []).forEach((t) => pts.push([t[1], t[2]]));
   (S.a || []).forEach(([x, y, a1, a2, r]) => { const cx = x - r * Math.cos(a1 * RAD), cy = y - r * Math.sin(a1 * RAD); pts.push([cx + r * Math.cos(a2 * RAD), cy + r * Math.sin(a2 * RAD)]); });
   const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
-  const W = Math.ceil((x1 - x0) * k + 2 * pad + 30), H = Math.ceil((y1 - y0) * k + 2 * pad);
-  const G = new Geo(host, { w: W, h: H, k, ox: pad + 15 - x0 * k, oy: pad + y1 * k });
+  const W = Math.ceil((x1 - x0) * k + 2 * pad), H = Math.ceil((y1 - y0) * k + 2 * pad);
+  const G = new Geo(host, { w: W, h: H, k, ox: pad - x0 * k, oy: pad + y1 * k });
   G.el.classList.add('u9l8-tikz');
   lines.forEach((L) => {
     const g = G.poly(L.p, { closed: L.z, width: 2.6, dash: L.dash });
@@ -827,6 +844,6 @@ function mountStatic() {
   const pyr = document.getElementById('u9l8-pyr'); if (pyr) pyramidFig(pyr);
   document.querySelectorAll('[data-u9l8-fig]').forEach((el) => { const S = FIG[el.dataset.u9l8Fig]; if (S) tikzFig(el, S); });
 }
-mountStatic();
+(document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(mountStatic);
 export const explainers = mountExplainers({ pyramid, whichTool, names, cofunction, solveSide, solveAngle, elevation, split, iso, bearings });
 export const _test = { FIG, WT };

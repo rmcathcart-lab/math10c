@@ -16,9 +16,9 @@ const T = (s) => tex(s);
 const IMP = COLORS.amber, SI = COLORS.blue, RED = COLORS.red, GRN = COLORS.green, INK = COLORS.ink;
 
 /* ---------------- number formatting ---------------- */
-const group = (s, sep) => { const [i, d] = s.split('.'); const neg = i.startsWith('-'); let a = neg ? i.slice(1) : i; if (a.length >= 4) a = a.replace(/\B(?=(\d{3})+(?!\d))/g, sep); return (neg ? '-' : '') + a + (d != null ? '.' + d : ''); };
+const group = (s, sep) => { const [i, d] = s.split('.'); const neg = i.startsWith('-'); let a = neg ? i.slice(1) : i; if (a.length >= 5) a = a.replace(/\B(?=(\d{3})+(?!\d))/g, sep); return (neg ? '-' : '') + a + (d != null ? '.' + d : ''); };
 const str = (v, dp) => (dp == null ? String(parseFloat(v.toFixed(6))) : v.toFixed(dp));
-/** TeX number with thin spaces: tn(38016) → 38\,016 */
+/** TeX number with thin spaces from five digits on, like the booklet (5280, 38\,016) */
 const tn = (v, dp) => group(str(v, dp), '\\,');
 /** HTML number with narrow no-break spaces */
 const hn = (v, dp) => group(str(v, dp), ' ');
@@ -266,7 +266,7 @@ const bench = {
       const B = balance(stage, ex.W, H); B.set(-18);
       const P = panel(stage, 600, 30, ex.W - 620, H - 60, 'Mass');
       const kgW = weight(B.P[0].load, 0, 62, 62, SI, '1 kg');
-      const lb1 = weight(B.P[1].load, -38, 34, 30, IMP, '1 lb'), lb2 = weight(B.P[1].load, 0, 34, 30, IMP, '1 lb'), lb3 = weight(B.P[1].load, 30, 14, 14, IMP, '');
+      const lb1 = weight(B.P[1].load, -44, 42, 38, IMP, '1 lb'), lb2 = weight(B.P[1].load, 2, 42, 38, IMP, '1 lb'), lb3 = weight(B.P[1].load, 38, 18, 18, IMP, '');
       const tip = (c, from, to) => tween(c, 700, (t) => { B.deg = from + (to - from) * t; B.set(B.deg); });
       B.set(0); kgW.style.opacity = 0;
       return [
@@ -299,7 +299,7 @@ const bench = {
       } },
       { cap: `${T(d.fact)}${d.L === 1.609344 ? '' : ' <b>(exact)</b>'}. For mental math, the <b>benchmark</b> is ${T(d.bench)}.`,
         run: async (c) => { await say(c, P, `${T(d.fact)}${d.L === 1.609344 ? '' : ' <span class="u10l4b-tag u10l4b-tagx">exact</span>'}`, 'u10l4b-big'); await say(c, P, `Benchmark: ${T(d.bench)}`, 'u10l4b-bmk'); } },
-      { cap: d.dir, run: async (c) => { await say(c, P, d.dir, 'u10l4b-sm'); } }
+      { cap: d.dir, run: async (c) => { await say(c, P, d.dir); } }
     ];
     if (d.five) steps.push({ cap: 'Scale it up: <b>5 mi ≈ 8 km</b> (exactly about 8.05 km). Worth memorizing.',
       run: async (c) => {
@@ -370,14 +370,14 @@ const ladder = {
       { cap: `Fact: 1 ft = 12 in. ${T('10\\,560\\times12=126\\,720')} in.`,
         run: async (c) => { await reach(c, S, A.ftin, 'in', T(q(126720, 'in')), 'ft'); await say(c, P, T('10\\,560\\times12=126\\,720\\text{ in}'), 'u10l4b-big'); } },
       { cap: 'Two steps, two facts, both <b>written down</b>. A mile is a long way in inches!',
-        run: async (c) => { const s = sstamp(P, '2 mi = 126 720 in'); await stampIn(c, s); } }
+        run: async (c) => { const s = sstamp(stage, '2 mi = 126 720 in', true, { x: ex.W - 170, y: 392 }); await stampIn(c, s); } }
     ];
     if (k === 'routes') return [
       { cap: 'Start with <b>1 mile</b> at the top of the stairs.', run: async (c) => { await reach(c, S, null, 'mi', T(q(1, 'mi'))); } },
       { cap: 'Step down to yards: 1 mi = 1760 yd.', run: async (c) => { await reach(c, S, A.miyd, 'yd', T(q(1760, 'yd')), 'mi'); await say(c, P, T('1\\times1760=1760\\text{ yd}')); } },
       { cap: `Step down to feet: ${T('1760\\times3=5280')} ft.`, run: async (c) => { await reach(c, S, A.ydft, 'ft', T(q(5280, 'ft')), 'yd'); await say(c, P, T('1760\\times3=5280\\text{ ft}')); } },
       { cap: 'The shortcut says the same: <b>1 mi = 5280 ft</b>. The facts agree, so use whichever route is shorter.',
-        run: async (c) => { await anim(c, S.sc, [{ strokeWidth: 3 }, { strokeWidth: 9 }, { strokeWidth: 4 }], 900); await say(c, P, T('1\\text{ mi}=1760\\text{ yd}=5280\\text{ ft}'), 'u10l4b-big'); } }
+        run: async (c) => { await anim(c, S.sc, [{ strokeWidth: 3 }, { strokeWidth: 9 }, { strokeWidth: 4 }], 900); await say(c, P, T('1\\text{ mi}=1760\\text{ yd}=5280\\text{ ft}')); } }
     ];
     return [
       { cap: 'Going <b>up</b> the stairs (to a bigger unit) means <b>divide</b>: fewer of the bigger units fit.',
@@ -390,7 +390,7 @@ const ladder = {
           await reach(c, S, A.miyd, 'mi', T(q(1.5, 'mi') + '\\ \\checkmark'), 'yd'); await say(c, P, T('2640\\div1760=1.5\\text{ mi}'));
         } },
       { cap: '<b>Direction check:</b> a bigger unit gives a smaller number (7920 → 1.5) ✓',
-        run: async (c) => { const s = sstamp(P, '7920 ft = 1.5 mi'); await stampIn(c, s); } }
+        run: async (c) => { const s = sstamp(stage, '7920 ft = 1.5 mi', true, { x: ex.W - 170, y: 392 }); await stampIn(c, s); } }
     ];
   }
 };
@@ -414,14 +414,14 @@ const mixed = {
     const d = MIX[key], x0 = 40, wid = ex.W - 80, sc = wid / d.total, bw = d.k * sc, y = 120;
     const head = add(stage, box(h('div', 'u10l4b-qbar', d.pack ? `Convert <b>${hn(d.total)} ${d.small}</b> to ${d.big} and ${d.small}.` : `Convert <b>${d.qq} ${d.big} ${hn(d.r)} ${d.small}</b> to ${d.small}.`), ex.W - 36, 46), 18, 14);
     head.style.opacity = 1;
-    const P = panel(stage, 40, 282, ex.W - 80, 176, 'Work');
+    const P = panel(stage, 40, 292, ex.W - 80, 166, 'Work'), stX = ex.W - 80 - 150;
     const blocks = [], labs = [];
     for (let i = 0; i < d.qq; i++) {
       const b = hide(add(stage, box(h('div', 'u10l4b-blk' + (i % 2 ? ' u10l4b-alt' : ''), bw > 46 ? T('1' + U(d.big)) : bw > 18 ? `<small>${i + 1}</small>` : ''), bw, 56), x0 + i * bw, y));
       blocks.push(b);
     }
     const rest = hide(add(stage, box(h('div', 'u10l4b-blk u10l4b-rest', d.r * sc > 50 ? T(hn(d.r) + U(d.small)) : ''), d.r * sc, 56), x0 + d.qq * bw, y));
-    const brace = (from, to, html, below = true) => { const e = hide(add(stage, box(h('div', 'u10l4b-brace' + (below ? '' : ' u10l4b-brup'), html), to - from, 40), from, below ? y + 62 : y - 46)); return e; };
+    const brace = (from, to, html, below = true) => { to = Math.min(to, ex.W - 8); const e = hide(add(stage, box(h('div', 'u10l4b-brace' + (below ? '' : ' u10l4b-brup'), html), to - from, 22), from, below ? y + 62 : y - 28)); return e; };
     if (!d.pack) {
       return [
         { cap: `${d.qq} ${d.big} ${hn(d.r)} ${d.small} is <b>${d.qq} whole ${d.big === 'ft' ? 'feet' : d.big === 'yd' ? 'yards' : 'miles'}</b> plus <b>${hn(d.r)} extra ${d.small === 'in' ? 'inches' : d.small === 'ft' ? (d.r === 1 ? 'foot' : 'feet') : 'yards'}</b>.`,
@@ -437,11 +437,11 @@ const mixed = {
             const br = brace(x0, x0 + d.qq * bw, T(`${d.qq}\\times${tn(d.k)}=${tn(d.qq * d.k)}`)); await appear(c, br);
             await say(c, P, T(`${d.qq}\\times${tn(d.k)}=${tn(d.qq * d.k)}${U(d.small)}`));
           } },
-        { cap: `Add the extra ${d.small}: ${T(`${tn(d.qq * d.k)}+${tn(d.r)}=${tn(d.total)}`)} ${d.small}.`,
+        { cap: `Add the extra ${hn(d.r)} ${d.small}: ${T(`${tn(d.qq * d.k)}+${tn(d.r)}=${tn(d.total)}`)} ${d.small}.`,
           run: async (c) => {
-            const br = hide(add(stage, box(h('div', 'u10l4b-brace u10l4b-brall', T(`${tn(d.total)}${U(d.small)}`)), d.qq * bw + d.r * sc, 40), x0, y + 112)); await appear(c, br);
+            const br = hide(add(stage, box(h('div', 'u10l4b-brace u10l4b-brall', T(`${tn(d.total)}${U(d.small)}`)), d.qq * bw + d.r * sc, 22), x0, y + 112)); await appear(c, br);
             await say(c, P, T(`${tn(d.qq * d.k)}+${tn(d.r)}=${tn(d.total)}${U(d.small)}`), 'u10l4b-big');
-            const s = sstamp(P, `${hn(d.total)} ${d.small}`); await stampIn(c, s);
+            const s = sstamp(P, `${hn(d.total)} ${d.small}`, true, { x: stX, y: 92 }); await stampIn(c, s);
           } }
       ];
     }
@@ -470,7 +470,7 @@ const mixed = {
           await say(c, P, `Calculator: ${T(`${tn(d.total)}\\div${tn(d.k)}=${tn(d.total / d.k, 4)}\\ldots`)}, so ${d.qq} whole; ${T(`${tn(d.total)}-${d.qq}\\times${tn(d.k)}=${tn(d.r)}`)}`, 'u10l4b-sm');
         } },
       { cap: `So ${hn(d.total)} ${d.small} = <b>${d.qq} ${d.big} ${hn(d.r)} ${d.small}</b>. The remainder is always smaller than ${hn(d.k)}.`,
-        run: async (c) => { await say(c, P, T(`${tn(d.total)}${U(d.small)}=${d.qq}${U(d.big)}\\ ${tn(d.r)}${U(d.small)}`), 'u10l4b-big'); const s = sstamp(P, `${d.qq} ${d.big} ${hn(d.r)} ${d.small}`); await stampIn(c, s); } }
+        run: async (c) => { await say(c, P, T(`${tn(d.total)}${U(d.small)}=${d.qq}${U(d.big)}\\ ${tn(d.r)}${U(d.small)}`), 'u10l4b-big'); const s = sstamp(P, `${d.qq} ${d.big} ${hn(d.r)} ${d.small}`, true, { x: stX, y: 60 }); await stampIn(c, s); } }
     ];
   }
 };
@@ -490,7 +490,7 @@ const twoways = {
     const d = TWO[k], H = ex.def.height, PW = (ex.W - 54) / 2, [u0, u1, u2] = d.u;
     const route = add(stage, h('div', 'u10l4b-route', `<span class="u10l4b-ru">${tn(d.v)} ${u0}</span><span class="u10l4b-ra">${T('\\times' + tn(d.k[0]))}</span><span class="u10l4b-ru">${u1}</span><span class="u10l4b-ra">${T('\\times' + tn(d.k[1]))}</span><span class="u10l4b-ru">${u2}</span>`), 18, 12);
     route.style.opacity = 0;
-    const L = panel(stage, 18, 70, PW, H - 86, 'Proportional reasoning'), R = panel(stage, 36 + PW, 70, PW, H - 86, 'Unit analysis');
+    const L = panel(stage, 18, 70, PW, H - 86, 'Proportional reasoning', 'u10l4b-pbig'), R = panel(stage, 36 + PW, 70, PW, H - 86, 'Unit analysis', 'u10l4b-pbig');
     const row = h('div', 'u10l4b-chain u10l4b-chsm'); R.appendChild(row);
     const f0 = fracEl({ n: tn(d.v), u: u0 }, { n: '1' }), f1 = fracEl({ n: tn(d.k[0]), u: u1 }, { n: '1', u: u0 }), f2 = fracEl({ n: tn(d.k[1]), u: u2 }, { n: '1', u: u1 });
     const o1 = op('\\times'), o2 = op('\\times');
@@ -614,12 +614,12 @@ const EST = {
   a: { label: 'Example 5(a)', min: 1.5, max: 2.0, step: 0.05, labs: [1.5, 1.6, 1.7, 1.8, 1.9, 2.0], dp: 2, unit: 'm',
     q: 'Convert <b>5 ft 9 in</b> to metres.', bench: '1\\text{ in}\\approx2.5\\text{ cm}',
     est: ['5\\text{ ft }9\\text{ in}=69\\text{ in}', '69\\times2.5\\approx172\\text{ cm}\\approx1.7\\text{ m}'], ev: 1.725, evTex: '\\approx1.7',
-    exa: ['69\\times2.54=175.26\\text{ cm}', '=1.7526\\text{ m}\\approx\\mathbf{1.75}\\text{ m}'], xv: 1.7526, xvTex: '1.75',
+    exa: ['69\\times2.54=175.26\\text{ cm}', '=1.7526\\text{ m}\\approx\\mathbf{1.75}\\text{ m}'], xv: 1.7526, xvTex: '1.75', capX: '69\\times2.54=175.26\\text{ cm}=1.7526\\text{ m}\\approx1.75\\text{ m}',
     end: 'The exact answer (1.75 m) lands right beside the estimate: <b>reasonable</b> ✓' },
   b: { label: '(b)', min: 20, max: 30, step: 1, labs: [20, 22, 24, 26, 28, 30], dp: 1, unit: 'mi',
     q: 'Convert <b>40 km</b> to miles.', bench: '5\\text{ mi}\\approx8\\text{ km}',
     est: ['40\\text{ km}=5\\times8\\text{ km}', '\\approx5\\times5=25\\text{ mi}'], ev: 25, evTex: '\\approx25',
-    exa: ['40\\text{ km}\\times\\dfrac{1\\text{ mi}}{1.6093\\text{ km}}', '=24.86\\ldots\\approx\\mathbf{24.9}\\text{ mi}'], xv: 24.8555, xvTex: '24.9',
+    exa: ['40\\text{ km}\\times\\dfrac{1\\text{ mi}}{1.6093\\text{ km}}', '=24.86\\ldots\\approx\\mathbf{24.9}\\text{ mi}'], xv: 24.8555, xvTex: '24.9', capX: '40\\div1.6093=24.86\\ldots\\approx24.9\\text{ mi}',
     end: '24.9 mi is close to 25 ✓ (km is the smaller unit, so the mile number is smaller).' },
   c: { label: '(c)', min: 0, max: 350, step: 10, labs: [0, 50, 100, 150, 200, 250, 300, 350], dp: 0, unit: 'kg', wrong: 330,
     q: 'A student writes <b>150 lb = 330 kg</b>.', bench: '1\\text{ kg}\\approx2.2\\text{ lb}',
@@ -636,8 +636,7 @@ const estimate = {
     const d = EST[k], W = ex.W, PW = (W - 54) / 2;
     const head = add(stage, box(h('div', 'u10l4b-qbar', `${d.q} Benchmark: ${T(d.bench)}`), W - 36, 46), 18, 12); head.style.opacity = 1;
     const A = panel(stage, 18, 70, PW, 180, 'Estimate (mental math)', 'u10l4b-pE'), B = panel(stage, 36 + PW, 70, PW, 180, 'Exact (calculator)', 'u10l4b-pX');
-    const NL = new NumberLine(stage, { x: 30, y: 290, width: W - 60, height: 130, min: d.min, max: d.max, step: d.step, labels: d.labs.map((v) => ({ v, html: T(String(v)) })) });
-    add(stage, h('div', 'u10l4b-nlu', d.unit), W - 70, 400);
+    const NL = new NumberLine(stage, { x: 30, y: 290, width: W - 60, height: 130, min: d.min, max: d.max, step: d.step, labels: d.labs.map((v, i) => ({ v, html: T((d.dp === 2 ? v.toFixed(1) : String(v)) + (i === d.labs.length - 1 ? U(d.unit) : '')) })) });
     const pt = (v, color, html, pos = 'n') => { const p = NL.point(v, { color }); const m = NL.mark(v, html, { pos }); p.style.opacity = 0; m.style.opacity = 0; return [p, m]; };
     const reveal = async (c, [p, m]) => { await pop(c, p); await pop(c, m); };
     if (d.wrong) {
@@ -657,7 +656,7 @@ const estimate = {
       { cap: `Estimate with the benchmark ${T(d.bench)}: ${T(d.est[1])}.`,
         run: async (c) => { for (const s of d.est) await say(c, A, T(s)); } },
       { cap: 'Mark the estimate on the number line.', run: async (c) => { await reveal(c, pt(d.ev, IMP, `est. ${T(d.evTex)}`, 'n')); } },
-      { cap: `Now convert exactly: ${T(d.exa[1].replace('\\mathbf', ''))}.`,
+      { cap: `Now convert exactly: ${T(d.capX)}.`,
         run: async (c) => { for (const s of d.exa) await say(c, B, T(s)); } },
       { cap: 'Mark the exact answer. How far is it from the estimate?',
         run: async (c) => { await reveal(c, pt(d.xv, SI, `<b>${T(d.xvTex)}</b>`, 's')); } },
@@ -693,19 +692,20 @@ const heights = {
     const P = panel(stage, W - 400, 20, 384, H - 40, d.who ? d.who : 'a ' + d.what);
     if (d.who) {
       const svg = add(stage, svgEl('svg', { width: 560, height: H, viewBox: `0 0 560 ${H}` }), 10, 0);
-      const floor = H - 30, top = 30, ppi = (floor - top) / 96, sx = 150;
+      const floor = H - 34, top = 30, ppi = (floor - top) / 96, sx = 130;
       svgEl('rect', { x: sx, y: top, width: 70, height: floor - top, fill: '#fffaf0', stroke: '#c9c3b2' }, svg);
       for (let i = 0; i <= 96; i++) { const y = floor - i * ppi, L = i % 12 === 0 ? 26 : i % 6 === 0 ? 16 : 8; svgEl('line', { x1: sx, x2: sx + L, y1: y, y2: y, stroke: IMP, 'stroke-width': i % 12 ? 1 : 2 }, svg); if (i % 12 === 0 && i) { const t = svgEl('text', { x: sx - 8, y: y + 6, 'text-anchor': 'end', class: 'u10l4b-gimp' }, svg); t.textContent = i / 12 + ' ft'; } }
       const ppc = ppi / 2.54;
       for (let cm = 0; cm <= 96 * 2.54; cm += 10) { const y = floor - cm * ppc, L = cm % 50 === 0 ? 26 : 14; svgEl('line', { x1: sx + 70 - L, x2: sx + 70, y1: y, y2: y, stroke: SI, 'stroke-width': cm % 50 ? 1 : 2 }, svg); if (cm % 50 === 0 && cm) { const t = svgEl('text', { x: sx + 78, y: y + 6, class: 'u10l4b-gsi' }, svg); t.textContent = (cm / 100).toFixed(1) + ' m'; } }
       svgEl('line', { x1: 20, x2: 550, y1: floor, y2: floor, stroke: INK, 'stroke-width': 2 }, svg);
       const others = Object.values(HT).filter((o) => o.who && o !== d);
-      others.forEach((o, i) => { const hi = o.ft * 12 + o.inch; person(svg, 320 + i * 70, floor, hi * ppi, '#c9ccd3', 0.7); const t = svgEl('text', { x: 320 + i * 70, y: floor - hi * ppi - 8, 'text-anchor': 'middle', class: 'u10l4b-gname' }, svg); t.textContent = o.who.split(' ').pop(); });
+      others.forEach((o, i) => { const hi = o.ft * 12 + o.inch, ox = 290 + i * 105; person(svg, ox, floor, hi * ppi, '#c9ccd3', 0.7); const t = svgEl('text', { x: ox, y: floor + 20, 'text-anchor': 'middle', class: 'u10l4b-gname' }, svg); t.textContent = o.who.split(' ').pop(); });
       const inches = d.ft * 12 + d.inch, cm = inches * 2.54, m = cm / 100, hpx = inches * ppi, yH = floor - hpx;
-      const me = person(svg, 480, floor, hpx, IMP); me.style.transform = 'scaleY(0)';
+      const me = person(svg, 500, floor, hpx, IMP);
+      const myn = svgEl('text', { x: 500, y: floor + 20, 'text-anchor': 'middle', class: 'u10l4b-gname u10l4b-gme' }, svg); myn.textContent = d.who.split(' ').pop(); me.style.transform = 'scaleY(0)';
       const hl = svgEl('line', { x1: sx - 4, x2: 500, y1: yH, y2: yH, stroke: RED, 'stroke-width': 2.5, 'stroke-dasharray': '7 5' }, svg); hl.style.opacity = 0;
       const pI = hide(add(stage, h('div', 'u10l4b-hread u10l4b-imp', T(`${d.ft}'${d.inch}''=${inches}\\text{ in}`)), 6, yH - 44));
-      const pS = hide(add(stage, h('div', 'u10l4b-hread u10l4b-si', T(`${tn(m, 2)}\\text{ m}`)), 250, yH - 44));
+      const pS = hide(add(stage, h('div', 'u10l4b-hread u10l4b-si', T(`${tn(m, 2)}\\text{ m}`)), 214, yH - 44));
       return [
         { cap: `${d.who}: ${T(`${d.ft}'${d.inch}''`)} means <b>${d.ft} ft ${d.inch} in</b>.`,
           run: async (c) => { await anim(c, me, [{ transform: 'scaleY(0)' }, { transform: 'scaleY(1)' }], 900); await anim(c, hl, [{ opacity: 0 }, { opacity: 1 }], 300); } },
@@ -769,7 +769,7 @@ const roundup = {
     const x0 = 40, wid = W - 80, sc = wid / 6000, y = 70;
     const film = hide(add(stage, box(h('div', 'u10l4b-film', `<span>${hn(d.m)} m of film</span>`), ft * sc, 54), x0, y));
     const ruler = add(stage, svgEl('svg', { width: wid + 20, height: 30, viewBox: `0 0 ${wid + 20} 30` }), x0, y + 58); ruler.style.opacity = 0;
-    for (let f = 0; f <= 6000; f += 500) { const x = f * sc; svgEl('line', { x1: x, x2: x, y1: 0, y2: f % 1000 ? 7 : 13, stroke: INK, 'stroke-width': 1.4 }, ruler); if (f % 1000 === 0) { const t = svgEl('text', { x: x + 2, y: 27, class: 'u10l4b-rtx' }, ruler); t.textContent = hn(f) + (f ? ' ft' : ''); } }
+    for (let f = 0; f <= 6000; f += 500) { const x = f * sc; svgEl('line', { x1: x, x2: x, y1: 0, y2: f % 1000 ? 7 : 13, stroke: INK, 'stroke-width': 1.4 }, ruler); if (f % 1000 === 0 && f < 6000) { const t = svgEl('text', { x: x + 2, y: 27, class: 'u10l4b-rtx' }, ruler); t.textContent = hn(f) + (f ? ' ft' : ''); } }
     const loads = [], discs = [];
     for (let i = 0; i < need; i++) {
       const w = Math.max(6, Math.min(1200, ft - i * 1200) * sc);
@@ -794,7 +794,7 @@ const roundup = {
         run: async (c) => {
           await appear(c, discs[full], 250); await anim(c, discs[full].fill, [{ height: '0%' }, { height: Math.round((n - full) * 100) + '%' }], 600);
           await say(c, P, `${T(`${tn(n, 3)}\\ldots`)} rounds <b>up</b> to <b>${need} DVDs</b>`, 'u10l4b-big');
-          const s = sstamp(P, `${need} DVDs`); await stampIn(c, s);
+          const s = sstamp(P, `${need} DVDs`, true, { x: W - 80 - 110, y: 64 }); await stampIn(c, s);
         } }
     ];
   }

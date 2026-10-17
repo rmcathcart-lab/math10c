@@ -70,6 +70,7 @@
 .u10l2-ph { font: 800 15px var(--round); color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
 .u10l2-line { margin: 3px 0; line-height: 1.45; }
 .u10l2-eqp { min-height: 46px; }
+.u10l2-panel:empty { visibility: hidden; }
 .u10l2-lest { color: #8a5a00; }
 .u10l2-ltrue { color: var(--u10l2-true); }
 .u10l2-lsi { color: var(--u10l2-si); }

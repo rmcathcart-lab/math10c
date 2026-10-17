@@ -38,7 +38,7 @@
 .u9l7-social { font-style: italic; color: var(--ink2); font-size: 20px; text-align: center; margin: 16px 0 0; }
 
 /* ---------------- example rows ---------------- */
-.u9l7-exrow { display: grid; grid-template-columns: auto 1fr; gap: 22px; align-items: start; margin-bottom: 14px; }
+.u9l7-exrow { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 22px; align-items: start; margin-bottom: 14px; }
 .u9l7-exrow > .u9l7-fig { justify-self: center; }
 .u9l7-fig { display: flex; justify-content: center; }
 .u9l7-figc { display: flex; justify-content: center; margin: 6px 0 12px; }
@@ -94,3 +94,5 @@
 
 /* ---------------- summary ---------------- */
 .u9l7-sum .sum-grid .katex { white-space: nowrap; }
+
+.u9l7-exrow .part, .parts.c2 > .part { min-width: 0; }

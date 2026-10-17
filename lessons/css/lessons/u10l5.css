@@ -108,3 +108,4 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u10l5-bname { font: 700 18px var(--round); color: var(--ink); }
 .u10l5-bval { font-size: 19px; font-weight: 700; color: var(--ink); }
 .u10l5-flab { font-size: 18px; font-weight: 800; color: var(--ink); background: rgba(255, 255, 255, .85); border-radius: 5px; padding: 0 4px; }
+.u10l5-small { font-size: 18px; gap: 5px; }

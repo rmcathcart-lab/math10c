@@ -562,7 +562,7 @@ const sightings = {
     S.poly([[-4.5, 0], [0, 0], [0, H4], [-4.5, H4]], { fill: '#d9dee8', stroke: INK, sw: 1.5 });
     const TC = S.seg('C', 'T', { width: 6 }); S.rmark('C', 'B', 'T');
     S.vname('C', 'C', 'sw'); S.vname('T', 'T', 'n'); S.vname('A', 'A', 's', { gap: 8 }); S.vname('B', 'B', 's', { gap: 8 });
-    const hl = S.lab([0, H4 / 2], T('h'), { pos: 'w', gap: 46, cls: 'u9l7-lab u9l7-big' });
+    const hl = S.lab([0, H4 / 2], T('h'), { pos: 'w', gap: 40, cls: 'u9l7-lab u9l7-big' });
     const gh = S.glow('C', 'T');
     const Pn = panel(stage, W + 12, 8, ex.W - W - 18, 454, walk ? 'Angle of elevation' : 'Work');
     if (walk) {
@@ -606,7 +606,7 @@ const sightings = {
       { cap: `(c) The long bar minus the short bar is the ${T('25')} m. Subtract (a) from (b): ${T(`25=\\tfrac{h}{\\tan 32^\\circ}-\\tfrac{h}{\\tan 47^\\circ}=h(1.6003345\\ldots-0.9325151\\ldots)=h(0.6678194\\ldots)`)}.`,
         run: async (c) => { await appear(c, gr, 400); await pop(c, gap); await say(c, Pn, `(c) ${T(`25=h\\left(\\tfrac{1}{\\tan 32^\\circ}-\\tfrac{1}{\\tan 47^\\circ}\\right)`)}`); await say(c, Pn, T(`=h(${dots(1 / tanD(32), 7)}-${dots(1 / tanD(47), 7)})`), 'u9l7-small'); await say(c, Pn, T(`=h(${dots(1 / tanD(32) - 1 / tanD(47), 7)})`), 'u9l7-small'); } },
       { cap: `${T(`h=25\\div ${dots(1 / tanD(32) - 1 / tanD(47), 7)}=${dots(H4)}\\approx 37`)} m. Keep the two quotients unrounded: their difference is small.`,
-        run: async (c) => { await say(c, Pn, T(`h=\\dfrac{25}{0.6678194\\ldots}=${dots(H4)}\\approx${cG('37')}\\text{ m}`), 'u9l7-res'); hl.innerHTML = T('h\\approx37\\text{ m}'); hl.style.color = OPP; await pulse(c, hl, 1.2); } },
+        run: async (c) => { await say(c, Pn, T(`h=\\dfrac{25}{0.6678194\\ldots}=${dots(H4)}\\approx${cG('37')}\\text{ m}`), 'u9l7-res'); hl.innerHTML = T('h\\approx37'); hl.style.color = OPP; await pulse(c, hl, 1.2); } },
       { cap: `Check: ${T(`x=37.4353\\div\\tan 47^\\circ=${X4.toFixed(3)}`)} m, so ${T('AC=' + (X4 + 25).toFixed(3))} and ${T(`\\tan^{-1}\\!\\left(\\tfrac{37.4353}{${(X4 + 25).toFixed(3)}}\\right)=32^\\circ`)} ✓`,
         run: async (c) => { await say(c, Pn, `${T(`\\tan^{-1}\\!\\left(\\tfrac{37.4353}{${(X4 + 25).toFixed(3)}}\\right)=32^\\circ`)} <span class="u9l7-good">✓</span>`, 'u9l7-small'); await stampIn(c, stamp(stage, '✓', { x: W - 40, y: 50 })); } }
     ];
@@ -683,7 +683,7 @@ const wedge = {
   make(stage, v, ex) {
     const W = 560, yaw0 = -22, pit0 = 16;
     const hostEl = add(stage, box(h('div', 'u9l7-3d'), W, 460), 4, 4), svg = svgEl('svg', { width: W, height: 460 }, hostEl), hp = h('div', 'u9l7-hl'); hostEl.appendChild(hp);
-    const S3 = new Solid3(svg, hp, { verts: WV, faces: WF, c: [5.5, 3, 4.5], s: 34, ox: W / 2, oy: 240, view: { yaw: yaw0, pitch: pit0 } });
+    const S3 = new Solid3(svg, hp, { verts: WV, faces: WF, c: [5.5, 3, 4.5], s: 30, ox: W / 2, oy: 240, view: { yaw: yaw0, pitch: pit0 } });
     const V = WV, mid = (a, b) => lerp3(V[a], V[b], 0.5);
     S3.label(mid('A', 'B'), '11', { out: 24 }); S3.label(mid('A', 'D'), '6', { out: 22 }); S3.label(mid('A', 'E'), '2', { out: 24 }); S3.label(mid('C', 'G'), '9', { out: 24 });
     const Pn = panel(stage, W + 14, 8, ex.W - W - 20, 454, v === 'a' ? 'Rectangles?' : 'Side face ADHE');
@@ -738,7 +738,7 @@ function fig(id, k, win, pad = 30) {
 }
 const FS = 'u9l7-lab u9l7-fs';
 function mountStatic() {
-  let S = fig('u9l7-f1', 62, [-0.4, 4.3, 0, 6.2], [26, 120, 46, 110]);
+  let S = fig('u9l7-f1', 58, [-0.4, 4.3, 0, 6.2], [26, 120, 46, 110]);
   if (S) {
     S.seg([-0.4, 0], [4.3, 0], { width: 2 }); S.seg([0, 0], [0, 4.7], { width: 4.5 }); S.seg([3.8, 0], [3.8, 6.2], { width: 4.5 });
     S.seg([0, 4.7], [4.3, 4.7], { dash: '8 6', width: 2 }); S.seg([0, 4.7], [3.8, 6.2], { dash: '2 5', width: 2.4 }); S.seg([0, 4.7], [3.8, 0], { dash: '2 5', width: 2.4 });
@@ -746,7 +746,7 @@ function mountStatic() {
     S.lab([2.6, 5.15], T('22^\\circ'), { cls: FS }); S.lab([1.44, 4.01], T('51^\\circ'), { cls: FS }); S.lab([1.9, -0.05], '38 m', { pos: 's', cls: FS });
     S.lab([0, 2.35], 'Ashgrove', { pos: 'w', cls: FS }); S.lab([3.8, 3.1], 'Birchwood', { pos: 'e', cls: FS });
   }
-  S = fig('u9l7-ffr', 78, [-2.6, 1.6, 0, 2.6], [40, 40, 44, 40]);
+  S = fig('u9l7-ffr', 66, [-2.6, 1.6, 0, 2.6], [40, 40, 44, 40]);
   if (S) {
     S.pt('Y', -2.6, 0).pt('W', 0, 0).pt('Z', 1.6, 0).pt('X', 0, 2.6);
     S.path(['Y', 'Z', 'X', 'Y'], { width: 2.5, closed: true }); S.seg('X', 'W', { width: 2.5 }); S.rmark('W', 'Y', 'X');

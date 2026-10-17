@@ -177,13 +177,14 @@ class VScale {
     Object.assign(this, { nDiv: 20, div: 0.95, minMain: 0, plateL: 1.15, plateR: 0.55 }, o);
     const k = this.k, u = this.u;
     this.padL = Math.round(0.3 * k + 4);
-    this.W = Math.ceil((this.hi - this.lo) * u + 2 * this.padL);
+    this.fullW = Math.ceil((this.hi - this.lo) * u + 2 * this.padL); this.W = this.viewW || this.fullW; this.dx = 0;
     this.y0 = Math.round(1.05 * k + (this.mainTitle ? 30 : 6)); this.H = Math.ceil(this.y0 + 1.0 * k + (this.verTitle ? 32 : 8));
     const el = this.el = box(h('div', 'u10l3-fhost'), this.W, this.H);
     if (o.x != null) add(host, el, o.x, o.y); else host.appendChild(el);
-    const svg = this.svg = S('svg', { width: this.W, height: this.H, class: 'u10l3-svg' }, el);
+    this.svgOuter = S('svg', { width: this.W, height: this.H, class: 'u10l3-svg' + (this.viewW ? ' u10l3-clip' : '') }, el);
+    const svg = this.svg = S('g', {}, this.svgOuter);
     const X = this.X = (m) => this.padL + (m - this.lo) * u, y0 = this.y0;
-    S('rect', { x: 2, y: y0 - 1.05 * k, width: this.W - 4, height: 1.05 * k, class: 'u10l3-mpanel' }, svg);
+    S('rect', { x: 2, y: y0 - 1.05 * k, width: this.fullW - 4, height: 1.05 * k, class: 'u10l3-mpanel' }, svg);
     this.main = {};
     for (let m = Math.ceil(this.lo); m <= Math.floor(this.hi); m++) {
       if (m < this.minMain) continue;
@@ -194,7 +195,7 @@ class VScale {
     }
     if (this.mainTitle) { const t = add(el, h('div', 'u10l3-ttl', this.mainTitle), this.W / 2, y0 - 1.05 * k - 15); t.style.translate = '-50% -50%'; }
     const cid = 'u10l3c' + (++CLIP);
-    S('rect', { x: 2, y: 0, width: this.W - 4, height: this.H }, S('clipPath', { id: cid }, svg));
+    S('rect', { x: 2, y: 0, width: this.fullW - 4, height: this.H }, S('clipPath', { id: cid }, svg));
     this.vg = S('g', { 'clip-path': `url(#${cid})` }, svg);
     this.vgi = S('g', {}, this.vg);
     this.p0 = this.p; const xz = X(this.p0), xe = xz + this.nDiv * this.div * u;
@@ -219,7 +220,8 @@ class VScale {
   }
   slide(c, p, ms = 1400) { const a = this.p; return tween(c, ms, (t) => this.set(a + (p - a) * t)); }
   vx(n) { return this.X(this.p) + n * this.div * this.u; }
-  pill(x, y, html, cls) { return pillAt(this.el, x, y, html, cls); }
+  pill(x, y, html, cls) { return pillAt(this.el, x + this.dx, y, html, cls); }
+  pan(dx) { this.dx = dx; this.svg.setAttribute('transform', `translate(${dx} 0)`); }
   hiMain(m, cls) { const t = this.main[m]; if (t) { t.ln.classList.add(cls); if (t.lab) t.lab.classList.add(cls + 't'); } return t; }
   hiVer(n, cls) { const t = this.ver[n]; if (t) { t.ln.classList.add(cls); if (t.lab) t.lab.classList.add(cls + 't'); } return t; }
   unVer(n, cls) { const t = this.ver[n]; if (t) { t.ln.classList.remove(cls); if (t.lab) t.lab.classList.remove(cls + 't'); } }
@@ -343,10 +345,12 @@ function mountWarm() {
   cal.el.classList.add('u10l3-wcal');
   cal.object(1.75, 'coin');
   const [qx, qy] = cal.P(cal.Z + 6, 13);
-  const call = pillAt(cal.el, qx + 92, qy + 92, `main scale: <b>1 mm</b><br>vernier: <b>0.75 mm</b>`, 'u10l3-call');
-  S('line', { x1: qx + 40, y1: qy + 70, x2: qx, y2: qy - 6, class: 'u10l3-lead u10l3-leadR' }, cal.svg);
-  const [lx, ly] = cal.P(1, 30);
-  pillAt(cal.el, lx + 70, ly + 18, 'loonie', 'u10l3-wlab u10l3-wgold');
+  const cx = cal.W + 30, cy = cal.H - 70;
+  const call = pillAt(cal.el, cx, cy, `main scale: <b>1 mm</b><br>vernier: <b>0.75 mm</b>`, 'u10l3-call');
+  S('line', { x1: cx - 70, y1: cy - 22, x2: qx, y2: qy + 4, class: 'u10l3-lead u10l3-leadR' }, cal.svg);
+  const [lx, ly] = cal.P(0.9, 31), [mx, my] = cal.P(14, 38);
+  S('line', { x1: mx - 20, y1: my, x2: lx, y2: ly, class: 'u10l3-lead' }, cal.svg);
+  pillAt(cal.el, mx + 10, my, 'loonie', 'u10l3-wlab u10l3-wgold');
   const btn = document.getElementById('u10l3-stack');
   let busy = false;
   btn.addEventListener('click', async () => {
@@ -389,7 +393,7 @@ const precision = {
     for (let m = 0; m <= 60; m++) S('line', { x1: X(m), x2: X(m), y1: rY, y2: rY + (m % 10 === 0 ? 24 : m % 5 === 0 ? 16 : 10), class: 'u10l3-tk' }, ov);
     for (let cm = 0; cm <= 6; cm++) txt(ov, X(10 * cm), rY + 35, String(cm), { class: 'u10l3-st u10l3-stB' });
     txt(ov, X(60) - 2, rY - 14, 'cm', { 'text-anchor': 'end', class: 'u10l3-st' });
-    const rod = S('rect', { x: X(0), y: rY - 24, width: LEN * u, height: 18, rx: 4, class: 'u10l3-rodT' }, ov);
+    const rod = S('rect', { x: X(0), y: rY - 24, width: 0, height: 18, rx: 4, class: 'u10l3-rodT' }, ov);
     const zl = 40, zr = W - 40, zy = 250, Z = (mm) => zl + (mm - 25) * (zr - zl);
     const zoom = S('g', { opacity: 0 }, ov);
     S('rect', { x: X(25) - 3, y: rY - 30, width: u + 6, height: 64, class: 'u10l3-zbox' }, zoom);
@@ -619,10 +623,10 @@ const why = {
     A.el.style.left = ((W - A.W) / 2) + 'px';
     const MW = W - 40, u2 = 150;
     const wrap = add(stage, box(h('div', 'u10l3-mag'), MW, 186), 20, 214);
-    const B = new VScale(wrap, { lo: -1, hi: 22, u: u2, k: 64, p: 0, x: 0, y: 0, minMain: 0,
+    const B = new VScale(wrap, { lo: -1, hi: 22, u: u2, k: 64, p: 0, x: 0, y: 0, minMain: 0, viewW: MW - 4,
       mainTick: (m) => ({ len: 0.5, thick: m % 5 === 0, lab: String(m) }),
       verTick: (n) => ({ len: 0.5, thick: n % 5 === 0, lab: String(n) }), mainTitle: '<b>Magnified</b>' });
-    const pan = (cmm) => { B.el.style.left = (MW / 2 - B.X(cmm)) + 'px'; };
+    const pan = (cmm) => B.pan(MW / 2 - B.X(cmm));
     pan(2.6);
     const gaps = S('g', {}, B.svg);
     let lit = [];
@@ -637,7 +641,7 @@ const why = {
           for (let n = 1; n <= 4; n++) {
             const xa = B.X(0.95 * n), xb = B.X(n), y = B.y0;
             S('rect', { x: xa, y: y - 3, width: xb - xa, height: 6, class: 'u10l3-gap' }, gaps);
-            const p = hidden(pillAt(B.el, (xa + xb) / 2, B.y0 + 0.5 * B.k + 44, f2(0.05 * n), 'u10l3-gapL')); await pop(c, p, 260);
+            const p = hidden(B.pill((xa + xb) / 2, B.y0 + 0.5 * B.k + 44, f2(0.05 * n), 'u10l3-gapL')); await pop(c, p, 260);
           }
         } },
       { cap: 'Slide the jaws open <b>0.05 mm</b>: the first gap closes, and vernier mark <b>1</b> lines up.',

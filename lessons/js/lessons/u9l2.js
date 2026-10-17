@@ -690,7 +690,7 @@ const tan90 = {
     const W = ex.W, H = 470;
     const G = new Graph(stage, { x: 6, y: 10, width: 470, height: 450, xmin: -16, xmax: 96, ymin: -0.6, ymax: 6.6, xstep: 15, ystep: 1, xlabels: 30, xtitle: 'x^\\circ', ytitle: '\\tan x^\\circ', fontSize: 15, grid: true });
     const tanF = (x) => (x >= 90 ? NaN : Math.tan(x * RAD));
-    const px = 500, P = panel(stage, px, 10, W - px - 8, H - 20, 'tan x = opp ÷ adj (hyp 1)');
+    const px = 500, P = panel(stage, px, 10, W - px - 8, H - 20, 'Tangent = opp ÷ adj (hyp 1)');
     const tbl = h('table', 'u9l2-tbl'); tbl.style.margin = '2px 0'; tbl.style.fontSize = '18px'; P.appendChild(tbl);
     tbl.innerHTML = `<tr><th>${T('x^\\circ')}</th><th>${T(cO('\\text{opp}'))}</th><th>${T(cA('\\text{adj}'))}</th><th>${T(cT('\\tan x^\\circ'))}</th></tr>`;
     const adjTxt = (a) => { const c = cs(a); return c >= 0.1 ? f4(c) : c.toPrecision(4); };

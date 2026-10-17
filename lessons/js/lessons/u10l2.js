@@ -426,7 +426,7 @@ function layH(stage, k0, ex) {
     await appear(c, cnt.el, 200); tileG = G(S);
     for (let i = 0; i < C.n; i++) {
       let t;
-      if (C.foot) t = footprint(tileG, x0 + i * rPx + 9, C.oy + C.oh / 2 + (i % 2 ? -13 : 13), 18, 0, i % 2 === 1, { fill: REF, op: 0.95 });
+      if (C.foot) t = footprint(tileG, x0 + i * rPx + 12, C.oy + C.oh / 2 + (i % 2 ? -14 : 14), 24, 0, i % 2 === 1, { fill: REF, op: 0.95 });
       else {
         t = G(tileG);
         svgEl('rect', { x: x0 + i * rPx + 1, y: C.ty, width: rPx - 2, height: C.th, rx: 8, fill: i % 2 ? '#fbe2b6' : '#f7cf8a', stroke: REF, 'stroke-width': 2 }, t);
@@ -736,10 +736,10 @@ const towel = {
           await show(c, lab(stage, W - 14, 300, '<b class="u10l2-cimp">Imperial:</b> pace ≈ 1 yd', 'w', 'u10l2-refc'));
           cnt.set(0);
           const p = 90 * k, fy = 266;
-          const f0 = footprint(S, x0 + 16, fy, 34, 0, false, { fill: IMP, op: 0.8 }); await pop(c, f0);
+          const f0 = footprint(S, x0 + 22, fy, 44, 0, false, { fill: IMP, op: 0.8 }); await pop(c, f0);
           const hop = (xa, xb, t) => { const g = G(S); svgEl('path', { d: `M${xa} ${fy - 18} Q${(xa + xb) / 2} ${fy - 44} ${xb} ${fy - 18}`, fill: 'none', stroke: IMP, 'stroke-width': 2.6 }, g); AH(g, xb, fy - 18, 0.5, 1, IMP); return g; };
           let g = hop(x0, x0 + p); await appear(c, g, 400);
-          await pop(c, footprint(S, x0 + p + 16, fy + 14, 34, 0, true, { fill: IMP, op: 0.8 })); cnt.set(1);
+          await pop(c, footprint(S, x0 + p + 22, fy + 14, 44, 0, true, { fill: IMP, op: 0.8 })); cnt.set(1);
           await show(c, lab(stage, x0 + p / 2, fy + 26, '1 pace', 's', 'u10l2-sm u10l2-cimp', 2));
           g = hop(x0 + p, x0 + 1.5 * p); g.querySelector('path').setAttribute('stroke-dasharray', '6 4'); await appear(c, g, 400);
           await show(c, lab(stage, x0 + 1.25 * p, fy + 26, T('\\tfrac12'), 's', 'u10l2-cimp', 2)); cnt.set('1½');
@@ -876,10 +876,10 @@ const card = {
   make(stage, v, ex) {
     const W = ex.W, S = SV(stage, W, ex.def.height), k = 80, x0 = 64, cy0 = 30, cw = 3 * k, ch = 2 * k, ry = cy0 + ch + 4;
     const P = panel(stage, x0 - 10, 336, W - 2 * x0 + 20, null, '', 'u10l2-eqp');
-    const cardAt = (x, ghost) => {
+    const cardAt = (x, ghost, nm) => {
       const g = G(S);
       svgEl('rect', { x, y: cy0, width: cw, height: ch, rx: 8, fill: ghost ? '#f6f8fc' : '#eaf2ff', stroke: ghost ? COLORS.gray : INK, 'stroke-width': 2.5, 'stroke-dasharray': ghost ? '8 6' : null }, g);
-      svgEl('text', { x: x + cw / 2, y: cy0 + ch / 2 + 7, class: 'u10l2-svgt', 'text-anchor': 'middle', fill: ghost ? COLORS.gray : INK }, g).textContent = ghost ? 'diagram length' : 'sample card';
+      svgEl('text', { x: x + cw / 2, y: cy0 + ch / 2 + 7, class: 'u10l2-svgt', 'text-anchor': 'middle', fill: ghost ? COLORS.gray : INK }, g).textContent = ghost ? nm : 'sample card';
       return g;
     };
     const cmRuler = () => {
@@ -912,13 +912,13 @@ const card = {
       { cap: `(b) The scale is ${T('1:3')}: each ${T('1')} cm on the diagram is ${T('3')} cm on the real card. Three diagram lengths: ${T('3.0\\times3=9.0')} cm.`,
         run: async (c) => {
           drop(inR, m1); cmR = cmRuler(); await appear(c, cmR, 300);
-          for (const j of [1, 2]) { const g = cardAt(x0 + j * cw, true); ghosts.push(g); await pop(c, g, 380); }
+          for (const j of [1, 2]) { const g = cardAt(x0 + j * cw, true, j === 1 ? '× 2' : '× 3'); ghosts.push(g); await pop(c, g, 380); }
           m1 = await mark(c, 9, '9.0 cm'); await show(c, line(P, `(b) ${T('3.0\\times3=9.0\\text{ cm}')}`, 'u10l2-lsi'));
         } },
       { cap: `In inches: ${T('9.0\\div2.54=3.5433\\ldots\\approx3.54')} in, the same as ${T('1.18\\times3')}. The length is multiplied by 3; the <b>unit</b> does not change.`,
         run: async (c) => { drop(cmR, m1); inR = inRuler(); await appear(c, inR, 300); m1 = await mark(c, 9, '≈ 3.54 in', 'u10l2-truei'); P.lastChild.innerHTML += ` &nbsp;=&nbsp; ${T('9.0\\div2.54\\approx3.54\\text{ in}')}`; await pulse(c, P.lastChild, 1.04); } },
       { cap: '(c) Cards like this are made to a <b>fixed standard size</b>, and one is always in your wallet: a personal referent for about <b>9 cm</b>, or <b>3½ in</b>.',
-        run: async (c) => { const s = stamp(stage, 'referent ✓', { ok: true, x: x0 + 1.5 * cw, y: cy0 + ch / 2 }); await stampIn(c, s); await show(c, line(P, `(c) a referent for ${T('\\approx9')} cm or ${T('\\approx3\\tfrac12')} in`, 'u10l2-lest')); } }
+        run: async (c) => { const s = stamp(stage, 'referent ✓', { ok: true, x: x0 + 1.5 * cw, y: cy0 + ch - 28 }); await stampIn(c, s); await show(c, line(P, `(c) a referent for ${T('\\approx9')} cm or ${T('\\approx3\\tfrac12')} in`, 'u10l2-lest')); } }
     ];
   }
 };

@@ -174,7 +174,7 @@ function mountCarpet() {
 /* =============================== explainer: a unit square fills up (the star) =============================== */
 /** the picture: a square Q px, its side labels and a panel. Returns tools the steps use. */
 function squareKit(stage, ex, d, o = {}) {
-  const H = ex.def.height, W = ex.W, Q = o.Q || 380, x0 = 70, y0 = (H - Q) / 2 - 8, k = d.k;
+  const H = ex.def.height, W = ex.W, Q = o.Q || 380, x0 = 108, y0 = (H - Q) / 2 - 8, k = d.k;
   const S = mkSvg(stage, W, H), uid = ++UID;
   const defs = svgEl('defs', {}, S), cp = svgEl('clipPath', { id: 'u10l5-cp' + uid }, defs), cr = svgEl('rect', { x: x0, y: y0 + Q, width: Q, height: 0 }, cp);
   svgEl('rect', { x: x0, y: y0, width: Q, height: Q, fill: '#fff' }, S);
@@ -417,7 +417,7 @@ const rect = {
   choices: Object.keys(RC).map((k) => ({ v: k, label: RC[k].label })),
   intro: 'A 7 m by 4 m rectangle, two ways. Press <b>Next</b>.',
   make(stage, k, ex) {
-    const d = RC[k], H = ex.def.height, s = 66, x0 = 64, y0 = 40, w = 7 * s, hh = 4 * s;
+    const d = RC[k], H = ex.def.height, s = 60, x0 = 112, y0 = 50, w = 7 * s, hh = 4 * s;
     const S = mkSvg(stage, ex.W, H), gTiles = svgEl('g', {}, S), gTop = svgEl('g', {}, S);
     svgEl('rect', { x: x0, y: y0, width: w, height: hh, fill: 'none', stroke: INK, 'stroke-width': 3.5 }, S);
     const lb = lab(stage, x0 + w / 2, y0 + hh + 12, T('7\\text{ m}'), 'u10l5-side', 't'), ll = lab(stage, x0 - 12, y0 + hh / 2, T('4\\text{ m}'), 'u10l5-side', 'r');
@@ -446,7 +446,7 @@ const rect = {
 
 /* =============================== explainer: a unit cube fills with layers (the star, part 2) =============================== */
 function cubeKit(stage, ex, d) {
-  const H = ex.def.height, W = ex.W, E = d.E || 290, ox = 66, oy = H - 52, P = oblique(ox, oy, E), k = d.k;
+  const H = ex.def.height, W = ex.W, E = d.E || 276, ox = 108, oy = H - 52, P = oblique(ox, oy, E), k = d.k;
   const S = mkSvg(stage, W, H);
   const gBack = svgEl('g', {}, S), gFill = svgEl('g', {}, S), gMid = svgEl('g', {}, S), gOut = svgEl('g', {}, S);
   drawBox(gBack, P, [0, 1, 0, 1, 0, 1], { fill: { front: '#fff', top: '#f6f7fa', side: '#eef1f6' }, sw: 0 });
@@ -585,7 +585,7 @@ const prism = {
   choices: [{ v: 'ex5', label: 'Example 5 check' }],
   intro: 'Build the 5 m by 2 m by 3 m prism from cubic metres. Press <b>Next</b>.',
   make(stage, k, ex) {
-    const H = ex.def.height, s = 74, ox = 70, oy = H - 70, P = oblique(ox, oy, s);
+    const H = ex.def.height, s = 68, ox = 110, oy = H - 70, P = oblique(ox, oy, s);
     const S = mkSvg(stage, ex.W, H), gF = svgEl('g', {}, S), gO = svgEl('g', {}, S);
     drawBox(gO, P, [0, 5, 0, 3, 0, 2], { sw: 3.2 }); const hid = hiddenEdges(gO, P, [0, 5, 0, 3, 0, 2]);
     const L = boxLabels(stage, P, 5, 3, 2, [T('5\\text{ m}'), T('3\\text{ m}'), T('2\\text{ m}')], 'u10l5-side');
@@ -618,7 +618,7 @@ const imperial = {
   height: 500,
   choices: Object.keys(IMP).map((k) => ({ v: k, label: IMP[k].label })),
   intro: 'The same picture as Sections 1 and 2, with imperial units. Press <b>Next</b>.',
-  make(stage, k, ex) { const d = IMP[k]; return d.kind === 'sq' ? squareSteps(stage, ex, d) : cubeSteps(stage, ex, Object.assign({ E: 280 }, d)); }
+  make(stage, k, ex) { const d = IMP[k]; return d.kind === 'sq' ? squareSteps(stage, ex, d) : cubeSteps(stage, ex, Object.assign({ E: 268 }, d)); }
 };
 
 /* =============================== explainer: unit analysis with the table (Example 8) =============================== */
@@ -720,9 +720,9 @@ const bins = {
   choices: [{ v: 'vol', label: 'Example 9(a) check: volume' }, { v: 'sa', label: 'Example 9(b) check: surface area' }],
   intro: 'Two bins, two systems. Convert both to the same unit, then compare. Press <b>Next</b>.',
   make(stage, k, ex) {
-    const H = ex.def.height, s = 150, W = ex.W;
+    const H = ex.def.height, s = 135, W = ex.W;
     const S = mkSvg(stage, W, H), g = svgEl('g', {}, S), gTop = svgEl('g', {}, S);
-    const PA = oblique(36, 214, s), PB = oblique(316, 214, s);
+    const PA = oblique(80, 214, s), PB = oblique(378, 214, s);
     const fillW = { front: '#fff', top: '#f4f6fa', side: '#e9edf4' };
     const bA = drawBox(g, PA, [0, BA.L, 0, BA.H, 0, BA.D], { fill: fillW, sw: 2.6 }); hiddenEdges(g, PA, [0, BA.L, 0, BA.H, 0, BA.D]);
     const bB = drawBox(g, PB, [0, BB.L, 0, BB.H, 0, BB.D], { fill: fillW, sw: 2.6, stroke: PUR }); hiddenEdges(g, PB, [0, BB.L, 0, BB.H, 0, BB.D], PUR);
@@ -730,7 +730,7 @@ const bins = {
     boxLabels(stage, PB, BB.L, BB.H, BB.D, [T('4\\text{ ft}'), T('2.5\\text{ ft}'), T('3\\text{ ft}')], 'u10l5-sm u10l5-imp');
     lab(stage, PA(BA.L / 2, BA.H, BA.D)[0], PA(0, BA.H, BA.D)[1] - 14, '<b>Bin A</b> (metric)', 'u10l5-btitle', 'b');
     lab(stage, PB(BB.L / 2, BB.H, BB.D)[0], PB(0, BB.H, BB.D)[1] - 14, '<b>Bin B</b> (imperial)', 'u10l5-btitle u10l5-imp', 'b');
-    const px0 = 610, Pn = panel(stage, px0, 12, W - px0 - 12, H - 24, k === 'vol' ? 'Volume in cm³' : 'Surface area in in²');
+    const px0 = 640, Pn = panel(stage, px0, 12, W - px0 - 12, H - 24, k === 'vol' ? 'Volume in cm³' : 'Surface area in in²', 'u10l5-small');
     // comparison bars
     const bx = 120, bw = 330, by = [300, 360];
     const mk = (i, name, color) => { lab(stage, bx - 12, by[i] + 17, `<b>${name}</b>`, 'u10l5-bname', 'r'); const r = svgEl('rect', { x: bx, y: by[i], width: 0, height: 34, rx: 6, fill: color, 'fill-opacity': 0.8 }, S); const t = lab(stage, bx + 8, by[i] + 17, '', 'u10l5-bval', 'l'); return { r, t }; };

@@ -401,7 +401,6 @@ const step4 = {
     eqp.append(lt, e1, e2, so); hide(lt, e1, e2, so);
     const k1 = checkCard(stage, { title: 'Check Eq. 1', left: d.ck1.l, right: d.ck1.r, ok: true, x: RX, y: 8, width: CW, hidden: true, cls: 'u8l4-ckc u8l4-ckc1' });
     const k2 = checkCard(stage, { title: 'Check Eq. 2', left: d.ck2.l, right: d.ck2.r, ok: true, x: RX + CW + 12, y: 8, width: CW, hidden: true, cls: 'u8l4-ckc u8l4-ckc2' });
-    [[k1, d.ck1], [k2, d.ck2]].forEach(([kc, q]) => kc.rows.forEach((r, i) => { if (q.l[i] == null) r[0].innerHTML = ''; if (q.r[i] == null) r[2].innerHTML = ''; })); // blank lines (the block prints null)
     const wp = panel(stage, 12, 306, W - 24, 140, 'Check against the words', 'u8l4-idle');
     const wrow = h('div', 'u8l4-wrow'); wp.appendChild(wrow);
     const ws = d.words.map(([t, ok]) => { const e = h('div', 'u8l4-wbox' + (ok === null ? ' u8l4-na' : ''), `<b>${t}</b><span>${ok === null ? 'does not apply' : ''}</span>`); wrow.appendChild(e); e.ok = ok; return e; });
@@ -438,7 +437,7 @@ const TR = {
   less: { label: '2 less than four times', lets: 'Let $n$ be the number.',
     sents: [{ tiles: ['Two less than', 'four times a number', 'is', '18'], slots: ['4n', '-2', '=', '18'], map: [[1], [0], [2], [3]], eq: 1 }],
     caps: ['“Two less than four times a number”: start with <b>4n</b>, then take 2 away. Said first, written last.'],
-    trap: { wrong: '2-4n=18', cap: 'Read it back: n = 5 gives 4(5) − 2 = 18 ✓. The trap 2 − 4n would be “four times less than two”: the order matters.', lines: ['n=5:\\ 4(5)-2=18\\ ✓'] } }
+    trap: { wrong: '2-4n=18', cap: 'Read it back: n = 5 gives 4(5) − 2 = 18 ✓. The trap 2 − 4n would mean four times the number taken away <b>from 2</b>: the order matters.', lines: ['n=5:\\ 4(5)-2=18\\ ✓'] } }
 };
 const translate = {
   title: 'From words to symbols',
@@ -721,7 +720,7 @@ const rates = {
   title: 'Time line, output line: only the crossing does both',
   height: 470,
   choices: Object.keys(RT).map((k) => ({ v: k, label: RT[k].label })),
-  intro: (k) => { const d = RT[k]; return `${d.names[0]} makes ${d.r[0]} ${d.rate}, ${d.names[1]} makes ${d.r[1]}. Together they run ${d.T} min and make ${f5(d.out)} ${d.item}. Press <b>Next</b>.`; },
+  intro: (k) => { const d = RT[k]; return `${d.names[0]} makes ${d.r[0]} ${d.rate}, ${d.names[1]} makes ${d.r[1]}. They run for a combined total of ${d.T} min and make ${f5(d.out)} ${d.item}. Press <b>Next</b>.`; },
   make(stage, k, ex) {
     const d = RT[k], W = ex.W, GW = 470, out = (p) => d.r[0] * p[0] + d.r[1] * p[1];
     const G = new Graph(stage, Object.assign({ x: W - GW - 12, y: 8, width: GW, height: 454, xtitle: 'a', ytitle: 'b', fontSize: 16 }, d.g));
