@@ -974,9 +974,10 @@
           return { a: a, R: R, tv: tv, h0: h0, pk: pk, H: pk - a, b: a * (R - 1), eq: 'h=' + quadT(-a, a * (R - 1), a * R, 't') };
         },
         stem: function (s) {
-          var top = Math.ceil((s.pk + 6) / 10) * 10, f = function (x) { return -s.a * x * x + s.b * x + s.h0; };
-          return 'A stunt diver is launched upward from a platform above a lake. Her height above the water, in metres, ' + t('t') + ' seconds after launch is ' + t(s.eq) + '. Each grid square is ' + t('0.5') + ' s across and ' + t('5') + ' m up.' +
-            HW.graph({ x: [0, s.R + 0.5], y: [0, top], unitX: 270 / (s.R + 0.5), unitY: 190 / top, grid: 0.5, gridY: 5, labels: 1, labelsX: 1, labelsY: top > 60 ? 20 : 10, firstQuadrant: true, xName: 't', yName: 'h', xTitle: 'Time (s)', yTitle: 'Height (m)', max: 360,
+          // grid squares are a metres up, so A, B, D and the height in (f) all sit on grid lines (h0 = aR, pk and H are multiples of a)
+          var ly = s.a === 4 || s.pk > 54 ? 20 : 10, top = Math.ceil((s.pk + 6) / ly) * ly, f = function (x) { return -s.a * x * x + s.b * x + s.h0; };
+          return 'A stunt diver is launched upward from a platform above a lake. Her height above the water, in metres, ' + t('t') + ' seconds after launch is ' + t(s.eq) + '. Each grid square is ' + t('0.5') + ' s across and ' + t(s.a) + ' m up.' +
+            HW.graph({ x: [0, s.R + 0.5], y: [0, top], unitX: 270 / (s.R + 0.5), unitY: 190 / top, grid: 0.5, gridY: s.a, labels: 1, labelsX: 1, labelsY: ly, firstQuadrant: true, xName: 't', yName: 'h', xTitle: 'Time (s)', yTitle: 'Height (m)', max: 360,
               fns: [{ f: f, from: 0, to: s.R }], points: [{ x: 0, y: s.h0, label: 'A' }, { x: s.tv, y: s.pk, label: 'B' }, { x: s.R, y: 0, label: 'C' }, { x: 2 * s.tv, y: s.h0, label: 'D' }], aria: 'graph of the diver’s height with points A, B, C, D' });
         },
         parts: [
