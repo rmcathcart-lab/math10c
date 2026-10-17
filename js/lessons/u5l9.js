@@ -80,7 +80,8 @@
     valley: function (low, hi, lo, end) { hi = hi == null ? 4.6 : hi; lo = lo == null ? 1 : lo; end = end == null ? hi : end;
       return { fns: [Fn(function (x) { return x <= low ? hi - (hi - lo) * (1 - Math.cos(Math.PI * (x - 0.3) / (low - 0.3))) / 2 : lo + (end - lo) * (1 - Math.cos(Math.PI * (x - low) / (9.6 - low))) / 2; }, 0.3, 9.6)] }; }
   };
-  function mcG(r, prompt, opts, sol, hints, text, cols) { var p = K.P.mc(r, prompt, opts, sol, hints, text); if (cols !== 1) p.input.columns = 2; return p; }
+  /* graph options are stacked in one column: in two columns a phone leaves under 90 px per graph */
+  function mcG(r, prompt, opts, sol, hints, text) { return K.P.mc(r, prompt, opts, sol, hints, text); }
   /* a typed number with diagnoses: cands = [{ v, code, hint }] (skipped when equal to the answer) */
   function numDiag(ans, cands, extra) {
     return function (v) {
