@@ -411,7 +411,7 @@
   HW.graph = function (g) {
     g = g || {};
     var xr = g.x || [-6, 6], yr = g.y || [-6, 6], grid = g.grid == null ? 1 : g.grid, lab = g.labels == null ? 2 : g.labels;
-    var padL = g.yTitle ? 40 : 22, padB = g.xTitle ? 38 : 20, padT = 14, padR = 16, U = g.unit || Math.max(14, Math.min(32, 300 / Math.max(xr[1] - xr[0], yr[1] - yr[0])));
+    var yLen = Math.max(String(Math.round(yr[0])).length, String(Math.round(yr[1])).length), padL = Math.max(g.yTitle ? 40 : 22, (xr[0] >= 0 ? yLen * 7.5 + 8 : 0) + (g.yTitle ? 18 : 0)), padB = g.xTitle ? 38 : 20, padT = 14, padR = 16, U = g.unit || Math.max(14, Math.min(32, 300 / Math.max(xr[1] - xr[0], yr[1] - yr[0])));
     if (g.unitX || g.unitY) { /* unequal scales for contexts */ }
     var ux = g.unitX || U, uy = g.unitY || U;
     var W = padL + (xr[1] - xr[0]) * ux + padR, H = padT + (yr[1] - yr[0]) * uy + padB;

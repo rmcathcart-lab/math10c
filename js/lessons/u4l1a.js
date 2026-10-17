@@ -237,7 +237,7 @@
     W = W.concat(opt.wrong || []);
     W = dedupW(PL.mul(g, B), W).map(function (w) { if (!w.tex && Array.isArray(w.is)) w.tex = gTex(w.is[0]) + '(' + tx(w.is[1]) + ')'; return w; });
     var allNeg = terms.every(isNeg), mustNeg = opt.mustNeg != null ? opt.mustNeg : allNeg && isNeg(g);
-    var check = factorCheck(target, { wrong: W, mustNeg: mustNeg, mustPos: opt.mustPos, pi: opt.pi, negMsg: opt.negMsg, integral: opt.integral });
+    var check = factorCheck(target, { wrong: W, mustNeg: mustNeg, mustPos: opt.mustPos, pi: opt.pi, negMsg: opt.negMsg, integral: opt.integral !== false }); // brackets must be integral (factor.js accepts ½x + 2y)
     var shown = opt.prompt || t((opt.before || '') + (opt.dec ? seq(terms, true) : seq(terms)));
     var divs = terms.map(function (m, i) { return t((opt.dec ? tx(m, { dec: true }) : pg(m)) + '\\div ' + (opt.dec ? '\\left(' + gT + '\\right)' : pg(g)) + '=' + (opt.dec ? tx(br[i], { dec: true }) : tx(br[i]))); }).join(', &nbsp;');
     var sol = opt.sol || (opt.gcfSol || gcfLines(terms, { forceNeg: opt.forceNeg, noSign: opt.noSign, signNote: opt.signNote }) + '<br>So remove ' + t(gT || '1') + '.') + '<br>Divide every term by it: ' + divs + '.<br>' + t((opt.before || '') + (opt.dec ? seq(terms, true) : seq(terms)) + '=\\mathbf{' + keyTex + '}');
