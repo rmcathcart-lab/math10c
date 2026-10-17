@@ -259,7 +259,7 @@ function legsFig(host, ans) {
   S.line([0, 0], R, { width: 2.8, color: ans ? HYP : INK }); S.line(R, L, { width: 2.8, color: ans ? HYP : INK });
   S.lab(0, 0, T('T'), { pos: 's', gap: 6 }); S.lab(...R, T('R'), { pos: 'w', gap: 8 }); S.lab(...L, T('L'), { pos: 'e', gap: 8 });
   S.lab(R[0] / 2, R[1] / 2, T('14') + ' km', { pos: 'se', gap: 8, cls: 'u9l6-lab sm' });
-  S.lab((R[0] + L[0]) / 2, (R[1] + L[1]) / 2, T('9') + ' km', { pos: 'n', gap: 8, cls: 'u9l6-lab sm' });
+  S.lab((R[0] + L[0]) / 2, (R[1] + L[1]) / 2, T('9') + ' km', { pos: ans ? 's' : 'n', gap: 8, cls: 'u9l6-lab sm' });
   if (ans) {
     S.arc([0, 0], 90, 52, 46, { color: ANG, width: 2.5, label: T(deg(38)), lr: 20 });
     S.arc(R, 90, -7, 40, { color: ANG, width: 2.5, label: T(deg(97)), lr: 20 });
@@ -275,7 +275,7 @@ function mountFigs() {
     S.line([0, 0], C, { color: HYP, width: 3, dash: '9 6' }); S.line(C, [C[0], 0], { color: OPP, width: 3, dash: '9 6' });
     S.rmark([C[0], 0], 180, 90, 11);
     S.lab(C[0], 7.5, T('15'), { pos: 'e', gap: 6, color: OPP, cls: 'u9l6-lab sm' });
-    S.arc([0, 0], 0, 32, 78, { color: ANG, width: 2.5, label: T(deg(32)), lr: 20 });
+    S.arc([0, 0], 0, 32, 112, { color: ANG, width: 2.5, label: T(deg(32)), lr: 18 });
   }
   const four = g('u9l6-four'); if (four) [72, 155, 210, 318].forEach((b) => figBearing(four, b));
   if (g('u9l6-ex5fig')) ferryFig(g('u9l6-ex5fig'));

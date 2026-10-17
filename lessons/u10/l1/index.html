@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rounding and Formula Substitution · Math 10C 10.1</title>
+<meta name="description" content="Math 10C Unit 10 Lesson 1: rounding to a given place value on a zoomable number line, the rounding rule on the digits, rounding a calculated value only at the end, scientific notation and re-normalizing (Extension), substituting negative values in brackets, and substituting into measurement formulas: substitute first or solve first. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u10l1.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 10 Measurement · Lesson 1</div>
+  <h1>Rounding and Formula Substitution</h1>
+  <p class="lede">Every measurement in this unit ends the same way: put numbers into a <b>formula</b>, let the calculator work, then <b>round</b> the answer sensibly. Today: round to any place value (and see <b>why</b> the rule works), keep every digit until the end, and substitute into expressions and formulas without sign slips.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>round a number to any place value, and explain why it snaps to the <b>closer</b> neighbour</li>
+      <li>keep every digit through a calculation and round <b>only once, at the end</b></li>
+      <li><span class="u10l1-ext sm">Extension</span> write a number in scientific notation and re-normalize a calculated coefficient</li>
+      <li>substitute values, each in <b>brackets</b>, into an expression and evaluate it with the order of operations</li>
+      <li>substitute into a measurement formula and solve for the unknown, either <b>substituting first</b> or <b>solving first</b></li>
+    </ul>
+  </div>
+  <div class="outcome"><b>M1</b> Solve problems that involve linear measurement, using: SI and imperial units of measure; estimation strategies; measurement strategies.</div>
+  <p class="u10l1-skills">A <b>skills lesson</b> for the whole unit: the rounding and formula work here is used in every lesson that follows, for length (M1), conversions (M2), and surface area and volume (M3).</p>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: Your Age in Seconds" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Your Age in Seconds</h2></div>
+  <p class="big">Since you were born, your <b>seconds counter</b> has gone up by 1 every second.</p>
+  <div class="u10l1-wtop">
+    <div class="u10l1-odo-wrap">
+      <div class="u10l1-odo" id="u10l1-odo" aria-label="seconds counter"></div>
+      <div class="u10l1-odo-cap">SECONDS OLD</div>
+      <div class="u10l1-odo-sub" id="u10l1-odo-sub">&nbsp;</div>
+    </div>
+    <div class="u10l1-wbtns">
+      <button type="button" class="pill" id="u10l1-live">Count live</button>
+      <button type="button" class="pill" id="u10l1-y15">15 years old</button>
+      <button type="button" class="pill" id="u10l1-y16">16 years old</button>
+      <button type="button" class="pill" id="u10l1-bil">One billion!</button>
+      <button type="button" class="pill" id="u10l1-zero">Reset</button>
+    </div>
+  </div>
+  <div class="u10l1-chain">
+    <div class="u10l1-unit">1 second</div><div class="u10l1-arr"><span class="tex">\times 60</span></div>
+    <div class="u10l1-unit">1 minute</div><div class="u10l1-arr"><span class="tex">\times 60</span></div>
+    <div class="u10l1-unit">1 hour</div><div class="u10l1-arr"><span class="tex">\times 24</span></div>
+    <div class="u10l1-unit">1 day</div><div class="u10l1-arr"><span class="tex">\times 365</span></div>
+    <div class="u10l1-unit u10l1-unit-y">1 year</div>
+  </div>
+  <div class="u10l1-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>How many seconds are in <b>1 hour</b>?</div></div>
+      <div class="u10l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">60\times60=3\,600</span> s</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>How many seconds are in <b>1 day</b>?</div></div>
+      <div class="u10l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">3\,600\times24=86\,400</span> s</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>How many seconds are in <b>1 year</b>? Use scientific notation, <span class="tex">a\times10^{n}</span>.</div></div>
+      <div class="u10l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">86\,400\times365=31\,536\,000</span> s <span class="tex">\approx\mathbf{3.2\times10^{7}}</span> s. (With leap years, 365.25 days gives <span class="tex">31\,557\,600</span> s: still <span class="tex">3.2\times10^{7}</span>.)</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">4</div><div><b>1 million</b> s <span class="tex">\approx</span> how many days?</div></div>
+      <div class="u10l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">1\,000\,000\div86\,400\approx11.6</span> days: under two weeks.</div></div>
+    </div>
+  </div>
+
+  <div class="poll u10l1-poll4">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> The counter reads <b>1 000 000 000</b>. You are <b>one billion seconds</b> old! How old are you in <b>years</b>? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> about 3 years</div>
+      <div class="opt"><b>B</b> about 12 years</div>
+      <div class="opt right"><b>C</b> about 32 years</div>
+      <div class="opt"><b>D</b> about 100 years</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>C: about 32 years.</b> <span class="tex">1\,000\,000\,000\div31\,536\,000\approx31.7</span> years (31.69 with leap years). A billion is a <b>thousand</b> millions, so it is <span class="tex">1000\times11.6</span> days <span class="tex">\approx11\,574</span> days.<br>
+      <span class="muted"><b>B (12)</b> is the trap: “a million seconds is 11.6 days, so a billion is about 12 of something.” <b>A (3)</b> slips one power of ten. <b>D (100)</b> is the “a billion is unimaginably huge” gut feeling.</span></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Seconds in a year, then a billion seconds in years.</b> <span class="keys"><kbd>6</kbd><kbd>0</kbd><kbd>×</kbd><kbd>6</kbd><kbd>0</kbd><kbd>×</kbd><kbd>2</kbd><kbd>4</kbd><kbd>×</kbd><kbd>3</kbd><kbd>6</kbd><kbd>5</kbd><kbd>ENTER</kbd></span> gives 31536000. Then <span class="keys"><kbd>1</kbd><kbd>EE</kbd><kbd>9</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>1</kbd><kbd>5</kbd><kbd>3</kbd><kbd>6</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives 31.70979198 years. <kbd>EE</kbd> types “<span class="tex">\times10^{\square}</span>”.</div>
+    <div class="pill-col"><button class="pill" data-keys="60 × 60 × 24 × 365 =">1 year</button><button class="pill" data-keys="1 EE 9 ÷ 31536000 =">1 billion s</button></div>
+  </div>
+  <div class="bk-wq u10l1-social-q">
+    <div class="q-line"><div class="q-num bonus">?</div><div><b>Poll the room:</b> who has already lived <b>half a billion</b> seconds?</div></div>
+    <div class="u10l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Half a billion seconds <span class="tex">\approx15.8</span> years, about 15 years 10 months: right around the age of a Grade 10 class. Tap <b>15 years old</b> and <b>16 years old</b> above to see the counter pass 500 000 000.</div></div>
+  </div>
+  <div class="bk-wq">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> How many seconds long is an 80-minute class? How old are you at <b>2 billion</b> seconds?</div></div>
+    <div class="u10l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">80\times60=4\,800=4.8\times10^{3}</span> s. At 2 billion seconds you are about <span class="tex">63.4</span> years old.</div></div>
+  </div>
+</section>
+
+<!-- ================= 1. Rounding ================= -->
+<section class="card" data-ink="s1" data-section="1. Rounding to a Given Place Value">
+  <div class="sec-h"><span class="badge">1</span><h2>Rounding to a Given Place Value</h2></div>
+  <p>A calculation often produces far more digits than are useful: a non-terminating decimal, or a value with many decimal places. <b>Rounding</b> expresses such an answer to a sensible degree of accuracy, and gives a quick way to check whether an answer is reasonable.</p>
+  <div class="u10l1-pvrow">
+    <table class="u10l1-pv">
+      <tr><th>ten<br>thousands</th><th>thousands</th><th>hundreds</th><th>tens</th><th class="u10l1-pvbar">ones</th><th>tenths</th><th>hundredths</th><th>thousandths</th></tr>
+      <tr><td>5</td><td>2</td><td>1</td><td>4</td><td class="u10l1-pvbar">8</td><td>6</td><td>7</td><td>3</td></tr>
+    </table>
+    <div class="u10l1-pvnum"><span class="tex">52\,148.673</span></div>
+  </div>
+  <div class="def"><b>The Rounding Rule.</b> To round a number to a given place value:
+    <ol class="u10l1-rule">
+      <li>Find the digit in that place: the <b class="u10l1-cpv">place-value digit</b>.</li>
+      <li>Look at the digit immediately to its right: the <b class="u10l1-ctd">test digit</b>.</li>
+      <li>If the test digit is <span class="tex">0,\ 1,\ 2,\ 3</span> or <span class="tex">4</span>, leave the place-value digit as it is (round <b>down</b>), and drop every digit to its right (replacing them with zeros if they lie to the left of the decimal point).</li>
+      <li>If the test digit is <span class="tex">5,\ 6,\ 7,\ 8</span> or <span class="tex">9</span>, increase the place-value digit by one (round <b>up</b>), and drop every digit to its right the same way.</li>
+    </ol>
+  </div>
+  <p>To round <span class="tex">52\,148.673</span> to the nearest ten, the place-value digit is the <span class="tex">4</span> and the test digit is the <span class="tex">8</span>; since <span class="tex">8\ge5</span> we round up, giving <span class="tex">\mathbf{52\,150}</span>. For a negative number, rounding <b>up</b> means increasing the <b>magnitude</b> (moving further from <span class="tex">0</span>), so <span class="tex">-138.4562</span> rounds to <span class="tex">-138.5</span> at the tenths place, not <span class="tex">-138.4</span>.</p>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. Zoom in: which neighbour is closer?">
+  <h3 class="sub">Zoom in: which neighbour is closer?</h3>
+  <p>Rounding to a place value means: of the two numbers <b>on either side</b> at that place, which one is closer? Zoom in on the number line and the number sits between two neighbours. Past the halfway mark, it snaps to the upper one. That is all the test digit is checking.</p>
+  <div class="explainer" data-explainer="zoom"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Exactly halfway goes up.</b> A test digit of <span class="tex">5</span> means the number is at (or past) the halfway mark, and the rule says round <b>up</b>. For a negative number, “up” means <b>away from 0</b>: <span class="tex">-2.86\to-2.9</span>, because <span class="tex">-2.9</span> really is the closer neighbour.</div></div>
+</section>
+
+<section class="card" data-ink="s1c" data-section="1. The rule on the digits">
+  <h3 class="sub">The rule on the digits</h3>
+  <p>The same rule, done on the digits themselves: find the place, read the test digit, roll the place-value digit up (or not), then drop everything to its right. A <span class="tex">9</span> that rolls up carries into the next place, like a car’s odometer.</p>
+  <div class="explainer" data-explainer="digits"></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>One number, seven different place values</h3></div>
+  <p class="q">Round each number below to each place value indicated in the table.</p>
+  <div class="parts c1">
+    <div class="part">
+      <table class="u10l1-rt">
+        <tr><th class="u10l1-rtn">Number</th><th>One</th><th>Ten</th><th>Hundred</th><th>Tenth</th><th>Hundredth</th><th>1st Dec.<br>Place</th><th>2nd Dec.<br>Place</th></tr>
+        <tr><td class="u10l1-rtn"><span class="tex">837.4629</span></td>
+          <td><span class="u10l1-cans"><span class="tex">837</span></span></td><td><span class="u10l1-cans"><span class="tex">840</span></span></td><td><span class="u10l1-cans"><span class="tex">800</span></span></td>
+          <td><span class="u10l1-cans"><span class="tex">837.5</span></span></td><td><span class="u10l1-cans"><span class="tex">837.46</span></span></td><td><span class="u10l1-cans"><span class="tex">837.5</span></span></td><td><span class="u10l1-cans"><span class="tex">837.46</span></span></td></tr>
+        <tr><td class="u10l1-rtn"><span class="tex">15\,273.918</span></td>
+          <td><span class="u10l1-cans"><span class="tex">15\,274</span></span></td><td><span class="u10l1-cans"><span class="tex">15\,270</span></span></td><td><span class="u10l1-cans"><span class="tex">15\,300</span></span></td>
+          <td><span class="u10l1-cans"><span class="tex">15\,273.9</span></span></td><td><span class="u10l1-cans"><span class="tex">15\,273.92</span></span></td><td><span class="u10l1-cans"><span class="tex">15\,273.9</span></span></td><td><span class="u10l1-cans"><span class="tex">15\,273.92</span></span></td></tr>
+      </table>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Each answer is the closer neighbour at that place. For example, <span class="tex">837.4\underline{6}29</span> to the nearest tenth: test digit <span class="tex">6\ge5</span>, so <span class="tex">837.5</span>; and <span class="tex">15\,2\underline{7}3.918</span> to the nearest hundred: test digit <span class="tex">7\ge5</span>, so <span class="tex">15\,300</span>.</div></div>
+    </div>
+  </div>
+  <p class="u10l1-note"><i>Note:</i> “Tenth” and “1st decimal place” name the <b>same</b> place, as do “hundredth” and “2nd decimal place”, so those columns get the same answers. Questions use both wordings, so the table shows both.</p>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s1d" data-section="1. Rounding with a calculator">
+  <h3 class="sub">Rounding with a calculator</h3>
+  <p>Two features do this automatically. Setting a <b>fixed number of decimal places</b> in the mode/format menu rounds every displayed result to that many places: useful when every answer in a problem needs the same precision, such as money to the nearest cent. A <b>round(</b> function in the Math or numeric menu (on graphing calculators) rounds one calculation on demand, as round(expression, number of decimal places): useful when different questions call for different precision.</p>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>On the TI-30XIIS.</b> Press <kbd>MODE</kbd>, arrow down to the row <b>FLO 0 1 2 3 …</b>, pick the number of decimal places and press <kbd>ENTER</kbd> (<b>FIX</b> shows on the screen). Choose <b>FLO</b> to go back to every digit. It has no round( key, so for a one-off rounding, read the full display and use the rounding rule.</div>
+  </div>
+  <p>Whichever you use, the calculator must still hold <b>every</b> digit while it works. Round <b>once, at the very end</b>, never part-way through.</p>
+  <div class="explainer" data-explainer="early"></div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Rounding a stored or calculated value</h3></div>
+  <p class="q">Use a calculator to round off each of the following.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Round <span class="tex">24.839\,17</span> to three decimal places.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The digit after the third decimal place is <span class="tex">1&lt;5</span>, so round <b>down</b>: drop it and keep the third decimal as it is.<br><span class="tex">24.839\,\underline{1}7\to\mathbf{24.839}</span></div></div></div>
+    <div class="part"><div class="pl">(b) Round <span class="tex">32.647</span> to the nearest hundredth.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Hundredths is the second decimal place, so the test digit is the thousandths digit, <span class="tex">7\ge5</span>: round <b>up</b>.<br><span class="tex">32.64\underline{7}\to\mathbf{32.65}</span></div></div></div>
+    <div class="part"><div class="pl">(c) Round <span class="tex">7\,942\div356</span> to the nearest tenth.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Divide first and keep every digit the calculator shows: <span class="tex">7\,942\div356=22.3089\ldots</span><br>Tenths place-value digit <span class="tex">3</span>, test digit <span class="tex">0&lt;5</span>, so round down: <span class="tex">\mathbf{22.3}</span></div></div></div>
+    <div class="part"><div class="pl">(d) Round <span class="tex">2.85\times3.47</span> to the second decimal place.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">2.85\times3.47=9.8895</span> exactly.<br>Second decimal place is the <span class="tex">8</span>; the test digit is the thousandths digit, <span class="tex">9\ge5</span>, so round up: <span class="tex">\mathbf{9.89}</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Calculate first, round second.</b> (c) <span class="keys"><kbd>7</kbd><kbd>9</kbd><kbd>4</kbd><kbd>2</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>5</kbd><kbd>6</kbd><kbd>ENTER</kbd></span> shows 22.30898876, so <b>22.3</b>. (d) <span class="keys"><kbd>2</kbd><kbd>.</kbd><kbd>8</kbd><kbd>5</kbd><kbd>×</kbd><kbd>3</kbd><kbd>.</kbd><kbd>4</kbd><kbd>7</kbd><kbd>ENTER</kbd></span> shows 9.8895, so <b>9.89</b>.</div>
+    <div class="pill-col"><button class="pill" data-keys="7942 ÷ 356 =">Show me (c)</button><button class="pill" data-keys="2.85 × 3.47 =">Show me (d)</button></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<!-- ================= 2. Extension: scientific notation ================= -->
+<section class="card u10l1-extcard" data-ink="s2" data-section="2. Extension: Scientific Notation">
+  <div class="sec-h"><span class="badge">2</span><h2>Scientific Notation</h2><span class="u10l1-ext-tag">Extension</span></div>
+  <div class="u10l1-extbox"><span class="u10l1-ext">Extension</span><span>This section is enrichment: the Math 10C measurement outcomes do not require scientific notation (you met it in Unit 2). Sections 1, 3 and 4 are the core of this lesson.</span></div>
+  <p class="u10l1-mt">Some measurements are extremely large (the distance between planets) or extremely small (the diameter of a cell), and standard notation is unwieldy for them. <b>Scientific notation</b> writes such a number as</p>
+  <div class="u10l1-disp"><span class="tex">a\times10^{n},\qquad 1\le a&lt;10,\ \ n\text{ an integer,}</span></div>
+  <p>where <span class="tex">a</span> is the <b>coefficient</b>. Neptune’s average distance from the sun, about <span class="tex">4\,500\,000\,000</span> km, becomes</p>
+  <div class="u10l1-disp"><span class="tex">4\,500\,000\,000=\underbrace{4.5}_{1\,\le\,a\,&lt;\,10}\times\underbrace{10^{9}}_{\text{power of ten}}.</span></div>
+  <div class="explainer" data-explainer="sci"></div>
+</section>
+
+<section class="card example u10l1-extcard" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Standard notation to scientific notation</h3><span class="u10l1-ext-tag">Extension</span></div>
+  <p class="q">Express each number in scientific notation, rounded to the nearest tenth.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) <span class="tex">68\,400\,000</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Move the decimal point so the coefficient lands in <span class="tex">[1,\ 10)</span>: from <span class="tex">68\,400\,000</span> it moves <span class="tex">7</span> places left, so <span class="tex">n=7</span>.<br><span class="tex">68\,400\,000=6.84\times10^{7}</span><br>Round the coefficient to the nearest tenth: test digit <span class="tex">4&lt;5</span>, round down: <span class="tex">\mathbf{6.8\times10^{7}}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">0.000\,051\,27</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The decimal point moves <span class="tex">5</span> places <b>right</b> to reach <span class="tex">5.127</span>, so <span class="tex">n=-5</span>.<br><span class="tex">0.000\,051\,27=5.127\times10^{-5}</span><br>Coefficient to the nearest tenth: test digit <span class="tex">2&lt;5</span>, round down: <span class="tex">\mathbf{5.1\times10^{-5}}</span></div></div></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card example u10l1-extcard" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Calculating, then re-normalizing the coefficient</h3><span class="u10l1-ext-tag">Extension</span></div>
+  <p class="q">Perform each calculation and express the answer in scientific notation, rounded to one decimal place.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">(3.24\times10^{3})(6.15\times10^{-7})</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Multiply coefficients, add exponents.<br><span class="tex">3.24\times6.15=19.926</span> and <span class="tex">10^{3}\times10^{-7}=10^{-4}</span><br><span class="tex">=19.926\times10^{-4}</span>, but <span class="tex">19.926\not&lt;10</span>, so re-normalize:<br><span class="tex">=1.9926\times10^{-3}</span><br>To one decimal place the test digit is <span class="tex">9\ge5</span>, and the <span class="tex">9</span> carries: <span class="tex">\mathbf{2.0\times10^{-3}}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">\dfrac{7.36\times10^{-3}}{4.21\times10^{-9}}</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Divide coefficients, subtract exponents.<br><span class="tex">7.36\div4.21=1.7482\ldots</span> and <span class="tex">10^{-3}\div10^{-9}=10^{6}</span><br><span class="tex">=1.7482\ldots\times10^{6}</span><br>Test digit <span class="tex">4&lt;5</span>, so round down: <span class="tex">\mathbf{1.7\times10^{6}}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">84.216\times12.5073</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">84.216\times12.5073=1053.3147768</span><br>The decimal point moves <span class="tex">3</span> places left:<br><span class="tex">=1.0533147\ldots\times10^{3}</span><br>To one decimal place the test digit is <span class="tex">5</span>, so round <b>up</b>: <span class="tex">\mathbf{1.1\times10^{3}}</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Type scientific notation with <kbd>EE</kbd>.</b> (a) <span class="keys"><kbd>3</kbd><kbd>.</kbd><kbd>2</kbd><kbd>4</kbd><kbd>EE</kbd><kbd>3</kbd><kbd>×</kbd><kbd>6</kbd><kbd>.</kbd><kbd>1</kbd><kbd>5</kbd><kbd>EE</kbd><kbd>(−)</kbd><kbd>7</kbd><kbd>ENTER</kbd></span> shows 0.0019926, which is <span class="tex">1.9926\times10^{-3}</span>. (b) shows 1748218.527, which is <span class="tex">1.748\ldots\times10^{6}</span>. (c) shows 1053.314777. The calculator re-normalizes for you only in SCI mode; otherwise, count the hops yourself.</div>
+    <div class="pill-col"><button class="pill" data-keys="3.24 EE 3 × 6.15 EE (−) 7 =">Show me (a)</button><button class="pill" data-keys="7.36 EE (−) 3 ÷ 4.21 EE (−) 9 =">Show me (b)</button><button class="pill" data-keys="84.216 × 12.5073 =">Show me (c)</button></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card u10l1-extcard" data-ink="s2b" data-section="2. Re-normalizing the coefficient">
+  <div class="u10l1-subh"><h3 class="sub">Re-normalizing: keep the coefficient between 1 and 10</h3><span class="u10l1-ext-tag">Extension</span></div>
+  <p>Multiplying or dividing the coefficients can land outside <span class="tex">1\le a&lt;10</span>. Hop the decimal point one place left (<span class="tex">\div10</span>) and raise the exponent by one (<span class="tex">\times10</span>): the two changes cancel, so the value stays the same.</p>
+  <div class="explainer" data-explainer="renorm"></div>
+</section>
+
+<!-- ================= 3. Substitution in expressions ================= -->
+<section class="card" data-ink="s3" data-section="3. Substitution in Algebraic Expressions">
+  <div class="sec-h"><span class="badge">3</span><h2>Substitution in Algebraic Expressions</h2></div>
+  <p>To evaluate an expression for given values of its variables, replace each variable with its value, <b>always enclosed in brackets</b>, then simplify using the order of operations. The brackets prevent sign errors when a value is negative. A calculator’s variable-store feature (<kbd>STO▸</kbd>) substitutes automatically once the values are stored, and applies the brackets for you.</p>
+  <div class="explainer" data-explainer="brackets"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>The square needs the brackets.</b> <span class="tex">(-3)^{2}=(-3)(-3)=9</span>, but <span class="tex">-3^{2}=-(3\times3)=-9</span>: without brackets the square only touches the <span class="tex">3</span>. The TI-30XIIS reads <kbd>(−)</kbd><kbd>3</kbd><kbd>x²</kbd> as <span class="tex">-9</span> too.</div></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Brackets on the calculator.</b> <span class="keys"><kbd>(</kbd><kbd>(−)</kbd><kbd>3</kbd><kbd>)</kbd><kbd>x²</kbd><kbd>ENTER</kbd></span> gives 9; <span class="keys"><kbd>(−)</kbd><kbd>3</kbd><kbd>x²</kbd><kbd>ENTER</kbd></span> gives −9. Or store the value: <kbd>(−)</kbd><kbd>3</kbd><kbd>STO▸</kbd>, choose a letter, <kbd>ENTER</kbd>, then use <kbd>RCL</kbd> to put it in an expression.</div>
+    <div class="pill-col"><button class="pill" data-keys="( (−) 3 ) x² =">With brackets</button><button class="pill" data-keys="(−) 3 x² =">Without brackets</button></div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Substituting a negative value</h3></div>
+  <p class="q">Evaluate each expression if <span class="tex">x=-3</span> and <span class="tex">y=4</span>.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">y^{2}-5x+2</span></div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">y^{2}-5x+2=(4)^{2}-5(-3)+2</span><br><span class="tex">=16+15+2</span><br><span class="tex">=\mathbf{33}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">6x^{2}+y-y^{3}</span></div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">6x^{2}+y-y^{3}=6(-3)^{2}+(4)-(4)^{3}</span><br><span class="tex">=6(9)+4-64</span><br><span class="tex">=54+4-64=\mathbf{-6}</span><br>(The brackets matter: <span class="tex">(-3)^{2}=9</span>, not <span class="tex">-9</span>.)</div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">3x^{2}-2y+y^{2}</span></div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">3x^{2}-2y+y^{2}=3(-3)^{2}-2(4)+(4)^{2}</span><br><span class="tex">=3(9)-8+16</span><br><span class="tex">=27-8+16=\mathbf{35}</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check on the calculator, brackets and all.</b> (a) <span class="keys"><kbd>4</kbd><kbd>x²</kbd><kbd>−</kbd><kbd>5</kbd><kbd>×</kbd><kbd>(</kbd><kbd>(−)</kbd><kbd>3</kbd><kbd>)</kbd><kbd>+</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> gives 33. (b) <span class="keys"><kbd>6</kbd><kbd>×</kbd><kbd>(</kbd><kbd>(−)</kbd><kbd>3</kbd><kbd>)</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>4</kbd><kbd>−</kbd><kbd>4</kbd><kbd>x³</kbd><kbd>ENTER</kbd></span> gives −6. (c) gives 35.</div>
+    <div class="pill-col"><button class="pill" data-keys="4 x² − 5 × ( (−) 3 ) + 2 =">Show me (a)</button><button class="pill" data-keys="6 × ( (−) 3 ) x² + 4 − 4 x³ =">Show me (b)</button><button class="pill" data-keys="3 × ( (−) 3 ) x² − 2 × 4 + 4 x² =">Show me (c)</button></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<!-- ================= 4. Substitution in formulas ================= -->
+<section class="card" data-ink="s4" data-section="4. Substitution in Formulas">
+  <div class="sec-h"><span class="badge">4</span><h2>Substitution in Formulas</h2></div>
+  <p>A measurement formula relates several quantities, and two tasks recur throughout this unit: <b>substitute</b> the known values directly and solve for the one remaining unknown, or first <b>solve the formula</b> in general for the unknown variable and <b>then</b> substitute. Both approaches are used below, on formulas you will meet again later in the unit.</p>
+  <div class="explainer" data-explainer="routes"></div>
+</section>
+
+<section class="card example" data-ink="ex6" data-section="Example 6">
+  <div class="ex-head"><span class="ex-tag">Example 6</span><h3>Substitute first, then solve</h3></div>
+  <p class="q">In each case: (i) substitute the given value into the formula, then (ii) solve for the indicated variable, rounding to the nearest tenth where necessary.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) The distance formula is <span class="tex">d=vt</span>. If <span class="tex">d=84</span> and <span class="tex">v=12</span>, calculate <span class="tex">t</span>.</div><div class="work" style="--h:330px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Substitute into <span class="tex">d=vt</span>:<br><span class="tex">84=(12)t</span><br><span class="tex">t=\dfrac{84}{12}=\mathbf{7}</span><br>(Exact, so no rounding is needed.)</div></div></div>
+    <div class="part"><div class="pl">(b) The circumference of a circle is <span class="tex">C=2\pi r</span>. If <span class="tex">C=100</span>, calculate <span class="tex">r</span>.</div><div class="u10l1-fig" data-u10l1-fig="circle"></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Substitute into <span class="tex">C=2\pi r</span>:<br><span class="tex">100=2\pi r</span><br><span class="tex">r=\dfrac{100}{2\pi}=\dfrac{100}{6.28318\ldots}=15.9154\ldots</span><br><span class="tex">\approx\mathbf{15.9}</span><br>Check: <span class="tex">2\pi(15.9155)=100.0</span> ✓</div></div></div>
+    <div class="part"><div class="pl">(c) The volume of a sphere is <span class="tex">V=\dfrac{4}{3}\pi r^{3}</span>. If <span class="tex">V=150</span>, calculate <span class="tex">r</span>.</div><div class="u10l1-fig" data-u10l1-fig="sphere"></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Substitute into <span class="tex">V=\frac{4}{3}\pi r^{3}</span>:<br><span class="tex">150=\frac{4}{3}\pi r^{3}</span><br><span class="tex">r^{3}=\dfrac{3(150)}{4\pi}=\dfrac{450}{12.56637\ldots}=35.8098\ldots</span><br><span class="tex">r=\sqrt[3]{35.8098\ldots}=3.2961\ldots\approx\mathbf{3.3}</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Bracket the whole denominator, and use the <kbd>π</kbd> key.</b> (b) <span class="keys"><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>(</kbd><kbd>2</kbd><kbd>×</kbd><kbd>π</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 15.91549431. (c) The cube root is <kbd>3</kbd><kbd>2nd</kbd><kbd>^</kbd> (<span class="tex">\sqrt[x]{\ }</span>): <span class="keys"><kbd>3</kbd><kbd>ˣ√</kbd><kbd>(</kbd><kbd>3</kbd><kbd>×</kbd><kbd>1</kbd><kbd>5</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>(</kbd><kbd>4</kbd><kbd>×</kbd><kbd>π</kbd><kbd>)</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 3.296103825.</div>
+    <div class="pill-col"><button class="pill" data-keys="84 ÷ 12 =">Show me (a)</button><button class="pill" data-keys="100 ÷ ( 2 × π ) =">Show me (b)</button><button class="pill" data-keys="3 ˣ√ ( 3 × 150 ÷ ( 4 × π ) ) =">Show me (c)</button></div>
+  </div>
+  <div class="space" id="ex6-space"></div>
+  <button class="more" data-more="ex6-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s4b" data-section="4. Substitute, then undo">
+  <h3 class="sub">Substitute, then undo</h3>
+  <p>Once the numbers are in, the unknown is wrapped in operations. <b>Undo</b> them, one at a time, doing the same thing to both sides. Keep every digit, and round at the end.</p>
+  <div class="explainer" data-explainer="subfirst"></div>
+</section>
+
+<section class="card example" data-ink="ex7" data-section="Example 7">
+  <div class="ex-head"><span class="ex-tag">Example 7</span><h3>Solve for the variable first, then substitute</h3></div>
+  <p class="q">In each case: (i) solve the formula in general for the indicated variable, then (ii) substitute the given values and calculate, rounding to the nearest tenth where necessary.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) The area of a circle is <span class="tex">A=\pi r^{2}</span>, where <span class="tex">r&gt;0</span>. Solve for <span class="tex">r</span>, then calculate <span class="tex">r</span> when <span class="tex">A=60</span>.</div><div class="u10l1-fig" data-u10l1-fig="disc"></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Solve first: <span class="tex">A=\pi r^{2}\Rightarrow r^{2}=\dfrac{A}{\pi}\Rightarrow r=\sqrt{\dfrac{A}{\pi}}</span> (positive root, since <span class="tex">r&gt;0</span>).<br><span class="tex">r^{2}=\dfrac{60}{\pi}=19.0986\ldots</span><br><span class="tex">r=\sqrt{19.0986\ldots}=4.3702\ldots\approx\mathbf{4.4}</span></div></div></div>
+    <div class="part"><div class="pl">(b) The volume of a cylinder is <span class="tex">V=\pi r^{2}h</span>. Solve for <span class="tex">r</span>, then calculate <span class="tex">r</span> when <span class="tex">V=250</span> and <span class="tex">h=5</span>.</div><div class="u10l1-fig" data-u10l1-fig="cylinder"></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Solve first: <span class="tex">V=\pi r^{2}h\Rightarrow r^{2}=\dfrac{V}{\pi h}\Rightarrow r=\sqrt{\dfrac{V}{\pi h}}</span>.<br><span class="tex">r^{2}=\dfrac{250}{\pi(5)}=\dfrac{250}{15.7079\ldots}=15.9154\ldots</span><br><span class="tex">r=\sqrt{15.9154\ldots}=3.9894\ldots\approx\mathbf{4.0}</span></div></div></div>
+    <div class="part"><div class="pl">(c) The volume of a cone is <span class="tex">V=\dfrac{1}{3}\pi r^{2}h</span>. Solve for <span class="tex">h</span>, then calculate <span class="tex">h</span> when <span class="tex">V=90</span> and <span class="tex">r=6</span>.</div><div class="u10l1-fig" data-u10l1-fig="cone"></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Solve first: <span class="tex">V=\frac{1}{3}\pi r^{2}h\Rightarrow 3V=\pi r^{2}h\Rightarrow h=\dfrac{3V}{\pi r^{2}}</span>.<br><span class="tex">h=\dfrac{3(90)}{\pi(6)^{2}}=\dfrac{270}{113.0973\ldots}=2.3873\ldots</span><br><span class="tex">\approx\mathbf{2.4}</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Type the solved formula in one line.</b> (a) <span class="keys"><kbd>√</kbd><kbd>(</kbd><kbd>6</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>π</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 4.370193722. (b) <span class="keys"><kbd>√</kbd><kbd>(</kbd><kbd>2</kbd><kbd>5</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>(</kbd><kbd>π</kbd><kbd>×</kbd><kbd>5</kbd><kbd>)</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 3.989422804. (c) <span class="keys"><kbd>3</kbd><kbd>×</kbd><kbd>9</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>(</kbd><kbd>π</kbd><kbd>×</kbd><kbd>6</kbd><kbd>x²</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 2.387324146.</div>
+    <div class="pill-col"><button class="pill" data-keys="√ ( 60 ÷ π ) =">Show me (a)</button><button class="pill" data-keys="√ ( 250 ÷ ( π × 5 ) ) =">Show me (b)</button><button class="pill" data-keys="3 × 90 ÷ ( π × 6 x² ) =">Show me (c)</button></div>
+  </div>
+  <div class="space" id="ex7-space"></div>
+  <button class="more" data-more="ex7-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s4c" data-section="4. Solve first: run the formula backwards">
+  <h3 class="sub">Solve first: run the formula backwards</h3>
+  <p>A formula is a recipe: it says what to do to the unknown to get the answer. To solve for the unknown, run the recipe <b>backwards</b>, undoing the <b>last</b> step first.</p>
+  <div class="explainer" data-explainer="undo"></div>
+  <div class="parts c1 u10l1-mt"><div class="part think"><div class="pl"><span class="think-tag">Think</span> In Example 7(a), why do we keep only the <b>positive</b> square root?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A radius is a length, so <span class="tex">r&gt;0</span>. <span class="tex">r=-4.37\ldots</span> also makes <span class="tex">\pi r^{2}=60</span>, but it isn’t a real radius.</div></div></div></div>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Rounding = the closer neighbour.</b> Find the <span class="u10l1-cpv"><b>place-value digit</b></span>, read the <span class="u10l1-ctd"><b>test digit</b></span> to its right: <span class="tex">0</span>–<span class="tex">4</span> round down, <span class="tex">5</span>–<span class="tex">9</span> round up (a <span class="tex">9</span> carries). Drop the digits to its right; zeros hold the places left of the decimal point.</div>
+    <div><b>Round once, at the end.</b> Keep every digit (and the <kbd>π</kbd> key, never 3.14) through the whole calculation. Rounding part-way through drifts the final answer.</div>
+    <div><b>Substitute in brackets.</b> <span class="tex">x=-3</span> goes in as <span class="tex">(-3)</span>, so <span class="tex">x^{2}=(-3)^{2}=9</span>. Then powers, multiply/divide, add/subtract. <span class="u10l1-ext sm">Ext</span> <span class="tex">a\times10^{n}</span> needs <span class="tex">1\le a&lt;10</span>.</div>
+    <div><b>Formulas: two routes.</b> Substitute first and undo, or solve for the unknown first and then substitute. Undo the <b>last</b> operation first. Answers keep their units.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u10l1" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 1 — Rounding and Formula Substitution</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l2/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 2 — Estimating Length with Personal Referents</b><div class="muted">No ruler needed: your hand span, your pace and a door frame are measuring tools you always carry.</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u10l1.js';
+  boot({ key: 'u10l1', homeHref: '../../', title: '10.1 Rounding and Substitution' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

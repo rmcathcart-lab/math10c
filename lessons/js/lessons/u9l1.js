@@ -323,13 +323,13 @@ const why = {
   intro: 'Two triangles from Example 1. Why must their ratios agree? Press <b>Next</b>.',
   make(stage, key, ex) {
     const { i, j } = WHY[key], k = j / i, aS = 3 * i, oS = +(1.8 * i).toFixed(1), aB = 3 * j, oB = +(1.8 * j).toFixed(1);
-    const u = 380 / aB, OY = 330, sX = 40, bX = 300, pad = [40, 70, 50, 40];
+    const u = 320 / aB, OY = 316, sX = 36, bX = 262, pad = [40, 70, 60, 40];
     const mk = (x, a, o, n) => new Tri(stage, { x: x - pad[3], y: OY - o * u - pad[0], width: a * u + pad[1] + pad[3], height: o * u + pad[0] + pad[2], pad, unit: u, fill: true,
       P: { O: [0, 0], A: [a, 0], B: [a, o] }, right: 'A', vlab: false, lens: { OA: a, AB: o }, ref: 'O', refLab: '31^\\circ', arcR: 28 });
     const sm = mk(sX, aS, oS, i), bg = mk(bX, aB, oB, j);
-    const vl = (t, n) => { t.hlabel(t.V.O[0] - 4, t.V.O[1] + 20, T('O'), { cls: 'u9l1-v' }); t.hlabel(t.V.A[0] + 6, t.V.A[1] + 20, T(`A_${n}`), { cls: 'u9l1-v' }); t.hlabel(t.V.B[0] - 6, t.V.B[1] - 18, T(`B_${n}`), { cls: 'u9l1-v' }); };
-    vl(sm, i); vl(bg, j);
-    const P = panel(stage, 700, 10, ex.W - 710, 380, 'Why the ratio is fixed');
+    const vl = (t, n) => { t.oLab = t.hlabel(t.V.O[0] - 4, t.V.O[1] + 20, T('O'), { cls: 'u9l1-v' }); t.hlabel(t.V.A[0] + 6, t.V.A[1] + 20, T(`A_${n}`), { cls: 'u9l1-v' }); t.hlabel(t.V.B[0] - 6, t.V.B[1] - 18, T(`B_${n}`), { cls: 'u9l1-v' }); };
+    vl(sm, i); vl(bg, j); bg.len('OA', aB, { gap: 34 });
+    const P = panel(stage, 650, 10, ex.W - 660, 380, 'Why the ratio is fixed');
     const dx = bX - sX;
     return [
       { cap: `Two right triangles from Example 1, ${T(`\\triangle OA_${i}B_${i}`)} and ${T(`\\triangle OA_${j}B_${j}`)}. Each has a right angle and a ${T('31^\\circ')} angle.`,
@@ -342,13 +342,14 @@ const why = {
         } },
       { cap: `Slide the small one into the corner of the big one. It fits exactly: its slanted side lies along the big one’s.`,
         run: async (c) => {
+          const extra = [sm.S('OA').lenEl, sm.arcs.O.g, sm.arcs.O.lab, sm.oLab];
+          await Promise.all(extra.map((e) => anim(c, e, [{ opacity: 1 }, { opacity: 0 }], 300)));
           await anim(c, sm.el, [{ transform: 'translateX(0)' }, { transform: `translateX(${dx}px)` }], 1300);
-          await anim(c, sm.el, [{ opacity: 1 }, { opacity: 0.85 }], 200);
         } },
       { cap: `Scale factor: ${T(`${aB}\\div${aS}=${k}`)}. <b>Every</b> side of the big triangle is ${k} times as long: ${T(`${oS}\\times${k}=${oB}`)} and ${T(`${aS}\\times${k}=${aB}`)}.`,
         run: async (c) => { await show(c, line(P, `scale factor ${T(`k=\\frac{${aB}}{${aS}}=${k}`)}`)); await show(c, line(P, T(`${oB}=${k}\\times${oS},\\ \\ ${aB}=${k}\\times${aS}`), 'u9l1-sm')); } },
       { cap: `So in the big triangle, ${T(`\\dfrac{${oB}}{${aB}}=\\dfrac{${k}\\times${oS}}{${k}\\times${aS}}`)}. The ${k}s <b>cancel</b>, leaving the small triangle’s ratio, ${T(`\\dfrac{${oS}}{${aS}}=0.6`)}.`,
-        run: async (c) => { await show(c, line(P, T(`\\dfrac{${oB}}{${aB}}=\\dfrac{\\cancel{${k}}\\times${oS}}{\\cancel{${k}}\\times${aS}}=\\dfrac{${oS}}{${aS}}=0.6`), 'u9l1-big')); } },
+        run: async (c) => { await show(c, line(P, T(`\\dfrac{${oB}}{${aB}}=\\dfrac{\\cancel{${k}}\\times${oS}}{\\cancel{${k}}\\times${aS}}`))); await show(c, line(P, T(`=\\dfrac{${oS}}{${aS}}=0.6`))); } },
       { cap: `Any scale factor ${T('k')} cancels the same way: ${T('\\dfrac{k\\cdot\\text{opp}}{k\\cdot\\text{adj}}=\\dfrac{\\text{opp}}{\\text{adj}}')}. The ratio depends <b>only on the angle</b>.`,
         run: async (c) => {
           await show(c, line(P, T(`\\dfrac{k\\cdot${ctxt('opp')}}{k\\cdot${ctxt('adj')}}=\\dfrac{${ctxt('opp')}}{${ctxt('adj')}}`), 'u9l1-big'));
@@ -375,9 +376,9 @@ const grow = {
   make(stage, key, ex) {
     const d = GROW[key], th0 = Math.atan(d.opp / d.adj), th2 = (d.th2 * Math.PI) / 180, kmax = Math.max(...d.ks);
     const deg0 = ((th0 * 180) / Math.PI).toFixed(1), hyp0 = Math.hypot(d.opp, d.adj);
-    const OX = 64, OY = 446, u = Math.min((500 - OX) / (d.adj * kmax), (OY - 60) / (d.opp * kmax));
+    const OX = 60, OY = 446, u = Math.min((440 - OX) / (d.adj * kmax), (OY - 60) / (d.opp * kmax));
     const st = { k: 1, ang: th0, ref: 'O' };
-    const svg = svgEl('svg', { width: 620, height: 520, class: 'bk-svg' }, stage);
+    const svg = svgEl('svg', { width: 545, height: 520, class: 'bk-svg' }, stage);
     const gGh = svgEl('g', {}, svg), poly = svgEl('polygon', { class: 'u9l1-tri-fill' }, svg);
     const ln = { base: null, vert: null, hyp: null };
     for (const k in ln) ln[k] = svgEl('line', { stroke: INK, 'stroke-width': 4, 'stroke-linecap': 'round' }, svg);
@@ -388,7 +389,7 @@ const grow = {
     const geo = () => { const a = d.adj * st.k, o = a * Math.tan(st.ang), hy = a / Math.cos(st.ang); return { a, o, hy, O: [OX, OY], A: [OX + a * u, OY], B: [OX + a * u, OY - o * u] }; };
     const roleOf = () => (st.ref === 'O' ? { base: 'adj', vert: 'opp', hyp: 'hyp' } : { base: 'opp', vert: 'adj', hyp: 'hyp' });
     // readout panel
-    const P = panel(stage, 630, 10, ex.W - 640, 500, '');
+    const P = panel(stage, 548, 10, ex.W - 558, 500, '');
     const head = h('div', 'u9l1-rhead', `<div>angle at ${T('O')}: <b class="u9l1-hang">${T(d.ex1 ? '31^\\circ' : `\\theta\\approx${deg0}^\\circ`)}</b></div><div>size <b class="u9l1-k">×1</b></div>`); P.appendChild(head);
     const kEl = head.querySelector('.u9l1-k'), angEl = head.querySelector('.u9l1-hang');
     const ROWS = [['opp', 'hyp', 'sin'], ['adj', 'hyp', 'cos'], ['opp', 'adj', 'tan']];
@@ -623,7 +624,7 @@ const size = {
   intro: 'Why can’t a sine or a cosine reach 1? Press <b>Next</b>.',
   make(stage, key, ex) {
     const d = SIZE[key], n = d.n;
-    const t = new Tri(stage, { x: 10, y: 6, width: 520, height: 428, pad: key === 'a' ? [60, 60, 90, 60] : [40, 160, 50, 160], P: d.P, right: d.right, ref: d.ref, arcR: key === 'a' ? 54 : 28, lens: d.lens, sn: d.sn });
+    const t = new Tri(stage, { x: 10, y: 6, width: 520, height: 428, pad: key === 'a' ? [60, 50, 90, 96] : [40, 160, 50, 160], P: d.P, right: d.right, ref: d.ref, arcR: key === 'a' ? 54 : 28, lens: d.lens, sn: d.sn });
     const R = t.roles(d.ref);
     const P = panel(stage, 545, 10, ex.W - 555, 420, `From angle ${d.ref}`);
     const common = (k1, k2) => t.S(k1).k.split('').find((ch) => t.S(k2).k.includes(ch));
@@ -675,7 +676,7 @@ const ratios = {
   intro: 'Label the sides first, then SOH CAH TOA does the rest. Press <b>Next</b>.',
   make(stage, key, ex) {
     const d = RAT[key], tall = key === 'ex5z';
-    const t = new Tri(stage, { x: 10, y: 6, width: 450, height: 458, pad: tall ? [40, 150, 50, 150] : [70, 60, 90, 60], P: d.P, right: d.right, ref: d.refs[0], arcR: tall ? 28 : 46, lens: d.lens, sn: d.sn });
+    const t = new Tri(stage, { x: 10, y: 6, width: 450, height: 458, pad: tall ? [40, 150, 50, 150] : [70, 50, 90, 96], P: d.P, right: d.right, ref: d.refs[0], arcR: tall ? 28 : 46, lens: d.lens, sn: d.sn });
     const two = d.refs.length > 1, PW = ex.W - 480;
     const P = panel(stage, 470, 10, PW, 450, '');
     const grid = h('div', ''); grid.style.cssText = `display:grid;grid-template-columns:${two ? '1fr 1fr' : '1fr'};gap:6px 14px`; P.appendChild(grid);
@@ -740,7 +741,7 @@ const hypFirst = {
   intro: 'Two legs given, no hypotenuse. Sine and cosine need it. Press <b>Next</b>.',
   make(stage, key, ex) {
     const d = HF[key], [an, a] = d.a, [bn, b] = d.b, c2 = a * a + b * b, hy = Math.round(Math.sqrt(c2));
-    const t = new Tri(stage, { x: 10, y: 10, width: 470, height: 360, pad: [60, 60, 80, 60], P: d.P, right: d.right, ref: d.ref, refLab: 'x^\\circ', arcR: 50, lens: { [an]: a, [bn]: b, [d.hyp]: '?' }, sn: d.sn });
+    const t = new Tri(stage, { x: 10, y: 10, width: 470, height: 360, pad: [60, 50, 80, 96], P: d.P, right: d.right, ref: d.ref, refLab: 'x^\\circ', arcR: 50, lens: { [an]: a, [bn]: b, [d.hyp]: '?' }, sn: d.sn });
     t.paint(d.hyp, 'hyp');
     const P = panel(stage, 495, 10, ex.W - 505, 450, '');
     const R = t.roles(d.ref), n = { opp: t.nm(R.opp) === an ? a : b, adj: t.nm(R.adj) === an ? a : b, hyp: hy };

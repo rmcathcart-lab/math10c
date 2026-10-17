@@ -62,7 +62,7 @@ b.u9l1-cr, .u9l1-cr { color: #c93a33; }
 /* ---------------- explainer pieces ---------------- */
 .u9l1-panel { background: #fff; border: 1px solid var(--line2); border-radius: 14px; padding: 10px 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
 .u9l1-ph { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
-.u9l1-line { font-size: 21px; line-height: 1.35; }
+.u9l1-line { font-size: 22px; line-height: 1.35; }
 .u9l1-line.u9l1-sm { font-size: 19px; }
 .u9l1-big { font-size: 24px; }
 .u9l1-step { font-size: 18px; color: var(--muted); padding: 4px 8px; border-radius: 8px; transition: background .3s, color .3s; }
@@ -70,17 +70,18 @@ b.u9l1-cr, .u9l1-cr { color: #c93a33; }
 .u9l1-step.done { color: var(--ink2); }
 
 /* grow: live readouts */
-.u9l1-rhead { display: flex; justify-content: space-between; align-items: baseline; font: 800 17px var(--round); color: var(--muted); }
+.u9l1-rhead { display: flex; justify-content: space-between; align-items: baseline; font: 800 18px var(--round); color: var(--muted); }
+.u9l1-rhead .katex { font-size: 1.15em; color: var(--ink); }
 .u9l1-rhead .u9l1-k { font-size: 24px; color: var(--ink); }
-.u9l1-rrow { display: grid; grid-template-columns: 52px 112px 92px 1fr; align-items: center; gap: 6px; border-radius: 12px; padding: 4px 8px; background: #faf9f6; transition: background .3s; }
+.u9l1-rrow { display: grid; grid-template-columns: 44px 98px 78px 1fr; align-items: center; gap: 5px; border-radius: 12px; padding: 4px 8px; background: #faf9f6; transition: background .3s; }
 .u9l1-rrow.u9l1-same { background: #e5f4ec; }
 .u9l1-rrow.u9l1-diff { background: #fde9e7; }
 .u9l1-rname { font: 800 22px var(--round); color: var(--brand); }
-.u9l1-rlab { font: 800 18px var(--round); }
+.u9l1-rlab { font: 800 17px var(--round); white-space: nowrap; }
 .u9l1-fr { display: inline-flex; flex-direction: column; align-items: center; font: 700 21px var(--round); font-variant-numeric: tabular-nums; }
 .u9l1-nu { border-bottom: 2.5px solid currentColor; padding: 0 6px; }
 .u9l1-de { padding: 0 6px; }
-.u9l1-rval { font: 800 27px var(--round); font-variant-numeric: tabular-nums; }
+.u9l1-rval { font: 800 25px var(--round); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .u9l1-gl { font: 800 18px var(--round); background: rgba(255, 255, 255, .9); border-radius: 7px; padding: 0 5px; white-space: nowrap; }
 .u9l1-gv { font: 800 22px var(--round); }
 .u9l1-note { font: 700 17px var(--round); color: var(--ok); }

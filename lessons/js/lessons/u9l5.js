@@ -12,7 +12,7 @@
  * unknowns red. */
 import {
   h, tex, add, box, Box, Flowchart, NumberLine, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep, tween,
-  svgEl, pulse, anim, angleArc, rightMark, arrowHead, place
+  svgEl, pulse, anim, angleArc, rightMark, arrowHead, place, drawIn
 } from '../blocks.js';
 
 const T = (s) => tex(s);
@@ -92,7 +92,7 @@ class Tri extends Box {
     }
     return g;
   }
-  setAngleLabel(v, label, cls) { const a = this.arcs[v], d = this.al[v]; if (!d) return this.arc(v, label, { cls }); d.className = 'u9l5-alab' + (cls ? ' ' + cls : ''); d.innerHTML = T(label); return a; }
+  setAngleLabel(v, label, cls) { const a = this.arcs[v], d = this.al[v]; if (!d) return this.arc(v, label, { cls }); d.className = 'u9l5-alab' + (cls ? ' ' + cls : ''); d.style.color = ''; d.innerHTML = T(label); return a; }
   hypK() { const [a, b] = this.ks.filter((k) => k !== this.rv); return key(a + b); }
   oppK(v) { const [a, b] = this.ks.filter((k) => k !== v); return key(a + b); }
   adjK(v) { return key(v + this.rv); }
@@ -323,7 +323,7 @@ const whichTool = {
  * ====================================================================================== */
 const TR = {
   ex2: { label: 'Example 2 check', pts: { F: [0, 0], A: [0, 3], S: [3.637, 0] }, right: 'F', names: false, pad: [40, 30, 50, 64],
-    sides: { AF: '14', AS: '22', FS: Object.assign({ label: '?' }, U) }, angles: { S: { label: '\\theta', r: 30 } }, unit: '\\text{ m}',
+    sides: { AF: '14', AS: '22', FS: Object.assign({ label: '?' }, U) }, angles: { S: { label: '\\theta', r: 30 } }, unit: '\\text{ m}', unk: 'FS',
     cap0: 'Example 2: antenna 14 m, wire 22 m. Wanted: the base, from the stake to the foot of the antenna.',
     r1: { h: 'Route 1: Pythagoras', lines: ['\\sqrt{22^2-14^2}=\\sqrt{288}'], v: 16.97056, s: '16.9706\\ldots', r: '17.0', cap: 'Route 1, <b>Pythagoras</b>, uses only the given 14 and 22: ' + T('16.9706\\ldots') + ' m.' },
     r2: { h: 'Route 2: trig, rounded angle', lines: ['\\theta=39.52\\ldots^\\circ\\to\\boldsymbol{40^\\circ}', '22\\cos40^\\circ'], v: 16.85298, s: '16.8530\\ldots', r: '16.9', cap: 'Route 2 rounds ' + T('\\theta') + ' to ' + T('40^\\circ') + ' first, then uses CAH: ' + T('22\\cos40^\\circ=16.8530\\ldots') + ' m.' },
@@ -331,7 +331,7 @@ const TR = {
     cmp: { ok: false, cap: 'Rounded: <b>17.0 m</b> against <b>16.9 m</b>. About 12 cm apart, and only one can be right.', gap: '0.12\\text{ m}' },
     nl: { min: 16.8, max: 17.0, step: 0.05, minor: 0.01, dec: 2 } },
   tower: { label: 'Demo: the tower’s height', pts: { B: [0, 0], H: [0, 5], T: [1.5, 5] }, right: 'H', names: false, pad: [34, 60, 40, 60], ntsc: true,
-    sides: { BT: '56', HT: '\\text{shift}', BH: Object.assign({ label: '?' }, U) }, angles: { B: { label: '4^\\circ', r: 46 } }, unit: '\\text{ m}',
+    sides: { BT: '56', HT: '\\text{shift}', BH: Object.assign({ label: '?' }, U) }, angles: { B: { label: '4^\\circ', r: 46 } }, unit: '\\text{ m}', unk: 'BH',
     cap0: 'The warm-up tower: 56 m long, leaning 4°. Wanted: the height of the top.',
     r1: { h: 'Route 1: CAH, from the given', lines: ['56\\cos4^\\circ'], v: 55.863587, s: '55.8636\\ldots', r: '55.9', cap: 'Route 1, <b>CAH</b>, uses only the given 56 and ' + T('4^\\circ') + ': ' + T('55.8636\\ldots') + ' m.' },
     r2: { h: 'Route 2: Pythagoras, rounded shift', lines: ['\\text{shift}=3.906\\ldots\\to\\boldsymbol{3.9}', '\\sqrt{56^2-3.9^2}'], v: 55.864031, s: '55.8640\\ldots', r: '55.9', cap: 'Route 2 rounds the shift to 3.9 m first, then uses Pythagoras: ' + T('55.8640\\ldots') + ' m.' },
@@ -355,13 +355,14 @@ const twoRoutes = {
     };
     const p1 = mk(d.r1, rx, HYP), p2 = mk(d.r2, rx + rw + 12, UNK);
     const NL = new NumberLine(stage, { x: rx, y: 190, width: ex.W - rx, height: 110, min: d.nl.min, max: d.nl.max, step: d.nl.step, minor: d.nl.minor, labels: (v) => T(v.toFixed(d.nl.dec)), cls: 'u9l5-nl', arrows: false });
-    const pt1 = NL.point(d.r1.v, { color: HYP, label: 'route 1', pos: 'n' }), pt2 = NL.point(d.r2.v, { color: UNK, label: 'route 2', pos: 'n', lift: 0 });
+    const r2left = d.r2.v < d.r1.v;
+    const pt1 = NL.point(d.r1.v, { color: HYP, label: 'route 1', pos: r2left ? 'ne' : 'nw' }), pt2 = NL.point(d.r2.v, { color: UNK, label: 'route 2', pos: r2left ? 'nw' : 'ne' });
     [pt1, pt2].forEach((p) => { hide0(p); hide0(p.label); });
     const verdict = add(stage, box(h('div', 'u9l5-verdict'), ex.W - rx, 52), rx, 318); hide0(verdict);
     const dx = NL.toPx(d.r1.v) - NL.toPx(d.r2.v);
     let fixLine;
     return [
-      { cap: d.cap0, run: async (c) => { await pulse(c, tri.sl[tri.ks.length && Object.keys(d.sides).map(key).find((s) => d.sides[Object.keys(d.sides).find((q) => key(q) === s)].cls)], 1.35); } },
+      { cap: d.cap0, run: async (c) => { await pulse(c, tri.sl[key(d.unk)], 1.35); } },
       { cap: d.r1.cap, run: async (c) => { await show(c, p1); await Promise.all([pop(c, pt1), fadeIn(c, pt1.label)]); } },
       { cap: d.r2.cap, run: async (c) => { await show(c, p2); await Promise.all([pop(c, pt2), fadeIn(c, pt2.label)]); } },
       { cap: d.cmp.cap, run: async (c) => {
@@ -513,7 +514,7 @@ const fromGiven = {
     const mid0 = x0 + 20 + nw / 2, mid1 = x1 + 20 + nw / 2, rgt = x1 + 20 + nw;
     const a1 = arr([[mid0, 90], [mid0, 128]], UNK), a2 = arr([[mid0, 216], [mid0, 254]], UNK);
     const b1 = arr([[mid1, 90], [mid1, 128]], REF), b2 = arr([[rgt - 30, 90], [rgt - 30, 110], [rgt + 40, 110], [rgt + 40, 236], [rgt - 30, 236], [rgt - 30, 254]], REF);
-    const go = async (c, a, n) => { a.style.opacity = 1; await Promise.all([a.querySelector('path') && fadeIn(c, n, 380)]); };
+    const go = async (c, a, n) => { a.style.opacity = 1; await drawIn(a, 450, c); await fadeIn(c, n, 380); };
     return [
       { cap: d.cap0, run: async (c) => { await Promise.all([pulse(c, g1, 1.05), pulse(c, g2, 1.05)]); } },
       { cap: d.c1cap, run: (c) => go(c, a1, c1) },
@@ -578,7 +579,6 @@ const SV = {
     ],
     pyth: ['WF^2+WT^2=2.1^2+6.1514^2=42.25', 'FT^2=6.5^2=42.25\\ \\checkmark'], sum: ['90^\\circ+71.1509^\\circ+18.8491^\\circ=180^\\circ\\ \\checkmark'] }
 };
-const sideName = (k) => k; // side keys are written in the order the booklet uses (e.g. TW is shown as WT below)
 const SIDE_SHOW = { TW: 'WT', FW: 'WF', BT: 'BT' };
 const solveIt = {
   title: 'Solve it: fill in all six',
@@ -640,7 +640,6 @@ const solveIt = {
     return steps;
   }
 };
-void sideName;
 
 /* ======================================================================================
  * Explainer 7: from words to a triangle — the ladder (Example 5)
@@ -703,7 +702,7 @@ const ladder = {
     ];
   }
 };
-function this_draw(c, g) { return g.querySelector('.bk-stroke') ? import('../blocks.js').then((m) => m.drawIn(g, 600, c)) : Promise.resolve(); }
+const this_draw = (c, g) => drawIn(g, 600, c);
 
 /* ======================================================================================
  * Explainer 8: which check catches which slip
