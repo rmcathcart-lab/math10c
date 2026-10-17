@@ -656,7 +656,7 @@ const sizeUp = {
     lab(B, xS - 50, Y(62) - 6, 'inches', 'n', 'u10l9-flab u10l9-sm');
     sline(L, [20, yG], [W - 20, yG], { w: 3 });
     // horse
-    const hs = 57 * pin, sx = hs * 0.78, hx = 34 + 0.38 * sx, HP = (pts) => pts.map(([x, y]) => [hx + x * sx, yG - y * hs]);
+    const hs = 57 * pin, sx = hs * 0.78, hx = 52 + 0.38 * sx, HP = (pts) => pts.map(([x, y]) => [hx + x * sx, yG - y * hs]);
     HORSE_LEGS.forEach((lg) => svgEl('path', { d: pD(HP(lg), true), fill: '#8a5a33', stroke: '#4a2f17', 'stroke-width': 1.6, 'stroke-linejoin': 'round' }, L));
     svgEl('path', { d: pD(HP(HORSE), true), fill: '#b9844f', stroke: '#4a2f17', 'stroke-width': 2.2, 'stroke-linejoin': 'round' }, L);
     svgEl('circle', { cx: hx - 0.2 * sx, cy: yG - 1.08 * hs, r: 3.5, fill: '#2a1a0c' }, L);
