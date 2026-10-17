@@ -668,7 +668,7 @@
   /* ---------- extra-practice helpers ---------- */
   var LET = ['A', 'B', 'C', 'D', 'E', 'F'];
   function bank(items, cols) { // items: [{ label, svg }]
-    return '<div style="display:grid;grid-template-columns:repeat(' + (cols || 2) + ',minmax(0,1fr));gap:2px 12px;margin:6px 0">' + items.map(function (it) { return '<div><b>' + it.label + '.</b>' + it.svg + '</div>'; }).join('') + '</div>';
+    return '<div style="display:grid;grid-template-columns:repeat(' + (cols || 2) + ',minmax(0,1fr));gap:2px 12px;margin:6px 0">' + items.map(function (it) { return '<div><b>' + it.label + '.</b>' + (it.cap ? ' <span style="font-size:14px">' + it.cap + '</span>' : '') + it.svg + '</div>'; }).join('') + '</div>';
   }
   /* a matching question: shapes = { key: { svg, desc } }, stories = [{ id, key, text }] → grid (story rows × graph letters) */
   function matchPart(r, sh, keys, intro, stories, labels, text) {
@@ -714,24 +714,27 @@
   }
   var SEGN = ['J to K', 'K to L', 'L to M', 'M to N', 'N to P'];
 
+  function e1Part(r, keys, labels, note) {
+    var sh = {
+      line: { svg: sk({ segs: [Ln([[0, 0], [9.5, 5.2]])] }), desc: 'one straight line (a steady pace, no stops)' },
+      speed: { svg: sk({ fns: [Fn(function (x) { return 0.0576 * x * x; }, 0, 9.5)] }), desc: 'a curve getting steeper and steeper (speeding up)' },
+      stop: { svg: sk({ segs: [Ln([[0, 0], [3.5, 2.6], [6, 2.6], [9.5, 5.2]])] }), desc: 'two equally steep pieces with a flat part between (a stop, then the same speed again)' },
+      back: { svg: sk({ segs: [Ln([[0, 0], [4.5, 5], [9, 0]])] }), desc: 'up to a highest point and straight back down to 0 (out and back, no stop)' },
+      slow: { svg: sk({ fns: [Fn(function (x) { return 5.3 * (1 - Math.exp(-0.4 * x)); }, 0, 9.5)] }), desc: 'still rising but flattening out (moving away, slowing down)' },
+      away: { svg: sk({ segs: [Ln([[0, 4.6], [5, 4.6], [9.5, 0]])] }), desc: 'starting above 0, flat, then down to 0 (already away, stays, then comes home)' } };
+    var ST = { line: r.pick(['Amir jogs from home to the soccer pitch at one steady pace and never stops.', 'Amir walks from home to school at one steady pace without stopping.']),
+      speed: 'Beth wheels her bike out of the driveway and rides away, pedalling harder and harder, so each minute she covers more ground than the minute before.',
+      stop: r.pick(['Cai drives away from home, is held at a level crossing while a train passes, then carries on at the speed he was going before.', 'Cai drives away from home, waits at a long red light, then carries on at the same speed as before.']),
+      back: r.pick(['Dev walks to the corner store and comes straight back home without going inside.', 'Dev jogs to the end of the street and straight back home.']),
+      slow: 'Eryn’s train pulls out of her home station and slows steadily as it coasts into the next station down the line.',
+      away: r.pick(['Fen is already at the library when the graph starts. She studies there for an hour, then walks home.', 'Fen is already at a friend’s house when the graph starts. She stays a while, then walks home.']) };
+    return matchPart(r, sh, keys, 'Each graph shows one person’s distance from home (vertical) against time (horizontal). Match each story with its graph.' + note, keys.map(function (k) { return { key: k, text: ST[k] }; }), labels, 'match stories to distance graphs');
+  }
+
   var EXTRA = [
     { num: '1', section: 'Extra practice A — Matching a story to its graph', parts: [
-      { id: 'e1', level: 'EMG', make: function (r) {
-        var sh = {
-          line: { svg: sk({ segs: [Ln([[0, 0], [9.5, 5.2]])] }), desc: 'one straight line (a steady pace, no stops)' },
-          speed: { svg: sk({ fns: [Fn(function (x) { return 0.0576 * x * x; }, 0, 9.5)] }), desc: 'a curve getting steeper and steeper (speeding up)' },
-          stop: { svg: sk({ segs: [Ln([[0, 0], [3.5, 2.6], [6, 2.6], [9.5, 5.2]])] }), desc: 'two equally steep pieces with a flat part between (a stop, then the same speed again)' },
-          back: { svg: sk({ segs: [Ln([[0, 0], [4.5, 5], [9, 0]])] }), desc: 'up to a highest point and straight back down to 0 (out and back, no stop)' },
-          slow: { svg: sk({ fns: [Fn(function (x) { return 5.3 * (1 - Math.exp(-0.4 * x)); }, 0, 9.5)] }), desc: 'still rising but flattening out (moving away, slowing down)' },
-          away: { svg: sk({ segs: [Ln([[0, 4.6], [5, 4.6], [9.5, 0]])] }), desc: 'starting above 0, flat, then down to 0 (already away, stays, then comes home)' } };
-        var stories = [{ key: 'line', text: 'Amir jogs from home to the soccer pitch at one steady pace and never stops.' },
-          { key: 'speed', text: 'Beth wheels her bike out of the driveway and rides away, pedalling harder and harder, so each minute she covers more ground than the minute before.' },
-          { key: 'stop', text: 'Cai drives away from home, is held at a level crossing while a train passes, then carries on at the speed he was going before.' },
-          { key: 'back', text: 'Dev walks to the corner store and comes straight back home without going inside.' },
-          { key: 'slow', text: 'Eryn’s train pulls out of her home station and slows steadily as it coasts into the next station down the line.' },
-          { key: 'away', text: 'Fen is already at the library when the graph starts. She studies there for an hour, then walks home.' }];
-        return matchPart(r, sh, ['line', 'speed', 'stop', 'back', 'slow', 'away'], 'Each graph shows one person’s distance from home (vertical) against time (horizontal). Match each story with its graph.', stories, LET, 'match stories to distance graphs');
-      } }] },
+      { id: 'e1a', level: 'EMG', make: function (r) { return e1Part(r, ['line', 'speed', 'stop'], ['A', 'B', 'C'], ' Graphs A, B and C begin and end at the same points (in some order), so only what happens <i>in between</i> tells them apart.'); } },
+      { id: 'e1b', level: 'BEG', make: function (r) { return e1Part(r, ['back', 'slow', 'away'], ['D', 'E', 'F'], ''); } }] },
     { num: '2', parts: [
       { id: 'e2', level: 'EMG', make: function (r) {
         var sh = {
@@ -1190,14 +1193,14 @@
 
     { num: '15', section: 'Extra practice F — The shape of the container', stem: function (c) {
         return 'Water runs from the same tap, at the same constant rate, into each of four containers. All four are the same height and each is filled right to the top. The graphs show the <b>height of the water</b> (vertical) against time (horizontal), in a different order.' +
-          bank(c.letters.map(function (l) { return { label: l, svg: container(c.box[l]) }; }), 4) + bank(c.nums.map(function (n) { return { label: n, svg: sk(FILL[c.gr[n]]) }; }), 2);
+          bank(c.letters.map(function (l) { return { label: l, cap: CNAME[c.box[l]], svg: container(c.box[l]) }; }), 2) + bank(c.nums.map(function (n) { return { label: n, svg: sk(FILL[c.gr[n]]) }; }), 2);
       }, shared: function (r) {
         var types = ['wide', 'narrow', 'down', 'up'], tl = r.shuffle(types), tn = r.shuffle(types), letters = ['W', 'X', 'Y', 'Z'], nums = ['I', 'II', 'III', 'IV'], box = {}, gr = {}, of = {};
         letters.forEach(function (l, i) { box[l] = tl[i]; }); nums.forEach(function (n, i) { gr[n] = tn[i]; of[tn[i]] = n; });
         return { letters: letters, nums: nums, box: box, gr: gr, of: of };
       }, parts: [
       { id: 'e15a', level: 'PRG', make: function (r, c) {
-        var rows = c.letters.map(function (l) { return { id: l, html: l + ' (' + CNAME[c.box[l]] + ')' }; }), cols = c.nums.map(function (n) { return { id: n, html: n }; }), want = {};
+        var rows = c.letters.map(function (l) { return { id: l, html: l }; }), cols = c.nums.map(function (n) { return { id: n, html: n }; }), want = {};
         c.letters.forEach(function (l) { want[l] = c.of[c.box[l]]; });
         var p = K.P.grid('Match each container with its graph.', rows, cols, want, { why: function (row) { return { code: 'row', hint: CWHY[c.box[row]] }; } },
           c.letters.map(function (l) { return l + ' → ' + want[l] + ': ' + CWHY[c.box[l]]; }).join('<br>'), ['The wider the container at the water line, the more slowly the height rises.'], 'containers: match');
@@ -1303,13 +1306,14 @@
     order.forEach(function (id, i) { lab[id] = LET[i]; });
     FEAT.forEach(function (f) { want[f.id] = lab[f.id]; });
     var nm = kind === 'dist' ? 'distance–time' : 'speed–time', other = kind === 'dist' ? 'speed' : 'dist';
-    var p = K.P.grid('On a <b>' + nm + '</b> graph, what does each feature mean? Choose a letter for each row.<br>' + order.map(function (id) { return '<b>' + lab[id] + '</b>: ' + MEAN[kind][id]; }).join('<br>'), FEAT, order.map(function (id) { return { id: lab[id], html: lab[id] }; }).sort(function (a, b) { return a.id < b.id ? -1 : 1; }), want,
+    var rows = FEAT.map(function (f, i) { return { id: f.id, html: String(i + 1) }; });
+    var p = K.P.grid('On a <b>' + nm + '</b> graph, what does each feature mean? Match each feature (1–5) with a meaning (A–E).<br><b>Features:</b><br>' + FEAT.map(function (f, i) { return '<b>' + (i + 1) + '</b>: ' + f.html.replace('&', 'and'); }).join('<br>') + '<br><b>Meanings:</b><br>' + order.map(function (id) { return '<b>' + lab[id] + '</b>: ' + MEAN[kind][id]; }).sort().join('<br>'), rows, order.map(function (id) { return { id: lab[id], html: lab[id] }; }).sort(function (a, b) { return a.id < b.id ? -1 : 1; }), want,
       { why: function (row, got) {
         var gid = order[LET.indexOf(got)];
         if (gid && MEAN[other][row] === MEAN[kind][gid] || (gid && MEAN[other][row].split(':')[0] === MEAN[kind][gid].split(':')[0])) return { code: 'swap-axes', hint: '“' + FEAT.filter(function (f) { return f.id === row; })[0].html + '” means that on a <b>' + (kind === 'dist' ? 'speed' : 'distance') + '</b> graph. Here the vertical axis is ' + (kind === 'dist' ? 'distance' : 'speed') + '.' };
-        return { code: 'row', hint: 'Row “' + FEAT.filter(function (f) { return f.id === row; })[0].html + '”: ask what is happening to the ' + (kind === 'dist' ? 'distance' : 'speed') + ' — is it changing, and how?' };
+        return { code: 'row', hint: 'Feature “' + FEAT.filter(function (f) { return f.id === row; })[0].html + '”: ask what is happening to the ' + (kind === 'dist' ? 'distance' : 'speed') + ' — is it changing, and how?' };
       } }, FEAT.map(function (f) { return f.html + ': ' + MEAN[kind][f.id] + '.'; }).join('<br>'), ['Read the vertical axis first. Flat means “no change in whatever the vertical axis measures”.'], 'feature meanings: ' + nm);
-    p.answer = FEAT.map(function (f) { return f.html + ': ' + want[f.id] + ' (' + MEAN[kind][f.id] + ')'; }).join('<br>');
+    p.answer = FEAT.map(function (f, i) { return (i + 1) + ' (' + f.html + '): ' + want[f.id] + ' — ' + MEAN[kind][f.id]; }).join('<br>');
     return p;
   }
   /* EP15–16 containers */
@@ -1324,7 +1328,7 @@
   }
   function flaskSvg(wideBottom) {
     var p = wideBottom ? 'M44 6 L44 52 L20 52 L20 100 L80 100 L80 52 L56 52 L56 6' : 'M20 6 L20 54 L44 54 L44 100 L56 100 L56 54 L80 54 L80 6';
-    return '<svg class="fig-svg" viewBox="0 0 100 108" style="max-width:90px" role="img" aria-label="the flask"><rect width="100" height="108" fill="#fff"/><path d="' + p + '" fill="#e6f2f1" stroke="' + INK + '" stroke-width="2.4" stroke-linejoin="round"/><line x1="8" y1="53" x2="92" y2="53" stroke="#9aa3ad" stroke-dasharray="4 3"/><text x="94" y="57" font-size="10" fill="#6a7182" text-anchor="end">half</text></svg>';
+    return '<svg class="fig-svg" viewBox="0 0 100 108" style="max-width:90px" role="img" aria-label="the flask"><rect width="100" height="108" fill="#fff"/><path d="' + p + '" fill="#e6f2f1" stroke="' + INK + '" stroke-width="2.4" stroke-linejoin="round"/></svg>';
   }
 
   HW.defineLesson({
