@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Trig Ratios: Calculator Values and Angle Patterns · Math 10C 9.2</title>
+<meta name="description" content="Math 10C Unit 9 Lesson 2: evaluating sine, cosine and tangent in degree mode on the TI-30XIIS and naming the side ratio each value stands for; why sine grows and cosine shrinks as the angle opens (hypotenuse fixed at 1); ordering ratios by SOH CAH TOA reasoning and the 45° benchmark; the values at 0° and 90° and the pattern in between; Extension: tangent near 90° and sin x = cos(90 − x). Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u9l2.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 9 Trigonometry · Lesson 2</div>
+  <h1>Trig Ratios: Calculator Values and Angle Patterns</h1>
+  <p class="lede">Evaluating the ratios in <b>degree mode</b>, and how each ratio behaves as the angle opens from <span class="tex">0^\circ</span> to <span class="tex">90^\circ</span>. Fix the <b class="u9l2-h">hypotenuse</b> at 1 and open the angle: the <b class="u9l2-o">opposite</b> side climbs, the <b class="u9l2-a">adjacent</b> side shrinks, and every pattern can be read straight off the picture. (Finding an angle from a ratio comes in Lesson 4.)</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>evaluate <span class="tex">\sin</span>, <span class="tex">\cos</span> and <span class="tex">\tan</span> of an angle on the TI-30XIIS in <b>degree mode</b>, round to four decimal places, and name the <b>side ratio</b> each value stands for</li>
+      <li>explain with SOH CAH TOA why <b>sine increases</b> and <b>cosine decreases</b> as the angle opens, and what the tangent does</li>
+      <li>compare two ratios <b>without a calculator</b>, using the <span class="tex">45^\circ</span> benchmark</li>
+      <li>state <span class="tex">\sin</span>, <span class="tex">\cos</span> and <span class="tex">\tan</span> of <span class="tex">0^\circ</span> and <span class="tex">90^\circ</span> and describe the pattern in between</li>
+      <li><span class="u9l2-ext sm">Extension</span> describe <span class="tex">\tan x^\circ</span> near <span class="tex">90^\circ</span>, and explain why <span class="tex">\sin x^\circ=\cos(90-x)^\circ</span></li>
+    </ul>
+  </div>
+  <div class="outcome"><b>M4</b> Develop and apply the primary trigonometric ratios (sine, cosine, tangent) to solve problems that involve right triangles.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: The 4-to-1 Ladder Rule" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The 4-to-1 Ladder Rule</h2></div>
+  <p class="u9l2-sticker">Safety sticker: <b>“For every 4 m up the wall, put the foot 1 m out.”</b></p>
+  <div class="u9l2-wfig" id="u9l2-wfig"></div>
+  <div class="u9l2-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>A ladder reaches <b>12 m</b> up a wall. How far out should its foot be?</div></div>
+      <div class="u9l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>3 m.</b> 12 m up is three groups of “4 up”, so three groups of “1 out”.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>Which of ladders <b>A–D</b> follow the rule?</div></div>
+      <div class="u9l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>A</b> (<span class="tex">4:1</span>) and <b>C</b> (<span class="tex">8:2=4:1</span>). B is <span class="tex">6:3=2:1</span>, too shallow (it could slide out). D is <span class="tex">5:0.5=10:1</span>, too steep (it could tip backward).</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>Two of the ladders are different sizes but both follow the rule. Do they lean at the <b>same angle</b>? Why?</div></div>
+      <div class="u9l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>Yes.</b> Both have up <span class="tex">\div</span> out <span class="tex">=4</span>, so C is just A scaled by 2: similar triangles, same angles.</div></div>
+    </div>
+  </div>
+
+  <div class="poll u9l2-poll4">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> A ladder that follows the 4-to-1 rule makes what angle with the <b>ground</b>? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> about <span class="tex">14^\circ</span></div>
+      <div class="opt"><b>B</b> <span class="tex">22.5^\circ</span></div>
+      <div class="opt"><b>C</b> <span class="tex">72^\circ</span></div>
+      <div class="opt right"><b>D</b> about <span class="tex">76^\circ</span></div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>D: about <span class="tex">76^\circ</span>.</b> Relative to the angle <span class="tex">\theta</span> at the foot, “up” is <b class="u9l2-o">opposite</b> and “out” is <b class="u9l2-a">adjacent</b>, so <span class="tex">\tan\theta=\frac{4}{1}=4</span>. Nobody can “see” that angle, so hunt for it with the calculator (degree mode!): <span class="tex">\tan72^\circ\approx3.08</span>, <span class="tex">\tan76^\circ\approx4.01</span>, <span class="tex">\tan80^\circ\approx5.67</span>. So <span class="tex">\theta\approx76^\circ</span>.
+      <div class="u9l2-hunt"><button class="pill" type="button" data-keys="tan 72 ) =">tan 72°</button><button class="pill" type="button" data-keys="tan 76 ) =">tan 76°</button><button class="pill" type="button" data-keys="tan 80 ) =">tan 80°</button></div>
+      <span class="muted"><b>A</b> (about <span class="tex">14^\circ</span>) is out over up: the angle at the <em>top</em>, between the ladder and the wall (<span class="tex">14^\circ+76^\circ=90^\circ</span>). <b>B</b> is “<span class="tex">\tfrac14</span> of <span class="tex">90^\circ</span>” and <b>C</b> is “<span class="tex">\tfrac45</span> of <span class="tex">90^\circ</span>”: both assume the angle grows in step with the ratio. It doesn’t, and that is what this lesson is about.</span></div>
+  </div>
+
+  <div class="bk-wq u9l2-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Some safety guides measure the 4 <b>along the ladder</b> instead: foot out <span class="tex">=\tfrac14</span> of the ladder’s length. Which ratio is that, and about what angle?</div></div>
+    <div class="u9l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Out is <b class="u9l2-a">adjacent</b> and the ladder is the <b class="u9l2-h">hypotenuse</b>: <span class="tex">\cos\theta=0.25</span>. <span class="tex">\cos75^\circ\approx0.26</span> and <span class="tex">\cos76^\circ\approx0.24</span>, so about <span class="tex">75.5^\circ</span>. (The <span class="tex">\cos^{-1}</span> key does this directly in Lesson 4.)</div></div>
+  </div>
+  <p class="u9l2-social">Hands up if you’ve set up a ladder. Show the rule’s angle with your arm!</p>
+</section>
+
+<!-- ================= 1. Calculator ================= -->
+<section class="card" data-ink="s1" data-section="1. Evaluating Ratios with a Calculator">
+  <div class="sec-h"><span class="badge">1</span><h2>Evaluating Trigonometric Ratios with a Calculator</h2></div>
+  <div class="u9l2-soh">
+    <div class="u9l2-fig" id="u9l2-sohfig" style="width:300px;height:210px"></div>
+    <div>For a reference angle <span class="tex">x^\circ</span> in a right triangle, SOH CAH TOA gives
+      <div class="u9l2-trio">
+        <div><span class="u9l2-mn">SOH</span><span class="tex">\sin x^\circ=\dfrac{\textcolor{#7b4fc4}{\text{opp}}}{\textcolor{#1f5bd6}{\text{hyp}}}</span></div>
+        <div><span class="u9l2-mn">CAH</span><span class="tex">\cos x^\circ=\dfrac{\textcolor{#c27a0e}{\text{adj}}}{\textcolor{#1f5bd6}{\text{hyp}}}</span></div>
+        <div><span class="u9l2-mn">TOA</span><span class="tex">\tan x^\circ=\dfrac{\textcolor{#7b4fc4}{\text{opp}}}{\textcolor{#c27a0e}{\text{adj}}}</span></div>
+      </div>
+    </div>
+  </div>
+  <p>A calculator returns any of these ratios, for any angle between <span class="tex">0^\circ</span> and <span class="tex">90^\circ</span>, to as many decimal places as are wanted, but only once it is set to <b>degree mode</b>.</p>
+  <div class="explainer" data-explainer="calc"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Degree mode first.</b> Look for <b>DEG</b> on the screen. If it says RAD, the calculator reads 24 as 24 <em>radians</em> and <span class="tex">\sin24</span> comes out as <span class="tex">-0.9056</span>: a negative “sine” is the giveaway. Press <kbd>MODE</kbd>, choose <b>DEG</b>, <kbd>ENTER</kbd>.</div></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Calculator values, and the side ratio each one names</h3></div>
+  <p class="q">Each triangle below has a right angle at <span class="tex">A</span>.</p>
+  <div class="u9l2-figrow"><div class="u9l2-fig" id="u9l2-f1a"></div><div class="u9l2-fig" id="u9l2-f1b"></div></div>
+  <p class="q"><b>(a)</b> Use a calculator to determine the value of each ratio, to four decimal places.</p>
+  <div class="parts c4" style="grid-template-columns:repeat(4,1fr)">
+    <div class="part"><div class="pl">(i) <span class="tex">\sin 24^\circ=</span></div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\boldsymbol{0.4067}</span></div></div></div>
+    <div class="part"><div class="pl">(ii) <span class="tex">\cos 24^\circ=</span></div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\boldsymbol{0.9135}</span></div></div></div>
+    <div class="part"><div class="pl">(iii) <span class="tex">\sin 67^\circ=</span></div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\boldsymbol{0.9205}</span></div></div></div>
+    <div class="part"><div class="pl">(iv) <span class="tex">\cos 67^\circ=</span></div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\boldsymbol{0.3907}</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>On the TI-30XIIS</b> (DEG on the screen): <span class="keys"><kbd>SIN</kbd><kbd>2</kbd><kbd>4</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> shows <span class="tex">0.4067366431</span>. The fifth decimal is 3, so round down: <b>0.4067</b>. <kbd>SIN</kbd> opens a bracket for you; close it before <kbd>ENTER</kbd>.</div>
+    <div class="pill-col"><button class="pill" data-keys="sin 24 ) =">sin 24°</button><button class="pill" data-keys="cos 24 ) =">cos 24°</button></div>
+    <div class="pill-col"><button class="pill" data-keys="sin 67 ) =">sin 67°</button><button class="pill" data-keys="cos 67 ) =">cos 67°</button></div>
+  </div>
+  <div class="parts c1" style="margin-top:14px">
+    <div class="part"><div class="pl"><b>(b)</b> With respect to the two diagrams above, which ratio of sides (<span class="tex">\frac{OA}{OB}</span>, <span class="tex">\frac{AB}{OB}</span>, <span class="tex">\frac{AB}{OA}</span>, etc.) is represented by each of the four ratios in (a)?</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">In each triangle the right angle is at <span class="tex">A</span>, so <span class="tex">OB</span> is the <b class="u9l2-h">hypotenuse</b>, <span class="tex">AB</span> is <b class="u9l2-o">opposite</b> <span class="tex">\angle O</span>, and <span class="tex">OA</span> is <b class="u9l2-a">adjacent</b> to <span class="tex">\angle O</span>. By SOH CAH TOA, <span class="tex">\sin(\angle O)=\dfrac{AB}{OB}</span> and <span class="tex">\cos(\angle O)=\dfrac{OA}{OB}</span>:<br><span class="tex">\sin 24^\circ=\dfrac{AB}{OB}</span>, <span class="tex">\cos 24^\circ=\dfrac{OA}{OB}</span> (first triangle); <span class="tex">\sin 67^\circ=\dfrac{AB}{OB}</span>, <span class="tex">\cos 67^\circ=\dfrac{OA}{OB}</span> (second triangle), each pair using the sides of its own triangle.</div></div></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<!-- ================= 2. How the ratios change ================= -->
+<section class="card" data-ink="s2" data-section="2. How the Ratios Change">
+  <div class="sec-h"><span class="badge">2</span><h2>How the Ratios Change as the Angle Changes</h2></div>
+  <p>Rescaling a right triangle so that its hypotenuse is exactly <span class="tex">1</span> unit long makes the sine and cosine ratios equal to the side lengths themselves: <span class="tex">\sin x^\circ=\dfrac{\text{opp}}{1}=\text{opp}</span> and <span class="tex">\cos x^\circ=\dfrac{\text{adj}}{1}=\text{adj}</span>. Drawing every such triangle inside one quarter circle of radius <span class="tex">1</span> lets the effect of opening the angle be read straight off the picture.</p>
+  <div class="explainer" data-explainer="rescale"></div>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. The angle dial">
+  <h3 class="sub">Open the dial: the hypotenuse stays 1, the legs trade places</h3>
+  <p>Every triangle below has the same <b class="u9l2-h">hypotenuse</b>, a radius of the quarter circle. Watch the <b class="u9l2-o">opposite</b> and <b class="u9l2-a">adjacent</b> bars as the angle opens, and the <b class="u9l2-t">tangent</b>, which is not tied to the hypotenuse at all.</p>
+  <div class="explainer" data-explainer="dial"></div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Why sine grows and cosine shrinks as the angle opens</h3></div>
+  <p class="q">The diagram shows the two triangles of Example 1 rescaled so that each hypotenuse <span class="tex">OB</span> equals <span class="tex">1</span> unit. Both hypotenuses are radii of the same quarter circle, so the <b>vertical</b> legs (the sines) and the <b>horizontal</b> legs (the cosines) can be compared directly.</p>
+  <div class="u9l2-figrow"><div class="u9l2-fig" id="u9l2-f2"></div></div>
+  <div class="parts c2">
+    <div class="part"><div class="pl"><b>(a)</b> As angle <span class="tex">AOB</span> increases from <span class="tex">24^\circ</span> to <span class="tex">67^\circ</span>, explain, using SOH CAH TOA and the diagrams above, why the sine ratio <em>increases</em> in value while the cosine ratio <em>decreases</em> in value.</div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">With the hypotenuse fixed at <span class="tex">1</span>, <span class="tex">\sin(\angle AOB)=\dfrac{AB}{OB}=AB</span> and <span class="tex">\cos(\angle AOB)=\dfrac{OA}{OB}=OA</span>.<br>As the angle opens from <span class="tex">24^\circ</span> to <span class="tex">67^\circ</span> the triangle gets taller and narrower: the <b class="u9l2-o">opposite</b> side <span class="tex">AB</span> grows longer, so the sine ratio <b>increases</b>, while the <b class="u9l2-a">adjacent</b> side <span class="tex">OA</span> grows shorter, so the cosine ratio <b>decreases</b>.<br>Numerically, <span class="tex">\sin 24^\circ=0.4067&lt;\sin 67^\circ=0.9205</span> and <span class="tex">\cos 24^\circ=0.9135&gt;\cos 67^\circ=0.3907</span>.</div></div></div>
+    <div class="part"><div class="pl"><b>(b)</b> Determine, with reasoning, what happens to the tangent ratio as the angle increases from <span class="tex">24^\circ</span> to <span class="tex">67^\circ</span>.</div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\tan(\angle AOB)=\dfrac{AB}{OA}</span>. The numerator <span class="tex">AB</span> is increasing while the denominator <span class="tex">OA</span> is decreasing, so the tangent ratio <b>increases</b>, and more steeply than the sine ratio does, since the growing numerator and the shrinking denominator both push the ratio upward.<br><span class="tex">\tan 24^\circ\approx 0.4452</span> while <span class="tex">\tan 67^\circ\approx 2.3559</span>.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check (b) on the calculator.</b> <span class="keys"><kbd>TAN</kbd><kbd>2</kbd><kbd>4</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives <span class="tex">0.4452286853</span> and <span class="keys"><kbd>TAN</kbd><kbd>6</kbd><kbd>7</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives <span class="tex">2.355852366</span>: from less than 1 to more than 2.</div>
+    <div class="pill-col"><button class="pill" data-keys="tan 24 ) =">tan 24°</button><button class="pill" data-keys="tan 67 ) =">tan 67°</button></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2c" data-section="2. Try any angle">
+  <h3 class="sub">Try any angle</h3>
+  <p>Drag the slider (or tap an angle) and read the three ratios off the bars. Then press <b>Swap</b> to flip the triangle over the <span class="tex">45^\circ</span> line.</p>
+  <div class="u9l2-play" id="u9l2-play"></div>
+  <div class="u9l2-ctl no-ink" id="u9l2-ctl"></div>
+</section>
+
+<!-- ================= 3. Comparing ================= -->
+<section class="card" data-ink="s3" data-section="3. Comparing Ratios Without a Calculator">
+  <div class="sec-h"><span class="badge">3</span><h2>Comparing Ratios Without a Calculator</h2></div>
+  <p>Once it is clear <em>why</em> each ratio grows or shrinks with the angle, two ratios can be compared by reasoning alone.</p>
+  <div class="def"><b>The <span class="tex">45^\circ</span> benchmark.</b> At exactly <span class="tex">45^\circ</span> the triangle is isosceles: <b class="u9l2-o">opp</b> <span class="tex">=</span> <b class="u9l2-a">adj</b>. So <span class="tex">\sin 45^\circ=\cos 45^\circ</span> and <span class="tex">\tan 45^\circ=1</span>. Below <span class="tex">45^\circ</span> the adjacent leg is longer (<span class="tex">\cos&gt;\sin</span>, <span class="tex">\tan&lt;1</span>); above <span class="tex">45^\circ</span> the opposite leg is longer (<span class="tex">\sin&gt;\cos</span>, <span class="tex">\tan&gt;1</span>).</div>
+  <div class="explainer" data-explainer="compare"></div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Ordering ratios by SOH CAH TOA reasoning</h3></div>
+  <p class="q">Without using a calculator, state which ratio in each part has the greater value. Justify each answer using SOH CAH TOA reasoning.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl"><b>(a)</b> <span class="tex">\sin 18^\circ,\ \sin 71^\circ</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">With the hypotenuse fixed, a larger angle has a longer <b class="u9l2-o">opposite</b> side, so the sine ratio increases with the angle: <span class="tex">\boldsymbol{\sin 71^\circ}</span> is greater.<br>(<span class="tex">\sin 18^\circ\approx 0.3090</span>, <span class="tex">\sin 71^\circ\approx 0.9455</span>.)</div></div></div>
+    <div class="part"><div class="pl"><b>(b)</b> <span class="tex">\cos 12^\circ,\ \cos 55^\circ</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">With the hypotenuse fixed, a larger angle has a shorter <b class="u9l2-a">adjacent</b> side, so the cosine ratio decreases as the angle increases: <span class="tex">\boldsymbol{\cos 12^\circ}</span> is greater.<br>(<span class="tex">\cos 12^\circ\approx 0.9781</span>, <span class="tex">\cos 55^\circ\approx 0.5736</span>.)</div></div></div>
+    <div class="part"><div class="pl"><b>(c)</b> <span class="tex">\tan 22^\circ,\ \tan 80^\circ</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">As the angle grows the opposite side grows and the adjacent side shrinks, so <span class="tex">\tan=\frac{\text{opp}}{\text{adj}}</span> increases with the angle: <span class="tex">\boldsymbol{\tan 80^\circ}</span> is greater.<br>(<span class="tex">\tan 22^\circ\approx 0.4040</span>, <span class="tex">\tan 80^\circ\approx 5.6713</span>.)</div></div></div>
+    <div class="part"><div class="pl"><b>(d)</b> <span class="tex">\sin 50^\circ,\ \cos 50^\circ,\ \tan 50^\circ</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Since <span class="tex">50^\circ&gt;45^\circ</span>, the opposite side is longer than the adjacent side, so <span class="tex">\tan 50^\circ=\frac{\text{opp}}{\text{adj}}&gt;1</span>, and <span class="tex">\sin 50^\circ=\frac{\text{opp}}{\text{hyp}}</span> exceeds <span class="tex">\cos 50^\circ=\frac{\text{adj}}{\text{hyp}}</span>.<br>Order: <span class="tex">\cos 50^\circ&lt;\sin 50^\circ&lt;\tan 50^\circ</span> (<span class="tex">0.6428&lt;0.7660&lt;1.1918</span>), so <span class="tex">\boldsymbol{\tan 50^\circ}</span> is the greatest.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Reason first, then check.</b> The calculator is only the referee once the reasoning is written down.</div>
+    <div class="pill-col"><button class="pill" data-keys="sin 18 ) =">sin 18°</button><button class="pill" data-keys="sin 71 ) =">sin 71°</button></div>
+    <div class="pill-col"><button class="pill" data-keys="cos 12 ) =">cos 12°</button><button class="pill" data-keys="cos 55 ) =">cos 55°</button></div>
+    <div class="pill-col"><button class="pill" data-keys="tan 22 ) =">tan 22°</button><button class="pill" data-keys="tan 80 ) =">tan 80°</button></div>
+    <div class="pill-col"><button class="pill" data-keys="sin 50 ) =">sin 50°</button><button class="pill" data-keys="cos 50 ) =">cos 50°</button><button class="pill" data-keys="tan 50 ) =">tan 50°</button></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<!-- ================= 4. Special ratios ================= -->
+<section class="card" data-ink="s4" data-section="4. Ratios at 0° and 90°">
+  <div class="sec-h"><span class="badge">4</span><h2>Special Ratios at <span class="tex">0^\circ</span> and <span class="tex">90^\circ</span>, and the Pattern Across All Angles</h2></div>
+  <p>A triangle cannot actually be formed when the angle is <span class="tex">0^\circ</span> or <span class="tex">90^\circ</span>, but the ratios still make sense if a rotation angle is pictured sweeping open. Below, a segment of length <span class="tex">r</span> is rotated counterclockwise about <span class="tex">O</span> through an angle of <span class="tex">a^\circ</span>, forming right triangle <span class="tex">OAB</span> with <b class="u9l2-o">opposite</b> side <span class="tex">y</span>, <b class="u9l2-a">adjacent</b> side <span class="tex">x</span>, and <b class="u9l2-h">hypotenuse</b> <span class="tex">r</span>.</p>
+  <div class="explainer" data-explainer="extremes"></div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>The two extremes, and the pattern in between</h3></div>
+  <div class="u9l2-exrow">
+    <div class="u9l2-fig" id="u9l2-f4"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">Given that <span class="tex">\sin a^\circ=\dfrac{y}{r}</span>, <b>(a)</b> write <span class="tex">\cos a^\circ</span> and <span class="tex">\tan a^\circ</span> in terms of <span class="tex">x</span>, <span class="tex">y</span>, and <span class="tex">r</span>.</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">By SOH CAH TOA, the adjacent side is <span class="tex">x</span> and the hypotenuse is <span class="tex">r</span>, so <span class="tex">\cos a^\circ=\dfrac{x}{r}</span>; the opposite side is <span class="tex">y</span> and the adjacent side is <span class="tex">x</span>, so <span class="tex">\tan a^\circ=\dfrac{y}{x}</span>.</div></div></div>
+    </div>
+  </div>
+  <div class="parts c1">
+    <div class="part"><div class="pl"><b>(b)</b> Explain what happens to <span class="tex">x</span> and <span class="tex">y</span> as <span class="tex">a</span> shrinks toward <span class="tex">0^\circ</span>, and what happens to <span class="tex">x</span> and <span class="tex">y</span> as <span class="tex">a</span> grows toward <span class="tex">90^\circ</span>. Use this to state the exact value of each of <span class="tex">\sin 0^\circ</span>, <span class="tex">\cos 0^\circ</span>, <span class="tex">\tan 0^\circ</span>, <span class="tex">\sin 90^\circ</span>, <span class="tex">\cos 90^\circ</span>, and <span class="tex">\tan 90^\circ</span>.</div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">As <span class="tex">a</span> shrinks toward <span class="tex">0^\circ</span> the triangle flattens: <span class="tex">y</span> shrinks toward <span class="tex">0</span> while <span class="tex">x</span> grows toward <span class="tex">r</span>. As <span class="tex">a</span> grows toward <span class="tex">90^\circ</span> the triangle stands up straight: <span class="tex">x</span> shrinks toward <span class="tex">0</span> while <span class="tex">y</span> grows toward <span class="tex">r</span>. Substituting these limiting values,<br><span class="tex">\sin 0^\circ=\frac{0}{r}=\mathbf{0}</span>, <span class="tex">\cos 0^\circ=\frac{r}{r}=\mathbf{1}</span>, <span class="tex">\tan 0^\circ=\frac{0}{r}=\mathbf{0}</span>,<br><span class="tex">\sin 90^\circ=\frac{r}{r}=\mathbf{1}</span>, <span class="tex">\cos 90^\circ=\frac{0}{r}=\mathbf{0}</span>, <span class="tex">\tan 90^\circ=\frac{r}{0}</span> <b>is undefined</b>.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>The calculator agrees.</b> <span class="keys"><kbd>SIN</kbd><kbd>9</kbd><kbd>0</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives <span class="tex">1</span>, <span class="keys"><kbd>COS</kbd><kbd>9</kbd><kbd>0</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives <span class="tex">0</span>, and <span class="keys"><kbd>TAN</kbd><kbd>9</kbd><kbd>0</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives an <b>error</b>: it refuses to divide by 0.</div>
+    <div class="pill-col"><button class="pill" data-keys="sin 0 ) =">sin 0°</button><button class="pill" data-keys="cos 0 ) =">cos 0°</button><button class="pill" data-keys="tan 0 ) =">tan 0°</button></div>
+    <div class="pill-col"><button class="pill" data-keys="sin 90 ) =">sin 90°</button><button class="pill" data-keys="cos 90 ) =">cos 90°</button><button class="pill" data-keys="tan 90 ) =">tan 90°</button></div>
+  </div>
+  <div class="parts c1" style="margin-top:14px">
+    <div class="part"><div class="pl"><b>(c)</b> Complete the table below, rounding to two decimal places where necessary, then complete the statement underneath it.</div>
+      <table class="u9l2-tbl">
+        <tr><th>Angle <span class="tex">x^\circ</span></th><th><span class="tex">0^\circ</span></th><th><span class="tex">15^\circ</span></th><th><span class="tex">30^\circ</span></th><th><span class="tex">45^\circ</span></th><th><span class="tex">60^\circ</span></th><th><span class="tex">75^\circ</span></th><th><span class="tex">90^\circ</span></th></tr>
+        <tr><td class="u9l2-rh"><span class="tex">\sin x^\circ</span></td><td><span data-reveal><span class="tex">0.00</span></span></td><td><span data-reveal><span class="tex">0.26</span></span></td><td><span data-reveal><span class="tex">0.50</span></span></td><td><span data-reveal><span class="tex">0.71</span></span></td><td><span data-reveal><span class="tex">0.87</span></span></td><td><span data-reveal><span class="tex">0.97</span></span></td><td><span data-reveal><span class="tex">1.00</span></span></td></tr>
+        <tr><td class="u9l2-rh"><span class="tex">\cos x^\circ</span></td><td><span data-reveal><span class="tex">1.00</span></span></td><td><span data-reveal><span class="tex">0.97</span></span></td><td><span data-reveal><span class="tex">0.87</span></span></td><td><span data-reveal><span class="tex">0.71</span></span></td><td><span data-reveal><span class="tex">0.50</span></span></td><td><span data-reveal><span class="tex">0.26</span></span></td><td><span data-reveal><span class="tex">0.00</span></span></td></tr>
+      </table>
+      <p class="u9l2-stmt">As <span class="tex">x^\circ</span> increases from <span class="tex">0^\circ</span> to <span class="tex">90^\circ</span>, <span class="tex">\sin x^\circ</span> <span class="u9l2-blank"><span data-reveal>increases</span></span> from <span class="u9l2-blank"><span data-reveal><span class="tex">0</span></span></span> to <span class="u9l2-blank"><span data-reveal><span class="tex">1</span></span></span>, while <span class="tex">\cos x^\circ</span> <span class="u9l2-blank"><span data-reveal>decreases</span></span> from <span class="u9l2-blank"><span data-reveal><span class="tex">1</span></span></span> to <span class="u9l2-blank"><span data-reveal><span class="tex">0</span></span></span>.</p>
+      <div class="work" style="--h:60px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Tap the cells above, or show them all. The two rows are <b>mirror images</b> of each other: <span class="tex">\sin 15^\circ=\cos 75^\circ</span>, <span class="tex">\sin 30^\circ=\cos 60^\circ</span>, and so on. This is the cofunction relationship of Section 5 (Extension).</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Filling the table.</b> <span class="keys"><kbd>SIN</kbd><kbd>1</kbd><kbd>5</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> shows <span class="tex">0.2588190451</span>, which is <b>0.26</b> to two decimal places. Then <span class="tex">30^\circ</span>, <span class="tex">45^\circ</span> … the same way.</div>
+    <div class="pill-col"><button class="pill" data-keys="sin 15 ) =">sin 15°</button><button class="pill" data-keys="sin 30 ) =">sin 30°</button></div>
+    <div class="pill-col"><button class="pill" data-keys="sin 45 ) =">sin 45°</button><button class="pill" data-keys="sin 60 ) =">sin 60°</button></div>
+    <div class="pill-col"><button class="pill" data-keys="sin 75 ) =">sin 75°</button><button class="pill" data-keys="cos 15 ) =">cos 15°</button></div>
+  </div>
+  <div class="explainer" data-explainer="pattern" style="margin-top:16px"></div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card example u9l2-extcard" data-ink="ex4d" data-section="Example 4(d): Extension">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>(d) Tangent near <span class="tex">90^\circ</span></h3><span class="u9l2-ext-tag">Extension</span></div>
+  <div class="parts c1">
+    <div class="part u9l2-extpart"><div class="pl"><b>(d)</b> <span class="u9l2-ext sm">Extension</span> Use a calculator to complete: <span class="tex">\tan 89^\circ=</span> <span class="u9l2-blank"><span data-reveal><span class="tex">57.29</span></span></span>, <span class="tex">\tan 89.9^\circ=</span> <span class="u9l2-blank"><span data-reveal><span class="tex">572.96</span></span></span>, <span class="tex">\tan 89.99^\circ=</span> <span class="u9l2-blank"><span data-reveal><span class="tex">5\,729.58</span></span></span>. Then complete the statement: as <span class="tex">x^\circ</span> increases from <span class="tex">0^\circ</span> toward <span class="tex">90^\circ</span>, <span class="tex">\tan x^\circ</span> <span class="u9l2-blank" style="min-width:220px"><span data-reveal>increases without bound</span></span>.</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\tan 89^\circ\approx57.29</span>, <span class="tex">\tan 89.9^\circ\approx572.96</span>, <span class="tex">\tan 89.99^\circ\approx5\,729.58</span>: <b>increases without bound</b>.<br>As <span class="tex">x^\circ</span> approaches <span class="tex">90^\circ</span> the adjacent side shrinks toward <span class="tex">0</span> while the opposite side stays close to <span class="tex">r</span>, so <span class="tex">\tan x^\circ=\frac{y}{x}</span> grows without limit, which is exactly why <span class="tex">\tan 90^\circ</span> is undefined rather than equal to some finite number.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Creep up on <span class="tex">90^\circ</span>.</b> <span class="keys"><kbd>TAN</kbd><kbd>8</kbd><kbd>9</kbd><kbd>.</kbd><kbd>9</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> shows <span class="tex">572.957213</span>. Each extra 9 makes the answer about ten times bigger.</div>
+    <div class="pill-col"><button class="pill" data-keys="tan 89 ) =">tan 89°</button><button class="pill" data-keys="tan 89.9 ) =">tan 89.9°</button></div>
+    <div class="pill-col"><button class="pill" data-keys="tan 89.99 ) =">tan 89.99°</button><button class="pill" data-keys="tan 90 ) =">tan 90°</button></div>
+  </div>
+  <div class="explainer" data-explainer="tan90" style="margin-top:16px"></div>
+  <div class="space" id="ex4d-space"></div>
+  <button class="more" data-more="ex4d-space">+ More space</button>
+</section>
+
+<!-- ================= 5. Extension: complementary angles ================= -->
+<section class="card u9l2-extcard" data-ink="s5" data-section="5. Extension: Complementary Angles">
+  <div class="sec-h"><span class="badge">5</span><h2>Complementary Angles: the Cofunction Relationship</h2><span class="u9l2-ext-tag">Extension</span></div>
+  <p>In any right triangle the two acute angles add to <span class="tex">90^\circ</span>: they are <b>complementary</b>. This links the sine of one acute angle to the cosine of the other.</p>
+  <div class="explainer" data-explainer="cofn"></div>
+</section>
+
+<section class="card example u9l2-extcard" data-ink="ex5" data-section="Example 5: Extension">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3><span class="tex">\sin x^\circ=\cos(90-x)^\circ</span></h3><span class="u9l2-ext-tag">Extension</span></div>
+  <p class="q">Triangle <span class="tex">DEF</span> has a right angle at <span class="tex">D</span>, with <span class="tex">\angle F=x^\circ</span>, as shown.</p>
+  <div class="u9l2-exrow">
+    <div class="u9l2-fig" id="u9l2-f5"></div>
+    <div class="parts c1">
+      <div class="part u9l2-extpart"><div class="pl"><b>(a)</b> Write an expression for <span class="tex">\angle E</span> in terms of <span class="tex">x</span>.</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The three angles of any triangle sum to <span class="tex">180^\circ</span>, and <span class="tex">\angle D=90^\circ</span>, so <span class="tex">\angle E=180^\circ-90^\circ-x^\circ=\boldsymbol{(90-x)^\circ}</span>.</div></div></div>
+      <div class="part u9l2-extpart"><div class="pl"><b>(b)</b> Explain, using the side ratios in the diagram, why <span class="tex">\sin x^\circ=\cos(90-x)^\circ</span>.</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The hypotenuse is <span class="tex">EF</span>. Relative to <span class="tex">\angle F=x^\circ</span> the <b class="u9l2-o">opposite</b> side is <span class="tex">DE</span>, so <span class="tex">\sin x^\circ=\dfrac{DE}{EF}</span>. Relative to <span class="tex">\angle E=(90-x)^\circ</span> the <b class="u9l2-a">adjacent</b> side is <span class="tex">DE</span>, so <span class="tex">\cos(90-x)^\circ=\dfrac{DE}{EF}</span>. Both ratios equal <span class="tex">\dfrac{DE}{EF}</span>, hence <span class="tex">\sin x^\circ=\cos(90-x)^\circ</span>.</div></div></div>
+    </div>
+  </div>
+  <p class="q"><b>(c)</b> Complete the following, using an angle between <span class="tex">0^\circ</span> and <span class="tex">90^\circ</span>.</p>
+  <div class="parts c2">
+    <div class="part u9l2-extpart"><div class="pl">(i) <span class="tex">\sin 63^\circ=\cos</span> <span class="u9l2-blank"><span data-reveal><span class="tex">27^\circ</span></span></span></div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sin 63^\circ=\cos(90-63)^\circ=\boldsymbol{\cos 27^\circ}</span>.<br>Check: <span class="tex">\sin 63^\circ\approx 0.8910</span> and <span class="tex">\cos 27^\circ\approx 0.8910</span> ✓</div></div></div>
+    <div class="part u9l2-extpart"><div class="pl">(ii) <span class="tex">\sin 9^\circ=\cos</span> <span class="u9l2-blank"><span data-reveal><span class="tex">81^\circ</span></span></span></div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sin 9^\circ=\cos(90-9)^\circ=\boldsymbol{\cos 81^\circ}</span>.<br>Check: <span class="tex">\sin 9^\circ\approx 0.1564</span> and <span class="tex">\cos 81^\circ\approx 0.1564</span> ✓</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check the pairs.</b> <span class="keys"><kbd>SIN</kbd><kbd>6</kbd><kbd>3</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> and <span class="keys"><kbd>COS</kbd><kbd>2</kbd><kbd>7</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> both show <span class="tex">0.8910065242</span>.</div>
+    <div class="pill-col"><button class="pill" data-keys="sin 63 ) =">sin 63°</button><button class="pill" data-keys="cos 27 ) =">cos 27°</button></div>
+    <div class="pill-col"><button class="pill" data-keys="sin 9 ) =">sin 9°</button><button class="pill" data-keys="cos 81 ) =">cos 81°</button></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Calculator:</b> check <b>DEG</b> mode, then <kbd>SIN</kbd> <kbd>2</kbd><kbd>4</kbd> <kbd>)</kbd> <kbd>ENTER</kbd>. The value <b>is</b> a side ratio: <span class="tex">\sin 24^\circ=0.4067</span> means opp is about <span class="tex">0.41</span> of hyp.</div>
+    <div><b>Hypotenuse 1:</b> <span class="tex">\sin=\text{opp}</span>, <span class="tex">\cos=\text{adj}</span>. Opening the angle, <b class="u9l2-o">sine increases</b> from 0 to 1, <b class="u9l2-a">cosine decreases</b> from 1 to 0, <b class="u9l2-t">tangent increases</b> from 0, passing 1 at <span class="tex">45^\circ</span>.</div>
+    <div><b>Benchmark <span class="tex">45^\circ</span>:</b> opp <span class="tex">=</span> adj, so <span class="tex">\sin45^\circ=\cos45^\circ</span>, <span class="tex">\tan45^\circ=1</span>. Below: <span class="tex">\cos&gt;\sin</span>. Above: <span class="tex">\sin&gt;\cos</span>, <span class="tex">\tan&gt;1</span>.</div>
+    <div><b>Extremes:</b> <span class="tex">\sin0^\circ=0</span>, <span class="tex">\cos0^\circ=1</span>, <span class="tex">\tan0^\circ=0</span>; <span class="tex">\sin90^\circ=1</span>, <span class="tex">\cos90^\circ=0</span>, <span class="tex">\tan90^\circ</span> undefined. <span class="u9l2-ext sm">Extension</span> <span class="tex">\sin x^\circ=\cos(90-x)^\circ</span>.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u9l2" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 2 — Trig Ratios: Calculator Values and Angle Patterns</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l3/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 3 — Finding a Missing Side Length</b><div class="muted">Put the ratio to work: one side and one angle are enough to find any other side of a right triangle</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u9l2.js';
+  boot({ key: 'u9l2', homeHref: '../../', title: '9.2 Calculator Values and Angle Patterns' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

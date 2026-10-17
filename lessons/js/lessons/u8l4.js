@@ -641,7 +641,7 @@ const swap = {
       } },
       { cap: `That is exactly the algebra: substitute ${T(`${vl}=${d.n}-${vh}`)}, and ${T(String(all))} is “all ${d.plLo}”, ${T(`${cf(step)}${vh}`)} is the swaps.`, run: async (c) => { await show(c, l3); await show(c, l4); } },
       { cap: `${T(`${vh}=${nh}`)} ${d.plHi} and ${T(`${vl}=${nl}`)} ${d.plLo}. Check: ${T(`${nl}+${nh}=${d.n}`)} ✓ and ${T(`${d.lo}(${nl})+${d.hi}(${nh})=${d.lo * nl}+${d.hi * nh}=${d.total}`)} ✓.`, run: async (c) => {
-        await show(c, l5); const s = stamp(stage, `${nl} ${d.plLo}, ${nh} ${d.plHi}`, { ok: true, x: W - 230, y: 420 }); await stampIn(c, s);
+        await show(c, l5); const s = stamp(stage, `${nl} ${d.plLo}, ${nh} ${d.plHi}`, { ok: true, x: W - 250, y: 396 }); await stampIn(c, s);
       } }
     ];
   }

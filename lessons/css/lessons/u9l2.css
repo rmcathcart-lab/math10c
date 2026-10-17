@@ -1,0 +1,106 @@
+/* Math 10C · Unit 9 · Lesson 2 — Trig Ratios: Calculator Values and Angle Patterns: styles used only on this page (prefix u9l2-).
+ * Unit 9 colours: opposite purple, adjacent amber, hypotenuse blue, reference-angle arc red, tangent green.
+ * Extension parts use the slate "Extension" pill of Unit 6 Lesson 6. */
+:root { --u9l2-opp: #7b4fc4; --u9l2-adj: #c27a0e; --u9l2-hyp: #1f5bd6; --u9l2-ang: #c93a33; --u9l2-tan: #12805a; --u9l2-ext: #5d6475; }
+
+.ex-cap { min-height: 120px; }
+.ex-cap .katex { font-size: 1.04em; }
+.chip .katex { font-size: 1em; }
+.pl .katex { font-size: 1.08em; }
+.ans .katex { font-size: 1.04em; }
+.part.span2 { grid-column: span 2; }
+.pill-col { display: flex; flex-direction: column; gap: 6px; }
+.lesson .katex { white-space: nowrap; }
+h2 .katex, h3 .katex { font-size: .95em; }
+
+/* ---------------- side colours ---------------- */
+.u9l2-o { color: var(--u9l2-opp); }
+.u9l2-a { color: var(--u9l2-adj); }
+.u9l2-h { color: var(--u9l2-hyp); }
+.u9l2-r { color: var(--u9l2-ang); }
+.u9l2-t { color: var(--u9l2-tan); }
+
+/* ---------------- Extension ---------------- */
+.u9l2-ext { display: inline-block; background: var(--u9l2-ext); color: #fff; font: 800 13px var(--round); letter-spacing: .06em; text-transform: uppercase; padding: 2px 9px; border-radius: 6px; vertical-align: 2px; margin-right: 4px; }
+.u9l2-ext.sm { font-size: 11px; padding: 1px 6px; vertical-align: 1px; }
+.u9l2-extcard { border-left: 6px solid #a5a9b3; }
+.u9l2-ext-tag { margin-left: auto; font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--u9l2-ext); background: #f1f2f5; border: 1.5px solid #c6cad3; border-radius: 8px; padding: 3px 10px; white-space: nowrap; align-self: center; }
+.u9l2-extpart { border-color: #c6cad3; background: #f7f8fa; }
+
+/* ---------------- SOH CAH TOA ---------------- */
+.u9l2-soh { display: grid; grid-template-columns: 300px 1fr; gap: 22px; align-items: center; background: var(--brand-soft); border-left: 5px solid var(--brand2); border-radius: 10px; padding: 10px 18px; margin: 0 0 16px; font-size: 20px; }
+.u9l2-trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 6px 0; }
+.u9l2-trio > div { background: #fff; border-radius: 10px; padding: 8px 6px; text-align: center; font-size: 24px; }
+.u9l2-trio .u9l2-mn { display: block; font: 800 15px var(--round); letter-spacing: .08em; color: var(--muted); margin-bottom: 2px; }
+
+/* ---------------- static figures ---------------- */
+.u9l2-fig { position: relative; flex: none; }
+.u9l2-fig > svg { position: absolute; left: 0; top: 0; overflow: visible; }
+.u9l2-fl { position: absolute; translate: -50% -50%; font-size: 20px; white-space: nowrap; line-height: 1; pointer-events: none; }
+.u9l2-fl.sm { font-size: 17px; }
+.u9l2-fl.v { font-size: 21px; font-weight: 600; }
+.u9l2-fl.halo { background: rgba(255, 255, 255, .92); border-radius: 5px; padding: 1px 3px; }
+.u9l2-figrow { display: flex; gap: 40px; justify-content: center; align-items: flex-end; margin: 4px 0 14px; }
+.u9l2-exrow { display: grid; grid-template-columns: auto 1fr; gap: 26px; align-items: start; margin-bottom: 14px; }
+.u9l2-exrow .parts { margin-bottom: 0; }
+
+/* ---------------- tables ---------------- */
+.u9l2-tbl { border-collapse: collapse; margin: 6px auto 12px; font-size: 20px; }
+.u9l2-tbl th, .u9l2-tbl td { border: 2px solid #cfc8b8; padding: 6px 10px; text-align: center; min-width: 74px; height: 42px; }
+.u9l2-tbl th { background: #f6f3ec; font-weight: 700; }
+.u9l2-tbl td.u9l2-rh { background: #f6f3ec; font-weight: 700; }
+.u9l2-blank { display: inline-block; min-width: 92px; border-bottom: 2px solid var(--ink2); text-align: center; padding: 0 4px; }
+.u9l2-stmt { font-size: 20px; line-height: 2.1; margin: 4px 0 0; }
+
+/* ---------------- warm-up ---------------- */
+.u9l2-sticker { text-align: center; font-size: 22px; margin: 0 0 8px; }
+.u9l2-wfig { position: relative; width: 100%; height: 330px; border-radius: 14px; background: #fbfaf7; border: 1px solid var(--line2); overflow: hidden; }
+.u9l2-wfig > svg { position: absolute; left: 0; top: 0; }
+.u9l2-wt { font: 800 19px var(--round); fill: #1e2d46; }
+.u9l2-wl { font: 800 22px var(--round); fill: #fff; }
+.u9l2-wqs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-top: 12px; }
+.u9l2-wqs .bk-wq { background: #fff; border: 1px solid var(--line2); border-radius: 12px; padding: 4px 12px 10px; }
+.u9l2-wa { margin: 4px 0 0 0; }
+.u9l2-poll4 .poll-opts { grid-template-columns: repeat(4, 1fr); }
+.u9l2-hunt { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.u9l2-early { margin-top: 14px; }
+.u9l2-social { font-style: italic; color: var(--ink2); font-size: 19px; text-align: center; margin: 16px 0 0; }
+
+/* ---------------- explainer pieces ---------------- */
+.u9l2-panel { position: absolute; background: #fff; border: 1px solid var(--line2); border-radius: 14px; padding: 10px 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
+.u9l2-ph { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.u9l2-line { font-size: 21px; line-height: 1.35; }
+.u9l2-big { font-size: 26px; }
+.u9l2-lab { position: absolute; translate: -50% -50%; font-size: 20px; white-space: nowrap; line-height: 1.1; pointer-events: none; }
+.u9l2-lab.sm { font-size: 17px; }
+.u9l2-lab.b { font-weight: 800; }
+.u9l2-lab.halo { background: rgba(255, 255, 255, .9); border-radius: 6px; padding: 1px 4px; }
+.u9l2-tag { position: absolute; translate: -50% -50%; font: 800 16px var(--round); color: #fff; border-radius: 7px; padding: 2px 8px; white-space: nowrap; pointer-events: none; }
+.u9l2-ang { position: absolute; translate: -50% -50%; font: 800 30px var(--round); color: var(--u9l2-ang); white-space: nowrap; }
+.u9l2-keys { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; min-height: 44px; }
+.u9l2-key { display: inline-grid; place-items: center; min-width: 44px; height: 38px; padding: 0 8px; border-radius: 8px; background: #2e3c4f; color: #fff; font: 800 17px var(--round); box-shadow: 0 3px 0 #18212d; }
+.u9l2-key.num { background: #e9ecf1; color: #1c2230; box-shadow: 0 3px 0 #b5bcc8; }
+.u9l2-key.ent { background: #3a6fd8; box-shadow: 0 3px 0 #22448a; }
+.u9l2-scr { background: #cfd8c4; border: 3px solid #56604c; border-radius: 10px; padding: 6px 12px; font-family: ui-monospace, Menlo, Consolas, monospace; color: #1d2416; min-height: 70px; box-sizing: border-box; }
+.u9l2-scr .u9l2-s1 { font-size: 18px; display: flex; justify-content: space-between; }
+.u9l2-scr .u9l2-s2 { font-size: 28px; text-align: right; font-weight: 700; letter-spacing: .02em; }
+.u9l2-scr .u9l2-deg { font-size: 12px; font-weight: 800; }
+.u9l2-dig-hl { background: #ffe08a; border-radius: 3px; }
+.u9l2-barlab { position: absolute; translate: -50% 0; text-align: center; font-size: 17px; line-height: 1.15; white-space: nowrap; }
+.u9l2-barval { position: absolute; translate: -50% -100%; font: 800 20px var(--round); white-space: nowrap; }
+.u9l2-hbar { position: absolute; height: 30px; border-radius: 6px; }
+.u9l2-hbl { position: absolute; font-size: 18px; white-space: nowrap; translate: 0 -50%; }
+.u9l2-card { position: absolute; background: #fff; border: 2px solid var(--line2); border-radius: 12px; padding: 6px 12px; font-size: 21px; white-space: nowrap; translate: -50% 0; }
+.u9l2-card.ok { border-color: #9bd3b8; background: #f1faf5; }
+.u9l2-readout { position: absolute; font: 800 26px var(--round); color: var(--u9l2-ang); }
+.u9l2-frac { position: absolute; font-size: 24px; white-space: nowrap; }
+.u9l2-err { color: var(--u9l2-ang); font-weight: 800; }
+.u9l2-tb .bk-td, .u9l2-tb .bk-th { font-size: 19px; }
+.u9l2-tb .bk-td.u9l2-pair { background: #f3effb; box-shadow: inset 0 0 0 2px #b9a3e6; }
+
+/* ---------------- dial playground ---------------- */
+.u9l2-play { position: relative; height: 470px; border-radius: 14px; background: #fbfaf7; border: 1px solid var(--line2); overflow: hidden; }
+.u9l2-ctl { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+.u9l2-ctl input[type=range] { width: 380px; height: 40px; accent-color: var(--u9l2-ang); }
+.u9l2-ctl .pill.on { background: var(--brand); color: #fff; }
+.u9l2-ctl .u9l2-cv { font: 800 22px var(--round); color: var(--u9l2-ang); min-width: 62px; }

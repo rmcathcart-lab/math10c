@@ -947,8 +947,11 @@ export const stampIn = (c, el, ms = 420) => anim(c, el, [{ opacity: 0, transform
  *  o: { at: 'x=2', left, right, values, ok, title, x, y, width, hidden }
  *  left/right: an array of TeX lines, or { tex, sub, f } (f(values) gives the last line). Returns el with el.play(c). */
 export function checkCard(host, o = {}) {
-  const side = (s) => (Array.isArray(s) ? s.map(String) : [s.tex, s.sub, s.f ? texNum(s.f(o.values || {}), 4) : null].filter((x) => x != null));
-  const L = side(o.left || []), R = side(o.right || []), n = Math.max(L.length, R.length);
+  const side = (s) => (Array.isArray(s) ? s.map((x) => (x == null ? null : String(x))) : [s.tex, s.sub, s.f ? texNum(s.f(o.values || {}), 4) : null].filter((x) => x != null));
+  let L = side(o.left || []), R = side(o.right || []); const n = Math.max(L.length, R.length);
+  // a shorter side (e.g. just a constant) shows its value on the first row and again on the last row, beside the verdict
+  const pad = (A) => (!A.length || A.length >= n ? A : A.length === 1 ? [A[0], ...Array(n - 2).fill(null), A[0]] : [...A.slice(0, -1), ...Array(n - A.length).fill(null), A[A.length - 1]]);
+  L = pad(L); R = pad(R);
   const lv = Array.isArray(o.left) ? null : o.left && o.left.f && o.left.f(o.values || {}), rv = Array.isArray(o.right) ? null : o.right && o.right.f && o.right.f(o.values || {});
   const ok = o.ok ?? (lv != null && rv != null ? Math.abs(lv - rv) < 1e-9 : true);
   const el = h('div', 'bk-check' + (o.cls ? ' ' + o.cls : ''));

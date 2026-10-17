@@ -126,7 +126,7 @@ class Balance {
     this.rods = [svgEl('line', { class: 'u8l3-rod' }, svg), svgEl('line', { class: 'u8l3-rod' }, svg)];
     this.beam = svgEl('line', { class: 'u8l3-beam' }, svg);
     svgEl('circle', { cx, cy: py, r: 7, class: 'u8l3-piv' }, svg);
-    this.lab = add(el, h('div', 'u8l3-balab', o.label || ''));
+    this.lab = add(el, h('div', 'u8l3-balab', o.label || '')); if (o.labY != null) this.lab.style.top = o.labY + 'px';
     this.pans = [-1, 1].map((s) => {
       const p = add(el, box(h('div', 'u8l3-pan'), this.pw, ty + 10 - top), cx + s * this.L - this.pw / 2, top);
       p.cont = h('div', 'u8l3-cont'); p.append(p.cont, h('div', 'u8l3-tray')); return p;
@@ -340,7 +340,7 @@ const balance = {
     const b1 = new Balance(stage, { x: 12, y: 6, w: bw, h: 222, label: `${TAG1} ${T(k1(eqT(e1)))}` });
     const b2 = new Balance(stage, { x: W - 12 - bw, y: 6, w: bw, h: 222, label: `${TAG2} ${T(k2(eqT(e2)))}` });
     b1.fill(e1, 1); b2.fill(e2, 2);
-    const bb = new Balance(stage, { x: 12, y: 238, w: 560, h: 252, label: '<span class="u8l3-muted">one big balance</span>', cls: 'u8l3-big' });
+    const bb = new Balance(stage, { x: 12, y: 238, w: 560, h: 252, top: 96, labY: 50, label: '<span class="u8l3-muted">one big balance</span>', cls: 'u8l3-big' });
     const P = panel(stage, 586, 242, W - 598, 260, 'On the board', 'u8l3-board');
     const steps = [];
     if (d.m2) {
@@ -624,10 +624,10 @@ const scale = {
 
 /* =============================== explainer: the LCM picks the multipliers =============================== */
 const LC = {
-  ex3: { label: 'Example 3: eliminate y', e1: E(3, 2, 20), e2: E(5, -1, 29), v: 'y' },
-  ex4: { label: 'Example 4: eliminate x', e1: E(3, 2, 20), e2: E(5, -1, 29), v: 'x' },
-  ex5a: { label: 'Example 5 (a): y', e1: E(4, 5, 1), e2: E(3, -2, 18), v: 'y' },
-  ex5c: { label: 'Example 5 (c): x', e1: E(4, 5, 1), e2: E(3, -2, 18), v: 'x' }
+  ex3: { label: `Example 3: eliminate ${T('y')}`, e1: E(3, 2, 20), e2: E(5, -1, 29), v: 'y' },
+  ex4: { label: `Example 4: eliminate ${T('x')}`, e1: E(3, 2, 20), e2: E(5, -1, 29), v: 'x' },
+  ex5a: { label: `Example 5 (a): ${T('y')}`, e1: E(4, 5, 1), e2: E(3, -2, 18), v: 'y' },
+  ex5c: { label: `Example 5 (c): ${T('x')}`, e1: E(4, 5, 1), e2: E(3, -2, 18), v: 'x' }
 };
 /** TeX of e with the v-term highlighted */
 function eqHL(e, v, col) {
@@ -816,8 +816,8 @@ const prep = {
 
 /* =============================== explainer: special cases =============================== */
 const SP = {
-  same: { label: 'Same line: 0 = 0', e1: E(1, 2, 4), e2: E(3, 6, 12), m: 3 },
-  par: { label: 'Parallel lines: 0 = 15', e1: E(1, 2, 4), e2: E(2, 4, -7), m: 2 }
+  same: { label: `Same line: ${T('0=0')}`, e1: E(1, 2, 4), e2: E(3, 6, 12), m: 3 },
+  par: { label: `Parallel lines: ${T('0=15')}`, e1: E(1, 2, 4), e2: E(2, 4, -7), m: 2 }
 };
 const special = {
   title: 'When both variables disappear',
@@ -854,11 +854,11 @@ const special = {
 
 /* =============================== explainer: choosing a method =============================== */
 const CH = {
-  g: { label: 'y = 2x − 1, y = −x + 5', s1: 'y=2x-1', s2: 'y=-x+5', path: ['start', 'q0', 'graph'], sol: [2, 3],
+  g: { label: T('y=2x-1,\\ y=-x+5'), s1: 'y=2x-1', s2: 'y=-x+5', path: ['start', 'q0', 'graph'], sol: [2, 3],
     why: `Both are in <b>slope–intercept form</b> ${T('y=mx+b')}, quick to graph, and you want a picture. By hand it is exact here because the crossing has integer coordinates.`, q: 'Need a picture? <b>Yes</b> → <b>Graphing</b>.' },
-  s: { label: 'y = 3x − 2, 5x − 2y = 1', s1: 'y=3x-2', s2: '5x-2y=1', path: ['start', 'q0', 'q1', 'sub'], sol: [3, 7],
+  s: { label: T('y=3x-2,\\ 5x-2y=1'), s1: 'y=3x-2', s2: '5x-2y=1', path: ['start', 'q0', 'q1', 'sub'], sol: [3, 7],
     why: `${T('y')} is already <b>isolated</b>: replace ${T('y')} with ${T('3x-2')}.`, q: 'Need a picture? <b>No</b>. A variable isolated? <b>Yes</b> → <b>Substitution</b>.', lines: ['5x-2(3x-2)=1', '5x-6x+4=1', '-x=-3\\ \\Rightarrow\\ x=3', 'y=3(3)-2=7'] },
-  e: { label: '4x + 3y = 10, 4x − 5y = −6', s1: '4x+3y=10', s2: '4x-5y=-6', path: ['start', 'q0', 'q1', 'elim'], sol: [1, 2],
+  e: { label: T('4x+3y=10,\\ 4x-5y=-6'), s1: '4x+3y=10', s2: '4x-5y=-6', path: ['start', 'q0', 'q1', 'elim'], sol: [1, 2],
     why: `No variable is isolated, but the ${T('x')}-coefficients already <b>match</b> (${T('4')} and ${T('4')}): subtract.`, q: 'Need a picture? <b>No</b>. A variable isolated, or a coefficient of 1 or −1? <b>No</b> → <b>Elimination</b>.', lines: ['(4x+3y)-(4x-5y)=10-(-6)', '8y=16\\ \\Rightarrow\\ y=2', '4x+3(2)=10\\ \\Rightarrow\\ x=1'] },
   ex3: { label: 'Example 3’s system', s1: '3x+2y=20', s2: '5x-y=29', path: ['start', 'q0', 'q1', 'sub'], sol: [6, 1],
     why: `In ${T('5x-y=29')}, ${T('y')} has coefficient ${T('-1')}, so substitution is easy too: ${T('y=5x-29')}. (Elimination, as in Example 3, works just as well.)`, q: 'Need a picture? <b>No</b>. A coefficient of 1 or −1? <b>Yes</b> → <b>Substitution</b>.', lines: ['3x+2(5x-29)=20', '13x-58=20', '13x=78\\ \\Rightarrow\\ x=6', 'y=5(6)-29=1'] }
@@ -890,7 +890,7 @@ const choose = {
     if (k === 'g') {
       steps.push({ cap: `Graph both lines: they cross at ${T(ks('(2,\\ 3)'))}.`,
         run: async (c) => {
-          const G = new Graph(stage, { x: 600, y: 230, width: 238, height: 238, xmin: -1, xmax: 6, ymin: -1, ymax: 6, fontSize: 14 });
+          const G = new Graph(stage, { x: 604, y: 250, width: 220, height: 220, xmin: -1, xmax: 6, ymin: -1, ymax: 6, fontSize: 14 });
           await G.drawIn(G.line({ m: 2, b: -1 }, { color: B1, width: 3.5 }), 500, c); await G.drawIn(G.line({ m: -1, b: 5 }, { color: A2, width: 3.5 }), 500, c);
           await pop(c, G.point(2, 3, { color: SOL, r: 7, label: T('(2,\\ 3)'), pos: 'e', cls: 'bk-ptlab' }));
         } });

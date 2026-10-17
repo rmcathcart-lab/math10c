@@ -110,6 +110,7 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u8l3-cont:empty::after { content: '0'; font: 700 24px var(--round); color: #b6bac3; align-self: flex-end; margin-bottom: 4px; }
 .u8l3-tray { position: absolute; left: 0; right: 0; bottom: 0; height: 10px; background: #3a4254; border-radius: 3px 3px 8px 8px; }
 .u8l3-big .u8l3-balab { font-size: 24px; }
+.u8l3-big .u8l3-cont:empty::after { content: none; }
 
 /* ---------------- pets explainer ---------------- */
 .u8l3-rc { display: flex; align-items: center; justify-content: center; font-size: 22px; }
