@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Solving Word Problems with Systems · Math 10C 8.4</title>
+<meta name="description" content="Math 10C Unit 8 Lesson 4: solving word problems with systems of linear equations. The four-step strategy (let statements with units, two equations, solve, answer and check against the words), number relationships, perimeter and dimensions, money and denominations (one equation counts, the other totals value), investment and interest, and rate and production. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u8l4.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 8 Systems of Linear Equations · Lesson 4</div>
+  <h1>Solving Word Problems with Systems of Equations</h1>
+  <p class="lede">Translating a situation described in words into <b>two equations</b>, solving the system, and <b>interpreting the answer</b> in context. Numbers, rectangles, money, investments and machines: the same four steps work every time.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>use the <b>four-step strategy</b>: introduce variables (with units), form two equations, solve, and answer in words with a check</li>
+      <li>translate <b>sum</b>, <b>difference</b>, <b>more than</b> and <b>twice</b> into equations about two unknown numbers</li>
+      <li>set up a <b>perimeter</b> problem from the perimeter formula and a length–width relationship</li>
+      <li>write one equation that <b>counts</b> and one that <b>totals value</b> (money), or totals <b>principal</b> and <b>interest</b> (investments)</li>
+      <li>solve <b>rate and production</b> problems where one equation totals <b>time</b> and the other totals <b>output</b></li>
+    </ul>
+  </div>
+  <div class="outcome"><b>RF9</b> Solve problems that involve systems of linear equations in two variables, graphically and algebraically.</div>
+  <div class="outcome"><b>RF7</b> Determine the equation of a linear relation, given: a graph; a point and the slope; two points; a point and the equation of a parallel or perpendicular line, to solve problems.</div>
+  <div class="u8l4-key"><span class="u8l4-k1">Eq. 1</span> blue <span class="u8l4-k2">Eq. 2</span> amber <span class="u8l4-ks">solution</span> purple, all through the lesson.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: How Old Am I?" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>How Old Am I?</h2></div>
+  <p class="big">Maya and her little brother Leo. Everyone ages <b>one year per year</b>. Right now Maya is <b>12</b> and Leo is <b>4</b>.</p>
+  <div id="u8l4-ages" class="u8l4-ages"></div>
+
+  <div class="u8l4-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>How old were they <b>4 years ago</b>?</div></div>
+      <div class="u8l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Maya was <b>8</b> and Leo was <b>0</b>: Leo had just been born.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>How old will they be <b>in 4 years</b>? Now Maya is <b>3 times</b> Leo’s age. Is she still?</div></div>
+      <div class="u8l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Maya <b>16</b>, Leo <b>8</b>. <b>No:</b> <span class="tex">16=2\times8</span>, so she is only <b>twice</b> his age then. The “times as old” number shrinks as they grow up.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>In each picture, how much <b>older</b> is Maya? Will that ever change?</div></div>
+      <div class="u8l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Always <b>8 years</b> (<span class="tex">8-0</span>, <span class="tex">12-4</span>, <span class="tex">16-8</span>). The <b>difference</b> never changes, because both add the same number of years.</div></div>
+    </div>
+  </div>
+
+  <div class="poll u8l4-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Sam’s dad says: <i>“Right now I’m <b>4 times</b> your age. In <b>20 years</b>, I’ll be only <b>twice</b> your age.”</i> How old is Sam? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> 5</div>
+      <div class="opt right"><b>B</b> 10</div>
+      <div class="opt"><b>C</b> 20</div>
+      <div class="opt"><b>D</b> Impossible</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>B: Sam is 10</b> (Dad is 40). Check: <span class="tex">40=4\times10</span> ✓. In 20 years: Dad 60, Sam 30, and <span class="tex">60=2\times30</span> ✓.<br>
+      <span class="muted"><b>A (5):</b> Dad 20 now; in 20 years 40 and 25, not double. <b>C (20):</b> Dad 80 now; in 20 years 100 and 40, which is 2.5 times. <b>D</b> is the big misconception: “4 times as old” does not last forever. Question 2 showed the ratio shrinks while the gap stays fixed.</span></div>
+  </div>
+
+  <div class="bk-wq u8l4-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Mom is <b>30 years older</b> than her daughter. In <b>5 years</b> she will be <b>3 times</b> as old. How old is each now?</div></div>
+    <div class="u8l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Daughter <b>10</b>, Mom <b>40</b>: <span class="tex">m=k+30</span> and <span class="tex">m+5=3(k+5)</span>. Check: in 5 years, <span class="tex">45=3\times15</span> ✓.</div></div>
+  </div>
+  <p class="u8l4-social">Your turn: write an age riddle about you and a family member. Can a neighbour solve it?</p>
+</section>
+
+<!-- ================= 1. Four-step strategy ================= -->
+<section class="card" data-ink="s1" data-section="1. The Four-Step Strategy">
+  <div class="sec-h"><span class="badge">1</span><h2>A Four-Step Strategy for Word Problems</h2></div>
+  <p>Almost every application problem in this lesson can be attacked with the same four steps, whether the situation involves numbers, geometry, money, or rates.</p>
+  <div class="u8l4-steps">
+    <div class="u8l4-step"><div class="u8l4-sn">Step 1</div><div>Introduce <b>variables</b> to represent the unknown quantities. Say what each one stands for <i>and in what units</i>.</div></div>
+    <div class="u8l4-step"><div class="u8l4-sn">Step 2</div><div>Use the given information to form a <b>system of two equations</b> in those variables.</div></div>
+    <div class="u8l4-step"><div class="u8l4-sn">Step 3</div><div><b>Solve</b> the system, using graphing, substitution, or elimination.</div></div>
+    <div class="u8l4-step"><div class="u8l4-sn">Step 4</div><div><b>Answer</b> the original question in words, and <b>check</b> that your solution makes sense in the context of the problem.</div></div>
+  </div>
+  <p>Watch one problem travel through the four steps: the sentences light up, the unknowns become a <b>“let”</b> card, the facts go into a <b>table</b>, and each row of the table becomes an equation.</p>
+  <div class="explainer" data-explainer="pipeline"></div>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. Step 3: Choosing a Method">
+  <h3 class="sub">Step 3: choosing a method <span class="muted small">(the table from Lesson 3, Section 6)</span></h3>
+  <div class="u8l4-mtab">
+    <div class="u8l4-mh">Graphing</div><div>a picture or estimate is enough, or a graphing calculator is allowed (by hand: integer solutions only)</div>
+    <div class="u8l4-mh">Substitution</div><div>a variable already has coefficient <span class="tex">1</span> or <span class="tex">-1</span>, or is isolated, e.g. <span class="tex">f+t=23\Rightarrow f=23-t</span></div>
+    <div class="u8l4-mh">Elimination</div><div>the coefficients of one variable already match or are opposites, or are easy multiples</div>
+  </div>
+  <div class="explainer" data-explainer="method"></div>
+</section>
+
+<section class="card" data-ink="s1c" data-section="1. Step 4 Is Not Optional">
+  <h3 class="sub">Step 4 is not optional</h3>
+  <div class="def amber">A system can be solved correctly and still answer the wrong question, so check the solution against the <b>words</b> as well as against the equations: <b>totals</b> must add up, <b>counts</b> of objects must be <b>whole numbers</b>, and <b>prices, lengths and times</b> must be <b>positive</b>.</div>
+  <div class="explainer" data-explainer="step4"></div>
+</section>
+
+<!-- ================= 2. Number relationships ================= -->
+<section class="card" data-ink="s2" data-section="2. Number Relationships">
+  <div class="sec-h"><span class="badge">2</span><h2>Number Relationships</h2></div>
+  <p>Some problems describe a relationship between two unknown numbers with no physical context at all. The words <b>sum</b>, <b>difference</b>, <b>more than</b> and <b>twice</b> translate directly into algebraic expressions.</p>
+  <div class="u8l4-words">
+    <div><b>sum</b><span class="tex">x+y</span></div>
+    <div><b>difference</b><span class="tex">x-y</span><i>larger − smaller</i></div>
+    <div><b>2 more than <span class="tex">y</span></b><span class="tex">y+2</span></div>
+    <div><b>twice <span class="tex">y</span></b><span class="tex">2y</span></div>
+    <div><b>2 less than <span class="tex">y</span></b><span class="tex">y-2</span><i>not <span class="tex">2-y</span></i></div>
+  </div>
+  <div class="explainer" data-explainer="translate"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>“More than” and “less than” flip the order.</b> “2 more than twice the smaller” starts with 2 but is written <span class="tex">2y+2</span>: the 2 is added <i>after</i>. “7 less than <span class="tex">n</span>” is <span class="tex">n-7</span>, not <span class="tex">7-n</span>.</div></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Two numbers, a difference and a “more than” relationship</h3></div>
+  <p class="q">The difference between two numbers is <span class="tex">11</span>. The larger number is <span class="tex">2</span> more than twice the smaller number.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Introduce variables for the larger number and the smaller number.</div><div class="work" style="--h:150px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Let <span class="tex">x</span> be the larger number and let <span class="tex">y</span> be the smaller number.<br><span class="muted">(Both are pure numbers, so there are no units to attach.)</span></div></div></div>
+    <div class="part"><div class="pl">(b) Use the given information to form a system of two equations.</div><div class="work" style="--h:150px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">“The difference between two numbers is 11”: <span class="tex">\textcolor{#1f5bd6}{x-y=11}</span><br>“The larger is 2 more than twice the smaller”: <span class="tex">x=2y+2</span>, i.e. <span class="tex">\textcolor{#c27a0e}{x-2y=2}</span><br>System: <span class="tex">\textcolor{#1f5bd6}{x-y=11}\qquad \textcolor{#c27a0e}{x-2y=2}</span></div></div></div>
+    <div class="part"><div class="pl">(c) Solve the system to find both numbers.</div><div class="work" style="--h:190px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Both equations have the same <span class="tex">x</span>-coefficient, so subtract Eq. 2 from Eq. 1 to eliminate <span class="tex">x</span>:<br><span class="tex">(\textcolor{#1f5bd6}{x-y})-(\textcolor{#c27a0e}{x-2y})=11-2</span><br><span class="tex">-y+2y=9\ \Rightarrow\ y=9</span><br>Into <span class="tex">x-y=11</span>: <span class="tex">x-9=11\ \Rightarrow\ x=20</span></div></div></div>
+    <div class="part"><div class="pl">(d) State the answer in words, and verify that both numbers satisfy the original conditions.</div><div class="work" style="--h:190px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Check the equations: <span class="tex">20-9=11</span> ✓ and <span class="tex">2(9)+2=20</span> ✓<br>Check the words: <span class="tex">20</span> really is the larger of the two ✓<br><b>The two numbers are <span class="tex">20</span> and <span class="tex">9</span>.</b></div></div></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="ex1c" data-section="Example 1 check">
+  <h3 class="sub">Example 1 check: the four steps</h3>
+  <div class="explainer" data-explainer="ex1chk"></div>
+</section>
+
+<!-- ================= 3. Perimeter ================= -->
+<section class="card" data-ink="s3" data-section="3. Perimeter and Dimensions">
+  <div class="sec-h"><span class="badge">3</span><h2>Perimeter and Dimension Problems</h2></div>
+  <p>When a problem gives the perimeter of a rectangle together with a relationship between its length and width, the <b>perimeter formula</b> and the <b>length–width relationship</b> become the two equations.</p>
+  <div class="def-grid">
+    <div class="def u8l4-d1"><b>Perimeter</b> (Eq. 1): <span class="tex">2l+2w=P</span>, or halve it: <span class="tex">l+w=\tfrac{P}{2}</span>. One length plus one width is <b>half the fence</b>.</div>
+    <div class="def u8l4-d2"><b>Length–width relationship</b> (Eq. 2): e.g. “the length is 3 more than twice the width” is <span class="tex">l=2w+3</span>.</div>
+  </div>
+  <div class="explainer" data-explainer="rect"></div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Perimeter and a length–width relationship</h3></div>
+  <p class="q">A rectangular garden has a perimeter of <span class="tex">54</span> metres. Its length is <span class="tex">3</span> metres more than twice its width. Find the dimensions of the garden.</p>
+  <div class="parts c1">
+    <div class="part"><div class="pl u8l4-scaf"><span>1 Let</span><span>2 Two equations</span><span>3 Solve</span><span>4 Answer &amp; check</span></div><div class="work" style="--h:330px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Let <span class="tex">l</span> be the length of the garden and <span class="tex">w</span> its width, both in metres.<br>
+        Perimeter: <span class="tex">2(l+w)=54</span>, i.e. <span class="tex">\textcolor{#1f5bd6}{l+w=27}</span>. Length condition: <span class="tex">\textcolor{#c27a0e}{l=2w+3}</span>.<br>
+        Substituting the second equation into the first: <span class="tex">(\textcolor{#c27a0e}{2w+3})+w=27\ \Rightarrow\ 3w+3=27\ \Rightarrow\ 3w=24\ \Rightarrow\ w=8</span>, so <span class="tex">l=2(8)+3=19</span>.<br>
+        Check the equations: <span class="tex">l+w=19+8=27</span>, so the perimeter is <span class="tex">2(27)=54</span> ✓; <span class="tex">2(8)+3=19</span> ✓<br>
+        Check the words: both dimensions are positive, and 19 m is indeed 3 m more than twice 8 m ✓<br>
+        <b>The garden is <span class="tex">\textcolor{#7b4fc4}{19}</span> m long and <span class="tex">\textcolor{#7b4fc4}{8}</span> m wide.</b></div></div></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="ex2c" data-section="Example 2 check">
+  <h3 class="sub">Example 2 check: the four steps</h3>
+  <div class="explainer" data-explainer="ex2chk"></div>
+</section>
+
+<!-- ================= 4. Money ================= -->
+<section class="card" data-ink="s4" data-section="4. Money and Denominations">
+  <div class="sec-h"><span class="badge">4</span><h2>Money and Denomination Problems</h2></div>
+  <p>Here one equation counts <b>how many</b> items there are and the other totals their <b>value</b>. Keeping the two straight (one for a count, one for a value) is the key to setting up the system correctly.</p>
+  <div class="u8l4-cv">
+    <div class="u8l4-cv1"><div class="u8l4-cvh">Count equation (Eq. 1)</div>every bill counts as <b>1</b>, whatever it is worth<div class="u8l4-cvx"><span class="tex">f+t=\text{number of bills}</span></div></div>
+    <div class="u8l4-cv2"><div class="u8l4-cvh">Value equation (Eq. 2)</div>each bill counts as <b>its value</b> in dollars<div class="u8l4-cvx"><span class="tex">5f+20t=\text{total value}</span></div></div>
+  </div>
+  <div class="explainer" data-explainer="swap"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Don’t mix a count with a value.</b> Adding numbers of bills to dollars, as in <span class="tex">f+t=310</span>, mixes two different units. Read the units in each equation: bills + bills = bills; dollars + dollars = dollars.</div></div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>One equation counts, the other totals value</h3></div>
+  <p class="q">Maria has a total of $310 in five-dollar bills and twenty-dollar bills. If she has <span class="tex">23</span> bills in total, how many of each denomination does she have?</p>
+  <div class="parts c1">
+    <div class="part"><div class="pl u8l4-scaf"><span>1 Let</span><span>2 Two equations</span><span>3 Solve</span><span>4 Answer &amp; check</span></div><div class="work" style="--h:330px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Let <span class="tex">f</span> be the number of five-dollar bills and <span class="tex">t</span> the number of twenty-dollar bills (counts of bills).<br>
+        Counting bills: <span class="tex">\textcolor{#1f5bd6}{f+t=23}</span>. Totalling value, in dollars: <span class="tex">\textcolor{#c27a0e}{5f+20t=310}</span>.<br>
+        From the first equation, <span class="tex">f=23-t</span>. Substituting: <span class="tex">5(23-t)+20t=310\ \Rightarrow\ 115-5t+20t=310\ \Rightarrow\ 115+15t=310\ \Rightarrow\ 15t=195\ \Rightarrow\ t=13</span>, so <span class="tex">f=23-13=10</span>.<br>
+        Check the equations: <span class="tex">10+13=23</span> ✓; <span class="tex">5(10)+20(13)=50+260=310</span> ✓<br>
+        Check the words: both counts are whole, positive numbers, as counts of bills must be ✓<br>
+        <b>Maria has <span class="tex">\textcolor{#7b4fc4}{10}</span> five-dollar bills and <span class="tex">\textcolor{#7b4fc4}{13}</span> twenty-dollar bills.</b></div></div></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="ex3c" data-section="Example 3 check">
+  <h3 class="sub">Example 3 check: the four steps</h3>
+  <div class="explainer" data-explainer="ex3chk"></div>
+</section>
+
+<!-- ================= 5. Investment ================= -->
+<section class="card" data-ink="s5" data-section="5. Investment and Interest">
+  <div class="sec-h"><span class="badge">5</span><h2>Investment and Interest Problems</h2></div>
+  <p>Investment problems work the same way, except the two equations total the <b>principal</b> invested and the <b>interest</b> earned. Interest rates given as percentages must be <b>converted to decimals</b> before they are used in an equation.</p>
+  <div class="u8l4-cv">
+    <div class="u8l4-cv1"><div class="u8l4-cvh">Principal equation (Eq. 1)</div>the two amounts add up to the total invested<div class="u8l4-cvx"><span class="tex">x+y=\text{total invested}</span></div></div>
+    <div class="u8l4-cv2"><div class="u8l4-cvh">Interest equation (Eq. 2)</div>rate (as a decimal) × amount, added up<div class="u8l4-cvx"><span class="tex">8\%=\tfrac{8}{100}=0.08</span>, so <span class="tex">0.08x+0.05y=\text{interest}</span></div></div>
+  </div>
+  <div class="explainer" data-explainer="interest"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Interest on the calculator.</b> 8% of $18 000: <span class="keys"><kbd>.</kbd><kbd>0</kbd><kbd>8</kbd><kbd>×</kbd><kbd>1</kbd><kbd>8</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>ENTER</kbd></span>. The overall rate: <span class="keys"><kbd>2</kbd><kbd>3</kbd><kbd>4</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>6</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives 0.065, which is 6.5%.</div>
+    <div class="pill-col"><button class="pill" data-keys="0.08 × 18000 =">8% of 18 000</button><button class="pill" data-keys="0.05 × 18000 =">5% of 18 000</button><button class="pill" data-keys="2340 ÷ 36000 =">Overall rate</button></div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>One equation totals principal, the other totals interest</h3></div>
+  <p class="q">Devon invested his savings of $36 000 in two accounts. One account earned <span class="tex">8\%</span> interest and the other earned <span class="tex">5\%</span> interest. If he earned a total of $2340 in interest for the year, how much did he invest at each rate?</p>
+  <div class="parts c1">
+    <div class="part"><div class="pl u8l4-scaf"><span>1 Let</span><span>2 Two equations</span><span>3 Solve</span><span>4 Answer &amp; check</span></div><div class="work" style="--h:330px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Let <span class="tex">x</span> be the amount invested at <span class="tex">8\%</span> and <span class="tex">y</span> the amount invested at <span class="tex">5\%</span>, both in dollars.<br>
+        Totalling principal: <span class="tex">\textcolor{#1f5bd6}{x+y=36\,000}</span>. Totalling interest: <span class="tex">\textcolor{#c27a0e}{0.08x+0.05y=2340}</span>.<br>
+        From the first equation, <span class="tex">y=36\,000-x</span>. Substituting: <span class="tex">0.08x+0.05(36\,000-x)=2340\ \Rightarrow\ 0.08x+1800-0.05x=2340\ \Rightarrow\ 0.03x=540\ \Rightarrow\ x=18\,000</span>, so <span class="tex">y=36\,000-18\,000=18\,000</span>.<br>
+        Check the equations: <span class="tex">18\,000+18\,000=36\,000</span> ✓; <span class="tex">0.08(18\,000)+0.05(18\,000)=1440+900=2340</span> ✓<br>
+        Check the words: both amounts are positive, and the overall rate <span class="tex">2340\div36\,000=6.5\%</span> lies between <span class="tex">5\%</span> and <span class="tex">8\%</span>, as it must ✓<br>
+        <b>Devon invested <span class="tex">\textcolor{#7b4fc4}{\$18\,000}</span> at <span class="tex">8\%</span> and <span class="tex">\textcolor{#7b4fc4}{\$18\,000}</span> at <span class="tex">5\%</span>.</b></div></div></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="ex4c" data-section="Example 4 check">
+  <h3 class="sub">Example 4 check: the four steps</h3>
+  <div class="explainer" data-explainer="ex4chk"></div>
+</section>
+
+<!-- ================= 6. Rate and production ================= -->
+<section class="card" data-ink="s6" data-section="6. Rate and Production">
+  <div class="sec-h"><span class="badge">6</span><h2>Rate and Production Problems</h2></div>
+  <p>A final common type gives two different rates (two machines producing items at different speeds, say) together with a combined total. One equation totals the <b>time</b>, the other totals the <b>output</b>.</p>
+  <div class="u8l4-cv">
+    <div class="u8l4-cv1"><div class="u8l4-cvh">Time equation (Eq. 1)</div>hours + hours = total hours<div class="u8l4-cvx"><span class="tex">o+n=\text{total time}</span></div></div>
+    <div class="u8l4-cv2"><div class="u8l4-cvh">Output equation (Eq. 2)</div>rate × time for each machine, added up<div class="u8l4-cvx"><span class="tex">25o+35n=\text{total output}</span></div></div>
+  </div>
+  <p>Each equation is a line. A point on <b>one</b> line satisfies only one condition; the crossing satisfies <b>both</b>.</p>
+  <div class="explainer" data-explainer="rates"></div>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>One equation totals time, the other totals output</h3></div>
+  <p class="q">A factory has an older machine that packs <span class="tex">25</span> boxes per hour and a newer machine that packs <span class="tex">35</span> boxes per hour. Yesterday the two machines ran for a combined total of <span class="tex">18</span> hours and packed <span class="tex">550</span> boxes. For how many hours did each machine run?</p>
+  <div class="parts c1">
+    <div class="part"><div class="pl u8l4-scaf"><span>1 Let</span><span>2 Two equations</span><span>3 Solve</span><span>4 Answer &amp; check</span></div><div class="work" style="--h:330px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Let <span class="tex">o</span> be the number of hours the older machine ran and <span class="tex">n</span> the number of hours the newer machine ran.<br>
+        Totalling time, in hours: <span class="tex">\textcolor{#1f5bd6}{o+n=18}</span>. Totalling output, in boxes: <span class="tex">\textcolor{#c27a0e}{25o+35n=550}</span>.<br>
+        From the first equation, <span class="tex">o=18-n</span>. Substituting: <span class="tex">25(18-n)+35n=550\ \Rightarrow\ 450-25n+35n=550\ \Rightarrow\ 450+10n=550\ \Rightarrow\ 10n=100\ \Rightarrow\ n=10</span>, so <span class="tex">o=18-10=8</span>.<br>
+        Check the equations: <span class="tex">8+10=18</span> ✓; <span class="tex">25(8)+35(10)=200+350=550</span> ✓<br>
+        Check the words: both running times are positive, and the average rate <span class="tex">550\div18\approx30.6</span> boxes per hour lies between <span class="tex">25</span> and <span class="tex">35</span> ✓<br>
+        <b>The older machine ran for <span class="tex">\textcolor{#7b4fc4}{8}</span> hours and the newer machine ran for <span class="tex">\textcolor{#7b4fc4}{10}</span> hours.</b></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Does the average rate make sense?</b> <span class="keys"><kbd>5</kbd><kbd>5</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>1</kbd><kbd>8</kbd><kbd>ENTER</kbd></span> gives about 30.6 boxes per hour: between the two machines’ rates, 25 and 35.</div>
+    <div class="pill-col"><button class="pill" data-keys="550 ÷ 18 =">550 ÷ 18</button></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="ex5c" data-section="Example 5 check">
+  <h3 class="sub">Example 5 check: the four steps</h3>
+  <div class="explainer" data-explainer="ex5chk"></div>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Four steps.</b> 1 Let statements (what each variable stands for, with units). 2 Two equations from the facts. 3 Solve: graphing, substitution or elimination. 4 Answer the question in words and check.</div>
+    <div><b>Translate the words.</b> Sum <span class="tex">x+y</span>, difference <span class="tex">x-y</span>, twice <span class="tex">2y</span>, “2 more than twice <span class="tex">y</span>” <span class="tex">2y+2</span>. Rectangles: <span class="tex">2l+2w=P</span> plus the length–width relationship.</div>
+    <div><b>Two kinds of total.</b> Money: one equation <b>counts</b> (<span class="tex">f+t=23</span>), one totals <b>value</b> (<span class="tex">5f+20t=310</span>). Investments: principal and interest (rates as decimals). Machines: time and output.</div>
+    <div><b>Check against the story.</b> Totals add up, counts are whole numbers, prices, lengths and times are positive, and the sentence answers the question that was asked.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u8l4" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 4 — Solving Word Problems with Systems</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l5/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 5 — Mixture and Motion</b><div class="muted">Mixture tables (amount × rate) and distance, speed and time with wind and current</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u8l4.js';
+  boot({ key: 'u8l4', homeHref: '../../', title: '8.4 Word Problems with Systems' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

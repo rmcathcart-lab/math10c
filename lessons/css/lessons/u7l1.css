@@ -1,0 +1,158 @@
+/* Math 10C · Unit 7 · Lesson 1 — Slope–Intercept Form: styles used only on this page (prefix u7l1-).
+ * Colours: m / lines blue, b / y-intercept green, run amber, rise purple; non-linear culprits red. */
+
+.ex-cap { min-height: 128px; }
+.ex-cap .katex { font-size: 1.04em; }
+.chip .katex { font-size: 1em; }
+.pl .katex { font-size: 1.1em; }
+.ans .katex { font-size: 1.04em; }
+.pill-col { display: flex; flex-direction: column; gap: 6px; }
+.lesson .katex { white-space: nowrap; }
+h2 .katex, h3 .katex { font-size: .95em; }
+.u7l1-cm { color: #1f5bd6; }
+.u7l1-cb { color: #12805a; }
+.u7l1-c-rise { color: #7b4fc4; }
+.u7l1-c-run { color: #c27a0e; }
+.u7l1-blue { color: #1f5bd6; }
+.u7l1-red { color: #c93a33; }
+.u7l1-calcfr { font-family: var(--round); }
+.u7l1-small { font-size: 15px !important; }
+
+/* ---------------- warm-up ---------------- */
+.u7l1-wtop { display: grid; grid-template-columns: 560px 1fr; gap: 22px; align-items: start; }
+.u7l1-wfig { display: flex; flex-direction: column; gap: 10px; }
+.u7l1-wbtns { display: flex; gap: 10px; flex-wrap: wrap; }
+.u7l1-wqs .q-line { margin-top: 6px; }
+.u7l1-wa { margin: 0 0 8px 50px; }
+.u7l1-wa .pill.small { margin-left: 0; }
+.u7l1-early { margin-top: 14px; }
+.u7l1-social { font-style: italic; color: var(--ink2); font-size: 19px; text-align: center; margin: 16px 0 0; }
+.u7l1-cupwrap { position: relative; background: #fff; border: 1px solid var(--line2); border-radius: 14px; overflow: hidden; }
+.u7l1-cupwrap > svg { position: absolute; left: 0; top: 0; }
+.u7l1-cuplab { font: 800 18px var(--round); color: var(--ink); }
+.u7l1-cupdim { font: 700 17px var(--round); color: var(--ink2); }
+.u7l1-cupq { font: 900 54px var(--round); color: var(--red); }
+.u7l1-cupplot { position: absolute; left: 0; top: 0; background: #fffdf7; }
+.u7l1-cupeq { font-size: 22px; background: rgba(255, 255, 255, .94); border: 2px solid #1f5bd6; border-radius: 10px; padding: 2px 10px; }
+
+/* ---------------- section 1 ---------------- */
+.u7l1-nots { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 0 0 16px; }
+.u7l1-not { background: #fff6f5; border: 2px solid #f1cdca; border-radius: 12px; padding: 8px 6px; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 21px; text-align: center; }
+.u7l1-nt { font-size: 16px; color: var(--ink2); line-height: 1.25; }
+
+/* Example 1 sort */
+.u7l1-sort { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 8px; }
+.u7l1-pool, .u7l1-binb { display: flex; flex-wrap: wrap; gap: 10px; align-content: flex-start; }
+.u7l1-pool { height: 128px; padding: 4px 0; }
+.u7l1-bin { display: grid; grid-template-columns: 150px 1fr; align-items: stretch; border-radius: 12px; border: 2px solid; overflow: hidden; }
+.u7l1-bin-lin { border-color: #b8cdf2; background: #f3f7fe; }
+.u7l1-bin-non { border-color: #f1cdca; background: #fff6f5; }
+.u7l1-binh { font: 800 17px var(--round); letter-spacing: .05em; display: grid; place-items: center; text-align: center; }
+.u7l1-bin-lin .u7l1-binh { color: #1f5bd6; background: #e3ecfc; }
+.u7l1-bin-non .u7l1-binh { color: #c93a33; background: #fbe7e5; }
+.u7l1-binb { height: 128px; padding: 8px 10px; box-sizing: border-box; }
+.u7l1-tile { font: inherit; font-size: 19px; background: #fff; border: 2px solid #cfc7b5; border-radius: 10px; padding: 4px 12px; height: 52px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; color: var(--ink); }
+.u7l1-tile.u7l1-ok { border-color: var(--ok); background: #e9f6ef; }
+.u7l1-tile.u7l1-no { border-color: var(--red); background: #fbe7e5; }
+.u7l1-sortbtns { display: flex; gap: 10px; }
+
+/* ---------------- example figures ---------------- */
+.u7l1-exfig { display: grid; grid-template-columns: 390px 1fr; gap: 20px; align-items: start; margin-bottom: 14px; }
+.u7l1-exfig .parts { margin: 0; }
+.u7l1-exfig3 { grid-template-columns: 310px 1fr; }
+.u7l1-fill { font-size: 20px; white-space: nowrap; line-height: 2; margin: 6px 0 4px; }
+.u7l1-blank { display: inline-block; min-width: 86px; border-bottom: 2px solid var(--ink2); text-align: center; color: var(--red); }
+.u7l1-gap { display: inline-block; width: 12px; }
+.u7l1-ex6g { margin: 6px auto 0; width: 400px; }
+.u7l1-taphint { text-align: center; font-size: 15px; margin: 2px 0 6px; }
+.u7l1-ansfig { margin-top: 8px; }
+.u7l1-sif-h { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin-bottom: 6px; font-size: 21px; }
+.u7l1-sif-f { font-size: 30px; background: #fff; border-radius: 10px; padding: 0 14px; }
+.u7l1-sif { margin-top: 18px; }
+.u7l1-methods { margin-bottom: 16px; }
+.u7l1-methods .def { margin: 0; }
+.u7l1-flowbox { margin-top: 18px; }
+.u7l1-flowbox #u7l1-flow { margin-top: 8px; }
+.u7l1-flow .bk-fc-node { font-size: 18px; }
+
+/* ---------------- explainer pieces ---------------- */
+.u7l1-panel { background: #fff; border: 1px solid var(--line2); border-radius: 14px; padding: 10px 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
+.u7l1-ph { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.u7l1-line { font-size: 20px; line-height: 1.35; }
+.u7l1-mline { font-size: 22px; }
+.u7l1-soft { color: var(--ink2); }
+.u7l1-big { font-size: 28px; text-align: center; margin-top: 6px; }
+.u7l1-eqbox { font-size: 30px; text-align: center; background: #f6f5f1; border-radius: 12px; padding: 8px 10px; min-height: 66px; display: grid; place-items: center; }
+.u7l1-ro { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.u7l1-ro-r { display: flex; align-items: baseline; gap: 10px; font-size: 24px; background: #f6f5f1; border-radius: 12px; padding: 4px 12px; border-left: 6px solid; min-height: 48px; box-sizing: border-box; }
+.u7l1-ro-m { border-color: #1f5bd6; } .u7l1-ro-b { border-color: #12805a; }
+.u7l1-ro-k { font: 800 17px var(--round); color: var(--ink2); white-space: nowrap; }
+.u7l1-log { display: flex; flex-direction: column; gap: 4px; font-size: 19px; }
+.u7l1-stampb { align-self: center; margin-top: auto; margin-bottom: 6px; }
+.u7l1-rulebox { margin-top: auto; background: var(--brand-soft); border-left: 5px solid var(--brand2); border-radius: 10px; padding: 8px 14px; font-size: 20px; line-height: 1.45; }
+
+/* slope triangle labels */
+.u7l1-tlab { font: 700 18px var(--round); background: rgba(255, 255, 255, .9); border-radius: 7px; padding: 0 5px; white-space: nowrap; }
+.u7l1-trun { color: #c27a0e; } .u7l1-trise { color: #7b4fc4; }
+.u7l1-glab { font-size: 20px !important; }
+.u7l1-bint { font: 800 16px var(--round); color: #12805a; }
+
+/* cups explainer */
+.u7l1-stackwrap { position: relative; }
+.u7l1-stackwrap > svg { position: absolute; left: 0; top: 0; }
+.u7l1-stack-n { font: 800 20px var(--round); color: var(--ink); }
+
+/* linTest */
+.u7l1-lt-eq { font-size: 34px; text-align: center; background: #f6f5f1; border-radius: 12px; padding: 10px; min-height: 76px; display: grid; place-items: center; }
+.u7l1-lt-why { font-size: 19px; line-height: 1.35; min-height: 52px; }
+.u7l1-bins { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
+.u7l1-xbin { border-radius: 10px; border: 2px solid; padding: 4px 10px; min-height: 92px; box-sizing: border-box; }
+.u7l1-xbin-h { font: 800 14px var(--round); letter-spacing: .05em; }
+.u7l1-xbin-lin { border-color: #b8cdf2; background: #f3f7fe; } .u7l1-xbin-lin .u7l1-xbin-h { color: #1f5bd6; }
+.u7l1-xbin-non { border-color: #f1cdca; background: #fff6f5; } .u7l1-xbin-non .u7l1-xbin-h { color: #c93a33; }
+.u7l1-xbin-b { display: flex; flex-wrap: wrap; gap: 6px 10px; font-size: 18px; margin-top: 2px; }
+.u7l1-xchip { background: #fff; border-radius: 8px; padding: 1px 8px; border: 1px solid var(--line2); }
+.u7l1-verdict { font: 800 22px var(--round); text-align: center; border-radius: 10px; padding: 4px 8px; }
+.u7l1-v-lin { color: #1f5bd6; background: #e3ecfc; } .u7l1-v-non { color: #c93a33; background: #fbe7e5; }
+
+/* dials */
+.u7l1-dials { display: flex; gap: 10px; justify-content: space-between; }
+.u7l1-dial { position: relative; touch-action: none; cursor: grab; }
+.u7l1-dial > svg { position: absolute; left: 0; top: 0; }
+.u7l1-dial .bk-html { pointer-events: none; }
+.u7l1-dtick { font-size: 15px; font-weight: 700; }
+.u7l1-dname { font: 800 17px var(--round); }
+.u7l1-dial-m .u7l1-dname { color: #1f5bd6; } .u7l1-dial-b .u7l1-dname { color: #12805a; }
+.u7l1-dhint { font-size: 15px; color: var(--muted); text-align: center; }
+
+/* balance */
+.u7l1-bal { position: relative; }
+.u7l1-bal > svg { position: absolute; left: 0; top: 0; overflow: visible; }
+.u7l1-pan { position: absolute; font-size: 30px; translate: -50% -100%; white-space: nowrap; }
+.u7l1-div { position: absolute; font: 800 18px var(--round); color: #fff; background: #7b4fc4; border-radius: 9px; padding: 0 7px; translate: -50% 0; }
+.u7l1-alg { font-size: 23px; line-height: 1.45; }
+.u7l1-alg .u7l1-line { font-size: 23px; }
+.u7l1-tile2 { display: inline-block; }
+
+/* step graph / intercepts / match */
+.u7l1-plist { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: 20px; }
+.u7l1-cards { display: flex; flex-direction: column; gap: 8px; }
+.u7l1-mcard { font-size: 22px; border-radius: 10px; padding: 4px 12px; background: #f6f5f1; border-left: 6px solid #cfc7b5; display: flex; align-items: center; justify-content: space-between; min-height: 50px; box-sizing: border-box; }
+.u7l1-mcard.on { background: #eef3fd; border-left-color: #1f5bd6; }
+.u7l1-mcard .u7l1-mto { font: 800 20px var(--round); }
+.u7l1-lname { font: 800 18px var(--round) !important; }
+
+/* cups table */
+.u7l1-ctab { display: flex; flex-direction: column; }
+.u7l1-ctr { display: grid; grid-template-columns: 88px 88px; height: 50px; align-items: center; text-align: center; font-size: 24px; border-bottom: 1px solid var(--line2); }
+.u7l1-ctr.u7l1-cth { height: 44px; font: 800 15px var(--round); color: var(--muted); border-bottom: 2px solid #cfc7b5; }
+.u7l1-ctr.u7l1-ct0 { background: #e9f6ef; color: #12805a; border-radius: 8px; }
+.u7l1-cdiff { font: 800 16px var(--round); color: #fff; background: #7b4fc4; border-radius: 10px; padding: 2px 8px; }
+.u7l1-cdiff.u7l1-cd0 { background: #12805a; }
+.u7l1-cdoor .u7l1-line { font-size: 19px; line-height: 1.25; }
+.u7l1-dialp { gap: 10px; }
+.u7l1-eqbig { font-size: 34px; min-height: 84px; }
+.u7l1-dial-m .u7l1-dtick { font-size: 17px; }
+.u7l1-dial-b .u7l1-dtick { font-size: 16px; }
+.u7l1-dname { font-size: 19px; }
+.u7l1-ro-r .katex { font-size: .95em; }

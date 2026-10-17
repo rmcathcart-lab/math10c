@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>From Slope to Equation · Math 10C 7.2</title>
+<meta name="description" content="Math 10C Unit 7 Lesson 2: building linear equations with y = mx + b. Substituting a given slope and y-intercept, reading m and b off a grid, getting the slope from a parallel line (copy the slope triangle) or a perpendicular line (turn it 90°), and horizontal lines y = k and vertical lines x = k. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u7l2.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 7 Equations of Linear Relations · Lesson 2</div>
+  <h1>From Slope to Equation: Building Linear Equations with <span class="tex">y=mx+b</span></h1>
+  <p class="lede">Two numbers build a line: the <b class="u7l2-c-m">slope</b> <span class="tex">m</span> and the <b class="u7l2-c-b">y-intercept</b> <span class="tex">b</span>. Find them, drop them into <span class="tex">y=mx+b</span>, and the equation is done.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>write <span class="tex">y=mx+b</span> straight from a given slope and <span class="tex">y</span>-intercept, and recognise a point <span class="tex">(0,\ k)</span> as the <span class="tex">y</span>-intercept</li>
+      <li>read <span class="tex">m</span> (count the <b class="u7l2-c-rise">rise</b> and <b class="u7l2-c-run">run</b>) and <span class="tex">b</span> (where the line crosses the <span class="tex">y</span>-axis) off a grid, and write the equation</li>
+      <li>get the slope of a new line from a <b>parallel</b> line (the same slope) or a <b>perpendicular</b> line (the negative reciprocal)</li>
+      <li>write the equations of <b>horizontal</b> lines <span class="tex">y=k</span> and <b>vertical</b> lines <span class="tex">x=k</span>, and explain why a vertical line can’t be written as <span class="tex">y=mx+b</span></li>
+    </ul>
+  </div>
+  <div class="outcome"><b>RF7</b> Determine the equation of a linear relation, given: a graph; a point and the slope; two points; a point and the equation of a parallel or perpendicular line, to solve problems.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: The Cricket Thermometer" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Cricket Thermometer</h2></div>
+  <p class="big">This made-up cricket chirps <b>faster</b> when it’s <b>warmer</b>, at a steady rate.</p>
+  <div id="u7l2-crickets" class="u7l2-crickets"></div>
+  <div class="u7l2-wtop">
+    <div class="u7l2-wqs">
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">1</div><div>How warm is it at <b>40</b> chirps per minute?</div></div>
+        <div class="u7l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">15\ ^\circ\text{C}</span>. 40 chirps is halfway from 20 to 60, so it is halfway from <span class="tex">10\ ^\circ\text{C}</span> to <span class="tex">20\ ^\circ\text{C}</span>.</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">2</div><div>Each <b><span class="tex">1\ ^\circ\text{C}</span></b> warmer adds how many chirps per minute?</div></div>
+        <div class="u7l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>4 chirps</b> per <span class="tex">^\circ\text{C}</span>: 40 more chirps for 10 more degrees, and <span class="tex">40\div10=4</span>. Flip it: each chirp is worth <span class="tex">\tfrac14\ ^\circ\text{C}</span>.</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">3</div><div>Follow the pattern down. How cold is it when the cricket goes <b>silent</b>?</div></div>
+        <div class="u7l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">5\ ^\circ\text{C}</span>. From 20 chirps, drop 20 more chirps: that is <span class="tex">20\div4=5</span> degrees colder than <span class="tex">10\ ^\circ\text{C}</span>.</div></div>
+      </div>
+    </div>
+    <div class="poll">
+      <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> You hear the cricket chirp <b>100</b> times in one minute. How warm is it? <b>Guess first.</b></div></div>
+      <div class="poll-opts">
+        <div class="opt"><b>A</b> <span class="tex">25\ ^\circ\text{C}</span></div>
+        <div class="opt right"><b>B</b> <span class="tex">30\ ^\circ\text{C}</span></div>
+        <div class="opt"><b>C</b> <span class="tex">33\ ^\circ\text{C}</span></div>
+        <div class="opt"><b>D</b> <span class="tex">50\ ^\circ\text{C}</span></div>
+      </div>
+      <button class="pill" type="button" data-poll-reveal>Reveal</button>
+      <div class="poll-ans"><b>B: <span class="tex">30\ ^\circ\text{C}</span>.</b> From 60 to 100 chirps is 40 more chirps, worth <span class="tex">10\ ^\circ\text{C}</span> more: <span class="tex">20+10=30</span>. As an equation, <span class="tex">T=\tfrac14C+5</span>, so <span class="tex">T=\tfrac14(100)+5=30</span>.<br>
+        <span class="muted"><b>A</b> did <span class="tex">100\div4</span>: the slope without the <span class="tex">+5</span> starting value. <b>C</b> and <b>D</b> scaled as if doubling the chirps doubled the temperature (<span class="tex">\tfrac{100}{60}\times20</span> or <span class="tex">\tfrac{100}{20}\times10</span>). The line does <b>not</b> pass through <span class="tex">(0,\ 0)</span>.</span><br>
+        Real crickets really do this: Dolbear’s law (1897) for the snowy tree cricket.</div>
+    </div>
+  </div>
+
+  <div class="u7l2-wplot">
+    <div class="u7l2-wgraph"><div id="u7l2-wgraph"></div></div>
+    <div class="u7l2-wside">
+      <div class="u7l2-wh">Put it on a graph</div>
+      <p>Chirps per minute <span class="tex">C</span> across, temperature <span class="tex">T</span> up.</p>
+      <div class="u7l2-wbtns">
+        <button type="button" class="pill" id="u7l2-wb1">1. Plot the two readings</button>
+        <button type="button" class="pill" id="u7l2-wb2">2. Extend to the <span class="tex">T</span>-axis</button>
+        <button type="button" class="pill" id="u7l2-wb3">3. Rise over run</button>
+        <button type="button" class="pill small" id="u7l2-wb0">Clear</button>
+      </div>
+      <div class="u7l2-wro" id="u7l2-wro"></div>
+    </div>
+  </div>
+
+  <div class="bk-wq u7l2-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Write the <b>chirps</b> as a function of the <b>temperature</b> instead: <span class="tex">C=\ ?</span> Why is the slope now <span class="tex">4</span> and not <span class="tex">\tfrac14</span>?</div></div>
+    <div class="u7l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">C=4T-20</span>. With <span class="tex">T</span> across and <span class="tex">C</span> up, rise and run swap places: 40 chirps up for every 10 degrees across. Check: <span class="tex">T=20</span> gives <span class="tex">4(20)-20=60</span> ✓.</div></div>
+  </div>
+  <p class="u7l2-social">Be the cricket: tap your desk for 15 seconds while a neighbour counts. What temperature are you?</p>
+</section>
+
+<!-- ================= 1. From m and b ================= -->
+<section class="card" data-ink="s1" data-section="1. Straight from m and b">
+  <div class="sec-h"><span class="badge">1</span><h2>Building an Equation Directly from Slope and <span class="tex">y</span>-Intercept</h2></div>
+  <div class="u7l2-defrow">
+    <div class="def">When the slope <span class="tex">m</span> and the <span class="tex">y</span>-intercept <span class="tex">b</span> are both known, nothing is left to calculate: <b>substitute both values into <span class="tex">y=mx+b</span></b>. A given point of the form <span class="tex">(0,\ k)</span> <em>is</em> the <span class="tex">y</span>-intercept, so it supplies <span class="tex">b=k</span> immediately.</div>
+    <div class="u7l2-anat">
+      <div class="u7l2-anat-eq"><span class="tex">y=\textcolor{#1f5bd6}{m}x+\textcolor{#13807a}{b}</span></div>
+      <div class="u7l2-anat-k"><b class="u7l2-c-m">m</b> slope <span class="tex">=\dfrac{\text{rise}}{\text{run}}</span></div>
+      <div class="u7l2-anat-k"><b class="u7l2-c-b">b</b> <span class="tex">y</span>-intercept: the line crosses the <span class="tex">y\text{-axis}</span> at <span class="tex">(0,\ b)</span></div>
+    </div>
+  </div>
+  <div class="explainer" data-explainer="assemble"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>A negative <span class="tex">b</span> becomes a minus sign.</b> Substituting <span class="tex">b=-5</span> gives <span class="tex">y=\tfrac34x+(-5)</span>, written tidily as <span class="tex">y=\tfrac34x-5</span>. And only a point with <span class="tex">x=0</span> is the <span class="tex">y</span>-intercept: <span class="tex">(-5,\ 0)</span> is not.</div></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Slope and <span class="tex">y</span>-intercept given directly</h3></div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Write the equation of the line that passes through <span class="tex">(0,\ -5)</span> and has slope <span class="tex">\dfrac{3}{4}</span>.</div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">(0,\ -5)</span> has <span class="tex">x=0</span>, so it <em>is</em> the <span class="tex">y</span>-intercept: <span class="tex">b=-5</span>. The slope is given, <span class="tex">m=\tfrac34</span>.<br>Substituting into <span class="tex">y=mx+b</span>: <span class="tex">\boldsymbol{y=\dfrac{3}{4}x-5}</span><br><b>Check.</b> <span class="tex">x=0</span> gives <span class="tex">y=\tfrac34(0)-5=-5</span>, so <span class="tex">(0,\ -5)</span> is on the line, and the coefficient of <span class="tex">x</span> is <span class="tex">\tfrac34</span> ✓.</div></div></div>
+    <div class="part"><div class="pl">(b) Write the equation of the line with <span class="tex">y</span>-intercept <span class="tex">7</span> and slope <span class="tex">-\dfrac{2}{5}</span>.</div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Both values are given directly: <span class="tex">m=-\tfrac25</span> and <span class="tex">b=7</span>.<br>Substituting into <span class="tex">y=mx+b</span>: <span class="tex">\boldsymbol{y=-\dfrac{2}{5}x+7}</span><br><b>Check.</b> <span class="tex">x=0</span> gives <span class="tex">y=7</span>, the required <span class="tex">y</span>-intercept, and the coefficient of <span class="tex">x</span> is <span class="tex">-\tfrac25</span> ✓.</div></div></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<!-- ================= 2. From a graph ================= -->
+<section class="card" data-ink="s2" data-section="2. Reading m and b off a Graph">
+  <div class="sec-h"><span class="badge">2</span><h2>Reading Slope and <span class="tex">y</span>-Intercept from a Graph</h2></div>
+  <p>When a line passes through <b>lattice points</b> (points whose coordinates are both integers), count the <b class="u7l2-c-rise">rise</b> and <b class="u7l2-c-run">run</b> between two of them to get <span class="tex">m</span>, and read <span class="tex">b</span> where the line crosses the <span class="tex">y</span>-axis. Substituting both into <span class="tex">y=mx+b</span> gives the equation.</p>
+  <div class="explainer" data-explainer="readGraph"></div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Reading <span class="tex">m</span> and <span class="tex">b</span> off a grid</h3></div>
+  <p class="q">Each line below passes through points with integer coordinates. For each line, state the slope and the <span class="tex">y</span>-intercept, and determine the equation of the line.</p>
+  <div class="u7l2-ex2">
+    <div id="u7l2-ex2fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">Line <span class="tex">l_1</span>: <span class="u7l2-mb"><span class="tex">m=</span> <span class="u7l2-blank" data-reveal><span class="tex">\tfrac14</span></span> <span class="tex">b=</span> <span class="u7l2-blank" data-reveal><span class="tex">-6</span></span></span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Two lattice points on <span class="tex">l_1</span>: <span class="tex">(0,\ -6)</span> and <span class="tex">(4,\ -5)</span>. Rise <span class="tex">=-5-(-6)=1</span>, run <span class="tex">=4-0=4</span>, so <span class="tex">m=\tfrac14</span>. It crosses the <span class="tex">y</span>-axis at <span class="tex">(0,\ -6)</span>, so <span class="tex">b=-6</span>.<br><span class="tex">\boldsymbol{y=\dfrac14x-6}</span>. <b>Check</b> at <span class="tex">(4,\ -5)</span>: <span class="tex">\tfrac14(4)-6=1-6=-5</span> ✓</div></div></div>
+      <div class="part"><div class="pl">Line <span class="tex">l_2</span>: <span class="u7l2-mb"><span class="tex">m=</span> <span class="u7l2-blank" data-reveal><span class="tex">-2</span></span> <span class="tex">b=</span> <span class="u7l2-blank" data-reveal><span class="tex">5</span></span></span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Two lattice points on <span class="tex">l_2</span>: <span class="tex">(0,\ 5)</span> and <span class="tex">(1,\ 3)</span>. Rise <span class="tex">=3-5=-2</span>, run <span class="tex">=1-0=1</span>, so <span class="tex">m=-2</span>. It crosses the <span class="tex">y</span>-axis at <span class="tex">(0,\ 5)</span>, so <span class="tex">b=5</span>.<br><span class="tex">\boldsymbol{y=-2x+5}</span>. <b>Check</b> at <span class="tex">(1,\ 3)</span>: <span class="tex">-2(1)+5=3</span> ✓</div></div></div>
+    </div>
+  </div>
+  <div class="parts c1">
+    <div class="part think"><div class="pl"><span class="think-tag">Think</span> Would two <em>other</em> lattice points on <span class="tex">l_1</span> give the same slope? Try <span class="tex">(-8,\ -8)</span> and <span class="tex">(8,\ -4)</span>.</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Yes.</b> Run <span class="tex">16</span>, rise <span class="tex">4</span>: <span class="tex">\tfrac{4}{16}=\tfrac14</span>. Any two points on a line give the same slope, so pick two that are easy to count.</div></div></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. Spot the mistake">
+  <h3 class="sub">Spot the mistake</h3>
+  <p>Four students wrote an equation for the same line. Each wrong one hides a classic slip. Graph each equation and see which one actually lands on the line.</p>
+  <div class="explainer" data-explainer="spotError"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Three checks before you move on.</b> Is the slope <b>rise over run</b> (not run over rise)? Does its <b>sign</b> match the direction (falling left to right means negative)? Is <span class="tex">b</span> read on the <b><span class="tex">y</span>-axis</b>?</div></div>
+</section>
+
+<!-- ================= 3. Parallel and perpendicular ================= -->
+<section class="card" data-ink="s3" data-section="3. Parallel and Perpendicular">
+  <div class="sec-h"><span class="badge">3</span><h2>Parallel and Perpendicular Line Conditions</h2></div>
+  <div class="def-grid u7l2-pp">
+    <div class="def">Two non-vertical lines are <b>parallel</b> exactly when their <b>slopes are equal</b>. All vertical lines are parallel.</div>
+    <div class="def amber">Two non-vertical lines are <b>perpendicular</b> exactly when their slopes are <b>negative reciprocals</b> of each other, that is, when their <b>product is <span class="tex">-1</span></b>. A horizontal line and a vertical line are always perpendicular.</div>
+  </div>
+  <p>Either condition supplies the slope of a new line from the equation, or from two points, of another line. For a parallel line, <b>copy</b> the slope triangle:</p>
+  <div class="explainer" data-explainer="copyTri"></div>
+</section>
+
+<section class="card" data-ink="s3b" data-section="3. Why negative reciprocals?">
+  <h3 class="sub">Why negative reciprocals?</h3>
+  <div class="u7l2-why">
+    <div>
+      <p>The blue line has slope <span class="tex">\tfrac{2}{3}</span>: run <span class="tex">3</span>, rise <span class="tex">2</span>. Turn its slope triangle <span class="tex">90^\circ</span> about the origin: the run of <span class="tex">3</span> becomes a <b class="u7l2-c-rise">rise</b> of <span class="tex">3</span>, and the rise of <span class="tex">2</span> becomes a <b class="u7l2-c-run">run</b> of <span class="tex">2</span> to the <em>left</em>.</p>
+      <p>The turned (red) line is perpendicular to the blue one, and its slope is <span class="tex">\tfrac{3}{-2}=-\tfrac{3}{2}</span>. Rise and run <b>swap places</b> and <b>one sign changes</b>, so <span class="tex">\tfrac{2}{3}\times\left(-\tfrac{3}{2}\right)=-1</span>.</p>
+    </div>
+    <div id="u7l2-whyfig"></div>
+  </div>
+  <div class="explainer" data-explainer="turnTri"></div>
+  <div class="parts c1">
+    <div class="part think"><div class="pl"><span class="think-tag">Think</span> A horizontal line and a vertical line are perpendicular. Why can’t the “product is <span class="tex">-1</span>” test show it?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The vertical line’s slope is <b>undefined</b>, so there is no number to multiply by <span class="tex">0</span>. That is why the rule says <em>non-vertical</em> lines, and the horizontal–vertical case is stated on its own.</div></div></div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Slope from a parallel or perpendicular condition</h3></div>
+  <p class="q">Determine the equation of each line.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) the line parallel to <span class="tex">y=\dfrac{1}{2}x+7</span>, with the same <span class="tex">y</span>-intercept as <span class="tex">y=5x-3</span></div><div class="work" style="--h:260px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Parallel lines have equal slopes, so <span class="tex">m=\tfrac12</span>, matching <span class="tex">y=\tfrac12x+7</span>.<br>The <span class="tex">y</span>-intercept of <span class="tex">y=5x-3</span> is <span class="tex">b=-3</span>.<br><span class="tex">\boldsymbol{y=\dfrac12x-3}</span><br><b>Check.</b> The slope <span class="tex">\tfrac12</span> equals the slope of <span class="tex">y=\tfrac12x+7</span>, and <span class="tex">x=0</span> gives <span class="tex">y=-3</span>, the same <span class="tex">y</span>-intercept as <span class="tex">y=5x-3</span> ✓.</div></div></div>
+    <div class="part"><div class="pl">(b) the line passing through <span class="tex">(0,\ 11)</span>, perpendicular to the line joining <span class="tex">(3,\ -4)</span> and <span class="tex">(-6,\ 2)</span></div><div class="work" style="--h:260px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Slope of the line joining <span class="tex">(3,\ -4)</span> and <span class="tex">(-6,\ 2)</span>: <span class="tex">m=\dfrac{2-(-4)}{-6-3}=\dfrac{6}{-9}=-\dfrac23</span>.<br>Perpendicular slope <span class="tex">=</span> negative reciprocal <span class="tex">=\tfrac32</span>. The line passes through <span class="tex">(0,\ 11)</span>, so <span class="tex">b=11</span>.<br><span class="tex">\boldsymbol{y=\dfrac32x+11}</span><br><b>Check.</b> <span class="tex">-\tfrac23\times\tfrac32=-1</span>, and <span class="tex">x=0</span> gives <span class="tex">y=11</span> ✓.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>(b) on the calculator.</b> Bracket the top and the bottom of the slope formula, then <kbd>F◂▸D</kbd> turns the decimal into a fraction: <span class="keys"><kbd>(</kbd><kbd>2</kbd><kbd>−</kbd><kbd>(−)</kbd><kbd>4</kbd><kbd>)</kbd><kbd>÷</kbd><kbd>(</kbd><kbd>(−)</kbd><kbd>6</kbd><kbd>−</kbd><kbd>3</kbd><kbd>)</kbd><kbd>ENTER</kbd><kbd>F◂▸D</kbd></span> shows <b class="u7l2-calcfr">−2┘3</b>. Check the product: <span class="keys"><kbd>(−)</kbd><kbd>2</kbd><kbd>a b/c</kbd><kbd>3</kbd><kbd>×</kbd><kbd>3</kbd><kbd>a b/c</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> gives <span class="tex">-1</span>.</div>
+    <div class="pill-col"><button class="pill" data-keys="( 2 − (−) 4 ) ÷ ( (−) 6 − 3 ) = F◂▸D">Show the slope</button><button class="pill" data-keys="(−) 2 ab/c 3 × 3 ab/c 2 =">Check the product</button></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s3c" data-section="3. Where do m and b come from?">
+  <h3 class="sub">Two questions, every time: where does <span class="tex">m</span> come from, and where does <span class="tex">b</span> come from?</h3>
+  <p>Every problem in this lesson ends the same way: substitute into <span class="tex">y=mx+b</span>. Only the <b>source</b> of each number changes. Pick an example to trace it.</p>
+  <div class="explainer" data-explainer="strategy"></div>
+</section>
+
+<!-- ================= 4. Horizontal and vertical ================= -->
+<section class="card" data-ink="s4" data-section="4. Horizontal and Vertical Lines">
+  <div class="sec-h"><span class="badge">4</span><h2>Horizontal and Vertical Lines</h2></div>
+  <p>Horizontal and vertical lines are special cases. Use the grid in Example 4 to work out what their slopes are, and what their equations look like.</p>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Horizontal and vertical lines</h3></div>
+  <p class="q">The grid shows two horizontal lines, <span class="tex">L_1</span> and <span class="tex">L_2</span>, and one vertical line, <span class="tex">L_3</span>.</p>
+  <div class="u7l2-ex4">
+    <div id="u7l2-ex4fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(a) State the slope and <span class="tex">y</span>-intercept of the horizontal line <span class="tex">L_1</span>.</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">L_1</span> sits at height <span class="tex">y=3</span> for every <span class="tex">x</span>, so it rises <span class="tex">0</span> units for any run: <span class="tex">\boldsymbol{m=0}</span>. It crosses the <span class="tex">y</span>-axis at <span class="tex">(0,\ 3)</span>, so <span class="tex">\boldsymbol{b=3}</span>.</div></div></div>
+      <div class="part"><div class="pl">(b) Use <span class="tex">y=mx+b</span> to determine the equation of <span class="tex">L_1</span>.</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Substituting <span class="tex">m=0</span> and <span class="tex">b=3</span>: <span class="tex">y=0\cdot x+3</span>, i.e. <span class="tex">\boldsymbol{y=3}</span>.<br><b>Check.</b> <span class="tex">(-5,\ 3)</span> and <span class="tex">(7,\ 3)</span> are both on <span class="tex">L_1</span>, and both satisfy <span class="tex">y=3</span> ✓.</div></div></div>
+      <div class="part"><div class="pl">(c) Predict the equation of the horizontal line <span class="tex">L_2</span>.</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">L_2</span> is also horizontal and crosses the <span class="tex">y</span>-axis at <span class="tex">(0,\ -6)</span>, so <span class="tex">m=0</span>, <span class="tex">b=-6</span> and <span class="tex">\boldsymbol{y=-6}</span>.<br><b>Check.</b> <span class="tex">(4,\ -6)</span> lies on <span class="tex">L_2</span> and satisfies <span class="tex">y=-6</span> ✓.</div></div></div>
+    </div>
+  </div>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(d) State the slope and <span class="tex">y</span>-intercept of the vertical line <span class="tex">L_3</span>.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Take <span class="tex">(-3,\ -8)</span> and <span class="tex">(-3,\ 8)</span> on <span class="tex">L_3</span>: run <span class="tex">=-3-(-3)=0</span>. Slope divides by the run, and division by <span class="tex">0</span> is undefined, so the slope is <b>undefined</b>.<br><span class="tex">L_3</span> never crosses the <span class="tex">y</span>-axis: <b>no <span class="tex">y</span>-intercept</b>.</div></div></div>
+    <div class="part"><div class="pl">(e) Explain why the form <span class="tex">y=mx+b</span> cannot be used to determine the equation of <span class="tex">L_3</span>.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The form <span class="tex">y=mx+b</span> needs a numerical value of <span class="tex">m</span> to substitute. The slope of a vertical line is undefined, so there is no such value and the form cannot describe <span class="tex">L_3</span>.</div></div></div>
+    <div class="part"><div class="pl">(f) Predict the equation of the vertical line <span class="tex">L_3</span>.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Every point of <span class="tex">L_3</span> has <span class="tex">x=-3</span>, and <span class="tex">L_3</span> crosses the <span class="tex">x</span>-axis at <span class="tex">(-3,\ 0)</span>, so <span class="tex">\boldsymbol{x=-3}</span>.<br><b>Check.</b> <span class="tex">(-3,\ -8)</span> and <span class="tex">(-3,\ 8)</span> both satisfy <span class="tex">x=-3</span> ✓.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>(d) Ask the calculator for the slope of <span class="tex">L_3</span>.</b> From <span class="tex">(-3,\ -8)</span> to <span class="tex">(-3,\ 8)</span>: <span class="keys"><kbd>(</kbd><kbd>8</kbd><kbd>−</kbd><kbd>(−)</kbd><kbd>8</kbd><kbd>)</kbd><kbd>÷</kbd><kbd>(</kbd><kbd>(−)</kbd><kbd>3</kbd><kbd>−</kbd><kbd>(−)</kbd><kbd>3</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives an <b>error</b>: there is no number to give. For <span class="tex">L_1</span>, from <span class="tex">(-5,\ 3)</span> to <span class="tex">(7,\ 3)</span>, the rise is <span class="tex">0</span> and the slope is <span class="tex">0</span>.</div>
+    <div class="pill-col"><button class="pill" data-keys="( 8 − (−) 8 ) ÷ ( (−) 3 − (−) 3 ) =">Slope of L₃</button><button class="pill" data-keys="( 3 − 3 ) ÷ ( 7 − (−) 5 ) =">Slope of L₁</button></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s4b" data-section="4. Flatten it, stand it up">
+  <h3 class="sub">Flatten a line: <span class="tex">y=mx+b</span> collapses to <span class="tex">y=b</span></h3>
+  <p>Keep the <span class="tex">y</span>-intercept and turn the slope down to <span class="tex">0</span>. Watch the <span class="tex">x</span> term disappear.</p>
+  <div class="explainer" data-explainer="flatten"></div>
+  <h3 class="sub u7l2-gap">Stand a line up: the slope and the <span class="tex">y</span>-intercept run away</h3>
+  <p>Now keep the <span class="tex">x</span>-intercept and steepen the line until it is vertical. What happens to <span class="tex">m</span> and <span class="tex">b</span>?</p>
+  <div class="explainer" data-explainer="steepen"></div>
+  <div class="def u7l2-hvsum"><b>Summary: horizontal and vertical lines.</b>
+    <div class="u7l2-hv">
+      <div class="u7l2-hvc u7l2-hv-h"><div class="u7l2-hvfig" id="u7l2-hvH"></div><div><b>Horizontal: <span class="tex">y=k</span></b><br>Rises <span class="tex">0</span> for every unit of run, so <span class="tex">m=0</span> and <span class="tex">y=mx+b</span> collapses to <span class="tex">y=b</span>. It crosses the <span class="tex">y</span>-axis at <span class="tex">(0,\ k)</span>.</div></div>
+      <div class="u7l2-hvc u7l2-hv-v"><div class="u7l2-hvfig" id="u7l2-hvV"></div><div><b>Vertical: <span class="tex">x=k</span></b><br>Any two points have a run of <span class="tex">0</span>, and division by <span class="tex">0</span> is undefined: the slope is <b>undefined</b>. With no <span class="tex">m</span> to substitute, it can’t be written as <span class="tex">y=mx+b</span>. It crosses the <span class="tex">x</span>-axis at <span class="tex">(k,\ 0)</span>.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Find two numbers, substitute.</b> With the slope <span class="tex">m</span> and the <span class="tex">y</span>-intercept <span class="tex">b</span>, the equation is <span class="tex">y=mx+b</span>. A point <span class="tex">(0,\ k)</span> <em>is</em> the <span class="tex">y</span>-intercept: <span class="tex">b=k</span>. Tidy <span class="tex">+(-5)</span> to <span class="tex">-5</span>.</div>
+    <div><b>Off a graph.</b> <span class="tex">b</span>: where the line crosses the <span class="tex">y</span>-axis. <span class="tex">m</span>: count rise over run between two lattice points (falling left to right means negative). Check with a third point.</div>
+    <div><b>Parallel</b>: copy the slope triangle, equal slopes. <b>Perpendicular</b>: turn it <span class="tex">90^\circ</span>, so rise and run swap and one sign flips: the negative reciprocal (product <span class="tex">-1</span>), e.g. <span class="tex">-\tfrac23\to\tfrac32</span>.</div>
+    <div><b>Horizontal</b> lines: <span class="tex">m=0</span>, equation <span class="tex">y=k</span>. <b>Vertical</b> lines: slope undefined, no <span class="tex">y</span>-intercept, not <span class="tex">y=mx+b</span>; equation <span class="tex">x=k</span>.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u7l2" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 2 — From Slope to Equation</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l3/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 3 — The General Form</b><div class="muted">Writing <span class="tex">Ax+By+C=0</span>, reading slope and intercepts back out of it, and testing parallel and perpendicular lines</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u7l2.js';
+  boot({ key: 'u7l2', homeHref: '../../', title: '7.2 From Slope to Equation' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>
