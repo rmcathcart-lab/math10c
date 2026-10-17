@@ -591,7 +591,7 @@
           var p = K.P.poly('(f) The points lie on a straight line. Write its equation in function notation.', T, { before: 'f(x)=', wrong: W },
             'Pattern: from ' + t('x=' + x1) + ' to ' + t('x=' + x2) + ', ' + t('y') + ' changes by ' + t(sh.ys[2] - sh.ys[1]) + ' in ' + t(x2 - x1) + ' step' + (x2 - x1 === 1 ? '' : 's') + ', so ' + t('y') + ' changes by ' + t(m) + ' for each unit of ' + t('x') + '. When ' + t('x=0') + ', ' + t('y=' + b) + '.<br>' + t('f(x)=' + lin([[m, 'x'], [b, '']])) + '<br><i>Check</i> ' + t(ptT(sh.pts[4])) + ': ' + t(m + '(' + sh.xs[4] + ')' + (b < 0 ? b : '+' + b) + '=' + sh.ys[4]) + ' ✓',
             ['How much does ' + t('y') + ' change for each step of ' + t('1') + ' in ' + t('x') + '? That is the coefficient of ' + t('x') + '.', 'The constant is the output when ' + t('x=0') + ' — it’s in the table.'], 'equation from a table');
-          p.bad = W.map(function (w) { return PL.tex(w.is); });
+          p.bad = W.map(function (w) { return PL.tex(w.is); }); p.answer = t('f(x)=' + p.key);
           return p;
         } },
         { id: '11g', level: 'EMG', outcome: 'RF1', make: function (r, sh) {

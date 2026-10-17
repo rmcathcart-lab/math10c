@@ -90,7 +90,7 @@
 
   var HE = ['To evaluate ' + t('f(a)') + ', replace <b>every</b> ' + t('x') + ' in the formula with ' + t('a') + ' (in brackets), then simplify.',
     'The brackets in ' + t('f(a)') + ' mark the input — they do not mean “times”.'];
-  var HN = ['Put a negative input in brackets: ' + t('f(-2)=4(-2)-9') + '. Then use the sign rules carefully.', 'Do powers first, then multiplication, then addition and subtraction.'];
+  var HN = ['Put a negative input in brackets — for example, if ' + t('f(x)=4x-9') + ', then ' + t('f(-2)=4(-2)-9') + '. Then use the sign rules carefully.', 'Do powers first, then multiplication, then addition and subtraction.'];
   var HS = ['To solve ' + t('f(x)=b') + ', you are given the <b>output</b>. Set the formula equal to ' + t('b') + ' and solve for the input ' + t('x') + '.',
     'Check: substitute your answer back into the formula — do you get ' + t('b') + '?'];
   var HX = ['Replace every ' + t('x') + ' with the whole expression, in brackets, then expand and collect like terms.', 'A number in front of the bracket multiplies <b>every</b> term inside it, signs included.'];
@@ -632,8 +632,8 @@
             var res = c0(resp); if (res.v !== 'correct') return res;
             var str = String(resp || '');
             if (/\d\.\d/.test(str)) return form('decimal', 'Right values — but give them <b>exactly</b>, in simplest radical form (use ' + t('\\sqrt{\\ }') + '), not as decimals.');
-            var m, re = /\\sqrt\{(\d+)\}|sqrt\((\d+)\)/g;
-            while ((m = re.exec(str))) { var N = Number(m[1] || m[2]); if (!ex.simplest(N, 2)) return form('not-simplest', 'Right values — now simplify the radical: ' + t(N) + ' has a perfect-square factor.'); }
+            var m, re = /\\sqrt\{(\d+)\}|sqrt\((\d+)\)|√\{?(\d+)/g;
+            while ((m = re.exec(str))) { var N = Number(m[1] || m[2] || m[3]); if (!ex.simplest(N, 2)) return form('not-simplest', 'Right values — now simplify the radical: ' + t(N) + ' has a perfect-square factor.'); }
             return res;
           };
           p.good = ['\\pm ' + s + '\\sqrt{' + q + '}', 'a=-' + s + '\\sqrt{' + q + '}, a=' + s + '\\sqrt{' + q + '}'];
@@ -739,7 +739,8 @@
             var h = sh.h, k = sh.k;
             return mc(r, 'The equation ' + t('f(x)=' + k) + ' has exactly one solution. Which statement is correct?', [
               { html: t('x=' + h) + ': the point ' + t('(' + h + ',\\ ' + k + ')') + ' is the lowest point (vertex), so the line ' + t('y=' + k) + ' touches the graph only there.', right: true },
-              { html: t('x=' + k) + ': it is the lowest point of the graph.', why: t(k) + ' is the <b>output</b> (the height). The solution is the input: read the ' + t('x') + '-coordinate of that point.' },
+              h !== k ? { html: t('x=' + k) + ': it is the lowest point of the graph.', why: t(k) + ' is the <b>output</b> (the height). The solution is the input: read the ' + t('x') + '-coordinate of that point.' }
+                : { html: t('x=' + (-h)) + ': it is the lowest point of the graph.', why: 'Check which side of the ' + t('y') + '-axis the lowest point is on: it is ' + t('(' + h + ',\\ ' + k + ')') + ', so the input is ' + t(h) + '.' },
               { html: t('x=' + h) + ': it is where the graph crosses the ' + t('y') + '-axis.', why: 'The ' + t('y') + '-axis is where the input is ' + t('0') + '. Look at what is special about the height ' + t(k) + '.' },
               { html: t('x=' + (h - sh.root)) + ' and ' + t('x=' + (h + sh.root)) + ': the ' + t('x') + '-intercepts.', why: 'Those solve ' + t('f(x)=0') + '. Draw the line ' + t('y=' + k) + ' instead.' }],
               'The line ' + t('y=' + k) + ' touches the graph only at ' + t('(' + h + ',\\ ' + k + ')') + ', the lowest point (vertex). So ' + t('x=' + h) + ' is the only solution.', ['Draw the horizontal line ' + t('y=' + k) + '. How many times does it meet the graph, and where?'], 'f(x)=k at vertex');
@@ -777,7 +778,7 @@
             return mc(r, 'Why does the repeated output ' + t(A) + ' not stop ' + t('f') + ' from being a function?', [
               { html: 'The test restricts inputs, not outputs: each input appears once with one output. Two inputs sharing an output is allowed.', right: true },
               { html: 'It does stop it: an output used twice means ' + t('f') + ' is not a function.', why: 'Look at the definition: each <b>input</b> must have exactly one output. Outputs may repeat.' },
-              { html: 'Because ' + t(A) + ' is positive.', why: 'The sign of an output has nothing to do with the function test.' },
+              { html: 'Because ' + t(A) + ' is ' + (A > 0 ? 'positive' : 'negative') + '.', why: 'The sign of an output has nothing to do with the function test.' },
               { html: 'Because the table has more than ' + t('5') + ' columns.', why: 'The size of the table doesn’t matter. Check whether any input has two outputs.' }],
               'The inputs ' + t(sh.xs.join(',\\ ')) + ' each appear once, each with one output. ' + t('f(' + xa[0] + ')=f(' + xa[1] + ')=' + A) + ' is two inputs sharing an output (many-to-one), which is allowed.', ['What does the definition of a function restrict — inputs or outputs?'], 'repeated output ok');
           } },
@@ -1146,7 +1147,8 @@
       /* ---------- mapping notation (lesson Extension, Section 4) ---------- */
       { num: 'M', section: 'Extra practice — Mapping notation (lesson extension)', stem: 'Some books write a function as a <b>mapping</b>: ' + t('f: x\\to 3x+1') + ' (“' + t('f') + ' maps ' + t('x') + ' to ' + t('3x+1') + '”), so ' + t('f: 4\\to 13') + ' means the same as ' + t('f(4)=13') + '.', parts: [
         { id: 'em1', level: 'BEG', make: function (r) {
-          var m = r.int(2, 6), b = r.pick(nz(-7, 7)), p = r.pick(nz(-4, 5)), q = m * p + b;
+          var o = pickWhere(function () { var m = r.int(2, 6), b = r.pick(nz(-7, 7)), p = r.pick(nz(-4, 5)); return { m: m, b: b, p: p, q: m * p + b }; }, function (o) { return o.q !== o.p; });
+          var m = o.m, b = o.b, p = o.p, q = o.q;
           return mc(r, 'For ' + t('f: x\\to ' + lin([[m, 'x'], [b, '']])) + ', which statement means the same as ' + t('f: ' + p + '\\to ' + q) + '?', [
             { html: t('f(' + p + ')=' + q), right: true },
             { html: t('f(' + q + ')=' + p), why: 'In ' + t('f: ' + p + '\\to ' + q) + ' the arrow goes from the input ' + t(p) + ' to the output ' + t(q) + '.' },
