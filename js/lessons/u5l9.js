@@ -665,7 +665,667 @@
     return { A: n * p, p: p, n: n };
   }
 
-  var EXTRA = [];
+  /* ---------- extra-practice helpers ---------- */
+  var LET = ['A', 'B', 'C', 'D', 'E', 'F'];
+  function bank(items, cols) { // items: [{ label, svg }]
+    return '<div style="display:grid;grid-template-columns:repeat(' + (cols || 2) + ',minmax(0,1fr));gap:2px 12px;margin:6px 0">' + items.map(function (it) { return '<div><b>' + it.label + '.</b>' + it.svg + '</div>'; }).join('') + '</div>';
+  }
+  /* a matching question: shapes = { key: { svg, desc } }, stories = [{ id, key, text }] → grid (story rows × graph letters) */
+  function matchPart(r, sh, keys, intro, stories, labels, text) {
+    var order = r.shuffle(keys), letter = {}, byLetter = {};
+    order.forEach(function (k, i) { letter[k] = labels[i]; byLetter[labels[i]] = k; });
+    var st = r.shuffle(stories), rows = st.map(function (s, i) { return { id: s.key, html: '(' + String.fromCharCode(97 + i) + ')', text: s.text }; });
+    var want = {}; rows.forEach(function (rw) { want[rw.id] = letter[rw.id]; });
+    var cols = labels.slice(0, keys.length).map(function (l) { return { id: l, html: l }; });
+    var p = K.P.grid(intro + bank(labels.slice(0, keys.length).map(function (l) { return { label: l, svg: sh[byLetter[l]].svg }; })) + rows.map(function (rw) { return '<b>' + rw.html + '</b> ' + rw.text; }).join('<br>'), rows, cols, want, { why: function (row, got) {
+      var rw = rows.filter(function (x) { return x.id === row; })[0];
+      return { code: 'row', hint: 'Story ' + rw.html + ': graph ' + got + ' is ' + sh[byLetter[got]].desc + '. The story needs a graph that is ' + sh[row].desc + '.' };
+    } }, rows.map(function (rw) { return rw.html + ' → graph <b>' + want[rw.id] + '</b>: ' + sh[rw.id].desc + '.'; }).join('<br>'), ['Read each story piece by piece: is the person moving away, stopped, or coming back? Steady, speeding up, or slowing down?'], text);
+    p.answer = rows.map(function (rw) { return rw.html + ' ' + want[rw.id]; }).join(', ');
+    return p;
+  }
+  function tickList(lo, hi, step) { var a = []; for (var v = lo; v <= hi + 1e-9; v += step) a.push([v, dn(v)]); return a; }
+  /* a scaled context graph: polyline pts, letters at vertices (optional) */
+  function ctx(o) {
+    var X = o.X, Y = o.Y;
+    return fig({ x: [0, X], y: [0, Y], grid: o.gx, gridY: o.gy, labels: 0, firstQuadrant: true, unitX: (o.w || 290) / X, unitY: (o.h || 150) / Y, xName: ' ', yName: ' ', xTitle: o.xt, yTitle: o.yt,
+      segs: o.segs || [{ pts: o.pts }], fns: o.fns, points: o.dots ? o.pts.map(function (p) { return { x: p[0], y: p[1] }; }) : null, xt: o.xT, yt: o.yT, notes: o.notes, max: o.max || 400, aria: o.aria || 'graph' });
+  }
+  function letterNotes(pts, names, offs) { return pts.map(function (p, i) { var o = (offs && offs[i]) || [0, -9]; return { x: p[0], y: p[1], dx: o[0], dy: o[1], text: names[i], bold: true, size: 12.5 }; }); }
+
+  /* EP4–5: a ride out to a friend's house and back */
+  function ride(r, allowBook) {
+    if (allowBook && r.chance(0.3)) return { t: [0, 20, 30, 50, 60, 90], d: [0, 8, 8, 14, 14, 0] };
+    for (var k = 0; k < 3000; k++) {
+      var t1 = r.pick([10, 15, 20, 25, 30]), v1 = r.pick([12, 15, 18, 20, 24, 30]), d1 = v1 * t1 / 60;
+      var L2 = r.pick([10, 15, 20, 25, 30]), v2 = r.pick([12, 15, 18, 20, 24]), dd = v2 * L2 / 60, s1 = r.pick([5, 10, 15]), s2 = r.pick([5, 10, 15]), v3 = r.pick([18, 20, 24, 28, 30, 36]);
+      if (d1 % 1 || dd % 1 || v1 === v2) continue;
+      var d2 = d1 + dd, dur = 60 * d2 / v3; if (dur % 5 || d2 > 18 || d2 < 6) continue;
+      var tt = [0, t1, t1 + s1, t1 + s1 + L2, t1 + s1 + L2 + s2]; tt.push(tt[4] + dur); if (tt[5] > 110) continue;
+      var m = [v1, v2, v3].sort(function (a, b) { return b - a; }); if (m[0] === m[1]) continue;
+      return { t: tt, d: [0, d1, d1, d2, d2, 0] };
+    }
+  }
+  function rideInfo(R) { var t = R.t, d = R.d; return { v1: 60 * d[1] / t[1], v2: 60 * (d[3] - d[2]) / (t[3] - t[2]), v3: 60 * (d[5] - d[4]) / (t[5] - t[4]), s1: t[2] - t[1], s2: t[4] - t[3] }; }
+  function rideFig(R) {
+    var X = R.t[5] + 10, Y = R.d[3] + 2, pts = R.t.map(function (x, i) { return [x, R.d[i]]; });
+    return ctx({ X: X, Y: Y, gx: 10, gy: 2, xt: 'Time (min)', yt: 'Distance from home (km)', pts: pts, dots: true, xT: tickList(X > 100 ? 20 : 10, X - 5, X > 100 ? 20 : 10), yT: tickList(2, Y - 1, 2),
+      notes: letterNotes(pts, ['J', 'K', 'L', 'M', 'N', 'P'], [[-8, -4], [-6, -9], [6, -9], [-6, -9], [6, -9], [8, -6]]), aria: 'distance from home during a bike ride' });
+  }
+  var SEGN = ['J to K', 'K to L', 'L to M', 'M to N', 'N to P'];
+
+  var EXTRA = [
+    { num: '1', section: 'Extra practice A — Matching a story to its graph', parts: [
+      { id: 'e1', level: 'EMG', make: function (r) {
+        var sh = {
+          line: { svg: sk({ segs: [Ln([[0, 0], [9.5, 5.2]])] }), desc: 'one straight line (a steady pace, no stops)' },
+          speed: { svg: sk({ fns: [Fn(function (x) { return 0.0576 * x * x; }, 0, 9.5)] }), desc: 'a curve getting steeper and steeper (speeding up)' },
+          stop: { svg: sk({ segs: [Ln([[0, 0], [3.5, 2.6], [6, 2.6], [9.5, 5.2]])] }), desc: 'two equally steep pieces with a flat part between (a stop, then the same speed again)' },
+          back: { svg: sk({ segs: [Ln([[0, 0], [4.5, 5], [9, 0]])] }), desc: 'up to a highest point and straight back down to 0 (out and back, no stop)' },
+          slow: { svg: sk({ fns: [Fn(function (x) { return 5.3 * (1 - Math.exp(-0.4 * x)); }, 0, 9.5)] }), desc: 'still rising but flattening out (moving away, slowing down)' },
+          away: { svg: sk({ segs: [Ln([[0, 4.6], [5, 4.6], [9.5, 0]])] }), desc: 'starting above 0, flat, then down to 0 (already away, stays, then comes home)' } };
+        var stories = [{ key: 'line', text: 'Amir jogs from home to the soccer pitch at one steady pace and never stops.' },
+          { key: 'speed', text: 'Beth wheels her bike out of the driveway and rides away, pedalling harder and harder, so each minute she covers more ground than the minute before.' },
+          { key: 'stop', text: 'Cai drives away from home, is held at a level crossing while a train passes, then carries on at the speed he was going before.' },
+          { key: 'back', text: 'Dev walks to the corner store and comes straight back home without going inside.' },
+          { key: 'slow', text: 'Eryn’s train pulls out of her home station and slows steadily as it coasts into the next station down the line.' },
+          { key: 'away', text: 'Fen is already at the library when the graph starts. She studies there for an hour, then walks home.' }];
+        return matchPart(r, sh, ['line', 'speed', 'stop', 'back', 'slow', 'away'], 'Each graph shows one person’s distance from home (vertical) against time (horizontal). Match each story with its graph.', stories, LET, 'match stories to distance graphs');
+      } }] },
+    { num: '2', parts: [
+      { id: 'e2', level: 'EMG', make: function (r) {
+        var sh = {
+          bus: { svg: sk({ segs: [Ln([[0, 0], [2.5, 4], [9.5, 4]])] }), desc: 'rising from 0, then flat above the axis (speeds up, then holds a steady speed)' },
+          brake: { svg: sk({ segs: [Ln([[0, 4.4], [5, 4.4], [8.5, 0], [9.6, 0]])] }), desc: 'flat up high, a straight fall to 0, then on the axis (cruising, braking, stopped)' },
+          sprint: { svg: sk({ segs: [Ln([[0, 0], [1.8, 4.8], [5.5, 4.8], [8, 1.6], [9.6, 1.6]])] }), desc: 'a steep rise, flat at the top, then down to a lower speed that is not 0' },
+          light: { svg: sk({ segs: [Ln([[0, 3.2], [2.2, 0], [4.5, 0], [7, 3.2], [9.6, 3.2]])] }), desc: 'falling to 0, sitting on the axis, then climbing back to the same speed' } };
+        var stories = [{ key: 'bus', text: 'A city bus pulls away from a stop, builds up to the speed limit, and holds it all the way to the next stop.' },
+          { key: 'brake', text: 'A car is cruising on the highway when the driver brakes smoothly to a complete stop at a rest area.' },
+          { key: 'light', text: 'A car driving through town slows to a stop at a red light, waits, then builds back up to the speed it was doing before.' },
+          { key: 'sprint', text: 'A sprinter accelerates hard out of the blocks, holds top speed to the finish line, then slows to an easy jog and keeps jogging.' }];
+        return matchPart(r, sh, ['bus', 'brake', 'sprint', 'light'], 'These graphs show <b>speed</b> (vertical) against time — read the vertical axis before you decide. Match each story with its graph.', stories, ['P', 'Q', 'R', 'S'], 'match stories to speed graphs');
+      } }] },
+    { num: '3', stem: function (s) {
+        var X = s.T * 1.15, Y = s.D * 1.25;
+        return 'Two riders leave home at the same instant. Both graphs start at ' + t('(0\\text{ min}, 0\\text{ km})') + ' and end at ' + t('(' + s.T + '\\text{ min}, ' + s.D + '\\text{ km})') + '. Rider A’s graph is a straight line; rider B’s is a curve.' +
+          ctx({ X: X, Y: Y, gx: 0, gy: 0, xt: 'Time (min)', yt: 'Distance from home (km)', segs: [{ pts: [[0, 0], [s.T, s.D]], color: C1 }], fns: [Fn(function (x) { return s.D * Math.pow(x / s.T, 2.6); }, 0, s.T, { color: C2 })],
+            xT: [[s.T / 2, dn(s.T / 2)], [s.T, String(s.T)]], yT: [[s.D, String(s.D)]], notes: [{ x: s.T * 0.45, y: s.D * 0.45, dx: -8, dy: -4, text: 'A', bold: true, color: C1, anchor: 'end' }, { x: s.T * 0.8, y: s.D * Math.pow(0.8, 2.6), dx: 8, dy: 4, text: 'B', bold: true, color: C2, anchor: 'start' }], h: 140, aria: 'two riders' });
+      }, shared: function (r) {
+        if (r.chance(0.3)) return { D: 6, T: 30, v: 12 };
+        var c = []; [20, 30, 40, 45, 60].forEach(function (T) { for (var D = 3; D <= 15; D++) { var v = 60 * D / T; if (v % 1 === 0 && v >= 8 && v <= 24) c.push({ D: D, T: T, v: v }); } });
+        return r.pick(c);
+      }, parts: [
+      { id: 'e3a', level: 'EMG', make: function (r, s) {
+        var dg = numDiag(s.v, [{ v: s.D / s.T, code: 'per-min', hint: 'That is km per <b>minute</b>. ' + t(s.T + units('min') + '=' + fr(s.T / 60) + units('h')) + '.' }, { v: s.D, code: 'avg-speed', hint: 'That is the distance. Average speed = distance ÷ time.' }, { v: s.T / s.D, code: 'rate-flip', hint: 'Average speed = distance ÷ time, not time ÷ distance.' }]);
+        var p = K.P.fields('Find the average speed of each rider over the whole ' + t(s.T) + ' minutes, in km/h.', [numBox('Rider A:', 'km/h'), numBox('Rider B:', 'km/h')], [K.number(s.v, dg), K.number(s.v, dg)], [String(s.v), String(s.v)], 'A: ' + t(s.v + units('km/h')) + ', B: ' + t(s.v + units('km/h')),
+          t(s.T + units('min') + '=' + fr(s.T / 60) + units('h')) + '. Both: ' + t(s.D + '\\div ' + fr(s.T / 60) + '=' + s.v + units('km/h')) + '. Same start and same end, so the <b>averages are equal</b>.', ['Average speed = total distance ÷ total time (in hours).'], 'two riders: average speeds');
+        p.bad = [[String(s.v), String(s.v / 2)], [dn(s.D / s.T), dn(s.D / s.T)]]; return p;
+      } },
+      { id: 'e3b', level: 'EMG', make: function (r, s) {
+        var p = K.P.grid('Which rider is moving faster in the first few minutes, and which in the last few minutes?', [{ id: 'first', html: 'First few minutes' }, { id: 'last', html: 'Last few minutes' }], [{ id: 'A', html: 'A' }, { id: 'B', html: 'B' }], { first: 'A', last: 'B' },
+          { why: function (row) { return { code: 'row', hint: 'Steeper means faster. In the ' + (row === 'first' ? 'first' : 'last') + ' few minutes, which graph is steeper: A’s line or B’s curve?' }; } },
+          '<b>First few minutes: A</b> — B’s curve is almost flat there. <b>Last few minutes: B</b> — B’s curve is steeper than A’s line there. Steeper means faster.', ['Compare the steepness of the two graphs at the left end and at the right end.'], 'two riders: who is faster when');
+        p.answer = 'First few minutes: A; last few minutes: B'; return p;
+      } },
+      { id: 'e3c', level: 'EMG', make: function (r, s) {
+        return K.P.mc(r, 'Which rider is farther from home ' + t(dn(s.T / 2)) + ' minutes in?', [
+          { html: 'A — B’s curve lies below A’s line between the start and the finish.', right: true },
+          { html: 'B — B is going faster at the end.', why: 'B is faster near the end, but at ' + t(dn(s.T / 2)) + ' minutes read the heights: B’s curve is <b>below</b> A’s line.' },
+          { html: 'They are the same distance, because they have the same average speed.', why: 'Equal averages only means they finish together. In between, read the heights of the two graphs at ' + t(dn(s.T / 2)) + ' minutes.' },
+          { html: 'You can’t tell without a formula for B.', why: 'You can compare without numbers: which graph is higher at ' + t(dn(s.T / 2)) + ' minutes?' }],
+          'At ' + t(dn(s.T / 2)) + ' minutes A’s line is higher than B’s curve, so A has covered more ground: <b>A</b> is farther from home.', ['Higher on a distance-from-home graph means farther from home.'], 'two riders: farther at halfway');
+      } },
+      { id: 'e3d', level: 'PRG', make: function (r, s) {
+        return numPart('B starts out slower than A and finishes faster than A. B’s speed changes smoothly, with no jumps, so at some instant the two riders are travelling at exactly the same speed. What is that speed, in km/h?', s.v,
+          [{ v: s.D / s.T, code: 'per-min', hint: 'Give the speed in km/h, not km/min.' }, { v: 0, code: 'avg-speed', hint: 'Both are moving the whole time. What is A’s speed?' }, { v: 2 * s.v, code: 'avg-speed', hint: 'A’s line has the same steepness the whole way. What is A’s (constant) speed?' }],
+          'A’s speed never changes: ' + t(s.v + units('km/h')) + ' the whole way. B’s speed starts below that and ends above it, and changes smoothly, so it must pass through ' + t(s.v + units('km/h')) + ' at some instant.', ['A rides at one constant speed. What is it?'], 'two riders: common speed', { after: 'km/h' });
+      } },
+      { id: 'e3e', level: 'EMG', make: function (r, s) {
+        return K.P.tf(r, '“Equal average speed means equal speed the whole way.” Use the graphs: is this statement true or false?', false, 'Both riders average ' + t(s.v + units('km/h')) + ', but B is slower than A at the start and faster at the end.',
+          '<b>False.</b> Both averages are ' + t(s.v + units('km/h')) + ', but A rides at ' + t(s.v + units('km/h')) + ' the whole way while B is slower at first (flatter) and faster at the end (steeper). Equal averages, different speeds along the way.', ['Do the two graphs have the same steepness everywhere?'], 'equal average ≠ equal speed');
+      } }] },
+
+    { num: '4', section: 'Extra practice B — Describing a graph segment by segment', stem: function (R) { return 'Jules rides her bike from home to a friend’s house, then rides home again. The graph of her distance from home is made of five straight segments.' + rideFig(R); },
+      shared: function (r) { return ride(r, true); }, parts: [
+      { id: 'e4a', level: 'BEG', make: function (r, R) {
+        var rows = SEGN.map(function (n, i) { return { id: 's' + i, html: n }; }), want = { s0: 'away', s1: 'stop', s2: 'away', s3: 'stop', s4: 'back' };
+        var p = K.P.grid('Describe what Jules is doing on each segment.', rows, [{ id: 'away', html: 'Riding<br>away' }, { id: 'stop', html: 'Stopped' }, { id: 'back', html: 'Riding<br>home' }], want, { why: function (row) {
+          var w = want[row]; return { code: 'row', hint: w === 'stop' ? 'On a distance–time graph a flat segment means the distance is not changing: she is stopped.' : w === 'back' ? 'Her distance from home is going <b>down</b> on this segment: she is coming back.' : 'Her distance from home is going <b>up</b> here: she is riding away.' };
+        } }, rows.map(function (rw, i) { var I = rideInfo(R); return rw.html + ': ' + (want[rw.id] === 'stop' ? 'stopped ' + R.d[i] + ' km from home for ' + (R.t[i + 1] - R.t[i]) + ' min' : want[rw.id] === 'back' ? 'riding home steadily: ' + R.d[i] + ' km in ' + (R.t[i + 1] - R.t[i]) + ' min' : 'riding away steadily: ' + (R.d[i + 1] - R.d[i]) + ' km in ' + (R.t[i + 1] - R.t[i]) + ' min'); }).join('<br>'),
+        ['Rising = moving away, flat = stopped, falling = coming back.'], 'ride: describe segments');
+        p.answer = rows.map(function (rw) { return rw.html + ': ' + { away: 'riding away', stop: 'stopped', back: 'riding home' }[want[rw.id]]; }).join('<br>'); return p;
+      } },
+      { id: 'e4b', level: 'BEG', make: function (r, R) {
+        var I = rideInfo(R);
+        return K.P.fields('How far from home is the friend’s house, and how long does Jules spend there?', [numBox('Distance:', 'km'), numBox('Time there:', 'min')],
+          [K.number(R.d[3], numDiag(R.d[3], [{ v: R.d[1], code: 'wrong-line', hint: 'That is her first stop. The friend’s house is the farthest point from home.' }])), K.number(I.s2, numDiag(I.s2, [{ v: I.s1, code: 'wrong-line', hint: 'That is the first stop. She is at the friend’s house on the highest flat segment, M to N.' }, { v: R.t[4], code: 'shared-time', hint: 'That is the time she leaves. How long is the flat segment M to N?' }]))],
+          [String(R.d[3]), String(I.s2)], t(R.d[3] + units('km')) + '; ' + t(I.s2 + units('min')),
+          'The friend’s house is the farthest point, ' + t(R.d[3] + units('km')) + ' from home. She is there from ' + t(R.t[3]) + ' to ' + t(R.t[4]) + ' min (M to N): ' + t(R.t[4] + '-' + R.t[3] + '=' + I.s2 + units('min')) + '.', ['The friend’s house is where she turns around.'], 'ride: friend’s house');
+      } },
+      { id: 'e4c', level: 'BEG', make: function (r, R) {
+        var I = rideInfo(R), tot = I.s1 + I.s2;
+        return numPart('For how many minutes in total is Jules not moving?', tot, [{ v: I.s1, code: 'one-stop', hint: 'There are <b>two</b> flat segments. Add both.' }, { v: I.s2, code: 'one-stop', hint: 'There are <b>two</b> flat segments. Add both.' }],
+          'She is not moving on the flat segments: K to L (' + t(I.s1) + ' min) and M to N (' + t(I.s2) + ' min). Total ' + t(I.s1 + '+' + I.s2 + '=' + tot) + ' min.', ['Not moving = flat segments. How many are there?'], 'ride: time stopped', { after: 'min' });
+      } },
+      { id: 'e4d', level: 'EMG', make: function (r, R) {
+        var tot = 2 * R.d[3];
+        return numPart('How far does Jules travel altogether?', tot, [{ v: R.d[3], code: 'dist-vs-travel', hint: 'That is how far she gets from home. She also has to ride back.' }, { v: 0, code: 'dist-vs-travel', hint: 'That is her distance from home at the end, not how far she rode.' }],
+          'Out: ' + t(R.d[1] + '+' + (R.d[3] - R.d[1]) + '=' + R.d[3]) + ' km, back: ' + t(R.d[3]) + ' km. Total ' + t(tot) + ' km. The graph shows <b>distance from home</b>, which is ' + t('0') + ' at P because she ends where she started.', ['Add the distance out and the distance back.'], 'ride: total distance', { after: 'km' });
+      } }] },
+    { num: '5', stem: function (R) { return 'Another of Jules’s rides is shown below. Give every rate of change <b>with its units</b>.' + rideFig(R); }, shared: function (r) { return ride(r, true); }, parts: [
+      { id: 'e5a', level: 'EMG', make: function (r, R) {
+        var I = rideInfo(R);
+        return numPart('Find the rate of change on J to K, in km/h.', I.v1, rateCands(R.d[1], R.t[1], true, I.v1), t('\\text{rate}=\\frac{' + R.d[1] + '-0}{' + R.t[1] + '-0}=' + dn(R.d[1] / R.t[1]) + '\\text{ km/min}') + ', and ' + t(dn(R.d[1] / R.t[1]) + '\\times 60=' + I.v1 + units('km/h')) + '.', ['Rate = change in distance ÷ change in time. Then convert km/min to km/h.'], 'ride: rate J-K', { after: 'km/h' });
+      } },
+      { id: 'e5b', level: 'EMG', make: function (r, R) {
+        var I = rideInfo(R), dd = R.d[3] - R.d[2], dt = R.t[3] - R.t[2];
+        return numPart('Find the rate of change on L to M, in km/h.', I.v2, rateCands(dd, dt, true, I.v2).concat([{ v: 60 * R.d[3] / (R.t[3] - R.t[2]), code: 'wrong-line', hint: 'Use the <b>change</b> in distance on L to M (' + t(R.d[3] + '-' + R.d[2]) + '), not the distance at M.' }]),
+          t('\\text{rate}=\\frac{' + R.d[3] + '-' + R.d[2] + '}{' + R.t[3] + '-' + R.t[2] + '}=\\frac{' + dd + '}{' + dt + '}=' + dn(dd / dt) + '\\text{ km/min}') + ', so ' + t(dn(dd / dt) + '\\times 60=' + I.v2 + units('km/h')) + '.', ['Use the change in distance and the change in time on this segment only.'], 'ride: rate L-M', { after: 'km/h' });
+      } },
+      { id: 'e5c', level: 'EMG', make: function (r, R) {
+        var I = rideInfo(R), before = I.v1 > I.v2;
+        return K.P.mc(r, 'Is Jules faster before her first stop or after it, and how does the picture show that?', [
+          { html: 'Before — J to K is the steeper segment.', right: before, why: before ? null : 'Compare the steepness: ' + t(I.v1 + units('km/h')) + ' on J to K and ' + t(I.v2 + units('km/h')) + ' on L to M.' },
+          { html: 'After — L to M is the steeper segment.', right: !before, why: !before ? null : 'Compare the steepness: ' + t(I.v1 + units('km/h')) + ' on J to K and ' + t(I.v2 + units('km/h')) + ' on L to M.' },
+          { html: 'After — L to M is higher up on the graph.', why: 'Height shows distance from home, not speed. Speed is shown by the <b>steepness</b>.' },
+          { html: 'Before — J to K starts at the origin.', why: 'Where a segment starts doesn’t tell you the speed. Compare how steep the segments are.' }],
+          'J to K: ' + t(I.v1 + units('km/h')) + '; L to M: ' + t(I.v2 + units('km/h')) + '. She is faster <b>' + (before ? 'before' : 'after') + '</b> the stop, and that segment is the steeper one.', ['Steeper = faster.'], 'ride: faster before/after', true);
+      } },
+      { id: 'e5d', level: 'BEG', make: function (r, R) {
+        return numPart('Find the rate of change on K to L, in km/h.', 0, [{ v: R.d[1], code: 'wrong-line', hint: 'That is her distance from home. The rate of change is the <b>change</b> in distance ÷ time.' }, { v: R.t[2] - R.t[1], code: 'rate-flip', hint: 'That is the time. How much does the distance change on K to L?' }],
+          t('\\text{rate}=\\frac{' + R.d[2] + '-' + R.d[1] + '}{' + R.t[2] + '-' + R.t[1] + '}=0') + ' km/h: her distance from home is not changing — she is stopped.', ['How much does the distance change on a flat segment?'], 'ride: rate K-L', { after: 'km/h' });
+      } },
+      { id: 'e5e', level: 'PRG', make: function (r, R) {
+        var I = rideInfo(R), dt = R.t[5] - R.t[4];
+        return numPart('Find the rate of change on N to P, in km/h.', I.v3, rateCands(-R.d[4], dt, true, I.v3),
+          t(dt + units('min') + '=' + fr(dt / 60) + units('h')) + '. ' + t('\\text{rate}=\\frac{0-' + R.d[4] + '}{' + fr(dt / 60) + '}=' + I.v3 + units('km/h')) + '. The negative sign means her <b>distance from home is decreasing</b> — she is riding back toward home (forwards on her bike).', ['The distance goes down on this segment. What sign does that give the rate of change?'], 'ride: rate N-P', { after: 'km/h' });
+      } },
+      { id: 'e5f', level: 'EMG', make: function (r, R) {
+        var I = rideInfo(R), sp = -I.v3;
+        return numPart('How fast is Jules actually pedalling on N to P, in km/h?', sp, [{ v: I.v3, code: 'speed-sign', hint: 'Speed is only <b>how fast</b>, with no direction, so it is never negative. The minus sign only tells which way the distance from home is changing.' }, { v: sp / 60, code: 'per-min', hint: 'Give the speed in km/h.' }],
+          'Speed is the size of the rate of change: ' + t('|' + I.v3 + '|=' + sp + units('km/h')) + '. The sign only tells that the distance from home is decreasing.', ['Speed has no direction.'], 'ride: speed N-P', { after: 'km/h' });
+      } },
+      { id: 'e5g', level: 'EMG', make: function (r, R) {
+        var I = rideInfo(R), sizes = [I.v1, I.v2, -I.v3], mx = Math.max.apply(null, sizes), names = ['J to K', 'L to M', 'N to P'];
+        var means = ['she is riding away from home fastest on her first ride out', 'she rides fastest on the second part of the trip out', 'the ride home is the fastest part of the trip'];
+        return K.P.mc(r, 'Which segment is steepest, and what does that tell you about the ride?', names.map(function (n, i) {
+          return { html: n + ': ' + means[i] + '.', right: sizes[i] === mx, why: sizes[i] === mx ? null : 'Compare the sizes of the rates: ' + t(I.v1) + ', ' + t(I.v2) + ' and ' + t('|' + I.v3 + '|=' + (-I.v3)) + ' km/h. A falling segment can be the steepest too.' };
+        }).concat([{ html: 'M to N: she is highest there.', why: 'M to N is flat — its rate of change is ' + t('0') + '. Height is distance, not speed.' }]),
+          'Sizes of the rates: ' + t(I.v1) + ', ' + t(I.v2) + ' and ' + t('|' + I.v3 + '|=' + (-I.v3)) + ' km/h. The steepest is <b>' + names[sizes.indexOf(mx)] + '</b>: ' + means[sizes.indexOf(mx)] + '.', ['Steepness ignores the sign: compare the sizes of the rates.'], 'ride: steepest segment', true);
+      } }] },
+
+    { num: '6', stem: function (Dr) {
+        var X = Dr.t[5] + 12, Y = Dr.a[3] + 20, pts = Dr.t.map(function (x, i) { return [x, Dr.a[i]]; });
+        return 'A survey drone rises from the ground, hovers, climbs again, hovers again, then descends. The graph shows its altitude against time.' +
+          ctx({ X: X, Y: Y, gx: 10, gy: 10, xt: 'Time (s)', yt: 'Altitude (m)', pts: pts, xT: tickList(20, X - 5, 20), yT: tickList(20, Y - 5, 20), aria: 'drone altitude' });
+      }, shared: function (r) {
+        if (r.chance(0.3)) return { t: [0, 20, 50, 70, 90, 110], a: [0, 60, 60, 100, 100, 0], r: [3, 2, -5] };
+        for (var k = 0; k < 3000; k++) {
+          var c1 = r.pick([10, 15, 20, 25]), r1 = r.pick([2, 3, 4, 5]), h1 = r.pick([10, 20, 30]), c2 = r.pick([10, 20]), r2 = r.pick([1, 2, 3]), h2 = r.pick([10, 20]), r3 = r.pick([4, 5, 6, 8, 10]);
+          var a1 = r1 * c1, a2 = a1 + r2 * c2, c3 = a2 / r3;
+          if (r1 === r2 || r3 <= Math.max(r1, r2) || c3 % 5 || a2 > 160 || (10 * r3) % r2) continue;
+          var tt = [0, c1, c1 + h1, c1 + h1 + c2, c1 + h1 + c2 + h2]; tt.push(tt[4] + c3); if (tt[5] > 130) continue;
+          return { t: tt, a: [0, a1, a1, a2, a2, 0], r: [r1, r2, -r3] };
+        }
+      }, parts: [
+      { id: 'e6a', level: 'BEG', make: function (r, Dr) {
+        return numPart('Find the rate of change of altitude during the first climb, in m/s.', Dr.r[0], rateCands(Dr.a[1], Dr.t[1], false, Dr.r[0]).concat([{ v: Dr.a[1], code: 'avg-speed', hint: 'That is the altitude. Divide the change in altitude by the time it took.' }]),
+          t('\\text{rate}=\\frac{' + Dr.a[1] + '-0}{' + Dr.t[1] + '-0}=' + Dr.r[0] + units('m/s')) + ': the drone gains ' + Dr.r[0] + ' m every second.', ['Change in altitude ÷ change in time.'], 'drone: first climb', { after: 'm/s' });
+      } },
+      { id: 'e6b', level: 'BEG', make: function (r, Dr) {
+        var dd = Dr.a[3] - Dr.a[2], dt = Dr.t[3] - Dr.t[2];
+        return numPart('Find the rate of change during the second climb, in m/s.', Dr.r[1], rateCands(dd, dt, false, Dr.r[1]).concat([{ v: Dr.a[3] / dt, code: 'wrong-line', hint: 'Use the <b>change</b> in altitude (' + t(Dr.a[3] + '-' + Dr.a[2]) + '), not the final altitude.' }]),
+          t('\\text{rate}=\\frac{' + Dr.a[3] + '-' + Dr.a[2] + '}{' + Dr.t[3] + '-' + Dr.t[2] + '}=\\frac{' + dd + '}{' + dt + '}=' + Dr.r[1] + units('m/s')) + '. The ' + (Dr.r[0] > Dr.r[1] ? 'first' : 'second') + ' climb is faster — its segment is steeper.', ['Use only the change during the second climb.'], 'drone: second climb', { after: 'm/s' });
+      } },
+      { id: 'e6c', level: 'EMG', make: function (r, Dr) {
+        var dt = Dr.t[5] - Dr.t[4];
+        return numPart('Find the rate of change during the descent, in m/s.', Dr.r[2], rateCands(-Dr.a[4], dt, false, Dr.r[2]),
+          t('\\text{rate}=\\frac{0-' + Dr.a[4] + '}{' + Dr.t[5] + '-' + Dr.t[4] + '}=\\frac{-' + Dr.a[4] + '}{' + dt + '}=' + Dr.r[2] + units('m/s')) + '. The negative sign means the drone is <b>losing</b> altitude, ' + (-Dr.r[2]) + ' m every second.', ['The altitude decreases, so the rate of change is negative.'], 'drone: descent', { after: 'm/s' });
+      } },
+      { id: 'e6d', level: 'BEG', make: function (r, Dr) {
+        var h1 = Dr.t[2] - Dr.t[1], h2 = Dr.t[4] - Dr.t[3];
+        return numPart('For how many seconds in total is the altitude constant?', h1 + h2, [{ v: h1, code: 'flat-time', hint: 'There are two flat pieces. Add both.' }, { v: h2, code: 'flat-time', hint: 'There are two flat pieces. Add both.' }],
+          'Flat from ' + Dr.t[1] + ' to ' + Dr.t[2] + ' s (' + h1 + ' s) and from ' + Dr.t[3] + ' to ' + Dr.t[4] + ' s (' + h2 + ' s): total ' + t(h1 + h2) + ' s.', ['Constant altitude = flat segments.'], 'drone: hovering time', { after: 's' });
+      } },
+      { id: 'e6e', level: 'EMG', make: function (r, Dr) {
+        var q = -Dr.r[2] / Dr.r[1];
+        return numPart('The descent is steeper than either climb. The drone comes down ________ times as fast as it went up on the second climb.', q, [{ v: Dr.r[1] / -Dr.r[2], code: 'ratio', hint: 'Divide the faster rate (the descent) by the slower one (the second climb).' }, { v: -Dr.r[2] - Dr.r[1], code: 'ratio', hint: '“How many times as fast” means divide, not subtract.' }, { v: -Dr.r[2] / Dr.r[0], code: 'wrong-line', hint: 'That compares with the <b>first</b> climb.' }],
+          'Descent: ' + t((-Dr.r[2]) + units('m/s')) + ' down; second climb: ' + t(Dr.r[1] + units('m/s')) + ' up. ' + t((-Dr.r[2]) + '\\div ' + Dr.r[1] + '=' + dn(q)) + ' times as fast.', ['Compare the sizes of the two rates by dividing.'], 'drone: compare rates');
+      } },
+      { id: 'e6f', level: 'EMG', make: function (r, Dr) {
+        return K.P.tf(r, 'While the graph is flat, the drone’s altitude is not changing. True or false: that proves the drone is not moving at all.', false, 'The graph records only altitude. The drone could be flying level across the survey area.',
+          '<b>False.</b> Flat means the <b>height</b> is constant. The drone could be hovering in place or flying level — the graph doesn’t show horizontal motion.', ['What does this graph measure, and what doesn’t it show?'], 'drone: flat ≠ not moving');
+      } }] },
+
+    { num: '7', section: 'Extra practice C — Sketching a graph from a story', stem: 'There is no scale, so only the <b>shape</b> matters: where it rises, falls, stays flat, bends or repeats. Choose the best sketch.', parts: [
+      { id: 'e7a', level: 'EMG', make: function (r) {
+        var it = r.pick(['A mug of hot coffee is left on a desk in a warm room and forgotten all afternoon.', 'A bowl of hot soup is left on the kitchen table and forgotten.', 'A pot of boiling water is taken off the stove and left on the counter.']);
+        return mcG(r, it + ' Which graph shows its temperature (vertical) against time (horizontal)?', [
+          { html: sk(S.downSlow(1.7)), right: true },
+          { html: sk(S.down0(8.6)), code: 'lin', why: 'A straight line means it cools by the same amount every minute, down to nothing. It cools fastest at first, then more slowly, and stops at room temperature.' },
+          { html: sk(S.downFast()), code: 'fast', why: 'This cools slowly at first and faster later. A hot drink cools fastest at the start, when it is much hotter than the room.' },
+          { html: sk(S.downSlow(0.08)), code: 'zero', why: 'This levels off at about zero. It can only cool to room temperature, which is well above the bottom of the graph.' }],
+          'Decreasing, <b>steeply at first, then more slowly</b>; it levels off at room temperature and never drops below it.', ['When is it cooling fastest? Where does it stop?'], 'sketch: cooling');
+      } },
+      { id: 'e7b', level: 'EMG', make: function (r) {
+        var k = r.pick([2, 3, 3, 4]), wn = k === 2 ? 3 : k - 1;
+        return mcG(r, 'One seat on a Ferris wheel turning at a steady rate, for ' + k + ' complete turns, starting from the loading platform at the bottom. Which graph shows the height of the seat against time?', [
+          { html: sk(S.wave(k, 'low', 0.4, 5.2)), right: true },
+          { html: sk(S.wave(k, 'high', 0.4, 5.2)), code: 'top', why: 'This starts at the top. The seat starts at the loading platform, at the <b>bottom</b>.' },
+          { html: sk(S.wave(wn, 'low', 0.4, 5.2)), code: 'count', why: 'Count the cycles: this shows ' + wn + ' turns, not ' + k + '.' },
+          { html: sk(S.damped(k, 0.4)), code: 'damped', why: 'The peaks shrink here. The wheel turns steadily, so every turn reaches the same top height.' }],
+          'A repeating wave: <b>' + k + ' identical cycles</b>, starting at the bottom (the platform), each rising to the same top and back down.', ['Where does the seat start? How many cycles?'], 'sketch: Ferris wheel');
+      } },
+      { id: 'e7c', level: 'EMG', make: function (r) {
+        var pl = r.pick(['a school parking lot from 7:00 a.m. to 5:00 p.m. on a school day', 'an office building’s parking garage from 6:00 a.m. to 7:00 p.m. on a workday']);
+        return mcG(r, 'The number of cars in ' + pl + '. Which graph fits best (number of cars vertical, time horizontal)?', [
+          { html: sk({ segs: [Ln([[0.3, 0.3], [1, 0.5], [2.2, 4.6], [2.8, 4.8], [7.6, 4.7], [8.2, 4.4], [9.2, 0.6], [9.6, 0.4]])] }), right: true },
+          { html: sk(S.hill(4.95, 0.3, 4.8, 0.3)), code: 'hill', why: 'This builds up slowly all morning and drains slowly all afternoon. People arrive in a rush, stay all day, then leave in a rush.' },
+          { html: sk(S.up()), code: 'up', why: 'This keeps rising all day. The lot empties at the end of the day.' },
+          { html: sk({ segs: [Ln([[0.3, 0.3], [1, 0.5], [2.2, 4.6], [9.6, 4.8]])] }), code: 'nofall', why: 'This rises and stays full. Everyone leaves at the end of the day, so it must fall again.' }],
+          'Near ' + t('0') + ' early, a <b>steep rise</b> as people arrive, roughly <b>flat</b> all day, then a <b>steep fall</b> when everyone leaves.', ['When do the cars arrive and leave? Quickly or slowly?'], 'sketch: parking lot');
+      } },
+      { id: 'e7d', level: 'BEG', make: function (r) {
+        var D = r.pick([3, 5, 5, 8, 10]);
+        function G(sh) { return sk(sh, { pad: true, yT: [[5, String(D)]] }); }
+        return mcG(r, 'A runner jogs a straight ' + t(D + units('km')) + ' course at one steady pace. Which graph shows the distance she still has <b>left</b> to run (in km) against time?', [
+          { html: G({ segs: [Ln([[0, 5], [8.4, 0]], { end: 'closed' })] }), right: true },
+          { html: G({ segs: [Ln([[0, 0], [8.4, 5]], { end: 'closed' })] }), code: 'run', why: 'This shows the distance she has <b>run</b>, which goes up. The distance left goes down.' },
+          { html: G({ fns: [Fn(function (x) { return 5 * Math.exp(-0.32 * x); }, 0, 9.6)] }), code: 'curve', why: 'A curve that flattens means she slows down and never finishes. A steady pace gives a straight line.' },
+          { html: G({ segs: [Ln([[0, 5], [6, 1.5]], { end: 'closed' })] }), code: 'short', why: 'This stops before reaching ' + t('0') + '. When she finishes, the distance left is ' + t('0') + '.' }],
+          'A <b>straight line falling from ' + D + ' to 0</b>: a steady pace is a constant rate of change, and it reaches ' + t('0') + ' when she finishes.', ['Does the distance left go up or down? Is the pace steady?'], 'sketch: distance left');
+      } }] },
+    { num: '8', stem: 'Each of these has a detail that is easy to get wrong. Choose the best sketch.', parts: [
+      { id: 'e8a', level: 'EMG', make: function (r) {
+        var sh = function (o) { return sk(o); };
+        return mcG(r, 'A stone is dropped from a bridge and falls until it hits the water. Which graph shows the <b>distance it has fallen</b> against time? (A falling stone does not fall at a steady speed.)', [
+          { html: sh({ fns: [Fn(function (x) { return 0.08 * x * x; }, 0, 8)], points: [{ x: 8, y: 5.12 }] }), right: true },
+          { html: sh({ segs: [Ln([[0, 0], [8, 5.12]], { end: 'closed' })] }), code: 'lin', why: 'A straight line means a steady speed. The stone speeds up as it falls, so the graph gets steeper and steeper.' },
+          { html: sh({ fns: [Fn(function (x) { return 5.3 * (1 - Math.exp(-0.38 * x)); }, 0, 8)], points: [{ x: 8, y: 5.3 * (1 - Math.exp(-3.04)) }] }), code: 'slow', why: 'This flattens out, as if the stone slowed down. It speeds up all the way down.' },
+          { html: sh({ fns: [Fn(function (x) { return 5.12 - 0.08 * x * x; }, 0, 8)], points: [{ x: 8, y: 0 }] }), code: 'height', why: 'This is the stone’s <b>height</b> above the water, which goes down. The question asks for the distance fallen, which goes up.' }],
+          'From the origin, rising and getting <b>steeper and steeper</b> (the stone speeds up); it stops when it hits the water.', ['Does the distance fallen go up or down? Is the speed steady?'], 'sketch: falling stone');
+      } },
+      { id: 'e8b', level: 'EMG', make: function (r) {
+        var n = r.pick([2, 3, 3]), w = 9.3 / n;
+        function bus(low, stops) { var pts = [[0, 0]]; for (var i = 0; i < stops; i++) { var x = i * (9.3 / stops); pts.push([x + 0.12 * w * (n / stops), 4.2], [x + 0.62 * w * (n / stops), 4.2], [x + 0.74 * w * (n / stops), low], [x + (i === stops - 1 ? 0.74 : 1) * w * (n / stops), low]); } return { segs: [Ln(pts)] }; }
+        var stair = []; for (var i = 0; i < n; i++) { var x0 = i * w; stair.push([x0, i * 1.6], [x0 + 0.7 * w, (i + 1) * 1.6], [x0 + w, (i + 1) * 1.6]); }
+        return mcG(r, 'A bus leaves the depot and makes ' + n + ' stops along its route. Which graph shows the bus’s <b>speed</b> from the moment it leaves the depot until it reaches stop ' + n + '?', [
+          { html: sk(bus(0, n)), right: true },
+          { html: sk(bus(1.6, n)), code: 'high', why: 'Here the flat parts between trips are above the axis — that means driving at a lower steady speed. At a stop the speed is ' + t('0') + ', so the graph must sit <b>on</b> the time axis.' },
+          { html: sk({ segs: [Ln(stair)] }), code: 'dist', why: 'This graph only goes up — it looks like the bus’s <b>distance</b> along the route. Speed drops to ' + t('0') + ' at every stop.' },
+          { html: sk(bus(0, n - 1 || 1)), code: 'count', why: 'Count the stops: the speed should drop to ' + t('0') + ' ' + n + ' times.' }],
+          'Speed up, cruise, slow to ' + t('0') + ' — ' + n + ' times. The stops are flat parts <b>on the time axis</b> (speed ' + t('0') + '), not flat parts up high (which mean cruising).', ['What is the speed at a stop? Where is that on the graph?'], 'sketch: bus speed');
+      } },
+      { id: 'e8c', level: 'EMG', make: function (r) {
+        return mcG(r, 'A tap fills a bathtub at a steady rate. The tap is turned off, someone bathes for a while, and then the plug is pulled and the tub empties <b>faster</b> than it filled. Which graph shows the amount of water in the tub against time?', [
+          { html: sk({ segs: [Ln([[0.3, 0], [3.8, 4.4], [6.2, 4.4], [7.8, 0], [9.6, 0]])] }), right: true },
+          { html: sk({ segs: [Ln([[0.3, 0], [2.4, 4.4], [4.6, 4.4], [9.4, 0]])] }), code: 'slowempty', why: 'Here the fall is gentler than the rise, so it empties more slowly. Emptying faster means a <b>steeper</b> fall.' },
+          { html: sk({ segs: [Ln([[0.3, 0], [3.8, 4.4], [5.4, 0], [9.6, 0]])] }), code: 'noflat', why: 'There is no flat part. While someone bathes, the tap is off and the plug is in, so the amount stays constant.' },
+          { html: sk({ fns: [Fn(function (x) { return x <= 3.8 ? 4.4 * Math.sqrt((x - 0.3) / 3.5) : x <= 6.2 ? 4.4 : Math.max(0, 4.4 - 4.4 * Math.pow((x - 6.2) / 1.6, 0.5)); }, 0.3, 9.6)] }), code: 'curve', why: 'The rising part curves (slowing down). A tap at a steady rate adds the same amount each minute, so the rise should be straight.' }],
+          'Straight rise (tap on, steady), flat (tap off, bathing), then a straight fall to ' + t('0') + ' that is <b>steeper than the rise</b>, because it empties faster than it filled.', ['Three stages: filling, bathing, emptying. Which is steepest?'], 'sketch: bathtub');
+      } },
+      { id: 'e8d', level: 'EMG', make: function (r) {
+        var it = r.pick(['A phone', 'A tablet', 'A gaming console']);
+        return mcG(r, it + ' loses value quickly in its first year and more slowly after that, but a working one is never quite worthless. Which graph shows its value against its age?', [
+          { html: sk(S.downSlow(1.0)), right: true },
+          { html: sk(S.downSlow(0.0)), code: 'zero', why: 'This curve sinks right down to the axis — worth nothing. A working one is never quite worthless, so it levels off <b>above</b> the axis.' },
+          { html: sk(S.down0(8.6)), code: 'lin', why: 'A straight line loses the same amount every year and reaches ' + t('\\$0') + '. It loses value fastest in the first year.' },
+          { html: sk(S.downFast()), code: 'fast', why: 'This loses value slowly at first and faster later — the opposite of the description.' }],
+          'Decreasing, steep in the first year and then flattening, but <b>staying above the axis</b>: it never reaches ' + t('\\$0') + '.', ['When does it lose value fastest? Does it ever reach zero?'], 'sketch: phone value');
+      } }] },
+    { num: '9', stem: function (s) { return 'This sketch has a scale, so the numbers matter. ' + s.nm + ' leaves home at 8:00 a.m. ' + s.nm + ' walks ' + t(dn(s.d[0]) + units('km')) + ' to the bus stop, arriving at ' + hm(8 + s.tt[1] / 60) + ', and waits ' + t(s.w + units('min')) + '. The bus then carries ' + s.nm + ' ' + t(s.d[1] + units('km')) + ' farther from home, arriving at ' + hm(8 + s.tt[3] / 60) + '. From there ' + s.nm + ' walks the last ' + t(dn(s.d[2]) + units('km')) + ' to work, arriving at ' + hm(8 + s.tt[4] / 60) + '.'; },
+      shared: function (r) {
+        var nm = r.pick(['Sanjay', 'Ravi', 'Tariq', 'Iris', 'Hana']);
+        if (r.chance(0.3)) return { nm: 'Sanjay', tt: [0, 20, 30, 50, 65], d: [2, 12, 1], v: [6, 0, 36, 4], w: 10 };
+        for (var k = 0; k < 3000; k++) {
+          var w1 = r.pick([4, 5, 6]), t1 = r.pick([12, 15, 18, 20, 24, 30]), w = r.pick([5, 10, 15]), vb = r.pick([30, 36, 40, 45, 48, 60]), t2 = r.pick([15, 20, 25, 30]), w2 = r.pick([3, 4, 5, 6]), t3 = r.pick([10, 12, 15, 20]);
+          var d1 = w1 * t1 / 60, d2 = vb * t2 / 60, d3 = w2 * t3 / 60;
+          if ((d1 * 2) % 1 || d2 % 1 || (d3 * 2) % 1 || d2 > 16) continue;
+          var tt = [0, t1, t1 + w, t1 + w + t2, t1 + w + t2 + t3]; if (tt[4] > 85) continue;
+          return { nm: nm, tt: tt, d: [d1, d2, d3], v: [w1, 0, vb, w2], w: w };
+        }
+      }, parts: [
+      { id: 'e9a', level: 'PRG', make: function (r, s) {
+        var tt = s.tt, c = [0, s.d[0], s.d[0], s.d[0] + s.d[1], s.d[0] + s.d[1] + s.d[2]], X = tt[4] + 10, Y = c[4] + 2;
+        function G(pts) { return fig({ x: [0, X], y: [0, Y], grid: 5, gridY: 1, labels: 0, firstQuadrant: true, unitX: 160 / X, unitY: 110 / Y, xName: ' ', yName: ' ', yTitle: ' ', segs: [{ pts: pts }], xt: tickList(20, X - 4, 20), yt: tickList(Y > 12 ? 4 : 2, Y - 0.5, Y > 12 ? 4 : 2), max: 220 }); }
+        var right = tt.map(function (x, i) { return [x, c[i]]; });
+        var back = right.slice(0, 4).concat([[tt[4], c[3] - s.d[2]]]);
+        var nowait = [[0, 0], [tt[1], c[1]], [tt[3] - s.w, c[3]], [tt[4] - s.w, c[4]]];
+        var swap = [[0, 0], [tt[1], c[1]], [tt[2], c[2]], [tt[3], c[2] + s.d[2]], [tt[4], c[4]]];
+        return mcG(r, 'Which graph shows ' + s.nm + '’s distance from home (km) against time since 8:00 (min)?', [
+          { html: G(right), right: true },
+          { html: G(back), code: 'back', why: 'The last segment goes <b>down</b>, back toward home. The last walk takes ' + s.nm + ' farther from home, to work.' },
+          { html: G(nowait), code: 'nowait', why: 'There is no flat piece. The ' + s.w + '-minute wait at the bus stop is a flat segment at ' + t(dn(c[1]) + units('km')) + '.' },
+          { html: G(swap), code: 'swap', why: 'Check the bus ride: it should take ' + s.nm + ' from ' + t(dn(c[2])) + ' km to ' + t(dn(c[3])) + ' km. In this graph the bus part only covers ' + t(dn(s.d[2])) + ' km.' }],
+          'Join ' + right.map(function (p) { return t('(' + p[0] + ',' + dn(p[1]) + ')'); }).join(', ') + ' with straight segments.', ['Find each corner point: (minutes after 8:00, km from home).'], 'commute graph');
+      } },
+      { id: 'e9b', level: 'PRG', make: function (r, s) {
+        var tt = s.tt, dd = [s.d[0], 0, s.d[1], s.d[2]], f = ['First walk:', 'Wait:', 'Bus:', 'Last walk:'].map(function (l) { return numBox(l, 'km/h'); });
+        var ch = dd.map(function (d, i) { var dt = tt[i + 1] - tt[i]; return K.number(s.v[i], numDiag(s.v[i], rateCands(d, dt, true, 0))); });
+        var p = K.P.fields('Find the rate of change of each of the four parts of the journey, in km/h.', f, ch, s.v.map(String), s.v.map(function (v) { return t(v + units('km/h')); }).join(', '),
+          dd.map(function (d, i) { var dt = tt[i + 1] - tt[i]; return ['Walk', 'Wait', 'Bus', 'Walk'][i] + ': ' + t('\\frac{' + dn(d) + '}{' + dt + '}\\text{ km/min}\\times 60=' + s.v[i] + units('km/h')); }).join('<br>'), ['For each part: change in distance ÷ change in time, then × 60 to change km/min to km/h.'], 'commute rates');
+        p.bad = [dd.map(function (d, i) { return dn(d / (tt[i + 1] - tt[i])); })]; return p;
+      } },
+      { id: 'e9c', level: 'BEG', make: function (r, s) {
+        return K.P.mc(r, 'Which part of the journey has the steepest segment?', [
+          { html: 'The bus ride — a bus travels much faster than a person walks.', right: true },
+          { html: 'The first walk — it starts at home.', why: 'Where a segment starts doesn’t matter. Compare the rates: ' + s.v.join(', ') + ' km/h.' },
+          { html: 'The wait — the bus stop is the most important part.', why: 'The wait is flat: rate of change ' + t('0') + '.' },
+          { html: 'The last walk — it ends highest on the graph.', why: 'Height is distance from home, not speed. Compare the rates.' }],
+          'The <b>bus ride</b> (' + t(s.v[2] + units('km/h')) + '), by far: a faster rate of change is a steeper segment.', ['Steeper = faster.'], 'commute: steepest');
+      } }] },
+
+    { num: '10', section: 'Extra practice D — The same journey on two different graphs', stem: function (v) {
+        var X = v.T + 0.5, Y = v.d2 * 1.15, ys = v.d2 > 200 ? 80 : 40;
+        return 'A delivery van leaves the depot, stops to unload, then drives on. Its <b>distance from the depot</b> is graphed below.' +
+          ctx({ X: X, Y: Y, gx: 0.5, gy: ys / 2, xt: 'Time (h)', yt: 'Distance (km)', pts: [[0, 0], [v.t1, v.d1], [v.t1 + v.s, v.d1], [v.T, v.d2]], xT: tickList(0.5, X - 0.2, 0.5), yT: tickList(ys, Y - 5, ys), aria: 'van distance' });
+      }, shared: function (r) {
+        if (r.chance(0.3)) return { v1: 60, t1: 1, s: 0.5, v2: 80, t2: 1.5, d1: 60, d2: 180, T: 3 };
+        for (var k = 0; k < 500; k++) {
+          var v1 = r.pick([40, 50, 60, 70, 80, 90]), v2 = r.pick([40, 50, 60, 70, 80, 90]), t1 = r.pick([1, 1.5, 2]), t2 = r.pick([1, 1.5, 2]), s = r.pick([0.5, 1]);
+          if (Math.abs(v1 - v2) < 20 || t1 + s + t2 > 4.5) continue;
+          return { v1: v1, t1: t1, s: s, v2: v2, t2: t2, d1: v1 * t1, d2: v1 * t1 + v2 * t2, T: t1 + s + t2 };
+        }
+      }, parts: [
+      { id: 'e10a', level: 'EMG', make: function (r, v) {
+        var f = [numBox('First part:', 'km/h'), numBox('Middle part:', 'km/h'), numBox('Last part:', 'km/h')];
+        return K.P.fields('Find the van’s speed on each of the three parts of the journey, in km/h.', f,
+          [K.number(v.v1, numDiag(v.v1, [{ v: v.t1 / v.d1, code: 'rate-flip', hint: 'Speed = distance ÷ time.' }])), K.number(0, numDiag(0, [{ v: v.d1, code: 'wrong-line', hint: 'That is the distance from the depot. While it unloads, how fast is the van going?' }, { v: v.d1 / v.s, code: 'wrong-line', hint: 'The distance doesn’t change during this part. How fast is the van going?' }])),
+            K.number(v.v2, numDiag(v.v2, [{ v: v.d2 / v.t2, code: 'wrong-line', hint: 'Use the <b>change</b> in distance on the last part: ' + t(v.d2 + '-' + v.d1) + '.' }, { v: v.d2 / v.T, code: 'avg-speed', hint: 'That is the average for the whole trip. Use only the last part.' }]))],
+          [String(v.v1), '0', String(v.v2)], t(v.v1) + ', ' + t('0') + ', ' + t(v.v2) + ' km/h',
+          t('0') + ' to ' + t(dn(v.t1)) + ' h: ' + t('\\frac{' + v.d1 + '}{' + dn(v.t1) + '}=' + v.v1) + ' km/h. Then ' + t('0') + ' km/h for ' + t(dn(v.s)) + ' h (unloading). Last part: ' + t('\\frac{' + v.d2 + '-' + v.d1 + '}{' + dn(v.T) + '-' + dn(v.t1 + v.s) + '}=\\frac{' + (v.d2 - v.d1) + '}{' + dn(v.t2) + '}=' + v.v2) + ' km/h.', ['Speed on each part = change in distance ÷ change in time.'], 'van speeds');
+      } },
+      { id: 'e10b', level: 'PRG', make: function (r, v) {
+        var top = Math.max(v.v1, v.v2), Y = top * 1.3, e = 0.04 * v.T, A = v.t1, B = v.t1 + v.s;
+        function G(pts) { return fig({ x: [0, v.T + 0.3], y: [0, Y], grid: 0, labels: 0, firstQuadrant: true, unitX: 160 / (v.T + 0.3), unitY: 100 / Y, xName: ' ', yName: ' ', yTitle: ' ', segs: [{ pts: pts }], xt: tickList(1, v.T, 1), yt: [[v.v1, String(v.v1)], [v.v2, String(v.v2)]], max: 220 }); }
+        return mcG(r, 'Which <b>speed</b>–time graph (speed in km/h, time in h) shows the same journey? (The near-vertical pieces are drawn steep rather than truly vertical.)', [
+          { html: G([[0, v.v1], [A - e, v.v1], [A + e, 0], [B - e, 0], [B + e, v.v2], [v.T, v.v2]]), right: true },
+          { html: G([[0, 0], [A, v.v1], [B, v.v1], [v.T, Math.min(Y * 0.95, v.v1 + v.v2 * 0.6)]]), code: 'copy', why: 'This copies the shape of the distance graph. A <b>straight</b> distance segment means a <b>constant</b> speed — a flat line on a speed graph.' },
+          { html: G([[0, v.v1], [B - e, v.v1], [B + e, v.v2], [v.T, v.v2]]), code: 'nostop', why: 'This never drops to ' + t('0') + ', so the stop to unload is missing.' },
+          { html: G([[0, v.v2], [A - e, v.v2], [A + e, 0], [B - e, 0], [B + e, v.v1], [v.T, v.v1]]), code: 'swap', why: 'The two speeds are swapped: ' + t(v.v1) + ' km/h comes before the stop and ' + t(v.v2) + ' km/h after.' }],
+          t(v.v1) + ' km/h for the first ' + t(dn(v.t1)) + ' h, ' + t('0') + ' for the ' + t(dn(v.s)) + '-h stop, then ' + t(v.v2) + ' km/h to the end: three flat pieces, the middle one on the time axis.', ['Each straight distance segment is one constant speed.'], 'van speed graph');
+      } }] },
+
+    { num: '11', stem: 'This is the heart of the lesson: the same feature means different things on a distance–time graph and on a speed–time graph.', parts: [
+      { id: 'e11a', level: 'EMG', make: function (r) { return featPart(r, 'dist'); } },
+      { id: 'e11b', level: 'PRG', make: function (r) { return featPart(r, 'speed'); } }] },
+
+    { num: '12', stem: function (L) {
+        var X = L.t[4] + 8, Y = L.v + 5;
+        return 'The graph shows the <b>speed</b> of a light-rail train between two stations.' + ctx({ X: X, Y: Y, gx: 5, gy: 5, xt: 'Time (s)', yt: 'Speed (m/s)', pts: [[0, 0], [L.t[1], L.v], [L.t[2], L.v], [L.t[3], 0], [L.t[4], 0]], xT: tickList(10, X - 4, 10), yT: tickList(5, Y - 2, 5), aria: 'train speed' });
+      }, shared: function (r) {
+        if (r.chance(0.3)) return { t: [0, 10, 40, 50, 70], v: 20 };
+        var t1 = r.pick([8, 10, 12, 15]), t2 = t1 + r.pick([20, 25, 30, 40]), t3 = t2 + r.pick([8, 10, 12]), t4 = t3 + r.pick([15, 20]);
+        return { t: [0, t1, t2, t3, t4], v: r.pick([15, 18, 20, 24, 25]) };
+      }, parts: [
+      { id: 'e12a', level: 'BEG', make: function (r, L) {
+        var rows = [0, 1, 2, 3].map(function (i) { return { id: 's' + i, html: L.t[i] + '–' + L.t[i + 1] + ' s' }; }), want = { s0: 'up', s1: 'steady', s2: 'down', s3: 'stop' };
+        var cols = [{ id: 'up', html: 'Speeding<br>up' }, { id: 'steady', html: 'Steady<br>speed' }, { id: 'down', html: 'Slowing<br>down' }, { id: 'stop', html: 'Stopped' }];
+        var p = K.P.grid('Describe the journey: what is the train doing on each part?', rows, cols, want, { why: function (row) {
+          return { code: 'row', hint: { s0: 'The speed rises from 0: the train is speeding up.', s1: 'Flat <b>above</b> the axis on a speed graph means the speed isn’t changing: a steady speed, not stopped.', s2: 'The speed falls to 0: the train is slowing down.', s3: 'On the axis the speed is 0: the train is stopped.' }[row] };
+        } }, rows.map(function (rw) { return rw.html + ': ' + { up: 'speeding up steadily from rest to ' + L.v + ' m/s', steady: 'steady speed of ' + L.v + ' m/s', down: 'slowing down steadily to a stop', stop: 'stopped at the station (speed 0)' }[want[rw.id]]; }).join('<br>'), ['On a speed graph: rising = speeding up, flat = steady speed, falling = slowing down, on the axis = stopped.'], 'train: describe speed');
+        p.answer = rows.map(function (rw) { return rw.html + ': ' + { up: 'speeding up', steady: 'steady speed', down: 'slowing down', stop: 'stopped' }[want[rw.id]]; }).join('<br>'); return p;
+      } },
+      { id: 'e12b', level: 'PRG', make: function (r, L) {
+        var t1 = L.t[1], t2 = L.t[2], t3 = L.t[3], t4 = L.t[4], v = L.v, a = v / t1, b = v / (t3 - t2);
+        var s1 = 0.5 * a * t1 * t1, s2 = s1 + v * (t2 - t1), s3 = s2 + 0.5 * v * (t3 - t2);
+        function dist(x) { return x <= t1 ? 0.5 * a * x * x : x <= t2 ? s1 + v * (x - t1) : x <= t3 ? s2 + v * (x - t2) - 0.5 * b * (x - t2) * (x - t2) : s3; }
+        var X = t4 * 1.06, Y = s3 * 1.18;
+        function G(o) { return fig({ x: [0, X], y: [0, Y], grid: 0, labels: 0, firstQuadrant: true, unitX: 140 / X, unitY: 84 / Y, xName: ' ', yName: ' ', fns: o.fns, segs: o.segs, max: 200 }); }
+        return mcG(r, 'Which graph is the matching <b>distance travelled</b>–time graph for the same ' + t4 + ' seconds? (Shape only.)', [
+          { html: G({ fns: [Fn(dist, 0, t4)] }), right: true },
+          { html: G({ segs: [Ln([[0, 0], [t1, s3 * 0.8], [t2, s3 * 0.8], [t3, 0], [t4, 0]])] }), code: 'copy', why: 'This copies the speed graph. Distance travelled can never go back down — the train doesn’t reverse.' },
+          { html: G({ fns: [Fn(function (x) { return x <= t3 ? dist(x) : s3 + v * 0.6 * (x - t3); }, 0, t4)] }), code: 'nostop', why: 'This keeps rising at the end. From ' + t3 + ' to ' + t4 + ' s the train is stopped, so its distance stops changing (flat).' },
+          { html: G({ segs: [Ln([[0, 0], [t1, s1 * 2.2], [t2, s2], [t3, s3], [t4, s3]])] }), code: 'straight', why: 'All straight pieces means a constant speed on each part. While the train speeds up, the distance graph curves, getting steeper; while it slows down, it curves and flattens.' }],
+          'Curve getting steeper (speeding up), straight line (steady speed), curve flattening out (slowing down), then <b>flat</b> (stopped).', ['What does speeding up look like on a distance graph? What does stopped look like?'], 'train: distance sketch');
+      } },
+      { id: 'e12c', level: 'EMG', make: function (r, L) {
+        return K.P.mc(r, 'The speed graph has two flat parts: from ' + L.t[1] + ' s to ' + L.t[2] + ' s and from ' + L.t[3] + ' s to ' + L.t[4] + ' s. What does each one mean?', [
+          { html: 'The first: moving at a steady ' + L.v + ' m/s. The second: not moving at all.', right: true },
+          { html: 'Both mean the train is stopped.', why: 'Flat on a <b>speed</b> graph means the speed isn’t changing. The first flat part is at ' + L.v + ' m/s — the train is moving.' },
+          { html: 'Both mean the train is moving at a steady speed.', why: 'The second flat part is <b>on the axis</b>: speed ' + t('0') + '.' },
+          { html: 'The first: stopped at a signal. The second: moving slowly.', why: 'Read the heights: ' + L.v + ' m/s for the first, ' + t('0') + ' for the second.' }],
+          'Flat at ' + L.v + ' m/s: a <b>steady speed</b>. Flat at ' + t('0') + ': <b>stopped</b>. Same shape, different height, completely different meaning.', ['Read how high each flat part is.'], 'train: two flat parts');
+      } },
+      { id: 'e12d', level: 'EMG', make: function (r, L) {
+        return K.P.fields('Over which seconds is the <b>distance</b>–time graph flat?', [numBox('From:', 's'), numBox('To:', 's')],
+          [K.number(L.t[3], numDiag(L.t[3], [{ v: L.t[1], code: 'wrong-line', hint: 'The speed graph is flat there, but the train is moving at ' + L.v + ' m/s, so its distance is still increasing.' }])), K.number(L.t[4], numDiag(L.t[4], [{ v: L.t[2], code: 'wrong-line', hint: 'The train is still moving then. The distance is flat only while the speed is ' + t('0') + '.' }]))],
+          [String(L.t[3]), String(L.t[4])], t(L.t[3]) + ' s to ' + t(L.t[4]) + ' s',
+          'From ' + t(L.t[3]) + ' to ' + t(L.t[4]) + ' s only: the only stretch where the speed is ' + t('0') + '. At any other time the train is moving, so its distance is increasing.', ['When is the speed zero?'], 'train: distance flat');
+      } },
+      { id: 'e12e', level: 'EMG', make: function (r, L) {
+        var d = L.v * (L.t[2] - L.t[1]);
+        return numPart('How far does the train travel between ' + L.t[1] + ' s and ' + L.t[2] + ' s?', d, [{ v: L.v * L.t[2], code: 'dist-speed', hint: 'Use the time the steady part lasts: ' + t(L.t[2] + '-' + L.t[1]) + ' seconds.' }, { v: L.t[2] - L.t[1], code: 'dist-speed', hint: 'That is the time. Distance = speed × time.' }, { v: L.v / (L.t[2] - L.t[1]), code: 'dist-speed', hint: 'Distance = speed <b>×</b> time.' }],
+          'Steady ' + t(L.v + units('m/s')) + ' for ' + t(L.t[2] + '-' + L.t[1] + '=' + (L.t[2] - L.t[1])) + ' s: ' + t(L.v + '\\times ' + (L.t[2] - L.t[1]) + '=' + d + units('m')) + '.', ['Distance = speed × time.'], 'train: distance at steady speed', { after: 'm' });
+      } }] },
+
+    { num: '13', section: 'Extra practice E — Find the mistake', stem: function (c) {
+        var X = c.p[6][0] + 8, Y = Math.max(c.v1, c.v2) + 15;
+        return '<i>(Error analysis)</i> The graph shows the <b>speed</b> of a car on a trip across town. A student writes: <i>“Between ' + c.p[1][0] + ' and ' + c.p[2][0] + ' minutes the graph is flat, so the car wasn’t moving during those ' + (c.p[2][0] - c.p[1][0]) + ' minutes.”</i>' +
+          ctx({ X: X, Y: Y, gx: 5, gy: 10, xt: 'Time (min)', yt: 'Speed (km/h)', pts: c.p, xT: tickList(10, X - 4, 10), yT: tickList(10, Y - 5, 10), aria: 'car speed' });
+      }, shared: function (r) {
+        if (r.chance(0.3)) return { p: [[0, 0], [5, 45], [25, 45], [30, 0], [40, 0], [45, 30], [60, 30]], v1: 45, v2: 30 };
+        for (var k = 0; k < 500; k++) {
+          var a = r.pick([3, 5]), v1 = r.pick([30, 45, 60, 90]), L = r.pick([12, 15, 20, 30]), c = r.pick([3, 5]), st = r.pick([5, 10]), e = r.pick([3, 5]), v2 = r.pick([20, 30, 40, 50]), f = r.pick([10, 15]);
+          if ((v1 * L / 60) % 1 || v1 === v2) continue;
+          var x = [0, a, a + L, a + L + c, a + L + c + st, a + L + c + st + e, a + L + c + st + e + f]; if (x[6] > 75) continue;
+          return { p: [[0, 0], [x[1], v1], [x[2], v1], [x[3], 0], [x[4], 0], [x[5], v2], [x[6], v2]], v1: v1, v2: v2 };
+        }
+      }, parts: [
+      { id: 'e13a', level: 'EMG', make: function (r, c) {
+        return K.P.mc(r, 'What rule did the student use, and what rule should they have used?', [
+          { html: 'They used the distance–time rule “flat means not moving”. On a speed graph, flat means the <b>speed</b> isn’t changing — a steady speed.', right: true },
+          { html: 'Their rule is right: flat always means not moving.', why: 'Read the vertical axis: it is <b>speed</b>. A flat piece at ' + c.v1 + ' km/h means the car keeps going at ' + c.v1 + ' km/h.' },
+          { html: 'They should have said the car was speeding up, because the graph is high.', why: 'Height shows the speed itself. A flat piece means the speed is constant — neither speeding up nor slowing down.' },
+          { html: 'They should have said the car was going backwards.', why: 'A speed graph can’t show direction. Flat means a constant speed.' }],
+          'The student pictured a <b>distance</b>–time graph. On a speed–time graph, flat means no change in whatever the vertical axis measures — the speed — so the car is moving at a steady ' + c.v1 + ' km/h. Rule: <i>read the vertical axis first</i>.', ['What is on the vertical axis?'], 'error: flat on speed graph');
+      } },
+      { id: 'e13b', level: 'BEG', make: function (r, c) {
+        return numPart('What is the car actually doing between ' + c.p[1][0] + ' and ' + c.p[2][0] + ' minutes? It is driving at a constant speed of ________ km/h.', c.v1, [{ v: 0, code: 'wrong-line', hint: 'Not stopped — read the height of the flat piece.' }, { v: c.p[2][0] - c.p[1][0], code: 'swap-axes', hint: 'That is the time. Read the speed on the vertical axis.' }],
+          'The flat piece is at ' + t(c.v1) + ' on the speed axis: a constant ' + t(c.v1 + units('km/h')) + '.', ['Read the vertical axis at the flat piece.'], 'error: actual speed', { after: 'km/h' });
+      } },
+      { id: 'e13c', level: 'EMG', make: function (r, c) {
+        return K.P.fields('There <b>is</b> a stretch of this trip where the car is not moving. When is it?', [numBox('From:', 'min'), numBox('To:', 'min')],
+          [K.number(c.p[3][0], numDiag(c.p[3][0], [{ v: c.p[1][0], code: 'wrong-line', hint: 'That flat piece is at ' + c.v1 + ' km/h. The car is stopped where the speed is ' + t('0') + '.' }])), K.number(c.p[4][0], numDiag(c.p[4][0], [{ v: c.p[2][0], code: 'wrong-line', hint: 'That flat piece is at ' + c.v1 + ' km/h. Find where the graph lies <b>on</b> the time axis.' }]))],
+          [String(c.p[3][0]), String(c.p[4][0])], t(c.p[3][0]) + ' to ' + t(c.p[4][0]) + ' min',
+          'From ' + t(c.p[3][0]) + ' to ' + t(c.p[4][0]) + ' min the graph lies <b>on</b> the time axis: speed ' + t('0') + ', so the car is stopped. The student’s flat part is at a height of ' + t(c.v1) + ', not ' + t('0') + '.', ['Stopped means speed 0. Where is the graph on the time axis?'], 'error: when stopped');
+      } },
+      { id: 'e13d', level: 'PRG', make: function (r, c) {
+        var L = c.p[2][0] - c.p[1][0], d = c.v1 * L / 60;
+        return numPart('How far does the car travel between ' + c.p[1][0] + ' and ' + c.p[2][0] + ' minutes?', d, [{ v: c.v1 * L, code: 'rate-unit', hint: 'The speed is per <b>hour</b>: change ' + t(L) + ' minutes to hours first (' + t('\\frac{' + L + '}{60}') + ').' }, { v: c.v1 / L, code: 'dist-speed', hint: 'Distance = speed <b>×</b> time.' }, { v: 0, code: 'wrong-line', hint: 'The car is moving at ' + c.v1 + ' km/h during this time.' }],
+          t(L + units('min') + '=\\frac{' + L + '}{60}' + units('h') + '=' + fr(L / 60) + units('h')) + '. Distance ' + t('=' + c.v1 + '\\times ' + fr(L / 60) + '=' + dn(d) + units('km')) + '.', ['Distance = speed × time, with the time in hours.'], 'error: distance at steady speed', { after: 'km' });
+      } },
+      { id: 'e13e', level: 'BEG', make: function (r, c) {
+        var rows = [{ id: 'a', html: c.p[2][0] + '–' + c.p[3][0] + ' min' }, { id: 'b', html: c.p[4][0] + '–' + c.p[5][0] + ' min' }], cols = [{ id: 'up', html: 'Speeding<br>up' }, { id: 'steady', html: 'Steady' }, { id: 'down', html: 'Slowing<br>down' }, { id: 'stop', html: 'Stopped' }];
+        var p = K.P.grid('Describe what the car is doing on each interval.', rows, cols, { a: 'down', b: 'up' }, { why: function (row) { return { code: 'row', hint: row === 'a' ? 'The speed falls from ' + c.v1 + ' km/h to 0: braking.' : 'The speed rises from 0 to ' + c.v2 + ' km/h.' }; } },
+          rows[0].html + ': braking steadily from ' + c.v1 + ' km/h to a stop.<br>' + rows[1].html + ': speeding up steadily from rest to ' + c.v2 + ' km/h.', ['Is the speed going up or down on each interval?'], 'error: braking and speeding up');
+        p.answer = rows[0].html + ': slowing down; ' + rows[1].html + ': speeding up'; return p;
+      } }] },
+    { num: '14', stem: function (j) {
+        var X = j.t[4] + 8, Y = j.d[2] + 3;
+        return '<i>(Error analysis)</i> Asked to graph her distance from home during an afternoon out, a student draws the graph below. It has a vertical jump at ' + j.t[1 + 1] + ' minutes.' +
+          ctx({ X: X, Y: Y, gx: 5, gy: 1, xt: 'Time (min)', yt: 'Distance from home (km)', pts: [[0, 0], [j.t[1], j.d[1]], [j.t[2], j.d[1]], [j.t[2], j.d[2]], [j.t[3], j.d[2]], [j.t[4], 0]], xT: tickList(10, X - 4, 10), yT: tickList(1, Y - 1, 1), aria: 'graph with a vertical jump' });
+      }, shared: function (r) {
+        if (r.chance(0.3)) return { t: [0, 10, 20, 35, 50], d: [0, 1, 5], b: 5, r: [6, 0, 48, 0, -20] };
+        for (var k = 0; k < 3000; k++) {
+          var t1 = r.pick([10, 15]), d1 = r.pick([1, 2]), t2 = t1 + r.pick([5, 10]), d2 = d1 + r.pick([3, 4, 5, 6]), t3 = t2 + r.pick([15, 20]), t4 = t3 + r.pick([10, 15, 20, 30]), b = r.pick([5, 10]);
+          var r1 = 60 * d1 / t1, r3 = 60 * (d2 - d1) / b, r5 = -60 * d2 / (t4 - t3);
+          if (r1 % 1 || r3 % 1 || r5 % 1 || t4 > 75) continue;
+          return { t: [0, t1, t2, t3, t4], d: [0, d1, d2], b: b, r: [r1, 0, r3, 0, r5] };
+        }
+      }, parts: [
+      { id: 'e14a', level: 'BEG', outcome: 'RF2', make: function (r, j) {
+        return K.P.mc(r, 'Which test does this graph fail, and where?', [
+          { html: 'The vertical line test: the line ' + t('t=' + j.t[2]) + ' meets the graph at every height from ' + j.d[1] + ' km to ' + j.d[2] + ' km.', right: true },
+          { html: 'The horizontal line test: the line at ' + j.d[1] + ' km meets the graph in many points.', why: 'For a function of time we check <b>vertical</b> lines: one time, one distance.' },
+          { html: 'It passes every test; the graph is fine.', why: 'Draw a vertical line at ' + t('t=' + j.t[2]) + '. How many points does it meet?' },
+          { html: 'The vertical line test, at the flat parts.', why: 'A vertical line through a flat part meets it only once. Look at the jump.' }],
+          'The <b>vertical line test</b>. The line ' + t('t=' + j.t[2]) + ' meets the graph at every height from ' + j.d[1] + ' to ' + j.d[2] + ' km, so one time has many distances.', ['Which graphs can show a quantity as a function of time?'], 'vertical jump: test');
+      } },
+      { id: 'e14b', level: 'EMG', make: function (r, j) {
+        return K.P.mc(r, 'Put the failure into words about the outing: what would the student have had to do at ' + j.t[2] + ' minutes?', [
+          { html: 'Be at every distance from ' + j.d[1] + ' km to ' + j.d[2] + ' km from home at the same instant — jumping ' + (j.d[2] - j.d[1]) + ' km in no time at all.', right: true },
+          { html: 'Stop and rest for a while.', why: 'Resting would be a flat (horizontal) segment, not a vertical one.' },
+          { html: 'Travel very fast, but possibly.', why: 'A vertical segment takes <b>zero</b> time. No matter how fast, travelling ' + (j.d[2] - j.d[1]) + ' km takes some time.' },
+          { html: 'Turn around and go home.', why: 'Going home would make the distance decrease over time — a falling segment.' }],
+          'She would have to be at every distance from ' + j.d[1] + ' to ' + j.d[2] + ' km at one instant — jumping ' + (j.d[2] - j.d[1]) + ' km in no time, which is impossible.', ['How much time passes along a vertical segment?'], 'vertical jump: meaning');
+      } },
+      { id: 'e14c', level: 'EMG', make: function (r, j) {
+        var dd = j.d[2] - j.d[1];
+        return K.P.mc(r, 'What rate of change would that vertical segment have?', [
+          { html: 'Undefined: ' + t('\\frac{' + dd + '}{0}') + ' — division by zero has no answer.', right: true },
+          { html: t('0') + ' km/min, because no time passes.', why: 'A rate of ' + t('0') + ' is a flat segment. Here the change is ' + t(dd + units('km')) + ' over ' + t('0') + ' minutes: ' + t('\\frac{' + dd + '}{0}') + '.' },
+          { html: t(dd) + ' km/min, the rise.', why: 'Rate = rise ÷ run. The run is ' + t('0') + '.' },
+          { html: t('\\frac{0}{' + dd + '}=0') + ' km/min.', why: 'Rate = change in distance ÷ change in time, not the other way round.' }],
+          'Rise ' + t(j.d[2] + '-' + j.d[1] + '=' + dd) + ' km, run ' + t(j.t[2] + '-' + j.t[2] + '=0') + ' min. ' + t('\\text{rate}=\\frac{' + dd + '}{0}') + ' is <b>undefined</b>: no finite rate of change exists.', ['Rise over run: what is the run?'], 'vertical jump: rate');
+      } },
+      { id: 'e14d', level: 'PRG', make: function (r, j) {
+        var tt = [0, j.t[1], j.t[2], j.t[2] + j.b, j.t[3], j.t[4]], dd = [0, j.d[1], j.d[1], j.d[2], j.d[2], 0];
+        var f = [1, 2, 3, 4, 5].map(function (n) { return numBox('Segment ' + n + ':', 'km/h'); });
+        var ch = j.r.map(function (rt, i) { return K.number(rt, numDiag(rt, rateCands(dd[i + 1] - dd[i], tt[i + 1] - tt[i], true, rt))); });
+        var p = K.P.fields('The student meant that she covered the extra ' + t((j.d[2] - j.d[1]) + units('km')) + ' by bus, and that the bus ride took ' + t(j.b + units('min')) + '. In the corrected graph the jump becomes a sloped segment from ' + t('(' + j.t[2] + ', ' + j.d[1] + ')') + ' to ' + t('(' + (j.t[2] + j.b) + ', ' + j.d[2] + ')') + '; everything else stays. State the rate of change of each of the five segments, in km/h.', f, ch, j.r.map(String), j.r.map(function (x) { return t(x); }).join(', ') + ' km/h',
+          [0, 1, 2, 3, 4].map(function (i) { return t('(' + tt[i] + ',' + dd[i] + ')') + ' to ' + t('(' + tt[i + 1] + ',' + dd[i + 1] + ')') + ': ' + t('\\frac{' + (dd[i + 1] - dd[i]) + '}{' + (tt[i + 1] - tt[i]) + '}\\text{ km/min}\\times 60=' + j.r[i] + units('km/h')); }).join('<br>'), ['Rate = change in distance ÷ change in time; multiply km/min by 60 for km/h.', 'The last segment comes back home, so its rate is negative.'], 'vertical jump: corrected rates');
+        p.bad = [j.r.map(function (x) { return String(Math.abs(x)); })].filter(function (b) { return j.r.some(function (x) { return x < 0; }); }); return p;
+      } }] },
+
+    { num: '15', section: 'Extra practice F — The shape of the container', stem: function (c) {
+        return 'Water runs from the same tap, at the same constant rate, into each of four containers. All four are the same height and each is filled right to the top. The graphs show the <b>height of the water</b> (vertical) against time (horizontal), in a different order.' +
+          bank(c.letters.map(function (l) { return { label: l, svg: container(c.box[l]) }; }), 4) + bank(c.nums.map(function (n) { return { label: n, svg: sk(FILL[c.gr[n]]) }; }), 2);
+      }, shared: function (r) {
+        var types = ['wide', 'narrow', 'down', 'up'], tl = r.shuffle(types), tn = r.shuffle(types), letters = ['W', 'X', 'Y', 'Z'], nums = ['I', 'II', 'III', 'IV'], box = {}, gr = {}, of = {};
+        letters.forEach(function (l, i) { box[l] = tl[i]; }); nums.forEach(function (n, i) { gr[n] = tn[i]; of[tn[i]] = n; });
+        return { letters: letters, nums: nums, box: box, gr: gr, of: of };
+      }, parts: [
+      { id: 'e15a', level: 'PRG', make: function (r, c) {
+        var rows = c.letters.map(function (l) { return { id: l, html: l + ' (' + CNAME[c.box[l]] + ')' }; }), cols = c.nums.map(function (n) { return { id: n, html: n }; }), want = {};
+        c.letters.forEach(function (l) { want[l] = c.of[c.box[l]]; });
+        var p = K.P.grid('Match each container with its graph.', rows, cols, want, { why: function (row) { return { code: 'row', hint: CWHY[c.box[row]] }; } },
+          c.letters.map(function (l) { return l + ' → ' + want[l] + ': ' + CWHY[c.box[l]]; }).join('<br>'), ['The wider the container at the water line, the more slowly the height rises.'], 'containers: match');
+        p.answer = c.letters.map(function (l) { return l + ' – ' + want[l]; }).join(', '); return p;
+      } },
+      { id: 'e15b', level: 'EMG', make: function (r, c) {
+        return K.P.mc(r, 'Two of the graphs are straight lines. What do those two containers have in common, and why does that make the line straight?', [
+          { html: 'Both have vertical sides, so the width at the water line never changes: every second’s water adds the same height — a constant rate of change.', right: true },
+          { html: 'Both are the same width, so they fill at the same rate.', why: 'They are different widths — that’s why one line is steeper. What stays the same <b>within</b> each container as it fills?' },
+          { html: 'Both are filled from the same tap.', why: 'All four use the same tap, but two graphs curve. The shape of the container is what matters.' },
+          { html: 'Both get narrower toward the top.', why: 'A container that narrows makes the height rise faster and faster — a curve, not a straight line.' }],
+          'The two cylinders have <b>vertical sides</b>: the width at the water line is the same all the way up, so the height rises by the same amount each second — a straight line.', ['What happens to the width at the water line as each container fills?'], 'containers: straight lines');
+      } },
+      { id: 'e15c', level: 'BEG', make: function (r, c) {
+        return K.P.mc(r, 'Complete the rule: “the wider the container at the water line, the ________ the height rises.”', [
+          { html: 'more slowly', right: true }, { html: 'faster', why: 'In a wide container the same water spreads over a bigger surface, making a thinner layer.' },
+          { html: 'more steadily', why: 'Steadiness depends on whether the width changes, not on how wide it is.' }, { html: 'higher', why: 'All four end at the same height. Think about how fast the height rises.' }],
+          'The same volume arrives each second. In a wider container it spreads over a bigger surface and makes a thinner layer: less height gained each second — <b>more slowly</b>.', ['Picture pouring a cup of water into a wide pan and into a narrow glass.'], 'containers: wider = slower');
+      } },
+      { id: 'e15d', level: 'PRG', make: function (r, c) {
+        return K.P.mc(r, 'The two cones are the same cone, one turned upside down, so they hold the same amount. What does that tell you about their two graphs?', [
+          { html: 'Same volume at the same rate means the same total time: both graphs end at the same point. They differ only in how the height builds up in between.', right: true },
+          { html: 'The two graphs must be identical.', why: 'They hold the same amount, but the narrow part is at the bottom in one and at the top in the other, so the height rises differently along the way.' },
+          { html: 'The point-down cone fills faster, so its graph ends first.', why: 'It starts faster, but it holds the same volume from the same tap, so it takes the same total time.' },
+          { html: 'Nothing — the graphs can’t be compared.', why: 'Think about how long each takes to fill: same volume, same tap.' }],
+          'Same volume ÷ same rate = <b>same total time</b>, so both graphs end at the same time and height. No contradiction: they agree at the start and the end and differ only in how the height builds up.', ['How long does each cone take to fill?'], 'containers: same cone');
+      } },
+      { id: 'e15e', level: 'PRG', make: function (r, c) {
+        return K.P.mc(r, 'One straight-line graph is steeper than the other and also stops sooner. Why do those two facts go together?', [
+          { html: 'Both come from the narrower cross-section: each second’s water adds more height (steeper), and the narrower container holds less, so it is full sooner.', right: true },
+          { html: 'A steeper line always stops sooner on any graph.', why: 'Not on every graph. Here it happens because both facts come from the container being narrow.' },
+          { html: 'The narrow container gets more water each second.', why: 'All four get the same water each second from the same tap.' },
+          { html: 'The narrow container is shorter.', why: 'All four are the same height.' }],
+          'Both come from the <b>narrower cross-section</b>: narrow means each second’s water adds more height (steeper), and it also means the container holds less water, so it is full sooner.', ['What is different about the narrow cylinder?'], 'containers: steeper and sooner');
+      } }] },
+    { num: '16', stem: function (f) {
+        return 'A flask is a ' + (f.wideBottom ? 'wide cylinder for its bottom half and a narrower cylinder for its top half' : 'narrow cylinder for its bottom half and a wider cylinder for its top half') + ', joined by a flat shoulder. Water runs in at a constant rate.' + flaskSvg(f.wideBottom);
+      }, shared: function (r) { return { wideBottom: r.chance(0.6) }; }, parts: [
+      { id: 'e16a', level: 'PRG', make: function (r, f) {
+        var gentle = [[0.3, 0], [6.4, 2.6], [9.2, 5.2]], steep = [[0.3, 0], [3.1, 2.6], [9.2, 5.2]];
+        return mcG(r, 'Which graph shows the height of the water against time, from empty to full?', [
+          { html: sk({ segs: [Ln(f.wideBottom ? gentle : steep)] }), right: true },
+          { html: sk({ segs: [Ln(f.wideBottom ? steep : gentle)] }), code: 'swap', why: 'The pieces are the wrong way round. The ' + (f.wideBottom ? 'wide bottom fills slowly (gentle), the narrow top fast (steep)' : 'narrow bottom fills fast (steep), the wide top slowly (gentle)') + '.' },
+          { html: sk({ fns: [Fn(f.wideBottom ? function (x) { return 5.2 * Math.pow((x - 0.3) / 8.9, 2); } : function (x) { return 5.2 * Math.sqrt((x - 0.3) / 8.9); }, 0.3, 9.2)] }), code: 'curve', why: 'A smooth curve means the width changes gradually. Each half is a cylinder (constant width), so each piece is straight, with a sudden change at the shoulder.' },
+          { html: sk({ segs: [Ln([[0.3, 0], [9.2, 5.2]])] }), code: 'one', why: 'One straight line means the same width all the way up. The two halves have different widths.' }],
+          'Two straight pieces: a ' + (f.wideBottom ? '<b>gentle</b> one for the wide bottom, then a <b>steeper</b> one for the narrow top' : '<b>steep</b> one for the narrow bottom, then a <b>gentler</b> one for the wide top') + ', meeting in a corner at half the height.', ['Each half has a constant width. Which half rises faster?'], 'flask sketch');
+      } },
+      { id: 'e16b', level: 'EMG', make: function (r, f) {
+        return K.P.mc(r, 'The graph has a sharp corner, not a smooth bend. Where is it, and why is the change sudden?', [
+          { html: 'At half the height (the shoulder): the width changes suddenly there, so the rate of change jumps from one constant value to another.', right: true },
+          { html: 'At the top, because the flask is full.', why: 'Being full ends the graph. Look for where the steepness changes.' },
+          { html: 'At half the height, because the water slows down there.', why: 'The tap’s rate never changes. It is the <b>width</b> that changes suddenly at the shoulder.' },
+          { html: 'At the start, because the flask is empty.', why: 'The graph starts there, but the steepness changes at the shoulder.' }],
+          'The corner is at <b>half the height, the shoulder</b>. The width changes suddenly there (a flat shoulder, not a slope), so the rate at which the height rises jumps from one constant value to another.', ['Where does the width of the flask change?'], 'flask corner');
+      } },
+      { id: 'e16c', level: 'BEG', make: function (r, f) {
+        var top = f.wideBottom;
+        return K.P.mc(r, 'Which part of the graph is steeper, and what feature of the flask makes it so?', [
+          { html: 'The ' + (top ? 'upper' : 'lower') + ' part, because that half of the flask is narrower.', right: true },
+          { html: 'The ' + (top ? 'lower' : 'upper') + ' part, because that half of the flask is wider.', why: 'Wider means the water spreads out more, so the height rises <b>more slowly</b>.' },
+          { html: 'The ' + (top ? 'lower' : 'upper') + ' part, because the water is ' + (top ? 'deeper at the bottom' : 'higher up') + '.', why: 'How fast the height rises depends on the width at the water line.' },
+          { html: 'Neither — the tap runs at a constant rate, so both are equally steep.', why: 'The same volume per second gives different heights in halves of different widths.' }],
+          'The <b>' + (top ? 'upper' : 'lower') + '</b> part is steeper, because that cylinder is <b>narrower</b>: each second’s water adds more height.', ['Narrow = faster rise.'], 'flask steeper part');
+      } },
+      { id: 'e16d', level: 'EMG', make: function (r, f) {
+        var half = f.wideBottom ? 'bottom' : 'top';
+        return K.P.mc(r, 'The two halves are the same height, but they don’t take the same time to fill. Which half takes longer, and why?', [
+          { html: 'The ' + half + ' half — it is wider, so it holds more water, and the tap delivers water at a fixed rate.', right: true },
+          { html: 'The ' + (half === 'bottom' ? 'top' : 'bottom') + ' half — it is narrower, so the water has to squeeze in.', why: 'The tap delivers the same volume each second regardless. The narrow half holds less, so it fills sooner.' },
+          { html: 'They take the same time, because they are the same height.', why: 'Same height, but different widths, so they hold different amounts of water.' },
+          { html: 'The bottom half, because water fills from the bottom.', why: 'Every container fills from the bottom; what matters is how much each half holds.' }],
+          'The <b>' + half + ' half</b> takes longer. It is wider, so it holds more water, and the tap only delivers water at a fixed rate.', ['Which half holds more water?'], 'flask: which half longer');
+      } }] },
+
+    { num: '17', section: 'Extra practice G — Two for the test', stem: '<i>(Multiple Choice)</i>', parts: [
+      { id: 'e17', level: 'EMG', make: function (r) {
+        var obj = r.pick(['A ball is thrown straight up and caught again at the height it was released from.', 'A juggler tosses a beanbag straight up and catches it at the same height.']);
+        return mcG(r, obj + ' Which graph best shows its <b>height</b> against time?', [
+          { html: sk(S.hill(4.95, 1.2, 5, 1.2)), right: true },
+          { html: sk({ segs: [Ln([[0.3, 1.2], [4.95, 5], [9.6, 1.2]])] }), code: 'straight', why: 'Straight pieces mean a constant speed up and down with an instant turnaround at the top. Gravity slows it on the way up, so the top is rounded.' },
+          { html: sk({ segs: [Ln([[0.3, 1.2], [4.95, 5], [4.95, 1.2], [9.6, 1.2]])] }), code: 'drop', why: 'A vertical drop fails the vertical line test — it can’t be at many heights at one instant.' },
+          { html: sk(S.upFast()), code: 'never', why: 'This one never comes back down.' }],
+          'Gravity slows it on the way up and speeds it up on the way down, so the graph <b>flattens near the top</b> and is steepest near the release height: a smooth, rounded, symmetric arch.', ['How does the speed change near the top?'], 'thrown ball graph');
+      } }] },
+    { num: '18', stem: '<i>(Numerical Response)</i>', parts: [
+      { id: 'e18', level: 'PRG', make: function (r) {
+        var bk = r.chance(0.3), t1, dt, rt, d1, dd;
+        for (var k = 0; k < 500; k++) { t1 = bk ? 10 : r.pick([5, 10, 15, 20]); dt = bk ? 40 : r.pick([20, 30, 40, 45, 50]); rt = bk ? 21 : r.int(9, 60); d1 = bk ? 4 : r.int(1, 8); dd = rt * dt / 60; if (dd % 1 === 0 && dd >= 3) break; }
+        var p = K.P.nr('On a distance–time graph, time is measured in minutes and distance in kilometres. A straight segment of the graph joins ' + t('(' + t1 + ', ' + d1 + ')') + ' to ' + t('(' + (t1 + dt) + ', ' + (d1 + dd) + ')') + '. The rate of change of that segment, in km/h, is ________.', rt,
+          numDiag(rt, [{ v: dd / dt, code: 'per-min', hint: 'That is km per <b>minute</b>. Multiply by ' + t('60') + ' for km/h.' }, { v: (d1 + dd) / (t1 + dt) * 60, code: 'wrong-line', hint: 'Use the <b>changes</b>: ' + t((d1 + dd) + '-' + d1) + ' km over ' + t((t1 + dt) + '-' + t1) + ' min.' }, { v: dt / dd, code: 'rate-flip', hint: 'Rate = change in distance ÷ change in time.' }, { v: dd, code: 'rate-unit', hint: 'That is the change in distance. Divide by the time in hours.' }]),
+          'Rise: ' + t((d1 + dd) + '-' + d1 + '=' + dd + units('km')) + '. Run: ' + t(dt + units('min') + '=' + fr(dt / 60) + units('h')) + '. ' + t('\\text{rate}=' + dd + '\\div ' + fr(dt / 60) + '=' + rt + units('km/h')) + '.', ['Find the change in distance and the change in time; change minutes to hours.'], 'rate from two points ' + rt);
+        p.good = [('00' + rt).slice(-3)]; return p;
+      } }] }
+  ];
+
+  /* distance-time vs speed-time feature tables (EP11) */
+  var FEAT = [{ id: 'flat', html: 'Flat, above axis' }, { id: 'axis', html: 'On the time axis' }, { id: 'up', html: 'Straight, up' }, { id: 'down', html: 'Straight, down' }, { id: 'curve', html: 'Steeper & steeper' }];
+  var MEAN = {
+    dist: { flat: 'stopped: the distance is not changing', axis: 'at the starting point (distance 0)', up: 'moving away at a constant speed', down: 'moving back toward the start at a constant speed', curve: 'moving away and speeding up' },
+    speed: { flat: 'moving at a steady speed (not stopped)', axis: 'stopped: speed 0', up: 'speeding up at a constant rate', down: 'slowing down at a constant rate', curve: 'speeding up faster and faster' } };
+  function featPart(r, kind) {
+    var ids = FEAT.map(function (f) { return f.id; }), order = r.shuffle(ids), lab = {}, want = {};
+    order.forEach(function (id, i) { lab[id] = LET[i]; });
+    FEAT.forEach(function (f) { want[f.id] = lab[f.id]; });
+    var nm = kind === 'dist' ? 'distance–time' : 'speed–time', other = kind === 'dist' ? 'speed' : 'dist';
+    var p = K.P.grid('On a <b>' + nm + '</b> graph, what does each feature mean? Choose a letter for each row.<br>' + order.map(function (id) { return '<b>' + lab[id] + '</b>: ' + MEAN[kind][id]; }).join('<br>'), FEAT, order.map(function (id) { return { id: lab[id], html: lab[id] }; }).sort(function (a, b) { return a.id < b.id ? -1 : 1; }), want,
+      { why: function (row, got) {
+        var gid = order[LET.indexOf(got)];
+        if (gid && MEAN[other][row] === MEAN[kind][gid] || (gid && MEAN[other][row].split(':')[0] === MEAN[kind][gid].split(':')[0])) return { code: 'swap-axes', hint: '“' + FEAT.filter(function (f) { return f.id === row; })[0].html + '” means that on a <b>' + (kind === 'dist' ? 'speed' : 'distance') + '</b> graph. Here the vertical axis is ' + (kind === 'dist' ? 'distance' : 'speed') + '.' };
+        return { code: 'row', hint: 'Row “' + FEAT.filter(function (f) { return f.id === row; })[0].html + '”: ask what is happening to the ' + (kind === 'dist' ? 'distance' : 'speed') + ' — is it changing, and how?' };
+      } }, FEAT.map(function (f) { return f.html + ': ' + MEAN[kind][f.id] + '.'; }).join('<br>'), ['Read the vertical axis first. Flat means “no change in whatever the vertical axis measures”.'], 'feature meanings: ' + nm);
+    p.answer = FEAT.map(function (f) { return f.html + ': ' + want[f.id] + ' (' + MEAN[kind][f.id] + ')'; }).join('<br>');
+    return p;
+  }
+  /* EP15–16 containers */
+  var CNAME = { wide: 'wide cylinder', narrow: 'narrow cylinder', down: 'cone, point down', up: 'cone, point up' };
+  var CWHY = { wide: 'constant width, so a straight line; wide, so it rises slowly (the shallow line).', narrow: 'constant width, so a straight line; narrow, so it rises fast and fills first (the steep line).', down: 'narrow at the bottom and widening, so the height shoots up and then slows (steep, then flattening).', up: 'wide at the bottom and narrowing, so the height creeps up and then races (shallow, then steepening).' };
+  var FILL = {
+    wide: { segs: [Ln([[0, 0], [9.4, 5]])] }, narrow: { segs: [Ln([[0, 0], [3.8, 5]])] },
+    down: { fns: [Fn(function (x) { return 5 * Math.pow(x / 6.6, 1 / 3); }, 0, 6.6)] }, up: { fns: [Fn(function (x) { return 5 * (1 - Math.pow(Math.max(0, 1 - x / 6.6), 1 / 3)); }, 0, 6.6)] } };
+  function container(kind) {
+    var p = { wide: 'M14 8 L14 70 L66 70 L66 8', narrow: 'M28 8 L28 70 L52 70 L52 8', down: 'M8 8 L33 70 L47 70 L72 8', up: 'M33 8 L8 70 L72 70 L47 8' }[kind];
+    return '<svg class="fig-svg" viewBox="0 0 80 76" style="max-width:70px" role="img" aria-label="' + CNAME[kind] + '"><rect width="80" height="76" fill="#fff"/><path d="' + p + '" fill="#e6f2f1" stroke="' + INK + '" stroke-width="2.4" stroke-linejoin="round"/></svg>';
+  }
+  function flaskSvg(wideBottom) {
+    var p = wideBottom ? 'M44 6 L44 52 L20 52 L20 100 L80 100 L80 52 L56 52 L56 6' : 'M20 6 L20 54 L44 54 L44 100 L56 100 L56 54 L80 54 L80 6';
+    return '<svg class="fig-svg" viewBox="0 0 100 108" style="max-width:90px" role="img" aria-label="the flask"><rect width="100" height="108" fill="#fff"/><path d="' + p + '" fill="#e6f2f1" stroke="' + INK + '" stroke-width="2.4" stroke-linejoin="round"/><line x1="8" y1="53" x2="92" y2="53" stroke="#9aa3ad" stroke-dasharray="4 3"/><text x="94" y="57" font-size="10" fill="#6a7182" text-anchor="end">half</text></svg>';
+  }
 
   HW.defineLesson({
     id: 'u5l9', unit: 5, num: '9', title: 'Interpreting and Sketching Real-World Graphs', outcome: 'RF1',

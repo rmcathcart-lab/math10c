@@ -185,7 +185,7 @@
     p.answer = values.length ? t(solsKey(values, v)) : 'no solution';
     return p;
   }
-  function solField(label, v) { return { label: label, name: label, mode: 'math', keys: 'solutions', vars: [v || 'x'], none: true, placeholder: 'e.g. ' + (v || 'x') + ' = 3, ' + (v || 'x') + ' = -5' }; }
+  function solField(label, v) { return { label: label, name: String(label).replace(/:\s*$/, ''), mode: 'math', keys: 'solutions', vars: [v || 'x'], none: true, placeholder: 'e.g. ' + (v || 'x') + ' = 3, ' + (v || 'x') + ' = -5' }; }
 
   /* ---------------- piecewise-linear graphs ---------------- */
   function pwAt(V, x) { for (var i = 0; i + 1 < V.length; i++) { var a = V[i], b = V[i + 1]; if (x >= a[0] - 1e-9 && x <= b[0] + 1e-9) return cl(a[1] + (b[1] - a[1]) * (x - a[0]) / (b[0] - a[0])); } return NaN; }
@@ -255,18 +255,24 @@
     var cD = domChk(Dt, dv, Ry, { wrong: o.dW, ctx: o.dC }), cR = rangeChk(Ry, fname, dv, { other: Dt, wrong: o.rW, ctx: o.rC });
     var fl = [{ label: 'Domain', name: 'Domain', mode: 'math', keys: 'set', vars: [dv, fname], placeholder: 'e.g. {' + dv + ' | -2 <= ' + dv + ' <= 5, ' + dv + ' in R}' },
       { label: 'Range', name: 'Range', mode: 'math', keys: 'set', vars: [dv, fname], placeholder: 'e.g. {' + fx + ' | 1 <= ' + fx + ' <= 4, ' + fx + ' in R}' }];
-    var p = B.fields(prompt, fl, [cD, cR], [Dt, Rshow], t('D=' + Dt) + '<br>' + t('R=' + Rshow), sol, hints, text);
+    var p = BF(prompt, fl, [cD, cR], [Dt, Rshow], t('D=' + Dt) + '<br>' + t('R=' + Rshow), sol, hints, text);
     p.good = o.disc ? [] : [[ivAlt(Dt), ivAlt(Ry)], [cond(dv, o.D[0], o.D[1]), cond(fx, o.R[0], o.R[1])], [Dt, Ry]];
     p.bad = [[Ry, Dt]].concat((o.dW || []).map(function (w) { return [w.is, Rshow]; })).concat((o.rW || []).map(function (w) { return [Dt, w.is]; })).filter(function (b) { return !(S.eq(S.parse(b[0]).set, S.parse(Dt).set) && S.eq(S.parse(toY(b[1], fname, dv)).set, S.parse(Ry).set)); });
     return p;
   }
 
   /* ---------------- small builders ---------------- */
+  /* fields with a sensible placeholder in every math box (the widget's default is a product of primes) */
+  function phFix(fl) {
+    fl.forEach(function (f) { if (f.mode === 'math' && !f.placeholder) f.placeholder = f.keys === EQK ? 'e.g. f(2) = 5' : f.keys === 'fraction' ? 'e.g. 7 or 3/4' : f.keys === 'solutions' ? 'e.g. 5' : f.keys === 'set' ? 'e.g. {x | 0 <= x <= 5, x in R}' : ''; });
+    return fl;
+  }
+  function BF(prompt, fl, ch, keys, answer, sol, hints, text) { return B.fields(prompt, phFix(fl), ch, keys, answer, sol, hints, text); }
   function mc(r, prompt, opts, sol, hints, text, keepOrder) { return B.mc(r, prompt, opts, sol, hints, text, keepOrder); }
   function graphMC(r, prompt, opts, sol, hints, text) { var p = B.mc(r, prompt, opts, sol, hints, text); p.input.columns = 2; return p; }
   function numF(label, v, diag) { return { f: { label: label, name: label, mode: 'math', keys: 'fraction' }, c: K.value(v, { diag: diag }), k: nf(v) }; }
   function fieldsOf(prompt, items, answer, sol, hints, text) {
-    return B.fields(prompt, items.map(function (x) { return x.f; }), items.map(function (x) { return x.c; }), items.map(function (x) { return x.k; }), answer, sol, hints, text);
+    return BF(prompt, items.map(function (x) { return x.f; }), items.map(function (x) { return x.c; }), items.map(function (x) { return x.k; }), answer, sol, hints, text);
   }
   /* a small context graph for the sketch multiple choice */
   function ctxGraph(o, segs, fns) {
@@ -353,10 +359,10 @@
   /* two boxes: x-y notation and function notation */
   function bothPart(prompt, o, sol, hints, text) {
     var v = o.v || 'x', out = o.out || 'y', name = o.name || 'f';
-    var fl = [{ label: t(v) + '-' + t(out) + ' notation:', name: 'x-y notation', mode: 'math', keys: EQK, vars: [v, out, name] }, { label: 'Function notation:', name: 'Function notation', mode: 'math', keys: EQK, vars: [v, out, name] }];
+    var fl = [{ label: t(v) + '-' + t(out) + ' notation:', name: 'x-y notation', mode: 'math', keys: EQK, vars: [v, out, name], placeholder: 'e.g. ' + out + ' = 2' + v + ' - 3' }, { label: 'Function notation:', name: 'Function notation', mode: 'math', keys: EQK, vars: [v, out, name], placeholder: 'e.g. ' + name + '(' + v + ') = 2' + v + ' - 3' }];
     var c1 = convChk('xy', { T: o.T, v: v, out: out, wrong: o.wrong }), c2 = convChk('fn', { T: o.T, v: v, name: name, reqName: true, wrong: o.wrong });
     var k1 = out + '=' + o.keyRhs, k2 = name + '(' + v + ')=' + o.keyRhs;
-    var p = B.fields(prompt, fl, [c1, c2], [k1, k2], t(k1) + '<br>' + t(k2), sol, hints, text);
+    var p = BF(prompt, fl, [c1, c2], [k1, k2], t(k1) + '<br>' + t(k2), sol, hints, text);
     p.bad = [[k2, k1]].concat(o.bad || []);
     return p;
   }
@@ -482,7 +488,7 @@
           var fl = bs.map(function (b, i) { return solField(lab[i] + ' ' + t(sh.n + '(x)=' + b) + ':', 'x'); });
           var ch = bs.map(function (b) { var s0 = pwSols(sh.V, b).pts; return solsChk(s0, { b: b, graph: true, noneHint: 'Read across at height ' + t(b) + ': the graph only goes from ' + t(-sh.A) + ' to ' + t(sh.A) + '.' }); });
           var keys = bs.map(function (b) { var s0 = pwSols(sh.V, b).pts; return s0.length ? solsKey(s0) : 'none'; });
-          var p = B.fields('(c) State the value(s) of ' + t('x') + ' if', fl, ch, keys, bs.map(function (b, i) { var s0 = pwSols(sh.V, b).pts; return lab[i] + ' ' + (s0.length ? t(solsKey(s0)) : 'no solution'); }).join('<br>'),
+          var p = BF('(c) State the value(s) of ' + t('x') + ' if', fl, ch, keys, bs.map(function (b, i) { var s0 = pwSols(sh.V, b).pts; return lab[i] + ' ' + (s0.length ? t(solsKey(s0)) : 'no solution'); }).join('<br>'),
             'Start on the vertical axis at each height and read <b>across</b>, counting every point of the graph at that height:<br>' + bs.map(function (b, i) { var s0 = pwSols(sh.V, b).pts; return lab[i] + ' ' + t(sh.n + '(x)=' + b) + ': ' + (s0.length ? t(solsKey(s0)) + ' (' + s0.length + ' points)' : 'the graph never reaches ' + t(b) + ', so <b>no solution</b>'); }).join('<br>'),
             [t(sh.n + '(x)=b') + ' gives the <b>output</b>: start on the vertical axis and read across. There can be several answers, or none.'], 'solve ' + sh.n + '(x)=b on zigzag');
           p.good = [keys.map(function (k) { return k === 'none' ? '\\text{none}' : k; })];
@@ -491,7 +497,7 @@
         { id: '4d', level: 'EMG', make: function (r, sh) {
           var P0 = sh.V[0], P4 = sh.V[4], n = sh.n;
           var fl = [{ label: 'Point ' + sh.ends[0] + ':', name: 'Point ' + sh.ends[0], mode: 'math', keys: EQK, vars: [n] }, { label: 'Point ' + sh.ends[1] + ':', name: 'Point ' + sh.ends[1], mode: 'math', keys: EQK, vars: [n] }];
-          var p = B.fields('(d) Use the notation in (a) to make a statement about the points ' + sh.ends[0] + ' and ' + sh.ends[1] + ' on the graph.', fl,
+          var p = BF('(d) Use the notation in (a) to make a statement about the points ' + sh.ends[0] + ' and ' + sh.ends[1] + ' on the graph.', fl,
             [stmtChk(n, P0[0], P0[1]), stmtChk(n, P4[0], P4[1])], [n + '(' + P0[0] + ')=' + P0[1], n + '(' + P4[0] + ')=' + P4[1]], t(n + '(' + P0[0] + ')=' + P0[1]) + ', ' + t(n + '(' + P4[0] + ')=' + P4[1]),
             sh.ends[0] + ' is ' + t(ptT(P0)) + ', so ' + t(n + '(' + P0[0] + ')=' + P0[1]) + '.<br>' + sh.ends[1] + ' is ' + t(ptT(P4)) + ', so ' + t(n + '(' + P4[0] + ')=' + P4[1]) + '.',
             ['A point ' + t('(a,\\ b)') + ' on the graph means ' + t(n + '(a)=b') + '.'], 'statements for endpoints of ' + n);
@@ -501,7 +507,7 @@
         { id: '4e', level: 'EMG', make: function (r, sh) {
           var z = pwSols(sh.V, 0).pts, n = sh.n, y0 = pwAt(sh.V, 0);
           var fl = [solField(t('x') + '-intercepts: ' + t(n + '(x)=0') + ' when', 'x'), { label: t('y') + '-intercept: ' + t(n + '(0)='), name: n + '(0)', mode: 'math', keys: 'solutions', vars: ['x'] }];
-          var p = B.fields('(e) Write the ' + t('x') + '- and ' + t('y') + '-intercepts of the graph using function notation.', fl,
+          var p = BF('(e) Write the ' + t('x') + '- and ' + t('y') + '-intercepts of the graph using function notation.', fl,
             [solsChk(z, { b: 0, graph: true }), K.value(y0, { diag: function (u) { return z.some(function (x) { return same(x, u); }) ? { code: 'xint-yint', hint: 'That is an ' + t('x') + '-intercept. The ' + t('y') + '-intercept is the output at ' + t('x=0') + '.' } : null; } })],
             [solsKey(z), nf(y0)], z.map(function (x) { return t(n + '(' + x + ')'); }).join('=') + t('=0') + '; ' + t(n + '(0)=' + y0),
             'An ' + t('x') + '-intercept has output ' + t('0') + ': ' + z.map(function (x) { return t(n + '(' + x + ')=0'); }).join(', ') + '.<br>The ' + t('y') + '-intercept is the output at ' + t('x=0') + ': ' + t(n + '(0)=' + y0) + '.',
@@ -590,7 +596,7 @@
         { id: '7c', level: 'PRG', make: function (r, sh) {
           var a = sh.a, b = sh.b;
           var fl = [{ label: t('x') + '-intercept: ' + t('x='), name: 'x-intercept', mode: 'math', keys: 'fraction' }, { label: t('y') + '-intercept: ' + t('y='), name: 'y-intercept', mode: 'math', keys: 'fraction' }];
-          var p = B.fields('(c) calculate the ' + t('x') + '-intercept and the ' + t('y') + '-intercept on the graph of ' + t('f') + '.', fl,
+          var p = BF('(c) calculate the ' + t('x') + '-intercept and the ' + t('y') + '-intercept on the graph of ' + t('f') + '.', fl,
             [K.fraction([a, b], { decimalOk: true, diag: function (u) { if (same(u, a)) return { code: 'xint-yint', hint: 'That is the ' + t('y') + '-intercept. For the ' + t('x') + '-intercept, solve ' + t('f(x)=0') + '.' }; return null; } }),
               K.value(a, { diag: function (u) { if (same(u, a / b)) return { code: 'xint-yint', hint: 'That is the ' + t('x') + '-intercept. The ' + t('y') + '-intercept is ' + t('f(0)') + '.' }; return null; } })],
             [frT(a, b), String(a)], t('x') + '-int ' + t(frT(a, b)) + ', ' + t('y') + '-int ' + t(a),
@@ -620,7 +626,7 @@
         { id: '8c', sub: 'b', level: 'EMG', make: function (r, sh) {
           var bs = [sh.lo, sh.hi], n = sh.n;
           var fl = bs.map(function (b, i) { return solField(['i)', 'ii)'][i] + ' ' + t(n + '(x)=' + b) + ':', 'x'); });
-          return B.fields('(b) Give the solution to the following equations.', fl, bs.map(function (b) { return solsChk(pwSols(sh.V, b).pts, { b: b, graph: true, scale: sh.k }); }), bs.map(function (b) { return solsKey(pwSols(sh.V, b).pts); }),
+          return BF('(b) Give the solution to the following equations.', fl, bs.map(function (b) { return solsChk(pwSols(sh.V, b).pts, { b: b, graph: true, scale: sh.k }); }), bs.map(function (b) { return solsKey(pwSols(sh.V, b).pts); }),
             bs.map(function (b, i) { return ['i)', 'ii)'][i] + ' ' + t(solsKey(pwSols(sh.V, b).pts)); }).join('<br>'),
             'Read across at each height (remember each grid line is ' + t(sh.k) + '):<br>' + bs.map(function (b) { return t(n + '(x)=' + b) + ' at ' + t(solsKey(pwSols(sh.V, b).pts)) + (b === sh.lo ? ' (the two low points)' : ' (the two high points)'); }).join('<br>'),
             ['Start on the vertical axis and read across; count every point at that height.'], 'solve on scaled zigzag');
@@ -665,7 +671,7 @@
             }
             return ok();
           };
-          var p = { prompt: 'Now give two sets of answers: two values of ' + t('b') + ' for which ' + t(n + '(a)=b') + ' has exactly two solutions, and the two values of ' + t('a') + ' for each.', input: { type: 'fields', fields: fl }, check: check,
+          var p = { prompt: 'Now give two sets of answers: two values of ' + t('b') + ' for which ' + t(n + '(a)=b') + ' has exactly two solutions, and the two values of ' + t('a') + ' for each.', input: { type: 'fields', fields: phFix(fl) }, check: check,
             key: [String(sh.hi), solsKey(hiS, 'a'), String(sh.lo), solsKey(loS, 'a')], answer: t('b=' + sh.hi) + ': ' + t(solsKey(hiS, 'a')) + '<br>' + t('b=' + sh.lo) + ': ' + t(solsKey(loS, 'a')),
             solution: 'Only the highest and lowest heights are reached exactly twice:<br>' + t('b=' + sh.hi) + ' with ' + t(solsKey(hiS, 'a')) + '<br>' + t('b=' + sh.lo) + ' with ' + t(solsKey(loS, 'a')),
             hints: ['Look at the highest and the lowest points of the graph.'], text: 'two sets s(a)=b' };
@@ -896,7 +902,7 @@
           };
           var Dk = bld('t', -20, z), Rk = '\\{P(t)\\mid ' + cond('P(t)', 0, P0(-20)) + ',\\ P(t)\\in\\mathbb{R}\\}';
           var fl = [{ label: 'Domain', name: 'Domain', mode: 'math', keys: 'set', vars: ['t', 'P'], placeholder: 'e.g. {t | -20 <= t <= 10, t in R}' }, { label: 'Range', name: 'Range', mode: 'math', keys: 'set', vars: ['t', 'P'], placeholder: 'e.g. {P(t) | 0 <= P(t) <= 300, P(t) in R}' }];
-          var p = { prompt: '(f) Suggest an appropriate domain and range for the function ' + t('P(t)') + ' if the resort is located in the Canadian Rockies.', input: { type: 'fields', fields: fl }, check: check,
+          var p = { prompt: '(f) Suggest an appropriate domain and range for the function ' + t('P(t)') + ' if the resort is located in the Canadian Rockies.', input: { type: 'fields', fields: phFix(fl) }, check: check,
             key: [Dk, Rk], answer: 'Answers may vary, for example ' + t('D=' + Dk) + ', ' + t('R=' + Rk),
             solution: 'Answers may vary. Using a coldest average of about ' + t('-20\\,^{\\circ}\\text{C}') + ', and the temperature at which sales reach zero, ' + t('P(t)=0') + ' when ' + t('t=' + nf(z)) + ':<br>' + t(Dk) + '<br>' + t(Rk) + '<br>The range must match the domain: ' + t('P(' + nf(z) + ')=0') + ' and ' + t('P(-20)=' + P0(-20)) + '.',
             hints: ['Choose a realistic coldest temperature, and stop the domain where sales reach zero.', 'Then find ' + t('P') + ' at both ends of your domain for the range.'], text: 'domain/range cocoa (answers vary)' };
@@ -1083,7 +1089,7 @@
         } },
         { id: 'e6b', level: 'EMG', make: function (r, sh) {
           var bs = [0, 4 * sh.sy, -5 * sh.sy], lab = ['(b)', '(c)', '(d)'];
-          return B.fields('Solve each equation. (Press <b>none</b> if there is no solution.)', bs.map(function (b, i) { return solField(lab[i] + ' ' + t('f(x)=' + b), 'x'); }),
+          return BF('Solve each equation. (Press <b>none</b> if there is no solution.)', bs.map(function (b, i) { return solField(lab[i] + ' ' + t('f(x)=' + b), 'x'); }),
             bs.map(function (b) { return solsChk(pwSols(sh.V, b).pts, { b: b, graph: true, noneHint: 'The graph only reaches from ' + t(pwMin(sh.V)) + ' to ' + t(pwMax(sh.V)) + '. Does it ever reach height ' + t(b) + '?' }); }),
             bs.map(function (b) { var s0 = pwSols(sh.V, b).pts; return s0.length ? solsKey(s0) : 'none'; }), bs.map(function (b, i) { var s0 = pwSols(sh.V, b).pts; return lab[i] + ' ' + (s0.length ? t(solsKey(s0)) : 'no solution'); }).join('<br>'),
             bs.map(function (b, i) { var s0 = pwSols(sh.V, b).pts; return lab[i] + ' Read across at height ' + t(b) + ': ' + (s0.length ? t(solsKey(s0)) + (s0.length === 1 ? ' only' : '') : '<b>no solution</b> — the line ' + t('y=' + b) + ' passes entirely ' + (b < 0 ? 'below' : 'above') + ' the graph'); }).join('<br>'),
@@ -1100,7 +1106,7 @@
         } },
         { id: 'e6d', level: 'EMG', make: function (r, sh) {
           var z = pwSols(sh.V, 0).pts, y0 = pwAt(sh.V, 0);
-          return B.fields('(f) Write the ' + t('x') + '-intercepts and the ' + t('y') + '-intercept of the graph using function notation.', [solField(t('x') + '-intercepts: ' + t('f(x)=0') + ' when', 'x'), { label: t('y') + '-intercept: ' + t('f(0)='), name: 'f(0)', mode: 'math', keys: 'solutions', vars: ['x'] }],
+          return BF('(f) Write the ' + t('x') + '-intercepts and the ' + t('y') + '-intercept of the graph using function notation.', [solField(t('x') + '-intercepts: ' + t('f(x)=0') + ' when', 'x'), { label: t('y') + '-intercept: ' + t('f(0)='), name: 'f(0)', mode: 'math', keys: 'solutions', vars: ['x'] }],
             [solsChk(z, { b: 0, graph: true }), K.value(y0)], [solsKey(z), nf(y0)], z.map(function (x) { return t('f(' + x + ')=0'); }).join(', ') + '; ' + t('f(0)=' + y0),
             t('x') + '-intercepts (output ' + t('0') + '): ' + z.map(function (x) { return t('f(' + x + ')=0'); }).join(', ') + '.<br>' + t('y') + '-intercept (input ' + t('0') + '): ' + t('f(0)=' + y0) + ' — the graph passes through the origin, so one point is both.', ['Solve ' + t('f(x)=0') + ', then find ' + t('f(0)') + '.'], 'EP intercepts fn notation');
         } },
@@ -1129,7 +1135,7 @@
         } },
         { id: 'e7c', level: 'PRG', make: function (r, sh) {
           var bs = [2 * sh.sy, 4 * sh.sy, -5 * sh.sy], lab = ['(c)', '(d)', '(e)'];
-          return B.fields('Solve each equation. (Press <b>none</b> if there is no solution.)', bs.map(function (b, i) { return solField(lab[i] + ' ' + t('g(x)=' + b), 'x'); }),
+          return BF('Solve each equation. (Press <b>none</b> if there is no solution.)', bs.map(function (b, i) { return solField(lab[i] + ' ' + t('g(x)=' + b), 'x'); }),
             bs.map(function (b) { return solsChk(pwSols(sh.V, b).pts, { b: b, graph: true, scale: sh.sx, noneHint: 'The lowest point of the graph is at ' + t(pwMin(sh.V)) + '. Is ' + t(b) + ' ever reached?' }); }),
             bs.map(function (b) { var s0 = pwSols(sh.V, b).pts; return s0.length ? solsKey(s0) : 'none'; }), bs.map(function (b, i) { var s0 = pwSols(sh.V, b).pts; return lab[i] + ' ' + (s0.length ? t(solsKey(s0)) : 'no solution'); }).join('<br>'),
             bs.map(function (b, i) { var s0 = pwSols(sh.V, b).pts; return lab[i] + ' ' + t(b) + ' is ' + t(Math.abs(b / sh.sy)) + ' squares ' + (b < 0 ? 'down' : 'up') + ': ' + (s0.length ? t(solsKey(s0)) : '<b>no solution</b> — it lies below the lowest point'); }).join('<br>'),
@@ -1137,7 +1143,7 @@
         } },
         { id: 'e7d', level: 'EMG', make: function (r, sh) {
           var z = pwSols(sh.V, 0).pts;
-          return B.fields('(f) Write the ' + t('x') + '-intercepts of the graph in function notation.', [solField(t('g(x)=0') + ' when', 'x')], [solsChk(z, { b: 0, graph: true, scale: sh.sx })], [solsKey(z)],
+          return BF('(f) Write the ' + t('x') + '-intercepts of the graph in function notation.', [solField(t('g(x)=0') + ' when', 'x')], [solsChk(z, { b: 0, graph: true, scale: sh.sx })], [solsKey(z)],
             z.map(function (x) { return t('g(' + x + ')=0'); }).join(', '), t('x') + '-intercepts: ' + z.map(function (x) { return t('g(' + x + ')=0'); }).join(', ') + '.', ['Where does the graph cross the ' + t('x') + '-axis? Use the horizontal scale.'], 'EP x-ints scaled');
         } },
         { id: 'e7e', level: 'EMG', outcome: 'RF2', make: function (r, sh) {
@@ -1157,9 +1163,9 @@
         { id: 'e8a', level: 'PRG', make: function (r) {
           var a = r.pick([6, 6, 3, 4, 7]), c = r.pick([-2, -2, -1, -3, -5]);
           var rows = [{ id: 'r1', html: 'Find ' + t('f(' + a + ')') }, { id: 'r2', html: 'Solve ' + t('f(x)=' + a) }, { id: 'r3', html: 'Find ' + t('f(0)') }, { id: 'r4', html: 'Solve ' + t('f(x)=0') }, { id: 'r5', html: 'Given ' + t('f(k)=' + c) + ', find ' + t('k') }, { id: 'r6', html: 'Given ' + t('f(' + c + ')=k') + ', find ' + t('k') }];
-          var cols = [{ id: 'in', html: 'Input given: start on the horizontal axis, exactly one answer' }, { id: 'out', html: 'Output given: start on the vertical axis, none, one or many answers' }];
+          var cols = [{ id: 'in', html: 'Input given' }, { id: 'out', html: 'Output given' }];
           var want = { r1: 'in', r2: 'out', r3: 'in', r4: 'out', r5: 'out', r6: 'in' };
-          return B.grid('Classify each item.', rows, cols, want, { why: function (row, got) {
+          return B.grid('Classify each item. (<b>Input given</b>: start on the horizontal axis — exactly one answer. <b>Output given</b>: start on the vertical axis — none, one or many answers.)', rows, cols, want, { why: function (row, got) {
             if (row === 'r5') return { code: 'row', hint: 'In ' + t('f(k)=' + c) + ' the number ' + t(c) + ' is after the equals sign — it is an <b>output</b>; the input ' + t('k') + ' is unknown.' };
             if (row === 'r6') return { code: 'row', hint: 'In ' + t('f(' + c + ')=k') + ' the number ' + t(c) + ' is in the brackets — it is an <b>input</b>; the output ' + t('k') + ' is unknown.' };
             return { code: 'row', hint: 'The number inside the brackets is the input; a number after ' + t('f(x)=') + ' is an output.' };
@@ -1275,7 +1281,7 @@
         } },
         { id: 'e11b', level: 'EMG', make: function (r, sh) {
           var b1 = sh.a + sh.s, b2 = sh.a + sh.s - 10;
-          return B.fields('Solve each equation. (Press <b>none</b> if there is no solution.)', [solField('(b) ' + t('V(t)=' + b1), 't'), solField('(c) ' + t('V(t)=' + b2), 't')],
+          return BF('Solve each equation. (Press <b>none</b> if there is no solution.)', [solField('(b) ' + t('V(t)=' + b1), 't'), solField('(c) ' + t('V(t)=' + b2), 't')],
             [solsChk([2, 4], { v: 't', b: b1, diag: function (A) { return A.length === 1 ? { code: 'sol-graph-missing', hint: t(b1) + ' appears more than once in the bottom row.' } : null; } }), solsChk([], { v: 't', b: b2, noneHint: t(b2) + ' never appears in the ' + t('V(t)') + ' row.' })],
             ['t=2,\\ t=4', 'none'], t('t=2,\\ t=4') + '; no solution',
             '(b) ' + t(b1) + ' sits under ' + t('t=2') + ' and ' + t('t=4') + ': the hill had ' + t(b1) + ' visitors on two separate days.<br>(c) ' + t(b2) + ' never appears in the ' + t('V(t)') + ' row: <b>no solution</b> — no day had exactly ' + t(b2) + ' visitors.', ['Look for the number in the bottom row; read the day above it.'], 'EP solve V(t)=b from table');
@@ -1328,7 +1334,7 @@
         } },
         { id: 'e12e', level: 'EMG', make: function (r, sh) {
           var hi = sh.F + 100, lo = sh.S;
-          return B.fields('(e) Solve each equation.', [solField(t('W(t)=' + hi), 't'), solField(t('W(t)=' + lo), 't')],
+          return BF('(e) Solve each equation.', [solField(t('W(t)=' + hi), 't'), solField(t('W(t)=' + lo), 't')],
             [solsChk([], { v: 't', b: hi, noneHint: 'The tank never holds more than ' + t(sh.F) + ' L.' }), solsChk([0], { v: 't', b: lo, diag: function (A) { return null; } })], ['none', 't=0'], 'no solution; ' + t('t=0'),
             t('W(t)=' + hi) + ': <b>no solution</b> — the tank never rises above ' + t(sh.F) + ' L.<br>' + t('W(t)=' + lo) + ': <b>one</b>, ' + t('t=0') + ' — the starting volume; draining stops at ' + t(sh.E) + ' L, so ' + t(lo) + ' L is never reached again.', ['Read across at each height; count every crossing.'], 'EP none and one');
         } },
@@ -1466,7 +1472,7 @@
         }, stem: function (sh) { return '<i>(Error analysis)</i> The graph of a function ' + t('g') + ' is shown. Asked to solve ' + t('g(x)=0') + ', a student answers “' + t('x=' + sh.z[1]) + '”. Asked to solve ' + t('g(x)=' + sh.top) + ', the same student answers “' + t('x=' + (sh.h + sh.w)) + '”.' + sh.fig; }, parts: [
         { id: 'e16a', level: 'EMG', make: function (r, sh) {
           var s1 = sh.z, s2 = [sh.h - sh.w, sh.h + sh.w];
-          return B.fields('(a) Give the complete solution to each equation.', [solField(t('g(x)=0'), 'x'), solField(t('g(x)=' + sh.top), 'x')], [solsChk(s1, { b: 0, graph: true }), solsChk(s2, { b: sh.top, graph: true })], [solsKey(s1), solsKey(s2)],
+          return BF('(a) Give the complete solution to each equation.', [solField(t('g(x)=0'), 'x'), solField(t('g(x)=' + sh.top), 'x')], [solsChk(s1, { b: 0, graph: true }), solsChk(s2, { b: sh.top, graph: true })], [solsKey(s1), solsKey(s2)],
             t(solsKey(s1)) + '; ' + t(solsKey(s2)), t('g(x)=0') + ': read along the ' + t('x') + '-axis — two crossings, ' + t(solsKey(s1)) + '.<br>' + t('g(x)=' + sh.top) + ': that height is reached at both endpoints, ' + t(solsKey(s2)) + '.', ['Keep reading across the whole graph.'], 'EP complete solutions parabola');
         } },
         { id: 'e16b', level: 'EMG', make: function (r, sh) {
@@ -1489,7 +1495,7 @@
           var fl = [{ label: 'A value of ' + t('b') + ' with exactly <b>one</b> solution: ' + t('b='), name: 'one solution', mode: 'math', keys: 'fraction' }, { label: 'A value of ' + t('b') + ' with <b>no</b> solution: ' + t('b='), name: 'no solution', mode: 'math', keys: 'fraction' }];
           var cnt = function (b) { if (b < sh.k - 1e-9 || b > sh.top + 1e-9) return 0; if (same(b, sh.k)) return 1; return 2; };
           var mk = function (want) { return function (resp) { var a = K.read(resp); if (a.res) return a.res; var c = cnt(a.val); if (c === want) return ok(); return wrong('two-b', t('g(x)=' + nf(a.val)) + ' has ' + (c === 0 ? 'no solution' : c === 1 ? 'exactly one solution' : 'two solutions') + '. Draw the horizontal line at height ' + t(nf(a.val)) + ' and count.' + (want === 1 ? ' Look at the lowest point.' : '')); }; };
-          var p = B.fields('(d) ' + t('g(x)=b') + ' for different values of ' + t('b') + ':', fl, [mk(1), mk(0)], [String(sh.k), String(sh.k - 2)], t('b=' + sh.k) + ' (only); for no solution any ' + t('b<' + sh.k) + ' or ' + t('b>' + sh.top) + ', e.g. ' + t('b=' + (sh.k - 2)),
+          var p = BF('(d) ' + t('g(x)=b') + ' for different values of ' + t('b') + ':', fl, [mk(1), mk(0)], [String(sh.k), String(sh.k - 2)], t('b=' + sh.k) + ' (only); for no solution any ' + t('b<' + sh.k) + ' or ' + t('b>' + sh.top) + ', e.g. ' + t('b=' + (sh.k - 2)),
             'The lowest point is ' + t(ptT([sh.h, sh.k])) + '.<br>' + t('b=' + sh.k) + ': exactly one solution, ' + t('x=' + sh.h) + '.<br>Any ' + t('b<' + sh.k) + ' (e.g. ' + t(sh.k - 2) + '), or any ' + t('b>' + sh.top) + ' (above both endpoints): no solution.', ['Look at the lowest point, and at the highest points of the graph.'], 'EP b for one / none');
           p.good = [[String(sh.k), String(sh.top + 3)]]; p.bad = [[String(sh.k + 1), String(sh.k - 2)], [String(sh.k), '0']];
           return p;
@@ -1536,7 +1542,7 @@
             return wrong('value', null);
           };
           var fl = [{ label: 'Statement: “' + t(k2) + ' kg of apples cost ' + t('\\$' + c2) + '”', name: 'statement', mode: 'math', keys: EQK, vars: ['C', 'k'] }, { label: 'Question: “how many kilograms can be bought for ' + t('\\$' + c2) + '?” Solve', name: 'question', mode: 'math', keys: EQK, vars: ['C', 'k'] }];
-          var p = B.fields('(d) Write each in function notation.', fl, [stmtChk('C', k2, c2), eqChk], ['C(' + k2 + ')=' + c2, 'C(k)=' + c2], t('C(' + k2 + ')=' + c2) + '; solve ' + t('C(k)=' + c2),
+          var p = BF('(d) Write each in function notation.', fl, [stmtChk('C', k2, c2), eqChk], ['C(' + k2 + ')=' + c2, 'C(k)=' + c2], t('C(' + k2 + ')=' + c2) + '; solve ' + t('C(k)=' + c2),
             'Input ' + t(k2) + ' kg, output ' + t('\\$' + c2) + ': ' + t('C(' + k2 + ')=' + c2) + '.<br>The question gives the output ' + t('\\$' + c2) + ' and asks for the input: solve ' + t('C(k)=' + c2) + '.', ['Mass goes in the brackets; cost goes after the equals sign.'], 'EP write statement and equation');
           p.bad = [['C(' + c2 + ')=' + k2, 'C(k)=' + c2], ['C(' + k2 + ')=' + c2, 'C(' + c2 + ')=k']];
           return p;
@@ -1558,7 +1564,7 @@
         } },
         { id: 'e18b', level: 'EMG', make: function (r, sh) {
           var bs = [sh.sy, 5 * sh.sy];
-          return B.fields('(b) Solve each equation.', bs.map(function (b) { return solField(t('f(x)=' + b), 'x'); }), bs.map(function (b) { return solsChk(pwSols(sh.V, b).pts, { b: b, graph: true }); }), bs.map(function (b) { return solsKey(pwSols(sh.V, b).pts); }),
+          return BF('(b) Solve each equation.', bs.map(function (b) { return solField(t('f(x)=' + b), 'x'); }), bs.map(function (b) { return solsChk(pwSols(sh.V, b).pts, { b: b, graph: true }); }), bs.map(function (b) { return solsKey(pwSols(sh.V, b).pts); }),
             bs.map(function (b) { return t(solsKey(pwSols(sh.V, b).pts)); }).join('; '), bs.map(function (b) { return t('f(x)=' + b) + ': ' + t(solsKey(pwSols(sh.V, b).pts)); }).join('<br>'), ['Read across; count every crossing.'], 'EP stretch solve');
         } },
         { id: 'e18c', level: 'PRG', make: function (r, sh) {
@@ -1568,7 +1574,7 @@
         } },
         { id: 'e18d', level: 'EMG', make: function (r, sh) {
           var bs = [6 * sh.sy, -3 * sh.sy];
-          return B.fields('(d) Solve each equation. (Press <b>none</b> if there is no solution.)', bs.map(function (b) { return solField(t('f(x)=' + b), 'x'); }), bs.map(function (b) { return solsChk(pwSols(sh.V, b).pts, { b: b, graph: true }); }),
+          return BF('(d) Solve each equation. (Press <b>none</b> if there is no solution.)', bs.map(function (b) { return solField(t('f(x)=' + b), 'x'); }), bs.map(function (b) { return solsChk(pwSols(sh.V, b).pts, { b: b, graph: true }); }),
             bs.map(function (b) { var s0 = pwSols(sh.V, b).pts; return s0.length ? solsKey(s0) : 'none'; }), bs.map(function (b) { var s0 = pwSols(sh.V, b).pts; return s0.length ? t(solsKey(s0)) : 'no solution'; }).join('; '),
             t('f(x)=' + bs[0]) + ': <b>no solution</b> — the graph never goes beyond ' + t(5 * sh.sy) + '.<br>' + t('f(x)=' + bs[1]) + ': <b>exactly one</b>, ' + t(solsKey(pwSols(sh.V, bs[1]).pts)) + ', where pieces 1 and 2 meet.', ['Find the highest and lowest points.'], 'EP stretch none / one');
         } },

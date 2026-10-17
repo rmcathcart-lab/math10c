@@ -288,6 +288,8 @@
   /* ---------------- several solutions ---------------- */
   function valueList(resp, v) {
     var s = String(resp || '').replace(/\\(left|right)/g, '').replace(/\\text\{\s*(or|and)\s*\}/gi, ',').replace(/\b(or|and)\b/gi, ',').replace(/;/g, ',');
+    var lm, letters = /([a-zA-Z])\s*=/g;
+    while ((lm = letters.exec(s))) { if (v && lm[1] !== v) return { letter: lm[1] }; }
     s = s.replace(/[a-zA-Z]\s*=\s*/g, '').replace(/\\pm|±/g, '±');
     s = s.replace(/\\(quad|qquad)|\\[ ,;:!]|~/g, ' ');
     if (!s.trim()) return { empty: true };
@@ -309,6 +311,7 @@
     return function (resp) {
       var L = valueList(resp, opt.v);
       if (L.empty) return form('empty', 'Type your answer first.');
+      if (L.letter) return form('sol-letter', 'Use the variable ' + t(opt.v) + ' here (you wrote ' + t(L.letter + '=') + ').');
       if (L.unsimp) return form('simplify', 'Simplify each solution to a single number (no ' + t('\\times') + ', + or − between numbers).');
       if (L.bad) return form('unreadable', 'Write each solution as a number, separated by commas, e.g. ' + t((opt.v || 'x') + '=3,\\ ' + (opt.v || 'x') + '=-5') + '.');
       var A = uniq(L.vals);
