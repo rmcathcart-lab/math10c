@@ -118,10 +118,11 @@ class Scene extends Box {
 async function role(c, segEl, tagEl, r) { segEl.setAttribute('stroke', ROLE[r]); segEl.setAttribute('stroke-width', 4.5); await anim(c, segEl, [{ opacity: 0.3 }, { opacity: 1 }], 260); await pop(c, tagEl, 300); }
 async function glowOn(c, g) { await anim(c, g, [{ opacity: 0 }, { opacity: 1 }], 350); await anim(c, g, [{ opacity: 1 }, { opacity: 0.45 }, { opacity: 1 }], 600); }
 /** a gold copy of a segment that flies from one place to another (px offsets) */
-async function carry(c, S, a, b, dx, dy, ms = 900) {
+async function carry(c, S, a, b, from, to, ms = 900) {
   const L = S.layer(); const g = S.seg(a, b, { color: GOLD, width: 9, L }); void g;
   L.g.style.filter = 'drop-shadow(0 0 6px rgba(240,185,30,.9))';
-  await appear(c, L.g, 200); await S.slide(c, L, dx, dy, ms); await anim(c, L.g, [{ opacity: 1 }, { opacity: 0 }], 350);
+  L.dx = from[0]; L.dy = from[1]; const tr = `translate(${from[0]}px, ${from[1]}px)`; L.g.style.transform = tr; L.d.style.transform = tr;
+  await appear(c, L.g, 200); await S.slide(c, L, to[0], to[1], ms); await anim(c, L.g, [{ opacity: 1 }, { opacity: 0 }], 350);
   L.g.remove(); L.d.remove();
 }
 const chainIcon = (S, px, py) => { const d = h('div', 'u9l7-chain', '<svg viewBox="0 0 40 20"><rect x="2" y="4" width="20" height="12" rx="6"/><rect x="18" y="4" width="20" height="12" rx="6"/></svg>'); S.html.appendChild(d); place(d, px, py, 'c'); d.style.opacity = 0; return d; };
@@ -194,3 +195,420 @@ const unit3 = (v) => { const l = Math.hypot(...v); return v.map((x) => x / l); }
 /** points of an arc at V from direction u toward direction w (both unit, perpendicular) through angle deg, radius r (units) */
 const arc3 = (V, u, w, deg, r, n = 24) => Array.from({ length: n + 1 }, (_, i) => { const t = deg * RAD * i / n; return add3(add3(V, u, r * Math.cos(t)), w, r * Math.sin(t)); });
 
+/* =============================== warm-up: the unreachable cliff =============================== */
+const CLIFF = { walk: { label: 'Walk A → B: 30° then 60°', a: 30 }, follow: { label: 'Follow-up: 25° then 50°', a: 25 } };
+function drawCliff(S, a, d) {
+  const b = 2 * a, BT = d, xB = BT * cosD(b), hh = BT * sinD(b), F = d + xB;
+  S.pt('A', 0, 0).pt('B', d, 0).pt('F', F, 0).pt('T', F, hh);
+  const g = S.layer(); // ground, river, cliff
+  S.poly([[-4, 0], [d + 0.35 * xB, 0], [d + 0.35 * xB, -2.2], [-4, -2.2]], { fill: '#cfe5bd', L: g });
+  S.poly([[d + 0.35 * xB, 0], [F, 0], [F, -2.2], [d + 0.35 * xB, -2.2]], { fill: '#a9cdee', L: g });
+  S.poly([[F, -2.2], [F, hh], [F + 4, hh + 0.6], [F + 12, hh], [F + 16, hh - 2], [F + 16, -2.2]], { fill: '#b3a698', stroke: INK, sw: 2, L: g });
+  S.poly([[F, hh], [F + 4, hh + 0.6], [F + 12, hh], [F + 12, hh - 0.5], [F + 4, hh + 0.1], [F, hh - 0.5]], { fill: '#6f9a4e', L: g });
+  S.seg([-4, 0], [d + 0.35 * xB, 0], { width: 2.5, L: g }); S.seg([d + 0.35 * xB, 0], [F, 0], { width: 2.5, color: '#4f86b8', L: g });
+  S.lab([d + 0.68 * xB, -1.1], 'river', { cls: 'u9l7-river' });
+  const shade = S.poly(['A', 'B', 'T'], { fill: '#ffecb3', op: 0.85 });
+  const FT = S.seg('F', 'T', { dash: '9 6', width: 2.5 }), rm = S.rmark('F', 'B', 'T');
+  const AT = S.seg('A', 'T', { color: RED, width: 3.4 }), BTs = S.seg('B', 'T', { color: RED, width: 3.4 }), BF = S.seg('B', 'F', { width: 0.01, color: INK });
+  S.arc('A', 'B', 'T', 58); S.angLab('A', 'B', 'T', 82, T(a + '^\\circ'), { cls: 'u9l7-alab big' });
+  S.arc('B', 'F', 'T', 34); S.angLab('B', 'F', 'T', 58, T(b + '^\\circ'), { cls: 'u9l7-alab big', dx: 0 });
+  S.arc('B', 'A', 'T', 26, { color: '#b5810f', width: 3 }); const l1 = S.angLab('B', 'A', 'T', 46, '<b>1</b>', { cls: 'u9l7-alab u9l7-num' });
+  S.arc('T', 'A', 'B', 46, { color: '#b5810f', width: 3 }); const l2 = S.angLab('T', 'A', 'B', 70, '<b>2</b>', { cls: 'u9l7-alab u9l7-num' });
+  for (const n of ['A', 'B']) { svgEl('circle', { cx: S.P(n)[0], cy: S.P(n)[1], r: 6, fill: INK }, S.svg); S.lab(n, `<b>${n}</b>`, { pos: 's', gap: 12, cls: 'u9l7-who' }); }
+  svgEl('circle', { cx: S.P('T')[0], cy: S.P('T')[1], r: 6, fill: RED }, S.svg);
+  S.lab([d / 2, 0], '40 m', { pos: 's', gap: 40, cls: 'u9l7-lab u9l7-chip' });
+  const q = S.lab([F, hh / 2], '? m', { pos: 'e', gap: 10, cls: 'u9l7-lab u9l7-red' });
+  return { b, xB, hh, F, shade, FT, rm, AT, BTs, BF, l1, l2, q };
+}
+const cliff = {
+  title: 'The Unreachable Cliff: solve the triangle you can, hand its side on',
+  height: 430,
+  choices: Object.keys(CLIFF).map((k) => ({ v: k, label: CLIFF[k].label })),
+  intro: (v) => (v === 'walk' ? 'The board picture. Answer warm-up 1–3 and guess the big one, then press <b>Next</b>.' : 'The teacher-notes follow-up: the angles are 25° then 50°, still 40 m apart. Press <b>Next</b>.'),
+  make(stage, v, ex) {
+    const a = CLIFF[v].a, d = 40, b = 2 * a, W = 620;
+    const xB = d * cosD(b), F = d + xB, hh = d * sinD(b);
+    const S = new Scene(stage, { x: 4, y: 6, width: W, height: 410, xmin: -4, xmax: F + 16, ymin: -2.2, ymax: hh + 1, pad: [22, 8, 58, 8] });
+    const K = drawCliff(S, a, d), Pn = panel(stage, W + 16, 8, ex.W - W - 22, 404, 'Work');
+    const g = S.glow('B', 'T'), roleBT = S.tag('B', 'T', 'hyp', 'F', { off: 22 }), roleFT = S.tag('F', 'T', 'opp', 'B', { off: 30 }), roleBF = S.tag('B', 'F', 'adj', 'T', { off: 26 });
+    const tick = (p, q) => { const P = S.P(p), Q = S.P(q), M = [(P[0] + Q[0]) / 2, (P[1] + Q[1]) / 2], [ux, uy] = norm(Q[0] - P[0], Q[1] - P[1]); return svgEl('path', { d: `M${M[0] - uy * 9} ${M[1] + ux * 9}L${M[0] + uy * 9} ${M[1] - ux * 9}`, stroke: GOLDD, 'stroke-width': 3.5, opacity: 0 }, S.svg); };
+    const t1 = tick('A', 'B'), t2 = tick('B', 'T'), bt = hide(S.sideLab('B', 'T', '40 m', 'A', { off: 24, cls: 'u9l7-lab u9l7-gold' }));
+    const ang1 = 180 - b, ang2 = 180 - a - ang1;
+    return [
+      { cap: `Angle <b>1</b> and the ${T(b + '^\\circ')} angle sit on a straight line: angle 1 ${T('=180^\\circ-' + b + '^\\circ=' + ang1 + '^\\circ')}.`,
+        run: async (c) => { K.l1.innerHTML = `<b>1</b>${T('=' + ang1 + '^\\circ')}`; await pulse(c, K.l1, 1.25); await say(c, Pn, T(`\\angle 1=180^\\circ-${b}^\\circ=${ang1}^\\circ`)); } },
+      { cap: `The shaded triangle’s angles add to ${T('180^\\circ')}: angle 2 ${T(`=180^\\circ-${a}^\\circ-${ang1}^\\circ=${ang2}^\\circ`)}.`,
+        run: async (c) => { K.l2.innerHTML = `<b>2</b>${T('=' + ang2 + '^\\circ')}`; await pulse(c, K.l2, 1.25); await say(c, Pn, T(`\\angle 2=180^\\circ-${a}^\\circ-${ang1}^\\circ=${ang2}^\\circ`)); } },
+      { cap: `Two equal angles (${T(a + '^\\circ')} and ${T(a + '^\\circ')}): the shaded triangle is <b>isosceles</b>. The sides opposite them are equal, so the sight line ${T('BT=AB=40')} m.`,
+        run: async (c) => { await Promise.all([appear(c, t1, 300), appear(c, t2, 300)]); await glowOn(c, g); await pop(c, bt); await say(c, Pn, `${T('BT=AB=' + cG('40') + '\\text{ m}')} <span class="u9l7-small muted">(isosceles)</span>`); } },
+      { cap: `${T('BT')} is the <b>shared side</b>. The right triangle at the cliff uses it as its <b>hypotenuse</b>, and the height is <b>opposite</b> the ${T(b + '^\\circ')} angle.`,
+        run: async (c) => {
+          await anim(c, K.shade, [{ opacity: 1 }, { opacity: 0.25 }], 400);
+          const arc = S.arc('B', 'F', 'T', 34, { color: REF, width: 4 }); await drawIn(arc, 400, c);
+          K.BF.setAttribute('stroke-width', 4.5); K.BF.setAttribute('stroke', ADJ); K.FT.removeAttribute('stroke-dasharray');
+          await role(c, K.BTs, roleBT, 'hyp'); await role(c, K.FT, roleFT, 'opp'); await pop(c, roleBF, 300);
+        } },
+      { cap: `SOH: ${T(`\\sin ${b}^\\circ=\\dfrac{h}{40}`)}, so ${T(`h=40\\sin ${b}^\\circ\\approx${r1(hh)}`)} m. ${v === 'walk' ? 'The big one is <b>B, about 35 m</b>.' : 'Same trick, any angle that doubles.'}`,
+        run: async (c) => { await say(c, Pn, T(`\\sin ${b}^\\circ=\\dfrac{${cO('h')}}{${cH('40')}}`)); await say(c, Pn, T(`h=40\\sin ${b}^\\circ=${cO(r2(hh))}\\text{ m}`)); K.q.innerHTML = `${T('h\\approx' + r1(hh))} m`; K.q.classList.remove('u9l7-red'); K.q.style.color = OPP; await pulse(c, K.q, 1.2); } },
+      { cap: `Check from A: ${T('BF=40\\cos ' + b + '^\\circ=' + r2(xB))}, so the base is ${T(r2(xB) + '+40=' + r2(F))} m from A, and ${T(`\\tan^{-1}\\!\\left(\\dfrac{${r2(hh)}}{${r2(F)}}\\right)=${a}^\\circ`)} ✓`,
+        run: async (c) => { await say(c, Pn, T(`BF=40\\cos ${b}^\\circ=${r2(xB)}`)); await say(c, Pn, T(`\\tan^{-1}\\!\\left(\\tfrac{${r2(hh)}}{${r2(F)}}\\right)=${a}^\\circ`) + ' <span class="u9l7-good">✓</span>'); await stampIn(c, stamp(stage, '✓', { x: W - 50, y: 56 })); } }
+    ];
+  }
+};
+
+/* =============================== Example 1: two towers =============================== */
+const TW = {
+  ex1: { label: 'Example 1 check', n1: 'Ashgrove', n2: 'Birchwood', d: 38, aB: 51, aT: 22, up: true },
+  low: { label: 'Shorter second tower', n1: 'Tower 1', n2: 'Tower 2', d: 30, aB: 60, aT: 25, up: false }
+};
+const towers = {
+  title: 'Two towers, one shared horizontal distance',
+  height: 470,
+  choices: Object.keys(TW).map((k) => ({ v: k, label: TW[k].label })),
+  intro: (v) => (v === 'ex1' ? 'Example 1, after the class has tried it. Press <b>Next</b>.' : 'What if the second tower is <b>shorter</b>? Look <b>down</b> to its top. Press <b>Next</b>.'),
+  make(stage, v, ex) {
+    const o = TW[v], d = o.d, H1 = d * tanD(o.aB), pc = d * tanD(o.aT), H2 = o.up ? H1 + pc : H1 - pc, W = 560;
+    const S = new Scene(stage, { x: 0, y: 4, width: W, height: 460, xmin: 0, xmax: d, ymin: 0, ymax: Math.max(H1, H2), pad: [40, 150, 64, 150] });
+    S.pt('O', 0, 0).pt('M', 0, H1).pt('N', d, 0).pt('K', d, H1).pt('T2', d, H2).pt('E', d + 0.25 * d, H1);
+    S.seg([-0.25 * d, 0], [d * 1.25, 0], { width: 2.5 });
+    const t1 = S.seg('O', 'M', { width: 6 }), t2 = S.seg('N', 'T2', { width: 6 });
+    S.lab([0, H1 / 2], o.n1, { pos: 'w', gap: 14, cls: 'u9l7-lab u9l7-name' }); S.lab([d, Math.min(H1, H2) / 2], o.n2, { pos: 'e', gap: 14, cls: 'u9l7-lab u9l7-name' });
+    const hz = S.seg('M', 'E', { dash: '9 7', width: 2.2 });
+    const dl = S.lab([d / 2, 0], `${d} m`, { pos: 's', gap: 10, cls: 'u9l7-lab' });
+    const Pn = panel(stage, W + 12, 8, ex.W - W - 18, 454, 'Work');
+    // pieces drawn later
+    const sB = S.seg('M', 'N', { dash: '3 6', width: 2.6 }), sT = S.seg('M', 'T2', { dash: '3 6', width: 2.6 });
+    [sB, sT].forEach(hide);
+    const aBarc = hide(S.arc('M', 'E', 'N', 46)), aBl = hide(S.angLab('M', 'E', 'N', 72, T(o.aB + '^\\circ')));
+    const aTarc = hide(S.arc('M', 'E', 'T2', 86)), aTl = hide(S.angLab('M', 'E', 'T2', 112, T(o.aT + '^\\circ')));
+    const z = hide(S.path([[d * 1.2, H1], 'M', 'N', [-0.2 * d, 0]], { color: REF, width: 5, cls: 'u9l7-z' }));
+    const zArc = hide(S.arc('N', 'O', 'M', 46, { color: REF, width: 3.5 })), zl = hide(S.angLab('N', 'O', 'M', 72, T(o.aB + '^\\circ'), { color: REF }));
+    const g0 = S.glow('O', 'N'), mk = hide(S.seg('M', 'K', { width: 4.5, color: ADJ })), mkl = hide(S.lab([d / 2, H1], `${d} m`, { pos: o.up ? 's' : 'n', gap: 8, cls: 'u9l7-lab u9l7-gold' }));
+    const rk = hide(S.rmark('K', 'M', 'T2')), ro = hide(S.rmark('O', 'N', 'M'));
+    const tg = { OM: S.tag('O', 'M', 'opp', [-d, H1 / 2], { off: 30 }), ON: S.tag('O', 'N', 'adj', 'M', { off: 52 }), NM: S.tag('N', 'M', 'hyp', 'O', { off: 26 }), KT: S.tag('K', 'T2', 'opp', 'M', { off: 34 }), MT: S.tag('M', 'T2', 'hyp', 'K', { off: 24 }) };
+    const on = S.seg('O', 'N', { width: 0.01 });
+    const hd = (x, f) => `${x}=${f}`;
+    const N1 = o.n1.split(' ')[0], vH = 'H';
+    const stackL = S.layer(), copy = S.seg('O', 'M', { width: 7, color: GOLD, L: stackL }); void copy; hide(stackL.g);
+    return [
+      { cap: `From the top of ${o.n1}, look along the dashed horizontal: <b>down</b> ${T(o.aB + '^\\circ')} to ${o.n2}’s base, ${o.up ? '<b>up</b>' : 'and <b>down</b>'} ${T(o.aT + '^\\circ')} to its top. Two sight lines make <b>two right triangles</b>.`,
+        run: async (c) => { for (const e of [sB, sT]) { e.style.opacity = 1; await drawIn(e, 500, c); } for (const e of [aBarc, aTarc]) await appear(c, e, 250); await pop(c, aBl); await pop(c, aTl); } },
+      { cap: `The two horizontals (eye level and the ground) are parallel, so the angles of the <b>Z</b> are equal: the ${T(o.aB + '^\\circ')} angle of depression equals the angle of elevation from ${o.n2}’s base up to ${o.n1}’s top.`,
+        run: async (c) => { z.style.opacity = 1; await drawIn(z, 900, c); await appear(c, zArc, 300); await pop(c, zl); await sleep(c, 400); await anim(c, z, [{ opacity: 1 }, { opacity: 0.25 }], 400); } },
+      { cap: `Lower triangle, from the ${T(o.aB + '^\\circ')} at the base: ${o.n1}’s height is <b>opposite</b>, the ${T(d)} m is <b>adjacent</b>. TOA: ${T(`${vH}=${d}\\tan ${o.aB}^\\circ=${dots(H1)}\\approx${r0(H1)}`)} m.`,
+        run: async (c) => {
+          await appear(c, ro, 250); sB.setAttribute('stroke-dasharray', ''); on.setAttribute('stroke-width', 4.5);
+          await role(c, t1, tg.OM, 'opp'); await role(c, on, tg.ON, 'adj'); await role(c, sB, tg.NM, 'hyp');
+          await say(c, Pn, `<b>Lower</b> ${T(`\\tan ${o.aB}^\\circ=\\dfrac{${cO(vH)}}{${cA(d)}}`)}`);
+          await say(c, Pn, T(`${hd(cO(vH), `${d}\\tan ${o.aB}^\\circ`)}=${dots(H1)}`));
+          await say(c, Pn, `${N1}: ${T('\\approx' + r0(H1))} m`, 'u9l7-res');
+        } },
+      { cap: `The horizontal from ${o.n1}’s top across to ${o.n2} is the <b>same ${d} m</b>: the side both triangles share. Carry it up to eye level.`,
+        run: async (c) => { await glowOn(c, g0); await carry(c, S, 'O', 'N', [0, 0], [0, -H1 * S.s], 900); await appear(c, mk, 300); await pop(c, mkl); await appear(c, rk, 250); } },
+      { cap: o.up ? `Upper triangle, from the ${T(o.aT + '^\\circ')}: the extra height ${T('x')} is <b>opposite</b>, ${T(d)} m is <b>adjacent</b>: ${T(`x=${d}\\tan ${o.aT}^\\circ=${dots(pc)}`)} m.`
+        : `Lower-right triangle at eye level, from the ${T(o.aT + '^\\circ')}: the <b>drop</b> ${T('x')} to ${o.n2}’s top is <b>opposite</b>, ${T(d)} m is <b>adjacent</b>: ${T(`x=${d}\\tan ${o.aT}^\\circ=${dots(pc)}`)} m.`,
+        run: async (c) => {
+          const kt = S.seg('K', 'T2', { width: 4.5 }); kt.style.opacity = 0; sT.setAttribute('stroke-dasharray', '');
+          await role(c, kt, tg.KT, 'opp'); await role(c, sT, tg.MT, 'hyp');
+          await say(c, Pn, `<b>${o.up ? 'Upper' : 'Eye level'}</b> ${T(`\\tan ${o.aT}^\\circ=\\dfrac{${cO('x')}}{${cA(d)}}`)}`);
+          await say(c, Pn, T(`${cO('x')}=${d}\\tan ${o.aT}^\\circ=${dots(pc)}`));
+        } },
+      { cap: o.up ? `Stack the pieces: ${o.n2} ${T(`=${dots(H1)}+${dots(pc)}=${dots(H2)}\\approx${r0(H2)}`)} m. Add the <b>unrounded</b> values.`
+        : `${o.n2} ${T(`=${dots(H1)}-${dots(pc)}=${dots(H2)}\\approx${r0(H2)}`)} m. Looking <b>down</b> to its top means <b>subtract</b>.`,
+        run: async (c) => {
+          stackL.g.style.opacity = 1; await appear(c, stackL.g, 250); await S.slide(c, stackL, d * S.s, 0, 900);
+          await say(c, Pn, `${o.n2}: ${T(`${dots(H1, 3)}${o.up ? '+' : '-'}${dots(pc, 3)}`)}`);
+          await say(c, Pn, T(`=${dots(H2)}\\approx${r0(H2)}`) + ' m', 'u9l7-res');
+          await pulse(c, t2, 1.04);
+        } },
+      { cap: `Check: ${T(`\\tan^{-1}\\!\\left(\\dfrac{${H1.toFixed(3)}}{${d}}\\right)=${o.aB}^\\circ`)} ✓ and ${T(`\\tan^{-1}\\!\\left(\\dfrac{${pc.toFixed(3)}}{${d}}\\right)=${o.aT}^\\circ`)} ✓`,
+        run: async (c) => { await stampIn(c, stamp(stage, '✓', { x: 60, y: 60 })); } }
+    ];
+  }
+};
+
+/* =============================== never round the shared side =============================== */
+const NR = {
+  ex3: { label: 'Example 3: round EC first?', nl: [63, 64], cut: [63.5], band: [63.5, 64], good: acosD(4.5 * sinD(35) / 5.8), bad: acosD(2.6 / 5.8),
+    L: [`${T('EC=4.5\\sin 35^\\circ=' + cG('2.58109\\ldots'))}`, `${T('\\cos\\angle BEC=\\dfrac{2.58109\\ldots}{5.8}=0.445016\\ldots')}`, `${T('\\angle BEC=63.58^\\circ')}`],
+    R: [`${T('EC=4.5\\sin 35^\\circ\\approx' + cG('2.6'))} <span class="u9l7-small">(rounded)</span>`, `${T('\\cos\\angle BEC=\\dfrac{2.6}{5.8}=0.448275\\ldots')}`, `${T('\\angle BEC=63.37^\\circ')}`],
+    ga: '64^\\circ', ba: '63^\\circ' },
+  ex4: { label: 'Example 4: round the quotients?', nl: [35, 38], cut: [35.5, 36.5, 37.5], band: [36.5, 37.5], good: 25 / (1 / tanD(32) - 1 / tanD(47)), bad: 25 / 0.7,
+    L: [`${T('\\tfrac{1}{\\tan 32^\\circ}-\\tfrac{1}{\\tan 47^\\circ}')}`, `${T('=1.60033\\ldots-0.93251\\ldots=0.66781\\ldots')}`, `${T('h=25\\div0.66781\\ldots=37.44')}`],
+    R: [`<span class="u9l7-small">to one decimal place:</span>`, `${T('1.6-0.9=0.7')}`, `${T('h=25\\div0.7=35.71')}`],
+    ga: '37\\text{ m}', ba: '36\\text{ m}' }
+};
+const noround = {
+  title: 'Never round the shared side',
+  height: 450,
+  choices: Object.keys(NR).map((k) => ({ v: k, label: NR[k].label })),
+  intro: 'The same problem worked twice: once with every digit kept, once rounded partway. Press <b>Next</b>.',
+  make(stage, v, ex) {
+    const o = NR[v], w = (ex.W - 30) / 2;
+    const Lp = panel(stage, 8, 8, w, 196, '<span class="u9l7-good">Keep every digit</span>'), Rp = panel(stage, w + 22, 8, w, 196, '<span class="u9l7-bad">Round too early</span>');
+    const N = new NumberLine(stage, { x: 20, y: 214, width: ex.W - 40, height: 200, min: o.nl[0], max: o.nl[1], step: v === 'ex3' ? 0.1 : 0.5, labels: v === 'ex3' ? [{ v: 63, html: T('63^\\circ') }, { v: 63.5, html: T('63.5^\\circ') }, { v: 64, html: T('64^\\circ') }] : [35, 35.5, 36, 36.5, 37, 37.5, 38].map((x) => ({ v: x, html: T(String(x)) })), axisY: 130 });
+    const bandG = N.interval(o.band[0], o.band[1], { color: 'green', width: 12, openB: true }), bandL = N.mark((o.band[0] + o.band[1]) / 2, `rounds to ${T(o.ga)}`, { lift: 62, color: GRN });
+    const lo = v === 'ex3' ? [63, 63.5] : [35.5, 36.5], bandR = N.interval(lo[0], lo[1], { color: 'red', width: 12, openB: true }), bandRL = N.mark((lo[0] + lo[1]) / 2, `rounds to ${T(o.ba)}`, { lift: 62, color: RED });
+    [bandG, bandL, bandR, bandRL].forEach(hide);
+    const pg = hide(N.point(o.good, { color: GRN, r: 9 })), pb = hide(N.point(o.bad, { color: RED, r: 9 }));
+    const lg = hide(N.mark(o.good, T(o.good.toFixed(2)), { color: GRN, lift: 10, cls: 'u9l7-nlv' })), lb = hide(N.mark(o.bad, T(o.bad.toFixed(2)), { color: RED, lift: 10, cls: 'u9l7-nlv' }));
+    return [
+      { cap: v === 'ex3' ? `Find ${T('EC')} in the first triangle and carry <b>every digit</b> into the second: ${T('\\angle BEC=63.58^\\circ')}.` : `Keep both quotients unrounded: ${T('h=25\\div0.66781\\ldots=37.44')} m.`,
+        run: async (c) => { for (const s of o.L) await say(c, Lp, s); } },
+      { cap: v === 'ex3' ? `Now round ${T('EC')} to ${T('2.6')} first. The second triangle starts from the wrong number: ${T('\\cos^{-1}(2.6\\div5.8)=63.37^\\circ')}.` : `Now round each quotient to one decimal place first: ${T('1.6-0.9=0.7')}, and ${T('25\\div0.7=35.71')}.`,
+        run: async (c) => { for (const s of o.R) await say(c, Rp, s); } },
+      { cap: v === 'ex3' ? `Only ${T('0.2^\\circ')} apart, but ${T('63.5^\\circ')} is the line between rounding <b>down</b> and rounding <b>up</b>.` : `The difference ${T('1.60-0.93')} is <b>small</b>, so a tiny rounding error in either piece is a big error in ${T('h')}.`,
+        run: async (c) => { bandR.style.opacity = 1; bandG.style.opacity = 1; await Promise.all([drawIn(bandR, 500, c), drawIn(bandG, 500, c)]); await Promise.all([fadeIn(c, bandRL), fadeIn(c, bandL)]); await pop(c, pg); await fadeIn(c, lg); await pop(c, pb); await fadeIn(c, lb); } },
+      { cap: `Full accuracy: ${T(o.ga)} ✓. Rounded early: ${T(o.ba)}, the wrong answer ✗. <b>Never round the shared side:</b> round only the final answer.`,
+        run: async (c) => { await say(c, Lp, `<span class="u9l7-good">${T('\\approx' + o.ga)} ✓</span>`, 'u9l7-res'); await say(c, Rp, `<span class="u9l7-bad">${T('\\approx' + o.ba)} ✗</span>`, 'u9l7-res'); await stampIn(c, stamp(stage, '✓', { x: w - 30, y: 150 })); await stampIn(c, stamp(stage, '✗', { ok: false, x: 2 * w - 10, y: 150 })); } }
+    ];
+  }
+};
+
+/* =============================== ★ the chain: two right triangles sharing a side =============================== */
+const EC3 = 4.5 * sinD(35), PS2 = 24 * tanD(48), RS2 = PS2 * tanD(57), BEC = acosD(EC3 / 5.8), BC3 = Math.sqrt(5.8 * 5.8 - EC3 * EC3), AC3 = 4.5 * cosD(35);
+const CH = {
+  ex2: { label: 'Example 2 check', L: 'R', F: 'S', R: 'Q', Tp: 'P', xl: -RS2, xr: 24, ht: PS2, unit: 'mm' },
+  ex3: { label: 'Example 3 check', L: 'B', F: 'C', R: 'A', Tp: 'E', xl: -BC3, xr: AC3, ht: EC3, unit: 'm' }
+};
+const chain = {
+  title: 'The chain: solve one triangle, hand the shared side to the other',
+  height: 490,
+  choices: Object.keys(CH).map((k) => ({ v: k, label: CH[k].label })),
+  intro: (v) => (v === 'ex2' ? 'Example 2: find ' + T('QR') + '. Press <b>Next</b>.' : 'Example 3: find ' + T('\\angle BEC') + '. Press <b>Next</b>.'),
+  make(stage, v, ex) {
+    const o = CH[v], sep = 66, W = ex.W - 12, is2 = v === 'ex2';
+    const S = new Scene(stage, { x: 6, y: 0, width: W, height: 300, xmin: o.xl, xmax: o.xr, ymin: 0, ymax: o.ht, pad: [42, 40 + sep, 64, 40 + sep] });
+    S.pt('L', o.xl, 0).pt('F', 0, 0).pt('R', o.xr, 0).pt('Tp', 0, o.ht);
+    const L2 = S.layer(), L1 = S.layer();
+    const f2 = S.poly(['L', 'F', 'Tp'], { fill: '#eef1f6', L: L2 }), f1 = S.poly(['F', 'R', 'Tp'], { fill: '#eef1f6', L: L1 });
+    const s2 = { base: S.seg('L', 'F', { L: L2 }), hyp: S.seg('L', 'Tp', { L: L2 }), sh: S.seg('F', 'Tp', { L: L2 }) };
+    const s1 = { base: S.seg('F', 'R', { L: L1 }), hyp: S.seg('R', 'Tp', { L: L1 }), sh: S.seg('F', 'Tp', { L: L1 }) };
+    S.rmark('F', 'L', 'Tp', { L: L2 }); S.rmark('F', 'R', 'Tp', { L: L1 });
+    S.vname('L', o.L, 's', { L: L2 }); S.vname('R', o.R, 's', { L: L1 });
+    S.vname('F', o.F, 's', { L: L2, gap: 7 }); S.vname('Tp', o.Tp, 'n', { L: L2 });
+    const dupF = hide(S.vname('F', o.F, 's', { L: L1, gap: 7 })), dupT = hide(S.vname('Tp', o.Tp, 'n', { L: L1 }));
+    // the givens, as in the booklet
+    let a1, a2, ref2;
+    if (is2) {
+      S.lab([12, 0], '24 mm', { pos: 's', gap: 8, L: L1 });
+      a1 = S.arc('R', 'F', 'Tp', 54, { L: L1 }); S.angLab('R', 'F', 'Tp', 80, T('48^\\circ'), { L: L1 });
+      a2 = S.arc('Tp', 'F', 'L', 48, { L: L2 }); S.angLab('Tp', 'F', 'L', 74, T('57^\\circ'), { L: L2 });
+    } else {
+      S.sideLab('L', 'Tp', '5.8 m', 'F', { L: L2, off: 22 }); S.sideLab('R', 'Tp', '4.5 m', 'F', { L: L1, off: 22 });
+      a1 = S.arc('R', 'F', 'Tp', 60, { L: L1 }); S.angLab('R', 'F', 'Tp', 88, T('35^\\circ'), { L: L1 });
+      ref2 = hide(S.arc('Tp', 'F', 'L', 40, { L: L2, color: REF, width: 4 }));
+    }
+    const lab2 = hide(S.angLab('Tp', 'F', 'L', is2 ? 74 : 66, is2 ? '' : T('?'), { L: L2, color: REF }));
+    const g1 = S.glow('F', 'Tp', { L: L1 }), g2 = S.glow('F', 'Tp', { L: L2 });
+    const tg1 = { sh: S.tag('F', 'Tp', 'opp', 'R', { L: L1, off: 30 }), base: S.tag('F', 'R', 'adj', 'Tp', { L: L1, off: is2 ? 48 : 40 }), hyp: S.tag('R', 'Tp', 'hyp', 'F', { L: L1, off: is2 ? 26 : 52 }) };
+    const tg2 = { sh: S.tag('F', 'Tp', 'adj', 'L', { L: L2, off: 30 }), base: S.tag('L', 'F', 'opp', 'Tp', { L: L2, off: is2 ? 26 : 40 }), hyp: S.tag('L', 'Tp', 'hyp', 'F', { L: L2, off: is2 ? 26 : 52 }) };
+    const shV1 = hide(S.sideLab('F', 'Tp', T(cG(dots(o.ht))), 'R', { L: L1, off: 0, dx: 74, cls: 'u9l7-lab u9l7-goldlab' }));
+    const shV2 = hide(S.sideLab('F', 'Tp', T(cG(dots(o.ht))), 'L', { L: L2, off: 0, dx: -74, cls: 'u9l7-lab u9l7-goldlab' }));
+    const pick1 = hide(S.lab([o.xr * 0.42, o.ht * 0.32], 'start here', { L: L1, cls: 'u9l7-pickon' })), pick2 = hide(S.lab([o.xl * 0.4, o.ht * 0.3], 'not yet', { L: L2, cls: 'u9l7-pickoff' }));
+    const pw = (ex.W - 26) / 2, P2 = panel(stage, 8, 304, pw, 180, `Second: ${T('\\triangle ' + o.Tp + o.F + o.L)}`), P1 = panel(stage, pw + 18, 304, pw, 180, `First: ${T('\\triangle ' + o.Tp + o.F + o.R)}`);
+    const link = chainIcon(S, S.P('F')[0], S.P([0, o.ht * 0.55])[1]);
+    const n = (x) => T(o.F === 'S' ? x : x);
+    void n;
+    const steps = [];
+    const T1 = `\\triangle ${o.Tp}${o.F}${o.R}`, T2 = `\\triangle ${o.Tp}${o.F}${o.L}`, sh = o.Tp + o.F === 'PS' ? 'PS' : o.F === 'S' ? 'PS' : 'EC';
+    steps.push({ cap: is2 ? `Two right triangles share the altitude ${T('PS')}. Which one has <b>enough</b>? ${T(T1)} has a side (24 mm) <b>and</b> an angle (48°). ${T(T2)} has only an angle. Start with ${T(T1)}.`
+      : `Two right triangles share the altitude ${T('EC')}. ${T(T1)} has a side (the hypotenuse 4.5 m) <b>and</b> an angle (35°). ${T(T2)} has only a side. Start with ${T(T1)}.`,
+    run: async (c) => { f1.setAttribute('fill', '#dff3e8'); await anim(c, f1, [{ opacity: 0.3 }, { opacity: 1 }], 350); await pop(c, pick1); await pop(c, pick2); } });
+    steps.push({ cap: is2 ? `In ${T(T1)}, from the 48° angle: ${T('PS')} is <b>opposite</b>, ${T('QS')} is <b>adjacent</b>. Opposite and adjacent: <b>TOA</b>.` : `In ${T(T1)}, from the 35° angle: ${T('EC')} is <b>opposite</b> and ${T('EA')} is the <b>hypotenuse</b>: <b>SOH</b>.`,
+      run: async (c) => {
+        await Promise.all([appear(c, pick1, 1), anim(c, pick1, [{ opacity: 1 }, { opacity: 0 }], 300), anim(c, pick2, [{ opacity: 1 }, { opacity: 0 }], 300)]);
+        a1.setAttribute('stroke', REF); a1.setAttribute('stroke-width', 4);
+        await role(c, s1.sh, tg1.sh, 'opp'); if (is2) await role(c, s1.base, tg1.base, 'adj'); await role(c, s1.hyp, tg1.hyp, 'hyp'); if (!is2) await role(c, s1.base, tg1.base, 'adj');
+        await say(c, P1, is2 ? T(`\\tan 48^\\circ=\\dfrac{${cO('PS')}}{${cA('24')}}`) : T(`\\sin 35^\\circ=\\dfrac{${cO('EC')}}{${cH('4.5')}}`));
+      } });
+    steps.push({ cap: is2 ? `${T('PS=24\\tan 48^\\circ=' + dots(PS2))} mm. It <b>glows</b>: this is the shared side. Keep every digit.` : `${T('EC=4.5\\sin 35^\\circ=' + dots(EC3, 5))} m. It <b>glows</b>: this is the shared side. Keep every digit.`,
+      run: async (c) => { await say(c, P1, T(is2 ? `${cO('PS')}=24\\tan 48^\\circ=${cG(dots(PS2))}` : `${cO('EC')}=4.5\\sin 35^\\circ=${cG(dots(EC3, 5))}`)); await glowOn(c, g1); await pop(c, shV1); } });
+    steps.push({ cap: `Pull the triangles apart: ${T(sh)} belongs to <b>both</b>. Carry it, <b>unrounded</b>, into ${T(T2)}. That is the chain.`,
+      run: async (c) => {
+        await Promise.all([S.slide(c, L2, -sep, 0, 800), S.slide(c, L1, sep, 0, 800)]); await Promise.all([fadeIn(c, dupF, 200), fadeIn(c, dupT, 200)]);
+        await carry(c, S, 'F', 'Tp', [sep, 0], [-sep, 0], 1000); await glowOn(c, g2); await pop(c, shV2); await pop(c, link);
+      } });
+    steps.push({ cap: is2 ? `In ${T(T2)}, from the 57° angle at ${T('P')}: ${T('RS')} is <b>opposite</b> and ${T('PS')} is now <b>adjacent</b>. TOA again.` : `In ${T(T2)}, from ${T('\\angle BEC')} at ${T('E')}: ${T('EC')} is now <b>adjacent</b> and ${T('EB=5.8')} is the <b>hypotenuse</b>: <b>CAH</b>.`,
+      run: async (c) => {
+        if (is2) { a2.setAttribute('stroke', REF); a2.setAttribute('stroke-width', 4); } else { ref2.style.opacity = 1; await drawIn(ref2, 400, c); await pop(c, lab2); }
+        await role(c, s2.sh, tg2.sh, 'adj'); await role(c, s2.base, tg2.base, 'opp'); await role(c, s2.hyp, tg2.hyp, 'hyp');
+        await say(c, P2, is2 ? T(`\\tan 57^\\circ=\\dfrac{${cO('RS')}}{${cA(cG(dots(PS2)))}}`) : T(`\\cos(\\angle BEC)=\\dfrac{${cA(cG(dots(EC3, 5)))}}{${cH('5.8')}}`));
+      } });
+    steps.push({ cap: is2 ? `${T(`RS=${dots(PS2)}\\times\\tan 57^\\circ=${dots(RS2)}`)} mm.` : `${T(`\\cos(\\angle BEC)=${dots(EC3 / 5.8, 6)}`)}, so ${T(`\\angle BEC=\\cos^{-1}(${dots(EC3 / 5.8, 6)})=${BEC.toFixed(2)}^\\circ`)}.`,
+      run: async (c) => {
+        if (is2) { await say(c, P2, T(`${cO('RS')}=${dots(PS2)}\\tan 57^\\circ=${dots(RS2)}`)); const l = S.sideLab('L', 'F', T(cO(dots(RS2))), 'Tp', { L: L2, off: 26 }); await pop(c, l); }
+        else { await say(c, P2, T(`\\angle BEC=\\cos^{-1}(${dots(EC3 / 5.8, 6)})=${BEC.toFixed(2)}^\\circ`)); lab2.innerHTML = T(BEC.toFixed(1) + '^\\circ'); await pulse(c, lab2, 1.3); }
+      } });
+    steps.push({ cap: is2 ? `Slide them back together. ${T('S')} lies between ${T('R')} and ${T('Q')}: ${T(`QR=24+${dots(RS2)}=${dots(24 + RS2, 2)}\\approx 65`)} mm.` : `Slide them back together: ${T(`\\angle BEC\\approx 64^\\circ`)}. Rounding ${T('EC')} to 2.6 first would give ${T('63^\\circ')}: the wrong answer.`,
+      run: async (c) => {
+        await Promise.all([anim(c, link, [{ opacity: 1 }, { opacity: 0 }], 250), anim(c, dupF, [{ opacity: 1 }, { opacity: 0 }], 250), anim(c, dupT, [{ opacity: 1 }, { opacity: 0 }], 250), anim(c, tg1.base, [{ opacity: 1 }, { opacity: 0 }], 250), anim(c, tg2.base, [{ opacity: 1 }, { opacity: 0 }], 250)]);
+        await Promise.all([S.slide(c, L2, 0, 0, 800), S.slide(c, L1, 0, 0, 800)]);
+        if (is2) {
+          const yb = -14 / S.s * 0 - 0, A = S.P('L'), B = S.P('R'), y = A[1] + 54; void yb;
+          const br = svgEl('path', { class: 'bk-stroke', d: `M${A[0]} ${y - 8}L${A[0]} ${y}L${B[0]} ${y}L${B[0]} ${y - 8}`, stroke: INK, 'stroke-width': 2.5, fill: 'none' }, S.svg); await drawIn(br, 600, c);
+          const l = S.hlabel((A[0] + B[0]) / 2, y + 4, T(`QR\\approx 65\\text{ mm}`), { pos: 's', gap: 2, cls: 'u9l7-res' }); await pop(c, l);
+          await say(c, P2, T(`QR=24+${dots(RS2)}=${dots(24 + RS2, 2)}\\approx${cG('65')}`) + ' mm', 'u9l7-res');
+        } else { await say(c, P2, T(`\\angle BEC\\approx 64^\\circ`), 'u9l7-res'); }
+      } });
+    steps.push({ cap: is2 ? `Check: ${T(`\\tan^{-1}\\!\\left(\\tfrac{26.65470}{24}\\right)=48^\\circ`)} ✓ and ${T(`\\tan^{-1}\\!\\left(\\tfrac{41.04464}{26.65470}\\right)=57^\\circ`)} ✓`
+      : `Check with Pythagoras: ${T(`BC=\\sqrt{5.8^2-2.58109^2}=${BC3.toFixed(5)}`)}, and ${T(`2.58109^2+${BC3.toFixed(5)}^2=33.64=5.8^2`)} ✓`,
+    run: async (c) => { await say(c, P1, is2 ? `${T('\\tan^{-1}(26.65470\\div24)=48^\\circ')} <span class="u9l7-good">✓</span>` : `${T(`BC=${BC3.toFixed(5)}`)}, ${T('2.58109^2+5.19403^2=5.8^2')} <span class="u9l7-good">✓</span>`, 'u9l7-small'); await stampIn(c, stamp(stage, '✓', { x: W - 40, y: 40 })); } });
+    return steps;
+  }
+};
+
+/* =============================== reading the shared side off both triangles =============================== */
+const FR = { letters: { label: 'The frame, in letters' }, nums: { label: 'Try numbers: XW = 5, 40°, 62°', XW: 5, Y: 40, Z: 62 } };
+const frame = {
+  title: 'Reading the shared side off both triangles',
+  height: 440,
+  choices: Object.keys(FR).map((k) => ({ v: k, label: FR[k].label })),
+  intro: (v) => (v === 'letters' ? 'The frame from the booklet. Press <b>Next</b>.' : 'The same frame with numbers (not from the assignment). Press <b>Next</b>.'),
+  make(stage, v, ex) {
+    const nums = v === 'nums', o = FR[v], W = 500, sep = 36;
+    const XW = nums ? o.XW : 2.6, YW = nums ? o.XW / tanD(o.Y) : 2.6, WZ = nums ? o.XW / tanD(o.Z) : 1.6;
+    const S = new Scene(stage, { x: 4, y: 10, width: W, height: 420, xmin: -YW, xmax: WZ, ymin: 0, ymax: XW, pad: [44, 30 + sep, 80, 30 + sep] });
+    S.pt('Y', -YW, 0).pt('W', 0, 0).pt('Z', WZ, 0).pt('X', 0, XW);
+    const LY = S.layer(), LZ = S.layer();
+    const sY = { b: S.seg('Y', 'W', { L: LY }), h: S.seg('Y', 'X', { L: LY }), s: S.seg('W', 'X', { L: LY }) }, sZ = { b: S.seg('W', 'Z', { L: LZ }), h: S.seg('Z', 'X', { L: LZ }), s: S.seg('W', 'X', { L: LZ }) };
+    S.rmark('W', 'Y', 'X', { L: LY }); const rz = hide(S.rmark('W', 'Z', 'X', { L: LZ }));
+    S.vname('Y', 'Y', 'sw', { L: LY }); S.vname('Z', 'Z', 'se', { L: LZ }); S.vname('W', 'W', 's', { L: LY, gap: 8 }); S.vname('X', 'X', 'n', { L: LY });
+    const dW = hide(S.vname('W', 'W', 's', { L: LZ, gap: 8 })), dX = hide(S.vname('X', 'X', 'n', { L: LZ }));
+    const aY = S.arc('Y', 'W', 'X', 40, { L: LY, color: REF, width: 3.5 }), aZ = S.arc('Z', 'W', 'X', 40, { L: LZ, color: REF, width: 3.5 });
+    S.angLab('Y', 'W', 'X', 64, nums ? T(o.Y + '^\\circ') : T('\\angle Y'), { L: LY, color: REF }); S.angLab('Z', 'W', 'X', 64, nums ? T(o.Z + '^\\circ') : T('\\angle Z'), { L: LZ, color: REF });
+    [aY, aZ].forEach(hide);
+    if (nums) { S.sideLab('W', 'X', T(XW + '\\text{ cm}'), 'Y', { L: LZ, off: 34 }); }
+    const gY = S.glow('W', 'X', { L: LY }), gZ = S.glow('W', 'X', { L: LZ });
+    const tY = { s: S.tag('W', 'X', 'opp', 'Z', { L: LY, off: 28 }), b: S.tag('Y', 'W', 'adj', 'X', { L: LY, off: 52 }) }, tZ = { s: S.tag('W', 'X', 'opp', 'Y', { L: LZ, off: nums ? 64 : 28 }), b: S.tag('W', 'Z', 'adj', 'X', { L: LZ, off: 52 }) };
+    const Pn = panel(stage, W + 14, 8, ex.W - W - 20, 424, 'The frame');
+    const yw = nums ? dots(YW) : 'YW', wz = nums ? dots(WZ) : 'WZ', xw = nums ? String(XW) : 'XW', tyY = nums ? `\\tan ${o.Y}^\\circ` : '\\tan(\\angle Y)', tyZ = nums ? `\\tan ${o.Z}^\\circ` : '\\tan(\\angle Z)';
+    return [
+      { cap: `${T('XW')} meets ${T('YZ')} at a right angle: it is an <b>altitude</b>. It splits ${T('\\triangle XYZ')} into two right triangles, and ${T('XW')} is a leg of <b>both</b>.`,
+        run: async (c) => { await Promise.all([S.slide(c, LY, -sep, 0, 700), S.slide(c, LZ, sep, 0, 700)]); await appear(c, rz, 200); await Promise.all([fadeIn(c, dW, 200), fadeIn(c, dX, 200)]); await Promise.all([glowOn(c, gY), glowOn(c, gZ)]); } },
+      { cap: `In ${T('\\triangle XWY')}, from ${nums ? T(o.Y + '^\\circ') : T('\\angle Y')}: ${T('XW')} is <b>opposite</b>, ${T('YW')} is <b>adjacent</b>. Opposite and adjacent: <b>TOA</b>.`,
+        run: async (c) => { aY.style.opacity = 1; await drawIn(aY, 400, c); await role(c, sY.s, tY.s, 'opp'); await role(c, sY.b, tY.b, 'adj'); await say(c, Pn, `In ${T('\\triangle XWY')}: ${T(`${tyY}=\\dfrac{${cO(xw)}}{${cA('YW')}}`)}`); } },
+      { cap: `The unknown ${T('YW')} is on the <b>bottom</b>, so it and ${T(nums ? `\\tan ${o.Y}^\\circ` : '\\tan(\\angle Y)')} swap places: ${T(`YW=\\dfrac{${xw}}{${tyY}}`)}${nums ? T('=' + dots(YW)) : ''}.`,
+        run: async (c) => { await say(c, Pn, T(`${cA('YW')}=\\dfrac{${cO(xw)}}{${tyY}}${nums ? '=' + dots(YW) : ''}`)); if (nums) { const l = S.sideLab('Y', 'W', T(cA(dots(YW, 3))), 'X', { L: LY, off: 26 }); await pop(c, l); } } },
+      { cap: `In ${T('\\triangle XWZ')}, from ${nums ? T(o.Z + '^\\circ') : T('\\angle Z')}: the <b>same</b> ${T('XW')} is opposite again, and ${T('WZ')} is adjacent. TOA again.`,
+        run: async (c) => { aZ.style.opacity = 1; await drawIn(aZ, 400, c); await role(c, sZ.s, tZ.s, 'opp'); await role(c, sZ.b, tZ.b, 'adj'); await say(c, Pn, `In ${T('\\triangle XWZ')}: ${T(`${tyZ}=\\dfrac{${cO(xw)}}{${cA('WZ')}}`)}`); } },
+      { cap: `Unknown on the bottom again: ${T(`WZ=\\dfrac{${xw}}{${tyZ}}`)}${nums ? T('=' + dots(WZ)) : ''}.`,
+        run: async (c) => { await say(c, Pn, T(`${cA('WZ')}=\\dfrac{${cO(xw)}}{${tyZ}}${nums ? '=' + dots(WZ) : ''}`)); if (nums) { const l = S.sideLab('W', 'Z', T(cA(dots(WZ, 3))), 'X', { L: LZ, off: 26 }); await pop(c, l); } } },
+      { cap: `Slide them back. ${T('W')} lies between ${T('Y')} and ${T('Z')}, so ${T('YZ=YW+WZ')}${nums ? T(`=${dots(YW)}+${dots(WZ)}=${dots(YW + WZ, 3)}\\approx ${r1(YW + WZ)}`) + ' cm' : ''}.`,
+        run: async (c) => {
+          await Promise.all([anim(c, dW, [{ opacity: 1 }, { opacity: 0 }], 200), anim(c, dX, [{ opacity: 1 }, { opacity: 0 }], 200), anim(c, tY.b, [{ opacity: 1 }, { opacity: 0 }], 200), anim(c, tZ.b, [{ opacity: 1 }, { opacity: 0 }], 200)]);
+          await Promise.all([S.slide(c, LY, 0, 0, 700), S.slide(c, LZ, 0, 0, 700)]);
+          const A = S.P('Y'), B = S.P('Z'), y = A[1] + 50;
+          const br = svgEl('path', { class: 'bk-stroke', d: `M${A[0]} ${y - 8}L${A[0]} ${y}L${B[0]} ${y}L${B[0]} ${y - 8}`, stroke: INK, 'stroke-width': 2.5, fill: 'none' }, S.svg); await drawIn(br, 500, c);
+          await pop(c, S.hlabel((A[0] + B[0]) / 2, y + 2, T(nums ? `YZ\\approx${r1(YW + WZ)}\\text{ cm}` : 'YZ=YW+WZ'), { pos: 's', gap: 2, cls: 'u9l7-res' }));
+          await say(c, Pn, T(`YZ=${cA('YW')}+${cA('WZ')}${nums ? `\\approx${r1(YW + WZ)}` : ''}`), 'u9l7-res');
+        } }
+    ];
+  }
+};
+
+/* =============================== which triangle first? (flowchart) =============================== */
+const WH = {
+  ex1: { label: 'Example 1', yes: true, n: ['The triangle at Birchwood’s base has 38 m and 51°: <b>yes</b>.', `${T('\\text{Ashgrove}=38\\tan 51^\\circ')} (TOA)`, `Upper triangle shares the 38 m: ${T('x=38\\tan 22^\\circ')} (TOA)`, `Add the pieces: Birchwood ${T('\\approx 62')} m`] },
+  ex2: { label: 'Example 2', yes: true, n: [`${T('\\triangle PSQ')} has 24 mm and 48°: <b>yes</b>.`, `${T('PS=24\\tan 48^\\circ')} (TOA)`, `In ${T('\\triangle PSR')}: ${T('RS=PS\\tan 57^\\circ')} (TOA)`, `Add: ${T('QR=24+RS\\approx 65')} mm`] },
+  ex3: { label: 'Example 3', yes: true, n: [`${T('\\triangle EAC')} has 4.5 m and 35°: <b>yes</b>.`, `${T('EC=4.5\\sin 35^\\circ')} (SOH)`, `In ${T('\\triangle EBC')}: ${T('\\cos(\\angle BEC)=\\tfrac{EC}{5.8}')} (CAH)`, `Read the angle: ${T('\\angle BEC\\approx 64^\\circ')}`] },
+  ex4: { label: 'Example 4', yes: false, n: ['Both triangles have only an angle: <b>no</b>. The only length is the 25 m between A and B.', `${T('x=\\tfrac{h}{\\tan 47^\\circ}')}, ${T('x+25=\\tfrac{h}{\\tan 32^\\circ}')} (TOA twice)`, `Subtract: ${T('25=h\\left(\\tfrac{1}{\\tan 32^\\circ}-\\tfrac{1}{\\tan 47^\\circ}\\right)')}`, `Solve: ${T('h\\approx 37')} m`] }
+};
+const which = {
+  title: 'Which triangle first? Which ratio? How to finish?',
+  height: 440,
+  choices: Object.keys(WH).map((k) => ({ v: k, label: WH[k].label })),
+  intro: 'Follow one example through the plan. Press <b>Next</b>.',
+  make(stage, v, ex) {
+    const o = WH[v], FW = 600;
+    const F = new Flowchart(stage, { x: 4, y: 4, width: FW, height: 430,
+      nodes: {
+        start: { x: 300, y: 34, w: 400, h: 48, html: '<b>Two right triangles share a side</b>', cls: 'bk-round' },
+        q: { x: 300, y: 122, w: 470, h: 74, html: '<b>Does one triangle have a side AND an angle?</b>(or two sides)', color: 'amber' },
+        solve: { x: 160, y: 228, w: 290, h: 70, html: '<b>Solve it first</b>find the shared side; keep every digit', color: 'blue' },
+        carry: { x: 160, y: 318, w: 290, h: 64, html: '<b>Carry it across</b>SOH, CAH or TOA in the other', color: 'blue' },
+        alg: { x: 470, y: 268, w: 250, h: 92, html: '<b>Neither has a side</b>write both distances in terms of h; subtract', color: 'purple' },
+        fin: { x: 300, y: 398, w: 330, h: 50, html: '<b>Finish:</b> add, subtract, or read the angle', cls: 'bk-round', color: 'green' }
+      },
+      edges: [{ from: 'start', to: 'q' }, { from: 'q', to: 'solve', label: 'yes', route: 'vhv' }, { from: 'q', to: 'alg', label: 'no', route: 'vhv' }, { from: 'solve', to: 'carry' }, { from: 'carry', to: 'fin', route: 'vh' }, { from: 'alg', to: 'fin', route: 'vh' }] });
+    const Pn = panel(stage, FW + 16, 8, ex.W - FW - 22, 424, o.label);
+    const path = o.yes ? ['q', 'solve', 'carry', 'fin'] : ['q', 'alg', 'alg', 'fin'];
+    const caps = o.yes ? ['Does one triangle have a known side and a known angle?', 'Solve that triangle first: the shared side comes out of it.', 'Carry the shared side across and choose the ratio there.', 'Finish the question.']
+      : ['Does one triangle have a known side and a known angle?', 'No: write each horizontal distance in terms of h.', 'Subtract to eliminate the unknown distance.', 'Finish the question.'];
+    return path.map((id, i) => ({
+      cap: `${caps[i]} ${o.n[i]}`,
+      run: async (c) => {
+        if (i === 0) { await F.visit(c, 'start'); await F.go(c, 'start', 'q'); }
+        else if (path[i] !== path[i - 1]) await F.go(c, path[i - 1], id);
+        else await pulse(c, F.node(id), 1.06);
+        await say(c, Pn, `<span class="u9l7-step">${i + 1}</span> ${o.n[i]}`);
+      }
+    }));
+  }
+};
+
+/* =============================== Example 4: two sightings =============================== */
+const H4 = 25 / (1 / tanD(32) - 1 / tanD(47)), X4 = H4 / tanD(47);
+const sightings = {
+  title: 'Two sightings, 25 m apart: neither triangle has a known side',
+  height: 470,
+  choices: [{ v: 'walk', label: 'Walk toward the building' }, { v: 'ex4', label: 'Example 4 check' }],
+  intro: (v) => (v === 'walk' ? 'Watch the angle of elevation as you walk from A to B. Press <b>Next</b>.' : 'Example 4 (a), (b) and (c), after the class has tried them. Press <b>Next</b>.'),
+  make(stage, v, ex) {
+    const W = 600, walk = v === 'walk';
+    const S = new Scene(stage, { x: 0, y: 4, width: W, height: 460, xmin: 0, xmax: X4 + 25, ymin: 0, ymax: H4, pad: [40, 40, 150, 70] });
+    S.pt('C', 0, 0).pt('T', 0, H4).pt('B', X4, 0).pt('A', X4 + 25, 0);
+    S.seg([-3, 0], [X4 + 29, 0], { width: 2.5 });
+    S.poly([[-4.5, 0], [0, 0], [0, H4], [-4.5, H4]], { fill: '#d9dee8', stroke: INK, sw: 1.5 });
+    const TC = S.seg('C', 'T', { width: 6 }); S.rmark('C', 'B', 'T');
+    S.vname('C', 'C', 'sw'); S.vname('T', 'T', 'n'); S.vname('A', 'A', 's', { gap: 8 }); S.vname('B', 'B', 's', { gap: 8 });
+    const hl = S.lab([0, H4 / 2], T('h'), { pos: 'w', gap: 46, cls: 'u9l7-lab u9l7-big' });
+    const gh = S.glow('C', 'T');
+    const Pn = panel(stage, W + 12, 8, ex.W - W - 18, 454, walk ? 'Angle of elevation' : 'Work');
+    if (walk) {
+      const L = S.layer(), sl = S.seg('A', 'T', { color: RED, width: 3, L }), arcHost = S.layer(L);
+      const man = h('div', 'u9l7-walker', '<svg viewBox="0 0 30 60"><circle cx="15" cy="8" r="6"/><path d="M15 14v22M15 36l-8 20M15 36l8 20M15 20l-10 10M15 20l10 10"/></svg>'); S.html.appendChild(man);
+      const read = h('div', 'u9l7-readout', ''); Pn.appendChild(read);
+      let xNow = X4 + 25, arcEl = null, alab = null;
+      const draw = (x) => {
+        xNow = x; const P = S.P([x, 0]), Tq = S.P('T'); sl.setAttribute('d', `M${P[0]} ${P[1]}L${Tq[0]} ${Tq[1]}`);
+        place(man, P[0], P[1], 'n', 0); const ang = atanD(H4 / x);
+        if (arcEl) arcEl.remove(); if (alab) alab.remove();
+        arcEl = angleArc(arcHost.g, P, S.P([0, 0]), Tq, 40, { color: REF, width: 3.5 }); alab = S.angLab([x, 0], [0, 0], 'T', 64, T(ang.toFixed(0) + '^\\circ'), { color: REF, cls: 'u9l7-alab big' });
+        read.innerHTML = `${T(`\\theta=${ang.toFixed(1)}^\\circ`)}<div class="u9l7-small muted">${(X4 + 25 - x).toFixed(0)} m walked</div>`;
+      };
+      draw(X4 + 25);
+      const ghost = () => S.seg('A', 'T', { color: RED, width: 2, dash: '6 6', opacity: 0.5 });
+      return [
+        { cap: `From ${T('A')} on level ground, the angle of elevation of the top ${T('T')} is ${T('32^\\circ')}.`, run: async (c) => { await pulse(c, read, 1.15); } },
+        { cap: `Walk ${T('25')} m straight toward the building. The angle grows: at ${T('B')} it is ${T('47^\\circ')}.`,
+          run: async (c) => { ghost(); await tween(c, 2600, (t) => draw(X4 + 25 - 25 * t)); } },
+        { cap: `Two right triangles, ${T('\\triangle TAC')} and ${T('\\triangle TBC')}, share the height ${T('h=TC')}: the shared side.`,
+          run: async (c) => { await glowOn(c, gh); const f = S.poly(['A', 'C', 'T'], { fill: '#e8f0fc', op: 0.6 }); S.svg.insertBefore(f, S.svg.firstChild.nextSibling); await appear(c, f, 400); } },
+        { cap: `But <b>neither</b> triangle has a known side: ${T('AC')}, ${T('BC')} and ${T('h')} are all unknown. Only the ${T('25')} m <b>between</b> ${T('A')} and ${T('B')} is known. Call ${T('BC=x')}.`,
+          run: async (c) => { await pop(c, S.lab([X4 / 2, 0], T('x'), { pos: 's', gap: 10, cls: 'u9l7-lab u9l7-big' })); await pop(c, S.lab([X4 + 12.5, 0], '25 m', { pos: 's', gap: 10 })); await say(c, Pn, `Known: ${T('32^\\circ, 47^\\circ, 25\\text{ m}')}`); await say(c, Pn, `Unknown: ${T('h, x')}`); } },
+        { cap: `The plan: write ${T('x')} and ${T('x+25')} in terms of ${T('h')}, then <b>subtract</b> so ${T('x')} disappears. That is Example 4.`, run: async (c) => { await say(c, Pn, '<b>Plan:</b> two expressions, subtract.'); } }
+      ];
+    }
+    S.lab([X4 / 2, 0], T('x'), { pos: 's', gap: 8 }); S.lab([X4 + 12.5, 0], '25 m', { pos: 's', gap: 8 });
+    const sA = S.seg('A', 'T'), sB = S.seg('B', 'T'); S.arc('A', 'C', 'T', 40); S.angLab('A', 'C', 'T', 66, T('32^\\circ')); S.arc('B', 'C', 'T', 34); S.angLab('B', 'C', 'T', 58, T('47^\\circ'));
+    const tgh = S.tag('C', 'T', 'opp', 'B', { off: 30 }), tB = S.tag('C', 'B', 'adj', 'T', { off: 64 });
+    // bar model below the ground
+    const by = (k) => S.P([0, 0])[1] + 64 + k * 40, P0 = S.P('C')[0], PB = S.P('B')[0], PA = S.P('A')[0];
+    const bar = (x1, y, color, html) => { const r = svgEl('rect', { x: P0, y: y - 13, width: x1 - P0, height: 26, rx: 6, fill: color, 'fill-opacity': 0.22, stroke: color, 'stroke-width': 2 }, S.svg); r.style.opacity = 0; const l = S.hlabel((P0 + x1) / 2, y, html, { cls: 'u9l7-barlab' }); l.style.opacity = 0; return [r, l]; };
+    const bB = bar(PB, by(0), ADJ, T(`x=\\tfrac{h}{\\tan 47^\\circ}`)), bA = bar(PA, by(1), ADJ, T(`x+25=\\tfrac{h}{\\tan 32^\\circ}`));
+    const gap = hide(S.hlabel((PB + PA) / 2, by(0), T(cG('25')), { cls: 'u9l7-gapl' })), gr = svgEl('rect', { x: PB, y: by(0) - 13, width: PA - PB, height: 26, rx: 6, fill: GOLD, 'fill-opacity': 0.35, stroke: GOLDD, 'stroke-width': 2, 'stroke-dasharray': '5 4' }, S.svg); gr.style.opacity = 0;
+    return [
+      { cap: `(a) In ${T('\\triangle TBC')}, from ${T('47^\\circ')}: ${T('h')} is <b>opposite</b>, ${T('x')} is <b>adjacent</b>. ${T('\\tan 47^\\circ=\\tfrac{h}{x}')}, so ${T('x=\\tfrac{h}{\\tan 47^\\circ}')}.`,
+        run: async (c) => { const bc = S.seg('C', 'B', { width: 0.01 }); await role(c, TC, tgh, 'opp'); await role(c, bc, tB, 'adj'); sB.setAttribute('stroke', HYP); await say(c, Pn, `(a) ${T(`\\tan 47^\\circ=\\dfrac{${cO('h')}}{${cA('x')}}`)}`); await say(c, Pn, T(`${cA('x')}=\\dfrac{h}{\\tan 47^\\circ}`)); await appear(c, bB[0], 300); await fadeIn(c, bB[1]); } },
+      { cap: `(b) In ${T('\\triangle TAC')}, from ${T('32^\\circ')}: ${T('\\tan 32^\\circ=\\tfrac{h}{x+25}')}, so ${T('x+25=\\tfrac{h}{\\tan 32^\\circ}')}.`,
+        run: async (c) => { sA.setAttribute('stroke', HYP); await say(c, Pn, `(b) ${T(`\\tan 32^\\circ=\\dfrac{${cO('h')}}{${cA('x+25')}}`)}`); await say(c, Pn, T(`${cA('x+25')}=\\dfrac{h}{\\tan 32^\\circ}`)); await appear(c, bA[0], 300); await fadeIn(c, bA[1]); } },
+      { cap: `(c) The long bar minus the short bar is the ${T('25')} m. Subtract (a) from (b): ${T(`25=\\tfrac{h}{\\tan 32^\\circ}-\\tfrac{h}{\\tan 47^\\circ}=h(1.60033\\ldots-0.93251\\ldots)=h(0.66781\\ldots)`)}.`,
+        run: async (c) => { await appear(c, gr, 400); await pop(c, gap); await say(c, Pn, `(c) ${T(`25=h\\left(\\tfrac{1}{\\tan 32^\\circ}-\\tfrac{1}{\\tan 47^\\circ}\\right)`)}`); await say(c, Pn, T(`25=h(${dots(1 / tanD(32), 5)}-${dots(1 / tanD(47), 5)})=h(${dots(1 / tanD(32) - 1 / tanD(47), 5)})`), 'u9l7-small'); } },
+      { cap: `${T(`h=25\\div ${dots(1 / tanD(32) - 1 / tanD(47), 5)}=${dots(H4)}\\approx 37`)} m. Keep the two quotients unrounded: their difference is small.`,
+        run: async (c) => { await say(c, Pn, T(`h=\\dfrac{25}{0.66781\\ldots}=${dots(H4)}\\approx${cG('37')}\\text{ m}`), 'u9l7-res'); hl.innerHTML = T('h\\approx37\\text{ m}'); hl.style.color = OPP; await pulse(c, hl, 1.2); } },
+      { cap: `Check: ${T(`x=37.4353\\div\\tan 47^\\circ=${X4.toFixed(3)}`)} m, so ${T('AC=' + (X4 + 25).toFixed(3))} and ${T(`\\tan^{-1}\\!\\left(\\tfrac{37.4353}{${(X4 + 25).toFixed(3)}}\\right)=32^\\circ`)} ✓`,
+        run: async (c) => { await say(c, Pn, `${T(`\\tan^{-1}\\!\\left(\\tfrac{37.4353}{${(X4 + 25).toFixed(3)}}\\right)=32^\\circ`)} <span class="u9l7-good">✓</span>`, 'u9l7-small'); await stampIn(c, stamp(stage, '✓', { x: W - 40, y: 50 })); } }
+    ];
+  }
+};

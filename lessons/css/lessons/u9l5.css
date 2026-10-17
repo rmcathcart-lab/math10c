@@ -1,0 +1,115 @@
+/* Math 10C · Unit 9 · Lesson 5 — Solving Right Triangles Completely: styles used only on this page (prefix u9l5-).
+ * Side colours (relative to the reference angle): opposite purple, adjacent amber, hypotenuse blue; reference angle green;
+ * unknowns red. */
+
+.ex-cap { min-height: 128px; }
+.ex-cap .katex { font-size: 1.04em; }
+.chip .katex { font-size: 1em; }
+.pl .katex { font-size: 1.1em; }
+.ans .katex { font-size: 1.04em; }
+.part.span2 { grid-column: span 2; }
+.pill-col { display: flex; flex-direction: column; gap: 6px; }
+.lesson .katex { white-space: nowrap; }
+h2 .katex, h3 .katex { font-size: .95em; }
+
+.u9l5-co { color: #7b4fc4; }
+.u9l5-ca { color: #c27a0e; }
+.u9l5-ch { color: #1f5bd6; }
+.u9l5-cr { color: #12805a; }
+.u9l5-cu { color: #c93a33; }
+.u9l5-arrow { font-weight: 800; color: var(--brand2); }
+.u9l5-pill-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; flex: none; }
+
+/* ---------------- warm-up ---------------- */
+.u9l5-wgrid { display: grid; grid-template-columns: 450px 1fr; gap: 20px; align-items: start; }
+.u9l5-wfig { position: relative; width: 450px; height: 440px; border-radius: 14px; background: linear-gradient(#eef5fc, #fbfaf7 75%); border: 1px solid var(--line2); overflow: hidden; }
+.u9l5-wfig > svg { position: absolute; left: 0; top: 0; }
+.u9l5-wtab { border-radius: 14px; border: 1px solid var(--line2); overflow: hidden; background: #fff; }
+.u9l5-wtab-h { font: 800 21px var(--round); padding: 10px 16px; background: var(--brand-soft); color: var(--brand); }
+.u9l5-wrow { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 16px; font-size: 20px; border-top: 1px solid var(--line2); min-height: 34px; }
+.u9l5-wrow:nth-child(odd) { background: #f6f9fe; }
+.u9l5-wrow > b { font-size: 22px; white-space: nowrap; }
+.u9l5-wbtns { display: flex; gap: 10px; flex-wrap: wrap; margin: 14px 0 0; }
+.u9l5-wqs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-top: 16px; }
+.u9l5-wqs .bk-wq { background: #fff; border: 1px solid var(--line2); border-radius: 12px; padding: 4px 12px 10px; }
+.u9l5-wa { margin: 4px 0 0 0; }
+.u9l5-early { margin-top: 14px; }
+.u9l5-social { font-style: italic; color: var(--ink2); font-size: 19px; text-align: center; margin: 16px 0 0; }
+.u9l5-wt { font: 800 20px var(--round); }
+.u9l5-wt-s { font: 600 16px var(--round); fill: #5b6475; }
+.u9l5-wfade { transition: opacity .45s; }
+
+/* ---------------- example figures ---------------- */
+.u9l5-pw { display: grid; grid-template-columns: 210px 1fr; gap: 10px; align-items: start; }
+.u9l5-pfig { width: 210px; height: 230px; }
+.u9l5-exrow { display: grid; grid-template-columns: 330px 1fr; gap: 20px; align-items: start; margin-bottom: 14px; }
+.u9l5-exrow .parts { margin-bottom: 0; }
+.u9l5-exfig { width: 330px; height: 330px; }
+
+/* ---------------- triangle block (custom) ---------------- */
+.u9l5-tri-fill { fill: #f2f8f7; }
+.u9l5-vlab { font: 800 22px var(--round); color: var(--ink); }
+.u9l5-slab { font-size: 21px; font-weight: 700; white-space: nowrap; }
+.u9l5-slab.u9l5-unk, .u9l5-alab.u9l5-unk { color: #c93a33; }
+.u9l5-slab.u9l5-found, .u9l5-alab.u9l5-found { color: #12805a; background: #e9f6ef; border-radius: 8px; padding: 0 6px; }
+.u9l5-alab { font-size: 20px; font-weight: 700; white-space: nowrap; }
+.u9l5-tag { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .05em; background: #fff; border: 2px solid currentColor; border-radius: 9px; padding: 0 7px; white-space: nowrap; }
+.u9l5-ntsc { font: italic 600 15px var(--round); color: var(--muted); }
+
+/* ---------------- explainer pieces ---------------- */
+.u9l5-panel { background: #fff; border: 1px solid var(--line2); border-radius: 14px; padding: 10px 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
+.u9l5-ph { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.u9l5-line { font-size: 21px; line-height: 1.35; }
+.u9l5-sm { font-size: 18px; }
+.u9l5-big { font-size: 24px; }
+.u9l5-eq { font-size: 22px; line-height: 1.3; }
+.u9l5-eq .katex { font-size: 1.08em; }
+.u9l5-hint { font-size: 17px; color: var(--muted); }
+
+/* tools explainer: four tool cards */
+.u9l5-tool { background: #fff; border: 2px solid var(--line2); border-radius: 14px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; padding: 8px 8px 10px; transition: border-color .3s, box-shadow .3s; }
+.u9l5-tool.u9l5-on { border-color: var(--bk-tc, #13807a); box-shadow: 0 0 0 4px color-mix(in srgb, var(--bk-tc, #13807a) 22%, transparent); }
+.u9l5-tool-h { font: 800 20px var(--round); color: var(--bk-tc, #13807a); }
+.u9l5-tool-g { font-size: 17px; text-align: center; line-height: 1.3; color: var(--ink2); }
+.u9l5-tool-f { font-size: 20px; margin-top: 4px; }
+.u9l5-pair { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .04em; color: #fff; background: var(--bk-tc, #13807a); border-radius: 8px; padding: 1px 8px; margin-top: 6px; }
+
+/* flowchart leaves: KaTeX a touch smaller */
+.u9l5-flow .bk-fc-node { font-size: 16px; }
+.u9l5-flow .bk-fc-node .katex { font-size: 1em; }
+
+/* checklist (solveIt) */
+.u9l5-ck { display: grid; grid-template-columns: 70px 1fr 132px; align-items: center; column-gap: 8px; font-size: 19px; }
+.u9l5-ck > div { padding: 3px 0; border-bottom: 1px solid var(--line2); min-height: 30px; display: flex; align-items: center; }
+.u9l5-ck .u9l5-ckh { font: 800 14px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.u9l5-ck .u9l5-ckv { font-weight: 700; }
+.u9l5-ck .u9l5-ckt { font: 700 15px var(--round); }
+.u9l5-badge { display: inline-block; border-radius: 7px; padding: 0 7px; font: 800 14px var(--round); color: #fff; background: #9aa0ab; white-space: nowrap; }
+.u9l5-badge.u9l5-given { background: #6a7182; }
+.u9l5-ok { color: #12805a; font-weight: 900; }
+
+/* chain vs hub (fromGiven) */
+.u9l5-col-h { font: 800 19px var(--round); text-align: center; }
+.u9l5-node { position: absolute; box-sizing: border-box; background: #fff; border: 2.5px solid #9aa0ab; border-radius: 12px; padding: 6px 10px; font-size: 19px; text-align: center; line-height: 1.3; }
+.u9l5-node.u9l5-given { border-color: #6a7182; background: #f3f2ee; }
+.u9l5-node.u9l5-bad { border-color: #c93a33; }
+.u9l5-node.u9l5-good { border-color: #12805a; }
+.u9l5-rnd { color: #c93a33; font-weight: 800; }
+.u9l5-verdict { position: absolute; box-sizing: border-box; text-align: center; font: 800 19px var(--round); border-radius: 10px; padding: 6px 10px; }
+.u9l5-verdict.u9l5-v-ok { color: #12805a; background: #e3f4ea; }
+.u9l5-verdict.u9l5-v-no { color: #c93a33; background: #fde3e0; }
+.u9l5-verdict.u9l5-v-mid { color: #8a5a06; background: #fff4dd; }
+
+/* checks list (catchIt) */
+.u9l5-chk { display: grid; grid-template-columns: 1fr 44px; align-items: center; gap: 4px 8px; }
+.u9l5-chk-n { font: 800 17px var(--round); color: var(--ink2); }
+.u9l5-chk-w { font-size: 19px; grid-column: 1; }
+.u9l5-chk-m { grid-row: span 2; font: 900 30px var(--round); text-align: center; }
+.u9l5-chk-m.u9l5-y { color: #12805a; } .u9l5-chk-m.u9l5-n { color: #c93a33; }
+.u9l5-chk-sep { grid-column: 1 / -1; border-top: 1px solid var(--line2); }
+
+/* number line labels */
+.u9l5-nl .bk-nl-lab { font-size: 16px; }
+
+/* ladder scene */
+.u9l5-scene-t { font: 800 20px var(--round); }

@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Solving Right Triangles Completely · Math 10C 9.5</title>
+<meta name="description" content="Math 10C Unit 9 Lesson 5: solving right triangles completely. Choosing the right tool (the Pythagorean Theorem, a primary trigonometric ratio, an inverse ratio, or the 90° angle sum) for the given pair, finding one length two ways as a check, what it means to solve a triangle, and solving from one angle and one side, from two sides, and in an applied problem. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u9l5.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 9 Trigonometry · Lesson 5</div>
+  <h1>Solving Right Triangles Completely</h1>
+  <p class="lede">Every side and every angle. Besides the right angle, <b>two</b> known measurements are enough. Pick the tool that matches what is given: the <b>Pythagorean Theorem</b>, <b>SOH CAH TOA</b>, an <b>inverse ratio</b> or the <b>90° angle sum</b>. Take each unknown from the <b>original given data</b>, and round only at the end.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>choose the tool that uses exactly what is given: two sides <span class="u9l5-arrow">→</span> a side (Pythagoras), a side and an angle <span class="u9l5-arrow">→</span> a side (SOH CAH TOA), two sides <span class="u9l5-arrow">→</span> an angle (<span class="tex">\sin^{-1}</span>, <span class="tex">\cos^{-1}</span>, <span class="tex">\tan^{-1}</span>), one acute angle <span class="u9l5-arrow">→</span> the other (<span class="tex">90^\circ-</span> the angle)</li>
+      <li>find one length <b>two ways</b> and explain why a rounded value fed into one route makes the answers disagree</li>
+      <li>explain what it means to <b>solve</b> a right triangle (all three sides and all three angles) and why exactly two more pieces of information are needed</li>
+      <li>solve a right triangle from one side and one acute angle, or from two sides, in a diagram or a real situation, and <b>check</b> it with the Pythagorean Theorem and the angle sum</li>
+    </ul>
+  </div>
+  <div class="outcome"><b>M4</b> Develop and apply the primary trigonometric ratios (sine, cosine, tangent) to solve problems that involve right triangles.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: The Leaning Tower" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Leaning Tower</h2></div>
+  <p class="big">Pisa’s famous tower is about <b>56 m</b> long and leans about <b>4°</b> from upright.</p>
+  <div class="u9l5-wgrid">
+    <div class="u9l5-wfig" id="u9l5-wfig"></div>
+    <div class="u9l5-wside">
+      <div class="u9l5-wtab">
+        <div class="u9l5-wtab-h">Solve the tower’s triangle</div>
+        <div class="u9l5-wrow"><span>Tower (the slanted side)</span><b>56 m</b></div>
+        <div class="u9l5-wrow"><span>Lean from upright</span><b><span class="tex">4^\circ</span></b></div>
+        <div class="u9l5-wrow"><span>Angle with the ground</span><b class="red" data-reveal><span class="tex">86^\circ</span></b></div>
+        <div class="u9l5-wrow"><span>How far the top is shifted</span><b class="red" data-reveal>3.9 m</b></div>
+        <div class="u9l5-wrow"><span>Height of the top</span><b class="red" data-reveal>55.9 m</b></div>
+      </div>
+      <div class="u9l5-wbtns">
+        <button type="button" class="pill" id="u9l5-wtri">Show the right triangle</button>
+        <button type="button" class="pill" id="u9l5-wgnd">Angle with the ground</button>
+      </div>
+    </div>
+  </div>
+  <div class="u9l5-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>If it stood upright, how far would the top be shifted?</div></div>
+      <div class="u9l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>0 m</b>: no lean, no shift.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>In the right triangle, which side is the tower?</div></div>
+      <div class="u9l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">The <b>hypotenuse</b>. The right angle is where the plumb line meets the horizontal through the top, so the tower is opposite it.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>What angle does the tower make with the ground?</div></div>
+      <div class="u9l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">\boldsymbol{86^\circ}</span>. The plumb line meets the ground at <span class="tex">90^\circ</span> and the lean takes <span class="tex">4^\circ</span> of it: <span class="tex">90^\circ-4^\circ=86^\circ</span>. (The two acute angles of a right triangle add to <span class="tex">90^\circ</span>.)</div></div>
+    </div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> It’s “only” <span class="tex">4^\circ</span>. About how far sideways is the top shifted? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> about 40 cm</div>
+      <div class="opt"><b>B</b> about 2.5 m</div>
+      <div class="opt right"><b>C</b> about 3.9 m</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>C: about 3.9 m.</b> The shift is <b>opposite</b> the <span class="tex">4^\circ</span> angle and the tower is the <b>hypotenuse</b>: <span class="tex">\text{shift}=56\sin4^\circ\approx56(0.0698)\approx3.9</span> m. Roughly the length of a car.<br>
+      <span class="muted"><b>A</b> is the gut feeling: “<span class="tex">4^\circ</span> is tiny, so the shift must be tiny.” Over 56 m a small angle adds up. <b>B</b> is <span class="tex">\tfrac{4}{90}\times56</span>: treating the shift as growing in step with the angle.</span></div>
+  </div>
+
+  <div class="bk-wq u9l5-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Before repair work that finished in 2001, the lean was about <span class="tex">5.5^\circ</span>. How big was the shift then?</div></div>
+    <div class="u9l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">56\sin5.5^\circ\approx5.4</span> m.</div></div>
+  </div>
+  <p class="u9l5-social">Challenge a neighbour: tilt a pencil <span class="tex">4^\circ</span>. Can they even see the lean? <span class="muted">(At pencil size, about 18 cm, the tip moves only about 1.3 cm.)</span></p>
+</section>
+
+<!-- ================= 1. Choosing the right tool ================= -->
+<section class="card" data-ink="s1" data-section="1. Choosing the Right Tool">
+  <div class="sec-h"><span class="badge">1</span><h2>Choosing the Right Tool</h2></div>
+  <p>Two known measurements determine a third. Two sides with no angle involved call for the <b>Pythagorean Theorem</b>; a side paired with an acute angle, or two sides with the angle unknown, call for <b>SOH</b>, <b>CAH</b> or <b>TOA</b>. Name the given sides relative to the angle in use (<b class="u9l5-co">opposite</b>, <b class="u9l5-ca">adjacent</b>, <b class="u9l5-ch">hypotenuse</b>), then pick the tool that uses exactly what is given.</p>
+  <div class="explainer" data-explainer="tools"></div>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. Which tool? A flowchart">
+  <h3 class="sub">Which tool? Ask two questions</h3>
+  <p>First: is the missing piece an <b>angle</b> or a <b>side</b>? Then: what do I already have? Name the sides from the angle in use before you write a ratio. If the unknown is on <b>top</b> of the fraction, multiply; on the <b>bottom</b>, divide; if the <b>angle</b> is unknown, run the ratio backwards with <span class="tex">\sin^{-1}</span>, <span class="tex">\cos^{-1}</span> or <span class="tex">\tan^{-1}</span>.</p>
+  <div class="explainer" data-explainer="whichTool"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Inverse ratios on the TI-30XIIS.</b> <span class="keys"><kbd>2nd</kbd><kbd>sin</kbd></span> is <span class="tex">\sin^{-1}</span> (and the same for cos and tan). The calculator must be in <b>DEG</b> mode. Like <kbd>sin</kbd>, it opens a bracket: <span class="keys"><kbd>2nd</kbd><kbd>tan</kbd><kbd>5</kbd><kbd>.</kbd><kbd>8</kbd><kbd>÷</kbd><kbd>1</kbd><kbd>1</kbd><kbd>.</kbd><kbd>4</kbd><kbd>)</kbd><kbd>ENTER</kbd></span></div>
+    <button class="pill" data-keys="tan⁻¹ 5.8 ÷ 11.4 ) =">Show me</button>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>One unknown: match the tool to the given pair</h3></div>
+  <p class="q">In each case, calculate the indicated measure. Give angles to the nearest degree and sides to the nearest tenth.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a)</div>
+      <div class="u9l5-pw"><div class="u9l5-pfig" id="u9l5-f1a"></div><div class="work" style="--h:230px"></div></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Both given sides are legs: from <span class="tex">x^\circ</span>, <span class="tex">5.8</span> is <b class="u9l5-co">opposite</b> and <span class="tex">11.4</span> is <b class="u9l5-ca">adjacent</b> <span class="tex">\Rightarrow</span> TOA.<br><span class="tex">\tan x^\circ=\dfrac{5.8}{11.4}=0.50877\ldots</span><br><span class="tex">x^\circ=\tan^{-1}(0.50877)=26.9657^\circ\approx\boldsymbol{27^\circ}</span></div></div></div>
+    <div class="part"><div class="pl">(b)</div>
+      <div class="u9l5-pw"><div class="u9l5-pfig" id="u9l5-f1b"></div><div class="work" style="--h:230px"></div></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">From <span class="tex">31^\circ</span>: <span class="tex">21.5</span> is <b class="u9l5-ca">adjacent</b> and <span class="tex">x</span> is <b class="u9l5-co">opposite</b> <span class="tex">\Rightarrow</span> TOA.<br><span class="tex">\tan 31^\circ=\dfrac{x}{21.5}</span><br><span class="tex">x=21.5\tan 31^\circ=21.5(0.60086)=12.9185\ldots\approx\boldsymbol{12.9}</span></div></div></div>
+    <div class="part"><div class="pl">(c)</div>
+      <div class="u9l5-pw"><div class="u9l5-pfig" id="u9l5-f1c"></div><div class="work" style="--h:230px"></div></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">From <span class="tex">62^\circ</span>: <span class="tex">x</span> is <b class="u9l5-co">opposite</b> and <span class="tex">33.5</span> is the <b class="u9l5-ch">hypotenuse</b> <span class="tex">\Rightarrow</span> SOH.<br><span class="tex">\sin 62^\circ=\dfrac{x}{33.5}</span><br><span class="tex">x=33.5\sin 62^\circ=33.5(0.88295)=29.5787\ldots\approx\boldsymbol{29.6}</span></div></div></div>
+    <div class="part"><div class="pl">(d)</div>
+      <div class="u9l5-pw"><div class="u9l5-pfig" id="u9l5-f1d"></div><div class="work" style="--h:230px"></div></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">From <span class="tex">x^\circ</span>: <span class="tex">8.1</span> is <b class="u9l5-ca">adjacent</b> and <span class="tex">13.6</span> is the <b class="u9l5-ch">hypotenuse</b> <span class="tex">\Rightarrow</span> CAH.<br><span class="tex">\cos x^\circ=\dfrac{8.1}{13.6}=0.59559\ldots</span><br><span class="tex">x^\circ=\cos^{-1}(0.59559)=53.4454^\circ\approx\boldsymbol{53^\circ}</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Example 1 on the TI-30XIIS.</b> (a) <span class="keys"><kbd>2nd</kbd><kbd>tan</kbd><kbd>5.8</kbd><kbd>÷</kbd><kbd>11.4</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> &nbsp;(b) <span class="keys"><kbd>21.5</kbd><kbd>×</kbd><kbd>tan</kbd><kbd>31</kbd><kbd>)</kbd><kbd>ENTER</kbd></span><br>(c) <span class="keys"><kbd>33.5</kbd><kbd>×</kbd><kbd>sin</kbd><kbd>62</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> &nbsp;(d) <span class="keys"><kbd>2nd</kbd><kbd>cos</kbd><kbd>8.1</kbd><kbd>÷</kbd><kbd>13.6</kbd><kbd>)</kbd><kbd>ENTER</kbd></span></div>
+    <div class="u9l5-pill-grid"><button class="pill" data-keys="tan⁻¹ 5.8 ÷ 11.4 ) =">(a)</button><button class="pill" data-keys="21.5 × tan 31 ) =">(b)</button><button class="pill" data-keys="33.5 × sin 62 ) =">(c)</button><button class="pill" data-keys="cos⁻¹ 8.1 ÷ 13.6 ) =">(d)</button></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<!-- ================= 2. Two routes ================= -->
+<section class="card" data-ink="s2" data-section="2. Two Routes to the Same Side">
+  <div class="sec-h"><span class="badge">2</span><h2>Two Routes to the Same Side</h2></div>
+  <p>When a side can be reached either by the <b>Pythagorean Theorem</b> or by a <b>trigonometric ratio</b>, the two routes agree only if no rounded value is fed into them. The next example computes one length both ways and compares.</p>
+  <div class="explainer" data-explainer="twoRoutes"></div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>The same length, two ways</h3></div>
+  <p class="q">A radio antenna is 14 m tall. It is supported by a guy wire 22 m long running from the top of the antenna to a stake in the ground.</p>
+  <div class="u9l5-exrow">
+    <div class="u9l5-exfig" id="u9l5-f2"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(a) Calculate, to the nearest degree, the angle <span class="tex">\theta^\circ</span> between the wire and the ground.</div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">From <span class="tex">\theta^\circ</span>: the antenna (<span class="tex">14</span>) is <b class="u9l5-co">opposite</b> and the wire (<span class="tex">22</span>) is the <b class="u9l5-ch">hypotenuse</b> <span class="tex">\Rightarrow</span> SOH.<br><span class="tex">\sin\theta^\circ=\dfrac{14}{22}=0.63636\ldots\Rightarrow\theta^\circ=\sin^{-1}(0.63636)=39.5212^\circ\approx\boldsymbol{40^\circ}</span></div></div></div>
+    </div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(b) Calculate the distance, to the nearest tenth of a metre, between the stake and the foot of the antenna, using<br>&nbsp; i) the Pythagorean Theorem</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The stake-to-foot distance is the third side, and both other sides are given exactly:<br><span class="tex">\text{base}=\sqrt{22^2-14^2}=\sqrt{484-196}=\sqrt{288}=16.9706\ldots\approx\boldsymbol{17.0\text{ m}}</span></div></div></div>
+    <div class="part"><div class="pl"><br>&nbsp; ii) trigonometry, using your rounded angle from (a).</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\text{base}=22\cos 40^\circ=22(0.76604)=16.8530\ldots\approx\boldsymbol{16.9\text{ m}}</span></div></div></div>
+    <div class="part think span2"><div class="pl"><span class="think-tag">Think</span> The two answers disagree. Which one is right, and why does the other miss?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>17.0 m</b> is right. ii) is built on the <b>rounded</b> <span class="tex">40^\circ</span> rather than on <span class="tex">39.5212^\circ</span>. Carrying the angle unrounded gives <span class="tex">22\cos(39.5212^\circ)=16.9706</span>, matching i) exactly. Work from the original given data and round only at the end.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Example 2 on the TI-30XIIS.</b> (a) <span class="keys"><kbd>2nd</kbd><kbd>sin</kbd><kbd>14</kbd><kbd>÷</kbd><kbd>22</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> &nbsp;(b) i) <span class="keys"><kbd>2nd</kbd><kbd>x²</kbd></span> is <span class="tex">\sqrt{\phantom{x}}</span>: <span class="keys"><kbd>√</kbd><kbd>22</kbd><kbd>x²</kbd><kbd>−</kbd><kbd>14</kbd><kbd>x²</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> &nbsp;ii) <span class="keys"><kbd>22</kbd><kbd>×</kbd><kbd>cos</kbd><kbd>40</kbd><kbd>)</kbd><kbd>ENTER</kbd></span>. Unrounded: put the whole <span class="tex">\sin^{-1}</span> inside the cos.</div>
+    <div class="u9l5-pill-grid"><button class="pill" data-keys="sin⁻¹ 14 ÷ 22 ) =">(a)</button><button class="pill" data-keys="√ 22 x² − 14 x² ) =">(b) i</button><button class="pill" data-keys="22 × cos 40 ) =">(b) ii</button><button class="pill" data-keys="22 × cos sin⁻¹ 14 ÷ 22 ) ) =">unrounded</button></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<!-- ================= 3. What it means to solve ================= -->
+<section class="card" data-ink="s3" data-section="3. What It Means to Solve a Triangle">
+  <div class="sec-h"><span class="badge">3</span><h2>What It Means to “Solve” a Triangle</h2></div>
+  <div class="def"><b>Solving a right triangle</b> means finding the length of <b>every</b> side and the measure of <b>every</b> angle. One angle, the right angle, is already known, so exactly <b>two</b> more independent pieces of information are needed: either <b>one side and one acute angle</b>, or <b>two sides</b>. From those, the Pythagorean Theorem, SOH CAH TOA, and the fact that the two acute angles of a right triangle add to <span class="tex">90^\circ</span> deliver everything else, applying whichever tool fits the information available at each step.</div>
+  <div class="explainer" data-explainer="twoPieces"></div>
+</section>
+
+<section class="card" data-ink="s3b" data-section="3. From the original given data">
+  <h3 class="sub">Take every unknown from the given data</h3>
+  <div class="def amber">Take every unknown from the <b>original given measurements</b> wherever possible, not from a value you have just rounded. A rounded intermediate result carries its error into everything built on it, as Example 2 shows. Carry full calculator precision through the work and <b>round only the final answer</b>.</div>
+  <div class="explainer" data-explainer="fromGiven"></div>
+</section>
+
+<section class="card" data-ink="s3c" data-section="3. Solve it: the checklist">
+  <h3 class="sub">Solve it: a checklist of six</h3>
+  <p>Three sides and three angles. Tick off what is given, then take the missing pieces one at a time: ask the flowchart which tool fits, work it from the given data, and fill it in. Finish with a <b>consistency check</b>: the Pythagorean Theorem and the angle sum.</p>
+  <div class="explainer" data-explainer="solveIt"></div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Solve from one angle and one side</h3></div>
+  <p class="q">Solve the given triangle. Give all angles to the nearest degree and all sides to the nearest tenth.</p>
+  <div class="u9l5-exrow">
+    <div class="u9l5-exfig" id="u9l5-f3"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">Solve triangle <span class="tex">ABC</span>.</div><div class="work" style="--h:330px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Angle <span class="tex">C=90^\circ-48^\circ=\boldsymbol{42^\circ}</span>.<br><span class="tex">BC</span> is <b class="u9l5-co">opposite</b> <span class="tex">48^\circ</span> and <span class="tex">AB=25</span> is <b class="u9l5-ca">adjacent</b> <span class="tex">\Rightarrow</span> TOA:<br><span class="tex">\tan 48^\circ=\dfrac{BC}{25}\Rightarrow BC=25\tan 48^\circ=25(1.11061)=27.7653\ldots\approx\boldsymbol{27.8}</span><br><span class="tex">AC</span> is the <b class="u9l5-ch">hypotenuse</b> with <span class="tex">AB=25</span> <b class="u9l5-ca">adjacent</b> <span class="tex">\Rightarrow</span> CAH, taken from the <b>given</b> 25 and <span class="tex">48^\circ</span>, never from the rounded <span class="tex">BC</span>:<br><span class="tex">\cos 48^\circ=\dfrac{25}{AC}\Rightarrow AC=\dfrac{25}{\cos 48^\circ}=\dfrac{25}{0.66913}=37.3619\ldots\approx\boldsymbol{37.4}</span><br>Check: <span class="tex">90^\circ+48^\circ+42^\circ=180^\circ</span> ✓ and <span class="tex">\sqrt{25^2+27.7653^2}=37.3619</span> ✓</div></div></div>
+    </div>
+  </div>
+  <div class="parts c1">
+    <div class="part think"><div class="pl"><span class="think-tag">Think</span> <span class="tex">AC</span> is on the <b>bottom</b> of <span class="tex">\cos 48^\circ=\dfrac{25}{AC}</span>. Do you multiply or divide? How can you tell your answer is not <span class="tex">25\cos 48^\circ</span>?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Divide:</b> <span class="tex">AC=25\div\cos 48^\circ</span>. Multiplying gives <span class="tex">25\cos48^\circ\approx16.7</span>, which is <b>shorter</b> than the leg <span class="tex">AB=25</span>. The hypotenuse is always the longest side, so 16.7 can’t be it.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Example 3 on the TI-30XIIS.</b> <span class="tex">BC</span>: <span class="keys"><kbd>25</kbd><kbd>×</kbd><kbd>tan</kbd><kbd>48</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> &nbsp; <span class="tex">AC</span>: <span class="keys"><kbd>25</kbd><kbd>÷</kbd><kbd>cos</kbd><kbd>48</kbd><kbd>)</kbd><kbd>ENTER</kbd></span>. Both start from the given 25 and <span class="tex">48^\circ</span>.</div>
+    <div class="pill-col"><button class="pill" data-keys="25 × tan 48 ) =">BC</button><button class="pill" data-keys="25 ÷ cos 48 ) =">AC</button></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Solve from two sides</h3></div>
+  <p class="q">Solve triangle <span class="tex">DEF</span>. Give all sides to the nearest tenth and all angles to the nearest degree.</p>
+  <div class="u9l5-exrow">
+    <div class="u9l5-exfig" id="u9l5-f4"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">Solve triangle <span class="tex">DEF</span>.</div><div class="work" style="--h:330px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">DF</span> is the hypotenuse, and both legs are given, so use the Pythagorean Theorem:<br><span class="tex">DF=\sqrt{DE^2+EF^2}=\sqrt{8.6^2+6.1^2}=\sqrt{73.96+37.21}=\sqrt{111.17}=10.5437\ldots\approx\boldsymbol{10.5}</span><br>Angle <span class="tex">F</span>: <span class="tex">DE=8.6</span> is <b class="u9l5-co">opposite</b> and <span class="tex">EF=6.1</span> is <b class="u9l5-ca">adjacent</b> <span class="tex">\Rightarrow</span> TOA:<br><span class="tex">\tan F=\dfrac{8.6}{6.1}=1.40984\ldots\Rightarrow F=\tan^{-1}(1.40984)=54.6518^\circ\approx\boldsymbol{55^\circ}</span><br>Angle <span class="tex">D=90^\circ-54.6518^\circ=35.3482^\circ\approx\boldsymbol{35^\circ}</span> (from the unrounded <span class="tex">F</span>, not from <span class="tex">55^\circ</span>).<br>Check: <span class="tex">90^\circ+54.6518^\circ+35.3482^\circ=180^\circ</span> ✓ and <span class="tex">8.6^2+6.1^2=111.17=10.5437^2</span> ✓</div></div></div>
+    </div>
+  </div>
+  <div class="parts c1">
+    <div class="part think"><div class="pl"><span class="think-tag">Think</span> Before calculating: which acute angle, <span class="tex">D</span> or <span class="tex">F</span>, should be the larger one? How do you know?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\angle F</span>. The bigger angle faces the longer side: <span class="tex">F</span> faces <span class="tex">DE=8.6</span>, while <span class="tex">D</span> faces <span class="tex">EF=6.1</span>. And indeed <span class="tex">55^\circ&gt;35^\circ</span>.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Example 4 on the TI-30XIIS.</b> <span class="tex">DF</span>: <span class="keys"><kbd>√</kbd><kbd>8.6</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>6.1</kbd><kbd>x²</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> &nbsp; <span class="tex">\angle F</span>: <span class="keys"><kbd>2nd</kbd><kbd>tan</kbd><kbd>8.6</kbd><kbd>÷</kbd><kbd>6.1</kbd><kbd>)</kbd><kbd>ENTER</kbd></span>, then <span class="tex">90-54.6518\ldots</span> for <span class="tex">\angle D</span>.</div>
+    <div class="pill-col"><button class="pill" data-keys="√ 8.6 x² + 6.1 x² ) =">DF</button><button class="pill" data-keys="tan⁻¹ 8.6 ÷ 6.1 ) =">∠F</button></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s3d" data-section="3. Words to a triangle: the ladder">
+  <h3 class="sub">From words to a triangle</h3>
+  <p>An applied problem hides the triangle in a sentence. Find the <b>right angle</b> first (a wall meets the ground, a tower stands on level ground), name the vertices, and decide which side each measurement is. “The angle with the ground” and “the angle with the wall” are two different corners.</p>
+  <div class="explainer" data-explainer="ladder"></div>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Solve an applied triangle</h3></div>
+  <p class="q">A 6.5 m ladder leans against a vertical wall with its foot 2.1 m from the base of the wall. Let <span class="tex">W</span> be the point where the wall meets the ground, <span class="tex">F</span> the foot of the ladder, and <span class="tex">T</span> the point where the top of the ladder touches the wall. Solve triangle <span class="tex">WFT</span>: find the height <span class="tex">WT</span> the ladder reaches on the wall, the angle the ladder makes with the ground at <span class="tex">F</span>, and the angle the ladder makes with the wall at <span class="tex">T</span>. Give the side to the nearest tenth of a metre and both angles to the nearest degree.</p>
+  <div class="u9l5-exrow">
+    <div class="u9l5-exfig" id="u9l5-f5"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">Solve triangle <span class="tex">WFT</span>.</div><div class="work" style="--h:360px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">WT</span> from the Pythagorean Theorem, using the two <b>given</b> lengths:<br><span class="tex">WT=\sqrt{FT^2-WF^2}=\sqrt{6.5^2-2.1^2}=\sqrt{42.25-4.41}=\sqrt{37.84}=6.1514\ldots\approx\boldsymbol{6.2\text{ m}}</span><br>Angle <span class="tex">F</span> (ladder to ground): <span class="tex">WF=2.1</span> is <b class="u9l5-ca">adjacent</b> and <span class="tex">FT=6.5</span> is the <b class="u9l5-ch">hypotenuse</b> <span class="tex">\Rightarrow</span> CAH:<br><span class="tex">\cos F=\dfrac{2.1}{6.5}=0.32308\ldots\Rightarrow F=\cos^{-1}(0.32308)=71.1509^\circ\approx\boldsymbol{71^\circ}</span><br>Angle <span class="tex">T</span> (ladder to wall) <span class="tex">=90^\circ-71.1509^\circ=18.8491^\circ\approx\boldsymbol{19^\circ}</span>, taken from the unrounded <span class="tex">F</span>; starting from <span class="tex">71^\circ</span> would give <span class="tex">19^\circ</span> here but will not always.<br>Check: <span class="tex">2.1^2+6.1514^2=42.25=6.5^2</span> ✓ and <span class="tex">90^\circ+71.1509^\circ+18.8491^\circ=180^\circ</span> ✓</div></div></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Example 5 on the TI-30XIIS.</b> <span class="tex">WT</span>: <span class="keys"><kbd>√</kbd><kbd>6.5</kbd><kbd>x²</kbd><kbd>−</kbd><kbd>2.1</kbd><kbd>x²</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> &nbsp; <span class="tex">\angle F</span>: <span class="keys"><kbd>2nd</kbd><kbd>cos</kbd><kbd>2.1</kbd><kbd>÷</kbd><kbd>6.5</kbd><kbd>)</kbd><kbd>ENTER</kbd></span></div>
+    <div class="pill-col"><button class="pill" data-keys="√ 6.5 x² − 2.1 x² ) =">WT</button><button class="pill" data-keys="cos⁻¹ 2.1 ÷ 6.5 ) =">∠F</button></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s3e" data-section="3. Checks catch mistakes">
+  <h3 class="sub">Checks catch mistakes</h3>
+  <p>A solved triangle must hang together: the angles add to <span class="tex">180^\circ</span>, the <b>hypotenuse is the longest side</b>, the sides fit <span class="tex">a^2+b^2=c^2</span>, and the <b>bigger acute angle faces the longer leg</b>. Each check catches a different slip, so use more than one.</p>
+  <div class="explainer" data-explainer="catchIt"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>The angle sum can’t catch everything.</b> If the two acute angles are swapped, they still add to <span class="tex">90^\circ</span>. Ask which angle faces the longer leg.</div></div>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Match the tool to the pair.</b> Two sides <span class="u9l5-arrow">→</span> side: Pythagoras. Side + angle <span class="u9l5-arrow">→</span> side: SOH CAH TOA. Two sides <span class="u9l5-arrow">→</span> angle: <span class="tex">\sin^{-1}</span>, <span class="tex">\cos^{-1}</span>, <span class="tex">\tan^{-1}</span>. Angle <span class="u9l5-arrow">→</span> angle: <span class="tex">90^\circ-</span> it.</div>
+    <div><b>Solve</b> = all three sides and all three angles. The right angle is free, so two more pieces are needed: <b>a side and an acute angle</b>, or <b>two sides</b>.</div>
+    <div><b>Work from the given data</b> and round only at the end. A rounded value fed into the next step carries its error (Example 2: 16.9 m instead of 17.0 m).</div>
+    <div><b>Check</b> with unrounded values: <span class="tex">a^2+b^2=c^2</span> and angles adding to <span class="tex">180^\circ</span>. The hypotenuse is the longest side, and the bigger acute angle faces the longer leg.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u9l5" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 5 — Solving Right Triangles Completely</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l6/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 6 — Multi-Step Trigonometry</b><div class="muted">Problems that need more than one right triangle, solved in a chain</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u9l5.js';
+  boot({ key: 'u9l5', homeHref: '../../', title: '9.5 Solving Right Triangles' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>
