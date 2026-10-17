@@ -966,7 +966,7 @@
           { html: sk({ segs: [Ln([[0.3, 0], [3.8, 4.4], [6.2, 4.4], [7.8, 0], [9.6, 0]])] }), right: true },
           { html: sk({ segs: [Ln([[0.3, 0], [2.4, 4.4], [4.6, 4.4], [9.4, 0]])] }), code: 'slowempty', why: 'Here the fall is gentler than the rise, so it empties more slowly. Emptying faster means a <b>steeper</b> fall.' },
           { html: sk({ segs: [Ln([[0.3, 0], [3.8, 4.4], [5.4, 0], [9.6, 0]])] }), code: 'noflat', why: 'There is no flat part. While ' + tb[2] + ', no water goes in or out, so the amount stays constant.' },
-          { html: sk({ fns: [Fn(function (x) { return x <= 3.8 ? 4.4 * Math.sqrt((x - 0.3) / 3.5) : x <= 6.2 ? 4.4 : Math.max(0, 4.4 - 4.4 * Math.pow((x - 6.2) / 1.6, 0.5)); }, 0.3, 9.6)] }), code: 'curve', why: 'The rising part curves (slowing down). A tap at a steady rate adds the same amount each minute, so the rise should be straight.' }],
+          { html: sk({ fns: [Fn(function (x) { return x <= 3.8 ? 4.4 * Math.sqrt((x - 0.3) / 3.5) : x <= 6.2 ? 4.4 : Math.max(0, 4.4 - 4.4 * Math.pow((x - 6.2) / 1.6, 0.5)); }, 0.3, 9.6)] }), code: 'curve', why: 'The rising part curves (slowing down). Filling at a steady rate adds the same amount each minute, so the rise should be straight.' }],
           'Straight rise (filling steadily), flat (' + tb[3] + '), then a straight fall to ' + t('0') + ' that is <b>steeper than the rise</b>, because it empties faster than it filled.', ['Three stages: filling, bathing, emptying. Which is steepest?'], 'sketch: bathtub');
       } },
       { id: 'e8d', level: 'EMG', make: function (r) {
@@ -1021,9 +1021,10 @@
       } }] },
 
     { num: '10', section: 'Extra practice D — The same journey on two different graphs', stem: function (v) {
-        var X = v.T + 0.5, Y = v.d2 * 1.15, ys = v.d2 > 200 ? 80 : 40;
+        var X = v.T + 0.5, Y = v.d2 * 1.12, g = [60, 50, 40, 30, 20, 15, 10, 5].filter(function (q) { return v.d1 % q === 0 && v.d2 % q === 0 && Y / q <= 24; })[0] || 5, ys = g;
+        while (Y / ys > 6) ys += g;
         return 'A delivery van leaves the depot, stops to unload, then drives on. Its <b>distance from the depot</b> is graphed below.' +
-          ctx({ X: X, Y: Y, gx: 0.5, gy: ys / 2, xt: 'Time (h)', yt: 'Distance (km)', pts: [[0, 0], [v.t1, v.d1], [v.t1 + v.s, v.d1], [v.T, v.d2]], xT: tickList(0.5, X - 0.2, 0.5), yT: tickList(ys, Y - 5, ys), aria: 'van distance' });
+          ctx({ X: X, Y: Y, gx: 0.5, gy: g, xt: 'Time (h)', yt: 'Distance (km)', pts: [[0, 0], [v.t1, v.d1], [v.t1 + v.s, v.d1], [v.T, v.d2]], xT: tickList(0.5, X - 0.2, 0.5), yT: tickList(ys, Y - 5, ys), aria: 'van distance' });
       }, shared: function (r) {
         if (r.chance(0.3)) return { v1: 60, t1: 1, s: 0.5, v2: 80, t2: 1.5, d1: 60, d2: 180, T: 3 };
         for (var k = 0; k < 500; k++) {

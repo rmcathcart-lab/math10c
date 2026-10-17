@@ -29,7 +29,7 @@
     'ctx-no-k': 'Left out the factor in front of the bracket', 'ctx-gave-end': 'Gave the end of the domain', 'ctx-used': 'Gave the amount used instead of the amount left',
     'ctx-to-empty': 'Distance to empty instead of to the refuel level', 'ctx-swap-boxes': 'Two answers in each other’s boxes', 'ctx-round-down': 'Rounded down where the count must round up',
     'ctx-round-up': 'Rounded up where the count must round down', 'ctx-year-round': 'Rounded the year up', 'ctx-gave-a': 'Gave a number from the formula, not the intercept',
-    'ctx-gave-cost': 'Gave the expenses instead of the number of tickets', whole: 'Decimal where a whole number is needed', 'order-boxes': 'Two right answers in each other’s boxes', 'ctx-start-diff': 'Gave a starting height instead of the difference', 'ctx-more-cases': 'Chose the price that sells more'
+    'ctx-gave-cost': 'Gave the expenses instead of the number of tickets', whole: 'Decimal where a whole number is needed', 'order-boxes': 'Two right answers in each other’s boxes', 'ctx-start-diff': 'Gave a starting height instead of the difference', 'ctx-more-cases': 'Chose the price that sells more', 'ctx-sum': 'Added the two zeros'
   });
 
   /* ---------------- numbers and LaTeX ---------------- */
@@ -115,7 +115,7 @@
       if (y0 >= y1) return wrong('win-order', cd('Ymin') + ' must be less than ' + cd('Ymax') + ' — the bottom edge of the screen comes first.');
       if (x0 < -1e-9) return wrong('win-neg-x', t(o.xv) + ' ' + o.xNeg + ', so negative values of ' + t(o.xv) + ' never happen in this situation. Start the window at ' + cd('Xmin') + ' = 0.');
       if (x0 > o.x[0] + 1e-9) return wrong('win-cut-left', 'With ' + cd('Xmin') + ' = ' + t(nT(x0)) + ' the start of the situation (' + t(o.xv + '=0') + ') is off the screen.');
-      if (x1 < o.x[1] - 1e-9) return wrong('win-cut-x', cd('Xmax') + ' = ' + t(nT(x1)) + ' cuts off ' + o.xHi + '. ' + o.xHiHow);
+      if (x1 < Math.min(o.x[1], rd(o.x[1], 2)) - 1e-9) return wrong('win-cut-x',   // Xmax = the landing time to the hundredth (e.g. 4.12 for 4.1213) is fine cd('Xmax') + ' = ' + t(nT(x1)) + ' cuts off ' + o.xHi + '. ' + o.xHiHow);
       if (y1 < o.y[1] - 1e-9) return wrong('win-cut-top', cd('Ymax') + ' = ' + t(nT(y1)) + ' cuts off ' + o.yHi + '. ' + o.yHiHow);
       if (y0 > o.y[0] + 1e-9) return wrong('win-cut-bottom', cd('Ymin') + ' = ' + t(nT(y0)) + ' hides ' + o.yLo + '.');
       if (x1 - x0 > 10 * xs) return wrong('win-huge', 'That window is so wide that the graph is squeezed into a thin strip at the left. Bring ' + cd('Xmax') + ' down to just past the values the question needs.');
@@ -1139,7 +1139,7 @@
           var o = pickWhere(function () { return [r.int(6, 14), r.int(1, 4)]; }, function (o) { return (o[0] - o[1]) % 2 === 0 && o[0] > o[1] + 1 && Math.pow((o[0] + o[1]) / 2, 2) !== o[0]; });
           var R = o[0], S = o[1], tv = (R - S) / 2, pk = Math.pow((R + S) / 2, 2), b = R - S, c = R * S;
           return mc(r, 'A gull is sighted flying above a beach. Its height above the beach, in metres, ' + t('t') + ' seconds after it is first sighted is ' + t('h=' + quadT(-1, b, c, 't')) + '. It lands on the beach when ' + t('h=0') + '. The practical domain of this relation is', [
-            { html: t('\\{t\\mid -' + S + '\\le t\\le ' + R + ',\\ t\\in\\mathbb{R}\\}'), why: 't = −' + S + ' is the rejected root: the gull wasn’t sighted yet. Time starts at ' + t('t=0') + '.' },
+            { html: t('\\{t\\mid -' + S + '\\le t\\le ' + R + ',\\ t\\in\\mathbb{R}\\}'), why: t('t=-' + S) + ' is the rejected root: the gull wasn’t sighted yet. Time starts at ' + t('t=0') + '.' },
             { html: t('\\{t\\mid 0\\le t\\le ' + R + ',\\ t\\in\\mathbb{R}\\}'), right: true },
             { html: t('\\{t\\mid 0\\le t\\le ' + pk + ',\\ t\\in\\mathbb{R}\\}'), why: t(pk) + ' is the greatest <b>height</b>, ' + t('h(' + tv + ')') + ' — not a time.' },
             { html: t('\\{t\\mid 0\\le t\\le ' + tv + ',\\ t\\in\\mathbb{R}\\}'), why: 'That stops at the vertex and cuts off the descent to the beach.' }],
