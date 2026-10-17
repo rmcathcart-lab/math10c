@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Slope–Point Form · Math 10C 7.4</title>
+<meta name="description" content="Math 10C Unit 7 Lesson 4: using slope–point form to determine the equation of a line. Slope–point form built from the slope formula with one point fixed and one point moving, a point and a slope to y = mx + b, two methods compared, from a grid to general form, reading m and (x1, y1) from slope–point form, and general form from two points, a slope and an x-intercept, and perpendicular lines. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u7l4.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 7 Equations of Linear Relations · Lesson 4</div>
+  <h1>Using Slope–Point Form to Determine the Equation of a Line</h1>
+  <p class="lede">Building <span class="tex">y-y_1=m(x-x_1)</span> <b>from the slope formula</b>, then using it to turn <b>indirect descriptions</b> of a line into general form.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>explain where <b>slope–point form</b> <span class="tex">y-y_1=m(x-x_1)</span> comes from: the slope formula with one point <b class="u7l4-c-fix">fixed</b> and <span class="tex">(x,y)</span> <b class="u7l4-c-mov">free to move</b> along the line</li>
+      <li>write the equation of a line in slope–point form from a <b>point and a slope</b>, and rearrange it to <span class="tex">y=mx+b</span> or to general form <span class="tex">Ax+By+C=0</span></li>
+      <li>read the <b>slope</b> and the <b>point</b> back out of a slope–point equation, without falling for the <b>sign trap</b></li>
+      <li>find the equation of a line from a <b>graph</b>, from <b>two points</b>, from a slope and an <b>intercept</b>, or from a <b>perpendicular</b> line</li>
+    </ul>
+  </div>
+  <div class="outcome"><b>RF6</b> Relate linear relations expressed in: slope–intercept form (<span class="tex">y=mx+b</span>); general form (<span class="tex">Ax+By+C=0</span>); slope–point form (<span class="tex">y-y_1=m(x-x_1)</span>) to their graphs.</div>
+  <div class="outcome"><b>RF7</b> Determine the equation of a linear relation, given: a graph; a point and the slope; two points; a point and the equation of a parallel or perpendicular line, to solve problems.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: Hot Air Balloon" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Hot Air Balloon</h2></div>
+  <p class="big">At <b>10:05</b> the balloon is <b>800 m</b> up, dropping a steady <b>40 m every minute</b>.</p>
+  <div class="u7l4-wtop">
+    <div class="u7l4-wfig">
+      <div id="u7l4-sky"></div>
+      <div class="u7l4-wbtns">
+        <button type="button" class="pill small" data-u7l4-t="5">10:05</button>
+        <button type="button" class="pill small" data-u7l4-t="6">10:06</button>
+        <button type="button" class="pill small" data-u7l4-t="10">10:10</button>
+        <button type="button" class="pill small" data-u7l4-t="0">10:00</button>
+        <button type="button" class="pill small" data-u7l4-t="25">Touch down</button>
+      </div>
+      <table class="u7l4-wlog">
+        <tr><th>Time</th><td>10:00</td><td>10:05</td><td>10:06</td><td>10:10</td><td><span data-reveal><b>10:25</b></span></td></tr>
+        <tr><th>Height (m)</th><td><span data-reveal><b>1&#8239;000</b></span></td><td>800</td><td><span data-reveal><b>760</b></span></td><td><span data-reveal><b>600</b></span></td><td>0 (landed)</td></tr>
+      </table>
+    </div>
+    <div class="u7l4-wright">
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">1</div><div>How high is the balloon at <b>10:06</b>?</div></div>
+        <div class="u7l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">800-40=760</span> m.</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">2</div><div>How high is it at <b>10:10</b>?</div></div>
+        <div class="u7l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">5 minutes later: <span class="tex">800-5(40)=600</span> m.</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">3</div><div>How high <em>was</em> it at <b>10:00</b>, five minutes before we first saw it?</div></div>
+        <div class="u7l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Run the clock backwards: <span class="tex">800+5(40)=1\,000</span> m.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> If it keeps dropping at the same rate, at what time does the balloon <b>touch down</b>? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> 10:20</div>
+      <div class="opt right"><b>B</b> 10:25</div>
+      <div class="opt"><b>C</b> 10:30</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>B: 10:25.</b> From 10:05 it must lose all 800 m: <span class="tex">800\div40=20</span> minutes after 10:05. Check from Q3: 1&#8239;000 m at 10:00, and <span class="tex">1\,000\div40=25</span> minutes after 10:00, also 10:25.<br>
+      <span class="muted"><b>A</b> counted the 20 minutes from 10:00, as if 10:00 were the start. <b>C</b> used the 25 minutes from 10:00 but added them to 10:05. The one reading we have is in the <b>middle</b> of the story, not at time zero.</span></div>
+  </div>
+
+  <div class="bk-wq u7l4-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> At what time is the balloon at <b>300 m</b>?</div></div>
+    <div class="u7l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">It must drop <span class="tex">800-300=500</span> m after 10:05: <span class="tex">500\div40=12.5</span> minutes, so <b>10:17:30</b>.</div></div>
+  </div>
+  <p class="u7l4-social">Hands up for A, B or C, then convince someone who voted differently.</p>
+</section>
+
+<!-- ================= 1. Building the equation ================= -->
+<section class="card" data-ink="s1" data-section="1. From the Slope Formula">
+  <div class="sec-h"><span class="badge">1</span><h2>Building the Equation from the Slope Formula</h2></div>
+  <div class="u7l4-defrow">
+    <div>
+      <p>Let <span class="tex u7l4-c-fix">(x_1,y_1)</span> be a <b>fixed</b> point on a line and let <span class="tex u7l4-c-mov">P(x,y)</span> be any other point on that same line, <b>free to move</b> along it. From <span class="tex">(x_1,y_1)</span> to <span class="tex">P</span> the <b class="u7l4-c-rise">rise</b> is <span class="tex">y-y_1</span> and the <b class="u7l4-c-run">run</b> is <span class="tex">x-x_1</span>, so the slope between them is</p>
+      <div class="u7l4-formula"><span class="tex">m=\dfrac{\color{#7b4fc4}y-y_1}{\color{#c27a0e}x-x_1}</span></div>
+      <p>Multiplying both sides by <span class="tex">(x-x_1)</span> clears the fraction and gives an equation that is <b>also</b> true for <span class="tex">(x_1,y_1)</span> itself (both sides become <span class="tex">0</span>), so it is the equation of the <b>entire</b> line:</p>
+      <div class="u7l4-formula"><span class="tex">y-y_1=m(x-x_1)</span></div>
+    </div>
+    <div id="u7l4-s1fig"></div>
+  </div>
+  <div class="explainer" data-explainer="build"></div>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. Walkthrough and the definition">
+  <h3 class="sub">Walkthrough</h3>
+  <p>A line has slope <span class="tex">4</span> and passes through <span class="tex">A(2,-1)</span>. With <span class="tex">P(x,y)</span> any point on the line,</p>
+  <div class="u7l4-chain"><span class="tex">\dfrac{y-(-1)}{x-2}=4\quad\Longrightarrow\quad y+1=4(x-2)\quad\Longrightarrow\quad y+1=4x-8\quad\Longrightarrow\quad y=4x-9.</span></div>
+  <p>The middle equation, <span class="tex">y+1=4(x-2)</span>, is exactly the pattern <span class="tex">y-y_1=m(x-x_1)</span> with <span class="tex">m=4</span> and <span class="tex">(x_1,y_1)=(2,-1)</span> substituted in directly: no cross-multiplying or solving required.</p>
+  <div class="def u7l4-spdef"><b>Slope–Point Form</b> (also called <em>point-slope form</em>)
+    <div class="u7l4-spbig"><span class="tex">y-\color{#13807a}y_1\color{#1c2230}=\color{#1f5bd6}m\color{#1c2230}(x-\color{#13807a}x_1\color{#1c2230})</span></div>
+    where <b class="u7l4-c-m">m</b> is the slope and <b class="u7l4-c-fix">(x₁, y₁)</b> is <em>any</em> known point on the line.</div>
+  <ul class="u7l4-bul">
+    <li>Use it whenever a <b>slope and a point</b> are given: it needs no solving, only substitution.</li>
+    <li>A final answer is usually expected in general form, <span class="tex">Ax+By+C=0</span>, or in slope–intercept form, <span class="tex">y=mx+b</span>, so slope–point form is often just the <b>first step</b>.</li>
+    <li><b>Any</b> point on the line may be used for <span class="tex">(x_1,y_1)</span>; different choices give different-<em>looking</em> slope–point equations that all simplify to the same line.</li>
+  </ul>
+  <div class="explainer" data-explainer="anyPoint"></div>
+</section>
+
+<!-- ================= 2. Practice ================= -->
+<section class="card" data-ink="s2" data-section="2. Practice with Slope–Point Form">
+  <div class="sec-h"><span class="badge">2</span><h2>Practice with the Slope–Point Form</h2></div>
+  <p>Substitute the slope for <span class="tex">m</span> and the point for <span class="tex">(x_1,y_1)</span>. Keep the minus signs of the pattern and put each coordinate in <b>brackets</b> first: a negative coordinate turns <span class="tex">-(-3)</span> into <span class="tex">+3</span>.</p>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Writing slope–point form from a point and a slope</h3></div>
+  <p class="q">State the equation, in slope–point form, of the line through the given point with the given slope.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">(4,7)</span>, slope <span class="tex">5</span></div><div class="work" style="--h:130px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\boldsymbol{y-7=5(x-4)}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">(2,-3)</span>, slope <span class="tex">-6</span></div><div class="work" style="--h:130px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">y-(-3)=-6(x-2)</span><br>i.e. <span class="tex">\boldsymbol{y+3=-6(x-2)}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">(-8,-2)</span>, slope <span class="tex">\dfrac{1}{3}</span></div><div class="work" style="--h:130px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">y-(-2)=\tfrac{1}{3}\bigl(x-(-8)\bigr)</span><br>i.e. <span class="tex">\boldsymbol{y+2=\tfrac{1}{3}(x+8)}</span></div></div></div>
+  </div>
+  <div class="explainer u7l4-exgap" data-explainer="plug"></div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Converting a point and a slope to <span class="tex">y=mx+b</span></h3></div>
+  <p class="q">In each case the slope of a line and a point on the line are given. Determine the equation of the line in slope–intercept form, <span class="tex">y=mx+b</span>.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) <span class="tex">m=6</span>, point <span class="tex">(-4,3)</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">y-3=6\bigl(x-(-4)\bigr)=6(x+4)</span><br><span class="tex">y-3=6x+24</span><br><span class="tex">\boldsymbol{y=6x+27}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">m=-8</span>, point <span class="tex">(-1,5)</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">y-5=-8\bigl(x-(-1)\bigr)=-8(x+1)</span><br><span class="tex">y-5=-8x-8</span><br><span class="tex">\boldsymbol{y=-8x-3}</span></div></div></div>
+  </div>
+  <div class="explainer u7l4-exgap" data-explainer="toMxB"></div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Two methods compared: <span class="tex">y=mx+b</span> against <span class="tex">y-y_1=m(x-x_1)</span></h3></div>
+  <p class="q">Priya and Deshawn were each asked: <em>“Determine the equation, in general form, of the line with slope <span class="tex">-5</span> passing through the point <span class="tex">(4,-2)</span>.”</em> Priya could only remember <span class="tex">y=mx+b</span>; Deshawn remembered <span class="tex">y-y_1=m(x-x_1)</span>. Complete each student’s method, then compare.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) <b>Priya’s method.</b> Start from <span class="tex">y=mx+b</span>, substitute the slope, then substitute the point to solve for <span class="tex">b</span>.</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">y=-5x+b</span>. Substitute <span class="tex">(4,-2)</span>:<br><span class="tex">-2=-5(4)+b=-20+b</span><br><span class="tex">b=18</span><br><span class="tex">\boldsymbol{y=-5x+18}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <b>Deshawn’s method.</b> Start from <span class="tex">y-y_1=m(x-x_1)</span> and substitute the slope and the point directly.</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">y-(-2)=-5(x-4)</span><br><span class="tex">y+2=-5x+20</span><br><span class="tex">\boldsymbol{y=-5x+18}</span></div></div></div>
+  </div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(c) Convert both final answers to general form, <span class="tex">Ax+By+C=0</span>. What do you notice?</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Both reach <span class="tex">y=-5x+18</span>. Adding <span class="tex">5x-18</span> to both sides gives <span class="tex">\boldsymbol{5x+y-18=0}</span>.<br>The two methods always agree: substituting the point into <span class="tex">y-y_1=m(x-x_1)</span> builds the point into the equation, so the separate step of solving for <span class="tex">b</span> is not needed.</div></div></div>
+  </div>
+  <div class="explainer u7l4-exgap" data-explainer="race"></div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>From a grid to general form; reading <span class="tex">m</span> and <span class="tex">(x_1,y_1)</span></h3></div>
+  <p class="q"><b>(a)</b> The line on the grid passes through at least two points with integer coordinates. Determine the equation of the line in general form.</p>
+  <div class="parts c1">
+    <div class="part">
+      <div class="u7l4-ex4">
+        <div id="u7l4-ex4fig"></div>
+        <div class="work" style="--h:400px"></div>
+      </div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The line passes through <span class="tex">(-3,-4)</span> and <span class="tex">(1,4)</span>.<br><span class="tex">m=\dfrac{4-(-4)}{1-(-3)}=\dfrac{8}{4}=2</span><br>Using <span class="tex">(1,4)</span>: <span class="tex">y-4=2(x-1)</span>, so <span class="tex">y-4=2x-2</span> and <span class="tex">y=2x+2</span>.<br><span class="tex">\boldsymbol{2x-y+2=0}</span>. Check <span class="tex">(-3,-4)</span>: <span class="tex">2(-3)-(-4)+2=-6+4+2=0</span> ✓</div></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>The slope in one go.</b> Bracket the top and the bottom: <span class="keys"><kbd>(</kbd><kbd>4</kbd><kbd>−</kbd><kbd>(−)</kbd><kbd>4</kbd><kbd>)</kbd><kbd>÷</kbd><kbd>(</kbd><kbd>1</kbd><kbd>−</kbd><kbd>(−)</kbd><kbd>3</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives <span class="tex">2</span>.</div>
+    <div class="pill-col"><button class="pill" data-keys="( 4 − (−) 4 ) ÷ ( 1 − (−) 3 ) =">Show me</button></div>
+  </div>
+  <div class="explainer u7l4-exgap" data-explainer="grid"></div>
+
+  <p class="q u7l4-qgap"><b>(b)</b> Each equation below is written in slope–point form. State the slope of the line and the coordinates of the point used to write the equation.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(i) <span class="tex">y-5=-\dfrac{2}{3}(x+9)</span></div><div class="work" style="--h:140px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">y-5=-\tfrac{2}{3}\bigl(x-(-9)\bigr)</span><br><span class="tex">\boldsymbol{m=-\tfrac{2}{3}}</span>, point <span class="tex">\boldsymbol{(-9,5)}</span></div></div></div>
+    <div class="part"><div class="pl">(ii) <span class="tex">y+7=4x</span></div><div class="work" style="--h:140px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">y-(-7)=4(x-0)</span><br><span class="tex">\boldsymbol{m=4}</span>, point <span class="tex">\boldsymbol{(0,-7)}</span></div></div></div>
+    <div class="part"><div class="pl">(iii) <span class="tex">y=-6(x-10)</span></div><div class="work" style="--h:140px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">y-0=-6(x-10)</span><br><span class="tex">\boldsymbol{m=-6}</span>, point <span class="tex">\boldsymbol{(10,0)}</span></div></div></div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>The sign trap.</b> The pattern has <b>minus</b> signs built in: <span class="tex">y-y_1</span> and <span class="tex">x-x_1</span>. So the numbers you see in the equation have the <b>opposite</b> signs of the point’s coordinates: <span class="tex">x+9</span> means <span class="tex">x-(-9)</span>, so <span class="tex">x_1=-9</span>. A missing term means a coordinate of <span class="tex">0</span>.</div></div>
+  <div class="explainer u7l4-exgap" data-explainer="read"></div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<!-- ================= 3. Indirect descriptions ================= -->
+<section class="card" data-ink="s3" data-section="3. Indirect Descriptions of a Line">
+  <div class="sec-h"><span class="badge">3</span><h2>Using Slope–Point Form for Indirect Descriptions of a Line</h2></div>
+  <p>Three forms are now available:</p>
+  <div class="u7l4-forms">
+    <div class="u7l4-form"><span class="tex">Ax+By+C=0</span><span class="u7l4-fname">General form</span></div>
+    <div class="u7l4-form"><span class="tex">y=mx+b</span><span class="u7l4-fname">Slope–intercept form</span></div>
+    <div class="u7l4-form u7l4-form-on"><span class="tex">y-y_1=m(x-x_1)</span><span class="u7l4-fname">Slope–point form</span></div>
+  </div>
+  <p>Slope–intercept form is the natural choice when the slope <span class="tex">m</span> and the <span class="tex">y</span>-intercept <span class="tex">b</span> are both handed to you. Slope–point form is more flexible: it needs the slope and <b>any</b> single point <span class="tex">(x_1,y_1)</span>, which need not be the <span class="tex">y</span>-intercept.</p>
+  <p>Most questions do not state a slope and a point outright. Instead the line is described <b>indirectly</b>: through two points on it, through its relationship (parallel or perpendicular) to another line, or through an intercept it shares with another line. The work is turning those clues into <b>a slope and a point</b>; slope–point form then produces the equation, and clearing fractions and collecting terms converts it to general form.</p>
+  <div class="explainer" data-explainer="strategy"></div>
+  <div class="def u7l4-gfrules"><b>General form, tidied up</b> (Lesson 3): <span class="tex">A</span>, <span class="tex">B</span> and <span class="tex">C</span> are <b>integers</b> (clear fractions first), <span class="tex">A\ge0</span> (the <span class="tex">x</span>-term is positive), and they have <b>no common factor</b> other than 1.</div>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>General form of the line through two points</h3></div>
+  <p class="q">Given the points <span class="tex">P(4,-3)</span> and <span class="tex">Q(-2,9)</span>, determine the equation, in general form, of the line passing through <span class="tex">P</span> and <span class="tex">Q</span>.</p>
+  <div class="parts c1">
+    <div class="part"><div class="work" style="--h:260px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">m=\dfrac{9-(-3)}{-2-4}=\dfrac{12}{-6}=-2</span><br>Using <span class="tex">P(4,-3)</span>: <span class="tex">y-(-3)=-2(x-4)</span>, so <span class="tex">y+3=-2x+8</span><br><span class="tex">\boldsymbol{2x+y-5=0}</span>. Check <span class="tex">Q(-2,9)</span>: <span class="tex">2(-2)+9-5=-4+9-5=0</span> ✓</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>The slope on the calculator.</b> <span class="keys"><kbd>(</kbd><kbd>9</kbd><kbd>−</kbd><kbd>(−)</kbd><kbd>3</kbd><kbd>)</kbd><kbd>÷</kbd><kbd>(</kbd><kbd>(−)</kbd><kbd>2</kbd><kbd>−</kbd><kbd>4</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives <span class="tex">-2</span>. Without the brackets the calculator divides first and gives <span class="tex">3.5</span>: wrong.</div>
+    <div class="pill-col"><button class="pill" data-keys="( 9 − (−) 3 ) ÷ ( (−) 2 − 4 ) =">Show me</button><button class="pill" data-keys="9 − (−) 3 ÷ (−) 2 − 4 =">No brackets</button></div>
+  </div>
+  <div class="explainer u7l4-exgap" data-explainer="solve5"></div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex6" data-section="Example 6">
+  <div class="ex-head"><span class="ex-tag">Example 6</span><h3>General form from a slope and an <span class="tex">x</span>-intercept</h3></div>
+  <p class="q">Determine the equation, in general form, of the line with slope <span class="tex">\dfrac{3}{4}</span> and an <span class="tex">x</span>-intercept of <span class="tex">8</span>.</p>
+  <div class="parts c1">
+    <div class="part"><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">An <span class="tex">x</span>-intercept of <span class="tex">8</span> means the line passes through <span class="tex">(8,0)</span>.<br><span class="tex">y-0=\tfrac{3}{4}(x-8)</span>. Multiply by <span class="tex">4</span>: <span class="tex">4y=3(x-8)=3x-24</span><br><span class="tex">\boldsymbol{3x-4y-24=0}</span>. Check <span class="tex">(8,0)</span>: <span class="tex">3(8)-4(0)-24=0</span> ✓</div></div></div>
+  </div>
+  <div class="explainer u7l4-exgap" data-explainer="solve6"></div>
+  <div class="space" id="ex6-space"></div>
+  <button class="more" data-more="ex6-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex7" data-section="Example 7">
+  <div class="ex-head"><span class="ex-tag">Example 7</span><h3>General form from a point and a perpendicular line</h3></div>
+  <p class="q">Determine the equation, in general form, of the line that passes through the point <span class="tex">(-4,2)</span> and is perpendicular to the line with equation <span class="tex">2x-3y+12=0</span>.</p>
+  <div class="parts c1">
+    <div class="part"><div class="work" style="--h:280px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">2x-3y+12=0\ \Rightarrow\ y=\dfrac{2x+12}{3}=\tfrac{2}{3}x+4</span>, so <span class="tex">m_{\text{given}}=\tfrac{2}{3}</span>.<br>Negative reciprocal: <span class="tex">m_{\perp}=-\tfrac{3}{2}</span>.<br>Using <span class="tex">(-4,2)</span>: <span class="tex">y-2=-\tfrac{3}{2}(x+4)</span>. Multiply by <span class="tex">2</span>: <span class="tex">2y-4=-3x-12</span><br><span class="tex">\boldsymbol{3x+2y+8=0}</span>. Check: <span class="tex">3(-4)+2(2)+8=-12+4+8=0</span> ✓</div></div></div>
+  </div>
+  <div class="explainer u7l4-exgap" data-explainer="solve7"></div>
+  <div class="space" id="ex7-space"></div>
+  <button class="more" data-more="ex7-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex8" data-section="Example 8">
+  <div class="ex-head"><span class="ex-tag">Example 8</span><h3>A perpendicular slope and a shared <span class="tex">x</span>-intercept</h3></div>
+  <p class="q">Determine the equation, in general form, of the line that is perpendicular to the line <span class="tex">4x-9y-27=0</span> and has the same <span class="tex">x</span>-intercept as the line <span class="tex">3x-5y-15=0</span>.</p>
+  <div class="parts c1">
+    <div class="part"><div class="work" style="--h:300px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x</span>-intercept of <span class="tex">3x-5y-15=0</span>: set <span class="tex">y=0</span>, <span class="tex">3x-15=0</span>, <span class="tex">x=5</span>, so the line passes through <span class="tex">(5,0)</span>.<br><span class="tex">4x-9y-27=0\ \Rightarrow\ y=\dfrac{4x-27}{9}=\tfrac{4}{9}x-3</span>, so <span class="tex">m_{\text{given}}=\tfrac{4}{9}</span> and <span class="tex">m_{\perp}=-\tfrac{9}{4}</span>.<br>Using <span class="tex">(5,0)</span>: <span class="tex">y-0=-\tfrac{9}{4}(x-5)</span>. Multiply by <span class="tex">4</span>: <span class="tex">4y=-9x+45</span><br><span class="tex">\boldsymbol{9x+4y-45=0}</span>. Check: <span class="tex">9(5)+4(0)-45=0</span> ✓</div></div></div>
+  </div>
+  <div class="explainer u7l4-exgap" data-explainer="solve8"></div>
+  <div class="space" id="ex8-space"></div>
+  <button class="more" data-more="ex8-space">+ More space</button>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Where it comes from.</b> Fix one point <span class="tex">(x_1,y_1)</span>, let <span class="tex">(x,y)</span> move along the line: <span class="tex">\dfrac{y-y_1}{x-x_1}=m</span> always. Clear the fraction: <span class="tex">\boldsymbol{y-y_1=m(x-x_1)}</span>.</div>
+    <div><b>Substitute, then tidy.</b> Slope for <span class="tex">m</span>, point for <span class="tex">(x_1,y_1)</span>, in brackets: <span class="tex">y-(-3)</span> becomes <span class="tex">y+3</span>. Expand and isolate <span class="tex">y</span> for <span class="tex">y=mx+b</span>; clear fractions and collect for <span class="tex">Ax+By+C=0</span>.</div>
+    <div><b>Reading it back.</b> The signs in the brackets are the <b>opposite</b> of the point’s: <span class="tex">y-5=-\tfrac23(x+9)</span> has <span class="tex">m=-\tfrac23</span> and point <span class="tex">(-9,5)</span>. Any point on the line works, so one line has many slope–point equations.</div>
+    <div><b>Indirect clues.</b> Turn them into a <b>slope</b> (slope formula, parallel: same, perpendicular: negative reciprocal) and a <b>point</b> (given, either of two points, an intercept <span class="tex">(a,0)</span> or <span class="tex">(0,b)</span>). Then slope–point form, then general form, then check a point.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u7l4" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 4 — Using Slope–Point Form to Determine the Equation of a Line</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l5/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 5 — Graphing Linear Equations</b><div class="muted">Graph each form straight from its equation: plot a point, then step the slope</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u7l4.js';
+  boot({ key: 'u7l4', homeHref: '../../', title: '7.4 Slope–Point Form' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Slope in Context · Math 10C 7.6</title>
+<meta name="description" content="Math 10C Unit 7 Lesson 6: slope in context. Reading a rate of change with units off a graph, writing and interpreting the equation of a rate-of-change graph (slope = rate, intercept = starting value), average rate of change between two points (average speed on each leg of a trip), and base pay plus commission as y = mx + b. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u7l6.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 7 Equations of Linear Relations · Lesson 6</div>
+  <h1>Slope in Context: Interpreting Rates of Change</h1>
+  <p class="lede">Slope as a <b>rate of change with units</b>: read it off a graph, give the intercept a meaning, find <b>average</b> rates between two points, and model <b>base pay plus commission</b>.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>read a <b>rate of change</b> off a graph as <span class="tex">\dfrac{\text{rise}}{\text{run}}</span> with units (<b>vertical units per horizontal unit</b>) and say it in a sentence: increasing or decreasing</li>
+      <li>write the equation of a rate-of-change graph in the form <span class="tex">y=mx+b</span> and explain the <b class="u7l6-c-m">slope</b> (the rate) and the <b class="u7l6-c-b">vertical intercept</b> (the starting value) in context</li>
+      <li>calculate the <b>average rate of change</b> between two points, such as the average speed over each leg of a trip</li>
+      <li>model <b>base pay plus commission</b> as <span class="tex">E=mS+b</span> and use the equation forwards and backwards</li>
+    </ul>
+  </div>
+  <div class="outcome"><b>RF3</b> Demonstrate an understanding of slope with respect to: rise and run; line segments and lines; rate of change; parallel lines; perpendicular lines.</div>
+  <div class="outcome"><b>RF7</b> Determine the equation of a linear relation, given: a graph; a point and the slope; two points; a point and the equation of a parallel or perpendicular line, to solve problems.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: How Fast Does It Grow?" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>How Fast Does It Grow?</h2></div>
+  <p class="big">Too slow to watch, but every one of these has a <b>speed</b>.</p>
+  <div class="u7l6-grow" id="u7l6-grow"></div>
+  <div class="u7l6-wtop">
+    <div class="u7l6-wqs">
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">1</div><div>How much longer is your hair after <b>6 months</b>?</div></div>
+        <div class="u7l6-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">6\times1\text{ cm}</span>: about <b>6 cm</b>.</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">2</div><div>How much does a fingernail grow in <b>1 year</b>? Answer in cm.</div></div>
+        <div class="u7l6-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">12\times3\text{ mm}=36\text{ mm}</span>: about <b>3.6 cm</b> per year.</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">3</div><div>Nail, hair or lawn: which grows <b>fastest</b>? <span class="muted">(Careful: the units are all different!)</span></div></div>
+        <div class="u7l6-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>The lawn</b>, by far. In cm per month: nail <span class="tex">\approx0.3</span>, hair <span class="tex">\approx1</span>, lawn <span class="tex">\approx5\times4=20</span>. The lawn’s “5” looks small, but its time unit is a <b>week</b>. Rates only compare in the <b>same units</b>.</div></div>
+      </div>
+    </div>
+    <div class="u7l6-barbox">
+      <div class="u7l6-bars" id="u7l6-bars"></div>
+      <div class="u7l6-wbtns">
+        <button type="button" class="pill" id="u7l6-bmonth">Same units: cm per month</button>
+        <button type="button" class="pill" id="u7l6-bzoom">Zoom in on the slow ones</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> North America and Europe are slowly drifting apart, so the Atlantic gets a little wider every year. Their speed is closest to… <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> a snail crawling</div>
+      <div class="opt"><b>B</b> your hair growing</div>
+      <div class="opt right"><b>C</b> your nails growing</div>
+      <div class="opt"><b>D</b> the lawn growing</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>C: your fingernails.</b> The Atlantic widens by about <b>2.5 cm per year</b>; nails grow about <b>3.6 cm per year</b> (question 2).<br>
+      <span class="muted"><b>A</b> a snail covers about 1 mm per <em>second</em>: tens of kilometres a year. <b>B</b> hair is about 12 cm per year, roughly 5 times the drift. <b>D</b> the lawn would be over 2 m a year: about 100 times too fast (question 3’s trap).</span><br>
+      Over 100 years that is only about 2.5 m, but over 100 million years it is about <span class="tex">2\,500</span> km: enough to open an ocean.</div>
+  </div>
+
+  <div class="bk-wq u7l6-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> At 2.5 cm per year, how many years does it take the Atlantic to widen by <b>1 m</b>?</div></div>
+    <div class="u7l6-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">100\div2.5=40</span> years.</div></div>
+  </div>
+  <p class="u7l6-social">Could you ever actually <em>watch</em> one of these grow?</p>
+</section>
+
+<!-- ================= 1. Reading a rate of change ================= -->
+<section class="card" data-ink="s1" data-section="1. Reading a Rate of Change">
+  <div class="sec-h"><span class="badge">1</span><h2>Reading a Rate of Change from a Graph</h2></div>
+  <div class="u7l6-defrow">
+    <div class="def">For a straight-line graph the slope is the same no matter which two points on the line are used. When the axes measure real quantities, this constant ratio is the <b>rate of change</b>: how much the vertical quantity changes for each <b>one-unit increase</b> in the horizontal quantity.</div>
+    <div class="u7l6-formula"><span class="tex">m=\dfrac{\color{#7b4fc4}\text{rise}}{\color{#c27a0e}\text{run}}=\dfrac{y_2-y_1}{x_2-x_1}</span></div>
+  </div>
+  <div class="u7l6-signs">
+    <div class="u7l6-sign u7l6-sg-pos"><b>Positive slope</b><div>the vertical quantity is <b>increasing</b></div></div>
+    <div class="u7l6-sign u7l6-sg-neg"><b>Negative slope</b><div>the vertical quantity is <b>decreasing</b></div></div>
+    <div class="u7l6-sign u7l6-sg-unit"><b>Units</b><div>straight from the axes: <b>vertical units per horizontal unit</b></div></div>
+  </div>
+  <p>Watch a story and its graph run together: as time ticks along the horizontal axis, the quantity on the vertical axis changes, and the slope says <b>how fast</b>.</p>
+  <div class="explainer" data-explainer="sync"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Answer with a sentence carrying units.</b> “The distance is increasing at 25 km/h”, not just “25”. A bare number does not say <em>what</em> is changing, in which <em>direction</em>, or how <em>fast</em>.</div></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Reading a rate of change off a graph</h3></div>
+  <p class="q">Each graph below shows a linear relationship between two real-world quantities.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) The distance travelled by a cyclist as a function of time.</div>
+      <div class="u7l6-fig" id="u7l6-ex1a"></div>
+      <div class="u7l6-sub">Use <span class="tex">m=\dfrac{\text{rise}}{\text{run}}=\dfrac{y_2-y_1}{x_2-x_1}</span> to calculate the slope of the line, then complete:</div>
+      <div class="u7l6-fill">“The distance is <span class="u7l6-blank" data-reveal><b>increasing</b></span> at the rate of <span class="u7l6-blank u7l6-bs" data-reveal><b>25</b></span> km/h.”</div>
+      <div class="work" style="--h:150px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">m=\dfrac{100-50}{4-2}=\dfrac{50}{2}=25</span><br>The slope is positive, so the distance is <b>increasing</b> at the rate of <b>25 km/h</b>.<br><span class="muted">(Units: km on the vertical axis, hours on the horizontal axis, so km/h.)</span></div></div></div>
+    <div class="part"><div class="pl">(b) The temperature inside an oven as a function of time.</div>
+      <div class="u7l6-fig" id="u7l6-ex1b"></div>
+      <div class="u7l6-sub">Calculate the slope of the line. What units should be used for this rate of change? Then complete:</div>
+      <div class="u7l6-fill">“The temperature is <span class="u7l6-blank" data-reveal><b>increasing</b></span> at the rate of <span class="u7l6-blank u7l6-bs" data-reveal><b>55</b></span> <span class="u7l6-blank u7l6-bs" data-reveal><b>°F</b></span> per <span class="u7l6-blank u7l6-bs" data-reveal><b>minute</b></span>.”</div>
+      <div class="work" style="--h:150px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">m=\dfrac{340-65}{5-0}=\dfrac{275}{5}=55</span><br>The vertical axis is in °F and the horizontal axis in minutes, so the units are °F per minute.<br>The temperature is <b>increasing</b> at the rate of <b>55 °F per minute</b>.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Brackets keep the subtractions together.</b> <span class="keys"><kbd>(</kbd><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd><kbd>−</kbd><kbd>5</kbd><kbd>0</kbd><kbd>)</kbd><kbd>÷</kbd><kbd>(</kbd><kbd>4</kbd><kbd>−</kbd><kbd>2</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 25. Without the brackets the calculator divides first and gets it wrong.</div>
+    <div class="pill-col"><button class="pill" data-keys="( 100 − 50 ) ÷ ( 4 − 2 ) =">Show (a)</button><button class="pill" data-keys="( 340 − 65 ) ÷ ( 5 − 0 ) =">Show (b)</button></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. Say it as a sentence">
+  <h3 class="sub">Say it as a sentence</h3>
+  <p>Every rate sentence has four blanks, and the graph fills all of them: the <b>sign</b> of the slope gives the direction, its <b>size</b> gives the number, and the two <b>axis titles</b> give the units.</p>
+  <div class="explainer" data-explainer="sentence"></div>
+</section>
+
+<!-- ================= 2. Equation of a rate-of-change graph ================= -->
+<section class="card" data-ink="s2" data-section="2. Writing the Equation">
+  <div class="sec-h"><span class="badge">2</span><h2>Writing the Equation of a Rate-of-Change Graph</h2></div>
+  <p>Given the rate of change (the slope) and the coordinates of one point on the line, substitute the point into <span class="tex">y=mx+b</span> and solve for <span class="tex">b</span>, or use slope–point form, <span class="tex">y-y_1=m(x-x_1)</span>, from Lesson 4 and rearrange. Either works whether the rate is positive or negative.</p>
+  <div class="def-grid u7l6-mb">
+    <div class="def u7l6-def-m"><b class="u7l6-c-m">Slope <span class="tex">m</span></b> = the <b>rate of change</b>, with units: how much <span class="tex">y</span> changes for each 1 unit of <span class="tex">x</span>.</div>
+    <div class="def u7l6-def-b"><b class="u7l6-c-b">Vertical intercept <span class="tex">b</span></b> = the value of the vertical quantity when the horizontal quantity is <span class="tex">0</span>: a <b>starting amount</b>, a full tank, a fixed fee. State it in context, with units.</div>
+  </div>
+  <div class="explainer" data-explainer="van"></div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Equation and interpretation from a fuel-consumption graph</h3></div>
+  <p class="q">The graph shows the fuel remaining in the tank of a delivery van, <span class="tex">N</span> litres, as a function of the distance driven, <span class="tex">D</span> kilometres.</p>
+  <div class="u7l6-ex2">
+    <div class="u7l6-fig" id="u7l6-ex2fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(a) Calculate the slope of the line. What units apply here? Then complete:</div>
+        <div class="u7l6-fill">“The amount of fuel in the tank is <span class="u7l6-blank" data-reveal><b>decreasing</b></span> at the rate of <span class="u7l6-blank u7l6-bs" data-reveal><b>0.4</b></span> <span class="u7l6-blank u7l6-bs" data-reveal><b>L</b></span> per <span class="u7l6-blank u7l6-bs" data-reveal><b>km</b></span>.”</div>
+        <div class="work" style="--h:150px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">m=\dfrac{32-80}{150-30}=\dfrac{-48}{120}=-0.4</span><br>Litres on the vertical axis, kilometres on the horizontal axis, so the units are L/km.<br>The slope is negative, so the fuel is <b>decreasing</b> at the rate of <b>0.4 L per km</b>.</div></div></div>
+    </div>
+  </div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(b) Determine the equation of the line in the form <span class="tex">N=mD+b</span>, and state what the value of <span class="tex">b</span> means for the van.</div>
+      <div class="work" style="--h:200px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">N=-0.4D+b</span>. Substitute the point <span class="tex">(30,\ 80)</span>:<br><span class="tex">80=-0.4(30)+b=-12+b\ \Rightarrow\ b=92</span><br><span class="tex">\boldsymbol{N=-0.4D+92}</span><br>Check with <span class="tex">(150,\ 32)</span>: <span class="tex">-0.4(150)+92=-60+92=32</span> ✓<br><span class="tex">b=92</span> is the value of <span class="tex">N</span> when <span class="tex">D=0</span>: the van set out with <b>92 L of fuel</b> in the tank.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>The slope, then <span class="tex">b</span>.</b> <span class="keys"><kbd>(</kbd><kbd>3</kbd><kbd>2</kbd><kbd>−</kbd><kbd>8</kbd><kbd>0</kbd><kbd>)</kbd><kbd>÷</kbd><kbd>(</kbd><kbd>1</kbd><kbd>5</kbd><kbd>0</kbd><kbd>−</kbd><kbd>3</kbd><kbd>0</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives <span class="tex">-0.4</span>. Then <span class="tex">b=80-(-0.4)(30)</span>: use <kbd>(−)</kbd> for the negative slope.</div>
+    <div class="pill-col"><button class="pill" data-keys="( 32 − 80 ) ÷ ( 150 − 30 ) =">Show the slope</button><button class="pill" data-keys="80 − (−) 0.4 × 30 =">Show b</button></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. Two ways to the equation">
+  <h3 class="sub">Two ways to the equation</h3>
+  <p>Substituting into <span class="tex">y=mx+b</span> and starting from slope–point form are two roads to the <b>same</b> line. Use whichever you like; the check with the second point works either way.</p>
+  <div class="explainer" data-explainer="routes"></div>
+</section>
+
+<section class="card" data-ink="s2c" data-section="2. Every part tells the story">
+  <h3 class="sub">Every part of the equation tells the story</h3>
+  <p>Change the story and the graph changes with it: a different <b class="u7l6-c-b">starting value</b> slides the line up or down (same rate, parallel lines); a different <b class="u7l6-c-m">rate</b> tilts it about the starting value.</p>
+  <div class="explainer" data-explainer="parts"></div>
+  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Two vans use fuel at the same rate, but one starts with more fuel. How do their graphs compare? Which one runs dry farther along the road?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Same rate means the <b>same slope</b>, so the lines are <b>parallel</b>. The van with more fuel has the higher vertical intercept, so its line meets the horizontal axis farther right: it runs dry <b>later</b>.</div></div></div>
+</section>
+
+<!-- ================= 3. Average rate of change ================= -->
+<section class="card" data-ink="s3" data-section="3. Average Rate of Change">
+  <div class="sec-h"><span class="badge">3</span><h2>Average Rate of Change Between Two Points</h2></div>
+  <p>Not every situation runs at one steady rate: a car may travel quickly on the highway for a while and slowly through towns the next while. Join any two data points with a straight segment: the slope of that segment is the <b>average rate of change</b> between the two points, the constant rate that would have produced the same overall change even though the actual rate varied in between. Different pairs of points on the same graph give different average rates of change.</p>
+  <div class="def amber"><b>Key idea.</b> On a graph of distance as a function of time, the slope of the segment joining two points is the <b>average speed</b> between those two points.</div>
+  <div class="explainer" data-explainer="trip"></div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Average speed over each leg of a trip</h3></div>
+  <p class="q">The graph records a road trip by car at four points: <span class="tex">O(0,0)</span>, <span class="tex">P(2,80)</span>, <span class="tex">Q(5,260)</span> and <span class="tex">R(7,320)</span>, where distance is in kilometres and time is in hours. Calculate the average speed of the car over each interval below.</p>
+  <div class="u7l6-ex3">
+    <div class="u7l6-fig" id="u7l6-ex3fig"></div>
+    <div class="parts c2">
+      <div class="part"><div class="pl">(a) between <span class="tex">O</span> and <span class="tex">P</span></div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">m=\dfrac{80-0}{2-0}=\dfrac{80}{2}=\boldsymbol{40}</span> km/h</div></div></div>
+      <div class="part"><div class="pl">(b) between <span class="tex">P</span> and <span class="tex">Q</span></div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">m=\dfrac{260-80}{5-2}=\dfrac{180}{3}=\boldsymbol{60}</span> km/h</div></div></div>
+      <div class="part"><div class="pl">(c) between <span class="tex">Q</span> and <span class="tex">R</span></div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">m=\dfrac{320-260}{7-5}=\dfrac{60}{2}=\boldsymbol{30}</span> km/h</div></div></div>
+      <div class="part"><div class="pl">(d) for the whole trip, <span class="tex">O</span> to <span class="tex">R</span></div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">m=\dfrac{320-0}{7-0}=\dfrac{320}{7}=45\tfrac{5}{7}\approx\boldsymbol{45.7}</span> km/h<br>The car was fastest from <span class="tex">P</span> to <span class="tex">Q</span> and slowest from <span class="tex">Q</span> to <span class="tex">R</span>; the whole-trip average lies between the fastest and slowest legs.</div></div></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>(d) as a decimal and as a mixed number.</b> <span class="keys"><kbd>3</kbd><kbd>2</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>7</kbd><kbd>ENTER</kbd></span> gives 45.714…; <span class="keys"><kbd>3</kbd><kbd>2</kbd><kbd>0</kbd><kbd>a b/c</kbd><kbd>7</kbd><kbd>ENTER</kbd></span> shows the fraction <b class="u7l6-calcfr">320┘7</b>; then <span class="keys"><kbd>2nd</kbd><kbd>d/e</kbd></span> turns it into <b class="u7l6-calcfr">45┘5┘7</b>, which means <span class="tex">45\tfrac{5}{7}</span>.</div>
+    <div class="pill-col"><button class="pill" data-keys="320 ÷ 7 =">Show 320 ÷ 7</button><button class="pill" data-keys="320 ab/c 7 = d/e">Show as a mixed number</button></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s3b" data-section="3. Average rate on a curve">
+  <h3 class="sub">Average rate of change on a curve</h3>
+  <p>When the graph is a curve, there is no single slope: the rate keeps changing. The segment joining two points (a <b>secant</b>) still has a slope, and that slope is the average rate of change between those two points.</p>
+  <div class="explainer" data-explainer="secant"></div>
+</section>
+
+<!-- ================= 4. Base pay plus commission ================= -->
+<section class="card" data-ink="s4" data-section="4. Base Pay Plus Commission">
+  <div class="sec-h"><span class="badge">4</span><h2>Modelling Base Pay Plus Commission</h2></div>
+  <p>Many jobs pay a fixed base amount plus a variable amount that depends on performance, such as commission on sales. If earnings <span class="tex">E</span> depend on sales <span class="tex">S</span> linearly, <span class="tex">E=mS+b</span>, then:</p>
+  <div class="def-grid u7l6-mb">
+    <div class="def u7l6-def-m">the slope <b class="u7l6-c-m"><span class="tex">m</span></b> is the <b>commission rate</b> (a decimal, usually quoted as a percent): dollars earned per dollar of sales</div>
+    <div class="def u7l6-def-b">the vertical intercept <b class="u7l6-c-b"><span class="tex">b</span></b> is the <b>fixed base pay</b>: the amount earned on zero sales</div>
+  </div>
+  <div class="explainer" data-explainer="pay"></div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Base salary plus commission</h3></div>
+  <p class="q">Maria is paid a weekly base salary plus commission for selling kitchen appliances. One week her sales totalled $2&#8239;800 and she earned $560. The next week her sales totalled $4&#8239;600 and she earned $740.</p>
+  <div class="parts u7l6-ex4">
+    <div class="part"><div class="pl">(a) On the grid, plot the two ordered pairs (Sales, Earnings) described above and join them.</div>
+      <div class="u7l6-fig" id="u7l6-ex4fig"></div>
+      <div class="muted small u7l6-tapnote">Tap the grid to plot a point (drag to adjust, tap it again to remove it).</div>
+      <div class="u7l6-tapread" id="u7l6-ex4read"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div class="u7l6-ans4"><div id="u7l6-ex4ans"></div><div>Plot <span class="tex">(2\,800,\ 560)</span> and <span class="tex">(4\,600,\ 740)</span>, then join them with a ruler.</div></div></div></div></div>
+    <div class="part"><div class="pl">(b) Calculate the slope of the line segment joining the two points, and explain what it represents in this context.</div><div class="work" style="--h:300px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">m=\dfrac{740-560}{4\,600-2\,800}=\dfrac{180}{1\,800}=0.1</span><br>Maria’s earnings rise by <b>$0.10 for every $1 of sales</b>. The slope is her <b>commission rate</b>.</div></div></div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(c) State, as a percent, Maria’s commission rate. Then calculate her fixed weekly base salary and write the equation of the line in the form <span class="tex">E=mS+b</span>.</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Commission rate <span class="tex">=0.1=\boldsymbol{10\%}</span>.<br><span class="tex">E=0.1S+b</span>; substitute <span class="tex">(2\,800,\ 560)</span>:<br><span class="tex">560=0.1(2\,800)+b=280+b\ \Rightarrow\ b=280</span><br>Her fixed weekly base salary is <b>$280</b>: what she earns on $0 of sales.<br><span class="tex">\boldsymbol{E=0.10S+280}</span><br>Check: <span class="tex">0.1(4\,600)+280=460+280=740</span> ✓</div></div></div>
+    <div class="part"><div class="pl">(d) Three weeks ago Maria earned $410. Use your equation from part (c) to calculate her sales that week.</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">410=0.1S+280</span><br><span class="tex">130=0.1S</span><br><span class="tex">S=1\,300</span><br>Her sales that week were <b>$1&#8239;300</b>.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Slope, base pay, then (d).</b> The slope: <span class="keys"><kbd>(</kbd><kbd>7</kbd><kbd>4</kbd><kbd>0</kbd><kbd>−</kbd><kbd>5</kbd><kbd>6</kbd><kbd>0</kbd><kbd>)</kbd><kbd>÷</kbd><kbd>(</kbd><kbd>4</kbd><kbd>6</kbd><kbd>0</kbd><kbd>0</kbd><kbd>−</kbd><kbd>2</kbd><kbd>8</kbd><kbd>0</kbd><kbd>0</kbd><kbd>)</kbd><kbd>ENTER</kbd></span>. Base pay: <span class="tex">560-0.1\times2\,800</span>. Part (d) undoes the equation: subtract 280, then divide by 0.1.</div>
+    <div class="pill-col"><button class="pill" data-keys="( 740 − 560 ) ÷ ( 4600 − 2800 ) =">Show the slope</button><button class="pill" data-keys="560 − 0.1 × 2800 =">Show b</button><button class="pill" data-keys="( 410 − 280 ) ÷ 0.1 =">Show (d)</button></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s4b" data-section="4. Forwards and backwards">
+  <h3 class="sub">Use the equation forwards and backwards</h3>
+  <p>Forwards, the equation turns an input into an output: sales into earnings. Backwards, it answers “what input gave this output?”: undo the steps in reverse order.</p>
+  <div class="explainer" data-explainer="machine"></div>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Slope is a rate of change.</b> <span class="tex">m=\dfrac{\text{rise}}{\text{run}}</span> in <b>vertical units per horizontal unit</b>. Positive: increasing; negative: decreasing. Answer with a sentence: “The distance is increasing at 25 km/h.”</div>
+    <div><b>The equation tells the story.</b> In <span class="tex">y=mx+b</span>, <span class="tex">m</span> is the rate and <span class="tex">b</span> is the starting value (the value when <span class="tex">x=0</span>): <span class="tex">N=-0.4D+92</span> means 92 L at the start, using 0.4 L per km.</div>
+    <div><b>Average rate of change</b> between two points is the slope of the segment joining them. On a distance–time graph it is the <b>average speed</b>: <span class="tex">\tfrac{320\text{ km}}{7\text{ h}}\approx45.7</span> km/h for the whole trip.</div>
+    <div><b>Base pay plus commission:</b> <span class="tex">E=mS+b</span>, with <span class="tex">m</span> the commission rate (<span class="tex">0.10=10\%</span>) and <span class="tex">b</span> the base pay ($280). Use it forwards (sales → earnings) and backwards (earnings → sales).</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u7l6" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 6 — Slope in Context: Interpreting Rates of Change</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l7/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 7 — Unit 7 Review</b><div class="muted">All three forms of a linear equation, writing equations from graphs, points and slopes, and rates of change, together</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u7l6.js';
+  boot({ key: 'u7l6', homeHref: '../../', title: '7.6 Slope in Context' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

@@ -10,7 +10,8 @@
       'u2l1', 'u2l2', 'u2l3', 'u2l4', 'u2l5a', 'u2l5b', 'u2l6', 'u3l1', 'u3l2', 'u3l3', 'u3l4', 'u3l5', 'u3l6',
       'u4l1a', 'u4l1b', 'u4l2', 'u4l3', 'u4l4', 'u4l5', 'u4l6', 'u4l7', 'u4l8',
       'u5l1', 'u5l2', 'u5l3', 'u5l4', 'u5l5', 'u5l6', 'u5l7a', 'u5l7b', 'u5l8', 'u5l9', 'u5l10',
-      'u6l1', 'u6l2', 'u6l3', 'u6l4', 'u6l5', 'u6l6'] };
+      'u6l1', 'u6l2', 'u6l3', 'u6l4', 'u6l5', 'u6l6',
+      'u7l1', 'u7l2', 'u7l3', 'u7l4', 'u7l5', 'u7l6', 'u7l7'] };
   root.HW.CATALOG = [
     { unit: 1, title: 'Number', outcomes: 'AN1 · AN2', lessons: [
       { id: 'u1l1', num: '1', title: 'Prime Building Blocks of Numbers' },

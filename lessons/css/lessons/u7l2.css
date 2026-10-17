@@ -1,0 +1,118 @@
+/* Math 10C · Unit 7 · Lesson 2 — From Slope to Equation: styles used only on this page (prefix u7l2-).
+ * Colours: run amber, rise purple, lines blue, the y-intercept (b) teal. */
+
+.ex-cap { min-height: 128px; }
+.ex-cap .katex { font-size: 1.04em; }
+.chip .katex { font-size: 1em; }
+.pl .katex { font-size: 1.1em; }
+.ans .katex { font-size: 1.04em; }
+.pill-col { display: flex; flex-direction: column; gap: 6px; }
+.lesson .katex { white-space: nowrap; }
+h2 .katex, h3 .katex { font-size: .95em; }
+.u7l2-c-rise { color: #7b4fc4; }
+.u7l2-c-run { color: #c27a0e; }
+.u7l2-c-m { color: #1f5bd6; }
+.u7l2-c-b { color: #13807a; }
+.u7l2-und { color: #7b4fc4; }
+.u7l2-calcfr { font-family: var(--round); }
+.u7l2-gap { margin-top: 26px; }
+
+/* ---------------- warm-up ---------------- */
+.u7l2-crickets { margin: 6px 0 16px; display: flex; justify-content: center; }
+.u7l2-crwrap { position: relative; }
+.u7l2-crwrap svg { position: absolute; left: 0; top: 0; }
+.u7l2-crt { font: 700 14px var(--round); color: var(--ink2); }
+.u7l2-crtemp { font: 800 22px var(--round); color: var(--ink); }
+.u7l2-crtq { color: var(--red); }
+.u7l2-crq { font: 900 40px var(--round); color: var(--red); }
+.u7l2-crchirp { font: 800 21px var(--round); color: var(--ink); }
+.u7l2-crper { font: 700 19px var(--round); color: var(--ink); white-space: nowrap; }
+.u7l2-crn { color: var(--red); font-size: 24px; }
+.u7l2-wtop { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: start; }
+.u7l2-wtop .poll { margin: 0; }
+.u7l2-wqs .q-line { margin-top: 4px; }
+.u7l2-wa { margin: 0 0 8px 50px; }
+.u7l2-wa .pill.small { margin-left: 0; }
+.u7l2-wplot { display: grid; grid-template-columns: 510px 1fr; gap: 20px; align-items: start; margin-top: 18px; background: #f7fbfa; border: 1px solid #cfe3e0; border-radius: 14px; padding: 12px 14px; }
+.u7l2-wh { font: 800 16px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--brand2); }
+.u7l2-wside p { margin: 6px 0 10px; font-size: 19px; }
+.u7l2-wbtns { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.u7l2-wro { margin-top: 14px; font-size: 20px; line-height: 1.45; min-height: 120px; }
+.u7l2-early { margin-top: 16px; }
+.u7l2-social { font-style: italic; color: var(--ink2); font-size: 19px; text-align: center; margin: 16px 0 0; }
+
+/* ---------------- section 1 ---------------- */
+.u7l2-defrow { display: grid; grid-template-columns: 1fr 330px; gap: 18px; align-items: center; margin-bottom: 14px; }
+.u7l2-defrow .def { margin: 0; }
+.u7l2-anat { background: #f6f5f1; border-radius: 14px; padding: 10px 16px; display: flex; flex-direction: column; gap: 6px; }
+.u7l2-anat-eq { font-size: 32px; text-align: center; }
+.u7l2-anat-k { font-size: 17px; line-height: 1.35; }
+.u7l2-anat-k b { font-size: 21px; margin-right: 4px; }
+
+/* ---------------- example figures ---------------- */
+.u7l2-ex2, .u7l2-ex4 { display: grid; grid-template-columns: 400px 1fr; gap: 22px; align-items: start; margin-bottom: 14px; }
+.u7l2-ex2 .parts, .u7l2-ex4 .parts { margin: 0; }
+.u7l2-mb { display: inline-flex; align-items: baseline; gap: 8px; margin-left: 10px; }
+.u7l2-blank { display: inline-block; min-width: 90px; border-bottom: 2px solid var(--ink2); text-align: center; color: var(--red); margin-right: 14px; }
+.u7l2-lname { font-size: 20px; font-weight: 700; }
+.u7l2-mlab { font-size: 18px; }
+.u7l2-pp { margin-bottom: 14px; }
+.u7l2-pp .def { margin: 0; }
+.u7l2-why { display: grid; grid-template-columns: 1fr 380px; gap: 20px; align-items: center; margin-bottom: 14px; }
+.u7l2-why p { margin: 0 0 10px; }
+.u7l2-hvsum { margin-top: 20px; }
+.u7l2-hv { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 10px; }
+.u7l2-hvc { display: grid; grid-template-columns: 150px 1fr; gap: 14px; align-items: center; background: #fff; border-radius: 12px; padding: 8px 12px; border-top: 5px solid; font-size: 18px; line-height: 1.4; }
+.u7l2-hv-h { border-color: #1f5bd6; } .u7l2-hv-v { border-color: #7b4fc4; }
+.u7l2-hvc b { font-size: 19px; }
+.u7l2-hvfig .bk-ptlab { font-size: 15px; }
+
+/* ---------------- explainer pieces ---------------- */
+.u7l2-panel { background: #fff; border: 1px solid var(--line2); border-radius: 14px; padding: 10px 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+.u7l2-ph { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.u7l2-line { font-size: 20px; line-height: 1.35; }
+.u7l2-given { background: #f6f5f1; border-radius: 10px; padding: 6px 12px; }
+.u7l2-big { font-size: 23px; }
+.u7l2-log { display: flex; flex-direction: column; gap: 4px; font-size: 19px; }
+.u7l2-stampb { align-self: center; margin-top: auto; margin-bottom: 6px; }
+.u7l2-rulebox { background: var(--brand-soft); border-left: 5px solid var(--brand2); border-radius: 10px; padding: 8px 14px; font-size: 23px; text-align: center; }
+
+/* the y = [m] x + [b] builder */
+.u7l2-eqrow { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 34px; background: #f6f5f1; border-radius: 14px; padding: 10px 8px; min-height: 96px; }
+.u7l2-eqrow-sm { font-size: 30px; min-height: 86px; }
+.u7l2-slot { min-width: 82px; min-height: 70px; display: grid; place-items: center; border: 3px dashed #b7bcc6; border-radius: 12px; color: #9aa0ab; background: #fff; padding: 0 6px; box-sizing: border-box; }
+.u7l2-slot-m.on { border: 3px solid #1f5bd6; color: var(--ink); }
+.u7l2-slot-b.on { border: 3px solid #13807a; color: var(--ink); }
+.u7l2-fly { z-index: 5; font-size: 30px; background: #fff; border-radius: 12px; padding: 2px 10px; box-shadow: 0 6px 18px rgba(0, 0, 0, .18); border: 3px solid; white-space: nowrap; }
+.u7l2-fly-m { border-color: #1f5bd6; }
+.u7l2-fly-b { border-color: #13807a; }
+.u7l2-final { font-size: 34px; text-align: center; min-height: 64px; display: grid; place-items: center; }
+.u7l2-final:empty { visibility: hidden; }
+
+/* slope triangle labels */
+.u7l2-tlab { font: 700 18px var(--round); background: rgba(255, 255, 255, .9); border-radius: 7px; padding: 0 5px; white-space: nowrap; }
+.u7l2-trun { color: #c27a0e; } .u7l2-trise { color: #7b4fc4; }
+.u7l2-glab { font-size: 18px; color: #3a4254; }
+.u7l2-yil { font-size: 18px; font-weight: 700; color: #13807a; }
+
+/* spot the mistake */
+.u7l2-scard { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 10px; background: #f6f5f1; border-radius: 12px; padding: 6px 12px; border-left: 6px solid transparent; font-size: 26px; transition: background .2s; }
+.u7l2-scard.on { background: #fff7e6; border-left-color: #c27a0e; }
+.u7l2-sw { font: 800 24px var(--round); color: var(--ink2); }
+.u7l2-sv { font: 900 32px var(--round); text-align: center; }
+.u7l2-sv.ok { color: var(--ok); } .u7l2-sv.no { color: var(--red); }
+
+/* turn: flip card */
+.u7l2-flip { font-size: 27px; text-align: center; background: #fff7e6; border: 2px solid #f0d6a8; border-radius: 12px; padding: 8px 10px; }
+
+/* strategy flowchart */
+.u7l2-fcres { font-size: 32px; display: grid; place-items: center; background: #f6f5f1; border-radius: 14px; }
+.u7l2-fcres .katex { font-size: 1em; }
+
+/* flatten / steepen */
+.u7l2-live { font-size: 34px; text-align: center; background: #f6f5f1; border-radius: 12px; padding: 8px; min-height: 64px; display: grid; place-items: center; }
+.u7l2-coll { font-size: 34px; text-align: center; display: flex; justify-content: center; align-items: baseline; min-height: 60px; }
+.u7l2-cz { display: inline-block; overflow: hidden; white-space: nowrap; max-width: 200px; vertical-align: bottom; }
+.u7l2-stab { border-collapse: collapse; font-size: 21px; width: 100%; }
+.u7l2-stab th, .u7l2-stab td { border-bottom: 1px solid var(--line2); padding: 4px 6px; text-align: center; height: 44px; }
+.u7l2-stab th { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
