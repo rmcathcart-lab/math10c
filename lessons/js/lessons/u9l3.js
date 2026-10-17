@@ -12,14 +12,14 @@
  *   letters  reading ∠JLK = 90°, ∠LJK = 34°, KL = 11.2 mm onto the triangle (middle letter = vertex; two letters = side)
  *   solve7   the star again for Examples 6 and 7, plus a Pythagoras / angle-sum check of Example 7
  *   tool     summary flowchart: which tool? where is the unknown?
- * Colours (every Unit 9 page): opposite purple, adjacent amber, hypotenuse blue, reference angle raspberry. */
+ * Colours (every Unit 9 page): opposite purple, adjacent amber, hypotenuse blue, reference angle red. */
 import {
   h, tex, add, box, place, RightTriangle, Flowchart, NumberLine, Graph, stamp, stampIn, checkCard, mountExplainers,
   pop, fadeIn, appear, sleep, tween, anim, svgEl, pulse, COLORS, texNum
 } from '../blocks.js';
 
 const T = (s) => tex(String(s));
-const OPP = COLORS.purple, ADJ = COLORS.amber, HYP = COLORS.blue, ANG = '#d6336c', GOOD = COLORS.green, BAD = COLORS.red, INK = COLORS.ink;
+const OPP = COLORS.purple, ADJ = COLORS.amber, HYP = COLORS.blue, ANG = COLORS.red, GOOD = COLORS.green, BAD = COLORS.red, INK = COLORS.ink;
 const RC = { opp: OPP, adj: ADJ, hyp: HYP };
 const tc = (c, s) => `\\textcolor{${c}}{${s}}`;
 const rc = (role, s) => tc(RC[role], s);
@@ -102,7 +102,7 @@ function mkTri1(host, key, o, pad) {
   t.roleKey = (role) => keyOf(N, posOf(t.d, role));
   const lab = Object.assign({}, d.lab, o.lab || {});
   for (const p in lab) if (lab[p] != null) sideLabel(t, keyOf(N, p), T(lab[p]));
-  if (d.ang && o.angle !== false) t.angle(t.av(), dg(d.deg), { color: ANG, r: o.r || 30 });
+  if (d.ang && o.angle !== false) t.angle(t.av(), typeof d.deg === 'number' ? dg(d.deg) : d.deg, { color: ANG, r: o.r || 30 });
   return t;
 }
 /** colour the sides opp / adj / hyp from the reference angle and tag them (animated with c) */
@@ -142,7 +142,7 @@ function glowRole(c, t, role) {
   t.svg.insertBefore(p, t.svg.querySelector('.bk-tri-side'));
   return appear(c, p, 420);
 }
-/** mark a side label as the known side (soft box) or the unknown (dashed raspberry box) */
+/** mark a side label as the known side (soft box) or the unknown (dashed red box) */
 async function markLab(c, t, role, kind) {
   const el = t.sideLabs[t.roleKey(role)]; if (!el) return;
   el.classList.add(kind === 'find' ? 'u9l3-find' : 'u9l3-known');

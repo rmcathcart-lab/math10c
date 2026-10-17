@@ -1,5 +1,5 @@
 /* Math 10C · Unit 9 · Lesson 3 — Finding a Missing Side Length: styles used only on this page (prefix u9l3-).
- * Colours: opposite purple #7b4fc4, adjacent amber #c27a0e, hypotenuse blue #1f5bd6, reference angle raspberry #d6336c. */
+ * Colours: opposite purple #7b4fc4, adjacent amber #c27a0e, hypotenuse blue #1f5bd6, reference angle red #c93a33 (as in every Unit 9 page). */
 
 .ex-cap { min-height: 128px; }
 .ex-cap .katex { font-size: 1.04em; }
@@ -11,7 +11,7 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .part.span2 { grid-column: span 2; }
 .pill-col { display: flex; flex-direction: column; gap: 6px; }
 
-.u9l3-co { color: #7b4fc4; } .u9l3-ca { color: #c27a0e; } .u9l3-ch { color: #1f5bd6; } .u9l3-cang { color: #d6336c; }
+.u9l3-co { color: #7b4fc4; } .u9l3-ca { color: #c27a0e; } .u9l3-ch { color: #1f5bd6; } .u9l3-cang { color: #c93a33; }
 
 /* ---------------- warm-up ---------------- */
 .u9l3-wfig { display: flex; gap: 18px; align-items: flex-start; }
@@ -29,7 +29,7 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u9l3-scene > svg, .u9l3-sqfig > svg { position: absolute; left: 0; top: 0; }
 .u9l3-shtml { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; }
 .u9l3-slab { position: absolute; font: 800 20px var(--round); color: var(--ink); white-space: nowrap; }
-.u9l3-sang { color: #d6336c; }
+.u9l3-sang { color: #c93a33; }
 .u9l3-sghost { color: #8a92a0; font-size: 17px; }
 .u9l3-sstr { background: rgba(255,255,255,.85); border-radius: 7px; padding: 0 6px; }
 .u9l3-sh { color: #7b4fc4; background: rgba(255,255,255,.85); border-radius: 7px; padding: 0 6px; }
@@ -44,7 +44,7 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u9l3-kth { font: 800 16px var(--round); text-transform: uppercase; letter-spacing: .04em; color: var(--muted); text-align: center; padding: 4px 0; }
 .u9l3-ktd { background: #e8f0fc; border-radius: 8px; text-align: center; padding: 6px 0; min-height: 36px; box-sizing: border-box; }
 .u9l3-ktv { font-weight: 800; color: #c93a33; }
-.u9l3-ktq { outline: 3px dashed #d6336c; outline-offset: -3px; }
+.u9l3-ktq { outline: 3px dashed #c93a33; outline-offset: -3px; }
 
 /* ---------------- panels ---------------- */
 .u9l3-panel { background: #fff; border: 1px solid var(--line2); border-radius: 14px; padding: 10px 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
@@ -65,12 +65,12 @@ h2 .katex, h3 .katex { font-size: .95em; }
 /* known / unknown side labels */
 .bk-tri-lab { padding: 0 5px; border-radius: 8px; }
 .u9l3-known { background: #e7f4ec; border-radius: 8px; }
-.u9l3-find { outline: 3px dashed #d6336c; outline-offset: 1px; border-radius: 6px; background: #fff; }
+.u9l3-find { outline: 3px dashed #c93a33; outline-offset: 1px; border-radius: 6px; background: #fff; }
 
 /* ratio cards (SOH CAH TOA) */
 .u9l3-rcd { background: #fff; border: 2px solid var(--line2); border-radius: 14px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; transition: opacity .3s; }
 .u9l3-rcdh { font: 900 30px var(--round); letter-spacing: .08em; }
-.u9l3-mn0 { color: #d6336c; }
+.u9l3-mn0 { color: #c93a33; }
 .u9l3-rcdm { font-size: 21px; }
 .u9l3-rcd-on { border-color: #12805a; box-shadow: 0 0 0 4px rgba(18,128,90,.18); }
 .u9l3-rcd-off { opacity: .45; }
@@ -107,7 +107,7 @@ h2 .katex, h3 .katex { font-size: .95em; }
 /* reading letters */
 .u9l3-stmt { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; background: #fff; border: 1px solid var(--line2); border-radius: 14px; padding: 6px 14px; box-sizing: border-box; font-size: 22px; }
 .u9l3-chunk { padding: 2px 10px; border-radius: 9px; background: #f3f2ee; }
-.u9l3-chunk-on { background: #fde9f0; box-shadow: inset 0 0 0 2px #d6336c; }
+.u9l3-chunk-on { background: #fbeae8; box-shadow: inset 0 0 0 2px #c93a33; }
 
 /* static figures on the cards */
 .u9l3-exrow { display: grid; grid-template-columns: auto 1fr; gap: 22px; align-items: start; margin-bottom: 12px; }
@@ -120,7 +120,7 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u9l3-soh b { display: block; font: 900 24px var(--round); letter-spacing: .08em; }
 .u9l3-key { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font: 700 16px var(--round); margin: 4px 0 12px; }
 .u9l3-kc { border-radius: 8px; padding: 2px 10px; color: #fff; }
-.u9l3-k-opp { background: #7b4fc4; } .u9l3-k-adj { background: #c27a0e; } .u9l3-k-hyp { background: #1f5bd6; } .u9l3-k-ang { background: #d6336c; }
+.u9l3-k-opp { background: #7b4fc4; } .u9l3-k-adj { background: #c27a0e; } .u9l3-k-hyp { background: #1f5bd6; } .u9l3-k-ang { background: #c93a33; }
 .u9l3-fill { line-height: 2.1; font-size: 20px; }
 .u9l3-fill [data-reveal] { min-width: 120px; display: inline-block; text-align: center; border-bottom: 2px solid var(--ink2); }
 .u9l3-tbl { width: 100%; border-collapse: collapse; font-size: 19px; margin: 6px 0 12px; }

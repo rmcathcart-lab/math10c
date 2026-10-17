@@ -30,16 +30,16 @@
 .u10l9-social { margin: 14px 0 0; font-size: 20px; font-style: italic; text-align: center; color: var(--ink2); }
 
 /* ---------------- at a glance ---------------- */
-.u10l9-glance { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.u10l9-glance { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 18px; }
 .u10l9-facts, .u10l9-methods { background: #f6f5f1; border-radius: 14px; padding: 10px 14px 12px; }
 .u10l9-fh { font: 800 17px var(--round); color: var(--brand2); margin-bottom: 6px; }
 .u10l9-fh small { color: var(--muted); font-weight: 600; }
-.u10l9-fgrid { display: grid; grid-template-columns: 1fr 1.1fr 1fr; gap: 4px 12px; font-size: 16.5px; }
+.u10l9-fgrid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px 18px; font-size: 18px; }
 .u10l9-fgrid > div { display: flex; flex-direction: column; gap: 3px; }
 .u10l9-fgrid b { font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
 .u10l9-fgrid .katex { white-space: nowrap; }
 .u10l9-mgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.u10l9-meth { display: flex; flex-direction: column; gap: 6px; background: #fff; border-radius: 10px; padding: 8px 10px; font-size: 16px; line-height: 1.3; }
+.u10l9-meth { display: flex; flex-direction: column; gap: 6px; background: #fff; border-radius: 10px; padding: 8px 12px; font-size: 17px; line-height: 1.3; }
 .u10l9-meth > b { color: #9a610b; font-family: var(--round); }
 .u10l9-meth .katex { font-size: 1em; }
 
