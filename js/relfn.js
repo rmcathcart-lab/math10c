@@ -289,6 +289,7 @@
   function valueList(resp, v) {
     var s = String(resp || '').replace(/\\(left|right)/g, '').replace(/\\text\{\s*(or|and)\s*\}/gi, ',').replace(/\b(or|and)\b/gi, ',').replace(/;/g, ',');
     s = s.replace(/[a-zA-Z]\s*=\s*/g, '').replace(/\\pm|±/g, '±');
+    s = s.replace(/\\(quad|qquad)|\\[ ,;:!]|~/g, ' ');
     if (!s.trim()) return { empty: true };
     var out = [];
     var pieces = s.split(',');
