@@ -8,6 +8,7 @@
 .chip .katex { font-size: 1em; }
 .pl .katex { font-size: 1.08em; }
 .ans .katex { font-size: 1.04em; }
+.example .ans { line-height: 1.75; }
 .pill-col { display: flex; flex-direction: column; gap: 6px; }
 .lesson .katex { white-space: nowrap; }
 h2 .katex, h3 .katex { font-size: .95em; }

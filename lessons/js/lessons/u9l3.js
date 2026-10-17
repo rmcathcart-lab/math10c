@@ -88,7 +88,9 @@ function mkTri(host, key, o = {}) {
   for (let i = 0; ; i++) {
     const t = mkTri1(host, key, o, pad), over = Math.max(0, ...Object.values(t.sideLabs).map((e) => e.clampBy || 0));
     if (over < 1 || i === 3) return t;
-    t.el.remove(); pad += over + 4;
+    const cap = 0.3 * Math.min(o.w || 320, o.h || 280);
+    if (pad >= cap) return t;
+    t.el.remove(); pad = Math.min(cap, pad + over + 4);
   }
 }
 function mkTri1(host, key, o, pad) {
@@ -534,7 +536,7 @@ const solve7 = {
   make(stage, k, ex) {
     if (k !== 'chk') return solveSteps(stage, k, ex);
     const W = ex.W, de = 71 * Math.tan(64 * RAD), df = 71 / Math.cos(64 * RAD);
-    const t = mkTri(stage, 'e7', { x: 0, y: 0, w: 330, h: 440, pad: 66, r: 30, lab: { vert: `DE\\approx${de.toFixed(4)}`, hyp: `DF\\approx${df.toFixed(4)}` } });
+    const t = mkTri(stage, 'e7', { x: 0, y: 0, w: 330, h: 440, pad: 66, r: 30, lab: { vert: 'DE', hyp: 'DF' } });
     const f4 = (v) => texNum(v, 1).replace(/^(\d+)(\d{3})/, '$1\\,$2');
     const k1 = checkCard(stage, { title: 'Pythagoras check', left: ['71^2+' + de.toFixed(4) + '^2', '5041+' + texNum(de * de, 1), f4(71 * 71 + de * de)], right: [df.toFixed(4) + '^2', f4(df * df)], ok: true, x: 350, y: 10, width: W - 360, hidden: true });
     const P = panel(stage, 350, 268, W - 360, 196, '');
@@ -656,8 +658,8 @@ function coverTri(host, fn, x, y, w, hh) {
   const lay = h('div', 'u9l3-shtml'); el.appendChild(lay);
   const [F, top, br] = CT[fn];
   const cell = (px, py, html, col) => { const e = add(lay, h('div', 'u9l3-ctc', html)); e.style.color = col; place(e, px, py); return e; };
-  el.cells = { top: cell(w / 2, hh * 0.38, LET[top], RC[top]), bl: cell(w * 0.34, hh * 0.79, F, ANG), br: cell(w * 0.66, hh * 0.79, LET[br], RC[br]) };
-  el.pos = { top: [w / 2, hh * 0.38], bl: [w * 0.34, hh * 0.79], br: [w * 0.66, hh * 0.79] };
+  el.cells = { top: cell(w / 2, hh * 0.38, LET[top], RC[top]), bl: cell(w * 0.31, hh * 0.79, F, ANG), br: cell(w * 0.69, hh * 0.79, LET[br], RC[br]) };
+  el.pos = { top: [w / 2, hh * 0.38], bl: [w * 0.31, hh * 0.79], br: [w * 0.69, hh * 0.79] };
   el.fn = fn; el.lay = lay; el.W = w; el.H = hh; return el;
 }
 const cover = {
