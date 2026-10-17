@@ -132,7 +132,7 @@ class ZoomLine {
   track(f) { this.fns.push(f); f(); return f; }
   draw() {
     const [a, b] = this.view, L = this.gA, ay = this.ay, wv = b - a, Lpx = this.W - 2 * this.pad;
-    const M = 10 ** Math.ceil(Math.log10(wv / 1.6) - 1e-9), m = M / 10, mpx = m / wv * Lpx, dM = Math.max(0, -Math.round(Math.log10(M)));
+    const M = 10 ** Math.ceil(Math.log10(wv / 1.6) - 1e-9), m = M / 10, mpx = m / wv * Lpx, dM = Math.max(0, -Math.round(Math.log10(M))), dm = Math.max(0, -Math.round(Math.log10(m)));
     L.innerHTML = '';
     svgEl('line', { x1: 8, x2: this.W - 8, y1: ay, y2: ay, class: 'u10l1-zax' }, L);
     svgEl('path', { d: `M${this.W - 2} ${ay} l-15 -8 v16 z`, class: 'u10l1-zhead' }, L);
@@ -148,7 +148,7 @@ class ZoomLine {
       if (this.skip.some((s) => Math.abs(s - v) < m / 100)) continue;
       let lab = null;
       if (major && (i / 10) % f === 0) lab = nsvg(v, dM);
-      else if (!major && !this.quiet && mpx > wOf(nsvg(v, dM + 1))) lab = nsvg(v, dM + 1);
+      else if (!major && !this.quiet && mpx > wOf(nsvg(v, dm))) lab = nsvg(v, dm);
       if (lab) { const t = svgEl('text', { x: px, y: ay + 37, 'text-anchor': 'middle', class: 'u10l1-znum' + (major ? ' u10l1-znmaj' : '') }, L); t.textContent = lab; }
     }
   }
@@ -675,7 +675,7 @@ const undo = {
     const arrow = (xa, xb, y, cls) => { const g = svgEl('g', { class: 'u10l1-unarr ' + cls }, sv), dirn = xb > xa ? 1 : -1; svgEl('line', { x1: xa, x2: xb - dirn * 10, y1: y, y2: y }, g); svgEl('path', { d: `M${xb} ${y} l${-dirn * 14} -8 v16 z` }, g); g.style.opacity = 0; return g; };
     const edge = (i, j) => [xs[i] + (j > i ? 1 : -1) * (nwid[i] / 2 + 6), xs[j] - (j > i ? 1 : -1) * (nwid[j] / 2 + 6)];
     add(stage, h('div', 'u10l1-unrow', 'the formula: forwards →'), 14, yF - 60);
-    const rowB = add(stage, h('div', 'u10l1-unrow u10l1-unrowb', '← backwards: undo the last step first'), 14, yB - 60); hide(rowB);
+    const rowB = add(stage, h('div', 'u10l1-unrow u10l1-unrowb', '← backwards: undo the last step first'), 14, yB + 38); hide(rowB);
     const F = [nodeEl(0, yF, T(d.inV), 'u10l1-unv'), nodeEl(1, yF, T(d.op[0]), 'u10l1-unop'), nodeEl(2, yF, T(d.op[1]), 'u10l1-unop'), nodeEl(3, yF, T(d.outV), 'u10l1-unv')];
     const FA = [0, 1, 2].map((i) => arrow(...edge(i, i + 1), yF, 'u10l1-fwd'));
     const B = [nodeEl(3, yB, T(d.outV), 'u10l1-unv'), nodeEl(2, yB, T(d.inv[1]), 'u10l1-unop u10l1-uninv'), nodeEl(1, yB, T(d.inv[0]), 'u10l1-unop u10l1-uninv'), nodeEl(0, yB, T(d.inV), 'u10l1-unv')];

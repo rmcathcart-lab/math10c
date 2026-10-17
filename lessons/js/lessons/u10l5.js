@@ -34,7 +34,7 @@ const line = (P, html, cls = '') => { const d = h('div', 'u10l5-line ' + cls, ht
 const show = (c, el) => fadeIn(c, el, 320);
 const say = (c, P, html, cls) => show(c, line(P, html, cls));
 const hide = (el) => { el.style.opacity = 0; return el; };
-const ANCH = { c: '-50% -50%', l: '0 -50%', r: '-100% -50%', t: '-50% 0', b: '-50% -100%' };
+const ANCH = { c: '-50% -50%', l: '0 -50%', r: '-100% -50%', t: '-50% 0', b: '-50% -100%', bl: '0 -100%' };
 function lab(host, x, y, html, cls = '', a = 'c') { const d = h('div', 'u10l5-lab ' + cls, html); d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.translate = ANCH[a]; host.appendChild(d); return d; }
 async function swap(c, el, html) { await anim(c, el, [{ opacity: 1 }, { opacity: 0 }], 180); el.innerHTML = html; await anim(c, el, [{ opacity: 0 }, { opacity: 1 }], 260); }
 async function strike(c, el) { el.classList.add('u10l5-struck'); const x = h('span', 'u10l5-xline'); el.appendChild(x); await anim(c, x, [{ width: '0%' }, { width: '100%' }], 380); }
@@ -230,8 +230,7 @@ function squareSteps(stage, ex, d) {
         let dd = ''; for (let i = 1; i < 10; i++) dd += `M${x0 + Q * i / 10} ${y0}V${y0 + Q}M${x0} ${y0 + Q * i / 10}H${x0 + Q}`;
         const g = svgEl('path', { d: dd, stroke: INK, 'stroke-width': 2.4, fill: 'none' }, K.gMid); await appear(c, g, 400);
         const tile = svgEl('rect', { x: x0, y: y0 + Q * 0.9, width: Q / 10, height: Q / 10, fill: AMB, 'fill-opacity': 0.75, stroke: INK, 'stroke-width': 2.4 }, K.gMid); await appear(c, tile, 300);
-        await pop(c, lab(stage, x0 + 6, y0 + Q * 0.9 - 8, T(`100${U(sm, 2)}`), 'u10l5-call u10l5-calla', 'l'));
-        stage.lastChild.style.translate = '0 -100%';
+        await pop(c, lab(stage, x0 + 6, y0 + Q * 0.9 - 8, T(`100${U(sm, 2)}`), 'u10l5-call u10l5-calla', 'bl'));
         await say(c, P, T(`100\\text{ tiles}\\times100${U(sm, 2)}=${tn(kk)}${U(sm, 2)}`));
       } }] : []),
     { cap: `${T(`1${U(big, 2)}=${k}\\times${k}=${k}^2=${tn(kk)}${U(sm, 2)}`)}. The factor ${k} is used <b>twice</b>: once for each dimension.`,
@@ -292,7 +291,7 @@ const grid = {
 const PRE = { '-3': 'km', '-2': 'hm', '-1': 'dam', 0: 'm', 1: 'dm', 2: 'cm', 3: 'mm' };
 const STEPC = [TEAL, AMB, PUR];
 function prefixLine(stage, ex, p, y = 6) {
-  return new NumberLine(stage, { x: 20, y, width: ex.W - 40, height: 96, axisY: 44, min: -3, max: 3, step: 1, arrows: true,
+  return new NumberLine(stage, { x: 20, y, width: ex.W - 40, height: 106, axisY: 60, min: -3, max: 3, step: 1, arrows: true,
     labels: [-3, -2, -1, 0, 1, 2, 3].map((v) => ({ v, html: T(UU(PRE[v], p)) })) });
 }
 const SC = {
@@ -322,7 +321,6 @@ const shortcut = {
       return { r, zs, pw, p };
     });
     const runRow = async (c, R) => { await appear(c, R.r, 250); for (let j = 0; j < R.zs.length; j++) { await pop(c, R.zs[j], 220); await sleep(c, 50); } await fadeIn(c, R.pw); };
-    const per = (p) => (p === 1 ? '10' : `10^${p}`);
     return [
       { cap: `${a} to ${b}: <b>${n} steps</b> right on the metric number line, to a smaller unit.`,
         run: async (c) => { for (let i = 0; i < n; i++) await NL.hop(c, d.from + i, d.from + i + 1, { label: T('\\times10'), color: STEPC[i % 3], height: 30 }); } },
@@ -330,7 +328,7 @@ const shortcut = {
       { cap: `<b>Area</b> has two dimensions: each step is ${T('\\times10')} twice, ${T('\\times10^2')}. Two zeros per step: ${T(`1${U(a, 2)}=10^{${2 * n}}${U(b, 2)}`)}.`, run: (c) => runRow(c, rows[1]) },
       { cap: `<b>Volume</b> has three dimensions: ${T('\\times10^3')} per step. Three zeros per step: ${T(`1${U(a, 3)}=10^{${3 * n}}${U(b, 3)}`)}.`, run: (c) => runRow(c, rows[2]) },
       { cap: `The rule: <b>${T('n')} steps apart</b> → length ${T('10^{n}')}, area ${T('10^{2n}')}, volume ${T('10^{3n}')}. Here ${T(`n=${n}`)}.`,
-        run: async (c) => { for (const R of rows) await pulse(c, R.pw, 1.12); const s = stamp(stage, `${per(1)}^${n}, ${per(2)}^${n}, ${per(3)}^${n}`.replace(/\^/g, '^'), { x: ex.W - 150, y: 60 }); s.innerHTML = T(`10^{${n}},\\ 10^{${2 * n}},\\ 10^{${3 * n}}`); await stampIn(c, s); } }
+        run: async (c) => { for (const R of rows) await pulse(c, R.pw, 1.12); const s = stamp(stage, '', { x: ex.W - 150, y: 430 }); s.innerHTML = T(`10^{${n}},\\ 10^{${2 * n}},\\ 10^{${3 * n}}`); await stampIn(c, s); } }
     ];
   }
 };
@@ -350,7 +348,7 @@ function shiftDef(p, data, title) {
       let L = 0; if (p0 + m < 1) { L = 1 - (p0 + m); }
       const R = Math.max(0, p0 + m - orig);
       const cells = [...Array(L).fill('0'), ...digs, ...Array(R).fill('0')], ps = p0 + L, pe = ps + m;
-      const cw = 46, sw = cells.length * cw, sx = (W - sw) / 2, sy = 128;
+      const cw = 46, sw = cells.length * cw, sx = (W - sw) / 2, sy = 132;
       const strip = add(stage, h('div', 'u10l5-strip'), sx, sy); strip.style.width = sw + 'px';
       const cEls = cells.map((v, i) => { const e = h('div', 'u10l5-cell', v); e.style.left = i * cw + 'px'; if (i < L || i >= L + orig) e.style.opacity = 0; strip.appendChild(e); return e; });
       const dot = h('div', 'u10l5-dot'); strip.appendChild(dot);
@@ -366,18 +364,18 @@ function shiftDef(p, data, title) {
       };
       const intRes = !cells.some((v, j) => j >= pe && v !== '0');
       return [
-        { cap: `${T(d.vt + UU(PRE[d.from], p).replace('\\text{', '\\text{ '))} to ${toU}. Find both units on the metric number line.`,
-          run: async (c) => { await pop(c, NL.point(d.from, { color: INK, label: fromU })); await pop(c, NL.point(d.to, { color: BLUE, label: toU })); } },
+        { cap: `${T(d.vt + U(PRE[d.from], p))} to ${toU}. Find both units on the metric number line.`,
+          run: async (c) => { await pop(c, NL.point(d.from, { color: INK })); await pop(c, NL.point(d.to, { color: BLUE })); } },
         { cap: `${fromU} to ${toU} is <b>${n} step${n > 1 ? 's' : ''} ${right ? 'right' : 'left'}</b>: to a ${right ? '<b>smaller</b> unit, so the number gets bigger (multiply)' : '<b>bigger</b> unit, so the number gets smaller (divide)'}.`,
-          run: async (c) => { for (let i = 0; i < n; i++) { const a = d.from + (right ? i : -i), b = a + (right ? 1 : -1); await NL.hop(c, a, b, { label: T((right ? '\\times' : '\\div') + per), color: STEPC[i % 3], height: 30, below: !right }); } } },
+          run: async (c) => { for (let i = 0; i < n; i++) { const a = d.from + (right ? i : -i), b = a + (right ? 1 : -1); await NL.hop(c, a, b, { label: T((right ? '\\times' : '\\div') + per), color: STEPC[i % 3], height: 28 }); } } },
         { cap: `For ${p === 2 ? 'area' : 'volume'} each step is ${T('\\times10')} in each of <b>${p} dimensions</b>: ${T(per + '=' + (p === 2 ? '100' : '1000'))} per step. ${n} step${n > 1 ? 's' : ''}: ${T(`(${per})^{${n}}=${fac}`)}.`,
-          run: (c) => say(c, P, T(`${right ? '\\times' : '\\div'}(${per})^{${n}}=${right ? '\\times' : '\\div'}${fac}${p * n >= 4 ? '=' + (right ? '\\times' : '\\div') + tn(String(10 ** (p * n))) : ''}`)) },
+          run: (c) => say(c, P, T(`${right ? '\\times' : '\\div'}${n > 1 ? `(${per})^{${n}}=${right ? '\\times' : '\\div'}${fac}` : per}=${right ? '\\times' : '\\div'}${tn(String(10 ** (p * n)))}`)) },
         { cap: `Move the decimal point <b>${Math.abs(m)} places ${right ? 'right' : 'left'}</b>: ${p} places for each step.`,
           run: async (c) => {
             for (let j = 0; j < Math.abs(m); j++) {
               const b0 = ps + (right ? j : -j), b1 = b0 + (right ? 1 : -1), cross = right ? b0 : b1, col = STEPC[Math.floor(j / p) % 3];
               const ce = cEls[cross];
-              if (+ce.style.opacity === 0 || ce.style.opacity === '0') { await pop(c, ce, 200); }
+              if (ce.style.opacity === '0') await pop(c, ce, 200);
               ce.style.background = col + '33'; ce.style.borderColor = col;
               await tween(c, 260, (t) => { const b = b0 + (b1 - b0) * t; dot.style.left = b * cw + 'px'; dot.style.marginTop = -Math.sin(Math.PI * t) * 26 + 'px'; });
               dot.style.marginTop = '0px';
@@ -451,8 +449,7 @@ function cubeKit(stage, ex, d) {
   const H = ex.def.height, W = ex.W, E = d.E || 290, ox = 66, oy = H - 52, P = oblique(ox, oy, E), k = d.k;
   const S = mkSvg(stage, W, H);
   const gBack = svgEl('g', {}, S), gFill = svgEl('g', {}, S), gMid = svgEl('g', {}, S), gOut = svgEl('g', {}, S);
-  const ob = drawBox(gBack, P, [0, 1, 0, 1, 0, 1], { fill: { front: '#fff', top: '#f6f7fa', side: '#eef1f6' }, sw: 0 });
-  ob.style.opacity = 1;
+  drawBox(gBack, P, [0, 1, 0, 1, 0, 1], { fill: { front: '#fff', top: '#f6f7fa', side: '#eef1f6' }, sw: 0 });
   drawBox(gOut, P, [0, 1, 0, 1, 0, 1], { sw: 3.2 });
   const hid = hiddenEdges(gOut, P, [0, 1, 0, 1, 0, 1]);
   const px0 = ox + E * (1 + KX) + 44;
@@ -521,9 +518,8 @@ function cubeSteps(stage, ex, d) {
       } },
     { cap: `The cube is <b>${k} ${sm} tall</b>, so stack <b>${k} layers</b>.`,
       run: async (c) => {
-        const p = P(0, 1, 0);
-        counter = lab(stage, p[0] - 14, p[1], '', 'u10l5-call', 'r');
-        const setC = (n, y) => { counter.innerHTML = `layer <b>${n}</b>`; counter.style.top = P(0, y, 0)[1] + 'px'; };
+        counter = lab(stage, P(0.5, 0, 0)[0], K.oy - 18, '', 'u10l5-call', 'c');
+        const setC = (n, y) => { counter.innerHTML = `layer <b>${n}</b>`; counter.style.top = Math.min(K.oy - 18, P(0.5, y, 0)[1] + 20) + 'px'; };
         if (cont) await tween(c, 2600, (t) => { const y = (1 + (k - 1) * t) / k; slab.setH(y); setC(Math.round(y * k), y); }, (t) => t);
         else for (let y = 1; y < k; y++) { layers[y] = K.layer(y); layers[y].style.opacity = 0; setC(y + 1, (y + 1) / k); await anim(c, layers[y], [{ opacity: 0, transform: 'translateY(-24px)' }, { opacity: 1, transform: 'none' }], 160 + 900 / k); }
         setC(k, 1); await fade(c, K.hid, 0.25);
@@ -537,7 +533,9 @@ function cubeSteps(stage, ex, d) {
       for (let i = 1; i < 10; i++) { const t = i / 10; dd += seg(P(t, 0, 0), P(t, 1, 0)) + seg(P(0, t, 0), P(1, t, 0)) + seg(P(t, 1, 0), P(t, 1, 1)) + seg(P(0, 1, t), P(1, 1, t)) + seg(P(1, 0, t), P(1, 1, t)) + seg(P(1, t, 0), P(1, t, 1)); }
       const g = svgEl('path', { d: dd, stroke: INK, 'stroke-width': 1.8, fill: 'none' }, K.gMid); await appear(c, g, 400);
       const blk = drawBox(K.gMid, P, [0.9, 1, 0.9, 1, 0, 0.1], { fill: AMBF, sw: 2.2 }); await pop(c, blk);
-      const q = P(1, 1, 0.05); await pop(c, lab(stage, q[0] + 14, q[1] - 10, T(`10\\times10\\times10=1000${U(sm, 3)}`), 'u10l5-call u10l5-calla', 'l'));
+      const q = P(0.95, 1, 0.05), tp = P(0.5, 1, 1), ly = tp[1] - 14;
+      const ar = svgEl('line', { x1: tp[0] + 40, y1: ly, x2: q[0], y2: q[1] - 2, stroke: AMB, 'stroke-width': 2.6 }, K.gMid); await appear(c, ar);
+      await pop(c, lab(stage, tp[0], ly, T(`10\\times10\\times10=1000${U(sm, 3)}`), 'u10l5-call u10l5-calla', 'b'));
       await say(c, Pn, T(`1000\\text{ blocks}\\times1000${U(sm, 3)}`));
     } });
   steps.push({ cap: `${T(`1${U(big, 3)}=${k}\\times${k}\\times${k}=${k}^3=${tn(k3)}${U(sm, 3)}`)}. The factor ${k} is used <b>three times</b>: once for each dimension.`,
@@ -571,7 +569,7 @@ const cube = {
       { cap: `(c) ${T('1\\text{ m}^3=1\\,000\\,000\\text{ cm}^3')}. In millimetres every edge is 1000 mm: the factor 1000, once for <b>each</b> edge.`,
         run: async (c) => {
           await K.relabel(c, T('1000\\text{ mm}'));
-          const at = [P(0.5, 0, 0), P(0, 0.5, 0), P(1, 0, 0.5)], off = [[0, 44, 't'], [-58, 0, 'r'], [52, 30, 'l']];
+          const at = [P(0.5, 0, 0), P(0, 0.5, 0), P(1, 0, 0.5)], off = [[0, 44, 't'], [-62, 34, 'r'], [16, 38, 'l']];
           for (let i = 0; i < 3; i++) { const e = lab(stage, at[i][0] + off[i][0], at[i][1] + off[i][1], T('\\times1000'), 'u10l5-call u10l5-calla', off[i][2]); pills.push(e); await pop(c, e); }
         } },
       { cap: `So ${T('1\\text{ m}^3=1000\\times1000\\times1000=1000^3=10^{9}\\text{ mm}^3')}, that is ${T('1\\,000\\,000\\,000\\text{ mm}^3')}.`,
@@ -602,7 +600,7 @@ const prism = {
         run: async (c) => { const b = drawBox(gO, P, [4, 5, 2, 3, 0, 1], { fill: AMBF, sw: 2.4 }); await pop(c, b); const q = P(4.5, 3, 0.5); await pop(c, lab(stage, q[0], q[1] - 14, T('10^{6}\\text{ cm}^3'), 'u10l5-call u10l5-calla', 'b')); await say(c, Pn, '<b>1</b> ' + T('30\\times1\\,000\\,000=30\\,000\\,000\\text{ cm}^3')); } },
       { cap: `<b>Way 2:</b> convert the edges: 500 cm, 200 cm and 300 cm. ${T('500\\times200\\times300=30\\,000\\,000\\text{ cm}^3')}.`,
         run: async (c) => { await Promise.all([swap(c, L.b, T('500\\text{ cm}')), swap(c, L.l, T('300\\text{ cm}')), swap(c, L.d, T('200\\text{ cm}'))]); await say(c, Pn, '<b>2</b> ' + T('500\\times200\\times300')); await say(c, Pn, T('\\phantom{2}=30\\,000\\,000\\text{ cm}^3')); await stampIn(c, stampP(Pn, 'same answer ✓')); } },
-      { cap: `“Times 100” once would give ${T('30\\times100=3000\\text{ cm}^3')}: about the size of a juice box, not a room-sized prism.`,
+      { cap: `“Times 100” once would give ${T('30\\times100=3000\\text{ cm}^3')}: a cube only about 14 cm on an edge, not a room-sized prism.`,
         run: async (c) => { const w = line(Pn, T('30\\times100=3000\\text{ cm}^3'), 'u10l5-wrong'); await show(c, w); await strike(c, w); } }
     ];
   }
@@ -734,7 +732,7 @@ const bins = {
     lab(stage, PB(BB.L / 2, BB.H, BB.D)[0], PB(0, BB.H, BB.D)[1] - 14, '<b>Bin B</b> (imperial)', 'u10l5-btitle u10l5-imp', 'b');
     const px0 = 610, Pn = panel(stage, px0, 12, W - px0 - 12, H - 24, k === 'vol' ? 'Volume in cm³' : 'Surface area in in²');
     // comparison bars
-    const bx = 120, bw = 440, by = [300, 360];
+    const bx = 120, bw = 330, by = [300, 360];
     const mk = (i, name, color) => { lab(stage, bx - 12, by[i] + 17, `<b>${name}</b>`, 'u10l5-bname', 'r'); const r = svgEl('rect', { x: bx, y: by[i], width: 0, height: 34, rx: 6, fill: color, 'fill-opacity': 0.8 }, S); const t = lab(stage, bx + 8, by[i] + 17, '', 'u10l5-bval', 'l'); return { r, t }; };
     const bar = [mk(0, 'Bin A', TEAL), mk(1, 'Bin B', PUR)];
     const vals = k === 'vol' ? [756000, 849505] : [7905, 8496], max = Math.max(...vals);

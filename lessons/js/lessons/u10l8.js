@@ -182,7 +182,7 @@ function mountWarm() {
   arrow2(cg, [cx - rb - 26, yt], [cx - rb - 26, yb]);
   lab(wrap, cx - rb - 34, (yt + yb) / 2 - 8, 'height<br>of can', 'w', 'u10l8-wl');
   const hval = hide(lab(wrap, cx - rb - 34, (yt + yb) / 2 + 40, '20.1 cm', 'w', 'u10l8-wl u10l8-wv'));
-  lab(wrap, cx + rb + 6, sy + 4, 'distance<br>around', 'e', 'u10l8-wl u10l8-wred');
+  const lAround = lab(wrap, cx + rb + 6, sy + 4, 'distance<br>around', 'e', 'u10l8-wl u10l8-wred');
   // one ball close up
   const bx = 392, by = 150, br = 62;
   tball(cg, bx, by, br);
@@ -193,7 +193,8 @@ function mountWarm() {
   // the unrolled string
   const live = { s: null, k: null }, ctx = liveCtx(), L = PI * 2 * rb, xs = cx + rb + 20;
   document.getElementById('u10l8-wstring').addEventListener('click', async () => {
-    if (live.s) { live.s.forEach((e) => e.remove()); live.s = null; hide(hval); return; }
+    if (live.s) { live.s.forEach((e) => e.remove()); live.s = null; hide(hval); lAround.style.opacity = 1; return; }
+    lAround.style.opacity = 0;
     const g = G(svg), bar = P(`M${xs} ${yb} L${xs} ${yb - L}`, { stroke: RAD, 'stroke-width': 7, class: 'bk-stroke' }, g);
     const extra = P(`M${xs + 14} ${yt} L${xs + 14} ${yb - L}`, { stroke: INK, 'stroke-width': 2 }, g);
     const guide = P(`M${cx - rb - 26} ${yt} L${xs + 22} ${yt}`, { stroke: INK, 'stroke-width': 1.4, 'stroke-dasharray': '4 4' }, g);
@@ -253,13 +254,13 @@ function mountStatics() {
     const { svg, wrap } = F, r = 68, g = G(svg);
     sphere(g, 90, 82, r);
     P('M200 82 L262 82', { 'stroke-width': 3 }, g); P('M250 74 L264 82 L250 90', { 'stroke-width': 3 }, g);
-    dome(g, 370, 108, r, { floor: true });
+    dome(g, 370, 108, r);
     lab(wrap, 90, 82 + r + 10, 'sphere, radius ' + T('r'), 's', 'u10l8-sm');
     lab(wrap, 370, 108 + r * EQ + 10, 'hemisphere, radius ' + T('r'), 's', 'u10l8-sm');
   }
   // Example 4: the two sheds
   for (const [id, floor, name] of [['u10l8-ex4a', true, 'Sana’s shed (with floor)'], ['u10l8-ex4b', false, 'Tavi’s shed (no floor)']]) {
-    F = figure(id, 300, 190);
+    F = figure(id, 300, 214);
     if (!F) continue;
     const { svg, wrap } = F, g = G(svg), cx = 150, cy = 118, r = 96;
     dome(g, cx, cy, r, { floor });

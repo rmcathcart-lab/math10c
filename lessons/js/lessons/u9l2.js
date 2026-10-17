@@ -341,6 +341,7 @@ const calc = {
     const ratioTex = `\\${d.fn} ${deg(a)}=\\dfrac{${F.num === 'opp' ? cO(ns) : cA(ns)}}{${F.den === 'hyp' ? cH(ds) : cA(ds)}}`;
     const meanCap = d.fn === 'tan'
       ? `So ${T(`\\dfrac{${ns}}{${ds}}=${r4.replace(/0+$/, '').replace(/\.$/, '')}`)}: the opposite side is <b>exactly as long as</b> the adjacent side. A ${a}° right triangle is isosceles.`
+      : exact ? `So ${T(`\\dfrac{${ns}}{${ds}}=${screen}`)}: the ${nk === 'opp' ? 'opposite' : 'adjacent'} side is <b>exactly half</b> the hypotenuse, in <b>any</b> right triangle with a ${a}° angle.`
       : `So ${T(`\\dfrac{${ns}}{${ds}}\\approx${r4}`)}: the ${nk === 'opp' ? 'opposite' : 'adjacent'} side is about <b>${Math.round(v * 100)}%</b> of the hypotenuse, in <b>any</b> right triangle with a ${a}° angle.`;
     return [
       { cap: `The reference angle is ${T(`\\angle O=${deg(a)}`)}. The right angle is at ${T('A')}, so ${T('OB')}, across from it, is the ${bH('hypotenuse')}.`,
@@ -447,7 +448,7 @@ const dial = {
         { cap: `Open to ${T('30^\\circ')}: ${bO('opp')} climbs, ${bA('adj')} shrinks. ${T('\\sin 30^\\circ=0.5')} exactly: the opposite leg is half the hypotenuse.`, run: go(30) },
         { cap: `At ${T('45^\\circ')} the legs are <b>equal</b> (${T('0.7071')}): ${T('\\sin 45^\\circ=\\cos 45^\\circ')} and ${T('\\tan 45^\\circ=1')}.`, run: go(45) },
         { cap: `${T('60^\\circ')}: now ${bO('opp')} is the longer leg. ${st(60)}. ${T(`\\tan 60^\\circ=${f4(tn(60))}`)} is already over the top of the chart.`, run: go(60) },
-        { cap: `${T('80^\\circ')}: ${bA('adj')} is tiny (${T(f4(cs(80)))}), so ${T(`\\tan 80^\\circ=\\dfrac{${f4(sn(80))}}{${f4(cs(80))}}=${f4(tn(80))}`)}: way off the chart.`, run: go(80) },
+        { cap: `${T('80^\\circ')}: ${bA('adj')} is tiny (${T(f4(cs(80)))}), so ${T(`\\tan 80^\\circ=\\dfrac{${f4(sn(80))}}{${f4(cs(80))}}\\approx${f2(tn(80))}`)}: way off the chart.`, run: go(80) },
         { cap: `${T('90^\\circ')}: ${bO('opp')} ${T('=1')}, ${bA('adj')} ${T('=0')}. ${T('\\sin 90^\\circ=1')}, ${T('\\cos 90^\\circ=0')}, and ${T('\\tan 90^\\circ=\\frac{1}{0}')} is <b>undefined</b>. Sine went up ${T('0\\to1')}, cosine down ${T('1\\to0')}.`, run: go(90, 900) }
       ];
     }
@@ -700,7 +701,7 @@ const tan90 = {
     const pt = (a) => G.point(a, tn(a), { color: TAN, r: 6 });
     const zoom = (ymax, ys) => (c) => G.setWindow({ ymin: -ymax * 0.09, ymax, yscl: ys }, c, 1100);
     return [
-      { cap: `Up to ${T('45^\\circ')} the tangent grows slowly: ${T('\\tan 45^\\circ=1')} (opp ${T('=')} adj). At ${T('80^\\circ')}, ${T(`\\tan 80^\\circ=${f4(sn(80))}\\div${f4(cs(80))}=${f2(tn(80))}`)}.`,
+      { cap: `Up to ${T('45^\\circ')} the tangent grows slowly: ${T('\\tan 45^\\circ=1')} (opp ${T('=')} adj). At ${T('80^\\circ')}, ${T(`\\tan 80^\\circ\\approx${f4(sn(80))}\\div${f4(cs(80))}\\approx${f2(tn(80))}`)}.`,
         run: async (c) => { curve = G.fn(tanF, { from: 0, to: 89.9999, color: TAN, width: 3.5, samples: 3000 }); await G.drawIn(curve, 1000, c); for (const i of [0, 1]) { await pop(c, pt(TROWS[i]), 200); await appear(c, rows[i], 250); } } },
       { cap: `${T('89^\\circ')}: the ${bA('adjacent')} side is only ${T(adjTxt(89))}. ${T(`\\tan 89^\\circ\\approx${f2(tn(89))}`)}. Zoom out ×10 to see it.`,
         run: async (c) => { await zoom(66, 10)(c); await pop(c, pt(89), 200); await appear(c, rows[2], 250); } },
@@ -722,7 +723,7 @@ const cofn = {
   title: 'One side, two names',
   height: 440,
   choices: Object.keys(COF).map((k) => ({ v: k, label: COF[k].label })),
-  intro: 'Triangle DEF: right angle at D, angle x at F. Press <b>Next</b>.',
+  intro: `Triangle ${T('DEF')}: right angle at ${T('D')}, angle ${T('x^\\circ')} at ${T('F')}. Press <b>Next</b>.`,
   make(stage, key, ex) {
     const W = ex.W, H = 440, svg = stageSvg(stage, W, H), d = COF[key], x = d.x;
     const ang = x ?? Math.atan(2.101 / 3) / RAD; // booklet shape for the general case

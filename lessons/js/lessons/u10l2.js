@@ -29,6 +29,7 @@ function lab(stage, x, y, html, pos = 'c', cls = '', gap = 0) {
   const d = h('div', 'u10l2-lab ' + cls, html); stage.appendChild(d); place(d, x, y, pos, gap); d.style.opacity = 0; return d;
 }
 const show = (c, el, ms = 320) => fadeIn(c, el, ms);
+const fadeTo = (c, el, o, ms = 300) => (c ? c.anim(el, [{ opacity: getComputedStyle(el).opacity }, { opacity: o }], ms) : (el.style.opacity = o));
 /** a panel of lines (HTML) on the stage */
 function panel(stage, x, y, w, hh, title, cls = '') {
   const p = h('div', 'u10l2-panel ' + cls, title ? `<div class="u10l2-ph">${title}</div>` : '');
@@ -239,14 +240,14 @@ const imperial = {
       { cap: `Lay <b>12 inches</b> end to end: <b>1 foot</b>, about the length of an adult foot. ${T('1\\text{ ft}=12\\text{ in}')}`,
         run: async (c) => {
           for (let i = 1; i < 12; i++) { await pop(c, inchTile(i), 200); await sleep(c, 40); }
-          await appear(c, thumb, 200).then(() => { thumb.style.opacity = 0.25; });
-          foot = footprint(S, x0 + 6 * u, yb - 62, 12 * u, 0, false, { fill: '#c99a6e', op: 0.55, stroke: '#7a5537' }); await appear(c, foot, 500);
+          await fadeTo(c, thumb, 0.25);
+          foot = footprint(S, x0 + 6 * u, yb - 70, 12 * u, 0, false, { fill: '#c99a6e', op: 0.55, stroke: '#7a5537' }); await appear(c, foot, 500);
           footL = dim(S, x0, yb + bh + 36, x0 + 12 * u, yb + bh + 36, IMP); await appear(c, footL, 300);
           await show(c, lab(stage, x0 + 6 * u, yb + bh + 42, `<b>1 ft</b> = 12 in`, 's', 'u10l2-cimp'));
         } },
       { cap: `${T('3')} feet ${T('=1')} <b>yard</b>. Legend says King Henry I made the yard the distance from his <b>nose</b> to the end of his <b>outstretched thumb</b>.`,
         run: async (c) => {
-          await appear(c, foot, 300).then(() => { foot.style.opacity = 0; thumb.style.opacity = 0; });
+          await Promise.all([fadeTo(c, foot, 0), fadeTo(c, thumb, 0)]);
           ftBlocks = G(S);
           for (const j of [1, 2]) {
             svgEl('rect', { x: x0 + 12 * j * u, y: yb, width: 12 * u, height: bh, fill: j % 2 ? '#c5d6f7' : '#dbe6fb', stroke: IMP, 'stroke-width': 1.6 }, ftBlocks);
@@ -297,7 +298,7 @@ const metric = {
         { cap: 'Zoom into <b>one metre</b> (the thin red box): <b>100 centimetres</b>.', run: (c) => Z.drawRow(c, 1) },
         { cap: 'Zoom into <b>one centimetre</b>: <b>10 millimetres</b>.', run: (c) => Z.drawRow(c, 2) },
         { cap: `Every SI step is ${T('\\times10')}, ${T('\\times100')} or ${T('\\times1\\,000')}: a <b>power of 10</b>. That is the whole idea of the metric system.`,
-          run: async (c) => { P = lab(stage, ex.W / 2, 368, `${T('1\\text{ km}=1\\,000\\text{ m}\\qquad 1\\text{ m}=100\\text{ cm}\\qquad 1\\text{ cm}=10\\text{ mm}')}`, 'n', 'u10l2-big u10l2-boxed', 0); P.style.top = '366px'; P.style.translate = '-50% 0'; await pop(c, P, 450); } }
+          run: async (c) => { P = lab(stage, ex.W / 2, 362, `${T('1\\text{ km}=1\\,000\\text{ m}\\qquad 1\\text{ m}=100\\text{ cm}\\qquad 1\\text{ cm}=10\\text{ mm}')}`, 's', 'u10l2-big u10l2-boxed', 0); await pop(c, P, 450); } }
       ];
     }
     const bw = 120, gap = Math.min(110, (W - 4 * bw - 40) / 3), x0 = (W - 4 * bw - 3 * gap) / 2;
@@ -467,7 +468,6 @@ function cmTicks(max, minor, mid, labEvery, fmtL = (v) => String(v)) {
 function inTicks(maxIn, den = 16) {
   const out = [];
   for (let i = 0; i <= Math.round(maxIn * den); i++) {
-    let lev = 0; for (let d = den; d > 1 && i % (den / d * (den / den)) === 0; d /= 2) lev++;
     const len = i % den === 0 ? 26 : i % (den / 2) === 0 ? 21 : i % (den / 4) === 0 ? 16 : i % (den / 8) === 0 ? 12 : 8;
     out.push({ v: (i / den) * 2.54, len, label: i % den === 0 ? String(i / den) : null });
   }
@@ -484,10 +484,10 @@ function layPony(stage, ex) {
   const pt = (x, y) => `${(X0 + x * hw).toFixed(1)},${(gy - y * hw).toFixed(1)}`;
   const shape = [[0.40, 0], [0.40, 0.5], [0.34, 0.62], [0.30, 0.80], [0.16, 1.03], [0.03, 1.06], [-0.04, 1.13], [-0.01, 1.22], [0.12, 1.33], [0.17, 1.42], [0.22, 1.37], [0.30, 1.29], [0.45, 1.0], [0.75, 0.96], [1.05, 0.98], [1.18, 0.92], [1.27, 0.66], [1.24, 0.52], [1.19, 0.70], [1.17, 0.55], [1.15, 0], [1.06, 0], [1.04, 0.44], [0.98, 0.52], [0.60, 0.52], [0.54, 0.44], [0.51, 0]];
   const sx = X0 + 1.42 * hw, tx = sx + 52;
-  const P = panel(stage, tx + 70, 120, W - tx - 84, null, '', 'u10l2-eqp');
+  const P = panel(stage, tx + 70, 206, W - tx - 84, null, '', 'u10l2-eqp');
   const cnt = counter(stage, W - 150, 10);
   return [
-    { cap: 'Example 1(c): a pony’s height is measured to the <b>withers</b> (the top of the shoulders). Pick the <b>hand</b>: a fist, ${T("4")} in.'.replace('${T("4")}', T('4')),
+    { cap: `Example 1(c): a pony’s height is measured to the <b>withers</b> (the top of the shoulders). Pick the <b>hand</b>: a fist, ${T('4')} in.`,
       run: async (c) => {
         const g = G(S);
         svgEl('rect', { x: 10, y: gy, width: W - 20, height: 8, fill: '#9c8f74', rx: 2 }, g);
@@ -498,7 +498,7 @@ function layPony(stage, ex) {
         const lv = G(S); svgEl('line', { x1: X0 + 0.45 * hw, x2: tx + 10, y1: gy - hw, y2: gy - hw, stroke: TRUE, 'stroke-width': 2, 'stroke-dasharray': '7 5' }, lv);
         svgEl('circle', { cx: X0 + 0.45 * hw, cy: gy - hw, r: 6, fill: TRUE }, lv);
         await appear(c, lv, 300); await show(c, lab(stage, X0 + 0.47 * hw, gy - hw - 8, 'withers', 'ne', 'u10l2-sm u10l2-cred', 2));
-        const ic = icon(S, 'fist', 36, 36, 42); await pop(c, ic); await show(c, lab(stage, 64, 36, '<b>hand (fist)</b> = 4 in', 'e', 'u10l2-refc'));
+        const ic = icon(S, 'fist', tx + 92, 40, 42); await pop(c, ic); await show(c, lab(stage, tx + 120, 40, '<b>hand (fist)</b> = 4 in', 'e', 'u10l2-refc'));
       } },
     { cap: 'Stack fists from the ground up to the withers and <b>count</b>: <b>12</b> hands.',
       run: async (c) => {
@@ -583,7 +583,7 @@ const fit = {
         svgEl('rect', { x: x0, y, width: full, height: rh, rx: 6, fill: '#fde3e0', stroke: TRUE, 'stroke-width': 2 }, body);
         if (w > W - x0 - 14) svgEl('path', { d: `M${x0 + full - 10} ${y - 2} l8 ${rh / 4} l-8 ${rh / 4} l8 ${rh / 4} l-8 ${rh / 4}`, fill: 'none', stroke: TRUE, 'stroke-width': 2 }, body);
         svgEl('line', { x1: x0 + Wd, x2: x0 + Wd, y1: y - 6, y2: y + rh + 6, stroke: INK, 'stroke-width': 2, 'stroke-dasharray': '4 3' }, body);
-      } else if (w >= 5) {
+      } else if (w >= 1.5) {
         const n = Math.ceil(1 / ratio - 1e-9);
         for (let j = 0; j < n; j++) svgEl('rect', { x: x0 + j * w, y, width: Math.max(w - (w > 12 ? 2 : 1), 1), height: rh, rx: w > 20 ? 5 : 1, fill: j % 2 ? '#fbe2b6' : '#f7cf8a', stroke: w > 12 ? REF : 'none', 'stroke-width': 1.5 }, body);
       } else {
@@ -736,16 +736,16 @@ const towel = {
         run: async (c) => { await show(c, line(P, `<b class="u10l2-csi">SI:</b> ${T('7\\times20\\text{ cm}=140\\text{ cm}\\approx1.4\\text{ m}')}`)); } },
       { cap: '(b) <b>Imperial</b>: the <b>pace</b>, about 1 yd. Walk along it: one full pace, then about half a pace more.',
         run: async (c) => {
-          await show(c, lab(stage, 20, 276, '<b class="u10l2-cimp">Imperial:</b> pace ≈ 1 yd', 'e', 'u10l2-refc'));
+          await show(c, lab(stage, W - 14, 300, '<b class="u10l2-cimp">Imperial:</b> pace ≈ 1 yd', 'w', 'u10l2-refc'));
           cnt.set(0);
-          const p = 90 * k, fy = 252;
+          const p = 90 * k, fy = 266;
           const f0 = footprint(S, x0 + 16, fy, 34, 0, false, { fill: IMP, op: 0.8 }); await pop(c, f0);
-          const hop = (xa, xb, t) => { const g = G(S); svgEl('path', { d: `M${xa} ${fy - 20} Q${(xa + xb) / 2} ${fy - 52} ${xb} ${fy - 20}`, fill: 'none', stroke: IMP, 'stroke-width': 2.6 }, g); AH(g, xb, fy - 20, 0.5, 1, IMP); return g; };
+          const hop = (xa, xb, t) => { const g = G(S); svgEl('path', { d: `M${xa} ${fy - 18} Q${(xa + xb) / 2} ${fy - 44} ${xb} ${fy - 18}`, fill: 'none', stroke: IMP, 'stroke-width': 2.6 }, g); AH(g, xb, fy - 18, 0.5, 1, IMP); return g; };
           let g = hop(x0, x0 + p); await appear(c, g, 400);
           await pop(c, footprint(S, x0 + p + 16, fy + 14, 34, 0, true, { fill: IMP, op: 0.8 })); cnt.set(1);
-          await show(c, lab(stage, x0 + p / 2, fy - 50, '1 pace', 'n', 'u10l2-sm u10l2-cimp', 2));
+          await show(c, lab(stage, x0 + p / 2, fy + 26, '1 pace', 's', 'u10l2-sm u10l2-cimp', 2));
           g = hop(x0 + p, x0 + 1.5 * p); g.querySelector('path').setAttribute('stroke-dasharray', '6 4'); await appear(c, g, 400);
-          await show(c, lab(stage, x0 + 1.25 * p, fy - 44, T('\\tfrac12'), 'n', 'u10l2-cimp', 2)); cnt.set('1½');
+          await show(c, lab(stage, x0 + 1.25 * p, fy + 26, T('\\tfrac12'), 's', 'u10l2-cimp', 2)); cnt.set('1½');
         } },
       { cap: `(c) ${T('1\\tfrac12')} paces ${T('\\times\\ 1')} yd ${T('=1.5\\text{ yd}=1.5\\times3=4.5\\text{ ft}')}, about ${T('1.4')} m. Both systems agree.`,
         run: async (c) => { await show(c, line(P, `<b class="u10l2-cimp">Imperial:</b> ${T('1\\tfrac12\\times1\\text{ yd}=1.5\\text{ yd}=1.5\\times3=4.5\\text{ ft}\\ (\\approx1.4\\text{ m})')}`)); } }
@@ -760,7 +760,7 @@ const shed = {
   intro: 'The base of a rectangular shed, seen from above. Press <b>Next</b>.',
   make(stage, v, ex) {
     const W = ex.W, S = SV(stage, W, ex.def.height), u = 30, sx = 78, sy = 92, L = 12, Wd = 8;
-    const P = panel(stage, sx + L * u + 70, 70, W - (sx + L * u + 84), null, '', 'u10l2-eqp');
+    const P = panel(stage, sx + L * u + 70, 96, W - (sx + L * u + 84), null, '', 'u10l2-eqp');
     const cnt = counter(stage, W - 150, 10);
     const walk = async (c, n, x, y, dx, dy, ang, ghost) => {
       const g = G(S);
@@ -780,10 +780,10 @@ const shed = {
           for (let i = 1; i < 8; i++) svgEl('line', { x1: sx, x2: sx + L * u, y1: sy + i * Wd * u / 8, y2: sy + i * Wd * u / 8, stroke: '#bba98a', 'stroke-width': 1 }, g);
           svgEl('text', { x: sx + L * u / 2, y: sy + Wd * u / 2 - 10, class: 'u10l2-svgt', 'text-anchor': 'middle', fill: '#4d3e26' }, g).textContent = 'shed roof';
           await appear(c, g, 400);
-          const ic = icon(S, 'foot', 40, 34, 40); await pop(c, ic); await show(c, lab(stage, 66, 34, '<b>adult foot</b> ≈ 1 ft', 'e', 'u10l2-refc'));
+          const ic = icon(S, 'foot', sx + L * u + 92, 36, 40); await pop(c, ic); await show(c, lab(stage, sx + L * u + 118, 36, '<b>adult foot</b> ≈ 1 ft', 'e', 'u10l2-refc'));
         } },
       { cap: 'Walk the long side heel-to-toe and count: <b>12</b> foot lengths.',
-        run: async (c) => { await appear(c, cnt.el, 200); await walk(c, L, sx, sy - 16, 1, 0, 0); await show(c, lab(stage, sx + L * u / 2, sy - 30, '12', 'n', 'u10l2-side', 2)); await show(c, line(P, 'long side: <b>12</b> ft')); } },
+        run: async (c) => { await appear(c, cnt.el, 200); await walk(c, L, sx, sy - 16, 1, 0, 0); await show(c, lab(stage, sx + L * u / 2, sy + 10, '12', 's', 'u10l2-side', 2)); await show(c, line(P, 'long side: <b>12</b> ft')); } },
       { cap: 'Walk the short side: <b>8</b> foot lengths.',
         run: async (c) => { cnt.set(0); await walk(c, Wd, sx + L * u + 16, sy, 0, 1, 90); await show(c, lab(stage, sx + L * u + 30, sy + Wd * u / 2, '8', 'e', 'u10l2-side', 2)); await show(c, line(P, 'short side: <b>8</b> ft')); } },
       { cap: 'A rectangle’s <b>opposite sides are equal</b>, so the other two sides are 12 and 8 again: no need to walk them.',
@@ -887,9 +887,9 @@ const card = {
     };
     const cmRuler = () => {
       const g = G(S);
-      svgEl('rect', { x: x0 - 22, y: ry, width: 11 * k + 44, height: 64, rx: 4, fill: '#fff8dc', stroke: '#b8a46a', 'stroke-width': 1.6 }, g);
-      for (let i = 0; i <= 110; i++) { const x = x0 + i * k / 10; svgEl('line', { x1: x, x2: x, y1: ry, y2: ry + (i % 10 === 0 ? 26 : i % 5 === 0 ? 17 : 10), stroke: INK, 'stroke-width': i % 10 === 0 ? 1.6 : 1 }, g); if (i % 10 === 0) svgEl('text', { x, y: ry + 46, class: 'u10l2-svgs', 'text-anchor': 'middle' }, g).textContent = String(i / 10); }
-      svgEl('text', { x: x0 + 11 * k - 6, y: ry + 58, class: 'u10l2-svgxs', 'text-anchor': 'end', fill: COLORS.slate }, g).textContent = 'cm';
+      svgEl('rect', { x: x0 - 22, y: ry, width: 10.5 * k + 44, height: 64, rx: 4, fill: '#fff8dc', stroke: '#b8a46a', 'stroke-width': 1.6 }, g);
+      for (let i = 0; i <= 105; i++) { const x = x0 + i * k / 10; svgEl('line', { x1: x, x2: x, y1: ry, y2: ry + (i % 10 === 0 ? 26 : i % 5 === 0 ? 17 : 10), stroke: INK, 'stroke-width': i % 10 === 0 ? 1.6 : 1 }, g); if (i % 10 === 0) svgEl('text', { x, y: ry + 46, class: 'u10l2-svgs', 'text-anchor': 'middle' }, g).textContent = String(i / 10); }
+      svgEl('text', { x: x0 + 10.5 * k + 16, y: ry + 58, class: 'u10l2-svgxs', 'text-anchor': 'end', fill: COLORS.slate }, g).textContent = 'cm';
       return g;
     };
     const inRuler = () => {
@@ -901,7 +901,7 @@ const card = {
     };
     const mark = async (c, cm, txt, cls) => {
       const x = x0 + cm * k, g = G(S); svgEl('line', { x1: x, x2: x, y1: cy0 - 6, y2: ry + 30, stroke: TRUE, 'stroke-width': 2.5, 'stroke-dasharray': '6 4' }, g);
-      await appear(c, g, 300); const L = lab(stage, x, cy0 - 4, txt, 'n', 'u10l2-truel ' + (cls || ''), 0); L.style.top = '2px'; L.style.translate = '-50% 0'; await pop(c, L); return [g, L];
+      await appear(c, g, 300); const L = lab(stage, x, 1, txt, 's', 'u10l2-truel ' + (cls || ''), 0); await pop(c, L); return [g, L];
     };
     let cmR, inR, m1, ghosts = [];
     const drop = (...els) => els.flat().forEach((e) => e && (e.style.opacity = 0));
@@ -946,8 +946,8 @@ const km = {
       const pw = Wd / 20;
       return [first,
         { cap: 'Start from a referent he does know: an <b>Olympic swimming pool</b> is <b>50 m</b> long.',
-          run: async (c) => { await appear(c, cnt.el, 200); const t = G(S); poolTile(t, x0, by, pw, bh, 1); cnt.set(1); await pop(c, t); await show(c, lab(stage, x0 + pw / 2, by + bh + 8, '50 m', 's', 'u10l2-sm u10l2-csi', 0)); } },
-        { cap: 'Lay pool lengths end to end and count: … <b>20</b> of them reach ${T("1")} km.'.replace('${T("1")}', T('1')),
+          run: async (c) => { await appear(c, cnt.el, 200); const t = G(S); poolTile(t, x0, by, pw, bh, 1); cnt.set(1); await pop(c, t); await show(c, lab(stage, x0 + pw / 2, by + bh + 34, '50 m', 's', 'u10l2-sm u10l2-csi', 0)); } },
+        { cap: `Lay pool lengths end to end and count: … <b>20</b> of them reach ${T('1')} km.`,
           run: async (c) => { for (let i = 1; i < 20; i++) { const t = G(S); poolTile(t, x0 + i * pw, by, pw, bh, i + 1); cnt.set(i + 1); await pop(c, t, 220); await sleep(c, 40); } } },
         { cap: `${T('1\\,000\\text{ m}\\div50\\text{ m per pool length}=20')}. So ${T('1')} km is about <b>20 pool lengths</b>.`,
           run: async (c) => { await show(c, line(P, `${T('1\\,000\\text{ m}\\div50\\text{ m}=\\boldsymbol{20}')} pool lengths`, 'u10l2-lest')); } }

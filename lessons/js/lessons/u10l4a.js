@@ -429,9 +429,9 @@ function whaleSteps(stage, ex) {
   let band = null;
   return [
     { cap: 'The scale: <b>1 cm</b> on the photo stands for <b>2.4 m</b> of whale. Line them up.',
-      run: async (c) => { await top.drawIn(top.point(1, { color: TEAL }), 300, c); await bot.drawIn(bot.point(2.4, { color: TEAL }), 300, c); await appear(c, l1, 300); } },
+      run: async (c) => { await pop(c, top.point(1, { color: TEAL })); await pop(c, bot.point(2.4, { color: TEAL })); await appear(c, l1, 300); } },
     { cap: `The flukes are <b>2.5 cm</b> on the photo. Matching units in matching positions: ${T('\\dfrac{1\\text{ cm}}{2.4\\text{ m}}=\\dfrac{2.5\\text{ cm}}{x}')}.`,
-      run: async (c) => { await top.drawIn(top.point(2.5, { color: PT }), 300, c); await appear(c, l2, 300); await show(c, q); await show(c, e1); } },
+      run: async (c) => { await pop(c, top.point(2.5, { color: PT })); await appear(c, l2, 300); await show(c, q); await show(c, e1); } },
     { cap: `2.5 cm is <b>2.5 times</b> as far along the photo line, so ${T('x')} is 2.5 times 2.4 m. Cross-multiplying says the same: ${T('(1)(x)=(2.5)(2.4)')}, so ${T('x=6')} m.`,
       run: async (c) => {
         await top.drawIn(top.interval(0, 2.5, { color: PT, width: 6 }), 500, c); await bot.drawIn(bot.interval(0, 6, { color: PT, width: 6 }), 500, c);

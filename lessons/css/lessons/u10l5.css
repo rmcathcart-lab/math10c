@@ -1,0 +1,110 @@
+/* Math 10C · Unit 10 · Lesson 5 — Converting Square and Cubic Units: styles used only on this page (prefix u10l5-).
+ * Colours: big units ink, small units blue, the wrong "×k once" red, tiles/blocks amber, imperial purple. */
+:root { --u10l5-imp: #7b4fc4; --u10l5-red: #c93a33; --u10l5-amb: #c27a0e; --u10l5-blue: #1f5bd6; }
+
+.ex-cap { min-height: 128px; }
+.ex-cap .katex { font-size: 1.04em; }
+.chip .katex { font-size: 1em; }
+.pl .katex { font-size: 1.08em; }
+.ans .katex { font-size: 1.04em; }
+.lesson .katex { white-space: nowrap; }
+h2 .katex, h3 .katex { font-size: .95em; }
+.part.span2 { grid-column: span 2; }
+.pill-col { display: flex; flex-direction: column; gap: 6px; }
+.u10l5-pills3 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+
+/* ---------------- warm-up ---------------- */
+.u10l5-wtop { display: grid; grid-template-columns: 1fr 460px; gap: 24px; align-items: center; }
+.u10l5-tags { display: flex; flex-direction: column; gap: 26px; align-items: center; }
+.u10l5-tag { position: relative; width: 300px; padding: 14px 18px 14px 46px; background: #ffecb3; border: 3px solid #c88c14; border-radius: 10px 14px 14px 10px; text-align: center; box-shadow: 0 4px 10px rgba(0, 0, 0, .08); }
+.u10l5-tag::before { content: ""; position: absolute; left: 14px; top: 50%; width: 16px; height: 16px; margin-top: -8px; border-radius: 50%; background: #fff; border: 2.5px solid #c88c14; }
+.u10l5-tagA { rotate: 4deg; } .u10l5-tagB { rotate: -4deg; }
+.u10l5-tagS { font: 800 24px var(--round); color: var(--ink); }
+.u10l5-tagP { font: 900 50px var(--round); color: #d23c32; line-height: 1.1; }
+.u10l5-tagU { font: 800 21px var(--round); color: var(--ink); }
+.u10l5-wfig { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+.u10l5-wbtns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.u10l5-wqs { margin-top: 10px; }
+.u10l5-wqs .q-line { margin-top: 6px; }
+.u10l5-wa { margin: 0 0 8px 50px; }
+.u10l5-wa .pill.small { margin-left: 0; }
+.u10l5-early { margin-top: 14px; }
+.u10l5-social { font-style: italic; color: var(--ink2); font-size: 19px; text-align: center; margin: 16px 0 0; }
+.u10l5-wnum { font: 900 34px var(--round); color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, .45); pointer-events: none; }
+.u10l5-wprice { font: 800 18px var(--round); color: #1c2230; background: #ffecb3; border: 2px solid #c88c14; border-radius: 7px; padding: 0 6px; pointer-events: none; }
+.u10l5-wslip { font: 800 19px var(--round); color: #fff; background: var(--u10l5-red); border-radius: 8px; padding: 2px 10px; white-space: nowrap; pointer-events: none; }
+.u10l5-wtot { font: 700 18px var(--round); color: var(--ink); background: #fff; border: 2px solid var(--ink); border-radius: 8px; padding: 3px 10px; white-space: nowrap; }
+.u10l5-wdim { font: 800 19px var(--round); color: var(--ink); text-align: center; line-height: 1.15; }
+.u10l5-wcap { font: 700 17px var(--round); color: var(--ink2); }
+
+/* ---------------- static figures ---------------- */
+.u10l5-fig { display: flex; justify-content: center; }
+.u10l5-fsvg { display: block; overflow: visible; }
+.u10l5-svgt { font: 600 18px var(--font); fill: var(--ink); }
+.u10l5-svgb { font-weight: 800; font-size: 20px; }
+.u10l5-why { display: grid; grid-template-columns: 320px 1fr; gap: 22px; align-items: center; margin: 4px 0 6px; }
+.u10l5-why .def { margin: 0; }
+.u10l5-exrow { display: grid; grid-template-columns: 300px 1fr; gap: 18px; align-items: start; margin-bottom: 14px; }
+.u10l5-exrow .parts { margin-bottom: 0; }
+.u10l5-bins { display: flex; justify-content: center; gap: 60px; margin: 4px 0 12px; }
+.u10l5-blank { display: inline-block; min-width: 120px; border-bottom: 2px solid var(--ink); text-align: center; padding: 0 6px; }
+.u10l5-tbl { border-collapse: collapse; margin: 10px auto 16px; font-size: 18px; }
+.u10l5-tbl th, .u10l5-tbl td { border: 1.5px solid #c9c3b4; padding: 7px 14px; text-align: left; }
+.u10l5-tbl th { background: #f2efe6; font-weight: 800; }
+.u10l5-tbl2 td { background: #f6f3fb; }
+
+/* ---------------- explainer pieces ---------------- */
+.u10l5-svg { position: absolute; left: 0; top: 0; overflow: visible; }
+.u10l5-lab { position: absolute; white-space: nowrap; pointer-events: none; }
+.u10l5-side { font-size: 22px; font-weight: 700; color: var(--ink); background: rgba(251, 250, 246, .92); border-radius: 6px; padding: 0 4px; }
+.u10l5-sm { font-size: 18px; font-weight: 700; color: var(--ink); background: rgba(251, 250, 246, .92); border-radius: 6px; padding: 0 3px; }
+.u10l5-imp { color: var(--u10l5-imp); }
+.u10l5-call { font: 700 18px var(--round); color: var(--u10l5-blue); background: #fff; border: 2px solid var(--u10l5-blue); border-radius: 8px; padding: 1px 8px; }
+.u10l5-callr { color: var(--u10l5-red); border-color: var(--u10l5-red); }
+.u10l5-calla { color: #8a5608; border-color: var(--u10l5-amb); background: #fff8ea; }
+.u10l5-panel { position: absolute; background: #fff; border: 1.5px solid var(--line2); border-radius: 14px; padding: 10px 14px; display: flex; flex-direction: column; gap: 7px; font-size: 20px; box-sizing: border-box; overflow: hidden; }
+.u10l5-ph { font: 800 15px var(--font); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.u10l5-line { line-height: 1.35; }
+.u10l5-wrong { position: relative; align-self: flex-start; color: var(--u10l5-red); }
+.u10l5-boxed { align-self: flex-start; border: 2.5px solid var(--brand2); background: var(--brand-soft); border-radius: 10px; padding: 4px 10px; font-size: 21px; }
+.u10l5-struck { position: relative; color: var(--u10l5-red); }
+.u10l5-xline { position: absolute; left: -3px; top: 50%; height: 3.5px; margin-top: -2px; background: var(--u10l5-red); border-radius: 2px; width: 0; }
+.u10l5-un .u10l5-xline { left: -2px; rotate: -22deg; }
+.u10l5-wide { align-items: center; }
+.u10l5-wide .u10l5-line { font-size: 24px; }
+
+/* the shortcut's rows of zeros */
+.u10l5-zrow { position: absolute; display: flex; align-items: center; gap: 18px; font-size: 24px; }
+.u10l5-zname { width: 140px; display: flex; flex-direction: column; line-height: 1.15; }
+.u10l5-zname small { font-size: 15px; color: var(--muted); }
+.u10l5-zeq { display: flex; align-items: center; gap: 6px; }
+.u10l5-zdig { display: inline-flex; font: 800 30px var(--round); margin: 0 2px; }
+.u10l5-zd { display: inline-block; min-width: 20px; text-align: center; }
+.u10l5-zgap { margin-left: 8px; }
+.u10l5-z0 { color: var(--brand2); } .u10l5-z1 { color: var(--u10l5-amb); } .u10l5-z2 { color: var(--u10l5-imp); }
+.u10l5-zpow { margin-left: 10px; }
+
+/* the decimal-point strip */
+.u10l5-strip { position: absolute; height: 64px; }
+.u10l5-cell { position: absolute; top: 0; width: 42px; height: 58px; margin-left: 2px; border: 2px solid #d7d2c4; border-radius: 8px; background: #fff; box-sizing: border-box; display: grid; place-items: center; font: 800 34px var(--round); color: var(--ink); }
+.u10l5-dot { position: absolute; top: 46px; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; background: var(--u10l5-red); box-shadow: 0 0 0 2.5px #fff; z-index: 2; }
+
+/* unit analysis */
+.u10l5-mtbl { position: absolute; display: grid; grid-template-columns: 1fr 1.2fr 1.5fr; border: 1.5px solid #c9c3b4; border-radius: 10px; overflow: hidden; background: #fff; font-size: 18px; }
+.u10l5-mh { background: #f2efe6; font-weight: 800; padding: 5px 12px; border-bottom: 1.5px solid #c9c3b4; }
+.u10l5-mc { padding: 8px 12px; border-top: 1px solid #e6e1d4; transition: background .3s; }
+.u10l5-hl1 { background: #fde8c4; box-shadow: inset 0 0 0 2.5px var(--u10l5-amb); }
+.u10l5-hl2 { background: #d9efec; box-shadow: inset 0 0 0 2.5px var(--brand2); }
+.u10l5-ua { position: absolute; display: flex; align-items: center; justify-content: center; gap: 16px; font-size: 28px; }
+.u10l5-fr { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; }
+.u10l5-nu { padding: 0 8px 4px; }
+.u10l5-de { padding: 4px 8px 0; border-top: 2.5px solid var(--ink); align-self: stretch; text-align: center; }
+.u10l5-un { position: relative; display: inline-block; }
+.u10l5-op { color: var(--muted); }
+.u10l5-ures { position: absolute; text-align: center; font-size: 30px; }
+
+/* bins */
+.u10l5-btitle { font: 700 19px var(--round); color: var(--ink); }
+.u10l5-bname { font: 700 18px var(--round); color: var(--ink); }
+.u10l5-bval { font-size: 19px; font-weight: 700; color: var(--ink); }
+.u10l5-flab { font-size: 18px; font-weight: 800; color: var(--ink); background: rgba(255, 255, 255, .85); border-radius: 5px; padding: 0 4px; }

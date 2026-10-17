@@ -396,7 +396,7 @@ const pick = {
     const t = mkTri(stage, p.tri, { x: 0, y: 6, w: 360, h: 380, pad: 66, lab: p.lab, r: 28 });
     const cards = ratioCards(stage, 380, 14, W - 390);
     const P = panel(stage, 380, 162, W - 390, 226, '');
-    const miss = (fn) => RAT[fn].filter((r) => r !== p.giv && r !== p.unk);
+    const miss = (fn) => [p.giv, p.unk].filter((r) => !RAT[fn].includes(r));
     return [
       { cap: `From the ${T(dg(I.deg))} angle, name every side.`, run: (c) => tagRoles(c, t) },
       { cap: `Known: ${T(I.kT)}, the <b>${LONG[p.giv]}</b>. Unknown: ${T(I.uT)}, the <b>${LONG[p.unk]}</b>.`,

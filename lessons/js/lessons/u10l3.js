@@ -432,8 +432,6 @@ const mtour = {
   make(stage, v, ex) {
     const W = ex.W, M = new Micrometer(stage, { s: 5.5, x: 6, y: 58, r: 3, rmax: 4.2 });
     const k = Math.min(60, (W - M.W - 30) / (4.2 * 0.55 + 3.62)), MS = new MicroScale(stage, { R: 1.75, r0: 3, rmax: 4.2, mlo: 0, k, x: W - 10 - (4.2 * 0.55 + 3.62) * k, y: 18 });
-    const ov = overlay(stage, W, 420);
-    S('path', { d: `M${6 + M.P(50, -5)[0]} ${58 + M.P(50, -5)[1]} L${MS.el.offsetLeft || W - 10 - (4.2 * 0.55 + 3.62) * k} 30`, class: 'u10l3-zline' }, ov);
     const P = panel(stage, M.W + 24, 300, W - M.W - 34, 108, 'Reading');
     let labels = [], coin = null, turnPill = null, l1, l2, l3;
     const sync = (c, r, ms) => Promise.all([M.turn(c, r, ms), MS.turn(c, r, ms)]);
