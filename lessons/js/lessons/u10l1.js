@@ -54,7 +54,7 @@ function strip(host, s, o = {}) {
   const mk = (ch, e, gap) => { const d = h('div', 'u10l1-dg' + (gap ? ' u10l1-gap' : ''), `<div class="u10l1-dgv">${ch}</div>`); d.exp = e; d.dv = d.firstChild; el.appendChild(d); cells.push(d); return d; };
   [...ip].forEach((ch, i) => mk(ch, ip.length - 1 - i, i > 0 && (ip.length - 1 - i) % 3 === 2));
   let pt = null;
-  if (fp != null) { pt = h('div', 'u10l1-pt', '.'); el.appendChild(pt); [...fp].forEach((ch, i) => mk(ch, -(i + 1), i > 0 && i % 3 === 0)); }
+  if (fp != null) { pt = h('div', 'u10l1-pt', '.'); el.appendChild(pt); [...fp].forEach((ch, i) => mk(ch, -(i + 1), !o.noFracGap && i > 0 && i % 3 === 0)); }
   host.appendChild(el);
   return { el, cells, pt, at: (e) => cells.find((d) => d.exp === e) };
 }
@@ -182,7 +182,7 @@ const zoom = {
   intro: (k) => `Where does ${T(nt(ZM[k].s))} sit? Zoomed out, it is somewhere between two big neighbours. Press <b>Next</b> to zoom in${ZM[k].ks.length > 1 ? ', one place value at a time' : ''}.`,
   make(stage, key, ex) {
     const d = ZM[key], v = +d.s, W = ex.W, multi = d.ks.length > 1, num = T(nt(d.s));
-    const S = strip(stage, d.s, { cls: 'u10l1-strip-md' }); at(S.el, (W - S.el.offsetWidth) / 2, 40);
+    const S = strip(stage, d.s, { cls: 'u10l1-strip-md', noFracGap: true }); at(S.el, (W - S.el.offsetWidth) / 2, 40);
     const Z = new ZoomLine(stage, 14, 140, W - 28, 176, 86);
     const sg = v < 0 ? -1 : 1, kTop = Math.max(...d.ks) + 1;
     const nb = (k) => {
@@ -287,6 +287,7 @@ const digits = {
         const right = S.cells.filter((cl) => cl.exp < k), jobs = [];
         for (const cl of right) { if (cl.exp >= 0) jobs.push(roll(c, cl, 0, 'u10l1-zero')); else jobs.push(dropOut(c, cl)); }
         if (k >= 0 && S.pt) jobs.push(dropOut(c, S.pt));
+        if (tdCell.exp < 0) S.el.querySelectorAll('.u10l1-ttd').forEach((t) => jobs.push(c.anim(t, [{ opacity: 1 }, { opacity: 0 }], 300)));
         await Promise.all(jobs); await pop(c, out, 420);
       } });
     return steps;
@@ -394,13 +395,13 @@ const sci = {
         run: async (c) => {
           const ph = cells.filter((_, j) => (small ? j < f : j > last)); ph.forEach((e) => e.classList.add('u10l1-scph'));
           cells.slice(f, last + 1).forEach((e) => e.classList.add('u10l1-sca'));
-          at(brace, x0 + xs[f] + (xs[last] + CW - xs[f]) / 2, Y + 84); brace.style.translate = '-50% 0'; await pop(c, brace);
+          box(brace, xs[last] + CW - xs[f]); at(brace, x0 + xs[f], Y + 76); await pop(c, brace);
           await show(c, lineT(P, d.tx + unit + '=' + sciT + unit));
         } },
       { cap: aR === +aStr && aStr.length <= 3 ? `To the nearest tenth: ${T(aStr)} already stops at the tenths, so the answer is ${T(sciR + unit)}.`
         : `Round the coefficient to the nearest tenth: test digit <b>${tdD}</b> ${tdD >= 5 ? 'is 5 or more, round up' : 'is less than 5, round down'}: ${T(sciR + unit)}.`,
         run: async (c) => {
-          if (cells[f + 1]) cells[f + 1].classList.add('u10l1-pv'); if (cells[f + 2]) cells[f + 2].classList.add('u10l1-td');
+          if (!(aR === +aStr && aStr.length <= 3)) { if (cells[f + 1]) cells[f + 1].classList.add('u10l1-pv'); if (cells[f + 2]) cells[f + 2].classList.add('u10l1-td'); }
           await sleep(c, 200); await pop(c, lineT(P, '\\approx\\mathbf{' + sciR + '}' + unit, 'u10l1-big'), 420);
         } }
     ];
@@ -445,7 +446,7 @@ const renorm = {
     const mk = svgEl('circle', { r: 11, cy: N.ay, class: 'u10l1-rnmk' }, N.layers.top); mk.style.opacity = 0;
     const ml = add(N.html, h('div', 'u10l1-rnml', '')); hide(ml);
     const xOf = (v) => (v > 20 ? N.toPx(20) + 22 : N.toPx(v));
-    const place = (v, txt) => { const px = xOf(v); mk.setAttribute('cx', px); ml.innerHTML = txt; ml.style.left = px + 'px'; ml.style.top = (N.ay - 30) + 'px'; };
+    const place = (v, txt) => { const px = xOf(v); mk.setAttribute('cx', px); ml.innerHTML = txt; ml.style.left = px + 'px'; ml.style.top = (N.ay - 30) + 'px'; ml.style.translate = v > 20 ? '-100% -100%' : ''; };
     const inZone = (v) => v >= 1 && v < 10;
     const shown = (v) => (v > 20 ? `${T(grp(calcStr(v).slice(0, 8)) + '\\ldots')} →` : T(calcStr(v).length > 7 ? calcStr(v).slice(0, 6) + '\\ldots' : calcStr(v)));
     return d.steps.map(([cap, tx, act]) => ({
@@ -456,7 +457,7 @@ const renorm = {
         if (act === 'bad') await shake(c, ml);
         if (act === 'good') await pulse(c, ml, 1.15);
         if (act === 'v1') {
-          const a = d.v0 > 20 ? 21.5 : d.v0, b = d.v1;
+          const a = d.v0 > 20 ? 21.5 : d.v0, b = d.v1; ml.style.translate = '';
           await tween(c, 900, (t) => { const px = (d.v0 > 20 ? N.toPx(20) + 22 : N.toPx(a)) + (N.toPx(b) - (d.v0 > 20 ? N.toPx(20) + 22 : N.toPx(a))) * t; mk.setAttribute('cx', px); ml.style.left = px + 'px'; });
           place(b, shown(b)); mk.classList.add('u10l1-in'); await pulse(c, ml, 1.15);
         }
@@ -589,8 +590,8 @@ const subfirst = {
     const L = (i, cls) => lineT(P, d.lines[i], cls);
     if (key === 'a' || key === 'units') {
       const U = key === 'units';
-      add(fig, h('div', 'u10l1-sfh', U ? `${T('84\\text{ km}')} at ${T('12\\text{ km/h}')}: each hop is 1 hour` : `How many 12s make 84?`), 0, 18);
-      const N = new NumberLine(fig, { x: 8, y: 150, width: FW - 16, height: 130, axisY: 86, min: 0, max: 84, step: 12, labels: (v) => T(U ? v + '\\text{ km}' : String(v)), fontSize: 16 });
+      add(fig, h('div', 'u10l1-sfh', U ? `Distance in km: each hop of 12 km takes 1 hour` : `How many 12s make 84?`), 0, 18);
+      const N = new NumberLine(fig, { x: 8, y: 150, width: FW - 16, height: 130, axisY: 86, min: 0, max: 84, step: 12, labels: (v) => T(String(v)), fontSize: 16 });
       const cnt = add(fig, h('div', 'u10l1-sfcnt', '&nbsp;'), 0, 300); box(cnt, FW);
       const hops = async (c) => { for (let i = 0; i < 7; i++) { await N.hop(c, 12 * i, 12 * (i + 1), { label: U ? T('1\\text{ h}') : T('+12'), color: 'amber', height: 30, ms: 300 }); cnt.innerHTML = `${i + 1} hop${i ? 's' : ''}`; } cnt.innerHTML = U ? `7 hops: ${T('t=7\\text{ h}')}` : `7 hops: ${T('t=7')}`; await pulse(c, cnt, 1.12); };
       if (U) return [
@@ -619,14 +620,14 @@ const subfirst = {
       setW(x0);
       const cl = add(fig, h('div', 'u10l1-sflab u10l1-sfc', T('C=100')), 0, base + 14); hide(cl);
       const rl = add(fig, h('div', 'u10l1-sflab u10l1-sfr', T('r\\approx15.9')), 0, 0); hide(rl);
-      add(fig, h('div', 'u10l1-sfh', 'Roll the circle once: its trail is the circumference'), 0, 18);
+      add(fig, h('div', 'u10l1-sfh', 'Roll the circle once: its trail is C'), 0, 18);
       return [
         { cap: `Substitute: ${T('C=2\\pi r')} becomes ${T('100=2\\pi r')}. Roll the circle once along the ground: its trail is the circumference, 100.`,
           run: async (c) => { await show(c, L(0)); await show(c, L(1)); await tween(c, 1800, (t) => setW(x0 + (x1 - x0) * t)); setW(x1); at(cl, (x0 + x1) / 2, base + 14); cl.style.translate = '-50% 0'; await pop(c, cl); } },
         { cap: `${T('r')} is being multiplied by ${T('2\\pi')}. Undo it: divide <b>both sides</b> by ${T('2\\pi')}.`, run: async (c) => { await show(c, L(2)); } },
         { cap: `Calculate, keeping every digit: ${T('r=15.9154\\ldots')}.`, run: async (c) => { await show(c, L(3)); } },
         { cap: `Round at the end, to the nearest tenth (test digit 1): ${T('r\\approx15.9')}. Check: ${T('2\\pi(15.9155)=100.0')} ✓`,
-          run: async (c) => { await pulse(c, spoke, 1.1); at(rl, x1 + 10, base - R - 56); rl.style.translate = '-50% 0'; await pop(c, rl); await pop(c, L(4, 'u10l1-big'), 420); await show(c, L(5, 'u10l1-sm')); } }
+          run: async (c) => { await pulse(c, spoke, 1.1); at(rl, x1 - 10, base - 2 * R - 46); rl.style.translate = '-50% 0'; await pop(c, rl); await pop(c, L(4, 'u10l1-big'), 420); await show(c, L(5, 'u10l1-sm')); } }
       ];
     }
     // c: grow a sphere until its volume reaches 150
@@ -651,16 +652,16 @@ const subfirst = {
 /* =============================== explainer: run the formula backwards (Example 7) =============================== */
 const UN = {
   a: { label: 'Example 7(a)', inV: 'r', outV: 'A', op: ['(\\ \\ )^{2}', '\\times\\pi'], inv: ['\\sqrt{\\ \\ }', '\\div\\pi'], f: 'r=\\sqrt{\\dfrac{A}{\\pi}}', root: true,
-    say: ['<b>square</b> it', '<b>multiply by π</b>'], undo: `${T('\\div\\pi')} undoes ${T('\\times\\pi')}, then ${T('\\sqrt{\\ }')} undoes the square`,
-    vals: ['60', '19.0986\\ldots', '4.3702\\ldots'], sub: `${T('A=60')}`, run: `${T('60\\div\\pi=19.0986\\ldots')}, then ${T('\\sqrt{19.0986\\ldots}=4.3702\\ldots')}`, fin: 'r\\approx4.4', td: 7,
+    say: ['<b>square</b> it', `<b>multiply by ${T('\\pi')}</b>`], undo: `${T('\\div\\pi')} undoes ${T('\\times\\pi')}, then ${T('\\sqrt{\\ }')} undoes the square`,
+    vals: ['60', '19.0986\\ldots', '4.3702\\ldots'], sub: `${T('A=60')}`, run: `${T('60\\div\\pi=19.0986\\ldots')}, then ${T('\\sqrt{19.0986\\ldots}=4.3702\\ldots')}`, fin: 'r\\approx\\mathbf{4.4}', td: 7,
     subLine: 'r=\\sqrt{\\dfrac{60}{\\pi}}=\\sqrt{19.0986\\ldots}=4.3702\\ldots' },
   b: { label: 'Example 7(b)', inV: 'r', outV: 'V', op: ['(\\ \\ )^{2}', '\\times\\pi h'], inv: ['\\sqrt{\\ \\ }', '\\div\\pi h'], f: 'r=\\sqrt{\\dfrac{V}{\\pi h}}', root: true,
-    say: ['<b>square</b> it', '<b>multiply by πh</b>'], undo: `${T('\\div\\pi h')} undoes ${T('\\times\\pi h')}, then ${T('\\sqrt{\\ }')} undoes the square`,
-    vals: ['250', '15.9154\\ldots', '3.9894\\ldots'], sub: `${T('V=250')} and ${T('h=5')}`, run: `${T('250\\div(5\\pi)=15.9154\\ldots')}, then ${T('\\sqrt{15.9154\\ldots}=3.9894\\ldots')}`, fin: 'r\\approx4.0', td: 8,
+    say: ['<b>square</b> it', `<b>multiply by ${T('\\pi h')}</b>`], undo: `${T('\\div\\pi h')} undoes ${T('\\times\\pi h')}, then ${T('\\sqrt{\\ }')} undoes the square`,
+    vals: ['250', '15.9154\\ldots', '3.9894\\ldots'], sub: `${T('V=250')} and ${T('h=5')}`, run: `${T('250\\div(5\\pi)=15.9154\\ldots')}, then ${T('\\sqrt{15.9154\\ldots}=3.9894\\ldots')}`, fin: 'r\\approx\\mathbf{4.0}', td: 8,
     subLine: 'r=\\sqrt{\\dfrac{250}{\\pi(5)}}=\\sqrt{15.9154\\ldots}=3.9894\\ldots' },
   c: { label: 'Example 7(c)', inV: 'h', outV: 'V', op: ['\\times\\pi r^{2}', '\\div3'], inv: ['\\div\\pi r^{2}', '\\times3'], f: 'h=\\dfrac{3V}{\\pi r^{2}}',
-    say: ['<b>multiply by πr²</b>', '<b>divide by 3</b> (that is the ⅓)'], undo: `${T('\\times3')} undoes ${T('\\div3')}, then ${T('\\div\\pi r^2')} undoes ${T('\\times\\pi r^2')}`,
-    vals: ['90', '270', '2.3873\\ldots'], sub: `${T('V=90')} and ${T('r=6')}`, run: `${T('90\\times3=270')}, then ${T('270\\div\\pi(6)^2=2.3873\\ldots')}`, fin: 'h\\approx2.4', td: 8,
+    say: [`<b>multiply by ${T('\\pi r^2')}</b>`, `<b>divide by 3</b> (that is the ${T('\\tfrac13')})`], undo: `${T('\\times3')} undoes ${T('\\div3')}, then ${T('\\div\\pi r^2')} undoes ${T('\\times\\pi r^2')}`,
+    vals: ['90', '270', '2.3873\\ldots'], sub: `${T('V=90')} and ${T('r=6')}`, run: `${T('90\\times3=270')}, then ${T('270\\div(\\pi(6)^2)=2.3873\\ldots')}`, fin: 'h\\approx\\mathbf{2.4}', td: 8,
     subLine: 'h=\\dfrac{3(90)}{\\pi(6)^{2}}=\\dfrac{270}{113.0973\\ldots}=2.3873\\ldots' }
 };
 const undo = {
@@ -691,7 +692,7 @@ const undo = {
       { cap: `Substitute ${d.sub} and run the numbers backwards: ${d.run}.`,
         run: async (c) => { for (const e of VL) { await pop(c, e, 320); await sleep(c, 120); } await show(c, lineT(P, d.subLine)); } },
       { cap: `Round at the end, to the nearest tenth (test digit ${d.td}): ${T(d.fin)}.`,
-        run: async (c) => { await pop(c, lineT(P, '\\mathbf{' + d.fin + '}', 'u10l1-big'), 420); } }
+        run: async (c) => { await pop(c, lineT(P, d.fin, 'u10l1-big'), 420); } }
     ];
   }
 };

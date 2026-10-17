@@ -110,3 +110,10 @@
 
 /* keep wide figures from stretching their grid column: the figure shrinks to fit instead */
 .u9l8-rev .part, .u9l8-exrow > *, .u9l8-fig { min-width: 0; }
+/* review questions with several parts: an outer box (not a .part, so each inner part keeps its own Answer toggle) */
+.u9l8-qbox { border: 1.5px solid #e4dfd3; border-radius: 14px; padding: 12px 14px; margin-bottom: 16px; background: #fffdf8; min-width: 0; }
+.u9l8-qbox > .part.u9l8-in { margin-top: 10px; }
+.u9l8-subgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 8px 0 10px; }
+.u9l8-sub { border: 1.5px dashed #ddd6c6; border-radius: 10px; padding: 8px 10px; }
+.u9l8-sub-q { margin: 4px 0 10px; }
+.u9l8-exrow.u9l8-xwide { grid-template-columns: 600px 1fr; }

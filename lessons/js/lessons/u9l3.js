@@ -722,7 +722,7 @@ const letters = {
     const steps = d.parts.map((q, i) => {
       if (q.a && q.val === 90) return { cap: q.a.length === 3 ? `${T(angT(q.a))}: the <b>middle letter</b> is the vertex. The right angle is at ${T(q.v)}.` : `${T(angT(q.a))}: the right angle is at ${T(q.v)}.`,
         run: async (c) => { chunks[i].innerHTML = T(chunkT(q, true)); chunks[i].classList.add('u9l3-chunk-on'); await pulse(c, t.vLabs[q.v], 1.5); await pop(c, rmk); await say(c, P, `${T(chunkT(q, true))} → right angle at ${T(q.v)}`); } };
-      if (q.a) return { cap: `${T(angT(q.a))}: the angle is at the middle letter, ${T(q.v)}. Mark ${T(dg(q.val))} there.`,
+      if (q.a) return { cap: `${T(angT(q.a))}: the angle is at ${q.a.length === 3 ? 'the middle letter, ' : ''}${T(q.v)}. Mark ${T(dg(q.val))} there.`,
         run: async (c) => { chunks[i].innerHTML = T(chunkT(q, true)); chunks[i].classList.add('u9l3-chunk-on'); const g = t.angle(q.v, dg(q.val), { color: ANG, r: 36 }); await fadeIn(c, g); if (g.label) await pop(c, g.label); await say(c, P, `${T(chunkT(q, true))} → ${T(dg(q.val))} at ${T(q.v)}`); } };
       const kk = lc(Object.keys(t.V).find((v) => !(q.s || q.f).includes(v)));
       if (q.s) return { cap: `${T(q.s)}: a side is named by its <b>two endpoints</b>, ${T(q.s[0])} and ${T(q.s[1])}. ${T(`${q.s}=${q.val}`)}.`,

@@ -416,7 +416,7 @@ function crossDef(DATA, title) {
       const d = DATA[k], Hs = ex.def.height, cone = !!d.cone, body = d.body || 0;
       const R = cone ? d.r : d.R || d.side / (2 * Math.sin(PI / d.n)), a = cone ? d.r : +(R * Math.cos(PI / d.n)).toFixed(6);
       const sLen = Math.hypot(d.h, a), tot = d.h + body, SW = 500;
-      const sc = Math.min(330 / (2 * R), 300 / (tot * 0.95));
+      const sc = Math.min(440 / (2 * R), 300 / (tot * 0.95));
       const S = new Scene3(stage, { x: 0, y: 0, w: ex.W, h: Hs, cx: SW / 2, cy: Hs - 70 - (R * sc * Math.sin(16 * RAD)), scale: sc, yaw: -28, tilt: 16 });
       const base = cone ? null : regPoly(d.n, R), O = [0, body, 0], A = [0, body + d.h, 0], M = [a, body, 0];
       const st = { rise: 0, hT: 0, aT: 0, sT: 0, tri: false, lift: 0, spin: 0, lab: { h: 0, a: 0, s: 0 } };
@@ -499,15 +499,15 @@ const hsc = crossDef(HSC, 'The right triangle inside a cone');
 /* =============================== pouring: funnel → box, cone → cylinder =============================== */
 /** one scene with a container on the left and a pourer that fills it in three pours. cfg: { kind: 'pyr'|'cone', W, D, r, H, S, fill colours } */
 function pourScene(stage, ex, cfg) {
-  const Hs = ex.def.height, tilt = 22, ANG = -118;
+  const Hs = ex.def.height, tilt = 22, ANG = -118, lipUp = 50;
   const S = new Scene3(stage, { x: 0, y: 0, w: ex.W, h: Hs, scale: cfg.S, yaw: cfg.kind === 'pyr' ? -24 : 0, tilt });
-  const bx = cfg.bx ?? 230, by = Hs - 46, sc = cfg.S, Hh = cfg.H, boxOrg = [bx, by, sc];
+  const bx = cfg.bx ?? 230, by = Hs - 66, sc = cfg.S, Hh = cfg.H, boxOrg = [bx, by, sc];
   const topC = S.P([0, Hh, 0], boxOrg), home = [bx + (cfg.gap ?? 420), topC[1]];
   const st = { level: 0, fill: 0, pos: home.slice(), ang: 0, stream: false, guides: false, done: 0 };
   const rimLocal = () => (cfg.kind === 'pyr' ? rect(cfg.W, cfg.D).map((p) => S.P(p, [0, 0, sc])) : eArc(ellipse(S, [0, 0, 0], cfg.r, [0, 0, sc]), 0, 2 * PI, 36));
   const xf = (p, pos, ang) => { const a = ang * RAD; return [pos[0] + p[0] * Math.cos(a) - p[1] * Math.sin(a), pos[1] + p[0] * Math.sin(a) + p[1] * Math.cos(a)]; };
   const lipOf = (pos, ang) => rimLocal().map((p) => xf(p, pos, ang)).reduce((m, p) => (p[1] > m[1] ? p : m));
-  const l0 = lipOf([0, 0], ANG), over = [topC[0] - l0[0] - 10, topC[1] - 86 - l0[1]];
+  const l0 = lipOf([0, 0], ANG), over = [topC[0] - l0[0] - 10, topC[1] - lipUp - l0[1]];
   const drawContainer = (g) => {
     const L = st.level * Hh;
     if (cfg.kind === 'pyr') {
@@ -544,8 +544,8 @@ function pourScene(stage, ex, cfg) {
     const g2 = svgEl('g', { transform: `translate(${st.pos[0].toFixed(1)} ${st.pos[1].toFixed(1)}) rotate(${st.ang.toFixed(2)})` }, g);
     drawPourer(g2);
     const atHome = dist2(st.pos, home) < 1;
-    S.lab('c1', cfg.name1, [bx, by + 10], 's', { cls: 'u10l7-sm' });
-    if (atHome) S.lab('c2', cfg.name2, [home[0], by + 10], 's', { cls: 'u10l7-sm' });
+    S.lab('c1', cfg.name1, [bx, by + 30], 's', { cls: 'u10l7-sm' });
+    if (atHome) S.lab('c2', cfg.name2, [home[0], by + 30], 's', { cls: 'u10l7-sm' });
     S.lab('cnt', ['empty', '<b>⅓</b> full', '<b>⅔</b> full', '<b>full!</b>'][st.done], [bx, 14], 's', { cls: 'u10l7-pill' + (st.done === 3 ? ' u10l7-ok' : '') });
   };
   S.render();
@@ -563,10 +563,10 @@ function pourScene(stage, ex, cfg) {
   return { S, st, pour, home, by, topC };
 }
 
-const RICECFG = { kind: 'pyr', W: 4, D: 3, H: 3.6, S: 33, c0: '#b89a4a', c1: RICE, c2: RICE2, name1: 'planter box (prism)', name2: 'funnel (pyramid)' };
+const RICECFG = { kind: 'pyr', W: 4, D: 3, H: 3.6, S: 40, c0: '#b89a4a', c1: RICE, c2: RICE2, name1: 'planter box (prism)', name2: 'funnel (pyramid)' };
 const third = {
   title: 'One third: three pyramids fill the prism',
-  height: 470,
+  height: 490,
   choices: [{ v: 'rice', label: 'Rice: funnel into planter box' }, { v: 'cube', label: 'Why ⅓? Cut a cube into 3' }, { v: 'ex1', label: 'Example 1(a) check: the skylight' }],
   intro: (v) => (v === 'rice' ? 'Mr. Halden’s woodworking class. Press <b>Next</b>.' : v === 'cube' ? 'A cube cut into three identical pyramids. Press <b>Next</b>.' : 'The skylight inside the prism on the same base. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -587,7 +587,7 @@ const third = {
 };
 function cubeSteps(stage, ex) {
   const Hs = ex.def.height, a = 3.2;
-  const S = new Scene3(stage, { x: 0, y: 0, w: ex.W, h: Hs, cx: 330, cy: Hs - 130, scale: 50, yaw: -32, tilt: 22 });
+  const S = new Scene3(stage, { x: 0, y: 0, w: ex.W, h: Hs, cx: 320, cy: Hs - 150, scale: 64, yaw: -32, tilt: 22 });
   const P = panel(stage, ex.W - 330, 14, 316, Hs - 28, '');
   const c0 = [-a / 2, 0, -a / 2], Ap = [-a / 2, a, -a / 2]; // shared corner: back-left-top
   const cube = (x, y, z) => [c0[0] + x * a, y * a, c0[2] + z * a];
@@ -626,7 +626,7 @@ function cubeSteps(stage, ex) {
 }
 function skyThirdSteps(stage, ex) {
   const Hs = ex.def.height;
-  const S = new Scene3(stage, { x: 0, y: 0, w: ex.W, h: Hs, cx: 290, cy: Hs - 110, scale: 15.5, yaw: -26, tilt: 18 });
+  const S = new Scene3(stage, { x: 0, y: 0, w: ex.W, h: Hs, cx: 290, cy: Hs - 120, scale: 18, yaw: -26, tilt: 18 });
   const P = panel(stage, ex.W - 360, 14, 346, Hs - 28, '');
   const st = { pf: 0, layers: 0 };
   S.draw = (S) => {
@@ -637,7 +637,7 @@ function skyThirdSteps(stage, ex) {
     } });
     const [V3, F3] = pyramidVF(rect(16, 16), [0, 6, 0], { open: true }); solid(S, g, V3, F3, { w: 3.6, hidden: !st.layers, fill: null });
     S.lab('a', `${T('16')} m`, S.P([0, 0, 8]), 's', { gap: 8 }); S.lab('b', `${T('16')} m`, S.P([8, 0, 0]), 'se', { gap: 2 });
-    S.lab('h', `${T('h=6')} m`, S.P([8, 3, 8]), 'w', { color: HC, cls: 'u10l7-halo' });
+    S.lab('h', `${T('h=6')} m`, S.P([-8, 3, 8]), 'w', { color: HC, cls: 'u10l7-halo' });
     if (st.layers >= 1) for (let i = 0; i < 3; i++) S.lab('L' + i, T('512'), S.P([8, 2 * i + 1, 8]), 'e', { cls: 'u10l7-tag u10l7-sm' });
   };
   S.render();
@@ -653,13 +653,13 @@ function skyThirdSteps(stage, ex) {
 
 const pour = {
   title: 'One third: three cones fill the cylinder',
-  height: 470,
+  height: 490,
   choices: [{ v: 'water', label: 'Water: cone into cylinder' }, { v: 'pop', label: 'Warm-up check: the popcorn deal' }],
   intro: 'Same base, same height. How many cones of water? Press <b>Next</b>.',
   make(stage, k, ex) {
     const popc = k === 'pop';
     const cfg = popc ? { kind: 'cone', r: 10, H: 20, S: 7.6, c0: '#c88c14', c1: POP, c2: POP2, name1: 'tub (cylinder)', name2: 'cone' }
-      : { kind: 'cone', r: 1.9, H: 3.6, S: 34, c0: '#2c78b8', c1: WATER, c2: WATER2, name1: 'cylinder', name2: 'cone' };
+      : { kind: 'cone', r: 1.9, H: 3.6, S: 44, c0: '#2c78b8', c1: WATER, c2: WATER2, name1: 'cylinder', name2: 'cone' };
     const p = pourScene(stage, ex, cfg), { S, st } = p;
     const P = panel(stage, ex.W - 330, 14, 316, popc ? 250 : 150, '');
     if (!popc) return [
@@ -686,8 +686,8 @@ const pour = {
 
 /* =============================== explainer: unfold the net =============================== */
 const NET = {
-  ex1: { label: 'Example 1(b) check: the skylight', side: 16, h: 6, s: 10, unit: 'm', base: false, S: 12.5 },
-  closed: { label: 'A closed pyramid: the base counts', side: 6, h: 4, s: 5, unit: 'cm', base: true, S: 29 }
+  ex1: { label: 'Example 1(b) check: the skylight', side: 16, h: 6, s: 10, unit: 'm', base: false, S: 12.5, S0: 21 },
+  closed: { label: 'A closed pyramid: the base counts', side: 6, h: 4, s: 5, unit: 'cm', base: true, S: 29, S0: 46 }
 };
 const net = {
   title: 'Unfold the pyramid into its net',
@@ -701,7 +701,7 @@ const net = {
     const B = regPoly(4, half * Math.SQRT2), st = { u: 0, sOn: 0, baseX: 0, one: 0, all: 0 }, triA = 0.5 * d.side * d.s, u = d.unit;
     S.draw = (S) => {
       const g = S.g, beta = (1 - E(st.u)) * (PI - a0);
-      S.tilt = lerp(20, 52, E(st.u)); S.yaw = lerp(-28, 0, E(st.u)); S.cy = lerp(Hs - 110, Hs / 2 + 6, E(st.u));
+      S.tilt = lerp(20, 52, E(st.u)); S.yaw = lerp(-28, 0, E(st.u)); S.cy = lerp(Hs - 110, Hs / 2 + 6, E(st.u)); S.S = lerp(d.S0, d.S, E(st.u));
       const tris = [0, 1, 2, 3].map((i) => {
         const p = B[i], q = B[(i + 1) % 4], M = lerp3(p, q, 0.5), n = mul3(M, 1 / Math.hypot(M[0], M[2]));
         const ap = add3(M, add3(mul3(n, d.s * Math.cos(beta)), [0, d.s * Math.sin(beta), 0]));
@@ -714,7 +714,7 @@ const net = {
         const pp = t.pts.map((p) => S.P(p)), lit = (st.one && t.i === 0) || st.all;
         poly(g, pp, { fill: lit ? '#9fd0f0' : GLASS, fo: st.u > 0.3 ? 0.9 : 0.55, stroke: INK, w: 2.4 });
         if (st.sOn && t.i === 0) seg(g, S.P(t.ap), S.P(t.M), { stroke: SC, w: 3.2 });
-        if ((st.one && t.i === 0) || st.all) S.lab('t' + t.i, T(String(triA)), S.P(avg3([t.M, t.M, t.ap])), 'c', { cls: 'u10l7-tag' });
+        if ((st.one && t.i === 0) || st.all) S.lab('t' + t.i, T(String(triA)), S.P(avg3([t.M, t.pts[0], t.ap])), 'c', { cls: 'u10l7-tag' });
       });
       if (st.u === 0) {
         seg(g, S.P([0, d.h, 0]), S.P([0, 0, 0]), { stroke: HC, w: 2.4, dash: DASH });
@@ -803,12 +803,12 @@ const unroll = {
       { cap: `The arc wrapped around the base, so the arc is as long as the base’s circumference: ${T('2\\pi r')}.`, run: async (c) => { st.arc = 1; S.render(); await pop(c, S.L('arc')); } },
       { cap: `The full circle of radius ${T('s')} would be ${T('2\\pi s')} around, with area ${T('\\pi s^2')}.`, run: async (c) => { st.full = 1; S.render(); await appear(c, S.L('full')); } },
       { cap: `The sector is the fraction ${T('\\dfrac{2\\pi r}{2\\pi s}=\\dfrac rs')} of that circle${d.unit ? `: ${T(fr)}` : `: ${T('\\dfrac25')}, a ${deg.toFixed(0)}° slice`}.`,
-        run: async (c) => { await show(c, line(P, T('\\text{fraction}=\\dfrac{2\\pi r}{2\\pi s}=\\dfrac rs'))); if (d.unit) await show(c, line(P, T(`=${fr}`))); } },
+        run: async (c) => { await show(c, line(P, T('\\text{fraction}=\\frac{2\\pi r}{2\\pi s}=\\frac rs'))); if (d.unit) await show(c, line(P, T(`=${fr}`))); } },
       { cap: d.unit ? `Curved area ${T(`=\\tfrac{5}{13}\\times\\pi(13)^2=65\\pi\\approx204.2`)} cm². Add the base ${T('25\\pi')}: ${T('SA=90\\pi\\approx282.7')} cm².` : `Curved area ${T('=\\dfrac rs\\times\\pi s^2=\\pi rs')}. Add the base: ${T('SA_{\\text{cone}}=\\pi r^2+\\pi rs')}.`,
         run: async (c) => {
           st.baseLab = 1; S.render(); await pop(c, S.L('bl'));
           if (d.unit) { await show(c, line(P, T('\\pi rs=\\pi(5)(13)=65\\pi'))); await show(c, line(P, T('SA=25\\pi+65\\pi=90\\pi'))); await show(c, line(P, T('\\approx282.7') + ' cm²', 'u10l7-big')); }
-          else { await show(c, line(P, T('\\dfrac rs\\times\\pi s^2=\\pi rs'), 'u10l7-big')); await show(c, line(P, T('SA_{\\text{cone}}=\\pi r^2+\\pi rs'), 'u10l7-big')); }
+          else { await show(c, line(P, T('\\frac rs\\times\\pi s^2=\\pi rs'), 'u10l7-big')); await show(c, line(P, T('SA_{\\text{cone}}=\\pi r^2+\\pi rs'), 'u10l7-big')); }
         } }
     ];
   }
@@ -835,8 +835,8 @@ const which = {
         q: { x: cxm, y: 38, w: 340, h: 54, html: '<b>What are you finding?</b>', cls: 'bk-round' },
         vol: { x: L, y: 132, w: 330, h: 74, html: `<b>Volume</b>${T('\\tfrac13A_{\\text{Base}}h')} or ${T('\\tfrac13\\pi r^2h')}`, color: 'blue' },
         sa: { x: R, y: 132, w: 330, h: 74, html: `<b>Surface area</b>base + triangles or ${T('\\pi r^2+\\pi rs')}`, color: 'red' },
-        useh: { x: L, y: 232, w: 300, h: 56, html: `<b>Use ${T('h')}</b>, the perpendicular height`, color: 'blue' },
-        uses: { x: R, y: 232, w: 300, h: 56, html: `<b>Use ${T('s')}</b>, the slant height`, color: 'red' },
+        useh: { x: L, y: 232, w: 300, h: 56, html: `<b>Use ${T('h')}</b>the perpendicular height`, color: 'blue' },
+        uses: { x: R, y: 232, w: 300, h: 56, html: `<b>Use ${T('s')}</b>the slant height`, color: 'red' },
         given: { x: cxm, y: 322, w: 250, h: 54, html: '<b>Is it given?</b>', cls: 'bk-round' },
         yes: { x: L, y: 412, w: 300, h: 60, html: '<b>Substitute</b>and round once, at the end', color: 'green' },
         no: { x: R, y: 412, w: 300, h: 60, html: `<b>Pythagoras</b>${T('s^2=h^2+r^2')} (or half the side)`, color: 'purple' }
@@ -864,7 +864,7 @@ const hex = {
   height: 480,
   intro: 'A regular hexagon with sides of 6 cm, seen from directly above. Press <b>Next</b>.',
   make(stage, k, ex) {
-    const Hs = ex.def.height, sc = 19.5, base = regPoly(6, 6, 0), A = [0, 12, 0];
+    const Hs = ex.def.height, sc = 23, base = regPoly(6, 6, 0), A = [0, 12, 0];
     const S = new Scene3(stage, { x: 0, y: 0, w: ex.W, h: Hs, cx: 290, cy: Hs / 2, scale: sc, yaw: -12, tilt: 90 });
     const P = panel(stage, ex.W - 360, 14, 346, Hs - 28, '');
     const st = { sp: 0, one: 0, all: 0, up: 0, water: 0, apo: 0 };
@@ -887,7 +887,7 @@ const hex = {
         return;
       }
       const [V, F] = pyramidVF(base, [0, 12 * u + 0.001, 0]);
-      solid(S, g, V, F, { fill: st.water ? '#bfe0f7' : '#fff', fo: 0.9, faceFill: (i) => (i === 0 ? '#ddd0f5' : null) });
+      solid(S, g, V, F, { fo: 0.9, faceFill: (i) => (i === 0 ? '#ddd0f5' : st.water ? '#bfe0f7' : '#fff') });
       if (u >= 1) { seg(g, S.P(A), O, { stroke: HC, w: 2.6, dash: DASH }); S.lab('h', `${T('h=12')} cm`, S.P([0, 6, 0]), 'w', { color: HC, cls: 'u10l7-halo' }); }
       S.lab('side', `${T('6')} cm`, lerp2(bp[1], bp[2], 0.5), 's', { gap: 6 });
     };

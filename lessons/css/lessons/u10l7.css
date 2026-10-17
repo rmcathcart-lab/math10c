@@ -61,3 +61,5 @@
 .u10l7-ph { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
 .u10l7-line { font-size: 20px; line-height: 1.35; }
 .u10l7-line.u10l7-big { font-size: 23px; font-weight: 700; }
+.u10l7 .bk-stamp { text-transform: none; }
+.u10l7-panel .bk-stamp { margin-top: 16px !important; }

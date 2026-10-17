@@ -383,7 +383,7 @@ function shiftDef(p, data, title) {
             setDot(pe);
             await Promise.all(cEls.map((e, i) => (needed(i, pe) ? anim(c, e, [{ opacity: 1 }], 200) : fade(c, e, 0.12))));
             if (intRes) await fade(c, dot, 0.15);
-            await say(c, P, T(`${d.vt}\\ ${right ? '\\times' : '\\div'}\\ ${fac}=${d.std}${U(PRE[d.to], p)}`));
+            await say(c, P, T(`${d.vt}${right ? '\\times' : '\\div'}${fac}=${d.std}${U(PRE[d.to], p)}`));
           } },
         { cap: d.sci ? `Standard notation: <b>${T(d.std + U(PRE[d.to], p))}</b>. Scientific notation: <b>${T(d.sci + U(PRE[d.to], p))}</b>.` : `${T(`${d.vt}${U(PRE[d.from], p)}=${d.std}${U(PRE[d.to], p)}`)}.`,
           run: async (c) => { if (d.sci) await say(c, P, T(`=${d.sci}${U(PRE[d.to], p)}`)); await stampIn(c, stampP(P, `${n} step${n > 1 ? 's' : ''} → ${p * n} places`)); } }
@@ -433,13 +433,13 @@ const rect = {
       { cap: `<b>Way 2:</b> each square metre holds ${T(`${d.f}^2=${d.ff}${U(d.sm, 2)}`)} (Example 1).`,
         run: async (c) => {
           const f = fine(0, 3); if (d.sm === 'mm') f.setAttribute('stroke-width', 0.5);
-          await appear(c, f, 300); svgEl('rect', { x: x0, y: y0 + 3 * s, width: s, height: s, fill: 'none', stroke: AMB, 'stroke-width': 4 }, gTop);
+          await appear(c, f, 300); svgEl('rect', { x: x0 + 2, y: y0 + 3 * s + 2, width: s - 4, height: s - 4, fill: AMB, 'fill-opacity': 0.3, stroke: AMB, 'stroke-width': 4 }, gTop);
           const l = lab(stage, x0 + s / 2, y0 + 3 * s - 6, T(`${d.ff}${U(d.sm, 2)}`), 'u10l5-call u10l5-calla', 'b'); l.style.translate = '-12% -100%'; await pop(c, l);
         } },
       { cap: `28 squares, each ${T(`${d.ff}${U(d.sm, 2)}`)}: ${T(`28\\times${d.ff}=${d.prod}${U(d.sm, 2)}`)}. The same answer ✓`,
-        run: async (c) => { for (let r = 0; r < 4; r++) for (let q = 0; q < 7; q++) if (q || r !== 3) fine(q, r).style.opacity = 0; for (const e of [...gTop.querySelectorAll('path')].slice(1)) await appear(c, e, 40); await say(c, P, '<b>2</b> ' + T(`28\\times${d.ff}=${d.prod}${U(d.sm, 2)}`)); await stampIn(c, stampP(P, 'same answer ✓')); } },
+        run: async (c) => { for (let r = 0; r < 4; r++) for (let q = 0; q < 7; q++) if (q || r !== 3) fine(q, r).style.opacity = 0; for (const e of [...gTop.querySelectorAll('path')].slice(1)) await appear(c, e, 40); await say(c, P, '<b>2</b> ' + T(`28\\times${d.ff}=${d.prod}${U(d.sm, 2)}`)); } },
       { cap: `“Times ${d.f}” once would give ${T(`28\\times${d.f}=${d.wrong}${U(d.sm, 2)}`)}: far too small, because it scales only one side.`,
-        run: async (c) => { const w2 = line(P, T(`28\\times${d.f}=${d.wrong}${U(d.sm, 2)}`), 'u10l5-wrong'); await show(c, w2); await strike(c, w2); } }
+        run: async (c) => { const w2 = line(P, T(`28\\times${d.f}=${d.wrong}${U(d.sm, 2)}`), 'u10l5-wrong'); await show(c, w2); await strike(c, w2); await stampIn(c, stampP(P, 'ways 1 and 2 agree ✓')); } }
     ];
   }
 };
@@ -569,8 +569,8 @@ const cube = {
       { cap: `(c) ${T('1\\text{ m}^3=1\\,000\\,000\\text{ cm}^3')}. In millimetres every edge is 1000 mm: the factor 1000, once for <b>each</b> edge.`,
         run: async (c) => {
           await K.relabel(c, T('1000\\text{ mm}'));
-          const at = [P(0.5, 0, 0), P(0, 0.5, 0), P(1, 0, 0.5)], off = [[0, 44, 't'], [-62, 34, 'r'], [16, 38, 'l']];
-          for (let i = 0; i < 3; i++) { const e = lab(stage, at[i][0] + off[i][0], at[i][1] + off[i][1], T('\\times1000'), 'u10l5-call u10l5-calla', off[i][2]); pills.push(e); await pop(c, e); }
+          const at = [P(0.5, 0.1, 0), P(0.13, 0.5, 0), P(1, 0.18, 0.5)];
+          for (let i = 0; i < 3; i++) { const e = lab(stage, at[i][0], at[i][1], T('\\times1000'), 'u10l5-call u10l5-calla', 'c'); pills.push(e); await pop(c, e); }
         } },
       { cap: `So ${T('1\\text{ m}^3=1000\\times1000\\times1000=1000^3=10^{9}\\text{ mm}^3')}, that is ${T('1\\,000\\,000\\,000\\text{ mm}^3')}.`,
         run: async (c) => { const r = line(Pn, '(c) ' + T('1\\text{ m}^3=1000^3\\text{ mm}^3'), ''); await show(c, r); const r2 = line(Pn, T('=10^{9}=1\\,000\\,000\\,000\\text{ mm}^3'), 'u10l5-boxed'); await pop(c, r2, 450); await stampIn(c, stampP(Pn, 'factor used 3 times')); } }
@@ -599,9 +599,9 @@ const prism = {
       { cap: `Each of those cubes is ${T('1\\text{ m}^3=1\\,000\\,000\\text{ cm}^3')} (Example 4). <b>Way 1:</b> ${T('30\\times1\\,000\\,000=30\\,000\\,000\\text{ cm}^3')}.`,
         run: async (c) => { const b = drawBox(gO, P, [4, 5, 2, 3, 0, 1], { fill: AMBF, sw: 2.4 }); await pop(c, b); const q = P(4.5, 3, 0.5); await pop(c, lab(stage, q[0], q[1] - 14, T('10^{6}\\text{ cm}^3'), 'u10l5-call u10l5-calla', 'b')); await say(c, Pn, '<b>1</b> ' + T('30\\times1\\,000\\,000=30\\,000\\,000\\text{ cm}^3')); } },
       { cap: `<b>Way 2:</b> convert the edges: 500 cm, 200 cm and 300 cm. ${T('500\\times200\\times300=30\\,000\\,000\\text{ cm}^3')}.`,
-        run: async (c) => { await Promise.all([swap(c, L.b, T('500\\text{ cm}')), swap(c, L.l, T('300\\text{ cm}')), swap(c, L.d, T('200\\text{ cm}'))]); await say(c, Pn, '<b>2</b> ' + T('500\\times200\\times300')); await say(c, Pn, T('\\phantom{2}=30\\,000\\,000\\text{ cm}^3')); await stampIn(c, stampP(Pn, 'same answer ✓')); } },
+        run: async (c) => { await Promise.all([swap(c, L.b, T('500\\text{ cm}')), swap(c, L.l, T('300\\text{ cm}')), swap(c, L.d, T('200\\text{ cm}'))]); await say(c, Pn, '<b>2</b> ' + T('500\\times200\\times300')); await say(c, Pn, T('\\phantom{2}=30\\,000\\,000\\text{ cm}^3')); } },
       { cap: `“Times 100” once would give ${T('30\\times100=3000\\text{ cm}^3')}: a cube only about 14 cm on an edge, not a room-sized prism.`,
-        run: async (c) => { const w = line(Pn, T('30\\times100=3000\\text{ cm}^3'), 'u10l5-wrong'); await show(c, w); await strike(c, w); } }
+        run: async (c) => { const w = line(Pn, T('30\\times100=3000\\text{ cm}^3'), 'u10l5-wrong'); await show(c, w); await strike(c, w); await stampIn(c, stampP(Pn, 'ways 1 and 2 agree ✓')); } }
     ];
   }
 };
@@ -741,12 +741,12 @@ const bins = {
     const diff = async (c, txt) => { const x1 = bx + bw * vals[0] / max, x2 = bx + bw; const br = svgEl('path', { d: `M${x1} ${by[1] + 44}v8H${x2}v-8`, stroke: RED, 'stroke-width': 2.6, fill: 'none' }, S); await appear(c, br); await pop(c, lab(stage, (x1 + x2) / 2 + 30, by[1] + 62, txt, 'u10l5-call u10l5-callr', 't')); };
     if (k === 'vol') return [
       { cap: 'Bin A is measured in metres and Bin B in feet. To compare, put both in the <b>same unit</b>: cubic centimetres.', run: (c) => say(c, Pn, '<b>Common unit:</b> ' + T('\\text{cm}^3')) },
-      { cap: `Bin A: ${T('V=1.2\\times0.9\\times0.7=0.756\\text{ m}^3')}.`, run: (c) => say(c, Pn, '<b>A</b> ' + T('V=1.2\\times0.9\\times0.7=0.756\\text{ m}^3')) },
+      { cap: `Bin A: ${T('V=1.2\\times0.9\\times0.7=0.756\\text{ m}^3')}.`, run: (c) => say(c, Pn, T('V=1.2\\times0.9\\times0.7=0.756\\text{ m}^3'), 'u10l5-la') },
       { cap: `${T('1\\text{ m}^3=100^3=10^{6}\\text{ cm}^3')}, so Bin A is ${T('0.756\\times10^{6}=756\\,000\\text{ cm}^3')}.`,
-        run: async (c) => { await say(c, Pn, T('\\phantom{A}\\ 0.756\\times10^{6}=756\\,000\\text{ cm}^3')); await grow(c, 0, T('756\\,000\\text{ cm}^3')); } },
-      { cap: `Bin B: ${T('V=4\\times3\\times2.5=30\\text{ ft}^3')}.`, run: (c) => say(c, Pn, '<b>B</b> ' + T('V=4\\times3\\times2.5=30\\text{ ft}^3')) },
+        run: async (c) => { await say(c, Pn, T('0.756\\times10^{6}=756\\,000\\text{ cm}^3'), 'u10l5-la'); await grow(c, 0, T('756\\,000\\text{ cm}^3')); } },
+      { cap: `Bin B: ${T('V=4\\times3\\times2.5=30\\text{ ft}^3')}.`, run: (c) => say(c, Pn, T('V=4\\times3\\times2.5=30\\text{ ft}^3'), 'u10l5-lb') },
       { cap: `${T('1\\text{ ft}=30.48\\text{ cm}')}, so ${T('1\\text{ ft}^3=30.48^3=28\\,316.846\\,592\\text{ cm}^3')}. Bin B is ${T('30\\times28\\,316.846\\,592\\approx849\\,505\\text{ cm}^3')}.`,
-        run: async (c) => { await say(c, Pn, T('\\phantom{B}\\ 1\\text{ ft}^3=30.48^3\\text{ cm}^3')); await say(c, Pn, T('\\phantom{B}\\ 30\\times28\\,316.846\\,592')); await say(c, Pn, T('\\phantom{B}\\ \\approx849\\,505\\text{ cm}^3')); await grow(c, 1, T('849\\,505\\text{ cm}^3')); } },
+        run: async (c) => { await say(c, Pn, T('1\\text{ ft}^3=30.48^3\\text{ cm}^3'), 'u10l5-lb'); await say(c, Pn, T('30\\times28\\,316.846\\,592'), 'u10l5-lb'); await say(c, Pn, T('\\approx849\\,505\\text{ cm}^3'), 'u10l5-lb'); await grow(c, 1, T('849\\,505\\text{ cm}^3')); } },
       { cap: 'Bin B drawn to the same scale on top of Bin A: a little longer, deeper <b>and</b> taller (4 ft is 1.22 m, 3 ft is 0.91 m, 2.5 ft is 0.76 m).',
         run: async (c) => { const o = drawBox(gTop, PA, [0, BB.L, 0, BB.H, 0, BB.D], { stroke: PUR, sw: 2.6 }); o.setAttribute('stroke-dasharray', '8 6'); o.style.opacity = 0; await appear(c, o, 500); } },
       { cap: `Bin B is greater, by ${T('849\\,505-756\\,000=93\\,505\\text{ cm}^3')}.`,
@@ -756,13 +756,13 @@ const bins = {
       { cap: 'Surface area: six faces in three matching pairs. Put both bins in the <b>same unit</b>: square inches.', run: (c) => say(c, Pn, '<b>Common unit:</b> ' + T('\\text{in}^2')) },
       { cap: `Bin A’s faces: top ${T('1.2\\times0.9=1.08')}, front ${T('1.2\\times0.7=0.84')}, end ${T('0.9\\times0.7=0.63')} (all in ${T('\\text{m}^2')}).`,
         run: async (c) => { const b = [0, BA.L, 0, BA.H, 0, BA.D]; await faceHL(c, PA, b, 'top', AMB, '1.08'); await faceHL(c, PA, b, 'front', TEAL, '0.84'); await faceHL(c, PA, b, 'side', PUR, '0.63'); } },
-      { cap: `Each face has a matching one on the hidden side: ${T('SA=2(1.08+0.84+0.63)=5.10\\text{ m}^2')}.`, run: (c) => say(c, Pn, '<b>A</b> ' + T('SA=2(1.08+0.84+0.63)=5.10\\text{ m}^2')) },
+      { cap: `Each face has a matching one on the hidden side: ${T('SA=2(1.08+0.84+0.63)=5.10\\text{ m}^2')}.`, run: (c) => say(c, Pn, T('SA=2(1.08+0.84+0.63)'), 'u10l5-la').then(() => say(c, Pn, T('\\phantom{SA}=5.10\\text{ m}^2'), 'u10l5-la')) },
       { cap: `${T('1\\text{ m}^2=1550.003\\,1\\text{ in}^2')}, so Bin A is ${T('5.10\\times1550.003\\,1\\approx7905\\text{ in}^2')}.`,
-        run: async (c) => { await say(c, Pn, T('\\phantom{A}\\ 5.10\\times1550.003\\,1\\approx7905\\text{ in}^2')); await grow(c, 0, T('7905\\text{ in}^2')); } },
+        run: async (c) => { await say(c, Pn, T('5.10\\times1550.003\\,1\\approx7905\\text{ in}^2'), 'u10l5-la'); await grow(c, 0, T('7905\\text{ in}^2')); } },
       { cap: `Bin B’s faces: ${T('4\\times3=12')}, ${T('4\\times2.5=10')}, ${T('3\\times2.5=7.5')}, so ${T('SA=2(29.5)=59\\text{ ft}^2')}.`,
-        run: async (c) => { const b = [0, BB.L, 0, BB.H, 0, BB.D]; await faceHL(c, PB, b, 'top', AMB, '12'); await faceHL(c, PB, b, 'front', TEAL, '10'); await faceHL(c, PB, b, 'side', PUR, '7.5'); await say(c, Pn, '<b>B</b> ' + T('SA=2(12+10+7.5)=59\\text{ ft}^2')); } },
+        run: async (c) => { const b = [0, BB.L, 0, BB.H, 0, BB.D]; await faceHL(c, PB, b, 'top', AMB, '12'); await faceHL(c, PB, b, 'front', TEAL, '10'); await faceHL(c, PB, b, 'side', PUR, '7.5'); await say(c, Pn, T('SA=2(12+10+7.5)=59\\text{ ft}^2'), 'u10l5-lb'); } },
       { cap: `${T('1\\text{ ft}^2=12^2=144\\text{ in}^2')}, so Bin B is ${T('59\\times144=8496\\text{ in}^2')}.`,
-        run: async (c) => { await say(c, Pn, T('\\phantom{B}\\ 59\\times144=8496\\text{ in}^2')); await grow(c, 1, T('8496\\text{ in}^2')); } },
+        run: async (c) => { await say(c, Pn, T('59\\times144=8496\\text{ in}^2'), 'u10l5-lb'); await grow(c, 1, T('8496\\text{ in}^2')); } },
       { cap: `Bin B is greater, by ${T('8496-7905=591\\text{ in}^2')}.`,
         run: async (c) => { await diff(c, T('591\\text{ in}^2')); const r = line(Pn, '<b>B</b> greater by ' + T('591\\text{ in}^2'), 'u10l5-boxed'); await pop(c, r, 450); } }
     ];

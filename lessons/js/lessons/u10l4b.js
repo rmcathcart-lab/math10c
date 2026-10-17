@@ -356,7 +356,7 @@ async function reach(c, S, path, u, html, from) {
 }
 const ladder = {
   title: 'The imperial staircase: four multipliers',
-  height: 420,
+  height: 446,
   choices: Object.keys(LAD).map((k) => ({ v: k, label: LAD[k].label })),
   intro: 'Each step down the staircase is a smaller unit, with its own multiplier. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -370,7 +370,7 @@ const ladder = {
       { cap: `Fact: 1 ft = 12 in. ${T('10\\,560\\times12=126\\,720')} in.`,
         run: async (c) => { await reach(c, S, A.ftin, 'in', T(q(126720, 'in')), 'ft'); await say(c, P, T('10\\,560\\times12=126\\,720\\text{ in}'), 'u10l4b-big'); } },
       { cap: 'Two steps, two facts, both <b>written down</b>. A mile is a long way in inches!',
-        run: async (c) => { const s = sstamp(stage, '2 mi = 126 720 in', true, { x: ex.W - 170, y: 392 }); await stampIn(c, s); } }
+        run: async (c) => { const s = sstamp(stage, '2 mi = 126 720 in', true, { x: ex.W - 160, y: 408 }); await stampIn(c, s); } }
     ];
     if (k === 'routes') return [
       { cap: 'Start with <b>1 mile</b> at the top of the stairs.', run: async (c) => { await reach(c, S, null, 'mi', T(q(1, 'mi'))); } },
@@ -390,7 +390,7 @@ const ladder = {
           await reach(c, S, A.miyd, 'mi', T(q(1.5, 'mi') + '\\ \\checkmark'), 'yd'); await say(c, P, T('2640\\div1760=1.5\\text{ mi}'));
         } },
       { cap: '<b>Direction check:</b> a bigger unit gives a smaller number (7920 → 1.5) ✓',
-        run: async (c) => { const s = sstamp(stage, '7920 ft = 1.5 mi', true, { x: ex.W - 170, y: 392 }); await stampIn(c, s); } }
+        run: async (c) => { const s = sstamp(stage, '7920 ft = 1.5 mi', true, { x: ex.W - 160, y: 408 }); await stampIn(c, s); } }
     ];
   }
 };

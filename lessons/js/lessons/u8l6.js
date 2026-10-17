@@ -191,7 +191,7 @@ const howMany = {
         run: async (c) => { await say(c, Pn, `${T('2x-1=-x+5')}<br>${T('3x=6\\Rightarrow x=2,\\ y=3')}`); const p = G.point(2, 3, { color: PUR, r: 8, label: T(cP('(2,\\ 3)')), pos: 'e', gap: 10 }); await G.reveal(p, c); } });
       steps.push({ cap: `<b>One solution:</b> ${T(cP('(2,\\ 3)'))}, the only point on both lines.`, run: async (c) => { const s = stamp(Pn, 'one solution', { ok: true, size: 'sm' }); s.style.alignSelf = 'center'; await stampIn(c, s); } });
     } else if (v === 'none') {
-      steps.push({ cap: `<b>Slopes</b> ${T('2')} and ${T('2')}: equal. <b>Intercepts</b> ${T('-1')} and ${T('3')}: different. The lines are parallel: 4 units apart everywhere.`,
+      steps.push({ cap: `<b>Slopes</b> ${T('2')} and ${T('2')}: equal. <b>Intercepts</b> ${T('-1')} and ${T('3')}: different. The lines are parallel: always 4 units apart vertically.`,
         run: async (c) => { await say(c, Pn, `Slopes ${T('2')}, ${T('2')}: <b>equal</b><br>Intercepts ${T('-1')}, ${T('3')}: <b>different</b>`); for (const x of [-2, 1]) { const s = G.segment([x, 2 * x - 1], [x, 2 * x + 3], { color: GRAY, width: 2.5, dash: '5 4' }); await G.drawIn(s, 300, c); } } });
       steps.push({ cap: `<b>Algebra:</b> write both as ${T('2x-y=\\ldots')}: ${T(cB('2x-y=1'))} and ${T(cA('2x-y=-3'))}. Subtract: ${T('0=4')}. That is <b>false</b>: no pair ${T('(x,y)')} can make it true.`,
         run: async (c) => { await say(c, Pn, `${T(cB('2x-y=1'))}<br>${T(cA('2x-y=-3'))}<br>subtract: ${T('0=4')} <span class="u8l6-bad">✗ false</span>`); } });

@@ -1,7 +1,7 @@
 /* Math 10C · Unit 10 · Lesson 1 — Rounding and Formula Substitution: styles used only on this page (prefix u10l1-).
  * Colours: place-value digit teal, test digit amber, the number being rounded red, x blue, y amber.
  * Extension styling follows Unit 6 Lesson 6 (slate grey). */
-:root { --u10l1-ext: #5d6475; --u10l1-pv: #13807a; --u10l1-td: #c27a0e; --u10l1-x: #1f5bd6; --u10l1-y: #c27a0e; }
+:root { --u10l1-blue: #1f5bd6; --u10l1-purple: #7b4fc4; --u10l1-green: #12805a; --u10l1-ext: #5d6475; --u10l1-pv: #13807a; --u10l1-td: #c27a0e; --u10l1-x: #1f5bd6; --u10l1-y: #c27a0e; }
 
 .ex-cap { min-height: 128px; }
 .ex-cap .katex { font-size: 1.04em; }
@@ -148,20 +148,20 @@ h2 .katex, h3 .katex { font-size: .95em; }
 /* scientific notation */
 .u10l1-sc { display: grid; place-items: center; background: #fff; border: 2px solid #d5d0c2; border-radius: 10px; font: 800 36px/1 var(--round); transition: opacity .4s, background .3s, border-color .3s; }
 .u10l1-sc.u10l1-scph { opacity: .3; }
-.u10l1-sc.u10l1-sca { background: #e7f5ea; border-color: var(--green); }
+.u10l1-sc.u10l1-sca { background: #e7f5ea; border-color: var(--u10l1-green); }
 .u10l1-sc.u10l1-pv { background: #dff2ef; border-color: var(--u10l1-pv); box-shadow: 0 0 0 3px rgba(19, 128, 122, .25); }
 .u10l1-sc.u10l1-td { background: #fdf0d9; border-color: var(--u10l1-td); box-shadow: 0 0 0 3px rgba(194, 122, 14, .25); }
 .u10l1-scpt { width: 16px; height: 16px; border-radius: 50%; background: var(--red); translate: -50% -50%; box-shadow: 0 0 0 3px #fff; z-index: 3; }
 .u10l1-sccnt { text-align: center; font: 800 24px var(--round); color: var(--red); }
-.u10l1-scbrace { font-size: 22px; color: var(--green); border-top: 3px solid var(--green); padding: 2px 14px 0; white-space: nowrap; }
+.u10l1-scbrace { box-sizing: border-box; text-align: center; font-size: 22px; color: var(--u10l1-green); border-top: 3px solid var(--u10l1-green); padding: 2px 14px 0; white-space: nowrap; }
 .u10l1-scp { justify-content: center; }
 
 /* re-normalizing */
 .u10l1-rnp { justify-content: center; }
 .u10l1-rnmk { fill: var(--red); stroke: #fff; stroke-width: 2.5; transition: fill .3s; }
-.u10l1-rnmk.u10l1-in { fill: var(--green); }
+.u10l1-rnmk.u10l1-in { fill: var(--u10l1-green); }
 .u10l1-rnml { position: absolute; translate: -50% -100%; white-space: nowrap; font-size: 19px; background: #fff; border: 2px solid var(--line2); border-radius: 8px; padding: 0 8px; }
-.u10l1-zonelab { color: var(--green); font-size: 18px; }
+.u10l1-zonelab { color: var(--u10l1-green); font-size: 18px; }
 
 /* brackets */
 .u10l1-vals { display: flex; gap: 10px; }
@@ -192,29 +192,29 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u10l1-ground { stroke: #8d93a0; stroke-width: 2; }
 .u10l1-trail { stroke: var(--red); stroke-width: 6; stroke-linecap: round; }
 .u10l1-wheel { fill: #eef3fd; stroke: var(--ink); stroke-width: 3; }
-.u10l1-spoke { stroke: var(--blue); stroke-width: 3; }
+.u10l1-spoke { stroke: var(--u10l1-blue); stroke-width: 3; }
 .u10l1-hub { fill: var(--ink); }
 .u10l1-wmark { fill: var(--red); stroke: #fff; stroke-width: 2; }
 .u10l1-sflab { position: absolute; font-size: 22px; white-space: nowrap; }
 .u10l1-sfc { color: var(--red); }
-.u10l1-sfr { color: var(--blue); }
+.u10l1-sfr { color: var(--u10l1-blue); }
 .u10l1-ball { fill: #eef3fd; stroke: var(--ink); stroke-width: 3; }
 .u10l1-eqb { fill: none; stroke: var(--ink); stroke-width: 2; stroke-dasharray: 6 5; }
 .u10l1-eqf { fill: none; stroke: var(--ink); stroke-width: 2; }
-.u10l1-read { position: absolute; text-align: center; font: 700 22px var(--font); color: var(--blue); font-variant-numeric: tabular-nums; }
+.u10l1-read { position: absolute; text-align: center; font: 700 22px var(--font); color: var(--u10l1-blue); font-variant-numeric: tabular-nums; }
 .u10l1-read i { font-family: "KaTeX_Math", Georgia, serif; }
 
 /* run it backwards */
 .u10l1-unsvg { pointer-events: none; }
 .u10l1-un { display: grid; place-items: center; border-radius: 14px; font-size: 26px; box-sizing: border-box; }
 .u10l1-unv { background: #fff; border: 3px solid var(--ink); border-radius: 50%; font-size: 30px; }
-.u10l1-unop { background: #e6eefc; border: 2.5px solid var(--blue); }
-.u10l1-unop.u10l1-uninv { background: #f1eafb; border-color: var(--purple); }
+.u10l1-unop { background: #e6eefc; border: 2.5px solid var(--u10l1-blue); }
+.u10l1-unop.u10l1-uninv { background: #f1eafb; border-color: var(--u10l1-purple); }
 .u10l1-unarr line { stroke-width: 3.5; }
-.u10l1-unarr.u10l1-fwd line { stroke: var(--blue); } .u10l1-unarr.u10l1-fwd path { fill: var(--blue); }
-.u10l1-unarr.u10l1-bwd line { stroke: var(--purple); } .u10l1-unarr.u10l1-bwd path { fill: var(--purple); }
-.u10l1-unrow { font: 800 16px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--blue); }
-.u10l1-unrowb { color: var(--purple); }
-.u10l1-unval { font-size: 19px; background: #fff; border: 2px solid var(--purple); color: var(--purple); border-radius: 8px; padding: 0 7px; white-space: nowrap; }
+.u10l1-unarr.u10l1-fwd line { stroke: var(--u10l1-blue); } .u10l1-unarr.u10l1-fwd path { fill: var(--u10l1-blue); }
+.u10l1-unarr.u10l1-bwd line { stroke: var(--u10l1-purple); } .u10l1-unarr.u10l1-bwd path { fill: var(--u10l1-purple); }
+.u10l1-unrow { font: 800 16px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--u10l1-blue); }
+.u10l1-unrowb { color: var(--u10l1-purple); }
+.u10l1-unval { font-size: 19px; background: #fff; border: 2px solid var(--u10l1-purple); color: var(--u10l1-purple); border-radius: 8px; padding: 0 7px; white-space: nowrap; }
 .u10l1-unp { justify-content: center; gap: 2px; }
 .u10l1-unp .u10l1-line { line-height: 1.35; }

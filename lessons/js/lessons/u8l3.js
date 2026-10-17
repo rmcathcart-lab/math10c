@@ -10,7 +10,7 @@
  *   lcm      count up in multiples to the LCM; multipliers; same sign → subtract, opposite → add
  *   walk     the four steps, line by line, with checks in both equations (Examples 3–5; walk6: Example 6)
  *   prep     rearranging into Ax + By = C (terms hop over "=" and flip sign) and clearing fractions (× LCD)
- *   special  0 = 0 (same line) and 0 = 15 (parallel lines)
+ *   special  0 = 0 (same line) and 0 = 10 (parallel lines)
  *   choose   which method? a flowchart, then a quick solve by that method
  * Colours: Eq. 1 brand blue, Eq. 2 amber, the combined / one-variable equation green, the solution purple. */
 import {
@@ -267,7 +267,7 @@ const pets = {
         run: async (c) => { await showRow(c, r1); await showRow(c, r2); await anim(c, rule2, [{ opacity: 0, transform: 'scaleX(0)' }, { opacity: 1, transform: 'none' }], 450); } },
       { cap: 'The cats cancel: <b>2 dogs = 6 + 14 = 20 kg</b>, so one dog is <b>10 kg</b>.',
         run: async (c) => { await cancelPets(c, r1.p2.firstChild, r2.p2.firstChild); await showRow(c, r3); } },
-      { cap: 'Then the cat is 14 − 10 = <b>4 kg</b> and the rabbit is 6 − 4 = <b>2 kg</b>. Check with the scale we haven’t used, B: 10 + 2 = 12 ✓',
+      { cap: 'Then the cat is 14 − 10 = <b>4 kg</b> and the rabbit is 6 − 4 = <b>2 kg</b>. Check in Scale B: 10 + 2 = 12 ✓',
         run: (c) => show(c, fin) }
     ];
   }
@@ -817,7 +817,7 @@ const prep = {
 /* =============================== explainer: special cases =============================== */
 const SP = {
   same: { label: `Same line: ${T('0=0')}`, e1: E(1, 2, 4), e2: E(3, 6, 12), m: 3 },
-  par: { label: `Parallel lines: ${T('0=15')}`, e1: E(1, 2, 4), e2: E(2, 4, -7), m: 2 }
+  par: { label: `Parallel lines: ${T('0=10')}`, e1: E(1, 2, 4), e2: E(2, 4, -2), m: 2 }
 };
 const special = {
   title: 'When both variables disappear',

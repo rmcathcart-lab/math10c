@@ -50,6 +50,7 @@ function dimArrow(L, a, b, o = {}) {
 /** an SVG + HTML-label box placed in a stage (or in the flow of a card) */
 function fbox(host, W, H, x, y, cls = '') { const B = new Box(host, x != null ? { x, y } : {}, 'u10l9-fbox ' + cls, W, H); B.L = B.layer('f'); B.top = B.layer('t'); return B; }
 const lab = (B, x, y, html, pos = 'c', cls = 'u10l9-flab') => B.hlabel(x, y, html, { pos, cls, gap: 4 });
+const slab = (stage, x, y, html, pos = 'c', cls = '') => { const d = h('div', 'bk-lab u10l9-flab ' + cls, html); stage.appendChild(d); return place(d, x, y, pos, 4); };
 
 /* =============================== 3-D solids (oblique view, hidden edges dashed) =============================== */
 const SINE = 0.34, COSE = Math.sqrt(1 - SINE * SINE);
@@ -507,7 +508,7 @@ const ladder = {
     N.el.classList.add('u10l9-pline');
     const [ux0, ux1] = [N.toPx(3.5), N.toPx(6.4)];
     svgEl('rect', { x: ux0, y: 64, width: ux1 - ux0, height: 82, rx: 10, fill: '#eceef2' }, N.layers.axis).parentNode.insertBefore(N.layers.axis.lastChild, N.layers.axis.firstChild);
-    const extl = N.hlabel((ux0 + ux1) / 2, 60, 'Extension: ×1000 per prefix', { cls: 'u10l9-extlab', pos: 'n', gap: 0 });
+    N.hlabel((ux0 + ux1) / 2, 60, 'Extension: ×1000 per prefix', { cls: 'u10l9-extlab', pos: 'n', gap: 0, parent: N.axisHtml });
     const hops = async (c, a, b, color = AMB) => { const st = Math.sign(b - a); for (let p = a; p !== b; p += st) await N.hop(c, p, p + st, { label: st > 0 ? '×10' : '÷10', color, height: 34 }); };
     const strip = (D, e, unit, range) => numStrip(stage, Math.max(10, W / 2 - (range[1] - range[0] + 1) * 18 - 30), 12, D, e, unit, range);
     const here = (p, col = TEAL) => N.point(p, { color: col, r: 9 });
@@ -716,8 +717,7 @@ const ratioMap = {
       const eq = add(stage, h('div', 'u10l9-eq', ''), 20, 16);
       const NK = new NumberLine(stage, { x: 20, y: 150, width: W - 40, height: 90, min: 0, max: 1100, step: 100, arrows: false, axisY: 34 });
       const NM = new NumberLine(stage, { x: 20, y: 250, width: W - 40, height: 90, min: 0, max: 1100 * 5 / 8, step: 100, arrows: false, axisY: 34 });
-      lab({ hlabel: (x, y, ht, o) => { const d = h('div', 'bk-lab ' + o.cls, ht); stage.appendChild(d); return place(d, x, y, o.pos, o.gap); } }, 24, 160, '<b>km</b>', 'n', 'u10l9-flab u10l9-amb');
-      const tagM = h('div', 'bk-lab u10l9-flab u10l9-blue', '<b>mi</b>'); stage.appendChild(tagM); place(tagM, 24, 260, 'n', 4);
+      slab(stage, 50, 184, '<b>km</b>', 'w', 'u10l9-amb'); slab(stage, 50, 284, '<b>mi</b>', 'w', 'u10l9-blue');
       const bk = NK.interval(0, 1032, { color: AMB, width: 9, openA: false }), bm = NM.interval(0, 645, { color: BLUE, width: 9 });
       [bk, bm].forEach(hide);
       const st = add(stage, h('div', 'u10l9-ansbox', ''), W - 330, 330); hide(st);
@@ -816,8 +816,7 @@ const wrench = {
     const NMM = new NumberLine(stage, { x: 10, y: 54, width: W - 20, height: 90, min: lo, max: hi, step: 1, arrows: false, axisY: 30 });
     const NIN = new NumberLine(stage, { x: 10, y: 214, width: W - 20, height: 110, min: lo / 25.4, max: hi / 25.4, step: 1 / 16, minor: 1 / 32, arrows: false, axisY: 30,
       labels: IMP.map(([n, d]) => ({ v: n / d, html: T(`\\tfrac{${n}}{${d}}`) })) });
-    const tl = (x, y, html, cls) => { const d = h('div', 'bk-lab u10l9-flab ' + cls, html); stage.appendChild(d); place(d, x, y, 'w', 2); return d; };
-    tl(46, 30, '<b>mm</b>', 'u10l9-amb'); tl(46, 190, '<b>in</b>', 'u10l9-blue');
+    slab(stage, 40, 84, '<b>mm</b>', 'w', 'u10l9-amb'); slab(stage, 40, 244, '<b>in</b>', 'w', 'u10l9-blue');
     const B = fbox(stage, W, 380, 0, 0); B.el.style.pointerEvents = 'none'; const L = B.L;
     const xOf = (mm) => 10 + NMM.toPx(mm);
     const band = (a, b, col) => { const r = svgEl('rect', { x: xOf(a), y: 70, width: xOf(b) - xOf(a), height: 190, fill: col, 'fill-opacity': 0.14, stroke: col, 'stroke-width': 2, 'stroke-dasharray': '6 5' }, L); hide(r); return r; };
@@ -1040,9 +1039,9 @@ const tank = {
       for (let i = 0; i < 5; i++) {
         const y = 60 + i * 72, g = svgEl('g', {}, L), lev = svgEl('rect', { x: tx, y: y - 28, width: 0, height: 56, fill: '#8fd0a8' }, g);
         drawLogCyl(g, tx, y, 9 * k * 1.5, 1.8 * k * 0.9, { fill: 'none', endFill: 'none' });
-        g.insertBefore(lev, g.firstChild); lev.setAttribute('clip-path', ''); hide(g); trucks.push({ g, lev, y });
+        g.insertBefore(lev, g.firstChild); hide(g); trucks.push({ g, lev, y });
       }
-      const len = 9 * k * 1.5, tl = hide(lab(B, tx + len + 40, 60, T('29.16\\pi\\ \\text{m}^3') + ' each', 'e', 'u10l9-flab'));
+      const len = 9 * k * 1.5, tl = hide(lab(B, tx + len + 40, 20, T('29.16\\pi\\ \\text{m}^3') + ' each', 'e', 'u10l9-flab'));
       const cnt = trucks.map((t, i) => hide(lab(B, tx + len + 40, t.y, i < 4 ? 'full' : '0.05 of a truck', 'e', 'u10l9-flab ' + (i < 4 ? 'u10l9-teal' : 'u10l9-amb'))));
       return [
         { cap: `The diameter is three times the height: ${T('d=3(5.4)=16.2')} m, so ${T('r=16.2\\div2=8.1')} m.`, run: async (c) => { dl.innerHTML = T('d=16.2\\text{ m}'); await pulse(c, dl, 1.15); await say(c, p, `${T('d=16.2,\\ r=8.1')}`); } },
