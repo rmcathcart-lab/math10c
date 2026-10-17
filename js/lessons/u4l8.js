@@ -442,9 +442,11 @@
               'The top-left region is a square of area ' + t('b^{2}') + ', so the top row has height ' + t('b') + ' and the left column has width ' + t('b') + '. Let the right column have width ' + t('w') + ' and the bottom row height ' + t('h') + '; then ' + t('hw=' + sh.w * sh.h) + '.<br>The other two regions have areas ' + t('bw') + ' and ' + t('bh') + ', so ' + t('b(w+h)=' + S + 'b') + ' and ' + t('w+h=' + S) + '.<br>' + t('P=2[(b+w)+(b+h)]=4b+2(w+h)=4b+' + 2 * S) + (sh.w === sh.h ? '<br>(Here ' + t('w=h=' + sh.w) + ', so ' + t('ABCD') + ' is the square ' + t('(b+' + sh.w + ')^{2}=b^{2}+' + 2 * sh.w + 'b+' + sh.w * sh.w) + '.)' : '<br>(Here ' + t('w') + ' and ' + t('h') + ' are ' + t(sh.w) + ' and ' + t(sh.h) + ': ' + t('b^{2}+' + S + 'b+' + sh.w * sh.h + '=(b+' + sh.w + ')(b+' + sh.h + ')') + '.)'),
               ['Call the unknown width of the right column ' + t('w') + ' and the height of the bottom row ' + t('h') + '. Write each region’s area.', 'What does ' + t(S + 'b') + ' tell you about ' + t('w+h') + '?'], 'perimeter ABCD (' + sh.w + ',' + sh.h + ')', { vars: ['b'] });
           } }] },
-      { num: '20', stem: 'Identify and explain the error in each factorization. Then write the correct factored form.', parts: [
-        { id: '20a1', sub: 'a i', level: 'EMG', make: function (r) {
-          var z = gen20a(r), stu = br(lin(z.m, 'x', z.s)) + br(lin(z.n, 'x', -z.u));
+      { num: '20', stem: 'Identify and explain the error in each factorization. Then write the correct factored form.',
+        shared: function (r) { return { a: gen20a(r), q: r.pick([2, 3, 4, 5]) }; }, // (a i)/(a ii) and (b i)/(b ii) use the same factorization
+        parts: [
+        { id: '20a1', sub: 'a i', level: 'EMG', make: function (r, sh) {
+          var z = sh.a, stu = br(lin(z.m, 'x', z.s)) + br(lin(z.n, 'x', -z.u));
           return mc(r, t(z.poly + '=' + stu) + '. What is the error?', [
             { html: 'The signs are in the wrong brackets: ' + t(stu + '=' + z.stuExp) + ', so the middle term has the wrong sign.', right: true },
             { html: 'The pair of constants is wrong: they don’t multiply to the constant term.', why: 'They do: ' + t(z.s + '\\times(-' + z.u + ')=' + (-z.s * z.u)) + '. Expand the student’s answer and compare the <b>middle</b> term.' },
@@ -453,14 +455,14 @@
             'Expanding gives ' + t(stu + '=' + seq([M(z.m * z.n, 'x', 2), M(-z.m * z.u, 'x'), M(z.n * z.s, 'x'), N(-z.s * z.u)]) + '=' + z.stuExp) + ': the middle term is ' + t(tx(M(-z.b, 'x'))) + ' instead of ' + t(tx(M(z.b, 'x'))) + '. The signs are in the wrong brackets.',
             ['Expand the student’s answer and compare it with the original, term by term.'], 'error: ' + plain(z.poly) + ' = ' + plain(stu));
         } },
-        { id: '20a2', sub: 'a ii', level: 'PRG', make: function (r) {
-          var z = gen20a(r), Ft = FT(null, [lin(z.m, 'x', -z.s), lin(z.n, 'x', z.u)]);
-          return fac('Write the correct factored form of ' + t(z.poly) + '.', Ft, [{ is: FT(null, [lin(z.m, 'x', z.s), lin(z.n, 'x', -z.u)]), code: 'student-ans', hint: 'That is the student’s answer — it expands to ' + t(z.stuExp) + '. Swap the signs.' }],
+        { id: '20a2', sub: 'a ii', level: 'PRG', make: function (r, sh) {
+          var z = sh.a, Ft = FT(null, [lin(z.m, 'x', -z.s), lin(z.n, 'x', z.u)]);
+          return fac('Write the correct factored form of ' + t(z.poly) + ' (the student wrote ' + t(br(lin(z.m, 'x', z.s)) + br(lin(z.n, 'x', -z.u))) + ').', Ft, [{ is: FT(null, [lin(z.m, 'x', z.s), lin(z.n, 'x', -z.u)]), code: 'student-ans', hint: 'That is the student’s answer — it expands to ' + t(z.stuExp) + '. Swap the signs.' }],
             t('ac=' + (z.a * z.c)) + '; the pair with sum ' + t(z.b) + ' is ' + t(z.m * z.u) + ' and ' + t(-z.n * z.s) + '.<br>' + t(z.poly + '=' + Ft.tex) + '<br>Check: ' + t(Ft.tex + '=' + seq([M(z.m * z.n, 'x', 2), M(z.m * z.u, 'x'), M(-z.n * z.s, 'x'), N(-z.s * z.u)]) + '=' + z.poly) + ' ✓',
             ['Keep the student’s brackets but fix the signs so the middle term comes out right.'], 'correct ' + plain(z.poly));
         } },
-        { id: '20b1', sub: 'b i', level: 'EMG', make: function (r) {
-          var q = r.pick([2, 3, 4, 5]), q2 = q * q, poly = 'x^{4}-' + q2 * q2, stu = '(x^{2}-' + q2 + ')^{2}';
+        { id: '20b1', sub: 'b i', level: 'EMG', make: function (r, sh) {
+          var q = sh.q, q2 = q * q, poly = 'x^{4}-' + q2 * q2, stu = '(x^{2}-' + q2 + ')^{2}';
           return mc(r, t(poly + '=' + stu) + '. What is the error?', [
             { html: t(stu + '=x^{4}-' + 2 * q2 + 'x^{2}+' + q2 * q2) + ' has a middle term. A difference of squares factors as ' + t('(A-B)(A+B)') + ' — one minus, one plus — and ' + t('x^{2}-' + q2) + ' factors again.', right: true },
             { html: 'There is no error.', why: 'Expand: ' + t(stu + '=x^{4}-' + 2 * q2 + 'x^{2}+' + q2 * q2) + '. Is that the original?' },
@@ -469,8 +471,8 @@
             t(stu + '=x^{4}-' + 2 * q2 + 'x^{2}+' + q2 * q2) + ', not the original. Correct: ' + t(poly + '=(x^{2}-' + q2 + ')(x^{2}+' + q2 + ')') + ', and ' + t('x^{2}-' + q2) + ' factors again.',
             ['Expand the student’s answer.', 'What is the pattern for ' + t('A^{2}-B^{2}') + '?'], 'error: ' + plain(poly) + ' = ' + plain(stu));
         } },
-        { id: '20b2', sub: 'b ii', level: 'PRG', make: function (r) {
-          var q = r.pick([2, 3, 4, 5]), q2 = q * q, Ft = FT(null, [lin(1, 'x', -q), lin(1, 'x', q), [M(1, 'x', 2), N(q2)]]), poly = tx(Ft.poly);
+        { id: '20b2', sub: 'b ii', level: 'PRG', make: function (r, sh) {
+          var q = sh.q, q2 = q * q, Ft = FT(null, [lin(1, 'x', -q), lin(1, 'x', q), [M(1, 'x', 2), N(q2)]]), poly = tx(Ft.poly);
           return fac('Write the correct, complete factored form of ' + t(poly) + '.', Ft, [
             { is: FT(null, [{ terms: [M(1, 'x', 2), N(-q2)], k: 2 }]), code: 'student-ans', hint: 'That is the student’s answer — it has a middle term when expanded.' },
             { is: FT(null, [lin(1, 'x', -q), { terms: lin(1, 'x', q), k: 3 }]), code: 'sum-split', hint: t('x^{2}+' + q2) + ' is a <b>sum</b> of squares and doesn’t factor.' }],
@@ -719,7 +721,7 @@
         { id: 'e5b', level: 'ADV', make: function (r) {
           var z = r.pick([[4, 2], [3, 2], [2, 3], [4, 3], [3, 1], [2, 1]]), a = z[0], q = z[1];
           var Ft = FT(null, [[M(a, 'm'), M(-1, 'n')], [M(a, 'm'), M(1, 'n')], [M(1, 'm'), M(-q, 'n')], [M(1, 'm'), M(q, 'n')]]), poly = seq([M(a * a, 'm', 4), MM(-(a * a * q * q + 1), { m: 2, n: 2 }), M(q * q, 'n', 4)]);
-          return fac(t(poly), Ft, [], 'A trinomial in ' + t('m^{2}') + ' and ' + t('n^{2}') + ': ' + t('ac=' + a * a * q * q) + '; pair ' + t(-1) + ' and ' + t(-a * a * q * q) + '.<br>' + t('=(' + a * a + 'm^{2}-n^{2})(m^{2}-' + q * q + 'n^{2})') + '<br>Both brackets are differences of squares:<br>' + t('=' + Ft.tex),
+          return fac(t(poly), Ft, [], 'A trinomial in ' + t('m^{2}') + ' and ' + t('n^{2}') + ': ' + t('ac=' + a * a * q * q) + '; pair ' + t(-1) + ' and ' + t(-a * a * q * q) + '.<br>' + t('=(' + a * a + 'm^{2}-n^{2})(m^{2}-' + (q === 1 ? '' : q * q) + 'n^{2})') + '<br>Both brackets are differences of squares:<br>' + t('=' + Ft.tex),
             ['Decompose as if ' + t('m^{2}') + ' and ' + t('n^{2}') + ' were single letters.', 'Then factor each bracket again.'], 'factor ' + plain(poly));
         } },
         { id: 'e5c', level: 'PRG', make: function (r) {
@@ -876,7 +878,7 @@
             var z = pick(function () { return { a: r.pick([2, 3]), s: r.int(1, 7) }; }, function (z) { return gcd(z.a, z.s) === 1; });
             var eq = tx(M(z.a * z.a, 'x', 3)) + '=' + tx(M(z.s * z.s, 'x'));
             return vs(t(eq), [0, rat(z.s, z.a), rat(-z.s, z.a)], { diag: function (A) { if (A.indexOf(0) < 0) return { code: 'divided-x', hint: 'Don’t divide by ' + t('x') + ': move everything to one side and take out ' + t('x') + '. It gives ' + t('x=0') + '.' }; return null; } },
-              t(z.a * z.a + 'x^{3}-' + z.s * z.s + 'x=0') + ' (do not divide by ' + t('x') + ')<br>' + t('x(' + z.a * z.a + 'x^{2}-' + z.s * z.s + ')=0') + '<br>' + t('x(' + z.a + 'x-' + z.s + ')(' + z.a + 'x+' + z.s + ')=0') + '<br>' + t('x=0') + ', ' + t('x=' + frac(z.s, z.a)) + ' or ' + t('x=' + frac(-z.s, z.a)),
+              t(seq([M(z.a * z.a, 'x', 3), M(-z.s * z.s, 'x')]) + '=0') + ' (do not divide by ' + t('x') + ')<br>' + t('x(' + z.a * z.a + 'x^{2}-' + z.s * z.s + ')=0') + '<br>' + t('x(' + z.a + 'x-' + z.s + ')(' + z.a + 'x+' + z.s + ')=0') + '<br>' + t('x=0') + ', ' + t('x=' + frac(z.s, z.a)) + ' or ' + t('x=' + frac(-z.s, z.a)),
               ['Move everything to the left side and take out the common factor ' + t('x') + '.'], 'solve ' + plain(eq), ['x=' + frac(z.s, z.a) + ', x=' + frac(-z.s, z.a)]);
           } },
           { id: 'e9e', level: 'PRG', make: function (r) {
@@ -910,7 +912,7 @@
             var Ft = FT(null, [sh.A, sh.B]), ac = sh.m * sh.n * sh.s * sh.u;
             return fac('Factor ' + t('A') + ' to recover the two side lengths.', Ft, [{ is: FT(null, [lin(sh.n, 'x', sh.u), lin(sh.m, 'x', sh.s)]), code: 'swap-const', hint: 'The constants are in the wrong brackets — check the middle term.' }],
               'Decomposition: ' + t('ac=' + ac) + '; pair ' + t(sh.n * sh.u) + ' and ' + t(sh.m * sh.s) + '.<br>' + t(tx(sh.T) + '=' + Ft.tex) + '<br>Side lengths: ' + t(seq(sh.A)) + ' cm and ' + t(seq(sh.B)) + ' cm.',
-              ['Find two numbers that multiply to ' + t('ac=' + ac) + ' and add to ' + t(sh.m * sh.u + sh.n * sh.s) + '.'], 'factor area ' + plain(tx(sh.T)));
+              ['Find two numbers that multiply to ' + t('ac=' + ac) + ' and add to ' + t(sh.n * sh.u + sh.m * sh.s) + '.'], 'factor area ' + plain(tx(sh.T)));
           } },
           { id: 'e10b', level: 'EMG', make: function (r, sh) {
             var d = sum([M(sh.m - sh.n, 'x'), N(sh.u - sh.s)]), Lt = seq(sh.B), St = seq(sh.A);
@@ -923,7 +925,7 @@
               ['Subtract one side from the other and look at the sign.'], 'longer side');
           } },
           { id: 'e10c', level: 'ADV', make: function (r, sh) {
-            var C = sh.s * sh.u - sh.A0, eq2 = seq([M(sh.m * sh.n, 'x', 2), M(sh.m * sh.u + sh.n * sh.s, 'x'), N(C)]);
+            var C = sh.s * sh.u - sh.A0, eq2 = seq([M(sh.m * sh.n, 'x', 2), M(sh.n * sh.u + sh.m * sh.s, 'x'), N(C)]);
             return vs('Solve ' + t(tx(sh.T) + '=' + sh.A0) + ' to find when the area is ' + t(sh.A0 + '\\text{ cm}^{2}') + '. Give <b>both</b> roots of the equation.', [sh.x0, rat(-sh.K, sh.m * sh.n)], {},
               t(eq2 + '=0') + '<br>' + t('ac=' + sh.m * sh.n * C) + '; pair ' + t(sh.K) + ' and ' + t(-sh.m * sh.n * sh.x0) + '.<br>' + t('(x-' + sh.x0 + ')(' + sh.m * sh.n + 'x+' + sh.K + ')=0') + '<br>' + t('x=' + sh.x0) + ' or ' + t('x=' + frac(-sh.K, sh.m * sh.n)) + '<br>Reject ' + t('x=' + frac(-sh.K, sh.m * sh.n)) + ': it makes both side lengths negative.',
               ['Move ' + t(sh.A0) + ' to the left side first, then decompose.'], 'area = ' + sh.A0, ['x=' + sh.x0]);

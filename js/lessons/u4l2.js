@@ -768,7 +768,7 @@
               { html: 'When ' + t('c>0') + ' the numbers have the same sign, so the sizes add: ' + t(sh.u + '+' + sh.v + '=' + a) + '. When ' + t('c<0') + ' the signs are opposite, so the sizes subtract: ' + t(sh.v + '-' + sh.u + '=' + d) + '.', right: true },
               { html: t(a) + ' is the sum and ' + t(d) + ' is the product of ' + t(sh.u) + ' and ' + t(sh.v) + '.', why: 'The product of ' + t(sh.u) + ' and ' + t(sh.v) + ' is ' + t(sh.u * sh.v) + ' — that is the constant term, not the middle coefficient.' },
               { html: 'They are unrelated: (c) and (d) use a different pair of numbers.', why: 'Factor (c): its brackets also contain ' + t(sh.u) + ' and ' + t(sh.v) + ', just with opposite signs.' },
-              { html: t(d) + ' comes from dividing: ' + t(a + '\\div ' + sh.u) + '.', why: 'Try it with the actual numbers: the middle coefficient is the <b>sum</b> of the two signed integers.' }],
+              { html: t(d) + ' comes from dividing: ' + t(a + '\\div ' + sh.v) + '.', why: 'Try it with the actual numbers: the middle coefficient is the <b>sum</b> of the two signed integers.' }],
               'The middle coefficient is the sum of the two signed integers. Same signs: ' + t(sh.u + '+' + sh.v + '=' + a) + ' (or ' + t(-a) + '). Opposite signs: ' + t(sh.v + '+(-' + sh.u + ')=' + d) + ' (or ' + t(-d) + ').',
               ['Write the two signed integers for each of (a)–(d) and add them.'], 'where 11 and 3 come from');
           } },
@@ -900,7 +900,7 @@
           var p = r.pick([11, 13, 17, 19, 23]);
           var q = B.fields('For the prime ' + t(p) + ', ' + t('x^{2}+bx+' + p) + ' can be factored over the integers for exactly two values of ' + t('b') + '. State both.', [numField('b ='), numField('b =')], [function () { return ok(); }, function () { return ok(); }],
             [String(p + 1), String(-(p + 1))], t('b=' + (p + 1)) + ' and ' + t('b=-' + (p + 1)),
-            'A prime ' + t(p) + ' has exactly two integer factor pairs: ' + t('1\\ \\&\\ ' + p) + ' (sum ' + t(p + 1) + ') and ' + t('-1\\ \\&\\ -' + p) + ' (sum ' + t(-(p + 1)) + ').<br>So ' + t('b=\\pm(p+1)=\\pm' + (p + 1)) + ': ' + t('x^{2}+' + (p + 1) + 'x+' + p + '=(x+1)(x+' + p + ')') + ' and ' + t('x^{2}-' + (p + 1) + 'x+' + p + '=(x-1)(x-' + p + ')') + '.',
+            'A prime ' + t(p) + ' has exactly two integer factor pairs: ' + t('1\\ \\&\\ ' + p) + ' (sum ' + t(p + 1) + ') and ' + t('-1\\ \\&\\ -' + p) + ' (sum ' + t(-(p + 1)) + ').<br>So ' + t('b=\\pm(' + p + '+1)=\\pm' + (p + 1)) + ': ' + t('x^{2}+' + (p + 1) + 'x+' + p + '=(x+1)(x+' + p + ')') + ' and ' + t('x^{2}-' + (p + 1) + 'x+' + p + '=(x-1)(x-' + p + ')') + '.',
             ['A prime has only the factors ' + t('\\pm1') + ' and ' + t('\\pm' + p) + '.', 'Don’t forget the negative pair.'], 'prime c: values of b');
           q.check = setCheck([p + 1, -(p + 1)], function (v) {
             var a = v.map(Math.abs);

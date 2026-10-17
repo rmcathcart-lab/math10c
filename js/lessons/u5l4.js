@@ -35,6 +35,8 @@
   function cl(x) { return Math.round(x * 1e6) / 1e6; }
   function ptT(p) { return '(' + p[0] + ',\\ ' + p[1] + ')'; }
   function ptsT(ps) { return ps.map(ptT).join(',\\ '); }
+  function ptsH(ps) { return ps.map(function (p) { return t(ptT(p)); }).join(', '); }  // wraps on a phone
+  function setH(ps) { var a = ps.map(ptT); a[0] = '\\{' + a[0]; a[a.length - 1] += '\\}'; return a.map(t).join(', '); }
   function sorted(a) { for (var i = 1; i < a.length; i++) if (a[i] < a[i - 1]) return false; return true; }
   function shuffleUnsorted(r, arr, key) { var s = r.shuffle(arr); for (var g = 0; g < 20 && sorted(s.map(key)); g++) s = r.shuffle(arr); return s; }
   function signed(x) { return x < 0 ? '-' + Math.abs(x) : '+' + x; }
@@ -287,12 +289,12 @@
           var v3 = r.sample(nz(-5, 10), 3); while (!v3.some(function (y) { return y < 0; })) v3 = r.sample(nz(-5, 10), 3);
           ys = r.shuffle([v3[0], v3[0], v3[0], v3[1], v3[2]]);
           var pairs = shuffleUnsorted(r, xs.map(function (x, i) { return [x, ys[i]]; }), function (p) { return p[0]; });
-          return pairsDR(t(ptsT(pairs)), pairs, { text: 'D & R of 5 pairs (repeated y)' });
+          return pairsDR(ptsH(pairs), pairs, { text: 'D & R of 5 pairs (repeated y)' });
         } },
         { id: '1b', level: 'BEG', make: function (r) {
           var c = r.int(-9, -2), ys; do { ys = r.sample(nz(-5, 10), 4); } while (!ys.some(function (y) { return y < 0; }) || sorted(ys));
           var pairs = ys.map(function (y) { return [c, y]; });
-          var p = pairsDR(t(ptsT(pairs)), pairs, { text: 'D & R of pairs with one x-value' });
+          var p = pairsDR(ptsH(pairs), pairs, { text: 'D & R of pairs with one x-value' });
           p.hints = ['Every pair has the same first coordinate. How many different ' + t('x') + '-values is that?', HINT_LIST];
           return p;
         } }] },
@@ -317,7 +319,7 @@
       { num: '4', stem: 'State the domain and range of each relation graphed below.', parts: [
         { id: '4a', level: 'BEG', make: function (r) {
           var xs = r.sample(range(-5, 5), 5).sort(function (a, b) { return a - b; }), ys = r.sample(nz(-5, 5), 5), pts = xs.map(function (x, i) { return [x, ys[i]]; });
-          var p = pairsDR(G({ points: pts.map(function (q) { return { x: q[0], y: q[1] }; }) }), pts, { solPre: 'Five separate points: ' + t(ptsT(pts)) + '. ', text: 'D & R of plotted points' });
+          var p = pairsDR(G({ points: pts.map(function (q) { return { x: q[0], y: q[1] }; }) }), pts, { solPre: 'Five separate points: ' + ptsH(pts) + '. ', text: 'D & R of plotted points' });
           p.hints = ['These are separate dots, not a line: list the ' + t('x') + '-coordinates and the ' + t('y') + '-coordinates.', HINT_LIST];
           return p;
         } },
@@ -377,7 +379,7 @@
           while (!xs.some(function (x) { return x < 0; })) xs = r.sample(range(-5, 5), 3).sort(function (a, b) { return a - b; });
           var c = r.pick(nz(-6, 9)), pairs = xs.map(function (x) { return [x, c]; });
           var p = pairsDR('A relation that assigns each of the values ' + t(xs.join(',\\ ')) + ' to the single output value ' + t(c) + '.', pairs,
-            { solPre: 'The relation is ' + t(ptsT(pairs)) + ': three inputs, all sent to one output. ', text: 'D & R from a description' });
+            { solPre: 'The relation is ' + ptsH(pairs) + ': three inputs, all sent to one output. ', text: 'D & R from a description' });
           p.hints = ['The inputs are the domain; the outputs are the range.', 'The single output is written once: ' + t('\\{' + c + '\\}') + '-style.'];
           return p;
         } },
@@ -388,7 +390,7 @@
       /* ---------- Q6 list or inequality ---------- */
       { num: '6', stem: function (sh) {
           return 'For each relation, state whether the domain and range are best described as a finite list of values or with an inequality, then write the domain and range using the appropriate notation.<br>' +
-            '(a) ' + t('\\{' + ptsT(sh.a) + '\\}') + '<br>(b) All points on the line ' + t('y=' + sh.m + 'x' + (sh.b ? signed(sh.b) : '')) + ' for ' + t(sh.lo + '\\le x\\le ' + sh.hi) + '.<br>(c) All points on the graph of ' + t('y=x^{2}' + (sh.k ? signed(sh.k) : '')) + '.';
+            '(a) ' + setH(sh.a) + '<br>(b) All points on the line ' + t('y=' + sh.m + 'x' + (sh.b ? signed(sh.b) : '')) + ' for ' + t(sh.lo + '\\le x\\le ' + sh.hi) + '.<br>(c) All points on the graph of ' + t('y=x^{2}' + (sh.k ? signed(sh.k) : '')) + '.';
         },
         shared: function (r) {
           var x0 = r.pick([-4, -3, -2]), st = r.pick([1, 2, 2, 3]), c = r.pick(nz(-5, 5));
@@ -404,7 +406,7 @@
             return p;
           } },
           { id: '6a', sub: 'a', level: 'BEG', make: function (r, sh) {
-            var p = pairsDR('(a) ' + t('\\{' + ptsT(sh.a) + '\\}'), sh.a, { solPre: 'Four ordered pairs only, so a <b>finite list</b>. All four share the output ' + t(sh.c) + '. ', text: 'D & R of four pairs, one y-value' });
+            var p = pairsDR('(a) ' + setH(sh.a), sh.a, { solPre: 'Four ordered pairs only, so a <b>finite list</b>. All four share the output ' + t(sh.c) + '. ', text: 'D & R of four pairs, one y-value' });
             return p;
           } },
           { id: '6b', sub: 'b', level: 'PRG', make: function (r, sh) {
@@ -450,7 +452,8 @@
             var sol = 'A distance can be any real number of kilometres in the allowed interval, so both sets are inequalities with ' + t('\\in\\mathbb{R}') + '.<br>' + t('D=' + D) + '.<br>' +
               t('C=' + sh.f + '+' + sh.rt + 'd') + ' increases with ' + t('d') + ', so the cost runs from ' + t('C(' + sh.d0 + ')=' + c0) + ' to ' + t('C(' + sh.d1 + ')=' + c1) + ': ' + t('R=' + R) + '.';
             return drPart('(b) State the domain and range of the relation. Use ' + t('d') + ' for the domain and ' + t('C') + ' for the range.', D, R,
-              { dv: 'd', rv: 'C', rW: [{ is: bld('C', sh.f, c1), code: 'dr-from-zero', hint: 'The shortest delivery allowed is ' + t(sh.d0) + ' km, not ' + t('0') + ' km, so the cheapest cost is ' + t(sh.f + '+' + sh.rt + '(' + sh.d0 + ')') + '.' }],
+              { dv: 'd', rv: 'C', dW: [{ is: bld('d', 0, sh.d1), code: 'dr-from-zero', hint: 'The company only accepts deliveries of at least ' + t(sh.d0) + ' km, so the domain starts at ' + t(sh.d0) + ', not ' + t('0') + '.' }, { is: bld('d', 0, null), code: 'dr-from-zero', hint: 'The company’s rule limits the distance on both sides: ' + t(sh.d0 + '\\le d\\le ' + sh.d1) + '.' }],
+                rW: [{ is: bld('C', sh.f, c1), code: 'dr-from-zero', hint: 'The shortest delivery allowed is ' + t(sh.d0) + ' km, not ' + t('0') + ' km, so the cheapest cost is ' + t(sh.f + '+' + sh.rt + '(' + sh.d0 + ')') + '.' }],
                 dC: { 'set-continuous': 'A distance is <b>measured</b>, not counted: a ' + t('7.5') + ' km delivery is allowed too, so the domain is an inequality, not a list.' },
                 rC: { 'set-continuous': 'The table shows only five distances, but every distance in between is allowed, so every cost in between occurs too: use an inequality.' } },
               sol, ['The domain is the set of allowed distances — it is stated in the question.', 'For the range, find the cost at the shortest and at the longest allowed distance.'], 'courier domain and range');
@@ -495,7 +498,7 @@
             if ((v === n * b || v === a * n) && v !== ans) return { code: 'nr-repeat', hint: 'One of your counts includes a repeated value. List each set with each value once, then count.' };
             return null; };
           var xsU = uniq(pairs.map(function (p) { return p[0]; })), ysU = uniq(pairs.map(function (p) { return p[1]; }));
-          return B.nr('A relation includes the ordered pairs ' + t(ptsT(pairs)) + '. If ' + t('a') + ' is the number of elements in the domain and ' + t('b') + ' is the number of elements in the range, the value of ' + t('a\\times b') + ' is ______.', ans, diag,
+          return B.nr('A relation includes the ordered pairs ' + ptsH(pairs) + '. If ' + t('a') + ' is the number of elements in the domain and ' + t('b') + ' is the number of elements in the range, the value of ' + t('a\\times b') + ' is ______.', ans, diag,
             'Domain: ' + t('\\{' + xsU.join(', ') + '\\}') + ', so ' + t('a=' + a) + '. Range: ' + t('\\{' + ysU.join(', ') + '\\}') + ', so ' + t('b=' + b) + ' (repeated values count once).<br>' + t('a\\times b=' + a + '\\times ' + b + '=' + ans) + '.',
             ['Write the domain and the range as lists (each value once), then count each list.'], 'count domain × range elements');
         } }] }
@@ -511,12 +514,12 @@
             var pairs = xs.map(function (x, i) { return [x, ys[i]]; });
             if (uniq(pairs.map(function (p) { return p[0] * 1000 + p[1]; })).length === 5 && !sorted(xs)) break;
           }
-          return pairsDR(t(ptsT(pairs)), pairs, { text: 'D & R of pairs with repeats' });
+          return pairsDR(ptsH(pairs), pairs, { text: 'D & R of pairs with repeats' });
         } },
         { id: 'e1b', level: 'BEG', make: function (r) {
           var xs = r.sample(range(1, 16), 4).sort(function (a, b) { return a - b; }); if (r.chance(0.3)) xs = [1, 4, 9, 16];
           var c = r.int(-6, -1), pairs = xs.map(function (x) { return [x, c]; });
-          return pairsDR(t(ptsT(pairs)), pairs, { text: 'D & R of pairs with one y-value' });
+          return pairsDR(ptsH(pairs), pairs, { text: 'D & R of pairs with one y-value' });
         } },
         { id: 'e1c', level: 'EMG', make: function (r) {
           for (var g = 0; g < 100; g++) {
@@ -525,7 +528,7 @@
             var pairs = xs.map(function (x, i) { return [x, ys[i]]; });
             if (uniq(pairs.map(function (p) { return p[0] * 1000 + p[1]; })).length === 4) break;
           }
-          return pairsDR(t(ptsT(pairs)), pairs, { text: 'D & R of pairs with decimals' });
+          return pairsDR(ptsH(pairs), pairs, { text: 'D & R of pairs with decimals' });
         } }] },
       { num: '2', stem: 'State the domain and range of the relation in each table of values.', parts: [
         { id: 'e2a', level: 'BEG', make: function (r) {
@@ -736,7 +739,7 @@
             { g: { segs: [{ pts: pts, start: 'closed', end: 'closed' }] }, why: 'Joining the points makes an unbroken path: every ' + t('x') + ' between ' + t(xs[0]) + ' and ' + t(xs[3]) + ' would be used, so the domain would be an inequality, not a list.' },
             { g: { points: P(pts.map(function (q) { return [q[1], q[0]]; })) }, why: 'These points have ' + t('x') + '-values ' + t(lst(ys)) + ' — the coordinates are swapped.' },
             { g: { points: P(other) }, why: 'One of these points has ' + t('y=' + other[0][1]) + ', which is not in the range ' + t(lst(yv)) + '.' }],
-            'Four separate (unjoined) points with ' + t('x') + '-values ' + t(xs.join(',\\ ')) + ', each with a ' + t('y') + '-value of ' + t(yv[0]) + ' or ' + t(yv[1]) + ', both used. One answer: ' + t(ptsT(pts)) + '.',
+            'Four separate (unjoined) points with ' + t('x') + '-values ' + t(xs.join(',\\ ')) + ', each with a ' + t('y') + '-value of ' + t(yv[0]) + ' or ' + t(yv[1]) + ', both used. One answer: ' + ptsH(pts) + '.',
             ['A list domain means separate points, not a line.', 'Check that every ' + t('y') + '-value used is in the range, and both are used.'], 'points with a list D & R');
         } },
         { id: 'e10d', level: 'PRG', make: function (r) {
@@ -771,7 +774,7 @@
             var p = segDR(sh.P, sh.Q, 'closed', 'closed', { text: 'correct the domain and range' });
             p.prompt = '(b) Write the correct domain and range.'; return p;
           } }] },
-      { num: '13', stem: function (sh) { return 'A relation is given by ' + t(ptsT(sh.pairs)) + '. One student writes ' + t('R=' + bld('y', sh.ymin, sh.ymax)) + '. A second student writes ' + t('D=' + lst(sh.xs)) + ' and ' + t('R=\\{' + sh.ys.join(', ') + '\\}') + '.'; },
+      { num: '13', stem: function (sh) { return 'A relation is given by ' + ptsH(sh.pairs) + '. One student writes ' + t('R=' + bld('y', sh.ymin, sh.ymax)) + '. A second student writes ' + t('D=' + lst(sh.xs)) + ' and ' + t('R=\\{' + sh.ys.join(', ') + '\\}') + '.'; },
         shared: function (r) {
           var xs = r.sample(range(-4, 6), 4).sort(function (a, b) { return a - b; }), y0 = r.int(-2, 2), g1 = r.int(2, 4), g2 = r.int(2, 4), yv = [y0, y0 + g1, y0 + g1 + g2];
           var ys = [yv[0], yv[1], yv[1], yv[2]]; return { xs: xs, ys: ys, yv: yv, ymin: yv[0], ymax: yv[2], pairs: xs.map(function (x, i) { return [x, ys[i]]; }) };
@@ -833,7 +836,7 @@
       { num: '15', stem: 'True or false? (If false, think of a counterexample.)', parts: [
         { id: 'e15a', level: 'EMG', make: function (r) { var c = r.pick(nz(-6, 9));
           return B.tf(r, 'A relation whose range is ' + t('\\{' + c + '\\}') + ' must be a horizontal line.', false, 'Think of separate points that all have ' + t('y=' + c) + ', or a short segment at that height.',
-            '<b>False.</b> The four separate points ' + t('(1,\\ ' + c + '),\\ (2,\\ ' + c + '),\\ (3,\\ ' + c + '),\\ (4,\\ ' + c + ')') + ' have range ' + t('\\{' + c + '\\}') + ' but are not a line.', [], 'range {c} ⇒ horizontal line? (false)'); } },
+            '<b>False.</b> The four separate points ' + ptsH([[1, c], [2, c], [3, c], [4, c]]) + ' have range ' + t('\\{' + c + '\\}') + ' but are not a line.', [], 'range {c} ⇒ horizontal line? (false)'); } },
         { id: 'e15b', level: 'LIM', make: function (r) { var c = r.pick(nz(-6, 6));
           return B.tf(r, 'The vertical line ' + t('x=' + c) + ' has exactly one value in its domain.', true, 'Every point on ' + t('x=' + c) + ' has the same ' + t('x') + '-coordinate.',
             '<b>True.</b> Every point on the vertical line ' + t('x=' + c) + ' has ' + t('x') + '-value ' + t(c) + ', so ' + t('D=\\{' + c + '\\}') + '.', [], 'vertical line has one domain value (true)'); } },
@@ -875,7 +878,7 @@
     for (var i = 0; i < Math.max(nD, nR); i++) ex1.push([xs[Math.min(i, nD - 1)], ys[Math.min(i, nR - 1)]]);
     var keyTex = '\\{' + ex1.map(function (p) { return '(' + p[0] + ', ' + p[1] + ')'; }).join(', ') + '\\}';
     var q = 'Can a relation have ' + t(nD) + (nD === 1 ? ' value' : ' values') + ' in its domain and ' + (nR === 1 ? 'only ' : '') + t(nR) + (nR === 1 ? ' value' : ' values') + ' in its range? Yes — write a set of ordered pairs that does it.';
-    return { prompt: q, input: { type: 'math', keys: 'pairs', placeholder: 'e.g. {(1, 4), (2, 7)}' }, key: keyTex, answer: t(keyTex) + ' (one example)', text: 'pairs with ' + nD + ' domain / ' + nR + ' range values',
+    return { prompt: q, input: { type: 'math', keys: 'pairs', placeholder: 'e.g. {(1, 4), (2, 7)}' }, key: keyTex, answer: setH(ex1) + ' (one example)', text: 'pairs with ' + nD + ' domain / ' + nR + ' range values',
       check: function (resp) {
         var L = readPairs(resp);
         if (L.empty) return form('empty', 'Type your answer first.');
@@ -886,7 +889,7 @@
       },
       good: [keyTex.replace(/\\\{|\\\}/g, ''), '\\left\\lbrace ' + ex1.map(function (p) { return '\\left(' + p[0] + ',' + p[1] + '\\right)'; }).join(',') + '\\right\\rbrace '],
       bad: ['\\{' + ex1.slice(0, 1).map(function (p) { return '(' + p[0] + ', ' + p[1] + ')'; }).join(', ') + ', (' + (xs[0] + 20) + ', ' + (ys[0] + 20) + ')\\}'],
-      solution: '<b>Yes.</b> For example ' + t(keyTex) + ': ' + t('D=' + lst(xs)) + ' (' + nD + (nD === 1 ? ' value' : ' values') + ') and ' + t('R=' + lst(ys)) + ' (' + nR + (nR === 1 ? ' value' : ' values') + ').' +
+      solution: '<b>Yes.</b> For example ' + setH(ex1) + ': ' + t('D=' + lst(xs)) + ' (' + nD + (nD === 1 ? ' value' : ' values') + ') and ' + t('R=' + lst(ys)) + ' (' + nR + (nR === 1 ? ' value' : ' values') + ').' +
         (nD === 1 ? ' A relation may pair one input with several outputs.' : nR === 1 ? ' Several inputs can share one output.' : ' Nothing forces the two sets to be the same size.'),
       hints: ['Choose ' + t(nD) + ' different ' + t('x') + '-values and ' + t(nR) + ' different ' + t('y') + '-values; you may reuse a value in several pairs.'] };
   }

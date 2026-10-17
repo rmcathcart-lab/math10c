@@ -844,6 +844,7 @@
             var pr = sh.pr, t4 = pr.t4;
             pr.sol = '<b>Regroup</b> so each pair shares a factor:<br>' + t(pr.tex + '=' + P.seq([t4[0], t4[2], t4[1], t4[3]])) + '<br>' + t('=x(x+' + sh.p + ')+' + (sh.q === 1 ? '' : sh.q) + 'y(x+' + sh.p + ')') + '<br>' + t('=' + lst([S(X, N(sh.p)), S(X, M(sh.q, 'y'))]));
             pr.keyTex = lst([S(X, N(sh.p)), S(X, M(sh.q, 'y'))]);
+            pr.hints = ['Grouping the terms in the order given gets nowhere. Rearrange them so each pair shares a factor: put ' + t(tx(t4[0])) + ' next to ' + t(tx(t4[2])) + '.', 'Take the common factor out of each pair — the two brackets must match.'];
             return fac(pr, { prompt: 'Regroup and factor ' + t(pr.tex) + ' completely.' });
           } },
           { id: 'e17b', sub: 'b', level: 'PRG', make: function (r) {

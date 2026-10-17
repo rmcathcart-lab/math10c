@@ -295,10 +295,10 @@
       { tex: Fz.expr, yes: true, note: pstLine(Fz) + ' — <b>yes</b>, ' + t(Fz.key) + '.' }];
   }
 
-  /* Q14 figure: right angle at P */
+  /* Q14 figure: right angle at P; PQ (vertical) drawn longer than PR, as in the question */
   var TRI_SVG = '<svg class="fig-svg" viewBox="0 0 220 170" width="100%" style="max-width:240px" role="img" aria-label="Right triangle PQR with the right angle at P">' +
-    '<polygon points="40,150 180,150 40,20" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="40,136 54,136 54,150" fill="none" stroke="currentColor" stroke-width="1.5"/>' +
-    '<text x="26" y="162" font-size="15" font-style="italic" fill="currentColor">P</text><text x="186" y="162" font-size="15" font-style="italic" fill="currentColor">R</text><text x="34" y="14" font-size="15" font-style="italic" fill="currentColor">Q</text></svg>';
+    '<polygon points="40,150 130,150 40,20" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="40,136 54,136 54,150" fill="none" stroke="currentColor" stroke-width="1.5"/>' +
+    '<text x="26" y="162" font-size="15" font-style="italic" fill="currentColor">P</text><text x="136" y="162" font-size="15" font-style="italic" fill="currentColor">R</text><text x="34" y="14" font-size="15" font-style="italic" fill="currentColor">Q</text></svg>';
 
   /* EP14 four-term polynomials */
   function e14Shared(r) {
@@ -534,7 +534,7 @@
           var yes = function (o) { return 'It <i>is</i> a perfect square: ' + pstLine(o) + '.'; };
           return mcTex(r, 'From the expressions below, the one which does <b>not</b> represent a perfect square trinomial is', [
             { html: t(A.expr), why: yes(A) }, { html: t(Bq.expr), why: yes(Bq) }, { html: t(tx(Ct)), right: true }, { html: t(D.expr), why: yes(D) }],
-            'A: ' + pstLine(A) + '<br>B: ' + pstLine(Bq) + '<br>D: ' + pstLine(D) + '<br>' + t(tx(Ct)) + ': ' + t('\\sqrt{' + c.a * c.a + 'x^{2}}=' + c.a + 'x') + ', ' + t('\\sqrt{' + c.b * c.b + '}=' + c.b) + ', but ' + t('2(' + c.a + 'x)(' + c.b + ')=' + 2 * c.a * c.b + 'x\\neq ' + c.a * c.b + 'x') + ' — <b>not</b> a perfect square.',
+            t(A.expr) + ': ' + pstLine(A) + '<br>' + t(Bq.expr) + ': ' + pstLine(Bq) + '<br>' + t(D.expr) + ': ' + pstLine(D) + '<br>' + t(tx(Ct)) + ': ' + t('\\sqrt{' + c.a * c.a + 'x^{2}}=' + c.a + 'x') + ', ' + t('\\sqrt{' + c.b * c.b + '}=' + c.b) + ', but ' + t('2(' + c.a + 'x)(' + c.b + ')=' + 2 * c.a * c.b + 'x\\neq ' + c.a * c.b + 'x') + ' — <b>not</b> a perfect square.',
             ['Run the three-part test on each option. Watch the middle term.'], 'which is not a PST');
         } }] },
       { num: '10', stem: '<i>(Multiple Choice)</i>', parts: [
@@ -933,10 +933,14 @@
         shared: e14Shared,
         parts: [
           { id: 'e14', sub: 'decide', level: 'EMG', make: function (r, sh) {
-            var rows = ['a', 'b', 'c', 'd', 'e', 'f'].map(function (k) { return { id: k, html: '(' + k + ')' }; }), want = { a: '31', b: '22', c: '22', d: '31', e: '31', f: '22' };
-            return KP.grid(['a', 'b', 'c', 'd', 'e', 'f'].map(function (k) { return '(' + k + ')&nbsp; ' + t(sh[k].expr); }).join('<br>') + '<br>For each one, would you split it ' + t('2+2') + ' (factoring by grouping) or ' + t('3+1') + ' (three terms forming a perfect square trinomial, leaving a difference of squares)?', rows, [{ id: '22', html: t('2+2') }, { id: '31', html: t('3+1') }], want,
-              { why: function (id) { return '(' + id + '): ' + (want[id] === '31' ? 'count the perfect-square terms: three of them, with a lone square subtracted.' : 'there is no perfect square trinomial here — the terms fall into two pairs with common factors.'); } },
-              '(a) ' + t('3+1') + ': ' + t('x^{2}+' + 2 * sh.a.k + 'x+' + sh.a.k * sh.a.k) + ' is a perfect square trinomial.<br>(b) ' + t('2+2') + ': no squares; the pairs share ' + t('a') + ' and ' + t('b') + '.<br>(c) ' + t('2+2') + ': no square pattern.<br>(d) ' + t('3+1') + ': ' + t('-(n^{2}-' + 2 * sh.d.k + 'n+' + sh.d.k * sh.d.k + ')') + ' is a perfect square, with the lone square ' + t('m^{2}') + '.<br>(e) ' + t('3+1') + ': the first three terms are ' + t('(' + sh.e.bt + ')^{2}') + '.<br>(f) ' + t('2+2') + ': no squares.',
+            /* rows shown in a shuffled order (labelled by the polynomial itself) so the answer pattern is not always the same */
+            var want = { a: '31', b: '22', c: '22', d: '31', e: '31', f: '22' }, order = r.shuffle(['a', 'b', 'c', 'd', 'e', 'f']);
+            var note = { a: t('x^{2}+' + 2 * sh.a.k + 'x+' + sh.a.k * sh.a.k) + ' is a perfect square trinomial.', b: 'no squares; the pairs share ' + t('a') + ' and ' + t('b') + '.', c: 'no square pattern.',
+              d: t('-(n^{2}-' + 2 * sh.d.k + 'n+' + sh.d.k * sh.d.k + ')') + ' is a perfect square, with the lone square ' + t('m^{2}') + '.', e: 'the first three terms are ' + t('(' + sh.e.bt + ')^{2}') + '.', f: 'no squares.' };
+            var rows = order.map(function (k) { return { id: k, html: t(sh[k].expr) }; });
+            return KP.grid('For each polynomial, would you split it ' + t('2+2') + ' (factoring by grouping) or ' + t('3+1') + ' (three terms forming a perfect square trinomial, leaving a difference of squares)?', rows, [{ id: '22', html: t('2+2') }, { id: '31', html: t('3+1') }], want,
+              { why: function (id) { return t(sh[id].expr) + ': ' + (want[id] === '31' ? 'count the perfect-square terms: three of them, with a lone square subtracted.' : 'there is no perfect square trinomial here — the terms fall into two pairs with common factors.'); } },
+              order.map(function (k) { return t(sh[k].expr) + ' — ' + t(want[k] === '31' ? '3+1' : '2+2') + ': ' + note[k]; }).join('<br>'),
               ['A ' + t('3+1') + ' problem has three perfect-square terms, and a lone square with a minus sign in front of it.'], 'grouping or 3+1');
           } },
           { id: 'e14a', sub: 'a', level: 'PRG', make: function (r, sh) {

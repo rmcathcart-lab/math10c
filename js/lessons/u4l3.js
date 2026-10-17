@@ -17,7 +17,7 @@
     'lw-swap': 'Length and width swapped', 'perim-half': 'Used L + W for the perimeter instead of 2(L + W)', 'no-pi': 'Left out π', 'added-sq': 'Added the squares instead of subtracting',
     'circ': 'Used circumference instead of area', 'd-not-squared': 'Didn’t square the distance from the middle number', 'minus-bracket': 'Subtracted a bracket without changing every sign',
     'lost-half': 'Dropped the ½', 'ab-sum': 'Gave a + b instead of a² + b²', 'simplify-br': 'Brackets not simplified', 'squared-each': 'Squared the numbers instead of using the factored form',
-    'abcd': 'Wrong values of a, b, c, d', 'sub-value': 'Substitution error', 'sum-pair': 'Wrong pair of squares'
+    'abcd': 'Wrong values of a, b, c, d', 'sub-value': 'Substitution error', 'sum-pair': 'Wrong pair of squares', 'frac-in-bracket': 'Left fractions inside the brackets'
   });
 
   /* ---------------- small helpers ---------------- */
@@ -89,6 +89,19 @@
         if (ka.length !== kb.length || !ka.every(function (k) { return SN.keys[k] === TN.keys[k]; })) return r;
         var fracOnly = SN.raw.every(function (f) { return !Object.keys(f.cn.v).length && Math.abs(f.cn.c[0]) === 1; });
         return fracOnly ? ok() : r;
+      };
+    };
+  }
+  /* the reverse (e12 b ii): the question asks for the fraction OUT in front, so a correct product whose brackets still
+   * hold fractions, e.g. (⅓p − 5/2 q)(⅓p + 5/2 q), gets a nudge (K.factored itself accepts fraction-only brackets) */
+  function fracOut(Lc2) {
+    return function (check) {
+      return function (resp) {
+        var r = check(resp); if (r.v !== 'correct') return r;
+        var a = K.read(resp), sp = a.res ? null : FX.split(a.ast);
+        if (sp && sp.ok && sp.factors.some(function (f) { return P.count(f.p) > 1 && P.terms(f.p).some(function (T) { return T.c[1] !== 1; }); }))
+          return form('frac-in-bracket', 'Right product — but this question asks for the other form: take the fractional common factor ' + t('\\frac{1}{' + Lc2 + '}') + ' out in front first, so the brackets have <b>whole-number</b> coefficients.');
+        return r;
       };
     };
   }
@@ -718,7 +731,7 @@
           { id: 'e9b', level: 'PRG', make: function (r, sh) { return fxPart(S(L(1, 'x'), N(sh.n), 2), { prompt: 'Finish the question properly: factor ' + t('x^{4}-' + Math.pow(sh.n, 4)) + ' completely.' }); } },
           { id: 'e9c', level: 'EMG', make: function (r, sh) {
             var n = sh.n;
-            return mc(r, 'Compare with the student in question 8, who wrote ' + t('x^{2}+25=(x+5)(x-5)') + '. They made opposite mistakes. Which describes them?', [
+            return mc(r, 'Compare with the student in question 8, who factored a sum of squares as if it were a difference (like ' + t('x^{2}+25=(x+5)(x-5)') + '). They made opposite mistakes. Which describes them?', [
               { html: 'Question 8: factored something that <b>does not factor</b> (a sum of squares). Question 9: <b>stopped too soon</b>, leaving a difference of squares unfactored.', right: true },
               { html: 'Question 8: stopped too soon. Question 9: factored a sum of squares that doesn’t factor.', why: 'Swap them: ' + t('x^{2}+25') + ' is the sum of squares; ' + t('x^{2}-' + n * n) + ' is the bracket that was left unfactored.' },
               { html: 'Both students forgot to take out a common factor.', why: 'Neither expression has a common factor. Look at what kind of bracket each one is.' },
@@ -768,7 +781,7 @@
               { is: '\\frac{1}{' + Lc + '}' + dosTex(A2, B2), code: 'gcf-one', hint: 'Check the fraction in front: ' + t('\\frac{1}{' + Lc2 + '}\\times ' + a2 * a2 + 'p^{2}=' + tx(sq(A))) + '. The common factor is ' + t('\\frac{1}{' + Lc2 + '}') + ', the square of ' + t('\\frac{1}{' + Lc + '}') + '.' }],
               'Take out ' + t('\\frac{1}{' + Lc2 + '}') + ' (the lowest common denominator):<br>' + t(e + '=\\frac{1}{' + Lc2 + '}(' + P.seq([sq(A2), P.neg(sq(B2))]) + ')') + '<br>' + t('=\\frac{1}{' + Lc2 + '}\\left[' + sqTex(A2) + '-' + sqTex(B2) + '\\right]=' + target),
               ['Find the common denominator of the two fractions and take ' + t('\\frac{1}{\\text{LCD}}') + ' out first.', 'The bracket that is left has whole-number coefficients — factor it as a difference of squares.'], 'fraction out first: ' + plain(e),
-              { good: ['\\frac{(' + P.seq([A2, P.neg(B2)]) + ')(' + P.seq([A2, B2]) + ')}{' + Lc2 + '}'], bad: [dosTex(A, B)] });
+              { good: ['\\frac{(' + P.seq([A2, P.neg(B2)]) + ')(' + P.seq([A2, B2]) + ')}{' + Lc2 + '}'], bad: [dosTex(A, B)], wrap: fracOut(Lc2) });
           } }] },
       /* ---------- Part E: expressions as squares ---------- */
       { num: '13', section: 'Extra practice E — When each “square” is an expression', stem: 'In ' + t('a^{2}-b^{2}=(a-b)(a+b)') + ' the letters may stand for whole brackets. Factor, then <b>simplify inside each bracket</b>.', parts: [

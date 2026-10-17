@@ -154,8 +154,17 @@
   }
 
   /* ---------- Q2 the big grid ---------- */
+  /* would any letter in the Q2 grid (drawn up-right of its dot, 15 px per unit) touch another dot or letter, or a tick number (±5, ±10)? */
+  function q2Crowded(pts) {
+    var U = 15, boxes = [], labels = [];
+    var hit = function (a, b) { return a[0] < b[2] && b[0] < a[2] && a[1] < b[3] && b[1] < a[3]; };
+    Object.keys(pts).forEach(function (L) { var X = pts[L][0] * U, Y = -pts[L][1] * U; boxes.push({ L: L, b: [X - 4.5, Y - 4.5, X + 4.5, Y + 4.5] }); labels.push({ L: L, b: [X + 5, Y - 16, X + 15, Y - 5] }); });
+    [-10, -5, 5, 10].forEach(function (v) { boxes.push({ L: 'tx', b: [v * U - 9, 5, v * U + 9, 15] }); boxes.push({ L: 'ty', b: [-20, -v * U - 5, -3, -v * U + 5] }); });
+    return labels.some(function (l, i) { return boxes.some(function (o) { return o.L !== l.L && hit(l.b, o.b); }) || labels.some(function (m, j) { return j !== i && hit(l.b, m.b); }); }) ||
+      boxes.some(function (o) { return o.L.length === 1 && boxes.some(function (t) { return t.L.length === 2 && hit(o.b, t.b); }); });
+  }
   function q2Shared(r) {
-    var P0;
+    var P0, pts;
     for (var tries = 0; tries < 400; tries++) {
       var k = r.int(1, 6);
       P0 = { A: [-r.int(5, 9), r.int(3, 9)], B: [-r.int(1, 5), k], C: [r.int(2, 6), k], D: [r.int(5, 9), r.int(3, 8)], E: [0, k], F: [-r.int(1, 6), 0],
@@ -163,12 +172,12 @@
       var xs = ['A', 'B', 'C', 'D', 'F', 'G', 'H', 'I'].map(function (L) { return P0[L][0]; });
       var ysPos = [P0.A[1], P0.D[1], k], ysNeg = [P0.G[1], P0.H[1], P0.I[1]];
       var uniq = function (a) { return a.filter(function (x, i) { return a.indexOf(x) === i; }).length === a.length; };
-      // the only shared x: E and O; the only shared y: B, C, E (y = k) and F, O (y = 0); labels not crowded
-      if (uniq(xs) && uniq(ysPos) && uniq(ysNeg) && Math.abs(P0.B[0] - P0.F[0]) + Math.abs(k) > 2 && Math.abs(P0.C[0]) > 1 && Math.abs(P0.A[0] - P0.G[0]) + Math.abs(P0.A[1] - P0.G[1]) > 2) break;
+      var sx = r.chance(0.5) ? 1 : -1, sy = r.chance(0.6) ? 1 : -1;
+      pts = {}; Object.keys(P0).forEach(function (L) { pts[L] = [P0[L][0] * sx || 0, P0[L][1] * sy || 0]; });
+      pts.O = [0, 0];
+      // the only shared x: E and O; the only shared y: B, C, E (y = k) and F, O (y = 0); no letter touching a dot, a letter or a tick number
+      if (uniq(xs) && uniq(ysPos) && uniq(ysNeg) && Math.abs(P0.B[0] - P0.F[0]) + Math.abs(k) > 2 && Math.abs(P0.C[0]) > 1 && Math.abs(P0.A[0] - P0.G[0]) + Math.abs(P0.A[1] - P0.G[1]) > 2 && !q2Crowded(pts)) break;
     }
-    var sx = r.chance(0.5) ? 1 : -1, sy = r.chance(0.6) ? 1 : -1;
-    var pts = {}; Object.keys(P0).forEach(function (L) { pts[L] = [P0[L][0] * sx || 0, P0[L][1] * sy || 0]; });
-    pts.O = [0, 0];
     return { pts: pts, letters: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'] };
   }
   function q2Graph(sh) {
@@ -501,7 +510,7 @@
           } },
           { id: '5d', level: 'EMG', make: function (r, sh) {
             var Fv = sh.fare(sh.dd);
-            return { prompt: 'Use the graph to estimate the distance travelled if the fare was ' + t('\\$' + money(Fv)) + '.', input: { type: 'number', after: 'km' }, check: estCheck(sh.dd, 0.3, function (v) {
+            return { prompt: 'Use the graph (in (c)) to estimate the distance travelled if the fare was ' + t('\\$' + money(Fv)) + '.', input: { type: 'number', after: 'km' }, check: estCheck(sh.dd, 0.3, function (v) {
                 if (Math.abs(v - Fv / 100) < 0.05) return { code: 'value', hint: 'That is the fare. Find ' + t('\\$' + money(Fv)) + ' on the vertical axis, go across to the line, then <b>down</b> to read the distance.' };
                 if (Math.abs(v - Fv / sh.rateC) < 0.25) return { code: 'no-fee', hint: 'Read the graph itself rather than dividing by the rate — the fee at ' + t('d=0') + ' is part of the fare.' };
                 return null;
@@ -826,7 +835,7 @@
         var s = sh.a + sh.b, c = sh.c, w = c - s;
         return KP.mc(r, 'A student who assumed the pattern started at Figure 1 wrote ' + t('T=' + lin(s, w, 'n')) + '. Test both equations at ' + t('n=0') + ' and ' + t('n=3') + '. Which is right?', [
           { html: t('T=' + lin(s, c, 'n')) + ': it gives ' + t(c) + ' and ' + t(sh.T(3)) + ', matching Figures 0 and 3.', right: true },
-          { html: t('T=' + lin(s, w, 'n')) + ': it gives ' + t(w) + ' and ' + t(s * 3 + w) + '.', why: 'Compare with the diagrams: Figure 0 has ' + c + ' tiles and Figure 3 has ' + sh.T(3) + '.' },
+          { html: t('T=' + lin(s, w, 'n')) + ': it gives ' + t(w) + ' and ' + t(s * 3 + w) + '.', why: 'Compare with the diagrams: Figure 0 has ' + c + ' tile' + (c > 1 ? 's' : '') + ' and Figure 3 has ' + sh.T(3) + '.' },
           { html: 'Both — they only differ in where you start counting.', why: 'They give different numbers for the same figure. Only one can match the diagrams.' },
           { html: 'Neither equation works.', why: 'Substitute ' + t('n=0') + ' and ' + t('n=3') + ' into ' + t('T=' + lin(s, c, 'n')) + ' and compare with the diagrams.' }],
           t('n=0') + ': ' + t(lin(s, c, 'n')) + ' gives ' + t(c) + ' ✓; ' + t(lin(s, w, 'n')) + ' gives ' + t(w) + ' ✗.<br>' + t('n=3') + ': ' + t(sh.T(3)) + ' ✓ versus ' + t(3 * s + w) + ' ✗ (that is Figure 2’s count).<br>' + t('T=' + lin(s, c, 'n')) + ' is right; the other forgets that the pattern starts at Figure 0.',
@@ -849,7 +858,7 @@
           { html: 'The number of tiles added each figure.', why: 'The tiles added each figure (' + s + ') multiply ' + t('n') + '.' },
           { html: 'The number of tiles in the top row.', why: 'The top row has ' + t(lin(sh.b, 0, 'n')) + ' tiles — it changes with ' + t('n') + '.' },
           { html: 'The number of tiles in Figure 1.', why: 'Figure 1 has ' + sh.T(1) + ' tiles. Which figure has exactly ' + c + '?' }],
-          'The constant is ' + t('T') + ' when ' + t('n=0') + ': the ' + c + ' tile' + (c > 1 ? 's' : '') + ' of Figure 0, which stay at the bottom left of every diagram. The ' + t(s + 'n') + ' counts the tiles added.', ['Substitute ' + t('n=0') + '.'], 'meaning of constant');
+          'The constant is ' + t('T') + ' when ' + t('n=0') + ': the ' + c + ' tile' + (c > 1 ? 's' : '') + ' of Figure 0, which ' + (c > 1 ? 'stay' : 'stays') + ' at the bottom left of every diagram. The ' + t(s + 'n') + ' counts the tiles added.', ['Substitute ' + t('n=0') + '.'], 'meaning of constant');
       } }] });
 
   /* ----- EP 3: chain of polygons ----- */

@@ -627,7 +627,7 @@
       'Calculator: ' + C.y1(rel) + ', a window such as ' + winTex(w) + ', then ' + C.zero + ' — once near each crossing: ' + t('X=' + xs.map(function (v) { return nT(rnd(v, 7)); }).join('\\text{ and }X=')) + (dec ? '; ▸Frac turns the decimal into ' + t(xs.filter(function (v) { return !Number.isInteger(v); }).map(vt).join(',\\ ')) : '') + '. ' + C.value0 + ' gives ' + t('Y=' + nT(c)) + '.<br>' +
       'Check algebraically: ' + t('y=' + rel + '=' + fac()) + ', so ' + t('y=0') + ' when ' + t('x=' + xs.map(vt).join('\\text{ or }x=')) + '; at ' + t('x=0') + ', ' + t('y=' + nT(c)) + '.' + screen([qf(a, b, c)], w, xs.map(function (v) { return { x: v, y: 0, label: vt(v).indexOf('frac') >= 0 ? nT(rnd(v, 2)) : nT(v) }; }).concat([{ x: 0, y: c, label: '(0, ' + nT(c) + ')' }])),
       ['The ' + t('x') + '-intercepts are where ' + t('y=0') + ' — there are two here.', 'The ' + t('y') + '-intercept is the output at ' + t('x=0') + ' (the constant term).'], 'intercepts ' + rel,
-      { good: [[xs.slice().reverse().map(vt).join(', '), String(c)]], bad: [[vt(xs[0]), nT(c)], [keyX, nT(-c)]].concat(same(r1, -r2) ? [] : [[xs.map(function (v) { return vt(-v); }).join(', '), nT(c)]]).concat(dec ? [[xs.map(function (v) { return nT(rnd(v, 2)); }).join(', '), nT(c)]] : []) });
+      { good: [[xs.slice().reverse().map(vt).join(', '), String(c)]], bad: [[vt(xs[0]), nT(c)], [keyX, nT(-c)]].concat(same(r1, -r2) ? [] : [[xs.map(function (v) { return vt(-v); }).join(', '), nT(c)]]).concat(xs.some(function (v) { return !termDec(v); }) ? [[xs.map(function (v) { return nT(rnd(v, 2)); }).join(', '), nT(c)]] : []) });
   }
   /* ---- Q8: exact turning point of y = ax² + bx + c ---- */
   function vertexPart(a, b, c, r) {

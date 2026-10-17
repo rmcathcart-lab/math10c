@@ -344,7 +344,7 @@
             sol: steps(['\\text{Expand: }' + tx(O) + '=' + s.k, polyEq(E)].concat(trin(f1, f2)).concat(zl([f2, f1]))) + '<br>So ' + t(ans('x', roots)) + '.' });
         } },
         { id: '3e', level: 'PRG', make: function (r) {
-          var s = gen(function () { var a = r.int(2, 5), b = r.int(1, 6), c = r.int(1, 7); return cop(a, b) && c !== b && ((b + c) % a !== 0 || (b - c) % a !== 0) ? { a: a, b: b, c: c } : null; });
+          var s = gen(function () { var a = r.int(2, 5), b = r.int(1, 6), c = r.int(1, 7); var g = gcd(gcd(a * a, 2 * a * b), b * b - c * c); return cop(a, b) && c !== b && ((b + c) % a !== 0 || (b - c) % a !== 0) && a * a * Math.abs(b * b - c * c) <= 240 * g * g ? { a: a, b: b, c: c } : null; }); // reduced |ac| ≤ 240 (booklet: 3)
           var st = squareSteps(s.a, s.b, s.c), rp = st.roots[0], rm = st.roots[1];
           return solvePart(t('(' + tx(lin(s.a, -s.b)) + ')^{2}=' + s.c * s.c), [rp, rm], { fs: st.f, hints: ['Expand the square (it has a middle term), then move ' + t(s.c * s.c) + ' to the left.', 'Take out any common factor, then factor and solve.'], text: 'solve (ax-b)^2=c^2',
             wrong: [[[rp], 'pos-root-only', 'There is a second solution. Two numbers square to ' + t(s.c * s.c) + ': ' + t(s.c) + ' <b>and</b> ' + t(-s.c) + '. Expanding and factoring keeps both.']],
@@ -431,7 +431,7 @@
               { is: P.add(mono(1, 'b', 2), mono(sh.d, 'b'), P.num(2 * sh.A)), code: 'sign-k', hint: 'When ' + t(2 * sh.A) + ' moves to the left side, it becomes ' + t(-2 * sh.A) + '.' }];
             if (sh.A % 2 === 0) wr.push({ is: P.add(mono(1, 'b', 2), mono(sh.d, 'b'), P.num(-sh.A / 2)), code: 'half-wrong', hint: 'To clear the ' + t('\\tfrac{1}{2}') + ', <b>multiply</b> both sides by 2.' });
             return eqZeroPart('Let ' + t('b') + ' be the base, in mm. Write a polynomial equation that models this information, in the form ' + t('\\ldots=0') + ' (type the left side).', T, 'b', wr,
-              'Base ' + t('=b') + ', height ' + t('=b+' + sh.d) + '.<br>' + steps(['\\tfrac{1}{2}b(b+' + sh.d + ')=' + sh.A, 'b(b+' + sh.d + ')=' + 2 * sh.A, tx(T) + '=0']) + '<br>(Any equivalent equation, such as ' + t('\\tfrac{1}{2}b^{2}+' + (sh.d % 2 ? '\\tfrac{' + sh.d + '}{2}' : sh.d / 2) + 'b-' + sh.A + '=0') + ', is also correct.)',
+              'Base ' + t('=b') + ', height ' + t('=b+' + sh.d) + '.<br>' + steps(['\\tfrac{1}{2}b(b+' + sh.d + ')=' + sh.A, 'b(b+' + sh.d + ')=' + 2 * sh.A, tx(T) + '=0']) + '<br>(Any equivalent equation, such as ' + t('\\tfrac{1}{2}b^{2}+' + (sh.d % 2 ? '\\tfrac{' + sh.d + '}{2}' : sh.d === 2 ? '' : sh.d / 2) + 'b-' + sh.A + '=0') + ', is also correct.)',
               ['Write the height in terms of ' + t('b') + ', then use Area ' + t('=\\tfrac{1}{2}\\times\\text{base}\\times\\text{height}') + '.', 'Multiply both sides by 2, expand, and move the constant to the left.'], 'triangle model equation');
           } },
           { id: '7b', level: 'ADV', make: function (r, sh) {
@@ -461,7 +461,7 @@
         { id: '9', level: 'PRG', make: function (r) {
           var s = gen(function () {
             var A = r.pick([3, 6, 7]), Bn = r.int(1, 2 * A - 1), C = r.pick([2, 4, 5]), D = r.int(1, 2 * C - 1);
-            if (!cop(A, Bn) || !cop(C, D) || Bn % A === 0 || D % C === 0 || Bn * C - A * D === 0 || A === C) return null;
+            if (!cop(A, Bn) || !cop(C, D) || Bn % A === 0 || D % C === 0 || Bn * C - A * D === 0 || A === C || A * C * Bn * D > 240) return null; // |ac| ≤ 240 (booklet: 60)
             return { A: A, B: Bn, C: C, D: D, M: Bn * C - A * D };
           });
           var f1 = L(s.A, s.B), f2 = L(s.C, -s.D), E = prod([f1, f2]), bv = s.B / s.A, rb = K.roundTo(bv, 2), ra = K.roundTo(s.D / s.C, 2);
@@ -669,7 +669,7 @@
             sol: steps([a + 'x^{3}-' + b + 'x^{2}=0', '\\text{Common factor } ' + g + 'x^{2}:\\ ' + g + 'x^{2}(' + monoT(u.a, 'x') + '-' + u.b + ')=0', g + 'x^{2}=0' + IMP + 'x=0', monoT(u.a, 'x') + '-' + u.b + '=0' + IMP + 'x=' + rt(R0)]) + '<br>So ' + t(ans('x', [0, R0])) + '.' });
         } },
         { id: 'e6f', level: 'PRG', make: function (r) {
-          var u = fracPair(r, [2, 3, 4, 5], 11), p = r.int(1, 7), R0 = [u.b, u.a];
+          var u = gen(function () { var w = fracPair(r, [2, 3, 4, 5], 11); return w.b > 1 ? w : null; }), p = r.int(1, 7), R0 = [u.b, u.a]; // b > 1: no "1(x−p)" on the right
           return solvePart(t(u.a + 'x(x-' + p + ')=' + u.b + '(x-' + p + ')'), [p, R0], { fs: [L(u.a, -u.b)], hints: ['Don’t divide by ' + t('(x-' + p + ')') + '. Subtract ' + t(u.b + '(x-' + p + ')') + ' from both sides instead.', 'Then take out the common factor ' + t('(x-' + p + ')') + '.'], text: 'solve ax(x-p)=b(x-p)',
             wrong: [[[R0], 'divided', 'Dividing by ' + t('(x-' + p + ')') + ' threw away a root: ' + t('x-' + p) + ' can be 0. Move everything to one side and factor out ' + t('(x-' + p + ')') + ' instead.']],
             sol: '<span>Do <b>not</b> divide by ' + t('(x-' + p + ')') + '.</span><br>' + steps([u.a + 'x(x-' + p + ')-' + u.b + '(x-' + p + ')=0', '(x-' + p + ')(' + monoT(u.a, 'x') + '-' + u.b + ')=0']) + '<br>So ' + t(ans('x', [p, R0])) + '.' });
