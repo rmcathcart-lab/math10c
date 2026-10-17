@@ -298,6 +298,7 @@
       var pm = p.charAt(0) === '±'; if (pm) p = p.slice(1);
       var r = ex.parse(p); if (!r.ok) return { bad: true };
       var val = ex.value(r.ast); if (!isFinite(val)) return { bad: true };
+      if (!/sqrt|√/.test(p) && /\\times|\\cdot|[×*+]/.test(p) || !/sqrt|√/.test(p) && /[0-9a-zA-Z})]\s*[-−]/.test(p)) return { unsimp: true };
       out.push(val); if (pm) out.push(-val);
     }
     return { vals: out };
@@ -308,6 +309,7 @@
     return function (resp) {
       var L = valueList(resp, opt.v);
       if (L.empty) return form('empty', 'Type your answer first.');
+      if (L.unsimp) return form('simplify', 'Simplify each solution to a single number (no ' + t('\\times') + ', + or − between numbers).');
       if (L.bad) return form('unreadable', 'Write each solution as a number, separated by commas, e.g. ' + t((opt.v || 'x') + '=3,\\ ' + (opt.v || 'x') + '=-5') + '.');
       var A = uniq(L.vals);
       var miss = T.filter(function (x) { return !A.some(function (y) { return ex.eq(x, y, 1e-9) || Math.abs(x - y) < 1e-12; }); }), extra = A.filter(function (x) { return !T.some(function (y) { return ex.eq(x, y, 1e-9) || Math.abs(x - y) < 1e-12; }); });
@@ -327,7 +329,8 @@
 
   /* ---------------- ordered pairs ---------------- */
   function pairList(resp) {
-    var s = String(resp || '').replace(/\\(left|right)/g, '').replace(/\\\{|\\\}|\\lbrace|\\rbrace|[{}]/g, ' ');
+    var s = String(resp || '').replace(/\\(left|right)/g, '').replace(/\\\{|\\\}|\\lbrace|\\rbrace/g, ' ').trim();
+    if (s.charAt(0) === '{' && s.charAt(s.length - 1) === '}') s = s.slice(1, -1); // outer set braces typed plainly (keep \frac{…}{…})
     if (!s.trim()) return { empty: true };
     var re = /\(([^()]*)\)/g, m, out = [], rest = s;
     while ((m = re.exec(s))) {
