@@ -30,6 +30,10 @@
   function near(a, b) { return Math.abs(a - b) < 1e-6; }
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
   function units(s) { return '\\text{ ' + s + '}'; }
+  /* a compact horizontal table (fits 7 data columns on a phone) */
+  function ctable(rows) {
+    return '<table class="vtab" style="font-size:14px">' + rows.map(function (r) { return '<tr>' + r.map(function (c, i) { var h = typeof c === 'number' ? String(c) : HW.tex(String(c)); return i === 0 ? '<th style="padding:3px 6px">' + h + '</th>' : '<td style="padding:3px 5px;min-width:0">' + h + '</td>'; }).join('') + '</tr>'; }).join('') + '</table>';
+  }
 
   /* ---------- drawings: HW.graph plus custom ticks, text notes and numbered badges ---------- */
   function geo(g) { // the same geometry HW.graph uses
@@ -301,7 +305,7 @@
           if (row === 'W') return { code: 'wrong-line', hint: t('W') + ' is at time ' + t('0') + ' and distance ' + t('0') + ': nobody has gone anywhere yet.' };
           if (got === 'go') return { code: 'wrong-line', hint: 'At ' + t(row) + ' the distance is ' + t(sc.D + units('km')) + ' — someone has reached ' + sc.to + '. Whose line ends there?' };
           return { code: 'wrong-line', hint: 'Follow each numbered line to ' + t(sc.D + units('km')) + '. The fastest person arrives first (at ' + t('X') + '), the slowest last (at ' + t('Z') + ').' };
-        } }, t('W(0,0)') + ': all three leave ' + sc.from + ' together. ' + t('X(' + sc.t.cyc + ',' + sc.D + ')') + ': ' + sc.name.cyc + ' (steepest line) arrives first and his graph goes flat — his distance stops changing. ' +
+        } }, t('W(0,0)') + ': all three leave ' + sc.from + ' together. ' + t('X(' + sc.t.cyc + ',' + sc.D + ')') + ': ' + sc.name.cyc + ' (steepest line) arrives first; that line goes flat because the distance stops changing. ' +
           t('Y(' + sc.t.jog + ',' + sc.D + ')') + ': ' + sc.name.jog + ' arrives. ' + t('Z(' + sc.t.walk + ',' + sc.D + ')') + ': ' + sc.name.walk + ', the walker, arrives last.', ['A flat piece at the top means that person has stopped: they have arrived.'], 'three trips: points W X Y Z');
         p.answer = 'W: all set off; X: ' + sc.name.cyc + ' arrives; Y: ' + sc.name.jog + ' arrives; Z: ' + sc.name.walk + ' arrives';
         return p;
@@ -544,12 +548,12 @@
         var m1 = bk ? 'cycles' : r.pick(['cycles', 'rides a scooter']), m2 = bk ? 'jogs' : r.pick(['jogs', 'walks']);
         var yT = [[b, dn(b)], [a, dn(a)], [c, dn(c)]].sort(function (u, v) { return u[0] - v[0]; });
         function G(p0, p3) { return fig({ x: [0, 7], y: [0, c + 0.8], grid: 0, labels: 0, firstQuadrant: true, unitX: 16, unitY: 88 / (c + 0.8), xName: ' ', yName: ' ', yTitle: ' ', segs: [Ln([[0, p0], [1, c], [2.4, c], [6.6, p3]])], yt: yT, max: 190 }); }
-        return mcG(r, nm + ' leaves the ' + pl[0] + ' and ' + m1 + ' to the ' + pl[1] + ', ' + t(dn(b) + units('km')) + ' farther from home. He spends some time at the ' + pl[1] + ', then ' + m2 + ' straight home. The ' + pl[0] + ' is ' + t(dn(a) + units('km')) + ' from his home, along the same route. Which graph best shows ' + nm + '’s distance from home (in km), starting from when he left the ' + pl[0] + '?' + lineDiagram(['home', pl[0], pl[1]], [a, b]), [
+        return mcG(r, nm + ' leaves the ' + pl[0] + ' and ' + m1 + ' to the ' + pl[1] + ', ' + t(dn(b) + units('km')) + ' farther from home. ' + nm + ' spends some time at the ' + pl[1] + ', then ' + m2 + ' straight home. The ' + pl[0] + ' is ' + t(dn(a) + units('km')) + ' from home, along the same route. Which graph best shows ' + nm + '’s distance from home (in km), starting from the moment of leaving the ' + pl[0] + '?' + lineDiagram(['home', pl[0], pl[1]], [a, b]), [
           { html: G(a, 0), right: true },
-          { html: G(c, 0), code: 'start-far', why: 'This graph starts at ' + t(dn(c) + units('km')) + ', as if he began at the ' + pl[1] + '. He starts at the ' + pl[0] + ', ' + t(dn(a) + units('km')) + ' from home.' },
-          { html: G(a, b), code: 'end-short', why: 'This graph ends at ' + t(dn(b) + units('km')) + ', not at ' + t('0') + '. He goes straight <b>home</b>, so his distance from home ends at ' + t('0') + '.' },
-          { html: G(0, 0), code: 'start-home', why: 'This graph starts at ' + t('0') + ', as if he began at home. He starts at the ' + pl[0] + '.' }],
-          nm + ' starts at the ' + pl[0] + ', ' + t(dn(a) + units('km')) + ' from home, so the graph starts at ' + t(dn(a)) + '. He goes ' + t(dn(b) + units('km')) + ' farther, so it rises to ' + t(dn(a) + '+' + dn(b) + '=' + dn(c)) + '. It is flat while he is at the ' + pl[1] + ', then falls all the way to ' + t('0') + ' as he goes home.',
+          { html: G(c, 0), code: 'start-far', why: 'This graph starts at ' + t(dn(c) + units('km')) + ', as if the trip began at the ' + pl[1] + '. The trip starts at the ' + pl[0] + ', ' + t(dn(a) + units('km')) + ' from home.' },
+          { html: G(a, b), code: 'end-short', why: 'This graph ends at ' + t(dn(b) + units('km')) + ', not at ' + t('0') + '. The trip ends at <b>home</b>, so the distance from home ends at ' + t('0') + '.' },
+          { html: G(0, 0), code: 'start-home', why: 'This graph starts at ' + t('0') + ', as if the trip began at home. It starts at the ' + pl[0] + '.' }],
+          nm + ' starts at the ' + pl[0] + ', ' + t(dn(a) + units('km')) + ' from home, so the graph starts at ' + t(dn(a)) + '. The ' + pl[1] + ' is ' + t(dn(b) + units('km')) + ' farther, so it rises to ' + t(dn(a) + '+' + dn(b) + '=' + dn(c)) + '. It is flat during the time at the ' + pl[1] + ', then falls all the way to ' + t('0') + ' on the way home.',
           ['Where does the graph start? How high does it go? Where does it end?'], 'trip graph ' + a + '+' + b);
       } }] },
 
@@ -590,7 +594,7 @@
           'The same amount is added for each unit on the horizontal axis — a constant rate of change, which graphs as a <b>straight increasing line</b>.', ['Is the rate of change constant, speeding up, or slowing down?'], 'match: straight increasing');
       } }] },
 
-    { num: '14', section: 'Part D — Data, rate of change and domain', stem: function (c) { return 'A cup of ' + c.drink + ' is left on a counter, and its temperature is recorded every ' + t('5') + ' minutes.' + HW.valueTable([['Time, ' + t('t') + ' (min)', 0, 5, 10, 15, 20, 25, 30], ['Temp., ' + t('T') + ' (°C)'].concat(c.T)]); },
+    { num: '14', section: 'Part D — Data, rate of change and domain', stem: function (c) { return 'A cup of ' + c.drink + ' is left on a counter, and its temperature is recorded every ' + t('5') + ' minutes.' + ctable([[t('t') + ' (min)', 0, 5, 10, 15, 20, 25, 30], [t('T') + ' (°C)'].concat(c.T)]); },
       shared: function (r) { return cooling(r); }, parts: [
       { id: '14a', level: 'EMG', make: function (r, c) {
         return mcG(r, 'Which graph shows the data correctly?', [
@@ -647,10 +651,10 @@
         var sc = friends(r, true), d = sc.t.walk - sc.t.cyc;
         var p = K.P.nr(friendsStem(sc, false) + '<br>' + sc.name.walk + ' arrives at ' + sc.to + ' ________ minutes after ' + sc.name.cyc + '.', d, numDiag(d, [
           { v: sc.t.walk, code: 'shared-time', hint: 'That is when ' + sc.name.walk + ' arrives. How much <b>later</b> is that than ' + sc.name.cyc + '’s arrival?' },
-          { v: sc.t.walk - sc.t.jog, code: 'wrong-line', hint: 'That compares ' + sc.name.walk + ' with ' + sc.name.jog + ', the jogger. ' + sc.name.cyc + ' cycles: his line is the steepest.' },
-          { v: sc.t.jog - sc.t.cyc, code: 'wrong-line', hint: 'That compares ' + sc.name.jog + ' (the jogger) with ' + sc.name.cyc + '. ' + sc.name.walk + ' walks: her line is the least steep.' },
+          { v: sc.t.walk - sc.t.jog, code: 'wrong-line', hint: 'That compares ' + sc.name.walk + ' with ' + sc.name.jog + ', the jogger. ' + sc.name.cyc + ' is the cyclist: the steepest line.' },
+          { v: sc.t.jog - sc.t.cyc, code: 'wrong-line', hint: 'That compares ' + sc.name.jog + ' (the jogger) with ' + sc.name.cyc + '. ' + sc.name.walk + ' is the walker: the least steep line.' },
           { v: d / 60, code: 'min-not-h', hint: 'Give the answer in <b>minutes</b>.' }]),
-          sc.name.cyc + ' cycles, so his is the steepest line, reaching ' + t(sc.D + units('km')) + ' at ' + t(sc.t.cyc + units('min')) + '. ' + sc.name.walk + ' walks: the least steep line, reaching ' + t(sc.D + units('km')) + ' at ' + t(sc.t.walk + units('min')) + '. ' + t(sc.t.walk + '-' + sc.t.cyc + '=' + d) + ' minutes.',
+          sc.name.cyc + ' cycles, so that is the steepest line, reaching ' + t(sc.D + units('km')) + ' at ' + t(sc.t.cyc + units('min')) + '. ' + sc.name.walk + ' walks: the least steep line, reaching ' + t(sc.D + units('km')) + ' at ' + t(sc.t.walk + units('min')) + '. ' + t(sc.t.walk + '-' + sc.t.cyc + '=' + d) + ' minutes.',
           ['Who has the steepest line? Who has the least steep?', 'Read each arrival time where the line reaches ' + t(sc.D + units('km')) + ', then subtract.'], 'arrival gap ' + d);
         return p;
       } }] }

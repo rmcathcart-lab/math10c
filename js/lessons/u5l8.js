@@ -1564,7 +1564,7 @@
         { id: 'e18c', level: 'PRG', make: function (r, sh) {
           var b = -2 * sh.sy, s0 = pwSols(sh.V, b).pts;
           return solsPart('(c) Solve ' + t('f(x)=' + b) + '. There are two answers and neither lands on a grid line.', s0, { b: b, graph: true },
-            'From the low point, height ' + t(b) + ' is ' + t('1') + ' unit ' + (sh.fl ? 'down' : 'up') + '. Each piece there changes ' + t('2') + ' per ' + t('1') + ' across, so that is ' + t('\\tfrac{1}{2}') + ' unit sideways: ' + t(solsKey(s0)) + '. The third piece never reaches ' + t(b) + '.', ['Use the slope of each piece near the low point.'], 'EP stretch half-unit');
+            'From the ' + (sh.fl ? 'high' : 'low') + ' point, height ' + t(b) + ' is ' + t('1') + ' unit ' + (sh.fl ? 'down' : 'up') + '. Each piece there changes ' + t('2') + ' per ' + t('1') + ' across, so that is ' + t('\\tfrac{1}{2}') + ' unit sideways: ' + t(solsKey(s0)) + '. The third piece never reaches ' + t(b) + '.', ['Use the slope of each piece near the low point.'], 'EP stretch half-unit');
         } },
         { id: 'e18d', level: 'EMG', make: function (r, sh) {
           var bs = [6 * sh.sy, -3 * sh.sy];
@@ -1578,7 +1578,7 @@
             { is: sh.fl ? '\\{b\\mid -5\\le b\\le 1,\\ b\\in\\mathbb{R}\\}' : '\\{b\\mid -1\\le b\\le 5,\\ b\\in\\mathbb{R}\\}', code: 'stretch-b', hint: 'Check ' + t('b=' + 5 * sh.sy) + ': the peak is a single point shared by two pieces, so that height gives only two solutions.' },
             { is: sh.fl ? '\\{b\\mid -5<b<1,\\ b\\in\\mathbb{R}\\}' : '\\{b\\mid -1<b<5,\\ b\\in\\mathbb{R}\\}', code: 'stretch-b', hint: 'Check ' + t('b=' + -sh.sy) + ': the endpoint of the third piece counts — that height gives three solutions.' },
             { is: sh.fl ? '\\{b\\mid -5<b<3,\\ b\\in\\mathbb{R}\\}' : '\\{b\\mid -3<b<5,\\ b\\in\\mathbb{R}\\}', code: 'stretch-b', hint: 'The third piece only reaches ' + t(-sh.sy) + '. Below that, only two pieces are crossed.' }] }), sh.fl ? '-5<b\\le 1' : '-1\\le b<5',
-            'Pieces 1 and 2 cover heights from ' + t(-3 * sh.sy) + ' to ' + t(5 * sh.sy) + '; piece 3 only covers ' + t(-sh.sy) + ' to ' + t(5 * sh.sy) + '. Each piece is crossed once for heights strictly between the extremes it covers, and at ' + t('b=' + -sh.sy) + ' the endpoint of piece 3 counts too (three solutions). At ' + t('b=' + 5 * sh.sy) + ' pieces 2 and 3 share the peak — only two.<br>' + t(sh.fl ? '-5<b\\le 1' : '-1\\le b<5'),
+            'Pieces 1 and 2 cover heights from ' + t(Math.min(-3 * sh.sy, 5 * sh.sy)) + ' to ' + t(Math.max(-3 * sh.sy, 5 * sh.sy)) + '; piece 3 only covers ' + t(Math.min(-sh.sy, 5 * sh.sy)) + ' to ' + t(Math.max(-sh.sy, 5 * sh.sy)) + '. Each piece is crossed once for heights strictly between the extremes it covers, and at ' + t('b=' + -sh.sy) + ' the endpoint of piece 3 counts too (three solutions). At ' + t('b=' + 5 * sh.sy) + ' pieces 2 and 3 share the peak — only two.<br>' + t(sh.fl ? '-5<b\\le 1' : '-1\\le b<5'),
             ['For each piece, write the range of heights it covers. Then check the edges one at a time.'], 'EP stretch three solutions', { keys: 'set', vars: ['b'], placeholder: 'e.g. -2 < b <= 3' });
           p.good = [tg, sh.fl ? '(-5, 1]' : '[-1, 5)'];
           return p;
