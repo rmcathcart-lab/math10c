@@ -37,7 +37,7 @@
   /* ---------------- set notation ---------------- */
   function normalize(s) {
     s = String(s == null ? '' : s);
-    s = s.replace(/\\(left|right|bigl|bigr|Bigl|Bigr|big|Big)\b\.?/g, '').replace(/\\displaystyle|\\textstyle/g, '');
+    s = s.replace(/\\(left|right|middle|bigl|bigr|Bigl|Bigr|big|Big)\b\.?/g, '').replace(/\\displaystyle|\\textstyle/g, '');
     s = s.replace(/^\s*(\\text\{)?\s*(domain|range)\s*\}?\s*[:=]?\s*/i, '').replace(/^\s*[DR]\s*[:=]\s*/, '');
     s = s.replace(/\\text\{\s*all real numbers\s*\}|all\s+real\s+numbers/ig, '\\mathbb{R}');
     s = s.replace(/\\text\{([^}]*)\}/g, ' $1 ').replace(/\\mathrm\{([^}]*)\}/g, '$1').replace(/\\operatorname\{([^}]*)\}/g, '$1');
@@ -46,6 +46,7 @@
     s = s.replace(/\\R(?![a-zA-Z])/g, ' @R ');
     s = s.replace(/\\leqslant|\\leq|\\le(?![a-zA-Z])|≤|<=/g, ' #le ').replace(/\\geqslant|\\geq|\\ge(?![a-zA-Z])|≥|>=/g, ' #ge ').replace(/\\neq|\\ne(?![a-zA-Z])|≠|!=/g, ' #ne ');
     s = s.replace(/\\lt(?![a-zA-Z])|</g, ' #lt ').replace(/\\gt(?![a-zA-Z])|>/g, ' #gt ');
+    s = s.replace(/\\(ldots|dots|cdots)|…|\.\.\./g, ' #dots ');
     s = s.replace(/\\infty|∞|\binfinity\b|\binf\b/gi, ' #inf ');
     s = s.replace(/\\in(?![a-zA-Z])|∈|\bis an element of\b/g, ' #in ').replace(/\\mid|\\vert|\\lvert|\\rvert|\|/g, ' #mid ').replace(/\\cup|∪/g, ' #cup ');
     s = s.replace(/\\pm|±/g, ' #pm ').replace(/\\cdot|\\times/g, '*').replace(/\\[,;:! ]|~/g, ' ').replace(/\\quad|\\qquad/g, ' ');
@@ -56,7 +57,7 @@
     while (i < s.length) {
       var c = s.charAt(i);
       if (/\s/.test(c)) { i++; continue; }
-      if ((m = /^#(le|ge|lt|gt|ne|inf|in|mid|cup|pm)/.exec(s.slice(i)))) { out.push({ t: m[1] }); i += m[0].length; continue; }
+      if ((m = /^#(le|ge|lt|gt|ne|inf|in|mid|cup|pm|dots)/.exec(s.slice(i)))) { out.push({ t: m[1] }); i += m[0].length; continue; }
       if ((m = /^@([RWNIZQ])/.exec(s.slice(i)))) { out.push({ t: 'numset', v: m[1] }); i += m[0].length; continue; }
       if ('{}[](),;'.indexOf(c) >= 0) { out.push({ t: c === ';' ? ',' : c }); i++; continue; }
       if (c === ':') { out.push({ t: 'mid' }); i++; continue; }
@@ -157,6 +158,19 @@
     if (toks[0].t === '{') {
       if (toks[toks.length - 1].t !== '}') return { ok: false, why: 'unbalanced' };
       var inner = toks.slice(1, -1), mi = inner.findIndex(function (k) { return k.t === 'mid'; });
+      if (mi === 3 && inner[0].t === 'var' && inner[1].t === 'in' && inner[2].t === 'numset') { // {x ∈ ℝ | -2 < x ≤ 4}
+        inner = [inner[0], inner[3]].concat(inner.slice(4), [{ t: ',' }, inner[0], inner[1], inner[2]]); mi = 1;
+      }
+      if (mi < 0 && inner.some(function (k) { return k.t === 'dots'; })) { // {0, 5, 10, …, 50}
+        var nums = [], di = -1;
+        for (var z = 0; z < inner.length; z++) { var kz = inner[z]; if (kz.t === 'num') nums.push({ v: kz.v, at: z }); else if (kz.t === 'dots') { if (di >= 0) return { ok: false, why: 'unreadable' }; di = nums.length; } else if (kz.t !== ',') return { ok: false, why: 'unreadable' }; }
+        if (di < 2 || di !== nums.length - 1) return { ok: false, why: 'unreadable' };
+        var st = nums[1].v - nums[0].v, last = nums[nums.length - 1].v; if (!(st > 0)) return { ok: false, why: 'unreadable' };
+        for (var y = 2; y < di; y++) if (Math.abs(nums[y].v - nums[y - 1].v - st) > 1e-9) return { ok: false, why: 'unreadable' };
+        var cnt = (last - nums[0].v) / st; if (Math.abs(cnt - Math.round(cnt)) > 1e-9 || cnt > 5000) return { ok: false, why: 'unreadable' };
+        var ex2 = []; for (var w2 = 0; w2 <= Math.round(cnt); w2++) ex2.push(+(nums[0].v + w2 * st).toFixed(10));
+        return { ok: true, set: { kind: 'list', vals: uniq(ex2) }, form: 'list', v: '' };
+      }
       if (mi < 0) { // a list
         if (!inner.length) return { ok: true, set: { kind: 'list', vals: [] }, form: 'list', v: '' };
         var vals = [];

@@ -36,4 +36,7 @@ chk(pr, 'pairs', { '\\{(0,-3),(1,1),(2,5)\\}': 'correct', '(2,5),(0,-3),(1,1)': 
 eq(/<svg/.test(HW.graph({ points: [{ x: 1, y: 2 }], segs: [{ pts: [[-3, -1], [2, 4]], start: 'closed', end: 'arrow' }], fns: [{ f: function (x) { return x * x - 2; }, from: -3, to: 3, start: 'open', end: 'closed' }] })), true, 'graph');
 eq(/<svg/.test(HW.arrowDiagram([1, 2, 3], [4, 5], [[1, 4], [2, 5], [3, 5]])), true, 'arrow diagram');
 eq(/<table/.test(HW.valueTable([['x', 1, 2], ['y', 3, 4]])), true, 'table');
+// alternate builder order, \middle, and lists with dots
+(function () { var c = K.set('\\{x\\mid -5<x\\le 4, x\\in\\mathbb{R}\\}'); eq(c('\\{x\\in\\mathbb{R}\\mid -5<x\\le 4\\}').v, 'correct', 'x in R first'); eq(c('\\left\\{x\\middle|-5<x\\le4, x\\in R\\right\\}').v, 'correct', 'middle bar');
+  var d = K.set('\\{n\\mid 0\\le n\\le 250, n\\in W\\}'); eq(d('\\{0, 1, 2, \\ldots, 250\\}').v, 'correct', 'dots list'); eq(d('{0, 1, 2, ..., 249}').v, 'wrong', 'dots list short'); })();
 console.log(n + ' checks, ' + fails + ' failed'); process.exit(fails ? 1 : 0);

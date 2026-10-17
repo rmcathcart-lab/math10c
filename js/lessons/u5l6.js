@@ -1102,8 +1102,8 @@
         stem: function (s) { return 'Two model rockets are launched at the same instant from the same field: Rocket A from the ground, Rocket B from a platform. Their heights, in metres, ' + t('t') + ' seconds after launch are ' + t(s.eqA) + ' and ' + t(s.eqB) + '. Graph both together.'; },
         parts: [
           { id: 'e14a', sub: 'b', level: 'BEG', make: function (r, s) {
-            return numPart('Which rocket starts higher, and by how many metres? (Give the difference.)', s.c, 2, [{ v: 0, code: 'ctx-zero-start', hint: 'Find each height at ' + t('t=0') + ': ' + t('h_{A}(0)') + ' and ' + t('h_{B}(0)') + '.' }],
-              t('h_{A}(0)=0') + ', ' + t('h_{B}(0)=' + s.c) + ': Rocket B starts ' + t(s.c) + ' m higher.', ['Find both heights at ' + t('t=0') + '.'], 'start difference', { after: 'm higher (Rocket B)' });
+            return numPart('How many metres higher than Rocket A does Rocket B start?', s.c, 2, [{ v: 0, code: 'ctx-zero-start', hint: 'Find each height at ' + t('t=0') + ': ' + t('h_{A}(0)') + ' and ' + t('h_{B}(0)') + '.' }],
+              t('h_{A}(0)=0') + ', ' + t('h_{B}(0)=' + s.c) + ': Rocket B starts ' + t(s.c) + ' m higher.', ['Find both heights at ' + t('t=0') + '.'], 'start difference', { after: 'm' });
           } },
           { id: 'e14b', sub: 'c', level: 'EMG', make: function (r, s) {
             return fieldsPart('Use ' + cd('5:intersect') + '. At what time are the two rockets at the same height, and what height is that?', [
