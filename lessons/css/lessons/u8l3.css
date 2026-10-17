@@ -125,9 +125,11 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u8l3-pf { display: flex; align-items: center; gap: 6px; }
 .u8l3-pf .u8l3-psvg { width: 84px; height: 76px; }
 .u8l3-pf > div { display: flex; flex-direction: column; }
-.u8l3-pf b { font: 900 28px var(--round); color: var(--ink); }
-.u8l3-pf div > span { font-size: 16px; color: var(--muted); }
-.u8l3-pfc { font-size: 20px; }
+.u8l3-pf b { font: 900 28px var(--round); color: var(--ink); white-space: nowrap; }
+.u8l3-pet.u8l3-xed { opacity: .28; position: relative; }
+.u8l3-pet.u8l3-xed::after { content: ''; position: absolute; left: 6px; right: 6px; top: 50%; border-top: 4px solid var(--red); transform: rotate(-20deg); }
+.u8l3-pf div > span { font-size: 16px; color: var(--muted); white-space: nowrap; }
+.u8l3-pfc { font-size: 20px; white-space: nowrap; }
 .u8l3-vs-sm .u8l3-vs-name { font-size: 18px; margin-top: 2px; }
 .u8l3-vs-sm, .u8l3-vs-big { transition: opacity .3s, box-shadow .3s; border-radius: 14px; }
 .u8l3-vs-sm.u8l3-used { opacity: .4; }
@@ -147,14 +149,14 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u8l3-sz { color: var(--muted); }
 .u8l3-sz.u8l3-gone { text-decoration: line-through; background: #e8f5ee; }
 .u8l3-sz.u8l3-gone::after { content: 'eliminated'; position: absolute; bottom: -22px; font: 800 13px var(--round); color: var(--ok); text-transform: uppercase; letter-spacing: .05em; }
-.u8l3-slip { position: relative; background: #fff1ef; border-radius: 12px; padding: 8px 12px; font-size: 21px; display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+.u8l3-slip { position: relative; background: #fff1ef; border-radius: 12px; padding: 8px 12px; font-size: 19px; display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
 .u8l3-sliph { font: 800 14px var(--round); color: var(--red); text-transform: uppercase; letter-spacing: .05em; }
-.u8l3-slip .bk-stamp { position: absolute; right: 10px; top: 10px; }
+.u8l3-slip .bk-stamp { position: absolute; right: 10px; top: 4px; }
 
 /* ---------------- graph view ---------------- */
 .u8l3-kro { background: #eef8f2; border: 2px solid #a9d8bd; border-radius: 12px; padding: 8px 12px; display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
 .u8l3-rok { font: 700 19px var(--round); color: var(--ink2); }
-.u8l3-kv, .u8l3-kn { color: #12805a; }
+.u8l3-kv, .u8l3-kval { color: #12805a; }
 .u8l3-rokv { font: 700 24px var(--round); color: var(--ink); }
 .u8l3-roeq { font: italic 600 23px 'KaTeX_Main', serif; color: #12805a; min-height: 32px; white-space: nowrap; }
 

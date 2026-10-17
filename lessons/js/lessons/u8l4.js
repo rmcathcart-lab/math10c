@@ -229,22 +229,22 @@ function pipeDef(keys, o = {}) {
     make(stage, k, ex) {
       const d = PIPE[k], W = ex.W, LW = Math.round(W * 0.465), RX = LW + 24, RW = W - RX - 12;
       /* left: the problem, the let card, the check */
-      const sp = panel(stage, 12, 8, LW, 226, 'The problem', 'u8l4-storyp');
+      const sp = panel(stage, 12, 8, LW, 192, 'The problem', 'u8l4-storyp');
       const sb = h('div', 'u8l4-story', parseStory(d.story)); sp.appendChild(sb);
-      const letP = panel(stage, 12, 242, LW, 108, 'Step 1 · Let', 'u8l4-idle');
+      const letP = panel(stage, 12, 208, LW, 86, 'Step 1 · Let' + (d.letNote ? ` <i class="u8l4-phn">${d.letNote}</i>` : ''), 'u8l4-idle');
       const lets = d.lets.map(([v, txt]) => { const e = h('div', 'u8l4-let', `Let ${T(v)} be ${txt}`); letP.appendChild(e); fit(e, LW - 26); return e; });
-      const letNote = d.letNote ? h('div', 'u8l4-letnote', d.letNote) : null; if (letNote) letP.appendChild(letNote);
+      const letNote = letP.querySelector('.u8l4-phn');
       hide(...lets, letNote);
-      const ckP = panel(stage, 12, 358, LW, 162, 'Step 4 · Answer and check against the story', 'u8l4-idle');
+      const ckP = panel(stage, 12, 302, LW, 218, 'Step 4 · Answer and check against the story', 'u8l4-idle');
       const ckRows = d.checks.map((q, i) => {
-        const r = h('div', 'u8l4-ck', `<span class="u8l4-ckm u8l4-c${i + 1}">✓</span><span class="u8l4-ckw">${q.w}</span>${T(q.t)}`);
-        ckP.appendChild(r); fit(r, LW - 26); return r;
+        const r = h('div', 'u8l4-ck', `<span class="u8l4-ckm u8l4-c${i + 1}">✓</span><div><div class="u8l4-ckw">${q.w}</div><div class="u8l4-ckt">${T(q.t)}</div></div>`);
+        ckP.appendChild(r); fit(r.querySelector('.u8l4-ckt'), LW - 60); return r;
       });
-      const senseR = h('div', 'u8l4-ck u8l4-sense', `<span class="u8l4-ckm">✓</span>${d.sense}`); ckP.appendChild(senseR); fit(senseR, LW - 26);
-      const ansR = h('div', 'u8l4-answer', d.answer); ckP.appendChild(ansR); fit(ansR, LW - 26);
+      const senseR = h('div', 'u8l4-ck u8l4-sense', `<span class="u8l4-ckm">✓</span><div>${d.sense}</div>`); ckP.appendChild(senseR);
+      const ansR = h('div', 'u8l4-answer', d.answer); ckP.appendChild(ansR);
       hide(...ckRows, senseR, ansR);
       /* right: table, equations, solve */
-      const tabP = panel(stage, RX, 8, RW, 150, 'Step 2 · Organize the facts', 'u8l4-idle');
+      const tabP = panel(stage, RX, 8, RW, 160, 'Step 2 · Organize the facts', 'u8l4-idle');
       const tb = h('div', 'u8l4-tab u8l4-' + d.table.mode); tabP.appendChild(tb);
       let head, rows, ops = [];
       if (d.table.mode === 'sum') {
@@ -260,10 +260,10 @@ function pipeDef(keys, o = {}) {
         rows = d.table.rows.map((r, i) => { const row = h('div', `u8l4-tr u8l4-r${i + 1}`, `<div class="u8l4-tw">${r[0]}</div><div class="u8l4-ts">${T(r[1])}</div>`); tb.appendChild(row); return row; });
       }
       hide(head); rows.forEach((r) => hide(...r.children)); hide(...ops);
-      const eqP = panel(stage, RX, 166, RW, 88, 'Step 2 · Two equations', 'u8l4-idle');
+      const eqP = panel(stage, RX, 174, RW, 88, 'Step 2 · Two equations', 'u8l4-idle');
       const eqs = d.eqs.map((e, i) => { const r = h('div', 'u8l4-eq', `<span class="u8l4-tag u8l4-t${i + 1}">Eq. ${i + 1}</span>${T(`\\${i ? 'A' : 'B'}{${e}}`)}`); eqP.appendChild(r); fit(r, RW - 26); return r; });
       hide(...eqs);
-      const svP = panel(stage, RX, 262, RW, 258, 'Step 3 · Solve', 'u8l4-idle');
+      const svP = panel(stage, RX, 270, RW, 250, 'Step 3 · Solve', 'u8l4-idle');
       const groups = d.solve.map((s) => {
         const els = [];
         if (s.note) els.push(h('div', 'u8l4-snote', s.note));
@@ -401,6 +401,7 @@ const step4 = {
     eqp.append(lt, e1, e2, so); hide(lt, e1, e2, so);
     const k1 = checkCard(stage, { title: 'Check Eq. 1', left: d.ck1.l, right: d.ck1.r, ok: true, x: RX, y: 8, width: CW, hidden: true, cls: 'u8l4-ckc u8l4-ckc1' });
     const k2 = checkCard(stage, { title: 'Check Eq. 2', left: d.ck2.l, right: d.ck2.r, ok: true, x: RX + CW + 12, y: 8, width: CW, hidden: true, cls: 'u8l4-ckc u8l4-ckc2' });
+    [[k1, d.ck1], [k2, d.ck2]].forEach(([kc, q]) => kc.rows.forEach((r, i) => { if (q.l[i] == null) r[0].innerHTML = ''; if (q.r[i] == null) r[2].innerHTML = ''; })); // blank lines (the block prints null)
     const wp = panel(stage, 12, 306, W - 24, 140, 'Check against the words', 'u8l4-idle');
     const wrow = h('div', 'u8l4-wrow'); wp.appendChild(wrow);
     const ws = d.words.map(([t, ok]) => { const e = h('div', 'u8l4-wbox' + (ok === null ? ' u8l4-na' : ''), `<b>${t}</b><span>${ok === null ? 'does not apply' : ''}</span>`); wrow.appendChild(e); e.ok = ok; return e; });
@@ -455,7 +456,7 @@ const translate = {
       const tiles = s.tiles.map((t) => { const e = h('div', 'u8l4-tile', t); trow.appendChild(e); return e; });
       const srow = add(stage, h('div', 'u8l4-srow'), 0, y0 + 100); srow.style.width = W + 'px';
       const slots = s.slots.map((t) => { const e = h('div', 'u8l4-slot', T(t)); srow.appendChild(e); return e; });
-      const tag = h('span', `u8l4-tag u8l4-t${s.eq}`, 'Eq. ' + s.eq); srow.prepend(tag);
+      const tag = h('span', `u8l4-tag u8l4-t${s.eq}`, 'Eq. ' + s.eq); if (d.sents.length > 1) srow.prepend(tag); else tag.style.display = 'none';
       hide(tag, ...slots);
       return { s, tiles, slots, tag, color: s.eq === 1 ? BLUE : AMB };
     });
@@ -480,9 +481,9 @@ const translate = {
       } });
     });
     const extra = d.back || d.trap;
-    const bp = panel(stage, 16, d.sents.length > 1 ? 380 : 230, W - 32, d.sents.length > 1 ? 54 : 150, '', 'u8l4-trback');
+    const bp = panel(stage, 16, d.sents.length > 1 ? 380 : 236, W - 32, d.sents.length > 1 ? 54 : 74, '', 'u8l4-trback');
     if (d.trap) {
-      const wr = h('div', 'u8l4-wrong', `<span class="u8l4-wx">✗</span>${T(d.trap.wrong)}<span class="u8l4-wtxt">a common trap</span>`); bp.appendChild(wr); hide(wr);
+      const wr = h('div', 'u8l4-wrong', `<span class="u8l4-wx">✗</span><span class="u8l4-wtex">${T(d.trap.wrong)}</span><span class="u8l4-wtxt">a common trap</span>`); bp.appendChild(wr); hide(wr);
       steps.push({ cap: 'A common trap: writing the words in the order they are <b>said</b>.', run: async (c) => { await show(c, wr); } });
     }
     const lines = extra.lines.map((t) => { const e = h('div', 'u8l4-backl', T(t)); bp.appendChild(e); return e; });
@@ -576,7 +577,7 @@ const rect = {
         for (const e of labs) await pulse(c, e, 1.15, 300);
       } },
       { cap: `Check: ${T(`2(${l})+2(${w})=${2 * l}+${2 * w}=${d.P}`)} ✓ and ${T(`${d.a === 1 ? '' : d.a}(${w})${d.b ? '+' + d.b : ''}=${l}`)} ✓. Both positive: <b>${l} ${d.u} by ${w} ${d.u}</b>.`, run: async (c) => {
-        const st = stamp(stage, `${l} ${d.u} × ${w} ${d.u}`, { ok: true, x: X0 + RW / 2, y: Y0 + RH / 2 + 12 }); await stampIn(c, st);
+        const st = stamp(stage, `✓ ${l} by ${w}`, { ok: true, x: X0 + RW / 2, y: Y0 + RH / 2 + 12 }); await stampIn(c, st);
       } }
     ];
   }
@@ -584,8 +585,8 @@ const rect = {
 
 /* =============================== Section 4: count vs value (swap) =============================== */
 const SW = {
-  ex3: { label: 'Example 3 check', n: 23, lo: 5, hi: 20, total: 310, vl: 'f', vh: 't', kind: 'bill', nameLo: 'five', nameHi: 'twenty' },
-  coins: { label: 'Loonies and toonies: 12 coins, $19', n: 12, lo: 1, hi: 2, total: 19, vl: 'l', vh: 't', kind: 'coin', nameLo: 'loonie', nameHi: 'toonie' }
+  ex3: { label: 'Example 3 check', n: 23, lo: 5, hi: 20, total: 310, vl: 'f', vh: 't', kind: 'bill', nameLo: 'five', nameHi: 'twenty', plLo: 'fives', plHi: 'twenties' },
+  coins: { label: 'Loonies and toonies: 12 coins, $19', n: 12, lo: 1, hi: 2, total: 19, vl: 'l', vh: 't', kind: 'coin', nameLo: 'loonie', nameHi: 'toonie', plLo: 'loonies', plHi: 'toonies' }
 };
 const swap = {
   title: 'One equation counts, the other totals value',
@@ -614,7 +615,7 @@ const swap = {
     const vl = d.vl, vh = d.vh, cf = (n) => (n === 1 ? '' : n);
     const l1 = L(colL, `\\B{${vl}+${vh}=${d.n}}`), l2 = L(colL, `\\A{${cf(d.lo)}${vl}+${cf(d.hi)}${vh}=${d.total}}`);
     const l3 = L(colR, `${cf(d.lo)}(${d.n}-${vh})+${cf(d.hi)}${vh}=${d.total}`);
-    const l4 = L(colR, `\\underbrace{${all}}_{\\text{all ${d.nameLo}s}}+\\underbrace{${cf(step)}${vh}}_{\\text{swaps}}=${d.total}`);
+    const l4 = L(colR, `\\underbrace{${all}}_{\\textstyle\\text{all ${d.plLo}}}+\\underbrace{${cf(step)}${vh}}_{\\textstyle\\text{swaps}}=${d.total}`);
     const l5 = L(colR, step === 1 ? `${vh}=${short},\\ \\ ${vl}=${d.n}-${nh}=${nl}` : `${step}${vh}=${short}\\ \\Rightarrow\\ ${vh}=${nh},\\ \\ ${vl}=${d.n}-${nh}=${nl}`);
     const face = (e, v) => { e.textContent = '$' + v; e.classList.toggle('u8l4-hi', v === d.hi); e.classList.toggle('u8l4-lo', v === d.lo); };
     return [
@@ -623,7 +624,7 @@ const swap = {
         for (let i = 0; i < d.n; i++) { setV(cCount, i + 1); await pop(c, items[i], c.fast ? 0 : 120); }
         await show(c, l1);
       } },
-      { cap: `<b>Value</b> totals dollars instead: ${T(`\\A{${cf(d.lo)}${vl}+${cf(d.hi)}${vh}=${d.total}}`)}. Start with a guess: all ${d.n} are ${d.nameLo}s, worth ${T(`${d.n}\\times${d.lo}=${all}`)} dollars.`, run: async (c) => {
+      { cap: `<b>Value</b> totals dollars instead: ${T(`\\A{${cf(d.lo)}${vl}+${cf(d.hi)}${vh}=${d.total}}`)}. Start with a guess: all ${d.n} are ${d.plLo}, worth ${T(`${d.n}\\times${d.lo}=${all}`)} dollars.`, run: async (c) => {
         await show(c, l2); await show(c, cVal, 200); items.forEach((e) => face(e, d.lo)); setV(cVal, '$' + all); await pulse(c, cVal, 1.06);
       } },
       { cap: `We need $${d.total}: short by $${short}. Swap one ${d.nameLo} for a ${d.nameHi}: still ${d.n} ${d.kind}s, but <b>$${step} more</b>.`, run: async (c) => {
@@ -638,9 +639,9 @@ const swap = {
         }
         await pulse(c, cVal, 1.1);
       } },
-      { cap: `That is exactly the algebra: substitute ${T(`${vl}=${d.n}-${vh}`)}, and ${T(String(all))} is “all ${d.nameLo}s”, ${T(`${cf(step)}${vh}`)} is the swaps.`, run: async (c) => { await show(c, l3); await show(c, l4); } },
-      { cap: `${T(`${vh}=${nh}`)} ${d.nameHi}s and ${T(`${vl}=${nl}`)} ${d.nameLo}s. Check: ${T(`${nl}+${nh}=${d.n}`)} ✓ and ${T(`${d.lo}(${nl})+${d.hi}(${nh})=${d.lo * nl}+${d.hi * nh}=${d.total}`)} ✓.`, run: async (c) => {
-        await show(c, l5); const s = stamp(stage, `${nl} ${d.nameLo}s, ${nh} ${d.nameHi}s`, { ok: true, x: W - 170, y: cy - 4 }); await stampIn(c, s);
+      { cap: `That is exactly the algebra: substitute ${T(`${vl}=${d.n}-${vh}`)}, and ${T(String(all))} is “all ${d.plLo}”, ${T(`${cf(step)}${vh}`)} is the swaps.`, run: async (c) => { await show(c, l3); await show(c, l4); } },
+      { cap: `${T(`${vh}=${nh}`)} ${d.plHi} and ${T(`${vl}=${nl}`)} ${d.plLo}. Check: ${T(`${nl}+${nh}=${d.n}`)} ✓ and ${T(`${d.lo}(${nl})+${d.hi}(${nh})=${d.lo * nl}+${d.hi * nh}=${d.total}`)} ✓.`, run: async (c) => {
+        await show(c, l5); const s = stamp(stage, `${nl} ${d.plLo}, ${nh} ${d.plHi}`, { ok: true, x: W - 230, y: 420 }); await stampIn(c, s);
       } }
     ];
   }
@@ -679,8 +680,8 @@ const interest = {
     const setP = (v) => {
       cur = v; const fx = v / d.P;
       px.style.width = fx * 100 + '%'; py.style.width = (1 - fx) * 100 + '%';
-      px.innerHTML = fx > 0.14 ? `${T('x')} at ${d.r1}%: ${money(Math.round(v))}` : '';
-      py.innerHTML = fx < 0.86 ? `${T('y')} at ${d.r2}%: ${money(Math.round(d.P - v))}` : '';
+      px.innerHTML = fx > 0.14 ? `<span>${T('x')} at ${d.r1}%: ${money(Math.round(v))}</span>` : '';
+      py.innerHTML = fx < 0.86 ? `<span>${T('y')} at ${d.r2}%: ${money(Math.round(d.P - v))}</span>` : '';
       const ia = a * v, ib = b * (d.P - v);
       ma.style.width = ia * sc + 'px'; mb.style.width = ib * sc + 'px';
       mread.innerHTML = `interest ${money(Math.round(ia))} + ${money(Math.round(ib))} = <b>${money(Math.round(ia + ib))}</b>`;
@@ -703,7 +704,7 @@ const interest = {
         await slide(c, 0, 500); await slide(c, x, 1400); await show(c, r2); await show(c, r3);
       } },
       { cap: `Check: ${T(`${dA}(${tnum(x)})+${dB}(${tnum(y)})=${tnum(a * x)}+${tnum(b * y)}=${tnum(d.I)}`)} ✓. Overall rate ${T(`${tnum(d.I)}\\div${tnum(d.P)}=${+(d.I / d.P * 100).toFixed(2)}\\%`)}, between ${d.r2}% and ${d.r1}% ✓.`, run: async (c) => {
-        const s = stamp(stage, `${money(x)} at ${d.r1}%, ${money(y)} at ${d.r2}%`, { ok: true, x: W / 2 + 40, y: 426 }); await stampIn(c, s);
+        const s = stamp(stage, `${money(x)} at ${d.r1}%, ${money(y)} at ${d.r2}%`, { ok: true, x: W - 250, y: 194, size: 'sm' }); await stampIn(c, s);
       } }
     ];
   }

@@ -250,17 +250,23 @@ const pets = {
     const fin = add(stage, box(h('div', 'u8l3-petfin'), W - 28, 136), 14, 300); fin.style.opacity = 0;
     fin.innerHTML = ['dog', 'cat', 'rabbit'].map((p) => `<div class="u8l3-pf">${petSVG(p)}<div><b>${{ dog: '10 kg', cat: '4 kg', rabbit: '2 kg' }[p]}</b><span>${{ dog: '20 ÷ 2', cat: '14 − 10 (Scale A)', rabbit: '6 − 4 (Scale C)' }[p]}</span></div></div>`).join('') +
       '<div class="u8l3-pfc">Check Scale B: <b>10 + 2 = 12</b> ✓</div>';
+    const cancelPets = async (c, a, b) => {
+      const pa = a.parentNode, pb = b.parentNode;
+      await cancelPair(c, stage, a, b, '<b class="u8l3-z0">0</b>');
+      const xa = pa.appendChild(petEl(a.kind, 'u8l3-xed')), xb = pb.appendChild(petEl(b.kind, 'u8l3-xed'));
+      await Promise.all([xa, xb].map((x) => anim(c, x, [{ opacity: 0 }, { opacity: 0.28 }], 300)));
+    };
     const showRow = (c, row) => Promise.all(Object.values(row).map((e, i) => anim(c, e, [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], 320, { delay: i * 60 })));
     return [
       { cap: 'Both scales have a rabbit. <b>Subtract</b>: Scale B minus Scale C, left side minus left side, reading minus reading.',
         run: async (c) => { await pop(c, rowC.s, 380); await anim(c, rule, [{ opacity: 0, transform: 'scaleX(0)' }, { opacity: 1, transform: 'none' }], 450); } },
       { cap: 'Rabbit − rabbit <b>= 0</b>: the rabbits cancel. The rabbit has been <b>eliminated</b>!',
-        run: (c) => cancelPair(c, stage, rowB.p2.firstChild, rowC.p2.firstChild, '<b class="u8l3-z0">0</b>') },
+        run: (c) => cancelPets(c, rowB.p2.firstChild, rowC.p2.firstChild) },
       { cap: 'What is left: dog − cat = 12 − 6 = <b>6 kg</b>. The dog is <b>6 kg heavier</b> than the cat.', run: (c) => showRow(c, res) },
       { cap: 'Now bring in Scale A, dog + cat = 14 kg. The cats have <b>opposite</b> signs (− and +), so this time <b>add</b>.',
         run: async (c) => { await showRow(c, r1); await showRow(c, r2); await anim(c, rule2, [{ opacity: 0, transform: 'scaleX(0)' }, { opacity: 1, transform: 'none' }], 450); } },
       { cap: 'The cats cancel: <b>2 dogs = 6 + 14 = 20 kg</b>, so one dog is <b>10 kg</b>.',
-        run: async (c) => { await cancelPair(c, stage, r1.p2.firstChild, r2.p2.firstChild, '<b class="u8l3-z0">0</b>'); await showRow(c, r3); } },
+        run: async (c) => { await cancelPets(c, r1.p2.firstChild, r2.p2.firstChild); await showRow(c, r3); } },
       { cap: 'Then the cat is 14 − 10 = <b>4 kg</b> and the rabbit is 6 − 4 = <b>2 kg</b>. Check with the scale we haven’t used, B: 10 + 2 = 12 ✓',
         run: (c) => show(c, fin) }
     ];
@@ -431,7 +437,7 @@ const signs = {
     const sumc = vs.map((_, i) => cell(xs[i], Y[3], colW, (r1[i] || r2[i]) ? T(i === elimI ? '0' : kr(term(rs[i], vs[i], i === firstI(rs)))) : '', i === elimI ? 'u8l3-sz' : ''));
     const sume = cell(xe, Y[3], 40, T('=')), sumk = cell(xc, Y[3], 110, T(kr(texNum(rs[n]))));
     [...sumc, sume, sumk].forEach((e) => (e.style.opacity = 0));
-    const P = panel(stage, W - 290, 14, 278, 400, 'Result');
+    const P = panel(stage, W - 304, 14, 292, 400, 'Result');
     const val = leftK.length === 1 ? rs[n] / leftK[0][0] : null;
     const steps = [
       { cap: `Write the whole of ${d.n2} in brackets with a minus sign in front: ${T(`(${'\\cdots'})-(${'\\cdots'})`)}. The minus belongs to <b>every</b> term inside.`,
@@ -495,8 +501,8 @@ const pencil = {
     lineEl(P, `${TAG1} ${T(k1(eqT(e1)))}`); lineEl(P, `${TAG2} ${T(k2(eqT(e2)))}`);
     const kname = p === 1 ? 'Eq. 1' : `${p} × Eq. 1`, sgn = q > 0 ? '+' : '−';
     const ro = lineEl(P, '', 'u8l3-kro'); ro.style.opacity = 0;
-    ro.innerHTML = `<div class="u8l3-rok">${kname} ${sgn} <b class="u8l3-kv">k</b> × Eq. 2</div><div class="u8l3-rokv">k = <b class="u8l3-kn">0</b></div><div class="u8l3-roeq"></div>`;
-    const kn = ro.querySelector('.u8l3-kn'), req = ro.querySelector('.u8l3-roeq');
+    ro.innerHTML = `<div class="u8l3-rok">${kname} ${sgn} <b class="u8l3-kv">k</b> × Eq. 2</div><div class="u8l3-rokv">k = <b class="u8l3-kval">0</b></div><div class="u8l3-roeq"></div>`;
+    const kn = ro.querySelector('.u8l3-kval'), req = ro.querySelector('.u8l3-roeq');
     const st = { t: 0, on: false };
     const coef = () => E(p * e1.a + st.t * q * e2.a, p * e1.b + st.t * q * e2.b, p * e1.c + st.t * q * e2.c);
     const comb = G.curve(() => {
@@ -518,7 +524,7 @@ const pencil = {
     ];
     if (p !== 1) {
       steps.push({ cap: `${p} × Eq. 1 is ${T(k1(eqT(scaleE(e1, p))))}: the <b>same</b> blue line, since every term was doubled.`,
-        run: (c) => show(c, lineEl(P, `${tag(1, p + ' × Eq. 1')} ${T(k1(eqT(scaleE(e1, p))))}`)) });
+        run: (c) => { const l = h('div', 'u8l3-ln', `${tag(1, p + ' × Eq. 1')} ${T(k1(eqT(scaleE(e1, p))))}`); P.insertBefore(l, ro); return show(c, l); } });
     }
     steps.push({ cap: `Make a new equation, ${kname} ${sgn} ${T('k')} × Eq. 2, and let ${T('k')} grow from ${T('0')} to ${T(Math.abs(q))}. Every point on <b>both</b> lines fits it, so the green line always passes through the crossing. Watch it <b>turn</b>.`,
       run: async (c) => {
@@ -528,7 +534,7 @@ const pencil = {
     steps.push({ cap: `At ${T('k=' + Math.abs(q))} the ${T(vert ? 'y' : 'x')}-terms cancel: ${T(kr(finT))}, a <b>${vert ? 'vertical' : 'horizontal'}</b> line through the crossing.`,
       run: async (c) => {
         st.t = 1; upd(); req.innerHTML = T(kr(eqT(fin)));
-        const lab = vert ? G.label(S[0], d.win.ymax - 0.6, T(kr(resT)), { pos: 'e', cls: 'bk-pill', color: RES }) : G.label(d.win.xmax - 1.6, S[1], T(kr(resT)), { pos: 'n', cls: 'bk-pill', color: RES });
+        const lab = vert ? G.label(S[0], d.win.ymax - 0.6, T(kr(resT)), { pos: 'e', cls: 'bk-pill', color: RES }) : G.label(d.win.xmin + 1.4, S[1], T(kr(resT)), { pos: 'n', cls: 'bk-pill', color: RES });
         await pop(c, lab);
       } });
     steps.push({ cap: `That is all elimination does: it finds the ${vert ? 'vertical' : 'horizontal'} line through the crossing, so ${T(kr(resT))}. The other coordinate comes from either original line.`,
