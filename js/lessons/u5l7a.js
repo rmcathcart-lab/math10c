@@ -119,13 +119,13 @@
     return notG({ segs: [{ pts: pts, start: dots ? 'closed' : 'none', end: dots ? 'closed' : 'none' }] }, vx, [[vx, o.k + o.d], [vx, o.k - o.d]], 'sideways parabola');
   }
   function gWideEllipse(r) {
-    var o = pickWhere(function () { return { h: r.int(-1, 1), k: r.int(-1, 1), a: r.pick([3, 4]), b: r.pick([1, 2]) }; }, function (o) { return Math.abs(o.h) + o.a <= 4.6 && Math.abs(o.k) + o.b <= 4.6; });
+    var o = pickWhere(function () { return { h: r.int(-1, 1), k: r.int(-1, 1), a: r.pick([3, 4]), b: r.pick([1, 2]) }; }, function (o) { return Math.abs(o.h) + o.a <= 4.6 && Math.abs(o.k) + o.b <= 4.6 && Math.abs(o.h) !== o.a && Math.abs(o.k) !== o.b; });
     if (r.chance(0.7)) return notG({ segs: [{ pts: ell(o.h, o.k, o.a, o.b, 0, 2 * Math.PI) }] }, o.h, [[o.h, o.k + o.b], [o.h, o.k - o.b]], 'wide ellipse');
     var top = r.chance(0.5), s = top ? 1 : -1;
     return fnG({ segs: [{ pts: ell(o.h, o.k, o.a, o.b, 0, s * Math.PI), start: 'closed', end: 'closed' }] }, o.h, [o.h, o.k + s * o.b], (top ? 'top' : 'bottom') + ' half of an ellipse', 'only the ' + (top ? 'top' : 'bottom') + ' half of the oval is drawn');
   }
   function gTallEllipse(r) {
-    var o = pickWhere(function () { return { h: r.int(-2, 2), k: r.int(-1, 1), a: r.pick([1, 2]), b: r.pick([3, 4]) }; }, function (o) { return Math.abs(o.h) + o.a <= 4.6 && Math.abs(o.k) + o.b <= 4.6; });
+    var o = pickWhere(function () { return { h: r.int(-2, 2), k: r.int(-1, 1), a: r.pick([1, 2]), b: r.pick([3, 4]) }; }, function (o) { return Math.abs(o.h) + o.a <= 4.6 && Math.abs(o.k) + o.b <= 4.6 && Math.abs(o.h) !== o.a && Math.abs(o.k) !== o.b; });
     if (r.chance(0.65)) return notG({ segs: [{ pts: ell(o.h, o.k, o.a, o.b, 0, 2 * Math.PI) }] }, o.h, [[o.h, o.k + o.b], [o.h, o.k - o.b]], 'tall ellipse');
     var top = r.chance(0.5), s = top ? 1 : -1;
     return fnG({ segs: [{ pts: ell(o.h, o.k, o.a, o.b, 0, s * Math.PI), start: 'closed', end: 'closed' }] }, o.h, [o.h, o.k + s * o.b], (top ? 'top' : 'bottom') + ' half of a tall ellipse', 'only the ' + (top ? 'top' : 'bottom') + ' half of the oval is drawn');
@@ -354,6 +354,20 @@
 
   /* ---------------- relations for Q4 (mothers and children) ---------------- */
   var KIDS = ['Aiden', 'Blake', 'Chloe', 'Danielle', 'Evan', 'Fatima', 'Grace', 'Hiro', 'Isla', 'Jonah', 'Kiran', 'Leah', 'Mateo', 'Nora', 'Owen', 'Priya', 'Quinn', 'Ravi', 'Sofia', 'Tariq', 'Uma', 'Wes'];
+  function nameDiagram(left, right, pairs) { // an arrow diagram for names (wider ovals; arrows start and end clear of the words)
+    var n = Math.max(left.length, right.length), rowH = 30, H = n * rowH + 30, W = 330, lx = 78, rx = 252, hw = function (sv) { return 3.9 * String(sv).length + 6; };
+    var ly = function (i) { return 15 + (i + 0.5) * (n * rowH / left.length); }, ry = function (i) { return 15 + (i + 0.5) * (n * rowH / right.length); };
+    var esc = function (v) { return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;'); };
+    var o = '<rect width="' + W + '" height="' + H + '" fill="#fff"/>';
+    [lx, rx].forEach(function (cx) { o += '<ellipse cx="' + cx + '" cy="' + (15 + n * rowH / 2) + '" rx="58" ry="' + (n * rowH / 2 + 8) + '" fill="#f6f4ef" stroke="#2b3340" stroke-width="1.4"/>'; });
+    left.forEach(function (v, i) { o += '<text x="' + lx + '" y="' + (ly(i) + 5) + '" font-size="14" text-anchor="middle" fill="#1c2230">' + esc(v) + '</text>'; });
+    right.forEach(function (v, i) { o += '<text x="' + rx + '" y="' + (ry(i) + 5) + '" font-size="14" text-anchor="middle" fill="#1c2230">' + esc(v) + '</text>'; });
+    pairs.forEach(function (pp) {
+      var i = left.indexOf(pp[0]), j = right.indexOf(pp[1]); if (i < 0 || j < 0) return;
+      o += '<line x1="' + (lx + hw(pp[0])) + '" y1="' + ly(i) + '" x2="' + (rx - hw(pp[1]) - 2) + '" y2="' + ry(j) + '" stroke="#13807a" stroke-width="1.6" marker-end="url(#ndArr)"/>';
+    });
+    return '<svg class="fig-svg" viewBox="0 0 ' + W + ' ' + H + '" style="max-width:330px" role="img" aria-label="arrow diagram"><defs><marker id="ndArr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#13807a"/></marker></defs>' + o + '</svg>';
+  }
   function kidsSentence(m, ks) { return m + ' has ' + (ks.length === 1 ? 'one child, ' + ks[0] : (ks.length === 2 ? 'two children, ' : 'three children: ') + ks.slice(0, -1).join(', ') + ' and ' + ks[ks.length - 1]) + '.'; }
 
   HW.defineLesson({
@@ -437,12 +451,12 @@
             var bi = sh.big, moved = sh.kids[bi][sh.kids[bi].length - 1];
             var wrongMom = pr.map(function (p) { return p[1] === moved ? [M[1 - bi], moved] : p; }), firstOnly = sh.kids.map(function (ks, i) { return [M[i], ks[0]]; });
             var opts = [
-              { html: HW.arrowDiagram(M, kidsAll, pr), right: true },
-              { html: HW.arrowDiagram(kidsAll, M, pr.map(function (p) { return [p[1], p[0]]; })), code: 'reversed', why: 'That diagram goes from the children to the mothers — that is “is the child of”. “Is the mother of” starts at the mothers.' },
-              { html: HW.arrowDiagram(M, kidsAll, wrongMom), code: 'wrong-mom', why: 'Check who belongs to whom: ' + moved + ' is ' + M[bi] + '’s child.' },
-              { html: HW.arrowDiagram(M, kidsAll, firstOnly), code: 'missing-arrows', why: 'Every mother–child pair needs its own arrow: ' + M[bi] + ' has ' + sh.kids[bi].length + ' children, so ' + sh.kids[bi].length + ' arrows leave ' + M[bi] + '.' }];
+              { html: nameDiagram(M, kidsAll, pr), right: true },
+              { html: nameDiagram(kidsAll, M, pr.map(function (p) { return [p[1], p[0]]; })), code: 'reversed', why: 'That diagram goes from the children to the mothers — that is “is the child of”. “Is the mother of” starts at the mothers.' },
+              { html: nameDiagram(M, kidsAll, wrongMom), code: 'wrong-mom', why: 'Check who belongs to whom: ' + moved + ' is ' + M[bi] + '’s child.' },
+              { html: nameDiagram(M, kidsAll, firstOnly), code: 'missing-arrows', why: 'Every mother–child pair needs its own arrow: ' + M[bi] + ' has ' + sh.kids[bi].length + ' children, so ' + sh.kids[bi].length + ' arrows leave ' + M[bi] + '.' }];
             return B.mc(r, 'Which arrow diagram shows the relation “is the mother of”, from the set of mothers to the set of children?', opts,
-              'The domain is the mothers and the range is the children. One arrow goes from each mother to each of her children:' + HW.arrowDiagram(M, kidsAll, pr),
+              'The domain is the mothers and the range is the children. One arrow goes from each mother to each of her children:' + nameDiagram(M, kidsAll, pr),
               ['“Is the mother of” starts at a mother and points to her child.', 'Draw one arrow for every mother–child pair.'], 'arrow diagram: is the mother of');
           } },
           { id: '4aii', sub: 'a ii', level: 'EMG', make: function (r, sh) {
@@ -461,12 +475,12 @@
             var bi = sh.big, moved = sh.kids[bi][0], other = sh.kids[1 - bi][0];
             var wrongMom = pr.map(function (p) { return p[0] === moved ? [moved, M[1 - bi]] : p; }), twoMoms = pr.concat([[other, M[bi]]]);
             var opts = [
-              { html: HW.arrowDiagram(kidsAll, M, pr), right: true },
-              { html: HW.arrowDiagram(M, kidsAll, pr.map(function (p) { return [p[1], p[0]]; })), code: 'reversed', why: 'That diagram goes from the mothers to the children — that is “is the mother of”. “Is the child of” starts at the children.' },
-              { html: HW.arrowDiagram(kidsAll, M, wrongMom), code: 'wrong-mom', why: 'Check who belongs to whom: ' + moved + ' is ' + M[bi] + '’s child.' },
-              { html: HW.arrowDiagram(kidsAll, M, twoMoms), code: 'two-moms', why: other + ' has only one mother, ' + M[1 - bi] + ', so only one arrow should leave ' + other + '.' }];
+              { html: nameDiagram(kidsAll, M, pr), right: true },
+              { html: nameDiagram(M, kidsAll, pr.map(function (p) { return [p[1], p[0]]; })), code: 'reversed', why: 'That diagram goes from the mothers to the children — that is “is the mother of”. “Is the child of” starts at the children.' },
+              { html: nameDiagram(kidsAll, M, wrongMom), code: 'wrong-mom', why: 'Check who belongs to whom: ' + moved + ' is ' + M[bi] + '’s child.' },
+              { html: nameDiagram(kidsAll, M, twoMoms), code: 'two-moms', why: other + ' has only one mother, ' + M[1 - bi] + ', so only one arrow should leave ' + other + '.' }];
             return B.mc(r, 'Which arrow diagram shows the relation “is the child of”, from the set of children to the set of mothers?', opts,
-              'Now the domain is the children and the range is the mothers. One arrow goes from each child to their mother:' + HW.arrowDiagram(kidsAll, M, pr),
+              'Now the domain is the children and the range is the mothers. One arrow goes from each child to their mother:' + nameDiagram(kidsAll, M, pr),
               ['“Is the child of” starts at a child and points to the mother.', 'Each child gets one arrow, to their own mother.'], 'arrow diagram: is the child of');
           } },
           { id: '4bii', sub: 'b ii', level: 'PRG', make: function (r, sh) {

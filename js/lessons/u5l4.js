@@ -339,8 +339,8 @@
         { id: '4d', level: 'PRG', make: function (r) {
           return segDR([r.int(-5, -2), r.int(1, 4)], [r.int(1, 4), r.int(-4, -1)], 'open', 'closed', { text: 'D & R of a segment, hollow + solid' });
         } },
-        { id: '4e', level: 'EMG', make: function (r) { return hvDR('h', r.pick(nz(-4, 4))); } },
-        { id: '4f', level: 'EMG', make: function (r) { return hvDR('v', r.pick(nz(-4, 4))); } },
+        { id: '4e', level: 'EMG', make: function (r) { return hvDR('h', r.pick([-4, -3, -2, 2, 3, 4])); } },
+        { id: '4f', level: 'EMG', make: function (r) { return hvDR('v', r.pick([-4, -3, -2, 2, 3, 4])); } },
         { id: '4g', level: 'EMG', make: function (r) {
           var m = r.pick([1, -1, 2, -2, 0.5]), b = r.int(-2, 2), D = all('x'), R = all('y');
           var sol = 'A slanted line with arrows at both ends goes on forever left and right <b>and</b> up and down, so it uses every real ' + t('x') + ' and produces every real ' + t('y') + '.<br>' + t('D=' + D) + ', ' + t('R=' + R) + '.';
@@ -349,7 +349,7 @@
             sol, [HINT_D, 'Arrows on both ends — does the line ever stop going left, right, up or down?'], 'D & R of a full slanted line');
         } },
         { id: '4h', level: 'PRG', make: function (r) {
-          var a = r.int(-4, -1), b = r.int(-3, 0), s = r.pick([1, 1, 2, 0.5]), D = bld('x', a, null, false), R = bld('y', b, null, false);
+          var a = r.int(-4, -1), b = r.int(-3, -1), s = r.pick([1, 1, 2, 0.5]), D = bld('x', a, null, false), R = bld('y', b, null, false);
           var sol = 'The ray starts at the <b>hollow</b> dot ' + t(ptT([a, b])) + ' (not on the graph) and goes up to the right forever.<br>' + t('x') + ' starts just after ' + t(a) + ' and grows forever; ' + t('y') + ' starts just above ' + t(b) + ' and grows forever.<br>' + t('D=' + D) + ', ' + t('R=' + R) + '.';
           return drPart(G({ segs: [{ pts: [[a, b], toEdge([a, b], [1, s])], start: 'open', end: 'arrow' }] }), D, R,
             { dW: [{ is: bld('x', null, a, true, false), code: 'dr-ray-dir', hint: 'The ray goes to the <b>right</b> of ' + t('x=' + a) + ', so the ' + t('x') + '-values are bigger than ' + t(a) + '.' }], rW: [{ is: bld('y', null, b, true, false), code: 'dr-ray-dir', hint: 'The ray goes <b>up</b> from ' + t('y=' + b) + ', so the ' + t('y') + '-values are bigger than ' + t(b) + '.' }] },
@@ -599,8 +599,8 @@
             'A parabola with vertex ' + t(ptT([h, k])) + ' and arrows on both arms: every real ' + t('x') + ' is used, and the lowest ' + t('y') + ' is ' + t(k) + ' with no upper limit. Infinitely many values, so inequalities.<br>' + t('D=' + D) + ', ' + t('R=' + R) + '.',
             [HINT_D, 'Where is the lowest point? Do the arrows ever stop?'], 'D & R of an upward parabola');
         } },
-        { id: 'e6b', level: 'EMG', make: function (r) { return hvDR('h', r.pick(nz(-4, 4))); } },
-        { id: 'e6c', level: 'EMG', make: function (r) { return hvDR('v', r.pick(nz(-4, 4))); } },
+        { id: 'e6b', level: 'EMG', make: function (r) { return hvDR('h', r.pick([-4, -3, -2, 2, 3, 4])); } },
+        { id: 'e6c', level: 'EMG', make: function (r) { return hvDR('v', r.pick([-4, -3, -2, 2, 3, 4])); } },
         { id: 'e6d', level: 'EMG', make: function (r) {
           var h = r.int(-2, 2), k = r.int(-2, 2), rad = r.pick([2, 3, 3]); while (h === 0 && k === 0) h = r.int(-2, 2);
           return circleDR(h, k, rad, { prompt: G({ segs: [ellipse(h, k, rad, rad)], points: [] }), text: 'D & R of a drawn circle' });

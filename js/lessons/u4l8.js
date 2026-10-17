@@ -38,6 +38,7 @@
   function lin(a, v, b) { return [M(a, v), N(b)]; }             // a v + b, as terms
   function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var t2 = a % b; a = b; b = t2; } return a; }
   function pick(gen, test) { for (var i = 0; i < 4000; i++) { var v = gen(); if (test(v)) return v; } throw new Error('pick failed'); }
+  function lc(n) { return n === 1 ? '' : n === -1 ? '-' : String(n); }   // coefficient in front of a letter
   function pv(n) { return n < 0 ? '(' + n + ')' : String(n); }
   function sg(n) { return n < 0 ? String(n) : '+' + n; }
   function isSq(n) { var r = Math.round(Math.sqrt(n)); return n >= 0 && r * r === n; }
@@ -269,7 +270,7 @@
             { html: t('(' + q + '-x)(' + p + '-x)'), why: 'Expand it: ' + t('(' + q + '-x)(' + p + '-x)=' + seq([N(p * q), M(-(p + q), 'x'), M(1, 'x', 2)])) + '. Count the tiles: there is one <b>negative</b> ' + t('x^{2}') + '-tile.' },
             { html: t('(' + p + '-x)(' + q + '+x)'), why: 'Expand it: ' + t('(' + p + '-x)(' + q + '+x)=' + seq([N(p * q), M(d, 'x'), M(-1, 'x', 2)])) + ' — the ' + t('x') + '-term should be ' + t(tx(M(-d, 'x'))) + ' (the ' + t('x') + '-tiles are negative).' },
             { html: t(ex), why: 'That is the expression the tiles show, but it is in <b>expanded</b> form, not factored form.' }],
-            'Tiles: one negative ' + t('x^{2}') + ', ' + t(d) + ' negative ' + t('x') + '-tiles and ' + t(p * q) + ' positive units: ' + t(seq([M(-1, 'x', 2), M(-d, 'x'), N(p * q)])) + '.<br>Take out ' + t('-1') + ': ' + t('-(x^{2}+' + d + 'x-' + p * q + ')=-(x+' + p + ')(x-' + q + ')=(' + q + '-x)(' + p + '+x)') + '.<br>Check: ' + t('(' + q + '-x)(' + p + '+x)=' + seq([N(p * q), M(q, 'x'), M(-p, 'x'), M(-1, 'x', 2)]) + '=' + ex) + ' ✓',
+            'Tiles: one negative ' + t('x^{2}') + ', ' + t(d) + ' negative ' + t('x') + '-tiles and ' + t(p * q) + ' positive units: ' + t(seq([M(-1, 'x', 2), M(-d, 'x'), N(p * q)])) + '.<br>Take out ' + t('-1') + ': ' + t('-(x^{2}+' + lc(d) + 'x-' + p * q + ')=-(x+' + p + ')(x-' + q + ')=(' + q + '-x)(' + p + '+x)') + '.<br>Check: ' + t('(' + q + '-x)(' + p + '+x)=' + seq([N(p * q), M(q, 'x'), M(-p, 'x'), M(-1, 'x', 2)]) + '=' + ex) + ' ✓',
             ['Write the expression from the tiles first (white tiles are negative).', 'Expand each choice and compare.'], 'tiles −x²−' + d + 'x+' + p * q);
         } }] },
       { num: '8', stem: '<i>(Multiple Choice)</i>', parts: [
@@ -330,12 +331,12 @@
           var z = pick(function () { return { a: r.int(2, 5), p: r.int(2, 8), q: r.int(1, 7) }; }, function (z) { return gcd(z.a, z.q) === 1 && z.p * z.q <= 99 && z.q !== z.p; });
           var c = z.p * z.q, expr = seq([M(z.a, 'x', 2), M(-z.a * z.p, 'x'), M(-z.q, 'x')]) + '+c';
           return nr('The expression ' + t(expr) + ' can be factored by grouping into the product of two binomials. If one of these binomials is ' + t('x-' + z.p) + ', then the value of ' + t('c') + ' is ________.', c, function (v) {
-            if (v === -c) return { code: 'nr-sign', hint: 'Check the sign: ' + t('-' + z.q + '(x-' + z.p + ')=-' + z.q + 'x+' + c) + '.' };
-            if (v === z.q || v === z.p) return { code: 'times-c', hint: 'The second group ' + t('-' + z.q + 'x+c') + ' must equal ' + t('-' + z.q + '(x-' + z.p + ')') + '. Expand that.' };
+            if (v === -c) return { code: 'nr-sign', hint: 'Check the sign: ' + t('-' + lc(z.q) + '(x-' + z.p + ')=-' + lc(z.q) + 'x+' + c) + '.' };
+            if (v === z.q || v === z.p) return { code: 'times-c', hint: 'The second group ' + t('-' + lc(z.q) + 'x+c') + ' must equal ' + t('-' + lc(z.q) + '(x-' + z.p + ')') + '. Expand that.' };
             if (v === z.p + z.q) return { code: 'times-c', hint: 'Multiply, don’t add: ' + t('-' + z.q + '\\times(-' + z.p + ')') + '.' };
-            if (v === z.a * z.p * z.q) return { code: 'times-c', hint: 'Only the second group needs to make ' + t('(x-' + z.p + ')') + ': ' + t('-' + z.q + 'x+c=-' + z.q + '(x-' + z.p + ')') + '.' };
+            if (v === z.a * z.p * z.q) return { code: 'times-c', hint: 'Only the second group needs to make ' + t('(x-' + z.p + ')') + ': ' + t('-' + lc(z.q) + 'x+c=-' + lc(z.q) + '(x-' + z.p + ')') + '.' };
             return null;
-          }, t('(' + seq([M(z.a, 'x', 2), M(-z.a * z.p, 'x')]) + ')+(-' + z.q + 'x+c)=' + z.a + 'x(x-' + z.p + ')+(-' + z.q + 'x+c)') + '.<br>For ' + t('x-' + z.p) + ' to be the common binomial, ' + t('-' + z.q + 'x+c=-' + z.q + '(x-' + z.p + ')') + ', so ' + t('c=' + c) + '.<br>Check: ' + t(z.a + 'x(x-' + z.p + ')-' + z.q + '(x-' + z.p + ')=(x-' + z.p + ')(' + z.a + 'x-' + z.q + ')') + ' ✓',
+          }, t('(' + seq([M(z.a, 'x', 2), M(-z.a * z.p, 'x')]) + ')+(-' + lc(z.q) + 'x+c)=' + z.a + 'x(x-' + z.p + ')+(-' + lc(z.q) + 'x+c)') + '.<br>For ' + t('x-' + z.p) + ' to be the common binomial, ' + t('-' + lc(z.q) + 'x+c=-' + lc(z.q) + '(x-' + z.p + ')') + ', so ' + t('c=' + c) + '.<br>Check: ' + t(z.a + 'x(x-' + z.p + ')-' + lc(z.q) + '(x-' + z.p + ')=(x-' + z.p + ')(' + z.a + 'x-' + z.q + ')') + ' ✓',
           ['Group the first two terms and take out their GCF. What must the last two terms look like?', 'The second group must be a multiple of ' + t('(x-' + z.p + ')') + '.'], 'grouping c with x−' + z.p);
         } }] },
       { num: '13', stem: 'Factor completely.', parts: [
@@ -487,15 +488,15 @@
             var p = KP.math('State a polynomial with ' + t('c=' + c) + ' which <b>can</b> be factored over the integers.', bCheck(c, S, true), key,
               'Any pair of integers that multiplies to ' + t(c) + ' works. For example ' + t(pq[0]) + ' and ' + t(pq[1]) + ' give ' + t('b=' + (pq[0] + pq[1])) + ': ' + t(key + '=(x+' + pq[0] + ')(x+' + pq[1] + ')') + '.',
               ['Pick two integers that multiply to ' + t(c) + '. Their sum is ' + t('b') + '.'], 'factorable x²+bx+' + c, { keys: 'poly', vars: ['x'] });
-            p.good = S.map(function (s) { return 'x^{2}-' + s + 'x+' + c; }); p.bad = ['x^{2}+' + sh.nb + 'x+' + c, '2x^{2}+' + S[0] + 'x+' + c, 'x^{2}+' + S[0] + 'x+' + (c + 1)];
+            p.good = S.map(function (s) { return 'x^{2}-' + s + 'x+' + c; }); p.bad = ['x^{2}+' + lc(sh.nb) + 'x+' + c, '2x^{2}+' + S[0] + 'x+' + c, 'x^{2}+' + S[0] + 'x+' + (c + 1)];
             return p;
           } },
           { id: '21b', sub: 'b i', level: 'EMG', make: function (r, sh) {
-            var c = sh.c, key = 'x^{2}+' + sh.nb + 'x+' + c;
+            var c = sh.c, key = 'x^{2}+' + lc(sh.nb) + 'x+' + c;
             var p = KP.math('State a polynomial with ' + t('c=' + c) + ' which <b>cannot</b> be factored over the integers.', bCheck(c, sh.S, false), key,
               'For example ' + t(key) + '. The factor pairs of ' + t(c) + ' are ' + pairsOf(c).map(function (q) { return t(q[0] + '\\ \\&\\ ' + q[1]); }).join(', ') + ' with sums ' + t(sh.S.map(function (s) { return '\\pm' + s; }).join(',\\ ')) + '. ' + t(sh.nb) + ' is not one of them.',
               ['Choose a value of ' + t('b') + ' that is <b>not</b> the sum of a factor pair of ' + t(c) + '.'], 'non-factorable x²+bx+' + c, { keys: 'poly', vars: ['x'] });
-            p.good = ['x^{2}-' + sh.nb + 'x+' + c]; p.bad = ['x^{2}+' + sh.S[0] + 'x+' + c, 'x^{2}-' + sh.S[sh.S.length - 1] + 'x+' + c];
+            p.good = ['x^{2}-' + lc(sh.nb) + 'x+' + c]; p.bad = ['x^{2}+' + sh.S[0] + 'x+' + c, 'x^{2}-' + sh.S[sh.S.length - 1] + 'x+' + c];
             return p;
           } },
           { id: '21bw', sub: 'b ii', level: 'EMG', make: function (r, sh) {
@@ -505,7 +506,7 @@
               { html: 'Because ' + t(c) + ' is not a perfect square.', why: t('x^{2}+' + small + 'x+' + c + '=(x+' + ps[ps.length - 1][0] + ')(x+' + ps[ps.length - 1][1] + ')') + ' factors, and ' + t(c) + ' still isn’t a perfect square.' },
               { html: 'Because ' + t('b') + ' is smaller than ' + t('c') + '.', why: t('x^{2}+' + small + 'x+' + c) + ' has ' + t(small + '<' + c) + ' and it factors: ' + t('(x+' + ps[ps.length - 1][0] + ')(x+' + ps[ps.length - 1][1] + ')') + '.' },
               { html: 'A trinomial ' + t('x^{2}+bx+' + c) + ' can only be factored when ' + t('b') + ' is ' + (big % 2 ? 'even' : 'odd') + '.', why: t('x^{2}+' + big + 'x+' + c + '=(x+1)(x+' + c + ')') + ' factors, and ' + t(big) + ' is ' + (big % 2 ? 'odd' : 'even') + '.' }];
-            return mc(r, 'Explain why ' + t('x^{2}+' + b + 'x+' + c) + ' cannot be factored over the integers.', opts,
+            return mc(r, 'Explain why ' + t('x^{2}+' + lc(b) + 'x+' + c) + ' cannot be factored over the integers.', opts,
               'To factor ' + t('x^{2}+bx+' + c) + ' you need two integers that multiply to ' + t(c) + ' and add to ' + t('b') + '. The factor pairs of ' + t(c) + ' have sums ' + t(sh.S.map(function (s) { return '\\pm' + s; }).join(',\\ ')) + ' — never ' + t(b) + '.',
               ['What two things must the integers in ' + t('(x+m)(x+n)') + ' do?'], 'why x²+' + b + 'x+' + c + ' cannot factor');
           } },
@@ -689,7 +690,7 @@
           var z = pick(function () { return { g: r.pick([2, 3, 5]), a: r.int(2, 5), b: r.int(1, 5) }; }, function (z) { return gcd(z.a, z.b) === 1 && z.a !== z.b; });
           var G = MM(z.g, { m: 2 }), Ft = FT(G, [[M(z.a, 'm'), M(-z.b, 'n')], [M(z.a, 'm'), M(z.b, 'n')]]), poly = seq([MM(z.g * z.a * z.a, { m: 4 }), MM(-z.g * z.b * z.b, { m: 2, n: 2 })]);
           return fac(t(poly), Ft, [{ is: [MM(z.g, { m: 1 }), P.add(MM(z.a, { m: 1 }), MM(-z.b, { n: 1 })), P.add(MM(z.a, { m: 1 }), MM(z.b, { n: 1 }))], code: 'gcf-power', hint: 'Check the power of ' + t('m') + ' in your common factor: both terms have at least ' + t('m^{2}') + '.' }],
-            'GCF ' + t('=' + tx(G)) + ': ' + t(tx(G) + '(' + z.a * z.a + 'm^{2}-' + z.b * z.b + 'n^{2})') + '<br>' + t(z.a * z.a + 'm^{2}-' + z.b * z.b + 'n^{2}=(' + z.a + 'm)^{2}-(' + z.b + 'n)^{2}') + '<br>' + t('=' + Ft.tex), ['Common factor first (number and power of ' + t('m') + ').', 'Then a difference of squares.'], 'factor ' + plain(poly));
+            'GCF ' + t('=' + tx(G)) + ': ' + t(tx(G) + '(' + z.a * z.a + 'm^{2}-' + lc(z.b * z.b) + 'n^{2})') + '<br>' + t(z.a * z.a + 'm^{2}-' + lc(z.b * z.b) + 'n^{2}=(' + z.a + 'm)^{2}-' + (z.b === 1 ? 'n^{2}' : '(' + z.b + 'n)^{2}')) + '<br>' + t('=' + Ft.tex), ['Common factor first (number and power of ' + t('m') + ').', 'Then a difference of squares.'], 'factor ' + plain(poly));
         } },
         { id: 'e4d', level: 'PRG', make: function (r) {
           var z = pick(function () { return { g: r.pick([2, 3, 4, 6]), p: r.int(2, 5), s: r.int(1, 3), u: r.int(1, 5) }; }, function (z) { return gcd(z.p, z.s) === 1 && z.s !== z.p * z.u; });
@@ -1049,8 +1050,8 @@
       { num: '14', section: 'Extra practice E — Reasoning and error analysis', stem: 'Decide whether each statement is <b>true</b> or <b>false</b>.', parts: [
         { id: 'e14a', level: 'EMG', make: function (r) {
           var c = r.pick([20, 12, 18, 28, 30]), S = sumsOf(c), mx = Math.max.apply(null, S), cand = []; for (var k = 1; k < mx; k++) if (S.indexOf(k) < 0) cand.push(k); var b = r.pick(cand);
-          return KP.tf(r, 'Every quadratic trinomial can be factored over the integers.', false, 'Try ' + t('x^{2}+' + b + 'x+' + c) + ': the factor pairs of ' + t(c) + ' have sums ' + t(S.map(function (s) { return '\\pm' + s; }).join(',\\ ')) + ' — never ' + t(b) + '.',
-            '<b>False.</b> Counterexample: ' + t('x^{2}+' + b + 'x+' + c) + '. The factor pairs of ' + t(c) + ' have sums ' + t(S.map(function (s) { return '\\pm' + s; }).join(',\\ ')) + ' — never ' + t(b) + '.', ['Can you find a trinomial where no pair works?'], 'TF every trinomial factors');
+          return KP.tf(r, 'Every quadratic trinomial can be factored over the integers.', false, 'Try ' + t('x^{2}+' + lc(b) + 'x+' + c) + ': the factor pairs of ' + t(c) + ' have sums ' + t(S.map(function (s) { return '\\pm' + s; }).join(',\\ ')) + ' — never ' + t(b) + '.',
+            '<b>False.</b> Counterexample: ' + t('x^{2}+' + lc(b) + 'x+' + c) + '. The factor pairs of ' + t(c) + ' have sums ' + t(S.map(function (s) { return '\\pm' + s; }).join(',\\ ')) + ' — never ' + t(b) + '.', ['Can you find a trinomial where no pair works?'], 'TF every trinomial factors');
         } },
         { id: 'e14b', level: 'LIM', make: function (r) {
           return KP.tf(r, 'If a product of two factors equals ' + t('0') + ', then at least one of those factors is ' + t('0') + '.', true, 'This is the Zero Product Law: a product can be ' + t('0') + ' only if a factor is ' + t('0') + '.',
@@ -1076,12 +1077,12 @@
           return KP.tf(r, 'A quadratic equation always has exactly two different solutions.', false, 'Counterexample: ' + t(seq([M(a * a, 'x', 2), M(-2 * a * s, 'x'), N(s * s)]) + '=0') + ' is ' + t('(' + a + 'x-' + s + ')^{2}=0') + ', with only one solution.',
             '<b>False.</b> Counterexample: ' + t(seq([M(a * a, 'x', 2), M(-2 * a * s, 'x'), N(s * s)]) + '=0') + ' is ' + t('(' + a + 'x-' + s + ')^{2}=0') + ', with only one solution, ' + t('x=' + frac(s, a)) + '.', ['Think about a perfect square trinomial set equal to ' + t('0') + '.'], 'TF quadratic two solutions');
         } }] },
-      { num: '15', stem: function (sh) { return 'Asked to solve ' + t('x^{2}+' + sh.b + 'x=' + sh.N) + ', a student wrote ' + t('x(x+' + sh.b + ')=' + sh.N) + ', so ' + t('x=' + sh.N) + ' or ' + t('x+' + sh.b + '=' + sh.N) + ', giving ' + t('x=' + sh.N) + ' or ' + t('x=' + (sh.N - sh.b)) + '.'; },
+      { num: '15', stem: function (sh) { return 'Asked to solve ' + t('x^{2}+' + lc(sh.b) + 'x=' + sh.N) + ', a student wrote ' + t('x(x+' + sh.b + ')=' + sh.N) + ', so ' + t('x=' + sh.N) + ' or ' + t('x+' + sh.b + '=' + sh.N) + ', giving ' + t('x=' + sh.N) + ' or ' + t('x=' + (sh.N - sh.b)) + '.'; },
         shared: function (r) { var z = pick(function () { return { p: r.int(2, 6), q: r.int(3, 10) }; }, function (z) { return z.q > z.p && z.q - z.p <= 7; }); z.b = z.q - z.p; z.N = z.p * z.q; return z; },
         parts: [
           { id: 'e15a', level: 'BEG', make: function (r, sh) {
             var v1 = sh.N * sh.N + sh.b * sh.N, x2 = sh.N - sh.b, v2 = x2 * x2 + sh.b * x2;
-            var p = KP.fields('Substitute both of the student’s answers into the left side ' + t('x^{2}+' + sh.b + 'x') + '.', [numBox('At ' + t('x=' + sh.N) + ':', 'at x=' + sh.N), numBox('At ' + t('x=' + x2) + ':', 'at x=' + x2)], [K.number(v1), K.number(v2)], [String(v1), String(v2)],
+            var p = KP.fields('Substitute both of the student’s answers into the left side ' + t('x^{2}+' + lc(sh.b) + 'x') + '.', [numBox('At ' + t('x=' + sh.N) + ':', 'at x=' + sh.N), numBox('At ' + t('x=' + x2) + ':', 'at x=' + x2)], [K.number(v1), K.number(v2)], [String(v1), String(v2)],
               t(F(v1)) + ' and ' + t(F(v2)) + ' — neither is ' + t(sh.N), t(sh.N + '^{2}+' + sh.b + '(' + sh.N + ')=' + F(sh.N * sh.N) + '+' + sh.b * sh.N + '=' + F(v1) + '\\neq ' + sh.N) + '<br>' + t(x2 + '^{2}+' + sh.b + '(' + x2 + ')=' + F(x2 * x2) + '+' + sh.b * x2 + '=' + F(v2) + '\\neq ' + sh.N) + '<br>Neither satisfies the equation.',
               ['Square the value, then add ' + t(sh.b) + ' times the value.'], 'check student roots');
             return p;
@@ -1096,7 +1097,7 @@
               ['What does the Zero Product Law need on one side of the equation?'], 'invalid step x(x+b)=N');
           } },
           { id: 'e15c', level: 'EMG', make: function (r, sh) {
-            return vs('Solve the equation correctly.', [sh.p, -sh.q], {}, t('x^{2}+' + sh.b + 'x-' + sh.N + '=0') + '<br>Product ' + t(-sh.N) + ', sum ' + t(sh.b) + ': ' + t(sh.q) + ' and ' + t(-sh.p) + '.<br>' + t('(x+' + sh.q + ')(x-' + sh.p + ')=0') + '<br>' + t('x=-' + sh.q) + ' or ' + t('x=' + sh.p) + '<br>Check: ' + t('(' + (-sh.q) + ')^{2}+' + sh.b + '(' + (-sh.q) + ')=' + (sh.q * sh.q) + '-' + sh.b * sh.q + '=' + sh.N) + ' ✓',
+            return vs('Solve the equation correctly.', [sh.p, -sh.q], {}, t('x^{2}+' + lc(sh.b) + 'x-' + sh.N + '=0') + '<br>Product ' + t(-sh.N) + ', sum ' + t(sh.b) + ': ' + t(sh.q) + ' and ' + t(-sh.p) + '.<br>' + t('(x+' + sh.q + ')(x-' + sh.p + ')=0') + '<br>' + t('x=-' + sh.q) + ' or ' + t('x=' + sh.p) + '<br>Check: ' + t('(' + (-sh.q) + ')^{2}+' + sh.b + '(' + (-sh.q) + ')=' + (sh.q * sh.q) + '-' + sh.b * sh.q + '=' + sh.N) + ' ✓',
               ['Move ' + t(sh.N) + ' to the left side first, then factor.'], 'solve x²+' + sh.b + 'x=' + sh.N, ['x=' + sh.N + ', x=' + (sh.N - sh.b), 'x=' + (-sh.p) + ', x=' + sh.q]);
           } }] },
       { num: '16', stem: function (sh) { return 'Asked to factor ' + t(tx(sh.T)) + ' completely, a student wrote ' + t(tx(sh.T) + '=-' + sh.g + '(x^{2}-' + sh.d + 'x+' + sh.C + ')') + ' and then said the bracket does not factor.'; },
@@ -1214,7 +1215,7 @@
           var p = KP.fields(t(poly) + ' has ' + t('(' + z.p + 'x-' + z.s + ')') + ' as one factor. Determine the other factor and the value of ' + t('b') + '.', [polyBox('Other factor:', ['x']), numBox(t('b') + ' =', 'b')],
             [K.poly(other, { expanded: false, wrong: cleanW(other, [{ is: sum(lin(z.q, 'x', -z.u)), code: 'sign', hint: 'The constants must multiply to ' + t(c) + ': ' + t('-' + z.s + '\\times n=' + c) + '.' }]) }), K.number(b, function (v) { return v === -b ? { code: 'sign', hint: 'Check the sign of the middle term: ' + t(z.p + 'x\\cdot ' + z.u + '+(-' + z.s + ')\\cdot ' + z.q + 'x') + '.' } : null; })],
             [tx(other), String(b)], t(tx(other)) + ', ' + t('b=' + b),
-            'The other factor is ' + t('(' + z.q + 'x+n)') + ', since ' + t(z.p + 'x\\cdot ' + z.q + 'x=' + lead + 'x^{2}') + '; the constants give ' + t('-' + z.s + 'n=' + c) + ', so ' + t('n=' + z.u) + '.<br>Other factor: ' + t(tx(other)) + '<br>' + t('(' + z.p + 'x-' + z.s + ')(' + tx(other) + ')=' + seq([M(lead, 'x', 2), M(z.p * z.u, 'x'), M(-z.q * z.s, 'x'), N(c)]) + '=' + seq([M(lead, 'x', 2), M(b, 'x'), N(c)])) + ', so ' + t('b=' + b) + '.',
+            'The other factor is ' + t('(' + z.q + 'x+n)') + ', since ' + t(z.p + 'x\\cdot ' + z.q + 'x=' + lead + 'x^{2}') + '; the constants give ' + t('-' + lc(z.s) + 'n=' + c) + ', so ' + t('n=' + z.u) + '.<br>Other factor: ' + t(tx(other)) + '<br>' + t('(' + z.p + 'x-' + z.s + ')(' + tx(other) + ')=' + seq([M(lead, 'x', 2), M(z.p * z.u, 'x'), M(-z.q * z.s, 'x'), N(c)]) + '=' + seq([M(lead, 'x', 2), M(b, 'x'), N(c)])) + ', so ' + t('b=' + b) + '.',
             ['What times ' + t(z.p + 'x') + ' gives ' + t(lead + 'x^{2}') + '? What times ' + t(-z.s) + ' gives ' + t(c) + '?'], 'other factor and b');
           p.bad = [[tx(sum(lin(z.q, 'x', -z.u))), String(b)], [tx(other), String(-b)]];
           return p;

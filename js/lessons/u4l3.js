@@ -731,7 +731,7 @@
           { id: 'e9b', level: 'PRG', make: function (r, sh) { return fxPart(S(L(1, 'x'), N(sh.n), 2), { prompt: 'Finish the question properly: factor ' + t('x^{4}-' + Math.pow(sh.n, 4)) + ' completely.' }); } },
           { id: 'e9c', level: 'EMG', make: function (r, sh) {
             var n = sh.n;
-            return mc(r, 'Compare with the student in question 8, who factored a sum of squares as if it were a difference (like ' + t('x^{2}+25=(x+5)(x-5)') + '). They made opposite mistakes. Which describes them?', [
+            return mc(r, 'Compare with the student in question 8, who wrote something like ' + t('x^{2}+25=(x+5)(x-5)') + '. They made opposite mistakes. Which describes them?', [
               { html: 'Question 8: factored something that <b>does not factor</b> (a sum of squares). Question 9: <b>stopped too soon</b>, leaving a difference of squares unfactored.', right: true },
               { html: 'Question 8: stopped too soon. Question 9: factored a sum of squares that doesn’t factor.', why: 'Swap them: ' + t('x^{2}+25') + ' is the sum of squares; ' + t('x^{2}-' + n * n) + ' is the bracket that was left unfactored.' },
               { html: 'Both students forgot to take out a common factor.', why: 'Neither expression has a common factor. Look at what kind of bracket each one is.' },
@@ -749,7 +749,7 @@
         { id: 'e11a', level: 'EMG', make: function (r) { var a = r.int(2, 9), c = r.int(2, 5); return fracPart(L(a, 'm'), L([1, c], 'n')); } },
         { id: 'e11b', level: 'PRG', make: function (r) { var g = pickWhere(function () { return [r.int(2, 6), r.int(2, 6)]; }, function (g) { return g[0] !== g[1]; }); return fracPart(L([1, g[0]], 'a'), L([1, g[1]], 'b')); } },
         { id: 'e11c', level: 'PRG', make: function (r) { var g = pickWhere(function () { return [r.int(1, 3), r.int(2, 5), r.int(1, 5), r.int(2, 6)]; }, function (g) { return gcd(g[0], g[1]) === 1 && gcd(g[2], g[3]) === 1 && (g[0] > 1 || g[2] > 1) && g[1] !== g[3] && Math.abs(FX.content(P.sub(L([g[0], g[1]], 'p'), L([g[2], g[3]], 'q'))).c[0]) === 1; }); return fracPart(L([g[0], g[1]], 'p'), L([g[2], g[3]], 'q')); } }] },
-      { num: '12', stem: function (sh) { var a = sh.a, c = sh.c; return 'Question 11(a) can have two correct-looking answers: ' + t('\\left(' + a + 'm-\\frac{1}{' + c + '}n\\right)\\left(' + a + 'm+\\frac{1}{' + c + '}n\\right)') + ' and ' + t('\\frac{1}{' + c * c + '}(' + a * c + 'm-n)(' + a * c + 'm+n)') + '.'; },
+      { num: '12', stem: function (sh) { var a = sh.a, c = sh.c; return 'A question like 11(a) can have two correct-looking answers, for example ' + t('\\left(' + a + 'm-\\frac{1}{' + c + '}n\\right)\\left(' + a + 'm+\\frac{1}{' + c + '}n\\right)') + ' and ' + t('\\frac{1}{' + c * c + '}(' + a * c + 'm-n)(' + a * c + 'm+n)') + '.'; },
         shared: function (r) { return { a: r.int(2, 9), c: r.int(2, 5) }; },
         parts: [
           { id: 'e12a', level: 'EMG', make: function (r, sh) {
@@ -790,10 +790,10 @@
         { id: 'e13c', level: 'PRG', make: function (r) { var g = pickWhere(function () { return { k: r.pick([2, 2, 3]), p: r.int(1, 5), n: r.int(2, 5) }; }, function (g) { return gcd(g.k, g.p) === 1; }); return bracketPart(P.add(L(g.k, 'a'), N(g.p)), L(g.n, 'b')); } },
         { id: 'e13d', level: 'ADV', make: function (r) {
           var k = r.pick([1, 1, 2, 3]), v = r.pick([['m', 'n'], ['m', 'n'], ['x', 'y'], ['a', 'b']]), A = P.add(L(1, v[0]), L(k, v[1])), B = P.sub(L(1, v[0]), L(k, v[1]));
-          var e = '(' + tx(A) + ')^{2}-(' + tx(B) + ')^{2}', T = P.sub(sq(A), sq(B));
-          var p = KP.poly(t(e), T, { wrong: [{ is: P.scale(T, -1), code: 'rev-order', hint: 'Your answer is the opposite: it comes from ' + t('(' + tx(B) + ')^{2}-(' + tx(A) + ')^{2}') + '. Keep ' + t('a=' + tx(A)) + ' (the first square) first.' }, { is: N(0), code: 'minus-bracket', hint: 'Check the first bracket: ' + t('(' + tx(A) + ')-(' + tx(B) + ')=' + tx(A) + '-' + tx(L(1, v[0])) + '+' + tx(L(k, v[1])) + '=' + tx(P.sub(A, B))) + '. Subtracting a bracket changes the sign of <b>every</b> term in it.' }] },
+          var e = '(' + tx(A) + ')^{2}-(' + tx(B) + ')^{2}', T = P.sub(sq(A), sq(B)), la = v[0] === 'a' ? 'A' : 'a', lb = v[0] === 'a' ? 'B' : 'b';
+          var p = KP.poly(t(e), T, { wrong: [{ is: P.scale(T, -1), code: 'rev-order', hint: 'Your answer is the opposite: it comes from ' + t('(' + tx(B) + ')^{2}-(' + tx(A) + ')^{2}') + '. Keep ' + t(la + '=' + tx(A)) + ' (the first square) first.' }, { is: N(0), code: 'minus-bracket', hint: 'Check the first bracket: ' + t('(' + tx(A) + ')-(' + tx(B) + ')=' + tx(A) + '-' + tx(L(1, v[0])) + '+' + tx(L(k, v[1])) + '=' + tx(P.sub(A, B))) + '. Subtracting a bracket changes the sign of <b>every</b> term in it.' }] },
             t(e + '=\\left[(' + tx(A) + ')-(' + tx(B) + ')\\right]\\left[(' + tx(A) + ')+(' + tx(B) + ')\\right]') + '<br>' + t('=(' + tx(P.sub(A, B)) + ')(' + tx(P.add(A, B)) + ')=' + tx(T)),
-            ['Let ' + t('a=' + tx(A)) + ' and ' + t('b=' + tx(B)) + ' and use ' + t('(a-b)(a+b)') + '.', 'Simplify each bracket: subtracting a bracket changes the sign of every term in it.'], 'factor ' + plain(e));
+            ['Let ' + t(la + '=' + tx(A)) + ' and ' + t(lb + '=' + tx(B)) + ' and use ' + t('(' + la + '-' + lb + ')(' + la + '+' + lb + ')') + '.', 'Simplify each bracket: subtracting a bracket changes the sign of every term in it.'], 'factor ' + plain(e));
           p.good = [tx(P.mul(L(2 * k, v[1]), L(2, v[0])))];
           p.bad = [tx(P.scale(T, -1)), '0', '(' + tx(P.sub(A, B)) + ')(' + tx(P.add(A, B)) + ')'];
           return p;
@@ -935,6 +935,9 @@
     var D = P.sub(A, B), Sm = P.add(A, B), gs = bkGs(A, B), kAbs = gs[0] * gs[1];
     var aw = function (X) { return P.count(X) > 1 ? '(' + tx(X) + ')' : tx(X); };
     var e = sqLabel(A) + '-' + sqLabel(B);
+    /* the pattern letters a, b become A, B when the question itself uses a or b, e.g. (3a+4)^2 - 16b^2 */
+    var clash = P.vars(P.add(sq(A), sq(B))).some(function (v) { return v === 'a' || v === 'b'; });
+    function pat(s) { return clash ? s.replace(/a/g, 'A').replace(/b/g, 'B') : s; }
     /* the booklet's order: the number first when the first square is a number, (2a+1-3b) when nothing combines */
     function ord(X, sign) {
       if (isNum(A)) { var c0 = P.constant(X); if (c0[0] > 0) return P.seq([N(c0), P.sub(X, N(c0))]); }
@@ -959,10 +962,10 @@
       ws.push({ is: [Dbad, Sm], code: 'minus-bracket', hint: 'Check the first bracket: ' + t(aw(A) + '-' + aw(B)) + '. Subtracting a bracket changes the sign of <b>every</b> term in it.' });
     }
     if (kAbs > 1) ws.push({ is: [fD, fS], code: 'lost-gcf', hint: 'Your brackets are right, but the common factor ' + t(String(kAbs)) + ' you took out has gone missing — it stays in front.' });
-    ws.push({ is: [{ p: D, k: 2 }], code: 'dsq-square', hint: 'Use ' + t('(a-b)(a+b)') + ' with ' + t('a=' + tx(A)) + ' and ' + t('b=' + tx(B)) + ': one minus bracket and one plus bracket.' });
-    if (isNum(B) && !P.eq(sq(B), B)) { var B2 = sq(B); ws.push({ is: [P.sub(A, B2), P.add(A, B2)], code: 'no-root', hint: 'Use the square <b>root</b>: ' + t(tx(B2) + '=' + sqTex(B)) + ', so ' + t('b=' + tx(B)) + '.' }); }
-    ws.push({ is: [P.sub(B, A), P.add(B, A)], code: 'rev-order', hint: 'Your factors multiply to the opposite. In ' + t('a^{2}-b^{2}') + ', ' + t('a') + ' is the root of the <b>first</b> square, ' + t(tx(A)) + '.' });
-    var hints = ['Let ' + t('a=' + tx(A)) + ' and ' + t('b=' + tx(B)) + ', and use ' + t('(a-b)(a+b)') + ' with square brackets around each.', 'Simplify each bracket (subtracting a bracket changes every sign), then take out any common factor.'];
+    ws.push({ is: [{ p: D, k: 2 }], code: 'dsq-square', hint: 'Use ' + t(pat('(a-b)(a+b)')) + ' with ' + t(pat('a') + '=' + tx(A)) + ' and ' + t(pat('b') + '=' + tx(B)) + ': one minus bracket and one plus bracket.' });
+    if (isNum(B) && !P.eq(sq(B), B)) { var B2 = sq(B); ws.push({ is: [P.sub(A, B2), P.add(A, B2)], code: 'no-root', hint: 'Use the square <b>root</b>: ' + t(tx(B2) + '=' + sqTex(B)) + ', so ' + t(pat('b') + '=' + tx(B)) + '.' }); }
+    ws.push({ is: [P.sub(B, A), P.add(B, A)], code: 'rev-order', hint: 'Your factors multiply to the opposite. In ' + t(pat('a^{2}-b^{2}')) + ', ' + t(pat('a')) + ' is the root of the <b>first</b> square, ' + t(tx(A)) + '.' });
+    var hints = ['Let ' + t(pat('a') + '=' + tx(A)) + ' and ' + t(pat('b') + '=' + tx(B)) + ', and use ' + t(pat('(a-b)(a+b)')) + ' with square brackets around each.', 'Simplify each bracket (subtracting a bracket changes every sign), then take out any common factor.'];
     var raw = '(' + P.seq([A, P.neg(B)]) + ')(' + P.seq([A, B]) + ')', bad = raw === '(' + tD + ')(' + tS + ')' ? [] : [raw];
     if (kAbs > 1) bad.push('(' + ord(D, -1) + ')(' + ord(Sm, 1) + ')');
     return factPart(t(e), target, ws, lines, hints, 'factor ' + plain(e), { wrap: function (c) { return simpBr(c); }, bad: bad, good: ['(' + tS + ')(' + tD + ')'].map(function (x) { return (kAbs > 1 ? String(kAbs) : '') + x; }) });

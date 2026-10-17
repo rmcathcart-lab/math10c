@@ -54,7 +54,7 @@
   }
   function rng(a, b, step) { var o = []; for (var x = a; x <= b + 1e-9; x += (step || 1)) o.push(cl(x)); return o; }
   function pickWhere(gen, okf) { for (var i = 0; i < 3000; i++) { var o = gen(); if (okf(o)) return o; } throw new Error('u5l6: no valid numbers'); }
-  function margin(x, d) { var f = Math.pow(10, d), fr = x * f - Math.floor(x * f); return Math.abs(fr - 0.5) > 0.04 && fr > 0.02 && fr < 0.98; }  // safe to round
+  function margin(x, d) { var f = Math.pow(10, d), fr = x * f - Math.floor(x * f); return isDp(x, d) || Math.abs(fr - 0.5) > 0.04; }  // exact, or safely away from a rounding tie
   function kb(s) { return '<b>' + s + '</b>'; }
   function cd(s) { return '<code>' + s + '</code>'; }
   function niceUp(v) { if (v <= 0) return 0; var p = Math.pow(10, Math.floor(Math.log10(v))), ms = [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 7, 8, 10]; for (var i = 0; i < ms.length; i++) if (ms[i] * p >= v - 1e-9) return cl(ms[i] * p); return cl(10 * p); }
@@ -96,7 +96,7 @@
     };
     var keys = boxes.map(function (b) { return numKey(b.x, b.d == null ? 2 : b.d); });
     return { prompt: prompt, input: { type: 'fields', fields: fields }, check: check, key: keys,
-      answer: boxes.map(function (b, i) { return b.label + ': ' + (b.before || '') + t(F(keys[i])) + (b.after ? ' ' + b.after : ''); }).join('<br>'),
+      answer: boxes.map(function (b, i) { return b.label + ': ' + (b.before || '') + t(b.plain ? keys[i] : F(keys[i])) + (b.after ? ' ' + b.after : ''); }).join('<br>'),
       solution: sol, hints: hints || [], text: text, bad: opt.swap ? [keys.slice().reverse()] : [] };
   }
   /* window settings. o = { x:[lo,hi], y:[lo,hi] (what must be visible), xv, yv, xHi, xHiHow, yHi, yHiHow, yLo, yNonneg, key, good, bad } */
@@ -176,7 +176,7 @@
     return pickWhere(function () {
       var p = r.pick([5, 8, 10, 12, 15, 20]), k = r.int(40, 90), E = p * k, cap = r.pick([200, 250, 300, 350]);
       var n3s = rng(k + 30, cap - 20).filter(function (n) { return (p * n - E) % 100 === 0; });
-      var n3 = n3s.length ? r.pick(n3s) : 0, N4 = r.pick(rng(k + 20, cap - 10, 10).filter(function (n) { return n !== n3; }));
+      var n3 = n3s.length ? r.pick(n3s) : 0, N4 = r.pick(rng(Math.ceil((k + 20) / 10) * 10, cap - 10, 10).filter(function (n) { return n !== n3; }));
       return { p: p, k: k, E: E, cap: cap, n3: n3, Pt: p * n3 - E, N4: N4, P4: p * N4 - E, top: p * cap - E, eq: 'P=' + p + 'n-' + E, y1: 'Y_1=' + p + 'X-' + E };
     }, function (o) { return o.n3 > 0 && o.cap > o.k + 60 && o.Pt > 0; });
   }
@@ -874,7 +874,7 @@
             var yr = Math.floor(s.base + s.t1);
             return fieldsPart('In what year does the model give a population of ' + t(F(s.Pt)) + '? Give the number of years (nearest hundredth) and then the calendar year.', [
               { label: 'Years since ' + s.base, x: s.t1, d: 2, cands: [{ v: s.Pt / s.rt, code: 'ctx-no-sub', hint: 'Solve ' + t(F(s.P0) + '-' + s.rt + 't=' + F(s.Pt)) + ': the change is ' + t(F(s.P0) + '-' + F(s.Pt)) + '.' }] },
-              { label: 'Calendar year', x: yr, d: 0, cands: [{ v: yr + 1, code: 'ctx-year-round', hint: t(s.base + '+' + rT(s.t1, 2) + '=' + rT(s.base + s.t1, 2)) + ' is part-way through ' + yr + ', so it happens <b>during</b> ' + yr + '.' }, { v: Math.round(s.t1), code: 'ctx-year-round', hint: 'Add the years to ' + s.base + ' to get the calendar year.' }] }],
+              { label: 'Calendar year', x: yr, d: 0, plain: true, cands: [{ v: yr + 1, code: 'ctx-year-round', hint: t(s.base + '+' + rT(s.t1, 2) + '=' + rT(s.base + s.t1, 2)) + ' is part-way through ' + yr + ', so it happens <b>during</b> ' + yr + '.' }, { v: Math.round(s.t1), code: 'ctx-year-round', hint: 'Add the years to ' + s.base + ' to get the calendar year.' }] }],
               t(F(s.P0) + '-' + s.rt + 't=' + F(s.Pt) + '\\Rightarrow ' + s.rt + 't=' + F(s.P0 - s.Pt) + '\\Rightarrow t\\approx ' + rT(s.t1, 2)) + ' years (' + cd('5:intersect') + '). ' + t(s.base + '+' + rT(s.t1, 2) + '=' + rT(s.base + s.t1, 2)) + ', so during ' + yr + '.', [H_INT, 'Add the years to ' + s.base + '; a part-way year is still that calendar year.'], 'year population ' + s.Pt);
           } },
           { id: 'e8b', sub: 'c', level: 'EMG', make: function (r, s) {
@@ -961,7 +961,7 @@
             'Check: ' + t(F(V0) + '-' + rt + '(' + M + ')=0') + '. The ' + t('t') + '-intercept is when the value reaches ' + t('\\$0') + ': ' + t(M) + ' months after purchase.', ['At a ' + t('t') + '-intercept, ' + t('V=0') + '.'], 'meaning of t-intercept value');
         } },
         { id: 'e10d', sub: 'd', level: 'EMG', make: function (r) {
-          var o = pickWhere(function () { var b = r.pick([20, 24, 30, 36]), c = r.pick([100, 150, 200, 250, 300]), q = Math.sqrt(b * b - c); return { b: b, c: c, r1: 2 * b - 2 * q, r2: 2 * b + 2 * q }; }, function (o) { return margin(o.r1, 2) && margin(o.r2, 2) && o.r1 > 1.5; });
+          var o = pickWhere(function () { var b = r.pick([20, 24, 30, 36]), c = r.pick([100, 150, 200, 250, 300]), q = Math.sqrt(b * b - c); return { b: b, c: c, r1: 2 * b - 2 * q, r2: 2 * b + 2 * q }; }, function (o) { return o.r1 > 1.5 && !isDp(o.r1, 0); });
           var lo = Math.ceil(o.r1), hi = Math.floor(o.r2);
           return mc(r, t('P=' + quadT(-0.25, o.b, -o.c, 'n')) + ' — the profit from a banquet, ' + t('P') + ' in dollars, ' + t('n') + ' meals served. <i>' + t('n') + '-intercepts:</i> ' + t(rT(o.r1, 2)) + ' and ' + t(rT(o.r2, 2)) + '.', [
             { html: 'The banquet breaks even (profit ' + t('\\$0') + ') at about ' + t(rT(o.r1, 2)) + ' and ' + t(rT(o.r2, 2)) + ' meals; serving from ' + t(lo) + ' to ' + t(hi) + ' meals makes a profit, fewer or more loses money.', right: true },

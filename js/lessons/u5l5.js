@@ -638,7 +638,7 @@
       dl: [[cl(f(-h)), 'vy-wrong-x', 'That is the output at ' + t('x=' + vt(-h)) + '. Substitute the ' + t('x') + '-coordinate of the turning point.'], [c, 'vy-yint', 'That is the ' + t('y') + '-intercept (the output at ' + t('x=0') + '), not the turning point.'], [cl(-a * h * h + b * h + c), 'calc-sign', 'Square first, then multiply by ' + t(nT(a)) + ' — watch the sign.']] });
     var w = niceWin([featV(h, k), featY(c)]);
     var sub = t((a === 1 ? '' : a === -1 ? '-' : nT(a)) + '\\left(' + hT + '\\right)^{2}' + term(b, '', false) + '\\left(' + hT + '\\right)' + term(c, '', false) + '=' + kT);
-    var bad = [[vt(-h), vt(f(-h))], [hT, nT(c)]].concat(same(h, k) ? [] : [[kT, hT]]).concat(Number.isInteger(k) ? [] : [[hT, nT(rnd(k, 1))]]);
+    var bad = [[vt(-h), vt(f(-h))], [hT, nT(c)]].concat(same(h, k) ? [] : [[kT, hT]]).concat(same(rnd(k, 1), k) ? [] : [[hT, nT(rnd(k, 1))]]);
     return fieldsPart(t('y=' + rel), [mbox(t('x') + '-coordinate'), mbox(t('y') + '-coordinate')], [cx, cy], [hT, kT],
       (up ? 'Minimum' : 'Maximum') + ' point ' + t('\\left(' + hT + ',\\ ' + kT + '\\right)'),
       'The ' + t('x^{2}') + ' coefficient is ' + (up ? 'positive, so the parabola opens <b>up</b> and has a <b>minimum</b>: use ' + C.min : 'negative, so the parabola opens <b>down</b> and has a <b>maximum</b>: use ' + C.max) + ' in a window such as ' + winTex(w) + '. It shows about ' + t('X\\approx ' + nT(rnd(h, 4)) + ',\\ Y\\approx ' + nT(rnd(k, 4))) + (Number.isInteger(h) && Number.isInteger(k) ? '' : '; ▸Frac gives ' + t('\\left(' + hT + ',\\ ' + kT + '\\right)')) + '.<br>' +
@@ -648,5 +648,588 @@
   }
 
   /* ================= EXTRA PRACTICE ================= */
-  function EXTRA() { return []; }
+  function pq(v) { return Array.isArray(v) ? ex.norm(v[0], v[1]) : fracOf(v); }
+  function PL(a2, a1, a0) { return P.add(P.mono(pq(a2), { x: 2 }), P.mono(pq(a1), { x: 1 }), P.num(pq(a0))); }
+  function y1Part(prompt, target, wl, sol, hints, text, o) {
+    o = o || {};
+    wl = wl.filter(function (w) { return !P.eq(w.is, target); });
+    var p = K.P.poly(prompt, target, { before: t('y='), expanded: false, wrong: wl, keyTex: o.keyTex }, sol, hints, text);
+    p.bad = wl.map(function (w) { return P.tex(w.is); }); if (o.good) p.good = o.good;
+    return p;
+  }
+  var Y1H = ['Get ' + t('y') + ' by itself: move every other term to the other side, then divide by the coefficient of ' + t('y') + ' (every term!).', 'Check one point: substitute a value of ' + t('x') + ' into the original equation and into your answer — the ' + t('y') + '-values must match.'];
+  function screenStd(fns, o) {
+    o = o || {};
+    return HW.graph({ x: [-10, 10], y: [-10, 10], unit: 15, grid: 0, labels: 5, fns: fns, points: o.pts || [], max: o.max || 300, aria: 'standard window screen' });
+  }
+  function EXTRA() {
+    return [
+      /* ---------- Part A ---------- */
+      { num: '1', section: 'Extra practice A — Before you press GRAPH: solve for y', stem: 'The equation editor (' + code('Y=') + ') only accepts a right-hand side. Solve each relation for ' + t('y') + ' — that is the expression you would type into ' + code('Y1') + '.', parts: [
+        { id: 'e1a', level: 'BEG', make: function (r) {
+          var o = pickWhere(function () { return { A: r.int(2, 9), B: r.int(2, 5), k: r.int(2, 9) }; }, function (o) { return o.A % o.B !== 0; });
+          var C = o.B * o.k, T = PL(0, [-o.A, o.B], o.k);
+          return y1Part(t(o.A + 'x+' + o.B + 'y=' + C), T, [{ is: PL(0, -o.A, C), code: 'inv-no-div', hint: 'Nearly: after moving ' + t(o.A + 'x') + ', divide <b>both</b> terms by ' + t(o.B) + '.' }, { is: PL(0, [o.A, o.B], o.k), code: 'inv-sign', hint: 'Moving ' + t('+' + o.A + 'x') + ' to the other side makes it ' + t('-' + o.A + 'x') + '.' }, { is: PL(0, [-o.A, o.B], C), code: 'inv-no-div', hint: 'Divide the constant by ' + t(o.B) + ' too.' }],
+            t(o.B + 'y=' + C + '-' + o.A + 'x') + ', so ' + t('y=\\frac{' + C + '-' + o.A + 'x}{' + o.B + '}=' + P.tex(T)) + '. Type ' + code('(' + C + '−' + o.A + 'X)/' + o.B) + ' into ' + code('Y1') + ' (the brackets matter).', Y1H, 'solve for y: ' + o.A + 'x+' + o.B + 'y=' + C, { good: ['\\frac{' + C + '-' + o.A + 'x}{' + o.B + '}'] });
+        } },
+        { id: 'e1b', level: 'EMG', make: function (r) {
+          var o = pickWhere(function () { return { A: r.int(2, 9), B: r.int(2, 5), k: r.int(2, 9) }; }, function (o) { return o.A % o.B !== 0; });
+          var C = o.B * o.k, T = PL(0, [o.A, o.B], -o.k);
+          return y1Part(t(o.A + 'x-' + o.B + 'y=' + C), T, [{ is: PL(0, o.A, -C), code: 'inv-no-div', hint: 'After moving ' + t(o.A + 'x') + ', divide every term by ' + t('-' + o.B) + '.' }, { is: PL(0, [-o.A, o.B], o.k), code: 'inv-neg', hint: 'You divided by ' + t(o.B) + ', but the coefficient of ' + t('y') + ' is ' + t('-' + o.B) + '. Dividing by a negative changes every sign.' }],
+            t('-' + o.B + 'y=' + C + '-' + o.A + 'x') + '. Divide every term by ' + t('-' + o.B) + ': ' + t('y=\\frac{' + C + '-' + o.A + 'x}{-' + o.B + '}=\\frac{' + o.A + 'x-' + C + '}{' + o.B + '}=' + P.tex(T)) + '. Type ' + code('(' + o.A + 'X−' + C + ')/' + o.B) + '.', Y1H, 'solve for y: ' + o.A + 'x-' + o.B + 'y=' + C, { good: ['\\frac{' + o.A + 'x-' + C + '}{' + o.B + '}', nT(o.A / o.B) + 'x-' + o.k] });
+        } },
+        { id: 'e1c', level: 'BEG', make: function (r) {
+          var k = r.int(2, 9), T = PL(1, k, 0);
+          return y1Part(t('y-x^{2}=' + k + 'x'), T, [{ is: PL(1, -k, 0), code: 'inv-sign', hint: 'Add ' + t('x^{2}') + ' to both sides — the ' + t(k + 'x') + ' doesn’t change.' }, { is: PL(-1, k, 0), code: 'inv-sign', hint: 'To move ' + t('-x^{2}') + ', <b>add</b> ' + t('x^{2}') + ' to both sides.' }],
+            'Add ' + t('x^{2}') + ' to both sides: ' + t('y=x^{2}+' + k + 'x') + '. Type ' + code('X^2+' + k + 'X') + '.', Y1H, 'solve for y: y-x^2=' + k + 'x');
+        } },
+        { id: 'e1d', level: 'EMG', make: function (r) {
+          var o = pickWhere(function () { return { B: r.int(2, 5), k: r.int(2, 9) }; }, function () { return true; }), C = o.B * o.k, T = PL([-1, o.B], 0, o.k);
+          return y1Part(t('x^{2}+' + o.B + 'y-' + C + '=0'), T, [{ is: PL(-1, 0, C), code: 'inv-no-div', hint: 'Divide both terms by ' + t(o.B) + '.' }, { is: PL([1, o.B], 0, -o.k), code: 'inv-sign', hint: 'Moving ' + t('+x^{2}') + ' and ' + t('-' + C) + ' to the other side changes both signs: ' + t(o.B + 'y=' + C + '-x^{2}') + '.' }, { is: PL([-1, o.B], 0, C), code: 'inv-no-div', hint: 'Divide the constant by ' + t(o.B) + ' too.' }],
+            t(o.B + 'y=' + C + '-x^{2}') + ', so ' + t('y=\\frac{' + C + '-x^{2}}{' + o.B + '}=' + P.tex(T)) + '. Type ' + code('(' + C + '−X^2)/' + o.B) + '.', Y1H, 'solve for y: x^2+' + o.B + 'y-' + C + '=0', { good: ['\\frac{' + C + '-x^{2}}{' + o.B + '}'] });
+        } },
+        { id: 'e1e', level: 'EMG', make: function (r) {
+          var p = r.int(1, 9), q = r.int(2, 5), s = r.int(1, 9), T = PL(0, q, -q * s - p);
+          return y1Part(t('\\frac{y+' + p + '}{' + q + '}=x-' + s), T, [{ is: PL(0, q, -s - p), code: 'y1-dist', hint: 'Multiply <b>both</b> terms of ' + t('x-' + s) + ' by ' + t(q) + ': ' + t(q + '(x-' + s + ')=' + q + 'x-' + q * s) + '.' }, { is: PL(0, q, -q * s + p), code: 'inv-sign', hint: 'To move ' + t('+' + p) + ', subtract ' + t(p) + ' from both sides.' }, { is: PL(0, [1, q], [-s * 1, 1]).constructor === Object ? PL(0, [1, q], -s / q - p) : PL(0, [1, q], -p), code: 'inv-mult', hint: 'To undo “divided by ' + t(q) + '”, <b>multiply</b> both sides by ' + t(q) + '.' }],
+            'Multiply both sides by ' + t(q) + ' first: ' + t('y+' + p + '=' + q + '(x-' + s + ')=' + q + 'x-' + q * s) + ', then subtract ' + t(p) + ': ' + t('y=' + P.tex(T)) + '. Type ' + code(q + 'X−' + (q * s + p)) + '.', Y1H, 'solve for y: (y+' + p + ')/' + q + '=x-' + s);
+        } },
+        { id: 'e1f', level: 'BEG', make: function (r) {
+          var A = r.int(2, 9), C = r.int(2, 12), T = PL(0, A, C);
+          return y1Part(t(A + 'x-y=-' + C), T, [{ is: PL(0, A, -C), code: 'inv-sign', hint: 'Divide every term by ' + t('-1') + ': ' + t('-y=-' + A + 'x-' + C) + ' becomes ' + t('y=' + A + 'x+' + C) + '.' }, { is: PL(0, -A, C), code: 'inv-sign', hint: 'Divide <b>every</b> term by ' + t('-1') + '.' }],
+            t('-y=-' + A + 'x-' + C) + '. Divide by ' + t('-1') + ': ' + t('y=' + A + 'x+' + C) + '. Type ' + code(A + 'X+' + C) + '.', Y1H, 'solve for y: ' + A + 'x-y=-' + C);
+        } }] },
+      { num: '2', stem: function (s) { return 'Asked to graph ' + t('y=\\frac{' + s.p + 'x-' + s.q + '}{' + s.d + '}') + ', one student types ' + code('(' + s.p + 'X−' + s.q + ')/' + s.d) + ' into ' + code('Y1') + ' and a second student types ' + code(s.p + 'X−' + s.q + '/' + s.d) + '.'; },
+        shared: function (r) { return pickWhere(function () { return { p: r.int(2, 7), q: r.int(3, 24), d: r.pick([2, 4, 5]) }; }, function (o) { return o.q % o.d !== 0 && o.p % o.d !== 0 && o.q % o.p !== 0 && (2 * o.p - o.q) % o.d === 0; }); },
+        parts: [
+          { id: 'e2a', level: 'EMG', make: function (r, s) {
+            var T = PL(0, s.p, [-s.q, s.d]), dq = nT(s.q / s.d);
+            return y1Part('Write the relation the <b>second</b> student actually graphed, in the form ' + t('y=mx+b') + '.', T, [{ is: PL(0, [s.p, s.d], [-s.q, s.d]), code: 'y1-order', hint: 'That is the relation they <i>meant</i>. Without brackets the calculator divides first: only the ' + t(s.q) + ' is divided by ' + t(s.d) + '.' }],
+              'The calculator divides before it subtracts, so ' + code(s.p + 'X−' + s.q + '/' + s.d) + ' means ' + t(s.p + 'x-\\frac{' + s.q + '}{' + s.d + '}') + ': ' + t('y=' + s.p + 'x-' + dq) + '.', ['Order of operations: division comes before subtraction. Which numbers does the ' + code('/' + s.d) + ' act on?'], 'missing brackets graph', { keyTex: s.p + 'x-' + dq, good: [s.p + 'x-\\frac{' + s.q + '}{' + s.d + '}'] });
+          } },
+          { id: 'e2b', level: 'BEG', make: function (r, s) {
+            var v = [-s.q, s.d];
+            return mathPart('Both graphs are straight lines with the <b>same</b> ' + t('y') + '-intercept. State it.', exactChk(v, { dl: [[-s.q, 'int-no-div', 'At ' + t('x=0') + ' both give ' + t('\\frac{-' + s.q + '}{' + s.d + '}') + ' — divide by ' + t(s.d) + '.'], [s.q / s.p, 'int-swap', 'That is the correct graph’s ' + t('x') + '-intercept. The ' + t('y') + '-intercept is the output at ' + t('x=0') + '.']] }), nT(-s.q / s.d),
+              'At ' + t('x=0') + ': correct ' + t('y=\\frac{' + s.p + '(0)-' + s.q + '}{' + s.d + '}=' + nT(-s.q / s.d)) + '; student ' + t('y=' + s.p + '(0)-' + nT(s.q / s.d) + '=' + nT(-s.q / s.d)) + '. Both are ' + t(nT(-s.q / s.d) + '=' + rT(-s.q, s.d)) + '.', ['Substitute ' + t('x=0') + ' into each relation.'], 'common y-intercept', 'fraction', { good: [rT(-s.q, s.d)] });
+          } },
+          { id: 'e2c', level: 'EMG', make: function (r, s) {
+            return mc(r, 'Why can’t checking the ' + t('y') + '-intercept catch the missing brackets?', [
+              { html: 'The missing brackets only change the ' + t('x') + '-term, and at ' + t('x=0') + ' the ' + t('x') + '-term is ' + t('0') + ' — so both relations give the same ' + t('y') + '-intercept.', right: true },
+              { html: 'The two relations are really the same, so there is nothing to catch.', why: 'Try ' + t('x=2') + ' in both: the outputs are different, so the relations are different.' },
+              { html: 'The calculator rounds the ' + t('y') + '-intercept.', why: 'Both ' + t('y') + '-intercepts are exactly ' + t(nT(-s.q / s.d)) + ' — no rounding is involved.' },
+              { html: 'The ' + t('y') + '-intercept check only works for parabolas.', why: 'The ' + t('y') + '-intercept check works for any relation; the trouble is that this particular mistake doesn’t affect the output at ' + t('x=0') + '.' }],
+              'Correct: ' + t('\\frac{' + s.p + 'x}{' + s.d + '}-\\frac{' + s.q + '}{' + s.d + '}') + '; student: ' + t(s.p + 'x-\\frac{' + s.q + '}{' + s.d + '}') + '. They differ only in the ' + t('x') + '-term, which is ' + t('0') + ' at ' + t('x=0') + '.', ['Write both relations as ' + t('mx+b') + ': which part is different?'], 'why y-int check fails');
+          } },
+          { id: 'e2d', level: 'EMG', make: function (r, s) {
+            var a = ex.norm(s.q, s.p), b = ex.norm(s.q, s.d * s.p);
+            return fieldsPart('Run ' + code('2:zero') + ' on each relation. Give both ' + t('x') + '-intercepts as exact fractions.', [mbox('correct relation'), mbox('student’s relation')],
+              [exactChk(a, { dl: [[b[0] / b[1], 'int-swap', 'That is the student’s intercept.']] }), exactChk(b, { dl: [[a[0] / a[1], 'int-swap', 'That is the correct relation’s intercept. Solve ' + t(s.p + 'x-\\frac{' + s.q + '}{' + s.d + '}=0') + '.']] })], [ex.texRat(a), ex.texRat(b)],
+              'correct ' + t(ex.texRat(a)) + ', student ' + t(ex.texRat(b)),
+              'Correct: ' + t('\\frac{' + s.p + 'x-' + s.q + '}{' + s.d + '}=0\\Rightarrow ' + s.p + 'x=' + s.q + '\\Rightarrow x=' + ex.texRat(a)) + '. Student: ' + t(s.p + 'x-\\frac{' + s.q + '}{' + s.d + '}=0\\Rightarrow ' + s.p + 'x=\\frac{' + s.q + '}{' + s.d + '}\\Rightarrow x=' + ex.texRat(b)) + '. (On the calculator: ' + C.zero + ', then ▸Frac.)',
+              ['Set each relation equal to ' + t('0') + ' and solve.'], 'two x-intercepts', { bad: [[ex.texRat(b), ex.texRat(a)]] });
+          } },
+          { id: 'e2e', level: 'BEG', make: function (r, s) {
+            var y1 = (2 * s.p - s.q) / s.d, y2 = cl(2 * s.p - s.q / s.d);
+            return fieldsPart('Evaluate both relations at ' + t('x=2') + '.', [nbox('correct relation: ' + t('y=')), nbox('student’s relation: ' + t('y='))],
+              [K.number(y1, function (v) { return same(v, y2) ? { code: 'int-swap', hint: 'That is the student’s output.' } : null; }), K.number(y2, function (v) { return same(v, y1) ? { code: 'int-swap', hint: 'That is the correct output. The student’s relation is ' + t('y=' + s.p + 'x-' + nT(s.q / s.d)) + '.' } : null; })],
+              [String(y1), String(y2)], 'correct ' + t(nT(y1)) + ', student ' + t(nT(y2)),
+              'Correct: ' + t('\\frac{' + s.p + '(2)-' + s.q + '}{' + s.d + '}=\\frac{' + (2 * s.p - s.q) + '}{' + s.d + '}=' + nT(y1)) + '. Student: ' + t(s.p + '(2)-' + nT(s.q / s.d) + '=' + nT(y2)) + '. One trace value shows the two graphs are different.',
+              ['Substitute ' + t('x=2') + ' into each relation (or trace to ' + t('x=2') + ' on each).'], 'outputs at x=2', { bad: [[String(y2), String(y1)]] });
+          } },
+          { id: 'e2f', level: 'BEG', make: function (r, s) {
+            return mc(r, 'Which check is the <b>fastest</b> way to expose the missing brackets?', [
+              { html: 'A single trace (or table) value at some ' + t('x\\ne 0') + ', compared with substituting by hand', right: true },
+              { html: 'The ' + t('y') + '-intercept', why: 'Both relations have the same ' + t('y') + '-intercept, so this check can’t tell them apart.' },
+              { html: 'Checking that the graph rises from left to right', why: 'Both lines rise from left to right (positive slopes), so this doesn’t expose anything.' },
+              { html: 'Checking that the graph is a straight line', why: 'Both relations are straight lines.' }],
+              'One substitution at, say, ' + t('x=2') + ' gives different outputs at once. (The ' + t('x') + '-intercept also exposes it, but takes longer; the ' + t('y') + '-intercept cannot.)', ['Which check gives different results for the two relations?'], 'fastest bracket check');
+          } }] },
+      { num: '3', stem: 'Choose the expression you would type into ' + code('Y1') + ' for each relation. Every bracket the calculator needs must be there.', parts: [
+        { id: 'e3a', level: 'BEG', make: function (r) {
+          var quad = r.chance(0.4), p = r.int(2, 9), q = r.pick([2, 3, 4, 5]), top = quad ? 'X^2' : 'X', sg = quad ? '−' : '+', texTop = quad ? 'x^{2}-' + p : 'x+' + p;
+          return mc(r, t('y=\\frac{' + texTop + '}{' + q + '}'), [
+            { html: code('(' + top + sg + p + ')/' + q), right: true },
+            { html: code(top + sg + p + '/' + q), why: 'Without brackets the calculator divides first, so only the ' + t(p) + ' is divided by ' + t(q) + '.' },
+            { html: code(top + '/' + q + sg + p), why: 'This divides only the ' + t(quad ? 'x^{2}' : 'x') + ' by ' + t(q) + '; the whole numerator has to be divided.' },
+            { html: code(q + '/(' + top + sg + p + ')'), why: 'This is upside down: it divides ' + t(q) + ' by the expression.' }],
+            'Brackets keep the whole numerator over ' + t(q) + ': ' + code('(' + top + sg + p + ')/' + q) + '.', ['Division happens before addition and subtraction unless brackets say otherwise.'], 'Y1 entry numerator');
+        } },
+        { id: 'e3b', level: 'BEG', make: function (r) {
+          var k = r.int(2, 15), p = r.int(1, 9);
+          return mc(r, t('y=\\frac{' + k + '}{x+' + p + '}'), [
+            { html: code(k + '/(X+' + p + ')'), right: true },
+            { html: code(k + '/X+' + p), why: 'Without brackets this is ' + t('\\frac{' + k + '}{x}+' + p) + ': only ' + t('x') + ' is in the denominator.' },
+            { html: code('(X+' + p + ')/' + k), why: 'This is upside down.' },
+            { html: code(k + '(X+' + p + ')'), why: 'This multiplies by ' + t('x+' + p) + ' instead of dividing.' }],
+            'Brackets keep the whole denominator together: ' + code(k + '/(X+' + p + ')') + '.', ['What has to be under the fraction bar?'], 'Y1 entry denominator');
+        } },
+        { id: 'e3c', level: 'BEG', make: function (r) {
+          var o = pickWhere(function () { return { a: r.int(1, 7), b: r.int(2, 9), c: r.int(1, 12) }; }, function (o) { return gcd(o.a, o.b) === 1 && o.a < o.b; });
+          return mc(r, t('y=\\frac{' + o.a + '}{' + o.b + '}x-' + o.c), [
+            { html: code('(' + o.a + '/' + o.b + ')X−' + o.c), right: true },
+            { html: code(o.a + '/(' + o.b + 'X)−' + o.c), why: 'This puts ' + t('x') + ' in the denominator: ' + t('\\frac{' + o.a + '}{' + o.b + 'x}') + '.' },
+            { html: code('(' + o.a + '/' + o.b + ')(X−' + o.c + ')'), why: 'This multiplies the ' + t(o.c) + ' by ' + t('\\frac{' + o.a + '}{' + o.b + '}') + ' as well.' },
+            { html: code('(' + o.a + 'X−' + o.c + ')/' + o.b), why: 'This divides the ' + t(o.c) + ' by ' + t(o.b) + ' too.' }],
+            'The brackets make only ' + t('\\frac{' + o.a + '}{' + o.b + '}') + ' multiply ' + t('x') + ': ' + code('(' + o.a + '/' + o.b + ')X−' + o.c) + '.', ['Only the fraction multiplies ' + t('x') + '; the ' + t(o.c) + ' is subtracted afterwards.'], 'Y1 entry fraction coefficient');
+        } },
+        { id: 'e3d', level: 'BEG', make: function (r) {
+          var h = r.int(1, 9), k = r.int(1, 9);
+          return mc(r, t('y=(x-' + h + ')^{2}-' + k), [
+            { html: code('(X−' + h + ')^2−' + k), right: true },
+            { html: code('X−' + h + '^2−' + k), why: 'Without brackets only the ' + t(h) + ' is squared: that graphs ' + t('y=x-' + (h * h) + '-' + k) + '.' },
+            { html: code('X^2−' + h + '−' + k), why: 'This squares only ' + t('x') + '; the whole bracket ' + t('x-' + h) + ' must be squared.' },
+            { html: code('(X−' + h + ')^(2−' + k + ')'), why: 'The ' + t('-' + k) + ' has gone into the exponent. Close the exponent before typing ' + code('−' + k) + '.' }],
+            'The brackets make all of ' + t('x-' + h) + ' get squared: ' + code('(X−' + h + ')^2−' + k) + '.', ['What exactly is being squared?'], 'Y1 entry square');
+        } },
+        { id: 'e3e', level: 'LIM', make: function (r) {
+          var m = r.int(2, 9), b = r.int(1, 9);
+          return mc(r, 'To enter ' + t('y=-' + m + 'x+' + b) + ', which key should the entry start with?', [
+            { html: code('(−)') + ' — the negation key', right: true },
+            { html: code('−') + ' — the subtraction key', why: 'Subtraction needs something before it to subtract from; at the start of an entry it gives ERR:SYNTAX.' },
+            { html: 'Either one — they do the same thing', why: 'They don’t: ' + code('−') + ' subtracts, ' + code('(−)') + ' makes a number negative.' },
+            { html: code('ALPHA') + ' then ' + code('−'), why: code('ALPHA') + ' types letters; it doesn’t make a number negative.' }],
+            'A leading negative has nothing before it to subtract from, so it needs the negation key: ' + code('(−)' + m + 'X+' + b) + '.', ['Is the first minus sign “subtract” or “negative”?'], 'negation key');
+        } },
+        { id: 'e3f', level: 'EMG', make: function (r) {
+          var p = r.int(1, 9), q = r.pick([2, 4, 5]); if (p % q === 0) p++;
+          var T = PL(0, 1, [p, q]);
+          return y1Part('A student types ' + code('X+' + p + '/' + q) + ' for ' + t('y=\\frac{x+' + p + '}{' + q + '}') + ' (no brackets). Write the relation the calculator actually graphs.', T, [{ is: PL(0, [1, q], [p, q]), code: 'y1-order', hint: 'That is the relation that was meant. Without brackets only the ' + t(p) + ' is divided by ' + t(q) + '.' }],
+            'Division is done before addition, so only ' + t(p) + ' is divided: ' + t('y=x+\\frac{' + p + '}{' + q + '}=x+' + nT(p / q)) + '.', ['Order of operations: which number does ' + code('/' + q) + ' act on?'], 'no-bracket graph', { keyTex: 'x+' + nT(p / q), good: ['x+\\frac{' + p + '}{' + q + '}'] });
+        } }] },
+
+      /* ---------- Part B ---------- */
+      { num: '4', section: 'Extra practice B — Choosing a window that shows everything', stem: 'Work out the intercepts algebraically — and the vertex, if it is a parabola — then record a window that shows every one of those features with room to spare.', parts: [
+        { id: 'e4a', level: 'BEG', make: function (r) {
+          var m = r.int(2, 4), X = r.int(11, 20), b = -m * X, feat = [featX(X, linT(m, b)), featY(b)], w = niceWin(feat);
+          return winPart(t('y=' + linT(m, b)), feat, { sol: linWinSol(m, b, w) + ' ' + WT.Ymin + ' sits just below the lowest feature (the ' + t('y') + '-intercept ' + t(b) + ').', fns: [lf(m, b)], pts: [{ x: X, y: 0, label: '(' + X + ', 0)' }, { x: 0, y: b, label: '(0, ' + b + ')' }], text: 'window y=' + linT(m, b) });
+        } },
+        { id: 'e4b', level: 'EMG', make: function (r) {
+          var r1 = r.int(2, 6), r2 = r1 + 2 * r.int(3, 5), h = (r1 + r2) / 2, k = -Math.pow((r2 - r1) / 2, 2), b = -(r1 + r2), c = r1 * r2, rel = quadT(1, b, c);
+          var feat = [featX(r1, rel, 'the smaller ' + t('x') + '-intercept'), featX(r2, rel, 'the larger ' + t('x') + '-intercept'), featY(c), featV(h, k)], w = niceWin(feat);
+          return winPart(t('y=' + rel), feat, { sol: t(rel + '=(x-' + r1 + ')(x-' + r2 + ')') + ': ' + t('x') + '-intercepts ' + t(r1) + ' and ' + t(r2) + '; ' + t('y') + '-intercept ' + t(c) + '. Vertex: ' + t('x=\\frac{' + (r1 + r2) + '}{2}=' + h) + ', ' + t('y=' + h + '^{2}-' + (r1 + r2) + '(' + h + ')+' + c + '=' + k) + ', so ' + t('(' + h + ',\\ ' + k + ')') + '.<br>' + WT.Ymin + ' must be below the vertex value ' + t(k) + ' and ' + WT.Ymax + ' above the ' + t('y') + '-intercept ' + t(c) + '. One window: ' + winTex(w) + '.',
+            fns: [qf(1, b, c)], pts: [{ x: r1, y: 0 }, { x: r2, y: 0 }, { x: 0, y: c, label: '(0, ' + c + ')' }, { x: h, y: k, label: '(' + h + ', ' + k + ')' }], text: 'window ' + rel });
+        } },
+        { id: 'e4c', level: 'EMG', make: function (r) {
+          var r1 = r.int(1, 4), r2 = r1 + r.int(6, 12), a = -0.5, b = cl(0.5 * (r1 + r2)), c = cl(-0.5 * r1 * r2), h = (r1 + r2) / 2, k = cl(qf(a, b, c)(h)), rel = quadT(a, b, c);
+          var feat = [featX(r1, rel, 'the smaller ' + t('x') + '-intercept'), featX(r2, rel, 'the larger ' + t('x') + '-intercept'), featY(c), featV(h, k)], w = niceWin(feat);
+          return winPart(t('y=' + rel), feat, { sol: t(rel + '=0\\Rightarrow x^{2}-' + (r1 + r2) + 'x+' + r1 * r2 + '=0\\Rightarrow (x-' + r1 + ')(x-' + r2 + ')=0') + ': ' + t('x') + '-intercepts ' + t(r1) + ' and ' + t(r2) + '; ' + t('y') + '-intercept ' + t(nT(c)) + '. Vertex: ' + t('x=\\frac{-' + nT(b) + '}{2(-0.5)}=' + nT(h)) + ', ' + t('y=' + nT(k)) + '.<br>' + WT.Ymin + ' must be below ' + t(nT(c)) + ' and ' + WT.Ymax + ' above the vertex value ' + t(nT(k)) + '. One window: ' + winTex(w) + '.',
+            fns: [qf(a, b, c)], pts: [{ x: r1, y: 0 }, { x: r2, y: 0 }, { x: 0, y: c, label: '(0, ' + nT(c) + ')' }, { x: h, y: k, label: '(' + nT(h) + ', ' + nT(k) + ')' }], text: 'window ' + rel });
+        } },
+        { id: 'e4d', level: 'BEG', make: function (r) {
+          var o = pickWhere(function () { return { p: r.pick([2, 3, 5]), X: -r.int(12, 24), d: r.pick([2, 3, 4, 5]) }; }, function (o) { var q = -o.p * o.X; return q % o.d === 0 && q / o.d >= 8 && q / o.d <= 30 && o.p % o.d !== 0; });
+          var q = -o.p * o.X, Y = q / o.d, tex = '\\frac{' + o.p + 'x+' + q + '}{' + o.d + '}', feat = [featX(o.X, o.p + 'x+' + q), featY(Y)], w = niceWin(feat);
+          return winPart(t('y=' + tex), feat, { sol: t('x') + '-intercept: ' + t(o.p + 'x+' + q + '=0\\Rightarrow x=' + o.X) + '; ' + t('y') + '-intercept: ' + t('y=\\frac{' + q + '}{' + o.d + '}=' + Y) + '.<br>' + WT.Ymin + ' can sit just below the ' + t('x') + '-axis (where the ' + t('x') + '-intercept is) and ' + WT.Ymax + ' above ' + t(Y) + '. One window: ' + winTex(w) + '.',
+            fns: [lf(o.p / o.d, Y)], pts: [{ x: o.X, y: 0, label: '(' + o.X + ', 0)' }, { x: 0, y: Y, label: '(0, ' + Y + ')' }], text: 'window ' + tex });
+        } }] },
+      { num: '5', stem: function (s) { return 'A student enters ' + t('y=' + s.rel) + ', presses ' + code('ZOOM') + ' ' + code('6') + ' for ZStandard — the window ' + t('x:[-10,\\ 10,\\ 1],\\ y:[-10,\\ 10,\\ 1]') + ' — and gets the screen below. Nothing is drawn at all, so the student reports that the calculator is broken.' + screenStd([]); },
+        shared: function (r) {
+          var o = pickWhere(function () { var a = r.pick([0.4, 0.4, 0.5, 0.2, 0.25]); return { a: a, h: r.int(12, 16), k: r.int(2, 6) }; }, function (o) { var b = -2 * o.a * o.h, c = o.a * o.h * o.h + o.k; return same(b, Math.round(b)) && same(c, Math.round(c)) && o.a * Math.pow(10 - o.h, 2) + o.k > 10.5; });
+          o.b = cl(-2 * o.a * o.h); o.c = cl(o.a * o.h * o.h + o.k); o.f = qf(o.a, o.b, o.c); o.rel = quadT(o.a, o.b, o.c); return o;
+        },
+        parts: [
+          { id: 'e5a', level: 'BEG', make: function (r, s) {
+            var xs = [-10, 0, 10], ys = xs.map(function (x) { return cl(s.f(x)); });
+            return fieldsPart('Evaluate the relation at ' + t('x=-10') + ', ' + t('x=0') + ' and ' + t('x=10') + '.', xs.map(function (x) { return nbox(t('x=' + x) + ':&nbsp;' + t('y=')); }),
+              xs.map(function (x, i) { return K.number(ys[i], function (v) { return x === -10 && same(v, cl(s.f(10))) ? { code: 'calc-sign', hint: 'Check ' + t(nT(s.b) + '(-10)') + ': a negative times a negative is positive.' } : null; }); }), ys.map(String), ys.map(function (y, i) { return t('y(' + xs[i] + ')=' + nT(y)); }).join(', '),
+              xs.map(function (x, i) { return t('y(' + x + ')=' + nT(s.a) + '(' + x + ')^{2}' + term(s.b, '', false) + '(' + x + ')+' + nT(s.c) + '=' + nT(ys[i])); }).join('<br>'), ['Square first, then multiply, then add.'], 'blank screen values');
+          } },
+          { id: 'e5b', level: 'EMG', make: function (r, s) {
+            var m = cl(s.f(10));
+            return mc(r, 'Use those values to explain why the screen really is blank.', [
+              { html: 'The outputs fall all the way from ' + t('x=-10') + ' to ' + t('x=10') + ', so the smallest output on the screen is ' + t(nT(m)) + ' — still above ' + t('Y_{\\max}=10') + '. Every point is above the top edge.', right: true },
+              { html: 'The parabola opens down, so all of it is below the screen.', why: 'The ' + t('x^{2}') + ' coefficient ' + t(nT(s.a)) + ' is positive, so it opens up — and the values you found are all <b>above</b> ' + t('10') + '.' },
+              { html: 'The relation has no ' + t('x') + '-intercepts, so the calculator can’t draw it.', why: 'A graph doesn’t need ' + t('x') + '-intercepts to be drawn. Compare the outputs with ' + t('Y_{\\max}') + '.' },
+              { html: 'The calculator really is broken.', why: 'Check the outputs you found against the window: are any of them between ' + t('-10') + ' and ' + t('10') + '?' }],
+              t('y(-10)=' + nT(s.f(-10)) + ',\\ y(0)=' + nT(s.c) + ',\\ y(10)=' + nT(m)) + '. The vertex is further right (at ' + t('x=' + s.h) + '), so on the screen the outputs keep falling, and the lowest one, ' + t(nT(m)) + ', is above ' + t('Y_{\\max}=10') + '.', ['Compare each output with ' + t('Y_{\\max}=10') + '.'], 'why blank');
+          } },
+          { id: 'e5c', level: 'EMG', make: function (r, s) {
+            var p = vertexPart(s.a, s.b, s.c, r); p.prompt = 'Find the vertex algebraically, using ' + t('x=-\\frac{b}{2a}') + '.'; return p;
+          } },
+          { id: 'e5d', level: 'EMG', make: function (r, s) {
+            var feat = [featV(s.h, s.k), featY(s.c)], w = niceWin(feat);
+            return winPart('Give a window that shows the vertex <b>and</b> the ' + t('y') + '-intercept.', feat, { sol: 'Vertex ' + t('(' + s.h + ',\\ ' + s.k + ')') + ', ' + t('y') + '-intercept ' + t(nT(s.c)) + '. The window needs ' + t('0\\le x\\le ' + s.h) + ' and ' + t(s.k + '\\le y\\le ' + nT(s.c)) + ' with room to spare, e.g. ' + winTex(w) + '.', fns: [s.f], pts: [{ x: s.h, y: s.k, label: '(' + s.h + ', ' + s.k + ')' }, { x: 0, y: s.c, label: '(0, ' + nT(s.c) + ')' }], text: 'window vertex+yint' });
+          } },
+          { id: 'e5e', level: 'EMG', make: function (r, s) {
+            var D = cl(s.b * s.b - 4 * s.a * s.c);
+            return mc(r, 'Does this relation have any ' + t('x') + '-intercepts, and what would ' + code('2:zero') + ' do?', [
+              { html: 'No: ' + t('b^{2}-4ac=' + nT(D) + '<0') + ' and the vertex ' + t('(' + s.h + ',\\ ' + s.k + ')') + ' is above the ' + t('x') + '-axis, so ' + code('2:zero') + ' finds no crossing and returns an error.', right: true },
+              { html: 'Yes, two: the graph is a parabola, and parabolas always cross the ' + t('x') + '-axis twice.', why: 'A parabola that opens up with its vertex above the axis never reaches it. Check the discriminant: ' + t(nT(D)) + '.' },
+              { html: 'Yes, one: ' + code('2:zero') + ' returns the vertex.', why: code('2:zero') + ' looks for ' + t('y=0') + '; the vertex has ' + t('y=' + s.k) + '.' },
+              { html: 'No, but ' + code('2:zero') + ' would return ' + t('x=0') + '.', why: code('2:zero') + ' can’t return a value where ' + t('y\\ne 0') + ' — with no crossing it gives an error.' }],
+              t('b^{2}-4ac=' + sgp(s.b) + '^{2}-4(' + nT(s.a) + ')(' + nT(s.c) + ')=' + nT(s.b * s.b) + '-' + nT(4 * s.a * s.c) + '=' + nT(D) + '<0') + ': no real roots. The parabola opens up and its lowest point ' + t('(' + s.h + ',\\ ' + s.k + ')') + ' is above the axis. ' + code('2:zero') + ' needs a sign change between the bounds, so it gives an error.', ['Where is the lowest point of the graph?'], 'no x-intercepts');
+          } },
+          { id: 'e5f', level: 'BEG', make: function (r, s) {
+            return mc(r, 'The blank screen hid the whole graph. Which important feature can ZStandard hide even when a graph <b>is</b> visible in it?', [
+              { html: 'Any intercept or vertex beyond ' + t('\\pm 10') + ' — e.g. ' + t('y=0.75x-9') + ' shows up, but its ' + t('x') + '-intercept ' + t('x=12') + ' is off the right edge.', right: true },
+              { html: 'Nothing — if part of a graph is visible, every feature is.', why: 'Try ' + t('y=0.75x-9') + ' in ZStandard: the line shows, but where is its ' + t('x') + '-intercept?' },
+              { html: 'Only the ' + t('y') + '-intercept, never an ' + t('x') + '-intercept.', why: 'Either kind of intercept (or a vertex) can be beyond ' + t('\\pm 10') + '.' },
+              { html: 'The slope of a line.', why: 'The slope shows as the steepness — it isn’t a point that can be off the screen.' }],
+              'ZStandard shows only ' + t('-10\\le x\\le 10') + ' and ' + t('-10\\le y\\le 10') + '. Any intercept or turning point outside that box is hidden, even when part of the graph is on the screen.', ['What part of the plane does ZStandard show?'], 'what ZStandard hides');
+          } }] },
+      { num: '6', stem: function (s) { return code('ZoomFit') + ' (' + code('ZOOM') + ' ' + code('0') + ') keeps your ' + t('x') + '-bounds and chooses ' + WT.Ymin + ' and ' + WT.Ymax + ' so the curve exactly fills the screen over those bounds. Consider ' + t('y=' + s.rel) + '.'; },
+        shared: function (r) {
+          var o = pickWhere(function () { var a = r.pick([-0.25, -0.25, -0.5]); return { a: a, h: r.pick([6, 8, 10, 12]), k: r.int(10, 30), d: r.pick([10, 12]) }; }, function (o) { var b = -2 * o.a * o.h, c = o.a * o.h * o.h + o.k; return same(b, Math.round(b)) && same(c, Math.round(c)) && o.h - o.d < 0 && Math.abs(c) <= 15 && c !== 0; });
+          o.b = cl(-2 * o.a * o.h); o.c = cl(o.a * o.h * o.h + o.k); o.f = qf(o.a, o.b, o.c); o.rel = quadT(o.a, o.b, o.c); o.lo = cl(o.k + o.a * o.d * o.d); return o;
+        },
+        parts: [
+          { id: 'e6a', level: 'PRG', make: function (r, s) {
+            var L = s.h - s.d, R = s.h + s.d;
+            return fieldsPart('With ' + t('x:[' + L + ',\\ ' + R + ',\\ 2]') + ' set, predict the exact ' + WT.Ymin + ' and ' + WT.Ymax + ' that ZoomFit will produce.', [nbox(WT.Ymin), nbox(WT.Ymax)],
+              [K.number(s.lo, function (v) { if (same(v, s.c)) return { code: 'zf-yint', hint: 'That is the ' + t('y') + '-intercept, but the lowest output on ' + t('[' + L + ',\\ ' + R + ']') + ' is at an <b>end</b> of the interval.' }; if (same(v, s.k)) return { code: 'int-swap', hint: 'That is the highest output.' }; return null; }),
+                K.number(s.k, function (v) { if (same(v, s.c)) return { code: 'zf-yint', hint: 'That is the ' + t('y') + '-intercept. The highest point is the vertex — is it inside the interval?' }; if (same(v, s.lo)) return { code: 'int-swap', hint: 'That is the lowest output.' }; return null; })],
+              [String(s.lo), String(s.k)], WT.Ymin + ' ' + t('=' + nT(s.lo)) + ', ' + WT.Ymax + ' ' + t('=' + s.k),
+              t('a<0') + ', so the parabola opens down. Vertex: ' + t('x=\\frac{-' + nT(s.b) + '}{2(' + nT(s.a) + ')}=' + s.h) + ', inside ' + t('[' + L + ',\\ ' + R + ']') + '; ' + t('y(' + s.h + ')=' + s.k) + ', so ' + WT.Ymax + ' ' + t('=' + s.k) + '.<br>The lowest output is at an end, and both ends are ' + t(s.d) + ' from the axis ' + t('x=' + s.h) + ': ' + t('y(' + L + ')=y(' + R + ')=' + nT(s.lo)) + ', so ' + WT.Ymin + ' ' + t('=' + nT(s.lo)) + '.',
+              ['The highest point is the vertex (if it is inside the interval). The lowest point of a downward parabola on an interval is at an end.', 'The two ends are the same distance from the axis of symmetry, so they have the same output.'], 'ZoomFit prediction');
+          } },
+          { id: 'e6b', level: 'EMG', make: function (r, s) {
+            var lo = cl(s.f(-10));
+            return fieldsPart('A student instead sets ' + t('x:[-10,\\ 0,\\ 1]') + ' and presses ' + code('ZOOM') + ' ' + code('0') + '. Predict ' + WT.Ymin + ' and ' + WT.Ymax + ' now.', [nbox(WT.Ymin), nbox(WT.Ymax)],
+              [K.number(lo, null), K.number(s.c, function (v) { return same(v, s.k) ? { code: 'zf-vertex', hint: 'The vertex is at ' + t('x=' + s.h) + ', outside ' + t('[-10,\\ 0]') + ' — it isn’t on this screen.' } : null; })],
+              [String(lo), String(s.c)], WT.Ymin + ' ' + t('=' + nT(lo)) + ', ' + WT.Ymax + ' ' + t('=' + nT(s.c)),
+              'On ' + t('-10\\le x\\le 0') + ' the curve is left of the vertex, so it is still rising: the extremes are at the ends. ' + t('y(-10)=' + nT(lo)) + ', ' + t('y(0)=' + nT(s.c)) + '. The maximum (at ' + t('x=' + s.h) + ') is outside ' + t('[-10,\\ 0]') + ', and ZoomFit never changes ' + WT.Xmin + ' or ' + WT.Xmax + ', so it stays off the screen.',
+              ['Is the vertex inside ' + t('[-10,\\ 0]') + '? If not, the highest and lowest outputs are at the ends.'], 'ZoomFit left side', { bad: [[String(lo), String(s.k)]] });
+          } },
+          { id: 'e6c', level: 'BEG', make: function (r) {
+            return mc(r, 'Complete the sentence: ZoomFit fixes a bad ____ window but can never fix a bad ____ window.', [
+              { html: '<b>vertical</b> … <b>horizontal</b>', right: true },
+              { html: '<b>horizontal</b> … <b>vertical</b>', why: 'ZoomFit changes only ' + WT.Ymin + ' and ' + WT.Ymax + ' — the vertical bounds.' },
+              { html: '<b>small</b> … <b>large</b>', why: 'Think about which bounds ZoomFit is allowed to change.' },
+              { html: '<b>linear</b> … <b>quadratic</b>', why: 'ZoomFit works the same way for any relation; think about which bounds it changes.' }],
+              'ZoomFit only chooses ' + WT.Ymin + ' and ' + WT.Ymax + ' to fit the part of the curve the ' + t('x') + '-bounds already contain. If the ' + t('x') + '-bounds leave out a feature, ZoomFit can never bring it back.', ['Which window values does ZoomFit change?'], 'ZoomFit sentence');
+          } }] },
+
+      /* ---------- Part C ---------- */
+      { num: '7', section: 'Extra practice C — The CALC menu: value, zero, minimum, maximum, intersect', stem: 'Open ' + code('CALC') + ' (' + code('2ND') + ' ' + code('TRACE') + ') and use ' + code('1:value') + ' to find the output at the given input. Then verify each answer algebraically.',
+        shared: function (r) { return { xa: r.int(2, 6), xb: -r.int(2, 7), xc: r.pick([2, 6, 10]), xd: -r.int(2, 7) }; },
+        parts: [
+          { id: 'e7a', level: 'BEG', make: function (r, s) {
+            var o = pickWhere(function () { return { p: r.int(2, 9), q: r.int(1, 12), d: r.pick([3, 4, 6, 7]) }; }, function (o) { return (o.p * s.xa - o.q) % o.d === 0 && o.p % o.d !== 0; }), y = (o.p * s.xa - o.q) / o.d, tex = '\\frac{' + o.p + 'x-' + o.q + '}{' + o.d + '}';
+            return numPart(t('y=' + tex) + ', ' + t('x=' + s.xa), y, [[o.p * s.xa - o.q, 'int-no-div', 'Divide the numerator by ' + t(o.d) + '.'], [o.p * s.xa - o.q / o.d, 'y1-order', 'The whole numerator is divided by ' + t(o.d) + ' — in ' + code('Y1') + ' that needs brackets.']],
+              code('1:value') + ', ' + t('X=' + s.xa) + ': ' + t('Y=' + y) + '. Check: ' + t('y=\\frac{' + o.p + '(' + s.xa + ')-' + o.q + '}{' + o.d + '}=\\frac{' + (o.p * s.xa - o.q) + '}{' + o.d + '}=' + y) + ' ✓', ['Work out the numerator first, then divide.'], 'value ' + tex);
+          } },
+          { id: 'e7b', level: 'BEG', make: function (r, s) {
+            var a = r.pick([-0.6, -0.4, -0.5, -0.2]), b = r.int(2, 6), c = r.int(1, 5), x = s.xb, f = qf(a, b, c), y = cl(f(x));
+            return numPart(t('y=' + quadT(a, b, c)) + ', ' + t('x=' + x), y, [[cl(-a * x * x + b * x + c), 'calc-sq-neg', t('(' + x + ')^{2}=' + x * x) + ' is positive; then multiply by ' + t(nT(a)) + '.'], [cl(a * x * x - b * x + c), 'calc-sign', 'Check ' + t(b + '(' + x + ')=' + b * x) + '.']],
+              code('1:value') + ', ' + t('X=' + x) + ': ' + t('Y=' + nT(y)) + '. Check: ' + t('y=' + nT(a) + '(' + x + ')^{2}+' + b + '(' + x + ')+' + c + '=' + nT(a * x * x) + nT(b * x) + '+' + c + '=' + nT(y)) + ' ✓', ['Square the input first (in brackets), then multiply by ' + t(nT(a)) + '.'], 'value ' + quadT(a, b, c));
+          } },
+          { id: 'e7c', level: 'BEG', make: function (r, s) {
+            var o = pickWhere(function () { return { p: r.pick([1, 3, 5, 7]), q: r.pick([1, 3, 5, 7, 9, 11, 13]) }; }, function (o) { return Number.isInteger(o.p * s.xc / 4 - o.q / 2); }), x = s.xc, y = o.p * x / 4 - o.q / 2, tex = '\\frac{' + o.p + '}{4}x-\\frac{' + o.q + '}{2}';
+            return numPart(t('y=' + tex) + ', ' + t('x=' + x), y, [[o.p * x / 4 + o.q / 2, 'calc-sign', 'Subtract ' + t('\\frac{' + o.q + '}{2}') + '.']],
+              code('1:value') + ', ' + t('X=' + x) + ': ' + t('Y=' + y) + '. Check: ' + t('y=\\frac{' + o.p + '}{4}(' + x + ')-\\frac{' + o.q + '}{2}=\\frac{' + o.p * x / 2 + '}{2}-\\frac{' + o.q + '}{2}=' + y) + ' ✓', ['Use a common denominator of ' + t('2') + ' (or decimals).'], 'value ' + tex);
+          } },
+          { id: 'e7d', level: 'BEG', make: function (r, s) {
+            var m = r.int(2, 4), n = r.int(1, 9), c = r.int(1, 9), x = s.xd, y = Math.abs(m * x - n) - c;
+            return numPart(t('y=|' + m + 'x-' + n + '|-' + c) + ', ' + t('x=' + x), y, [[m * x - n - c, 'calc-abs', 'The absolute value makes ' + t(m + '(' + x + ')-' + n + '=' + (m * x - n)) + ' positive before you subtract ' + t(c) + '.'], [Math.abs(m * x - n) + c, 'calc-sign', 'Subtract ' + t(c) + ' after taking the absolute value.']],
+              code('1:value') + ', ' + t('X=' + x) + ': ' + t('Y=' + y) + '. Check: ' + t('y=|' + m + '(' + x + ')-' + n + '|-' + c + '=|' + (m * x - n) + '|-' + c + '=' + Math.abs(m * x - n) + '-' + c + '=' + y) + ' ✓', ['Work out the inside of the bars, make it positive, then subtract.'], 'value abs');
+          } },
+          { id: 'e7e', level: 'EMG', make: function (r, s) {
+            var xs = [s.xa, s.xb, s.xc, s.xd], lo = Math.min.apply(null, xs), hi = Math.max.apply(null, xs);
+            return fieldsPart(code('1:value') + ' refuses any input outside the current window. The inputs used in (a)–(d) were ' + t(xs.join(',\\ ')) + '. State the <b>largest</b> ' + WT.Xmin + ' and the <b>smallest</b> ' + WT.Xmax + ' that would let you do all four without changing the window.', [nbox(WT.Xmin), nbox(WT.Xmax)],
+              [K.number(lo, function (v) { return v < lo ? { code: 'win-not-tight', hint: 'That works, but it isn’t the <b>largest</b> possible ' + WT.Xmin + '. The window only needs to reach the smallest input.' } : v > lo ? { code: 'win-cut', hint: 'Then ' + t('x=' + lo) + ' would be outside the window.' } : null; }),
+                K.number(hi, function (v) { return v > hi ? { code: 'win-not-tight', hint: 'That works, but it isn’t the <b>smallest</b> possible ' + WT.Xmax + '.' } : v < hi ? { code: 'win-cut', hint: 'Then ' + t('x=' + hi) + ' would be outside the window.' } : null; })],
+              [String(lo), String(hi)], WT.Xmin + ' ' + t('=' + lo) + ', ' + WT.Xmax + ' ' + t('=' + hi),
+              'The window needs ' + WT.Xmin + ' ' + t('\\le ' + lo) + ' and ' + WT.Xmax + ' ' + t('\\ge ' + hi) + ', so the tightest bounds are ' + t(lo) + ' and ' + t(hi) + '. The <b>table</b> (' + code('2ND') + ' ' + code('GRAPH') + ', with Indpnt: Ask) gives the same outputs and ignores the window completely.', ['The window has to reach the smallest and the largest input.'], 'tightest x-bounds', { bad: [[String(lo - 1), String(hi)], [String(lo), String(hi + 1)]] });
+          } }] },
+      { num: '8', stem: function (s) { return 'Use ' + code('2:zero') + ' to find every ' + t('x') + '-intercept, then press ' + code('2ND') + ' ' + code('QUIT') + ' and convert the decimal with ' + code('X,T,θ,n') + ' ' + code('MATH') + ' ' + code('ENTER') + ' ' + code('ENTER') + '. Record each ' + t('x') + '-intercept as an <b>exact value</b>.<br>(a) ' + t('y=' + s.A.tex) + '&emsp; (b) ' + t('y=' + s.Bq.tex) + '&emsp; (c) ' + t('y=' + s.Cq.tex) + '&emsp; (d) ' + t('y=' + s.D.tex) + '&emsp; (e) ' + t('y=' + s.E.tex); },
+        shared: function (r) {
+          var A = pickWhere(function () { return { p: r.int(3, 9), q: r.int(1, 11), d: r.int(2, 5) }; }, function (o) { return gcd(o.p, o.q) === 1 && o.q % o.p !== 0; });
+          A.tex = '\\frac{' + A.p + 'x-' + A.q + '}{' + A.d + '}'; A.v = [[A.q, A.p]];
+          var Bq = pickWhere(function () { return { m: r.int(2, 9), n: r.int(1, 11) }; }, function (o) { return gcd(o.m, o.n) === 1 && o.n % o.m !== 0; });
+          Bq.tex = linT(Bq.m, Bq.n); Bq.v = [[-Bq.n, Bq.m]];
+          var Cq = pickWhere(function () { return { u: r.int(2, 5), w: r.int(1, 9) }; }, function (o) { return gcd(o.u, o.w) === 1; });
+          Cq.tex = (Cq.u * Cq.u) + 'x^{2}-' + (Cq.w * Cq.w); Cq.v = [[Cq.w, Cq.u], [-Cq.w, Cq.u]];
+          var D = pickWhere(function () { return { a: r.pick([2, 3]), p: r.pick([1, 3, 5, 7]), q: r.int(2, 6) }; }, function (o) { return o.p % o.a !== 0 && o.a * o.q !== o.p; });
+          D.b = D.p - D.a * D.q; D.c = -D.p * D.q; D.tex = quadT(D.a, D.b, D.c); D.v = [[-D.p, D.a], [D.q, 1]];
+          var E = { n: r.pick([2, 3, 5, 6, 7, 10, 11, 13]) }; E.tex = 'x^{2}-' + E.n;
+          return { A: A, Bq: Bq, Cq: Cq, D: D, E: E };
+        },
+        parts: [
+          { id: 'e8a', level: 'BEG', make: function (r, s) { var A = s.A; return zeroPart('(a) ' + t('y=' + A.tex), A.v, t('\\frac{' + A.p + 'x-' + A.q + '}{' + A.d + '}=0\\Rightarrow ' + A.p + 'x-' + A.q + '=0\\Rightarrow x=' + rT(A.q, A.p)), [[[A.q, A.d * A.p]], 'int-no-div', 'The denominator ' + t(A.d) + ' doesn’t matter: a fraction is ' + t('0') + ' when its numerator is ' + t('0') + '.']); } },
+          { id: 'e8b', level: 'BEG', make: function (r, s) { var o = s.Bq; return zeroPart('(b) ' + t('y=' + o.tex), o.v, t(o.tex + '=0\\Rightarrow ' + o.m + 'x=-' + o.n + '\\Rightarrow x=' + rT(-o.n, o.m))); } },
+          { id: 'e8c', level: 'EMG', make: function (r, s) { var o = s.Cq; return zeroPart('(c) ' + t('y=' + o.tex), o.v, t(o.tex + '=0\\Rightarrow x^{2}=\\frac{' + o.w * o.w + '}{' + o.u * o.u + '}\\Rightarrow x=\\pm' + rT(o.w, o.u)), [[[o.w, o.u]], 'sol-missing', 'A square root has two answers: ' + t('\\pm') + '.']); } },
+          { id: 'e8d', level: 'EMG', make: function (r, s) { var o = s.D; return zeroPart('(d) ' + t('y=' + o.tex), o.v, t(o.tex + '=(' + o.a + 'x+' + o.p + ')(x-' + o.q + ')=0') + ', so ' + t('x=' + rT(-o.p, o.a)) + ' or ' + t('x=' + o.q)); } },
+          { id: 'e8e', level: 'EMG', make: function (r, s) {
+            var n = s.E.n, v = Math.sqrt(n);
+            return mathPart('(e) ' + t('y=' + s.E.tex), exactSet([v, -v], { close: 'That is a rounded decimal (▸Frac just hands it back — there is no fraction for it). Write the exact value with a square root: ' + t('\\pm\\sqrt{\\ }') + '.' }), 'x=\\pm\\sqrt{' + n + '}',
+              C.zero + ' shows ' + t('X=\\pm' + nT(rnd(v, 7))) + '; ▸Frac hands the decimal back. Algebra: ' + t('x^{2}-' + n + '=0\\Rightarrow x^{2}=' + n + '\\Rightarrow x=\\pm\\sqrt{' + n + '}') + '.', ['Solve ' + t('x^{2}=' + n) + ': the exact answer needs a square root.'], 'zeros x^2-' + n, 'solutions', { good: ['\\sqrt{' + n + '}, -\\sqrt{' + n + '}'], bad: ['\\pm' + nT(rnd(v, 2)), '\\sqrt{' + n + '}'] });
+          } },
+          { id: 'e8f', level: 'LIM', make: function (r, s) {
+            return mc(r, 'How many times must ' + code('2:zero') + ' be run in part (d), and what changes between the runs?', [
+              { html: '<b>Twice</b> — once for each ' + t('x') + '-intercept; the Left Bound?, Right Bound? and Guess? are moved to the other crossing.', right: true },
+              { html: '<b>Once</b> — it finds both intercepts at the same time.', why: code('2:zero') + ' returns one crossing each time: the one between the bounds.' },
+              { html: '<b>Twice</b>, with exactly the same bounds both times.', why: 'The same bounds give the same crossing. Move them around the other one.' },
+              { html: '<b>Four times</b> — twice for each intercept.', why: 'One run per crossing is enough.' }],
+              'The parabola crosses the axis twice, and ' + code('2:zero') + ' finds the single crossing between the bounds, so run it twice with the bounds around each crossing in turn.', ['How many crossings are there, and how many does one run find?'], 'zero twice');
+          } },
+          { id: 'e8g', level: 'EMG', make: function (r, s) {
+            var opts = [['a', s.A.tex, rT(s.A.q, s.A.p)], ['b', s.Bq.tex, rT(-s.Bq.n, s.Bq.m)], ['c', s.Cq.tex, '\\pm' + rT(s.Cq.w, s.Cq.u)], ['d', s.D.tex, rT(-s.D.p, s.D.a) + ',\\ ' + s.D.q]].map(function (o) { return { html: '(' + o[0] + ') ' + t('y=' + o[1]), why: 'Its intercept ' + t(o[2]) + ' is rational, so ▸Frac converts it.' }; });
+            opts.push({ html: '(e) ' + t('y=' + s.E.tex), right: true });
+            return mc(r, 'In exactly one of (a)–(e) the ▸Frac conversion hands the decimal straight back instead of a fraction. Which one?', opts.slice(1).concat([opts[0]]).filter(function (o, i) { return i < 3 || o.right; }).concat([]),
+              'Part (e): its intercepts are ' + t('\\pm\\sqrt{' + s.E.n + '}') + ', which is <b>irrational</b> — no fraction equals it, so ▸Frac has nothing to convert. The others are rational.', ['Which intercept can’t be written as a fraction?'], 'which is irrational', true);
+          } }] },
+      { num: '9', stem: function (s) { return 'Decide first whether each parabola opens up or down, so you know to choose ' + code('3:minimum') + ' or ' + code('4:maximum') + '. Then give the turning point as an <b>exact</b> ordered pair.'; },
+        shared: function (r) {
+          var a = pickWhere(function () { return { b: r.pick([3, 5, 7, 9, 11]), c: r.int(1, 12) }; }, function () { return true; });
+          var b = { b: r.pick([6, 10, 14]), c: r.int(1, 9) };
+          var c = pickWhere(function () { return { b: r.pick([2, 6, 10]), c: r.int(1, 9) }; }, function () { return true; });
+          var d = { b: r.int(1, 4), c: r.int(1, 9) };
+          var Q = [{ id: 'a', a: 1, b: -a.b, c: a.c }, { id: 'b', a: -2, b: b.b, c: -b.c }, { id: 'c', a: 0.4, b: -c.b, c: c.c }, { id: 'd', a: -0.125, b: d.b, c: d.c }];
+          Q.forEach(function (q) { q.tex = quadT(q.a, q.b, q.c); });
+          return { Q: Q, order: r.shuffle([0, 1, 2, 3]) };
+        },
+        parts: [
+          { id: 'e9a', level: 'BEG', make: function (r, s) {
+            var rows = s.order.map(function (i) { return { id: s.Q[i].id, html: t('y=' + s.Q[i].tex) }; }), want = {}, sg = {};
+            s.Q.forEach(function (q) { want[q.id] = q.a > 0 ? 'min' : 'max'; sg[q.id] = q.a; });
+            return B.grid('Which feature finds the turning point of each parabola?', rows, [{ id: 'min', html: code('3:minimum') }, { id: 'max', html: code('4:maximum') }], want,
+              { why: function (rid) { return { code: 'row', hint: 'Look at the ' + t('x^{2}') + ' coefficient of ' + t('y=' + s.Q.filter(function (q) { return q.id === rid; })[0].tex) + ': ' + (sg[rid] > 0 ? 'positive → opens up → a lowest point.' : 'negative → opens down → a highest point.') }; } },
+              'Positive ' + t('x^{2}') + ' coefficient → opens up → ' + code('3:minimum') + '; negative → opens down → ' + code('4:maximum') + '.<br>' + s.Q.map(function (q) { return t('y=' + q.tex) + ': ' + t('a=' + nT(q.a)) + ' → ' + (q.a > 0 ? 'minimum' : 'maximum'); }).join('<br>'),
+              ['The sign of the ' + t('x^{2}') + ' coefficient tells you which way the parabola opens.'], 'min or max');
+          } },
+          { id: 'e9b', level: 'EMG', make: function (r, s) { return vertexPart(s.Q[0].a, s.Q[0].b, s.Q[0].c, r); } },
+          { id: 'e9c', level: 'EMG', make: function (r, s) { return vertexPart(s.Q[1].a, s.Q[1].b, s.Q[1].c, r); } },
+          { id: 'e9d', level: 'EMG', make: function (r, s) { return vertexPart(s.Q[2].a, s.Q[2].b, s.Q[2].c, r); } },
+          { id: 'e9e', level: 'EMG', make: function (r, s) { return vertexPart(s.Q[3].a, s.Q[3].b, s.Q[3].c, r); } },
+          { id: 'e9f', level: 'BEG', make: function (r, s) {
+            var q = s.Q[1], h = -q.b / (2 * q.a), k = qf(q.a, q.b, q.c)(h);
+            return mc(r, 'For ' + t('y=' + q.tex) + ' one student’s calculator returns ' + t('X=' + nT(h - 0.0000002) + ',\\ Y=' + nT(k - 0.000001)) + '. What should the student hand in?', [
+              { html: t('\\left(' + vt(h) + ',\\ ' + vt(k) + '\\right)') + ' — the trailing digits are the calculator’s approximation error.', right: true },
+              { html: t('(' + nT(h - 0.0000002) + ',\\ ' + nT(k - 0.000001) + ')') + ' exactly as shown.', why: 'The calculator searches numerically and stops when it is “close enough”. Round to the sensible value and check it by substituting.' },
+              { html: t('(' + Math.floor(h) + ',\\ ' + Math.floor(k) + ')') + ' — drop the decimals.', why: 'Chopping the decimals loses the exact value. Substitute ' + t('x=' + vt(h)) + ' to check.' },
+              { html: 'Nothing — the calculator has made an error, so the maximum can’t be found.', why: 'It is only a tiny approximation error. Round, then check by substituting.' }],
+              code('4:maximum') + ' searches numerically between the bounds and stops when it is close enough, so the trailing digits are not mathematics. Exactly, ' + t('x=-\\frac{b}{2a}=' + vt(h)) + ' and ' + t('y=' + vt(k)) + ': the maximum point is ' + t('\\left(' + vt(h) + ',\\ ' + vt(k) + '\\right)') + '.', ['Is ' + t(nT(h - 0.0000002)) + ' really different from ' + t(nT(h)) + '?'], 'calculator noise');
+          } }] },
+      { num: '10', stem: 'Use ' + code('5:intersect') + '. Give every intersection exactly.', parts: [
+        { id: 'e10a', level: 'BEG', make: function (r) {
+          var o = pickWhere(function () { return { p: r.int(2, 7), q: r.int(1, 9), d: r.int(2, 5), k: r.int(2, 10) }; }, function (o) { return (o.d * o.k + o.q) % o.p !== 0; });
+          var X = ex.norm(o.d * o.k + o.q, o.p), tex = '\\frac{' + o.p + 'x-' + o.q + '}{' + o.d + '}';
+          return mathPart(t('Y_1=' + tex) + ', ' + t('Y_2=' + o.k) + '. State the ' + t('x') + '-coordinate of the intersection point.', exactChk(X, { dl: [[(o.k + o.q) / o.p, 'int-no-div', 'Multiply both sides by ' + t(o.d) + ' first: ' + t(o.p + 'x-' + o.q + '=' + o.d * o.k) + '.'], [(o.d * o.k - o.q) / o.p, 'inv-sign', 'Add ' + t(o.q) + ' to both sides.']] }), ex.texRat(X),
+            t(tex + '=' + o.k + '\\Rightarrow ' + o.p + 'x-' + o.q + '=' + o.d * o.k + '\\Rightarrow ' + o.p + 'x=' + (o.d * o.k + o.q) + '\\Rightarrow x=' + ex.texRat(X)) + ' ' + (termDec(X[0] / X[1]) ? t('=' + termDec(X[0] / X[1])) : '') + '. Intersection point ' + t('\\left(' + ex.texRat(X) + ',\\ ' + o.k + '\\right)') + '.', ['Set ' + t('Y_1=Y_2') + ' and solve: multiply by ' + t(o.d) + ', add ' + t(o.q) + ', divide by ' + t(o.p) + '.'], 'intersect with constant', 'fraction');
+        } },
+        { id: 'e10b', level: 'EMG', make: function (r) {
+          var o = pickWhere(function () { return { r1: r.int(2, 7), r2: -r.int(1, 5), k: r.int(1, 6) }; }, function (o) { return o.r1 + o.r2 !== 0; });
+          var B_ = -(o.r1 + o.r2), C0 = o.r1 * o.r2 + o.k, rel = quadT(1, B_, C0);
+          return mathPart(t('Y_1=' + rel) + ', ' + t('Y_2=' + o.k) + '. State the ' + t('x') + '-coordinates of the intersection points.', exactSet([o.r1, o.r2], { diag: function (A) { var D = B_ * B_ - 4 * C0; if (D >= 0 && sameVals(A, [(-B_ + Math.sqrt(D)) / 2, (-B_ - Math.sqrt(D)) / 2])) return { code: 'used-zero', hint: 'Those are the zeros of ' + t('Y_1') + '. Set ' + t('Y_1=' + o.k) + ' first.' }; return null; } }), 'x=' + o.r1 + ',\\ x=' + o.r2,
+            t(rel + '=' + o.k + '\\Rightarrow ' + quadT(1, B_, C0 - o.k) + '=0\\Rightarrow (x-' + o.r1 + ')(x' + term(-o.r2, '', false) + ')=0') + ', so ' + t('x=' + o.r1) + ' or ' + t('x=' + o.r2) + ': points ' + t('(' + o.r2 + ',\\ ' + o.k + ')') + ' and ' + t('(' + o.r1 + ',\\ ' + o.k + ')') + ' — run ' + code('5:intersect') + ' once near each.', ['Move ' + t(o.k) + ' to the left side so one side is ' + t('0') + ', then factor.'], 'parabola meets constant', 'solutions', { good: [o.r2 + ', ' + o.r1], bad: [String(o.r1)] });
+        } },
+        { id: 'e10c', level: 'EMG', make: function (r) {
+          var o = pickWhere(function () { return { m1: r.pick([1.5, 2, 0.5, 1]), m2: r.pick([-0.5, -1, -1.5]), x: r.int(2, 8), y: r.int(1, 9) }; }, function (o) { var b1 = o.y - o.m1 * o.x, b2 = o.y - o.m2 * o.x; return same(b1, Math.round(b1)) && same(b2, Math.round(b2)) && b1 !== 0; });
+          var b1 = cl(o.y - o.m1 * o.x), b2 = cl(o.y - o.m2 * o.x);
+          return fieldsPart(t('Y_1=' + linT(o.m1, b1)) + ', ' + t('Y_2=' + linT(o.m2, b2)) + '. State the intersection point.', [nbox(t('x=')), nbox(t('y='))], [K.number(o.x, function (v) { return same(v, o.y) ? { code: 'int-swap', hint: 'That is the ' + t('y') + '-coordinate.' } : null; }), K.number(o.y, null)], [String(o.x), String(o.y)], t('(' + o.x + ',\\ ' + o.y + ')'),
+            t(linT(o.m1, b1) + '=' + linT(o.m2, b2) + '\\Rightarrow ' + nT(o.m1 - o.m2) + 'x=' + nT(b2 - b1) + '\\Rightarrow x=' + o.x) + '; ' + t('y=' + nT(o.m1) + '(' + o.x + ')' + term(b1, '', false) + '=' + o.y) + ' (check: ' + t(nT(o.m2) + '(' + o.x + ')' + term(b2, '', false) + '=' + o.y) + ' ✓).', ['Set ' + t('Y_1=Y_2') + ', collect the ' + t('x') + '-terms on one side, solve, then substitute back.'], 'two lines meet');
+        } },
+        { id: 'e10d', level: 'EMG', make: function (r) {
+          var o = pickWhere(function () { return { r1: r.int(2, 5), r2: -r.int(1, 4), c1: -r.int(1, 5) }; }, function (o) { return o.r1 + o.r2 !== 0; });
+          var m = o.r1 + o.r2, b = o.c1 - o.r1 * o.r2, pts = [[o.r2, m * o.r2 + b], [o.r1, m * o.r1 + b]];
+          var p = K.P.pairs(t('Y_1=x^{2}' + term(o.c1, '', false)) + ', ' + t('Y_2=' + linT(m, b)) + '. State both intersection points.', pts, {},
+            t('x^{2}' + term(o.c1, '', false) + '=' + linT(m, b) + '\\Rightarrow ' + quadT(1, -m, o.c1 - b) + '=0\\Rightarrow (x-' + o.r1 + ')(x+' + (-o.r2) + ')=0') + ', so ' + t('x=' + o.r1) + ' or ' + t('x=' + o.r2) + '. Then ' + t('y=' + linT(m, b)) + ': ' + t('(' + pts[0][0] + ',\\ ' + pts[0][1] + ')') + ' and ' + t('(' + pts[1][0] + ',\\ ' + pts[1][1] + ')') + '. On the calculator, run ' + code('5:intersect') + ' twice, moving the Guess? to each crossing.',
+            ['Set ' + t('Y_1=Y_2') + ', move everything to one side and factor; then find each ' + t('y') + ' from either relation.'], 'parabola meets line');
+          p.bad = ['\\{(' + pts[0][0] + ', ' + pts[0][1] + ')\\}', '\\{(' + pts[0][1] + ', ' + pts[0][0] + '), (' + pts[1][1] + ', ' + pts[1][0] + ')\\}'];
+          return p;
+        } },
+        { id: 'e10e', level: 'BEG', make: function (r) {
+          return mc(r, 'Two curves cross twice, but ' + code('5:intersect') + ' reports a single point. What must you do to get the other point, and why does the Guess? prompt exist?', [
+            { html: 'Run ' + code('5:intersect') + ' again and, at Guess?, move the cursor near the <b>other</b> crossing — the calculator finds the crossing nearest the guess.', right: true },
+            { html: 'Nothing — ' + code('5:intersect') + ' always finds every crossing at once.', why: 'It reports one point per run.' },
+            { html: 'Change the window to ZStandard and run it again.', why: 'Changing the window doesn’t tell the calculator which crossing you want — the Guess? does.' },
+            { html: 'Use ' + code('2:zero') + ' instead.', why: code('2:zero') + ' finds where one curve meets the ' + t('x') + '-axis, not where two curves meet.' }],
+            'Two curves can meet more than once, so the calculator needs to know which crossing you want: it converges on the intersection nearest the Guess?.', ['What does the cursor position at Guess? decide?'], 'guess prompt');
+        } }] },
+
+      /* ---------- Part D ---------- */
+      { num: '11', section: 'Extra practice D — Error analysis', stem: function (s) { return 'Asked to graph ' + t(s.A + 'x+' + s.B + 'y=' + s.C) + ', a student moves the ' + t(s.A + 'x') + ' across and types ' + code('Y1=' + s.C + '−' + s.A + 'X') + ' into the editor.'; },
+        shared: function (r) { return pickWhere(function () { var A = r.int(2, 6), B = r.int(2, 5); return { A: A, B: B, C: A * B * r.int(1, 3), x3: r.int(1, 5) }; }, function (o) { return o.A !== o.B && ((o.C - o.A * o.x3) % o.B === 0) && o.C - o.A * o.x3 !== 0 && gcd(o.A, o.B) === 1; }); },
+        parts: [
+          { id: 'e11a', level: 'EMG', make: function (r, s) {
+            return y1Part('Solve ' + t(s.A + 'x+' + s.B + 'y=' + s.C) + ' for ' + t('y') + ' properly.', PL(0, [-s.A, s.B], s.C / s.B), [{ is: PL(0, -s.A, s.C), code: 'inv-no-div', hint: 'That is the student’s mistake: after moving ' + t(s.A + 'x') + ', divide both terms by ' + t(s.B) + '.' }],
+              t(s.B + 'y=' + s.C + '-' + s.A + 'x\\Rightarrow y=\\frac{' + s.C + '-' + s.A + 'x}{' + s.B + '}=' + P.tex(PL(0, [-s.A, s.B], s.C / s.B))) + '. Type ' + code('(' + s.C + '−' + s.A + 'X)/' + s.B) + '. The student never divided by ' + t(s.B) + '.', Y1H, 'solve properly', { good: ['\\frac{' + s.C + '-' + s.A + 'x}{' + s.B + '}'] });
+          } },
+          { id: 'e11b', level: 'BEG', make: function (r, s) {
+            var X = s.C / s.A;
+            return numPart('Use ' + code('2:zero') + ' on both relations. What ' + t('x') + '-intercept do they share?', X, [[s.C / s.B, 'int-swap', 'That is the correct ' + t('y') + '-intercept. The ' + t('x') + '-intercept is where ' + t('y=0') + '.']],
+              'Correct: ' + t('\\frac{' + s.C + '-' + s.A + 'x}{' + s.B + '}=0\\Rightarrow ' + s.C + '-' + s.A + 'x=0\\Rightarrow x=' + X) + '. Student: ' + t(s.C + '-' + s.A + 'x=0\\Rightarrow x=' + X) + '. Both give ' + t('x=' + X) + ': dividing by ' + t(s.B) + ' can’t move a point where ' + t('y=0') + ', so an ' + t('x') + '-intercept check passes even though the graph is wrong.', ['Set each relation equal to ' + t('0') + '.'], 'shared x-intercept');
+          } },
+          { id: 'e11c', level: 'BEG', make: function (r, s) {
+            var yc = s.C / s.B, ys = s.C, y3 = (s.C - s.A * s.x3) / s.B, y3s = s.C - s.A * s.x3;
+            return fieldsPart('Compare the two graphs: give each ' + t('y') + '-intercept and each output at ' + t('x=' + s.x3) + '.', [nbox('correct ' + t('y') + '-intercept'), nbox('student’s ' + t('y') + '-intercept'), nbox('correct ' + t('y') + ' at ' + t('x=' + s.x3)), nbox('student’s ' + t('y') + ' at ' + t('x=' + s.x3))],
+              [K.number(yc, function (v) { return same(v, ys) ? { code: 'int-swap', hint: 'That is the student’s.' } : null; }), K.number(ys, null), K.number(y3, function (v) { return same(v, y3s) ? { code: 'int-swap', hint: 'That is the student’s output.' } : null; }), K.number(y3s, null)],
+              [yc, ys, y3, y3s].map(String), 'correct ' + t(yc) + ' and ' + t(y3) + '; student ' + t(ys) + ' and ' + t(y3s),
+              t('y') + '-intercepts: correct ' + t('\\frac{' + s.C + '}{' + s.B + '}=' + yc) + ', student ' + t(ys) + '. At ' + t('x=' + s.x3) + ': correct ' + t('\\frac{' + s.C + '-' + s.A * s.x3 + '}{' + s.B + '}=' + y3) + ', student ' + t(s.C + '-' + s.A * s.x3 + '=' + y3s) + '.<br>Check ' + t('(' + s.x3 + ',\\ ' + y3 + ')') + ' in the original: ' + t(s.A + '(' + s.x3 + ')+' + s.B + '(' + y3 + ')=' + s.C) + ' ✓, so it is on the true graph and the student’s ' + t('(' + s.x3 + ',\\ ' + y3s + ')') + ' is not.', ['Substitute ' + t('x=0') + ' and ' + t('x=' + s.x3) + ' into each relation.'], 'compare outputs');
+          } },
+          { id: 'e11d', level: 'EMG', make: function (r, s) {
+            return mc(r, 'Which rule checks, before you press ' + code('GRAPH') + ', that ' + code('Y1') + ' really is the relation you were given?', [
+              { html: 'Pick a point that satisfies the original equation but is <b>not</b> on the ' + t('x') + '-axis (such as ' + t('(0,\\ ' + s.C / s.B + ')') + '), and check that ' + code('1:value') + ' or the table gives the same ' + t('y') + '.', right: true },
+              { html: 'Check that the ' + t('x') + '-intercept is right.', why: 'This mistake keeps the ' + t('x') + '-intercept the same, so that check passes even though the graph is wrong.' },
+              { html: 'Check that the graph is a straight line.', why: 'The wrong entry is also a straight line.' },
+              { html: 'Check that the expression has no brackets.', why: 'Brackets are often needed (e.g. ' + code('(' + s.C + '−' + s.A + 'X)/' + s.B) + ').' }],
+              'A point off the ' + t('x') + '-axis reacts to a missing division, so comparing one such output with the original equation catches the error.', ['Which kind of point would reveal a missing division?'], 'checking rule');
+          } }] },
+      { num: '12', stem: function (s) { return 'A student graphs ' + t('y=' + s.rel) + ' in ZStandard and sees the screen below. The curve crosses the ' + t('x') + '-axis once and then falls off the bottom edge, so the student writes: <i>“the graph has no minimum — it just keeps going down.”</i>' + screenStd([{ f: s.f }]); },
+        shared: function (r) {
+          var o = pickWhere(function () { return { r1: r.int(6, 9), r2: r.int(11, 20) }; }, function (o) { var h = (o.r1 + o.r2) / 2, k = -Math.pow((o.r2 - o.r1) / 2, 2); return Number.isInteger(h) && h > 10 && k < -10 && k >= -40; });
+          o.h = (o.r1 + o.r2) / 2; o.k = -Math.pow((o.r2 - o.r1) / 2, 2); o.b = -(o.r1 + o.r2); o.c = o.r1 * o.r2; o.rel = quadT(1, o.b, o.c); o.f = qf(1, o.b, o.c); return o;
+        },
+        parts: [
+          { id: 'e12a', level: 'EMG', make: function (r, s) {
+            return fieldsPart('Find both ' + t('x') + '-intercepts and the ' + t('y') + '-intercept algebraically.', [mbox(t('x') + '-intercepts', 'solutions'), mbox(t('y') + '-intercept', 'solutions')], [exactSet([s.r1, s.r2]), exactChk(s.c, { dl: [[-s.c, 'sign', 'Check the sign of the constant term.']] })], ['x=' + s.r1 + ',\\ x=' + s.r2, String(s.c)],
+              t('x') + '-intercepts ' + t(s.r1 + ',\\ ' + s.r2) + '; ' + t('y') + '-intercept ' + t(s.c), t(s.rel + '=(x-' + s.r1 + ')(x-' + s.r2 + ')') + ': ' + t('x') + '-intercepts ' + t(s.r1) + ' and ' + t(s.r2) + '; ' + t('y') + '-intercept ' + t(s.c) + '.', ['Factor: two numbers that multiply to ' + t(s.c) + ' and add to ' + t(s.b) + '.'], 'intercepts ' + s.rel, { bad: [[String(s.r1), String(s.c)]] });
+          } },
+          { id: 'e12b', level: 'BEG', make: function (r, s) {
+            return mc(r, 'Which of those three intercepts is on the ZStandard screen?', [
+              { html: 'Only the ' + t('x') + '-intercept ' + t(s.r1), right: true },
+              { html: 'Both ' + t('x') + '-intercepts', why: t(s.r2) + ' is past ' + t('X_{\\max}=10') + '.' },
+              { html: 'The ' + t('y') + '-intercept ' + t(s.c), why: t(s.c) + ' is far above ' + t('Y_{\\max}=10') + '.' },
+              { html: 'None of them', why: 'The curve visibly crosses the ' + t('x') + '-axis once — at which intercept?' }],
+              'Only ' + t('x=' + s.r1) + ' is on the screen: ' + t(s.r2) + ' is past ' + t('X_{\\max}=10') + ' and ' + t(s.c) + ' is far above ' + t('Y_{\\max}=10') + '.', ['Compare each intercept with the window ' + t('[-10,\\ 10]') + '.'], 'which intercept visible');
+          } },
+          { id: 'e12c', level: 'EMG', make: function (r, s) { var p = vertexPart(1, s.b, s.c, r); p.prompt = 'Find the vertex algebraically. (Its ' + t('y') + '-coordinate is the minimum value.)'; return p; } },
+          { id: 'e12d', level: 'BEG', make: function (r, s) {
+            return fieldsPart('How far outside the ZStandard window is the vertex ' + t('(' + s.h + ',\\ ' + s.k + ')') + ' in each direction?', [nbox('units right of ' + WT.Xmax), nbox('units below ' + WT.Ymin)], [K.number(s.h - 10, null), K.number(-10 - s.k, function (v) { return same(v, -s.k) ? { code: 'win-edge', hint: 'Measure from ' + t('Y_{\\min}=-10') + ', not from ' + t('0') + '.' } : null; })],
+              [String(s.h - 10), String(-10 - s.k)], t(s.h - 10) + ' units right, ' + t(-10 - s.k) + ' units below', t(s.h + '-10=' + (s.h - 10)) + ' units right of ' + t('X_{\\max}=10') + '; ' + t('-10-(' + s.k + ')=' + (-10 - s.k)) + ' units below ' + t('Y_{\\min}=-10') + '.', ['Measure from the edges of the window, ' + t('x=10') + ' and ' + t('y=-10') + '.'], 'distance outside');
+          } },
+          { id: 'e12e', level: 'EMG', make: function (r, s) {
+            var feat = [featX(s.r1, s.rel, 'the smaller ' + t('x') + '-intercept'), featX(s.r2, s.rel, 'the larger ' + t('x') + '-intercept'), featV(s.h, s.k), featY(s.c)], w = niceWin(feat);
+            return winPart('Record a window that shows both ' + t('x') + '-intercepts, the vertex and the ' + t('y') + '-intercept at once.', feat, { sol: 'The window must cover ' + t('0\\le x\\le ' + s.r2) + ' and ' + t(s.k + '\\le y\\le ' + s.c) + ', e.g. ' + winTex(w) + '. In it, ' + C.min + ' reports ' + t('X=' + s.h + ',\\ Y=' + s.k) + ' (perhaps with a tiny rounding error).', fns: [s.f], pts: [{ x: s.h, y: s.k, label: '(' + s.h + ', ' + s.k + ')' }, { x: 0, y: s.c, label: '(0, ' + s.c + ')' }, { x: s.r1, y: 0 }, { x: s.r2, y: 0 }], text: 'window all features' });
+          } },
+          { id: 'e12f', level: 'EMG', make: function (r, s) {
+            return mc(r, 'The student’s sentence is wrong, but the screen really does show a curve that only falls. What is the general lesson?', [
+              { html: 'A graphing window is evidence about only the part of the relation inside it, and about nothing else.', right: true },
+              { html: 'ZStandard always shows the whole graph of a parabola.', why: 'This parabola’s vertex ' + t('(' + s.h + ',\\ ' + s.k + ')') + ' is outside ZStandard.' },
+              { html: 'Parabolas that cross the ' + t('x') + '-axis once have no minimum.', why: 'This one crosses twice — the second crossing is just off the screen — and its minimum is ' + t(s.k) + '.' },
+              { html: 'The calculator draws curves inaccurately near the edge of the screen.', why: 'The drawing is accurate; it just stops at the edge of the window.' }],
+              'The curve falls on the screen but turns at ' + t('x=' + s.h) + ', just past the edge. A window only tells you about what is inside it.', ['What does the screen tell you about the graph outside the window?'], 'window is evidence');
+          } }] },
+      { num: '13', stem: function (s) { return 'A third student enters ' + t('y=' + s.rel) + ', runs ' + code('2:zero') + ', and the calculator returns an error instead of a value. The student then tries ' + code('4:maximum') + ' and gets nothing useful either.'; },
+        shared: function (r) { var o = { a: r.int(1, 3), h: r.int(1, 4), k: r.int(1, 6) }; o.b = -2 * o.a * o.h; o.c = o.a * o.h * o.h + o.k; o.rel = quadT(o.a, o.b, o.c); return o; },
+        parts: [
+          { id: 'e13a', level: 'EMG', make: function (r, s) {
+            var D = s.b * s.b - 4 * s.a * s.c;
+            return mc(r, 'Why can’t ' + code('2:zero') + ' succeed, whatever bounds are entered?', [
+              { html: t('b^{2}-4ac=' + D + '<0') + ': there are no real roots. The parabola opens up, so the whole graph lies above the ' + t('x') + '-axis and there is no sign change to find.', right: true },
+              { html: 'The bounds were entered in the wrong order.', why: 'Wrong bounds can fail once, but here no bounds can work. Check the discriminant: ' + t(D) + '.' },
+              { html: 'The graph crosses the ' + t('x') + '-axis outside the window.', why: 'Compute the discriminant: ' + t(D) + '. Does the graph cross the axis anywhere?' },
+              { html: code('2:zero') + ' only works for straight lines.', why: code('2:zero') + ' works for any relation that crosses the ' + t('x') + '-axis.' }],
+              t('b^{2}-4ac=' + sgp(s.b) + '^{2}-4(' + s.a + ')(' + s.c + ')=' + s.b * s.b + '-' + 4 * s.a * s.c + '=' + D + '<0') + ', so there are no real roots, and with ' + t('a>0') + ' the graph lies entirely above the ' + t('x') + '-axis. ' + code('2:zero') + ' needs a sign change between the bounds, so no bounds can work.', ['Compute ' + t('b^{2}-4ac') + '.'], 'why zero fails');
+          } },
+          { id: 'e13b', level: 'BEG', make: function (r, s) {
+            return mc(r, 'Why was ' + code('4:maximum') + ' the wrong choice?', [
+              { html: t('a=' + s.a + '>0') + ', so the parabola opens <b>up</b>: it has a minimum and no maximum — use ' + code('3:minimum') + '.', right: true },
+              { html: code('4:maximum') + ' only works in ZStandard.', why: 'It works in any window. Which way does this parabola open?' },
+              { html: 'It wasn’t — the student just picked bad bounds.', why: 'An upward parabola has no highest point, so no bounds will give a turning point.' },
+              { html: 'Because the relation has no ' + t('x') + '-intercepts.', why: 'Having no ' + t('x') + '-intercepts doesn’t stop a parabola from having a turning point. Look at the sign of ' + t('a') + '.' }],
+              'The ' + t('x^{2}') + ' coefficient is positive, so the parabola opens up: its turning point is a <b>minimum</b>. ' + code('3:minimum') + ' is the right feature.', ['Which way does the parabola open?'], 'wrong tool');
+          } },
+          { id: 'e13c', level: 'EMG', make: function (r, s) { var p = vertexPart(s.a, s.b, s.c, r); p.prompt = 'Run the right feature and give the turning point exactly.'; return p; } },
+          { id: 'e13d', level: 'BEG', make: function (r) {
+            return mc(r, 'One student blamed the calculator (Question 5), another trusted the screen too much (Question 12), and this one chose the wrong tool. Which advice would have saved all three?', [
+              { html: 'Work out what the graph should look like first — its shape, intercepts and vertex — then use the calculator to confirm it; if the screen disagrees, suspect the window or the feature before the mathematics.', right: true },
+              { html: 'Always use ZStandard.', why: 'ZStandard caused two of the three problems.' },
+              { html: 'Trust the calculator: it is never wrong.', why: 'The calculator was right each time — the window or the chosen feature was the problem, and the students didn’t check.' },
+              { html: 'Avoid the CALC menu and use the table only.', why: 'The CALC features are fine when you know what to expect.' }],
+              'Each mistake came from not predicting the graph first. Knowing the shape, intercepts and vertex tells you which window and which feature to use, and lets you spot a screen that doesn’t make sense.', ['What did all three students skip?'], 'advice');
+          } }] },
+
+      /* ---------- Part E ---------- */
+      { num: '14', section: 'Extra practice E — Stretch: two graphs that look identical', stem: function (s) { return 'Enter ' + t('Y_1=' + s.y1) + ' and ' + t('Y_2=' + s.y2) + ' and press ' + code('ZOOM') + ' ' + code('6') + '. Only one curve appears to be drawn — the second is hidden underneath it.' + screenStd([{ f: s.f1 }, { f: s.f2, dash: true, color: '#c4532a' }]); },
+        shared: function (r) { var k = r.pick([0.005, 0.005, 0.004, 0.002, 0.01]), c = r.int(1, 5); return { k: k, c: c, y1: quadT(k, 1, c), y2: linT(1, c), f1: qf(k, 1, c), f2: lf(1, c) }; },
+        parts: [
+          { id: 'e14a', level: 'BEG', make: function (r, s) {
+            var xs = [-10, -5, 0, 5, 10], ys = xs.map(function (x) { return cl(s.f1(x)); });
+            return fieldsPart('Complete the table of ' + t('Y_1') + ' values.' + HW.valueTable([[t('x')].concat(xs), [t('Y_1')].concat(xs.map(function () { return '?'; }))]), xs.map(function (x) { return nbox(t('x=' + x) + ':&nbsp;' + t('Y_1=')); }),
+              xs.map(function (x, i) { return K.number(ys[i], function (v) { return same(v, x + s.c) && x !== 0 ? { code: 'calc-no-b', hint: 'That is ' + t('Y_2') + '. Add ' + t(nT(s.k) + 'x^{2}') + ' too.' } : null; }); }), ys.map(String), HW.valueTable([[t('x')].concat(xs), [t('Y_1')].concat(ys), [t('Y_2')].concat(xs.map(s.f2))]),
+              'Use the table (' + code('TblStart = −10') + ', ' + code('ΔTbl = 5') + '). E.g. ' + t('Y_1(10)=' + nT(s.k) + '(100)+10+' + s.c + '=' + nT(ys[4])) + '.' + HW.valueTable([[t('x')].concat(xs), [t('Y_1')].concat(ys), [t('Y_2')].concat(xs.map(s.f2)), [t('Y_1-Y_2')].concat(xs.map(function (x) { return cl(s.k * x * x); }))]),
+              ['Square, multiply by ' + t(nT(s.k)) + ', then add ' + t('x+' + s.c) + '.'], 'table Y1');
+          } },
+          { id: 'e14b', level: 'EMG', make: function (r, s) {
+            var g = cl(100 * s.k);
+            return numPart('What is the largest gap ' + t('Y_1-Y_2') + ' anywhere in this window?', g, [[cl(25 * s.k), 'gap-mid', 'That is the gap at ' + t('x=\\pm 5') + '. ' + t('Y_1-Y_2=' + nT(s.k) + 'x^{2}') + ' is largest at the edges of the window.'], [0, 'gap-mid', 'The gap is ' + t('0') + ' only at ' + t('x=0') + '.']],
+              t('Y_1-Y_2=' + nT(s.k) + 'x^{2}') + ', which is largest at the edges, ' + t('x=\\pm 10') + ': ' + t(nT(s.k) + '(100)=' + nT(g)) + '.', ['Subtract the relations: what is ' + t('Y_1-Y_2') + '? Where in ' + t('-10\\le x\\le 10') + ' is it biggest?'], 'largest gap');
+          } },
+          { id: 'e14c', level: 'BEG', make: function (r, s) {
+            var g = cl(100 * s.k), px = g / 0.3;
+            var p = B.approx('In ZStandard one row of screen pixels is worth about ' + t('0.3') + ' of a ' + t('y') + '-unit. About how many pixels apart do the two curves ever get? (Round to the nearest whole number.)', px, 0, {}, t(nT(g) + '\\div 0.3\\approx ' + nT(rnd(px, 1))) + ', so the curves are never more than about ' + t(rnd(px, 0)) + ' pixel' + (rnd(px, 0) === 1 ? '' : 's') + ' apart — they share most of the same pixels and read as one graph.', ['Divide the largest gap by ' + t('0.3') + '.'], 'pixels apart');
+            return p;
+          } },
+          { id: 'e14d', level: 'BEG', make: function (r, s) {
+            var g1 = cl(s.k * 40000), g2 = cl(s.k * 10000);
+            return fieldsPart('Evaluate both relations at ' + t('x=-200') + ' and at ' + t('x=100') + '. State the gap ' + t('Y_1-Y_2') + ' at each.', [nbox('gap at ' + t('x=-200')), nbox('gap at ' + t('x=100'))], [K.number(g1, null), K.number(g2, null)], [String(g1), String(g2)], t(nT(g1)) + ' and ' + t(nT(g2)),
+              t('Y_1(-200)=' + nT(s.k) + '(40\\,000)-200+' + s.c + '=' + nT(s.f1(-200))) + ', ' + t('Y_2(-200)=' + nT(s.f2(-200))) + ': gap ' + t(nT(g1)) + '.<br>' + t('Y_1(100)=' + nT(s.k) + '(10\\,000)+100+' + s.c + '=' + nT(s.f1(100))) + ', ' + t('Y_2(100)=' + nT(s.f2(100))) + ': gap ' + t(nT(g2)) + '.', ['The gap is ' + t(nT(s.k) + 'x^{2}') + '.'], 'gaps far away', { bad: [[String(g2), String(g1)]] });
+          } }] },
+      { num: '15', stem: function (s) { return 'Keep ' + t('Y_1=' + s.y1) + ' and ' + t('Y_2=' + s.y2) + ' from Question 14.'; },
+        shared: function (r) { var k = r.pick([0.005, 0.005, 0.004, 0.002, 0.01]), c = r.int(1, 5); return { k: k, c: c, y1: quadT(k, 1, c), y2: linT(1, c), f1: qf(k, 1, c), f2: lf(1, c) }; },
+        parts: [
+          { id: 'e15a', level: 'EMG', make: function (r, s) {
+            var X = 1 / s.k, W = function (a, b, c, d) { return t('x:[' + a + ',\\ ' + b + '],\\ y:[' + c + ',\\ ' + d + ']'); };
+            var good = W(-1.1 * X, 0.6 * X, -1.1 * X, 1.1 * X);
+            return mc(r, 'In which window are the two graphs <b>obviously</b> different?', [
+              { html: good, right: true },
+              { html: W(-10, 10, -10, 10) + ' (ZStandard)', why: 'In ZStandard the gap is at most ' + t(nT(100 * s.k)) + ' — a pixel or two.' },
+              { html: W(-20, 20, -20, 20), why: 'The gap is at most ' + t(nT(400 * s.k)) + ' here, still small next to a screen 40 units tall.' },
+              { html: 'ZoomFit with ' + t('x:[-10,\\ 10]'), why: 'ZoomFit keeps ' + t('-10\\le x\\le 10') + ', where the curves almost coincide.' }],
+              'The ' + t(nT(s.k) + 'x^{2}') + ' term only matters when ' + t('x') + ' is large (around ' + t(nT(X)) + '), so the window must be wide: in ' + good + ' the parabola ' + t('Y_1') + ' clearly turns at ' + t('x=' + nT(-X / 2)) + ' while ' + t('Y_2') + ' stays straight.', ['Where is the gap ' + t(nT(s.k) + 'x^{2}') + ' big?'], 'window shows difference');
+          } },
+          { id: 'e15b', level: 'EMG', make: function (r, s) {
+            var p = K.P.pairs('Solve ' + t('Y_1=Y_2') + ' algebraically. State every intersection point.', [[0, s.c]], {}, t(s.y1 + '=' + s.y2 + '\\Rightarrow ' + nT(s.k) + 'x^{2}=0\\Rightarrow x=0') + ', so the only intersection is ' + t('(0,\\ ' + s.c + ')') + '. Every Guess? converges there because there is no other intersection to find.', ['Subtract ' + t(s.y2) + ' from both sides.'], 'only intersection');
+            p.bad = ['(' + s.c + ', 0)', '(0, 0)']; return p;
+          } },
+          { id: 'e15c', level: 'EMG', make: function (r, s) {
+            var D = 1 - 4 * s.k * s.c, r1 = (-1 + Math.sqrt(D)) / (2 * s.k), r2 = (-1 - Math.sqrt(D)) / (2 * s.k);
+            return mathPart('Find the ' + t('x') + '-intercepts of ' + t('Y_1') + ' to the nearest hundredth.', approxSet([r1, r2], 2, { missHint: t('Y_1') + ' is a parabola — it crosses the ' + t('x') + '-axis twice, once far to the left. Widen the window and run ' + code('2:zero') + ' again.', diag: function (A) { return sameVals(A, [-s.c]) ? { code: 'zero-other', hint: 'That is ' + t('Y_2') + '’s intercept. ' + t('Y_1') + '’s is close to it, but not equal.' } : null; } }),
+              'x=' + nT(rnd(r1, 2)) + ',\\ x=' + nT(rnd(r2, 2)),
+              C.zero + ' (in a wide window) gives ' + t('x\\approx ' + nT(rnd(r1, 2))) + ' and ' + t('x\\approx ' + nT(rnd(r2, 2))) + '. Algebra: ' + t('x=\\frac{-1\\pm\\sqrt{1-4(' + nT(s.k) + ')(' + s.c + ')}}{2(' + nT(s.k) + ')}') + '. ' + t('Y_2') + '’s intercept is exactly ' + t(-s.c) + ', so near the origin the two crossings differ by only ' + t(nT(rnd(Math.abs(r1 + s.c), 2))) + '.', ['Use ' + code('2:zero') + ' twice, or the quadratic formula.'], 'Y1 zeros', 'solutions', { bad: [String(-s.c), nT(rnd(r1, 2))] });
+          } },
+          { id: 'e15d', level: 'EMG', make: function (r, s) { var p = vertexPart(s.k, 1, s.c, r); p.prompt = t('Y_1') + ' has a minimum point and ' + t('Y_2') + ' does not. Find the minimum point of ' + t('Y_1') + ' exactly.'; return p; } },
+          { id: 'e15e', level: 'EMG', make: function (r, s) {
+            return mc(r, 'Two relations agree on every pixel of one screen. What would make them the <b>same</b> relation?', [
+              { html: 'The two expressions must be equal for <b>every</b> input — checked algebraically. A matching table only proves agreement at the listed inputs.', right: true },
+              { html: 'They look identical in ZStandard.', why: 'These two look identical in ZStandard but differ by ' + t(nT(40000 * s.k)) + ' at ' + t('x=-200') + '.' },
+              { html: 'Their tables match at ' + t('x=-10,-5,0,5,10') + '.', why: 'The tables don’t even match exactly at ' + t('x=10') + ' — and a table can never prove agreement everywhere.' },
+              { html: 'They have the same ' + t('y') + '-intercept.', why: 'Many different relations share a ' + t('y') + '-intercept.' }],
+              t('Y_1-Y_2=' + nT(s.k) + 'x^{2}') + ', which is ' + t('0') + ' only at ' + t('x=0') + ', so these are different relations. Same relation means equal for every input; a screen or a table checks only some inputs.', ['What is ' + t('Y_1-Y_2') + '?'], 'same relation');
+          } }] },
+
+      /* ---------- Part F ---------- */
+      { num: '16', section: 'Extra practice F — Three for the test', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: 'e16', level: 'EMG', make: function (r) {
+          var o = pickWhere(function () { return { A: r.int(2, 9), B: r.int(2, 5), C: r.int(2, 9) * 6 }; }, function (o) { return o.A % o.B !== 0 && o.C % o.B === 0; });
+          return mc(r, 'To graph ' + t(o.A + 'x-' + o.B + 'y=' + o.C) + ' on a calculator, the expression that must be entered into ' + code('Y1') + ' is', [
+            { html: code(o.A + 'X−' + o.C + '/' + o.B), why: 'Without brackets only the ' + t(o.C) + ' is divided by ' + t(o.B) + '.' },
+            { html: code('(' + o.A + 'X−' + o.C + ')/' + o.B), right: true },
+            { html: code('(' + o.C + '−' + o.A + 'X)/' + o.B), why: 'This divides by ' + t(o.B) + ' instead of ' + t('-' + o.B) + ', which reverses every sign.' },
+            { html: code(o.A + 'X/' + o.B + '−' + o.C), why: 'This divides only the ' + t(o.A + 'x') + '; the ' + t(o.C) + ' must be divided too.' }],
+            t(o.A + 'x-' + o.B + 'y=' + o.C + '\\Rightarrow -' + o.B + 'y=' + o.C + '-' + o.A + 'x\\Rightarrow y=\\frac{' + o.C + '-' + o.A + 'x}{-' + o.B + '}=\\frac{' + o.A + 'x-' + o.C + '}{' + o.B + '}') + '.', ['Solve for ' + t('y') + ' first — careful dividing by a negative.'], 'Y1 for ' + o.A + 'x-' + o.B + 'y=' + o.C, true);
+        } }] },
+      { num: '17', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: 'e17', level: 'EMG', make: function (r) {
+          var o = pickWhere(function () { var g = r.pick([2, 4]); return { r1: r.int(7, 10), g: g }; }, function (o) { return o.r1 + o.g > 10 && o.r1 + o.g < 15; });
+          var r1 = o.r1, r2 = o.r1 + o.g, h = (r1 + r2) / 2, k = -(o.g / 2) * (o.g / 2), rel = quadT(1, -(r1 + r2), r1 * r2), W = function (a, b, s1, c, d, s2) { return t('x:[' + a + ',\\ ' + b + ',\\ ' + s1 + '],\\ y:[' + c + ',\\ ' + d + ',\\ ' + s2 + ']'); };
+          return mc(r, 'The relation ' + t('y=' + rel) + ' is entered into ' + code('Y1') + '. The only window below that shows <b>both</b> ' + t('x') + '-intercepts and the vertex is', [
+            { html: W(-10, 10, 1, -10, 10, 1), why: t('X_{\\max}=10') + ' cuts off the ' + t('x') + '-intercept ' + t(r2) + '.' },
+            { html: W(0, 15, 5, -5, 5, 1), right: true },
+            { html: W(-5, 5, 1, -10, 100, 10), why: t('X_{\\max}=5') + ' cuts off both intercepts and the vertex.' },
+            { html: W(5, 15, 1, 0, 10, 1), why: t('Y_{\\min}=0') + ' is above the vertex value ' + t(k) + '.' }],
+            t(rel + '=(x-' + r1 + ')(x-' + r2 + ')') + ': ' + t('x') + '-intercepts ' + t(r1) + ' and ' + t(r2) + '. Vertex: ' + t('x=' + h) + ', ' + t('y=' + k) + '. Only ' + W(0, 15, 5, -5, 5, 1) + ' contains ' + t('x=' + r1 + ',\\ ' + h + ',\\ ' + r2) + ' and ' + t('y=' + k) + '.', ['Find the intercepts and the vertex first, then test each window.'], 'window MC parabola', true);
+        } }] },
+      { num: '18', stem: '<i>(Numerical Response)</i>', parts: [
+        { id: 'e18', level: 'EMG', make: function (r) {
+          var o = pickWhere(function () { var a = r.pick([-0.2, -0.2, -0.25, -0.5]); return { a: a, h: r.int(4, 30), k: r.int(20, 120) }; }, function (o) { var b = -2 * o.a * o.h, c = o.a * o.h * o.h + o.k; return same(b, Math.round(b)) && same(c, Math.round(c)) && c < 0 && c >= -40 && o.h + o.k <= 999; });
+          var b = cl(-2 * o.a * o.h), c = cl(o.a * o.h * o.h + o.k), rel = quadT(o.a, b, c), s = o.h + o.k;
+          var p = B.nr('The relation ' + t('y=' + rel) + ' is graphed and ' + code('4:maximum') + ' is used. If the maximum point is ' + t('(p,\\ q)') + ', the value of ' + t('p+q') + ' is ________.', s, function (v) {
+            if (same(v, o.k)) return { code: 'nr-gave-x', hint: 'That is ' + t('q') + ' alone. Add ' + t('p') + ', the ' + t('x') + '-coordinate.' };
+            if (same(v, o.h)) return { code: 'nr-gave-x', hint: 'That is ' + t('p') + ' alone. Add ' + t('q') + ', the maximum value.' };
+            if (same(v, o.k - o.h)) return { code: 'nr-sign', hint: 'Check the sign of ' + t('p') + ': the maximum is to the right of the ' + t('y') + '-axis.' };
+            return null;
+          }, t('p=-\\frac{b}{2a}=-\\frac{' + nT(b) + '}{2(' + nT(o.a) + ')}=' + o.h) + ', ' + t('q=' + nT(o.a) + '(' + o.h + ')^{2}+' + nT(b) + '(' + o.h + ')' + term(c, '', false) + '=' + o.k) + '. ' + t('p+q=' + o.h + '+' + o.k + '=' + s) + '.' + (s < 100 ? ' Record ' + t((s < 10 ? '00' : '0') + s) + '.' : ''), ['Find the maximum point (calculator or ' + t('x=-\\frac{b}{2a}') + '), then add its coordinates.'], 'p+q for max of ' + rel);
+          p.bad = [String(o.k), String(o.h)]; return p;
+        } }] }
+    ];
+  }
+  /* e8: a list of exact x-intercepts */
+  function zeroPart(prompt, vals, alg, dl) {
+    var T = vals.map(function (v) { return v[0] / v[1]; }), keyTex = vals.map(function (v) { return 'x=' + rT(v[0], v[1]); }).join(',\\ ');
+    var chk = exactSet(vals, { diag: function (A) { if (dl && sameVals(A, dl[0].map(function (v) { return v[0] / v[1]; }))) return { code: dl[1], hint: dl[2] }; return null; } });
+    var bad = [T.map(function (v) { return termDec(v) ? String(-v) : nT(rnd(v, 2)); }).join(', ')];
+    if (T.length > 1 && !same(T[0], -T[1])) bad.push(rT(vals[0][0], vals[0][1]));
+    return mathPart(prompt, chk, keyTex, C.zero + (T.length > 1 ? ' (once near each crossing)' : '') + ' shows ' + T.map(function (v) { return t('X=' + nT(rnd(v, 7))); }).join(' and ') + '; ' + C.frac + ' gives ' + t(vals.map(function (v) { return rT(v[0], v[1]); }).join(',\\ ')) + '.<br>Check algebraically: ' + alg + '.',
+      ['An ' + t('x') + '-intercept is where ' + t('y=0') + '. Solve, or convert the calculator’s decimal with ▸Frac.'], 'exact zeros', 'solutions', { bad: bad.filter(function (b) { return chk(b).v !== 'correct'; }) });
+  }
 })(window);
