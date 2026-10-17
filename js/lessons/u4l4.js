@@ -438,7 +438,7 @@
               { is: PL.sub(PL.mul(PL.add(T.F1, N(w)), PL.add(T.F2, N(w))), T.inner), code: 'ax-one-side', hint: 'The path goes along <b>both</b> sides, so each dimension grows by ' + t(2 * w) + ' m, not ' + t(w) + ' m.' },
               { is: PL.sub(PL.add(outer, T.inner), PL.scale(M(T.a, { a: 2 }), 2)), code: 'ax-minus-first', hint: 'When you subtract ' + t('(' + T.innerTex + ')') + ', change the sign of <b>every</b> term in the bracket.' }].filter(function (x) { return !PL.eq(x.is, path); });
             return B.poly('(b) The bed is to be completely surrounded by a path ' + w + ' m wide. Find and simplify an expression for the area of the path.', path, { wrong: wr, after: t('\\text{ m}^{2}') },
-              'A ' + w + ' m path adds ' + w + ' m at each end, so each dimension grows by ' + t(2 * w) + ':<br>outer ' + t('=' + br(Lo) + br(Wo) + '=' + tx(outer)) + '<br>path ' + t('=(' + tx(outer) + ')-(' + T.innerTex + ')=' + tx(path)) + ' m².',
+              'A ' + w + ' m path adds ' + w + ' m at each end, so each dimension grows by ' + t(2 * w) + ':<br>outer ' + t('=' + (PL.count(Wo) === 1 ? tx(Wo) + br(Lo) : br(Lo) + br(Wo)) + '=' + tx(outer)) + '<br>path ' + t('=(' + tx(outer) + ')-(' + T.innerTex + ')=' + tx(path)) + ' m².',
               ['Path = (bed + path) − bed. Each dimension of the outer rectangle is ' + t(2 * w) + ' m longer than the bed.'], 'path area');
           } },
           { id: '11c', level: 'EMG', make: function (r, sh) {
@@ -712,7 +712,7 @@
           var o = pick(r, { p: [2, 5], q: [1, 5], r: [2, 5], s: [-7, -1], test: function (o) { return o.b < 0; }, book: { p: 4, q: 3, r: 3, s: -5 } }), T = Tri(o);
           var chk = K.fields([K.poly(T.F2), K.value(T.a, { diag: function (v) { return v === T.p ? { code: 'ax-lead', hint: t('a') + ' is the product of the two leading coefficients.' } : null; } })], { labels: ['Missing factor', 'a'] });
           var p = fieldsPart(t('ax^{2}' + sg(T.b) + 'x' + sg(T.c) + '=' + br(T.F1) + '(\\underline{\\qquad\\quad})') + '. Find the missing factor and ' + t('a') + '.', [pbox('Missing factor'), nbox(t('a'))], chk, [tx(T.F2), String(T.a)], t(tx(T.F2)) + ', ' + t('a=' + T.a),
-            'Let the factor be ' + t('(kx+m)') + '. Constants: ' + t(T.q + 'm=' + T.c) + ', so ' + t('m=' + T.s) + '.<br>Middle term: ' + t(tx(M(T.p, { x: 1 })) + '\\cdot ' + pn(T.s) + '+' + T.q + '(kx)=' + tx(M(T.b, { x: 1 }))) + ', so ' + t(T.q + 'k=' + (T.b - T.m)) + ' and ' + t('k=' + T.r) + '.<br>Missing factor ' + t(tx(T.F2)) + '; ' + t('a=' + T.p + '(' + T.r + ')=' + T.a) + '.<br>Check: ' + t(br(T.F1) + br(T.F2) + '=' + T.tex) + ' ✓',
+            'Let the factor be ' + t('(kx+m)') + '. Constants: ' + t(cf(T.q) + 'm=' + T.c) + ', so ' + t('m=' + T.s) + '.<br>Middle term: ' + t(tx(M(T.p, { x: 1 })) + '\\cdot ' + pn(T.s) + '+' + cf(T.q) + '(kx)=' + tx(M(T.b, { x: 1 }))) + ', so ' + t(cf(T.q) + 'k=' + (T.b - T.m)) + ' and ' + t('k=' + T.r) + '.<br>Missing factor ' + t(tx(T.F2)) + '; ' + t('a=' + T.p + '(' + T.r + ')=' + T.a) + '.<br>Check: ' + t(br(T.F1) + br(T.F2) + '=' + T.tex) + ' ✓',
             ['The constants multiply to ' + t(T.c) + ', so you can find the constant in the missing factor first.', 'Then make the outside and inside products add to ' + t(tx(M(T.b, { x: 1 }))) + '.'], 'missing factor and a');
           p.bad = [[tx(lin(T.r, -T.s)), String(T.a)], [tx(T.F2), String(T.p)]];
           return p;
@@ -721,7 +721,7 @@
           var o = pick(r, { p: [2, 5], q: [-5, -1], r: [1, 4], s: [-5, -1], test: function (o) { return o.b <= -8; }, book: { p: 3, q: -4, r: 2, s: -3 } }), T = Tri(o);
           var chk = K.fields([K.value(T.a, { diag: function (v) { return v === T.p ? { code: 'ax-lead', hint: t('a') + ' is the product of the two leading coefficients.' } : null; } }), K.poly(T.F2)], { labels: ['a', 'Other factor'] });
           var p = fieldsPart(t('ax^{2}' + sg(T.b) + 'x' + sg(T.c)) + ' has ' + t(br(T.F1)) + ' as a factor. Find ' + t('a') + ' and the other factor.', [nbox(t('a')), pbox('Other factor')], chk, [String(T.a), tx(T.F2)], t('a=' + T.a) + ', ' + t(tx(T.F2)),
-            'Let the other factor be ' + t('(kx+m)') + '. Constants: ' + t(pn(T.q) + 'm=' + T.c) + ', so ' + t('m=' + T.s) + '.<br>Middle: ' + t(tx(M(T.p, { x: 1 })) + '\\cdot ' + pn(T.s) + '+' + pn(T.q) + '(kx)') + ' must be ' + t(tx(M(T.b, { x: 1 }))) + ', so ' + t(T.m + sg(T.q) + 'k=' + T.b) + ' and ' + t('k=' + T.r) + '.<br>Other factor ' + t(tx(T.F2)) + '; ' + t('a=' + T.p + '(' + T.r + ')=' + T.a) + '.<br>Check: ' + t(br(T.F1) + br(T.F2) + '=' + T.tex) + ' ✓',
+            'Let the other factor be ' + t('(kx+m)') + '. Constants: ' + t(pn(T.q) + 'm=' + T.c) + ', so ' + t('m=' + T.s) + '.<br>Middle: ' + t(tx(M(T.p, { x: 1 })) + '\\cdot ' + pn(T.s) + '+' + pn(T.q) + '(kx)') + ' must be ' + t(tx(M(T.b, { x: 1 }))) + ', so ' + t(T.m + cfs(T.q) + 'k=' + T.b) + ' and ' + t('k=' + T.r) + '.<br>Other factor ' + t(tx(T.F2)) + '; ' + t('a=' + T.p + '(' + T.r + ')=' + T.a) + '.<br>Check: ' + t(br(T.F1) + br(T.F2) + '=' + T.tex) + ' ✓',
             ['Find the constant of the other factor first: the constants multiply to ' + t(T.c) + '.'], 'a and other factor');
           p.bad = T.r !== 1 ? [[String(T.p), tx(T.F2)]] : [[String(T.a), tx(lin(T.r, -T.s))]];
           return p;
@@ -784,10 +784,10 @@
         parts: [
           { id: 'e15a', level: 'EMG', make: function (r, sh) {
             var T = sh.T;
-            return mcPart(r, 'The split really does equal the trinomial (' + t(sh.u + 'x+' + sh.wv + 'x=' + T.b + 'x') + '). So which step went wrong, and what should the product have been?', [
+            return mcPart(r, 'The split really does equal the trinomial (' + t(PL.seq([M(sh.u, { x: 1 }), M(sh.wv, { x: 1 })]) + '=' + tx(M(T.b, { x: 1 }))) + '). So which step went wrong, and what should the product have been?', [
               { html: 'Step (2): the pair must have product ' + t('ac=' + T.a + '(' + T.c + ')=' + T.ac) + ', not ' + t(-T.c) + '.', right: true },
               { html: 'Step (2): the product should have been ' + t(-T.ac) + '.', why: 'The sign matters: ' + t('ac=' + T.a + '(' + T.c + ')=' + T.ac) + ', so the pair has opposite signs.' },
-              { html: 'Step (3): the split is not equal to the trinomial.', why: 'Check: ' + t(sh.u + 'x+' + sh.wv + 'x=' + T.b + 'x') + '. The split is fine — the problem is the product the student used.' },
+              { html: 'Step (3): the split is not equal to the trinomial.', why: 'Check: ' + t(PL.seq([M(sh.u, { x: 1 }), M(sh.wv, { x: 1 })]) + '=' + tx(M(T.b, { x: 1 }))) + '. The split is fine — the problem is the product the student used.' },
               { html: 'Step (4): the student grouped the terms the wrong way.', why: 'No grouping can work when the pair is wrong. Look at the product the student used.' }],
               'Step (2) went wrong: the student used product ' + t(-T.c) + ' (from ' + t('c') + ' alone). The product must be ' + t('ac=' + T.a + '(' + T.c + ')=' + T.ac) + '; only the sum is ' + t('b=' + T.b) + '.', ['The product of the pair is not ' + t('c') + ' when ' + t('a\\neq1') + '.'], 'wrong product in step 2');
           } },

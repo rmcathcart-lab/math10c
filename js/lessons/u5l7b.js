@@ -31,7 +31,7 @@
     'fn-coef-in': 'Put the coefficient inside the square: 2(x+4)² as (2x+8)²', 'fn-neg-out': 'Gave −F(x) for F(−x)', 'fn-unchanged': 'Didn’t substitute',
     'fn-sq-coef': 'Squared only the letter: (2a)² as 2a²', 'fn-reverse': 'Subtracted in the wrong order', 'fn-add-fns': 'Added instead of subtracting',
     'fn-comp-order': 'Composed in the wrong order', 'fn-eq-flip': 'Swapped input and output in f(a) = b', 'fn-one-root': 'Used only one solution',
-    'fn-inner': 'Ignored the expression inside the brackets', 'pairs-identity': 'Gave pairs (x, x)', 'fn-const-zero': 'Gave output 0 for a constant function'
+    'fn-inner': 'Ignored the expression inside the brackets', 'fn-sqrt-half': 'Halved instead of taking the square root', 'pairs-identity': 'Gave pairs (x, x)', 'fn-const-zero': 'Gave output 0 for a constant function'
   });
 
   /* ---------------- numbers and LaTeX ---------------- */
@@ -130,7 +130,7 @@
               { is: setTex(sortU(D.map(function (x) { return m + x + b; }))), code: 'fn-add-coef', hint: t(m + 'x') + ' means ' + t(m + '\\times x') + ': multiply the input by ' + t(m) + ', don’t add it.' }] },
               'Evaluate ' + t('f') + ' at each element of the domain:<br>' + D.map(function (x) { return t('f(' + x + ')=' + m + '(' + x + ')' + sg(b) + '=' + f(x)); }).join('<br>') + '<br>Range ' + t('=' + setTex(ys)) + '.',
               ['The range is the set of <b>outputs</b>. Substitute each input from the domain into ' + t('f(x)=' + sh.ftex) + '.', 'List each output once, inside braces.'], 'range of f(x)=' + sh.ftex);
-            p.good = [setTex(ys.slice().reverse())]; p.bad = p.bad || [];
+            p.good = [setTex(ys.slice().reverse())]; p.bad = [setTex(sortU(D.map(function (x) { return m * x; }))), setTex(sortU(D.map(function (x) { return m * x - b; }))), setTex(D)];
             return p;
           } },
           { id: '1b', level: 'BEG', make: function (r, sh) {
@@ -367,7 +367,7 @@
             return numPart(t('f(' + x + ')'), ans, [
               [-x * x * x + a * x * x + b * x + d, 'fn-cube-neg', t('(' + x + ')^{3}=' + x * x * x) + ': an odd power of a negative is negative.'],
               [x * x * x - a * x * x + b * x + d, 'fn-neg-square', t('(' + x + ')^{2}=' + x * x) + ': an even power of a negative is positive.'],
-              [x * x * x + a * x * x - b * x + d, 'fn-neg-sub', 'Check the ' + t(term(b, 'x', true)) + ' term: ' + t(term(b, '(' + x + ')', true) + '=' + sg(b * x).replace('+', '+\\,')) + ' — a negative times a negative is positive.'],
+              [x * x * x + a * x * x - b * x + d, 'fn-neg-sub', 'Check the ' + t(term(b, 'x', true)) + ' term: ' + t(term(b, '(' + x + ')', true) + '=' + sg(b * x)) + ' — a negative times a negative is positive.'],
               [x * x * x + a * a * x * x + b * x + d, 'fn-coef-power', 'Only the input is squared: ' + t(term(a, '(' + x + ')^{2}', true) + '=' + a + '(' + x * x + ')=' + a * x * x) + '.']],
               t('f(' + x + ')=' + steps) + '<br>' + t('=' + s2 + '=' + ans), HN, 'f(' + x + ') for ' + sh.ftex);
           } }] },
@@ -766,7 +766,7 @@
           { id: 'e12a', level: 'BEG', make: function (r, sh) {
             var iB = sh.ys.indexOf(sh.B), iU = range(0, 5).filter(function (i) { return i !== sh.i0 && sh.ys[i] !== sh.A && sh.ys[i] !== sh.B; })[0];
             var xa = sh.xs[iB], xb = sh.xs[iU], ya = sh.ys[iB], yb = sh.ys[iU];
-            var flip = function (x, y) { return K.number(y, function (v) { var j = sh.ys.indexOf(x); return (sh.xs.indexOf(v) >= 0 && sh.ys[sh.xs.indexOf(v)] === x) || (j >= 0 && v === sh.xs[j] && v !== y) ? { code: 'fn-eq-flip', hint: 'Find ' + t(x) + ' in the <b>' + t('x') + '</b> row, then read the output underneath it.' } : null; }); };
+            var flip = function (x, y) { return K.number(y, function (v) { return sh.xs.indexOf(v) >= 0 ? { code: 'fn-eq-flip', hint: t(v) + ' is an input (top row). Find ' + t(x) + ' in the <b>' + t('x') + '</b> row, then read the output underneath it.' } : null; }); };
             return B.fields('State ' + t('f(' + xa + ')') + ' and ' + t('f(' + xb + ')') + '.', [{ name: t('f(' + xa + ')'), before: t('f(' + xa + ')=') }, { name: t('f(' + xb + ')'), before: t('f(' + xb + ')=') }], [flip(xa, ya), flip(xb, yb)], [String(ya), String(yb)],
               t('f(' + xa + ')=' + ya) + ', ' + t('f(' + xb + ')=' + yb), 'Read down the columns: under ' + t('x=' + xa) + ' the output is ' + t(ya) + '; under ' + t('x=' + xb) + ' it is ' + t(yb) + '.', ['Find the input in the top row and read the output directly below it.'], 'read table values');
           } },
@@ -800,7 +800,7 @@
         parts: [
           { id: 'e13a', level: 'EMG', make: function (r, sh) {
             var b = sh.b, c = sh.c, x = -sh.q, ans = x * x + b * x + c;
-            return numPart(t('f(' + x + ')'), ans, [[-x * x + b * x + c, 'fn-neg-square', t('(' + x + ')^{2}=' + x * x) + ': an even power of a negative is positive.'], [x * x - b * x + c, 'fn-neg-sub', t(b + '(' + x + ')=' + sg(b * x).replace('+', '+\\,')) + ': a negative times a negative is positive.']],
+            return numPart(t('f(' + x + ')'), ans, [[-x * x + b * x + c, 'fn-neg-square', t('(' + x + ')^{2}=' + x * x) + ': an even power of a negative is positive.'], [x * x - b * x + c, 'fn-neg-sub', t(b + '(' + x + ')=' + sg(b * x)) + ': a negative times a negative is positive.']],
               t('f(' + x + ')=(' + x + ')^{2}' + term(b, '(' + x + ')') + sg(c) + '=' + x * x + sg(b * x) + sg(c) + '=' + ans), HN, 'f(' + x + ') for ' + sh.ft);
           } },
           { id: 'e13b', level: 'BEG', make: function (r, sh) {
@@ -895,7 +895,7 @@
         parts: [
           { id: 'e15a', level: 'EMG', make: function (r, sh) {
             var u = sh.u, fu = u * u + sh.p, gu = sh.m * u + sh.q;
-            return numPart(t('f(' + u + ')+g(' + u + ')'), fu + gu, [[(u + u) * (u + u) + sh.p, 'fn-input-sum', 'Evaluate each function separately at ' + t(u) + ', then add the two outputs.'], [fu * gu, 'fn-add-fns', 'The question says <b>add</b> the outputs.']],
+            return numPart(t('f(' + u + ')+g(' + u + ')'), fu + gu, [[fu * gu, 'fn-add-fns', 'The question says <b>add</b> the outputs.']],
               t('f(' + u + ')=' + u + '^{2}+' + sh.p + '=' + fu) + ', ' + t('g(' + u + ')=' + sh.m + '(' + u + ')' + sg(sh.q) + '=' + gu) + ', so ' + t(fu + '+' + sgp(gu) + '=' + (fu + gu)) + '.', ['Find ' + t('f(' + u + ')') + ' and ' + t('g(' + u + ')') + ' separately.'], 'f(u)+g(u)');
           } },
           { id: 'e15b', level: 'EMG', make: function (r, sh) {
@@ -1121,7 +1121,7 @@
             { html: 'The point ' + t('(' + p + ',\\ ' + q + ')') + ' lies on the graph of ' + t('y=f(x)') + '.', right: true },
             { html: t('f') + ' multiplied by ' + t(p) + ' equals ' + t(q) + '.', why: 'The brackets mark the input; they don’t mean multiplication.' },
             { html: t('f(' + q + ')=' + p), why: 'That swaps input and output. Nothing tells you the output for the input ' + t(q) + '.' }],
-            t('f(' + p + ')=' + q) + ': input ' + t(p) + ', output ' + t(q) + ', so ' + t('(' + p + ',\\ ' + q + ')') + ' is on the graph (input first).', ['In an ordered pair, which comes first — input or output?'], 'f(p)=q statement', true);
+            t('f(' + p + ')=' + q) + ': input ' + t(p) + ', output ' + t(q) + ', so ' + t('(' + p + ',\\ ' + q + ')') + ' is on the graph (input first).', ['In an ordered pair, which comes first — input or output?'], 'f(p)=q statement');
         } }] },
       { num: '25', stem: '<i>(Numerical Response)</i>', parts: [
         { id: 'e25', level: 'ADV', make: function (r) {

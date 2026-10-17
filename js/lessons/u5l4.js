@@ -142,6 +142,8 @@
   var EDGE = 5.4;
   function G(spec) { return HW.graph(Object.assign({ x: [-6, 6], y: [-6, 6], labels: 1, max: 300 }, spec)); }
   function Gs(spec) { return HW.graph(Object.assign({ x: [-6, 6], y: [-6, 6], labels: 2, max: 175 }, spec)); }
+  /* an MC option graph: fixed width, so it doesn't shrink beside the option letter */
+  function Gm(spec) { return Gs(Object.assign({ max: 210 }, spec)).replace('style="max-width:', 'style="width:210px;max-width:'); }
   function toEdge(p, d, w) {
     w = w || EDGE; var k = Infinity;
     if (d[0] > 0) k = Math.min(k, (w - p[0]) / d[0]); if (d[0] < 0) k = Math.min(k, (-w - p[0]) / d[0]);
@@ -274,7 +276,7 @@
   }
   /* MC: which graph has this domain and range? opts: [{ g: spec, right, why }] */
   function graphMC(r, prompt, opts, sol, hints, text) {
-    return mc2(B.mc(r, prompt, opts.map(function (o) { return { html: Gs(o.g), right: o.right, why: o.why }; }), sol, hints, text));
+    return B.mc(r, prompt, opts.map(function (o) { return { html: Gm(o.g), right: o.right, why: o.why }; }), sol, hints, text);
   }
 
   HW.defineLesson({

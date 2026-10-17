@@ -27,7 +27,8 @@
     'one-base': 'Cylinder: only one circular base', 'frac-div': 'Divided by a fraction incorrectly', half: 'Lost the ½ in the formula', same: 'Gave the same answer twice',
     'not-factor': 'Factor doesn’t give the polynomial when expanded', 'kept-var': 'Kept a letter that divides out', 'no-divide': 'Didn’t divide by the common factor',
     'gcf-high': 'GCF exponent too high', 'pi-inside': 'π left inside the bracket', 'first-only': 'Multiplied only the first term in the bracket',
-    'neg-first': 'Negative monomial: sign applied to the first term only', 'nr-sum': 'Added the wrong quantities', 'c-sign': 'Ignored the sign of c'
+    'neg-first': 'Negative monomial: sign applied to the first term only', 'nr-sum': 'Added the wrong quantities', 'c-sign': 'Ignored the sign of c',
+    'frac-bracket': 'Fraction or decimal left inside the bracket'
   });
 
   /* ---------- small helpers ---------- */
@@ -210,6 +211,11 @@
     return function (resp) {
       var s = opt.pi ? piIn(resp) : resp, res = base(s);
       if (opt.pi && res.hint) res = { v: res.v, code: res.code, hint: piT(res.hint) };
+      if (opt.integral && (res.v === 'correct' || res.code === 'gcf-inside')) { // equal: every bracket must have whole-number coefficients
+        var rd = K.read(s), spl = !rd.res && FA.split(rd.ast);
+        if (spl && spl.ok && spl.factors.some(function (f) { return PL.count(f.p) > 1 && PL.terms(f.p).some(function (T) { return T.c[1] !== 1; }); }))
+          return form('frac-bracket', 'Equal — but every coefficient inside the bracket must be a <b>whole number</b>. Take the fraction (or decimal) out in front as part of the common factor.');
+      }
       if (res.v !== 'correct' || !(opt.mustNeg || opt.mustPos)) return res;
       var si = signInfo(s); if (!si) return res;
       if (opt.mustNeg && (si.sign > 0 || si.brNeg)) return form('neg-factor', opt.negMsg || 'Equal — but every term is negative, so take out a <b>negative</b> common factor. Then every term in the bracket is positive.');
@@ -231,7 +237,7 @@
     W = W.concat(opt.wrong || []);
     W = dedupW(PL.mul(g, B), W).map(function (w) { if (!w.tex && Array.isArray(w.is)) w.tex = gTex(w.is[0]) + '(' + tx(w.is[1]) + ')'; return w; });
     var allNeg = terms.every(isNeg), mustNeg = opt.mustNeg != null ? opt.mustNeg : allNeg && isNeg(g);
-    var check = factorCheck(target, { wrong: W, mustNeg: mustNeg, mustPos: opt.mustPos, pi: opt.pi, negMsg: opt.negMsg });
+    var check = factorCheck(target, { wrong: W, mustNeg: mustNeg, mustPos: opt.mustPos, pi: opt.pi, negMsg: opt.negMsg, integral: opt.integral });
     var shown = opt.prompt || t((opt.before || '') + (opt.dec ? seq(terms, true) : seq(terms)));
     var divs = terms.map(function (m, i) { return t((opt.dec ? tx(m, { dec: true }) : pg(m)) + '\\div ' + (opt.dec ? '\\left(' + gT + '\\right)' : pg(g)) + '=' + (opt.dec ? tx(br[i], { dec: true }) : tx(br[i]))); }).join(', &nbsp;');
     var sol = opt.sol || (opt.gcfSol || gcfLines(terms, { forceNeg: opt.forceNeg, noSign: opt.noSign, signNote: opt.signNote }) + '<br>So remove ' + t(gT || '1') + '.') + '<br>Divide every term by it: ' + divs + '.<br>' + t((opt.before || '') + (opt.dec ? seq(terms, true) : seq(terms)) + '=\\mathbf{' + keyTex + '}');
@@ -507,7 +513,7 @@
               { html: 'The flight is symmetric about its highest point at ' + t('t=' + (T / 2)) + ': ' + t(a) + ' s is the same time before the peak as ' + t(b) + ' s is after it.', right: true },
               { html: 'The rocket hovers at that height between ' + t(a) + ' s and ' + t(b) + ' s.', why: 'Check a time in between: at ' + t('t=' + (T / 2)) + ' the height is ' + t(5 * T * T / 4) + ' m, not ' + t(ha) + ' m. It goes up, then comes back down.' },
               { html: 'The formula only works for whole-number times, so it repeats.', why: 'The formula works for any time from ' + t('0') + ' to ' + t(T) + '. Think about the shape of the flight.' },
-              { html: 'Because ' + t(a + '+' + b + '=' + T) + ' is even.', why: 'The sum doesn’t need to be even. Look at the factored form: ' + t('5t(' + T + '-t)') + ' — swapping ' + t('t') + ' and ' + t(T + '-t') + ' gives the same product.' }],
+              { html: 'The rocket travels at a constant speed, so it covers equal distances in equal times.', why: 'The speed is not constant: the rocket slows down on the way up, stops at the peak and speeds up on the way down. Look at the factored form: ' + t('5t(' + T + '-t)') + ' — swapping ' + t('t') + ' and ' + t(T + '-t') + ' gives the same product.' }],
               'In factored form ' + t('h=5t(' + T + '-t)') + ': at ' + t('t=' + a) + ', ' + t('h=5(' + a + ')(' + b + ')=' + ha) + '; at ' + t('t=' + b) + ', ' + t('h=5(' + b + ')(' + a + ')=' + ha) + '. The rocket rises to its peak at ' + t('t=' + (T / 2)) + ' and falls back the same way, so the path is symmetric about the peak.', ['Look at your table: where is the highest point?'], 'rocket symmetry');
           } },
           { id: '11d1', sub: 'd i', level: 'BEG', make: function (r, sh) { var t9 = sh.T + 1, h = 5 * t9 * (sh.T - t9);
@@ -622,7 +628,7 @@
       { num: '19', section: 'Part C — Extension: Fractional Common Factors', stem: 'In each case, a common factor has been removed so that the remaining factor is an integral binomial. Complete the factoring.', parts: [
         { id: '19a', level: 'EMG', make: function (r) { var n = r.int(2, 6), k = r.pick([1, 1, 2]), v = r.pick(['x', 'y', 'a']), G = M([1, n], { [v]: 1 }), terms = [M([1, n], { [v]: 1 }), M(-k, { [v]: 2 })];
           return backPart(terms, G, { wrong: [{ is: sum([N(1), M(-k, { [v]: 1 })]), code: 'frac-div', hint: 'Dividing by ' + t('\\tfrac{1}{' + n + '}') + ' is the same as <b>multiplying</b> by ' + t(n) + ': ' + t(tx(terms[1]) + '\\div\\tfrac{1}{' + n + '}' + v + '=' + tx(M(-k * n, { [v]: 1 }))) + '.' }], hints: ['Divide each term by ' + t('\\tfrac{1}{' + n + '}' + v) + ' — dividing by ' + t('\\tfrac{1}{' + n + '}') + ' means multiplying by ' + t(n) + '.', 'Check by expanding.'] }); } },
-        { id: '19b', level: 'EMG', make: function (r) { var n = r.pick([3, 4, 5]), pq = pickWhere(function () { return [r.int(2, 7), r.int(1, n - 1)]; }, function (x) { return gcd(x[1], n) === 1; }), v = r.pick(['a', 'x', 'm']), G = M([1, n], { [v]: 1 }), terms = [M(pq[0], { [v]: 2 }), M([pq[1], n], { [v]: 1 })];
+        { id: '19b', level: 'EMG', make: function (r) { var n = r.pick([3, 4, 5]), pq = pickWhere(function () { return [r.int(2, 7), r.int(1, n - 1)]; }, function (x) { return gcd(x[1], n) === 1 && gcd(x[0] * n, x[1]) === 1; }), v = r.pick(['a', 'x', 'm']), G = M([1, n], { [v]: 1 }), terms = [M(pq[0], { [v]: 2 }), M([pq[1], n], { [v]: 1 })];
           return backPart(terms, G, { wrong: [{ is: sum([M(pq[0], { [v]: 1 }), N(pq[1])]), code: 'frac-div', hint: 'Dividing by ' + t('\\tfrac{1}{' + n + '}' + v) + ' means multiplying by ' + t(n) + ' (and dividing by ' + t(v) + '): ' + t(tx(terms[0]) + '\\div\\tfrac{1}{' + n + '}' + v + '=' + (pq[0] * n) + v) + '.' }], hints: ['Divide each term by ' + t('\\tfrac{1}{' + n + '}' + v) + ': multiply the coefficient by ' + t(n) + ' and divide by ' + t(v) + '.', 'Check by expanding.'] }); } },
         { id: '19c', level: 'EMG', make: function (r) { var n = r.int(2, 6), k = r.pick([1, 1, 2]), v = r.pick(['y', 'x', 'n']), G = M([-1, n], { [v]: 1 }), terms = [M([-1, n], { [v]: 2 }), M(-k, { [v]: 1 })];
           return backPart(terms, G, { hints: ['Dividing by a negative changes every sign. Dividing by ' + t('\\tfrac{1}{' + n + '}') + ' means multiplying by ' + t(n) + '.', 'Check by expanding.'] }); } }] },
@@ -631,7 +637,7 @@
           return frontPart(PL.mul(G, B), G, B); } },
         { id: '20b', level: 'EMG', make: function (r) { var o = r.pick([[2, 6], [2, 4], [3, 6], [2, 8], [3, 9], [2, 10], [3, 12], [4, 12], [5, 10]]), v = r.pick(['x', 'y', 'a']), B = sum([M(o[0], { [v]: 2 }), N(1)]), G = M([1, o[1]], { [v]: 1 });
           return frontPart(PL.mul(G, B), G, B); } },
-        { id: '20c', level: 'EMG', make: function (r) { var o = r.pick([[0.2, 2, 5], [0.2, 3, 5], [0.5, 2, 2], [0.5, 3, 4], [0.25, 2, 4], [0.2, 4, 10], [0.5, 4, 6]]), v = r.pick(['a', 'x', 't']), d = o[0], G = M(ex.norm(Math.round(d * 100), 100), { [v]: 1 }), B = sum([M(o[1], { [v]: 2 }), N(-o[2])]), P = PL.mul(G, B);
+        { id: '20c', level: 'EMG', make: function (r) { var o = r.pick([[0.2, 2, 5], [0.2, 3, 5], [0.5, 2, 3], [0.5, 3, 4], [0.25, 2, 3], [0.2, 4, 5], [0.5, 4, 3]]), v = r.pick(['a', 'x', 't']), d = o[0], G = M(ex.norm(Math.round(d * 100), 100), { [v]: 1 }), B = sum([M(o[1], { [v]: 2 }), N(-o[2])]), P = PL.mul(G, B);
           return frontPart(P, G, B, { dec: true, polyTex: tx(P, { dec: true }), keyTex: decStr(d) + v, good: [tx(G)] }); } }] },
       { num: '21', stem: 'In each case, remove a common factor so that the remaining factor is an <b>integral</b> polynomial (whole-number coefficients).', parts: [
         { id: '21a', level: 'BEG', make: function (r) { var n = r.int(2, 9), v = r.pick(['x', 'y', 'a']); return factorPart([N([1, n]), M([1, n], { [v]: 1 })], fracOpt()); } },
@@ -683,7 +689,7 @@
               { html: 'The number inside the bracket should be ' + t(sh.k) + ', not ' + t(nk) + '.', why: 'Dividing by ' + t('\\tfrac{1}{' + n + '}') + ' multiplies by ' + t(n) + ': ' + t(sh.k + '\\times ' + n + '=' + nk) + ' is right. Look at what else is in that term.' },
               { html: 'There is no error.', why: 'Expand it: ' + t('\\tfrac{1}{' + n + '}\\pi r(-' + nk + '\\pi)=-' + sh.k + '\\pi^{2}r') + ', not ' + t('-' + sh.k + '\\pi r') + '.' }],
               'Expanding the second term gives ' + t('\\tfrac{1}{' + n + '}\\pi r(-' + nk + '\\pi)=-' + sh.k + '\\pi^{2}r') + '. Dividing correctly, ' + t('-' + sh.k + '\\pi r\\div\\tfrac{1}{' + n + '}\\pi r=-' + nk) + ', so the correct form is ' + t('\\tfrac{1}{' + n + '}\\pi r(r-' + nk + ')') + '.', ['Expand the second term of the student’s answer.'], 'fraction GCF error (π inside)'); } },
-          { id: '23b2', sub: 'b ii', level: 'EMG', make: function (r, sh) { return factorPart(sh.terms, fracOpt({ pi: true, prompt: 'Write the correct factorization of ' + t(seq(sh.terms)) + '.', wrong: [{ is: [M([1, sh.n], { Q: 1, r: 1 }), sum([M(1, { r: 1 }), M(-sh.n * sh.k, { Q: 1 })])], code: 'pi-inside', hint: t('\\pi') + ' is already in the common factor — leave it out of the bracket.', tex: '\\frac{1}{' + sh.n + '}Qr(r-' + (sh.n * sh.k) + 'Q)' }] })); } }] }
+          { id: '23b2', sub: 'b ii', level: 'EMG', make: function (r, sh) { return factorPart(sh.terms, fracOpt({ pi: true, prompt: 'Write the correct factorization of ' + t(seq(sh.terms)) + ' (integral bracket).', wrong: [{ is: [M([1, sh.n], { Q: 1, r: 1 }), sum([M(1, { r: 1 }), M(-sh.n * sh.k, { Q: 1 })])], code: 'pi-inside', hint: t('\\pi') + ' is already in the common factor — leave it out of the bracket.', tex: '\\frac{1}{' + sh.n + '}Qr(r-' + (sh.n * sh.k) + 'Q)' }] })); } }] }
     ],
     extra: [
       { num: '1', section: 'Extra practice A — The GCF when a letter is missing', stem: 'State the greatest common factor of each set of monomials. In most sets at least one letter is missing from at least one monomial.', parts: [
@@ -784,7 +790,7 @@
           { id: 'e14c', level: 'BEG', make: function (r, sh) { var p = gcfPart(sh.terms, { prompt: '(c) State the greatest common factor the student should have removed.' }); return p; } },
           { id: 'e14d', level: 'BEG', make: function (r, sh) { return factorPart(sh.terms, { prompt: '(c) Write the complete factorization of ' + t(sh.poly) + '.', wrong: [] }); } }] },
       { num: '15', stem: function (sh) { return 'Three students factor ' + t(sh.poly) + '.<br>' + sh.names.map(function (n, i) { return n + ': ' + t(sh.ans[i]); }).join(', &nbsp; '); },
-        shared: function (r) { var g = r.pick([3, 4, 5, 6, 8, 12]), b = r.int(2, 5), v = r.pick(['p', 'x', 'y']), names = ['Amira', 'Ben', 'Cass'], roles = r.shuffle(['right', 'sign', 'drop']);
+        shared: function (r) { var g = r.pick([3, 4, 5, 6, 8, 12]), b = 2, v = r.pick(['p', 'x', 'y']) // b = 2 as in the booklet: the bracket is then (v+1)², which is what (c) is about, names = ['Amira', 'Ben', 'Cass'], roles = r.shuffle(['right', 'sign', 'drop']);
           var terms = [M(-g, { [v]: 3 }), M(-g * b, { [v]: 2 }), M(-g, { [v]: 1 })], G = '-' + g + v, A = { right: G + '(' + v + '^{2}+' + b + v + '+1)', sign: G + '(' + v + '^{2}+' + b + v + '-1)', drop: G + '(' + v + '^{2}+' + b + v + ')' };
           return { g: g, b: b, v: v, names: names, roles: roles, ans: roles.map(function (k) { return A[k]; }), terms: terms, poly: seq(terms), who: function (k) { return names[roles.indexOf(k)]; } }; },
         parts: [
@@ -855,7 +861,7 @@
   /* ---------- part makers that need the lesson helpers ---------- */
   function fracOpt(o) {
     o = o || {};
-    return Object.assign({ hints: ['Write the coefficients over a common denominator. The common factor is (GCF of the numerators) ÷ (common denominator), times the letters common to every term.', 'Divide each term by your common factor; every coefficient in the bracket must be a whole number. Check by expanding.'] }, o);
+    return Object.assign({ integral: true, hints: ['Write the coefficients over a common denominator. The common factor is (GCF of the numerators) ÷ (common denominator), times the letters common to every term.', 'Divide each term by your common factor; every coefficient in the bracket must be a whole number. Check by expanding.'] }, o);
   }
   function negPart(terms) {
     var G = gcfOf(terms), g = isNeg(G) ? G : PL.neg(G);

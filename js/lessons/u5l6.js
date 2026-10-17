@@ -29,7 +29,7 @@
     'ctx-no-k': 'Left out the factor in front of the bracket', 'ctx-gave-end': 'Gave the end of the domain', 'ctx-used': 'Gave the amount used instead of the amount left',
     'ctx-to-empty': 'Distance to empty instead of to the refuel level', 'ctx-swap-boxes': 'Two answers in each other’s boxes', 'ctx-round-down': 'Rounded down where the count must round up',
     'ctx-round-up': 'Rounded up where the count must round down', 'ctx-year-round': 'Rounded the year up', 'ctx-gave-a': 'Gave a number from the formula, not the intercept',
-    'ctx-gave-cost': 'Gave the expenses instead of the number of tickets', 'ctx-start-diff': 'Gave a starting height instead of the difference', 'ctx-more-cases': 'Chose the price that sells more'
+    'ctx-gave-cost': 'Gave the expenses instead of the number of tickets', whole: 'Decimal where a whole number is needed', 'order-boxes': 'Two right answers in each other’s boxes', 'ctx-start-diff': 'Gave a starting height instead of the difference', 'ctx-more-cases': 'Chose the price that sells more'
   });
 
   /* ---------------- numbers and LaTeX ---------------- */
@@ -66,7 +66,7 @@
   /* diagnoses: cands = [{ v, code, hint }] matched to the typed value (to within rounding) */
   function near(cands, x, d) {
     var tol = 0.5 * Math.pow(10, -d) + 1e-6;
-    var list = (cands || []).filter(function (c) { return c && c.v != null && isFinite(c.v) && Math.abs(c.v - x) > 2 * tol; });
+    var list = (cands || []).filter(function (c) { return c && c.v != null && isFinite(c.v) && Math.abs(c.v - x) >= 1.5 * tol; });
     return function (v) { for (var i = 0; i < list.length; i++) if (Math.abs(v - list[i].v) < tol) return { code: list[i].code, hint: list[i].hint }; return null; };
   }
   /* a value: exact when it has at most d decimals, otherwise rounded to d places */
@@ -739,10 +739,10 @@
           } },
           { id: 'e5d', sub: 'c', level: 'ADV', make: function (r, s) {
             var lo = Math.ceil(s.r1), hi = Math.floor(s.r2);
-            return fieldsPart('Meals are sold whole. State the smallest and the largest whole numbers of meals that still make a profit.', [
+            return wholeOnly(fieldsPart('Meals are sold whole. State the smallest and the largest whole numbers of meals that still make a profit.', [
               { label: 'Smallest', x: lo, d: 0, after: 'meals', cands: [{ v: lo - 1, code: 'ctx-round-down', hint: 'Check: ' + t('P(' + (lo - 1) + ')=' + money(s.P(lo - 1))) + ' — still a loss. Round <b>up</b> from ' + t(rT(s.r1, 2)) + '.' }] },
               { label: 'Largest', x: hi, d: 0, after: 'meals', cands: [{ v: hi + 1, code: 'ctx-round-up', hint: 'Check: ' + t('P(' + (hi + 1) + ')=' + money(s.P(hi + 1))) + ' — a loss. Round <b>down</b> from ' + t(rT(s.r2, 2)) + '.' }] }],
-              'A profit needs ' + t(rT(s.r1, 2) + '<n<' + rT(s.r2, 2)) + '. Smallest: ' + t(lo) + ' meals, ' + t('P(' + lo + ')=' + money(s.P(lo)) + '>0') + '. Largest: ' + t(hi) + ' meals, ' + t('P(' + hi + ')=' + money(s.P(hi)) + '>0') + '. The neighbours lose: ' + t('P(' + (lo - 1) + ')=' + money(s.P(lo - 1))) + ', ' + t('P(' + (hi + 1) + ')=' + money(s.P(hi + 1))) + '.', ['The profit is positive between the two break-even values. Which whole numbers are inside that interval?', 'Check your answers by substituting them (and their neighbours) into ' + t('P') + '.'], 'whole meals for profit');
+              'A profit needs ' + t(rT(s.r1, 2) + '<n<' + rT(s.r2, 2)) + '. Smallest: ' + t(lo) + ' meals, ' + t('P(' + lo + ')=' + money(s.P(lo)) + '>0') + '. Largest: ' + t(hi) + ' meals, ' + t('P(' + hi + ')=' + money(s.P(hi)) + '>0') + '. The neighbours lose: ' + t('P(' + (lo - 1) + ')=' + money(s.P(lo - 1))) + ', ' + t('P(' + (hi + 1) + ')=' + money(s.P(hi + 1))) + '.', ['The profit is positive between the two break-even values. Which whole numbers are inside that interval?', 'Check your answers by substituting them (and their neighbours) into ' + t('P') + '.'], 'whole meals for profit'), 'Meals are sold whole: give whole numbers of meals. Which whole numbers lie between the two break-even values?');
           } },
           { id: 'e5e', sub: 'd', level: 'EMG', make: function (r, s) {
             return fieldsPart('What is the greatest daily profit, and how many meals produce it?', [
@@ -1004,7 +1004,7 @@
           } },
           { id: 'e11g', sub: 'f', level: 'EMG', make: function (r, s) {
             return fieldsPart('A rescue boat must stay clear while the diver is above ' + t(s.H) + ' m. Between which two times is she above ' + t(s.H) + ' m? Read them from the graph and check on your calculator.', [
-              { label: 'From', x: s.tv - 1, d: 2, after: 's', cands: [] }, { label: 'To', x: s.tv + 1, d: 2, after: 's', cands: [{ v: s.R, code: 'ctx-gave-end', hint: 'That is when she enters the water. Find where she passes ' + t(s.H) + ' m on the way down.' }] }],
+              { label: 'Earlier time', x: s.tv - 1, d: 2, after: 's', cands: [] }, { label: 'Later time', x: s.tv + 1, d: 2, after: 's', cands: [{ v: s.R, code: 'ctx-gave-end', hint: 'That is when she enters the water. Find where she passes ' + t(s.H) + ' m on the way down.' }] }],
               'On the graph ' + t('h=' + s.H) + ' at ' + t('t=' + (s.tv - 1)) + ' and ' + t('t=' + (s.tv + 1)) + '. Check: ' + t(s.eq.slice(2) + '=' + s.H + '\\Rightarrow ' + quadT(1, -(s.R - 1), s.H / s.a - s.R, 't') + '=0\\Rightarrow (t-' + (s.tv - 1) + ')(t-' + (s.tv + 1) + ')=0') + '. She is above ' + t(s.H) + ' m from ' + t(s.tv - 1) + ' s to ' + t(s.tv + 1) + ' s.', [H_INT], 'diver above ' + s.H, { swap: 'form' });
           } }] },
 
@@ -1160,6 +1160,12 @@
     ]
   });
 
+  /* boxes that must hold whole numbers: a decimal gets a nudge that doesn't use a try */
+  function wholeOnly(p, hint) {
+    var c = p.check;
+    p.check = function (resp) { var bad = (resp || []).some(function (v) { var q = HW.parse.number(v == null ? '' : v); return q.ok && Math.abs(q.value - Math.round(q.value)) > 1e-9; }); return bad ? form('whole', hint) : c(resp); };
+    return p;
+  }
   /* a point read from a graph (one ordered pair) */
   function ptPart(prompt, name, xy, sol, text) {
     var p = B.pairs(prompt, [xy], {}, sol, ['Read across to the time (' + t('t') + ') first, then up to the height (' + t('h') + '). Check with the formula.'], text);

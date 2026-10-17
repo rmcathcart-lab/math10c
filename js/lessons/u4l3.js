@@ -413,6 +413,7 @@
               ['Write “length = 2 × width” with your expressions from (a), and solve for ' + t('q') + ' using ' + t('p=' + p0) + '.', 'Then substitute ' + t('p') + ' and ' + t('q') + ' into the length and width.'], 'deck: length twice width');
             part.check = function (resp) {
               resp = resp || [];
+              if (String(resp[0] == null ? '' : resp[0]).trim() === '' || String(resp[1] == null ? '' : resp[1]).trim() === '') return both(resp);
               if (Number(resp[0]) === sh.Wv && Number(resp[1]) === sh.Lv) return form('lw-swap', 'Those are the right two numbers, but the length is the longer side.');
               if (Number(resp[0]) !== sh.Lv && Number(resp[0]) === 2 * Number(resp[1])) return wrong('value', 'Your length is twice your width, but check the perimeter: it must still be ' + t(sh.per) + ' ft. Set ' + t('(' + tx(sh.Lp) + ')=2(' + tx(sh.Wp) + ')') + ' and solve for ' + t('q') + ' using ' + t('p=' + p0) + '.');
               return both(resp);

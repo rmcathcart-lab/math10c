@@ -619,9 +619,9 @@
             : 'No two points are on the same vertical line: the inputs ' + andT(I.xs.slice().sort(num)) + ' are all different. <b>Function.</b>', 'points: ' + psT(pairs), HVLT);
         } },
         { id: 'e4f', level: 'BEG', make: function (r) {
-          var h = r.int(-1, 1), k = r.int(-3, -1);
+          var h = r.int(-1, 1), k = r.pick([-4, -2]);
           if (r.chance(0.7)) return graphPick(r, fnG({ segs: [{ pts: [[h - 3, k + 3], [h, k], [h + 3, k + 3]], start: 'closed', end: 'closed' }] }, h, [h, k], 'V shape', 'the V goes down and then up, always moving to the right'));
-          var kk = k + 2;
+          var kk = r.pick([-1, 1]);
           return graphPick(r, notG({ segs: [{ pts: [[h + 3, kk + 3], [h, kk], [h + 3, kk - 3]], start: 'closed', end: 'closed' }] }, h + 1, [[h + 1, kk + 1], [h + 1, kk - 1]], 'sideways V'));
         } }] },
       { num: '5', stem: 'Decide whether each equation defines ' + t('y') + ' as a function of ' + t('x') + '.',
@@ -812,8 +812,8 @@
   /* ---------------- part makers that need the helpers above ---------------- */
   function segPick(r, sh, steep) {
     var c = sh.c, y0 = sh.y0;
-    if (steep) return graphPick(r, fnG({ segs: [{ pts: [[c - 1, -y0], [c + 1, y0]], start: 'closed', end: 'closed' }] }, c, [c, 0], 'steep segment', 'it is steep, but not vertical: it rises ' + 2 * y0 + ' over a run of ' + 2));
-    var g = notG({ segs: [{ pts: [[c, -y0], [c, y0]], start: 'closed', end: 'closed' }] }, c, [[c, -y0], [c, y0]], 'vertical segment');
+    if (steep) return graphPick(r, fnG({ x: [-6, 6], y: [-6, 6], segs: [{ pts: [[c - 1, -y0], [c + 1, y0]], start: 'closed', end: 'closed' }] }, c, [c, 0], 'steep segment', 'it is steep, but not vertical: it rises ' + 2 * y0 + ' over a run of ' + 2));
+    var g = notG({ x: [-6, 6], y: [-6, 6], segs: [{ pts: [[c, -y0], [c, y0]], start: 'closed', end: 'closed' }] }, c, [[c, -y0], [c, y0]], 'vertical segment');
     g.why = 'This segment lies on the vertical line ' + t('x=' + c) + ': the input ' + t(c) + ' is paired with every ' + t('y') + ' from ' + t(-y0) + ' to ' + t(y0) + ', e.g. ' + t(pT([c, -y0])) + ' and ' + t(pT([c, y0])) + '. <b>Not a function.</b>';
     return graphPick(r, g);
   }

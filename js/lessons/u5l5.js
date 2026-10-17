@@ -653,7 +653,14 @@
   function y1Part(prompt, target, wl, sol, hints, text, o) {
     o = o || {};
     wl = wl.filter(function (w) { return !P.eq(w.is, target); });
-    var p = K.P.poly(prompt, target, { before: t('y='), expanded: false, wrong: wl, keyTex: o.keyTex }, sol, hints, text);
+    var p = K.P.poly(prompt, target, { before: t('y='), expanded: false, wrong: wl, keyTex: o.keyTex }, sol, hints, text), base = p.check;
+    p.check = function (resp) { // rounded decimal coefficients -> a nudge to stay exact
+      var res = base(resp); if (res.v !== 'wrong') return res;
+      var rd = P.read(resp); if (!rd || !rd.ok) return res;
+      var mapOf = function (q) { var m = {}; P.terms(q).forEach(function (x) { m[P.monoTex(x.v) || '1'] = x.c[0] / x.c[1]; }); return m; }, A = mapOf(rd.p), Tm = mapOf(target), ks = Object.keys(Tm);
+      if (Object.keys(A).length === ks.length && ks.every(function (k) { return A[k] != null && Math.abs(A[k] - Tm[k]) < 0.006; })) return form('exact', 'Close — but a coefficient has been rounded. Keep it exact: use a fraction like ' + t('\\frac{5}{3}') + '.');
+      return res;
+    };
     p.bad = wl.map(function (w) { return P.tex(w.is); }); if (o.good) p.good = o.good;
     return p;
   }
@@ -676,7 +683,7 @@
           var o = pickWhere(function () { return { A: r.int(2, 9), B: r.int(2, 5), k: r.int(2, 9) }; }, function (o) { return o.A % o.B !== 0; });
           var C = o.B * o.k, T = PL(0, [o.A, o.B], -o.k);
           return y1Part(t(o.A + 'x-' + o.B + 'y=' + C), T, [{ is: PL(0, o.A, -C), code: 'inv-no-div', hint: 'After moving ' + t(o.A + 'x') + ', divide every term by ' + t('-' + o.B) + '.' }, { is: PL(0, [-o.A, o.B], o.k), code: 'inv-neg', hint: 'You divided by ' + t(o.B) + ', but the coefficient of ' + t('y') + ' is ' + t('-' + o.B) + '. Dividing by a negative changes every sign.' }],
-            t('-' + o.B + 'y=' + C + '-' + o.A + 'x') + '. Divide every term by ' + t('-' + o.B) + ': ' + t('y=\\frac{' + C + '-' + o.A + 'x}{-' + o.B + '}=\\frac{' + o.A + 'x-' + C + '}{' + o.B + '}=' + P.tex(T)) + '. Type ' + code('(' + o.A + 'X−' + C + ')/' + o.B) + '.', Y1H, 'solve for y: ' + o.A + 'x-' + o.B + 'y=' + C, { good: ['\\frac{' + o.A + 'x-' + C + '}{' + o.B + '}', nT(o.A / o.B) + 'x-' + o.k] });
+            t('-' + o.B + 'y=' + C + '-' + o.A + 'x') + '. Divide every term by ' + t('-' + o.B) + ': ' + t('y=\\frac{' + C + '-' + o.A + 'x}{-' + o.B + '}=\\frac{' + o.A + 'x-' + C + '}{' + o.B + '}=' + P.tex(T)) + '. Type ' + code('(' + o.A + 'X−' + C + ')/' + o.B) + '.', Y1H, 'solve for y: ' + o.A + 'x-' + o.B + 'y=' + C, { good: ['\\frac{' + o.A + 'x-' + C + '}{' + o.B + '}'].concat(termDec(o.A / o.B) ? [termDec(o.A / o.B) + 'x-' + o.k] : []) });
         } },
         { id: 'e1c', level: 'BEG', make: function (r) {
           var k = r.int(2, 9), T = PL(1, k, 0);
