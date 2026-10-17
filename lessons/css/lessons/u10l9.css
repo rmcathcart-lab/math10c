@@ -159,3 +159,5 @@
 .u10l9-hint { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--brand2); }
 .u10l9-hint.u10l9-pur { color: #6a40ad; }
 .u10l9-inl .bk-nl-lab { font-size: 24px; }
+.parts > .part.span2 { grid-column: 1 / -1; }
+.parts.c2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }

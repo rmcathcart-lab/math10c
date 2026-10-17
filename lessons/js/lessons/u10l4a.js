@@ -285,10 +285,9 @@ const hop = {
       { cap: `Hop! Each step on the line moves the decimal point <b>one place ${right ? 'right' : 'left'}</b>.${zeros ? ' Empty places fill with <b>zeros</b>.' : ''}`,
         run: async (c) => {
           for (let i = 0; i < n; i++) await Promise.all([N.hop(c, a + dir * i, a + dir * (i + 1), { label: right ? '×10' : '÷10', color: right ? RT : LT, height: 20, ms: 380 }), tape.hop(c, dir)]);
-          if (!right) await tape.lead(c);
         } },
       { cap: `Re-write it: ${tidyNote}. ${calcT ? T(calcT) + ', so ' : ''}${T(eqT)}.`,
-        run: async (c) => { await tape.tidy(c); await tape.setUnit(c, T(u1)); await pop(c, fin, 420); const s = stamp(stage, '✓', { x: W - 70, y: 336 }); await stampIn(c, s); } }
+        run: async (c) => { if (!right) await tape.lead(c); await tape.tidy(c); await tape.setUnit(c, T(u1)); await pop(c, fin, 420); const s = stamp(stage, '✓', { x: W - 70, y: 336 }); await stampIn(c, s); } }
     ];
   }
 };

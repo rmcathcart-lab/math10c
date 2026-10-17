@@ -274,7 +274,7 @@ function coneFig(host, o) {
   if (o.dl) { sline(B.L, [cx - R, cy], [cx + R, cy], { w: 2 }); lab(B, cx, cy + R * SINE + 4, o.dl, 's'); }
   else { sline(B.L, [cx, cy], [cx + R, cy], { w: 2 }); lab(B, cx + R / 2, cy + R * SINE + 4, o.rl, 's'); }
   lab(B, cx + 6, (cy + apex[1]) / 2, o.hl, 'e', 'u10l9-flab u10l9-wbg');
-  if (o.note) lab(B, cx + R * 0.55, apex[1] + 6, o.note, 'e', 'u10l9-flab u10l9-note');
+  if (o.note) lab(B, cx - R, apex[1] - 4, o.note, 'e', 'u10l9-flab u10l9-note');
   return B;
 }
 function sphereFig(host, o) {
@@ -662,7 +662,7 @@ const sizeUp = {
     svgEl('circle', { cx: hx - 0.2 * sx, cy: yG - 1.08 * hs, r: 3.5, fill: '#2a1a0c' }, L);
     const wx = hx + 0.26 * sx;
     sline(L, [wx, Y(57)], [xS + hw + 30, Y(57)], { dash: '6 5', color: RED, w: 2 });
-    lab(B, wx - 6, Y(57) - 4, 'withers', 'nw', 'u10l9-flab u10l9-sm');
+    lab(B, hx + 0.62 * sx, Y(57) - 4, 'withers height', 'n', 'u10l9-flab u10l9-sm u10l9-red');
     const handG = svgEl('g', {}, L); const hands = [];
     for (let i = 0; i < 15; i++) {
       const top = i < 14 ? 4 * (i + 1) : 57, bot = 4 * i, gg = svgEl('g', {}, handG);
@@ -744,7 +744,7 @@ const ratioMap = {
     [tA, tB].forEach((t, i) => { svgEl('circle', { cx: t[0], cy: t[1], r: 8, fill: INK }, L); lab(B, t[0], t[1] - 10, i ? 'Town B' : 'Town A', 'n', 'u10l9-flab'); });
     const ry = my + mh + 22; svgEl('rect', { x: mx - 10, y: ry, width: mw, height: 46, fill: '#fbe6a8', stroke: INK, 'stroke-width': 1.6 }, L);
     for (let i = 0; i <= 40; i++) { const x = mx + 2 * k + (i - 0) * k - 2 * k; sline(L, [x, ry], [x, ry + (i % 5 === 0 ? 18 : 10)], { w: i % 5 === 0 ? 1.8 : 1.1 }); if (i % 5 === 0) { const t = svgEl('text', { x, y: ry + 36, 'text-anchor': 'middle', class: 'u10l9-mnum' }, L); t.textContent = i; } }
-    lab(B, mx + 41.3 * k, ry + 23, 'cm', 'c', 'u10l9-flab u10l9-sm');
+    lab(B, mx + 41.5 * k, ry + 31, 'cm', 'c', 'u10l9-flab u10l9-sm');
     const one = svgEl('rect', { x: mx, y: ry - 4, width: k, height: 54, fill: AMB, 'fill-opacity': 0.25, stroke: AMB, 'stroke-width': 2 }, L); hide(one);
     const oneL = hide(lab(B, mx - 8, ry + 52, `${T('1\\text{ cm}')} on the map = ${T('1\\,500\\,000\\text{ cm}')} = 15 km`, 'se', 'u10l9-flab u10l9-amb'));
     const seg = svgEl('line', { x1: tA[0], y1: tA[1], x2: tB[0], y2: tB[1], stroke: GRN, 'stroke-width': 5, 'stroke-linecap': 'round' }, L); hide(seg);
