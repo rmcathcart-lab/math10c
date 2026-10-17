@@ -393,8 +393,13 @@
   function stretchShared(r) {
     var mi = r.chance(0.4), fl = r.chance(0.3);
     var V = [[-6, 5], [-2, -3], [2, 5], [5, -1]]; if (mi) V = mirror(V); if (fl) V = flipV(V);
-    return { V: V, mi: mi, fl: fl, sy: fl ? -1 : 1, sx: mi ? -1 : 1, fig: pwGraph(V, { x: [-7, 7], y: [-5, 6], labels: 2, yName: 'f(x)', max: 320, aria: 'graph of f made of three pieces' }) };
+    /* piece names follow the drawing (mirroring swaps which piece is the short one; flipping swaps peak and low point) */
+    var nm = { long: mi ? 'pieces 2 and 3' : 'pieces 1 and 2', Long: mi ? 'Pieces 2 and 3' : 'Pieces 1 and 2', short: mi ? 'piece 1' : 'piece 3', shortThe: mi ? 'the first piece' : 'the third piece',
+      meetLow: mi ? 'pieces 2 and 3' : 'pieces 1 and 2', shareTop: mi ? 'pieces 1 and 2' : 'pieces 2 and 3', end: mi ? 'right end' : 'left end', top: fl ? 'low point' : 'peak', near: fl ? 'high point' : 'low point' };
+    return { V: V, mi: mi, fl: fl, nm: nm, sy: fl ? -1 : 1, sx: mi ? -1 : 1, fig: pwGraph(V, { x: [-7, 7], y: fl ? [-6, 5] : [-5, 6], labels: 2, yName: 'f(x)', max: 320, aria: 'graph of f made of three pieces' }) };
   }
+  /* 'a squares left/right and b squares up' for a grid count g = [a, b] */
+  function sqT(g) { var a = Math.abs(g[0]); return t(a) + (a === 1 ? ' square ' : ' squares ') + (g[0] < 0 ? 'left' : 'right') + ' and ' + t(Math.abs(g[1])) + (Math.abs(g[1]) === 1 ? ' square ' : ' squares ') + (g[1] < 0 ? 'down' : 'up'); }
   function meaningMC(r, prompt, right, wrongs, sol, hints, text) { return mc(r, prompt, [{ html: right, right: true }].concat(wrongs), sol, hints, text); }
 
   HW.defineLesson({
@@ -437,13 +442,13 @@
         } },
         { id: '2c', level: 'PRG', make: function (r) {
           var Bq = r.pick([4, 4, 2, 3, 5]), A = r.pick([1, 2, 3, 3, 4, 5, 6, 7].filter(function (x) { return x % Bq !== 0 && gcd(x, Bq) === 1; })), k = r.int(2, 6), C = Bq * k;
-          var rhs = lin([[k, ''], [[-A, Bq], 'x']]), eq = lin([[A, 'x'], [Bq, 'y'], [-C, '']]) + '=0';
+          var rhs = lin([[k, ''], [[-A, Bq], 'x']]), eq = lin([[A, 'x'], [Bq, 'y'], [-C, '']]) + '=0', Ax = (A === 1 ? '' : A) + 'x';
           var W = [{ is: P(lin([[C, ''], [-A, 'x']])), code: 'conv-no-divide', hint: 'You solved for ' + t(Bq + 'y') + ', not ' + t('y') + '. Divide <b>every</b> term by ' + t(Bq) + '.' },
-            { is: P(lin([[k, ''], [[A, Bq], 'x']])), code: 'conv-move-sign', hint: 'Check the sign of the ' + t('x') + ' term: moving ' + t(A + 'x') + ' to the other side makes it ' + t('-' + A + 'x') + '.' },
-            { is: P(lin([[[A, Bq], 'x'], [-k, '']])), code: 'conv-move-sign', hint: 'Check your signs: ' + t(Bq + 'y=' + C + '-' + A + 'x') + '. Every term that moves across the equals sign changes sign.' },
+            { is: P(lin([[k, ''], [[A, Bq], 'x']])), code: 'conv-move-sign', hint: 'Check the sign of the ' + t('x') + ' term: moving ' + t(Ax) + ' to the other side makes it ' + t('-' + Ax) + '.' },
+            { is: P(lin([[[A, Bq], 'x'], [-k, '']])), code: 'conv-move-sign', hint: 'Check your signs: ' + t(Bq + 'y=' + C + '-' + Ax) + '. Every term that moves across the equals sign changes sign.' },
             { is: P(lin([[k, ''], [-A, 'x']])), code: 'conv-part-divide', hint: 'Divide <b>both</b> terms on the right by ' + t(Bq) + ', not just the constant.' }];
           return convPart('fn', t(eq), { T: P(rhs), v: 'x', name: 'f', keyRhs: rhs, wrong: W, good: ['f(x)=' + lin([[[-A, Bq], 'x'], [k, '']])].concat(Bq !== 3 ? ['f(x)=' + k + '-' + cl(A / Bq) + 'x'] : []), bad: ['y=' + rhs] },
-            'Solve for ' + t('y') + ' first:<br>' + t(Bq + 'y=' + C + '-' + A + 'x') + '<br>' + t('y=' + rhs) + '<br>Then replace ' + t('y') + ' with ' + t('f(x)') + ': ' + t('f(x)=' + rhs),
+            'Solve for ' + t('y') + ' first:<br>' + t(Bq + 'y=' + C + '-' + Ax) + '<br>' + t('y=' + rhs) + '<br>Then replace ' + t('y') + ' with ' + t('f(x)') + ': ' + t('f(x)=' + rhs),
             ['Get ' + t('y') + ' by itself first: move the other terms across, then divide by ' + t(Bq) + '.'], eq + ' to f(x)');
         } }] },
       /* ---------------- Q3 ---------------- */
@@ -613,12 +618,12 @@
             { html: 'The function is named ' + t(n) + ', not ' + t(sh.bad) + '; and the input and output are in the wrong order.', why: 'The order is right — the ' + t('x') + '-coordinate is in the brackets. Look at the numbers on the axes instead.' },
             { html: 'The point was read by counting grid squares; and the input and output are in the wrong order.', why: 'The order is right. Look at the letter the student used for the function.' },
             { html: 'There is only one error: the statement should be ' + t(n + '(' + g[1] + ')=' + g[0]) + '.', why: 'In ' + t(n + '(a)=b') + ' the input goes in the brackets, so the order was right. Check the name and the scale.' }],
-            'The graph is of ' + t(n) + ', so the statement must use ' + t(n) + '. And each grid square is ' + t(k) + ' units, so the point ' + t(g[0]) + ' squares across and ' + t(g[1]) + ' up is ' + t(ptT(real)) + '.', ['Check two things: the letter, and the numbers on the axes.'], 'two errors in a statement');
+            'The graph is of ' + t(n) + ', so the statement must use ' + t(n) + '. And each grid square is ' + t(k) + ' units, so the point ' + sqT(g) + ' is ' + t(ptT(real)) + '.', ['Check two things: the letter, and the numbers on the axes.'], 'two errors in a statement');
         } },
         { id: '8b', sub: 'a ii', level: 'PRG', make: function (r, sh) {
           var n = sh.n, g = sh.mk, k = sh.k, real = [g[0] * k, g[1] * k];
           var p = B.math('Write a correct statement using function notation about the marked point.', stmtChk(n, real[0], real[1], { grid: g, scale: k }), n + '(' + real[0] + ')=' + real[1],
-            'The marked point is ' + t(g[0]) + ' squares across and ' + t(g[1]) + ' up. With ' + t(k) + ' units per square it is ' + t(ptT(real)) + ', so ' + t(n + '(' + real[0] + ')=' + real[1]) + '.',
+            'The marked point is ' + sqT(g) + '. With ' + t(k) + ' units per square it is ' + t(ptT(real)) + ', so ' + t(n + '(' + real[0] + ')=' + real[1]) + '.',
             ['Multiply each grid count by ' + t(k) + '.'], 'correct statement on scaled graph', { keys: EQK, vars: [n], placeholder: 'e.g. ' + n + '(2) = 5' });
           p.bad = [n + '(' + g[0] + ')=' + g[1], sh.bad + '(' + real[0] + ')=' + real[1], n + '(' + real[1] + ')=' + real[0]];
           return p;
@@ -839,7 +844,7 @@
         stem: function (sh) { return 'A ski resort tracks how the number of hot cocoa packets sold in its lodge depends on the average daily temperature. The relationship is modelled by ' + t('P(t)=' + sh.A + '-' + sh.Bc + 't') + ', where ' + t('P(t)') + ' is the number of packets sold when the average daily temperature is ' + t('t\\,^{\\circ}\\text{C}') + '.'; }, parts: [
         { id: '15a', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
           var L = -20, top = sh.P(L), z = sh.z, ym = Math.ceil((top + 2 * sh.Bc * 20) / 100) * 100;
-          var o = { x: [-25, 30], y: [0, Math.max(ym, 400)], gx: 5, gy: 100, lx: 20, ly: 200, xName: 't', yName: 'P', fq: false };
+          var o = { x: [-25, Math.max(30, Math.ceil(z / 5) * 5 + 5)], y: [0, Math.max(ym, 400)], gx: 5, gy: 100, lx: 20, ly: 200, xName: 't', yName: 'P', fq: false };
           var G = function (segs) { return ctxGraph(o, segs); };
           return graphMC(r, '(a) Which graph shows the function, from a cold day of ' + t('-20\\,^{\\circ}\\text{C}') + ' until sales drop to zero?', [
             { html: G([{ pts: [[L, top], [z, 0]], start: 'closed', end: 'closed' }]), right: true },
@@ -890,6 +895,7 @@
             if (d.v && d.v !== 't') return form('set-letter', '<b>Domain:</b> use the variable ' + t('t') + '.');
             if (d.form === 'builder' && !d.tagged) return form('set-tag', '<b>Domain:</b> finish the set notation with ' + t(',\\ t\\in\\mathbb{R}') + '.');
             if (L >= 0) return wrong('dr-context', '<b>Domain:</b> a ski resort in the Rockies has many days below ' + t('0\\,^{\\circ}\\text{C}') + ' — the domain should start at a negative temperature.');
+            if (L > -10) return wrong('dr-context', '<b>Domain:</b> ' + t(nf(L) + '\\,^{\\circ}\\text{C}') + ' is a mild winter day in the Rockies — the coldest average daily temperatures there are much lower. Start the domain at a realistic coldest temperature (about ' + t('-20') + ' to ' + t('-30\\,^{\\circ}\\text{C}') + ').');
             if (L < -50) return wrong('dr-context', '<b>Domain:</b> ' + t(nf(L) + '\\,^{\\circ}\\text{C}') + ' is colder than any average daily temperature in the Rockies. Choose a realistic coldest temperature (about ' + t('-20') + ' to ' + t('-30\\,^{\\circ}\\text{C}') + ').');
             if (U > z + 1e-9) return wrong('dr-context', '<b>Domain:</b> above ' + t(nf(z) + '\\,^{\\circ}\\text{C}') + ' the model gives a negative number of packets. ' + t('P(t)=0') + ' at ' + t('t=' + nf(z)) + ', so the domain should stop there (or sooner).');
             if (U < 0) return wrong('dr-context', '<b>Domain:</b> the resort also has days above ' + t('0\\,^{\\circ}\\text{C}') + '. Let the domain run up to a warm day.');
@@ -997,9 +1003,9 @@
           return convPart('fn', t(eq), { T: P(rhs), v: 'x', keyRhs: rhs, wrong: W, bad: ['y=' + rhs] }, 'Solve for ' + t('y') + ' first:<br>' + t('-2y=' + C + '-' + A + 'x') + '<br>' + t('y=' + rhs) + '<br>' + t('f(x)=' + rhs), ['Move ' + t(A + 'x') + ' across, then divide by ' + t('-2') + '.'], 'EP rearrange Ax-2y=C');
         } },
         { id: 'e2d', level: 'PRG', make: function (r) {
-          var Bq = r.pick([3, 3, 2, 5]), A = r.pick([4, 4, 1, 2, 7].filter(function (x) { return gcd(x, Bq) === 1; })), k = r.pick([6, 6, 2, 3, 4, 5]), C = Bq * k, rhs = lin([[[-A, Bq], 'x'], [-k, '']]), eq = lin([[A, 'x'], [Bq, 'y'], [C, '']]) + '=0';
-          var W = [{ is: P(lin([[[A, Bq], 'x'], [k, '']])), code: 'conv-move-sign', hint: 'Both terms change sign when they move across: ' + t(Bq + 'y=-' + A + 'x-' + C) + '.' }, { is: P(lin([[-A, 'x'], [-C, '']])), code: 'conv-no-divide', hint: 'Divide every term by ' + t(Bq) + '.' }];
-          return convPart('fn', t(eq), { T: P(rhs), v: 'x', keyRhs: rhs, wrong: W, bad: ['y=' + rhs] }, 'Solve for ' + t('y') + ':<br>' + t(Bq + 'y=-' + A + 'x-' + C) + '<br>' + t('y=' + rhs) + '<br>' + t('f(x)=' + rhs), ['Get the ' + t('y') + '-term by itself, then divide by ' + t(Bq) + '.'], 'EP rearrange Ax+By+C=0');
+          var Bq = r.pick([3, 3, 2, 5]), A = r.pick([4, 4, 1, 2, 7].filter(function (x) { return gcd(x, Bq) === 1; })), k = r.pick([6, 6, 2, 3, 4, 5]), C = Bq * k, rhs = lin([[[-A, Bq], 'x'], [-k, '']]), eq = lin([[A, 'x'], [Bq, 'y'], [C, '']]) + '=0', Ax = (A === 1 ? '' : A) + 'x';
+          var W = [{ is: P(lin([[[A, Bq], 'x'], [k, '']])), code: 'conv-move-sign', hint: 'Both terms change sign when they move across: ' + t(Bq + 'y=-' + Ax + '-' + C) + '.' }, { is: P(lin([[-A, 'x'], [-C, '']])), code: 'conv-no-divide', hint: 'Divide every term by ' + t(Bq) + '.' }];
+          return convPart('fn', t(eq), { T: P(rhs), v: 'x', keyRhs: rhs, wrong: W, bad: ['y=' + rhs] }, 'Solve for ' + t('y') + ':<br>' + t(Bq + 'y=-' + Ax + '-' + C) + '<br>' + t('y=' + rhs) + '<br>' + t('f(x)=' + rhs), ['Get the ' + t('y') + '-term by itself, then divide by ' + t(Bq) + '.'], 'EP rearrange Ax+By+C=0');
         } },
         { id: 'e2e', level: 'PRG', make: function (r) {
           var a = r.pick([2, 2, 4, 5]), b = r.pick([9, 9, 3, 7, 11].filter(function (x) { return x % a !== 0; }));
@@ -1018,19 +1024,19 @@
       { num: '3', stem: 'Each table gives every ordered pair of a function. Write the rule first in ' + t('x') + '-' + t('y') + ' notation and then in function notation (use the name ' + t('f') + '), keeping the letters used in the table.', parts: [
         { id: 'e3a', level: 'PRG', make: function (r) {
           var m = r.pick([-3, -3, -2, 2, 3, 4]), b = r.pick([5, 5, 1, 2, 3, -1, 4]), xs = [-2, -1, 0, 1, 2], rhs = m < 0 ? lin([[b, ''], [m, 'x']]) : lin([[m, 'x'], [b, '']]);
-          return bothPart(HW.valueTable([['x'].concat(xs), ['y'].concat(xs.map(function (x) { return m * x + b; }))]), { T: P(rhs), v: 'x', keyRhs: rhs },
+          return bothPart(HW.valueTable([[t('x')].concat(xs), [t('y')].concat(xs.map(function (x) { return m * x + b; }))]), { T: P(rhs), v: 'x', keyRhs: rhs },
             t('x') + ' up ' + t('1') + ' ' + t('\\Rightarrow') + ' ' + t('y') + (m < 0 ? ' down ' + t(-m) : ' up ' + t(m)) + '; at ' + t('x=0') + ', ' + t('y=' + b) + '.<br>' + t('y=' + rhs) + '<br>' + t('f(x)=' + rhs),
             ['How much does ' + t('y') + ' change when ' + t('x') + ' goes up by ' + t('1') + '? What is ' + t('y') + ' when ' + t('x=0') + '?'], 'EP rule from table');
         } },
         { id: 'e3b', level: 'ADV', make: function (r) {
           var m = r.pick([4.5, 4.5, 1.5, 2.5, 3.5]), b = r.pick([7, 7, 2, 3, 5]), ts = [0, 2, 4, 6], rhs = lin([[m, 't'], [b, '']]);
-          return bothPart(HW.valueTable([['t'].concat(ts), ['d'].concat(ts.map(function (x) { return cl(m * x + b); }))]), { T: P(rhs), v: 't', out: 'd', keyRhs: rhs },
+          return bothPart(HW.valueTable([[t('t')].concat(ts), [t('d')].concat(ts.map(function (x) { return cl(m * x + b); }))]), { T: P(rhs), v: 't', out: 'd', keyRhs: rhs },
             t('t') + ' up ' + t('2') + ' ' + t('\\Rightarrow') + ' ' + t('d') + ' up ' + t(2 * m) + ', so ' + t('d') + ' rises ' + t(m) + ' per unit of ' + t('t') + '; at ' + t('t=0') + ', ' + t('d=' + b) + '.<br>' + t('d=' + rhs) + '<br>' + t('f(t)=' + rhs) + ' (the input stays ' + t('t') + ')',
             ['The ' + t('t') + '-values go up by ' + t('2') + ', not ' + t('1') + '. Find the change in ' + t('d') + ' for one unit of ' + t('t') + '.'], 'EP rule from table t,d');
         } },
         { id: 'e3c', level: 'EMG', make: function (r) {
           var k = r.pick([1, 1, 2, 3]), ns = [1, 2, 3, 4], rhs = lin([[k, 'n^{2}']]);
-          return bothPart(HW.valueTable([['n'].concat(ns), ['A'].concat(ns.map(function (x) { return k * x * x; }))]), { T: P(rhs), v: 'n', out: 'A', keyRhs: rhs, wrong: [{ is: P(lin([[2 * k, 'n']])), code: 'diag', hint: 'Check ' + t('n=3') + ': ' + t(2 * k + '(3)=' + 6 * k) + ', but the table says ' + t(9 * k) + '. Look for squares.' }] },
+          return bothPart(HW.valueTable([[t('n')].concat(ns), [t('A')].concat(ns.map(function (x) { return k * x * x; }))]), { T: P(rhs), v: 'n', out: 'A', keyRhs: rhs, wrong: [{ is: P(lin([[2 * k, 'n']])), code: 'diag', hint: 'Check ' + t('n=3') + ': ' + t(2 * k + '(3)=' + 6 * k) + ', but the table says ' + t(9 * k) + '. Look for squares.' }] },
             'Each ' + t('A') + ' is ' + (k === 1 ? 'the square of ' + t('n') : t(k) + ' times the square of ' + t('n')) + ': ' + ns.map(function (x) { return t((k === 1 ? '' : k + '\\cdot ') + x + '^{2}'); }).join(', ') + '.<br>' + t('A=' + rhs) + '<br>' + t('f(n)=' + rhs),
             ['The differences are not constant, so it isn’t linear. Compare each ' + t('A') + ' with ' + t('n^{2}') + '.'], 'EP rule from table squares');
         } }] },
@@ -1063,9 +1069,9 @@
             'The brackets must hold the <b>input</b>, ' + t('x') + '; ' + t('y') + ' is the output being replaced.<br>Correct: ' + t('f(x)=' + rhs), ['What goes inside the brackets of ' + t('f(\\ )') + '?'], 'EP fix f(y)');
         } },
         { id: 'e5c', level: 'PRG', make: function (r) {
-          var Bq = r.pick([4, 4, 2, 3]), A = r.pick([3, 3, 1, 5].filter(function (x) { return gcd(x, Bq) === 1; })), k = r.pick([6, 6, 2, 3, 5]), C = Bq * k, rhs = lin([[k, ''], [[-A, Bq], 'x']]);
-          return convPart('fn', 'A student wrote: “' + t(A + 'x+' + Bq + 'y=' + C) + ' becomes ' + t('f(x)=' + C + '-' + A + 'x-' + Bq) + '.” Write the correct function notation.', { T: P(rhs), v: 'x', keyRhs: rhs, bad: ['f(x)=' + C + '-' + A + 'x-' + Bq], wrong: [{ is: P(C - Bq + '-' + A + 'x'), code: 'conv-no-divide', hint: t(Bq + 'y') + ' means ' + t(Bq + '\\times y') + ': you can’t just drop the letter ' + t('y') + ' and subtract ' + t(Bq) + '. Divide by ' + t(Bq) + ' instead.' }, { is: P(lin([[C, ''], [-A, 'x']])), code: 'conv-no-divide', hint: 'Divide every term by ' + t(Bq) + '.' }] },
-            'Only the letter ' + t('y') + ' was dropped; the whole term ' + t(Bq + 'y') + ' must be isolated and then divided by ' + t(Bq) + ':<br>' + t(Bq + 'y=' + C + '-' + A + 'x') + '<br>' + t('y=' + rhs) + '<br>Correct: ' + t('f(x)=' + rhs), ['Solve for ' + t('y') + ' properly first.'], 'EP fix dropped y');
+          var Bq = r.pick([4, 4, 2, 3]), A = r.pick([3, 3, 1, 5].filter(function (x) { return gcd(x, Bq) === 1; })), k = r.pick([6, 6, 2, 3, 5]), C = Bq * k, rhs = lin([[k, ''], [[-A, Bq], 'x']]), Ax = (A === 1 ? '' : A) + 'x';
+          return convPart('fn', 'A student wrote: “' + t(Ax + '+' + Bq + 'y=' + C) + ' becomes ' + t('f(x)=' + C + '-' + Ax + '-' + Bq) + '.” Write the correct function notation.', { T: P(rhs), v: 'x', keyRhs: rhs, bad: ['f(x)=' + C + '-' + Ax + '-' + Bq], wrong: [{ is: P(C - Bq + '-' + Ax), code: 'conv-no-divide', hint: t(Bq + 'y') + ' means ' + t(Bq + '\\times y') + ': you can’t just drop the letter ' + t('y') + ' and subtract ' + t(Bq) + '. Divide by ' + t(Bq) + ' instead.' }, { is: P(lin([[C, ''], [-A, 'x']])), code: 'conv-no-divide', hint: 'Divide every term by ' + t(Bq) + '.' }] },
+            'Only the letter ' + t('y') + ' was dropped; the whole term ' + t(Bq + 'y') + ' must be isolated and then divided by ' + t(Bq) + ':<br>' + t(Bq + 'y=' + C + '-' + Ax) + '<br>' + t('y=' + rhs) + '<br>Correct: ' + t('f(x)=' + rhs), ['Solve for ' + t('y') + ' properly first.'], 'EP fix dropped y');
         } },
         { id: 'e5d', level: 'EMG', make: function (r) {
           var a = r.pick([2, 2, 3, 4, 5]), b = r.pick([3, 3, 1, 5, 7]), rhs = lin([[a, 'x'], [-b, '']]);
@@ -1152,7 +1158,7 @@
             t(bld('x', L, Rr)) + '<br>' + t('\\{g(x)\\mid ' + cond('g(x)', pwMin(sh.V), pwMax(sh.V)) + ',\\ g(x)\\in\\mathbb{R}\\}'), ['Use each axis’s own scale.'], 'EP D/R scaled');
         } },
         { id: 'e7f', level: 'PRG', make: function (r, sh) {
-          var pk = sh.G[1], real = [pk[0] * sh.sx, pk[1] * sh.sy];
+          var pk = sh.G[sh.mi ? 2 : 1], real = [pk[0] * sh.sx, pk[1] * sh.sy];
           var p = B.math('(g) A student read ' + t('g(' + pk[0] + ')=' + pk[1]) + ' for the peak straight off the grid squares. Write the correct statement in function notation.', stmtChk('g', real[0], real[1], { grid: pk, scale: sh.sx + '\\text{ (across) and }' + sh.sy + '\\text{ (up)}' }), 'g(' + real[0] + ')=' + real[1],
             'The student counted grid squares instead of applying the scales. The peak is ' + t(Math.abs(pk[0])) + ' squares ' + (pk[0] < 0 ? 'left' : 'right') + ' and ' + t(pk[1]) + ' squares up: ' + t(Math.abs(pk[0]) + '\\times ' + sh.sx + '=' + Math.abs(real[0])) + ' and ' + t(pk[1] + '\\times ' + sh.sy + '=' + real[1]) + '.<br>Correct: ' + t('g(' + real[0] + ')=' + real[1]) + ', and the point ' + t(ptT(real)) + ' lies on the graph.',
             ['Multiply the horizontal count by ' + t(sh.sx) + ' and the vertical count by ' + t(sh.sy) + '.'], 'EP correct scaled statement', { keys: EQK, vars: ['g'] });
@@ -1275,7 +1281,7 @@
       { num: '11', shared: function (r) {
           var a = r.pick([240, 240, 150, 200, 320]), s = r.pick([70, 70, 40, 50, 60]), top = a + 2 * s + r.pick([70, 30, 50]);
           return { V: [a, a + s, a + 2 * s, a + s, a, top], a: a, s: s };
-        }, stem: function (sh) { return 'A ski hill records ' + t('V(t)') + ', the number of visitors on day ' + t('t') + ' of a six-day festival. The function is given entirely by the table below — there is no formula.' + HW.valueTable([['t\\text{ (day)}', 1, 2, 3, 4, 5, 6], ['V(t)'].concat(sh.V)]); }, parts: [
+        }, stem: function (sh) { return 'A ski hill records ' + t('V(t)') + ', the number of visitors on day ' + t('t') + ' of a six-day festival. The function is given entirely by the table below — there is no formula.' + HW.valueTable([[t('t') + ' (day)', 1, 2, 3, 4, 5, 6], [t('V(t)')].concat(sh.V)]); }, parts: [
         { id: 'e11a', level: 'BEG', make: function (r, sh) {
           return B.number('(a) State ' + t('V(3)') + '.', sh.V[2], function (u) { if (sh.V.indexOf(u) >= 0) return { code: 'diag', hint: 'Find ' + t('t=3') + ' in the top row and read the number below it.' }; return null; }, t('V(3)=' + sh.V[2]) + ': on day 3 of the festival, the hill had ' + t(sh.V[2]) + ' visitors.', ['Day 3 is in the top row.'], 'EP V(3) table', { after: 'visitors' });
         } },
@@ -1354,7 +1360,7 @@
       { num: '13', shared: function (r) { var rate = r.pick([15, 15, 10, 12, 20]), fix = r.pick([40, 40, 20, 25, 30]), mx = r.pick([8, 8, 6]); return { rate: rate, fix: fix, mx: mx, C: function (h) { return cl(rate * h + fix); }, h1: r.pick([3, 3, 2, 4]), h2: r.pick([5, 5, 4]) }; },
         stem: function (sh) { return 'A guide service rents sea kayaks. The charge is modelled by ' + t('C(h)=' + sh.rate + 'h+' + sh.fix) + ', where ' + t('C(h)') + ' is the cost, in dollars, of a rental lasting ' + t('h') + ' hours. Rentals are limited to ' + t(sh.mx) + ' hours.'; }, parts: [
         { id: 'e13a', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
-          var top = sh.C(sh.mx), o = { x: [0, 10], y: [0, Math.ceil((top + 40) / 40) * 40], gx: 1, gy: 20, lx: 2, ly: 40, xName: 'h', yName: 'C' };
+          var top = sh.C(sh.mx), o = { x: [0, 10], y: [0, Math.ceil((Math.max(top + 40, sh.C(10)) + 10) / 40) * 40], gx: 1, gy: 20, lx: 2, ly: 40, xName: 'h', yName: 'C' };
           var G = function (segs) { return ctxGraph(o, segs); };
           return graphMC(r, '(a) Which graph shows the rental cost?', [
             { html: G([{ pts: [[0, sh.fix], [sh.mx, top]], start: 'closed', end: 'closed' }]), right: true },
@@ -1570,21 +1576,21 @@
         { id: 'e18c', level: 'PRG', make: function (r, sh) {
           var b = -2 * sh.sy, s0 = pwSols(sh.V, b).pts;
           return solsPart('(c) Solve ' + t('f(x)=' + b) + '. There are two answers and neither lands on a grid line.', s0, { b: b, graph: true },
-            'From the ' + (sh.fl ? 'high' : 'low') + ' point, height ' + t(b) + ' is ' + t('1') + ' unit ' + (sh.fl ? 'down' : 'up') + '. Each piece there changes ' + t('2') + ' per ' + t('1') + ' across, so that is ' + t('\\tfrac{1}{2}') + ' unit sideways: ' + t(solsKey(s0)) + '. The third piece never reaches ' + t(b) + '.', ['Use the slope of each piece near the low point.'], 'EP stretch half-unit');
+            'From the ' + (sh.fl ? 'high' : 'low') + ' point, height ' + t(b) + ' is ' + t('1') + ' unit ' + (sh.fl ? 'down' : 'up') + '. Each piece there changes ' + t('2') + ' per ' + t('1') + ' across, so that is ' + t('\\tfrac{1}{2}') + ' unit sideways: ' + t(solsKey(s0)) + '. The short piece (' + sh.nm.short + ') never reaches ' + t(b) + '.', ['Use the slope of each piece near the ' + sh.nm.near + '.'], 'EP stretch half-unit');
         } },
         { id: 'e18d', level: 'EMG', make: function (r, sh) {
           var bs = [6 * sh.sy, -3 * sh.sy];
           return BF('(d) Solve each equation. (Press <b>none</b> if there is no solution.)', bs.map(function (b) { return solField(t('f(x)=' + b), 'x'); }), bs.map(function (b) { return solsChk(pwSols(sh.V, b).pts, { b: b, graph: true }); }),
             bs.map(function (b) { var s0 = pwSols(sh.V, b).pts; return s0.length ? solsKey(s0) : 'none'; }), bs.map(function (b) { var s0 = pwSols(sh.V, b).pts; return s0.length ? t(solsKey(s0)) : 'no solution'; }).join('; '),
-            t('f(x)=' + bs[0]) + ': <b>no solution</b> — the graph never goes beyond ' + t(5 * sh.sy) + '.<br>' + t('f(x)=' + bs[1]) + ': <b>exactly one</b>, ' + t(solsKey(pwSols(sh.V, bs[1]).pts)) + ', where pieces 1 and 2 meet.', ['Find the highest and lowest points.'], 'EP stretch none / one');
+            t('f(x)=' + bs[0]) + ': <b>no solution</b> — the graph never goes beyond ' + t(5 * sh.sy) + '.<br>' + t('f(x)=' + bs[1]) + ': <b>exactly one</b>, ' + t(solsKey(pwSols(sh.V, bs[1]).pts)) + ', where ' + sh.nm.meetLow + ' meet.', ['Find the highest and lowest points.'], 'EP stretch none / one');
         } },
         { id: 'e18e', level: 'MAS', make: function (r, sh) {
           var tg = sh.fl ? '\\{b\\mid -5<b\\le 1,\\ b\\in\\mathbb{R}\\}' : '\\{b\\mid -1\\le b<5,\\ b\\in\\mathbb{R}\\}';
           var p = B.math('(e) For which values of ' + t('b') + ' does ' + t('f(x)=b') + ' have exactly <b>three</b> solutions? (Write an inequality or a set.)', K.set(tg, { v: 'b', wrong: [
-            { is: sh.fl ? '\\{b\\mid -5\\le b\\le 1,\\ b\\in\\mathbb{R}\\}' : '\\{b\\mid -1\\le b\\le 5,\\ b\\in\\mathbb{R}\\}', code: 'stretch-b', hint: 'Check ' + t('b=' + 5 * sh.sy) + ': the peak is a single point shared by two pieces, so that height gives only two solutions.' },
-            { is: sh.fl ? '\\{b\\mid -5<b<1,\\ b\\in\\mathbb{R}\\}' : '\\{b\\mid -1<b<5,\\ b\\in\\mathbb{R}\\}', code: 'stretch-b', hint: 'Check ' + t('b=' + -sh.sy) + ': the endpoint of the third piece counts — that height gives three solutions.' },
-            { is: sh.fl ? '\\{b\\mid -5<b<3,\\ b\\in\\mathbb{R}\\}' : '\\{b\\mid -3<b<5,\\ b\\in\\mathbb{R}\\}', code: 'stretch-b', hint: 'The third piece only reaches ' + t(-sh.sy) + '. Below that, only two pieces are crossed.' }] }), sh.fl ? '-5<b\\le 1' : '-1\\le b<5',
-            'Pieces 1 and 2 cover heights from ' + t(Math.min(-3 * sh.sy, 5 * sh.sy)) + ' to ' + t(Math.max(-3 * sh.sy, 5 * sh.sy)) + '; piece 3 only covers ' + t(Math.min(-sh.sy, 5 * sh.sy)) + ' to ' + t(Math.max(-sh.sy, 5 * sh.sy)) + '. Each piece is crossed once for heights strictly between the extremes it covers, and at ' + t('b=' + -sh.sy) + ' the endpoint of piece 3 counts too (three solutions). At ' + t('b=' + 5 * sh.sy) + ' pieces 2 and 3 share the peak — only two.<br>' + t(sh.fl ? '-5<b\\le 1' : '-1\\le b<5'),
+            { is: sh.fl ? '\\{b\\mid -5\\le b\\le 1,\\ b\\in\\mathbb{R}\\}' : '\\{b\\mid -1\\le b\\le 5,\\ b\\in\\mathbb{R}\\}', code: 'stretch-b', hint: 'Check ' + t('b=' + 5 * sh.sy) + ': the ' + sh.nm.top + ' is a single point shared by two pieces, so that height gives only two solutions.' },
+            { is: sh.fl ? '\\{b\\mid -5<b<1,\\ b\\in\\mathbb{R}\\}' : '\\{b\\mid -1<b<5,\\ b\\in\\mathbb{R}\\}', code: 'stretch-b', hint: 'Check ' + t('b=' + -sh.sy) + ': the endpoint of ' + sh.nm.shortThe + ' counts — that height gives three solutions.' },
+            { is: sh.fl ? '\\{b\\mid -5<b<3,\\ b\\in\\mathbb{R}\\}' : '\\{b\\mid -3<b<5,\\ b\\in\\mathbb{R}\\}', code: 'stretch-b', hint: 'The short piece (' + sh.nm.short + ') only reaches ' + t(-sh.sy) + '. Beyond that, only two pieces are crossed.' }] }), sh.fl ? '-5<b\\le 1' : '-1\\le b<5',
+            sh.nm.Long + ' cover heights from ' + t(Math.min(-3 * sh.sy, 5 * sh.sy)) + ' to ' + t(Math.max(-3 * sh.sy, 5 * sh.sy)) + '; ' + sh.nm.short + ' only covers ' + t(Math.min(-sh.sy, 5 * sh.sy)) + ' to ' + t(Math.max(-sh.sy, 5 * sh.sy)) + '. Each piece is crossed once for heights strictly between the extremes it covers, and at ' + t('b=' + -sh.sy) + ' the endpoint of ' + sh.nm.short + ' counts too (three solutions). At ' + t('b=' + 5 * sh.sy) + ' ' + sh.nm.shareTop + ' share the ' + sh.nm.top + ' — only two.<br>' + t(sh.fl ? '-5<b\\le 1' : '-1\\le b<5'),
             ['For each piece, write the range of heights it covers. Then check the edges one at a time.'], 'EP stretch three solutions', { keys: 'set', vars: ['b'], placeholder: 'e.g. -2 < b <= 3' });
           p.good = [tg, sh.fl ? '(-5, 1]' : '[-1, 5)'];
           return p;
@@ -1594,19 +1600,19 @@
           var iv = s > 0 ? t(lo + '<b<' + mid) : t(mid + '<b<' + lo);
           return mc(r, '(f) Which describes every value of ' + t('b') + ' for which ' + t('f(x)=b') + ' has exactly <b>two</b> solutions?', [
             { html: iv + ' or ' + t('b=' + hi), right: true },
-            { html: iv + ' only', why: 'Check ' + t('b=' + hi) + ': the left end and the peak are both at that height — two solutions.' },
+            { html: iv + ' only', why: 'Check ' + t('b=' + hi) + ': the ' + sh.nm.end + ' and the ' + sh.nm.top + ' are both at that height — two solutions.' },
             { html: s > 0 ? t(lo + '\\le b\\le ' + mid) : t(mid + '\\le b\\le ' + lo), why: 'Check the edges: ' + t('b=' + lo) + ' gives one solution and ' + t('b=' + mid) + ' gives three.' },
-            { html: t('b=' + hi) + ' only', why: 'Heights between ' + t(lo) + ' and ' + t(mid) + ' are reached by only two pieces — the third piece stops at ' + t(mid) + '.' }],
-            iv + ': only pieces 1 and 2 reach these heights, one crossing each. <b>And</b> ' + t('b=' + hi) + ': the left end and the peak. Edges: ' + t('b=' + lo) + ' gives one solution and ' + t('b=' + mid) + ' gives three, so both are excluded.', ['Check the top and the bottom of every piece.'], 'EP stretch two solutions');
+            { html: t('b=' + hi) + ' only', why: 'Heights between ' + t(lo) + ' and ' + t(mid) + ' are reached by only two pieces — ' + sh.nm.shortThe + ' stops at ' + t(mid) + '.' }],
+            iv + ': only ' + sh.nm.long + ' reach these heights, one crossing each. <b>And</b> ' + t('b=' + hi) + ': the ' + sh.nm.end + ' and the ' + sh.nm.top + '. Edges: ' + t('b=' + lo) + ' gives one solution and ' + t('b=' + mid) + ' gives three, so both are excluded.', ['Check the top and the bottom of every piece.'], 'EP stretch two solutions');
         } },
         { id: 'e18g', level: 'PRG', make: function (r, sh) {
           var s = sh.sy;
-          return mc(r, '(g) If the last piece ended at height ' + t(-3 * s) + ' instead of ' + t(-s) + ', when would ' + t('f(x)=b') + ' have exactly two solutions?', [
+          return mc(r, '(g) If the end point ' + t(ptT([5 * sh.sx, -s])) + ' were moved to ' + t(ptT([5 * sh.sx, -3 * s])) + ', when would ' + t('f(x)=b') + ' have exactly two solutions?', [
             { html: 'Only at ' + t('b=' + 5 * s) + ' and ' + t('b=' + -3 * s) + ': all three pieces would reach every height in between.', right: true },
-            { html: 'The same values as in (f).', why: 'The interval in (f) came from the third piece stopping short. If it reaches ' + t(-3 * s) + ', that gap closes.' },
-            { html: 'Never.', why: 'Check the top: the left end and the peak share a height.' },
+            { html: 'The same values as in (f).', why: 'The interval in (f) came from ' + sh.nm.shortThe + ' stopping short. If it reaches ' + t(-3 * s) + ', that gap closes.' },
+            { html: 'Never.', why: 'Check ' + t('b=' + 5 * s) + ': the ' + sh.nm.end + ' and the ' + sh.nm.top + ' share that height.' },
             { html: 'For every ' + t('b') + ' between ' + t(-3 * s) + ' and ' + t(5 * s) + '.', why: 'In between, all three pieces are crossed — three solutions.' }],
-            'Pieces 1 and 2 reach ' + t(-3 * s) + ' but piece 3 stopped at ' + t(-s) + ': that gap is exactly the interval in (f). If piece 3 reached ' + t(-3 * s) + ' too, every height strictly between the extremes would give three solutions, and exactly two would occur only at ' + t('b=' + 5 * s) + ' and ' + t('b=' + -3 * s) + '.', ['Which pieces reach which heights?'], 'EP stretch what-if');
+            sh.nm.Long + ' reach ' + t(-3 * s) + ' but ' + sh.nm.short + ' stopped at ' + t(-s) + ': that gap is exactly the interval in (f). If ' + sh.nm.short + ' reached ' + t(-3 * s) + ' too, every height strictly between the extremes would give three solutions, and exactly two would occur only at ' + t('b=' + 5 * s) + ' and ' + t('b=' + -3 * s) + '.', ['Which pieces reach which heights?'], 'EP stretch what-if');
         } }] },
       { num: '19', stem: '<i>(Multiple Choice)</i>', parts: [
         { id: 'e19', level: 'EMG', make: function (r) {

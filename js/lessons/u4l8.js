@@ -600,10 +600,10 @@
           } },
           { id: 'e1b', sub: 'b', level: 'EMG', make: function (r, sh) {
             var rows = sh.order.map(function (k) { return { id: k, html: t(sh.ex[k].tex) }; });
-            var cols = [{ id: 'dos', html: 'Difference of squares' }, { id: 'tri', html: 'Trinomial (decomposition)' }, { id: 'pst', html: 'Perfect square trinomial' }, { id: 'grp', html: 'Grouping' }, { id: 'none', html: 'Does not factor' }];
-            var allow = { a: ['tri'], b: ['grp'], c: ['pst', 'tri'], d: ['dos'], e: ['none'] }, name = {}; cols.forEach(function (c) { name[c.id] = c.html; });
+            var cols = [{ id: 'dos', html: 'DS' }, { id: 'tri', html: 'T' }, { id: 'pst', html: 'PS' }, { id: 'grp', html: 'G' }, { id: 'none', html: 'N' }];
+            var allow = { a: ['tri'], b: ['grp'], c: ['pst', 'tri'], d: ['dos'], e: ['none'] }, name = { dos: 'difference of squares', tri: 'trinomial (decomposition)', pst: 'perfect square trinomial', grp: 'grouping', none: 'does not factor' };
             var why = { a: 'After the common factor there are three terms with ' + t('a\\neq 1') + ': decomposition.', b: 'Four terms: grouping (then a difference of squares).', c: 'Three terms, and the first and last are perfect squares with the right middle term: a perfect square trinomial.', d: 'After the common factor it is a difference of squares (twice).', e: 'Two terms, but a <b>sum</b> of squares: no method applies.' };
-            return { prompt: 'Which method do you use on what is left (after any common factor)?', input: { type: 'grid', rows: rows, cols: cols, multi: false, rowHead: 'Expression' }, key: { a: 'tri', b: 'grp', c: 'pst', d: 'dos', e: 'none' },
+            return { prompt: 'Which method do you use on what is left (after any common factor)?<br><span class="muted">DS = difference of squares · T = trinomial (decomposition) · PS = perfect square trinomial · G = grouping · N = does not factor</span>', input: { type: 'grid', rows: rows, cols: cols, multi: false, rowHead: 'Expression' }, key: { a: 'tri', b: 'grp', c: 'pst', d: 'dos', e: 'none' },
               answer: sh.order.map(function (k) { return t(sh.ex[k].tex) + ': ' + allow[k].map(function (c) { return name[c]; }).join(' or '); }).join('<br>'),
               check: function (resp) {
                 resp = resp || {}; var ks = ['a', 'b', 'c', 'd', 'e'], miss = ks.filter(function (k) { return resp[k] == null; });

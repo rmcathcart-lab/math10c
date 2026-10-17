@@ -86,7 +86,14 @@
       if (bits.length > 2) return { bad: true };
       if (bits.length === 2) {
         var a0 = bits[0].trim() ? ex.parse(bits[0].trim()) : { ok: true, ast: null }, b0 = ex.parse(bits[1].trim());
-        if (!a0.ok || !b0.ok) return { bad: true };
+        if (!a0.ok || !b0.ok) { // ± inside a bracket or fraction, e.g. \frac{-5\pm\sqrt{37}}{2}: read the + and − versions whole
+          var pP = ex.parse(p.replace('±', '+')), pM = ex.parse(p.replace('±', '-'));
+          if (!pP.ok || !pM.ok) return { bad: true };
+          var vP = ex.value(pP.ast), vM = ex.value(pM.ast);
+          if (!isFinite(vP) || !isFinite(vM)) return { bad: true };
+          out.push({ v: vP, ast: pP.ast }); out.push({ v: vM, ast: pM.ast });
+          continue;
+        }
         var av = a0.ast ? ex.value(a0.ast) : 0, bv = ex.value(b0.ast);
         if (!isFinite(av) || !isFinite(bv)) return { bad: true };
         out.push({ v: av + bv, ast: b0.ast }); out.push({ v: av - bv, ast: b0.ast });
@@ -114,6 +121,7 @@
       if (looksPoint(s)) return form('int-point', 'Just give the <b>value</b> (one number), not an ordered pair.');
       var a = K.read(s); if (a.res) return a.res;
       if (!same(a.val, T) && ex.shape(a.ast).decimals && Math.abs(a.val - T) < 0.006 * Math.max(1, Math.abs(T)) && !dlFind(dl, a.val)) return form(o.closeCode || 'exact', o.close || CLOSE);
+      if (same(a.val, T) && !termDec(T) && ex.shape(a.ast).decimals && !ex.shape(a.ast).rep) return form(o.closeCode || 'exact', o.close || CLOSE); // a long calculator decimal is still not exact
       return base(s);
     };
   }
@@ -129,7 +137,8 @@
       var A = uniqV(L.items.map(function (x) { return x.v; }));
       var miss = T.filter(function (x) { return !A.some(function (y) { return same(x, y); }); }), extra = A.filter(function (x) { return !T.some(function (y) { return same(x, y); }); });
       if (!miss.length && !extra.length) {
-        for (var i = 0; i < L.items.length; i++) if (lowestIssue(L.items[i].ast)) return form('lowest', 'Right values — now write each fraction in lowest terms.');
+        for (var i = 0; i < L.items.length; i++) { var sh = ex.shape(L.items[i].ast); if (sh.decimals && !sh.rep && termDec(L.items[i].v) == null) return form('exact', o.close || CLOSE); } // a long calculator decimal is still not exact
+        for (i = 0; i < L.items.length; i++) if (lowestIssue(L.items[i].ast)) return form('lowest', 'Right values — now write each fraction in lowest terms.');
         return ok();
       }
       if (A.length === T.length && extra.every(function (y) { return T.some(function (x) { return Math.abs(x - y) < 0.006 * Math.max(1, Math.abs(x)); }); })) return form('exact', o.close || CLOSE);
@@ -314,14 +323,15 @@
           var feat = [featY(y0), { x: 0, y: 0, name: 'the ' + t('x') + '-axis (you need it on the screen to see that the curve never reaches it)', how: 'Make ' + WT.Ymin + ' negative.' }], w = { x: [-3, 5], y: [-2, Math.max(10, Math.ceil((Math.pow(a, 3) + c) / 5) * 5 + 5)], sx: 1, sy: 5 };
           var sol = 'Algebra first: ' + t('y') + '-intercept ' + t('y=' + a + '^{0}' + (c ? '+' + c : '') + '=' + (c ? '1+' + c + '=' : '') + y0) + '. There is <b>no</b> ' + t('x') + '-intercept: ' + t(a + '^{x}') + ' is always positive, so ' + t('y') + ' is always more than ' + t(c ? String(c) : '0') + ' — ' + (c ? 'the graph stays above the line ' + t('y=' + c) + '.' : 'the curve gets closer and closer to the ' + t('x') + '-axis on the left but never touches it.') + '<br>' +
             'Calculator: ' + C.y1(rel) + ' (use the ' + code('^') + ' key). The standard window already shows the ' + t('y') + '-intercept; a window such as ' + winTex(w) + ' shows the curve rising more clearly.';
-          return winPart(t('y=' + rel), feat, { win: w, sol: sol, fns: [function (x) { return Math.pow(a, x) + c; }], pts: [{ x: 0, y: y0, label: '(0, ' + y0 + ')' }], minY: 10, text: 'window for y=' + rel });
+          return winPart(t('y=' + rel) + ' &nbsp;(keep the ' + t('x') + '-axis on the screen too)', feat, { win: w, sol: sol, fns: [function (x) { return Math.pow(a, x) + c; }], pts: [{ x: 0, y: y0, label: '(0, ' + y0 + ')' }], minY: 10, text: 'window for y=' + rel });
         } }] },
 
       /* ===== Q2 ===== */
       { num: '2', stem: function (sh) { return 'Consider the equation ' + t('y=' + linT(-sh.m, sh.b)) + '.'; },
         shared: function (r) {
           var o = pickWhere(function () { return { m: r.int(2, 6), X: r.int(6, 12) }; }, function (o) { return o.m * o.X > 10 && o.m * o.X <= 60; });
-          var x1 = r.int(1, o.X - 1), x2 = r.pick(range(1, o.X - 1).filter(function (v) { return v !== x1; }));
+          var xs = range(1, o.X - 1).filter(function (v) { return v !== o.m * (o.X - v); }); // x ≠ y, so the "solved for x" / "substituted y" MC distractors can't land on the answer
+          var x1 = r.pick(xs), x2 = r.pick(xs.filter(function (v) { return v !== x1; }));
           return { m: o.m, X: o.X, b: o.m * o.X, x1: x1, y1: o.m * (o.X - x1), x2: x2, y2: o.m * (o.X - x2) };
         },
         parts: [
@@ -770,12 +780,12 @@
             'Brackets keep the whole denominator together: ' + code(k + '/(X+' + p + ')') + '.', ['What has to be under the fraction bar?'], 'Y1 entry denominator');
         } },
         { id: 'e3c', level: 'BEG', make: function (r) {
-          var o = pickWhere(function () { return { a: r.int(1, 7), b: r.int(2, 9), c: r.int(1, 12) }; }, function (o) { return gcd(o.a, o.b) === 1 && o.a < o.b; });
+          var o = pickWhere(function () { return { a: r.int(1, 7), b: r.int(2, 9), c: r.int(1, 12) }; }, function (o) { return gcd(o.a, o.b) === 1 && o.a < o.b; }), aX = o.a === 1 ? 'X' : o.a + 'X';
           return mc(r, t('y=\\frac{' + o.a + '}{' + o.b + '}x-' + o.c), [
             { html: code('(' + o.a + '/' + o.b + ')X−' + o.c), right: true },
             { html: code(o.a + '/(' + o.b + 'X)−' + o.c), why: 'This puts ' + t('x') + ' in the denominator: ' + t('\\frac{' + o.a + '}{' + o.b + 'x}') + '.' },
             { html: code('(' + o.a + '/' + o.b + ')(X−' + o.c + ')'), why: 'This multiplies the ' + t(o.c) + ' by ' + t('\\frac{' + o.a + '}{' + o.b + '}') + ' as well.' },
-            { html: code('(' + o.a + 'X−' + o.c + ')/' + o.b), why: 'This divides the ' + t(o.c) + ' by ' + t(o.b) + ' too.' }],
+            { html: code('(' + aX + '−' + o.c + ')/' + o.b), why: 'This divides the ' + t(o.c) + ' by ' + t(o.b) + ' too.' }],
             'The brackets make only ' + t('\\frac{' + o.a + '}{' + o.b + '}') + ' multiply ' + t('x') + ': ' + code('(' + o.a + '/' + o.b + ')X−' + o.c) + '.', ['Only the fraction multiplies ' + t('x') + '; the ' + t(o.c) + ' is subtracted afterwards.'], 'Y1 entry fraction coefficient');
         } },
         { id: 'e3d', level: 'BEG', make: function (r) {
@@ -1073,7 +1083,7 @@
           } }] },
       { num: '12', stem: function (s) { return 'A student graphs ' + t('y=' + s.rel) + ' in ZStandard and sees the screen below. The curve crosses the ' + t('x') + '-axis once and then falls off the bottom edge, so the student writes: <i>“the graph has no minimum — it just keeps going down.”</i>' + screenStd([{ f: s.f }]); },
         shared: function (r) {
-          var o = pickWhere(function () { return { r1: r.int(6, 9), r2: r.int(11, 20) }; }, function (o) { var h = (o.r1 + o.r2) / 2, k = -Math.pow((o.r2 - o.r1) / 2, 2); return Number.isInteger(h) && h > 10 && k < -10 && k >= -40; });
+          var o = pickWhere(function () { return { r1: r.int(6, 9), r2: r.int(11, 20) }; }, function (o) { var h = (o.r1 + o.r2) / 2, k = -Math.pow((o.r2 - o.r1) / 2, 2); return Number.isInteger(h) && h > 10 && k < -10 && k >= -40 && (10 - o.r1) * (10 - o.r2) < -10.5; }); // the curve really leaves through the bottom edge
           o.h = (o.r1 + o.r2) / 2; o.k = -Math.pow((o.r2 - o.r1) / 2, 2); o.b = -(o.r1 + o.r2); o.c = o.r1 * o.r2; o.rel = quadT(1, o.b, o.c); o.f = qf(1, o.b, o.c); return o;
         },
         parts: [
@@ -1138,7 +1148,7 @@
 
       /* ---------- Part E ---------- */
       { num: '14', section: 'Extra practice E — Stretch: two graphs that look identical', stem: function (s) { return 'Enter ' + t('Y_1=' + s.y1) + ' and ' + t('Y_2=' + s.y2) + ' and press ' + code('ZOOM') + ' ' + code('6') + '. Only one curve appears to be drawn — the second is hidden underneath it.' + screenStd([{ f: s.f1 }, { f: s.f2, dash: true, color: '#c4532a' }]); },
-        shared: function (r) { var k = r.pick([0.005, 0.005, 0.004, 0.002, 0.01]), c = r.int(1, 5); return { k: k, c: c, y1: quadT(k, 1, c), y2: linT(1, c), f1: qf(k, 1, c), f2: lf(1, c) }; },
+        shared: function (r) { var k = r.pick([0.005, 0.005, 0.004, 0.002]), c = r.int(1, 5); return { k: k, c: c, y1: quadT(k, 1, c), y2: linT(1, c), f1: qf(k, 1, c), f2: lf(1, c) }; },
         parts: [
           { id: 'e14a', level: 'BEG', make: function (r, s) {
             var xs = [-10, -5, 0, 5, 10], ys = xs.map(function (x) { return cl(s.f1(x)); });
@@ -1162,11 +1172,11 @@
             return fieldsPart('Evaluate both relations at ' + t('x=-200') + ' and at ' + t('x=100') + '. State the gap ' + t('Y_1-Y_2') + ' at each.', [nbox('gap at ' + t('x=-200')), nbox('gap at ' + t('x=100'))], [K.number(g1, null), K.number(g2, null)], [String(g1), String(g2)], t(nT(g1)) + ' and ' + t(nT(g2)),
               t('Y_1(-200)=' + nT(s.k) + '(40\\,000)-200+' + s.c + '=' + nT(s.f1(-200))) + ', ' + t('Y_2(-200)=' + nT(s.f2(-200))) + ': gap ' + t(nT(g1)) + '.<br>' + t('Y_1(100)=' + nT(s.k) + '(10\\,000)+100+' + s.c + '=' + nT(s.f1(100))) + ', ' + t('Y_2(100)=' + nT(s.f2(100))) + ': gap ' + t(nT(g2)) + '.', ['The gap is ' + t(nT(s.k) + 'x^{2}') + '.'], 'gaps far away', { bad: [[String(g2), String(g1)]] });
           } }] },
-      { num: '15', stem: function (s) { return 'Keep ' + t('Y_1=' + s.y1) + ' and ' + t('Y_2=' + s.y2) + ' from Question 14.'; },
-        shared: function (r) { var k = r.pick([0.005, 0.005, 0.004, 0.002, 0.01]), c = r.int(1, 5); return { k: k, c: c, y1: quadT(k, 1, c), y2: linT(1, c), f1: qf(k, 1, c), f2: lf(1, c) }; },
+      { num: '15', stem: function (s) { return 'Take another pair like the one in Question 14: ' + t('Y_1=' + s.y1) + ' and ' + t('Y_2=' + s.y2) + '. In ZStandard they also look like one graph.'; },
+        shared: function (r) { var k = r.pick([0.005, 0.005, 0.004, 0.002]), c = r.int(1, 5); return { k: k, c: c, y1: quadT(k, 1, c), y2: linT(1, c), f1: qf(k, 1, c), f2: lf(1, c) }; },
         parts: [
           { id: 'e15a', level: 'EMG', make: function (r, s) {
-            var X = 1 / s.k, W = function (a, b, c, d) { return t('x:[' + a + ',\\ ' + b + '],\\ y:[' + c + ',\\ ' + d + ']'); };
+            var X = cl(1 / s.k), W = function (a, b, c, d) { return t('x:[' + nT(a) + ',\\ ' + nT(b) + '],\\ y:[' + nT(c) + ',\\ ' + nT(d) + ']'); };
             var good = W(-1.1 * X, 0.6 * X, -1.1 * X, 1.1 * X);
             return mc(r, 'In which window are the two graphs <b>obviously</b> different?', [
               { html: good, right: true },

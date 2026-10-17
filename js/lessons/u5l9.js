@@ -16,7 +16,7 @@
     'pct-original': 'Took the percent of the original height every time', 'pct-lost': 'Used the percent lost instead of the percent kept', 'pct-linear': 'Subtracted the same amount every bounce', 'pct-shift': 'Off by one bounce',
     'one-stop': 'Counted only one of the stops', 'dist-vs-travel': 'Distance from home confused with distance travelled', 'months': 'Wrong number of payments',
     'shared-time': 'Gave an arrival time instead of the difference', 'avg-speed': 'Average speed wrong', 'ratio': 'Comparison of rates wrong', 'flat-time': 'Total time on flat segments wrong',
-    'rate-unit': 'Rate in the wrong units', 'dist-speed': 'Distance from a speed graph wrong'
+    'rate-unit': 'Rate in the wrong units', 'dist-speed': 'Distance from a speed graph wrong', 'round-early': 'Rounded too early / to the wrong hundredth'
   });
 
   /* ---------- small helpers ---------- */
@@ -161,8 +161,8 @@
   /* ---------- Q2: a kicked ball (height against horizontal distance) ---------- */
   function kick(r) {
     var book = r.chance(0.3);
-    var H = book ? 8 : r.int(6, 12), dp = book ? 25 : r.pick([20, 25, 30]), L = book ? 54 : 2 * dp + r.pick([2, 4, 6]), nb = book ? 2 : r.pick([2, 2, 3]);
-    var w = book ? [3, 1.5] : nb === 2 ? r.pick([[3, 1.5], [4, 2]]) : [4, 2, 1], h = [H * 0.27, H * 0.1, H * 0.035];
+    var H = book ? 8 : 2 * r.int(3, 6), /* even: the height axis is labelled every 2 m */ dp = book ? 25 : r.pick([20, 25, 30]), L = book ? 54 : 2 * dp + r.pick([2, 4, 6]), nb = book ? 2 : r.pick([2, 2, 3]);
+    var w = book ? [3, 1.5] : nb === 2 ? r.pick([[3, 1.5], [4, 2]]) : [4, 2.5, 2], h = [H * 0.27, H * 0.1, H * 0.055]; // 3rd bounce big enough to see and count (was ~4 px)
     var end = L + w.slice(0, nb).reduce(function (a, b) { return a + b; }, 0), S = book ? 60 : Math.ceil(end + r.pick([1, 2, 3]));
     return { H: H, dp: dp, L: L, nb: nb, w: w.slice(0, nb), h: h.slice(0, nb), rollFrom: end, S: S };
   }
@@ -214,7 +214,7 @@
       var wg = 2 * Math.sqrt(H0) * tx * 0.8, a0 = x0; fns.push(Fn(function (x) { return sc * H0 * (1 - Math.pow((x - a0 - wg / 2) / (wg / 2), 2)); }, a0, a0 + wg)); x0 = a0 + wg;
       tx = (9.6 - x0) / (2 * hs.slice(1).reduce(function (a, h) { return a + Math.sqrt(h); }, 0));
     } else {
-      var w0 = Math.sqrt(H0) * tx; fns.push(Fn(function (x) { return sc * H0 * (1 - Math.pow((x - x0) / w0, 2)); }, x0, x0 + w0)); x0 += w0;
+      var w0 = Math.sqrt(H0) * tx, d0 = x0; fns.push(Fn(function (x) { return sc * H0 * (1 - Math.pow((x - d0) / w0, 2)); }, x0, x0 + w0)); x0 += w0; // d0: x0 changes later
     }
     if (kind === 'same') tx = (9.6 - x0) / (8 * Math.sqrt(H0));
     for (var j = 1; j <= 4; j++) {
@@ -422,16 +422,17 @@
           return function (resp) {
             var pz = HW.parse.number(resp);
             if (!pz.ok) return form(pz.code === 'empty' ? 'empty' : 'notnumber', pz.code === 'empty' ? 'Type your answer first.' : 'Enter a single number (in metres).');
-            var v = pz.value; if (Math.abs(v - x) <= 0.011 + 0.002 * x) return ok();
+            var v = pz.value; if (Math.abs(v - x) <= 0.005 + 1e-9) return ok(); // rounds to the right hundredth (or is more precise)
             var c = [{ v: b.H0 * b.p, code: 'pct-original', hint: 'Each rebound is ' + t(b.pct + '\\%') + ' of the <b>previous</b> rebound, not of the first drop. Multiply by ' + t(dn(b.p)) + ' again each time.' },
               { v: b.H0 * Math.pow(1 - b.p, k), code: 'pct-lost', hint: 'The ball keeps ' + t(b.pct + '\\%') + ' of its height — multiply by ' + t(dn(b.p)) + ', not ' + t(dn(1 - b.p)) + '.' },
               { v: b.H0 - k * b.H0 * (1 - b.p), code: 'pct-linear', hint: 'The ball doesn’t lose the same number of metres each time: it keeps ' + t(b.pct + '\\%') + ' of whatever height it just had, so multiply by ' + t(dn(b.p)) + ' each bounce.' },
               { v: b.H0 * Math.pow(b.p, k - 1), code: 'pct-shift', hint: 'That is the height <b>before</b> rebound ' + k + '. Multiply by ' + t(dn(b.p)) + ' once more.' }];
             for (var i = 0; i < c.length; i++) if (!(k === 1 && i === 0) && Math.abs(c[i].v - x) > 0.02 && Math.abs(v - c[i].v) <= 0.011 + 0.002 * c[i].v) return wrong(c[i].code, c[i].hint);
+            if (Math.abs(v - x) <= 0.03) return wrong('round-early', 'Very close — check the rounding. Keep the full value in your calculator from bounce to bounce, and round to the nearest hundredth only at the end.');
             return wrong('value', null);
           };
         }
-        var keys = hs.map(function (h) { return (Math.round(h * 100) / 100).toFixed(2); });
+        var keys = hs.map(function (h) { return (Math.round(h * 100 + 1e-6) / 100).toFixed(2); }); // 1e-6: 15 × 0.7³ = 5.145 is stored as 5.14499…
         var p = K.P.fields('Find the height of each of the first four rebounds, to the nearest hundredth of a metre. (These are the peaks your sketch must show.)', f, [chk(1), chk(2), chk(3), chk(4)], keys,
           keys.map(function (k, i) { return t(k + units('m')); }).join(', '),
           'Multiply by ' + t(dn(b.p)) + ' for each bounce: ' + t([b.H0].concat(hs).map(function (h, i) { return i ? (Math.round(h * 10000) / 10000) : h; }).join('\\to ')) + '. Rounded: ' + keys.map(function (k) { return t(k + units('m')); }).join(', ') + '.',
@@ -445,7 +446,7 @@
           { html: ballFig(b.H0, b.p, 'same'), code: 'same', why: 'Every bounce here reaches the full ' + t(b.H0 + units('m')) + '. The ball only rebounds to ' + t(b.pct + '\\%') + ' of the previous height, so each peak is lower.' },
           { html: ballFig(b.H0, b.p, 'ground'), code: 'ground', why: 'This graph starts on the ground. The ball is <b>dropped</b> from ' + t(b.H0 + units('m')) + ', so at time ' + t('0') + ' its height is ' + t(b.H0 + units('m')) + '.' },
           { html: ballFig(b.H0, b.p, 'float'), code: 'float', why: 'Here the ball never comes back down to height ' + t('0') + '. A bounce happens when the ball hits the ground, so the graph must touch the axis between arches.' }],
-          'The graph starts at ' + t(b.H0 + units('m')) + ' and falls to ' + t('0') + ' (the drop). Then come arches of height about ' + [1, 2, 3, 4].map(function (k) { return t(dn(Math.round(b.H0 * Math.pow(b.p, k) * 100) / 100)); }).join(', ') + ' m, each touching ' + t('h=0') + ' at a bounce. Lower bounces take less time, so the arches also get narrower.',
+          'The graph starts at ' + t(b.H0 + units('m')) + ' and falls to ' + t('0') + ' (the drop). Then come arches of height about ' + [1, 2, 3, 4].map(function (k) { return t(dn(Math.round(b.H0 * Math.pow(b.p, k) * 100 + 1e-6) / 100)); }).join(', ') + ' m, each touching ' + t('h=0') + ' at a bounce. Lower bounces take less time, so the arches also get narrower.',
           ['Where does the ball start? What happens at every bounce? How do the peaks change?'], 'bouncing ball graph');
       } }] },
 
@@ -455,7 +456,7 @@
         var per = r.pick(['the height of the ocean tide at a beach over a day', 'the height above the ground of a seat on a Ferris wheel turning at a steady rate', 'the height of the water at a dock as the tide comes in and goes out']);
         var D = r.sample([['the height of a candle as it burns steadily', 'A burning candle only gets shorter, at a steady rate: a straight line going down.'],
           ['the height of a tree as it grows', 'A tree’s height only increases (slowing down as it matures). It never goes back down.'],
-          ['the height of a ball thrown straight up and caught', 'A thrown ball rises and falls <b>once</b>. This graph repeats.'],
+          ['the height of a ball thrown straight up and caught', 'A thrown ball rises and falls only <b>once</b>.'],
           ['the depth of water in a bathtub being filled at a steady rate', 'A filling tub only gets deeper: a straight line going up.']], 3);
         return K.P.mc(r, 'Which situation could this graph show?' + g, [{ html: per, right: true }].concat(D.map(function (d) { return { html: d[0], why: d[1] + ' This graph rises and falls in the same pattern again and again (it is periodic).' }; })),
           'The graph rises and falls in a repeating (periodic) pattern and never reaches ' + t('0') + '. Something that goes up and down over and over fits: <b>' + per + '</b>.',
@@ -528,7 +529,11 @@
 
     { num: '8', stem: function (z) { return 'A student sketched the graph below to represent her distance from her locker during part of a school day.' + z.svg; },
       shared: function (r) {
-        var P = [[0, 0], [r.int(8, 14) / 10, r.int(8, 14) / 10], [r.int(28, 34) / 10, r.int(30, 38) / 10], [r.int(16, 21) / 10, r.int(4, 10) / 10], [r.int(40, 46) / 10, r.int(46, 52) / 10], [r.int(60, 66) / 10, r.int(3, 9) / 10]];
+        for (var k = 0; k < 50; k++) { // keep the fold visible: the 3rd vertex must not sit on the line through the 4th and 5th (else the back-track is drawn over itself)
+          var P = [[0, 0], [r.int(8, 14) / 10, r.int(8, 14) / 10], [r.int(28, 34) / 10, r.int(30, 38) / 10], [r.int(16, 21) / 10, r.int(4, 10) / 10], [r.int(40, 46) / 10, r.int(46, 52) / 10], [r.int(60, 66) / 10, r.int(3, 9) / 10]];
+          var A = P[2], B = P[3], Cq = P[4], dist = Math.abs((Cq[0] - B[0]) * (A[1] - B[1]) - (Cq[1] - B[1]) * (A[0] - B[0])) / Math.hypot(Cq[0] - B[0], Cq[1] - B[1]);
+          if (dist >= 0.3) break;
+        }
         return { svg: fig({ x: [0, 7], y: [0, 5.8], grid: 0, labels: 0, firstQuadrant: true, unit: 40, xName: ' ', yName: ' ', xTitle: 'Time', yTitle: 'Distance from locker', segs: [Ln(P)], max: 330 }) };
       }, parts: [
       { id: '8', level: 'EMG', outcome: 'RF2', make: function (r) {
@@ -569,8 +574,8 @@
     { num: '11', parts: [
       { id: '11', level: 'EMG', make: function (r) {
         var d = r.pick(['The average monthly rainfall in a coastal town is lowest in mid-summer and highest in winter. Rainfall as a function of month, starting in January.', 'A family’s monthly heating bill, which is highest in winter and lowest in summer, as a function of month, starting in January.', 'The number of hours of darkness each day, which is greatest in winter, as a function of the date, starting in January.']);
-        return mcG(r, d + ' (Over several years.)', [{ html: sk(S.wave(2, 'dip')), right: true },
-          { html: sk(S.wave(2, 'rise')), code: 'rise', why: 'This one rises first. January is in winter, when the quantity is already high, so the graph must start by going <b>down</b> toward summer.' },
+        return mcG(r, d + ' (Over several years.)', [{ html: sk(S.wave(2, 'high')), right: true }, // January (winter) is at the high point; the low point falls in mid-summer
+          { html: sk(S.wave(2, 'low')), code: 'rise', why: 'This one starts at its lowest point and rises first. January is in winter, when the quantity is high, so the graph must start high and go <b>down</b> toward summer.' },
           { html: sk(S.down()), code: 'lin', why: 'This one only goes down. The pattern repeats every year: down toward summer, then back up toward winter.' },
           { html: sk(S.upSlow()), code: 'slow', why: 'This one only goes up. The pattern repeats every year.' }],
           'Starting in January (winter) the value is high, dips to its lowest in summer, then rises again by December, and repeats every year: a <b>periodic curve that dips first</b>.', ['Is January a high month or a low month? Does the pattern repeat?'], 'match: periodic, dips first');
@@ -1030,7 +1035,9 @@
         for (var k = 0; k < 500; k++) {
           var v1 = r.pick([40, 50, 60, 70, 80, 90]), v2 = r.pick([40, 50, 60, 70, 80, 90]), t1 = r.pick([1, 1.5, 2]), t2 = r.pick([1, 1.5, 2]), s = r.pick([0.5, 1]);
           if (Math.abs(v1 - v2) < 20 || t1 + s + t2 > 4.5) continue;
-          return { v1: v1, t1: t1, s: s, v2: v2, t2: t2, d1: v1 * t1, d2: v1 * t1 + v2 * t2, T: t1 + s + t2 };
+          var e1 = v1 * t1, e2 = e1 + v2 * t2; // the stem needs a gridline spacing that divides both distances with at most 24 lines (else 40–60 lines, a few px apart)
+          if (![60, 50, 40, 30, 20, 15, 10, 5].some(function (q) { return e1 % q === 0 && e2 % q === 0 && e2 * 1.12 / q <= 24; })) continue;
+          return { v1: v1, t1: t1, s: s, v2: v2, t2: t2, d1: e1, d2: e2, T: t1 + s + t2 };
         }
       }, parts: [
       { id: 'e10a', level: 'EMG', make: function (r, v) {
@@ -1061,8 +1068,9 @@
         return 'The graph shows the <b>speed</b> of a light-rail train between two stations.' + ctx({ X: X, Y: Y, gx: 5, gy: 5, xt: 'Time (s)', yt: 'Speed (m/s)', pts: [[0, 0], [L.t[1], L.v], [L.t[2], L.v], [L.t[3], 0], [L.t[4], 0]], xT: tickList(10, X - 4, 10), yT: tickList(5, Y - 2, 5), aria: 'train speed' });
       }, shared: function (r) {
         if (r.chance(0.3)) return { t: [0, 10, 40, 50, 70], v: 20 };
-        var t1 = r.pick([8, 10, 12, 15]), t2 = t1 + r.pick([20, 25, 30, 40]), t3 = t2 + r.pick([8, 10, 12]), t4 = t3 + r.pick([15, 20]);
-        return { t: [0, t1, t2, t3, t4], v: r.pick([15, 18, 20, 24, 25]) };
+        // every corner on a gridline (grid 5 s × 5 m/s): e12d reads the stop times and e12e the speed off the graph
+        var t1 = r.pick([5, 10, 15]), t2 = t1 + r.pick([20, 25, 30, 40]), t3 = t2 + r.pick([5, 10, 15]), t4 = t3 + r.pick([15, 20]);
+        return { t: [0, t1, t2, t3, t4], v: r.pick([10, 15, 20, 25, 30]) };
       }, parts: [
       { id: 'e12a', level: 'BEG', make: function (r, L) {
         var rows = [0, 1, 2, 3].map(function (i) { return { id: 's' + i, html: L.t[i] + '–' + L.t[i + 1] + ' s' }; }), want = { s0: 'up', s1: 'steady', s2: 'down', s3: 'stop' };
@@ -1112,7 +1120,8 @@
       }, shared: function (r) {
         if (r.chance(0.3)) return { p: [[0, 0], [5, 45], [25, 45], [30, 0], [40, 0], [45, 30], [60, 30]], v1: 45, v2: 30 };
         for (var k = 0; k < 500; k++) {
-          var a = r.pick([3, 5]), v1 = r.pick([30, 45, 60, 90]), L = r.pick([12, 15, 20, 30]), c = r.pick([3, 5]), st = r.pick([5, 10]), e = r.pick([3, 5]), v2 = r.pick([20, 30, 40, 50]), f = r.pick([10, 15]);
+          // times are multiples of 5 so every corner sits on a 5-min gridline (e13c reads the stop off the graph)
+          var a = r.pick([5, 10]), v1 = r.pick([30, 45, 60, 90]), L = r.pick([10, 15, 20, 30]), c = r.pick([5, 10]), st = r.pick([5, 10]), e = r.pick([5, 10]), v2 = r.pick([20, 30, 40, 50]), f = r.pick([10, 15]);
           if ((v1 * L / 60) % 1 || v1 === v2) continue;
           var x = [0, a, a + L, a + L + c, a + L + c + st, a + L + c + st + e, a + L + c + st + e + f]; if (x[6] > 75) continue;
           return { p: [[0, 0], [x[1], v1], [x[2], v1], [x[3], 0], [x[4], 0], [x[5], v2], [x[6], v2]], v1: v1, v2: v2 };
