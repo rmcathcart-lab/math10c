@@ -710,7 +710,7 @@ const wedge = {
     const Elab = hide(S3.label(Ep, T("E'"), { dx: -20, dy: 14, cls: 'bk-lab u9l7-v' }));
     const l6 = hide(S3.label(lerp3(Ep, V.E, 0.5), T(cA('6')), { dy: 18 })), l7 = hide(S3.label(lerp3(Ep, V.H, 0.5), T(cO('7')), { dx: -18 })), lEH = hide(S3.label(lerp3(V.E, V.H, 0.5), T(cH('\\sqrt{85}')), { dx: 30, dy: 6 }));
     const a1 = hide(S3.add('path', arc3(V.E, [0, 1, 0], [0, 0, 1], HEE, 1.6), { stroke: REF, 'stroke-width': 3.5 })), a1l = hide(S3.label(add3(add3(V.E, [0, 1, 0], 2.3), [0, 0, 1], 1.1), T('49.40^\\circ'), { color: REF, cls: 'u9l7-lab u9l7-alab' }));
-    const a2 = hide(S3.add('path', arc3(V.E, [0, 0, -1], [0, 1, 0], 90 + HEE, 0.9), { stroke: RED, 'stroke-width': 3.5 })), a2l = hide(S3.label(add3(V.E, [0, -1, 0.2], 0.4), T('139^\\circ'), { color: RED, dx: 34, dy: 18, cls: 'u9l7-lab u9l7-alab' }));
+    const a2 = hide(S3.add('path', arc3(V.E, [0, 0, -1], [0, 1, 0], 90 + HEE, 0.9), { stroke: RED, 'stroke-width': 3.5 })), a2l = hide(S3.label(add3(V.E, [0, 0.938, -0.347], 1.9), T('139^\\circ'), { color: RED, cls: 'u9l7-lab u9l7-alab' }));
     return [
       { cap: `Work in the side face ${T('ADHE')}: a right trapezoid. ${T('EA=2')} and ${T('HD=9')} are vertical; ${T('AD=6')} is horizontal.`, run: async (c) => { await appear(c, sf, 400); await say(c, Pn, `${T('EA=2')}, ${T('HD=9')}, ${T('AD=6')}`); } },
       { cap: `Turn the solid so face ${T('ADHE')} faces us.`, run: async (c) => { await Promise.all([S3.turn(c, 90, 4, 1800), S3.dimEdges(c, 0.35), ...back.map((e) => anim(c, e, [{ opacity: 1 }, { opacity: 0 }], 300))]); } },

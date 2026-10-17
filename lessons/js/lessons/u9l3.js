@@ -538,7 +538,7 @@ const solve7 = {
     const W = ex.W, de = 71 * Math.tan(64 * RAD), df = 71 / Math.cos(64 * RAD);
     const t = mkTri(stage, 'e7', { x: 0, y: 0, w: 330, h: 440, pad: 66, r: 30, lab: { vert: 'DE', hyp: 'DF' } });
     const f4 = (v) => texNum(v, 1).replace(/^(\d+)(\d{3})/, '$1\\,$2');
-    const k1 = checkCard(stage, { title: 'Pythagoras check', left: ['71^2+' + de.toFixed(4) + '^2', '5041+' + texNum(de * de, 1), f4(71 * 71 + de * de)], right: [df.toFixed(4) + '^2', f4(df * df)], ok: true, x: 350, y: 10, width: W - 360, hidden: true });
+    const k1 = checkCard(stage, { title: 'Pythagoras check', left: ['71^2+' + de.toFixed(4) + '^2', f4(5041) + '+' + f4(de * de), f4(71 * 71 + de * de)], right: [df.toFixed(4) + '^2', f4(df * df)], ok: true, x: 350, y: 10, width: W - 360, hidden: true });
     const P = panel(stage, 350, 268, W - 360, 196, '');
     return [
       { cap: 'Keep the <b>unrounded</b> answers: the legs squared and added should give the hypotenuse squared.', run: (c) => k1.play(c) },
