@@ -43,7 +43,6 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u10l4b-axis { position: absolute; inset: 0; border-top: 2px solid var(--ink2); }
 .u10l4b-axt { position: absolute; top: -2px; width: 0; height: 7px; border-left: 1.5px solid var(--ink2); }
 .u10l4b-axt5 { height: 11px; }
-.u10l4b-axt5::after { content: attr(data-x); }
 .u10l4b-axt { font-size: 14px; white-space: nowrap; color: var(--ink2); text-indent: -14px; line-height: 40px; }
 .u10l4b-win { margin: 6px 0 0 220px; font-weight: 700; color: var(--ok); font-size: 18px; }
 .u10l4b-early { margin-top: 14px; }

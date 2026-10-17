@@ -113,3 +113,7 @@ h2 .katex, h3 .katex { font-size: .95em; }
 
 /* ladder scene */
 .u9l5-scene-t { font: 800 20px var(--round); }
+
+/* keep wide KaTeX from stretching grid columns (answers wrap between spans instead) */
+.parts.c2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.u9l5-exrow { grid-template-columns: 330px minmax(0, 1fr); }

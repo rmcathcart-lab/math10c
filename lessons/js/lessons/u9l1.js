@@ -343,7 +343,7 @@ const why = {
         } },
       { cap: `Slide the small one into the corner of the big one. It fits exactly: its slanted side lies along the big one’s.`,
         run: async (c) => {
-          const extra = [sm.S('OA').lenEl, sm.arcs.O.g, sm.arcs.O.lab, sm.oLab];
+          const extra = [sm.S('OA').lenEl, sm.arcs.O.g, sm.arcs.O.lab, sm.oLab, sm.poly];
           await Promise.all(extra.map((e) => anim(c, e, [{ opacity: 1 }, { opacity: 0 }], 300)));
           await anim(c, sm.el, [{ transform: 'translateX(0)' }, { transform: `translateX(${dx}px)` }], 1300);
         } },
