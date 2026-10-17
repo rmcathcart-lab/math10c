@@ -118,7 +118,7 @@
   /* ---------- several labelled boxes. f.mode: 'number' (default), 'text', or 'math' (a math box; f.keys picks the keypad,
    * f.none adds a "none" key). Math boxes share one keypad that types into whichever math box was used last. ---------- */
   W.fields = function (opt) {
-    var wrap = el('div', 'w-fields'), enter = null, boxes = [], active = null, mathKeys = null, wantNone = false;
+    var wrap = el('div', 'w-fields'), enter = null, boxes = [], active = null, mathKeys = null, wantNone = false, activeText = null, numBoxes = 0;
     function next(i) { for (var j = i + 1; j < boxes.length; j++) { var b = boxes[j]; if (!b.get()) { b.focus(); return; } } if (enter) enter(); }
     opt.fields.forEach(function (f, i) {
       var row = el('div', 'ans-row fld-row');
@@ -142,6 +142,7 @@
         inp.setAttribute('autocapitalize', 'off'); inp.setAttribute('inputmode', f.mode === 'text' ? 'text' : 'decimal'); if (f.placeholder) inp.placeholder = f.placeholder;
         inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); next(i); } });
         row.appendChild(inp);
+        if (f.mode !== 'text') { numBoxes++; inp.addEventListener('focusin', function () { activeText = inp; }); if (!activeText) activeText = inp; }
         box = { kind: 'text', get: function () { return inp.value.trim(); }, focus: function () { inp.focus(); }, clear: function () { inp.value = ''; }, disable: function (on) { inp.disabled = !!on; }, set: function (v) { inp.value = v; } };
       }
       if (f.after) row.appendChild(el('span', 'ans-affix', HW.tex(f.after)));
@@ -150,11 +151,27 @@
     if (mathKeys) {
       var ksx = W.KEYSETS[mathKeys] || W.KEYSETS.product; if (typeof ksx === 'function') ksx = ksx({ vars: opt.fields.reduce(function (acc, f) { return acc.concat(f.vars || []); }, []).filter(function (v, i, arr) { return arr.indexOf(v) === i; }) });
       var rows = ksx.map(function (r) { return r.slice(); });
-      if (wantNone) rows[rows.length - 1].splice(rows[rows.length - 1].length - 1, 0, { label: 'none', tex: '\\text{none}', plain: 'none', title: 'There is no such root' });
+      if (wantNone) rows[rows.length - 1].splice(rows[rows.length - 1].length - 1, 0, { label: 'none', tex: '\\text{none}', plain: 'none', title: 'There is no answer' });
       var kp = W.keypad(rows, function (k) { if (k.fn === 'enter') { if (enter) enter(); return; } if (active) active.w.press(k); });
       kp.classList.add('kp-small'); wrap.appendChild(kp);
       var help = W.KEYHELP[mathKeys] ? W.KEYHELP[mathKeys][W.mathReady() ? 0 : 1] : (W.mathReady() ? 'Tap a box, then use <b>x<sup>n</sup></b> for an exponent and <b>×</b> between factors. Press <b>▶</b> to step out of an exponent.' : 'Type <b>^</b> for an exponent and <b>×</b> or <b>*</b> between factors, e.g. <code>2^3 × 3</code>.');
-      wrap.appendChild(el('div', 'w-help', help + (wantNone ? ' Press <b>none</b> if there is no such root.' : '')));
+      wrap.appendChild(el('div', 'w-help', help + (wantNone ? ' Press <b>none</b> if there is no answer (for example, it has no such root or doesn’t factor).' : '')));
+    }
+    if (!mathKeys && numBoxes) { // number boxes: phones' decimal keyboards have no minus sign, so give them a small keypad
+      var nk = function (v) { return { label: v === '-' ? '−' : v, v: v }; };
+      var kpn = W.keypad([[nk('7'), nk('8'), nk('9'), { label: '⌫', fn: 'del', title: 'Delete' }], [nk('4'), nk('5'), nk('6'), nk('-')], [nk('1'), nk('2'), nk('3'), nk('.')],
+        [{ label: '0', v: '0', wide: true }, { label: 'clear', fn: 'clear' }, { label: 'Check ↵', fn: 'enter' }]], function (k) {
+        if (k.fn === 'enter') { if (enter) enter(); return; }
+        var t = activeText; if (!t || t.disabled) return;
+        var st = t.selectionStart == null ? t.value.length : t.selectionStart, en = t.selectionEnd == null ? st : t.selectionEnd;
+        if (k.fn === 'clear') { t.value = ''; st = 0; }
+        else if (k.fn === 'del') { if (st === en && st > 0) st--; t.value = t.value.slice(0, st) + t.value.slice(en); }
+        else { t.value = t.value.slice(0, st) + k.v + t.value.slice(en); st += k.v.length; }
+        try { t.setSelectionRange(st, st); } catch (e) {}
+        t.dispatchEvent(new Event('input')); if (!coarse()) t.focus();
+      });
+      kpn.classList.add('kp-small'); wrap.appendChild(kpn);
+      wrap.appendChild(el('div', 'w-help', 'Tap a box, then type with the keypad or your keyboard.'));
     }
     return { node: wrap, value: function () { return boxes.map(function (b) { return b.get(); }); }, focus: function () { if (!coarse() && boxes[0]) boxes[0].focus(); },
       clear: function () { boxes.forEach(function (b) { b.clear(); }); }, disable: function (on) { wrap.classList.toggle('off', !!on); boxes.forEach(function (b) { b.disable(on); }); },

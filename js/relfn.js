@@ -312,7 +312,7 @@
       var miss = T.filter(function (x) { return !A.some(function (y) { return ex.eq(x, y, 1e-9) || Math.abs(x - y) < 1e-12; }); }), extra = A.filter(function (x) { return !T.some(function (y) { return ex.eq(x, y, 1e-9) || Math.abs(x - y) < 1e-12; }); });
       if (!miss.length && !extra.length) return ok();
       if (opt.diag) { var h = opt.diag(A, T); if (h) return wrong(h.code || 'diag', h.hint); }
-      if (miss.length && !extra.length) return wrong('sol-missing', 'Correct so far — but there ' + (miss.length === 1 ? 'is another solution' : 'are more solutions') + '. Set <b>each</b> factor equal to zero.');
+      if (miss.length && !extra.length) return wrong('sol-missing', 'Correct so far — but there ' + (miss.length === 1 ? 'is another solution' : 'are more solutions') + '. Look for every value that makes the equation true (for example, both a positive and a negative square root, or one from each factor).');
       if (extra.length && !miss.length) return wrong('sol-extra', 'You have ' + (extra.length === 1 ? 'a value that isn’t' : 'values that aren’t') + ' a solution — substitute each one to check.');
       if (A.length === T.length && A.every(function (x) { return T.some(function (y) { return ex.eq(-x, y, 1e-9); }); })) return wrong('sol-sign', 'Check the signs: if ' + t('x-3=0') + ' then ' + t('x=3') + ' (not ' + t('-3') + ').');
       return wrong('value', null);

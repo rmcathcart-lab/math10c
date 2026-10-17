@@ -31,6 +31,9 @@ chk('(a+b)(x+3)', {}, { '(x+3)(a+b)': 'correct', 'a(x+3)+b(x+3)': 'form:not-fact
 chk('5x^{2}(2x-3)', {}, { '5x^2(2x-3)': 'correct', '5x(2x^2-3x)': 'form:gcf-inside', 'x^2(10x-15)': 'form:gcf-inside' });
 chk('3x(x^{2}-16)', { gcfOnly: true }, { '3x(x^2-16)': 'correct', '3x(x-4)(x+4)': 'correct', 'x(3x^2-48)': 'form:gcf-inside' });
 chk('(x+3)(x-4)', { wrong: [{ is: '(x-3)(x+4)', code: 'swap', hint: 'swapped' }] }, { '(x-3)(x+4)': 'wrong:swap', '': 'form:empty' });
+chk('(\\frac{1}{2}x+2y)^{2}', {}, { '(\\frac{1}{2}x+2y)^2': 'correct', '\\frac{1}{4}(x+4y)^2': 'correct' });
+chk('(x-1)^{2}(x+1)^{2}', {}, { '[(x-1)(x+1)]^2': 'correct', '(x^2-1)^2': 'form:factor-more' });
+chk('(3x-10)(x-4)', {}, { '(3(x-2)-4)(x-2-2)': 'form:simplify-bracket', '(3x-10)(x-4)': 'correct' });
 var p = K.P.factored('Factor.', '(x+3)(x-4)', {}, 's', [], 't');
 eq([p.key, p.input.keys, p.check(p.key).v], ['(x+3)(x-4)', 'poly', 'correct'], 'builder');
 console.log(n + ' checks, ' + fails + ' failed');

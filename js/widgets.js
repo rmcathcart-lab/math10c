@@ -134,7 +134,7 @@
       mf.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); if (enter) enter(); } else if (e.key === '|' && opt.keys === 'set') { e.preventDefault(); e.stopPropagation(); try { mf.executeCommand(['insert', '\\mid', { focus: true, feedback: false, mode: 'math', format: 'latex' }]); } catch (x) {} } }, true);
       mf.addEventListener('mount', function () { if (api.wantFocus) api.focus(); noPhoneKb(); });
       var row = el('div', 'ans-row'); if (opt.before) row.appendChild(el('span', 'ans-affix', HW.tex(opt.before)));
-      row.appendChild(mf); wrap.appendChild(row);
+      row.appendChild(mf); if (opt.after) row.appendChild(el('span', 'ans-affix', HW.tex(opt.after))); wrap.appendChild(row);
       api.value = function () { return mf.value; };
       api.focus = function () { api.wantFocus = true; try { if (!coarse()) mf.focus({ preventScroll: true }); } catch (e) {} };
       api.clear = function () { mf.value = ''; };
@@ -155,7 +155,7 @@
       var inp = plainInput(opt.placeholder || ({ radical: 'e.g. 3sqrt(5)', fraction: 'e.g. 3/4', decimal: 'e.g. 0.1\\overline{6}', expr: 'Your answer', var: 'e.g. 3x sqrt(2x)', abs: 'Your answer', expo: 'e.g. 3x^4/(2y^2)', poly: 'e.g. 3x^2 - 5x + 4', sci: 'e.g. 3.2 × 10^5' })[opt.keys] || 'e.g. 2^3 × 3 × 11', 'text'); inp.classList.add('ans-wide');
       var prev = el('div', 'preview muted', 'Your answer will appear here as math.');
       var row2 = el('div', 'ans-row'); if (opt.before) row2.appendChild(el('span', 'ans-affix', HW.tex(opt.before)));
-      row2.appendChild(inp); wrap.appendChild(row2); wrap.appendChild(prev);
+      row2.appendChild(inp); if (opt.after) row2.appendChild(el('span', 'ans-affix', HW.tex(opt.after))); wrap.appendChild(row2); wrap.appendChild(prev);
       function upd() { var v = inp.value.trim(); prev.className = 'preview' + (v ? '' : ' muted'); prev.innerHTML = v ? '<span class="eyebrow">Reads as</span> ' + HW.k(plainToLatex(v)) : 'Your answer will appear here as math.'; }
       inp.addEventListener('input', upd);
       inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); if (enter) enter(); } });
