@@ -196,7 +196,7 @@
     { num: '1', section: 'Extra practice A — One relation, several descriptions', stem: function (sh) { return 'A rain barrel holds ' + t(sh.V) + ' L of water. A soaker hose drains it at a steady rate of ' + t(sh.R) + ' L per minute. Let ' + t('t') + ' be the time in minutes and ' + t('V') + ' the volume left in litres.'; },
       shared: function (r) { var o = r.pick([[200, 25], [200, 25], [200, 20], [240, 30], [180, 20], [160, 20], [150, 25], [240, 40], [300, 50]]); return { V: o[0], R: o[1], T: o[0] / o[1] }; },
       parts: [
-        { id: 'e1b', level: 'BEG', make: function (r, sh) {
+        { id: 'e1b', sub: 'b', level: 'BEG', make: function (r, sh) {
           var V = sh.V, R = sh.R, ts = [0, 1, 2, 3, 4], vs = ts.map(function (x) { return V - R * x; });
           var fields = ts.map(function (x) { return { label: t('t=' + x), name: t('t=' + x), before: t('V=') }; });
           return { prompt: 'Complete the table of values for ' + t('t=0,1,2,3,4') + '.', input: { type: 'fields', fields: fields }, key: vs.map(String), answer: htable('t', 'V', ts, vs), text: 'barrel table',
@@ -207,12 +207,12 @@
               return null; }); }), { labels: fields.map(function (f) { return f.name; }) }),
             solution: 'Start at ' + t(V) + ' and subtract ' + t(R) + ' each minute: ' + t(seqTex(vs)) + '.', hints: ['At ' + t('t=0') + ' the barrel is full. Each minute, ' + t(R) + ' L drain away.'] };
         } },
-        { id: 'e1c', level: 'BEG', outcome: 'RF2', make: function (r, sh) {
+        { id: 'e1c', sub: 'c', level: 'BEG', outcome: 'RF2', make: function (r, sh) {
           var ps = [0, 1, 2, 3, 4].map(function (x) { return [x, sh.V - sh.R * x]; });
           return pairsPart('Write the relation for ' + t('t=0,1,2,3,4') + ' as a set of ordered pairs ' + t('(t,V)') + '.', ps, 'Pair each ' + t('t') + ' with its ' + t('V') + ', input first: ' + t(ptsTex(ps)) + '.', 'barrel pairs');
         } },
-        { id: 'e1d', level: 'EMG', make: function (r, sh) { return contMC(r, 'The water level falls continuously, not in jumps. What should you do with the points after you plot them?', false, 'Water keeps draining between the whole minutes (at ' + t('t=1.5') + ' there is still a volume), so the in-between points belong to the relation too.', 'barrel continuous'); } },
-        { id: 'e1e', level: 'EMG', make: function (r, sh) {
+        { id: 'e1d', sub: 'd', level: 'EMG', make: function (r, sh) { return contMC(r, 'The water level falls continuously, not in jumps. What should you do with the points after you plot them?', false, 'Water keeps draining between the whole minutes (at ' + t('t=1.5') + ' there is still a volume), so the in-between points belong to the relation too.', 'barrel continuous'); } },
+        { id: 'e1e', sub: 'e', level: 'EMG', make: function (r, sh) {
           var V = sh.V, R = sh.R, T = sh.T, ly = [50, 60, 40, 30, 100].filter(function (x) { return V % x === 0 && V / x >= 3 && V / x <= 6; })[0], gy = ly / 2;
           var base = { X: T + 1, Y: V + gy, gx: 1, gy: gy, lx: T > 7 ? 2 : 1, ly: ly, xn: 't', yn: 'V', xt: 'Time (min)', yt: 'Volume (L)', w: 180, h: 130, max: 220 };
           var dots = [0, 1, 2, 3, 4].map(function (x) { return { x: x, y: V - R * x }; });
@@ -225,12 +225,12 @@
             'The graph starts at ' + t('(0,' + V + ')') + ', falls ' + t(R) + ' L each minute and is a solid line (continuous) that reaches the ' + t('t') + '-axis at ' + t('(' + T + ',0)') + '.', ['Where does the graph start? Does it go up or down? Is it joined?'], 'barrel graph');
           p.input.columns = 2; return p;
         } },
-        { id: 'e1f', level: 'EMG', make: function (r, sh) {
+        { id: 'e1f', sub: 'f', level: 'EMG', make: function (r, sh) {
           return K.P.number('At what time is the barrel empty?', sh.T, function (v) {
             if (v === sh.V - sh.R) return { code: 'diag', hint: 'That’s the volume after one minute. Find the time when the volume reaches ' + t('0') + '.' };
             return null; }, 'Empty means ' + t('V=0') + ': ' + t(sh.V + '\\div ' + sh.R + '=' + sh.T) + '. The barrel is empty after <b>' + sh.T + ' min</b>.', ['How many minutes does it take to drain ' + t(sh.V) + ' L at ' + t(sh.R) + ' L per minute?'], 'barrel empty time', { after: 'min' });
         } },
-        { id: 'e1g', level: 'PRG', make: function (r, sh) {
+        { id: 'e1g', sub: 'g', level: 'PRG', make: function (r, sh) {
           var V = sh.V, R = sh.R;
           var p = K.P.poly('Write an equation for ' + t('V') + ' in terms of ' + t('t') + '.', PL.parse(cfirst(V, -R, 't')), { before: t('V='), keyTex: cfirst(V, -R, 't'),
             wrong: [{ is: PL.parse(lin(R, -V, 't')), code: 'eq-sign', hint: 'At ' + t('t=0') + ' your equation gives ' + t('V=-' + V) + '. The barrel starts full and loses water.' },
@@ -261,8 +261,8 @@
             hints: ['Pick two columns and divide the change in ' + t('C') + ' by the change in ' + t('d') + '.', 'Then take the daily charges off one of the totals.'] };
         } },
         { id: 'e2b', level: 'BEG', outcome: 'RF2', make: function (r, sh) { var ps = sh.ds.map(function (d, i) { return [d, sh.cs[i]]; }); return pairsPart('Write the relation as a set of ordered pairs ' + t('(d,C)') + '.', ps, 'Each column gives a pair, input first: ' + t(ptsTex(ps)) + '. The first coordinate is ' + t('d') + ' (days, independent); the second is ' + t('C') + ' (dollars, dependent).', 'rental pairs'); } },
-        { id: 'e2d', level: 'EMG', make: function (r, sh) { return contMC(r, 'The shop rents only in whole days. When you plot the ordered pairs, should you join the points with a line?', true, 'Only whole days can be rented — a line would claim a charge for ' + t('2.5') + ' days, which can’t happen.', 'rental discrete'); } },
-        { id: 'e2e', level: 'EMG', make: function (r, sh) {
+        { id: 'e2d', sub: 'd', level: 'EMG', make: function (r, sh) { return contMC(r, 'The shop rents only in whole days. When you plot the ordered pairs, should you join the points with a line?', true, 'Only whole days can be rented — a line would claim a charge for ' + t('2.5') + ' days, which can’t happen.', 'rental discrete'); } },
+        { id: 'e2e', sub: 'e', level: 'EMG', make: function (r, sh) {
           var F = sh.F, R = sh.R, d1 = r.pick([3, 5, 7].filter(function (d) { return sh.ds.indexOf(d) < 0; })), d2 = r.pick([9, 10, 12]);
           var fields = [{ label: t(d1) + ' days:', name: d1 + ' days', before: t('\\$') }, { label: t(d2) + ' days:', name: d2 + ' days', before: t('\\$') }];
           var diag = function (d) { return function (v) { if (v === R * d) return { code: 'ctx-no-fee', hint: 'Add the ' + t('\\$' + F) + ' up-front charge.' }; if (v === (F + R) * d) return { code: 'ctx-fee-times', hint: 'The up-front charge is paid once, not every day.' }; return null; }; };
@@ -271,7 +271,7 @@
             check: K.fields([K.number(F + R * d1, diag(d1)), K.number(F + R * d2, diag(d2))], { labels: [d1 + ' days', d2 + ' days'] }),
             solution: t('C=' + F + '+' + R + 'd') + '. ' + t('d=' + d1 + ':\\ ' + F + '+' + R + '(' + d1 + ')=' + (F + R * d1)) + '; ' + t('d=' + d2 + ':\\ ' + F + '+' + R + '(' + d2 + ')=' + (F + R * d2)) + '.', hints: ['Use ' + t('C=' + F + '+' + R + 'd') + ' (up-front charge plus the daily charge times the days).'] };
         } },
-        { id: 'e2f', level: 'PRG', make: function (r, sh) {
+        { id: 'e2f', sub: 'f', level: 'PRG', make: function (r, sh) {
           var F = sh.F, R = sh.R, d = r.int(11, 16), C = F + R * d;
           return K.P.number('A customer is charged ' + t('\\$' + C) + '. How many days did they keep the washer?', d, function (v) {
             if (Math.abs(v - C / R) < 0.01) return { code: 'ctx-no-fee', hint: 'Part of the ' + t('\\$' + C) + ' is the ' + t('\\$' + F) + ' up-front charge. Take it off first.' };
@@ -285,7 +285,7 @@
         return { m: m, b: b, ps: [-2, -1, 0, 1, 2].map(function (x) { return [x, m * x + b]; }) };
       },
       parts: [
-        { id: 'e3d', level: 'EMG', make: function (r, sh) {
+        { id: 'e3d', sub: 'd', level: 'EMG', make: function (r, sh) {
           var m = sh.m, b = sh.b;
           var opts = [{ html: 'Each output is ' + rule(m, b) + '.', right: true },
             { html: 'Each output is ' + WORD[m] + (b > 0 ? ' more' : ' less') + ' than ' + times(Math.abs(b)) + 'the input.', why: 'Test it on ' + t(pt([0, b])) + ': your rule gives ' + t(b > 0 ? m : -m) + ', not ' + t(b) + '.' },
@@ -293,7 +293,7 @@
             { html: 'Each output is ' + WORD[Math.abs(b)] + (b > 0 ? ' less' : ' more') + ' than ' + times(m) + 'the input.', why: 'Test it on ' + t(pt([0, b])) + ': your rule gives ' + t(-b) + ', not ' + t(b) + '.' }];
           return mc(r, 'Describe the relation in words.', opts, 'As ' + t('x') + ' goes up by ' + t('1') + ', ' + t('y') + ' goes up by ' + t(m) + ', and ' + t('x=0') + ' gives ' + t('y=' + b) + '. Each output is <b>' + rule(m, b) + '</b>.', ['Look at the pair with input ' + t('0') + ', and at how much the output grows for each step of ' + t('1') + '.'], 'words for y=' + lin(m, b));
         } },
-        { id: 'e3e', level: 'EMG', make: function (r, sh) {
+        { id: 'e3e', sub: 'e', level: 'EMG', make: function (r, sh) {
           var m = sh.m, b = sh.b;
           var p = K.P.poly('Write an equation for the relation.', PL.parse(lin(m, b)), { before: t('y='),
             wrong: [{ is: PL.parse(lin(b, m)), code: 'eq-rate-const', hint: 'Check with ' + t(pt([0, b])) + ': at ' + t('x=0') + ' the output is ' + t(b) + ', so the constant is ' + t(b) + '. The change per step, ' + t(m) + ', multiplies ' + t('x') + '.' },
@@ -301,7 +301,7 @@
             t('y') + ' rises ' + t(m) + ' for every ' + t('1') + ' in ' + t('x') + ', and ' + t('y=' + b) + ' when ' + t('x=0') + ': ' + t('y=' + lin(m, b)) + '. Check ' + t(pt(sh.ps[4])) + ': ' + t(m + '(2)' + term(b, '', false) + '=' + sh.ps[4][1]) + ' ✓', ['How much does ' + t('y') + ' change for each step of ' + t('1') + ' in ' + t('x') + '? What is ' + t('y') + ' when ' + t('x=0') + '?'], 'equation from pairs');
           p.good = [num(b) + '+' + m + 'x']; return p;
         } },
-        { id: 'e3f', level: 'EMG', make: function (r, sh) {
+        { id: 'e3f', sub: 'f', level: 'EMG', make: function (r, sh) {
           var m = sh.m, b = sh.b, X = r.int(5, 8), xi = r.pick([-7, -6, -5, -4, -3].filter(function (x) { return m * (m * x + b) + b !== x; })), Y = m * xi + b;
           var fields = [nbox('Output when the input is ' + t(X) + ':', 'Output'), nbox('Input that gives an output of ' + t(Y) + ':', 'Input')];
           return { prompt: 'Use your equation. Determine the output when the input is ' + t(X) + ', and the input that gives an output of ' + t(Y) + '.', input: { type: 'fields', fields: fields }, key: [String(m * X + b), String(xi)], text: 'evaluate and solve y=' + lin(m, b),
@@ -323,7 +323,7 @@
       },
       parts: [
         { id: 'e4a', level: 'BEG', outcome: 'RF2', make: function (r, sh) { return pairsPart('Read the five ordered pairs off the graph.', sh.ps, 'Read across for ' + t('x') + ', then up or down for ' + t('y') + ': ' + t(ptsTex(sh.ps)) + '.', 'pairs from graph'); } },
-        { id: 'e4d', level: 'PRG', make: function (r, sh) {
+        { id: 'e4d', sub: 'd', level: 'PRG', make: function (r, sh) {
           var m = sh.m, b = sh.b, s = sh.step, d = m * s;
           var w = [{ is: PL.parse(lin(-m, b)), code: 'sign', hint: 'As ' + t('x') + ' increases, does ' + t('y') + ' go up or down? That decides the sign of the ' + t('x') + ' term.' }];
           if (s > 1) w.push({ is: PL.parse(lin(d, b)), code: 'diff-unit', hint: 'The inputs go up by ' + t(s) + ', so ' + t(num(d)) + ' is the change in ' + t('y') + ' for ' + t(s) + ' steps of ' + t('x') + '. Per ' + t('1') + ' in ' + t('x') + ', it is ' + t(num(d) + '\\div ' + s + '=' + m) + '.' });
@@ -332,7 +332,7 @@
             ['How much does ' + t('y') + ' change for each increase of ' + t('1') + ' in ' + t('x') + '?', 'Continue the pattern to ' + t('x=0') + ' to find the constant.'], 'equation from graph points');
           p.good = [num(b) + term(m, 'x', false)]; return p;
         } },
-        { id: 'e4e', level: 'EMG', make: function (r, sh) {
+        { id: 'e4e', sub: 'e', level: 'EMG', make: function (r, sh) {
           return mc(r, 'The points were left unjoined. What does that tell you about the relation?', [
             { html: 'It is <b>discrete</b>: only these five ordered pairs belong to it. Joining them would claim that inputs like ' + t('x=0.5') + ' also have outputs.', right: true },
             { html: 'It is <b>continuous</b>; the person drawing it just forgot to join the points.', why: 'The question says the graph shows <b>every</b> ordered pair — there are no others to join.' },
@@ -348,8 +348,8 @@
         return { ins: ins, outs: outs, pat: pat, pairs: arrowsFrom(ins, outs, pat) };
       },
       parts: [
-        { id: 'e5b', level: 'BEG', outcome: 'RF2', make: function (r, sh) { return pairsPart('Write the relation as a set of ordered pairs.', sh.pairs, 'Read each arrow, input first: ' + t(ptsTex(sh.pairs)) + '.', 'pairs from mapping'); } },
-        { id: 'e5c', level: 'EMG', outcome: 'RF2', make: function (r, sh) {
+        { id: 'e5b', sub: 'b', level: 'BEG', outcome: 'RF2', make: function (r, sh) { return pairsPart('Write the relation as a set of ordered pairs.', sh.pairs, 'Read each arrow, input first: ' + t(ptsTex(sh.pairs)) + '.', 'pairs from mapping'); } },
+        { id: 'e5c', sub: 'c', level: 'EMG', outcome: 'RF2', make: function (r, sh) {
           var shared = sh.outs[[0, 1, 2].filter(function (j) { return sh.pat.filter(function (x) { return x === j; }).length === 2; })[0]], from = sh.pairs.filter(function (p) { return p[1] === shared; });
           return mc(r, 'One element of ' + t('Y') + ' has two arrows pointing at it. Which one, and what does that look like in the list of ordered pairs?', [
             { html: t(shared) + ' — it is the second coordinate of two pairs, ' + t(pt(from[0])) + ' and ' + t(pt(from[1])) + '.', right: true },
@@ -430,21 +430,21 @@
             { html: 'The relation is not linear, because the first differences are odd numbers.', why: 'Odd or even doesn’t matter (a line can go up by 3 every time). What matters is whether they are all <b>equal</b>.' }],
             'First differences ' + t(seqTex(ds)) + ' are not all equal, so the relation is <b>not linear</b> — its graph is a curve.', ['Are the first differences all the same?'], 'squares not linear');
         } },
-        { id: 'e8d', level: 'EMG', make: function (r, sh) {
+        { id: 'e8d', sub: 'd', level: 'EMG', make: function (r, sh) {
           var a = r.pick(sh.ss.filter(function (s) { return sh.ss.indexOf(2 * s) >= 0; })), A1 = a * a, A2 = 4 * a * a;
           return K.P.number('The side length doubles from ' + t(a) + ' m to ' + t(2 * a) + ' m. Use the table: the area is multiplied by what number?', 4, function (v) {
             if (v === 2) return { code: 'sq-double', hint: 'Check the table: ' + t('A=' + A1) + ' when ' + t('s=' + a) + ' and ' + t('A=' + A2) + ' when ' + t('s=' + 2 * a) + '. Divide.' };
             if (v === A2 - A1) return { code: 'diag', hint: 'That’s how much the area <b>increased</b>. The question asks what it was <b>multiplied</b> by: divide.' };
             return null; }, 'From the table, ' + t('s=' + a) + ' gives ' + t('A=' + A1) + ' and ' + t('s=' + 2 * a) + ' gives ' + t('A=' + A2) + '. ' + t(A2 + '\\div ' + A1 + '=4') + ': doubling the side multiplies the area by <b>4</b>, not by 2.', ['Divide the new area by the old area.'], 'double side area factor');
         } },
-        { id: 'e8e', level: 'BEG', make: function (r) {
+        { id: 'e8e', sub: 'e', level: 'BEG', make: function (r) {
           var n = r.int(11, 15);
           return K.P.number('Determine the area of a patio with side length ' + t(n) + ' m.', n * n, function (v) {
             if (v === 2 * n) return { code: 'two-x', hint: t('A=s^{2}') + ' means ' + t('s\\times s') + ', not ' + t('2s') + '.' };
             if (v === 4 * n) return { code: 'diag', hint: 'That’s the perimeter. The area is ' + t('s\\times s') + '.' };
             return null; }, t('A=' + n + '^{2}=' + n * n) + ' m².', ['Use ' + t('A=s^{2}') + '.'], 'area of square side ' + n, { after: 'm²' });
         } },
-        { id: 'e8f', level: 'EMG', make: function (r) {
+        { id: 'e8f', sub: 'f', level: 'EMG', make: function (r) {
           var n = r.pick([14, 16, 17, 18, 19, 21]), A = n * n;
           return K.P.number('A patio has area ' + t(A) + ' m². Determine its side length.', n, function (v) {
             if (v === A / 2) return { code: 'sq-halved', hint: 'Undoing a square means taking the <b>square root</b>, not dividing by 2.' };
@@ -469,7 +469,7 @@
             if (v === X * X) return { code: 'no-const', hint: 'Don’t forget to add ' + t(c) + '.' };
             return null; }, t('y=' + X + '^{2}+' + c + '=' + X * X + '+' + c + '=' + (X * X + c)) + '.', ['Use ' + t('y=x^{2}+' + c) + '.'], 'evaluate x^2+c at ' + X);
         } },
-        { id: 'e9e', level: 'PRG', make: function (r, sh) {
+        { id: 'e9e', sub: 'e', level: 'PRG', make: function (r, sh) {
           var c = sh.c, k = r.pick([5, 6, 7, 8, 9].filter(function (x) { return x !== sh.X; })), Y = k * k + c;
           var p = K.P.valueSet('Determine <b>every</b> input that produces an output of ' + t(Y) + '. (There are two.)', [k, -k], { diag: function (A) {
             if (A.length === 1 && A[0] === k) return { code: 'only-positive', hint: t('x=' + k) + ' works. A number and its opposite have the same square — try ' + t('x=-' + k) + '.' };
@@ -479,7 +479,7 @@
             t('x^{2}+' + c + '=' + Y) + ' → ' + t('x^{2}=' + (Y - c)) + ' → ' + t('x=' + k) + ' or ' + t('x=-' + k) + '. Check: ' + t('(-' + k + ')^{2}+' + c + '=' + Y) + ' ✓', ['Subtract ' + t(c) + ', then think: which numbers squared give ' + t(Y - c) + '?'], 'inputs giving ' + Y);
           p.good = ['\\pm ' + k, '-' + k + ', ' + k]; p.bad = ['x=' + k]; return p;
         } },
-        { id: 'e9f', level: 'EMG', make: function (r) {
+        { id: 'e9f', sub: 'f', level: 'EMG', make: function (r) {
           return mc(r, 'Why can a squaring rule like this one give the same output for two different inputs, while a rule like ' + t('y=3x+2') + ' never does?', [
             { html: 'A number and its opposite have the same square, so ' + t('x') + ' and ' + t('-x') + ' share an output. For ' + t('y=3x+2') + ', different inputs always give different outputs.', right: true },
             { html: 'Squaring rules always give larger outputs than linear rules.', why: 'Size has nothing to do with it. Think about ' + t('6^{2}') + ' and ' + t('(-6)^{2}') + '.' },
@@ -500,21 +500,21 @@
             { html: 'Both', why: 'The question says exactly one is linear. Compare the first differences of each.' }, { html: 'Neither', why: 'The question says exactly one is linear. Compare the first differences of each.' }],
             'Relation ' + sh.L + ': differences ' + t(seqTex(dl)) + ' (constant). Relation ' + sh.S + ': differences ' + t(seqTex(dq)) + ' (not constant). <b>Relation ' + sh.L + ' is linear.</b>', ['Find the first differences of each table.'], 'which table is linear', true);
         } },
-        { id: 'e10b', level: 'PRG', make: function (r, sh) {
+        { id: 'e10b', sub: 'b i', level: 'PRG', make: function (r, sh) {
           var m = sh.m, b = sh.b;
           var p = K.P.poly('Write an equation for the linear relation (Relation ' + sh.L + ').', PL.parse(lin(m, b)), { before: t('y='),
             wrong: [{ is: PL.parse(lin(m, m + b)), code: 'diag', hint: 'At ' + t('x=1') + ' the output is ' + t(m + b) + ', but the constant is the output at ' + t('x=0') + ': go one step back, ' + t((m + b) + '-' + m + '=' + b) + '.' }, { is: PL.parse(lin(b, m)), code: 'eq-rate-const', hint: 'The change per step, ' + t(m) + ', multiplies ' + t('x') + '.' }] },
             'Up ' + t(m) + ' per step; going back one step to ' + t('x=0') + ' gives ' + t((m + b) + '-' + m + '=' + b) + '. So ' + t('y=' + lin(m, b)) + '.', ['How much does ' + t('y') + ' go up per step? What would ' + t('y') + ' be at ' + t('x=0') + '?'], 'linear equation from table');
           p.good = [b + '+' + m + 'x']; return p;
         } },
-        { id: 'e10c', level: 'ADV', make: function (r, sh) {
+        { id: 'e10c', sub: 'b ii', level: 'ADV', make: function (r, sh) {
           var a = sh.a;
           var p = K.P.poly('Write an equation for the other relation (Relation ' + sh.S + '). It involves a square.', PL.parse(a + 'x^2'), { before: t('y='),
             wrong: [{ is: PL.parse('x^2'), code: 'diag', hint: 'Compare each output with ' + t('x^{2}') + ': ' + t('2^{2}=4') + ', but the table gives ' + t(4 * a) + '.' }, { is: PL.parse(a * a + 'x^2'), code: 'diag', hint: 'Check ' + t('x=1') + ': your rule gives ' + t(a * a) + ', but the table gives ' + t(a) + '.' }] },
             'Compare the outputs with ' + t('x^{2}') + ': ' + [1, 2, 3, 4].map(function (x) { return t(a * x * x + '=' + a + '(' + x + ')^{2}'); }).join(', ') + '. So ' + t('y=' + a + 'x^{2}') + '.', ['Divide each output by the square of its input. What do you notice?'], 'ax^2 from table');
           return p;
         } },
-        { id: 'e10d', level: 'EMG', make: function (r, sh) {
+        { id: 'e10d', sub: 'c', level: 'EMG', make: function (r, sh) {
           var m = sh.m, b = sh.b, a = sh.a, fields = [{ label: 'Relation ' + sh.L + ':', name: 'Relation ' + sh.L, before: t('y=') }, { label: 'Relation ' + sh.S + ':', name: 'Relation ' + sh.S, before: t('y=') }];
           return { prompt: 'Determine the output of each relation when the input is ' + t('10') + '.', input: { type: 'fields', fields: fields }, key: [String(10 * m + b), String(100 * a)], text: 'outputs at 10',
             answer: 'Relation ' + sh.L + ': ' + t(10 * m + b) + '; Relation ' + sh.S + ': ' + t(100 * a), bad: [[String(10 * m + b), String(100 * a * a)]],
@@ -585,14 +585,14 @@
             solution: 'At ' + t('t=0') + ' the graph is at ' + t('D=' + num(sh.D)) + '; at ' + t('t=1') + ' it is at ' + t(num(sh.D - sh.rate)) + ', a drop of ' + t(num(sh.rate)) + '. The bucket starts <b>' + num(sh.D) + ' cm</b> deep and the depth falls steadily by <b>' + num(sh.rate) + ' cm per minute</b> until it is empty at ' + t('t=' + sh.T) + '.',
             hints: ['Read the depth at ' + t('t=0') + ' and at ' + t('t=1') + '. Remember each grid line is ' + t('0.5') + '.'] };
         } },
-        { id: 'e15d', level: 'PRG', make: function (r, sh) {
+        { id: 'e15d', sub: 'd', level: 'PRG', make: function (r, sh) {
           var D = sh.D, R = sh.rate;
           var p = K.P.poly('Write an equation for ' + t('D') + ' in terms of ' + t('t') + '.', PL.parse(cfirst(D, -R, 't')), { before: t('D='), keyTex: cfirst(D, -R, 't'), dec: true,
             wrong: [{ is: PL.parse(lin(R, D, 't')), code: 'eq-sign', hint: 'The depth goes <b>down</b> as time passes: subtract.' }, { is: PL.parse(lin(D, -R, 't')), code: 'eq-rate-const', hint: 'The starting depth is the constant; the rate multiplies ' + t('t') + '.' }, { is: PL.parse(lin(R, -D, 't')), code: 'eq-sign', hint: 'At ' + t('t=0') + ' your equation gives a negative depth.' }] },
             'Start at ' + t(num(D)) + ', lose ' + t(num(R)) + ' per minute: ' + t('D=' + cfirst(D, -R, 't')) + '.', ['What is ' + t('D') + ' at ' + t('t=0') + '? How much does it drop each minute?'], 'bucket equation');
           p.good = [lin(-R, D, 't')]; return p;
         } },
-        { id: 'e15e', level: 'EMG', make: function (r, sh) {
+        { id: 'e15e', sub: 'e', level: 'EMG', make: function (r, sh) {
           return mc(r, 'The graph stops at ' + t('t=' + sh.T) + '. Which reason comes from the <b>situation</b>?', [
             { html: 'At ' + t('t=' + sh.T) + ' the bucket is empty. The depth can’t fall below ' + t('0') + ' cm, so the relation ends there.', right: true },
             { html: 'The equation stops working after ' + t('t=' + sh.T) + '.', why: 'The equation would happily give negative depths after that. The reason comes from the situation: what is in the bucket at ' + t('t=' + sh.T) + '?' },
@@ -600,7 +600,7 @@
             { html: 'The hole gets blocked at ' + t('t=' + sh.T) + '.', why: 'Nothing says the hole gets blocked. Look at the depth at ' + t('t=' + sh.T) + '.' }],
             'At ' + t('t=' + sh.T) + ', ' + t('D=0') + ': the bucket is <b>empty</b>. There is no water left to leak, so the depth can’t keep falling and the relation ends.', ['What is the depth at ' + t('t=' + sh.T) + '?'], 'why the graph stops');
         } },
-        { id: 'e15f', level: 'EMG', make: function (r, sh) {
+        { id: 'e15f', sub: 'f', level: 'EMG', make: function (r, sh) {
           var D = sh.D, R = sh.rate, x = sh.tf, ans = D - R * x;
           return K.P.number('Use your equation to find ' + t('D') + ' when ' + t('t=' + num(x)) + '. (This value can’t be read exactly off the grid.)', ans, function (v) {
             if (Math.abs(v - (D + R * x)) < 1e-9) return { code: 'ctx-add', hint: 'The depth is falling: subtract.' };
