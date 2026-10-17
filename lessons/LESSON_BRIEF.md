@@ -50,9 +50,12 @@ change, describe it in your report.
 - Projector-readable (≥ 17 px), fixed 1080 px layout (design for ~1000 px content). Interactive things are `<button>`s or
   have `data-tap` (finger AND Pencil).
 - Calculator: the class scientific calculator is the TI-30XIIS (built into every page; `data-keys` demos; KEYMAP tokens:
-  digits `÷ × + − ^ ( ) = √ ˣ√ x² x³ x⁻¹ π (−) F◂▸D ab/c d/e EE sin cos tan sin⁻¹ cos⁻¹ tan⁻¹`; use `(−)` for
+  digits `÷ × + − ^ ( ) = √ ˣ√ x² x⁻¹ π (−) F◂▸D ab/c d/e EE % sin cos tan sin⁻¹ cos⁻¹ tan⁻¹`; use `(−)` for
   negatives; the emulator is in degree mode and `sin` opens a bracket like the real one, e.g. `8 × tan 40 ) =`). The emulator matches the real
   calculator (e.g. a negative base with a fractional exponent is a DOMAIN error unless the exponent is 1/odd).
+  It has the real key layout: there is NO x³, |x| or MODE key (cube with `^ 3`; angle mode is the DRG key; FIX is
+  2nd + decimal point; SCI/ENG is 2nd DRG). EE (2nd x⁻¹), F◂▸D (2nd PRB), % (2nd "(") and d/e (2nd Ab/c) are 2nd
+  functions: write them in `<span class="keys">` as `<kbd>2nd</kbd><kbd>EE</kbd>` etc. x! is in the PRB menu.
 
 ## Testing (budget: aim for ≤ 3 dump runs and ≤ ~12 images viewed in total)
 1. Teacher mode is automatic in the dump script. Run

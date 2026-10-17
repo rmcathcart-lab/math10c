@@ -296,11 +296,11 @@ const SB = {
     keys: '0 x² + 3 − ( 5 − 0 ) =' },
   a3: { sep: 'Example 3', label: '(a)', funcs: F3, use: [0], ask: 'f(-2)', ans: '-26',
     lines: [[`f(-2)=4${S('-2')}^3-3${S('-2')}`, `Both ${T('x')}’s get ${T('(-2)')}.`], ['=4(-8)+6', `${T('(-2)^3=-8')} and ${T('-3(-2)=+6')}.`], ['=-32+6', 'Multiply.'], ['=-26', 'Add.']],
-    keys: '4 × ( (−) 2 ) x³ − 3 × ( (−) 2 ) =' },
+    keys: '4 × ( (−) 2 ) ^ 3 − 3 × ( (−) 2 ) =' },
   b3: { label: '(b)', funcs: F3, use: [0], ask: 'f(3)', ans: '99', read: `“The value of ${T('f')} when ${T('x=3')}” means ${T('f(3)')}.`,
-    lines: [[`f(3)=4${S('3')}^3-3${S('3')}`, 'Put 3 into both slots.'], ['=4(27)-9', `${T('3^3=27')}.`], ['=108-9', 'Multiply.'], ['=99', 'Subtract.']], keys: '4 × 3 x³ − 3 × 3 =' },
+    lines: [[`f(3)=4${S('3')}^3-3${S('3')}`, 'Put 3 into both slots.'], ['=4(27)-9', `${T('3^3=27')}.`], ['=108-9', 'Multiply.'], ['=99', 'Subtract.']], keys: '4 × 3 ^ 3 − 3 × 3 =' },
   c3: { label: '(c)', funcs: F3, use: [0], ask: 'f(5)', ans: '485', read: `“The image of 5 under ${T('f')}” means ${T('f(5)')}.`,
-    lines: [[`f(5)=4${S('5')}^3-3${S('5')}`, 'Put 5 into both slots.'], ['=4(125)-15', `${T('5^3=125')}.`], ['=500-15', 'Multiply.'], ['=485', 'Subtract.']], keys: '4 × 5 x³ − 3 × 5 =' }
+    lines: [[`f(5)=4${S('5')}^3-3${S('5')}`, 'Put 5 into both slots.'], ['=4(125)-15', `${T('5^3=125')}.`], ['=500-15', 'Multiply.'], ['=485', 'Subtract.']], keys: '4 × 5 ^ 3 − 3 × 5 =' }
 };
 const SBchoices = []; Object.keys(SB).forEach((k) => { if (SB[k].sep) SBchoices.push({ sep: SB[k].sep }); SBchoices.push({ v: k, label: SB[k].label }); });
 const substitute = {
