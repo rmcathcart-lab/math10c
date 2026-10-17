@@ -370,7 +370,7 @@
     card.appendChild(h);
     if (cur.notice) { card.appendChild(el('div', 'notice warn', cur.notice)); cur.notice = null; }
     if (inst.stem) card.appendChild(el('div', 'qstem', HW.tex(inst.stem)));
-    card.appendChild(el('div', 'qprompt', (it.q.parts.length > 1 && !/^[A-Z]/.test(stripTags(inst.prompt)) ? '<span class="qlabel">(' + esc(it.label.replace(/^.*\(|\)$/g, '')) + ')</span> ' : '') + HW.tex(inst.prompt)));
+    card.appendChild(el('div', 'qprompt', (it.q.parts.length > 1 && !/^[A-Z]/.test(stripTags(inst.prompt)) && stripTags(inst.prompt).trim().indexOf('(' + it.label.replace(/^.*\(|\)$/g, '') + ')') !== 0 ? '<span class="qlabel">(' + esc(it.label.replace(/^.*\(|\)$/g, '')) + ')</span> ' : '') + HW.tex(inst.prompt)));
     var fb = el('div', 'feedback'); fb.setAttribute('aria-live', 'polite');
     var done = r.s === 'done' && !cur.practice, shown = r.s === 'shown' && !cur.practice;
 

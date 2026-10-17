@@ -432,7 +432,7 @@
           var o = pickWhere(function () { return { b: r.int(2, 6), c: -r.int(3, 12), k: r.int(-8, 8) }; }, function (o) {
             var D = o.b * o.b - 4 * (o.c - o.k); if (D <= 0 || isSq(D)) return false;
             var r1 = (-o.b + Math.sqrt(D)) / 2, r2 = (-o.b - Math.sqrt(D)) / 2;
-            return [r1, r2].every(function (z) { var f = Math.abs(z * 100 - Math.floor(z * 100) - 0.5); return f > 0.05; }) && o.k !== o.c;
+            return [r1, r2].every(function (z) { var f = Math.abs(z * 100 - Math.floor(z * 100) - 0.5); return f > 0.05; }) && o.k !== 0;
           });
           var D = o.b * o.b - 4 * (o.c - o.k), r1 = (-o.b + Math.sqrt(D)) / 2, r2 = (-o.b - Math.sqrt(D)) / 2, rel = quadT(1, o.b, o.c);
           var Dz = o.b * o.b - 4 * o.c, zs = Dz >= 0 ? [(-o.b + Math.sqrt(Dz)) / 2, (-o.b - Math.sqrt(Dz)) / 2] : null;
@@ -627,7 +627,7 @@
       'Calculator: ' + C.y1(rel) + ', a window such as ' + winTex(w) + ', then ' + C.zero + ' — once near each crossing: ' + t('X=' + xs.map(function (v) { return nT(rnd(v, 7)); }).join('\\text{ and }X=')) + (dec ? '; ▸Frac turns the decimal into ' + t(xs.filter(function (v) { return !Number.isInteger(v); }).map(vt).join(',\\ ')) : '') + '. ' + C.value0 + ' gives ' + t('Y=' + nT(c)) + '.<br>' +
       'Check algebraically: ' + t('y=' + rel + '=' + fac()) + ', so ' + t('y=0') + ' when ' + t('x=' + xs.map(vt).join('\\text{ or }x=')) + '; at ' + t('x=0') + ', ' + t('y=' + nT(c)) + '.' + screen([qf(a, b, c)], w, xs.map(function (v) { return { x: v, y: 0, label: vt(v).indexOf('frac') >= 0 ? nT(rnd(v, 2)) : nT(v) }; }).concat([{ x: 0, y: c, label: '(0, ' + nT(c) + ')' }])),
       ['The ' + t('x') + '-intercepts are where ' + t('y=0') + ' — there are two here.', 'The ' + t('y') + '-intercept is the output at ' + t('x=0') + ' (the constant term).'], 'intercepts ' + rel,
-      { good: [[xs.slice().reverse().map(vt).join(', '), String(c)]], bad: [[vt(xs[0]), nT(c)], [xs.map(function (v) { return vt(-v); }).join(', '), nT(c)], [keyX, nT(-c)]].concat(dec ? [[xs.map(function (v) { return nT(rnd(v, 2)); }).join(', '), nT(c)]] : []) });
+      { good: [[xs.slice().reverse().map(vt).join(', '), String(c)]], bad: [[vt(xs[0]), nT(c)], [keyX, nT(-c)]].concat(same(r1, -r2) ? [] : [[xs.map(function (v) { return vt(-v); }).join(', '), nT(c)]]).concat(dec ? [[xs.map(function (v) { return nT(rnd(v, 2)); }).join(', '), nT(c)]] : []) });
   }
   /* ---- Q8: exact turning point of y = ax² + bx + c ---- */
   function vertexPart(a, b, c, r) {

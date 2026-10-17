@@ -1192,8 +1192,8 @@
         } },
         { id: 'e19d', level: 'PRG', make: function (r) {
           var z = pick(function () { return { q: r.pick([2, 3, 4, 5]), u: r.int(1, 7) }; }, function (z) { return gcd(z.q, z.u) === 1; });
-          return eqPart('D', t('x=' + frac(z.u, z.q)) + ', and no other solution', [z.u / z.q], FT(null, [{ terms: lin(z.q, 'x', -z.u), k: 2 }]),
-            t('x=' + frac(z.u, z.q) + '\\Rightarrow(' + z.q + 'x-' + z.u + ')') + '. Only one solution, so the factor is repeated (a quadratic with a double root):<br>');
+          return eqPart('D', 'A <b>quadratic</b> equation with ' + t('x=' + frac(z.u, z.q)) + ' and no other solution', [z.u / z.q], FT(null, [{ terms: lin(z.q, 'x', -z.u), k: 2 }]),
+            t('x=' + frac(z.u, z.q) + '\\Rightarrow(' + z.q + 'x-' + z.u + ')') + '. Only one solution, so the factor is repeated (a quadratic with a double root):<br>', true);
         } },
         { id: 'e19e', level: 'EMG', make: function (r) {
           var A = r.int(1, 8), B = pick(function () { return r.int(2, 9); }, function (b) { return b !== A; }), T = P.mul(sum(lin(1, 'x', A)), sum(lin(1, 'x', -B)));
@@ -1335,13 +1335,31 @@
     return { list: list, tex: tex, poly: FX.product(list) };
   }
   /* EP19: an equation with integer coefficients and exactly the given roots (any nonzero multiple; factored or expanded) */
-  function eqPart(tag, rootsTex, roots, Ft, lead) {
+  /* true when S (in x) is a constant times a product of powers of (x − r), r in roots (exact rational division) */
+  function onlyRoots(S, roots) {
+    var dg = P.degree(S); if (!(dg >= 0)) return false;
+    var rq = function (a) { var g = gcd(a[0], a[1]) || 1, p = a[0] / g, q = a[1] / g; return q < 0 ? [-p, -q] : [p, q]; };
+    var a = []; for (var e = dg; e >= 0; e--) a.push(P.coef(S, e ? { x: e } : {}));
+    roots.forEach(function (rt) {
+      var q = 1; while (q < 1000 && Math.abs(Math.round(rt * q) - rt * q) > 1e-9) q++;
+      var r = rq([Math.round(rt * q), q]);
+      while (a.length > 1) {
+        var b = [a[0]];
+        for (var i = 1; i < a.length; i++) { var m = rq([r[0] * b[i - 1][0], r[1] * b[i - 1][1]]); b.push(rq([a[i][0] * m[1] + m[0] * a[i][1], a[i][1] * m[1]])); }
+        if (b.pop()[0] !== 0) break;
+        a = b;
+      }
+    });
+    return a.length === 1 && a[0][0] !== 0;
+  }
+  function eqPart(tag, rootsTex, roots, Ft, lead, quad) {
     var T = Ft.poly, key = tx(T), deg = P.degree(T);
     var check = function (resp) {
       var s = String(resp == null ? '' : resp).replace(/=\s*0\s*$/, '');
       if (/=/.test(s)) return form('relation', 'Type the left side only — the ' + t('=0') + ' is already there.');
       var a = readP(s); if (a.res) return a.res;
       var S = a.p, vs3 = P.vars(S);
+      if (P.isZero(S)) return wrong('value', t('0=0') + ' is true for <b>every</b> ' + t('x') + ' — build the left side from one factor per root.');
       if (vs3.some(function (v) { return v !== 'x'; })) return wrong('var', 'Use the variable ' + t('x') + ' only.');
       var lt = P.lead(S, 'x'), lT = P.lead(T, 'x');
       var same = !P.isZero(S) && P.eq(P.scale(S, [lT[0] * lt[1], lT[1] * lt[0]]), T);
@@ -1351,6 +1369,11 @@
       }
       var at = function (x) { return P.at(S, { x: x }); };
       var miss = roots.filter(function (x) { return Math.abs(at(x)) > 1e-9; });
+      if (!miss.length && onlyRoots(S, roots)) { // c·∏(x − r)^m: a repeated factor adds no new solution
+        if (quad && P.degree(S) !== 2) return wrong('double-root', P.degree(S) < 2 ? 'Right solution, but the question asks for a <b>quadratic</b>: repeat the factor.' : 'Right solution, but that isn’t a <b>quadratic</b> — use the factor exactly twice.');
+        if (P.terms(S).some(function (u) { return u.c[1] !== 1; })) return form('coef-fraction', 'Right roots — now multiply through so every coefficient is an integer.');
+        return ok();
+      }
       if (miss.length && roots.every(function (x) { return Math.abs(at(-x)) < 1e-9; }) && miss.length === roots.filter(function (x) { return x !== 0; }).length) return wrong('root-sign', 'Check the signs: the root ' + t('x=' + rootTex(miss[0])) + ' comes from the factor that is ' + t('0') + ' there, e.g. ' + t('x=-4') + ' gives ' + t('(x+4)') + '.');
       if (miss.length) return wrong('root-missing', t('x=' + rootTex(miss[0])) + ' is not a solution of your equation. Each root ' + t('r') + ' needs a factor that is ' + t('0') + ' at ' + t('r') + '.');
       if (P.degree(S) < deg) return wrong('double-root', 'Your equation has the right root, but a quadratic with only that root has the factor <b>repeated</b>.');
