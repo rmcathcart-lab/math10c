@@ -118,7 +118,7 @@ function mountStatics() {
   if ($('u10l5-f-s1')) figSquare($('u10l5-f-s1'), { w: 1, h: 1, s: 230, grid: 10, b: '1 m = 100 cm', l: '1 m = 100 cm', lrot: true });
   if ($('u10l5-f-ex1')) figSquare($('u10l5-f-ex1'), { w: 1, h: 1, s: 150, b: '1 m', l: '1 m' });
   if ($('u10l5-f-ex2')) figSquare($('u10l5-f-ex2'), { w: 7, h: 4, s: 36, b: '7 m', l: '4 m' });
-  if ($('u10l5-f-s2')) figBox($('u10l5-f-s2'), { L: 1, H: 1, D: 1, s: 200, grid: 10, t: ['100 cm', '100 cm', '100 cm'] });
+  if ($('u10l5-f-s2')) figBox($('u10l5-f-s2'), { L: 1, H: 1, D: 1, s: 170, grid: 10, t: ['100 cm', '100 cm', '100 cm'] });
   if ($('u10l5-f-ex4')) figBox($('u10l5-f-ex4'), { L: 1, H: 1, D: 1, s: 150, t: ['1 m', '1 m', '1 m'] });
   if ($('u10l5-f-ex5')) figBox($('u10l5-f-ex5'), { L: 5, H: 3, D: 2, s: 46, t: ['5 m', '3 m', '2 m'] });
   if ($('u10l5-f-ex7a')) figSquare($('u10l5-f-ex7a'), { w: 1, h: 1, s: 150, b: '1 ft', l: '1 ft' });
