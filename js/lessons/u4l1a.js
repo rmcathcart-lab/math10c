@@ -720,7 +720,7 @@
         { id: 'e3c', level: 'EMG', make: function (r) { var g = r.int(2, 5), c = r.pick([[3, 5, 4], [2, 5, 3], [4, 3, 5], [3, 4, 2]]), v = r.pick(['m', 'x', 'y']), e = r.int(1, 2); return negPart([M(-g * c[0], { [v]: e + 2 }), M(g * c[1], { [v]: e + 1 }), M(g * c[2], { [v]: e })]); } },
         { id: 'e3d', level: 'BEG', make: function (r) { var g = r.pick([4, 6, 8, 10, 12]), c = r.pick([[2, 3], [3, 2], [3, 4], [2, 5]]), L = r.pick(PAIRS), a = r.int(1, 2), b = r.int(1, 2); return negPart([M(-g * c[0], { [L[0]]: a + 1, [L[1]]: b }), M(-g * c[1], { [L[0]]: a, [L[1]]: b + 1 })]); } },
         { id: 'e3e', level: 'EMG', make: function (r) { var L = r.pick(PAIRS), x = L[0], y = L[1]; return negPart([M(-1, { [x]: 2, [y]: 1 }), M(1, { [x]: 1, [y]: 2 }), M(-1, { [x]: 1, [y]: 1 })]); } },
-        { id: 'e3f', level: 'PRG', make: function (r) { var g = r.int(3, 9), c = r.pick([[5, 3, 2], [4, 3, 2], [5, 2, 3], [2, 5, 3]]), L = r.pick([['u', 'v'], ['x', 'y'], ['a', 'b']]), a = r.int(1, 2), b = r.int(1, 2);
+        { id: 'e3f', level: 'EMG', make: function (r) { var g = r.int(3, 9), c = r.pick([[5, 3, 2], [4, 3, 2], [5, 2, 3], [2, 5, 3]]), L = r.pick([['u', 'v'], ['x', 'y'], ['a', 'b']]), a = r.int(1, 2), b = r.int(1, 2);
           return negPart([M(-g * c[0], { [L[0]]: a + 3, [L[1]]: b }), M(g * c[1], { [L[0]]: a + 1, [L[1]]: b + 2 }), M(-g * c[2], { [L[0]]: a, [L[1]]: b + 1 })]); } }] },
       { num: '4', stem: function (sh) { return 'The lesson’s rule is: <i>if every monomial is negative, take the GCF negative too</i>. Consider (a) ' + t(seq(sh.A)) + ' and (b) ' + t(seq(sh.B)) + '.'; },
         shared: function (r) { var g = r.int(3, 9), c = r.pick([[2, 3, 1], [3, 2, 1], [2, 5, 1], [3, 4, 1]]), v = r.pick(['y', 'x', 'm']), h = r.int(2, 7), d = r.pick([[2, 3], [3, 2], [3, 4], [2, 5]]), L = r.pick(PAIRS);
@@ -846,7 +846,7 @@
             'The first term is negative, so remove a negative factor. ' + t('\\gcd(' + c.map(function (k) { return g * k; }).join(',') + ')=' + g) + '; lowest powers ' + t(x + '^{2}') + ', ' + t(y + '^{2}') + ', so the factor is ' + t(tx(G)) + ':<br>' + t(seq(terms) + '=' + tx(G) + '(' + br + ')') + '.', ['Find the GCF of the coefficients and the lowest power of each letter. Then decide the sign.'], 'MC negative GCF', true);
         } }] },
       { num: '20', stem: '<i>(Numerical Response)</i>', parts: [
-        { id: 'e20', level: 'PRG', make: function (r) {
+        { id: 'e20', level: 'EMG', make: function (r) {
           var g = r.pick([10, 12, 15, 20, 25, 30]), c = r.pick([[2, 3, 5], [3, 2, 5], [2, 5, 3], [4, 3, 5]]), a = r.int(2, 4), b = r.int(2, 4);
           var terms = [M(g * c[0], { x: a + 2, y: b }), M(-g * c[1], { x: a, y: b + 1 }), M(g * c[2], { x: a, y: b })], ans = g + a + b;
           return KP.nr('When ' + t(seq(terms)) + ' is factored completely, the greatest common factor is ' + t('ax^{b}y^{c}') + '. The value of ' + t('a+b+c') + ' is ________.', ans, function (v) {

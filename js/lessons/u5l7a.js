@@ -484,7 +484,7 @@
               'Now the domain is the children and the range is the mothers. One arrow goes from each child to their mother:' + nameDiagram(kidsAll, M, pr),
               ['“Is the child of” starts at a child and points to the mother.', 'Each child gets one arrow, to their own mother.'], 'arrow diagram: is the child of');
           } },
-          { id: '4bii', sub: 'b ii', level: 'PRG', make: function (r, sh) {
+          { id: '4bii', sub: 'b ii', level: 'EMG', make: function (r, sh) {
             var M = sh.moms, bi = sh.big, nb = sh.kids[bi].length;
             return B.mc(r, 'Is the relation “is the child of” (from children to mothers) a function?', [
               { html: 'Yes — each child has exactly one arrow leaving them, pointing to their one mother.', right: true },

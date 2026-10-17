@@ -201,13 +201,14 @@
 
   /* ---------------- multiple choice ---------------- */
   function mc(r, prompt, opts, sol, hints, text, keepOrder) { return B.mc(r, prompt, distinct(opts), sol, hints, text, keepOrder); }
-  function graphMC(r, prompt, opts, sol, hints, text) { var p = B.mc(r, prompt, distinct(opts), sol, hints, text); p.input.columns = 2; return p; }
+  /* one column: two columns squeeze each option graph to ~90 px on a phone; stacked they are ~240 px and readable */
+  function graphMC(r, prompt, opts, sol, hints, text) { var p = B.mc(r, prompt, distinct(opts), sol, hints, text); p.input.columns = 1; return p; }
   function tf(r, prompt, truth, why, sol, hints, text) { return B.tf(r, prompt, truth, why, sol, hints, text); }
 
   /* ---------------- drawings ---------------- */
   function G(spec) { return HW.graph(Object.assign({ x: [-6, 6], y: [-6, 6], labels: 2, max: 300 }, spec)); }
   /* a small graph for a multiple-choice option: fixed width so it doesn't shrink beside the option letter */
-  function Gm(spec) { var w = spec.w || 170; return '<span style="display:block;flex:1 1 auto;min-width:0;width:100%;max-width:' + w + 'px">' + HW.graph(Object.assign({ x: [-6, 6], y: [-6, 6], labels: 2 }, spec, { max: w })) + '</span>'; }
+  function Gm(spec) { var w = spec.w || 240; return '<span style="display:block;flex:1 1 auto;min-width:0;width:100%;max-width:' + w + 'px">' + HW.graph(Object.assign({ x: [-6, 6], y: [-6, 6], labels: 2 }, spec, { max: w })) + '</span>'; }
   function fig(s) { return '<div class="fig">' + s + '</div>'; }
   function figs(list, w) { w = w || 150; return '<div style="display:flex;flex-wrap:wrap;gap:6px 14px;align-items:flex-start">' + list.map(function (f) { return '<div style="flex:1 1 ' + w + 'px;max-width:300px">' + f + '</div>'; }).join('') + '</div>'; }
   /* piecewise-linear helpers: V = [[x, y], …] */
@@ -949,7 +950,7 @@
             return null;
           }, t('100-' + sh.r + 't=' + sh.V) + '<br>' + t(sh.r + 't=' + (100 - sh.V)) + '<br>' + t('t=' + sh.m) + ' hours', [HINT_SOLVE], 'solve B(t)=V', { before: t('t='), after: 'h' });
         } },
-        { id: '16c', level: 'PRG', make: function (r, sh) {
+        { id: '16c', level: 'EMG', make: function (r, sh) {
           return B.approx('(c) After how many hours is the battery empty? (nearest hundredth)', sh.T, 2, { after: 'h', diag: function (u) { if (same(u, K.roundTo(sh.r / 100, 2))) return { code: 'rate-flip', hint: 'Divide ' + t('100') + ' by ' + t(sh.r) + ', not the other way round.' }; return null; } },
             'Empty means ' + t('B(t)=0') + ':<br>' + t('100-' + sh.r + 't=0') + '<br>' + t('t=\\dfrac{100}{' + sh.r + '}\\approx ' + sh.T2) + ' hours', ['“Empty” means the output is ' + t('0') + ': solve ' + t('B(t)=0') + '.'], 'battery empty time');
         } },
@@ -1123,11 +1124,10 @@
         } },
         { id: 'e2b', level: 'ADV', make: function (r, sh) {
           var V = sh.pts, fR = uniq(sh.ys), cands = rng(-sh.L, sh.top).filter(function (y) { return fR.indexOf(y) < 0; }), v0 = cands.indexOf(5) >= 0 ? 5 : cands[cands.length - 1];
-          var sol0 = pwSols(V, v0), x0 = sol0.pts[0];
           var chk = function (resp) {
             resp = resp || [];
-            var u = num(resp[0]), w = num(resp[1]);
-            if (u == null || w == null) return form('empty', 'Fill in both boxes with a number.');
+            var u = valOf(resp[0]), w = valOf(resp[1]);    // a fraction such as -11/3 is the exact input on a slope-3 segment
+            if (u == null || w == null) return form('empty', 'Fill in both boxes with a number (a fraction like ' + t('-\\frac{11}{3}') + ' is fine).');
             if (u < -sh.L - 1e-9 || u > sh.top + 1e-9) return wrong('not-in-range', '<b>Value:</b> ' + t(nf(u)) + ' is not in the range of ' + t('g') + ' — the graph never goes ' + (u > sh.top ? 'above ' + t(sh.top) : 'below ' + t(-sh.L)) + '.');
             if (fR.some(function (y) { return same(y, u); })) return wrong('in-f-range', '<b>Value:</b> ' + t(nf(u)) + ' is already in the range of ' + t('f') + ' (a dot is at that height). Choose a height between the dots’ heights.');
             var gw = pwAt(V, w);
@@ -1137,11 +1137,13 @@
           };
           var segA = V[0], segB = V[1], i0 = 0; for (var i = 0; i + 1 < V.length; i++) { var a = V[i], b = V[i + 1]; if ((v0 - a[1]) * (v0 - b[1]) <= 0 && a[1] !== b[1]) { segA = a; segB = b; i0 = i; break; } }
           var sl = ex.norm(segB[1] - segA[1], segB[0] - segA[0]);
+          var xf = ex.norm((v0 - segA[1]) * (segB[0] - segA[0]) + segA[0] * (segB[1] - segA[1]), segB[1] - segA[1]), x0 = xf[0] / xf[1];
+          var xT = frT(xf[0], xf[1]) + (xf[1] === 1 || String(cl(x0)).length > 6 ? '' : '=' + nf(x0)), xK = xf[1] === 1 ? String(xf[0]) : xf[0] + '/' + xf[1];
           return { prompt: '(b) Name a number that is in the range of ' + t('g') + ' but <b>not</b> in the range of ' + t('f') + ', and give an input ' + t('x') + ' where ' + t('g') + ' produces it.', input: { type: 'fields', fields: [{ label: 'value', name: 'value' }, { label: t('x='), name: 'x' }] },
-            check: chk, key: [String(v0), nf(x0)], answer: 'e.g. ' + t(v0) + ', produced at ' + t(ptT([x0, v0])) + ' (many answers)',
-            solution: 'Any number from ' + t(-sh.L) + ' to ' + t(sh.top) + ' other than ' + t(fR.join(',\\ ')) + ' works, e.g. ' + t(v0) + '.<br>It is produced on the segment from ' + t(ptT(segA)) + ' to ' + t(ptT(segB)) + ', slope ' + t(ex.texRat(sl)) + ':<br>' + t(segA[1] + (sl[0] < 0 ? '' : '+') + ex.texRat(sl) + '(x' + (segA[0] < 0 ? '+' + (-segA[0]) : segA[0] === 0 ? '' : '-' + segA[0]) + ')=' + v0) + ' gives ' + t('x=' + nf(x0)) + ', the point ' + t(ptT([x0, v0])) + '.',
+            check: chk, key: [String(v0), xK], answer: 'e.g. ' + t(v0) + ', produced at ' + t('x=' + xT) + ' (many answers)',
+            solution: 'Any number from ' + t(-sh.L) + ' to ' + t(sh.top) + ' other than ' + t(fR.join(',\\ ')) + ' works, e.g. ' + t(v0) + '.<br>It is produced on the segment from ' + t(ptT(segA)) + ' to ' + t(ptT(segB)) + ', slope ' + t(ex.texRat(sl)) + ':<br>' + t(segA[1] + (sl[0] < 0 ? '' : '+') + ex.texRat(sl) + '(x' + (segA[0] < 0 ? '+' + (-segA[0]) : segA[0] === 0 ? '' : '-' + segA[0]) + ')=' + v0) + ' gives ' + t('x=' + xT) + ', the point ' + t('\\left(' + dfr(frT(xf[0], xf[1])) + ',\\ ' + v0 + '\\right)') + '.',
             hints: ['The range of ' + t('f') + ' is ' + t(sh.R) + '. Pick a height in between, e.g. between two of those values.', 'Use the slope of the segment that crosses that height to find its ' + t('x') + '-value.'], text: 'value in range of g not f',
-            good: [[String(v0), nf(x0)]], bad: [[String(fR[0]), String(sh.xs[sh.ys.indexOf(fR[0])])], [String(sh.top + 1), '0']] };
+            good: [[String(v0), nf(x0)], [String(v0), frT(xf[0], xf[1])]], bad: [[String(fR[0]), String(sh.xs[sh.ys.indexOf(fR[0])])], [String(sh.top + 1), '0']] };
         } },
         { id: 'e2c', level: 'ADV', make: function (r, sh) {
           var num2 = sh.x6 * sh.y7 + sh.y2 * (sh.x7 - sh.x6), den = sh.y7, fx = ex.norm(num2, den);
@@ -1493,7 +1495,7 @@
           return intPart('(b) State the ' + t('C') + '-intercept and the ' + t('t') + '-intercept of the model as ordered pairs ' + t('(t,\\ C)') + '.', [[sh.T, 0]], [[0, 100]], { xLabel: t('t') + '-int', yLabel: t('C') + '-int' },
             t('C') + '-int: ' + t('C(0)=100') + ', so ' + t('(0,\\ 100)') + '.<br>' + t('t') + '-int: ' + t('100-' + nf(sh.r) + 't=0\\Rightarrow t=\\dfrac{100}{' + nf(sh.r) + '}=' + nf(sh.T)) + ', so ' + t(ptT([sh.T, 0])) + '.', ['The ' + t('C') + '-intercept has ' + t('t=0') + '; the ' + t('t') + '-intercept has ' + t('C=0') + '.'], 'intercepts of C(t)');
         } },
-        { id: 'e10b2', sub: 'b ii', level: 'PRG', make: function (r, sh) {
+        { id: 'e10b2', sub: 'b ii', level: 'EMG', make: function (r, sh) {
           return mc(r, '(b) What does the ' + t('t') + '-intercept ' + t(ptT([sh.T, 0])) + ' mean in this situation?', [
             { html: 'The battery is flat after ' + t(nf(sh.T)) + ' hours of playback.', right: true },
             { html: 'The battery is full after ' + t(nf(sh.T)) + ' hours.', why: 'At the ' + t('t') + '-intercept the charge is ' + t('0') + ': the battery is empty.' },
@@ -1732,7 +1734,7 @@
           return intPart('(c) The student wrote “' + t('f(0)=' + sh.c) + ', so the ' + t('x') + '-intercept is ' + t(ptT([0, sh.c])) + '.” Write the correct intercepts.', [[sh.c, 0]], [[0, sh.c]], {},
             'Error: ' + t(ptT([0, sh.c])) + ' has ' + t('x=0') + ', so it is the <b>' + t('y') + '-intercept</b>. The line is ' + t('y=' + sh.c + '-x') + ' (slope ' + t('-1') + ' through ' + t(ptT([0, sh.c])) + '), and ' + t('f(x)=0') + ' gives ' + t('x=' + sh.c) + '.<br>Correct: ' + t('y') + '-int ' + t(ptT([0, sh.c])) + '; ' + t('x') + '-int ' + t(ptT([sh.c, 0])) + '.', ['A point on the ' + t('x') + '-axis has ' + t('y=0') + '.'], 'correct intercepts');
         } },
-        { id: 'e14d', level: 'PRG', make: function (r, sh) {
+        { id: 'e14d', level: 'EMG', make: function (r, sh) {
           return mc(r, '(d) The student wrote “This is not a function, because the left endpoint is hollow.” Which correction is right?', [
             { html: 'It <b>is</b> a function: a hollow endpoint only removes one point, and every vertical line still meets the segment at most once.', right: true },
             { html: 'The student is right: a hollow endpoint means some input has no output, so it isn’t a function.', why: 'An input with no output is simply not in the domain. A function only fails when one input has two outputs.' },

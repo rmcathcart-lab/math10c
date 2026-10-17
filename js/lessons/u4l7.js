@@ -365,7 +365,7 @@
             hints: ['Write the terms in descending order first: ' + t('a^{2}') + ' term, then the ' + t('a') + ' term, then the constant.', 'Then factor by decomposition and set each factor equal to 0.'],
             sol: steps(['\\text{Descending order: }' + polyEq(E)].concat(trin(f1, f2, 'a')).concat(zl([f2, f1], 'a'))) + '<br>So ' + t(ans('a', roots)) + '.' });
         } },
-        { id: '4b', level: 'ADV', make: function (r) {
+        { id: '4b', level: 'PRG', make: function (r) {
           var s = gen(function () {
             var a = r.pick([2, 3, 4]), b = r.pick([2, 3, 5]), u = r.int(1, 7), w = r.int(1, 7); if (a === b || !cop(a, u) || u % a === 0 || !cop(b, w) || w % b === 0) return null;
             var M = b * u - a * w, A = a * b; if (M <= 0 || A > 15) return null; var m = r.int(1, A - 1); return { a: a, b: b, u: u, w: w, M: M, A: A, m: m, n: A - m };
@@ -979,13 +979,13 @@
             wrong: [[[2 * n], 'pm-k', t('(x-' + n + ')^{2}') + ' is also a perfect square. What value of ' + t('k') + ' gives it?'], [[-2 * n], 'pm-k', t('(x+' + n + ')^{2}') + ' is also a perfect square. What value of ' + t('k') + ' gives it?'], [[n, -n], 'no-double', 'The middle term of ' + t('(x+' + n + ')^{2}') + ' is ' + t('2(' + n + ')x') + ' — don’t forget the 2.'], [[n * n, -n * n], 'no-double', 'Expand ' + t('(x+' + n + ')^{2}') + ' and read off the ' + t('x') + ' coefficient.']],
             sol: steps([n * n + '=' + n + '^{2},\\ \\text{so the square is }(x\\pm' + n + ')^{2}', '\\text{Middle term } =2(x)(\\pm' + n + ')=\\pm' + 2 * n + 'x', 'k=' + 2 * n + ':\\ (x+' + n + ')^{2}=0,\\ x=-' + n, 'k=-' + 2 * n + ':\\ (x-' + n + ')^{2}=0,\\ x=' + n]) + '<br>So ' + t('k=\\pm' + 2 * n) + '.' });
         } },
-        { id: 'e19b', level: 'ADV', make: function (r) {
+        { id: 'e19b', level: 'PRG', make: function (r) {
           var p = r.int(3, 12);
           var part = numPart(t('x^{2}-' + 2 * p + 'x+k=0'), p * p, [[p, 'no-square', 'Halve the middle coefficient, then <b>square</b> it: the square is ' + t('(x-' + p + ')^{2}') + '.'], [4 * p * p, 'full-square', 'Square <b>half</b> of the middle coefficient, not the whole ' + t(2 * p) + '.'], [-p * p, 'sign', t('(x-' + p + ')^{2}') + ' has constant term ' + t('(-' + p + ')^{2}=' + p * p) + ' — positive.'], [2 * p, 'no-square', 'Halve ' + t(2 * p) + ' and square the result.']],
             steps(['-' + 2 * p + 'x=2(x)(-' + p + '),\\ \\text{so the square is }(x-' + p + ')^{2}', 'k=(-' + p + ')^{2}=' + p * p]) + '<br>' + t('(x-' + p + ')^{2}=0') + ' gives the single solution ' + t('x=' + p) + '.', ['The middle term fixes the square: ' + t('-' + 2 * p + 'x=2(x)(-' + p + ')') + '.'], 'k for perfect square x^2-bx+k');
           part.input.before = t('k='); return part;
         } },
-        { id: 'e19c', level: 'MAS', make: function (r) {
+        { id: 'e19c', level: 'ADV', make: function (r) {
           var u = gen(function () { var a = r.int(2, 5), b = r.int(1, 9); return cop(a, b) ? { a: a, b: b } : null; }), a = u.a, b = u.b, k = 2 * a * b;
           return solvePart(t(a * a + 'x^{2}+kx+' + b * b + '=0'), [k, -k], { v: 'k', fs: [L(1, -k)], hints: ['Write the first and last terms as squares: ' + t(a * a + 'x^{2}=(' + a + 'x)^{2}') + ' and ' + t(b * b + '=' + b + '^{2}') + '.', 'The middle term of ' + t('(' + a + 'x\\pm' + b + ')^{2}') + ' is ' + t('2(' + a + 'x)(\\pm' + b + ')') + '.'], text: 'k for perfect square a^2x^2+kx+b^2',
             wrong: [[[k], 'pm-k', t('(' + a + 'x-' + b + ')^{2}') + ' is also a perfect square. What value of ' + t('k') + ' gives it?'], [[-k], 'pm-k', t('(' + a + 'x+' + b + ')^{2}') + ' is also a perfect square.'], [[a * b, -a * b], 'no-double', 'The middle term is ' + t('2(' + a + 'x)(' + b + ')') + ' — don’t forget the 2.'], [[2 * b, -2 * b], 'no-double', 'Use the square root of ' + t(a * a + 'x^{2}') + ', which is ' + t(a + 'x') + ', in ' + t('2(' + a + 'x)(' + b + ')') + '.']],

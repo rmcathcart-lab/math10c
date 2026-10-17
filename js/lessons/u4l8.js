@@ -558,7 +558,7 @@
       { num: '24', stem: function (sh) { return 'A rectangular array of chairs has ' + t(sh.d) + ' more chairs in each row than there are rows, and ' + t(sh.r * (sh.r + sh.d)) + ' chairs in total.'; },
         shared: function (r) { return { r: r.int(5, 12), d: r.int(2, 7) }; },
         parts: [
-          { id: '24a', sub: 'a', level: 'ADV', make: function (r, sh) {
+          { id: '24a', sub: 'a', level: 'PRG', make: function (r, sh) {
             var n = sh.r * (sh.r + sh.d);
             return vs('Write an equation for the number of rows ' + t('r') + ', and solve it. Give <b>both</b> roots of the equation.', [sh.r, -(sh.r + sh.d)], { v: 'r' },
               'Let ' + t('r=') + ' number of rows; each row holds ' + t('r+' + sh.d) + ' chairs.<br>' + t('r(r+' + sh.d + ')=' + n + '\\ \\Rightarrow\\ r^{2}+' + sh.d + 'r-' + n + '=0') + '<br>' + t('(r-' + sh.r + ')(r+' + (sh.r + sh.d) + ')=0') + '<br>' + t('r=' + sh.r) + ' or ' + t('r=-' + (sh.r + sh.d)),
@@ -1032,7 +1032,7 @@
             p.bad = [[String(sh.p), String(sh.q)]];
             return p;
           } },
-          { id: 'e13d', level: 'ADV', make: function (r, sh) {
+          { id: 'e13d', level: 'PRG', make: function (r, sh) {
             return KP.number('Determine the number of tickets for which the profit is exactly ' + t('\\$' + sh.M) + '. (The equation you get is a perfect square trinomial.)', sh.h, null,
               t(tx(sh.T) + '=' + sh.M) + '<br>' + t(tx(P.add(sh.T, N(-sh.M))) + '=0') + '<br>' + t('-' + sh.g + '(x^{2}-' + 2 * sh.h + 'x+' + sh.h * sh.h + ')=0') + '<br>' + t('-' + sh.g + '(x-' + sh.h + ')^{2}=0') + ', so ' + t('x=' + sh.h) + ' tickets.',
               ['Move ' + t(sh.M) + ' to the left side and take out ' + t(-sh.g) + '.', 'The bracket is a perfect square.'], 'profit = ' + sh.M);

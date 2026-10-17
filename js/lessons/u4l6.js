@@ -418,7 +418,7 @@
             ['Factor it completely by decomposition, then compare with the options.'], 'which is a factor of ' + plain(pr.tex));
         } }] },
       { num: '8', stem: '<i>(Numerical Response)</i>', parts: [
-        { id: '8', level: 'ADV', make: function (r) {
+        { id: '8', level: 'PRG', make: function (r) {
           var pq = cop(r, 2, 9, 2, 9), p = pq[0], q = pq[1], k = 2 * p * q;
           return B.nr('If ' + t(p * p + 'a^{2}+ka+' + q * q) + ' is a perfect square trinomial and ' + t('k>0') + ', then the value of ' + t('k') + ' is ________.', k, function (v) {
             if (v === p * q) return { code: 'k-half', hint: 'The middle term of ' + t('(A+B)^{2}') + ' is ' + t('2AB') + ' — don’t forget the ' + t('2') + '.' };

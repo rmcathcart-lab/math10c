@@ -410,7 +410,7 @@
           var o = pickWhere(function () { return { p: r.int(2, 5), q: r.int(1, 5), k: r.int(2, 5), c: r.int(1, 7) }; }, function (o) { return cop(o.p, o.q) && cop(o.k, o.c) && o.k * o.q !== o.c * o.p && !(o.p === o.k && o.q === o.c); });
           return groupPart({ A: [M(o.p, 'm'), M(-o.q, 'n')], B: [M(o.k, 'm'), M(-o.c, 'n')] }, 'kpm^2-kqmn-cpmn+cqn^2');
         } },
-        { id: 'e8f', level: 'ADV', make: function (r) {
+        { id: 'e8f', level: 'PRG', make: function (r) {
           var L = r.pick([['a', 'b', 'c', 'd'], ['a', 'b', 'c', 'd'], ['p', 'q', 'r', 's'], ['w', 'x', 'y', 'z'], ['m', 'n', 'u', 'v']]);
           return groupPart({ A: [M(1, L[2]), M(r.pick([1, 1, -1]), L[3])], B: [M(1, L[0]), M(-1, L[1])], show: [0, 3, 1, 2] }, 'ac-bd+ad-bc', REARR_HINTS);
         } }] },

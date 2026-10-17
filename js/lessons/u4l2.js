@@ -843,8 +843,8 @@
         { id: 'e8f', level: 'PRG', make: function (r) { var p = r.int(1, 3), q = r.int(p + 1, 5); return facPart(spec({ e: 2, G: P.num(r.pick([2, 3, 4])), p: p, q: q })); } }] },
       { num: '9', stem: 'Same idea, but at least one bracket factors <b>again</b> as a difference of squares, ' + t('a^{2}-b^{2}=(a-b)(a+b)') + ' (a sum of squares ' + t('a^{2}+b^{2}') + ' does not factor). Factor completely.', parts: [
         { id: 'e9a', level: 'PRG', make: function (r) { var h = r.int(1, 2), k = r.int(h + 1, 4); return dsqPart(-h, -k); } },
-        { id: 'e9b', level: 'ADV', make: function (r) { var h = r.int(1, 3), k = r.int(h + 1, 5); return dsqPart(h, -k); } },
-        { id: 'e9c', level: 'ADV', make: function (r) { var k = r.int(1, 3), h = r.int(k + 1, 4); return dsqPart(h, -k); } },
+        { id: 'e9b', level: 'PRG', make: function (r) { var h = r.int(1, 3), k = r.int(h + 1, 5); return dsqPart(h, -k); } },
+        { id: 'e9c', level: 'PRG', make: function (r) { var k = r.int(1, 3), h = r.int(k + 1, 4); return dsqPart(h, -k); } },
         { id: 'e9d', level: 'PRG', make: function (r) { var h = r.int(1, 3), k = r.int(4, 6); return dsqPart(-h, -k); } },
         { id: 'e9e', sub: 'e', level: 'PRG', make: function (r) {
           var h = r.int(1, 3), k = r.int(h + 1, 5), T = P.mul(P.add(V('x', 2), P.num(h * h)), P.sub(V('x', 2), P.num(k * k))), sq = 'x^{2}+' + h * h;
@@ -1017,7 +1017,7 @@
       { num: '17', section: 'Extra practice H — Stretch', stem: 'A <b>perfect-square trinomial</b> is one that factors as ' + t('(x+n)^{2}') + ' or ' + t('(x-n)^{2}') + '.',
         shared: function (r) { return { n: r.int(4, 9) }; },
         parts: [
-          { id: 'e17a', sub: 'a', level: 'ADV', make: function (r, sh) {
+          { id: 'e17a', sub: 'a', level: 'PRG', make: function (r, sh) {
             var n = sh.n, c = n * n;
             var p = B.fields('Find every value of ' + t('k') + ' for which ' + t('x^{2}+kx+' + c) + ' is a perfect-square trinomial.', [numField('k ='), numField('k =')],
               [function () { return ok(); }, function () { return ok(); }], [String(2 * n), String(-2 * n)], t('k=' + 2 * n) + ' and ' + t('k=-' + 2 * n),
@@ -1079,7 +1079,7 @@
               ['Expand ' + t('(x+n)(x+n+1)') + ' and collect the ' + t('x') + ' terms.'], 'consecutive identity');
           } }] },
       { num: '19', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: 'e19', level: 'PRG', make: function (r) {
+        { id: 'e19', level: 'EMG', make: function (r) {
           var o = pickWhere(function () { var u = r.pick([6, 7, 8, 10, 11, 12]), v = r.int(2, u - 2); return { u: u, v: v, w: r.int(2, 9) }; }, function (o) { return !isSq(o.u) && !isSq(o.v) && o.w !== o.u && o.w !== o.v; });
           var s = spec({ e: 2, p: -o.u, q: o.v });
           return B.mc(r, 'Which of the following is a factor of ' + t(tx(s.full)) + '?', [

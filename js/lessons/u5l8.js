@@ -751,7 +751,7 @@
           return B.number('(b) Determine the value of ' + t('H(' + x + ')') + '.', v, function (u) { if (same(u, cl((x - sh.c) * sh.q / sh.p))) return { code: 'solve-instead', hint: 'You solved ' + t('H(t)=' + x) + '. ' + t('H(' + x + ')') + ' means substitute ' + t('t=' + x) + '.' }; return null; },
             t('H(' + x + ')=\\frac{' + sh.p + '}{' + sh.q + '}(' + x + ')+' + sh.c + '=' + 2 * sh.p + '+' + sh.c + '=' + v) + ' cm', ['Substitute ' + t('t=' + x) + ' into the rule.'], 'H(2q)', { after: 'cm' });
         } },
-        { id: '13c', level: 'PRG', make: function (r, sh) {
+        { id: '13c', level: 'EMG', make: function (r, sh) {
           var x = 2 * sh.q, v = sh.H(x);
           return mc(r, '(c) What is the meaning of ' + t('H(' + x + ')=' + v) + '?', [
             { html: t(x) + ' days after treatment begins, the seedling is ' + t(v) + ' cm tall.', right: true },
@@ -766,7 +766,7 @@
           return fieldsOf('(d) Evaluate the following.', items, xs.map(function (x) { return t('H(' + x + ')=' + sh.H(x)); }).join(', '),
             xs.map(function (x) { return t('H(' + x + ')=\\frac{' + sh.p + '}{' + sh.q + '}(' + x + ')+' + sh.c + '=' + sh.H(x)) + ' cm'; }).join('<br>'), ['Substitute each value of ' + t('t') + '.'], 'evaluate H at three values');
         } },
-        { id: '13e', level: 'ADV', make: function (r, sh) {
+        { id: '13e', level: 'PRG', make: function (r, sh) {
           var y = 3 * sh.p + sh.c, ans = 3 * sh.q;
           return B.number('(e) How many days will it take for the seedling to reach a height of ' + t(y) + ' cm?', ans, function (u) {
             if (same(u, sh.H(y))) return { code: 'ev-instead', hint: 'You found ' + t('H(' + y + ')') + '. Here ' + t(y) + ' cm is the <b>output</b>: solve ' + t('H(t)=' + y) + '.' };
@@ -802,7 +802,7 @@
           return B.number('(b) Determine the value of ' + t('C(' + sh.n1 + ')') + '.', v, function (u) { if (same(u, cl(sh.rate * sh.n1))) return { code: 'no-fixed', hint: 'Add the fixed cost ' + t(F(sh.Fc)) + ' too.' }; return null; },
             t('C(' + sh.n1 + ')=' + F(sh.Fc) + '+' + sh.rate + '(' + sh.n1 + ')=' + F(sh.Fc) + '+' + cl(sh.rate * sh.n1) + '=' + F(v)), ['Substitute ' + t('n=' + sh.n1) + '.'], 'C(n1)', { before: t('\\$') });
         } },
-        { id: '14c', level: 'PRG', make: function (r, sh) {
+        { id: '14c', level: 'EMG', make: function (r, sh) {
           var v = sh.C(sh.n1);
           return mc(r, '(c) What is the meaning of ' + t('C(' + sh.n1 + ')=' + F(v)) + '?', [
             { html: 'It costs ' + t('\\$' + F(v)) + ' to print ' + t(sh.n1) + ' t-shirts.', right: true },
@@ -819,7 +819,7 @@
             { html: t('C(0)=' + sh.rate) + ': the cost of each t-shirt.', why: t(sh.rate) + ' is the cost per shirt (the rate). ' + t('C(0)') + ' is the output when ' + t('n=0') + '.' }],
             t('C(0)=' + F(sh.Fc) + '+' + sh.rate + '(0)=' + F(sh.Fc)) + '. It is the fixed cost (screens, artwork) that has to be paid before a single shirt is printed.', ['Substitute ' + t('n=0') + ', then think about what ' + t('n=0') + ' means.'], 'meaning of C(0)');
         } },
-        { id: '14e', level: 'ADV', make: function (r, sh) {
+        { id: '14e', level: 'PRG', make: function (r, sh) {
           var y = sh.C(sh.n2);
           return B.number('(e) How many t-shirts can be printed for ' + t('\\$' + F(y)) + '?', sh.n2, function (u) {
             if (Math.abs(u - y / sh.rate) < 1) return { code: 'no-fixed', hint: 'Subtract the fixed cost ' + t(F(sh.Fc)) + ' before dividing by ' + t(sh.rate) + '.' };
@@ -858,7 +858,7 @@
           return B.number('(b) Determine the value of ' + t('P(' + sh.t1 + ')') + '.', v, function (u) { if (same(u, sh.A + sh.Bc * sh.t1)) return { code: 'ev-sign', hint: t('-' + sh.Bc + '(' + sh.t1 + ')=+' + (-sh.Bc * sh.t1)) + ': a negative times a negative is positive.' }; return null; },
             t('P(' + sh.t1 + ')=' + sh.A + '-' + sh.Bc + '(' + sh.t1 + ')=' + sh.A + '+' + (-sh.Bc * sh.t1) + '=' + v), ['Substitute ' + t('t=' + sh.t1) + ', in brackets.'], 'P(negative)', { after: 'packets' });
         } },
-        { id: '15c', level: 'PRG', make: function (r, sh) {
+        { id: '15c', level: 'EMG', make: function (r, sh) {
           var v = sh.P(sh.t1);
           return mc(r, '(c) What is the meaning of ' + t('P(' + sh.t1 + ')=' + v) + '?', [
             { html: 'When the average daily temperature is ' + t(sh.t1 + '\\,^{\\circ}\\text{C}') + ', ' + t(v) + ' packets of hot cocoa are sold.', right: true },
@@ -867,7 +867,7 @@
             { html: 'When the temperature is ' + t(v + '\\,^{\\circ}\\text{C}') + ', ' + t(sh.t1) + ' packets are sold.', why: 'Input and output are swapped (and a negative number of packets is impossible).' }],
             'Input ' + t(sh.t1 + '\\,^{\\circ}\\text{C}') + ', output ' + t(v) + ' packets: on a day averaging ' + t(sh.t1 + '\\,^{\\circ}\\text{C}') + ', the lodge sells ' + t(v) + ' packets.', ['Which number is the temperature and which is the number of packets?'], 'meaning of P(a)=b');
         } },
-        { id: '15d', level: 'ADV', make: function (r, sh) {
+        { id: '15d', level: 'PRG', make: function (r, sh) {
           var y = sh.P(sh.t2);
           return B.number('(d) What was the average temperature if ' + t(y) + ' packets were sold?', sh.t2, function (u) {
             if (same(u, -sh.t2)) return { code: 'sign', hint: 'Check the sign: ' + t('-' + sh.Bc + 't=' + (y - sh.A)) + ', and dividing by ' + t('-' + sh.Bc) + ' gives a positive answer.' };
@@ -1197,7 +1197,7 @@
           return B.number('(a) Determine ' + t('C(' + sh.m1 + ')') + '.', v, function (u) { if (same(u, cl(sh.rate * sh.m1))) return { code: 'no-fixed', hint: 'Add the fixed charge ' + t(sh.fix) + '.' }; return null; },
             t('C(' + sh.m1 + ')=' + sh.rate + '(' + sh.m1 + ')+' + sh.fix + '=' + cl(sh.rate * sh.m1) + '+' + sh.fix + '=' + v), ['Substitute ' + t('m=' + sh.m1) + '.'], 'EP C(m1)', { before: t('\\$') });
         } },
-        { id: 'e9b', level: 'PRG', make: function (r, sh) {
+        { id: 'e9b', level: 'EMG', make: function (r, sh) {
           var v = sh.C(sh.m1);
           return meaningMC(r, '(b) Which sentence gives the meaning of your answer to (a)?', 'Shipping a ' + t(sh.m1) + ' kg parcel costs ' + t('\\$' + v) + '.', [
             { html: 'A parcel that costs ' + t('\\$' + sh.m1) + ' has a mass of ' + t(v) + ' kg.', why: 'Input and output are swapped: the input ' + t(sh.m1) + ' is a mass in kilograms.' },
@@ -1212,7 +1212,7 @@
             { html: t('C(0)=' + sh.fix) + ': the cost of a 1 kg parcel.', why: 'A 1 kg parcel costs ' + t('C(1)=' + sh.C(1)) + '. ' + t('C(0)') + ' is what is charged before any mass counts.' }],
             t('C(0)=' + sh.rate + '(0)+' + sh.fix + '=' + sh.fix) + ': the ' + t('\\$' + sh.fix) + ' fixed charge paid before any mass is added — the ' + t('C') + '-intercept.', ['Substitute ' + t('m=0') + '.'], 'EP meaning C(0)');
         } },
-        { id: 'e9d', level: 'ADV', make: function (r, sh) {
+        { id: 'e9d', level: 'PRG', make: function (r, sh) {
           var y = sh.C(sh.m2);
           return B.number('(d) Solve ' + t('C(m)=' + y) + '. (A parcel that costs ' + t('\\$' + y) + ' to ship has what mass?)', sh.m2, function (u) {
             if (same(u, sh.C(y))) return { code: 'ev-instead', hint: 'You found ' + t('C(' + y + ')') + '. ' + t(y) + ' is the cost (the output): solve ' + t(sh.rate + 'm+' + sh.fix + '=' + y) + '.' };
@@ -1248,7 +1248,7 @@
           return fieldsOf('Determine each value.', items, t('T(' + sh.d1 + ')=' + sh.f(sh.d1)) + ', ' + t('T(0)=' + sh.T0),
             t('T(' + sh.d1 + ')=' + sh.T0 + '-' + sh.k + '(' + sh.d1 + ')=' + sh.f(sh.d1)) + ': at a depth of ' + t(sh.d1) + ' m the water is ' + t(sh.f(sh.d1) + '\\,^{\\circ}\\text{C}') + '.<br>' + t('T(0)=' + sh.T0) + ': the surface temperature — the ' + t('T') + '-intercept of the graph.', ['Substitute each depth.'], 'EP lake values');
         } },
-        { id: 'e10b', level: 'ADV', make: function (r, sh) {
+        { id: 'e10b', level: 'PRG', make: function (r, sh) {
           var y = sh.y3;
           return B.number('(c) Solve ' + t('T(d)=' + y) + '. At what depth is the water ' + t(y + '\\,^{\\circ}\\text{C}') + '?', sh.Dp, function (u) {
             if (same(u, sh.f(y))) return { code: 'ev-instead', hint: 'You found ' + t('T(' + y + ')') + '. ' + t(y) + ' is a temperature (the output): solve ' + t(sh.T0 + '-' + sh.k + 'd=' + y) + '.' };
@@ -1318,7 +1318,7 @@
           var items = xs.map(function (x) { var v = pwAt(sh.V, x); return { f: { label: t('W(' + x + ')='), name: 'W(' + x + ')', after: 'L' }, k: nf(v), c: K.number(v, function (u) { if (same(u * 50, v)) return { code: 'read-scale', hint: 'Each grid line on the vertical axis is ' + t('50') + ' L.' }; return null; }) }; });
           return fieldsOf('(a) State each value.', items, xs.map(function (x) { return t('W(' + x + ')=' + pwAt(sh.V, x)); }).join(', '), 'Vertical scale: 1 square ' + t('=50') + ' L.<br>' + xs.map(function (x) { return t('W(' + x + ')=' + pwAt(sh.V, x)) + ' L'; }).join(', '), ['Read up from each time to the graph.'], 'EP tank values');
         } },
-        { id: 'e12b', level: 'PRG', make: function (r, sh) {
+        { id: 'e12b', level: 'EMG', make: function (r, sh) {
           var x = 9, v = pwAt(sh.V, x);
           return meaningMC(r, '(b) What is the meaning of ' + t('W(' + x + ')=' + v) + '?', t(x) + ' minutes after filling begins, the tank holds ' + t(v) + ' L of water.', [
             { html: 'After ' + t(v) + ' minutes the tank holds ' + t(x) + ' L of water.', why: 'Input and output are swapped: ' + t(x) + ' is the time.' },
@@ -1373,7 +1373,7 @@
           var v = sh.C(sh.h1);
           return B.number('(b) Determine ' + t('C(' + sh.h1 + ')') + '.', v, null, t('C(' + sh.h1 + ')=' + sh.rate + '(' + sh.h1 + ')+' + sh.fix + '=' + v) + ': a ' + t(sh.h1) + '-hour rental costs ' + t('\\$' + v) + '.', ['Substitute ' + t('h=' + sh.h1) + '.'], 'EP C(h1)', { before: t('\\$') });
         } },
-        { id: 'e13c', level: 'ADV', make: function (r, sh) {
+        { id: 'e13c', level: 'PRG', make: function (r, sh) {
           var y = sh.C(sh.h2);
           return B.number('(d) Solve ' + t('C(h)=' + y) + '. How long is a rental that costs ' + t('\\$' + y) + '?', sh.h2, function (u) { if (same(u, sh.C(y))) return { code: 'ev-instead', hint: t(y) + ' is the cost (the output): solve ' + t(sh.rate + 'h+' + sh.fix + '=' + y) + '.' }; if (Math.abs(u - y / sh.rate) < 0.01) return { code: 'no-fixed', hint: 'Subtract the base charge first.' }; return null; },
             t(sh.rate + 'h+' + sh.fix + '=' + y) + '<br>' + t(sh.rate + 'h=' + (y - sh.fix)) + '<br>' + t('h=' + sh.h2) + ': a rental that costs ' + t('\\$' + y) + ' lasts ' + t(sh.h2) + ' hours.', ['The cost is the output.'], 'EP solve C(h)=b', { after: 'hours' });

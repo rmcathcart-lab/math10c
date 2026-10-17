@@ -507,7 +507,7 @@
             'Up ' + t(m) + ' per step; going back one step to ' + t('x=0') + ' gives ' + t((m + b) + '-' + m + '=' + b) + '. So ' + t('y=' + lin(m, b)) + '.', ['How much does ' + t('y') + ' go up per step? What would ' + t('y') + ' be at ' + t('x=0') + '?'], 'linear equation from table');
           p.good = [b + '+' + m + 'x']; return p;
         } },
-        { id: 'e10c', sub: 'b ii', level: 'ADV', make: function (r, sh) {
+        { id: 'e10c', sub: 'b ii', level: 'PRG', make: function (r, sh) {
           var a = sh.a;
           var p = K.P.poly('Write an equation for the other relation (Relation ' + sh.S + '). It involves a square.', PL.parse(a + 'x^2'), { before: t('y='),
             wrong: [{ is: PL.parse('x^2'), code: 'diag', hint: 'Compare each output with ' + t('x^{2}') + ': ' + t('2^{2}=4') + ', but the table gives ' + t(4 * a) + '.' }, { is: PL.parse(a * a + 'x^2'), code: 'diag', hint: 'Check ' + t('x=1') + ': your rule gives ' + t(a * a) + ', but the table gives ' + t(a) + '.' }] },
@@ -689,7 +689,7 @@
             { tries: 2, why: function () { return { code: 'var-swap', hint: 'On a graph the independent variable is on the <b>horizontal</b> axis and the dependent variable is on the <b>vertical</b> axis.' }; } },
             'The horizontal axis shows ' + g.x + ', so ' + g.x + ' is the independent variable; ' + g.y + ', on the vertical axis, is the dependent variable.', ['Which quantity is on the horizontal axis?'], 'variables from graph: ' + g.x + ' / ' + g.y);
         } },
-        { id: '4c', level: 'PRG', outcome: 'RF2', make: function (r) {
+        { id: '4c', level: 'EMG', outcome: 'RF2', make: function (r) {
           var c = r.pick(CTX4), s = r.pick(c.s);
           return varsPart(s, c.ind, c.dep, c.why + ' So ' + t(c.dep) + ' is dependent.', c.why + ' Independent: ' + t(c.ind) + '; dependent: ' + t(c.dep) + '.', 'variables from words: ' + c.ind + ' / ' + c.dep);
         } }] },

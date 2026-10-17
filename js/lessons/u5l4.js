@@ -621,7 +621,7 @@
               'The number of tickets is a whole number (a count), at least ' + t('0') + ' and at most the ' + t(sh.N) + ' seats.<br>' + t('D=' + target) + ' (or ' + t('n\\in I') + ' with the bound ' + t('0\\le n') + ').',
               ['What kind of number is a count of tickets? What are the fewest and the most tickets that can be sold?'], 'ticket domain (whole numbers)');
           } },
-          { id: 'e7b', sub: 'b', level: 'PRG', make: function (r, sh) {
+          { id: 'e7b', sub: 'b', level: 'EMG', make: function (r, sh) {
             var max = sh.p * sh.N, k1 = r.int(3, 9), right = sh.p * k1 + r.int(1, sh.p - 1), m = r.sample(range(2, Math.floor(sh.N / 2)), 2);
             return B.mc(r, '(b) A student writes ' + t('R=\\{R\\mid 0\\le R\\le ' + max + ',\\ R\\in I\\}') + '. The bounds are right but the notation is not: some whole numbers between the bounds are never produced. Which amount can the revenue <b>never</b> be?', [
               { html: '$' + right, right: true },
@@ -831,7 +831,7 @@
             p.good = [[ivAlt(R1), 'y=' + sh.c]]; p.bad = [[R1, all('y')], [R2, R1]].concat(sh.y1 === -sh.a && sh.y2 === sh.a ? [] : [[bld('y', -sh.a, sh.a), R2]]);
             return p;
           } },
-          { id: 'e14b', level: 'PRG', make: function (r, sh) {
+          { id: 'e14b', level: 'EMG', make: function (r, sh) {
             return B.tf(r, '(b) True or false: “If I tell you the domain of a relation, you can tell me its range.”', false, 'Look at part (a): the same domain gave two different ranges.',
               '<b>False.</b> In (a) the same domain ' + t(bld('x', -sh.a, sh.a)) + ' gave two different ranges, ' + t(bld('y', sh.y1, sh.y2)) + ' and ' + t('\\{' + sh.c + '\\}') + '. Likewise two segments can share the range ' + t(bld('y', -1, 2)) + ' with different domains, e.g. from ' + t('(0,\\ -1)') + ' to ' + t('(3,\\ 2)') + ' and from ' + t('(-5,\\ 2)') + ' to ' + t('(-2,\\ -1)') + '.',
               ['Do the two graphs in (a) have the same range?'], 'domain decides range? (false)');

@@ -569,7 +569,7 @@
               [(Vc - sh.Fc) / 100, 'fn-solve-divide', t(Rt + v + '=' + money(Vc - sh.Fc)) + ' — now divide by ' + t(Rt) + '.']],
               t(Ft + '+' + Rt + v + '=' + V) + '<br>' + t(Rt + v + '=' + money(Vc - sh.Fc)) + '<br>' + t(v + '=' + money(Vc - sh.Fc) + '\\div ' + Rt + '=' + n) + ' ' + x.after + '.', HS, 'solve C=' + V + ' context', { before: t(v + '='), after: x.after });
           } },
-          { id: '15d', level: 'PRG', make: function (r, sh) {
+          { id: '15d', level: 'EMG', make: function (r, sh) {
             var x = sh.ctx, Ft = money(sh.Fc), Rt = money(sh.Rc);
             return mc(r, 'What does ' + t('C(0)=' + Ft) + ' represent?', [
               { html: 'The ' + x.fee + ': $' + Ft + ' is charged even when the ' + x.inWord + ' is ' + t('0') + '.', right: true },
@@ -1116,7 +1116,7 @@
               { html: 'Because ' + t(v) + ' is between the lowest and highest points.', why: 'That explains why there are three solutions, not why ' + t('f') + ' is a function.' }],
               'The three solutions are inputs that share the output ' + t(v) + ' (many-to-one) — allowed. Every <b>vertical</b> line meets the graph exactly once, so ' + t('f') + ' is a function.', ['Which kind of line decides whether a graph is a function?'], 'many-to-one still a function');
           } },
-          { id: 'e23f', level: 'MAS', make: function (r, sh) {
+          { id: 'e23f', level: 'ADV', make: function (r, sh) {
             var L = sh.L, H = sh.H;
             return B.set('For which values of ' + t('k') + ' does ' + t('f(x)=k') + ' have exactly <b>three</b> solutions? Give your answer as an inequality.', '\\{k\\mid ' + L + '<k<' + H + ',\\ k\\in\\mathbb{R}\\}', { v: 'k', wrong: [
               { is: '\\{k\\mid ' + L + '\\le k\\le ' + H + ',\\ k\\in\\mathbb{R}\\}', code: 'set-endpoint', hint: 'Check ' + t('k=' + H) + ': the line ' + t('y=' + H) + ' meets the graph only at the two upper corners. The same happens at ' + t('k=' + L) + '.' },
