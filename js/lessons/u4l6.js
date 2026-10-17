@@ -732,7 +732,7 @@
               { html: 'They used <b>decomposition</b> (line 4), but the expression has <b>four</b> terms, so they should use <b>grouping</b> (line 5).', right: true },
               { html: 'They used grouping, but it is a trinomial, so they should use decomposition.', why: 'Count the terms of ' + t(sh.pr.tex) + ': there are four. And ' + t('a') + ', ' + t('c') + ', ' + t('ac') + ' are decomposition words.' },
               { html: 'They used decomposition correctly — only their sum is wrong.', why: 'There is no single middle term to split: the expression already has four terms, so ' + t('a') + ', ' + t('c') + ' and the sum mean nothing here.' },
-              { html: 'They should have used difference of squares, because ' + t(sh.a + 'x^{3}') + ' and ' + t(sh.p * sh.q) + ' are both terms.', why: 'Difference of squares is for exactly two terms. This has four.' }],
+              { html: 'They should have used difference of squares, because the first and last terms are separated by a minus sign.', why: 'Difference of squares is for exactly two terms. This has four.' }],
               'The student used line 4, <b>decomposition</b>, which is only for a trinomial ' + t('ax^{2}+bx+c') + '. ' + t(sh.pr.tex) + ' has <b>four</b> terms (and no factor common to all four), so they should have used line 5, <b>factoring by grouping</b>.', ['Count the terms first.'], 'which checklist line');
           } },
           { id: 'e13b', sub: 'b', level: 'PRG', make: function (r, sh) {

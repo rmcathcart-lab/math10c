@@ -941,12 +941,13 @@
     { num: '8', stem: 'Each of these has a detail that is easy to get wrong. Choose the best sketch.', parts: [
       { id: 'e8a', level: 'EMG', make: function (r) {
         var sh = function (o) { return sk(o); };
-        return mcG(r, 'A stone is dropped from a bridge and falls until it hits the water. Which graph shows the <b>distance it has fallen</b> against time? (A falling stone does not fall at a steady speed.)', [
+        var ob = r.pick([['A stone is dropped from a bridge and falls until it hits the water.', 'stone', 'water'], ['An apple falls from a tall tree until it hits the ground.', 'apple', 'ground'], ['A coin is dropped from a lookout tower into a pond.', 'coin', 'water']]);
+        return mcG(r, ob[0] + ' Which graph shows the <b>distance it has fallen</b> against time? (A falling object does not fall at a steady speed.)', [
           { html: sh({ fns: [Fn(function (x) { return 0.08 * x * x; }, 0, 8)], points: [{ x: 8, y: 5.12 }] }), right: true },
-          { html: sh({ segs: [Ln([[0, 0], [8, 5.12]], { end: 'closed' })] }), code: 'lin', why: 'A straight line means a steady speed. The stone speeds up as it falls, so the graph gets steeper and steeper.' },
-          { html: sh({ fns: [Fn(function (x) { return 5.3 * (1 - Math.exp(-0.38 * x)); }, 0, 8)], points: [{ x: 8, y: 5.3 * (1 - Math.exp(-3.04)) }] }), code: 'slow', why: 'This flattens out, as if the stone slowed down. It speeds up all the way down.' },
-          { html: sh({ fns: [Fn(function (x) { return 5.12 - 0.08 * x * x; }, 0, 8)], points: [{ x: 8, y: 0 }] }), code: 'height', why: 'This is the stone’s <b>height</b> above the water, which goes down. The question asks for the distance fallen, which goes up.' }],
-          'From the origin, rising and getting <b>steeper and steeper</b> (the stone speeds up); it stops when it hits the water.', ['Does the distance fallen go up or down? Is the speed steady?'], 'sketch: falling stone');
+          { html: sh({ segs: [Ln([[0, 0], [8, 5.12]], { end: 'closed' })] }), code: 'lin', why: 'A straight line means a steady speed. The ' + ob[1] + ' speeds up as it falls, so the graph gets steeper and steeper.' },
+          { html: sh({ fns: [Fn(function (x) { return 5.3 * (1 - Math.exp(-0.38 * x)); }, 0, 8)], points: [{ x: 8, y: 5.3 * (1 - Math.exp(-3.04)) }] }), code: 'slow', why: 'This flattens out, as if the ' + ob[1] + ' slowed down. It speeds up all the way down.' },
+          { html: sh({ fns: [Fn(function (x) { return 5.12 - 0.08 * x * x; }, 0, 8)], points: [{ x: 8, y: 0 }] }), code: 'height', why: 'This is the ' + ob[1] + '’s <b>height</b> above the ' + ob[2] + ', which goes down. The question asks for the distance fallen, which goes up.' }],
+          'From the origin, rising and getting <b>steeper and steeper</b> (the ' + ob[1] + ' speeds up); it stops when it hits the ' + ob[2] + '.', ['Does the distance fallen go up or down? Is the speed steady?'], 'sketch: falling stone');
       } },
       { id: 'e8b', level: 'EMG', make: function (r) {
         var n = r.pick([2, 3, 3]), w = 9.3 / n;
@@ -960,12 +961,13 @@
           'Speed up, cruise, slow to ' + t('0') + ' — ' + n + ' times. The stops are flat parts <b>on the time axis</b> (speed ' + t('0') + '), not flat parts up high (which mean cruising).', ['What is the speed at a stop? Where is that on the graph?'], 'sketch: bus speed');
       } },
       { id: 'e8c', level: 'EMG', make: function (r) {
-        return mcG(r, 'A tap fills a bathtub at a steady rate. The tap is turned off, someone bathes for a while, and then the plug is pulled and the tub empties <b>faster</b> than it filled. Which graph shows the amount of water in the tub against time?', [
+        var tb = r.pick([['A tap fills a bathtub at a steady rate. The tap is turned off, someone bathes for a while, and then the plug is pulled', 'tub', 'someone bathes', 'bathing'], ['A hose fills a kiddie pool at a steady rate. The hose is turned off, the kids play in it for a while, and then it is pumped out', 'pool', 'the kids play', 'playing'], ['A tap fills a sink at a steady rate. The tap is turned off, someone washes the dishes, and then the plug is pulled', 'sink', 'someone washes the dishes', 'washing']]);
+        return mcG(r, tb[0] + ' and it empties <b>faster</b> than it filled. Which graph shows the amount of water in the ' + tb[1] + ' against time?', [
           { html: sk({ segs: [Ln([[0.3, 0], [3.8, 4.4], [6.2, 4.4], [7.8, 0], [9.6, 0]])] }), right: true },
           { html: sk({ segs: [Ln([[0.3, 0], [2.4, 4.4], [4.6, 4.4], [9.4, 0]])] }), code: 'slowempty', why: 'Here the fall is gentler than the rise, so it empties more slowly. Emptying faster means a <b>steeper</b> fall.' },
-          { html: sk({ segs: [Ln([[0.3, 0], [3.8, 4.4], [5.4, 0], [9.6, 0]])] }), code: 'noflat', why: 'There is no flat part. While someone bathes, the tap is off and the plug is in, so the amount stays constant.' },
+          { html: sk({ segs: [Ln([[0.3, 0], [3.8, 4.4], [5.4, 0], [9.6, 0]])] }), code: 'noflat', why: 'There is no flat part. While ' + tb[2] + ', no water goes in or out, so the amount stays constant.' },
           { html: sk({ fns: [Fn(function (x) { return x <= 3.8 ? 4.4 * Math.sqrt((x - 0.3) / 3.5) : x <= 6.2 ? 4.4 : Math.max(0, 4.4 - 4.4 * Math.pow((x - 6.2) / 1.6, 0.5)); }, 0.3, 9.6)] }), code: 'curve', why: 'The rising part curves (slowing down). A tap at a steady rate adds the same amount each minute, so the rise should be straight.' }],
-          'Straight rise (tap on, steady), flat (tap off, bathing), then a straight fall to ' + t('0') + ' that is <b>steeper than the rise</b>, because it empties faster than it filled.', ['Three stages: filling, bathing, emptying. Which is steepest?'], 'sketch: bathtub');
+          'Straight rise (filling steadily), flat (' + tb[3] + '), then a straight fall to ' + t('0') + ' that is <b>steeper than the rise</b>, because it empties faster than it filled.', ['Three stages: filling, bathing, emptying. Which is steepest?'], 'sketch: bathtub');
       } },
       { id: 'e8d', level: 'EMG', make: function (r) {
         var it = r.pick(['A phone', 'A tablet', 'A gaming console']);
