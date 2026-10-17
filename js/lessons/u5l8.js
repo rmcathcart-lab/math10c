@@ -704,7 +704,7 @@
             { html: t('(0,\\ ' + b + ')'), right: true },
             { html: t('(0,\\ ' + m + ')'), why: t(m) + ' is the rate of change (slope). The ' + t('y') + '-intercept is the output when ' + t('x=0') + '.' },
             { html: t('\\left(' + frT(-b, m) + ',\\ 0\\right)'), why: 'That is where the graph crosses the ' + t('x') + '-axis (the ' + t('x') + '-intercept).' }],
-            'The ' + t('y') + '-axis is where ' + t('x=0') + ': ' + t(nm + '(0)=' + m + '(0)+' + b + '=' + b) + ', so the graph crosses at ' + t('(0,\\ ' + b + ')') + '.', ['On the ' + t('y') + '-axis, ' + t('x=0') + '.'], 'y-intercept of mx+b', true);
+            'The ' + t('y') + '-axis is where ' + t('x=0') + ': ' + t(nm + '(0)=' + m + '(0)+' + b + '=' + b) + ', so the graph crosses at ' + t('(0,\\ ' + b + ')') + '.', ['On the ' + t('y') + '-axis, ' + t('x=0') + '.'], 'y-intercept of mx+b');
         } }] },
       { num: '11', stem: '<i>(Multiple Choice)</i>', parts: [
         { id: '11', level: 'EMG', make: function (r) {
@@ -1622,7 +1622,7 @@
             { html: 'Shipping a ' + t(a) + ' kg parcel costs ' + t('\\$' + b) + '.', right: true },
             { html: t('C') + ' multiplied by ' + t(a) + ' equals ' + t(b) + '.', why: t('C') + ' names the function; the brackets hold the input.' },
             { html: t('C(' + b + ')=' + a) + '.', why: 'That is a different claim, which need not be true.' }],
-            t('C(' + a + ')=' + b) + ': input ' + t(a) + ' kg, output ' + t('\\$' + b) + '. Only B reads ' + t(a) + ' as the mass and ' + t(b) + ' as the cost.', ['Input in the brackets; output after the equals sign.'], 'EP MC C(a)=b', true);
+            t('C(' + a + ')=' + b) + ': input ' + t(a) + ' kg, output ' + t('\\$' + b) + '. Only “Shipping a ' + t(a) + ' kg parcel costs ' + t('\\$' + b) + '” reads ' + t(a) + ' as the mass and ' + t(b) + ' as the cost.', ['Input in the brackets; output after the equals sign.'], 'EP MC C(a)=b');
         } }] },
       { num: '20', shared: flatShared, stem: function (sh) { return '<i>(Multiple Choice)</i> For the function ' + t('f') + ' graphed below (the graph from Extra 6),' + sh.fig; }, parts: [
         { id: 'e20', level: 'PRG', make: function (r, sh) {
@@ -1630,7 +1630,7 @@
           return mc(r, 'the equation ' + t('f(x)=' + b) + ' has', [
             { html: 'one solution', why: 'Look again at the flat piece.' }, { html: 'two solutions', why: 'The flat piece is at that height for a whole interval of ' + t('x') + '-values.' },
             { html: 'three solutions', why: 'The ends of the flat piece aren’t the only points there — every point on it counts.' }, { html: 'infinitely many solutions', right: true }],
-            'The line ' + t('y=' + b) + ' crosses one piece, then lies <b>along</b> the flat piece for every ' + t('x') + ' in an interval — infinitely many points.', ['Draw the horizontal line at height ' + t(b) + '.'], 'EP MC flat piece', true);
+            'The line ' + t('y=' + b) + ' crosses one piece, then lies <b>along</b> the flat piece for every ' + t('x') + ' in an interval — infinitely many points.', ['Draw the horizontal line at height ' + t(b) + '.'], 'EP MC flat piece');
         } }] },
       { num: '21', stem: '<i>(Numerical Response)</i>', parts: [
         { id: 'e21', level: 'ADV', make: function (r) {

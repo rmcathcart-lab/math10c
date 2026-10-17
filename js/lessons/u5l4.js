@@ -832,21 +832,31 @@
             return p;
           } },
           { id: 'e14b', level: 'EMG', make: function (r, sh) {
+            var tv = r.chance(0.5), ex = ' In (a) the same domain ' + t(bld('x', -sh.a, sh.a)) + ' gave two different ranges, ' + t(bld('y', sh.y1, sh.y2)) + ' and ' + t('\\{' + sh.c + '\\}') + '. Likewise two segments can share the range ' + t(bld('y', -1, 2)) + ' with different domains, e.g. from ' + t('(0,\\ -1)') + ' to ' + t('(3,\\ 2)') + ' and from ' + t('(-5,\\ 2)') + ' to ' + t('(-2,\\ -1)') + '.';
+            if (tv) return B.tf(r, '(b) True or false: “Two relations can have the same domain but different ranges.”', true, 'Look at part (a): the same domain gave two different ranges.',
+              '<b>True.</b>' + ex, ['Do the two graphs in (a) have the same range?'], 'same domain, different ranges? (true)');
             return B.tf(r, '(b) True or false: “If I tell you the domain of a relation, you can tell me its range.”', false, 'Look at part (a): the same domain gave two different ranges.',
-              '<b>False.</b> In (a) the same domain ' + t(bld('x', -sh.a, sh.a)) + ' gave two different ranges, ' + t(bld('y', sh.y1, sh.y2)) + ' and ' + t('\\{' + sh.c + '\\}') + '. Likewise two segments can share the range ' + t(bld('y', -1, 2)) + ' with different domains, e.g. from ' + t('(0,\\ -1)') + ' to ' + t('(3,\\ 2)') + ' and from ' + t('(-5,\\ 2)') + ' to ' + t('(-2,\\ -1)') + '.',
-              ['Do the two graphs in (a) have the same range?'], 'domain decides range? (false)');
+              '<b>False.</b>' + ex, ['Do the two graphs in (a) have the same range?'], 'domain decides range? (false)');
           } }] },
       { num: '15', stem: 'True or false? (If false, think of a counterexample.)', parts: [
         { id: 'e15a', level: 'EMG', make: function (r) { var c = r.pick(nz(-6, 9));
+          if (r.chance(0.5)) return B.tf(r, 'A relation whose range is ' + t('\\{' + c + '\\}') + ' can be a set of separate points instead of a line.', true, 'Separate points that all have ' + t('y=' + c) + ', such as ' + t('(1,\\ ' + c + ')') + ' and ' + t('(2,\\ ' + c + ')') + ', have range ' + t('\\{' + c + '\\}') + '.',
+            '<b>True.</b> The four separate points ' + ptsH([[1, c], [2, c], [3, c], [4, c]]) + ' have range ' + t('\\{' + c + '\\}') + ' but are not a line.', [], 'range {c} can be separate points? (true)');
           return B.tf(r, 'A relation whose range is ' + t('\\{' + c + '\\}') + ' must be a horizontal line.', false, 'Think of separate points that all have ' + t('y=' + c) + ', or a short segment at that height.',
             '<b>False.</b> The four separate points ' + ptsH([[1, c], [2, c], [3, c], [4, c]]) + ' have range ' + t('\\{' + c + '\\}') + ' but are not a line.', [], 'range {c} ⇒ horizontal line? (false)'); } },
         { id: 'e15b', level: 'LIM', make: function (r) { var c = r.pick(nz(-6, 6));
+          if (r.chance(0.5)) return B.tf(r, 'The vertical line ' + t('x=' + c) + ' has exactly one value in its range.', false, 'The line goes up and down forever: its points have every possible ' + t('y') + '-value.',
+            '<b>False.</b> The vertical line ' + t('x=' + c) + ' goes up and down forever, so every ' + t('y') + '-value occurs: ' + t('R=' + all('y')) + '. It is the <b>domain</b> that has one value, ' + t('D=\\{' + c + '\\}') + '.', [], 'vertical line has one range value? (false)');
           return B.tf(r, 'The vertical line ' + t('x=' + c) + ' has exactly one value in its domain.', true, 'Every point on ' + t('x=' + c) + ' has the same ' + t('x') + '-coordinate.',
             '<b>True.</b> Every point on the vertical line ' + t('x=' + c) + ' has ' + t('x') + '-value ' + t(c) + ', so ' + t('D=\\{' + c + '\\}') + '.', [], 'vertical line has one domain value (true)'); } },
         { id: 'e15c', level: 'PRG', make: function (r) { var a = r.int(-3, 3), b = r.pick(nz(-4, 5)), w = r.pick([3, 4]);
+          if (r.chance(0.5)) return B.tf(r, 'A graph with a hollow endpoint at ' + t(ptT([a, b])) + ' can still have ' + t(b) + ' in its range.', true, 'Another point of the graph can still have ' + t('y=' + b) + ' — think of a horizontal segment starting at that hollow dot.',
+            '<b>True.</b> The horizontal segment from a hollow ' + t(ptT([a, b])) + ' to a solid ' + t(ptT([a + w, b])) + ': every other point has ' + t('y=' + b) + ', so ' + t('R=\\{' + b + '\\}') + ' and ' + t(b) + ' <i>is</i> in the range. A hollow dot removes one point, not a whole ' + t('y') + '-value.', [], 'hollow dot, value still in range? (true)');
           return B.tf(r, 'If a graph has a hollow endpoint at ' + t(ptT([a, b])) + ', then ' + t(b) + ' cannot be in the range.', false, 'Another point of the graph can still have ' + t('y=' + b) + ' — think of a horizontal segment starting at that hollow dot.',
             '<b>False.</b> The horizontal segment from a hollow ' + t(ptT([a, b])) + ' to a solid ' + t(ptT([a + w, b])) + ': every other point has ' + t('y=' + b) + ', so ' + t('R=\\{' + b + '\\}') + ' and ' + t(b) + ' <i>is</i> in the range. A hollow dot removes one point, not a whole ' + t('y') + '-value.', [], 'hollow dot ⇒ value excluded? (false)'); } },
         { id: 'e15d', level: 'EMG', make: function (r) { var k = r.int(-4, -1);
+          if (r.chance(0.5)) return B.tf(r, 'A relation with a domain of ' + t(all('x')) + ' can have a range that is not ' + t(all('y')) + '.', true, 'Think of a horizontal line, or a parabola with a lowest point.',
+            '<b>True.</b> The parabola ' + t('y=x^{2}' + signed(k)) + ' uses every real ' + t('x') + ' but has range ' + t(bld('y', k, null)) + ' (and a horizontal line ' + t('y=3') + ' has range ' + t('\\{3\\}') + ').', [], 'domain R, range not R? (true)');
           return B.tf(r, 'A relation with a domain of ' + t(all('x')) + ' must also have a range of ' + t(all('y')) + '.', false, 'Think of a horizontal line, or a parabola with a lowest point.',
             '<b>False.</b> The parabola ' + t('y=x^{2}' + signed(k)) + ' uses every real ' + t('x') + ' but has range ' + t(bld('y', k, null)) + ' (and a horizontal line ' + t('y=3') + ' has range ' + t('\\{3\\}') + ').', [], 'domain R ⇒ range R? (false)'); } }] },
       { num: '16', stem: '<i>(Multiple Choice)</i>', parts: [

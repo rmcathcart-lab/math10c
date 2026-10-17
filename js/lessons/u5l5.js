@@ -566,7 +566,7 @@
             { html: W(-5, Xhi, 5, -10, 10, 1), why: 'The ' + t('y') + '-intercept is ' + t('-' + c) + ', below ' + t('Y_{\\min}=-10') + '.' },
             { html: W(0, 20, 2, 0, 20, 2), why: 'This window shows no negative ' + t('y') + '-values, so the ' + t('y') + '-intercept ' + t('-' + c) + ' is off the screen.' }],
             t('x') + '-intercept: ' + linXint(o.m, -c) + '; ' + t('y') + '-intercept: ' + t('-' + c) + '. The window must include ' + t('x=' + o.X) + ' and ' + t('y=-' + c) + ': only ' + W(-5, Xhi, 5, Ylo, 5, 5) + ' does.',
-            ['Find both intercepts first, then check each window: is the ' + t('x') + '-intercept between ' + WT.Xmin + ' and ' + WT.Xmax + ', and the ' + t('y') + '-intercept between ' + WT.Ymin + ' and ' + WT.Ymax + '?'], 'window MC ' + linT(o.m, -c), true);
+            ['Find both intercepts first, then check each window: is the ' + t('x') + '-intercept between ' + WT.Xmin + ' and ' + WT.Xmax + ', and the ' + t('y') + '-intercept between ' + WT.Ymin + ' and ' + WT.Ymax + '?'], 'window MC ' + linT(o.m, -c));
         } }] },
       { num: '10', stem: '<i>(Multiple Choice)</i>', parts: [
         { id: '10', level: 'LIM', make: function (r) {
@@ -982,7 +982,7 @@
             opts.push({ html: '(e) ' + t('y=' + s.E.tex), right: true });
             var keep = r.sample([0, 1, 2, 3], 3).sort(); opts = keep.map(function (i) { return opts[i]; }).concat([opts[4]]);
             return mc(r, 'In exactly one of (a)–(e) the ▸Frac conversion hands the decimal straight back instead of a fraction. Which one?', opts,
-              'Part (e): its intercepts are ' + t('\\pm\\sqrt{' + s.E.n + '}') + ', which is <b>irrational</b> — no fraction equals it, so ▸Frac has nothing to convert. The others are rational.', ['Which intercept can’t be written as a fraction?'], 'which is irrational', true);
+              'Part (e): its intercepts are ' + t('\\pm\\sqrt{' + s.E.n + '}') + ', which is <b>irrational</b> — no fraction equals it, so ▸Frac has nothing to convert. The others are rational.', ['Which intercept can’t be written as a fraction?'], 'which is irrational');
           } }] },
       { num: '9', stem: function (s) { return 'Decide first whether each parabola opens up or down, so you know to choose ' + code('3:minimum') + ' or ' + code('4:maximum') + '. Then give the turning point as an <b>exact</b> ordered pair.'; },
         shared: function (r) {
@@ -1214,7 +1214,7 @@
             { html: code('(' + o.A + 'X−' + o.C + ')/' + o.B), right: true },
             { html: code('(' + o.C + '−' + o.A + 'X)/' + o.B), why: 'This divides by ' + t(o.B) + ' instead of ' + t('-' + o.B) + ', which reverses every sign.' },
             { html: code(o.A + 'X/' + o.B + '−' + o.C), why: 'This divides only the ' + t(o.A + 'x') + '; the ' + t(o.C) + ' must be divided too.' }],
-            t(o.A + 'x-' + o.B + 'y=' + o.C + '\\Rightarrow -' + o.B + 'y=' + o.C + '-' + o.A + 'x\\Rightarrow y=\\frac{' + o.C + '-' + o.A + 'x}{-' + o.B + '}=\\frac{' + o.A + 'x-' + o.C + '}{' + o.B + '}') + '.', ['Solve for ' + t('y') + ' first — careful dividing by a negative.'], 'Y1 for ' + o.A + 'x-' + o.B + 'y=' + o.C, true);
+            t(o.A + 'x-' + o.B + 'y=' + o.C + '\\Rightarrow -' + o.B + 'y=' + o.C + '-' + o.A + 'x\\Rightarrow y=\\frac{' + o.C + '-' + o.A + 'x}{-' + o.B + '}=\\frac{' + o.A + 'x-' + o.C + '}{' + o.B + '}') + '.', ['Solve for ' + t('y') + ' first — careful dividing by a negative.'], 'Y1 for ' + o.A + 'x-' + o.B + 'y=' + o.C);
         } }] },
       { num: '17', stem: '<i>(Multiple Choice)</i>', parts: [
         { id: 'e17', level: 'EMG', make: function (r) {
@@ -1225,7 +1225,7 @@
             { html: W(0, 15, 5, -5, 5, 1), right: true },
             { html: W(-5, 5, 1, -10, 100, 10), why: t('X_{\\max}=5') + ' cuts off both intercepts and the vertex.' },
             { html: W(5, 15, 1, 0, 10, 1), why: t('Y_{\\min}=0') + ' is above the vertex value ' + t(k) + '.' }],
-            t(rel + '=(x-' + r1 + ')(x-' + r2 + ')') + ': ' + t('x') + '-intercepts ' + t(r1) + ' and ' + t(r2) + '. Vertex: ' + t('x=' + h) + ', ' + t('y=' + k) + '. Only ' + W(0, 15, 5, -5, 5, 1) + ' contains ' + t('x=' + r1 + ',\\ ' + h + ',\\ ' + r2) + ' and ' + t('y=' + k) + '.', ['Find the intercepts and the vertex first, then test each window.'], 'window MC parabola', true);
+            t(rel + '=(x-' + r1 + ')(x-' + r2 + ')') + ': ' + t('x') + '-intercepts ' + t(r1) + ' and ' + t(r2) + '. Vertex: ' + t('x=' + h) + ', ' + t('y=' + k) + '. Only ' + W(0, 15, 5, -5, 5, 1) + ' contains ' + t('x=' + r1 + ',\\ ' + h + ',\\ ' + r2) + ' and ' + t('y=' + k) + '.', ['Find the intercepts and the vertex first, then test each window.'], 'window MC parabola');
         } }] },
       { num: '18', stem: '<i>(Numerical Response)</i>', parts: [
         { id: 'e18', level: 'EMG', make: function (r) {

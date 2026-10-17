@@ -1247,7 +1247,7 @@
             { html: t('y=x^{2}+' + s), right: true },
             { html: t('x=' + s), why: 'A vertical line crosses the ' + t('x') + '-axis at ' + t(ptT([s, 0])) + '.' },
             { html: t('y=' + s + 'x'), why: 'This line passes through the origin, ' + t('(0,\\ 0)') + ', which is an ' + t('x') + '-intercept.' }],
-            t('y=x^{2}+' + s) + ': ' + t('y=0') + ' needs ' + t('x^{2}=-' + s) + ', impossible since ' + t('x^{2}\\ge 0') + ' — <b>no ' + t('x') + '-intercept</b>. The others: ' + t('\\pm' + k) + '; ' + t(ptT([s, 0])) + '; ' + t('(0,\\ 0)') + '.', ['Substitute ' + t('y=0') + ' into each option. Which equation has no solution?'], 'no x-intercept MC', true);
+            t('y=x^{2}+' + s) + ': ' + t('y=0') + ' needs ' + t('x^{2}=-' + s) + ', impossible since ' + t('x^{2}\\ge 0') + ' — <b>no ' + t('x') + '-intercept</b>. The others: ' + t('\\pm' + k) + '; ' + t(ptT([s, 0])) + '; ' + t('(0,\\ 0)') + '.', ['Substitute ' + t('y=0') + ' into each option. Which equation has no solution?'], 'no x-intercept MC');
         } }] },
       { num: '17', stem: '<i>(Numerical Response)</i>', parts: [
         { id: 'e17', level: 'PRG', make: function (r) {

@@ -488,7 +488,7 @@
             { html: t('\\{t\\mid 0\\le t\\le ' + Y + ',\\ t\\in\\mathbb{R}\\}'), right: true },
             { html: t('\\{t\\mid 0\\le t\\le ' + F(V0) + ',\\ t\\in\\mathbb{R}\\}'), why: t(F(V0)) + ' is the starting <b>value</b> in dollars — that belongs to the range, not to the age.' },
             { html: t('\\{t\\mid t\\ge 0,\\ t\\in W\\}'), why: 'Age can be any number of years (like ' + t('2.5') + '), not just whole years — and after ' + t(Y) + ' years the formula gives a negative value.' }],
-            'The value reaches ' + t('0') + ' when ' + t(F(R) + 't=' + F(V0)) + ', so ' + t('t=' + Y) + '. The age can be any value from ' + t('0') + ' to ' + t(Y) + ' years: ' + t('\\{t\\mid 0\\le t\\le ' + Y + ',\\ t\\in\\mathbb{R}\\}') + '.', ['When is the snowmobile worth ' + t('\\$0') + '? Can the age be a decimal?'], 'snowmobile domain', true);
+            'The value reaches ' + t('0') + ' when ' + t(F(R) + 't=' + F(V0)) + ', so ' + t('t=' + Y) + '. The age can be any value from ' + t('0') + ' to ' + t(Y) + ' years: ' + t('\\{t\\mid 0\\le t\\le ' + Y + ',\\ t\\in\\mathbb{R}\\}') + '.', ['When is the snowmobile worth ' + t('\\$0') + '? Can the age be a decimal?'], 'snowmobile domain');
         } }] },
       { num: '7', stem: '<i>(Multiple Choice)</i>', parts: [
         { id: '7', level: 'EMG', make: function (r) {
@@ -532,7 +532,7 @@
               { html: 'Carly', right: true },
               { html: 'Dev', why: 'Dev’s ' + cd('Ymax') + ' = ' + t(s.w.Dev[3]) + ' is below the peak, so the top of the flight is cut off.' }],
               'The shell lands at ' + t('t\\approx ' + rT(s.land, 2)) + ' s (' + cd('2:zero') + ') and peaks at ' + t(nT(s.pk)) + ' m (' + cd('4:maximum') + '). A window needs ' + cd('Xmax') + ' past ' + t(rT(s.land, 2)) + ' and ' + cd('Ymax') + ' above ' + t(nT(s.pk)) + ', starting from ' + t('0') + '. Only <b>Carly</b>’s does.' + quadFig(s, s.w.Carly, [{ x: s.tv, y: s.pk }]),
-              ['Find the landing time and the greatest height first, then compare each window with them.'], 'which window shows flight', true);
+              ['Find the landing time and the greatest height first, then compare each window with them.'], 'which window shows flight');
           } },
           { id: 'e1b', sub: 'b', level: 'PRG', make: function (r, s) {
             var rows = [{ id: 'Ama', html: 'Ama' }, { id: 'Beni', html: 'Beni' }, { id: 'Carly', html: 'Carly' }, { id: 'Dev', html: 'Dev' }];
@@ -1017,6 +1017,8 @@
         stem: function (s) { return 'A ball is thrown upward from a balcony. Its height above the ground, in metres, after ' + t('t') + ' seconds is ' + t(s.eq) + '. Asked how long the ball is in the air, a student uses ' + cd('2:zero') + ', reports <b>' + t('-' + s.S) + ' seconds</b>, and moves on.'; },
         parts: [
           { id: 'e12a', sub: 'a', level: 'BEG', make: function (r, s) {
+            if (r.chance(0.5)) return B.tf(r, 'True or false: ' + t('t=-' + s.S) + ' is <b>not</b> a solution of the equation ' + t(quadT(-5, s.b, s.c, 't') + '=0') + ', so the student must have made an arithmetic error.', false, 'Substitute: ' + t('-5(-' + s.S + ')^{2}+' + s.b + '(-' + s.S + ')+' + s.c + '=' + (-5 * s.S * s.S) + (-s.b * s.S) + '+' + s.c + '=0') + '. It does solve the equation.',
+              t('h(-' + s.S + ')=-5(' + (s.S * s.S) + ')-' + (s.b * s.S) + '+' + s.c + '=0') + ' — <b>false</b>: ' + t('t=-' + s.S) + ' <i>is</i> a solution of the equation, so the algebra is fine. The trouble is elsewhere.', ['Substitute ' + t('t=-' + s.S) + ' and see whether you get ' + t('0') + '.'], 'is -S not a root (false)');
             return B.tf(r, 'True or false: substituting ' + t('t=-' + s.S) + ' gives ' + t('h=0') + ', so ' + t('t=-' + s.S) + ' is a solution of the equation ' + t(quadT(-5, s.b, s.c, 't') + '=0') + '.', true, 'Substitute: ' + t('-5(-' + s.S + ')^{2}+' + s.b + '(-' + s.S + ')+' + s.c + '=' + (-5 * s.S * s.S) + (-s.b * s.S) + '+' + s.c + '=0') + '. It does solve the equation.',
               t('h(-' + s.S + ')=-5(' + (s.S * s.S) + ')-' + (s.b * s.S) + '+' + s.c + '=0') + ' — <b>true</b>: ' + t('t=-' + s.S) + ' is a solution of the equation. The trouble is elsewhere.', ['Substitute ' + t('t=-' + s.S) + ' and see whether you get ' + t('0') + '.'], 'is -S a root');
           } },
@@ -1145,7 +1147,7 @@
             { html: t('\\{t\\mid 0\\le t\\le ' + R + ',\\ t\\in\\mathbb{R}\\}'), right: true },
             { html: t('\\{t\\mid 0\\le t\\le ' + pk + ',\\ t\\in\\mathbb{R}\\}'), why: t(pk) + ' is the greatest <b>height</b>, ' + t('h(' + tv + ')') + ' — not a time.' },
             { html: t('\\{t\\mid 0\\le t\\le ' + tv + ',\\ t\\in\\mathbb{R}\\}'), why: 'That stops at the vertex and cuts off the descent to the beach.' }],
-            t('-t^{2}+' + b + 't+' + c + '=0\\Rightarrow (t-' + R + ')(t+' + S + ')=0') + ', so ' + t('t=' + R) + ' or ' + t('t=-' + S) + '. Time starts at the sighting, ' + t('t=0') + ', and ends at the landing, ' + t('t=' + R) + '.', ['Find both zeros, then decide where the situation starts and ends.'], 'gull domain', true);
+            t('-t^{2}+' + b + 't+' + c + '=0\\Rightarrow (t-' + R + ')(t+' + S + ')=0') + ', so ' + t('t=' + R) + ' or ' + t('t=-' + S) + '. Time starts at the sighting, ' + t('t=0') + ', and ends at the landing, ' + t('t=' + R) + '.', ['Find both zeros, then decide where the situation starts and ends.'], 'gull domain');
         } }] },
       { num: '16', stem: '<i>(Numerical Response)</i>', parts: [
         { id: 'e16', level: 'EMG', make: function (r) {

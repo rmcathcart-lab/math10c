@@ -495,8 +495,9 @@
       parts: [
         { id: 'e10a', level: 'EMG', make: function (r, sh) {
           var dl = sh.yl.slice(1).map(function (y, i) { return y - sh.yl[i]; }), dq = sh.yq.slice(1).map(function (y, i) { return y - sh.yq[i]; });
-          return mc(r, 'Which relation is linear?', [
-            { html: 'Relation ' + sh.L, right: true }, { html: 'Relation ' + sh.S, why: 'Find its first differences: ' + t(seqTex(dq)) + '. Are they all equal?' },
+          var oL = { html: 'Relation ' + sh.L, right: true }, oS = { html: 'Relation ' + sh.S, why: 'Find its first differences: ' + t(seqTex(dq)) + '. Are they all equal?' };
+          return mc(r, 'Which relation is linear?', [ // kept in the order P, Q, Both, Neither; which of P/Q is linear varies
+            sh.L === 'P' ? oL : oS, sh.L === 'P' ? oS : oL,
             { html: 'Both', why: 'The question says exactly one is linear. Compare the first differences of each.' }, { html: 'Neither', why: 'The question says exactly one is linear. Compare the first differences of each.' }],
             'Relation ' + sh.L + ': differences ' + t(seqTex(dl)) + ' (constant). Relation ' + sh.S + ': differences ' + t(seqTex(dq)) + ' (not constant). <b>Relation ' + sh.L + ' is linear.</b>', ['Find the first differences of each table.'], 'which table is linear', true);
         } },

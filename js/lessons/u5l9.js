@@ -789,6 +789,8 @@
           'A’s speed never changes: ' + t(s.v + units('km/h')) + ' the whole way. B’s speed starts below that and ends above it, and changes smoothly, so it must pass through ' + t(s.v + units('km/h')) + ' at some instant.', ['A rides at one constant speed. What is it?'], 'two riders: common speed', { after: 'km/h' });
       } },
       { id: 'e3e', level: 'EMG', make: function (r, s) {
+        if (r.chance(0.5)) return K.P.tf(r, '“Two riders can have the same average speed but different speeds along the way.” Use the graphs: is this statement true or false?', true, 'Look at the graphs: both riders average ' + t(s.v + units('km/h')) + ', but B is slower than A at the start and faster at the end.',
+          '<b>True.</b> Both averages are ' + t(s.v + units('km/h')) + ', but A rides at ' + t(s.v + units('km/h')) + ' the whole way while B is slower at first (flatter) and faster at the end (steeper). Equal averages, different speeds along the way.', ['Do the two graphs have the same steepness everywhere?'], 'equal average, different speeds (true)');
         return K.P.tf(r, '“Equal average speed means equal speed the whole way.” Use the graphs: is this statement true or false?', false, 'Both riders average ' + t(s.v + units('km/h')) + ', but B is slower than A at the start and faster at the end.',
           '<b>False.</b> Both averages are ' + t(s.v + units('km/h')) + ', but A rides at ' + t(s.v + units('km/h')) + ' the whole way while B is slower at first (flatter) and faster at the end (steeper). Equal averages, different speeds along the way.', ['Do the two graphs have the same steepness everywhere?'], 'equal average ≠ equal speed');
       } }] },
@@ -901,6 +903,8 @@
           'Descent: ' + t((-Dr.r[2]) + units('m/s')) + ' down; second climb: ' + t(Dr.r[1] + units('m/s')) + ' up. ' + t((-Dr.r[2]) + '\\div ' + Dr.r[1] + '=' + dn(q)) + ' times as fast.', ['Compare the sizes of the two rates by dividing.'], 'drone: compare rates');
       } },
       { id: 'e6f', level: 'EMG', make: function (r, Dr) {
+        if (r.chance(0.5)) return K.P.tf(r, 'While the graph is flat, the drone’s altitude is not changing. True or false: the drone could still be moving during that time.', true, 'The graph records only altitude. The drone could be flying level across the survey area.',
+          '<b>True.</b> Flat means the <b>height</b> is constant. The drone could be hovering in place or flying level — the graph doesn’t show horizontal motion.', ['What does this graph measure, and what doesn’t it show?'], 'drone: flat, could still move (true)');
         return K.P.tf(r, 'While the graph is flat, the drone’s altitude is not changing. True or false: that proves the drone is not moving at all.', false, 'The graph records only altitude. The drone could be flying level across the survey area.',
           '<b>False.</b> Flat means the <b>height</b> is constant. The drone could be hovering in place or flying level — the graph doesn’t show horizontal motion.', ['What does this graph measure, and what doesn’t it show?'], 'drone: flat ≠ not moving');
       } }] },

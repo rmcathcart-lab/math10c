@@ -579,7 +579,7 @@
             { html: t(k), right: true },
             { html: t(b), why: 'You stopped at ' + t(a + 'x=' + b) + ' — now divide both sides by ' + t(a) + '.' }],
             'An ' + t('x') + '-intercept has ' + t('y=0') + ', so set ' + t(nm + '(x)=0') + ':<br>' + t(a + 'x-' + b + '=0') + '<br>' + t(a + 'x=' + b) + '<br>' + t('x=' + k),
-            ['On the ' + t('x') + '-axis the output is ' + t('0') + '. Solve ' + t(nm + '(x)=0') + '.'], 'x-intercept of ax-b', true);
+            ['On the ' + t('x') + '-axis the output is ' + t('0') + '. Solve ' + t(nm + '(x)=0') + '.'], 'x-intercept of ax-b');
         } }] },
       /* ---------------- Q2 ---------------- */
       { num: '2', stem: '<i>(Multiple Choice)</i>', parts: [
@@ -609,7 +609,7 @@
             { html: t('\\dfrac{1}{' + P1 + '}'), right: true },
             { html: t('\\dfrac{1}{' + b * k + '}'), why: 'Reciprocal is right, but ' + t(b + '^{' + k + '}=' + P1) + ', not ' + t(b + '\\times ' + k) + '.' }],
             t('f(-' + k + ')=' + b + '^{-' + k + '}=\\dfrac{1}{' + b + '^{' + k + '}}=\\dfrac{1}{' + P1 + '}'),
-            ['Replace ' + t('x') + ' with ' + t('-' + k) + '. What does a negative exponent mean?'], 'f(x)=b^x at a negative input', true);
+            ['Replace ' + t('x') + ' with ' + t('-' + k) + '. What does a negative exponent mean?'], 'f(x)=b^x at a negative input');
         } }] },
       /* ---------------- Q4 ---------------- */
       { num: '4', stem: '<i>(Multiple Choice)</i>', parts: [
@@ -630,7 +630,7 @@
             { html: t(lx([c, 1])), why: 'You dropped the ' + t('-' + d) + ' part of the input. Multiply ' + t(dfr(frT(p, q))) + ' by <b>both</b> terms of ' + t(k + 'x-' + d) + '.' },
             { html: t(lx(ex.norm(-p * d, q))), why: 'Don’t forget the ' + t('+' + c) + ' at the end of the rule.' }],
             'Replace every ' + t('x') + ' with the whole expression ' + t(k + 'x-' + d) + ':<br>' + t('g(' + k + 'x-' + d + ')=' + dfr(frT(p, q)) + '(' + k + 'x-' + d + ')+' + c) + '<br>' + t('=' + dfr(lin([[A, 'x'], [ex.norm(-p * d, q), '']])) + '+' + c) + '<br>' + t('=' + lx(Cr)),
-            ['Put ' + t('(' + k + 'x-' + d + ')') + ' in brackets where the ' + t('x') + ' was, then distribute ' + t(dfr(frT(p, q))) + '.', 'Write ' + t(c) + ' with the same denominator before adding.'], 'g(kx-d) for linear g', true);
+            ['Put ' + t('(' + k + 'x-' + d + ')') + ' in brackets where the ' + t('x') + ' was, then distribute ' + t(dfr(frT(p, q))) + '.', 'Write ' + t(c) + ' with the same denominator before adding.'], 'g(kx-d) for linear g');
         } }] },
       /* ---------------- Q5 ---------------- */
       { num: '5', stem: '<i>(Multiple Choice)</i>', parts: [
@@ -972,7 +972,7 @@
             { html: t('-\\dfrac{1}{' + k + '}'), why: 'Write ' + t(P1) + ' as a power of ' + t(b) + ' and compare exponents.' },
             { html: t('\\dfrac{1}{' + k + '}'), why: 'Write ' + t(P1) + ' as a power of ' + t(b) + ' and compare exponents.' }],
             t('f(-a)=' + b + '^{-a}') + ', and ' + t('\\dfrac{1}{' + P1 + '}=\\dfrac{1}{' + b + '^{' + k + '}}=' + b + '^{-' + k + '}') + '.<br>Equal bases give equal exponents: ' + t('-a=-' + k) + ', so ' + t('a=' + k) + '.',
-            ['Write ' + t('\\dfrac{1}{' + P1 + '}') + ' as a power of ' + t(b) + '.'], 'solve 2^(-a)=1/32', true);
+            ['Write ' + t('\\dfrac{1}{' + P1 + '}') + ' as a power of ' + t(b) + '.'], 'solve 2^(-a)=1/32');
         } }] },
       { num: '18', stem: '<i>(Extension, Numerical Response)</i>', parts: [
         { id: '18', level: 'ADV', make: function (r) {
@@ -1092,7 +1092,7 @@
             { html: '<b>Continuous</b> — the dots follow a smooth pattern.', why: 'A pattern doesn’t fill in the gaps. Only the seven plotted inputs belong to this relation.' },
             { html: '<b>Continuous</b> — it is a function.', why: 'Functions can be discrete. Look at whether the graph is separate dots or an unbroken line.' },
             { html: '<b>Discrete</b> — because some outputs repeat.', why: 'Repeated outputs don’t decide it. It is discrete because the graph is separate dots.' }],
-            '<b>Discrete:</b> separate dots, not joined, so the inputs are only the seven listed values.', ['Separate dots → discrete; an unbroken line or curve → continuous.'], 'discrete or continuous dots', true);
+            '<b>Discrete:</b> separate dots, not joined, so the inputs are only the seven listed values.', ['Separate dots → discrete; an unbroken line or curve → continuous.'], 'discrete or continuous dots');
         } },
         { id: 'e1h2', sub: 'h ii', level: 'EMG', outcome: 'RF2', make: function (r, sh) {
           var xs = sh.xs, lo = xs[0], hi = xs[6], gaps = rng(lo, hi).filter(function (x) { return xs.indexOf(x) < 0; }), keyV = gaps.length ? gaps[0] : cl((xs[0] + xs[1]) / 2);
@@ -1221,8 +1221,9 @@
             'Leftmost/rightmost: the ' + (sh.s > 0 ? 'turning point' : 'endpoints') + ' at ' + t('x=' + Math.min(sh.xe, sh.xv)) + ' and the ' + (sh.s > 0 ? 'endpoints' : 'turning point') + ' at ' + t('x=' + Math.max(sh.xe, sh.xv)) + ': ' + t('D=' + sh.D) + '.<br>Lowest/highest: the solid endpoints at ' + t('y=\\pm' + sh.m) + ': ' + t('R=' + sh.R) + '.', [HINT_DR, HINT_DOTS], 'D and R of sideways parabola');
         } },
         { id: 'e4a2', sub: 'ii', level: 'BEG', outcome: 'RF2', make: function (r, sh) {
-          return tf(r, '(ii) True or false: this relation is a function.', false, 'The vertical line ' + t('x=0') + ' meets the curve twice, at ' + t('y=-' + sh.k) + ' and ' + t('y=' + sh.k) + ': one input, two outputs.',
-            '<b>Not a function:</b> the vertical line ' + t('x=0') + ' meets the curve at ' + t('(0,\\ -' + sh.k + ')') + ' and ' + t('(0,\\ ' + sh.k + ')') + '.', ['Try a vertical line near the middle of the curve.'], 'VLT sideways parabola');
+          var neg = r.chance(0.5); // statement "is a function" (false) or "is not a function" (true)
+          return tf(r, '(ii) True or false: this relation is ' + (neg ? '<b>not</b> ' : '') + 'a function.', neg, 'The vertical line ' + t('x=0') + ' meets the curve twice, at ' + t('y=-' + sh.k) + ' and ' + t('y=' + sh.k) + ': one input, two outputs.',
+            (neg ? '<b>True</b> — ' : '<b>False</b> — ') + '<b>not a function:</b> the vertical line ' + t('x=0') + ' meets the curve at ' + t('(0,\\ -' + sh.k + ')') + ' and ' + t('(0,\\ ' + sh.k + ')') + '.', ['Try a vertical line near the middle of the curve.'], 'VLT sideways parabola' + (neg ? ' (not a function?)' : ''));
         } },
         { id: 'e4a3', sub: 'iii', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
           return intPart('(iii) State every ' + t('x') + '-intercept and every ' + t('y') + '-intercept as ordered pairs.', [[sh.xv, 0]], [[0, -sh.k], [0, sh.k]], { plural: true, yLabel: t('y') + '-int(s)' },
@@ -1234,8 +1235,9 @@
             'The hollow end ' + t(ptT(sh.hollow)) + ' is excluded, the solid end ' + t(ptT(sh.solid)) + ' included: ' + t('D=' + sh.D) + '.<br>Lowest point: the corner, ' + t('y=' + (-sh.d)) + '; highest: the solid end, ' + t('y=' + sh.yR) + ': ' + t('R=' + sh.R) + '.', [HINT_DOTS, 'For the range, the lowest point may be a corner, not an end.'], 'D and R of a V with a hollow end');
         } },
         { id: 'e4b2', sub: 'ii', level: 'BEG', outcome: 'RF2', make: function (r) {
-          return tf(r, '(ii) True or false: this relation is a function.', true, 'Every vertical line meets the graph at most once. (A hollow endpoint just removes one point.)',
-            '<b>Function:</b> no vertical line meets the graph twice.', ['Imagine sliding a vertical line across the graph.'], 'VLT V-shape');
+          var neg = r.chance(0.5); // statement "is a function" (true) or "is not a function" (false)
+          return tf(r, '(ii) True or false: this relation is ' + (neg ? '<b>not</b> ' : '') + 'a function.', !neg, 'Every vertical line meets the graph at most once. (A hollow endpoint just removes one point.)',
+            (neg ? '<b>False</b> — ' : '<b>True</b> — ') + 'it <b>is a function:</b> no vertical line meets the graph twice.', ['Imagine sliding a vertical line across the graph.'], 'VLT V-shape' + (neg ? ' (not a function?)' : ''));
         } },
         { id: 'e4b3', sub: 'iii', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
           var xs = sh.xi.map(function (x) { return [x, 0]; }), ys = [[0, sh.yi]];
@@ -1249,8 +1251,9 @@
             'Inputs, each once: ' + t('D=' + sh.D) + '.<br>Outputs, each once, in increasing order: ' + t('R=' + sh.R) + '.', [HINT_DR, HINT_LIST], 'D and R of six dots');
         } },
         { id: 'e4c2', sub: 'ii', level: 'BEG', outcome: 'RF2', make: function (r, sh) {
-          return tf(r, '(ii) True or false: this relation is a function.', false, 'Look at ' + t('x=' + sh.dbl[0]) + ': two dots lie on that vertical line, so that input has two outputs.',
-            '<b>Not a function:</b> ' + t(sh.dbl[0]) + ' and ' + t(sh.dbl[1]) + ' are each paired with two outputs.', ['Is any vertical line through two dots?'], 'VLT six dots');
+          var neg = r.chance(0.5); // statement "is a function" (false) or "is not a function" (true)
+          return tf(r, '(ii) True or false: this relation is ' + (neg ? '<b>not</b> ' : '') + 'a function.', neg, 'Look at ' + t('x=' + sh.dbl[0]) + ': two dots lie on that vertical line, so that input has two outputs.',
+            (neg ? '<b>True</b> — ' : '<b>False</b> — ') + '<b>not a function:</b> ' + t(sh.dbl[0]) + ' and ' + t(sh.dbl[1]) + ' are each paired with two outputs.', ['Is any vertical line through two dots?'], 'VLT six dots' + (neg ? ' (not a function?)' : ''));
         } },
         { id: 'e4c3', sub: 'iii', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
           return intPart('(iii) State every ' + t('x') + '-intercept and every ' + t('y') + '-intercept as ordered pairs. If one does not exist, press <b>none</b>.', [[sh.z, 0]], [], { none: true, plural: true },
@@ -1537,7 +1540,7 @@
             { html: '<b>Continuous</b> — you can stop a video partway, so it uses ' + t('\\in\\mathbb{R}') + '.', why: 'The <b>number</b> of videos watched is a count — 2.7 videos is not a count.' },
             { html: '<b>Discrete</b> — so its domain uses ' + t('\\in\\mathbb{R}') + '.', why: 'A discrete count of videos uses ' + t('\\in I') + ' (whole numbers), not every real number.' },
             { html: '<b>Continuous</b> — because time is continuous.', why: 'Time is continuous, but the number of videos is a separate, counted variable.' }],
-            '<b>Discrete:</b> videos are counted ' + t('0, 1, 2, \\ldots') + ', so its domain uses ' + t('\\in I') + '.', ['Can the number of videos be ' + t('2.7') + '?'], 'videos discrete', true);
+            '<b>Discrete:</b> videos are counted ' + t('0, 1, 2, \\ldots') + ', so its domain uses ' + t('\\in I') + '.', ['Can the number of videos be ' + t('2.7') + '?'], 'videos discrete');
         } }] },
       { num: '11', outcome: 'RF1',
         shared: function (r) {
@@ -1875,7 +1878,7 @@
             { html: t('\\{' + ys.join(', ') + '\\}'), why: 'Right values, but a list is written in <b>increasing</b> order.' },
             { html: t('\\{y\\mid ' + lo + '\\le y\\le ' + hi + ',\\ y\\in I\\}'), why: 'That includes every integer between, like ' + t(lo + 1) + ', which ' + t('h') + ' may never produce. List only the four outputs.' }],
             xs.map(function (x, i) { return t('h(' + x + ')=' + ys[i]); }).join(', ') + '. The domain is a finite list, so the range is the list of outputs, each once, in increasing order: ' + t('\\{' + so.join(', ') + '\\}') + '.',
-            ['Evaluate ' + t('h') + ' at each domain value.'], 'range on a finite domain', true);
+            ['Evaluate ' + t('h') + ' at each domain value.'], 'range on a finite domain');
         } }] },
       { num: '20', stem: '<i>(Numerical Response)</i>', parts: [
         { id: 'e20', level: 'ADV', make: function (r) {

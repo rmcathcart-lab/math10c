@@ -287,7 +287,7 @@
     if (I.type === 'm1') { var s = I.shared[0]; return 'Each input has one output, but ' + andT(s.xs) + ' share the output ' + t(nT(s.y)) + '. <b>Many-to-one; a function.</b>'; }
     return 'Each input has one output and each output comes from one input. <b>One-to-one; a function.</b>';
   }
-  function typeMC(r, fig, pairs, rep, text) {
+  function typeMC(r, fig, pairs, rep, text, shuffle) { // shuffle: let the four types shuffle (when the answer type never varies)
     var I = info(pairs), ty = I.type, b = I.breakers[0], s = I.shared[0];
     var whys = {
       '11': function () { return ty === 'm1' ? andT(s.xs) + ' share the output ' + t(nT(s.y)) + ', so it is many-to-one, not one-to-one. (It is still a function.)' : 'The input ' + t(nT(b.x)) + ' has two outputs (' + andT(b.ys) + '): one-to-many.'; },
@@ -296,7 +296,7 @@
       'm1x': function () { return ty === 'm1' ? 'Right type — but a many-to-one relation <b>is</b> a function: every input still has exactly one output.' : ty === '11' ? 'No outputs are shared here, so it isn’t many-to-one. And every input has one output.' : 'The input ' + t(nT(b.x)) + ' has two outputs — that is one-to-many, not many-to-one.'; }
     };
     var opts = TYPES.map(function (o) { return { html: o.html, right: o.id === ty, why: o.id === ty ? null : whys[o.id](), code: o.id }; });
-    var p = B.mc(r, fig + 'Classify the relation and state whether it is a function.', opts, typeSol(I, rep), ['One-to-one: one output per input <i>and</i> one input per output. Many-to-one: inputs share an output. One-to-many: an input has two or more outputs.', 'Only one-to-many fails the function test.'], 'type: ' + text, true);
+    var p = B.mc(r, fig + 'Classify the relation and state whether it is a function.', opts, typeSol(I, rep), ['One-to-one: one output per input <i>and</i> one input per output. Many-to-one: inputs share an output. One-to-many: an input has two or more outputs.', 'Only one-to-many fails the function test.'], 'type: ' + text, !shuffle);
     p.check = (function (c) { return function (resp) { var res = c(resp); if (res.v === 'wrong') res.code = 'type-' + res.code.replace(/^mc-/, ''); return res; }; })(p.check);
     return p;
   }
@@ -751,7 +751,7 @@
               { html: 'Neither: every set of ordered pairs is a function.', code: 'side-none', why: 'Every set of ordered pairs is a <i>relation</i>. A function also needs each input to have exactly one output.' }],
               'The definition restricts the <b>first</b> coordinate: no input may have two outputs. Second coordinates (outputs) may repeat.', HFN, 'definition restricts inputs');
           } },
-          { id: 'e20b', level: 'EMG', make: function (r, sh) { var p = typeMC(r, '', sh.ps, 'pairs', 'error analysis ' + psT(sh.ps)); p.prompt = 'Classify the relation and give the correct verdict.'; p.solution += ' The student is wrong: repeated outputs are allowed.'; return p; } },
+          { id: 'e20b', level: 'EMG', make: function (r, sh) { var p = typeMC(r, '', sh.ps, 'pairs', 'error analysis ' + psT(sh.ps), true); p.prompt = 'Classify the relation and give the correct verdict.'; p.solution += ' The student is wrong: repeated outputs are allowed.'; return p; } },
           { id: 'e20c', level: 'PRG', make: function (r, sh) {
             var O = sh.ps, key = [O[0], O[1], [-sh.a, sh.q], O[3]], good1 = [O[0], O[1], [-sh.b, sh.p], O[3]], good2 = [O[0], O[1], O[2], [sh.b, sh.p]];
             var keyOf = function (p) { return nT(p[0]) + '|' + nT(p[1]); }, OK = O.map(keyOf);

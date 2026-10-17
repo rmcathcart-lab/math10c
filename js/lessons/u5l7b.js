@@ -247,7 +247,9 @@
         shared: function (r) { return { n: r.pick(['h', 'h', 'f', 'g']) }; },
         parts: [
           { id: '5a', level: 'LIM', make: function (r, sh) {
-            var n = sh.n;
+            var n = sh.n, val = r.chance(0.5); // ask about h (name) or h(x) (value)
+            if (val) return mc2(r, t(n + '(x)') + ' is the ________ of the function at the input ' + t('x') + '.', [{ html: '<b>name</b>', why: 'The name is just the letter ' + t(n) + '. ' + t(n + '(x)') + ' has an input in its brackets: it is what comes out of ' + t(n) + ' for that input.' }, { html: '<b>value</b>', right: true }],
+              t(n + '(x)') + ' is the <b>value</b> (output) of the function at the input ' + t('x') + '. The letter ' + t(n) + ' on its own is the function’s name.', ['Compare ' + t(n) + ' with ' + t(n + '(x)') + '. Which one has an input?'], 'h(x) is the value');
             return mc2(r, t(n) + ' is the ________ of the function.', [{ html: '<b>name</b>', right: true }, { html: '<b>value</b>', why: 'A value (output) of the function is written ' + t(n + '(x)') + ' or ' + t(n + '(3)') + '. The letter ' + t(n) + ' on its own is just the function’s name.' }],
               t(n) + ' is the <b>name</b> of the function. Its value at the input ' + t('x') + ' is written ' + t(n + '(x)') + '.', ['Compare ' + t(n) + ' with ' + t(n + '(x)') + '. Which one has an input?'], 'h is the name');
           } },
@@ -594,7 +596,7 @@
           var m = o.m, b = o.b, x = o.x, V = o.V, vals = sortU([x, (V - b) / m, V + b, m * V - b]);
           var why = {}; why[(V - b) / m] = 'Check it: ' + t('f(' + (V - b) / m + ')=' + (m * (V - b) / m - b)) + ', not ' + t(V) + '. To undo ' + t('-' + b) + ', add ' + t(b) + '.'; why[V + b] = t(m + 't=' + (V + b)) + ' — you still have to divide by ' + t(m) + '.'; why[m * V - b] = 'That is ' + t('f(' + V + ')') + '. ' + t(V) + ' is the output; solve ' + t(m + 't-' + b + '=' + V) + '.';
           return mc(r, 'If ' + t('f(x)=' + m + 'x-' + b) + ' and ' + t('f(t)=' + V) + ', then ' + t('t=') + ' ________', vals.map(function (v) { return { html: t(v), right: v === x, why: v === x ? null : why[v] }; }),
-            t(m + 't-' + b + '=' + V) + ', so ' + t(m + 't=' + (V + b)) + ' and ' + t('t=' + x) + '.', HS, 'f(t)=' + V + ' for ' + m + 'x-' + b, true);
+            t(m + 't-' + b + '=' + V) + ', so ' + t(m + 't=' + (V + b)) + ' and ' + t('t=' + x) + '.', HS, 'f(t)=' + V + ' for ' + m + 'x-' + b);
         } }] },
       { num: '18', stem: '<i>(Numerical Response)</i>', parts: [
         { id: '18', level: 'PRG', make: function (r) {
@@ -1052,6 +1054,7 @@
       /* ---------- EP22 a, b, e, f: true or false ---------- */
       { num: '22', section: 'Extra practice G — True or false', stem: 'State whether each statement is true or false.', parts: [
         { id: 'e22a', sub: 'a', level: 'LIM', make: function (r) {
+          if (r.chance(0.5)) return B.tf(r, t('f(x)') + ' means the output of ' + t('f') + ' when the input is ' + t('x') + '.', true, 'The brackets mark the input: ' + t('f(x)') + ' is the output of ' + t('f') + ' at the input ' + t('x') + ' — not ' + t('f') + ' multiplied by ' + t('x') + '.', '<b>True.</b> ' + t('f(x)') + ' is the output of ' + t('f') + ' at the input ' + t('x') + '; the brackets mark an input, not multiplication.', [], 'f(x) is an output');
           return B.tf(r, t('f(x)') + ' means ' + t('f') + ' multiplied by ' + t('x') + '.', false, 'The brackets mark the input: ' + t('f(x)') + ' is the output of ' + t('f') + ' at the input ' + t('x') + '.', '<b>False.</b> ' + t('f(x)') + ' is the output of ' + t('f') + ' at the input ' + t('x') + '; the brackets mark an input.', [], 'f(x) not multiplication');
         } },
         { id: 'e22b', sub: 'b', level: 'LIM', make: function (r) {
@@ -1061,18 +1064,24 @@
         } },
         { id: 'e22c', sub: 'c', level: 'EMG', outcome: 'RF2', make: function (r) {
           var p = r.int(1, 5), s = p + r.int(2, 6), q = r.pick(nz(-9, 12));
+          if (r.chance(0.5)) return B.tf(r, 'If ' + t('f(' + p + ')=' + q) + ' and ' + t('f(' + s + ')=' + q) + ', then ' + t('f') + ' can still be a function.', true, 'Two different inputs may share an output (many-to-one). A function only forbids one input having two outputs.',
+            '<b>True.</b> The inputs ' + t(p) + ' and ' + t(s) + ' share the output ' + t(q) + ' (many-to-one), which is allowed; ' + t('f') + ' can still be a function.', [], 'shared output still a function (true)');
           return B.tf(r, 'If ' + t('f(' + p + ')=' + q) + ' and ' + t('f(' + s + ')=' + q) + ', then ' + t('f') + ' is not a function.', false, 'Two different inputs may share an output (many-to-one). A function only forbids one input having two outputs.',
             '<b>False.</b> The inputs ' + t(p) + ' and ' + t(s) + ' share the output ' + t(q) + ' (many-to-one), which is allowed; ' + t('f') + ' can still be a function.', [], 'shared output still a function');
         } },
         { id: 'e22d', sub: 'd', level: 'BEG', outcome: 'RF2', make: function (r) {
           var p = r.int(1, 6), q = r.pick(nz(-9, 12)), s = pickWhere(function () { return r.pick(nz(-9, 12)); }, function (v) { return v !== q; });
+          if (r.chance(0.5)) return B.tf(r, 'If ' + t('f(' + p + ')=' + q) + ' and ' + t('f(' + p + ')=' + s) + ', then ' + t('f') + ' can still be a function.', false, 'The single input ' + t(p) + ' would have two different outputs, ' + t(q) + ' and ' + t(s) + ' — exactly what a function forbids.',
+            '<b>False.</b> The input ' + t(p) + ' would have two outputs, ' + t(q) + ' and ' + t(s) + ', so ' + t('f') + ' cannot be a function.', [], 'one input two outputs (false)');
           return B.tf(r, 'If ' + t('f(' + p + ')=' + q) + ' and ' + t('f(' + p + ')=' + s) + ', then ' + t('f') + ' is not a function.', true, 'The single input ' + t(p) + ' would have two different outputs, ' + t(q) + ' and ' + t(s) + ' — exactly what a function forbids.',
             '<b>True.</b> The input ' + t(p) + ' would have two outputs, ' + t(q) + ' and ' + t(s) + ', so ' + t('f') + ' is not a function.', [], 'one input two outputs');
         } },
         { id: 'e22e', sub: 'e', level: 'BEG', make: function (r) {
+          if (r.chance(0.5)) return B.tf(r, t('f') + ' and ' + t('f(x)') + ' mean different things.', true, t('f') + ' names the function; ' + t('f(x)') + ' is its output value at the input ' + t('x') + '.', '<b>True.</b> ' + t('f') + ' names the function; ' + t('f(x)') + ' is its output value at the input ' + t('x') + '.', [], 'f vs f(x) (true)');
           return B.tf(r, t('f') + ' and ' + t('f(x)') + ' mean the same thing.', false, t('f') + ' names the function; ' + t('f(x)') + ' is its output value at the input ' + t('x') + '.', '<b>False.</b> ' + t('f') + ' names the function; ' + t('f(x)') + ' is its output value at the input ' + t('x') + '.', [], 'f vs f(x)');
         } },
         { id: 'e22f', sub: 'f', level: 'PRG', make: function (r) {
+          if (r.chance(0.5)) return B.tf(r, 'Some functions ' + t('f') + ' do <b>not</b> satisfy ' + t('f(a+b)=f(a)+f(b)') + '.', true, 'Try ' + t('f(x)=x^{2}') + ' with ' + t('a=b=1') + ': ' + t('f(2)=4') + ' but ' + t('f(1)+f(1)=2') + '.', '<b>True.</b> For ' + t('f(x)=x^{2}') + ' and ' + t('a=b=1') + ': ' + t('f(2)=4') + ' but ' + t('f(1)+f(1)=2') + '. (It holds only for some functions, such as ' + t('f(x)=mx') + '.)', [], 'f(a+b) claim (true)');
           return B.tf(r, t('f(a+b)=f(a)+f(b)') + ' for every function ' + t('f') + '.', false, 'Try a counterexample: ' + t('f(x)=x^{2}') + ' with ' + t('a=b=1') + ' gives ' + t('f(2)=4') + ' but ' + t('f(1)+f(1)=2') + '.', '<b>False.</b> For ' + t('f(x)=x^{2}') + ' and ' + t('a=b=1') + ': ' + t('f(2)=4') + ' but ' + t('f(1)+f(1)=2') + '. (It holds only for some functions, such as ' + t('f(x)=mx') + '.)', [], 'f(a+b) claim');
         } }] },
       /* ---------- EP23: zigzag graph ---------- */
