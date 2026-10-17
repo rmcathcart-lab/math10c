@@ -70,7 +70,8 @@ export class Explainer {
     this.bNext = B('next', 'Next <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>', 'Next step', () => { this.stop(); this.next(); });
     this.bPlay = B('play', '<svg viewBox="0 0 24 24"><path d="M7 5l12 7-12 7z"/></svg>', 'Play to the end', () => this.togglePlay());
     host.append(top, this.stage, this.cap, ctl);
-    this.value = def.value != null ? def.value : def.choices ? (typeof def.choices[0] === 'object' ? def.choices[0].v : def.choices[0]) : null;
+    const first = def.choices ? def.choices.find((c) => !(c && typeof c === 'object' && c.sep)) : undefined; // skip { sep } headings
+    this.value = def.value != null ? def.value : first !== undefined ? (typeof first === 'object' ? first.v : first) : null;
     this.lastW = 0;
     const ro = new ResizeObserver(() => { const w = this.stage.clientWidth; if (w && Math.abs(w - this.lastW) > 2) { const first = !this.lastW; this.lastW = w; if (first) this.build(0); else { this.stop(); this.build(this.k); } } });
     ro.observe(this.stage);
