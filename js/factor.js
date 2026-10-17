@@ -127,7 +127,7 @@
           var fq = sp.factors[q];
           if (!fq.ast || P.count(fq.p) < 2) continue;
           var fi = P.formIssue(fq.ast);
-          if (fi && fi.code !== 'not-poly') return form('simplify-bracket', 'Equal, but simplify inside each bracket: ' + t('(' + P.tex(fq.p) + ')') + ' — expand and collect like terms.');
+          if (fi && fi.code !== 'not-poly') return form('simplify-bracket', 'Equal, but simplify inside each bracket: expand any inner brackets and collect like terms.');
         }
         if (!opt.gcfOnly && !sameKeys(SN.keys, TN.keys)) {
           var more = Object.keys(SN.keys).filter(function (k) { return !TN.keys[k]; })[0];

@@ -654,8 +654,8 @@
         } },
         { id: '8g', sub: 'e ii', level: 'ADV', make: function (r, sh) {
           var n = sh.n, hiS = pwSols(sh.V, sh.hi).pts, loS = pwSols(sh.V, sh.lo).pts;
-          var fl = [{ label: 'First answer: ' + t('b='), name: 'first b', mode: 'math', keys: 'solutions', vars: ['a'] }, { label: t('a='), name: 'first a values', mode: 'math', keys: 'solutions', vars: ['a'] },
-            { label: 'Second answer: ' + t('b='), name: 'second b', mode: 'math', keys: 'solutions', vars: ['a'] }, { label: t('a='), name: 'second a values', mode: 'math', keys: 'solutions', vars: ['a'] }];
+          var fl = [{ label: 'First answer: ' + t('b='), name: 'first b', mode: 'math', keys: 'solutions', vars: ['a'] }, { label: t('a='), name: 'first a values', mode: 'math', keys: 'solutions', vars: ['a'], placeholder: 'e.g. a = 3, a = -5' },
+            { label: 'Second answer: ' + t('b='), name: 'second b', mode: 'math', keys: 'solutions', vars: ['a'] }, { label: t('a='), name: 'second a values', mode: 'math', keys: 'solutions', vars: ['a'], placeholder: 'e.g. a = 3, a = -5' }];
           var check = function (resp) {
             resp = resp || [];
             if (resp.some(function (x) { return !String(x || '').trim(); })) return form('incomplete', 'Fill in all four boxes: two values of ' + t('b') + ', each with its two values of ' + t('a') + '.');
