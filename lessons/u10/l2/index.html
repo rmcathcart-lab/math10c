@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Estimating Length with Personal Referents · Math 10C 10.2</title>
+<meta name="description" content="Math 10C Unit 10 Lesson 2: the imperial and SI systems of measurement and how their units are related, referents and personal referents, matching the size of the referent to the object, estimating a length by laying a referent end to end (count, then multiply), strategies for a perimeter and a circumference, measuring a scale diagram in both systems, and building a big referent out of a smaller one. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u10l2.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 10 Measurement · Lesson 2</div>
+  <h1>Estimating Length with Personal Referents</h1>
+  <p class="lede">No ruler? You carry a whole set of them around with you. Today: the two systems of measurement, <b class="u10l2-imp">imperial</b> and <b class="u10l2-si">SI</b>, and how to estimate a length: <b>pick</b> a referent close in size to the object, <b>count</b> how many times it fits, then <b>multiply</b> the count by the referent’s length.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>name the imperial units of length (inch, foot, yard, mile) and the SI units (millimetre, centimetre, metre, kilometre) and state how they are related</li>
+      <li>explain what a <b>referent</b> is, and give a <b>personal referent</b> for common units in both systems</li>
+      <li>choose a referent that is <b>close in size</b> to the object being measured, and justify the choice</li>
+      <li>estimate a length, a <b>perimeter</b> or a <b>circumference</b> by laying a referent end to end, counting, and multiplying</li>
+      <li>measure a scale diagram in both systems and use the scale to find the actual length</li>
+      <li>build a referent for a large unit out of a referent for a smaller one</li>
+    </ul>
+  </div>
+  <div class="outcome"><b>M1</b> Solve problems that involve linear measurement, using: SI and imperial units of measure; estimation strategies; measurement strategies.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: Your Body Is a Ruler" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Your Body Is a Ruler</h2></div>
+  <p class="big">No ruler? No problem. You carry a whole set of them around with you.</p>
+  <div class="u10l2-wrow">
+    <div class="u10l2-wfig" id="u10l2-wfig"></div>
+    <div class="u10l2-rulers">
+      <div class="u10l2-rh">Body rulers</div>
+      <div><b>pinky nail</b> ≈ 1 cm<i>(width of the nail)</i></div>
+      <div><b>hand span</b> ≈ 20 cm<i>(thumb to pinky)</i></div>
+      <div><b>cubit</b> ≈ 45 cm<i>(elbow to fingertip)</i></div>
+      <div><b>one pace</b> ≈ 90 cm<i>(one big step)</i></div>
+    </div>
+  </div>
+  <div class="u10l2-wbtns"><button type="button" class="pill" id="u10l2-warms">Arms out wide</button></div>
+  <div class="u10l2-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>A desk is <b>3 hand spans</b> wide. About how many cm is that?</div></div>
+      <div class="u10l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">3\times20</span> cm <span class="tex">=</span> about <b>60 cm</b>.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>A hallway is <b>30 paces</b> long. About how many metres is that?</div></div>
+      <div class="u10l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">30\times90</span> cm <span class="tex">=2\,700</span> cm <span class="tex">=</span> about <b>27 m</b>.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>Which body ruler fits best to measure (a) a phone? (b) the gym?</div></div>
+      <div class="u10l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">(a) <b>Pinky nails</b> (a phone is about 7 of them wide). (b) <b>Paces</b> (a gym is dozens of paces long). A referent should be <b>close in size</b> to the object: nobody measures a gym in pinky nails.</div></div>
+    </div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Stretch your arms out wide. Your <b>arm span</b>, fingertip to fingertip, is closest to… <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> half your height</div>
+      <div class="opt right"><b>B</b> your height</div>
+      <div class="opt"><b>C</b> double your height</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>B: your height.</b> For most people, arm span and height are within a few centimetres of each other: the “human square” Leonardo da Vinci drew in the <i>Vitruvian Man</i>. Tap <b>Arms out wide</b> to see it.<br>
+      <span class="muted"><b>A</b> is tempting because arms hanging at your sides look short, but a span is <b>two</b> arms plus your shoulders. <b>C</b> feels right with your arms out: the span looks enormous next to your narrow body.</span></div>
+  </div>
+  <p class="u10l2-social">Try it: partner up at the wall and compare your arm span with your height.</p>
+</section>
+
+<!-- ================= 1. Imperial ================= -->
+<section class="card" data-ink="s1" data-section="1. The Imperial System">
+  <div class="sec-h"><span class="badge">1</span><h2>The Imperial System of Measurement</h2></div>
+  <p>Before measuring instruments existed, an unknown length was compared to a familiar object or body part: a <b>referent</b>. The need for consistent, repeatable measurements produced formal <b>systems of measurement</b>. The <b class="u10l2-imp">imperial system</b>, developed in England and still in everyday use in the United States, measures length in <b>inches, feet, yards and miles</b>.</p>
+  <div class="def u10l2-units u10l2-dimp"><b>Imperial units of length</b>
+    <div class="u10l2-disp"><span class="tex">1\text{ foot}=12\text{ inches}\qquad 1\text{ yard}=3\text{ feet}\qquad 1\text{ mile}=1\,760\text{ yards}</span></div>
+  </div>
+  <p>Many imperial units began life as referents:</p>
+  <div class="u10l2-hist">
+    <div><b>Yard</b> Shortly after the Norman Conquest of 1066, legend holds that King Henry I decreed it to be the distance from the tip of his <b>nose</b> to the end of his <b>outstretched thumb</b>.</div>
+    <div><b>Furlong</b> Used by Saxon farmers before 1066 for how far a team of oxen could plow before resting. It still states the distance of horse races: <span class="tex">8</span> furlongs <span class="tex">=1</span> mile.</div>
+    <div><b>Rod</b> A pole about <span class="tex">11</span> cubits long.</div>
+    <div><b>League</b> Several personal referents, the two most common being the distance a person or a horse could walk in one hour: roughly <span class="tex">3</span> miles. No longer in common use.</div>
+    <div><b>Chain</b> The length of a cricket pitch, about <span class="tex">4</span> rods, and <span class="tex">10</span> chains <span class="tex">=1</span> furlong.</div>
+    <div><b>Hand</b> The width of a clenched fist, <span class="tex">4</span> inches. It still states the height of a horse or pony.</div>
+  </div>
+  <div class="explainer" data-explainer="imperial"></div>
+</section>
+
+<!-- ================= 2. SI ================= -->
+<section class="card" data-ink="s2" data-section="2. The SI System">
+  <div class="sec-h"><span class="badge">2</span><h2>The SI System of Measurement</h2></div>
+  <p>The other major system is the <b class="u10l2-si">SI system</b> (Système International d’Unités), commonly called the <b>metric system</b>. As early as 1670 Gabriel Mouton and Jean Picard proposed a base-<span class="tex">10</span> system to replace the tangle of older, inconsistent units, and in 1790 the French Academy of Sciences was asked to design a scientific standard: a unit of length based on a fraction of the Earth’s circumference, with every related unit scaled by a power of <span class="tex">10</span>. Canada officially adopted SI in the 1970s, by which time most of the world had already switched. The common SI unit of length is the <b>metre</b>.</p>
+  <div class="def u10l2-units u10l2-dsi"><b>SI units of length</b>
+    <div class="u10l2-disp"><span class="tex">1\text{ centimetre}=10\text{ millimetres}\qquad 1\text{ metre}=100\text{ centimetres}\qquad 1\text{ kilometre}=1\,000\text{ metres}</span></div>
+  </div>
+  <p>The United States uses SI units widely in science but still relies on the imperial system for most everyday purposes, so both systems are worth knowing well.</p>
+  <div class="explainer" data-explainer="metric"></div>
+  <div class="parts c1">
+    <div class="part think"><div class="pl"><span class="think-tag">Think</span> Which system is easier to move between units in? Why?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>SI.</b> Every SI step is a power of <span class="tex">10</span> (<span class="tex">\times10,\ \times100,\ \times1\,000</span>), so changing units just moves the decimal point. The imperial steps (<span class="tex">12,\ 3,\ 1\,760</span>) are all different.</div></div></div>
+  </div>
+</section>
+
+<!-- ================= 3. Referents ================= -->
+<section class="card" data-ink="s3" data-section="3. Referents: Measuring Without a Tool">
+  <div class="sec-h"><span class="badge">3</span><h2>Referents: Measuring Without a Tool</h2></div>
+  <div class="def">A <b>referent</b> is a familiar object, very often a part of your own body, used as a stand-in point of reference when no measuring tool is available. A referent taken from a person’s immediate surroundings (their own body, or an object they always carry) is a <b>personal referent</b>.
+    <div class="eg">Body-based referents are the oldest and most convenient, since they are always at hand. The five below are drawn roughly to scale relative to one another.</div>
+  </div>
+  <div class="u10l2-five" id="u10l2-five"></div>
+  <div class="u10l2-steps">
+    <div><span class="u10l2-sn">1</span><div><b>Pick</b> a referent close in size to the object.</div></div>
+    <div><span class="u10l2-sn">2</span><div><b>Count</b> how many times it fits, end to end.</div></div>
+    <div><span class="u10l2-sn">3</span><div><b>Multiply</b> the count by the referent’s length.</div></div>
+  </div>
+  <div class="explainer" data-explainer="lay"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>A pace is a normal walking step,</b> about <span class="tex">90</span> cm <span class="tex">\approx1</span> yd. Walking <b>heel-to-toe</b> measures something else: foot lengths of about <span class="tex">1</span> ft.</div></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Matching the size of the referent to the size of the object</h3></div>
+  <p class="q">For each object, state one personal referent (from the diagram above, or from the imperial units it represents) that would be reasonable to use to estimate it, and justify the choice.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) the length of a hockey rink</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A standard NHL rink is <span class="tex">200</span> ft long, far too big for a small referent. Use the <b>pace</b> (<span class="tex">\approx90</span> cm <span class="tex">\approx1</span> yd): walk the length with normal walking paces, counting, then multiply the count by about <span class="tex">1</span> yard.<br><span class="tex">200\text{ ft}\div3\text{ ft per pace}\approx\boldsymbol{67}</span> <b>paces</b>, a countable number.<br>A thumb width would need <span class="tex">200\times12=2\,400</span> repetitions: far too many to count without losing track.</div></div></div>
+    <div class="part"><div class="pl">(b) the length of a USB flash drive</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A flash drive is only an inch or two long, so a pace or a cubit is far too large to resolve it. Use the <b>width of a thumb</b> across the joint (<span class="tex">\approx2.5</span> cm <span class="tex">\approx1</span> in): lay the drive beside your thumb and compare directly.<br>About <span class="tex">2</span> thumb widths <span class="tex">\Rightarrow</span> about <b>2 in</b> (<span class="tex">\approx5</span> cm).<br>The referent should be close in size to the object.</div></div></div>
+    <div class="part"><div class="pl">(c) the height of a pony</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Horse and pony heights are traditionally given in <b>hands</b>, and <span class="tex">1</span> hand <span class="tex">=4</span> in <span class="tex">\approx10</span> cm is exactly the width of a clenched fist. Stack fists from the ground to the withers (the top of the shoulders) and count.<br>A <span class="tex">12</span>-hand pony is <span class="tex">12\times4=48</span> in <span class="tex">=</span> <b>4 ft</b> (<span class="tex">\approx122</span> cm).<br>Both the most natural referent and the standard unit for the object.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>How many paces?</b> <span class="keys"><kbd>2</kbd><kbd>0</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> gives <span class="tex">66.67</span>, so about <span class="tex">67</span> paces. The pony: <span class="keys"><kbd>1</kbd><kbd>2</kbd><kbd>×</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> <span class="tex">=48</span> in.</div>
+    <div class="pill-col"><button class="pill" data-keys="200 ÷ 3 =">Show me (a)</button><button class="pill" data-keys="12 × 4 =">Show me (c)</button></div>
+  </div>
+  <div class="explainer" data-explainer="fit"></div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<!-- ================= 4. Everyday referents ================= -->
+<section class="card" data-ink="s4" data-section="4. Referents for Everyday Objects">
+  <div class="sec-h"><span class="badge">4</span><h2>Referents for Everyday Objects</h2></div>
+  <p>Connecting a unit to a concrete, familiar referent is the fastest way to build a feel for that unit. Tap a card to flip it.</p>
+  <div class="u10l2-fh u10l2-imp">Imperial referents for length</div>
+  <div class="bk-flips u10l2-flips" style="--bk-cols:3">
+    <div class="bk-flip u10l2-fimp"><div class="bk-front">the width of a thumb across the joint</div><div class="bk-back">about <b>1 inch</b></div></div>
+    <div class="bk-flip u10l2-fimp"><div class="bk-front">the length of an adult foot</div><div class="bk-back">about <b>1 foot</b></div></div>
+    <div class="bk-flip u10l2-fimp"><div class="bk-front">one adult pace</div><div class="bk-back">about <b>1 yard</b></div></div>
+  </div>
+  <div class="u10l2-fh u10l2-si">SI referents for length</div>
+  <div class="bk-flips u10l2-flips" style="--bk-cols:4">
+    <div class="bk-flip"><div class="bk-front">the width of an adult little (“pinky”) fingernail</div><div class="bk-back">about <b>1 centimetre</b></div></div>
+    <div class="bk-flip"><div class="bk-front">the width of five adult toes together</div><div class="bk-back">about <b>1 decimetre</b> (<span class="tex">\tfrac{1}{10}</span> of a metre)</div></div>
+    <div class="bk-flip"><div class="bk-front">the thickness of a dime</div><div class="bk-back">about <b>1 millimetre</b></div></div>
+    <div class="bk-flip"><div class="bk-front">the average height of a 4-year-old child</div><div class="bk-back">about <b>1 metre</b></div></div>
+    <div class="bk-flip"><div class="bk-front">the height of a standard doorway</div><div class="bk-back">about <b>2 metres</b></div></div>
+    <div class="bk-flip"><div class="bk-front">the width of this workbook</div><div class="bk-back">about <b>20 centimetres</b></div></div>
+    <div class="bk-flip"><div class="bk-front">the diameter of a hockey puck</div><div class="bk-back">about <b>7.6 centimetres</b></div></div>
+    <div class="bk-flip"><div class="bk-front">the length of an Olympic swimming pool</div><div class="bk-back"><b>50 metres</b></div></div>
+  </div>
+  <div class="explainer" data-explainer="ladder"></div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>One object, one referent from each system</h3></div>
+  <p class="q">Consider the task of estimating the length of a bath towel.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) Identify a referent that could be used to estimate the length in SI units.</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A bath towel is roughly <span class="tex">1</span>–<span class="tex">1.5</span> m long, so a mid-sized SI referent fits best: the <b>width of this workbook</b>, <span class="tex">\approx20</span> cm.<br>It takes about <span class="tex">100\div20=5</span> to <span class="tex">150\div20=7.5</span> workbook widths: a small, easy count.<br>(A pinky fingernail, <span class="tex">\approx1</span> cm, would need <span class="tex">100</span>–<span class="tex">150</span> repetitions.)</div></div></div>
+    <div class="part"><div class="pl">(b) Identify a referent that could be used to estimate the length in imperial units.</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The <b>adult pace</b>, <span class="tex">\approx90</span> cm <span class="tex">\approx1</span> yd.<br>A towel of <span class="tex">1</span>–<span class="tex">1.5</span> m is about <span class="tex">1</span> to <span class="tex">1\tfrac{1}{2}</span> paces long, so the count stays small and the leftover fraction is easy to judge by eye.<br>(The thumb, <span class="tex">\approx1</span> in, would need <span class="tex">40</span>–<span class="tex">60</span> repetitions; the adult foot, <span class="tex">\approx1</span> ft, about <span class="tex">3</span>–<span class="tex">5</span>.)</div></div></div>
+    <div class="part"><div class="pl">(c) Explain the process you would use to estimate the length with your imperial referent from part (b).</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Lay the towel out flat. Starting at one end, walk along it with normal paces, counting full paces and estimating any leftover fraction. Then multiply by the referent’s length:<br><span class="tex">\text{estimated length}=(\text{number of paces})\times1\text{ yd}</span><br>E.g. <span class="tex">1\tfrac{1}{2}</span> paces gives <span class="tex">1.5\text{ yd}=1.5\times3=\boldsymbol{4.5\text{ ft}}</span> (<span class="tex">\approx1.4</span> m).<br>The estimate is only as good as the referent: treat it as approximate, not exact.</div></div></div>
+  </div>
+  <div class="explainer" data-explainer="towel"></div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Strategies for a perimeter and a circumference</h3></div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Describe and explain a personal strategy that could be used to estimate the perimeter of the base of a rectangular tool shed, using one of the referents above.</div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Use the <b>adult foot</b> (<span class="tex">\approx1</span> ft): walk heel-to-toe along each side of the shed’s base, counting foot lengths. Multiply each count by about <span class="tex">1</span> ft, then add:<br><span class="tex">P\approx(\text{count}_1+\text{count}_2+\text{count}_3+\text{count}_4)\times1\text{ ft}</span><br>Because the base is a <b>rectangle</b>, only two adjacent sides need to be counted: <span class="tex">P\approx2(\ell+w)</span>. A shed measuring <span class="tex">8</span> heel-to-toe steps by <span class="tex">12</span> gives <span class="tex">P\approx2(8+12)=\boldsymbol{40\text{ ft}}</span>.<br>For a large shed the <b>pace</b> (<span class="tex">\approx1</span> yd) keeps the counts smaller.</div></div></div>
+    <div class="part"><div class="pl">(b) Describe and explain a personal strategy that could be used to estimate the circumference of a bicycle wheel, using one of the referents above.</div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A rim is curved, so no straight referent can be laid along it. <b>Wrap a string</b> once around the outside of the tire, mark where it meets itself, then lay the string out straight.<br>Measure the string with a small SI referent, the <b>width of a pinky fingernail</b> (<span class="tex">\approx1</span> cm), counting how many fit. The count <b>is</b> the circumference in centimetres.<br>A <span class="tex">700</span> mm road wheel has circumference <span class="tex">\pi(70)\approx220</span> cm, so expect roughly <b>220</b> fingernail widths.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Circumference of the wheel.</b> <span class="tex">C=\pi d</span> with <span class="tex">d=700</span> mm <span class="tex">=70</span> cm: <span class="keys"><kbd>π</kbd><kbd>×</kbd><kbd>7</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives <span class="tex">219.911\ldots\approx220</span> cm.</div>
+    <div class="pill-col"><button class="pill" data-keys="π × 70 =">Show me</button></div>
+  </div>
+  <div class="explainer" data-explainer="shed"></div>
+  <div class="explainer" data-explainer="wheel"></div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Measuring a scale diagram in both systems</h3></div>
+  <p class="q">Shown below is a scale diagram of a sample access card, drawn at a scale of <span class="tex">1:3</span>. Measure the printed diagram itself: it is reproduced at full size.</p>
+  <div class="u10l2-cardrow">
+    <div class="u10l2-card"><div class="u10l2-cardt">sample card</div></div>
+    <div class="u10l2-cardnote">In the booklet this diagram is printed at its true size, <b>3.0 cm</b> long. On a screen it is not, so measure the booklet’s copy, or use the on-screen ruler in the explainer below.</div>
+  </div>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) Measure the length of the scale diagram above, in both SI units and imperial units.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A ruler laid along the longer edge reads <b>3.0 cm</b>.<br>Converting with <span class="tex">1\text{ in}=2.54</span> cm:<br><span class="tex">3.0\text{ cm}\div2.54\text{ cm/in}=1.1811\ldots\approx\boldsymbol{1.18\text{ in}}</span><br>(On a ruler marked in sixteenths, this is just short of <span class="tex">1\tfrac{3}{16}</span> in.)</div></div></div>
+    <div class="part"><div class="pl">(b) Use your answer from part (a) to determine the actual length of the access card.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The scale is <span class="tex">1:3</span>, so every <span class="tex">1</span> cm on the diagram stands for <span class="tex">3</span> cm on the real card.<br><span class="tex">3.0\text{ cm}\times3=\boldsymbol{9.0\text{ cm}}</span><br>In imperial units: <span class="tex">9.0\div2.54=3.5433\ldots\approx\boldsymbol{3.54\text{ in}}</span>, the same as <span class="tex">1.18\times3</span>.<br>The length is multiplied by the scale factor; the <b>unit</b> does not change.</div></div></div>
+    <div class="part"><div class="pl">(c) Could the length of this access card be used as a referent in either system of measurement? Explain.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Yes.</b> Access cards of this type are manufactured to a fixed, standard size, so the length is the same from card to card: exactly the consistency a referent needs. A card kept in a wallet is always at hand, so it is a <b>personal</b> referent.<br>In SI it stands for <span class="tex">\approx9</span> cm; in imperial units for <span class="tex">\approx3\tfrac12</span> in.<br>(A Canadian bank note works for the same reason.)</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Centimetres to inches: divide by 2.54.</b> <span class="keys"><kbd>3</kbd><kbd>÷</kbd><kbd>2</kbd><kbd>.</kbd><kbd>5</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> gives <span class="tex">1.1811\ldots</span> and <span class="keys"><kbd>9</kbd><kbd>÷</kbd><kbd>2</kbd><kbd>.</kbd><kbd>5</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> gives <span class="tex">3.5433\ldots</span></div>
+    <div class="pill-col"><button class="pill" data-keys="3 ÷ 2.54 =">Show me (a)</button><button class="pill" data-keys="9 ÷ 2.54 =">Show me (b)</button></div>
+  </div>
+  <div class="explainer" data-explainer="card"></div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Building a big referent out of a smaller one</h3></div>
+  <p class="q">Marcus was asked to give a referent for <span class="tex">1</span> kilometre. He could not think of anything that was actually <span class="tex">1</span> kilometre long, so instead he built his referent for the kilometre out of a referent for a smaller unit. Suggest how he might have done this.</p>
+  <div class="parts c1">
+    <div class="part"><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Build the large referent by repeating a smaller one whose length he already knows. Since <span class="tex">1</span> km <span class="tex">=1\,000</span> m, and an Olympic swimming pool is <span class="tex">50</span> m:<br><span class="tex">1\,000\text{ m}\div50\text{ m per pool length}=\boldsymbol{20}</span><br>So <span class="tex">1</span> kilometre is about <b>20 pool lengths</b> laid end to end.<br>The same method works from any smaller referent (with an adult pace, <span class="tex">\approx1</span> yd <span class="tex">\approx0.9</span> m: <span class="tex">1\,000\div0.9\approx1\,111</span> paces), but <span class="tex">20</span> pool lengths is by far the easier count to picture.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>How many referents make a kilometre?</b> <span class="keys"><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>5</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> <span class="tex">=20</span> pool lengths; <span class="keys"><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>.</kbd><kbd>9</kbd><kbd>ENTER</kbd></span> <span class="tex">=1\,111.1\ldots</span> paces.</div>
+    <div class="pill-col"><button class="pill" data-keys="1000 ÷ 50 =">Pool lengths</button><button class="pill" data-keys="1000 ÷ 0.9 =">Paces</button></div>
+  </div>
+  <div class="explainer" data-explainer="km"></div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Two systems.</b> <span class="u10l2-imp"><b>Imperial</b></span>: <span class="tex">1</span> ft <span class="tex">=12</span> in, <span class="tex">1</span> yd <span class="tex">=3</span> ft, <span class="tex">1</span> mi <span class="tex">=1\,760</span> yd. <span class="u10l2-si"><b>SI</b></span>: <span class="tex">1</span> cm <span class="tex">=10</span> mm, <span class="tex">1</span> m <span class="tex">=100</span> cm, <span class="tex">1</span> km <span class="tex">=1\,000</span> m: every step a power of <span class="tex">10</span>.</div>
+    <div><b>Referents.</b> A familiar object (often a body part) used as a stand-in when there is no measuring tool. Thumb <span class="tex">\approx1</span> in, adult foot <span class="tex">\approx1</span> ft, pace <span class="tex">\approx1</span> yd; pinky nail <span class="tex">\approx1</span> cm, workbook <span class="tex">\approx20</span> cm, 4-year-old <span class="tex">\approx1</span> m.</div>
+    <div><b>Pick · count · multiply.</b> Choose a referent <b>close in size</b> to the object (a countable number of copies), lay it end to end, then estimate <span class="tex">=</span> count <span class="tex">\times</span> referent length. An estimate is only as good as its referent.</div>
+    <div><b>Harder shapes.</b> Rectangle perimeter: count two adjacent sides, <span class="tex">P\approx2(\ell+w)</span>. Curve: wrap a string, straighten it, then count. Scale diagram: measure, then multiply by the scale. Big unit: repeat a smaller referent (<span class="tex">20</span> pool lengths <span class="tex">=1</span> km).</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u10l2" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 2 — Estimating Length with Personal Referents</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l3/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 3 — Reading Precision Measuring Instruments</b><div class="muted">A referent is good to “about”. When you need more, read a ruler to the sixteenth of an inch, a vernier caliper and a micrometer.</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u10l2.js';
+  boot({ key: 'u10l2', homeHref: '../../', title: '10.2 Personal Referents' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

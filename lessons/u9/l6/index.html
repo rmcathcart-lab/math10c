@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Multi-Step Trigonometry: Eye Level, Elevation and Depression · Math 10C 9.6</title>
+<meta name="description" content="Math 10C Unit 9 Lesson 6: multi-step right-triangle problems. Two calculations in one triangle, hidden right angles (an angle in a semicircle), angles of elevation measured from eye level with the eye height added back at the end, reading a clinometer for indirect measurement, and (Extension) tangent lines to a circle and bearings measured clockwise from north. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u9l6.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 9 Trigonometry · Lesson 6</div>
+  <h1>Multi-Step Trigonometry: Eye Level, Elevation and Depression</h1>
+  <p class="lede">Real measuring jobs rarely fit in one step. A height is measured from someone’s <b>eyes</b>, not the ground; a second question reuses the answer to the first; a right angle hides in a circle. Today: layered right-triangle problems, and measuring a real height with a home-made <b>clinometer</b>.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>solve a problem that needs <b>two calculations</b> in one right triangle, reusing the <b>unrounded</b> answer from the first part</li>
+      <li>spot a <b>hidden right angle</b>: an angle inscribed in a semicircle is <span class="tex">90^\circ</span></li>
+      <li>work with an angle of elevation measured from <b>eye level</b>, and add the eye height back at the end</li>
+      <li>read a <b>clinometer</b> (angle of elevation <span class="tex">=|90^\circ-\text{string reading}|</span>) and use it to measure a height indirectly</li>
+      <li><span class="u9l6-ext sm">Extension</span> build right triangles from <b>tangent lines</b> to a circle and from <b>bearings</b> measured clockwise from north</li>
+    </ul>
+  </div>
+  <div class="outcome"><b>M4</b> Develop and apply the primary trigonometric ratios (sine, cosine, tangent) to solve problems that involve right triangles.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: Lighthouse Lookout" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Lighthouse Lookout</h2></div>
+  <p class="big">The keeper’s eyes are <b>40 m</b> above the water. She looks <b>down</b> at three boats.</p>
+  <div class="u9l6-wfig" id="u9l6-wfig"></div>
+  <div class="u9l6-wbtns">
+    <button type="button" class="pill" id="u9l6-wz">Move the 15° down to boat C</button>
+    <button type="button" class="pill" id="u9l6-wtri">Show boat C’s right triangle</button>
+  </div>
+  <div class="u9l6-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>Each angle is measured down from which line?</div></div>
+      <div class="u9l6-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">The <b>horizontal</b> through the keeper’s eyes (the dashed line), never the lighthouse wall.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>Boat <b>A</b> is <span class="tex">45^\circ</span> down. How far is it from the lighthouse?</div></div>
+      <div class="u9l6-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>40 m.</b> At <span class="tex">45^\circ</span> the triangle is isosceles: distance <span class="tex">=</span> height.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>As a boat sails away, does its angle get bigger or smaller?</div></div>
+      <div class="u9l6-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>Smaller.</b> Farther boats need a shallower look down, so the <b>biggest</b> angle belongs to the <b>closest</b> boat.</div></div>
+    </div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Boat C’s angle (<span class="tex">15^\circ</span>) is one third of boat A’s (<span class="tex">45^\circ</span>). How far is C from the lighthouse? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> about 11 m</div>
+      <div class="opt"><b>B</b> 120 m</div>
+      <div class="opt right"><b>C</b> about 149 m</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>C: about 149 m.</b> The angle of depression equals the angle of elevation from the boat up to the keeper (alternate angles between the two horizontals). From the boat, 40 m is <b>opposite</b> <span class="tex">15^\circ</span> and the distance <span class="tex">d</span> is <b>adjacent</b>: <span class="tex">\tan15^\circ=\dfrac{40}{d}\Rightarrow d=\dfrac{40}{\tan15^\circ}\approx149.3</span> m.<br>
+      <span class="muted"><b>A</b> is <span class="tex">40\tan15^\circ\approx10.7</span>: multiplying instead of dividing (a boat 11 m out would be almost straight down). <b>B</b> is “a third of the angle, so three times as far”: distance is not proportional to the angle. (Boat B: <span class="tex">40\div\tan25^\circ\approx85.8</span> m.)</span>
+      <div class="u9l6-inl"><button class="pill small" type="button" data-keys="40 ÷ tan 15 ) =">Show me 40 ÷ tan 15°</button></div></div>
+  </div>
+  <p class="u9l6-social">Look down at your feet, then at the floor by the door. Which angle of depression is bigger?</p>
+</section>
+
+<!-- ================= 1. Multi-step, single triangle ================= -->
+<section class="card" data-ink="s1" data-section="1. Two Calculations, One Triangle">
+  <div class="sec-h"><span class="badge">1</span><h2>Multi-Step Problems with a Single Triangle</h2></div>
+  <p>Some situations are solved inside a single right triangle but still need <b>two separate calculations</b>: one for part (a), and a second for part (b) that uses a <b>different vertex</b> or a different pair of sides.</p>
+  <div class="def"><b>Read every part first.</b> A later part frequently reuses a length found in an earlier one. Keep that length <b>unrounded</b> (all the calculator digits) and round only the final answer.</div>
+  <div class="explainer" data-explainer="twoCalcs"></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Two calculations in one triangle</h3></div>
+  <p class="q">Land surveyor Priya uses a transit (a tripod-mounted sighting instrument) to determine the height of a utility pole. The transit is set up <span class="tex">45</span> m from the base of the pole, and the angle from the transit’s eyepiece up to the top of the pole is measured to be <span class="tex">15^\circ</span>.</p>
+  <div class="bk-fig u9l6-fig" id="u9l6-ex1fig"></div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) If the transit’s eyepiece is <span class="tex">1.6</span> m above the ground, calculate the height of the pole to the nearest tenth of a metre.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">From the <span class="tex">15^\circ</span> at the eyepiece: the rise above eye level is <b class="u9l6-co">opposite</b>, <span class="tex">45</span> is <b class="u9l6-ca">adjacent</b> <span class="tex">\Rightarrow</span> TOA.<br>rise <span class="tex">=45\tan15^\circ=45(0.267949)=12.0577</span> m<br>pole <span class="tex">=1.6+12.0577=13.6577\approx\boldsymbol{13.7}</span> <b>m</b></div></div></div>
+    <div class="part"><div class="pl">(b) Determine, to the nearest degree, the angle of elevation of the top of the pole from the <em>base</em> of the transit (at ground level, not the eyepiece).</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">From the base, the <b>whole</b> pole is <b class="u9l6-co">opposite</b> and <span class="tex">45</span> is <b class="u9l6-ca">adjacent</b>. Use the <b>unrounded</b> height.<br><span class="tex">\tan\theta=\dfrac{13.6577}{45}=0.303504</span><br><span class="tex">\theta=\tan^{-1}(0.303504)=16.88^\circ\approx\boldsymbol{17^\circ}</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>On the TI-30XIIS.</b> (a) <span class="keys"><kbd>45</kbd><kbd>×</kbd><kbd>TAN</kbd><kbd>15</kbd><kbd>)</kbd><kbd>+</kbd><kbd>1.6</kbd><kbd>=</kbd></span> gives 13.6577… (b) <span class="keys"><kbd>2nd</kbd><kbd>TAN</kbd><kbd>13.6577</kbd><kbd>÷</kbd><kbd>45</kbd><kbd>)</kbd><kbd>=</kbd></span> gives 16.88…; <kbd>2nd</kbd><kbd>TAN</kbd> is <span class="tex">\tan^{-1}</span>, and it opens a bracket too.</div>
+    <div class="pill-col"><button class="pill" data-keys="45 × tan 15 ) + 1.6 =">Show me (a)</button><button class="pill" data-keys="tan⁻¹ 13.6577 ÷ 45 ) =">Show me (b)</button></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. Hidden Right Angles">
+  <h3 class="sub">Hidden right angles</h3>
+  <p>SOH CAH TOA needs a right angle, and sometimes the right angle is <b>not marked</b>. One you met in Math 9:</p>
+  <div class="def amber">An angle <b>inscribed in a semicircle</b> (its vertex on the circle and its two arms through the ends of a <b>diameter</b>) is always <span class="tex">90^\circ</span>. The diameter is the hypotenuse.</div>
+  <div class="explainer" data-explainer="semicircle"></div>
+</section>
+
+<!-- ================= 2. Eye level ================= -->
+<section class="card" data-ink="s2" data-section="2. Angles Measured from Eye Level">
+  <div class="sec-h"><span class="badge">2</span><h2>Angles Measured from Eye Level</h2></div>
+  <p>An angle of elevation or depression is often measured from an observer’s <b>eye level</b>, not from the ground. Before applying SOH CAH TOA, check whether the diagram’s vertical measurements need to be adjusted by an eye height.</p>
+  <div class="def">The trigonometry returns only the rise <b>above eye level</b>, so the <b class="u9l6-ce">eye height</b> must be <b>added back at the end</b>:
+    <div class="u9l6-eq">height <span class="tex">=</span> <span class="u9l6-ce">eye height</span> <span class="tex">+</span> <span class="u9l6-co">rise above eye level</span></div></div>
+  <div class="explainer" data-explainer="eyeLevel"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Which height is the angle measured from?</b> Draw the horizontal through the <b>eyes</b> first. Everything below that line (the eye height) is not in the triangle, so it is not in the trig. Forget it and the answer comes out exactly one eye height too short.</div></div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Eye level at both ends of the line of sight</h3></div>
+  <p class="q">Malik stands on the ground <span class="tex">18</span> ft from the base of an apartment building and looks up at his friend, who is leaning out of a window. The angle of elevation from Malik’s eye level to his friend’s eye level is <span class="tex">55^\circ</span>. Malik’s eyes are <span class="tex">5.5</span> ft above the ground, and his friend’s eyes are <span class="tex">4.3</span> ft below the very top of the building. Determine the height of the building to the nearest tenth of a foot.</p>
+  <div class="u9l6-exrow">
+    <div id="u9l6-ex2fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">Height of the building</div><div class="work" style="--h:330px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">From the <span class="tex">55^\circ</span> at Malik’s eye level: the rise to his friend’s eye level is <b class="u9l6-co">opposite</b> and <span class="tex">18</span> is <b class="u9l6-ca">adjacent</b> <span class="tex">\Rightarrow</span> TOA.<br>rise <span class="tex">=18\tan55^\circ=18(1.428148)=25.7067</span> ft<br>friend’s eye level <span class="tex">=5.5+25.7067=31.2067</span> ft<br>height <span class="tex">=31.2067+4.3=35.5067\approx\boldsymbol{35.5}</span> <b>ft</b></div></div></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>All in one line.</b> <span class="keys"><kbd>18</kbd><kbd>×</kbd><kbd>TAN</kbd><kbd>55</kbd><kbd>)</kbd><kbd>+</kbd><kbd>5.5</kbd><kbd>+</kbd><kbd>4.3</kbd><kbd>=</kbd></span> gives 35.5066… so nothing is rounded until the end.</div>
+    <button class="pill" data-keys="18 × tan 55 ) + 5.5 + 4.3 =">Show me</button>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. Example 2 check">
+  <h3 class="sub">Example 2 check: stack the heights</h3>
+  <p>Three pieces make the building: below Malik’s eye level, the rise the trig gives, and the bit above his friend’s eyes.</p>
+  <div class="explainer" data-explainer="twoEyes"></div>
+</section>
+
+<!-- ================= 3. Clinometer ================= -->
+<section class="card" data-ink="s3" data-section="3. Indirect Measurement: Clinometer">
+  <div class="sec-h"><span class="badge">3</span><h2>Indirect Measurement With a Clinometer</h2></div>
+  <p>A <b>clinometer</b> measures an angle of elevation. A simple one is a protractor with a drinking straw taped along its straight edge and a string, weighted with a washer, hanging from the centre hole. Sight the top of an object through the straw: the string hangs <b>straight down</b>, so the angle of elevation is the difference between the string’s reading and <span class="tex">90^\circ</span>:</p>
+  <div class="def amber"><div class="u9l6-eq">angle of elevation <span class="tex">=\left|\,90^\circ-\text{string reading}\,\right|</span></div></div>
+  <div class="explainer" data-explainer="clinometer"></div>
+</section>
+
+<section class="card" data-ink="act" data-section="3. Activity: How Tall Is It?">
+  <h3 class="sub">Activity: How tall is it?</h3>
+  <p>Work in groups of three (sighter, reader, recorder).</p>
+  <ol class="u9l6-steps">
+    <li><b>Build</b> the clinometer: tape the straw along the protractor’s straight edge; tie the string through the centre hole and hang a washer on it.</li>
+    <li>Measure the sighter’s <b>eye height</b> with a metre stick.</li>
+    <li>Measure the <b>horizontal distance</b> from the sighter’s feet to the base of a tall object (flagpole, wall, goalpost) with a measuring tape or metre stick.</li>
+    <li>Sight the top of the object through the straw. The reader records where the string crosses the protractor; convert it to the angle of elevation.</li>
+    <li><b>Calculate:</b> height <span class="tex">=</span> eye height <span class="tex">+</span> distance <span class="tex">\times\tan(\text{angle of elevation})</span>.</li>
+    <li>Measure the height <b>directly</b> where you can (a wall or doorframe with the metre stick, or count bricks <span class="tex">\times</span> the height of one brick) and compare.</li>
+  </ol>
+  <table class="u9l6-tbl">
+    <thead><tr><th>Object</th><th>eye height (m)</th><th>distance (m)</th><th>string reading</th><th>angle of elevation</th><th>calculated height (m)</th><th>direct height (m)</th></tr></thead>
+    <tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody>
+  </table>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Reading a clinometer</h3></div>
+  <p class="q">Ana’s eyes are <span class="tex">1.55</span> m above the ground. Standing <span class="tex">18.0</span> m from the base of the school flagpole, she sights the top through her clinometer, and the string crosses the protractor at <span class="tex">58^\circ</span>.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) What is the angle of elevation?</div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The string hangs vertically, so the reading is measured from the vertical:<br><span class="tex">90^\circ-58^\circ=\boldsymbol{32^\circ}</span></div></div></div>
+    <div class="part"><div class="pl">(b) Determine the height of the flagpole to the nearest tenth of a metre.</div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">From eye level (TOA):<br>rise <span class="tex">=18.0\tan32^\circ</span><br><span class="tex">=18.0(0.624869)=11.2476</span> m<br>height <span class="tex">=1.55+11.2476</span><br><span class="tex">=12.7976\approx\boldsymbol{12.8}</span> <b>m</b></div></div></div>
+    <div class="part"><div class="pl">(c) The caretaker says the pole is <span class="tex">12.5</span> m tall. Give two reasons the measurement could be off.</div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A <span class="tex">1^\circ</span> reading error matters: <span class="tex">32^\circ\pm1^\circ</span> gives heights from <span class="tex">12.4</span> m to <span class="tex">13.2</span> m. Also: the string swinging, the ground not level, the distance not measured to the point directly below the top, or the eye height changing (tilting the head).</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Part (b), and the ±1° check for (c).</b> <span class="keys"><kbd>18</kbd><kbd>×</kbd><kbd>TAN</kbd><kbd>32</kbd><kbd>)</kbd><kbd>+</kbd><kbd>1.55</kbd><kbd>=</kbd></span> gives 12.7976…; change 32 to 31 or 33 for the range.</div>
+    <div class="pill-col"><button class="pill" data-keys="18 × tan 32 ) + 1.55 =">Show me 32°</button><button class="pill" data-keys="18 × tan 31 ) + 1.55 =">31°</button><button class="pill" data-keys="18 × tan 33 ) + 1.55 =">33°</button></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s3c" data-section="3. Example 3(c): one degree">
+  <h3 class="sub">Example 3(c): how much does one degree matter?</h3>
+  <p>The string is thin, the washer swings, and the scale has tiny marks. Misread by just <span class="tex">1^\circ</span> and watch where the line of sight hits the pole.</p>
+  <div class="explainer" data-explainer="wobble"></div>
+</section>
+
+<!-- ================= 4. Extension: tangent lines ================= -->
+<section class="card u9l6-extcard" data-ink="s4" data-section="4. Extension: Tangent Lines">
+  <div class="sec-h"><span class="badge">4</span><h2>Tangent Lines to a Circle</h2><span class="u9l6-ext-tag">Extension</span></div>
+  <div class="def">A line <b>tangent</b> to a circle meets the radius drawn to the point of tangency at a <b>right angle</b>. When two tangent segments are drawn to a circle from the same outside point, the two segments are <b>equal</b> in length, and the segment joining that outside point to the circle’s centre <b>bisects</b> the angle between them.</div>
+  <p>Both facts let a right triangle be built to work with, even though no right angle is drawn in the original picture.</p>
+  <div class="explainer" data-explainer="tangent"></div>
+</section>
+
+<section class="card example u9l6-extcard" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>A circle tangent to both arms of an angle</h3><span class="u9l6-ext-tag">Extension</span></div>
+  <p class="q">A circular sprinkler head has centre <span class="tex">C</span> and radius <span class="tex">15</span> mm, and is tangent to both arms of angle <span class="tex">POQ</span>. If angle <span class="tex">POQ=64^\circ</span>, determine the length of <span class="tex">OC</span> to the nearest millimetre.</p>
+  <div class="u9l6-exrow">
+    <div id="u9l6-ex4fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">Length of <span class="tex">OC</span></div><div class="work" style="--h:300px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">OP</span> and <span class="tex">OQ</span> are tangents from the same outside point <span class="tex">O</span>, so <span class="tex">OC</span> bisects angle <span class="tex">POQ</span>: <span class="tex">64^\circ\div2=32^\circ</span>.<br>The radius to the point of tangency on <span class="tex">OQ</span> is perpendicular to <span class="tex">OQ</span>: <span class="tex">15</span> is <b class="u9l6-co">opposite</b> <span class="tex">32^\circ</span> and <span class="tex">OC</span> is the <b class="u9l6-ch">hypotenuse</b> <span class="tex">\Rightarrow</span> SOH.<br><span class="tex">\sin32^\circ=\dfrac{15}{OC}\Rightarrow OC=\dfrac{15}{\sin32^\circ}=\dfrac{15}{0.529919}=28.31\approx\boldsymbol{28}</span> <b>mm</b><div class="u9l6-ansfig" id="u9l6-ex4ans"></div></div></div></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Unknown on the bottom: divide.</b> <span class="keys"><kbd>15</kbd><kbd>÷</kbd><kbd>SIN</kbd><kbd>32</kbd><kbd>)</kbd><kbd>=</kbd></span> gives 28.306…</div>
+    <button class="pill" data-keys="15 ÷ sin 32 ) =">Show me</button>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<!-- ================= 5. Extension: bearings ================= -->
+<section class="card u9l6-extcard" data-ink="s5" data-section="5. Extension: Bearings">
+  <div class="sec-h"><span class="badge">5</span><h2>Bearings</h2><span class="u9l6-ext-tag">Extension</span></div>
+  <div class="def">A <b>bearing</b> describes a direction as an angle measured <b>clockwise from north</b>, always written using <b>three digits</b> (for example <span class="tex">065^\circ</span>, not <span class="tex">65^\circ</span>).</div>
+  <p>The four diagrams below show four different bearings, each measured at a single point; the ray shows the direction.</p>
+  <div class="u9l6-four" id="u9l6-four"></div>
+  <div class="explainer" data-explainer="compass"></div>
+  <p>To use a bearing in a right triangle, work with the <b>acute angle between the direction and the north–south line</b> (its <em>reference angle</em>):</p>
+  <table class="u9l6-btbl">
+    <thead><tr><th><span class="tex">000^\circ</span>–<span class="tex">090^\circ</span></th><th><span class="tex">090^\circ</span>–<span class="tex">180^\circ</span></th><th><span class="tex">180^\circ</span>–<span class="tex">270^\circ</span></th><th><span class="tex">270^\circ</span>–<span class="tex">360^\circ</span></th></tr></thead>
+    <tbody><tr><td>bearing,<br>from <b>north</b> (toward E)</td><td><span class="tex">180^\circ-</span>bearing,<br>from <b>south</b> (toward E)</td><td>bearing<span class="tex">\,-180^\circ</span>,<br>from <b>south</b> (toward W)</td><td><span class="tex">360^\circ-</span>bearing,<br>from <b>north</b> (toward W)</td></tr></tbody>
+  </table>
+  <div class="def amber">For a leg of length <span class="tex">d</span>, the leg is the <b class="u9l6-ch">hypotenuse</b>: the east–west part is <b class="u9l6-co">opposite</b> the reference angle (<span class="tex">d\sin</span>) and the north–south part is <b class="u9l6-ca">adjacent</b> (<span class="tex">d\cos</span>). The picture tells you which direction (N or S, E or W) each part goes. Draw a north–south line at <b>every</b> point where the direction of travel changes.</div>
+</section>
+
+<section class="card example u9l6-extcard" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>A ferry on a bearing</h3><span class="u9l6-ext-tag">Extension</span></div>
+  <p class="q">A ferry sails <span class="tex">8</span> km from a dock, <span class="tex">D</span>, on a bearing of <span class="tex">130^\circ</span> to a buoy, <span class="tex">M</span>, as shown.</p>
+  <div class="u9l6-exrow">
+    <div id="u9l6-ex5fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(a) At <span class="tex">M</span> the ferry changes direction and sails due north until it reaches a point <span class="tex">N</span> that is due east of <span class="tex">D</span>. How far east of <span class="tex">D</span> is the ferry when it reaches <span class="tex">N</span>? Answer to the nearest <span class="tex">0.1</span> km.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">130^\circ</span> points south of east: reference angle <span class="tex">180^\circ-130^\circ=50^\circ</span> from <b>south</b>. Hypotenuse <span class="tex">DM=8</span>:<br>east part (<b class="u9l6-co">opposite</b>) <span class="tex">=8\sin50^\circ=8(0.766044)=6.1284</span> km<br>south part (<b class="u9l6-ca">adjacent</b>) <span class="tex">=8\cos50^\circ=8(0.642788)=5.1423</span> km<br>Sailing due north does not change the east position: <span class="tex">N</span> is <span class="tex">\boldsymbol{6.1}</span> <b>km</b> east of <span class="tex">D</span>.</div></div></div>
+    </div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(b) The ferry continues sailing north for a further <span class="tex">10</span> km to a point <span class="tex">W</span>. Determine the three-figure bearing of <span class="tex">W</span> from <span class="tex">D</span>.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">From <span class="tex">M</span> the ferry sails <span class="tex">5.1423</span> km north to <span class="tex">N</span>, then <span class="tex">10</span> km further: <span class="tex">W</span> is <span class="tex">10</span> km north and <span class="tex">6.1284</span> km east of <span class="tex">D</span>, between <span class="tex">000^\circ</span> and <span class="tex">090^\circ</span>.<br><span class="tex">\tan\theta=\dfrac{6.1284}{10}=0.61284\Rightarrow\theta=31.50^\circ</span><br>bearing <span class="tex">\approx\boldsymbol{032^\circ}</span> (three digits)</div></div></div>
+    <div class="part"><div class="pl">(c) If the ferry maintains an average speed of <span class="tex">12</span> km/h for the entire trip from <span class="tex">D</span> to <span class="tex">W</span>, determine, to the nearest tenth of an hour, the total time for the journey.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Total distance <span class="tex">=DM+MN+NW</span><br><span class="tex">=8+5.1423+10=23.1423</span> km<br><span class="tex">t=\dfrac{23.1423}{12}=1.9285\approx\boldsymbol{1.9}</span> <b>h</b></div></div></div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Keep the digits.</b> In (b) the unrounded <span class="tex">6.1284</span> gives <span class="tex">31.50^\circ</span>, which rounds to <span class="tex">032^\circ</span>. Use the rounded <span class="tex">6.1</span> instead and you get <span class="tex">\tan^{-1}(0.61)=31.38^\circ</span>, which rounds to <span class="tex">031^\circ</span>: a wrong answer from an early rounding.</div></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>The ferry on the TI-30XIIS.</b> (a) <span class="keys"><kbd>8</kbd><kbd>×</kbd><kbd>SIN</kbd><kbd>50</kbd><kbd>)</kbd><kbd>=</kbd></span>; the south part with <kbd>COS</kbd>. (b) <span class="keys"><kbd>2nd</kbd><kbd>TAN</kbd><kbd>6.1284</kbd><kbd>÷</kbd><kbd>10</kbd><kbd>)</kbd><kbd>=</kbd></span>. (c) <span class="keys"><kbd>(</kbd><kbd>8</kbd><kbd>+</kbd><kbd>5.1423</kbd><kbd>+</kbd><kbd>10</kbd><kbd>)</kbd><kbd>÷</kbd><kbd>12</kbd><kbd>=</kbd></span>.</div>
+    <div class="pill-col u9l6-pills2"><button class="pill" data-keys="8 × sin 50 ) =">Show me east</button><button class="pill" data-keys="8 × cos 50 ) =">south</button><button class="pill" data-keys="tan⁻¹ 6.1284 ÷ 10 ) =">bearing (b)</button><button class="pill" data-keys="( 8 + 5.1423 + 10 ) ÷ 12 =">time (c)</button></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<section class="card u9l6-extcard" data-ink="s5b" data-section="5. Example 5 check">
+  <h3 class="sub">Example 5 check: follow the ferry <span class="u9l6-ext sm">Extension</span></h3>
+  <div class="explainer" data-explainer="ferry"></div>
+</section>
+
+<!-- ================= 6. Extension: multiple legs ================= -->
+<section class="card u9l6-extcard" data-ink="s6" data-section="6. Extension: Multiple Legs">
+  <div class="sec-h"><span class="badge">6</span><h2>Combining Multiple Legs</h2><span class="u9l6-ext-tag">Extension</span></div>
+  <p>When a journey has two or more legs on different bearings, draw a north–south line at <b>every</b> turning point. Split each leg of length <span class="tex">d</span> into an <b class="u9l6-co">east–west part</b> (<span class="tex">d\sin</span> of its reference angle) and a <b class="u9l6-ca">north–south part</b> (<span class="tex">d\cos</span> of its reference angle), and use the picture to decide whether to <b>add or subtract</b>. The Pythagorean Theorem and an inverse tangent then give the direct distance and the bearing between the start and end points.</p>
+  <div class="explainer" data-explainer="twoLegs"></div>
+</section>
+
+<section class="card example u9l6-extcard" data-ink="ex6" data-section="Example 6">
+  <div class="ex-head"><span class="ex-tag">Example 6</span><h3>Two legs on different bearings</h3><span class="u9l6-ext-tag">Extension</span></div>
+  <p class="q">A cyclist leaves a trailhead, <span class="tex">T</span>, and rides <span class="tex">14</span> km on a bearing of <span class="tex">038^\circ</span> to a rest stop, <span class="tex">R</span>. At <span class="tex">R</span> she changes direction and rides <span class="tex">9</span> km on a bearing of <span class="tex">097^\circ</span> to a lookout, <span class="tex">L</span>. <span class="tex">TN</span> and <span class="tex">RM</span> represent north lines at <span class="tex">T</span> and <span class="tex">R</span>.</p>
+  <div class="u9l6-exrow">
+    <div id="u9l6-ex6fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(a) On the diagram, mark the sizes of angle <span class="tex">NTR</span> and angle <span class="tex">MRL</span>.</div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A bearing is measured clockwise from the north line at that point: angle <span class="tex">NTR=\boldsymbol{38^\circ}</span> and angle <span class="tex">MRL=\boldsymbol{97^\circ}</span>.<div class="u9l6-ansfig" id="u9l6-ex6ans"></div></div></div></div>
+    </div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(b) Determine, to the nearest <span class="tex">0.1</span> km, how far <span class="tex">L</span> is east of <span class="tex">T</span>.</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Leg <span class="tex">TR</span>: <span class="tex">38^\circ</span> from north: east <span class="tex">=14\sin38^\circ=8.6193</span><br>Leg <span class="tex">RL</span>: <span class="tex">097^\circ</span> is just south of east, reference <span class="tex">180^\circ-97^\circ=83^\circ</span> from south: east <span class="tex">=9\sin83^\circ=8.9329</span><br>Both go east: <span class="tex">8.6193+8.9329=17.5522\approx\boldsymbol{17.6}</span> <b>km</b></div></div></div>
+    <div class="part"><div class="pl">(c) Determine, to the nearest <span class="tex">0.1</span> km, how far <span class="tex">L</span> is north of <span class="tex">T</span>.</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Leg <span class="tex">TR</span> goes north: <span class="tex">14\cos38^\circ=11.0322</span><br>Leg <span class="tex">RL</span> goes <b>south</b>: <span class="tex">9\cos83^\circ=1.0968</span><br>North of <span class="tex">T</span>: <span class="tex">11.0322-1.0968=9.9354\approx\boldsymbol{9.9}</span> <b>km</b></div></div></div>
+    <div class="part"><div class="pl">(d) Determine, to the nearest <span class="tex">0.1</span> km, the direct distance from <span class="tex">T</span> to <span class="tex">L</span>.</div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Pythagorean Theorem on the <b>unrounded</b> parts:<br><span class="tex">TL=\sqrt{17.5522^2+9.9354^2}=\sqrt{308.078+98.711}</span><br><span class="tex">=\sqrt{406.789}=20.169\approx\boldsymbol{20.2}</span> <b>km</b></div></div></div>
+    <div class="part"><div class="pl">(e) Determine the three-figure bearing of <span class="tex">L</span> from <span class="tex">T</span>.</div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">L</span> is east and north of <span class="tex">T</span>, so the bearing is between <span class="tex">000^\circ</span> and <span class="tex">090^\circ</span>. The angle from north is opposite the east part, adjacent to the north part:<br><span class="tex">\tan\theta=\dfrac{17.5522}{9.9354}=1.76663\Rightarrow\theta=60.49^\circ</span><br>bearing <span class="tex">\approx\boldsymbol{060^\circ}</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Example 6 on the TI-30XIIS.</b> (b) <span class="keys"><kbd>14</kbd><kbd>×</kbd><kbd>SIN</kbd><kbd>38</kbd><kbd>)</kbd><kbd>+</kbd><kbd>9</kbd><kbd>×</kbd><kbd>SIN</kbd><kbd>83</kbd><kbd>)</kbd><kbd>=</kbd></span> (c) the same with <kbd>COS</kbd> and <kbd>−</kbd>. (d) <span class="keys"><kbd>2nd</kbd><kbd>x²</kbd></span> is <span class="tex">\sqrt{\ }</span> and opens a bracket. (e) <span class="keys"><kbd>2nd</kbd><kbd>TAN</kbd></span>.</div>
+    <div class="pill-col u9l6-pills2"><button class="pill" data-keys="14 × sin 38 ) + 9 × sin 83 ) =">(b) east</button><button class="pill" data-keys="14 × cos 38 ) − 9 × cos 83 ) =">(c) north</button><button class="pill" data-keys="√ 17.5522 x² + 9.9354 x² ) =">(d) distance</button><button class="pill" data-keys="tan⁻¹ 17.5522 ÷ 9.9354 ) =">(e) bearing</button></div>
+  </div>
+  <div class="space" id="ex6-space"></div>
+  <button class="more" data-more="ex6-space">+ More space</button>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Two calculations, one triangle.</b> Read every part first. Part (b) often reuses part (a)’s length: keep it <b>unrounded</b> and round only the final answer.</div>
+    <div><b>Eye level.</b> The angle is measured from the horizontal through the <b>eyes</b>. Trig gives the rise above eye level; <b>add the eye height back</b> at the end.</div>
+    <div><b>Clinometer.</b> The string hangs straight down: angle of elevation <span class="tex">=|90^\circ-\text{reading}|</span>. A <span class="tex">1^\circ</span> misreading can move the answer by tenths of a metre.</div>
+    <div><span class="u9l6-ext sm">Ext</span> <b>Hidden right angles:</b> in a semicircle; between a tangent and its radius. <b>Bearings:</b> clockwise from north, three digits; split each leg into <span class="tex">d\sin</span> (E–W) and <span class="tex">d\cos</span> (N–S).</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u9l6" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 6 — Multi-Step Trigonometry</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l7/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 7 — Chaining Right Triangles Together</b><div class="muted">Two triangles sharing a side: towers, two sightings from different spots, and a length found in one triangle carried into the next</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u9l6.js';
+  boot({ key: 'u9l6', homeHref: '../../', title: '9.6 Multi-Step Trigonometry' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

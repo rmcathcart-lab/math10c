@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Finding the Measure of an Angle in a Right Triangle · Math 10C 9.4</title>
+<meta name="description" content="Math 10C Unit 9 Lesson 4: finding an angle in a right triangle. Inverse ratios (sin⁻¹, cos⁻¹, tan⁻¹ on the TI-30XIIS) run SOH CAH TOA backwards; name the two known sides from the angle, choose the ratio, then use the inverse. Angles of elevation and depression, measured from the horizontal and equal as alternate angles; splitting an isosceles triangle; two right triangles sharing a side. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u9l4.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 9 Trigonometry · Lesson 4</div>
+  <h1>Finding the Measure of an Angle in a Right Triangle</h1>
+  <p class="lede">Two sides known and the angle unknown. <b>Name the sides</b> from the angle, <b>choose the ratio</b> that pairs them, then run the calculator <b>backwards</b> with <span class="tex">\sin^{-1}</span>, <span class="tex">\cos^{-1}</span> or <span class="tex">\tan^{-1}</span>.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>use a calculator (in <b>degree mode</b>) to go from an angle to a ratio, and back from a ratio to the angle with <span class="tex">\sin^{-1}</span>, <span class="tex">\cos^{-1}</span>, <span class="tex">\tan^{-1}</span></li>
+      <li>name the two known sides as <b class="u9l4-co">opposite</b>, <b class="u9l4-ca">adjacent</b> or <b class="u9l4-ch">hypotenuse</b> from the unknown angle, <em>then</em> choose SOH, CAH or TOA</li>
+      <li>find an angle from two sides, to the nearest degree or tenth of a degree</li>
+      <li>find an <b>angle of elevation</b> or <b>depression</b>, measured from the <b>horizontal</b>, and explain why the two are equal</li>
+      <li>find an angle in an isosceles triangle by splitting it, and an angle that spans two right triangles</li>
+    </ul>
+  </div>
+  <div class="outcome"><b>M4</b> Develop and apply the primary trigonometric ratios (sine, cosine, tangent) to solve problems that involve right triangles.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: Roof Pitch" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Roof Pitch</h2></div>
+  <p class="big">A roof’s <b>pitch</b> is how far it rises for every <b>12</b> across. (6/12: up 6, across 12.)</p>
+  <div class="u9l4-wfig" id="u9l4-roofs"></div>
+  <div class="u9l4-wbtns">
+    <button type="button" class="pill" id="u9l4-wroof">Build the 24/12 roof</button>
+    <button type="button" class="pill" id="u9l4-wang">Show every roof angle</button>
+  </div>
+  <div class="u9l4-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>A <b>6/12</b> roof goes <b>36</b> across. How far up does it rise?</div></div>
+      <div class="u9l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>18.</b> Three groups of 12 across, so three groups of 6 up.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>Write each pitch as a decimal (rise <span class="tex">\div</span> run): 4/12, 6/12, 12/12.</div></div>
+      <div class="u9l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">4/12\approx0.33</span>, <span class="tex">6/12=0.5</span>, <span class="tex">12/12=1</span>.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>On the <b>12/12</b> roof, rise = run. What angle does the roof make with the horizontal?</div></div>
+      <div class="u9l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">\mathbf{45^\circ}</span>. Rise = run makes an isosceles right triangle, so its two acute angles are equal: <span class="tex">90^\circ\div2=45^\circ</span>.</div></div>
+    </div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> A <b>24/12</b> roof is twice as steep as a 12/12 roof. So is it a <span class="tex">90^\circ</span> wall of shingles? <b>Guess first:</b> the 24/12 roof’s angle is…</div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> <span class="tex">90^\circ</span></div>
+      <div class="opt"><b>B</b> <span class="tex">67.5^\circ</span></div>
+      <div class="opt right"><b>C</b> about <span class="tex">63^\circ</span></div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>C: about <span class="tex">63^\circ</span>.</b> The pitch is <span class="tex">\dfrac{\text{rise}}{\text{run}}=\dfrac{\text{opp}}{\text{adj}}</span>, so <span class="tex">\tan\theta=\dfrac{24}{12}=2</span> and <span class="tex">\theta=\tan^{-1}(2)\approx63.4^\circ</span>.<br>
+      <span class="muted"><b>A</b> is “twice as steep, so twice the angle, <span class="tex">2\times45^\circ</span>”: doubling the ratio does <b>not</b> double the angle, and a <span class="tex">90^\circ</span> roof would need an endless pitch. <b>B</b> is “halfway from <span class="tex">45^\circ</span> to <span class="tex">90^\circ</span>”: the same straight-line thinking, softened.</span></div>
+  </div>
+
+  <div class="bk-wq u9l4-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Double the 4/12 roof to 8/12. Does its angle double from <span class="tex">18.4^\circ</span> to <span class="tex">36.9^\circ</span>? And what pitch gives a <span class="tex">30^\circ</span> roof?</div></div>
+    <div class="u9l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>No:</b> <span class="tex">\tan^{-1}\!\left(\tfrac{8}{12}\right)\approx33.7^\circ</span>. A <span class="tex">30^\circ</span> roof rises <span class="tex">12\tan30^\circ\approx6.9</span>, so about a <b>7/12</b> pitch.</div></div>
+  </div>
+  <p class="u9l4-social">Vote with your arm: hold it at the angle you think a 24/12 roof makes!</p>
+</section>
+
+<!-- ================= 1. Inverse ratios ================= -->
+<section class="card" data-ink="s1" data-section="1. Inverse Trigonometric Ratios">
+  <div class="sec-h"><span class="badge">1</span><h2>Inverse Trigonometric Ratios</h2></div>
+  <p>A calculator can also run SOH CAH TOA <b>backwards</b>. If the value of a trigonometric ratio for an acute angle is known, the angle itself is recovered with the <b>inverse ratio</b>.</p>
+  <div class="def">If <span class="tex">\sin\theta^\circ=k</span> then <span class="tex">\theta^\circ=\sin^{-1}(k)</span>, and likewise <span class="tex">\cos^{-1}</span> and <span class="tex">\tan^{-1}</span>. On most calculators these are <span class="keys"><kbd>2nd</kbd><kbd>SIN</kbd></span>, <span class="keys"><kbd>2nd</kbd><kbd>COS</kbd></span> and <span class="keys"><kbd>2nd</kbd><kbd>TAN</kbd></span>, in <b>degree mode</b>. Read <span class="tex">\sin^{-1}(k)</span> as “<b>the angle whose sine is</b> <span class="tex">k</span>”; it does <b>not</b> mean <span class="tex">1\div\sin</span>.</div>
+  <div class="explainer" data-explainer="backwards"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Degree mode.</b> The TI-30XIIS shows <b>DEG</b> at the top of the screen. If it says RAD or GRAD, <span class="tex">\sin 30</span> will not be <span class="tex">0.5</span>: press <kbd>DRG</kbd>, use the arrows to underline <b>DEG</b>, then press <kbd>ENTER</kbd>.</div></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Ratio to value, and value back to angle</h3></div>
+  <p class="q"><b>(a)</b> Use a calculator to determine the value of each ratio, to four decimal places.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(i) <span class="tex">\sin79^\circ=</span></div><div class="work" style="--h:70px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\mathbf{0.9816}</span></div></div></div>
+    <div class="part"><div class="pl">(ii) <span class="tex">\tan11^\circ=</span></div><div class="work" style="--h:70px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\mathbf{0.1944}</span></div></div></div>
+    <div class="part"><div class="pl">(iii) <span class="tex">\cos52^\circ=</span></div><div class="work" style="--h:70px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\mathbf{0.6157}</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Forwards: angle in, ratio out.</b> <span class="keys"><kbd>SIN</kbd><kbd>79</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 0.981627183 → <b>0.9816</b>. The TI-30XIIS opens a bracket after <kbd>SIN</kbd>, so close it.</div>
+    <div class="pill-col"><button class="pill" data-keys="sin 79 ) =">sin 79°</button><button class="pill" data-keys="tan 11 ) =">tan 11°</button><button class="pill" data-keys="cos 52 ) =">cos 52°</button></div>
+  </div>
+  <p class="q u9l4-qgap"><b>(b)</b> Now run it backwards: in each case, determine the measure of the acute angle to the nearest degree.</p>
+  <div class="parts u9l4-c4">
+    <div class="part"><div class="pl">(i) <span class="tex">\sin a^\circ=0.4217</span>, <span class="tex">a^\circ=</span></div><div class="work" style="--h:130px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">a^\circ=\sin^{-1}(0.4217)</span><br><span class="tex">=24.94^\circ\approx\mathbf{25^\circ}</span></div></div></div>
+    <div class="part"><div class="pl">(ii) <span class="tex">\cos b^\circ=0.6820</span>, <span class="tex">b^\circ=</span></div><div class="work" style="--h:130px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">b^\circ=\cos^{-1}(0.6820)</span><br><span class="tex">=47.00^\circ\approx\mathbf{47^\circ}</span></div></div></div>
+    <div class="part"><div class="pl">(iii) <span class="tex">\tan P=2.7500</span>, <span class="tex">\angle P=</span></div><div class="work" style="--h:130px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\angle P=\tan^{-1}(2.7500)</span><br><span class="tex">=70.02^\circ\approx\mathbf{70^\circ}</span></div></div></div>
+    <div class="part"><div class="pl">(iv) <span class="tex">\sin C=\dfrac{3}{5}</span>, <span class="tex">\angle C=</span></div><div class="work" style="--h:130px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\angle C=\sin^{-1}\!\left(\tfrac{3}{5}\right)</span><br><span class="tex">=\sin^{-1}(0.6)</span><br><span class="tex">=36.87^\circ\approx\mathbf{37^\circ}</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Backwards: ratio in, angle out.</b> <span class="keys"><kbd>2nd</kbd><kbd>SIN</kbd><kbd>.4217</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 24.94196… → <b>25°</b>. For a fraction, type the division inside the bracket: <span class="keys"><kbd>2nd</kbd><kbd>SIN</kbd><kbd>3</kbd><kbd>÷</kbd><kbd>5</kbd><kbd>)</kbd><kbd>ENTER</kbd></span>.</div>
+    <div class="pill-col u9l4-pills2"><button class="pill" data-keys="sin⁻¹ .4217 ) =">(i)</button><button class="pill" data-keys="cos⁻¹ .6820 ) =">(ii)</button><button class="pill" data-keys="tan⁻¹ 2.75 ) =">(iii)</button><button class="pill" data-keys="sin⁻¹ 3 ÷ 5 ) =">(iv)</button></div>
+  </div>
+  <div class="parts c1 u9l4-qgap">
+    <div class="part think"><div class="pl"><span class="think-tag">Think</span> What does the calculator say for <span class="tex">\sin^{-1}(1.2)</span>? Why must that happen?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>An error</b> (DOMAIN). <span class="tex">\sin\theta=\dfrac{\text{opp}}{\text{hyp}}</span>, and the hypotenuse is the longest side, so a sine can never be more than 1. No angle has a sine of 1.2. <button class="pill small" data-keys="sin⁻¹ 1.2 ) =">Show me</button></div></div></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. Reading a ratio graph backwards">
+  <h3 class="sub">Why the inverse works: read the graph backwards</h3>
+  <p>As an angle opens from <span class="tex">0^\circ</span> to <span class="tex">90^\circ</span>, its sine climbs, its cosine falls and its tangent climbs without end. Each ratio value meets the graph <b>once</b>, so it belongs to exactly <b>one</b> acute angle. Forwards: up from the angle, across to the ratio. Backwards: across from the ratio, down to the angle.</p>
+  <div class="explainer" data-explainer="readBack"></div>
+</section>
+
+<!-- ================= 2. Two sides → angle ================= -->
+<section class="card" data-ink="s2" data-section="2. An Angle From Two Known Sides">
+  <div class="sec-h"><span class="badge">2</span><h2>Determining an Angle From Two Known Sides</h2></div>
+  <p>Calculating an angle requires the lengths of <b>two</b> of the triangle’s three sides.</p>
+  <div class="u9l4-steps">
+    <div><span class="u9l4-sn">1</span><b>Name</b> each known side from the unknown angle: <b class="u9l4-co">opposite</b>, <b class="u9l4-ca">adjacent</b> or <b class="u9l4-ch">hypotenuse</b>.</div>
+    <div><span class="u9l4-sn">2</span><b>Choose</b> the ratio that pairs those two names: SOH, CAH or TOA.</div>
+    <div><span class="u9l4-sn">3</span><b>Write</b> it as an equation, then <b>solve</b> with the inverse ratio.</div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Name first, choose second.</b> Reading the ratio off the wrong pair of sides is the usual error. Name the sides <em>from the angle you want</em>, and only then pick SOH, CAH or TOA.</div></div>
+</section>
+
+<section class="card example" data-ink="exN" data-section="Naming the sides">
+  <div class="ex-head"><span class="ex-tag">Example</span><h3>Naming the sides before choosing the ratio</h3></div>
+  <p class="q">Complete the following for the diagram shown.</p>
+  <div class="u9l4-exrow">
+    <div class="parts c1">
+      <div class="part"><div class="pl">Relative to the angle <span class="tex">p^\circ</span>, <span class="tex">21</span> is the length of the ADJACENT side and <span class="tex">35</span> is the length of the <span data-reveal="_______">HYPOTENUSE</span>.</div><div class="work" style="--h:40px"></div>
+        <div class="pl">The trigonometric ratio which involves the ADJACENT side and the <span data-reveal="_______">HYPOTENUSE</span> is the <span data-reveal="_______">COSINE</span> ratio.</div><div class="work" style="--h:40px"></div>
+        <div class="pl"><span data-reveal="____"><span class="tex">\cos</span></span> <span class="tex">p^\circ=\dfrac{21}{35}</span> &nbsp; so &nbsp; <span class="tex">p^\circ=</span> <span data-reveal="______"><span class="tex">53^\circ</span></span></div><div class="work" style="--h:110px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans">From <span class="tex">p^\circ</span>: <span class="tex">21</span> is ADJACENT and <span class="tex">35</span> is the HYPOTENUSE (it faces the right angle). Adjacent with hypotenuse <span class="tex">\Rightarrow</span> <b>CAH</b>.<br><span class="tex">\cos p^\circ=\dfrac{21}{35}=0.6\ \Rightarrow\ p^\circ=\cos^{-1}(0.6)=53.13^\circ\approx\mathbf{53^\circ}</span></div></div></div>
+    </div>
+    <div class="u9l4-figc" id="u9l4-figN"></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>One line on the TI-30XIIS.</b> <span class="keys"><kbd>2nd</kbd><kbd>COS</kbd><kbd>21</kbd><kbd>÷</kbd><kbd>35</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 53.13010235 → <b>53°</b>.</div>
+    <button class="pill" data-keys="cos⁻¹ 21 ÷ 35 ) =">Show me</button>
+  </div>
+  <div class="space" id="exN-space"></div>
+  <button class="more" data-more="exN-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. Name the sides, then choose">
+  <h3 class="sub">Name the sides, then choose the ratio</h3>
+  <p>The hypotenuse <b>faces the right angle</b>, the opposite side <b>faces the angle</b>, and the adjacent side <b>touches the angle</b> (and is not the hypotenuse). The two sides you know decide the ratio.</p>
+  <div class="explainer" data-explainer="nameFirst"></div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Two sides given, angle to the nearest degree</h3></div>
+  <p class="q">In each case, determine the measure of the indicated angle to the nearest degree.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a)</div><div class="u9l4-figc" id="u9l4-fig2a"></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">From <span class="tex">a^\circ</span>: <span class="tex">5</span> is OPPOSITE, <span class="tex">11</span> is the HYPOTENUSE <span class="tex">\Rightarrow</span> <b>SOH</b>.<br><span class="tex">\sin a^\circ=\dfrac{5}{11}=0.4545</span><br><span class="tex">a^\circ=\sin^{-1}(0.4545)</span><br><span class="tex">=27.04^\circ\approx\mathbf{27^\circ}</span></div></div></div>
+    <div class="part"><div class="pl">(b)</div><div class="u9l4-figc" id="u9l4-fig2b"></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">From <span class="tex">b^\circ</span>: <span class="tex">15</span> is ADJACENT, <span class="tex">23</span> is the HYPOTENUSE <span class="tex">\Rightarrow</span> <b>CAH</b>.<br><span class="tex">\cos b^\circ=\dfrac{15}{23}=0.6522</span><br><span class="tex">b^\circ=\cos^{-1}(0.6522)</span><br><span class="tex">=49.29^\circ\approx\mathbf{49^\circ}</span></div></div></div>
+    <div class="part"><div class="pl">(c)</div><div class="u9l4-figc" id="u9l4-fig2c"></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">From <span class="tex">c^\circ</span>: <span class="tex">14</span> is ADJACENT, <span class="tex">19</span> is OPPOSITE <span class="tex">\Rightarrow</span> <b>TOA</b>.<br><span class="tex">\tan c^\circ=\dfrac{19}{14}=1.3571</span><br><span class="tex">c^\circ=\tan^{-1}(1.3571)</span><br><span class="tex">=53.62^\circ\approx\mathbf{54^\circ}</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Type the fraction straight in.</b> <span class="keys"><kbd>2nd</kbd><kbd>SIN</kbd><kbd>5</kbd><kbd>÷</kbd><kbd>11</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> keeps every decimal of <span class="tex">5\div11</span>, so nothing is lost to rounding.</div>
+    <div class="pill-col u9l4-pills2"><button class="pill" data-keys="sin⁻¹ 5 ÷ 11 ) =">(a)</button><button class="pill" data-keys="cos⁻¹ 15 ÷ 23 ) =">(b)</button><button class="pill" data-keys="tan⁻¹ 19 ÷ 14 ) =">(c)</button></div>
+  </div>
+  <div class="parts c1 u9l4-qgap">
+    <div class="part think"><div class="pl"><span class="think-tag">Think</span> In (a), what is the <b>other</b> acute angle? Find it two ways.</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The angles of a right triangle add to <span class="tex">180^\circ</span>, so <span class="tex">90^\circ-27.04^\circ=62.96^\circ\approx63^\circ</span>. Or name the sides from the bottom angle: <span class="tex">5</span> is now ADJACENT, so <span class="tex">\cos^{-1}\!\left(\tfrac{5}{11}\right)=62.96^\circ</span>. The same side is opposite one acute angle and adjacent to the other.</div></div></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<!-- ================= 3. Elevation & depression ================= -->
+<section class="card" data-ink="s3" data-section="3. Angle of Elevation and Depression">
+  <div class="sec-h"><span class="badge">3</span><h2>Angle of Elevation and Angle of Depression</h2></div>
+  <div class="def-grid">
+    <div class="def">The <b>angle of elevation</b> is measured <b>upward</b> from a horizontal line to the line of sight of an object <b>above</b> the horizontal.</div>
+    <div class="def amber">The <b>angle of depression</b> is measured <b>downward</b> from a horizontal line to the line of sight of an object <b>below</b> it.</div>
+  </div>
+  <div class="u9l4-exrow u9l4-ed">
+    <div>
+      <p>Both are measured from the <b>horizontal</b>, never from the vertical. The horizontal line at the observer and the horizontal line at the object are <b>parallel</b>, and the line of sight is a transversal crossing both, so the alternate interior angles they form are equal:</p>
+      <div class="u9l4-big-rule">angle of depression from the higher point <span class="tex">=</span> angle of elevation from the lower point</div>
+      <p class="muted">In the diagram, the angle of depression of the object from the observer equals the angle of elevation of the observer from the object.</p>
+    </div>
+    <div class="u9l4-figc" id="u9l4-figED"></div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Angle of elevation of the sun</h3></div>
+  <p class="q">A flagpole <span class="tex">6.4</span> m tall casts a shadow <span class="tex">9.2</span> m long. Determine, to the nearest tenth of a degree, the angle of elevation of the sun.</p>
+  <div class="u9l4-exrow u9l4-r2">
+    <div class="u9l4-figc" id="u9l4-fig3"></div>
+    <div class="parts c1">
+      <div class="part"><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">From <span class="tex">\theta^\circ</span>: the pole (<span class="tex">6.4</span> m) is OPPOSITE and the shadow (<span class="tex">9.2</span> m) is ADJACENT <span class="tex">\Rightarrow</span> <b>TOA</b>.<br><span class="tex">\tan\theta^\circ=\dfrac{6.4}{9.2}=0.6957\ \Rightarrow\ \theta^\circ=\tan^{-1}(0.6957)=34.82^\circ\approx\mathbf{34.8^\circ}</span></div></div></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><span class="keys"><kbd>2nd</kbd><kbd>TAN</kbd><kbd>6.4</kbd><kbd>÷</kbd><kbd>9.2</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 34.82448916 → <b>34.8°</b> to the nearest tenth.</div>
+    <button class="pill" data-keys="tan⁻¹ 6.4 ÷ 9.2 ) =">Show me</button>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s3b" data-section="3. The sun’s angle of elevation">
+  <h3 class="sub">The sun, the pole and its shadow</h3>
+  <p>The sun’s ray that grazes the top of the pole lands at the tip of the shadow. The angle of elevation of the sun is the angle between that ray and the <b>ground</b> at the shadow’s tip.</p>
+  <div class="explainer" data-explainer="sunElev"></div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Angle of depression from the top of a cliff</h3></div>
+  <p class="q">A sea kayaker is on the water below a cliff. The cliff is <span class="tex">68</span> m high, and the kayaker is <span class="tex">155</span> m from the base of the cliff.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Draw a diagram to represent this situation, and mark the angle of depression of the kayaker from the top of the cliff.</div><div class="work" style="--h:260px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The cliff is vertical, the water is horizontal, and the dashed line at the top of the cliff is the horizontal through the observer. <span class="tex">\alpha^\circ</span> is the angle of depression.<div class="u9l4-figc" id="u9l4-fig4a"></div></div></div></div>
+    <div class="part"><div class="pl">(b) Determine, to the nearest degree, the angle of depression of the kayaker from the top of the cliff.</div><div class="work" style="--h:260px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\alpha^\circ</span> equals the angle of elevation of the cliff top from the kayaker (alternate interior angles), and that angle sits in the right triangle.<br>From it, the cliff (<span class="tex">68</span> m) is OPPOSITE and the water distance (<span class="tex">155</span> m) is ADJACENT <span class="tex">\Rightarrow</span> <b>TOA</b>.<br><span class="tex">\tan\alpha^\circ=\dfrac{68}{155}=0.4387</span><br><span class="tex">\alpha^\circ=\tan^{-1}(0.4387)=23.69^\circ\approx\mathbf{24^\circ}</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><span class="keys"><kbd>2nd</kbd><kbd>TAN</kbd><kbd>68</kbd><kbd>÷</kbd><kbd>155</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 23.68752634 → <b>24°</b>.</div>
+    <button class="pill" data-keys="tan⁻¹ 68 ÷ 155 ) =">Show me</button>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>The angle of depression is outside the triangle.</b> It sits between the horizontal and the line of sight, at the top. The angle at the top <em>inside</em> the triangle is measured from the <b>vertical</b> cliff: <span class="tex">90^\circ-23.69^\circ=66.31^\circ</span>, which is not the answer.</div></div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s3c" data-section="3. The Z: depression = elevation">
+  <h3 class="sub">The cliff, the kayak and the Z</h3>
+  <p>Two parallel horizontals and the line of sight between them make a <b>Z</b>. The angles tucked into the two corners of a Z are <b>alternate angles</b>, and they are always equal. That is why the angle of depression can be found <em>inside</em> the right triangle, at the kayak.</p>
+  <div class="explainer" data-explainer="cliffZ"></div>
+</section>
+
+<!-- ================= 4. Isosceles ================= -->
+<section class="card" data-ink="s4" data-section="4. Angles in Isosceles Triangles">
+  <div class="sec-h"><span class="badge">4</span><h2>Angles in Isosceles Triangles</h2></div>
+  <p>SOH CAH TOA applies only inside a <b>right</b> triangle. An isosceles triangle is not in general a right triangle, but dropping a perpendicular from its apex to its base splits it into two <b>congruent right triangles</b>, each of which the ratios do apply to.</p>
+  <div class="def">The perpendicular <b>bisects</b> both the base and the apex angle, so the angle found in one half is <b>half</b> of the apex angle.</div>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Splitting an isosceles triangle</h3></div>
+  <p class="q">Consider isosceles triangle <span class="tex">PQR</span>, in which <span class="tex">PQ=18</span> cm, <span class="tex">QR=18</span> cm, and <span class="tex">PR=26</span> cm.</p>
+  <div class="u9l4-exrow u9l4-r5">
+    <div class="u9l4-figc" id="u9l4-fig5"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(a) Why can SOH CAH TOA not be used directly in triangle <span class="tex">PQR</span> to determine the measure of angle <span class="tex">PQR</span>?</div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Triangle <span class="tex">PQR</span> has <b>no right angle</b>, so none of its sides is a hypotenuse and no side is opposite or adjacent <em>to a right angle</em>. SOH CAH TOA works only inside a right triangle.</div></div></div>
+    </div>
+  </div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(b) Determine, to the nearest degree, the measure of angle <span class="tex">PQR</span> by splitting triangle <span class="tex">PQR</span> into two congruent right triangles.</div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans u9l4-ansgrid"><div class="u9l4-figc" id="u9l4-fig5b"></div><div>The perpendicular <span class="tex">QM</span> bisects <span class="tex">PR</span>, so <span class="tex">PM=26\div2=13</span>, and it bisects angle <span class="tex">PQR</span>.<br>In right triangle <span class="tex">PMQ</span>: <span class="tex">PM=13</span> is OPPOSITE <span class="tex">\angle PQM</span> and <span class="tex">PQ=18</span> is the HYPOTENUSE <span class="tex">\Rightarrow</span> <b>SOH</b>.<br><span class="tex">\sin(\angle PQM)=\dfrac{13}{18}=0.7222\ \Rightarrow\ \angle PQM=46.24^\circ</span><br><span class="tex">\angle PQR=2(46.24^\circ)=92.48^\circ\approx\mathbf{92^\circ}</span></div></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Double before you round.</b> <span class="keys"><kbd>2</kbd><kbd>×</kbd><kbd>2nd</kbd><kbd>SIN</kbd><kbd>13</kbd><kbd>÷</kbd><kbd>18</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives the whole apex angle, 92.47651… → <b>92°</b>, with no rounding along the way.</div>
+    <div class="pill-col"><button class="pill" data-keys="sin⁻¹ 13 ÷ 18 ) =">Half: ∠PQM</button><button class="pill" data-keys="2 × sin⁻¹ 13 ÷ 18 ) =">Whole: ∠PQR</button></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s4b" data-section="4. Split it in two">
+  <h3 class="sub">Split it, fold it, double it</h3>
+  <p>No right angle, no SOH CAH TOA. Drop the perpendicular, check that the two halves match, solve <b>one</b> half, then double.</p>
+  <div class="explainer" data-explainer="isoSplit"></div>
+</section>
+
+<!-- ================= 5. Two right triangles ================= -->
+<section class="card" data-ink="s5" data-section="5. Combining Two Right Triangles">
+  <div class="sec-h"><span class="badge">5</span><h2>Combining Two Right Triangles</h2></div>
+  <p>Some diagrams show two right triangles joined along a <b>common side</b>. The Pythagorean Theorem gives the length of the shared side, and the two triangles are then used together (one angle from each) to find an angle that spans both.</p>
+</section>
+
+<section class="card example" data-ink="ex6" data-section="Example 6">
+  <div class="ex-head"><span class="ex-tag">Example 6</span><h3>An angle split across two right triangles</h3></div>
+  <p class="q">The diagram shows two right triangles sharing the common side <span class="tex">AD</span>, where <span class="tex">D</span> lies on <span class="tex">BC</span> between <span class="tex">B</span> and <span class="tex">C</span>.</p>
+  <div class="u9l4-exrow u9l4-r6">
+    <div class="u9l4-figc" id="u9l4-fig6"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(a) Use the Pythagorean Theorem to calculate the length of <span class="tex">AD</span>.</div><div class="work" style="--h:130px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">In right triangle <span class="tex">ABD</span>, <span class="tex">AB=41</span> is the hypotenuse and <span class="tex">BD=9</span> is a leg:<br><span class="tex">AD=\sqrt{41^2-9^2}=\sqrt{1681-81}=\sqrt{1600}=\mathbf{40}</span></div></div></div>
+    </div>
+  </div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(b) Determine, to the nearest degree, the measure of angle <span class="tex">BAC</span>.</div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">First <span class="tex">DC=\sqrt{85^2-40^2}=\sqrt{7225-1600}=\sqrt{5625}=75</span>.<br>In <span class="tex">\triangle ABD</span>, from <span class="tex">\angle BAD</span>: <span class="tex">BD=9</span> is OPPOSITE, <span class="tex">AD=40</span> is ADJACENT <span class="tex">\Rightarrow</span> TOA, so <span class="tex">\angle BAD=\tan^{-1}\!\left(\dfrac{9}{40}\right)=12.68^\circ</span>.<br>In <span class="tex">\triangle ADC</span>, from <span class="tex">\angle DAC</span>: <span class="tex">DC=75</span> is OPPOSITE, <span class="tex">AD=40</span> is ADJACENT <span class="tex">\Rightarrow</span> TOA, so <span class="tex">\angle DAC=\tan^{-1}\!\left(\dfrac{75}{40}\right)=61.93^\circ</span>.<br><span class="tex">\angle BAC=12.68^\circ+61.93^\circ=74.61^\circ\approx\mathbf{75^\circ}</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>The whole chain.</b> <span class="keys"><kbd>2nd</kbd><kbd>x²</kbd></span> is <span class="tex">\sqrt{\phantom{x}}</span> (it opens a bracket too). Both angles in one line: <span class="keys"><kbd>2nd</kbd><kbd>TAN</kbd><kbd>9</kbd><kbd>÷</kbd><kbd>40</kbd><kbd>)</kbd><kbd>+</kbd><kbd>2nd</kbd><kbd>TAN</kbd><kbd>75</kbd><kbd>÷</kbd><kbd>40</kbd><kbd>)</kbd><kbd>ENTER</kbd></span>.</div>
+    <div class="pill-col"><button class="pill" data-keys="√ 41 x² − 9 x² ) =">AD</button><button class="pill" data-keys="√ 85 x² − 40 x² ) =">DC</button><button class="pill" data-keys="tan⁻¹ 9 ÷ 40 ) + tan⁻¹ 75 ÷ 40 ) =">∠BAC</button></div>
+  </div>
+  <div class="space" id="ex6-space"></div>
+  <button class="more" data-more="ex6-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s5b" data-section="5. Solving in a chain">
+  <h3 class="sub">Two triangles, solved in a chain</h3>
+  <p>The shared side is the bridge: find it in the first triangle, use it in the second, then put the two angles together.</p>
+  <div class="explainer" data-explainer="chain"></div>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Inverse ratios</b> run SOH CAH TOA backwards: <span class="tex">\sin\theta=k\Rightarrow\theta=\sin^{-1}(k)</span>, “the angle whose sine is <span class="tex">k</span>”. <kbd>2nd</kbd> <kbd>SIN</kbd>, in degree mode. Not <span class="tex">1\div\sin</span>.</div>
+    <div><b>Two sides → angle.</b> <b>Name</b> the two known sides from the angle, <b>choose</b> SOH, CAH or TOA, <b>solve</b> with the inverse. Round only at the end.</div>
+    <div><b>Elevation</b> (up) and <b>depression</b> (down) are measured from the <b>horizontal</b>. They form a Z with the line of sight, so depression from the top <span class="tex">=</span> elevation from the bottom.</div>
+    <div><b>No right angle?</b> Make one. Split an isosceles triangle down the middle (then double), or find a shared side with Pythagoras and add the two angles.</div>
+  </div>
+  <h3 class="sub u9l4-qgap">Which inverse ratio? Every example on one flowchart</h3>
+  <div class="explainer" data-explainer="choose"></div>
+  <a class="assign" href="../../../#/lesson/u9l4" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 4 — Finding the Measure of an Angle in a Right Triangle</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l5/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 5 — Solving Right Triangles Completely</b><div class="muted">Every side and every angle: sides with SOH CAH TOA or Pythagoras, angles with the inverse ratios</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u9l4.js';
+  boot({ key: 'u9l4', homeHref: '../../', title: '9.4 Finding an Angle' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

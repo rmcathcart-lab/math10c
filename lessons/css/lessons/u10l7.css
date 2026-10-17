@@ -1,0 +1,65 @@
+/* Math 10C · Unit 10 · Lesson 7 — Surface Area and Volume of Pyramids and Cones: styles used only on this page (prefix u10l7-).
+ * Colours: h blue, s red, r / half the side amber, the cross-section triangle purple. */
+.u10l7 .ex-cap { min-height: 118px; }
+.u10l7 .ex-cap .katex { font-size: 1.04em; }
+.u10l7 .chip .katex { font-size: 1em; }
+.u10l7 .pl .katex { font-size: 1.08em; }
+.u10l7 .ans .katex { font-size: 1.04em; }
+.u10l7 .katex { white-space: nowrap; }
+.u10l7 h2 .katex, .u10l7 h3 .katex { font-size: .95em; }
+.u10l7 .pill-col { display: flex; flex-direction: column; gap: 6px; }
+
+/* ---------------- warm-up ---------------- */
+.u10l7-wtop { display: grid; grid-template-columns: 560px 1fr; gap: 22px; align-items: start; }
+.u10l7-wfig { display: flex; flex-direction: column; gap: 10px; }
+.u10l7-wbtns { display: flex; gap: 8px; flex-wrap: wrap; }
+.u10l7-wqs .q-line { margin-top: 6px; }
+.u10l7-wqs .tip { margin-top: 10px; }
+.u10l7-wa { margin: 0 0 8px 50px; }
+.u10l7-wa .pill.small { margin-left: 0; }
+.u10l7-poll3 { margin-top: 14px; }
+.u10l7-poll3 .poll-opts { grid-template-columns: repeat(3, 1fr); }
+.u10l7-early { margin-top: 14px; }
+.u10l7-social { font-style: italic; color: var(--ink2); font-size: 19px; text-align: center; margin: 16px 0 0; }
+
+/* ---------------- layout ---------------- */
+.u10l7-row { display: grid; grid-template-columns: 1fr 300px; gap: 22px; align-items: start; }
+.u10l7-row2 { grid-template-columns: auto 1fr; }
+.u10l7-fig { display: flex; justify-content: center; }
+.u10l7-hs { margin: 4px 0 10px; padding-left: 24px; }
+.u10l7-hs li { margin: 4px 0; }
+.u10l7-disp { text-align: center; font-size: 23px; margin: 8px 0 10px; }
+.u10l7-forms { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+.u10l7-forms .def { margin: 0; }
+.u10l7-fh { font: 800 17px var(--round); text-transform: uppercase; letter-spacing: .04em; color: var(--ink2); margin-bottom: 8px; }
+.u10l7-fh .katex { text-transform: none; font-size: 1.2em; }
+.u10l7-fl { font-size: 19px; margin: 6px 0; }
+.u10l7-fsa { border-left: 5px solid #c93a33; }
+.u10l7-fv { border-left: 5px solid #1f5bd6; }
+.u10l7-probs { display: grid; gap: 8px; margin: 0 0 14px; padding: 12px 16px; border-radius: 12px; background: #f7f5ef; border: 1px solid var(--line2); }
+.u10l7-afig { position: relative; display: block; margin: 8px 0; }
+.u10l7-ansrow { display: grid; grid-template-columns: 1fr 300px; gap: 16px; align-items: start; }
+
+/* ---------------- 3-D scenes ---------------- */
+.u10l7-scene { overflow: visible; }
+.u10l7-svg { display: block; overflow: visible; }
+.u10l7-ov { position: absolute; inset: 0; pointer-events: none; }
+.u10l7-lab { position: absolute; white-space: nowrap; font-size: 19px; font-weight: 700; color: var(--ink); line-height: 1.2; }
+.u10l7-lab.u10l7-sm { font-size: 17px; }
+.u10l7-lab.u10l7-big { font-size: 25px; }
+.u10l7-lab.u10l7-ctr { text-align: center; }
+.u10l7-lab.u10l7-muted { color: var(--muted); font-weight: 600; }
+.u10l7-lab.u10l7-halo { background: rgba(255, 255, 255, .88); border-radius: 6px; padding: 0 5px; }
+.u10l7-lab.u10l7-tag { background: rgba(255, 255, 255, .92); border: 1.5px solid #7b4fc4; color: #4d2f8a; border-radius: 8px; padding: 2px 7px; text-align: center; }
+.u10l7-lab.u10l7-no { background: #fff0ef; border: 1.5px solid #c93a33; color: #a12c26; border-radius: 8px; padding: 2px 7px; text-align: center; }
+.u10l7-lab.u10l7-hid { visibility: hidden; }
+.u10l7-lab.u10l7-pill { background: #fff; border: 2px solid var(--brand2); color: var(--brand); border-radius: 18px; padding: 3px 14px; font-size: 19px; }
+.u10l7-lab.u10l7-ok { background: #e6f5ee; border-color: #12805a; color: #0d6447; }
+
+/* ---------------- explainer panels ---------------- */
+.u10l7-panel { background: #fff; border: 1px solid var(--line2); border-radius: 14px; padding: 10px 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
+.u10l7-ph { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.u10l7-line { font-size: 20px; line-height: 1.35; }
+.u10l7-line.u10l7-big { font-size: 23px; font-weight: 700; }
+.u10l7 .bk-stamp { text-transform: none; }
+.u10l7-panel .bk-stamp { margin-top: 16px !important; margin-bottom: 12px; }

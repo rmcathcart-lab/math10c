@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Surface Area and Volume of Spheres and Hemispheres · Math 10C 10.8</title>
+<meta name="description" content="Math 10C Unit 10 Lesson 8: surface area and volume of spheres and hemispheres. Mika's overflow test (a sphere is two thirds of its snug cylinder), V = 4/3 πr³, the orange-peel test (SA = 4πr², four great circles), halving the diameter first, the hemisphere formulas (2/3 πr³, curved 2πr², closed 3πr²), a circumference gives the radius, the same dome with and without its floor, and working backwards from a volume to a radius with a cube root. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u10l8.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 10 Measurement · Lesson 8</div>
+  <h1>Surface Area and Volume of Spheres and Hemispheres</h1>
+  <p class="lede">A ball fills exactly <b>two thirds</b> of the cylinder that just holds it, and its peel covers exactly <b class="u10l8-cor">four circles</b>. Today: the volume and surface area of a sphere, the <b>hemisphere</b> (half a sphere, with or without its <b class="u10l8-cbl">flat floor</b>), and working backwards from a volume to a radius.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>explain why <span class="tex">V_{\text{sphere}}=\tfrac43\pi r^3</span> (two thirds of the snug cylinder) and <span class="tex">SA_{\text{sphere}}=4\pi r^2</span> (four great circles)</li>
+      <li>find the surface area and volume of a sphere, <b>halving the diameter first</b> when that is what I’m given</li>
+      <li>write the hemisphere formulas in terms of <span class="tex">r</span> and <span class="tex">\pi</span>: <span class="tex">V=\tfrac23\pi r^3</span>, curved surface <span class="tex">2\pi r^2</span>, closed surface <span class="tex">3\pi r^2</span>, and decide from the wording whether the flat base counts</li>
+      <li>get the radius from a circumference measurement, <span class="tex">r=\dfrac{C}{2\pi}</span></li>
+      <li>work backwards from a volume to a radius with a <b>cube root</b></li>
+    </ul>
+  </div>
+  <div class="outcome"><b>M3</b> Solve problems, using SI and imperial units, that involve the surface area and volume of 3-D objects, including: right cones; right cylinders; right prisms; right pyramids; spheres.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: The Tennis Ball Can" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Tennis Ball Can</h2></div>
+  <p class="big">Three tennis balls fit <b>snugly</b> in a can: touching the sides, the bottom and the lid. One ball is <b>about 6.7 cm</b> across.</p>
+  <div class="u10l8-wtop">
+    <div class="u10l8-wfig">
+      <div id="u10l8-can"></div>
+      <div class="u10l8-wbtns">
+        <button type="button" class="pill" id="u10l8-wstring">Unroll the string</button>
+        <button type="button" class="pill" id="u10l8-wsnug">Split into snug cylinders</button>
+      </div>
+    </div>
+    <div class="u10l8-wqs">
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">1</div><div>How <b>tall</b> is the inside of the can?</div></div>
+        <div class="u10l8-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Three diameters: <span class="tex">3\times6.7\approx\boldsymbol{20.1}</span> cm.</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">2</div><div>What is the <b>radius</b> of one ball? Of the can?</div></div>
+        <div class="u10l8-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">6.7\div2=\boldsymbol{3.35}</span> cm for <b>both</b>: the balls touch the sides, so the can’s radius equals the ball’s.</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">3</div><div>Guess: what fraction of the can do the balls fill? <span class="tex">\tfrac12</span>? <span class="tex">\tfrac23</span>? <span class="tex">\tfrac34</span>?</div></div>
+        <div class="u10l8-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b><span class="tex">\tfrac23</span>.</b> Can: <span class="tex">\pi r^2(6r)=6\pi r^3</span>. Balls: <span class="tex">3\times\tfrac43\pi r^3=4\pi r^3</span>. <span class="tex">4\div6=\tfrac23</span>. With numbers: balls <span class="tex">\approx472</span> cm³, can <span class="tex">\approx709</span> cm³. That is today’s first big idea.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="poll u10l8-poll3">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which is <b>longer</b>: the can’s <b>height</b>, or the <b>distance around</b> the can? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> the height</div>
+      <div class="opt right"><b>B</b> the distance around</div>
+      <div class="opt"><b>C</b> exactly the same</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>B: the distance around.</b> Height <span class="tex">=3d</span>. Distance around <span class="tex">=\pi d\approx3.14d</span>. Since <span class="tex">\pi&gt;3</span>, the circumference always wins: <span class="tex">\pi(6.7)\approx21.0</span> cm vs <span class="tex">3(6.7)=20.1</span> cm. Tap <b>Unroll the string</b> to see it.<br>
+      <span class="muted"><b>A</b> is what almost everyone picks: a tall, skinny can <em>looks</em> much taller than it is wide. <b>C</b> is close (only about 1 cm apart), and it would be exactly right if <span class="tex">\pi</span> were 3.</span></div>
+  </div>
+
+  <div class="u10l8-early">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> How much <b>empty space</b> is in the can?</div></div>
+      <div class="u10l8-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">709-472\approx236</span> cm³: exactly <span class="tex">\tfrac13</span> of the can, the volume of <b>one and a half</b> balls.</div></div>
+    </div>
+  </div>
+  <p class="u10l8-social">Try it: wrap a string around a ball or a pop can. Is it longer than 3 widths?</p>
+</section>
+
+<!-- ================= 1. Volume of a sphere ================= -->
+<section class="card" data-ink="s1" data-section="1. Volume of a Sphere">
+  <div class="sec-h"><span class="badge">1</span><h2>Volume of a Sphere</h2></div>
+  <p>Mika filled a cylinder with <span class="tex">480</span> mL of water, balanced it above an empty overflow container, and lowered a solid ball straight down into the cylinder until the water stopped spilling. The ball and the cylinder had the <b>same radius</b>, and the cylinder’s height equalled the ball’s <b>diameter</b>. Across three trials the overflow container always held exactly <span class="tex">320</span> mL and exactly <span class="tex">160</span> mL always stayed in the cylinder.</p>
+  <p>The water pushed out is the water the ball displaces, so the overflow volume <em>is</em> the ball’s volume; <span class="tex">320</span> mL is <span class="tex">\tfrac23</span> of <span class="tex">480</span> mL, and the <span class="tex">160</span> mL left behind is the other <span class="tex">\tfrac13</span>.</p>
+  <div class="def">So <b>a sphere’s volume is <span class="tex">\tfrac23</span> of the volume of a cylinder with the same radius whose height equals the sphere’s diameter.</b></div>
+  <div class="explainer" data-explainer="overflow"></div>
+  <div class="parts c1">
+    <div class="part think"><div class="pl"><span class="think-tag">For discussion</span> If Mika instead filled the same cylinder with <span class="tex">900</span> mL of water under the same conditions (cylinder radius <span class="tex">=</span> ball radius, cylinder height <span class="tex">=</span> ball diameter), how many millilitres would overflow, and how many would remain in the cylinder?</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Overflow <span class="tex">=\tfrac23(900)=\boldsymbol{600}</span> mL. Remaining <span class="tex">=\tfrac13(900)=\boldsymbol{300}</span> mL. (Pick the <b>900 mL</b> chip above to watch it.)</div></div></div>
+  </div>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. The Snug Cylinder">
+  <h3 class="sub">The snug cylinder: a formula for every radius</h3>
+  <div class="u10l8-s1row">
+    <div id="u10l8-snugfig"></div>
+    <div>
+      <p>A cylinder that holds a sphere of radius <span class="tex">r</span> <b>snugly</b> (the sphere touching the top, the bottom and the curved wall all at once) has radius <span class="tex">r</span> and height <span class="tex">2r</span>. Mika’s <span class="tex">\tfrac23</span> relationship then turns the cylinder formula <span class="tex">V=\pi r^2h</span> into a formula good for <em>every</em> radius, with no need to repeat the experiment:</p>
+      <div class="u10l8-disp"><span class="tex">V_{\text{sphere}}=\tfrac23V_{\text{cylinder}}=\tfrac23\pi r^2h=\tfrac23\pi r^2(2r)=\dfrac43\pi r^3</span></div>
+    </div>
+  </div>
+  <div class="def u10l8-formula"><b>Sphere formulas.</b>
+    <div class="u10l8-disp u10l8-two"><span class="tex">SA_{\text{sphere}}=4\pi r^2</span><span class="tex">V_{\text{sphere}}=\dfrac43\pi r^3</span></div>
+    <div class="eg">Both use the <b class="u10l8-crad">radius</b>. Surface area is in <b>square</b> units; volume is in <b>cubic</b> units.</div>
+  </div>
+  <div class="explainer" data-explainer="derive"></div>
+</section>
+
+<section class="card" data-ink="s1c" data-section="1. Why 4πr²? The Orange-Peel Test">
+  <h3 class="sub">Why <span class="tex">4\pi r^2</span>? The orange-peel test</h3>
+  <p>Trace four circles with the same radius <span class="tex">r</span> as an orange. Peel the orange and lay the flattened pieces of peel inside the circles: the peel fills almost exactly <b class="u10l8-cor">four</b> circles, so the sphere’s surface is <span class="tex">4\times\pi r^2</span>. (Archimedes showed the same thing another way: the sphere’s surface equals the curved surface of its snug cylinder, <span class="tex">2\pi r\times2r=4\pi r^2</span>.)</p>
+  <div class="u10l8-center"><div id="u10l8-peelfig"></div></div>
+  <div class="explainer" data-explainer="peel"></div>
+  <p class="muted u10l8-note">A circle through the centre of a sphere (the biggest circle you can draw on it) is called a <b>great circle</b>. Its radius is the sphere’s radius, so its area is <span class="tex">\pi r^2</span>.</p>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>A spherical tank: halve the diameter first</h3></div>
+  <p class="q">A spherical propane storage tank has a diameter of <span class="tex">5.8</span> m.</p>
+  <div class="u10l8-exrow">
+    <div id="u10l8-ex1fig"></div>
+    <div class="parts c2">
+      <div class="part"><div class="pl">(a) Determine the surface area of the tank, to the nearest tenth of a square metre.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">r=5.8\div2=2.9</span> m.<br><span class="tex">SA_{\text{sphere}}=4\pi r^2=4\pi(2.9)^2=4\pi(8.41)=33.64\pi</span><br><span class="tex">SA=\boldsymbol{105.7}\text{ m}^2</span></div></div></div>
+      <div class="part"><div class="pl">(b) Determine the volume of the tank, to the nearest tenth of a cubic metre.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">V_{\text{sphere}}=\tfrac43\pi r^3=\tfrac43\pi(2.9)^3=\tfrac43\pi(24.389)</span><br><span class="tex">=32.5187\pi=\boldsymbol{102.2}\text{ m}^3</span></div></div></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Use the <kbd>π</kbd> key, never 3.14.</b> (a) <span class="keys"><kbd>4</kbd><kbd>×</kbd><kbd>π</kbd><kbd>×</kbd><kbd>2</kbd><kbd>.</kbd><kbd>9</kbd><kbd>x²</kbd><kbd>ENTER</kbd></span> gives 105.6831769. (b) <span class="keys"><kbd>4</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>×</kbd><kbd>π</kbd><kbd>×</kbd><kbd>2</kbd><kbd>.</kbd><kbd>9</kbd><kbd>x³</kbd><kbd>ENTER</kbd></span> gives 102.1604043. (<kbd>x³</kbd> is <kbd>2nd</kbd> above <kbd>|x|</kbd>; or use <kbd>^</kbd><kbd>3</kbd>.)</div>
+    <div class="pill-col"><button class="pill" data-keys="4 × π × 2.9 x² =">Show me (a)</button><button class="pill" data-keys="4 ÷ 3 × π × 2.9 x³ =">Show me (b)</button></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s1d" data-section="1. Example 1 check">
+  <h3 class="sub">Example 1 check: radius, not diameter</h3>
+  <div class="explainer" data-explainer="halve"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Halve the diameter first.</b> Every sphere and hemisphere formula uses the <b>radius</b>. Putting the diameter in by mistake makes the surface area 4 times too big and the volume 8 times too big.</div></div>
+</section>
+
+<!-- ================= 2. Hemispheres ================= -->
+<section class="card" data-ink="s2" data-section="2. Hemispheres">
+  <div class="sec-h"><span class="badge">2</span><h2>Hemispheres</h2></div>
+  <p>A <b>hemisphere</b> is half of a sphere: the solid produced by slicing a sphere exactly through its centre, just as a <b>semi-circle</b> is half of a circle.</p>
+  <div class="def">When a question asks for the <b>surface area of a hemisphere</b> it means <b class="u10l8-cor">the curved surface</b> plus <b class="u10l8-cbl">the flat circular base</b>, <em>unless</em> the base is specifically excluded by the wording (an open bowl, say, or a dome built with no floor).</div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>The three hemisphere formulas, in terms of <span class="tex">r</span> and <span class="tex">\pi</span></h3></div>
+  <p class="q">A sphere of radius <span class="tex">r</span> is sliced exactly in half, giving a hemisphere of the same radius <span class="tex">r</span>. Complete each statement below.</p>
+  <div class="u10l8-center"><div id="u10l8-ex2fig"></div></div>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) Volume of a hemisphere <span class="tex">=</span> <span class="u10l8-blank"></span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A hemisphere is exactly half a sphere:<br><span class="tex">V=\tfrac12\left(\tfrac43\pi r^3\right)=\boldsymbol{\tfrac23\pi r^3}</span></div></div></div>
+    <div class="part"><div class="pl">(b) Surface area of a hemisphere <span class="tex">=</span> curved surface area <span class="tex">+</span> area of circular base<br><span class="tex">=</span> <span class="u10l8-blank u10l8-bs"></span> <span class="tex">+</span> <span class="u10l8-blank u10l8-bs"></span> <span class="tex">=</span> <span class="u10l8-blank u10l8-bs"></span></div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Curved part <span class="tex">=\tfrac12(4\pi r^2)=2\pi r^2</span>; flat base <span class="tex">=\pi r^2</span>.<br><span class="tex">2\pi r^2+\pi r^2=\boldsymbol{3\pi r^2}</span></div></div></div>
+    <div class="part"><div class="pl">(c) Surface area of a hemisphere, if the base is <u>not</u> included, <span class="tex">=</span> <span class="u10l8-blank"></span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Drop the base and only the curved half-sphere is left: <span class="tex">\boldsymbol{2\pi r^2}</span>.</div></div></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. Example 2 check">
+  <h3 class="sub">Example 2 check: 2 great circles curved, + 1 floor</h3>
+  <div class="explainer" data-explainer="slice"></div>
+  <div class="u10l8-hemi">
+    <div><b>Hemisphere</b></div>
+    <div><span class="tex">V_{\text{hemi}}=\tfrac23\pi r^3</span></div>
+    <div>curved: <span class="tex">2\pi r^2</span></div>
+    <div>closed: <span class="tex">3\pi r^2</span></div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>A circumference measurement gives the radius</h3></div>
+  <p class="q">A soccer ball is wrapped once around its widest point with a piece of string, which is then pulled straight and measured with a ruler. The string is <span class="tex">70</span> cm long. Determine the volume of the soccer ball, to the nearest tenth of a cubic centimetre.</p>
+  <div class="parts c1">
+    <div class="part"><div class="work" style="--h:280px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The string wraps the great circle, so <span class="tex">C=2\pi r=70</span> cm and <span class="tex">r=\dfrac{70}{2\pi}=\dfrac{35}{\pi}\approx11.1408</span> cm.<br>Substituting <span class="tex">r=\dfrac{C}{2\pi}</span> into <span class="tex">V=\tfrac43\pi r^3</span> gives <span class="tex">V=\dfrac{C^3}{6\pi^2}</span>, which avoids rounding <span class="tex">r</span> first:<br><span class="tex">V=\dfrac{70^3}{6\pi^2}=\dfrac{343\,000}{59.2176\ldots}=\boldsymbol{5792.2}\text{ cm}^3</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Radius first, then the volume in one line.</b> <span class="keys"><kbd>7</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>(</kbd><kbd>2</kbd><kbd>×</kbd><kbd>π</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 11.14084602. Then put the whole radius in brackets: <span class="keys"><kbd>4</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>×</kbd><kbd>π</kbd><kbd>×</kbd><kbd>(</kbd><kbd>7</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>(</kbd><kbd>2</kbd><kbd>×</kbd><kbd>π</kbd><kbd>)</kbd><kbd>)</kbd><kbd>x³</kbd><kbd>ENTER</kbd></span> gives 5792.194332. The booklet’s shortcut <span class="tex">\dfrac{70^3}{6\pi^2}</span> gives the same.</div>
+    <div class="pill-col"><button class="pill" data-keys="70 ÷ ( 2 × π ) =">Show me r</button><button class="pill" data-keys="4 ÷ 3 × π × ( 70 ÷ ( 2 × π ) ) x³ =">Show me V</button><button class="pill" data-keys="70 x³ ÷ ( 6 × π x² ) =">Shortcut</button></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2c" data-section="2. Example 3 check">
+  <h3 class="sub">Example 3 check: string, radius, volume</h3>
+  <div class="explainer" data-explainer="string"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Don’t round the radius.</b> The radius is cubed, so a small rounding error grows. Carry every digit (brackets, or the shortcut <span class="tex">\frac{C^3}{6\pi^2}</span>) and round only the final answer.</div></div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>The same dome, with and without its floor</h3></div>
+  <p class="q">Sana and Tavi are each building a hemisphere-shaped storage shed, both of diameter <span class="tex">12</span> ft. Sana’s shed will include a circular floor built from the same material as the dome; Tavi’s shed will have no floor.</p>
+  <div class="parts c2">
+    <div class="part"><div class="u10l8-center"><div id="u10l8-ex4a"></div></div><div class="pl">(a) Calculate, in terms of <span class="tex">\pi</span>, how much material Sana needs to build her shed.</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">r=\dfrac{12}{2}=6</span> ft, so <span class="tex">r^2=36</span> ft².<br>The floor is built too, so Sana needs the curved surface <em>and</em> the base:<br><span class="tex">SA=2\pi r^2+\pi r^2=3\pi r^2=3\pi(36)=\boldsymbol{108\pi}\text{ ft}^2\ (\approx339.3\text{ ft}^2)</span></div></div></div>
+    <div class="part"><div class="u10l8-center"><div id="u10l8-ex4b"></div></div><div class="pl">(b) Calculate, in terms of <span class="tex">\pi</span>, how much material Tavi needs to build his shed.</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Same <span class="tex">r=6</span> ft, but no floor, so only the curved surface counts:<br><span class="tex">SA=2\pi r^2=2\pi(36)=\boldsymbol{72\pi}\text{ ft}^2\ (\approx226.2\text{ ft}^2)</span></div></div></div>
+    <div class="part think span2"><div class="pl"><span class="think-tag">Think</span> Which takes more material: Sana’s floor or her curved dome? How many times more?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The dome: <span class="tex">72\pi</span> vs <span class="tex">36\pi</span>, exactly <b>2 times</b> the floor. The curved part is 2 great circles; the floor is 1.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>“In terms of <span class="tex">\pi</span>”</b> means leave <span class="tex">\pi</span> as a symbol: <span class="tex">108\pi</span> is the exact answer. To see roughly how much that is, <span class="keys"><kbd>1</kbd><kbd>0</kbd><kbd>8</kbd><kbd>×</kbd><kbd>π</kbd><kbd>ENTER</kbd></span> gives 339.2920066.</div>
+    <div class="pill-col"><button class="pill" data-keys="108 × π =">108π</button><button class="pill" data-keys="72 × π =">72π</button></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2d" data-section="2. Example 4 check">
+  <h3 class="sub">Example 4 check: with and without the floor</h3>
+  <div class="explainer" data-explainer="domes"></div>
+  <h3 class="sub u10l8-gap">Does the flat base count? Read the wording</h3>
+  <div class="explainer" data-explainer="floor"></div>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Working backwards from a volume to a radius</h3></div>
+  <p class="q">A spherical stone sculpture has a volume of <span class="tex">3053.6</span> ft³. Determine the radius of the sculpture, to the nearest tenth of a foot.</p>
+  <div class="parts c1">
+    <div class="part"><div class="work" style="--h:280px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">V=\tfrac43\pi r^3\ \Rightarrow\ r^3=\dfrac{3V}{4\pi}=\dfrac{3(3053.6)}{4\pi}=\dfrac{9160.8}{12.56637}\approx728.99</span><br><span class="tex">r=\sqrt[3]{728.99}\approx\boldsymbol{9.0}\text{ ft}</span><br>Check: <span class="tex">\tfrac43\pi(9.0)^3=972\pi\approx3053.6</span> ft³ ✓</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Cube root on the TI-30XIIS:</b> type the index <b>3</b> first, then <kbd>2nd</kbd><kbd>^</kbd> (<kbd>ˣ√</kbd>), then the number in brackets: <span class="keys"><kbd>3</kbd><kbd>ˣ√</kbd><kbd>(</kbd><kbd>3</kbd><kbd>×</kbd><kbd>3</kbd><kbd>0</kbd><kbd>5</kbd><kbd>3</kbd><kbd>.</kbd><kbd>6</kbd><kbd>÷</kbd><kbd>(</kbd><kbd>4</kbd><kbd>×</kbd><kbd>π</kbd><kbd>)</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 8.999972433, so <b>9.0 ft</b>.</div>
+    <div class="pill-col"><button class="pill" data-keys="3 ˣ√ ( 3 × 3053.6 ÷ ( 4 × π ) ) =">Show me r</button><button class="pill" data-keys="4 ÷ 3 × π × 9 x³ =">Check</button></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2e" data-section="2. Example 5 check">
+  <h3 class="sub">Example 5 check: run the formula backwards</h3>
+  <div class="explainer" data-explainer="backwards"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Undo in reverse order.</b> The formula cubes <span class="tex">r</span> first and multiplies by <span class="tex">\tfrac43\pi</span> last, so undo the <span class="tex">\tfrac43\pi</span> first (<span class="tex">\times3\div4\pi</span>) and take the <b>cube root</b> last. A square root here would be wrong: the radius is <b>cubed</b>.</div></div>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Sphere.</b> <span class="tex">V_{\text{sphere}}=\tfrac43\pi r^3</span>: two thirds of its snug cylinder (Mika’s overflow). <span class="tex">SA_{\text{sphere}}=4\pi r^2</span>: the peel fills <b class="u10l8-cor">four great circles</b>.</div>
+    <div><b>Radius first.</b> Halve a diameter; from a circumference, <span class="tex">r=\frac{C}{2\pi}</span>. Use the <kbd>π</kbd> key, carry every digit, round only at the end. Area in units², volume in units³.</div>
+    <div><b>Hemisphere.</b> <span class="tex">V=\tfrac23\pi r^3</span>. Curved surface <span class="tex">2\pi r^2</span> (2 great circles); closed <span class="tex">3\pi r^2</span> (+ <b class="u10l8-cbl">1 floor</b>). The base counts <b>unless the wording leaves it out</b>.</div>
+    <div><b>Working backwards.</b> <span class="tex">r^3=\frac{3V}{4\pi}</span>, then <span class="tex">r=\sqrt[3]{\frac{3V}{4\pi}}</span>. Check by putting <span class="tex">r</span> back into <span class="tex">\tfrac43\pi r^3</span>.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u10l8" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 8 — Surface Area and Volume of Spheres and Hemispheres</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l9/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 9 — Measurement: A Cumulative Review</b><div class="muted">No new formulas: every skill of the unit together, starting with how many basketballs would fill our classroom.</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u10l8.js';
+  boot({ key: 'u10l8', homeHref: '../../', title: '10.8 Spheres and Hemispheres' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

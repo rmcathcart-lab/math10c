@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Measurement Review · Math 10C 10.9</title>
+<meta name="description" content="Math 10C Unit 10 Lesson 9: the measurement cumulative review. Converting within SI, choosing referents, units and instruments, map scales and approximate conversions, applied conversions, comparing imperial and SI, and the surface area and volume of prisms, cylinders, pyramids, cones, spheres and hemispheres, plus the unit review questions. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u10l9.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 10 Measurement · Lesson 9</div>
+  <h1>Measurement — A Cumulative Review</h1>
+  <p class="lede">No new formulas today: every skill of the unit, assembled into one set of problems. <b>Convert</b> first, choose the right <b>referent, unit or instrument</b>, pick the right <b>formula</b>, carry full precision, and round <b>once</b>, at the end.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>convert within SI by moving along the prefix number line, and check the direction (a smaller unit gives a bigger number)</li>
+      <li>choose a sensible unit, instrument or referent, and calculate with a referent</li>
+      <li>use an approximate conversion and a map scale, and convert between imperial and SI in applied problems</li>
+      <li>find the surface area and volume of prisms, cylinders, pyramids, cones, spheres and hemispheres, and work backwards to a missing dimension</li>
+      <li>chain several steps (a volume, trucks, a new tank, a cost comparison) at full precision</li>
+      <li><span class="u10l9-ext">Extension</span> read a micrometer, and write a conversion in scientific notation</li>
+    </ul>
+  </div>
+  <div class="u10l9-outs">
+    <div class="outcome"><b>M1</b> Solve problems that involve linear measurement, using: SI and imperial units of measure; estimation strategies; measurement strategies.</div>
+    <div class="outcome"><b>M2</b> Apply proportional reasoning to problems that involve conversions between SI and imperial units of measure.</div>
+    <div class="outcome"><b>M3</b> Solve problems, using SI and imperial units, that involve the surface area and volume of 3-D objects, including: right cones; right cylinders; right prisms; right pyramids; spheres.</div>
+  </div>
+  <div class="u10l9-extbox"><span class="u10l9-ext">Extension</span><span>The marked parts go beyond the Math 10C outcomes: Example 1(b) (scientific notation), Section 3 and Example 3 (the micrometer), and review questions 30–33 at the end.</span></div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: Fill the Classroom" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Fill the Classroom</h2></div>
+  <p class="big">Imagine filling our classroom with basketballs, floor to ceiling, wall to wall.</p>
+  <div class="u10l9-roomwrap"><div id="u10l9-room" class="u10l9-room"></div></div>
+
+  <div class="u10l9-wqs">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>What is the room’s <b>volume</b>, in <span class="tex">\text{m}^3</span>?</div></div>
+      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">9\times8\times3=\mathbf{216}\ \text{m}^3</span>.</div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>How many balls in one row along the <b>9 m</b> wall? (24 cm <span class="tex">=0.24</span> m)</div></div>
+      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">9\div0.24=37.5</span>, so <b>37</b> whole balls per row.</div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>How many stack <b>floor to ceiling</b>?</div></div>
+      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">3\div0.24=12.5</span>, so <b>12</b> layers.</div></div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> About how many basketballs to <b>fill the whole room</b>? <b>Guess first.</b></div></div>
+    <div class="poll-opts u10l9-c4">
+      <div class="opt"><b>A</b> about 150</div>
+      <div class="opt"><b>B</b> about 1 500</div>
+      <div class="opt right"><b>C</b> about 15 000</div>
+      <div class="opt"><b>D</b> about 150 000</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>C, about 15 000.</b> <b>Stack them in a grid:</b> along the 8 m wall, <span class="tex">8\div0.24\approx33</span>, so <span class="tex">37\times33\times12=14\,652\approx15\,000</span>. <b>Or by volume:</b> give each ball its own 24 cm cube box, <span class="tex">0.24^3=0.013\,824\ \text{m}^3</span>, and <span class="tex">216\div0.013\,824=15\,625</span>.<br>
+      <span class="muted">Anything from about 10 000 to 25 000 is a great Fermi estimate (a jumbled pile packs a little tighter than a neat grid); the point is the order of magnitude, <span class="tex">10^4</span>. <b>A</b> and <b>B</b> are the usual gut guesses: we forget to multiply <i>three</i> dimensions. <b>D</b> uses the radius (12 cm) as the ball’s width: <span class="tex">216\div0.12^3=125\,000</span>.</span><br>
+      <b>Today’s lesson:</b> convert first (24 cm to 0.24 m), check it makes sense, and pick the right formula. That is the whole review.</div>
+  </div>
+
+  <h3 class="sub u10l9-gap">Count the balls</h3>
+  <div class="explainer" data-explainer="fill"></div>
+
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Cube boxes in one line.</b> <span class="keys"><kbd>2</kbd><kbd>1</kbd><kbd>6</kbd><kbd>÷</kbd><kbd>0</kbd><kbd>.</kbd><kbd>2</kbd><kbd>4</kbd><kbd>x³</kbd><kbd>ENTER</kbd></span> gives 15 625. The grid count: <span class="keys"><kbd>3</kbd><kbd>7</kbd><kbd>×</kbd><kbd>3</kbd><kbd>3</kbd><kbd>×</kbd><kbd>1</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> gives 14 652.</div>
+    <div class="pill-col"><button class="pill" data-keys="216 ÷ 0.24 x³ =">Cube boxes</button><button class="pill" data-keys="37 × 33 × 12 =">Grid count</button></div>
+  </div>
+
+  <div class="bk-wq u10l9-bonus">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> How many ping-pong balls (4 cm across) would fill the room?</div></div>
+    <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">Cube boxes: <span class="tex">4\text{ cm}=0.04\text{ m}</span>, and <span class="tex">216\div0.04^3=216\div0.000\,064=3\,375\,000</span>. Over 3 million!</div>
+  </div>
+  <p class="u10l9-social">Poll the room: everyone writes a gut guess first. Closest guess wins!</p>
+</section>
+
+<!-- ================= toolkit ================= -->
+<section class="card u10l9-recap" data-ink="recap" data-section="Unit 10 at a Glance">
+  <div class="sec-h"><span class="badge">★</span><h2>Unit 10 at a Glance: Which Conversion? Which Formula?</h2></div>
+  <div class="u10l9-glance">
+    <div class="u10l9-facts">
+      <div class="u10l9-fh">Conversion facts <small>(Lesson 4)</small></div>
+      <div class="u10l9-fgrid">
+        <div><b>Imperial</b><span class="tex">1\text{ ft}=12\text{ in}</span><span class="tex">1\text{ yd}=3\text{ ft}</span><span class="tex">1\text{ mi}=5280\text{ ft}=1760\text{ yd}</span></div>
+        <div><b>Imperial ↔ SI</b><span class="tex">1\text{ in}=2.54\text{ cm}</span><span class="tex">1\text{ cm}=0.3937\text{ in}</span><span class="tex">1\text{ ft}=0.3048\text{ m}</span><span class="tex">1\text{ m}=3.2808\text{ ft}</span></div>
+        <div><b>&nbsp;</b><span class="tex">1\text{ yd}=0.9144\text{ m}</span><span class="tex">1\text{ mi}=1.6093\text{ km}</span><span class="tex">1\text{ km}=0.6214\text{ mi}</span></div>
+      </div>
+    </div>
+    <div class="u10l9-methods">
+      <div class="u10l9-fh">Three ways to convert <span class="tex">1.46\text{ m}</span> to mm</div>
+      <div class="u10l9-mgrid">
+        <div class="u10l9-meth"><b>1 · Number line</b><span>m → mm is <b>3 steps right</b>: <span class="tex">\times10^3</span></span><span class="tex">1.46\times1000=1460\text{ mm}</span></div>
+        <div class="u10l9-meth"><b>2 · Proportion</b><span class="tex">\dfrac{1\text{ m}}{1000\text{ mm}}=\dfrac{1.46\text{ m}}{x}</span><span class="tex">x=1460\text{ mm}</span></div>
+        <div class="u10l9-meth"><b>3 · Unit analysis</b><span class="tex">\dfrac{1.46\text{ m}}{1}\times\dfrac{1000\text{ mm}}{1\text{ m}}</span><span>m cancels: <span class="tex">1460\text{ mm}</span></span></div>
+      </div>
+    </div>
+  </div>
+  <div class="explainer" data-explainer="whichWay"></div>
+</section>
+
+<!-- ================= 1. SI ================= -->
+<section class="card" data-ink="s1" data-section="1. Converting Within SI">
+  <div class="sec-h"><span class="badge">1</span><h2>Converting Within the SI System</h2></div>
+  <div class="def">From kilo through milli (<b>kilo, hecto, deca, <i>unit</i>, deci, centi, milli</b>) each step along the SI prefix ladder changes a measurement by a factor of <span class="tex">10</span>; the <span class="u10l9-ext sm">Extension</span> steps milli → micro → nano are each a factor of <span class="tex">1000</span>, as on the Lesson 4A number line. Either way, every metric conversion is a multiplication or division by a power of ten.</div>
+  <div class="explainer" data-explainer="ladder"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Check the direction every time.</b> Converting to a <b>smaller</b> unit must give a <b>larger</b> number (and to a larger unit, a smaller number). And put every length in the <b>same unit</b> before you add or subtract.</div></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Metric conversions, and judging a set of statements</h3></div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) A rectangular banner measures <span class="tex">54</span> cm in height and <span class="tex">1.46</span> m in length. Determine the difference between these two measurements, in millimetres.</div>
+      <div class="work" style="--h:230px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Put both lengths in millimetres first.<br><span class="tex">1.46\text{ m}=1.46\times1000=1460\text{ mm}</span>; &nbsp; <span class="tex">54\text{ cm}=54\times10=540\text{ mm}</span>.<br>Difference <span class="tex">=1460-540=\mathbf{920\ mm}</span>.</div></div></div>
+    <div class="part u10l9-extpart"><div class="pl">(b) <span class="u10l9-ext sm">Extension</span> Determine the number of kilometres in <span class="tex">0.045</span> centimetres. Give the answer in scientific notation.</div>
+      <div class="work" style="--h:230px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">cm → m is two steps left (<span class="tex">\div100</span>); m → km is three more (<span class="tex">\div1000</span>), five steps in all.<br><span class="tex">0.045\text{ cm}=0.00045\text{ m}=0.00000045\text{ km}</span>.<br>In scientific notation the coefficient must lie in <span class="tex">[1,10)</span>: <span class="tex">\mathbf{4.5\times10^{-7}\ km}</span>.<br>The number got smaller, as it must when converting to a larger unit. ✓</div></div></div>
+    <div class="part span2"><div class="pl">(c) <i>(Extension)</i> Consider the following four statements. How many of them are false?
+      <div class="u10l9-stmts"><div class="u10l9-stmt">Statement 1: <span class="tex">1\text{ cm}=0.01\text{ m}</span></div><div class="u10l9-stmt">Statement 2: <span class="tex">1\text{ mm}=0.001\text{ m}</span></div><div class="u10l9-stmt">Statement 3: <span class="tex">1\ \mu\text{m}=0.01\text{ mm}</span></div><div class="u10l9-stmt">Statement 4: <span class="tex">1\text{ km}=1000\text{ m}</span></div></div></div>
+      <div class="work" style="--h:170px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Statement 1: <span class="tex">1\text{ cm}=10^{-2}\text{ m}=0.01\text{ m}</span>: <b>true</b>. &nbsp; Statement 2: <span class="tex">1\text{ mm}=10^{-3}\text{ m}=0.001\text{ m}</span>: <b>true</b>.<br>Statement 3: <span class="tex">1\ \mu\text{m}=10^{-6}\text{ m}</span> and <span class="tex">1\text{ mm}=10^{-3}\text{ m}</span>, so <span class="tex">1\ \mu\text{m}=0.001\text{ mm}</span>, not <span class="tex">0.01\text{ mm}</span>: <b>false</b>.<br>Statement 4: <span class="tex">1\text{ km}=10^{3}\text{ m}=1000\text{ m}</span>: <b>true</b>. &nbsp; Exactly <b>one</b> statement is false.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Scientific notation on the TI-30XIIS.</b> <span class="keys"><kbd>0</kbd><kbd>.</kbd><kbd>0</kbd><kbd>4</kbd><kbd>5</kbd><kbd>÷</kbd><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> shows <span class="tex">4.5\times10^{-7}</span> (too small for the screen as a plain decimal). Check it with <kbd>EE</kbd>: <span class="keys"><kbd>4</kbd><kbd>.</kbd><kbd>5</kbd><kbd>EE</kbd><kbd>(−)</kbd><kbd>7</kbd><kbd>×</kbd><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives back <span class="tex">0.045</span> (km to cm is <span class="tex">\times100\,000</span>).</div>
+    <div class="pill-col"><button class="pill" data-keys="0.045 ÷ 100 ÷ 1000 =">Show 1(b)</button><button class="pill" data-keys="4.5 EE (−) 7 × 100000 =">Check with EE</button></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<!-- ================= 2. referents, units, instruments ================= -->
+<section class="card" data-ink="s2" data-section="2. Referents, Units, Instruments">
+  <div class="sec-h"><span class="badge">2</span><h2>Choosing Referents, Units, and Instruments</h2></div>
+  <div class="def">Choosing a <b>unit</b> means matching the size of the unit to the size of the object; choosing an <b>instrument</b> means matching the precision the job needs to a tool that can deliver it. A <b>referent</b> is a familiar object (often a part of the body) whose size is known, used to estimate a measurement with no tool in hand.</div>
+  <div class="explainer" data-explainer="sizeUp"></div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Units, instruments, and a referent-based calculation</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(a) State the most suitable <i>imperial</i> unit for measuring each of the following.</div>
+      <div class="u10l9-blanks"><div>the diameter of a coin: <span class="u10l9-bl" data-reveal>inches</span></div><div>the length of a soccer field: <span class="u10l9-bl" data-reveal>yards</span></div><div>the driving distance between two towns: <span class="u10l9-bl" data-reveal>miles</span></div></div>
+      <div class="work" style="--h:70px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">coin: <b>inches</b> &nbsp; soccer field: <b>yards</b> &nbsp; driving distance: <b>miles</b>. Each unit is chosen so the measurement is a convenient-sized number: a coin is about 1 in across, a field about 100 yd long, a drive tens of miles.</div></div></div>
+    <div class="part"><div class="pl">(b) State the measuring instrument that would be easiest to use for each of the following.</div>
+      <div class="u10l9-blanks"><div>the thickness of a credit card: <span class="u10l9-bl" data-reveal>micrometer</span></div><div>the width of a doorway: <span class="u10l9-bl" data-reveal>tape measure</span></div><div>the length of a running track: <span class="u10l9-bl" data-reveal>trundle wheel</span></div></div>
+      <div class="work" style="--h:70px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">credit card: <b>micrometer</b> (well under a millimetre, and 0.01 mm precision is needed) &nbsp; doorway: <b>tape measure</b> &nbsp; running track: <b>trundle wheel</b> (a long distance, walked out).</div></div></div>
+    <div class="part"><div class="pl">(c) The height of a horse is measured in <i>hands</i>. Using the width of an adult hand as a referent for <span class="tex">4</span> inches, determine the height, in feet, of a horse measuring <span class="tex">14\tfrac14</span> hands.</div>
+      <div class="work" style="--h:190px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Each hand is the 4 in referent, so <span class="tex">14\tfrac14\text{ hands}=14.25\times4=57\text{ in}</span>.<br><span class="tex">1\text{ ft}=12\text{ in}</span>, so <span class="tex">57\text{ in}\times\dfrac{1\text{ ft}}{12\text{ in}}=\dfrac{57}{12}=\mathbf{4\tfrac34\ feet}</span> (inches cancel) <span class="tex">=4\text{ ft }9\text{ in}</span>.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Hands to feet, as a fraction.</b> <span class="keys"><kbd>1</kbd><kbd>4</kbd><kbd>.</kbd><kbd>2</kbd><kbd>5</kbd><kbd>×</kbd><kbd>4</kbd><kbd>÷</kbd><kbd>1</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> gives 4.75; press <kbd>F◂▸D</kbd> to see it as a fraction: the screen shows <b>19┘4</b>, which is <span class="tex">\tfrac{19}{4}=4\tfrac34</span>.</div>
+    <div class="pill-col"><button class="pill" data-keys="14.25 × 4 ÷ 12 =">Show me</button><button class="pill" data-keys="14.25 × 4 ÷ 12 = F◂▸D">As a fraction</button></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<!-- ================= 3. micrometer (Extension) ================= -->
+<section class="card u10l9-extcard" data-ink="s3" data-section="3. Extension: The Micrometer">
+  <div class="sec-h"><span class="badge">3</span><h2>Reading a Micrometer</h2><span class="u10l9-ext-tag">Extension</span></div>
+  <div class="def">A <b>micrometer</b> measures small lengths to a hundredth of a millimetre by combining two scales: a fixed <b>sleeve scale</b>, marked in whole and half millimetres, giving the coarse reading; and a rotating <b>thimble scale</b>, marked in hundredths of a millimetre, giving the fine reading. The two are added:
+    <div class="u10l9-formula"><span class="tex">\text{reading}=(\text{sleeve scale value})+(\text{thimble scale value})</span></div></div>
+  <div class="explainer" data-explainer="micro"></div>
+</section>
+
+<section class="card example u10l9-extcard" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Combining the sleeve and thimble readings</h3><span class="u10l9-ext-tag">Extension</span></div>
+  <p class="q">The micrometer below has a measuring range of 0–25 mm and is accurate to 0.01 mm. The sleeve has a mark every 0.5 mm; the thimble has divisions of 0.01 mm. Determine the sleeve (coarse) reading and the thimble (fine) reading separately, then combine them to state the full reading, in millimetres.</p>
+  <div class="bk-fig u10l9-center"><div data-u10l9-micro="17,27"></div></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">Sleeve reading <span class="u10l9-bl" data-reveal>8.5 mm</span> &nbsp; + &nbsp; thimble reading <span class="u10l9-bl" data-reveal>0.27 mm</span> &nbsp; = &nbsp; reading <span class="u10l9-bl" data-reveal>8.77 mm</span></div>
+      <div class="work" style="--h:150px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Sleeve (coarse) reading: the last fully visible sleeve mark left of the thimble is the 8.5 mm half-millimetre mark, so <b>sleeve</b> <span class="tex">=8.5</span> mm.<br>Thimble (fine) reading: the index line is on thimble mark 27, so <b>thimble</b> <span class="tex">=27\times0.01=0.27</span> mm.<br>Reading <span class="tex">=8.5+0.27=\mathbf{8.77\ mm}</span>, stated to the instrument’s own 0.01 mm precision.</div></div></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<!-- ================= 4. between systems, scale ================= -->
+<section class="card" data-ink="s4" data-section="4. Between Systems, and Scale">
+  <div class="sec-h"><span class="badge">4</span><h2>Converting Between Systems, and Using Scale</h2></div>
+  <div class="def">An <b>approximate conversion</b> such as <span class="tex">5\text{ miles}=8\text{ km}</span> (the Lesson 4B benchmark <span class="tex">1\text{ mi}\approx1.6\text{ km}</span>) switches between the systems by a single ratio. A <b>map scale</b> written <span class="tex">1:n</span> (Lesson 4A, Example 7) means one unit of distance on the map represents <span class="tex">n</span> of the same unit in reality, so the map distance is the real distance divided by <span class="tex">n</span>, with both expressed in the same unit first.</div>
+  <div class="explainer" data-explainer="ratioMap"></div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>An approximate conversion and a map scale</h3></div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) A section of highway is <span class="tex">1032</span> km long. Using the approximate conversion <span class="tex">5\text{ miles}=8\text{ km}</span>, determine this distance in miles.</div>
+      <div class="work" style="--h:250px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Unit analysis with the ratio <span class="tex">5\text{ mi}=8\text{ km}</span>, arranged so km cancels:<br><span class="tex">1032\text{ km}\times\dfrac{5\text{ mi}}{8\text{ km}}=\dfrac{1032}{8}\times5=129\times5=\mathbf{645\ miles}</span>.<br>Miles are longer than kilometres, so the number should be smaller. ✓</div></div></div>
+    <div class="part"><div class="pl">(b) The scale on a map is <span class="tex">1:1\,500\,000</span>. If the actual distance between two towns is <span class="tex">540</span> km, determine the distance between them on the map, in centimetres.</div>
+      <div class="work" style="--h:250px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Put the real distance in centimetres: <span class="tex">540\text{ km}=540\,000\text{ m}=54\,000\,000\text{ cm}</span>.<br>A scale of <span class="tex">1:1\,500\,000</span> means 1 cm on the map for every <span class="tex">1\,500\,000</span> cm in reality, so divide:<br>map distance <span class="tex">=\dfrac{54\,000\,000}{1\,500\,000}=\mathbf{36\ cm}</span>.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>(a)</b> <span class="keys"><kbd>1</kbd><kbd>0</kbd><kbd>3</kbd><kbd>2</kbd><kbd>×</kbd><kbd>5</kbd><kbd>÷</kbd><kbd>8</kbd><kbd>ENTER</kbd></span> gives 645. <b>(b)</b> Big numbers are easy to mistype; <kbd>EE</kbd> keeps the zeros straight: <span class="keys"><kbd>5</kbd><kbd>4</kbd><kbd>EE</kbd><kbd>6</kbd><kbd>÷</kbd><kbd>1</kbd><kbd>.</kbd><kbd>5</kbd><kbd>EE</kbd><kbd>6</kbd><kbd>ENTER</kbd></span> gives 36.</div>
+    <div class="pill-col"><button class="pill" data-keys="1032 × 5 ÷ 8 =">Show 4(a)</button><button class="pill" data-keys="54 EE 6 ÷ 1.5 EE 6 =">Show 4(b)</button></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<!-- ================= 5. applied ================= -->
+<section class="card" data-ink="s5" data-section="5. Applied Conversion Problems">
+  <div class="sec-h"><span class="badge">5</span><h2>Applied Conversion Problems</h2></div>
+  <div class="def">Most applied problems give measurements in mixed units. <b>Convert every quantity to the same unit before any arithmetic is attempted.</b></div>
+  <div class="explainer" data-explainer="applied"></div>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Tiling a floor, and dosing a tank</h3></div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) A rectangular hallway floor is <span class="tex">7</span> yards long and <span class="tex">3\tfrac12</span> yards wide. The tiles chosen to cover it are <span class="tex">10\tfrac12</span> inches by <span class="tex">10\tfrac12</span> inches. Determine the number of tiles needed.</div>
+      <div class="work" style="--h:270px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Convert the floor to inches, the unit the tiles are given in: <span class="tex">1\text{ yd}=3\text{ ft}=36\text{ in}</span>.<br>Length: <span class="tex">7\times36=252</span> in. &nbsp; Width: <span class="tex">3\tfrac12\times36=126</span> in.<br>Tiles along the length: <span class="tex">252\div10.5=24</span>. &nbsp; Along the width: <span class="tex">126\div10.5=12</span>.<br>Total <span class="tex">=24\times12=\mathbf{288\ tiles}</span>.</div></div></div>
+    <div class="part"><div class="pl">(b) An aquarium has dimensions <span class="tex">55</span> cm by <span class="tex">40</span> cm by <span class="tex">25</span> cm. The directions on a bottle of fish medicine are to add <span class="tex">4</span> drops per <span class="tex">10</span> litres of water. Determine the number of drops needed to completely fill the aquarium with treated water.</div>
+      <div class="work" style="--h:270px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Volume <span class="tex">=55\times40\times25=55\,000\text{ cm}^3</span>.<br><span class="tex">1\text{ cm}^3=1\text{ mL}</span>, so <span class="tex">55\,000\text{ cm}^3=55\,000\text{ mL}=55\text{ L}</span>.<br>At 4 drops per 10 L: <span class="tex">\dfrac{55}{10}\times4=5.5\times4=\mathbf{22\ drops}</span>.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>(a)</b> Tiles along each side, multiplied: <span class="keys"><kbd>(</kbd><kbd>7</kbd><kbd>×</kbd><kbd>3</kbd><kbd>6</kbd><kbd>÷</kbd><kbd>1</kbd><kbd>0</kbd><kbd>.</kbd><kbd>5</kbd><kbd>)</kbd><kbd>×</kbd><kbd>(</kbd><kbd>3</kbd><kbd>.</kbd><kbd>5</kbd><kbd>×</kbd><kbd>3</kbd><kbd>6</kbd><kbd>÷</kbd><kbd>1</kbd><kbd>0</kbd><kbd>.</kbd><kbd>5</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 288. <b>(b)</b> <span class="keys"><kbd>5</kbd><kbd>5</kbd><kbd>×</kbd><kbd>4</kbd><kbd>0</kbd><kbd>×</kbd><kbd>2</kbd><kbd>5</kbd><kbd>÷</kbd><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives 55 L; then <span class="keys"><kbd>5</kbd><kbd>5</kbd><kbd>÷</kbd><kbd>1</kbd><kbd>0</kbd><kbd>×</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> gives 22.</div>
+    <div class="pill-col"><button class="pill" data-keys="( 7 × 36 ÷ 10.5 ) × ( 3.5 × 36 ÷ 10.5 ) =">Show tiles</button><button class="pill" data-keys="55 × 40 × 25 ÷ 1000 =">Show litres</button><button class="pill" data-keys="55 ÷ 10 × 4 =">Show drops</button></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<!-- ================= 6. comparing ================= -->
+<section class="card" data-ink="s6" data-section="6. Comparing Imperial and SI">
+  <div class="sec-h"><span class="badge">6</span><h2>Comparing Imperial and Metric Measurements</h2></div>
+  <div class="def">Two lengths given in different systems can be compared without a full conversion of both, as long as each is placed on the <b>same number line</b>. Lesson 4B’s bridge, <span class="tex">1\text{ cm}=0.3937\text{ in}</span>, does it in either direction: <span class="tex">1\text{ mm}=0.03937\text{ in}</span>, and <span class="tex">1\text{ in}=2.54\text{ cm}=25.4\text{ mm}</span>.</div>
+  <div class="explainer" data-explainer="wrench"></div>
+</section>
+
+<section class="card example" data-ink="ex6" data-section="Example 6">
+  <div class="ex-head"><span class="ex-tag">Example 6</span><h3>Choosing a wrench from the other system</h3></div>
+  <p class="q">Zara received a mixed wrench set. The metric wrenches measure <span class="tex">7</span> mm, <span class="tex">8</span> mm, <span class="tex">9</span> mm, <span class="tex">11</span> mm, <span class="tex">13</span> mm, and <span class="tex">16</span> mm. The imperial wrenches measure <span class="tex">\tfrac14</span> in, <span class="tex">\tfrac{9}{32}</span> in, <span class="tex">\tfrac38</span> in, <span class="tex">\tfrac{7}{16}</span> in, <span class="tex">\tfrac12</span> in, and <span class="tex">\tfrac58</span> in.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Zara is tightening a bolt. Her <span class="tex">9</span> mm wrench is too small and her <span class="tex">11</span> mm wrench is too large. Which imperial wrench from her set should she try?</div>
+      <div class="work" style="--h:250px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Use <span class="tex">1\text{ mm}=0.03937\text{ in}</span> to place the metric bounds on the imperial line: <span class="tex">9\text{ mm}\approx0.354\text{ in}</span> and <span class="tex">11\text{ mm}\approx0.433\text{ in}</span>.<br><span class="tex">\tfrac14=0.250</span> (too small), <span class="tex">\tfrac{9}{32}=0.281</span> (too small), <span class="tex">\tfrac38=0.375</span> (<b>fits</b>), <span class="tex">\tfrac{7}{16}=0.438</span> (too large).<br>She should try the <span class="tex">\boldsymbol{\tfrac38}</span> <b>in</b> wrench.</div></div></div>
+    <div class="part"><div class="pl">(b) On a different bolt, Zara’s <span class="tex">\tfrac12</span> in wrench is too small and her <span class="tex">\tfrac58</span> in wrench is too large. Which metric wrench from her set should she try?</div>
+      <div class="work" style="--h:250px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">This time convert the imperial bounds to millimetres, using <span class="tex">1\text{ in}=25.4\text{ mm}</span>: <span class="tex">\tfrac12\text{ in}=12.7\text{ mm}</span> and <span class="tex">\tfrac58\text{ in}=15.875\text{ mm}</span>.<br>11 mm (too small), 13 mm (<b>fits</b>), 16 mm (too large).<br>She should try the <b>13 mm</b> wrench.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Fractions of an inch.</b> <kbd>ab/c</kbd> types a fraction: <span class="keys"><kbd>5</kbd><kbd>ab/c</kbd><kbd>8</kbd><kbd>×</kbd><kbd>2</kbd><kbd>5</kbd><kbd>.</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> gives <b>127┘8</b> (a fraction in, a fraction out); <kbd>F◂▸D</kbd> turns it into 15.875 mm. The other way: <span class="keys"><kbd>1</kbd><kbd>1</kbd><kbd>×</kbd><kbd>0</kbd><kbd>.</kbd><kbd>0</kbd><kbd>3</kbd><kbd>9</kbd><kbd>3</kbd><kbd>7</kbd><kbd>ENTER</kbd></span> gives 0.43307 in.</div>
+    <div class="pill-col"><button class="pill" data-keys="9 × 0.03937 =">9 mm in inches</button><button class="pill" data-keys="11 × 0.03937 =">11 mm in inches</button><button class="pill" data-keys="5 ab/c 8 × 25.4 = F◂▸D">⅝ in in mm</button></div>
+  </div>
+  <div class="space" id="ex6-space"></div>
+  <button class="more" data-more="ex6-space">+ More space</button>
+</section>
+
+<!-- ================= 7. SA and V formulas ================= -->
+<section class="card" data-ink="s7" data-section="7. SA and V Formulas">
+  <div class="sec-h"><span class="badge">7</span><h2>Surface Area and Volume Formulas: A Review</h2></div>
+  <div class="def">Every formula of Lessons 6, 7 and 8 is collected below. Throughout, <span class="tex">h</span> is the <b>perpendicular height</b>, <span class="tex">s</span> is the <b>slant height</b>, <span class="tex">A_{\text{Base}}</span> is the area of the base, and <span class="tex">r</span> is the <b>radius</b>: halve a diameter before substituting it.</div>
+  <table class="u10l9-ftab">
+    <thead><tr><th>Solid</th><th>Surface area</th><th>Volume</th></tr></thead>
+    <tbody>
+      <tr><td><b>Prism</b></td><td>sum of all faces <span class="tex">=2A_{\text{Base}}+(\text{perimeter})h</span></td><td><span class="tex">V=A_{\text{Base}}\times h</span></td></tr>
+      <tr><td><b>Cylinder</b></td><td><span class="tex">SA=2\pi r^{2}+2\pi rh=2\pi r(r+h)</span></td><td><span class="tex">V=\pi r^{2}h</span></td></tr>
+      <tr><td><b>Pyramid</b></td><td><span class="tex">SA=A_{\text{Base}}+(\text{triangular faces, each }\tfrac12 bs)</span></td><td><span class="tex">V=\tfrac13 A_{\text{Base}}h</span></td></tr>
+      <tr><td><b>Cone</b></td><td><span class="tex">SA=\pi r^{2}+\pi rs</span>, where <span class="tex">s^{2}=h^{2}+r^{2}</span></td><td><span class="tex">V=\tfrac13\pi r^{2}h</span></td></tr>
+      <tr><td><b>Sphere</b></td><td><span class="tex">SA=4\pi r^{2}</span></td><td><span class="tex">V=\tfrac43\pi r^{3}</span></td></tr>
+      <tr><td><b>Hemisphere</b></td><td><span class="tex">SA=3\pi r^{2}</span> with its flat base, <span class="tex">2\pi r^{2}</span> without</td><td><span class="tex">V=\tfrac23\pi r^{3}</span></td></tr>
+    </tbody>
+  </table>
+  <div class="explainer" data-explainer="morph"></div>
+</section>
+
+<section class="card" data-ink="s7b" data-section="7. Slant height and radius first">
+  <div class="sec-h"><span class="badge">7</span><h2>The Measurement You Need First</h2></div>
+  <p>A cone’s surface area needs the <b>slant height</b> <span class="tex">s</span>, not the perpendicular height <span class="tex">h</span>: find it with the Pythagorean theorem on the cone’s cross-section. A sphere’s formulas need the <b>radius</b>: halve the diameter first.</p>
+  <div class="explainer" data-explainer="coneSphere"></div>
+</section>
+
+<section class="card example" data-ink="ex7" data-section="Example 7">
+  <div class="ex-head"><span class="ex-tag">Example 7</span><h3>A cone (slant height first) and a sphere (radius first)</h3></div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) A conical paperweight has a base radius of <span class="tex">8</span> cm and a height of <span class="tex">15</span> cm. Determine the surface area of the paperweight, in terms of <span class="tex">\pi</span>.</div>
+      <div class="u10l9-figrow"><div data-u10l9-fig="ex7a"></div></div>
+      <div class="work" style="--h:220px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Surface area of a cone needs the <i>slant</i> height <span class="tex">s</span>, not the perpendicular height <span class="tex">h</span>:<br><span class="tex">s^{2}=h^{2}+r^{2}=15^{2}+8^{2}=225+64=289</span>, so <span class="tex">s=\sqrt{289}=17</span> cm (an 8–15–17 triangle).<br><span class="tex">SA=\pi r^{2}+\pi rs=\pi(8)^{2}+\pi(8)(17)=64\pi+136\pi=\mathbf{200\pi\ cm^{2}}</span>.</div></div></div>
+    <div class="part"><div class="pl">(b) A spherical balloon has a diameter of <span class="tex">18</span> inches. Determine its surface area, to the nearest square inch.</div>
+      <div class="u10l9-figrow"><div data-u10l9-fig="ex7b"></div></div>
+      <div class="work" style="--h:220px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">A sphere’s surface area needs the <i>radius</i>: <span class="tex">r=\dfrac{18}{2}=9</span> in.<br><span class="tex">SA=4\pi r^{2}=4\pi(9)^{2}=4\pi(81)=324\pi=1017.876\ldots</span><br><span class="tex">SA\approx\mathbf{1018\ in^{2}}</span>. (Using the diameter by mistake would give four times too much.)</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>(a)</b> The slant height: <span class="keys"><kbd>√</kbd><kbd>1</kbd><kbd>5</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>8</kbd><kbd>x²</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 17. <b>(b)</b> Use the <kbd>π</kbd> key, never 3.14: <span class="keys"><kbd>4</kbd><kbd>×</kbd><kbd>π</kbd><kbd>×</kbd><kbd>9</kbd><kbd>x²</kbd><kbd>ENTER</kbd></span> gives 1017.876…</div>
+    <div class="pill-col"><button class="pill" data-keys="√ 15 x² + 8 x² ) =">Show s</button><button class="pill" data-keys="4 × π × 9 x² =">Show SA</button></div>
+  </div>
+  <div class="space" id="ex7-space"></div>
+  <button class="more" data-more="ex7-space">+ More space</button>
+</section>
+
+<!-- ================= 8. volume review ================= -->
+<section class="card" data-ink="s8" data-section="8. Volume Review">
+  <div class="sec-h"><span class="badge">8</span><h2>Volume of 3-D Solids: A Review</h2></div>
+  <div class="def">A pyramid or cone holds <b>one third</b> of the prism or cylinder on the same base, so <span class="tex">V=\tfrac13 A_{\text{Base}}h</span> uses the <b>perpendicular</b> height, never the slant height. A volume formula can also be rearranged and solved for a missing dimension: <span class="tex">V=\tfrac23\pi r^{3}</span> gives <span class="tex">r=\sqrt[3]{\dfrac{3V}{2\pi}}</span>.</div>
+  <div class="explainer" data-explainer="backwards"></div>
+</section>
+
+<section class="card example" data-ink="ex8" data-section="Example 8">
+  <div class="ex-head"><span class="ex-tag">Example 8</span><h3>A pyramid’s volume, and a hemisphere’s radius from its volume</h3></div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) A sculpture is shaped like a triangular pyramid. Its base is an equilateral triangle with sides of <span class="tex">8</span> m, and the pyramid’s height is <span class="tex">15</span> m. Determine the volume of the sculpture, as an exact value in simplest radical form and to one decimal place.</div>
+      <div class="u10l9-figrow"><div data-u10l9-fig="ex8a"></div></div>
+      <div class="work" style="--h:230px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The base is an equilateral triangle of side 8 m, so <span class="tex">A_{\text{Base}}=\dfrac{\sqrt3}{4}(8)^{2}=\dfrac{\sqrt3}{4}(64)=16\sqrt3\ \text{m}^2</span>.<br><span class="tex">V=\tfrac13 A_{\text{Base}}h=\tfrac13(16\sqrt3)(15)=\mathbf{80\sqrt3\ m^{3}}</span> (exact).<br><span class="tex">80\sqrt3=80(1.7320508\ldots)=138.564\ldots\approx\mathbf{138.6\ m^{3}}</span>.</div></div></div>
+    <div class="part"><div class="pl">(b) A hemispherical storage dome has a volume of <span class="tex">1526.8\ \text{m}^{3}</span>. Determine the radius of the dome, to the nearest tenth of a metre.</div>
+      <div class="u10l9-figrow"><div data-u10l9-fig="ex8b"></div></div>
+      <div class="work" style="--h:230px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Solve <span class="tex">V=\tfrac23\pi r^{3}</span> for <span class="tex">r</span>: <span class="tex">r^{3}=\dfrac{3V}{2\pi}</span>, so <span class="tex">r=\sqrt[3]{\dfrac{3V}{2\pi}}</span>.<br><span class="tex">r^{3}=\dfrac{3(1526.8)}{2\pi}=\dfrac{4580.4}{6.283185\ldots}=728.99\ldots</span><br><span class="tex">r=\sqrt[3]{728.99\ldots}=8.99997\ldots\approx\mathbf{9.0\ m}</span>.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>(a)</b> <span class="keys"><kbd>8</kbd><kbd>0</kbd><kbd>×</kbd><kbd>√</kbd><kbd>3</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 138.564… <b>(b)</b> The cube root is <kbd>2nd</kbd><kbd>^</kbd> (<kbd>ˣ√</kbd>): type the <b>index first</b>, then the radicand in brackets: <span class="keys"><kbd>3</kbd><kbd>ˣ√</kbd><kbd>(</kbd><kbd>3</kbd><kbd>×</kbd><kbd>1</kbd><kbd>5</kbd><kbd>2</kbd><kbd>6</kbd><kbd>.</kbd><kbd>8</kbd><kbd>÷</kbd><kbd>(</kbd><kbd>2</kbd><kbd>×</kbd><kbd>π</kbd><kbd>)</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 8.99997…</div>
+    <div class="pill-col"><button class="pill" data-keys="80 × √ 3 ) =">Show 8(a)</button><button class="pill" data-keys="3 ˣ√ ( 3 × 1526.8 ÷ ( 2 × π ) ) =">Show 8(b)</button></div>
+  </div>
+  <div class="space" id="ex8-space"></div>
+  <button class="more" data-more="ex8-space">+ More space</button>
+</section>
+
+<!-- ================= 9. cumulative applied ================= -->
+<section class="card" data-ink="s9" data-section="9. Cumulative Applied Problem">
+  <div class="sec-h"><span class="badge">9</span><h2>Cumulative Applied Problem</h2></div>
+  <div class="def">One problem can chain the volume of a cone, the volume of a cylinder, a volume formula solved for a missing dimension, and a cost comparison that needs both a unit conversion and a currency conversion. As everywhere in this unit, <b>carry each value forward at full calculator precision</b> and round only the answer a part asks for.</div>
+  <div class="explainer" data-explainer="tank"></div>
+</section>
+
+<section class="card example" data-ink="ex9" data-section="Example 9">
+  <div class="ex-head"><span class="ex-tag">Example 9</span><h3>A conical tank, tanker trucks, a second tank, and two bids</h3></div>
+  <p class="q">A specialty fertilizer concentrate is stored in a conical tank in Calgary whose diameter is three times its height. The height of the tank is <span class="tex">5.4</span> m.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Determine the volume of concentrate the tank holds, correct to one decimal place.</div>
+      <div class="u10l9-figrow"><div data-u10l9-fig="ex9a"></div></div>
+      <div class="work" style="--h:200px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The diameter is three times the height: <span class="tex">d=3(5.4)=16.2</span> m, so <span class="tex">r=\dfrac{16.2}{2}=8.1</span> m.<br><span class="tex">V=\tfrac13\pi r^{2}h=\tfrac13\pi(8.1)^{2}(5.4)=\tfrac13\pi(65.61)(5.4)=\tfrac13\pi(354.294)=118.098\pi</span><br><span class="tex">V=371.0158\ldots\approx\mathbf{371.0\ m^{3}}</span>.</div></div></div>
+    <div class="part"><div class="pl">(b) The concentrate is transferred using cylindrical tanker trucks, each with a radius of <span class="tex">1.8</span> m and a length of <span class="tex">9</span> m. Using the volume from part (a), determine the number of trucks needed.</div>
+      <div class="u10l9-figrow"><div data-u10l9-fig="ex9b"></div></div>
+      <div class="work" style="--h:200px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Each truck is a cylinder lying on its side, so its length is the height of the cylinder:<br><span class="tex">V_{\text{truck}}=\pi r^{2}h=\pi(1.8)^{2}(9)=\pi(3.24)(9)=29.16\pi\approx91.6088\ \text{m}^3</span>.<br>Number of trucks <span class="tex">=\dfrac{118.098\pi}{29.16\pi}=4.05</span> (the unrounded volume from (a); <span class="tex">\pi</span> cancels, so this is exact).<br>Four trucks would leave concentrate behind, so <b>5 trucks</b> are needed (always round <i>up</i>).</div></div></div>
+    <div class="part"><div class="pl">(c) At the distributor, the concentrate is poured into a new conical tank with a circular base of diameter <span class="tex">12</span> m. Using the total volume from part (a), determine the height of this tank, to one decimal place.</div>
+      <div class="u10l9-figrow"><div data-u10l9-fig="ex9c"></div></div>
+      <div class="work" style="--h:200px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The new cone has <span class="tex">r=\dfrac{12}{2}=6</span> m, and holds the same <span class="tex">118.098\pi\ \text{m}^3</span> (the unrounded volume from (a)).<br><span class="tex">\tfrac13\pi(6)^{2}h=118.098\pi\ \Rightarrow\ 12\pi h=118.098\pi\ \Rightarrow\ h=\dfrac{118.098}{12}</span><br><span class="tex">h=9.8415\approx\mathbf{9.8\ m}</span>.</div></div></div>
+    <div class="part"><div class="pl">(d) Two shipping companies bid on the transport job. Prairie Freight charges C$150 per truck plus C$4.80 per <span class="tex">\text{m}^{3}</span> of concentrate. Northern Cargo charges US$110 per truck plus US$0.12 per <span class="tex">\text{ft}^{3}</span> of concentrate. Using C$1 = US$0.92 and 2.54 cm = 1 inch, and using the volume and number of trucks from parts (a) and (b), determine which company is cheaper.</div>
+      <div class="work" style="--h:300px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Prairie Freight (already in C$):</b> <span class="tex">150(5)+4.80(371.0158\ldots)=750+1780.8758\ldots=\mathbf{C\$2530.88}</span>.<br>
+        <b>Northern Cargo</b> charges per <span class="tex">\text{ft}^3</span>, so convert the volume first. <span class="tex">1\text{ in}=2.54\text{ cm}</span> gives <span class="tex">1\text{ ft}=12(2.54)=30.48\text{ cm}=0.3048\text{ m}</span>, and a <i>cubic</i> conversion cubes that factor: <span class="tex">1\text{ m}^{3}=\left(\dfrac{1}{0.3048}\right)^{3}=35.3146\ldots\ \text{ft}^{3}</span>, so <span class="tex">371.0158\ldots\times35.3146\ldots=13\,102.2996\ldots\ \text{ft}^{3}</span>.<br>
+        Cost <span class="tex">=110(5)+0.12(13\,102.2996\ldots)=550+1572.2759\ldots=\text{US\$}2122.2759\ldots</span><br>
+        Converting to Canadian dollars (<span class="tex">\div0.92</span>): <span class="tex">\dfrac{2122.2759\ldots}{0.92}\approx\mathbf{C\$2306.82}</span>.<br>
+        Since C$2306.82 &lt; C$2530.88, <b>Northern Cargo is cheaper</b>, by about C$224.05. (Full precision carried throughout; each dollar amount rounded once.)</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Keep full precision.</b> (a) <span class="keys"><kbd>π</kbd><kbd>×</kbd><kbd>8</kbd><kbd>.</kbd><kbd>1</kbd><kbd>x²</kbd><kbd>×</kbd><kbd>5</kbd><kbd>.</kbd><kbd>4</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> gives 371.0158… (b) <span class="tex">\pi</span> cancels: <span class="keys"><kbd>1</kbd><kbd>1</kbd><kbd>8</kbd><kbd>.</kbd><kbd>0</kbd><kbd>9</kbd><kbd>8</kbd><kbd>÷</kbd><kbd>2</kbd><kbd>9</kbd><kbd>.</kbd><kbd>1</kbd><kbd>6</kbd><kbd>ENTER</kbd></span> gives 4.05. (c) <span class="keys"><kbd>1</kbd><kbd>1</kbd><kbd>8</kbd><kbd>.</kbd><kbd>0</kbd><kbd>9</kbd><kbd>8</kbd><kbd>÷</kbd><kbd>1</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> gives 9.8415.</div>
+    <div class="pill-col"><button class="pill" data-keys="π × 8.1 x² × 5.4 ÷ 3 =">Show 9(a)</button><button class="pill" data-keys="118.098 ÷ 29.16 =">Show 9(b)</button><button class="pill" data-keys="118.098 ÷ 12 =">Show 9(c)</button></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>(d) Each bid in one line</b>, with the volume typed as <span class="tex">118.098\pi</span> so nothing is rounded early. Prairie: <span class="keys"><kbd>1</kbd><kbd>5</kbd><kbd>0</kbd><kbd>×</kbd><kbd>5</kbd><kbd>+</kbd><kbd>4</kbd><kbd>.</kbd><kbd>8</kbd><kbd>×</kbd><kbd>1</kbd><kbd>1</kbd><kbd>8</kbd><kbd>.</kbd><kbd>0</kbd><kbd>9</kbd><kbd>8</kbd><kbd>×</kbd><kbd>π</kbd><kbd>ENTER</kbd></span> gives 2530.875… Northern: the whole US$ bid in brackets, cubing <span class="tex">0.3048</span> for ft³, then <kbd>÷</kbd> 0.92 for C$; the button shows it: 2306.821…</div>
+    <div class="pill-col"><button class="pill" data-keys="150 × 5 + 4.8 × 118.098 × π =">Prairie</button><button class="pill" data-keys="( 110 × 5 + 0.12 × 118.098 × π ÷ 0.3048 x³ ) ÷ 0.92 =">Northern (C$)</button></div>
+  </div>
+  <div class="space" id="ex9-space"></div>
+  <button class="more" data-more="ex9-space">+ More space</button>
+</section>
+
+<!-- ================= review questions ================= -->
+<section class="card u10l9-rev" data-ink="r1" data-section="Review: Questions 1–4">
+  <div class="sec-h"><span class="badge">R</span><h2>Unit 10 Review Questions</h2></div>
+  <p class="muted u10l9-revnote">Questions 1–29 review the Math 10C outcomes. Questions 30–33, at the end, are Extension items on micro- and mega-prefixes, the micrometer and scientific notation.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl"><b>1.</b> <i>(Multiple Choice)</i> Which is the most suitable imperial unit of measurement for the length of a pencil?</div>
+      <div class="bk-mc" data-answer="D" data-pick><div>mile</div><div>yard</div><div>foot</div><div>inch</div></div>
+      <div class="work" style="--h:100px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">A pencil is roughly 7 in long. A foot, yard or mile would each make the measure an awkward fraction, so the inch is the only sensible imperial unit. <b>Answer: D.</b></div></div></div>
+    <div class="part"><div class="pl"><b>2.</b> <i>(Multiple Choice)</i> A rectangular photograph measures <span class="tex">62</span> cm in width and <span class="tex">1.24</span> m in length. The difference between these two measurements, in mm, is</div>
+      <div class="bk-mc" data-answer="C" data-pick><div><span class="tex">6.2</span></div><div><span class="tex">62</span></div><div><span class="tex">620</span></div><div><span class="tex">6200</span></div></div>
+      <div class="work" style="--h:100px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Convert both to millimetres: <span class="tex">1.24\text{ m}=1240\text{ mm}</span> and <span class="tex">62\text{ cm}=620\text{ mm}</span>. <span class="tex">1240-620=620</span> mm. <b>Answer: C.</b> (A and B come from subtracting before converting.)</div></div></div>
+    <div class="part"><div class="pl"><b>3.</b> <i>(Multiple Choice)</i> The number of kilometres in <span class="tex">0.036</span> centimetres is</div>
+      <div class="bk-mc" data-answer="C" data-cols="2" data-pick><div><span class="tex">0.0000000036</span></div><div><span class="tex">360</span></div><div><span class="tex">0.00000036</span></div><div><span class="tex">36</span></div></div>
+      <div class="work" style="--h:110px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">0.036\text{ cm}=0.00036\text{ m}\ (\div100)=0.00000036\text{ km}\ (\div1000)</span>, i.e. <span class="tex">3.6\times10^{-7}</span> km. <b>Answer: C.</b></div></div></div>
+    <div class="part"><div class="pl"><b>4.</b> <i>(Multiple Choice)</i> Consider the following four statements. How many of these statements are false?
+      <div class="u10l9-stmts c2"><div class="u10l9-stmt">Statement 1: <span class="tex">1\text{ mm}=0.1\text{ cm}</span></div><div class="u10l9-stmt">Statement 2: <span class="tex">1\text{ m}=100\text{ cm}</span></div><div class="u10l9-stmt">Statement 3: <span class="tex">1\text{ km}=100\,000\text{ cm}</span></div><div class="u10l9-stmt">Statement 4: <span class="tex">1\text{ cm}=0.01\text{ mm}</span></div></div></div>
+      <div class="bk-mc" data-answer="B" data-pick><div>zero</div><div>one</div><div>three</div><div>four</div></div>
+      <div class="work" style="--h:90px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">1: true. 2: true. 3: <span class="tex">1\text{ km}=1000\text{ m}=1000\times100=100\,000\text{ cm}</span>, true. 4: <span class="tex">1\text{ cm}=10\text{ mm}</span> (a smaller unit gives a bigger number), not 0.01 mm: false. One statement is false. <b>Answer: B.</b></div></div></div>
+  </div>
+</section>
+
+<section class="card u10l9-rev" data-ink="r2" data-section="Review: Questions 5–8">
+  <div class="parts c2">
+    <div class="part"><div class="pl"><b>5.</b> <i>(Multiple Choice)</i> The height of horses is often measured in hands. Using the width of an adult hand as a referent for <span class="tex">4</span> inches, the height of a horse measuring <span class="tex">15\tfrac34</span> hands is</div>
+      <div class="bk-mc" data-answer="C" data-pick><div><span class="tex">4\tfrac12</span> feet</div><div><span class="tex">5</span> feet</div><div><span class="tex">5\tfrac14</span> feet</div><div><span class="tex">6\tfrac14</span> feet</div></div>
+      <div class="work" style="--h:110px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">15\tfrac34\times4=15.75\times4=63</span> in, then <span class="tex">63\text{ in}\times\dfrac{1\text{ ft}}{12\text{ in}}=\dfrac{63}{12}=5\tfrac14</span> ft. <b>Answer: C.</b></div></div></div>
+    <div class="part"><div class="pl"><b>6.</b> <i>(Multiple Choice)</i> Which of the following measuring instruments would be easiest to use to measure the width of a small keyhole?</div>
+      <div class="bk-mc" data-answer="B" data-cols="2" data-pick><div>micrometer</div><div>vernier caliper</div><div>ruler</div><div>trundle wheel</div></div>
+      <div class="work" style="--h:110px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">A keyhole is small but recessed. A micrometer’s flat anvils cannot reach inside it and a ruler is far too coarse; a vernier caliper’s jaws slide into a small gap and read to 0.05 mm. <b>Answer: B.</b></div></div></div>
+    <div class="part"><div class="pl"><b>7.</b> <i>(Multiple Choice)</i> A section of the Trans-Canada Highway is <span class="tex">968</span> km long. Using the approximate conversion <span class="tex">5\text{ miles}=8\text{ km}</span>, this distance in miles is</div>
+      <div class="bk-mc" data-answer="B" data-pick><div><span class="tex">242</span></div><div><span class="tex">605</span></div><div><span class="tex">788</span></div><div><span class="tex">1548.8</span></div></div>
+      <div class="work" style="--h:110px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">968\text{ km}\times\dfrac{5\text{ mi}}{8\text{ km}}=\dfrac{968}{8}\times5=121\times5=605</span> mi (km cancels). <b>Answer: B.</b> (D multiplies by <span class="tex">\tfrac85</span> instead.)</div></div></div>
+  </div>
+  <div class="parts c1 u10l9-gap">
+    <div class="part"><div class="pl"><b>8.</b> <i>(Multiple Choice)</i> The vernier caliper below reads to the nearest <span class="tex">0.05</span> mm. The reading is</div>
+      <div class="bk-fig u10l9-center"><div data-u10l9-vernier="14,17"></div></div>
+      <div class="bk-mc" data-answer="A" data-pick><div><span class="tex">14.85</span> mm</div><div><span class="tex">14.17</span> mm</div><div><span class="tex">15.85</span> mm</div><div><span class="tex">14.80</span> mm</div></div>
+      <div class="work" style="--h:90px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Coarse (main scale): the index sits just past 14 mm, so 14 mm. Fine: vernier mark 17 lines up with a main-scale mark, so <span class="tex">17\times0.05=0.85</span> mm. Reading <span class="tex">=14+0.85=14.85</span> mm. <b>Answer: A.</b> (B reads the vernier mark as hundredths; C takes the coarse reading from the next mark; D uses the neighbouring vernier mark 16.)</div></div></div>
+  </div>
+</section>
+
+<section class="card u10l9-rev" data-ink="r3" data-section="Review: Questions 9–12">
+  <div class="parts c2">
+    <div class="part"><div class="pl"><b>9.</b> <i>(Numerical Response)</i> Priya and Devon are tiling a rectangular hallway floor that is <span class="tex">6</span> yards long and <span class="tex">4</span> yards wide, using square tiles that measure <span class="tex">9</span> inches by <span class="tex">9</span> inches. The number of tiles they need is ____.</div>
+      <div class="work" style="--h:200px"></div><div class="bk-nr" data-value="384"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">6\text{ yd}=6\times36=216</span> in and <span class="tex">4\text{ yd}=4\times36=144</span> in. Tiles along each side: <span class="tex">216\div9=24</span> and <span class="tex">144\div9=16</span>. <span class="tex">24\times16=\mathbf{384}</span> tiles.</div></div></div>
+    <div class="part"><div class="pl"><b>10.</b> <i>(Multiple Choice)</i> The scale on a map is <span class="tex">1:850\,000</span>. If the actual distance between two towns is <span class="tex">425</span> km, the distance between them on the map is</div>
+      <div class="bk-mc" data-answer="B" data-cols="2" data-pick><div><span class="tex">5</span> cm</div><div><span class="tex">50</span> cm</div><div><span class="tex">500</span> cm</div><div><span class="tex">0.5</span> cm</div></div>
+      <div class="work" style="--h:200px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">425\text{ km}=425\,000\text{ m}=42\,500\,000\text{ cm}</span>. Map distance <span class="tex">=\dfrac{42\,500\,000}{850\,000}=50</span> cm. <b>Answer: B.</b></div></div></div>
+    <div class="part"><div class="pl"><b>11.</b> <i>(Numerical Response)</i> An aquarium has dimensions <span class="tex">60</span> cm by <span class="tex">45</span> cm by <span class="tex">20</span> cm. The directions on a bottle of fish medicine are to add <span class="tex">5</span> drops per <span class="tex">10</span> litres of water. The number of drops that should be added to a completely full aquarium is ____.</div>
+      <div class="work" style="--h:200px"></div><div class="bk-nr" data-value="27"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Volume <span class="tex">=60\times45\times20=54\,000\text{ cm}^3=54\,000\text{ mL}=54\text{ L}</span>. Drops <span class="tex">=\dfrac{54}{10}\times5=5.4\times5=\mathbf{27}</span>.</div></div></div>
+    <div class="part"><div class="pl"><b>12.</b> <i>(Numerical Response)</i> Mia is marking the sideline of a field, which needs to be <span class="tex">10</span> yards long. Her shoe is <span class="tex">9</span> inches long, so each heel-to-toe step covers <span class="tex">9</span> inches; she uses this as a referent, placing her feet heel to toe repeatedly along the line. The number of times she must place her feet is ____.</div>
+      <div class="work" style="--h:200px"></div><div class="bk-nr" data-value="40"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">10\text{ yd}=10\times36=360</span> in. Each placement covers 9 in. <span class="tex">360\div9=\mathbf{40}</span> placements.</div></div></div>
+  </div>
+</section>
+
+<section class="card u10l9-rev" data-ink="r4" data-section="Review: Questions 13–16">
+  <div class="parts c2">
+    <div class="part span2"><div class="pl"><b>13.</b> <i>(Multiple Choice)</i> A hex key set includes metric sizes <span class="tex">3</span> mm, <span class="tex">4</span> mm, <span class="tex">5</span> mm, <span class="tex">6</span> mm, <span class="tex">7</span> mm, and <span class="tex">8</span> mm, and imperial sizes <span class="tex">\tfrac18</span> in, <span class="tex">\tfrac{5}{32}</span> in, <span class="tex">\tfrac{3}{16}</span> in, <span class="tex">\tfrac{7}{32}</span> in, <span class="tex">\tfrac14</span> in, and <span class="tex">\tfrac{5}{16}</span> in. Dov’s <span class="tex">5</span> mm key is too small for a bolt and his <span class="tex">6</span> mm key is too large. Which imperial key should he try?</div>
+      <div class="bk-mc" data-answer="B" data-pick><div><span class="tex">\tfrac{3}{16}</span> in</div><div><span class="tex">\tfrac{7}{32}</span> in</div><div><span class="tex">\tfrac14</span> in</div><div><span class="tex">\tfrac{5}{16}</span> in</div></div>
+      <div class="work" style="--h:120px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">5\text{ mm}\approx5(0.03937)=0.197</span> in and <span class="tex">6\text{ mm}\approx0.236</span> in, so the bolt is between those. <span class="tex">\tfrac{3}{16}=0.1875</span> (too small), <span class="tex">\tfrac{7}{32}=0.21875</span> (<b>fits</b>), <span class="tex">\tfrac14=0.25</span> (too large). <b>Answer: B.</b></div></div></div>
+    <div class="part span2"><div class="pl"><b>14.</b> <i>(Multiple Choice)</i> Using the same hex key set as Question 13, Dov’s <span class="tex">\tfrac14</span> in key is too small for a different bolt and his <span class="tex">\tfrac{5}{16}</span> in key is too large. Which metric key should he try?</div>
+      <div class="bk-mc" data-answer="C" data-pick><div><span class="tex">5</span> mm</div><div><span class="tex">6</span> mm</div><div><span class="tex">7</span> mm</div><div><span class="tex">8</span> mm</div></div>
+      <div class="work" style="--h:120px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\tfrac14\text{ in}=0.25(25.4)=6.35</span> mm and <span class="tex">\tfrac{5}{16}\text{ in}=0.3125(25.4)=7.9375</span> mm. 6 mm (too small), 7 mm (<b>fits</b>), 8 mm (too large). <b>Answer: C.</b></div></div></div>
+    <div class="part"><div class="pl"><b>15.</b> <i>(Numerical Response)</i> A sprinter completes a <span class="tex">200</span> m time trial in <span class="tex">11.82</span> seconds. Her average speed, to the nearest <span class="tex">0.1</span> km/h, is ____.</div>
+      <div class="work" style="--h:200px"></div><div class="bk-nr" data-value="60.9"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Speed <span class="tex">=\dfrac{200\text{ m}}{11.82\text{ s}}=16.92047\ldots</span> m/s. <span class="tex">1\text{ m/s}=\dfrac{3600\text{ m}}{1\text{ h}}=3.6</span> km/h, so <span class="tex">16.92047\ldots\times3.6=60.9137\ldots\approx\mathbf{60.9}</span> km/h.</div></div></div>
+    <div class="part"><div class="pl"><b>16.</b> <i>(Numerical Response)</i> A cylindrical can of paint has a base diameter of <span class="tex">8.2</span> cm and a height of <span class="tex">12.5</span> cm. A paper label completely covers the curved surface of the can. The surface area of the label, to the nearest <span class="tex">\text{cm}^{2}</span>, is ____.</div>
+      <div class="work" style="--h:200px"></div><div class="bk-nr" data-value="322"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The label covers the <i>curved</i> surface only (no circular ends), so it is the circumference times the height: <span class="tex">SA=\pi dh=\pi(8.2)(12.5)=102.5\pi=322.0132\ldots\approx\mathbf{322}\ \text{cm}^2</span>.</div></div></div>
+  </div>
+</section>
+
+<section class="card u10l9-rev" data-ink="r5" data-section="Review: Questions 17–20">
+  <div class="parts c2">
+    <div class="part"><div class="pl"><b>17.</b> <i>(Multiple Choice)</i> A conical funnel has a base radius of <span class="tex">9</span> cm, a height of <span class="tex">12</span> cm, and no base (it is open at its wide end). The surface area of the funnel, in terms of <span class="tex">\pi</span>, is</div>
+      <div class="u10l9-figrow"><div data-u10l9-fig="q17"></div></div>
+      <div class="bk-mc" data-answer="B" data-pick><div><span class="tex">81\pi</span></div><div><span class="tex">135\pi</span></div><div><span class="tex">216\pi</span></div><div><span class="tex">225\pi</span></div></div>
+      <div class="work" style="--h:150px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Slant height first: <span class="tex">s^{2}=12^{2}+9^{2}=144+81=225</span>, so <span class="tex">s=15</span> cm. A funnel is open at its wide end, so it has no base: only the curved surface counts. <span class="tex">SA=\pi rs=\pi(9)(15)=135\pi</span>. <b>Answer: B.</b> (C, <span class="tex">216\pi</span>, adds the base <span class="tex">81\pi</span>; A is the base alone; D uses <span class="tex">\pi s^{2}</span>.)</div></div></div>
+    <div class="part"><div class="pl"><b>18.</b> <i>(Multiple Choice)</i> A spherical ornament has a diameter of <span class="tex">14</span> inches. The surface area of the ornament, to the nearest square inch, is</div>
+      <div class="u10l9-figrow"><div data-u10l9-fig="q18"></div></div>
+      <div class="bk-mc" data-answer="B" data-cols="2" data-pick><div><span class="tex">308</span></div><div><span class="tex">616</span></div><div><span class="tex">1232</span></div><div>none of the above</div></div>
+      <div class="work" style="--h:150px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Halve the diameter: <span class="tex">r=7</span> in. <span class="tex">SA=4\pi r^{2}=4\pi(49)=196\pi=615.752\ldots\approx616</span> in². <b>Answer: B.</b> (C uses the diameter as the radius; A is half the sphere’s area.)</div></div></div>
+    <div class="part"><div class="pl"><b>19.</b> <i>(Multiple Choice)</i> A decorative object is in the shape of a triangular pyramid. The base is an equilateral triangle with sides of <span class="tex">12</span> m, and the height is <span class="tex">9</span> m. The volume of the pyramid in <span class="tex">\text{m}^{3}</span> is</div>
+      <div class="u10l9-figrow"><div data-u10l9-fig="q19"></div></div>
+      <div class="bk-mc" data-answer="A" data-pick><div><span class="tex">108\sqrt3</span></div><div><span class="tex">36\sqrt3</span></div><div><span class="tex">324</span></div><div><span class="tex">216</span></div></div>
+      <div class="work" style="--h:150px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">A_{\text{Base}}=\dfrac{\sqrt3}{4}(12)^{2}=36\sqrt3\ \text{m}^2</span>. <span class="tex">V=\tfrac13 A_{\text{Base}}h=\tfrac13(36\sqrt3)(9)=108\sqrt3\ \text{m}^3</span>. <b>Answer: A.</b> (B is the base area, not the volume.)</div></div></div>
+    <div class="part"><div class="pl"><b>20.</b> <i>(Multiple Choice)</i> The volume of a hemispherical water tank is <span class="tex">718.4\ \text{m}^{3}</span>. The radius of the tank, to the nearest tenth of a metre, is</div>
+      <div class="u10l9-figrow"><div data-u10l9-fig="q20"></div></div>
+      <div class="bk-mc" data-answer="B" data-pick><div><span class="tex">5.0</span></div><div><span class="tex">7.0</span></div><div><span class="tex">9.0</span></div><div><span class="tex">12.0</span></div></div>
+      <div class="work" style="--h:150px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">r^{3}=\dfrac{3V}{2\pi}=\dfrac{3(718.4)}{2\pi}=\dfrac{2155.2}{6.283185\ldots}=343.0\ldots</span>, so <span class="tex">r=\sqrt[3]{343.0\ldots}=7.00007\ldots\approx7.0</span> m. <b>Answer: B.</b></div></div></div>
+  </div>
+</section>
+
+<section class="card u10l9-rev" data-ink="r6" data-section="Review: Written Response 21">
+  <div class="sec-h"><span class="badge">WR</span><h2>21. Written Response</h2></div>
+  <p class="q">Golden Plains Dairy stores fresh milk in a cylindrical vat with a radius of <span class="tex">2.2</span> m and a height of <span class="tex">4.5</span> m, filled completely.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Determine the volume of milk in the vat, correct to one decimal place.</div>
+      <div class="work" style="--h:200px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">V=\pi r^{2}h=\pi(2.2)^{2}(4.5)=\pi(4.84)(4.5)=21.78\pi=68.4238\ldots\approx\mathbf{68.4\ m^{3}}</span>.</div></div></div>
+    <div class="part"><div class="pl">(b) The milk is transported to a processing plant using rectangular tanker trucks with interior dimensions <span class="tex">2.5</span> m by <span class="tex">2</span> m by <span class="tex">8</span> m. Using the volume from (a), determine the number of trucks needed.</div>
+      <div class="work" style="--h:200px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Each truck is a rectangular prism: <span class="tex">V_{\text{truck}}=2.5\times2\times8=40\ \text{m}^3</span>. <span class="tex">\dfrac{68.4238\ldots}{40}=1.7106\ldots</span> (the unrounded volume from (a)), and a part-load still needs a whole truck, so <b>2 trucks</b>.</div></div></div>
+    <div class="part"><div class="pl">(c) At the plant, the milk is poured into a hemispherical storage tank with a diameter of <span class="tex">10</span> m. Using the total volume from (a), determine what percentage of the hemispherical tank’s capacity is filled, to the nearest tenth of a percent.</div>
+      <div class="work" style="--h:230px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The tank’s radius is <span class="tex">5</span> m, so its capacity is <span class="tex">V_{\text{hemi}}=\tfrac23\pi r^{3}=\tfrac23\pi(125)=\tfrac{250}{3}\pi=261.7993\ldots\ \text{m}^3</span>.<br>Percentage <span class="tex">=\dfrac{21.78\pi}{\tfrac{250}{3}\pi}\times100\%=\dfrac{65.34}{250}\times100\%=26.136\%\approx\mathbf{26.1\%}</span> (<span class="tex">\pi</span> cancels, so no rounding enters at all).</div></div></div>
+    <div class="part"><div class="pl">(d) Two trucking companies bid for the job. Foothills Transport charges C$200 per truck plus C$3.50 per <span class="tex">\text{m}^{3}</span> of milk. Rocky Mountain Haulers charges US$150 per truck plus US$0.10 per <span class="tex">\text{ft}^{3}</span> of milk. Using C$1 = US$0.93 and 2.54 cm = 1 inch, and using the volume and number of trucks from (a) and (b), determine which company is cheaper.</div>
+      <div class="work" style="--h:230px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Foothills Transport:</b> <span class="tex">200(2)+3.50(68.4238\ldots)=400+239.4836\ldots=\mathbf{C\$639.48}</span>.<br><b>Rocky Mountain Haulers</b> charges per <span class="tex">\text{ft}^3</span>: <span class="tex">1\text{ m}^{3}=\left(\tfrac{1}{0.3048}\right)^{3}=35.3146\ldots\ \text{ft}^{3}</span>, so <span class="tex">68.4238\ldots\times35.3146\ldots=2416.3668\ldots\ \text{ft}^{3}</span>. Cost <span class="tex">=150(2)+0.10(2416.3668\ldots)=300+241.6366\ldots=\text{US\$}541.6366\ldots</span>; in Canadian dollars, <span class="tex">\dfrac{541.6366\ldots}{0.93}\approx\mathbf{C\$582.41}</span>.<br>Since C$582.41 &lt; C$639.48, <b>Rocky Mountain Haulers is cheaper</b>, by about C$57.08.</div></div></div>
+  </div>
+  <div class="space" id="r6-space"></div>
+  <button class="more" data-more="r6-space">+ More space</button>
+</section>
+
+<section class="card u10l9-rev" data-ink="r7" data-section="Review: Written Response 22">
+  <div class="sec-h"><span class="badge">WR</span><h2>22. Written Response</h2></div>
+  <p class="q">A cone-shaped pile of road salt has a base diameter of <span class="tex">9.4</span> m and a height of <span class="tex">2.8</span> m.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Determine the volume of the pile, in <span class="tex">\text{m}^{3}</span>, to the nearest hundredth. Then state that volume rounded to the nearest tenth, and to the nearest whole <span class="tex">\text{m}^{3}</span>.</div>
+      <div class="work" style="--h:220px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Halve the diameter: <span class="tex">r=4.7</span> m. <span class="tex">V=\tfrac13\pi(4.7)^{2}(2.8)=\tfrac13\pi(22.09)(2.8)=\tfrac13\pi(61.852)=64.77126\ldots</span><br>Nearest hundredth: test digit 1 (&lt; 5), round down: <b>64.77 m³</b>. Nearest tenth: test digit 7 (≥ 5), round up: <b>64.8 m³</b>. Nearest whole: test digit 8 (≥ 5), round up: <b>65 m³</b>.</div></div></div>
+    <div class="part"><div class="pl">(b) One cubic metre holds <span class="tex">1000</span> L. Using the volume from (a) rounded to the nearest whole <span class="tex">\text{m}^{3}</span>, determine the capacity of the pile, in litres.</div>
+      <div class="work" style="--h:220px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">65\text{ m}^{3}\times\dfrac{1000\text{ L}}{1\text{ m}^{3}}=\mathbf{65\,000\ L}</span> (<span class="tex">\text{m}^3</span> cancels).</div></div></div>
+    <div class="part"><div class="pl">(c) Rearrange <span class="tex">V=\tfrac13\pi r^{2}h</span> to isolate <span class="tex">h</span>.</div>
+      <div class="work" style="--h:180px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Multiply both sides by 3: <span class="tex">3V=\pi r^{2}h</span>. Divide both sides by <span class="tex">\pi r^{2}</span>: <span class="tex">\boldsymbol{h=\dfrac{3V}{\pi r^{2}}}</span>.</div></div></div>
+    <div class="part"><div class="pl">(d) A second cone-shaped pile has the same volume as your answer to (a) rounded to the nearest whole <span class="tex">\text{m}^{3}</span>, but a base radius of <span class="tex">3.0</span> m. Use your formula from (c) to determine its height, to the nearest tenth of a metre.</div>
+      <div class="work" style="--h:180px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">h=\dfrac{3(65)}{\pi(3.0)^{2}}=\dfrac{195}{9\pi}=\dfrac{195}{28.27433\ldots}=6.89671\ldots\approx\mathbf{6.9\ m}</span>. (Narrower base, same volume, so it must be taller than the 2.8 m pile. ✓)</div></div></div>
+  </div>
+  <div class="space" id="r7-space"></div>
+  <button class="more" data-more="r7-space">+ More space</button>
+</section>
+
+<section class="card u10l9-rev" data-ink="r8" data-section="Review: Written Response 23">
+  <div class="sec-h"><span class="badge">WR</span><h2>23. Written Response</h2></div>
+  <p class="q">State each of the following readings, to the precision of the instrument shown.</p>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(a) A vernier caliper read on its inch scale (main scale every <span class="tex">\tfrac{1}{16}</span> in, vernier <span class="tex">\tfrac{1}{128}</span> in per division). Give the reading as a mixed fraction in lowest terms.</div>
+      <div class="bk-fig u10l9-center"><div data-u10l9-vinch="2,9,6"></div></div>
+      <div class="work" style="--h:120px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Coarse: the index sits just past the <span class="tex">2\tfrac{9}{16}</span> in mark, so <span class="tex">2\tfrac{9}{16}=2\tfrac{72}{128}</span> in. Fine: vernier mark 6 lines up with a main-scale mark, so <span class="tex">\tfrac{6}{128}</span> in.<br>Reading <span class="tex">=2\tfrac{72}{128}+\tfrac{6}{128}=2\tfrac{78}{128}=\mathbf{2\tfrac{39}{64}\ in}</span> (<span class="tex">\gcd(78,128)=2</span>).</div></div></div>
+    <div class="part"><div class="pl">(b) A vernier caliper accurate to <span class="tex">0.05</span> mm.</div>
+      <div class="bk-fig u10l9-center"><div data-u10l9-vernier="37,12"></div></div>
+      <div class="work" style="--h:120px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Main-scale (coarse) reading: the last whole millimetre passed is 37, so main <span class="tex">=37</span> mm. Vernier (fine) reading: vernier mark 12 lines up with a main-scale mark, so vernier <span class="tex">=12\times0.05=0.60</span> mm.<br>Reading <span class="tex">=37+0.60=\mathbf{37.60\ mm}</span>, written to two decimals because the caliper reads to 0.05 mm.</div></div></div>
+  </div>
+</section>
+
+<section class="card u10l9-rev" data-ink="r9" data-section="Review: Questions 24–26">
+  <div class="parts c2">
+    <div class="part"><div class="pl"><b>24.</b> <i>(Multiple Choice)</i> A rectangular patio measures <span class="tex">4.5</span> m by <span class="tex">3.2</span> m. Its area, in <span class="tex">\text{cm}^{2}</span>, is</div>
+      <div class="bk-mc" data-answer="C" data-cols="2" data-pick><div><span class="tex">1440</span></div><div><span class="tex">14\,400</span></div><div><span class="tex">144\,000</span></div><div><span class="tex">1\,440\,000</span></div></div>
+      <div class="work" style="--h:190px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Area first, in the given unit: <span class="tex">4.5\times3.2=14.4\ \text{m}^2</span>. An area conversion <i>squares</i> the linear factor: <span class="tex">1\text{ m}^2=100^2=10\,000\text{ cm}^2</span>. <span class="tex">14.4\times10\,000=144\,000\text{ cm}^2</span>. <b>Answer: C.</b> (B applies the factor 100 only once; D cubes it.)</div></div></div>
+    <div class="part"><div class="pl"><b>25.</b> <i>(Numerical Response)</i> A concrete footing is a rectangular prism measuring <span class="tex">1.2</span> m by <span class="tex">0.8</span> m by <span class="tex">0.5</span> m. Its volume, to the nearest <span class="tex">\text{ft}^{3}</span>, is ____.</div>
+      <div class="work" style="--h:190px"></div><div class="bk-nr" data-value="17"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Volume first: <span class="tex">1.2\times0.8\times0.5=0.48\ \text{m}^3</span>. A volume conversion <i>cubes</i> the linear factor: <span class="tex">1\text{ ft}=0.3048</span> m, so <span class="tex">1\text{ m}^3=\left(\tfrac{1}{0.3048}\right)^3=35.3147\ \text{ft}^3</span>. <span class="tex">0.48\times35.3147=16.951\ldots\approx\mathbf{17}\ \text{ft}^3</span>.</div></div></div>
+    <div class="part span2"><div class="pl"><b>26.</b> <i>(Written Response)</i> A chocolate bar is a right triangular prism. Its triangular ends are right triangles with legs of <span class="tex">6</span> cm and <span class="tex">8</span> cm and a hypotenuse of <span class="tex">10</span> cm, and the bar is <span class="tex">15</span> cm long.</div>
+      <div class="u10l9-wr26">
+        <div data-u10l9-fig="q26"></div>
+        <div class="u10l9-wrparts">
+          <div class="u10l9-sub"><div class="pl">(a) Determine the volume of the bar.</div><div class="work" style="--h:120px"></div>
+            <div class="ansrow"><button class="reveal">Answer</button><div class="ans">For a prism, <span class="tex">V=A_{\text{Base}}\times h</span>, where the base is the triangular end and <span class="tex">h</span> is the 15 cm length. <span class="tex">A_{\text{Base}}=\tfrac12(6)(8)=24\ \text{cm}^2</span>; <span class="tex">V=24\times15=\mathbf{360\ cm^{3}}</span>.</div></div></div>
+          <div class="u10l9-sub"><div class="pl">(b) Determine the surface area of the foil wrapper that covers the bar exactly.</div><div class="work" style="--h:120px"></div>
+            <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Two triangular ends plus three rectangles. Ends: <span class="tex">2(24)=48\ \text{cm}^2</span>. The three rectangles together form one rectangle of width (perimeter of the triangle) and length 15 cm: <span class="tex">(6+8+10)(15)=360\ \text{cm}^2</span>. <span class="tex">SA=48+360=\mathbf{408\ cm^{2}}</span>: an <i>area</i>, so cm², not cm³.</div></div></div>
+          <div class="u10l9-sub"><div class="pl">(c) Melted, the chocolate is poured into a measuring cup. State its volume in millilitres and in litres.</div><div class="work" style="--h:100px"></div>
+            <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">1\text{ cm}^3=1\text{ mL}</span>, so <span class="tex">360\text{ cm}^3=\mathbf{360\ mL}</span>; <span class="tex">1000\text{ mL}=1\text{ L}</span>, so <span class="tex">360\text{ mL}=\mathbf{0.36\ L}</span>.</div></div></div>
+        </div>
+      </div></div>
+  </div>
+</section>
+
+<section class="card u10l9-rev" data-ink="r10" data-section="Review: Questions 27–29">
+  <div class="parts c2">
+    <div class="part span2"><div class="pl"><b>27.</b> <i>(Written Response)</i> A monument is a square-based pyramid. Each side of the base is <span class="tex">10</span> cm and the pyramid’s perpendicular height is <span class="tex">12</span> cm.</div>
+      <div class="u10l9-wr26">
+        <div data-u10l9-fig="q27"></div>
+        <div class="u10l9-wrparts">
+          <div class="u10l9-sub"><div class="pl">(a) Determine the slant height <span class="tex">s</span> of a triangular face.</div><div class="work" style="--h:120px"></div>
+            <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The slant height runs from the apex to the midpoint of a base edge, so its foot is half a side from the centre: 5 cm. <span class="tex">s^2=12^2+5^2=144+25=169</span>, so <span class="tex">s=\mathbf{13\ cm}</span>.</div></div></div>
+          <div class="u10l9-sub"><div class="pl">(b) Determine the total surface area of the monument, including its base.</div><div class="work" style="--h:120px"></div>
+            <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Surface area uses the <i>slant</i> height <span class="tex">s=13</span> cm. Base: <span class="tex">10\times10=100\ \text{cm}^2</span>. Four triangular faces: <span class="tex">4\left(\tfrac12 bs\right)=4\left(\tfrac12\right)(10)(13)=260\ \text{cm}^2</span>. <span class="tex">SA=100+260=\mathbf{360\ cm^{2}}</span>.</div></div></div>
+          <div class="u10l9-sub"><div class="pl">(c) Determine the volume of the monument.</div><div class="work" style="--h:100px"></div>
+            <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Volume uses the <i>perpendicular</i> height <span class="tex">h=12</span> cm. <span class="tex">A_{\text{Base}}=100\ \text{cm}^2</span>; <span class="tex">V=\tfrac13 A_{\text{Base}}h=\tfrac13(100)(12)=\mathbf{400\ cm^{3}}</span>.</div></div></div>
+        </div>
+      </div></div>
+    <div class="part"><div class="pl"><b>28.</b> <i>(Multiple Choice)</i> A solid glass paperweight is a hemisphere of radius <span class="tex">6</span> cm, resting flat side down. Its total surface area, including the flat circular base, to the nearest tenth of a <span class="tex">\text{cm}^{2}</span>, is</div>
+      <div class="u10l9-figrow"><div data-u10l9-fig="q28"></div></div>
+      <div class="bk-mc" data-answer="B" data-cols="2" data-pick><div><span class="tex">226.2\ \text{cm}^2</span></div><div><span class="tex">339.3\ \text{cm}^2</span></div><div><span class="tex">452.4\ \text{cm}^2</span></div><div><span class="tex">904.8\ \text{cm}^2</span></div></div>
+      <div class="work" style="--h:150px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">“Including the flat circular base” means both pieces count: curved <span class="tex">2\pi r^2=72\pi</span>, base <span class="tex">\pi r^2=36\pi</span>. <span class="tex">SA=3\pi r^{2}=3\pi(36)=108\pi=339.292\ldots\approx339.3\ \text{cm}^2</span>. <b>Answer: B.</b> (A leaves the base out; C is a whole sphere.)</div></div></div>
+    <div class="part"><div class="pl"><b>29.</b> <i>(Numerical Response)</i> A cone-shaped paper cup has a diameter of <span class="tex">8</span> cm and a depth of <span class="tex">10</span> cm. Its capacity, to the nearest <span class="tex">\text{cm}^{3}</span>, is ____.</div>
+      <div class="u10l9-figrow"><div data-u10l9-fig="q29"></div></div>
+      <div class="work" style="--h:150px"></div><div class="bk-nr" data-value="168"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Halve the diameter: <span class="tex">r=4</span> cm; the depth is the perpendicular height. <span class="tex">V=\tfrac13\pi(4)^{2}(10)=\tfrac{160}{3}\pi=167.5516\ldots\approx\mathbf{168}\ \text{cm}^3</span>.</div></div></div>
+  </div>
+</section>
+
+<section class="card u10l9-rev u10l9-extcard" data-ink="r11" data-section="Review: Extension 30–33">
+  <div class="sec-h"><span class="badge">R</span><h2>Extension: Micro and Mega, the Micrometer, Scientific Notation</h2><span class="u10l9-ext-tag">Extension</span></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl"><b>30.</b> <i>(Extension; Multiple Choice)</i> Consider the following four statements. How many of these statements are false?
+      <div class="u10l9-stmts"><div class="u10l9-stmt">Statement 1: <span class="tex">1\text{ mm}=0.1\text{ cm}</span></div><div class="u10l9-stmt">Statement 2: <span class="tex">1\text{ m}=100\text{ cm}</span></div><div class="u10l9-stmt">Statement 3: <span class="tex">1\ \mu\text{m}=1000\text{ nm}</span></div><div class="u10l9-stmt">Statement 4: <span class="tex">1\text{ Mm}=0.001\text{ km}</span></div></div></div>
+      <div class="bk-mc" data-answer="B" data-pick><div>zero</div><div>one</div><div>three</div><div>four</div></div>
+      <div class="work" style="--h:90px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">1: true. 2: true. 3: <span class="tex">1\text{ nm}=0.001\ \mu\text{m}</span>, so <span class="tex">1\ \mu\text{m}=1000\text{ nm}</span>: true. 4: mega is <span class="tex">10^6</span> and kilo is <span class="tex">10^3</span>, so <span class="tex">1\text{ Mm}=1000\text{ km}</span>, not 0.001 km: false. One statement is false. <b>Answer: B.</b></div></div></div>
+    <div class="part"><div class="pl"><b>31.</b> <i>(Extension; Multiple Choice)</i> The micrometer below has a measuring range of 0–25 mm and is accurate to 0.01 mm. The sleeve scale has increments of 0.5 mm and the thimble scale has increments of 0.01 mm. The reading is</div>
+      <div class="bk-fig u10l9-center"><div data-u10l9-micro="29,33"></div></div>
+      <div class="bk-mc" data-answer="A" data-pick><div><span class="tex">14.83</span> mm</div><div><span class="tex">13.83</span> mm</div><div><span class="tex">14.33</span> mm</div><div><span class="tex">13.33</span> mm</div></div>
+      <div class="work" style="--h:90px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Sleeve: the last fully visible mark left of the thimble is 14.5 mm; thimble: the index line is on mark 33, so thimble <span class="tex">=33\times0.01=0.33</span> mm. Reading <span class="tex">=14.5+0.33=14.83</span> mm. <b>Answer: A.</b></div></div></div>
+    <div class="part"><div class="pl"><b>32.</b> <i>(Extension; Written Response)</i> State the reading of this micrometer, accurate to 0.01 mm.</div>
+      <div class="bk-fig u10l9-center"><div data-u10l9-micro="13,8"></div></div>
+      <div class="work" style="--h:110px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Sleeve (coarse): the last fully visible sleeve mark is the 6.5 mm half-millimetre mark, so sleeve <span class="tex">=6.5</span> mm. Thimble (fine): the index line falls on division 8, so thimble <span class="tex">=8\times0.01=0.08</span> mm. Reading <span class="tex">=6.5+0.08=\mathbf{6.58\ mm}</span>.</div></div></div>
+    <div class="part"><div class="pl"><b>33.</b> <i>(Extension)</i> Write your answer to Question 22(b) in scientific notation.</div>
+      <div class="work" style="--h:90px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">65\,000</span> L: the decimal point moves 4 places left so the coefficient lies in <span class="tex">[1,10)</span>: <span class="tex">\mathbf{6.5\times10^{4}\ L}</span>.</div></div></div>
+  </div>
+  <div class="space" id="r11-space"></div>
+  <button class="more" data-more="r11-space">+ More space</button>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Convert first.</b> SI to SI: slide along the prefix line (<span class="tex">\times10</span> per step to the right). Anything else: unit analysis with a conversion fraction that <b>cancels</b> the unwanted unit. Squared or cubed units: <b>square or cube</b> the factor. Smaller unit, bigger number.</div>
+    <div><b>Match the tool to the job.</b> Units: a convenient-sized number (in, yd, mi). Instruments: the precision the job needs (micrometer, caliper, ruler, tape, trundle wheel). Referents: count how many fit, then convert.</div>
+    <div><b>Pick the formula from the shape.</b> Flat top: <span class="tex">V=A_{\text{Base}}h</span>. Pointed: <span class="tex">\tfrac13</span> of that, and <span class="tex">s</span> (not <span class="tex">h</span>) for surface area. Round: <span class="tex">4\pi r^2</span>, <span class="tex">\tfrac43\pi r^3</span>. Always the <b>radius</b>.</div>
+    <div><b>Chain carefully.</b> Carry full precision, round <b>once</b> at the end; round <b>up</b> for whole trucks or tiles; work backwards by undoing the formula (<span class="tex">\sqrt{\ }</span>, <span class="tex">\sqrt[3]{\ }</span>); compare costs in one currency.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u10l9" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 9 — Measurement: A Cumulative Review</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <div class="u10l9-review">
+    <div class="u10l9-review-h"><span class="kicker">Up next</span><b>Unit 10 test.</b> <span class="muted">Shaky on a question today? Go back to its lesson.</span></div>
+    <div class="u10l9-review-grid">
+      <a href="../l1/"><span class="u10l9-rn">10.1</span>Rounding and formula substitution <small>Ex 1(b) <span class="u10l9-ext sm">Ext</span>, 8(a), 9 · Review 22, 33 <span class="u10l9-ext sm">Ext</span></small></a>
+      <a href="../l2/"><span class="u10l9-rn">10.2</span>Estimating length with personal referents <small>Ex 2(c) · Review 5, 12</small></a>
+      <a href="../l3/"><span class="u10l9-rn">10.3</span>Reading precision measuring instruments <small>Ex 2(b), 3 <span class="u10l9-ext sm">Ext</span> · Review 6, 8, 23, 31–32 <span class="u10l9-ext sm">Ext</span></small></a>
+      <a href="../l4a/"><span class="u10l9-rn">10.4A</span>Converting units within SI <small>Ex 1, 4(b) · Review 2, 3, 4, 10, 15, 30 <span class="u10l9-ext sm">Ext</span></small></a>
+      <a href="../l4b/"><span class="u10l9-rn">10.4B</span>Imperial units and converting between systems <small>Ex 2(a), 4(a), 5(a), 6 · Review 1, 7, 9, 13, 14</small></a>
+      <a href="../l5/"><span class="u10l9-rn">10.5</span>Converting square and cubic units <small>Ex 5(b), 9(d) · Review 11, 21(d), 24, 25, 26(c)</small></a>
+      <a href="../l6/"><span class="u10l9-rn">10.6</span>Prisms and cylinders <small>Ex 9(b) · Review 16, 21(a)(b), 26</small></a>
+      <a href="../l7/"><span class="u10l9-rn">10.7</span>Pyramids and cones <small>Ex 7(a), 8(a), 9(a)(c) · Review 17, 19, 22, 27, 29</small></a>
+      <a href="../l8/"><span class="u10l9-rn">10.8</span>Spheres and hemispheres <small>Ex 7(b), 8(b) · Review 18, 20, 21(c), 28</small></a>
+      <div class="u10l9-test"><span class="u10l9-rn">Test</span>Unit 10 test: M1, M2, M3 <small>same question styles as today · the last unit of Math 10C</small></div>
+    </div>
+  </div>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u10l9.js';
+  boot({ key: 'u10l9', homeHref: '../../', title: '10.9 Measurement Review' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

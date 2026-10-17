@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Finding a Missing Side Length · Math 10C 9.3</title>
+<meta name="description" content="Math 10C Unit 9 Lesson 3: finding a missing side length in a right triangle. Pythagoras when two sides are known; otherwise name the sides from the given angle, choose sine, cosine or tangent, then multiply (unknown on top) or cross-multiply and divide (unknown on the bottom). Ladders, vertex-letter descriptions and two unknown sides. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u9l3.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 9 Trigonometry · Lesson 3</div>
+  <h1>Finding a Missing Side Length in a Right Triangle</h1>
+  <p class="lede">Name the sides relative to the given angle, choose the ratio that holds the <b>known side</b> and the <b>unknown</b>, then <b>multiply</b> or <b>divide</b>. And when two sides are already known, no trigonometry is needed at all.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>decide which tool a question calls for: the <b>Pythagorean theorem</b> (two sides known) or a <b>trig ratio</b> (an acute angle and one side known)</li>
+      <li>name the <b class="u9l3-co">opposite</b>, <b class="u9l3-ca">adjacent</b> and <b class="u9l3-ch">hypotenuse</b> from the given angle and choose SOH, CAH or TOA</li>
+      <li>solve when the unknown is on <b>top</b> of the ratio (<b>multiply</b>) and when it is on the <b>bottom</b> (cross-multiply, then <b>divide</b>)</li>
+      <li>sketch a triangle from a description such as <span class="tex">\angle JLK=90^\circ</span>, find two unknown sides from the given information, round only at the end, and sense-check every answer</li>
+    </ul>
+  </div>
+  <div class="outcome"><b>M4</b> Develop and apply the primary trigonometric ratios (sine, cosine, tangent) to solve problems that involve right triangles.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: Kite Height" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Kite Height</h2></div>
+  <p class="big">You let out all <b>50 m</b> of string. It makes a <b><span class="tex">40^\circ</span></b> angle with the level ground.</p>
+  <div class="u9l3-wfig" id="u9l3-wfig"></div>
+  <div class="u9l3-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>If the string went <b>straight up</b> (<span class="tex">90^\circ</span>), how high is the kite?</div></div>
+      <div class="u9l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>50 m</b>: all of the string is height.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>If the string lay <b>flat</b> (<span class="tex">0^\circ</span>), how high is it?</div></div>
+      <div class="u9l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>0 m</b>: the kite is at hand height.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>At <span class="tex">30^\circ</span>, the kite’s height is exactly <b>half</b> the string’s length. How high is it?</div></div>
+      <div class="u9l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>25 m.</b> This is <span class="tex">\sin30^\circ=\tfrac12</span> stated in words.</div></div>
+    </div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> At <span class="tex">40^\circ</span>, about how high is the kite above your hand? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt"><b>A</b> about 22 m</div>
+      <div class="opt"><b>B</b> about 29 m</div>
+      <div class="opt right"><b>C</b> about 32 m</div>
+      <div class="opt"><b>D</b> about 38 m</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>C: about 32 m.</b> The string is the <b class="u9l3-ch">hypotenuse</b> and the height is <b class="u9l3-co">opposite</b> the <span class="tex">40^\circ</span> angle, so <span class="tex">\sin40^\circ=\dfrac{h}{50}</span> and <span class="tex">h=50\sin40^\circ\approx32.1</span> m.<br>
+      <span class="muted"><b>A</b> is <span class="tex">\tfrac{40}{90}\times50</span>: “height grows in step with the angle.” <b>B</b> is a straight line between the <span class="tex">30^\circ</span> (25 m) and <span class="tex">90^\circ</span> (50 m) rows, but sine is not linear: the height climbs fast at low angles and levels off near <span class="tex">90^\circ</span> (at <span class="tex">60^\circ</span> it is already 43 m). <b>D</b> is <span class="tex">50\cos40^\circ\approx38.3</span>: the <b>adjacent</b> side, the ground distance to the spot under the kite. Wrong side.</span></div>
+  </div>
+
+  <div class="bk-wq u9l3-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> At the same <span class="tex">40^\circ</span>, how much string do you need for the kite to be <b>40 m</b> up?</div></div>
+    <div class="u9l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">\sin40^\circ=\dfrac{40}{x}\ \Rightarrow\ x=\dfrac{40}{\sin40^\circ}\approx62.2</span> m. The unknown is now on the <b>bottom</b>: a preview of Section 3.</div></div>
+  </div>
+  <p class="u9l3-social">Stand up and point at a kite at 30°, then at 40°. How far did your finger rise? (About 7 m of kite height for only 10°.)</p>
+</section>
+
+<section class="card" data-ink="warm2" data-section="Warm-up: the kite, solved">
+  <h3 class="sub">The kite, solved</h3>
+  <p>The string is the hypotenuse, the height is the side opposite the angle. That is the whole recipe of this lesson: <b>name the sides, choose the ratio, then multiply or divide</b>.</p>
+  <div class="explainer" data-explainer="kite"></div>
+</section>
+
+<!-- ================= 1. Pythagoras ================= -->
+<section class="card" data-ink="s1" data-section="1. Review: The Pythagorean Theorem">
+  <div class="sec-h"><span class="badge">1</span><h2>Review: The Pythagorean Theorem</h2></div>
+  <div class="u9l3-pyrow">
+    <div>
+      <p>In a right triangle with legs <span class="tex">a</span> and <span class="tex">b</span> and hypotenuse <span class="tex">c</span>,</p>
+      <div class="u9l3-pyeq"><span class="tex">c^2=a^2+b^2,\qquad a^2=c^2-b^2,\qquad b^2=c^2-a^2</span></div>
+      <div class="def">The theorem applies whenever <b>two</b> side lengths are known. When <b>one</b> side length and one <b>acute angle</b> are known instead, a trigonometric ratio is needed. Recognizing which tool the given information calls for is the <b>first decision</b> in every question.</div>
+    </div>
+    <div class="u9l3-fig" id="u9l3-fsec1"></div>
+  </div>
+  <div class="explainer" data-explainer="pyth"></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Two sides known, so no trigonometry is required</h3></div>
+  <p class="q">Calculate the length of the third side of each triangle, to the nearest tenth of a unit if necessary.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a)</div><div class="u9l3-fig" id="u9l3-f1a"></div><div class="work" style="--h:190px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Two legs are known and no angle is given: Pythagorean theorem. <span class="tex">r</span> is the hypotenuse.<br><span class="tex">r^2=6.3^2+8.4^2=39.69+70.56=110.25</span><br><span class="tex">r=\sqrt{110.25}=\boldsymbol{10.5}\text{ cm}</span> (exact: a 3–4–5 triangle scaled by 2.1)</div></div></div>
+    <div class="part"><div class="pl">(b)</div><div class="u9l3-fig" id="u9l3-f1b"></div><div class="work" style="--h:230px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Again both legs are known, and <span class="tex">s</span> is the hypotenuse.<br><span class="tex">s^2=12.0^2+5.0^2=144.00+25.00=169.00</span><br><span class="tex">s=\sqrt{169.00}=\boldsymbol{13.0}\text{ mm}</span> (a 5–12–13 triangle)</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>The whole calculation in one line.</b> <span class="keys"><kbd>2nd</kbd><kbd>x²</kbd></span> is <span class="tex">\sqrt{\phantom{x}}</span>, and it opens a bracket: <span class="keys"><kbd>√</kbd><kbd>6</kbd><kbd>.</kbd><kbd>3</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>8</kbd><kbd>.</kbd><kbd>4</kbd><kbd>x²</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 10.5. Close the bracket before <kbd>ENTER</kbd>.</div>
+    <div class="pill-col"><button class="pill" data-keys="√ 6.3 x² + 8.4 x² ) =">Show me (a)</button><button class="pill" data-keys="√ 12 x² + 5 x² ) =">Show me (b)</button></div>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<!-- ================= 2. Unknown in the numerator ================= -->
+<section class="card" data-ink="s2" data-section="2. The Unknown in the Numerator">
+  <div class="sec-h"><span class="badge">2</span><h2>The Unknown in the Numerator</h2></div>
+  <p>Once an acute angle is chosen, every side of the triangle has a name relative to it: the <b class="u9l3-co">opposite</b> side, the <b class="u9l3-ca">adjacent</b> side, and the <b class="u9l3-ch">hypotenuse</b>. SOH CAH TOA then fixes the ratio to use:</p>
+  <div class="u9l3-soh">
+    <div><b><span class="u9l3-cang">S</span>OH</b><span class="tex">\sin\theta=\dfrac{\textcolor{#7b4fc4}{\text{opp}}}{\textcolor{#1f5bd6}{\text{hyp}}}</span></div>
+    <div><b><span class="u9l3-cang">C</span>AH</b><span class="tex">\cos\theta=\dfrac{\textcolor{#c27a0e}{\text{adj}}}{\textcolor{#1f5bd6}{\text{hyp}}}</span></div>
+    <div><b><span class="u9l3-cang">T</span>OA</b><span class="tex">\tan\theta=\dfrac{\textcolor{#7b4fc4}{\text{opp}}}{\textcolor{#c27a0e}{\text{adj}}}</span></div>
+  </div>
+  <div class="def">If the unknown side is <b>on top</b> of the chosen ratio, the equation is solved by a single <b>multiplication</b>: <span class="tex">\dfrac{x}{k}=\sin\theta</span> gives <span class="tex">x=k\sin\theta</span>.</div>
+  <div class="u9l3-key"><span class="u9l3-kc u9l3-k-opp">opposite</span><span class="u9l3-kc u9l3-k-adj">adjacent</span><span class="u9l3-kc u9l3-k-hyp">hypotenuse</span><span class="u9l3-kc u9l3-k-ang">reference angle</span></div>
+  <div class="explainer" data-explainer="pick"></div>
+</section>
+
+<section class="card" data-ink="s2b" data-section="2. Unknown on top: multiply">
+  <h3 class="sub">Unknown on top → multiply</h3>
+  <p>The two sides in the chosen ratio light up on the triangle. Put the equation on a balance: whatever divides the unknown, multiply <b>both</b> pans by it.</p>
+  <div class="explainer" data-explainer="solveTop"></div>
+</section>
+
+<section class="card example" data-ink="ex2" data-section="Example 2">
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Setting up the ratio with the unknown on top</h3></div>
+  <p class="q">The measure of an acute angle and the length of the hypotenuse are given. Complete the steps for finding <span class="tex">x</span>, the side opposite the given angle.</p>
+  <div class="u9l3-exrow">
+    <div class="u9l3-fig" id="u9l3-f2"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl u9l3-fill">The given side, <span class="tex">16.4</span> cm, is the <span data-reveal>hypotenuse</span>, and the side to be found, <span class="tex">x</span>, is <span data-reveal>opposite</span> the given angle of <span class="tex">58^\circ</span>.<br>
+        We use the <span data-reveal>sine</span> ratio.<br>
+        <span class="tex">\dfrac{x}{16.4}=</span> <span data-reveal><span class="tex">\sin</span></span> <span class="tex">58^\circ</span> &emsp;&emsp; <span class="tex">x=16.4</span> <span data-reveal><span class="tex">\sin</span></span> <span class="tex">58^\circ</span><br>
+        To the nearest tenth, <span class="tex">x=</span> <span data-reveal><span class="tex">13.9</span></span> cm.</div>
+        <div class="work" style="--h:130px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">16.4</span> cm is the <b>hypotenuse</b> and <span class="tex">x</span> is <b>opposite</b> <span class="tex">58^\circ</span>, so SOH gives the <b>sine</b> ratio.<br><span class="tex">\dfrac{x}{16.4}=\sin58^\circ</span>. The unknown is in the numerator, so multiply: <span class="tex">x=16.4\sin58^\circ</span>.<br><span class="tex">x=16.4(0.8480481)=13.90798\ldots\approx\boldsymbol{13.9}\text{ cm}</span><br>Sense check: <span class="tex">x</span> must be shorter than the hypotenuse, 16.4 cm ✓</div></div></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>DEG mode first.</b> The <span class="keys"><kbd>SIN</kbd></span> key opens a bracket, so close it: <span class="keys"><kbd>1</kbd><kbd>6</kbd><kbd>.</kbd><kbd>4</kbd><kbd>×</kbd><kbd>SIN</kbd><kbd>5</kbd><kbd>8</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 13.90798… Check: <span class="tex">\sin90^\circ</span> should give exactly 1.</div>
+    <div class="pill-col"><button class="pill" data-keys="16.4 × sin 58 ) =">Show me</button><button class="pill" data-keys="sin 90 ) =">sin 90°</button></div>
+  </div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>A ladder against a wall</h3></div>
+  <p class="q">A ladder 6.8 m long leans against a wall, making an angle of <span class="tex">68^\circ</span> with the ground.</p>
+  <div class="u9l3-exrow">
+    <div class="u9l3-fig" id="u9l3-f3"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(a) How high up the wall, to the nearest tenth of a metre, does the ladder reach?</div><div class="work" style="--h:200px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">h</span> is <b>opposite</b> <span class="tex">68^\circ</span> and the hypotenuse (6.8 m) is given: sine, unknown on top.<br><span class="tex">\sin68^\circ=\dfrac{h}{6.8}</span>, so <span class="tex">h=6.8\sin68^\circ=6.30485\ldots</span><br><span class="tex">h\approx\boldsymbol{6.3}\text{ m}</span></div></div></div>
+    </div>
+  </div>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(b) Use trigonometry to determine, to the nearest tenth of a metre, the distance <span class="tex">d</span> between the foot of the ladder and the base of the wall.</div><div class="work" style="--h:200px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">d</span> is <b>adjacent</b> to <span class="tex">68^\circ</span> and the hypotenuse is given: cosine, unknown on top.<br><span class="tex">\cos68^\circ=\dfrac{d}{6.8}</span>, so <span class="tex">d=6.8\cos68^\circ=2.54732\ldots</span><br><span class="tex">d\approx\boldsymbol{2.5}\text{ m}</span></div></div></div>
+    <div class="part"><div class="pl">(c) Use your answer to (a) and the Pythagorean theorem to determine <span class="tex">d</span> again, to the nearest tenth of a metre.</div><div class="work" style="--h:200px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Using the <b>rounded</b> <span class="tex">h=6.3</span> m:<br><span class="tex">d=\sqrt{6.8^2-6.3^2}</span><br><span class="tex">=\sqrt{46.24-39.69}=\sqrt{6.55}</span><br><span class="tex">=2.55929\ldots\approx\boldsymbol{2.6}\text{ m}</span></div></div></div>
+    <div class="part"><div class="pl">(d) Explain why the answers to (b) and (c) are not quite the same.</div><div class="work" style="--h:200px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">(b) is built on the two <b>given</b> quantities, 6.8 m and <span class="tex">68^\circ</span>. (c) is built on <span class="tex">h</span> after it was already <b>rounded</b> to 6.3 m, and the subtraction inside the square root magnifies that error: 2.5593 instead of 2.5473, which rounds to 2.6 rather than 2.5. Carrying <span class="tex">h=6.30485\ldots</span> unrounded gives 2.5473, matching (b): <b>round only at the very end</b>.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Three calculations.</b> (a) <span class="keys"><kbd>6</kbd><kbd>.</kbd><kbd>8</kbd><kbd>×</kbd><kbd>SIN</kbd><kbd>6</kbd><kbd>8</kbd><kbd>)</kbd><kbd>ENTER</kbd></span>, (b) the same with <kbd>COS</kbd>, (c) <span class="keys"><kbd>√</kbd><kbd>6</kbd><kbd>.</kbd><kbd>8</kbd><kbd>x²</kbd><kbd>−</kbd><kbd>6</kbd><kbd>.</kbd><kbd>3</kbd><kbd>x²</kbd><kbd>)</kbd><kbd>ENTER</kbd></span>.</div>
+    <div class="pill-col"><button class="pill" data-keys="6.8 × sin 68 ) =">(a) height</button><button class="pill" data-keys="6.8 × cos 68 ) =">(b) distance</button><button class="pill" data-keys="√ 6.8 x² − 6.3 x² ) =">(c) Pythagoras</button></div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s2c" data-section="2. The ladder, animated">
+  <h3 class="sub">The ladder, and the rounding trap</h3>
+  <p>Slide the ladder to see the height and the distance trade off, then check Example 3, and see exactly why (b) and (c) disagree.</p>
+  <div class="explainer" data-explainer="ladder"></div>
+</section>
+
+<!-- ================= 3. Unknown in the denominator ================= -->
+<section class="card" data-ink="s3" data-section="3. The Unknown in the Denominator">
+  <div class="sec-h"><span class="badge">3</span><h2>The Unknown in the Denominator</h2></div>
+  <p>If the unknown side is the hypotenuse (or, more generally, sits <b>underneath</b> the known side in the ratio, for example the adjacent leg in <span class="tex">\tan\theta=\frac{\text{opp}}{\text{adj}}</span> when the opposite leg is the one given), it lands in the <b>denominator</b>, and the equation is solved by cross-multiplying and then dividing:</p>
+  <div class="u9l3-pyeq"><span class="tex">\sin\theta=\dfrac{k}{x}\ \Rightarrow\ x\sin\theta=k\ \Rightarrow\ x=\dfrac{k}{\sin\theta},\qquad\text{and likewise}\qquad\tan\theta=\dfrac{k}{x}\ \Rightarrow\ x=\dfrac{k}{\tan\theta}</span></div>
+  <div class="def amber">Where the unknown sits decides the whole calculation: <b>on top</b> it is a <b>multiplication</b>, <b>underneath</b> it is a <b>division</b>. Carry full calculator precision through and round only the final answer.</div>
+  <div class="explainer" data-explainer="solveBot"></div>
+</section>
+
+<section class="card" data-ink="s3b" data-section="3. Cover-up triangles">
+  <h3 class="sub">A quick way to remember: cover the unknown</h3>
+  <p>Write each ratio as a little triangle: the side on top, the ratio and the other side on the bottom. Cover the side you want. If what is left sits <b>side by side</b>, multiply; if it is <b>one over the other</b>, divide.</p>
+  <div class="explainer" data-explainer="cover"></div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Cross-multiplying to free the unknown</h3></div>
+  <p class="q">The acute angle and the leg opposite it are known, but the hypotenuse <span class="tex">c</span> is unknown, so <span class="tex">c</span> appears in the <u>denominator</u> of the ratio. Complete the steps.</p>
+  <div class="u9l3-exrow">
+    <div class="u9l3-fig" id="u9l3-f4"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl u9l3-fill"><span data-reveal><span class="tex">\sin</span></span> <span class="tex">37^\circ=\dfrac{9.4}{c}</span><br>cross multiply: &ensp;<span class="tex">c</span> <span data-reveal><span class="tex">\sin</span></span> <span class="tex">37^\circ=9.4</span><br>
+        Divide both sides by <span data-reveal><span class="tex">\sin</span></span> <span class="tex">37^\circ</span> to get<br>
+        <span class="tex">c=9.4\div</span> <span data-reveal><span class="tex">\sin</span></span> <span class="tex">37^\circ=</span> <span data-reveal><span class="tex">15.6</span></span> cm (to the nearest tenth).</div>
+        <div class="work" style="--h:130px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">9.4</span> cm is <b>opposite</b> <span class="tex">37^\circ</span> and <span class="tex">c</span> is the hypotenuse, so <span class="tex">c</span> sits underneath: <span class="tex">\sin37^\circ=\dfrac{9.4}{c}</span>.<br>Cross multiply: <span class="tex">c\sin37^\circ=9.4</span>. Divide by <span class="tex">\sin37^\circ</span>:<br><span class="tex">c=\dfrac{9.4}{\sin37^\circ}=\dfrac{9.4}{0.6018150}=15.61941\ldots\approx\boldsymbol{15.6}\text{ cm}</span><br>This is a <b>division</b>: <span class="tex">9.4\sin37^\circ=5.66</span> would be shorter than a leg, impossible for a hypotenuse. Check: adjacent leg <span class="tex">=\sqrt{15.6194^2-9.4^2}=12.474</span>, and <span class="tex">9.4\div12.474=0.7536=\tan37^\circ</span> ✓</div></div></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Divide, in one line.</b> <span class="keys"><kbd>9</kbd><kbd>.</kbd><kbd>4</kbd><kbd>÷</kbd><kbd>SIN</kbd><kbd>3</kbd><kbd>7</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 15.61941… Don’t round <span class="tex">\sin37^\circ</span> first.</div>
+    <div class="pill-col"><button class="pill" data-keys="9.4 ÷ sin 37 ) =">Show me</button></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Reading the labels from a vertex-letter description</h3></div>
+  <p class="q">Determine, to one decimal place, the length of the hypotenuse <span class="tex">JK</span> of triangle <span class="tex">JKL</span>, in which angle <span class="tex">JLK=90^\circ</span>, angle <span class="tex">LJK=34^\circ</span>, and <span class="tex">KL=11.2</span> mm.</p>
+  <div class="u9l3-exrow">
+    <div class="u9l3-fig" id="u9l3-f5"></div>
+    <div class="parts c1">
+      <div class="part"><div class="work" style="--h:290px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\angle L=90^\circ</span>, so <span class="tex">JK</span> is the hypotenuse. Relative to <span class="tex">\angle J=34^\circ</span>, <span class="tex">KL=11.2</span> mm is <b>opposite</b>, and the unknown hypotenuse sits in the <b>denominator</b>.<br><span class="tex">\sin34^\circ=\dfrac{KL}{JK}=\dfrac{11.2}{JK}</span><br>Cross multiply and divide: <span class="tex">JK=\dfrac{11.2}{\sin34^\circ}=\dfrac{11.2}{0.5591929}=20.02886\ldots</span><br><span class="tex">JK\approx\boldsymbol{20.0}\text{ mm}</span><br>Check: <span class="tex">JL=\dfrac{11.2}{\tan34^\circ}=16.605</span>, and <span class="tex">11.2^2+16.605^2=401.2=20.029^2</span> ✓</div></div></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Unknown on the bottom: divide.</b> <span class="keys"><kbd>1</kbd><kbd>1</kbd><kbd>.</kbd><kbd>2</kbd><kbd>÷</kbd><kbd>SIN</kbd><kbd>3</kbd><kbd>4</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 20.02886… The check uses <kbd>TAN</kbd>: <span class="keys"><kbd>1</kbd><kbd>1</kbd><kbd>.</kbd><kbd>2</kbd><kbd>÷</kbd><kbd>TAN</kbd><kbd>3</kbd><kbd>4</kbd><kbd>)</kbd><kbd>ENTER</kbd></span>.</div>
+    <div class="pill-col"><button class="pill" data-keys="11.2 ÷ sin 34 ) =">Show me</button><button class="pill" data-keys="11.2 ÷ tan 34 ) =">Check: JL</button></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s3c" data-section="3. Reading the letters">
+  <h3 class="sub">From words to a labelled triangle</h3>
+  <p>In <span class="tex">\angle JLK</span> the <b>middle letter</b> is the vertex where the angle is. A side is named by its <b>two endpoints</b>: <span class="tex">KL</span> runs from <span class="tex">K</span> to <span class="tex">L</span>, across from the third vertex <span class="tex">J</span>.</p>
+  <div class="explainer" data-explainer="letters"></div>
+</section>
+
+<!-- ================= 4. More than one side ================= -->
+<section class="card" data-ink="s4" data-section="4. Solving for More Than One Side">
+  <div class="sec-h"><span class="badge">4</span><h2>Solving for More Than One Side</h2></div>
+  <div class="def">A single triangle may ask for two unknown sides at once, typically one numerator case and one denominator case. Set each one up from the <b>given</b> side and the <b>given</b> angle; never build the second calculation on the rounded answer to the first.</div>
+</section>
+
+<section class="card example" data-ink="ex6" data-section="Example 6">
+  <div class="ex-head"><span class="ex-tag">Example 6</span><h3>An unknown leg in the denominator of tangent</h3></div>
+  <p class="q">In right triangle <span class="tex">ABC</span>, <span class="tex">\angle C=90^\circ</span>, <span class="tex">\angle A=28^\circ</span>, and the leg opposite <span class="tex">\angle A</span> is <span class="tex">BC=9.5</span> cm. Determine the length of the adjacent leg <span class="tex">AC</span>, to the nearest tenth of a centimetre.</p>
+  <div class="u9l3-exrow">
+    <div class="u9l3-fig" id="u9l3-f6"></div>
+    <div class="parts c1">
+      <div class="part"><div class="work" style="--h:230px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans">From <span class="tex">\angle A=28^\circ</span>: <span class="tex">BC=9.5</span> is <b>opposite</b> and <span class="tex">AC</span> is <b>adjacent</b>: TOA. The unknown is the adjacent leg, which sits underneath:<br><span class="tex">\tan28^\circ=\dfrac{9.5}{AC}</span>. Cross multiply: <span class="tex">AC\tan28^\circ=9.5</span>, then divide:<br><span class="tex">AC=\dfrac{9.5}{\tan28^\circ}=\dfrac{9.5}{0.5317094}=17.86690\ldots\approx\boldsymbol{17.9}\text{ cm}</span><br>Sense check: <span class="tex">28^\circ&lt;45^\circ</span>, so the adjacent leg must be <b>longer</b> than the opposite leg. Multiplying instead (<span class="tex">9.5\tan28^\circ=5.05</span>) would make it shorter: impossible.</div></div></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Tangent, divided.</b> <span class="keys"><kbd>9</kbd><kbd>.</kbd><kbd>5</kbd><kbd>÷</kbd><kbd>TAN</kbd><kbd>2</kbd><kbd>8</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 17.86690…</div>
+    <div class="pill-col"><button class="pill" data-keys="9.5 ÷ tan 28 ) =">Show me</button></div>
+  </div>
+  <div class="space" id="ex6-space"></div>
+  <button class="more" data-more="ex6-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex7" data-section="Example 7">
+  <div class="ex-head"><span class="ex-tag">Example 7</span><h3>One triangle, two unknown sides</h3></div>
+  <p class="q">In triangle <span class="tex">DEF</span>, angle <span class="tex">DEF=90^\circ</span>, angle <span class="tex">DFE=64^\circ</span>, and <span class="tex">EF=71</span> m. Use trigonometric ratios to determine the lengths of <span class="tex">DE</span> and <span class="tex">DF</span>, each to the nearest metre.</p>
+  <div class="u9l3-exrow">
+    <div class="u9l3-fig" id="u9l3-f7"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(a) Determine the length of <span class="tex">DE</span>.</div><div class="work" style="--h:150px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Relative to <span class="tex">\angle F=64^\circ</span>: <span class="tex">EF=71</span> m is <b>adjacent</b> and <span class="tex">DE</span> is <b>opposite</b>: TOA, unknown on top.<br><span class="tex">\tan64^\circ=\dfrac{DE}{71}</span>, so <span class="tex">DE=71\tan64^\circ=71(2.0503038)=145.57157\ldots\approx\boldsymbol{146}\text{ m}</span></div></div></div>
+      <div class="part"><div class="pl">(b) Determine the length of <span class="tex">DF</span>.</div><div class="work" style="--h:150px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">DF</span> is the hypotenuse, so it lands in the denominator: <span class="tex">\cos64^\circ=\dfrac{EF}{DF}=\dfrac{71}{DF}</span>.<br><span class="tex">DF\cos64^\circ=71</span>, so <span class="tex">DF=\dfrac{71}{\cos64^\circ}=\dfrac{71}{0.4383711}=161.96321\ldots\approx\boldsymbol{162}\text{ m}</span><br>Both parts start from the <b>given</b> 71 m, never from the rounded <span class="tex">DE</span>. Check: <span class="tex">71^2+145.5716^2=26\,232.1=161.963^2</span> ✓ and <span class="tex">90^\circ+64^\circ+26^\circ=180^\circ</span> ✓</div></div></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>One multiplication, one division.</b> (a) <span class="keys"><kbd>7</kbd><kbd>1</kbd><kbd>×</kbd><kbd>TAN</kbd><kbd>6</kbd><kbd>4</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> &nbsp; (b) <span class="keys"><kbd>7</kbd><kbd>1</kbd><kbd>÷</kbd><kbd>COS</kbd><kbd>6</kbd><kbd>4</kbd><kbd>)</kbd><kbd>ENTER</kbd></span></div>
+    <div class="pill-col"><button class="pill" data-keys="71 × tan 64 ) =">(a) DE</button><button class="pill" data-keys="71 ÷ cos 64 ) =">(b) DF</button></div>
+  </div>
+  <div class="space" id="ex7-space"></div>
+  <button class="more" data-more="ex7-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s4b" data-section="4. Two sides, checked">
+  <h3 class="sub">Two unknowns: two fresh starts</h3>
+  <p>Each unknown gets its own ratio, set up from the given side and angle. Then check the pair with the Pythagorean theorem and the angle sum.</p>
+  <div class="explainer" data-explainer="solve7"></div>
+</section>
+
+<!-- ================= 5. Which tool? ================= -->
+<section class="card" data-ink="s5" data-section="5. Which Tool? Where Is the Unknown?">
+  <div class="sec-h"><span class="badge">5</span><h2>Summary: Which Tool? Where Is the Unknown?</h2></div>
+  <table class="u9l3-tbl">
+    <tr><th>What is known</th><th>Tool</th><th>Where is the unknown? What do I do?</th></tr>
+    <tr><td>two sides, no acute angle</td><td>Pythagorean theorem</td><td><span class="tex">c^2=a^2+b^2</span>; subtract first if the unknown is a leg</td></tr>
+    <tr><td>an acute angle and one side</td><td>SOH, CAH or TOA: the ratio that holds the known side <b>and</b> the unknown</td><td>unknown on <b>top</b>: <span class="u9l3-mul">multiply</span>, e.g. <span class="tex">x=k\sin\theta</span><br>unknown <b>underneath</b>: <span class="u9l3-div">divide</span>, e.g. <span class="tex">x=k\div\sin\theta</span> or <span class="tex">x=k\div\tan\theta</span></td></tr>
+    <tr><td>only angles, or no right angle</td><td>—</td><td>not enough information for these tools</td></tr>
+  </table>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Sense check every answer:</b> the hypotenuse is the <b>longest</b> side, and the leg opposite the <b>larger</b> acute angle is the <b>longer</b> leg.</div></div>
+  <div class="explainer" data-explainer="tool"></div>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Which tool?</b> Two sides known: <b>Pythagoras</b>, <span class="tex">c^2=a^2+b^2</span> (subtract first for a leg). An acute angle and one side: a <b>trig ratio</b>.</div>
+    <div><b>Which ratio?</b> Name <b class="u9l3-co">opp</b>, <b class="u9l3-ca">adj</b>, <b class="u9l3-ch">hyp</b> from the given angle. Pick the one of SOH, CAH, TOA that holds the <b>known side</b> and the <b>unknown</b>.</div>
+    <div><b>Multiply or divide?</b> Unknown on <b>top</b>: <span class="tex">x=k\sin\theta</span>. Unknown on the <b>bottom</b>: cross-multiply, then <span class="tex">x=\dfrac{k}{\sin\theta}</span>.</div>
+    <div><b>Precision and sense.</b> Start each unknown from the <b>given</b> values, round only at the end, and check: the hypotenuse is the longest side.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u9l3" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 3 — Finding a Missing Side Length</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l4/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 4 — Finding the Measure of an Angle</b><div class="muted">Two sides known, the angle unknown: run the calculator backwards with sin⁻¹, cos⁻¹ and tan⁻¹</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u9l3.js';
+  boot({ key: 'u9l3', homeHref: '../../', title: '9.3 Missing Side Length' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>

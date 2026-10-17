@@ -1,0 +1,83 @@
+/* Math 10C · Unit 9 · Lesson 6 — Multi-Step Trigonometry: styles used only on this page (prefix u9l6-).
+ * Colours: opposite purple, adjacent amber, hypotenuse blue, reference angle pink-red, eye height green. */
+
+:root { --u9l6-ext: #5d6475; --u9l6-o: #7b4fc4; --u9l6-a: #a86605; --u9l6-h: #1f5bd6; --u9l6-r: #d6336c; --u9l6-e: #12805a; --u9l6-t: #13807a; }
+.ex-cap { min-height: 128px; }
+.ex-cap .katex { font-size: 1.04em; }
+.chip .katex { font-size: 1em; }
+.pl .katex { font-size: 1.1em; }
+.ans .katex { font-size: 1.04em; }
+.lesson .katex { white-space: nowrap; }
+.pill-col { display: flex; flex-direction: column; gap: 6px; }
+.u9l6-pills2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+
+/* colour words */
+.u9l6-co { color: var(--u9l6-o); }
+.u9l6-ca { color: var(--u9l6-a); }
+.u9l6-ch { color: var(--u9l6-h); }
+.u9l6-ce { color: var(--u9l6-e); }
+.u9l6-ct { color: var(--u9l6-t); }
+.u9l6-eq { font-size: 22px; text-align: center; margin: 8px 0 2px; font-weight: 600; }
+
+/* ---------------- Extension styling (as in u6l6) ---------------- */
+.u9l6-ext { display: inline-block; background: var(--u9l6-ext); color: #fff; font: 800 13px var(--round); letter-spacing: .06em; text-transform: uppercase; padding: 2px 9px; border-radius: 6px; vertical-align: 2px; margin-right: 4px; }
+.u9l6-ext.sm { font-size: 11px; padding: 1px 6px; vertical-align: 1px; }
+.u9l6-extcard { border-left: 6px solid #a5a9b3; }
+.u9l6-ext-tag { margin-left: auto; font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--u9l6-ext); background: #f1f2f5; border: 1.5px solid #c6cad3; border-radius: 8px; padding: 3px 10px; white-space: nowrap; align-self: center; }
+
+/* ---------------- warm-up ---------------- */
+.u9l6-wfig { position: relative; width: 100%; height: 330px; border-radius: 14px; background: #f4f8fd; border: 1px solid var(--line2); overflow: hidden; }
+.u9l6-wbtns { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0 6px; }
+.u9l6-wbtns .pill.on { background: var(--brand); color: #fff; }
+.u9l6-wqs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-top: 8px; }
+.u9l6-wqs .bk-wq { background: #fff; border: 1px solid var(--line2); border-radius: 12px; padding: 4px 12px 10px; }
+.u9l6-wa { margin: 4px 0 0; }
+.u9l6-social { font-style: italic; color: var(--ink2); font-size: 19px; text-align: center; margin: 16px 0 0; }
+.u9l6-inl { margin-top: 8px; }
+.u9l6-boatn { font: 800 17px var(--round); color: #fff; background: #1e2d46; border-radius: 50%; width: 26px; height: 26px; line-height: 26px; text-align: center; }
+.u9l6-tog { opacity: 0; transition: opacity .4s; }
+.u9l6-tog.on { opacity: 1; }
+.u9l6-tagi { font: 800 13px var(--round); text-transform: uppercase; letter-spacing: .05em; margin-left: 4px; }
+
+/* ---------------- figures ---------------- */
+.u9l6-fig { display: flex; justify-content: center; margin: 4px 0 12px; }
+.u9l6-exrow { display: grid; grid-template-columns: auto 1fr; gap: 22px; align-items: start; margin-bottom: 14px; }
+.u9l6-exrow .parts { margin-bottom: 0; }
+.u9l6-ansfig { margin-top: 8px; }
+.u9l6-four { display: flex; justify-content: center; gap: 26px; margin: 4px 0 12px; }
+.u9l6-lab { font-size: 19px; font-weight: 600; color: var(--ink); }
+.u9l6-lab.sm { font-size: 17px; }
+.u9l6-muted { color: #6b7385; font-style: italic; font-weight: 500; }
+.u9l6-halo { background: rgba(255, 255, 255, .9); border-radius: 7px; padding: 0 5px; }
+.u9l6-bl { font-size: 20px; font-weight: 700; }
+.u9l6-alab { font-size: 19px; font-weight: 700; background: rgba(255, 255, 255, .85); border-radius: 6px; padding: 0 3px; }
+.u9l6-tag { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .04em; background: #fff; border: 2px solid currentColor; border-radius: 9px; padding: 0 7px; }
+.u9l6-cmp { font: 800 22px var(--round); color: var(--ink); }
+
+/* ---------------- activity + tables ---------------- */
+.u9l6-steps { margin: 4px 0 14px; padding-left: 28px; font-size: 19px; line-height: 1.45; }
+.u9l6-steps li { margin-bottom: 4px; }
+.u9l6-tbl { width: 100%; border-collapse: collapse; font-size: 16px; }
+.u9l6-tbl th { background: #f3f2ee; font-weight: 700; padding: 6px; border: 1.5px solid #c6cad3; line-height: 1.2; }
+.u9l6-tbl td { height: 64px; border: 1.5px solid #c6cad3; }
+.u9l6-btbl { width: 100%; border-collapse: collapse; font-size: 18px; margin: 4px 0 14px; text-align: center; }
+.u9l6-btbl th { background: #f3f2ee; padding: 6px; border: 1.5px solid #c6cad3; }
+.u9l6-btbl td { padding: 8px; border: 1.5px solid #c6cad3; line-height: 1.35; }
+
+/* ---------------- explainer pieces ---------------- */
+.u9l6-panel { background: #fff; border: 1px solid var(--line2); border-radius: 14px; padding: 10px 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+.u9l6-ph { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.u9l6-line { font-size: 20px; line-height: 1.35; }
+.u9l6-line.sm { font-size: 17px; line-height: 1.4; }
+.u9l6-big { font-size: 28px; text-align: center; padding: 6px 0; }
+.u9l6-bigb { font-size: 46px; text-align: center; padding: 4px 0; font-weight: 700; }
+.u9l6-stamps { display: flex; gap: 18px; justify-content: center; margin-top: 8px; }
+.u9l6-chtml { pointer-events: none; }
+.u9l6-chtml > * { position: absolute; }
+.u9l6-pt { font: 700 15px var(--round); fill: #6b4f12; }
+.u9l6-rd { font: 800 20px var(--round); color: #fff; background: #3a4254; border-radius: 8px; padding: 1px 8px; }
+.u9l6-rd.u9l6-rd-on { background: var(--u9l6-r); }
+.u9l6-mini { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin: 6px 0 4px; }
+.u9l6-mini > div { font-size: 14px; line-height: 1.25; text-align: center; border: 1.5px solid #c6cad3; border-radius: 8px; padding: 4px 2px; color: #5b6475; }
+.u9l6-mini > div.on { border-color: var(--u9l6-r); background: #fdeef3; color: var(--ink); font-weight: 700; }
+.u9l6-reasons ul { margin: 0; padding-left: 20px; columns: 2; column-gap: 26px; font-size: 17px; line-height: 1.35; }

@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Right-Triangle Trigonometry: Sine, Cosine, and Tangent · Math 10C 9.1</title>
+<meta name="description" content="Math 10C Unit 9 Lesson 1: similar right triangles with the same acute angle have the same side ratios; naming the opposite, adjacent and hypotenuse relative to a reference angle; SOH CAH TOA; writing sine, cosine and tangent from side lengths, finding a missing hypotenuse first with the Pythagorean theorem. Write on it with an Apple Pencil.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="10C Lessons">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#0f5f5a">
+<link rel="manifest" href="../../manifest.webmanifest">
+<link rel="apple-touch-icon" href="../../assets/icon-180.png">
+<link rel="icon" href="../../assets/icon-192.png">
+<link rel="stylesheet" href="../../../assets/katex/katex.min.css">
+<link rel="stylesheet" href="../../css/site.css">
+<link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u9l1.css">
+<script src="../../../assets/katex/katex.min.js"></script>
+<script src="../../../js/calc.js"></script>
+<script src="../../js/vendor/qrcode.js"></script>
+</head>
+<body>
+<main class="lesson">
+
+<!-- ================= title ================= -->
+<section class="card hero" data-ink="hero" data-section="Start">
+  <div class="kicker">Math 10C · Unit 9 Trigonometry · Lesson 1</div>
+  <h1>Right-Triangle Trigonometry: Sine, Cosine, and Tangent</h1>
+  <p class="lede">Fix one acute angle of a right triangle and every ratio of its sides is fixed, however big or small the triangle is. Those ratios get names: <b>sine</b>, <b>cosine</b> and <b>tangent</b>. To use them, first name the sides <b class="u9l1-co">opposite</b>, <b class="u9l1-ca">adjacent</b> and <b class="u9l1-ch">hypotenuse</b> from the angle you are looking at.</p>
+  <div class="goals">
+    <div class="goals-h">I can…</div>
+    <ul>
+      <li>explain why right triangles with the <b>same acute angle</b> are similar, so a ratio of their sides depends <b>only on the angle</b>, not on the size</li>
+      <li>label the <b class="u9l1-ch">hyp</b>, <b class="u9l1-co">opp</b> and <b class="u9l1-ca">adj</b> sides relative to a <b>reference angle</b>, and say which labels change when the other acute angle is used</li>
+      <li>state the three primary trigonometric ratios with <b>SOH CAH TOA</b>: <span class="tex">\sin x^\circ=\dfrac{\text{opp}}{\text{hyp}}</span>, <span class="tex">\cos x^\circ=\dfrac{\text{adj}}{\text{hyp}}</span>, <span class="tex">\tan x^\circ=\dfrac{\text{opp}}{\text{adj}}</span></li>
+      <li>write the sine, cosine and tangent of either acute angle from the side lengths, as fractions in simplest form and as decimals, finding a missing <b>hypotenuse</b> first with the Pythagorean theorem</li>
+    </ul>
+  </div>
+  <div class="outcome"><b>M4</b> Develop and apply the primary trigonometric ratios (sine, cosine, tangent) to solve problems that involve right triangles.</div>
+</section>
+
+<!-- ================= warm-up ================= -->
+<section class="card warm" data-ink="warm" data-section="Warm-up: Shadow Height" id="wu">
+  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Shadow Height</h2></div>
+  <p class="big">Same sunny moment. A student and the school flagpole both cast shadows.</p>
+  <div class="u9l1-wfig" id="u9l1-wfig"></div>
+  <div class="u9l1-wbtns">
+    <button type="button" class="pill" id="u9l1-wtri">Show the two right triangles</button>
+    <button type="button" class="pill" id="u9l1-wgrow">Check the big one: grow the student’s triangle</button>
+    <button type="button" class="pill" id="u9l1-wreset">Reset</button>
+  </div>
+  <div class="u9l1-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>A kid <b>0.8 m</b> tall stands beside the student. How long is the kid’s shadow?</div></div>
+      <div class="u9l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>1 m.</b> Half the height, so half the shadow: <span class="tex">2\div2=1</span>.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>For the student: height <span class="tex">\div</span> shadow <span class="tex">=</span> ?</div></div>
+      <div class="u9l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">1.6\div2=\boldsymbol{0.8}</span>. Right now, everything is 0.8 times as tall as its shadow.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>Right now, would a tree give the <b>same</b> height <span class="tex">\div</span> shadow? Why?</div></div>
+      <div class="u9l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>Yes.</b> The sun’s rays arrive parallel, so every upright object and its shadow make a right triangle with the <b>same angle</b> <span class="tex">\theta</span>. Same angles, similar triangles, same ratio.</div></div>
+    </div>
+  </div>
+
+  <div class="poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> At that same moment, the flagpole’s shadow is <b>15 m</b> long. How tall is the flagpole? <b>Guess first.</b></div></div>
+    <div class="poll-opts">
+      <div class="opt right"><b>A</b> 12 m</div>
+      <div class="opt"><b>B</b> 14.6 m</div>
+      <div class="opt"><b>C</b> 18.75 m</div>
+      <div class="opt"><b>D</b> 24 m</div>
+    </div>
+    <button class="pill" type="button" data-poll-reveal>Reveal</button>
+    <div class="poll-ans"><b>A: 12 m.</b> Height <span class="tex">=0.8\times15=12</span> m. Check: <span class="tex">12\div15=0.8</span>, the same ratio as the student. The flagpole’s triangle is the student’s triangle scaled up <span class="tex">\times7.5</span>.<br>
+      <span class="muted"><b>B</b> is the adding trap (“the shadow is 0.4 m longer, so <span class="tex">15-0.4</span>”): similar shapes scale by <b>multiplying</b>, not adding. <b>C</b> flips the ratio, <span class="tex">15\div0.8</span>, but the pole must be shorter than its shadow, like the student. <b>D</b> is <span class="tex">15\times1.6</span>: the height instead of the ratio.</span></div>
+  </div>
+
+  <div class="bk-wq u9l1-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Later that day the student’s shadow is <b>3.2 m</b>. How long is the flagpole’s shadow now? At what sun angle is your shadow exactly as long as you are?</div></div>
+    <div class="u9l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Now height <span class="tex">\div</span> shadow <span class="tex">=1.6\div3.2=0.5</span>, so the pole’s shadow is <span class="tex">12\div0.5=\boldsymbol{24}</span> m. Shadow = height when the ratio is 1: the sun is <span class="tex">45^\circ</span> up.</div></div>
+  </div>
+  <p class="u9l1-social">At lunch: measure a friend and their shadow. How tall is our school?</p>
+</section>
+
+<!-- ================= 1. Similar right triangles ================= -->
+<section class="card" data-ink="s1" data-section="1. Similar Triangles, Constant Ratio">
+  <div class="sec-h"><span class="badge">1</span><h2>Similar Right Triangles and a Constant Ratio</h2></div>
+  <div class="def">Two right triangles that have an <b>equal</b> acute angle are <b>similar</b>, so the ratio of any pair of corresponding sides is the same in both, no matter how large or small each triangle is.</div>
+  <div class="explainer" data-explainer="why"></div>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>A ratio that depends only on the angle</h3></div>
+  <p class="q">The four right triangles <span class="tex">\triangle OA_1B_1,\ \triangle OA_2B_2,\ \triangle OA_3B_3</span> and <span class="tex">\triangle OA_4B_4</span> all share the angle of <span class="tex">31^\circ</span> at <span class="tex">O</span>. Using the side lengths shown, compute each ratio <span class="tex">\dfrac{A_iB_i}{OA_i}</span> and round it to one decimal place. The first row is done for you.</p>
+  <div class="u9l1-ex1row">
+    <div id="u9l1-ex1fig"></div>
+    <div class="part u9l1-ex1tab">
+      <div class="pl">(a) Complete the ratios.</div>
+      <div class="u9l1-rat"><span class="tex">\dfrac{A_1B_1}{OA_1}=\dfrac{1.8}{3}=0.6</span></div>
+      <div class="u9l1-rat"><span class="tex">\dfrac{A_2B_2}{OA_2}=\dfrac{3.6}{6}=</span> <span data-reveal><span class="tex">0.6</span></span></div>
+      <div class="u9l1-rat"><span class="tex">\dfrac{A_3B_3}{OA_3}=\dfrac{5.4}{9}=</span> <span data-reveal><span class="tex">0.6</span></span></div>
+      <div class="u9l1-rat"><span class="tex">\dfrac{A_4B_4}{OA_4}=\dfrac{7.2}{12}=</span> <span data-reveal><span class="tex">0.6</span></span></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">All four are <b>0.6</b>, even though the triangles have four different sizes.</div></div>
+    </div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(b) The ratio <span class="u9l1-blank"></span> is therefore connected to the angle of <span class="tex">31^\circ</span> itself.</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\dfrac{\text{opp}}{\text{adj}}</span>. Relative to the <span class="tex">31^\circ</span> angle at <span class="tex">O</span>, each height <span class="tex">A_iB_i</span> is the <b class="u9l1-co">opposite</b> side and each base <span class="tex">OA_i</span> is the <b class="u9l1-ca">adjacent</b> side.</div></div></div>
+    <div class="part"><div class="pl">(c) Evaluate <span class="tex">\tan(31^\circ)</span> on a calculator, to the nearest thousandth, and compare it to the ratios above.</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\tan(31^\circ)\approx\boldsymbol{0.601}</span>, the same value. The ratio depends only on the angle, not on the size of the triangle: it is the <b>tangent</b> ratio.</div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b><span class="tex">\tan(31^\circ)</span> on the TI-30XIIS.</b> Check the screen says <b>DEG</b>. <span class="keys"><kbd>TAN</kbd><kbd>3</kbd><kbd>1</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 0.600860619 → <b>0.601</b>. The calculator opens the bracket for you after <kbd>TAN</kbd>.</div>
+    <button class="pill" data-keys="tan 31 ) =">Show me</button>
+  </div>
+  <div class="space" id="ex1-space"></div>
+  <button class="more" data-more="ex1-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s1b" data-section="1. Grow it, the ratios stay">
+  <h3 class="sub">Grow the triangle: the ratios don’t move</h3>
+  <p>Keep the angle, change the size. Every side is multiplied by the same scale factor, so every ratio of two sides stays put. Change the <b>angle</b> instead, and the ratios change. Then watch what happens when the <b>other</b> acute angle becomes the reference angle.</p>
+  <div class="explainer" data-explainer="grow"></div>
+</section>
+
+<!-- ================= 2. Naming the sides ================= -->
+<section class="card" data-ink="s2" data-section="2. Naming the Sides">
+  <div class="sec-h"><span class="badge">2</span><h2>Naming the Sides of a Right Triangle</h2></div>
+  <div class="u9l1-namerow">
+    <div id="u9l1-xyzfig"></div>
+    <div class="u9l1-names">
+      <p>In right triangle <span class="tex">XYZ</span>, with the right angle at <span class="tex">Y</span> and <span class="tex">\angle YXZ=x^\circ</span>, each side is named <em>relative to</em> <span class="tex">x^\circ</span>:</p>
+      <ul>
+        <li><span class="tex">XZ</span>, the side opposite the right angle, is the <b class="u9l1-ch">hypotenuse</b> (hyp): always the longest side, and always the same side whichever acute angle is used.</li>
+        <li><span class="tex">YZ</span>, the side opposite <span class="tex">x^\circ</span>, is the <b class="u9l1-co">opposite</b> side (opp).</li>
+        <li><span class="tex">XY</span>, which forms <span class="tex">x^\circ</span> together with the hypotenuse, is the <b class="u9l1-ca">adjacent</b> side (adj).</li>
+      </ul>
+      <p>Using <span class="tex">\angle XZY</span> as the reference angle instead <b>swaps</b> opp and adj: the hypotenuse never changes, but “opposite” and “adjacent” are always defined relative to the angle being used.</p>
+    </div>
+  </div>
+  <div class="def amber"><b>Labelling routine (use it every time).</b> <b>1.</b> Label the <b class="u9l1-ch">hyp</b> first: the side across from the right angle. <b>2.</b> The <b class="u9l1-co">opp</b> side does <em>not</em> touch the reference angle. <b>3.</b> The <b class="u9l1-ca">adj</b> side <em>touches</em> the reference angle (and is not the hypotenuse).</div>
+  <div class="explainer" data-explainer="name"></div>
+</section>
+
+<!-- ================= 3. Identifying sides ================= -->
+<section class="card example" data-ink="ex2" data-section="3. Example 2">
+  <div class="sec-h"><span class="badge">3</span><h2>Identifying Sides for a Given Reference Angle</h2></div>
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Reading opp, adj and hyp off a figure</h3></div>
+  <p class="q">For the reference angle <span class="tex">x^\circ</span> marked on each triangle, label the hypotenuse (hyp), the opposite side (opp), and the adjacent side (adj).</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a)</div><div class="u9l1-fig" id="u9l1-ex2a"></div><div class="u9l1-fill">hyp <span class="tex">=</span> <span data-reveal><span class="tex">LM</span></span> &nbsp; opp <span class="tex">=</span> <span data-reveal><span class="tex">KL</span></span> &nbsp; adj <span class="tex">=</span> <span data-reveal><span class="tex">KM</span></span></div><div class="work" style="--h:60px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The right angle is at <span class="tex">K</span> and <span class="tex">x^\circ</span> is at <span class="tex">M</span>. The <b class="u9l1-ch">hyp</b> joins the two non-right-angle vertices: <span class="tex">LM</span>. The <b class="u9l1-co">opp</b> joins the right angle to the vertex <em>away</em> from <span class="tex">x^\circ</span>: <span class="tex">KL</span>. The <b class="u9l1-ca">adj</b> joins the right angle to the vertex <em>at</em> <span class="tex">x^\circ</span>: <span class="tex">KM</span>.</div></div></div>
+    <div class="part"><div class="pl">(b)</div><div class="u9l1-fig" id="u9l1-ex2b"></div><div class="u9l1-fill">hyp <span class="tex">=</span> <span data-reveal><span class="tex">TU</span></span> &nbsp; opp <span class="tex">=</span> <span data-reveal><span class="tex">SU</span></span> &nbsp; adj <span class="tex">=</span> <span data-reveal><span class="tex">ST</span></span></div><div class="work" style="--h:60px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The right angle is at <span class="tex">S</span> and <span class="tex">x^\circ</span> is at <span class="tex">T</span>. <b class="u9l1-ch">hyp</b> <span class="tex">=TU</span> (it joins <span class="tex">T</span> and <span class="tex">U</span>); <b class="u9l1-co">opp</b> <span class="tex">=SU</span> (right angle to <span class="tex">U</span>, the vertex away from <span class="tex">x^\circ</span>); <b class="u9l1-ca">adj</b> <span class="tex">=ST</span> (right angle to <span class="tex">T</span>, where <span class="tex">x^\circ</span> is measured).</div></div></div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Tilted triangles.</b> In (b) no side is horizontal, and the triangle is not sitting “the usual way”. That doesn’t matter: find the little square first, then follow the routine.</div></div>
+  <div class="space" id="ex2-space"></div>
+  <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s3b" data-section="3. Tap the side">
+  <h3 class="sub">Your turn at the board: tap the side</h3>
+  <p>A new triangle every time, turned any which way. Tap the side that is asked for. Hyp first, then opp, then adj.</p>
+  <div class="u9l1-game" id="u9l1-game"></div>
+</section>
+
+<!-- ================= 4. SOH CAH TOA ================= -->
+<section class="card" data-ink="s4" data-section="4. SOH CAH TOA">
+  <div class="sec-h"><span class="badge">4</span><h2>SOH CAH TOA</h2></div>
+  <p>For a reference angle <span class="tex">x^\circ</span> in a right triangle, the three <b>primary trigonometric ratios</b> are</p>
+  <div class="u9l1-soh">
+    <div><span class="tex">\sin x^\circ=\dfrac{\color{#7b4fc4}\text{opp}}{\color{#1f5bd6}\text{hyp}}</span></div>
+    <div><span class="tex">\cos x^\circ=\dfrac{\color{#c27a0e}\text{adj}}{\color{#1f5bd6}\text{hyp}}</span></div>
+    <div><span class="tex">\tan x^\circ=\dfrac{\color{#7b4fc4}\text{opp}}{\color{#c27a0e}\text{adj}}</span></div>
+  </div>
+  <p>memorized as <b>SOH CAH TOA</b>: <u>S</u>ine is <u>O</u>pposite over <u>H</u>ypotenuse; <u>C</u>osine is <u>A</u>djacent over <u>H</u>ypotenuse; <u>T</u>angent is <u>O</u>pposite over <u>A</u>djacent. The ratio found in Example 1 was exactly the tangent ratio, <span class="tex">\dfrac{\text{opp}}{\text{adj}}</span>.</p>
+  <div class="explainer" data-explainer="soh"></div>
+</section>
+
+<section class="card" data-ink="s4b" data-section="4. Size check">
+  <h3 class="sub">Size check</h3>
+  <div class="def gray">The hypotenuse is always the longest side, so for an acute angle <span class="tex">\sin x^\circ</span> and <span class="tex">\cos x^\circ</span> are always <b>less than 1</b>. The tangent compares the two legs, so it can be any positive number: less than <span class="tex">1</span> when opp <span class="tex">&lt;</span> adj, and greater than <span class="tex">1</span> when opp <span class="tex">&gt;</span> adj.</div>
+  <div class="explainer" data-explainer="size"></div>
+</section>
+
+<!-- ================= 5. Computing the ratios ================= -->
+<section class="card" data-ink="s5" data-section="5. Ratios From Side Lengths">
+  <div class="sec-h"><span class="badge">5</span><h2>Computing the Ratios From Given Side Lengths</h2></div>
+  <p>When all three side lengths of a right triangle are known, each ratio for either acute angle can be written down directly from SOH CAH TOA. Label the sides first, then write each fraction and simplify it.</p>
+  <div class="explainer" data-explainer="ratios"></div>
+</section>
+
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>The same triangle, the two different reference angles</h3></div>
+  <p class="q">Right triangle <span class="tex">PQR</span> is shown, with the right angle at <span class="tex">Q</span>.</p>
+  <div class="u9l1-exrow">
+    <div id="u9l1-ex3fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(a) Using <span class="tex">\angle R</span> as the reference angle, write <span class="tex">\sin R</span>, <span class="tex">\cos R</span> and <span class="tex">\tan R</span> as fractions in simplest form.</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">From <span class="tex">\angle R</span>: <b class="u9l1-co">opp</b> <span class="tex">=PQ=9</span>, <b class="u9l1-ca">adj</b> <span class="tex">=QR=12</span>, <b class="u9l1-ch">hyp</b> <span class="tex">=PR=15</span>.<br><span class="tex">\sin R=\dfrac{9}{15}=\boldsymbol{\dfrac{3}{5}}</span>, &nbsp; <span class="tex">\cos R=\dfrac{12}{15}=\boldsymbol{\dfrac{4}{5}}</span>, &nbsp; <span class="tex">\tan R=\dfrac{9}{12}=\boldsymbol{\dfrac{3}{4}}</span></div></div></div>
+      <div class="part"><div class="pl">(b) Now use <span class="tex">\angle P</span> as the reference angle. Write <span class="tex">\sin P</span>, <span class="tex">\cos P</span> and <span class="tex">\tan P</span> as fractions in simplest form. How do these compare to your answers in (a)?</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">From <span class="tex">\angle P</span> the two legs trade places: <b class="u9l1-co">opp</b> <span class="tex">=QR=12</span>, <b class="u9l1-ca">adj</b> <span class="tex">=PQ=9</span>, <b class="u9l1-ch">hyp</b> <span class="tex">=PR=15</span> (the hypotenuse never changes).<br><span class="tex">\sin P=\dfrac{12}{15}=\boldsymbol{\dfrac{4}{5}}</span>, &nbsp; <span class="tex">\cos P=\dfrac{9}{15}=\boldsymbol{\dfrac{3}{5}}</span>, &nbsp; <span class="tex">\tan P=\dfrac{12}{9}=\boldsymbol{\dfrac{4}{3}}</span><br>So <span class="tex">\sin R=\cos P</span> and <span class="tex">\cos R=\sin P</span>. The two acute angles are complementary (<span class="tex">\angle R+\angle P=90^\circ</span>), and the sine of one is always the cosine of the other.</div></div></div>
+    </div>
+  </div>
+  <div class="space" id="ex3-space"></div>
+  <button class="more" data-more="ex3-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Finding the missing hypotenuse first</h3></div>
+  <p class="q">In right triangle <span class="tex">LMN</span> the right angle is at <span class="tex">N</span>, <span class="tex">NM=8</span> and <span class="tex">NL=15</span>. The hypotenuse <span class="tex">LM</span> is not given.</p>
+  <div class="u9l1-exrow">
+    <div id="u9l1-ex4fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(a) Use the Pythagorean theorem to determine the length of <span class="tex">LM</span>.</div><div class="work" style="--h:140px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">LM^2=NM^2+NL^2=8^2+15^2=64+225=289</span>, so <span class="tex">LM=\sqrt{289}=\boldsymbol{17}</span>.</div></div></div>
+      <div class="part"><div class="pl">(b) Using <span class="tex">\angle L=x^\circ</span> as the reference angle, write <span class="tex">\sin x^\circ</span>, <span class="tex">\cos x^\circ</span> and <span class="tex">\tan x^\circ</span> as fractions in simplest form, and then as decimals rounded to the nearest thousandth.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">From <span class="tex">\angle L=x^\circ</span>: <b class="u9l1-co">opp</b> <span class="tex">=NM=8</span>, <b class="u9l1-ca">adj</b> <span class="tex">=NL=15</span>, <b class="u9l1-ch">hyp</b> <span class="tex">=LM=17</span>.<br><span class="tex">\sin x^\circ=\dfrac{8}{17}\approx\boldsymbol{0.471}</span>, &nbsp; <span class="tex">\cos x^\circ=\dfrac{15}{17}\approx\boldsymbol{0.882}</span>, &nbsp; <span class="tex">\tan x^\circ=\dfrac{8}{15}\approx\boldsymbol{0.533}</span></div></div></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>The square root and the decimals.</b> <kbd>2nd</kbd><kbd>x²</kbd> is <span class="tex">\sqrt{\phantom{x}}</span>: <span class="keys"><kbd>√</kbd><kbd>2</kbd><kbd>8</kbd><kbd>9</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 17. Then <span class="keys"><kbd>8</kbd><kbd>÷</kbd><kbd>1</kbd><kbd>7</kbd><kbd>ENTER</kbd></span> gives 0.470588235 → <b>0.471</b>.</div>
+    <div class="pill-col"><button class="pill" data-keys="√ 289 ) =">√289</button><button class="pill" data-keys="8 ÷ 17 =">8 ÷ 17</button><button class="pill" data-keys="15 ÷ 17 =">15 ÷ 17</button><button class="pill" data-keys="8 ÷ 15 =">8 ÷ 15</button></div>
+  </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s5b" data-section="5. Hypotenuse first">
+  <h3 class="sub">Missing hypotenuse? Pythagoras first</h3>
+  <p>Sine and cosine both need the hypotenuse. If only the two legs are given, find it with <span class="tex">c^2=a^2+b^2</span>, check it is the longest side, then write the ratios.</p>
+  <div class="explainer" data-explainer="hypFirst"></div>
+</section>
+
+<!-- ================= 6. Two triangles ================= -->
+<section class="card example" data-ink="ex5" data-section="6. Example 5">
+  <div class="sec-h"><span class="badge">6</span><h2>More Practice With Two Triangles</h2></div>
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Two triangles, two different reference angles</h3></div>
+  <p class="q">Two right triangles are shown below. Determine each ratio as a fraction in simplest form.</p>
+  <div class="u9l1-ex5figs"><div id="u9l1-ex5a"></div><div id="u9l1-ex5b"></div></div>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(i) <span class="tex">\sin A</span></div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sin A=\boldsymbol{\dfrac{5}{13}}</span></div></div></div>
+    <div class="part"><div class="pl">(ii) <span class="tex">\cos A</span></div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\cos A=\boldsymbol{\dfrac{12}{13}}</span></div></div></div>
+    <div class="part"><div class="pl">(iii) <span class="tex">\tan A</span></div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\tan A=\boldsymbol{\dfrac{5}{12}}</span></div></div></div>
+    <div class="part"><div class="pl">(iv) <span class="tex">\sin Z</span></div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sin Z=\boldsymbol{\dfrac{24}{25}}</span></div></div></div>
+    <div class="part"><div class="pl">(v) <span class="tex">\cos Z</span></div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\cos Z=\boldsymbol{\dfrac{7}{25}}</span></div></div></div>
+    <div class="part"><div class="pl">(vi) <span class="tex">\tan Z</span></div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\tan Z=\boldsymbol{\dfrac{24}{7}}</span></div></div></div>
+  </div>
+  <div class="parts c1">
+    <div class="part think"><div class="pl"><span class="think-tag">Think</span> How do you know which side is the hypotenuse in each triangle? Which of the six ratios is greater than 1, and why is that allowed?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">In <span class="tex">\triangle ABC</span> the right angle is at <span class="tex">C</span>, so <span class="tex">AB=13</span> is the hypotenuse; from <span class="tex">\angle A</span>, opp <span class="tex">=CB=5</span> and adj <span class="tex">=CA=12</span>. In <span class="tex">\triangle XYZ</span> the right angle is at <span class="tex">Y</span>, so <span class="tex">XZ=25</span> is the hypotenuse; from <span class="tex">\angle Z</span>, opp <span class="tex">=XY=24</span> and adj <span class="tex">=YZ=7</span>. Only <span class="tex">\tan Z=\frac{24}{7}</span> is greater than 1: a tangent compares the two legs and may exceed 1; a sine or cosine never can.</div></div></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<!-- ================= summary ================= -->
+<section class="card summary" data-ink="sum" data-section="Summary">
+  <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
+  <div class="sum-grid">
+    <div><b>Same angle, same ratios.</b> Right triangles with an equal acute angle are similar: every side is multiplied by the same scale factor, so each ratio of two sides depends <b>only on the angle</b>.</div>
+    <div><b>Name the sides from the reference angle.</b> <b class="u9l1-ch">hyp</b> first (across from the right angle), <b class="u9l1-co">opp</b> doesn’t touch the angle, <b class="u9l1-ca">adj</b> touches it. Switch angles: opp and adj swap, hyp stays.</div>
+    <div><b>SOH CAH TOA.</b><br><span class="tex">\sin x^\circ=\dfrac{\text{opp}}{\text{hyp}}</span>, <span class="tex">\cos x^\circ=\dfrac{\text{adj}}{\text{hyp}}</span>, <span class="tex">\tan x^\circ=\dfrac{\text{opp}}{\text{adj}}</span>. Sine and cosine are less than 1; tangent can be any positive number.</div>
+    <div><b>From side lengths:</b> missing hypotenuse? Pythagoras first. Write each fraction, then simplify. The sine of one acute angle is the cosine of the other.</div>
+  </div>
+  <a class="assign" href="../../../#/lesson/u9l1" target="_blank" rel="noopener">
+    <div><div class="kicker">Your turn</div><b>Assignment 1 — Right-Triangle Trigonometry: Sine, Cosine, and Tangent</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+  </a>
+  <a class="assign next-l" href="../l2/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 2 — Trig Ratios: Calculator Values and Angle Patterns</b><div class="muted">The calculator knows the ratio for every angle: how sine, cosine and tangent change as the angle opens from 0° to 90°</div></div><span class="arrow">→</span>
+  </a>
+  <div class="space" id="sum-space" style="min-height:120px"></div>
+</section>
+
+</main>
+
+<script type="module">
+  import { boot } from '../../js/ui.js';
+  import '../../js/lessons/u9l1.js';
+  boot({ key: 'u9l1', homeHref: '../../', title: '9.1 Sine, Cosine and Tangent' });
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
+</body>
+</html>
