@@ -272,7 +272,7 @@ function mountWarm() {
 const FIG = {
   ex1a: { width: 420, height: 320, xmin: 0, xmax: 6.5, ymin: 0, ymax: 132, xstep: 1, ystep: 20, xtitle: '\\text{Time (h)}', ytitle: '\\text{Distance (km)}', origin: true },
   ex1b: { width: 420, height: 320, xmin: 0, xmax: 8.6, ymin: 0, ymax: 445, xstep: 1, ystep: 50, xtitle: '\\text{Time (min)}', ytitle: '\\text{Temperature }(^\\circ\\text{F})', origin: true },
-  ex2: { width: 430, height: 340, xmin: 0, xmax: 272, ymin: 0, ymax: 112, xstep: 25, ystep: 10, xlabels: 50, ylabels: 20, xtitle: '\\text{Distance, }D\\text{ (km)}', ytitle: '\\text{Fuel, }N\\text{ (L)}', origin: true },
+  ex2: { width: 430, height: 340, xmin: 0, xmax: 272, ymin: 0, ymax: 112, xstep: 25, ystep: 10, xlabels: 50, ylabels: 20, xtitle: 'D\\text{ (km)}', ytitle: '\\text{Fuel, }N\\text{ (L)}', origin: true },
   ex3: { width: 400, height: 360, xmin: 0, xmax: 8.6, ymin: 0, ymax: 375, xstep: 1, ystep: 50, xtitle: '\\text{Time (h)}', ytitle: '\\text{Distance (km)}', origin: true },
   ex4: { width: 440, height: 370, xmin: 0, xmax: 5400, ymin: 0, ymax: 870, xstep: 500, ystep: 100, xlabels: 1000, ylabels: 100, xtitle: '\\text{Sales, }S\\ (\\$)', ytitle: '\\text{Earnings, }E\\ (\\$)', origin: true }
 };
