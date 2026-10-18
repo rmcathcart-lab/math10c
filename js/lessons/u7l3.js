@@ -57,6 +57,7 @@
   function cop(a, b) { return gcd(a, b) === 1; }
   function pickWhere(gen0, okf) { for (var i = 0; i < 3000; i++) { var o = gen0(); if (okf(o)) return o; } throw new Error('u7l3: no valid numbers'); }
   function sgp(x) { return x < 0 ? '(' + fT(x) + ')' : fT(x); }
+  function prn(x) { return '(' + fT(x) + ')'; }                                      // a factor in a product: always bracketed
   function valAt(A, Bc, C, p) { return Math.round((A * p[0] + Bc * p[1] + C) * 1e9) / 1e9 + 0; }
 
   /* steps for solving Ax + By + C = 0 for y */
@@ -164,7 +165,7 @@
   /* slope–intercept form → general form */
   function lineGen(prompt, T, wr, sol, hints, text, o) {
     o = o || {};
-    var p = B.line(prompt, T, { form: 'general', wrong: wr, point: o.point, keyTex: o.keyTex }, sol, hints || HGEN, text);
+    var p = B.line(prompt, T, { form: 'general', wrong: wr, point: o.point }, sol, hints || HGEN, text);
     p.good = o.good; p.bad = (o.bad || []).filter(function (b) { return p.check(b).v !== 'correct'; });   // drop a "typical wrong answer" that coincides with the right line
     return p;
   }
@@ -214,7 +215,7 @@
 
   /* MC helpers */
   function mc(r, prompt, opts, sol, hints, text, keep) { return B.mc(r, prompt, opts, sol, hints, text, keep); }
-  function mc3(r, prompt, opts, sol, hints, text) { var p = B.mc(r, prompt, opts, sol, hints, text, true); p.tries = 1; p.input.columns = 3; return p; }
+  function mc3(r, prompt, opts, sol, hints, text) { var p = B.mc(r, prompt, opts, sol, hints, text, false); p.tries = 1; p.input.columns = 3; return p; }
   function numPart(prompt, ans, diag, sol, hints, text, inp) { return B.number(prompt, ans, diag, sol, hints, text, inp); }
 
   /* ---------------- question makers ---------------- */
@@ -241,18 +242,24 @@
     }, function (o) {
       return o.lines.every(function (L3, i) { var hit = o.ch.filter(function (c) { return c.test(L3); }).map(function (c) { return c.id; }); return hit.length === 1 && hit[0] === o.own[i]; });
     });
+    /* the booklet's letters are E, C, A, F, G for (i)–(v); shuffle the labels so the right letter isn't fixed per part */
+    var labels = r.shuffle(['A', 'B', 'C', 'D', 'E', 'F', 'G']), byKind = {};
+    o.ch.forEach(function (c, i) { c.kind = c.id; c.id = labels[i]; byKind[c.kind] = c.id; });
+    o.ch.sort(function (a, b) { return a.id < b.id ? -1 : 1; });
+    o.ownKind = o.own; o.own = o.own.map(function (k) { return byKind[k]; });
+    o.unused = [byKind.B, byKind.D].sort();
     return o;
   }
   var Q8IDS = ['i', 'ii', 'iii', 'iv', 'v'];
   function q8stem(o) { return 'Match each equation with the correct characteristic of its graph. Each characteristic (A–G) may be used once, more than once, or not at all.'; }
   function q8part(o, i) {
-    var L3 = o.lines[i], own = o.own[i], m = -L3[0] / L3[1], b = -L3[2] / L3[1], id = Q8IDS[i], how;
-    if (own === 'C') how = 'substitute ' + t(pT(o.cp)) + ': ' + t(L3[0] + '(' + o.cp[0] + ')' + (L3[1] < 0 ? '-' : '+') + Math.abs(L3[1]) + '(' + o.cp[1] + ')=0') + ', so the point is on the line';
-    else if (own === 'G') how = t(siT(m, b)) + '; set ' + t('y=0') + ': ' + t(lin([[L3[0], 'x'], [L3[2], '']]) + '=0') + ', so the ' + t('x') + '-intercept is ' + t(fT(-L3[2] / L3[0]));
+    var L3 = o.lines[i], own = o.own[i], ownK = o.ownKind[i], m = -L3[0] / L3[1], b = -L3[2] / L3[1], id = Q8IDS[i], how;
+    if (ownK === 'C') how = 'substitute ' + t(pT(o.cp)) + ': ' + t(L3[0] + '(' + o.cp[0] + ')' + (L3[1] < 0 ? '-' : '+') + Math.abs(L3[1]) + '(' + o.cp[1] + ')=0') + ', so the point is on the line';
+    else if (ownK === 'G') how = t(siT(m, b)) + '; set ' + t('y=0') + ': ' + t(lin([[L3[0], 'x'], [L3[2], '']]) + '=0') + ', so the ' + t('x') + '-intercept is ' + t(fT(-L3[2] / L3[0]));
     else how = t(rT(L3)) + ' → ' + t(siT(m, b)) + ': slope ' + t(fT(m)) + ', ' + t('y') + '-intercept ' + t(fT(b));
     var kind = { A: 'slope', B: 'yint', C: 'pt', D: 'slope', E: 'yint', F: 'yint', G: 'xint' };
     var whyOf = function (c) {
-      var k = kind[c.id];
+      var k = kind[c.kind];
       if (k === 'slope') return 'Solve for ' + t('y') + ' and check the slope again — it doesn’t match ' + c.id + '.';
       if (k === 'yint') return 'Set ' + t('x=0') + ' and check the ' + t('y') + '-intercept again — it doesn’t match ' + c.id + '.';
       if (k === 'pt') return 'Substitute ' + t(pT(o.cp)) + ' into the left side: you don’t get ' + t('0') + '.';
@@ -262,7 +269,7 @@
     var right = options.filter(function (x) { return x.right; })[0];
     return { prompt: '(' + id + ') ' + t(rT(L3)), input: { type: 'mc', options: options },
       check: function (resp) { if (!resp) return form('empty', 'Choose an answer.'); if (resp === own) return ok(); var op = options.filter(function (x) { return x.key === resp; })[0]; return wrong('mc-' + (op ? op.code : 'x'), op && op.why ? op.why : null); },
-      key: own, answer: HW.tex(right.key + '. ' + right.html), solution: how + ' — <b>' + own + '</b>.' + (i === 4 ? '<br>(Characteristics B and D are not used by any equation.)' : ''),
+      key: own, answer: HW.tex(right.key + '. ' + right.html), solution: how + ' — <b>' + own + '</b>.' + (i === 4 ? '<br>(Characteristics ' + o.unused[0] + ' and ' + o.unused[1] + ' are not used by any equation.)' : ''),
       hints: ['Solve the equation for ' + t('y') + ' to read its slope and ' + t('y') + '-intercept; set ' + t('y=0') + ' for the ' + t('x') + '-intercept; substitute a point to test it.'], text: 'match characteristic: ' + rT(L3), tries: 3 };
   }
 
@@ -485,8 +492,8 @@
           'General form allows ' + t('B=0') + ', which gives a vertical line such as ' + t('x-4=0') + '. In ' + t('y=mx+b') + ' that would need an undefined slope, but ' + t('m') + ' must be a real number — so vertical lines can’t be written in ' + t('y=mx+b') + ' form.', ['Which kind of line has no slope that ' + t('m') + ' could equal?'], 'general vs slope-intercept');
       } },
       { id: 'e6h', sub: 'h(i)', level: 'EMG', outcome: 'RF7', make: function (r) {
-        var x0 = r.pick(pm(2, 7)), y0 = r.pick(pm(2, 7)), keyTex = 'x' + (x0 < 0 ? '+' : '-') + Math.abs(x0) + '=0';
-        return lineGen('Write, in general form, the <b>vertical</b> line through ' + t(pT([x0, y0])) + '.', { x: x0 }, [], 'Every point has ' + t('x=' + x0) + ', so the line is ' + t('x=' + x0) + '. In general form: ' + t(keyTex) + ' (' + t('A=1,\\ B=0,\\ C=' + (-x0)) + ').', ['A vertical line: every point has the same ' + t('x') + '-value. Then move it to the left side.'], 'vertical line in general form', { keyTex: keyTex, bad: ['y' + (y0 < 0 ? '+' : '-') + Math.abs(y0) + '=0', 'x=' + x0] });
+        var x0 = r.pick(pm(2, 7)), y0 = r.pick(pm(2, 7)), keyTex = gen({ x: x0 });
+        return lineGen('Write, in general form, the <b>vertical</b> line through ' + t(pT([x0, y0])) + '.', { x: x0 }, [], 'Every point has ' + t('x=' + x0) + ', so the line is ' + t('x=' + x0) + '. In general form: ' + t(keyTex) + ' (' + t('A=1,\\ B=0,\\ C=' + (-x0)) + ').', ['A vertical line: every point has the same ' + t('x') + '-value. Then move it to the left side.'], 'vertical line in general form', { bad: ['y' + (y0 < 0 ? '+' : '-') + Math.abs(y0) + '=0', 'x=' + x0] });
       } },
       { id: 'e6h2', sub: 'h(ii)', level: 'EMG', outcome: 'RF7', make: function (r) {
         var x0 = r.pick(pm(2, 7)), y0 = r.pick(pm(2, 7));
@@ -509,7 +516,7 @@
       var parts = subs.map(function (s, i) {
         return { id: 'e7' + s, level: i === 4 ? 'EMG' : 'BEG', outcome: 'RF5', make: function (r, sh) {
           var p = ptsOf(sh)[i], v = valAt(sh.A, -sh.Bc, -sh.C, p), slip = sh.A * p[0] + sh.Bc * p[1] - sh.C, slip2 = sh.A * p[0] - sh.Bc * p[1] + sh.C;
-          var sub = t(sh.A + sgp(p[0]) + '-' + sh.Bc + sgp(p[1]) + '-' + sh.C + '=' + v);
+          var sub = t(sh.A + prn(p[0]) + '-' + sh.Bc + prn(p[1]) + '-' + sh.C + '=' + v);
           return numPart('Substitute ' + t(pT(p)) + '. What value does the left side take? (Then decide: on or off ' + t('L') + '?)', v, function (x) {
             if (!near(slip, v) && near(x, slip)) return { code: 'gf-sub-sign', hint: 'Careful with the ' + t('y') + '-term: it is ' + t('-' + sh.Bc + '\\times' + sgp(p[1])) + '.' };
             if (!near(slip2, v) && near(x, slip2)) return { code: 'gf-sub-sign', hint: 'Check the sign of the constant: it is ' + t('-' + sh.C) + '.' };
@@ -579,7 +586,7 @@
         var pr = pairMaker(r, 'same'), L1 = pr[0], L2 = pr[1], s = L2[0] / L1[0];
         return mc(r, 'The slope test says ' + t(gT(L1[0], L1[1], L1[2])) + ' and ' + t(gT(L2[0], L2[1], L2[2])) + ' are parallel. But something stronger is true. What?', [
           { html: 'They are the <b>same line</b>: every coefficient of the second, ' + t('C') + ' included, is ' + t(s) + ' times the first.', right: true },
-          { html: 'They are also perpendicular.', why: 'Lines with equal slopes can’t be perpendicular (unless… never, for non-vertical lines).' },
+          { html: 'They are also perpendicular.', why: 'Equal slopes mean parallel (or the same line) — never perpendicular. Perpendicular slopes multiply to ' + t('-1') + '.' },
           { html: 'They are parallel and ' + t(s) + ' units apart.', why: 'Check the constants: ' + t(L2[2] + '=' + s + '\\times' + sgp(L1[2])) + '. Multiplying a whole equation by ' + t(s) + ' doesn’t move the line.' },
           { html: 'They cross at exactly one point.', why: 'Lines with equal slopes never cross at just one point.' }],
           t(gT(L2[0], L2[1], L2[2])) + ' is ' + t(s + '\\times(' + gT(L1[0], L1[1], L1[2]).replace('=0', '') + ')=0') + ', so the two equations have exactly the same solutions: the <b>same line</b>.', ['Compare all three coefficients, not just ' + t('A') + ' and ' + t('B') + '.'], 'same line');
@@ -605,13 +612,13 @@
         var o = pickWhere(function () { return { A: r.int(2, 7), Bc: r.int(1, 6), C: -r.int(1, 9), x0: r.pick(pm(1, 6)), y0: r.pick(pm(1, 8)) }; }, function (o) { return cop(o.A, o.Bc) && o.A !== o.Bc && valAt(o.A, o.Bc, o.C, [o.x0, o.y0]) !== 0; });
         var D = -(o.A * o.x0 + o.Bc * o.y0);
         return lineGen('Write, in general form, the line through ' + t(pT([o.x0, o.y0])) + ' parallel to ' + t(gT(o.A, o.Bc, o.C)) + '.', { A: o.A, B: o.Bc, C: D }, [],
-          'Parallel family: ' + t(lin([[o.A, 'x'], [o.Bc, 'y']]) + '+D=0') + '.<br>Substitute ' + t(pT([o.x0, o.y0])) + ': ' + t(o.A + sgp(o.x0) + '+' + o.Bc + sgp(o.y0) + '+D=0') + ', so ' + t('D=' + D) + '.<br>' + t(gT(o.A, o.Bc, D)), ['Keep ' + t('A') + ' and ' + t('B') + ', and find the constant that makes the point fit.'], 'parallel through point (general form)', { point: [o.x0, o.y0], bad: [gT(o.A, o.Bc, o.C), gT(o.A, o.Bc, -D)] });
+          'Parallel family: ' + t(lin([[o.A, 'x'], [o.Bc, 'y']]) + '+D=0') + '.<br>Substitute ' + t(pT([o.x0, o.y0])) + ': ' + t(o.A + prn(o.x0) + '+' + o.Bc + prn(o.y0) + '+D=0') + ', so ' + t('D=' + D) + '.<br>' + t(gT(o.A, o.Bc, D)), ['Keep ' + t('A') + ' and ' + t('B') + ', and find the constant that makes the point fit.'], 'parallel through point (general form)', { point: [o.x0, o.y0], bad: [gT(o.A, o.Bc, o.C), gT(o.A, o.Bc, -D)] });
       } },
       { id: 'e9d', level: 'PRG', outcome: 'RF7', make: function (r) {
         var o = pickWhere(function () { return { A: r.int(2, 7), Bc: r.int(1, 6), C: -r.int(1, 9), x0: r.pick(pm(1, 6)), y0: r.pick(pm(1, 8)) }; }, function (o) { return cop(o.A, o.Bc) && o.A !== o.Bc; });
         var D = -(o.Bc * o.x0 - o.A * o.y0), Dp = -(o.A * o.x0 + o.Bc * o.y0);
         return lineGen('Write, in general form, the line through ' + t(pT([o.x0, o.y0])) + ' perpendicular to ' + t(gT(o.A, o.Bc, o.C)) + '.', { A: o.Bc, B: -o.A, C: D }, [{ is: { A: o.A, B: o.Bc, C: Dp }, code: 'gf-par-for-perp', hint: 'That line is <b>parallel</b> to the given one. For a perpendicular line, swap ' + t('A') + ' and ' + t('B') + ' and negate one: ' + t(lin([[o.Bc, 'x'], [-o.A, 'y']]) + '+D=0') + '.' }],
-          'Perpendicular family: ' + t(lin([[o.Bc, 'x'], [-o.A, 'y']]) + '+D=0') + '.<br>Substitute ' + t(pT([o.x0, o.y0])) + ': ' + t(o.Bc + sgp(o.x0) + '-' + o.A + sgp(o.y0) + '+D=0') + ', so ' + t('D=' + D) + '.<br>' + t(gT(o.Bc, -o.A, D)) + (o.Bc === 1 ? '' : '') + '.<br>Check: slopes ' + t(fT(-o.A / o.Bc)) + ' and ' + t(fT(o.Bc / o.A)) + ' multiply to ' + t('-1') + ' ✓', ['Use the rule: ' + t('Ax+By+C=0') + ' is perpendicular to ' + t('Bx-Ay+D=0') + '. Then substitute the point to find ' + t('D') + '.'], 'perpendicular through point (general form)', { point: [o.x0, o.y0], bad: [gT(o.A, o.Bc, Dp), gT(o.Bc, o.A, -(o.Bc * o.x0 + o.A * o.y0))] });
+          'Perpendicular family: ' + t(lin([[o.Bc, 'x'], [-o.A, 'y']]) + '+D=0') + '.<br>Substitute ' + t(pT([o.x0, o.y0])) + ': ' + t(o.Bc + prn(o.x0) + '-' + o.A + prn(o.y0) + '+D=0') + ', so ' + t('D=' + D) + '.<br>' + t(gT(o.Bc, -o.A, D)) + (o.Bc === 1 ? '' : '') + '.<br>Check: slopes ' + t(fT(-o.A / o.Bc)) + ' and ' + t(fT(o.Bc / o.A)) + ' multiply to ' + t('-1') + ' ✓', ['Use the rule: ' + t('Ax+By+C=0') + ' is perpendicular to ' + t('Bx-Ay+D=0') + '. Then substitute the point to find ' + t('D') + '.'], 'perpendicular through point (general form)', { point: [o.x0, o.y0], bad: [gT(o.A, o.Bc, Dp), gT(o.Bc, o.A, -(o.Bc * o.x0 + o.A * o.y0))] });
       } }] },
     { num: '10', section: 'Extra practice F — The same line wearing a different coat', shared: function (r) {
         return pickWhere(function () { var a = r.int(1, 5), b = r.int(2, 5); return { a: a, b: b, c: a * b * r.pick([1, 1, 2]), k0: -r.int(2, 4), cR: r.pick(pm(1, 9)), s2: r.int(3, 5), cG: r.int(5, 40) }; },
@@ -669,7 +676,8 @@
     { num: '11', section: 'Extra practice G — Error analysis', shared: function (r) { return { m: r.int(2, 9), b: r.int(1, 9) }; },
       stem: function (sh) { return 'Asked to write ' + t(siT(sh.m, sh.b)) + ' in general form, a student slides the ' + t('x') + '-term across and writes ' + t(gT(-sh.m, 1, -sh.b)) + '.'; }, parts: [
       { id: 'e11a', level: 'BEG', make: function (r, sh) {
-        return B.tf(r, 'Test ' + t('(0,\\ ' + sh.b + ')') + ' and ' + t('(1,\\ ' + (sh.m + sh.b) + ')') + ' in the student’s equation. True or false: it is a true equation of the line.', true, 'Substitute: ' + t('-' + sh.m + '(0)+' + sh.b + '-' + sh.b + '=0') + ' and ' + t('-' + sh.m + '(1)+' + (sh.m + sh.b) + '-' + sh.b + '=0') + ' — both points fit.',
+        var same = r.chance(0.5);
+        return B.tf(r, 'Test ' + t('(0,\\ ' + sh.b + ')') + ' and ' + t('(1,\\ ' + (sh.m + sh.b) + ')') + ' in the student’s equation. True or false: ' + (same ? 'it is a true equation of the line ' + t(siT(sh.m, sh.b)) + '.' : 'it describes a different line from ' + t(siT(sh.m, sh.b)) + '.'), same, 'Substitute: ' + t('-' + sh.m + '(0)+' + sh.b + '-' + sh.b + '=0') + ' and ' + t('-' + sh.m + '(1)+' + (sh.m + sh.b) + '-' + sh.b + '=0') + ' — both points fit.',
           t('(0,\\ ' + sh.b + ')') + ': ' + t('-' + sh.m + '(0)+' + sh.b + '-' + sh.b + '=0') + ' ✓; ' + t('(1,\\ ' + (sh.m + sh.b) + ')') + ': ' + t('-' + sh.m + '(1)+' + (sh.m + sh.b) + '-' + sh.b + '=0') + ' ✓. It <b>is</b> a true equation of the line.', ['Substitute each point into the left side.'], 'student equation true?');
       } },
       { id: 'e11b', level: 'BEG', make: function (r, sh) {
@@ -766,7 +774,7 @@
         return B.fields('Solve for ' + t('A') + ' and ' + t('B') + '.', [{ label: t('A') + ' =', name: 'A' }, { label: t('B') + ' =', name: 'B' }],
           [K.number(sh.a, function (v) { return v === -sh.a ? { code: 'sign', hint: t(lin([[sh.x0, 'A']]) + '=-' + c) + ': divide carefully.' } : null; }), K.number(sh.b, function (v) { return v === -sh.b ? { code: 'sign', hint: 'Substitute ' + t('A=' + sh.a) + ' and the other point; check the sign when you solve for ' + t('B') + '.' } : null; })],
           [String(sh.a), String(sh.b)], t('A=' + sh.a) + ', ' + t('B=' + sh.b) + ': ' + t(gT(sh.a, sh.b, c)),
-          t(lin([[sh.x0, 'A'], [c, '']]) + '=0') + ', so ' + t('A=' + sh.a) + '.<br>' + t(pT(p2)) + ': ' + t(sh.a + sgp(p2[0]) + '+' + sgp(p2[1]) + 'B+' + c + '=0') + ' → ' + t(lin([[p2[1], 'B']]) + '=' + (-(sh.a * p2[0] + c))) + ' → ' + t('B=' + sh.b) + '.<br>The line is ' + t(gT(sh.a, sh.b, c)) + '.', ['Solve the one-unknown equation for ' + t('A') + ' first, then substitute the other point.'], 'solve for A and B');
+          t(lin([[sh.x0, 'A'], [c, '']]) + '=0') + ', so ' + t('A=' + sh.a) + '.<br>' + t(pT(p2)) + ': ' + t(sh.a + prn(p2[0]) + (p2[1] < 0 ? '' : '+') + p2[1] + 'B+' + c + '=0') + ' → ' + t(lin([[p2[1], 'B']]) + '=' + (-(sh.a * p2[0] + c))) + ' → ' + t('B=' + sh.b) + '.<br>The line is ' + t(gT(sh.a, sh.b, c)) + '.', ['Solve the one-unknown equation for ' + t('A') + ' first, then substitute the other point.'], 'solve for A and B');
       } },
       { id: 'e14c', level: 'PRG', outcome: 'RF5', make: function (r, sh) {
         var c = -sh.a * sh.x0;
@@ -976,7 +984,7 @@
             if (near(v, sh.C2 * sh.x1)) return { code: 'gf-k-mult', hint: t('\\frac{' + sh.C2 + '}{a}=' + sh.x1) + ' means ' + t('a=\\frac{' + sh.C2 + '}{' + sh.x1 + '}') + ' — divide, don’t multiply.' };
             if (near(v, aS)) return { code: 'gf-k-mixed', hint: 'That value makes the <b>slopes</b> equal. This part is about the ' + t('x') + '-intercepts.' };
             return null;
-          } }, t('x') + '-intercept of the first line: set ' + t('y=0') + ': ' + t(A1 + 'x-' + A1 * sh.x1 + '=0') + ', so ' + t('x=' + sh.x1) + '.<br>' + t('x') + '-intercept of the second: ' + t('ax-' + sh.C2 + '=0') + ', so ' + t('x=\\frac{' + sh.C2 + '}{a}') + '.<br>' + t('\\frac{' + sh.C2 + '}{a}=' + sh.x1 + '\\ \\Rightarrow\\ a=\\frac{' + sh.C2 + '}{' + sh.x1 + '}=' + fT(sh.C2 / sh.x1)) + '.',
+          } }, t('x') + '-intercept of the first line: set ' + t('y=0') + ': ' + t(A1 + 'x-' + A1 * sh.x1 + '=0') + ', so ' + t('x=' + sh.x1) + '.<br>' + t('x') + '-intercept of the second: ' + t('ax-' + sh.C2 + '=0') + ', so ' + t('x=\\frac{' + sh.C2 + '}{a}') + '.<br>' + t('\\frac{' + sh.C2 + '}{a}=' + sh.x1 + '\\ \\Rightarrow\\ a=\\frac{' + sh.C2 + '}{' + sh.x1 + '}' + (gcd(sh.C2, sh.x1) > 1 ? '=' + fT(sh.C2 / sh.x1) : '')) + '.',
             ['Set ' + t('y=0') + ' in each equation to get its ' + t('x') + '-intercept (the second one in terms of ' + t('a') + ').'], 'a for equal x-intercepts');
           p.input.before = t('a=');
           return p;
@@ -1063,9 +1071,9 @@
           var pts = {}, sl = r.pick([[0, 2, -1], [-1, 1, 2], [1, -1, 2]]);
           ['A', 'B', 'C'].forEach(function (nm, i) { var p = on(sl[i]); if (want.indexOf(nm) < 0) { p = [p[0], p[1] + r.pick(pm(1, 6))]; } pts[nm] = p; });
           var Lq = [o.A, -o.Bc, C], vals = {}; ['A', 'B', 'C'].forEach(function (nm) { vals[nm] = valAt(o.A, -o.Bc, C, pts[nm]); });
-          var opts = combos.map(function (c, i) { var bad = ['A', 'B', 'C'].filter(function (nm) { return (c.indexOf(nm) >= 0) !== (vals[nm] === 0); })[0]; return { html: c.map(function (x) { return t(x); }).join(' and ') + ' only', right: i === ri, why: i === ri ? null : 'Substitute ' + t(bad) + ' into the equation: ' + t(o.A + sgp(pts[bad][0]) + '-' + o.Bc + sgp(pts[bad][1]) + (C < 0 ? '' : '+') + C + '=' + vals[bad]) + '.' }; });
+          var opts = combos.map(function (c, i) { var bad = ['A', 'B', 'C'].filter(function (nm) { return (c.indexOf(nm) >= 0) !== (vals[nm] === 0); })[0]; return { html: c.map(function (x) { return t(x); }).join(' and ') + ' only', right: i === ri, why: i === ri ? null : 'Substitute ' + t(bad) + ' into the equation: ' + t(o.A + prn(pts[bad][0]) + '-' + o.Bc + prn(pts[bad][1]) + (C < 0 ? '' : '+') + C + '=' + vals[bad]) + '.' }; });
           return mc(r, 'Line ' + t('L') + ' has equation ' + t(gT(Lq[0], Lq[1], Lq[2])) + '. ' + t('A') + ' is the point ' + t(pT(pts.A)) + ', ' + t('B') + ' is ' + t(pT(pts.B)) + ', and ' + t('C') + ' is ' + t(pT(pts.C)) + '. Which of these points lie on line ' + t('L') + '?', opts,
-            ['A', 'B', 'C'].map(function (nm) { return t(nm + pT(pts[nm])) + ': ' + t(o.A + sgp(pts[nm][0]) + '-' + o.Bc + sgp(pts[nm][1]) + (C < 0 ? '' : '+') + C + '=' + vals[nm]) + (vals[nm] === 0 ? ' — on ' + t('L') : ' — not on ' + t('L')); }).join('<br>'),
+            ['A', 'B', 'C'].map(function (nm) { return t(nm + pT(pts[nm])) + ': ' + t(o.A + prn(pts[nm][0]) + '-' + o.Bc + prn(pts[nm][1]) + (C < 0 ? '' : '+') + C + '=' + vals[nm]) + (vals[nm] === 0 ? ' — on ' + t('L') : ' — not on ' + t('L')); }).join('<br>'),
             ['Substitute each point into the left side. The point is on the line exactly when you get ' + t('0') + '.'], 'which points on ' + gT(Lq[0], Lq[1], Lq[2]), true);
         } }] },
       { num: '16', stem: '<i>(Numerical Response)</i>', parts: [

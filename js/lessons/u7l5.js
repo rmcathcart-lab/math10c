@@ -241,7 +241,7 @@
           { id: '1a', sub: 'strategy', level: 'LIM', make: function (r, sh) {
             var m = sh.m, b = sh.b;
             return mc(r, 'Which strategy graphs it fastest?', [
-              { html: 'It is in slope–intercept form: plot the ' + t('y') + '-intercept ' + ptt([0, b]) + ', then step down ' + (-m) + ' and right 1 again and again, and join the points.', right: true },
+              { html: 'Plot the ' + t('y') + '-intercept ' + ptt([0, b]) + ', then step down ' + (-m) + ' and right 1, and join the points.', right: true },
               { html: 'Plot ' + ptt([b, 0]) + ' on the ' + t('x') + '-axis, then step down ' + (-m) + ' and right 1, and join the points.', why: t('b=' + b) + ' is the <b>' + t('y') + '-intercept</b>: the line crosses the ' + t('y') + '-axis at ' + ptt([0, b]) + '.' },
               { html: 'Plot ' + ptt([0, b]) + ', then step up ' + (-m) + ' and right 1, and join the points.', why: 'The slope is ' + t(m) + ', negative: from the ' + t('y') + '-intercept the line goes <b>down</b> as you move right.' },
               { html: 'Plot ' + ptt([0, m]) + ', then step up ' + b + ' and right 1, and join the points.', why: 'In ' + t('y=mx+b') + ' the number multiplying ' + t('x') + ' is the slope and the constant is the ' + t('y') + '-intercept — these are swapped.' }],
@@ -257,7 +257,7 @@
           { id: '2a', sub: 'strategy', level: 'BEG', make: function (r, sh) {
             var p = sh.p, q = sh.q, Lo = sh.L;
             return mc(r, 'Which strategy graphs it fastest?', [
-              { html: 'It is in general form: substitute ' + t('y=0') + ' to get ' + t('x=' + p) + ' and ' + t('x=0') + ' to get ' + t('y=' + q) + '; plot ' + ptt([p, 0]) + ' and ' + ptt([0, q]) + ' and draw the line through them.', right: true },
+              { html: 'Substitute ' + t('y=0') + ' and ' + t('x=0') + ', then plot ' + ptt([p, 0]) + ' and ' + ptt([0, q]) + ' and draw the line through them.', right: true },
               { html: 'Read the intercepts from the coefficients: plot ' + ptt([Lo.A, 0]) + ' and ' + ptt([0, Lo.B]) + ' and draw the line through them.', why: 'The coefficients are not the intercepts. Substitute ' + t('y=0') + ' and ' + t('x=0') + ' and solve.' },
               { html: 'Substitute ' + t('y=0') + ' and ' + t('x=0') + ', then plot ' + ptt([0, p]) + ' and ' + ptt([q, 0]) + ' and draw the line through them.', why: 'Right values, wrong axes: the ' + t('x') + '-intercept ' + t(p) + ' is the point ' + ptt([p, 0]) + ', on the ' + t('x') + '-axis.' },
               { html: 'Substitute ' + t('y=0') + ' and ' + t('x=0') + ', then plot ' + ptt([-p, 0]) + ' and ' + ptt([0, -q]) + ' and draw the line through them.', why: 'Check the signs when you solve, e.g. ' + t((Lo.A === 1 ? '' : Lo.A) + 'x' + sg(Lo.C) + '=0') + ' gives ' + t('x=' + p) + '.' }],
@@ -267,13 +267,15 @@
           { id: '2b', sub: 'graph', level: 'PRG', make: function (r, sh) { return intGraph('Draw the graph on the grid.', sh.p, sh.q, W8, 'graph ' + gen(sh.L)); } }] },
       /* ---------- Q3: slope–point form ---------- */
       { num: '3',
-        shared: function (r) { var x1 = -r.int(1, 4), y1 = r.pick([-4, -3, -2, -1, 1, 2, 3, 4, 5]), m = -r.pick([2, 3]); return { P: [x1, y1], m: m, L: ms(m, [x1, y1]) }; },
+        shared: function (r) {   // not through the origin: then (−x₁, −y₁) is on the line too and the sign-flip distractor would be right
+          var x1, y1, m, g = 0; do { x1 = -r.int(1, 4); y1 = r.pick([-4, -3, -2, -1, 1, 2, 3, 4, 5]); m = -r.pick([2, 3]); g++; } while (y1 === m * x1 && g < 100);
+          return { P: [x1, y1], m: m, L: ms(m, [x1, y1]) }; },
         stem: function (sh) { return STRAT + 'explain how to graph ' + t(ps(sh.L, sh.P)) + '. Then draw the graph.'; },
         parts: [
           { id: '3a', sub: 'strategy', level: 'BEG', make: function (r, sh) {
             var P0 = sh.P, m = sh.m;
             return mc(r, 'Which strategy graphs it fastest?', [
-              { html: 'It is in slope–point form: plot ' + ptt(P0) + ', then step down ' + (-m) + ' and right 1 again and again, and join the points.', right: true },
+              { html: 'It is in slope–point form: plot ' + ptt(P0) + ', then step down ' + (-m) + ' and right 1, and join the points.', right: true },
               { html: 'It is in slope–point form: plot ' + ptt([-P0[0], -P0[1]]) + ', then step down ' + (-m) + ' and right 1, and join the points.', why: 'The numbers in the brackets have the opposite signs to the coordinates: ' + t('x' + sg(-P0[0])) + ' means ' + t('x-(' + P0[0] + ')') + ', so ' + t('x_1=' + P0[0]) + '.' },
               { html: 'It is in slope–point form: plot ' + ptt(P0) + ', then step up ' + (-m) + ' and right 1, and join the points.', why: 'Right point, but the slope is ' + t(m) + ': the line goes <b>down</b> as you move right.' },
               { html: 'Plot the ' + t('y') + '-intercept ' + ptt([0, P0[1]]) + ', then step down ' + (-m) + ' and right 1, and join the points.', why: t(String(P0[1])) + ' isn’t the ' + t('y') + '-intercept: the form hands you the point ' + ptt(P0) + ', not an intercept.' }],
@@ -479,7 +481,8 @@
       /* ---------- Q9–Q11 ---------- */
       { num: '9', section: 'Assignment — Multiple choice and numerical response', parts: [
         { id: '9', level: 'BEG', make: function (r) {
-          var P0 = [-r.int(1, 5), r.int(2, 6)], m = -r.int(2, 5), Lo = ms(m, P0);
+          var P0, m, g = 0; do { P0 = [-r.int(1, 5), r.int(2, 6)]; m = -r.int(2, 5); g++; } while (P0[1] === m * P0[0] && g < 100);   // not through the origin (else option D is right too)
+          var Lo = ms(m, P0);
           return mc(r, '<i>(Multiple Choice)</i> Without altering its form, which strategy correctly describes how to graph ' + t(ps(Lo, P0)) + '?', [
             { html: 'Plot ' + ptt(P0) + '; use slope ' + t(m) + '.', right: true },
             { html: 'Plot ' + ptt([0, P0[1]]) + '; use slope ' + t(m) + '.', why: t(String(P0[1])) + ' is the ' + t('y') + '-coordinate of the given point, not the ' + t('y') + '-intercept.' },
@@ -490,7 +493,7 @@
       { num: '10', parts: [
         { id: '10', level: 'BEG', outcome: 'RF5', make: function (r) {
           var A, B, C, g = 0; do { A = r.pick([3, 4, 5, 6]); B = r.pick([2, 3, 4]); C = lcm(A, B) * r.pick([1, 2]); g++; } while ((A === B || C > 40 || C / A === C / B) && g < 100);
-          var Lo = line(A, -B, C);
+          var Lo = line(A, -B, C); A = Lo.A; B = -Lo.B; C = Lo.C;   // the reduced coefficients the student sees (e.g. 4x−2y+8 → 2x−y+4)
           return mc(r, '<i>(Multiple Choice)</i> A line has general form ' + t(gen(Lo)) + '. Its ' + t('x') + '-intercept is', [
             { html: t(-C / A), right: true },
             { html: t(C / A), why: 'Set ' + t('y=0') + ': ' + t(A + 'x+' + C + '=0') + ', so ' + t(A + 'x=-' + C) + ' — watch the sign.' },
@@ -667,7 +670,7 @@
               t('y=0') + ': ' + t('x=' + fT(fr(-sh.c, 2))) + ' → ' + ptt([xv, 0]) + '. ' + t('x=0') + ': ' + t(sh.c + '=0') + ' — impossible, no ' + t('y') + '-intercept: <b>one point</b>.<br>' + t('x=' + fT(fr(-sh.c, 2))) + ' for every ' + t('y') + ': a <b>vertical</b> line through ' + ptt([xv, 0]) + '.', ['Solve for ' + t('x') + '. Does ' + t('y') + ' appear at all?'], 'graph vertical line half');
             p.bad = W.map(function (w) { return w.is; }).filter(function (v) { return !DR.same(v, key); }); return p;
           } },
-          { id: 'e6c', sub: 'c', level: 'EMG', make: function (r, sh) {
+          { id: 'e6c', sub: 'c', level: 'BEG', make: function (r, sh) {
             var m = mf(sh.f), Lo = mb(m, 0);
             return gpart('Graph (c) ' + t(si(Lo)) + '.', Lo, W8, { wrong: [{ L: mb([-m[0], m[1]], 0), code: 'l5-gr-sign', hint: 'The slope ' + t(fT(m)) + ' is positive: the line rises from left to right.' }, { L: mb([m[1], m[0]], 0), code: 'l5-gr-flip', hint: 'Slope is rise over run: ' + t(fT(m)) + ' means ' + stepT(m) + '.' }],
               anchor: [{ p: [0, 0], hint: 'Both intercepts are ' + ptt([0, 0]) + ' — good. Now step the slope ' + t(fT(m)) + ' from there: ' + stepT(m) + '.' }] },
@@ -699,14 +702,14 @@
               { html: '(a) ' + t(sh.a + 'y' + sg(-sh.a * sh.k) + '=0'), why: '(a) is ' + t('y=0x+(' + sh.k + ')') + ', i.e. ' + t('y=' + sh.k) + ': slope 0 is a number.' },
               { html: '(c) ' + t(si(mb(sh.f, 0))), why: '(c) is ' + t('y=mx+b') + ' with ' + t('b=0') + '.' },
               { html: 'None of them — every line can be written as ' + t('y=mx+b') + '.', why: 'A vertical line has undefined slope: it can’t be solved for ' + t('y') + '.' }],
-              '(b) is ' + t('x=' + fT(fr(-sh.c, 2))) + ', a vertical line: its slope is undefined and ' + t('y') + ' doesn’t appear, so it can’t be solved for ' + t('y') + '.', ['Which line has an undefined slope?'], 'which cannot be y=mx+b', true);
+              '(b) is ' + t('x=' + fT(fr(-sh.c, 2))) + ', a vertical line: its slope is undefined and ' + t('y') + ' doesn’t appear, so it can’t be solved for ' + t('y') + '.', ['Which line has an undefined slope?'], 'which cannot be y=mx+b');
           } }] },
       /* ---- Part D ---- */
       { num: '7', section: 'Extra practice D — Backwards: from a drawn line to all three forms',
         shared: function (r) {
           var fa = r.pick([[3, 2], [2, 3], [1, 2], [3, 4]]), ba = r.pick([-4, -3, -2, -1, 1, 2]), La = mb(fa, ba), kk = 1;
-          while (Math.abs(ba + (kk + 1) * fa[0]) <= 6 && (kk + 1) * fa[1] <= 6) kk++;
-          var fb = r.pick([[3, 5], [1, 4], [3, 4], [2, 5], [1, 5]]), bb = r.pick([-2, -1, 1, 2, 3]), Lb = mb(fb, bb);
+          while (Math.abs(ba + (kk + 1) * fa[0]) <= 5 && (kk + 1) * fa[1] <= 5) kk++;   // marks inside the frame (at ±6 they sit under the arrowhead)
+          var fb = r.pick([[3, 5], [1, 4], [3, 4], [2, 5], [1, 5]]), bb = r.pick([-2, -1, 1, 2, 3].filter(function (v) { return v + fb[0] <= 5; })), Lb = mb(fb, bb);
           var xc = r.pick([-5, -4, -3, -2, 2, 3, 4, 5]), yc = r.pick([-4, -3, -2, 2, 3, 4]);
           return { a: { L: La, P: [[0, ba], [kk * fa[1], ba + kk * fa[0]]], m: fa, b: ba }, b: { L: Lb, P: [[-fb[1], bb - fb[0]], [fb[1], bb + fb[0]]], m: fb, b: bb }, c: { x: xc, y: yc } };
         },
@@ -861,7 +864,7 @@
             return K.P.line('Determine the equation, in general form, of the line the student <b>actually drew</b>.', sh.S, { form: 'general', wrong: [{ is: sh.L, code: 'l5-gr-student', hint: 'That is the correct line for the question — but this asks for the line the student drew, through ' + ptt([0, sh.p]) + ' and ' + ptt([sh.q, 0]) + '.' }] },
               'Through ' + ptt([0, sh.p]) + ' and ' + ptt([sh.q, 0]) + ': ' + t('m=\\frac{0-' + sh.p + '}{' + sh.q + '-0}=' + fT(fr(-sh.p, sh.q))) + ', ' + t('b=' + sh.p) + '. ' + t(si(sh.S)) + ' → ' + t(gen(sh.S)) + '.', ['Find the slope through the two plotted points; the ' + t('y') + '-intercept is ' + t(sh.p) + '.'], 'equation of the wrong line');
           } },
-          { id: 'e10c', sub: 'c', level: 'PRG', make: function (r, sh) {
+          { id: 'e10c', sub: 'c', level: 'EMG', make: function (r, sh) {
             var p = gpart('Draw the <b>correct</b> line for ' + t(gen(sh.L)) + '. (The student’s line is shown dashed.)', sh.L, W8, { pad: { bg: { segs: [dashed(sh.S, W8)] } },
               wrong: [{ L: sh.S, code: 'l5-gr-student', hint: 'That’s the student’s line again. The ' + t('x') + '-intercept goes on the ' + t('x') + '-axis: ' + ptt([sh.p, 0]) + '.' }],
               anchor: [{ p: [sh.p, 0], hint: ptt([sh.p, 0]) + ' is right. The other point is the ' + t('y') + '-intercept ' + ptt([0, sh.q]) + '.' }, { p: [0, sh.q], hint: ptt([0, sh.q]) + ' is right. The other point is the ' + t('x') + '-intercept ' + ptt([sh.p, 0]) + '.' }] },

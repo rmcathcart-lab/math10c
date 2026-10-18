@@ -59,6 +59,7 @@
       var r = base(prep(resp, o.fn, X));
       if (r.v === 'form' && r.code === 'line-vars') return form('line-vars', 'Use the letters from the question: ' + t(lhs) + ' and ' + t(X) + '.');
       if (r.v === 'form' && r.code === 'line-form-si') return form('line-form-si', 'Right equation — now write it in the form ' + t(lhs + '=m' + X + '+b') + ', with ' + t(lhs) + ' by itself on the left.');
+      if (r.v === 'form' && r.code === 'line-form-simplify') return form('line-form-simplify', 'Right equation — now simplify it (reduce any fraction, collect like terms) so it reads ' + t(lhs + '=m' + X + '+b') + '.');
       if (r.v === 'wrong' && r.code === 'line-intercept' && o.bHint) return wrong('line-intercept', o.bHint);
       if (r.hint && o.fn) r = { v: r.v, code: r.code, hint: r.hint.split(t(Y) + '-intercept').join('vertical intercept (the value at ' + t(X + '=0') + ')') };
       if (r.v === 'wrong' && r.code === 'line-slope' && o.mHint) return wrong('line-slope', o.mHint);
@@ -225,7 +226,7 @@
 
   /* interpretation sentences for a model y = mx + b. M: what (the quantity), up/down (verbs), uy/uy1 (top unit plural /
    * singular), ux/uxs (bottom unit singular / plural), money, start (sentence for the intercept, given its value text) */
-  function rateS(M, up, val, flip) { var v = M.money && !flip ? t('\\$' + nf(val)) : t(nf(val)); return cap(M.what) + ' is ' + (up ? M.up : M.down) + ' at ' + v + ' ' + (flip ? M.uxs + ' per ' + M.uy1 : M.uy + ' per ' + M.ux) + '.'; }
+  function rateS(M, up, val, flip) { var v = M.money && !flip ? t('\\$' + nf(val)) : t(nf(val)); return cap(M.what) + ' is ' + (up ? M.up : M.down) + ' at ' + v + ' ' + (flip ? M.uxs + ' per ' + M.uy1 : (M.money ? '' : M.uy + ' ') + 'per ' + M.ux) + '.'; }
   function interpMC(r, prompt, M, m, b, sol, text) {
     var up = m > 0, a = Math.abs(m), bt = M.money ? t('\\$' + nf(b)) : t(nf(b)), at = M.money ? t('\\$' + nf(a)) : t(nf(a));
     return mc(r, prompt, [
@@ -294,7 +295,7 @@
             return num('Calculate the average rate of change.', -sh.rate, [
               { v: sh.rate, code: 'ctx-rate-sign', hint: 'Check the direction: the later year (' + sh.y2 + ') has <b>fewer</b> ' + sh.what + ', so the rate must be negative. Put the later year first in both subtractions.' },
               { v: dN, code: 'ctx-total', hint: 'That’s the total change. Divide it by the number of years, ' + t(sh.y2 + '-' + sh.y1 + '=' + sh.span) + '.' },
-              { v: -sh.span / dN, code: 'ctx-flip', hint: 'Upside down — that’s years per ride. Put the change in ' + sh.what + ' on top.' },
+              { v: -sh.span / dN, code: 'ctx-flip', hint: 'Upside down — that’s years per ' + sh.what.replace(/s$/, '') + '. Put the change in ' + sh.what + ' on top.' },
               { v: -dN / (sh.span + 1), code: 'ctx-months', hint: 'From ' + sh.y1 + ' to ' + sh.y2 + ' is ' + t(sh.span) + ' years.' }],
               sh.y1 + ' to ' + sh.y2 + ' is ' + t(sh.span) + ' years.<br>' + t('\\text{rate}=\\dfrac{' + nf(sh.N2) + '-' + nf(sh.N1) + '}{' + sh.y2 + '-' + sh.y1 + '}=\\dfrac{' + nf(dN) + '}{' + sh.span + '}=' + nf(-sh.rate)) + ' ' + sh.what + ' per year.',
               ['Rate = (change in ' + sh.what + ') ÷ (change in years). Subtract in the same order: later minus earlier for both.', 'The later year is listed first in the question — is the number going up or down?'], 'rate, decreasing', { after: sh.what + ' per year' });
@@ -305,7 +306,7 @@
               { html: 'The number of ' + sh.what + ' is <b>decreasing</b> by ' + a + ' ' + sh.what + ' per year.', right: true },
               { html: 'The number of ' + sh.what + ' is <b>increasing</b> by ' + a + ' ' + sh.what + ' per year.', why: 'The count in ' + sh.y2 + ' is smaller than in ' + sh.y1 + ', so it is going down — that’s what the negative sign says.' },
               { html: 'The number of ' + sh.what + ' is <b>decreasing</b> by ' + t(nf(-sh.rate)) + ' ' + sh.what + ' per year.', why: '“Decreasing” already carries the minus sign. Saying decreasing by a negative amount would mean increasing.' },
-              { html: 'The number of ' + sh.what + ' is <b>decreasing</b> by ' + a + ' years per ride.', why: 'Units upside down: the rate is ' + sh.what + ' per year.' }],
+              { html: 'The number of ' + sh.what + ' is <b>decreasing</b> by ' + a + ' years per ' + sh.what.replace(/s$/, '') + '.', why: 'Units upside down: the rate is ' + sh.what + ' per year.' }],
               'The rate is ' + t(nf(-sh.rate)) + ' ' + sh.what + ' per year. The negative sign means the number is <b>decreasing</b>, so in words: decreasing by ' + a + ' ' + sh.what + ' each year.', ['A negative rate means the quantity is going down. In a sentence, say “decreasing” and give the size of the rate.'], 'sentence for a negative rate');
           } }] },
       /* ---------------- Q3 ---------------- */
@@ -385,7 +386,7 @@
           } },
           { id: '3hii', sub: 'h ii', level: 'ADV', make: function (r, sh) {
             var k = sh.A * sh.rate;
-            var p = B.math('(h) ii) Calculate the rate (in terms of ' + t('\\pi') + ') at which water is draining out of the tank.', piChk(k, [
+            var p = B.math('(h) The tank is cylindrical with a radius of ' + t(sh.R) + ' cm, so ' + t('V=\\pi r^{2}h=' + sh.A + '\\pi h') + '.<br>ii) Calculate the rate (in terms of ' + t('\\pi') + ') at which water is draining out of the tank.', piChk(k, [
               { v: sh.rate, code: 'ctx-area', hint: t(sh.rate + '\\pi') + ' leaves out the size of the tank. Use your two volumes from i): change in volume ÷ change in time.' },
               { v: sh.R * sh.rate, code: 'ctx-r-not-r2', hint: 'Each centimetre of water has volume ' + t('\\pi r^{2}(1)=' + sh.A + '\\pi') + ' cm³ — the radius is squared.' },
               { v: sh.A * (sh.W1 - sh.W2), code: 'ctx-total', hint: 'That’s the total volume drained between the two times. Divide by the change in time, ' + t(sh.t2 - sh.t1) + ' min.' }],

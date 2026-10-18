@@ -284,7 +284,12 @@
     var keyTex = opt.keyTex || P.tex(T, { order: opt.order, var: opt.var, dec: opt.dec });
     var vs = P.vars(T).concat(opt.vars || []).filter(function (v, i, arr) { return arr.indexOf(v) === i; }).sort();
     if (!vs.length) vs = ['x'];
-    return K.P.math(prompt, K.poly(T, opt), keyTex, sol, hints, text, { keys: 'poly', vars: vs, before: opt.before, after: opt.after });
+    var chk = K.poly(T, opt), pre = opt.before ? String(opt.before).replace(/\\[,;! ]|\s/g, '') : '';
+    var check = !/=$/.test(pre) ? chk : function (resp) { // the student typed the "y =" that is already shown before the box
+      var r = String(resp == null ? '' : resp), sq = r.replace(/\\[,;! ]|\s/g, '');
+      return sq.indexOf(pre) === 0 ? chk(r.slice(r.indexOf('=') + 1)) : chk(resp);
+    };
+    return K.P.math(prompt, check, keyTex, sol, hints, text, { keys: 'poly', vars: vs, before: opt.before, after: opt.after });
   };
 
   /* ---------------- keypad ---------------- */

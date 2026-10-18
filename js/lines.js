@@ -95,9 +95,9 @@
     if (fm === 'slope-intercept') {
       if (r.b === 0) return null;   // vertical line: x = k is the only way
       var yl = isVar(r.lAst, Y) && noVar(r.R, Y), yr = isVar(r.rAst, Y) && noVar(r.L, Y);
-      if (!yl && !yr) return form('line-form-si', 'Right line — now write it in slope–intercept form: get ' + t(Y) + ' by itself, ' + t(Y + '=mx+b') + '.');
-      if (yr) return form('line-form-si', 'Right — write it with ' + t(Y) + ' on the left: ' + t(Y + '=mx+b') + '.');
-      var fi = formIssue(r.rAst); if (fi && fi.code !== 'not-poly') return form('line-form-simplify', 'Right line — now simplify: expand any brackets and collect like terms so it reads ' + t(Y + '=mx+b') + '.');
+      if (!yl && !yr) return form('line-form-si', 'Right line — now write it in slope–intercept form: get ' + t(Y) + ' by itself, ' + t(Y + '=m' + X + '+b') + '.');
+      if (yr) return form('line-form-si', 'Right — write it with ' + t(Y) + ' on the left: ' + t(Y + '=m' + X + '+b') + '.');
+      var fi = formIssue(r.rAst); if (fi && fi.code !== 'not-poly') return form('line-form-simplify', 'Right line — now simplify: expand any brackets and collect like terms so it reads ' + t(Y + '=m' + X + '+b') + '.');
       return null;
     }
     if (fm === 'general') {

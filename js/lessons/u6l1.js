@@ -488,9 +488,9 @@
       var h = r.int(2, 5), top = r.int(2, 6), bot = r.int(top + 2, 10), yt = r.int(top - 2, 6), ym = yt - top, yb = ym - bot, c = r.pick([0, 0, 0, -1, 1]);
       if (yb < -8 || bot + top > 12 || yt < 1 || yb > -1 || ym === 0) continue;
       var n1 = h * h + top * top, n2 = h * h + bot * bot; if (isSq(n1) || isSq(n2)) continue;
-      return { W: [c, yt], X: [c + h, ym], Y: [c, yb], Z: [c - h, ym], h: h, n1: n1, n2: n2, win: { x: [-6, 6], y: [yb - 1, Math.max(yt + 1, 1)] } };
+      return { W: [c, yt], X: [c + h, ym], Y: [c, yb], Z: [c - h, ym], h: h, n1: n1, n2: n2, win: { x: [-7, 7], y: [yb - 1, Math.max(yt + 1, 1)] } };
     }
-    return { W: [0, 5], X: [4, 1], Y: [0, -7], Z: [-4, 1], h: 4, n1: 32, n2: 80, win: { x: [-6, 6], y: [-8, 6] } };
+    return { W: [0, 5], X: [4, 1], Y: [0, -7], Z: [-4, 1], h: 4, n1: 32, n2: 80, win: { x: [-7, 7], y: [-8, 6] } };
   }
   /* exact perimeter of a polygon given its squared sides (like radicals collected) */
   function perimTex(sqs) {
@@ -639,7 +639,7 @@
         } },
         { id: '8c', level: 'ADV', make: function (r, sh) {
           var k = sh.d / 2, kc = K.radical({ k: k, n: 2, m: 2 }, 'mixed', { diag: function (v) { if (near(v, sh.d / 2)) return { code: 'half-dist', hint: 'Halving the distance doesn’t work: ' + t('(' + k + ',\\ ' + k + ')') + ' is only ' + t(k + '\\sqrt{2}') + ' m from home. Use ' + t('\\sqrt{k^{2}+k^{2}}=' + sh.d) + '.' }; if (near(v, sh.s / 2)) return { code: 'half-dist', hint: 'That’s the centre of the square. The pitcher is ' + t(sh.d) + ' m from home: solve ' + t('\\sqrt{k^{2}+k^{2}}=' + sh.d) + '.' }; return null; } });
-          var p = K.P.math('Calculate the <b>exact</b> coordinates of the pitcher.', ptChk([k * Math.SQRT2, k * Math.SQRT2], { chk: [kc, kc] }), '(' + k + '\\sqrt{2},\\ ' + k + '\\sqrt{2})',
+          var p = K.P.math('The pitcher stands on the mound ' + t(sh.d) + ' m from home plate. Calculate the <b>exact</b> coordinates of the pitcher.', ptChk([k * Math.SQRT2, k * Math.SQRT2], { chk: [kc, kc] }), '(' + k + '\\sqrt{2},\\ ' + k + '\\sqrt{2})',
             'The diagonal from ' + t('(0,\\ 0)') + ' to ' + t('(' + sh.s + ',\\ ' + sh.s + ')') + ' is the line ' + t('y=x') + ', so the pitcher is at ' + t('(k,\\ k)') + ' with ' + t('k>0') + '.<br>' + t('\\sqrt{k^{2}+k^{2}}=k\\sqrt{2}=' + sh.d) + ', so ' + t('k=\\dfrac{' + sh.d + '}{\\sqrt{2}}=\\dfrac{' + sh.d + '\\sqrt{2}}{2}=' + k + '\\sqrt{2}') + '.<br>Pitcher: ' + t('(' + k + '\\sqrt{2},\\ ' + k + '\\sqrt{2})') + '. (Check: ' + t('\\sqrt{' + 2 * k * k + '+' + 2 * k * k + '}=\\sqrt{' + sh.d * sh.d + '}=' + sh.d) + '.)',
             ['On the diagonal, both coordinates are equal: call the point ' + t('(k,\\ k)') + '.', 'Its distance from home is ' + t('\\sqrt{k^{2}+k^{2}}=k\\sqrt{2}') + '. Set that equal to ' + t(sh.d) + ' and solve.'], 'exact pitcher coordinates', { keys: PTK, placeholder: 'e.g. (3sqrt(2), 3sqrt(2))' });
           p.bad = ['(' + k + ', ' + k + ')', '(' + dec(k * Math.SQRT2, 1) + ', ' + dec(k * Math.SQRT2, 1) + ')']; p.good = ['(' + k + '\\sqrt{2}, ' + k + '\\sqrt{2})', '\\left(' + k + '\\sqrt{2},' + k + '\\sqrt{2}\\right)']; return p;
@@ -764,13 +764,13 @@
         } },
         { id: 'e3c', sub: 'c ii', level: 'PRG', make: function (r, sh) {
           var rs = d2(sh.R, sh.S);
-          var p = K.P.fields('Determine ' + t('PS') + ' and ' + t('RS') + '.', [lenField('PS', sh.c * sh.c), lenField('RS', rs)], [exactLen(sh.c * sh.c, [0, sh.c]), exactLen(rs, runRise(sh.R, sh.S))], [String(sh.c), rt(rs)],
+          var p = K.P.fields('With ' + t('S' + P2(sh.S)) + ', determine ' + t('PS') + ' and ' + t('RS') + '.', [lenField('PS', sh.c * sh.c), lenField('RS', rs)], [exactLen(sh.c * sh.c, [0, sh.c]), exactLen(rs, runRise(sh.R, sh.S))], [String(sh.c), rt(rs)],
             t('PS=' + sh.c) + ', ' + t('RS=' + rt(rs)), t('PS') + ' is vertical: ' + t('|' + sub(sh.S[1], sh.P[1]) + '|=' + sh.c) + ' units.<br>' + distSol('RS', sh.R, sh.S), ['' + t('PS') + ' is vertical — subtract. ' + t('RS') + ' is diagonal — use the Pythagorean theorem.'], 'PS and RS');
           p.bad = [[String(sh.c + 1), String(sh.h + sh.c - sh.v)]]; return p;
         } },
         { id: 'e3c2', sub: 'c iii', level: 'EMG', make: function (r, sh) {
           var rs = rt(d2(sh.R, sh.S));
-          return mcP(r, 'A student claims that ' + t('\\triangle PRS') + ' is isosceles. Using ' + t('PR') + ', ' + t('PS') + ' and ' + t('RS') + ', decide whether the claim is true.', [
+          return mcP(r, 'A student claims that ' + t('\\triangle PRS') + ', with ' + t('S' + P2(sh.S)) + ', is isosceles. Using ' + t('PR') + ', ' + t('PS') + ' and ' + t('RS') + ', decide whether the claim is true.', [
             { html: 'True: ' + t('PR=PS=' + sh.c), right: true },
             { html: 'True: ' + t('PR=RS'), why: t('RS=' + rs) + ', which is not ' + t(sh.c) + '.' },
             { html: 'True: ' + t('PS=RS'), why: t('RS=' + rs) + ', but ' + t('PS=' + sh.c) + '.' },
@@ -779,7 +779,7 @@
         } },
         { id: 'e3d', sub: 'd', level: 'EMG', make: function (r, sh) {
           var a = sh.c * sh.c, b = sh.c * sh.c, c = d2(sh.R, sh.S);
-          return mcP(r, 'Is ' + t('\\triangle PRS') + ' also a right triangle? Compare ' + t('PR^{2}+RS^{2}') + ', ' + t('PR^{2}+PS^{2}') + ' and ' + t('PS^{2}+RS^{2}') + ' with the square of the remaining side.', [
+          return mcP(r, 'Is ' + t('\\triangle PRS') + ' (with ' + t('S' + P2(sh.S)) + ') also a right triangle? Compare ' + t('PR^{2}+RS^{2}') + ', ' + t('PR^{2}+PS^{2}') + ' and ' + t('PS^{2}+RS^{2}') + ' with the square of the remaining side.', [
             { html: 'No — none of the three sums equals the square of the remaining side.', right: true },
             { html: 'Yes — the right angle is at ' + t('P') + '.', why: 'Check: ' + t('PR^{2}+PS^{2}=' + (a + b)) + ', but ' + t('RS^{2}=' + c) + '.' },
             { html: 'Yes — the right angle is at ' + t('R') + '.', why: 'Check: ' + t('PR^{2}+RS^{2}=' + (a + c)) + ', but ' + t('PS^{2}=' + b) + '.' },
@@ -791,7 +791,7 @@
         return { id: 'e4' + 'abcdef'[i], level: ['PRG', 'PRG', 'EMG', 'EMG', 'PRG', 'EMG'][i], make: function (r, sh) { var s = sh.segs[i]; return lenPart(t(s.n[0] + P2(s.A)) + ' to ' + t(s.n[1] + P2(s.B)), s.n.join(''), s.A, s.B, 1); } };
       }).concat([{ id: 'e4g', level: 'EMG', make: function (r, sh) {
         var Ns = sh.segs.map(function (s) { return d2(s.A, s.B); }), L = 'abcdef';
-        return mcP(r, 'Exactly one of the six answers needed no radical sign at all in its final form. Which one, and what was special about the number under the radical?', [
+        return mcP(r, 'The six segments were ' + sh.segs.map(function (s, i) { return '(' + L[i] + ') ' + t(s.n[0] + P2(s.A)) + ' to ' + t(s.n[1] + P2(s.B)); }).join(', ') + '. Exactly one of the six lengths needs no radical sign at all in its final form. Which one, and what was special about the number under the radical?', [
           { html: '(c): ' + t(Ns[2]) + ' is a perfect square (' + t(Ns[2] + '=' + Math.sqrt(Ns[2]) + '^{2}') + ').', right: true },
           { html: '(a): ' + t(Ns[0]) + ' has a perfect-square factor.', why: 'A perfect-square <b>factor</b> only simplifies the radical: ' + t(rtSteps(Ns[0])) + ' still has a radical.' },
           { html: '(d): ' + t(Ns[3]) + ' has no perfect-square factor.', why: 'Then the radical can’t be simplified at all: ' + t('\\sqrt{' + Ns[3] + '}') + ' stays as it is.' },
@@ -840,7 +840,7 @@
             { html: 'Rounding always makes the route with radicals look shorter.', why: 'Rounding can go up or down. Here both totals round to ' + t(dec(sh.R1, 1)) + '.' }],
             'The totals are ' + t(dec(sh.R1, 5)) + ' and ' + t(dec(sh.R2, 5)) + ': they differ by about ' + t(dec(Math.abs(sh.R2 - sh.R1), 4)) + ', far less than the rounding step of ' + t('0.1') + ', so both round to ' + t(dec(sh.R1, 1)) + '.', ['How far apart are the two totals compared with 0.1?'], 'why rounding fails');
         } },
-        { id: 'e6c', sub: 'c i', level: 'ADV', make: function (r, sh) {
+        { id: 'e6c', sub: 'c i', level: 'PRG', make: function (r, sh) {
           var h = sh.h, H = h * h, mn = sh.m * sh.n, S = sh.m + sh.n, L2 = sh.R1 * sh.R1;
           var p = K.P.number('Settle it exactly. Square both totals: ' + t('(' + sh.intName.replace('Route ', '\\text{Route }') + ')^{2}=' + sh.R1 + '^{2}=' + L2) + ' and ' + t('(\\sqrt{' + sh.m + '}+\\sqrt{' + sh.n + '})^{2}=' + S + '+2\\sqrt{' + mn + '}') + '. Subtract ' + t(S) + ' from both, divide by ' + t('2') + ', then square both sides. You end up comparing ' + t(F(mn)) + ' with which whole number?', H, function (v) {
             if (v === h) return { code: 'no-sq-first', hint: 'You’re comparing ' + t('\\sqrt{' + mn + '}') + ' with ' + t(h) + '. Square both sides to compare whole numbers.' };
@@ -851,7 +851,7 @@
           ['Work step by step: ' + t(L2 + '-' + S) + ', then ÷ 2, then square.'], 'reduce comparison to whole numbers');
           p.bad = [String(h)]; return p;
         } },
-        { id: 'e6c2', sub: 'c ii', level: 'PRG', make: function (r, sh) {
+        { id: 'e6c2', sub: 'c ii', level: 'EMG', make: function (r, sh) {
           var shorter = sh.R1 < sh.R2 ? sh.intName : sh.radName, longer = shorter === sh.intName ? sh.radName : sh.intName;
           return mcP(r, 'Since ' + t(F(sh.m * sh.n) + (sh.m * sh.n > sh.h * sh.h ? '\\gt ' : '\\lt ') + F(sh.h * sh.h)) + ', which route is shorter?', [
             { html: shorter, right: true },
@@ -938,7 +938,7 @@
           return mcP(r, 'Why are the diagonals ' + t('WY') + ' and ' + t('XZ') + ' easy to find without any radical?', [
             { html: t('WY') + ' is vertical and ' + t('XZ') + ' is horizontal, so one difference is ' + t('0') + ' and each length is a single subtraction.', right: true },
             { html: 'Diagonals of a kite are always whole numbers.', why: 'Not in general — these are whole numbers because they are vertical and horizontal on the grid.' },
-            { html: 'The diagonals are shorter than the sides.', why: 'Length has nothing to do with it (and ' + t('WY') + ' is longer than every side). Look at the direction of each diagonal.' },
+            { html: 'The diagonals are shorter than the sides.', why: 'Length has nothing to do with it. Look at the direction of each diagonal.' },
             { html: 'The diagonals cross at a right angle.', why: 'They do, but that isn’t why no radical is needed. One coordinate stays the same along each diagonal.' }],
             'For a horizontal or vertical segment one of the differences is ' + t('0') + ', so ' + t('\\sqrt{d^{2}+0^{2}}=d') + ': the length is just a subtraction.', ['What direction does each diagonal run?'], 'why diagonals need no radical');
         } }] },
@@ -1031,7 +1031,7 @@
             { html: 'Because ' + t('B') + ' is below ' + t('A') + '.', why: 'Where the points are doesn’t make a length negative — a distance is never negative.' }],
             'A length measures how far apart two points are, so it is never negative. ' + t(v) + ' is impossible.', ['Can a distance be negative?'], 'length never negative');
         } },
-        { id: 'e13c', sub: 'c', level: 'BEG', make: function (r, sh) { return lenPart('Determine the correct length of ' + t('AB') + ', exactly and to the nearest tenth.', 'AB', sh.A, sh.B, 1); } },
+        { id: 'e13c', sub: 'c', level: 'EMG', make: function (r, sh) { return lenPart('Determine the correct length of ' + t('AB') + ', exactly and to the nearest tenth.', 'AB', sh.A, sh.B, 1); } },
         { id: 'e13d', sub: 'd', level: 'EMG', make: function (r, sh) {
           var dx = sh.B[0] - sh.A[0], dy = sh.B[1] - sh.A[1];
           return mcP(r, 'What does squaring do to the two differences that makes the order of the endpoints — ' + t('A') + ' to ' + t('B') + ' or ' + t('B') + ' to ' + t('A') + ' — stop mattering?', [
@@ -1087,7 +1087,7 @@
             t('B=(x,\\ ' + by + ')') + ': ' + t('(' + mn('x', ax) + ')^{2}+(' + sub(by, ay) + ')^{2}=' + N) + ', ' + t('(' + mn('x', ax) + ')^{2}+' + v * v + '=' + N) + ', ' + t('(' + mn('x', ax) + ')^{2}=' + h * h) + ', ' + t('x=' + ax + '\\pm' + h) + ': ' + t(x1) + ' or ' + t(x2) + '.', ['Substitute ' + t('B=(x,\\ ' + by + ')') + ' into the distance formula and solve.'], 'MC possible x of B');
         } }] },
       { num: '16', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: 'e16', level: 'PRG', make: function (r) {
+        { id: 'e16', level: 'EMG', make: function (r) {
           var g = r.pick([6, 10]), pq = r.pick([[2, 3], [3, 2], [1, 2], [2, 1], [1, 3], [3, 1]]), m = pq[0] * pq[0] + pq[1] * pq[1], A = [r.int(-9, -4), r.int(-9, -4)];
           var B = [A[0] + g * pq[0], A[1] + g * pq[1]], f = g === 6 ? [[2, 9], [3, 4]] : [[2, 25], [5, 4]], big = g * Math.max(pq[0], pq[1]);
           return mcP(r, 'The exact length of the segment from ' + t(P2(A)) + ' to ' + t(P2(B)) + ', written as a mixed radical <b>in simplest form</b>, is', [

@@ -78,6 +78,8 @@
     p.good = (!opt.form || opt.form === 'any' ? [Lns.tex(target, 'general', null, vars)] : []).concat(opt.good || []);
     return p;
   }
+  /* the question asks for exact fractions: a right line typed with decimals gets a form nudge */
+  function exactOnly(p) { var c = p.check; p.check = function (resp) { var res = c(resp); if (res.v === 'correct' && /\d\.\d/.test(String(resp))) return form('u72-decimal', 'Right line — but give it with exact <b>fractions</b>, not decimals, as the question asks.'); return res; }; return p; }
   function withB(m, base) { var o = { m: fr(m) }; if (base.point) o.point = base.point; else o.b = fr(base.b); return o; }
   /* classic perpendicular / parallel slope mistakes. g = the given slope; base = { b } or { point } */
   function perpW(g, base) {
@@ -88,17 +90,6 @@
   }
   function parW(g, base) { return [{ is: withB(nrec(g), base), code: 'u72-par-perp', hint: 'That’s the negative reciprocal — the slope of a <b>perpendicular</b> line. Parallel lines have <b>equal</b> slopes.' }]; }
 
-  /* ---------------- a keypad with extra letters (for equations with a, b, p, q, r, s) ---------------- */
-  var LETK = 'u7l2let', W = HW.widgets;
-  if (W && W.KEYSETS && !W.KEYSETS[LETK]) {
-    W.KEYSETS[LETK] = function (opt) {
-      var rows = (W.KEYSETS.eq ? W.KEYSETS.eq({ vars: ['x', 'y'] }) : []).map(function (rw) { return rw.slice(); });
-      var extra = ((opt && opt.vars) || []).filter(function (v) { return v !== 'x' && v !== 'y'; }).map(function (v) { return { label: '<i>' + v + '</i>', tex: v, plain: v }; });
-      if (extra.length) rows.push(extra);
-      return rows;
-    };
-    if (W.KEYHELP) W.KEYHELP[LETK] = ['Type the whole equation with the <b>=</b> key; the letters from the question are on the last row. Use <b><sup>a</sup>⁄<sub>b</sub></b> for a fraction and <b>▶</b> to step out of it.', 'Type the whole equation, e.g. <code>y = -1/r x + q</code>.'];
-  }
   /* an equation with letters: correct when it describes the same line for every value of the letters.
    * coef(env) -> [A, B, C] of the target A x + B y + C = 0; diags: [{ coef, code, hint }] */
   var ENVS = [{ a: 2.17, b: -3.41, p: 1.37, q: 2.71, r: -1.93, s: 0.61 }, { a: -1.29, b: 2.53, p: -2.6, q: -0.83, r: 3.17, s: 1.9 }, { a: 3.7, b: 1.13, p: 0.77, q: 1.61, r: 1.41, s: -2.23 }];
@@ -135,7 +126,7 @@
     };
   }
   function symPart(prompt, coef, letters, diags, keyTex, sol, hints, text, good, bad) {
-    var p = B.math(prompt, symChk(coef, letters, diags), keyTex, sol, hints, text, { keys: LETK, vars: ['x', 'y'].concat(letters), placeholder: 'e.g. y = 2x + 1' });
+    var p = B.math(prompt, symChk(coef, letters, diags), keyTex, sol, hints, text, { keys: 'eq', vars: ['x', 'y'].concat(letters), placeholder: 'e.g. y = 2x + 1' });
     p.good = good || []; p.bad = bad || [];
     return p;
   }
@@ -368,7 +359,7 @@
           return LP('through the point ' + t(ptT(0, b)) + ' and parallel to ' + t(given(g, c)), L(g, b), { wrong: parW(g, { b: [b, 1] }).concat([{ is: L(g, c), code: 'u72-given-line', hint: 'That’s the given line itself. Keep its slope, but your line passes through ' + t(ptT(0, b)) + ', so ' + t('b=' + b) + '.' }]) },
             t(ptT(0, b)) + ' gives ' + t('b=' + b) + '; parallel to ' + t(given(g, c)) + ' gives ' + t('m=' + nT(g)) + ': ' + t(SI(g, b)) + '.<br><b>Check.</b> ' + t('x=0\\Rightarrow y=' + b) + '; the slopes are equal ✓', H_PAR, 'through (0,' + b + ') parallel to slope ' + nT(g));
         } },
-        { id: '1i', level: 'PRG', make: function (r) {
+        { id: '1i', level: 'EMG', make: function (r) {
           var A = r.pick([2, 3, 4, 5, -2, -3]), Bq = nz(r, -15, 15), g = until(function () { return anyFrac(r, 3, 9, 2, 4); }, function (f) { return f[0] > f[1]; }), c = nz(r, -9, 9), m = nrec(g), oT = SI(A, Bq);
           return LP('with the same ' + t('y') + '-intercept as ' + t(oT) + ' and perpendicular to ' + t(given(g, c)), L(m, Bq),
             { wrong: perpW(g, { b: [Bq, 1] }).concat([{ is: L(m, c), code: 'u72-b-given', hint: 'Right slope — but ' + t('b') + ' comes from ' + t(oT) + ', not from the line you are perpendicular to.' },
@@ -404,7 +395,7 @@
           }, function (o) { var bs = [o.b1, o.b2, o.b3]; return Math.abs(bs[0] - bs[1]) >= 2 && Math.abs(bs[0] - bs[2]) >= 2 && Math.abs(bs[1] - bs[2]) >= 2 && Math.abs(o.b1) >= 2; });
         },
         parts: [
-          { id: '2a', sub: 'n₁', level: 'EMG', make: function (r, sh) { return gridLinePart(sh.m1, sh.b1, '1'); } },
+          { id: '2a', sub: 'n₁', level: 'BEG', make: function (r, sh) { return gridLinePart(sh.m1, sh.b1, '1'); } },
           { id: '2b', sub: 'n₂', level: 'BEG', make: function (r, sh) { return gridLinePart(sh.m2, sh.b2, '2'); } },
           { id: '2c', sub: 'n₃', level: 'BEG', make: function (r, sh) { return gridLinePart(sh.m3, sh.b3, '3'); } }] },
 
@@ -499,7 +490,7 @@
               [[[k, x0], 'pairs-flip', 'Your coordinates are swapped: the point is ' + t('(x,\\ y)') + ', and on the line ' + t('y=' + k) + ' the ' + t('y') + '-coordinate is ' + t(k) + '.'],
                 [[(k + c) / m2, k], 'u72-pt-solve', 'Check how you solved ' + t(k + '=' + m2 + 'x' + (c < 0 ? '' : '+') + c) + ': move the constant to the other side by doing the <b>opposite</b> operation.'],
                 [[x0, m2 * k + c], 'u72-pt-solve', 'You substituted ' + t('x=' + k) + '. On the line ' + t('y=' + k) + ' it’s ' + t('y') + ' that equals ' + t(k) + ': set ' + t(k + '=' + m2 + 'x' + (c < 0 ? '' : '+') + c) + ' and solve for ' + t('x') + '.']],
-              'At the intersection both equations give the same ' + t('y') + ', so set them equal: ' + t(k + '=' + m2 + 'x' + (c < 0 ? '' : '+') + c + '\\Rightarrow ' + m2 + 'x=' + (k - c) + '\\Rightarrow x=' + x0) + ', and ' + t('y=' + k) + '. The lines meet at ' + t(ptT(x0, k)) + '.<br><b>Check.</b> ' + t(m2 + pT(x0) + (c < 0 ? '' : '+') + c + '=' + k) + ' ✓',
+              'At the intersection both equations give the same ' + t('y') + ', so set them equal: ' + t(k + '=' + m2 + 'x' + (c < 0 ? '' : '+') + c + '\\Rightarrow ' + m2 + 'x=' + (k - c) + '\\Rightarrow x=' + x0) + ', and ' + t('y=' + k) + '. The lines meet at ' + t(ptT(x0, k)) + '.<br><b>Check.</b> ' + t(m2 + '\\left(' + x0 + '\\right)' + (c < 0 ? '' : '+') + c + '=' + k) + ' ✓',
               ['Every point on ' + t('y=' + k) + ' has ' + t('y=' + k) + '. Substitute ' + t('y=' + k) + ' into the other equation and solve for ' + t('x') + '.'], 'intersection of y=' + k + ' and ' + oT);
           } }] },
 
@@ -610,7 +601,7 @@
             ['Build the line first: its slope is the negative reciprocal of ' + t('\\frac{1}{' + k + '}') + ', and its ' + t('b') + ' is the constant term of ' + t(oT) + '.', 'Then subtract carefully: ' + t('m-b') + ' with a negative ' + t('b') + '.'], 'NR m-b, perp to 1/' + k + ', b=' + (-Bq));
         } }] },
       { num: '14', stem: '<i>(Numerical Response)</i>', parts: [
-        { id: '14', level: 'ADV', make: function (r) {
+        { id: '14', level: 'PRG', make: function (r) {
           var k = r.pick([2, 4, 5, 5, -2, -4, -5]), c = r.int(1, 9), ans = Math.round((c - 1 / k) * 100) / 100, gT = SI(k, c), m = nrec([k, 1]);
           return nrPart('Two perpendicular lines intersect on the ' + t('y') + '-axis. One line has equation ' + t(gT) + '. If the equation of the other line is ' + t('y=mx+b') + ', then the exact value of ' + t('m+b') + ' is ______.', ans,
             [[c - k, 'u72-nr-perp', 'The other line’s slope is the negative <b>reciprocal</b> of ' + t(k) + ', not ' + t(-k) + '.'], [Math.round((c + 1 / k) * 100) / 100, 'u72-nr-perp', 'Check the sign: the negative reciprocal of ' + t(k) + ' is ' + t(nT(m)) + '.'], [c + k, 'u72-nr-perp', 'You used the same slope — that would make the lines parallel, not perpendicular.'], [c, 'u72-nr-b', 'Remember to add the slope ' + t('m') + ' as well as ' + t('b') + '.'], [Math.round((1 / k) * 100) / 100, 'u72-nr-b', 'Where do the lines meet? On the ' + t('y') + '-axis — at the ' + t('y') + '-intercept of ' + t(gT) + ', so ' + t('b=' + c) + '.']],
@@ -623,12 +614,12 @@
     extra: [
       /* ---------- Part A: the point is not the y-intercept ---------- */
       { num: '1', section: 'Extra practice A — When the point is not the y-intercept', stem: 'Determine the equation of each line in the form ' + t('y=mx+b') + '. Use exact fractions, never decimals.', parts: [
-        { id: 'e1a', level: 'EMG', make: function (r) { var m = r.int(2, 5), x0 = r.int(1, 4), y0 = r.int(-8, -2); return slopePointPart([m, 1], x0, y0); } },
-        { id: 'e1b', level: 'EMG', make: function (r) { var m = -r.int(2, 5), x0 = r.int(-5, -2), y0 = r.int(2, 9); return slopePointPart([m, 1], x0, y0); } },
-        { id: 'e1c', level: 'EMG', make: function (r) { var f = properFrac(r, 2, 5), x0 = f[1] * r.int(1, 3), y0 = r.int(-6, -1); return slopePointPart(f, x0, y0); } },
-        { id: 'e1d', level: 'EMG', make: function (r) { var f = fNeg(properFrac(r, 3, 5)), x0 = -f[1] * r.int(1, 2), y0 = r.int(1, 6); return slopePointPart(f, x0, y0); } },
-        { id: 'e1e', level: 'PRG', make: function (r) { var f = until(function () { return properFrac(r, 4, 6); }, function (f) { return f[1] !== 5; }), x0 = until(function () { return nz(r, -5, 5); }, function (x) { return (f[0] * x) % f[1] !== 0; }), y0 = nz(r, -6, 6); return slopePointPart(f, x0, y0); } },
-        { id: 'e1f', level: 'PRG', make: function (r) { var q = r.pick([2, 2, 3]), f = [-1, q], x0 = until(function () { return r.int(1, 9); }, function (x) { return x % q !== 0; }); return slopePointPart(f, x0, 0); } }] },
+        { id: 'e1a', level: 'EMG', make: function (r) { var m = r.int(2, 5), x0 = r.int(1, 4), y0 = r.int(-8, -2); return exactOnly(slopePointPart([m, 1], x0, y0)); } },
+        { id: 'e1b', level: 'EMG', make: function (r) { var m = -r.int(2, 5), x0 = r.int(-5, -2), y0 = r.int(2, 9); return exactOnly(slopePointPart([m, 1], x0, y0)); } },
+        { id: 'e1c', level: 'EMG', make: function (r) { var f = properFrac(r, 2, 5), x0 = f[1] * r.int(1, 3), y0 = r.int(-6, -1); return exactOnly(slopePointPart(f, x0, y0)); } },
+        { id: 'e1d', level: 'EMG', make: function (r) { var f = fNeg(properFrac(r, 3, 5)), x0 = -f[1] * r.int(1, 2), y0 = r.int(1, 6); return exactOnly(slopePointPart(f, x0, y0)); } },
+        { id: 'e1e', level: 'PRG', make: function (r) { var f = until(function () { return properFrac(r, 4, 6); }, function (f) { return f[1] !== 5; }), x0 = until(function () { return nz(r, -5, 5); }, function (x) { return (f[0] * x) % f[1] !== 0; }), y0 = nz(r, -6, 6); return exactOnly(slopePointPart(f, x0, y0)); } },
+        { id: 'e1f', level: 'PRG', make: function (r) { var q = r.pick([2, 2, 3]), f = [-1, q], x0 = until(function () { return r.int(1, 9); }, function (x) { return x % q !== 0; }); return exactOnly(slopePointPart(f, x0, 0)); } }] },
       { num: '2', stem: function (sh) { return 'Determine the equation of the line through each pair of points, in the form ' + t('y=mx+b') + ' where possible.'; },
         shared: function (r) {
           var mk = function (m, x1, y1, j) { m = fr(m); var x2 = x1 + m[1] * j, y2 = y1 + m[0] * j; return { x1: x1, y1: y1, x2: x2, y2: y2, m: m }; };
@@ -673,7 +664,7 @@
             var yv = fAdd(fMul(sh.m, x), sh.c), y = on ? fv(yv) : Math.round(fv(yv)) + 0;
             var trueOn = near(fv(yv), y);
             return B.tf(r, 'True or false: the point ' + t(ptT(x, y)) + ' lies on this line.', trueOn,
-              trueOn ? 'Substitute ' + t('x=' + x) + ': ' + t(nT(sh.m) + pT(x) + (sh.c < 0 ? '' : '+') + sh.c + '=' + nT(yv)) + ', which <b>is</b> ' + t(y) + '.' : 'Substitute ' + t('x=' + x) + ': ' + t(nT(sh.m) + pT(x) + (sh.c < 0 ? '' : '+') + sh.c + '=' + nT(yv)) + ', which is not ' + t(y) + '.',
+              trueOn ? 'Substitute ' + t('x=' + x) + ': ' + t(nT(sh.m) + '\\left(' + x + '\\right)' + (sh.c < 0 ? '' : '+') + sh.c + '=' + nT(yv)) + ', which <b>is</b> ' + t(y) + '.' : 'Substitute ' + t('x=' + x) + ': ' + t(nT(sh.m) + '\\left(' + x + '\\right)' + (sh.c < 0 ? '' : '+') + sh.c + '=' + nT(yv)) + ', which is not ' + t(y) + '.',
               'Substitute ' + t('x=' + x) + ': ' + t(nT(sh.m) + '\\left(' + x + '\\right)' + (sh.c < 0 ? '' : '+') + sh.c + '=' + nT(yv)) + '. ' + (trueOn ? 'That equals ' + t(y) + ', so <b>yes</b>: the point is on the line.' : t(nT(yv) + '\\ne ' + y) + ', so <b>no</b>: the point is not on the line.'),
               ['Substitute the ' + t('x') + '-coordinate and see whether you get the ' + t('y') + '-coordinate.'], 'is (' + x + ',' + y + ') on the line');
           } },
@@ -720,7 +711,7 @@
             return mc(r, 'Neither line crosses the ' + t('y') + '-axis at a grid point. Why couldn’t reading ' + t('b') + ' off the graph give an exact answer, and what do you do instead?', [
               { html: 'The lines cross the ' + t('y') + '-axis between grid lines, so reading ' + t('b') + ' is only an estimate. Take the slope from the two exact lattice points and solve for ' + t('b') + ' by substituting one of them into ' + t('y=mx+b') + '.', right: true },
               { html: 'The graph is drawn to scale, so ' + t('b') + ' can be read to the nearest tenth, which is exact enough.', why: 'A reading to the nearest tenth is still an estimate — an exact answer like ' + t('-\\frac{1}{4}') + ' needs algebra.' },
-              { html: 'Use the ' + t('x') + '-intercept as ' + t('b') + ' instead, because it is easier to read.', why: 'The ' + t('x') + '-intercept isn’t ' + t('b') + ' (and here it isn’t a grid point either).' },
+              { html: 'Use the ' + t('x') + '-intercept as ' + t('b') + ' instead, because it is easier to read.', why: 'The ' + t('x') + '-intercept isn’t ' + t('b') + ': ' + t('b') + ' is where the line crosses the <b>' + t('y') + '</b>-axis.' },
               { html: 'There is no exact answer: these lines can’t be written in the form ' + t('y=mx+b') + '.', why: 'Every non-vertical line can be written as ' + t('y=mx+b') + ' — here ' + t('b') + ' is just a fraction.' }],
               'The lines cross the ' + t('y') + '-axis at ' + t(nT(bOf(sh.mA, sh.A[0], sh.A[1]))) + ' and ' + t(nT(bOf(sh.mB, sh.B[0], sh.B[1]))) + ', which lie between grid lines, so the graph only lets you estimate ' + t('b') + '. Instead, find the slope from the two exact lattice points, then substitute one of them into ' + t('y=mx+b') + ' and solve for ' + t('b') + '.',
               ['Where exactly do the lines cross the ' + t('y') + '-axis? Can you read that from the grid?'], 'why b cannot be read off');
@@ -734,7 +725,7 @@
         parts: [
           { id: 'e5a', level: 'PRG', outcome: 'RF7', make: function (r, sh) { var o = sh.a, xs = [0, 1, 2, 3, 4].map(function (i) { return o.x0 + i * o.dx; }); return tablePart(xs, xs.map(function (x) { return o.m * x + o.b; }), [o.m, 1], o.dx); } },
           { id: 'e5b', level: 'PRG', outcome: 'RF7', make: function (r, sh) { var o = sh.b, xs = [0, 1, 2, 3, 4].map(function (i) { return o.x0 + i * o.dx; }); return tablePart(xs, xs.map(function (x) { return fv(fAdd(fMul(o.m, x - o.x0), o.y0)); }), o.m, o.dx); } },
-          { id: 'e5c', level: 'EMG', outcome: 'RF4', make: function (r, sh) {
+          { id: 'e5c', level: 'BEG', outcome: 'RF4', make: function (r, sh) {
             var o = sh.c, xs = [1, 2, 3, 4].map(function (i) { return i + o.x0; }), ys = xs.map(function (x) { return o.s * x * x + o.c; }), d = [ys[1] - ys[0], ys[2] - ys[1], ys[3] - ys[2]];
             return mc(r, HW.valueTable([[t('x')].concat(xs), [t('y')].concat(ys)]) + 'Is this relation linear?', [
               { html: '<b>Not linear</b>: ' + t('x') + ' steps by ' + t('1') + ', but ' + t('y') + ' changes by ' + t(d.join(',\\ ')) + ' — the rate of change is not constant.', right: true },
@@ -808,7 +799,7 @@
             p.good = [['-\\frac{1}{' + C + '}k', String(b0)], ['\\frac{-k}{' + C + '}', 'b=' + b0]]; p.bad = [['\\frac{k}{' + C + '}', String(b0)], ['-k', String(b0)], ['-\\frac{k}{' + C + '}', String(-b0)]];
             return p;
           } },
-          { id: 'e7b', level: 'ADV', outcome: 'RF7', make: function (r, sh) {
+          { id: 'e7b', level: 'PRG', outcome: 'RF7', make: function (r, sh) {
             var C = sh.C, M = sh.M, gT = SI(M, sh.c1), k = -C * M;
             return valPart('Determine the value of ' + t('k') + ' for which this line is <b>parallel</b> to ' + t(gT) + '.', [k, 1],
               [[C * M, 'u72-k-sign', 'Solve ' + t('-\\frac{k}{' + C + '}=' + M) + ' carefully: multiply both sides by ' + t('-' + C) + '.'], [fr(C, M), 'u72-k-perp', 'That makes the line <b>perpendicular</b>. Parallel lines have <b>equal</b> slopes: ' + t('-\\frac{k}{' + C + '}=' + M) + '.'], [-M, 'u72-k-nodiv', 'The slope is ' + t('-\\frac{k}{' + C + '}') + ', not ' + t('-k') + ': multiply by ' + t(C) + ' too.']],
@@ -827,7 +818,7 @@
               'Substitute the point: ' + t('k\\left(' + x0 + '\\right)+' + C + '\\left(' + y0 + '\\right)-' + sh.D + '=0') + ', so ' + t(x0 + 'k' + (C * y0 - sh.D < 0 ? '' : '+') + (C * y0 - sh.D) + '=0') + ' and ' + t('k=' + k) + '.<br><b>Check.</b> ' + t(k * x0 + (C * y0 < 0 ? '' : '+') + (C * y0) + '-' + sh.D + '=0') + ' ✓',
               ['A point is on a line when its coordinates make the equation true. Substitute, then solve for ' + t('k') + '.'], 'k through a point', { before: t('k=') });
           } },
-          { id: 'e7e', level: 'PRG', outcome: 'RF6', make: function (r, sh) {
+          { id: 'e7e', level: 'EMG', outcome: 'RF6', make: function (r, sh) {
             var C = sh.C, b0 = sh.b0;
             var p = B.fields('For which value of ' + t('k') + ' is the line horizontal? State its equation for that ' + t('k') + '.', [{ name: t('k'), label: '', before: t('k='), mode: 'math', keys: 'eq' }, { name: 'equation', label: 'equation', mode: 'math', keys: 'eq', wide: true }],
               [valChk([0, 1], [[C, 'u72-k-nodiv', 'Horizontal means slope ' + t('0') + ': ' + t('-\\frac{k}{' + C + '}=0') + '.']]), K.line({ y: b0 }, { wrong: [{ is: { y: sh.D }, code: 'u72-k-nodiv', hint: 'With ' + t('k=0') + ': ' + t(C + 'y-' + sh.D + '=0') + ', so ' + t('y=\\frac{' + sh.D + '}{' + C + '}') + '.' }] })],
@@ -1080,7 +1071,7 @@
               'They used the negative reciprocal — the <b>perpendicular</b> slope. Parallel lines have <b>equal</b> slopes, so ' + t('m') + ' should be ' + t(nT(g)) + '.', ['What is the rule for parallel slopes?'], 'error: perp slope for parallel');
           } },
           { id: 'e14b', level: 'PRG', make: function (r, sh) { return slopePointPart(sh.g, sh.x0, sh.y0, 'Determine the correct equation.', [{ is: L(nrec(sh.g), sh.bs), code: 'u72-student', hint: 'That’s the student’s line. A parallel line keeps the slope ' + t(nT(sh.g)) + '.' }].concat(parW(sh.g, { point: [sh.x0, sh.y0] }))); } },
-          { id: 'e14c', level: 'PRG', make: function (r, sh) {
+          { id: 'e14c', level: 'EMG', make: function (r, sh) {
             var gT = given(sh.g, sh.c), P = ptT(sh.x0, sh.y0), Q = ptT(sh.y0, sh.x0);
             var swapOn = near(fv(fAdd(fMul(nrec(sh.g), sh.y0), sh.bs)), sh.x0);
             return mc(r, 'The student’s arithmetic after the slope is flawless. Their answer is the correct answer to which question?', uniqOpts([

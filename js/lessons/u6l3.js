@@ -376,7 +376,7 @@
     var sT = sl[1] === 0 ? '\\text{undefined}' : slT(red(sl[0], sl[1]));
     var sol = sl[1] === 0 ? 'An undefined slope means the run is ' + t('0') + ' (a vertical segment), so ' + t('Q') + ' keeps ' + t('x=' + nT(P[0])) + ': for example ' + t(ptsT(key)) + '.'
       : sl[0] === 0 ? 'A slope of ' + t('0') + ' means the rise is ' + t('0') + ' (a horizontal segment), so ' + t('Q') + ' keeps ' + t('y=' + nT(P[1])) + ': for example ' + t(ptsT(key)) + '.'
-        : t(sT + '=' + rawFr(sl[0], sl[1])) + ', so step ' + t('(+' + sl[1] + ',\\ ' + (sl[0] > 0 ? '+' : '') + sl[0] + ')') + ' from ' + t('P' + ptT(P)) + ': ' + t(ptsT(key)) + '. (Any point you reach by stepping a multiple of the run and rise works, e.g. ' + t(ptT([P[0] - sl[1], P[1] - sl[0]])) + '.)';
+        : t(sT === rawFr(sl[0], sl[1]) ? sT : sT + '=' + rawFr(sl[0], sl[1])) + ', so step ' + t('(+' + sl[1] + ',\\ ' + (sl[0] > 0 ? '+' : '') + sl[0] + ')') + ' from ' + t('P' + ptT(P)) + ': ' + t(ptsT(key)) + '. (Any point you reach by stepping a multiple of the run and rise works, e.g. ' + t(ptT([P[0] - sl[1], P[1] - sl[0]])) + '.)';
     var p = ptsPart('(' + L + ') Slope of ' + t('PQ') + ' ' + t('=' + sT) + '. Give two positions for ' + t('Q') + '.', { n: 2, exclude: [P], test: onLineTest(P, sl) }, key, sol,
       [sl[1] === 0 ? 'Undefined slope: what has to be true about the run?' : sl[0] === 0 ? 'Slope 0: what has to be true about the rise?' : 'Write the slope as ' + t('\\frac{\\text{rise}}{\\text{run}}') + (sl[1] === 1 ? ' (' + t(sl[0] + '=\\frac{' + sl[0] + '}{1}') + ')' : '') + ', then step from ' + t('P') + '.'], 'two Q with slope ' + sT + ' from ' + ptT(P));
     p.good = [ptsT(sl[1] === 0 ? [[P[0], P[1] + 1], [P[0], P[1] - 1]] : sl[0] === 0 ? [[P[0] + 1, P[1]], [P[0] - 1, P[1]]] : stepPts(P, sl, [-1, 3]))];
@@ -438,7 +438,7 @@
             var sl = sh.sl;
             return segDrawPart('Draw the segment on the grid. It must be long enough to cross both the ' + t('x') + '-axis and the ' + t('y') + '-axis.', sh.P0, sl, sh.win, sh.key, sh.xi, sh.yi,
               'From ' + t(ptT(sh.P0)) + ' step ' + t(sl[0]) + ' up and ' + t(sl[1]) + ' right, again and again: ' + t(ptsT(sh.ip.filter(function (p) { return p[0] > sh.P0[0]; }).slice(0, 4))) + '. A segment from ' + t(ptT(sh.ip[0])) + ' to ' + t(ptT(sh.ip[sh.ip.length - 1])) + ' crosses the ' + t('y') + '-axis at ' + t('(0,\\ ' + frT.apply(null, LN.toFr(sh.yi)) + ')') + ' and the ' + t('x') + '-axis at ' + t('(' + frT.apply(null, LN.toFr(sh.xi)) + ',\\ 0)') + '.',
-              ['Slope ' + t(slT(sl) + '=\\frac{' + sl[0] + '}{' + sl[1] + '}') + ': from the point, go ' + t(sl[0]) + ' up and ' + t(sl[1]) + ' right. Repeat until you are past both axes.', 'Join your first and last points with one straight segment.'], 'draw segment slope ' + slT(sl) + ' through ' + ptT(sh.P0));
+              ['Slope ' + t(slT(sl)) + ': from the point, go ' + t(sl[0]) + ' up and ' + t(sl[1]) + ' right. Repeat until you are past both axes.', 'Join your first and last points with one straight segment.'], 'draw segment slope ' + slT(sl) + ' through ' + ptT(sh.P0));
           } },
           { id: '3b', sub: 'points', level: 'BEG', make: function (r, sh) {
             var others = sh.ip.filter(function (p) { return !same(p, sh.P0); }), key = others.slice(0, 3), sl = sh.sl;
@@ -546,7 +546,7 @@
               return null;
             }, '$' + sh.B + ' at $' + sh.rt + ' per week lasts ' + t(sh.B + '\\div ' + sh.rt + '=' + sh.W) + ' weeks — where the graph meets the horizontal axis.', ['Where does the graph reach a balance of $0?'], 'weeks until empty', { after: 'weeks' });
           } }] },
-      { num: '11', stem: function (sh) { return 'A highway sign warns of an ' + t(sh.g + '\\%') + ' downhill grade.'; },
+      { num: '11', stem: function (sh) { return 'A highway sign warns of ' + (sh.g === 8 || sh.g === 11 || sh.g === 18 ? 'an ' : 'a ') + t(sh.g + '\\%') + ' downhill grade.'; },
         shared: function (r) { return { g: r.chance(0.25) ? 8 : r.pick([4, 5, 6, 8, 10, 12, 15, 6, 8]), d: r.chance(0.25) ? 1.5 : r.pick([0.5, 1.5, 2, 2.5, 3, 1.2, 0.8]) }; },
         parts: [
           { id: '11a', level: 'BEG', make: function (r, sh) {
@@ -742,15 +742,15 @@
               'Compare the sizes ' + t('|m|') + ': ' + sorted.map(function (s) { return t('|m_{' + s.n + '}|=' + dec(Math.abs(sval(s.s)), 2)); }).join(', ') + '. Least steep to steepest: ' + t(sorted.map(function (s) { return s.n; }).join(',\\ ')) + '.', ['Steepness is the size of the slope, ' + t('|m|') + ', not its sign.'], 'order by steepness');
             return p;
           } },
-          { id: 'e3c', sub: 'c', level: 'EMG', make: function (r, sh) {
+          { id: 'e3c', sub: 'c', level: 'BEG', make: function (r, sh) {
             var byNum = sh.segs.slice().sort(function (a, b) { return sval(a.s) - sval(b.s); }), top = byNum[3], steep = sh.segs.slice().sort(function (a, b) { return Math.abs(sval(b.s)) - Math.abs(sval(a.s)); })[0];
             return B.mc(r, '(c) Which segment has the <b>greatest</b> slope as a number?', sh.segs.map(function (s) { return { html: t(s.n), right: s === top, why: s === steep ? t(s.n) + ' is the steepest, but its slope is negative — as a number it is the least.' : 'Compare the signed values: ' + t(byNum.map(function (x) { return slT(x.s); }).join('<')) + '.' }; }),
-              'Signed values: ' + t(byNum.map(function (x) { return slT(x.s); }).join('<')) + '. The greatest is ' + t(top.n) + ' with ' + t('m=' + slT(top.s)) + '.', ['Every positive number is greater than every negative number.'], 'greatest slope as number', true);
+              'Signed values: ' + t(byNum.map(function (x) { return slT(x.s); }).join('<')) + '. The greatest is ' + t(top.n) + ' with ' + t('m=' + slT(top.s)) + '.', ['Every positive number is greater than every negative number.'], 'greatest slope as number');
           } },
-          { id: 'e3d', sub: 'd', level: 'EMG', make: function (r, sh) {
+          { id: 'e3d', sub: 'd', level: 'BEG', make: function (r, sh) {
             var byNum = sh.segs.slice().sort(function (a, b) { return sval(a.s) - sval(b.s); }), low = byNum[0];
             return B.mc(r, '(d) Which segment has the <b>least</b> slope as a number?', sh.segs.map(function (s) { return { html: t(s.n), right: s === low, why: Math.abs(sval(s.s)) < Math.abs(sval(low.s)) && sval(s.s) < 0 ? 'Among negative numbers, the one furthest from zero is the least: ' + t(slT(low.s) + '<' + slT(s.s)) + '.' : 'Compare the signed values: ' + t(byNum.map(function (x) { return slT(x.s); }).join('<')) + '.' }; }),
-              'From the same ordering, ' + t(byNum.map(function (x) { return slT(x.s); }).join('<')) + ', the least is ' + t(low.n) + ' with ' + t('m=' + slT(low.s)) + '.', ['On a number line, which slope is furthest left?'], 'least slope as number', true);
+              'From the same ordering, ' + t(byNum.map(function (x) { return slT(x.s); }).join('<')) + ', the least is ' + t(low.n) + ' with ' + t('m=' + slT(low.s)) + '.', ['On a number line, which slope is furthest left?'], 'least slope as number');
           } },
           { id: 'e3e', sub: 'e', level: 'EMG', make: function (r, sh) {
             return B.mc(r, '(e) The segment with the greatest slope is not the steepest one. Why are “greatest slope” and “steepest” different questions once negatives are involved?', [
@@ -873,7 +873,7 @@
           }, t('\\frac{' + subT(D[1], y1) + '}{' + D[0] + '-w}=' + m) + ', so ' + t((D[1] - y1) + '=' + m + '(' + D[0] + '-w)') + ', ' + t(D[0] + '-w=' + run) + ', and ' + t('w=' + w) + '. Check: ' + t(formulaT([w, y1], D) + '=' + fracSteps(D[1] - y1, D[0] - w)) + ' ✓', ['Write the slope formula with ' + t('w') + ' in it, then solve.'], 'missing x1 with slope', { before: t('w=') });
         } },
         { id: 'e8d', level: 'EMG', make: function (r) {
-          var x = r.int(-7, 7), y = r.int(-9, 9);
+          var x = r.int(-7, 7), y = r.pick([-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]);   // y = 0 would duplicate the “only h = 0” option
           return B.mc(r, '(d) ' + t('E(' + x + ',\\ h)') + ', ' + t('F' + ptT([x, y])) + ', slope undefined. What can ' + t('h') + ' be?', [
             { html: 'Any value except ' + t(y), right: true }, { html: 'Only ' + t('h=' + y), why: 'Then ' + t('E') + ' and ' + t('F') + ' would be the same point — no segment at all.' },
             { html: 'Only ' + t('h=0'), why: 'The run is ' + t(x + '-' + (x < 0 ? '(' + x + ')' : x) + '=0') + ' already, whatever ' + t('h') + ' is.' }, { html: 'No value — an undefined slope is impossible.', why: 'Vertical segments have undefined slopes, and both points already have ' + t('x=' + x) + '.' }],
@@ -907,7 +907,7 @@
             t('\\text{run}=\\frac{\\text{rise}}{m}=' + rise + '\\times ' + frT(f[1], f[0]) + '=' + run) + '. Endpoint: ' + t('(' + nT(S[0]) + run + ',\\ ' + nT(S[1]) + rise + ')=' + ptT(E)) + '. Check: ' + t(rawFr(rise, run) + '=' + frT(f[0], f[1])) + ' ✓', ['run = rise ÷ slope. A negative rise with a positive slope gives a negative run.'], 'endpoint from rise');
           p.bad = [ptT([S[0] - run, S[1] + rise])]; return p;
         } },
-        { id: 'e9c', level: 'EMG', make: function (r) {
+        { id: 'e9c', level: 'BEG', make: function (r) {
           var f = r.pick([[4, 9], [2, 5], [3, 7], [5, 8]]);
           return B.mc(r, '(c) A segment has slope ' + t(frT(f[0], f[1])) + ', and both its rise and its run are negative. In which direction does the second endpoint lie from the first?', [
             { html: 'Down and to the left', right: true }, { html: 'Up and to the right', why: 'That would be a positive rise and a positive run.' },
@@ -970,7 +970,7 @@
               'More rise for the same run means a steeper climb, so the slope must be kept small. ' + t('\\frac{\\text{rise}}{\\text{run}}\\le\\frac{1}{12}') + ' times ' + t('12\\times\\text{run}') + ' gives ' + t('12\\times\\text{rise}\\le\\text{run}') + ' — a minimum run.', ['Rearrange the inequality for the run.'], 'max slope, min run');
           } }] },
       { num: '12', stem: function (sh) { return 'A roof described as a “' + sh.a + ' in 12” pitch rises ' + t(sh.a) + ' ft vertically for every ' + t('12') + ' ft of horizontal run.'; },
-        shared: function (r) { var useB = r.chance(0.25), a = useB ? 4 : r.pick([3, 4, 6, 8, 9, 10, 5]), bs = [5, 6, 8, 9, 10, 12].filter(function (x) { return x > a && x % a !== 0; }), b = useB ? 9 : bs.length ? r.pick(bs) : 12; return { a: a, b: b, W: useB ? 30 : r.pick([24, 30, 36, 40, 28]) }; },
+        shared: function (r) { var useB = r.chance(0.25), a = useB ? 4 : r.pick([3, 4, 6, 8, 9, 10, 5]), bs = [5, 6, 8, 9, 10, 12].filter(function (x) { return x > a && x % a !== 0; }), b = useB ? 9 : bs.length ? r.pick(bs) : 12; return { a: a, b: b, W: useB ? 30 : r.pick([24, 30, 36, 40, 28].filter(function (w) { return (a * w) % 3 === 0; })) }; },   // a·W/24 must be a terminating decimal
         parts: [
           { id: 'e12a', level: 'BEG', make: function (r, sh) { var f = red(sh.a, 12); return B.fraction('(a) State the slope of that roofline in lowest terms.', f, {}, t('m=\\frac{' + sh.a + '}{12}=' + frT(f[0], f[1])), ['rise over run, then reduce.'], 'pitch slope'); } },
           { id: 'e12b', level: 'BEG', make: function (r, sh) { var f = red(-sh.a, 12); return slopePart('(b) The far side of the roof is the mirror image. State its slope.', f, 'Read left to right, the far side falls: its rise is negative while the run stays positive. ' + t('m=-\\frac{' + sh.a + '}{12}=' + frT(f[0], f[1])) + ' — same steepness, opposite sign.', ['Read the far side from left to right: up or down?'], 'mirror roof slope'); } },
@@ -1086,7 +1086,7 @@
         { id: 'e16d', level: 'MAS', make: function (r) {
           for (var g = 0; g < 300; g++) { var useB = g === 0 && r.chance(0.25), f = useB ? [-1, 2] : r.pick([[-1, 2], [1, 2], [-2, 3], [-1, 3], [2, 3]]), k = useB ? -1 : r.int(-4, 4), d = useB ? 3 : k + f[1] * r.pick([1, 2, -1]), c = k - f[0] * (d - k) / f[1]; if (c % 1 || d === k || c === k || Math.abs(c) > 9 || Math.abs(d) > 9) continue; break; }
           return B.number('(d) The segment joining ' + t('A(k,\\ ' + c + ')') + ' and ' + t('B(' + d + ',\\ k)') + ' has slope ' + t(frT(f[0], f[1])) + '.', k, null,
-            t('\\frac{k-' + (c < 0 ? '(' + c + ')' : c) + '}{' + d + '-k}=' + frT(f[0], f[1])) + ' → ' + t(f[1] + '(k' + (c < 0 ? '+' + (-c) : '-' + c) + ')=' + f[0] + '(' + d + '-k)') + ' → ' + t('k=' + k) + '. Check: ' + t('A' + ptT([k, c]) + ',\\ B' + ptT([d, k])) + ': ' + t(formulaT([k, c], [d, k]) + '=' + fracSteps(k - c, d - k)) + ' ✓', ['Cross-multiply: ' + t(f[1] + '(k-' + c + ')=' + f[0] + '(' + d + '-k)') + ', then solve.'], 'stretch k in x1 and y2', { before: t('k=') });
+            t('\\frac{k-' + (c < 0 ? '(' + c + ')' : c) + '}{' + d + '-k}=' + frT(f[0], f[1])) + ' → ' + t(f[1] + '(k' + (c < 0 ? '+' + (-c) : '-' + c) + ')=' + f[0] + '(' + d + '-k)') + ' → ' + t('k=' + k) + '. Check: ' + t('A' + ptT([k, c]) + ',\\ B' + ptT([d, k])) + ': ' + t(formulaT([k, c], [d, k]) + '=' + fracSteps(k - c, d - k)) + ' ✓', ['Cross-multiply: ' + t(f[1] + '(k' + (c < 0 ? '+' + (-c) : '-' + c) + ')=' + f[0] + '(' + d + '-k)') + ', then solve.'], 'stretch k in x1 and y2', { before: t('k=') });
         } },
         { id: 'e16e', level: 'EMG', make: function (r) {
           return B.mc(r, '(e) Part (b) is different from the others. What is special about those two points?', [

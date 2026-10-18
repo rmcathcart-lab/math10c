@@ -110,7 +110,7 @@
   }
   function numAns(prompt, val, list, sol, hints, text, before) {   // val number or [p, q]
     var fr = Array.isArray(val) ? red(val[0], val[1]) : [val, 1], tv = fr[0] / fr[1];
-    var p = fr[1] === 1 ? B.number(prompt, fr[0], dg(list, tv), sol, hints, text, { before: before }) : B.fraction(prompt, fr, { diag: dg(list, tv), before: before }, sol, hints, text);
+    var p = fr[1] === 1 ? B.number(prompt, fr[0], dg(list, tv), sol, hints, text, { before: before }) : B.fraction(prompt, fr, { diag: dg(list, tv), before: before, decimalOk: true }, sol, hints, text);
     p.bad = list.filter(function (x) { return x[0] != null && isFinite(x[0]) && !near(x[0], tv); }).slice(0, 3).map(function (x) { var f = Ln.toFr(x[0]); return fr[1] === 1 ? String(cl(x[0])) : frT(f[0], f[1]); });
     return p;
   }
@@ -338,7 +338,8 @@
         },
         stem: function (s) { return 'A coordinate grid is superimposed on the cross-section of a ski hill. The bottom and the top of a straight path up the hill are ' + t(ptT(s.A)) + ' and ' + t(ptT(s.B)) + ', where the units are metres.'; },
         parts: [
-          { id: '3a', level: 'EMG', make: function (r, s) { return slopeAns('(a) Calculate the slope of the path.', s.s, null, t(calc(s.A, s.B)) + ' (the path rises ' + t(nT(sV(s.s))) + ' m for every metre across).', [SLOPE_HINT, 'Reduce the fraction (a decimal is fine too).'], 'slope of a ski path'); } },
+          { id: '3a', level: 'EMG', make: function (r, s) { var v = sV(s.s), exact = s.s[1] === 2 || s.s[1] === 4;
+            return slopeAns('(a) Calculate the slope of the path.', s.s, slopeChk(s.s, function (x) { if (Math.abs(x - v) < 0.006) return { code: 'slope', hint: 'That decimal is rounded. Give the exact slope as a fraction in lowest terms.' }; return null; }), t(calc(s.A, s.B)) + ' (the path rises ' + t(sT(s.s) + (exact ? '=' : '\\approx ') + (exact ? nT(v) : v.toFixed(2))) + ' m for every metre across).', [SLOPE_HINT, 'Reduce the fraction to lowest terms.'], 'slope of a ski path'); } },
           { id: '3b', level: 'BEG', outcome: 'EXT', make: function (r, s) {
             var M = [(s.A[0] + s.B[0]) / 2, (s.A[1] + s.B[1]) / 2], base = K.pairs([[M[0], M[1]]]), sub = K.pairs([[(s.B[0] - s.A[0]) / 2, (s.B[1] - s.A[1]) / 2]]), sum = K.pairs([[s.A[0] + s.B[0], s.A[1] + s.B[1]]]);
             var chk = function (resp) { var a = base(resp); if (a.v !== 'wrong') return a; if (sub(resp).v === 'correct') return wrong('mid-sub', 'For a midpoint, <b>add</b> the coordinates and then halve them: ' + t('\\left(\\frac{x_1+x_2}{2},\\ \\frac{y_1+y_2}{2}\\right)') + '.'); if (sum(resp).v === 'correct') return wrong('mid-half', 'You added the coordinates — now divide each sum by ' + t('2') + '.'); return a; };
@@ -886,7 +887,7 @@
             'The answer is every value of ' + t('k') + ': ' + t('AB') + ' is horizontal (slope ' + t('0') + ') for any ' + t('k') + ', and ' + t('CD') + ' is vertical (undefined slope). A horizontal and a vertical segment always meet at ' + t('90^{\\circ}') + ', so the condition puts no restriction on ' + t('k') + '. The product rule could not have produced this, since ' + t('0\\times\\text{undefined}') + ' can’t be evaluated.', ['What kind of segment is ' + t('AB') + ', whatever ' + t('k') + ' is?'], 'why every k works');
         } }] },
       { num: '7', section: 'Extra practice C — The one case the product rule cannot handle', shared: function (r) {
-          var b = r.int(-3, 5), x1 = r.int(-7, -4), x2 = r.int(3, 6), a = r.int(-2, 4), y1 = r.int(-5, -2), y2 = r.int(6, 10);
+          var b = r.int(-1, 5), x1 = r.int(-7, -4), x2 = r.int(3, 6), a = r.int(-2, 2), y1 = r.int(-5, -2), y2 = r.int(6, 10);   // x1 < a < x2 and y1 < b < y2: the segments really cross
           return { P: [x1, b], Q: [x2, b], R: [a, y1], S: [a, y2] };
         },
         stem: function (s) { return 'Segment ' + t('PQ') + ' joins ' + nP('P', s.P) + ' to ' + nP('Q', s.Q) + '. Segment ' + t('RS') + ' joins ' + nP('R', s.R) + ' to ' + nP('S', s.S) + '. Adeyemi writes: <i>“' + t('m_{PQ}=0') + ' and ' + t('m_{RS}') + ' is undefined, so ' + t('m_{PQ}\\times m_{RS}') + ' is not ' + t('-1') + '. Perpendicular lines must have slopes with product ' + t('-1') + '. Therefore ' + t('PQ') + ' and ' + t('RS') + ' are not perpendicular.”</i>' + graphOf({ x: [-8, 7], y: [-6, 11], grid: 1, labels: 2, max: 300, segs: [{ pts: [s.P, s.Q] }, { pts: [s.R, s.S], color: '#c4532a' }], points: [lbl(s.P, 'P'), lbl(s.Q, 'Q'), lbl(s.R, 'R'), lbl(s.S, 'S')] }); },
@@ -988,7 +989,7 @@
             { id: 'e11b', sub: 'b', level: 'PRG', outcome: 'EXT', make: function (r, s) {
               var lg = legs(s);
               var p = B.fields('(b) Find the exact lengths of the two sides that meet at the right angle (simplest radical form).', lg.map(function (l) { return radField(l.nm); }), lg.map(function (l) { return radChk(l.P, l.Q); }), lg.map(function (l) { return lenT(l.P, l.Q); }), t(lg.map(function (l) { return l.nm + '=' + lenT(l.P, l.Q); }).join(',\\quad ')),
-                lg.map(function (l) { return t(l.nm + '=\\sqrt{' + d2(l.P, l.Q) + '}=' + lenT(l.P, l.Q)); }).join('<br>'), ['Distance formula, then simplify.'], 'legs of a right triangle');
+                lg.map(function (l) { var rt = '\\sqrt{' + d2(l.P, l.Q) + '}'; return t(l.nm + '=' + rt + (lenT(l.P, l.Q) === rt ? '' : '=' + lenT(l.P, l.Q))); }).join('<br>'), ['Distance formula, then simplify.'], 'legs of a right triangle');
               p.bad = [lg.map(function (l) { return String(d2(l.P, l.Q)); })]; return p;
             } },
             { id: 'e11c', sub: 'c', level: 'PRG', outcome: 'EXT', make: function (r, s) {
@@ -1025,7 +1026,7 @@
             } }];
         })() },
       { num: '13', section: 'Extra practice F — The odd point out', shared: function (r) {
-          return gen(r, function (r) { var q = r.pick([2, 3]), p = r.pick(q === 2 ? [1, 3] : [1, 2]) * (r.chance(0.6) ? 1 : -1), y0 = r.int(-2, 2); var pts = [-2, -1, 0, 1, 2].map(function (i) { return [i * q, y0 + i * p]; }); var odd = r.int(1, 3), sh = r.pick([-1, 1]); pts[odd] = [pts[odd][0], pts[odd][1] + sh]; var ys = pts.map(function (P) { return P[1]; }); if (Math.max.apply(null, ys) - Math.min.apply(null, ys) > 12) return null; return { pts: pts, odd: odd, sh: sh, s: red(p, q), good: pts[odd][1] - sh }; }, { pts: [[-6, -4], [-3, -2], [0, 0], [3, 3], [6, 4]], odd: 3, sh: 1, s: [2, 3], good: 2 });
+          return gen(r, function (r) { var q = r.pick([2, 3]), p = r.pick(q === 2 ? [1, 3] : [1, 2]) * (r.chance(0.6) ? 1 : -1), y0 = r.int(-2, 2); var pts = [-2, -1, 0, 1, 2].map(function (i) { return [i * q, y0 + i * p]; }); var odd = r.int(0, 4), sh = r.pick([-1, 1]); pts[odd] = [pts[odd][0], pts[odd][1] + sh]; var ys = pts.map(function (P) { return P[1]; }); if (Math.max.apply(null, ys) - Math.min.apply(null, ys) > 12) return null; return { pts: pts, odd: odd, sh: sh, s: red(p, q), good: pts[odd][1] - sh }; }, { pts: [[-6, -4], [-3, -2], [0, 0], [3, 3], [6, 4]], odd: 3, sh: 1, s: [2, 3], good: 2 });
         },
         stem: function (s) { return 'Four of the five points below lie on one straight line. One does not.' + flow(['A', 'B', 'C', 'D', 'E'].map(function (n, i) { return n + ptT(s.pts[i]); })); },
         parts: (function () {
@@ -1047,10 +1048,13 @@
               return numAns('(c) Keeping its ' + t('x') + '-coordinate, what should ' + t(N[s.odd]) + '’s ' + t('y') + '-coordinate have been for all five points to be collinear?', s.good, [[P[1], 'k-sign', 'That is where it is now — find the ' + t('y') + ' that gives the common slope ' + t(sT(s.s)) + '.']],
                 'From ' + t(N[ri] + ptT(R0)) + ' (or any point on the line) the slope must be ' + t(sT(s.s)) + ': ' + t('\\frac{y-' + nb(R0[1]) + '}{' + P[0] + '-' + nb(R0[0]) + '}=' + sT(s.s) + '\\ \\Rightarrow\\ y=' + s.good) + ', so the point should be ' + t(ptT([P[0], s.good])) + '.', ['Use the common slope from a point on the line.'], 'fix the odd point', t('y='));
             } },
-            { id: 'e13d', level: 'PRG', make: function (r) {
-              return B.mc(r, '(d) A classmate computes only ' + t('m_{AB}') + ' and ' + t('m_{DE}') + ', finds they differ, and announces that ' + t('A') + ' or ' + t('B') + ' must be the odd point. What is wrong, and how many slope calculations always identify the culprit?', [
+            { id: 'e13d', level: 'PRG', make: function (r, s) {
+              // the classmate's two pairs: one holds the odd point, the other (which they blame) does not — as in the booklet
+              var o = s.odd, bad = o <= 1 ? [0, 1] : o === 2 ? [2, 3] : [3, 4], clean = o <= 1 ? [3, 4] : [0, 1], pr = [bad, clean].sort(function (x, y) { return x[0] - y[0]; });
+              var p1 = N[pr[0][0]] + N[pr[0][1]], p2 = N[pr[1][0]] + N[pr[1][1]];
+              return B.mc(r, '(d) A classmate computes only ' + t('m_{' + p1 + '}') + ' and ' + t('m_{' + p2 + '}') + ', finds they differ, and announces that ' + t(N[clean[0]]) + ' or ' + t(N[clean[1]]) + ' must be the odd point. What is wrong, and how many slope calculations always identify the culprit?', [
                 { html: 'Two unequal slopes only say the two pairs aren’t on one line — the bad point could be in either pair. Fix one point and compute three slopes from it: <b>three</b> always works.', right: true },
-                { html: 'Nothing is wrong: the first pair is always the culprit.', why: 'The bad point spoils every pair it belongs to — it might be in the second pair.' },
+                { html: 'Nothing is wrong: the pair they chose must hold the odd point.', why: 'The bad point spoils every pair it belongs to — it might be in the other pair.' },
                 { html: 'You need all ten slopes between the five points.', why: 'Three slopes from one reference point are enough: two agree and one differs (or all three agree, or all differ).' },
                 { html: 'Two slopes are always enough if you choose the right pair.', why: 'You don’t know the right pair in advance. With a fixed reference point, three slopes always settle it.' }],
                 'Each slope comes from a <i>pair</i> of points, and one bad point spoils every pair it is in. ' + t('m_{AB}\\ne m_{DE}') + ' can’t say which pair holds it. Fix a reference point, say ' + t('A') + ', and find ' + t('m_{AB}') + ', ' + t('m_{AC}') + ', ' + t('m_{AD}') + ': if all agree, ' + t('E') + ' is odd; if one differs, that point is odd; if all differ, ' + t('A') + ' is odd. So <b>three</b> calculations always work.', ['One bad point ruins every slope it is part of.'], 'how many slopes find the odd point');
