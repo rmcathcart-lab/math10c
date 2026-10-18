@@ -248,7 +248,7 @@
     'ctx-nr-m': 'Rate per metre, not per km', 'ctx-temp': 'Used a temperature, not the change'
   });
 
-  HW.defineLesson({
+  var LESSON = {
     id: 'u7l6', unit: 7, num: '6', title: 'Slope in Context: Interpreting Rates of Change', outcome: 'RF5',
     blurb: 'Slope as a rate of change with units — reading it off a graph, interpreting the intercept, average rate of change, and base-plus-commission models.',
     questions: [
@@ -592,7 +592,7 @@
         } }] },
       /* ---------------- Q9 (Extension) ---------------- */
       { num: '9', section: 'Extension — real data are rarely perfectly linear', shared: candleShared,
-        stem: function (sh) { return '<i>(Extension)</i> A class lit a candle and measured its height, ' + t('h') + ' centimetres, every ' + t(10) + ' minutes.' + HW.valueTable([['\\(t\\) (min)'].concat(sh.ts), ['\\(h\\) (cm)'].concat(sh.hs.map(function (v) { return fx(v, 1); }))]); },
+        stem: function (sh) { return '<i>(Extension)</i> A class lit a candle and measured its height, ' + t('h') + ' centimetres, every ' + t(10) + ' minutes.' + [[0, 4], [4, 7]].map(function (q) { return HW.valueTable([['\\(t\\) (min)'].concat(sh.ts.slice(q[0], q[1])), ['\\(h\\) (cm)'].concat(sh.hs.slice(q[0], q[1]).map(function (v) { return fx(v, 1); }))]); }).join(''); },
         parts: [
           { id: '9a', level: 'PRG', outcome: 'RF4', make: function (r, sh) {
             var data = sh.ts.map(function (x, i) { return { x: x, y: sh.hs[i] }; });
@@ -1447,5 +1447,8 @@
           return p;
         } }] }
     ]
-  });
+  };
+  /* booklet letters: every part of a multi-part question shows the letter from its id (5d → d), never a position */
+  LESSON.questions.concat(LESSON.extra).forEach(function (q) { if (q.parts.length > 1) q.parts.forEach(function (p) { if (!p.sub) p.sub = p.id.replace(/^e?\d+/, ''); }); });
+  HW.defineLesson(LESSON);
 })(window);

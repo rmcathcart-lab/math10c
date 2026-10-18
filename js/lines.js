@@ -58,14 +58,14 @@
   function termT(coef, v, first) { var c = toFr(coef); if (c[0] === 0) return ''; var s = (c[0] < 0 ? '-' : first ? '' : '+'), ab = Math.abs(c[0]); var num = c[1] === 1 ? (ab === 1 && v ? '' : String(ab)) : '\\frac{' + ab + '}{' + c[1] + '}'; return s + num + v; }
   Lns.tex = function (T, fm, point, vars) {
     vars = vars || ['x', 'y']; var X = vars[0], Y = vars[1], L = Lns.of(T), A = L[0], B = L[1], C = L[2];
-    if (B === 0) return X + '=' + frT.apply(null, toFr(-C / A));
-    var m = -A / B, b = -C / B;
     if (fm === 'general') {   // integers, A > 0 (or B > 0), no common factor
       var den = 1; [A, B, C].forEach(function (v) { den = den * toFr(v)[1] / gcd(den, toFr(v)[1]); });
       var ia = Math.round(A * den), ib = Math.round(B * den), ic = Math.round(C * den), g = gcd(gcd(ia, ib), ic) || 1; ia /= g; ib /= g; ic /= g;
       if (ia < 0 || (ia === 0 && ib < 0)) { ia = -ia; ib = -ib; ic = -ic; }
       var out = termT(ia, X, true); out += termT(ib, Y, !out); out += termT(ic, '', !out); return out + '=0';
     }
+    if (B === 0) return X + '=' + frT.apply(null, toFr(-C / A));
+    var m = -A / B, b = -C / B;
     if (fm === 'point-slope' && point) {
       var side = function (v, k) { return k === 0 ? v : v + (k > 0 ? '-' : '+') + frT.apply(null, toFr(Math.abs(k))); };
       var mm = toFr(m), mT = mm[0] === mm[1] ? '' : mm[0] === -mm[1] ? '-' : frT(mm[0], mm[1]);
@@ -165,7 +165,7 @@
       if (und) return wrong(v === 0 ? 'slope-zero-und' : 'slope-num-und', v === 0 ? 'A slope of 0 is a <b>horizontal</b> line. This line is vertical: the run is 0, and you can’t divide by 0 — the slope is undefined.' : 'This line is vertical: the run is 0, so the slope is undefined.');
       var tv = T[0] / T[1];
       if (near(v, tv)) { var r = ratAst(a.ast); if (opt.lowest !== false && r && Math.abs(r[1]) !== 1 && gcd(r[0], r[1]) > 1) return form('slope-lowest', 'Right — now reduce the fraction to lowest terms.'); return ok(); }
-      if (tv !== 0 && near(v, -tv)) return wrong('slope-sign', 'Check the sign: the line ' + (tv > 0 ? 'rises' : 'falls') + ' from left to right, so the slope is ' + (tv > 0 ? 'positive' : 'negative') + '.');
+      if (tv !== 0 && near(v, -tv)) return wrong('slope-sign', opt.signHint || 'Check the sign of the slope: subtract the coordinates in the same order on the top and the bottom' + (opt.graph ? ' — the line ' + (tv > 0 ? 'rises' : 'falls') + ' from left to right' : '') + '.');
       if (tv !== 0 && near(v, 1 / tv)) return wrong('slope-flip', 'Slope is <b>rise over run</b> (change in ' + t('y') + ' over change in ' + t('x') + ') — you have run over rise.');
       if (tv !== 0 && near(v, -1 / tv)) return wrong('slope-perp', 'That’s the negative reciprocal — the slope of a perpendicular line.');
       if (opt.diag) { var h = opt.diag(v); if (h) return wrong(h.code || 'slope', h.hint); }

@@ -382,17 +382,17 @@
               'Using ' + ptt([0, y0]) + ' and ' + ptt([xl, yl]) + ': ' + t('m=\\frac{' + yl + '-' + y0 + '}{' + xl + '-0}=\\frac{' + (yl - y0) + '}{' + xl + '}=' + (-k)) + '.<br>The ' + t('y') + '-intercept is ' + t(y0) + ' (the value at ' + t('x=0') + '), so ' + t(si(sh.L)) + '.<br>General form (' + t('A>0') + '): ' + t(gen(sh.L)) + '.',
               ['Find the slope from two table points, and read the ' + t('y') + '-intercept from the column where ' + t('x=0') + '.', 'Then move every term to one side, with the ' + t('x') + '-term positive.'], 'general form from table');
           } },
-          { id: '7b1', sub: 'b(i)', level: 'EMG', make: function (r, sh) {
+          { id: '7b1', sub: 'b i', level: 'EMG', make: function (r, sh) {
             var p = K.P.line('Rewrite the equation in terms of ' + t('x') + ', that is ' + t('y=\\ldots') + '.', sh.L, { form: 'slope-intercept' }, 'Solve ' + t(gen(sh.L)) + ' for ' + t('y') + ': ' + t(si(sh.L)) + '.', ['Move the ' + t('x') + '-term and the constant to the other side.'], 'y in terms of x');
             p.good = ['y=' + sh.y0 + '-' + sh.k + 'x']; return p;
           } },
-          { id: '7b2', sub: 'b(ii)', level: 'PRG', make: function (r, sh) {
+          { id: '7b2', sub: 'b ii', level: 'PRG', make: function (r, sh) {
             var key = 'x=\\frac{' + sh.y0 + '-y}{' + sh.k + '}';
             var p = K.P.math('Rewrite the equation in terms of ' + t('y') + ', that is ' + t('x=\\ldots') + '.', solvedForX(sh.L), key, t(gen(sh.L)) + ' → ' + t(sh.k + 'x=' + sh.y0 + '-y') + ' → ' + t(key) + '.', ['Get the ' + t('x') + '-term by itself, then divide by its coefficient.'], 'x in terms of y', { keys: 'eq', vars: ['x', 'y'], placeholder: 'e.g. x = (90 - y)/3' });
             p.good = ['x=\\frac{' + sh.y0 + '}{' + sh.k + '}-\\frac{y}{' + sh.k + '}', 'x=-\\frac{y-' + sh.y0 + '}{' + sh.k + '}'];
             p.bad = [si(sh.L), 'x=\\frac{y-' + sh.y0 + '}{' + sh.k + '}', 'x=' + sh.y0 + '-' + sh.k + 'y']; return p;
           } },
-          { id: '7c1', sub: 'c(i)', level: 'PRG', outcome: 'RF5', make: function (r, sh) {
+          { id: '7c1', sub: 'c i', level: 'PRG', outcome: 'RF5', make: function (r, sh) {
             var k = sh.k, s = sh.s;
             return mc(r, 'What real-world quantity does the slope represent?', [
               { html: 'The cooling rate: the coffee loses ' + k + '°C every minute.', right: true },
@@ -401,7 +401,7 @@
               { html: 'It takes ' + k + ' minutes for the coffee to cool by 1°C.', why: 'Check the units: slope = change in temperature ÷ change in time, so its units are °C per minute, not minutes per °C.' }],
               'The slope is ' + t('-' + k) + ' °C per minute: the coffee loses ' + k + '°C every minute (the units are those of ' + t('y') + ' per unit of ' + t('x') + ').', ['Slope = change in ' + t('y') + ' ÷ change in ' + t('x') + '. What are the units?'], 'meaning of slope');
           } },
-          { id: '7c2', sub: 'c(ii)', level: 'EMG', outcome: 'RF5', make: function (r, sh) {
+          { id: '7c2', sub: 'c ii', level: 'EMG', outcome: 'RF5', make: function (r, sh) {
             return mc(r, 'What does the ' + t('y') + '-intercept represent?', [
               { html: 'The temperature of the coffee, ' + sh.y0 + '°C, at the moment it was poured.', right: true },
               { html: 'The room temperature, ' + sh.y0 + '°C.', why: 'The ' + t('y') + '-intercept is where ' + t('x=0') + ': zero minutes after pouring.' },
@@ -409,13 +409,13 @@
               { html: 'The temperature of the coffee after 1 minute.', why: 'At ' + t('x=1') + ' it has already cooled by ' + sh.k + '°. The intercept is at ' + t('x=0') + '.' }],
               'The ' + t('y') + '-intercept, ' + t(sh.y0) + ', is the temperature in °C at ' + t('x=0') + ' — the instant the coffee was poured.', ['The ' + t('y') + '-intercept is the ' + t('y') + '-value when ' + t('x=0') + '.'], 'meaning of y-intercept');
           } },
-          { id: '7d1', sub: 'd(i)', level: 'EMG', outcome: 'RF4', make: function (r, sh) {
+          { id: '7d1', sub: 'd i', level: 'EMG', outcome: 'RF4', make: function (r, sh) {
             var v = sh.y0 - sh.k * sh.T;
             return K.P.number('Real coffee cools more and more slowly and levels off at room temperature (about 20°C). What does this linear model predict for the temperature at ' + t('x=' + sh.T) + ' min?', v,
               function (x) { if (x === sh.y0 + sh.k * sh.T) return { code: 'sign', hint: 'The slope is ' + t(-sh.k) + ': ' + t('y=-' + sh.k + '(' + sh.T + ')+' + sh.y0) + '.' }; if (x === 20) return { code: 'l5-room', hint: 'Use the linear model ' + t(si(sh.L)) + ', not real coffee: substitute ' + t('x=' + sh.T) + '.' }; return null; },
               t('y=-' + sh.k + '(' + sh.T + ')+' + sh.y0 + '=' + v) + '°C. That is colder than the room — impossible: coffee can’t cool below room temperature.', ['Substitute ' + t('x=' + sh.T) + ' into ' + t(si(sh.L)) + '.'], 'predict at x=T', { after: ' °C' });
           } },
-          { id: '7d2', sub: 'd(ii)', level: 'PRG', outcome: 'RF5', make: function (r, sh) {
+          { id: '7d2', sub: 'd ii', level: 'PRG', outcome: 'RF5', make: function (r, sh) {
             var xl = 5 * sh.s;
             return mc(r, 'For what domain is the linear model reasonable?', [
               { html: t('\\{x\\mid 0\\le x\\le ' + xl + ',\\ x\\in\\mathbb{R}\\}') + ' — about the times that were measured', right: true },
@@ -434,11 +434,11 @@
         },
         stem: function (sh) { return 'Use graphing technology for the linear relations ' + t(gen(sh.L1)) + ' and ' + t(ps(sh.L2, sh.P)) + '.'; },
         parts: [
-          { id: '8a1', sub: 'a(i)', level: 'EMG', make: function (r, sh) {
+          { id: '8a1', sub: 'a i', level: 'EMG', make: function (r, sh) {
             return K.P.line('Technology needs each equation solved for ' + t('y') + '. Write ' + t(gen(sh.L1)) + ' in the form you would enter as ' + t('Y_1') + ': ' + t('y=\\ldots') + '.', sh.L1, { form: 'slope-intercept', wrong: [{ is: { m: -1, b: sh.b1 }, code: 'l5-nodiv', hint: 'Divide <b>every</b> term by ' + t(sh.A) + ', including the ' + t('x') + '-term.' }, { is: { m: [-1, sh.A], b: -sh.A * sh.b1 }, code: 'l5-nodiv', hint: 'Divide <b>every</b> term by ' + t(sh.A) + ', including the constant.' }] },
               t(gen(sh.L1)) + ' → ' + t(sh.A + 'y=-x' + sg(sh.A * sh.b1)) + ' → ' + t(si(sh.L1)) + '.', ['Move ' + t('x') + ' and the constant to the right, then divide every term by ' + t(sh.A) + '.'], 'tech: general to y=');
           } },
-          { id: '8a2', sub: 'a(ii)', level: 'EMG', make: function (r, sh) {
+          { id: '8a2', sub: 'a ii', level: 'EMG', make: function (r, sh) {
             var P = sh.P;
             return K.P.line('Write ' + t(ps(sh.L2, P)) + ' in the form you would enter as ' + t('Y_2') + ': ' + t('y=\\ldots') + '.', sh.L2, { form: 'slope-intercept', wrong: [{ is: { m: sh.m2, b: P[1] - P[0] }, code: 'l5-dist', hint: 'Multiply the slope by <b>both</b> terms in the bracket: ' + t(sh.m2 + '(x' + sg(-P[0]) + ')=' + sh.m2 + 'x' + sg(-sh.m2 * P[0])) + '.' }, { is: { m: sh.m2, b: -sh.m2 * P[0] - P[1] }, code: 'l5-c-sign', hint: 'To undo ' + t('-' + P[1]) + ' on the left, <b>add</b> ' + t(P[1]) + ' to both sides.' }] },
               t(ps(sh.L2, P)) + ' → ' + t('y-' + P[1] + '=' + sh.m2 + 'x' + sg(-sh.m2 * P[0])) + ' → ' + t(si(sh.L2)) + '.', ['Expand the bracket, then get ' + t('y') + ' by itself.'], 'tech: slope-point to y=');
@@ -461,7 +461,7 @@
               solution: t(si(sh.L1)) + ' has intercepts ' + ptt([sh.x1a, 0]) + ' and ' + ptt([0, sh.b1]) + '; ' + t(si(sh.L2)) + ' has ' + ptt([sh.r, 0]) + ' and ' + ptt([0, sh.b2]) + '. The window must include ' + t('x') + ' from ' + t(need.x[0]) + ' to ' + t(0) + ' and ' + t('y') + ' from ' + t(need.y[0]) + ' to ' + t(need.y[1]) + '; e.g. ' + t('x:[' + key[0] + ',\\ ' + key[1] + ']') + ', ' + t('y:[' + key[2] + ',\\ ' + key[3] + ']') + '.',
               hints: ['Find all four intercepts first; the window has to contain every one of them.'], text: 'tech window', bad: [['0', '10', '0', '10'], ['-1', '1', '-1', '1']] };
           } },
-          { id: '8b2', sub: 'b (graph)', level: 'PRG', make: function (r, sh) {
+          { id: '8b2', sub: 'b graph', level: 'PRG', make: function (r, sh) {
             var win = [[Math.min(sh.x1a, sh.r) - 1, 2], [sh.b1 - 1, sh.b2 + 1]];
             var p = gpart('Draw both graphs on the grid.', [sh.L1, sh.L2], win, { names: [t(gen(sh.L1)), t(ps(sh.L2, sh.P))],
               wrong: [{ v: lineV(sh.L1, win), code: 'l5-line-missing', hint: 'The line for ' + t(gen(sh.L1)) + ' is right — now draw ' + t(ps(sh.L2, sh.P)) + ' too.' }, { v: lineV(sh.L2, win), code: 'l5-line-missing', hint: 'The line for ' + t(ps(sh.L2, sh.P)) + ' is right — now draw ' + t(gen(sh.L1)) + ' too.' }] },
@@ -558,13 +558,13 @@
         shared: function (r) { var a = intPair(r, [2, 3, 4, 5, 6], [3, 4, 5, 6, 7, 8]), m, b, g = 0; do { m = r.pick([2, 3, 4]); b = r.int(1, 3); g++; } while (b % m === 0 && g < 50); return { a: a, m: m, b: b }; },
         parts: [
           { id: 'e2a', sub: 'a', level: 'PRG', make: function (r, sh) { return intGraph('Graph ' + t(gen(sh.a.L)) + ' <b>by the two intercepts</b>.', sh.a.p, sh.a.q, W8, 'graph by intercepts'); } },
-          { id: 'e2a2', sub: 'a (solve for y)', level: 'EMG', make: function (r, sh) {
+          { id: 'e2a2', sub: 'a solve', level: 'EMG', make: function (r, sh) {
             var Lo = sh.a.L;
             return K.P.line('Now solve ' + t(gen(Lo)) + ' for ' + t('y') + ' — the first step of the slower strategy.', Lo, { form: 'slope-intercept', wrong: [{ is: { m: -Lo.A, b: -Lo.C / Lo.B }, code: 'l5-nodiv', hint: 'Divide <b>every</b> term by ' + t(Lo.B) + ', including the ' + t('x') + '-term.' }] },
               t(Lo.B + 'y=' + (-Lo.A) + 'x' + sg(-Lo.C)) + ' → ' + t(si(Lo)) + '. Then you still have to step a fractional slope — two extra steps compared with the two substitutions.', ['Move the ' + t('x') + '-term and the constant across, then divide by the coefficient of ' + t('y') + '.'], 'solve for y');
           } },
           { id: 'e2b', sub: 'b', level: 'BEG', make: function (r, sh) { return siGraph('Graph ' + t(si(mb(sh.m, sh.b))) + ' <b>by its slope and ' + t('y') + '-intercept</b>.', sh.m, sh.b, W8, 'graph y=mx+b'); } },
-          { id: 'e2b2', sub: 'b (intercepts)', level: 'EMG', outcome: 'RF5', make: function (r, sh) {
+          { id: 'e2b2', sub: 'b intercept', level: 'EMG', outcome: 'RF5', make: function (r, sh) {
             return K.P.fraction('The slower strategy for ' + t(si(mb(sh.m, sh.b))) + ' is the two intercepts. Find the ' + t('x') + '-intercept.', fr(-sh.b, sh.m), {},
               t('y=0') + ': ' + t('0=' + sh.m + 'x+' + sh.b) + ', ' + t(sh.m + 'x=-' + sh.b) + ', ' + t('x=' + fT(fr(-sh.b, sh.m))) + ' — not a lattice point, so it can only be estimated on the grid.', ['Set ' + t('y=0') + ' and solve for ' + t('x') + '.'], 'x-intercept fraction');
           } },
@@ -580,7 +580,7 @@
       { num: '3', section: 'Extra practice B — One strategy at a time, on the grid', stem: 'Each equation is in general form and both intercepts are whole numbers. Find them by substitution, then draw the line through them.',
         shared: function (r) { return { a: intPair(r, [-3, -4, -5, -6, -7], [3, 4, 5, 6, 7]), b: intPair(r, [5, 6, 7, 8], [2, 3, 4, 5]) }; },
         parts: ['a', 'b'].reduce(function (acc, w) {
-          acc.push({ id: 'e3' + w, sub: w + ' (intercepts)', level: 'EMG', outcome: 'RF5', make: function (r, sh) {
+          acc.push({ id: 'e3' + w, sub: w + ' intercepts', level: 'EMG', outcome: 'RF5', make: function (r, sh) {
             var s = sh[w], Lo = s.L;
             return pairsPart('State both intercepts of ' + t(gen(Lo)) + ' as ordered pairs.', [[s.p, 0], [0, s.q]],
               [{ pairs: [[0, s.p], [s.q, 0]], code: 'l5-pair-axes', hint: 'Right values, wrong axes. An ' + t('x') + '-intercept lies on the ' + t('x') + '-axis, so it is ' + t('(\\text{value},\\ 0)') + '; a ' + t('y') + '-intercept is ' + t('(0,\\ \\text{value})') + '.' },
@@ -589,7 +589,7 @@
               t('y=0') + ': ' + t((Lo.A === 1 ? '' : Lo.A) + 'x' + sg(Lo.C) + '=0') + ', ' + t('x=' + s.p) + ' → ' + ptt([s.p, 0]) + '.<br>' + t('x=0') + ': ' + t(Lo.B + 'y' + sg(Lo.C) + '=0') + ', ' + t('y=' + s.q) + ' → ' + ptt([0, s.q]) + '.',
               ['At the ' + t('x') + '-intercept ' + t('y=0') + '; at the ' + t('y') + '-intercept ' + t('x=0') + '.'], 'intercepts as pairs');
           } });
-          acc.push({ id: 'e3' + w + '2', sub: w + ' (graph)', level: 'EMG', make: function (r, sh) { var s = sh[w]; return intGraph('Draw the line ' + t(gen(s.L)) + ' through its intercepts.', s.p, s.q, W8, 'graph through intercepts'); } });
+          acc.push({ id: 'e3' + w + '2', sub: w + ' graph', level: 'EMG', make: function (r, sh) { var s = sh[w]; return intGraph('Draw the line ' + t(gen(s.L)) + ' through its intercepts.', s.p, s.q, W8, 'graph through intercepts'); } });
           return acc;
         }, []) },
       { num: '4', stem: 'Each equation is in <b>slope–point form</b>. Do not convert it. State the point it hands you and the slope, then step the slope to plot points and draw the line.',
@@ -598,14 +598,14 @@
           return { a: { m: fa, P: Pa, L: ms(fa, Pa) }, b: { m: [-fb[0], fb[1]], P: Pb, L: ms([-fb[0], fb[1]], Pb) } };
         },
         parts: ['a', 'b'].reduce(function (acc, w) {
-          acc.push({ id: 'e4' + w, sub: w + ' (point, slope)', level: 'BEG', make: function (r, sh) {
+          acc.push({ id: 'e4' + w, sub: w + ' point, slope', level: 'BEG', make: function (r, sh) {
             var s = sh[w], P0 = s.P, m = mf(s.m);
             var chk = [K.number(P0[0], function (v) { return v === -P0[0] ? { code: 'l5-ps-sign', hint: 'The sign flips: ' + t('x' + sg(-P0[0])) + ' means ' + t('x-(' + P0[0] + ')') + ', so ' + t('x_1=' + P0[0]) + '.' } : null; }),
               K.number(P0[1], function (v) { return v === -P0[1] ? { code: 'l5-ps-sign', hint: 'The sign flips: ' + t('y' + sg(-P0[1])) + ' means ' + t('y-(' + P0[1] + ')') + ', so ' + t('y_1=' + P0[1]) + '.' } : null; }), K.fraction(m)];
             return K.P.fields('For ' + t(ps(s.L, P0)) + ', state the point ' + t('(x_1,\\ y_1)') + ' and the slope.', [{ label: t('x_1=') }, { label: t('y_1=') }, { label: t('m='), mode: 'math', keys: 'fraction' }], chk, [String(P0[0]), String(P0[1]), fT(m)],
               'point ' + ptt(P0) + ', ' + t('m=' + fT(m)), t(ps(s.L, P0)) + ' is ' + t('y-(' + P0[1] + ')=' + fT(m) + '(x-(' + P0[0] + '))') + ': the point is ' + ptt(P0) + ' and ' + t('m=' + fT(m)) + '.', ['Compare with ' + t('y-y_1=m(x-x_1)') + ' — the signs in the brackets are opposite to the coordinates.'], 'read point and slope');
           } });
-          acc.push({ id: 'e4' + w + '2', sub: w + ' (graph)', level: 'PRG', make: function (r, sh) { var s = sh[w]; return psGraph('Draw the graph of ' + t(ps(s.L, s.P)) + '.', s.m, s.P, W8, 'graph slope-point'); } });
+          acc.push({ id: 'e4' + w + '2', sub: w + ' graph', level: 'PRG', make: function (r, sh) { var s = sh[w]; return psGraph('Draw the graph of ' + t(ps(s.L, s.P)) + '.', s.m, s.P, W8, 'graph slope-point'); } });
           return acc;
         }, []).concat([{ id: 'e4c', sub: 'c', level: 'EMG', make: function (r, sh) {
           return mc(r, 'Neither point in (a) or (b) is an intercept. Why does slope–point form almost never hand you an intercept — and why does that cost nothing when graphing?', [
@@ -623,13 +623,13 @@
           return { A: A, B: B, C: C, L: line(A, -B, -C), xs: xs, ys: xs.map(function (x) { return (A * x - C) / B; }) };
         },
         parts: [
-          { id: 'e5a', sub: 'a (table)', level: 'EMG', outcome: 'RF4', make: function (r, sh) {
+          { id: 'e5a', sub: 'a table', level: 'EMG', outcome: 'RF4', make: function (r, sh) {
             var chk = sh.xs.map(function (x, i) { return K.number(sh.ys[i], function (v) { return v === (sh.A * x + sh.C) / sh.B ? { code: 'l5-tab-sign', hint: 'From ' + t(gen(sh.L)) + ': ' + t(sh.B + 'y=' + sh.A + 'x-' + sh.C) + ', so ' + t('y=(' + sh.A + 'x-' + sh.C + ')\\div ' + sh.B) + '.' } : null; }); });
             return K.P.fields('Complete the table of values.', sh.xs.map(function (x) { return { label: t('x=' + x) + ': ' + t('y=') }; }), chk, sh.ys.map(String), sh.xs.map(function (x, i) { return t(pt([x, sh.ys[i]])); }).join(', '),
               t(sh.B + 'y=' + sh.A + 'x-' + sh.C) + ', so ' + t('y=(' + sh.A + 'x-' + sh.C + ')\\div ' + sh.B) + '.<br>' + sh.xs.map(function (x, i) { return t('x=' + x) + ': ' + t('y=(' + (sh.A * x) + '-' + sh.C + ')\\div ' + sh.B + '=' + sh.ys[i]); }).join('<br>'),
               ['Solve for ' + t('y') + ' first, or substitute each ' + t('x') + ' and solve for ' + t('y') + '.'], 'table of values');
           } },
-          { id: 'e5a2', sub: 'a (graph)', level: 'EMG', make: function (r, sh) {
+          { id: 'e5a2', sub: 'a graph', level: 'EMG', make: function (r, sh) {
             return gpart('Plot the points from your table and draw the line ' + t(gen(sh.L)) + '.', sh.L, W10, {},
               'Plot ' + sh.xs.map(function (x, i) { return ptt([x, sh.ys[i]]); }).join(', ') + '. Each step: right ' + sh.B + ', up ' + sh.A + '. Join them with one straight line (arrows on both ends).', ['Use the points from the table.'], 'graph from table');
           } },
@@ -712,18 +712,18 @@
         },
         stem: function (sh) { return 'Each line below is drawn through the marked lattice points.' + figs([{ label: '(a)', html: fig(sh.a.L, W6, { marks: sh.a.P, max: 150 }) }, { label: '(b)', html: fig(sh.b.L, W6, { marks: sh.b.P, max: 150 }) }, { label: '(c)', html: fig(line(1, 0, -sh.c.x), W6, { marks: [[sh.c.x, sh.c.y]], max: 150 }) }]); },
         parts: ['a', 'b'].reduce(function (acc, w) {
-          acc.push({ id: 'e7' + w + '1', sub: w + ' (slope–intercept)', level: w === 'a' ? 'EMG' : 'PRG', outcome: 'RF7', make: function (r, sh) {
+          acc.push({ id: 'e7' + w + '1', sub: w + ' slope–intercept', level: w === 'a' ? 'EMG' : 'PRG', outcome: 'RF7', make: function (r, sh) {
             var s = sh[w], P1 = s.P[0], P2 = s.P[1], m = mf(s.m);
             return K.P.line('Line (' + w + '): write its equation in <b>slope–intercept form</b>.', s.L, { form: 'slope-intercept' },
               'Marked points ' + ptt(P1) + ' and ' + ptt(P2) + ': ' + t('m=\\frac{' + P2[1] + '-(' + P1[1] + ')}{' + P2[0] + '-(' + P1[0] + ')}=\\frac{' + (P2[1] - P1[1]) + '}{' + (P2[0] - P1[0]) + '}=' + fT(m)) + '.<br>' + (w === 'a' ? 'The line crosses the ' + t('y') + '-axis at ' + t(s.b) : t(P2[1] + '=' + fT(m) + '(' + P2[0] + ')+b') + ', so ' + t('b=' + s.b)) + '.<br>' + t(si(s.L)) + '.',
               ['Find the slope from the two marked points (rise over run).', w === 'a' ? 'Read the ' + t('y') + '-intercept from the graph.' : 'The ' + t('y') + '-intercept isn’t marked: substitute a point into ' + t('y=mx+b') + ' to find ' + t('b') + '.'], 'equation from graph (si)');
           } });
-          acc.push({ id: 'e7' + w + '2', sub: w + ' (general)', level: 'PRG', outcome: 'RF7', make: function (r, sh) {
+          acc.push({ id: 'e7' + w + '2', sub: w + ' general', level: 'PRG', outcome: 'RF7', make: function (r, sh) {
             var s = sh[w], m = mf(s.m);
             return K.P.line('Line (' + w + '): write its equation in <b>general form</b> (' + t('A') + ', ' + t('B') + ', ' + t('C') + ' integers, ' + t('A>0') + ').', s.L, { form: 'general' },
               t(si(s.L)) + '; multiply by ' + t(m[1]) + ': ' + t(m[1] + 'y=' + (m[0] === 1 ? '' : m[0]) + 'x' + sg(m[1] * s.b)) + ', so ' + t(gen(s.L)) + '.', ['Start from slope–intercept form, clear the fraction, and move every term to one side.'], 'equation from graph (general)');
           } });
-          acc.push({ id: 'e7' + w + '3', sub: w + ' (slope–point)', level: 'EMG', outcome: 'RF7', make: function (r, sh) {
+          acc.push({ id: 'e7' + w + '3', sub: w + ' slope–point', level: 'EMG', outcome: 'RF7', make: function (r, sh) {
             var s = sh[w], P1 = s.P[0], P2 = s.P[1], Lo = s.L;
             var p = K.P.math('Line (' + w + '): write its equation in <b>slope–point form</b>, ' + t('y-y_1=m(x-x_1)') + ', using one of the marked points.', psEither(Lo, P1, P2), ps(Lo, P2),
               'With ' + ptt(P2) + ': ' + t(ps(Lo, P2)) + ' (or with ' + ptt(P1) + ': ' + t(ps(Lo, P1)) + ').', ['Use the slope you found and either marked point.'], 'equation from graph (slope-point)', { keys: 'eq', vars: ['x', 'y'], placeholder: 'e.g. y - 3 = 2(x + 1)' });
@@ -769,11 +769,11 @@
             return K.P.number('The value of ' + t('b') + ' is not in the table. Determine it.', sh.b, function (v) { if (v === sh.ys[0]) return { code: 'l5-b-table', hint: t('b') + ' is the value of ' + t('y') + ' when ' + t('x=0') + ', and the table starts at ' + t('x=' + sh.s) + '. Substitute a point into ' + t('y=' + fT([sh.d, sh.s]) + 'x+b') + '.' }; if (v === -sh.b) return { code: 'sign', hint: 'Check the sign when you solve for ' + t('b') + '.' }; return null; },
               t('y=' + fT([sh.d, sh.s]) + 'x+b') + ' with ' + ptt([sh.xs[0], sh.ys[0]]) + ': ' + t(sh.ys[0] + '=' + fT([sh.d, sh.s]) + '(' + sh.xs[0] + ')+b') + ', ' + t(sh.ys[0] + '=' + sh.d + '+b') + ', ' + t('b=' + sh.b) + '.', ['Substitute one table point into ' + t('y=mx+b') + ' and solve for ' + t('b') + '.'], 'b from table');
           } },
-          { id: 'e8c1', sub: 'c (general)', level: 'PRG', outcome: 'RF7', make: function (r, sh) {
+          { id: 'e8c1', sub: 'c general', level: 'PRG', outcome: 'RF7', make: function (r, sh) {
             return K.P.line('Write the relation in <b>general form</b>.', sh.L, { form: 'general', wrong: [{ is: { m: sh.d, b: sh.b }, code: 'l5-step', hint: 'Use the slope ' + t(fT([sh.d, sh.s])) + ', not ' + t(sh.d) + '.' }, { is: { m: [sh.d, sh.s], b: sh.ys[0] }, code: 'l5-b-table', hint: 'Use the ' + t('y') + '-intercept you found, ' + t('b=' + sh.b) + '.' }] },
               t(si(sh.L)) + '; ' + t('\\times ' + sh.s) + ': ' + t(sh.s + 'y=' + sh.d + 'x' + sg(sh.s * sh.b)) + ', so ' + t(gen(sh.L)) + '.', ['Clear the fraction, then move every term to one side with the ' + t('x') + '-term positive.'], 'general form from table');
           } },
-          { id: 'e8c2', sub: 'c (slope–point)', level: 'EMG', outcome: 'RF7', make: function (r, sh) {
+          { id: 'e8c2', sub: 'c slope–point', level: 'EMG', outcome: 'RF7', make: function (r, sh) {
             var P0 = [sh.xs[0], sh.ys[0]];
             return K.P.line('Write the relation in <b>slope–point form</b> using the first point in the table, ' + ptt(P0) + '.', sh.L, { form: 'point-slope', point: P0 }, t(ps(sh.L, P0)) + '.', ['Slope–point form: ' + t('y-y_1=m(x-x_1)') + '.'], 'slope-point from table');
           } },
@@ -810,11 +810,11 @@
             return K.P.number('Determine the rate of change (with its sign).', -sh.rt, function (v) { if (v === sh.rt) return { code: 'sign', hint: 'The balloon is <b>descending</b>: the altitude goes down, so the rate is negative.' }; if (v === -sh.rt * sh.s || v === sh.rt * sh.s) return { code: 'l5-run', hint: 'The altitude drops ' + t(sh.rt * sh.s) + ' m every ' + t(sh.s) + ' minutes. Divide by the run to get metres per <b>minute</b>.' }; return null; },
               t('m=\\frac{' + sh.As[1] + '-' + sh.As[0] + '}{' + sh.ts[1] + '-' + sh.ts[0] + '}=\\frac{' + (-sh.rt * sh.s) + '}{' + sh.s + '}=' + (-sh.rt)) + ' m/min: the balloon loses ' + sh.rt + ' metres of altitude every minute.', ['Change in ' + t('A') + ' ÷ change in ' + t('t') + '.'], 'rate of change with units', { after: ' m/min' });
           } },
-          { id: 'e9b1', sub: 'b (A = mt + b)', level: 'PRG', outcome: 'RF7', make: function (r, sh) {
+          { id: 'e9b1', sub: 'b i', level: 'PRG', outcome: 'RF7', make: function (r, sh) {
             return K.P.line('Write the relation in the form ' + t('A=mt+b') + '.', sh.L, { form: 'slope-intercept', vars: ['t', 'A'], wrong: [{ is: { m: -sh.rt, b: sh.As[0] }, code: 'l5-b-table', hint: 'The table starts at ' + t('t=' + sh.s) + ', not ' + t('t=0') + '. Substitute a point to find ' + t('b') + '.' }, { is: { m: sh.rt, b: sh.A0 }, code: 'l5-rise', hint: 'Descending: the slope is negative.' }] },
               t(sh.As[0] + '=-' + sh.rt + '(' + sh.s + ')+b') + ', ' + t('b=' + sh.A0) + ': ' + t('A=-' + sh.rt + 't+' + sh.A0) + '.', ['Use the rate as ' + t('m') + ' and substitute a table point to find ' + t('b') + '.'], 'A=mt+b from table');
           } },
-          { id: 'e9b2', sub: 'b (general)', level: 'EMG', make: function (r, sh) {
+          { id: 'e9b2', sub: 'b ii', level: 'EMG', make: function (r, sh) {
             return K.P.line('Now write it in general form.', sh.L, { form: 'general', vars: ['t', 'A'] }, t('A=-' + sh.rt + 't+' + sh.A0) + ' → ' + t(gen(sh.L, ['t', 'A'])) + '.', ['Move every term to one side, with the ' + t('t') + '-term positive.'], 'context general form');
           } },
           { id: 'e9c', sub: 'c', level: 'BEG', outcome: 'RF5', make: function (r, sh) {

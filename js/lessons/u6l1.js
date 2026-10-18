@@ -185,11 +185,11 @@
   function crosses(a, b, c, d) { function o(p, q, s) { return Math.sign((q[0] - p[0]) * (s[1] - p[1]) - (q[1] - p[1]) * (s[0] - p[0])); } return o(a, b, c) * o(a, b, d) < 0 && o(c, d, a) * o(c, d, b) < 0; }
   function apart(a, b, c, d, gap) { return !crosses(a, b, c, d) && Math.min(segD(a, c, d), segD(b, c, d), segD(c, a, b), segD(d, a, b)) >= gap; }
   /* place segments with the given (run, rise) vectors inside win (1 unit from the edges), apart from each other */
-  function place(r, vecs, win, avoid, gap) {
+  function place(r, vecs, win, avoid, gap, strictOnly) {
     avoid = avoid || [0, -1]; gap = gap || 1.4;
     function vals(lo, hi, d, strict) { var out = []; for (var a = lo; a <= hi; a++) if (a + d >= lo && a + d <= hi && (!strict || (avoid.indexOf(a) < 0 && avoid.indexOf(a + d) < 0))) out.push(a); return out; }
-    for (var tr = 0; tr < 2500; tr++) {
-      var out = [], good = true, strict = tr < 2000;
+    for (var tr = 0; tr < (strictOnly ? 400 : 300); tr++) {
+      var out = [], good = true, strict = !!strictOnly;
       for (var i = 0; i < vecs.length && good; i++) {
         var v = vecs[i], xs = vals(win.x[0] + 1, win.x[1] - 1, v[0], strict), ys = vals(win.y[0] + 1, win.y[1] - 1, v[1], strict);
         if (!xs.length || !ys.length) { good = false; break; }
@@ -307,9 +307,9 @@
   /* Q5: three diagonal segments on a grid */
   var W5 = { x: [-7, 7], y: [-7, 9] };
   function q5Shared(r) {
-    for (var i = 0; i < 40; i++) {
+    for (var i = 0; i < 50; i++) {
       var vs = [vecOf(r, r.pick(within(K2, 1, 4, 5, 10))), vecOf(r, r.pick(within(SF, 3, 6, 3, 7))), vecOf(r, r.pick([[3, 9], [3, 12], [4, 8], [4, 12], [5, 10]]))];
-      var pl = place(r, vs, W5); if (pl) return { segs: pl };
+      var pl = place(r, vs, W5, null, null, i < 25); if (pl) return { segs: pl };
     }
     return { segs: [[[-6, -3], [-4, 5]], [[0, 4], [5, -2]], [[1, -5], [5, 7]]] };
   }
@@ -321,9 +321,9 @@
   /* Q6: segment AB on a grid */
   var W6 = { x: [-7, 7], y: [-7, 7] };
   function q6Shared(r) {
-    for (var i = 0; i < 40; i++) {
+    for (var i = 0; i < 50; i++) {
       var ab = r.pick(within(K2.concat(SF), 1, 6, 2, 9).filter(function (p) { return p[0] !== p[1]; }));
-      var v = [r.chance(0.7) ? ab[0] : -ab[0], r.chance(0.7) ? ab[1] : -ab[1]], pl = place(r, [v], W6); if (pl) return { A: pl[0][0], B: pl[0][1] };
+      var v = [r.chance(0.7) ? ab[0] : -ab[0], r.chance(0.7) ? ab[1] : -ab[1]], pl = place(r, [v], W6, null, null, i < 25); if (pl) return { A: pl[0][0], B: pl[0][1] };
     }
     return { A: [-6, -3], B: [-4, 5] };
   }
@@ -376,10 +376,10 @@
   /* ---------- extra-practice generators ---------- */
   var WE1 = { x: [-8, 8], y: [-6, 7] };
   function e1Shared(r) {
-    for (var i = 0; i < 40; i++) {
+    for (var i = 0; i < 50; i++) {
       var sq = r.sample(SQ, 2), sf = r.pick(within(SF, 3, 6, 2, 6)), order = r.shuffle([0, 1, 2]), raw = [sq[0], sq[1], sf], vs = order.map(function (j) { return vecOf(r, raw[j], true); });
       if (raw[0][0] * raw[0][0] + raw[0][1] * raw[0][1] === raw[1][0] * raw[1][0] + raw[1][1] * raw[1][1]) continue;
-      var pl = place(r, vs, WE1); if (pl) return { segs: pl, sfIdx: order.indexOf(2) };
+      var pl = place(r, vs, WE1, null, null, i < 25); if (pl) return { segs: pl, sfIdx: order.indexOf(2) };
     }
     return { segs: [[[-7, -3], [-2, 2]], [[1, -5], [7, 1]], [[-4, 6], [1, 3]]], sfIdx: 2 };
   }
@@ -388,9 +388,9 @@
   var WE2 = { x: [-10, 10], y: [-8, 8], grid: 2, labels: 4 };
   function e2Shared(r) {
     var pool = legPairs(2, 6, function (N, a, b) { return sqFree(N) && a >= 3; });
-    for (var i = 0; i < 40; i++) {
+    for (var i = 0; i < 50; i++) {
       var raw = r.sample(pool, 2); if (raw[0][0] * raw[0][0] + raw[0][1] * raw[0][1] === raw[1][0] * raw[1][0] + raw[1][1] * raw[1][1]) continue;
-      var pl = place(r, raw.map(function (p) { return vecOf(r, p, false); }), { x: [-5, 5], y: [-4, 4] }, [0], 1);
+      var pl = place(r, raw.map(function (p) { return vecOf(r, p, false); }), { x: [-5, 5], y: [-4, 4] }, [0], 1, i < 25);
       if (pl) return { segs: pl.map(function (s) { return [[2 * s[0][0], 2 * s[0][1]], [2 * s[1][0], 2 * s[1][1]]]; }) };
     }
     return { segs: [[[-8, -2], [2, 4]], [[-6, 6], [6, -4]]] };
