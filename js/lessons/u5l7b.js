@@ -5,9 +5,9 @@
  * Every part is a generator: it keeps the booklet question's structure (which input is negative, a squared or cubed
  * input, a radical or decimal input, an expression input, two solutions, the context) and changes the numbers; the
  * booklet's own numbers are among the possible values.
- * Graphing parts ("graph the function", "plot the points and draw a smooth curve") become multiple choice between small
- * graphs whose wrong options come from the classic mistakes; "explain" parts become multiple choice with
- * misconception hints. Levels: LIM BEG EMG PRG ADV MAS. */
+ * Graphing parts ("graph the function", "plot the points and draw a smooth curve") are drawn on the graph pad
+ * (js/draw.js, points mode with a Join button): discrete domains must stay unjoined, "draw a smooth curve" must be
+ * joined; classic mistakes get targeted hints. "Explain" parts become multiple choice with misconception hints. Levels: LIM BEG EMG PRG ADV MAS. */
 (function (root) {
   'use strict';
   var HW = root.HW, ex = HW.ex, F = HW.fmt, K = HW.kit, t = K.t, ok = K.ok, wrong = K.wrong, form = K.form, B = K.P, P = HW.poly;
@@ -82,11 +82,28 @@
   }
   function mc(r, prompt, opts, sol, hints, text, keepOrder) { return B.mc(r, prompt, opts, sol, hints, text, keepOrder); }
   function mc2(r, prompt, opts, sol, hints, text) { var p = B.mc(r, prompt, opts, sol, hints, text, true); p.tries = 1; p.input.columns = 2; return p; }
-  function graphMC(r, prompt, opts, sol, hints, text) { var p = B.mc(r, prompt, opts, sol, hints, text); p.input.columns = 2; return p; }
-  function G(spec) { return HW.graph(Object.assign({ max: 200 }, spec)); }
   function dots(pts) { return pts.map(function (p) { return { x: p[0], y: p[1] }; }); }
   function yWin(vals, pad) { var lo = Math.min.apply(null, vals.concat([0])) - (pad || 1), hi = Math.max.apply(null, vals.concat([0])) + (pad || 1); return [lo, hi]; }
   function ptsTex(pts) { return pts.map(function (p) { return '(' + nT(p[0]) + ',\\ ' + nT(p[1]) + ')'; }).join(',\\ '); }
+  /* ---------------- graphing on the graph pad (js/draw.js) ---------------- */
+  var Dr = HW.draw;
+  function pT(q) { return '(' + nT(q[0]) + ',\\ ' + nT(q[1]) + ')'; }
+  function dv(pts, join) { return { pts: pts.map(function (q) { return [q[0], q[1]]; }), pieces: [], join: join || 'none' }; }
+  function joined(pts) { return dv(pts, 'curve'); }
+  /* a points-mode pad (with a Join button) sized for phones; win = { x, y, … } */
+  function padIn(win) {
+    var xs = win.x[1] - win.x[0], ys = win.y[1] - win.y[0];
+    return Object.assign({ labels: 1, unitX: Math.min(44, 290 / xs), unitY: Math.min(26, 330 / ys), mode: 'points', join: true, max: 360 }, win);
+  }
+  var PAD_HELP = '<div class="muted">Press <b>Join</b> only if the points should be joined by a smooth curve.</div>';
+  /* plot the points of a function on a discrete domain; wl = [[points, code, hint], …] classic wrong drawings */
+  function plotPart(prompt, win, pts, wl, sol, hints, text) {
+    var wrongs = [];
+    wl.forEach(function (w) { wrongs.push({ is: dv(w[0]), code: w[1], hint: w[2] }); wrongs.push({ is: joined(w[0]), code: w[1], hint: w[2] }); });
+    var key = dv(pts), p = B.graph(prompt + PAD_HELP, padIn(win), K.graphExact(key, { joinMatters: true, wrong: wrongs }), key, sol, hints, text);
+    p.bad = [joined(pts), dv(pts.map(function (q) { return [q[1], q[0]]; }))].concat(wl.map(function (w) { return dv(w[0]); }));
+    return p;
+  }
 
   var HE = ['To evaluate ' + t('f(a)') + ', replace <b>every</b> ' + t('x') + ' in the formula with ' + t('a') + ' (in brackets), then simplify.',
     'The brackets in ' + t('f(a)') + ' mark the input — they do not mean “times”.'];
@@ -118,8 +135,9 @@
       /* ---------- Q1: linear function on a small domain ---------- */
       { num: '1', section: 'Function notation, tables and graphs', stem: function (sh) { return 'The function ' + t('f(x)=' + sh.ftex) + ' has domain ' + t(setTex(sh.D)) + '.'; },
         shared: function (r) {
-          var m = r.pick([2, 3, 4, 4, 5]), b = r.pick([-5, -4, -3, -3, -2, -1, 1, 2, 3]), s = r.pick([0, 0, 0, 1, -1]);
-          return { m: m, b: b, D: [s, s + 1, s + 2, s + 3], ftex: lin([[m, 'x'], [b, '']]) };
+          var o = pickWhere(function () { return { m: r.pick([2, 3, 4, 4]), b: r.pick([-5, -4, -3, -3, -2, -1, 1, 2, 3]), s: r.pick([0, 0, 0, 1, -1]) }; },
+            function (o) { var y0 = o.m * o.s + o.b, y1 = o.m * (o.s + 3) + o.b; return Math.max(0, y1) - Math.min(0, y0) + 2 <= 15; });   // the graph pad stays at most 15 squares tall
+          return { m: o.m, b: o.b, D: [o.s, o.s + 1, o.s + 2, o.s + 3], ftex: lin([[o.m, 'x'], [o.b, '']]) };
         },
         parts: [
           { id: '1a', level: 'BEG', make: function (r, sh) {
@@ -133,19 +151,15 @@
             p.good = [setTex(ys.slice().reverse())]; p.bad = [setTex(sortU(D.map(function (x) { return m * x; }))), setTex(sortU(D.map(function (x) { return m * x - b; }))), setTex(D)];
             return p;
           } },
-          { id: '1b', level: 'BEG', make: function (r, sh) {
-            var m = sh.m, b = sh.b, D = sh.D;
-            var S = { ok: D.map(function (x) { return [x, m * x + b]; }), sign: D.map(function (x) { return [x, m * x - b]; }), drop: D.map(function (x) { return [x, m * x]; }) };
-            var yy = yWin([].concat(S.ok, S.sign, S.drop).map(function (q) { return q[1]; })), span = yy[1] - yy[0];
-            var win = { x: [Math.min(-1, D[0] - 1), D[3] + 1], y: yy, labels: 1, labelsY: span > 14 ? 4 : 2, gridY: span > 24 ? 2 : 1, unitX: 30, unitY: Math.min(16, 210 / span), xName: 'x', yName: 'f(x)' };
-            var pic = function (pts, segs) { return G(Object.assign({ points: dots(pts), segs: segs || [], aria: 'graph option' }, win)); };
-            return graphMC(r, 'Which graph shows the function ' + t('f') + '?', [
-              { html: pic(S.ok), right: true },
-              { html: pic(S.ok, [{ pts: S.ok }]), why: 'The domain has only four values, so the graph is just four separate points. Don’t join them with a line.' },
-              { html: pic(S.sign), why: 'Check one point: ' + t('f(' + D[1] + ')=' + m + '(' + D[1] + ')' + sg(b) + '=' + (m * D[1] + b)) + '. Watch the sign of the constant.' },
-              { html: pic(S.drop), why: 'These points leave out the constant ' + t(sg(b)) + '. Check ' + t('f(' + D[0] + ')') + '.' }],
-              'Plot one point ' + t('(x,\\ f(x))') + ' for each element of the domain: ' + t(ptsTex(S.ok)) + '. The domain has only four values, so the graph is four separate points — they are not joined.',
-              ['Each element of the domain gives one point ' + t('(x,\\ f(x))') + '. Work out the four outputs first.'], 'graph f(x)=' + sh.ftex + ' on a 4-element domain');
+          { id: '1b', level: 'EMG', make: function (r, sh) {
+            var m = sh.m, b = sh.b, D = sh.D, ok0 = D.map(function (x) { return [x, m * x + b]; });
+            var ys = ok0.map(function (q) { return q[1]; }), win = { x: [Math.min(-1, D[0] - 1), D[3] + 1], y: [Math.min(0, Math.min.apply(null, ys)) - 1, Math.max(0, Math.max.apply(null, ys)) + 1], labelsY: 2, xName: 'x', yName: 'f(x)' };
+            return plotPart('Graph the function ' + t('f') + '.', win, ok0, [
+              [D.map(function (x) { return [x, m * x - b]; }), 'fn-const-sign', 'Check one point: ' + t('f(' + D[1] + ')=' + m + '(' + D[1] + ')' + sg(b) + '=' + (m * D[1] + b)) + '. Watch the sign of the constant.'],
+              [D.map(function (x) { return [x, m * x]; }), 'fn-const', 'These points leave out the constant ' + t(sg(b)) + '. Check ' + t('f(' + D[0] + ')') + '.'],
+              [D.map(function (x) { return [x, m + x + b]; }), 'fn-add-coef', t(m + 'x') + ' means ' + t(m + '\\times x') + ': multiply the input by ' + t(m) + ', don’t add it.']],
+              'Plot one point ' + t('(x,\\ f(x))') + ' for each element of the domain: ' + t(ptsTex(ok0)) + '. The domain has only four values, so the graph is four separate points — they are <b>not</b> joined.',
+              ['Each element of the domain gives one point ' + t('(x,\\ f(x))') + '. Work out the four outputs first (your range from part (a)).', 'The domain is a short list, not all real numbers: should the points be joined?'], 'graph f(x)=' + sh.ftex + ' on a 4-element domain');
           } }] },
       /* ---------- Q2: cubic on a small domain ---------- */
       { num: '2', stem: function (sh) { return 'The function ' + t('g(x)=' + lin([[1, 'x^{3}'], [sh.c, '']])) + ' has domain ' + t(setTex(sh.D)) + '.'; },
@@ -162,22 +176,19 @@
             p.good = [setTex(ys.slice().reverse())];
             return p;
           } },
-          { id: '2b', level: 'BEG', make: function (r, sh) {
-            var c = sh.c, D = sh.D, g = function (x) { return x * x * x + c; };
-            var S = { ok: D.map(function (x) { return [x, g(x)]; }), neg: D.map(function (x) { return [x, Math.abs(x * x * x) + c]; }), tri: D.map(function (x) { return [x, 3 * x + c]; }) };
-            var win = { x: [-3, 3], y: [c - 9, c + 9], labels: 1, labelsY: 4, unitX: 26, unitY: 11, xName: 'x', yName: 'g(x)' };
-            var pic = function (pts, fns) { return G(Object.assign({ points: dots(pts), fns: fns || [], aria: 'graph option' }, win)); };
-            return graphMC(r, 'Which graph shows the function ' + t('g') + '?', [
-              { html: pic(S.ok), right: true },
-              { html: pic(S.ok, [{ f: g, from: -2, to: 2 }]), why: 'The domain is only ' + t(setTex(D)) + ', so the graph is five separate points. A smooth curve would mean every real number between ' + t('-2') + ' and ' + t('2') + ' is an input.' },
-              { html: pic(S.neg), why: 'Look at the negative inputs: ' + t('g(-2)=(-2)^{3}' + sg(c) + '=-8' + sg(c) + '=' + g(-2)) + '. An odd power of a negative is negative.' },
-              { html: pic(S.tri), why: 'These points lie on a straight line — they come from ' + t('3x' + sg(c)) + '. Cubing means ' + t('x\\times x\\times x') + ': ' + t('g(2)=8' + sg(c) + '=' + g(2)) + '.' }],
-              'The points are ' + t(ptsTex(S.ok)) + '. The domain has five values, so the graph is five separate points.',
-              ['Work out the five outputs, then plot ' + t('(x,\\ g(x))') + ' for each.'], 'graph g(x)=x^3' + sg(c) + ' on a 5-element domain');
+          { id: '2b', level: 'EMG', make: function (r, sh) {
+            var c = sh.c, D = sh.D, g = function (x) { return x * x * x + c; }, ok0 = D.map(function (x) { return [x, g(x)]; });
+            var win = { x: [-3, 3], y: [c - 9, c + 9], labelsY: 2, xName: 'x', yName: 'g(x)' };
+            return plotPart('Graph the function ' + t('g') + '.', win, ok0, [
+              [D.map(function (x) { return [x, Math.abs(x * x * x) + c]; }), 'fn-cube-neg', 'Look at the negative inputs: ' + t('g(-2)=(-2)^{3}' + sg(c) + '=-8' + sg(c) + '=' + g(-2)) + '. An odd power of a negative is negative.'],
+              [D.map(function (x) { return [x, 3 * x + c]; }), 'fn-cube-3x', 'These points lie on a straight line — they come from ' + t('3x' + sg(c)) + '. Cubing means ' + t('x\\times x\\times x') + ': ' + t('g(2)=8' + sg(c) + '=' + g(2)) + '.'],
+              [D.map(function (x) { return [x, x * x * x - c]; }), 'fn-const-sign', 'Check the sign of the constant: the formula ends in ' + t(sg(c)) + '.']],
+              'The points are ' + t(ptsTex(ok0)) + '. The domain has five values, so the graph is five separate points (not joined: a curve would mean every real number between ' + t('-2') + ' and ' + t('2') + ' is an input).',
+              ['Work out the five outputs (your range from part (a)), then plot ' + t('(x,\\ g(x))') + ' for each.', 'Put negative inputs in brackets before cubing: ' + t('(-1)^{3}=-1') + '.'], 'graph g(x)=x^3' + sg(c) + ' on a 5-element domain');
           } }] },
       /* ---------- Q3: quadratic table and smooth curve ---------- */
       { num: '3', stem: function (sh) { return 'Consider the function ' + t('f(x)=x^{2}' + sg(sh.c)) + '.'; },
-        shared: function (r) { return { c: r.pick([1, 2, 3, 3, 4, 5]) }; },
+        shared: function (r) { return { c: r.pick([1, 2, 3, 3, 4]) }; },   // c ≤ 4 keeps the graph pad at most 15 squares tall
         parts: [
           { id: '3a', level: 'BEG', make: function (r, sh) {
             var c = sh.c, xs = [3, 2, 1, -1, -2, -3], f = function (x) { return x * x + c; };
@@ -197,18 +208,32 @@
             p.bad = [xs.map(function (x) { return String(2 * x + c); }), xs.map(function (x) { return String(x < 0 ? -x * x + c : x * x + c); })];
             return p;
           } },
-          { id: '3b', level: 'BEG', make: function (r, sh) {
+          { id: '3b', level: 'EMG', make: function (r, sh) {
             var c = sh.c, xs = [-3, -2, -1, 1, 2, 3], f = function (x) { return x * x + c; }, pts = xs.map(function (x) { return [x, f(x)]; });
-            var bad = function (x) { return x * Math.abs(x) + c; }, bpts = xs.map(function (x) { return [x, bad(x)]; });
-            var win = { x: [-4, 4], y: [c - 11, c + 12], labels: 1, labelsY: 4, gridY: 1, unitX: 22, unitY: 8.5, xName: 'x', yName: 'f(x)' };
-            var pic = function (ps, extra) { return G(Object.assign({ points: dots(ps), aria: 'graph option' }, win, extra || {})); };
-            return graphMC(r, 'Plot the ordered pairs from your table and draw a smooth curve through them to show ' + t('f(x)=x^{2}' + sg(c) + ',\\ x\\in\\mathbb{R}') + '. Which graph is correct?', [
-              { html: pic(pts, { fns: [{ f: f, from: -3.3, to: 3.3, start: 'arrow', end: 'arrow' }] }), right: true },
-              { html: pic(pts), why: 'The points are right, but the domain is now ' + t('x\\in\\mathbb{R}') + ': every real number is an input, so join the points with a smooth curve.' },
-              { html: pic(pts, { segs: [{ pts: pts }] }), why: 'Don’t join the points with straight segments. Between ' + t('x=-1') + ' and ' + t('x=1') + ' the graph dips to ' + t('f(0)=' + c) + ': the curve is a smooth U shape with its lowest point at ' + t('(0,\\ ' + c + ')') + '.' },
-              { html: pic(bpts, { fns: [{ f: bad, from: -3.3, to: 3.3, start: 'arrow', end: 'arrow' }] }), why: 'Check the negative inputs: ' + t('f(-3)=(-3)^{2}' + sg(c) + '=9' + sg(c) + '=' + f(-3)) + ', not ' + t(bad(-3)) + '. Squaring a negative gives a positive.' }],
-              'The points ' + t(ptsTex(pts)) + ' are symmetric about the ' + t('y') + '-axis (' + t('f(-x)=f(x)') + '). Joined by a smooth curve they make a U-shaped parabola with lowest point (vertex) ' + t('(0,\\ ' + c + ')') + '.',
+            var win = { x: [-4, 4], y: [-1, c + 10], labelsY: 2, xName: 'x', yName: 'f(x)' };
+            var check = function (resp) {
+              var v = Dr.norm(resp);
+              if (!v.pts.length) return form('empty', 'Plot the points from your table on the grid first.');
+              var on = function (q) { return same(q[1], f(q[0])); }, has = function (q) { return v.pts.some(function (z) { return same(z[0], q[0]) && same(z[1], q[1]); }); };
+              var off = v.pts.filter(function (q) { return !on(q); });
+              if (off.length) {
+                if (v.pts.every(function (q) { return same(q[0], f(q[1])); })) return wrong('graph-swap', 'You swapped the coordinates: in ' + t('(x,\\ f(x))') + ' go <b>across</b> to ' + t('x') + ' first, then <b>up</b> to ' + t('f(x)') + '.');
+                var q = off[0];
+                if (q[0] < 0 && same(q[1], -q[0] * q[0] + c)) return wrong('fn-neg-square', 'Check ' + t(pT(q)) + ': ' + t('(' + nT(q[0]) + ')^{2}=' + q[0] * q[0]) + ' — squaring a negative gives a positive, so ' + t('f(' + nT(q[0]) + ')=' + f(q[0])) + '.');
+                if (same(q[1], 2 * q[0] + c)) return wrong('fn-square-2x', 'Check ' + t(pT(q)) + ': ' + t('x^{2}') + ' means ' + t('x\\times x') + ', not ' + t('2\\times x') + '.');
+                return wrong('graph-points', t(pT(q)) + ' is not on the graph: ' + t('f(' + nT(q[0]) + ')=' + sgp(q[0]) + '^{2}' + sg(c) + '=' + f(q[0])) + '. Plot the pairs from your table.');
+              }
+              var miss = pts.filter(function (q) { return !has(q); });
+              if (miss.length) return wrong('graph-missing', 'Those points are right — now plot every pair from your table: ' + (miss.length === 1 ? t(pT(miss[0])) + ' is missing.' : miss.length + ' of them are missing.'));
+              if (v.join === 'none') return wrong('graph-not-joined', 'Your points are right — now press <b>Join</b>: the domain is ' + t('x\\in\\mathbb{R}') + ', so every value in between is an input too and the graph is a smooth curve.');
+              return ok();
+            };
+            var key = joined(pts), p = B.graph('Plot the ordered pairs from your table, then draw a smooth curve through them (press <b>Join</b>) to show ' + t('f(x)=x^{2}' + sg(c) + ',\\ x\\in\\mathbb{R}') + '. You may plot more points of the graph if you like.', padIn(win), check, key,
+              'The points ' + t(ptsTex(pts)) + ' are symmetric about the ' + t('y') + '-axis (' + t('f(-x)=f(x)') + '). The domain is all real numbers, so they are joined by a smooth curve: a U-shaped parabola whose lowest point (vertex) is ' + t('(0,\\ ' + c + ')') + ' — you may plot that point too.',
               ['Use your table: each column gives one point ' + t('(x,\\ f(x))') + '.', 'With domain ' + t('x\\in\\mathbb{R}') + ' the graph is a smooth curve, not separate dots.'], 'smooth curve x^2' + sg(c));
+            p.good = [joined(pts.concat([[0, c]]))];
+            p.bad = [dv(pts), joined(xs.map(function (x) { return [x, x * Math.abs(x) + c]; }).filter(function (q) { return q[1] >= -1; })), joined(pts.slice(1)), joined(xs.map(function (x) { return [x, 2 * x + c]; }))];
+            return p;
           } }] },
       /* ---------- Q4: constant function ---------- */
       { num: '4', stem: function (sh) { return 'The function ' + t('h(x)=' + sh.k) + ' has domain ' + t(setTex(sh.D)) + '.'; },
@@ -230,17 +255,13 @@
             p.bad = ['\\{' + D.map(function (x) { return '(' + x + ', ' + k * x + ')'; }).join(', ') + '\\}', '\\{' + D.map(function (x) { return '(' + x + ', ' + x + ')'; }).join(', ') + '\\}', '\\{' + D.map(function (x) { return '(' + k + ', ' + x + ')'; }).join(', ') + '\\}'];
             return p;
           } },
-          { id: '4b', level: 'BEG', make: function (r, sh) {
+          { id: '4b', level: 'EMG', make: function (r, sh) {
             var k = sh.k, D = sh.D, pts = D.map(function (x) { return [x, k]; });
-            var win = { x: [-1, 16], y: [-1, 16], labels: 5, unit: 10.5, xName: 'x', yName: 'h(x)' };
-            var pic = function (ps, segs) { return G(Object.assign({ points: dots(ps), segs: segs || [], aria: 'graph option' }, win)); };
-            return graphMC(r, 'Which graph shows the function ' + t('h') + '?', [
-              { html: pic(pts), right: true },
-              { html: pic(D.map(function (x) { return [k, x]; })), why: 'These points have the inputs and outputs swapped. The input goes across (horizontal axis): the points are ' + t(ptsTex(pts)) + '.' },
-              { html: pic(pts, [{ pts: [[-0.6, k], [15.6, k]], start: 'arrow', end: 'arrow' }]), why: 'The domain is only ' + t(setTex(D)) + ', so the graph is three separate points, not a whole line.' },
-              { html: pic(D.map(function (x) { return [x, 0]; })), why: 'The output is ' + t('h(x)=' + k) + ' for every input, not ' + t('0') + '.' }],
-              'Each input gives the output ' + t(k) + ', so the graph is the three points ' + t(ptsTex(pts)) + ', all on the horizontal line ' + t('y=' + k) + '. A function like this is called a <b>constant function</b>.',
-              ['Plot ' + t('(x,\\ h(x))') + ' for each input in the domain.'], 'graph constant function h(x)=' + k);
+            var win = { x: [0, 15], y: [0, 15], labels: 5, unitX: 20, unitY: 20, firstQuadrant: true, xName: 'x', yName: 'h(x)' };
+            return plotPart('Graph the function ' + t('h') + '.', win, pts, [
+              [D.map(function (x) { return [x, 0]; }), 'fn-const-zero', 'The output is ' + t('h(x)=' + k) + ' for every input, not ' + t('0') + '.']],
+              'Each input gives the output ' + t(k) + ', so the graph is the three points ' + t(ptsTex(pts)) + ', all at the height ' + t(k) + ' (on the horizontal line ' + t('y=' + k) + '). The domain has only three values, so the points are not joined. A function like this is called a <b>constant function</b>.',
+              ['Plot ' + t('(x,\\ h(x))') + ' for each input in the domain — your ordered pairs from part (a).', 'There is no ' + t('x') + ' in the formula: every output is ' + t(k) + '.'], 'graph constant function h(x)=' + k);
           } }] },
       /* ---------- Q5: vocabulary ---------- */
       { num: '5', stem: function (sh) { return 'Each statement below refers to a function ' + t(sh.n) + ' whose graph has equation ' + t('y=' + sh.n + '(x)') + '.'; },

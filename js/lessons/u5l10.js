@@ -5,8 +5,10 @@
  * Extension 17–20) and the whole Lesson 10 Extra Practice (u5_EP10.tex, Q1–20).
  * Every part is a generator that keeps the booklet question's structure (signs, which endpoint is hollow, a value
  * reached twice, a flat piece, a stopping point in a context, a fraction answer) and changes the numbers; the booklet's
- * numbers are among the possible values. Sketches become multiple choice between small graphs; "explain" items become
- * multiple choice with misconception hints; calculator items ask for the values the calculator finds.
+ * numbers are among the possible values. Plotting and sketching (11b, 13a, Extra 6a–c) use the graph pad (js/draw.js):
+ * exact plots via K.graphExact, the cyclist's speed story via K.graphStory (stages and times checked, any steady-speed
+ * height), the open "sketch a relation with this domain/range" tasks via K.graphRules plus a local intercept count;
+ * "explain" items become multiple choice with misconception hints; calculator items ask for the values the calculator finds.
  * Levels follow LEVEL_RUBRIC.md (recognition formats one level below the constructed task, capped at PRG). */
 (function (root) {
   'use strict';
@@ -23,7 +25,8 @@
     'sq-split': 'Squared a binomial without the middle term', 'abc-sum': 'Added instead of a − b − c', 'used-y': 'Solved for the y-intercept', 'no-root': 'Didn’t take the square root',
     'dom-real': 'Used ∈ R for a count', 'dom-n': 'Natural numbers leave out 0', 'not-between': 'Value outside the range of the bounds', 'is-produced': 'That value is produced',
     'not-in-range': 'Value outside the range', 'in-f-range': 'Value already in the first range', 'x-wrong': 'Input does not give that output', 'not-between-d': 'Number outside the domain’s span',
-    'in-domain': 'Number is in the domain', 'sol-interval': 'Missed the flat piece of solutions', 'sol-point-only': 'Missed the single solution', 'f-sum': 'Added the inputs’ outputs wrongly'
+    'in-domain': 'Number is in the domain', 'sol-interval': 'Missed the flat piece of solutions', 'sol-point-only': 'Missed the single solution', 'f-sum': 'Added the inputs’ outputs wrongly',
+    'rule-xint': 'Sketch: wrong number of x-intercepts', 'rule-yint': 'Sketch: wrong number of y-intercepts'
   });
 
   /* ---------------- numbers and LaTeX ---------------- */
@@ -201,14 +204,10 @@
 
   /* ---------------- multiple choice ---------------- */
   function mc(r, prompt, opts, sol, hints, text, keepOrder) { return B.mc(r, prompt, distinct(opts), sol, hints, text, keepOrder); }
-  /* one column: two columns squeeze each option graph to ~90 px on a phone; stacked they are ~240 px and readable */
-  function graphMC(r, prompt, opts, sol, hints, text) { var p = B.mc(r, prompt, distinct(opts), sol, hints, text); p.input.columns = 1; return p; }
   function tf(r, prompt, truth, why, sol, hints, text) { return B.tf(r, prompt, truth, why, sol, hints, text); }
 
   /* ---------------- drawings ---------------- */
   function G(spec) { return HW.graph(Object.assign({ x: [-6, 6], y: [-6, 6], labels: 2, max: 300 }, spec)); }
-  /* a small graph for a multiple-choice option: fixed width so it doesn't shrink beside the option letter */
-  function Gm(spec) { var w = spec.w || 240; return '<span style="display:block;flex:1 1 auto;min-width:0;width:100%;max-width:' + w + 'px">' + HW.graph(Object.assign({ x: [-6, 6], y: [-6, 6], labels: 2 }, spec, { max: w })) + '</span>'; }
   function fig(s) { return '<div class="fig">' + s + '</div>'; }
   /* ---------------- graph-pad drawings (js/draw.js) ---------------- */
   function seg(a, b, s, e) { return { v: [a, b], s: s || 'closed', e: e || 'closed' }; }
@@ -889,16 +888,22 @@
           return { a: a, s: s, d: d, w: w, T: a + s + d + w };
         },
         stem: function (sh) { return 'A cyclist starts from rest, speeds up steadily for ' + t(sh.a) + ' s, holds a steady speed for ' + t(sh.s) + ' s, slows steadily to a stop over the next ' + t(sh.d) + ' s, then stays stopped for ' + t(sh.w) + ' s.'; }, parts: [
-        { id: '13a', level: 'EMG', make: function (r, sh) {
-          var X = sh.T + 10, V = 3.5, A = sh.a, S2 = sh.a + sh.s, D2 = S2 + sh.d;
-          var g = function (pts) { return Gm({ x: [0, X], y: [0, 5], grid: 10, gridY: 1, labels: 20, labelsX: 20, labelsY: 1000, unitX: 170 / X, unitY: 22, firstQuadrant: true, xName: 't', yName: 'v', segs: [{ pts: pts }], aria: 'speed–time option' }); };
-          return graphMC(r, '(a) Which graph shows the cyclist’s <b>speed</b> against time (seconds)?', [
-            { html: g([[0, 0], [A, V], [S2, V], [D2, 0], [sh.T, 0]]), right: true },
-            { html: g([[0, 0], [A, 2], [S2, V], [D2, 0], [sh.T, 0]]), why: 'During the steady stage the speed doesn’t change, so that piece must be <b>horizontal</b>.' },
-            { html: g([[0, 0], [A, V], [S2, V], [D2, 1.5], [sh.T, 1.5]]), why: 'At the end the cyclist is <b>stopped</b>: speed ' + t('0') + ', so the last piece lies along the time axis.' },
-            { html: g([[0, 0], [A, V], [S2, V], [S2, 0], [sh.T, 0]]), why: 'The cyclist slows <b>steadily</b> over ' + t(sh.d) + ' s, so the speed falls along a slanted line, not straight down.' }],
-            'Speed rises steadily from ' + t('0') + ' (' + t('0') + '–' + t(A) + ' s), stays constant (' + t(A) + '–' + t(S2) + ' s), falls steadily to ' + t('0') + ' (' + t(S2) + '–' + t(D2) + ' s), then stays at ' + t('0') + ' (' + t(D2) + '–' + t(sh.T) + ' s).',
-            ['On a speed graph, constant speed is a horizontal line and “stopped” means speed ' + t('0') + '.'], 'sketch speed–time');
+        { id: '13a', level: 'PRG', make: function (r, sh) {
+          var X = sh.T + 10, A = sh.a, S2 = sh.a + sh.s, D2 = S2 + sh.d, T = sh.T;
+          var I = { x: [0, X], y: [0, 5], grid: 10, gridY: 1, labels: 20, labelsX: 20, labelsY: 1000, unitX: 300 / X, unitY: 40, firstQuadrant: true, xName: 't', yName: 'v', xTitle: 'Time (s)', yTitle: 'Speed',
+            tools: ['line'], defaultEnd: 'none', snapX: 10, snapY: 1 };
+          var chk = K.graphStory({ phases: [{ dir: 'up', text: 'speeds up', x0: 0, x1: A }, { dir: 'flat', text: 'steady speed', x0: A, x1: S2 }, { dir: 'down', text: 'slows to a stop', x0: S2, x1: D2 }, { dir: 'flat', text: 'stopped', x0: D2, x1: T }],
+            start: 0, end: 0, xUnit: 's', startHint: 'The cyclist starts <b>from rest</b>: the speed at ' + t('t=0') + ' is ' + t('0') + ', so start at the origin.',
+            endHint: 'At the end the cyclist is <b>stopped</b>: speed ' + t('0') + '. The slowing piece must come down to the time axis at ' + t('t=' + D2) + ' s, and the last piece lies along the axis.' });
+          var key = drawing([poly([[0, 0], [A, 3], [S2, 3], [D2, 0], [T, 0]], 'none', 'none')]);
+          var p = B.graph('(a) Sketch a graph of the cyclist’s <b>speed</b> against time. (Speed has no scale here — any steady speed height is fine.) Use <b>╱ Line</b>: tap the start, then each corner, and tap the last point again to finish.', I, chk, key,
+            'Speed rises steadily from ' + t('0') + ' (' + t('0') + '–' + t(A) + ' s), stays constant (' + t(A) + '–' + t(S2) + ' s), falls steadily to ' + t('0') + ' (' + t(S2) + '–' + t(D2) + ' s), then stays at ' + t('0') + ' (' + t(D2) + '–' + t(T) + ' s). Any height for the steady stage is right.',
+            ['On a speed graph, constant speed is a horizontal line and “stopped” means speed ' + t('0') + '.', 'Work out when each stage starts and ends: ' + t('0') + ', ' + t(A) + ', ' + t(S2) + ', ' + t(D2) + ', ' + t(T) + ' s.'], 'sketch speed–time');
+          p.good = [drawing([poly([[0, 0], [A, 5], [S2, 5], [D2, 0]], 'none', 'none'), poly([[D2, 0], [T, 0]], 'none', 'none')])];
+          p.bad = [drawing([poly([[0, 0], [A, 2], [S2, 3], [D2, 0], [T, 0]], 'none', 'none')]), drawing([poly([[0, 0], [A, 3], [S2, 3], [D2, 1], [T, 1]], 'none', 'none')]),
+            drawing([poly([[0, 0], [A, 3], [S2, 3], [S2, 0], [T, 0]], 'none', 'none')]), drawing([poly([[0, 0], [A, 3], [S2, 3], [D2, 0]], 'none', 'none')]),
+            drawing([poly([[0, 0], [A + 10, 3], [S2, 3], [D2, 0], [T, 0]], 'none', 'none')]), drawing([poly([[0, 1], [A, 3], [S2, 3], [D2, 0], [T, 0]], 'none', 'none')])];
+          return p;
         } },
         { id: '13b', level: 'BEG', make: function (r, sh) {
           var A = sh.a, S2 = sh.a + sh.s, D2 = S2 + sh.d;
@@ -1302,27 +1307,36 @@
             ['What is the input of every ' + t('y') + '-intercept?'], 'two y-intercepts means not a function');
         } }] },
       { num: '6', shared: ep6Shared, stem: function (sh) { return 'Each part asks for a relation that meets some conditions. Choose the graph that meets <b>all</b> of them.'; }, parts: [
-        { id: 'e6a', level: 'PRG', outcome: 'RF2', make: function (r, sh) {
-          var g = function (pts, s, e) { return Gm({ x: [-5, 6], y: [-4, 5], labels: 2, segs: [{ pts: pts, start: s || 'closed', end: e || 'closed' }], aria: 'option' }); };
-          var A = sh.a1, Bb = sh.a2, lo = sh.r1, hi = sh.r2, v = sh.v;
-          var d3 = r.chance(0.5) && lo + 1 < 0 ? { html: g([[A, hi], [v, lo + 1], [Bb, hi]]), why: 'This graph never goes down to ' + t('y=' + lo) + ', so its range is too small.' } : { html: g([[A, hi], [v, lo], [Bb - 1, hi]]), why: 'This graph stops at ' + t('x=' + (Bb - 1)) + ', so its domain doesn’t reach ' + t(Bb) + '.' };
-          return graphMC(r, '(a) A <b>function</b> with ' + t('D=' + sh.Dt) + ', ' + t('R=' + sh.Rt) + ', exactly two ' + t('x') + '-intercepts and one ' + t('y') + '-intercept.', [
-            { html: g([[A, hi], [v, lo], [Bb, hi]]), right: true },
-            { html: g([[A, lo], [Bb, hi]]), why: 'Domain and range are right, but this line crosses the ' + t('x') + '-axis only <b>once</b>.' },
-            { html: g([[Bb, hi], [A, Math.round((lo + hi) / 2)], [Bb, lo]]), why: 'Domain and range are right, but a vertical line meets this graph twice — it is not a function.' }, d3],
-            'A “V” from ' + t(ptT([A, hi])) + ' down to ' + t(ptT([v, lo])) + ' and up to ' + t(ptT([Bb, hi])) + ' with solid ends: it runs from ' + t('x=' + A) + ' to ' + t('x=' + Bb) + ', from ' + t('y=' + lo) + ' to ' + t('y=' + hi) + ', crosses the ' + t('x') + '-axis twice and the ' + t('y') + '-axis once, and every vertical line meets it at most once.',
-            ['Check each condition in turn: domain, range, function, number of intercepts.'], 'choose a function with given D and R');
+        { id: 'e6a', level: 'MAS', outcome: 'RF2', make: function (r, sh) {
+          /* open sketch: any function meeting all the conditions (checked by rules) */
+          var A = sh.a1, Bb = sh.a2, lo = sh.r1, hi = sh.r2, v = sh.v, I = { x: [-5, 5], y: [-5, 5], grid: 1, labels: 2, max: 340 };
+          var cnt = function (n, w) { return n === 1 ? 'one ' + w : n + ' ' + w + 's'; };
+          var chk = K.graphRules({ fn: true, domain: sh.Dt, range: sh.Rt, custom: function (val) {
+            var xh = axisHits(val, 'x'), yh = axisHits(val, 'y');
+            if (xh.inf) return { code: 'rule-xint', hint: 'Part of your graph lies along the ' + t('x') + '-axis — that is infinitely many ' + t('x') + '-intercepts. The graph should <b>cross</b> the ' + t('x') + '-axis exactly twice.' };
+            if (xh.vals.length !== 2) return { code: 'rule-xint', hint: 'Your graph meets the ' + t('x') + '-axis ' + (xh.vals.length ? cnt(xh.vals.length, 'time') : 'nowhere') + '; it needs <b>exactly two</b> ' + t('x') + '-intercepts. Try going down below the axis and back up (a “V”).' };
+            if (yh.vals.length !== 1) return { code: 'rule-yint', hint: 'Your graph needs exactly <b>one</b> ' + t('y') + '-intercept (it meets the ' + t('y') + '-axis ' + (yh.vals.length ? cnt(yh.vals.length, 'time') : 'nowhere') + ').' };
+            return null;
+          } });
+          var key = drawing([poly([[A, hi], [v, lo], [Bb, hi]])]);
+          var p = B.graph('(a) Sketch a <b>function</b> with ' + t('D=' + sh.Dt) + ', ' + t('R=' + sh.Rt) + ', exactly two ' + t('x') + '-intercepts and one ' + t('y') + '-intercept. Mark endpoints solid or hollow as required. Many answers are right.' + padHelp(true), I, chk, key,
+            'Answers vary. E.g. a “V” from ' + t(ptT([A, hi])) + ' down to ' + t(ptT([v, lo])) + ' and up to ' + t(ptT([Bb, hi])) + ' with solid ends: it runs from ' + t('x=' + A) + ' to ' + t('x=' + Bb) + ', from ' + t('y=' + lo) + ' to ' + t('y=' + hi) + ', crosses the ' + t('x') + '-axis twice and the ' + t('y') + '-axis once, and every vertical line meets it at most once.',
+            ['Start with the ends: the graph must begin at ' + t('x=' + A) + ' and end at ' + t('x=' + Bb) + ' with solid dots (≤ in the domain).', 'To cross the ' + t('x') + '-axis twice, go down below it and back up. Its lowest point is ' + t('y=' + lo) + ', its highest ' + t('y=' + hi) + '.'], 'sketch a function with given D, R and intercepts');
+          p.good = [drawing([poly([[A, lo], [0, hi], [Bb, lo]])]), drawing([poly([[Bb, hi], [v, lo], [A, hi]])])];
+          p.bad = [drawing([poly([[A, lo], [Bb, hi]])]), drawing([poly([[Bb, hi], [A, Math.round((lo + hi) / 2)], [Bb, lo]])]), drawing([poly([[A, hi], [v, lo], [Bb - 1, hi]])]),
+            drawing([poly([[A, hi], [v, lo], [Bb, hi]], 'open', 'closed')]), drawing([poly([[A, hi], [v, lo + 1], [Bb, hi]])]), drawing([poly([[A, hi], [v, lo], [Bb, hi]], 'arrow', 'arrow')])];
+          return p;
         } },
-        { id: 'e6b', level: 'PRG', outcome: 'RF2', make: function (r, sh) {
-          var g = function (pts) { return Gm({ x: [-5, 6], y: [-4, 5], labels: 2, segs: [{ pts: pts, start: 'closed', end: 'closed' }], aria: 'option' }); };
-          var A = sh.a1, Bb = sh.a2, lo = sh.r1, hi = sh.r2, mid = Math.round((lo + hi) / 2);
-          return graphMC(r, '(b) A relation that is <b>not</b> a function, with exactly the same domain and range as (a): ' + t('D=' + sh.Dt) + ', ' + t('R=' + sh.Rt) + '.', [
-            { html: g([[Bb, hi], [A, mid], [Bb, lo]]), right: true },
-            { html: g([[A, hi], [sh.v, lo], [Bb, hi]]), why: 'This one passes the vertical line test — it is a function.' },
-            { html: g([[Bb, hi], [A + 1, mid], [Bb, lo]]), why: 'Not a function — but it starts at ' + t('x=' + (A + 1)) + ', so the domain doesn’t reach ' + t(A) + '.' },
-            { html: g([[Bb, hi - 1], [A, mid], [Bb, lo]]), why: 'Not a function — but it only goes up to ' + t('y=' + (hi - 1)) + ', so the range is wrong.' }],
-            'E.g. the “V” turned on its side: ' + t(ptT([Bb, hi])) + ' to ' + t(ptT([A, mid])) + ' to ' + t(ptT([Bb, lo])) + '. It still covers ' + t(cond('x', A, Bb)) + ' and ' + t(cond('y', lo, hi)) + ', but a vertical line such as ' + t('x=0') + ' meets it twice.',
-            ['Check the domain and range first, then use the vertical line test.'], 'choose a non-function with given D and R');
+        { id: 'e6b', level: 'ADV', outcome: 'RF2', make: function (r, sh) {
+          var A = sh.a1, Bb = sh.a2, lo = sh.r1, hi = sh.r2, mid = Math.round((lo + hi) / 2), I = { x: [-5, 5], y: [-5, 5], grid: 1, labels: 2, max: 340 };
+          var chk = K.graphRules({ fn: false, domain: sh.Dt, range: sh.Rt });
+          var key = drawing([poly([[Bb, hi], [A, mid], [Bb, lo]])]);
+          var p = B.graph('(b) Sketch a relation that is <b>not</b> a function, with exactly the same domain and range as (a): ' + t('D=' + sh.Dt) + ', ' + t('R=' + sh.Rt) + '. Many answers are right.' + padHelp(true), I, chk, key,
+            'Answers vary. E.g. the “V” turned on its side: ' + t(ptT([Bb, hi])) + ' to ' + t(ptT([A, mid])) + ' to ' + t(ptT([Bb, lo])) + '. It still covers ' + t(cond('x', A, Bb)) + ' and ' + t(cond('y', lo, hi)) + ', but a vertical line such as ' + t('x=0') + ' meets it twice.',
+            ['Make some vertical line meet your graph twice — e.g. turn a “V” on its side.', 'Then check: does it still reach from ' + t('x=' + A) + ' to ' + t('x=' + Bb) + ' and from ' + t('y=' + lo) + ' to ' + t('y=' + hi) + '?'], 'sketch a non-function with given D and R');
+          p.good = [drawing([seg([A, lo], [Bb, hi]), seg([A, hi], [Bb, lo])])];
+          p.bad = [drawing([poly([[A, hi], [sh.v, lo], [Bb, hi]])]), drawing([poly([[Bb, hi], [A + 1, mid], [Bb, lo]])]), drawing([poly([[Bb, hi - 1], [A, mid], [Bb, lo]])]), drawing([poly([[Bb, hi], [A, mid], [Bb, lo]], 'open', 'closed')])];
+          return p;
         } },
         { id: 'e6b2', sub: 'b ii', level: 'EMG', outcome: 'RF2', make: function (r) {
           return mc(r, '(b) What is the one feature that makes the difference between a graph for (a) and a graph for (b)?', [
@@ -1332,14 +1346,18 @@
             { html: 'In (b) the range is different.', why: 'The question makes the domain and range the same in both.' }],
             'Same domain, same range — the only difference is the vertical line test: in (b) some input has two outputs.', ['What is the definition of a function?'], 'function vs not, same D and R');
         } },
-        { id: 'e6c', level: 'EMG', outcome: 'RF2', make: function (r, sh) {
-          var k = sh.k, g = function (seg) { return Gm({ x: [-5, 5], y: [-5, 5], labels: 2, segs: [seg], aria: 'option' }); };
-          return graphMC(r, '(c) A function with ' + t('D=\\{x\\mid x\\in\\mathbb{R}\\}') + ' and ' + t('R=\\{' + k + '\\}') + '.', [
-            { html: g({ pts: [[-5, k], [5, k]], start: 'arrow', end: 'arrow' }), right: true },
-            { html: g({ pts: [[k, -5], [k, 5]], start: 'arrow', end: 'arrow' }), why: 'That is the vertical line ' + t('x=' + k) + ': its domain is ' + t('\\{' + k + '\\}') + ' and it is not a function.' },
-            { html: g({ pts: [[-3, k], [3, k]], start: 'closed', end: 'closed' }), why: 'The solid ends stop the domain at ' + t('-3') + ' and ' + t('3') + '. Every real ' + t('x') + ' must be an input — arrows at both ends.' },
-            { html: g({ pts: [[-5, -4], [5, 4]], start: 'arrow', end: 'arrow' }), why: 'A slanted line takes every output, so its range is all real numbers, not just ' + t('\\{' + k + '\\}') + '.' }],
-            'The horizontal line ' + t('y=' + k) + ' with arrows at both ends: every ' + t('x') + ' is an input, and ' + t(k) + ' is the only output.', ['Only one output value, for every possible input.'], 'horizontal line D=R, R={k}');
+        { id: 'e6c', level: 'PRG', outcome: 'RF2', make: function (r, sh) {
+          var k = sh.k, I = { x: [-5, 5], y: [-5, 5], grid: 1, labels: 2, max: 340 };
+          var target = drawing([seg([-4, k], [4, k], 'arrow', 'arrow')]);
+          var W = [{ is: drawing([seg([k, -4], [k, 4], 'arrow', 'arrow')]), code: 'rule-fn', hint: 'That is the vertical line ' + t('x=' + k) + ': its domain is ' + t('\\{' + k + '\\}') + ', its range is all real numbers, and it is not a function. The <b>output</b> is always ' + t(k) + ': ' + t('y=' + k) + '.' },
+            { is: drawing([seg([-4, -k], [4, -k], 'arrow', 'arrow')]), code: 'graph-points', hint: 'Check the height: the only output is ' + t(k) + ', so the line is ' + t('y=' + k) + '.' }];
+          var exact = K.graphExact(target, { wrong: W }), rules = K.graphRules({ fn: true, domain: '\\mathbb{R}', range: '\\{' + k + '\\}' });
+          var chk = function (resp) { var a = exact(resp); if (a.v === 'wrong' && (a.code === 'graph' || a.code === 'graph-length')) { var b = rules(resp); if (b.v === 'wrong') return b; } return a; };
+          var p = B.graph('(c) Sketch a function with ' + t('D=\\{x\\mid x\\in\\mathbb{R}\\}') + ' and ' + t('R=\\{' + k + '\\}') + '.' + padHelp(true), I, chk, target,
+            'The horizontal line ' + t('y=' + k) + ' with <b>arrows at both ends</b>: every real ' + t('x') + ' is an input, and ' + t(k) + ' is the only output.', ['Only one output value, for every possible input.', 'All real numbers as inputs: the graph never stops — arrows.'], 'horizontal line D=R, R={k}');
+          p.good = [drawing([seg([5, k], [-5, k], 'arrow', 'arrow')]), drawing([seg([0, k], [1, k], 'arrow', 'arrow')])];
+          p.bad = W.map(function (w) { return w.is; }).concat([drawing([seg([-3, k], [3, k])]), drawing([seg([-5, -4], [5, 4], 'arrow', 'arrow')]), drawing([seg([-4, k], [4, k], 'closed', 'arrow')])]);
+          return p;
         } },
         { id: 'e6c2', sub: 'c ii', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
           return intPart('(c) State both intercepts of the graph ' + t('y=' + sh.k) + ', or press <b>none</b> for one that does not exist.', [], [[0, sh.k]], { none: true },

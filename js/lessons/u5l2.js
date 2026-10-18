@@ -4,7 +4,9 @@
  * of the possible values) and changes the numbers / context. Levels: LIM BEG EMG PRG ADV MAS.
  * Outcome: RF1 by default (evaluating, solving, linear vs nonlinear, equations from situations, continuous vs
  * discrete, reading graphs); RF2 for independent/dependent variables, lists of inputs and outputs, ordered pairs and
- * mapping diagrams. */
+ * mapping diagrams.
+ * Drawing: "plot / graph the relation" -> the graph pad (js/draw.js; a Join button where joining is the student's
+ * decision), "draw a mapping diagram" -> the arrow-diagram drawer. */
 (function (root) {
   'use strict';
   var HW = root.HW, F = HW.fmt, K = HW.kit, PL = HW.poly, t = K.t, ok = K.ok, wrong = K.wrong, form = K.form;
@@ -170,6 +172,45 @@
   }
   function arrowsFrom(ins, outs, pat) { return ins.map(function (x, i) { return [x, outs[pat[i]]]; }); }
 
+  /* ---------- drawing parts (graph pad / arrow-diagram drawer, js/draw.js) ---------- */
+  var DR = HW.draw;
+  function gv(pts, pieces, join) { return { pts: pts || [], pieces: pieces || [], join: join || 'none' }; }
+  function segv(a, b, s, e) { return { v: [a, b], s: s || 'closed', e: e || 'closed' }; }
+  function feq(a, b) { return Math.abs(a - b) < 1e-9; }
+  /* the same point set is always right (K.graphExact tests "joined or not" before it tests equality) */
+  function exactChk(target, opt) {
+    var base = K.graphExact(target, opt);
+    return function (resp) { if (!DR.empty(resp) && DR.same(resp, target)) return ok(); return base(resp); };
+  }
+  function withDiag(base, diag) { return function (resp) { var res = base(resp); if (res.v === 'wrong' && !res.hint) { var h = diag(resp); if (h) return wrong(h.code || 'graph-points', h.hint || h); } return res; }; }
+  function pointsDiag(tp, xName, yName) { // a plotted point at the right x but the wrong y
+    return function (resp) {
+      var S = DR.norm(resp);
+      for (var i = 0; i < tp.length; i++) {
+        var p = tp[i], at = S.pts.filter(function (q) { return feq(q[0], p[0]); });
+        if (at.length && !at.some(function (q) { return feq(q[1], p[1]); })) return 'Check your point at ' + t(xName + '=' + num(p[0])) + ': its partner is ' + t(yName + '=' + num(p[1])) + ', so it goes at ' + t(pt(p)) + '.';
+      }
+      return null;
+    };
+  }
+  function drawPart(prompt, inp, check, key, sol, hints, text, bad) {
+    var p = K.P.graph(prompt, inp, check, key, sol, hints, text);
+    p.bad = (bad || []).filter(function (b) { return !DR.same(b, key); });
+    return p;
+  }
+  /* a context grid in the first quadrant: x 0..X (step sx), y 0..Y (step sy), labelled every lx / ly */
+  function ctxPad(X, Y, sx, sy, lx, ly, o) {
+    var nx = X / sx, ny = Y / sy;
+    return { x: [0, X], y: [0, Y], grid: sx, gridY: sy, labels: lx, labelsX: lx, labelsY: ly, snapX: sx, snapY: sy, unitX: Math.min(48, 300 / nx) / sx, unitY: Math.min(24, 320 / ny) / sy, firstQuadrant: true,
+      xName: o.xn || 'x', yName: o.yn || 'y', xTitle: o.xt, yTitle: o.yt, mode: o.mode || 'points', join: o.join, tools: o.tools };
+  }
+  function arrowPart(prompt, left, right, pairs, sol, hints, text, o) {
+    o = o || {};
+    var p = K.P.arrows(prompt, { left: left.map(String), right: right.map(String), leftTitle: o.lt, rightTitle: o.rt }, pairs, sol, hints, text, { diag: o.diag });
+    var key = p.key; p.bad = [key.slice(1), key.slice(0, -1).concat([[key[key.length - 1][0], right.map(String).filter(function (y) { return y !== key[key.length - 1][1]; })[0]]])];
+    return p;
+  }
+
   var DEP11A = [
     { ind: 'number of litres of fuel pumped', dep: 'cost of the fill-up', why: 'You pump the fuel first; the cost is worked out from the litres.' },
     { ind: 'number of weeks since a sunflower was planted', dep: 'height of the sunflower', why: 'The sunflower grows as the weeks pass — the weeks don’t depend on its height.' },
@@ -213,17 +254,22 @@
         } },
         { id: 'e1d', sub: 'd', level: 'EMG', make: function (r, sh) { return contMC(r, 'The water level falls continuously, not in jumps. What should you do with the points after you plot them?', false, 'Water keeps draining between the whole minutes (at ' + t('t=1.5') + ' there is still a volume), so the in-between points belong to the relation too.', 'barrel continuous'); } },
         { id: 'e1e', sub: 'e', level: 'EMG', make: function (r, sh) {
-          var V = sh.V, R = sh.R, T = sh.T, ly = [50, 60, 40, 30, 100].filter(function (x) { return V % x === 0 && V / x >= 3 && V / x <= 6; })[0], gy = ly / 2;
-          var base = { X: T + 1, Y: V + gy, gx: 1, gy: gy, lx: T > 7 ? 2 : 1, ly: ly, xn: 't', yn: 'V', xt: 'Time (min)', yt: 'Volume (L)', w: 180, h: 130, max: 220 };
-          var dots = [0, 1, 2, 3, 4].map(function (x) { return { x: x, y: V - R * x }; });
-          function G(extra) { var o = Object.assign({}, base, extra); return cgraph(o); }
-          var p = mc(r, 'Which graph shows this relation?', [
-            { html: G({ segs: [{ pts: [[0, V], [T, 0]], start: 'closed', end: 'closed' }], points: dots }), right: true },
-            { html: G({ points: dots }), why: 'Those are the right points, but the water drains continuously, so they should be joined with a line.' },
-            { html: G({ segs: [{ pts: [[0, 0], [T, V]], start: 'closed', end: 'closed' }], points: [0, 1, 2, 3, 4].map(function (x) { return { x: x, y: R * x }; }) }), why: 'That volume goes <b>up</b> over time. The barrel is draining, so the volume goes down.' },
-            { html: G({ segs: [{ pts: [[0, V], [T / 2, 0]], start: 'closed', end: 'closed' }], points: [0, 1, 2].filter(function (x) { return 2 * R * x <= V; }).map(function (x) { return { x: x, y: V - 2 * R * x }; }) }), why: 'Check ' + t('t=1') + ': the volume should be ' + t(V - R) + ' L, but this graph shows ' + t(V - 2 * R) + ' L.' }],
-            'The graph starts at ' + t('(0,' + V + ')') + ', falls ' + t(R) + ' L each minute and is a solid line (continuous) that reaches the ' + t('t') + '-axis at ' + t('(' + T + ',0)') + '.', ['Where does the graph start? Does it go up or down? Is it joined?'], 'barrel graph');
-          p.input.columns = 2; return p;
+          var V = sh.V, R = sh.R, T = sh.T, k = Math.ceil(T / 6), ts = [0, 1, 2, 3, 4], tp = ts.map(function (x) { return [x, V - R * x]; });
+          var target = gv([], [segv([0, V], [T, 0])]);
+          var base = exactChk(target, { wrong: [
+            { is: gv([], [segv([0, V], [4, V - 4 * R])]), code: 'graph-length', hint: 'Good start — now <b>complete</b> the graph: the water keeps draining after 4 minutes, until the barrel is empty. Where does the line reach ' + t('V=0') + '?' },
+            { is: gv([], [segv([0, V], [T, 0], 'closed', 'arrow')]), code: 'graph-noarrow', hint: 'The graph must stop when the barrel is empty, at ' + t('(' + T + ',\\ 0)') + ' — the volume can’t go below 0 L. Use a dot there, not an arrow.' },
+            { is: gv([], [segv([0, 0], [T, V])]), code: 'ctx-add', hint: 'Your volume goes <b>up</b> over time. The barrel is draining, so the volume goes down, starting from ' + t(V) + ' L.' }] });
+          var check = function (resp) {
+            var S = DR.norm(resp);
+            if (!S.pieces.length && S.pts.length && S.pts.every(function (p) { return tp.some(function (q) { return feq(p[0], q[0]) && feq(p[1], q[1]); }); })) return wrong('graph-not-joined', S.pts.length >= 5 ? 'Your points are right — now complete the graph: the water drains continuously, so join the points with a line (use <b>╱ Line</b>) and continue it until the barrel is empty.' : 'Plot all five pairs from your table, then join them with a line.');
+            return base(resp);
+          };
+          var inp = ctxPad(T + 1, V + R, 1, R, k, R * k, { xn: 't', yn: 'V', xt: 'Time, t (min)', yt: 'Volume, V (L)', mode: 'lines' });
+          return drawPart('Plot the ordered pairs from your table on the grid and complete the graph.', inp, check, target,
+            'Plot ' + tp.map(pt).map(function (s) { return t(s); }).join(', ') + '. The water drains continuously, so join them with a straight line, and continue it down to ' + t('(' + T + ',\\ 0)') + ', when the barrel is empty — the graph stops there.',
+            ['Where does the graph start? Does it go up or down?', 'The volume falls ' + t(R) + ' L every minute. When does it reach ' + t('0') + '?'], 'barrel graph',
+            [gv(tp), gv([], [segv([0, V], [4, V - 4 * R])]), gv([], [segv([0, V], [T, 0], 'closed', 'arrow')]), gv([], [segv([0, 0], [T, V])])]);
         } },
         { id: 'e1f', sub: 'f', level: 'EMG', make: function (r, sh) {
           return K.P.number('At what time is the barrel empty?', sh.T, function (v) {
@@ -241,8 +287,8 @@
         } }] },
     { num: '2', stem: function (sh) { return 'A tool shop rents out a pressure washer. The table shows the total charge ' + t('C') + ', in dollars, for ' + t('d') + ' days of rental. <b>The inputs do not go up by ' + t('1') + ' each time.</b>' + htable('d', 'C', sh.ds, sh.cs); },
       shared: function (r) {
-        var F, R; do { F = r.pick([10, 15, 20, 20, 25, 30]); R = r.pick([20, 25, 30, 30, 35, 40]); } while (F === R);
-        var ds = r.pick([[1, 2, 4, 6], [1, 2, 4, 6], [1, 3, 4, 6], [1, 2, 5, 7], [2, 3, 5, 8]]);
+        var F, R, ds; // multiples of 10 and C ≤ $200 so the plotting grid (steps of $10) stays tappable
+        do { F = r.pick([10, 20, 20, 30]); R = r.pick([20, 20, 30, 30, 40]); ds = r.pick([[1, 2, 4, 6], [1, 2, 4, 6], [1, 3, 4, 6], [1, 2, 5, 7], [2, 3, 5, 8]]); } while (F === R || F + R * ds[3] > 200);
         return { F: F, R: R, ds: ds, cs: ds.map(function (d) { return F + R * d; }) };
       },
       parts: [
@@ -261,6 +307,14 @@
             hints: ['Pick two columns and divide the change in ' + t('C') + ' by the change in ' + t('d') + '.', 'Then take the daily charges off one of the totals.'] };
         } },
         { id: 'e2b', level: 'BEG', outcome: 'RF2', make: function (r, sh) { var ps = sh.ds.map(function (d, i) { return [d, sh.cs[i]]; }); return pairsPart('Write the relation as a set of ordered pairs ' + t('(d,C)') + '.', ps, 'Each column gives a pair, input first: ' + t(ptsTex(ps)) + '. The first coordinate is ' + t('d') + ' (days, independent); the second is ' + t('C') + ' (dollars, dependent).', 'rental pairs'); } },
+        { id: 'e2c', sub: 'c', level: 'BEG', make: function (r, sh) {
+          var tp = sh.ds.map(function (d, i) { return [d, sh.cs[i]]; }), target = gv(tp), Y = sh.cs[3] + 10, X = sh.ds[3] + 1;
+          var check = withDiag(exactChk(target, { joinMatters: true, wrong: [{ is: gv(sh.ds.map(function (d) { return [d, sh.R * d]; })), code: 'ctx-no-fee', hint: 'Plot the charges from the table — they include the up-front charge of ' + t('\\$' + sh.F) + '.' }] }), pointsDiag(tp, 'd', 'C'));
+          return drawPart('Plot the four ordered pairs on the grid. Decide whether to join them (the <b>Join</b> button).', ctxPad(X, Y, 1, 10, 1, 50, { xn: 'd', yn: 'C', xt: 'Days, d', yt: 'Charge, C ($)', join: true }), check, target,
+            'Plot ' + tp.map(function (q) { return t(pt(q)); }).join(', ') + ': across to the number of days, up to the charge. The shop rents only whole days, so the points are not joined.',
+            ['Each column of the table is one point ' + t('(d,\\ C)') + ' — days across, dollars up.', 'The grid lines go up in steps of ' + t('\\$10') + '.'], 'plot rental pairs',
+            [gv(tp, [], 'curve'), gv(tp.slice(1)), gv(tp.map(function (q) { return [q[0] + 1, q[1]]; }))]);
+        } },
         { id: 'e2d', sub: 'd', level: 'EMG', make: function (r, sh) { return contMC(r, 'The shop rents only in whole days. When you plot the ordered pairs, should you join the points with a line?', true, 'Only whole days can be rented — a line would claim a charge for ' + t('2.5') + ' days, which can’t happen.', 'rental discrete'); } },
         { id: 'e2e', sub: 'e', level: 'EMG', make: function (r, sh) {
           var F = sh.F, R = sh.R, d1 = r.pick([3, 5, 7].filter(function (d) { return sh.ds.indexOf(d) < 0; })), d2 = r.pick([9, 10, 12]);
@@ -281,10 +335,22 @@
         } }] },
     { num: '3', stem: function (sh) { return 'A relation is given by the ordered pairs ' + t(ptsTex(sh.ps)) + '.'; },
       shared: function (r) {
-        var m = r.pick([2, 2, 3, 4]), b = r.pick([-3, -2, -1, 1, 1, 2, 3].filter(function (x) { return Math.abs(x) !== m; }));
+        var m = r.pick([2, 2, 3, 3]), b = r.pick([-3, -2, -1, 1, 1, 2, 3].filter(function (x) { return Math.abs(x) !== m; })); // |y| ≤ 9 keeps the grid tappable
         return { m: m, b: b, ps: [-2, -1, 0, 1, 2].map(function (x) { return [x, m * x + b]; }) };
       },
       parts: [
+        { id: 'e3b', sub: 'b', level: 'BEG', outcome: 'RF2', make: function (r, sh) {
+          var xs = sh.ps.map(function (p) { return p[0]; }), ys = sorted(sh.ps.map(function (p) { return p[1]; }));
+          return arrowPart('Draw a mapping diagram for this relation: one arrow for each ordered pair.', xs, ys, sh.ps, 'One arrow per pair, from the input (left oval ' + t('X') + ') to the output (right oval ' + t('Y') + '): ' + sh.ps.map(function (q) { return t(num(q[0]) + '\\to ' + num(q[1])); }).join(', ') + '.',
+            ['Each ordered pair ' + t('(x,\\ y)') + ' is one arrow from ' + t('x') + ' to ' + t('y') + '.'], 'mapping diagram from pairs', { lt: 'X', rt: 'Y' });
+        } },
+        { id: 'e3c', sub: 'c', level: 'BEG', outcome: 'RF2', make: function (r, sh) {
+          var ps = sh.ps, ys = ps.map(function (p) { return p[1]; }), y0 = Math.min(-2, Math.min.apply(null, ys) - 1), y1 = Math.max(2, Math.max.apply(null, ys) + 1), target = gv(ps);
+          var check = withDiag(exactChk(target, { joinMatters: true }), pointsDiag(ps, 'x', 'y'));
+          return drawPart('Graph the relation. (It is just the five ordered pairs — decide whether to join them.)', { x: [-4, 4], y: [y0, y1], labels: 2, mode: 'points', join: true, unitX: 34, unitY: Math.min(24, 320 / (y1 - y0)) }, check, target,
+            'Plot the five points ' + t(ptsTex(ps)) + '. The relation is exactly these five pairs, so the points are not joined.', ['Across to ' + t('x') + ' first, then up or down to ' + t('y') + '.', 'The relation is only these five pairs — would joining them add pairs that weren’t given?'], 'graph five pairs',
+            [gv(ps, [], 'curve'), gv(ps.map(function (p) { return [p[1], p[0]]; })), gv(ps.slice(1))]);
+        } },
         { id: 'e3d', sub: 'd', level: 'EMG', make: function (r, sh) {
           var m = sh.m, b = sh.b;
           var opts = [{ html: 'Each output is ' + rule(m, b) + '.', right: true },
@@ -323,6 +389,11 @@
       },
       parts: [
         { id: 'e4a', level: 'BEG', outcome: 'RF2', make: function (r, sh) { return pairsPart('Read the five ordered pairs off the graph.', sh.ps, 'Read across for ' + t('x') + ', then up or down for ' + t('y') + ': ' + t(ptsTex(sh.ps)) + '.', 'pairs from graph'); } },
+        { id: 'e4c', sub: 'c', level: 'BEG', outcome: 'RF2', make: function (r, sh) {
+          var xs = sh.ps.map(function (p) { return p[0]; }), ys = sorted(sh.ps.map(function (p) { return p[1]; }));
+          return arrowPart('Draw a mapping diagram for the relation in the graph.', xs, ys, sh.ps, 'Read each point as ' + t('(x,\\ y)') + ' and draw an arrow from its ' + t('x') + ' to its ' + t('y') + ': ' + sh.ps.map(function (q) { return t(num(q[0]) + '\\to ' + num(q[1])); }).join(', ') + '.',
+            ['Read the five ordered pairs off the graph first.', 'Arrows go from the inputs (' + t('x') + ') to the outputs (' + t('y') + ').'], 'mapping diagram from graph', { lt: 'X', rt: 'Y' });
+        } },
         { id: 'e4d', sub: 'd', level: 'PRG', make: function (r, sh) {
           var m = sh.m, b = sh.b, s = sh.step, d = m * s;
           var w = [{ is: PL.parse(lin(-m, b)), code: 'sign', hint: 'As ' + t('x') + ' increases, does ' + t('y') + ' go up or down? That decides the sign of the ' + t('x') + ' term.' }];
@@ -366,16 +437,17 @@
       },
       parts: [
         { id: 'e6a', level: 'EMG', outcome: 'RF2', make: function (r, sh) {
-          var xs = sh.xs, outs = sh.outs, ps = sh.ps, i0 = sh.ij[1], wrongOut = outs.filter(function (y) { return y !== sh.ys[i0]; })[0];
-          var twice = sh.ys.map(function (y, i) { return i === i0 ? y + ' ' : String(y); });
-          var opts = [
-            { html: HW.arrowDiagram(xs, outs, ps), right: true },
-            { html: HW.arrowDiagram(xs, twice, xs.map(function (x, i) { return [x, twice[i]]; })), why: 'Each output is written <b>once only</b>: both arrows should point to the same ' + t(sh.ys[i0]) + '.' },
-            { html: HW.arrowDiagram(outs, xs, ps.map(function (p) { return [p[1], p[0]]; })), why: 'The arrows go <b>from</b> the inputs (first coordinates) <b>to</b> the outputs. This diagram is backwards.' },
-            { html: HW.arrowDiagram(xs, outs, ps.map(function (p, i) { return i === i0 ? [p[0], wrongOut] : p; })), why: 'Check the pair ' + t(pt(ps[i0])) + ': ' + t(xs[i0]) + ' must point to ' + t(sh.ys[i0]) + '.' }];
-          var p = mc(r, 'Which mapping diagram shows this relation? (Each output should be written once only, in increasing order.)', opts,
-            'Inputs ' + t(seqTex(xs)) + ' on the left; outputs ' + t(seqTex(outs)) + ' on the right, each written once. One arrow per pair: ' + ps.map(function (q) { return t(q[0] + '\\to ' + q[1]); }).join(', ') + '.', ['Draw one arrow for each ordered pair, from the first coordinate to the second.'], 'mapping from pairs');
-          p.input.columns = 2; return p;
+          var xs = sh.xs, outs = sh.outs, ps = sh.ps, i0 = sh.ij[0], i1 = sh.ij[1], y0 = sh.ys[i0];
+          var diag = function (resp) {
+            var has = function (x, y) { return resp.some(function (q) { return String(q[0]) === String(x) && String(q[1]) === String(y); }); };
+            var miss = [i0, i1].filter(function (i) { return !has(xs[i], y0); });
+            if (miss.length === 1 && ps.every(function (q, i) { return i === miss[0] || has(q[0], q[1]); })) return { code: 'arrows-missing', hint: 'The pair ' + t(pt(ps[miss[0]])) + ' needs its arrow too. ' + t(y0) + ' is written once, but <b>two</b> arrows can point to it.' };
+            var bad = resp.filter(function (q) { return !ps.some(function (p) { return String(p[0]) === String(q[0]) && String(p[1]) === String(q[1]); }); })[0];
+            if (bad) { var j = xs.map(String).indexOf(String(bad[0])); if (j >= 0) return { code: 'arrows', hint: 'Check the pair ' + t(pt(ps[j])) + ': ' + t(xs[j]) + ' must point to ' + t(sh.ys[j]) + ', not ' + t(bad[1]) + '.' }; }
+            return null;
+          };
+          return arrowPart('Draw the arrows of the mapping diagram for this relation. (The outputs are written once only, in increasing order.)', xs, outs, ps,
+            'Inputs ' + t(seqTex(xs)) + ' on the left; outputs ' + t(seqTex(outs)) + ' on the right, each written once. One arrow per pair: ' + ps.map(function (q) { return t(q[0] + '\\to ' + q[1]); }).join(', ') + ' — so two arrows point to ' + t(y0) + '.', ['Draw one arrow for each ordered pair, from the first coordinate to the second.', 'Two pairs share an output: that output gets two arrows.'], 'mapping from pairs', { lt: 'X', rt: 'Y', diag: diag });
         } },
         { id: 'e6b', level: 'BEG', outcome: 'RF2', make: function (r, sh) {
           var fields = [{ label: 'Number of arrows:', name: 'Arrows' }, { label: 'Numbers in the right oval:', name: 'Right oval' }], n = sh.ps.length, o = sh.outs.length;
@@ -410,6 +482,12 @@
             if (orig(resp).v === 'correct') return wrong('not-reversed', 'Those are the original pairs. Reversing every arrow swaps the coordinates: ' + t(pt(sh.pairs[0])) + ' becomes ' + t(pt(rev[0])) + '.');
             return null;
           });
+        } },
+        { id: 'e7d', sub: 'c, diagram', level: 'EMG', outcome: 'RF2', make: function (r, sh) {
+          var rev = sh.pairs.map(function (p) { return [p[1], p[0]]; });
+          return arrowPart('Now draw the mapping diagram of the new (reversed) relation. Its inputs are the old outputs.', sh.outs, sh.ins, rev,
+            'One arrow per reversed pair: ' + rev.map(function (q) { return t(q[0] + '\\to ' + q[1]); }).join(', ') + '. The old input ' + t(sh.two) + ', which had two arrows leaving it, now has two arrows pointing <b>into</b> it.',
+            ['Every old arrow ' + t('x\\to y') + ' becomes ' + t('y\\to x') + '.'], 'reversed mapping diagram', { lt: 'Y', rt: 'X' });
         } }] },
     { num: '8', section: 'Extra practice C — Tables with no constant difference', stem: function (sh) { return 'A square patio has side length ' + t('s') + ' metres and area ' + t('A') + ' square metres.' + htable('s', 'A', sh.ss, sh.as); },
       shared: function (r) { var k = r.pick([1, 1, 2, 3]), ss = [0, 1, 2, 3, 4, 5].map(function (i) { return k + i; }); return { k: k, ss: ss, as: ss.map(function (s) { return s * s; }) }; },
@@ -452,7 +530,7 @@
             return null; }, t('s^{2}=' + A) + ', so ' + t('s=\\sqrt{' + A + '}=' + n) + ' m (a length is positive).', ['Which number times itself gives ' + t(A) + '?'], 'side from area ' + A, { after: 'm' });
         } }] },
     { num: '9', stem: function (sh) { return 'A relation is given by the table below.' + htable('x', 'y', [0, 1, 2, 3, 4], [0, 1, 2, 3, 4].map(function (x) { return x * x + sh.c; })); },
-      shared: function (r) { return { c: r.int(1, 9), X: r.int(6, 9) }; },
+      shared: function (r) { return { c: r.int(1, 5), X: r.int(6, 9) }; }, // y ≤ 21 keeps the plotting grid tappable
       parts: [
         { id: 'e9a', level: 'EMG', make: function (r, sh) { var p = diffsPart('Write out the first differences, then say whether the relation is linear.', [0, 1, 2, 3, 4], [0, 1, 2, 3, 4].map(function (x) { return x * x + sh.c; }), 'differences x^2+c'); p.prompt = 'Write out the first differences, then say whether the relation is linear.'; return p; } },
         { id: 'e9b', level: 'EMG', make: function (r, sh) {
@@ -468,6 +546,16 @@
             if (v === 2 * X + c) return { code: 'two-x', hint: t('x^{2}') + ' means ' + t('x\\times x') + ', not ' + t('2x') + '.' };
             if (v === X * X) return { code: 'no-const', hint: 'Don’t forget to add ' + t(c) + '.' };
             return null; }, t('y=' + X + '^{2}+' + c + '=' + X * X + '+' + c + '=' + (X * X + c)) + '.', ['Use ' + t('y=x^{2}+' + c) + '.'], 'evaluate x^2+c at ' + X);
+        } },
+        { id: 'e9d', sub: 'd', level: 'EMG', make: function (r, sh) {
+          var c = sh.c, xs = [0, 1, 2, 3, 4], tp = xs.map(function (x) { return [x, x * x + c]; }), target = gv(tp, [], 'curve'), Y = 16 + c + 1;
+          var check = withDiag(exactChk(target, { joinMatters: true, wrong: [
+            { is: gv(xs.map(function (x) { return [x, x * x]; }), [], 'curve'), code: 'no-const', hint: 'Use the outputs from the table: each one is ' + t(c) + ' more than ' + t('x^{2}') + ', so the curve starts at ' + t('(0,\\ ' + c + ')') + '.' },
+            { is: gv(xs.map(function (x) { return [x, 2 * x + c]; }), [], 'curve'), code: 'two-x', hint: 'Those points lie on a straight line. Use the outputs from the table: ' + t(seqTex(tp.map(function (p) { return p[1]; }))) + '.' }] }), pointsDiag(tp, 'x', 'y'));
+          return drawPart('Plot the five ordered pairs from the table and join them with a smooth curve (plot the points, then press <b>Join</b>).', ctxPad(5, Y, 1, 1, 1, 5, { xn: 'x', yn: 'y', join: true }), check, target,
+            'Plot ' + tp.map(function (p) { return t(pt(p)); }).join(', ') + ' and join them with a smooth curve: it bends upward, because the first differences ' + t(seqTex([1, 3, 5, 7])) + ' keep growing.',
+            ['Each column of the table is one point.', 'Then press <b>Join</b> to draw the smooth curve through them.'], 'plot x^2+c and join',
+            [gv(tp), gv(xs.map(function (x) { return [x, x * x]; }), [], 'curve'), gv(tp.slice(1), [], 'curve')]);
         } },
         { id: 'e9e', sub: 'e', level: 'PRG', make: function (r, sh) {
           var c = sh.c, k = r.pick([5, 6, 7, 8, 9].filter(function (x) { return x !== sh.X; })), Y = k * k + c;
@@ -568,6 +656,12 @@
             wrong: [{ is: PL.parse('\\frac{1}{' + S + '}t'), code: 'var-swap', hint: 'That gives tables from chairs. Each table seats ' + t(S) + ', so the chairs are ' + t(S) + ' times the tables.' }, { is: PL.parse('t+' + S), code: 'diag', hint: 'Check ' + t('t=2') + ': two tables need ' + t(2 * S) + ' chairs. Multiply.' }] },
             'Each table seats ' + t(S) + ': ' + t('c=' + S + 't') + '. (Check: ' + t('t=3') + ' gives ' + t(3 * S) + ' chairs ✓.) The correct pairs are ' + t(ptsTex([1, 2, 3, 4].map(function (k) { return [k, S * k]; }))) + '.', ['How many chairs do 3 tables need?'], 'chairs equation');
           return p;
+        } },
+        { id: 'e14c', level: 'BEG', outcome: 'RF2', make: function (r, sh) {
+          var S = sh.S, ks = [1, 2, 3, 4], cs = ks.map(function (k) { return S * k; }), sp = ks.map(function (k) { return [S * k, k]; });
+          return arrowPart('Draw the mapping diagram that <i>would</i> match the student’s ordered pairs ' + t(ptsTex(sp)) + '. The first coordinates go in the left oval.', cs, ks, sp,
+            'The student’s pairs start with the number of chairs, so the arrows run from ' + t('c') + ' to ' + t('t') + ': ' + sp.map(function (q) { return t(q[0] + '\\to ' + q[1]); }).join(', ') + '. That diagram represents ' + t('t=\\dfrac{c}{' + S + '}') + ' — tables found from chairs, the reverse of the real relation.',
+            ['Each pair ' + t('(a,\\ b)') + ' is an arrow from ' + t('a') + ' (left) to ' + t('b') + ' (right).'], 'student mapping diagram', { lt: 'c', rt: 't' });
         } }] },
     { num: '15', section: 'Extra practice F — A stretch, and two for the test', stem: function (sh) {
         var X = sh.T + 1, Y = Math.ceil(sh.D + 0.5);

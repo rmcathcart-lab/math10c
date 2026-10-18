@@ -871,15 +871,15 @@
         },
         shared: function (r) { var a = r.pick([2, 3, 3, 4]), y1 = r.int(-4, -1), y2 = r.int(1, 4), c = r.pick(nz(-4, 4)); return { a: a, y1: y1, y2: y2, c: c }; },
         parts: [
-          { id: 'e14r', level: 'BEG', make: function (r, sh) {
+          { id: 'e14r', sub: 'a', level: 'BEG', make: function (r, sh) {
             var R1 = bld('y', sh.y1, sh.y2);
             return setPart('(a) State the range of Graph 1.', R1, { v: 'y', before: t('R='), other: bld('x', -sh.a, sh.a), otherName: 'domain', bad: [bld('y', -sh.a, sh.a), all('y')].filter(function (w) { return !S.eq(S.parse(w).set, S.parse(R1).set); }) },
               'Graph 1 rises from ' + t(ptT([-sh.a, sh.y1])) + ' to ' + t(ptT([sh.a, sh.y2])) + ', both ends solid: ' + t('R=' + R1) + '.',
               ['Read the graph from its lowest point to its highest point.'], 'range of Graph 1');
           } },
-          { id: 'e14s', level: 'PRG', make: function (r, sh) {
+          { id: 'e14s', sub: 'a, sketch', level: 'PRG', make: function (r, sh) {
             var Dt = bld('x', -sh.a, sh.a), R1 = bld('y', sh.y1, sh.y2), r1 = Dr.setParts(S.parse(R1).set), g1 = drw([seg([-sh.a, sh.y1], [sh.a, sh.y2])]);
-            var p = sketchPart('(a) Now sketch <b>Graph 2</b>: a relation with the same domain ' + t(Dt) + ' but a <b>different range</b> from Graph 1.', { domain: Dt, custom: function (v) {
+            var p = sketchPart('Now sketch <b>Graph 2</b>: a relation with the same domain ' + t(Dt) + ' but a <b>different range</b> from Graph 1.', { domain: Dt, custom: function (v) {
                 return Dr.partsSame(Dr.range(v).parts, r1) ? { code: 'sk-same-range', hint: 'Your graph has the same range as Graph 1, ' + t(R1) + '. Keep the left and right ends at ' + t('x=' + (-sh.a)) + ' and ' + t('x=' + sh.a) + ', but change how low or high it goes.' } : null; } },
               drw([seg([-sh.a, sh.c], [sh.a, sh.c])]),
               [g1, drw([seg([sh.a, sh.y1], [-sh.a, sh.y2])]), drw([seg([-sh.a, sh.c], [sh.a, sh.c], 'closed', 'open')]), drw([seg([-sh.a - 1, sh.c], [sh.a, sh.c])])],
@@ -887,7 +887,7 @@
               ['Keep the leftmost and rightmost points at ' + t('x=' + (-sh.a)) + ' and ' + t('x=' + sh.a) + ' with solid dots.', 'Change the heights: a flat segment, or one that goes higher or lower than Graph 1.'], 'sketch same domain, different range');
             return p;
           } },
-          { id: 'e14b', level: 'EMG', make: function (r, sh) {
+          { id: 'e14b', sub: 'b', level: 'EMG', make: function (r, sh) {
             var tv = r.chance(0.5), ex = ' In (a) Graph 1 and, for example, the flat segment at ' + t('y=' + sh.c) + ' share the domain ' + t(bld('x', -sh.a, sh.a)) + ' but have the different ranges ' + t(bld('y', sh.y1, sh.y2)) + ' and ' + t('\\{' + sh.c + '\\}') + '. Likewise two segments can share the range ' + t(bld('y', -1, 2)) + ' with different domains, e.g. from ' + t('(0,\\ -1)') + ' to ' + t('(3,\\ 2)') + ' and from ' + t('(-5,\\ 2)') + ' to ' + t('(-2,\\ -1)') + '.';
             if (tv) return B.tf(r, '(b) True or false: “Two relations can have the same domain but different ranges.”', true, 'Look at part (a): Graph 1 and your Graph 2 have the same domain but different ranges.',
               '<b>True.</b>' + ex, ['Do Graph 1 and your Graph 2 have the same range?'], 'same domain, different ranges? (true)');

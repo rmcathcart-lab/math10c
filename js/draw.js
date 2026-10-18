@@ -315,8 +315,10 @@
       if (S.length !== T.length) return wrong('story-speed', 'The ups and downs are right — now show the change of speed: ' + T.map(function (p) { return p.text; }).filter(Boolean).join(', then ') + '.');
       for (var j = 0; j < T.length; j++) {
         var a = S[j], b = T[j];
-        if (b.x0 != null && !near(a.x0, b.x0) || b.x1 != null && !near(a.x1, b.x1)) return wrong('story-time', 'Stage ' + (j + 1) + (b.text ? ' (' + b.text + ')' : '') + ' should run from ' + t(nT(b.x0)) + ' to ' + t(nT(b.x1)) + (spec.xUnit ? ' ' + spec.xUnit : '') + '.');
-        if (b.y0 != null && !near(a.y0, b.y0) || b.y1 != null && !near(a.y1, b.y1)) return wrong('story-height', 'Stage ' + (j + 1) + (b.text ? ' (' + b.text + ')' : '') + ' should go from ' + t(nT(b.y0)) + ' to ' + t(nT(b.y1)) + (spec.yUnit ? ' ' + spec.yUnit : '') + '.');
+        var stg = 'Stage ' + (j + 1) + (b.text ? ' (' + b.text + ')' : ''), xu = spec.xUnit ? ' ' + spec.xUnit : '', yu = spec.yUnit ? ' ' + spec.yUnit : '';
+        var span = function (lo, hi, u, verbA, verbB) { return lo != null && hi != null ? verbA + ' ' + t(nT(lo)) + ' to ' + t(nT(hi)) + u : lo != null ? verbB[0] + ' ' + t(nT(lo)) + u : verbB[1] + ' ' + t(nT(hi)) + u; };
+        if (b.x0 != null && !near(a.x0, b.x0) || b.x1 != null && !near(a.x1, b.x1)) return wrong('story-time', stg + ' should ' + span(b.x0, b.x1, xu, 'run from', ['start at', 'end at']) + '.');
+        if (b.y0 != null && !near(a.y0, b.y0) || b.y1 != null && !near(a.y1, b.y1)) return wrong('story-height', stg + ' should ' + span(b.y0, b.y1, yu, 'go from', ['start at', 'end at']) + '.');
         if (b.steeper != null && !(Math.abs(a.m) > Math.abs(S[b.steeper].m) + 1e-9)) return wrong('story-steep', 'Stage ' + (j + 1) + (b.text ? ' (' + b.text + ')' : '') + ' should be <b>steeper</b> than stage ' + (b.steeper + 1) + ' — faster means steeper.');
       }
       if (spec.end != null && !near(S[S.length - 1].y1, spec.end)) return wrong('story-end', spec.endHint || 'Check where the graph ends.');
@@ -486,7 +488,7 @@
     if (opt.join) { joinBtn = btn('Join: off', 'dr-tool', 'Join the points with a smooth curve'); joinBtn.addEventListener('click', function () { if (disabled) return; push(); state.join = state.join === 'none' ? 'curve' : 'none'; render(); }); bar.appendChild(joinBtn); }
     var undoB = btn('Undo', 'dr-act'), clearB = btn('Clear', 'dr-act');
     undoB.addEventListener('click', function () { if (disabled || !hist.length) return; state = JSON.parse(hist.pop()); chain = null; render(); });
-    clearB.addEventListener('click', function () { if (disabled) return; push(); state = { pts: [], pieces: [], join: state.join }; chain = null; render(); });
+    clearB.addEventListener('click', function () { if (disabled) return; push(); state = { pts: [], pieces: [], join: 'none' }; chain = null; render(); });
     bar.appendChild(undoB); bar.appendChild(clearB);
     wrap.appendChild(bar); wrap.appendChild(board); wrap.appendChild(help);
     function setTool(k) { finishChain(); tool = k; Object.keys(toolBtns).forEach(function (n) { toolBtns[n].classList.toggle('on', n === k); }); help.innerHTML = opt.help || tips[k]; render(); }

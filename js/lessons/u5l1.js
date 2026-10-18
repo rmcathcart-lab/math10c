@@ -2,7 +2,8 @@
  * Assignment questions 1–12 (u5_L01.tex) and the Lesson 1 Extra Practice (u5_EP01.tex).
  * Every part is a generator: the booklet's numbers are one possible version; new versions keep the same structure
  * (same quadrants and axis points, same kind of growing pattern, same kind of decimal rate, …).
- * Conversions: "plot the data" -> choose the right graph (MC with small graphs); "explain / describe" -> MC with a
+ * Conversions: "plot / represent the data" -> the graph pad (js/draw.js): points with a Join button where joining is
+ * the student's decision (checked with joinMatters), lines for "join them"; "explain / describe" -> MC with a
  * hint for each misconception; tables -> number boxes; equations -> polynomial answer with the left side given.
  * Levels: LIM BEG EMG PRG ADV MAS (LEVEL_RUBRIC.md). */
 (function (root) {
@@ -1043,16 +1044,23 @@
           ts.map(function (x) { return t('h=' + sh.H0 + '-' + sh.r + '(' + x + ')=' + dec(sh.h(x))); }).join('<br>'), ['Each hour the candle loses ' + sh.r + ' cm.'], 'candle table');
       } },
       { id: 'e5b', level: 'BEG', make: function (r, sh) {
-        var ly = sh.H0 > 24 ? 6 : 4, ym = Math.ceil(sh.H0 / ly) * ly + (sh.H0 % ly ? 0 : ly / 2), xm = sh.T + sh.st;
-        var G = function (pts, line) { return HW.graph({ x: [0, xm], y: [Math.min(0, line && line.length ? Math.min(line[0][1], line[line.length - 1][1]) : 0), ym], grid: sh.st, gridY: ly / 2, labels: 1, labelsX: sh.st, labelsY: ly, unitX: 110 / xm, unitY: 100 / ym, xName: 't', yName: 'h', firstQuadrant: true, max: 200,
-          points: pts.map(function (p) { return { x: p[0], y: p[1] }; }), segs: line ? [{ pts: line }] : [], aria: 'candle graph' }); };
-        var good = sh.ts.map(function (x) { return [x, sh.h(x)]; });
-        return mcCols(KP.mc(r, 'Plot the five points from the table and join them. Which graph is correct?', [
-          { html: G(good, [[0, sh.H0], [sh.T, 0]]), right: true },
-          { html: G(good, null), why: 'Time and height are continuous: the candle has a height at every moment, so join the points.' },
-          { html: G(good, [[0, sh.H0], [xm, sh.h(xm)]]), why: 'Once the height reaches 0 the candle is gone — the graph must stop at ' + t('t=' + sh.T) + '.' },
-          { html: G(sh.ts.map(function (x) { return [x, sh.r * x]; }), [[0, 0], [sh.T, sh.H0]]), why: 'The candle starts at ' + sh.H0 + ' cm and gets shorter. This graph shows how much has burned.' }],
-          'Plot ' + good.map(function (p) { return t(pt([p[0], dec(p[1])])); }).join(', ') + ' and join them: a straight line falling from ' + t(pt([0, sh.H0])) + ' to ' + t(pt([sh.T, 0])) + '.', ['Where does the graph start? Where must it stop?'], 'candle graph'));
+        var H0 = sh.H0, T = sh.T, st = sh.st, q = H0 / 4, dy = [1, 2, 3, 4, 5, 6, 8, 9, 1.5, 2.5, 4.5, 7.5].filter(function (d) { return feq(q / d, Math.round(q / d)) && H0 / d <= 16 && H0 / d >= 8; })[0] || q;
+        var good = sh.ts.map(function (x) { return [x, sh.h(x)]; }), target = gv([], [segv([0, H0], [T, 0])]);
+        var base = exactChk(target, { wrong: [
+          { is: gv([], [segv([0, H0], [T, 0], 'closed', 'arrow')]), code: 'graph-noarrow', hint: 'Once the height reaches ' + t('0') + ' the candle is gone — the graph must <b>stop</b> at ' + t(pt([T, 0])) + ' (a dot, not an arrow).' },
+          { is: gv([], [segv([0, 0], [T, H0])]), code: 'sign-rate', hint: 'The candle starts at ' + t(H0) + ' cm and gets <b>shorter</b>. Your graph shows how much has burned.' },
+          { is: gv([], [segv([0, H0], [sh.ts[3], sh.h(sh.ts[3])])]), code: 'graph-length', hint: 'Join all five points — the last one is ' + t(pt([T, 0])) + '.' }] });
+        var check = function (resp) {
+          var S = DR.norm(resp);
+          if (!S.pieces.length && S.join === 'none' && DR.same(S, gv(good))) return wrong('graph-not-joined', 'Your points are right — now join them: the candle has a height at every moment (time and height are continuous).');
+          return base(resp);
+        };
+        var inp = { x: [0, T + st], y: [0, H0 + dy], grid: st, gridY: dy, labels: 1, labelsX: st, labelsY: dy * (H0 / dy > 10 ? 2 : 1), snapX: st, snapY: dy, unitX: 300 / (T + st), unitY: Math.min(22, 300 / (H0 + dy)),
+          xName: 't', yName: 'h', xTitle: 'Time, t (h)', yTitle: 'Height, h (cm)', firstQuadrant: true, join: true };
+        return drawPart('Plot the five points from the table and join them.', inp, check, target,
+          'Plot ' + good.map(function (p) { return t(pt([p[0], dec(p[1])])); }).join(', ') + ' and join them: a straight line falling from ' + t(pt([0, H0])) + ' to ' + t(pt([T, 0])) + '. It stops there — the candle is gone.',
+          ['Where does the graph start? Where must it stop?', 'Use <b>╱ Line</b> from the first point to the last, or plot the points and press <b>Join</b>.'], 'candle graph',
+          [gv(good), gv([], [segv([0, H0], [T, 0], 'closed', 'arrow')]), gv([], [segv([0, 0], [T, H0])])]);
       } },
       { id: 'e5c', level: 'BEG', make: function (r, sh) {
         var g = HW.graph({ x: [0, sh.T + 1], y: [0, sh.H0 + 2], grid: 1, gridY: 1, labels: 1, labelsX: 2, labelsY: 2, unitX: 300 / (sh.T + 1), unitY: 260 / (sh.H0 + 2), xName: 't', yName: 'h', firstQuadrant: true, xTitle: 'Time, t (h)', yTitle: 'Height, h (cm)', max: 360,
@@ -1091,16 +1099,27 @@
   X.push({ num: '6', stem: function (sh) {
       return 'A tile pattern starts at Figure 0. Its table of values is shown. Plot the data on a grid — the horizontal axis must start at ' + t('n=0') + '.' + HW.valueTable([['\\(n\\)', 0, 1, 2, 3, 4, 5], ['\\(T\\)'].concat([0, 1, 2, 3, 4, 5].map(sh.T))]);
     },
-    shared: function (r) { var a = r.pick([2, 3, 3, 4]), c = r.int(1, 5); return { a: a, c: c, T: function (n) { return a * n + c; }, q: r.int(2, 5) }; },
+    shared: function (r) { var a = r.pick([2, 2, 3, 3]), c = r.int(1, 3); return { a: a, c: c, T: function (n) { return a * n + c; }, q: r.int(2, 5) }; }, // T(5) ≤ 18 keeps the grid tappable
     parts: [
-      { id: 'e6a', level: 'BEG', make: function (r, sh) {
+      { id: 'e6p', sub: 'plot', level: 'BEG', make: function (r, sh) {
+        var ns = [0, 1, 2, 3, 4, 5], tp = ns.map(function (n) { return [n, sh.T(n)]; }), target = gv(tp), ym = sh.T(5) + 1;
+        var base = exactChk(target, { joinMatters: true, wrong: [
+          { is: gv(ns.map(function (n) { return [n + 1, sh.T(n)]; })), code: 'axis-start', hint: 'The horizontal axis starts at ' + t('n=0') + ': Figure 0 goes on the vertical axis, at ' + t(pt([0, sh.c])) + '.' },
+          { is: gv(tp.slice(1)), code: 'graph-missing', hint: 'Don’t forget Figure 0: its point ' + t(pt([0, sh.c])) + ' sits on the vertical axis.' }] }), diag = pointsDiag(tp, 'n', 'T');
+        var check = function (resp) { var res = base(resp); if (res.v === 'wrong' && !res.hint) { var h = diag(resp); if (h) return wrong('graph-points', h); } return res; };
+        return drawPart('Plot the data from the table on the grid (the horizontal axis starts at ' + t('n=0') + '). Decide whether to join the points.', patternPad(7, ym, 1, { xName: 'n', yName: 'T' }), check, target,
+          'Plot ' + tp.map(function (p) { return t(pt(p)); }).join(', ') + '. Figure 0 is on the vertical axis. The points stay separate: there is no Figure 2.5.',
+          ['Figure 0 is a point too: ' + t('(0,\\ ' + sh.c + ')') + '.', 'Is there a Figure 2.5? If not, don’t join the points.'], 'plot figure-0 table',
+          [gv(tp, [], 'curve'), gv(tp.slice(1)), gv(ns.map(function (n) { return [n + 1, sh.T(n)]; }))]);
+      } },
+      { id: 'e6a', sub: 'a', level: 'BEG', make: function (r, sh) {
         return pairPart('Give the coordinates of the plotted point for Figure ' + t(sh.q) + '.', sh.q, sh.T(sh.q), null, 'Figure ' + sh.q + ' has ' + t(sh.T(sh.q)) + ' tiles (from the table, or ' + t(sh.a + '(' + sh.q + ')+' + sh.c) + '): ' + t(pt([sh.q, sh.T(sh.q)])) + '.', ['Figure number first, then the number of tiles.'], 'point fig ' + sh.q);
       } },
-      { id: 'e6b', level: 'BEG', make: function (r, sh) {
+      { id: 'e6b', sub: 'b', level: 'BEG', make: function (r, sh) {
         return pairPart('One plotted point sits on the vertical axis. Give its coordinates.', 0, sh.c, function (x, y) { return feq(x, sh.c) && feq(y, 0) ? { code: 'pair-swap', hint: 'A point on the vertical axis has ' + t('x=0') + '. Figure number first.' } : null; },
           t(pt([0, sh.c])) + ': Figure 0, the ' + sh.c + ' starting tile' + (sh.c > 1 ? 's' : '') + ' before anything is added.', ['Which figure number puts a point on the vertical axis?'], 'point on vertical axis');
       } },
-      { id: 'e6c', level: 'EMG', make: function (r, sh) {
+      { id: 'e6c', sub: 'c', level: 'EMG', make: function (r, sh) {
         return joinMC(r, 'Your six points lie in a straight row. Should you draw the line through them?', true, 'there is no Figure 2.5 — the figure number and the tile count are whole numbers, even though the points are in a straight row', 'collinear but discrete');
       } }] });
 
@@ -1245,7 +1264,7 @@
         HW.graph({ x: [0, 6], y: [0, ym], grid: 1, gridY: 2, labels: 1, labelsX: 1, labelsY: 4, unitX: 44, unitY: 230 / ym, xName: 'n', yName: 'W', firstQuadrant: true, max: 320,
           points: [1, 2, 3, 4, 5].map(function (n) { return { x: n, y: W(n) }; }).concat([{ x: sh.h, y: W(sh.h), open: true, label: '(' + sh.h + ', ' + W(sh.h) + ')' }]), segs: [{ pts: [[1, W(1)], [5, W(5)]] }], aria: 'student graph with joined points' });
     },
-    shared: function (r) { var a = r.pick([2, 4, 4, 6]), b = r.int(1, 6); return { a: a, b: b, h: r.pick([1.5, 2.5, 2.5, 3.5]) }; },
+    shared: function (r) { var a = r.pick([2, 4, 4]), b = r.pick([2, 4, 6]); return { a: a, b: b, h: r.pick([1.5, 2.5, 2.5, 3.5]) }; }, // even counts: the grid goes up in 2s
     parts: [
       { id: 'e13a', level: 'EMG', make: function (r, sh) {
         var v = sh.a * sh.h + sh.b;
@@ -1273,13 +1292,17 @@
           t(sh.a + 'n=' + (v - sh.b)) + ', ' + t('n=' + sh.h) + '. A count of ' + v + ' could only come from Figure ' + sh.h + ', which does not exist — this backs up both reasons.', ['Subtract, then divide.'], 'solve for half figure', { before: t('n=') });
       } },
       { id: 'e13d', level: 'EMG', make: function (r, sh) {
-        var W = function (n) { return sh.a * n + sh.b; }, ns = [1, 2, 3, 4, 5], o = { xName: 'n', yName: 'W' };
-        return mcCols(KP.mc(r, 'Which graph shows what the finished graph should look like?', [
-          { html: patternGraph(ns.map(function (n) { return [n, W(n)]; }), o), right: true },
-          { html: patternGraph(ns.map(function (n) { return [n, W(n)]; }), Object.assign({ join: [[1, W(1)], [5, W(5)]] }, o)), why: 'That is the student’s graph. The variables are discrete, so the points stay separate.' },
-          { html: patternGraph(ns.map(function (n) { return [n, W(n)]; }).concat([[sh.h, W(sh.h)]]), o), why: 'There is an extra point at Figure ' + sh.h + ', which doesn’t exist.' },
-          { html: patternGraph(ns.map(function (n) { return [n, sh.a * n]; }), o), why: 'Check Figure 1: it has ' + W(1) + ' tiles.' }],
-          '<b>Five separate dots</b> at ' + ns.map(function (n) { return t(pt([n, W(n)])); }).join(', ') + ', with nothing drawn between them. Rule: leave the points unconnected when the variables are discrete.', ['Discrete variables: what happens between the points?'], 'correct discrete graph'));
+        var W = function (n) { return sh.a * n + sh.b; }, ns = [1, 2, 3, 4, 5], tp = ns.map(function (n) { return [n, W(n)]; }), target = gv(tp), ym = Math.ceil((W(5) + 2) / 4) * 4;
+        var base = exactChk(target, { joinMatters: true, wrong: [{ is: gv(ns.map(function (n) { return [n, sh.a * n]; })), code: 'no-constant', hint: 'Check Figure 1: ' + t('W=' + lin(sh.a, sh.b, 'n')) + ' gives ' + W(1) + ' tiles.' }] });
+        var check = function (resp) {
+          var res = base(resp);
+          if (res.v === 'wrong' && res.code === 'graph-joined') return wrong('graph-joined', 'Your points are right, but that is the student’s mistake again: there is no Figure ' + sh.h + ', so the points must stay <b>separate</b>.');
+          if (res.v === 'wrong' && res.code === 'graph-lines') return wrong('graph-lines', 'No lines at all: the variables are discrete, so the finished graph is just the separate points.');
+          return res;
+        };
+        return drawPart('Draw what the finished graph should look like instead. (Use <b>Join</b> only if the points should be joined.)', patternPad(6, ym, 2, { xName: 'n', yName: 'W' }), check, target,
+          '<b>Five separate dots</b> at ' + tp.map(function (p) { return t(pt(p)); }).join(', ') + ', with nothing drawn between them. Rule: leave the points unconnected when the variables are discrete.', ['Discrete variables: what happens between the points?'], 'correct discrete graph',
+          [gv(tp, [], 'curve'), gv([], [segv(tp[0], tp[4])]), gv(ns.map(function (n) { return [n, sh.a * n]; }))]);
       } }] });
   X.push({ num: '14', stem: function (sh) {
       return '<i>(Error analysis)</i> Asked to write down the coordinates of the marked point ' + t('P') + ', a student wrote ' + t('P' + pt([sh.P[1], sh.P[0]])) + '. The point they actually described is marked ' + t('Q') + '.<br>' +

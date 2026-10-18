@@ -5,8 +5,9 @@
  * numbers are among the possible values.
  * Answer formats follow the booklet's wording: "the value of the intercept" → one number (a point gets a nudge);
  * "write each intercept point as an ordered pair" → two boxes (x-intercept points, y-intercept points) with a
- * "none" key (a bare value gets a nudge). Sketches become multiple choice between small graphs (Q6b, Q7a) or the
- * equation of the line (Q7b–d). Explain-questions become multiple choice with misconception hints.
+ * "none" key (a bare value gets a nudge). Sketches and plots use the graph pad (js/draw.js): Q6b plot + Join,
+ * Q7a–d sketch the line (arrows), EP 9a plot and join; Q7b–d also ask for the equation of the line.
+ * Explain-questions become multiple choice with misconception hints.
  * Levels: LIM BEG EMG PRG ADV MAS. */
 (function (root) {
   'use strict';
@@ -218,6 +219,24 @@
   function mcPart(r, prompt, opts, sol, hints, text, keepOrder) { return B.mc(r, prompt, opts, sol, hints, text, keepOrder); }
   function graphMC(r, prompt, opts, sol, hints, text) { var p = B.mc(r, prompt, opts, sol, hints, text); p.input.columns = 2; return p; }
 
+  /* ---------------- drawing parts (graph pad, js/draw.js) ---------------- */
+  var DR = HW.draw;
+  function gv(pts, pieces, join) { return { pts: pts || [], pieces: pieces || [], join: join || 'none' }; }
+  function segv(a, b, s, e) { return { v: [a, b], s: s || 'closed', e: e || 'closed' }; }
+  function lineV(p, q) { return gv([], [segv(p, q, 'arrow', 'arrow')]); }          // the whole line through p and q
+  /* the same point set is always right (K.graphExact tests "joined or not" before it tests equality) */
+  function exactChk(target, opt) {
+    var base = K.graphExact(target, opt);
+    return function (resp) { if (!DR.empty(resp) && DR.same(resp, target)) return ok(); return base(resp); };
+  }
+  function drawPart(prompt, inp, check, key, sol, hints, text, bad) {
+    var p = B.graph(prompt, inp, check, key, sol, hints, text);
+    p.bad = (bad || []).filter(function (b) { return !DR.same(b, key); });
+    return p;
+  }
+  var LINEPAD = { x: [-6, 6], y: [-6, 6], labels: 2, defaultEnd: 'arrow', tools: ['line', 'ends'] };
+  var LINEHELP = 'Use <b>╱ Line</b>: tap two points on the line — its ends start as arrows (a line goes on forever).';
+
   /* ---------------- equations of lines ---------------- */
   var EQKEYS = (function () {
     var d = function (n) { return { label: String(n), tex: String(n), plain: String(n) }; };
@@ -346,7 +365,7 @@
     return { T: T, s: s, rate: rate, V0: rate * T, td: td, te: te, Vr: rate * (T - te), V: function (x) { return rate * (T - x); }, eq: 'V=' + F(rate * T) + '-' + rate + 't' };
   }
   function ball(r) {
-    var Lq = r.pick([[7, 1], [7, 1], [5, 1], [6, 2], [8, 2]]), L = Lq[0], q = Lq[1];
+    var Lq = r.pick([[7, 1], [7, 1], [5, 1], [6, 2], [5, 3]]), L = Lq[0], q = Lq[1]; // max height ≤ 80 m keeps the plotting grid (steps of 5 m) tappable
     var b = 5 * (L - q), c = 5 * L * q, v = (L - q) / 2;
     var h = function (x) { return cl(-5 * x * x + b * x + c); };
     var halves = range(v, L - 1).map(function (k) { return k + 0.5; });
@@ -615,14 +634,27 @@
             ['Substitute each value of ' + t('t') + '. Square ' + t('t') + ' first, then multiply by ' + t('-5') + '.', 'The heights should rise and then fall symmetrically.'], 'ball table');
           } },
           { id: '6b2', sub: 'b, graph', level: 'EMG', make: function (r, o) {
-            var top = Math.ceil((o.hmax + 6) / 20) * 20, L = o.L, h0 = o.c, hm = o.hmax;
-            return graphMC(r, 'Which graph shows ' + t('h') + ' versus ' + t('t') + ', joining the points of your table with a smooth curve?', [
-              { html: ballGraph(o.h, L, top), right: true },
-              { html: ballGraph(function (x) { return -5 * x * (x - L); }, L, top), why: 'At ' + t('t=0') + ' the ball is on the platform, ' + t(h0) + ' m above the ground — the graph should start at ' + t('(0,\\ ' + h0 + ')') + ', not at the origin.' },
-              { html: ballGraph(function (x) { return h0 - h0 * x / L; }, L, top), why: 'Your table goes up to ' + t(hm) + ' m and back down, so the points are not on a straight line. Join them with a smooth curve.' },
-              { html: ballGraph(function (x) { return o.h(L - x); }, L, top), why: 'This one starts on the ground and ends on the platform. At ' + t('t=0') + ' the ball is at ' + t(h0) + ' m, and it lands (' + t('h=0') + ') at ' + t('t=' + L) + '.' }],
-              'Plot the table — ' + t('(0,\\ ' + h0 + ')') + ', ' + t('(' + o.v + ',\\ ' + hm + ')') + ', …, ' + t('(' + L + ',\\ 0)') + ' — and join them with a smooth curve: it starts at the platform height, rises to ' + t(hm) + ' m at ' + t('t=' + o.v) + ', and falls to the ground at ' + t('t=' + L) + '.',
-              ['Where is the ball at ' + t('t=0') + '? Where is it at ' + t('t=' + L) + '? Is the path straight?'], 'ball graph');
+            var top = o.hmax + 5, L = o.L, h0 = o.c, hm = o.hmax, ts = range(0, L), tp = ts.map(function (x) { return [x, o.h(x)]; }), target = gv(tp, [], 'curve');
+            var base = exactChk(target, { joinMatters: true, wrong: [
+              { is: gv(ts.map(function (x) { return [x, o.h(L - x)]; }), [], 'curve'), code: 'graph', hint: 'Your graph starts on the ground and ends on the platform. At ' + t('t=0') + ' the ball is at ' + t(h0) + ' m, and it lands (' + t('h=0') + ') at ' + t('t=' + L) + '.' }] });
+            var check = function (resp) {
+              var res = base(resp); if (res.v !== 'wrong' || res.hint) return res;
+              var S = DR.norm(resp);
+              if (S.pieces.length && !S.pts.length && S.join === 'none') return wrong('graph-lines', 'Plot the points from your table first, then press <b>Join</b> to join them with a smooth curve.');
+              if (S.pts.some(function (p) { return same(p[0], 0) && same(p[1], 0); })) return wrong('graph', 'At ' + t('t=0') + ' the ball is on the platform, ' + t(h0) + ' m above the ground — the graph starts at ' + t('(0,\\ ' + h0 + ')') + ', not at the origin.');
+              for (var i = 0; i < tp.length; i++) {
+                var p = tp[i], at = S.pts.filter(function (q) { return same(q[0], p[0]); });
+                if (!at.length) return wrong('graph-missing', 'Plot a point for every value of ' + t('t') + ' in your table — ' + t('t=' + p[0]) + ' is missing.');
+                if (!at.some(function (q) { return same(q[1], p[1]); })) return wrong('graph-points', 'Check your point at ' + t('t=' + p[0]) + ': ' + t('h=-5(' + p[0] + ')^{2}+' + o.b + '(' + p[0] + ')+' + o.c + '=' + p[1]) + '.');
+              }
+              return wrong('graph-extra', 'Plot only the points from your table (one for each whole second from ' + t('0') + ' to ' + t(L) + ').');
+            };
+            var inp = { x: [0, L + 1], y: [0, top], grid: 1, gridY: 5, labels: 1, labelsX: 1, labelsY: top > 60 ? 20 : 10, snapX: 1, snapY: 5, unitX: Math.min(40, 300 / (L + 1)), unitY: Math.min(4.6, 330 / top), firstQuadrant: true,
+              xName: 't', yName: 'h', xTitle: 'Time, t (s)', yTitle: 'Height, h (m)', mode: 'points', join: true };
+            return drawPart('Plot the points of your table on the grid and join them with a smooth curve (plot the points, then press <b>Join</b>).', inp, check, target,
+              'Plot ' + tp.map(function (p) { return t(ptT(p)); }).join(', ') + ' and join them with a smooth curve: it starts at the platform height, rises to ' + t(hm) + ' m at ' + t('t=' + o.v) + ', and falls to the ground at ' + t('t=' + L) + '.',
+              ['Where is the ball at ' + t('t=0') + '? Where is it at ' + t('t=' + L) + '?', 'The grid lines go up in steps of ' + t('5') + ' m.'], 'ball graph',
+              [gv(tp), gv(ts.map(function (x) { return [x, -5 * x * (x - L)]; }), [], 'curve'), gv(ts.map(function (x) { return [x, o.h(L - x)]; }), [], 'curve'), gv([], [segv([0, h0], [L, 0])])]);
           } },
           { id: '6c', level: 'BEG', make: function (r, o) {
             return mcPart(r, 'Is this relation linear or nonlinear?', [
@@ -671,31 +703,81 @@
               ['What would a negative time mean? What happens to the ball at ' + t('t=' + o.L) + '?'], 'extend the ball graph?');
           } }] },
       /* ---------------- Question 7: lines from their intercepts ---------------- */
-      { num: '7', section: 'Part C — Lines with one, two, or infinitely many intercepts', stem: 'Each line is described by its intercepts.', parts: [
-        { id: '7a', level: 'BEG', make: function (r) {
-          var ab = r.chance(0.3) ? [4, -2] : pickWhere(function () { return [r.pick(pm(2, 5)), r.pick(pm(2, 5))]; }, function (z) { return Math.abs(z[0]) !== Math.abs(z[1]); }), a = ab[0], b = ab[1];
-          var G = function (x, y) { return lineGraph(x, y, { max: 250 }); };
-          return mcPart(r, 'Which graph shows a line with ' + t('x') + '-intercept ' + t(a) + ' and ' + t('y') + '-intercept ' + t(b) + '?', [
-            { html: G(a, b), right: true },
-            { html: G(b, a), why: 'This line has ' + t('x') + '-intercept ' + t(b) + ' and ' + t('y') + '-intercept ' + t(a) + ' — the two are swapped. The ' + t('x') + '-intercept is on the horizontal axis.' },
-            { html: G(-a, -b), why: 'Check the signs: this line crosses the ' + t('x') + '-axis at ' + t(-a) + ' and the ' + t('y') + '-axis at ' + t(-b) + '.' },
-            { html: G(a, -b), why: 'The ' + t('x') + '-intercept is right, but this line crosses the ' + t('y') + '-axis at ' + t(-b) + ', not ' + t(b) + '.' }],
-            'Plot ' + t(ptT([a, 0])) + ' on the ' + t('x') + '-axis and ' + t(ptT([0, b])) + ' on the ' + t('y') + '-axis, and draw the line through them.', ['The ' + t('x') + '-intercept point is ' + t(ptT([a, 0])) + '; the ' + t('y') + '-intercept point is ' + t(ptT([0, b])) + '.'], 'sketch line ' + a + ', ' + b);
+      { num: '7', section: 'Part C — Lines with one, two, or infinitely many intercepts', stem: 'Each line is described by its intercepts. Sketch the line on the grid; for (b), (c) and (d) also write its equation.',
+        shared: function (r) {
+          var ab = r.chance(0.3) ? [4, -2] : pickWhere(function () { return [r.pick(pm(2, 5)), r.pick(pm(2, 5))]; }, function (z) { return Math.abs(z[0]) !== Math.abs(z[1]); });
+          return { a: ab[0], b: ab[1], k: r.pick([-3, -3].concat(pm(1, 5))), h: r.pick([3, 3].concat(pm(1, 5))), yInts: r.chance(0.7) };
+        },
+        parts: [
+        { id: '7a', sub: 'a', level: 'BEG', make: function (r, o) {
+          var a = o.a, b = o.b, target = lineV([a, 0], [0, b]);
+          var check = exactChk(target, { wrong: [
+            { is: lineV([b, 0], [0, a]), code: 'int-pt-swap', hint: 'Your line has ' + t('x') + '-intercept ' + t(b) + ' and ' + t('y') + '-intercept ' + t(a) + ' — the two are swapped. The ' + t('x') + '-intercept is on the horizontal axis: ' + t(ptT([a, 0])) + '.' },
+            { is: lineV([-a, 0], [0, -b]), code: 'int-sign', hint: 'Check the signs: your line crosses the ' + t('x') + '-axis at ' + t(-a) + ' and the ' + t('y') + '-axis at ' + t(-b) + '.' },
+            { is: lineV([a, 0], [0, -b]), code: 'int-sign', hint: 'The ' + t('x') + '-intercept is right, but your line crosses the ' + t('y') + '-axis at ' + t(-b) + ', not ' + t(b) + '.' },
+            { is: lineV([-a, 0], [0, b]), code: 'int-sign', hint: 'The ' + t('y') + '-intercept is right, but your line crosses the ' + t('x') + '-axis at ' + t(-a) + ', not ' + t(a) + '.' }] });
+          return drawPart('Sketch a line with ' + t('x') + '-intercept ' + t(a) + ' and ' + t('y') + '-intercept ' + t(b) + '. ' + LINEHELP, LINEPAD, check, target,
+            'Plot ' + t(ptT([a, 0])) + ' on the ' + t('x') + '-axis and ' + t(ptT([0, b])) + ' on the ' + t('y') + '-axis, and draw the line through them, with arrows: a line goes on forever.', ['The ' + t('x') + '-intercept point is ' + t(ptT([a, 0])) + '; the ' + t('y') + '-intercept point is ' + t(ptT([0, b])) + '.'], 'sketch line ' + a + ', ' + b,
+            [lineV([b, 0], [0, a]), lineV([-a, 0], [0, -b]), gv([], [segv([a, 0], [0, b])]), gv([[a, 0], [0, b]])]);
         } },
-        { id: '7b', level: 'EMG', make: function (r) {
-          var k = r.pick([-3, -3].concat(pm(1, 6)));
+        { id: '7bs', sub: 'b, sketch', level: 'EMG', make: function (r, o) {
+          var k = o.k, target = lineV([-1, k], [1, k]);
+          var check = exactChk(target, { wrong: [
+            { is: lineV([k, -1], [k, 1]), code: 'eq-h-v', hint: 'Your line is <b>vertical</b>: it crosses the ' + t('x') + '-axis at ' + t(k) + ' and never meets the ' + t('y') + '-axis. This line has a ' + t('y') + '-intercept but no ' + t('x') + '-intercept, so it never meets the ' + t('x') + '-axis: it is <b>horizontal</b>.' },
+            { is: lineV([-1, -k], [1, -k]), code: 'int-sign', hint: 'Right kind of line (horizontal) — but it crosses the ' + t('y') + '-axis at ' + t(-k) + '. Check the sign.' }] });
+          var c2 = function (resp) {
+            var res = check(resp); if (res.v !== 'wrong' || res.code !== 'graph') return res;
+            var g = DR.geom(resp), ks = Object.keys(g.lines);
+            if (ks.length === 1 && g.lines[ks[0]].A !== 0 && g.lines[ks[0]].B !== 0) return wrong('eq-slanted', 'A slanted line always crosses the ' + t('x') + '-axis somewhere. This line must never meet the ' + t('x') + '-axis, so it runs parallel to it.');
+            return res;
+          };
+          return drawPart('Sketch a line with ' + t('y') + '-intercept ' + t(k) + ' and <b>no</b> ' + t('x') + '-intercept. ' + LINEHELP, LINEPAD, c2, target,
+            'A line that never meets the ' + t('x') + '-axis runs parallel to it: a <b>horizontal</b> line, through ' + t(ptT([0, k])) + ', with arrows at both ends.', ['Which kind of line never crosses the ' + t('x') + '-axis?'], 'sketch y-int ' + k + ', no x-int',
+            [lineV([k, -1], [k, 1]), lineV([-1, -k], [1, -k]), gv([], [segv([-3, k], [3, k])]), lineV([0, k], [1, k + 1])]);
+        } },
+        { id: '7b', sub: 'b, equation', level: 'EMG', make: function (r, o) {
+          var k = o.k;
           return linePart('A line has ' + t('y') + '-intercept ' + t(k) + ' and <b>no</b> ' + t('x') + '-intercept. Write the equation of the line.', [0, 1, -k], 'y=' + k, {},
             'A line that never meets the ' + t('x') + '-axis is parallel to it: <b>horizontal</b>. A horizontal line through ' + t(ptT([0, k])) + ' has every ' + t('y') + '-value equal to ' + t(k) + ': ' + t('y=' + k) + '.',
             ['Which kind of line never crosses the ' + t('x') + '-axis?', 'On a horizontal line every point has the same ' + t('y') + '-coordinate.'], 'line y-int ' + k + ', no x-int');
         } },
-        { id: '7c', level: 'EMG', make: function (r) {
-          var h = r.pick([3, 3].concat(pm(1, 6)));
+        { id: '7cs', sub: 'c, sketch', level: 'EMG', make: function (r, o) {
+          var h = o.h, target = lineV([h, -1], [h, 1]);
+          var check = exactChk(target, { wrong: [
+            { is: lineV([-1, h], [1, h]), code: 'eq-h-v', hint: 'Your line is <b>horizontal</b>: it crosses the ' + t('y') + '-axis at ' + t(h) + ' and never meets the ' + t('x') + '-axis. This line has an ' + t('x') + '-intercept but no ' + t('y') + '-intercept, so it never meets the ' + t('y') + '-axis: it is <b>vertical</b>.' },
+            { is: lineV([-h, -1], [-h, 1]), code: 'int-sign', hint: 'Right kind of line (vertical) — but it crosses the ' + t('x') + '-axis at ' + t(-h) + '. Check the sign.' }] });
+          var c2 = function (resp) {
+            var res = check(resp); if (res.v !== 'wrong' || res.code !== 'graph') return res;
+            var g = DR.geom(resp), ks = Object.keys(g.lines);
+            if (ks.length === 1 && g.lines[ks[0]].A !== 0 && g.lines[ks[0]].B !== 0) return wrong('eq-slanted', 'A slanted line always crosses the ' + t('y') + '-axis somewhere. This line must never meet the ' + t('y') + '-axis, so it runs parallel to it.');
+            return res;
+          };
+          return drawPart('Sketch a line with ' + t('x') + '-intercept ' + t(h) + ' and <b>no</b> ' + t('y') + '-intercept. ' + LINEHELP, LINEPAD, c2, target,
+            'A line that never meets the ' + t('y') + '-axis runs parallel to it: a <b>vertical</b> line, through ' + t(ptT([h, 0])) + ', with arrows at both ends.', ['Which kind of line never crosses the ' + t('y') + '-axis?'], 'sketch x-int ' + h + ', no y-int',
+            [lineV([-1, h], [1, h]), lineV([-h, -1], [-h, 1]), gv([], [segv([h, -3], [h, 3])]), lineV([h, 0], [h + 1, 1])]);
+        } },
+        { id: '7c', sub: 'c, equation', level: 'EMG', make: function (r, o) {
+          var h = o.h;
           return linePart('A line has ' + t('x') + '-intercept ' + t(h) + ' and <b>no</b> ' + t('y') + '-intercept. Write the equation of the line.', [1, 0, -h], 'x=' + h, {},
             'A line that never meets the ' + t('y') + '-axis is parallel to it: <b>vertical</b>. A vertical line through ' + t(ptT([h, 0])) + ' has every ' + t('x') + '-value equal to ' + t(h) + ': ' + t('x=' + h) + '.',
             ['Which kind of line never crosses the ' + t('y') + '-axis?', 'On a vertical line every point has the same ' + t('x') + '-coordinate.'], 'line x-int ' + h + ', no y-int');
         } },
-        { id: '7d', level: 'PRG', make: function (r) {
-          var yInts = r.chance(0.7), T = yInts ? [1, 0, 0] : [0, 1, 0], key = yInts ? 'x=0' : 'y=0', ax = yInts ? 'y' : 'x', oth = yInts ? 'x' : 'y';
+        { id: '7ds', sub: 'd, sketch', level: 'EMG', make: function (r, o) {
+          var yInts = o.yInts, ax = yInts ? 'y' : 'x', oth = yInts ? 'x' : 'y', target = yInts ? lineV([0, -1], [0, 1]) : lineV([-1, 0], [1, 0]), other = yInts ? lineV([-1, 0], [1, 0]) : lineV([0, -1], [0, 1]);
+          var check = exactChk(target, { wrong: [{ is: other, code: 'eq-h-v', hint: 'You drew the <b>' + oth + '-axis</b>: it has infinitely many ' + t(oth) + '-intercepts. Which line meets the ' + t(ax) + '-axis at every one of its points?' }] });
+          var c2 = function (resp) {
+            var res = check(resp); if (res.v !== 'wrong' || res.code !== 'graph') return res;
+            var g = DR.geom(resp), ks = Object.keys(g.lines); if (ks.length !== 1) return res;
+            var L = g.lines[ks[0]], par = yInts ? L.B === 0 : L.A === 0;
+            if (par) return wrong('eq-const', 'Your line is parallel to the ' + t(ax) + '-axis, so it never meets it. To meet it at infinitely many points the line must lie <b>on</b> the ' + t(ax) + '-axis.');
+            return wrong('eq-h-v', 'Your line crosses the ' + t(ax) + '-axis only <b>once</b>. To meet the ' + t(ax) + '-axis at infinitely many points, the line must lie <b>along</b> it.');
+          };
+          return drawPart('Sketch a line with <b>infinitely many</b> ' + t(ax) + '-intercepts. ' + LINEHELP, LINEPAD, c2, target,
+            'To meet the ' + t(ax) + '-axis at infinitely many points, the line must <b>be</b> the ' + t(ax) + '-axis: draw along it, with arrows at both ends.', ['A line can only meet an axis at more than one point if it lies along that axis.'], 'sketch infinitely many ' + ax + '-intercepts',
+            [other, yInts ? lineV([2, -1], [2, 1]) : lineV([-1, 2], [1, 2]), lineV([0, 0], [1, 1]), yInts ? gv([], [segv([0, -3], [0, 3])]) : gv([], [segv([-3, 0], [3, 0])])]);
+        } },
+        { id: '7d', sub: 'd, equation', level: 'PRG', make: function (r, o) {
+          var yInts = o.yInts, T = yInts ? [1, 0, 0] : [0, 1, 0], key = yInts ? 'x=0' : 'y=0', ax = yInts ? 'y' : 'x', oth = yInts ? 'x' : 'y';
           return linePart('A line has <b>infinitely many</b> ' + t(ax) + '-intercepts. Write the equation of the line.', T, key, { diag: function (c) {
             var v = same(c.B, 0), h = same(c.A, 0);
             if ((yInts && h && same(c.C, 0)) || (!yInts && v && same(c.C, 0))) return { code: 'eq-h-v', hint: t(eqTexOf(c)) + ' is the <b>' + oth + '-axis</b>: it has infinitely many ' + t(oth) + '-intercepts. Which line lies along the ' + t(ax) + '-axis?' };
@@ -1047,21 +1129,40 @@
         },
         stem: function (o) { return 'A portable generator starts a job with a full fuel tank and burns fuel at a steady rate. The fuel remaining, ' + t('F') + ' litres, after ' + t('h') + ' hours of running is ' + t(o.eq) + '.'; },
         parts: [
-          { id: 'e9a', level: 'BEG', make: function (r, o) {
+          { id: 'e9a', sub: 'a', level: 'BEG', make: function (r, o) {
             var hs = [0, o.s, 2 * o.s, 3 * o.s];
             return tablePart('Complete the table of values.' + HW.valueTable([[t('h') + ' (h)'].concat(hs.map(function (x) { return t(x); })), [t('F') + ' (L)'].concat(hs.map(function () { return '?'; }))]), 'h', 'F', hs, o.f,
               function (x, v) { return x && same(v, o.rate * x) ? { code: 'ctx-used', hint: t(nT(o.rate * x)) + ' L is the fuel burned. Subtract it from ' + t(o.F0) + '.' } : null; },
               hs.map(function (x) { return t('F=' + o.F0 + '-' + nT(o.rate) + '(' + x + ')=' + nT(o.f(x))); }).join(', ') + '.', ['Substitute each value of ' + t('h') + '.'], 'generator table', 'L');
           } },
-          { id: 'e9b', level: 'BEG', make: function (r, o) {
+          { id: 'e9a2', sub: 'a, graph', level: 'BEG', make: function (r, o) {
+            var hs = [0, o.s, 2 * o.s, 3 * o.s], tp = hs.map(function (x) { return [x, o.f(x)]; }), target = gv([], [segv([0, o.F0], [o.T, 0])]), step = o.rate * o.s;
+            var dy = [1, 2, 2.5, 3, 4, 5, 6, 7, 7.5, 10, 15].filter(function (d) { var k = step / d; return Math.abs(k - Math.round(k)) < 1e-9 && o.F0 / d <= 16; })[0] || step;
+            var base = exactChk(target, { wrong: [
+              { is: gv([], [segv([0, o.F0], [o.T, 0], 'closed', 'arrow')]), code: 'graph-noarrow', hint: 'The generator can’t have less than ' + t('0') + ' L of fuel: the line stops at ' + t(ptT([o.T, 0])) + ' (a dot, not an arrow).' },
+              { is: gv([], [segv([0, 0], [o.T, o.F0])]), code: 'ctx-used', hint: 'Your line shows the fuel <b>burned</b>, which goes up. Plot the fuel <b>left</b>: it starts at ' + t(o.F0) + ' L and goes down.' }] });
+            var check = function (resp) {
+              var S = DR.norm(resp);
+              if (!S.pieces.length && S.join === 'none' && DR.same(S, gv(tp))) return wrong('graph-not-joined', 'Your points are right — now join them with a straight line (use <b>╱ Line</b> or <b>Join</b>): the fuel burns steadily, so every in-between time has a value.');
+              return base(resp);
+            };
+            var inp = { x: [0, o.T + o.s], y: [0, o.F0 + dy], grid: o.s, gridY: dy, labels: 1, labelsX: o.s, labelsY: dy * (o.F0 / dy > 8 ? 2 : 1), snapX: o.s, snapY: dy, unitX: 300 / (o.T + o.s),
+              firstQuadrant: true, xName: 'h', yName: 'F', xTitle: 'Time, h (hours)', yTitle: 'Fuel left, F (L)', join: true };
+            inp.unitY = Math.min(22, 320 / ((o.F0 + dy) / dy)) / dy;
+            return drawPart('Plot the points from your table on the grid and join them with a straight line.', inp, check, target,
+              'Plot ' + tp.map(function (p) { return t(ptT(p)); }).join(', ') + ' and join them: a straight line from ' + t(ptT([0, o.F0])) + ' down to ' + t(ptT([o.T, 0])) + ', where the tank is empty.',
+              ['Use your table: one point for each row, ' + t('(h,\\ F)') + '.', 'Then join them with <b>╱ Line</b> (or press <b>Join</b>).'], 'generator graph',
+              [gv(tp), gv([], [segv([0, o.F0], [o.T, 0], 'closed', 'arrow')]), gv([], [segv([0, 0], [o.T, o.F0])])]);
+          } },
+          { id: 'e9b', sub: 'b', level: 'BEG', make: function (r, o) {
             return numPart('Determine the ' + t('F') + '-intercept algebraically.', o.F0, [[o.T, 'int-gave-x', 'That is the ' + t('h') + '-intercept (where ' + t('F=0') + '). For the ' + t('F') + '-intercept set ' + t('h=0') + '.'], [o.rate, 'ctx-rate', t(nT(o.rate)) + ' is the rate. Set ' + t('h=0') + '.']],
               'Set ' + t('h=0') + ': ' + t('F=' + o.F0 + '-' + nT(o.rate) + '(0)=' + o.F0) + '. The ' + t('F') + '-intercept is ' + t(o.F0) + ' (point ' + t('(0,\\ ' + o.F0 + ')') + '): the full tank holds ' + t(o.F0) + ' L when the generator starts.', ['The ' + t('F') + '-intercept is on the ' + t('F') + '-axis, where ' + t('h=0') + '.'], 'F-intercept', { after: 'L' });
           } },
-          { id: 'e9c', level: 'EMG', make: function (r, o) {
+          { id: 'e9c', sub: 'c', level: 'EMG', make: function (r, o) {
             return numPart('Determine the ' + t('h') + '-intercept algebraically.', o.T, [[o.F0, 'int-gave-y', 'That is the ' + t('F') + '-intercept. For the ' + t('h') + '-intercept set ' + t('F=0') + '.'], [-o.T, 'int-sign', 'Check the sign.'], [o.F0 * o.rate, 'ctx-mult', 'Divide by ' + t(nT(o.rate)) + ', don’t multiply.']],
               'Set ' + t('F=0') + ': ' + t('0=' + o.F0 + '-' + nT(o.rate) + 'h') + ', ' + t(nT(o.rate) + 'h=' + o.F0) + ', ' + t('h=' + o.T) + '.', ['The ' + t('h') + '-intercept is on the ' + t('h') + '-axis, where ' + t('F=0') + '.'], 'h-intercept', { after: 'h' });
           } },
-          { id: 'e9d', level: 'EMG', make: function (r, o) {
+          { id: 'e9d', sub: 'd', level: 'EMG', make: function (r, o) {
             return mcPart(r, 'What does the ' + t('h') + '-intercept, ' + t(o.T) + ', represent?', [
               { html: 'The generator runs out of fuel after ' + t(o.T) + ' hours of running.', right: true },
               { html: 'The tank holds ' + t(o.T) + ' L when full.', why: 'The full tank is the ' + t('F') + '-intercept, ' + t(o.F0) + ' L. At the ' + t('h') + '-intercept, ' + t('F=0') + '.' },
@@ -1069,17 +1170,17 @@
               { html: 'The generator has run for ' + t(o.T) + ' hours and the tank is full.', why: 'At the ' + t('h') + '-intercept the fuel left is ' + t('0') + ', not a full tank.' }],
               'At the ' + t('h') + '-intercept, ' + t('(' + o.T + ',\\ 0)') + ', the fuel left is ' + t('0') + ': the generator runs out of fuel after ' + t(o.T) + ' hours.', ['At an ' + t('h') + '-intercept, what is ' + t('F') + '?'], 'meaning of h-intercept');
           } },
-          { id: 'e9e', level: 'BEG', make: function (r, o) {
+          { id: 'e9e', sub: 'e', level: 'BEG', make: function (r, o) {
             var x = o.td;
             return numPart('How much fuel is left after ' + t(x) + ' hours?', o.f(x), [[o.rate * x, 'ctx-used', t(nT(o.rate * x)) + ' L is the fuel burned. How much is <b>left</b>?']],
               t('F=' + o.F0 + '-' + nT(o.rate) + '(' + x + ')=' + o.F0 + '-' + nT(o.rate * x) + '=' + nT(o.f(x))) + ' L.', ['Substitute ' + t('h=' + x) + '.'], 'fuel after ' + x + ' h', { after: 'L' });
           } },
-          { id: 'e9f', level: 'EMG', make: function (r, o) {
+          { id: 'e9f', sub: 'f', level: 'EMG', make: function (r, o) {
             var Fr = o.Fr, x = o.te;
             return numPart('After how many hours is ' + t(nT(Fr)) + ' L left?', x, [[Fr / o.rate, 'ctx-no-sub', 'That is how long ' + t(nT(Fr)) + ' L takes to burn. Substitute ' + t('F=' + nT(Fr)) + ' and solve for ' + t('h') + '.'], [o.f(Fr), 'ctx-eval', 'You substituted ' + t(nT(Fr)) + ' for ' + t('h') + '. Here it is the fuel, ' + t('F') + '.']],
               t(nT(Fr) + '=' + o.F0 + '-' + nT(o.rate) + 'h') + ', ' + t(nT(o.rate) + 'h=' + nT(o.F0 - Fr)) + ', ' + t('h=' + x) + ' hours.', ['Substitute ' + t('F=' + nT(Fr)) + ' and solve for ' + t('h') + '.'], 'hours until ' + Fr + ' L', { after: 'h' });
           } },
-          { id: 'e9g', level: 'PRG', make: function (r, o) {
+          { id: 'e9g', sub: 'g', level: 'PRG', make: function (r, o) {
             return mcPart(r, 'Both intercepts matter here, but for the moving company (' + t('C=150+0.25n') + ', Question 4 of the assignment) the ' + t('n') + '-intercept did not. What is different?', [
               { html: 'Here the fuel really reaches ' + t('0') + ' at a positive time (the tank empties). The moving cost never reaches ' + t('\\$0') + ' for a real distance — its ' + t('n') + '-intercept was a negative distance.', right: true },
               { html: 'This graph decreases and the moving graph increases; only decreasing graphs have intercepts.', why: 'Increasing lines have intercepts too — the moving line’s ' + t('n') + '-intercept was ' + t('-600') + '. The question is whether the value makes sense.' },

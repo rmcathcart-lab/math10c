@@ -3,7 +3,10 @@
  * Every part is a generator: the stories, segment lengths, rates and the order of the increasing / constant /
  * decreasing pieces change, but each version keeps the idea and difficulty of the booklet question (the booklet's
  * own numbers are one of the possible versions where practical). "Describe" questions become grids or number
- * boxes; "sketch" questions become multiple choice with four small graphs built from classic mistakes.
+ * boxes. "Sketch / draw / graph" questions are drawing parts (js/draw.js graph pad): story sketches are checked by
+ * shape (stages in order, steeper / flatter, straight vs curved, start and end values; see story() below), scaled
+ * graphs (commute, corrected jump) exactly, the loan staircase and the plotted data by rules. Questions the booklet
+ * poses as choosing or matching (9, 10–13, 15, EP10b, EP17) stay multiple choice.
  * Levels: LIM BEG EMG PRG ADV MAS (recognition formats capped at PRG). */
 (function (root) {
   'use strict';
@@ -163,6 +166,34 @@
     var p = K.P.graph(prompt, inp, check, key, sol, hints, text);
     p.answer = 'One possible sketch:' + p.answer; p.bad = bad || []; return p;
   }
+  /* decreasing and flattening, levelling off above 0 (resale value, a cooling drink) */
+  function decayStory(text, bendHint, zeroHint) {
+    return story({ phases: [{ dir: 'down', text: text, bend: 'gentler', bendHint: bendHint }], prep: trimFlat(false, true),
+      after: function (G) { return G[G.length - 1].y1 <= 1e-9 ? { code: 'story-zero', hint: zeroHint } : null; } });
+  }
+  /* k identical up-and-down cycles starting from the lowest point */
+  function cycleStory(k, word, above) {
+    var ph = [];
+    for (var i = 0; i < k; i++) ph.push({ dir: 'up', text: 'going up, cycle ' + (i + 1) }, { dir: 'down', text: 'coming back down' });
+    return story({ phases: ph,
+      prep: function (G) {
+        var alt = G.every(function (g, j) { return g.dir === (j % 2 ? 'down' : 'up'); });
+        if (alt && G.length % 2 === 0 && G.length / 2 !== k) return { code: 'story-count', hint: 'Count the cycles: your graph rises and falls ' + (G.length / 2) + ' time' + (G.length === 2 ? '' : 's') + '. The ride makes ' + t(k) + ' ' + word + '.' };
+        return G;
+      },
+      after: function (G) {
+        var hi = [], lo = [G[0].y0];
+        for (var j = 0; j < G.length; j += 2) { hi.push(G[j].y1); lo.push(G[j + 1].y1); }
+        if (hi.some(function (y) { return !near(y, hi[0]); }) || lo.some(function (y) { return !near(y, lo[0]); })) return { code: 'story-cycles', hint: 'Every cycle is the same: the ride repeats the same motion, so all the peaks are at the same height, and all the low points too.' };
+        if (above && lo[0] <= 1e-9) return { code: 'story-zero', hint: 'Your seat never touches the ground: the lowest point of each cycle is still <b>above</b> the axis.' };
+        return null;
+      } });
+  }
+  function cycleKey(k, low, high, damped) {
+    var st = Math.floor(12 / (2 * k)), v = [[0, low]];
+    for (var i = 0; i < k; i++) v.push([(2 * i + 1) * st, damped ? high - i : high], [(2 * i + 2) * st, low]);
+    return poly(v);
+  }
   /* y-values a drawing takes at x (non-vertical pieces and points) */
   function ysAt(v, x) {
     var g = DR.geom(v), out = [];
@@ -304,16 +335,6 @@
       if (okk) return { T: T, R: R, q: q, T0: T0, drink: r.pick(['hot chocolate', 'tea', 'coffee', 'soup']) };
     }
   }
-  function coolFig(c, kind) {
-    var ts = [0, 5, 10, 15, 20, 25, 30], model = function (x) { return c.R + (c.T0 - c.R) * Math.pow(c.q, x / 5); }, segs = [], fns = [], pts;
-    if (kind === 'right') { pts = ts.map(function (x, i) { return { x: x, y: c.T[i] }; }); fns.push(Fn(model, 0, 30)); }
-    if (kind === 'line') { pts = ts.map(function (x, i) { return { x: x, y: c.T[i] }; }); segs.push({ pts: [[0, c.T[0]], [30, c.T[6]]] }); }
-    if (kind === 'bend') { var f = function (x) { return c.T[0] - (c.T[0] - c.T[6]) * Math.pow(x / 30, 2); }; pts = ts.map(function (x) { return { x: x, y: f(x) }; }); fns.push(Fn(f, 0, 30)); }
-    if (kind === 'late') { pts = ts.map(function (x, i) { return { x: x + 5, y: c.T[i] }; }); fns.push(Fn(function (x) { return model(x - 5); }, 5, 35)); }
-    var yt = [], xt = []; for (var y = 20; y <= 80; y += 20) yt.push([y, String(y)]); for (var x = 10; x <= 30; x += 10) xt.push([x, String(x)]);
-    return fig({ x: [0, 37], y: [0, 95], grid: 5, gridY: 10, labels: 0, firstQuadrant: true, unitX: 3.6, unitY: 1.05, xName: 't', yName: 'T', yTitle: ' ', segs: segs, fns: fns, points: pts, xt: xt, yt: yt, max: 200, aria: 'temperature graph' });
-  }
-
   /* ---------- Q15 and other situation banks ---------- */
   var SIT = {
     constDown: ['the height of a candle that sits unlit for an hour, then is lit and burns steadily', 'the water in a full rain barrel that sits untouched, then is pumped out at a steady rate', 'the fuel in a parked car’s tank, before and then during a long drive at a steady highway speed'],
@@ -543,16 +564,16 @@
         }), 'The graph is ' + desc[shp] + '. That fits <b>' + O[shp][0] + '</b>: its speed ' + O[shp][1] + '.', ['Is the speed going up or down? Is the graph straight, or does it level off?'], 'scenario for a ' + shp + ' speed graph');
       } }] },
 
-    { num: '7', section: 'Part C — Sketching a graph from a description', stem: 'Each graph has no scale, so only its <b>shape</b> matters. Choose the best sketch.', parts: [
-      { id: '7a', level: 'BEG', make: function (r) {
+    { num: '7', section: 'Part C — Sketching a graph from a description', stem: 'Sketch a graph for each situation. Where there is no scale, only the <b>shape</b> matters: where it rises, falls, stays flat or bends.', parts: [
+      { id: '7a', level: 'EMG', make: function (r) {
         var it = r.pick(['a used mountain bike', 'a used car', 'a laptop computer', 'a snowmobile']);
-        return mcG(r, 'The resale value of ' + it + ' as a function of its age. (Value on the vertical axis, age on the horizontal axis.)', [
-          { html: sk(S.downSlow(1.2)), right: true },
-          { html: sk(S.down0(8.6)), code: 'lin', why: 'This says it loses the same amount every year and is worth nothing at the end. A used item loses value fastest when it is new, then more slowly, and keeps some value.' },
-          { html: sk(S.downFast()), code: 'fast', why: 'This loses value slowly at first and faster and faster later. It is the other way around: the biggest drop is in the first year or two.' },
-          { html: sk(S.upSlow()), code: 'up', why: 'This value goes <b>up</b> with age. Used items lose value as they get older.' }],
+        return storyPart('The resale value of ' + it + ' as a function of its age. (Value on the vertical axis, age on the horizontal axis.)', spad({ xTitle: 'Age', yTitle: 'Value' }),
+          decayStory('losing value as it gets older', 'A used item loses value <b>fastest when it is new</b>, then more and more slowly: draw a curve that is steep at first and then flatter and flatter (a few short pieces, each less steep than the one before).',
+            'A used item is still worth something: the curve should level off <b>above</b> the axis, not drop to ' + t('0') + '.'),
+          poly([[0, 7], [1, 4], [3, 2], [7, 1], [11, 1]]),
           '<b>Decreasing and flattening:</b> ' + it + ' loses value fastest in its first year or two, then more and more slowly, levelling off at a low value. The curve should not reach ' + t('0') + '.',
-          ['Does the value go up or down with age? When does it drop the most?'], 'sketch: resale value vs age');
+          ['Does the value go up or down with age? When does it drop the most?', 'Draw a curve with a few short pieces: steep first, then flatter and flatter.'], 'sketch: resale value vs age',
+          [poly([[0, 7], [9, 0]]), poly([[0, 7], [6, 6], [9, 4], [11, 0]]), poly([[0, 1], [4, 4], [11, 7]]), poly([[0, 7], [1, 4], [3, 2], [7, 0]]), poly([[0, 7], [10, 2]])]);
       } },
       { id: '7b', level: 'BEG', make: function (r) {
         var L = loan(r);
@@ -561,39 +582,59 @@
           t(L.A + '\\div ' + L.p + '=' + L.n) + ', so it takes ' + t(L.n) + ' months.', ['Divide the amount of the loan by the monthly payment.'], 'loan months ' + L.A + '/' + L.p, { after: 'months' });
       } },
       { id: '7c', level: 'PRG', make: function (r) {
-        var L = loan(r), n = L.n, alt = n + 2, X = alt + 1, A = L.A;
-        function stairs(steps, upw) { var pts = [[0, upw ? 0 : A]], h = A / steps; for (var i = 1; i <= steps; i++) { var y0 = upw ? (i - 1) * h : A - (i - 1) * h, y1 = upw ? i * h : A - i * h; pts.push([i, y0], [i, y1]); } return { segs: [Ln(pts)] }; }
-        var xT = []; for (var m = 2; m < X; m += 2) xT.push([m, String(m)]);
-        function G(sh) { return fig({ x: [0, X], y: [0, A * 1.18], grid: 0, labels: 0, firstQuadrant: true, unitX: 118 / X, unitY: 78 / (A * 1.18), xName: ' ', yName: ' ', yTitle: ' ', segs: sh.segs, xt: xT, yt: [[A, '$' + A]], max: 190, tickSize: 10.5 }); }
-        return mcG(r, 'A ' + t('\\$' + A) + ' loan is paid off at ' + t('\\$' + L.p) + ' every month. Which graph shows the amount still owed (vertical axis) as a function of the number of months (horizontal axis), until it is fully paid off?', [
-          { html: G(stairs(n, false)), right: true },
-          { html: G({ segs: [Ln([[0, A], [n, 0]])] }), code: 'lin', why: 'A straight line says a little is paid off every day. The amount owed only drops on payment day — between payments it stays the same, so the graph is a staircase.' },
-          { html: G(stairs(n, true)), code: 'paid', why: 'This shows the amount <b>paid so far</b>, which goes up. The question asks for the amount still <b>owed</b>.' },
-          { html: G(stairs(alt, false)), code: 'steps', why: 'Count the steps: each payment is ' + t('\\$' + L.p) + ', so it takes ' + t(A + '\\div ' + L.p + '=' + n) + ' payments to reach ' + t('\\$0') + '. This graph takes ' + alt + '.' }],
-          '<b>A decreasing staircase.</b> The amount owed stays at ' + t('\\$' + A) + ' for a month, then drops by ' + t('\\$' + L.p) + ' at each payment. ' + t(A + '\\div ' + L.p + '=' + n) + ', so there are ' + t(n) + ' equal steps down and the graph reaches ' + t('\\$0') + ' after ' + t(n) + ' months.',
+        var L = loan(r), n = L.n, A = L.A, p = L.p, owed = function (k) { return A - k * p; };
+        var inp = { x: [0, n + 1], y: [0, A + p], grid: 1, gridY: p, labels: 1, labelsX: n > 6 ? 2 : 1, labelsY: n > 5 ? 2 * p : p, firstQuadrant: true, xName: ' ', yName: ' ', xTitle: 'Months', yTitle: 'Amount owed ($)',
+          unitX: 300 / (n + 1), unitY: 210 / (A + p), snapX: 1, snapY: p, max: 360 };
+        var chk = K.graphRules({ custom: function (v) {
+          var pts = v.pts;
+          if (!v.pieces.length && pts.length === n + 1 && pts.every(function (q) { return near(q[1], owed(q[0])) && Math.abs(q[0] - Math.round(q[0])) < 1e-9; })) return null; // one point per month: also right
+          var y0 = ysAt(v, 0.5), yl = ysAt(v, n - 0.5);
+          var gm = DR.geom(v), sloped = Object.keys(gm.lines).some(function (k) { var Ln0 = gm.lines[k]; return Ln0.A !== 0 && Ln0.B !== 0; });
+          if (sloped && y0.length && yl.length && y0[0] < yl[0]) return { code: 'stair-up', hint: 'Your graph goes <b>up</b> — that is the amount paid so far. The question asks for the amount still <b>owed</b>, which starts at ' + t('\\$' + A) + ' and goes down.' };
+          if (sloped) return { code: 'stair-lin', hint: 'A straight line says a little is paid off every day. The amount owed only drops on payment day — for the whole month in between it stays the same, so each month is a <b>flat</b> piece: a staircase.' };
+          if (y0.length && yl.length && y0[0] < yl[0]) return { code: 'stair-up', hint: 'Your graph goes <b>up</b> — that is the amount paid so far. The question asks for the amount still <b>owed</b>, which starts at ' + t('\\$' + A) + ' and goes down.' };
+          for (var k = 0; k < n; k++) {
+            var ys = ysAt(v, k + 0.5);
+            if (ys.length !== 1 || !near(ys[0], owed(k))) return { code: 'stair', hint: ys.length > 1 ? 'Between ' + k + ' and ' + (k + 1) + ' months your graph has two values — the amount owed has just one value at each moment.' : !ys.length ? 'Your graph has a gap between ' + k + ' and ' + (k + 1) + ' months: something is owed at every moment until the loan is paid off.' :
+              'Between ' + k + ' and ' + (k + 1) + ' months, ' + (k === 0 ? 'before the first payment' : 'after ' + k + ' payment' + (k > 1 ? 's' : '')) + ', the amount owed is ' + t('\\$' + A + (k ? '-' + k + '\\times\\$' + p + '=\\$' + owed(k) : '')) + '. Your graph shows ' + t('\\$' + dn(ys[0])) + ' there.' };
+          }
+          if (!DR.contains(v, [n, 0])) return { code: 'stair', hint: 'After ' + t(n) + ' payments of ' + t('\\$' + p) + ' the loan is paid off: at ' + t(n) + ' months the amount owed is ' + t('\\$0') + '. Show that point (use <b>● Point</b>, or end a piece there).' };
+          if (ysAt(v, n + 0.5).some(function (y) { return !near(y, 0); })) return { code: 'stair', hint: 'Once the loan is paid off, nothing more is owed: after ' + t(n) + ' months the graph can only be at ' + t('\\$0') + ' (or stop).' };
+          return null;
+        } });
+        var key = { pts: [[n, 0]], pieces: [], join: 'none' }; for (var k = 0; k < n; k++) key.pieces.push({ v: [[k, owed(k)], [k + 1, owed(k)]], s: 'closed', e: 'open' });
+        var riser = [[0, A]]; for (k = 1; k <= n; k++) riser.push([k, owed(k - 1)], [k, owed(k)]);
+        var stairs = function (f, m) { var o = { pts: [], pieces: [], join: 'none' }; for (var i = 0; i < m; i++) o.pieces.push({ v: [[i, f(i)], [i + 1, f(i)]], s: 'closed', e: 'open' }); return o; };
+        var pp = K.P.graph('A ' + t('\\$' + A) + ' loan is paid off at ' + t('\\$' + p) + ' every month. Draw the graph of the amount still owed as a function of the number of months, until it is fully paid off.', inp, chk, key,
+          '<b>A decreasing staircase.</b> The amount owed stays at ' + t('\\$' + A) + ' for the first month, then drops by ' + t('\\$' + p) + ' at each payment. ' + t(A + '\\div ' + p + '=' + n) + ', so there are ' + t(n) + ' equal steps down and the graph reaches ' + t('\\$0') + ' after ' + t(n) + ' months. (A solid dot shows which flat piece owns each payment day; plotting just the amount owed after each payment, one point per month, is also fine.)',
           ['When does the amount owed change — every instant, or only on payment day?', 'How many payments does it take?'], 'sketch: loan staircase');
+        pp.good = [poly(riser), { pts: Array.apply(null, Array(n + 1)).map(function (z, i) { return [i, owed(i)]; }), pieces: [], join: 'none' }];
+        pp.bad = [poly([[0, A], [n, 0]]), stairs(function (i) { return (i + 1) * p; }, n), stairs(function (i) { return owed(i + 1); }, n), stairs(owed, n), poly([[0, A], [n + 1, 0]])];
+        return pp;
       } },
       { id: '7d', level: 'EMG', make: function (r) {
-        var day = r.pick(['a winter day', 'a cold winter day in Edmonton', 'a spring day', 'a summer day at the lake']), xT = [[0.3, '6:00'], [4.95, '12:00'], [9.6, '18:00']];
-        function G(sh) { return sk(sh, { xT: xT, unit: 13.5 }); }
-        return mcG(r, 'The outdoor temperature on ' + day + ', from 6:00 a.m. to 6:00 p.m. (Temperature on the vertical axis, time on the horizontal axis.)', [
-          { html: G(S.hill(6.4, 0.8, 4.6, 2.6)), right: true },
-          { html: G(S.valley(5.2, 4.4, 1, 4.2)), code: 'valley', why: 'This is warmest early in the morning and coldest at midday. It is the other way round: coldest near sunrise, warmest in the early afternoon.' },
-          { html: G(S.wave(2, 'low', 0.8, 4.6)), code: 'wave', why: 'This has two warm peaks. From 6:00 a.m. to 6:00 p.m. there is just one warm part of the day.' },
-          { html: G(S.up()), code: 'up', why: 'This keeps warming until 6:00 p.m. The temperature falls again in the late afternoon and evening.' }],
-          '<b>Up, then down.</b> Coldest near 6:00 a.m., rising through the morning to a peak in the early afternoon, then falling toward 6:00 p.m. One peak only. (On a winter day the temperatures may all be below zero — it is the shape that matters.)',
-          ['When is it coldest? When is it warmest?'], 'sketch: daytime temperature');
+        var day = r.pick(['a winter day', 'a cold winter day in Edmonton', 'a spring day', 'a summer day at the lake']);
+        var inp = spad({ x: [6, 19], labels: 2, labelsY: 100, xTitle: 'Time of day (h, 24-hour clock)', yTitle: 'Temperature', unitX: 23 });
+        var chk = story({ phases: [{ dir: 'up', text: 'warming up through the morning' }, { dir: 'down', text: 'cooling off later in the day' }],
+          prep: function (G) { if (G.length === 3 && G[1].dir === 'flat' && G[0].dir === 'up' && G[2].dir === 'down') return [G[0], G[2]]; return G; }, // a short flat top is fine
+          after: function (G, v) {
+            var g = groupsOf(v), x0 = g[0].x0, x1 = g[g.length - 1].x1, top = G[0].x1, topEnd = G[1].x0;
+            if (!near(x0, 6) || !near(x1, 18)) return { code: 'story-time', hint: 'Show the whole time from 6:00 a.m. to 6:00 p.m.: start the graph at ' + t('6') + ' and end it at ' + t('18') + ' on the time axis.' };
+            if (topEnd < 12 - 1e-9) return { code: 'story-when', hint: 'Your warmest time is in the morning. The air keeps warming until the <b>early afternoon</b> (about 1–3 p.m.), so the peak comes after 12:00.' };
+            if (top > 16 + 1e-9) return { code: 'story-when', hint: 'Your peak is too late: the warmest part of the day is the <b>early afternoon</b>, and it is cooling off well before 6:00 p.m.' };
+            return null;
+          } });
+        return storyPart('The outdoor temperature on ' + day + ', from 6:00 a.m. to 6:00 p.m. (Temperature on the vertical axis, time on the horizontal axis; 12 is noon, 18 is 6:00 p.m.)', inp, chk, poly([[6, 1], [9, 3], [12, 5], [14, 6], [16, 5], [18, 3]]),
+          '<b>Up, then down.</b> Coldest near 6:00 a.m., rising through the morning to a peak in the early afternoon (around 13:00–15:00), then falling toward 6:00 p.m. One peak only. (On a winter day the temperatures may all be below zero — it is the shape that matters.)',
+          ['When is it coldest? When is it warmest?'], 'sketch: daytime temperature',
+          [poly([[6, 6], [12, 1], [18, 5]]), poly([[6, 1], [9, 6], [12, 1], [15, 6], [18, 1]]), poly([[6, 1], [18, 7]]), poly([[6, 1], [9, 6], [18, 2]]), poly([[6, 1], [14, 6], [16, 2]])]);
       } },
       { id: '7e', level: 'EMG', make: function (r) {
         var k = r.pick([2, 3, 3, 4]), rd = r.pick([['a swinging pirate-ship carnival ride', 'full swings'], ['a Ferris wheel turning at a steady rate, starting from the bottom', 'full turns'], ['a giant playground swing that is pushed the same amount every time', 'full swings']]);
-        var wrongN = k === 2 ? 3 : k - 1;
-        return mcG(r, 'Your height above the ground while riding ' + rd[0] + ', during ' + t(k) + ' ' + rd[1] + '. (Height on the vertical axis, time on the horizontal axis.)', [
-          { html: sk(S.wave(k, 'low', 0.8, 5)), right: true },
-          { html: sk(S.wave(wrongN, 'low', 0.8, 5)), code: 'count', why: 'Count the cycles: this graph shows ' + wrongN + ' rises and falls. The ride makes ' + k + '.' },
-          { html: sk(S.wave(k, 'low', 0, 5)), code: 'zero', why: 'Here your height drops all the way to ' + t('0') + ' each time. Your seat never touches the ground — the lowest point is still above it.' },
-          { html: sk(S.damped(k, 0.8)), code: 'damped', why: 'Here each peak is lower than the one before. The ride repeats the same motion, so every peak is the same height.' }],
+        return storyPart('Your height above the ground while riding ' + rd[0] + ', during ' + t(k) + ' ' + rd[1] + ', starting from the lowest point. (Height on the vertical axis, time on the horizontal axis.)', spad({ xTitle: 'Time', yTitle: 'Height' }),
+          cycleStory(k, rd[1], true), cycleKey(k, 1, 6),
           '<b>A repeating (periodic) wave with ' + k + ' identical cycles.</b> The same rise and fall repeats ' + k + ' times, with equal peaks and equal low points, and the low points stay above the axis.',
-          ['How many times does your height go up and down? Do the peaks change? Do you touch the ground?'], 'sketch: periodic ride');
+          ['How many times does your height go up and down? Do the peaks change? Do you touch the ground?'], 'sketch: periodic ride', [cycleKey(k === 2 ? 3 : k - 1, 1, 6), cycleKey(k, 0, 6), cycleKey(k, 1, 6, true), poly([[0, 6], [2, 1], [4, 6]])]);
       } }] },
 
     { num: '8', stem: function (z) { return 'A student sketched the graph below to represent her distance from her locker during part of a school day.' + z.svg; },
@@ -671,13 +712,31 @@
     { num: '14', section: 'Part D — Data, rate of change and domain', stem: function (c) { return 'A cup of ' + c.drink + ' is left on a counter, and its temperature is recorded every ' + t('5') + ' minutes.' + ctable([[t('t') + ' (min)', 0, 5, 10, 15, 20, 25, 30], [t('T') + ' (°C)'].concat(c.T)]); },
       shared: function (r) { return cooling(r); }, parts: [
       { id: '14a', level: 'EMG', make: function (r, c) {
-        return mcG(r, 'Which graph shows the data correctly?', [
-          { html: coolFig(c, 'right'), right: true },
-          { html: coolFig(c, 'line'), code: 'lin', why: 'The points don’t lie on a straight line: the drink cools by ' + t(c.T[0] - c.T[1]) + '° in the first 5 minutes but only ' + t(c.T[5] - c.T[6]) + '° in the last 5. Join them with a smooth curve.' },
-          { html: coolFig(c, 'bend'), code: 'bend', why: 'Check ' + t('t=10') + ': the table says ' + t(c.T[2]) + '°C, but this graph is much higher. This curve cools slowly first and faster later — the opposite of the data.' },
-          { html: coolFig(c, 'late'), code: 'late', why: 'Check the first point: at ' + t('t=0') + ' the temperature is ' + t(c.T[0]) + '°C. This graph puts every point ' + t('5') + ' minutes too late.' }],
-          'Plot ' + t('(0,' + c.T[0] + ')') + ', ' + t('(5,' + c.T[1] + ')') + ', …, ' + t('(30,' + c.T[6] + ')') + '. The drops get smaller (' + c.T.slice(1).map(function (x, i) { return c.T[i] - x; }).join(', ') + ' degrees), so the points lie on a smooth curve that falls quickly at first, then more slowly.',
-          ['Check a couple of points against the table.', 'Are the drops between readings equal or getting smaller?'], 'cooling graph');
+        var ts = [0, 5, 10, 15, 20, 25, 30], TOL = 2;
+        var inp = { x: [0, 35], y: [0, 90], grid: 5, gridY: 10, labels: 5, labelsY: 10, firstQuadrant: true, xName: 't', yName: 'T', xTitle: 'Time (min)', yTitle: 'Temperature (°C)', unitX: 8.6, unitY: 2.6,
+          mode: 'points', join: true, snapX: 5, snapY: 1, max: 360, help: 'Press and slide to aim (the coordinates show), lift to place a point. Tap a point again to remove it. <b>Join</b> joins the points with a smooth curve.' };
+        var chk = function (resp) {
+          if (DR.empty(resp)) return form('empty', 'Plot the points on the grid first.');
+          var v = DR.norm(resp), P = v.pts, at = function (x) { return P.filter(function (q) { return near(q[0], x); }); };
+          if (P.length === 7 && ts.every(function (x, i) { var q = at(x + 5); return q.length === 1 && Math.abs(q[0][1] - c.T[i]) <= TOL; })) return wrong('plot-shift', 'Check the first point: at ' + t('t=0') + ' the temperature is ' + t(c.T[0]) + '°C. Every point is ' + t('5') + ' minutes too late.');
+          var two = ts.filter(function (x) { return at(x).length > 1; })[0];
+          if (two != null) return wrong('plot-value', 'You have two points at ' + t('t=' + two) + '. Each reading gives one point.');
+          var extra = P.filter(function (q) { return ts.every(function (x) { return !near(q[0], x); }); });
+          if (extra.length) return wrong('plot-count', 'The point ' + t('(' + dn(extra[0][0]) + ',\\ ' + dn(extra[0][1]) + ')') + ' isn’t a reading: the table has readings at ' + t('t=0,\\ 5,\\ 10,\\ \\ldots,\\ 30') + ' only.');
+          for (var i = 0; i < 7; i++) { var q = at(ts[i]); if (q.length && Math.abs(q[0][1] - c.T[i]) > TOL) return wrong('plot-value', 'Check the point at ' + t('t=' + ts[i]) + ': the table says ' + t(c.T[i]) + '°C' + (Math.abs(q[0][1] - c.T[i]) > 40 ? '' : ', but your point is at ' + t(dn(q[0][1])) + '°C') + '. Read the scale: each grid line is ' + t('10') + '°C.'); }
+          var miss = ts.filter(function (x) { return !at(x).length; });
+          if (miss.length) return wrong('plot-count', 'Correct so far — but ' + (miss.length === 1 ? 'the reading at ' + t('t=' + miss[0]) + ' is' : t(miss.length) + ' readings are') + ' missing.');
+          if (v.join === 'none') return wrong('graph-not-joined', 'Your points are right — now decide about joining them. The drink has a temperature at <b>every</b> moment between the readings (time and temperature are continuous), so join them with a smooth curve (press <b>Join</b>).');
+          return ok();
+        };
+        var key = { pts: ts.map(function (x, i) { return [x, c.T[i]]; }), pieces: [], join: 'curve' };
+        var pp = K.P.graph('Graph the data on the grid: plot the seven readings, then decide whether the points should be joined.', inp, chk, key,
+          'Plot ' + t('(0,' + c.T[0] + ')') + ', ' + t('(5,' + c.T[1] + ')') + ', …, ' + t('(30,' + c.T[6] + ')') + '. Time and temperature are continuous, so join the points. The drops get smaller (' + c.T.slice(1).map(function (x, i) { return c.T[i] - x; }).join(', ') + ' degrees), so the points lie on a smooth curve that falls quickly at first, then more slowly.',
+          ['Each column of the table is one point: (time, temperature).', 'Does the drink have a temperature between the readings?'], 'cooling graph');
+        pp.good = [{ pts: ts.map(function (x, i) { return [x, c.T[i] + (i % 2 ? 1 : -1)]; }), pieces: [], join: 'curve' }];
+        pp.bad = [{ pts: key.pts, pieces: [], join: 'none' }, { pts: ts.map(function (x, i) { return [x + 5, c.T[i]]; }), pieces: [], join: 'curve' }, { pts: key.pts.slice(1), pieces: [], join: 'curve' },
+          { pts: key.pts.map(function (q, i) { return i === 2 ? [q[0], q[1] + 10] : q; }), pieces: [], join: 'curve' }, { pts: key.pts.concat([[35, c.R + 4]]), pieces: [], join: 'curve' }];
+        return pp;
       } },
       { id: '14b', level: 'EMG', make: function (r, c) {
         return K.P.mc(r, 'Should the points be joined?', [
@@ -978,109 +1037,126 @@
           '<b>False.</b> Flat means the <b>height</b> is constant. The drone could be hovering in place or flying level — the graph doesn’t show horizontal motion.', ['What does this graph measure, and what doesn’t it show?'], 'drone: flat ≠ not moving');
       } }] },
 
-    { num: '7', section: 'Extra practice C — Sketching a graph from a story', stem: 'There is no scale, so only the <b>shape</b> matters: where it rises, falls, stays flat, bends or repeats. Choose the best sketch.', parts: [
+    { num: '7', section: 'Extra practice C — Sketching a graph from a story', stem: 'Sketch a graph for each story. Where there is no scale, only the <b>shape</b> matters: where it rises, falls, stays flat, bends or repeats.', parts: [
       { id: 'e7a', level: 'EMG', make: function (r) {
         var it = r.pick(['A mug of hot coffee is left on a desk in a warm room and forgotten all afternoon.', 'A bowl of hot soup is left on the kitchen table and forgotten.', 'A pot of boiling water is taken off the stove and left on the counter.']);
-        return mcG(r, it + ' Which graph shows its temperature (vertical) against time (horizontal)?', [
-          { html: sk(S.downSlow(1.7)), right: true },
-          { html: sk(S.down0(8.6)), code: 'lin', why: 'A straight line means it cools by the same amount every minute, down to nothing. It cools fastest at first, then more slowly, and stops at room temperature.' },
-          { html: sk(S.downFast()), code: 'fast', why: 'This cools slowly at first and faster later. A hot drink cools fastest at the start, when it is much hotter than the room.' },
-          { html: sk(S.downSlow(0.08)), code: 'zero', why: 'This levels off at about zero. It can only cool to room temperature, which is well above the bottom of the graph.' }],
-          'Decreasing, <b>steeply at first, then more slowly</b>; it levels off at room temperature and never drops below it.', ['When is it cooling fastest? Where does it stop?'], 'sketch: cooling');
+        return storyPart(it + ' Sketch its temperature (vertical) against time (horizontal).', spad({ xTitle: 'Time', yTitle: 'Temperature' }),
+          decayStory('cooling down', 'It cools <b>fastest at the start</b>, when it is much hotter than the room, then more and more slowly: draw a curve that is steep at first and then flatter and flatter (a few short pieces, each less steep than the one before).',
+            'It can only cool down to <b>room temperature</b>, which is well above the bottom of the graph: level off above the axis.'),
+          poly([[0, 7], [1, 5], [3, 3], [6, 2], [11, 2]]),
+          'Decreasing, <b>steeply at first, then more slowly</b>; it levels off at room temperature and never drops below it.', ['When is it cooling fastest? Where does it stop?'], 'sketch: cooling',
+          [poly([[0, 7], [9, 0]]), poly([[0, 7], [5, 6], [8, 4], [10, 1]]), poly([[0, 7], [1, 4], [3, 2], [6, 0], [11, 0]]), poly([[0, 7], [11, 2]])]);
       } },
       { id: 'e7b', level: 'EMG', make: function (r) {
-        var k = r.pick([2, 3, 3, 4]), wn = k === 2 ? 3 : k - 1;
-        return mcG(r, 'One seat on a Ferris wheel turning at a steady rate, for ' + k + ' complete turns, starting from the loading platform at the bottom. Which graph shows the height of the seat against time?', [
-          { html: sk(S.wave(k, 'low', 0.4, 5.2)), right: true },
-          { html: sk(S.wave(k, 'high', 0.4, 5.2)), code: 'top', why: 'This starts at the top. The seat starts at the loading platform, at the <b>bottom</b>.' },
-          { html: sk(S.wave(wn, 'low', 0.4, 5.2)), code: 'count', why: 'Count the cycles: this shows ' + wn + ' turns, not ' + k + '.' },
-          { html: sk(S.damped(k, 0.4)), code: 'damped', why: 'The peaks shrink here. The wheel turns steadily, so every turn reaches the same top height.' }],
-          'A repeating wave: <b>' + k + ' identical cycles</b>, starting at the bottom (the platform), each rising to the same top and back down.', ['Where does the seat start? How many cycles?'], 'sketch: Ferris wheel');
+        var k = r.pick([2, 3, 3, 4]);
+        return storyPart('One seat on a Ferris wheel turning at a steady rate, for ' + k + ' complete turns, starting from the loading platform at the bottom. Sketch the height of the seat against time.', spad({ xTitle: 'Time', yTitle: 'Height of seat' }),
+          cycleStory(k, 'turns', false), cycleKey(k, 1, 7),
+          'A repeating wave: <b>' + k + ' identical cycles</b>, starting at the bottom (the platform), each rising to the same top and back down.', ['Where does the seat start? How many cycles?'], 'sketch: Ferris wheel',
+          [poly([[0, 7], [2, 1], [4, 7]]), cycleKey(k === 2 ? 3 : k - 1, 1, 7), cycleKey(k, 1, 7, true)]);
       } },
-      { id: 'e7c', level: 'EMG', make: function (r) {
-        var pl = r.pick(['a school parking lot from 7:00 a.m. to 5:00 p.m. on a school day', 'an office building’s parking garage from 6:00 a.m. to 7:00 p.m. on a workday']);
-        return mcG(r, 'The number of cars in ' + pl + '. Which graph fits best (number of cars vertical, time horizontal)?', [
-          { html: sk({ segs: [Ln([[0.3, 0.3], [1, 0.5], [2.2, 4.6], [2.8, 4.8], [7.6, 4.7], [8.2, 4.4], [9.2, 0.6], [9.6, 0.4]])] }), right: true },
-          { html: sk(S.hill(4.95, 0.3, 4.8, 0.3)), code: 'hill', why: 'This builds up slowly all morning and drains slowly all afternoon. People arrive in a rush, stay all day, then leave in a rush.' },
-          { html: sk(S.up()), code: 'up', why: 'This keeps rising all day. The lot empties at the end of the day.' },
-          { html: sk({ segs: [Ln([[0.3, 0.3], [1, 0.5], [2.2, 4.6], [9.6, 4.8]])] }), code: 'nofall', why: 'This rises and stays full. Everyone leaves at the end of the day, so it must fall again.' }],
-          'Near ' + t('0') + ' early, a <b>steep rise</b> as people arrive, roughly <b>flat</b> all day, then a <b>steep fall</b> when everyone leaves.', ['When do the cars arrive and leave? Quickly or slowly?'], 'sketch: parking lot');
+      { id: 'e7c', level: 'PRG', make: function (r) {
+        var pl = r.pick([['a school parking lot from 7:00 a.m. to 5:00 p.m. on a school day', 7, 17, 'school ends'], ['an office building’s parking garage from 6:00 a.m. to 7:00 p.m. on a workday', 6, 19, 'the workday ends']]), a = pl[1], b = pl[2];
+        var low = function (f) { return f.y0 <= 1 + 1e-9; };
+        var chk = story({ phases: [{ dir: 'up', text: 'cars arriving' }, { dir: 'flat', text: 'parked all day' }, { dir: 'down', text: 'cars leaving' }], prep: trimFlat(true, true, low),
+          after: function (G, v) {
+            var g = groupsOf(v);
+            if (!near(g[0].x0, a) || !near(g[g.length - 1].x1, b)) return { code: 'story-time', hint: 'Show the whole time from ' + a + ':00 to ' + b + ':00: start the graph at ' + t(a) + ' and end it at ' + t(b) + ' on the time axis.' };
+            if (G[0].y0 > 1 + 1e-9) return { code: 'story-start', hint: 'Early in the morning the lot is (almost) empty: start near ' + t('0') + '.' };
+            if (G[2].y1 > 1 + 1e-9) return { code: 'story-end', hint: 'By ' + b + ':00 almost everyone has gone home: end near ' + t('0') + '.' };
+            var up = G[0].x1 - G[0].x0, fl = G[1].x1 - G[1].x0, dw = G[2].x1 - G[2].x0;
+            if (!(fl > up && fl > dw)) return { code: 'story-rush', hint: 'People arrive in a rush and leave in a rush: the rise and the fall should be short and <b>steep</b>, with a long flat stretch for the day in between.' };
+            return null;
+          } });
+        var inp = spad({ x: [a, b + 1], labels: 2, labelsY: 100, xTitle: 'Time of day (h, 24-hour clock)', yTitle: 'Number of cars', unitX: 300 / (b + 1 - a) });
+        return storyPart('The number of cars in ' + pl[0] + '. Sketch the number of cars (vertical) against the time of day (horizontal).', inp, chk, poly([[a, 0], [a + 1, 1], [a + 2, 7], [b - 2, 7], [b - 1, 1], [b, 0]]),
+          'Near ' + t('0') + ' early, a <b>steep rise</b> as people arrive, roughly <b>flat</b> all day, then a <b>steep fall</b> when ' + pl[3] + '.', ['When do the cars arrive and leave? Quickly or slowly?'], 'sketch: parking lot',
+          [poly([[a, 0], [(a + b) / 2, 7], [b, 0]]), poly([[a, 0], [b, 7]]), poly([[a, 0], [a + 2, 7], [b, 7]]), poly([[a, 0], [a + 5, 7], [a + 6, 7], [b, 0]])]);
       } },
-      { id: 'e7d', level: 'BEG', make: function (r) {
-        var D = r.pick([3, 5, 5, 8, 10]);
-        function G(sh) { return sk(sh, { pad: true, yT: [[5, String(D)]] }); }
-        return mcG(r, 'A runner jogs a straight ' + t(D + units('km')) + ' course at one steady pace. Which graph shows the distance she still has <b>left</b> to run (in km) against time?', [
-          { html: G({ segs: [Ln([[0, 5], [8.4, 0]], { end: 'closed' })] }), right: true },
-          { html: G({ segs: [Ln([[0, 0], [8.4, 5]], { end: 'closed' })] }), code: 'run', why: 'This shows the distance she has <b>run</b>, which goes up. The distance left goes down.' },
-          { html: G({ fns: [Fn(function (x) { return 5 * Math.exp(-0.32 * x); }, 0, 9.6)] }), code: 'curve', why: 'A curve that flattens means she slows down and never finishes. A steady pace gives a straight line.' },
-          { html: G({ segs: [Ln([[0, 5], [6, 1.5]], { end: 'closed' })] }), code: 'short', why: 'This stops before reaching ' + t('0') + '. When she finishes, the distance left is ' + t('0') + '.' }],
-          'A <b>straight line falling from ' + D + ' to 0</b>: a steady pace is a constant rate of change, and it reaches ' + t('0') + ' when she finishes.', ['Does the distance left go up or down? Is the pace steady?'], 'sketch: distance left');
+      { id: 'e7d', level: 'EMG', make: function (r) {
+        var km = r.pick([3, 5, 5, 8, 10]);
+        var inp = spad({ y: [0, km + 1], unitY: 200 / (km + 1), labels: 1, labelsX: 100, xTitle: 'Time', yTitle: 'Distance left (km)' });
+        var chk = story({ phases: [{ dir: 'down', text: 'running at one steady pace', bend: 'straight', bendHint: 'One steady pace means the same distance every minute — a constant rate of change — so draw <b>one straight line</b>.' }],
+          start: km, startHint: 'At the start she still has the whole ' + t(km + units('km')) + ' left to run.', end: 0, endHint: 'When she finishes, the distance left is ' + t('0') + ': the line has to come down to the time axis.', prep: trimFlat(false, true, function (f) { return near(f.y0, 0); }) });
+        return storyPart('A runner jogs a straight ' + t(km + units('km')) + ' course at one steady pace. Sketch the distance she still has <b>left</b> to run (in km) against time.', inp, chk, poly([[0, km], [9, 0]]),
+          'A <b>straight line falling from ' + km + ' to 0</b>: a steady pace is a constant rate of change, and it reaches ' + t('0') + ' when she finishes.', ['Does the distance left go up or down? Is the pace steady?'], 'sketch: distance left',
+          [poly([[0, 0], [9, km]]), poly([[0, km], [1, km - 2], [4, 1], [10, 0]]), poly([[0, km], [6, 1]]), poly([[0, km - 1], [8, 0]])]);
       } }] },
-    { num: '8', stem: 'Each of these has a detail that is easy to get wrong. Choose the best sketch.', parts: [
-      { id: 'e8a', level: 'EMG', make: function (r) {
-        var sh = function (o) { return sk(o); };
+    { num: '8', stem: 'Sketch these. Each one has a detail that is easy to get wrong.', parts: [
+      { id: 'e8a', level: 'PRG', make: function (r) {
         var ob = r.pick([['A stone is dropped from a bridge and falls until it hits the water.', 'stone', 'water'], ['An apple falls from a tall tree until it hits the ground.', 'apple', 'ground'], ['A coin is dropped from a lookout tower into a pond.', 'coin', 'water']]);
-        return mcG(r, ob[0] + ' Which graph shows the <b>distance it has fallen</b> against time? (A falling object does not fall at a steady speed.)', [
-          { html: sh({ fns: [Fn(function (x) { return 0.08 * x * x; }, 0, 8)], points: [{ x: 8, y: 5.12 }] }), right: true },
-          { html: sh({ segs: [Ln([[0, 0], [8, 5.12]], { end: 'closed' })] }), code: 'lin', why: 'A straight line means a steady speed. The ' + ob[1] + ' speeds up as it falls, so the graph gets steeper and steeper.' },
-          { html: sh({ fns: [Fn(function (x) { return 5.3 * (1 - Math.exp(-0.38 * x)); }, 0, 8)], points: [{ x: 8, y: 5.3 * (1 - Math.exp(-3.04)) }] }), code: 'slow', why: 'This flattens out, as if the ' + ob[1] + ' slowed down. It speeds up all the way down.' },
-          { html: sh({ fns: [Fn(function (x) { return 5.12 - 0.08 * x * x; }, 0, 8)], points: [{ x: 8, y: 0 }] }), code: 'height', why: 'This is the ' + ob[1] + '’s <b>height</b> above the ' + ob[2] + ', which goes down. The question asks for the distance fallen, which goes up.' }],
-          'From the origin, rising and getting <b>steeper and steeper</b> (the ' + ob[1] + ' speeds up); it stops when it hits the ' + ob[2] + '.', ['Does the distance fallen go up or down? Is the speed steady?'], 'sketch: falling stone');
+        var chk = story({ phases: [{ dir: 'up', text: 'falling faster and faster', bend: 'steeper', bendHint: 'The ' + ob[1] + ' <b>speeds up</b> as it falls: each second it falls farther than the second before, so the graph gets <b>steeper and steeper</b>. Draw it as a few short pieces, each steeper than the last.' }],
+          start: 0, startHint: 'At the moment it is let go the ' + ob[1] + ' has fallen ' + t('0') + ' m, so start at ' + t('0') + '. (This graph is the distance <b>fallen</b>, which grows — not the height, which shrinks.)', prep: trimFlat(false, true) });
+        return storyPart(ob[0] + ' Sketch the <b>distance it has fallen</b> against time. (A falling object does not fall at a steady speed.)', spad({ xTitle: 'Time', yTitle: 'Distance fallen' }), chk, poly([[0, 0], [3, 1], [5, 3], [7, 6], [8, 8]]),
+          'From the origin, rising and getting <b>steeper and steeper</b> (the ' + ob[1] + ' speeds up); it stops when it hits the ' + ob[2] + '. A straight line would wrongly mean a steady speed.', ['Does the distance fallen go up or down? Is the speed steady?'], 'sketch: falling stone',
+          [poly([[0, 0], [8, 8]]), poly([[0, 0], [1, 4], [4, 7], [8, 8]]), poly([[0, 8], [3, 7], [5, 5], [7, 0]]), poly([[0, 2], [3, 3], [5, 5], [7, 8]])]);
       } },
-      { id: 'e8b', level: 'EMG', make: function (r) {
-        var n = r.pick([2, 3, 3]), w = 9.3 / n;
-        function bus(low, stops) { var pts = [[0, 0]]; for (var i = 0; i < stops; i++) { var x = i * (9.3 / stops); pts.push([x + 0.12 * w * (n / stops), 4.2], [x + 0.62 * w * (n / stops), 4.2], [x + 0.74 * w * (n / stops), low], [x + (i === stops - 1 ? 0.74 : 1) * w * (n / stops), low]); } return { segs: [Ln(pts)] }; }
-        var stair = []; for (var i = 0; i < n; i++) { var x0 = i * w; stair.push([x0, i * 1.6], [x0 + 0.7 * w, (i + 1) * 1.6], [x0 + w, (i + 1) * 1.6]); }
-        return mcG(r, 'A bus leaves the depot and makes ' + n + ' stops along its route. Which graph shows the bus’s <b>speed</b> from the moment it leaves the depot until it reaches stop ' + n + '?', [
-          { html: sk(bus(0, n)), right: true },
-          { html: sk(bus(1.6, n)), code: 'high', why: 'Here the flat parts between trips are above the axis — that means driving at a lower steady speed. At a stop the speed is ' + t('0') + ', so the graph must sit <b>on</b> the time axis.' },
-          { html: sk({ segs: [Ln(stair)] }), code: 'dist', why: 'This graph only goes up — it looks like the bus’s <b>distance</b> along the route. Speed drops to ' + t('0') + ' at every stop.' },
-          { html: sk(bus(0, n - 1 || 1)), code: 'count', why: 'Count the stops: the speed should drop to ' + t('0') + ' ' + n + ' times.' }],
-          'Speed up, cruise, slow to ' + t('0') + ' — ' + n + ' times. The stops are flat parts <b>on the time axis</b> (speed ' + t('0') + '), not flat parts up high (which mean cruising).', ['What is the speed at a stop? Where is that on the graph?'], 'sketch: bus speed');
+      { id: 'e8b', level: 'PRG', make: function (r) {
+        var n = r.pick([2, 3, 3]), ph = [], key = [[0, 0]], x = 0;
+        for (var i = 1; i <= n; i++) {
+          ph.push({ dir: 'up', text: 'pulling away' + (i === 1 ? ' from the depot' : ' from stop ' + (i - 1)) }, { dir: 'flat', text: 'driving at a steady speed' }, { dir: 'down', text: 'slowing down for stop ' + i });
+          key.push([x + 1, 6], [x + 3, 6], [x + 4, 0]); x += 4;
+          if (i < n) { ph.push({ dir: 'flat', text: 'waiting at stop ' + i }); key.push([x + 1, 0]); x += 1; }
+        }
+        var chk = story({ phases: ph, start: 0, startHint: 'At the depot the bus isn’t moving yet: its speed starts at ' + t('0') + '.', end: 0, endHint: 'At stop ' + n + ' the bus has stopped: its speed is ' + t('0') + '.',
+          after: function (G) {
+            for (var j = 2; j < G.length; j += 4) if (!near(G[j].y1, 0)) return { code: 'story-zero', hint: 'At a stop the bus isn’t moving: its speed is ' + t('0') + ', so the graph has to come all the way down <b>onto</b> the time axis. A flat part above the axis would mean driving at a steady speed.' };
+            return null;
+          } });
+        var bus = function (m, lowY) { var v = [[0, 0]], xx = 0; for (var q = 1; q <= m; q++) { v.push([xx + 1, 6], [xx + 3, 6], [xx + 4, q === m ? 0 : lowY]); xx += 4; if (q < m) { v.push([xx + 1, lowY]); xx += 1; } } return poly(v); };
+        var stair = [[0, 0]]; for (i = 0; i < n; i++) stair.push([4 * i + 2, 2 * i + 2], [4 * i + 4, 2 * i + 2]);
+        return storyPart('A bus leaves the depot and makes ' + n + ' stops along its route. Sketch the bus’s <b>speed</b> from the moment it leaves the depot until it reaches stop ' + n + '.', spad({ x: [0, 5 * n], unitX: 300 / (5 * n), xTitle: 'Time', yTitle: 'Speed of bus' }), chk, poly(key),
+          'Speed up, cruise, slow to ' + t('0') + ' — ' + n + ' times. The stops are flat parts <b>on the time axis</b> (speed ' + t('0') + '), not flat parts up high (which mean cruising).', ['What is the speed at a stop? Where is that on the graph?'], 'sketch: bus speed',
+          [bus(n, 2), poly(stair), bus(n - 1, 0), poly([[0, 0], [1, 6], [3, 6], [4, 0], [5, 6], [7, 6], [8, 0]])]);
       } },
-      { id: 'e8c', level: 'EMG', make: function (r) {
+      { id: 'e8c', level: 'PRG', make: function (r) {
         var tb = r.pick([['A tap fills a bathtub at a steady rate. The tap is turned off, someone bathes for a while, and then the plug is pulled', 'tub', 'someone bathes', 'bathing'], ['A hose fills a kiddie pool at a steady rate. The hose is turned off, the kids play in it for a while, and then it is pumped out', 'pool', 'the kids play', 'playing'], ['A tap fills a sink at a steady rate. The tap is turned off, someone washes the dishes, and then the plug is pulled', 'sink', 'someone washes the dishes', 'washing']]);
-        return mcG(r, tb[0] + ' and it empties <b>faster</b> than it filled. Which graph shows the amount of water in the ' + tb[1] + ' against time?', [
-          { html: sk({ segs: [Ln([[0.3, 0], [3.8, 4.4], [6.2, 4.4], [7.8, 0], [9.6, 0]])] }), right: true },
-          { html: sk({ segs: [Ln([[0.3, 0], [2.4, 4.4], [4.6, 4.4], [9.4, 0]])] }), code: 'slowempty', why: 'Here the fall is gentler than the rise, so it empties more slowly. Emptying faster means a <b>steeper</b> fall.' },
-          { html: sk({ segs: [Ln([[0.3, 0], [3.8, 4.4], [5.4, 0], [9.6, 0]])] }), code: 'noflat', why: 'There is no flat part. While ' + tb[2] + ', no water goes in or out, so the amount stays constant.' },
-          { html: sk({ fns: [Fn(function (x) { return x <= 3.8 ? 4.4 * Math.sqrt((x - 0.3) / 3.5) : x <= 6.2 ? 4.4 : Math.max(0, 4.4 - 4.4 * Math.pow((x - 6.2) / 1.6, 0.5)); }, 0.3, 9.6)] }), code: 'curve', why: 'The rising part curves (slowing down). Filling at a steady rate adds the same amount each minute, so the rise should be straight.' }],
-          'Straight rise (filling steadily), flat (' + tb[3] + '), then a straight fall to ' + t('0') + ' that is <b>steeper than the rise</b>, because it empties faster than it filled.', ['Three stages: filling, bathing, emptying. Which is steepest?'], 'sketch: bathtub');
+        var chk = story({ phases: [{ dir: 'up', text: 'filling at a steady rate', bend: 'straight', bendHint: 'It fills at a <b>steady</b> rate — the same amount every minute — so the rise is one straight piece.' }, { dir: 'flat', text: tb[3] + ': no water in or out' },
+          { dir: 'down', text: 'emptying, faster than it filled', steeper: 0 }], start: 0, startHint: 'It starts empty: the amount of water starts at ' + t('0') + '.', end: 0, endHint: 'It empties completely: end at ' + t('0') + '.', prep: trimFlat(false, true, function (f) { return near(f.y0, 0); }) });
+        return storyPart(tb[0] + ' and it empties <b>faster</b> than it filled. Sketch the amount of water in the ' + tb[1] + ' against time.', spad({ xTitle: 'Time', yTitle: 'Water in ' + tb[1] }), chk, poly([[0, 0], [4, 6], [7, 6], [9, 0], [11, 0]]),
+          'Straight rise (filling steadily), flat (' + tb[3] + '), then a straight fall to ' + t('0') + ' that is <b>steeper than the rise</b>, because it empties faster than it filled.', ['Three stages: filling, ' + tb[3] + ', emptying. Which is steepest?'], 'sketch: bathtub',
+          [poly([[0, 0], [2, 6], [5, 6], [11, 0]]), poly([[0, 0], [4, 6], [6, 0]]), poly([[0, 0], [1, 3], [3, 5], [5, 6], [8, 6], [10, 0]]), poly([[0, 0], [4, 6], [7, 6], [9, 2]])]);
       } },
       { id: 'e8d', level: 'EMG', make: function (r) {
         var it = r.pick(['A phone', 'A tablet', 'A gaming console']);
-        return mcG(r, it + ' loses value quickly in its first year and more slowly after that, but a working one is never quite worthless. Which graph shows its value against its age?', [
-          { html: sk(S.downSlow(1.0)), right: true },
-          { html: sk(S.downSlow(0.0)), code: 'zero', why: 'This curve sinks right down to the axis — worth nothing. A working one is never quite worthless, so it levels off <b>above</b> the axis.' },
-          { html: sk(S.down0(8.6)), code: 'lin', why: 'A straight line loses the same amount every year and reaches ' + t('\\$0') + '. It loses value fastest in the first year.' },
-          { html: sk(S.downFast()), code: 'fast', why: 'This loses value slowly at first and faster later — the opposite of the description.' }],
-          'Decreasing, steep in the first year and then flattening, but <b>staying above the axis</b>: it never reaches ' + t('\\$0') + '.', ['When does it lose value fastest? Does it ever reach zero?'], 'sketch: phone value');
+        return storyPart(it + ' loses value quickly in its first year and more slowly after that, but a working one is never quite worthless. Sketch its value against its age.', spad({ xTitle: 'Age', yTitle: 'Value ($)' }),
+          decayStory('losing value', 'It loses value <b>quickly in the first year</b> and more slowly after that: steep at first, then flatter and flatter (a few short pieces, each less steep than the one before).',
+            'A working one is <b>never quite worthless</b>: level off above the axis instead of dropping to ' + t('\\$0') + '.'),
+          poly([[0, 7], [1, 3], [3, 2], [7, 1], [11, 1]]),
+          'Decreasing, steep in the first year and then flattening, but <b>staying above the axis</b>: it never reaches ' + t('\\$0') + '.', ['When does it lose value fastest? Does it ever reach zero?'], 'sketch: phone value',
+          [poly([[0, 7], [1, 3], [3, 1], [6, 0], [11, 0]]), poly([[0, 7], [9, 0]]), poly([[0, 7], [6, 6], [9, 4], [11, 1]])]);
       } }] },
     { num: '9', stem: function (s) { return 'This sketch has a scale, so the numbers matter. ' + s.nm + ' leaves home at 8:00 a.m. ' + s.nm + ' walks ' + t(dn(s.d[0]) + units('km')) + ' to the bus stop, arriving at ' + hm(8 + s.tt[1] / 60) + ', and waits ' + t(s.w + units('min')) + '. The bus then carries ' + s.nm + ' ' + t(s.d[1] + units('km')) + ' farther from home, arriving at ' + hm(8 + s.tt[3] / 60) + '. From there ' + s.nm + ' walks the last ' + t(dn(s.d[2]) + units('km')) + ' to work, arriving at ' + hm(8 + s.tt[4] / 60) + '.'; },
       shared: function (r) {
         var nm = r.pick(['Sanjay', 'Ravi', 'Tariq', 'Iris', 'Hana']);
         if (r.chance(0.3)) return { nm: 'Sanjay', tt: [0, 20, 30, 50, 65], d: [2, 12, 1], v: [6, 0, 36, 4], w: 10 };
-        for (var k = 0; k < 3000; k++) {
-          var w1 = r.pick([4, 5, 6]), t1 = r.pick([12, 15, 18, 20, 24, 30]), w = r.pick([5, 10, 15]), vb = r.pick([30, 36, 40, 45, 48, 60]), t2 = r.pick([15, 20, 25, 30]), w2 = r.pick([3, 4, 5, 6]), t3 = r.pick([10, 12, 15, 20]);
+        // every corner on the drawing grid (5 min × 1 km) and the window at most 70 min × 16 km, so e9a can be drawn exactly
+        for (var k = 0; k < 4000; k++) {
+          var w1 = r.pick([4, 5, 6]), t1 = r.pick([10, 15, 20, 30]), w = r.pick([5, 10, 15]), vb = r.pick([30, 36, 40, 45, 48, 60]), t2 = r.pick([10, 15, 20, 25]), w2 = r.pick([3, 4, 5, 6]), t3 = r.pick([10, 15, 20]);
           var d1 = w1 * t1 / 60, d2 = vb * t2 / 60, d3 = w2 * t3 / 60;
-          if ((d1 * 2) % 1 || d2 % 1 || (d3 * 2) % 1 || d2 > 16) continue;
-          var tt = [0, t1, t1 + w, t1 + w + t2, t1 + w + t2 + t3]; if (tt[4] > 85) continue;
+          if (d1 % 1 || d2 % 1 || d3 % 1 || d1 + d2 + d3 > 15) continue;
+          var tt = [0, t1, t1 + w, t1 + w + t2, t1 + w + t2 + t3]; if (tt[4] > 70) continue;
           return { nm: nm, tt: tt, d: [d1, d2, d3], v: [w1, 0, vb, w2], w: w };
         }
       }, parts: [
       { id: 'e9a', level: 'PRG', make: function (r, s) {
-        var tt = s.tt, c = [0, s.d[0], s.d[0], s.d[0] + s.d[1], s.d[0] + s.d[1] + s.d[2]], X = tt[4] + 10, Y = c[4] + 2;
-        function G(pts) { return fig({ x: [0, X], y: [0, Y], grid: 5, gridY: 1, labels: 0, firstQuadrant: true, unitX: 160 / X, unitY: 110 / Y, xName: ' ', yName: ' ', yTitle: ' ', segs: [{ pts: pts }], xt: tickList(20, X - 4, 20), yt: tickList(Y > 12 ? 4 : 2, Y - 0.5, Y > 12 ? 4 : 2), max: 220 }); }
+        var tt = s.tt, c = [0, s.d[0], s.d[0], s.d[0] + s.d[1], s.d[0] + s.d[1] + s.d[2]], X = tt[4] + 5, Y = c[4] + 1;
+        var inp = { x: [0, X], y: [0, Y], grid: 5, gridY: 1, labels: 10, labelsY: 2, firstQuadrant: true, xName: ' ', yName: ' ', xTitle: 'Time since 8:00 (min)', yTitle: 'Distance from home (km)',
+          unitX: 310 / X, unitY: 230 / Y, snapX: 5, snapY: 1, tools: ['line'], max: 380 };
         var right = tt.map(function (x, i) { return [x, c[i]]; });
         var back = right.slice(0, 4).concat([[tt[4], c[3] - s.d[2]]]);
         var nowait = [[0, 0], [tt[1], c[1]], [tt[3] - s.w, c[3]], [tt[4] - s.w, c[4]]];
         var swap = [[0, 0], [tt[1], c[1]], [tt[2], c[2]], [tt[3], c[2] + s.d[2]], [tt[4], c[4]]];
-        return mcG(r, 'Which graph shows ' + s.nm + '’s distance from home (km) against time since 8:00 (min)?', [
-          { html: G(right), right: true },
-          { html: G(back), code: 'back', why: 'The last segment goes <b>down</b>, back toward home. The last walk takes ' + s.nm + ' farther from home, to work.' },
-          { html: G(nowait), code: 'nowait', why: 'There is no flat piece. The ' + s.w + '-minute wait at the bus stop is a flat segment at ' + t(dn(c[1]) + units('km')) + '.' },
-          { html: G(swap), code: 'swap', why: 'Check the bus ride: it should take ' + s.nm + ' from ' + t(dn(c[2])) + ' km to ' + t(dn(c[3])) + ' km. In this graph the bus part only covers ' + t(dn(s.d[2])) + ' km.' }],
-          'Join ' + right.map(function (p) { return t('(' + p[0] + ',' + dn(p[1]) + ')'); }).join(', ') + ' with straight segments.', ['Find each corner point: (minutes after 8:00, km from home).'], 'commute graph');
+        var leg = [[0, 0], [tt[1], c[1]], [tt[2], c[2]], [tt[3], s.d[1]], [tt[4], s.d[1] + s.d[2]]];
+        var wr = [{ is: poly(back), code: 'graph', hint: 'Your last segment goes <b>down</b>, back toward home. The last walk takes ' + s.nm + ' farther from home, to work, so the graph keeps rising.' },
+          { is: poly(nowait), code: 'graph', hint: 'Where is the wait? The ' + s.w + '-minute wait at the bus stop is a <b>flat</b> segment at ' + t(dn(c[1]) + units('km')) + ', from ' + t(tt[1]) + ' to ' + t(tt[2]) + ' min.' },
+          { is: poly(swap), code: 'graph', hint: 'Check the bus ride: it carries ' + s.nm + ' ' + t(s.d[1] + units('km')) + ' farther, from ' + t(dn(c[2])) + ' km to ' + t(dn(c[3])) + ' km.' },
+          { is: poly(leg), code: 'graph', hint: 'The graph shows the distance from <b>home</b>, not the length of each leg: after the bus ' + s.nm + ' is ' + t(dn(c[2]) + '+' + s.d[1] + '=' + dn(c[3]) + units('km')) + ' from home.' }];
+        var exact = K.graphExact(poly(right), { wrong: wr });
+        var chk = function (v) { var res = exact(v); if (res.v === 'wrong' && res.code === 'graph' && !res.hint) return wrong('graph', 'Find each corner as (minutes after 8:00, km from home): ' + t('(0,\\ 0)') + ', then the bus stop at ' + t(tt[1]) + ' min, and so on. Join them in order with straight segments.'); return res; };
+        var pp = K.P.graph('Draw the graph of ' + s.nm + '’s distance from home (km) against the time since 8:00 (min).', inp, chk, poly(right),
+          'Corners: ' + right.map(function (p) { return t('(' + p[0] + ',' + dn(p[1]) + ')'); }).join(', ') + ' — join them with straight segments. The wait is the flat segment; the bus ride is the steepest.', ['Find each corner point: (minutes after 8:00, km from home).', 'Distances add up: each leg starts where the last one ended.'], 'commute graph');
+        pp.bad = [poly(back), poly(nowait), poly(swap), poly(leg), poly(right.slice(0, 4))];
+        return pp;
       } },
       { id: 'e9b', level: 'PRG', make: function (r, s) {
         var tt = s.tt, dd = [s.d[0], 0, s.d[1], s.d[2]], f = ['First walk:', 'Wait:', 'Bus:', 'Last walk:'].map(function (l) { return numBox(l, 'km/h'); });
@@ -1153,18 +1229,13 @@
         } }, rows.map(function (rw) { return rw.html + ': ' + { up: 'speeding up steadily from rest to ' + L.v + ' m/s', steady: 'steady speed of ' + L.v + ' m/s', down: 'slowing down steadily to a stop', stop: 'stopped at the station (speed 0)' }[want[rw.id]]; }).join('<br>'), ['On a speed graph: rising = speeding up, flat = steady speed, falling = slowing down, on the axis = stopped.'], 'train: describe speed');
         p.answer = rows.map(function (rw) { return rw.html + ': ' + { up: 'speeding up', steady: 'steady speed', down: 'slowing down', stop: 'stopped' }[want[rw.id]]; }).join('<br>'); return p;
       } },
-      { id: 'e12b', level: 'PRG', make: function (r, L) {
-        var t1 = L.t[1], t2 = L.t[2], t3 = L.t[3], t4 = L.t[4], v = L.v, a = v / t1, b = v / (t3 - t2);
-        var s1 = 0.5 * a * t1 * t1, s2 = s1 + v * (t2 - t1), s3 = s2 + 0.5 * v * (t3 - t2);
-        function dist(x) { return x <= t1 ? 0.5 * a * x * x : x <= t2 ? s1 + v * (x - t1) : x <= t3 ? s2 + v * (x - t2) - 0.5 * b * (x - t2) * (x - t2) : s3; }
-        var X = t4 * 1.06, Y = s3 * 1.18;
-        function G(o) { return fig({ x: [0, X], y: [0, Y], grid: 0, labels: 0, firstQuadrant: true, unitX: 140 / X, unitY: 84 / Y, xName: ' ', yName: ' ', fns: o.fns, segs: o.segs, max: 200 }); }
-        return mcG(r, 'Which graph is the matching <b>distance travelled</b>–time graph for the same ' + t4 + ' seconds? (Shape only.)', [
-          { html: G({ fns: [Fn(dist, 0, t4)] }), right: true },
-          { html: G({ segs: [Ln([[0, 0], [t1, s3 * 0.8], [t2, s3 * 0.8], [t3, 0], [t4, 0]])] }), code: 'copy', why: 'This copies the speed graph. Distance travelled can never go back down — the train doesn’t reverse.' },
-          { html: G({ fns: [Fn(function (x) { return x <= t3 ? dist(x) : s3 + v * 0.6 * (x - t3); }, 0, t4)] }), code: 'nostop', why: 'This keeps rising at the end. From ' + t3 + ' to ' + t4 + ' s the train is stopped, so its distance stops changing (flat).' },
-          { html: G({ segs: [Ln([[0, 0], [t1, s1 * 2.2], [t2, s2], [t3, s3], [t4, s3]])] }), code: 'straight', why: 'All straight pieces means a constant speed on each part. While the train speeds up, the distance graph curves, getting steeper; while it slows down, it curves and flattens.' }],
-          'Curve getting steeper (speeding up), straight line (steady speed), curve flattening out (slowing down), then <b>flat</b> (stopped).', ['What does speeding up look like on a distance graph? What does stopped look like?'], 'train: distance sketch');
+      { id: 'e12b', level: 'ADV', make: function (r, L) {
+        var chk = story({ phases: [{ dir: 'up', text: 'the train moving: the distance travelled grows', bend: 'scurve', bendHint: 'Look at the three moving parts. Speeding up (0–' + L.t[1] + ' s): each second covers more distance, so the graph gets <b>steeper and steeper</b>. Steady speed (' + L.t[1] + '–' + L.t[2] + ' s): a <b>straight</b> piece. Slowing down (' + L.t[2] + '–' + L.t[3] + ' s): it <b>flattens out</b>. Draw that with a few short pieces.' },
+          { dir: 'flat', text: 'stopped at the station' }], start: 0, startHint: 'The distance travelled starts at ' + t('0') + '.',
+          prep: function (G) { return G.some(function (g) { return g.dir === 'down'; }) ? { code: 'story-dir', hint: 'Distance <b>travelled</b> can never go down — the train doesn’t reverse. (A graph that rises and falls copies the shape of the speed graph.) While the train moves the distance grows; when it stops the graph is flat.' } : G; } });
+        return storyPart('Sketch the matching <b>distance travelled</b>–time graph for the same ' + L.t[4] + ' seconds. (Shape only — no numbers.)', spad({ xTitle: 'Time (s)', yTitle: 'Distance travelled' }), chk, poly([[0, 0], [2, 1], [3, 2], [6, 6], [7, 7], [9, 8], [12, 8]]),
+          'Curve getting steeper (speeding up), straight line (steady speed), curve flattening out (slowing down), then <b>flat</b> (stopped). Distance travelled never goes down: the train doesn’t reverse.', ['What does speeding up look like on a distance graph? What does stopped look like?'], 'train: distance sketch',
+          [poly([[0, 0], [2, 6], [6, 6], [8, 0], [12, 0]]), poly([[0, 0], [2, 1], [3, 2], [6, 6], [7, 7], [12, 8]]), poly([[0, 0], [3, 5], [9, 8], [12, 8]]), poly([[0, 0], [8, 8], [12, 8]]), poly([[0, 0], [2, 1], [3, 2], [6, 6], [12, 8]])]);
       } },
       { id: 'e12c', level: 'EMG', make: function (r, L) {
         return K.P.mc(r, 'The speed graph has two flat parts: from ' + L.t[1] + ' s to ' + L.t[2] + ' s and from ' + L.t[3] + ' s to ' + L.t[4] + ' s. What does each one mean?', [
@@ -1267,6 +1338,27 @@
           { html: t('\\frac{0}{' + dd + '}=0') + ' km/min.', why: 'Rate = change in distance ÷ change in time, not the other way round.' }],
           'Rise ' + t(j.d[2] + '-' + j.d[1] + '=' + dd) + ' km, run ' + t(j.t[2] + '-' + j.t[2] + '=0') + ' min. ' + t('\\text{rate}=\\frac{' + dd + '}{0}') + ' is <b>undefined</b>: no finite rate of change exists.', ['Rise over run: what is the run?'], 'vertical jump: rate');
       } },
+      { id: 'e14e', level: 'EMG', make: function (r, j) {
+        var tb = j.t[2] + j.b, X = j.t[4] + 5, Y = j.d[2] + 1;
+        var orig = [[0, 0], [j.t[1], j.d[1]], [j.t[2], j.d[1]], [j.t[2], j.d[2]], [j.t[3], j.d[2]], [j.t[4], 0]];
+        var right = [[0, 0], [j.t[1], j.d[1]], [j.t[2], j.d[1]], [tb, j.d[2]], [j.t[3], j.d[2]], [j.t[4], 0]];
+        var inp = { x: [0, X], y: [0, Y], grid: 5, gridY: 1, labels: 10, labelsY: 1, firstQuadrant: true, xName: ' ', yName: ' ', xTitle: 'Time (min)', yTitle: 'Distance from home (km)', unitX: 310 / X, unitY: 190 / Y,
+          snapX: 5, snapY: 1, tools: ['line'], max: 380, bg: { segs: [{ pts: orig, dash: true, color: '#aab1bd' }] } };
+        var shift = [[0, 0], [j.t[1], j.d[1]], [j.t[2], j.d[1]], [tb, j.d[2]], [j.t[3] + j.b, j.d[2]], [j.t[4] + j.b, 0]];
+        var wr = [{ is: poly(shift), code: 'graph', hint: 'Keep everything else the same: only the jump changes. She still leaves at ' + t(j.t[3]) + ' min and is home at ' + t(j.t[4]) + ' min, so after the bus ride the flat part is just shorter.' }];
+        if (j.t[2] - j.b >= j.t[1]) wr.push({ is: poly([[0, 0], [j.t[1], j.d[1]], [j.t[2] - j.b, j.d[1]], [j.t[2], j.d[2]], [j.t[3], j.d[2]], [j.t[4], 0]]), code: 'graph', hint: 'The bus leaves at ' + t(j.t[2]) + ' min, where the jump was, and takes ' + t(j.b) + ' min, so it arrives at ' + t(tb) + ' min.' });
+        var exact = K.graphExact(poly(right), { wrong: wr });
+        var chk = function (v) {
+          if (DR.phases(v).vertical) return wrong('story-vertical', 'Your graph still has a vertical piece: that would mean covering ' + t((j.d[2] - j.d[1]) + units('km')) + ' in no time. The bus takes ' + t(j.b) + ' minutes, so draw a sloped segment from ' + t('(' + j.t[2] + ',\\ ' + j.d[1] + ')') + '.');
+          var res = exact(v); if (res.v === 'wrong' && !res.hint) return wrong(res.code, 'Start from the student’s graph (dashed): keep every corner except the jump, which becomes a sloped segment from ' + t('(' + j.t[2] + ',\\ ' + j.d[1] + ')') + ' to ' + t('(' + tb + ',\\ ' + j.d[2] + ')') + '.');
+          return res;
+        };
+        var pp = K.P.graph('The student meant that she covered the extra ' + t((j.d[2] - j.d[1]) + units('km')) + ' by bus, and that the bus ride took ' + t(j.b + units('min')) + '. Draw the corrected graph, keeping everything else the same. (The student’s graph is shown dashed.)', inp, chk, poly(right),
+          'The jump becomes a sloped segment from ' + t('(' + j.t[2] + ',' + j.d[1] + ')') + ' to ' + t('(' + tb + ',' + j.d[2] + ')') + ' (' + t((j.d[2] - j.d[1]) + units('km')) + ' in ' + t(j.b + units('min')) + '); every other corner stays: ' + right.map(function (q) { return t('(' + q[0] + ',' + q[1] + ')'); }).join(', ') + '.',
+          ['Which corners of the student’s graph stay the same?', 'Where does the bus ride start, and when does it end?'], 'vertical jump: redraw');
+        pp.bad = [poly(orig), poly(shift), poly([[0, 0], [j.t[1], j.d[1]], [j.t[2], j.d[1]], [j.t[3], j.d[2]], [j.t[4], 0]]), poly(right.slice(0, 5))];
+        return pp;
+      } },
       { id: 'e14d', level: 'PRG', make: function (r, j) {
         var tt = [0, j.t[1], j.t[2], j.t[2] + j.b, j.t[3], j.t[4]], dd = [0, j.d[1], j.d[1], j.d[2], j.d[2], 0];
         var f = [1, 2, 3, 4, 5].map(function (n) { return numBox('Segment ' + n + ':', 'km/h'); });
@@ -1325,13 +1417,20 @@
         return 'A flask is a ' + (f.wideBottom ? 'wide cylinder for its bottom half and a narrower cylinder for its top half' : 'narrow cylinder for its bottom half and a wider cylinder for its top half') + ', joined by a flat shoulder. Water runs in at a constant rate.' + flaskSvg(f.wideBottom);
       }, shared: function (r) { return { wideBottom: r.chance(0.6) }; }, parts: [
       { id: 'e16a', level: 'PRG', make: function (r, f) {
-        var gentle = [[0.3, 0], [6.4, 2.6], [9.2, 5.2]], steep = [[0.3, 0], [3.1, 2.6], [9.2, 5.2]];
-        return mcG(r, 'Which graph shows the height of the water against time, from empty to full?', [
-          { html: sk({ segs: [Ln(f.wideBottom ? gentle : steep)] }), right: true },
-          { html: sk({ segs: [Ln(f.wideBottom ? steep : gentle)] }), code: 'swap', why: 'The pieces are the wrong way round. The ' + (f.wideBottom ? 'wide bottom fills slowly (gentle), the narrow top fast (steep)' : 'narrow bottom fills fast (steep), the wide top slowly (gentle)') + '.' },
-          { html: sk({ fns: [Fn(f.wideBottom ? function (x) { return 5.2 * Math.pow((x - 0.3) / 8.9, 2); } : function (x) { return 5.2 * Math.sqrt((x - 0.3) / 8.9); }, 0.3, 9.2)] }), code: 'curve', why: 'A smooth curve means the width changes gradually. Each half is a cylinder (constant width), so each piece is straight, with a sudden change at the shoulder.' },
-          { html: sk({ segs: [Ln([[0.3, 0], [9.2, 5.2]])] }), code: 'one', why: 'One straight line means the same width all the way up. The two halves have different widths.' }],
-          'Two straight pieces: a ' + (f.wideBottom ? '<b>gentle</b> one for the wide bottom, then a <b>steeper</b> one for the narrow top' : '<b>steep</b> one for the narrow bottom, then a <b>gentler</b> one for the wide top') + ', meeting in a corner at half the height.', ['Each half has a constant width. Which half rises faster?'], 'flask sketch');
+        var w = f.wideBottom, ph = [{ dir: 'up', text: 'the ' + (w ? 'wide' : 'narrow') + ' bottom half fills' }, { dir: 'up', text: 'the ' + (w ? 'narrow' : 'wide') + ' top half fills' }];
+        if (w) ph[1].steeper = 0; else ph[0].steeper = 1;
+        var base = K.graphStory({ phases: ph, start: 0, startHint: 'The flask starts empty: the water height starts at ' + t('0') + '.', end: 6, endHint: 'Fill it right to the top: the graph ends at the dashed line (height ' + t('6') + ').',
+          custom: function (S) { return near(S[0].y1, 3) ? null : { code: 'story-height', hint: 'The corner is where the width changes — at the shoulder, <b>half way up</b> (height ' + t('3') + ' on this grid).' }; } });
+        var chk = function (v) {
+          var P = DR.phases(v).phases;
+          if (P.length && P.every(function (p) { return p.dir === 'up'; }) && P.length !== 2 && !DR.phases(v).gaps.length && !DR.notFunction(v)) return wrong('story-bend', P.length === 1 ? 'One straight line means the same width all the way up. The two halves have different widths, so the steepness changes at the shoulder: draw <b>two straight pieces</b>.' :
+            'Each half is a cylinder with a constant width, so each half fills at a constant rate: draw <b>two straight pieces</b>, one for each half, meeting in a corner at the shoulder.');
+          return base(v);
+        };
+        var inp = spad({ xTitle: 'Time', yTitle: 'Height of water', bg: { segs: [{ pts: [[0, 6], [12, 6]], dash: true, color: '#aab1bd' }] } });
+        return storyPart('Sketch the height of the water against time, from empty to full. (The dashed line is the top of the flask; the shoulder is half way up.)', inp, chk, poly(w ? [[0, 0], [8, 3], [11, 6]] : [[0, 0], [3, 3], [11, 6]]),
+          'Two straight pieces: a ' + (w ? '<b>gentle</b> one for the wide bottom, then a <b>steeper</b> one for the narrow top' : '<b>steep</b> one for the narrow bottom, then a <b>gentler</b> one for the wide top') + ', meeting in a corner at half the height.', ['Each half has a constant width. Which half rises faster?'], 'flask sketch',
+          [poly(w ? [[0, 0], [3, 3], [11, 6]] : [[0, 0], [8, 3], [11, 6]]), poly([[0, 0], [11, 6]]), poly([[0, 0], [3, 1], [6, 3], [8, 5], [9, 6]]), poly(w ? [[0, 0], [6, 4], [8, 6]] : [[0, 0], [2, 4], [8, 6]]), poly(w ? [[0, 0], [8, 3], [10, 5]] : [[0, 0], [3, 3], [9, 5]])]);
       } },
       { id: 'e16b', level: 'EMG', make: function (r, f) {
         return K.P.mc(r, 'The graph has a sharp corner, not a smooth bend. Where is it, and why is the change sudden?', [

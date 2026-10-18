@@ -295,10 +295,10 @@
   /* a linear model drawn as ONE segment over [X0, X1] with solid ends. o: f, X0, X1, sx, sy, name, v, unitY (text),
    * hint texts: start0 (started at 0 instead of the fixed value), startX, endX, arrow, dir */
   function segSketch(o) {
-    var tx = o.sx / 2 + 1e-6, ty = o.sy / 2 + 1e-6, Y0 = o.f(o.X0), Y1 = o.f(o.X1), nm = o.name, v = o.v;
+    var tx = o.sx / 2 + 1e-6, ty = o.sy / 2 + 1e-6, Y0 = o.f(o.X0), Y1 = o.f(o.X1), nm = o.name, v = o.v, fm = o.fmt || nf, pT = function (P0) { return '(' + fm(P0[0]) + ',\\ ' + fm(P0[1]) + ')'; };
     var A = [snapTo(o.X0, o.sx), snapTo(Y0, o.sy)], Bp = [snapTo(o.X1, o.sx), snapTo(Y1, o.sy)];
     var key = { pts: [], pieces: [{ v: [A, Bp], s: 'closed', e: 'closed' }], join: 'none' };
-    var near = function (P0) { return 'the grid point nearest ' + t(ptT(P0)); };
+    var near = function (P0) { return 'the grid point nearest ' + t(pT(P0)); };
     var check = function (resp) {
       if (HW.draw.empty(resp)) return form('empty', 'Draw your graph first: choose <b>╱ Line</b>, tap the start point, then the end point (tap it again to finish).');
       var g = HW.draw.geom(resp), ks = Object.keys(g.lines);
@@ -311,14 +311,14 @@
       var iv = L.iv[0];
       if (!isFinite(iv.lo) || !isFinite(iv.hi)) return wrong('sk-arrow', o.arrow || 'The model has a start and an end: finish the segment with solid dots, not arrows.');
       var f = function (x) { return (L.C - L.A * x) / L.B; }, yl = f(iv.lo), yh = f(iv.hi);
-      if ((yh - yl) * (Y1 - Y0) <= 0) return wrong('sk-dir', o.dir || ('Check the direction: ' + t(nm + '(' + nf(o.X0) + ')=' + nf(Y0)) + ' and ' + t(nm + '(' + nf(o.X1) + ')=' + nf(Y1)) + '.'));
+      if ((yh - yl) * (Y1 - Y0) <= 0) return wrong('sk-dir', o.dir || ('Check the direction: ' + t(nm + '(' + fm(o.X0) + ')=' + fm(Y0)) + ' and ' + t(nm + '(' + fm(o.X1) + ')=' + fm(Y1)) + '.'));
       if (Math.abs(iv.lo - o.X0) > tx) return wrong('sk-startx', o.startX || ('Check where the graph starts: the domain begins at ' + t(v + '=' + nf(o.X0)) + '.'));
       if (Math.abs(iv.hi - o.X1) > tx) return wrong('sk-endx', o.endX || ('Check where the graph ends: the domain stops at ' + t(v + '=' + nf(o.X1)) + '.'));
       if (Math.abs(yl - Y0) > ty) {
         if (o.start0 && Math.abs(yl) < ty) return wrong('no-fixed', o.start0);
-        return wrong('sk-starty', 'Check the start: ' + t(nm + '(' + nf(o.X0) + ')=' + nf(Y0)) + ', so the segment starts at ' + near([o.X0, Y0]) + '.');
+        return wrong('sk-starty', 'Check the start: ' + t(nm + '(' + fm(o.X0) + ')=' + fm(Y0)) + ', so the segment starts at ' + near([o.X0, Y0]) + '.');
       }
-      if (Math.abs(yh - Y1) > ty) return wrong('sk-endy', 'Check the end: ' + t(nm + '(' + nf(o.X1) + ')=' + nf(Y1)) + ', so the segment ends at ' + near([o.X1, Y1]) + '.');
+      if (Math.abs(yh - Y1) > ty) return wrong('sk-endy', 'Check the end: ' + t(nm + '(' + fm(o.X1) + ')=' + fm(Y1)) + ', so the segment ends at ' + near([o.X1, Y1]) + '.');
       if (!iv.lc || !iv.hc) return wrong('graph-ends', 'Both end values belong to the model: use <b>solid</b> dots at both ends (●○ Ends).');
       return ok();
     };
@@ -841,7 +841,7 @@
         { id: '14a', level: 'PRG', outcome: 'RF1', make: function (r, sh) {
           var N = sh.max, top = sh.C(N), SY = 1000, ym = Math.ceil((top + 500) / 1000) * 1000;
           var I = padIn({ x: [0, 900], y: [0, ym], sx: 100, sy: SY, lx: 200, ly: 2000, v: 'n', w: 'C(n)', xTitle: 'n (t-shirts)', yTitle: 'C(n) (dollars)' });
-          var S = segSketch({ f: sh.C, X0: 0, X1: N, sx: 100, sy: SY, name: 'C', v: 'n',
+          var S = segSketch({ f: sh.C, X0: 0, X1: N, sx: 100, sy: SY, name: 'C', v: 'n', fmt: F,
             start0: 'Before any shirt is printed the cost is already ' + t('C(0)=' + F(sh.Fc)) + ' dollars (the fixed cost), so the graph starts up the vertical axis, not at the origin.',
             endX: 'The question asks for a maximum of ' + t(N) + ' t-shirts: end the segment at ' + t('n=' + N) + '.', arrow: 'The graph stops at the maximum of ' + t(N) + ' t-shirts: end it with a solid dot, not an arrow.',
             dir: 'Printing more shirts costs more, so the graph rises from ' + t('C(0)=' + F(sh.Fc)) + ' to ' + t('C(' + N + ')=' + F(top)) + '.' });
