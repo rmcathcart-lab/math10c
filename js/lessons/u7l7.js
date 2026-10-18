@@ -818,26 +818,36 @@
     /* ---------------- Part E — Q11 ---------------- */
     { num: '11', section: 'Extra practice E — Reasoning and error analysis', stem: 'Decide whether each claim is <b>true</b> or <b>false</b>.', parts: [
       { id: 'e11a', sub: 'a', level: 'EMG', outcome: 'RF7', make: function (r) {
+        if (r.chance(0.4)) return B.tf(r, '“Parallel lines have the same slope.”', true, 'Parallel lines rise and run the same way, so they share a slope (they differ only in their ' + t('y') + '-intercepts).',
+          '<b>True.</b> Parallel lines have equal slopes and different ' + t('y') + '-intercepts.', ['What does “parallel” say about steepness?'], 'TF parallel same slope');
         var m = rnz(r, -5, 5), b1 = rnz(r, -6, 6), b2; do { b2 = rnz(r, -9, 9); } while (b2 === b1);
         return B.tf(r, '“Parallel lines have the same equation.”', false, 'Parallel lines share a <b>slope</b>; with the same equation they would be one line. ' + t('y=' + pol([[m, 'x'], [b1, '']])) + ' and ' + t('y=' + pol([[m, 'x'], [b2, '']])) + ' are parallel with different equations.',
           '<b>False.</b> Parallel lines share a slope, not an equation: ' + t('y=' + pol([[m, 'x'], [b1, '']])) + ' and ' + t('y=' + pol([[m, 'x'], [b2, '']])) + ' are parallel.', ['If two lines had the same equation, how many lines would there be?'], 'TF parallel same equation');
       } },
       { id: 'e11b', sub: 'b', level: 'EMG', outcome: 'RF6', make: function (r) {
+        if (r.chance(0.4)) return B.tf(r, '“A line with an undefined slope is vertical.”', true, 'Undefined slope means the run is ' + t('0') + ': every point has the same ' + t('x') + ', so the line is vertical, ' + t('x=k') + '.',
+          '<b>True.</b> Run ' + t('0') + ' means a vertical line ' + t('x=k') + '.', ['What is the run between two points on a vertical line?'], 'TF undefined slope vertical');
         var a = rnz(r, -8, 8);
         return B.tf(r, '“A line with an undefined slope has no equation.”', false, 'An undefined slope means a vertical line, ' + t('x=' + a) + ' for example (general form ' + t(gT(L3(1, 0, -a))) + '). It just has no equation of the <b>form</b> ' + t('y=mx+b') + '.',
           '<b>False.</b> Undefined slope means a vertical line, e.g. ' + t('x=' + a) + '. It has no equation of the form ' + t('y=mx+b') + ', but it does have an equation.', ['Think of a vertical line. Can you write its equation?'], 'TF undefined slope no equation');
       } },
       { id: 'e11c', sub: 'c', level: 'EMG', outcome: 'RF5', make: function (r) {
+        if (r.chance(0.4)) return B.tf(r, '“In ' + t('Ax+By+C=0') + ' with ' + t('A\\ne 0') + ', the ' + t('x') + '-intercept is ' + t('-\\frac{C}{A}') + '.”', true, 'Set ' + t('y=0') + ': ' + t('Ax+C=0') + ', so ' + t('x=-\\frac{C}{A}') + '.',
+          '<b>True.</b> With ' + t('y=0') + ', ' + t('Ax+C=0') + ' gives ' + t('x=-\\frac{C}{A}') + '.', ['Substitute ' + t('y=0') + '.'], 'TF x-intercept -C/A');
         var L = r.pick([L3(3, 4, -24), L3(2, 5, -20), L3(4, 3, -24), L3(5, 2, -20), L3(3, 2, -12)]);
         return B.tf(r, '“In ' + t('Ax+By+C=0') + ', ' + t('A') + ' is the ' + t('x') + '-intercept and ' + t('B') + ' is the ' + t('y') + '-intercept.”', false, 'The intercepts are ' + t('\\left(-\\frac{C}{A},\\ 0\\right)') + ' and ' + t('\\left(0,\\ -\\frac{C}{B}\\right)') + ', so ' + t('C') + ' matters. ' + t(gT(L)) + ' has intercepts ' + t(ptT([xint(L), 0])) + ' and ' + t(ptT([0, yint(L)])) + ', not ' + t(L.A) + ' and ' + t(L.B) + '.',
           '<b>False.</b> The intercepts are ' + t('-\\frac{C}{A}') + ' and ' + t('-\\frac{C}{B}') + '. E.g. ' + t(gT(L)) + ' has intercepts ' + t(ptT([xint(L), 0])) + ' and ' + t(ptT([0, yint(L)])) + '.', ['Find the intercepts of a specific example.'], 'TF A and B are intercepts');
       } },
       { id: 'e11d', sub: 'd', level: 'EMG', outcome: 'RF6', make: function (r) {
+        if (r.chance(0.4)) return B.tf(r, '“Every line can be written in general form ' + t('Ax+By+C=0') + '.”', true, 'General form allows ' + t('B=0') + ', so vertical lines fit too (' + t('x-k=0') + '). Every other line fits as well.',
+          '<b>True.</b> General form covers every line, vertical lines included (' + t('B=0') + ').', ['Can you write ' + t('x=3') + ' in general form?'], 'TF every line general form');
         var a = rnz(r, -8, 8);
         return B.tf(r, '“Every line can be written in the form ' + t('y=mx+b') + '.”', false, 'A vertical line such as ' + t('x=' + a) + ' has an undefined slope, so no ' + t('m') + ' works. Every line <i>can</i> be written in general form, which allows ' + t('B=0') + '.',
           '<b>False.</b> A vertical line ' + t('x=' + a) + ' has undefined slope. Corrected: every line can be written in <b>general form</b>.', ['Is there a line with no numerical slope?'], 'TF every line y=mx+b');
       } },
       { id: 'e11e', sub: 'e', level: 'EMG', outcome: 'RF7', make: function (r) {
+        if (r.chance(0.4)) return B.tf(r, '“If the slopes of two lines are negative reciprocals, the lines are perpendicular.”', true, 'Negative reciprocals multiply to ' + t('-1') + ', which is the condition for perpendicular lines.',
+          '<b>True.</b> Slopes with product ' + t('-1') + ' give perpendicular lines.', ['Multiply ' + t('\\frac{2}{3}') + ' by ' + t('-\\frac{3}{2}') + '.'], 'TF negative reciprocal slopes');
         var pq = r.pick([[3, 2], [4, 3], [5, 2], [2, 5], [3, 4]]);
         return B.tf(r, '“If the slopes of two lines are reciprocals, the lines are perpendicular.”', false, 'They must be <b>negative</b> reciprocals (product ' + t('-1') + '). ' + t('\\frac{' + pq[0] + '}{' + pq[1] + '}') + ' and ' + t('\\frac{' + pq[1] + '}{' + pq[0] + '}') + ' are reciprocals with product ' + t('1') + '; those lines are not perpendicular.',
           '<b>False.</b> Perpendicular slopes are <b>negative</b> reciprocals: ' + t('\\frac{' + pq[0] + '}{' + pq[1] + '}\\times\\frac{' + pq[1] + '}{' + pq[0] + '}=1\\ne -1') + '.', ['Multiply two reciprocals. Is the product ' + t('-1') + '?'], 'TF reciprocal slopes');
@@ -850,11 +860,15 @@
           same ? '<b>False.</b> ' + t(eq2) + ' is ' + t(k) + ' times the first equation: the same line.' : '<b>True.</b> Both have slope ' + t(qT(slopeOf(L))) + ', and dividing the second by ' + t(k) + ' gives a different constant, so they are different parallel lines.', ['Divide the second equation by ' + t(k) + ' and compare.'], 'TF same line vs parallel');
       } },
       { id: 'e11g', sub: 'g', level: 'EMG', outcome: 'RF5', make: function (r) {
+        if (r.chance(0.4)) return B.tf(r, '“A line with a positive slope can have a negative ' + t('y') + '-intercept.”', true, t('y=2x-5') + ' has slope ' + t('2') + ' and ' + t('y') + '-intercept ' + t('(0,\\ -5)') + '. The signs of ' + t('m') + ' and ' + t('b') + ' are independent.',
+          '<b>True.</b> For example ' + t('y=2x-5') + '.', ['Try to write an example.'], 'TF positive slope negative intercept');
         var pos = r.chance(0.6), m = r.int(2, 6) * (pos ? 1 : -1), b = r.int(3, 9) * (pos ? -1 : 1);
         return B.tf(r, '“A line with a ' + (pos ? 'positive' : 'negative') + ' slope must have a ' + (pos ? 'positive' : 'negative') + ' ' + t('y') + '-intercept.”', false, t('y=' + pol([[m, 'x'], [b, '']])) + ' has ' + (pos ? 'positive' : 'negative') + ' slope ' + t(m) + ' but ' + t('y') + '-intercept ' + t(ptT([0, b])) + '. The signs of ' + t('m') + ' and ' + t('b') + ' are independent.',
           '<b>False.</b> Counterexample: ' + t('y=' + pol([[m, 'x'], [b, '']])) + '.', ['Try to write a counterexample.'], 'TF slope sign and intercept sign');
       } },
       { id: 'e11h', sub: 'h', level: 'EMG', outcome: 'RF7', make: function (r) {
+        if (r.chance(0.4)) return B.tf(r, '“Two lines with the same slope are the same line.”', false, 'Equal slopes alone give <b>parallel</b> lines; they are the same line only if the ' + t('y') + '-intercepts match too, e.g. ' + t('y=2x+1') + ' and ' + t('y=2x-3') + ' are different.',
+          '<b>False.</b> ' + t('y=2x+1') + ' and ' + t('y=2x-3') + ' have the same slope but are different (parallel) lines.', ['Can two different lines have the same slope?'], 'TF same slope same line');
         return B.tf(r, '“Two lines with the same slope and the same ' + t('y') + '-intercept are the same line.”', true, t('m') + ' and ' + t('b') + ' are the only numbers in ' + t('y=mx+b') + ', so equal ' + t('m') + ' and equal ' + t('b') + ' give identical equations.',
           '<b>True.</b> ' + t('m') + ' and ' + t('b') + ' are the only numbers in ' + t('y=mx+b') + ', so the equations are identical — the same line.', ['Write both lines in ' + t('y=mx+b') + ' form.'], 'TF same m and b');
       } }] },
