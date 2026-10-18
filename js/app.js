@@ -200,6 +200,7 @@
       lesson.items.forEach(function (it) {
         var r = (S.lessons[lesson.id] || { items: {} }).items[it.id];
         if (!r || r.s !== 'done' || (r.credit !== 'first' && r.credit !== 'hint')) return;
+        if (it.outcome === 'EXT') return; // extension lessons (e.g. distance and midpoint) don't count toward a level
         if (outs.indexOf(it.outcome) < 0) outs.push(it.outcome);
         if (best[it.outcome] == null || LV.indexOf(it.level) > LV.indexOf(best[it.outcome])) best[it.outcome] = it.level;
       });

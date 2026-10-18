@@ -62,8 +62,21 @@
       { id: 'u5l8', num: '8', title: 'Function Notation: Graphs, Conversions, and Real-World Models' },
       { id: 'u5l9', num: '9', title: 'Interpreting and Sketching Real-World Graphs' },
       { id: 'u5l10', num: '10', title: 'Relations and Functions Review: Domain, Range, and Function Notation' }] },
-    { unit: 6, title: 'Characteristics of Linear Relations', outcomes: 'RF3 · RF4 · RF5', lessons: [] },
-    { unit: 7, title: 'Equations of Linear Relations', outcomes: 'RF6 · RF7', lessons: [] },
+    { unit: 6, title: 'Characteristics of Linear Relations', outcomes: 'RF3 · RF4 · RF5', lessons: [
+      { id: 'u6l1', num: '1', title: 'Extension: Measuring the Length of a Line Segment' },
+      { id: 'u6l2', num: '2', title: 'Extension: The Distance and Midpoint Formulas' },
+      { id: 'u6l3', num: '3', title: 'Rise Over Run: The Slope of a Line Segment' },
+      { id: 'u6l4', num: '4', title: 'Slope Relationships: Collinearity, Parallel and Perpendicular Lines' },
+      { id: 'u6l5', num: '5', title: 'Characteristics of Linear Graphs' },
+      { id: 'u6l6', num: '6', title: 'Coordinate Geometry Review: Slope, Linear Graphs, Distance and Midpoint' }] },
+    { unit: 7, title: 'Equations of Linear Relations', outcomes: 'RF4 · RF5 · RF6 · RF7', lessons: [
+      { id: 'u7l1', num: '1', title: 'Slope–Intercept Form and the Graph of a Line' },
+      { id: 'u7l2', num: '2', title: 'From Slope to Equation: Building Linear Equations with y = mx + b' },
+      { id: 'u7l3', num: '3', title: 'The General Form of a Linear Equation' },
+      { id: 'u7l4', num: '4', title: 'Using Slope–Point Form to Determine the Equation of a Line' },
+      { id: 'u7l5', num: '5', title: 'Graphing Linear Equations: A Strategy for Every Form' },
+      { id: 'u7l6', num: '6', title: 'Slope in Context: Interpreting Rates of Change' },
+      { id: 'u7l7', num: '7', title: 'Equations of Lines Review: Slope, Intercepts, and Perpendicularity' }] },
     { unit: 8, title: 'Systems of Linear Equations', outcomes: 'RF9', lessons: [] },
     { unit: 9, title: 'Trigonometry', outcomes: 'M4', lessons: [] },
     { unit: 10, title: 'Measurement', outcomes: 'M1 · M2 · M3', lessons: [] }
@@ -77,6 +90,6 @@
     RF1: 'Interpreting and explaining relations', RF2: 'Relations and functions', RF3: 'Slope', RF4: 'Linear relations',
     RF5: 'Characteristics of linear relations', RF6: 'Forms of linear equations', RF7: 'Equations of linear relations',
     RF8: 'Function notation', RF9: 'Systems of linear equations', M1: 'SI and imperial measurement', M2: 'Converting units',
-    M3: 'Surface area and volume', M4: 'Trigonometry'
+    M3: 'Surface area and volume', M4: 'Trigonometry', EXT: 'Extension (not part of a unit level)'
   };
 })(window);

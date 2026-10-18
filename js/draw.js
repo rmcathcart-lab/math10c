@@ -421,7 +421,7 @@
   };
   K.P.tiles = function (prompt, inp, target, sol, hints, text, key) {
     var I = inputOf('tilepad', inp), rect = I.mode === 'rect';
-    return { prompt: prompt, input: I, check: rect ? K.tileRect(target) : K.tilePoly(target), key: key, answer: D.tileSvg(I, key), solution: sol, hints: hints || [], text: text };
+    return { prompt: prompt, input: I, check: rect ? K.tileRect(target) : I.takeaway ? K.tileTakeaway(I.start, target) : K.tilePoly(target), key: key, answer: D.tileSvg(I, key), solution: sol, hints: hints || [], text: text };
   };
   /* a number-line value showing the given parts (the key) */
   D.numlineKey = function (parts) {
@@ -472,6 +472,10 @@
       var tok = function (side) { var o = []; for (var i = 0; i < Math.abs(side.x || 0); i++) o.push((side.x < 0 ? '-' : '') + 'x'); for (var j = 0; j < Math.abs(side.one || 0); j++) o.push((side.one < 0 ? '-' : '') + '1'); return o; };
       var tp = tok(v.top || {}), sd = tok(v.side || {});
       return tp.length && sd.length ? HW.tiles.frame(tp, sd, { fill: true }) : '<div class="muted">No rectangle yet.</div>';
+    }
+    if (I.takeaway) {
+      var raw = v.raw || {}, mat = raw.mat || HW.tiles.count({ x2: v.x2 || 0, x: v.x || 0, one: v.one || 0 }), aw = raw.away || HW.tiles.count(v.away || {});
+      return '<div class="tp-cap"><b>Left on the mat</b></div>' + (mat.length ? HW.tiles.row(mat) : '<div class="muted">none</div>') + '<div class="tp-cap"><b>Taken away</b></div>' + (aw.length ? HW.tiles.row(aw) : '<div class="muted">none</div>');
     }
     var toks = HW.tiles.count({ x2: v.x2 || 0, x: v.x || 0, one: v.one || 0 });
     return toks.length ? HW.tiles.row(toks) : '<div class="muted">No tiles yet.</div>';
@@ -698,9 +702,14 @@
   W.tilepad = function (opt) {
     opt = opt || {};
     var rect = opt.mode === 'rect', wrap = el('div', 'w-tilepad'), pal = el('div', 'tp-pal'), zonesBox = el('div', 'tp-zones'), view = el('div', 'tp-view'), bar = el('div', 'dr-bar'), help = el('div', 'w-help');
-    var disabled = false, hist = [], zones = rect ? ['top', 'side'] : ['mat'], active = zones[0];
-    var state = rect ? { top: [], side: [] } : { mat: [] }, lim = opt.limit || 12;
-    var kinds = rect ? ['x', '-x', '1', '-1'] : ['x2', '-x2', 'x', '-x', '1', '-1'];
+    var away = !rect && !!opt.takeaway, disabled = false, hist = [], zones = rect ? ['top', 'side'] : away ? ['mat', 'away'] : ['mat'], active = zones[0];
+    function fresh() { var st = rect ? { top: [], side: [] } : { mat: opt.start ? HW.tiles.count(opt.start) : [] }; if (away) st.away = []; return st; }
+    var state = fresh(), lim = opt.limit || (away ? 24 : 12);
+    var kinds = rect ? ['x', '-x', '1', '-1'] : away ? [] : ['x2', '-x2', 'x', '-x', '1', '-1'];
+    if (!rect && (opt.zeroPairs || away)) (opt.zeroKinds || ['x', '1']).forEach(function (k) {
+      var b = el('button', 'tp-tile tp-zp'); b.type = 'button'; b.setAttribute('data-tok', 'zp' + k); b.title = 'Add a zero pair of ' + k.replace('x2', 'x²') + '-tiles';
+      b.innerHTML = tileChip(k, 1.1) + tileChip('-' + k, 1.1) + '<span>zero pair</span>'; pal.appendChild(b);
+    });
     kinds.forEach(function (k) {
       var b = el('button', 'tp-tile'); b.type = 'button'; b.setAttribute('data-tok', k); b.title = 'Add a ' + (k.charAt(0) === '-' ? 'negative ' : '') + k.replace('-', '').replace('x2', 'x²') + '-tile';
       b.innerHTML = tileChip(rect && k.replace('-', '') === 'x' ? (k.charAt(0) === '-' ? '-x' : 'x') : k, 1.2) + '<span>' + HW.k(TLAB[k]) + '</span>';
@@ -709,24 +718,28 @@
     var zoneEls = {};
     zones.forEach(function (z) {
       var box = el('div', 'tp-zone'); box.setAttribute('data-zone', z);
-      box.innerHTML = '<div class="tp-zlab">' + (z === 'top' ? 'Along the top' : z === 'side' ? 'Down the side' : 'Your tiles') + '</div><div class="tp-zbody"></div>';
-      box.addEventListener('click', function (e) { if (disabled) return; if (e.target.closest('.tp-placed')) return; active = z; render(); });
+      box.innerHTML = '<div class="tp-zlab">' + (z === 'top' ? 'Along the top' : z === 'side' ? 'Down the side' : z === 'away' ? 'Taken away' : away ? 'On the mat' : 'Your tiles') + '</div><div class="tp-zbody"></div>';
+      box.addEventListener('click', function (e) { if (disabled || away) return; if (e.target.closest('.tp-placed')) return; active = z; render(); });
       zonesBox.appendChild(box); zoneEls[z] = box;
     });
     var undoB = btn('Undo', 'dr-act'), clearB = btn('Clear', 'dr-act');
     undoB.addEventListener('click', function () { if (disabled || !hist.length) return; state = JSON.parse(hist.pop()); render(); });
-    clearB.addEventListener('click', function () { if (disabled) return; push(); zones.forEach(function (z) { state[z] = []; }); render(); });
+    clearB.addEventListener('click', function () { if (disabled) return; push(); state = fresh(); render(); });
     bar.appendChild(undoB); bar.appendChild(clearB);
-    help.innerHTML = HW.tex(opt.help || (rect ? 'Tap a tile to add it to the highlighted side (tap “Along the top” or “Down the side” to switch), or drag it there. The rectangle fills in. Tap a placed tile to remove it.' : 'Tap a tile to add it, or drag it onto the mat. Tap a placed tile to remove it.')) + ' ' + HW.tex(HW.tiles.legend());
+    help.innerHTML = HW.tex(opt.help || (away ? 'Tap a tile on the mat to take it away (tap it again to put it back). If the tiles you need aren’t there, add <b>zero pairs</b> first — a zero pair adds nothing.' : rect ? 'Tap a tile to add it to the highlighted side (tap “Along the top” or “Down the side” to switch), or drag it there. The rectangle fills in. Tap a placed tile to remove it.' : 'Tap a tile to add it, or drag it onto the mat. Tap a placed tile to remove it.')) + ' ' + HW.tex(HW.tiles.legend());
     wrap.appendChild(pal); wrap.appendChild(zonesBox); if (rect) wrap.appendChild(view); wrap.appendChild(bar); wrap.appendChild(help);
     function push() { hist.push(JSON.stringify(state)); if (hist.length > 80) hist.shift(); }
-    function add(z, tok) { if (disabled) return; if (state[z].length >= lim) return; push(); state[z].push(rect ? tok.replace('x2', 'x') : tok); render(); }
+    function add(z, tok) {
+      if (disabled) return; if (away) z = 'mat'; if (state[z].length >= lim) return; push();
+      if (tok.slice(0, 2) === 'zp') { var k = tok.slice(2); state[z].push(k, '-' + k); } else state[z].push(rect ? tok.replace('x2', 'x') : tok);
+      render();
+    }
     function render() {
       zones.forEach(function (z) {
         var body = zoneEls[z].querySelector('.tp-zbody'), list = sortToks(state[z]);
         zoneEls[z].classList.toggle('on', z === active && zones.length > 1);
-        body.innerHTML = list.length ? '' : '<span class="muted tp-empty">' + (rect ? 'tap or drag tiles here' : 'tap or drag tiles here') + '</span>';
-        list.forEach(function (tok) { var c = el('button', 'tp-placed'); c.type = 'button'; c.title = 'Remove'; c.innerHTML = tileChip(rect && z === 'top' ? tok.replace('x', 'xh') : tok, 1.25); c.addEventListener('click', function (e) { e.stopPropagation(); if (disabled) return; var i = state[z].indexOf(tok); if (i >= 0) { push(); state[z].splice(i, 1); render(); } }); body.appendChild(c); });
+        body.innerHTML = list.length ? '' : '<span class="muted tp-empty">' + (z === 'away' ? 'tap tiles on the mat to take them away' : away ? 'no tiles left' : 'tap or drag tiles here') + '</span>';
+        list.forEach(function (tok) { var c = el('button', 'tp-placed'); c.type = 'button'; c.title = 'Remove'; c.innerHTML = tileChip(rect && z === 'top' ? tok.replace('x', 'xh') : tok, 1.25); c.addEventListener('click', function (e) { e.stopPropagation(); if (disabled) return; var i = state[z].indexOf(tok); if (i >= 0) { push(); state[z].splice(i, 1); if (away) state[z === 'mat' ? 'away' : 'mat'].push(tok); render(); } }); if (away) c.title = z === 'mat' ? 'Take away' : 'Put back'; body.appendChild(c); });
       });
       if (rect) {
         var tp = sortToks(state.top), sd = sortToks(state.side);
@@ -743,7 +756,7 @@
     });
     pal.addEventListener('pointermove', function (e) {
       if (!drag) return;
-      if (!drag.moved && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) > 6) { drag.moved = true; drag.ghost = el('div', 'tp-ghost'); drag.ghost.innerHTML = tileChip(drag.tok, 1.6); document.body.appendChild(drag.ghost); }
+      if (!drag.moved && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) > 6) { drag.moved = true; drag.ghost = el('div', 'tp-ghost'); drag.ghost.innerHTML = drag.tok.slice(0, 2) === 'zp' ? tileChip(drag.tok.slice(2), 1.4) + tileChip('-' + drag.tok.slice(2), 1.4) : tileChip(drag.tok, 1.6); document.body.appendChild(drag.ghost); }
       if (drag.ghost) { drag.ghost.style.left = e.clientX + 'px'; drag.ghost.style.top = e.clientY + 'px'; var over = document.elementFromPoint(e.clientX, e.clientY); zones.forEach(function (z) { zoneEls[z].classList.toggle('drop', !!(over && over.closest && over.closest('.tp-zone') === zoneEls[z])); }); }
     });
     function endDrag(e, cancel) {
@@ -751,6 +764,7 @@
       if (d.ghost) { d.ghost.remove(); zones.forEach(function (z) { zoneEls[z].classList.remove('drop'); }); }
       if (cancel) return;
       if (!d.moved) { add(active, d.tok); return; }
+      if (away) { add('mat', d.tok); return; }
       var over = document.elementFromPoint(e.clientX, e.clientY), zone = over && over.closest ? over.closest('.tp-zone') : null;
       if (zone && wrap.contains(zone)) { active = zone.getAttribute('data-zone'); add(active, d.tok); }
     }
@@ -759,21 +773,23 @@
     var api = { node: wrap, kind: 'tilepad' };
     api.value = function () {
       if (rect) { var a = countsOf(state.top), b = countsOf(state.side); return { top: { x: a.x, one: a.one }, side: { x: b.x, one: b.one }, raw: clone(state) }; }
-      var c = countsOf(state.mat); return { x2: c.x2, x: c.x, one: c.one, raw: clone(state) };
+      var c = countsOf(state.mat), o = { x2: c.x2, x: c.x, one: c.one, raw: clone(state) };
+      if (away) { var w = countsOf(state.away); o.away = { x2: w.x2, x: w.x, one: w.one }; }
+      return o;
     };
     api.set = function (v) {
       if (!v) return;
-      if (v.raw) state = clone(v.raw);
+      if (v.raw) { state = clone(v.raw); if (away && !state.away) state.away = []; }
       else if (rect) { var mk = function (s) { var o = []; for (var i = 0; i < Math.abs(s.x || 0); i++) o.push((s.x < 0 ? '-' : '') + 'x'); for (var j = 0; j < Math.abs(s.one || 0); j++) o.push((s.one < 0 ? '-' : '') + '1'); return o; }; state = { top: mk(v.top || {}), side: mk(v.side || {}) }; }
       else state = { mat: HW.tiles.count({ x2: v.x2 || 0, x: v.x || 0, one: v.one || 0 }) };
       render();
     };
-    api.clear = function () { zones.forEach(function (z) { state[z] = []; }); hist = []; render(); };
+    api.clear = function () { state = fresh(); hist = []; render(); };
     api.disable = function (on) { disabled = !!on; wrap.classList.toggle('off', disabled); };
     api.focus = function () {}; api.onEnter = function () {};
     render();
     return api;
   };
-  W.tilepad.text = function (v) { v = v || {}; if (v.top) { var f = D.tileFactors(v); return '(' + P.tex(f[0]) + ')(' + P.tex(f[1]) + ')'; } return P.tex(tilePolyOf(v)); };
+  W.tilepad.text = function (v) { v = v || {}; if (v.away) return 'took away ' + P.tex(tilePolyOf(v.away)) + ', left ' + P.tex(tilePolyOf(v)); if (v.top) { var f = D.tileFactors(v); return '(' + P.tex(f[0]) + ')(' + P.tex(f[1]) + ')'; } return P.tex(tilePolyOf(v)); };
   W.tilepad.html = function (v, I) { return D.tileSvg(I, v); };
 })(window);

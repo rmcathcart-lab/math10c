@@ -7,6 +7,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f5f5a'/%3E%3Ctext x='32' y='42' font-family='Arial' font-weight='700' font-size='26' fill='white' text-anchor='middle'%3E10C%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="../assets/katex/katex.min.css">
 <link rel="stylesheet" href="../assets/app.css">
+<script defer src="https://cdn.jsdelivr.net/npm/mathlive@0.108.3/mathlive.min.js" onload="try { MathfieldElement.fontsDirectory = null; MathfieldElement.soundsDirectory = null; } catch (e) {}"></script>
 <style>
   .demo-wrap { max-width: 640px; margin: 0 auto; padding: 18px 16px 60px; }
   .demo-intro { color: var(--ink2); margin: 4px 0 18px; line-height: 1.5; }
@@ -38,6 +39,7 @@
 <script src="../js/factor.js"></script>
 <script src="../js/relfn.js"></script>
 <script src="../js/draw.js"></script>
+<script src="../js/draw2.js"></script>
 <script>
 (function () {
   var HW = window.HW, K = HW.kit, W = HW.widgets, D = HW.draw, t = K.t;
@@ -92,6 +94,29 @@
   // 9 tiles: polynomial
   var in9 = { type: 'tilepad' };
   demo('Algebra tiles · model a polynomial', 'Model ' + t('x^{2}-3x+2') + ' with algebra tiles.', in9, K.tilePoly('x^2-3x+2'), D.tileSvg(in9, { x2: 1, x: -3, one: 2 }));
+  // 10 place numbers on a number line
+  var p10 = K.P.numplace('', { min: -6, max: 6, items: [{ id: 'a', tex: '\\sqrt{20}' }, { id: 'b', tex: '-\\sqrt[3]{9}' }, { id: 'c', tex: '\\frac{3}{4}' }, { id: 'd', tex: '-3.5' }] }, { a: Math.sqrt(20), b: -Math.cbrt(9), c: 0.75, d: -3.5 }, '', [], '');
+  demo('Number line · place the numbers', 'Place each number at its approximate position on the number line.', p10.input, p10.check, p10.answer);
+  // 11 sort into the real-number diagram
+  var p11 = K.P.setsort('', { items: [{ id: 'a', tex: '0' }, { id: 'b', tex: '-7' }, { id: 'c', tex: '\\sqrt{16}' }, { id: 'd', tex: '\\sqrt{10}' }, { id: 'e', tex: '0.\\overline{3}' }, { id: 'f', tex: '\\pi' }] }, { a: 'W', b: 'I', c: 'N', d: 'Qbar', e: 'Q', f: 'Qbar' }, '', [], '');
+  demo('Real-number diagram · sort the numbers', 'Put each number in the <b>innermost</b> set it belongs to.', p11.input, p11.check, p11.answer);
+  // 12 tap the intercepts
+  var p12 = K.P.points('', { x: [-6, 6], y: [-6, 6], bg: { fns: [{ f: function (x) { return 0.5 * (x + 2) * (x - 3); } }] } }, [[-2, 0], [3, 0]], '', [], '', { what: 'x-intercept', whatHint: 'An ' + t('x') + '-intercept is where the graph crosses the ' + t('x') + '-axis (' + t('y=0') + ').' });
+  demo('Graph tool · tap features', 'Tap the <b>' + t('x') + '-intercepts</b> of the graph.', p12.input, p12.check, p12.answer);
+  // 13 domain and range on number lines
+  var p13 = K.P.domrange('', { graph: { x: [-6, 6], y: [-6, 6], segs: [{ pts: [[-3, -2], [4, 5]], start: 'closed', end: 'open' }] } }, '\\{x\\mid -3\\le x<4\\}', '\\{y\\mid -2\\le y<5\\}', '', [], '');
+  demo('Domain and range · shade them', 'Show the domain and the range of the graph on the number lines.', p13.input, p13.check, p13.answer);
+  // 14 subtract with zero pairs
+  var in14 = { type: 'tilepad', takeaway: true, start: { x: 2, one: 1 } };
+  demo('Algebra tiles · subtract with zero pairs', 'The mat shows ' + t('2x+1') + '. Take away ' + t('3x-2') + '. (You’ll need zero pairs.)', in14, K.tileTakeaway({ x: 2, one: 1 }, { x: 3, one: -2 }), D.tileSvg(in14, { raw: { mat: ['-x', '1', '1', '1'], away: ['x', 'x', 'x', '-1', '-1'] } }));
+  // 15 rectangle with negative tiles
+  var in15 = { type: 'tilepad', mode: 'rect' };
+  demo('Algebra tiles · rectangle with negative tiles', 'Arrange ' + t('x^{2}+2x-8') + ' as a rectangle. (Use white tiles for negatives.)', in15, K.tileRect('x^2+2x-8'), D.tileSvg(in15, { top: { x: 1, one: 4 }, side: { x: 1, one: -2 } }));
+  // 16 area box
+  var p16 = K.P.areabox('', { rows: ['2x', '-3'], cols: ['3x', '2'], cells: [[null, null], [null, null]] }, { product: '6x^2-5x-6' }, { rows: ['2x', '-3'], cols: ['3x', '2'], cells: [['6x^{2}', '4x'], ['-9x', '-6']] }, '', [], '');
+  demo('Area box · fill in the products', 'Use the area box to multiply ' + t('(2x-3)(3x+2)') + '.', p16.input, p16.check, p16.answer);
+  var p17 = K.P.areabox('', { rows: [null, null], cols: [null, null], cells: [['6x^{2}', null], [null, '-6']] }, { product: '6x^2-5x-6', factor: true }, { rows: ['2x', '-3'], cols: ['3x', '2'], cells: [['6x^{2}', '4x'], ['-9x', '-6']] }, '', [], '');
+  demo('Area box · factor', 'Complete the area box for ' + t('6x^{2}-5x-6') + ': fill the two middle boxes, then the row and column terms.', p17.input, p17.check, p17.answer);
 })();
 </script>
 </body>

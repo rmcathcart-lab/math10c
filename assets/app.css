@@ -466,3 +466,36 @@ math-field.mf::part(menu-toggle), math-field.mf::part(virtual-keyboard-toggle) {
 .tp-placed:hover svg rect { stroke: #c4532a; }
 .tp-empty { font-size: 13px; }
 .tp-ghost { position: fixed; z-index: 1000; pointer-events: none; transform: translate(-50%, -50%); filter: drop-shadow(0 2px 4px rgba(0,0,0,.25)); }
+/* number placement, set sorting, domain/range lines, area boxes */
+.w-numplace, .w-setsort, .w-domrange, .w-areabox { margin: 6px 0 4px; }
+.np-tray { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; min-height: 34px; align-items: center; }
+.np-chip, .ss-chip { font: inherit; font-size: 15px; padding: 4px 10px; border-radius: 10px; border: 1.5px solid #d6cfbf; background: #fff; cursor: pointer; line-height: 1.3; }
+.np-chip.on, .ss-chip.on { border-color: #c4532a; background: #fff1ea; box-shadow: 0 0 0 2px rgba(196, 83, 42, .18); }
+.np-done { font-size: 13px; }
+.ss-diagram { font-size: 13px; }
+.ss-box { border: 1.6px solid #9fb3b0; border-radius: 12px; padding: 4px 6px 6px; background: rgba(19, 128, 122, .04); }
+.ss-diagram.live .ss-box[data-zone] { cursor: pointer; }
+.ss-diagram.live.armed .ss-box[data-zone]:hover { border-color: #c4532a; }
+.ss-R { border-color: #2b3340; background: #fff; }
+.ss-lab { font-size: 12px; font-weight: 700; color: var(--ink2); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ss-lab .ss-name { font-style: normal; font-weight: 600; color: var(--muted); }
+.ss-body { display: flex; flex-wrap: wrap; gap: 4px; min-height: 28px; margin-bottom: 4px; }
+.ss-cols { display: flex; gap: 6px; align-items: stretch; }
+.ss-cols > .ss-Q { flex: 2 1 0; min-width: 0; }
+.ss-cols > .ss-Qbar { flex: 1 1 0; min-width: 0; }
+.ss-chip { font-size: 14px; padding: 2px 7px; }
+@media (max-width: 420px) { .ss-lab .ss-name { font-size: 11px; } .ss-box { padding: 3px 4px 4px; } }
+.dr-nlab { font-size: 13px; color: var(--ink2); margin: 8px 0 2px; }
+.dr-dr .nl-svg { display: block; width: 100%; height: auto; }
+.ab-scroll { overflow-x: auto; max-width: 100%; }
+.ab-table { border-collapse: collapse; margin: 4px 0 8px; }
+.ab-table th, .ab-table td { border: 1.5px solid #2b3340; padding: 6px 8px; text-align: center; min-width: 64px; height: 44px; }
+.ab-table .ab-corner { border: 0; color: var(--muted); }
+.ab-table .ab-head { background: #f6f4ef; }
+.ab-live td, .ab-live th.ab-head { padding: 2px; }
+.ab-live .given { padding: 6px 8px; }
+.ab-live .act { box-shadow: inset 0 0 0 2px var(--brand2); }
+.ab-math .ans-row { margin: 0; }
+.ab-math math-field, .ab-math .mf { min-width: 58px; max-width: 96px; font-size: 17px; }
+.tp-zp span { font-size: 12.5px; color: var(--ink2); }
+.ab-math .preview { display: none; }
