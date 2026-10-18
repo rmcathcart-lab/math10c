@@ -273,12 +273,52 @@
   function fieldsOf(prompt, items, answer, sol, hints, text) {
     return BF(prompt, items.map(function (x) { return x.f; }), items.map(function (x) { return x.c; }), items.map(function (x) { return x.k; }), answer, sol, hints, text);
   }
-  /* a small context graph for the sketch multiple choice */
-  function ctxGraph(o, segs, fns) {
-    var sx = o.x[1] - o.x[0], sy = o.y[1] - o.y[0];
-    return HW.graph({ x: o.x, y: o.y, grid: o.gx, gridY: o.gy, labels: o.lx, labelsX: o.lx, labelsY: o.ly, unitX: 105 / sx, unitY: 85 / sy, firstQuadrant: o.fq !== false,
-      xName: o.xName, yName: o.yName, max: 210, segs: segs || [], fns: fns || [], aria: 'sketch option' });
+  /* ---------------- sketching a model on its context axes (graph pad) ----------------
+   * The model's true end values are often not on a tappable grid (H(24) = 47 on a 5 cm snap), so a sketch is checked
+   * like a careful paper sketch: each end must be on the grid point NEAREST the true point (within half a snap step),
+   * which is exact whenever the true point is on the grid. */
+  function padIn(o) {
+    var I = { x: o.x, y: o.y, grid: o.sx, gridY: o.gy || o.sy, labelsX: o.lx, labelsY: o.ly, unitX: 290 / (o.x[1] - o.x[0]), unitY: 230 / (o.y[1] - o.y[0]),
+      firstQuadrant: o.fq !== false, xName: o.v, yName: o.w, xTitle: o.xTitle, yTitle: o.yTitle, snapX: o.sx, snapY: o.sy, max: 340 };
+    Object.keys(o.extra || {}).forEach(function (k) { I[k] = o.extra[k]; });
+    return I;
   }
+  function snapTo(x, s) { return cl(Math.round(cl(x / s)) * s); }
+  /* a linear model drawn as ONE segment over [X0, X1] with solid ends. o: f, X0, X1, sx, sy, name, v, unitY (text),
+   * hint texts: start0 (started at 0 instead of the fixed value), startX, endX, arrow, dir */
+  function segSketch(o) {
+    var tx = o.sx / 2 + 1e-6, ty = o.sy / 2 + 1e-6, Y0 = o.f(o.X0), Y1 = o.f(o.X1), nm = o.name, v = o.v;
+    var A = [snapTo(o.X0, o.sx), snapTo(Y0, o.sy)], Bp = [snapTo(o.X1, o.sx), snapTo(Y1, o.sy)];
+    var key = { pts: [], pieces: [{ v: [A, Bp], s: 'closed', e: 'closed' }], join: 'none' };
+    var near = function (P0) { return 'the grid point nearest ' + t(ptT(P0)); };
+    var check = function (resp) {
+      if (HW.draw.empty(resp)) return form('empty', 'Draw your graph first: choose <b>╱ Line</b>, tap the start point, then the end point (tap it again to finish).');
+      var g = HW.draw.geom(resp), ks = Object.keys(g.lines);
+      if (!ks.length) return wrong('sk-points', 'Good start — now draw the graph itself: every value in between makes sense too, so connect the start to the end with <b>╱ Line</b>.');
+      if (ks.length > 1) return wrong('sk-straight', 'This model is linear, so its graph is <b>one straight segment</b>. Use <b>╱ Line</b> and tap only the two end points.');
+      var L = g.lines[ks[0]];
+      if (L.B === 0) return wrong('sk-vertical', 'A vertical line would give many outputs for one input. Draw the segment from the start of the domain to its end.');
+      if (L.iv.length > 1) return wrong('sk-gap', 'Your graph has a gap. The model works for every value of ' + t(v) + ' in its domain — draw one unbroken segment.');
+      if (g.pts.length) return wrong('sk-extra', 'The point ' + t(ptT(g.pts[0])) + ' is not on your segment. A sketch of a linear model is just the segment — remove separate points.');
+      var iv = L.iv[0];
+      if (!isFinite(iv.lo) || !isFinite(iv.hi)) return wrong('sk-arrow', o.arrow || 'The model has a start and an end: finish the segment with solid dots, not arrows.');
+      var f = function (x) { return (L.C - L.A * x) / L.B; }, yl = f(iv.lo), yh = f(iv.hi);
+      if ((yh - yl) * (Y1 - Y0) <= 0) return wrong('sk-dir', o.dir || ('Check the direction: ' + t(nm + '(' + nf(o.X0) + ')=' + nf(Y0)) + ' and ' + t(nm + '(' + nf(o.X1) + ')=' + nf(Y1)) + '.'));
+      if (Math.abs(iv.lo - o.X0) > tx) return wrong('sk-startx', o.startX || ('Check where the graph starts: the domain begins at ' + t(v + '=' + nf(o.X0)) + '.'));
+      if (Math.abs(iv.hi - o.X1) > tx) return wrong('sk-endx', o.endX || ('Check where the graph ends: the domain stops at ' + t(v + '=' + nf(o.X1)) + '.'));
+      if (Math.abs(yl - Y0) > ty) {
+        if (o.start0 && Math.abs(yl) < ty) return wrong('no-fixed', o.start0);
+        return wrong('sk-starty', 'Check the start: ' + t(nm + '(' + nf(o.X0) + ')=' + nf(Y0)) + ', so the segment starts at ' + near([o.X0, Y0]) + '.');
+      }
+      if (Math.abs(yh - Y1) > ty) return wrong('sk-endy', 'Check the end: ' + t(nm + '(' + nf(o.X1) + ')=' + nf(Y1)) + ', so the segment ends at ' + near([o.X1, Y1]) + '.');
+      if (!iv.lc || !iv.hc) return wrong('graph-ends', 'Both end values belong to the model: use <b>solid</b> dots at both ends (●○ Ends).');
+      return ok();
+    };
+    return { check: check, key: key, A: A, B: Bp };
+  }
+  function seg(a, b, s, e) { return { v: [a, b], s: s || 'closed', e: e || 'closed' }; }
+  function drawing(pieces, pts, join) { return { pieces: pieces || [], pts: pts || [], join: join || 'none' }; }
+  var LINE_HELP = ' Use <b>╱ Line</b>: tap the start, then the end (tap it again to finish). Put each end on the grid point nearest the true point.';
 
   /* ================= Question 4: zigzag graph ================= */
   function zigShared(r) {

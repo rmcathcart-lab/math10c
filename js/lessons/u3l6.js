@@ -6,7 +6,10 @@
  * Local helpers: lin/quad (build polynomials), wl (filters opt.wrong lists), pairCheck (two factors in either order),
  * prodCheck (two factors whose product is a target), factorCheck (the missing factor of a product),
  * exampleTri (a trinomial with stated features), and small SVG figures (card and photo, box net, tile rectangle, cube,
- * drilled block). Levels: LIM BEG EMG PRG ADV MAS. */
+ * drilled block). Levels: LIM BEG EMG PRG ADV MAS.
+ * Algebra tiles (js/draw.js tilepad): Q12(b) "complete the tile rectangle" → tileFillPart (poly mode; every tile inside the
+ * frame, zero pairs kept, checked from the builder's raw tiles); EP Q4 adds a rectangle-mode build of (x+p)(x−q) before
+ * the "why not all shaded" item (tileRectPart). Reading tiles (factors, dimensions, counts "without drawing") stays typed. */
 (function (root) {
   'use strict';
   var HW = root.HW, F = HW.fmt, K = HW.kit, KP = K.P, Y = HW.poly, t = K.t, ok = K.ok, wrong = K.wrong, form = K.form;
@@ -25,7 +28,8 @@
     'const-add': 'Added constants instead of multiplying', 'terms-wrong': 'Wrong number of terms', 'cancel-missed': 'Missed terms that cancel', 'factor-degree': 'Missing factor has the wrong degree',
     'factor-const': 'Missing factor has the wrong constant', 'factor-middle': 'Missing factor has a wrong middle term', 'trivial-factor': 'Used 1 (or a constant) as a factor', 'cube-each': 'Cubed each term separately',
     'not-doubled': 'Surface area not doubled', 'partial-miss': 'Missed a partial product', 'cross-once': 'Counted a cross product once', 'drop-term': 'Dropped one partial product',
-    'zero-missed': 'Missed k = 0', 'not-zero': 'A value that changes the area', 'neg-a': 'Gave a negative value', 'a-b-swap': 'Swapped a and b'
+    'zero-missed': 'Missed k = 0', 'not-zero': 'A value that changes the area', 'neg-a': 'Gave a negative value', 'a-b-swap': 'Swapped a and b',
+    'tile-simplified': 'Tiles: gave the simplified product instead of filling the rectangle', 'tile-same': 'Tiles: same factor on both sides'
   });
 
   /* ---------- polynomial helpers ---------- */
@@ -164,7 +168,68 @@
     return pickWhere(function () {
       var a = r.pick([1, 2, 2, 3]), b = nz(r, -3, 3), c = r.int(1, 3) * (b > 0 ? -1 : 1);
       return { a: a, b: b, c: c };
-    }, function (s) { return s.a + Math.abs(s.b) <= 5 && s.a * s.c + s.b !== 0 && gcd(s.a, Math.abs(s.b)) === 1; });
+    }, function (s) { return s.a + Math.abs(s.b) <= 5 && s.a * s.c + s.b !== 0 && gcd(s.a, Math.abs(s.b)) === 1 && s.a + s.a * Math.abs(s.c) + Math.abs(s.b) + Math.abs(s.b * s.c) <= 16; });
+  }
+  /* ---------- algebra-tile builder (js/draw.js tilepad) ---------- */
+  function tcount(n) { return n > 0 ? [n, 0] : [0, -n]; }
+  /* shaded / white counts per shape from the builder's raw tokens (net counts when there is no raw) */
+  function rawTiles(resp) {
+    var c = { x2: [0, 0], x: [0, 0], one: [0, 0] }, list = resp && resp.raw && resp.raw.mat;
+    if (list) list.forEach(function (tk) { var neg = tk.charAt(0) === '-', k = tk.replace('-', ''); c[k === 'x2' ? 'x2' : k === 'x' ? 'x' : 'one'][neg ? 1 : 0]++; });
+    else ['x2', 'x', 'one'].forEach(function (k) { c[k] = tcount((resp && resp[k]) || 0); });
+    return c;
+  }
+  /* Q12(b): fill the frame for (a x + b)(x + c) — every tile inside, zero pairs NOT yet removed (poly mode, raw counts) */
+  function tileFillPart(sh) {
+    var xs = sh.a * sh.c, us = sh.b, pos = (xs > 0 ? xs : 0) + (us > 0 ? us : 0), neg = (xs < 0 ? -xs : 0) + (us < 0 ? -us : 0), ones = sh.b * sh.c;
+    var want = { x2: [sh.a, 0], x: [pos, neg], one: tcount(ones) }, K3 = ['x2', 'x', 'one'];
+    var topT = tokens(sh.a, 'x').concat(tokens(sh.b, '1')), sideT = ['x'].concat(tokens(sh.c, '1'));
+    var mat = tokens(sh.a, 'x2').concat(tokens(pos, 'x'), tokens(-neg, 'x'), tokens(ones, '1'));
+    var col = function (v) { return v > 0 ? 'shaded' : 'white'; };
+    var xHow = t(sh.a) + ' ' + t('x') + '-tile' + (sh.a > 1 ? 's' : '') + ' on top × ' + t(Math.abs(sh.c)) + ' ' + col(sh.c) + ' unit tile' + (Math.abs(sh.c) > 1 ? 's' : '') + ' down the side give ' + t(Math.abs(xs)) + ' ' + col(xs) + ' ' + t('x') + '-tiles; ' + t(Math.abs(sh.b)) + ' ' + col(sh.b) + ' unit tile' + (Math.abs(sh.b) > 1 ? 's' : '') + ' on top × the ' + t('x') + '-tile on the side give ' + t(Math.abs(us)) + ' ' + col(us) + ' ' + t('x') + '-tile' + (Math.abs(us) > 1 ? 's' : '');
+    var check = function (resp) {
+      var rc = rawTiles(resp), tot = K3.reduce(function (s, k) { return s + rc[k][0] + rc[k][1]; }, 0);
+      if (!tot) return form('empty', 'Add the tiles that go inside the rectangle: tap a tile to put it on the mat.');
+      var same = function (k) { return rc[k][0] === want[k][0] && rc[k][1] === want[k][1]; }, net = function (c, k) { return c[k][0] - c[k][1]; };
+      if (K3.every(same)) return ok();
+      if (K3.every(function (k) { return net(rc, k) === net(want, k); })) return form('tile-simplified', 'Those tiles are worth the right amount — that is the simplified product. But the rectangle holds one tile for <b>every</b> pair of a top tile and a side tile, zero pairs included: ' + t(pos) + ' shaded and ' + t(neg) + ' white ' + t('x') + '-tiles. Put them all in.');
+      if (!same('x2')) return wrong('tile-count', 'Check the ' + t('x^{2}') + '-tiles: each ' + t('x') + '-tile on top times the ' + t('x') + '-tile on the side makes one <b>shaded</b> ' + t('x^{2}') + '-tile, so there are ' + t(sh.a) + '.');
+      if (!same('one')) return rc.one[0] + rc.one[1] === Math.abs(ones) ? wrong('tile-sign', 'Right number of unit tiles, wrong colour. Each one comes from a top unit tile and a side unit tile with <b>different</b> shading, so it is white.') : wrong('tile-count', 'Unit tiles: (unit tiles on top) × (unit tiles down the side) = ' + t(Math.abs(sh.b) + '\\times ' + Math.abs(sh.c) + '=' + Math.abs(ones)) + '.');
+      if (rc.x[0] + rc.x[1] === pos + neg) return wrong('tile-sign', 'Right number of ' + t('x') + '-tiles, but check the colours (same shading → shaded, different → white): ' + xHow + '.');
+      return wrong('tile-count', 'Count the ' + t('x') + '-tiles in two groups: ' + xHow + '.');
+    };
+    var keyC = { x2: sh.a, x: pos - neg, one: ones, raw: { mat: mat } };
+    return { prompt: 'Complete the tile rectangle using the shading rule: put on the mat every tile that goes <b>inside</b> the frame. Don’t remove any zero pairs yet.', input: { type: 'tilepad', mode: 'poly', limit: 20 },
+      check: check, key: keyC, answer: HW.tiles.frame(topT, sideT, { fill: true }) + '<div>' + HW.tiles.row(mat) + '</div>' + t(sh.a) + ' shaded ' + t('x^{2}') + '-tile' + (sh.a > 1 ? 's' : '') + ', ' + t(pos) + ' shaded and ' + t(neg) + ' white ' + t('x') + '-tiles, ' + t(Math.abs(ones)) + ' white unit tile' + (Math.abs(ones) > 1 ? 's' : ''),
+      solution: 'Each tile inside is (tile above it) × (tile beside it). Same shading → shaded (+), different shading → white (−).<br>' + t('x^{2}') + '-tiles: ' + t(sh.a) + ' shaded. ' + t('x') + '-tiles: ' + xHow + '. Unit tiles: ' + t(Math.abs(sh.b) + '\\times ' + Math.abs(sh.c) + '=' + Math.abs(ones)) + ', all white.' + HW.tiles.frame(topT, sideT, { fill: true }),
+      hints: ['Go cell by cell: the tile above × the tile beside. ' + t('x\\cdot x') + ' is an ' + t('x^{2}') + '-tile, ' + t('x\\cdot 1') + ' an ' + t('x') + '-tile, ' + t('1\\cdot 1') + ' a unit tile.', 'Same shading → shaded; different shading → white. Keep the zero pairs for now.'],
+      text: 'fill the tile rectangle',
+      bad: [{ x2: sh.a, x: pos - neg, one: ones }, { x2: sh.a, x: pos + neg, one: Math.abs(ones), raw: { mat: tokens(sh.a, 'x2').concat(tokens(pos + neg, 'x'), tokens(Math.abs(ones), '1')) } },
+        { x2: sh.a, x: pos - neg, one: -ones, raw: { mat: tokens(sh.a, 'x2').concat(tokens(pos, 'x'), tokens(-neg, 'x'), tokens(-ones, '1')) } }] };
+  }
+  /* rectangle mode: lay the factor tiles of (A x + B)(C x + D) along the top and down the side (any valid rectangle accepted) */
+  function tileRectPart(A, B, C, D, prodTex, text) {
+    var F1 = lin(A, B), F2 = lin(C, D), T = Y.mul(F1, F2), base = K.tileRect(T);
+    var fac = function (s) { s = s || {}; return lin(s.x || 0, s.one || 0); };
+    var desc = function (a, b) { return a + ' shaded ' + t('x') + '-tile' + (a > 1 ? 's' : '') + (b ? ' and ' + Math.abs(b) + ' ' + (b > 0 ? 'shaded' : 'white') + ' unit tile' + (Math.abs(b) > 1 ? 's' : '') : ''); };
+    var p = KP.tiles('Build ' + t(prodTex) + ' as a rectangle of algebra tiles: put the tiles for one factor along the top and the tiles for the other factor down the side.', { mode: 'rect' }, T,
+      HW.tiles.frame(tokens(A, 'x').concat(tokens(B, '1')), tokens(C, 'x').concat(tokens(D, '1')), { fill: true }) + 'Along the top: ' + t(tx(F1)) + ', so ' + desc(A, B) + '. Down the side: ' + t(tx(F2)) + ', so ' + desc(C, D) + '. (Either factor may go on top.)<br>The white unit tiles of ' + t(tx(F2)) + ' make white tiles inside, so the rectangle can’t be all shaded.',
+      ['Each factor is a binomial: its ' + t('x') + '-term gives the ' + t('x') + '-tiles and its constant gives the unit tiles.', 'A negative constant means <b>white</b> unit tiles.'], text, { top: { x: A, one: B }, side: { x: C, one: D } });
+    p.check = function (resp) {
+      resp = resp || {};
+      var res = base(resp); if (res.v !== 'wrong') return res;
+      var fa = fac(resp.top), fb = fac(resp.side), flip = function (q) { return lin(cf(q, 'x', 1), -cf(q, 'x', 0)); };
+      var pairs = [[F1, F2], [F2, F1]];
+      for (var i = 0; i < 2; i++) {
+        var X = pairs[i][0], Z = pairs[i][1];
+        if (Y.eq(fa, X) && Y.eq(fb, flip(Z))) return wrong('tile-sign', 'The top is right. Down the side, check the colour of the unit tiles: ' + t(tx(Z)) + ' needs ' + desc(cf(Z, 'x', 1), cf(Z, 'x', 0)) + '.');
+        if (Y.eq(fb, Z) && Y.eq(fa, flip(X))) return wrong('tile-sign', 'The side is right. Along the top, check the colour of the unit tiles: ' + t(tx(X)) + ' needs ' + desc(cf(X, 'x', 1), cf(X, 'x', 0)) + '.');
+      }
+      if (Y.eq(fa, fb) && !Y.eq(F1, F2) && (Y.eq(fa, F1) || Y.eq(fa, F2))) return wrong('tile-same', 'You built the same factor on both sides. Put ' + t(tx(F1)) + ' along one side and ' + t(tx(F2)) + ' along the other.');
+      return res;
+    };
+    p.bad = [{ top: { x: A, one: B }, side: { x: C, one: -D } }, { top: { x: A, one: -B }, side: { x: C, one: D } }, { top: { x: A, one: B }, side: { x: A, one: B } }].filter(function (v) { return !Y.eq(Y.mul(fac(v.top), fac(v.side)), T); });
+    return p;
   }
   function tokens(n, kind) { var o = []; for (var i = 0; i < Math.abs(n); i++) o.push((n < 0 ? '-' : '') + kind); return o; }
 
@@ -441,7 +506,7 @@
         },
         shared: function (r) { return tilesQ12(r); },
         parts: [
-          { id: '12a', level: 'BEG', make: function (r, sh) {
+          { id: '12a', sub: 'a', level: 'BEG', make: function (r, sh) {
             var top = lin(sh.a, sh.b), side = lin(1, sh.c), fl = [{ name: 'Top', label: 'across the top', mode: 'math', keys: 'poly', vars: ['x'] }, { name: 'Side', label: 'down the side', mode: 'math', keys: 'poly', vars: ['x'] }];
             var p = KP.fields('State the two factors.', fl, [], [tx(top), tx(side)], t(bt(top)) + ' and ' + t(bt(side)),
               'Top: ' + t(sh.a) + ' shaded ' + t('x') + '-tile' + (sh.a > 1 ? 's' : '') + ' and ' + t(Math.abs(sh.b)) + ' ' + (sh.b < 0 ? 'unshaded' : 'shaded') + ' unit tile' + (Math.abs(sh.b) > 1 ? 's' : '') + ', so ' + t(tx(top)) + '.<br>Side: one shaded ' + t('x') + '-tile and ' + t(Math.abs(sh.c)) + ' ' + (sh.c < 0 ? 'unshaded' : 'shaded') + ' unit tile' + (Math.abs(sh.c) > 1 ? 's' : '') + ', so ' + t(tx(side)) + '.',
@@ -455,18 +520,19 @@
             p.bad = [[tx(lin(sh.a, -sh.b)), tx(side)], [tx(top), tx(lin(1, -sh.c))]];
             return p;
           } },
-          { id: '12b', level: 'EMG', make: function (r, sh) {
+          { id: '12bt', sub: 'b i', level: 'EMG', make: function (r, sh) { return tileFillPart(sh); } },
+          { id: '12b', sub: 'b ii', level: 'EMG', make: function (r, sh) {
             var top = lin(sh.a, sh.b), side = lin(1, sh.c), R = Y.mul(top, side), xs = sh.a * sh.c, us = sh.b;
             var topT = tokens(sh.a, 'x').concat(tokens(sh.b, '1')), sideT = ['x'].concat(tokens(sh.c, '1'));
             var pos = (xs > 0 ? xs : 0) + (us > 0 ? us : 0), neg = (xs < 0 ? -xs : 0) + (us < 0 ? -us : 0), zp = Math.min(pos, neg);
-            return poly('Complete the tile rectangle using the shading rule, and state the product, simplified.', R, { wrong: [
+            return poly('State the product, simplified.', R, { wrong: [
               { is: Y.mul(lin(sh.a, Math.abs(sh.b)), lin(1, Math.abs(sh.c))), code: 'tile-sign', hint: 'Some tiles are white (negative). Use the shading rule: same colours give a shaded (positive) tile, different colours give a white (negative) tile.' },
               { is: quad(sh.a, pos + neg, sh.b * sh.c), code: 'no-zero-pairs', hint: 'A shaded ' + t('x') + '-tile and a white ' + t('x') + '-tile make a zero pair — they cancel. Count shaded minus white.' },
               { is: quad(sh.a, -(pos + neg), sh.b * sh.c), code: 'no-zero-pairs', hint: 'A shaded ' + t('x') + '-tile and a white ' + t('x') + '-tile make a zero pair — they cancel. Count shaded minus white.' }] },
               HW.tiles.frame(topT, sideT, { fill: true }) + 'Inside: ' + t(sh.a) + ' ' + t('x^{2}') + '-tile' + (sh.a > 1 ? 's' : '') + ', ' + t(pos) + ' shaded and ' + t(neg) + ' white ' + t('x') + '-tiles, and ' + t(Math.abs(sh.b * sh.c)) + ' white unit tiles. ' + t(zp) + ' zero pair' + (zp > 1 ? 's' : '') + ' of ' + t('x') + '-tiles cancel' + (zp > 1 ? '' : 's') + '.<br>' + t(bt(top) + bt(side) + '=' + Y.seq([mono(sh.a, 'x', 2), mono(xs, 'x'), mono(us, 'x'), Y.num(sh.b * sh.c)]) + '=' + tx(R)),
               ['Each product tile is (top tile) × (side tile). Same colours → shaded (+), different colours → white (−).', 'Then cancel zero pairs and count what is left.'], 'tile product');
           } },
-          { id: '12c', level: 'EMG', make: function (r, sh) {
+          { id: '12c', sub: 'b iii', level: 'EMG', make: function (r, sh) {
             var xs = sh.a * sh.c, us = sh.b, pos = (xs > 0 ? xs : 0) + (us > 0 ? us : 0), neg = (xs < 0 ? -xs : 0) + (us < 0 ? -us : 0), zp = Math.min(pos, neg), left = pos - neg;
             var leftTxt = t(Math.abs(left)) + ' ' + (left > 0 ? 'shaded' : 'white') + ' ' + t('x') + '-tile' + (Math.abs(left) > 1 ? 's' : '') + ' (' + t(tx(mono(left, 'x'))) + ')';
             return KP.mc(r, 'How are zero pairs used to simplify the product?', [
@@ -616,6 +682,7 @@
               'One ' + t('x^{2}') + '-tile; ' + t(u + '+' + w + '=' + (u + w)) + ' ' + t('x') + '-tiles; ' + t(u + '\\times ' + w + '=' + u * w) + ' unit tiles. So ' + t('(x+' + u + ')(x+' + w + ')=' + tx(Y.mul(lin(1, u), lin(1, w)))) + '.',
               ['Picture the rectangle: an ' + t('x^{2}') + '-tile in the corner, ' + t('x') + '-tiles along each side, and a block of unit tiles.'], 'tile counts');
           } },
+          { id: 'e4t', level: 'EMG', make: function (r, sh) { return tileRectPart(1, sh.p, 1, -sh.q, '(x+' + sh.p + ')(x-' + sh.q + ')', 'build tiles (x+p)(x-q)'); } },
           { id: 'e4e', level: 'EMG', make: function (r, sh) {
             var p = sh.p, q = sh.q;
             return KP.mc(r, 'Why can’t ' + t('(x+' + p + ')(x-' + q + ')') + ' be shown as one all-shaded rectangle of tiles?', [
