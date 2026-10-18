@@ -429,6 +429,9 @@ math-field.mf::part(menu-toggle), math-field.mf::part(virtual-keyboard-toggle) {
   .grid-tbl .grid-rowh { min-width: 4.5em; padding-right: 6px; }
   .grid-tbl thead th { font-size: 12.5px; }
   .grid-btn, .grid-btn:not(.multi) { width: 32px; height: 32px; }
+  .grid-tbl .grid-rowh .katex { font-size: 1em; }
+  .grid-tbl.many th, .grid-tbl.many td { padding: 5px 1px; }
+  .grid-tbl.many .grid-btn, .grid-tbl.many .grid-btn:not(.multi) { width: 29px; height: 29px; }
 }
 
 /* ---------- drawing inputs (js/draw.js) ---------- */

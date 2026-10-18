@@ -1429,7 +1429,7 @@
         { id: 'e18', level: 'PRG', outcome: 'RF7', make: function (r) {
           var bk = r.chance(0.25), k = bk ? 55 : r.pick(rng(35, 75, 5)), b = bk ? 20.6 : r.pick(rng(15, 25, 0.2)), x1 = bk ? 40 : r.pick([20, 40, 50]), x2 = bk ? 120 : r.pick([100, 120, 150]);
           var m = -k / 1000, y1 = cl(b + m * x1), y2 = cl(b + m * x2), wB = cl(y1 + m * x1), flip = K.roundTo((x2 - x1) / (y2 - y1), 1);
-          var o = function (mm, bb) { return t(nf(mm) + '\\text{ kg per balloon and }' + nf(bb) + '\\text{ kg}'); };
+          var o = function (mm, bb) { return t(nf(mm)) + ' kg per balloon and ' + t(nf(bb)) + ' kg'; };
           return mc(r, 'A graph of the mass of a helium cylinder against the number of balloons filled from it passes through ' + t(ptT([x1, y1])) + ' and ' + t(ptT([x2, y2])) + ', where mass is in kilograms. The rate of change and the mass of the full cylinder are, respectively,', [
             { html: o(m, b), right: true },
             { html: o(m, wB), why: 'Check the intercept: ' + t(nf(y1) + '=' + nf(m) + '(' + x1 + ')+b') + ', so ' + t('b=' + nf(y1) + '+' + nf(-m * x1)) + '.' },

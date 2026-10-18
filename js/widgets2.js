@@ -86,7 +86,7 @@
   /* ---------- a table: one choice per row (multi: any number per row) ---------- */
   W.grid = function (opt) {
     var wrap = el('div', 'w-grid'), state = {}, enter = null, btns = [];
-    var scroller = el('div', 'grid-scroll'), tb = el('table', 'grid-tbl');
+    var scroller = el('div', 'grid-scroll'), tb = el('table', 'grid-tbl' + (opt.cols.length >= 6 ? ' many' : ''));
     var h = '<thead><tr><th>' + (opt.rowHead ? HW.tex(opt.rowHead) : '') + '</th>' + opt.cols.map(function (c) { return '<th>' + HW.tex(c.html) + '</th>'; }).join('') + '</tr></thead>';
     tb.innerHTML = h;
     var body = el('tbody');
