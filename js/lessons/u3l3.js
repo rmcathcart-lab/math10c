@@ -435,15 +435,20 @@
       { num: '4', section: 'Extra practice B — Where the middle term comes from', stem: function (sh) { return 'The square below has side length ' + t('x+' + sh.n) + ', cut into four pieces.' + squareFig(sh.n); },
         shared: function (r) { return { n: r.int(3, 9), xv: r.int(2, 5) }; },
         parts: [
-          { id: 'e4a', level: 'BEG', make: function (r, sh) { var n = sh.n, x2 = V(1, { x: 2 }), nx = V(n, 'x'), n2 = V(n * n), tot = P.add(x2, V(2 * n, 'x'), n2);
-            var pc = function (want, other) { return K.poly(want, { wrong: [{ is: other, code: 'piece', hint: 'Area of a rectangle = width × height: read the two side lengths of that piece.' }] }); };
-            return B.fields('Write the area of each piece, then add them to give the expanded form of ' + t('(x+' + n + ')^{2}') + '.',
-              [polyField('I', t('\\text{I}=')), polyField('II', t('\\text{II}=')), polyField('III', t('\\text{III}=')), polyField('IV', t('\\text{IV}=')), polyField('Total', t('(x+' + n + ')^{2}='))],
-              [pc(x2, V(2, 'x')), pc(nx, V(n + 1, 'x')), pc(nx, V(n + 1, 'x')), pc(n2, V(2 * n)), K.poly(tot, { wrong: [{ is: P.add(x2, nx, n2), code: 'sq-not-doubled', hint: 'There are <b>two</b> rectangles of area ' + t(n + 'x') + ' (II and III).' }, { is: P.add(x2, n2), code: 'sq-no-middle', hint: 'Add <b>all four</b> pieces, including the two rectangles.' }] })],
-              ['x^{2}', n + 'x', n + 'x', String(n * n), P.tex(tot)], t('\\text{I}=x^{2},\\ \\text{II}=' + n + 'x,\\ \\text{III}=' + n + 'x,\\ \\text{IV}=' + n * n) + '; ' + t('(x+' + n + ')^{2}=' + P.tex(tot)),
-              'I ' + t('=x\\cdot x=x^{2}') + ', II ' + t('=' + n + '\\cdot x=' + n + 'x') + ', III ' + t('=x\\cdot ' + n + '=' + n + 'x') + ', IV ' + t('=' + n + '\\cdot ' + n + '=' + n * n) + '.<br>Total: ' + t('x^{2}+' + n + 'x+' + n + 'x+' + n * n + '=' + P.tex(tot)),
-              ['Each piece is a rectangle: multiply its width by its height.'], 'area pieces of (x+' + n + ')^2'); } },
-          { id: 'e4b', level: 'EMG', make: function (r, sh) { var n = sh.n;
+          { id: 'e4a', sub: 'a i', level: 'BEG', make: function (r, sh) { var n = sh.n, x2 = V(1, { x: 2 }), nx = V(n, 'x'), n2 = V(n * n), N = String(n);
+            /* the area box (js/draw2.js areabox) laid out like the square: I top-left, II top-right, III bottom-left, IV bottom-right */
+            var key = { rows: ['x', N], cols: ['x', N], cells: [['x^{2}', n + 'x'], [n + 'x', String(n * n)]] };
+            var p = B.areabox('Fill in the area of each piece. The box is laid out like the square: I top-left, II top-right, III bottom-left, IV bottom-right.', { rows: ['x', N], cols: ['x', N], cells: [[null, null], [null, null]], keys: 'poly', vars: ['x'] }, {}, key,
+              'I ' + t('=x\\cdot x=x^{2}') + ', II ' + t('=x\\cdot ' + n + '=' + n + 'x') + ', III ' + t('=' + n + '\\cdot x=' + n + 'x') + ', IV ' + t('=' + n + '\\cdot ' + n + '=' + n * n) + '.',
+              ['Each piece is a rectangle: multiply its width (at the top of its column) by its height (at the start of its row).'], 'area box pieces of (x+' + n + ')^2');
+            p.bad = [{ rows: key.rows, cols: key.cols, cells: [['2x', n + 'x'], [n + 'x', String(n * n)]] }, { rows: key.rows, cols: key.cols, cells: [['x^{2}', n + 'x'], [n + 'x', String(2 * n)]] }, { rows: key.rows, cols: key.cols, cells: [['x^{2}', 'x+' + n], [n + 'x', String(n * n)]] }];
+            return p; } },
+          { id: 'e4ap', sub: 'a ii', level: 'BEG', make: function (r, sh) { var n = sh.n, x2 = V(1, { x: 2 }), nx = V(n, 'x'), n2 = V(n * n), tot = P.add(x2, V(2 * n, 'x'), n2);
+            var p = B.poly('Add the four pieces to give the expanded form of ' + t('(x+' + n + ')^{2}') + '.', tot, { vars: ['x'], before: t('(x+' + n + ')^{2}='), wrong: [{ is: P.add(x2, nx, n2), code: 'sq-not-doubled', hint: 'There are <b>two</b> rectangles of area ' + t(n + 'x') + ' (II and III).' }, { is: P.add(x2, n2), code: 'sq-no-middle', hint: 'Add <b>all four</b> pieces, including the two rectangles.' }] },
+              'Total: ' + t('x^{2}+' + n + 'x+' + n + 'x+' + n * n + '=' + P.tex(tot)), ['Add the four pieces and collect the two ' + t('x') + '-terms.'], 'expand (x+' + n + ')^2 from the pieces');
+            p.bad = [P.tex(P.add(x2, nx, n2)), P.tex(P.add(x2, n2))];
+            return p; } },
+          { id: 'e4b', sub: 'b', level: 'EMG', make: function (r, sh) { var n = sh.n;
             return B.mc(r, 'Exactly two pieces make the middle term. Which two, and why does the middle term carry a factor of ' + t('2') + '?', [
               { html: 'II and III: each is an ' + t('x') + ' by ' + t(n) + ' rectangle, so ' + t(n + 'x+' + n + 'x=2(' + n + 'x)') + '. Both sides of the square are cut the same way.', right: true },
               { html: 'I and IV: the two squares ' + t('x^{2}') + ' and ' + t(n * n) + ' combine into the middle term.', why: 'I and IV are the squared terms ' + t('x^{2}') + ' and ' + t(n * n) + ' — the first and last terms, not the middle.' },
@@ -451,7 +456,7 @@
               { html: 'II only: the ' + t('2') + ' comes from the two sides labelled ' + t(n) + '.', why: 'Piece II alone has area ' + t(n + 'x') + '. The middle term ' + t(2 * n + 'x') + ' needs a second rectangle.' }],
               'Pieces <b>II and III</b>. Each has one side ' + t('x') + ' and the other side ' + t(n) + ', so each has area ' + t(n + 'x') + ': ' + t(n + 'x+' + n + 'x=' + 2 * n + 'x') + '. The ' + t('2') + ' in ' + t('2ab') + ' counts these two congruent rectangles.',
               ['Which pieces have area ' + t(n + 'x') + '?'], 'which pieces make the middle term'); } },
-          { id: 'e4c', level: 'BEG', make: function (r, sh) { var n = sh.n;
+          { id: 'e4c', sub: 'c', level: 'BEG', make: function (r, sh) { var n = sh.n;
             return B.mc(r, 'A student claims ' + t('(x+' + n + ')^{2}=x^{2}+' + n * n) + '. Which pieces has the student counted?', [
               { html: 'Counted I and IV; threw away II and III.', right: true },
               { html: 'Counted II and III; threw away I and IV.', why: t('x^{2}') + ' is piece I and ' + t(n * n) + ' is piece IV.' },
@@ -459,7 +464,7 @@
               { html: 'Counted all four pieces correctly.', why: 'All four pieces add to ' + t('x^{2}+' + 2 * n + 'x+' + n * n) + ', not ' + t('x^{2}+' + n * n) + '.' }],
               'The student counted the two squares, <b>I</b> (' + t('x^{2}') + ') and <b>IV</b> (' + t(n * n) + '), and threw away <b>II and III</b>, the two ' + t(n + 'x') + ' rectangles — the whole middle term ' + t(2 * n + 'x') + '.',
               ['Match each term of ' + t('x^{2}+' + n * n) + ' with a piece.'], 'which pieces the student kept'); } },
-          { id: 'e4d', level: 'BEG', make: function (r, sh) { var n = sh.n, x = sh.xv, tr = (x + n) * (x + n), st = x * x + n * n;
+          { id: 'e4d', sub: 'd', level: 'BEG', make: function (r, sh) { var n = sh.n, x = sh.xv, tr = (x + n) * (x + n), st = x * x + n * n;
             return B.fields('Take ' + t('x=' + x) + '. Find the true area of the whole square, the student’s total, and the missing area.',
               [{ name: 'True area', label: 'True area', before: t('(x+' + n + ')^{2}=') }, { name: 'Student', label: 'Student’s total', before: t('x^{2}+' + n * n + '=') }, { name: 'Missing', label: 'Missing area' }],
               [K.number(tr, numDiag([[x * x + n * n, 'sq-no-middle', 'That is the student’s total. The true area is ' + t('(' + x + '+' + n + ')^{2}=' + (x + n) + '^{2}') + '.']])), K.number(st), K.number(tr - st, numDiag([[st - tr, 'gap-sign', 'Subtract the student’s total from the true area.']]))],

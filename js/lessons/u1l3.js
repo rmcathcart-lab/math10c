@@ -445,28 +445,36 @@
               { id: 'e', tex: e[0] + '\\sqrt{' + e[1] + '}', v: e[0] * Math.sqrt(e[1]), mis: Math.sqrt(e[0] * e[1]), plain: e[0] + '√' + e[1], km: e },
               { id: 'f', tex: f[0] + '\\sqrt{' + f[1] + '}', v: f[0] * Math.sqrt(f[1]), mis: Math.sqrt(f[0] * f[1]), plain: f[0] + '√' + f[1], km: f }];
             vals = it.map(function (x) { return x.v; }).sort(function (x, y) { return x - y; });
-            var okGap = true; for (var j = 1; j < vals.length; j++) if (vals[j] - vals[j - 1] < 0.4) okGap = false;
+            var okGap = true; for (var j = 1; j < vals.length; j++) if (vals[j] - vals[j - 1] < 0.8) okGap = false;
             if (okGap) break;
           }
-          var sorted = it.slice().sort(function (x, y) { return x.v - y.v; }), byId = {}; it.forEach(function (x) { byId[x.id] = x; });
-          var mis = it.slice().sort(function (x, y) { return x.mis - y.mis; }).map(function (x) { return x.id; }), ids = sorted.map(function (x) { return x.id; });
-          var p = P.order(r, 'Order: ' + it.map(function (x) { return t(x.tex); }).join(', &nbsp;'), sorted.map(function (x) { return { id: x.id, tex: x.tex }; }), {
-            why: function (x, y) {
-              var A = byId[x], B = byId[y], km = A.km || B.km;
-              if (km) return t(A.tex) + ' and ' + t(B.tex) + ' are in the wrong order. Remember ' + t(km[0] + '\\sqrt{' + km[1] + '}') + ' means ' + t(km[0] + '\\times\\sqrt{' + km[1] + '}') + ': find ' + t('\\sqrt{' + km[1] + '}') + ' first, then multiply by ' + t(km[0]) + '.';
-              return t(A.tex) + ' and ' + t(B.tex) + ' are in the wrong order. Find a decimal for each on your calculator and compare.';
-            } },
+          /* number placement on the booklet's 0–15 line: order first, then each point within 0.4 (points are ≥ 0.8 apart) */
+          var sorted = it.slice().sort(function (x, y) { return x.v - y.v; }), byId = {}, targets = {}, hintOf = {}, TOL = 0.4;
+          it.forEach(function (x) { byId[x.id] = x; targets[x.id] = x.v; });
+          it.forEach(function (x) {
+            if (x.km) { var L = Math.floor(Math.sqrt(x.km[1])); hintOf[x.id] = t(x.tex) + ' means ' + t(x.km[0] + '\\times\\sqrt{' + x.km[1] + '}') + ': ' + t('\\sqrt{' + x.km[1] + '}') + ' is between ' + t(L) + ' and ' + t(L + 1) + ', so ' + t(x.tex) + ' is between ' + t(x.km[0] * L) + ' and ' + t(x.km[0] * (L + 1)) + '.'; return; }
+            if (x.id === 'a') { var d = Math.floor(x.v * 10) / 10, sq = function (u) { return String(Math.round(u * u * 100) / 100); }; hintOf.a = t(x.tex) + ' is between ' + t('\\sqrt{' + sq(d) + '}=' + d) + ' and ' + t('\\sqrt{' + sq(d + 0.1) + '}=' + String(Math.round((d + 0.1) * 10) / 10)) + ' — a square root of a number less than ' + t('1') + ' is <b>bigger</b> than the number.'; return; }
+            var m = Number(x.tex.replace(/[^0-9]/g, '')), lo = Math.floor(Math.sqrt(m)); hintOf[x.id] = t(x.tex) + ' is between ' + t('\\sqrt{' + lo * lo + '}=' + lo) + ' and ' + t('\\sqrt{' + (lo + 1) * (lo + 1) + '}=' + (lo + 1)) + '.';
+          });
+          var inp = { min: 0, max: 15, step: 1, labels: 1, items: it.map(function (x) { return { id: x.id, tex: x.tex }; }) };
+          var p = P.numplace('Place ' + it.map(function (x, i) { return t(x.tex + (i < it.length - 1 ? ',' : '')); }).join(' ') + ' on the number line.', inp, targets,
             'Approximate each value: ' + sorted.map(function (x) { return t(x.tex + (x.km ? '=' + x.km[0] + '(' + cut(Math.sqrt(x.km[1]), 3) + '\\ldots)' : '') + '\\approx ' + x.v.toFixed(3)); }).join(', ') + '.<br>' +
             numberLine(sorted.map(function (x) { return { v: x.v, label: x.plain }; }), 15) + '<br>' + t(sorted.map(function (x) { return x.tex; }).join('<')),
-            ['Use your calculator to find a decimal for each number, then sort the decimals.', 'For ' + t('k\\sqrt{m}') + ', find ' + t('\\sqrt{m}') + ' and multiply by ' + t('k') + '.'], 'order ' + it.map(function (x) { return x.plain; }).join(', '));
-          var base = p.check;
-          if (mis.join() !== ids.join()) {
-            p.check = function (resp) {
-              if (resp && resp.length === ids.length && resp.join() === mis.join()) return wrong('coef-inside', 'It looks like you treated ' + t(byId.e.tex) + ' as ' + t('\\sqrt{' + byId.e.km[0] * byId.e.km[1] + '}') + '. ' + t(byId.e.tex) + ' means ' + t(byId.e.km[0] + '\\times\\sqrt{' + byId.e.km[1] + '}') + ' — find the root first, then multiply.');
-              return base(resp);
-            };
-            p.bad = [mis];
-          }
+            ['Use your calculator to find a decimal for each number, then place it between the right whole numbers.', 'For ' + t('k\\sqrt{m}') + ', find ' + t('\\sqrt{m}') + ' and multiply by ' + t('k') + '.'], 'place ' + it.map(function (x) { return x.plain; }).join(', ') + ' on a number line',
+            { tol: TOL, hints: hintOf });
+          /* k√m read as √(k·m): the classic slip — diagnose it from the position of e or f */
+          var base = p.check, misKey = {};
+          it.forEach(function (x) { misKey[x.id] = p.key[x.id]; });
+          ['e', 'f'].forEach(function (id) { misKey[id] = Math.round(byId[id].mis * 10) / 10; });
+          p.check = function (resp) {
+            resp = resp || {};
+            for (var q = 0; q < 2; q++) {
+              var x = byId[['e', 'f'][q]];
+              if (resp[x.id] != null && Math.abs(resp[x.id] - x.mis) <= TOL && Math.abs(x.v - x.mis) > 2 * TOL) return wrong('coef-inside', 'It looks like you treated ' + t(x.tex) + ' as ' + t('\\sqrt{' + x.km[0] * x.km[1] + '}') + '. ' + t(x.tex) + ' means ' + t(x.km[0] + '\\times\\sqrt{' + x.km[1] + '}') + ' — find the root first, then multiply.');
+            }
+            return base(resp);
+          };
+          p.bad = (p.bad || []).concat([misKey]);
           return p;
         } }] },
       { num: '5', stem: 'Identify each number as rational or irrational. Use a calculator to convert the rational numbers to fractions in simplest form.',

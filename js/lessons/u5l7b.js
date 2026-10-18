@@ -7,7 +7,10 @@
  * booklet's own numbers are among the possible values.
  * Graphing parts ("graph the function", "plot the points and draw a smooth curve") are drawn on the graph pad
  * (js/draw.js, points mode with a Join button): discrete domains must stay unjoined, "draw a smooth curve" must be
- * joined; classic mistakes get targeted hints. "Explain" parts become multiple choice with misconception hints. Levels: LIM BEG EMG PRG ADV MAS. */
+ * joined; classic mistakes get targeted hints. "Explain" parts become multiple choice with misconception hints.
+ * "Solve f(x) = b" off a drawn graph: one part per graph (EP11 d, EP23 b) is answered by tapping every point of the
+ * graph at height b (K.P.points, js/draw2.js; the graph moves from the stem onto the pad); its partner (EP11 c, EP23 c)
+ * keeps the typed x-values. Levels: LIM BEG EMG PRG ADV MAS. */
 (function (root) {
   'use strict';
   var HW = root.HW, ex = HW.ex, F = HW.fmt, K = HW.kit, t = K.t, ok = K.ok, wrong = K.wrong, form = K.form, B = K.P, P = HW.poly;
@@ -31,7 +34,8 @@
     'fn-coef-in': 'Put the coefficient inside the square: 2(x+4)² as (2x+8)²', 'fn-neg-out': 'Gave −F(x) for F(−x)', 'fn-unchanged': 'Didn’t substitute',
     'fn-sq-coef': 'Squared only the letter: (2a)² as 2a²', 'fn-reverse': 'Subtracted in the wrong order', 'fn-add-fns': 'Added instead of subtracting',
     'fn-comp-order': 'Composed in the wrong order', 'fn-eq-flip': 'Swapped input and output in f(a) = b', 'fn-one-root': 'Used only one solution',
-    'fn-inner': 'Ignored the expression inside the brackets', 'fn-sqrt-half': 'Halved instead of taking the square root', 'pairs-identity': 'Gave pairs (x, x)', 'fn-const-zero': 'Gave output 0 for a constant function'
+    'fn-inner': 'Ignored the expression inside the brackets', 'fn-sqrt-half': 'Halved instead of taking the square root', 'pairs-identity': 'Gave pairs (x, x)', 'fn-const-zero': 'Gave output 0 for a constant function',
+    'tap-height': 'Tapped a point of the graph at the wrong height', 'tap-off-graph': 'Tapped a point that is not on the graph'
   });
 
   /* ---------------- numbers and LaTeX ---------------- */
@@ -102,6 +106,38 @@
     wl.forEach(function (w) { wrongs.push({ is: dv(w[0]), code: w[1], hint: w[2] }); wrongs.push({ is: joined(w[0]), code: w[1], hint: w[2] }); });
     var key = dv(pts), p = B.graph(prompt + PAD_HELP, padIn(win), K.graphExact(key, { joinMatters: true, wrong: wrongs }), key, sol, hints, text);
     p.bad = [joined(pts), dv(pts.map(function (q) { return [q[1], q[0]]; }))].concat(wl.map(function (w) { return dv(w[0]); }));
+    return p;
+  }
+
+  /* ---------------- tapping points on a given graph (K.P.points, js/draw2.js) ----------------
+   * "Solve f(x) = b" read off a graph: the student taps every point of the graph at height b. inp: the pad window with the
+   * given graph in bg; fx(x): the graph's value (NaN outside its domain); xs: the solutions (all on the snap grid). */
+  function onSnap(inp, q) {
+    var sx = inp.snapX || inp.snap || inp.grid || 1, sy = inp.snapY || inp.snap || inp.gridY || inp.grid || 1, X = inp.x || [-6, 6], Y = inp.y || [-6, 6];
+    var k = function (v, s) { return Math.abs(v / s - Math.round(v / s)) < 1e-9; };
+    return k(q[0], sx) && k(q[1], sy) && q[0] >= X[0] && q[0] <= X[1] && q[1] >= Y[0] && q[1] <= Y[1];
+  }
+  var GIVEN = '#5b6573'; // the given graph is drawn in slate (its end dots too) so the student's teal taps stand out
+  function givenDots(pts) { return pts.map(function (q) { return { x: q[0], y: q[1], color: GIVEN }; }); }
+  function levelTap(prompt, inp, fx, name, b, xs, sol, hints, text) {
+    var T = sortU(xs).map(function (x) { return [x, b]; }), fb = name + '(x)=' + nT(b);
+    T.forEach(function (q) { if (!onSnap(inp, q)) throw new Error('u5l7b: solution point ' + q + ' is off the tap grid'); });
+    var onG = function (q) { var v = fx(q[0]); return isFinite(v) && same(v, q[1]); };
+    var wr = T.length > 1 ? T.map(function (q) { return { pts: [q], code: 'fn-one-root', hint: 'Correct so far — but keep following the horizontal line ' + t('y=' + nT(b)) + ' across the <b>whole</b> graph: it meets the graph ' + (T.length === 2 ? 'once more' : 'again') + '.' }; }) : [];
+    var opt = { what: 'solution point', whats: 'solution points', wrong: wr, whatHint: 'Tap only points of the graph at height ' + t(nT(b)) + '.', pointHint: function (q) {
+      if (T.some(function (w) { return same(w[0], q[1]) && same(w[1], q[0]); })) return null; // swapped coordinates: built-in hint
+      if (onG(q) && same(q[0], b) && !same(q[1], b)) return { code: 'fn-evaluated', hint: 'That is the point at input ' + t(nT(b)) + ' — it gives ' + t(name + '(' + nT(b) + ')') + '. In ' + t(fb) + ' the number ' + t(nT(b)) + ' is the <b>output</b>, a height: start at ' + t(nT(b)) + ' on the vertical axis and read across.' };
+      if (same(q[0], b) && !same(q[1], b)) return { code: 'fn-eq-flip', hint: t(nT(b)) + ' is the <b>output</b> (a height), not an input. Find ' + t(nT(b)) + ' on the vertical axis and read across to the graph.' };
+      if (onG(q)) return { code: 'tap-height', hint: t('(' + nT(q[0]) + ',\\ ' + nT(q[1]) + ')') + ' is on the graph, but at height ' + t(nT(q[1])) + ', not ' + t(nT(b)) + '. Look along the horizontal line ' + t('y=' + nT(b)) + '.' };
+      if (same(q[1], b)) return { code: 'tap-off-graph', hint: t('(' + nT(q[0]) + ',\\ ' + nT(q[1]) + ')') + ' is at the right height, but it isn’t on the graph. Follow the line ' + t('y=' + nT(b)) + ' until it meets the graph.' };
+      return { code: 'tap-off-graph', hint: t('(' + nT(q[0]) + ',\\ ' + nT(q[1]) + ')') + ' is not on the graph, and not at height ' + t(nT(b)) + '. Tap the points where the horizontal line ' + t('y=' + nT(b)) + ' meets the graph.' };
+    } };
+    var p = B.points(prompt, inp, T, sol, hints, text, opt);
+    var bad = T.map(function (q) { return [q]; }).filter(function () { return T.length > 1; });
+    bad.push(T.map(function (q) { return [q[1], q[0]]; }));
+    if (onSnap(inp, [b, b]) && isFinite(fx(b)) && onSnap(inp, [b, fx(b)])) bad.push([[b, fx(b)]]);
+    if (onSnap(inp, [0, b]) && !T.some(function (w) { return same(w[0], 0); })) bad.push(T.concat([[0, b]]));
+    p.bad = bad.filter(function (ps) { return !(ps.length === T.length && ps.every(function (q) { return T.some(function (w) { return same(w[0], q[0]) && same(w[1], q[1]); }); })); }).map(function (ps) { return dv(ps); });
     return p;
   }
 
@@ -733,11 +769,11 @@
       /* ---------- EP11: reading a parabola ---------- */
       { num: '11', stem: function (sh) {
           var f = sh.f;
-          return 'The graph of a function ' + t('f') + ' is shown. Read every answer off the graph.' + HW.graph({ x: [Math.min(-1, sh.h - 4), Math.max(1, sh.h + 4)], y: [sh.k - 2, sh.k + 10], labels: 2, max: 320, xName: 'x', yName: 'y', fns: [{ f: f, from: sh.h - 3, to: sh.h + 3, start: 'closed', end: 'closed' }], aria: 'graph of f' });
+          return 'The graph of a function ' + t('f') + ' is shown. Read every answer off the graph.' + (sh.onPad ? '' : HW.graph({ x: sh.wx, y: sh.wy, labels: 2, max: 320, xName: 'x', yName: 'y', fns: [{ f: f, from: sh.h - 3, to: sh.h + 3, start: 'closed', end: 'closed' }], aria: 'graph of f' }));
         },
         shared: function (r) {
           var h = r.pick([-2, -1, 1, 1, 2]), k = r.pick([-4, -4, -1]);
-          return { h: h, k: k, f: function (x) { return (x - h) * (x - h) + k; }, j: k === -4 ? 1 : 2, root: Math.sqrt(-k) };
+          return { h: h, k: k, f: function (x) { return (x - h) * (x - h) + k; }, j: k === -4 ? 1 : 2, root: Math.sqrt(-k), wx: [Math.min(-1, h - 4), Math.max(1, h + 4)], wy: [k - 2, k + 10] };
         },
         parts: [
           { id: 'e11a', level: 'BEG', make: function (r, sh) {
@@ -755,8 +791,11 @@
           } },
           { id: 'e11d', level: 'EMG', make: function (r, sh) {
             var h = sh.h, j = sh.j, v = sh.f(h + j);
-            return solPart('All values of ' + t('x') + ' for which ' + t('f(x)=' + v) + '.', [h - j, h + j], 'x', [[[v], 'fn-eq-flip', 'You want the <b>inputs</b> where the height is ' + t(v) + '. Draw the horizontal line ' + t('y=' + v) + '.']],
-              'The line ' + t('y=' + v) + ' meets the graph at ' + t('(' + (h - j) + ',\\ ' + v + ')') + ' and ' + t('(' + (h + j) + ',\\ ' + v + ')') + ', so ' + t('x=' + (h - j)) + ' or ' + t('x=' + (h + j)) + '.', ['Draw the horizontal line ' + t('y=' + v) + '. Where does it meet the graph?'], 'read f(x)=' + v);
+            sh.onPad = true; // the graph is drawn on the pad, not repeated in the stem
+            var inp = { x: sh.wx, y: sh.wy, labels: 2, xName: 'x', yName: 'y', bg: { fns: [{ f: sh.f, from: h - 3, to: h + 3, color: GIVEN }], points: givenDots([[h - 3, sh.f(h - 3)], [h + 3, sh.f(h + 3)]]) } };
+            return levelTap('Solve ' + t('f(x)=' + v) + ': tap every point of the graph where ' + t('f(x)=' + v) + '.', inp, function (x) { return x >= h - 3 - 1e-9 && x <= h + 3 + 1e-9 ? sh.f(x) : NaN; }, 'f', v, [h - j, h + j],
+              'The line ' + t('y=' + v) + ' meets the graph at ' + t('(' + (h - j) + ',\\ ' + v + ')') + ' and ' + t('(' + (h + j) + ',\\ ' + v + ')') + '. The solutions are their inputs: ' + t('x=' + (h - j)) + ' or ' + t('x=' + (h + j)) + '.',
+              ['Find ' + t(v) + ' on the vertical axis and follow the horizontal line ' + t('y=' + v) + ' across. Where does it meet the graph?', 'A parabola can reach the same height twice — check both sides.'], 'tap f(x)=' + v);
           } },
           { id: 'e11e', level: 'EMG', make: function (r, sh) {
             var h = sh.h, k = sh.k;
@@ -1107,7 +1146,7 @@
         } }] },
       /* ---------- EP23: zigzag graph ---------- */
       { num: '23', section: 'Extra practice H — A stretch, and two for the test', stem: function (sh) {
-          return '<i>(Stretch)</i> The graph of a function ' + t('f') + ' is made of three straight pieces joined end to end, through the points ' + t(ptsTex(sh.P)) + '.' + HW.graph({ x: sh.wx, y: sh.wy, labels: 2, max: 320, segs: [{ pts: sh.P, start: 'closed', end: 'closed' }], points: dots(sh.P), aria: 'zigzag graph of f' });
+          return '<i>(Stretch)</i> The graph of a function ' + t('f') + ' is made of three straight pieces joined end to end, through the points ' + t(ptsTex(sh.P)) + '.' + (sh.onPad ? '' : HW.graph({ x: sh.wx, y: sh.wy, labels: 2, max: 320, segs: [{ pts: sh.P, start: 'closed', end: 'closed' }], points: dots(sh.P), aria: 'zigzag graph of f' }));
         },
         shared: function (r) {
           return pickWhere(function () {
@@ -1126,7 +1165,11 @@
           } },
           { id: 'e23b', level: 'EMG', make: function (r, sh) {
             var H = sh.H, xs = [sh.x0 + sh.d, sh.x0 + 3 * sh.d];
-            return solPart('Solve ' + t('f(x)=' + H) + '.', xs, 'x', [[[H], 'fn-eq-flip', 'You want the inputs where the height is ' + t(H) + ': read the ' + t('x') + '-coordinates.']], 'The line ' + t('y=' + H) + ' meets the graph at ' + t('(' + xs[0] + ',\\ ' + H + ')') + ' and ' + t('(' + xs[1] + ',\\ ' + H + ')') + ': ' + t('x=' + xs[0]) + ' or ' + t('x=' + xs[1]) + '.', ['Draw the horizontal line ' + t('y=' + H) + '. Where does it meet the graph?'], 'zigzag f(x)=H');
+            sh.onPad = true; // the graph is drawn on the pad, not repeated in the stem
+            var inp = { x: sh.wx, y: sh.wy, labels: 2, bg: { segs: [{ pts: sh.P, color: GIVEN }], points: givenDots(sh.P) } };
+            return levelTap('Solve ' + t('f(x)=' + H) + ': tap every point of the graph where ' + t('f(x)=' + H) + '.', inp, sh.f, 'f', H, xs,
+              'The line ' + t('y=' + H) + ' meets the graph at ' + t('(' + xs[0] + ',\\ ' + H + ')') + ' and ' + t('(' + xs[1] + ',\\ ' + H + ')') + ' — the two upper corners. The solutions are their inputs: ' + t('x=' + xs[0]) + ' or ' + t('x=' + xs[1]) + '.',
+              ['Find ' + t(H) + ' on the vertical axis and follow the horizontal line ' + t('y=' + H) + ' across the whole graph.', 'Count every point where the line meets the graph.'], 'tap zigzag f(x)=H');
           } },
           { id: 'e23c', level: 'EMG', make: function (r, sh) {
             var L = sh.L, xs = [sh.x0, sh.x0 + 2 * sh.d];

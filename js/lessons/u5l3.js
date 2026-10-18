@@ -7,6 +7,8 @@
  * "write each intercept point as an ordered pair" → two boxes (x-intercept points, y-intercept points) with a
  * "none" key (a bare value gets a nudge). Sketches and plots use the graph pad (js/draw.js): Q6b plot + Join,
  * Q7a–d sketch the line (arrows), EP 9a plot and join; Q7b–d also ask for the equation of the line.
+ * EP 5 (reading intercepts off a drawn graph) is answered by tapping the intercepts on the given graph (K.P.points,
+ * js/draw2.js); the typed ordered-pair / "none" format stays for every intercept found from an equation.
  * Explain-questions become multiple choice with misconception hints.
  * Levels: LIM BEG EMG PRG ADV MAS. */
 (function (root) {
@@ -232,6 +234,44 @@
   function drawPart(prompt, inp, check, key, sol, hints, text, bad) {
     var p = B.graph(prompt, inp, check, key, sol, hints, text);
     p.bad = (bad || []).filter(function (b) { return !DR.same(b, key); });
+    return p;
+  }
+  /* ---- tapping the intercepts of a given graph (K.P.points, js/draw2.js) ----
+   * inp: graph pad window + bg (the given graph). xs / ys: the intercept values ([] = none). onGraph(p): is p on the drawn
+   * graph? o: { xNone, yNone (why a tap on that axis is wrong when there is no such intercept), sol, hints, text, bad } */
+  function onSnap(inp, p) {
+    var sx = inp.snapX || inp.snap || inp.grid || 1, sy = inp.snapY || inp.snap || inp.gridY || inp.grid || 1, X = inp.x || [-6, 6], Y = inp.y || [-6, 6];
+    var k = function (v, s) { return Math.abs(v / s - Math.round(v / s)) < 1e-9; };
+    return k(p[0], sx) && k(p[1], sy) && p[0] >= X[0] && p[0] <= X[1] && p[1] >= Y[0] && p[1] <= Y[1];
+  }
+  var GIVEN = '#5b6573'; // the given graph is drawn in slate so the student's teal taps stand out
+  function interceptTap(prompt, inp, xs, ys, onGraph, o) {
+    o = o || {};
+    var X = uniqV(xs).map(function (v) { return [v, 0]; }), Y = uniqV(ys).map(function (v) { return [0, v]; });
+    var T = X.concat(Y);
+    T = T.filter(function (q, i) { return !T.slice(0, i).some(function (w) { return same(w[0], q[0]) && same(w[1], q[1]); }); });
+    T.forEach(function (q) { if (!onSnap(inp, q)) throw new Error('u5l3: intercept ' + q + ' is off the tap grid'); });
+    var isT = function (q) { return T.some(function (w) { return same(w[0], q[0]) && same(w[1], q[1]); }); };
+    var wr = [];
+    if (X.length && Y.length) {
+      wr.push({ pts: X, code: 'int-missing', hint: (X.length > 1 ? 'Those are the ' + t('x') + '-intercepts' : 'That is the ' + t('x') + '-intercept') + '. Now tap the ' + t('y') + '-intercept too: where the graph crosses the ' + t('y') + '-axis (' + t('x=0') + ').' });
+      wr.push({ pts: Y, code: 'int-missing', hint: 'That is the ' + t('y') + '-intercept. Now tap the ' + t('x') + '-intercept' + (X.length > 1 ? 's' : '') + ' too: where the graph meets the ' + t('x') + '-axis (' + t('y=0') + ').' });
+    }
+    var opt = { what: 'intercept', whats: 'intercepts', wrong: wr, whatHint: 'An intercept is a point where the graph meets one of the axes.', pointHint: function (q) {
+      if (isT([q[1], q[0]])) return null; // coordinates swapped: the built-in hint says so
+      var onX = same(q[1], 0), onY = same(q[0], 0), onG = onGraph(q);
+      if (onG && !onX && !onY) return { code: 'int-off-axis', hint: t(ptT(q)) + ' is on the graph, but not on an axis. An intercept is where the graph meets the ' + t('x') + '-axis (' + t('y=0') + ') or the ' + t('y') + '-axis (' + t('x=0') + ').' };
+      if (onX && !X.length && o.xNone) return { code: 'int-missed-none', hint: o.xNone };
+      if (onY && !Y.length && o.yNone) return { code: 'int-missed-none', hint: o.yNone };
+      if ((onX || onY) && !onG) return { code: 'int-extra', hint: t(ptT(q)) + ' is on the ' + t(onX ? 'x' : 'y') + '-axis, but the graph doesn’t pass through it. Tap exactly where the graph meets the axis.' };
+      return null;
+    } };
+    var p = B.points(prompt, inp, T, o.sol, o.hints || HXY, o.text, opt);
+    var bad = [];
+    if (X.length && Y.length) bad.push(X, Y);
+    bad.push(T.map(function (q) { return [q[1], q[0]]; }));
+    if (T.length > 1) bad.push(T.slice(1));
+    p.bad = bad.concat(o.bad || []).filter(function (b) { return b.length && !samePts(b, T); }).map(function (b) { return gv(b); });
     return p;
   }
   var LINEPAD = { x: [-6, 6], y: [-6, 6], labels: 2, defaultEnd: 'arrow', tools: ['line', 'ends'] };
@@ -886,9 +926,6 @@
     for (var i = 0; i <= n; i++) { var x = x0 + (x1 - x0) * i / n, y = f(x); if (y >= y0 - 1e-9 && y <= y1 + 1e-9) pts.push([x, y]); }
     return [pts[0], pts[pts.length - 1]];
   }
-  function axisGraph(spec) { // a ±6 grid labelled every unit (Extra practice Part B)
-    return HW.graph(Object.assign({ x: [-6, 6], y: [-6, 6], labels: 1, max: 320 }, spec));
-  }
 
   function EXTRA() {
     return [
@@ -1013,31 +1050,37 @@
             'The form (a point) is fine, but ' + t('(0,\\ ' + n + ')') + ' has ' + t('x') + '-coordinate ' + t('0') + ', so it is on the ' + t('y') + '-axis. Rewrite: “' + t('y') + '-intercept ' + t('=(0,\\ ' + n + ')') + '” or “the value of the ' + t('y') + '-intercept is ' + t(n) + '.”', ['Which coordinate is ' + t('0') + ' for a point on the ' + t('x') + '-axis?'], 'careless: x-int = (0,' + n + ')');
         } }] },
       /* ---------- Part B: reading intercepts off a graph ---------- */
-      { num: '5', section: 'Extra practice B — Reading intercepts off a graph', stem: 'State the ' + t('x') + '-intercept(s) and the ' + t('y') + '-intercept(s) of each graph <b>as ordered pairs</b>. If a graph has no intercept of one kind, press <b>none</b>.', parts: [
+      { num: '5', section: 'Extra practice B — Reading intercepts off a graph', stem: 'Tap every <b>intercept</b> of each graph: every point where it meets the ' + t('x') + '-axis or the ' + t('y') + '-axis. (A graph that never reaches one of the axes has no intercept on that axis — tap nothing there.)', parts: [
         { id: 'e5a', level: 'BEG', make: function (r) {
           var o = r.chance(0.3) ? [-1, 3] : pickWhere(function () { return [-r.int(1, 3), r.int(1, 4)]; }, function (z) { return z[1] - z[0] <= 5 && z[1] !== -z[0]; }), p = o[0], q = o[1];
-          var f = function (x) { return (x - p) * (x - q); };
-          var g = axisGraph({ y: [-7, 6], fns: [{ f: f, from: -6, to: 6, start: 'arrow', end: 'arrow' }] });
-          return interceptsPart(g, [p, q], [p * q], { text: 'read intercepts of parabola ' + p + ',' + q, sol: 'The parabola crosses the ' + t('x') + '-axis at ' + t(p) + ' and ' + t(q) + ', and the ' + t('y') + '-axis at ' + t(p * q) + '.<br>' + t('x') + '-intercepts ' + t(ptsT([[p, 0], [q, 0]])) + '; ' + t('y') + '-intercept ' + t(ptT([0, p * q])) + '.',
-            hints: ['Look where the curve meets the horizontal axis (' + t('y=0') + ') and the vertical axis (' + t('x=0') + ').', HXY[1]] });
+          var f = function (x) { return (x - p) * (x - q); }, v = (p + q) / 2;
+          var inp = { x: [-6, 6], y: [-7, 6], labels: 1, bg: { fns: [{ f: f, from: -6, to: 6, start: 'arrow', end: 'arrow', color: GIVEN }] } };
+          return interceptTap('Tap the intercepts of this parabola.', inp, [p, q], [p * q], function (z) { return same(f(z[0]), z[1]); }, { text: 'tap intercepts of parabola ' + p + ',' + q,
+            sol: 'The parabola crosses the ' + t('x') + '-axis at ' + t(p) + ' and ' + t(q) + ', and the ' + t('y') + '-axis at ' + t(p * q) + '.<br>' + t('x') + '-intercepts ' + t(ptsT([[p, 0], [q, 0]])) + '; ' + t('y') + '-intercept ' + t(ptT([0, p * q])) + '.',
+            hints: ['Look where the curve meets the horizontal axis (' + t('y=0') + ') and the vertical axis (' + t('x=0') + ').', 'A parabola can cross the ' + t('x') + '-axis twice. Count every crossing.'],
+            bad: [[[p, 0], [q, 0], [0, p * q], [v, f(v)]].filter(function (z) { return Number.isInteger(z[0]) && Number.isInteger(z[1]); }), [[q, 0], [0, p * q]]] });
         } },
         { id: 'e5b', level: 'BEG', make: function (r) {
           var k = r.pick([3, 3].concat(pm(1, 5)));
-          var g = axisGraph({ segs: [{ pts: [[-5.8, k], [5.8, k]], start: 'arrow', end: 'arrow' }] });
-          return interceptsPart(g, null, [k], { text: 'read intercepts of y=' + k, xNone: 'This line is horizontal at height ' + t(k) + ': it never reaches the ' + t('x') + '-axis, so there is no ' + t('x') + '-intercept.',
-            sol: t('x') + '-intercept: <b>none</b> — the line is horizontal at height ' + t(k) + ', so it never reaches the ' + t('x') + '-axis.<br>' + t('y') + '-intercept ' + t(ptT([0, k])) + '.', hints: ['Does the line ever reach the ' + t('x') + '-axis?', HXY[1]] });
+          var inp = { x: [-6, 6], y: [-6, 6], labels: 1, bg: { segs: [{ pts: [[-5.8, k], [5.8, k]], start: 'arrow', end: 'arrow', color: GIVEN }] } };
+          return interceptTap('Tap the intercepts of this line.', inp, [], [k], function (z) { return same(z[1], k); }, { text: 'tap intercepts of y=' + k, xNone: 'This line is horizontal at height ' + t(k) + ': it never reaches the ' + t('x') + '-axis, so there is no ' + t('x') + '-intercept to tap.',
+            sol: t('x') + '-intercept: <b>none</b> — the line is horizontal at height ' + t(k) + ', so it never reaches the ' + t('x') + '-axis.<br>' + t('y') + '-intercept ' + t(ptT([0, k])) + '.', hints: ['Does the line ever reach the ' + t('x') + '-axis?', 'Tap only where the line actually meets an axis.'],
+            bad: [[[0, k], [k, 0]], [[0, k], [0, 0]]] });
         } },
         { id: 'e5c', level: 'BEG', make: function (r) {
           var h = r.pick([-4, -4].concat(pm(1, 5)));
-          var g = axisGraph({ segs: [{ pts: [[h, -5.8], [h, 5.8]], start: 'arrow', end: 'arrow' }] });
-          return interceptsPart(g, [h], null, { text: 'read intercepts of x=' + h, yNone: 'This line is vertical at ' + t('x=' + h) + ': it never reaches the ' + t('y') + '-axis, so there is no ' + t('y') + '-intercept.',
-            sol: t('x') + '-intercept ' + t(ptT([h, 0])) + '.<br>' + t('y') + '-intercept: <b>none</b> — the line is vertical at ' + t('x=' + h) + ', so it never reaches the ' + t('y') + '-axis.', hints: ['Does the line ever reach the ' + t('y') + '-axis?', HXY[1]] });
+          var inp = { x: [-6, 6], y: [-6, 6], labels: 1, bg: { segs: [{ pts: [[h, -5.8], [h, 5.8]], start: 'arrow', end: 'arrow', color: GIVEN }] } };
+          return interceptTap('Tap the intercepts of this line.', inp, [h], [], function (z) { return same(z[0], h); }, { text: 'tap intercepts of x=' + h, yNone: 'This line is vertical at ' + t('x=' + h) + ': it never reaches the ' + t('y') + '-axis, so there is no ' + t('y') + '-intercept to tap.',
+            sol: t('x') + '-intercept ' + t(ptT([h, 0])) + '.<br>' + t('y') + '-intercept: <b>none</b> — the line is vertical at ' + t('x=' + h) + ', so it never reaches the ' + t('y') + '-axis.', hints: ['Does the line ever reach the ' + t('y') + '-axis?', 'Tap only where the line actually meets an axis.'],
+            bad: [[[h, 0], [0, h]], [[h, 0], [0, 0]]] });
         } },
         { id: 'e5d', level: 'EMG', make: function (r) {
           var o = r.chance(0.3) ? [0.25, 2, 1] : r.pick([[0.25, 2, 1], [0.25, -2, 1], [0.25, 2, 2], [0.25, -2, 3], [0.5, 2, 1], [0.5, -2, 1], [1, 1, 1], [1, -1, 2], [0.25, 4, 1]]), a = o[0], h = o[1], k = o[2], yi = a * h * h + k;
-          var g = axisGraph({ y: [-2, 7], fns: [{ f: function (x) { return a * (x - h) * (x - h) + k; }, from: -6, to: 6, start: 'arrow', end: 'arrow' }] });
-          return interceptsPart(g, null, [yi], { text: 'read intercepts of parabola above axis', xNone: 'The lowest point of this parabola is ' + t(ptT([h, k])) + ', above the ' + t('x') + '-axis, and it opens upward — it never reaches the ' + t('x') + '-axis.',
-            sol: t('x') + '-intercept: <b>none</b> — the parabola opens upward and its lowest point ' + t(ptT([h, k])) + ' is above the ' + t('x') + '-axis.<br>' + t('y') + '-intercept ' + t(ptT([0, yi])) + '.', hints: ['Does the curve ever reach the ' + t('x') + '-axis? Look at its lowest point.', HXY[1]] });
+          var f = function (x) { return a * (x - h) * (x - h) + k; };
+          var inp = { x: [-6, 6], y: [-2, 7], labels: 1, bg: { fns: [{ f: f, from: -6, to: 6, start: 'arrow', end: 'arrow', color: GIVEN }] } };
+          return interceptTap('Tap the intercepts of this parabola.', inp, [], [yi], function (z) { return same(f(z[0]), z[1]); }, { text: 'tap intercepts of parabola above axis', xNone: 'The lowest point of this parabola is ' + t(ptT([h, k])) + ', above the ' + t('x') + '-axis, and it opens upward — it never reaches the ' + t('x') + '-axis, so there is no ' + t('x') + '-intercept to tap.',
+            sol: t('x') + '-intercept: <b>none</b> — the parabola opens upward and its lowest point ' + t(ptT([h, k])) + ' is above the ' + t('x') + '-axis.<br>' + t('y') + '-intercept ' + t(ptT([0, yi])) + '.', hints: ['Does the curve ever reach the ' + t('x') + '-axis? Look at its lowest point.', 'Tap only where the curve actually meets an axis.'],
+            bad: [[[0, yi], [h, k]], [[h, k]], [[0, yi], [h, 0]]] });
         } }] },
       { num: '6', stem: function (o) { return 'The line below is the graph of ' + t(o.eq) + '.' + HW.graph({ x: [-3, 7], y: [-3, 6], labels: 1, max: 300, segs: [{ pts: clipFn(function (x) { return o.q - o.q * x / o.p; }, -2.8, 6.8, -2.8, 5.8), start: 'arrow', end: 'arrow' }] }); },
         shared: function (r) { var pq = r.chance(0.3) ? [4, 3] : pickWhere(function () { return [r.int(2, 6), r.int(2, 5)]; }, function (z) { return z[0] !== z[1]; }), p = pq[0], q = pq[1], T = reduceT([q, p, -p * q]); return { p: p, q: q, T: T, eq: lin([[T[0], 'x'], [T[1], 'y']]) + '=' + (-T[2]) }; },

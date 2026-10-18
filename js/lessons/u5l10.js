@@ -9,6 +9,9 @@
  * exact plots via K.graphExact, the cyclist's speed story via K.graphStory (stages and times checked, any steady-speed
  * height), the open "sketch a relation with this domain/range" tasks via K.graphRules plus a local intercept count;
  * "explain" items become multiple choice with misconception hints; calculator items ask for the values the calculator finds.
+ * js/draw2.js: graphs whose domain and range are asked (15, Extra 1b, 2a, 4a, 4b, 8a, 12b) get a domrange part first (shade
+ * them on number lines under the graph, same graph via shared numbers), then the typed set notation; intercepts read off a
+ * given graph (Extra 1f, 4a–c iii, 8c, 12f) are tapped on the graph (K.P.points, see tapPart()).
  * Levels follow LEVEL_RUBRIC.md (recognition formats one level below the constructed task, capped at PRG). */
 (function (root) {
   'use strict';
@@ -124,6 +127,7 @@
   }
   /* one part, two boxes: Domain and Range. o: dv, rv (letters), dW / rW (opt.wrong lists), good, bad */
   function drPart(prompt, D, R, o, sol, hints, text) {
+    if (o && o.shade) return shadeDR(prompt, o.shade, D, R, o, sol, hints, text);
     o = o || {}; var dv = o.dv || 'x', rv = o.rv || 'y';
     var cD = setChk(D, { v: dv, other: R, otherName: 'range', wrong: o.dW }), cR = setChk(R, { v: rv, other: D, otherName: 'domain', wrong: o.rW });
     var vars = [dv, rv].filter(function (v, i, a) { return a.indexOf(v) === i; });
@@ -287,6 +291,86 @@
   var HINT_EVAL = 'Replace every ' + t('x') + ' in the rule with the input (in brackets), then follow the order of operations.';
   var HINT_SOLVE = 'Set the rule equal to the given output and solve the equation for the input.';
 
+  /* ---------------- graphical answers (js/draw2.js) ----------------
+   * shadeDR: shade the domain and range on two number lines under a given graph (domrange). It comes right before the
+   * typed set-notation part and shows the same graph (shared numbers); the typed part's wrong sets (dW / rW) are reused as
+   * targeted diagnoses, plus generic ones (shading between separate points, dots only for an unbroken graph, stopping at
+   * the grid edge where there is an arrow, shading to the end where the graph stops).
+   * tapPart: tap the intercepts of a given graph (graph pad in points mode with the graph underneath). */
+  var DW = HW.draw;
+  var HINT_SHADOW = 'Shine a light straight down onto the graph: its shadow on the ' + t('x') + '-axis is the <b>domain</b>. Shine it from the side: its shadow on the ' + t('y') + '-axis is the <b>range</b>.';
+  var HINT_SH_DOTS = 'Copy the graph’s ends onto the number lines: solid end → solid dot, hollow end → open dot (tap the dot a second time), arrow → shade right to the end of the number line, with no dot.';
+  var SH_PROMPT = 'Show the domain and the range on the two number lines: a dot at each end value (solid or open), shaded in between. Then write them in set notation in the next part.';
+  function isPt(p) { return Math.abs(p.lo - p.hi) < 1e-9; }
+  function shWord(h) { return String(h || '').replace(/use \\\(\\(le|ge) ?\\\)/g, 'show it with a <b>solid</b> dot').replace(/use \\\((<|>)\\\)/g, 'show it with an <b>open</b> dot').replace(/both use \\\(\\le ?\\\)/g, 'both get solid dots'); }
+  function shadeHint(got, want, v, name) {
+    var allPt = function (ps) { return ps.length > 0 && ps.every(isPt); };
+    if (allPt(want) && !allPt(got)) return { code: 'dr-sh-list', hint: 'The graph is separate dots, so the ' + name + ' is only their ' + t(v) + '-values: put a solid dot at each one and shade nothing in between.' };
+    if (!allPt(want) && allPt(got) && got.length > 1) return { code: 'dr-sh-fill', hint: 'The graph is unbroken, so every ' + t(v) + '-value between the ends belongs to the ' + name + ' too: shade between your dots.' };
+    if (want.length === 1 && got.length === 1) {
+      var q = want[0], g = got[0];
+      if ((!isFinite(q.lo) && isFinite(g.lo)) || (!isFinite(q.hi) && isFinite(g.hi))) return { code: 'dr-sh-arrow', hint: 'The graph has an arrow, so it keeps going past the edge of the grid: the ' + name + ' has no end on that side. Shade right to the end of the number line.' };
+      if ((isFinite(q.lo) && !isFinite(g.lo)) || (isFinite(q.hi) && !isFinite(g.hi))) return { code: 'dr-sh-stop', hint: 'The graph stops at an end dot (not an arrow), so the ' + name + ' stops too: put a dot at that end value and shade only up to it.' };
+    }
+    return null;
+  }
+  /* spec: an HW.graph spec of the given graph; o: dv, rv, dW, rW (as for drPart), dom / ran (number-line options) */
+  function shadeDR(prompt, spec, D, R, o, sol, hints, text) {
+    o = o || {}; var dv = o.dv || 'x', rv = o.rv || 'y';
+    var g = Object.assign({ x: [-6, 6], y: [-6, 6], labels: 2 }, spec); g.max = 300;
+    var inp = { graph: g, v: dv, w: rv, dom: Object.assign({ labels: 2 }, o.dom || {}), ran: Object.assign({ labels: 2 }, o.ran || {}) };
+    var hm = function (h) { return h === HINT_DOTS ? HINT_SH_DOTS : h === HINT_DR ? HINT_SHADOW : h; };
+    var hs = (hints || []).map(hm); if (hs.indexOf(HINT_SH_DOTS) < 0) hs.push(HINT_SH_DOTS); if (hs.indexOf(HINT_SHADOW) < 0) hs.unshift(HINT_SHADOW);
+    var p = B.domrange(prompt || SH_PROMPT, inp, D, R, sol, hs, (text || 'domain and range') + ' (shade)');
+    var parts = function (tex) { return DW.setParts(S.parse(tex).set); }, TD = parts(D), TR = parts(R);
+    var prep = function (W, T) { return (W || []).map(function (w) { var q = S.parse(w.is); return q.ok ? { parts: DW.setParts(q.set), code: w.code, hint: shWord(w.sh || w.hint) } : null; }).filter(function (w) { return w && !DW.partsSame(w.parts, T); }); };
+    var WD = prep(o.dW, TD), WR = prep(o.rW, TR), base = p.check;
+    if (DW.partsSame(TD, TR)) p.bad = p.bad.filter(function (b) { return !(DW.partsSame(DW.numlineParts(b.domain), TD) && DW.partsSame(DW.numlineParts(b.range), TR)); }); // the built-in "swapped" bad is the key when D = R
+    p.check = function (resp) {
+      var res = base(resp); if (res.v !== 'wrong' || res.code === 'dr-swap') return res;
+      resp = resp || {};
+      var one = function (val, T, W, v, name) {
+        if (!val || (!(val.dots || []).length && !(val.shade || []).length)) return null;
+        var G0 = DW.numlineParts(val); if (DW.partsSame(G0, T)) return null;
+        for (var i = 0; i < W.length; i++) if (DW.partsSame(G0, W[i].parts)) return W[i];
+        return shadeHint(G0, T, v, name) || { code: null };
+      };
+      var a = one(resp.domain, TD, WD, dv, 'domain');
+      if (a) return a.code ? wrong(a.code, '<b>Domain:</b> ' + a.hint) : res;
+      var b = one(resp.range, TR, WR, rv, 'range');
+      return b && b.code ? wrong(b.code, '<b>Range:</b> ' + b.hint) : res;
+    };
+    WD.forEach(function (w) { p.bad.push({ domain: DW.numlineKey(w.parts), range: p.key.range }); });
+    WR.forEach(function (w) { p.bad.push({ domain: p.key.domain, range: DW.numlineKey(w.parts) }); });
+    if (!TD.every(isPt)) p.bad.push({ domain: { dots: p.key.domain.dots.map(function (d) { return { x: d.x, open: false }; }), shade: [] }, range: p.key.range });
+    if (TR.every(isPt) && TR.length > 1) p.bad.push({ domain: p.key.domain, range: DW.numlineKey([{ lo: TR[0].lo, hi: TR[TR.length - 1].hi, lc: true, hc: true }]) });
+    return p;
+  }
+  /* tap the intercepts of a given graph. inp: graph-pad window + bg (the graph); onGraph(p) -> true if p is a point of the graph */
+  function tapPart(prompt, inp, xs, ys, o, sol, hints, text) {
+    o = o || {};
+    var key = function (p) { return cl(p[0]) + '|' + cl(p[1]); }, seen = {}, targets = [];
+    xs.concat(ys).forEach(function (p) { if (!seen[key(p)]) { seen[key(p)] = 1; targets.push(p); } });
+    var ax = o.xName || 'x', wr = [];
+    if (ys.length && xs.length) {
+      var onlyX = xs.filter(function (p) { return !ys.some(function (q) { return key(q) === key(p); }); }), onlyY = ys.filter(function (p) { return !xs.some(function (q) { return key(q) === key(p); }); });
+      if (onlyY.length && onlyX.length === xs.length) wr.push({ pts: xs, code: 'pt-missing', hint: (xs.length > 1 ? 'Those are the ' + t(ax) + '-intercepts' : 'That is the ' + t(ax) + '-intercept') + ' — now also tap the ' + t('y') + '-intercept' + (ys.length > 1 ? 's' : '') + ', where the graph meets the ' + t('y') + '-axis.' });
+      if (onlyX.length && onlyY.length === ys.length) wr.push({ pts: ys, code: 'pt-missing', hint: (ys.length > 1 ? 'Those are the ' + t('y') + '-intercepts' : 'That is the ' + t('y') + '-intercept') + ' — now also tap every ' + t(ax) + '-intercept, where the graph meets the ' + t(ax) + '-axis.' });
+    }
+    var pointHint = function (p) {
+      var onAxis = Math.abs(p[0]) < 1e-9 || Math.abs(p[1]) < 1e-9, onG = o.onGraph ? o.onGraph(p) : true;
+      if (onAxis && !onG) return { code: 'pt-extra', hint: t(ptT(p)) + ' is on an axis, but the graph doesn’t pass through it. ' + (o.offHint || 'An intercept is a point <b>of the graph</b> that lies on an axis.') };
+      if (!onAxis && onG) return { code: 'pt-extra', hint: t(ptT(p)) + ' is on the graph but not on an axis. An ' + t(ax) + '-intercept has ' + t('y=0') + '; a ' + t('y') + '-intercept has ' + t(ax + '=0') + '.' };
+      return null;
+    };
+    var bg = inp.bg || {}, ink = function (o) { return Object.assign({ color: '#5b6474' }, o); };   // the given graph in grey, so the student's taps (teal) stand out
+    inp = Object.assign({}, inp, { bg: { points: (bg.points || []).map(ink), segs: (bg.segs || []).map(ink), fns: (bg.fns || []).map(ink) } });
+    var p = B.points(prompt, inp, targets, sol, hints, text,
+      { what: 'intercept', whats: 'intercepts', whatHint: 'An intercept is where the graph meets an axis.', wrong: wr.concat(o.wrong || []), pointHint: pointHint });
+    p.bad = wr.map(function (w) { return drawing([], w.pts); }).concat([drawing([], targets.slice(1)), drawing([], targets.map(function (q) { return [q[1], q[0]]; }).filter(function (q) { return !seen[key(q)]; }))]).filter(function (b) { return b.pts.length; }).concat(o.bad || []);
+    return p;
+  }
+
   /* =====================================================================================================
    * Assignment
    * ===================================================================================================== */
@@ -383,6 +467,16 @@
     throw new Error('q15');
   }
 
+  function q15Part(sh, shade) {
+    var Hp = sh.pts[2], Sp = sh.pts[0], ex1 = sh.flip ? sh.yhi : sh.ylo, otherEnd = sh.flip ? sh.ylo : sh.yhi;
+    var rW = [{ is: bld('y', Math.min(Hp[1], Sp[1]), Math.max(Hp[1], Sp[1])), code: 'set-values', hint: 'The range isn’t just between the endpoints’ heights: the ' + (sh.flip ? 'highest' : 'lowest') + ' point is the corner ' + t(ptT(sh.pts[1])) + '.' },
+      { is: sh.flip ? bld('y', Hp[1], sh.yhi, false, true) : bld('y', sh.ylo, Hp[1], true, false), code: 'set-values', hint: 'The hollow point’s height, ' + t(Hp[1]) + ', is still reached elsewhere on the graph, and the graph goes beyond it to ' + t(otherEnd) + ' at the solid end.' },
+      { is: sh.flip ? bld('y', sh.ylo, sh.yhi, false, true) : bld('y', sh.ylo, sh.yhi, true, false), code: 'set-endpoint', hint: 'The extreme height ' + t(otherEnd) + ' comes from the <b>solid</b> endpoint, so it is included. The hollow point’s height is reached elsewhere, so nothing is excluded from the range.' }];
+    return drPart(shade ? null : 'State the domain and range of the relation.', sh.D, sh.R, { rW: rW, shade: shade ? { segs: [{ pts: sh.pts, start: 'closed', end: 'open' }] } : null },
+      'The solid end ' + t(ptT(Sp)) + ' is included; the hollow end ' + t(ptT(Hp)) + ' is not, so ' + t('x=' + Hp[0]) + ' is excluded: ' + t('D=' + sh.D) + '.<br>The ' + (sh.flip ? 'highest' : 'lowest') + ' point is the corner ' + t(ptT(sh.pts[1])) + ' and the ' + (sh.flip ? 'lowest' : 'highest') + ' is the solid end at ' + t('y=' + Sp[1]) + ', which is included. The hollow point’s height, ' + t(Hp[1]) + ', is still reached elsewhere, so the range is ' + t('R=' + sh.R) + '.',
+      [HINT_DOTS, 'For the range, look for the lowest and highest points of the whole graph — not just the endpoints.'], 'D and R with a hollow endpoint');
+  }
+
   /* Q16: phone battery B(t) = 100 - rt */
   function q16Shared(r) {
     var rr = r.pick([12, 12, 6, 7, 9, 11, 14, 15, 16]), T = 100 / rr, top = Math.floor(T - 1e-9);
@@ -413,6 +507,36 @@
   function ep1Fig(sh, joined, nm) {
     return fig(G({ x: [-6, 6], y: [-sh.L - 2, sh.top + 1], labels: 2, max: 300, points: joined ? [{ x: sh.pts[0][0], y: sh.pts[0][1] }, { x: sh.pts[6][0], y: sh.pts[6][1] }] : sh.pts.map(function (p) { return { x: p[0], y: p[1] }; }),
       segs: joined ? [{ pts: sh.pts }] : [], aria: 'graph of ' + nm }));
+  }
+
+  function e2aPart(sh, shade) {
+    var D = bld('x', sh.x1, sh.x7), R = bld('y', -sh.L, sh.top);
+    return drPart(shade ? 'Show the domain and the range of ' + t('g') + ' on the two number lines. (Next you’ll write them in set notation.)' : '(a) State the domain and the range of ' + t('g') + '.', D, R, { shade: shade ? { x: [-6, 6], y: [-sh.L - 2, sh.top + 1], points: [{ x: sh.pts[0][0], y: sh.pts[0][1] }, { x: sh.pts[6][0], y: sh.pts[6][1] }], segs: [{ pts: sh.pts }] } : null, dW: [{ is: sh.D, code: 'set-continuous', hint: 'Joining the dots fills in every ' + t('x') + ' between them, so the domain is no longer a list.' }], rW: [{ is: sh.R, code: 'set-continuous', hint: 'The segments reach every height between the dots, so the range is no longer a list.' }, { is: bld('y', Math.min(sh.y1, sh.y7), Math.max(sh.y1, sh.y7)), code: 'set-values', hint: 'The lowest point isn’t an endpoint: the flat piece at ' + t('y=' + (-sh.L)) + ' is lower.' }] },
+      'Joining the dots fills in every ' + t('x') + ' from ' + t(sh.x1) + ' to ' + t(sh.x7) + ', and every ' + t('y') + ' from ' + t(-sh.L) + ' (the flat segment) up to ' + t(sh.top) + ':<br>' + t('D=' + D) + '<br>' + t('R=' + R) + '<br>Both endpoints are solid, so both use ' + t('\\le') + '.',
+      [HINT_DR, 'For the range, find the lowest and highest points of the whole graph.'], 'D and R of joined dots');
+  }
+
+  function e4aDR(sh, shade) {
+    return drPart(shade ? null : '(i) State the domain and the range.', sh.D, sh.R, { shade: shade ? { x: [-6, 6], y: [-5, 5], segs: [{ pts: sh.pts, start: 'closed', end: 'closed' }] } : null, dW: [{ is: bld('x', -sh.m, sh.m), code: 'set-swap', hint: 'That is the spread of ' + t('y') + '-values. Read the domain left to right along the ' + t('x') + '-axis.' }], rW: [{ is: bld('y', -sh.k, sh.k), code: 'set-values', hint: 'The graph goes past the ' + t('y') + '-intercepts, up to its endpoints at ' + t('y=\\pm' + sh.m) + '.' }] },
+      'Leftmost/rightmost: the ' + (sh.s > 0 ? 'turning point' : 'endpoints') + ' at ' + t('x=' + Math.min(sh.xe, sh.xv)) + ' and the ' + (sh.s > 0 ? 'endpoints' : 'turning point') + ' at ' + t('x=' + Math.max(sh.xe, sh.xv)) + ': ' + t('D=' + sh.D) + '.<br>Lowest/highest: the solid endpoints at ' + t('y=\\pm' + sh.m) + ': ' + t('R=' + sh.R) + '.', [HINT_DR, HINT_DOTS], 'D and R of sideways parabola');
+  }
+
+  function e4bDR(sh, shade) {
+    return drPart(shade ? null : '(i) State the domain and the range.', sh.D, sh.R, { shade: shade ? { x: [-6, 6], y: [-5, 6], segs: [{ pts: sh.pts, start: sh.start, end: sh.end }] } : null, rW: [{ is: bld('y', Math.min(sh.yL, sh.yR), sh.yR), code: 'set-values', hint: 'The lowest point is the corner at ' + t('y=' + (-sh.d)) + ', not an endpoint.' }, { is: bld('y', -sh.d, sh.yR, true, false), code: 'set-endpoint', hint: 'The top of the range comes from the <b>solid</b> endpoint ' + t(ptT(sh.solid)) + ', so ' + t(sh.yR) + ' is included.' }] },
+      'The hollow end ' + t(ptT(sh.hollow)) + ' is excluded, the solid end ' + t(ptT(sh.solid)) + ' included: ' + t('D=' + sh.D) + '.<br>Lowest point: the corner, ' + t('y=' + (-sh.d)) + '; highest: the solid end, ' + t('y=' + sh.yR) + ': ' + t('R=' + sh.R) + '.', [HINT_DOTS, 'For the range, the lowest point may be a corner, not an end.'], 'D and R of a V with a hollow end');
+  }
+
+  function e8aDR(sh, shade) {
+    var D = bld('x', sh.xL, sh.X0), R = bld('y', 0, sh.yL);
+    return drPart(shade ? 'Show the domain and the range of ' + t('h') + ' on the two number lines. (Next you’ll write them in set notation.)' : '(a) State the domain and range of ' + t('h') + '.', D, R, { shade: shade ? { x: [-7, 9], y: [-2, 8], segs: [{ pts: [[sh.xL, sh.yL], [sh.X0, 0]], start: 'closed', end: 'closed' }] } : null, rW: [{ is: bld('y', sh.b, sh.yL), code: 'set-values', hint: 'The graph goes all the way down to its right endpoint, ' + t(ptT([sh.X0, 0])) + '.' }, { is: bld('y', sh.yL, 0), code: 'set-values', hint: 'Write the smaller number first: ' + t('0\\le y\\le ' + sh.yL) + '.' }] },
+      t('D=' + D) + ', ' + t('R=' + R) + '.<br>The line falls from left to right, so the left endpoint ' + t(ptT([sh.xL, sh.yL])) + ' gives the <b>upper</b> bound ' + t(sh.yL) + ' and the right endpoint ' + t(ptT([sh.X0, 0])) + ' gives the <b>lower</b> bound ' + t('0') + '. Both are solid, so both use ' + t('\\le') + '.', [HINT_DR, 'For a falling line, the left end is the highest point.'], 'D and R of a falling segment');
+  }
+
+  function e12bDR(sh, shade) {
+    var D = bld('t', 0, sh.tot), R = bld('y', -sh.D, 0);
+    return drPart(shade ? 'Show the domain (times) and the range (positions) on the two number lines. (Next you’ll write them in set notation.)' : '(b) State the domain and the range, with the correct variable letters.', D, R, { dv: 't', rv: 'y',
+      shade: shade ? { x: [0, 24], y: [-sh.D - 2, 2], unitX: 12, unitY: 12, xName: 't', yName: 'y', xTitle: 'Time (min)', yTitle: 'Position (m)', segs: [{ pts: sh.V, start: 'closed', end: 'closed' }] } : null, dom: { step: 1, labels: 4 }, ran: { step: 1, labels: 2 }, rW: [{ is: bld('y', -sh.M, 0), code: 'set-values', hint: 'The lowest point is the flat bottom at ' + t('y=' + (-sh.D)) + '.' }] },
+      t('D=' + D) + ', ' + t('R=' + R) + '. The input is ' + t('t') + ' and the output is ' + t('y') + '; both endpoints are solid.', [HINT_DR], 'D and R of diver');
   }
 
   /* EP3: y = a x^2 + c on {-2, -1, 0, 1, 2} */
@@ -949,15 +1073,8 @@
       /* ---------------- Q15 ---------------- */
       { num: '15', shared: q15Shared, outcome: 'RF2',
         stem: function (sh) { return 'The relation graphed below has one solid and one hollow endpoint.' + fig(G({ x: [-6, 6], y: [-6, 6], labels: 2, max: 280, segs: [{ pts: sh.pts, start: 'closed', end: 'open' }], aria: 'relation with one hollow endpoint' })); }, parts: [
-        { id: '15', level: 'PRG', make: function (r, sh) {
-          var Hp = sh.pts[2], Sp = sh.pts[0], ex1 = sh.flip ? sh.yhi : sh.ylo, otherEnd = sh.flip ? sh.ylo : sh.yhi;
-          var rW = [{ is: bld('y', Math.min(Hp[1], Sp[1]), Math.max(Hp[1], Sp[1])), code: 'set-values', hint: 'The range isn’t just between the endpoints’ heights: the ' + (sh.flip ? 'highest' : 'lowest') + ' point is the corner ' + t(ptT(sh.pts[1])) + '.' },
-            { is: sh.flip ? bld('y', Hp[1], sh.yhi, false, true) : bld('y', sh.ylo, Hp[1], true, false), code: 'set-values', hint: 'The hollow point’s height, ' + t(Hp[1]) + ', is still reached elsewhere on the graph, and the graph goes beyond it to ' + t(otherEnd) + ' at the solid end.' },
-            { is: sh.flip ? bld('y', sh.ylo, sh.yhi, false, true) : bld('y', sh.ylo, sh.yhi, true, false), code: 'set-endpoint', hint: 'The extreme height ' + t(otherEnd) + ' comes from the <b>solid</b> endpoint, so it is included. The hollow point’s height is reached elsewhere, so nothing is excluded from the range.' }];
-          return drPart('State the domain and range of the relation.', sh.D, sh.R, { rW: rW },
-            'The solid end ' + t(ptT(Sp)) + ' is included; the hollow end ' + t(ptT(Hp)) + ' is not, so ' + t('x=' + Hp[0]) + ' is excluded: ' + t('D=' + sh.D) + '.<br>The ' + (sh.flip ? 'highest' : 'lowest') + ' point is the corner ' + t(ptT(sh.pts[1])) + ' and the ' + (sh.flip ? 'lowest' : 'highest') + ' is the solid end at ' + t('y=' + Sp[1]) + ', which is included. The hollow point’s height, ' + t(Hp[1]) + ', is still reached elsewhere, so the range is ' + t('R=' + sh.R) + '.',
-            [HINT_DOTS, 'For the range, look for the lowest and highest points of the whole graph — not just the endpoints.'], 'D and R with a hollow endpoint');
-        } }] },
+        { id: '15s', sub: 'shade', level: 'EMG', make: function (r, sh) { return q15Part(sh, true); } },
+        { id: '15', sub: 'set notation', level: 'PRG', make: function (r, sh) { return q15Part(sh, false); } }] },
       /* ---------------- Q16 ---------------- */
       { num: '16', shared: q16Shared,
         stem: function (sh) { return 'A phone’s battery charge, in percent, after ' + t('t') + ' hours of video streaming is modelled by the linear function ' + t('B(t)=100-' + sh.r + 't') + '.'; }, parts: [
@@ -1072,6 +1189,11 @@
           p.bad = ['\\{' + sh.pts.map(function (q) { return ptK([q[1], q[0]]); }).join(', ') + '\\}', '\\{' + sh.pts.slice(0, 6).map(ptK).join(', ') + '\\}'];
           return p;
         } },
+        { id: 'e1bs', sub: 'b, shade', level: 'BEG', outcome: 'RF2', make: function (r, sh) {
+          return shadeDR('Show the domain and the range of ' + t('f') + ' on the two number lines. Then write them in set notation in the next part.', { x: [-6, 6], y: [-sh.L - 2, sh.top + 1], points: sh.pts.map(function (p) { return { x: p[0], y: p[1] }; }) }, sh.D, sh.R, {},
+            'Each dot casts its own shadow. On the ' + t('x') + '-axis: ' + t(sh.xs.join(',\\ ')) + '. On the ' + t('y') + '-axis: ' + t(uniq(sh.ys).join(',\\ ')) + ' — the heights ' + t(-sh.L) + ' and ' + t('0') + ' each come from two dots but get one dot on the number line.',
+            [HINT_DR, 'A height reached by two dots is still one value in the range.'], 'D and R of seven dots');
+        } },
         { id: 'e1b', level: 'EMG', outcome: 'RF2', make: function (r, sh) {
           return drPart('(b) State the domain and the range. (Two outputs are each produced twice — think about how that shows up in the range.)', sh.D, sh.R, { bad: [[sh.D, '\\{' + sh.ys.slice().sort(function (a, b) { return a - b; }).join(', ') + '\\}'], [sh.D, bld('y', -sh.L, sh.top)]] },
             'Domain: the ' + t('x') + '-coordinates, each once, in increasing order: ' + t('D=' + sh.D) + '.<br>Range: the ' + t('y') + '-coordinates are ' + t(sh.ys.join(',\\ ')) + '. The outputs ' + t(-sh.L) + ' and ' + t('0') + ' each occur twice, but a set lists each value once: ' + t('R=' + sh.R) + ' — seven points, but only five range values.',
@@ -1108,8 +1230,9 @@
             'Solving ' + t('f(x)=b') + ' asks for every input with output ' + t('b') + '. Two dots are at height ' + t(-sh.L) + ' and only one at height ' + t(sh.y1) + '. That is allowed: a function forbids one input with two outputs, not two inputs with one output.',
             ['Count the dots at each height.'], 'why two solutions');
         } },
-        { id: 'e1f', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
-          return intPart('(f) State the ' + t('x') + '-intercept(s) and the ' + t('y') + '-intercept as ordered pairs.', [[sh.x3, 0], [sh.x6, 0]], [[0, -sh.L]], { plural: true },
+        { id: 'e1f', level: 'BEG', outcome: 'RF1', make: function (r, sh) {
+          var onG = function (p) { return sh.pts.some(function (q) { return same(q[0], p[0]) && same(q[1], p[1]); }); };
+          return tapPart('(f) Tap every ' + t('x') + '-intercept and the ' + t('y') + '-intercept of ' + t('f') + '.', { x: [-6, 6], y: [-sh.L - 2, sh.top + 1], labels: 2, bg: { points: sh.pts.map(function (p) { return { x: p[0], y: p[1] }; }) } }, [[sh.x3, 0], [sh.x6, 0]], [[0, -sh.L]], { onGraph: onG, offHint: 'The graph is only the dots: an intercept must be one of them.' },
             t('x') + '-intercepts: the dots on the ' + t('x') + '-axis (' + t('y=0') + '): ' + t(ptT([sh.x3, 0]) + ',\\ ' + ptT([sh.x6, 0])) + '.<br>' + t('y') + '-intercept: the dot on the ' + t('y') + '-axis (' + t('x=0') + '): ' + t(ptT([0, -sh.L])) + '.',
             ['An ' + t('x') + '-intercept is a point with ' + t('y=0') + '; a ' + t('y') + '-intercept is a point with ' + t('x=0') + '.'], 'intercepts of dots');
         } },
@@ -1144,12 +1267,8 @@
         } }] },
       { num: '2', shared: function (r) { return ep1Shared(r, true); },
         stem: function (sh) { return 'The seven points of a relation ' + t('f') + ' (left) are now joined, in order from left to right, by straight segments to make a new relation ' + t('g') + ' (right). Everything about the relation has changed except the dots themselves.' + figs(['<b>' + t('f') + '</b> (dots)' + ep1Fig(sh, false, 'f'), '<b>' + t('g') + '</b> (joined)' + ep1Fig(sh, true, 'g')], 150); }, parts: [
-        { id: 'e2a', level: 'PRG', outcome: 'RF2', make: function (r, sh) {
-          var D = bld('x', sh.x1, sh.x7), R = bld('y', -sh.L, sh.top);
-          return drPart('(a) State the domain and the range of ' + t('g') + '.', D, R, { dW: [{ is: sh.D, code: 'set-continuous', hint: 'Joining the dots fills in every ' + t('x') + ' between them, so the domain is no longer a list.' }], rW: [{ is: sh.R, code: 'set-continuous', hint: 'The segments reach every height between the dots, so the range is no longer a list.' }, { is: bld('y', Math.min(sh.y1, sh.y7), Math.max(sh.y1, sh.y7)), code: 'set-values', hint: 'The lowest point isn’t an endpoint: the flat piece at ' + t('y=' + (-sh.L)) + ' is lower.' }] },
-            'Joining the dots fills in every ' + t('x') + ' from ' + t(sh.x1) + ' to ' + t(sh.x7) + ', and every ' + t('y') + ' from ' + t(-sh.L) + ' (the flat segment) up to ' + t(sh.top) + ':<br>' + t('D=' + D) + '<br>' + t('R=' + R) + '<br>Both endpoints are solid, so both use ' + t('\\le') + '.',
-            [HINT_DR, 'For the range, find the lowest and highest points of the whole graph.'], 'D and R of joined dots');
-        } },
+        { id: 'e2as', sub: 'a, shade', level: 'EMG', outcome: 'RF2', make: function (r, sh) { return e2aPart(sh, true); } },
+        { id: 'e2a', level: 'PRG', outcome: 'RF2', make: function (r, sh) { return e2aPart(sh, false); } },
         { id: 'e2a2', sub: 'a ii', level: 'BEG', outcome: 'RF2', make: function (r) {
           return mc(r, '(a) Why do the domain and range of ' + t('g') + ' now need set-builder notation instead of a list?', [
             { html: 'Each set now holds infinitely many real numbers (every value between the ends), so they can’t be listed.', right: true },
@@ -1252,32 +1371,30 @@
             'The table, graph and mapping diagram each show only the five given pairs, so none says what happens at any other input (e.g. ' + t('x=0.5') + '). Only the equation, IV, gives an output for every real ' + t('x') + '.', ['Which representations show only five pairs?'], 'which representation shows all');
         } }] },
       { num: '4a', stem: function (sh) { return 'For the graph below state (i) the domain and range, (ii) whether the relation is a function, and (iii) every ' + t('x') + '-intercept and every ' + t('y') + '-intercept, as ordered pairs.' + fig(G({ x: [-6, 6], y: [-5, 5], labels: 2, max: 260, segs: [{ pts: sh.pts, start: 'closed', end: 'closed' }], aria: 'sideways parabola' })); }, shared: ep4aShared, parts: [
-        { id: 'e4a1', sub: 'i', level: 'PRG', outcome: 'RF2', make: function (r, sh) {
-          return drPart('(i) State the domain and the range.', sh.D, sh.R, { dW: [{ is: bld('x', -sh.m, sh.m), code: 'set-swap', hint: 'That is the spread of ' + t('y') + '-values. Read the domain left to right along the ' + t('x') + '-axis.' }], rW: [{ is: bld('y', -sh.k, sh.k), code: 'set-values', hint: 'The graph goes past the ' + t('y') + '-intercepts, up to its endpoints at ' + t('y=\\pm' + sh.m) + '.' }] },
-            'Leftmost/rightmost: the ' + (sh.s > 0 ? 'turning point' : 'endpoints') + ' at ' + t('x=' + Math.min(sh.xe, sh.xv)) + ' and the ' + (sh.s > 0 ? 'endpoints' : 'turning point') + ' at ' + t('x=' + Math.max(sh.xe, sh.xv)) + ': ' + t('D=' + sh.D) + '.<br>Lowest/highest: the solid endpoints at ' + t('y=\\pm' + sh.m) + ': ' + t('R=' + sh.R) + '.', [HINT_DR, HINT_DOTS], 'D and R of sideways parabola');
-        } },
+        { id: 'e4a0', sub: 'i, shade', level: 'EMG', outcome: 'RF2', make: function (r, sh) { return e4aDR(sh, true); } },
+        { id: 'e4a1', sub: 'i', level: 'PRG', outcome: 'RF2', make: function (r, sh) { return e4aDR(sh, false); } },
         { id: 'e4a2', sub: 'ii', level: 'BEG', outcome: 'RF2', make: function (r, sh) {
           var neg = r.chance(0.5); // statement "is a function" (false) or "is not a function" (true)
           return tf(r, '(ii) True or false: this relation is ' + (neg ? '<b>not</b> ' : '') + 'a function.', neg, 'The vertical line ' + t('x=0') + ' meets the curve twice, at ' + t('y=-' + sh.k) + ' and ' + t('y=' + sh.k) + ': one input, two outputs.',
             (neg ? '<b>True</b> — ' : '<b>False</b> — ') + '<b>not a function:</b> the vertical line ' + t('x=0') + ' meets the curve at ' + t('(0,\\ -' + sh.k + ')') + ' and ' + t('(0,\\ ' + sh.k + ')') + '.', ['Try a vertical line near the middle of the curve.'], 'VLT sideways parabola' + (neg ? ' (not a function?)' : ''));
         } },
         { id: 'e4a3', sub: 'iii', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
-          return intPart('(iii) State every ' + t('x') + '-intercept and every ' + t('y') + '-intercept as ordered pairs.', [[sh.xv, 0]], [[0, -sh.k], [0, sh.k]], { plural: true, yLabel: t('y') + '-int(s)' },
+          var onG = function (p) { return same(p[0], sh.s * (p[1] * p[1] - sh.k * sh.k)) && Math.abs(p[1]) <= sh.m; };
+          return tapPart('(iii) Tap every ' + t('x') + '-intercept and every ' + t('y') + '-intercept.', { x: [-6, 6], y: [-5, 5], labels: 2, bg: { segs: [{ pts: sh.pts, start: 'closed', end: 'closed' }] } }, [[sh.xv, 0]], [[0, -sh.k], [0, sh.k]], { onGraph: onG },
             t('x') + '-int: the turning point on the ' + t('x') + '-axis, ' + t(ptT([sh.xv, 0])) + '.<br>' + t('y') + '-ints: ' + t(ptT([0, -sh.k]) + ',\\ ' + ptT([0, sh.k])) + ' — a relation can meet the ' + t('y') + '-axis twice when it isn’t a function.', ['Look for every point where the curve meets each axis.'], 'intercepts of sideways parabola');
         } }] },
       { num: '4b', stem: function (sh) { return 'For the graph below state (i) the domain and range, (ii) whether the relation is a function, and (iii) every intercept as ordered pairs.' + fig(G({ x: [-6, 6], y: [-5, 6], labels: 2, max: 260, segs: [{ pts: sh.pts, start: sh.start, end: sh.end }], aria: 'V-shaped relation with a hollow end' })); }, shared: ep4bShared, parts: [
-        { id: 'e4b1', sub: 'i', level: 'PRG', outcome: 'RF2', make: function (r, sh) {
-          return drPart('(i) State the domain and the range.', sh.D, sh.R, { rW: [{ is: bld('y', Math.min(sh.yL, sh.yR), sh.yR), code: 'set-values', hint: 'The lowest point is the corner at ' + t('y=' + (-sh.d)) + ', not an endpoint.' }, { is: bld('y', -sh.d, sh.yR, true, false), code: 'set-endpoint', hint: 'The top of the range comes from the <b>solid</b> endpoint ' + t(ptT(sh.solid)) + ', so ' + t(sh.yR) + ' is included.' }] },
-            'The hollow end ' + t(ptT(sh.hollow)) + ' is excluded, the solid end ' + t(ptT(sh.solid)) + ' included: ' + t('D=' + sh.D) + '.<br>Lowest point: the corner, ' + t('y=' + (-sh.d)) + '; highest: the solid end, ' + t('y=' + sh.yR) + ': ' + t('R=' + sh.R) + '.', [HINT_DOTS, 'For the range, the lowest point may be a corner, not an end.'], 'D and R of a V with a hollow end');
-        } },
+        { id: 'e4b0', sub: 'i, shade', level: 'EMG', outcome: 'RF2', make: function (r, sh) { return e4bDR(sh, true); } },
+        { id: 'e4b1', sub: 'i', level: 'PRG', outcome: 'RF2', make: function (r, sh) { return e4bDR(sh, false); } },
         { id: 'e4b2', sub: 'ii', level: 'BEG', outcome: 'RF2', make: function (r) {
           var neg = r.chance(0.5); // statement "is a function" (true) or "is not a function" (false)
           return tf(r, '(ii) True or false: this relation is ' + (neg ? '<b>not</b> ' : '') + 'a function.', !neg, 'Every vertical line meets the graph at most once. (A hollow endpoint just removes one point.)',
             (neg ? '<b>False</b> — ' : '<b>True</b> — ') + 'it <b>is a function:</b> no vertical line meets the graph twice.', ['Imagine sliding a vertical line across the graph.'], 'VLT V-shape' + (neg ? ' (not a function?)' : ''));
         } },
-        { id: 'e4b3', sub: 'iii', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
-          var xs = sh.xi.map(function (x) { return [x, 0]; }), ys = [[0, sh.yi]];
-          return intPart('(iii) State every ' + t('x') + '-intercept and every ' + t('y') + '-intercept as ordered pairs.', xs, ys, { plural: true },
+        { id: 'e4b3', sub: 'iii', level: 'BEG', outcome: 'RF1', make: function (r, sh) {
+          var xs = sh.xi.map(function (x) { return [x, 0]; }), ys = [[0, sh.yi]], lo = Math.min(sh.hollow[0], sh.solid[0]), hi = Math.max(sh.hollow[0], sh.solid[0]);
+          var onG = function (p) { return p[0] >= lo - 1e-9 && p[0] <= hi + 1e-9 && !(same(p[0], sh.hollow[0]) && same(p[1], sh.hollow[1])) && same(p[1], pwAt(sh.pts.slice().sort(function (a, b) { return a[0] - b[0]; }), p[0])); };
+          return tapPart('(iii) Tap every ' + t('x') + '-intercept and every ' + t('y') + '-intercept.', { x: [-6, 6], y: [-5, 6], labels: 2, bg: { segs: [{ pts: sh.pts, start: sh.start, end: sh.end }] } }, xs, ys, { onGraph: onG },
             t('x') + '-ints: ' + t(xs.map(ptT).join(',\\ ')) + '.<br>' + t('y') + '-int: ' + t(ptT([0, sh.yi])) + (sh.yi === 0 ? ' — the same point as one of the ' + t('x') + '-intercepts (the origin).' : '.'), ['Check where each straight piece crosses the axes.'], 'intercepts of a V');
         } }] },
       { num: '4c', stem: function (sh) { return 'For the graph below state (i) the domain and range, (ii) whether the relation is a function, and (iii) every intercept as ordered pairs. If an intercept does not exist, say so.' + fig(G({ x: [-5, 5], y: [-5, 5], labels: 1, max: 260, points: sh.pts.map(function (p) { return { x: p[0], y: p[1] }; }), aria: 'six dots' })); }, shared: ep4cShared, parts: [
@@ -1292,7 +1409,8 @@
             (neg ? '<b>True</b> — ' : '<b>False</b> — ') + '<b>not a function:</b> ' + t(sh.dbl[0]) + ' and ' + t(sh.dbl[1]) + ' are each paired with two outputs.', ['Is any vertical line through two dots?'], 'VLT six dots' + (neg ? ' (not a function?)' : ''));
         } },
         { id: 'e4c3', sub: 'iii', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
-          return intPart('(iii) State every ' + t('x') + '-intercept and every ' + t('y') + '-intercept as ordered pairs. If one does not exist, press <b>none</b>.', [[sh.z, 0]], [], { none: true, plural: true },
+          var onG = function (p) { return sh.pts.some(function (q) { return same(q[0], p[0]) && same(q[1], p[1]); }); };
+          return tapPart('(iii) Tap every ' + t('x') + '-intercept and every ' + t('y') + '-intercept. If one kind does not exist, there is nothing to tap for it.', { x: [-5, 5], y: [-5, 5], labels: 1, bg: { points: sh.pts.map(function (p) { return { x: p[0], y: p[1] }; }) } }, [[sh.z, 0]], [], { onGraph: onG, offHint: 'The graph is only the dots, and no dot lies on the ' + t('y') + '-axis — so there is <b>no</b> ' + t('y') + '-intercept.' },
             t('x') + '-int: the dot on the ' + t('x') + '-axis, ' + t(ptT([sh.z, 0])) + '.<br><b>No ' + t('y') + '-intercept:</b> no dot has ' + t('x=0') + ' (the graph is only the dots).', ['Is there a dot exactly on each axis?'], 'intercepts of dots, none');
         } }] },
       { num: '5', stem: '', parts: [
@@ -1439,18 +1557,16 @@
         } }] },
       { num: '8', shared: ep8Shared,
         stem: function (sh) { return 'The graph below is the whole graph of a function ' + t('h') + '. Its equation is ' + t('h(x)=' + dfr(sh.rule)) + '.' + fig(G({ x: [-7, 9], y: [-2, 8], labels: 2, max: 320, segs: [{ pts: [[sh.xL, sh.yL], [sh.X0, 0]], start: 'closed', end: 'closed' }], aria: 'segment of a line' })); }, parts: [
-        { id: 'e8a', level: 'EMG', outcome: 'RF2', make: function (r, sh) {
-          var D = bld('x', sh.xL, sh.X0), R = bld('y', 0, sh.yL);
-          return drPart('(a) State the domain and range of ' + t('h') + '.', D, R, { rW: [{ is: bld('y', sh.b, sh.yL), code: 'set-values', hint: 'The graph goes all the way down to its right endpoint, ' + t(ptT([sh.X0, 0])) + '.' }, { is: bld('y', sh.yL, 0), code: 'set-values', hint: 'Write the smaller number first: ' + t('0\\le y\\le ' + sh.yL) + '.' }] },
-            t('D=' + D) + ', ' + t('R=' + R) + '.<br>The line falls from left to right, so the left endpoint ' + t(ptT([sh.xL, sh.yL])) + ' gives the <b>upper</b> bound ' + t(sh.yL) + ' and the right endpoint ' + t(ptT([sh.X0, 0])) + ' gives the <b>lower</b> bound ' + t('0') + '. Both are solid, so both use ' + t('\\le') + '.', [HINT_DR, 'For a falling line, the left end is the highest point.'], 'D and R of a falling segment');
-        } },
+        { id: 'e8as', sub: 'a, shade', level: 'BEG', outcome: 'RF2', make: function (r, sh) { return e8aDR(sh, true); } },
+        { id: 'e8a', level: 'EMG', outcome: 'RF2', make: function (r, sh) { return e8aDR(sh, false); } },
         { id: 'e8b', level: 'BEG', make: function (r, sh) {
           var v1 = sh.h(sh.x1);
           return fieldsOf('(b) Read ' + t('h(0)') + ' and ' + t('h(' + sh.x1 + ')') + ' off the graph (then check by substituting).', [numF(t('h(0)='), sh.b), numF(t('h(' + sh.x1 + ')='), v1)], t('h(0)=' + sh.b) + ', ' + t('h(' + sh.x1 + ')=' + nf(v1)),
             'Graph: the line crosses ' + t('x=0') + ' at ' + t('y=' + sh.b) + ' and passes through ' + t(ptT([sh.x1, v1])) + '.<br>Check: ' + t('h(0)=' + dfr(frT(-sh.p, sh.q)) + '(0)+' + sh.b + '=' + sh.b) + ' ✓, ' + t('h(' + sh.x1 + ')=' + dfr(frT(-sh.p, sh.q)) + '(' + sh.x1 + ')+' + sh.b + '=' + nf(v1)) + ' ✓', ['Go to the input on the ' + t('x') + '-axis, then up or down to the line.'], 'read h(a) off a segment');
         } },
-        { id: 'e8c', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
-          return intPart('(c) State both intercepts as ordered pairs.', [[sh.X0, 0]], [[0, sh.b]], {},
+        { id: 'e8c', level: 'BEG', outcome: 'RF1', make: function (r, sh) {
+          var onG = function (p) { return p[0] >= sh.xL - 1e-9 && p[0] <= sh.X0 + 1e-9 && same(p[1], sh.h(p[0])); };
+          return tapPart('(c) Tap both intercepts of ' + t('h') + '.', { x: [-7, 9], y: [-2, 8], labels: 2, bg: { segs: [{ pts: [[sh.xL, sh.yL], [sh.X0, 0]], start: 'closed', end: 'closed' }] } }, [[sh.X0, 0]], [[0, sh.b]], { onGraph: onG },
             t('x') + '-int: ' + t(dfr(sh.rule) + '=0\\Rightarrow x=' + sh.X0) + ': ' + t(ptT([sh.X0, 0])) + '.<br>' + t('y') + '-int: ' + t('h(0)=' + sh.b) + ': ' + t(ptT([0, sh.b])) + '.<br>' + t(ptT([sh.X0, 0])) + ' is also the right endpoint. It is solid, so it is on the graph and still counts. (If it were hollow, there would be no ' + t('x') + '-intercept.)',
             ['An intercept at an endpoint counts if the endpoint is solid.'], 'intercepts at an endpoint');
         } },
@@ -1684,11 +1800,8 @@
           return fieldsOf('(a) Writing the relation as ' + t('y=d(t)') + ', state ' + t('d(' + nf(ta) + ')') + ', ' + t('d(' + tb + ')') + ' and ' + t('d(' + tc + ')') + '.', items, [ta, tb, tc].map(function (x) { return t('d(' + nf(x) + ')=' + nf(pwAt(sh.V, x))); }).join(', '),
             'Read up or down from each time to the graph:<br>' + t('d(' + nf(ta) + ')=' + nf(-sh.M)) + ' (halfway down the first segment)<br>' + t('d(' + tb + ')=' + (-sh.D)) + ' (on the flat bottom)<br>' + t('d(' + tc + ')=' + (-sh.M)) + ' (on the flat piece at ' + t(-sh.M) + ')', ['Find the time on the horizontal axis, then read the height of the graph there.'], 'read d(t)');
         } },
-        { id: 'e12b', level: 'EMG', outcome: 'RF2', make: function (r, sh) {
-          var D = bld('t', 0, sh.tot), R = bld('y', -sh.D, 0);
-          return drPart('(b) State the domain and the range, with the correct variable letters.', D, R, { dv: 't', rv: 'y', rW: [{ is: bld('y', -sh.M, 0), code: 'set-values', hint: 'The lowest point is the flat bottom at ' + t('y=' + (-sh.D)) + '.' }] },
-            t('D=' + D) + ', ' + t('R=' + R) + '. The input is ' + t('t') + ' and the output is ' + t('y') + '; both endpoints are solid.', [HINT_DR], 'D and R of diver');
-        } },
+        { id: 'e12bs', sub: 'b, shade', level: 'BEG', outcome: 'RF2', make: function (r, sh) { return e12bDR(sh, true); } },
+        { id: 'e12b', level: 'EMG', outcome: 'RF2', make: function (r, sh) { return e12bDR(sh, false); } },
         { id: 'e12c', level: 'EMG', outcome: 'RF2', make: function (r) {
           return mc(r, '(c) Is ' + t('d') + ' a function?', [
             { html: '<b>Yes</b> — every vertical line ' + t('t=k') + ' meets the graph exactly once: at each time the diver has one position.', right: true },
@@ -1711,8 +1824,9 @@
             hints: ['Where is the graph at height ' + t(-sh.M) + '? Look for a single crossing and a whole flat stretch.', 'Write a single value and an interval, e.g. ' + t('t=2,\\ 5\\le t\\le 8') + '.'], text: 'solve d(t)=y with a flat piece',
             good: ['t=' + nf(tp) + ', ' + cond('t', I[0], I[1]), '\\{' + nf(tp) + '\\}\\cup[' + I[0] + ', ' + I[1] + ']', nf(tp) + '\\ \\text{or}\\ ' + cond('t', I[0], I[1])], bad: ['t=' + nf(tp) + ', t=' + I[0] + ', t=' + I[1], cond('t', I[0], I[1]), 't=' + nf(tp)] };
         } },
-        { id: 'e12f', level: 'EMG', make: function (r, sh) {
-          return intPart('(f) State the ' + t('t') + '-intercepts and the ' + t('y') + '-intercept.', [[0, 0], [sh.tot, 0]], [[0, 0]], { plural: true, xLabel: t('t') + '-int(s)' },
+        { id: 'e12f', level: 'BEG', make: function (r, sh) {
+          var onG = function (p) { var v = pwAt(sh.V, p[0]); return isFinite(v) && same(v, p[1]); };
+          return tapPart('(f) Tap every ' + t('t') + '-intercept and the ' + t('y') + '-intercept.', { x: [0, 24], y: [-sh.D - 2, 2], labels: 2, unitX: 12, unitY: 12, xName: 't', yName: 'y', xTitle: 'Time (min)', yTitle: 'Position (m)', bg: { segs: [{ pts: sh.V, start: 'closed', end: 'closed' }] } }, [[0, 0], [sh.tot, 0]], [[0, 0]], { onGraph: onG, xName: 't' },
             t('t') + '-ints: ' + t('(0,\\ 0)') + ' and ' + t(ptT([sh.tot, 0])) + ' — the diver is at the surface at the start and again when she comes back up at ' + t(sh.tot) + ' min.<br>' + t('y') + '-int: ' + t('(0,\\ 0)') + ' — at time ' + t('0') + ' she is at the surface.', ['Where does the graph meet each axis?'], 'intercepts of diver');
         } },
         { id: 'e12g', level: 'PRG', make: function (r, sh) {

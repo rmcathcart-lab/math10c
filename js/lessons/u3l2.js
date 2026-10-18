@@ -21,7 +21,7 @@
     'kept-error': 'Repeated the error being corrected', swap: 'Top and side factors swapped', 'not-binomial': 'A factor that isn’t a binomial', 'check-product': 'Factor doesn’t give the product when expanded',
     'fl-total': 'Added only two of the four partial products', 'partial': 'A partial product wrong', 'asked-other': 'Combined the coefficients the wrong way', 'one-root': 'Gave only one of two answers',
     'k-twice': 'Multiplied the number into both brackets', 'all-cancel': 'Thought everything cancels', 'whole-only': 'Used the whole rectangle (no piece removed)', 'tile-sign': 'Shading rule (sign) error',
-    'tile-same': 'Tiles: same factor on both sides'
+    'tile-same': 'Tiles: same factor on both sides', 'ab-side': 'Area box: wrong side term (working backwards)', 'ab-zeros': 'Area box: dropped the zeros of tens'
   });
 
   /* ---------- polynomial helpers ---------- */
@@ -159,12 +159,17 @@
   var HS = ['Expand each bracket first, then collect like terms.', SUBHINT];
 
   /* ---------- question-specific makers ---------- */
-  function q1(r, negc) {
-    var k = r.int(2, 5), c = r.int(2, 9) * (negc ? -1 : 1), m = xm(k), terms = [xm(1), N(c)], T = mul(m, add(terms[0], terms[1]));
+  function q1(o) {
+    var k = o.k, c = o.c, m = xm(k), terms = [xm(1), N(c)], T = mul(m, add(terms[0], terms[1]));
     return pp(grid(terms, [m], { blank: true, widths: [2.4, 1.4], heights: [1], max: 260 }) + 'Write the product as a <b>sum</b> of terms.', T,
       monoWrongs(m, terms).concat([{ is: add(xm(k, 2), N(k * c)), code: 'drop-x', hint: 'Each piece is (side) × (top). The second piece is ' + t(dot(m, N(c))) + ' — the ' + t('x') + ' from the side stays in that term.' }]),
       'Sub-areas: ' + t(dot(m, xm(1)) + '=' + tx(mul(m, xm(1)))) + ' and ' + t(dot(m, N(c)) + '=' + tx(mul(m, N(c)))) + '.' + grid(terms, [m], { widths: [2.4, 1.4], heights: [1], max: 260 }) + 'The model shows ' + t(tx(m) + br(terms) + '=' + tx(T)) + '.',
       ['The rectangle is ' + t(tx(m)) + ' high and split into widths ' + t('x') + ' and ' + t(c) + '. Find the area of each piece.', 'Area of a piece = (height) × (width). Add the two areas.'], 'area model ' + tx(m) + br(terms));
+  }
+  function q1box(o) {
+    var m = xm(o.k), terms = [xm(1), N(o.c)];
+    return boxPart('The rectangle is ' + t(tx(m)) + ' high and split into widths ' + t('x') + ' and ' + t(o.c < 0 ? '(' + o.c + ')' : o.c) + '. Fill in the area of each piece.', terms, [m],
+      { text: 'area box ' + tx(m) + br(terms), hints: ['Area of a piece = (height) × (width): ' + t(tx(m)) + ' times the width above it.', 'Keep the sign of the width: a positive times a negative is negative.'] });
   }
   function q7a(r) {
     var o = pickWhere(function () { var p = r.int(6, 9), s = r.int(Math.max(2, p - 4), p - 2), m = r.int(2, 4); return { p: p, s: s, q: r.int(1, 5), m: m, n: r.int(m + 2, Math.min(9, m + 5)) }; }, function () { return true; });
@@ -239,21 +244,118 @@
     p.bad = [{ top: { x: A, one: B }, side: { x: C, one: -D } }, { top: { x: A, one: -B }, side: { x: C, one: D } }, { top: { x: A, one: B }, side: { x: A, one: B } }, { top: { x: C, one: B }, side: { x: A, one: D } }].filter(function (v) { return !PL.eq(mul(fac(v.top), fac(v.side)), T); });
     return p;
   }
-  /* two-digit products with the four-cell grid: fields for the partial products and the product */
-  function numGrid(r, a, b, c, d) {
+  /* two-digit products with the four-cell grid: the area box (the partial products), then the product */
+  function numBox(a, b, c, d) {
+    var n1 = 10 * a + b, n2 = 10 * c + d;
+    return boxPart('Use the area model (no calculator) for ' + t(n1 + '\\times ' + n2) + ': ' + t(n1 + '=' + 10 * a + '+' + b) + ' along the top and ' + t(n2 + '=' + 10 * c + '+' + d) + ' down the side. Fill in the four partial products.', [N(10 * a), N(b)], [N(10 * c), N(d)],
+      { numeric: true, vars: [], text: n1 + ' x ' + n2 + ' area box', gridOpt: { widths: [2, 1], heights: [2, 1], max: 240 },
+        hints: ['Each box is (number at the top of its column) × (number at the start of its row).', 'Tens times tens: ' + t(10 * a + '\\times ' + 10 * c) + ' is ' + t(a + '\\times ' + c) + ' with two zeros on the end.'] });
+  }
+  function numProd(a, b, c, d) {
     var n1 = 10 * a + b, n2 = 10 * c + d, P4 = [100 * a * c, 10 * a * d, 10 * b * c, b * d], tot = n1 * n2;
-    var g = grid([N(10 * a), N(b)], [N(10 * c), N(d)], { blank: true, widths: [2, 1], heights: [2, 1], max: 240 });
-    var labs = [t(10 * a + '\\times ' + 10 * c), t(b + '\\times ' + 10 * c), t(10 * a + '\\times ' + d), t(b + '\\times ' + d)];
-    var fields = labs.map(nbox).concat([nbox('Product')]);
-    var checkers = [K.number(P4[0], function (v) { return v === a * c ? { code: 'partial', hint: 'These are tens: ' + t(10 * a + '\\times ' + 10 * c) + ' has two zeros on the end.' } : null; }), K.number(P4[2]), K.number(P4[1]), K.number(P4[3]),
-      K.number(tot, function (v) { if (v === P4[0] + P4[3]) return { code: 'fl-total', hint: 'Add <b>all four</b> partial products, not just the two diagonal ones.' }; return null; })];
-    var p = KP.fields(g + 'Use the area model (no calculator): fill in the four partial products, then the product ' + t(n1 + '\\times ' + n2) + '.', fields, checkers, [String(P4[0]), String(P4[2]), String(P4[1]), String(P4[3]), String(tot)],
-      t(n1 + '\\times ' + n2 + '=' + F(tot)),
+    var p = KP.number('Add your four partial products to find ' + t(n1 + '\\times ' + n2) + '.', tot, function (v) {
+        if (v === P4[0] + P4[3]) return { code: 'fl-total', hint: 'Add <b>all four</b> partial products, not just the two diagonal ones.' };
+        if (v === a * c * 100 + (a * d + b * c) + b * d || v === a * c + (a * d + b * c) * 10 + b * d) return { code: 'partial', hint: 'Check the place values of your partial products: tens × tens gives hundreds, tens × ones gives tens.' };
+        return null; },
       grid([N(10 * a), N(b)], [N(10 * c), N(d)], { widths: [2, 1], heights: [2, 1], max: 240, cells: [[F(P4[0]), F(P4[2])], [F(P4[1]), F(P4[3])]] }) + t(F(P4[0]) + '+' + F(P4[2]) + '+' + F(P4[1]) + '+' + F(P4[3]) + '=' + F(tot)) + '. (This is ' + t('(' + a + 't+' + b + ')(' + c + 't+' + d + ')') + ' with ' + t('t=10') + '.)',
-      ['Split each number into tens and ones: ' + t(n1 + '=' + 10 * a + '+' + b) + ' and ' + t(n2 + '=' + 10 * c + '+' + d) + '.', 'Each cell is (top) × (side). Add all four cells.'], n1 + ' x ' + n2 + ' by area model');
-    p.bad = [[String(P4[0]), String(P4[2]), String(P4[1]), String(P4[3]), String(P4[0] + P4[3])]];
+      ['Add the four boxes of your area model. Line up the place values.'], n1 + ' x ' + n2 + ' by area model', { before: t(n1 + '\\times ' + n2 + '=') });
     return p;
   }
+  /* ---------- area box (js/draw2.js areabox): the student fills the boxes ---------- */
+  /* cols = terms along the top, rows = terms down the side (as in grid()). o.give = { rows: [i…], cols: [j…], cells: [[i, j]…] }:
+     the entries shown (default: every row and column term, no boxes). o.numeric: whole numbers (extra hint for dropped zeros).
+     When side terms are hidden, a given box that doesn't match the student's sides gets a "side = box ÷ known side" hint.
+     Bad answers for the main slips (a sign, x·x written as x, adding instead of multiplying, dropped zeros, a side's sign)
+     are generated. */
+  function readT(s) { var a = HW.ex.parse(String(s == null ? '' : s).replace(/\\left|\\right/g, '')); if (!a.ok) return null; var q = PL.read(a.ast); return q.ok ? q.p : null; }
+  function boxPart(prompt, cols, rows, o) {
+    o = o || {};
+    var give = o.give || { rows: rows.map(function (q, i) { return i; }), cols: cols.map(function (q, j) { return j; }), cells: [] };
+    var has = function (list, v) { return (list || []).some(function (x) { return Array.isArray(x) ? x[0] === v[0] && x[1] === v[1] : x === v; }); };
+    var Rt = rows.map(tx), Ct = cols.map(tx), Mp = rows.map(function (a) { return cols.map(function (b) { return mul(a, b); }); }), Mt = Mp.map(function (rw) { return rw.map(tx); });
+    var vs = o.vars || PL.vars(sumOf(rows.concat(cols))); if (!vs.length && !o.numeric) vs = ['x'];
+    var inp = { rows: Rt.map(function (s, i) { return has(give.rows, i) ? s : null; }), cols: Ct.map(function (s, j) { return has(give.cols, j) ? s : null; }),
+      cells: Mt.map(function (rw, i) { return rw.map(function (s, j) { return has(give.cells, [i, j]) ? s : null; }); }), keys: 'poly', vars: vs };
+    var hidHead = inp.rows.some(function (x) { return x == null; }) || inp.cols.some(function (x) { return x == null; });
+    if (o.numeric) inp.help = 'Tap a box, then type its number. Each box is its row number × its column number.';
+    if (hidHead) inp.help = 'Tap a box, then type its term. Each box is (row term) × (column term): a missing side term is a box divided by the side term you know.';
+    var key = { rows: Rt.slice(), cols: Ct.slice(), cells: Mt.map(function (rw) { return rw.slice(); }) };
+    var list = [];
+    rows.forEach(function (a, i) { cols.forEach(function (b, j) { list.push(t(dot(b, a) + '=' + (o.numeric ? F(PL.constant(Mp[i][j])[0]) : Mt[i][j]))); }); });
+    var sol = o.sol || (grid(cols, rows, o.gridOpt || {}) + 'Each box is (column term) × (row term): ' + list.join(', &nbsp;') + '.');
+    var p = KP.areabox(prompt, inp, {}, key, sol, o.hints || ['Each box is the term at the top of its column times the term at the start of its row — sign included.', 'Multiply the coefficients and add the exponents of matching letters: ' + t('x\\cdot x=x^{2}') + '.'], o.text || 'area box');
+    var base = p.check;
+    p.check = function (resp) {
+      resp = resp || {};
+      var res = base(resp); if (res.v !== 'wrong' || res.code === 'ab-one-term') return res;
+      if (hidHead) {
+        var R = (resp.rows || []).map(readT), C = (resp.cols || []).map(readT);
+        for (var i = 0; i < rows.length; i++) for (var j = 0; j < cols.length; j++) {
+          if (!has(give.cells, [i, j]) || !R[i] || !C[j]) continue;
+          var pr = mul(R[i], C[j]); if (PL.eq(pr, Mp[i][j])) continue;
+          var which = !has(give.rows, i) && !has(give.cols, j) ? 'row ' + (i + 1) + ' or column ' + (j + 1) : !has(give.rows, i) ? 'row ' + (i + 1) : 'column ' + (j + 1);
+          if (PL.eq(pr, neg(Mp[i][j]))) return wrong('ab-sign', 'Check the sign of the side term in ' + which + ': ' + t(pf(R[i]) + '\\cdot ' + pf(C[j]) + '=' + tx(pr)) + ', but that box is ' + t(Mt[i][j]) + '.');
+          return wrong('ab-side', 'Check the side term in ' + which + ': ' + t(pf(R[i]) + '\\cdot ' + pf(C[j]) + '=' + tx(pr)) + ', but that box is ' + t(Mt[i][j]) + '. A missing side = (box) ÷ (the side you know): divide the coefficients and subtract the exponents.');
+        }
+      }
+      if (o.numeric) for (var a = 0; a < rows.length; a++) for (var b = 0; b < cols.length; b++) {
+        var got = Number(String(((resp.cells || [])[a] || [])[b] || '').replace(/\\,|[\s,]/g, '')), want = PL.constant(Mp[a][b])[0];
+        if (got === want) continue;
+        if (got > 0 && want % got === 0 && /^10+$/.test(String(want / got))) return wrong('ab-zeros', 'Check the box in row ' + (a + 1) + ', column ' + (b + 1) + ': ' + t(Rt[a] + '\\times ' + Ct[b]) + ' — these are tens, so keep the zeros (' + t('30\\times 20=600') + ', not ' + t('6') + ').');
+        return res;
+      }
+      return res;
+    };
+    /* bad answers */
+    var bads = [], copy = function () { return { rows: Rt.slice(), cols: Ct.slice(), cells: Mt.map(function (rw) { return rw.slice(); }) }; };
+    var cellsAll = []; rows.forEach(function (a, i) { cols.forEach(function (b, j) { cellsAll.push([i, j]); }); });
+    var free = cellsAll.filter(function (c) { return !has(give.cells, c); });
+    var negC = free.filter(function (c) { return coefOf(Mp[c[0]][c[1]]) < 0; })[0] || free[0];
+    if (negC && !(o.numeric && coefOf(Mp[negC[0]][negC[1]]) > 0)) { var b1 = copy(); b1.cells[negC[0]][negC[1]] = tx(neg(Mp[negC[0]][negC[1]])); bads.push(b1); }
+    free.some(function (c) {
+      var a = rows[c[0]], b = cols[c[1]], s = add(a, b);
+      if (o.numeric) { var b3 = copy(); b3.cells[c[0]][c[1]] = tx(s); bads.push(b3); var w = PL.constant(Mp[c[0]][c[1]])[0], z = String(w).replace(/0+$/, ''); if (z !== String(w)) { var b4 = copy(); b4.cells[c[0]][c[1]] = z; bads.push(b4); } return true; }
+      var ta = PL.terms(a)[0], tb = PL.terms(b)[0]; if (!ta || !tb) return false;
+      var sh = Object.keys(ta.v).filter(function (k) { return ta.v[k] && tb.v[k]; }); if (!sh.length) return false;
+      var v = {}; Object.keys(ta.v).concat(Object.keys(tb.v)).forEach(function (k) { v[k] = Math.max(ta.v[k] || 0, tb.v[k] || 0); });
+      var b2 = copy(); b2.cells[c[0]][c[1]] = tx(M([ta.c[0] * tb.c[0], ta.c[1] * tb.c[1]], v)); bads.push(b2); return true;
+    });
+    inp.rows.forEach(function (x, i) { if (x == null) { var b5 = copy(); b5.rows[i] = tx(neg(rows[i])); bads.push(b5); } });
+    inp.cols.forEach(function (x, j) { if (x == null) { var b6 = copy(); b6.cols[j] = tx(mul(cols[j], N(2))); bads.push(b6); } });
+    p.bad = bads;
+    if (hidHead && inp.rows.every(function (x) { return x == null; }) && inp.cols.every(function (x) { return x == null; })) p.good = [{ rows: rows.map(function (q) { return tx(neg(q)); }), cols: cols.map(function (q) { return tx(neg(q)); }), cells: key.cells }, { rows: Ct.slice(), cols: Rt.slice(), cells: key.cells[0].map(function (c, j) { return key.cells.map(function (rw) { return rw[j]; }); }) }].filter(function (g) { return JSON.stringify(g) !== JSON.stringify(key); });
+    return p;
+  }
+  /* the four-cell box for two binomials: (A + B) along the top, (C + D) down the side */
+  function binBox(prompt, A, B, C, D, text) {
+    return boxPart(prompt, [A, B], [C, D], { text: text, hints: ['Each box is the term at the top of its column times the term at the start of its row — sign included.', 'Multiply the coefficients and add the exponents: ' + t('x\\cdot x=x^{2}') + '. Two negatives make a positive.'] });
+  }
+  /* EP2: every cell given, the side terms erased */
+  function backBox(A, B, C, D) {
+    var f = foil(A, B, C, D);
+    return boxPart('Fill in the two side terms along the top and the two down the side.', [A, B], [C, D],
+      { give: { rows: [], cols: [], cells: [[0, 0], [0, 1], [1, 0], [1, 1]] }, text: 'grid backwards ' + tx(f.res),
+        sol: grid([A, B], [C, D]) + 'Each side term is a common factor of the boxes in its row or column. Row 1: ' + t(tx(f.F)) + ' and ' + t(tx(f.I)) + ' share ' + t(tx(C)) + ', so the top terms are ' + t(tx(f.F) + '\\div ' + pf(C) + '=' + tx(A)) + ' and ' + t(tx(f.I) + '\\div ' + pf(C) + '=' + tx(B)) + '. Then row 2: ' + t(tx(f.O) + '\\div ' + pf(A) + '=' + tx(D)) + '.<br>So the binomials are ' + t(pf(add(A, B))) + ' and ' + t(pf(add(C, D))) + ' (or both with every sign changed).',
+        hints: ['Look at one row: its two boxes share a common factor — that is the row’s side term (take out the greatest common factor, sign included).', 'Then each top term = (box) ÷ (side term). Check every box: (top) × (side).'] });
+  }
+  function backProd(A, B, C, D) {
+    var f = foil(A, B, C, D);
+    var g = grid([A, B], [C, D], { cells: [[tx(f.F), tx(f.I)], [tx(f.O), tx(f.L)]], topLabels: ['?', '?'], sideLabels: ['?', '?'] });
+    return pp(g + 'State the product in expanded form: add the four boxes and collect like terms.', f.res, binWrongs(A, B, C, D), t(pf(add(A, B)) + pf(add(C, D)) + '=' + seq([f.F, f.I, f.O, f.L]) + '=' + tx(f.res)),
+      ['The product is the sum of the four boxes. Collect the like terms in the middle.'], 'grid backwards product ' + tx(f.res));
+  }
+  /* EP3: part-filled grids — give = the entries shown */
+  function partBox(A, B, C, D, give, text) {
+    var f = foil(A, B, C, D);
+    return boxPart('Fill in every missing entry: the missing side terms and the missing box.', [A, B], [C, D],
+      { give: give, text: text, hints: ['Start where a box and one of its side terms are both known: the other side term = (box) ÷ (the known side).', 'A missing box = (top term) × (side term). Check every box when you are done.'] });
+  }
+  function partProd(A, B, C, D) {
+    var f = foil(A, B, C, D), vs = PL.vars(f.res);
+    return pp('State the product ' + t(pf(add(A, B)) + pf(add(C, D))) + ' from your grid, in expanded form.', f.res, binWrongs(A, B, C, D), grid([A, B], [C, D], { plus: true }) + t(pf(add(A, B)) + pf(add(C, D)) + '=' + seq([f.F, f.I, f.O, f.L]) + '=' + tx(f.res)),
+      ['Add the four boxes and collect the like terms.'], 'part-filled grid product ' + tx(f.res));
+  }
+
   /* "find the missing factor": fT = terms of the missing factor, gT = terms of the given one (display order) */
   function missingFactor(prompt, fT, gT, alt) {
     var Fp = sumOf(fT), G = sumOf(gT), T = mul(Fp, G);
@@ -383,45 +485,6 @@
   /* ---------- extra-practice makers ---------- */
   function termsOf(p) { return PL.sorted(p).map(function (q) { return M(q.c, q.v); }); }
   var CELL = ['\\textbf{A}', '\\textbf{B}', '\\textbf{C}', '\\textbf{D}'];
-  /* EP1: fill the four cells, then the product */
-  function gridFill(A, B, C, D) {
-    var f = foil(A, B, C, D), vs = PL.vars(f.res), prod = br([A, B]) + br([C, D]), vals = [f.F, f.I, f.O, f.L];
-    var g = grid([A, B], [C, D], { plus: true, cells: [[CELL[0], CELL[1]], [CELL[2], CELL[3]]] });
-    var fields = ['A', 'B', 'C', 'D'].map(function (n) { return pbox('Cell ' + n, vs); }).concat([pbox('Product', vs)]);
-    var p = KP.fields(g + 'Fill in the four cells of the grid for ' + t(prod) + ', then add the cells and collect like terms to state the product.', fields,
-      vals.map(function (v) { return K.poly(v); }).concat([chk(f.res, binWrongs(A, B, C, D))]), vals.map(tx).concat([tx(f.res)]),
-      'A ' + t(tx(f.F)) + ', B ' + t(tx(f.I)) + ', C ' + t(tx(f.O)) + ', D ' + t(tx(f.L)) + '; product ' + t(tx(f.res)),
-      grid([A, B], [C, D], { plus: true }) + 'Each cell is (top) × (side). ' + t(seq([f.F, f.I, f.O, f.L]) + '=' + tx(f.res)), ['Each cell is the term above it times the term beside it — sign included.', 'Then add all four cells and collect the like terms.'], 'fill grid ' + prod);
-    p.bad = [vals.map(tx).concat([tx(add(f.F, f.L))])].concat(PL.eq(f.O, f.I) ? [] : [[tx(f.F), tx(f.O), tx(f.I), tx(f.L), tx(f.res)]]);
-    return p;
-  }
-  /* EP2: grid filled, sides erased */
-  function backGrid(A, B, C, D) {
-    var f = foil(A, B, C, D), vs = PL.vars(f.res), labs = ['Across the top', 'Down the side', 'Product'];
-    var g = grid([A, B], [C, D], { cells: [[tx(f.F), tx(f.I)], [tx(f.O), tx(f.L)]], topLabels: ['?', '?'], sideLabels: ['?', '?'] });
-    var cP = chk(f.res, []);
-    function rd(s) { var a = K.read(s || ''); if (a.res) return { res: a.res }; var q = PL.read(a.ast); if (!q.ok) return { res: wrong('not-binomial', 'Each side of the grid is a binomial, like ' + t('3x+2') + '.') }; if (PL.formIssue(a.ast)) return { res: form('simplify', 'Write each side as a simplified binomial (two terms, no brackets).') }; return { p: q.p }; }
-    var p = { prompt: g + 'The grid has been filled in, but the side lengths have been erased. Write the two binomials that were multiplied, then state the product in expanded form.', input: { type: 'fields', fields: labs.map(function (l) { return pbox(l, vs); }) },
-      key: [tx(add(A, B)), tx(add(C, D)), tx(f.res)], answer: t(pf(add(A, B)) + pf(add(C, D)) + '=' + tx(f.res)), text: 'grid backwards ' + tx(f.res),
-      check: function (resp) {
-        resp = resp || [];
-        var a = rd(resp[0]), b = rd(resp[1]);
-        if (a.res) return { v: a.res.v, code: a.res.code, hint: '<b>' + labs[0] + ':</b> ' + (a.res.hint || 'Check this one again.') };
-        if (b.res) return { v: b.res.v, code: b.res.code, hint: '<b>' + labs[1] + ':</b> ' + (b.res.hint || 'Check this one again.') };
-        if (PL.count(a.p) !== 2 || PL.count(b.p) !== 2) return wrong('not-binomial', 'Each side is a <b>binomial</b>: one term for each column across the top, and one for each row down the side.');
-        var pr = mul(a.p, b.p);
-        if (!PL.eq(pr, f.res)) {
-          if (PL.eq(pr, neg(f.res))) return wrong('sign', 'Close — check the signs. The cell ' + t(tx(f.L)) + ' is (top term) × (side term), so the two constant-type terms must have ' + (coefOf(f.L) < 0 ? 'opposite' : 'the same') + ' signs.');
-          return wrong('check-product', 'Check: ' + t(pf(a.p) + pf(b.p) + '=' + tx(pr)) + ', which doesn’t match the four cells. Every cell must be (top term) × (side term).');
-        }
-        var r3 = cP(resp[2] || ''); if (r3.v !== 'correct') return { v: r3.v, code: r3.code, hint: '<b>Product:</b> ' + (r3.hint || 'Add the four cells and collect like terms.') };
-        return ok();
-      },
-      good: [[tx(add(C, D)), tx(add(A, B)), tx(f.res)], [tx(neg(add(A, B))), tx(neg(add(C, D))), tx(f.res)]], bad: [[tx(add(A, neg(B))), tx(add(C, D)), tx(f.res)], [tx(add(A, B)), tx(add(C, D)), tx(add(f.F, f.L))]],
-      solution: 'The first row is ' + t(tx(f.F)) + ' and ' + t(tx(f.I)) + '. Their greatest common factor is the first side term, ' + t(tx(C)) + ', so the top terms are ' + t(tx(f.F) + '\\div ' + pf(C) + '=' + tx(A)) + ' and ' + t(tx(f.I) + '\\div ' + pf(C) + '=' + tx(B)) + '.<br>Then the second side term is ' + t(tx(f.O) + '\\div ' + pf(A) + '=' + tx(D)) + ' (check: ' + t(dot(B, D) + '=' + tx(f.L)) + ' ✓).<br>' + t(pf(add(A, B)) + pf(add(C, D)) + '=' + seq([f.F, f.I, f.O, f.L]) + '=' + tx(f.res)),
-      hints: ['Look at one row: the side term is a common factor of both cells in that row.', 'Divide a cell by a known side term to get the other side term. Check every cell at the end.'] };
-    return p;
-  }
   /* EP11 missing factor with the product in the prompt */
   function missF(fT, gT, fmt, alt, square) {
     var T = mul(sumOf(fT), sumOf(gT)), p = missingFactor(fmt(t(tx(T))), fT, gT, alt);
@@ -464,10 +527,14 @@
     id: 'u3l2', unit: 3, num: '2', title: 'Multiplying Monomials and Binomials', outcome: 'AN4',
     blurb: 'Area models and the distributive property — from a(b + c) all the way to FOIL.',
     questions: [
-      { num: '1', section: 'Part A — Area Models and the Distributive Property', stem: 'State the polynomial product represented in each area model.', parts: [
-        { id: '1a', level: 'BEG', make: function (r) { return q1(r, false); } },
-        { id: '1b', level: 'BEG', make: function (r) { return q1(r, true); } }] },
-      { num: '2', stem: function (sh) { return 'For each product: i) sketch an area model (on paper), ii) express the product as a sum or difference of terms, and iii) verify the result when ' + t('x=6') + '.<br>(a) ' + t(sh.a.tex) + ' &nbsp;&nbsp; (b) ' + t(sh.b.tex); },
+      { num: '1', section: 'Part A — Area Models and the Distributive Property', stem: 'State the polynomial product represented in each area model.',
+        shared: function (r) { return { a: { k: r.int(2, 5), c: r.int(2, 9) }, b: { k: r.int(2, 5), c: -r.int(2, 9) } }; },
+        parts: [
+        { id: '1abox', sub: 'a i', level: 'BEG', make: function (r, sh) { return q1box(sh.a); } },
+        { id: '1a', sub: 'a ii', level: 'BEG', make: function (r, sh) { return q1(sh.a); } },
+        { id: '1bbox', sub: 'b i', level: 'BEG', make: function (r, sh) { return q1box(sh.b); } },
+        { id: '1b', sub: 'b ii', level: 'BEG', make: function (r, sh) { return q1(sh.b); } }] },
+      { num: '2', stem: function (sh) { return 'For each product: i) complete an area model, ii) express the product as a sum or difference of terms, and iii) verify the result when ' + t('x=6') + '.<br>(a) ' + t(sh.a.tex) + ' &nbsp;&nbsp; (b) ' + t(sh.b.tex); },
         shared: function (r) {
           var k = r.int(2, 5), m = r.int(2, 4), c = r.int(1, 7), k2 = r.int(2, 5), c2 = r.pick([2, 3, 4, 5, 7, 8, 9]);
           if (r.chance(0.15)) { k = 3; m = 2; c = 3; k2 = 2; c2 = 5; }
@@ -476,8 +543,10 @@
           return { a: A, b: B };
         },
         parts: [
+          { id: '2ai', sub: 'a i', level: 'BEG', make: function (r, sh) { var o = sh.a; return boxPart('(a) i) Complete the area model for ' + t(o.tex) + ': fill in each box.', o.terms, [o.m], { text: 'area box ' + o.tex }); } },
           { id: '2aii', sub: 'a ii', level: 'BEG', make: function (r, sh) { var o = sh.a; var p = expandMono(o.tex, o.m, o.terms); p.prompt = '(a) ii) Express ' + t(o.tex) + ' as a sum of terms.'; p.solution = grid(o.terms, [o.m], { max: 260 }) + p.solution; return p; } },
           { id: '2aiii', sub: 'a iii', level: 'BEG', make: function (r, sh) { return v6(sh.a); } },
+          { id: '2bi', sub: 'b i', level: 'EMG', make: function (r, sh) { var o = sh.b; return boxPart('(b) i) Complete the area model for ' + t(o.tex) + ': fill in each box.', o.terms, [o.m], { text: 'area box ' + o.tex }); } },
           { id: '2bii', sub: 'b ii', level: 'EMG', make: function (r, sh) { var o = sh.b; var p = expandMono(o.tex, o.m, o.terms); p.prompt = '(b) ii) Express ' + t(o.tex) + ' as a sum or difference of terms.'; p.solution = grid(o.terms, [o.m], { max: 260 }) + p.solution; return p; } },
           { id: '2biii', sub: 'b iii', level: 'EMG', make: function (r, sh) { return v6(sh.b); } }] },
       { num: '3', stem: 'Expand.', parts: [
@@ -594,11 +663,19 @@
         { id: '9', level: 'EMG', make: function (r) { return q9(r); } }] },
       { num: '10', stem: '<i>(Numerical Response)</i>', parts: [
         { id: '10', level: 'PRG', make: function (r) { return q10(r); } }] },
-      { num: '11', section: 'Part B — Multiplying Two Binomials', stem: 'Use an area model to determine each product.', parts: [
-        { id: '11a', level: 'BEG', make: function (r) { var a = r.int(2, 9), b = pickWhere(function () { return r.int(2, 9); }, function (v) { return v !== a; }); return gridBin(xm(1), N(a), xm(1), N(b)); } },
-        { id: '11b', level: 'EMG', make: function (r) { return gridBin(xm(r.int(2, 4)), N(r.int(1, 5)), xm(r.int(2, 4)), N(r.int(1, 7))); } },
-        { id: '11c', level: 'EMG', make: function (r) { var o = pickWhere(function () { return { a: r.int(2, 9), b: r.int(2, 6), c: r.int(1, 9) }; }, function (o) { return o.c !== o.a * o.b; }); return gridBin(xm(1, 1, 'y'), N(-o.a), xm(o.b, 1, 'y'), N(o.c)); } },
-        { id: '11d', level: 'EMG', make: function (r) { var b = r.int(2, 9), c = pickWhere(function () { return r.int(2, 9); }, function (v) { return v !== b; }); return gridBin(xm(1, 2, 'a'), N(b), xm(1, 2, 'a'), N(-c)); } }] },
+      { num: '11', section: 'Part B — Multiplying Two Binomials', stem: 'Use an area model to determine each product.',
+        /* shared: the area box (i) and the product (ii) of each binomial pair use the same numbers. f = [A, B, C, D]: (A + B)(C + D) */
+        shared: function (r) {
+          var a = r.int(2, 9), b = pickWhere(function () { return r.int(2, 9); }, function (v) { return v !== a; });
+          var o = pickWhere(function () { return { a: r.int(2, 9), b: r.int(2, 6), c: r.int(1, 9) }; }, function (o) { return o.c !== o.a * o.b; });
+          var db = r.int(2, 9), dc = pickWhere(function () { return r.int(2, 9); }, function (v) { return v !== db; });
+          return { a: [xm(1), N(a), xm(1), N(b)], b: [xm(r.int(2, 4)), N(r.int(1, 5)), xm(r.int(2, 4)), N(r.int(1, 7))], c: [xm(1, 1, 'y'), N(-o.a), xm(o.b, 1, 'y'), N(o.c)], d: [xm(1, 2, 'a'), N(db), xm(1, 2, 'a'), N(-dc)] };
+        },
+        parts: ['a', 'b', 'c', 'd'].map(function (k) {
+          var lv = k === 'a' ? 'BEG' : 'EMG';
+          return [{ id: '11' + k + 'box', sub: k + ' i', level: k === 'a' || k === 'b' ? 'BEG' : 'EMG', make: function (r, sh) { var f = sh[k]; return binBox('Fill in the area box for ' + t(br([f[0], f[1]]) + br([f[2], f[3]])) + '.', f[0], f[1], f[2], f[3], 'area box ' + br([f[0], f[1]]) + br([f[2], f[3]])); } },
+            { id: '11' + k, sub: k + ' ii', level: lv, make: function (r, sh) { var f = sh[k]; return expandBin(br([f[0], f[1]]) + br([f[2], f[3]]), f[0], f[1], f[2], f[3], 'grid', { pre: 'Add the boxes and collect like terms: ' }); } }];
+        }).reduce(function (a, b) { return a.concat(b); }, []) },
       { num: '12', stem: 'Use algebra tiles to model each product, then state the product.',
         shared: function (r) { var a = r.int(2, 4); return { B: r.int(1, 3), D: r.int(1, 2), a: a, b: pickWhere(function () { return r.int(1, 3); }, function (v) { return v !== a; }) }; },
         parts: [
@@ -626,11 +703,17 @@
             var p = pp('State the product, simplified.', f.res, binWrongs(A, B, C, D), 'Inside: ' + sh.m + ' ' + t('x^{2}') + '-tiles; ' + t('x') + '-tiles ' + t(tx(f.O)) + ' and ' + t(tx(f.I)) + ' (remove the zero pairs); ' + t(tx(f.L)) + ' in unit tiles.<br>' + t(pf(add(A, B)) + pf(add(C, D)) + '=' + seq([f.F, f.O, f.I, f.L]) + '=' + tx(f.res)), ['Count the tiles inside the frame: ' + t('x^{2}') + '-tiles, ' + t('x') + '-tiles (shaded minus white), unit tiles.', 'Or multiply the two factors you found in part (a).'], 'tile product');
             return p;
           } }] },
-      { num: '14', stem: 'Use an area model and no calculator to determine each product.', parts: [
-        { id: '14a', level: 'BEG', make: function (r) { return numGrid(r, r.int(2, 4), r.int(1, 5), r.int(2, 3), r.int(1, 4)); } },
-        { id: '14b', level: 'BEG', make: function (r) { var a = r.int(3, 5), b = r.int(1, 2), c = r.int(5, 7), d = r.int(2, 4); if (a === c && b === d) d++; return numGrid(r, a, b, c, d); } },
-        { id: '14c', level: 'BEG', make: function (r) { return numGrid(r, r.int(4, 6), r.int(6, 9), r.int(2, 3), r.int(6, 9)); } },
-        { id: '14d', level: 'BEG', make: function (r) { var a = r.int(5, 9), b = r.int(4, 9); return numGrid(r, a, b, a, b); } }] },
+      { num: '14', stem: 'Use an area model and no calculator to determine each product.',
+        /* shared: the area box (the old id) and the product (new id) use the same numbers: [a, b, c, d] = (10a + b) × (10c + d) */
+        shared: function (r) {
+          var b1 = [r.int(3, 5), r.int(1, 2), r.int(5, 7), r.int(2, 4)]; if (b1[0] === b1[2] && b1[1] === b1[3]) b1[3]++;
+          var d1 = [r.int(5, 9), r.int(4, 9)];
+          return { a: [r.int(2, 4), r.int(1, 5), r.int(2, 3), r.int(1, 4)], b: b1, c: [r.int(4, 6), r.int(6, 9), r.int(2, 3), r.int(6, 9)], d: [d1[0], d1[1], d1[0], d1[1]] };
+        },
+        parts: ['a', 'b', 'c', 'd'].map(function (k) {
+          return [{ id: '14' + k, sub: k + ' i', level: 'BEG', make: function (r, sh) { var g = sh[k]; return numBox(g[0], g[1], g[2], g[3]); } },
+            { id: '14' + k + 'p', sub: k + ' ii', level: 'BEG', make: function (r, sh) { var g = sh[k]; return numProd(g[0], g[1], g[2], g[3]); } }];
+        }).reduce(function (a, b) { return a.concat(b); }, []) },
       { num: '15', stem: function (sh) { return 'Multiplying two-digit numbers <i>is</i> multiplying binomials. Use ' + t(sh.tex) + ' to work out ' + t(sh.n1 + '\\times ' + sh.n2) + '.'; },
         shared: function (r) { var a = r.int(1, 9), b = pickWhere(function () { return r.int(1, 9); }, function (v) { return v !== a; }); if (r.chance(0.15)) { a = 3; b = 4; } return { a: a, b: b, n1: 10 + a, n2: 10 + b, tex: br([xm(1), N(a)]) + br([xm(1), N(b)]), T: mul(lin(1, a), lin(1, b)) }; },
         parts: [
@@ -669,8 +752,9 @@
       { num: '18', stem: function (sh) { return 'A rectangle has length ' + t(br([xm(sh.p, 1, 'a'), N(sh.q)])) + ' cm and width ' + t(br([xm(1, 1, 'a'), N(sh.s)])) + ' cm. Determine the area of the rectangle, in ' + t('\\text{cm}^{2}') + ', by each method.'; },
         shared: function (r) { var p = r.int(2, 5), q = r.int(1, 9), s = r.int(2, 9); if (r.chance(0.15)) { p = 4; q = 3; s = 6; } return { p: p, q: q, s: s, A: xm(p, 1, 'a'), B: N(q), C: xm(1, 1, 'a'), D: N(s) }; },
         parts: [
-          { id: '18i', sub: 'i', level: 'BEG', make: function (r, sh) {
-            var f = foil(sh.A, sh.B, sh.C, sh.D), p = pp(grid([sh.A, sh.B], [sh.C, sh.D], { blank: true }) + '(i) Use the area model.', f.res, binWrongs(sh.A, sh.B, sh.C, sh.D), gridSol(sh.A, sh.B, sh.C, sh.D) + ' The area is ' + t(tx(f.res)) + ' cm².', HB, 'area by area model', { before: t('A='), after: t('\\text{ cm}^{2}') });
+          { id: '18ibox', sub: 'i a', level: 'BEG', make: function (r, sh) { return binBox('(i) Use an area model: fill in the area box for ' + t(br([sh.A, sh.B]) + br([sh.C, sh.D])) + '.', sh.A, sh.B, sh.C, sh.D, 'area box rectangle'); } },
+          { id: '18i', sub: 'i b', level: 'BEG', make: function (r, sh) {
+            var f = foil(sh.A, sh.B, sh.C, sh.D), p = pp('(i) Add the boxes of your area model: the area of the rectangle is', f.res, binWrongs(sh.A, sh.B, sh.C, sh.D), gridSol(sh.A, sh.B, sh.C, sh.D) + ' The area is ' + t(tx(f.res)) + ' cm².', HB, 'area by area model', { before: t('A='), after: t('\\text{ cm}^{2}') });
             return p;
           } },
           { id: '18ii', sub: 'ii', level: 'BEG', make: function (r, sh) {
@@ -702,42 +786,43 @@
         { id: '21', level: 'PRG', make: function (r) { return q21(r); } }] }
     ],
     extra: [
-      { num: '1', section: 'Extra practice A — Four-cell grids, forwards and backwards', stem: 'Fill in the four cells of each grid, then state the product in expanded form.', parts: [
-        { id: 'e1a', level: 'EMG', make: function (r) { var o = pickWhere(function () { return { a: r.int(2, 4), b: r.int(1, 6), c: r.int(2, 4), d: r.int(1, 7) }; }, function (o) { return o.a * o.d !== o.b * o.c; }); return gridFill(xm(o.a), N(o.b), xm(o.c), N(-o.d)); } },
-        { id: 'e1b', level: 'EMG', make: function (r) { var o = pickWhere(function () { return { a: r.int(2, 5), b: r.int(2, 5), c: r.int(2, 3), d: r.int(2, 6) }; }, function (o) { return o.a * o.d !== o.b * o.c; }); return gridFill(xm(o.a, 1, 'm'), M(-o.b, { n: 1 }), xm(o.c, 1, 'm'), M(o.d, { n: 1 })); } },
-        { id: 'e1c', level: 'EMG', make: function (r) { var o = pickWhere(function () { return { b: r.int(2, 9), c: r.int(2, 3), d: r.int(2, 9) }; }, function (o) { return o.b * o.c !== o.d; }); return gridFill(xm(1, 2), N(o.b), xm(o.c, 2), N(-o.d)); } }] },
-      { num: '2', stem: 'Each grid below has already been filled in, but the side lengths have been erased.', parts: [
-        { id: 'e2a', level: 'ADV', make: function (r) { var o = pickWhere(function () { return { a: r.int(2, 4), b: r.int(1, 5), c: r.int(2, 3), d: r.int(1, 7) }; }, function (o) { return o.a * o.d !== o.b * o.c && HW.ex.gcd(o.a, o.b) === 1 && HW.ex.gcd(o.c, o.d) === 1; }); return backGrid(xm(o.a), N(o.b), xm(o.c), N(-o.d)); } },
-        { id: 'e2b', level: 'ADV', make: function (r) { var o = pickWhere(function () { return { p: r.int(2, 5), q: r.int(2, 5), s: r.int(2, 3), u: r.int(2, 7) }; }, function (o) { return o.p * o.u !== o.q * o.s && HW.ex.gcd(o.p, o.q) === 1 && HW.ex.gcd(o.s, o.u) === 1; }); return backGrid(xm(o.p, 1, 'a'), M(-o.q, { b: 1 }), xm(o.s, 1, 'a'), M(o.u, { b: 1 })); } },
-        { id: 'e2c', level: 'ADV', make: function (r) { var o = pickWhere(function () { return { p: r.int(2, 6), q: r.int(2, 4), s: r.int(2, 9) }; }, function (o) { return o.s !== o.p * o.q; }); return backGrid(xm(1, 2), N(-o.p), xm(o.q, 2), N(o.s)); } }] },
-      { num: '3', stem: 'These grids are part-filled. Recover every missing entry (the bold letters), then state the product.', parts: [
-        { id: 'e3a', level: 'ADV', make: function (r) {
+      { num: '1', section: 'Extra practice A — Four-cell grids, forwards and backwards', stem: 'Fill in the four cells of each grid, then state the product in expanded form.',
+        /* shared: the area box (old id) and the product (new id) use the same factors [A, B, C, D] = (A + B)(C + D) */
+        shared: function (r) {
+          var o1 = pickWhere(function () { return { a: r.int(2, 4), b: r.int(1, 6), c: r.int(2, 4), d: r.int(1, 7) }; }, function (o) { return o.a * o.d !== o.b * o.c; });
+          var o2 = pickWhere(function () { return { a: r.int(2, 5), b: r.int(2, 5), c: r.int(2, 3), d: r.int(2, 6) }; }, function (o) { return o.a * o.d !== o.b * o.c; });
+          var o3 = pickWhere(function () { return { b: r.int(2, 9), c: r.int(2, 3), d: r.int(2, 9) }; }, function (o) { return o.b * o.c !== o.d; });
+          return { a: [xm(o1.a), N(o1.b), xm(o1.c), N(-o1.d)], b: [xm(o2.a, 1, 'm'), M(-o2.b, { n: 1 }), xm(o2.c, 1, 'm'), M(o2.d, { n: 1 })], c: [xm(1, 2), N(o3.b), xm(o3.c, 2), N(-o3.d)] };
+        },
+        parts: ['a', 'b', 'c'].map(function (k) {
+          return [{ id: 'e1' + k, sub: k + ' i', level: 'EMG', make: function (r, sh) { var f = sh[k]; return binBox('Fill in the four cells of the grid for ' + t(br([f[0], f[1]]) + br([f[2], f[3]])) + '.', f[0], f[1], f[2], f[3], 'fill grid ' + br([f[0], f[1]]) + br([f[2], f[3]])); } },
+            { id: 'e1' + k + 'p', sub: k + ' ii', level: 'EMG', make: function (r, sh) { var f = sh[k]; return expandBin(br([f[0], f[1]]) + br([f[2], f[3]]), f[0], f[1], f[2], f[3], 'grid', { pre: 'Add the four cells and collect like terms: ' }); } }];
+        }).reduce(function (a, b) { return a.concat(b); }, []) },
+      { num: '2', stem: 'Each grid below has already been filled in, but the side lengths have been erased. Recover them, then state the product in expanded form.',
+        shared: function (r) {
+          var o1 = pickWhere(function () { return { a: r.int(2, 4), b: r.int(1, 5), c: r.int(2, 3), d: r.int(1, 7) }; }, function (o) { return o.a * o.d !== o.b * o.c && HW.ex.gcd(o.a, o.b) === 1 && HW.ex.gcd(o.c, o.d) === 1; });
+          var o2 = pickWhere(function () { return { p: r.int(2, 5), q: r.int(2, 5), s: r.int(2, 3), u: r.int(2, 7) }; }, function (o) { return o.p * o.u !== o.q * o.s && HW.ex.gcd(o.p, o.q) === 1 && HW.ex.gcd(o.s, o.u) === 1; });
+          var o3 = pickWhere(function () { return { p: r.int(2, 6), q: r.int(2, 4), s: r.int(2, 9) }; }, function (o) { return o.s !== o.p * o.q; });
+          return { a: [xm(o1.a), N(o1.b), xm(o1.c), N(-o1.d)], b: [xm(o2.p, 1, 'a'), M(-o2.q, { b: 1 }), xm(o2.s, 1, 'a'), M(o2.u, { b: 1 })], c: [xm(1, 2), N(-o3.p), xm(o3.q, 2), N(o3.s)] };
+        },
+        parts: ['a', 'b', 'c'].map(function (k) {
+          return [{ id: 'e2' + k, sub: k + ' i', level: 'ADV', make: function (r, sh) { var f = sh[k]; return backBox(f[0], f[1], f[2], f[3]); } },
+            { id: 'e2' + k + 'p', sub: k + ' ii', level: 'BEG', make: function (r, sh) { var f = sh[k]; return backProd(f[0], f[1], f[2], f[3]); } }];
+        }).reduce(function (a, b) { return a.concat(b); }, []) },
+      { num: '3', stem: 'These grids are part-filled. Recover every missing entry, then state the product.',
+        shared: function (r) {
           var a = r.int(2, 3), b = r.int(2, 9), c = r.int(2, 5), d = r.int(2, 7);
           if (r.chance(0.15)) { a = 2; b = 7; c = 4; d = 3; }
-          var A = xm(a), B = N(b), C = xm(c), D = N(-d), f = foil(A, B, C, D);
-          var g = grid([A, B], [C, D], { topLabels: [tx(A), CELL[0]], sideLabels: [CELL[1], tx(D)], cells: [[tx(f.F), tx(f.I)], [CELL[2], tx(f.L)]] });
-          var p = KP.fields(g + 'Find the missing entries A, B and C, then state the product.', [pbox('A', ['x']), pbox('B', ['x']), pbox('C', ['x']), pbox('Product', ['x'])],
-            [K.poly(B), K.poly(C, { wrong: [{ is: xm(c * a), code: 'value', hint: 'B is a side length: ' + t(tx(f.F) + '\\div ' + tx(A)) + '. Divide the coefficients and subtract the exponents.' }] }), K.poly(f.O), chk(f.res, binWrongs(A, B, C, D))], [tx(B), tx(C), tx(f.O), tx(f.res)],
-            'A ' + t(tx(B)) + ', B ' + t(tx(C)) + ', C ' + t(tx(f.O)) + '; product ' + t(pf(add(A, B)) + pf(add(C, D)) + '=' + tx(f.res)),
-            'Row 1 side: ' + t(tx(f.F) + '\\div ' + tx(A) + '=' + tx(C)) + ' (B).<br>Column 2 top: ' + t(tx(f.I) + '\\div ' + tx(C) + '=' + tx(B)) + ' (A); check ' + t(dot(B, D) + '=' + tx(f.L)) + ' ✓.<br>Missing cell: ' + t(dot(A, D) + '=' + tx(f.O)) + ' (C).<br>' + t(pf(add(A, B)) + pf(add(C, D)) + '=' + seq([f.F, f.I, f.O, f.L]) + '=' + tx(f.res)),
-            ['Start where a cell and one of its sides are both known: ' + t(tx(f.F)) + ' and ' + t(tx(A)) + '.', 'A missing side = (cell) ÷ (the known side). A missing cell = (top) × (side).'], 'part-filled grid (a)');
-          p.bad = [[tx(B), tx(C), tx(neg(f.O)), tx(f.res)]];
-          return p;
-        } },
-        { id: 'e3b', level: 'ADV', make: function (r) {
-          var a = r.int(2, 4), b = r.int(2, 5), c = r.int(2, 5), d = r.int(2, 5);
-          if (r.chance(0.15)) { a = 3; b = 2; c = 5; d = 4; }
-          var A = xm(a, 1, 'p'), B = M(-b, { q: 1 }), C = xm(c, 1, 'p'), D = M(d, { q: 1 }), f = foil(A, B, C, D), vs = ['p', 'q'];
-          var g = grid([A, B], [C, D], { topLabels: [CELL[0], tx(B)], sideLabels: [tx(C), CELL[1]], cells: [[tx(f.F), CELL[2]], [tx(f.O), tx(f.L)]] });
-          var p = KP.fields(g + 'Find the missing entries A, B and C, then state the product.', [pbox('A', vs), pbox('B', vs), pbox('C', vs), pbox('Product', vs)],
-            [K.poly(A), K.poly(D), K.poly(f.I), chk(f.res, binWrongs(A, B, C, D))], [tx(A), tx(D), tx(f.I), tx(f.res)],
-            'A ' + t(tx(A)) + ', B ' + t(tx(D)) + ', C ' + t(tx(f.I)) + '; product ' + t(pf(add(A, B)) + pf(add(C, D)) + '=' + tx(f.res)),
-            'Column 1 top: ' + t(tx(f.F) + '\\div ' + tx(C) + '=' + tx(A)) + ' (A).<br>Row 2 side: ' + t(tx(f.O) + '\\div ' + tx(A) + '=' + tx(D)) + ' (B); check ' + t(dot(B, D) + '=' + tx(f.L)) + ' ✓.<br>Missing cell: ' + t(dot(B, C) + '=' + tx(f.I)) + ' (C).<br>' + t(pf(add(A, B)) + pf(add(C, D)) + '=' + seq([f.F, f.I, f.O, f.L]) + '=' + tx(f.res)),
-            ['Start with column 1: you know the cell ' + t(tx(f.F)) + ' and the side ' + t(tx(C)) + '.', 'A missing side = (cell) ÷ (the known side). A missing cell = (top) × (side).'], 'part-filled grid (b)');
-          p.bad = [[tx(A), tx(D), tx(neg(f.I)), tx(f.res)]];
-          return p;
-        } },
-        { id: 'e3c', level: 'PRG', make: function (r) {
+          var a2 = r.int(2, 4), b2 = r.int(2, 5), c2 = r.int(2, 5), d2 = r.int(2, 5);
+          if (r.chance(0.15)) { a2 = 3; b2 = 2; c2 = 5; d2 = 4; }
+          return { a: [xm(a), N(b), xm(c), N(-d)], b: [xm(a2, 1, 'p'), M(-b2, { q: 1 }), xm(c2, 1, 'p'), M(d2, { q: 1 })] };
+        },
+        parts: [
+        { id: 'e3a', sub: 'a i', level: 'ADV', make: function (r, sh) { var f = sh.a; return partBox(f[0], f[1], f[2], f[3], { cols: [0], rows: [1], cells: [[0, 0], [0, 1], [1, 1]] }, 'part-filled grid (a)'); } },
+        { id: 'e3ap', sub: 'a ii', level: 'EMG', make: function (r, sh) { var f = sh.a; return partProd(f[0], f[1], f[2], f[3]); } },
+        { id: 'e3b', sub: 'b i', level: 'ADV', make: function (r, sh) { var f = sh.b; return partBox(f[0], f[1], f[2], f[3], { cols: [1], rows: [0], cells: [[0, 0], [1, 0], [1, 1]] }, 'part-filled grid (b)'); } },
+        { id: 'e3bp', sub: 'b ii', level: 'EMG', make: function (r, sh) { var f = sh.b; return partProd(f[0], f[1], f[2], f[3]); } },
+        { id: 'e3c', sub: 'c', level: 'PRG', make: function (r) {
           return KP.mc(r, 'In part (a) you found a missing cell from two side lengths, and a missing side length from a cell. Which job is harder, and why can a grid with several entries missing still be solvable?', [
             { html: 'A missing <b>side length</b> is harder: it is a division, and you first need a cell whose other side is known. A grid is solvable as long as each missing side borders a known cell whose other side is known.', right: true },
             { html: 'A missing <b>cell</b> is harder, because you have to divide; a grid is solvable only when at most one entry is missing.', why: 'A missing cell is just (top) × (side) — one multiplication. And part (a) had three entries missing and was still solvable.' },

@@ -191,8 +191,8 @@
       var vs = (opt && opt.vars && opt.vars.length ? opt.vars : ['x', 'y']).slice(0, 3).map(function (v) { return { label: '<i>' + v + '</i>', tex: v, plain: v }; });
       return [[d(7), d(8), d(9), KY.plus, KY.minus, KY.del], [d(4), d(5), d(6), KY.frac, KY.par, KY.clear], [d(1), d(2), d(3), KY.eq, KY.left, KY.right], [d(0), KY.dot].concat(vs, [KY.enter])];
     };
-    W.KEYSETS.slope = function () { return [[d(7), d(8), d(9), KY.frac, KY.del], [d(4), d(5), d(6), KY.minus, KY.clear], [d(1), d(2), d(3), KY.left, KY.right], [d(0), { label: 'undefined', tex: '\\text{undefined}', plain: 'undefined', title: 'Vertical line' }, KY.enter]]; };
+    W.KEYSETS.slope = function () { return [[d(7), d(8), d(9), KY.frac, KY.del], [d(4), d(5), d(6), KY.minus, KY.clear], [d(1), d(2), d(3), KY.left, KY.right], [d(0), KY.dot, { label: 'undef.', tex: '\\text{undefined}', plain: 'undefined', title: 'Undefined (vertical line)' }, KY.enter]]; };
     W.KEYHELP.eq = ['Type the whole equation, e.g. ' + HW.k('y=-\\frac{2}{3}x+4') + '. Use <b><sup>a</sup>⁄<sub>b</sub></b> for a fraction and <b>▶</b> to step out of it.', 'Type e.g. <code>y = -2/3x + 4</code> or <code>2x - 3y + 6 = 0</code>.'];
-    W.KEYHELP.slope = ['Use <b><sup>a</sup>⁄<sub>b</sub></b> for a fraction, or <b>undefined</b> for a vertical line.', 'Type e.g. <code>-2/3</code>, or <code>undefined</code>.'];
+    W.KEYHELP.slope = ['Use <b><sup>a</sup>⁄<sub>b</sub></b> for a fraction, or <b>undef.</b> (undefined) for a vertical line.', 'Type e.g. <code>-2/3</code>, or <code>undefined</code>.'];
   }
 })(window);

@@ -160,6 +160,26 @@
     p.input.help = 'Choose the innermost region for each number.';
     return p;
   }
+  /* sort numbers into the nested diagram (setsort): each one in the innermost set; wrong placements get the regionWhy diagnosis */
+  var TO_SS = { N: 'N', W: 'W', I: 'I', Q: 'Q', Qb: 'Qbar' };
+  function sortPart(items, prompt, text, hints) {
+    var targets = {}, byId = {}, ids = [];
+    var inp = { items: items.map(function (it, i) { var id = 'n' + i; targets[id] = TO_SS[SMALLEST[it.kind]]; byId[id] = it; ids.push(id); return { id: id, tex: it.tex }; }) };
+    var p = P.setsort(prompt, inp, targets,
+      items.map(function (it) { return t(it.tex) + ' → ' + S(SMALLEST[it.kind]) + '. ' + it.note; }).join('<br>'),
+      hints || ['Work from the outside in: rational or irrational? If rational, is it an integer? Whole (' + t('\\ge 0') + ')? Natural (' + t('\\ge 1') + ')?', 'Simplify first — a radical sign or a long decimal doesn’t decide anything by itself.'], text);
+    var base = p.check;
+    p.check = function (resp) {
+      var b = base(resp); if (b.v !== 'wrong') return b;
+      var bad = ids.filter(function (id) { return resp[id] !== targets[id]; }), id = bad[0];
+      var h = regionWhy(byId[id], resp[id] === 'Qbar' ? 'Qb' : resp[id]);
+      return h ? wrong(h.code, (bad.length > 1 ? bad.length + ' numbers are in the wrong set. ' : '') + h.hint) : b;
+    };
+    /* typical slips: every rational number in Q (not the innermost set), and 0 in N */
+    var allQ = {}; ids.forEach(function (id) { allQ[id] = targets[id] === 'Qbar' ? 'Qbar' : 'Q'; });
+    p.bad = (p.bad || []).concat(ids.some(function (id) { return targets[id] !== 'Q' && targets[id] !== 'Qbar'; }) ? [allQ] : []);
+    return p;
+  }
 
   /* ---------- pictures ---------- */
   function vennSvg() {
@@ -380,7 +400,7 @@
         } },
         { id: '1b', level: 'BEG', make: function (r) {
           var its = r.shuffle([r.chance(0.5) ? natInt(r.int(2, 40)) : sqrtPerfect(r.int(2, 12)), zeroItem(r, r.int(2, 9)), negInt(r.int(2, 30)), r.chance(0.5) ? fracItem(r.int(1, 4), r.pick([5, 7, 9]), r.chance(0.5)) : termItem(r), r.chance(0.5) ? sqrtIrr(r.pick([2, 3, 5, 7, 10, 15, 20])) : constItem(r, ['\\pi', 'e'])]);
-          return regionTable(its, 'In which region of the completed diagram does each number go? Choose the <b>innermost</b> region that contains it.', 'Venn regions', true);
+          return sortPart(its, 'Place each number in the completed diagram: put it in the <b>innermost</b> set that contains it.', 'Venn regions');
         } }] },
       { num: '2', stem: 'For each number, check <b>all</b> the sets (' + t('N, W, I, Q, \\overline{Q}, R') + ') to which it belongs.', parts: [
         { id: '2a', level: 'LIM', make: function (r) { return memberPart(negInt(r.int(2, 15))); } },
@@ -390,7 +410,12 @@
         { id: '2e', level: 'BEG', make: function (r) { return memberPart(zeroItem(r, r.int(2, 9))); } },
         { id: '2f', level: 'BEG', make: function (r) { return memberPart(sqrtIrr(gen(r, function () { return r.int(2, 99); }, nonSq))); } },
         { id: '2g', level: 'BEG', make: function (r) { return memberPart(nonRepItem(r, true)); } },
-        { id: '2h', level: 'BEG', make: function (r) { return memberPart(constItem(r, ['e', 'e', '\\pi', '\\pi', '2\\pi', '\\frac{\\pi}{2}', '-e'])); } }] },
+        { id: '2h', level: 'BEG', make: function (r) { return memberPart(constItem(r, ['e', 'e', '\\pi', '\\pi', '2\\pi', '\\frac{\\pi}{2}', '-e'])); } },
+        { id: '2s', level: 'EMG', make: function (r) {
+          var q = r.int(2, 9), p = gen(r, function () { return r.int(q + 1, 4 * q); }, function (p) { return gcd(p, q) === 1; });
+          var its = r.shuffle([negInt(r.int(2, 15)), sqrtPerfect(r.int(2, 12)), looksIrr(r), fracItem(p, q, true), zeroItem(r, r.int(2, 9)), sqrtIrr(gen(r, function () { return r.int(2, 99); }, nonSq)), nonRepItem(r, true), constItem(r, ['e', '\\pi', '2\\pi', '-e'])]);
+          return sortPart(its, 'Now show the same kinds of numbers on the diagram: put each one in the <b>innermost</b> set it belongs to. (It also belongs to every set around that one.)', 'sort Q2-type numbers');
+        } }] },
       { num: '3', stem: 'Comparing a negative integer with a negative fraction.', parts: [
         { id: '3', level: 'EMG', make: function (r) {
           var n = r.int(2, 12), d = gen(r, function () { return r.int(2, 9); }, function (d) { return n % d !== 0 && gcd(n, d) === 1; }), f = '-\\frac{' + n + '}{' + d + '}';
@@ -410,6 +435,11 @@
         { id: '4gl', sub: 'g–l', level: 'PRG', make: function (r) {
           var pq = r.chance(0.5) ? r.pick([[22, 7], [355, 113]]) : r.pick([[19, 6], [25, 8], [17, 5], [29, 4], [23, 6]]);
           return memberTable([constItem(r, ['-\\pi', '-\\pi', '\\frac{\\pi}{2}', '2\\pi', '-e']), fracItem(pq[0], pq[1], true), negSqrt(r.int(2, 12)), smallDec(r), patternItem(r), sqrtDecSq(r)], 'Check every set each number belongs to.', 'set table g–l');
+        } },
+        { id: '4s', sub: 'Venn', level: 'PRG', make: function (r) {
+          var pq = r.chance(0.5) ? r.pick([[22, 7], [355, 113]]) : r.pick([[19, 6], [25, 8], [17, 5], [29, 4], [23, 6]]);
+          var its = r.shuffle([constItem(r, ['-\\pi', '\\frac{\\pi}{2}', '2\\pi', '-e']), fracItem(pq[0], pq[1], true), negSqrt(r.int(2, 12)), smallDec(r), patternItem(r), sqrtDecSq(r), repItem(r), natInt(r.int(100000, 999999))]);
+          return sortPart(its, 'Sort the numbers into the diagram: each goes in the <b>innermost</b> set it belongs to.', 'sort Q4-type numbers');
         } }] },
       { num: '5', stem: 'Find one number that satisfies each condition. (Use the keypad for fractions, roots and ' + t('\\pi') + '.)', parts: [
         { id: '5a', level: 'BEG', make: function (r) {
@@ -687,7 +717,16 @@
         { id: 'e2c', level: 'EMG', make: function (r) { var x = r.pick(['\\pi', '\\pi', '\\sqrt{' + r.pick([3, 5, 7]) + '}', '\\sqrt[3]{' + r.pick([2, 4, 9]) + '}']), tx = x + '-' + x; return memberPart(item(tx, 'zero', t(tx + '=0') + ': any number minus itself is ' + t('0') + ' — whole, but ' + S('N') + ' starts at ' + t('1') + '.', { whyRat: t(tx + '=0') + ', which is rational.' })); } },
         { id: 'e2d', level: 'EMG', make: function (r) { var pq = r.pick([[3, 4], [2, 3], [1, 2], [2, 5], [4, 5], [3, 5]]), tx = '\\sqrt[3]{-\\frac{' + pq[0] * pq[0] * pq[0] + '}{' + pq[1] * pq[1] * pq[1] + '}}'; return memberPart(item(tx, 'rat', t(tx + '=-\\frac{' + pq[0] + '}{' + pq[1] + '}') + ', a ratio of integers — not an integer.', { neg: true, whyRat: t(tx + '=-\\frac{' + pq[0] + '}{' + pq[1] + '}') + ', a ratio of integers, so it is rational.' })); } },
         { id: 'e2e', level: 'EMG', make: function (r) { var a = r.pick([2, 3, 5, 6, 7]), m = r.int(2, 5), tx = '\\sqrt{' + a + '}\\times\\sqrt{' + a * m * m + '}'; return memberPart(item(tx, 'nat', t(tx + '=\\sqrt{' + a * a * m * m + '}=' + a * m) + ', a counting number.', { whyRat: t(tx + '=\\sqrt{' + a * a * m * m + '}=' + a * m) + '. Simplify first!' })); } },
-        { id: 'e2f', level: 'EMG', make: function (r) { var k = r.pick([2, 3, 5, 6, 7, 10]), tx = '\\sqrt{' + k + '}+\\sqrt{' + k + '}'; return memberPart(item(tx, 'irr', t(tx + '=2\\sqrt{' + k + '}=' + fx(2 * Math.sqrt(k), 6) + '\\ldots') + ' — ' + t(k) + ' isn’t a perfect square, so it never terminates or repeats.', { whyIrr: t(tx + '=2\\sqrt{' + k + '}') + ', and ' + t(k) + ' isn’t a perfect square, so it is irrational.' })); } }] },
+        { id: 'e2f', level: 'EMG', make: function (r) { var k = r.pick([2, 3, 5, 6, 7, 10]), tx = '\\sqrt{' + k + '}+\\sqrt{' + k + '}'; return memberPart(item(tx, 'irr', t(tx + '=2\\sqrt{' + k + '}=' + fx(2 * Math.sqrt(k), 6) + '\\ldots') + ' — ' + t(k) + ' isn’t a perfect square, so it never terminates or repeats.', { whyIrr: t(tx + '=2\\sqrt{' + k + '}') + ', and ' + t(k) + ' isn’t a perfect square, so it is irrational.' })); } },
+        { id: 'e2s', level: 'EMG', make: function (r) {
+          var b = r.pick([2, 3, 5, 6, 7]), k = r.int(2, 5), q1 = '\\frac{\\sqrt{' + b * k * k + '}}{\\sqrt{' + b + '}}', x = r.pick(['\\pi', '\\sqrt{' + r.pick([3, 5, 7]) + '}']), z = x + '-' + x;
+          var c = r.int(2, 9), cc = scaled(c * c * c, 3), q3 = '\\sqrt[3]{' + cc + '}', n = r.pick([2, 3, 5, 6, 7, 10]), s2 = '\\sqrt{' + n + '}+\\sqrt{' + n + '}';
+          var its = r.shuffle([item(q1, 'nat', t(q1 + '=\\sqrt{' + k * k + '}=' + k) + ', a counting number.', { whyRat: t(q1 + '=\\sqrt{' + k * k + '}=' + k) + '. Simplify before you decide!' }),
+            item(z, 'zero', t(z + '=0') + ': whole, but not natural.', { whyRat: t(z + '=0') + ', which is rational.' }), cbrtNeg(r.int(2, 5)),
+            item(q3, 'rat', t(q3 + '=0.' + c) + ' — it terminates, but it isn’t an integer.', { whyRat: t(q3 + '=0.' + c) + ' because ' + t('0.' + c + '^{3}=' + cc) + '. It terminates, so it is rational.' }),
+            item(s2, 'irr', t(s2 + '=2\\sqrt{' + n + '}') + ' — ' + t(n) + ' isn’t a perfect square.', { whyIrr: t(s2 + '=2\\sqrt{' + n + '}') + ', and ' + t(n) + ' isn’t a perfect square, so it is irrational.' }), sqrtDecSq(r)]);
+          return sortPart(its, 'Simplify each number, then put it in the <b>innermost</b> set it belongs to.', 'sort simplify-first numbers', ['Simplify first: work out the root, cancel, or combine. Then decide: rational or irrational? integer? whole? natural?']);
+        } }] },
       { num: '3', stem: 'A number belongs to several sets at once, but only one of them is the <b>smallest</b> set that still contains it. Simplify, then name that single set.', parts: [
         { id: 'e3a', level: 'LIM', make: function (r) { return strictPart(r, sqrtPerfect(r.int(5, 15))); } },
         { id: 'e3b', level: 'BEG', make: function (r) { return strictPart(r, cbrtNeg(r.pick([2, 3, 4, 5, 10]))); } },
@@ -750,7 +789,7 @@
             fracItem(p, q, false), constItem(r, ['-\\pi', '\\pi', '2\\pi', 'e']), item('\\sqrt{' + (d * d / 100).toFixed(2) + '}', 'rat', t('\\sqrt{' + (d * d / 100).toFixed(2) + '}=0.' + d) + ', rational but not an integer.', { whyRat: t('\\sqrt{' + (d * d / 100).toFixed(2) + '}=0.' + d) + ' because ' + t('0.' + d + '^{2}=' + (d * d / 100).toFixed(2)) + '. That is rational.' }),
             item('\\sqrt[3]{' + n + '}', 'irr', t(n) + ' is not a perfect cube, so ' + t('\\sqrt[3]{' + n + '}') + ' is irrational.', { whyIrr: t(n) + ' is not a perfect cube, so ' + t('\\sqrt[3]{' + n + '}') + ' never terminates or repeats.' }),
             item('\\frac{' + m * 3 + '}{3}', 'nat', t('\\frac{' + m * 3 + '}{3}=' + m) + ', a counting number.', { whyRat: t('\\frac{' + m * 3 + '}{3}=' + m) + ' — simplify first.' })];
-          return regionTable(its, 'Choose the innermost region for each number.', 'Venn placement of 8 numbers', true);
+          return sortPart(its, 'Sort the eight numbers into the diagram: each goes in the <b>innermost</b> set it belongs to.', 'Venn placement of 8 numbers');
         } }] },
       { num: '7', stem: 'For each description, decide whether <b>no number</b>, <b>exactly one number</b>, or <b>infinitely many numbers</b> fit it.', parts: [
         { id: 'e7a', level: 'BEG', make: function (r) { return countPart(r, r.pick([['In ' + S('W') + ' but not in ' + S('N') + '.', 'one', 'Only ' + t('0') + ': ' + t('W=\\{0,1,2,\\ldots\\}') + ' and ' + t('N=\\{1,2,3,\\ldots\\}') + ' differ only by ' + t('0') + '.'], ['In ' + S('I') + ', but neither positive nor negative.', 'one', 'Only ' + t('0') + '.']])); } },
@@ -979,15 +1018,36 @@
     var o = gen(r, function () { return { n: r.int(20, 99), a: r.int(2, 6), b: r.int(5, 30), c: r.int(3, 9), d: r.int(2, 12) }; }, function (o) {
       if (![o.n, o.b, o.d].every(function (v) { return nonSq(v) && nonCube(v); }) || (o.a === o.c && o.b === o.d)) return false;
       var vs = [Math.sqrt(o.n), Math.cbrt(o.n), o.a * Math.sqrt(o.b), o.a * Math.cbrt(o.b), o.c * Math.sqrt(o.d), o.c * Math.cbrt(o.d)].sort(function (x, y) { return x - y; });
-      if (vs[5] > 29.5) return false; for (var i = 1; i < 6; i++) if (vs[i] - vs[i - 1] < 0.5) return false; return true;
+      if (vs[5] > 29.5) return false; for (var i = 1; i < 6; i++) if (vs[i] - vs[i - 1] < 0.9) return false; return true;
     }, 2000);
-    var its = [['s1', '\\sqrt{' + o.n + '}', Math.sqrt(o.n)], ['c1', '\\sqrt[3]{' + o.n + '}', Math.cbrt(o.n)], ['s2', o.a + '\\sqrt{' + o.b + '}', o.a * Math.sqrt(o.b)], ['c2', o.a + '\\sqrt[3]{' + o.b + '}', o.a * Math.cbrt(o.b)], ['s3', o.c + '\\sqrt{' + o.d + '}', o.c * Math.sqrt(o.d)], ['c3', o.c + '\\sqrt[3]{' + o.d + '}', o.c * Math.cbrt(o.d)]]
+    var its = [['s1', '\\sqrt{' + o.n + '}', Math.sqrt(o.n), 2, o.n, 1], ['c1', '\\sqrt[3]{' + o.n + '}', Math.cbrt(o.n), 3, o.n, 1], ['s2', o.a + '\\sqrt{' + o.b + '}', o.a * Math.sqrt(o.b), 2, o.b, o.a], ['c2', o.a + '\\sqrt[3]{' + o.b + '}', o.a * Math.cbrt(o.b), 3, o.b, o.a], ['s3', o.c + '\\sqrt{' + o.d + '}', o.c * Math.sqrt(o.d), 2, o.d, o.c], ['c3', o.c + '\\sqrt[3]{' + o.d + '}', o.c * Math.cbrt(o.d), 3, o.d, o.c]]
       .sort(function (x, y) { return x[2] - y[2]; });
-    var byId = {}; its.forEach(function (x) { byId[x[0]] = x; });
-    return P.order(r, 'Order the numbers from least to greatest. (Every one lies between ' + t('0') + ' and ' + t('30') + '.)', its.map(function (x) { return { id: x[0], tex: x[1] }; }),
-      { sep: '<', why: function (a, b) { var A = byId[a], B = byId[b]; if (a.slice(1) === b.slice(1)) return 'For a number bigger than ' + t('1') + ', the cube root is <b>smaller</b> than the square root. Compare ' + t(A[1]) + ' and ' + t(B[1]) + ' again.'; return t(A[1]) + ' and ' + t(B[1]) + ' are in the wrong order. Work out a decimal value for each.'; } },
+    var byId = {}, targets = {}, tols = {}, hints = {};
+    its.forEach(function (x, i) {
+      byId[x[0]] = x; targets[x[0]] = x[2];
+      var gap = Math.min(i ? x[2] - its[i - 1][2] : 99, i < its.length - 1 ? its[i + 1][2] - x[2] : 99);
+      tols[x[0]] = Math.max(0.45, Math.min(0.75, gap / 2)); // ≥ 0.9 apart, so a point within its tolerance can't be mistaken for a neighbour
+      var L = Math.floor(rootV(x[3], x[4]) + 1e-9), root = rootT(x[3], x[4]), inner = t(root) + ' is between ' + t(rootT(x[3], Math.pow(L, x[3])) + '=' + L) + ' and ' + t(rootT(x[3], Math.pow(L + 1, x[3])) + '=' + (L + 1));
+      hints[x[0]] = x[5] === 1 ? inner + '.' : t(x[1]) + ' means ' + t(x[5] + '\\times ' + root) + ', and ' + inner + ', so ' + t(x[1]) + ' is between ' + t(x[5] * L) + ' and ' + t(x[5] * (L + 1)) + '.';
+    });
+    var p = P.numplace('Place the numbers on the number line from ' + t('0') + ' to ' + t('30') + ': ' + its.map(function (x, i) { return t(x[1] + (i < its.length - 1 ? ',' : '')); }).join(' '), { min: 0, max: 30, step: 1, labels: 5, items: r.shuffle(its).map(function (x) { return { id: x[0], tex: x[1] }; }) }, targets,
       'Decimal values: ' + its.map(function (x) { return t(x[1] + '\\approx ' + fx(x[2], 2)); }).join(', ') + '.<br>Least to greatest: ' + t(its.map(function (x) { return x[1]; }).join('<')) + '.<br>Each cube root is smaller than the matching square root, because cubing grows faster than squaring.',
-      ['Use your calculator to find a decimal value for each number.', 'For numbers bigger than 1, ' + t('\\sqrt[3]{n}<\\sqrt{n}') + '.'], 'order 6 roots');
+      ['Use your calculator to find a decimal value for each number, then place it between the right whole numbers.', 'For numbers bigger than 1, ' + t('\\sqrt[3]{n}<\\sqrt{n}') + '.'], 'place 6 roots on a number line', { tols: tols, hints: hints });
+    /* the classic slip: a cube root placed at (or right of) the matching square root */
+    var base = p.check, swapped = {};
+    p.check = function (resp) {
+      resp = resp || {};
+      for (var k = 1; k <= 3; k++) {
+        var s = byId['s' + k], c = byId['c' + k];
+        if (resp[s[0]] != null && resp[c[0]] != null && resp[c[0]] >= resp[s[0]] - 1e-9) return wrong('square-not-cube', t(c[1]) + ' is a <b>cube</b> root: for a number bigger than ' + t('1') + ' it is <b>smaller</b> than the square root ' + t(s[1]) + ', so it goes to the left. ' + hints[c[0]]);
+        if (resp[c[0]] != null && Math.abs(resp[c[0]] - s[2]) <= tols[c[0]] && Math.abs(c[2] - s[2]) > 2 * tols[c[0]]) return wrong('square-not-cube', 'It looks like you used a square root for ' + t(c[1]) + '. ' + hints[c[0]]);
+      }
+      return base(resp);
+    };
+    its.forEach(function (x) { swapped[x[0]] = p.key[x[0]]; });
+    swapped.c1 = p.key.s1; swapped.s1 = p.key.c1;
+    p.bad = (p.bad || []).concat([swapped]);
+    return p;
   }
   function nestMC(r) {
     var ROM = ['i', 'ii', 'iii', 'iv'], PAT = { A: [0, 0, 0, 1], B: [0, 0, 1, 0], C: [1, 0, 0, 0], D: [0, 0, 0, 0] }, ans = r.pick(['A', 'A', 'B', 'C', 'D']);

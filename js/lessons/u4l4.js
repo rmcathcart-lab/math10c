@@ -222,7 +222,81 @@
     return t('ac=' + T.a + '(' + T.c + ')=' + T.ac) + ': the middle boxes multiply to ' + t(tx(M(T.ac, vo(v, 2)))) + ' and add to ' + t(tx(M(T.b, vo(v, 1)))) + ', so they are ' + t(tx(M(T.m, vo(v, 1)))) + ' and ' + t(tx(M(T.n, vo(v, 1)))) + '.' + boxFig(T, true)
       + 'Row 1 shares ' + t(px) + ', row 2 shares ' + t(T.q) + '; the columns are ' + t(rx) + ' and ' + t(T.s) + ' (choose the signs so the rows and columns agree).<br>So ' + t(T.tex + '=' + FX.tex([T.F1, T.F2])) + '.';
   }
-  function tileFrame(T) { var top = [], side = [], i; for (i = 0; i < T.p; i++) top.push('x'); for (i = 0; i < T.q; i++) top.push('1'); for (i = 0; i < T.r; i++) side.push('x'); for (i = 0; i < T.s; i++) side.push('1'); return HW.tiles.frame(top, side, { fill: true }); }
+  /* area box in factoring mode (js/draw2.js areabox, factor: true): the corners a·x² and c are given; the student fills the
+   * two middle boxes and the row / column terms. The middle boxes are checked first (pair diagnoses from middleCheck), then
+   * the row and column terms must be integer-coefficient terms (so they are the GCFs), then K.areabox checks every box =
+   * row × column (any valid box: either middle arrangement, either sign choice). */
+  HW.addCodes({ 'ab-heads-empty': 'Area box: row/column terms missing', 'ab-gcf': 'Area box: row/column term not the GCF' });
+  function boxKey(T) {
+    var v = T.v, A = tx(M(T.a, vo(v, 2))), C = String(T.c), mx = tx(M(T.m, vo(v, 1))), nx = tx(M(T.n, vo(v, 1)));
+    return { rows: [tx(M(T.p, vo(v, 1))), String(T.q)], cols: [tx(M(T.r, vo(v, 1))), String(T.s)], cells: [[A, mx], [nx, C]] };
+  }
+  function areaboxPart(T) {
+    var v = T.v, A = tx(M(T.a, vo(v, 2))), C = String(T.c), key = boxKey(T), labels = ['Top-right box', 'Bottom-left box'];
+    var mid = middleCheck(T, labels), base = K.areabox({ product: T.innerTex, factor: true });
+    var inp = { rows: [null, null], cols: [null, null], cells: [[A, null], [null, C]], keys: 'poly', vars: [v] };
+    var sol = boxSol(T);
+    var p = B.areabox(t(T.tex) + ' — complete the area box: fill in the two middle boxes, then the term for each row (down the side) and each column (along the top).', inp,
+      { product: T.innerTex, factor: true }, key, sol,
+      ['The two middle boxes multiply to the product of the corners, ' + t(A + '\\times ' + pn(T.c) + '=' + tx(M(T.ac, vo(v, 2)))) + ', and add to ' + t(tx(M(T.b, vo(v, 1)))) + '.',
+        'Each row term is the GCF of the two boxes in that row; each column term is the GCF of the two boxes in that column. Choose each row’s sign so the columns agree.'], 'area box ' + T.tex);
+    p.check = function (resp) {
+      resp = resp || {}; var R = resp.rows || [], Cc = resp.cols || [], Mm = resp.cells || [];
+      var m1 = (Mm[0] || [])[1], m2 = (Mm[1] || [])[0], blank = function (s) { return !String(s == null ? '' : s).trim(); };
+      if (blank(m1) && blank(m2) && R.concat(Cc).every(blank)) return form('empty', 'Start with the two middle boxes: they multiply to ' + t(tx(M(T.ac, vo(v, 2)))) + ' and add to ' + t(tx(M(T.b, vo(v, 1)))) + '.');
+      var r0 = mid([m1, m2]); if (r0.v !== 'correct') return r0;
+      if (R.concat(Cc).some(blank)) return form('ab-heads-empty', 'Middle boxes ✓. Now fill in the row terms (down the side) and the column terms (along the top): the GCF of each row and each column.');
+      var heads = R.concat(Cc);
+      for (var i = 0; i < heads.length; i++) {
+        var rp = readPoly(heads[i]); if (rp.res) return rp.res;
+        var ts = PL.terms(rp.p);
+        if (ts.length === 1 && ts[0].c[1] !== 1) return wrong('ab-gcf', 'Use the <b>greatest common factor</b> of each row and column — a term with an integer coefficient, like ' + t(tx(M(T.p, vo(v, 1)))) + ' or ' + t(T.q) + ', not a fraction.');
+      }
+      var res = base(resp);
+      if (res.v === 'wrong' && res.code === 'ab-sign') return wrong(res.code, res.hint + ' Each row term is the GCF of its row, with the sign that makes the columns agree — try the <b>opposite sign</b> for that row term.');
+      return res;
+    };
+    var neg = function (s) { return tx(PL.neg(PL.lift(s))); };
+    p.good = [
+      { rows: [key.cols[0], key.cols[1]], cols: [key.rows[0], key.rows[1]], cells: [[A, key.cells[1][0]], [key.cells[0][1], C]] },
+      { rows: key.rows.map(neg), cols: key.cols.map(neg), cells: key.cells }];
+    p.bad = [
+      { rows: key.rows, cols: key.cols, cells: [[A, String(T.m)], [String(T.n), C]] },
+      { rows: key.rows, cols: key.cols, cells: [[A, tx(M(-T.m, vo(v, 1)))], [tx(M(-T.n, vo(v, 1))), C]] },
+      { rows: [key.rows[0], neg(key.rows[1])], cols: key.cols, cells: key.cells },
+      { rows: key.rows, cols: key.cols, cells: [[A, tx(M(T.b, vo(v, 1)))], ['0', C]] },
+      { rows: ['', ''], cols: ['', ''], cells: key.cells }];
+    return p;
+  }
+  /* 1c: a non-monic tile rectangle that needs white (negative) unit tiles: (p x + q)(x + s), p = a, at least one of q, s < 0 */
+  HW.addCodes({ 'tile-sign-swap': 'Rectangle: negative tiles on the wrong side', 'tile-all-pos': 'Rectangle: no negative tiles used' });
+  function negTilePart(T) {
+    var key = { top: { x: T.p, one: T.q }, side: { x: T.r, one: T.s } }, X = M(1, { x: 1 }), BX = tx(M(T.b, { x: 1 }));
+    var un = function (n) { return Math.abs(n) + ' ' + (n < 0 ? 'white' : 'shaded') + ' unit tile' + (Math.abs(n) > 1 ? 's' : ''); };
+    var swapP = PL.mul(lin(T.p, T.s), lin(T.r, T.q)), flipP = PL.mul(lin(T.p, -T.q), lin(T.r, -T.s)), asA1 = PL.mul(lin(1, T.m), lin(1, T.n));
+    var inside = function (S) { return tx(PL.sub(S, PL.add(M(T.a, { x: 2 }), N(T.c)))); };
+    var p = B.tiles('Now a trinomial with negative terms: build a tile rectangle for ' + t(T.tex) + '. Put ' + t('x') + '-tiles and unit tiles along the top and down the side — use <b>white (negative)</b> unit tiles where you need them. The ' + t('x^{2}') + '-tiles and the inside fill in.', { mode: 'rect' }, T.full,
+      t('ac=' + T.a + '(' + T.c + ')=' + T.ac) + ': the ' + t('x') + '-tiles inside split into ' + t(tx(M(T.m, { x: 1 }))) + ' and ' + t(tx(M(T.n, { x: 1 }))) + ' (product ' + t(T.ac) + ', sum ' + t(T.b) + ').<br>Along the top: ' + T.p + ' ' + t('x') + '-tiles (one for each ' + t('x^{2}') + '-tile) and ' + un(T.q) + '; down the side: one ' + t('x') + '-tile and ' + un(T.s) + '.' + tileFrame(T)
+        + 'Inside: ' + t(T.p + '\\times' + pn(T.s) + '=' + T.m) + ' and ' + t(pn(T.q) + '\\times 1=' + T.n) + ' ' + t('x') + '-tiles, ' + t(T.m + (T.n < 0 ? '' : '+') + T.n + '=' + T.b) + ' ✓; the corner holds ' + t(pn(T.q) + '\\times' + pn(T.s) + '=' + T.c) + ' ✓.<br>Length ' + t(tx(T.F1)) + ', width ' + t(tx(T.F2)) + ', so ' + t(T.tex + '=' + FX.tex([T.F1, T.F2])) + '.',
+      ['The ' + T.a + ' ' + t('x^{2}') + '-tiles go side by side: ' + T.a + ' ' + t('x') + '-tiles along the top, one down the side. The unit tiles on the two sides must multiply to ' + t(T.c) + '.', 'Each unit tile down the side adds a row of ' + T.a + ' ' + t('x') + '-tiles; each one along the top adds one ' + t('x') + '-tile. White × shaded gives white (negative). The ' + t('x') + '-tiles inside must come to ' + t(BX) + '.'],
+      'build tile rectangle with negatives ' + T.tex, key);
+    var base = p.check;
+    p.check = function (resp) {
+      var res = base(resp); if (res.v === 'correct' || res.v === 'form') return res;
+      var f = HW.draw.tileFactors(resp), S = PL.mul(f[0], f[1]), a = (resp && resp.top) || {}, d = (resp && resp.side) || {};
+      if (PL.eq(S, flipP)) return wrong('tile-sign-swap', 'The ' + t('x^{2}') + '-tiles and the corner are right ✓, but the ' + t('x') + '-tiles inside come to ' + t(inside(S)) + ', not ' + t(BX) + '. Switch the colours of the unit tiles on <b>both</b> sides.');
+      if (PL.eq(S, swapP)) return wrong('tile-const-swap', 'The ' + t('x^{2}') + '-tiles and the corner are right, but the ' + t('x') + '-tiles inside come to ' + t(inside(S)) + ', not ' + t(BX) + '. Each unit tile beside the long side of the ' + t('x^{2}') + '-tiles adds ' + T.a + ' ' + t('x') + '-tiles, each one on the short side adds only one: swap the unit tiles between the top and the side.');
+      if (PL.eq(S, asA1)) return wrong('tile-pair-a1', 'That rectangle has only one ' + t('x^{2}') + '-tile. The numbers ' + t(T.m) + ' and ' + t(T.n) + ' go straight on the sides only when there is one ' + t('x^{2}') + '-tile; here there are ' + T.a + ', so ' + T.a + ' ' + t('x') + '-tiles go along one side.');
+      if (T.c < 0 && (a.one || 0) >= 0 && (d.one || 0) >= 0 && ((a.one || 0) || (d.one || 0))) return wrong('tile-all-pos', 'The constant term is ' + t(T.c) + ', so the corner must hold <b>white</b> (negative) unit tiles — one side needs shaded unit tiles and the other side white ones.');
+      return res;
+    };
+    p.answer += '<div>Dimensions ' + t(tx(T.F1)) + ' by ' + t(tx(T.F2)) + '.</div>';
+    p.good = [{ top: key.side, side: key.top }];
+    p.bad = [{ top: { x: T.p, one: -T.q }, side: { x: T.r, one: -T.s } }, { top: { x: T.p, one: T.s }, side: { x: T.r, one: T.q } }, { top: { x: 1, one: T.m }, side: { x: 1, one: T.n } }, { top: { x: T.p, one: Math.abs(T.q) }, side: { x: T.r, one: Math.abs(T.s) } }]
+      .filter(function (v) { var g = HW.draw.tileFactors(v); return !PL.eq(PL.mul(g[0], g[1]), T.full); });
+    return p;
+  }
+  function tileFrame(T) { var top = [], side = [], i; for (i = 0; i < T.p; i++) top.push('x'); for (i = 0; i < Math.abs(T.q); i++) top.push(T.q < 0 ? '-1' : '1'); for (i = 0; i < T.r; i++) side.push('x'); for (i = 0; i < Math.abs(T.s); i++) side.push(T.s < 0 ? '-1' : '1'); return HW.tiles.frame(top, side, { fill: true }); }
   function tankSvg(k, F1, F2) {
     var s = '<svg class="fig-svg" viewBox="0 0 300 175" width="100%" style="max-width:340px" role="img" aria-label="rectangular prism tank">';
     s += '<polygon points="50,55 90,25 260,25 220,55" fill="#e3e7ec" stroke="#2b3340" stroke-width="1.6"/><polygon points="220,55 260,25 260,115 220,145" fill="#c3c9d1" stroke="#2b3340" stroke-width="1.6"/>';
@@ -272,7 +346,12 @@
       { num: '1', section: 'Part A — Tiles, Area Boxes and Grouping', stem: function (sh) {
           return 'Use algebra tiles to factor ' + t(sh.T.tex) + '.' + HW.tiles.legend() + '<div class="fig">' + HW.tiles.row(HW.tiles.count({ x2: sh.T.a, x: sh.T.b, one: sh.T.c }), { label: sh.T.a + ' x-squared tiles, ' + sh.T.b + ' x tiles and ' + sh.T.c + ' unit tiles' }) + '</div>';
         },
-        shared: function (r) { return { T: tri(r, { p: [2, 5], q: [1, 3], r: 1, s: [1, 3], test: function (o) { return o.b <= 16 && o.c <= 6; }, book: { p: 5, q: 1, r: 1, s: 2 } }) }; },
+        shared: function (r) {
+          var o = { T: tri(r, { p: [2, 5], q: [1, 3], r: 1, s: [1, 3], test: function (o) { return o.b <= 16 && o.c <= 6; }, book: { p: 5, q: 1, r: 1, s: 2 } }) };
+          // 1c: a second trinomial whose rectangle needs negative (white) tiles, e.g. 2x² + x − 3 = (2x + 3)(x − 1)
+          o.N = tri(r, { p: [2, 3], q: [-4, 4], r: 1, s: [-4, 4], test: function (t2) { return (t2.q < 0 || t2.s < 0) && Math.abs(t2.c) <= 12 && Math.abs(t2.b) <= 10 && t2.p + Math.abs(t2.q) <= 7; }, book: { p: 2, q: 3, r: 1, s: -1 } });
+          return o;
+        },
         parts: [
           { id: '1a', level: 'EMG', make: function (r, sh) {
             var T = sh.T, key = { top: { x: T.p, one: T.q }, side: { x: T.r, one: T.s } };
@@ -298,8 +377,9 @@
             var T = sh.T;
             return factorPart(T, { prompt: 'Write ' + t(T.tex) + ' in factored form.', sol: 'The rectangle is ' + t(tx(T.F1)) + ' by ' + t(tx(T.F2)) + ', so ' + t(T.tex + '=' + FX.tex([T.F1, T.F2])) + '.<br>Check: ' + t(FX.tex([T.F1, T.F2]) + '=' + PL.seq([M(T.a, { x: 2 }), M(T.m, { x: 1 }), M(T.n, { x: 1 }), N(T.c)]) + '=' + T.tex) + ' ✓',
               hints: ['Length × width of the tile rectangle.'], text: 'tiles factored ' + T.tex });
-          } }] },
-      { num: '2', stem: 'Complete an area box for each trinomial, then write it in factored form. The top-left box holds ' + t('ax^{2}') + ', the bottom-right box holds ' + t('c') + ', and the two middle boxes split ' + t('bx') + ' into two pieces that multiply to ' + t('ac\\,x^{2}') + '.',
+          } },
+          { id: '1c', level: 'PRG', make: function (r, sh) { return negTilePart(sh.N); } }] },
+      { num: '2', stem: 'Complete an area box for each trinomial, then write it in factored form. The top-left box holds ' + t('ax^{2}') + ', the bottom-right box holds ' + t('c') + ', and the two middle boxes split ' + t('bx') + ' into two pieces that multiply to ' + t('ac\\,x^{2}') + '. The term for each row and each column is the GCF of its two boxes — those are the factors.',
         shared: function (r) {
           return {
             A: tri(r, { p: [2, 3], q: [1, 5], r: 1, s: [1, 6], test: function (o) { return o.c >= 4 && o.c <= 20 && o.b <= 15; }, book: { p: 2, q: 3, r: 1, s: 4 } }),
@@ -308,15 +388,8 @@
           };
         },
         parts: ['A', 'B', 'C'].reduce(function (acc, X, i) {
-          var L = 'abc'.charAt(i), lv = [['BEG', 'BEG'], ['EMG', 'PRG'], ['EMG', 'EMG']][i];
-          acc.push({ id: '2' + L + '1', sub: L + ' i', level: lv[0], make: function (r, sh) {
-            var T = sh[X];
-            var p = fieldsPart(t(T.tex) + ' — what goes in the two empty boxes?' + boxFig(T), [pbox('Top-right box'), pbox('Bottom-left box')], middleCheck(T, ['Top-right box', 'Bottom-left box']),
-              [tx(M(T.m, { x: 1 })), tx(M(T.n, { x: 1 }))], t(tx(M(T.m, { x: 1 }))) + ' and ' + t(tx(M(T.n, { x: 1 }))) + ' (either way round)', boxSol(T),
-              ['The two middle boxes multiply to the product of the corners, ' + t(tx(M(T.a, { x: 2 })) + '\\times ' + pn(T.c) + '=' + tx(M(T.ac, { x: 2 }))) + ', and add to ' + t(tx(M(T.b, { x: 1 }))) + '.'], 'area box cells ' + T.tex);
-            p.bad = [[String(T.m), String(T.n)], [tx(M(-T.m, { x: 1 })), tx(M(-T.n, { x: 1 }))]];
-            return p;
-          } });
+          var L = 'abc'.charAt(i), lv = [['EMG', 'BEG'], ['PRG', 'PRG'], ['PRG', 'EMG']][i];
+          acc.push({ id: '2' + L + '1', sub: L + ' i', level: lv[0], make: function (r, sh) { return areaboxPart(sh[X]); } });
           acc.push({ id: '2' + L + '2', sub: L + ' ii', level: lv[1], make: function (r, sh) {
             var T = sh[X];
             return factorPart(T, { prompt: 'Write ' + t(T.tex) + ' in factored form.', sol: boxSol(T), hints: ['Take the GCF of each row and each column of your box. Choose each row’s sign so the columns agree.'], text: 'area box factored ' + T.tex });

@@ -13,7 +13,10 @@
  * axes: a linear model is one segment over its realistic domain with solid end dots; the falling case (16a) is plotted
  * from a table of values and joined. True end values are often off the tappable grid, so each point must be on the grid
  * point nearest the true one (half a snap step) — exact whenever the true point is on the grid. Explain / interpret
- * questions become multiple choice with misconception hints. Levels: LIM BEG EMG PRG ADV MAS. */
+ * questions become multiple choice with misconception hints.
+ * Extra 6(i) solves f(x) = b by tapping every point of the graph at height b (K.P.points, js/draw2.js; the graph moves
+ * from the stem onto the pad); every other "solve" part keeps typed x-values (a scale to apply, a "none", an interval,
+ * an off-grid answer, or a window too wide to tap). Levels: LIM BEG EMG PRG ADV MAS. */
 (function (root) {
   'use strict';
   var HW = root.HW, ex = HW.ex, F = HW.fmt, K = HW.kit, t = K.t, ok = K.ok, wrong = K.wrong, form = K.form, B = K.P, S = HW.sets, PL = HW.poly;
@@ -35,7 +38,8 @@
     'sk-extra': 'Sketch: extra point off the graph', 'sk-arrow': 'Sketch: arrow where the model stops', 'sk-dir': 'Sketch: rises/falls the wrong way', 'sk-startx': 'Sketch: domain starts at the wrong value',
     'sk-endx': 'Sketch: domain ends at the wrong value', 'sk-starty': 'Sketch: wrong starting value', 'sk-endy': 'Sketch: wrong end value (rate)', 'sk-lines': 'Sketch: straight pieces instead of a joined curve',
     'sk-after': 'Sketch: continued after landing', 'sk-up': 'Sketch: graphed 4.9t² (rising)', 'sk-shape': 'Sketch: curve falls fastest at the start', 'sk-point': 'Sketch: a plotted point is off the curve',
-    'sk-start': 'Sketch: release point missing', 'sk-land': 'Sketch: landing point missing', 'sk-few': 'Sketch: too few points for a curve'
+    'sk-start': 'Sketch: release point missing', 'sk-land': 'Sketch: landing point missing', 'sk-few': 'Sketch: too few points for a curve',
+    'tap-height': 'Tapped a point of the graph at the wrong height', 'tap-off-graph': 'Tapped a point that is not on the graph'
   });
 
   /* ---------------- keypads (namespaced, registered once) ---------------- */
@@ -217,6 +221,39 @@
     var g = { x: o.x, y: o.y, grid: o.grid || 1, gridY: o.gridY, labels: o.labels || 2, labelsX: o.labelsX, labelsY: o.labelsY, unit: o.unit, unitX: o.unitX, unitY: o.unitY,
       xName: 'x', yName: o.yName || 'y', max: o.max || 360, segs: [{ pts: V, start: o.start || 'closed', end: o.end || 'closed' }], points: o.points || [], aria: o.aria || 'graph of a function' };
     return '<div class="fig">' + HW.graph(g) + '</div>';
+  }
+
+  /* ---------------- tapping points on a given graph (K.P.points, js/draw2.js) ----------------
+   * "Solve f(x) = b" read off a graph: tap every point of the graph at height b. inp: the pad window with the given graph
+   * in bg; fx(x): the graph's value (NaN outside its domain); xs: the solutions (all on the snap grid). */
+  function onSnap(inp, q) {
+    var sx = inp.snapX || inp.snap || inp.grid || 1, sy = inp.snapY || inp.snap || inp.gridY || inp.grid || 1, X = inp.x || [-6, 6], Y = inp.y || [-6, 6];
+    var k = function (v, s0) { return Math.abs(v / s0 - Math.round(v / s0)) < 1e-9; };
+    return k(q[0], sx) && k(q[1], sy) && q[0] >= X[0] && q[0] <= X[1] && q[1] >= Y[0] && q[1] <= Y[1];
+  }
+  var GIVEN = '#5b6573'; // the given graph is drawn in slate (its end dots too) so the student's teal taps stand out
+  function levelTap(prompt, inp, fx, name, b, xs, sol, hints, text) {
+    var T = uniq(xs).map(function (x) { return [x, b]; }), fb = name + '(x)=' + nf(b), pq = function (q) { return t(ptT(q)); };
+    T.forEach(function (q) { if (!onSnap(inp, q)) throw new Error('u5l8: solution point ' + q + ' is off the tap grid'); });
+    var onG = function (q) { var v = fx(q[0]); return isFinite(v) && same(v, q[1]); };
+    var wr = T.length > 1 ? T.map(function (q) { return { pts: [q], code: 'sol-graph-missing', hint: 'Correct so far — but keep following the horizontal line ' + t('y=' + nf(b)) + ' across the <b>whole</b> graph: it meets the graph ' + (T.length === 2 ? 'once more' : 'again') + '.' }; }) : [];
+    if (T.length > 2) T.forEach(function (q, i) { wr.push({ pts: T.filter(function (w, j) { return j !== i; }), code: 'sol-graph-missing', hint: 'Correct so far — but the line ' + t('y=' + nf(b)) + ' meets the graph once more. Check every piece, right to the ends of the graph.' }); });
+    var opt = { what: 'solution point', whats: 'solution points', wrong: wr, whatHint: 'Tap only points of the graph at height ' + t(nf(b)) + '.', pointHint: function (q) {
+      if (T.some(function (w) { return same(w[0], q[1]) && same(w[1], q[0]); })) return null; // swapped coordinates: built-in hint
+      if (onG(q) && same(q[0], b) && !same(q[1], b)) return { code: 'read-reverse', hint: 'That is the point at input ' + t(nf(b)) + ' — it gives ' + t(name + '(' + nf(b) + ')') + '. In ' + t(fb) + ' the number ' + t(nf(b)) + ' is the <b>output</b>, a height: start at ' + t(nf(b)) + ' on the vertical axis and read across.' };
+      if (same(q[0], b) && !same(q[1], b)) return { code: 'read-reverse', hint: t(nf(b)) + ' is the <b>output</b> (a height), not an input. Find ' + t(nf(b)) + ' on the vertical axis and read across to the graph.' };
+      if (onG(q)) return { code: 'tap-height', hint: pq(q) + ' is on the graph, but at height ' + t(nf(q[1])) + ', not ' + t(nf(b)) + '. Look along the horizontal line ' + t('y=' + nf(b)) + '.' };
+      if (same(q[1], b)) return { code: 'tap-off-graph', hint: pq(q) + ' is at the right height, but it isn’t on the graph. Follow the line ' + t('y=' + nf(b)) + ' until it meets the graph.' };
+      return { code: 'tap-off-graph', hint: pq(q) + ' is not on the graph, and not at height ' + t(nf(b)) + '. Tap the points where the horizontal line ' + t('y=' + nf(b)) + ' meets the graph.' };
+    } };
+    var p = B.points(prompt, inp, T, sol, hints, text, opt);
+    var bad = T.length > 1 ? T.map(function (q) { return [q]; }) : [];
+    if (T.length > 2) bad.push(T.slice(0, -1));
+    bad.push(T.map(function (q) { return [q[1], q[0]]; }));
+    if (onSnap(inp, [b, b]) && isFinite(fx(b)) && onSnap(inp, [b, fx(b)])) bad.push([[b, fx(b)]]);
+    if (onSnap(inp, [0, b]) && !T.some(function (w) { return same(w[0], 0); })) bad.push(T.concat([[0, b]]));
+    p.bad = bad.filter(function (ps) { return !(ps.length === T.length && ps.every(function (q) { return T.some(function (w) { return same(w[0], q[0]) && same(w[1], q[1]); }); })); }).map(function (ps) { return drawing([], ps); });
+    return p;
   }
 
   /* ---------------- set answers ---------------- */
@@ -1177,7 +1214,7 @@
             'Only the name of the output changes (' + t('y') + ' becomes ' + t('f(x)') + '); the rule, the independent variable and every ordered pair stay exactly the same.', ['Think about Example 1: ' + t('h(t)=t^{2}+3t-8') + ' becomes ' + t('y=t^{2}+3t-8') + '.'], 'EP what changes');
         } }] },
       /* ---------------- Extra Part B ---------------- */
-      { num: '6', section: 'Extra practice B — Reading a graph in both directions', shared: flatShared, stem: function (sh) { return 'The graph of a function ' + t('f') + ' is shown. Read every answer off the graph, and count <i>every</i> point at the height you are given.' + sh.fig; }, parts: [
+      { num: '6', section: 'Extra practice B — Reading a graph in both directions', shared: flatShared, stem: function (sh) { return 'The graph of a function ' + t('f') + ' is shown. Read every answer off the graph, and count <i>every</i> point at the height you are given.' + (sh.onPad ? '' : sh.fig); }, parts: [
         { id: 'e6a', level: 'BEG', make: function (r, sh) {
           var xs = [-5, -3, 0, 3, 6].map(function (x) { return x * sh.sx; }).sort(function (a, b) { return a - b; });
           var items = xs.map(function (x) { var v = pwAt(sh.V, x); return { f: { label: t('f(' + x + ')='), name: 'f(' + x + ')' }, k: nf(v), c: K.number(v, function (u) { if (pwSols(sh.V, x).pts.some(function (z) { return same(z, u); })) return { code: 'read-reverse', hint: t('f(' + x + ')') + ': start at ' + t(x) + ' on the <b>horizontal</b> axis and read up or down.' }; return null; }) }; });
@@ -1217,6 +1254,16 @@
             { html: 'Because ' + t('f(a)') + ' is read on the vertical axis and ' + t('f(x)=b') + ' on the horizontal axis.', why: 'It is the other way round: ' + t('f(a)') + ' starts on the horizontal axis. And the axis alone does not explain the number of answers.' },
             { html: 'A function pairs each output with exactly one input, so ' + t('f(a)') + ' can only have one answer.', why: 'A function restricts <b>inputs</b> (one output each), not outputs.' }],
             'A function pairs each input with <b>exactly one</b> output, so asking for an output, as in (a), can only return one number. Nothing limits how many inputs share an output, so “solve” questions can return one, several, a whole interval — or none.', ['What does the definition of a function say about inputs and outputs?'], 'EP why one vs many');
+        } },
+        { id: 'e6b2', sub: 'i', level: 'EMG', make: function (r, sh) {
+          var b = -2 * sh.sy, s0 = pwSols(sh.V, b).pts;
+          if (s0.length !== 3 || pwSols(sh.V, b).ints.length) throw new Error('u5l8 e6b2: expected three crossings');
+          sh.onPad = true; // the graph is drawn on the pad, not repeated in the stem
+          var inp = { x: [-7, 7], y: [-5, 5], labels: 2, xName: 'x', yName: 'f(x)', bg: { segs: [{ pts: sh.V, color: GIVEN }], points: [sh.V[0], sh.V[sh.V.length - 1]].map(function (q) { return { x: q[0], y: q[1], color: GIVEN }; }) } };
+          var ends = s0.filter(function (x) { return same(Math.abs(x), 6); });
+          return levelTap('(i) Solve ' + t('f(x)=' + b) + ': tap every point of the graph where ' + t('f(x)=' + b) + '.', inp, function (x) { return pwAt(sh.V, x); }, 'f', b, s0,
+            'Follow the horizontal line ' + t('y=' + b) + ' across the whole graph: it meets the graph at ' + s0.map(function (x) { return t(ptT([x, b])); }).join(', ') + (ends.length ? ' — ' + t(ptT([ends[0], b])) + ' is an endpoint of the graph, and it counts too' : '') + '. The solutions are their inputs: ' + t(solsKey(s0)) + '.',
+            ['Find ' + t(b) + ' on the vertical axis and follow the horizontal line ' + t('y=' + b) + ' across.', 'Check every piece of the graph, right to its ends.'], 'EP tap f(x)=b');
         } }] },
       { num: '7', shared: scaled2Shared, stem: function (sh) { return 'The graph of a function ' + t('g') + ' is shown below. <i>Each grid line represents ' + t(sh.sx) + ' units on the horizontal axis and ' + t(sh.sy) + ' units on the vertical axis.</i> Check the scale before every read.' + sh.fig; }, parts: [
         { id: 'e7a', level: 'EMG', make: function (r, sh) {

@@ -9,6 +9,9 @@
  * Sketches (EP 10, EP 14a) are open drawings on the graph pad (js/draw.js), checked by rules (K.graphRules: domain,
  * range, function or not) with targeted hints; EP 10(e) adds "sketch a function"; explain-questions become multiple choice with
  * misconception hints; "give an example" (EP 11) is a typed set of ordered pairs checked for its counts.
+ * "Shade it, then write it": for several graphs (4b, 4d, 4e, 4h, 5a, EP 4c, 5b, 6d, 8a) a domrange part (js/draw2.js — shade
+ * the domain and range on number lines under the graph, id …s) comes right before the typed set-notation part and shows
+ * the same graph (shared numbers); see shadeDR().
  * Levels: LIM BEG EMG PRG ADV MAS. */
 (function (root) {
   'use strict';
@@ -28,7 +31,9 @@
     'ea-outside': 'Value outside the bounds', 'ea-output': 'Value is an output', 'pairs-count': 'Ordered pairs with the wrong counts',
     'empty-time': 'Divided the wrong way', 'empty-vol': 'Gave the volume instead of the time', 'dr-scale': 'Misread the axis scale',
     'sk-swap': 'Sketch: domain and range swapped', 'sk-join': 'Sketch: joined points for a list domain', 'sk-points': 'Sketch: points instead of a line for an interval',
-    'sk-ends': 'Sketch: wrong end dots / arrows', 'sk-same-range': 'Sketch: same range as the given graph'
+    'sk-ends': 'Sketch: wrong end dots / arrows', 'sk-same-range': 'Sketch: same range as the given graph',
+    'dr-sh-list': 'Shaded between separate points', 'dr-sh-fill': 'Dots only for an unbroken graph', 'dr-sh-arrow': 'Stopped the shading where the graph has an arrow',
+    'dr-sh-stop': 'Shaded to the end where the graph stops', 'dr-nl-dot': 'Domain/range: open vs solid dot', 'dr-nl-side': 'Domain/range: shaded the wrong side', 'dr-nl-values': 'Domain/range: wrong end values'
   });
 
   /* ---------------- numbers ---------------- */
@@ -107,6 +112,7 @@
   function ph(v) { return 'e.g. {' + v + ' | -2 <= ' + v + ' < 5, ' + v + ' in R}'; }
   /* one part, two boxes: Domain and Range.  o: dv, rv (letters), dW / rW (opt.wrong lists), dC / rC (ctx hints), good, bad */
   function drPart(prompt, D, R, o, sol, hints, text) {
+    if (o && o.shade) return shadeDR(prompt, o.shade, D, R, o, sol, hints, text);
     o = o || {}; var dv = o.dv || 'x', rv = o.rv || 'y';
     var cD = setChk(D, { v: dv, other: R, otherName: 'range', wrong: o.dW, ctx: o.dC }), cR = setChk(R, { v: rv, other: D, otherName: 'domain', wrong: o.rW, ctx: o.rC });
     var vars = [dv, rv].filter(function (v, i, a) { return a.indexOf(v) === i; });
@@ -210,7 +216,8 @@
     var sol = 'The segment runs from the ' + desc(L[0], L[1]) + ' to the ' + desc(Rt[0], Rt[1]) + '.<br>' +
       '<b>Domain</b> (left to right): ' + t('x') + ' from ' + t(L[0][0]) + ' to ' + t(Rt[0][0]) + ', so ' + t('D=' + D) + '.<br>' +
       '<b>Range</b> (bottom to top): ' + t('y') + ' from ' + t(lo[0][1]) + ' to ' + t(hi[0][1]) + ', so ' + t('R=' + R) + '.';
-    return drPart(G({ segs: [{ pts: [P, Q], start: sP, end: sQ }] }), D, R, { dW: dW, rW: rW }, sol, [HINT_D, HINT_DOTS], o.text || 'domain and range of a segment');
+    var spec = { segs: [{ pts: [P, Q], start: sP, end: sQ }] };
+    return drPart(o.shade ? shP(o) : G(spec), D, R, { dW: dW, rW: rW, shade: o.shade ? spec : null }, sol, [HINT_D, HINT_DOTS], o.text || 'domain and range of a segment');
   }
   /* a "V" from end L down (or up) to the vertex M and back up to end Rt. ends: 'closed' | 'open' */
   function vDR(Lp, M, Rp, ends, o) {
@@ -227,17 +234,18 @@
       rW.push({ is: bld('y', lowEnd[1], Math.max(Lp[1], Rp[1]), cl0, cl0), code: 'dr-peak', hint: 'The range is not just the two endpoints’ ' + t('y') + '-values: the highest point is the peak ' + t(ptT(M)) + '. Look for the highest and lowest points <b>anywhere</b> on the graph.' });
     } else {
       R = bld('y', M[1], top, true, cl0);
-      rW.push({ is: bld('y', M[1], top, false, cl0), code: 'dr-vertex', hint: 'The lowest point ' + t(ptT(M)) + ' is a corner <b>on</b> the graph (no hollow dot there), so ' + t('y=' + M[1]) + ' is included: use ' + t('\\le') + '.' });
+      rW.push({ is: bld('y', M[1], top, false, cl0), code: 'dr-vertex', hint: 'The lowest point ' + t(ptT(M)) + ' is a corner <b>on</b> the graph (no hollow dot there), so ' + t('y=' + M[1]) + ' is included: use ' + t('\\le') + '.', sh: 'The lowest point ' + t(ptT(M)) + ' is a corner <b>on</b> the graph (no hollow dot there), so ' + t('y=' + M[1]) + ' is included: a <b>solid</b> dot.' });
     }
     var sol = 'The graph goes from ' + t(ptT(Lp)) + ' to ' + t(ptT(M)) + ' to ' + t(ptT(Rp)) + '; the end dots are <b>' + (cl0 ? 'solid' : 'hollow') + '</b>' + (cl0 ? ' (included)' : ' (excluded)') + '.<br>' +
       '<b>Domain</b>: ' + t('x') + ' from ' + t(Lp[0]) + ' to ' + t(Rp[0]) + ': ' + t('D=' + D) + '.<br>' +
       '<b>Range</b>: lowest ' + t('y') + ' is ' + t(ymin) + ', highest is ' + t(ymax) + (peak ? ' (the peak ' + t(ptT(M)) + ')' : '') + (!cl0 && !peak ? '. The vertex ' + t(ptT(M)) + ' is on the graph, so ' + t(ymin) + ' is included; ' + t(top) + ' comes only from the hollow ends, so it is excluded' : '') + ': ' + t('R=' + R) + '.';
-    return drPart(G({ segs: [{ pts: [Lp, M, Rp], start: ends, end: ends }] }), D, R, { dW: dW, rW: rW }, sol,
+    var spec = { segs: [{ pts: [Lp, M, Rp], start: ends, end: ends }] };
+    return drPart(o.shade ? shP(o) : G(spec), D, R, { dW: dW, rW: rW, shade: o.shade ? spec : null }, sol,
       [HINT_D, peak ? 'The highest point is not always an endpoint — check the corner in the middle.' : HINT_DOTS], o.text || 'domain and range of a V-shaped graph');
   }
   /* a full horizontal (kind 'h', y = c) or vertical (kind 'v', x = c) line */
-  function hvDR(kind, c) {
-    var D, R, o, sol;
+  function hvDR(kind, c, oo) {
+    oo = oo || {}; var D, R, o, sol;
     if (kind === 'h') {
       D = all('x'); R = lst([c]);
       o = { rW: [{ is: all('y'), code: 'dr-one-value', hint: 'Every point on this line has ' + t('y=' + c) + '. The line goes forever sideways, not up and down, so only one ' + t('y') + '-value is produced.' }],
@@ -252,7 +260,9 @@
       sol = 'A vertical line ' + t('x=' + c) + ' with arrows at both ends: every point has ' + t('x=' + c) + ', but it goes forever up and down, so every real ' + t('y') + ' is reached.<br>' + t('D=' + D) + ' (one value, so a list), ' + t('R=' + R) + '.';
     }
     o.good = [[kind === 'h' ? '\\mathbb{R}' : 'x=' + c, kind === 'h' ? 'y=' + c : '\\mathbb{R}'], [kind === 'h' ? 'all real numbers' : '\\{' + c + '\\}', kind === 'h' ? '\\{' + c + '\\}' : '(-\\infty,\\infty)']];
-    return drPart(G({ segs: [kind === 'h' ? { pts: [[-EDGE, c], [EDGE, c]], start: 'arrow', end: 'arrow' } : line(null, c)] }), D, R, o, sol,
+    var spec = { segs: [kind === 'h' ? { pts: [[-EDGE, c], [EDGE, c]], start: 'arrow', end: 'arrow' } : line(null, c)] };
+    if (oo.shade) { o.shade = spec; o.good = null; }
+    return drPart(oo.shade ? shP(oo) : G(spec), D, R, o, sol,
       [HINT_D, 'Arrows on both ends: the line never stops in that direction.'], (kind === 'h' ? 'horizontal' : 'vertical') + ' line, domain and range');
   }
   function circleDR(h, k, r, o) {
@@ -272,7 +282,7 @@
       ? 'The ellipse is centred at the origin. It reaches ' + t(dv + '=\\pm ' + a) + ' left and right and ' + t(rv + '=\\pm ' + b) + ' up and down, and the curve is unbroken.<br>' + t('D=' + D) + ', ' + t('R=' + R) + '. Use the axis letters ' + t(dv) + ' and ' + t(rv) + ', not ' + t('x') + ' and ' + t('y') + '.'
       : 'Centre ' + t(ptT([h, k])) + ', radius ' + t(r) + '.<br>Left/right: ' + t(h + '-' + r + '=' + (h - r)) + ' to ' + t(h + '+' + r + '=' + (h + r)) + '. Down/up: ' + t(k + '-' + r + '=' + (k - r)) + ' to ' + t(k + '+' + r + '=' + (k + r)) + '.<br>' +
         'The circle includes its edge points, so use ' + t('\\le') + ': ' + t('D=' + D) + ', ' + t('R=' + R) + '.';
-    return drPart(o.prompt || '', D, R, { dv: dv, rv: rv, dW: dW, rW: rW }, sol,
+    return drPart(o.shade ? shP(o) : o.prompt || '', D, R, { dv: dv, rv: rv, dW: dW, rW: rW, shade: o.shade || null }, sol,
       o.ellipse ? ['Find the farthest left and right points, then the lowest and highest.', 'The axes are labelled ' + t(dv) + ' and ' + t(rv) + ': use those letters.'] : ['A circle reaches one radius left, right, up and down from its centre.', 'Domain: centre’s ' + t('x') + ' ± radius. Range: centre’s ' + t('y') + ' ± radius.'], o.text || 'domain and range of a circle');
   }
   /* ---------------- open sketches on the graph pad (EP 10, EP 14) ---------------- */
@@ -319,7 +329,102 @@
       return res;
     };
   }
-  var SK_HELP = 'Use <b>╱ Line</b> to draw (tap each corner; tap the last point again to finish), <b>●○ Ends</b> to make an end solid, hollow or an arrow, and <b>● Point</b> for separate points.';
+  /* ---------------- shading the domain and range on two number lines under the graph (domrange, js/draw2.js) ----------------
+   * Used for "shade it, then write it": a shading part comes right before the typed set-notation part and shows the same
+   * graph (the question's shared numbers). The typed part's wrong sets (dW / rW) are reused as targeted diagnoses, with
+   * "use ≤" style wording turned into dot wording; generic diagnoses for shading between separate points, dots only for
+   * an unbroken graph, stopping at the grid edge where the graph has an arrow, and shading to the end where it stops. */
+  var HINT_SHADOW = 'Shine a light straight down onto the graph: its shadow on the ' + t('x') + '-axis is the <b>domain</b>. Shine it from the side: its shadow on the ' + t('y') + '-axis is the <b>range</b>.';
+  var HINT_SH_DOTS = 'Copy the graph’s ends onto the number lines: solid end → solid dot, hollow end → open dot (tap the dot a second time), arrow → shade right to the end of the number line, with no dot.';
+  var SH_PROMPT = 'Show the domain and the range on the two number lines: a dot at each end value (solid or open), shaded in between. Then write them in set notation in the next part.';
+  function shWord(h) { return String(h || '').replace(/use \\\(\\(le|ge) ?\\\)/g, 'show it with a <b>solid</b> dot').replace(/use \\\((<|>)\\\)/g, 'show it with an <b>open</b> dot'); }
+  function shadeHint(got, want, v, name) {
+    var allPt = function (ps) { return ps.length > 0 && ps.every(isPt); };
+    if (allPt(want) && !allPt(got)) return { code: 'dr-sh-list', hint: 'The graph is separate points, so the ' + name + ' is only their ' + t(v) + '-values: put a solid dot at each one and shade nothing in between.' };
+    if (!allPt(want) && allPt(got) && got.length > 1) return { code: 'dr-sh-fill', hint: 'The graph is unbroken, so every ' + t(v) + '-value between the ends belongs to the ' + name + ' too: shade between your dots.' };
+    if (want.length === 1 && got.length === 1) {
+      var q = want[0], g = got[0];
+      if ((!isFinite(q.lo) && isFinite(g.lo)) || (!isFinite(q.hi) && isFinite(g.hi))) return { code: 'dr-sh-arrow', hint: 'The graph has an arrow, so it keeps going past the edge of the grid: the ' + name + ' has no end on that side. Don’t put a dot there — shade right to the end of the number line.' };
+      if ((isFinite(q.lo) && !isFinite(g.lo)) || (isFinite(q.hi) && !isFinite(g.hi))) return { code: 'dr-sh-stop', hint: 'The graph stops at an end dot (not an arrow), so the ' + name + ' stops too: put a dot at that end value and shade only up to it.' };
+    }
+    return null;
+  }
+  function shadeDR(prompt, spec, D, R, o, sol, hints, text) {
+    o = o || {}; var dv = o.dv || 'x', rv = o.rv || 'y';
+    var g = Object.assign({ x: [-6, 6], y: [-6, 6], labels: 1 }, spec); g.max = 300;
+    var inp = { graph: g, v: dv, w: rv, dom: Object.assign({ labels: 2 }, o.dom || {}), ran: Object.assign({ labels: 2 }, o.ran || {}) };
+    var hm = function (h) { return h === HINT_DOTS ? HINT_SH_DOTS : h === HINT_D ? HINT_SHADOW : h; };
+    var hs = (hints || []).map(hm); if (hs.indexOf(HINT_SH_DOTS) < 0) hs.push(HINT_SH_DOTS); if (hs.indexOf(HINT_SHADOW) < 0) hs.unshift(HINT_SHADOW);
+    var p = B.domrange(prompt, inp, D, R, sol, hs, (text || 'domain and range') + ' (shade)');
+    var parts = function (tex) { return Dr.setParts(S.parse(tex).set); }, TD = parts(D), TR = parts(R);
+    var prep = function (W, T) { return (W || []).map(function (w) { var q = S.parse(w.is); return q.ok ? { parts: Dr.setParts(q.set), code: w.code, hint: shWord(w.sh || w.hint) } : null; }).filter(function (w) { return w && !Dr.partsSame(w.parts, T); }); };
+    var WD = prep(o.dW, TD), WR = prep(o.rW, TR), base = p.check;
+    if (Dr.partsSame(TD, TR)) p.bad = p.bad.filter(function (b) { return !(Dr.partsSame(Dr.numlineParts(b.domain), TD) && Dr.partsSame(Dr.numlineParts(b.range), TR)); }); // built-in "swapped" bad is the key itself when D = R
+    p.check = function (resp) {
+      var res = base(resp); if (res.v !== 'wrong' || res.code === 'dr-swap') return res;
+      resp = resp || {};
+      var one = function (val, T, W, v, name) {
+        if (!val || (!(val.dots || []).length && !(val.shade || []).length)) return null;
+        var G0 = Dr.numlineParts(val); if (Dr.partsSame(G0, T)) return null;
+        for (var i = 0; i < W.length; i++) if (Dr.partsSame(G0, W[i].parts)) return W[i];
+        return shadeHint(G0, T, v, name) || { code: null };
+      };
+      var a = one(resp.domain, TD, WD, dv, 'domain');
+      if (a) return a.code ? wrong(a.code, '<b>Domain:</b> ' + a.hint) : res;
+      var b = one(resp.range, TR, WR, rv, 'range');
+      return b && b.code ? wrong(b.code, '<b>Range:</b> ' + b.hint) : res;
+    };
+    var NL = { dom: { min: g.x[0], max: g.x[1] }, ran: { min: g.y[0], max: g.y[1] } };
+    var edge = function (T, L) { return T.map(function (q) { return { lo: isFinite(q.lo) ? q.lo : L.min, hi: isFinite(q.hi) ? q.hi : L.max, lc: isFinite(q.lo) ? q.lc : true, hc: isFinite(q.hi) ? q.hc : true }; }); };
+    WD.forEach(function (w) { p.bad.push({ domain: Dr.numlineKey(w.parts), range: p.key.range }); });
+    WR.forEach(function (w) { p.bad.push({ domain: p.key.domain, range: Dr.numlineKey(w.parts) }); });
+    if (TD.some(function (q) { return !isFinite(q.lo) || !isFinite(q.hi); })) p.bad.push({ domain: Dr.numlineKey(edge(TD, Object.assign(NL.dom, o.dom || {}))), range: p.key.range });
+    if (TR.some(function (q) { return !isFinite(q.lo) || !isFinite(q.hi); })) p.bad.push({ domain: p.key.domain, range: Dr.numlineKey(edge(TR, Object.assign(NL.ran, o.ran || {}))) });
+    if (!TD.every(isPt)) p.bad.push({ domain: { dots: p.key.domain.dots.map(function (d) { return { x: d.x, open: false }; }), shade: [] }, range: p.key.range });
+    return p;
+  }
+  /* Q4(h): a ray up and to the right from a hollow dot */
+  function rayUpDR(a, b, s, o) {
+    o = o || {};
+    var D = bld('x', a, null, false), R = bld('y', b, null, false), spec = { segs: [{ pts: [[a, b], toEdge([a, b], [1, s])], start: 'open', end: 'arrow' }] };
+    var sol = 'The ray starts at the <b>hollow</b> dot ' + t(ptT([a, b])) + ' (not on the graph) and goes up to the right forever.<br>' + t('x') + ' starts just after ' + t(a) + ' and grows forever; ' + t('y') + ' starts just above ' + t(b) + ' and grows forever.<br>' + t('D=' + D) + ', ' + t('R=' + R) + '.';
+    return drPart(o.shade ? shP(o) : G(spec), D, R,
+      { shade: o.shade ? spec : null, dW: [{ is: bld('x', null, a, true, false), code: 'dr-ray-dir', hint: 'The ray goes to the <b>right</b> of ' + t('x=' + a) + ', so the ' + t('x') + '-values are bigger than ' + t(a) + '.' }], rW: [{ is: bld('y', null, b, true, false), code: 'dr-ray-dir', hint: 'The ray goes <b>up</b> from ' + t('y=' + b) + ', so the ' + t('y') + '-values are bigger than ' + t(b) + '.' }] },
+      sol, [HINT_D, HINT_DOTS], 'D & R of a ray with a hollow start');
+  }
+  /* EP 4(c): a ray down and to the right from a hollow dot */
+  function rayDownDR(a, b, s, o) {
+    o = o || {};
+    var D = bld('x', a, null, false), R = bld('y', null, b, true, false), spec = { segs: [{ pts: [[a, b], toEdge([a, b], [1, s])], start: 'open', end: 'arrow' }] };
+    var sol = 'The ray starts at the <b>hollow</b> dot ' + t(ptT([a, b])) + ' and goes down to the right with an arrow.<br>' + t('x') + ' starts just after ' + t(a) + ' and grows forever: ' + t('D=' + D) + '.<br>' + t('y') + ' starts just below ' + t(b) + ' and falls forever: ' + t('R=' + R) + '.';
+    return drPart(o.shade ? shP(o) : G(spec), D, R,
+      { shade: o.shade ? spec : null, rW: [{ is: bld('y', b, null, false), code: 'dr-ray-dir', hint: 'The ray goes <b>down</b> from the hollow dot, so the ' + t('y') + '-values are <b>less</b> than ' + t(b) + '.' }, { is: bld('y', null, b), code: 'set-endpoint', hint: 'The dot at ' + t(ptT([a, b])) + ' is hollow, so ' + t('y=' + b) + ' is not on the graph: use ' + t('<') + '.' }],
+        dW: [{ is: bld('x', null, a, true, false), code: 'dr-ray-dir', hint: 'The ray goes to the <b>right</b>, so the ' + t('x') + '-values are bigger than ' + t(a) + '.' }] },
+      sol, [HINT_D, HINT_DOTS], 'ray from a hollow dot, going down');
+  }
+  /* Q5(a): a downward parabola with arrows, vertex (h, k) */
+  function downParabDR(h, k, a, o) {
+    o = o || {};
+    var D = all('x'), R = bld('y', null, k), spec = { fns: [parab(h, k, a)] };
+    var sol = 'The arrows show the curve falling forever on both sides, so every real ' + t('x') + ' is used. The highest point is the vertex ' + t(ptT([h, k])) + ', which is on the curve; there is no lowest point.<br>' + t('D=' + D) + ', ' + t('R=' + R) + '.';
+    return drPart(o.shade ? shP(o) : G(spec), D, R,
+      { shade: o.shade ? spec : null, rW: [{ is: bld('y', k, null), code: 'dr-opens', hint: 'The curve opens <b>down</b>: the vertex ' + t(ptT([h, k])) + ' is the <b>highest</b> point and the arrows go down forever, so ' + t('y\\le ' + k) + '.', sh: 'The curve opens <b>down</b>: the vertex ' + t(ptT([h, k])) + ' is the <b>highest</b> point and the arrows go down forever, so shade <b>below</b> ' + t(k) + '.' }, { is: bld('y', null, k, true, false), code: 'dr-vertex', hint: 'The vertex ' + t(ptT([h, k])) + ' is on the curve, so ' + t('y=' + k) + ' is included: use ' + t('\\le') + '.' }],
+        dC: { 'set-arrow': 'The arrows mean the curve keeps going down and outward forever, so every ' + t('x') + '-value is reached eventually.' } },
+      sol, [HINT_D, 'Which way do the arrows point? Is there a highest point or a lowest point?'], 'D & R of a downward curve');
+  }
+  /* EP 8 drone: domain and range of a context graph with scaled axes (shade = number lines under the graph) */
+  function droneDR(sh, shade) {
+    var D = bld('t', 0, sh.T), R = bld('h', 0, sh.H);
+    var spec = { x: [0, sh.T + sh.ts * 0.7], y: [0, sh.H + 9], grid: sh.ts, gridY: 5, labelsX: sh.ts, labelsY: 10, labels: sh.ts, firstQuadrant: true, unitX: 260 / sh.T, unitY: 165 / sh.H, xName: 't', yName: 'h', xTitle: 'Time (s)', yTitle: 'Height (m)',
+      segs: [{ pts: [[0, 0], [sh.t1, sh.H], [sh.t2, sh.H], [sh.T, 0]], start: 'closed', end: 'closed' }] };
+    return drPart(shade ? 'Show the domain (times) and the range (heights) on the two number lines. Read the scales first. (Next you’ll write them in set notation.)' : '(a) State the domain and the range. Use ' + t('t') + ' and ' + t('h') + '.', D, R,
+      { dv: 't', rv: 'h', shade: shade ? spec : null, dom: { min: 0, max: sh.T + sh.ts, step: sh.ts, labels: sh.ts * 2, snap: sh.ts }, ran: { min: 0, max: sh.H + 10, step: 5, labels: 10, snap: 5 }, dW: [{ is: bld('t', 0, sh.T / sh.ts), code: 'dr-scale', hint: 'Read the scale: each gridline on the time axis is ' + t(sh.ts) + ' s, so the drone lands at ' + t('t=' + sh.T) + ' s.' }, { is: bld('t', sh.t1, sh.t2), code: 'dr-wrong-ends', hint: 'That is only the hovering part. The domain covers the whole flight, from take-off to landing.' }],
+                rW: [{ is: bld('h', sh.H, sh.H), code: 'dr-wrong-ends', hint: 'The drone is at ' + t(sh.H) + ' m only while hovering; on the way up and down it passes through every height from ' + t('0') + ' to ' + t(sh.H) + '.' }] },
+              'Scales: each time gridline is ' + t(sh.ts) + ' s; each height gridline is ' + t('5') + ' m. The flight starts at ' + t('(0,\\ 0)') + ', climbs to ' + t(sh.H) + ' m, hovers from ' + t(sh.t1) + ' to ' + t(sh.t2) + ' s and lands at ' + t(ptT([sh.T, 0])) + '. Time and height are measured, so ' + t('\\in\\mathbb{R}') + '.<br>' + t('D=' + D) + ', ' + t('R=' + R) + '.',
+              ['Read the scales on both axes first.', 'Domain: from take-off to landing. Range: from the ground to the highest point.'], 'drone domain and range');
+  }
+  function shP(o) { return (o && o.shadePrompt) || SH_PROMPT; }
+  var SK_HELP ='Use <b>╱ Line</b> to draw (tap each corner; tap the last point again to finish), <b>●○ Ends</b> to make an end solid, hollow or an arrow, and <b>● Point</b> for separate points.';
   function sketchPart(prompt, rules, key, bads, sol, hints, text, extra) {
     var p = B.graph(prompt + '<div class="muted">Many different drawings are right. ' + SK_HELP + '</div>', Object.assign({}, PAD), sketchChk(rules, extra), key, sol, hints, text);
     p.answer = 'One possible answer:' + p.answer; p.bad = bads || [];
@@ -365,18 +470,22 @@
           return arrowDR(left, [r1, r2], left.map(function (l, i) { return [l, pat[i] ? r2 : r1]; }), { text: 'D & R of an arrow diagram' });
         } }] },
       /* ---------- Q4 graphs ---------- */
-      { num: '4', stem: 'State the domain and range of each relation graphed below.', parts: [
-        { id: '4a', level: 'BEG', make: function (r) {
+      { num: '4', stem: 'State the domain and range of each relation graphed below.',
+        shared: function (r) {
+          var L = [r.int(-5, -3), 0], M = [r.int(-2, 0), r.int(3, 5)], Rp = [r.int(2, 4), 0], yy = r.sample(range(-4, -1), 2); L[1] = yy[0]; Rp[1] = yy[1];
+          return { b: { L: L, M: M, R: Rp }, d: { P: [r.int(-5, -2), r.int(1, 4)], Q: [r.int(1, 4), r.int(-4, -1)] }, e: r.pick([-4, -3, -2, 2, 3, 4]),
+            h: { a: r.int(-4, -1), b: r.int(-3, -1), s: r.pick([1, 1, 2, 0.5]) } };
+        },
+        parts: [
+        { id: '4a', sub: 'a', level: 'BEG', make: function (r) {
           var xs = r.sample(range(-5, 5), 5).sort(function (a, b) { return a - b; }), ys = r.sample(nz(-5, 5), 5), pts = xs.map(function (x, i) { return [x, ys[i]]; });
           var p = pairsDR(G({ points: pts.map(function (q) { return { x: q[0], y: q[1] }; }) }), pts, { solPre: 'Five separate points: ' + ptsH(pts) + '. ', text: 'D & R of plotted points' });
           p.hints = ['These are separate dots, not a line: list the ' + t('x') + '-coordinates and the ' + t('y') + '-coordinates.', HINT_LIST];
           return p;
         } },
-        { id: '4b', level: 'EMG', make: function (r) {
-          var L = [r.int(-5, -3), 0], M = [r.int(-2, 0), r.int(3, 5)], Rp = [r.int(2, 4), 0], yy = r.sample(range(-4, -1), 2); L[1] = yy[0]; Rp[1] = yy[1];
-          return vDR(L, M, Rp, 'closed', { text: 'D & R of a graph with a peak' });
-        } },
-        { id: '4c', level: 'PRG', make: function (r) {
+        { id: '4bs', sub: 'b, shade', level: 'BEG', make: function (r, sh) { return vDR(sh.b.L, sh.b.M, sh.b.R, 'closed', { shade: true, text: 'D & R of a graph with a peak' }); } },
+        { id: '4b', sub: 'b', level: 'EMG', make: function (r, sh) { return vDR(sh.b.L, sh.b.M, sh.b.R, 'closed', { text: 'D & R of a graph with a peak' }); } },
+        { id: '4c', sub: 'c', level: 'PRG', make: function (r) {
           var h = r.pick([-1, 0, 0, 1]), k = r.int(-3, -1), s = r.pick([1, 1.5, 2]);
           var D = all('x'), R = bld('y', k, null);
           var sol = 'Two rays start at the vertex ' + t(ptT([h, k])) + ' and spread up and out with <b>arrows</b>, so they go on forever: every real ' + t('x') + ' is used. The lowest point is the vertex, which is on the graph, and there is no top.<br>' + t('D=' + D) + ', ' + t('R=' + R) + '.';
@@ -385,45 +494,36 @@
               dC: { 'set-arrow': 'Look at the ends: the arrows mean the rays keep going forever, so they reach every ' + t('x') + '-value — the edge of the grid is not the end of the graph.' }, rC: { 'set-arrow': 'The graph has a lowest point (the vertex) but the arrows keep going up forever, so there is a bottom value and no top.' } },
             sol, [HINT_D, 'Arrows mean “keeps going”. Where is the lowest point?'], 'D & R of a V with arrows');
         } },
-        { id: '4d', level: 'PRG', make: function (r) {
-          return segDR([r.int(-5, -2), r.int(1, 4)], [r.int(1, 4), r.int(-4, -1)], 'open', 'closed', { text: 'D & R of a segment, hollow + solid' });
-        } },
-        { id: '4e', level: 'EMG', make: function (r) { return hvDR('h', r.pick([-4, -3, -2, 2, 3, 4])); } },
-        { id: '4f', level: 'EMG', make: function (r) { return hvDR('v', r.pick([-4, -3, -2, 2, 3, 4])); } },
-        { id: '4g', level: 'EMG', make: function (r) {
+        { id: '4ds', sub: 'd, shade', level: 'EMG', make: function (r, sh) { return segDR(sh.d.P, sh.d.Q, 'open', 'closed', { shade: true, text: 'D & R of a segment, hollow + solid' }); } },
+        { id: '4d', sub: 'd', level: 'PRG', make: function (r, sh) { return segDR(sh.d.P, sh.d.Q, 'open', 'closed', { text: 'D & R of a segment, hollow + solid' }); } },
+        { id: '4es', sub: 'e, shade', level: 'BEG', make: function (r, sh) { return hvDR('h', sh.e, { shade: true }); } },
+        { id: '4e', sub: 'e', level: 'EMG', make: function (r, sh) { return hvDR('h', sh.e); } },
+        { id: '4f', sub: 'f', level: 'EMG', make: function (r) { return hvDR('v', r.pick([-4, -3, -2, 2, 3, 4])); } },
+        { id: '4g', sub: 'g', level: 'EMG', make: function (r) {
           var m = r.pick([1, -1, 2, -2, 0.5]), b = r.int(-2, 2), D = all('x'), R = all('y');
           var sol = 'A slanted line with arrows at both ends goes on forever left and right <b>and</b> up and down, so it uses every real ' + t('x') + ' and produces every real ' + t('y') + '.<br>' + t('D=' + D) + ', ' + t('R=' + R) + '.';
           return drPart(G({ segs: [line(m, b)] }), D, R, { dW: [{ is: bld('x', -5, 5), code: 'set-arrow', hint: 'The arrows mean the line keeps going past the edge of the grid, so there is no end value.' }], rW: [{ is: bld('y', -5, 5), code: 'set-arrow', hint: 'The arrows mean the line keeps going past the edge of the grid, so there is no end value.' }],
             dC: { 'set-arrow': 'Arrows on both ends: the line keeps going forever, so no ' + t('x') + '-value is left out.' }, rC: { 'set-arrow': 'Arrows on both ends: the line keeps going up and down forever, so no ' + t('y') + '-value is left out.' } },
             sol, [HINT_D, 'Arrows on both ends — does the line ever stop going left, right, up or down?'], 'D & R of a full slanted line');
         } },
-        { id: '4h', level: 'PRG', make: function (r) {
-          var a = r.int(-4, -1), b = r.int(-3, -1), s = r.pick([1, 1, 2, 0.5]), D = bld('x', a, null, false), R = bld('y', b, null, false);
-          var sol = 'The ray starts at the <b>hollow</b> dot ' + t(ptT([a, b])) + ' (not on the graph) and goes up to the right forever.<br>' + t('x') + ' starts just after ' + t(a) + ' and grows forever; ' + t('y') + ' starts just above ' + t(b) + ' and grows forever.<br>' + t('D=' + D) + ', ' + t('R=' + R) + '.';
-          return drPart(G({ segs: [{ pts: [[a, b], toEdge([a, b], [1, s])], start: 'open', end: 'arrow' }] }), D, R,
-            { dW: [{ is: bld('x', null, a, true, false), code: 'dr-ray-dir', hint: 'The ray goes to the <b>right</b> of ' + t('x=' + a) + ', so the ' + t('x') + '-values are bigger than ' + t(a) + '.' }], rW: [{ is: bld('y', null, b, true, false), code: 'dr-ray-dir', hint: 'The ray goes <b>up</b> from ' + t('y=' + b) + ', so the ' + t('y') + '-values are bigger than ' + t(b) + '.' }] },
-            sol, [HINT_D, HINT_DOTS], 'D & R of a ray with a hollow start');
-        } },
-        { id: '4i', level: 'PRG', make: function (r) {
+        { id: '4hs', sub: 'h, shade', level: 'EMG', make: function (r, sh) { return rayUpDR(sh.h.a, sh.h.b, sh.h.s, { shade: true }); } },
+        { id: '4h', sub: 'h', level: 'PRG', make: function (r, sh) { return rayUpDR(sh.h.a, sh.h.b, sh.h.s); } },
+        { id: '4i', sub: 'i', level: 'PRG', make: function (r) {
           var h = r.pick([-1, 0, 0, 1]), c = r.pick([2, 3]), top = r.int(3, 5), v = r.int(-2, 0);
           return vDR([h - c, top], [h, v], [h + c, top], 'open', { text: 'D & R of a V with hollow ends' });
         } }] },
       /* ---------- Q5 curves, ellipse, words, circle ---------- */
-      { num: '5', stem: 'State the domain and range of each relation described below.', parts: [
-        { id: '5a', level: 'PRG', make: function (r) {
-          var h = r.pick([-1, 0, 0, 1]), k = r.int(1, 4), a = r.pick([-0.5, -1]), D = all('x'), R = bld('y', null, k);
-          var sol = 'The arrows show the curve falling forever on both sides, so every real ' + t('x') + ' is used. The highest point is the vertex ' + t(ptT([h, k])) + ', which is on the curve; there is no lowest point.<br>' + t('D=' + D) + ', ' + t('R=' + R) + '.';
-          return drPart(G({ fns: [parab(h, k, a)] }), D, R,
-            { rW: [{ is: bld('y', k, null), code: 'dr-opens', hint: 'The curve opens <b>down</b>: the vertex ' + t(ptT([h, k])) + ' is the <b>highest</b> point and the arrows go down forever, so ' + t('y\\le ' + k) + '.' }, { is: bld('y', null, k, true, false), code: 'dr-vertex', hint: 'The vertex ' + t(ptT([h, k])) + ' is on the curve, so ' + t('y=' + k) + ' is included: use ' + t('\\le') + '.' }],
-              dC: { 'set-arrow': 'The arrows mean the curve keeps going down and outward forever, so every ' + t('x') + '-value is reached eventually.' } },
-            sol, [HINT_D, 'Which way do the arrows point? Is there a highest point or a lowest point?'], 'D & R of a downward curve');
-        } },
-        { id: '5b', level: 'EMG', make: function (r) {
+      { num: '5', stem: 'State the domain and range of each relation described below.',
+        shared: function (r) { return { h: r.pick([-1, 0, 0, 1]), k: r.int(1, 4), a: r.pick([-0.5, -1]) }; },
+        parts: [
+        { id: '5as', sub: 'a, shade', level: 'EMG', make: function (r, sh) { return downParabDR(sh.h, sh.k, sh.a, { shade: true }); } },
+        { id: '5a', sub: 'a', level: 'PRG', make: function (r, sh) { return downParabDR(sh.h, sh.k, sh.a); } },
+        { id: '5b', sub: 'b', level: 'EMG', make: function (r) {
           var ab = r.pick([[5, 3], [4, 2], [5, 2], [4, 3], [3, 2], [5, 4]]), lt = r.pick([['p', 'q'], ['p', 'q'], ['u', 'v'], ['s', 't']]);
           return circleDR(0, 0, 0, { ellipse: true, a: ab[0], b: ab[1], dv: lt[0], rv: lt[1], text: 'D & R of an ellipse (letters ' + lt.join(',') + ')',
             prompt: 'An ellipse, with horizontal axis ' + t(lt[0]) + ' and vertical axis ' + t(lt[1]) + '.' + G({ segs: [ellipse(0, 0, ab[0], ab[1])], xName: lt[0], yName: lt[1] }) });
         } },
-        { id: '5c', level: 'BEG', make: function (r) {
+        { id: '5c', sub: 'c', level: 'BEG', make: function (r) {
           var xs = r.sample(nz(-5, 5), 2).concat([0]).sort(function (a, b) { return a - b; }); if (r.chance(0.5)) xs = r.sample(range(-5, 5), 3).sort(function (a, b) { return a - b; });
           while (!xs.some(function (x) { return x < 0; })) xs = r.sample(range(-5, 5), 3).sort(function (a, b) { return a - b; });
           var c = r.pick(nz(-6, 9)), pairs = xs.map(function (x) { return [x, c]; });
@@ -432,7 +532,7 @@
           p.hints = ['The inputs are the domain; the outputs are the range.', 'The single output is written once: ' + t('\\{' + c + '\\}') + '-style.'];
           return p;
         } },
-        { id: '5d', level: 'PRG', make: function (r) {
+        { id: '5d', sub: 'd', level: 'PRG', make: function (r) {
           var h = r.pick(nz(-5, 5)), k = r.pick(nz(-4, 4)), rad = r.int(3, 7); while (Math.abs(h) === Math.abs(k)) k = r.pick(nz(-4, 4));
           return circleDR(h, k, rad, { prompt: 'A circle with centre ' + t(ptT([h, k])) + ' and a radius of ' + t(rad) + '.', text: 'D & R of a circle from its centre and radius' });
         } }] },
@@ -614,23 +714,20 @@
           return p;
         } }] },
       /* ---------- EP Part B ---------- */
-      { num: '4', section: 'Extra practice B — Graphs, including hollow endpoints', stem: 'State the domain and range of each relation. Each graph has at least one hollow endpoint.', parts: [
-        { id: 'e4a', level: 'PRG', make: function (r) { return segDR([r.int(-5, -2), r.int(-4, -1)], [r.int(1, 4), r.int(1, 4)], 'open', 'closed', { text: 'segment hollow left, solid right' }); } },
-        { id: 'e4b', level: 'PRG', make: function (r) { return segDR([r.int(-4, -2), r.int(2, 4)], [r.int(2, 4), r.int(-4, -2)], 'open', 'open', { text: 'segment, both ends hollow' }); } },
-        { id: 'e4c', level: 'PRG', make: function (r) {
-          var a = r.int(-3, 0), b = r.int(1, 4), s = r.pick([-1, -1, -2, -0.5]), D = bld('x', a, null, false), R = bld('y', null, b, true, false);
-          var sol = 'The ray starts at the <b>hollow</b> dot ' + t(ptT([a, b])) + ' and goes down to the right with an arrow.<br>' + t('x') + ' starts just after ' + t(a) + ' and grows forever: ' + t('D=' + D) + '.<br>' + t('y') + ' starts just below ' + t(b) + ' and falls forever: ' + t('R=' + R) + '.';
-          return drPart(G({ segs: [{ pts: [[a, b], toEdge([a, b], [1, s])], start: 'open', end: 'arrow' }] }), D, R,
-            { rW: [{ is: bld('y', b, null, false), code: 'dr-ray-dir', hint: 'The ray goes <b>down</b> from the hollow dot, so the ' + t('y') + '-values are <b>less</b> than ' + t(b) + '.' }, { is: bld('y', null, b), code: 'set-endpoint', hint: 'The dot at ' + t(ptT([a, b])) + ' is hollow, so ' + t('y=' + b) + ' is not on the graph: use ' + t('<') + '.' }],
-              dW: [{ is: bld('x', null, a, true, false), code: 'dr-ray-dir', hint: 'The ray goes to the <b>right</b>, so the ' + t('x') + '-values are bigger than ' + t(a) + '.' }] },
-            sol, [HINT_D, HINT_DOTS], 'ray from a hollow dot, going down');
-        } }] },
+      { num: '4', section: 'Extra practice B — Graphs, including hollow endpoints', stem: 'State the domain and range of each relation. Each graph has at least one hollow endpoint.',
+        shared: function (r) { return { a: r.int(-3, 0), b: r.int(1, 4), s: r.pick([-1, -1, -2, -0.5]) }; },
+        parts: [
+        { id: 'e4a', sub: 'a', level: 'PRG', make: function (r) { return segDR([r.int(-5, -2), r.int(-4, -1)], [r.int(1, 4), r.int(1, 4)], 'open', 'closed', { text: 'segment hollow left, solid right' }); } },
+        { id: 'e4b', sub: 'b', level: 'PRG', make: function (r) { return segDR([r.int(-4, -2), r.int(2, 4)], [r.int(2, 4), r.int(-4, -2)], 'open', 'open', { text: 'segment, both ends hollow' }); } },
+        { id: 'e4cs', sub: 'c, shade', level: 'EMG', make: function (r, sh) { return rayDownDR(sh.a, sh.b, sh.s, { shade: true }); } },
+        { id: 'e4c', sub: 'c', level: 'PRG', make: function (r, sh) { return rayDownDR(sh.a, sh.b, sh.s); } }] },
       { num: '5', stem: function (sh) { return 'The two graphs below have exactly the same shape. Only the endpoints differ.' + flexFigs(['<b>(a)</b>' + Gs({ segs: [{ pts: [sh.L, sh.M, sh.R], start: 'closed', end: 'closed' }] }), '<b>(b)</b>' + Gs({ segs: [{ pts: [sh.L, sh.M, sh.R], start: 'open', end: 'open' }] })]); },
         shared: function (r) { var xv = r.int(-1, 2), c = r.pick([2, 3]), top = r.int(2, 4), bot = r.int(-4, -2); return { L: [xv - c, top], M: [xv, bot], R: [xv + c, top] }; },
         parts: [
-          { id: 'e5a', level: 'EMG', make: function (r, sh) { var p = vDR(sh.L, sh.M, sh.R, 'closed', { text: 'V with solid ends' }); p.prompt = '(a) State the domain and range.' + p.prompt; return p; } },
-          { id: 'e5b', level: 'PRG', make: function (r, sh) { var p = vDR(sh.L, sh.M, sh.R, 'open', { text: 'V with hollow ends' }); p.prompt = '(b) State the domain and range.' + p.prompt; return p; } },
-          { id: 'e5c', level: 'EMG', make: function (r, sh) {
+          { id: 'e5a', sub: 'a', level: 'EMG', make: function (r, sh) { var p = vDR(sh.L, sh.M, sh.R, 'closed', { text: 'V with solid ends' }); p.prompt = '(a) State the domain and range.' + p.prompt; return p; } },
+          { id: 'e5bs', sub: 'b, shade', level: 'EMG', make: function (r, sh) { return vDR(sh.L, sh.M, sh.R, 'open', { shade: true, shadePrompt: 'Show the domain and the range of graph (b) on the two number lines. Watch the vertex: it is on the graph. (Next you’ll write them in set notation.)', text: 'V with hollow ends' }); } },
+          { id: 'e5b', sub: 'b', level: 'PRG', make: function (r, sh) { var p = vDR(sh.L, sh.M, sh.R, 'open', { text: 'V with hollow ends' }); p.prompt = '(b) State the domain and range.' + p.prompt; return p; } },
+          { id: 'e5c', sub: 'c', level: 'EMG', make: function (r, sh) {
             return B.mc(r, '(c) Going from (a) to (b), <b>both</b> bounds of the domain changed from ' + t('\\le') + ' to ' + t('<') + ', but only <b>one</b> bound of the range did. Why did the lower bound of the range, ' + t('y=' + sh.M[1]) + ', not change?', [
               { html: 'That value comes from the vertex ' + t(ptT(sh.M)) + ', which is still on the graph. The hollow dots only remove the endpoints, whose ' + t('y') + '-value is ' + t(sh.L[1]) + '.', right: true },
               { html: 'The bottom of a range is always included.', why: 'That isn’t a rule: a ray from a hollow dot that goes up has a range like ' + t('y>-1') + ', with the bottom excluded.' },
@@ -639,8 +736,10 @@
               'Making the endpoints hollow removes only the points ' + t(ptT(sh.L)) + ' and ' + t(ptT(sh.R)) + '. The only ' + t('y') + '-value they supplied was ' + t(sh.L[1]) + ', so only the upper bound became strict. The lowest value, ' + t(sh.M[1]) + ', comes from the vertex in the middle of the graph, which is still there.',
               ['Which point of the graph gives the lowest ' + t('y') + '-value? Is that point an endpoint?'], 'why one range bound stayed');
           } }] },
-      { num: '6', stem: 'State the domain and range of each curve or line below. (Some answers are lists, not inequalities.)', parts: [
-        { id: 'e6a', level: 'PRG', make: function (r) {
+      { num: '6', stem: 'State the domain and range of each curve or line below. (Some answers are lists, not inequalities.)',
+        shared: function (r) { var h = r.int(-2, 2), k = r.int(-2, 2), rad = r.pick([2, 3, 3]); while (h === 0 && k === 0) h = r.int(-2, 2); return { h: h, k: k, rad: rad }; },
+        parts: [
+        { id: 'e6a', sub: 'a', level: 'PRG', make: function (r) {
           var h = r.pick([-1, 0, 0, 1]), k = r.int(-4, -1), a = r.pick([1, 0.5]), D = all('x'), R = bld('y', k, null);
           return drPart(G({ fns: [parab(h, k, a)] }), D, R,
             { rW: [{ is: bld('y', null, k), code: 'dr-opens', hint: 'The curve opens <b>up</b>: the vertex ' + t(ptT([h, k])) + ' is the <b>lowest</b> point and the arrows go up forever.' }, { is: bld('y', k, null, false), code: 'dr-vertex', hint: 'The vertex ' + t(ptT([h, k])) + ' is on the curve, so ' + t('y=' + k) + ' is included: use ' + t('\\ge') + '.' }],
@@ -648,11 +747,13 @@
             'A parabola with vertex ' + t(ptT([h, k])) + ' and arrows on both arms: every real ' + t('x') + ' is used, and the lowest ' + t('y') + ' is ' + t(k) + ' with no upper limit. Infinitely many values, so inequalities.<br>' + t('D=' + D) + ', ' + t('R=' + R) + '.',
             [HINT_D, 'Where is the lowest point? Do the arrows ever stop?'], 'D & R of an upward parabola');
         } },
-        { id: 'e6b', level: 'EMG', make: function (r) { return hvDR('h', r.pick([-4, -3, -2, 2, 3, 4])); } },
-        { id: 'e6c', level: 'EMG', make: function (r) { return hvDR('v', r.pick([-4, -3, -2, 2, 3, 4])); } },
-        { id: 'e6d', level: 'EMG', make: function (r) {
-          var h = r.int(-2, 2), k = r.int(-2, 2), rad = r.pick([2, 3, 3]); while (h === 0 && k === 0) h = r.int(-2, 2);
-          return circleDR(h, k, rad, { prompt: G({ segs: [ellipse(h, k, rad, rad)], points: [] }), text: 'D & R of a drawn circle' });
+        { id: 'e6b', sub: 'b', level: 'EMG', make: function (r) { return hvDR('h', r.pick([-4, -3, -2, 2, 3, 4])); } },
+        { id: 'e6c', sub: 'c', level: 'EMG', make: function (r) { return hvDR('v', r.pick([-4, -3, -2, 2, 3, 4])); } },
+        { id: 'e6ds', sub: 'd, shade', level: 'BEG', make: function (r, sh) {
+          return circleDR(sh.h, sh.k, sh.rad, { shade: { segs: [ellipse(sh.h, sh.k, sh.rad, sh.rad)] }, shadePrompt: 'Show the domain and the range of the circle on the two number lines. (Next you’ll write them in set notation.)', text: 'D & R of a drawn circle' });
+        } },
+        { id: 'e6d', sub: 'd', level: 'EMG', make: function (r, sh) {
+          return circleDR(sh.h, sh.k, sh.rad, { prompt: G({ segs: [ellipse(sh.h, sh.k, sh.rad, sh.rad)], points: [] }), text: 'D & R of a drawn circle' });
         } }] },
       /* ---------- EP Part C ---------- */
       { num: '7', section: 'Extra practice C — Practical domains and ranges', stem: function (sh) { return 'A drama club sells tickets to its spring play for $' + sh.p + ' each. The theatre seats ' + t(sh.N) + ' people, so the revenue ' + t('R') + ', in dollars, from selling ' + t('n') + ' tickets is ' + t('R=' + sh.p + 'n') + '.'; },
@@ -703,14 +804,8 @@
         },
         shared: function (r) { var ts = r.pick([10, 15, 15, 20]), u1 = r.pick([1, 2, 2]), u2 = u1 + r.pick([1, 2]), u3 = u2 + r.pick([2, 3]); return { ts: ts, t1: u1 * ts, t2: u2 * ts, T: u3 * ts, H: r.pick([30, 35, 40, 45, 45, 50]) }; },
         parts: [
-          { id: 'e8a', sub: 'a', level: 'PRG', make: function (r, sh) {
-            var D = bld('t', 0, sh.T), R = bld('h', 0, sh.H);
-            return drPart('(a) State the domain and the range. Use ' + t('t') + ' and ' + t('h') + '.', D, R,
-              { dv: 't', rv: 'h', dW: [{ is: bld('t', 0, sh.T / sh.ts), code: 'dr-scale', hint: 'Read the scale: each gridline on the time axis is ' + t(sh.ts) + ' s, so the drone lands at ' + t('t=' + sh.T) + ' s.' }, { is: bld('t', sh.t1, sh.t2), code: 'dr-wrong-ends', hint: 'That is only the hovering part. The domain covers the whole flight, from take-off to landing.' }],
-                rW: [{ is: bld('h', sh.H, sh.H), code: 'dr-wrong-ends', hint: 'The drone is at ' + t(sh.H) + ' m only while hovering; on the way up and down it passes through every height from ' + t('0') + ' to ' + t(sh.H) + '.' }] },
-              'Scales: each time gridline is ' + t(sh.ts) + ' s; each height gridline is ' + t('5') + ' m. The flight starts at ' + t('(0,\\ 0)') + ', climbs to ' + t(sh.H) + ' m, hovers from ' + t(sh.t1) + ' to ' + t(sh.t2) + ' s and lands at ' + t(ptT([sh.T, 0])) + '. Time and height are measured, so ' + t('\\in\\mathbb{R}') + '.<br>' + t('D=' + D) + ', ' + t('R=' + R) + '.',
-              ['Read the scales on both axes first.', 'Domain: from take-off to landing. Range: from the ground to the highest point.'], 'drone domain and range');
-          } },
+          { id: 'e8as', sub: 'a, shade', level: 'EMG', make: function (r, sh) { return droneDR(sh, true); } },
+          { id: 'e8a', sub: 'a', level: 'PRG', make: function (r, sh) { return droneDR(sh, false); } },
           { id: 'e8b', sub: 'b', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
             return B.mc(r, '(b) Why can’t the domain be ' + t('\\{t\\mid t\\in\\mathbb{R}\\}') + '?', [
               { html: 'Left bound: time is measured from take-off, so a negative ' + t('t') + ' is before the flight. Right bound: the drone lands at ' + t('t=' + sh.T) + ' s and the flight is over.', right: true },

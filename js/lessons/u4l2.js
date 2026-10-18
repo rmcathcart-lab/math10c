@@ -260,6 +260,36 @@
       .filter(function (v) { return !P.eq(tileProd(v), s.inner); });
     return part;
   }
+  /* tile rectangle with negative tiles (Example 8(c)): (x + u)(x + w), at least one of u, w negative. The classic slips —
+   * both signs switched, everything shaded, the right corner with the wrong x-tiles, the right x-tiles with the wrong
+   * corner — are diagnosed from the student's unit tiles before K.tileRect's generic hints. */
+  HW.addCodes({ 'tile-sign-swap': 'Rectangle: negative tiles on the wrong side', 'tile-all-pos': 'Rectangle: no negative tiles used', 'tile-neg-corner': 'Rectangle: corner sign wrong' });
+  function negBuildPart(s) {
+    var b = s.b, c = s.c, u = s.p, w = s.q, key = { top: { x: 1, one: u }, side: { x: 1, one: w } };
+    var X = function (n) { return t(Math.abs(n)) + ' ' + (n < 0 ? 'white' : 'shaded'); };
+    var prompt = 'Now a new trinomial: build a tile rectangle for ' + t(tx(s.inner)) + '. Put ' + t('x') + '-tiles and unit tiles along the top and down the side — use <b>white (negative)</b> unit tiles where you need them. The inside fills in.';
+    var sol = 'Two integers with product ' + t(c) + ' and sum ' + t(b) + ': ' + t(sg(u)) + ' and ' + t(sg(w)) + '. ' + signHint(b, c) + '<br>Along the top: one ' + t('x') + '-tile and ' + X(u) + ' unit tile' + (Math.abs(u) > 1 ? 's' : '') + '; down the side: one ' + t('x') + '-tile and ' + X(w) + ' unit tile' + (Math.abs(w) > 1 ? 's' : '') + '.'
+      + rectSvg(w, u, linLab(w), linLab(u)) + 'Inside: ' + t(sg(u) + 'x' + sg(w) + 'x=' + tx(P.scale(V('x'), b))) + ', and the corner holds ' + t(Math.abs(c)) + ' ' + (c < 0 ? 'white' : 'shaded') + ' unit tiles (' + t(par(u) + '\\times ' + par(w) + '=' + c) + '). Length ' + t(tx(s.A)) + ', width ' + t(tx(s.B)) + '.';
+    var part = B.tiles(prompt, { mode: 'rect' }, s.inner, sol,
+      ['The corner holds (units on top) × (units down the side), so they must multiply to ' + t(c) + '; the ' + t('x') + '-tiles inside add to ' + t(b) + '. ' + signHint(b, c), 'White tiles are negative: a shaded tile times a white tile gives a white (negative) unit tile.'], 'build tile rectangle with negatives', key);
+    var base = part.check;
+    part.check = function (resp) {
+      var res = base(resp); if (res.v === 'correct' || res.v === 'form') return res;
+      var a = (resp && resp.top) || {}, d = (resp && resp.side) || {}, x = a.one || 0, y = d.one || 0;
+      if ((a.x || 0) !== 1 || (d.x || 0) !== 1) return res;
+      if (x * y === c && x + y === -b) return wrong('tile-sign-swap', 'The corner is right ✓, but the ' + t('x') + '-tiles inside come to ' + t(tx(P.scale(V('x'), -b))) + ', not ' + t(tx(P.scale(V('x'), b))) + '. Switch the colours of the unit tiles on <b>both</b> sides.');
+      if (c < 0 && x >= 0 && y >= 0 && (x || y)) return wrong('tile-all-pos', 'The constant term is ' + t(c) + ', so the corner must be <b>white</b> (negative) unit tiles — that happens when one side has shaded unit tiles and the other side has white ones.');
+      if (x * y === -c) return wrong('tile-neg-corner', 'The corner has the wrong colour: it holds ' + t(Math.abs(c)) + ' ' + (x * y < 0 ? 'white' : 'shaded') + ' tiles, but the constant term is ' + t(c) + '. ' + signHint(b, c));
+      if (x * y === c) return wrong('tile-pair-product', 'The corner is right ✓ (' + t(par(x) + '\\times ' + par(y) + '=' + c) + '), but the ' + t('x') + '-tiles inside come to ' + t(tx(P.scale(V('x'), x + y))) + ', not ' + t(tx(P.scale(V('x'), b))) + '. Try another factor pair of ' + t(c) + '.');
+      if (x + y === b) return wrong('tile-pair-product', 'The ' + t('x') + '-tiles inside come to ' + t(tx(P.scale(V('x'), b))) + ' ✓, but the corner holds ' + t(par(x) + '\\times ' + par(y) + '=' + x * y) + ' unit tiles, not ' + t(c) + '. Try another pair that adds to ' + t(b) + '.');
+      return res;
+    };
+    part.answer += '<div>Length ' + t(tx(s.A)) + ', width ' + t(tx(s.B)) + ' (either way round).</div>';
+    part.good = [{ top: key.side, side: key.top }, { top: { x: -1, one: -u }, side: { x: -1, one: -w } }];
+    part.bad = [{ top: { x: 1, one: -u }, side: { x: 1, one: -w } }, { top: { x: 1, one: Math.abs(u) }, side: { x: 1, one: Math.abs(w) } }, { top: { x: 1, one: -Math.abs(u) }, side: { x: 1, one: -Math.abs(w) } }, { top: { x: 1, one: u }, side: { x: 1, one: 0 } }]
+      .filter(function (v) { return !P.eq(tileProd(v), s.inner); });
+    return part;
+  }
 
   /* ---------------- a number typed into a blank that already shows its sign ---------------- */
   function blankNumPart(s, given, missing, bracketSign, prompt, text) {
@@ -383,7 +413,14 @@
           { id: '3e', level: 'BEG', make: function (r) { var o = pickWhere(function () { return [r.int(2, 5), r.int(6, 12)]; }, function (o) { return posPairs(o[0] * o[1]).length >= 3 && o[0] * o[1] <= 60; }); return pairPart(-o[0], -o[1]); } },
           { id: '3f', level: 'BEG', make: function (r) { var k = r.int(3, 9); return pairPart(k, -k); } }] },
       { num: '4',
-        shared: function (r) { return pickWhere(function () { return { p: -r.int(2, 5), q: r.int(1, 3) }; }, function (o) { return o.p + o.q !== 0; }); },
+        shared: function (r) {
+          var o = pickWhere(function () { return { p: -r.int(2, 5), q: r.int(1, 3) }; }, function (o) { return o.p + o.q !== 0; });
+          // 4d/4e: a second trinomial to build with negative tiles (booklet Example 8(c): x² + 2x − 8); mostly mixed signs, sometimes both negative
+          o.n = pickWhere(function () { var a = r.int(1, 6), b = r.int(1, 6); return r.chance(0.7) ? { u: a, w: -b } : { u: -a, w: -b }; },
+            function (n) { var lo = Math.min(n.u, n.w), hi = Math.max(n.u, n.w), mlo = Math.min(o.p, o.q), mhi = Math.max(o.p, o.q);
+              return n.u + n.w !== 0 && n.u !== n.w && Math.abs(n.u * n.w) >= 3 && Math.abs(n.u * n.w) <= 18 && !(lo === mlo && hi === mhi); });
+          return o;
+        },
         stem: function (sh) { return 'The rectangle below is made of algebra tiles.' + HW.tiles.legend() + rectSvg(sh.p, sh.q, '?', '?'); },
         parts: [
           { id: '4a', level: 'BEG', make: function (r, sh) {
@@ -405,7 +442,7 @@
             return p;
           } },
           { id: '4b2', sub: 'b ii', level: 'BEG', make: function (r, sh) { return facPart(spec({ p: sh.p, q: sh.q }), { prompt: 'Write the trinomial in factored form.', text: 'tile rectangle → factored form' }); } },
-          { id: '4c', level: 'EMG', make: function (r, sh) {
+          { id: '4c', sub: 'c', level: 'EMG', make: function (r, sh) {
             return B.mc(r, 'Why are the unit tiles negative?', [
               { html: 'Each unit tile is in the row of a negative ' + t('x') + '-tile and the column of a positive ' + t('x') + '-tile, and ' + t('(+1)\\times(-1)=-1') + '.', right: true },
               { html: 'Because the ' + t('x') + '-term of the trinomial is negative.', why: 'A unit tile gets its sign from the tiles at the end of its row and its column. For example, ' + t('(x-2)(x-3)') + ' has a negative ' + t('x') + '-term but <b>positive</b> unit tiles.' },
@@ -413,7 +450,9 @@
               { html: 'Because the constant term of a trinomial is always negative.', why: 'Not always — ' + t('x^{2}+5x+6') + ' has positive unit tiles. Look at the signs of the row and column each unit tile sits in.' }],
               'Each unit tile sits where a row and a column cross. Its row ends in a <b>white</b> (negative) ' + t('x') + '-tile and its column in a <b>shaded</b> (positive) ' + t('x') + '-tile, so its sign is ' + t('(+1)\\times(-1)=-1') + ': negative. That is why the constant term is ' + t(sh.p * sh.q) + '.',
               ['Multiplying tiles works like multiplying numbers: same signs give positive, different signs give negative.'], 'why unit tiles negative');
-          } }] },
+          } },
+          { id: '4d', sub: 'd', level: 'EMG', make: function (r, sh) { return negBuildPart(spec({ p: sh.n.u, q: sh.n.w })); } },
+          { id: '4e', sub: 'e', level: 'BEG', make: function (r, sh) { var s = spec({ p: sh.n.u, q: sh.n.w }); return facPart(s, { prompt: 'Use your rectangle from (d) to write ' + t(tx(s.inner)) + ' in factored form.', text: 'negative tile rectangle → factored form' }); } }] },
 
       /* ---------------- Part B ---------------- */
       { num: '5', section: 'Part B — Factoring x² + bx + c', stem: 'Complete the following.', parts: [

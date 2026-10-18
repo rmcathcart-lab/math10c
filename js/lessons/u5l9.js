@@ -7,6 +7,7 @@
  * shape (stages in order, steeper / flatter, straight vs curved, start and end values; see story() below), scaled
  * graphs (commute, corrected jump) exactly, the loan staircase and the plotted data by rules. Questions the booklet
  * poses as choosing or matching (9, 10–13, 15, EP10b, EP17) stay multiple choice.
+ * 14(c): the realistic domain and range are first shaded on number lines under the data graph (domrange, js/draw2.js), then typed.
  * Levels: LIM BEG EMG PRG ADV MAS (recognition formats capped at PRG). */
 (function (root) {
   'use strict';
@@ -107,7 +108,8 @@
   var DR = HW.draw;
   HW.addCodes({ 'story-bend': 'Stage drawn with the wrong bend (straight vs curved, steeper vs flatter)', 'story-zero': 'Graph reaches zero when it shouldn’t (or not when it should)', 'story-peaks': 'Peak heights wrong', 'story-cycles': 'Cycles not identical',
     'story-when': 'A stage at the wrong time', 'story-lines': 'Points instead of a line', 'story-rush': 'Rise / fall too slow for the story', 'stair-lin': 'Straight line instead of a staircase', 'stair-up': 'Staircase going the wrong way', 'stair': 'Staircase steps wrong',
-    'plot-value': 'Point plotted at the wrong value', 'plot-shift': 'Points shifted by one reading', 'plot-count': 'Missing or extra point' });
+    'plot-value': 'Point plotted at the wrong value', 'plot-shift': 'Points shifted by one reading', 'plot-count': 'Missing or extra point',
+    'dr-sh-fill': 'Dots only for an unbroken graph', 'dr-values': 'Domain/range: wrong end values', 'dr-nl-dot': 'Domain/range: open vs solid dot', 'dr-nl-side': 'Domain/range: shaded the wrong side', 'dr-nl-values': 'Domain/range: wrong end values' });
   /* a shape-only story pad: no numbers, line tool only, no end marks */
   function spad(o) {
     return Object.assign({ x: [0, 12], y: [0, 8], grid: 1, labels: 0, firstQuadrant: true, xName: ' ', yName: ' ', unitX: 25, unitY: 25, defaultEnd: 'none', tools: ['line'], max: 360,
@@ -711,7 +713,7 @@
 
     { num: '14', section: 'Part D — Data, rate of change and domain', stem: function (c) { return 'A cup of ' + c.drink + ' is left on a counter, and its temperature is recorded every ' + t('5') + ' minutes.' + ctable([[t('t') + ' (min)', 0, 5, 10, 15, 20, 25, 30], [t('T') + ' (°C)'].concat(c.T)]); },
       shared: function (r) { return cooling(r); }, parts: [
-      { id: '14a', level: 'EMG', make: function (r, c) {
+      { id: '14a', sub: 'a', level: 'EMG', make: function (r, c) {
         var ts = [0, 5, 10, 15, 20, 25, 30], TOL = 2;
         var inp = { x: [0, 35], y: [0, 90], grid: 5, gridY: 10, labels: 5, labelsY: 10, firstQuadrant: true, xName: 't', yName: 'T', xTitle: 'Time (min)', yTitle: 'Temperature (°C)', unitX: 8.6, unitY: 2.6,
           mode: 'points', join: true, snapX: 5, snapY: 1, max: 360, help: 'Press and slide to aim (the coordinates show), lift to place a point. Tap a point again to remove it. <b>Join</b> joins the points with a smooth curve.' };
@@ -738,7 +740,7 @@
           { pts: key.pts.map(function (q, i) { return i === 2 ? [q[0], q[1] + 10] : q; }), pieces: [], join: 'curve' }, { pts: key.pts.concat([[35, c.R + 4]]), pieces: [], join: 'curve' }];
         return pp;
       } },
-      { id: '14b', level: 'EMG', make: function (r, c) {
+      { id: '14b', sub: 'b', level: 'EMG', make: function (r, c) {
         return K.P.mc(r, 'Should the points be joined?', [
           { html: 'Yes — time and temperature are continuous: the drink has a temperature at every instant between the readings.', right: true },
           { html: 'No — the temperature was only measured every 5 minutes.', why: 'Measuring every 5 minutes doesn’t stop the drink from having a temperature in between. The quantity itself is continuous.' },
@@ -746,21 +748,46 @@
           { html: 'Yes — because the temperature is going down.', why: 'Whether to join points depends on whether in-between values make sense (continuous data), not on the direction.' }],
           'Yes. Both time and temperature are <b>continuous</b>: at ' + t('t=7.5') + ' minutes the drink still has a temperature. Join the points with a smooth curve.', ['Does the drink have a temperature at ' + t('t=7') + ' minutes?'], 'join cooling points');
       } },
-      { id: '14c', level: 'EMG', outcome: 'RF2', make: function (r, c) {
+      { id: '14cs', sub: 'c, shade', level: 'BEG', outcome: 'RF2', make: function (r, c) {
+        /* shade the realistic domain and range on number lines under the joined data graph (domrange, js/draw2.js), then type them in 14c / 14d */
+        var ts = [0, 5, 10, 15, 20, 25, 30], data = { pts: ts.map(function (x, i) { return [x, c.T[i]]; }), pieces: [], join: 'curve' }, gv = DR.toGraph(data);
+        var graph = { x: [0, 35], y: [0, 90], grid: 5, gridY: 10, labels: 5, labelsY: 10, firstQuadrant: true, xName: 't', yName: 'T', xTitle: 'Time (min)', yTitle: 'Temperature (°C)', unitX: 8.6, unitY: 2.6, segs: gv.segs, points: gv.points };
+        var dom = '\\{t \\mid 0 \\le t \\le 30,\\ t \\in \\mathbb{R}\\}', rng = '\\{T \\mid ' + c.T[6] + ' \\le T \\le ' + c.T[0] + ',\\ T \\in \\mathbb{R}\\}';
+        var p = K.P.domrange('The graph shows the data from (a), joined. Show a realistic <b>domain</b> (the times measured) and <b>range</b> (the temperatures measured) on the two number lines: a dot at each end, shaded in between. (Press and slide on a line to aim — the number shows.)',
+          { graph: graph, v: 't', w: 'T', dom: { min: 0, max: 35, step: 5, labels: 5, snap: 5 }, ran: { min: 20, max: 90, step: 5, labels: 10, snap: 1 } }, dom, rng,
+          'The readings run from ' + t('t=0') + ' to ' + t('t=30') + ' min, and time is continuous, so shade from a solid dot at ' + t('0') + ' to a solid dot at ' + t('30') + '.<br>The temperatures run from ' + t(c.T[6]) + '°C (at 30 min) up to ' + t(c.T[0]) + '°C (at the start), and every temperature in between occurs, so shade from ' + t(c.T[6]) + ' to ' + t(c.T[0]) + '.',
+          ['Domain: the first and last times measured. Range: the lowest and highest temperatures measured.', 'Time and temperature are continuous, so shade between the end dots.'], 'cooling domain and range (shade)', { v: 't', w: 'T' });
+        var base = p.check, onlyDots = function (v) { return v && (v.dots || []).length > 1 && !(v.shade || []).length; };
+        p.check = function (resp) {
+          var res = base(resp); if (res.v !== 'wrong' || res.code === 'dr-swap') return res;
+          resp = resp || {}; var dP = resp.domain ? DR.numlineParts(resp.domain) : [], rP = resp.range ? DR.numlineParts(resp.range) : [];
+          var okD = DR.partsSame(dP, DR.setParts(HW.sets.parse(dom).set));
+          if (!okD && onlyDots(resp.domain)) return wrong('dr-sh-fill', '<b>Domain:</b> time is continuous — the drink has a temperature at every moment between the readings, so shade between the dots, not just the reading times.');
+          if (!okD && dP.length === 1 && Math.abs(dP[0].hi - 35) < 1e-9) return wrong('dr-values', '<b>Domain:</b> the readings stop at ' + t('t=30') + ' min.');
+          if (okD && onlyDots(resp.range)) return wrong('dr-sh-fill', '<b>Range:</b> the temperature passes through every value between the readings, so shade between the dots.');
+          if (okD && rP.length === 1 && !isFinite(rP[0].lo)) return wrong('dr-values', '<b>Range:</b> the drink never cools below the lowest reading, ' + t(c.T[6]) + '°C, in these 30 minutes: put a dot there instead of shading to the end.');
+          return res;
+        };
+        var k = p.key;
+        p.bad = (p.bad || []).concat([{ domain: { dots: ts.map(function (x) { return { x: x, open: false }; }), shade: [] }, range: k.range }, { domain: { dots: [{ x: 0, open: false }, { x: 35, open: false }], shade: [[0, 35]] }, range: k.range },
+          { domain: k.domain, range: { dots: [{ x: c.T[0], open: false }], shade: [[null, c.T[0]]] } }, { domain: k.domain, range: { dots: [{ x: c.T[6], open: false }, { x: c.T[0], open: false }], shade: [] } }]);
+        return p;
+      } },
+      { id: '14c', sub: 'c', level: 'EMG', outcome: 'RF2', make: function (r, c) {
         var dom = '\\{t \\mid 0 \\le t \\le 30,\\ t \\in \\mathbb{R}\\}', rng = '\\{T \\mid ' + c.T[6] + ' \\le T \\le ' + c.T[0] + ',\\ T \\in \\mathbb{R}\\}';
         var p = K.P.set('State a realistic <b>domain</b> for the data (the times measured).', dom, { v: 't', other: rng, wrong: [{ is: '\\{0, 5, 10, 15, 20, 25, 30\\}', code: 'set-continuous', hint: 'Time is continuous here, so the domain includes every time from ' + t('0') + ' to ' + t('30') + ', not just the readings.' }, { is: '\\{t \\mid 0 \\le t \\le 35, t \\in \\mathbb{R}\\}', code: 'set-values', hint: 'The readings stop at ' + t('t=30') + '.' }] },
           'The readings run from ' + t('t=0') + ' to ' + t('t=30') + ' minutes and time is continuous: ' + t('D=' + dom) + '.', ['What are the first and last times in the table?'], 'cooling domain');
         p.good = ['0\\le t\\le 30', '[0, 30]']; p.bad = ['\\{0, 5, 10, 15, 20, 25, 30\\}', c.T[6] + '\\le T\\le ' + c.T[0]];
         return p;
       } },
-      { id: '14d', level: 'EMG', outcome: 'RF2', make: function (r, c) {
+      { id: '14d', sub: 'd', level: 'EMG', outcome: 'RF2', make: function (r, c) {
         var dom = '\\{t \\mid 0 \\le t \\le 30,\\ t \\in \\mathbb{R}\\}', rng = '\\{T \\mid ' + c.T[6] + ' \\le T \\le ' + c.T[0] + ',\\ T \\in \\mathbb{R}\\}';
         var p = K.P.set('State a realistic <b>range</b> for the data (the temperatures measured).', rng, { v: 'T', other: dom, wrong: [{ is: '\\{T \\mid 0 \\le T \\le ' + c.T[0] + ', T \\in \\mathbb{R}\\}', code: 'set-values', hint: 'The drink never gets down to ' + t('0') + '°C here. The lowest temperature measured is ' + t(c.T[6]) + '°C.' }] },
           'The temperatures run from ' + t(c.T[6]) + '°C (at 30 min) up to ' + t(c.T[0]) + '°C (at the start): ' + t('R=' + rng) + '.', ['What are the lowest and highest temperatures in the table?'], 'cooling range');
         p.good = [c.T[6] + '\\le T\\le ' + c.T[0], '[' + c.T[6] + ', ' + c.T[0] + ']']; p.bad = ['0\\le T\\le ' + c.T[0], '0\\le t\\le 30'];
         return p;
       } },
-      { id: '14e', level: 'EMG', make: function (r, c) {
+      { id: '14e', sub: 'e', level: 'EMG', make: function (r, c) {
         return K.P.mc(r, 'Why should the graph not be extended far to the right by continuing the same pattern?', [
           { html: 'The drink levels off at room temperature — it can never cool below the room — so the curve flattens out instead of continuing down.', right: true },
           { html: 'It shouldn’t: the temperature keeps dropping until it reaches ' + t('0') + '°C.', why: 'A drink on a counter cools only to the temperature of the room (about ' + t(c.R) + '°C), then stays there.' },

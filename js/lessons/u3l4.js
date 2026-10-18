@@ -67,6 +67,27 @@
     return HW.areaModel(B.map(function (b) { return tx(b); }), A.map(function (a) { return tx(a); }),
       A.map(function (a) { return B.map(function (b) { return fill ? tx(P.mul(a, b)) : ''; }); }), { max: 380 });
   }
+  /* area box (js/draw2.js areabox): A's terms down the side, B's terms along the top (as in grid()); the student fills
+     every box. Bad answers: one box with the wrong sign, one box with x·x written as x. */
+  function boxPart(prompt, A, B, text, hints) {
+    var Rt = A.map(function (a) { return tx(a); }), Ct = B.map(function (b) { return tx(b); }), Mp = A.map(function (a) { return B.map(function (b) { return P.mul(a, b); }); });
+    var Mt = Mp.map(function (rw) { return rw.map(function (q) { return tx(q); }); }), vs = HW.poly.vars(sum(A.concat(B)));
+    var key = { rows: Rt, cols: Ct, cells: Mt };
+    var list = []; A.forEach(function (a, i) { B.forEach(function (b, j) { list.push(t('(' + tx(a) + ')(' + tx(b) + ')=' + Mt[i][j])); }); });
+    var p = KP.areabox(prompt, { rows: Rt, cols: Ct, cells: Mt.map(function (rw) { return rw.map(function () { return null; }); }), keys: 'poly', vars: vs.length ? vs : ['x'] }, {}, key,
+      grid(A, B, true) + 'Each box is (row term) × (column term): ' + list.join(', &nbsp;') + '.', hints || ['Each box is its row term times its column term — six boxes in all, sign included.', 'Multiply the coefficients and add the exponents: ' + t('p\cdot p^{2}=p^{3}') + '.'], text);
+    var copy = function () { return { rows: Rt.slice(), cols: Ct.slice(), cells: Mt.map(function (rw) { return rw.slice(); }) }; }, bads = [];
+    var cells = []; A.forEach(function (a, i) { B.forEach(function (b, j) { cells.push([i, j]); }); });
+    var nc = cells.filter(function (c) { var q = HW.poly.terms(Mp[c[0]][c[1]])[0]; return q && q.c[0] < 0; })[0] || cells[0], b1 = copy(); b1.cells[nc[0]][nc[1]] = tx(P.neg(Mp[nc[0]][nc[1]])); bads.push(b1);
+    cells.some(function (c) {
+      var ta = HW.poly.terms(A[c[0]])[0], tb = HW.poly.terms(B[c[1]])[0]; if (!ta || !tb) return false;
+      if (!Object.keys(ta.v).some(function (k) { return ta.v[k] && tb.v[k]; })) return false;
+      var v = {}; Object.keys(ta.v).concat(Object.keys(tb.v)).forEach(function (k) { v[k] = Math.max(ta.v[k] || 0, tb.v[k] || 0); });
+      var b2 = copy(); b2.cells[c[0]][c[1]] = tx(MM([ta.c[0] * tb.c[0], ta.c[1] * tb.c[1]], v)); bads.push(b2); return true;
+    });
+    p.bad = bads;
+    return p;
+  }
   /* three binomials F3 = [A, B, C]: multiply factors i and j first, then distribute the third over the result */
   function threeSol(F3, i, j, why) {
     var k = [0, 1, 2].filter(function (x) { return x !== i && x !== j; })[0], first = P.mul(sum(F3[i]), sum(F3[j])), T = termsOf(first);
@@ -207,18 +228,30 @@
     blurb: 'Six partial products at a time — by grid and by distribution — then three binomials at once for the volume of a box.',
     questions: [
       /* ---------- Q1 area model ---------- */
-      { num: '1', section: 'Part A — Binomial × Trinomial', stem: 'Use an area model (grid) to determine the expansion.', parts: [
-        { id: '1a', level: 'BEG', make: function (r) {
-          var g = pickWhere(function () { return { a: r.int(2, 6), b: r.int(1, 5), c: r.int(2, 7) }; }, function (g) { return g.b !== g.a && g.c !== g.a * g.b; });
+      { num: '1', section: 'Part A — Binomial × Trinomial', stem: 'Use an area model (grid) to determine the expansion.',
+        /* shared: the area box (i) and the expansion (ii) use the same numbers */
+        shared: function (r) {
+          return { a: pickWhere(function () { return { a: r.int(2, 6), b: r.int(1, 5), c: r.int(2, 7) }; }, function (g) { return g.b !== g.a && g.c !== g.a * g.b; }),
+            b: pickWhere(function () { return { k: r.pick([2, 2, 3]), a: r.int(1, 6), b: r.int(2, 5), c: r.int(2, 6) }; }, function (g) { var T = P.mul(lin(g.k, g.a, 'n'), quad(1, -g.b, g.c, 'n')); return gcd(g.k, g.a) === 1 && cnt(T) === 4; }) };
+        },
+        parts: [
+        { id: '1abox', sub: 'a i', level: 'BEG', make: function (r, sh) { var g = sh.a, A = lin(1, -g.a, 'p'), B = quad(1, g.b, g.c, 'p');
+          return boxPart('Fill in the area box for ' + t(br(A) + br(B)) + ': ' + t(br(A)) + ' down the side, ' + t(br(B)) + ' along the top.', A, B, 'area box ' + plain(br(A) + br(B)),
+            ['Each box is its row term times its column term — six boxes in all.', 'The bottom row is ' + t('-' + g.a) + ', so every box in that row is negative.']); } },
+        { id: '1a', sub: 'a ii', level: 'BEG', make: function (r, sh) {
+          var g = sh.a;
           var A = lin(1, -g.a, 'p'), B = quad(1, g.b, g.c, 'p'), lead = br(A) + br(B), T = P.mul(sum(A), sum(B));
-          return polyPart(t(lead) + grid(A, B, false), T, [wFoil(A, B), wSecond(A, B), { is: P.mul(lin(1, g.a, 'p'), sum(B)), code: 'sign', hint: 'Check the bottom row of your grid: it is ' + t('-' + g.a) + ', so every product in that row is negative.' }],
+          return polyPart('Add the six boxes and collect like terms: ' + t(lead), T, [wFoil(A, B), wSecond(A, B), { is: P.mul(lin(1, g.a, 'p'), sum(B)), code: 'sign', hint: 'Check the bottom row of your grid: it is ' + t('-' + g.a) + ', so every product in that row is negative.' }],
             'Fill each cell with (row label) × (column label):' + grid(A, B, true) + 'Add the six cells and collect like terms: ' + t(collectNote(partials(A, B))) + '<br>' + t(lead + '=' + tx(T)),
             ['Each cell is its row label times its column label — six cells in all.', 'Add the six cells, then collect the ' + t('p^{2}') + ' terms and the ' + t('p') + ' terms.'], 'area model ' + plain(lead));
         } },
-        { id: '1b', level: 'EMG', make: function (r) {
-          var g = pickWhere(function () { return { k: r.pick([2, 2, 3]), a: r.int(1, 6), b: r.int(2, 5), c: r.int(2, 6) }; }, function (g) { var T = P.mul(lin(g.k, g.a, 'n'), quad(1, -g.b, g.c, 'n')); return gcd(g.k, g.a) === 1 && cnt(T) === 4; });
+        { id: '1bbox', sub: 'b i', level: 'EMG', make: function (r, sh) { var g = sh.b, A = lin(g.k, g.a, 'n'), B = quad(1, -g.b, g.c, 'n');
+          return boxPart('Fill in the area box for ' + t(br(A) + br(B)) + ': ' + t(br(A)) + ' down the side, ' + t(br(B)) + ' along the top.', A, B, 'area box ' + plain(br(A) + br(B)),
+            ['Each box is its row term times its column term — six boxes in all.', 'Watch the column ' + t('-' + g.b + 'n') + ': both boxes in it are negative.']); } },
+        { id: '1b', sub: 'b ii', level: 'EMG', make: function (r, sh) {
+          var g = sh.b;
           var A = lin(g.k, g.a, 'n'), B = quad(1, -g.b, g.c, 'n'), lead = br(A) + br(B), T = P.mul(sum(A), sum(B));
-          return polyPart(t(lead) + grid(A, B, false), T, [wFoil(A, B), wSecond(A, B)],
+          return polyPart('Add the six boxes and collect like terms: ' + t(lead), T, [wFoil(A, B), wSecond(A, B)],
             'Fill each cell with (row label) × (column label):' + grid(A, B, true) + 'Add the six cells and collect like terms: ' + t(collectNote(partials(A, B))) + '<br>' + t(lead + '=' + tx(T)),
             ['Each cell is its row label times its column label — six cells in all.', 'Watch the column ' + t('-' + g.b + 'n') + ': both cells in it are negative.'], 'area model ' + plain(lead));
         } }] },

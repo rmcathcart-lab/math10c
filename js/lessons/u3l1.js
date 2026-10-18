@@ -23,7 +23,7 @@
     'reversed': 'Subtracted in the wrong order (A − B instead of B − A)', 'second-added': 'Added the second bracket instead of subtracting it', 'frac-add': 'Added numerators and denominators',
     'unlike-combined': 'Combined unlike terms', 'neg-sub': 'Sign error substituting a negative value', 'name': 'Wrong name for the polynomial', 'zero-pairs': 'Miscounted zero pairs',
     'lc-coef': 'Gave the coefficient of a different term', 'inner-sign': 'Sign error with nested brackets', 'mult-exp': 'Multiplied the powers instead of adding like terms',
-    'tile-colour': 'Tiles: every colour reversed', 'tile-shape': 'Tiles: x²- and x-tiles swapped', 'tile-zp': 'Tiles: left zero pairs in the model'
+    'tile-colour': 'Tiles: every colour reversed', 'tile-shape': 'Tiles: x²- and x-tiles swapped', 'tile-zp': 'Tiles: left zero pairs in the model', 'tile-away-opp': 'Take-away tiles: took away the opposite'
   });
 
   /* ---------------- small helpers ---------------- */
@@ -874,16 +874,30 @@
           return addSub(null, [{ s: 1, a: A }, { s: 1, a: Bq }], { text: 'add ' + plain(bracketsTex([{ s: 1, a: A }, { s: 1, a: Bq }])),
             wrong: [{ is: S([T(c, 'x', 2), T(2 * a, 'x', 1), T(b - d)]), code: 'sign', hint: t(a + 'x') + ' and ' + t('-' + a + 'x') + ' are opposites: they form ' + a + ' zero pairs and cancel.' }] });
         } }] },
-      { num: '11', stem: 'Use algebra tiles (or reasoning about zero pairs) to determine the result of the subtraction.', parts: [
-        { id: '11a', level: 'EMG', make: function (r) {
-          var a = r.int(2, 7), c = r.int(2, 4), b = r.int(1, 5), d = r.int(1, 6);
-          var A = [T(1, 'x', 2), T(-a)], Bq = [T(c, 'x', 2), T(b, 'x', 1), T(d)];
-          return addSub(null, [{ s: 1, a: A }, { s: -1, a: Bq }], { text: 'subtract ' + plain(bracketsTex([{ s: 1, a: A }, { s: -1, a: Bq }])) });
+      { num: '11', stem: 'Use algebra tiles (or reasoning about zero pairs) to determine the result of the subtraction.',
+        /* shared so the take-away tiles (i) and the typed result (ii) use the same numbers; the tile counts stay small
+           enough to fit the mat (start + zero pairs ≤ 22 tiles) */
+        shared: function (r) {
+          var a, b, c, d, A, Bq, g = 0;
+          do { a = r.int(2, 6); c = r.int(2, 3); b = r.int(1, 3); d = r.int(1, 4); g++; } while (g < 200 && 1 + a + 2 * (c - 1 + b + d) > 22);
+          if (r.chance(0.15)) { a = 5; c = 3; b = 2; d = 3; }
+          var qa = { A: [T(1, 'x', 2), T(-a)], B: [T(c, 'x', 2), T(b, 'x', 1), T(d)] };
+          g = 0;
+          do { a = r.int(3, 8); b = r.int(1, 4); c = r.int(1, 6); d = r.int(2, 6); g++; } while (g < 200 && (c === a || d === b || a + b + 1 + 2 * (Math.max(0, c - a) + Math.max(0, d - b) + 1) > 22));
+          if (r.chance(0.15)) { a = 5; b = 2; c = 2; d = 4; }
+          var qb = { A: [T(a), T(-b, 'x', 1), T(-1, 'x', 2)], B: [T(c), T(-d, 'x', 1), T(1, 'x', 2)] };
+          return { a: qa, b: qb };
+        },
+        parts: [
+        { id: '11at', sub: 'a i', level: 'EMG', make: function (r, sh) { return takeAwayPart(sh.a.A, sh.a.B); } },
+        { id: '11a', sub: 'a ii', level: 'EMG', make: function (r, sh) {
+          var A = sh.a.A, Bq = sh.a.B;
+          return addSub(t(bracketsTex([{ s: 1, a: A }, { s: -1, a: Bq }])) + '<br>State the result.', [{ s: 1, a: A }, { s: -1, a: Bq }], { text: 'subtract ' + plain(bracketsTex([{ s: 1, a: A }, { s: -1, a: Bq }])) });
         } },
-        { id: '11b', level: 'EMG', make: function (r) {
-          var a = r.int(3, 9), b = r.int(1, 4), c, d; do { c = r.int(1, 6); d = r.int(2, 6); } while (c === a || d === b);
-          var A = [T(a), T(-b, 'x', 1), T(-1, 'x', 2)], Bq = [T(c), T(-d, 'x', 1), T(1, 'x', 2)];
-          return addSub(null, [{ s: 1, a: A }, { s: -1, a: Bq }], { text: 'subtract ' + plain(bracketsTex([{ s: 1, a: A }, { s: -1, a: Bq }])) });
+        { id: '11bt', sub: 'b i', level: 'EMG', make: function (r, sh) { return takeAwayPart(sh.b.A, sh.b.B); } },
+        { id: '11b', sub: 'b ii', level: 'EMG', make: function (r, sh) {
+          var A = sh.b.A, Bq = sh.b.B;
+          return addSub(t(bracketsTex([{ s: 1, a: A }, { s: -1, a: Bq }])) + '<br>State the result.', [{ s: 1, a: A }, { s: -1, a: Bq }], { text: 'subtract ' + plain(bracketsTex([{ s: 1, a: A }, { s: -1, a: Bq }])) });
         } }] },
       { num: '12', stem: 'Simplify.', parts: [
         { id: '12a', level: 'EMG', make: function (r) {
@@ -1122,6 +1136,61 @@
     if (cnt.x2 !== cnt.x) bad.push({ x2: cnt.x, x: cnt.x2, one: cnt.one });
     bad.push({ x2: cnt.x2, x: cnt.x, one: cnt.one, raw: { mat: toks(c).concat(['1', '-1']) } });   // right value, but with a zero pair
     p.bad = bad.concat(o.bad || []);
+    return p;
+  }
+  /* ---------- take-away tiles with zero pairs (js/draw2.js: tilepad takeaway) ---------- */
+  /* net counts { x2, x, one } of a polynomial in x */
+  function cntOf(p) { return { x2: P.coef(p, { x: 2 })[0] || 0, x: P.coef(p, { x: 1 })[0] || 0, one: P.constant(p)[0] || 0 }; }
+  var TK = { x2: 'x2', x: 'x', one: '1' }, TNM = { x2: t('x^{2}') + '-tile', x: t('x') + '-tile', one: 'unit tile' };
+  function nTiles(n, k, col) { return n + ' ' + col + ' ' + TNM[k] + (n === 1 ? '' : 's'); }
+  /* the mat shows A; take away B. Returns the zero pairs needed per shape and the key drawing */
+  function takePlan(Ap, Bp) {
+    var s = cntOf(Ap), b = cntOf(Bp), zp = {}, mat = [], away = [];
+    ['x2', 'x', 'one'].forEach(function (k) {
+      var have = s[k] * b[k] > 0 ? Math.abs(s[k]) : 0; zp[k] = Math.max(0, Math.abs(b[k]) - have);
+      var i, tok = TK[k], ps = s[k] > 0 ? tok : '-' + tok, pb = b[k] > 0 ? tok : '-' + tok, list = [];
+      for (i = 0; i < Math.abs(s[k]); i++) list.push(ps);
+      for (i = 0; i < zp[k]; i++) list.push(tok, '-' + tok);
+      for (i = 0; i < Math.abs(b[k]); i++) { list.splice(list.indexOf(pb), 1); away.push(pb); }
+      mat = mat.concat(list);
+    });
+    var left = P.sub(Ap, Bp), lc = cntOf(left);
+    return { s: s, b: b, zp: zp, left: left, total: mat.length + away.length, key: { x2: lc.x2, x: lc.x, one: lc.one, away: { x2: b.x2, x: b.x, one: b.one }, raw: { mat: mat, away: away } } };
+  }
+  function awayCounts(resp) {
+    var c = { x2: [0, 0], x: [0, 0], one: [0, 0] };
+    (((resp || {}).raw || {}).away || []).forEach(function (tk) { var neg = tk.charAt(0) === '-', k = tk.replace('-', ''); c[k === 'x2' ? 'x2' : k === 'x' ? 'x' : 'one'][neg ? 1 : 0]++; });
+    return c;
+  }
+  function takeAwayPart(Aterms, Bterms) {
+    var Ap = S(Aterms), Bp = S(Bterms), pl = takePlan(Ap, Bp), base = K.tileTakeaway(pl.s, tx(Bp));
+    var need = function (k) { var b = pl.b[k]; return b ? nTiles(Math.abs(b), k, b > 0 ? 'shaded' : 'white') : 'no ' + TNM[k] + 's'; };
+    var zpTxt = ['x2', 'x', 'one'].filter(function (k) { return pl.zp[k]; }).map(function (k) { return pl.zp[k] + ' zero pair' + (pl.zp[k] === 1 ? '' : 's') + ' of ' + TNM[k] + 's'; });
+    var p = KP.tiles('The mat shows ' + t(W(Aterms)) + '. Use the tiles to subtract ' + t(B(Bterms)) + ': take away its tiles. If a tile you need isn’t on the mat, add <b>zero pairs</b> first.',
+      { takeaway: true, start: pl.s, zeroKinds: ['x2', 'x', '1'], limit: 26 }, tx(Bp),
+      'To take away ' + t(W(Bterms)) + ' you need ' + ['x2', 'x', 'one'].filter(function (k) { return pl.b[k]; }).map(need).join(', ') + '.<br>' +
+        'The mat doesn’t have them all, so add ' + zpTxt.join(', ') + ' — each zero pair is worth ' + t('0') + ', so the mat still shows ' + t(W(Aterms)) + '.<br>' +
+        'Take the tiles of ' + t(W(Bterms)) + ' away. What is left is ' + t(tx(pl.left)) + '.',
+      ['To take away ' + t(W(Bterms)) + ', count the shapes and colours it needs: ' + ['x2', 'x', 'one'].filter(function (k) { return pl.b[k]; }).map(need).join(', ') + '.', 'Not enough of a tile on the mat? Add a zero pair (one shaded and one white tile of that shape — together worth ' + t('0') + '), then take away the one you need.'],
+      'take away ' + plain(B(Bterms)) + ' from ' + plain(W(Aterms)), pl.key);
+    p.check = function (resp) {
+      var res = base(resp); if (res.v !== 'wrong' || res.code === 'tile-away-zero') return res;
+      var a = awayCounts(resp), opp = ['x2', 'x', 'one'].every(function (k) { var b = pl.b[k]; return a[k][b > 0 ? 1 : 0] === Math.abs(b) && a[k][b > 0 ? 0 : 1] === 0; });
+      if (opp) return wrong('tile-away-opp', 'You took away the tiles of the <b>opposite</b>, ' + t(tx(P.neg(Bp))) + '. Take away exactly the tiles of ' + t(W(Bterms)) + ' — same shapes, same colours.');
+      for (var i = 0; i < 3; i++) {
+        var k = ['x2', 'x', 'one'][i], b = pl.b[k], want = b > 0 ? [b, 0] : [0, -b];
+        if (a[k][0] === want[0] && a[k][1] === want[1]) continue;
+        var wrongCol = b && a[k][b > 0 ? 1 : 0] > 0;
+        return wrong('tile-away', 'Check the ' + TNM[k] + 's you took away: ' + t(W(Bterms)) + ' needs ' + need(k) + (wrongCol ? ' — no ' + (b > 0 ? 'white' : 'shaded') + ' ones' : '') + '.' + (pl.zp[k] && a[k][0] + a[k][1] < Math.abs(b) ? ' The mat doesn’t have enough, so add zero pairs of ' + TNM[k] + 's first.' : ''));
+      }
+      return res;
+    };
+    var only = { raw: { mat: [], away: [] } };   // took away only what was already on the mat
+    ['x2', 'x', 'one'].forEach(function (k) { var b = pl.b[k], n = Math.min(Math.abs(b), pl.s[k] * b > 0 ? Math.abs(pl.s[k]) : 0); for (var i = 0; i < n; i++) only.raw.away.push(b > 0 ? TK[k] : '-' + TK[k]); });
+    var oppA = { raw: { mat: [], away: pl.key.raw.away.map(function (tk) { return tk.charAt(0) === '-' ? tk.slice(1) : '-' + tk; }) } };
+    var extra = { raw: { mat: [], away: pl.key.raw.away.concat(['x', '-x']) } };
+    p.bad = [oppA, extra].concat(only.raw.away.length ? [only] : []);
+    p.total = pl.total;
     return p;
   }
   function likeGrid(rows, text) {

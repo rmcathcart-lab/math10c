@@ -88,6 +88,34 @@
     return P.grid(prompt, rows, game ? GAME_COLS : SET_COLS, want, { why: function (id, got) { return setHint(by[id], got, game); }, rowHead: game ? 'Card' : 'Number' }, sol, SET_HINTS, text);
   }
 
+  /* the same numbers on the nested diagram (setsort): each in its innermost set; items [{id, tex, cls, note}] (real numbers only) */
+  var SS_OF = { nat: 'N', zero: 'W', negint: 'I', frac: 'Q', irr: 'Qbar' }, SS_CHAIN = ['N', 'W', 'I', 'Q'], SS_TEX = { N: 'N', W: 'W', I: 'I', Q: 'Q', Qbar: '\\overline{Q}' };
+  function ssHint(c, put) {
+    var X = t(c.tex), why = c.note ? ' (' + t(c.note) + ')' : '', want = SS_OF[c.cls];
+    if (want === 'Qbar') return { code: 'sets-irr', hint: X + ' is irrational' + why + ': its decimal never ends and never repeats.' };
+    if (put === 'Qbar') return { code: 'sets-rat', hint: X + ' is rational' + why + ': it can be written as a fraction of integers.' };
+    if (SS_CHAIN.indexOf(put) > SS_CHAIN.indexOf(want)) return { code: 'not-smallest', hint: X + why + ' does belong to ' + t(SS_TEX[put]) + ', but it also fits in a smaller set inside it. Put each number in the <b>innermost</b> set.' };
+    if (c.cls === 'zero') return { code: 'sets-zero-N', hint: t('0') + ' is a whole number, but the natural numbers start at ' + t('1') + '.' };
+    if (c.cls === 'negint') return { code: 'sets-neg', hint: X + why + ' is negative. Natural and whole numbers are never negative.' };
+    return { code: 'sets-frac', hint: X + why + ' is not an integer, so it isn’t in ' + t('N') + ', ' + t('W') + ' or ' + t('I') + '.' };
+  }
+  function sortSetsPart(prompt, items, text, extraSol) {
+    var targets = {}, by = {};
+    items.forEach(function (c) { targets[c.id] = SS_OF[c.cls]; by[c.id] = c; });
+    var p = P.setsort(prompt, { items: items.map(function (c) { return { id: c.id, tex: c.tex }; }) }, targets,
+      items.map(function (c) { return t(c.tex) + (c.note ? ': ' + t(c.note) : '') + ' → ' + t(SS_TEX[targets[c.id]]); }).join('<br>') + (extraSol || ''),
+      ['Simplify each number first. Rational or irrational? If rational: an integer? Whole (' + t('\\ge 0') + ')? Natural (' + t('\\ge 1') + ')? The innermost set that fits is the answer.'], text);
+    var base = p.check;
+    p.check = function (resp) {
+      var b = base(resp); if (b.v !== 'wrong') return b;
+      var bad = items.filter(function (c) { return resp[c.id] !== targets[c.id]; }), h = ssHint(bad[0], resp[bad[0].id]);
+      return wrong(h.code, (bad.length > 1 ? bad.length + ' numbers are in the wrong set. ' : '') + h.hint);
+    };
+    var allQ = {}; items.forEach(function (c) { allQ[c.id] = targets[c.id] === 'Qbar' ? 'Qbar' : 'Q'; });
+    if (items.some(function (c) { return targets[c.id] !== 'Q' && targets[c.id] !== 'Qbar'; })) p.bad = (p.bad || []).concat([allQ]);
+    return p;
+  }
+
   /* ---------- other reusable checkers / part makers ---------- */
   /* a product of primes in exponent form, with diagnoses for known wrong values [{v, code, hint}] */
   function prodChk(n, alts) {
@@ -214,7 +242,7 @@
       'Natural ' + t('(N)\\ ' + p.N) + ' · Whole ' + t('(W)\\ ' + p.W) + ' · Integer ' + t('(I)\\ ' + p.I) + ' · Rational ' + t('(Q)\\ ' + p.Q) + ' · Irrational ' + t('(\\overline{Q})\\ ' + p.Qb) + ' · Non-real ' + t(p.NR) +
       '<br>For example, a card showing ' + t(sh.ex1) + ' earns ' + t(p.N + '+' + p.W + '+' + p.I + '+' + p.Q + '=' + (p.N + p.W + p.I + p.Q)) + ' points, because ' + t(sh.ex1) + ' is natural, whole, an integer <i>and</i> rational. Each student is dealt three cards; the most points wins.';
   }
-  function handTex(h) { return h.map(function (c) { return t(c.tex); }).join(', \\ '); }
+  function handTex(h) { return h.map(function (c, i) { return t(c.tex + (i < h.length - 1 ? ',' : '')); }).join(' '); }
   function handSol(h) { return h.map(function (c) { return t(c.tex) + (c.note && c.cls !== 'irr' ? ' ' + t('(' + c.note.replace(/^.*=/, '=') + ')') : '') + ': ' + setList(setsOf(c.cls, true)) + ' → ' + t(c.pts); }).join('<br>') + '<br>Total: ' + t(h.map(function (c) { return c.pts; }).join('+') + '=' + h.reduce(function (s, c) { return s + c.pts; }, 0)); }
   function totalChk(h) {
     var tot = h.reduce(function (s, c) { return s + c.pts; }, 0);
@@ -281,8 +309,8 @@
     var fr, c, n, p, z, d, k, m, i;
     function gaps(a, g) { a = a.slice().sort(function (x, y) { return x - y; }); for (var j = 1; j < a.length; j++) if (a[j] - a[j - 1] < g) return false; return true; }
     for (i = 0; i < 500; i++) {
-      fr = r.pick(F3); c = r.pick([28, 29, 30, 31, 32, 33, 34, 35]); n = r.pick([5, 6, 7]); p = r.pick([7, 8]); z = r.pick([-2, -3]); d = r.int(1, 8); k = r.pick([5, 6, 7]); m = r.pick([2, 3, 5]);
-      if (gaps([fr.v, Math.cbrt(c), Math.sqrt(10)], 0.03) && gaps([-Math.sqrt(n), -p / 3, z], 0.02)) break;
+      fr = r.pick(F3); c = r.pick([28, 29, 30, 31, 32, 33, 34, 35]); n = r.pick([5, 6, 7]); p = r.pick([7, 8]); z = r.pick([-2, -3]); d = r.int(1, 8); k = r.pick([4, 5, 6]); m = r.pick([2, 3, 5]); // k ≤ 6: the booklet's line ends at 6
+      if (gaps([fr.v, Math.cbrt(c), Math.sqrt(10)], 0.03) && gaps([-Math.sqrt(n), -p / 3, z], 0.09)) break;
     }
     var items = [
       { id: 'f', tex: fr.tex, v: fr.v, lab: fr.lab, irr: false, note: fr.tex + '=' + fr.v },
@@ -295,7 +323,23 @@
       { id: 'nf', tex: '-\\frac{' + p + '}{3}', v: -p / 3, irr: false }];
     return { items: items, k: k, m: m, c: c, n: n, three: [items[0], items[3], items[6]] };
   }
-  function e11Stem(sh) { return 'Consider the eight numbers ' + sh.items.map(function (x) { return t(x.tex); }).join(', \\ ') + '.'; }
+  /* per-number hints for placing the eight numbers (fine = for the magnified line) */
+  function e11Hints(sh, fine) {
+    var H = {};
+    sh.items.forEach(function (x) {
+      var X = t(x.tex);
+      if (x.id === 'f') H.f = Math.abs(x.v * 1000 - Math.round(x.v * 1000)) < 1e-9 ? t(x.tex + '=' + x.v) + ' exactly.' : t(x.tex + '\\approx ' + d3(x.v)) + ' — divide the top by the bottom.';
+      else if (x.id === 'sn') { var L = Math.floor(Math.sqrt(sh.n)); H.sn = t('\\sqrt{' + sh.n + '}') + ' is between ' + t(L) + ' and ' + t(L + 1) + ' (about ' + t(d3(-x.v)) + '), so ' + X + ' is between ' + t(-(L + 1)) + ' and ' + t(-L) + '.'; }
+      else if (x.id === 'rp') H.rp = t(x.tex + '=' + x.tex.replace(/\\overline\{(\d)\}/, '$1$1$1') + '\\ldots') + ': a little more than ' + t(x.tex.replace(/\\overline\{(\d)\}/, '$1')) + '.';
+      else if (x.id === 'cb') { var c0 = Math.floor(Math.cbrt(sh.c) * 10) / 10, c1 = Math.round((c0 + 0.1) * 10) / 10; H.cb = fine ? t(c0 + '^{3}=' + (Math.round(c0 * c0 * c0 * 1000) / 1000)) + ' and ' + t(c1 + '^{3}=' + (Math.round(c1 * c1 * c1 * 1000) / 1000)) + ', so ' + X + ' is between ' + t(c0) + ' and ' + t(c1) + '.' : X + ' is between ' + t('\\sqrt[3]{27}=3') + ' and ' + t('\\sqrt[3]{64}=4') + ', just above ' + t('3') + '.'; }
+      else if (x.id === 'z') H.z = X + ' is an integer: put it right on its tick.';
+      else if (x.id === 'q') H.q = 'Simplify first: ' + t(x.tex + '=\\sqrt{' + sh.k * sh.k + '}=' + sh.k) + '.';
+      else if (x.id === 's10') H.s10 = fine ? t('3.16^{2}=9.9856') + ' and ' + t('3.17^{2}=10.0489') + ', so ' + X + ' is between ' + t('3.16') + ' and ' + t('3.17') + '.' : X + ' is between ' + t('\\sqrt{9}=3') + ' and ' + t('\\sqrt{16}=4') + ', just above ' + t('3') + '.';
+      else if (x.id === 'nf') H.nf = t(x.tex + '=-' + Math.floor(-x.v) + '\\tfrac{' + (-Math.round(x.v * 3) - 3 * Math.floor(-x.v)) + '}{3}') + ', between ' + t(-Math.floor(-x.v) - 1) + ' and ' + t(-Math.floor(-x.v)) + '.';
+    });
+    return H;
+  }
+  function e11Stem(sh) { return 'Consider the eight numbers ' + sh.items.map(function (x, i) { return t(x.tex + (i < sh.items.length - 1 ? ',' : '')); }).join(' ') + '.'; }
 
   /* ---------- Extra 20(b): twelve numbers ---------- */
   function e20Items(r) {
@@ -451,6 +495,10 @@
           return P.mc(r, 'Which student wins?', ['A', 'B', 'C'].map(function (L, i) { return { html: 'Student ' + t(L), right: tots[i] === best, why: tots[i] === best ? null : 'Student ' + t(L) + ' scores ' + t(tots[i]) + ' points. Compare all three totals again.' }; }),
             'Totals: ' + ['A', 'B', 'C'].map(function (L, i) { return t(L + '=' + tots[i]); }).join(', ') + '. The highest total is ' + t(best) + ', so <b>Student ' + t(['A', 'B', 'C'][tots.indexOf(best)]) + ' wins</b>.',
             ['Use your three totals from the previous part.'], 'card game: winner', true);
+        } },
+        { id: '8s', level: 'EMG', make: function (r, sh) {
+          var real = [], nr = null; sh.hands.forEach(function (h) { h.forEach(function (c) { if (c.cls === 'nonreal') nr = c; else real.push(c); }); });
+          return sortSetsPart('The same nine cards on the diagram of the real number system: put each <b>real</b> card in the innermost set it belongs to.' + (nr ? ' (' + t(nr.tex) + ' is non-real, so it has no place in the diagram.)' : ''), r.shuffle(real.map(function (c) { return { id: c.id, tex: c.tex, cls: c.cls, note: c.note }; })), 'card game: sort the real cards');
         } }] }
     ],
     extra: [
@@ -678,6 +726,9 @@
           })).concat([
             { id: 'e5j', level: 'EMG', make: function (r, sh) {
               return setsPart('List every set each number belongs to.', sh.fr.map(function (f) { return { id: f.id, tex: f.tex, cls: f.red[1] === 1 ? 'nat' : 'frac', note: f.tex + '=' + ex.texRat(f.red) }; }), false, 'classify four fractions');
+            } },
+            { id: 'e5k', level: 'BEG', make: function (r, sh) {
+              return sortSetsPart('Now put each of the four numbers in the <b>innermost</b> set it belongs to.', sh.fr.map(function (f) { return { id: f.id, tex: f.tex, cls: f.red[1] === 1 ? 'nat' : 'frac', note: f.tex + '=' + ex.texRat(f.red) }; }), 'sort four fractions');
             } }]) },
       { num: '6',
         shared: function (r) {
@@ -715,7 +766,8 @@
               { html: 'The test only works for decimals with more than one repeating digit.', why: 'The test works for every fraction — as long as you reduce it first.' }],
               'Let ' + t('x=' + X) + ': ' + t('10x-x=' + (10 * n + 9) + '.\\overline{9}-' + X + '=' + (9 * n + 9)) + ', so ' + t('x=\\frac{' + (9 * n + 9) + '}{9}=' + (n + 1)) + '. Before reducing, the denominator ' + t('9') + ' looks as if it forces a repeat, but the test must be applied to the reduced fraction, whose denominator ' + t('1') + ' has no prime factors at all. ' + t(X) + ' and ' + t(n + 1) + ' are two ways of writing the same number, which belongs to ' + t('R,\\ Q,\\ I,\\ W,\\ N') + '.',
               ['What fraction did you get for ' + t(X) + '? Reduce it all the way.'], 'why 0.999… = 1');
-          } }]) },
+          } },
+          { id: 'e6g', level: 'EMG', make: function (r, sh) { return sortSetsPart('Put each of the four numbers in the <b>innermost</b> set it belongs to.', sh.ds.map(function (d) { return { id: d.id, tex: d.tex, cls: d.red[1] === 1 ? 'nat' : 'frac', note: d.tex + '=' + ex.texRat(d.red) }; }), 'sort four repeating decimals'); } }]) },
       { num: '7', stem: 'Simplify each number first, then sort it as <b>rational</b>, <b>irrational</b>, or <b>not possible in the real number system</b>.', parts: [
         { id: 'e7', level: 'PRG', make: function (r) {
           var items = r.shuffle(e7Items(r)), want = {}, by = {}; items.forEach(function (x) { want[x.id] = x.col; by[x.id] = x; });
@@ -859,20 +911,32 @@
             ['Use your calculator. For a repeating decimal, write out four digits and round.'], 'eight decimals to 3 dp');
         } },
         { id: 'e11b', level: 'EMG', make: function (r, sh) {
-          var srt = sh.items.slice().sort(function (a, b) { return a.v - b.v; });
-          return P.order(r, 'List all eight numbers in order from <b>least to greatest</b>. (This is the order you would plot them on a number line.)', srt.map(function (x) { return { id: x.id, tex: x.tex }; }), { sep: '<' },
-            'Least to greatest: ' + t(srt.map(function (x) { return x.tex; }).join('\\ <\\ ')) + '<br>(' + srt.map(function (x) { return t(d3(x.v)); }).join(', ') + ')', ['Use your three-decimal values from the previous part.'], 'order eight numbers');
+          var srt = sh.items.slice().sort(function (a, b) { return a.v - b.v; }), tg = {}, hints = e11Hints(sh), by = {}, inThree = {};
+          sh.items.forEach(function (x) { tg[x.id] = x.v; by[x.id] = x; }); sh.three.forEach(function (x) { inThree[x.id] = 1; });
+          var p = P.numplace('Plot all eight numbers on the number line, each labelled in its original form. (List them from least to greatest in your head first — the line checks the order.)',
+            { min: -3, max: 6, step: 1, labels: 1, snap: 0.05, items: sh.items.map(function (x) { return { id: x.id, tex: x.tex }; }) }, tg,
+            'Least to greatest: ' + t(srt.map(function (x) { return x.tex; }).join('\\ <\\ ')) + '<br>(' + srt.map(function (x) { return t(d3(x.v)); }).join(', ') + ')<br>The three numbers between ' + t('3') + ' and ' + t('3.3') + ' sit almost on top of each other here — the next part separates them.',
+            ['Use your three-decimal values from the previous part.', 'Negative numbers go left of ' + t('0') + ': the bigger the size, the further left.'], 'plot eight numbers', { order: false, tol: 0.2, hints: hints });
+          var base = p.check;
+          p.check = function (resp) {
+            var b = base(resp); if (b.v === 'form') return b;
+            /* order: every pair except the three that crowd together between 3 and 3.3 (placements within 0.04 count as a tie) */
+            for (var a = 0; a < srt.length; a++) for (var c = a + 1; c < srt.length; c++) {
+              var A = srt[a], B = srt[c];
+              if (inThree[A.id] && inThree[B.id]) continue;
+              if (B.v - A.v > 0.05 && resp[A.id] > resp[B.id] + 0.04) return wrong('np-order', 'Check the order: ' + t(A.tex) + ' is less than ' + t(B.tex) + ', so it goes to the <b>left</b> of it. ' + hints[A.id]);
+            }
+            return b;
+          };
+          return p;
         } },
         { id: 'e11c', level: 'EMG', make: function (r, sh) {
-          var th = sh.three, vals = th.map(function (x) { return x.v; });
-          var perms = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]], others = r.sample(perms.slice(1), 3);
-          var opts = [perms[0]].concat(others).map(function (pp, j) {
-            var pts = pp.map(function (src, dst) { return { v: vals[dst], lab: th[src].lab }; }), misplaced = pp.map(function (src, dst) { return src !== dst ? th[src] : null; }).filter(Boolean)[0];
-            return { html: lineSVG(pts), right: j === 0, why: j === 0 ? null : 'Look at where ' + t(misplaced.tex) + ' is placed. Use its three-decimal value from part (a).' };
-          });
-          return P.mc(r, 'Three of the numbers land between ' + t('3') + ' and ' + t('3.3') + ', too close to separate on an ordinary number line. Which magnified number line shows them correctly?', opts,
+          var th = sh.three, tg = {}, hints = e11Hints(sh, true);
+          th.forEach(function (x) { tg[x.id] = x.v; });
+          return P.numplace('Three of the numbers land between ' + t('3') + ' and ' + t('3.3') + ', too close to separate on an ordinary number line. Plot just those three on this magnified line.',
+            { min: 2.9, max: 3.4, step: 0.05, labels: 0.1, snap: 0.01, items: th.map(function (x) { return { id: x.id, tex: x.tex }; }) }, tg,
             th.slice().sort(function (a, b) { return a.v - b.v; }).map(function (x) { return t(x.tex + '\\approx ' + d3(x.v)); }).join(', ') + '.<br>' + lineSVG(th.map(function (x) { return { v: x.v, lab: x.lab }; })),
-            ['Compare the three decimals from part (a), to the hundredths.'], 'magnified number line');
+            ['Compare the three decimals from part (a), to the hundredths.', 'Each small tick is ' + t('0.05') + '; the labels go up by ' + t('0.1') + '.'], 'magnified number line', { tol: 0.015, hints: hints });
         } },
         { id: 'e11d', level: 'EMG', make: function (r, sh) {
           var opts = r.shuffle(sh.items).map(function (x) { return x.tex; }), want = sh.items.filter(function (x) { return x.irr; }).map(function (x) { return x.tex; });
