@@ -572,7 +572,7 @@
       { id: 'e12c', level: 'PRG', make: function (r) { var cm = r.pick([[3, 4], [2, 4], [2, 2], [4, 2], [5, 2]]); return meaningPart({ base: [-Math.pow(cm[0], 3), 1], m: cm[1], n: 3, noneWhy: 'The index ' + t('3') + ' is <b>odd</b>, so the cube root of a negative number exists.' }); } },
       { id: 'e12d', level: 'EMG', make: function (r) { var v = r.pick([[27, 3, 4], [8, 1, 4], [64, 3, 2], [125, 1, 2], [32, 3, 4], [81, 1, 2]]), ex1 = '(-' + v[0] + ')^{' + v[1] + '/' + v[2] + '}'; return meaningPart({ undef: true, expr: ex1, why: 'The index ' + t(v[2]) + ' is even and the base ' + t('-' + v[0]) + ' is negative: <b>no meaning</b>.', valWhy: 'Look at the index: ' + t(v[2]) + ' is <b>even</b>, and no real number raised to an even power is negative.' }); } },
       { id: 'e12e', level: 'PRG', make: function (r) { var cm = r.pick([[3, 3], [2, 3], [2, 2], [3, 2], [2, 4]]); return meaningPart({ base: [-Math.pow(cm[0], 5), 1], m: cm[1], n: 5, noneWhy: 'The index ' + t('5') + ' is <b>odd</b>, so the fifth root of a negative number exists.' }); } }] },
-    { num: '13', stem: 'Now state the rule behind question 12.', parts: [
+    { num: '13', stem: 'Some powers of a negative base have meaning as real numbers and some do not, for example ' + t('(-32)^{2/5}=4') + ' but ' + t('(-25)^{1/2}') + ' has no real value. Now state the rule behind this.', parts: [
       { id: 'e13a', level: 'EMG', make: function (r) {
         var c = r.pick([2, 3, 5, 10]), C = F(c * c * c);
         return mc(r, 'Why does ' + t('(-' + C + ')^{1/3}') + ' have meaning, but ' + t('(-' + C + ')^{1/2}') + ' does not?', [
@@ -874,7 +874,7 @@
             var p = P.fields('Write a power <b>and</b> a radical that represent the area of one face of the cube.', [{ name: 'Power', label: 'power: area', before: t('='), mode: 'math', keys: 'expo', vars: [L] }, { name: 'Radical', label: 'radical: area', before: t('='), mode: 'math', keys: 'expo', vars: [L] }],
               [convCheck(pw, { form: 'power', single: L + '^{n}', needRat: true, cands: c1 }), convCheck(rd, { form: 'radical', index: 3, cands: c2 })],
               [pw, rd], 'area ' + t('=' + pw + '=' + rd + '=' + rootTex(3, L + '^{2}')), 'One face is a square with side ' + t(L + '^{1/3}') + ':<br>' + t('\\text{area}=\\left(' + L + '^{1/3}\\right)^{2}=' + pw + '=' + rd) + ' (or ' + t(rootTex(3, L + '^{2}')) + ').',
-              ['A face is a square whose side is the edge. Square the edge from part (a).'], 'face area of cube volume ' + L);
+              ['A face is a square whose side is the edge. Find the edge length as a power of ' + t('W') + ', then square it.'], 'face area of cube volume ' + L);
             p.bad = [[L + '^{3/2}', rd], [pw, rootTex(3, L)]];
             return p;
           } }] },
@@ -928,7 +928,7 @@
           { id: '16b', level: 'EMG', make: function (r, sh) {
             var x = sh.P0 * Math.pow(2, sh.t1 / sh.d), e = sh.t1 + '/' + sh.d;
             var cands = [{ v: sh.P0 * Math.pow(2, sh.t1) / sh.d, code: 'no-brackets', hint: 'Put the exponent in brackets: <code>2^(' + e + ')</code>.' }, { v: Math.pow(2 * sh.P0, sh.t1 / sh.d), code: 'base', hint: 'Only the ' + t('2') + ' is raised to the power: work out ' + t('2^{' + e + '}') + ', then multiply by ' + t(sh.P0) + '.' }, { v: sh.P0 * 2 * sh.t1 / sh.d, code: 'times-exp', hint: 'The exponent isn’t a multiplier: use the ' + t('\\wedge') + ' key for ' + t('2^{' + e + '}') + '.' }];
-            var p = P.approx('Evaluate your answer to (a) to the nearest whole number of cells.', x, 0, { after: 'cells', diag: function (v) { for (var i = 0; i < cands.length; i++) if (Math.abs(v - Math.round(cands[i].v)) < 1e-9) return { code: cands[i].code, hint: cands[i].hint }; return null; } },
+            var p = P.approx('How many cells are there after ' + t(sh.t1) + (sh.t1 === 1 ? ' hour' : ' hours') + '? Give the answer to the nearest whole number of cells.', x, 0, { after: 'cells', diag: function (v) { for (var i = 0; i < cands.length; i++) if (Math.abs(v - Math.round(cands[i].v)) < 1e-9) return { code: cands[i].code, hint: cands[i].hint }; return null; } },
               t(sh.P0 + '(2)^{' + e + '}\\approx ' + sh.P0 + '(' + Math.pow(2, sh.t1 / sh.d).toFixed(4) + ')\\approx ' + F(Math.round(x))) + ' cells', ['Type <code>' + sh.P0 + '×2^(' + e + ')</code> — exponent in brackets.'], 'bacteria value, t=' + sh.t1);
             p.answer = t(F(Math.round(x))); p.bad = cands.map(function (c) { return String(Math.round(c.v)); }).filter(function (b) { return b !== String(Math.round(x)); });
             return p;

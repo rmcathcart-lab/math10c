@@ -470,7 +470,7 @@
         { id: 'e9b', level: 'PRG', make: function (r) { var v = find(r, function () { var k = -r.int(2, 5); return [S(nz(r, 11, 99), k), '+', S(nz(r, 11, 99), k - 1)]; }, function (v) { var s = add(v[0], v[2]); return sN(s) === sN(v[0]); }, [D(72, -4), '+', D(45, -5)]); return addPart(v); } },
         { id: 'e9c', level: 'PRG', make: function (r) { var v = find(r, function () { var k = r.int(5, 9); return [S(nz(r, 11, 99), k), '-', S(nz(r, 11, 99), k - 1)]; }, function (v) { var s = sub(v[0], v[2]); return sN(s) === sN(v[0]); }, [D(96, 7), '-', D(48, 6)]); return addPart(v); } },
         { id: 'e9d', level: 'PRG', make: function (r) { var v = find(r, function () { var k = -r.int(3, 7), m = nz(r, 11, 99); return [S(m, k), '-', S(m, k - 1)]; }, function (v) { return val(coef(v[0])) >= 1.2; }, [D(25, -7), '-', D(25, -8)]); return addPart(v); } }] },
-      { num: '10', stem: function (s) { return 'Combine each over the <b>larger</b> power of ten, as in Question 9. Some of the results then need renormalizing.'; },
+      { num: '10', stem: function (s) { return 'Rewrite both numbers over the <b>larger</b> power of ten, then add or subtract the coefficients. Some of the results then need renormalizing.'; },
         shared: function (r) {
           var a = find(r, function () { var k = r.int(3, 6), x = nz(r, 11, 89); return [S(x, k), '+', S(nz(r, 11, 99), k)]; }, function (v) { var s = add(v[0], v[2]); return sN(s) === sN(v[0]) && nd(s) <= 2; }, [D(63, 3), '+', D(27, 3)]);
           var b = find(r, function () { var k = -r.int(1, 4); return [S(nz(r, 11, 19), k), '-', S(nz(r, 51, 99), k - 1)]; }, function (v) { var s = sub(v[0], v[2]); return val(s) > 0 && sN(s) < sN(v[0]); }, [D(14, -3), '-', D(96, -4)]);
@@ -595,7 +595,7 @@
           } },
           { id: 'e15c', level: 'EMG', make: function (r, s) {
             var p = addPart([s.cell, '-', s.bact]);
-            p.prompt = 'How much wider is the cell than the bacterium is long? (This one is a subtraction — see Question 9.) Give the answer in metres.';
+            p.prompt = 'How much wider is the cell than the bacterium is long? (This one is a subtraction: rewrite both lengths over the same power of ten first.) Give the answer in metres.';
             p.solution = p.solution.replace(/<\/b>\.$/, ' m</b>.');
             p.text = 'cell − bacterium';
             return p;

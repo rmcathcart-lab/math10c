@@ -684,7 +684,7 @@
           { id: 'e1e', level: 'EMG', make: function (r, sh) { return signPowPart(sh.b, 2, 'neg-both'); } },
           { id: 'e1f', level: 'EMG', make: function (r, sh) {
             var b = sh.b, b2 = b * b, b3 = b * b * b;
-            return P.mc(r, 'Compare your answers. Why do ' + t('(-' + b + ')^{-3}') + ' and ' + t('-' + b + '^{-3}') + ' have the same value, while ' + t('(-' + b + ')^{-2}') + ' and ' + t('-' + b + '^{-2}') + ' do not?', [
+            return P.mc(r, 'Why do ' + t('(-' + b + ')^{-3}') + ' and ' + t('-' + b + '^{-3}') + ' have the same value, while ' + t('(-' + b + ')^{-2}') + ' and ' + t('-' + b + '^{-2}') + ' do not?', [
               { html: 'With the odd exponent ' + t('-3') + ', ' + t('(-' + b + ')^{-3}') + ' stays negative, just like ' + t('-' + b + '^{-3}') + '. With the even exponent ' + t('-2') + ', ' + t('(-' + b + ')^{-2}') + ' is positive but ' + t('-' + b + '^{-2}') + ' is negative.', right: true },
               { html: 'A negative exponent always makes the answer negative.', why: t('(-' + b + ')^{-2}=\\frac{1}{' + b2 + '}') + ' is positive.' },
               { html: 'Brackets never matter when the exponent is negative.', why: 'They mattered for ' + t('-2') + ': ' + t('-\\frac{1}{' + b2 + '}') + ' vs ' + t('\\frac{1}{' + b2 + '}') + '.' },
@@ -707,7 +707,7 @@
           { id: 'e3d', level: 'EMG', make: function (r, sh) { return twoVals(sh.v, '(-x)^{-3}', function (x) { return R(-1, x * x * x); }); } },
           { id: 'e3e', level: 'EMG', make: function (r, sh) {
             var v = sh.v, v3 = v * v * v;
-            return P.mc(r, 'Using your table, what does a negative exponent actually do to a base?', [
+            return P.mc(r, 'Compare ' + t('x^{-3}') + ' with ' + t('-x^{3}') + ' at ' + t('x=' + v) + ' and ' + t('x=-' + v) + '. What does a negative exponent actually do to a base?', [
               { html: 'It takes the <b>reciprocal</b>: ' + t('x^{-3}=\\frac{1}{x^{3}}') + '. The reciprocal of a number has the same sign, so the sign never changes.', right: true },
               { html: 'It makes the value negative: ' + t('x^{-3}=-x^{3}') + '.', why: 'At ' + t('x=' + v) + ', ' + t('x^{-3}=\\frac{1}{' + v3 + '}') + ' (positive) but ' + t('-x^{3}=-' + v3) + '.' },
               { html: 'It changes the sign of the base: ' + t('x^{-3}=(-x)^{3}') + '.', why: 'Compare columns (a) and (c): at ' + t('x=' + v) + ' they give ' + t('\\frac{1}{' + v3 + '}') + ' and ' + t('-' + v3) + '.' },
@@ -720,8 +720,8 @@
           { id: 'e4b', level: 'EMG', make: function (r, sh) { var x = sh.x, n = sh.n; return tfP(r, '(-' + x + ')^{-' + n + '}', '\\dfrac{1}{' + vt(x, n) + '}', '-\\dfrac{1}{' + vt(x, n) + '}', r.chance(0.5), 'The exponent is on ' + t('-' + x) + ' and it is even, so the sign is lost: ' + t('\\frac{1}{(-' + x + ')^{' + n + '}}=\\frac{1}{' + vt(x, n) + '}') + '.', 'T/F (-' + x + ')^-' + n); } },
           { id: 'e4c', level: 'EMG', make: function (r, sh) { var x = sh.x, o = sh.o; return tfP(r, '(-' + x + ')^{-' + o + '}', '-\\dfrac{1}{' + vt(x, o) + '}', '\\dfrac{1}{' + vt(x, o) + '}', r.chance(0.5), 'The exponent is on ' + t('-' + x) + ' and it is odd, so the sign stays: ' + t('\\frac{1}{(-' + x + ')^{' + o + '}}=-\\frac{1}{' + vt(x, o) + '}') + '.', 'T/F (-' + x + ')^-' + o); } },
           { id: 'e4d', level: 'BEG', make: function (r, sh) { var x = sh.x, k = sh.k; return tfP(r, '(' + k + x + ')^{-2}', '\\dfrac{1}{' + k * k + x + '^{2}}', k + x + '^{-2}', r.chance(0.5), 'The exponent covers the whole product ' + t(k + x) + ', so the ' + t(k) + ' is squared and moves too.', 'T/F (' + k + x + ')^-2'); } },
-          { id: 'e4e', level: 'BEG', make: function (r, sh) { var x = sh.x, n = sh.n, m = tmono(-1, [[x, -n]]); return X('Write the left side of (a), ' + t('-' + vt(x, -n)) + ', with positive exponents.', m, t('-' + vt(x, -n) + '=-\\frac{1}{' + vt(x, n) + '}') + ': the exponent is on ' + t(x) + ' only.', [H.only], '-' + x + '^-' + n, { bad: ['\\frac{1}{' + vt(x, n) + '}', vt(x, n)] }); } },
-          { id: 'e4f', level: 'EMG', make: function (r, sh) { var x = sh.x, k = sh.k, m = tmono(R(1, k * k), [[x, -2]]); return X('Write the left side of (d), ' + t('(' + k + x + ')^{-2}') + ', with positive exponents.', m, t('(' + k + x + ')^{-2}=\\frac{1}{(' + k + x + ')^{2}}=' + pT(m)) + '.', [H.only], '(' + k + x + ')^-2', { bad: ['\\frac{' + k + '}{' + x + '^{2}}', '\\frac{1}{' + k + x + '^{2}}'] }); } }] },
+          { id: 'e4e', level: 'BEG', make: function (r, sh) { var x = sh.x, n = sh.n, m = tmono(-1, [[x, -n]]); return X('Write ' + t('-' + vt(x, -n)) + ' with positive exponents.', m, t('-' + vt(x, -n) + '=-\\frac{1}{' + vt(x, n) + '}') + ': the exponent is on ' + t(x) + ' only.', [H.only], '-' + x + '^-' + n, { bad: ['\\frac{1}{' + vt(x, n) + '}', vt(x, n)] }); } },
+          { id: 'e4f', level: 'EMG', make: function (r, sh) { var x = sh.x, k = sh.k, m = tmono(R(1, k * k), [[x, -2]]); return X('Write ' + t('(' + k + x + ')^{-2}') + ' with positive exponents.', m, t('(' + k + x + ')^{-2}=\\frac{1}{(' + k + x + ')^{2}}=' + pT(m)) + '.', [H.only], '(' + k + x + ')^-2', { bad: ['\\frac{' + k + '}{' + x + '^{2}}', '\\frac{1}{' + k + x + '^{2}}'] }); } }] },
       { num: '5', section: 'Extra practice B — Crossing the fraction bar', stem: 'Every expression has negative exponents in both the numerator and the denominator. Write each with positive exponents.', parts: [
         { id: 'e5a', level: 'EMG', make: function (r) {
           var e = [r.int(1, 6), r.int(1, 6), r.int(1, 6), r.int(1, 6)], m = tmono(1, [['a', -e[0]], ['b', e[1]], ['c', -e[2]], ['d', e[3]]]), tex = '\\dfrac{' + tt(1, [['a', -e[0]], ['b', e[1]]]) + '}{' + tt(1, [['c', e[2]], ['d', -e[3]]]) + '}';
@@ -941,8 +941,8 @@
             return P.mc(r, 'What did the student confuse a negative <b>exponent</b> with?', [
               { html: 'A negative <b>sign</b>: a negative exponent means take the <b>reciprocal</b>, not the opposite.', right: true },
               { html: 'The product law: exponents should be added.', why: 'There is only one power here, so no law combines exponents. Think about what the minus sign in the exponent means.' },
-              { html: 'A negative base: ' + t('x^{-' + sh.n + '}') + ' should be ' + t('(-x)^{' + sh.n + '}') + '.', why: 'The base is still ' + t('x') + '. Compare the values at ' + t('x=' + sh.v) + ' from part (a).' },
-              { html: 'Nothing — the student is right.', why: 'Part (a) shows the two sides have different values.' }],
+              { html: 'A negative base: ' + t('x^{-' + sh.n + '}') + ' should be ' + t('(-x)^{' + sh.n + '}') + '.', why: 'The base is still ' + t('x') + '. Compare the values at ' + t('x=' + sh.v) + ' (substitute it into both sides).' },
+              { html: 'Nothing — the student is right.', why: 'Substitute ' + t('x=' + sh.v) + ' into both sides: they have different values.' }],
               'The student treated the negative exponent like a negative sign. A negative exponent means <b>reciprocal</b>: ' + t('x^{-' + sh.n + '}=\\frac{1}{x^{' + sh.n + '}}') + '.', [OPP], 'exponent vs sign');
           } }] },
       { num: '14', stem: function (sh) { return 'Asked to write ' + t('\\dfrac{' + sh.k + 'a^{-' + sh.m + '}}{b^{-' + sh.n + '}}') + ' with positive exponents, a student wrote ' + t('\\dfrac{b^{' + sh.n + '}}{' + sh.k + 'a^{' + sh.m + '}}') + '.'; },
