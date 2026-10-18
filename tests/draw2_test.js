@@ -71,5 +71,7 @@ eq(res(abf(V([['6x^{2}', '4x'], ['-9x', '-6']], ['2x', '3'], ['3x', '2']))), 'wr
 eq(res(abf(V([['6x^{2}', '2x'], ['-9x', '-6']], ['2x', '-3'], ['3x', '1']))), 'wrong:ab-sum', 'ab factor wrong middle box');
 var pab = K.P.areabox('Expand', { rows: ['2x', '-3'], cols: ['3x', '2'], cells: [[null, null], [null, null]] }, { product: '6x^2-5x-6' }, V([['6x^{2}', '4x'], ['-9x', '-6']]), 's', [], 't');
 eq(res(pab.check(pab.key)), 'correct', 'ab builder'); eq(/ab-table/.test(pab.answer), true, 'ab html');
+eq(res(abf(V([['6x^{2}', '4x'], ['-9x', '-6']], ['x', '-\\frac{3}{2}'], ['6x', '4']))), 'wrong:ab-frac', 'ab factor fractions rejected');
+eq(res(K.tileRect('x^2-6x+8')({ top: { x: 1, one: 2 }, side: { x: 1, one: 4 } })), 'wrong:tile-signs', 'tile signs switched');
 console.log(n + ' checks, ' + fails + ' failed');
 process.exit(fails ? 1 : 0);

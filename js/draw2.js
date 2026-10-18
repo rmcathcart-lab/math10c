@@ -240,7 +240,7 @@
   if (HW.addCodes) HW.addCodes({ 'np-order': 'Numbers out of order on the line', 'np-place': 'Number placed too far off', 'ss-inner': 'Not the innermost set', 'ss-subset': 'Put in a set it isn’t in', 'ss-rational': 'Rational vs irrational', 'dr-swap': 'Domain and range swapped',
     'pts-missing': 'Missed a point', 'pts-extra': 'Tapped a wrong point', 'tile-away': 'Took away the wrong tiles', 'tile-away-zero': 'Took away an extra zero pair', 'ab-sign': 'Area box: sign of a product', 'ab-exp': 'Area box: exponents', 'ab-add': 'Area box: added instead of multiplied',
     'dr-nl-dot': 'Domain/range: open vs solid dot', 'dr-nl-side': 'Domain/range: shaded the wrong side', 'dr-nl-values': 'Domain/range: wrong boundary', 'dr-nl-noshade': 'Domain/range: open dot without shading', 'dr-domain': 'Wrong domain shaded', 'dr-range': 'Wrong range shaded',
-    'ab-cell': 'Area box: wrong product', 'ab-sum': 'Area box: boxes don’t add to the expression', 'ab-one-term': 'Area box: more than one term in a box' });
+    'ab-cell': 'Area box: wrong product', 'ab-frac': 'Area box: fraction in a row/column term', 'ab-sum': 'Area box: boxes don’t add to the expression', 'ab-one-term': 'Area box: more than one term in a box' });
 
   /* ================= areabox ================= */
   function readTerm(s) {
@@ -266,6 +266,10 @@
       var rows = rd.slice(0, nr).map(function (r) { return r.p; }), cols = rd.slice(nr, nr + nc).map(function (r) { return r.p; }), cell = function (i2, j2) { return rd[nr + nc + i2 * nc + j2].p; };
       var sumCheck = function () { if (!T) return null; var sum = P.num(0); for (var i3 = 0; i3 < nr; i3++) for (var j3 = 0; j3 < nc; j3++) sum = P.add(sum, cell(i3, j3)); return P.eq(sum, T) ? null : wrong('ab-sum', 'All the boxes together must add up to ' + t(P.tex(T)) + '. ' + (opt.sumHint || 'Check the boxes you filled in.')); };
       if (opt.factor) { var sc = sumCheck(); if (sc) return sc; }
+      if (opt.factor && T && opt.integer !== false && P.terms(T).every(function (tm) { return tm.c[1] === 1; })) {
+        var fr = rows.concat(cols).some(function (h) { return P.terms(h).some(function (tm) { return tm.c[1] !== 1; }); });
+        if (fr) return wrong('ab-frac', 'Use whole-number row and column terms: each one is the <b>GCF</b> of its row or column (with an integer coefficient).');
+      }
       for (i = 0; i < nr; i++) for (j = 0; j < nc; j++) {
         var want = P.mul(rows[i], cols[j]), got = cell(i, j), where = 'the box in row ' + (i + 1) + ', column ' + (j + 1);
         if (P.eq(want, got)) continue;
