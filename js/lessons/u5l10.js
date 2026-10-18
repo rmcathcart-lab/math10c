@@ -319,6 +319,7 @@
     o = o || {}; var dv = o.dv || 'x', rv = o.rv || 'y';
     var g = Object.assign({ x: [-6, 6], y: [-6, 6], labels: 2 }, spec); g.max = 300;
     var inp = { graph: g, v: dv, w: rv, dom: Object.assign({ labels: 2 }, o.dom || {}), ran: Object.assign({ labels: 2 }, o.ran || {}) };
+    if (o.hideGraph !== false) inp.hideGraph = true; // every shading part here repeats the graph its question stem already shows
     var hm = function (h) { return h === HINT_DOTS ? HINT_SH_DOTS : h === HINT_DR ? HINT_SHADOW : h; };
     var hs = (hints || []).map(hm); if (hs.indexOf(HINT_SH_DOTS) < 0) hs.push(HINT_SH_DOTS); if (hs.indexOf(HINT_SHADOW) < 0) hs.unshift(HINT_SHADOW);
     var p = B.domrange(prompt || SH_PROMPT, inp, D, R, sol, hs, (text || 'domain and range') + ' (shade)');

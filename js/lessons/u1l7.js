@@ -920,11 +920,11 @@
           var base = p.check;
           p.check = function (resp) {
             var b = base(resp); if (b.v === 'form') return b;
-            /* order: every pair except the three that crowd together between 3 and 3.3 (placements within 0.04 count as a tie) */
+            /* order: every pair except the three that crowd together between 3 and 3.3 — strictly (all other pairs are ≥ 0.09 apart, so their keys are on different 0.05 snaps; a tie doesn't show the order) */
             for (var a = 0; a < srt.length; a++) for (var c = a + 1; c < srt.length; c++) {
               var A = srt[a], B = srt[c];
               if (inThree[A.id] && inThree[B.id]) continue;
-              if (B.v - A.v > 0.05 && resp[A.id] > resp[B.id] + 0.04) return wrong('np-order', 'Check the order: ' + t(A.tex) + ' is less than ' + t(B.tex) + ', so it goes to the <b>left</b> of it. ' + hints[A.id]);
+              if (B.v - A.v > 0.05 && resp[A.id] >= resp[B.id] - 1e-9) return wrong('np-order', 'Check the order: ' + t(A.tex) + ' is less than ' + t(B.tex) + ', so it goes to the <b>left</b> of it. ' + hints[A.id]);
             }
             return b;
           };

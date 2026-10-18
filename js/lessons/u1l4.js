@@ -1030,7 +1030,8 @@
       var L = Math.floor(rootV(x[3], x[4]) + 1e-9), root = rootT(x[3], x[4]), inner = t(root) + ' is between ' + t(rootT(x[3], Math.pow(L, x[3])) + '=' + L) + ' and ' + t(rootT(x[3], Math.pow(L + 1, x[3])) + '=' + (L + 1));
       hints[x[0]] = x[5] === 1 ? inner + '.' : t(x[1]) + ' means ' + t(x[5] + '\\times ' + root) + ', and ' + inner + ', so ' + t(x[1]) + ' is between ' + t(x[5] * L) + ' and ' + t(x[5] * (L + 1)) + '.';
     });
-    var p = P.numplace('Place the numbers on the number line from ' + t('0') + ' to ' + t('30') + ': ' + its.map(function (x, i) { return t(x[1] + (i < its.length - 1 ? ',' : '')); }).join(' '), { min: 0, max: 30, step: 1, labels: 5, items: r.shuffle(its).map(function (x) { return { id: x[0], tex: x[1] }; }) }, targets,
+    var shown = r.shuffle(its); // its is sorted: list the numbers out of order in the prompt too
+    var p = P.numplace('Place the numbers on the number line from ' + t('0') + ' to ' + t('30') + ': ' + shown.map(function (x, i) { return t(x[1] + (i < shown.length - 1 ? ',' : '')); }).join(' '), { min: 0, max: 30, step: 1, labels: 5, items: shown.map(function (x) { return { id: x[0], tex: x[1] }; }) }, targets,
       'Decimal values: ' + its.map(function (x) { return t(x[1] + '\\approx ' + fx(x[2], 2)); }).join(', ') + '.<br>Least to greatest: ' + t(its.map(function (x) { return x[1]; }).join('<')) + '.<br>Each cube root is smaller than the matching square root, because cubing grows faster than squaring.',
       ['Use your calculator to find a decimal value for each number, then place it between the right whole numbers.', 'For numbers bigger than 1, ' + t('\\sqrt[3]{n}<\\sqrt{n}') + '.'], 'place 6 roots on a number line', { tols: tols, hints: hints });
     /* the classic slip: a cube root placed at (or right of) the matching square root */

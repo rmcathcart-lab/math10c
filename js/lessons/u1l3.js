@@ -456,8 +456,9 @@
             if (x.id === 'a') { var d = Math.floor(x.v * 10) / 10, sq = function (u) { return String(Math.round(u * u * 100) / 100); }; hintOf.a = t(x.tex) + ' is between ' + t('\\sqrt{' + sq(d) + '}=' + d) + ' and ' + t('\\sqrt{' + sq(d + 0.1) + '}=' + String(Math.round((d + 0.1) * 10) / 10)) + ' — a square root of a number less than ' + t('1') + ' is <b>bigger</b> than the number.'; return; }
             var m = Number(x.tex.replace(/[^0-9]/g, '')), lo = Math.floor(Math.sqrt(m)); hintOf[x.id] = t(x.tex) + ' is between ' + t('\\sqrt{' + lo * lo + '}=' + lo) + ' and ' + t('\\sqrt{' + (lo + 1) * (lo + 1) + '}=' + (lo + 1)) + '.';
           });
-          var inp = { min: 0, max: 15, step: 1, labels: 1, items: it.map(function (x) { return { id: x.id, tex: x.tex }; }) };
-          var p = P.numplace('Place ' + it.map(function (x, i) { return t(x.tex + (i < it.length - 1 ? ',' : '')); }).join(' ') + ' on the number line.', inp, targets,
+          var shown = r.shuffle(it); // list them out of order, as the booklet does (a–d are generated in increasing order)
+          var inp = { min: 0, max: 15, step: 1, labels: 1, items: shown.map(function (x) { return { id: x.id, tex: x.tex }; }) };
+          var p = P.numplace('Place ' + shown.map(function (x, i) { return t(x.tex + (i < shown.length - 1 ? ',' : '')); }).join(' ') + ' on the number line.', inp, targets,
             'Approximate each value: ' + sorted.map(function (x) { return t(x.tex + (x.km ? '=' + x.km[0] + '(' + cut(Math.sqrt(x.km[1]), 3) + '\\ldots)' : '') + '\\approx ' + x.v.toFixed(3)); }).join(', ') + '.<br>' +
             numberLine(sorted.map(function (x) { return { v: x.v, label: x.plain }; }), 15) + '<br>' + t(sorted.map(function (x) { return x.tex; }).join('<')),
             ['Use your calculator to find a decimal for each number, then place it between the right whole numbers.', 'For ' + t('k\\sqrt{m}') + ', find ' + t('\\sqrt{m}') + ' and multiply by ' + t('k') + '.'], 'place ' + it.map(function (x) { return x.plain; }).join(', ') + ' on a number line',

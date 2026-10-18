@@ -240,7 +240,7 @@
       '<b>Domain</b>: ' + t('x') + ' from ' + t(Lp[0]) + ' to ' + t(Rp[0]) + ': ' + t('D=' + D) + '.<br>' +
       '<b>Range</b>: lowest ' + t('y') + ' is ' + t(ymin) + ', highest is ' + t(ymax) + (peak ? ' (the peak ' + t(ptT(M)) + ')' : '') + (!cl0 && !peak ? '. The vertex ' + t(ptT(M)) + ' is on the graph, so ' + t(ymin) + ' is included; ' + t(top) + ' comes only from the hollow ends, so it is excluded' : '') + ': ' + t('R=' + R) + '.';
     var spec = { segs: [{ pts: [Lp, M, Rp], start: ends, end: ends }] };
-    return drPart(o.shade ? shP(o) : G(spec), D, R, { dW: dW, rW: rW, shade: o.shade ? spec : null }, sol,
+    return drPart(o.shade ? shP(o) : G(spec), D, R, { dW: dW, rW: rW, shade: o.shade ? spec : null, hideGraph: o.hideGraph }, sol,
       [HINT_D, peak ? 'The highest point is not always an endpoint — check the corner in the middle.' : HINT_DOTS], o.text || 'domain and range of a V-shaped graph');
   }
   /* a full horizontal (kind 'h', y = c) or vertical (kind 'v', x = c) line */
@@ -344,7 +344,7 @@
     if (!allPt(want) && allPt(got) && got.length > 1) return { code: 'dr-sh-fill', hint: 'The graph is unbroken, so every ' + t(v) + '-value between the ends belongs to the ' + name + ' too: shade between your dots.' };
     if (want.length === 1 && got.length === 1) {
       var q = want[0], g = got[0];
-      if ((!isFinite(q.lo) && isFinite(g.lo)) || (!isFinite(q.hi) && isFinite(g.hi))) return { code: 'dr-sh-arrow', hint: 'The graph has an arrow, so it keeps going past the edge of the grid: the ' + name + ' has no end on that side. Don’t put a dot there — shade right to the end of the number line.' };
+      if ((!isFinite(q.lo) && isFinite(g.lo)) || (!isFinite(q.hi) && isFinite(g.hi))) return { code: 'dr-sh-arrow', hint: 'The graph has an arrow, so it keeps going past the edge of the grid: the ' + name + ' has no end on that side. Don’t put a dot at that end — shade right to the end of the number line.' };
       if ((isFinite(q.lo) && !isFinite(g.lo)) || (isFinite(q.hi) && !isFinite(g.hi))) return { code: 'dr-sh-stop', hint: 'The graph stops at an end dot (not an arrow), so the ' + name + ' stops too: put a dot at that end value and shade only up to it.' };
     }
     return null;
@@ -353,6 +353,7 @@
     o = o || {}; var dv = o.dv || 'x', rv = o.rv || 'y';
     var g = Object.assign({ x: [-6, 6], y: [-6, 6], labels: 1 }, spec); g.max = 300;
     var inp = { graph: g, v: dv, w: rv, dom: Object.assign({ labels: 2 }, o.dom || {}), ran: Object.assign({ labels: 2 }, o.ran || {}) };
+    if (o.hideGraph) inp.hideGraph = true; // the question stem already shows this graph
     var hm = function (h) { return h === HINT_DOTS ? HINT_SH_DOTS : h === HINT_D ? HINT_SHADOW : h; };
     var hs = (hints || []).map(hm); if (hs.indexOf(HINT_SH_DOTS) < 0) hs.push(HINT_SH_DOTS); if (hs.indexOf(HINT_SHADOW) < 0) hs.unshift(HINT_SHADOW);
     var p = B.domrange(prompt, inp, D, R, sol, hs, (text || 'domain and range') + ' (shade)');
@@ -418,7 +419,7 @@
     var spec = { x: [0, sh.T + sh.ts * 0.7], y: [0, sh.H + 9], grid: sh.ts, gridY: 5, labelsX: sh.ts, labelsY: 10, labels: sh.ts, firstQuadrant: true, unitX: 260 / sh.T, unitY: 165 / sh.H, xName: 't', yName: 'h', xTitle: 'Time (s)', yTitle: 'Height (m)',
       segs: [{ pts: [[0, 0], [sh.t1, sh.H], [sh.t2, sh.H], [sh.T, 0]], start: 'closed', end: 'closed' }] };
     return drPart(shade ? 'Show the domain (times) and the range (heights) on the two number lines. Read the scales first. (Next you’ll write them in set notation.)' : '(a) State the domain and the range. Use ' + t('t') + ' and ' + t('h') + '.', D, R,
-      { dv: 't', rv: 'h', shade: shade ? spec : null, dom: { min: 0, max: sh.T + sh.ts, step: sh.ts, labels: sh.ts * 2, snap: sh.ts }, ran: { min: 0, max: sh.H + 10, step: 5, labels: 10, snap: 5 }, dW: [{ is: bld('t', 0, sh.T / sh.ts), code: 'dr-scale', hint: 'Read the scale: each gridline on the time axis is ' + t(sh.ts) + ' s, so the drone lands at ' + t('t=' + sh.T) + ' s.' }, { is: bld('t', sh.t1, sh.t2), code: 'dr-wrong-ends', hint: 'That is only the hovering part. The domain covers the whole flight, from take-off to landing.' }],
+      { dv: 't', rv: 'h', shade: shade ? spec : null, hideGraph: shade, dom: { min: 0, max: sh.T + sh.ts, step: sh.ts, labels: sh.ts * 2, snap: sh.ts }, ran: { min: 0, max: sh.H + 10, step: 5, labels: 10, snap: 5 }, dW: [{ is: bld('t', 0, sh.T / sh.ts), code: 'dr-scale', hint: 'Read the scale: each gridline on the time axis is ' + t(sh.ts) + ' s, so the drone lands at ' + t('t=' + sh.T) + ' s.' }, { is: bld('t', sh.t1, sh.t2), code: 'dr-wrong-ends', hint: 'That is only the hovering part. The domain covers the whole flight, from take-off to landing.' }],
                 rW: [{ is: bld('h', sh.H, sh.H), code: 'dr-wrong-ends', hint: 'The drone is at ' + t(sh.H) + ' m only while hovering; on the way up and down it passes through every height from ' + t('0') + ' to ' + t(sh.H) + '.' }] },
               'Scales: each time gridline is ' + t(sh.ts) + ' s; each height gridline is ' + t('5') + ' m. The flight starts at ' + t('(0,\\ 0)') + ', climbs to ' + t(sh.H) + ' m, hovers from ' + t(sh.t1) + ' to ' + t(sh.t2) + ' s and lands at ' + t(ptT([sh.T, 0])) + '. Time and height are measured, so ' + t('\\in\\mathbb{R}') + '.<br>' + t('D=' + D) + ', ' + t('R=' + R) + '.',
               ['Read the scales on both axes first.', 'Domain: from take-off to landing. Range: from the ground to the highest point.'], 'drone domain and range');
@@ -725,7 +726,7 @@
         shared: function (r) { var xv = r.int(-1, 2), c = r.pick([2, 3]), top = r.int(2, 4), bot = r.int(-4, -2); return { L: [xv - c, top], M: [xv, bot], R: [xv + c, top] }; },
         parts: [
           { id: 'e5a', sub: 'a', level: 'EMG', make: function (r, sh) { var p = vDR(sh.L, sh.M, sh.R, 'closed', { text: 'V with solid ends' }); p.prompt = '(a) State the domain and range.' + p.prompt; return p; } },
-          { id: 'e5bs', sub: 'b, shade', level: 'EMG', make: function (r, sh) { return vDR(sh.L, sh.M, sh.R, 'open', { shade: true, shadePrompt: 'Show the domain and the range of graph (b) on the two number lines. Watch the vertex: it is on the graph. (Next you’ll write them in set notation.)', text: 'V with hollow ends' }); } },
+          { id: 'e5bs', sub: 'b, shade', level: 'EMG', make: function (r, sh) { return vDR(sh.L, sh.M, sh.R, 'open', { shade: true, hideGraph: true, shadePrompt: 'Show the domain and the range of graph (b) on the two number lines. Watch the vertex: it is on the graph. (Next you’ll write them in set notation.)', text: 'V with hollow ends' }); } },
           { id: 'e5b', sub: 'b', level: 'PRG', make: function (r, sh) { var p = vDR(sh.L, sh.M, sh.R, 'open', { text: 'V with hollow ends' }); p.prompt = '(b) State the domain and range.' + p.prompt; return p; } },
           { id: 'e5c', sub: 'c', level: 'EMG', make: function (r, sh) {
             return B.mc(r, '(c) Going from (a) to (b), <b>both</b> bounds of the domain changed from ' + t('\\le') + ' to ' + t('<') + ', but only <b>one</b> bound of the range did. Why did the lower bound of the range, ' + t('y=' + sh.M[1]) + ', not change?', [
