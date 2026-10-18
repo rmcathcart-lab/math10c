@@ -993,16 +993,24 @@
   X.push({ num: '4', section: 'Extra practice B — Plot it, then read it back', stem: function (sh) {
       return 'A tile pattern has this table of values (' + t('n') + ' = figure number, ' + t('W') + ' = number of tiles). Plot the data on a grid.' + HW.valueTable([['\\(n\\)', 1, 2, 3, 4, 5], ['\\(W\\)'].concat([1, 2, 3, 4, 5].map(sh.W))]);
     },
-    shared: function (r) { var a = r.pick([3, 4, 4, 5]), b = r.int(2, 6), q = r.int(3, 5); return { a: a, b: b, q: q, W: function (n) { return a * n + b; } }; },
+    shared: function (r) { var a = r.pick([2, 4, 4]), b = r.pick([2, 4, 6]), q = r.int(3, 5); return { a: a, b: b, q: q, W: function (n) { return a * n + b; } }; }, // even counts: the grid goes up in 2s
     parts: [
-      { id: 'e4a', level: 'BEG', make: function (r, sh) {
+      { id: 'e4p', sub: 'plot', level: 'BEG', make: function (r, sh) {
+        var tp = [1, 2, 3, 4, 5].map(function (n) { return [n, sh.W(n)]; }), target = gv(tp), ym = sh.W(5) + 2;
+        var base = exactChk(target, { joinMatters: true, wrong: [{ is: gv([0, 1, 2, 3, 4].map(function (n) { return [n, sh.W(n + 1)]; })), code: 'off-by-one', hint: 'The figures start at ' + t('n=1') + ': Figure 1 goes at ' + t(pt(tp[0])) + '.' }] }), diag = pointsDiag(tp, 'n', 'W');
+        var check = function (resp) { var res = base(resp); if (res.v === 'wrong' && !res.hint) { var h = diag(resp); if (h) return wrong('graph-points', h); } return res; };
+        return drawPart('Plot the data from the table on the grid. Decide whether to join the points (the <b>Join</b> button).', patternPad(6, ym, 2, { xName: 'n', yName: 'W' }), check, target,
+          'Plot ' + tp.map(function (p) { return t(pt(p)); }).join(', ') + ' as separate points: figure numbers and tile counts are whole numbers, so they are not joined.',
+          ['Each column of the table is one point ' + t('(n,\\ W)') + '.', 'The grid lines go up in 2s.'], 'plot tile table', [gv(tp, [], 'curve'), gv(tp.map(function (p) { return [p[1], p[0]]; })), gv(tp.slice(1))]);
+      } },
+      { id: 'e4a', sub: 'a', level: 'BEG', make: function (r, sh) {
         var q = sh.q, w = sh.W(q);
         return pairPart('State the coordinates of the point that represents Figure ' + t(q) + '.', q, w, null, 'Figure ' + q + ' has ' + t(w) + ' tiles: the point is ' + t(pt([q, w])) + ' (figure number first, then the count).', ['The figure number goes first (horizontal axis).'], 'point for figure ' + q);
       } },
-      { id: 'e4b', level: 'EMG', make: function (r, sh) {
+      { id: 'e4b', sub: 'b', level: 'EMG', make: function (r, sh) {
         return joinMC(r, 'Should the plotted points be joined?', true, 'the figure number and the number of tiles are whole numbers (there is no Figure 2.5 and no half tile)', 'join? tile table');
       } },
-      { id: 'e4c', level: 'EMG', make: function (r, sh) {
+      { id: 'e4c', sub: 'c', level: 'EMG', make: function (r, sh) {
         return mcCols(KP.mc(r, 'The plotted points all lie in one quadrant. Which one, and why can no point of this pattern lie in any other?', [
           { html: 'Quadrant I: both coordinates are counts, so both are always positive.', right: true },
           { html: 'Quadrant II: the pattern grows to the left.', why: 'The figure numbers ' + t('1, 2, 3, \\ldots') + ' are positive, so the points are to the <b>right</b> of the ' + t('y') + '-axis.' },
