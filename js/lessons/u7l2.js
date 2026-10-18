@@ -640,8 +640,8 @@
           { id: 'e2e', level: 'PRG', make: function (r, sh) { return twoPointPart(sh.e); } },
           { id: 'e2f', level: 'EMG', make: function (r, sh) { return twoPointPart(sh.f); } },
           { id: 'e2g', sub: 'surprise', level: 'EMG', make: function (r, sh) {
-            var f = sh.f;
-            return mc(r, 'One of these lines “surprises” you. Which one, and why?', [
+            var f = sh.f, list = ['a', 'b', 'c', 'd', 'e', 'f'].map(function (k) { var o = sh[k]; return '(' + k + ') ' + t(ptT(o.x1, o.y1)) + ' and ' + t(ptT(o.x2, o.y2)); }).join('<br>');
+            return mc(r, 'The six pairs of points are:<br>' + list + '<br>One of these lines “surprises” you. Which one, and why?', [
               { html: '(f): the rise is ' + t('0') + ', so ' + t('m=0') + ', the ' + t('x') + '-term vanishes and the line is horizontal, ' + t('y=' + f.y1) + '.', right: true },
               { html: '(f): the run is ' + t('0') + ', so the slope is undefined and the line is vertical.', why: 'Look again at (f): the ' + t('x') + '-values ' + t(f.x1) + ' and ' + t(f.x2) + ' are different, so the run isn’t ' + t('0') + '. It’s the ' + t('y') + '-values that are equal.' },
               { html: '(d): its ' + t('y') + '-intercept is a fraction, so it can’t be written as ' + t('y=mx+b') + '.', why: 'A fractional ' + t('b') + ' is fine in ' + t('y=mx+b') + '. Look for the line whose slope behaves differently.' },
@@ -679,12 +679,12 @@
             return p;
           } },
           { id: 'e3g', level: 'EMG', outcome: 'RF4', make: function (r, sh) {
-            return mc(r, 'Parts (a) and (b) are about the same line, but one needed an equation solved and the other did not. Which direction is the quick one, and why?', [
+            return mc(r, 'Finding the point on this line with a given ' + t('x') + '-coordinate, and finding the point with a given ' + t('y') + '-coordinate: one needs an equation solved and the other does not. Which direction is the quick one, and why?', [
               { html: 'Given ' + t('x') + ' is quick: ' + t('y=mx+b') + ' has ' + t('y') + ' alone on one side, so you substitute ' + t('x') + ' and evaluate.', right: true },
               { html: 'Given ' + t('y') + ' is quick: you substitute ' + t('y') + ' and read off ' + t('x') + '.', why: 'With ' + t('y') + ' given you still have to undo the ' + t((sh.c < 0 ? '' : '+') + sh.c) + ' and the ' + t('\\times ' + nT(sh.m)) + ' — that’s solving an equation.' },
               { html: 'Both are equally quick, because the slope is a fraction either way.', why: 'One direction only needs arithmetic; the other needs inverse operations. Which one?' },
               { html: 'Given ' + t('x') + ' is quick, because ' + t('x') + ' is always the smaller number.', why: 'The size of the numbers doesn’t matter — it’s about which variable is already by itself.' }],
-              'Given ' + t('x') + ' (part (a)) is quick: substitute and evaluate, and ' + t('y') + ' comes straight out. Given ' + t('y') + ' (part (b)), you must undo the ' + t((sh.c < 0 ? '' : '+') + sh.c) + ' and the ' + t('\\times ' + nT(sh.m)) + ' — an equation to solve. ' + t('y=mx+b') + ' is built as an “' + t('x') + ' in, ' + t('y') + ' out” recipe.',
+              'Given ' + t('x') + ' is quick: substitute and evaluate, and ' + t('y') + ' comes straight out. Given ' + t('y') + ', you must undo the ' + t((sh.c < 0 ? '' : '+') + sh.c) + ' and the ' + t('\\times ' + nT(sh.m)) + ' — an equation to solve. ' + t('y=mx+b') + ' is built as an “' + t('x') + ' in, ' + t('y') + ' out” recipe.',
               ['Which variable is by itself in ' + t('y=mx+b') + '?'], 'which direction is quick');
           } }] },
 
@@ -743,8 +743,8 @@
               ['What is the rise between any two columns?', 'A slope of ' + t('0') + ' makes ' + t('y=mx+b') + ' collapse to ' + t('y=b') + '.'], 'constant table y=' + o.k);
           } },
           { id: 'e5e', level: 'EMG', outcome: 'RF4', make: function (r, sh) {
-            var o = sh.b;
-            return mc(r, 'In table (b) the ' + t('x') + '-values go up in steps of ' + t(o.dx) + ', not ' + t('1') + '. Why are the first differences of the ' + t('y') + '-column (' + t(o.m[0]) + ' each time) <b>not</b> the slope?', [
+            var o = sh.b, xs = [0, 1, 2, 3, 4].map(function (i) { return o.x0 + i * o.dx; });
+            return mc(r, HW.valueTable([[t('x')].concat(xs), [t('y')].concat(xs.map(function (x) { return fv(fAdd(fMul(o.m, x - o.x0), o.y0)); }))]) + 'In this table (table (b)) the ' + t('x') + '-values go up in steps of ' + t(o.dx) + ', not ' + t('1') + '. Why are the first differences of the ' + t('y') + '-column (' + t(o.m[0]) + ' each time) <b>not</b> the slope?', [
               { html: 'Slope is rise ÷ run: each difference ' + t(o.m[0]) + ' is the rise for a run of ' + t(o.dx) + ', so divide by the ' + t('x') + '-step: ' + t('m=' + nT(o.m)) + '.', right: true },
               { html: 'The first differences are the slope only when they are negative.', why: 'The sign has nothing to do with it — what matters is the size of the step in ' + t('x') + '.' },
               { html: 'You must multiply each difference by the ' + t('x') + '-step: ' + t('m=' + (o.m[0] * o.dx)) + '.', why: 'Slope is rise <b>divided</b> by run, so divide by the ' + t('x') + '-step.' },
@@ -943,7 +943,7 @@
         { id: 'e11c', level: 'EMG', make: function (r) { var o = until(function () { return [-r.int(2, 9), -r.int(2, 9)]; }, function (o) { return Math.abs(o[0]) !== Math.abs(o[1]); }); return twoIntPart(o[0], o[1], false); } },
         { id: 'e11d', level: 'EMG', make: function (r) { var o = until(function () { return [r.int(2, 9), r.int(2, 9)]; }, function (o) { return Math.abs(o[0]) !== Math.abs(o[1]); }); return twoIntPart(o[0], o[1], false); } },
         { id: 'e11e', level: 'EMG', make: function (r) {
-          return mc(r, 'In each part above, one of the two given facts went straight into the equation with no work, while the other had to be handled as an ordinary point. Which is which, and why?', [
+          return mc(r, 'When you build ' + t('y=mx+b') + ' from a line’s ' + t('x') + '-intercept and ' + t('y') + '-intercept, one of the two given facts goes straight into the equation with no work, while the other has to be handled as an ordinary point. Which is which, and why?', [
             { html: 'The ' + t('y') + '-intercept is ' + t('b') + ' itself, so it goes straight into ' + t('y=mx+b') + '. The ' + t('x') + '-intercept ' + t('a') + ' has to be written as the point ' + t('(a,\\ 0)') + ' and used (with ' + t('(0,\\ b)') + ') to find the slope.', right: true },
             { html: 'The ' + t('x') + '-intercept goes straight in as ' + t('b') + '; the ' + t('y') + '-intercept is used for the slope.', why: t('b') + ' is where the line crosses the <b>' + t('y') + '</b>-axis.' },
             { html: 'Both go straight in: the ' + t('x') + '-intercept is ' + t('m') + ' and the ' + t('y') + '-intercept is ' + t('b') + '.', why: 'The ' + t('x') + '-intercept isn’t the slope. Write it as the point ' + t('(a,\\ 0)') + ' and compute rise over run.' },
@@ -1003,7 +1003,7 @@
               t(ch + '=' + sh.R + 'h+' + sh.F) + ', so ' + t(Math.round((ch - sh.F) * 100) / 100 + '=' + sh.R + 'h') + ' and ' + t('h=\\frac{' + Math.round((ch - sh.F) * 100) / 100 + '}{' + sh.R + '}=' + sh.h2) + ' hours.', ['Substitute ' + t('C=' + ch) + ' and solve for ' + t('h') + '.'], 'hours for $' + ch, { after: 'hours' });
           } },
           { id: 'e12f', level: 'BEG', outcome: 'RF4', make: function (r, sh) {
-            return mc(r, 'Parts (d) and (e) run the same equation in opposite directions. Which operations does each one need?', [
+            return mc(r, '(d) What does a ' + t(sh.h1) + '-hour rental cost?<br>(e) A customer is charged ' + t('\\$' + money(Math.round(sh.charge * 100) / 100)) + '. For how many hours did they keep the tool?<br>These two questions run the same equation in opposite directions. Which operations does each one need?', [
               { html: '(d) substitutes ' + t('h') + ' and <b>evaluates</b>: multiply, then add. (e) substitutes ' + t('C') + ' and <b>solves</b>: subtract the fee, then divide by the rate.', right: true },
               { html: '(d) solves: subtract, then divide. (e) evaluates: multiply, then add.', why: 'In (d) ' + t('h') + ' is given and ' + t('C') + ' is alone on one side — you just evaluate.' },
               { html: 'Both evaluate: multiply, then add.', why: 'In (e) the unknown is ' + t('h') + ', which isn’t by itself — you have to undo the operations.' },
@@ -1024,11 +1024,11 @@
           } },
           { id: 'e12h', level: 'EMG', outcome: 'RF5', make: function (r, sh) {
             var a = sh.R2 * sh.j, b = sh.R * sh.j + sh.F, diff = Math.round((b - a) * 100) / 100;
-            return mc(r, 'Which shop is cheaper for a ' + t(sh.j) + '-hour job, and by how much?', uniqOpts([
+            return mc(r, 'A rival shop charges no booking fee but ' + t('\\$' + money(sh.R2)) + ' per hour. Which shop is cheaper for a ' + t(sh.j) + '-hour job, and by how much?', uniqOpts([
               { html: 'The rival, by ' + t('\\$' + money(diff)), right: true },
               { html: 'The original shop, by ' + t('\\$' + money(diff)), why: 'Compute both: rival ' + t(sh.R2 + '\\times ' + sh.j) + '; original ' + t(sh.R + '\\times ' + sh.j + '+' + sh.F) + '. Which is smaller?' },
               { html: 'The rival, by ' + t('\\$' + money(Math.round(sh.d * sh.j * 100) / 100)), why: 'That’s only the difference in hourly charges. Include the original shop’s booking fee.' },
-              { html: 'They cost the same.', why: 'They only cost the same at ' + t(Math.round(sh.be * 100) / 100) + ' hours (part (g)).' }]),
+              { html: 'They cost the same.', why: 'They only cost the same at ' + t(Math.round(sh.be * 100) / 100) + ' hours.' }]),
               'Rival: ' + t(sh.R2 + '\\times ' + sh.j + '=\\$' + money(a)) + '; original: ' + t(sh.R + '\\times ' + sh.j + '+' + sh.F + '=\\$' + money(b)) + '. The <b>rival</b> is cheaper by ' + t('\\$' + money(diff)) + '. It starts ' + t('\\$' + sh.F) + ' lower (' + t('b=0') + ' vs ' + t('b=' + sh.F) + ') but climbs ' + t('\\$' + money(sh.d)) + ' per hour faster, so it wins below ' + t(Math.round(sh.be * 100) / 100) + ' h and loses above it.',
               ['Substitute ' + t('h=' + sh.j) + ' into both equations.'], 'cheaper for ' + sh.j + ' h');
           } }] },
@@ -1141,7 +1141,7 @@
           } },
           { id: 'e16d', sub: 'd', level: 'PRG', outcome: 'RF7', make: function (r, sh) {
             var m = fr(sh.v, sh.u), pm_ = nrec(m), M = sh.M;
-            return slopePointPart(pm_, M[0], M[1], 'Use ' + t('M') + ' and the slope from (c) to determine the equation of the perpendicular bisector in the form ' + t('y=mx+b') + '.',
+            return slopePointPart(pm_, M[0], M[1], 'Use the midpoint ' + t('M') + ' of ' + t('AB') + ' and the perpendicular slope to determine the equation of the perpendicular bisector in the form ' + t('y=mx+b') + '.',
               [{ is: LP_(m, M[0], M[1]), code: 'u72-gr-par', hint: 'That line has the slope of ' + t('AB') + ' — it lies along ' + t('AB') + '. Use the perpendicular slope.' }, { is: LP_(pm_, sh.A[0], sh.A[1]), code: 'u72-gr-endpoint', hint: 'That line passes through ' + t('A') + '. The bisector passes through the <b>midpoint</b> ' + t('M') + '.' }, { is: LP_(pm_, sh.B[0], sh.B[1]), code: 'u72-gr-endpoint', hint: 'That line passes through ' + t('B') + '. The bisector passes through the <b>midpoint</b> ' + t('M') + '.' }].concat(perpW(m, { point: M })));
           } },
           { id: 'e16d2', sub: 'd, draw', level: 'EMG', outcome: 'RF6', make: function (r, sh) {
@@ -1163,8 +1163,8 @@
           } },
           { id: 'e16e', sub: 'e', level: 'BEG', outcome: 'RF7', make: function (r, sh) {
             var m = nrec(fr(sh.v, sh.u)), M = sh.M, b = bOf(m, M[0], M[1]);
-            return numPart('Verify your equation: substitute ' + t('x=' + M[0]) + '. What ' + t('y') + '-value does it give?', M[1], [[M[0], 'u72-pt-swap', 'That’s the ' + t('x') + '-value you substituted. Work out ' + t(SI(m, b)) + ' at ' + t('x=' + M[0]) + '.']],
-              t('y=' + nT(m) + '\\left(' + M[0] + '\\right)+' + pT(b) + '=' + nT(fMul(m, M[0])) + '+' + pT(b) + '=' + M[1]) + ' ✓ — so ' + t('M' + ptT(M[0], M[1])) + ' is on the line.', ['Substitute into your equation from (d).'], 'verify M on the bisector', { before: t('y=') });
+            return numPart('Verify the equation of the perpendicular bisector: substitute ' + t('x=' + M[0]) + ' (the ' + t('x') + '-coordinate of the midpoint ' + t('M') + ') into it. What ' + t('y') + '-value does it give?', M[1], [[M[0], 'u72-pt-swap', 'That’s the ' + t('x') + '-value you substituted. Work out ' + t(SI(m, b)) + ' at ' + t('x=' + M[0]) + '.']],
+              t('y=' + nT(m) + '\\left(' + M[0] + '\\right)+' + pT(b) + '=' + nT(fMul(m, M[0])) + '+' + pT(b) + '=' + M[1]) + ' ✓ — so ' + t('M' + ptT(M[0], M[1])) + ' is on the line.', ['Find the bisector’s equation (midpoint of ' + t('AB') + ', negative reciprocal of the slope of ' + t('AB') + '), then substitute.'], 'verify M on the bisector', { before: t('y=') });
           } },
           { id: 'e16f', sub: 'f', level: 'PRG', outcome: 'EXT', make: function (r, sh) {
             var P = sh.P, A = sh.A, Bp = sh.B, N = Math.pow(P[0] - A[0], 2) + Math.pow(P[1] - A[1], 2), k = 1;
@@ -1179,12 +1179,12 @@
             p.bad = [[String(N), String(N)]].concat(spec.k > 1 ? [['\\sqrt{' + N + '}', rt]] : []);
             return p;
           } },
-          { id: 'e16g', sub: 'g', level: 'PRG', outcome: 'EXT', make: function (r) {
-            return mc(r, 'Your answer to (f) is a property every point of a perpendicular bisector has. Which sentence states it?', [
+          { id: 'e16g', sub: 'g', level: 'PRG', outcome: 'EXT', make: function (r, sh) {
+            return mc(r, 'The point ' + t('P' + ptT(sh.P[0], sh.P[1])) + ' on the perpendicular bisector has ' + t('PA=PB') + '. That is a property every point of a perpendicular bisector has. Which sentence states it?', [
               { html: 'Every point on the perpendicular bisector of a segment is the same distance from the two endpoints of the segment.', right: true },
               { html: 'Every point on the perpendicular bisector is the midpoint of the segment.', why: 'Only one point — ' + t('M') + ' — is the midpoint. ' + t('P') + ' isn’t, yet ' + t('PA=PB') + '.' },
               { html: 'Every point on the perpendicular bisector is the same distance from the midpoint as from each endpoint.', why: 'Compare ' + t('PM') + ' with ' + t('PA') + ': they’re different. The equal distances are to the two <b>endpoints</b>.' },
-              { html: 'Every point on the perpendicular bisector is closer to the nearer endpoint.', why: 'In (f), ' + t('PA') + ' and ' + t('PB') + ' were <b>equal</b>.' }],
+              { html: 'Every point on the perpendicular bisector is closer to the nearer endpoint.', why: t('PA') + ' and ' + t('PB') + ' are <b>equal</b>.' }],
               'Every point on the perpendicular bisector of a segment is the <b>same distance from the two endpoints</b> of the segment.', ['What did you notice about ' + t('PA') + ' and ' + t('PB') + '?'], 'perpendicular bisector property');
           } }] },
       { num: '17', stem: '<i>(Multiple Choice)</i>', parts: [
