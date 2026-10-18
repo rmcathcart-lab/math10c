@@ -185,15 +185,16 @@
   function crosses(a, b, c, d) { function o(p, q, s) { return Math.sign((q[0] - p[0]) * (s[1] - p[1]) - (q[1] - p[1]) * (s[0] - p[0])); } return o(a, b, c) * o(a, b, d) < 0 && o(c, d, a) * o(c, d, b) < 0; }
   function apart(a, b, c, d, gap) { return !crosses(a, b, c, d) && Math.min(segD(a, c, d), segD(b, c, d), segD(c, a, b), segD(d, a, b)) >= gap; }
   /* place segments with the given (run, rise) vectors inside win (1 unit from the edges), apart from each other */
-  function place(r, vecs, win, avoid) {
-    avoid = avoid || [0, -1];
-    for (var tr = 0; tr < 500; tr++) {
-      var out = [], good = true, strict = tr < 300;
+  function place(r, vecs, win, avoid, gap) {
+    avoid = avoid || [0, -1]; gap = gap || 1.4;
+    function vals(lo, hi, d, strict) { var out = []; for (var a = lo; a <= hi; a++) if (a + d >= lo && a + d <= hi && (!strict || (avoid.indexOf(a) < 0 && avoid.indexOf(a + d) < 0))) out.push(a); return out; }
+    for (var tr = 0; tr < 2500; tr++) {
+      var out = [], good = true, strict = tr < 2000;
       for (var i = 0; i < vecs.length && good; i++) {
-        var v = vecs[i], A = [r.int(win.x[0] + 1, win.x[1] - 1), r.int(win.y[0] + 1, win.y[1] - 1)], B = [A[0] + v[0], A[1] + v[1]];
-        if (B[0] < win.x[0] + 1 || B[0] > win.x[1] - 1 || B[1] < win.y[0] + 1 || B[1] > win.y[1] - 1) { good = false; break; }
-        if (strict && [A[0], A[1], B[0], B[1]].some(function (z) { return avoid.indexOf(z) >= 0; })) { good = false; break; }
-        for (var j = 0; j < out.length; j++) if (!apart(A, B, out[j][0], out[j][1], strict ? 1.4 : 0.9)) { good = false; break; }
+        var v = vecs[i], xs = vals(win.x[0] + 1, win.x[1] - 1, v[0], strict), ys = vals(win.y[0] + 1, win.y[1] - 1, v[1], strict);
+        if (!xs.length || !ys.length) { good = false; break; }
+        var A = [r.pick(xs), r.pick(ys)], B = [A[0] + v[0], A[1] + v[1]];
+        for (var j = 0; j < out.length; j++) if (!apart(A, B, out[j][0], out[j][1], strict ? gap : 0.9)) { good = false; break; }
         out.push([A, B]);
       }
       if (good) return out;
@@ -389,7 +390,7 @@
     var pool = legPairs(2, 6, function (N, a, b) { return sqFree(N) && a >= 3; });
     for (var i = 0; i < 40; i++) {
       var raw = r.sample(pool, 2); if (raw[0][0] * raw[0][0] + raw[0][1] * raw[0][1] === raw[1][0] * raw[1][0] + raw[1][1] * raw[1][1]) continue;
-      var pl = place(r, raw.map(function (p) { return vecOf(r, p, false); }), { x: [-5, 5], y: [-4, 4] }, [0]);
+      var pl = place(r, raw.map(function (p) { return vecOf(r, p, false); }), { x: [-5, 5], y: [-4, 4] }, [0], 1);
       if (pl) return { segs: pl.map(function (s) { return [[2 * s[0][0], 2 * s[0][1]], [2 * s[1][0], 2 * s[1][1]]]; }) };
     }
     return { segs: [[[-8, -2], [2, 4]], [[-6, 6], [6, -4]]] };

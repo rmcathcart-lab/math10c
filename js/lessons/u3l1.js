@@ -861,17 +861,25 @@
           return tileReadPart(c);
         } }] },
       /* ================= Part C ================= */
-      { num: '10', section: 'Part C — Adding and Subtracting Polynomials', stem: 'Use algebra tiles (or reasoning about zero pairs) to determine the result of the addition.', parts: [
-        { id: '10a', level: 'BEG', make: function (r) {
+      { num: '10', section: 'Part C — Adding and Subtracting Polynomials', stem: 'Use algebra tiles (or reasoning about zero pairs) to determine the result of the addition.',
+        /* (b) is shared so the tile model (b i) and the typed sum (b ii) use the same numbers; ≤ 22 tiles in all */
+        shared: function (r) {
+          var a, b, c, d, g = 0;
+          do { a = r.int(2, 7); b = r.int(1, 5); c = r.int(2, 4); d = r.int(2, 8); g++; } while (g < 200 && (d === b || 2 * a + b + c + d > 22));
+          if (r.chance(0.15)) { a = 5; b = 3; c = 3; d = 5; }
+          return { b: { a: a, b: b, c: c, d: d, A: [T(a, 'x', 1), T(b)], B: [T(c, 'x', 2), T(-a, 'x', 1), T(-d)] } };
+        },
+        parts: [
+        { id: '10a', sub: 'a', level: 'BEG', make: function (r) {
           var a = r.int(1, 6), b = r.int(1, 6), c = r.int(1, 6), d = r.int(1, 6);
           var A = [T(1, 'x', 2), T(-a, 'x', 1), T(-b)], Bq = [T(1, 'x', 2), T(-c, 'x', 1), T(-d)];
           return addSub(null, [{ s: 1, a: A }, { s: 1, a: Bq }], { text: 'add ' + plain(bracketsTex([{ s: 1, a: A }, { s: 1, a: Bq }])),
             wrong: [{ is: S([T(2, 'x', 4), T(-a - c, 'x', 1), T(-b - d)]), code: 'add-exp', hint: 'When you add like terms, add the <b>coefficients</b> and keep the exponent: ' + t('x^{2}+x^{2}=2x^{2}') + ', not ' + t('2x^{4}') + '.' }] });
         } },
-        { id: '10b', level: 'BEG', make: function (r) {
-          var a = r.int(2, 7), b = r.int(1, 5), c = r.int(2, 4), d; do { d = r.int(2, 8); } while (d === b);
-          var A = [T(a, 'x', 1), T(b)], Bq = [T(c, 'x', 2), T(-a, 'x', 1), T(-d)];
-          return addSub(null, [{ s: 1, a: A }, { s: 1, a: Bq }], { text: 'add ' + plain(bracketsTex([{ s: 1, a: A }, { s: 1, a: Bq }])),
+        { id: '10bt', sub: 'b i', level: 'BEG', make: function (r, sh) { return addTilesPart(sh.b.A, sh.b.B); } },
+        { id: '10b', sub: 'b ii', level: 'BEG', make: function (r, sh) {
+          var a = sh.b.a, b = sh.b.b, c = sh.b.c, d = sh.b.d, A = sh.b.A, Bq = sh.b.B;
+          return addSub(t(bracketsTex([{ s: 1, a: A }, { s: 1, a: Bq }])) + '<br>State the result.', [{ s: 1, a: A }, { s: 1, a: Bq }], { text: 'add ' + plain(bracketsTex([{ s: 1, a: A }, { s: 1, a: Bq }])),
             wrong: [{ is: S([T(c, 'x', 2), T(2 * a, 'x', 1), T(b - d)]), code: 'sign', hint: t(a + 'x') + ' and ' + t('-' + a + 'x') + ' are opposites: they form ' + a + ' zero pairs and cancel.' }] });
         } }] },
       { num: '11', stem: 'Use algebra tiles (or reasoning about zero pairs) to determine the result of the subtraction.',
@@ -1191,6 +1199,20 @@
     var extra = { raw: { mat: [], away: pl.key.raw.away.concat(['x', '-x']) } };
     p.bad = [oppA, extra].concat(only.raw.away.length ? [only] : []);
     p.total = pl.total;
+    return p;
+  }
+  /* addition with tiles: the mat starts with A's tiles; the student adds B's tiles and removes the zero pairs (poly mode) */
+  function addTilesPart(Aterms, Bterms) {
+    var Ap = S(Aterms), Bp = S(Bterms), ans = P.add(Ap, Bp), a = cntOf(Ap), b = cntOf(Bp), n = cntOf(ans);
+    var zp = ['x2', 'x', 'one'].filter(function (k) { return a[k] * b[k] < 0; }).map(function (k) { return Math.min(Math.abs(a[k]), Math.abs(b[k])) + ' zero pair' + (Math.min(Math.abs(a[k]), Math.abs(b[k])) === 1 ? '' : 's') + ' of ' + TNM[k] + 's'; });
+    var p = buildPart(n, { prompt: 'The mat shows ' + t(W(Aterms)) + '. Add the tiles for ' + t(W(Bterms)) + ', then remove the zero pairs. The tiles left show the sum.', text: 'add with tiles ' + plain(W(Aterms)) + ' + ' + plain(B(Bterms)),
+      sol: 'Add ' + tileDesc({ x2: tc(b.x2), x: tc(b.x), one: tc(b.one) }) + ' to the mat.' + (zp.length ? ' Remove ' + zp.join(' and ') + ' — each pair is worth ' + t('0') + '.' : '') + '<br>Left: ' + tileDesc({ x2: tc(n.x2), x: tc(n.x), one: tc(n.one) }) + ', so the sum is ' + t(tx(ans)) + '.',
+      hints: ['Add the tiles for ' + t(W(Bterms)) + ': the shape comes from the power of ' + t('x') + ', the colour from the sign.', 'A shaded and a white tile of the same shape cancel: remove each such pair (tap a tile to remove it).'],
+      wrong: [{ is: a, code: 'no-change', hint: 'The mat still shows only ' + t(W(Aterms)) + '. Add the tiles for ' + t(W(Bterms)) + ' too.' }, { is: cntOf(P.sub(Ap, Bp)), code: 'tile-colour', hint: 'You added the tiles of the <b>opposite</b> of ' + t(B(Bterms)) + '. This is an addition: add its tiles with their own colours (negative terms are white).' }],
+      bad: [a, cntOf(P.sub(Ap, Bp))] });
+    p.input = { mode: 'poly', start: a, limit: 26 };
+    p.input.type = 'tilepad';
+    p.bad.push({ x2: n.x2, x: n.x, one: n.one, raw: { mat: HW.tiles.count(a).concat(HW.tiles.count(b)) } });   // right value, zero pairs left in
     return p;
   }
   function likeGrid(rows, text) {

@@ -227,7 +227,8 @@
       stem: function (o) { return '<b>The whole unit on one line.</b> Everything Lessons 1–6 taught you can be asked about the single equation ' + t(gT(o.L)) + '. Work through the parts in order; each one feeds the next.'; },
       parts: [
         { id: 'e1a', sub: 'a', level: 'EMG', outcome: 'RF6', make: function (r, o) {
-          return B.slope('State the slope, using ' + t('m=-\\frac{A}{B}') + ' (then confirm it by solving the equation for ' + t('y') + ').', o.m, {}, t('m=-\\frac{A}{B}=-\\frac{' + o.L.A + '}{' + o.L.B + '}=' + qT(o.m)) + '.<br>Check: ' + t(pol([[o.L.B, 'y']]) + '=' + pol([[-o.L.A, 'x'], [-o.L.C, '']])) + ', so ' + t(sT(o.L)) + ' ✓',
+          var raw = '-\\frac{' + o.L.A + '}{' + o.L.B + '}';
+          return B.slope('State the slope, using ' + t('m=-\\frac{A}{B}') + ' (then confirm it by solving the equation for ' + t('y') + ').', o.m, {}, t('m=-\\frac{A}{B}=' + raw + (raw === qT(o.m) ? '' : '=' + qT(o.m))) + '.<br>Check: ' + t(pol([[o.L.B, 'y']]) + '=' + pol([[-o.L.A, 'x'], [-o.L.C, '']])) + ', so ' + t(sT(o.L)) + ' ✓',
             ['For ' + t('Ax+By+C=0') + ', ' + t('A') + ' is the ' + t('x') + '-coefficient and ' + t('B') + ' is the ' + t('y') + '-coefficient.'], 'slope from general form');
         } },
         { id: 'e1b', sub: 'b', level: 'PRG', outcome: 'RF5', make: function (r, o) { return intsP('Determine both intercepts <b>as ordered pairs</b>.', o.L, intSteps(o.L), ['Set ' + t('y=0') + ' for the ' + t('x') + '-intercept, and ' + t('x=0') + ' for the ' + t('y') + '-intercept.'], 'intercepts from general form'); } },

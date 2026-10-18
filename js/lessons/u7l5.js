@@ -331,9 +331,9 @@
         },
         parts: [
           { id: '5', level: 'PRG', make: function (r, sh) {
-            var rows = sh.lines.map(function (ln, i) { return { id: 'e' + (i + 1), html: 'Equation ' + (i + 1) + ': ' + nw(t(ln.tex)) }; }), cols = ['A', 'B', 'C', 'D'].map(function (l) { return { id: l, html: 'Graph ' + l }; }), want = {};
+            var rows = sh.lines.map(function (ln, i) { return { id: 'e' + (i + 1), html: '<b>Eqn ' + (i + 1) + '</b> ' + nw(t(ln.tex)) }; }), cols = ['A', 'B', 'C', 'D'].map(function (l) { return { id: l, html: l }; }), want = {};
             sh.lines.forEach(function (ln, i) { want['e' + (i + 1)] = ln.letter; });
-            return K.P.grid('Choose the graph for each equation.', rows, cols, want, { why: function (row) { var i = +row.slice(1) - 1; return 'Check Equation ' + (i + 1) + ': rewrite it as ' + t('y=mx+b') + '. Does it rise or fall? Is it steep or shallow? Where does it cross the ' + t('y') + '-axis?'; } },
+            return K.P.grid('Choose the graph (A, B, C or D) for each equation.', rows, cols, want, { why: function (row) { var i = +row.slice(1) - 1; return 'Check Equation ' + (i + 1) + ': rewrite it as ' + t('y=mx+b') + '. Does it rise or fall? Is it steep or shallow? Where does it cross the ' + t('y') + '-axis?'; } },
               'Rewrite each as ' + t('y=mx+b') + ' and compare.<br>' + sh.lines.map(function (ln, i) { return 'Eqn ' + (i + 1) + ': ' + t(ln.tex) + (ln.form === 'si' ? '' : ' → ' + t(si(ln.L))) + ' (' + t('m=' + fT(ln.m)) + ', ' + t('b=' + ln.b) + ') — ' + (Math.abs(fv(ln.m)) > 1 ? 'steep' : 'shallow') + ' and ' + (ln.m[0] > 0 ? 'rising' : 'falling') + ', crossing at ' + t(ln.b) + ': <b>Graph ' + ln.letter + '</b>.'; }).join('<br>'),
               ['The sign of ' + t('m') + ' tells you rising or falling; its size tells you steep or shallow; ' + t('b') + ' tells you where it crosses the ' + t('y') + '-axis.'], 'match equations to graphs');
           } }] },
@@ -352,9 +352,9 @@
         stem: function (sh) { return '<b>Sorting equivalent forms.</b> The eight equations below describe only three different lines. Sort them into groups, where every equation in a group describes the same line.'; },
         parts: [
           { id: '6a', sub: 'sort', level: 'PRG', make: function (r, sh) {
-            var rows = sh.eqs.map(function (e) { return { id: e.id, html: '<b>' + e.id + '.</b> ' + nw(t(e.tex)) }; }), cols = sh.order.map(function (g) { return { id: 'g' + g, html: t(si(sh.L[g - 1])) }; }), want = {};
+            var rows = sh.eqs.map(function (e) { return { id: e.id, html: '<b>' + e.id + '.</b> ' + nw(t(e.tex)) }; }), cols = sh.order.map(function (g, j) { return { id: 'g' + g, html: 'Line ' + (j + 1) }; }), want = {};
             sh.eqs.forEach(function (e) { want[e.id] = 'g' + e.g; });
-            return K.P.grid('Rewrite each equation in slope–intercept form, then tap the line it describes.', rows, cols, want, {
+            return K.P.grid('Rewrite each equation in slope–intercept form, then tap the line it describes:<br>' + sh.order.map(function (g, j) { return nw('<b>Line ' + (j + 1) + ':</b> ' + t(si(sh.L[g - 1]))); }).join(' &nbsp; '), rows, cols, want, {
               why: function (row, got, w) { var pair = [got, w].sort().join(); return pair === 'g1,g3' ? row + ' has the right slope but check its ' + t('y') + '-intercept: lines with the same slope and different intercepts are parallel, not the same line.' : 'Check ' + row + ': rewrite it as ' + t('y=mx+b') + ' and compare the slope and the ' + t('y') + '-intercept.'; } },
               sh.eqs.map(function (e) { return '<b>' + e.id + ':</b> ' + t(e.tex) + ' → ' + t(si(sh.L[e.g - 1])); }).join('<br>') + '<br>The lone general-form equation with slope ' + t(fT(slopeOf(sh.L[2]))) + ' and ' + t('b=' + fT(yInt(sh.L[2]))) + ' has the same slope as the four-equation group but a different ' + t('y') + '-intercept: it is parallel to that line, not the same line.',
               ['Get ' + t('y') + ' by itself in each one. For slope–point form, expand the bracket and add ' + t('y_1') + ' to both sides.'], 'sort 8 equations into 3 lines');

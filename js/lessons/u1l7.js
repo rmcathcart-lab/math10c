@@ -92,7 +92,7 @@
   var SS_OF = { nat: 'N', zero: 'W', negint: 'I', frac: 'Q', irr: 'Qbar' }, SS_CHAIN = ['N', 'W', 'I', 'Q'], SS_TEX = { N: 'N', W: 'W', I: 'I', Q: 'Q', Qbar: '\\overline{Q}' };
   function ssHint(c, put) {
     var X = t(c.tex), why = c.note ? ' (' + t(c.note) + ')' : '', want = SS_OF[c.cls];
-    if (want === 'Qbar') return { code: 'sets-irr', hint: X + ' is irrational' + why + ': its decimal never ends and never repeats.' };
+    if (want === 'Qbar') return { code: 'sets-irr', hint: X + ' is irrational' + (c.note ? ': ' + t(c.note) + ', so its' : ': its') + ' decimal never ends and never repeats.' };
     if (put === 'Qbar') return { code: 'sets-rat', hint: X + ' is rational' + why + ': it can be written as a fraction of integers.' };
     if (SS_CHAIN.indexOf(put) > SS_CHAIN.indexOf(want)) return { code: 'not-smallest', hint: X + why + ' does belong to ' + t(SS_TEX[put]) + ', but it also fits in a smaller set inside it. Put each number in the <b>innermost</b> set.' };
     if (c.cls === 'zero') return { code: 'sets-zero-N', hint: t('0') + ' is a whole number, but the natural numbers start at ' + t('1') + '.' };
