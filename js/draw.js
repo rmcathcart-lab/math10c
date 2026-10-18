@@ -710,7 +710,7 @@
       });
       if (rect) {
         var tp = sortToks(state.top), sd = sortToks(state.side);
-        view.innerHTML = tp.length && sd.length ? HW.tiles.frame(tp, sd, { fill: true }) + '<div class="tp-cap">' + HW.k('(' + P.tex(D.tileFactors(api.value())[0]) + ')(' + P.tex(D.tileFactors(api.value())[1]) + ')') + '</div>' : '<div class="muted tp-empty">Put tiles along the top and down the side to see the rectangle.</div>';
+        view.innerHTML = tp.length && sd.length ? HW.tiles.frame(tp, sd, { fill: true }) + (opt.caption ? '<div class="tp-cap">' + HW.k('(' + P.tex(D.tileFactors(api.value())[0]) + ')(' + P.tex(D.tileFactors(api.value())[1]) + ')') + '</div>' : '') : '<div class="muted tp-empty">Put tiles along the top and down the side to see the rectangle.</div>';
       }
       undoB.disabled = !hist.length;
     }

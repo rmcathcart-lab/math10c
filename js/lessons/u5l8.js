@@ -774,16 +774,20 @@
       /* ---------------- Q13 seedling ---------------- */
       { num: '13', section: 'Part D — Models in function notation', shared: seedShared,
         stem: function (sh) { return 'A greenhouse seedling is treated with a special nutrient solution. The seedling’s height is modelled by ' + t(sh.rule) + ', where ' + t('H(t)') + ' is the height of the seedling, in cm, ' + t('t') + ' days after treatment begins.'; }, parts: [
-        { id: '13a', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
-          var T = sh.T, top = sh.H(T), alt = cl(sh.c + T * sh.q / sh.p), ym = Math.ceil(Math.max(top, alt) / 10) * 10 + 10;
-          var o = { x: [0, T + sh.q], y: [0, ym], gx: sh.q, gy: 10, lx: 2 * sh.q, ly: 20, xName: 't', yName: 'H' };
-          var G = function (segs) { return ctxGraph(o, segs); };
-          return graphMC(r, '(a) The seedling reaches maturity ' + t(T) + ' days after treatment begins (see part (f)). Which graph shows the function from treatment to maturity?', [
-            { html: G([{ pts: [[0, sh.c], [T, top]], start: 'closed', end: 'closed' }]), right: true },
-            { html: G([{ pts: [[0, sh.c], [T, alt]], start: 'closed', end: 'closed' }]), why: 'Check the rate: the height rises ' + t(sh.p) + ' cm every ' + t(sh.q) + ' days, so ' + t('H(' + T + ')=' + top) + '.' },
-            { html: G([{ pts: [[0, 0], [T, top - sh.c]], start: 'closed', end: 'closed' }]), why: 'At ' + t('t=0') + ' the seedling is already ' + t(sh.c) + ' cm tall: ' + t('H(0)=' + sh.c) + '.' },
-            { html: G([{ pts: [[0, sh.c], [T + sh.q, sh.H(T + sh.q)]], start: 'closed', end: 'arrow' }]), why: 'The model stops at maturity, ' + t('t=' + T) + ': the graph should end with a dot there, not an arrow.' }],
-            'The graph starts at ' + t('(0,\\ ' + sh.c + ')') + ' and rises ' + t(sh.p) + ' cm every ' + t(sh.q) + ' days, ending at ' + t(ptT([T, top])) + '.', ['Find ' + t('H(0)') + ' and ' + t('H(' + T + ')') + ' first.'], 'sketch seedling');
+        { id: '13a', level: 'PRG', outcome: 'RF1', make: function (r, sh) {
+          var T = sh.T, top = sh.H(T), alt = cl(sh.c + T * sh.q / sh.p), ym = Math.ceil((top + 5) / 10) * 10;
+          var I = padIn({ x: [0, T + sh.q], y: [0, ym], sx: sh.q, sy: 5, lx: 2 * sh.q, ly: 10, v: 't', w: 'H(t)', xTitle: 't (days)', yTitle: 'H(t) (cm)' });
+          var S = segSketch({ f: sh.H, X0: 0, X1: T, sx: sh.q, sy: 5, name: 'H', v: 't',
+            start0: 'At ' + t('t=0') + ' the seedling is already ' + t(sh.c) + ' cm tall: ' + t('H(0)=' + sh.c) + ', so the graph starts on the vertical axis at ' + t(sh.c) + ', not at the origin.',
+            endX: 'The model stops at maturity, ' + t('t=' + T) + ' days: end the segment there.', arrow: 'The model stops at maturity, ' + t('t=' + T) + ': end the graph with a solid dot there, not an arrow.',
+            dir: 'The seedling grows, so the graph rises from ' + t('H(0)=' + sh.c) + ' to ' + t('H(' + T + ')=' + top) + '.' });
+          var p = B.graph('(a) The seedling reaches maturity ' + t(T) + ' days after treatment begins (see part (f)). Sketch the graph of the function from treatment to maturity.' + LINE_HELP, I, S.check, S.key,
+            t('H(0)=' + sh.c) + ' and ' + t('H(' + T + ')=\\frac{' + sh.p + '}{' + sh.q + '}(' + T + ')+' + sh.c + '=' + top) + '. The graph is a segment that starts at ' + t('(0,\\ ' + sh.c + ')') + ' and rises ' + t(sh.p) + ' cm every ' + t(sh.q) + ' days, ending with a solid dot at ' + t(ptT([T, top])) + ' (maturity).',
+            ['Find ' + t('H(0)') + ' and ' + t('H(' + T + ')') + ' first: those are the two ends.', 'The domain runs from ' + t('t=0') + ' to maturity, ' + t('t=' + T) + '.'], 'sketch seedling');
+          p.bad = [drawing([seg([0, 0], [T, snapTo(top - sh.c, 5)])]), drawing([seg(S.A, [T + sh.q, snapTo(sh.H(T + sh.q), 5)], 'closed', 'arrow')]), drawing([seg([0, snapTo(top, 5)], [T, snapTo(sh.c, 5)])]),
+            drawing([seg(S.A, [T + sh.q, snapTo(sh.H(T + sh.q), 5)])]), drawing([seg(S.A, S.B, 'closed', 'open')])];
+          if (Math.abs(snapTo(alt, 5) - S.B[1]) > 1e-9 && alt <= ym) p.bad.push(drawing([seg(S.A, [T, snapTo(alt, 5)])]));
+          return p;
         } },
         { id: '13b', level: 'BEG', make: function (r, sh) {
           var x = 2 * sh.q, v = sh.H(x);
