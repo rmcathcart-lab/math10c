@@ -219,15 +219,30 @@
   };
 
   /* ---------------- drawing -> HW.graph spec (for answers and solutions) ---------------- */
-  function smooth(pts) {   // Catmull-Rom through points sorted by x, sampled
-    var p = pts.slice().sort(function (a, b) { return a[0] - b[0]; }), out = [];
-    for (var i = 0; i < p.length - 1; i++) {
-      var p0 = p[i - 1] || p[i], p1 = p[i], p2 = p[i + 1], p3 = p[i + 2] || p2;
-      for (var s = 0; s < 12; s++) { var u = s / 12, u2 = u * u, u3 = u2 * u; out.push([0.5 * ((2 * p1[0]) + (-p0[0] + p2[0]) * u + (2 * p0[0] - 5 * p1[0] + 4 * p2[0] - p3[0]) * u2 + (-p0[0] + 3 * p1[0] - 3 * p2[0] + p3[0]) * u3), 0.5 * ((2 * p1[1]) + (-p0[1] + p2[1]) * u + (2 * p0[1] - 5 * p1[1] + 4 * p2[1] - p3[1]) * u2 + (-p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1]) * u3)]); }
+  function smooth(pts) {   // monotone cubic (no overshoot) through points sorted by x, sampled
+    var p = pts.slice().sort(function (a, b) { return a[0] - b[0]; }).filter(function (q, i, arr) { return i === 0 || q[0] > arr[i - 1][0]; }), n = p.length, out = [];
+    if (n < 3) return p;
+    var d = [], m = [];
+    for (var i = 0; i < n - 1; i++) d.push((p[i + 1][1] - p[i][1]) / (p[i + 1][0] - p[i][0]));
+    m[0] = d[0]; m[n - 1] = d[n - 2];
+    for (var k = 1; k < n - 1; k++) m[k] = d[k - 1] * d[k] <= 0 ? 0 : (d[k - 1] + d[k]) / 2;
+    for (var k2 = 0; k2 < n - 1; k2++) { if (d[k2] === 0) { m[k2] = 0; m[k2 + 1] = 0; continue; } var a = m[k2] / d[k2], b = m[k2 + 1] / d[k2], h = a * a + b * b; if (h > 9) { var tt = 3 / Math.sqrt(h); m[k2] = tt * a * d[k2]; m[k2 + 1] = tt * b * d[k2]; } }
+    for (var j2 = 0; j2 < n - 1; j2++) {
+      var x0 = p[j2][0], x1 = p[j2 + 1][0], y0 = p[j2][1], y1 = p[j2 + 1][1], hh = x1 - x0;
+      for (var s2 = 0; s2 < 12; s2++) { var u = s2 / 12, h00 = 2 * u * u * u - 3 * u * u + 1, h10 = u * u * u - 2 * u * u + u, h01 = -2 * u * u * u + 3 * u * u, h11 = u * u * u - u * u; out.push([x0 + u * hh, h00 * y0 + h10 * hh * m[j2] + h01 * y1 + h11 * hh * m[j2 + 1]]); }
     }
-    out.push(p[p.length - 1]); return out;
+    out.push(p[n - 1]); return out;
   }
   D.smooth = smooth;
+  function toEdge(p, q, xr, yr) {   // from p, continue away from q until the window edge
+    var dx = p[0] - q[0], dy = p[1] - q[1], best = INF;
+    if (dx > 0) best = Math.min(best, (xr[1] - p[0]) / dx); if (dx < 0) best = Math.min(best, (xr[0] - p[0]) / dx);
+    if (dy > 0) best = Math.min(best, (yr[1] - p[1]) / dy); if (dy < 0) best = Math.min(best, (yr[0] - p[1]) / dy);
+    if (!isFinite(best) || best <= 0) return p; return [p[0] + dx * best, p[1] + dy * best];
+  }
+  D.toEdge = toEdge;
+  function extendPiece(pc, xr, yr) { var v = pc.v.slice(); if (v.length < 2) return pc; if (pc.s === 'arrow') v[0] = toEdge(v[0], v[1], xr, yr); if (pc.e === 'arrow') v[v.length - 1] = toEdge(v[v.length - 1], v[v.length - 2], xr, yr); return { v: v, s: pc.s, e: pc.e }; }
+  D.extendPiece = extendPiece;
   D.toGraph = function (value, color) {
     var v = D.norm(value), segs = [], points = [];
     v.pieces.forEach(function (pc) { segs.push({ pts: pc.v, start: pc.s, end: pc.e, color: color }); });
@@ -238,7 +253,7 @@
   };
   D.graphOf = function (input, value, extra) {
     var spec = {}; Object.keys(input || {}).forEach(function (k) { if (k !== 'type') spec[k] = input[k]; });
-    var bg = input.bg || {}, dv = D.toGraph(value);
+    var bg = input.bg || {}, xr = input.x || [-6, 6], yr = input.y || [-6, 6], nv = D.norm(value); nv.pieces = nv.pieces.map(function (pc) { return extendPiece(pc, xr, yr); }); var dv = D.toGraph(nv);
     spec.segs = (bg.segs || []).concat(dv.segs); spec.points = (bg.points || []).concat(dv.points); spec.fns = bg.fns || [];
     Object.keys(extra || {}).forEach(function (k) { spec[k] = extra[k]; });
     return HW.graph(spec);
@@ -252,6 +267,7 @@
     return function (resp) {
       var e = emptyForm(resp); if (e) return e;
       var S = D.norm(resp), Sk = geomKey(D.geom(S));
+      if (Sk === Tk && !(opt.joinMatters && T.pts.length && !T.pieces.length && S.pts.length && (S.join === 'none') !== (T.join === 'none'))) return ok();
       if (opt.joinMatters && T.pts.length && (S.join === 'none') !== (T.join === 'none')) {
         var S2 = D.norm(resp); S2.join = T.join;
         if (geomKey(D.geom(S2)) === Tk) return wrong(T.join === 'none' ? 'graph-joined' : 'graph-not-joined', T.join === 'none' ? 'Your points are right — but here only these separate values make sense, so don’t join them.' : 'Your points are right — now join them: every value in between makes sense too.');
@@ -527,13 +543,15 @@
     function render() {
       var X = Lt.X, Y = Lt.Y, s = '';
       if (state.join !== 'none' && state.pts.length > 1) { var sm = smooth(state.pts); s += '<polyline points="' + sm.map(function (p) { return X(p[0]).toFixed(1) + ',' + Y(p[1]).toFixed(1); }).join(' ') + '" fill="none" stroke="' + COL + '" stroke-width="2.6"/>'; }
-      state.pieces.forEach(function (pc, k) {
+      state.pieces.forEach(function (pc0, k) {
+        var pc = k === chain ? pc0 : extendPiece(pc0, Lt.xr, Lt.yr);
         if (pc.v.length >= 2) s += '<polyline points="' + pc.v.map(function (p) { return X(p[0]) + ',' + Y(p[1]); }).join(' ') + '" fill="none" stroke="' + COL + '" stroke-width="2.8" stroke-linejoin="round" stroke-linecap="round"/>';
         pc.v.forEach(function (p, i) { if (i > 0 && i < pc.v.length - 1) s += '<circle cx="' + X(p[0]) + '" cy="' + Y(p[1]) + '" r="2.4" fill="' + COL + '"/>'; });
         if (pc.v.length >= 2) {
           var a = pc.v[0], b = pc.v[1], z = pc.v[pc.v.length - 1], y2 = pc.v[pc.v.length - 2];
           s += endMark(pc.s, X(a[0]), Y(a[1]), X(a[0]) - X(b[0]), Y(a[1]) - Y(b[1])) + endMark(pc.e, X(z[0]), Y(z[1]), X(z[0]) - X(y2[0]), Y(z[1]) - Y(y2[1]));
         }
+        [['s', 0], ['e', pc0.v.length - 1]].forEach(function (q) { if (pc0[q[0]] === 'arrow' && pc0.v.length >= 2) { var vv = pc0.v[q[1]]; s += '<circle cx="' + X(vv[0]) + '" cy="' + Y(vv[1]) + '" r="2.6" fill="' + COL + '"/>'; } });
         if (k === chain) { var lv = pc.v[pc.v.length - 1]; s += '<circle cx="' + X(lv[0]) + '" cy="' + Y(lv[1]) + '" r="7" fill="none" stroke="#c4532a" stroke-width="2"/>'; }
       });
       state.pts.forEach(function (p) { s += '<circle cx="' + X(p[0]) + '" cy="' + Y(p[1]) + '" r="5" fill="' + COL + '"/>'; });

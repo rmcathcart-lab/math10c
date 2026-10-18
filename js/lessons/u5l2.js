@@ -182,7 +182,7 @@
     var base = K.graphExact(target, opt);
     return function (resp) { if (!DR.empty(resp) && DR.same(resp, target)) return ok(); return base(resp); };
   }
-  function withDiag(base, diag) { return function (resp) { var res = base(resp); if (res.v === 'wrong' && !res.hint) { var h = diag(resp); if (h) return wrong(h.code || 'graph-points', h.hint || h); } return res; }; }
+  function withDiag(base, diag) { return function (resp) { var res = base(resp); if (res.v === 'wrong' && (!res.hint || res.code === 'graph-points')) { var h = diag(resp); if (h) return wrong(h.code || 'graph-points', h.hint || h); } return res; }; }
   function pointsDiag(tp, xName, yName) { // a plotted point at the right x but the wrong y
     return function (resp) {
       var S = DR.norm(resp);

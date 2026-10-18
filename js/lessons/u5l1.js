@@ -461,7 +461,7 @@
               { is: noC, code: 'forgot-centre', hint: 'Check Figure 1: it has ' + sh.S(1) + ' dots (don’t forget the ' + (sh.a === 2 ? 'bottom' : 'centre') + ' dot), so its point is ' + t(pt([1, sh.S(1)])) + '.' },
               { is: shift, code: 'off-by-one', hint: 'Each point is one figure ahead. Figure 1 has ' + sh.S(1) + ' dots: its point is ' + t(pt([1, sh.S(1)])) + '.' },
               { is: from0, code: 'off-by-one', hint: 'The figures start at ' + t('N=1') + ', not ' + t('N=0') + ': Figure 1 goes at ' + t(pt([1, sh.S(1)])) + '.' }] }), diag = pointsDiag(tp, 'N', 'S');
-            var check = function (resp) { var res = base(resp); if (res.v === 'wrong' && !res.hint) { var h = diag(resp); if (h) return wrong('graph-points', h); } return res; };
+            var check = function (resp) { var res = base(resp); if (res.v === 'wrong' && (!res.hint || res.code === 'graph-points')) { var h = diag(resp); if (h) return wrong('graph-points', h); } return res; };
             var inp = patternPad(6, sh.S(5) + 1 + (sh.S(5) + 1) % 2, 1, { xName: 'N', yName: 'S' });
             return drawPart('Represent the data from the table on the grid. Decide whether to join the points (the <b>Join</b> button).', inp, check, target,
               'Plot ' + tp.map(function (p) { return t(pt(p)); }).join(', ') + ' and leave them as separate points: the figure number is a whole number (there is no Figure 2.5), so nothing in between has meaning.',
@@ -999,7 +999,7 @@
       { id: 'e4p', sub: 'plot', level: 'BEG', make: function (r, sh) {
         var tp = [1, 2, 3, 4, 5].map(function (n) { return [n, sh.W(n)]; }), target = gv(tp), ym = sh.W(5) + 2;
         var base = exactChk(target, { joinMatters: true, wrong: [{ is: gv([0, 1, 2, 3, 4].map(function (n) { return [n, sh.W(n + 1)]; })), code: 'off-by-one', hint: 'The figures start at ' + t('n=1') + ': Figure 1 goes at ' + t(pt(tp[0])) + '.' }] }), diag = pointsDiag(tp, 'n', 'W');
-        var check = function (resp) { var res = base(resp); if (res.v === 'wrong' && !res.hint) { var h = diag(resp); if (h) return wrong('graph-points', h); } return res; };
+        var check = function (resp) { var res = base(resp); if (res.v === 'wrong' && (!res.hint || res.code === 'graph-points')) { var h = diag(resp); if (h) return wrong('graph-points', h); } return res; };
         return drawPart('Plot the data from the table on the grid. Decide whether to join the points (the <b>Join</b> button).', patternPad(6, ym, 2, { xName: 'n', yName: 'W' }), check, target,
           'Plot ' + tp.map(function (p) { return t(pt(p)); }).join(', ') + ' as separate points: figure numbers and tile counts are whole numbers, so they are not joined.',
           ['Each column of the table is one point ' + t('(n,\\ W)') + '.', 'The grid lines go up in 2s.'], 'plot tile table', [gv(tp, [], 'curve'), gv(tp.map(function (p) { return [p[1], p[0]]; })), gv(tp.slice(1))]);
@@ -1106,7 +1106,7 @@
         var base = exactChk(target, { joinMatters: true, wrong: [
           { is: gv(ns.map(function (n) { return [n + 1, sh.T(n)]; })), code: 'axis-start', hint: 'The horizontal axis starts at ' + t('n=0') + ': Figure 0 goes on the vertical axis, at ' + t(pt([0, sh.c])) + '.' },
           { is: gv(tp.slice(1)), code: 'graph-missing', hint: 'Don’t forget Figure 0: its point ' + t(pt([0, sh.c])) + ' sits on the vertical axis.' }] }), diag = pointsDiag(tp, 'n', 'T');
-        var check = function (resp) { var res = base(resp); if (res.v === 'wrong' && !res.hint) { var h = diag(resp); if (h) return wrong('graph-points', h); } return res; };
+        var check = function (resp) { var res = base(resp); if (res.v === 'wrong' && (!res.hint || res.code === 'graph-points')) { var h = diag(resp); if (h) return wrong('graph-points', h); } return res; };
         return drawPart('Plot the data from the table on the grid (the horizontal axis starts at ' + t('n=0') + '). Decide whether to join the points.', patternPad(7, ym, 1, { xName: 'n', yName: 'T' }), check, target,
           'Plot ' + tp.map(function (p) { return t(pt(p)); }).join(', ') + '. Figure 0 is on the vertical axis. The points stay separate: there is no Figure 2.5.',
           ['Figure 0 is a point too: ' + t('(0,\\ ' + sh.c + ')') + '.', 'Is there a Figure 2.5? If not, don’t join the points.'], 'plot figure-0 table',
