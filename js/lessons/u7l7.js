@@ -300,7 +300,7 @@
             t('m=' + qT(o.m) + (isInt(qm(o.m, 100)) ? '=' + dec(qv(o.m)) : '')) + ' L/km: the water supply <b>decreases by ' + rt + ' litres for every kilometre paddled</b>.', ['Units of a slope: units of ' + t('y') + ' per unit of ' + t('x') + '.'], 'interpret slope (kayak)');
         } },
         { id: 'e1k2', sub: 'k2', level: 'PRG', outcome: 'RF5', make: function (r, o) {
-          return mc(r, 'Which sentence interprets the two intercepts, ' + t(ptT([0, o.b])) + ' and ' + t(ptT([o.a, 0])) + '?', [
+          return mc(r, 'On the kayak trip (' + t('x') + ' = kilometres paddled, ' + t('y') + ' = litres of water left), which sentence interprets the two intercepts, ' + t(ptT([0, o.b])) + ' and ' + t(ptT([o.a, 0])) + '?', [
             { html: 'The group set out with ' + t(o.b) + ' L of water, and after ' + t(o.a) + ' km the supply runs out.', right: true },
             { html: 'The group set out with ' + t(o.a) + ' L of water, and after ' + t(o.b) + ' km the supply runs out.', why: 'Check which axis is which: ' + t('y') + ' (litres) is ' + t(o.b) + ' when ' + t('x=0') + '; ' + t('x') + ' (km) is ' + t(o.a) + ' when ' + t('y=0') + '.' },
             { html: 'The trip is ' + t(o.b) + ' km long and uses ' + t(o.a) + ' L of water.', why: 'The ' + t('y') + '-intercept is an amount of water at the start, and the ' + t('x') + '-intercept is a distance.' },
@@ -308,7 +308,7 @@
             t(ptT([0, o.b])) + ': at ' + t('x=0') + ' km the group has ' + t(o.b) + ' L — what they set out with.<br>' + t(ptT([o.a, 0])) + ': after ' + t(o.a) + ' km the supply is ' + t('0') + ' — the ' + t('x') + '-intercept marks the moment the water runs out.', ['At each intercept, one of the two quantities is zero. What does that mean here?'], 'interpret intercepts (kayak)');
         } },
         { id: 'e1k3', sub: 'k3', level: 'EMG', outcome: 'RF5', make: function (r, o) {
-          return B.fields('How much water is left after ' + t(o.x5) + ' km? After how many kilometres is the supply gone?', [fld('water left', 'fraction', { after: 'L' }), fld('supply gone after', 'fraction', { after: 'km' })], [exactV(qv(o.w5)), exactV(o.a)], [qT(o.w5), String(o.a)],
+          return B.fields('On the kayak trip (' + t('x') + ' = kilometres paddled, ' + t('y') + ' = litres of water left): how much water is left after ' + t(o.x5) + ' km? After how many kilometres is the supply gone?', [fld('water left', 'fraction', { after: 'L' }), fld('supply gone after', 'fraction', { after: 'km' })], [exactV(qv(o.w5)), exactV(o.a)], [qT(o.w5), String(o.a)],
             t(qT(o.w5)) + ' L; after ' + t(o.a) + ' km',
             'After ' + t(o.x5) + ' km (substitute and <b>evaluate</b>): ' + t('y=' + qT(o.m) + '(' + o.x5 + ')+' + o.b + '=' + qT(o.w5) + (isInt(qm(o.w5, 100)) && !isInt(o.w5) ? '=' + dec(qv(o.w5)) : '')) + ' L.<br>Gone (substitute ' + t('y=0') + ' and <b>solve</b>): ' + t(pol([[o.L.A, 'x'], [o.L.C, '']]) + '=0') + ', ' + t('x=' + o.a) + ' km.',
             ['Evaluate the equation at ' + t('x=' + o.x5) + '. “Gone” means ' + t('y=0') + '.'], 'use the model (kayak)');
@@ -726,9 +726,10 @@
             t(o.Y0 + o.tp) + ': ' + t('t=' + o.tp) + '. ' + t('D=' + o.m + '(' + o.tp + ')+' + o.b + '=' + F(D)) + ' m', ['Convert the year to ' + t('t') + ' first.'], 'predict (glacier)', { after: 'm' });
         } },
         { id: 'e9e', sub: 'e', level: 'PRG', outcome: 'RF4', make: function (r, o) {
-          var tt = Math.round(o.te), Y = o.Y0 + tt;
-          return B.number('In which year does the model predict the terminus passes ' + t(o.T / 1000) + ' km from the marker? Answer to the nearest year.', Y, function (v) { if (v === tt) return { code: 'year-t', hint: 'That is ' + t('t') + ', the number of years since ' + t(o.Y0) + '. Add ' + t(o.Y0) + ' to get the year.' }; if (Math.abs(v - (o.Y0 + Math.round((o.T / 1000 - o.b) / o.m))) < 0.5) return { code: 'unit-conv', hint: t(o.T / 1000) + ' km is ' + t(F(o.T)) + ' m: the model is in metres.' }; return null; },
+          var tt = Math.round(o.te), Y = o.Y0 + tt, part;
+          part = B.number('In which year does the model predict the terminus passes ' + t(o.T / 1000) + ' km from the marker? Answer to the nearest year.', Y, function (v) { if (v === tt) return { code: 'year-t', hint: 'That is ' + t('t') + ', the number of years since ' + t(o.Y0) + '. Add ' + t(o.Y0) + ' to get the year.' }; if (Math.abs(v - (o.Y0 + Math.round((o.T / 1000 - o.b) / o.m))) < 0.5) return { code: 'unit-conv', hint: t(o.T / 1000) + ' km is ' + t(F(o.T)) + ' m: the model is in metres.' }; return null; },
             t(o.T / 1000 + '\\text{ km}=' + F(o.T) + '\\text{ m}') + '. ' + t(o.m + 't+' + o.b + '=' + F(o.T)) + ' ⟹ ' + t(o.m + 't=' + F(o.T - o.b)) + ' ⟹ ' + t('t=' + dec(Math.floor(o.te * 1000) / 1000) + '\\ldots\\approx ' + tt) + '. ' + t(o.Y0 + '+' + tt + '=' + Y), ['Change km to metres, solve for ' + t('t') + ', then add ' + t(o.Y0) + '.'], 'solve for year (glacier)');
+          part.answer = t(String(Y)); return part;
         } },
         { id: 'e9f', sub: 'f', level: 'EMG', outcome: 'RF5', make: function (r, o) {
           var k = o.m / 10;

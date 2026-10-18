@@ -2,7 +2,8 @@
  * Assignment questions 1–10 (u3_L04.tex) and the whole Lesson 4 Extra Practice (u3_EP04.tex, Q1–17).
  * Every part is a generator: it keeps the structure of the booklet question (signs, which factor carries the
  * coefficient, number of letters, special pairs) and changes the numbers; the booklet's numbers are one of the
- * possible values. Keys are built with HW.poly from the generated numbers. Levels: LIM BEG EMG PRG ADV MAS. */
+ * possible values. Keys are built with HW.poly from the generated numbers. Levels: LIM BEG EMG PRG ADV MAS.
+ * Q1 (area model): the student fills the six-box area box (js/draw2.js areabox), then the expansion is its own part. */
 (function (root) {
   'use strict';
   var HW = root.HW, K = HW.kit, KP = K.P, t = K.t;

@@ -502,7 +502,7 @@
     var sx = opt.snapX || opt.snap || opt.grid || 1, sy = opt.snapY || opt.snap || opt.gridY || opt.grid || 1;
     var state = { pts: [], pieces: [], join: 'none' }, chain = null, tool = tools[0], hist = [], disabled = false;
     var toolBtns = {};
-    var names = { point: '● Point', line: '╱ Line', ends: '●○ Ends' }, tips = { point: 'Tap to place a point. Tap a point again to remove it.', line: 'Tap where the line starts, then tap each next corner. Tap the last point again to finish.', ends: 'Tap the end of a line to change it: solid dot → open dot → arrow → nothing.' };
+    var names = { point: '● Point', line: '╱ Line', ends: '●○ Ends' }, tips = { point: 'Tap to place a point. Tap a point again to remove it.', line: 'Tap where the line starts, then tap each next corner. Tap the last point again to finish. To close a shape, tap the first corner, then tap it once more to finish.', ends: 'Tap the end of a line to change it: solid dot → open dot → arrow → nothing.' };
     if (tools.length > 1) tools.forEach(function (k) { var b = btn(names[k], 'dr-tool'); b.addEventListener('click', function () { setTool(k); }); toolBtns[k] = b; bar.appendChild(b); });
     var joinBtn = null;
     if (opt.join) { joinBtn = btn('Join: off', 'dr-tool', 'Join the points with a smooth curve'); joinBtn.addEventListener('click', function () { if (disabled) return; push(); state.join = state.join === 'none' ? 'curve' : 'none'; render(); }); bar.appendChild(joinBtn); }
@@ -527,8 +527,8 @@
       } else if (tool === 'line') {
         if (chain == null) {
           push();
-          var hit = -1; state.pieces.forEach(function (pc, k) { if (hit < 0 && sameP(pc.v[pc.v.length - 1], P0)) hit = k; else if (hit < 0 && sameP(pc.v[0], P0)) { pc.v.reverse(); var tmp = pc.s; pc.s = pc.e; pc.e = tmp; hit = k; } });
-          if (hit >= 0) chain = hit; else { state.pieces.push({ v: [P0], s: defEnd, e: defEnd }); chain = state.pieces.length - 1; }
+          // a new tap always starts a new line, even at the end of an existing one (two lines through a shared vertex stay two lines)
+          state.pieces.push({ v: [P0], s: defEnd, e: defEnd }); chain = state.pieces.length - 1;
         } else {
           var pc = state.pieces[chain], last = pc.v[pc.v.length - 1];
           if (sameP(last, P0)) finishChain(); else { push(); pc.v.push(P0); }

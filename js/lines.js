@@ -14,7 +14,7 @@
  *       Diagnoses: slope sign, reciprocal slope (run over rise), perpendicular slope, right slope/wrong intercept,
  *       right intercept/wrong slope, horizontal vs vertical, misses the given point.
  *   K.P.line(prompt, target, opt, sol, hints, text) -> part with the 'eq' keypad (digits, x, y, =, fraction, brackets).
- *   K.slope(p, q, opt) -> checker for a slope value p/q (fractions, integers, 'undefined' for vertical, 0);
+ *   K.slope(slope, opt) -> checker for a slope value (slope = [p, q], a number, or null = undefined); opt.diag(v) runs first (fractions, integers, 'undefined' for vertical, 0);
  *       diagnoses run/rise, sign, and a negative written as −(−a/b). K.P.slope(prompt, slope, opt, sol, hints, text).
  */
 (function (root) {
@@ -69,7 +69,7 @@
     if (fm === 'point-slope' && point) {
       var side = function (v, k) { return k === 0 ? v : v + (k > 0 ? '-' : '+') + frT.apply(null, toFr(Math.abs(k))); };
       var mm = toFr(m), mT = mm[0] === mm[1] ? '' : mm[0] === -mm[1] ? '-' : frT(mm[0], mm[1]);
-      return side(Y, point[1]) + '=' + (m === 0 ? '0' : mT + (point[0] === 0 && mT ? X : '(' + side(X, point[0]) + ')'));
+      return side(Y, point[1]) + '=' + (m === 0 ? '0' : point[0] === 0 ? mT + X : mT === '' ? side(X, point[0]) : mT + '(' + side(X, point[0]) + ')');
     }
     var r = termT(m, X, true); r += termT(b, '', !r); return Y + '=' + (r || '0');
   };
@@ -147,7 +147,9 @@
   };
   K.P.line = function (prompt, target, opt, sol, hints, text) {
     opt = opt || {}; var vars = opt.vars || ['x', 'y'];
-    var key = opt.keyTex || Lns.tex(target, opt.form === 'any' || !opt.form ? 'slope-intercept' : opt.form, opt.point, vars);
+    var fmK = opt.form === 'any' || !opt.form ? 'slope-intercept' : opt.form, ptK = opt.point || target.point;
+    if (fmK === 'point-slope' && !ptK) { var LL = Lns.of(target); ptK = LL[1] === 0 ? null : [0, -LL[2] / LL[1]]; if (!ptK) fmK = 'slope-intercept'; }
+    var key = opt.keyTex || Lns.tex(target, fmK, ptK, vars);
     return K.P.math(prompt, K.line(target, opt), key, sol, hints, text, { keys: 'eq', vars: vars, placeholder: opt.placeholder || (opt.form === 'general' ? 'e.g. 2x - 3y + 6 = 0' : opt.form === 'point-slope' ? 'e.g. y - 3 = 2(x + 1)' : 'e.g. y = 2x + 3') });
   };
 
@@ -164,11 +166,11 @@
       var v = ex.value(a.ast); if (!isFinite(v)) return form('unreadable', 'Write the slope as a number or fraction.');
       if (und) return wrong(v === 0 ? 'slope-zero-und' : 'slope-num-und', v === 0 ? 'A slope of 0 is a <b>horizontal</b> line. This line is vertical: the run is 0, and you can’t divide by 0 — the slope is undefined.' : 'This line is vertical: the run is 0, so the slope is undefined.');
       var tv = T[0] / T[1];
+      if (opt.diag && !near(v, tv)) { var h0 = opt.diag(v); if (h0) return wrong(h0.code || 'slope', h0.hint); }
       if (near(v, tv)) { var r = ratAst(a.ast); if (opt.lowest !== false && r && Math.abs(r[1]) !== 1 && gcd(r[0], r[1]) > 1) return form('slope-lowest', 'Right — now reduce the fraction to lowest terms.'); return ok(); }
       if (tv !== 0 && near(v, -tv)) return wrong('slope-sign', opt.signHint || 'Check the sign of the slope: subtract the coordinates in the same order on the top and the bottom' + (opt.graph ? ' — the line ' + (tv > 0 ? 'rises' : 'falls') + ' from left to right' : '') + '.');
       if (tv !== 0 && near(v, 1 / tv)) return wrong('slope-flip', 'Slope is <b>rise over run</b> (change in ' + t('y') + ' over change in ' + t('x') + ') — you have run over rise.');
       if (tv !== 0 && near(v, -1 / tv)) return wrong('slope-perp', 'That’s the negative reciprocal — the slope of a perpendicular line.');
-      if (opt.diag) { var h = opt.diag(v); if (h) return wrong(h.code || 'slope', h.hint); }
       return wrong('slope', null);
     };
   };
@@ -188,8 +190,9 @@
       plus: { label: '+', tex: '+', plain: '+' }, minus: { label: '−', tex: '-', plain: '-' }, eq: { label: '=', tex: '=', plain: '=' }, frac: { label: '<sup>a</sup>⁄<sub>b</sub>', tex: '\\frac{#@}{#?}', plain: '/', title: 'Fraction' },
       par: { label: '( )', tex: '\\left(#0\\right)', plain: '(', title: 'Brackets' }, dot: { label: '.', tex: '.', plain: '.' } };
     W.KEYSETS.eq = function (opt) {
-      var vs = (opt && opt.vars && opt.vars.length ? opt.vars : ['x', 'y']).slice(0, 3).map(function (v) { return { label: '<i>' + v + '</i>', tex: v, plain: v }; });
-      return [[d(7), d(8), d(9), KY.plus, KY.minus, KY.del], [d(4), d(5), d(6), KY.frac, KY.par, KY.clear], [d(1), d(2), d(3), KY.eq, KY.left, KY.right], [d(0), KY.dot].concat(vs, [KY.enter])];
+      var vs = (opt && opt.vars && opt.vars.length ? opt.vars : ['x', 'y']).slice(0, 8).map(function (v) { return { label: '<i>' + v + '</i>', tex: v, plain: v }; });
+      var rows = [[d(7), d(8), d(9), KY.plus, KY.minus, KY.del], [d(4), d(5), d(6), KY.frac, KY.par, KY.clear], [d(1), d(2), d(3), KY.eq, KY.left, KY.right]];
+      return vs.length <= 3 ? rows.concat([[d(0), KY.dot].concat(vs, [KY.enter])]) : rows.concat([[d(0), KY.dot, KY.enter], vs]);
     };
     W.KEYSETS.slope = function () { return [[d(7), d(8), d(9), KY.frac, KY.del], [d(4), d(5), d(6), KY.minus, KY.clear], [d(1), d(2), d(3), KY.left, KY.right], [d(0), KY.dot, { label: 'undef.', tex: '\\text{undefined}', plain: 'undefined', title: 'Undefined (vertical line)' }, KY.enter]]; };
     W.KEYHELP.eq = ['Type the whole equation, e.g. ' + HW.k('y=-\\frac{2}{3}x+4') + '. Use <b><sup>a</sup>⁄<sub>b</sub></b> for a fraction and <b>▶</b> to step out of it.', 'Type e.g. <code>y = -2/3x + 4</code> or <code>2x - 3y + 6 = 0</code>.'];

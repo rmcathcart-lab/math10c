@@ -60,6 +60,7 @@
       if (r.v === 'form' && r.code === 'line-vars') return form('line-vars', 'Use the letters from the question: ' + t(lhs) + ' and ' + t(X) + '.');
       if (r.v === 'form' && r.code === 'line-form-si') return form('line-form-si', 'Right equation — now write it in the form ' + t(lhs + '=m' + X + '+b') + ', with ' + t(lhs) + ' by itself on the left.');
       if (r.v === 'wrong' && r.code === 'line-intercept' && o.bHint) return wrong('line-intercept', o.bHint);
+      if (r.hint && o.fn) r = { v: r.v, code: r.code, hint: r.hint.split(t(Y) + '-intercept').join('vertical intercept (the value at ' + t(X + '=0') + ')') };
       if (r.v === 'wrong' && r.code === 'line-slope' && o.mHint) return wrong('line-slope', o.mHint);
       return r;
     };
@@ -1092,7 +1093,7 @@
         stem: function (sh) {
           var L = ['A', 'B', 'C', 'D', 'E'];
           return 'The curve shows the depth of snow on a flat roof through a spring thaw, where ' + t('t') + ' is the number of hours after 8 a.m. and ' + t('d') + ' is the depth in centimetres. The five marked points lie exactly on the curve.' +
-            fig({ x: [0, 8.8], y: [0, sh.c + 6], gx: 1, gy: 5, lx: 1, ly: 10, xn: 't', yn: 'd', xt: 'Time, t (h)', yt: 'Depth, d (cm)', fns: [{ f: sh.d, from: 0, to: 8 }], points: sh.P.map(function (p, i) { return { x: p[0], y: p[1], label: L[i] + '(' + p[0] + ', ' + p[1] + ')' }; }), aria: 'snow depth curve' });
+            fig({ x: [0, 9.6], y: [0, sh.c + 6], gx: 1, gy: 5, lx: 1, ly: 10, xn: 't', yn: 'd', xt: 'Time, t (h)', yt: 'Depth, d (cm)', fns: [{ f: sh.d, from: 0, to: 8 }], points: sh.P.map(function (p, i) { return { x: p[0], y: p[1], label: L[i] + '(' + p[0] + ', ' + p[1] + ')' }; }), aria: 'snow depth curve' });
         },
         parts: [
           { id: 'e10a', level: 'BEG', make: function (r, sh) {

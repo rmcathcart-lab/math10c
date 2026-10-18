@@ -23,7 +23,7 @@
     abs: { label: '|x|', tex: '\\left|#0\\right|', plain: '|', title: 'Absolute value' }
   };
   W.KEYSETS = {
-    radical: [[d(7), d(8), d(9), K.sqrt, K.cbrt, K.del], [d(4), d(5), d(6), K.nrt, K.frac, K.clear], [d(1), d(2), d(3), K.neg, K.left, K.right], [d(0), K.dot, K.times, K.enter]],
+    radical: [[d(7), d(8), d(9), K.sqrt, K.cbrt, K.del], [d(4), d(5), d(6), K.nrt, K.frac, K.clear], [d(1), d(2), d(3), K.neg, K.left, K.right], [d(0), K.dot, K.times, { label: '+', tex: '+', plain: '+' }, K.enter]],
     fraction: [[d(7), d(8), d(9), K.frac, K.del], [d(4), d(5), d(6), K.neg, K.clear], [d(1), d(2), d(3), K.left, K.right], [d(0), K.dot, K.enter]],
     decimal: [[d(7), d(8), d(9), K.bar, K.del], [d(4), d(5), d(6), K.neg, K.clear], [d(1), d(2), d(3), K.left, K.right], [d(0), K.dot, K.frac, K.enter]],
     expr: [[d(7), d(8), d(9), K.sqrt, K.nrt, K.del], [d(4), d(5), d(6), K.frac, K.pow, K.clear], [d(1), d(2), d(3), K.pi, K.left, K.right], [d(0), K.dot, K.neg, K.times, K.enter]],

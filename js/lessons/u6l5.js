@@ -237,7 +237,7 @@
   function drPart(prompt, Dt, Rt, o, sol, hints, text) {
     o = o || {};
     var p = B.fields(prompt, [fSet('Domain', o.v || 'x'), fSet('Range', o.w || 'y')],
-      [K.set(Dt, { v: o.v, other: Rt, otherName: 'range', wrong: o.dWrong }), K.set(Rt, { v: o.w, other: Dt, otherName: 'domain', wrong: o.rWrong })], [Dt, Rt],
+      [K.set(Dt, { v: o.v || 'x', other: Rt, otherName: 'range', wrong: o.dWrong }), K.set(Rt, { v: o.w || 'y', other: Dt, otherName: 'domain', wrong: o.rWrong })], [Dt, Rt],
       'Domain: ' + t(Dt) + '<br>Range: ' + t(Rt), sol, hints, text);
     p.bad = (o.bad || []).concat(Dt !== Rt ? [[Rt, Dt]] : []).filter(function (x) { return !(x[0] === Dt && x[1] === Rt); });
     p.good = o.good || [];
@@ -501,7 +501,7 @@
             if (near(v, -o.c)) return { code: 'ctx-rate-step', hint: t('-' + o.c) + ' km is the change for each step of ' + t(o.s) + ' minutes. The slope is the change <b>per minute</b>: divide by ' + t(o.s) + '.' };
             return null; } },
             t('m=\\dfrac{\\Delta d}{\\Delta t}=\\dfrac{-' + o.c + '\\text{ km}}{' + o.s + '\\text{ min}}=-' + dT(o.rate)) + ' km/min.', ['Slope = change in ' + t('d') + ' ÷ change in ' + t('t') + '. Distance from home is going <b>down</b>.'], 'context slope -' + o.rate);
-          p.input.after = '\\text{ km/min}'; p.input.keys = 'fraction'; p.input.placeholder = 'e.g. -0.5'; p.key = '-' + dT(o.rate); p.answer = t('-' + dT(o.rate) + '\\text{ km/min}');
+          p.input.after = '\\text{ km/min}'; p.input.placeholder = 'e.g. -0.5'; p.key = '-' + dT(o.rate); p.answer = t('-' + dT(o.rate) + '\\text{ km/min}');
           p.good = [nT([-o.c, o.s])]; p.bad = ['-' + o.c, dT(o.rate), nT([-o.s, o.c])];
           return p;
         } },
@@ -589,7 +589,7 @@
             ['A slanted line always crosses both axes. When are those crossings the same point?'], 'one intercept + ' + s + ' slope');
         } }] },
       { num: '11', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: '11', level: 'BEG', make: function (r) {
+        { id: '11', level: 'LIM', make: function (r) {
           var h = r.pick(nz(-5, 5)), k = r.pick(nz(-6, 6).filter(function (z) { return Math.abs(z) !== Math.abs(h); })), hor = r.chance(0.7);
           var oH = { html: 'domain ' + t(ALLX) + ', range ' + t('\\{' + k + '\\}') }, oV = { html: 'domain ' + t('\\{' + h + '\\}') + ', range ' + t(ALLY) }, oA = { html: 'domain ' + t(ALLX) + ', range ' + t(ALLY) }, oP = { html: 'domain ' + t('\\{' + h + '\\}') + ', range ' + t('\\{' + k + '\\}') };
           if (hor) { oH.right = true; oV.why = 'That describes the <b>vertical</b> line through the point.'; } else { oV.right = true; oH.why = 'That describes the <b>horizontal</b> line through the point.'; }
@@ -652,7 +652,7 @@
         stem: function (o) { var dy = diffs(o.ys); return 'Jordan says the relation in this table is <b>not</b> linear, because the ' + t('y') + '-values go ' + (o.m > 0 ? 'up' : 'down') + ' by different amounts (' + t(dy.map(function (v) { return Math.abs(v); }).join(',\\ ')) + ').' + tbl(o.xs, o.ys); }, parts: [
         { id: 'e1a', level: 'PRG', make: function (r, o) {
           var dx = diffs(o.xs), dy = diffs(o.ys);
-          return mc(r, 'Is Jordan correct?', [
+          return mc(r, 'Is Jordan correct? Choose the answer with the correct reasoning.', [
             { html: 'No. The ' + t('x') + '-steps are not equal, so compare rates: ' + t('\\frac{\\Delta y}{\\Delta x}') + ' is ' + t(o.m) + ' every time, so the relation <b>is</b> linear.', right: true },
             { html: 'Yes. In a linear relation the ' + t('y') + '-values always change by the same amount.', why: 'Only when the ' + t('x') + '-steps are equal. Here they are ' + t(dx.join(',\\ ')) + ', so divide each change in ' + t('y') + ' by its change in ' + t('x') + '.' },
             { html: 'Yes. A table can only be linear if its ' + t('x') + '-values go up in equal steps.', why: 'Uneven steps are fine — you just compare ' + t('\\frac{\\Delta y}{\\Delta x}') + ' instead of the changes in ' + t('y') + '.' },
@@ -660,7 +660,7 @@
             'The ' + t('x') + '-steps are ' + t(dx.join(',\\ ')) + ', so compare rates: ' + t(dy.map(function (d, i) { return qT(d, dx[i]); }).join('=') + '=' + o.m) + '. The rate is constant, so Jordan is wrong: the relation is linear.',
             ['Look at the ' + t('x') + '-values. Are the steps equal?'], 'Jordan uneven table');
         } },
-        { id: 'e1b', level: 'ADV', make: function (r, o) {
+        { id: 'e1b', level: 'PRG', make: function (r, o) {
           var y0 = o.ys[0], dy0 = o.ys[1] - o.ys[0];
           return B.number('State the ' + t('y') + '-intercept of its graph.', o.b, function (v) {
             if (v === y0) return { code: 'nr-first-y', hint: t(y0) + ' is ' + t('y') + ' at ' + t('x=' + o.x0) + ', not at ' + t('x=0') + '.' };
@@ -691,7 +691,7 @@
           var p = B.fields(tbl(xs, ys) + 'State both intercepts (exact values).', [fMath(t('x') + '-intercept:', 'e.g. 9/2', 'fraction', false), fMath(t('y') + '-intercept:', 'e.g. -4', 'fraction', false)],
             [valChk(X, { v: 'x', other: b }), valChk(b, { v: 'y', other: X, diag: function (v) { if (v === ys[0] - 2 * m) return { code: 'stepback', hint: 'You stepped back a whole column (' + t('2') + ' units). From ' + t('x=1') + ' to ' + t('x=0') + ' is just ' + t('1') + ' unit.' }; if (v === ys[0]) return { code: 'nr-first-y', hint: t(ys[0]) + ' is ' + t('y') + ' at ' + t('x=1') + '.' }; return null; } })],
             [nT(Xf), String(b)], t('x') + '-intercept ' + t(nT(Xf)) + ', ' + t('y') + '-intercept ' + t(b),
-            'Slope: ' + t(qT(2 * m, 2) + '=' + m) + '. ' + t('y') + '-intercept: from ' + t(ptT([1, ys[0]])) + ' step back ' + t('1') + ': ' + t(ys[0] + '-(' + m + ')=' + b) + '.<br>' + t('x') + '-intercept: ' + t('y') + ' must change by ' + t(sgT(-b)) + ' from ' + t(ptT([0, b])) + ', which takes ' + t(qT(-b, m) + '=' + nT(Xf)) + ' units of ' + t('x') + '. So the ' + t('x') + '-intercept is ' + t(nT(Xf)) + '.',
+            'Slope: ' + t(qT(2 * m, 2) + '=' + m) + '. ' + t('y') + '-intercept: from ' + t(ptT([1, ys[0]])) + ' step back ' + t('1') + ': ' + t(ys[0] + '-(' + m + ')=' + b) + '.<br>' + t('x') + '-intercept: ' + t('y') + ' must change by ' + t(sgT(-b)) + ' from ' + t(ptT([0, b])) + ', so ' + t('x') + ' must change by ' + t(qT(-b, m) + '=' + nT(Xf)) + '. So the ' + t('x') + '-intercept is ' + t(nT(Xf)) + '.',
             ['Find the slope first (per unit of ' + t('x') + ').', 'From the ' + t('y') + '-intercept, how far must ' + t('x') + ' move for ' + t('y') + ' to reach ' + t('0') + '?'], 'intercepts, neither in table');
           p.bad = [[String(b), nT(Xf)]];
           if (Math.abs(rv(Xf) * 10 % 1) < 1e-9 && rv(Xf) % 1 !== 0) p.good = [[dT(rv(Xf)), String(b)]];
@@ -706,7 +706,7 @@
           var lo = Math.min(y1, y2), hi = Math.max(y1, y2), loOpen = (lo === y2) === openRight, R = between('y', lo, hi, loOpen ? '<' : '\\le ', loOpen ? '\\le ' : '<');
           var figS = fig(G({ segs: [{ pts: [[x1, y1], [x2, y2]], start: sL, end: sR }] }));
           return drPart(figS + 'State the domain and the range.', Dd, R,
-            { rWrong: [{ is: between('y', x1, x2), code: 'set-xy', hint: 'The range uses the ' + t('y') + '-coordinates of the endpoints.' }],
+            { rWrong: x1 === lo && x2 === hi ? [] : [{ is: between('y', x1, x2), code: 'set-xy', hint: 'The range uses the ' + t('y') + '-coordinates of the endpoints.' }],
               bad: [[between('x', x1, x2), between('y', lo, hi)], [Dd, between('y', lo, hi)]] },
             'The segment runs from ' + t(ptT([x1, y1])) + ' (' + sL + ' dot) to ' + t(ptT([x2, y2])) + ' (' + sR + ' dot). An open dot means that value is <b>not</b> included (' + t('<') + ').<br>Domain ' + t(Dd) + ', Range ' + t(R) + '.',
             ['Read the endpoints. A solid dot is included (' + t('\\le') + '), an open dot is not (' + t('<') + ').', 'For the range, the smaller ' + t('y') + '-value goes first — keep track of which endpoint it belongs to.'], 'D and R of segment with open end');
@@ -757,7 +757,7 @@
           var ss = r.pick([-1, 1]), qx = r.pick([-1, 1]), qy = ss < 0 ? -qx : qx;   // an impossible combination
           var sw = function (s) { return s < 0 ? '<0' : '>0'; }, ex1 = [2 * qx, 0], ex2 = [0, 3 * qy], exS = nT([-3 * qy, 2 * qx]);
           var okY = ss < 0 ? qx : -qx;
-          return mc(r, 'Is a line with slope ' + t(sw(ss)) + ', ' + t('x') + '-intercept ' + t(sw(qx)) + ' and ' + t('y') + '-intercept ' + t(sw(qy)) + ' possible?', [
+          return mc(r, 'Is a line with slope ' + t(sw(ss)) + ', ' + t('x') + '-intercept ' + t(sw(qx)) + ' and ' + t('y') + '-intercept ' + t(sw(qy)) + ' possible? Choose the answer with the correct reasoning.', [
             { html: 'No. Through ' + t('(a,\\ 0)') + ' and ' + t('(0,\\ b)') + ' the slope is ' + t('-\\frac{b}{a}') + '; with ' + t('a' + sw(qx)) + ' and ' + t('b' + sw(qy)) + ' that is always ' + signW(-ss) + '.', right: true },
             { html: 'Yes — for example the line through ' + t(ptT(ex1)) + ' and ' + t(ptT(ex2)) + '.', why: 'Work out that line’s slope: ' + t(qT(3 * qy, -2 * qx) + '=' + exS) + ', which is ' + signW(-ss) + ', not ' + signW(ss) + '.' },
             { html: 'Yes — the slope and the intercepts don’t depend on each other.', why: 'They do: from ' + t('(a,\\ 0)') + ' to ' + t('(0,\\ b)') + ' the slope is ' + t('\\frac{b-0}{0-a}=-\\frac{b}{a}') + ', so the signs of the intercepts decide the sign of the slope.' },
@@ -776,7 +776,7 @@
           var rows = items.map(function (it, i) { return { id: 'r' + i, html: it.html }; }), want = {}; items.forEach(function (it, i) { want['r' + i] = it.w; });
           return B.grid('Is each relation linear?', rows, [{ id: 'lin', html: 'Linear' }, { id: 'non', html: 'Not linear' }], want,
             { why: function (id) { var it = items[Number(id.slice(1))]; return { code: 'row', hint: it.why }; } },
-            items.map(function (it) { return it.html + ': ' + (it.w === 'lin' ? '<b>linear</b>' : '<b>not linear</b>') + ' — ' + it.why; }).join('<br>'),
+            items.map(function (it) { return it.html.replace(/\.$/, '') + ': ' + (it.w === 'lin' ? '<b>linear</b>' : '<b>not linear</b>') + ' — ' + it.why; }).join('<br>'),
             ['Linear means a constant rate of change: equal steps in the input always give equal changes in the output.'], 'linear or not: pairs and words');
         } }] },
       { num: '9', section: 'Extra practice F — Intercepts from a table', stem: '<i>(Numerical Response)</i> The table represents a linear relation.', parts: [

@@ -152,7 +152,7 @@
     return { v: v, parts: merge(parts), backwards: back };
   }
   function parseSet(tex) {
-    var s = normalize(tex).trim();
+    var s = normalize(String(tex == null ? '' : tex).replace(/(\d)(?:\\,|\\ |\u2009| )(?=\d{3}(?!\d))/g, '$1')).trim(); // digit groups: 44\,823 -> 44823
     if (!s) return { ok: false, why: 'empty' };
     var toks = tokens(s); if (!toks) return { ok: false, why: 'unreadable' };
     // strip "D =" / "R =" / "Domain:" style prefixes
@@ -420,7 +420,7 @@
       return [[d(7), d(8), d(9), KY.frac, KY.del], [d(4), d(5), d(6), KY.sqrt, KY.clear], [d(1), d(2), d(3), KY.minus, KY.left, KY.right], [d(0), KY.dot, { label: '<i>' + v + '</i> =', tex: v + '=', plain: v + ' = ' }, KY.comma, KY.pm, KY.enter]];
     };
     W.KEYSETS.pairs = function () {
-      return [[d(7), d(8), d(9), KY.par, KY.del], [d(4), d(5), d(6), KY.braces, KY.clear], [d(1), d(2), d(3), KY.minus, KY.left, KY.right], [d(0), KY.dot, KY.comma, KY.frac, KY.enter]];
+      return [[d(7), d(8), d(9), KY.par, KY.del], [d(4), d(5), d(6), KY.braces, KY.clear], [d(1), d(2), d(3), KY.minus, KY.left, KY.right], [d(0), KY.dot, KY.comma, KY.frac, KY.sqrt, KY.enter]];
     };
     W.KEYHELP.set = ['Use <b>{ }</b>, <b>|</b>, <b>≤ &lt;</b> and <b>∈ ℝ</b> for set notation, or <b>[ ( ) ]</b> and <b>∞</b> for interval notation. Press <b>▶</b> to step out of the braces.',
       'Type e.g. <code>{x | -2 &lt;= x &lt; 5, x in R}</code>, <code>[-2, 5)</code> or a list <code>{1, 3, 5}</code>.'];
@@ -459,8 +459,9 @@
     }
     if (g.xTitle) s += '<text x="' + ((X(xr[0]) + X(xr[1])) / 2) + '" y="' + (H - 6) + '" font-size="12.5" text-anchor="middle" fill="#2b3340">' + esc(g.xTitle) + '</text>';
     if (g.yTitle) s += '<text x="12" y="' + ((Y(yr[0]) + Y(yr[1])) / 2) + '" font-size="12.5" text-anchor="middle" fill="#2b3340" transform="rotate(-90 12 ' + ((Y(yr[0]) + Y(yr[1])) / 2) + ')">' + esc(g.yTitle) + '</text>';
-    var col = '#13807a';
-    function endMark(kind, x, y, dx, dy) {
+    var col = '#13807a', colDef = col;
+    function endMark(kind, x, y, dx, dy, c0) {
+      var col = c0 || colDef;
       if (kind === 'closed') return '<circle cx="' + X(x) + '" cy="' + Y(y) + '" r="4.2" fill="' + col + '"/>';
       if (kind === 'open') return '<circle cx="' + X(x) + '" cy="' + Y(y) + '" r="4.2" fill="#fff" stroke="' + col + '" stroke-width="2"/>';
       if (kind === 'arrow') { var L = Math.hypot(dx, dy) || 1, ux2 = dx / L, uy2 = dy / L, px = X(x), py = Y(y); var bx = px - ux2 * 9, by = py + uy2 * 9; return '<path d="M' + px + ' ' + py + ' L' + (bx - uy2 * 5) + ' ' + (by - ux2 * 5) + ' L' + (bx + uy2 * 5) + ' ' + (by + ux2 * 5) + ' Z" fill="' + col + '"/>'; }
@@ -470,7 +471,7 @@
       var pts = sg.pts; if (!pts || pts.length < 2) return;
       s += '<polyline points="' + pts.map(function (p) { return X(p[0]) + ',' + Y(p[1]); }).join(' ') + '" fill="none" stroke="' + (sg.color || col) + '" stroke-width="2.4"' + (sg.dash ? ' stroke-dasharray="6 4"' : '') + ' stroke-linejoin="round"/>';
       var a = pts[0], b = pts[1], y2 = pts[pts.length - 1], z = pts[pts.length - 2];
-      s += endMark(sg.start || 'none', a[0], a[1], a[0] - b[0], a[1] - b[1]) + endMark(sg.end || 'none', y2[0], y2[1], y2[0] - z[0], y2[1] - z[1]);
+      s += endMark(sg.start || 'none', a[0], a[1], a[0] - b[0], a[1] - b[1], sg.color) + endMark(sg.end || 'none', y2[0], y2[1], y2[0] - z[0], y2[1] - z[1], sg.color);
     });
     (g.fns || []).forEach(function (fn) {
       var from = fn.from == null ? xr[0] : fn.from, to = fn.to == null ? xr[1] : fn.to, n = 160, pts = [];
@@ -478,7 +479,7 @@
       if (pts.length < 2) return;
       s += '<polyline points="' + pts.map(function (p) { return X(p[0]).toFixed(1) + ',' + Y(p[1]).toFixed(1); }).join(' ') + '" fill="none" stroke="' + (fn.color || col) + '" stroke-width="2.4"' + (fn.dash ? ' stroke-dasharray="6 4"' : '') + '/>';
       var a = pts[0], b = pts[2] || pts[1], y2 = pts[pts.length - 1], z = pts[pts.length - 3] || pts[pts.length - 2];
-      s += endMark(fn.start || 'none', a[0], a[1], a[0] - b[0], a[1] - b[1]) + endMark(fn.end || 'none', y2[0], y2[1], y2[0] - z[0], y2[1] - z[1]);
+      s += endMark(fn.start || 'none', a[0], a[1], a[0] - b[0], a[1] - b[1], fn.color) + endMark(fn.end || 'none', y2[0], y2[1], y2[0] - z[0], y2[1] - z[1], fn.color);
     });
     (g.vline || []).forEach(function (x) { s += '<line x1="' + X(x) + '" y1="' + Y(yr[0]) + '" x2="' + X(x) + '" y2="' + Y(yr[1]) + '" stroke="#c4532a" stroke-width="1.6" stroke-dasharray="5 4"/>'; });
     (g.hline || []).forEach(function (y) { s += '<line x1="' + X(xr[0]) + '" y1="' + Y(y) + '" x2="' + X(xr[1]) + '" y2="' + Y(y) + '" stroke="#c4532a" stroke-width="1.6" stroke-dasharray="5 4"/>'; });

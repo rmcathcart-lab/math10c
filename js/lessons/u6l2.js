@@ -380,7 +380,7 @@
               [lenCheck(n[0], 1, { cands: dCands(o.A, o.B) }), lenCheck(n[1], 1, { cands: dCands(o.B, o.C) }), lenCheck(n[2], 1, { cands: dCands(o.A, o.C) })], n.map(function (x) { return lenKey(x); }),
               t('AB=' + lenTex(n[0]) + ',\\ BC=' + lenTex(n[1]) + ',\\ AC=' + lenTex(n[2])), sol, HD, 'right-angle lengths');
           } },
-          { id: '5b', sub: 'b', level: 'PRG', make: function (r, o) {
+          { id: '5b', sub: 'b', level: 'EMG', make: function (r, o) {
             var n = [d2(o.A, o.B), d2(o.B, o.C), d2(o.A, o.C)], L = n.map(function (x) { return lenTex(x); });
             var opts = [
               { html: t('AB^{2}+BC^{2}=' + n[0] + '+' + n[1] + '=' + (n[0] + n[1]) + '=AC^{2}') + ', so by the converse of the Pythagorean theorem the right angle is opposite ' + t('AC') + ', at ' + t('B') + '.', right: true },
@@ -436,7 +436,7 @@
             var c = [[Db, 'd-units', 'That is the distance in <b>blocks</b>. Multiply by ' + t(o.L) + ' to get metres.'], [(o.m[0] + o.m[1] + o.n[0] + o.n[1]) * o.L, 'd-walk', 'That is how far the two walk along the streets. The <b>direct</b> distance is a straight line between the houses — use the distance formula.'],
               [Math.sqrt(sq(o.m[0] - o.n[0]) + sq(o.m[1] - o.n[1])) * o.L, 'd-no-neg', 'Nathan’s house has negative coordinates, ' + t(ptT(N)) + '. Then ' + t('x_2-x_1=' + M[0] + '-(' + N[0] + ')=' + dx) + '.'], [nb * o.L, 'd-no-root', 'Take the square root before converting to metres.']].concat(dCands(N, M, o.L));
             return B.approx('If a block represents ' + t(o.L) + '&nbsp;metres, determine the direct distance, to the nearest metre, between the two houses.', D, 0, { after: 'm', diag: matchDiag(c, 0) },
-              t('x_2-x_1=' + M[0] + '-(' + N[0] + ')=' + dx) + ', ' + t('y_2-y_1=' + M[1] + '-(' + N[1] + ')=' + dy) + '.<br>' + t('d=\\sqrt{' + dx + '^{2}+' + dy + '^{2}}=\\sqrt{' + nb + '}' + simpTail(nb) + '\\approx ' + fx(Db, 4)) + ' blocks.<br>Each block is ' + t(o.L) + '&nbsp;m: ' + t(fx(Db, 4) + '\\times ' + o.L + '\\approx ' + fx(D, 0)) + '&nbsp;m.',
+              t('x_2-x_1=' + M[0] + '-(' + N[0] + ')=' + dx) + ', ' + t('y_2-y_1=' + M[1] + '-(' + N[1] + ')=' + dy) + '.<br>' + t('d=\\sqrt{' + dx + '^{2}+' + dy + '^{2}}=\\sqrt{' + nb + '}' + simpTail(nb) + (isSq(nb) ? '' : '\\approx ' + fx(Db, 4))) + ' blocks.<br>Each block is ' + t(o.L) + '&nbsp;m: ' + t((isSq(nb) ? nT(Db) + '\\times ' + o.L + '=' : fx(Db, 4) + '\\times ' + o.L + '\\approx ') + fx(D, 0)) + '&nbsp;m.',
               ['Find the distance in blocks with the distance formula, then multiply by the length of one block.', 'Round only at the very end.'], 'direct distance between houses');
           } }] },
       /* ---------------- Question 8: bush plane ---------------- */
@@ -455,7 +455,7 @@
               segs: [{ pts: o.pts, start: 'closed', end: 'closed' }], points: o.pts.map(function (p, i) { return { x: p[0], y: p[1], label: N[i] }; }) }) + '</div>';
         },
         parts: [
-          { id: '8a', sub: 'a', level: 'BEG', make: function (r, o) {
+          { id: '8a', sub: 'a', level: 'LIM', make: function (r, o) {
             var y = o.pts[0][1];
             return mcPart(r, 'Describe the position of checkpoint ' + t('A') + ' relative to the airstrip.', [
               { html: t(y) + '&nbsp;km due north of the airstrip.', right: true },
@@ -496,7 +496,7 @@
             return { A: A, B: add(A, scl(h, 2)), tt: r.pick([1, -1, 2]) };
           }, function (z) { return Math.abs(z.B[1]) <= 12 && Math.abs(z.B[0]) <= 12; });
           var M = mid(o.A, o.B), h = sub(o.B, M), g = gcd(h[0], h[1]), pp = [h[1] / g, -h[0] / g], X = add(M, scl(pp, o.tt));
-          var dis = o.dis || ([[0, 0]].filter(function (q) { return Math.abs(d2(q, o.A) - d2(q, o.B)) >= 4; }).concat(ptsOpt(r, o.A, o.B, 3))).filter(function (q) { return !samePt(q, X); }).slice(0, 3);
+          var dis = o.dis || ([[0, 0]].filter(function (q) { return Math.abs(d2(q, o.A) - d2(q, o.B)) >= 4; }).concat(ptsOpt(r, o.A, o.B, 4))).filter(function (q, i, arr) { return !samePt(q, X) && !arr.slice(0, i).some(function (p) { return samePt(p, q); }); }).slice(0, 3);
           var opts = [{ html: t(ptT(X)), right: true }].concat(dis.map(function (q) { return { html: t(ptT(q)), why: eqWhy(q, o.A, 'A', o.B, 'B') + ' Equidistant means the two distances are equal.' }; }));
           return mcPart(r, '<i>(Multiple Choice)</i> Which of the following points is equidistant from ' + t(nm('A', o.A)) + ' and ' + t(nm('B', o.B)) + '?', opts,
             'Compare <b>squared</b> distances to ' + t('A') + ' and ' + t('B') + ' (equal squares mean equal distances).<br>' + t(ptT(X)) + ': ' + t('(' + nT(X[0]) + '-' + sgp(o.A[0]) + ')^{2}+(' + nT(X[1]) + '-' + sgp(o.A[1]) + ')^{2}=' + d2(X, o.A)) + ' and ' + t('(' + nT(X[0]) + '-' + sgp(o.B[0]) + ')^{2}+(' + nT(X[1]) + '-' + sgp(o.B[1]) + ')^{2}=' + d2(X, o.B)) + '. Equal ✓<br>' + dis.map(function (q) { return t(ptT(q)) + ': ' + t(d2(q, o.A)) + ' vs ' + t(d2(q, o.B)) + '.'; }).join(' &nbsp;'),
@@ -586,7 +586,7 @@
               S.map(function (s, i) { return t(s[0] + s[1] + '=' + lenTex(n[i]) + (isSq(n[i]) ? '' : '\\approx ' + fx(Math.sqrt(n[i]), 1))); }).join(', '),
               S.map(function (s, i) { return t(dLine(o.P[s[0]], o.P[s[1]], s[0] + s[1]) + simpTail(n[i])); }).join('<br>'), HD, 'side lengths of DEF');
           } },
-          { id: '14a2', sub: 'a, why', level: 'PRG', make: function (r, o) {
+          { id: '14a2', sub: 'a, why', level: 'EMG', make: function (r, o) {
             var R = o.R, h = o.H, hy = h[0] + h[1], l1 = (R < h[0] ? R + h[0] : h[0] + R), l2 = (R < h[1] ? R + h[1] : h[1] + R);
             var n1 = d2(o.P[R], o.P[h[0]]), n2 = d2(o.P[R], o.P[h[1]]), nh = d2(o.P[h[0]], o.P[h[1]]);
             var wrongV = h[0];
@@ -787,7 +787,7 @@
             { id: 'g', html: 'Finding the perimeter of a triangle from its vertices.', w: 'd', why: 'A perimeter adds side <b>lengths</b>.' },
             { id: 'h', html: 'Finding where to put a water station halfway along a straight trail.', w: 'm', why: 'Halfway along is a <b>location</b>.' },
             { id: 'i', html: 'Finding the length of a median of a triangle (from a vertex to the midpoint of the opposite side).', w: 'b', why: 'You need the <b>midpoint</b> of the opposite side first, then the <b>distance</b> to it.' },
-            { id: 'j', html: 'Finding the radius of a circle when only the endpoints of a diameter are known.', w: 'b', why: 'Either find the centre (<b>midpoint</b>) and the <b>distance</b> to an endpoint, or halve the diameter’s length — a length is still required.' }];
+            { id: 'j', html: 'Finding how far a given point is from the centre of a circle when only the endpoints of a diameter are known.', w: 'b', why: 'First locate the centre (the <b>midpoint</b> of the diameter), then find the <b>distance</b> from the centre to the point.' }];
           var rows = r.chance(0.3) ? POOL.slice(0, 6) : r.shuffle(r.sample(POOL.slice(0, 8), 5).concat([r.pick(POOL.slice(8))]));
           var cols = [{ id: 'd', html: 'Distance' }, { id: 'm', html: 'Midpoint' }, { id: 'b', html: 'Both' }], want = {}, by = {};
           rows.forEach(function (x) { want[x.id] = x.w; by[x.id] = x; });
@@ -899,15 +899,15 @@
         { id: 'e8b', level: 'ADV', make: function (r) {
           var o = r.chance(0.2) ? { C: [-1, 4], s: 4 } : pickWhere(function () { return { C: [r.pick(pm(1, 3)), r.pick(pm(1, 6))], s: r.int(2, 6) }; }, function (z) { return !isSq(z.C[0] * z.C[0] + z.s * z.s) && z.C[1] !== z.s && z.C[1] !== -z.s; });
           var C = o.C, h = C[0], s = o.s, R = h * h + s * s, W = [[0, C[1] + s], [0, C[1] - s]];
-          return { prompt: t('D') + ' lies on the ' + t('y') + '-axis and ' + t('CD=\\sqrt{' + R + '}') + ', where ' + t('C') + ' is ' + t(ptT(C)) + '.', input: { type: 'math', keys: 'pairs', placeholder: 'e.g. (0, 3), (0, -1)' },
+          return { prompt: t('D') + ' lies on the ' + t('y') + '-axis and ' + t('CD=' + lenTex(R)) + ', where ' + t('C') + ' is ' + t(ptT(C)) + '.', input: { type: 'math', keys: 'pairs', placeholder: 'e.g. (0, 3), (0, -1)' },
             check: ptsCheck(W, { missCode: 'ax-one', missHint: 'Correct so far — ' + t('y-' + sgp(C[1]) + '=\\pm ' + s) + ' gives <b>two</b> values. Find the other point.', diag: function (L) {
               if (L.some(function (p) { return !same(p[0], 0); })) return { code: 'pts', hint: 'A point on the ' + t('y') + '-axis has ' + t('x=0') + ': write it as ' + t('(0,\\ y)') + '.' };
               var ys = L.map(function (p) { return p[1]; });
               if (ys.some(function (y) { return same(y, C[1] + Math.sqrt(R)) || same(y, C[1] - Math.sqrt(R)); })) return { code: 'ax-no-leg', hint: 'Include the horizontal difference: ' + t('(0-' + sgp(h) + ')^{2}+(y-' + sgp(C[1]) + ')^{2}=' + R) + '.' };
               if (ys.some(function (y) { return same(y, -C[1] + s) || same(y, -C[1] - s); })) return { code: 'ax-sign', hint: 'Check the signs: ' + t('y=' + C[1] + '\\pm ' + s) + '.' };
               return null; } }),
-            key: ptKey(W[0]) + ', ' + ptKey(W[1]), answer: t('D' + ptT(W[0]) + '\\text{ or }D' + ptT(W[1])), text: 'points on y-axis at distance', hints: ['A point on the ' + t('y') + '-axis is ' + t('(0,\\ y)') + '. Square both sides of the distance: ' + t('(\\sqrt{' + R + '})^{2}=' + R) + '.', 'Expect two answers.'],
-            solution: 'On the ' + t('y') + '-axis: ' + t('D(0,\\ y)') + '.<br>' + t('(0-' + sgp(h) + ')^{2}+(y-' + sgp(C[1]) + ')^{2}=(\\sqrt{' + R + '})^{2}') + '<br>' + t(h * h + '+(y-' + sgp(C[1]) + ')^{2}=' + R) + ', so ' + t('(y-' + sgp(C[1]) + ')^{2}=' + s * s) + '<br>' + t('y=' + C[1] + '\\pm ' + s) + ': ' + t('D' + ptT(W[0])) + ' or ' + t('D' + ptT(W[1])) + '.',
+            key: ptKey(W[0]) + ', ' + ptKey(W[1]), answer: t('D' + ptT(W[0]) + '\\text{ or }D' + ptT(W[1])), text: 'points on y-axis at distance', hints: ['A point on the ' + t('y') + '-axis is ' + t('(0,\\ y)') + '. Square both sides of the distance: ' + t('(' + lenTex(R) + ')^{2}=' + R) + '.', 'Expect two answers.'],
+            solution: 'On the ' + t('y') + '-axis: ' + t('D(0,\\ y)') + '.<br>' + t('(0-' + sgp(h) + ')^{2}+(y-' + sgp(C[1]) + ')^{2}=(' + lenTex(R) + ')^{2}') + '<br>' + t(h * h + '+(y-' + sgp(C[1]) + ')^{2}=' + R) + ', so ' + t('(y-' + sgp(C[1]) + ')^{2}=' + s * s) + '<br>' + t('y=' + C[1] + '\\pm ' + s) + ': ' + t('D' + ptT(W[0])) + ' or ' + t('D' + ptT(W[1])) + '.',
             good: [ptKey(W[1]) + ', ' + ptKey(W[0])], bad: [ptKey(W[1])] };
         } },
         { id: 'e8c', level: 'ADV', make: function (r) {
@@ -1010,9 +1010,9 @@
             var M = mid(o.A, add(add(o.A, o.u), o.w));
             return mcPart(r, 'Both diagonals have the midpoint ' + t(ptT(M)) + '. What does this prove about ' + t('ABCD') + '?', [
               { html: 'The diagonals bisect each other, and a quadrilateral whose diagonals bisect each other is a <b>parallelogram</b>.', right: true },
-              { html: 'The diagonals are equal, so ' + t('ABCD') + ' is a rectangle.', why: 'A shared midpoint says where the diagonals cross, not how long they are.' },
-              { html: 'The diagonals are perpendicular, so ' + t('ABCD') + ' is a rhombus.', why: 'Midpoints say nothing about the angle between the diagonals.' },
-              { html: t('ABCD') + ' is a square.', why: 'A square needs equal and perpendicular diagonals too — midpoints alone can’t show that.' }],
+              { html: 'It proves the diagonals are equal, so ' + t('ABCD') + ' is a rectangle.', why: 'A shared midpoint says where the diagonals cross, not how long they are.' },
+              { html: 'It proves the diagonals are perpendicular, so ' + t('ABCD') + ' is a rhombus.', why: 'Midpoints say nothing about the angle between the diagonals.' },
+              { html: 'It proves ' + t('ABCD') + ' is a square.', why: 'A square needs equal and perpendicular diagonals too — midpoints alone can’t show that.' }],
               'The two diagonals have the same midpoint, so they bisect each other. Property: <i>a quadrilateral whose diagonals bisect each other is a parallelogram</i>. So ' + t('ABCD') + ' is a parallelogram.', ['What does it mean when two diagonals share a midpoint?'], 'shared midpoint → parallelogram');
           } },
           { id: 'e11c', sub: 'c', level: 'PRG', make: function (r, o) {
@@ -1085,7 +1085,7 @@
           if (r.chance(0.2)) return { L: [-5, 8], S: [7, -1], W: [10, 8], k: 2 };
           return pickWhere(function () {
             var tr = r.pick([[12, 9], [8, 6], [9, 12], [6, 8], [12, 5], [4, 3]]), L0 = [r.int(-6, -3), r.int(5, 9)];
-            return { L: L0, S: [L0[0] + tr[0], L0[1] - tr[1]], W: [r.int(4, 11), r.int(4, 9)], k: r.pick([2, 2, 3, 5]) };
+            return { L: L0, S: [L0[0] + tr[0], L0[1] - tr[1]], W: r.chance(0.45) ? [L0[0] + r.int(-3, 5), L0[1] + r.int(1, 5)] : [r.int(4, 11), r.int(4, 9)], k: r.pick([2, 2, 3, 5]) };
           }, function (z) { var a = dist(z.L, z.W), b = dist(z.S, z.W); return Math.abs(a - b) > 1 && !samePt(z.W, z.S) && !samePt(z.W, z.L) && z.S[1] >= -4; });
         },
         stem: function (o) { return 'A provincial park prints a map with a coordinate grid laid over it. A fire lookout is at ' + t(nm('L', o.L)) + ', a ranger station is at ' + t(nm('S', o.S)) + ', and a warden’s cabin is at ' + t(nm('W', o.W)) + '. On this map ' + t('1') + ' grid unit represents ' + t(o.k) + '&nbsp;km.' + figPoly([o.L, o.S, o.W], ['L', 'S', 'W'], { segs: [[o.L, o.S]] }); },
@@ -1110,13 +1110,13 @@
               [K.approx(a, 1, { diag: matchDiag([[a / o.k, 'd-units', 'Convert to km: multiply the grid units by ' + t(o.k) + '.']], 1) }), K.approx(b, 1, { diag: matchDiag([[b / o.k, 'd-units', 'Convert to km: multiply the grid units by ' + t(o.k) + '.']], 1) })], [fx(a, 1), fx(b, 1)], t('LW\\approx ' + fx(a, 1)) + '&nbsp;km, ' + t('SW\\approx ' + fx(b, 1)) + '&nbsp;km',
               t(dLine(o.L, o.W, 'LW') + simpTail(d2(o.L, o.W))) + ' units, ' + t('\\times ' + o.k + '\\approx ' + fx(a, 1)) + '&nbsp;km<br>' + t(dLine(o.S, o.W, 'SW') + simpTail(d2(o.S, o.W))) + ' units, ' + t('\\times ' + o.k + '\\approx ' + fx(b, 1)) + '&nbsp;km', HD.concat(['Multiply each length by ' + t(o.k) + ' before rounding.']), 'cabin distances in km');
           } },
-          { id: 'e14d2', sub: 'd, closer', level: 'BEG', make: function (r, o) {
+          { id: 'e14d2', sub: 'd, closer', level: 'LIM', make: function (r, o) {
             var a = rd(dist(o.L, o.W) * o.k, 1), b = rd(dist(o.S, o.W) * o.k, 1), toS = b < a;
             return mcPart(r, 'With ' + t('LW\\approx ' + fx(a, 1)) + '&nbsp;km and ' + t('SW\\approx ' + fx(b, 1)) + '&nbsp;km, is the cabin closer to ' + t('L') + ' or to ' + t('S') + '?', [
               { html: 'Closer to the lookout ' + t('L') + '.', right: !toS, why: toS ? t(fx(b, 1) + '<' + fx(a, 1)) + ', so the ranger station is closer.' : null },
               { html: 'Closer to the ranger station ' + t('S') + '.', right: toS, why: toS ? null : t(fx(a, 1) + '<' + fx(b, 1)) + ', so the lookout is closer.' },
               { html: 'The same distance from both.', why: 'The two distances are different.' }],
-              (toS ? t(fx(b, 1) + '<' + fx(a, 1)) + ', so the cabin is <b>closer to the ranger station ' + t('S') + '</b>.' : t(fx(a, 1) + '<' + fx(b, 1)) + ', so the cabin is <b>closer to the lookout ' + t('L') + '</b>.'), ['The smaller distance wins.'], 'which is closer', true);
+              (toS ? t(fx(b, 1) + '<' + fx(a, 1)) + ', so the cabin is <b>closer to the ranger station ' + t('S') + '</b>.' : t(fx(a, 1) + '<' + fx(b, 1)) + ', so the cabin is <b>closer to the lookout ' + t('L') + '</b>.'), ['The smaller distance wins.'], 'which is closer');
           } }] },
       /* ---- EP 15: Rowan subtracted ---- */
       { num: '15', section: 'Extra practice F — Error analysis', shared: function (r) {

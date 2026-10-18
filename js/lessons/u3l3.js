@@ -4,7 +4,8 @@
  * coefficient, the booklet's term order) and changes the numbers; the booklet's own numbers are among the possible values.
  * Expansions are built as a list of signed products (see `T` below); the classic wrong answers for squares of binomials,
  * sums × differences, a number out front and subtracted products are computed from the generated numbers and given
- * targeted hints through K.poly's opt.wrong. Levels: LIM BEG EMG PRG ADV MAS. */
+ * targeted hints through K.poly's opt.wrong. Levels: LIM BEG EMG PRG ADV MAS.
+ * Extra Q4(a): the four pieces of (x + n)² are an area box (js/draw2.js areabox), then the total as its own part. */
 (function (root) {
   'use strict';
   var HW = root.HW, F = HW.fmt, K = HW.kit, t = K.t, B = K.P, P = HW.poly;

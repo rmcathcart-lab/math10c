@@ -3,7 +3,8 @@
  * Every part is a generator: it keeps the structure of the booklet question (signs, which factor has the coefficient,
  * number of letters, degree) and changes the numbers; the booklet's own numbers are one of the possible values.
  * Keys are built with HW.poly from the generated numbers. Levels: LIM BEG EMG PRG ADV MAS.
- * Conversions: "sketch an area model" → the model is shown (or drawn in the solution) and the product is typed;
+ * Conversions: "sketch / use an area model" → an area box the student fills (js/draw2.js areabox; boxPart) followed by the
+ * product as its own typed part (Q1, Q2, Q11, Q14, Q18 and EP Q1–3, which also work backwards: side terms from given boxes);
  * "verify when x = 6" → the value as a number; "explain" → multiple choice with a hint for each wrong option;
  * "identify the error and correct it" → an MC (which error?) plus the corrected expansion; several-answer items → fields.
  * "Use algebra tiles to model each product" (Q12) → a tile-builder part (js/draw.js tilepad, rect mode: the student lays out

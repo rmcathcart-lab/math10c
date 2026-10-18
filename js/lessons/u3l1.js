@@ -6,7 +6,9 @@
  * with every listed property tested), nameChk (monomial / binomial / trinomial / polynomial typed as a word) and a
  * zero-answer wrapper (K.poly nudges a bare "0" as a "0 term").
  * Algebra tiles: "state the polynomial the diagram shows" stays a typed answer; "draw the tiles for …" (EP Q7, and the
- * tiles to add in EP Q9) uses the tile builder (js/draw.js tilepad, poly mode) via buildPart / tileBuildChk. */
+ * tiles to add in EP Q9) uses the tile builder (js/draw.js tilepad, poly mode) via buildPart / tileBuildChk.
+ * Q10(b) and Q11: a tile part first (10b: the mat starts with the first polynomial, add the second and remove the zero
+ * pairs; 11: take-away tiles with zero pairs, js/draw2.js) and then the typed result, sharing the numbers. */
 (function (root) {
   'use strict';
   var HW = root.HW, F = HW.fmt, K = HW.kit, KP = K.P, ex = HW.ex, P = HW.poly, t = K.t, ok = K.ok, wrong = K.wrong, form = K.form;

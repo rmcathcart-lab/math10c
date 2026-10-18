@@ -11,7 +11,8 @@
  *             HW.draw.realSet(value) -> 'N'|'W'|'I'|'Q'|'Qbar' for a number (or [p,q] fraction; 'Qbar' if irrational:true).
  *             K.P.setsort(prompt, inp, targets, sol, hints, text, opt).
  *   domrange  a given graph with two number lines under it: shade the domain and the range.
- *             input { type: 'domrange', graph: HW.graph spec, dom: { min, max, step }, ran: { min, max, step }, v, w }
+ *             input { type: 'domrange', graph: HW.graph spec, dom: { min, max, step }, ran: { min, max, step }, v, w,
+ *                     hideGraph: true when the question stem already shows the graph (the graph spec still sets the lines) }
  *             value { domain: numlineValue, range: numlineValue }.  K.domrange(domTex, ranTex, opt);
  *             K.P.domrange(prompt, inp, domTex, ranTex, sol, hints, text, opt).
  *   areabox   an area (box) model: row terms down the side, column terms along the top, products in the boxes.
@@ -173,14 +174,14 @@
   function drLines(I) { var g = I.graph || {}, xr = g.x || [-5, 5], yr = g.y || [-5, 5]; return { dom: Object.assign({ min: xr[0], max: xr[1], step: g.grid || 1 }, I.dom || {}), ran: Object.assign({ min: yr[0], max: yr[1], step: g.gridY || g.grid || 1 }, I.ran || {}) }; }
   D.domrangeHtml = function (I, value) {
     value = value || {}; var NL = drLines(I), v = I.v || 'x', w = I.w || 'y';
-    return '<div class="dr-dr">' + HW.graph(Object.assign({ max: 300 }, I.graph || {})) + '<div class="dr-nlab">Domain (' + HW.k(v) + '-values)</div>' + D.numlineSvg(NL.dom, value.domain || {}) + '<div class="dr-nlab">Range (' + HW.k(w) + '-values)</div>' + D.numlineSvg(NL.ran, value.range || {}) + '</div>';
+    return '<div class="dr-dr">' + (I.hideGraph ? '' : HW.graph(Object.assign({ max: 300 }, I.graph || {}))) + '<div class="dr-nlab">Domain (' + HW.k(v) + '-values)</div>' + D.numlineSvg(NL.dom, value.domain || {}) + '<div class="dr-nlab">Range (' + HW.k(w) + '-values)</div>' + D.numlineSvg(NL.ran, value.range || {}) + '</div>';
   };
   K.P.domrange = function (prompt, inp, domTex, ranTex, sol, hints, text, opt) {
     var I = inputOf('domrange', inp), NL = drLines(I), o = Object.assign({ v: I.v || 'x', w: I.w || 'y' }, opt || {});
     var parse = function (tx) { var r = HW.sets.parse(tx); if (!r.ok) throw new Error('bad set ' + tx); return D.setParts(r.set); };
     var key = { domain: D.numlineKey(parse(domTex)), range: D.numlineKey(parse(ranTex)) };
     return { prompt: prompt, input: I, check: K.domrange(domTex, ranTex, o), key: key, answer: D.domrangeHtml(I, key) + '<div>Domain ' + t(domTex) + ', range ' + t(ranTex) + '</div>', solution: sol, hints: hints || [], text: text,
-      bad: [{ domain: key.range, range: key.domain }, { domain: key.domain, range: { dots: [], shade: [] } }] };
+      bad: [{ domain: key.range, range: key.domain }, { domain: key.domain, range: { dots: [], shade: [] } }].filter(function (b) { return JSON.stringify(b.domain) !== JSON.stringify(key.domain) || JSON.stringify(b.range) !== JSON.stringify(key.range); }) };
   };
 
   /* ================= tap points on a graph ================= */
@@ -209,9 +210,15 @@
   };
   K.P.points = function (prompt, inp, targets, sol, hints, text, opt) {
     var I = inputOf('graphpad', Object.assign({ mode: 'points' }, inp)), key = { pts: targets.map(function (p) { return p.slice(); }), pieces: [], join: 'none' };
+    var SLATE = '#5b6573', tint = function (a) { return (a || []).map(function (o) { return o.color ? o : Object.assign({}, o, { color: SLATE }); }); };
+    if (I.bg) I.bg = { segs: tint(I.bg.segs), fns: tint(I.bg.fns), points: tint(I.bg.points) };
     var spec = {}; Object.keys(I).forEach(function (k) { if (['type', 'mode', 'tools', 'defaultEnd', 'join', 'snap', 'snapX', 'snapY', 'bg', 'help'].indexOf(k) < 0) spec[k] = I[k]; });
     var bg = I.bg || {}; spec.segs = (bg.segs || []).slice(); spec.fns = bg.fns || []; spec.points = (bg.points || []).concat(targets.map(function (p) { return { x: p[0], y: p[1], color: '#c4532a' }; })); spec.max = 300;
-    return { prompt: prompt, input: I, check: K.graphPoints(targets, opt), key: key, answer: HW.graph(spec) + '<div>' + targets.map(function (p) { return t(D.ptT(p)); }).join(', ') + '</div>', solution: sol, hints: hints || [], text: text };
+    var bad = [];
+    if (targets.length > 1) bad.push({ pts: targets.slice(1).map(function (p) { return p.slice(); }), pieces: [], join: 'none' });
+    var sw = targets.map(function (p) { return [p[1], p[0]]; }); if (sw.some(function (p, i) { return p[0] !== targets[i][0] || p[1] !== targets[i][1]; })) bad.push({ pts: sw, pieces: [], join: 'none' });
+    return { prompt: prompt, input: I, check: K.graphPoints(targets, opt), key: key, answer: HW.graph(spec) + '<div>' + targets.map(function (p) { return t(D.ptT(p)); }).join(', ') + '</div>', solution: sol, hints: hints || [], text: text,
+      bad: bad.filter(function (b) { var A = b.pts.map(keyP).sort().join(';'), B = targets.map(keyP).sort().join(';'); return A !== B; }) };
   };
 
   /* ================= tiles: take away ================= */
@@ -232,6 +239,7 @@
   };
   if (HW.addCodes) HW.addCodes({ 'np-order': 'Numbers out of order on the line', 'np-place': 'Number placed too far off', 'ss-inner': 'Not the innermost set', 'ss-subset': 'Put in a set it isn’t in', 'ss-rational': 'Rational vs irrational', 'dr-swap': 'Domain and range swapped',
     'pts-missing': 'Missed a point', 'pts-extra': 'Tapped a wrong point', 'tile-away': 'Took away the wrong tiles', 'tile-away-zero': 'Took away an extra zero pair', 'ab-sign': 'Area box: sign of a product', 'ab-exp': 'Area box: exponents', 'ab-add': 'Area box: added instead of multiplied',
+    'dr-nl-dot': 'Domain/range: open vs solid dot', 'dr-nl-side': 'Domain/range: shaded the wrong side', 'dr-nl-values': 'Domain/range: wrong boundary', 'dr-nl-noshade': 'Domain/range: open dot without shading', 'dr-domain': 'Wrong domain shaded', 'dr-range': 'Wrong range shaded',
     'ab-cell': 'Area box: wrong product', 'ab-sum': 'Area box: boxes don’t add to the expression', 'ab-one-term': 'Area box: more than one term in a box' });
 
   /* ================= areabox ================= */
@@ -366,7 +374,7 @@
   W.domrange = function (opt) {
     opt = opt || {};
     var NL = drLines(opt), v = opt.v || 'x', w = opt.w || 'y', wrap = el('div', 'w-domrange');
-    var g = el('div', 'dr-dr-graph', HW.graph(Object.assign({ max: 320 }, opt.graph || {})));
+    var g = el('div', 'dr-dr-graph', opt.hideGraph ? '' : HW.graph(Object.assign({ max: 320 }, opt.graph || {})));
     var nd = W.numline(NL.dom), nr = W.numline(NL.ran);
     wrap.appendChild(g); wrap.appendChild(el('div', 'dr-nlab', '<b>Domain</b> (' + HW.k(v) + '-values, left to right)')); wrap.appendChild(nd.node);
     wrap.appendChild(el('div', 'dr-nlab', '<b>Range</b> (' + HW.k(w) + '-values, bottom to top)')); wrap.appendChild(nr.node);
