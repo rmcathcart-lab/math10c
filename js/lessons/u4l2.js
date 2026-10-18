@@ -266,10 +266,10 @@
   HW.addCodes({ 'tile-sign-swap': 'Rectangle: negative tiles on the wrong side', 'tile-all-pos': 'Rectangle: no negative tiles used', 'tile-neg-corner': 'Rectangle: corner sign wrong' });
   function negBuildPart(s) {
     var b = s.b, c = s.c, u = s.p, w = s.q, key = { top: { x: 1, one: u }, side: { x: 1, one: w } };
-    var X = function (n) { return t(Math.abs(n)) + ' ' + (n < 0 ? 'white' : 'shaded'); };
+    var X = function (n) { return t(Math.abs(n)) + ' ' + (n < 0 ? 'white' : 'shaded'); }, xT = function (n) { return (n < 0 ? '-' : '+') + (Math.abs(n) === 1 ? '' : Math.abs(n)) + 'x'; };
     var prompt = 'Now a new trinomial: build a tile rectangle for ' + t(tx(s.inner)) + '. Put ' + t('x') + '-tiles and unit tiles along the top and down the side — use <b>white (negative)</b> unit tiles where you need them. The inside fills in.';
     var sol = 'Two integers with product ' + t(c) + ' and sum ' + t(b) + ': ' + t(sg(u)) + ' and ' + t(sg(w)) + '. ' + signHint(b, c) + '<br>Along the top: one ' + t('x') + '-tile and ' + X(u) + ' unit tile' + (Math.abs(u) > 1 ? 's' : '') + '; down the side: one ' + t('x') + '-tile and ' + X(w) + ' unit tile' + (Math.abs(w) > 1 ? 's' : '') + '.'
-      + rectSvg(w, u, linLab(w), linLab(u)) + 'Inside: ' + t(sg(u) + 'x' + sg(w) + 'x=' + tx(P.scale(V('x'), b))) + ', and the corner holds ' + t(Math.abs(c)) + ' ' + (c < 0 ? 'white' : 'shaded') + ' unit tiles (' + t(par(u) + '\\times ' + par(w) + '=' + c) + '). Length ' + t(tx(s.A)) + ', width ' + t(tx(s.B)) + '.';
+      + rectSvg(w, u, linLab(w), linLab(u)) + 'Inside: ' + t((xT(u) + xT(w)).replace(/^\+/, '') + '=' + tx(P.scale(V('x'), b))) + ', and the corner holds ' + t(Math.abs(c)) + ' ' + (c < 0 ? 'white' : 'shaded') + ' unit tiles (' + t(par(u) + '\\times ' + par(w) + '=' + c) + '). Length ' + t(tx(s.A)) + ', width ' + t(tx(s.B)) + '.';
     var part = B.tiles(prompt, { mode: 'rect' }, s.inner, sol,
       ['The corner holds (units on top) × (units down the side), so they must multiply to ' + t(c) + '; the ' + t('x') + '-tiles inside add to ' + t(b) + '. ' + signHint(b, c), 'White tiles are negative: a shaded tile times a white tile gives a white (negative) unit tile.'], 'build tile rectangle with negatives', key);
     var base = part.check;

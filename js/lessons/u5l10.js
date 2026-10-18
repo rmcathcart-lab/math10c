@@ -359,8 +359,9 @@
       if (onlyX.length && onlyY.length === ys.length) wr.push({ pts: ys, code: 'pt-missing', hint: (ys.length > 1 ? 'Those are the ' + t('y') + '-intercepts' : 'That is the ' + t('y') + '-intercept') + ' — now also tap every ' + t(ax) + '-intercept, where the graph meets the ' + t(ax) + '-axis.' });
     }
     var pointHint = function (p) {
-      var onAxis = Math.abs(p[0]) < 1e-9 || Math.abs(p[1]) < 1e-9, onG = o.onGraph ? o.onGraph(p) : true;
-      if (onAxis && !onG) return { code: 'pt-extra', hint: t(ptT(p)) + ' is on an axis, but the graph doesn’t pass through it. ' + (o.offHint || 'An intercept is a point <b>of the graph</b> that lies on an axis.') };
+      if (targets.some(function (q) { return key(q) === key([p[1], p[0]]); })) return null; // coordinates swapped: the built-in hint says so
+      var onAxis = Math.abs(p[0]) < 1e-9 || Math.abs(p[1]) < 1e-9, onG = o.onGraph ? o.onGraph(p) : true, off = typeof o.offHint === 'function' ? o.offHint(p) : o.offHint;
+      if (onAxis && !onG) return { code: 'pt-extra', hint: t(ptT(p)) + ' is on an axis, but the graph doesn’t pass through it. ' + (off || 'An intercept is a point <b>of the graph</b> that lies on an axis.') };
       if (!onAxis && onG) return { code: 'pt-extra', hint: t(ptT(p)) + ' is on the graph but not on an axis. An ' + t(ax) + '-intercept has ' + t('y=0') + '; a ' + t('y') + '-intercept has ' + t(ax + '=0') + '.' };
       return null;
     };
@@ -1411,7 +1412,7 @@
         } },
         { id: 'e4c3', sub: 'iii', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
           var onG = function (p) { return sh.pts.some(function (q) { return same(q[0], p[0]) && same(q[1], p[1]); }); };
-          return tapPart('(iii) Tap every ' + t('x') + '-intercept and every ' + t('y') + '-intercept. If one kind does not exist, there is nothing to tap for it.', { x: [-5, 5], y: [-5, 5], labels: 1, bg: { points: sh.pts.map(function (p) { return { x: p[0], y: p[1] }; }) } }, [[sh.z, 0]], [], { onGraph: onG, offHint: 'The graph is only the dots, and no dot lies on the ' + t('y') + '-axis — so there is <b>no</b> ' + t('y') + '-intercept.' },
+          return tapPart('(iii) Tap every ' + t('x') + '-intercept and every ' + t('y') + '-intercept. If one kind does not exist, there is nothing to tap for it.', { x: [-5, 5], y: [-5, 5], labels: 1, bg: { points: sh.pts.map(function (p) { return { x: p[0], y: p[1] }; }) } }, [[sh.z, 0]], [], { onGraph: onG, offHint: function (p) { return Math.abs(p[0]) < 1e-9 ? 'The graph is only the dots, and no dot lies on the ' + t('y') + '-axis — so there is <b>no</b> ' + t('y') + '-intercept.' : 'The graph is only the dots: an intercept must be one of them.'; } },
             t('x') + '-int: the dot on the ' + t('x') + '-axis, ' + t(ptT([sh.z, 0])) + '.<br><b>No ' + t('y') + '-intercept:</b> no dot has ' + t('x=0') + ' (the graph is only the dots).', ['Is there a dot exactly on each axis?'], 'intercepts of dots, none');
         } }] },
       { num: '5', stem: '', parts: [
