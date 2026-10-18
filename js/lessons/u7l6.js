@@ -356,7 +356,7 @@
               t('W=' + (-sh.rate) + 't+b') + '; substitute ' + t(ptT([sh.t1, sh.W1])) + ':<br>' + t(sh.W1 + '=' + (-sh.rate) + '(' + sh.t1 + ')+b=' + (-sh.rate * sh.t1) + '+b\\Rightarrow b=' + sh.b) + '<br>' + t('W=' + (-sh.rate) + 't+' + sh.b) + '. Check ' + t(ptT([sh.t2, sh.W2])) + ': ' + t((-sh.rate) + '(' + sh.t2 + ')+' + sh.b + '=' + sh.W2) + ' ✓',
               ['Use the slope from (b), then substitute one of the points to find ' + t('b') + '.'], 'W = mt + b for the tank');
           } },
-          { id: '3f', level: 'PRG', make: function (r, sh) {
+          { id: '3f', level: 'PRG', outcome: 'RF7', make: function (r, sh) {
             return num('(f) After how many minutes will the tank be empty?', sh.T, [
               { v: sh.b, code: 'ctx-tint-b', hint: 'That’s the starting water level (in cm). Empty means ' + t('W=0') + ': solve ' + t('0=' + (-sh.rate) + 't+' + sh.b) + '.' },
               { v: -sh.T, code: 'ctx-rate-sign', hint: 'Time can’t be negative here — check the signs when you solve ' + t('0=' + (-sh.rate) + 't+' + sh.b) + '.' },

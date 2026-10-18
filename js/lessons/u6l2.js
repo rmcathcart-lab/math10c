@@ -323,7 +323,7 @@
           var E = o.E, Fp = add(E, o.L), n = d2(E, Fp), s = lenSpec(n);
           return B.radical(t(nm('E', E)) + ' and ' + t(nm('F', Fp)), { k: s.k, n: 2, m: s.m }, 'mixed', dSteps(E, Fp) + '<br>' + t(dLine(E, Fp, 'EF') + simpTail(n)) + '.', HD.concat(['To simplify ' + t('\\sqrt{' + n + '}') + ', look for the largest perfect-square factor of ' + t(n) + '.']), 'exact distance ' + ptT(E) + ' to ' + ptT(Fp), { diag: matchDiag(dCands(E, Fp)) });
         } },
-        { id: '3b', level: 'ADV', make: function (r) {
+        { id: '3b', level: 'PRG', make: function (r) {
           var PQ = [[5, 5], [1, 7], [7, 1], [3, 3], [3, 9], [9, 3], [7, 7], [5, 1]], o = r.chance(0.2) ? { a: 1, b: 1, p: 5, q: 5 } : pickWhere(function () { var pq = r.pick(PQ); return { a: r.pick([1, 3, 5]), b: r.pick([1, 3, 5]), p: pq[0], q: pq[1] }; }, function (z) { return z.p !== z.a && radParts(z.p * z.p + z.q * z.q).k >= 2; });
           var Kp = [-o.a / 2, o.b / 2], Lp = [(o.p - o.a) / 2, (o.q + o.b) / 2], n = o.p * o.p + o.q * o.q, s = lenSpec(n, 2);
           var kT = function (v) { return Number.isInteger(v) ? String(v) : (v < 0 ? '-' : '') + '\\dfrac{' + Math.abs(v * 2) + '}{2}'; };
@@ -606,7 +606,7 @@
             if (!Number.isInteger(N[0]) || !Number.isInteger(N[1])) p.good.push('\\left(' + (Number.isInteger(N[0]) ? N[0] : '\\frac{' + N[0] * 2 + '}{2}') + ',' + (Number.isInteger(N[1]) ? N[1] : '\\frac{' + N[1] * 2 + '}{2}') + '\\right)');
             return p;
           } },
-          { id: '14c', sub: 'c', level: 'ADV', make: function (r, o) {
+          { id: '14c', sub: 'c', level: 'PRG', make: function (r, o) {
             var h = o.H, N = mid(o.P[h[0]], o.P[h[1]]), nh = d2(o.P[h[0]], o.P[h[1]]), V = ['D', 'E', 'F'];
             var cands = [[nh / 4, 'd-no-root', 'That is the squared distance — take the square root.'], [Math.sqrt(nh), 'd-half', 'That is the whole hypotenuse. ' + t('N') + ' is its midpoint, so the distance from ' + t('N') + ' to an end is half of it.']];
             return B.fields(t(nm('N', N)) + ' is the midpoint of the hypotenuse ' + t(h[0] + h[1]) + '. Calculate the distance from ' + t('N') + ' to each of the three vertices of the triangle (exact, or to the nearest tenth).', V.map(function (v) { return lenField('N' + v); }),
