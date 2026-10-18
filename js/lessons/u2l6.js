@@ -934,7 +934,7 @@
               ['Number = total mass ÷ mass of one.', 'The coefficient ' + t('\\frac{1}{' + sh.at + '}') + ' is less than 1, so renormalize.'], 'bacteria in 1 g');
           } },
           { id: 'e12c', level: 'EMG', make: function (r, sh) {
-            return P.mc(r, '(c) Which exponent laws were used in (a) and (b)?', [
+            return P.mc(r, '(c) In (a) you find the mass of a colony of ' + t(sh.bt + '\\times 10^{' + sh.q + '}') + ' bacteria, and in (b) how many bacteria have a combined mass of ' + t('1') + ' g. Which exponent laws do (a) and (b) use?', [
               mcOpt('(a) multiplies, so the Product Law (add exponents); (b) divides, so the Quotient Law (subtract exponents).', true),
               mcOpt('(a) uses the Quotient Law and (b) uses the Product Law.', false, 'In (a) you multiply the number of bacteria by the mass of one; in (b) you divide.'),
               mcOpt('Both use the Power of a Power Law.', false, 'Neither part raises a power to another power. Look at whether you multiplied or divided.'),
@@ -1161,11 +1161,11 @@
               resp = resp || []; var pa = HW.parse.number(resp[0] || ''), pb = HW.parse.number(resp[1] || '');
               if (!pa.ok || !pb.ok) return form('empty', 'Type a positive number in each box.');
               var A = pa.value, B = pb.value; if (A <= 0 || B <= 0) return wrong('value', t('a') + ' and ' + t('b') + ' must both be positive.');
-              if (A === sh.av && B === sh.bv) return form('same-pair', 'That’s the pair from (b) — find a <b>different</b> pair.');
+              if (A === sh.av && B === sh.bv) return form('same-pair', 'That’s the pair ' + t('a=' + sh.av) + ', ' + t('b=' + sh.bv) + ' — find a <b>different</b> pair.');
               if (Math.abs(P1 * Math.log(A) - Q1 * Math.log(B)) < 1e-9 * Math.max(1, Math.abs(P1 * Math.log(A)))) return ok();
               return wrong('cond', 'At ' + t('a=' + A) + ', ' + t('b=' + B) + ' the value isn’t ' + t('1') + '. You need ' + t('a^{' + P1 + '}=b^{' + Q1 + '}') + (P1 === sh.eb ? '' : ', that is ' + t('a^{' + sh.eb + '}=b^{' + sh.ea + '}')) + '. Try ' + t('a') + ' and ' + t('b') + ' as powers of the same number.');
             };
-            return { prompt: '(c) Find <b>another</b> pair ' + t('a,b>0') + ' that gives the same value as in (b).', input: { type: 'fields', fields: [{ name: 'a', label: t('a=') }, { name: 'b', label: t('b=') }] }, check: chk, key: [String(ka), String(kb)],
+            return { prompt: '(c) Find <b>another</b> pair ' + t('a,b>0') + ' for which the expression has the same value as it does at ' + t('a=' + sh.av) + ' and ' + t('b=' + sh.bv) + '.', input: { type: 'fields', fields: [{ name: 'a', label: t('a=') }, { name: 'b', label: t('b=') }] }, check: chk, key: [String(ka), String(kb)],
               answer: 'For example ' + t('a=' + ka) + ', ' + t('b=' + kb) + ' (any pair with ' + t('a^{' + sh.eb + '}=b^{' + sh.ea + '}') + ')',
               solution: 'The value is ' + t('1') + ' exactly when ' + t('a^{' + P1 + '}=b^{' + Q1 + '}') + (P1 === sh.eb ? '' : ', that is ' + t('a^{' + sh.eb + '}=b^{' + sh.ea + '}')) + ' (check: ' + t(sh.av + '^{' + sh.eb + '}=' + Math.pow(sh.av, sh.eb) + '=' + sh.bv + '^{' + sh.ea + '}') + ').<br>Another pair: ' + t('a=' + ka) + ', ' + t('b=' + kb) + ', since ' + t(ka + '^{' + sh.eb + '}=' + F(Math.pow(ka, sh.eb)) + '=' + kb + '^{' + sh.ea + '}') + '.',
               hints: ['When is ' + t(posTex(sh.A, sh.ord)) + ' equal to ' + t('1') + '?', 'Look at how ' + t(sh.av) + ' and ' + t(sh.bv) + ' are related as powers of ' + t(sh.tt) + '.'], text: 'E21c another pair', good: [[String(ka), String(kb)]], bad: [[String(sh.av), String(sh.bv)], [String(kb), String(ka)]] };

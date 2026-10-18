@@ -874,7 +874,7 @@
             var p = P.fields('Write a power <b>and</b> a radical that represent the area of one face of the cube.', [{ name: 'Power', label: 'power: area', before: t('='), mode: 'math', keys: 'expo', vars: [L] }, { name: 'Radical', label: 'radical: area', before: t('='), mode: 'math', keys: 'expo', vars: [L] }],
               [convCheck(pw, { form: 'power', single: L + '^{n}', needRat: true, cands: c1 }), convCheck(rd, { form: 'radical', index: 3, cands: c2 })],
               [pw, rd], 'area ' + t('=' + pw + '=' + rd + '=' + rootTex(3, L + '^{2}')), 'One face is a square with side ' + t(L + '^{1/3}') + ':<br>' + t('\\text{area}=\\left(' + L + '^{1/3}\\right)^{2}=' + pw + '=' + rd) + ' (or ' + t(rootTex(3, L + '^{2}')) + ').',
-              ['A face is a square whose side is the edge. Find the edge length as a power of ' + t('W') + ', then square it.'], 'face area of cube volume ' + L);
+              ['A face is a square whose side is the edge. Find the edge length as a power of ' + t(L) + ', then square it.'], 'face area of cube volume ' + L);
             p.bad = [[L + '^{3/2}', rd], [pw, rootTex(3, L)]];
             return p;
           } }] },
