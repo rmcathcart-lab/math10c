@@ -106,7 +106,7 @@
       var cs = [cfR(side, X + '1'), cfR(side, Y + '1'), cfR(side, '')];
       if (cs.some(function (c) { return c[1] !== 1; })) return form('line-form-int', 'Right line — general form uses whole numbers: multiply every term by the common denominator.');
       var A = cs[0][0], B = cs[1][0], C = cs[2][0];
-      if (A < 0 || (A === 0 && B < 0)) return form('line-form-sign', 'Right line — in general form the ' + t(X) + '-term is positive: multiply every term by ' + t('-1') + '.');
+      if (A < 0 || (A === 0 && B < 0)) return form('line-form-sign', 'Right line — in general form the ' + t(A === 0 ? Y : X) + '-term is positive' + (A === 0 ? ' (there is no ' + t(X) + '-term)' : '') + ': multiply every term by ' + t('-1') + '.');
       var g = gcd(gcd(A, B), C); if (g > 1) return form('line-form-gcd', 'Right line — divide every term by the common factor ' + t(String(g)) + '.');
       var fi2 = formIssue(ast); if (fi2 && fi2.code !== 'not-poly') return form('line-form-simplify', 'Right line — simplify: expand brackets and collect like terms.');
       return null;

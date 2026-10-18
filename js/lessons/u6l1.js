@@ -828,12 +828,12 @@
         { id: 'e6b', sub: 'b i', level: 'EMG', make: function (r, sh) {
           var f = [numField(sh.intName + ' ≈', sh.intName, 'units'), numField(sh.radName + ' ≈', sh.radName, 'units')], c = [K.approx(sh.R1, 1), K.approx(sh.R2, 1)], k = [dec(sh.R1, 1), dec(sh.R2, 1)];
           if (sh.swap) { f.reverse(); c.reverse(); k.reverse(); }
-          var p = K.P.fields('Round both totals to the nearest tenth.', f, c, k, sh.intName + ' ' + t('\\approx ' + dec(sh.R1, 1)) + ', ' + sh.radName + ' ' + t('\\approx ' + dec(sh.R2, 1)),
-            sh.intName + ': ' + t(sh.R1 + '=' + dec(sh.R1, 1)) + '. ' + sh.radName + ': ' + t(rt(sh.m) + '+' + rt(sh.n) + '\\approx ' + dec(Math.sqrt(sh.m), 5) + '+' + dec(Math.sqrt(sh.n), 5) + '=' + dec(sh.R2, 5) + '\\approx ' + dec(sh.R2, 1)) + '.', ['Use a calculator on the exact totals from (a).'], 'route totals rounded');
+          var p = K.P.fields('Round the total length of each route to the nearest tenth.', f, c, k, sh.intName + ' ' + t('\\approx ' + dec(sh.R1, 1)) + ', ' + sh.radName + ' ' + t('\\approx ' + dec(sh.R2, 1)),
+            sh.intName + ': ' + t(sh.R1 + '=' + dec(sh.R1, 1)) + '. ' + sh.radName + ': ' + t(rt(sh.m) + '+' + rt(sh.n) + '\\approx ' + dec(Math.sqrt(sh.m), 5) + '+' + dec(Math.sqrt(sh.n), 5) + '=' + dec(sh.R2, 5) + '\\approx ' + dec(sh.R2, 1)) + '.', ['Find each route’s exact total (add its two legs), then use a calculator.'], 'route totals rounded');
           p.bad = [[dec(sh.R1 + 1, 1), dec(sh.R2, 1)]]; return p;
         } },
         { id: 'e6b2', sub: 'b ii', level: 'EMG', make: function (r, sh) {
-          return mcP(r, 'Why can’t the rounded values settle which route is shorter?', [
+          return mcP(r, 'Rounded to the nearest tenth, both route totals come out as ' + t(dec(sh.R1, 1)) + ' (' + sh.intName + ' is exactly ' + t(sh.R1) + ', ' + sh.radName + ' is ' + t(radSumTex(sh.m, sh.n)) + '). Why can’t these rounded values settle which route is shorter?', [
             { html: 'The totals differ by much less than ' + t('0.05') + ', so both round to the same tenth — rounding hides the difference.', right: true },
             { html: 'The two routes are exactly the same length.', why: 'They aren’t — one total is a whole number and the other is a sum of irrational square roots. Part (c) shows which is longer.' },
             { html: 'You can’t round a sum of radicals.', why: 'You can (each radical has a decimal value). The problem is that both totals round to the same value.' },
@@ -853,7 +853,7 @@
         } },
         { id: 'e6c2', sub: 'c ii', level: 'EMG', make: function (r, sh) {
           var shorter = sh.R1 < sh.R2 ? sh.intName : sh.radName, longer = shorter === sh.intName ? sh.radName : sh.intName;
-          return mcP(r, 'Since ' + t(F(sh.m * sh.n) + (sh.m * sh.n > sh.h * sh.h ? '\\gt ' : '\\lt ') + F(sh.h * sh.h)) + ', which route is shorter?', [
+          return mcP(r, 'To compare ' + sh.intName + ' (' + t(sh.R1) + ') with ' + sh.radName + ' (' + t(radSumTex(sh.m, sh.n)) + ') exactly, both totals are squared, ' + t(sh.m + sh.n) + ' is subtracted, both sides are divided by ' + t('2') + ' and squared again. That leaves ' + t(F(sh.m * sh.n)) + ' on the side of ' + sh.radName + ' and ' + t(F(sh.h * sh.h)) + ' on the side of ' + sh.intName + '. Since ' + t(F(sh.m * sh.n) + (sh.m * sh.n > sh.h * sh.h ? '\\gt ' : '\\lt ') + F(sh.h * sh.h)) + ', which route is shorter?', [
             { html: shorter, right: true },
             { html: longer, why: 'Follow the comparison back: ' + t(F(sh.m * sh.n) + (sh.m * sh.n > sh.h * sh.h ? '\\gt ' : '\\lt ') + F(sh.h * sh.h)) + ' means the square of the route with radicals is ' + (sh.R2 > sh.R1 ? 'bigger' : 'smaller') + ' — and so is the route.' },
             { html: 'They are exactly the same length.', why: 'The two whole numbers are different, so the routes can’t be equal.' },
@@ -905,10 +905,10 @@
         } },
         { id: 'e8d', sub: 'd', level: 'EMG', make: function (r, sh) {
           var diff = Math.abs(K.roundTo(sh.sumE, 1) - sh.sumR);
-          var p = K.P.fields('A classmate rounds each side to the nearest tenth first and then adds. What total does the classmate get, and by how much does it differ from your answer to (c)?', [numField('Classmate’s total:', 'Classmate’s total', 'units'), numField('Difference:', 'Difference', 'units')],
+          var p = K.P.fields('The exact sides are ' + ['PQ', 'QR', 'RS', 'SP'].map(function (n, i) { return t(n + '=' + rt(sh.s[i])); }).join(', ') + ', and the exact perimeter, rounded only at the end, is ' + t('\\approx ' + dec(sh.sumE, 1)) + '. A classmate rounds each side to the nearest tenth first and then adds. What total does the classmate get, and by how much does it differ from ' + t(dec(sh.sumE, 1)) + '?', [numField('Classmate’s total:', 'Classmate’s total', 'units'), numField('Difference:', 'Difference', 'units')],
             [K.approx(sh.sumR, 1, { diag: function (v) { if (near(v, K.roundTo(sh.sumE, 1), 0.001)) return { code: 'round-first', hint: 'That’s the correct perimeter. Round <b>each side</b> to the nearest tenth first, then add those rounded values.' }; return null; } }), K.approx(diff, 1)],
             [dec(sh.sumR, 1), dec(diff, 1)], 'Classmate: ' + t(dec(sh.sumR, 1)) + '; difference ' + t(dec(diff, 1)) + ' (the answer from (c), ' + t(dec(sh.sumE, 1)) + ', is correct)',
-            'Rounded sides: ' + t(sh.s.map(function (N) { return dec(Math.sqrt(N), 1); }).join('+') + '=' + dec(sh.sumR, 1)) + '. The correct perimeter is ' + t(dec(sh.sumE, 1)) + ', so they differ by ' + t(dec(diff, 1)) + '. Each rounding error is small, but they add up — round once, at the end.', ['Round each side from (b) to one decimal, then add.'], 'rounding first');
+            'Rounded sides: ' + t(sh.s.map(function (N) { return dec(Math.sqrt(N), 1); }).join('+') + '=' + dec(sh.sumR, 1)) + '. The correct perimeter is ' + t(dec(sh.sumE, 1)) + ', so they differ by ' + t(dec(diff, 1)) + '. Each rounding error is small, but they add up — round once, at the end.', ['Round each side to one decimal, then add.'], 'rounding first');
           p.bad = [[dec(sh.sumE, 1), '0']]; return p;
         } }] },
       { num: '9', stem: function (sh) { return 'Quadrilateral ' + t('WXYZ') + ' has vertices ' + ['W', 'X', 'Y', 'Z'].map(function (n) { return t(n + P2(sh[n])); }).join(', ') + '.'; }, shared: e9Shared, parts: [
@@ -1005,7 +1005,7 @@
             t('(' + nx + '-k)^{2}+(' + ny + '-k)^{2}=(' + rt(L2) + ')^{2}=' + L2) + '<br>' + t('2k^{2}' + (S ? (-2 * S > 0 ? '+' : '-') + Math.abs(2 * S) + 'k' : '') + '+' + (nx * nx + ny * ny) + '=' + L2) + ', so ' + t('k^{2}' + (S ? (-S > 0 ? '+' : '-') + (Math.abs(S) === 1 ? '' : Math.abs(S)) + 'k' : '') + (Pc ? (Pc > 0 ? '+' : '-') + Math.abs(Pc) : '') + '=0') + '.<br>' + t('(' + mn('k', k1) + ')(' + mn('k', k2) + ')=0') + ': ' + t('k=' + k1) + ' or ' + t('k=' + k2) + '.', 'k in both coordinates');
         } },
         { id: 'e12d', sub: 'd', level: 'PRG', make: function (r) {
-          return mcP(r, 'In part (c) both coordinates of ' + t('M') + ' contained ' + t('k') + ', so squaring produced ' + t('k^{2}') + ' terms from <i>both</i> brackets. Why is the equation still only a quadratic — with at most two answers?', [
+          return mcP(r, 'For a segment from ' + t('M(k,\\ k)') + ' to a fixed point ' + t('N(a,\\ b)') + ', both coordinates of ' + t('M') + ' contain ' + t('k') + ', so squaring produces ' + t('k^{2}') + ' terms from <i>both</i> brackets: ' + t('(a-k)^{2}+(b-k)^{2}') + '. Why is the equation still only a quadratic — with at most two answers?', [
             { html: 'Each bracket squares to a single ' + t('k^{2}') + ' term and the two are <b>added</b> (giving ' + t('2k^{2}') + '); nothing multiplies ' + t('k^{2}') + ' by ' + t('k') + ', so the highest power is ' + t('2') + '.', right: true },
             { html: 'The two ' + t('k^{2}') + ' terms cancel, so it is really a linear equation.', why: 'They don’t cancel: ' + t('k^{2}+k^{2}=2k^{2}') + '. And a linear equation would have only one answer, but (c) has two.' },
             { html: 'Squaring twice gives ' + t('k^{4}') + ', which has at most two roots.', why: 'No ' + t('k^{4}') + ' appears: the squares are added, not multiplied.' },
