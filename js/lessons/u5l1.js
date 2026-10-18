@@ -403,7 +403,7 @@
             'The ' + t('y') + '-coordinate tells the height of a point. Points at the same height lie on the same <b>horizontal</b> line.', ['The ' + t('y') + '-coordinate measures up–down position.'], 'visual check same y');
         } }] },
       /* ===================== Q3 ===================== */
-      { num: '3', stem: function (sh) { return 'Plot the following points, in order, and join each point to the next with a straight line segment: ' + sh.path + '.'; },
+      { num: '3', stem: function (sh) { return 'A path goes from ' + sh.path + '.'; },
         shared: function (r) {
           var fam = r.pick(['house', 'house', 'trapezoid', 'parallelogram', 'kite']), S = SHAPES[fam], v0 = S.make(r);
           var ox = r.pick([-2, -1, 0, 0]), oy = r.pick([-2, -1, 0, 0]), v = v0.map(function (p) { return [p[0] + ox, p[1] + oy]; });
@@ -425,7 +425,7 @@
             return wrong('poly-extra', 'Your drawing has a segment (or point) that isn’t on the path. Join each point only to the <b>next</b> one in the list.');
           };
           var bad = [gv(v), gv([], [{ v: v, s: 'closed', e: 'closed' }]), gv([], [{ v: v.map(function (p) { return [p[1], p[0]]; }).concat([[v[0][1], v[0][0]]]), s: 'closed', e: 'closed' }])];
-          return drawPart('Plot the points in order and join each point to the next. (Use <b>╱ Line</b>: tap the points one after another, then tap the last one again to finish.)', { x: sh.xr, y: sh.yr, labels: 2, tools: ['line', 'point'] }, check, target,
+          return drawPart('Plot the points, in order, and join each point to the next with a straight line segment. (Use <b>╱ Line</b>: tap the points one after another, then tap the last one again to finish.)', { x: sh.xr, y: sh.yr, labels: 2, tools: ['line', 'point'] }, check, target,
             'Start at ' + t(pt(v[0])) + ' and join, in order, ' + v.slice(1).map(function (p) { return t(pt(p)); }).join(', ') + ' and back to ' + t(pt(v[0])) + '.', ['Plot each point: across first (' + t('x') + '), then up or down (' + t('y') + ').', 'Join each point to the next one, and the last one back to the first.'], 'plot and join: ' + sh.fam, bad);
         } },
         { id: '3', sub: 'b', level: 'BEG', make: function (r, sh) {
@@ -1057,7 +1057,7 @@
         };
         var inp = { x: [0, T + st], y: [0, H0 + dy], grid: st, gridY: dy, labels: 1, labelsX: st, labelsY: dy * (H0 / dy > 10 ? 2 : 1), snapX: st, snapY: dy, unitX: 300 / (T + st), unitY: Math.min(22, 300 / (H0 + dy)),
           xName: 't', yName: 'h', xTitle: 'Time, t (h)', yTitle: 'Height, h (cm)', firstQuadrant: true, join: true };
-        return drawPart('Plot the five points from the table and join them.', inp, check, target,
+        return drawPart('Plot the five points from your table in (a) (' + t('t=' + sh.ts.join(',\\ ')) + ') and join them.', inp, check, target,
           'Plot ' + good.map(function (p) { return t(pt([p[0], dec(p[1])])); }).join(', ') + ' and join them: a straight line falling from ' + t(pt([0, H0])) + ' to ' + t(pt([T, 0])) + '. It stops there — the candle is gone.',
           ['Where does the graph start? Where must it stop?', 'Use <b>╱ Line</b> from the first point to the last, or plot the points and press <b>Join</b>.'], 'candle graph',
           [gv(good), gv([], [segv([0, H0], [T, 0], 'closed', 'arrow')]), gv([], [segv([0, 0], [T, H0])])]);

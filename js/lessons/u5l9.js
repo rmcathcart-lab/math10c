@@ -531,7 +531,7 @@
         var key = [[0, b.H0], [1, 0]]; pk.forEach(function (h, i) { key.push([2 + 2 * i, h], [3 + 2 * i, 0]); });
         var arch = function (hh) { var v = [[0, b.H0], [1, 0]]; hh.forEach(function (h, i) { v.push([2 + 2 * i, h], [3 + 2 * i, 0]); }); return poly(v); };
         var rg = function (h) { return Math.max(g, Math.round(h / g) * g); };
-        var bad = [arch([b.H0, b.H0, b.H0, b.H0]), arch(pk.map(function (h) { return h; }).map(function (h, i) { return i ? pk[0] : h; })), arch([1, 2, 3, 4].map(function (k) { return rg(b.H0 * Math.pow(1 - b.p, k)); })),
+        var bad = [arch([b.H0, b.H0, b.H0, b.H0]), arch([pk[0], pk[0], pk[0], pk[0]]), arch([1, 2, 3, 4].map(function (k) { return rg(b.H0 * Math.pow(1 - b.p, k)); })),
           poly([[0, 0], [1, b.H0], [2, 0]].concat(pk.reduce(function (a, h, i) { return a.concat([[3 + 2 * i, h], [4 + 2 * i, 0]]); }, []))),
           poly([[0, b.H0], [1, g]].concat(pk.reduce(function (a, h, i) { return a.concat([[2 + 2 * i, h + g], [3 + 2 * i, g]]); }, [])))];
         return storyPart('Sketch the ball’s height (vertical axis) as a function of time (horizontal axis), showing the first four bounces. Work out each rebound height and put the top of each bounce on the nearest grid line.', inp, chk, poly(key),
@@ -1419,8 +1419,8 @@
       { id: 'e16a', level: 'PRG', make: function (r, f) {
         var w = f.wideBottom, ph = [{ dir: 'up', text: 'the ' + (w ? 'wide' : 'narrow') + ' bottom half fills' }, { dir: 'up', text: 'the ' + (w ? 'narrow' : 'wide') + ' top half fills' }];
         if (w) ph[1].steeper = 0; else ph[0].steeper = 1;
-        var base = K.graphStory({ phases: ph, start: 0, startHint: 'The flask starts empty: the water height starts at ' + t('0') + '.', end: 6, endHint: 'Fill it right to the top: the graph ends at the dashed line (height ' + t('6') + ').',
-          custom: function (S) { return near(S[0].y1, 3) ? null : { code: 'story-height', hint: 'The corner is where the width changes — at the shoulder, <b>half way up</b> (height ' + t('3') + ' on this grid).' }; } });
+        var base = K.graphStory({ phases: ph, start: 0, startHint: 'The flask starts empty: the water height starts at ' + t('0') + '.', end: 6, endHint: 'Fill it right to the top: the graph ends on the dashed line.',
+          custom: function (S) { return near(S[0].y1, 3) ? null : { code: 'story-height', hint: 'The corner is where the width changes — at the shoulder, <b>half way up</b> to the dashed line (3 squares up).' }; } });
         var chk = function (v) {
           var P = DR.phases(v).phases;
           if (P.length && P.every(function (p) { return p.dir === 'up'; }) && P.length !== 2 && !DR.phases(v).gaps.length && !DR.notFunction(v)) return wrong('story-bend', P.length === 1 ? 'One straight line means the same width all the way up. The two halves have different widths, so the steepness changes at the shoulder: draw <b>two straight pieces</b>.' :
