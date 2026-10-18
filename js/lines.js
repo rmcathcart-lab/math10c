@@ -86,7 +86,7 @@
     if (a.t === 'num' && a.v === 0) return true;
     if (a.t === 'neg') return psRight(a.a, v);
     if (a.t === 'mul') return (isNumAst(a.a) && (a.b.t === 'paren' ? linBracket(a.b, v) : isVar(a.b, v))) || (isNumAst(a.b) && a.a.t === 'paren' && linBracket(a.a, v));
-    if (a.t === 'div') return a.a.t === 'paren' && linBracket(a.a, v) && isNumAst(a.b);
+    if (a.t === 'div') return isNumAst(a.b) && (psRight(a.a, v) || linBracket(a.a, v));
     return isVar(a, v) || (a.t === 'paren' || a.t === 'add' || a.t === 'sub') && linBracket(a, v);
   }
   function psLeft(a, v) { var r = P.read(a); return r.ok && cf(r.p, v + '1') === 1 && Object.keys(r.p).every(function (k) { return k === '' || k === v + '1'; }); }

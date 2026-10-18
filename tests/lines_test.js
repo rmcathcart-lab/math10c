@@ -25,5 +25,7 @@ var p = K.P.line('Write it.', T, { form: 'general' }, 's', [], 't'); eq([p.key, 
 eq(L.tex({ m: 1, point: [-6, -4] }, 'point-slope', [-6, -4]), 'y+4=x+6', 'ps m=1'); eq(K.line({ m: 1, point: [-6, -4] }, { form: 'point-slope' })('y+4=x+6').v, 'correct', 'ps m=1 accepted');
 var p2 = K.P.line('w', { m: 2, b: 3 }, { form: 'point-slope' }, 's', [], 't'); eq(p2.check(p2.key).v, 'correct', 'ps key without point');
 chk(K.slope([-1, 2]), { '\\frac{-4}{8}': 'form:slope-lowest', '-\\frac{4}{8}': 'form:slope-lowest', '\\frac{4}{-8}': 'form:slope-lowest', '-\\frac{1}{2}': 'correct', '-0.5': 'correct' }, 'slope lowest neg');
+chk(K.line({ m: [1, 4], point: [0, -9] }, { form: 'point-slope', point: [0, -9] }), { 'y+9=\\frac{x}{4}': 'correct', 'y+9=\\frac{1}{4}x': 'correct' }, 'ps x/4');
+chk(K.line({ m: [-5, 4], point: [-5, 2] }, { form: 'point-slope', point: [-5, 2] }), { 'y-2=-\\frac{5(x+5)}{4}': 'correct', 'y-2=-\\frac{5}{4}(x+5)': 'correct', 'y=-\\frac{5}{4}x-\\frac{17}{4}': 'form:line-form-ps' }, 'ps fraction of bracket');
 console.log(n + ' checks, ' + fails + ' failed');
 process.exit(fails ? 1 : 0);
