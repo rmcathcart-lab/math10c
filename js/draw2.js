@@ -267,14 +267,14 @@
       var rows = rd.slice(0, nr).map(function (r) { return r.p; }), cols = rd.slice(nr, nr + nc).map(function (r) { return r.p; }), cell = function (i2, j2) { return rd[nr + nc + i2 * nc + j2].p; };
       var sumCheck = function () { if (!T) return null; var sum = P.num(0); for (var i3 = 0; i3 < nr; i3++) for (var j3 = 0; j3 < nc; j3++) sum = P.add(sum, cell(i3, j3)); return P.eq(sum, T) ? null : wrong('ab-sum', 'All the boxes together must add up to ' + t(P.tex(T)) + '. ' + (opt.sumHint || 'Check the boxes you filled in.')); };
       if (opt.factor) { var sc = sumCheck(); if (sc) return sc; }
-      if (opt.factor && T && opt.integer !== false && P.terms(T).every(function (tm) { return tm.c[1] === 1; })) {
+      if (T && opt.integer !== false && P.terms(T).every(function (tm) { return tm.c[1] === 1; })) {
         var fr = rows.concat(cols).some(function (h) { return P.terms(h).some(function (tm) { return tm.c[1] !== 1; }); });
         if (fr) return wrong('ab-frac', 'Use whole-number row and column terms: each one is the <b>GCF</b> of its row or column (with an integer coefficient).');
       }
       for (i = 0; i < nr; i++) for (j = 0; j < nc; j++) {
         var want = P.mul(rows[i], cols[j]), got = cell(i, j), where = 'the box in row ' + (i + 1) + ', column ' + (j + 1);
         if (P.eq(want, got)) continue;
-        if (P.eq(P.neg(want), got)) return wrong('ab-sign', 'Check the sign in ' + where + ': a positive times a negative is negative; two negatives make a positive.');
+        if (P.eq(P.neg(want), got)) return wrong('ab-sign', 'Check the sign in ' + where + (P.terms(rows[i]).concat(P.terms(cols[j])).some(function (tm) { return tm.c[0] < 0; }) ? ': a positive times a negative is negative; two negatives make a positive.' : ': both of its side terms are positive, so the box is positive.'));
         if (P.eq(P.add(rows[i], cols[j]), got)) return wrong('ab-add', 'In ' + where + ', <b>multiply</b> the row term by the column term — don’t add them.');
         var cw = P.terms(want)[0], cg = P.terms(got)[0];
         if (cw && cg && cw.c[0] * cg.c[1] === cg.c[0] * cw.c[1]) return wrong('ab-exp', 'Check the exponent in ' + where + ': multiplying adds exponents (' + t('x\\cdot x=x^{2}') + ').');

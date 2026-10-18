@@ -351,9 +351,9 @@
     return boxPart('Fill in every missing entry: the missing side terms and the missing box.', [A, B], [C, D],
       { give: give, text: text, hints: ['Start where a box and one of its side terms are both known: the other side term = (box) ÷ (the known side).', 'A missing box = (top term) × (side term). Check every box when you are done.'] });
   }
-  function partProd(A, B, C, D) {
-    var f = foil(A, B, C, D), vs = PL.vars(f.res);
-    return pp('State the product ' + t(pf(add(A, B)) + pf(add(C, D))) + ' from your grid, in expanded form.', f.res, binWrongs(A, B, C, D), grid([A, B], [C, D], { plus: true }) + t(pf(add(A, B)) + pf(add(C, D)) + '=' + seq([f.F, f.I, f.O, f.L]) + '=' + tx(f.res)),
+  function partProd(A, B, C, D, give) {
+    var f = foil(A, B, C, D), vs = PL.vars(f.res), pic = HW.draw.areaboxHtml(partBox(A, B, C, D, give, '').input);
+    return pp('Complete this part-filled area grid, then state the product it represents, in expanded form.' + pic, f.res, binWrongs(A, B, C, D), grid([A, B], [C, D], { plus: true }) + t(pf(add(A, B)) + pf(add(C, D)) + '=' + seq([f.F, f.I, f.O, f.L]) + '=' + tx(f.res)),
       ['Add the four boxes and collect the like terms.'], 'part-filled grid product ' + tx(f.res));
   }
 
@@ -819,10 +819,10 @@
           return { a: [xm(a), N(b), xm(c), N(-d)], b: [xm(a2, 1, 'p'), M(-b2, { q: 1 }), xm(c2, 1, 'p'), M(d2, { q: 1 })] };
         },
         parts: [
-        { id: 'e3a', sub: 'a i', level: 'ADV', make: function (r, sh) { var f = sh.a; return partBox(f[0], f[1], f[2], f[3], { cols: [0], rows: [1], cells: [[0, 0], [0, 1], [1, 1]] }, 'part-filled grid (a)'); } },
-        { id: 'e3ap', sub: 'a ii', level: 'EMG', make: function (r, sh) { var f = sh.a; return partProd(f[0], f[1], f[2], f[3]); } },
-        { id: 'e3b', sub: 'b i', level: 'ADV', make: function (r, sh) { var f = sh.b; return partBox(f[0], f[1], f[2], f[3], { cols: [1], rows: [0], cells: [[0, 0], [1, 0], [1, 1]] }, 'part-filled grid (b)'); } },
-        { id: 'e3bp', sub: 'b ii', level: 'EMG', make: function (r, sh) { var f = sh.b; return partProd(f[0], f[1], f[2], f[3]); } },
+        { id: 'e3a', sub: 'a i', level: 'PRG', make: function (r, sh) { var f = sh.a; return partBox(f[0], f[1], f[2], f[3], { cols: [0], rows: [1], cells: [[0, 0], [0, 1], [1, 1]] }, 'part-filled grid (a)'); } },
+        { id: 'e3ap', sub: 'a ii', level: 'EMG', make: function (r, sh) { var f = sh.a; return partProd(f[0], f[1], f[2], f[3], { cols: [0], rows: [1], cells: [[0, 0], [0, 1], [1, 1]] }); } },
+        { id: 'e3b', sub: 'b i', level: 'PRG', make: function (r, sh) { var f = sh.b; return partBox(f[0], f[1], f[2], f[3], { cols: [1], rows: [0], cells: [[0, 0], [1, 0], [1, 1]] }, 'part-filled grid (b)'); } },
+        { id: 'e3bp', sub: 'b ii', level: 'EMG', make: function (r, sh) { var f = sh.b; return partProd(f[0], f[1], f[2], f[3], { cols: [1], rows: [0], cells: [[0, 0], [1, 0], [1, 1]] }); } },
         { id: 'e3c', sub: 'c', level: 'PRG', make: function (r) {
           return KP.mc(r, 'In part (a) you found a missing cell from two side lengths, and a missing side length from a cell. Which job is harder, and why can a grid with several entries missing still be solvable?', [
             { html: 'A missing <b>side length</b> is harder: it is a division, and you first need a cell whose other side is known. A grid is solvable as long as each missing side borders a known cell whose other side is known.', right: true },
