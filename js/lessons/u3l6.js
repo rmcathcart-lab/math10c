@@ -747,8 +747,8 @@
               ['Use the sum-times-difference pattern twice, then subtract the square.'], 'double sum×difference − square');
           } },
           { id: 'e5e', level: 'EMG', make: function (r, sh) {
-            var s = sh.c, u = s.V[0], w = s.V[1], bb = s.b * s.b;
-            return KP.mc(r, 'In part (c), a whole pair of terms vanished. Which terms cancelled, and where did each one come from?', [
+            var s = sh.c, u = s.V[0], w = s.V[1], bb = s.b * s.b, A = Y.add(mono(s.a, u), mono(-s.b, w)), B = Y.add(mono(s.a, u), mono(s.b, w));
+            return KP.mc(r, 'When ' + t(bt(A) + bt(B) + '+' + bt(A) + '^{2}') + ' is expanded and simplified, a whole pair of terms vanishes. Which terms cancel, and where does each one come from?', [
               { html: t('-' + bb + w + '^{2}') + ' from the sum × difference and ' + t('+' + bb + w + '^{2}') + ' from the square.', right: true },
               { html: 'The ' + t(u + w) + ' terms: one from each product.', code: 'opt-mw', why: 'The sum × difference has <b>no</b> ' + t(u + w) + ' term (its middle terms cancel inside it). The square’s ' + t('-' + 2 * s.a * s.b + u + w) + ' term stays.' },
               { html: 'The ' + t(u + '^{2}') + ' terms: one from each product.', code: 'opt-m2', why: 'Both ' + t(u + '^{2}') + ' terms are ' + t('+' + s.a * s.a + u + '^{2}') + ', so they add to ' + t(2 * s.a * s.a + u + '^{2}') + '.' },
@@ -1146,10 +1146,10 @@
           } },
           { id: 'e14e', level: 'BEG', make: function (r, sh) {
             var w = ex14(sh), f = features(w.correct), fl = [{ name: 'Degree', label: 'degree' }, { name: 'Leading coefficient', label: 'leading coefficient' }, { name: 'Constant term', label: 'constant term' }];
-            return KP.fields('State the degree, leading coefficient and constant term of your correct answer.', fl, [K.number(3), K.number(-1, numDiag([[1, 'lead-wrong', 'The leading term is ' + t('-x^{3}') + ': its coefficient is ' + t(-1) + '.']])), K.number(f.cst)],
+            return KP.fields('The correct simplification is ' + t(ord(w.correct)) + '. State its degree, leading coefficient and constant term.', fl, [K.number(3), K.number(-1, numDiag([[1, 'lead-wrong', 'The leading term is ' + t('-x^{3}') + ': its coefficient is ' + t(-1) + '.']])), K.number(f.cst)],
               ['3', '-1', String(f.cst)], 'degree ' + t(3) + ', leading coefficient ' + t(-1) + ', constant term ' + t(f.cst),
               t(ord(w.correct)) + ': degree ' + t(3) + ', leading coefficient ' + t(-1) + ', constant term ' + t(f.cst) + '. At ' + t('x=1') + ' it gives ' + t(Y.at(w.correct, { x: 1 })) + ', matching the original ✓',
-              ['Read them off your answer to the previous part.'], 'features of the corrected answer');
+              ['Read them off the correct simplification.'], 'features of the corrected answer');
           } }] },
       { num: '15',
         shared: function (r) { return pickWhere(function () { return { a: r.int(1, 4), b: r.int(1, 5), c: r.int(2, 7) }; }, function (s) { return s.a * s.b - s.c !== 0 && s.a + s.b !== 0; }); },
@@ -1252,7 +1252,7 @@
           } },
           { id: 'e17e', level: 'BEG', make: function (r, sh) {
             var k = sh.k, n = sh.n2, v = 3 * n * n + 2 * k * k;
-            return KP.number('Use your answer to (d) to evaluate ' + t((n - k) + '^{2}+' + n + '^{2}+' + (n + k) + '^{2}') + ' mentally.', v, numDiag([[3 * n * n, 'drop-term', 'Add the ' + t(2 * k * k) + ' too.']]),
+            return KP.number('Use ' + t('(n-' + k + ')^{2}+n^{2}+(n+' + k + ')^{2}=' + tx(quad(3, 0, 2 * k * k, 'n'))) + ' to evaluate ' + t((n - k) + '^{2}+' + n + '^{2}+' + (n + k) + '^{2}') + ' mentally.', v, numDiag([[3 * n * n, 'drop-term', 'Add the ' + t(2 * k * k) + ' too.']]),
               t('n=' + n) + ': ' + t('3(' + n + ')^{2}+' + 2 * k * k + '=' + F(3 * n * n) + '+' + 2 * k * k + '=' + F(v)) + '. Check: ' + t(F((n - k) * (n - k)) + '+' + F(n * n) + '+' + F((n + k) * (n + k)) + '=' + F(v)) + ' ✓',
               ['Which number is ' + t('n') + '?'], 'evaluate sum of squares');
           } },
@@ -1264,9 +1264,9 @@
           } },
           { id: 'e17g', level: 'BEG', make: function (r, sh) {
             var k = sh.k, N = sh.N, v = 3 * k * N * N + 3 * k * k * N + k * k * k;
-            return KP.number('Use your answer to (f) to find ' + t((N + k) + '^{3}-' + N + '^{3}') + ' without cubing anything.', v, null,
+            return KP.number('Use ' + t('(n+' + k + ')^{3}-n^{3}=' + tx(Y.sub(Y.pow(lin(1, k, 'n'), 3), mono(1, 'n', 3)))) + ' to find ' + t((N + k) + '^{3}-' + N + '^{3}') + ' without cubing anything.', v, null,
               t('n=' + N) + ': ' + t(3 * k + '(' + N + ')^{2}+' + 3 * k * k + '(' + N + ')+' + k * k * k + '=' + F(3 * k * N * N) + '+' + 3 * k * k * N + '+' + k * k * k + '=' + F(v)) + '.',
-              ['Substitute ' + t('n=' + N) + ' into your answer to (f).'], 'evaluate difference of cubes');
+              ['Substitute ' + t('n=' + N) + ' into that expansion.'], 'evaluate difference of cubes');
           } }] },
       { num: '18',
         shared: function (r) { var S = r.sample([[4, 2, 2], [64, 8, 4], [324, 18, 6]], 2); return { one: S[0], two: S[1] }; },

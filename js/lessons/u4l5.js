@@ -863,7 +863,7 @@
             return pstPart(t(o.expr), o, { solExtra: '<br>' + t(g[1]) + ' is not a perfect square — ' + t(o.baseTex) + ' stops.', wrong: [wr([fo(S(M(g[0], 'm'), N(-g[1])), 2), fo(S(M(g[0], 'm'), N(g[1])), 2)], 'not-square', t(o.baseTex) + ' is not a difference of two perfect squares (' + t(g[1]) + ' isn’t a perfect square), so it doesn’t factor again.')] });
           } },
           { id: 'e11e', level: 'EMG', make: function (r) {
-            return mcTex(r, 'In parts like these, some answers went further than a single square and some stopped. Which property of the bracket inside the square decides it?', [
+            return mcTex(r, 'When a perfect square trinomial in ' + t('x^{2}') + ' is factored as a square, some answers go further and some stop. For example, ' + t('x^{4}-2x^{2}+1=(x^{2}-1)^{2}=(x-1)^{2}(x+1)^{2}') + ', but ' + t('16x^{4}+8x^{2}+1=(4x^{2}+1)^{2}') + ' stops. Which property of the bracket inside the square decides it?', [
               { html: 'The bracket factors again only when it is a <b>difference of two perfect squares</b>, like ' + t('x^{2}-1') + ' or ' + t('a^{2}-9') + '.', right: true },
               { html: 'The bracket factors again whenever its first term is a perfect square.', why: t('4x^{2}+1') + ' and ' + t('4m^{2}-3') + ' both start with a perfect square, but neither factors.' },
               { html: 'The bracket factors again whenever it has a minus sign.', why: t('4m^{2}-3') + ' has a minus sign but ' + t('3') + ' isn’t a perfect square, so it stops.' },
@@ -908,7 +908,7 @@
               { html: 'A trinomial with only plus signs can never be factored.', why: 'This one can: it is ' + t('(x+' + sh.k + ')^{2}') + '.' }],
               'A difference of squares ' + t('a^{2}-b^{2}') + ' has exactly two terms and a minus sign between them. A three-term expression is never one, however many of its terms are perfect squares.', ['Look at the form ' + t('a^{2}-b^{2}') + ': how many terms? Which sign?'], 'the sentence that stops the error');
           } }] },
-      { num: '13', stem: function (sh) { return 'Asked to factor ' + t('k^{4}-' + (sh.p * sh.p + sh.q * sh.q) + 'k^{2}+' + sh.p * sh.p * sh.q * sh.q) + ' completely, a second student let ' + t('A=k^{2}') + ', factored ' + t('A^{2}-' + (sh.p * sh.p + sh.q * sh.q) + 'A+' + sh.p * sh.p * sh.q * sh.q + '=(A-' + sh.p * sh.p + ')(A-' + sh.q * sh.q + ')') + ', substituted back and wrote ' + t('k^{4}-' + (sh.p * sh.p + sh.q * sh.q) + 'k^{2}+' + sh.p * sh.p * sh.q * sh.q + '=(k^{2}-' + sh.p * sh.p + ')(k^{2}-' + sh.q * sh.q + ')') + '.'; },
+      { num: '13', stem: function (sh) { return 'Asked to factor ' + t('k^{4}-' + (sh.p * sh.p + sh.q * sh.q) + 'k^{2}+' + sh.p * sh.p * sh.q * sh.q) + ' completely, a student let ' + t('A=k^{2}') + ', factored ' + t('A^{2}-' + (sh.p * sh.p + sh.q * sh.q) + 'A+' + sh.p * sh.p * sh.q * sh.q + '=(A-' + sh.p * sh.p + ')(A-' + sh.q * sh.q + ')') + ', substituted back and wrote ' + t('k^{4}-' + (sh.p * sh.p + sh.q * sh.q) + 'k^{2}+' + sh.p * sh.p * sh.q * sh.q + '=(k^{2}-' + sh.p * sh.p + ')(k^{2}-' + sh.q * sh.q + ')') + '.'; },
         shared: function (r) { var g = pickWhere(function () { return { p: r.int(1, 4), q: r.int(2, 6) }; }, function (g) { return g.p < g.q && g.p * g.q <= 15; }); return g; },
         parts: [
           { id: 'e13a', sub: 'a', level: 'BEG', make: function (r, sh) {
@@ -921,12 +921,13 @@
             return blockPart('The instruction was “factor completely.” Finish the question: factor ' + t(tx(S(B('k', 4), M(-(sh.p * sh.p + sh.q * sh.q), 'k', 2), N(sh.p * sh.p * sh.q * sh.q)))) + ' completely.', { B: B('k', 2), Bt: 'k^{2}', Bw: B('k'), f: [[1, -sh.p * sh.p], [1, -sh.q * sh.q]] });
           } },
           { id: 'e13c', sub: 'c', level: 'EMG', make: function (r) {
-            return mcTex(r, 'This student and the one in Question 12 made opposite mistakes. Which description, and which final check, is right?', [
-              { html: 'Student 12 used a difference of squares on something that isn’t one; student 13 stopped before factoring brackets that <i>are</i> differences of squares. Check: for every bracket, is there a common factor, a difference of squares, or a trinomial that factors?', right: true },
+            var k = r.int(3, 9), ot = 'x^{2}+' + 2 * k + 'x+' + k * k;
+            return mcTex(r, 'Another student, asked to factor ' + t(ot) + ', wrote ' + t(ot + '=(x+' + k + ')(x-' + k + ')') + ', calling it a difference of squares. That student and the one above made opposite mistakes. Which description, and which final check, is right?', [
+              { html: 'The other student used a difference of squares on something that isn’t one; this student stopped before factoring brackets that <i>are</i> differences of squares. Check: for every bracket, is there a common factor, a difference of squares, or a trinomial that factors?', right: true },
               { html: 'Both students forgot to take out a common factor. Check: always take out the GCF.', why: 'Neither expression has a common factor. The mistakes are about differences of squares.' },
-              { html: 'Student 12 stopped too early and student 13 went too far. Check: never factor a bracket twice.', why: 'It’s the other way round, and “factor completely” often needs a second round on a bracket.' },
-              { html: 'Both students made sign errors. Check: expand the answer.', why: 'Student 13’s line was true. Expanding catches wrong answers like student 12’s, but not unfinished ones like student 13’s.' }],
-              'Student 12 called a perfect square trinomial a difference of squares; student 13 stopped while two brackets were still differences of squares. Before writing a final answer, ask of <b>each</b> bracket: a common factor? a difference of two perfect squares? a trinomial that factors? Stop only when every answer is no.', ['One student did too much with the wrong pattern; the other did too little.'], 'opposite mistakes');
+              { html: 'The other student stopped too early and this student went too far. Check: never factor a bracket twice.', why: 'It’s the other way round, and “factor completely” often needs a second round on a bracket.' },
+              { html: 'Both students made sign errors. Check: expand the answer.', why: 'This student’s line was true. Expanding catches wrong answers like the other student’s, but not unfinished ones like this student’s.' }],
+              'The other student called a perfect square trinomial a difference of squares; this student stopped while two brackets were still differences of squares. Before writing a final answer, ask of <b>each</b> bracket: a common factor? a difference of two perfect squares? a trinomial that factors? Stop only when every answer is no.', ['One student did too much with the wrong pattern; the other did too little.'], 'opposite mistakes');
           } }] },
       /* ---------- EP E: four terms ---------- */
       { num: '14', section: 'Extra practice E — Four Terms: Grouping, or Something Else?', stem: 'Every polynomial in this question has four terms, but they do not all want the same treatment.',

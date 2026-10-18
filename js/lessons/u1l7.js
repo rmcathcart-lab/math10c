@@ -492,13 +492,13 @@
         } },
         { id: '8f', level: 'EMG', make: function (r, sh) {
           var tots = sh.hands.map(function (h) { return h.reduce(function (s, c) { return s + c.pts; }, 0); }), best = Math.max.apply(null, tots);
-          return P.mc(r, 'Which student wins?', ['A', 'B', 'C'].map(function (L, i) { return { html: 'Student ' + t(L), right: tots[i] === best, why: tots[i] === best ? null : 'Student ' + t(L) + ' scores ' + t(tots[i]) + ' points. Compare all three totals again.' }; }),
+          return P.mc(r, 'Which student wins?<br>' + ['A', 'B', 'C'].map(function (L, i) { return 'Student ' + t(L) + ': ' + handTex(sh.hands[i]); }).join('<br>'), ['A', 'B', 'C'].map(function (L, i) { return { html: 'Student ' + t(L), right: tots[i] === best, why: tots[i] === best ? null : 'Student ' + t(L) + ' scores ' + t(tots[i]) + ' points. Compare all three totals again.' }; }),
             'Totals: ' + ['A', 'B', 'C'].map(function (L, i) { return t(L + '=' + tots[i]); }).join(', ') + '. The highest total is ' + t(best) + ', so <b>Student ' + t(['A', 'B', 'C'][tots.indexOf(best)]) + ' wins</b>.',
-            ['Use your three totals from the previous part.'], 'card game: winner', true);
+            ['Find each student’s point total: add the points for every category each card belongs to.'], 'card game: winner', true);
         } },
         { id: '8s', level: 'EMG', make: function (r, sh) {
           var real = [], nr = null; sh.hands.forEach(function (h) { h.forEach(function (c) { if (c.cls === 'nonreal') nr = c; else real.push(c); }); });
-          return sortSetsPart('The same nine cards on the diagram of the real number system: put each <b>real</b> card in the innermost set it belongs to.' + (nr ? ' (' + t(nr.tex) + ' is non-real, so it has no place in the diagram.)' : ''), r.shuffle(real.map(function (c) { return { id: c.id, tex: c.tex, cls: c.cls, note: c.note }; })), 'card game: sort the real cards');
+          return sortSetsPart('The nine cards dealt to Students ' + t('A') + ', ' + t('B') + ' and ' + t('C') + ', on the diagram of the real number system: put each <b>real</b> card in the innermost set it belongs to.' + (nr ? ' (' + t(nr.tex) + ' is non-real, so it has no place in the diagram.)' : ''), r.shuffle(real.map(function (c) { return { id: c.id, tex: c.tex, cls: c.cls, note: c.note }; })), 'card game: sort the real cards');
         } }] }
     ],
     extra: [
@@ -592,7 +592,7 @@
           { id: 'e2e', level: 'EMG', make: function (r, sh) { var mx = mixedOf(sh.pf, 2); return setsPart('List every set ' + t('\\sqrt{p}') + ' belongs to.', [{ id: 'sp', tex: '\\sqrt{p}', cls: 'irr', note: '\\sqrt{p}=' + rad(mx.k, 2, mx.m) }], false, 'classify sqrt p'); } },
           { id: 'e2f', level: 'PRG', outcome: 'AN1', make: function (r, sh) {
             var a = powerUp(sh.pf, 2), b = powerUp(sh.pf, 3);
-            return P.mc(r, 'How can both values of ' + t('k') + ' be read straight off the exponents of ' + t('p') + ', without guessing or a calculator?', [
+            return P.mc(r, 'The smallest ' + t('k') + ' that makes ' + t('pk') + ' a perfect square and the smallest ' + t('k') + ' that makes ' + t('pk') + ' a perfect cube can both be read straight off the exponents of ' + t('p') + '. How, without guessing or a calculator?', [
               { html: 'A square needs every exponent even and a cube needs every exponent a multiple of ' + t('3') + ', so ' + t('k') + ' supplies only what each exponent is <i>missing</i>. Anything more makes ' + t('k') + ' bigger.', right: true },
               { html: t('k') + ' is the product of all the primes in ' + t('p') + ', each used once.', why: 'That would also change exponents that are already fine. For a square here you only need ' + t('k=' + a.k) + '.' },
               { html: t('k') + ' is the smallest prime that does not divide ' + t('p') + '.', why: 'A new prime arrives with exponent ' + t('1') + ', which is neither even nor a multiple of ' + t('3') + ' — it makes things worse.' },
@@ -632,7 +632,7 @@
               ['Cancel the shared prime factors — or divide the top and bottom by the GCF.'], 'reduce a/b');
           } },
           { id: 'e3d', level: 'BEG', outcome: 'AN1', make: function (r, sh) {
-            return P.mc(r, 'To reduce ' + t('\\frac{a}{b}') + ' to lowest terms in one step, which number from your work above do you divide the top and bottom by?', [
+            return P.mc(r, 'To reduce ' + t('\\frac{a}{b}') + ' to lowest terms in one step, which number do you divide the top and bottom by?', [
               { html: 'The GCF, ' + t(F(sh.g)), right: true },
               { html: 'The LCM, ' + t(F(sh.l)), why: 'The LCM is a <b>multiple</b> of ' + t('a') + ' and ' + t('b') + ' — it doesn’t divide into them.' },
               { html: 'The product ' + t('ab=' + F(sh.a * sh.b)), why: t('ab') + ' is bigger than both numbers, so it can’t divide into them.' },
@@ -683,7 +683,7 @@
           } },
           { id: 'e4f', level: 'PRG', make: function (r, sh) {
             var mx = mixedOf(sh.f, 2);
-            return P.mc(r, 'What does the radicand left under the root in ' + t('\\sqrt{N}=' + rad(mx.k, 2, mx.m)) + ' tell you about ' + t('k') + '?', [
+            return P.mc(r, 'What does the radicand left under the root in ' + t('\\sqrt{N}=' + rad(mx.k, 2, mx.m)) + ' tell you about the smallest natural number ' + t('k') + ' for which ' + t('kN') + ' is a perfect square?', [
               { html: 'They are the same number: the leftover radicand ' + t(mx.m) + ' is the product of the primes with odd exponents — exactly what ' + t('k') + ' must supply.', right: true },
               { html: t('k') + ' is the coefficient ' + t(mx.k) + ', because that is what came out of the root.', why: 'Multiplying ' + t('N') + ' by ' + t(mx.k) + ' adds even more copies of primes that were already paired. Which primes were <i>not</i> paired?' },
               { html: t('k') + ' is the square of the radicand, ' + t(mx.m * mx.m) + '.', why: 'That makes a perfect square, but not the <b>smallest</b>: ' + t('\\sqrt{' + mx.m + 'N}') + ' already works.' },
@@ -759,7 +759,7 @@
           { id: 'e6e', level: 'PRG', make: function (r, sh) { return setsPart('List every set each number belongs to.', sh.ds.map(function (d) { return { id: d.id, tex: d.tex, cls: d.red[1] === 1 ? 'nat' : 'frac', note: d.tex + '=' + ex.texRat(d.red) }; }), false, 'classify four repeating decimals'); } },
           { id: 'e6f', level: 'PRG', make: function (r, sh) {
             var n = sh.n9, X = n + '.\\overline{9}';
-            return P.mc(r, 'Part (d) breaks the pattern of the other three. What happens to the denominator test for ' + t(X) + '?', [
+            return P.mc(r, 'Of the four decimals ' + sh.ds.map(function (d) { return t(d.tex); }).join(', ') + ', the decimal ' + t(X) + ' breaks the pattern of the other three. What happens to the denominator test for ' + t(X) + '?', [
               { html: 'Before reducing, the denominator is ' + t('9=3^{2}') + ', but the test uses the <b>reduced</b> fraction: ' + t('\\frac{' + (9 * n + 9) + '}{9}=\\frac{' + (n + 1) + '}{1}') + '. Denominator ' + t('1') + ' has no primes, so it terminates — ' + t(X) + ' and ' + t(n + 1) + ' are the same number.', right: true },
               { html: 'The test fails here: ' + t('9=3^{2}') + ', so ' + t(X) + ' must repeat and can’t equal ' + t(n + 1) + '.', why: 'Apply the test to the <b>reduced</b> fraction. ' + t('10x-x') + ' gives ' + t('9x=' + (9 * n + 9)) + ', so ' + t('x=' + (n + 1)) + ' exactly.' },
               { html: t(X) + ' is slightly less than ' + t(n + 1) + ', so it is irrational.', why: 'It repeats, so it is rational. And ' + t('x=' + X) + ' gives ' + t('9x=' + (9 * n + 9)) + ', so ' + t('x=' + (n + 1)) + ' exactly — there is no gap.' },
@@ -916,7 +916,7 @@
           var p = P.numplace('Plot all eight numbers on the number line, each labelled in its original form. (List them from least to greatest in your head first — the line checks the order.)',
             { min: -3, max: 6, step: 1, labels: 1, snap: 0.05, items: sh.items.map(function (x) { return { id: x.id, tex: x.tex }; }) }, tg,
             'Least to greatest: ' + t(srt.map(function (x) { return x.tex; }).join('\\ <\\ ')) + '<br>(' + srt.map(function (x) { return t(d3(x.v)); }).join(', ') + ')<br>The three numbers between ' + t('3') + ' and ' + t('3.3') + ' sit almost on top of each other here — the next part separates them.',
-            ['Use your three-decimal values from the previous part.', 'Negative numbers go left of ' + t('0') + ': the bigger the size, the further left.'], 'plot eight numbers', { order: false, tol: 0.2, hints: hints });
+            ['Write each number as a decimal to three places first.', 'Negative numbers go left of ' + t('0') + ': the bigger the size, the further left.'], 'plot eight numbers', { order: false, tol: 0.2, hints: hints });
           var base = p.check;
           p.check = function (resp) {
             var b = base(resp); if (b.v === 'form') return b;
@@ -936,7 +936,7 @@
           return P.numplace('Three of the numbers land between ' + t('3') + ' and ' + t('3.3') + ', too close to separate on an ordinary number line. Plot just those three on this magnified line.',
             { min: 2.9, max: 3.4, step: 0.05, labels: 0.1, snap: 0.01, items: th.map(function (x) { return { id: x.id, tex: x.tex }; }) }, tg,
             th.slice().sort(function (a, b) { return a.v - b.v; }).map(function (x) { return t(x.tex + '\\approx ' + d3(x.v)); }).join(', ') + '.<br>' + lineSVG(th.map(function (x) { return { v: x.v, lab: x.lab }; })),
-            ['Compare the three decimals from part (a), to the hundredths.', 'Each small tick is ' + t('0.05') + '; the labels go up by ' + t('0.1') + '.'], 'magnified number line', { tol: 0.015, hints: hints });
+            ['Write the three numbers as decimals and compare them to the hundredths.', 'Each small tick is ' + t('0.05') + '; the labels go up by ' + t('0.1') + '.'], 'magnified number line', { tol: 0.015, hints: hints });
         } },
         { id: 'e11d', level: 'EMG', make: function (r, sh) {
           var opts = r.shuffle(sh.items).map(function (x) { return x.tex; }), want = sh.items.filter(function (x) { return x.irr; }).map(function (x) { return x.tex; });
@@ -1022,7 +1022,7 @@
               ['Reduce the fraction first, then divide.'], 'decimal of a/b (terminates)');
           } },
           { id: 'e14d', level: 'BEG', make: function (r, sh) { var red = ex.norm(sh.a, sh.b); return setsPart('List every set ' + t('\\frac{a}{b}') + ' belongs to.', [{ id: 'ab', tex: '\\frac{a}{b}', cls: 'frac', note: '\\frac{a}{b}=' + K.decTex(red) }], false, 'classify a/b'); } }] },
-      { num: '15', stem: 'Statement 12(b) is worth arguing properly. Let ' + t('n') + ' be a natural number.',
+      { num: '15', stem: 'The claim “for a natural number ' + t('n') + ', ' + t('\\sqrt{n}') + ' is irrational unless ' + t('n') + ' is a perfect square” is worth arguing properly. Let ' + t('n') + ' be a natural number.',
         shared: function (r) {
           var f, n, i;
           for (i = 0; i < 300; i++) { var ps = r.sample([2, 3, 5, 7], 3).sort(function (a, b) { return a - b; }), es = r.shuffle([r.pick([2, 4]), r.pick([2, 4]), r.pick([3, 1, 5])]); f = ps.map(function (p, j) { return [p, es[j]]; }); n = fVal(f); if (n <= 200000 && n >= 500) break; }
@@ -1067,7 +1067,7 @@
             }, t('\\sqrt{n}=' + c + '\\sqrt{r}') + ' means ' + t('n=' + c + '^{2}\\times r=' + c2 + 'r') + ', where the leftover ' + t('r>1') + ' has no perfect-square factor. The smallest such ' + t('r') + ' is ' + t('2') + ':<br>' + t('n=' + c2 + '\\times 2=' + 2 * c2) + ', and ' + t('\\sqrt{' + 2 * c2 + '}=' + rad(c, 2, 2)) + '.',
             ['If ' + t('\\sqrt{n}=' + c + '\\sqrt{r}') + ', then ' + t('n=' + c + '^{2}\\times r') + '. What is the smallest allowed ' + t('r') + '?'], 'smallest n with coefficient ' + c);
           } },
-          { id: 'e16b', level: 'EMG', make: function (r, sh) { var c = sh.c; return P.radical('Write ' + t('\\sqrt{n}') + ' in simplest mixed radical form for your answer to part (a).', { k: c, n: 2, m: 2 }, 'mixed', t('\\sqrt{' + 2 * c * c + '}=\\sqrt{' + c * c + '\\times 2}=' + rad(c, 2, 2)), ['The coefficient must be ' + t(c) + '.'], 'sqrt ' + 2 * c * c); } },
+          { id: 'e16b', level: 'EMG', make: function (r, sh) { var c = sh.c; return P.radical('Write ' + t('\\sqrt{n}') + ' in simplest mixed radical form for the smallest such ' + t('n') + '.', { k: c, n: 2, m: 2 }, 'mixed', t('\\sqrt{' + 2 * c * c + '}=\\sqrt{' + c * c + '\\times 2}=' + rad(c, 2, 2)), ['The coefficient must be ' + t(c) + '.'], 'sqrt ' + 2 * c * c); } },
           { id: 'e16c', level: 'EMG', make: function (r, sh) {
             var c = sh.c, c2 = c * c;
             return P.mc(r, 'A classmate suggests ' + t('n=' + c2 + '\\times 4=' + F(4 * c2)) + '. Why does that fail?', [
@@ -1080,13 +1080,13 @@
           } },
           { id: 'e16d', level: 'PRG', make: function (r, sh) {
             var c2 = sh.c * sh.c;
-            return P.fields('Find the next <b>two</b> values of ' + t('n') + ' after your answer to (a), in increasing order.', [{ label: 'Next:', name: 'Next' }, { label: 'After that:', name: 'After that' }],
+            return P.fields('Find the next <b>two</b> values of ' + t('n') + ' after the smallest one, in increasing order.', [{ label: 'Next:', name: 'Next' }, { label: 'After that:', name: 'After that' }],
               [numChk(3 * c2, [{ v: 4 * c2, code: 'leftover-4', hint: 'That’s the classmate’s ' + t(F(4 * c2)) + ' — the leftover ' + t('4') + ' is a perfect square.' }]), numChk(5 * c2, [{ v: 4 * c2, code: 'leftover-4', hint: t(F(4 * c2)) + ' is ruled out by part (c). Skip the leftover ' + t('4') + '.' }, { v: 6 * c2, code: 'skipped', hint: 'Close — but there is an allowed leftover radicand between ' + t('3') + ' and ' + t('6') + '.' }])],
               [String(3 * c2), String(5 * c2)], t(F(3 * c2)) + ' and ' + t(F(5 * c2)),
               'The next allowed leftover radicands after ' + t('2') + ' are ' + t('3') + ' and ' + t('5') + ' (' + t('4') + ' is ruled out):<br>' + t('n=' + c2 + '\\times 3=' + F(3 * c2)) + ', ' + t('\\sqrt{' + F(3 * c2) + '}=' + rad(sh.c, 2, 3)) + '<br>' + t('n=' + c2 + '\\times 5=' + F(5 * c2)) + ', ' + t('\\sqrt{' + F(5 * c2) + '}=' + rad(sh.c, 2, 5)),
               ['List the allowed leftover radicands in order: ' + t('2, 3, ?, \\ldots') + '.'], 'next two n');
           } },
-          { id: 'e16e', level: 'EMG', make: function (r, sh) { var c = sh.c; return setsPart('Is ' + t('\\sqrt{n}') + ' rational for your answer in (a)? Tick every set it belongs to.', [{ id: 'x', tex: '\\sqrt{' + F(2 * c * c) + '}', cls: 'irr', note: '=' + rad(c, 2, 2) }], false, 'classify sqrt 2c^2'); } }] },
+          { id: 'e16e', level: 'EMG', make: function (r, sh) { var c = sh.c; return setsPart('Is ' + t('\\sqrt{n}') + ' rational for the smallest such ' + t('n') + '? Tick every set it belongs to.', [{ id: 'x', tex: '\\sqrt{' + F(2 * c * c) + '}', cls: 'irr', note: '=' + rad(c, 2, 2) }], false, 'classify sqrt 2c^2'); } }] },
       { num: '17',
         shared: function (r) {
           var G = r.pick([12, 6, 10, 14, 15, 18, 20]), R = r.pick([15, 6, 10, 12, 18, 20]), L = G * R, pairs = [];

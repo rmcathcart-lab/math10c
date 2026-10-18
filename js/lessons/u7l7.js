@@ -254,7 +254,7 @@
             t(pT(o.L, X)) + '<br>Multiply by ' + t(o.m[1]) + ' and rearrange: ' + t(gT(o.L)) + ' ✓ (the given line)', ['Use ' + t('m=' + qT(o.m)) + ' and the point ' + t(ptT(X)) + '.'], 'slope-point with x-intercept');
         } },
         { id: 'e1e2', sub: 'e ii', level: 'BEG', outcome: 'RF6', make: function (r, o) {
-          return lineP('Write a second slope–point equation, using the point from (d) that is on the line.', o.L, { form: 'point-slope', point: o.P, wrong: [{ is: lineMP(o.m, [-o.P[0], -o.P[1]]), code: 'ps-sign', hint: 'In ' + t('y-y_1=m(x-x_1)') + ' the coordinates are subtracted, so the signs flip: ' + t(pT(o.L, o.P)) + '.' }] },
+          return lineP('Write a second slope–point equation, using the point ' + t('P' + ptT(o.P)) + ' (from (d)), which is on the line.', o.L, { form: 'point-slope', point: o.P, wrong: [{ is: lineMP(o.m, [-o.P[0], -o.P[1]]), code: 'ps-sign', hint: 'In ' + t('y-y_1=m(x-x_1)') + ' the coordinates are subtracted, so the signs flip: ' + t(pT(o.L, o.P)) + '.' }] },
             t(pT(o.L, o.P)) + '<br>Converting to general form gives ' + t(gT(o.L)) + ' again — both slope–point equations describe the same line ✓', ['Use ' + t('m=' + qT(o.m)) + ' and ' + t('P' + ptT(o.P)) + '.'], 'slope-point with P');
         } },
         { id: 'e1f', sub: 'f', level: 'EMG', outcome: 'RF6', make: function (r, o) {
@@ -275,7 +275,7 @@
         } },
         { id: 'e1i', sub: 'i', level: 'BEG', outcome: 'RF7', make: function (r, o) {
           var n = perpS(o.m);
-          return mc(r, 'Confirm (h) by multiplying the two slopes. Which statement is correct?', [
+          return mc(r, 'In (h), the line through ' + t(ptT(o.H)) + ' perpendicular to the given line is ' + t(gT(o.Lh)) + '. Confirm (h) by multiplying the slopes of the two lines. Which statement is correct?', [
             { html: t('\\left(' + qT(o.m) + '\\right)\\left(' + qT(n) + '\\right)=-1') + ', which proves the lines are perpendicular.', right: true },
             { html: t('\\left(' + qT(o.m) + '\\right)\\left(' + qT(n) + '\\right)=1') + ', which proves the lines are perpendicular.', why: 'Multiply again: a negative times a positive is negative. Perpendicular slopes multiply to ' + t('-1') + '.' },
             { html: t('\\left(' + qT(o.m) + '\\right)\\left(' + qT(n) + '\\right)=-1') + ', which proves the lines are parallel.', why: 'Parallel lines have <b>equal</b> slopes. A product of ' + t('-1') + ' means perpendicular.' },
@@ -286,7 +286,7 @@
           var xr = o.win.x, yr = o.win.y, key = linesDraw([o.Lg, o.Lh], xr, yr), n = perpS(o.m);
           var sw = linesDraw([lineMP(n, o.G), lineMP(o.m, o.H)], xr, yr), W = sw ? [{ is: sw, code: 'diag', hint: 'Your lines go through the right points, but the slopes are swapped: the line through ' + t(ptT(o.G)) + ' is the <b>parallel</b> one (slope ' + t(qT(o.m)) + ').' }] : [];
           var a1 = lattice(o.Lg, xr, yr), b1 = lattice(o.Lh, xr, yr);
-          return drawPart('Draw your answers to (g) and (h) on the grid (the given line is shown in grey).' + LINEHELP + ' Draw both lines.', pad(xr, yr, { bg: bgLines([o.L], xr, yr) }), exactChk(key, { wrong: W }), key,
+          return drawPart('Draw your answers to (g) and (h) on the grid (the given line is shown in grey): the line through ' + t(ptT(o.G)) + ' <b>parallel</b> to the given line, and the line through ' + t(ptT(o.H)) + ' <b>perpendicular</b> to it.' + LINEHELP + ' Draw both lines.', pad(xr, yr, { bg: bgLines([o.L], xr, yr) }), exactChk(key, { wrong: W }), key,
             '(g) ' + t(gT(o.Lg)) + ': through ' + t(ptT(o.G)) + ', step ' + t(qT(o.m)) + ' to ' + t(ptT(a1[0][0] === o.G[0] ? a1[a1.length - 1] : a1[0])) + ' — it never meets the given line.<br>(h) ' + t(gT(o.Lh)) + ': through ' + t(ptT(o.H)) + ', step ' + t(qT(n)) + ' — it crosses the given line at a right angle.',
             ['Start each line at its given point and step its slope: ' + t(qT(o.m)) + ' for the parallel, ' + t(qT(n)) + ' for the perpendicular.'], 'graph parallel and perpendicular', [sw, lineDraw(o.Lg, xr, yr), gv([], [segv(a1[0], a1[a1.length - 1]), segv(b1[0], b1[b1.length - 1])])]);
         } },
@@ -403,7 +403,7 @@
         } },
         { id: 'e3f', sub: 'f', level: 'EMG', outcome: 'RF6', make: function (r, sh) { var o = sh.P;
           var v = o.P[1];
-          return mc(r, 'One of your answers to (e) has ' + t('A=0') + ', so it cannot have “' + t('A') + ' positive”. What does the unit do instead?', [
+          return mc(r, 'In (e), the line through ' + t(ptT(o.P)) + ' <b>parallel</b> to the ' + t('x') + '-axis is horizontal, so its general form has ' + t('A=0') + ' and cannot have “' + t('A') + ' positive”. What does the unit do instead?', [
             { html: 'Make the leading non-zero coefficient, ' + t('B') + ', positive: ' + t(gT(L3(0, 1, -v))) + ', not ' + t(pol([[-1, 'y'], [v, '']]) + '=0') + '.', right: true },
             { html: 'Make ' + t('C') + ' positive: ' + t(v > 0 ? pol([[-1, 'y'], [v, '']]) + '=0' : gT(L3(0, 1, -v))) + '.', why: 'The sign rule is about the first variable term, not the constant.' },
             { html: 'Nothing — when ' + t('A=0') + ' any sign is fine.', why: 'The unit still fixes the sign so every line has one standard general form: the first non-zero coefficient is made positive.' },
@@ -412,7 +412,7 @@
         } },
         { id: 'e3g', sub: 'g', level: 'EMG', outcome: 'EXT', make: function (r, sh) { var o = sh.bis;
           var d2 = dist2(o.C, o.Pt);
-          return B.fields('Verify (c): the point ' + t(ptT(o.Pt)) + ' is on your bisector. Determine its exact distance from ' + t('C') + ' and from ' + t('D') + '.', [fld('distance to ' + t('C'), 'radical'), fld('distance to ' + t('D'), 'radical')], [exactV(Math.sqrt(d2), 'a radical'), exactV(Math.sqrt(dist2(o.D, o.Pt)), 'a radical')], [radTex(d2), radTex(d2)], t(radTex(d2)) + ' both',
+          return B.fields('Verify (c): the point ' + t(ptT(o.Pt)) + ' is on the perpendicular bisector of ' + t('C' + ptT(o.C)) + ' and ' + t('D' + ptT(o.D)) + '. Determine its exact distance from ' + t('C') + ' and from ' + t('D') + '.', [fld('distance to ' + t('C'), 'radical'), fld('distance to ' + t('D'), 'radical')], [exactV(Math.sqrt(d2), 'a radical'), exactV(Math.sqrt(dist2(o.D, o.Pt)), 'a radical')], [radTex(d2), radTex(d2)], t(radTex(d2)) + ' both',
             t(ptT(o.Pt)) + ' is on (c): ' + t(sub(o.T, o.Pt) + '=0') + ' ✓<br>' + t('C') + ' to ' + t(ptT(o.Pt)) + ': ' + t(distT(o.C, o.Pt)) + '<br>' + t('D') + ' to ' + t(ptT(o.Pt)) + ': ' + t(distT(o.D, o.Pt)) + '<br>Both ' + t(radTex(d2)) + ' — equal, as every point of a perpendicular bisector must be.', ['Distance formula: ' + t('d=\\sqrt{(x_2-x_1)^2+(y_2-y_1)^2}') + '.'], 'equidistant check');
         } }] },
     /* ---------------- Q4 ---------------- */
@@ -460,7 +460,7 @@
             return { v: res.v, code: res.code, hint: '<b>General form:</b> ' + (res.hint || 'Write ' + t(pol([[kp, 'x'], [-Bc, 'y']]) + (c2 < 0 ? '' : '+') + c2 + '=0') + ' in lowest terms with ' + t('A>0') + '.') };
           };
           var key = [String(C0 - Bc), gT(eqv(C0 - Bc))];
-          var p = B.fields('Part (b) gave the given line itself, so it isn’t really “parallel”. Change the constant ' + t(C0) + ' to a value that makes the line parallel to <b>and different from</b> ' + t(gT(o.G)) + ', and write the new line in general form.', [{ label: 'new constant' }, fld('general form', 'eq', { vars: ['x', 'y'] })], [K.number(0), K.number(0)], key,
+          var p = B.fields('With ' + t('k=' + kp) + ' (part (b)), the line ' + t(pol([[kp, 'x'], [-Bc, 'y'], [C0, '']]) + '=0') + ' turns out to be the given line ' + t(gT(o.G)) + ' itself, so it isn’t really “parallel”. Change the constant ' + t(C0) + ' to a value that makes the line parallel to <b>and different from</b> ' + t(gT(o.G)) + ', and write the new line in general form.', [{ label: 'new constant' }, fld('general form', 'eq', { vars: ['x', 'y'] })], [K.number(0), K.number(0)], key,
             'e.g. ' + t(String(C0 - Bc)) + ': ' + t(gT(eqv(C0 - Bc))),
             'Parallel lines are two <b>different</b> lines with one slope, but (b) gave the same line: ' + t('b=' + o.b0) + ' is fixed, and ' + t(gT(o.G)) + ' also crosses at ' + t(ptT([0, o.b0])) + '.<br>Change ' + t(C0) + ' to e.g. ' + t(C0 - Bc) + ': ' + t(pol([[kp, 'x'], [-Bc, 'y'], [C0 - Bc, '']]) + '=0') + ', i.e. ' + t(gT(eqv(C0 - Bc))) + ' (same slope, ' + t('y') + '-intercept ' + t(ptT([0, Q(C0 - Bc, Bc)])) + ').',
             ['Any constant except ' + t(C0) + ' changes the ' + t('y') + '-intercept but keeps the slope.'], 'make it parallel and different');

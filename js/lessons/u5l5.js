@@ -346,7 +346,7 @@
           } },
           { id: '2c', level: 'BEG', make: function (r, s) {
             var y = s.y1;
-            return mc(r, 'Which work <b>algebraically verifies</b> the answer to (b)?', [
+            return mc(r, 'Which work <b>algebraically verifies</b> the value of ' + t('y') + ' when ' + t('x=' + s.x1) + '?', [
               { html: t('y=-' + s.m + '(' + s.x1 + ')+' + s.b + '=' + (-s.m * s.x1) + '+' + s.b + '=' + y), right: true },
               { html: t('y=-' + s.m + '(' + s.x1 + '+' + s.b + ')=' + (-s.m * (s.x1 + s.b))), why: 'The ' + t(s.b) + ' is added <i>after</i> multiplying — it is not inside the bracket. Multiply ' + t('-' + s.m + '\\times ' + s.x1) + ' first.' },
               { html: t('y=' + s.m + '(' + s.x1 + ')+' + s.b + '=' + (s.m * s.x1 + s.b)), why: 'The coefficient is ' + t('-' + s.m) + ', so ' + t('-' + s.m + '(' + s.x1 + ')') + ' is negative.' },
@@ -360,7 +360,7 @@
           } },
           { id: '2e', level: 'BEG', make: function (r, s) {
             var d = s.y2 - s.b;
-            return mc(r, 'Which work <b>algebraically verifies</b> the answer to (d)?', [
+            return mc(r, 'Which work <b>algebraically verifies</b> the value of ' + t('x') + ' when ' + t('y=' + s.y2) + '?', [
               { html: t(s.y2 + '=-' + s.m + 'x+' + s.b + '\\Rightarrow -' + s.m + 'x=' + d + '\\Rightarrow x=' + s.x2), right: true },
               { html: t(s.y2 + '=-' + s.m + 'x+' + s.b + '\\Rightarrow -' + s.m + 'x=' + (s.y2 + s.b) + '\\Rightarrow x=' + vt(-(s.y2 + s.b) / s.m)), why: 'To move ' + t('+' + s.b) + ' to the other side, <b>subtract</b> it: ' + t(s.y2 + '-' + s.b + '=' + d) + '.' },
               { html: t('y=-' + s.m + '(' + s.y2 + ')+' + s.b + '=' + (-s.m * s.y2 + s.b)), why: t(s.y2) + ' is the <b>output</b> ' + t('y') + '. Substituting it for ' + t('x') + ' answers a different question.' },
@@ -507,7 +507,7 @@
               { good: ['\\pm' + sqrtTex(s.s), '-' + nT(rnd(v, 2)) + ', ' + nT(rnd(v, 2))], bad: [nT(rnd(v, 2)), '\\pm' + nT(s.s)] });
           } },
           { id: '5e', level: 'EMG', make: function (r, s) {
-            return mc(r, 'Using the shape of the graph, why does the table in (a) give the same output for ' + t('x=-3') + ' and ' + t('x=3') + ', and for ' + t('x=-6') + ' and ' + t('x=6') + '?', [
+            return mc(r, 'Using the shape of the graph, why does this relation give the same output for ' + t('x=-3') + ' and ' + t('x=3') + ', and for ' + t('x=-6') + ' and ' + t('x=6') + '?', [
               { html: 'The parabola is symmetric about the ' + t('y') + '-axis ' + t('(x=0)') + ', so inputs the same distance from ' + t('0') + ' are mirror images and have the same output.', right: true },
               { html: 'The calculator rounds the outputs, so they only look equal.', why: 'Check by substituting: ' + t('(-3)^{2}') + ' and ' + t('3^{2}') + ' are both exactly ' + t('9') + ', so the outputs are exactly equal.' },
               { html: 'Every relation gives the same output for ' + t('x') + ' and ' + t('-x') + '.', why: 'Try ' + t('y=x+1') + ': ' + t('x=3') + ' gives ' + t('4') + ' but ' + t('x=-3') + ' gives ' + t('-2') + '. It works here because of this graph’s shape.' },
@@ -851,7 +851,7 @@
           } },
           { id: 'e5b', level: 'EMG', make: function (r, s) {
             var m = cl(s.f(10));
-            return mc(r, 'Use those values to explain why the screen really is blank.', [
+            return mc(r, 'Use the outputs at ' + t('x=-10') + ', ' + t('x=0') + ' and ' + t('x=10') + ' to explain why the screen really is blank.', [
               { html: 'The outputs fall all the way from ' + t('x=-10') + ' to ' + t('x=10') + ', so the smallest output on the screen is ' + t(nT(m)) + ' — still above ' + t('Y_{\\max}=10') + '. Every point is above the top edge.', right: true },
               { html: 'The parabola opens down, so all of it is below the screen.', why: 'The ' + t('x^{2}') + ' coefficient ' + t(nT(s.a)) + ' is positive, so it opens up — and the values you found are all <b>above</b> ' + t('10') + '.' },
               { html: 'The relation has no ' + t('x') + '-intercepts, so the calculator can’t draw it.', why: 'A graph doesn’t need ' + t('x') + '-intercepts to be drawn. Compare the outputs with ' + t('Y_{\\max}') + '.' },
@@ -1138,7 +1138,7 @@
           } },
           { id: 'e13c', level: 'EMG', make: function (r, s) { var p = vertexPart(s.a, s.b, s.c, r); p.prompt = 'Run the right feature and give the turning point exactly.'; return p; } },
           { id: 'e13d', level: 'BEG', make: function (r) {
-            return mc(r, 'One student blamed the calculator (Question 5), another trusted the screen too much (Question 12), and this one chose the wrong tool. Which advice would have saved all three?', [
+            return mc(r, 'One student blamed the calculator for a blank ZStandard screen, another trusted a screen that hid a parabola’s vertex (“it just keeps going down”), and this one chose the wrong tool. Which advice would have saved all three?', [
               { html: 'Work out what the graph should look like first — its shape, intercepts and vertex — then use the calculator to confirm it; if the screen disagrees, suspect the window or the feature before the mathematics.', right: true },
               { html: 'Always use ZStandard.', why: 'ZStandard caused two of the three problems.' },
               { html: 'Trust the calculator: it is never wrong.', why: 'The calculator was right each time — the window or the chosen feature was the problem, and the students didn’t check.' },
