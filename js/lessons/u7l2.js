@@ -744,7 +744,7 @@
           } },
           { id: 'e5e', level: 'EMG', outcome: 'RF4', make: function (r, sh) {
             var o = sh.b, xs = [0, 1, 2, 3, 4].map(function (i) { return o.x0 + i * o.dx; });
-            return mc(r, HW.valueTable([[t('x')].concat(xs), [t('y')].concat(xs.map(function (x) { return fv(fAdd(fMul(o.m, x - o.x0), o.y0)); }))]) + 'In this table (table (b)) the ' + t('x') + '-values go up in steps of ' + t(o.dx) + ', not ' + t('1') + '. Why are the first differences of the ' + t('y') + '-column (' + t(o.m[0]) + ' each time) <b>not</b> the slope?', [
+            return mc(r, HW.valueTable([[t('x')].concat(xs), [t('y')].concat(xs.map(function (x) { return fv(fAdd(fMul(o.m, x - o.x0), o.y0)); }))]) + 'In table (b), shown again here, the ' + t('x') + '-values go up in steps of ' + t(o.dx) + ', not ' + t('1') + '. Why are the first differences of the ' + t('y') + '-column (' + t(o.m[0]) + ' each time) <b>not</b> the slope?', [
               { html: 'Slope is rise ÷ run: each difference ' + t(o.m[0]) + ' is the rise for a run of ' + t(o.dx) + ', so divide by the ' + t('x') + '-step: ' + t('m=' + nT(o.m)) + '.', right: true },
               { html: 'The first differences are the slope only when they are negative.', why: 'The sign has nothing to do with it — what matters is the size of the step in ' + t('x') + '.' },
               { html: 'You must multiply each difference by the ' + t('x') + '-step: ' + t('m=' + (o.m[0] * o.dx)) + '.', why: 'Slope is rise <b>divided</b> by run, so divide by the ' + t('x') + '-step.' },
