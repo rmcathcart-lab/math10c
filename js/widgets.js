@@ -126,6 +126,8 @@
     if (mathReady()) {
       var mf = document.createElement('math-field'); mf.className = 'mf';
       mf.setAttribute('math-virtual-keyboard-policy', 'manual');
+      try { mf.mathVirtualKeyboardPolicy = 'manual'; } catch (e) {}
+      mf.addEventListener('focusin', function () { try { if (root.mathVirtualKeyboard) root.mathVirtualKeyboard.hide(); } catch (e) {} }); // the site's own keypad replaces MathLive's keyboard
       try { mf.menuItems = []; } catch (e) {}
       try { mf.smartSuperscript = false; } catch (e) {}
       try { mf.inlineShortcuts = Object.assign({}, mf.inlineShortcuts || {}, { '*': '\\times' }); } catch (e) {}

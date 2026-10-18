@@ -466,3 +466,5 @@ math-field.mf::part(menu-toggle), math-field.mf::part(virtual-keyboard-toggle) {
 .tp-placed:hover svg rect { stroke: #c4532a; }
 .tp-empty { font-size: 13px; }
 .tp-ghost { position: fixed; z-index: 1000; pointer-events: none; transform: translate(-50%, -50%); filter: drop-shadow(0 2px 4px rgba(0,0,0,.25)); }
+
+.ML__keyboard { display: none !important; } /* the site's own keypads replace MathLive's virtual keyboard */
