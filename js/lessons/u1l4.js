@@ -17,7 +17,7 @@
     'nested-one-root': 'Took only one of the two roots', 'rounded-early': 'Rounded too early', 'sum-own': 'Didn’t add own estimates', 'right-side': 'Right side wrong', 'took-root-not': 'Didn’t take the root',
     'sig-digits': 'More than one significant digit', 'place-value': 'Right digit, wrong place value', chop: 'Chopped instead of rounding', 'between-pair': 'Not two consecutive whole numbers',
     'between-wrong': 'Wrong pair of whole numbers', 'abs-negative': 'Gave a negative absolute value', 'abs-inside': 'Didn’t work inside the bars first', 'abs-each': 'Treated |a|−|b| as |a−b|',
-    'abs-outer': 'Forgot the outer bars', 'abs-minus-out': 'Dropped the minus sign outside the bars', 'abs-cube': 'Didn’t take the cube root', 'abs-added': 'Added instead of subtracting',
+    'abs-outer': 'Forgot the outer bars', 'abs-minus-out': 'Dropped the minus sign outside the bars', 'abs-cube': 'Didn’t take the cube root', 'abs-added': 'Added instead of subtracting', 'abs-shade': 'Shaded inside/outside the wrong way (absolute value)', 'abs-one-side': 'Graphed only one side of an absolute value inequality',
     'mc-said-always': 'Said “always”', 'mc-said-sometimes': 'Said “sometimes”', 'mc-said-never': 'Said “never”',
     'as-irrational': 'Counted the irrational ones instead', 'cube-in': 'Put the coefficient inside the root', 'flip-99': 'Used 100 instead of 99 for the repeating block'
   });
@@ -668,9 +668,9 @@
             [t('|x|=-x') + ' if ' + t('x>0'), false, 'Try ' + t('x=' + k) + ': ' + t('|' + k + '|=' + k) + ', but ' + t('-x=-' + k) + '.'],
             [t('|-x|=x') + ' for every real number ' + t('x'), false, 'Try ' + t('x=-' + k) + ': ' + t('|-(-' + k + ')|=|' + k + '|=' + k) + ', but ' + t('x=-' + k) + '.']], 'abs negative case', ABS_TF_HINTS);
         } }] },
-      { num: '21', stem: 'Choose the graph that represents each absolute value inequality. The variables are defined on the set of real numbers.', parts: [
-        { id: '21a', level: 'BEG', make: function (r) { return absGraphPart(r, true, r.int(2, 7), r.pick(['x', 'x', 'y', 'n'])); } },
-        { id: '21b', level: 'EMG', make: function (r) { return absGraphPart(r, false, r.int(2, 7), r.pick(['a', 'a', 'x', 'm'])); } }] }
+      { num: '21', stem: 'In each case, draw a graph on the number line to represent the absolute value inequality. The variables are defined on the set of real numbers.', parts: [
+        { id: '21a', level: 'EMG', make: function (r) { return absGraphPart(r, true, r.int(2, 7), r.pick(['x', 'x', 'y', 'n'])); } },
+        { id: '21b', level: 'PRG', make: function (r) { return absGraphPart(r, false, r.int(2, 7), r.pick(['a', 'a', 'x', 'm'])); } }] }
     ],
     extra: [
       /* ================= Extra practice A — Simplify first, then classify ================= */
@@ -1001,17 +1001,37 @@
     return P.mc(r, 'Consider the following statements.<br>' + st.map(function (p, i) { return ROM[i] + ') The set of ' + NAME[p[0]] + ' is nested within the set of ' + NAME[p[1]] + '.'; }).join('<br>') + '<br>Which of the statements are <b>false</b>?', opts,
       [0, 1, 2, 3].map(expl).join('<br>') + '<br>The false ones: ' + (falseSet.length ? falseSet.map(function (i) { return ROM[i] + ')'; }).join(', ') : 'none') + '.', ['Test each statement: is every number in the first set also in the second set?'], 'which nesting statements false', true);
   }
+  /* Question 21: draw |v| < k (inside) or |v| >= k (outside) on a number line (dots + shading) */
   function absGraphPart(r, inside, k, v) {
-    var ops = inside ? ['<', '\\le'] : ['\\ge', '>'], op = (inside ? r.chance(0.7) : r.chance(0.7)) ? ops[0] : ops[1], closed = op === '\\le' || op === '\\ge', ineq = '|' + v + '|' + op + ' ' + k;
-    var combos = [[true, false], [true, true], [false, false], [false, true]];
-    var opts = combos.map(function (cmb) {
-      var right = cmb[0] === inside && cmb[1] === closed, why = null;
-      if (!right) why = cmb[0] !== inside ? t(ineq) + ' means every point ' + (inside ? '<b>within</b> ' + k + ' units of ' + t('0') + ' — between ' + t('-' + k) + ' and ' + t(k) : '<b>at least</b> ' + k + ' units from ' + t('0') + ' — outward from ' + t('-' + k) + ' and ' + t(k)) + '.' : (closed ? 'The sign ' + t(op) + ' includes the endpoints, so use solid dots.' : 'The sign ' + t(op) + ' does not include the endpoints, so use open circles.');
-      return { html: numLine(k, cmb[0], cmb[1]), right: right, why: why };
-    });
-    var p = P.mc(r, 'Which graph represents ' + t(ineq + ',\\ ' + v + '\\in R') + '?', opts,
-      'Every point ' + (inside ? '<b>within</b> ' + t(k) + ' units of ' : '<b>at least</b> ' + t(k) + ' units from ') + t('0') + (inside ? ': between ' + t('-' + k) + ' and ' + t(k) : ': outward from ' + t('-' + k) + ' and ' + t(k) + ' in both directions') + '. ' + (closed ? 'The ' + t(op) + ' includes the endpoints, so they get solid dots.' : 'The strict ' + t(op) + ' excludes the endpoints, so they get open circles.') + numLine(k, inside, closed),
-      ['Read ' + t('|' + v + '|') + ' as “the distance of ' + t(v) + ' from ' + t('0') + '”.', 'Solid dot: endpoint included (' + t('\\le') + ' or ' + t('\\ge') + '). Open circle: not included (' + t('<') + ' or ' + t('>') + ').'], 'graph ' + ineq, true);
+    var ops = inside ? ['<', '\\le'] : ['\\ge', '>'], op = r.chance(0.7) ? ops[0] : ops[1], closed = op === '\\le' || op === '\\ge', ineq = '|' + v + '|' + op + ' ' + k;
+    var L = closed ? '[' : '(', R = closed ? ']' : ')';
+    var target = inside ? L + '-' + k + ',' + k + R : '(-\\infty,-' + k + R + '\\cup' + L + k + ',\\infty)';
+    var I = { min: -8, max: 8, step: 1 };
+    var sol = t(ineq) + ' means every point ' + (inside ? '<b>within</b> ' + t(k) + ' units of ' : (closed ? '<b>at least</b> ' : '<b>more than</b> ') + t(k) + ' units from ') + t('0') + (inside ? ': between ' + t('-' + k) + ' and ' + t(k) : ': outward from ' + t('-' + k) + ' and ' + t(k) + ' in both directions') + '. ' +
+      (closed ? 'The ' + t(op) + ' includes the endpoints, so they get solid dots.' : 'The strict ' + t(op) + ' excludes the endpoints, so they get open dots.') + numLine(k, inside, closed);
+    var p = P.numline('Draw the graph of ' + t(ineq + ',\\ ' + v + '\\in R') + ' on the number line.', I, target, sol,
+      ['Read ' + t('|' + v + '|') + ' as “the distance of ' + t(v) + ' from ' + t('0') + '”. Which numbers are ' + (inside ? (closed ? 'at most ' : 'less than ') : (closed ? 'at least ' : 'more than ')) + t(k) + ' units from ' + t('0') + '?', 'Solid dot: endpoint included (' + t('\\le') + ' or ' + t('\\ge') + '). Open dot: not included (' + t('<') + ' or ' + t('>') + ').'],
+      'graph ' + ineq, { v: v });
+    var base = p.check, D = HW.draw;
+    var dist = inside ? t('|' + v + '|' + op + ' ' + k) + ' means <b>less than' + (closed ? ' or equal to' : '') + '</b> ' + t(k) + ' units from ' + t('0') + ', so shade <b>between</b> ' + t('-' + k) + ' and ' + t(k) + '.' :
+      t('|' + v + '|' + op + ' ' + k) + ' means ' + (closed ? '<b>at least</b> ' : '<b>more than</b> ') + t(k) + ' units from ' + t('0') + ', so shade <b>outward</b> from ' + t('-' + k) + ' and from ' + t(k) + '.';
+    p.check = function (resp) {
+      var res = base(resp); if (res.v === 'correct' || res.v === 'form') return res;
+      var parts = D.numlineParts(resp), ends = [];
+      parts.forEach(function (q) { [q.lo, q.hi].forEach(function (x) { if (isFinite(x) && ends.indexOf(x) < 0) ends.push(x); }); });
+      var hasK = ends.indexOf(k) >= 0, hasNeg = ends.indexOf(-k) >= 0;
+      if (res.code === 'nl-side') return wrong('abs-shade', dist);
+      if (res.code === 'nl-dot') return wrong('nl-dot', 'Right stretch — check the dots: ' + (closed ? t(op) + ' includes ' + t('-' + k) + ' and ' + t(k) + ' (they are exactly ' + t(k) + ' units from ' + t('0') + '), so both get <b>solid</b> dots.' : 'the strict ' + t(op) + ' leaves out ' + t('-' + k) + ' and ' + t(k) + ', so both get <b>open</b> dots.'));
+      if (hasK && !hasNeg) return wrong('abs-one-side', 'Distance counts in <b>both</b> directions: ' + t('-' + k) + ' is also ' + t(k) + ' units from ' + t('0') + '. Your graph needs a boundary at ' + t('-' + k) + ' as well as at ' + t(k) + '. ' + dist);
+      if (ends.length === 2 && ends.indexOf(-ends[0]) === 1 && !hasK) return wrong('nl-values', 'The boundaries are where ' + t(v) + ' is exactly ' + t(k) + ' units from ' + t('0') + ': at ' + t('-' + k) + ' and ' + t(k) + '.');
+      return wrong(res.code, (res.hint ? res.hint + ' ' : '') + dist);
+    };
+    var dk = function (x, o) { return { x: x, open: o }; };
+    p.bad = [
+      inside ? { dots: [dk(-k, !closed), dk(k, !closed)], shade: [[null, -k], [k, null]] } : { dots: [dk(-k, !closed), dk(k, !closed)], shade: [[-k, k]] },   // inside/outside swapped
+      inside ? { dots: [dk(-k, closed), dk(k, closed)], shade: [[-k, k]] } : { dots: [dk(-k, closed), dk(k, closed)], shade: [[null, -k], [k, null]] },        // wrong dots
+      inside ? { dots: [dk(k, !closed)], shade: [[null, k]] } : { dots: [dk(k, !closed)], shade: [[k, null]] },                                                  // solved like v < k / v >= k
+      inside ? { dots: [dk(0, false), dk(k, !closed)], shade: [[0, k]] } : { dots: [dk(-k, !closed), dk(k, !closed)], shade: [[null, -k]] }];
     return p;
   }
   function strictPart(r, it) {

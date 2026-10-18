@@ -39,4 +39,5 @@ eq(/<table/.test(HW.valueTable([['x', 1, 2], ['y', 3, 4]])), true, 'table');
 // alternate builder order, \middle, and lists with dots
 (function () { var c = K.set('\\{x\\mid -5<x\\le 4, x\\in\\mathbb{R}\\}'); eq(c('\\{x\\in\\mathbb{R}\\mid -5<x\\le 4\\}').v, 'correct', 'x in R first'); eq(c('\\left\\{x\\middle|-5<x\\le4, x\\in R\\right\\}').v, 'correct', 'middle bar');
   var d = K.set('\\{n\\mid 0\\le n\\le 250, n\\in W\\}'); eq(d('\\{0, 1, 2, \\ldots, 250\\}').v, 'correct', 'dots list'); eq(d('{0, 1, 2, ..., 249}').v, 'wrong', 'dots list short'); })();
+(function () { var c = K.set('(-\\infty,-4]\\cup[4,\\infty)'); eq(c('\\{x\\mid x\\le -4\\text{ or }x\\ge 4\\}').v, 'correct', 'or in builder'); eq(c('x\\le -4 or x\\ge 4').v, 'correct', 'or bare'); eq(c('x<-4 or x>4').v, 'wrong', 'or strict'); })();
 console.log(n + ' checks, ' + fails + ' failed'); process.exit(fails ? 1 : 0);

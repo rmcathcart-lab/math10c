@@ -269,7 +269,6 @@
   }
   function BF(prompt, fl, ch, keys, answer, sol, hints, text) { return B.fields(prompt, phFix(fl), ch, keys, answer, sol, hints, text); }
   function mc(r, prompt, opts, sol, hints, text, keepOrder) { return B.mc(r, prompt, opts, sol, hints, text, keepOrder); }
-  function graphMC(r, prompt, opts, sol, hints, text) { var p = B.mc(r, prompt, opts, sol, hints, text); p.input.columns = 2; return p; }
   function numF(label, v, diag) { return { f: { label: label, name: label, mode: 'math', keys: 'fraction' }, c: K.value(v, { diag: diag }), k: nf(v) }; }
   function fieldsOf(prompt, items, answer, sol, hints, text) {
     return BF(prompt, items.map(function (x) { return x.f; }), items.map(function (x) { return x.c; }), items.map(function (x) { return x.k; }), answer, sol, hints, text);

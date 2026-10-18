@@ -48,7 +48,7 @@
     s = s.replace(/\\lt(?![a-zA-Z])|</g, ' #lt ').replace(/\\gt(?![a-zA-Z])|>/g, ' #gt ');
     s = s.replace(/\\(ldots|dots|cdots)|…|\.\.\./g, ' #dots ');
     s = s.replace(/\\infty|∞|\binfinity\b|\binf\b/gi, ' #inf ');
-    s = s.replace(/\\in(?![a-zA-Z])|∈|\bis an element of\b/g, ' #in ').replace(/\\mid|\\vert|\\lvert|\\rvert|\|/g, ' #mid ').replace(/\\cup|∪/g, ' #cup ');
+    s = s.replace(/\\in(?![a-zA-Z])|∈|\bis an element of\b/g, ' #in ').replace(/\\mid|\\vert|\\lvert|\\rvert|\|/g, ' #mid ').replace(/\\cup|∪|\bor\b/g, ' #cup ');
     s = s.replace(/\\pm|±/g, ' #pm ').replace(/\\cdot|\\times/g, '*').replace(/\\[,;:! ]|~/g, ' ').replace(/\\quad|\\qquad/g, ' ');
     return s;
   }
@@ -144,6 +144,13 @@
     }
     return vals;
   }
+  function chainOr(cd) { // "x < -4 or x > 4" inside one condition: the union of the pieces
+    if (!cd.some(function (k) { return k.t === 'cup'; })) return chain(cd);
+    var alts = [], cur = []; cd.forEach(function (k) { if (k.t === 'cup') { alts.push(cur); cur = []; } else cur.push(k); }); alts.push(cur);
+    var parts = [], v = null, back = false;
+    for (var i = 0; i < alts.length; i++) { var ch = chain(alts[i]); if (!ch) return null; if (v && ch.v !== v) return null; v = ch.v; if (ch.backwards) back = true; parts = parts.concat(ch.parts); }
+    return { v: v, parts: merge(parts), backwards: back };
+  }
   function parseSet(tex) {
     var s = normalize(tex).trim();
     if (!s) return { ok: false, why: 'empty' };
@@ -182,7 +189,7 @@
       for (var c = 0; c < conds.length; c++) {
         var cd = conds[c]; if (!cd.length) continue;
         if (cd.length === 3 && cd[0].t === 'var' && cd[1].t === 'in' && cd[2].t === 'numset') { if (cd[0].v !== v) return { ok: false, why: 'var-mix' }; ns = cd[2].v; tagged = true; continue; }
-        var ch = chain(cd); if (!ch) return { ok: false, why: 'unreadable' };
+        var ch = chainOr(cd); if (!ch) return { ok: false, why: 'unreadable' };
         if (ch.v !== v) return { ok: false, why: 'var-mix' };
         if (ch.backwards) backwards = true;
         parts = intersect(parts, ch.parts);
@@ -212,7 +219,7 @@
     for (var c2 = 0; c2 < conds2.length; c2++) {
       var cd2 = conds2[c2]; if (!cd2.length) continue;
       if (cd2.length === 3 && cd2[0].t === 'var' && cd2[1].t === 'in' && cd2[2].t === 'numset') { ns2 = cd2[2].v; tagged2 = true; if (v2 && v2 !== cd2[0].v) return { ok: false, why: 'var-mix' }; v2 = cd2[0].v; continue; }
-      var ch2 = chain(cd2); if (!ch2) { if (cd2.every(function (k) { return k.t === 'num' || k.t === ','; })) return { ok: false, why: 'no-braces' }; return { ok: false, why: 'unreadable' }; }
+      var ch2 = chainOr(cd2); if (!ch2) { if (cd2.every(function (k) { return k.t === 'num' || k.t === ','; })) return { ok: false, why: 'no-braces' }; return { ok: false, why: 'unreadable' }; }
       if (ch2.backwards) return { ok: false, why: 'backwards' };
       if (v2 && v2 !== ch2.v) return { ok: false, why: 'var-mix' }; v2 = ch2.v;
       parts2 = intersect(parts2, ch2.parts);

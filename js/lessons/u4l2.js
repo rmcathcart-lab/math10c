@@ -237,6 +237,29 @@
   }
   function linLab(n) { return 'x ' + (n < 0 ? '− ' + (-n) : '+ ' + n); }
   function pile(b, c) { return '<div class="fig">' + HW.tiles.row(HW.tiles.count({ x2: 1, x: b, one: c }), { label: 'algebra tiles' }) + '</div>'; }
+  /* tile-rectangle builder (js/draw.js rect mode): any rectangle whose sides multiply to the target is accepted; the
+   * classic monic mistakes get their own hint before K.tileRect's generic ones */
+  HW.addCodes({ 'tile-one-side': 'Rectangle: all unit tiles on one side', 'tile-sum-c': 'Rectangle: put c unit tiles along the edges', 'tile-pair-product': 'Rectangle: x-tiles right, corner wrong' });
+  function tileProd(v) { var f = HW.draw.tileFactors(v); return P.mul(f[0], f[1]); }
+  function tileBuildPart(s, prompt, sol, hints, text) {
+    var b = s.b, c = s.c, key = { top: { x: 1, one: s.q }, side: { x: 1, one: s.p } };
+    var part = B.tiles(prompt, { mode: 'rect' }, s.inner, sol, hints, text, key), base = part.check;
+    part.check = function (resp) {
+      var res = base(resp); if (res.v === 'correct' || res.v === 'form') return res;
+      var a = (resp && resp.top) || {}, d = (resp && resp.side) || {}, u = a.one || 0, w = d.one || 0;
+      if ((a.x || 0) === 1 && (d.x || 0) === 1 && u >= 0 && w >= 0) {
+        if ((u === 0) !== (w === 0)) return wrong('tile-one-side', 'All your unit tiles are on one side, so the corner of the rectangle is empty. The corner holds (unit tiles on top) × (unit tiles down the side), and that must be ' + t(c) + '. Share them out: a factor pair of ' + t(c) + ' that adds to ' + t(b) + '.');
+        if (u + w === c && u * w !== c) return wrong('tile-sum-c', 'You used ' + t(c) + ' unit tiles along the edges, but the edges only set the size of the corner: it fills with ' + t(u + '\\times ' + w + '=' + u * w) + ' unit tiles. You need two numbers that <b>multiply</b> to ' + t(c) + ' (the corner) and <b>add</b> to ' + t(b) + ' (the ' + t('x') + '-tiles).');
+        if (u + w === b && u * w !== c) return wrong('tile-pair-product', 'Your ' + t('x') + '-tiles add to ' + t(b) + ' ✓, but the corner holds ' + t(u + '\\times ' + w + '=' + u * w) + ' unit tiles, not ' + t(c) + '. Try another pair of numbers that adds to ' + t(b) + '.');
+      }
+      return res;
+    };
+    part.answer += '<div>Length ' + t(tx(s.B)) + ', width ' + t(tx(s.A)) + ' (either way round).</div>';
+    part.good = [{ top: key.side, side: key.top }];
+    part.bad = [{ top: { x: 1, one: 1 }, side: { x: 1, one: c } }, { top: { x: 1, one: c }, side: { x: 1, one: 0 } }, { top: { x: 1, one: b }, side: { x: 1, one: 1 } }, { top: { x: 1, one: 0 }, side: { x: 1, one: b } }]
+      .filter(function (v) { return !P.eq(tileProd(v), s.inner); });
+    return part;
+  }
 
   /* ---------------- a number typed into a blank that already shows its sign ---------------- */
   function blankNumPart(s, given, missing, bracketSign, prompt, text) {
@@ -331,12 +354,9 @@
           } },
           { id: '1b', level: 'BEG', make: function (r, sh) {
             var s = spec({ p: sh.p, q: sh.q }), L = s.B, W = s.A;
-            var p = { prompt: 'Arrange the tiles into a rectangle (no gaps or overlaps), and state its length and width.', input: { type: 'fields', fields: [polyBox('Length'), polyBox('Width')] },
-              check: eitherOrder([K.poly(L), K.poly(W)], ['Length', 'Width']), key: [tx(L), tx(W)], answer: 'Length ' + t(tx(L)) + ', width ' + t(tx(W)),
-              solution: 'Put the ' + t('x^{2}') + '-tile in the corner, ' + sh.q + ' ' + t('x') + '-tiles along the top, ' + sh.p + ' down the side, and the ' + s.c + ' unit tiles in the corner (' + t(sh.p + '\\times ' + sh.q + '=' + s.c) + ').' + rectSvg(sh.p, sh.q, linLab(sh.p), linLab(sh.q)) + 'Length ' + t(tx(L)) + ', width ' + t(tx(W)) + '.',
-              hints: ['The unit tiles must fill a rectangle in the corner: which factor pair of ' + t(s.c) + ' uses up exactly ' + t(s.b) + ' ' + t('x') + '-tiles along the two sides?', 'Each side of the rectangle is ' + t('x') + ' plus the number of ' + t('x') + '-tiles on that side.'], text: 'tile rectangle dimensions' };
-            p.good = [[tx(W), tx(L)]]; p.bad = [[tx(bin(V('x'), s.b)), tx(bin(V('x'), s.c))], ['x', tx(bin(V('x'), s.b))]];
-            return p;
+            return tileBuildPart(s, 'Arrange the tiles into a rectangle (no gaps or overlaps). Build it below: put ' + t('x') + '-tiles and unit tiles along the top and down the side — the ' + t('x^{2}') + '-tile goes in the corner and the inside fills in. Its length and width show under the rectangle.',
+              'Put the ' + t('x^{2}') + '-tile in the corner, ' + sh.q + ' ' + t('x') + '-tiles along the top, ' + sh.p + ' down the side, and the ' + s.c + ' unit tiles in the corner (' + t(sh.p + '\\times ' + sh.q + '=' + s.c) + '). Along the top: ' + t('x') + ' and ' + sh.q + ' unit' + (sh.q > 1 ? 's' : '') + '; down the side: ' + t('x') + ' and ' + sh.p + ' unit' + (sh.p > 1 ? 's' : '') + '.' + rectSvg(sh.p, sh.q, linLab(sh.p), linLab(sh.q)) + 'Length ' + t(tx(L)) + ', width ' + t(tx(W)) + '.',
+              ['The unit tiles must fill a rectangle in the corner: which factor pair of ' + t(s.c) + ' uses up exactly ' + t(s.b) + ' ' + t('x') + '-tiles along the two sides?', 'Put one ' + t('x') + '-tile along the top and one down the side (they make the ' + t('x^{2}') + '-tile), then add the unit tiles of your factor pair: one number along the top, the other down the side.'], 'build tile rectangle');
           } },
           { id: '1c', level: 'BEG', make: function (r, sh) { var s = spec({ p: sh.p, q: sh.q }); return facPart(s, { prompt: 'Write the polynomial in factored form.', text: 'tile pile → factored form' }); } }] },
       { num: '2', stem: 'Find two integers with the given sum and the given product.',

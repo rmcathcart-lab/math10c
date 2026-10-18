@@ -5,7 +5,9 @@
  * Keys are built with HW.poly from the generated numbers. Levels: LIM BEG EMG PRG ADV MAS.
  * Conversions: "sketch an area model" → the model is shown (or drawn in the solution) and the product is typed;
  * "verify when x = 6" → the value as a number; "explain" → multiple choice with a hint for each wrong option;
- * "identify the error and correct it" → an MC (which error?) plus the corrected expansion; several-answer items → fields. */
+ * "identify the error and correct it" → an MC (which error?) plus the corrected expansion; several-answer items → fields.
+ * "Use algebra tiles to model each product" (Q12) → a tile-builder part (js/draw.js tilepad, rect mode: the student lays out
+ * the factor tiles) followed by the typed product; reading a given tile model (Q13) stays typed. */
 (function (root) {
   'use strict';
   var HW = root.HW, F = HW.fmt, K = HW.kit, KP = K.P, PL = HW.poly, t = K.t, ok = K.ok, wrong = K.wrong, form = K.form;
@@ -18,7 +20,8 @@
     'not-subtracted': 'Didn’t subtract the missing piece', overlap: 'Composite area: pieces overlap', 'add-coef': 'Added coefficients instead of multiplying', 'mult-exp': 'Multiplied exponents (should add)',
     'kept-error': 'Repeated the error being corrected', swap: 'Top and side factors swapped', 'not-binomial': 'A factor that isn’t a binomial', 'check-product': 'Factor doesn’t give the product when expanded',
     'fl-total': 'Added only two of the four partial products', 'partial': 'A partial product wrong', 'asked-other': 'Combined the coefficients the wrong way', 'one-root': 'Gave only one of two answers',
-    'k-twice': 'Multiplied the number into both brackets', 'all-cancel': 'Thought everything cancels', 'whole-only': 'Used the whole rectangle (no piece removed)', 'tile-sign': 'Shading rule (sign) error'
+    'k-twice': 'Multiplied the number into both brackets', 'all-cancel': 'Thought everything cancels', 'whole-only': 'Used the whole rectangle (no piece removed)', 'tile-sign': 'Shading rule (sign) error',
+    'tile-same': 'Tiles: same factor on both sides'
   });
 
   /* ---------- polynomial helpers ---------- */
@@ -207,6 +210,33 @@
       binWrongs(xm(A), N(B), xm(C), N(D)).map(function (w) { if (w.code === 'last-sign') { w.code = 'tile-sign'; w.hint = 'Check the shading of the unit tiles: a unit tile is shaded only when the two factor tiles beside it have the <b>same</b> shading.'; } return w; }),
       HW.tiles.frame(top, side, { fill: true }) + desc + '<br>' + t(prod + '=' + seq([f.F, f.O, f.I, f.L]) + '=' + tx(T)),
       ['Each tile inside is (tile above it) × (tile beside it): ' + t('x\\cdot x') + ' is an ' + t('x^{2}') + '-tile, ' + t('x\\cdot 1') + ' an ' + t('x') + '-tile, ' + t('1\\cdot 1') + ' a unit tile.', 'Same shading → positive (shaded); different shading → negative (white). Remove zero pairs before you write the answer.'], text);
+    return p;
+  }
+  /* tile builder in rectangle mode (js/draw.js tilepad): the student lays the factor tiles for (A x + B)(C x + D) along the top
+     and down the side; any rectangle whose sides multiply to the product is accepted (K.tileRect), with extra hints for a
+     unit-tile colour slip on one side and for the same factor used twice. */
+  function tileRectPart(A, B, C, D, prodTex, text) {
+    var F1 = lin(A, B), F2 = lin(C, D), T = mul(F1, F2), base = K.tileRect(T);
+    var fac = function (s) { s = s || {}; return lin(s.x || 0, s.one || 0); };
+    var desc = function (a, b) { return a + ' shaded ' + t('x') + '-tile' + (a > 1 ? 's' : '') + (b ? ' and ' + Math.abs(b) + ' ' + (b > 0 ? 'shaded' : 'white') + ' unit tile' + (Math.abs(b) > 1 ? 's' : '') : ''); };
+    var key = { top: { x: A, one: B }, side: { x: C, one: D } };
+    var p = KP.tiles('Model ' + t(prodTex) + ' with algebra tiles: put the tiles for one factor along the top and the tiles for the other factor down the side. The rectangle fills in using the shading rule.', { mode: 'rect' }, T,
+      HW.tiles.frame(tilesOf(A, B), tilesOf(C, D), { fill: true }) + 'Along the top: ' + t(tx(F1)) + ', so ' + desc(A, B) + '. Down the side: ' + t(tx(F2)) + ', so ' + desc(C, D) + '. (Either factor may go on top.)<br>Each tile inside is (tile above it) × (tile beside it); same shading gives a shaded tile, different shading a white tile.',
+      ['Each factor is a binomial: its ' + t('x') + '-term gives the ' + t('x') + '-tiles and its constant gives the unit tiles.', 'A negative constant means <b>white</b> unit tiles.'], text, key);
+    p.check = function (resp) {
+      resp = resp || {};
+      var res = base(resp); if (res.v !== 'wrong') return res;
+      var fa = fac(resp.top), fb = fac(resp.side), flip = function (q) { return add(xm(PL.coef(q, { x: 1 })[0] || 0), N(-(PL.constant(q)[0] || 0))); };
+      var pairs = [[F1, F2], [F2, F1]];
+      for (var i = 0; i < 2; i++) {
+        var X = pairs[i][0], Y = pairs[i][1];
+        if (PL.eq(fa, X) && PL.eq(fb, flip(Y))) return wrong('tile-sign', 'The top is right. Down the side, check the colour of the unit tiles: ' + t(tx(Y)) + ' needs ' + desc(PL.coef(Y, { x: 1 })[0], PL.constant(Y)[0]) + '.');
+        if (PL.eq(fb, Y) && PL.eq(fa, flip(X))) return wrong('tile-sign', 'The side is right. Along the top, check the colour of the unit tiles: ' + t(tx(X)) + ' needs ' + desc(PL.coef(X, { x: 1 })[0], PL.constant(X)[0]) + '.');
+      }
+      if (PL.eq(fa, fb) && !PL.eq(F1, F2) && (PL.eq(fa, F1) || PL.eq(fa, F2))) return wrong('tile-same', 'You built the same factor on both sides. Put ' + t(tx(F1)) + ' along one side and ' + t(tx(F2)) + ' along the other.');
+      return res;
+    };
+    p.bad = [{ top: { x: A, one: B }, side: { x: C, one: -D } }, { top: { x: A, one: -B }, side: { x: C, one: D } }, { top: { x: A, one: B }, side: { x: A, one: B } }, { top: { x: C, one: B }, side: { x: A, one: D } }].filter(function (v) { return !PL.eq(mul(fac(v.top), fac(v.side)), T); });
     return p;
   }
   /* two-digit products with the four-cell grid: fields for the partial products and the product */
@@ -569,9 +599,13 @@
         { id: '11b', level: 'EMG', make: function (r) { return gridBin(xm(r.int(2, 4)), N(r.int(1, 5)), xm(r.int(2, 4)), N(r.int(1, 7))); } },
         { id: '11c', level: 'EMG', make: function (r) { var o = pickWhere(function () { return { a: r.int(2, 9), b: r.int(2, 6), c: r.int(1, 9) }; }, function (o) { return o.c !== o.a * o.b; }); return gridBin(xm(1, 1, 'y'), N(-o.a), xm(o.b, 1, 'y'), N(o.c)); } },
         { id: '11d', level: 'EMG', make: function (r) { var b = r.int(2, 9), c = pickWhere(function () { return r.int(2, 9); }, function (v) { return v !== b; }); return gridBin(xm(1, 2, 'a'), N(b), xm(1, 2, 'a'), N(-c)); } }] },
-      { num: '12', stem: 'Use algebra tiles to model each product.', parts: [
-        { id: '12a', level: 'BEG', make: function (r) { return tileProduct(r, 2, r.int(1, 3), 1, r.int(1, 2), 'tiles (x+a)(2x+b)', true); } },
-        { id: '12b', level: 'EMG', make: function (r) { var a = r.int(2, 4), b = pickWhere(function () { return r.int(1, 3); }, function (v) { return v !== a; }); return tileProduct(r, 1, a, 1, -b, 'tiles (x+a)(x-b)'); } }] },
+      { num: '12', stem: 'Use algebra tiles to model each product, then state the product.',
+        shared: function (r) { var a = r.int(2, 4); return { B: r.int(1, 3), D: r.int(1, 2), a: a, b: pickWhere(function () { return r.int(1, 3); }, function (v) { return v !== a; }) }; },
+        parts: [
+        { id: '12at', sub: 'a i', level: 'BEG', make: function (r, sh) { return tileRectPart(2, sh.B, 1, sh.D, pf(lin(1, sh.D)) + pf(lin(2, sh.B)), 'build tiles (x+a)(2x+b)'); } },
+        { id: '12a', sub: 'a ii', level: 'BEG', make: function (r, sh) { return tileProduct(r, 2, sh.B, 1, sh.D, 'tiles (x+a)(2x+b)', true); } },
+        { id: '12bt', sub: 'b i', level: 'EMG', make: function (r, sh) { return tileRectPart(1, sh.a, 1, -sh.b, pf(lin(1, sh.a)) + pf(lin(1, -sh.b)), 'build tiles (x+a)(x-b)'); } },
+        { id: '12b', sub: 'b ii', level: 'EMG', make: function (r, sh) { return tileProduct(r, 1, sh.a, 1, -sh.b, 'tiles (x+a)(x-b)'); } }] },
       { num: '13', stem: function (sh) { return HW.tiles.legend() + HW.tiles.frame(tilesOf(sh.m, sh.q), tilesOf(1, sh.s), { fill: true }) + 'The algebra-tile model shows a product of two binomials.'; },
         shared: function (r) { var m = r.pick([2, 2, 3]), q = r.int(1, 3), s = r.int(1, 3); if (r.chance(0.35)) { q = -q; } else { s = -s; } return { m: m, q: q, s: s, top: lin(m, q), side: lin(1, s) }; },
         parts: [

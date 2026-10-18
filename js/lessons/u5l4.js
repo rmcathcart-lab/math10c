@@ -142,8 +142,6 @@
   var EDGE = 5.4;
   function G(spec) { return HW.graph(Object.assign({ x: [-6, 6], y: [-6, 6], labels: 1, max: 300 }, spec)); }
   function Gs(spec) { return HW.graph(Object.assign({ x: [-6, 6], y: [-6, 6], labels: 2, max: 175 }, spec)); }
-  /* an MC option graph: fixed width, so it doesn't shrink beside the option letter */
-  function Gm(spec) { return Gs(Object.assign({ max: 210 }, spec)).replace('style="max-width:', 'style="width:210px;max-width:'); }
   function toEdge(p, d, w) {
     w = w || EDGE; var k = Infinity;
     if (d[0] > 0) k = Math.min(k, (w - p[0]) / d[0]); if (d[0] < 0) k = Math.min(k, (-w - p[0]) / d[0]);
@@ -274,9 +272,54 @@
     return drPart(o.prompt || '', D, R, { dv: dv, rv: rv, dW: dW, rW: rW }, sol,
       o.ellipse ? ['Find the farthest left and right points, then the lowest and highest.', 'The axes are labelled ' + t(dv) + ' and ' + t(rv) + ': use those letters.'] : ['A circle reaches one radius left, right, up and down from its centre.', 'Domain: centre’s ' + t('x') + ' ± radius. Range: centre’s ' + t('y') + ' ± radius.'], o.text || 'domain and range of a circle');
   }
-  /* MC: which graph has this domain and range? opts: [{ g: spec, right, why }] */
-  function graphMC(r, prompt, opts, sol, hints, text) {
-    return B.mc(r, prompt, opts.map(function (o) { return { html: Gm(o.g), right: o.right, why: o.why }; }), sol, hints, text);
+  /* ---------------- open sketches on the graph pad (EP 10, EP 14) ---------------- */
+  var PAD = { x: [-6, 6], y: [-6, 6], labels: 2 };
+  var Dr = HW.draw;
+  function seg(a, b, s, e) { return { v: [a, b], s: s || 'closed', e: e || 'closed' }; }
+  function drw(pieces, pts) { return { pts: pts || [], pieces: pieces || [], join: 'none' }; }
+  function isPt(p) { return Math.abs(p.lo - p.hi) < 1e-9; }
+  /* what is wrong with the ends of a domain/range whose extremes are otherwise right (null if the extremes differ) */
+  function bndHint(got, want, v) {
+    if (got.length !== want.length) return null;
+    var nm = v === 'x' ? 'domain' : 'range', lowW = v === 'x' ? 'to the left' : 'down', highW = v === 'x' ? 'to the right' : 'up';
+    for (var i = 0; i < want.length; i++) {
+      var q = want[i], p = got[i];
+      if (isPt(q) !== isPt(p)) return null;
+      var sides = [[q.lo, p.lo, q.lc, p.lc, lowW], [q.hi, p.hi, q.hc, p.hc, highW]];
+      for (var j = 0; j < 2; j++) {
+        var W0 = sides[j][0], G0 = sides[j][1];
+        if (!isFinite(W0) && isFinite(G0)) return 'The ' + nm + ' has no ' + (j ? 'upper' : 'lower') + ' end: the graph must keep going ' + sides[j][4] + ' forever. Finish it with an <b>arrow</b> (use <b>●○ Ends</b>).';
+        if (isFinite(W0) && !isFinite(G0)) return 'Your graph goes on forever ' + sides[j][4] + ', but the ' + nm + ' stops at ' + t(v + '=' + W0) + '. End it with a dot there, not an arrow.';
+        if (isFinite(W0) && Math.abs(W0 - G0) > 1e-9) return null;
+      }
+    }
+    for (var k = 0; k < want.length; k++) {
+      var a = want[k], b = got[k];
+      if (isFinite(a.lo) && a.lc !== b.lc) return 'Your graph reaches the right values — now fix the dots: ' + t(v + '=' + a.lo) + ' must be ' + (a.lc ? '<b>included</b> (a solid dot)' : '<b>excluded</b> (a hollow dot, and no other point of the graph at that ' + t(v) + ')') + '.';
+      if (isFinite(a.hi) && a.hc !== b.hc) return 'Your graph reaches the right values — now fix the dots: ' + t(v + '=' + a.hi) + ' must be ' + (a.hc ? '<b>included</b> (a solid dot)' : '<b>excluded</b> (a hollow dot, and no other point of the graph at that ' + t(v) + ')') + '.';
+    }
+    return null;
+  }
+  /* K.graphRules plus targeted diagnoses; extra(value, result, domainParts, rangeParts) -> { code, hint } | null */
+  function sketchChk(rules, extra) {
+    var base = K.graphRules(rules);
+    var dP = rules.domain ? Dr.setParts(S.parse(rules.domain).set) : null, rP = rules.range ? Dr.setParts(S.parse(rules.range).set) : null;
+    return function (resp) {
+      var res = base(resp); if (res.v !== 'wrong') return res;
+      var v = Dr.norm(resp), dd = Dr.domain(v).parts, rr = Dr.range(v).parts, h;
+      if (extra) { h = extra(v, res, dd, rr); if (h) return wrong(h.code, h.hint); }
+      if (dP && rP && !Dr.partsSame(dP, rP) && Dr.partsSame(dd, rP) && Dr.partsSame(rr, dP)) return wrong('sk-swap', 'Your graph has the domain and range swapped. The <b>domain</b> is read along the ' + t('x') + '-axis (left to right), the <b>range</b> along the ' + t('y') + '-axis (bottom to top).');
+      if (dP && dP.every(isPt) && (v.pieces.length || v.join !== 'none')) return wrong('sk-join', 'This domain is a <b>list</b>, so the relation is separate points: a line would use every ' + t('x') + ' in between. Use <b>● Point</b> only.');
+      if (res.code === 'rule-domain' && dP) { h = bndHint(dd, dP, 'x'); if (h) return wrong('sk-ends', h); }
+      if (res.code === 'rule-range' && rP) { h = bndHint(rr, rP, 'y'); if (h) return wrong('sk-ends', h); }
+      return res;
+    };
+  }
+  var SK_HELP = 'Use <b>╱ Line</b> to draw (tap each corner; tap the last point again to finish), <b>●○ Ends</b> to make an end solid, hollow or an arrow, and <b>● Point</b> for separate points.';
+  function sketchPart(prompt, rules, key, bads, sol, hints, text, extra) {
+    var p = B.graph(prompt + '<div class="muted">Many different drawings are right. ' + SK_HELP + '</div>', Object.assign({}, PAD), sketchChk(rules, extra), key, sol, hints, text);
+    p.answer = 'One possible answer:' + p.answer; p.bad = bads || [];
+    return p;
   }
 
   HW.defineLesson({

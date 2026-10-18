@@ -25,7 +25,8 @@
     'ax-added': 'Added the water instead of subtracting', 'ax-water': 'Gave the water’s volume', 'ax-neg-exp': 'Ignored the negative exponent', 'ax-digit-order': 'Digits in the wrong order',
     'ax-dos-square': 'Difference of squares written as a square', 'ax-pairs-not-divisors': 'Counted pairs instead of divisors', 'ax-divisors-not-pairs': 'Counted divisors instead of pairs',
     'ax-missing-b': 'Missing some values of b', 'ax-extra-b': 'A value of b that does not work', 'ax-only-positive': 'Left out the negative values of b', 'ax-unsimplified': 'Brackets not simplified',
-    'ax-sq-no-middle': 'Squared a binomial without its middle term', 'ax-same-sign': 'Took out a positive factor from a negative group', 'ax-lead': 'Wrong leading coefficient'
+    'ax-sq-no-middle': 'Squared a binomial without its middle term', 'ax-same-sign': 'Took out a positive factor from a negative group', 'ax-lead': 'Wrong leading coefficient',
+    'tile-const-swap': 'Rectangle: unit tiles on the wrong sides', 'tile-pair-a1': 'Rectangle: built as if a = 1'
   });
 
   /* ---------------- polynomial building blocks ---------------- */
@@ -274,13 +275,23 @@
         shared: function (r) { return { T: tri(r, { p: [2, 5], q: [1, 3], r: 1, s: [1, 3], test: function (o) { return o.b <= 16 && o.c <= 6; }, book: { p: 5, q: 1, r: 1, s: 2 } }) }; },
         parts: [
           { id: '1a', level: 'EMG', make: function (r, sh) {
-            var T = sh.T, labels = ['Length', 'Width'];
-            var p = fieldsPart('Arrange the tiles into a rectangle. State its length and width (in either order).', [pbox('Length'), pbox('Width')],
-              twoPolyCheck(T.F1, T.F2, labels, function (P1, P2) { return wrong('value', 'Those multiply to ' + t(tx(PL.mul(P1, P2))) + ', not ' + t(T.tex) + '. Put the ' + T.a + ' ' + t('x^{2}') + '-tiles in a row, then use <b>all</b> ' + T.b + ' ' + t('x') + '-tiles along the side and the bottom so the unit tiles fill the corner.'); }),
-              [tx(T.F1), tx(T.F2)], t(tx(T.F1)) + ' by ' + t(tx(T.F2)),
-              'Put the ' + T.a + ' ' + t('x^{2}') + '-tiles in a row. Under them go ' + T.s + ' row' + (T.s > 1 ? 's' : '') + ' of ' + T.p + ' flat ' + t('x') + '-tiles (' + T.a * T.s + ' tiles); ' + T.q + ' more ' + t('x') + '-tile' + (T.q > 1 ? 's stand' : ' stands') + ' up at the right end; the ' + T.c + ' unit tile' + (T.c > 1 ? 's fill' : ' fills') + ' the corner:' + tileFrame(T) + 'Length ' + t(tx(T.F1)) + ' (across), width ' + t(tx(T.F2)) + ' (down).',
-              ['The ' + T.a + ' ' + t('x^{2}') + '-tiles go side by side, so the rectangle is ' + t(T.a + 'x+\\ldots') + ' long.', 'The unit tiles fill the bottom-right corner: their rows times columns must be ' + T.c + '.'], 'tile rectangle ' + T.tex);
-            p.bad = [[tx(T.F1), 'x']]; if (!PL.eq(PL.mul(lin(T.p, T.s), lin(T.r, T.q)), T.full)) p.bad.push([tx(lin(T.p, T.s)), tx(lin(T.r, T.q))]);
+            var T = sh.T, key = { top: { x: T.p, one: T.q }, side: { x: T.r, one: T.s } };
+            var swapP = PL.mul(lin(T.p, T.s), lin(T.r, T.q)), asA1 = PL.mul(lin(1, T.m), lin(1, T.n));
+            var p = B.tiles('Arrange the tiles into a rectangle. Build it below: put ' + t('x') + '-tiles and unit tiles along the top and down the side — the ' + t('x^{2}') + '-tiles and the inside fill in. Its dimensions show under the rectangle.', { mode: 'rect' }, T.full,
+              'Put the ' + T.a + ' ' + t('x^{2}') + '-tiles in a row: that takes ' + T.p + ' ' + t('x') + '-tiles along the top and ' + T.r + ' down the side. Under them go ' + T.s + ' row' + (T.s > 1 ? 's' : '') + ' of ' + T.p + ' flat ' + t('x') + '-tiles (' + T.a * T.s + ' tiles); ' + T.q + ' more ' + t('x') + '-tile' + (T.q > 1 ? 's stand' : ' stands') + ' up at the right end; the ' + T.c + ' unit tile' + (T.c > 1 ? 's fill' : ' fills') + ' the corner (' + t(T.a * T.s + '+' + T.q + '=' + T.b) + ' ' + t('x') + '-tiles ✓):' + tileFrame(T) + 'Along the top: ' + T.p + ' ' + t('x') + '-tiles and ' + T.q + ' unit tile' + (T.q > 1 ? 's' : '') + ', so the length is ' + t(tx(T.F1)) + '. Down the side: one ' + t('x') + '-tile and ' + T.s + ' unit tile' + (T.s > 1 ? 's' : '') + ', so the width is ' + t(tx(T.F2)) + '.',
+              ['The ' + T.a + ' ' + t('x^{2}') + '-tiles go side by side, so put ' + T.a + ' ' + t('x') + '-tiles along the top and one down the side.', 'Now the unit tiles: (units on top) × (units down the side) must be ' + T.c + ', and each unit tile down the side adds a whole row of ' + T.a + ' ' + t('x') + '-tiles, so the ' + t('x') + '-tiles inside must come to ' + T.b + '.'], 'build tile rectangle ' + T.tex, key);
+            var base = p.check;
+            p.check = function (resp) {
+              var res = base(resp); if (res.v === 'correct' || res.v === 'form') return res;
+              var f = HW.draw.tileFactors(resp), S = PL.mul(f[0], f[1]);
+              if (PL.eq(S, swapP)) return wrong('tile-const-swap', 'The ' + t('x^{2}') + '-tiles and the corner are right, but the ' + t('x') + '-tiles inside come to ' + t(tx(PL.sub(S, PL.add(M(T.a, { x: 2 }), N(T.c))))) + ', not ' + t(tx(M(T.b, { x: 1 }))) + '. Each unit tile beside the long side of the ' + t('x^{2}') + '-tiles adds ' + T.a + ' ' + t('x') + '-tiles, each one on the short side adds only one: swap the unit tiles between the top and the side.');
+              if (PL.eq(S, asA1)) return wrong('tile-pair-a1', 'That rectangle has only one ' + t('x^{2}') + '-tile. Using the numbers ' + t(T.m) + ' and ' + t(T.n) + ' straight on the sides only works when there is one ' + t('x^{2}') + '-tile; here there are ' + T.a + ', so ' + T.a + ' ' + t('x') + '-tiles go along one side.');
+              return res;
+            };
+            p.answer += '<div>Dimensions ' + t(tx(T.F1)) + ' by ' + t(tx(T.F2)) + '.</div>';
+            p.good = [{ top: key.side, side: key.top }];
+            p.bad = [{ top: { x: T.p, one: T.s }, side: { x: T.r, one: T.q } }, { top: { x: 1, one: T.m }, side: { x: 1, one: T.n } }, { top: { x: T.p, one: 0 }, side: { x: T.r, one: T.b } }]
+              .filter(function (v) { var g = HW.draw.tileFactors(v); return !PL.eq(PL.mul(g[0], g[1]), T.full); });
             return p;
           } },
           { id: '1b', level: 'BEG', make: function (r, sh) {

@@ -4,7 +4,9 @@
  * of the possible values unless noted) and changes the numbers. Levels: LIM BEG EMG PRG ADV MAS.
  * Local checkers: numChk (a number such as 2π, √7, −1/8 or 0 typed in a math box), exampleChk ("give an example of…"
  * with every listed property tested), nameChk (monomial / binomial / trinomial / polynomial typed as a word) and a
- * zero-answer wrapper (K.poly nudges a bare "0" as a "0 term"). */
+ * zero-answer wrapper (K.poly nudges a bare "0" as a "0 term").
+ * Algebra tiles: "state the polynomial the diagram shows" stays a typed answer; "draw the tiles for …" (EP Q7, and the
+ * tiles to add in EP Q9) uses the tile builder (js/draw.js tilepad, poly mode) via buildPart / tileBuildChk. */
 (function (root) {
   'use strict';
   var HW = root.HW, F = HW.fmt, K = HW.kit, KP = K.P, ex = HW.ex, P = HW.poly, t = K.t, ok = K.ok, wrong = K.wrong, form = K.form;
@@ -20,7 +22,8 @@
     'white-skip': 'Ignored the white (negative) tiles', 'first-only': 'Changed the sign of only the first term in the subtracted bracket', 'no-change': 'Added instead of subtracting (no signs changed)',
     'reversed': 'Subtracted in the wrong order (A − B instead of B − A)', 'second-added': 'Added the second bracket instead of subtracting it', 'frac-add': 'Added numerators and denominators',
     'unlike-combined': 'Combined unlike terms', 'neg-sub': 'Sign error substituting a negative value', 'name': 'Wrong name for the polynomial', 'zero-pairs': 'Miscounted zero pairs',
-    'lc-coef': 'Gave the coefficient of a different term', 'inner-sign': 'Sign error with nested brackets', 'mult-exp': 'Multiplied the powers instead of adding like terms'
+    'lc-coef': 'Gave the coefficient of a different term', 'inner-sign': 'Sign error with nested brackets', 'mult-exp': 'Multiplied the powers instead of adding like terms',
+    'tile-colour': 'Tiles: every colour reversed', 'tile-shape': 'Tiles: x²- and x-tiles swapped', 'tile-zp': 'Tiles: left zero pairs in the model'
   });
 
   /* ---------------- small helpers ---------------- */
@@ -338,10 +341,10 @@
       { id: 'e6a', level: 'BEG', make: function (r) { return tileReadPart({ x2: [0, 1], x: [r.int(2, 4), 0], one: [0, r.int(1, 3)] }, { order: 'desc' }); } },
       { id: 'e6b', level: 'BEG', make: function (r) { return tileReadPart({ x2: [r.int(2, 3), 0], x: [0, r.int(2, 4)], one: [r.int(1, 2), 0] }, { order: 'desc' }); } },
       { id: 'e6c', level: 'BEG', make: function (r) { return tileReadPart({ x2: [0, r.int(1, 3)], x: [r.int(1, 3), 0] }, { order: 'desc' }); } }] },
-    { num: '7', stem: 'Now go the other way. Which collection of tiles represents the polynomial? (Shaded = positive, white = negative.)', parts: [
-      { id: 'e7a', level: 'BEG', make: function (r) { return drawPart(r, { x2: r.int(2, 3), x: -r.int(1, 3), one: r.int(2, 4) }); } },
-      { id: 'e7b', level: 'BEG', make: function (r) { return drawPart(r, { x2: -r.int(1, 2), x: -r.int(2, 3), one: 0 }); } },
-      { id: 'e7c', level: 'BEG', make: function (r) { return drawPart(r, { x2: 0, x: r.int(2, 3), one: -r.int(3, 5) }); } }] },
+    { num: '7', stem: 'Now go the other way. For each polynomial, build the tiles that represent it. (Shaded = positive, white = negative.)', parts: [
+      { id: 'e7a', level: 'BEG', make: function (r) { return buildPart({ x2: r.int(2, 3), x: -r.int(1, 3), one: r.int(2, 4) }); } },
+      { id: 'e7b', level: 'BEG', make: function (r) { return buildPart({ x2: -r.int(1, 2), x: -r.int(2, 3), one: 0 }); } },
+      { id: 'e7c', level: 'BEG', make: function (r) { return buildPart({ x2: 0, x: r.int(2, 3), one: -r.int(3, 5) }); } }] },
     { num: '8', stem: function (sh) { return 'The diagram below has not been simplified — it still contains <b>zero pairs</b> (a shaded and a white tile of the same shape, worth ' + t('0') + ' together).' + tilesFig(sh.c, 'unsimplified algebra tiles'); },
       shared: function (r) {
         var c; do { c = { x2: [r.int(1, 3), r.int(1, 2)], x: [r.int(1, 2), r.int(1, 4)], one: [r.int(2, 4), r.int(1, 3)] }; } while (P.count(tilePoly(c)) < 2 || c.x2[0] + c.x2[1] + c.x[0] + c.x[1] + c.one[0] + c.one[1] > 14);
@@ -363,12 +366,22 @@
         return { A: A, B: Bq };
       },
       parts: [
-        { id: 'e9a', level: 'BEG', make: function (r, sh) {
+        { id: 'e9a', sub: 'a i', level: 'BEG', make: function (r, sh) {
           var opp = P.neg(S(sh.B));
           return pp('Write the opposite of ' + t(W(sh.B)) + '.', opp, { text: 'opposite of ' + plainPoly(S(sh.B)), wrong: [{ is: P.add(P.neg(sh.B[0]), sh.B[1], sh.B[2]), code: 'first-only', hint: 'The opposite changes the sign of <b>every</b> term.' }],
             sol: 'Change the sign of every term: ' + t(tx(opp)) + '. With tiles: flip every tile to the other colour (' + tileDesc({ x2: tc(P.coef(opp, { x: 2 })[0]), x: tc(P.coef(opp, { x: 1 })[0]), one: tc(P.constant(opp)[0]) }) + ').', hints: ['The opposite of a polynomial has every sign changed.'] });
         } },
-        { id: 'e9b', level: 'EMG', make: function (r, sh) {
+        { id: 'e9t', sub: 'a ii', level: 'BEG', make: function (r, sh) {
+          var Bp = S(sh.B), cf = function (p, e) { return e ? P.coef(p, { x: e })[0] : P.constant(p)[0]; };
+          var b = { x2: cf(Bp, 2), x: cf(Bp, 1), one: cf(Bp, 0) }, opp = { x2: -b.x2, x: -b.x, one: -b.one };
+          return buildPart(opp, { prompt: 'Which tiles would you <b>add</b> to subtract ' + t(B(sh.B)) + '? Build them.', text: 'tiles for the opposite of ' + plainPoly(Bp),
+            flipHint: 'Those are the tiles for ' + t(W(sh.B)) + ' itself. Subtracting means adding the <b>opposite</b>: flip every tile to the other colour.',
+            wrong: [{ is: { x2: -b.x2, x: b.x, one: b.one }, code: 'first-only', hint: 'You flipped only the first tile group. The opposite changes the sign of <b>every</b> term, so flip every tile.' }],
+            bad: [{ x2: -b.x2, x: b.x, one: b.one }],
+            sol: 'Subtracting ' + t(B(sh.B)) + ' is the same as adding its opposite, ' + t(P.tex(P.neg(Bp))) + ': flip every tile to the other colour. Add ' + tileDesc({ x2: tc(opp.x2), x: tc(opp.x), one: tc(opp.one) }) + '.',
+            hints: ['Start from the tiles for ' + t(W(sh.B)) + ', then change the colour of every tile.'] });
+        } },
+        { id: 'e9b', sub: 'b', level: 'EMG', make: function (r, sh) {
           var opp = P.neg(S(sh.B)), A = S(sh.A), keys = [{ x: 2 }, { x: 1 }, {}];
           var zp = keys.map(function (v) { var a = P.coef(A, v)[0], b = P.coef(opp, v)[0]; return a * b < 0 ? Math.min(Math.abs(a), Math.abs(b)) : 0; });
           var fl = [{ name: 'x² zero pairs', label: t('x^{2}') + '-tiles' }, { name: 'x zero pairs', label: t('x') + '-tiles' }, { name: 'unit zero pairs', label: 'unit tiles' }];
@@ -376,8 +389,8 @@
             zp.map(String), zp.join(', '), keys.map(function (v, i) { var a = P.coef(A, v)[0], b = P.coef(opp, v)[0]; return ['x²', 'x', 'unit'][i] + ': ' + t(a) + ' and ' + t(b) + ' → <b>' + zp[i] + '</b> zero pair' + (zp[i] === 1 ? '' : 's'); }).join('<br>'),
             ['A zero pair needs one positive and one negative tile of the same shape.'], 'zero pairs in subtraction');
         } },
-        { id: 'e9c', level: 'EMG', make: function (r, sh) { return addSub('State the result.', [{ s: 1, a: sh.A }, { s: -1, a: sh.B }], { text: 'subtract by opposite' }); } },
-        { id: 'e9d', level: 'BEG', make: function (r, sh) {
+        { id: 'e9c', sub: 'c', level: 'EMG', make: function (r, sh) { return addSub('State the result.', [{ s: 1, a: sh.A }, { s: -1, a: sh.B }], { text: 'subtract by opposite' }); } },
+        { id: 'e9d', sub: 'd', level: 'BEG', make: function (r, sh) {
           var ans = P.sub(S(sh.A), S(sh.B)), v = P.at(ans, { x: 1 }), a1 = P.at(S(sh.A), { x: 1 }), b1 = P.at(S(sh.B), { x: 1 });
           var fl = [{ name: 'Original', label: 'Original expression at ' + t('x=1') }, { name: 'Answer', label: 'Your answer at ' + t('x=1') }];
           return KP.fields('Check your result by substituting ' + t('x=1') + ' into the original expression and into your answer.', fl, [K.number(v, function (x) { return x === a1 + b1 ? { code: 'no-change', hint: 'Work out each bracket at ' + t('x=1') + ', then <b>subtract</b>: ' + t('(' + a1 + ')-(' + b1 + ')') + '.' } : null; }), K.number(v)], [String(v), String(v)], t(v) + ' and ' + t(v),
@@ -1066,14 +1079,50 @@
       'Descending powers of ' + t(x) + ': ' + t(P.tex(Sp, { order: 'desc', var: x })) + '.<br>Leading coefficient ' + t(rt(lead)) + ' (the coefficient of ' + t(x + '^{' + d + '}') + '), constant term ' + t(rt(ct)) + (ct[0] === 0 ? ' (there is no term without ' + t(x) + ')' : '') + ', degree ' + t(d) + '.',
       ['Rewrite it first, highest power first. Then read the leading coefficient and degree from the first term and the constant term from the last.'], 'descending + LC/CT/deg ' + plain(W(terms)));
   }
-  function drawPart(r, cnt) {
+  /* ---------- algebra-tile builder (js/draw.js tilepad, poly mode) ---------- */
+  /* shaded / white counts per shape from the builder's raw tokens (falls back to the net counts when there is no raw) */
+  function rawCounts(resp) {
+    var c = { x2: [0, 0], x: [0, 0], one: [0, 0] }, list = resp && resp.raw && resp.raw.mat;
+    if (list) list.forEach(function (tk) { var neg = tk.charAt(0) === '-', k = tk.replace('-', ''); c[k === 'x2' ? 'x2' : k === 'x' ? 'x' : 'one'][neg ? 1 : 0]++; });
+    else ['x2', 'x', 'one'].forEach(function (k) { c[k] = tc((resp && resp[k]) || 0); });
+    return c;
+  }
+  /* cnt = { x2, x, one } net counts of the target. o.flipHint: hint when every tile has the other colour; o.wrong: [{ is: counts, code, hint }] */
+  function tileBuildChk(cnt, o) {
+    o = o || {};
+    var base = K.tilePoly(tilePoly({ x2: tc(cnt.x2), x: tc(cnt.x), one: tc(cnt.one) }));
+    var same = function (n, w) { return n.x2 === (w.x2 || 0) && n.x === (w.x || 0) && n.one === (w.one || 0); };
+    return function (resp) {
+      resp = resp || {};
+      var n = { x2: resp.x2 || 0, x: resp.x || 0, one: resp.one || 0 }, rc = rawCounts(resp);
+      var placed = rc.x2[0] + rc.x2[1] + rc.x[0] + rc.x[1] + rc.one[0] + rc.one[1];
+      if (!n.x2 && !n.x && !n.one) return placed ? wrong('zero-pairs', 'Every tile you placed is cancelled by a tile of the same shape and the other colour, so your tiles are worth ' + t('0') + '. Start again with only the tiles the polynomial needs.') : form('empty', 'Add some tiles first: tap a tile to put it on the mat.');
+      if (base(resp).v === 'correct') {
+        var zp = ['x2', 'x', 'one'].filter(function (k) { return rc[k][0] && rc[k][1]; });
+        if (zp.length) return form('tile-zp', 'Your tiles are worth the right amount, but they include zero pairs (a shaded and a white tile of the same shape). Remove the pairs so the model uses the fewest tiles.');
+        return ok();
+      }
+      for (var i = 0; i < (o.wrong || []).length; i++) if (same(n, o.wrong[i].is)) return wrong(o.wrong[i].code, o.wrong[i].hint);
+      if (same(n, { x2: -cnt.x2, x: -cnt.x, one: -cnt.one })) return wrong('tile-colour', o.flipHint || 'Every tile has the wrong colour. <b>Shaded</b> tiles are positive and <b>white</b> tiles are negative.');
+      if (cnt.x2 !== cnt.x && same(n, { x2: cnt.x, x: cnt.x2, one: cnt.one })) return wrong('tile-shape', 'You swapped the shapes: the big square is the ' + t('x^{2}') + '-tile and the long thin rectangle is the ' + t('x') + '-tile.');
+      return base(resp);
+    };
+  }
+  /* build a polynomial with tiles. cnt = { x2, x, one } (net, signed). o: { prompt, text, sol, hints, flipHint, wrong, bad } */
+  function buildPart(cnt, o) {
+    o = o || {};
     var c = { x2: tc(cnt.x2), x: tc(cnt.x), one: tc(cnt.one) }, ans = tilePoly(c), n = toks(c).length;
-    var swap = { x2: tc(-cnt.x2), x: tc(-cnt.x), one: tc(-cnt.one) }, xx = { x2: tc(cnt.x), x: tc(cnt.x2), one: tc(cnt.one) }, offOne = { x2: tc(cnt.x2), x: tc(cnt.x), one: tc(cnt.one === 0 ? 1 : -cnt.one) }, offX = { x2: tc(cnt.x2), x: tc(-cnt.x), one: tc(cnt.one) };
-    var cands = [{ c: swap, why: 'The colours are reversed: shaded tiles are <b>positive</b>, white tiles are negative.' }, { c: xx, why: 'Check the shapes: the big squares are ' + t('x^{2}') + '-tiles and the long thin rectangles are ' + t('x') + '-tiles.' }, { c: offOne, why: 'Check the unit tiles (small squares) — their number and colour must match the constant term.' }, { c: offX, why: 'Check the colour of the ' + t('x') + '-tiles: it must match the sign of the ' + t('x') + '-term.' }];
-    var seen = [ans], opts = [{ html: '<div class="fig">' + HW.tiles.row(toks(c)) + '</div>', right: true }];
-    cands.forEach(function (o) { var p = tilePoly(o.c); if (opts.length < 4 && !seen.some(function (s) { return P.eq(s, p); }) && toks(o.c).length) { seen.push(p); opts.push({ html: '<div class="fig">' + HW.tiles.row(toks(o.c)) + '</div>', why: o.why }); } });
-    var part = KP.mc(r, 'Which collection of tiles represents ' + t(tx(ans)) + '?', opts, t(tx(ans)) + ': ' + tileDesc(c) + ' — ' + n + ' tiles altogether.', ['Each term tells you the shape (from the power of ' + t('x') + '), how many tiles (the size of the coefficient) and the colour (the sign).'], 'tiles for ' + plainPoly(ans));
-    return part;
+    var key = { x2: cnt.x2, x: cnt.x, one: cnt.one };
+    var p = KP.tiles(o.prompt || 'Build ' + t(tx(ans)) + ' with algebra tiles.', { mode: 'poly' }, ans,
+      o.sol || t(tx(ans)) + ': ' + tileDesc(c) + ' — ' + n + ' tile' + (n === 1 ? '' : 's') + ' altogether.<br>Each term gives the shape (the power of ' + t('x') + '), the number of tiles (the size of the coefficient) and the colour (the sign: shaded positive, white negative).',
+      o.hints || ['Each term tells you the shape (from the power of ' + t('x') + '), how many tiles (the size of the coefficient) and the colour (the sign).', 'Shaded = positive, white = negative. A term that isn’t there needs no tiles.'],
+      o.text || 'build tiles for ' + plainPoly(ans), key);
+    p.check = tileBuildChk(cnt, o);
+    var bad = [{ x2: -cnt.x2, x: -cnt.x, one: -cnt.one }, { x2: cnt.x2, x: cnt.x, one: cnt.one === 0 ? 1 : -cnt.one }];
+    if (cnt.x2 !== cnt.x) bad.push({ x2: cnt.x, x: cnt.x2, one: cnt.one });
+    bad.push({ x2: cnt.x2, x: cnt.x, one: cnt.one, raw: { mat: toks(c).concat(['1', '-1']) } });   // right value, but with a zero pair
+    p.bad = bad.concat(o.bad || []);
+    return p;
   }
   function likeGrid(rows, text) {
     var cols = [{ id: 'like', html: 'Like' }, { id: 'exp', html: 'Unlike (exp.)' }, { id: 'var', html: 'Unlike (letters)' }], want = {};
