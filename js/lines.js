@@ -154,7 +154,7 @@
   };
 
   /* slope as a number (fraction / integer / undefined) */
-  function ratAst(a) { a = stripP(a); if (!a) return null; if (a.t === 'neg') { var r = ratAst(a.a); return r && [-r[0], r[1]]; } if (a.t === 'div') { var p = stripP(a.a), q = stripP(a.b); if (p && q && p.t === 'num' && q.t === 'num' && Number.isInteger(p.v) && Number.isInteger(q.v)) return [p.v, q.v]; } return null; }
+  function ratAst(a) { a = stripP(a); if (!a) return null; if (a.t === 'neg') { var r = ratAst(a.a); return r && [-r[0], r[1]]; } if (a.t === 'div') { var p = ratAst(a.a), q = ratAst(a.b); if (p && q && p[1] === 1 && q[1] === 1) return [p[0], q[0]]; return null; } if (a.t === 'num' && Number.isInteger(a.v)) return [a.v, 1]; return null; }
   K.slope = function (sl, opt) {
     opt = opt || {};
     var und = sl == null, T = und ? null : (Array.isArray(sl) ? sl : toFr(sl));

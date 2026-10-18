@@ -24,5 +24,6 @@ chk(K.slope(0), { '0': 'correct', '\\text{undefined}': 'wrong:slope-und' }, 'slo
 var p = K.P.line('Write it.', T, { form: 'general' }, 's', [], 't'); eq([p.key, p.check(p.key).v, p.input.keys], ['2x-3y-12=0', 'correct', 'eq'], 'builder');
 eq(L.tex({ m: 1, point: [-6, -4] }, 'point-slope', [-6, -4]), 'y+4=x+6', 'ps m=1'); eq(K.line({ m: 1, point: [-6, -4] }, { form: 'point-slope' })('y+4=x+6').v, 'correct', 'ps m=1 accepted');
 var p2 = K.P.line('w', { m: 2, b: 3 }, { form: 'point-slope' }, 's', [], 't'); eq(p2.check(p2.key).v, 'correct', 'ps key without point');
+chk(K.slope([-1, 2]), { '\\frac{-4}{8}': 'form:slope-lowest', '-\\frac{4}{8}': 'form:slope-lowest', '\\frac{4}{-8}': 'form:slope-lowest', '-\\frac{1}{2}': 'correct', '-0.5': 'correct' }, 'slope lowest neg');
 console.log(n + ' checks, ' + fails + ' failed');
 process.exit(fails ? 1 : 0);

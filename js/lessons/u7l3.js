@@ -353,7 +353,7 @@
           t('m=\\frac{' + o.b + '-0}{0-' + sgp(o.a) + '}=' + fT(m)) + ', ' + t('b=' + o.b) + ': ' + t(siT(m, o.b)) + '.<br>' + toGenSol(toFr(m), [o.b, 1]), ['The two intercepts are two points on the line: find the slope between them; the ' + t('y') + '-intercept is ' + t('b') + '.'], 'general form from intercepts', { bad: [gen({ m: toFr(-m), b: o.b })] });
       } },
       { id: 'e2d', level: 'PRG', outcome: 'RF7', make: function (r) { return twoPtPart(r, true); } },
-      { id: 'e2e', level: 'PRG', make: function (r) {
+      { id: 'e2e', level: 'EMG', make: function (r) {
         var o = pickWhere(function () { return { a: r.int(2, 9), b: r.int(2, 9) }; }, function (o) { return cop(o.a, o.b); });
         var eqT = '\\frac{x}{' + o.a + '}+\\frac{y}{' + o.b + '}=1';
         return lineGen(t(eqT), { A: o.b, B: o.a, C: -o.a * o.b }, [{ is: { A: o.a, B: o.b, C: -o.a * o.b }, code: 'gf-swap-ab', hint: 'Multiply each fraction by ' + t(o.a * o.b) + ' carefully: ' + t('\\frac{x}{' + o.a + '}\\times ' + o.a * o.b + '=' + o.b + 'x') + ', not ' + t(o.a + 'x') + '.' }],
@@ -365,7 +365,7 @@
         return lineGen(t(eqT), { m: [o.p, o.q], point: [o.x1, o.y1] }, [{ is: { m: [o.p, o.q], point: [-o.x1, o.y1] }, code: 'gf-point-sign', hint: 'Expand ' + t('(x+' + (-o.x1) + ')') + ' with a plus sign: ' + t(o.p + '(x+' + (-o.x1) + ')=' + o.p + 'x+' + o.p * -o.x1) + '.' }, { is: { m: [o.p, o.q], point: [o.x1, -o.y1] }, code: 'gf-point-sign', hint: 'Check the sign of the constant on the left: ' + t(o.q + '(y-' + o.y1 + ')=' + o.q + 'y-' + o.q * o.y1) + '.' }],
           'Multiply every term by ' + t(o.q) + ': ' + t(o.q + '(y-' + o.y1 + ')=' + o.p + '(x+' + (-o.x1) + ')') + ' → ' + t(o.q + 'y-' + o.q * o.y1 + '=' + o.p + 'x+' + (-o.p * o.x1)) + '.<br>Gather on the side with the ' + t('x') + '-term: ' + t(gT(o.p, -o.q, Cc)) + '.', ['Multiply both sides by ' + t(o.q) + ' first, expand the brackets, then gather every term on one side.'], 'general form of slope-point form', { bad: [gen({ m: [o.p, o.q], point: [-o.x1, o.y1] })] });
       } },
-      { id: 'e2g', level: 'EMG', outcome: 'RF5', make: function (r) {
+      { id: 'e2g', level: 'BEG', outcome: 'RF5', make: function (r) {
         var o = pickWhere(function () { return { a: r.pick(pm(2, 9)), b: r.pick(pm(2, 9)) }; }, function (o) { return Math.abs(o.a) !== Math.abs(o.b) && (o.a > 0 || o.b > 0); });
         var eqT = '\\frac{x}{' + o.a + '}+\\frac{y}{' + o.b + '}=1', xp = [o.a, 0], yp = [0, o.b];
         var p = B.fields('The equation ' + t(eqT) + ' is in <b>intercept form</b>. Read both intercepts straight off it, as ordered pairs.', [{ label: t('x') + '-intercept:', name: 'x-intercept', mode: 'math', keys: 'pairs' }, { label: t('y') + '-intercept:', name: 'y-intercept', mode: 'math', keys: 'pairs' }],
@@ -375,7 +375,7 @@
         return p;
       } }] },
     { num: '3', section: 'Extra practice B — Out of general form', stem: 'Determine the slope, the ' + t('x') + '-intercept and the ' + t('y') + '-intercept. Give both intercepts as ordered pairs.', parts: [
-      { id: 'e3a', level: 'EMG', outcome: 'RF5', make: function (r) { var o = pickWhere(function () { return { A: r.int(2, 7), Bc: r.int(2, 7), k: r.pick([1, 1, 2]) }; }, function (o) { return cop(o.A, o.Bc) && o.A * o.Bc * o.k <= 60; }); return mPtsFields(t(gT(o.A, -o.Bc, o.A * o.Bc * o.k)), o.A, -o.Bc, o.A * o.Bc * o.k); } },
+      { id: 'e3a', level: 'PRG', outcome: 'RF5', make: function (r) { var o = pickWhere(function () { return { A: r.int(2, 7), Bc: r.int(2, 7), k: r.pick([1, 1, 2]) }; }, function (o) { return cop(o.A, o.Bc) && o.A * o.Bc * o.k <= 60; }); return mPtsFields(t(gT(o.A, -o.Bc, o.A * o.Bc * o.k)), o.A, -o.Bc, o.A * o.Bc * o.k); } },
       { id: 'e3b', level: 'EMG', outcome: 'RF5', make: function (r) { var o = pickWhere(function () { return { A: r.int(2, 7), Bc: r.int(2, 9), k: r.pick([1, 1, 2]) }; }, function (o) { return cop(o.A, o.Bc) && o.A * o.Bc * o.k <= 60; }); return mPtsFields(t(gT(o.A, o.Bc, -o.A * o.Bc * o.k)), o.A, o.Bc, -o.A * o.Bc * o.k); } },
       { id: 'e3c', level: 'PRG', outcome: 'RF5', make: function (r) { var o = pickWhere(function () { return { A: r.int(2, 9), Bc: r.int(2, 5), C: r.int(2, 11) }; }, function (o) { return cop(o.A, o.Bc) && cop(o.C, o.A) && cop(o.C, o.Bc); }); return mPtsFields(t(gT(o.A, -o.Bc, -o.C)), o.A, -o.Bc, -o.C); } },
       { id: 'e3d', level: 'PRG', outcome: 'RF5', make: function (r) {
@@ -455,7 +455,7 @@
           [K.value(xv), K.value(yv)], [fT(xv), fT(yv)], t('x=' + fT(xv)) + ', ' + t('y=' + fT(yv)),
           t('L_1') + ': ' + t(sh.a + 'x=' + sh.a * sh.k) + ', so ' + t('x=' + xv) + ' — a <b>vertical</b> line ' + t(Math.abs(xv)) + ' units ' + (xv > 0 ? 'right' : 'left') + ' of the ' + t('y') + '-axis.<br>' + t('L_2') + ': ' + t(sh.b + 'y=' + (-sh.d)) + ', so ' + t('y=' + fT(yv)) + ' — a <b>horizontal</b> line ' + t(fT(Math.abs(yv))) + ' units ' + (yv > 0 ? 'above' : 'below') + ' the ' + t('x') + '-axis.', ['Move the constant across, then divide by the coefficient.'], 'solve one-variable lines');
       } },
-      { id: 'e6c', level: 'EMG', outcome: 'RF5', make: function (r, sh) {
+      { id: 'e6c', level: 'BEG', outcome: 'RF5', make: function (r, sh) {
         return B.fields('State the slope of each line, using the correct word where there is no number.', [{ label: t('L_1') + ':', name: 'L₁ slope', mode: 'math', keys: 'slope', before: t('m=') }, { label: t('L_2') + ':', name: 'L₂ slope', mode: 'math', keys: 'slope', before: t('m=') }],
           [K.slope(null), K.slope(0)], ['\\text{undefined}', '0'], t('L_1') + ': undefined; ' + t('L_2') + ': ' + t('0'),
           t('L_1') + ' is vertical (' + t('x=' + sh.k) + '): the run is ' + t('0') + ', so its slope is <b>undefined</b>.<br>' + t('L_2') + ' is horizontal (' + t('y=' + fT(-sh.d / sh.b)) + '): the rise is ' + t('0') + ', so its slope is ' + t('0') + '.', ['Which line is vertical and which is horizontal?'], 'slopes of vertical/horizontal');
@@ -545,7 +545,7 @@
           { html: 'Substitution only works for points on the axes.', why: 'Substitution works for any point — it is exact every time.' }],
           'At a small scale, one unit is about the width of a pencil line, so a near miss looks “on”. Substitution never has that problem: the left side is either exactly ' + t('0') + ' or it isn’t.', ['Think about point (b): would you notice a one-unit miss on a small hand-drawn grid?'], 'graphing vs substitution');
       } });
-      parts.push({ id: 'e7i', sub: 'i', level: 'EMG', outcome: 'RF5', make: function (r, sh) {
+      parts.push({ id: 'e7i', sub: 'i', level: 'BEG', outcome: 'RF5', make: function (r, sh) {
         var p = [sh.C / sh.A, 0];
         return mc(r, 'Point (e), ' + t(pT(p)) + ', is on ' + t('L') + '. What else does it tell you about ' + t('L') + '?', [
           { html: 'It is the ' + t('x') + '-intercept of ' + t('L') + '.', right: true },
@@ -574,7 +574,7 @@
         return numPart(t(gT(L1[0], L1[1], L1[2])) + ' and ' + t(gT(L2[0], L2[1], L2[2])) + ' have their ' + t('x') + '- and ' + t('y') + '-coefficients swapped, which looks like a reciprocal. Multiply the two slopes: what is the product?', 1, function (v) { return v === -1 ? { code: 'sign', hint: 'Both slopes are negative: ' + t(fT(m1)) + ' and ' + t(fT(m2)) + '. A negative times a negative is positive.' } : null; },
           t('(' + fT(m1) + ')(' + fT(m2) + ')=1') + ', not ' + t('-1') + '. Reciprocals are only half the job: perpendicular slopes must also have <b>opposite signs</b>, so these lines are neither parallel nor perpendicular.', ['Find each slope with ' + t('-\\frac{A}{B}') + ', then multiply.'], 'product of swapped slopes');
       } },
-      { id: 'e8h', level: 'PRG', outcome: 'RF7', make: function (r) {
+      { id: 'e8h', level: 'EMG', outcome: 'RF7', make: function (r) {
         return mc(r, 'Which rule turns ' + t('Ax+By+C=0') + ' into a line <b>perpendicular</b> to it?', [
           { html: t('Bx-Ay+D=0') + ' — swap ' + t('A') + ' and ' + t('B') + ' <b>and</b> negate one of them', right: true },
           { html: t('Bx+Ay+D=0') + ' — just swap ' + t('A') + ' and ' + t('B'), why: 'Slopes ' + t('-\\frac{A}{B}') + ' and ' + t('-\\frac{B}{A}') + ' multiply to ' + t('+1') + ', not ' + t('-1') + '. One sign must change too.' },
@@ -633,7 +633,7 @@
         return lineGen(t('Q') + ' is not in general form. Put it there, in lowest terms.', { A: sh.a, B: -sh.b, C: sh.c }, [],
           t(gT(sh.k0 * sh.a, -sh.k0 * sh.b, sh.k0 * sh.c)) + ' has ' + t('A<0') + '. Multiply by ' + t('-1') + ': ' + t(gT(-sh.k0 * sh.a, sh.k0 * sh.b, -sh.k0 * sh.c)) + '. Divide by ' + t(-sh.k0) + ': ' + t(gT(sh.a, -sh.b, sh.c)) + ' — identical to ' + t('P') + '.', ['Make ' + t('A') + ' positive, then divide out the common factor.'], 'general form of Q', { bad: [gT(sh.k0 * sh.a, -sh.k0 * sh.b, sh.k0 * sh.c), gT(-sh.k0 * sh.a, sh.k0 * sh.b, -sh.k0 * sh.c)] });
       } },
-      { id: 'e10c', level: 'EMG', outcome: 'RF5', make: function (r, sh) {
+      { id: 'e10c', level: 'PRG', outcome: 'RF5', make: function (r, sh) {
         var p = mbFields('Confirm that ' + t('P') + ' and ' + t('Q') + ' are the same line: state the slope and both intercepts (they are the same for both).', sh.a, -sh.b, sh.c, { x: true });
         p.solution += '<br>' + t('Q') + ' gives ' + t('m=-\\frac{' + sh.k0 * sh.a + '}{' + (-sh.k0 * sh.b) + '}=' + fT(sh.a / sh.b)) + ' and the same intercepts, so ' + t('P') + ' and ' + t('Q') + ' are the same line.';
         return p;
@@ -647,7 +647,7 @@
           { html: 'They cross at one point', why: 'Their slopes are equal, so they never cross.' }],
           'Match ' + t('A') + ': ' + t('k=2') + '; match ' + t('B') + ': ' + t('k=2') + '; but ' + t(2 * sh.c + '\\ne' + sgp(sh.cR)) + '. Both slopes are ' + t(fT(sh.a / sh.b)) + ', so ' + t('P') + ' and ' + t('R') + ' are <b>parallel and distinct</b>.', ['Compare the slopes, then check whether the constants match the same multiplier.'], 'P and R relation');
       } },
-      { id: 'e10e', level: 'PRG', make: function (r) {
+      { id: 'e10e', level: 'EMG', make: function (r) {
         return mc(r, 'Two equations ' + t('A_1x+B_1y+C_1=0') + ' and ' + t('A_2x+B_2y+C_2=0') + ' describe the <b>same line</b> exactly when ____, and are merely <b>parallel</b> when ____.', [
           { html: t('A_2,\\ B_2,\\ C_2') + ' are the same multiple of ' + t('A_1,\\ B_1,\\ C_1') + ' … only ' + t('A') + ' and ' + t('B') + ' share that multiple', right: true },
           { html: t('A_1=A_2') + ' … ' + t('B_1=B_2'), why: t('P') + ' and ' + t('Q') + ' are the same line with different ' + t('A') + '’s. It is the ratios that matter.' },
@@ -655,12 +655,12 @@
           { html: t('C_1=C_2') + ' … ' + t('C_1\\ne C_2'), why: 'Compare ' + t('P') + ' and ' + t('Q') + ': different ' + t('C') + '’s, same line. Only the ratio ' + t('A:B:C') + ' matters.' }],
           'Same line: ' + t('A_2=kA_1') + ', ' + t('B_2=kB_1') + ' and ' + t('C_2=kC_1') + ' for one non-zero ' + t('k') + '. Parallel only: ' + t('A_2=kA_1') + ' and ' + t('B_2=kB_1') + ', but ' + t('C_2\\ne kC_1') + '.', ['Use ' + t('P') + ', ' + t('Q') + ' and ' + t('R') + ' as test cases.'], 'same-line test');
       } },
-      { id: 'e10f', level: 'ADV', make: function (r, sh) {
+      { id: 'e10f', level: 'PRG', make: function (r, sh) {
         var k = sh.a * sh.s2;
         return numPart('Determine ' + t('k') + ' so that ' + t('kx-' + sh.b * sh.s2 + 'y+' + sh.c * sh.s2 + '=0') + ' is the <b>same line</b> as ' + t('P') + '.', k, function (v) { if (v === -k) return { code: 'sign', hint: 'The multiplier is ' + t(sh.s2) + ' (positive): ' + t('k=' + sh.a + '\\times ' + sh.s2) + '.' }; if (v === sh.s2) return { code: 'gf-k-mixed', hint: t(sh.s2) + ' is the multiplier. Multiply ' + t(sh.a) + ' by it to get ' + t('k') + '.' }; return null; },
           'Match ' + t('B') + ': ' + t('-' + sh.b * sh.s2 + '=' + sh.s2 + '\\times(-' + sh.b + ')') + ', so the multiplier is ' + t(sh.s2) + '. Check ' + t('C') + ': ' + t(sh.c + '\\times ' + sh.s2 + '=' + sh.c * sh.s2) + ' ✓.<br>' + t('k=' + sh.a + '\\times ' + sh.s2 + '=' + k) + '.', ['Find the multiplier from the ' + t('y') + '-coefficients, check it with the constants, then apply it to ' + t('A') + '.'], 'k for same line');
       } },
-      { id: 'e10g', level: 'ADV', make: function (r, sh) {
+      { id: 'e10g', level: 'PRG', make: function (r, sh) {
         var k = sh.a * sh.s2;
         return numPart('Determine ' + t('k') + ' so that ' + t('kx-' + sh.b * sh.s2 + 'y+' + sh.cG + '=0') + ' is <b>parallel to but different from</b> ' + t('P') + '.', k, function (v) { if (v === -k) return { code: 'sign', hint: 'The slope must equal ' + t(fT(sh.a / sh.b)) + ': ' + t('-\\frac{k}{-' + sh.b * sh.s2 + '}=\\frac{k}{' + sh.b * sh.s2 + '}') + '.' }; return null; },
           'Slope must match: ' + t('\\frac{k}{' + sh.b * sh.s2 + '}=' + fT(sh.a / sh.b)) + ', so ' + t('k=' + k) + '.<br>Different line: the multiplier ' + t(sh.s2) + ' would need ' + t('C=' + sh.c * sh.s2) + ', but it is ' + t(sh.cG) + ' ✓. ' + t('k') + ' (with ' + t('B') + ') fixes only the direction; ' + t('C') + ' alone decides whether it is ' + t('P') + ' itself or a parallel neighbour.', ['Set the slope ' + t('-\\frac{A}{B}') + ' equal to the slope of ' + t('P') + '.'], 'k for parallel line');
@@ -677,8 +677,8 @@
       stem: function (sh) { return 'Asked to write ' + t(siT(sh.m, sh.b)) + ' in general form, a student slides the ' + t('x') + '-term across and writes ' + t(gT(-sh.m, 1, -sh.b)) + '.'; }, parts: [
       { id: 'e11a', level: 'BEG', make: function (r, sh) {
         var same = r.chance(0.5);
-        return B.tf(r, 'Test ' + t('(0,\\ ' + sh.b + ')') + ' and ' + t('(1,\\ ' + (sh.m + sh.b) + ')') + ' in the student’s equation. True or false: ' + (same ? 'it is a true equation of the line ' + t(siT(sh.m, sh.b)) + '.' : 'it describes a different line from ' + t(siT(sh.m, sh.b)) + '.'), same, 'Substitute: ' + t('-' + sh.m + '(0)+' + sh.b + '-' + sh.b + '=0') + ' and ' + t('-' + sh.m + '(1)+' + (sh.m + sh.b) + '-' + sh.b + '=0') + ' — both points fit.',
-          t('(0,\\ ' + sh.b + ')') + ': ' + t('-' + sh.m + '(0)+' + sh.b + '-' + sh.b + '=0') + ' ✓; ' + t('(1,\\ ' + (sh.m + sh.b) + ')') + ': ' + t('-' + sh.m + '(1)+' + (sh.m + sh.b) + '-' + sh.b + '=0') + ' ✓. It <b>is</b> a true equation of the line.', ['Substitute each point into the left side.'], 'student equation true?');
+        return B.tf(r, 'Test ' + t('(0,\\ ' + sh.b + ')') + ' and ' + t('(1,\\ ' + (sh.m + sh.b) + ')') + ' in the student’s equation. True or false: ' + (same ? 'it is a true equation of the line ' + t(siT(sh.m, sh.b)) + '.' : 'it describes a different line from ' + t(siT(sh.m, sh.b)) + '.'), same, 'Substitute: ' + t('-' + sh.m + '(0)+' + sh.b + '-' + sh.b + '=0') + ' and ' + t('-' + sh.m + '(1)+' + (sh.m + sh.b) + '-' + sh.b + '=0') + ' — both points of the line fit, so it is the same line.',
+          t('(0,\\ ' + sh.b + ')') + ': ' + t('-' + sh.m + '(0)+' + sh.b + '-' + sh.b + '=0') + ' ✓; ' + t('(1,\\ ' + (sh.m + sh.b) + ')') + ': ' + t('-' + sh.m + '(1)+' + (sh.m + sh.b) + '-' + sh.b + '=0') + ' ✓. Both points of ' + t(siT(sh.m, sh.b)) + ' satisfy it, and two points fix a line, so it <b>is</b> a true equation of that line — the statement is <b>' + (same ? 'true' : 'false') + '</b>.', ['Substitute each point into the left side.'], 'student equation true?');
       } },
       { id: 'e11b', level: 'BEG', make: function (r, sh) {
         return mc(r, 'So the student is not wrong about the line. Which part of the general-form convention have they broken?', [
@@ -734,12 +734,12 @@
       { id: 'e13a', level: 'EMG', make: function (r, sh) {
         return B.slope('Solve the equation for ' + t('y') + ' and state the true slope.', toFr(-sh.A / sh.Bc), {}, t(sh.Bc + 'y=-' + sh.A + 'x+' + sh.C) + ' → ' + t(siT(-sh.A / sh.Bc, sh.C / sh.Bc)) + ', so ' + t('m=' + fT(-sh.A / sh.Bc)) + '. The student dropped the <b>negative sign</b> in ' + t('m=-\\frac{A}{B}') + '.', ['Move the ' + t('x') + '-term across (its sign changes), then divide by ' + t(sh.Bc) + '.'], 'true slope');
       } },
-      { id: 'e13b', level: 'EMG', outcome: 'RF5', make: function (r, sh) {
+      { id: 'e13b', level: 'PRG', outcome: 'RF5', make: function (r, sh) {
         var xi = sh.C / sh.A, yi = sh.C / sh.Bc;
         return B.fields('Determine both intercepts of this line (values).', [{ label: t('x') + '-intercept:', name: 'x-intercept', mode: 'math', keys: 'fraction' }, { label: t('y') + '-intercept:', name: 'y-intercept', mode: 'math', keys: 'fraction' }], [xBox(sh.A, sh.Bc, -sh.C), yBox(sh.A, sh.Bc, -sh.C)], [fT(xi), fT(yi)], t('x') + '-intercept ' + t(fT(xi)) + ', ' + t('y') + '-intercept ' + t(fT(yi)),
           t('y=0') + ': ' + t(sh.A + 'x=' + sh.C) + ', ' + t('x=' + fT(xi)) + '. &nbsp; ' + t('x=0') + ': ' + t(sh.Bc + 'y=' + sh.C) + ', ' + t('y=' + fT(yi)) + '.<br>Both intercepts are positive, so the line runs from upper left down to lower right: the slope must be <b>negative</b>.', ['Set ' + t('y=0') + ', then ' + t('x=0') + '.'], 'intercepts (sign check)');
       } },
-      { id: 'e13c', level: 'PRG', make: function (r, sh) {
+      { id: 'e13c', level: 'EMG', make: function (r, sh) {
         return mc(r, 'Which one-line sign check, using only the signs of ' + t('A') + ' and ' + t('B') + ', catches this error every time?', [
           { html: t('A') + ' and ' + t('B') + ' the <b>same</b> sign → slope negative; <b>opposite</b> signs → slope positive.', right: true },
           { html: t('A') + ' and ' + t('B') + ' the same sign → slope positive; opposite signs → slope negative.', why: 'Test it on ' + t(gT(sh.A, sh.Bc, -sh.C)) + ': ' + t('A') + ' and ' + t('B') + ' are both positive, and the true slope ' + t(fT(-sh.A / sh.Bc)) + ' is negative.' },
@@ -760,7 +760,7 @@
           function (o) { var c = -o.a * o.x0, p2 = [o.x0 - o.b * o.s, o.a * o.s]; return cop(o.a, -o.b) && o.a !== -o.b && c <= 24 && Math.abs(p2[0]) <= 10 && Math.abs(p2[1]) <= 10 && p2[0] !== 0; });
       },
       stem: function (sh) { var c = -sh.a * sh.x0; return 'The line ' + t('Ax+By+' + c + '=0') + ' passes through ' + t(pT([sh.x0 - sh.b * sh.s, sh.a * sh.s])) + ' and ' + t('(' + sh.x0 + ',\\ 0)') + '.'; }, parts: [
-      { id: 'e14a', level: 'EMG', outcome: 'RF7', make: function (r, sh) {
+      { id: 'e14a', level: 'BEG', outcome: 'RF7', make: function (r, sh) {
         var c = -sh.a * sh.x0;
         return mc(r, 'Substituting the point ' + t('(' + sh.x0 + ',\\ 0)') + ' gives an equation with only one unknown. Which?', [
           { html: t(lin([[sh.x0, 'A'], [c, '']]) + '=0'), right: true },
@@ -789,7 +789,7 @@
           { html: 'Because ' + t(c) + ' is a multiple of both coordinates.', why: 'The size of the constant isn’t the point — fixing <b>any</b> non-zero value picks one member of the family.' }],
           'Multiplying ' + t('Ax+By+C=0') + ' by any ' + t('k\\ne0') + ' gives the same line, so the points determine only the ratio ' + t('A:B:C') + '. Fixing ' + t('C') + ' picks one member, so ' + t('A') + ' and ' + t('B') + ' are single values. ' + t('C=0') + ' would force the line through the origin — impossible here.', ['What happens to ' + t('A') + ', ' + t('B') + ', ' + t('C') + ' if you multiply the equation by ' + t('2') + '?'], 'why fixing C works');
       } },
-      { id: 'e14e', level: 'ADV', outcome: 'RF7', make: function (r, sh) {
+      { id: 'e14e', level: 'PRG', outcome: 'RF7', make: function (r, sh) {
         var c = -sh.a * sh.x0;
         return B.fields('Suppose the question had said ' + t('Ax+By+' + 2 * c + '=0') + ' through the same two points. Find ' + t('A') + ' and ' + t('B') + '.', [{ label: t('A') + ' =', name: 'A' }, { label: t('B') + ' =', name: 'B' }],
           [K.number(2 * sh.a, function (v) { return v === sh.a ? { code: 'gf-k-mixed', hint: 'The constant doubled, so every coefficient doubles.' } : null; }), K.number(2 * sh.b, function (v) { return v === sh.b ? { code: 'gf-k-mixed', hint: 'The constant doubled, so every coefficient doubles.' } : null; })],
@@ -801,7 +801,7 @@
           function (o) { return o.A0 % o.q === 0 && o.A0 % o.u === 0 && cop(o.u, o.v) && cop(o.p, o.q) && o.C0 % o.A0 !== 0 && -o.A0 * o.p / o.q !== -o.A0 * o.v / o.u; });
       },
       stem: function (sh) { return 'Consider the line ' + t(sh.A0 + 'x+By-' + sh.C0 + '=0') + ', where ' + t('B') + ' is unknown.'; }, parts: [
-      { id: 'e15a', level: 'ADV', make: function (r, sh) {
+      { id: 'e15a', level: 'PRG', make: function (r, sh) {
         var Bv = -sh.A0 * sh.p / sh.q, par = sh.A0 * sh.q / sh.p;
         return numPart('Determine ' + t('B') + ' so that this line is <b>perpendicular</b> to ' + t(gT(sh.p, sh.q, -sh.r1)) + '. Use ' + t('-\\frac{A}{B}') + ' for both slopes.', Bv, function (v) {
           if (v === -Bv) return { code: 'sign', hint: 'The slope needed is ' + t(fT(sh.q / sh.p)) + ' (positive). Solve ' + t('-\\frac{' + sh.A0 + '}{B}=' + fT(sh.q / sh.p)) + ' carefully.' };
@@ -809,7 +809,7 @@
           return null;
         }, 'Slopes: ' + t('-\\frac{' + sh.A0 + '}{B}') + ' and ' + t(fT(-sh.p / sh.q)) + '. Perpendicular: ' + t('-\\frac{' + sh.A0 + '}{B}=' + fT(sh.q / sh.p)) + ' → ' + t(sh.q + 'B=' + (-sh.A0 * sh.p)) + ' → ' + t('B=' + Bv) + '.<br>Check: ' + t(gT(sh.A0, Bv, -sh.C0)) + ' has ' + t('m=' + fT(sh.q / sh.p)) + ', and ' + t('(' + fT(sh.q / sh.p) + ')(' + fT(-sh.p / sh.q) + ')=-1') + ' ✓', ['Find the slope of the given line, take its negative reciprocal, and set ' + t('-\\frac{' + sh.A0 + '}{B}') + ' equal to it.'], 'B for perpendicular');
       } },
-      { id: 'e15b', level: 'ADV', make: function (r, sh) {
+      { id: 'e15b', level: 'PRG', make: function (r, sh) {
         var Bv = -sh.A0 * sh.v / sh.u, perp = sh.A0 * sh.u / sh.v;
         return numPart('Determine ' + t('B') + ' so that this line is <b>parallel</b> to ' + t(gT(sh.u, -sh.v, 1)) + '.', Bv, function (v) {
           if (v === -Bv) return { code: 'sign', hint: 'The slope of ' + t(gT(sh.u, -sh.v, 1)) + ' is ' + t('-\\frac{' + sh.u + '}{-' + sh.v + '}=' + fT(sh.u / sh.v)) + ' (positive).' };
@@ -817,13 +817,13 @@
           return null;
         }, t(gT(sh.u, -sh.v, 1)) + ': ' + t('m=' + fT(sh.u / sh.v)) + '. Need ' + t('-\\frac{' + sh.A0 + '}{B}=' + fT(sh.u / sh.v)) + ' → ' + t(sh.u + 'B=' + (-sh.A0 * sh.v)) + ' → ' + t('B=' + Bv) + '.', ['Set the two slopes equal.'], 'B for parallel');
       } },
-      { id: 'e15c', level: 'PRG', make: function (r, sh) {
+      { id: 'e15c', level: 'EMG', make: function (r, sh) {
         var xv = sh.C0 / sh.A0;
         return B.fields('Determine ' + t('B') + ' so that this line is <b>vertical</b>, and state the line for that ' + t('B') + ' in the form ' + t('x=k') + '.', [{ label: t('B') + ' =', name: 'B', mode: 'math', keys: 'fraction' }, { label: 'Line:', name: 'x =', mode: 'math', keys: 'fraction', before: t('x=') }],
           [K.value(0), K.value(xv, { diag: function (v) { return near(v, sh.A0 / sh.C0) ? { code: 'flip', hint: t(sh.A0 + 'x=' + sh.C0) + ': divide ' + t(sh.C0) + ' by ' + t(sh.A0) + '.' } : null; } })], ['0', fT(xv)], t('B=0') + ': ' + t(sh.A0 + 'x-' + sh.C0 + '=0') + ', i.e. ' + t('x=' + fT(xv)),
           'Vertical means no ' + t('y') + '-term: ' + t('B=0') + '. Then ' + t(sh.A0 + 'x-' + sh.C0 + '=0') + ', so ' + t('x=\\frac{' + sh.C0 + '}{' + sh.A0 + '}=' + fT(xv)) + '.', ['A vertical line has no ' + t('y') + '-term.'], 'B for vertical');
       } },
-      { id: 'e15d', level: 'PRG', make: function (r, sh) {
+      { id: 'e15d', level: 'EMG', make: function (r, sh) {
         return mc(r, 'Why does <b>no</b> value of ' + t('B') + ' make ' + t(sh.A0 + 'x+By-' + sh.C0 + '=0') + ' horizontal?', [
           { html: 'A horizontal line needs ' + t('A=0') + ' (no ' + t('x') + '-term), but the ' + t(sh.A0 + 'x') + ' term is there whatever ' + t('B') + ' is: ' + t('-\\frac{' + sh.A0 + '}{B}') + ' is never ' + t('0') + '.', right: true },
           { html: t('B=0') + ' makes it horizontal.', why: t('B=0') + ' removes the ' + t('y') + '-term and makes the line <b>vertical</b>.' },
@@ -844,7 +844,7 @@
           t(gT(o.p * o.g, -o.q * o.g, o.c)) + ': ' + t('m=' + fT(par)) + ', so the perpendicular slope is ' + t(fT(mp)) + '; ' + t('b=' + o.b0) + '.<br>' + t(siT(mp, o.b0)) + '; ' + toGenSol(toFr(mp), [o.b0, 1]), ['Find the slope of the given line, take the negative reciprocal, use ' + t('b=' + o.b0) + ', then convert.'], 'perpendicular through y-int (MC)');
       } }] },
     { num: '17', stem: '<i>(Multiple Choice)</i>', parts: [
-      { id: 'e17', level: 'PRG', make: function (r) {
+      { id: 'e17', level: 'EMG', make: function (r) {
         var o = pickWhere(function () { var pq = r.pick([[1, 3], [1, 2], [2, 3], [1, 4], [3, 4], [2, 5]]), g = r.pick([1, 2]); return { p: pq[0], q: pq[1], g: g, B1: r.pick([4, 6, 8, 9, 10, 12]), c1: r.int(1, 9), c2: r.int(1, 9) }; }, function (o) { return cop(o.p, o.q) && o.B1 % o.p === 0 && (o.B1 * o.p) % o.q !== 0; });
         var k = o.B1 * o.q / o.p;
         return mc(r, 'The lines ' + t('kx+' + o.B1 + 'y-' + o.c1 + '=0') + ' and ' + t(gT(o.p * o.g, -o.q * o.g, o.c2)) + ' are perpendicular. The value of ' + t('k') + ' is', [
@@ -946,7 +946,7 @@
             function (o) { return cop(o.a, o.b) && o.a !== o.b && -o.A2 * o.b / o.a !== o.kb; });
         },
         stem: function (sh) { return 'Consider the lines ' + t(gT(sh.a, -sh.b, sh.b * sh.y0)) + ' and ' + t(sh.A2 + 'x+ky-' + sh.C2 + '=0') + '.'; }, parts: [
-        { id: '6a', level: 'ADV', make: function (r, sh) {
+        { id: '6a', level: 'PRG', make: function (r, sh) {
           var k = -sh.A2 * sh.b / sh.a;
           return numPart('Determine the value of ' + t('k') + ' if the lines have the same slope.', k, function (v) {
             if (v === -k) return { code: 'gf-k-sign', hint: 'Check the sign: the slope of the second line is ' + t('-\\frac{' + sh.A2 + '}{k}') + '. Set that equal to ' + t(fT(sh.a / sh.b)) + '.' };
@@ -970,7 +970,7 @@
             function (o) { return o.C2 % o.x1 !== 0 && o.p * o.g * o.x1 <= 60 && -o.p * o.s !== o.C2 / o.x1; });
         },
         stem: function (sh) { return 'Consider the lines ' + t(gT(sh.p * sh.g, -sh.q * sh.g, -sh.p * sh.g * sh.x1)) + ' and ' + t('ax+' + sh.q * sh.s + 'y-' + sh.C2 + '=0') + '.'; }, parts: [
-        { id: '7a', level: 'ADV', make: function (r, sh) {
+        { id: '7a', level: 'PRG', make: function (r, sh) {
           var A1 = sh.p * sh.g, B1 = sh.q * sh.g, B2 = sh.q * sh.s, a = -sh.p * sh.s;
           return numPart('Determine the value of ' + t('a') + ' if the lines have the same slope.', a, function (v) {
             if (v === -a) return { code: 'gf-k-sign', hint: 'Check the sign: the slope of ' + t('ax+' + B2 + 'y-' + sh.C2 + '=0') + ' is ' + t('-\\frac{a}{' + B2 + '}') + '.' };
@@ -978,7 +978,7 @@
           }, t(gT(A1, -B1, -A1 * sh.x1)) + ' → ' + t(siT(sh.p / sh.q, -A1 * sh.x1 / B1)) + ', so ' + t('m=' + fT(sh.p / sh.q)) + '.<br>' + t('ax+' + B2 + 'y-' + sh.C2 + '=0') + ' → ' + t('y=-\\frac{a}{' + B2 + '}x+' + fT(sh.C2 / B2)) + '.<br>' + t('-\\frac{a}{' + B2 + '}=' + fT(sh.p / sh.q) + '\\ \\Rightarrow\\ a=' + a) + '.',
             ['Write the slope of the second line in terms of ' + t('a') + ' and set it equal to the slope of the first line.'], 'a for equal slopes');
         } },
-        { id: '7b', level: 'ADV', outcome: 'RF5', make: function (r, sh) {
+        { id: '7b', level: 'PRG', outcome: 'RF5', make: function (r, sh) {
           var A1 = sh.p * sh.g, aS = -sh.p * sh.s;
           var p = B.fraction('Determine the value of ' + t('a') + ' if the lines have the same ' + t('x') + '-intercept.', [sh.C2, sh.x1], { diag: function (v) {
             if (near(v, sh.C2 * sh.x1)) return { code: 'gf-k-mult', hint: t('\\frac{' + sh.C2 + '}{a}=' + sh.x1) + ' means ' + t('a=\\frac{' + sh.C2 + '}{' + sh.x1 + '}') + ' — divide, don’t multiply.' };
@@ -1040,7 +1040,7 @@
             t('x=0') + ': ' + t(o.Bc + 'y' + (o.C < 0 ? '' : '+') + o.C + '=0') + ', so ' + t('y=' + o.py) + ' and ' + t('P(0,\\ ' + o.py + ')') + '.<br>' + t('m_{PQ}=\\frac{' + o.qy + '-' + sgp(o.py) + '}{' + o.qx + '-0}=' + fT(s)) + '.', ['Find ' + t('P') + ' by setting ' + t('x=0') + '. Then use ' + t('m=\\frac{y_2-y_1}{x_2-x_1}') + '.'], 'slope from y-int to Q');
         } }] },
       { num: '13', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: '13', level: 'PRG', make: function (r) {
+        { id: '13', level: 'EMG', make: function (r) {
           var o = pickWhere(function () { return { c: r.pick([2, 4, 6, 8, 6]), m2: r.int(2, 5), d: r.int(5, 19), e: r.int(2, 9) }; }, function (o) { return o.c !== o.m2; });
           var a = -o.c * o.m2;
           return mc(r, 'The lines with equations ' + t('ay=' + o.c + 'x+' + o.d) + ' and ' + t('y=' + o.m2 + 'x-' + o.e) + ' are perpendicular. The value of ' + t('a') + ' is', [
@@ -1063,7 +1063,7 @@
           return mc(r, 'Consider the following statements about all the lines in the form ' + t(eqT) + ', where ' + t('k\\in\\mathbb{R}') + ' (and ' + t('k\\ne 0') + ').<br><b>Statement 1:</b> The lines have the same slope.<br><b>Statement 2:</b> The lines have the same ' + t('y') + '-intercept.<br><b>Statement 3:</b> The lines have the same ' + t('x') + '-intercept.<br>Which of the statement(s) is/are true?', opts, sol, ['Find the slope and both intercepts in terms of ' + t('k') + '. Which ones don’t contain ' + t('k') + '?'], 'family ' + eqT, true);
         } }] },
       { num: '15', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: '15', level: 'EMG', outcome: 'RF5', make: function (r) {
+        { id: '15', level: 'BEG', outcome: 'RF5', make: function (r) {
           var o = pickWhere(function () { var A = r.int(2, 7), Bc = r.int(2, 7), x0 = r.int(-6, 6), y0 = r.int(-5, 5); return { A: A, Bc: Bc, x0: x0, y0: y0 }; }, function (o) { return cop(o.A, o.Bc) && o.A !== o.Bc && Math.abs(o.x0) + 2 * o.Bc <= 14 && Math.abs(o.y0) + 2 * o.A <= 14; });
           var C = -(o.A * o.x0 - o.Bc * o.y0), on = function (s) { return [o.x0 + o.Bc * s, o.y0 + o.A * s]; };
           var combos = [['A'], ['A', 'B'], ['A', 'C'], ['B', 'C']], ri = r.int(0, 3), want = combos[ri];
@@ -1077,7 +1077,7 @@
             ['Substitute each point into the left side. The point is on the line exactly when you get ' + t('0') + '.'], 'which points on ' + gT(Lq[0], Lq[1], Lq[2]), true);
         } }] },
       { num: '16', stem: '<i>(Numerical Response)</i>', parts: [
-        { id: '16', level: 'ADV', make: function (r) {
+        { id: '16', level: 'PRG', make: function (r) {
           var o = pickWhere(function () { var A = r.int(2, 7), Bc = r.int(2, 5), x1 = r.int(-3, 4), y1 = r.int(-2, 4), s = r.pick([1, 2, 2, 3]); return { A: A, Bc: Bc, x1: x1, y1: y1, s: s, c: r.int(2, 9) }; },
             function (o) { var p = o.Bc * o.s - o.y1; return cop(o.A, o.Bc) && o.A !== o.Bc && p > 0 && p <= 30; });
           var x2 = o.x1 + o.A * o.s, y2 = o.y1 - o.Bc * o.s, p = -y2, mp = -o.Bc / o.A;

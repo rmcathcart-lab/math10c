@@ -439,7 +439,7 @@
         parts: [
           { id: '7a', level: 'EMG', make: function (r, s) { var s1 = slopeOf(s.A1, s.A2), s2 = slopeOf(s.A2, s.P); return slopeFields('(a) The truck: find the slope of its path, ' + t('m_{A_1A_2}') + ', and the slope from ' + t('A_2') + ' to the camp, ' + t('m_{A_2P}') + '.', [{ nm: 'A_1A_2', s: s1 }, { nm: 'A_2P', s: s2 }], t(calc(s.A1, s.A2, 'A_1A_2')) + '<br>' + t(calc(s.A2, s.P, 'A_2P')) + '<br>' + (sEq(s1, s2) ? 'Equal: ' + t('P') + ' is on the truck’s line.' : 'Different: ' + t('P') + ' is not on the truck’s line.'), [SLOPE_HINT], 'rescue: truck slopes'); } },
           { id: '7b', level: 'EMG', make: function (r, s) { var s1 = slopeOf(s.B1, s.B2), s2 = slopeOf(s.B2, s.P); return slopeFields('(b) The boat: find ' + t('m_{B_1B_2}') + ' and ' + t('m_{B_2P}') + '.', [{ nm: 'B_1B_2', s: s1 }, { nm: 'B_2P', s: s2 }], t(calc(s.B1, s.B2, 'B_1B_2')) + '<br>' + t(calc(s.B2, s.P, 'B_2P')) + '<br>' + (sEq(s1, s2) ? 'Equal: ' + t('P') + ' is on the boat’s line.' : 'Different: ' + t('P') + ' is not on the boat’s line.'), [SLOPE_HINT], 'rescue: boat slopes'); } },
-          { id: '7c', level: 'PRG', make: function (r, s) {
+          { id: '7c', level: 'EMG', make: function (r, s) {
             var right = s.truck && s.boat ? 'both' : s.truck ? 'truck' : s.boat ? 'boat' : 'neither';
             var txt = { truck: 'Only the <b>truck</b> crew reaches the camp.', boat: 'Only the <b>boat</b> crew reaches the camp.', both: '<b>Both</b> crews reach the camp.', neither: '<b>Neither</b> crew reaches the camp.' };
             var why = function (o) { var w = []; if ((o === 'truck' || o === 'both') && !s.truck) w.push('the truck’s two slopes are different, so ' + t('P') + ' isn’t on its line'); if ((o === 'boat' || o === 'both') && !s.boat) w.push('the boat’s two slopes are different, so ' + t('P') + ' isn’t on its line'); if ((o === 'neither' || o === 'boat') && s.truck) w.push('the truck’s two slopes are equal, so ' + t('P') + ' is on its line'); if ((o === 'neither' || o === 'truck') && s.boat) w.push('the boat’s two slopes are equal, so ' + t('P') + ' is on its line'); return 'Look again: ' + w.join(', and ') + '.'; };
@@ -534,7 +534,7 @@
                 answer: right.map(function (p) { return t(p.a + sym + ' ' + p.b); }).join(', '), solution: sol, hints: [want === 'par' ? 'Parallel segments have equal slopes. Sort the slopes into groups of equal values.' : 'Perpendicular slopes are negative reciprocals: for each slope, flip it and change its sign, then look for that value.', 'A segment can be in more than one pair.'], text: want === 'par' ? 'eight slopes: parallel pairs' : 'eight slopes: perpendicular pairs', bad: [wantV.slice(1), wantV.concat(other.slice(0, 1).map(function (p) { return p.a + '|' + p.b; }))] };
             } };
           }
-          return [mk('13a', 'EMG', 'par'), mk('13b', 'PRG', 'perp')];
+          return [mk('13a', 'BEG', 'par'), mk('13b', 'PRG', 'perp')];
         })() },
       /* ---------------- Q14 ---------------- */
       { num: '14', parts: [
@@ -663,7 +663,7 @@
         } }] },
       /* ---------------- Q22 ---------------- */
       { num: '22', parts: [
-        { id: '22', level: 'ADV', make: function (r) {
+        { id: '22', level: 'PRG', make: function (r) {
           var g = gen(r, function (r) { var X = [r.int(-2, 4), r.int(2, 8)], a = r.int(1, 4), b = r.int(2, 6); if (gcd(a, b) !== 1) return null; var j = r.int(1, 2), Y = add(X, [b * j, -a * j]); if (!inBox(Y, 10)) return null; var V = [r.int(-4, 0), r.int(-2, 5)], dx = r.int(2, 4), U0 = V[0] - dx, ps = [b, a], p = V[1] - b / a * dx; if (Number.isInteger(p) || Math.abs(p) > 12 || U0 < -9 || Math.abs(Math.abs((p * 10) % 1) - 0.5) < 0.01) return null; return { X: X, Y: Y, U0: U0, V: V, p: p, sXY: red(-a, b), ps: ps, dx: dx }; }, { X: [1, 6], Y: [7, 2], U0: -5, V: [-2, 3], p: -1.5, sXY: [-2, 3], ps: [3, 2], dx: 3 });
           var m = sV(g.ps), pPar = g.V[1] - sV(g.sXY) * g.dx, pSign = g.V[1] + m * g.dx;
           return B.approx('The line segment joining ' + t('U(' + g.U0 + ',\\ p)') + ' and ' + nP('V', g.V) + ' is perpendicular to the segment joining ' + nP('X', g.X) + ' and ' + nP('Y', g.Y) + '. Find the value of ' + t('p') + ', to the nearest tenth.', g.p, 1, { diag: function (v) { if (near(v, K.roundTo(pPar, 1))) return { code: 'k-par-perp', hint: 'You used the slope of ' + t('XY') + ' itself. ' + t('UV') + ' is <b>perpendicular</b>, so it needs the negative reciprocal.' }; if (near(v, K.roundTo(pSign, 1))) return { code: 'k-sign', hint: 'Check the signs: is ' + t('m_{UV}') + ' the <b>negative</b> reciprocal, and did you subtract in the same order top and bottom?' }; return null; } },
@@ -1057,7 +1057,7 @@
                 { html: 'Nothing is wrong: the pair they chose must hold the odd point.', why: 'The bad point spoils every pair it belongs to — it might be in the other pair.' },
                 { html: 'You need all ten slopes between the five points.', why: 'Three slopes from one reference point are enough: two agree and one differs (or all three agree, or all differ).' },
                 { html: 'Two slopes are always enough if you choose the right pair.', why: 'You don’t know the right pair in advance. With a fixed reference point, three slopes always settle it.' }],
-                'Each slope comes from a <i>pair</i> of points, and one bad point spoils every pair it is in. ' + t('m_{AB}\\ne m_{DE}') + ' can’t say which pair holds it. Fix a reference point, say ' + t('A') + ', and find ' + t('m_{AB}') + ', ' + t('m_{AC}') + ', ' + t('m_{AD}') + ': if all agree, ' + t('E') + ' is odd; if one differs, that point is odd; if all differ, ' + t('A') + ' is odd. So <b>three</b> calculations always work.', ['One bad point ruins every slope it is part of.'], 'how many slopes find the odd point');
+                'Each slope comes from a <i>pair</i> of points, and one bad point spoils every pair it is in. ' + t('m_{' + p1 + '}\\ne m_{' + p2 + '}') + ' can’t say which pair holds it (here the odd point is ' + t(N[o]) + ', in the other pair). Fix a reference point, say ' + t('A') + ', and find ' + t('m_{AB}') + ', ' + t('m_{AC}') + ', ' + t('m_{AD}') + ': if all agree, ' + t('E') + ' is odd; if one differs, that point is odd; if all differ, ' + t('A') + ' is odd. So <b>three</b> calculations always work.', ['One bad point ruins every slope it is part of.'], 'how many slopes find the odd point');
             } }];
         })() },
       { num: '14', shared: function (r) { var x = r.int(-5, 5), ys = r.sample([-4, -3, -2, -1, 0, 1, 2, 3, 5, 6, 7, 8], 3), dx = r.pick([1, 2, -1, -2]), yn = r.int(-3, 7); return { x: x, ys: ys, N: [x + dx, yn] }; },
@@ -1125,7 +1125,7 @@
         },
         stem: function (s) { return nP('A', s.A) + ' and ' + nP('B', s.B) + ' are given. A third point ' + t('C') + ' is to be chosen so that ' + t('\\angle ABC') + ' is a right angle.'; },
         parts: [
-          { id: 'e17a', level: 'PRG', make: function (r, s) { return slopeAns('(a) The right angle is at ' + t('B') + ', so ' + t('BA\\perp BC') + '. What slope must ' + t('BC') + ' have?', s.pm, relChk(s.m, 'perp'), t(calc(s.A, s.B, 'AB')) + ', so ' + t('m_{BC}') + ' must be the negative reciprocal: ' + t(sT(s.pm)) + '.', ['Find ' + t('m_{AB}') + ' first.'], 'slope needed for a right angle at B', t('m_{BC}=')); } },
+          { id: 'e17a', level: 'EMG', make: function (r, s) { return slopeAns('(a) The right angle is at ' + t('B') + ', so ' + t('BA\\perp BC') + '. What slope must ' + t('BC') + ' have?', s.pm, relChk(s.m, 'perp'), t(calc(s.A, s.B, 'AB')) + ', so ' + t('m_{BC}') + ' must be the negative reciprocal: ' + t(sT(s.pm)) + '.', ['Find ' + t('m_{AB}') + ' first.'], 'slope needed for a right angle at B', t('m_{BC}=')); } },
           { id: 'e17b', level: 'ADV', make: function (r, s) {
             var p = B.math('(b) Determine the coordinates of ' + t('C') + ' if ' + t('C') + ' lies on the ' + t('x') + '-axis.', K.pairs([[s.xi, 0]]), '(' + s.xi + ', 0)', 'Let ' + t('C(x,\\ 0)') + ': ' + t('\\frac{0-' + nb(s.B[1]) + '}{x-' + nb(s.B[0]) + '}=' + sT(s.pm) + '\\ \\Rightarrow\\ x=' + s.xi) + ', so ' + t('C(' + s.xi + ',\\ 0)') + '. Check: ' + t('m_{BC}=' + sT(slopeOf(s.B, [s.xi, 0]))) + ' and ' + t(prodT(s.m, s.pm)) + ' ✓', ['A point on the ' + t('x') + '-axis is ' + t('(x,\\ 0)') + '. Set ' + t('m_{BC}') + ' equal to the slope from (a).'], 'right angle: C on the x-axis', { keys: 'pairs', placeholder: 'e.g. (5, 0)' });
             p.bad = ['(0, ' + s.xi + ')', '(' + (2 * s.B[0] - s.xi) + ', 0)']; return p;

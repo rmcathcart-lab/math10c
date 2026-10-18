@@ -13,7 +13,7 @@
 (function (root) {
   'use strict';
   var HW = root.HW, ex = HW.ex, K = HW.kit, t = K.t, ok = K.ok, wrong = K.wrong, form = K.form, B = K.P;
-  var FORCE = !!root.__U6L6_BOOKLET;   // test hook: always build the booklet's own version
+  var FORCE = root.__U6L6_BOOKLET === true;   // test hook: always build the booklet's own version (only an explicit true turns it on)
 
   HW.addCodes({
     'no-root': 'Gave the squared distance (no square root)', 'dist-add': 'Added the differences instead of their squares', 'dist-sub': 'Subtracted the squares',
@@ -641,7 +641,7 @@
   function q21(r) {
     var Q, R, bk = book(r);
     if (bk) { Q = [5.4, 3.2]; R = [9.1, 7.9]; }
-    else rep(r, function () { Q = [r.int(11, 79) / 10, r.int(11, 89) / 10]; R = [Q[0] + r.int(13, 49) / 10, r.int(11, 99) / 10]; var px = rnd(2 * R[0] - Q[0], 1); return px > 0 && px < 100 && Q[0] % 1 !== 0 && R[0] % 1 !== 0 ? true : null; });
+    else rep(r, function () { Q = [r.int(11, 79) / 10, r.int(11, 89) / 10]; R = [rnd(Q[0] + r.int(13, 49) / 10, 1), r.int(11, 99) / 10]; /* rnd: no float noise like 8.899999999999999 in the prompt */ var px = rnd(2 * R[0] - Q[0], 1); return px > 0 && px < 100 && Q[0] % 1 !== 0 && R[0] % 1 !== 0 ? true : null; });
     var px = rnd(2 * R[0] - Q[0], 1), avg = (Q[0] + R[0]) / 2, df = rnd(R[0] - Q[0], 1);
     return B.approx(t('PQ') + ' is the diameter of a circle whose centre is ' + t('R') + '. If ' + t('Q(' + Q[0] + ',\\ ' + Q[1] + ')') + ' and ' + t('R(' + R[0] + ',\\ ' + R[1] + ')') + ', then the ' + t('x') + '-coordinate of ' + t('P') + ' is ________.', px, 1, { nr: true, diag: function (v) {
       if (near(v, rnd(avg, 1)) || near(v, rnd(avg, 2))) return { code: 'end-avg', hint: 'You averaged ' + t('Q') + ' and ' + t('R') + '. ' + t('R') + ' is the midpoint of ' + t('P') + ' and ' + t('Q') + ': solve ' + t('\\frac{x+' + Q[0] + '}{2}=' + R[0]) + '.' };
@@ -880,7 +880,7 @@
       shared: function (r) {
         if (book(r)) return { D: [-8, 6], S: [4, -2], L: [-2, 12], R: [10, 4], sc: 250 };
         return rep(r, function () { var u = signs(r, r.pick([[12, -8], [8, -6], [10, -4], [6, -8], [8, -4], [12, -6], [10, -6]])), w = signs(r, r.pick([[6, 6], [4, 6], [6, 2], [2, 6], [4, 8], [6, 4]])), D = [r.int(-9, -2), r.int(-4, 6)];
-          var S = add(D, u), L = add(D, w), R = add(L, u); if (!inBox([D, S, L, R], -11, 14) || dot(u, w) === 0 || sameSlope(slopeOf([0, 0], u), slopeOf([0, 0], w))) return null; return { D: D, S: S, L: L, R: R, sc: r.pick([250, 200, 500, 100]) }; });
+          var S = add(D, u), L = add(D, w), R = add(L, u); if (!inBox([D, S, L, R], -11, 14) || dot(u, w) === 0 || dot(u, u) === dot(w, w) || sameSlope(slopeOf([0, 0], u), slopeOf([0, 0], w))) return null; return { D: D, S: S, L: L, R: R, sc: r.pick([250, 200, 500, 100]) }; });
       },
       parts: [
         { id: 'e4a', level: 'EMG', outcome: 'EXT', make: function (r, sh) {
@@ -1221,25 +1221,30 @@
             'Equal slopes give the same direction. If the lines also share a single point, they must be the same line: a line is fixed by one point and a direction.', ['A line is determined by a point and a slope.'], 'one shared point');
         } }] },
     { num: '13', stem: 'Decide whether each statement is true or false.', parts: [
+      /* each part has a true and a false version, so the right answer isn't always the same button */
       { id: 'e13a', level: 'EMG', outcome: 'EXT', make: function (r) {
-        var s = book(r) ? 0 : r.int(0, 1);
-        return s === 0 ? B.tf(r, '(a) “A rhombus is always a square.”', false, 'A rhombus needs only four equal sides. Question 5’s ' + t('ABCD') + ' has four sides of length ' + t('5') + ' but ' + t('m_{AB}\\times m_{BC}=0\\neq -1') + ': no right angle, so it isn’t a square.', '<b>False.</b> Counterexample: a rhombus with no right angle (e.g. Question 5: sides all ' + t('5') + ', ' + t('m_{AB}=0') + ', ' + t('m_{BC}=\\frac{4}{3}') + ').', ['Is there a rhombus without a right angle?'], 'rhombus always square?')
+        var s = book(r) ? 0 : r.int(0, 2), q5 = t('A(-4,\\ -2),\\ B(1,\\ -2),\\ C(4,\\ 2),\\ D(-1,\\ 2)');
+        if (s === 2) return B.tf(r, '(a) “A rhombus is always a parallelogram.”', true, 'A rhombus has four equal sides, so both pairs of opposite sides are equal — that always makes a parallelogram (e.g. ' + q5 + ': ' + t('m_{AB}=m_{CD}=0') + ', ' + t('m_{BC}=m_{DA}=\\frac{4}{3}') + ').', '<b>True.</b> Four equal sides means both pairs of opposite sides are equal, and that makes a parallelogram. For example ' + q5 + ' (all sides ' + t('5') + ') has ' + t('m_{AB}=m_{CD}=0') + ' and ' + t('m_{BC}=m_{DA}=\\frac{4}{3}') + ': both pairs parallel.', ['What does a parallelogram need? Does every rhombus have it?'], 'rhombus always parallelogram?');
+        return s === 0 ? B.tf(r, '(a) “A rhombus is always a square.”', false, 'A rhombus needs only four equal sides: e.g. ' + q5 + ' has four sides of length ' + t('5') + ' but ' + t('m_{AB}\\times m_{BC}=0\\times\\frac{4}{3}=0\\neq -1') + ': no right angle, so it isn’t a square.', '<b>False.</b> Counterexample: a rhombus with no right angle, e.g. ' + q5 + ' (the booklet’s Question 5): sides all ' + t('5') + ', ' + t('m_{AB}=0') + ', ' + t('m_{BC}=\\frac{4}{3}') + ', and ' + t('BC') + ' isn’t vertical.', ['Is there a rhombus without a right angle?'], 'rhombus always square?')
           : B.tf(r, '(a) “A rectangle is always a square.”', false, 'A rectangle needs right angles, not equal sides: e.g. ' + t('(0,\\ 0),\\ (6,\\ 0),\\ (6,\\ 2),\\ (0,\\ 2)') + ' has sides ' + t('6') + ' and ' + t('2') + '.', '<b>False.</b> Counterexample: ' + t('(0,\\ 0),\\ (6,\\ 0),\\ (6,\\ 2),\\ (0,\\ 2)') + ' — right angles, but sides ' + t('6\\neq 2') + '.', ['Is there a rectangle whose sides aren’t all equal?'], 'rectangle always square?');
       } },
       { id: 'e13b', level: 'EMG', outcome: 'EXT', make: function (r) {
-        var s = book(r) ? 0 : r.int(0, 1);
+        var s = book(r) ? 0 : r.int(0, 2), pg = t('(0,\\ 0),\\ (4,\\ 0),\\ (5,\\ 2),\\ (1,\\ 2)');
+        if (s === 2) return B.tf(r, '(b) “A parallelogram is always a rectangle.”', false, 'A parallelogram needs only parallel opposite sides: e.g. ' + pg + ' has slopes ' + t('0') + ' and ' + t('2') + ' at each corner — product ' + t('0\\neq -1') + ', so no right angle.', '<b>False.</b> Counterexample: ' + pg + '. Opposite sides have slopes ' + t('0, 0') + ' and ' + t('2, 2') + ' (a parallelogram), but ' + t('0\\times 2=0\\neq -1') + ' and no side is vertical: no right angle, so it isn’t a rectangle.', ['Is there a parallelogram without a right angle?'], 'parallelogram always rectangle?');
         return s === 0 ? B.tf(r, '(b) “A square is always a rhombus.”', true, 'A square has four equal sides — that is all “rhombus” requires.', '<b>True.</b> A square has four equal sides, which is all a rhombus needs. A square is a rhombus that also has right angles.', ['What does a rhombus need? Does every square have it?'], 'square always rhombus?')
           : B.tf(r, '(b) “A square is always a rectangle.”', true, 'A square has four right angles — that is all “rectangle” requires.', '<b>True.</b> A square has four right angles, which is all a rectangle needs. A square is a rectangle that also has equal sides.', ['What does a rectangle need? Does every square have it?'], 'square always rectangle?');
       } },
       { id: 'e13c', level: 'PRG', outcome: 'EXT', make: function (r) {
-        var s = book(r) ? 0 : r.int(0, 1);
+        var s = book(r) ? 0 : r.int(0, 2);
+        if (s === 2) return B.tf(r, '(c) “If the diagonals of a quadrilateral bisect each other <b>and</b> are perpendicular, it is a rhombus.”', true, 'Diagonals that bisect each other make a parallelogram; perpendicular diagonals then make all four sides equal — a rhombus.', '<b>True.</b> Diagonals that bisect each other make a parallelogram. If they are also perpendicular, the four triangles around the centre are congruent right triangles, so all four sides (their hypotenuses) are equal: a <b>rhombus</b>. (Perpendicular alone is not enough — a kite has perpendicular diagonals.)', ['Bisecting diagonals give which shape? What do perpendicular diagonals add?'], 'bisecting + perpendicular diagonals → rhombus?');
         return s === 0 ? B.tf(r, '(c) “If the diagonals of a quadrilateral are perpendicular, it is a rhombus.” (Try ' + t('K(0,\\ 6),\\ L(3,\\ 2),\\ M(0,\\ -4),\\ N(-3,\\ 2)') + '.)', false, 'Test the suggested points: ' + t('KM') + ' is vertical and ' + t('LN') + ' horizontal (perpendicular), but ' + t('KL=5') + ' while ' + t('LM=3\\sqrt{5}') + ' — not a rhombus.', '<b>False.</b> ' + t('KM') + ' is vertical and ' + t('LN') + ' is horizontal, so the diagonals are perpendicular. But ' + t('KL=\\sqrt{3^{2}+(-4)^{2}}=5') + ' and ' + t('LM=\\sqrt{(-3)^{2}+(-6)^{2}}=3\\sqrt{5}') + ': the sides aren’t all equal (it is a kite). The diagonals don’t bisect each other: midpoints ' + t('(0,\\ 1)') + ' and ' + t('(0,\\ 2)') + '.', ['Calculate two side lengths of the suggested figure.'], 'perpendicular diagonals → rhombus?')
           : B.tf(r, '(c) “If the diagonals of a quadrilateral are equal, it is a rectangle.” (Think of Question 6’s trapezoid.)', false, 'Question 6’s isosceles trapezoid has equal diagonals but isn’t a rectangle — its diagonals don’t bisect each other.', '<b>False.</b> An isosceles trapezoid (Question 6) has equal diagonals, but its diagonals have different midpoints, so it isn’t even a parallelogram. Equal diagonals give a rectangle only when they also bisect each other.', ['Do you know a shape with equal diagonals that isn’t a rectangle?'], 'equal diagonals → rectangle?');
       } },
       { id: 'e13d', level: 'PRG', outcome: 'EXT', make: function (r) {
-        var s = book(r) ? 0 : r.int(0, 1);
+        var s = book(r) ? 0 : r.int(0, 2);
+        if (s === 2) return B.tf(r, '(d) “If two segments have equal lengths and are perpendicular, their four endpoints form a square.”', false, 'They must also share a midpoint: e.g. ' + t('(-2,\\ 1)') + ' to ' + t('(2,\\ 1)') + ' and ' + t('(0,\\ 0)') + ' to ' + t('(0,\\ 4)') + ' are equal and perpendicular, but their midpoints differ.', '<b>False.</b> Counterexample: ' + t('(-2,\\ 1)') + ' to ' + t('(2,\\ 1)') + ' and ' + t('(0,\\ 0)') + ' to ' + t('(0,\\ 4)') + ': both have length ' + t('4') + ', one is horizontal and one vertical (perpendicular), but their midpoints ' + t('(0,\\ 1)') + ' and ' + t('(0,\\ 2)') + ' differ, so they don’t bisect each other. The endpoints form a kite with sides ' + t('\\sqrt{5}') + ' and ' + t('\\sqrt{13}') + ' — not a square.', ['Equal and perpendicular diagonals — but do they bisect each other?'], 'equal + perpendicular → square?');
         return s === 0 ? B.tf(r, '(d) “If two segments have equal lengths and share a midpoint, their four endpoints form a rectangle.”', true, 'Sharing a midpoint makes them the diagonals of a parallelogram; equal diagonals make it a rectangle.', '<b>True.</b> Sharing a midpoint means the segments bisect each other, so the endpoints form a parallelogram with them as diagonals; equal diagonals make it a rectangle. (It is a square only if the segments are also perpendicular — e.g. ' + t('(-5,\\ 0)') + ' to ' + t('(5,\\ 0)') + ' and ' + t('(-3,\\ -4)') + ' to ' + t('(3,\\ 4)') + ' give a rectangle that isn’t a square.)', ['Diagonals that bisect each other make which shape? Equal diagonals add what?'], 'equal + shared midpoint → rectangle?')
-          : B.tf(r, '(d) “If two segments share a midpoint, their four endpoints form a parallelogram.”', true, 'Diagonals that bisect each other always make a parallelogram.', '<b>True</b> (as long as the segments aren’t on the same line). Sharing a midpoint means the segments bisect each other, and a quadrilateral whose diagonals bisect each other is a parallelogram.', ['What do a parallelogram’s diagonals always do?'], 'shared midpoint → parallelogram?');
+          : B.tf(r, '(d) “If two segments that are not on the same line share a midpoint, their four endpoints form a parallelogram.”', true, 'Diagonals that bisect each other always make a parallelogram.', '<b>True.</b> Sharing a midpoint means the segments bisect each other, and a quadrilateral whose diagonals bisect each other is a parallelogram.', ['What do a parallelogram’s diagonals always do?'], 'shared midpoint → parallelogram?');
       } }] },
     { num: '14', shared: function (r) { return rightScaleneTri(r, book(r)); },
       stem: function (sh) { return 'A student claims: “The midpoint of the hypotenuse is the centre of the triangle.” Test it on ' + t('\\triangle GHJ') + ' with ' + nameList(['G', 'H', 'J'], [sh.G, sh.H, sh.J]) + ' (right angle at ' + t('H') + ').'; },

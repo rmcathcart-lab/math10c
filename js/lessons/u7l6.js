@@ -59,7 +59,7 @@
       var r = base(prep(resp, o.fn, X));
       if (r.v === 'form' && r.code === 'line-vars') return form('line-vars', 'Use the letters from the question: ' + t(lhs) + ' and ' + t(X) + '.');
       if (r.v === 'form' && r.code === 'line-form-si') return form('line-form-si', 'Right equation — now write it in the form ' + t(lhs + '=m' + X + '+b') + ', with ' + t(lhs) + ' by itself on the left.');
-      if (r.v === 'form' && r.code === 'line-form-simplify') return form('line-form-simplify', 'Right equation — now simplify it (reduce any fraction, collect like terms) so it reads ' + t(lhs + '=m' + X + '+b') + '.');
+      if (r.v === 'form' && r.code === 'line-form-simplify' && fm === 'slope-intercept') return form('line-form-simplify', 'Right equation — now simplify it (reduce any fraction, collect like terms) so it reads ' + t(lhs + '=m' + X + '+b') + '.');
       if (r.v === 'wrong' && r.code === 'line-intercept' && o.bHint) return wrong('line-intercept', o.bHint);
       if (r.hint && o.fn) r = { v: r.v, code: r.code, hint: r.hint.split(t(Y) + '-intercept').join('vertical intercept (the value at ' + t(X + '=0') + ')') };
       if (r.v === 'wrong' && r.code === 'line-slope' && o.mHint) return wrong('line-slope', o.mHint);
@@ -610,8 +610,8 @@
               var slope = -Lq.A / Lq.B;
               if (slope >= 0) return wrong('ctx-rate-sign', 'The candle gets shorter as it burns, so your line should go <b>down</b> from left to right.');
               var mx = Math.max.apply(null, res.map(Math.abs));
-              if (mx <= 0.8 + 1e-9) return ok();
-              if (res[0] > 0.8 || res[res.length - 1] < -0.8) return wrong('ctx-fit', 'Your line is too ' + (res[0] > 0.8 ? 'low on the left' : 'high on the right') + '. Make it pass through the middle of the points, with about as many above as below.');
+              if (mx <= 0.6 + 1e-9) return ok();
+              if (res[0] > 0.6 || res[res.length - 1] < -0.6) return wrong('ctx-fit', 'Your line is too ' + (res[0] > 0.6 ? 'low on the left' : 'high on the right') + '. Make it pass through the middle of the points, with about as many above as below.');
               return wrong('ctx-fit', 'Your line is too far from some of the points. Make it pass through the middle of the data, with about as many points above as below.');
             };
             var p = K.P.graph('(a) The data are plotted on the grid. Draw the straight line that you think best fits the points. <i>(Use ╱ Line and tap two points; heights snap to every 0.5 cm.)</i>', I, check,
@@ -629,7 +629,7 @@
               if (!rd.ok) { var why = { empty: 'Type your equation first.', 'no-eq': 'Write an equation, e.g. ' + t('h=-0.1t+14') + '.', vars: 'Use the letters ' + t('h') + ' and ' + t('t') + '.' }; return form(rd.why === 'empty' ? 'empty' : 'line-' + rd.why, why[rd.why] || 'I can’t read that equation. Check the signs and the letters.'); }
               if (Math.abs(rd.b) < 1e-12) return wrong('ctx-fit', 'That’s a vertical line. Write ' + t('h') + ' in terms of ' + t('t') + '.');
               var m = -rd.a / rd.b, c = -rd.c / rd.b, res = sh.ts.map(function (x, i) { return Math.abs(sh.hs[i] - (m * x + c)); }), mx = Math.max.apply(null, res);
-              if (mx <= 0.9 + 1e-9) { if (!/^\s*h\s*=/.test(prep(resp).replace(/\\left|\\right/g, ''))) return form('line-form-si', 'Good line — now write it in the form ' + t('h=mt+b') + ', with ' + t('h') + ' by itself on the left.'); return ok(); }
+              if (mx <= 0.7 + 1e-9) { if (!/^\s*h\s*=/.test(prep(resp).replace(/\\left|\\right/g, ''))) return form('line-form-si', 'Good line — now write it in the form ' + t('h=mt+b') + ', with ' + t('h') + ' by itself on the left.'); return ok(); }
               if (m > 0) return wrong('ctx-rate-sign', 'The candle gets shorter, so the slope must be negative.');
               var r10 = sh.ts.map(function (x, i) { return Math.abs(sh.hs[i] - (m / 10 * x + c)); });
               if (Math.max.apply(null, r10) <= 0.9) return wrong('ctx-per10', 'Your slope is the drop per <b>10 minutes</b> (per reading). ' + t('t') + ' is in minutes, so divide the change in height by the change in minutes.');
@@ -653,7 +653,8 @@
               'The slope is about ' + t(nf(Math.round(sh.m * 100) / 100)) + ' cm/min: the candle gets shorter by about ' + a + ' cm each minute.', ['Units of the slope: cm per minute.'], 'meaning of candle slope');
           } },
           { id: '9c', level: 'PRG', outcome: 'RF7', make: function (r, sh) {
-            var T = sh.T, lo = 0.9 * T, hi = 1.1 * T;
+            /* burn-out time extrapolates far past the data, so any line accepted in (a)/(b) gives roughly 0.85T–1.25T */
+            var T = sh.T, lo = 0.85 * T, hi = 1.25 * T;
             var check = function (resp) {
               var p = HW.parse.number(resp); if (!p.ok) return form(p.code === 'empty' ? 'empty' : 'notnumber', p.code === 'empty' ? 'Type your answer first.' : 'Enter a single number of minutes.');
               var v = p.value; if (v >= lo && v <= hi) return ok();
@@ -663,7 +664,7 @@
               return wrong('value', 'Set ' + t('h=0') + ' in your equation and solve for ' + t('t') + '. (A good answer is roughly ' + t(Math.round(lo / 10) * 10) + ' to ' + t(Math.round(hi / 10) * 10) + ' minutes.)');
             };
             var p = { prompt: '(c) Use your equation to predict when the candle will burn out.', input: { type: 'math', keys: 'fraction', after: 'min', placeholder: 'minutes' }, check: check, key: String(Math.round(T)), answer: t('\\approx ' + Math.round(T)) + ' min',
-              solution: 'Burns out when ' + t('h=0') + ': ' + t('0=' + nf(Math.round(sh.m * 1000) / 1000) + 't+' + nf(Math.round(sh.b * 10) / 10) + '\\Rightarrow t\\approx ' + Math.round(T)) + ' min (answers within about 10% are reasonable).', hints: ['The candle has burned out when its height is 0.'], text: 'candle burn-out time' };
+              solution: 'Burns out when ' + t('h=0') + ': ' + t('0=' + nf(Math.round(sh.m * 1000) / 1000) + 't+' + nf(Math.round(sh.b * 10) / 10) + '\\Rightarrow t\\approx ' + Math.round(T)) + ' min. Answers vary with your line: roughly ' + t(Math.round(lo)) + ' to ' + t(Math.round(hi)) + ' min is reasonable.', hints: ['The candle has burned out when its height is 0.'], text: 'candle burn-out time' };
             p.bad = [String(Math.round(sh.hs[0])), String(Math.round(T / 10)), String(-Math.round(T))];
             return p;
           } }] }
@@ -704,7 +705,7 @@
               { v: sh.F1 - sh.g * sh.t1, code: 'ctx-add-b', hint: 'Going back in time the spool had <b>more</b> filament: ' + t(sh.F1 + '+' + sh.t1 + '(' + sh.g + ')') + '.' }],
               t('F') + '-intercept: ' + t(sh.F1 + '+' + sh.t1 + '(' + sh.g + ')=' + sh.F0) + ', the point ' + t('(0,\\ ' + sh.F0 + ')') + '.', ['Work back from ' + t(ptT([sh.t1, sh.F1])) + ' to ' + t('t=0') + ' using the rate.'], 'spool intercept', { after: 'g' });
           } },
-          { id: 'e1c2', sub: 'c ii', level: 'PRG', make: function (r, sh) {
+          { id: 'e1c2', sub: 'c ii', level: 'EMG', make: function (r, sh) {
             return interpMC(r, '(c) Interpret the slope and the ' + t('F') + '-intercept of graph (a) in sentences with units.', { what: 'the filament on the spool', up: 'increasing', down: 'decreasing', uy: 'grams', uy1: 'gram', ux: 'hour of printing', uxs: 'hours', start: function (v) { return 'The spool held ' + v + ' grams of filament when printing began ' + t('(t=0)') + '.'; } }, -sh.g, sh.F0,
               'The slope ' + t(-sh.g) + ' g/h: the filament is <b>decreasing at ' + sh.g + ' grams per hour</b> of printing. The intercept ' + t(sh.F0) + ' g: the spool held ' + t(sh.F0) + ' g when printing began.', 'interpret spool slope/intercept');
           } },
@@ -715,7 +716,7 @@
               { v: c.E1 + c.rate * c.t1, code: 'ctx-add-b', hint: 'Going back in time the chair was <b>lower</b>: ' + t(c.E1 + '-' + c.t1 + '(' + nf(c.rate) + ')') + '.' }],
               t('E') + '-intercept: ' + t(c.E1 + '-' + c.t1 + '(' + nf(c.rate) + ')=' + c.E0) + ', the point ' + t('(0,\\ ' + c.E0 + ')') + '.', ['Work back from ' + t(ptT([c.t1, c.E1])) + ' to ' + t('t=0') + '.'], 'chair intercept', { after: 'm' });
           } },
-          { id: 'e1d2', sub: 'd ii', level: 'PRG', make: function (r, sh) {
+          { id: 'e1d2', sub: 'd ii', level: 'EMG', make: function (r, sh) {
             var c = sh.ch;
             return interpMC(r, '(d) Interpret the slope and the ' + t('E') + '-intercept of graph (b) in sentences with units.', { what: 'the chair’s height above the base station', up: 'increasing', down: 'decreasing', uy: 'metres', uy1: 'metre', ux: 'second', uxs: 'seconds', start: function (v) { return 'At ' + t('t=0') + ' the chair is ' + v + ' metres above the base station.'; } }, c.rate, c.E0,
               'The slope ' + t(nf(c.rate)) + ' m/s: the height is <b>increasing at ' + nf(c.rate) + ' metres per second</b>. The intercept: at ' + t('t=0') + ' the chair is ' + t(c.E0) + ' m above the base station.', 'interpret chair slope/intercept');
@@ -865,7 +866,7 @@
             if (a0 + pa * 80 <= 1180 && b0 + pb * 80 <= 1180 && a0 % 10 === 0) break;
           }
           var A = function (S) { return cl(a0 + pa / 100 * S); }, Bf = function (S) { return cl(b0 + pb / 100 * S); };
-          var s1 = r.pick(rng(1000, Ss - 1000, 500)), s2 = r.pick(rng(Ss + 1000, 8000, 500));
+          var s1 = r.pick(rng(1000, Ss - 1000, 500).filter(function (x) { return 2 * x !== Ss; })), s2 = r.pick(rng(Ss + 1000, 8000, 500));
           if (bk) { s1 = 2500; s2 = 7000; }
           return { pa: pa, pb: pb, a0: a0, b0: b0, Ss: Ss, Es: A(Ss), A: A, B: Bf, s1: s1, s2: s2 };
         },
@@ -890,7 +891,7 @@
             p.bad = [seg([0, sn(sh.a0)], [8000, sn(sh.A(8000))]), { pts: [], pieces: [{ v: [[0, sn(sh.a0)], [8000, sn(sh.B(8000))]], s: 'closed', e: 'closed' }, { v: [[0, sn(sh.b0)], [8000, sn(sh.A(8000))]], s: 'closed', e: 'closed' }], join: 'none' }];
             return p;
           } },
-          { id: 'e6b', level: 'PRG', make: function (r, sh) {
+          { id: 'e6b', level: 'EMG', make: function (r, sh) {
             var ma = t(cash(sh.pa / 100)), mb = t(cash(sh.pb / 100));
             return mc(r, '(b) Which statement interprets the slope and intercept of each plan correctly?', [
               { html: 'Plan A earnings rise ' + ma + ' for every extra dollar of sales and are ' + t(money(sh.a0)) + ' in a week with no sales; Plan B earnings rise ' + mb + ' per dollar of sales and are ' + t(money(sh.b0)) + ' with no sales.', right: true },
@@ -1083,7 +1084,7 @@
             return mc(r, '(e) Complete: “Making a rate of change steeper makes its slope a ___ number when the rate is positive, but a ___ number when the rate is negative.”', [
               { html: 'larger … smaller', right: true }, { html: 'larger … larger', why: 'Try it: steepen ' + t('-2') + ' to ' + t('-3') + '. Is ' + t('-3') + ' larger or smaller than ' + t('-2') + '?' },
               { html: 'smaller … larger', why: 'Try it: steepen ' + t('2') + ' to ' + t('3') + ' — the number gets larger.' }, { html: 'smaller … smaller', why: 'Try it: steepen ' + t('2') + ' to ' + t('3') + '.' }],
-              'Steepening increases ' + t('|m|') + '. Positive: ' + t('2\\to 3') + ', a <b>larger</b> number. Negative: ' + t('-2\\to -3') + ', a <b>smaller</b> (more negative) number.', ['Try an example for each: 2 → 3 and −2 → −3.'], 'steeper sentence', true);
+              'Steepening increases ' + t('|m|') + '. Positive: ' + t('2\\to 3') + ', a <b>larger</b> number. Negative: ' + t('-2\\to -3') + ', a <b>smaller</b> (more negative) number.', ['Try an example for each: 2 → 3 and −2 → −3.'], 'steeper sentence');
           } }] },
       /* ---------------- EP10 ---------------- */
       { num: '10', section: 'Extra practice E — Average rate of change against a constant rate', shared: function (r) {
@@ -1397,7 +1398,9 @@
               { html: Qf ? 'Reservoir Q' : 'Reservoir P', right: true },
               { html: Qf ? 'Reservoir P' : 'Reservoir Q', why: 'Compare in the same units: P ' + t(nf(sh.m)) + ' ML/week, Q ' + t(nf(sh.mQ)) + ' ML/week.' },
               { html: 'They fill at the same rate.', why: 'In ML per week they differ: ' + t(nf(sh.m)) + ' and ' + t(nf(sh.mQ)) + '.' },
-              { html: 'Reservoir Q, because ' + t(nf(sh.q)) + ' is much bigger than ' + t(nf(sh.m)) + '.', why: 'Those numbers have different units, so they can’t be compared directly.' }],
+              /* a wrong-reason distractor must also name the wrong reservoir, or it is a second right answer */
+              Qf ? { html: 'Reservoir P, because ' + t(nf(sh.m)) + ' ML per week is more than Q’s ' + t(nf(sh.q / 1e6)) + ' ML per day.', why: 'Still different units (per week vs per day). In ML per week Q fills at ' + t(nf(sh.mQ)) + '.' }
+                : { html: 'Reservoir Q, because ' + t(nf(sh.q)) + ' is much bigger than ' + t(nf(sh.m)) + '.', why: 'Those numbers have different units, so they can’t be compared directly.' }],
               'P: ' + t(nf(sh.m)) + ' ML/week; Q: ' + t(nf(sh.mQ)) + ' ML/week. <b>Reservoir ' + (Qf ? 'Q' : 'P') + ' is faster.</b>', ['Compare both rates in ML per week.'], 'which reservoir faster');
           } },
           { id: 'e17c2', sub: 'c ii', level: 'PRG', make: function (r, sh) {
