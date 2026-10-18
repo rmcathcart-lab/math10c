@@ -388,7 +388,7 @@
               { html: t('AC') + ' is the longest side, so the angle opposite it must be ' + t('90^{\\circ}') + '.', why: 'Every triangle has a longest side, but most have no right angle. You have to show ' + t('AB^{2}+BC^{2}=AC^{2}') + '.' },
               n[0] === n[1] ? { html: t('AB=BC') + ', so ' + t('\\angle ABC=90^{\\circ}') + '.', why: 'Two equal sides make the triangle isosceles, not necessarily right-angled. Test ' + t('AB^{2}+BC^{2}=AC^{2}') + '.' }
                 : { html: t('AB^{2}+AC^{2}=BC^{2}') + ', so ' + t('\\angle ABC') + ' is a right angle.', why: 'Check: ' + t('AB^{2}+AC^{2}=' + n[0] + '+' + n[2] + '=' + (n[0] + n[2])) + ', but ' + t('BC^{2}=' + n[1]) + '. The hypotenuse is the longest side, ' + t('AC') + '.' }];
-            return mcPart(r, 'Which argument uses your answers to (a) to prove that ' + t('\\angle ABC') + ' is a right angle?', opts,
+            return mcPart(r, 'The side lengths are ' + t('AB=' + L[0]) + ', ' + t('BC=' + L[1]) + ' and ' + t('AC=' + L[2]) + '. Which argument uses these lengths to prove that ' + t('\\angle ABC') + ' is a right angle?', opts,
               t('AC') + ' is the longest side, so it is the candidate hypotenuse. ' + t('AB^{2}+BC^{2}=(' + L[0] + ')^{2}+(' + L[1] + ')^{2}=' + n[0] + '+' + n[1] + '=' + (n[0] + n[1])) + ' and ' + t('AC^{2}=(' + L[2] + ')^{2}=' + n[2]) + '. They are equal, so by the converse of the Pythagorean theorem the right angle is opposite ' + t('AC') + ', at vertex ' + t('B') + '.',
               ['The converse of the Pythagorean theorem: if ' + t('a^{2}+b^{2}=c^{2}') + ' for the sides of a triangle, the angle opposite ' + t('c') + ' is ' + t('90^{\\circ}') + '.'], 'prove angle ABC is right');
           } }] },
@@ -609,19 +609,20 @@
           { id: '14c', sub: 'c', level: 'ADV', make: function (r, o) {
             var h = o.H, N = mid(o.P[h[0]], o.P[h[1]]), nh = d2(o.P[h[0]], o.P[h[1]]), V = ['D', 'E', 'F'];
             var cands = [[nh / 4, 'd-no-root', 'That is the squared distance — take the square root.'], [Math.sqrt(nh), 'd-half', 'That is the whole hypotenuse. ' + t('N') + ' is its midpoint, so the distance from ' + t('N') + ' to an end is half of it.']];
-            return B.fields('Calculate the distance from ' + t('N') + ' to each of the three vertices of the triangle (exact, or to the nearest tenth).', V.map(function (v) { return lenField('N' + v); }),
+            return B.fields(t(nm('N', N)) + ' is the midpoint of the hypotenuse ' + t(h[0] + h[1]) + '. Calculate the distance from ' + t('N') + ' to each of the three vertices of the triangle (exact, or to the nearest tenth).', V.map(function (v) { return lenField('N' + v); }),
               V.map(function () { return lenCheck(nh, 2, { dec: true, cands: cands }); }), V.map(function () { return lenKey(nh, 2); }),
               t('ND=NE=NF=' + lenTex(nh, 2) + '\\approx ' + fx(Math.sqrt(nh) / 2, 1)),
               V.map(function (v) { var P2 = o.P[v], dx = cl(P2[0] - N[0]), dy = cl(P2[1] - N[1]); return t('N' + v + '=\\sqrt{' + sgp(dx) + '^{2}+' + sgp(dy) + '^{2}}=\\sqrt{' + nT(dx * dx) + '+' + nT(dy * dy) + '}=\\sqrt{' + nT(nh / 4) + '}'); }).join('<br>') + '<br>All three equal ' + t('\\sqrt{' + nT(nh / 4) + '}=\\sqrt{\\tfrac{' + nh + '}{4}}=' + lenTex(nh, 2) + '\\approx ' + fx(Math.sqrt(nh) / 2, 1)) + '.',
               HD.concat(['Use ' + t(nm('N', N)) + ' as one endpoint each time. With decimals, ' + t('2.5^{2}=6.25') + '.']), 'N to each vertex');
           } },
           { id: '14c2', sub: 'c, notice', level: 'EMG', make: function (r, o) {
-            return mcPart(r, 'What do you notice about the three distances from ' + t('N') + '?', [
+            var Nn = mid(o.P[o.H[0]], o.P[o.H[1]]);
+            return mcPart(r, t(nm('N', Nn)) + ' is the midpoint of the hypotenuse ' + t(o.H[0] + o.H[1]) + '. What do you notice about the three distances ' + t('ND') + ', ' + t('NE') + ' and ' + t('NF') + '?', [
               { html: 'They are equal: the midpoint of the hypotenuse is the same distance from all three vertices (half the hypotenuse).', right: true },
               { html: t('N') + ' is closest to the right-angle vertex ' + t(o.R) + '.', why: 'Compare your three answers — they are all the same.' },
               { html: 'They add up to the perimeter of the triangle.', why: 'Compare your three answers with each other: what do they have in common?' },
               { html: t('N') + ' is the same distance from only the two ends of the hypotenuse.', why: 'Check ' + t('N' + o.R) + ' as well — it matches the other two.' }],
-              t('ND=NE=NF') + ': the midpoint of the hypotenuse is equidistant from all three vertices. (It is the centre of the circle through ' + t('D') + ', ' + t('E') + ' and ' + t('F') + ', and each distance is half the hypotenuse.)', ['Look at your three answers from (c).'], 'midpoint of hypotenuse equidistant');
+              t('ND=NE=NF') + ': the midpoint of the hypotenuse is equidistant from all three vertices. (It is the centre of the circle through ' + t('D') + ', ' + t('E') + ' and ' + t('F') + ', and each distance is half the hypotenuse.)', ['Find ' + t('ND') + ', ' + t('NE') + ' and ' + t('NF') + ' with the distance formula and compare them.'], 'midpoint of hypotenuse equidistant');
           } }] },
       /* ---------------- Question 15: diagonals of a quadrilateral ---------------- */
       { num: '15', shared: function (r) {
@@ -643,7 +644,7 @@
           } },
           { id: '15c', sub: 'c', level: 'EMG', make: function (r, o) {
             var m1 = mid(o.P, o.R), m2 = mid(o.Q, o.S), eq = samePt(m1, m2);
-            return mcPart(r, 'What do the results of (a) and (b) tell you about quadrilateral ' + t('PQRS') + '? (Recall: if the diagonals of a quadrilateral bisect each other, the quadrilateral is a parallelogram.)', [
+            return mcPart(r, 'The midpoint of diagonal ' + t('\\overline{PR}') + ' is ' + t(ptT(m1)) + ' and the midpoint of diagonal ' + t('\\overline{QS}') + ' is ' + t(ptT(m2)) + '. What does this tell you about quadrilateral ' + t('PQRS') + '? (Recall: if the diagonals of a quadrilateral bisect each other, the quadrilateral is a parallelogram.)', [
               { html: 'The diagonals have the same midpoint, so they bisect each other: ' + t('PQRS') + ' is a parallelogram.', right: eq, why: eq ? null : 'Compare your answers: ' + t(ptT(m1)) + ' and ' + t(ptT(m2)) + ' are different points.' },
               { html: 'The diagonals have different midpoints, so they don’t bisect each other: ' + t('PQRS') + ' is not a parallelogram.', right: !eq, why: eq ? 'Look again: both diagonals have the midpoint ' + t(ptT(m1)) + '.' : null },
               { html: 'The diagonals are equal in length, so ' + t('PQRS') + ' is a rectangle.', why: 'Midpoints tell you where the diagonals cross, not how long they are. Lengths would need the distance formula.' },
@@ -736,7 +737,7 @@
           } },
           { id: 'e1c2', sub: 'c, compare', level: 'EMG', make: function (r, o) {
             var L = dist(mid(o.P, o.Q), mid(o.Q, o.R)), PR = dist(o.P, o.R);
-            return mcPart(r, 'Compare the length of that segment, ' + t(nT(L)) + ', to the length of ' + t('\\overline{PR}') + '.', [
+            return mcPart(r, 'The segment joining the midpoint of ' + t('\\overline{PQ}') + ' to the midpoint of ' + t('\\overline{QR}') + ' has length ' + t(nT(L)) + '. Compare that length to the length of ' + t('\\overline{PR}') + '.', [
               { html: 'It is exactly half as long as ' + t('\\overline{PR}') + ' (and parallel to it).', right: true },
               { html: 'It is the same length as ' + t('\\overline{PR}') + '.', why: t('PR=' + nT(PR)) + ' — compare it with ' + t(nT(L)) + '.' },
               { html: 'It is twice as long as ' + t('\\overline{PR}') + '.', why: t('PR=' + nT(PR)) + ' is the longer one.' },
@@ -920,11 +921,12 @@
             good: ['\\left(' + c + ',' + E[1] + '\\right)'], bad: [ptKey([c, E[1] + o.rr]) + ', ' + ptKey([c, E[1] - o.rr])] };
         } },
         { id: 'e8d', sub: 'd', level: 'PRG', make: function (r) {
-          return mcPart(r, 'In part (c) there is only <b>one</b> point, while (a) and (b) each have two. Which explanation is correct?', [
-            { html: 'The points at a fixed distance from a given point form a circle. In (c) the given point is exactly that distance from the line, so the circle only <b>touches</b> the line once; in (a) and (b) the circle crosses the axis twice.', right: true },
-            { html: 'In (c) the line is vertical, and vertical lines can only contain one point at a given distance.', why: 'The direction of the line isn’t the reason — a vertical line closer to ' + t('E') + ' would cross the circle twice. What matters is how far the line is from the given point compared with the distance.' },
-            { html: 'In (c) one of the two answers was negative, so it had to be rejected.', why: 'Negative coordinates are perfectly good points. In (c) the equation became ' + t('(y-k)^{2}=0') + ', which has only one solution.' },
-            { html: 'The question in (c) has a mistake: there should be two points.', why: 'The algebra gives ' + t('(y-k)^{2}=0') + ' — only one solution. Think about the circle around ' + t('E') + ' and the line.' }],
+          var E = [r.pick(pm(1, 5)), r.pick(pm(1, 5))], d = r.int(2, 6), c = E[0] + r.pick([1, -1]) * d;
+          return mcPart(r, 'Finding all points on a line at a fixed distance from a given point usually gives <b>two</b> points. But when ' + t('F') + ' lies on the vertical line ' + t('x=' + c) + ' and ' + t('EF=' + d) + ', where ' + t('E') + ' is ' + t(ptT(E)) + ', there is only <b>one</b> point, ' + t('F' + ptT([c, E[1]])) + '. Which explanation is correct?', [
+            { html: 'The points at a fixed distance from a given point form a circle. Here ' + t('E') + ' is exactly that distance from the line, so the circle only <b>touches</b> the line once; in the two-point cases the circle crosses the line twice.', right: true },
+            { html: 'The line is vertical, and vertical lines can only contain one point at a given distance.', why: 'The direction of the line isn’t the reason — a vertical line closer to ' + t('E') + ' would cross the circle twice. What matters is how far the line is from the given point compared with the distance.' },
+            { html: 'One of the two answers was negative, so it had to be rejected.', why: 'Negative coordinates are perfectly good points. Here the equation becomes ' + t('(y-k)^{2}=0') + ', which has only one solution.' },
+            { html: 'The question has a mistake: there should be two points.', why: 'The algebra gives ' + t('(y-k)^{2}=0') + ' — only one solution. Think about the circle around ' + t('E') + ' and the line.' }],
             'The points at a fixed distance from a given point form a <b>circle</b> around it. When the line’s distance from the point equals the radius, the circle just touches the line (one point). When the radius is greater than the gap, the circle cuts the line at two points; when it is smaller, there are none.',
             ['Picture all the points at that distance from the given point. What shape do they make?'], 'why only one point');
         } }] },
@@ -968,7 +970,7 @@
         } },
         { id: 'e9d', sub: 'd', level: 'PRG', make: function (r, o) {
           var g = Math.abs(o.Q[1] - o.y0), Pq = t(ptT(o.Q)), side = o.Q[1] > o.y0 ? 'above' : 'below', foot = t(ptT([o.Q[0], o.y0]));
-          return mcPart(r, 'Part (c) has no solution. Explain, without algebra, why no point of the form ' + t('(k,\\ ' + o.y0 + ')') + ' can be ' + t(o.rr) + ' units from ' + Pq + '.', [
+          return mcPart(r, 'Solving for ' + t('k') + ' shows that no real value works. Explain, without algebra, why no point of the form ' + t('(k,\\ ' + o.y0 + ')') + ' can be ' + t(o.rr) + ' units from ' + Pq + '.', [
             { html: 'Every point ' + t('(k,\\ ' + o.y0 + ')') + ' is on the horizontal line ' + t('y=' + o.y0) + ', and ' + Pq + ' is ' + t(g) + ' units ' + side + ' that line. No point of the line is closer than ' + t(g) + ', so none can be only ' + t(o.rr) + ' away.', right: true },
             { html: 'Because ' + Pq + ' is not on the line ' + t('y=' + o.y0) + ', so no distance from it to the line can be calculated.', why: 'Distances from ' + Pq + ' to points on the line can be calculated — the smallest of them is ' + t(g) + '. Compare that gap with ' + t(o.rr) + '.' },
             { html: 'Because ' + t('k') + ' would have to be negative.', why: 'Negative values of ' + t('k') + ' are allowed. The problem is that every point on ' + t('y=' + o.y0) + ' is at least ' + t(g) + ' units from ' + Pq + '.' },
@@ -1101,7 +1103,7 @@
           } },
           { id: 'e14c', sub: 'c', level: 'EMG', make: function (r, o) {
             var D = dist(o.L, o.S);
-            return B.number('How far, in kilometres, must a crew travel from the lookout to reach the supply drop?', D / 2 * o.k, numDiag([[D / 2, 'd-units', 'That is in grid units. Multiply by ' + t(o.k) + '&nbsp;km per unit.'], [D * o.k, 'd-half', 'That is the whole distance from ' + t('L') + ' to ' + t('S') + '. The drop is halfway.'], [D, 'd-units', 'The drop is halfway, and the answer must be in km.']]),
+            return B.number('A supply drop is made at the point exactly halfway between ' + t('L') + ' and ' + t('S') + '. How far, in kilometres, must a crew travel from the lookout to reach the supply drop?', D / 2 * o.k, numDiag([[D / 2, 'd-units', 'That is in grid units. Multiply by ' + t(o.k) + '&nbsp;km per unit.'], [D * o.k, 'd-half', 'That is the whole distance from ' + t('L') + ' to ' + t('S') + '. The drop is halfway.'], [D, 'd-units', 'The drop is halfway, and the answer must be in km.']]),
               'The drop is halfway, so the distance is half of ' + t('LS') + ': ' + t('\\tfrac{1}{2}(' + D + ')=' + nT(D / 2)) + ' units ' + t('=' + nT(D / 2) + '\\times ' + o.k + '=' + nT(D / 2 * o.k)) + '&nbsp;km.', ['The drop is at the midpoint, so the trip is half of ' + t('LS') + '.', 'Then convert grid units to km.'], 'lookout to supply drop', { after: 'km' });
           } },
           { id: 'e14d', sub: 'd', level: 'PRG', make: function (r, o) {
