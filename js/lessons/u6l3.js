@@ -713,7 +713,7 @@
           } },
           { id: 'e2d', sub: 'd', level: 'PRG', make: function (r, sh) {
             var s2 = slopeOf(sh.R, sh.S), sq = red(sh.S[1] - sh.R[1], (sh.S[0] - sh.R[0]) / 2), half = red(sh.S[1] - sh.R[1], 2 * (sh.S[0] - sh.R[0]));
-            return B.mc(r, '(d) What would the same square-counting student get for ' + t('RS') + '? Would <i>any</i> segment on this grid be given its correct slope by counting squares?', [
+            return B.mc(r, '(d) What would a student who counts squares instead of units get for ' + t('RS') + '? Would <i>any</i> segment on this grid be given its correct slope by counting squares?', [
               { html: t(slT(sq)) + ', twice the correct value. Only a <b>horizontal</b> segment comes out right (its slope is ' + t('0') + ' either way); a vertical one is undefined either way.', right: true },
               { html: t(slT(sq)) + ', twice the correct value. No segment can ever come out right.', why: 'Try a horizontal segment: its rise is ' + t('0') + ', so ' + t('\\frac{0}{\\text{run}}=0') + ' whether you count squares or units.' },
               { html: t(slT(half)) + ', half the correct value. Only vertical segments come out right.', why: 'Counting squares makes the run smaller, which makes the slope bigger, not smaller.' },
@@ -817,12 +817,12 @@
           { id: 'e6b', level: 'BEG', make: function (r, sh) { var P = sh.P, k = [P[0], P[1] + r.pick([3, 4, 6, -3, -5])]; var p = ptsPart('(b) Give a second point so that the slope is undefined.', { n: 1, exclude: [P], test: onLineTest(P, [1, 0]) }, [k], 'An undefined slope needs a run of ' + t('0') + ': keep ' + t('x=' + P[0]) + ', e.g. ' + t(ptT(k)) + '.', ['Which coordinate must stay the same for the run to be 0?'], 'point undefined slope from ' + ptT(P)); p.bad = [ptT([P[0] + 3, P[1]])]; return p; } },
           { id: 'e6c', level: 'EMG', make: function (r, sh) {
             var P = sh.P;
-            return B.mc(r, '(c) Which describes <b>every</b> point that works in (a), and every point that works in (b)?', [
-              { html: '(a) every point ' + t('(a,\\ ' + P[1] + ')') + ' with ' + t('a\\ne ' + P[0]) + ' — the horizontal line ' + t('y=' + P[1]) + '; (b) every point ' + t('(' + P[0] + ',\\ b)') + ' with ' + t('b\\ne ' + P[1]) + ' — the vertical line ' + t('x=' + P[0]) + '.', right: true },
-              { html: '(a) the vertical line ' + t('x=' + P[0]) + '; (b) the horizontal line ' + t('y=' + P[1]) + '.', why: 'Swapped: slope ' + t('0') + ' is horizontal (same ' + t('y') + '), undefined is vertical (same ' + t('x') + ').' },
-              { html: '(a) only ' + t('(' + (P[0] + 1) + ',\\ ' + P[1] + ')') + '; (b) only ' + t('(' + P[0] + ',\\ ' + (P[1] + 1) + ')') + '.', why: 'Any distance along works, not just one step: ' + t('\\frac{0}{7}') + ' is still ' + t('0') + '.' },
-              { html: '(a) every point on the ' + t('x') + '-axis; (b) every point on the ' + t('y') + '-axis.', why: 'The points have to line up with ' + t(ptT(P)) + ', which ' + (P[1] === 0 && P[0] === 0 ? 'here is the origin — but that is a coincidence' : 'is not on the axes') + '.' }],
-              '(a) the rise must be ' + t('0') + ': every point with ' + t('y=' + P[1]) + ' (except ' + t(ptT(P)) + ' itself). (b) the run must be ' + t('0') + ': every point with ' + t('x=' + P[0]) + ' (except ' + t(ptT(P)) + ').', ['Think of all the points you could have chosen in (a).'], 'all points slope 0 / undefined');
+            return B.mc(r, '(c) Which describes <b>every</b> second point that makes the slope ' + t('0') + ', and every second point that makes the slope undefined?', [
+              { html: 'Slope ' + t('0') + ': every point ' + t('(a,\\ ' + P[1] + ')') + ' with ' + t('a\\ne ' + P[0]) + ' — the horizontal line ' + t('y=' + P[1]) + '; undefined: every point ' + t('(' + P[0] + ',\\ b)') + ' with ' + t('b\\ne ' + P[1]) + ' — the vertical line ' + t('x=' + P[0]) + '.', right: true },
+              { html: 'Slope ' + t('0') + ': the vertical line ' + t('x=' + P[0]) + '; undefined: the horizontal line ' + t('y=' + P[1]) + '.', why: 'Swapped: slope ' + t('0') + ' is horizontal (same ' + t('y') + '), undefined is vertical (same ' + t('x') + ').' },
+              { html: 'Slope ' + t('0') + ': only ' + t('(' + (P[0] + 1) + ',\\ ' + P[1] + ')') + '; undefined: only ' + t('(' + P[0] + ',\\ ' + (P[1] + 1) + ')') + '.', why: 'Any distance along works, not just one step: ' + t('\\frac{0}{7}') + ' is still ' + t('0') + '.' },
+              { html: 'Slope ' + t('0') + ': every point on the ' + t('x') + '-axis; undefined: every point on the ' + t('y') + '-axis.', why: 'The points have to line up with ' + t(ptT(P)) + ', which ' + (P[1] === 0 && P[0] === 0 ? 'here is the origin — but that is a coincidence' : 'is not on the axes') + '.' }],
+              'Slope ' + t('0') + ': the rise must be ' + t('0') + ': every point with ' + t('y=' + P[1]) + ' (except ' + t(ptT(P)) + ' itself). Undefined: the run must be ' + t('0') + ': every point with ' + t('x=' + P[0]) + ' (except ' + t(ptT(P)) + ').', ['Think of all the points you could choose, not just one.'], 'all points slope 0 / undefined');
           } },
           { id: 'e6d', level: 'EMG', make: function (r) {
             return B.mc(r, '(d) Why can no single line have both a slope of ' + t('0') + ' and an undefined slope?', [
@@ -841,7 +841,7 @@
           { id: 'e7bp', sub: 'b · points', level: 'BEG', make: function (r, sh) { return q4Pts(sh.b, 'b'); } },
           { id: 'e7c', sub: 'c', level: 'EMG', make: function (r, sh) {
             var c = sh.a, sl = c.sl, P0 = c.P0;
-            return B.mc(r, '(c) Your three points in (a) are probably not the same as a classmate’s, yet you can both be right. What do all the correct answers have in common?', [
+            return B.mc(r, '(c) Two students each list three integer points on the line through ' + t(ptT(P0)) + ' with slope ' + t(frT(sl[0], sl[1])) + '. Their lists are probably different, yet both can be right. What do all the correct answers have in common?', [
               { html: 'Each is reached from ' + t(ptT(P0)) + ' by moving <b>the same multiple of the rise and the run</b>: ' + t('(' + nT(P0[0]) + '+' + sl[1] + 'k,\\ ' + nT(P0[1]) + '+' + sl[0] + 'k)') + ' for a whole number ' + t('k') + ', so ' + t('\\frac{' + sl[0] + 'k}{' + sl[1] + 'k}=' + frT(sl[0], sl[1])) + ' every time.', right: true },
               { html: 'They all have the same ' + t('x') + '-coordinate.', why: 'Points with the same ' + t('x') + '-coordinate are on a vertical line.' },
               { html: 'Each is exactly one rise and one run from ' + t(ptT(P0)) + '.', why: 'Two or three steps (or steps backwards) land on the line too.' },
@@ -885,12 +885,14 @@
             t('\\frac{' + H[1] + '-y}{' + subT(H[0], G[0]) + '}=0') + ', so ' + t(H[1] + '-y=0') + ' and ' + t('y=' + H[1]) + ': a horizontal segment.', ['Slope 0: the two points are at the same height.'], 'missing y slope 0', { before: t('y=') });
         } },
         { id: 'e8f', level: 'EMG', make: function (r) {
-          return B.mc(r, '(f) Parts (d) and (e) behaved differently from (a)–(c): one had exactly one answer, the other infinitely many. Which is which, and why?', [
-            { html: '(e) had one answer: slope ' + t('0') + ' forces the <b>numerator</b> to be ' + t('0') + '. (d) had infinitely many: undefined is a condition on the <b>denominator</b>, which the given ' + t('x') + '-coordinates already meet.', right: true },
-            { html: '(d) had one answer and (e) infinitely many.', why: 'In (e), only one ' + t('y') + ' makes the rise ' + t('0') + '. In (d), ' + t('h') + ' never enters the run.' },
-            { html: 'Both had infinitely many answers, because ' + t('0') + ' and undefined are special.', why: 'In (e) the rise ' + t('2-y') + ' (or similar) is ' + t('0') + ' for only one value of ' + t('y') + '.' },
-            { html: 'Both had exactly one answer.', why: 'In (d), try ' + t('h=1') + ' and ' + t('h=2') + ': both segments are vertical.' }],
-            '(e): ' + t('m=0') + ' means the numerator ' + t('y_2-y_1=0') + ', and only one value does that. (d): undefined means the denominator ' + t('x_2-x_1=0') + ' — already true, and ' + t('h') + ' doesn’t appear in it, so every ' + t('h') + ' (except the one that repeats the point) works.', ['Where does the unknown appear in each slope fraction — top or bottom?'], 'one vs infinitely many');
+          var x = r.int(-7, 7), y = r.pick([-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]), G0 = r.int(-6, 0), H = [r.int(2, 8), r.int(-6, 6)];
+          var cE = t('E(' + x + ',\\ h)') + ', ' + t('F' + ptT([x, y])) + ' with an undefined slope', cG = t('G(' + G0 + ',\\ y)') + ', ' + t('H' + ptT(H)) + ' with ' + t('m=0');
+          return B.mc(r, '(f) A missing coordinate found from a slope usually has exactly one value. Two special cases behave differently: ' + cE + ', and ' + cG + '. One of them has exactly one answer, the other infinitely many. Which is which, and why?', [
+            { html: 'The slope-' + t('0') + ' case (' + t('G, H') + ') has one answer: slope ' + t('0') + ' forces the <b>numerator</b> to be ' + t('0') + '. The undefined case (' + t('E, F') + ') has infinitely many: undefined is a condition on the <b>denominator</b>, which the given ' + t('x') + '-coordinates already meet.', right: true },
+            { html: 'The undefined case (' + t('E, F') + ') has one answer and the slope-' + t('0') + ' case (' + t('G, H') + ') infinitely many.', why: 'For ' + t('G, H') + ', only one ' + t('y') + ' makes the rise ' + t('0') + '. For ' + t('E, F') + ', ' + t('h') + ' never enters the run.' },
+            { html: 'Both have infinitely many answers, because ' + t('0') + ' and undefined are special.', why: 'For ' + t('G, H') + ' the rise ' + t(H[1] + '-y') + ' is ' + t('0') + ' for only one value of ' + t('y') + '.' },
+            { html: 'Both have exactly one answer.', why: 'For ' + t('E, F') + ', try ' + t('h=' + (y + 1)) + ' and ' + t('h=' + (y + 2)) + ': both segments are vertical.' }],
+            t('G, H') + ': ' + t('m=0') + ' means the numerator ' + t(H[1] + '-y=0') + ', and only ' + t('y=' + H[1]) + ' does that. ' + t('E, F') + ': undefined means the denominator ' + t('x_2-x_1=0') + ' — already true, and ' + t('h') + ' doesn’t appear in it, so every ' + t('h') + ' except ' + t(y) + ' (which repeats the point) works.', ['Where does the unknown appear in each slope fraction — top or bottom?'], 'one vs infinitely many');
         } }] },
       { num: '9', stem: 'Use ' + t('m=\\frac{\\text{rise}}{\\text{run}}') + ' in reverse.', parts: [
         { id: 'e9a', level: 'PRG', make: function (r) {
@@ -999,7 +1001,7 @@
           { id: 'e13b', level: 'BEG', make: function (r, sh) { return coordSlopePart('(b) Determine the correct slope.', sh.A, sh.B, 'A', 'B'); } },
           { id: 'e13c', level: 'EMG', make: function (r, sh) {
             var w = slT(red(sh.s[1], sh.s[0])), c = slT(sh.s);
-            return B.mc(r, '(c) How is the student’s answer ' + t(w) + ' related to your answer?', [{ html: 'It is the <b>reciprocal</b>: the product is ' + t('1') + '.', right: true },
+            return B.mc(r, '(c) The correct slope is ' + t(c) + '. How is the student’s answer ' + t(w) + ' related to it?', [{ html: 'It is the <b>reciprocal</b>: the product is ' + t('1') + '.', right: true },
               { html: 'It is the negative reciprocal.', why: 'Both have the same sign, and ' + t(w + '\\times ' + c + '=1') + ', not ' + t('-1') + '.' },
               { html: 'It is the opposite (negative).', why: 'The opposite of ' + t(c) + ' is ' + t(slT([-sh.s[0], sh.s[1]])) + '.' },
               { html: 'They are equal.', why: 'Compare as decimals: ' + t(dec(sval(red(sh.s[1], sh.s[0])), 3)) + ' and ' + t(dec(sval(sh.s), 3)) + '.' }],
@@ -1089,12 +1091,13 @@
             t('\\frac{k-' + (c < 0 ? '(' + c + ')' : c) + '}{' + d + '-k}=' + frT(f[0], f[1])) + ' → ' + t(f[1] + '(k' + (c < 0 ? '+' + (-c) : '-' + c) + ')=' + f[0] + '(' + d + '-k)') + ' → ' + t('k=' + k) + '. Check: ' + t('A' + ptT([k, c]) + ',\\ B' + ptT([d, k])) + ': ' + t(formulaT([k, c], [d, k]) + '=' + fracSteps(k - c, d - k)) + ' ✓', ['Cross-multiply: ' + t(f[1] + '(k' + (c < 0 ? '+' + (-c) : '-' + c) + ')=' + f[0] + '(' + d + '-k)') + ', then solve.'], 'stretch k in x1 and y2', { before: t('k=') });
         } },
         { id: 'e16e', level: 'EMG', make: function (r) {
-          return B.mc(r, '(e) Part (b) is different from the others. What is special about those two points?', [
+          var y1 = r.int(-4, 2), run = r.pick([6, 4, 3, 2]), f = r.pick([[3, 2], [1, 2], [-1, 2], [2, 3], [5, 2]]), rise = f[0] * run / f[1]; if (rise % 1) { run = 2 * f[1]; rise = 2 * f[0]; }
+          return B.mc(r, '(e) Part (b) is different from the others: any segment like the one joining ' + t('A(k,\\ ' + y1 + ')') + ' and ' + t('B(k+' + run + ',\\ ' + (y1 + rise) + ')') + ' has slope ' + t(frT(f[0], f[1])) + ' for <b>every</b> value of ' + t('k') + '. What is special about those two points?', [
             { html: 'The same ' + t('k') + ' appears in both ' + t('x') + '-coordinates, so it cancels: the run and rise are fixed numbers, and changing ' + t('k') + ' only slides the segment sideways.', right: true },
-            { html: 'The slope is positive, so ' + t('k') + ' can be anything.', why: 'Positive slopes in (a)–(d) still gave one value of ' + t('k') + '. What matters is that ' + t('k') + ' cancels.' },
-            { html: t('k') + ' appears only in the ' + t('y') + '-coordinates.', why: 'Look again: ' + t('k') + ' is in the ' + t('x') + '-coordinates in (b).' },
+            { html: 'The slope is positive, so ' + t('k') + ' can be anything.', why: 'Other segments with positive slopes still give just one value of ' + t('k') + '. What matters is that ' + t('k') + ' cancels.' },
+            { html: t('k') + ' appears only in the ' + t('y') + '-coordinates.', why: 'Look again: ' + t('k') + ' is in both ' + t('x') + '-coordinates.' },
             { html: 'There is a mistake in the question.', why: 'The question is fine — it just has infinitely many answers.' }],
-            'In (b) the run is always ' + t('(k+6)-k=6') + ' (or similar) and the rise doesn’t involve ' + t('k') + ', so the slope doesn’t depend on ' + t('k') + ' at all — the equation holds for every ' + t('k') + '.', ['Simplify the run in (b).'], 'why k cancels');
+            'The run is always ' + t('(k+' + run + ')-k=' + run) + ' and the rise ' + t(rise) + ' doesn’t involve ' + t('k') + ', so the slope doesn’t depend on ' + t('k') + ' at all — the equation holds for every ' + t('k') + '.', ['Simplify the run ' + t('(k+' + run + ')-k') + '.'], 'why k cancels');
         } }] },
       { num: '17', stem: function (sh) { return 'The points ' + ['A', 'B', 'C', 'D'].map(function (n, i) { return t(n + ptT(sh.P[i])); }).join(', ') + ' all lie on one line.'; },
         shared: function (r) { for (var g = 0; g < 200; g++) { var useB = g === 0 && r.chance(0.3), f = useB ? [2, 3] : r.pick([[2, 3], [1, 2], [1, 3], [3, 2], [-2, 3], [-1, 2], [-1, 3]]), A = useB ? [-6, -4] : [r.int(-7, -7 + 14 - 4 * Math.abs(f[1])), 0]; if (!useB) { var ylo = f[0] > 0 ? -7 : -7 + 4 * Math.abs(f[0]), yhi = f[0] > 0 ? 7 - 4 * f[0] : 7; if (ylo > yhi) continue; A[1] = r.int(ylo, yhi); } var P = [0, 1, 3, 4].map(function (k) { return [A[0] + k * f[1], A[1] + k * f[0]]; }); if (P.some(function (p) { return Math.abs(p[0]) > 7 || Math.abs(p[1]) > 7; })) continue; return { f: f, P: P }; } return { f: [2, 3], P: [[-6, -4], [-3, -2], [3, 2], [6, 4]] }; },
@@ -1123,7 +1126,7 @@
             p.bad = [gv([], [{ v: [A, cB, Bp], s: 'closed', e: 'closed' }]), gv([], [seg(A, Dp)])]; return p;
           } },
           { id: 'e17c', level: 'PRG', make: function (r) {
-            return B.mc(r, '(c) Why must those two triangles be <b>similar</b>?', [
+            return B.mc(r, '(c) Picture the rise-and-run right triangle for ' + t('AB') + ' and the one for ' + t('AD') + ', each with legs parallel to the axes. Why must those two triangles be <b>similar</b>?', [
               { html: 'Each has a right angle (horizontal and vertical legs), they share the angle at ' + t('A') + ' (both hypotenuses lie along the same line from ' + t('A') + '), so the third angles match too.', right: true },
               { html: 'They have the same side lengths.', why: 'Same side lengths would make them congruent; the ' + t('AD') + ' triangle is bigger.' },
               { html: 'Both are isosceles.', why: 'Their legs are different lengths (unless the slope is ' + t('\\pm 1') + ').' },

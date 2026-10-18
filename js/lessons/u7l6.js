@@ -636,7 +636,7 @@
               if (Math.abs(c - sh.hs[0]) > 1) return wrong('ctx-fit', 'Check ' + t('b') + ': it is the height at ' + t('t=0') + ', about ' + t(fx(sh.hs[0], 1)) + ' cm.');
               return wrong('ctx-fit', 'Your line doesn’t fit the data. Choose two points on your line (far apart), find the slope ' + t('\\frac{\\Delta h}{\\Delta t}') + ', then ' + t('b') + '.');
             };
-            var p = B.math('(b) Choose two points on <b>your line</b> (not necessarily data points) and write the equation of your line in the form ' + t('h=mt+b') + '. <i>(Any equation close to the data is accepted.)</i>', check, 'h=' + nf(mk) + 't+' + nf(bk),
+            var p = B.math('(b) Choose two points on a line of best fit for the data — such as the line you drew in (a) — (not necessarily data points) and write the equation of that line in the form ' + t('h=mt+b') + '. <i>(Any equation close to the data is accepted.)</i>', check, 'h=' + nf(mk) + 't+' + nf(bk),
               'e.g. through ' + t(ptT([0, sh.hs[0]])) + ' and ' + t(ptT([60, sh.hs[6]])) + ': ' + t('m\\approx\\dfrac{' + fx(sh.hs[6], 1) + '-' + fx(sh.hs[0], 1) + '}{60-0}=\\dfrac{' + fx(sh.hs[6] - sh.hs[0], 1) + '}{60}\\approx ' + nf(Math.round((sh.hs[6] - sh.hs[0]) / 60 * 1000) / 1000)) + ' cm/min, ' + t('b\\approx ' + fx(sh.hs[0], 1)) + '.<br>A best-fit line is about ' + t('h=' + nf(mk) + 't+' + nf(bk)) + ' (answers vary slightly).',
               ['Pick two points on your line far apart, e.g. at ' + t('t=0') + ' and ' + t('t=60') + '.', 'Slope = change in height ÷ change in minutes.'], 'equation of best-fit line', { keys: 'eq', vars: ['t', 'h'], placeholder: 'e.g. h = -0.1t + 14' });
             p.bad = ['h=' + nf(mk * 10) + 't+' + nf(bk), 'h=' + nf(-mk) + 't+' + nf(bk), 'h=' + nf(mk) + 't+' + nf(bk + 3)];
@@ -645,7 +645,7 @@
           } },
           { id: '9bii', sub: 'b ii', level: 'EMG', make: function (r, sh) {
             var a = t(nf(Math.abs(Math.round(sh.m * 100) / 100)));
-            return mc(r, '(b) What does the slope of your line mean?', [
+            return mc(r, '(b) What does the slope of a line of best fit for these data mean?', [
               { html: 'The candle gets shorter by about ' + a + ' cm each minute.', right: true },
               { html: 'The candle gets shorter by about ' + a + ' cm every 10 minutes.', why: t('t') + ' is measured in minutes, so the slope is cm per <b>minute</b>.' },
               { html: 'The candle burns for about ' + a + ' minutes per centimetre.', why: 'Units upside down: the slope is cm (vertical) per minute (horizontal).' },
@@ -663,7 +663,7 @@
               if (v >= lo / 10 && v <= hi / 10) return wrong('ctx-per10', 'That’s in 10-minute steps. ' + t('t') + ' is in minutes — check your slope.');
               return wrong('value', 'Set ' + t('h=0') + ' in your equation and solve for ' + t('t') + '. (A good answer is roughly ' + t(Math.round(lo / 10) * 10) + ' to ' + t(Math.round(hi / 10) * 10) + ' minutes.)');
             };
-            var p = { prompt: '(c) Use your equation to predict when the candle will burn out.', input: { type: 'math', keys: 'fraction', after: 'min', placeholder: 'minutes' }, check: check, key: String(Math.round(T)), answer: t('\\approx ' + Math.round(T)) + ' min',
+            var p = { prompt: '(c) Use the equation of a line of best fit for the data (such as yours from (b)) to predict when the candle will burn out.', input: { type: 'math', keys: 'fraction', after: 'min', placeholder: 'minutes' }, check: check, key: String(Math.round(T)), answer: t('\\approx ' + Math.round(T)) + ' min',
               solution: 'Burns out when ' + t('h=0') + ': ' + t('0=' + nf(Math.round(sh.m * 1000) / 1000) + 't+' + nf(Math.round(sh.b * 10) / 10) + '\\Rightarrow t\\approx ' + Math.round(T)) + ' min. Answers vary with your line: roughly ' + t(Math.round(lo)) + ' to ' + t(Math.round(hi)) + ' min is reasonable.', hints: ['The candle has burned out when its height is 0.'], text: 'candle burn-out time' };
             p.bad = [String(Math.round(sh.hs[0])), String(Math.round(T / 10)), String(-Math.round(T))];
             return p;
@@ -852,7 +852,7 @@
           } },
           { id: 'e5e', level: 'PRG', outcome: 'RF6', make: function (r, sh) {
             var T = { m: [sh.p, 100], b: sh.base }, key = Ln.tex(T, 'general', null, ['S', 'E']);
-            var p = line('(e) Rewrite your equation from (a) in general form ' + t('Ax+By+C=0') + ', using ' + t('S') + ' for ' + t('x') + ' and ' + t('E') + ' for ' + t('y') + '. (' + t('A') + ', ' + t('B') + ' and ' + t('C') + ' must be integers and ' + t('A') + ' must be positive.)', sh.m, sh.base, { X: 'S', Y: 'E', form: 'general', target: T, keyTex: key },
+            var p = line('(e) Jonah’s model is ' + t('E=' + nf(sh.m) + 'S+' + nf(sh.base)) + '. Rewrite it in general form ' + t('Ax+By+C=0') + ', using ' + t('S') + ' for ' + t('x') + ' and ' + t('E') + ' for ' + t('y') + '. (' + t('A') + ', ' + t('B') + ' and ' + t('C') + ' must be integers and ' + t('A') + ' must be positive.)', sh.m, sh.base, { X: 'S', Y: 'E', form: 'general', target: T, keyTex: key },
               t('E=' + nf(sh.m) + 'S+' + nf(sh.base)) + '. Multiply every term by ' + t(100) + ' to clear the decimal, move every term to one side and divide by any common factor: ' + t(key) + '.',
               ['Clear the decimal first (multiply every term by 100), then move every term to the left side.'], 'general form of E = mS + b');
             p.bad = [p.bad[0] || 'E=' + nf(sh.m) + 'S+' + nf(sh.base + 1)];
@@ -968,7 +968,7 @@
               'A: ' + t(nf(sh.pa / 100) + '(' + sh.s2 + ')+' + nf(sh.a0) + '=' + nf(a)) + '; C: ' + t(nf(sh.rp / 100) + '(' + sh.s2 + ')+' + nf(sh.c0) + '=' + nf(c)) + '. <b>Plan C pays more, by ' + t(money(d)) + '.</b>', ['Substitute the sales into both plans.'], 'A vs C');
           } },
           { id: 'e7c', level: 'PRG', make: function (r, sh) {
-            return mc(r, '(c) Plan C has a smaller base than Plan A but a larger commission rate. Why does that guarantee the answer to (b) without any further arithmetic?', [
+            return mc(r, '(c) Plan C has a smaller base than Plan A but a larger commission rate. Why does that guarantee which plan pays more on sales of ' + t(money(sh.s2)) + ', without any further arithmetic?', [
               { html: 'The lines meet at ' + t(money(sh.Se)) + '. Past that, each extra dollar of sales adds ' + t(nf(sh.rp / 100)) + ' to Plan C but only ' + t(nf(sh.pa / 100)) + ' to Plan A, so C keeps gaining and must be ahead at ' + t(money(sh.s2)) + '.', right: true },
               { html: 'A smaller base always means a plan pays more.', why: 'Below ' + t(money(sh.Se)) + ' the smaller base makes Plan C pay <b>less</b>.' },
               { html: 'Plan C pays more at every level of sales.', why: 'Not at low sales: at ' + t('\\$0') + ' Plan A pays ' + t(money(sh.a0)) + ' and Plan C only ' + t(money(sh.c0)) + '.' },
@@ -1014,7 +1014,7 @@
               t('0=-' + nf(sh.a) + 'a+' + nf(sh.V0) + '\\Rightarrow ' + nf(sh.a) + 'a=' + nf(sh.V0) + '\\Rightarrow a=' + sh.N) + ' years', ['Set ' + t('V=0') + ' and solve for ' + t('a') + '.'], 'snowmobile worthless', { after: 'years' });
           } },
           { id: 'e8d2', sub: 'd ii', level: 'EMG', make: function (r, sh) {
-            return mc(r, '(d) Is the model believable that far out?', [
+            return mc(r, '(d) Model (a) predicts the snowmobile is worth ' + t('\\$0') + ' at an age of ' + t(sh.N) + ' years. Is the model believable that far out?', [
               { html: 'No — a ' + sh.N + '-year-old snowmobile still has resale and parts value. Real depreciation slows with age, so the straight line shouldn’t be extended that far.', right: true },
               { html: 'Yes — a straight line keeps going, so the value really does reach ' + t('\\$0') + '.', why: 'A model is only trusted where it matches the situation. Old machines keep some value.' },
               { html: 'Yes — every vehicle is worth nothing after ' + sh.N + ' years.', why: 'Used vehicles that age are still bought and sold.' },
@@ -1026,7 +1026,7 @@
               t(nf(sh.rr) + '\\text{ m/day}\\times 100\\text{ cm/m}=' + nf(sh.rr * 100)) + ' cm/day', ['1 m = 100 cm.'], 'm/day to cm/day', { after: 'cm per day' });
           } },
           { id: 'e8e2', sub: 'e ii', level: 'EMG', make: function (r, sh) {
-            return mc(r, '(e) Does the reservoir fall faster in this new wording?', [
+            return mc(r, '(e) Model (c)’s drop of ' + t(nf(sh.rr)) + ' m per day can be restated as ' + t(nf(sh.rr * 100)) + ' cm per day. Does the reservoir fall faster in this new wording?', [
               { html: 'No — ' + t(nf(sh.rr * 100)) + ' cm and ' + t(nf(sh.rr)) + ' m are the same distance, so it drops the same amount each day. Only the unit changed.', right: true },
               { html: 'Yes — ' + t(nf(sh.rr * 100)) + ' is a bigger number than ' + t(nf(sh.rr)) + '.', why: 'The number got bigger because a centimetre is smaller. The physical rate is the same.' },
               { html: 'Yes — 100 times faster.', why: 'Same amount of water level each day, written in a smaller unit.' },
@@ -1127,7 +1127,8 @@
               'Over the whole thaw (8 a.m. to 4 p.m.) the depth decreased at an <b>average</b> of ' + a + ' cm per hour.', ['An average rate over an interval — say which interval, and say “average”.'], 'interpret average rate');
           } },
           { id: 'e10d', level: 'PRG', outcome: 'RF4', make: function (r, sh) {
-            return mc(r, '(d) Your answers to (a), (b) and (c) are all different. What does that tell you about this roof?', [
+            var P = sh.P, rt = function (i, j) { return t(nf((P[j][1] - P[i][1]) / (P[j][0] - P[i][0]))); };
+            return mc(r, '(d) The average rates of change are ' + rt(0, 1) + ' cm/h from ' + t('A') + ' to ' + t('B') + ', ' + rt(2, 3) + ' cm/h from ' + t('C') + ' to ' + t('D') + ', ' + rt(3, 4) + ' cm/h from ' + t('D') + ' to ' + t('E') + ', and ' + rt(0, 4) + ' cm/h for the whole thaw, ' + t('A') + ' to ' + t('E') + ' — all different. What does that tell you about this roof?', [
               { html: 'The graph is a curve, so the melting rate is not constant — it speeds up as the day warms. Each average rate describes only its own interval, so “the rate of change” means nothing until you name the interval.', right: true },
               { html: 'There must be an arithmetic mistake — every graph has a single rate of change.', why: 'Only a <b>straight line</b> has one rate. This graph is a curve.' },
               { html: 'The melting rate is constant; the differences come from rounding.', why: 'The points lie exactly on the curve and the rates differ a lot. The rate really changes.' },
@@ -1193,7 +1194,7 @@
           } },
           { id: 'e11c2', sub: 'c ii', level: 'EMG', make: function (r, sh) {
             var v = (sh.A[4] - sh.A[0]) / 4, d2 = [1, 2, 3, 4].map(function (i) { return sh.A[i] - sh.A[i - 1]; });
-            return mc(r, '(c) Does any single year actually grow at that average rate?', [
+            return mc(r, '(c) Over the whole four years the average rate of change is ' + t(nf(v)) + ' subscribers per year. Does any single year actually grow at that average rate?', [
               { html: 'No — the yearly gains were ' + d2.map(function (x) { return t(nf(x)); }).join(', ') + '; ' + t(nf(v)) + ' matches none of them.', right: true },
               { html: 'Yes — the average rate is the growth in every year.', why: 'That’s only true when the relation is linear. Check the yearly gains.' },
               { html: 'Yes — the year from ' + t('t=1') + ' to ' + t('t=2') + '.', why: 'That year gained ' + t(nf(d2[1])) + ', not ' + t(nf(v)) + '.' },

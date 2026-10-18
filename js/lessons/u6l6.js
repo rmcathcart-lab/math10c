@@ -791,7 +791,7 @@
         } },
         { id: 'e1f', level: 'EMG', outcome: 'EXT', make: function (r, sh) {
           var a2 = n2(sh.A, sh.B), area = a2 / 2;
-          return B.number('(f) Determine the area of ' + t('\\triangle ABC') + '. (Use (a) and (e): which two sides can be the base and the height?)', area, function (v) {
+          return B.number('(f) Determine the area of ' + t('\\triangle ABC') + '. (Which two sides can serve as the base and the height?)', area, function (v) {
             if (near(v, a2)) return { code: 'value', hint: 'Area of a triangle is ' + t('\\tfrac12\\times\\text{base}\\times\\text{height}') + ' — don’t forget the ' + t('\\tfrac12') + '.' };
             if (near(v, Math.sqrt(a2) * Math.sqrt(n2(sh.A, sh.C)) / 2)) return { code: 'value', hint: 'The base and height must be <b>perpendicular</b>. The two legs that meet at the right angle work; the hypotenuse doesn’t.' };
             return null;
@@ -856,7 +856,7 @@
         { id: 'e3c', level: 'PRG', outcome: 'EXT', make: function (r, sh) { return pairPart(r, sh.c, ['J', 'K', 'L', 'M'], '(c)'); } },
         { id: 'e3d', level: 'EMG', outcome: 'EXT', make: function (r, sh) {
           var P = sh.b;
-          return mc(r, '(d) In (b), the endpoints ' + nameList(['E', 'G', 'F', 'H'], [P[0], P[2], P[1], P[3]]) + ', joined in that order, form a well-known shape (' + t('EF') + ' and ' + t('GH') + ' are its diagonals). Which name, and which three answers from (b), prove it?', [
+          return mc(r, '(d) In (b), the endpoints ' + nameList(['E', 'G', 'F', 'H'], [P[0], P[2], P[1], P[3]]) + ', joined in that order, form a well-known shape (' + t('EF') + ' and ' + t('GH') + ' are its diagonals). Which name, and which three facts about the diagonals ' + t('EF') + ' and ' + t('GH') + ', prove it?', [
             { html: 'A <b>square</b>: the diagonals share a midpoint (parallelogram), are equal (rectangle) and are perpendicular (rhombus).', right: true },
             { html: 'A <b>rhombus</b>: the diagonals are perpendicular and share a midpoint.', why: 'True, but the diagonals are also <b>equal</b>, which adds “rectangle”. There is a more complete name.' },
             { html: 'A <b>rectangle</b>: the diagonals are equal and share a midpoint.', why: 'True, but the diagonals are also <b>perpendicular</b>, which adds “rhombus”. There is a more complete name.' },
@@ -865,11 +865,12 @@
         } },
         { id: 'e3e', level: 'BEG', outcome: 'RF3', make: function (r, sh) {
           var P = sh.c;
-          return FP('(e) Part (c) is the one case where the product of the slopes can’t be used. State the two slopes.', [slopeBox('JK', P[0], P[1]), slopeBox('LM', P[2], P[3])],
+          return FP('(e) Part (c) — ' + t('JK') + ': ' + nameList(['J', 'K'], [P[0], P[1]]) + '; ' + t('LM') + ': ' + nameList(['L', 'M'], [P[2], P[3]]) + ' — is the one case where the product of the slopes can’t be used. State the two slopes.', [slopeBox('JK', P[0], P[1]), slopeBox('LM', P[2], P[3])],
             t('JK') + ' has equal ' + t('x') + '-coordinates: vertical, so ' + t('m_{JK}') + ' is <b>undefined</b> (run ' + t('0') + '). ' + t('LM') + ' has equal ' + t('y') + '-coordinates: horizontal, ' + t('m_{LM}=0') + '.', ['A vertical segment has run ' + t('0') + '; a horizontal one has rise ' + t('0') + '.'], 'vertical and horizontal slopes');
         } },
-        { id: 'e3e2', sub: 'e, cont.', level: 'EMG', outcome: 'RF3', make: function (r) {
-          return mc(r, '(e) continued. Why isn’t the product of these two slopes ' + t('-1') + ', and how do you know the segments are perpendicular anyway?', [
+        { id: 'e3e2', sub: 'e, cont.', level: 'EMG', outcome: 'RF3', make: function (r, sh) {
+          var P = sh.c;
+          return mc(r, '(e) continued. ' + t('JK') + ' (' + nameList(['J', 'K'], [P[0], P[1]]) + ') has an undefined slope and ' + t('LM') + ' (' + nameList(['L', 'M'], [P[2], P[3]]) + ') has slope ' + t('0') + '. Why isn’t the product of these two slopes ' + t('-1') + ', and how do you know the segments are perpendicular anyway?', [
             { html: '“Undefined” isn’t a number, so the product can’t be calculated at all; they are perpendicular because a vertical and a horizontal segment always meet at ' + t('90^\\circ') + '.', right: true },
             { html: 'The product is ' + t('0') + ', so they are not perpendicular.', why: 'You can’t multiply by “undefined”. And a vertical segment always meets a horizontal one at a right angle.' },
             { html: 'The product is ' + t('-1') + ' after all, because ' + t('0\\times\\text{undefined}=-1') + '.', why: '“Undefined” is not a number, so no product can be calculated.' },
@@ -910,7 +911,7 @@
             'Both routes have the same slope (c) and the same length ' + t(l) + ' (d). A quadrilateral with one pair of opposite sides both parallel and equal is a <b>parallelogram</b>.', ['One pair of opposite sides that is parallel <i>and</i> equal — what does that make?'], 'parallelogram from one pair');
         } },
         { id: 'e4e', level: 'PRG', outcome: 'EXT', make: function (r, sh) {
-          return FP('(e) Confirm (d) a second way, using only the diagonals ' + t('DR') + ' and ' + t('SL') + ': find each midpoint and each exact length.', [midBox('DR', sh.D, sh.R), midBox('SL', sh.S, sh.L), lenBox('DR', sh.D, sh.R), lenBox('SL', sh.S, sh.L)],
+          return FP('(e) Confirm that ' + t('DSRL') + ' is a parallelogram a second way, using only the diagonals ' + t('DR') + ' and ' + t('SL') + ': find each midpoint and each exact length.', [midBox('DR', sh.D, sh.R), midBox('SL', sh.S, sh.L), lenBox('DR', sh.D, sh.R), lenBox('SL', sh.S, sh.L)],
             t(mW(sh.D, sh.R, 'DR')) + ', ' + t(mW(sh.S, sh.L, 'SL')) + ': shared, so the diagonals bisect each other — a parallelogram ✓.<br>' + t(dW(sh.D, sh.R, 'DR')) + '<br>' + t(dW(sh.S, sh.L, 'SL')), [MID_HINT, LEN_HINT], 'diagonals of DSRL');
         } },
         { id: 'e4e2', sub: 'e, cont.', level: 'EMG', outcome: 'EXT', make: function (r, sh) {
@@ -955,12 +956,13 @@
           return FP('(e) Determine whether the diagonals are perpendicular: find their slopes.', [slopeBox('AC', sh.A, sh.C), slopeBox('BD', sh.B, sh.D)],
             t(slW(sh.A, sh.C, 'AC')) + ', ' + t(slW(sh.B, sh.D, 'BD')) + '; the product is ' + t('-1') + ': the diagonals are <b>perpendicular</b>.', [SLOPE_HINT], 'diagonal slopes');
         } },
-        { id: 'e5e2', sub: 'e, cont.', level: 'EMG', outcome: 'EXT', make: function (r) {
-          return mc(r, '(e) continued. Using (a)–(e), what is the most complete name for ' + t('ABCD') + '?', [
+        { id: 'e5e2', sub: 'e, cont.', level: 'EMG', outcome: 'EXT', make: function (r, sh) {
+          var facts = t('m_{AB}=m_{CD}=' + sT(slopeOf(sh.A, sh.B))) + ' and ' + t('m_{BC}=m_{DA}=' + sT(slopeOf(sh.B, sh.C))) + '; all four sides have length ' + t(radT(n2(sh.A, sh.B))) + '; ' + t('AB') + ' and ' + t('BC') + ' are not perpendicular; the diagonals share the midpoint ' + t(ptT(mid(sh.A, sh.C))) + ', have lengths ' + t('AC=' + radT(n2(sh.A, sh.C))) + ' and ' + t('BD=' + radT(n2(sh.B, sh.D))) + ', and slopes ' + t(sT(slopeOf(sh.A, sh.C))) + ' and ' + t(sT(slopeOf(sh.B, sh.D))) + '.';
+          return mc(r, '(e) continued. The results so far: ' + facts + ' What is the most complete name for ' + t('ABCD') + '?', [
             { html: '<b>Rhombus</b> (not a square)', right: true },
-            { html: '<b>Square</b>', why: 'All sides are equal, but (c) showed there is no right angle (and (d) the diagonals are unequal).' },
-            { html: '<b>Parallelogram</b>', why: 'True — but (b) showed all four sides are equal, which is more.' },
-            { html: '<b>Rectangle</b>', why: '(c) and (d) rule out a rectangle: no right angle, unequal diagonals.' }],
+            { html: '<b>Square</b>', why: 'All sides are equal, but there is no right angle (and the diagonals are unequal).' },
+            { html: '<b>Parallelogram</b>', why: 'True — but all four sides are equal, which is more.' },
+            { html: '<b>Rectangle</b>', why: 'No right angle and unequal diagonals rule out a rectangle.' }],
             '(a) parallelogram; (b) four equal sides ⟹ rhombus; (c), (d) no right angle and unequal diagonals ⟹ not a square; (e) perpendicular diagonals, as every rhombus has. Name: <b>rhombus</b>.', ['Combine every result: equal sides? right angle?'], 'most complete name (rhombus)');
         } }] },
     { num: '6', shared: function (r) { return isoTrap(r, book(r)); },
@@ -1028,7 +1030,7 @@
         } },
         { id: 'e7e', level: 'EMG', outcome: 'EXT', make: function (r, sh) {
           var M = mid(sh.G, sh.J), V = Math.sqrt(d2(M, sh.G));
-          return B.approx('(e) A circle drawn through all three vertices has ' + t('M') + ' as its centre (because ' + t('MG=MH=MJ') + '). State its radius to the nearest tenth.', V, 1, { after: 'units', diag: function (v) { return near(v, rnd(2 * V, 1)) ? { code: 'circ-radius', hint: 'That is the hypotenuse — the <b>diameter</b>. The radius is ' + t('MG') + '.' } : null; } },
+          return B.approx('(e) ' + t('M' + ptT(M)) + ' is the midpoint of the hypotenuse ' + t('GJ') + '. A circle drawn through all three vertices has ' + t('M') + ' as its centre (because ' + t('MG=MH=MJ') + '). State its radius to the nearest tenth.', V, 1, { after: 'units', diag: function (v) { return near(v, rnd(2 * V, 1)) ? { code: 'circ-radius', hint: 'That is the hypotenuse — the <b>diameter</b>. The radius is ' + t('MG') + '.' } : null; } },
             'Every point on a circle is the same distance from the centre. ' + t('MG=MH=MJ') + ', so the circle centred at ' + t('M') + ' with radius ' + t('MG=' + radT(n2(M, sh.G, 2), 2) + '\\approx ' + fx1(V)) + ' passes through all three vertices.', ['The radius is the distance from the centre ' + t('M') + ' to any vertex.'], 'circumradius');
         } }] },
     /* ---------- Part D — Working backwards ---------- */
@@ -1104,7 +1106,7 @@
             ['Both arms of the right angle start at ' + t('C(' + c + ',\\ k)') + ', so ' + t('k') + ' appears in both slopes. Set their product equal to ' + t('-1') + '.', 'You will get a quadratic in ' + t('k') + ' — factor it.'], 'right angle at C: quadratic');
         } },
         { id: 'e9c', level: 'PRG', outcome: 'RF3', make: function (r) {
-          return mc(r, '(c) Part (a) had one answer and part (b) had two. Why does “the right angle is at ' + t('C') + '” produce a quadratic?', [
+          return mc(r, '(c) Asking for the right angle at ' + t('A') + ' gives one value of ' + t('k') + ', but asking for it at ' + t('C') + ' gives two. Why does “the right angle is at ' + t('C') + '” produce a quadratic?', [
             { html: 'At ' + t('C') + ', <b>both</b> arms of the angle start at ' + t('C(0,\\ k)') + ', so ' + t('k') + ' appears in both slopes; multiplying them makes a ' + t('k^{2}') + ' term.', right: true },
             { html: 'Because ' + t('C') + ' is on the ' + t('y') + '-axis, its slope is squared.', why: 'Where ' + t('C') + ' sits doesn’t square anything. Count how many slopes contain ' + t('k') + '.' },
             { html: 'Because a right angle always gives two answers.', why: 'Part (a) was also a right angle and had one answer. What is different about the two arms at ' + t('C') + '?' },
@@ -1177,8 +1179,8 @@
         } },
         { id: 'e11b', level: 'EMG', outcome: 'EXT', make: function (r, sh) {
           var T = sub(scl(sh.M, 2), sh.S);
-          return FP('(b) Check your answer with distances: calculate ' + t('SM') + ', ' + t('MT') + ' and ' + t('ST') + ' exactly.', [lenBox('SM', sh.S, sh.M), lenBox('MT', sh.M, T), lenBox('ST', sh.S, T)],
-            t(dW(sh.S, sh.M, 'SM')) + '<br>' + t(dW(sh.M, T, 'MT')) + '<br>' + t(dW(sh.S, T, 'ST')) + '<br>' + t('SM=MT') + ' (equidistant) and ' + t('SM+MT=ST') + ' (' + t('M') + ' lies on the segment): ' + t('M') + ' is the midpoint ✓', [LEN_HINT, 'Use ' + t('T') + ' from (a).'], 'midpoint check by distances');
+          return FP('(b) The other endpoint is ' + t('T' + ptT(T)) + '. Check it with distances: calculate ' + t('SM') + ', ' + t('MT') + ' and ' + t('ST') + ' exactly.', [lenBox('SM', sh.S, sh.M), lenBox('MT', sh.M, T), lenBox('ST', sh.S, T)],
+            t(dW(sh.S, sh.M, 'SM')) + '<br>' + t(dW(sh.M, T, 'MT')) + '<br>' + t(dW(sh.S, T, 'ST')) + '<br>' + t('SM=MT') + ' (equidistant) and ' + t('SM+MT=ST') + ' (' + t('M') + ' lies on the segment): ' + t('M') + ' is the midpoint ✓', [LEN_HINT], 'midpoint check by distances');
         } },
         { id: 'e11c', level: 'PRG', outcome: 'EXT', make: function (r, sh) {
           return mc(r, '(c) Equal distances alone (' + t('SM=MT') + ') would not prove ' + t('M') + ' is the midpoint. What is the second condition, and which tool checks it?', [
@@ -1398,7 +1400,7 @@
         } },
         { id: 'e17e2', sub: 'e, cont.', level: 'EMG', outcome: 'EXT', make: function (r, sh) {
           var xm = (sh.A[0] + sh.B[0]) / 2;
-          return mc(r, '(e) continued. ' + t('PA=PB') + ', yet neither is the answer to (b). What does that equality tell you about ' + t('P') + '?', [
+          return mc(r, '(e) continued. ' + t('PA=PB') + ', yet neither is the shortest distance from ' + t('P') + ' to the segment. What does that equality tell you about ' + t('P') + '?', [
             { html: t('P') + ' lies on the <b>perpendicular bisector</b> of ' + t('AB') + ' (the line ' + t('x=' + nT(xm)) + ') — it tells you where ' + t('P') + ' sits sideways, not how far it is from the segment.', right: true },
             { html: t('PA') + ' is the shortest distance from ' + t('P') + ' to the segment.', why: 'The shortest path is the perpendicular from (b): ' + t(sh.A[1] - sh.P[1]) + ' units, shorter than ' + t('PA') + '.' },
             { html: t('P') + ' is the midpoint of ' + t('AB') + '.', why: t('P') + ' isn’t on ' + t('AB') + ' at all. Equal distances put it on the perpendicular bisector.' },
@@ -1458,10 +1460,10 @@
             '<i>Counting:</i> ' + t('A') + ' to ' + t('B') + ' is ' + t(Math.abs(sh.B[0] - sh.A[0])) + ' squares across and ' + t(Math.abs(sh.B[1] - sh.A[1])) + ' up or down; half of that from ' + t('A') + ' lands on ' + t(ptT(mid(A, Bq))) + '. <i>Formula:</i> ' + t(mW(A, Bq, 'AB')) + ', ' + t(mW(C, D, 'CD')) + '.<br><b>Not shared</b>: ' + t('AB') + ' and ' + t('CD') + ' don’t bisect each other, so ' + t('ACBD') + ' is not a parallelogram (so not the square that equal, perpendicular diagonals might suggest).', [MID_HINT], 'midpoints on a scaled grid');
         } },
         { id: 'e20e', level: 'PRG', outcome: 'EXT', make: function (r, sh) {
-          var s = sh.s, rows = [{ id: 'sl', html: 'the slopes in (c)' }, { id: 'len', html: 'the lengths in (b)' }, { id: 'mc', html: 'the midpoint coordinates in (d)' }, { id: 'sh', html: 'the verdict “shared or not” in (d)' }];
+          var s = sh.s, rows = [{ id: 'sl', html: 'the slopes of ' + t('AB') + ' and ' + t('CD') }, { id: 'len', html: 'the lengths ' + t('AB') + ' and ' + t('CD') }, { id: 'mc', html: 'the coordinates of the midpoints of ' + t('AB') + ' and ' + t('CD') }, { id: 'sh', html: 'the verdict “do ' + t('AB') + ' and ' + t('CD') + ' share a midpoint?”' }];
           var cols = [{ id: 'ok', html: 'right' }, { id: 'small', html: t(s) + ' times too small' }, { id: 'big', html: t(s) + ' times too large' }];
           var why = { sl: 'Slope: rise and run are <b>both</b> ' + t(s) + ' times too small, and the ' + t(s) + 's cancel in the fraction.', len: 'Length: every difference is ' + t(s) + ' times too small, and the common factor ' + t(s) + ' comes straight out of the square root.', mc: 'Midpoint: the same grid points, but each coordinate is ' + t(s) + ' times too small (an average scales with the values).', sh: 'Shared or not: the midpoints are the same grid points whatever the labels, so the verdict doesn’t change.' };
-          return B.grid('(e) A classmate ignores the tick labels and treats every square as ' + t('1') + ' unit. For each answer, would the classmate get it right, or wrong — and by what factor?', rows, cols, { sl: 'ok', len: 'small', mc: 'small', sh: 'ok' }, { why: function (rid) { return { code: 'row', hint: why[rid] }; } },
+          return B.grid('(e) A classmate ignores the tick labels and treats every square as ' + t('1') + ' unit. For each result below, would the classmate get it right, or wrong — and by what factor?', rows, cols, { sl: 'ok', len: 'small', mc: 'small', sh: 'ok' }, { why: function (rid) { return { code: 'row', hint: why[rid] }; } },
             rows.map(function (rw) { return why[rw.id]; }).join('<br>'), ['Write each formula with every coordinate divided by ' + t(s) + '. Does the ' + t(s) + ' cancel, come out, or stay?'], 'scale effects on slope, length, midpoint');
         } },
         { id: 'e20f', level: 'PRG', outcome: 'EXT', make: function (r, sh) {

@@ -383,7 +383,7 @@
         parts: [
           { id: '5a', sub: 'a i', level: 'PRG', make: function (r, s) { return slopeFields('Use the slope formula to prove that ' + t('X') + ', ' + t('Y') + ' and ' + t('Z') + ' are collinear: find ' + t('m_{XY}') + ' and ' + t('m_{YZ}') + '.', [{ nm: 'XY', s: s.s }, { nm: 'YZ', s: s.s }], t(calc(s.X, s.Y, 'XY')) + '<br>' + t(calc(s.Y, s.Z, 'YZ')) + '<br>' + t('m_{XY}=m_{YZ}') + ' and the two segments share the point ' + t('Y') + ', so ' + t('X') + ', ' + t('Y') + ', ' + t('Z') + ' are collinear.', [SLOPE_HINT], 'collinear: two slopes'); } },
           { id: '5a2', sub: 'a ii', level: 'EMG', make: function (r, s) {
-            return B.mc(r, 'Why do your two slopes prove that the three points are collinear?', [
+            return B.mc(r, 'The slopes are ' + t('m_{XY}=' + sT(slopeOf(s.X, s.Y))) + ' and ' + t('m_{YZ}=' + sT(slopeOf(s.Y, s.Z))) + '. Why do these two slopes prove that the three points are collinear?', [
               { html: 'The slopes are equal <b>and</b> the two segments share the point ' + t('Y') + ', so they lie on one line.', right: true },
               { html: 'The slopes are equal — equal slopes always mean the points are on one line.', why: 'Equal slopes alone only prove the segments are <b>parallel</b>. They are on one line because they also share a point.' },
               { html: 'The product of the two slopes is ' + t('-1') + '.', why: 'Multiply them: the product isn’t ' + t('-1') + ' — and ' + t('-1') + ' is the test for perpendicular, not collinear.' },
@@ -444,7 +444,7 @@
             var txt = { truck: 'Only the <b>truck</b> crew reaches the camp.', boat: 'Only the <b>boat</b> crew reaches the camp.', both: '<b>Both</b> crews reach the camp.', neither: '<b>Neither</b> crew reaches the camp.' };
             var why = function (o) { var w = []; if ((o === 'truck' || o === 'both') && !s.truck) w.push('the truck’s two slopes are different, so ' + t('P') + ' isn’t on its line'); if ((o === 'boat' || o === 'both') && !s.boat) w.push('the boat’s two slopes are different, so ' + t('P') + ' isn’t on its line'); if ((o === 'neither' || o === 'boat') && s.truck) w.push('the truck’s two slopes are equal, so ' + t('P') + ' is on its line'); if ((o === 'neither' || o === 'truck') && s.boat) w.push('the boat’s two slopes are equal, so ' + t('P') + ' is on its line'); return 'Look again: ' + w.join(', and ') + '.'; };
             var sol = function (nm, X1, X2, ok2) { return t('m_{' + nm + '_1' + nm + '_2}=' + sT(slopeOf(X1, X2))) + ', ' + t('m_{' + nm + '_2P}=' + sT(slopeOf(X2, s.P))) + (ok2 ? ': equal, and moving from ' + t(nm + '_1') + ' through ' + t(nm + '_2') + ' heads towards ' + t('P') + '.' : ': different, so it misses ' + t('P') + '.'); };
-            return B.mc(r, '(c) Use your slopes to decide: will either crew reach the base camp?', ['truck', 'boat', 'both', 'neither'].map(function (o) { return { html: txt[o], right: o === right, why: o === right ? null : why(o) }; }),
+            return B.mc(r, '(c) The truck: ' + t('m_{A_1A_2}=' + sT(slopeOf(s.A1, s.A2))) + ', ' + t('m_{A_2P}=' + sT(slopeOf(s.A2, s.P))) + '. The boat: ' + t('m_{B_1B_2}=' + sT(slopeOf(s.B1, s.B2))) + ', ' + t('m_{B_2P}=' + sT(slopeOf(s.B2, s.P))) + '. Use these slopes to decide: will either crew reach the base camp?', ['truck', 'boat', 'both', 'neither'].map(function (o) { return { html: txt[o], right: o === right, why: o === right ? null : why(o) }; }),
               'Truck: ' + sol('A', s.A1, s.A2, s.truck) + '<br>Boat: ' + sol('B', s.B1, s.B2, s.boat) + '<br>' + txt[right], ['A crew reaches ' + t('P') + ' only if ' + t('P') + ' is on its line: the slope from its second point to ' + t('P') + ' must equal the slope of its path.'], 'rescue: which crew reaches P', true);
           } }] },
       /* ---------------- Q8 ---------------- */
@@ -647,7 +647,7 @@
           } },
           { id: '20b', level: 'EMG', outcome: 'EXT', make: function (r, s) {
             var a = d2(s.A, s.B), b = d2(s.B, s.C), c = d2(s.A, s.C);
-            var p = B.fields('(b) <i>(Extension)</i> Use the distance formula to confirm part (a) with the Pythagorean theorem: find the three squared lengths.', [{ label: t('AB^{2}=') }, { label: t('BC^{2}=') }, { label: t('AC^{2}=') }], [K.number(a), K.number(b), K.number(c, function (v) { if (near(v, Math.sqrt(c))) return { code: 'len-no-root', hint: 'Give the <b>square</b> of the length here (no square root).' }; return null; })], [String(a), String(b), String(c)],
+            var p = B.fields('(b) <i>(Extension)</i> Use the distance formula and the Pythagorean theorem to confirm that ' + t('\\triangle ABC') + ' is right-angled at ' + t('B') + ': find the three squared lengths.', [{ label: t('AB^{2}=') }, { label: t('BC^{2}=') }, { label: t('AC^{2}=') }], [K.number(a), K.number(b), K.number(c, function (v) { if (near(v, Math.sqrt(c))) return { code: 'len-no-root', hint: 'Give the <b>square</b> of the length here (no square root).' }; return null; })], [String(a), String(b), String(c)],
               t('AB^{2}=' + a + ',\\ BC^{2}=' + b + ',\\ AC^{2}=' + c), t('AB^{2}=' + (s.B[0] - s.A[0]) + '^{2}+' + nb(s.B[1] - s.A[1]) + '^{2}=' + a) + '<br>' + t('BC^{2}=' + (s.C[0] - s.B[0]) + '^{2}+' + nb(s.C[1] - s.B[1]) + '^{2}=' + b) + '<br>' + t('AC^{2}=' + (s.C[0] - s.A[0]) + '^{2}+' + nb(s.C[1] - s.A[1]) + '^{2}=' + c) + '<br>' + t(a + '+' + b + '=' + c) + ': ' + t('AB^{2}+BC^{2}=AC^{2}') + ', so the right angle is at ' + t('B') + ' ✓.', ['Squared length: ' + t('(x_2-x_1)^{2}+(y_2-y_1)^{2}') + ' — no square root needed.'], 'Pythagorean check');
             p.bad = [[String(a), String(b), String(a + b + 1)]]; return p;
           } }] },
@@ -727,7 +727,7 @@
             p.bad = [[String(d2(s.X, s.Y)), lenT(s.Y, s.Z), lenT(s.X, s.Z)]]; return p;
           } },
           { id: 'e1d', level: 'EMG', make: function (r) {
-            return B.mc(r, '(d) All three tests reach the same verdict. Which one was the fastest, and why?', [
+            return B.mc(r, '(d) Three tests of collinearity can be used on ' + t('A') + ', ' + t('B') + ', ' + t('C') + ': compare ' + t('m_{AB}') + ' with ' + t('m_{BC}') + '; compare ' + t('m_{AC}') + ' with ' + t('m_{AB}') + '; or find the exact lengths and check whether ' + t('AB+BC=AC') + '. All three reach the same verdict. Which one is the fastest, and why?', [
               { html: 'A slope test: two subtractions and one fraction each, then compare two numbers.', right: true },
               { html: 'The distance test: it uses all three points at once.', why: 'It needs three lengths, each with two squares, a square root and a simplification, before you can add and compare.' },
               { html: 'They take the same time, because they all use the same coordinates.', why: 'Count the steps: one slope is two subtractions and a fraction; one length is two subtractions, two squares, a sum, a root and a simplification.' },
@@ -735,7 +735,7 @@
               'A slope is two subtractions and a fraction to reduce, and comparing ' + t('m_{AB}') + ' with ' + t('m_{BC}') + ' is immediate. The distance test needs three lengths, each with squares, a root and a simplification.', ['Count the operations each test needs.'], 'fastest collinearity test');
           } },
           { id: 'e1e', level: 'EMG', make: function (r) {
-            return B.mc(r, '(e) Suppose the three points had <b>not</b> been collinear. What would each test have shown?', [
+            return B.mc(r, '(e) Suppose the three points had <b>not</b> been collinear. What would the slope test (compare ' + t('m_{AB}') + ' with ' + t('m_{BC}') + ') and the distance test (does ' + t('AB+BC=AC') + '?) have shown?', [
               { html: 'The two slopes would be different, and the two shorter lengths would add to <b>more</b> than the longest: ' + t('AB+BC>AC') + '.', right: true },
               { html: 'The slopes would multiply to ' + t('-1') + ', and ' + t('AB+BC<AC') + '.', why: 'A product of ' + t('-1') + ' only happens when the bend is a right angle. And a bent path from ' + t('A') + ' through ' + t('B') + ' to ' + t('C') + ' is <b>longer</b> than the straight one, never shorter.' },
               { html: 'The slopes would still be equal, but ' + t('AB+BC\\ne AC') + '.', why: 'If ' + t('m_{AB}=m_{BC}') + ' with ' + t('B') + ' shared, the points ARE collinear. Off the line, the slopes differ.' },
@@ -792,18 +792,18 @@
           }
           return [mk('a', 'BEG'), mk('b', 'BEG'), mk('c', 'BEG'), mk('d', 'BEG'),
             { id: 'e3v', sub: 'verdict', level: 'EMG', make: function (r, s) {
-              var rows = ['a', 'b', 'c', 'd'].map(function (w) { return { id: w, html: '(' + w + ') ' + NM[w].join(', ') }; }), cols = [{ id: 'y', html: 'Collinear' }, { id: 'n', html: 'Not collinear' }];
+              var rows = ['a', 'b', 'c', 'd'].map(function (w) { return { id: w, html: '(' + w + ') ' + NM[w].map(function (n, i) { return nP(n, s[w][i]); }).join(', ') }; }), cols = [{ id: 'y', html: 'Collinear' }, { id: 'n', html: 'Not collinear' }];
               var want = { a: s.colA ? 'y' : 'n', b: 'y', c: s.colC ? 'y' : 'n', d: 'y' };
-              return B.grid('Now give the verdict for each set (a)–(d).', rows, cols, want, { why: function (row) { if (row === 'b') return 'In (b) both slopes are undefined: all three points share the same ' + t('x') + ', so they are on one vertical line.'; if (row === 'd') return 'In (d) both slopes are ' + t('0') + ': all three points share the same ' + t('y') + ' — one horizontal line.'; return 'Compare the two slopes in (' + row + '): collinear only if they are equal.'; } },
+              return B.grid('Give the verdict for each set of three points.', rows, cols, want, { why: function (row) { if (row === 'b') return 'In (b) both slopes are undefined: all three points share the same ' + t('x') + ', so they are on one vertical line.'; if (row === 'd') return 'In (d) both slopes are ' + t('0') + ': all three points share the same ' + t('y') + ' — one horizontal line.'; return 'Compare the two slopes in (' + row + '): collinear only if they are equal.'; } },
                 '(a) ' + (s.colA ? 'equal slopes: collinear' : 'different slopes: not collinear') + '. (b) both undefined, all on ' + t('x=' + s.b[0][0]) + ': collinear. (c) ' + (s.colC ? 'equal slopes: collinear' : 'different slopes: not collinear') + '. (d) both ' + t('0') + ', all on ' + t('y=' + s.d[0][1]) + ': collinear.', ['Equal slopes through a shared point → collinear.'], 'collinearity verdicts');
             } },
             { id: 'e3e', sub: 'e', level: 'EMG', make: function (r, s) {
-              return B.mc(r, 'In (b) and (d) you never wrote a fraction such as ' + t('\\tfrac{3}{4}') + '. Why is the argument there still a slope argument?', [
+              return B.mc(r, 'In (b), ' + NM.b.map(function (n, i) { return nP(n, s.b[i]); }).join(', ') + ' give two undefined slopes; in (d), ' + NM.d.map(function (n, i) { return nP(n, s.d[i]); }).join(', ') + ' give two slopes of ' + t('0') + '. Neither needs a fraction such as ' + t('\\tfrac{3}{4}') + '. Why is the argument there still a slope argument?', [
                 { html: '“Undefined” and “' + t('0') + '” are answers the slope formula gives; two segments with the same slope through a shared point lie on one line.', right: true },
                 { html: 'It isn’t — collinearity in (b) and (d) can only be seen from a graph.', why: 'The slope formula settles it: in (b) every run is ' + t('0') + ' (undefined), in (d) every rise is ' + t('0') + '.' },
                 { html: 'Because ' + t('0') + ' and undefined slopes multiply to ' + t('-1') + '.', why: 'They can’t be multiplied at all — and ' + t('-1') + ' would be about perpendicular lines anyway.' },
                 { html: 'Because vertical and horizontal lines are always collinear.', why: 'Collinear is about <b>points</b> on one line. Here the points share an ' + t('x') + ' (one vertical line) or a ' + t('y') + ' (one horizontal line).' }],
-                'In (b) every run is ' + t('0') + ', so every slope is undefined, and all three points share ' + t('x=' + s.b[0][0]) + ' — the same vertical line. In (d) every rise is ' + t('0') + ', so every slope is ' + t('0') + ', and all three share ' + t('y=' + s.d[0][1]) + '. “Undefined” and “' + t('0') + '” are results of the slope formula, and equal slopes through a shared point mean one line.', ['What did the slope formula give you in (b) and in (d)?'], 'undefined/zero slopes still prove collinear');
+                'In (b) every run is ' + t('0') + ', so every slope is undefined, and all three points share ' + t('x=' + s.b[0][0]) + ' — the same vertical line. In (d) every rise is ' + t('0') + ', so every slope is ' + t('0') + ', and all three share ' + t('y=' + s.d[0][1]) + '. “Undefined” and “' + t('0') + '” are results of the slope formula, and equal slopes through a shared point mean one line.', ['What does the slope formula give for each pair of points?'], 'undefined/zero slopes still prove collinear');
             } }];
         })() },
       { num: '4', section: 'Extra practice B — Solving for k', stem: 'Determine the value of ' + t('k') + ' that makes the three points <b>collinear</b>.', parts: [
@@ -879,7 +879,8 @@
           return p;
         } },
         { id: 'e6e', level: 'EMG', make: function (r) {
-          return B.mc(r, '(e) Part (d) does not behave like the others. What produces its answer?', [
+          var x1 = r.int(-6, -2), x2 = r.int(3, 9), cx = r.int(-3, 5), c1 = r.int(-7, -2), c2 = r.int(3, 9);
+          return B.mc(r, '(e) Part (d) does not behave like the others: with points such as ' + t('A(' + x1 + ',\\ k)') + ', ' + t('B(' + x2 + ',\\ k)') + ', ' + t('C(' + cx + ',\\ ' + c1 + ')') + ', ' + t('D(' + cx + ',\\ ' + c2 + ')') + ', <b>every</b> value of ' + t('k') + ' makes ' + t('AB\\perp CD') + '. What produces that answer?', [
             { html: t('A') + ' and ' + t('B') + ' always share a ' + t('y') + '-coordinate, so ' + t('AB') + ' is horizontal; ' + t('C') + ' and ' + t('D') + ' share an ' + t('x') + ', so ' + t('CD') + ' is vertical — and horizontal ⊥ vertical, whatever ' + t('k') + ' is.', right: true },
             { html: 'The slopes multiply to ' + t('-1') + ' for every ' + t('k') + '.', why: 'An undefined slope can’t be multiplied at all. The answer comes from the shapes of the segments, not from a product.' },
             { html: t('k') + ' cancels in the product rule, leaving ' + t('-1=-1') + '.', why: 'The product rule can’t even be written down here: ' + t('m_{CD}') + ' is undefined.' },
@@ -921,7 +922,10 @@
           mk('e8d', 'BEG', function (r) { return [[0, 1], [r.int(2, 9) * (r.chance(0.5) ? 1 : -1), 1]]; }), mk('e8e', 'EMG', function (r) { return [null, [r.chance(0.5) ? 1 : -1, r.int(2, 6)]]; }),
           mk('e8f', 'EMG', function (r) { var f = gen(r, function (r) { var p = r.int(2, 9), q = r.int(2, 9); return gcd(p, q) === 1 && p !== q ? [p, q] : null; }, [7, 2]), sg = r.chance(0.7) ? -1 : 1; return [[sg * f[0], f[1]], [sg * f[1], f[0]]]; }),
           { id: 'e8g', level: 'EMG', make: function (r) {
-            return B.mc(r, '(g) Exactly one row above is a pair of perpendicular segments whose slopes do <b>not</b> multiply to ' + t('-1') + '. Which row, and why isn’t it a counterexample to the rule?', [
+            var fq = gen(r, function (r) { var p = r.int(2, 9), q = r.int(2, 9); return gcd(p, q) === 1 && p !== q ? [p, q] : null; }, [7, 2]), sg = r.chance(0.7) ? -1 : 1;
+            var rows = [[[0, 1], [0, 1]], [[0, 1], null], [null, null], [[0, 1], [r.int(2, 9) * (r.chance(0.5) ? 1 : -1), 1]], [[r.chance(0.5) ? 1 : -1, r.int(2, 6)], null], [[sg * fq[0], fq[1]], [sg * fq[1], fq[0]]]];
+            var list = rows.map(function (v, i) { return '(' + 'abcdef'.charAt(i) + ') ' + t('m_1=' + sT(v[0]) + ',\\ m_2=' + sT(v[1])); }).join('; ');
+            return B.mc(r, '(g) The six rows were: ' + list + '. Exactly one of these rows is a pair of perpendicular segments whose slopes do <b>not</b> multiply to ' + t('-1') + '. Which row, and why isn’t it a counterexample to the rule?', [
               { html: 'Row (b): the rule ' + t('m_1m_2=-1') + ' is about two lines whose slopes are both numbers; an undefined slope is outside the rule, and horizontal–vertical is the exception.', right: true },
               { html: 'Row (f): the slopes are reciprocals.', why: 'Row (f) is <b>neither</b>: the reciprocals have the same sign, so the product is ' + t('+1') + '.' },
               { html: 'Row (a): two slopes of ' + t('0') + ' are perpendicular.', why: 'Two horizontal segments are parallel.' },

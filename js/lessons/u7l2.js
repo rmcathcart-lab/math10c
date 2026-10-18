@@ -1163,8 +1163,8 @@
           } },
           { id: 'e16e', sub: 'e', level: 'BEG', outcome: 'RF7', make: function (r, sh) {
             var m = nrec(fr(sh.v, sh.u)), M = sh.M, b = bOf(m, M[0], M[1]);
-            return numPart('Verify the equation of the perpendicular bisector: substitute ' + t('x=' + M[0]) + ' (the ' + t('x') + '-coordinate of the midpoint ' + t('M') + ') into it. What ' + t('y') + '-value does it give?', M[1], [[M[0], 'u72-pt-swap', 'That’s the ' + t('x') + '-value you substituted. Work out ' + t(SI(m, b)) + ' at ' + t('x=' + M[0]) + '.']],
-              t('y=' + nT(m) + '\\left(' + M[0] + '\\right)+' + pT(b) + '=' + nT(fMul(m, M[0])) + '+' + pT(b) + '=' + M[1]) + ' ✓ — so ' + t('M' + ptT(M[0], M[1])) + ' is on the line.', ['Find the bisector’s equation (midpoint of ' + t('AB') + ', negative reciprocal of the slope of ' + t('AB') + '), then substitute.'], 'verify M on the bisector', { before: t('y=') });
+            return numPart('The perpendicular bisector has equation ' + t(SI(m, b)) + '. Verify it: substitute ' + t('x=' + M[0]) + ' (the ' + t('x') + '-coordinate of the midpoint ' + t('M') + ') into it. What ' + t('y') + '-value does it give?', M[1], [[M[0], 'u72-pt-swap', 'That’s the ' + t('x') + '-value you substituted. Work out ' + t(SI(m, b)) + ' at ' + t('x=' + M[0]) + '.']],
+              t('y=' + nT(m) + '\\left(' + M[0] + '\\right)+' + pT(b) + '=' + nT(fMul(m, M[0])) + '+' + pT(b) + '=' + M[1]) + ' ✓ — so ' + t('M' + ptT(M[0], M[1])) + ' is on the line.', ['Substitute ' + t('x=' + M[0]) + ' into ' + t(SI(m, b)) + ' and simplify.'], 'verify M on the bisector', { before: t('y=') });
           } },
           { id: 'e16f', sub: 'f', level: 'PRG', outcome: 'EXT', make: function (r, sh) {
             var P = sh.P, A = sh.A, Bp = sh.B, N = Math.pow(P[0] - A[0], 2) + Math.pow(P[1] - A[1], 2), k = 1;

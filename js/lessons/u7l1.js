@@ -803,7 +803,7 @@
         } },
         { id: 'e7b', level: 'EMG', make: function (r) {
           var Bc = r.pick([2, 3, 4, 5]), A = r.pick([1, 3, 5, 7].filter(function (a) { return coprime(a, Bc); })), b = r.int(1, 4), C = Bc * b, eq = term(A, 'x', true) + '-' + Bc + 'y+' + C + '=0', m = Q(A, Bc);
-          return mbPart('(b) Use your formulas on ' + t(eq) + '.', m, b, { exact: true, mDiag: [[Q(-A, Bc), 'sign', t('B=-' + Bc) + ': ' + t('m=-\\frac{' + A + '}{-' + Bc + '}=' + qT(m)) + '.']], bDiag: [[-b, 'sign', t('b=-\\frac{C}{B}=-\\frac{' + C + '}{-' + Bc + '}=' + b) + '.']] },
+          return mbPart('(b) Use the formulas ' + t('m=-\\frac{A}{B}') + ' and ' + t('b=-\\frac{C}{B}') + ' on ' + t(eq) + '.', m, b, { exact: true, mDiag: [[Q(-A, Bc), 'sign', t('B=-' + Bc) + ': ' + t('m=-\\frac{' + A + '}{-' + Bc + '}=' + qT(m)) + '.']], bDiag: [[-b, 'sign', t('b=-\\frac{C}{B}=-\\frac{' + C + '}{-' + Bc + '}=' + b) + '.']] },
             t('A=' + A + ',\\ B=-' + Bc + ',\\ C=' + C) + ': ' + t('m=-\\frac{' + A + '}{-' + Bc + '}=' + qT(m)) + ', ' + t('b=-\\frac{' + C + '}{-' + Bc + '}=' + b) + '.<br>Check: ' + t('-' + Bc + 'y=' + term(-A, 'x', true) + '-' + C) + ' gives ' + t(siT(m, b)) + ' ✓',
             ['Read ' + t('A') + ', ' + t('B') + ', ' + t('C') + ' with their signs: ' + t('B') + ' is negative here.'], 'm, b from general form');
         } },
@@ -834,9 +834,9 @@
             t(k + 'y=' + (k * c)) + ', so ' + t('y=' + c) + ', i.e. ' + t('y=0x' + (c < 0 ? '' : '+') + c) + ': ' + t('m=0') + ', ' + t('b=' + c) + '. A horizontal line.', ['Solve for ' + t('y') + '. Is there an ' + t('x') + '-term?'], 'm, b of ky + c = 0');
         } },
         { id: 'e8c2', sub: 'c ii', level: 'BEG', make: function (r, sh) {
-          var c = sh.c.c, key = lineV([-5, c], [5, c]);
+          var c = sh.c.c, key = lineV([-5, c], [5, c]), kc = sh.c.k, eqc = kc + 'y' + (kc * -c < 0 ? '-' : '+') + Math.abs(kc * c) + '=0';
           var W = [{ is: lineV([c, -5], [c, 5]), code: 'gr-vh', hint: 'That’s vertical. ' + t('y=' + c) + ' is the <b>horizontal</b> line where every point has height ' + t(c) + '.' }, { is: lineV([-5, -c], [5, -c]), code: 'gr-b-sign', hint: 'Check the height: solve for ' + t('y') + ' again.' }];
-          return drawPart('Graph the line from (c i).', padI(), key, W, {}, 'The horizontal line ' + t('y=' + c) + ' through ' + t(ptT([0, c])) + '.', ['Every point has the same ' + t('y') + '-value.'], 'graph horizontal line', [segOf(key)]);
+          return drawPart('Graph ' + t(eqc) + '.', padI(), key, W, {}, 'The horizontal line ' + t('y=' + c) + ' through ' + t(ptT([0, c])) + '.', ['Every point has the same ' + t('y') + '-value.'], 'graph horizontal line', [segOf(key)]);
         } },
         { id: 'e8d', sub: 'd i', level: 'EMG', make: function (r, sh) {
           var k = sh.d.k, d = sh.d.d, eq = k + 'x' + (-k * d < 0 ? '-' : '+') + Math.abs(k * d) + '=0';
@@ -844,13 +844,13 @@
             t(k + 'x=' + (k * d)) + ', so ' + t('x=' + d) + ': a <b>vertical</b> line through ' + t(ptT([d, 0])) + '. It can’t be solved for ' + t('y') + '. Every run is ' + t('0') + ', so the slope is <b>undefined</b>; it never meets the ' + t('y') + '-axis, so there is <b>no</b> ' + t('b') + '.', ['There is no ' + t('y') + ' in this equation. What kind of line is ' + t('x=k') + '?'], 'vertical line: m undefined, no b');
         } },
         { id: 'e8d2', sub: 'd ii', level: 'BEG', make: function (r, sh) {
-          var d = sh.d.d, key = lineV([d, -5], [d, 5]);
+          var d = sh.d.d, key = lineV([d, -5], [d, 5]), kd = sh.d.k, eqd = kd + 'x' + (-kd * d < 0 ? '-' : '+') + Math.abs(kd * d) + '=0';
           var W = [{ is: lineV([-5, d], [5, d]), code: 'gr-vh', hint: 'That’s horizontal. ' + t('x=' + d) + ' is the <b>vertical</b> line where every point has ' + t('x') + '-value ' + t(d) + '.' }, { is: lineV([-d, -5], [-d, 5]), code: 'gr-xint', hint: 'Check the sign: solve for ' + t('x') + ' again.' }];
-          return drawPart('Graph the line from (d i).', padI(), key, W, {}, 'The vertical line ' + t('x=' + d) + ' through ' + t(ptT([d, 0])) + '.', ['Every point has the same ' + t('x') + '-value.'], 'graph vertical line', [segOf(key)]);
+          return drawPart('Graph ' + t(eqd) + '.', padI(), key, W, {}, 'The vertical line ' + t('x=' + d) + ' through ' + t(ptT([d, 0])) + '.', ['Every point has the same ' + t('x') + '-value.'], 'graph vertical line', [segOf(key)]);
         } },
         { id: 'e8e', sub: 'e', level: 'EMG', make: function (r, sh) {
-          var c = sh.c.c, d = sh.d.d;
-          return mc(r, '(e) Parts (c) and (d) look alike on the page. Why does one have a slope of ' + t('0') + ' while the other has no slope value at all?', [
+          var c = sh.c.c, d = sh.d.d, kc = sh.c.k, kd = sh.d.k, eqc = kc + 'y' + (kc * -c < 0 ? '-' : '+') + Math.abs(kc * c) + '=0', eqd = kd + 'x' + (-kd * d < 0 ? '-' : '+') + Math.abs(kd * d) + '=0';
+          return mc(r, '(e) ' + t(eqc) + ' and ' + t(eqd) + ' look alike on the page. Why does one have a slope of ' + t('0') + ' while the other has no slope value at all?', [
             { html: 'On ' + t('y=' + c) + ' the rise is always ' + t('0') + ': ' + t('0\\div\\text{run}=0') + '. On ' + t('x=' + d) + ' the run is always ' + t('0') + ', and ' + t('\\text{rise}\\div 0') + ' has no value.', right: true },
             { html: 'On ' + t('y=' + c) + ' the run is ' + t('0') + '; on ' + t('x=' + d) + ' the rise is ' + t('0') + '.', why: 'Swapped: a horizontal line has no rise; a vertical line has no run.' },
             { html: 'Both have slope ' + t('0') + ' because neither has both ' + t('x') + ' and ' + t('y') + '.', why: 'Only the horizontal one has slope ' + t('0') + '. Dividing by a run of ' + t('0') + ' is impossible, so the vertical one’s slope is undefined.' },
@@ -922,8 +922,9 @@
           p.bad = ['y=' + k]; return p;
         } },
         { id: 'e10e', level: 'BEG', outcome: 'RF5', make: function (r, sh) {
-          var c = sh.c.k, d = sh.d.k;
-          return mc(r, '(e) Only one of the four graphs has no ' + t('y') + '-intercept to read. Which one, and what is its equation?', [
+          var c = sh.c.k, d = sh.d.k, fo = { max: 150 };
+          var four = figs(['<b>(a)</b>' + lineFig([{ m: sh.a.m, b: sh.a.b }], fo), '<b>(b)</b>' + lineFig([{ m: Q(sh.b.m), b: sh.b.b }], fo), '<b>(c)</b>' + lineFig([{ m: 0, b: c }], fo), '<b>(d)</b>' + lineFig([{ x: d }], fo)], 120);
+          return mc(r, '(e) Here are the four graphs again. Only one of them has no ' + t('y') + '-intercept to read. Which one, and what is its equation?' + four, [
             { html: 'Graph (d): ' + t('x=' + d), right: true },
             { html: 'Graph (c): ' + t('y=' + c), why: 'A horizontal line crosses the ' + t('y') + '-axis at ' + t(ptT([0, c])) + ' — it has a ' + t('y') + '-intercept.' },
             { html: 'Graph (d): ' + t('y=' + d), why: 'Right graph, but a vertical line has the form ' + t('x=k') + '.' },
@@ -1033,7 +1034,7 @@
           return p;
         } },
         { id: 'e13c', level: 'EMG', outcome: 'RF7', make: function (r, sh) {
-          return mc(r, '(c) Check ' + t('m') + ' with the slope formula ' + t('m=\\frac{y_2-y_1}{x_2-x_1}') + '. Where is that formula hiding inside your work in (b)?', [
+          return mc(r, '(c) Solving the two equations from substituting ' + t(ptT([sh.x1, sh.m * sh.x1 + sh.b])) + ' and ' + t(ptT([sh.x2, sh.m * sh.x2 + sh.b])) + ' into ' + t('y=mx+b') + ' gives ' + t(siT(sh.m, sh.b)) + '. Check ' + t('m') + ' with the slope formula ' + t('m=\\frac{y_2-y_1}{x_2-x_1}') + '. Where is that formula hiding inside solving the pair of equations?', [
             { html: 'Subtracting the equations gave ' + t('y_1-y_2=m(x_1-x_2)') + '; dividing by ' + t('x_1-x_2') + ' to isolate ' + t('m') + ' <b>is</b> the slope formula.', right: true },
             { html: 'It isn’t: the substitution method finds ' + t('m') + ' a completely different way.', why: 'Same arithmetic: the subtraction step produces the slope formula’s numerator and denominator.' },
             { html: 'In the step where ' + t('b') + ' was found.', why: 'Finding ' + t('b') + ' comes after ' + t('m') + '. The formula is in the step that found ' + t('m') + '.' },

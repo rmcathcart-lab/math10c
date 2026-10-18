@@ -549,8 +549,8 @@
               ['Look at the form first. In general form, check whether the coefficients of ' + t('x') + ' and ' + t('y') + ' divide the constant.'], 'choose strategy x6');
           } },
           { id: 'e1g', sub: 'g', level: 'EMG', make: function (r, sh) {
-            var E = sh.rows[4].E;
-            return mc(r, 'Three of the six — (b), (c) and (e) — are in general form, but (e) is not a two-intercept question. Why not?', [
+            var E = sh.rows[4].E, rw = function (id) { var q = sh.rows.filter(function (x) { return x.id === id; })[0]; return '(' + id + ') ' + t(q.tex); };
+            return mc(r, 'Three of the six — ' + rw('b') + ', ' + rw('c') + ' and ' + rw('e') + ' — are in general form, but (e) is not a two-intercept question. Why not?', [
               { html: 'Its coefficients ' + E[0] + ' and ' + E[1] + ' don’t divide the constant ' + E[2] + ', so both intercepts are fractions that can’t be plotted on the grid.', right: true },
               { html: 'Its slope is a fraction.', why: '(c) has a fractional slope too, and the intercepts still work there. The problem in (e) is the <b>intercepts</b>.' },
               { html: 'It isn’t really in general form.', why: t(sh.rows[4].tex) + ' is in general form, ' + t('Ax+By+C=0') + '.' },
@@ -571,8 +571,8 @@
             return K.P.fraction('The slower strategy for ' + t(si(mb(sh.m, sh.b))) + ' is the two intercepts. Find the ' + t('x') + '-intercept.', fr(-sh.b, sh.m), {},
               t('y=0') + ': ' + t('0=' + sh.m + 'x+' + sh.b) + ', ' + t(sh.m + 'x=-' + sh.b) + ', ' + t('x=' + fT(fr(-sh.b, sh.m))) + ' — not a lattice point, so it can only be estimated on the grid.', ['Set ' + t('y=0') + ' and solve for ' + t('x') + '.'], 'x-intercept fraction');
           } },
-          { id: 'e2c', sub: 'c', level: 'PRG', make: function (r) {
-            return mc(r, 'What rule of thumb do (a) and (b) suggest for a general-form equation ' + t('Ax+By+C=0') + '?', [
+          { id: 'e2c', sub: 'c', level: 'PRG', make: function (r, sh) {
+            return mc(r, 'In (a), ' + t(gen(sh.a.L)) + ' was quicker to graph by its two intercepts than by solving for ' + t('y') + '. In (b), ' + t(si(mb(sh.m, sh.b))) + ' was quicker by its slope and ' + t('y') + '-intercept than by its intercepts (its ' + t('x') + '-intercept is ' + t(fT(fr(-sh.b, sh.m))) + '). What rule of thumb do these suggest for a general-form equation ' + t('Ax+By+C=0') + '?', [
               { html: 'If ' + t('A') + ' and ' + t('B') + ' both divide ' + t('C') + ', use the intercepts; if not, solve for ' + t('y') + ' and step the slope; if that is ugly too, use a table.', right: true },
               { html: 'Always solve for ' + t('y') + ' first — slope–intercept form is always fastest.', why: 'In (a), solving for ' + t('y') + ' took extra steps and gave a fractional slope; the two intercepts were faster.' },
               { html: 'Always use the two intercepts.', why: 'In (b) the ' + t('x') + '-intercept was a fraction that can’t be plotted accurately.' },
@@ -611,7 +611,7 @@
           acc.push({ id: 'e4' + w + '2', sub: w + ' graph', level: 'PRG', make: function (r, sh) { var s = sh[w]; return psGraph('Draw the graph of ' + t(ps(s.L, s.P)) + '.', s.m, s.P, W8, 'graph slope-point'); } });
           return acc;
         }, []).concat([{ id: 'e4c', sub: 'c', level: 'EMG', make: function (r, sh) {
-          return mc(r, 'Neither point in (a) or (b) is an intercept. Why does slope–point form almost never hand you an intercept — and why does that cost nothing when graphing?', [
+          return mc(r, 'The points handed to you by ' + t(ps(sh.a.L, sh.a.P)) + ' and ' + t(ps(sh.b.L, sh.b.P)) + ' — ' + ptt(sh.a.P) + ' and ' + ptt(sh.b.P) + ' — are not intercepts. Why does slope–point form almost never hand you an intercept — and why does that cost nothing when graphing?', [
             { html: 'The point is whichever point the line was built from; it is an intercept only if ' + t('x_1=0') + ' or ' + t('y_1=0') + '. A point and a slope already fix the line, so nothing is lost.', right: true },
             { html: 'Slope–point form does hand you an intercept: ' + t('y_1') + ' is the ' + t('y') + '-intercept.', why: t('y_1') + ' is the ' + t('y') + '-coordinate of the given point. It is the ' + t('y') + '-intercept only when ' + t('x_1=0') + '.' },
             { html: 'You must convert to slope–intercept form first, because a line can only be graphed from an intercept.', why: 'Any point plus the slope fixes the line — stepping the slope from ' + ptt(sh.a.P) + ' works just as well.' },
@@ -633,12 +633,12 @@
               ['Solve for ' + t('y') + ' first, or substitute each ' + t('x') + ' and solve for ' + t('y') + '.'], 'table of values');
           } },
           { id: 'e5a2', sub: 'a graph', level: 'EMG', make: function (r, sh) {
-            return gpart('Plot the points from your table and draw the line ' + t(gen(sh.L)) + '.', sh.L, W10, {},
-              'Plot ' + sh.xs.map(function (x, i) { return ptt([x, sh.ys[i]]); }).join(', ') + '. Each step: right ' + sh.B + ', up ' + sh.A + '. Join them with one straight line (arrows on both ends).', ['Use the points from the table.'], 'graph from table');
+            return gpart('Plot points from a table of values and draw the line ' + t(gen(sh.L)) + '.', sh.L, W10, {},
+              'Plot ' + sh.xs.map(function (x, i) { return ptt([x, sh.ys[i]]); }).join(', ') + '. Each step: right ' + sh.B + ', up ' + sh.A + '. Join them with one straight line (arrows on both ends).', ['Make a table of values with whole-number ' + t('y') + '-values, then plot it.'], 'graph from table');
           } },
           { id: 'e5b', sub: 'b', level: 'PRG', make: function (r, sh) {
             var A = sh.A, B = sh.B;
-            return mc(r, 'The ' + t('x') + '-values in the table step by ' + t(B) + ', not by ' + t(1) + '. Why is ' + t(B) + ' the smallest step that keeps every ' + t('y') + '-value a whole number?', [
+            return mc(r, 'In a table of values for ' + t(gen(sh.L)) + ', the ' + t('x') + '-values step by ' + t(B) + ', not by ' + t(1) + '. Why is ' + t(B) + ' the smallest step that keeps every ' + t('y') + '-value a whole number?', [
               { html: 'Since ' + t(B + 'y=' + A + 'x-' + sh.C) + ', ' + t('y') + ' is whole only when ' + t(B) + ' divides ' + t(A + 'x-' + sh.C) + '. Raising ' + t('x') + ' by ' + t('k') + ' raises it by ' + t(A + 'k') + ', and ' + t(A + 'k') + ' is first a multiple of ' + t(B) + ' at ' + t('k=' + B) + '.', right: true },
               { html: 'Because the ' + t('x') + '-intercept is ' + t(fT(fr(sh.C, A))) + '.', why: 'The ' + t('x') + '-intercept isn’t even in the table. Think about what makes ' + t('y=(' + A + 'x-' + sh.C + ')\\div ' + B) + ' a whole number.' },
               { html: 'Any step works; ' + t(B) + ' is just a convenient choice.', why: 'Try a step of ' + t(1) + ' from ' + t('x=' + sh.xs[0]) + ': ' + t('y=' + fT(fr(A * (sh.xs[0] + 1) - sh.C, B))) + ', not a whole number.' },
