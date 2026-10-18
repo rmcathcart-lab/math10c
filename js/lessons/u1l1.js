@@ -335,7 +335,7 @@
               t(F(sh.m) + '=' + K.fac(sh.m)) + ' isn’t prime. The rule: keep branching until <b>every</b> branch ends in a prime.', ['Check each number at the end of the branches: is it prime?'], 'error analysis tree ' + sh.n);
           } },
           { id: 'e14b', level: 'EMG', make: function (r, sh) { var p = treePart(sh.n, 'required'); p.prompt = 'Finish the job: draw a factor tree for ' + t(F(sh.n)) + ' and write its prime factorization in exponent form.'; return p; } },
-          { id: 'e14c', level: 'PRG', make: function (r, sh) { return ruleCount(r, sh.n); } }] },
+          { id: 'e14c', level: 'PRG', make: function (r, sh) { var p = ruleCount(r, sh.n); p.prompt = 'Use the rule ' + t('(a+1)(b+1)(c+1)\\ldots') + ' to state how many factors ' + t(F(sh.n)) + ' has. (Find its prime factorization first; do not list the factors.)'; return p; } }] },
       { num: '15', stem: 'Another student argues: “' + t('1') + ' divides into every number, so ' + t('1') + ' is a prime factor of every number. That makes ' + t('1') + ' prime.”', parts: [
         { id: 'e15', level: 'EMG', make: function (r) {
           return mcPart(r, 'If ' + t('1') + ' were counted as prime, what would go wrong with prime factorizations?', [

@@ -495,12 +495,12 @@
           } },
           { id: '10c', level: 'BEG', make: function (r, sh) { return cylPart(sh, true); } },
           { id: '10d', level: 'BEG', make: function (r, sh) {
-            return mcPart(r, 'Which method, (a) or (c), is simpler to use?', [
-              { html: '(c), the factored form: one addition inside the bracket, then a single product.', right: true },
-              { html: '(a), the original formula: it has fewer operations.', why: 'Count them: (a) needs two separate products (each with ' + t('\\pi') + ') and then an addition. (c) adds ' + t('r+h') + ' once and multiplies once.' },
-              { html: 'Neither — they give different answers, so only one can be used.', why: 'Both forms are equal for every ' + t('r') + ' and ' + t('h') + ', so they give the same area (check your answers to (a) and (c)).' },
-              { html: '(c), because the factored form gives a more accurate answer.', why: 'Both give exactly the same value; the factored form is just <b>quicker</b>, not more accurate.' }],
-              'Both give ' + t(K.roundTo(cylA(sh), 2).toFixed(2) + '\\text{ cm}^{2}') + '. The factored form ' + t('2\\pi r(r+h)') + ' needs one addition and one multiplication, instead of two separate products and an addition — method <b>(c)</b> is simpler.', [], 'cylinder: simpler method');
+            return mcPart(r, 'To calculate the surface area, which is simpler to use: the original formula ' + t('A=2\\pi r^{2}+2\\pi rh') + ' or the factored form ' + t('A=2\\pi r(r+h)') + '?', [
+              { html: 'The factored form: one addition inside the bracket, then a single product.', right: true },
+              { html: 'The original formula: it has fewer operations.', why: 'Count them: the original formula needs two separate products (each with ' + t('\\pi') + ') and then an addition. The factored form adds ' + t('r+h') + ' once and multiplies once.' },
+              { html: 'Neither — they give different answers, so only one can be used.', why: 'Both forms are equal for every ' + t('r') + ' and ' + t('h') + ', so they give the same area.' },
+              { html: 'The factored form, because it gives a more accurate answer.', why: 'Both give exactly the same value; the factored form is just <b>quicker</b>, not more accurate.' }],
+              'Both give ' + t(K.roundTo(cylA(sh), 2).toFixed(2) + '\\text{ cm}^{2}') + '. The factored form ' + t('2\\pi r(r+h)') + ' needs one addition and one multiplication, instead of two separate products and an addition — the <b>factored form</b> is simpler.', [], 'cylinder: simpler method');
           } }] },
       { num: '11', stem: function (sh) { return 'A rocket is launched straight upward from the ground with an initial speed of ' + t(sh.v + '\\text{ m/s}') + '. Its height (' + t('h') + ' metres) after ' + t('t') + ' seconds can be approximated by ' + t('h=' + sh.v + 't-5t^{2}') + '.'; },
         shared: function (r) { var v = r.pick([30, 35, 40, 45]); return { v: v, T: v / 5 }; },
@@ -661,7 +661,7 @@
         } },
         { id: '22b', level: 'BEG', make: function (r) {
           var tt = r.pick([0.5, 1.5, 2, 2.5, 3]), v = r.int(2, 9), a = 10, s = 0.5 * tt * (2 * v + a * tt), sR = Math.round(s * 1000) / 1000;
-          return KP.number('Use the factored form to calculate the distance travelled in ' + t(tt + '\\text{ s}') + ' if ' + t('v=' + v) + ' and ' + t('a=' + a) + '.', sR, function (x) {
+          return KP.number('Use the factored form ' + t('s=\\tfrac{1}{2}t(2v+at)') + ' to calculate the distance travelled in ' + t(tt + '\\text{ s}') + ' if ' + t('v=' + v) + ' and ' + t('a=' + a) + '.', sR, function (x) {
             var noHalf = tt * (2 * v + a * tt); if (Math.abs(x - noHalf) < 1e-9) return { code: 'half', hint: 'Don’t forget the ' + t('\\tfrac{1}{2}') + ' in front: ' + t('s=\\tfrac{1}{2}t(2v+at)') + '.' };
             if (Math.abs(x - 0.5 * tt * (v + a * tt)) < 1e-9) return { code: 'value', hint: 'Inside the bracket it is ' + t('2v') + ', not ' + t('v') + '.' };
             return null;
@@ -889,7 +889,7 @@
     var r = sh.d / 2, h = sh.h, A = cylA(sh), hs = h.toFixed(1);
     var sol = factored ? 'Radius ' + t('r=' + sh.d + '\\div 2=' + r) + ' cm.<br>' + t('A=2\\pi r(r+h)=2\\pi(' + r + ')(' + r + '+' + hs + ')=2\\pi(' + r + ')(' + decStr(r + h) + ')=' + decStr(2 * r * (r + h)) + '\\pi') + '<br>' + t('A\\approx\\mathbf{' + K.roundTo(A, 2).toFixed(2) + '}\\text{ cm}^{2}') + ' — the same as (a).'
       : 'Radius ' + t('r=' + sh.d + '\\div 2=' + r) + ' cm, ' + t('h=' + hs) + ' cm.<br>' + t('2\\pi r^{2}=2\\pi(' + r + ')^{2}=' + (2 * r * r) + '\\pi\\approx ' + (2 * Math.PI * r * r).toFixed(4)) + '<br>' + t('2\\pi rh=2\\pi(' + r + ')(' + hs + ')=' + decStr(2 * r * h) + '\\pi\\approx ' + (2 * Math.PI * r * h).toFixed(4)) + '<br>' + t('A\\approx\\mathbf{' + K.roundTo(A, 2).toFixed(2) + '}\\text{ cm}^{2}');
-    return KP.approx(factored ? 'Calculate the surface area, to the nearest ' + t('0.01\\text{ cm}^{2}') + ', using the factored form of ' + t('A') + '.' : 'Calculate the surface area, to the nearest ' + t('0.01\\text{ cm}^{2}') + '.', A, 2, {
+    return KP.approx(factored ? 'Calculate the surface area, to the nearest ' + t('0.01\\text{ cm}^{2}') + ', using the factored form ' + t('A=2\\pi r(r+h)') + '.' : 'Calculate the surface area, to the nearest ' + t('0.01\\text{ cm}^{2}') + '.', A, 2, {
       after: t('\\text{cm}^{2}'), diag: function (v) {
         var d = sh.d, R2 = function (x) { return K.roundTo(x, 2); };
         if (Math.abs(v - R2(2 * Math.PI * d * (d + h))) < 0.006) return { code: 'diam', hint: 'The formula uses the <b>radius</b>: ' + t('r=' + d + '\\div 2=' + r) + '.' };
@@ -905,7 +905,7 @@
       if (val === v * x + 5 * x * x) return { code: 'sign', hint: 'At ' + t('t=' + x) + ': ' + t('h=5(' + x + ')(' + T + '-' + x + ')') + ' — check the subtraction in the bracket.' };
       return { code: 'value', hint: 'At ' + t('t=' + x) + ': ' + t('h=5(' + x + ')(' + T + '-' + x + ')') + '.' };
     }); });
-    return KP.fields('Use your factored form of ' + t('h') + ' from (a) to calculate the height at each time.', ts.map(function (x) { return { label: t('t=' + x), name: 't = ' + x, after: t('\\text{m}') }; }), checks, hs.map(String),
+    return KP.fields('Use the factored form ' + t('h=5t(' + T + '-t)') + ' to calculate the height at each time.', ts.map(function (x) { return { label: t('t=' + x), name: 't = ' + x, after: t('\\text{m}') }; }), checks, hs.map(String),
       ts.map(function (x, i) { return t('t=' + x) + ': ' + t(hs[i]) + ' m'; }).join(', &nbsp;'),
       'Each height is ' + t('5t(' + T + '-t)') + ', e.g. ' + t('t=3:\\ 5(3)(' + (T - 3) + ')=' + 5 * 3 * (T - 3)) + '.<br>' + ts.map(function (x, i) { return t('t=' + x) + ': ' + t(hs[i]); }).join(', ') + ' (metres).', ['The factored form is ' + t('h=5t(' + T + '-t)') + '. Substitute each time: multiply ' + t('5') + ', ' + t('t') + ' and ' + t('(' + T + '-t)') + '.'], 'rocket table v=' + v);
   }

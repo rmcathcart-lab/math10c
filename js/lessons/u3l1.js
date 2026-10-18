@@ -394,8 +394,8 @@
         { id: 'e9c', sub: 'c', level: 'EMG', make: function (r, sh) { return addSub('State the result.', [{ s: 1, a: sh.A }, { s: -1, a: sh.B }], { text: 'subtract by opposite' }); } },
         { id: 'e9d', sub: 'd', level: 'BEG', make: function (r, sh) {
           var ans = P.sub(S(sh.A), S(sh.B)), v = P.at(ans, { x: 1 }), a1 = P.at(S(sh.A), { x: 1 }), b1 = P.at(S(sh.B), { x: 1 });
-          var fl = [{ name: 'Original', label: 'Original expression at ' + t('x=1') }, { name: 'Answer', label: 'Your answer at ' + t('x=1') }];
-          return KP.fields('Check your result by substituting ' + t('x=1') + ' into the original expression and into your answer.', fl, [K.number(v, function (x) { return x === a1 + b1 ? { code: 'no-change', hint: 'Work out each bracket at ' + t('x=1') + ', then <b>subtract</b>: ' + t('(' + a1 + ')-(' + b1 + ')') + '.' } : null; }), K.number(v)], [String(v), String(v)], t(v) + ' and ' + t(v),
+          var fl = [{ name: 'Original', label: 'Original expression at ' + t('x=1') }, { name: 'Answer', label: 'Result at ' + t('x=1') }];
+          return KP.fields('The simplified result is ' + t(tx(ans)) + '. Check it by substituting ' + t('x=1') + ' into the original expression and into this result.', fl, [K.number(v, function (x) { return x === a1 + b1 ? { code: 'no-change', hint: 'Work out each bracket at ' + t('x=1') + ', then <b>subtract</b>: ' + t('(' + a1 + ')-(' + b1 + ')') + '.' } : null; }), K.number(v)], [String(v), String(v)], t(v) + ' and ' + t(v),
             'Original: ' + t('(' + a1 + ')-(' + b1 + ')=' + v) + '. Answer: ' + t(tx(ans) + '\\big|_{x=1}=' + v) + '. They agree. ✓', ['Replace every ' + t('x') + ' with ' + t('1') + ' (so ' + t('x^{2}=1') + ').'], 'check at x=1');
         } }] },
     { num: '10', section: 'Extra practice C — Like Terms in Two Variables', stem: 'Terms are <b>like</b> only if they have the same variables raised to the same exponents. Classify each pair.', parts: [
@@ -522,8 +522,8 @@
         } },
         { id: 'e16c', level: 'EMG', make: function (r, sh) {
           var o = P.at(S(sh.A), { y: 1 }) - P.at(S(sh.B), { y: 1 }), s = P.at(sh.stu, { y: 1 }), m = P.at(sh.ans, { y: 1 });
-          var fl = [{ name: 'Original', label: 'Original' }, { name: 'Student', label: 'Student’s answer' }, { name: 'Correct', label: 'Your answer from (b)' }];
-          return KP.fields('Substitute ' + t('y=1') + ' into the original expression, into the student’s answer and into yours.', fl, [K.number(o), K.number(s), K.number(m)], [String(o), String(s), String(m)], t(o) + ', ' + t(s) + ', ' + t(m),
+          var fl = [{ name: 'Original', label: 'Original' }, { name: 'Student', label: 'Student’s answer' }, { name: 'Correct', label: 'Correct answer' }];
+          return KP.fields('The correct result is ' + t(tx(sh.ans)) + '. Substitute ' + t('y=1') + ' into the original expression, into the student’s answer and into the correct result.', fl, [K.number(o), K.number(s), K.number(m)], [String(o), String(s), String(m)], t(o) + ', ' + t(s) + ', ' + t(m),
             'Original: ' + t('(' + P.at(S(sh.A), { y: 1 }) + ')-(' + P.at(S(sh.B), { y: 1 }) + ')=' + o) + '; student: ' + t(s) + '; correct answer: ' + t(m) + '. The original and the correct answer agree, which shows the student’s answer is wrong.', ['At ' + t('y=1') + ', every power of ' + t('y') + ' is ' + t('1') + ': just add up the coefficients (with signs).'], 'check at y=1');
         } }] },
     { num: '17', section: 'Extra practice F — Reasoning About Degree', stem: 'Choose the answer with the correct reason.', parts: [
@@ -1010,7 +1010,7 @@
             var sides = [S(sh.s1), S(sh.s2), sh.s3], env = { m: sh.m, n: sh.n }, flip = { m: sh.m, n: -sh.n };
             var fl = sides.map(function (s, i) { return { name: 'Side ' + (i + 1), label: t(i < 2 ? W(i ? sh.s2 : sh.s1) : tx(s)), after: 'cm' }; });
             var chks = sides.map(function (s) { var v = P.at(s, env), w = P.at(s, flip); return K.number(v, function (x) { return x === w ? { code: 'neg-sub', hint: t('n=' + sh.n) + ' is negative: substitute it in brackets, e.g. ' + t(P.coef(s, { n: 1 })[0] + '(' + sh.n + ')=' + P.coef(s, { n: 1 })[0] * sh.n) + '.' } : null; }); });
-            return KP.fields('Determine the measure of each side when ' + t('m=' + sh.m) + ' and ' + t('n=' + sh.n) + '. (Use your answer from (a) for the third side.)', fl, chks, sh.v.map(String), sh.v.map(function (v) { return t(v + '\\text{ cm}'); }).join(', '),
+            return KP.fields('Determine the measure of each side when ' + t('m=' + sh.m) + ' and ' + t('n=' + sh.n) + '. (The third side is ' + t('(' + tx(sh.s3) + ')') + ' cm, the expression from (a).)', fl, chks, sh.v.map(String), sh.v.map(function (v) { return t(v + '\\text{ cm}'); }).join(', '),
               sides.map(function (s, i) { var c = P.coef(s, { m: 1 })[0], d = P.coef(s, { n: 1 })[0]; return 'Side ' + (i + 1) + ': ' + t(c + '(' + sh.m + ')' + (d < 0 ? '-' + -d : '+' + d) + '(' + sh.n + ')=' + c * sh.m + (d * sh.n < 0 ? '-' + -d * sh.n : '+' + d * sh.n) + '=' + sh.v[i]) + ' cm'; }).join('<br>') + '<br>Check: ' + t(sh.v.join('+') + '=' + (sh.v[0] + sh.v[1] + sh.v[2])) + ' and ' + t(tx(sh.per)) + ' at these values is also ' + t(P.at(sh.per, env)) + '. ✓',
               ['Substitute ' + t('m=' + sh.m) + ' and ' + t('n=(' + sh.n + ')') + ' into each side. Brackets around the negative help.'], 'triangle sides at m=' + sh.m + ', n=' + sh.n);
           } }] },

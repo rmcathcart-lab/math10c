@@ -585,8 +585,10 @@
               hints: ['Find ' + t(d) + ' on the horizontal axis, go up to the line, then across.'], text: 'estimate fare at ' + d + ' km', good: ['\\$' + money(sh.fare(d)), String(Math.round((ex0 + 0.2) * 10) / 10)], bad: [money(sh.fare(d) + 60)] };
           } },
           { id: '5d', level: 'EMG', make: function (r, sh) {
-            var Fv = sh.fare(sh.dd);
-            return { prompt: 'Use the graph (in (c)) to estimate the distance travelled if the fare was ' + t('\\$' + money(Fv)) + '.', input: { type: 'number', after: 'km' }, check: estCheck(sh.dd, 0.3, function (v) {
+            var Fv = sh.fare(sh.dd), f = function (d) { return sh.fare(d) / 100; }, ymax = Math.ceil((f(8) + 0.5) / 2) * 2;
+            var g = HW.graph({ x: [0, 9], y: [0, ymax], grid: 1, labels: 1, labelsX: 1, labelsY: 2, unitX: 34, unitY: 260 / ymax, xName: 'd', yName: 'F', firstQuadrant: true, xTitle: 'Distance, d (km)', yTitle: 'Fare, F ($)', max: 360,
+              points: sh.ds.map(function (x) { return { x: x, y: f(x) }; }), segs: [{ pts: [[0, f(0)], [8, f(8)]] }], aria: 'graph of fare against distance' });
+            return { prompt: g + '<br>Use the graph to estimate the distance travelled if the fare was ' + t('\\$' + money(Fv)) + '.', input: { type: 'number', after: 'km' }, check: estCheck(sh.dd, 0.3, function (v) {
                 if (Math.abs(v - Fv / 100) < 0.05) return { code: 'value', hint: 'That is the fare. Find ' + t('\\$' + money(Fv)) + ' on the vertical axis, go across to the line, then <b>down</b> to read the distance.' };
                 if (Math.abs(v - Fv / sh.rateC) < 0.25) return { code: 'no-fee', hint: 'Read the graph itself rather than dividing by the rate — the fee at ' + t('d=0') + ' is part of the fare.' };
                 return null;
@@ -610,7 +612,7 @@
           { id: '5f', level: 'EMG', make: function (r, sh) {
             var dq = sh.dq, Fq = sh.fare(dq), Fv = sh.fare(sh.dd), fee = money(sh.feeC), rate = money(sh.rateC);
             var fl = [{ label: t('F') + ' when ' + t('d=' + dq), mode: 'number', before: '$' }, { label: t('d') + ' when ' + t('F=' + money(Fv)), mode: 'number', after: 'km' }];
-            return KP.fields('Use the equation ' + t('F=' + fee + '+' + rate + 'd') + ' to check your estimates in (c) and (d).', fl, [
+            return KP.fields('Use the equation ' + t('F=' + fee + '+' + rate + 'd') + ' to calculate the fare for a ' + t(dq) + ' km trip and the distance travelled for a fare of ' + t('\\$' + money(Fv)) + '. (These check the estimates read off the graph.)', fl, [
               numCheck(Fq / 100, function (v) { return feq(v, sh.rateC * dq / 100) ? { code: 'no-fee', hint: 'Add the pickup fee ' + t('\\$' + fee) + '.' } : feq(v, (sh.feeC + sh.rateC) * dq / 100) ? { code: 'order-ops', hint: 'Multiply ' + t(rate + '\\times ' + dq) + ' first, then add ' + t(fee) + '.' } : null; }),
               numCheck(sh.dd, function (v) { return feq(v, Fv / sh.rateC) ? { code: 'no-subtract', hint: 'Subtract the fee ' + t(fee) + ' first, then divide by ' + t(rate) + '.' } : feq(v, (Fv + sh.feeC) / sh.rateC) ? { code: 'add-not-sub', hint: 'To undo the “' + t('+' + fee) + '”, subtract it.' } : null; })],
               [money(Fq), String(sh.dd)], t('\\$' + money(Fq)) + ' and ' + t(sh.dd) + ' km',
@@ -1057,7 +1059,7 @@
         };
         var inp = { x: [0, T + st], y: [0, H0 + dy], grid: st, gridY: dy, labels: 1, labelsX: st, labelsY: dy * (H0 / dy > 10 ? 2 : 1), snapX: st, snapY: dy, unitX: 300 / (T + st), unitY: Math.min(22, 300 / (H0 + dy)),
           xName: 't', yName: 'h', xTitle: 'Time, t (h)', yTitle: 'Height, h (cm)', firstQuadrant: true, join: true };
-        return drawPart('Plot the five points from your table in (a) (' + t('t=' + sh.ts.join(',\\ ')) + ') and join them.', inp, check, target,
+        return drawPart('Plot the height of the candle at ' + t('t=' + sh.ts.join(',\\ ')) + ' h and join the points.', inp, check, target,
           'Plot ' + good.map(function (p) { return t(pt([p[0], dec(p[1])])); }).join(', ') + ' and join them: a straight line falling from ' + t(pt([0, H0])) + ' to ' + t(pt([T, 0])) + '. It stops there — the candle is gone.',
           ['Where does the graph start? Where must it stop?', 'Use <b>╱ Line</b> from the first point to the last, or plot the points and press <b>Join</b>.'], 'candle graph',
           [gv(good), gv([], [segv([0, H0], [T, 0], 'closed', 'arrow')]), gv([], [segv([0, 0], [T, H0])])]);

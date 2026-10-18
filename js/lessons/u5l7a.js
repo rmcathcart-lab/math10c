@@ -608,7 +608,7 @@
         } }] },
       { num: '4', stem: 'Apply the vertical line test to each graph.', shared: function (r) { return { c: r.pick([-3, -2, -1, 1, 2, 3]), y0: r.pick([4, 5]), swap: r.chance(0.4) }; }, parts: [
         { id: 'e4a', level: 'BEG', make: function (r, sh) { return segPick(r, sh, !sh.swap); } },
-        { id: 'e4b', level: 'BEG', make: function (r, sh) { var p = segPick(r, sh, sh.swap); p.prompt = p.prompt.replace('Is this relation a function?', 'Graphs (a) and (b) are deliberately similar — use the grid, not your first impression. Is this relation a function?'); return p; } },
+        { id: 'e4b', level: 'BEG', make: function (r, sh) { var p = segPick(r, sh, sh.swap); p.prompt = p.prompt.replace('Is this relation a function?', 'Look closely — this graph is built to fool a quick glance. Use the grid, not your first impression. Is this relation a function?'); return p; } },
         { id: 'e4c', level: 'BEG', make: function (r) {
           var u = r.next(), g;
           if (u < 0.7) {
@@ -744,7 +744,7 @@
           } },
           { id: 'e9d', level: 'EMG', make: function (r, sh) {
             var D = sh.D;
-            return B.mc(r, 'Exactly one of your three diagrams fails the function test. Which one, and why?', [
+            return B.mc(r, 'In (a)–(c) you drew three relations on this domain: one many-to-one, one one-to-one and one one-to-many. Exactly one of these kinds of relation fails the function test. Which one, and why?', [
               { html: 'The one-to-many relation: a domain element such as ' + t(D[0]) + ' is paired with two range elements, but a function pairs each element of the domain with exactly one element of the range.', right: true },
               { html: 'The many-to-one relation: two domain elements share a range element.', code: 'shared-out', why: 'Sharing an output is allowed — many-to-one relations are functions.' },
               { html: 'The one-to-one relation: it has too many different outputs.', code: 'sizes', why: 'One-to-one relations are functions: each input has exactly one output.' },

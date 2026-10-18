@@ -264,7 +264,7 @@
               if (v.join === 'none') return wrong('graph-not-joined', 'Your points are right — now press <b>Join</b>: the domain is ' + t('x\\in\\mathbb{R}') + ', so every value in between is an input too and the graph is a smooth curve.');
               return ok();
             };
-            var key = joined(pts), p = B.graph('Plot the ordered pairs from your table, then draw a smooth curve through them (press <b>Join</b>) to show ' + t('f(x)=x^{2}' + sg(c) + ',\\ x\\in\\mathbb{R}') + '. You may plot more points of the graph if you like.', padIn(win), check, key,
+            var key = joined(pts), p = B.graph('Plot the ordered pairs ' + t('(x,\\ f(x))') + ' for ' + t('x=3,\\ 2,\\ 1,\\ -1,\\ -2,\\ -3') + ' (your table of values), then draw a smooth curve through them (press <b>Join</b>) to show ' + t('f(x)=x^{2}' + sg(c) + ',\\ x\\in\\mathbb{R}') + '. You may plot more points of the graph if you like.', padIn(win), check, key,
               'The points ' + t(ptsTex(pts)) + ' are symmetric about the ' + t('y') + '-axis (' + t('f(-x)=f(x)') + '). The domain is all real numbers, so they are joined by a smooth curve: a U-shaped parabola whose lowest point (vertex) is ' + t('(0,\\ ' + c + ')') + ' — you may plot that point too.',
               ['Use your table: each column gives one point ' + t('(x,\\ f(x))') + '.', 'With domain ' + t('x\\in\\mathbb{R}') + ' the graph is a smooth curve, not separate dots.'], 'smooth curve x^2' + sg(c));
             p.good = [joined(pts.concat([[0, c]]))];
@@ -891,8 +891,8 @@
               t('f(a)+' + h + '=(' + lin([[1, 'a^{2}'], [b, 'a'], [c, '']]) + ')+' + h + '=' + P.tex(T)), ['Find ' + t('f(a)') + ' first, then add ' + t(h) + ' to the finished output.'], 'f(a)+h');
           } },
           { id: 'e13f', level: 'PRG', make: function (r, sh) {
-            var h = sh.h;
-            return mc(r, 'Your answers for ' + t('f(a+' + h + ')') + ' and ' + t('f(a)+' + h) + ' are different. Why does the ' + t('+' + h) + ' land in a different place?', [
+            var h = sh.h, b = sh.b, c = sh.c, ap = PL([[1, 'a'], [h]]), T1 = P.add(P.pow(ap, 2), P.scale(ap, b), P.num(c)), T2 = PL([[1, 'a', 2], [b, 'a'], [c + h]]);
+            return mc(r, 'Simplified, ' + t('f(a+' + h + ')=' + P.tex(T1)) + ' but ' + t('f(a)+' + h + '=' + P.tex(T2)) + ' — different answers. Why does the ' + t('+' + h) + ' land in a different place?', [
               { html: 'In ' + t('f(a+' + h + ')') + ' the ' + t('+' + h) + ' is part of the input, so it is squared and multiplied along with ' + t('a') + '. In ' + t('f(a)+' + h) + ' it is added to the finished output.', right: true },
               { html: 'They should be the same; one of the answers has an arithmetic error.', why: 'Test with ' + t('a=0') + ': ' + t('f(' + h + ')') + ' and ' + t('f(0)+' + h) + ' are different numbers.' },
               { html: 'Brackets mean multiply, so ' + t('f(a+' + h + ')=f\\cdot a+f\\cdot ' + h) + '.', why: 'In function notation the brackets mark the input — ' + t('f') + ' is a name, not a number.' },
@@ -933,7 +933,7 @@
           } },
           { id: 'e14e', level: 'PRG', make: function (r, sh) {
             var m = sh.m;
-            return mc(r, 'Your answer to ' + t('g(a)-g(a+1)') + ' contains no ' + t('a') + '. What does that tell you about the graph of ' + t('g') + '?', [
+            return mc(r, 'Simplified, ' + t('g(a)-g(a+1)=' + m) + ', which contains no ' + t('a') + '. What does that tell you about the graph of ' + t('g') + '?', [
               { html: 'Wherever you start, one step right drops the output by exactly ' + t(m) + ': the graph is a straight line with slope ' + t('-' + m) + '.', right: true },
               { html: 'The graph is a horizontal line, because the answer has no ' + t('a') + '.', why: 'It is the <b>change</b> in the output that is always the same, not the output itself.' },
               { html: 'The graph passes through the origin.', why: t('g(0)=' + sh.c) + ', so it doesn’t. The answer is about how the output changes.' },
