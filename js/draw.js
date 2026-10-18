@@ -704,7 +704,7 @@
     opt = opt || {};
     var rect = opt.mode === 'rect', wrap = el('div', 'w-tilepad'), pal = el('div', 'tp-pal'), zonesBox = el('div', 'tp-zones'), view = el('div', 'tp-view'), bar = el('div', 'dr-bar'), help = el('div', 'w-help');
     var away = !rect && !!opt.takeaway, disabled = false, hist = [], zones = rect ? ['top', 'side'] : away ? ['mat', 'away'] : ['mat'], active = zones[0];
-    function fresh() { var st = rect ? { top: [], side: [] } : { mat: opt.start ? HW.tiles.count(opt.start) : [] }; if (away) st.away = []; return st; }
+    function fresh() { var st = rect ? { top: [], side: [] } : { mat: Array.isArray(opt.start) ? opt.start.slice() : opt.start ? HW.tiles.count(opt.start) : [] }; if (away) st.away = []; return st; }
     var state = fresh(), lim = opt.limit || (away ? 24 : 12);
     var kinds = rect ? ['x', '-x', '1', '-1'] : away ? [] : ['x2', '-x2', 'x', '-x', '1', '-1'];
     if (!rect && (opt.zeroPairs || away)) (opt.zeroKinds || ['x', '1']).forEach(function (k) {

@@ -69,7 +69,7 @@
     var L2 = (list || []).filter(function (d) { return d && d[0] != null && isFinite(qv(d[0])) && (Tv == null || !near(qv(d[0]), Tv)); });
     return function (v) { for (var i = 0; i < L2.length; i++) if (near(v, qv(L2[i][0]))) return { code: L2[i][1], hint: L2[i][2] }; return null; };
   }
-  function slopeC(m, list) { return m === null ? K.slope(null) : K.slope(Q(m), { diag: dg(list, m) }); }
+  function slopeC(m, list) { return m === null ? K.slope(null) : K.slope(Q(m), { diag: dg(list, m), signHint: 'Check the sign: once the equation reads ' + t('y=mx+b') + ', the slope is the number multiplying ' + t('x') + ' <b>with the sign in front of it</b>.' }); }
   /* a value (intercept, constant): exact; a point (0, b) / (a, 0) is accepted for an intercept (o.axis 'y' | 'x');
    * o.isNone: the right answer is "none"; o.exact: fractions only (no decimals) */
   function valC(T, list, o) {
@@ -79,7 +79,7 @@
     return function (resp) {
       var s = cleanS(resp);
       if (!s) return form('empty', 'Type your answer first.');
-      if (isNone(s)) return o.isNone ? ok() : wrong('icpt-none', o.noneHint || 'There is one: every line that isn’t vertical crosses the ' + t('y') + '-axis.');
+      if (isNone(s)) return o.isNone ? ok() : wrong('icpt-none', o.noneHint || (o.axis === 'x' ? 'There is one: every line that isn’t horizontal crosses the ' + t('x') + '-axis. Set ' + t('y=0') + ' and solve.' : 'There is one: every line that isn’t vertical crosses the ' + t('y') + '-axis.'));
       if (o.isNone) return wrong('icpt-has', o.hasHint || 'This line never crosses that axis — press <b>none</b>.');
       var p = o.axis ? asPoint(s) : null;
       if (p) {
@@ -300,7 +300,7 @@
         } }] },
       /* ================= Q2 ================= */
       { num: '2', stem: 'State the slope and ' + t('y') + '-intercept of the graph of each linear equation.', parts: [
-        { id: '2a', level: 'LIM', make: function (r) {
+        { id: '2a', level: 'BEG', make: function (r) {
           var a = r.int(2, 9), c = r.int(1, 9), eq = 'y=' + a + 'x-' + c;
           return mbPart(t(eq), [a, 1], -c, { bDiag: [[c, 'sign', 'Keep the sign: ' + t(eq) + ' is ' + t('y=' + a + 'x+(-' + c + ')') + ', so ' + t('b=-' + c) + '.']] },
             'Already solved for ' + t('y') + ': slope ' + t('m=' + a) + ', ' + t('y') + '-intercept ' + t('b=-' + c) + '.', null, 'm and b of ' + eq);
@@ -362,7 +362,9 @@
           var p = B.poly('(d) slope ' + t('=' + u) + ', &nbsp;' + t('y') + '-intercept ' + t('=' + w), PL.parse(u + 'x+' + w), { before: 'y=', vars: [u, w, 'x'],
             wrong: [{ is: PL.parse(w + 'x+' + u), code: 'si-swap', hint: 'The slope multiplies ' + t('x') + ': ' + t(u + 'x') + '. The ' + t('y') + '-intercept is the constant ' + t(w) + '.' }] },
             t('m=' + u) + ', ' + t('b=' + w) + ': ' + t('y=' + u + 'x+' + w) + '.', ['Put the letters into ' + t('y=mx+b') + ' just like numbers.'], 'equation from letters');
-          p.good = [w + '+' + u + 'x']; p.bad = [w + 'x+' + u];
+          var c0 = p.check; p.check = function (resp) { return c0(String(resp == null ? '' : resp).replace(/^\s*y\s*=\s*/, '')); };
+          p.answer = t('y=' + u + 'x+' + w);
+          p.good = [w + '+' + u + 'x', 'y=' + u + 'x+' + w]; p.bad = [w + 'x+' + u];
           return p;
         } }] },
       /* ================= Q4 ================= */
@@ -582,7 +584,7 @@
           var texts = ['steep', 'shallow', 'neg'].map(function (k) {
             var s = roles[k], E = clip(s, 0, [-2.6, 2.6], [-2.6, 2.6]), P = s > 0 ? E[1] : E[0];
             if (k === 'shallow') return { x: E[0][0] + 0.05, y: E[0][1] - 0.5, text: 'y = ' + who[k] + 'x', anchor: 'start' };
-            return { x: P[0] + (s > 0 ? 0.35 : -0.25), y: P[1] + 0.15, text: 'y = ' + who[k] + 'x', anchor: s > 0 ? 'start' : 'end' }; });
+            return { x: P[0] + (s > 0 ? 0.35 : 0.1), y: P[1] + 0.15, text: 'y = ' + who[k] + 'x', anchor: 'start' }; });
           var fig = lineFig(lines, { x: [-3, 3], y: [-3, 3], grid: 0, labels: 0, ends: 'none', max: 240, texts: texts, aria: 'three lines through the origin' });
           var right = [who.neg, who.shallow, who.steep], mag = [who.shallow, who.neg, who.steep], rev = [who.steep, who.shallow, who.neg];
           var perms = [['a', 'b', 'c'], ['b', 'a', 'c'], ['c', 'a', 'b'], ['c', 'b', 'a'], ['a', 'c', 'b'], ['b', 'c', 'a']], key = function (p) { return p.join(''); };
@@ -608,7 +610,9 @@
             ['Find both intercepts: they are the corners ' + t('P') + ' and ' + t('Q') + ' of a right triangle.', 'Lengths are positive: use the distance from the origin.'], 'area of intercept triangle');
           return p;
         } }] },
-      { num: '14', shared: function (r) { var a, b; do { a = r.int(2, 6); b = r.int(2, 8); } while (b % a === 0); return { a: a, b: b }; },
+      { num: '14', shared: function (r) {
+          /* skip perimeters within 0.005 of a rounding boundary (3, 4 → 9.5497; 2, 3 → 7.854): rounded intermediate values would flip the tenth */
+          var a, b, P; do { a = r.int(2, 6); b = r.int(2, 8); P = b / a + b + Math.sqrt(b * b / (a * a) + b * b); } while (b % a === 0 || Math.abs(P * 10 - Math.floor(P * 10) - 0.5) < 0.05); return { a: a, b: b }; },
         stem: function (sh) { return 'Consider the line with equation ' + t('y=' + sh.a + 'x+' + sh.b) + '. The line intersects the ' + t('x') + '-axis at ' + t('P') + ' and the ' + t('y') + '-axis at ' + t('Q') + '. Triangle ' + t('POQ') + ' is formed, where ' + t('O') + ' is the origin.'; }, parts: [
         { id: '14', level: 'ADV', outcome: 'RF5', make: function (r, sh) {
           var a = sh.a, b = sh.b, x0 = b / a, h = Math.sqrt(x0 * x0 + b * b), Pm = x0 + b + h;
@@ -626,7 +630,7 @@
     extra: [
       /* ================= EP Part A ================= */
       { num: '1', section: 'Extra practice A — Is it linear? Three answers, not two', stem: 'A relation is linear when it <i>can</i> be written as ' + t('y=mx+b') + ' — some arrive disguised and must be rearranged first. A vertical line is straight but can’t be written as ' + t('y=mx+b') + ': it gets a column of its own.', parts: [
-        { id: 'e1', level: 'PRG', outcome: 'RF4', make: function (r) {
+        { id: 'e1', level: 'EMG', outcome: 'RF4', make: function (r) {
           var T = r.shuffle(ep1Templates(r)), letters = 'abcdefghijkl'.split(''), want = {}, info = {};
           var rows = T.map(function (x, i) { want[letters[i]] = x.cat; info[letters[i]] = x; return { id: letters[i], html: '(' + letters[i] + ') ' + t(x.tex) }; });
           var name = { L: 'linear', N: 'non-linear', V: 'a vertical line (straight, but not ' + t('y=mx+b') + ')' };
@@ -744,12 +748,12 @@
         }
         return [
           P5('e5a', 'EMG', function (r) { var k = r.pick([4, 6, 8, 10]), m = r.pick(fracs([2, 4, 5].filter(function (q) { return k % q === 0; }), 9, false).filter(function (f) { return f[0] !== f[1]; })), b = r.int(1, 6) * r.pick([1, -1]);
-            var A = k * m[0] / m[1], C = k * b, eq = k + 'y=' + A + 'x' + (C < 0 ? '-' : '+') + Math.abs(C);
+            var A = k * m[0] / m[1], C = k * b, eq = k + 'y=' + term(A, 'x', true) + (C < 0 ? '-' : '+') + Math.abs(C);
             return { eq: eq, m: m, b: Q(b), md: [[A, 'not-divided', 'Divide <b>every</b> term by ' + t(k) + ' first.']], bd: [[C, 'not-divided', 'Divide the constant by ' + t(k) + ' too.']], sol: 'Divide every term by ' + t(k) + ': ' + t('y=\\frac{' + A + '}{' + k + '}x' + (C < 0 ? '-' : '+') + '\\frac{' + Math.abs(C) + '}{' + k + '}') + ', so ' + t(siT(m, b)) + '.' }; }),
-          P5('e5b', 'EMG', function (r) { var Bc = r.pick([3, 4, 5, 6]), A = r.pick([1, 2, 3, 4, 5].filter(function (a) { return coprime(a, Bc); })), b = r.int(1, 5), C = Bc * b, eq = A + 'x+' + Bc + 'y=' + C, m = Q(-A, Bc);
-            return { eq: eq, m: m, b: Q(b), md: [[-A, 'not-divided', 'After moving the ' + t('x') + '-term, divide every term by ' + t(Bc) + '.'], [Q(-Bc, A), 'xint-flip', 'Divide by the coefficient of ' + t('y') + ', ' + t(Bc) + '.']], bd: [[C, 'not-divided', 'Divide the constant by ' + t(Bc) + ' too.']], sol: t(Bc + 'y=-' + A + 'x+' + C) + '. Divide by ' + t(Bc) + ': ' + t(siT(m, b)) + '.' }; }),
-          P5('e5c', 'PRG', function (r) { var Bc = r.pick([2, 3, 4, 5, 6]), A = r.pick([1, 2, 3, 4, 5, 7].filter(function (a) { return coprime(a, Bc) && a !== Bc; })), b = r.int(1, 4), C = Bc * b, eq = A + 'x-' + Bc + 'y-' + C + '=0', m = Q(A, Bc);
-            return { eq: eq, m: m, b: Q(-b), md: [], bd: [[Q(C, 1), 'not-divided', 'Divide the constant by ' + t('-' + Bc) + ' as well.']], sol: t('-' + Bc + 'y=-' + A + 'x+' + C) + '. Divide every term by ' + t('-' + Bc) + ' (every sign flips): ' + t(siT(m, -b)) + '.' }; }),
+          P5('e5b', 'EMG', function (r) { var Bc = r.pick([3, 4, 5, 6]), A = r.pick([1, 2, 3, 4, 5].filter(function (a) { return coprime(a, Bc); })), b = r.int(1, 5), C = Bc * b, eq = term(A, 'x', true) + '+' + Bc + 'y=' + C, m = Q(-A, Bc);
+            return { eq: eq, m: m, b: Q(b), md: [[-A, 'not-divided', 'After moving the ' + t('x') + '-term, divide every term by ' + t(Bc) + '.'], [Q(-Bc, A), 'xint-flip', 'Divide by the coefficient of ' + t('y') + ', ' + t(Bc) + '.']], bd: [[C, 'not-divided', 'Divide the constant by ' + t(Bc) + ' too.']], sol: t(Bc + 'y=' + term(-A, 'x', true) + '+' + C) + '. Divide by ' + t(Bc) + ': ' + t(siT(m, b)) + '.' }; }),
+          P5('e5c', 'PRG', function (r) { var Bc = r.pick([2, 3, 4, 5, 6]), A = r.pick([1, 2, 3, 4, 5, 7].filter(function (a) { return coprime(a, Bc) && a !== Bc; })), b = r.int(1, 4), C = Bc * b, eq = term(A, 'x', true) + '-' + Bc + 'y-' + C + '=0', m = Q(A, Bc);
+            return { eq: eq, m: m, b: Q(-b), md: [], bd: [[Q(C, 1), 'not-divided', 'Divide the constant by ' + t('-' + Bc) + ' as well.']], sol: t('-' + Bc + 'y=' + term(-A, 'x', true) + '+' + C) + '. Divide every term by ' + t('-' + Bc) + ' (every sign flips): ' + t(siT(m, -b)) + '.' }; }),
           P5('e5d', 'EMG', function (r) { var k = r.int(2, 5), c = r.int(1, 7), eq = '\\dfrac{y}{' + k + '}=x-' + c;
             return { eq: eq, m: Q(k), b: Q(-k * c), md: [[Q(1, k), 'part-div', 'Multiply both sides by ' + t(k) + ' (don’t divide).'], [1, 'no-mult', 'Multiply <b>both</b> terms on the right by ' + t(k) + '.']], bd: [[-c, 'no-mult', 'Multiply <b>both</b> terms by ' + t(k) + ': ' + t(k + '(x-' + c + ')=' + k + 'x-' + (k * c)) + '.']], sol: 'Multiply both sides by ' + t(k) + ': ' + t('y=' + k + '(x-' + c + ')=' + k + 'x-' + (k * c)) + '.' }; }),
           P5('e5e', 'PRG', function (r) { var m = r.pick([[2, 3], [3, 4], [1, 2], [3, 2], [2, 5]]), v = m[1] * r.int(1, 3), u = r.int(1, 6), b = qadd(qmul(m, v), u), eq = 'y-' + u + '=' + qT(m) + '(x+' + v + ')';
@@ -757,7 +761,7 @@
               sol: 'Expand: ' + t('y-' + u + '=' + qT(m) + 'x+' + qT(qmul(m, v))) + '. Add ' + t(u) + ': ' + t(siT(m, b)) + '.' }; }),
           P5('e5f', 'PRG', function (r) { var a = r.int(2, 6), c = r.pick([2, 3, 4, 5, 6].filter(function (z) { return z !== a; })), l = a * c / gcd(a, c), m = Q(c, a), eq = '\\dfrac{x}{' + a + '}-\\dfrac{y}{' + c + '}=1';
             return { eq: eq, m: m, b: Q(-c), md: [], bd: [[Q(-l), 'part-div', 'Careful with the constant: multiplying by ' + t(l) + ' turns the ' + t('1') + ' into ' + t(l) + ', then divide by the coefficient of ' + t('y') + '.']],
-              sol: 'Multiply by ' + t(l) + ': ' + t((l / a) + 'x-' + (l / c) + 'y=' + l) + '. Then ' + t('-' + (l / c) + 'y=-' + (l / a) + 'x+' + l) + ', so ' + t(siT(m, -c)) + '.' }; }),
+              sol: 'Multiply by ' + t(l) + ': ' + t(lin([[l / a, 'x'], [-l / c, 'y']]) + '=' + l) + '. Then ' + t(lin([[-l / c, 'y']]) + '=' + lin([[-l / a, 'x'], [l, '']])) + ', so ' + t(siT(m, -c)) + '.' }; }),
           P5('e5g', 'PRG', function (r) { var k = r.pick([3, 4, 5]), n = r.pick([1, 2, 3, 4].filter(function (z) { return coprime(z, k); })), u, v; do { u = r.int(1, 4); v = r.int(1, 4); } while ((n * v) % k === 0);
             var m = Q(n, k), b = Q(-n * v - k * u, k), eq = k + '(y+' + u + ')=' + (n === 1 ? '' : n) + '(x-' + v + ')';
             return { eq: eq, m: m, b: b, md: [], bd: [[Q(-n * v - k * u), 'not-divided', 'Divide every term by ' + t(k) + ', the constant too.'], [Q(-n * v + k * u, k), 'move-sign', 'Move ' + t('+' + (k * u)) + ' across by subtracting it.'], [Q(-n * v - u, k), 'no-dist', 'Expand ' + t(k + '(y+' + u + ')') + ': ' + t(k + 'y+' + (k * u)) + '.']],
@@ -798,9 +802,9 @@
             t('By=-Ax-C') + ', so ' + t('y=-\\frac{A}{B}x-\\frac{C}{B}') + ': ' + t('m=-\\frac{A}{B}') + ', ' + t('b=-\\frac{C}{B}') + ' — only when ' + t('B\\ne 0') + '.', ['Move ' + t('Ax') + ' and ' + t('C') + ' across, then divide by ' + t('B') + '.'], 'm and b from general form');
         } },
         { id: 'e7b', level: 'EMG', make: function (r) {
-          var Bc = r.pick([2, 3, 4, 5]), A = r.pick([1, 3, 5, 7].filter(function (a) { return coprime(a, Bc); })), b = r.int(1, 4), C = Bc * b, eq = A + 'x-' + Bc + 'y+' + C + '=0', m = Q(A, Bc);
+          var Bc = r.pick([2, 3, 4, 5]), A = r.pick([1, 3, 5, 7].filter(function (a) { return coprime(a, Bc); })), b = r.int(1, 4), C = Bc * b, eq = term(A, 'x', true) + '-' + Bc + 'y+' + C + '=0', m = Q(A, Bc);
           return mbPart('(b) Use your formulas on ' + t(eq) + '.', m, b, { exact: true, mDiag: [[Q(-A, Bc), 'sign', t('B=-' + Bc) + ': ' + t('m=-\\frac{' + A + '}{-' + Bc + '}=' + qT(m)) + '.']], bDiag: [[-b, 'sign', t('b=-\\frac{C}{B}=-\\frac{' + C + '}{-' + Bc + '}=' + b) + '.']] },
-            t('A=' + A + ',\\ B=-' + Bc + ',\\ C=' + C) + ': ' + t('m=-\\frac{' + A + '}{-' + Bc + '}=' + qT(m)) + ', ' + t('b=-\\frac{' + C + '}{-' + Bc + '}=' + b) + '.<br>Check: ' + t('-' + Bc + 'y=-' + A + 'x-' + C) + ' gives ' + t(siT(m, b)) + ' ✓',
+            t('A=' + A + ',\\ B=-' + Bc + ',\\ C=' + C) + ': ' + t('m=-\\frac{' + A + '}{-' + Bc + '}=' + qT(m)) + ', ' + t('b=-\\frac{' + C + '}{-' + Bc + '}=' + b) + '.<br>Check: ' + t('-' + Bc + 'y=' + term(-A, 'x', true) + '-' + C) + ' gives ' + t(siT(m, b)) + ' ✓',
             ['Read ' + t('A') + ', ' + t('B') + ', ' + t('C') + ' with their signs: ' + t('B') + ' is negative here.'], 'm, b from general form');
         } },
         { id: 'e7c', level: 'EMG', make: function (r) {
@@ -864,7 +868,7 @@
             { html: 'Down ' + t(p) + ', left ' + t(q) + ', to ' + t(ptT([-q, b - p])) + '.', why: 'Down and left is a positive slope. Go down and right (or up and left).' }],
             'In ' + t('m=\\frac{\\text{rise}}{\\text{run}}=\\frac{-' + p + '}{' + q + '}') + ': down ' + t(p) + ', right ' + t(q) + ' to ' + t(ptT([q, b - p])) + ' (or up ' + t(p) + ', left ' + t(q) + ' to ' + t(ptT([-q, b + p])) + '). The student swapped them.', ['Slope = rise over run: which number is on top?'], 'correct rise/run count');
         } },
-        { id: 'e9b', level: 'PRG', outcome: 'RF7', make: function (r, sh) {
+        { id: 'e9b', level: 'EMG', outcome: 'RF7', make: function (r, sh) {
           var p = sh.p, q = sh.q, b = sh.b, ms = Q(-q, p);
           var pt = B.line('(b) Write the equation of the line the student <b>actually</b> drew.', { m: ms, b: b }, { wrong: [{ is: { m: Q(-p, q), b: b }, code: 'student-line', hint: 'That’s the line the student <i>meant</i> to draw. Find the slope of the line through ' + t(ptT([0, b])) + ' and ' + t(ptT([p, b - q])) + '.' }] },
             'From ' + t(ptT([0, b])) + ' to ' + t(ptT([p, b - q])) + ': rise ' + t(-q) + ', run ' + t(p) + ', so ' + t('m=' + qT(ms)) + '; ' + t('b=' + b) + '.<br>' + t(siT(ms, b)), ['Rise and run of the student’s step give its slope.', 'It still starts at ' + t(ptT([0, b])) + '.'], 'equation of the student’s line');
@@ -962,10 +966,10 @@
         } },
         { id: 'e12b', level: 'PRG', outcome: 'RF7', make: function (r, sh) {
           var rate = sh.c / 100, step = sh.c / 2;
-          var p = B.line('(b) Write the equation in the form ' + t('C=mn+b') + '.', { m: rate, b: sh.F }, { vars: ['n', 'C'], keyTex: 'C=' + rate + 'n+' + sh.F, placeholder: 'e.g. C = 0.5n + 10',
+          var p = B.line('(b) Write the equation in the form ' + t('C=mn+b') + '.', { m: rate, b: sh.F }, { vars: ['n', 'C'], form: 'slope-intercept', keyTex: 'C=' + rate + 'n+' + sh.F, placeholder: 'e.g. C = 0.5n + 10',
             wrong: [{ is: { m: step, b: sh.F }, code: 'rate-not-div', hint: 'The cost rises ' + t(money(step)) + ' per <b>50</b> minutes — the slope is the rate per minute.' }, { is: { m: sh.F, b: rate }, code: 'fee-wrong', hint: 'The fee is the constant (the cost at ' + t('n=0') + '); the rate per minute multiplies ' + t('n') + '.' }] },
             t('m=' + rate) + '; at ' + t('n=0') + ', ' + t('C=' + sh.F) + ', so ' + t('b=' + sh.F) + '.<br>' + t('C=' + rate + 'n+' + sh.F), ['Use ' + t('n') + ' and ' + t('C') + ' instead of ' + t('x') + ' and ' + t('y') + '.'], 'cost equation from table');
-          p.good = ['C=' + sh.F + '+' + rate + 'n']; p.bad = ['C=' + step + 'n+' + sh.F];
+          p.good = ['C=' + sh.F + '+' + rate + 'n']; p.bad = ['C=' + step + 'n+' + sh.F, '100C=' + sh.c + 'n+' + (100 * sh.F)];
           return p;
         } },
         { id: 'e12c', level: 'PRG', outcome: 'RF5', make: function (r, sh) {
@@ -1023,7 +1027,7 @@
         { id: 'e13b', level: 'PRG', outcome: 'RF7', make: function (r, sh) {
           var y1 = sh.m * sh.x1 + sh.b, y2 = sh.m * sh.x2 + sh.b, dx = sh.x1 - sh.x2, dy = y1 - y2;
           var p = B.line('(b) Solve the pair for ' + t('m') + ' and ' + t('b') + ', and state the equation of the line.', { m: sh.m, b: sh.b }, {},
-            'Subtract the second equation from the first: ' + t(dy + '=' + dx + 'm') + ', so ' + t('m=' + sh.m) + '.<br>Then ' + t(y1 + '=' + sh.m * sh.x1 + '+b') + ', so ' + t('b=' + sh.b) + '.<br>' + t(siT(sh.m, sh.b)) + '. Check ' + t(ptT([sh.x2, y2])) + ': ' + t(sh.m + '(' + sh.x2 + ')' + (sh.b < 0 ? '' : '+') + sh.b + '=' + y2) + ' ✓',
+            'Subtract the second equation from the first: ' + t(dy + '=' + dx + 'm') + ', so ' + t('m=' + sh.m) + '.<br>Then ' + t(y1 + '=' + sh.m * sh.x1 + '+b') + ', so ' + t('b=' + sh.b) + '.<br>' + t(siT(sh.m, sh.b)) + '. Check ' + t(ptT([sh.x2, y2])) + ': ' + t(sh.m + '(' + sh.x2 + ')' + (sh.b === 0 ? '' : (sh.b < 0 ? '' : '+') + sh.b) + '=' + y2) + ' ✓',
             ['Subtracting the two equations eliminates ' + t('b') + '.', 'Substitute ' + t('m') + ' back to find ' + t('b') + '.'], 'line through two points by substitution');
           p.bad = [siT(sh.m, sh.b + 1)];
           return p;
@@ -1078,7 +1082,7 @@
           return B.nr('<i>(Numerical Response)</i> The line ' + t('y=mx+b') + ' passes through ' + t(ptT([x1, y1])) + ' and ' + t(ptT([x2, y2])) + '. The value of ' + t('y') + ' on this line when ' + t('x=' + X) + ' is ____.', ans, function (v) {
             if (near(v, m * X)) return { code: 'nr-12m', hint: 'Don’t forget ' + t('b') + ': find it by substituting a point.' };
             if (near(v, X / m + b)) return { code: 'nr-flip', hint: 'Slope is rise over run: ' + t('\\frac{\\Delta y}{\\Delta x}') + '.' }; return null; },
-            t(y1 + '=' + x1 + 'm+b') + ', ' + t(y2 + '=' + x2 + 'm+b') + '. Subtract: ' + t((y2 - y1) + '=' + (x2 - x1) + 'm') + ', ' + t('m=' + m) + '; ' + t('b=' + b) + '.<br>' + t(siT(m, b)) + '; at ' + t('x=' + X) + ': ' + t('y=' + m + '(' + X + ')' + (b < 0 ? '' : '+') + b + '=' + ans) + '.',
+            t(y1 + '=' + x1 + 'm+b') + ', ' + t(y2 + '=' + x2 + 'm+b') + '. Subtract: ' + t((y2 - y1) + '=' + (x2 - x1) + 'm') + ', ' + t('m=' + m) + '; ' + t('b=' + b) + '.<br>' + t(siT(m, b)) + '; at ' + t('x=' + X) + ': ' + t('y=' + m + '(' + X + ')' + (b === 0 ? '' : (b < 0 ? '' : '+') + b) + '=' + ans) + '.',
             ['Find ' + t('m') + ' and ' + t('b') + ' first.', 'Then substitute ' + t('x=' + X) + '.'], 'y at x for line through two points');
         } }] }
     ]

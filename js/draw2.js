@@ -3,11 +3,12 @@
  *   numplace  place labelled numbers approximately on a number line.
  *             input { type: 'numplace', min, max, step, labels, snap, items: [{ id, tex, label? }] }
  *             value { id: x, … } (unplaced items missing).
- *             K.numplace(targets {id: x}, { tol, tols: {id: tol}, hints: {id: hint}, order: true }) — order first, then
+ *             K.numplace(targets {id: x}, { tol, tols: {id: tol}, hints: {id: hint}, order: true, orderGap }) — order first
+ *             (only for pairs whose true values differ by more than orderGap), then
  *             each position within the tolerance (default 1/30 of the line).  K.P.numplace(prompt, inp, targets, sol, hints, text, opt).
  *   setsort   sort numbers into the nested real-number diagram (ℕ ⊂ 𝕎 ⊂ ℤ ⊂ ℚ, and ℚ̄, inside ℝ).
  *             input { type: 'setsort', items: [{ id, tex }] }   value { id: 'N'|'W'|'I'|'Q'|'Qbar', … }
- *             K.setsort(targets, { hints: {id: hint} }) — each number goes in the innermost set it belongs to.
+ *             K.setsort(targets, { hints: {id: hint | function (placedSet, rightSet) -> hint} }) — innermost set for each number.
  *             HW.draw.realSet(value) -> 'N'|'W'|'I'|'Q'|'Qbar' for a number (or [p,q] fraction; 'Qbar' if irrational:true).
  *             K.P.setsort(prompt, inp, targets, sol, hints, text, opt).
  *   domrange  a given graph with two number lines under it: shade the domain and the range.
@@ -86,7 +87,7 @@
       var srt = ids.slice().sort(function (a, b) { return targets[a] - targets[b]; });
       if (opt.order !== false) for (var i = 0; i < srt.length; i++) for (var j = i + 1; j < srt.length; j++) {
         var a = srt[i], b = srt[j];
-        if (targets[b] - targets[a] > 1e-9 && resp[a] > resp[b] + 1e-9) return wrong('np-order', 'Check the order: ' + t(texOf(a)) + ' is less than ' + t(texOf(b)) + ', so it goes to the <b>left</b> of it.' + (opt.hints && opt.hints[a] ? ' ' + opt.hints[a] : ''));
+        if (targets[b] - targets[a] > Math.max(1e-9, opt.orderGap || 0) && resp[a] > resp[b] + 1e-9) return wrong('np-order', 'Check the order: ' + t(texOf(a)) + ' is less than ' + t(texOf(b)) + ', so it goes to the <b>left</b> of it.' + (opt.hints && opt.hints[a] ? ' ' + opt.hints[a] : ''));
       }
       for (var k = 0; k < srt.length; k++) {
         var id = srt[k], d = resp[id] - targets[id];
@@ -104,7 +105,7 @@
   };
 
   /* ================= setsort ================= */
-  var SETS = ['N', 'W', 'I', 'Q', 'Qbar'], SETTEX = { N: '\\mathbb{N}', W: '\\mathbb{W}', I: '\\mathbb{I}', Q: '\\mathbb{Q}', Qbar: '\\overline{\\mathbb{Q}}' };
+  var SETS = ['N', 'W', 'I', 'Q', 'Qbar'], SETTEX = { N: 'N', W: 'W', I: 'I', Q: 'Q', Qbar: '\\overline{Q}', R: 'R' }; // the booklet's plain letters
   var SETNAME = { N: 'Natural numbers', W: 'Whole numbers', I: 'Integers', Q: 'Rational numbers', Qbar: 'Irrational numbers' };
   D.SETTEX = SETTEX; D.SETNAME = SETNAME;
   D.realSet = function (x, irrational) {
@@ -134,7 +135,7 @@
       if (miss.length) return form('ss-unplaced', 'Place every number — ' + (miss.length === 1 ? 'one is' : miss.length + ' are') + ' still waiting.');
       var bad = ids.filter(function (id) { return resp[id] !== targets[id]; });
       if (!bad.length) return ok();
-      var id = bad[0], tex = (opt.tex && opt.tex[id]) || id, h = (opt.hints && opt.hints[id]) || setHint(tex, resp[id], targets[id]);
+      var id = bad[0], tex = (opt.tex && opt.tex[id]) || id, oh = opt.hints && opt.hints[id], h = (typeof oh === 'function' ? oh(resp[id], targets[id]) : oh) || setHint(tex, resp[id], targets[id]);
       var code = targets[id] === 'Qbar' || resp[id] === 'Qbar' ? 'ss-rational' : CHAIN.indexOf(resp[id]) > CHAIN.indexOf(targets[id]) ? 'ss-inner' : 'ss-subset';
       return wrong(code, (bad.length > 1 ? bad.length + ' numbers are in the wrong set. ' : '') + h);
     };
@@ -149,7 +150,7 @@
     var items = I.items || [];
     function chips(z) { return items.filter(function (it) { return value[it.id] === z; }).map(function (it) { return '<button type="button" class="ss-chip" data-id="' + HW.esc(it.id) + '"' + (live ? '' : ' tabindex="-1"') + '>' + HW.k(it.tex) + '</button>'; }).join(''); }
     function box(z, inner) { return '<div class="ss-box ss-' + z + '" data-zone="' + z + '"><div class="ss-lab">' + HW.k(SETTEX[z]) + ' <em class="ss-name">' + SETNAME[z] + '</em></div><div class="ss-body">' + chips(z) + '</div>' + (inner || '') + '</div>'; }
-    return '<div class="ss-diagram' + (live ? ' live' : '') + '"><div class="ss-box ss-R"><div class="ss-lab">' + HW.k('\\mathbb{R}') + ' <em class="ss-name">Real numbers</em></div><div class="ss-cols">' +
+    return '<div class="ss-diagram' + (live ? ' live' : '') + '"><div class="ss-box ss-R"><div class="ss-lab">' + HW.k(SETTEX.R) + ' <em class="ss-name">Real numbers</em></div><div class="ss-cols">' +
       box('Q', box('I', box('W', box('N')))) + box('Qbar') + '</div></div></div>';
   };
 

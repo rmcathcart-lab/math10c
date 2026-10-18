@@ -279,7 +279,7 @@
       if (setEq(r.set, T)) {
         if (r.v && V && r.v !== V) return form('set-letter', 'Right set — but use the variable ' + t(V) + ' here.');
         if (forms && forms.indexOf(r.form) < 0 && !(r.form === 'all' && forms.indexOf('builder') >= 0)) return form('set-form', 'Right set — now write it in ' + ({ builder: 'set notation, e.g. ' + t('\\{x\\mid x\\ge 2,\\ x\\in\\mathbb{R}\\}'), interval: 'interval notation, e.g. ' + t('[2,\\infty)'), list: 'a list in braces', ineq: 'an inequality' })[forms[0]] + '.');
-        if (tagNeeded && r.form === 'builder' && !r.tagged && T.kind === 'int') return form('set-tag', 'Right — now finish the set notation with ' + t(',\\ ' + V + '\\in\\mathbb{R}') + ' to say which numbers ' + t(V) + ' can be.');
+        if (tagNeeded && r.form === 'builder' && !r.tagged && T.kind === 'int' && !(T.parts && T.parts.length === 1 && T.parts[0].lo === T.parts[0].hi)) return form('set-tag', 'Right — now finish the set notation with ' + t(',\\ ' + V + '\\in\\mathbb{R}') + ' to say which numbers ' + t(V) + ' can be.');
         return ok();
       }
       for (var i = 0; i < wrongs.length; i++) if (setEq(r.set, wrongs[i].s)) return wrong(wrongs[i].code, wrongs[i].hint);
@@ -513,6 +513,6 @@
   };
   HW.valueTable = function (rows, opt) {
     opt = opt || {};
-    return '<table class="vtab">' + rows.map(function (r) { return '<tr>' + r.map(function (c, i) { var h = typeof c === 'number' ? fmtN(c) : HW.tex ? HW.tex(String(c)) : String(c); return i === 0 ? '<th>' + h + '</th>' : '<td>' + h + '</td>'; }).join('') + '</tr>'; }).join('') + '</table>';
+    return '<table class="vtab">' + rows.map(function (r) { return '<tr>' + r.map(function (c, i) { var cs = String(c), h = typeof c === 'number' ? fmtN(c) : (!/\\\(|\$/.test(cs) && /[\\^_]/.test(cs) && HW.k) ? HW.k(cs) : HW.tex ? HW.tex(cs) : cs; return i === 0 ? '<th>' + h + '</th>' : '<td>' + h + '</td>'; }).join('') + '</tr>'; }).join('') + '</table>';
   };
 })(typeof window !== 'undefined' ? window : globalThis);
