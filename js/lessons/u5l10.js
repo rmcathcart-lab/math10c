@@ -210,6 +210,34 @@
   /* a small graph for a multiple-choice option: fixed width so it doesn't shrink beside the option letter */
   function Gm(spec) { var w = spec.w || 240; return '<span style="display:block;flex:1 1 auto;min-width:0;width:100%;max-width:' + w + 'px">' + HW.graph(Object.assign({ x: [-6, 6], y: [-6, 6], labels: 2 }, spec, { max: w })) + '</span>'; }
   function fig(s) { return '<div class="fig">' + s + '</div>'; }
+  /* ---------------- graph-pad drawings (js/draw.js) ---------------- */
+  function seg(a, b, s, e) { return { v: [a, b], s: s || 'closed', e: e || 'closed' }; }
+  function poly(vs, s, e) { return { v: vs, s: s || 'closed', e: e || 'closed' }; }
+  function drawing(pieces, pts, join) { return { pieces: pieces || [], pts: pts || [], join: join || 'none' }; }
+  /* where a drawing meets an axis: axis 'x' -> the x-values where y = 0; axis 'y' -> the y-values where x = 0.
+   * Returns { vals: sorted distinct numbers, inf: true when a whole piece lies along that axis } */
+  function axisHits(value, axis) {
+    var g = HW.draw.geom(value), vals = [], inf = false;
+    var add = function (u) { u = cl(u); if (!vals.some(function (w) { return Math.abs(w - u) < 1e-6; })) vals.push(u); };
+    var inIv = function (iv, u) { return (u > iv.lo + 1e-9 && u < iv.hi - 1e-9) || (Math.abs(u - iv.lo) < 1e-9 && iv.lc) || (Math.abs(u - iv.hi) < 1e-9 && iv.hc); };
+    Object.keys(g.lines).forEach(function (k) {
+      var L = g.lines[k];   // A x + B y = C; position along the line is x (or y for a vertical line)
+      L.iv.forEach(function (iv) {
+        if (axis === 'x') {
+          if (L.B === 0) { if (inIv(iv, 0)) add(L.C / L.A); return; }
+          if (L.A === 0) { if (Math.abs(L.C) < 1e-9 && iv.hi - iv.lo > 1e-9) inf = true; else if (Math.abs(L.C) < 1e-9) add(iv.lo); return; }
+          var x0 = L.C / L.A; if (inIv(iv, x0)) add(x0);
+        } else {
+          if (L.B === 0) { if (Math.abs(L.C) < 1e-9 && iv.hi - iv.lo > 1e-9) inf = true; else if (Math.abs(L.C) < 1e-9) add(iv.lo); return; }
+          if (inIv(iv, 0)) add(L.C / L.B);
+        }
+      });
+    });
+    g.pts.forEach(function (p) { if (axis === 'x' && Math.abs(p[1]) < 1e-9) add(p[0]); if (axis === 'y' && Math.abs(p[0]) < 1e-9) add(p[1]); });
+    vals.sort(function (a, b) { return a - b; });
+    return { vals: vals, inf: inf };
+  }
+  function padHelp(ends) { return ' Use <b>╱ Line</b>: tap the start, then each corner (tap the last point again to finish).' + (ends ? ' <b>●○ Ends</b> changes an end: solid dot → open dot → arrow.' : ''); }
   function figs(list, w) { w = w || 150; return '<div style="display:flex;flex-wrap:wrap;gap:6px 14px;align-items:flex-start">' + list.map(function (f) { return '<div style="flex:1 1 ' + w + 'px;max-width:300px">' + f + '</div>'; }).join('') + '</div>'; }
   /* piecewise-linear helpers: V = [[x, y], …] */
   function pwAt(V, x) { for (var i = 0; i + 1 < V.length; i++) { var a = V[i], b = V[i + 1]; if (x >= a[0] - 1e-9 && x <= b[0] + 1e-9) return cl(a[1] + (b[1] - a[1]) * (x - a[0]) / (b[0] - a[0])); } return NaN; }
@@ -751,18 +779,21 @@
           p.bad = ['\\{' + sh.pts.map(function (q) { return ptK([q[1], q[0]]); }).join(', ') + '\\}', '\\{' + sh.pts.slice(1).map(ptK).join(', ') + '\\}'];
           return p;
         } },
-        { id: '11b', level: 'LIM', outcome: 'RF2', make: function (r, sh) {
-          var ylo = Math.min(-2, Math.min.apply(null, sh.ys) - 1), yhi = Math.max(2, Math.max.apply(null, sh.ys) + 1), base = { x: [-5, 5], y: [ylo, yhi], labels: 2, labelsY: 4, unitX: 16, unitY: Math.min(16, 200 / (yhi - ylo)) };
-          var P0 = function (ps) { return Gm(Object.assign({ points: ps.map(function (q) { return { x: q[0], y: q[1] }; }) }, base)); };
+        { id: '11b', level: 'BEG', outcome: 'RF2', make: function (r, sh) {
+          var ylo = Math.min(-2, Math.min.apply(null, sh.ys) - 1), yhi = Math.max(2, Math.max.apply(null, sh.ys) + 1);
+          var I = { x: [-5, 5], y: [ylo, yhi], grid: 1, labels: 2, unitX: 28, unitY: Math.min(28, 330 / (yhi - ylo)), mode: 'points' };
+          var target = drawing([], sh.pts);
           var j = r.int(0, 4); while (sh.xs[j] === 0) j = r.int(0, 4);
-          var moved = sh.pts.map(function (q, i) { return i === j ? [-q[0], q[1]] : q; });
-          var axisSwap = sh.pts.map(function (q) { return q[0] === 0 ? [q[1], 0] : q; });
-          return graphMC(r, '(b) Which graph shows the relation plotted correctly?', [
-            { html: P0(sh.pts), right: true },
-            { html: Gm(Object.assign({ segs: [{ pts: sh.pts, start: 'closed', end: 'closed' }] }, base)), why: 'The table alone doesn’t say the points should be joined (see part (d)). Plot the five points only.' },
-            { html: P0(moved), why: 'Check ' + t(ptT(sh.pts[j])) + ': its ' + t('x') + '-coordinate is ' + t(sh.xs[j]) + ', so it is ' + (sh.xs[j] < 0 ? 'left' : 'right') + ' of the ' + t('y') + '-axis.' },
-            { html: P0(axisSwap), why: 'Check ' + t(ptT([0, sh.b])) + ': ' + t('x=0') + ', so this point is on the ' + t('y') + '-axis, not the ' + t('x') + '-axis.' }],
-            'Plot each pair: go across to ' + t('x') + ', then up or down to ' + t('y') + '. Five separate points, not joined.', ['Go along the ' + t('x') + '-axis first, then up or down.'], 'plot a table');
+          var moved = drawing([], sh.pts.map(function (q, i) { return i === j ? [-q[0], q[1]] : q; }));
+          var axisSwap = drawing([], sh.pts.map(function (q) { return q[0] === 0 ? [q[1], 0] : q; }));
+          var W = [{ is: moved, code: 'graph-points', hint: 'Check ' + t(ptT(sh.pts[j])) + ': its ' + t('x') + '-coordinate is ' + t(sh.xs[j]) + ', so it is ' + (sh.xs[j] < 0 ? 'left' : 'right') + ' of the ' + t('y') + '-axis.' }];
+          if (Math.abs(sh.b) <= 5) W.push({ is: axisSwap, code: 'graph-swap', hint: 'Check ' + t(ptT([0, sh.b])) + ': ' + t('x=0') + ', so this point is <b>on the ' + t('y') + '-axis</b>, not the ' + t('x') + '-axis. Go across first (here: not at all), then up or down.' });
+          var p = B.graph('(b) Plot the relation on the grid. (Tap to place a point; tap it again to remove it.)', I, K.graphExact(target, { wrong: W }), target,
+            'Plot each pair: go across to ' + t('x') + ', then up or down to ' + t('y') + '. Five separate points, not joined (the table alone doesn’t say whether in-between values make sense — see part (d)).',
+            ['Go along the ' + t('x') + '-axis first, then up or down.'], 'plot a table');
+          p.bad = [moved, drawing([], sh.pts.map(function (q) { return [q[1], q[0]]; }).filter(function (q) { return Math.abs(q[0]) <= 5; })), drawing([], sh.pts.slice(1))];
+          if (Math.abs(sh.b) <= 5) p.bad.push(axisSwap);
+          return p;
         } },
         { id: '11c', level: 'BEG', outcome: 'RF1', make: function (r, sh) {
           var cols = [{ id: 'Q1', html: 'QI' }, { id: 'Q2', html: 'QII' }, { id: 'Q3', html: 'QIII' }, { id: 'Q4', html: 'QIV' }, { id: 'axis', html: 'axis' }];

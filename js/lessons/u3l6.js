@@ -682,8 +682,8 @@
               'One ' + t('x^{2}') + '-tile; ' + t(u + '+' + w + '=' + (u + w)) + ' ' + t('x') + '-tiles; ' + t(u + '\\times ' + w + '=' + u * w) + ' unit tiles. So ' + t('(x+' + u + ')(x+' + w + ')=' + tx(Y.mul(lin(1, u), lin(1, w)))) + '.',
               ['Picture the rectangle: an ' + t('x^{2}') + '-tile in the corner, ' + t('x') + '-tiles along each side, and a block of unit tiles.'], 'tile counts');
           } },
-          { id: 'e4t', level: 'EMG', make: function (r, sh) { return tileRectPart(1, sh.p, 1, -sh.q, '(x+' + sh.p + ')(x-' + sh.q + ')', 'build tiles (x+p)(x-q)'); } },
-          { id: 'e4e', level: 'EMG', make: function (r, sh) {
+          { id: 'e4t', sub: 'd ii', level: 'EMG', make: function (r, sh) { return tileRectPart(1, sh.p, 1, -sh.q, '(x+' + sh.p + ')(x-' + sh.q + ')', 'build tiles (x+p)(x-q)'); } },
+          { id: 'e4e', sub: 'e', level: 'EMG', make: function (r, sh) {
             var p = sh.p, q = sh.q;
             return KP.mc(r, 'Why can’t ' + t('(x+' + p + ')(x-' + q + ')') + ' be shown as one all-shaded rectangle of tiles?', [
               { html: 'A side of ' + t('x-' + q) + ' needs ' + t(q) + ' negative (white) unit tiles, so some tiles in the rectangle must be white.', right: true },
@@ -693,7 +693,7 @@
               'The side ' + t('x-' + q) + ' is one ' + t('x') + '-tile and ' + t(q) + ' <b>white</b> unit tiles. Products with a white tile are white (negative), so the rectangle mixes shaded and white tiles.',
               ['What colour are the tiles that model ' + t('-' + q) + '?'], 'why not all shaded');
           } },
-          { id: 'e4f', level: 'EMG', make: function (r, sh) {
+          { id: 'e4f', sub: 'f', level: 'EMG', make: function (r, sh) {
             var p = sh.p, q = sh.q, R = Y.mul(lin(1, p), lin(1, -q)), fl = [{ name: 'Product', label: 'expansion', mode: 'math', keys: 'poly', vars: ['x'] }, { name: 'Zero pairs', label: 'number of zero pairs of ' + t('x') + '-tiles' }];
             return KP.fields('Expand ' + t('(x+' + p + ')(x-' + q + ')') + ', and say how many zero pairs of ' + t('x') + '-tiles form.', fl,
               [K.poly(R, { wrong: wl(R, [{ is: quad(1, p + q, -p * q), code: 'no-zero-pairs', hint: 'Shaded and white ' + t('x') + '-tiles cancel: ' + t(tx(mono(p, 'x')) + '-' + q + 'x') + '.' }]) }), K.number(p, numDiag([[q, 'no-zero-pairs', 'Each zero pair uses one shaded <b>and</b> one white tile. There are only ' + t(p) + ' shaded ' + t('x') + '-tiles.'], [p + q, 'no-zero-pairs', 'A zero pair is two tiles (one shaded, one white). Count pairs, not tiles.']]))],

@@ -11,7 +11,9 @@
   var INK = '#2b3340', TEAL = '#13807a', GREY = '#c9ccd2';
 
   HW.addCodes({
-    'pair-format': 'Ordered pair not written as (x, y)', 'pair-brackets': 'Ordered pair without brackets', 'pair-swap': 'Coordinates in the wrong order',
+    'poly-join': 'Plotted the points but didn’t join them', 'poly-edge': 'A segment of the figure is missing', 'poly-extra': 'Joined points out of order', 'table-x': 'Plotted against 0, 1, 2, … instead of the table’s values',
+    'graph-left': 'Graph starts at the wrong place', 'graph-vertical': 'Vertical piece in a graph', 'axis-start': 'Horizontal axis not started at 0',
+    'pair-format':'Ordered pair not written as (x, y)', 'pair-brackets': 'Ordered pair without brackets', 'pair-swap': 'Coordinates in the wrong order',
     'pair-sign': 'Sign of a coordinate wrong', 'pair-value': 'Wrong coordinates', 'wrong-point': 'Named the wrong point', 'no-point': 'Named a point that isn’t there',
     letter: 'Not a point letter', 'quad-clockwise': 'Numbered the quadrants clockwise', 'quad-sign': 'Wrong quadrant (signs)', 'var-letter': 'Wrong letter for the variable',
     'no-constant': 'Equation missing the constant term', 'first-term': 'Used the first value as the constant', 'step-as-const': 'Used the step as the constant', 'times-first': 'Multiplied by the first value',
@@ -129,6 +131,37 @@
       answer: t(want.join(',\\ ')), solution: sol, hints: hints || [], text: text };
   }
   function mcCols(p) { p.input.columns = 2; return p; }
+  /* ---- drawing parts (graph pad, js/draw.js) ---- */
+  var DR = HW.draw;
+  function gv(pts, pieces, join) { return { pts: pts || [], pieces: pieces || [], join: join || 'none' }; }
+  function segv(a, b, s, e) { return { v: [a, b], s: s || 'closed', e: e || 'closed' }; }
+  /* the same point set is always right (K.graphExact tests "joined or not" before it tests equality) */
+  function exactChk(target, opt) {
+    var base = K.graphExact(target, opt);
+    return function (resp) { if (!DR.empty(resp) && DR.same(resp, target)) return ok(); return base(resp); };
+  }
+  function drawPart(prompt, inp, check, key, sol, hints, text, bad) {
+    var p = KP.graph(prompt, inp, check, key, sol, hints, text);
+    p.bad = (bad || []).filter(function (b) { return !DR.same(b, key); });
+    return p;
+  }
+  /* a first-quadrant plotting grid for a pattern: x = 0..xmax, y = 0..ymax (snap = grid) */
+  function patternPad(xmax, ymax, gy, o) {
+    o = o || {};
+    var ly = gy * (ymax / gy > 10 ? 2 : 1);
+    return { x: [0, xmax], y: [0, ymax], grid: 1, gridY: gy, labels: 1, labelsX: 1, labelsY: ly, unitX: Math.min(48, 300 / xmax), unitY: Math.min(24, 300 / ymax), firstQuadrant: true,
+      xName: o.xName || 'n', yName: o.yName || 'y', xTitle: o.xTitle, yTitle: o.yTitle, mode: o.mode || 'points', join: o.join !== false, snapX: o.snapX || 1, snapY: gy };
+  }
+  function pointsDiag(tp, xName, yName) { // hint for a plotted point set that differs from tp (points only)
+    return function (resp) {
+      var S = DR.norm(resp);
+      for (var i = 0; i < tp.length; i++) {
+        var p = tp[i], at = S.pts.filter(function (q) { return feq(q[0], p[0]); });
+        if (at.length && !at.some(function (q) { return feq(q[1], p[1]); })) return 'Check your point at ' + t(xName + '=' + p[0]) + ': from the table ' + t(yName + '=' + p[1]) + ', so it goes at ' + t(pt(p)) + '.';
+      }
+      return null;
+    };
+  }
   function smallGraph(spec) { spec.max = spec.max || 200; return HW.graph(spec); }
   function step(maxv) { return maxv <= 14 ? 2 : maxv <= 30 ? 4 : maxv <= 50 ? 10 : 20; }
   function patternGraph(pts, o) { // pts: [[x,y]...] ; o: { xName, yName, join, from0, max }
@@ -369,16 +402,36 @@
             'The ' + t('y') + '-coordinate tells the height of a point. Points at the same height lie on the same <b>horizontal</b> line.', ['The ' + t('y') + '-coordinate measures up–down position.'], 'visual check same y');
         } }] },
       /* ===================== Q3 ===================== */
-      { num: '3', stem: '', parts: [
-        { id: '3', level: 'BEG', make: function (r) {
+      { num: '3', stem: function (sh) { return 'Plot the following points, in order, and join each point to the next with a straight line segment: ' + sh.path + '.'; },
+        shared: function (r) {
           var fam = r.pick(['house', 'house', 'trapezoid', 'parallelogram', 'kite']), S = SHAPES[fam], v0 = S.make(r);
           var ox = r.pick([-2, -1, 0, 0]), oy = r.pick([-2, -1, 0, 0]), v = v0.map(function (p) { return [p[0] + ox, p[1] + oy]; });
-          var path = v.map(function (p) { return t(pt(p)); }).join(' to ') + ' and back to ' + t(pt(v[0]));
           var xs = v.map(function (p) { return p[0]; }), ys = v.map(function (p) { return p[1]; });
-          var g = HW.graph({ x: [Math.min(-2, Math.min.apply(null, xs) - 1), Math.max.apply(null, xs) + 1], y: [Math.min(-2, Math.min.apply(null, ys) - 1), Math.max.apply(null, ys) + 1], labels: 2, max: 240,
-            segs: [{ pts: v.concat([v[0]]) }], points: v.map(function (p) { return { x: p[0], y: p[1] }; }), aria: 'the plotted figure' });
-          return KP.mc(r, 'Plot the following points, in order, on a grid and join each point to the next with a straight line segment: ' + path + '. What geometric figure do the points outline?',
-            [{ html: S.name, right: true }].concat(S.wrong(v)), g + '<br>The segments outline ' + S.name + '.', ['Sketch a grid on paper, plot the points in order and join them.', 'Count the corners, then check which sides are parallel.'], 'plot and name: ' + fam);
+          return { fam: fam, S: S, v: v, path: v.map(function (p) { return t(pt(p)); }).join(' to ') + ' and back to ' + t(pt(v[0])),
+            xr: [Math.min(-2, Math.min.apply(null, xs) - 1), Math.max.apply(null, xs) + 1], yr: [Math.min(-2, Math.min.apply(null, ys) - 1), Math.max.apply(null, ys) + 1] };
+        },
+        parts: [
+        { id: '3a', sub: 'a', level: 'BEG', make: function (r, sh) {
+          var v = sh.v, n = v.length, target = gv([], [{ v: v.concat([v[0]]), s: 'closed', e: 'closed' }]), base = exactChk(target);
+          var check = function (resp) {
+            var res = base(resp); if (res.v !== 'wrong' || res.code === 'graph-swap') return res;
+            var S = DR.norm(resp);
+            if (!S.pieces.length) return wrong('poly-join', 'Now join the points: use <b>╱ Line</b> and tap each point in order, ending back at ' + t(pt(v[0])) + '.');
+            for (var i = 0; i < n; i++) {
+              var a = v[i], b = v[(i + 1) % n];
+              if (!DR.contains(resp, [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2])) return wrong('poly-edge', 'The segment from ' + t(pt(a)) + ' to ' + t(pt(b)) + ' is missing' + (i === n - 1 ? ' — join the last point back to the first one.' : '. Check that both points are in the right place.'));
+            }
+            return wrong('poly-extra', 'Your drawing has a segment (or point) that isn’t on the path. Join each point only to the <b>next</b> one in the list.');
+          };
+          var bad = [gv(v), gv([], [{ v: v, s: 'closed', e: 'closed' }]), gv([], [{ v: v.map(function (p) { return [p[1], p[0]]; }).concat([[v[0][1], v[0][0]]]), s: 'closed', e: 'closed' }])];
+          return drawPart('Plot the points in order and join each point to the next. (Use <b>╱ Line</b>: tap the points one after another, then tap the last one again to finish.)', { x: sh.xr, y: sh.yr, labels: 2, tools: ['line', 'point'] }, check, target,
+            'Start at ' + t(pt(v[0])) + ' and join, in order, ' + v.slice(1).map(function (p) { return t(pt(p)); }).join(', ') + ' and back to ' + t(pt(v[0])) + '.', ['Plot each point: across first (' + t('x') + '), then up or down (' + t('y') + ').', 'Join each point to the next one, and the last one back to the first.'], 'plot and join: ' + sh.fam, bad);
+        } },
+        { id: '3', sub: 'b', level: 'BEG', make: function (r, sh) {
+          var v = sh.v, S = sh.S;
+          var g = HW.graph({ x: sh.xr, y: sh.yr, labels: 2, max: 240, segs: [{ pts: v.concat([v[0]]) }], points: v.map(function (p) { return { x: p[0], y: p[1] }; }), aria: 'the plotted figure' });
+          return KP.mc(r, 'What geometric figure do the points outline?',
+            [{ html: S.name, right: true }].concat(S.wrong(v)), g + '<br>The segments outline ' + S.name + '.', ['Look at your drawing in (a).', 'Count the corners, then check which sides are parallel.'], 'plot and name: ' + sh.fam);
         } }] },
       /* ===================== Q4 ===================== */
       { num: '4', section: 'Part B — Growing patterns: table, graph and equation', stem: function (sh) {
@@ -387,7 +440,7 @@
             '<br>A ' + shape + '-shaped pattern of dots is shown. Figure ' + t('1') + ' has ' + t(sh.S(1)) + ' dots: one ' + (sh.a === 2 ? 'at the bottom of the V' : 'in the centre, where the arms meet') + ' and ' + t(sh.m) + ' on each ' + (sh.a === 2 ? '' : 'of the ' + sh.a + ' ') + 'arm' + (sh.a === 2 ? '' : 's') + '. Each new figure adds one more dot to the end of each arm. Let ' + t('N') + ' be the figure number and ' + t('S') + ' the number of dots.';
         },
         shared: function (r) {
-          var a = r.pick([2, 2, 3, 4]), m = r.pick([1, 1, 2]), b = a * (m - 1) + 1;
+          var a = r.pick([2, 2, 3]), m = a === 2 ? r.pick([1, 1, 2]) : 1, b = a * (m - 1) + 1; // S(5) ≤ 16 keeps the plotting grid tappable
           return { a: a, m: m, b: b, S: function (N) { return a * N + b; }, f50: r.int(30, 80), Ng: r.int(40, 90) };
         },
         parts: [
@@ -401,18 +454,17 @@
             ['Count the dots in Figures 1–3, then keep adding the same amount.', 'How many arms are there? Each one gets one more dot per figure.'], 'table S=' + lin(sh.a, sh.b, 'N'));
           } },
           { id: '4b', level: 'BEG', make: function (r, sh) {
-            var Ns = [1, 2, 3, 4, 5], o = { xName: 'N', yName: 'S' };
-            var right = patternGraph(Ns.map(function (N) { return [N, sh.S(N)]; }), o);
-            var joined = patternGraph(Ns.map(function (N) { return [N, sh.S(N)]; }), Object.assign({ join: [[1, sh.S(1)], [5, sh.S(5)]] }, o));
-            var noC = patternGraph(Ns.map(function (N) { return [N, sh.a * N]; }), o);
-            var shift = patternGraph(Ns.map(function (N) { return [N, sh.S(N + 1)]; }), o);
-            return mcCols(KP.mc(r, 'Which graph represents the data from the table?', [
-              { html: right, right: true },
-              { html: joined, why: 'The points are right, but they shouldn’t be joined: there is no Figure 2.5, so the in-between values have no meaning.' },
-              { html: noC, why: 'Check Figure 1: it has ' + sh.S(1) + ' dots, so its point is ' + t(pt([1, sh.S(1)])) + '.' },
-              { html: shift, why: 'Check Figure 1: its point should be ' + t(pt([1, sh.S(1)])) + '. This graph is one figure ahead.' }],
-              'Plot ' + Ns.map(function (N) { return t(pt([N, sh.S(N)])); }).join(', ') + ' and leave them as separate points (the figure number is a whole number).',
-              ['Find the point for Figure 1 first: ' + t('(1, S)') + '.'], 'graph of S=' + lin(sh.a, sh.b, 'N')));
+            var Ns = [1, 2, 3, 4, 5], tp = Ns.map(function (N) { return [N, sh.S(N)]; }), target = gv(tp);
+            var noC = gv(Ns.map(function (N) { return [N, sh.a * N]; })), shift = gv(Ns.map(function (N) { return [N, sh.S(N + 1)]; })), from0 = gv([0, 1, 2, 3, 4].map(function (N) { return [N, sh.S(N + 1)]; }));
+            var base = exactChk(target, { joinMatters: true, wrong: [
+              { is: noC, code: 'forgot-centre', hint: 'Check Figure 1: it has ' + sh.S(1) + ' dots (don’t forget the ' + (sh.a === 2 ? 'bottom' : 'centre') + ' dot), so its point is ' + t(pt([1, sh.S(1)])) + '.' },
+              { is: shift, code: 'off-by-one', hint: 'Each point is one figure ahead. Figure 1 has ' + sh.S(1) + ' dots: its point is ' + t(pt([1, sh.S(1)])) + '.' },
+              { is: from0, code: 'off-by-one', hint: 'The figures start at ' + t('N=1') + ', not ' + t('N=0') + ': Figure 1 goes at ' + t(pt([1, sh.S(1)])) + '.' }] }), diag = pointsDiag(tp, 'N', 'S');
+            var check = function (resp) { var res = base(resp); if (res.v === 'wrong' && !res.hint) { var h = diag(resp); if (h) return wrong('graph-points', h); } return res; };
+            var inp = patternPad(6, sh.S(5) + 1 + (sh.S(5) + 1) % 2, 1, { xName: 'N', yName: 'S' });
+            return drawPart('Represent the data from the table on the grid. Decide whether to join the points (the <b>Join</b> button).', inp, check, target,
+              'Plot ' + tp.map(function (p) { return t(pt(p)); }).join(', ') + ' and leave them as separate points: the figure number is a whole number (there is no Figure 2.5), so nothing in between has meaning.',
+              ['Each column of the table is a point ' + t('(N,\\ S)') + ': Figure 1 is ' + t(pt([1, sh.S(1)])) + '.', 'Is there a Figure 2.5? If not, don’t join the points.'], 'plot S=' + lin(sh.a, sh.b, 'N'), [gv(tp, [], 'curve'), noC, shift, gv(tp.map(function (p) { return [p[1], p[0]]; }))]);
           } },
           { id: '4c', level: 'EMG', make: function (r, sh) {
             return KP.mc(r, 'Does it make sense to join the points with a straight line?', [
@@ -469,24 +521,47 @@
             HW.valueTable([['\\(d\\) (km)'].concat(sh.ds), ['\\(F\\) ($)'].concat(sh.ds.map(function (d) { return money(sh.fare(d)); }))]);
         },
         shared: function (r) {
-          var feeC = r.pick([250, 300, 325, 350, 350, 375, 400, 450]), rateC = r.pick([80, 90, 110, 120, 120, 130, 140, 150, 160]);
+          var feeC = r.pick([250, 300, 325, 350, 350, 375, 400, 450]), rateC = r.pick([80, 90, 110, 120, 120, 130, 140]); // F(8) ≤ $15.70 keeps the plotting grid tappable
           var dq = r.pick([1, 3, 5, 5, 7]), dd = r.pick([1, 3, 5, 7, 7].filter(function (x) { return x !== dq; }));
           var fare = function (d) { return feeC + rateC * d; };
           return { feeC: feeC, rateC: rateC, dq: dq, dd: dd, ds: [0, 2, 4, 6, 8], fare: fare };
         },
         parts: [
-          { id: '5a', level: 'BEG', make: function (r, sh) {
-            var ds = sh.ds, f = function (d) { return sh.fare(d) / 100; }, ymax = Math.ceil((f(8) + 0.5) / 2) * 2;
-            var G = function (pts, line) { return HW.graph({ x: [0, 9], y: [0, ymax], grid: 1, labels: 1, labelsX: 2, labelsY: ymax > 14 ? 4 : 2, gridY: ymax > 14 ? 2 : 1, unitX: 13, unitY: 105 / ymax, xName: 'd', yName: 'F', firstQuadrant: true, max: 200,
-              points: pts.map(function (p) { return { x: p[0], y: p[1] }; }), segs: line ? [{ pts: line }] : [], aria: 'fare graph' }); };
-            var good = ds.map(function (d) { return [d, f(d)]; });
-            return mcCols(KP.mc(r, 'Which graph represents the data?', [
-              { html: G(good, [[0, f(0)], [8, f(8)]]), right: true },
-              { html: G(good, null), why: 'The points are right, but distance can be any value (e.g. ' + t('3.6') + ' km), so the points should be joined.' },
-              { html: G(ds.map(function (d) { return [d, sh.rateC * d / 100]; }), [[0, 0], [8, sh.rateC * 8 / 100]]), why: 'Check the first column of the table: at ' + t('d=0') + ' the fare is already ' + t('\\$' + money(sh.feeC)) + '.' },
-              { html: G(ds.map(function (d, i) { return [i, f(d)]; }), [[0, f(0)], [4, f(8)]]), why: 'Check the ' + t('d') + '-values: the table goes ' + t('0, 2, 4, 6, 8') + ', not ' + t('0, 1, 2, 3, 4') + '.' }],
-              'Plot ' + good.map(function (p) { return t('(' + p[0] + ', ' + p[1].toFixed(2) + ')'); }).join(', ') + ' and join them with a straight line (distance and fare are continuous).',
-              ['Find the point for ' + t('d=0') + ' first.'], 'graph of taxi fares'));
+          { id: '5a', level: 'EMG', make: function (r, sh) {
+            var ds = sh.ds, f = function (d) { return sh.fare(d) / 100; }, ymax = Math.ceil(f(8) + 1), tol = 0.5 + 1e-9;
+            var good = ds.map(function (d) { return [d, f(d)]; }), key = gv(good, [], 'curve');
+            var near = function (p) { return ds.some(function (d) { return feq(p[0], d) && Math.abs(p[1] - f(d)) <= tol; }); };
+            var check = function (resp) {
+              if (DR.empty(resp)) return form('empty', 'Draw your answer on the grid first.');
+              var S = DR.norm(resp), g = DR.geom(resp), lines = Object.keys(g.lines).map(function (k) { return g.lines[k]; });
+              var xsOf = S.pts.map(function (p) { return p[0]; }).sort(function (a, b) { return a - b; }).join();
+              if (xsOf === '0,1,2,3,4' && !S.pieces.length) return wrong('table-x', 'Check the ' + t('d') + '-values: the table goes ' + t('0,\\ 2,\\ 4,\\ 6,\\ 8') + ' km — plot each fare above its own distance.');
+              if (S.pts.some(function (p) { return feq(p[0], 0) && Math.abs(p[1]) < 0.3; }) && sh.feeC > 60) return wrong('no-fee', 'Check the first column of the table: at ' + t('d=0') + ' the fare is already ' + t('\\$' + money(sh.feeC)) + ' (the pickup fee).');
+              var off = S.pts.filter(function (p) { return !near(p); })[0];
+              if (off) { var d0 = ds.filter(function (d) { return feq(d, off[0]); })[0]; return wrong('graph-points', d0 != null ? 'Check your point at ' + t('d=' + d0) + ': the fare is ' + t('\\$' + money(sh.fare(d0))) + ', so the point goes at about ' + t('(' + d0 + ',\\ ' + money(sh.fare(d0)) + ')') + ' (between grid lines is fine — pick the nearest).' : t(pt(off)) + ' isn’t one of the data points. Plot one point for each column of the table.'); }
+              if (!lines.length) {
+                if (ds.every(function (d) { return S.pts.some(function (p) { return feq(p[0], d); }); })) return wrong('graph-not-joined', 'Your points are right — now join them: a trip can be any distance (say ' + t('3.6') + ' km), so every value in between has meaning.');
+                return wrong('graph-missing', 'Plot one point for each column of the table (' + t('d=0,\\ 2,\\ 4,\\ 6,\\ 8') + '), then join them.');
+              }
+              if (DR.notFunction(resp)) return wrong('graph-vertical', 'Your graph goes straight up somewhere — each distance has just one fare.');
+              var dom = DR.domain(resp).parts, lo = dom[0].lo, hi = dom[dom.length - 1].hi;
+              if (lo < -1e-9) return wrong('graph-left', 'A distance can’t be negative: start the graph at ' + t('d=0') + '.');
+              for (var i = 0; i < ds.length; i++) {
+                var d = ds[i], ys = []; lines.forEach(function (L) { if (L.B === 0) return; L.iv.forEach(function (iv) { if (d >= iv.lo - 1e-9 && d <= iv.hi + 1e-9) ys.push((L.C - L.A * d) / L.B); }); });
+                if (!ys.some(function (y) { return Math.abs(y - f(d)) <= tol; })) {
+                  if (ys.some(function (y) { return Math.abs(y - sh.rateC * d / 100) <= tol; }) && sh.feeC > 60) return wrong('no-fee', 'At ' + t('d=0') + ' the fare is already ' + t('\\$' + money(sh.feeC)) + ', so the line starts there, not at the origin.');
+                  return wrong('graph-points', ys.length ? 'Check ' + t('d=' + d) + ': the fare is ' + t('\\$' + money(sh.fare(d))) + ', so the line should pass through about ' + t('(' + d + ',\\ ' + money(sh.fare(d)) + ')') + '.' : 'Your line should cover every trip in the table, from ' + t('d=0') + ' to ' + t('d=8') + '.');
+                }
+              }
+              if (lo > 1e-9) return wrong('graph-left', 'Start the line at ' + t('d=0') + ': a trip of 0 km is the pickup fee.');
+              return ok();
+            };
+            var bad = [gv(good), gv(ds.map(function (d) { return [d, Math.round(sh.rateC * d / 100)]; }), [], 'curve'), gv(ds.map(function (d, i) { return [i, Math.round(f(d))]; }), [], 'curve'), gv([], [segv([-2, Math.round(f(-2))], [8, Math.round(f(8))], 'arrow', 'closed')])];
+            var p = drawPart('Represent the data on the grid. (Plot each point at the nearest grid line; use <b>╱ Line</b> or <b>Join</b> if the points should be joined.)', { x: [0, 9], y: [0, ymax], grid: 1, labels: 1, labelsX: 1, labelsY: 2, unitX: 34, unitY: Math.min(22, 300 / ymax), xName: 'd', yName: 'F', xTitle: 'Distance, d (km)', yTitle: 'Fare, F ($)', firstQuadrant: true, join: true }, check, key,
+              'Plot ' + good.map(function (p) { return t('(' + p[0] + ',\\ ' + p[1].toFixed(2) + ')'); }).join(', ') + ' and join them with a straight line: distance and fare are continuous (a trip can be any length).',
+              ['Find the point for ' + t('d=0') + ' first: the fare is ' + t('\\$' + money(sh.feeC)) + '.', 'Could a taxi ride be ' + t('3.6') + ' km long? Then join the points.'], 'plot taxi fares', bad);
+            p.good = [gv([], [segv([0, Math.round(f(0))], [8, Math.round(f(8))])]), gv(good.map(function (q) { return [q[0], Math.round(q[1])]; }), [], 'curve')];
+            return p;
           } },
           { id: '5b', level: 'EMG', make: function (r, sh) {
             return KP.mc(r, 'Does it make sense to join the points together with a straight line?', [

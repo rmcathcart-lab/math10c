@@ -100,6 +100,76 @@
     p.bad = cands.filter(function (c) { return c.v != null && isFinite(c.v) && !near(c.v, ans); }).map(function (c) { return dn(c.v); });
     return p;
   }
+  /* ---------- drawing answers (js/draw.js) ---------- */
+  var DR = HW.draw;
+  HW.addCodes({ 'story-bend': 'Stage drawn with the wrong bend (straight vs curved, steeper vs flatter)', 'story-zero': 'Graph reaches zero when it shouldn’t (or not when it should)', 'story-peaks': 'Peak heights wrong', 'story-cycles': 'Cycles not identical',
+    'story-when': 'A stage at the wrong time', 'story-lines': 'Points instead of a line', 'story-rush': 'Rise / fall too slow for the story', 'stair-lin': 'Straight line instead of a staircase', 'stair-up': 'Staircase going the wrong way', 'stair': 'Staircase steps wrong',
+    'plot-value': 'Point plotted at the wrong value', 'plot-shift': 'Points shifted by one reading', 'plot-count': 'Missing or extra point' });
+  /* a shape-only story pad: no numbers, line tool only, no end marks */
+  function spad(o) {
+    return Object.assign({ x: [0, 12], y: [0, 8], grid: 1, labels: 0, firstQuadrant: true, xName: ' ', yName: ' ', unitX: 25, unitY: 25, defaultEnd: 'none', tools: ['line'], max: 360,
+      help: 'Tap where the graph starts, then each corner in turn, left to right; tap the last point again to finish. For a curve, use several short pieces.' }, o || {});
+  }
+  function poly(pts) { return { pts: [], pieces: [{ v: pts, s: 'none', e: 'none' }], join: 'none' }; }
+  /* the drawing's left-to-right pieces, with each run going the same way (up / flat / down) merged into one stage */
+  function groupsOf(value) {
+    var g = [];
+    DR.phases(value).phases.forEach(function (p) { var L = g[g.length - 1]; if (L && L.dir === p.dir) { L.segs.push(p); L.x1 = p.x1; L.y1 = p.y1; } else g.push({ dir: p.dir, segs: [p], x0: p.x0, x1: p.x1, y0: p.y0, y1: p.y1 }); });
+    return g;
+  }
+  function simple(G) { var v = [[G[0].x0, G[0].y0]]; G.forEach(function (g) { v.push([g.x1, g.y1]); }); return poly(v); }
+  function bendOk(g, kind) {
+    var m = g.segs.map(function (s) { return Math.abs(s.m); }), i, k;
+    if (kind === 'straight') return m.length === 1;
+    if (kind === 'steeper' || kind === 'gentler') { if (m.length < 2) return false; for (i = 1; i < m.length; i++) if (kind === 'steeper' ? !(m[i] > m[i - 1] + 1e-9) : !(m[i] < m[i - 1] - 1e-9)) return false; return true; }
+    if (kind === 'scurve') { // steeper and steeper, (straight), then flatter and flatter
+      k = m.indexOf(Math.max.apply(null, m)); if (k === 0 || k === m.length - 1) return false;
+      for (i = 1; i <= k; i++) if (!(m[i] > m[i - 1] + 1e-9)) return false;
+      for (i = k + 1; i < m.length; i++) if (!(m[i] < m[i - 1] - 1e-9)) return false; return true;
+    }
+    return true;
+  }
+  var BENDH = { straight: 'This stage happens at a steady rate, so draw it as <b>one straight piece</b>.', steeper: 'This stage should <b>curve, getting steeper and steeper</b>: draw it as a few short pieces, each steeper than the one before.',
+    gentler: 'This stage should <b>curve, getting flatter and flatter</b>: steep at first, then a few short pieces, each less steep than the one before.', scurve: 'This stage should get steeper and steeper, then flatter and flatter.' };
+  /* Story graph checked by shape: K.graphStory on the drawing with each run of same-direction pieces merged into one
+   * stage (so a curve drawn as several short pieces counts as one stage); then each stage's bend (phase.bend:
+   * 'straight' | 'steeper' | 'gentler' | 'scurve', with phase.bendHint). spec.prep(G) may drop optional stages
+   * (a levelling-off flat end, …) and returns the new list (or { code, hint }); spec.after(G, value) -> { code, hint } | null. */
+  function story(spec) {
+    var base = K.graphStory(spec);
+    return function (resp) {
+      if (DR.empty(resp)) return base(resp);
+      var ph = DR.phases(resp);
+      if (ph.vertical || ph.gaps.length || DR.notFunction(resp)) return base(resp);
+      if (!ph.phases.length) return wrong('story-lines', 'Draw the graph as a line: tap where it starts, then each corner in turn, and tap the last point again to finish.');
+      var G = groupsOf(resp);
+      if (spec.prep) { var pr = spec.prep(G); if (pr && pr.hint) return wrong(pr.code || 'story', pr.hint); if (pr) G = pr; }
+      var r = base(simple(G)); if (r.v !== 'correct') return r;
+      for (var i = 0; i < spec.phases.length; i++) { var b = spec.phases[i].bend; if (b && !bendOk(G[i], b)) return wrong('story-bend', spec.phases[i].bendHint || BENDH[b]); }
+      if (spec.after) { var h = spec.after(G, DR.norm(resp)); if (h) return wrong(h.code || 'story', h.hint); }
+      return ok();
+    };
+  }
+  /* optional stages: a flat run at the end (levelling off / stopped) and/or at the start */
+  function trimFlat(lead, trail, test) {
+    return function (G) {
+      G = G.slice(); test = test || function () { return true; };
+      if (trail && G.length > 1 && G[G.length - 1].dir === 'flat' && test(G[G.length - 1])) G.pop();
+      if (lead && G.length > 1 && G[0].dir === 'flat' && test(G[0])) G.shift();
+      return G;
+    };
+  }
+  function storyPart(prompt, inp, check, key, sol, hints, text, bad) {
+    var p = K.P.graph(prompt, inp, check, key, sol, hints, text);
+    p.answer = 'One possible sketch:' + p.answer; p.bad = bad || []; return p;
+  }
+  /* y-values a drawing takes at x (non-vertical pieces and points) */
+  function ysAt(v, x) {
+    var g = DR.geom(v), out = [];
+    Object.keys(g.lines).forEach(function (k) { var L = g.lines[k]; if (L.B === 0) return; L.iv.forEach(function (iv) { if ((x > iv.lo + 1e-9 && x < iv.hi - 1e-9) || (near(x, iv.lo) && iv.lc) || (near(x, iv.hi) && iv.hc)) out.push(Math.round((L.C - L.A * x) / L.B * 1e6) / 1e6); }); });
+    g.pts.forEach(function (p) { if (near(p[0], x)) out.push(p[1]); });
+    return out;
+  }
   function numBox(label, after) { return { label: label, name: label.replace(/:$/, ''), after: after }; }
   function mathBox(label, after) { return { label: label, name: label.replace(/:$/, ''), mode: 'math', keys: 'fraction', after: after }; }
   /* rate diagnoses: dy over dxMin minutes, asked per hour (perHour) or per minute/second (not converted) */
@@ -203,25 +273,17 @@
   function vanRows(v) { return v.kinds.map(function (k, i) { return { id: 's' + i, html: hm(v.tt[i]) + '–' + hm(v.tt[i + 1]), kind: k }; }); }
 
   /* ---------- Q5: bouncing ball ---------- */
-  function ballFig(H0, p, kind) {
-    var hs = [H0]; for (var i = 1; i <= 4; i++) hs.push(H0 * Math.pow(p, i));
-    var sc = 5.2 / (H0 * 1.06), fns = [], T = Math.sqrt(H0) + 2 * hs.slice(1).reduce(function (a, h) { return a + Math.sqrt(h); }, 0), tx = 9.4 / T, x0 = 0.25;
-    if (kind === 'float') {
-      return sk({ fns: [Fn(function (x) { var u = x - x0; return sc * (H0 * 0.55 + H0 * 0.45 * Math.exp(-0.28 * u) * Math.cos(2 * Math.PI * u / 2.2)); }, x0, 9.6)] }, { pad: true, yT: [[H0 * sc, String(H0)]] });
-    }
-    var arch = kind === 'same' ? [H0, H0, H0, H0, H0] : hs;
-    if (kind === 'ground') {
-      var wg = 2 * Math.sqrt(H0) * tx * 0.8, a0 = x0; fns.push(Fn(function (x) { return sc * H0 * (1 - Math.pow((x - a0 - wg / 2) / (wg / 2), 2)); }, a0, a0 + wg)); x0 = a0 + wg;
-      tx = (9.6 - x0) / (2 * hs.slice(1).reduce(function (a, h) { return a + Math.sqrt(h); }, 0));
-    } else {
-      var w0 = Math.sqrt(H0) * tx, d0 = x0; fns.push(Fn(function (x) { return sc * H0 * (1 - Math.pow((x - d0) / w0, 2)); }, x0, x0 + w0)); x0 += w0; // d0: x0 changes later
-    }
-    if (kind === 'same') tx = (9.6 - x0) / (8 * Math.sqrt(H0));
-    for (var j = 1; j <= 4; j++) {
-      (function (h, a) { var w = 2 * Math.sqrt(h) * tx; fns.push(Fn(function (x) { return Math.max(0, sc * h * (1 - Math.pow((x - a - w / 2) / (w / 2), 2))); }, a, a + w)); x0 = a + w; })(arch[j], x0);
-    }
-    return sk({ fns: fns }, { pad: true, yT: [[H0 * sc, String(H0)]] });
-  }
+  /* drop heights and rebound percents whose first four peaks sit at least 1.5 grid lines up and a grid line apart
+   * (grid 1 m up to 12 m, 2 m above), so a correct sketch can show four distinct, decreasing peaks */
+  var BALL = (function () {
+    var out = [];
+    [8, 10, 12, 16, 20].forEach(function (H) { [50, 60, 65, 70, 75, 80].forEach(function (pc) {
+      var g = H <= 12 ? 1 : 2, h = [1, 2, 3, 4].map(function (k) { return H * Math.pow(pc / 100, k); });
+      if (h[3] < 1.5 * g) return; for (var i = 0; i < 3; i++) if (h[i] - h[i + 1] < g) return;
+      out.push({ H0: H, pct: pc });
+    }); });
+    return out;
+  })();
 
   /* ---------- Q9: out to a second place, then home ---------- */
   function lineDiagram(places, gaps) { // home --- a --- b
@@ -413,41 +475,48 @@
       } }] },
 
     { num: '5', stem: function (b) { return 'A rubber ball is dropped from a height of ' + t(b.H0 + units('m')) + '. On each bounce it rebounds to ' + t(b.pct + '\\%') + ' of its previous height.'; },
-      shared: function (r) { var bk = r.chance(0.3), H0 = bk ? 12 : r.pick([8, 10, 12, 15, 16, 20]), pct = bk ? 65 : r.pick([50, 60, 65, 70, 75, 80]); return { H0: H0, pct: pct, p: pct / 100 }; }, parts: [
-      { id: '5a', level: 'EMG', make: function (r, b) {
-        var hs = [1, 2, 3, 4].map(function (k) { return b.H0 * Math.pow(b.p, k); });
-        var f = hs.map(function (h, i) { return numBox(['1st', '2nd', '3rd', '4th'][i] + ' rebound:', 'm'); });
-        function chk(k) {
-          var x = hs[k - 1];
-          return function (resp) {
-            var pz = HW.parse.number(resp);
-            if (!pz.ok) return form(pz.code === 'empty' ? 'empty' : 'notnumber', pz.code === 'empty' ? 'Type your answer first.' : 'Enter a single number (in metres).');
-            var v = pz.value; if (Math.abs(v - x) <= 0.005 + 1e-9) return ok(); // rounds to the right hundredth (or is more precise)
-            var c = [{ v: b.H0 * b.p, code: 'pct-original', hint: 'Each rebound is ' + t(b.pct + '\\%') + ' of the <b>previous</b> rebound, not of the first drop. Multiply by ' + t(dn(b.p)) + ' again each time.' },
-              { v: b.H0 * Math.pow(1 - b.p, k), code: 'pct-lost', hint: 'The ball keeps ' + t(b.pct + '\\%') + ' of its height — multiply by ' + t(dn(b.p)) + ', not ' + t(dn(1 - b.p)) + '.' },
-              { v: b.H0 - k * b.H0 * (1 - b.p), code: 'pct-linear', hint: 'The ball doesn’t lose the same number of metres each time: it keeps ' + t(b.pct + '\\%') + ' of whatever height it just had, so multiply by ' + t(dn(b.p)) + ' each bounce.' },
-              { v: b.H0 * Math.pow(b.p, k - 1), code: 'pct-shift', hint: 'That is the height <b>before</b> rebound ' + k + '. Multiply by ' + t(dn(b.p)) + ' once more.' }];
-            for (var i = 0; i < c.length; i++) if (!(k === 1 && i === 0) && Math.abs(c[i].v - x) > 0.02 && Math.abs(v - c[i].v) <= 0.011 + 0.002 * c[i].v) return wrong(c[i].code, c[i].hint);
-            if (Math.abs(v - x) <= 0.03) return wrong('round-early', 'Very close — check the rounding. Keep the full value in your calculator from bounce to bounce, and round to the nearest hundredth only at the end.');
-            return wrong('value', null);
-          };
-        }
-        var keys = hs.map(function (h) { return (Math.round(h * 100 + 1e-6) / 100).toFixed(2); }); // 1e-6: 15 × 0.7³ = 5.145 is stored as 5.14499…
-        var p = K.P.fields('Find the height of each of the first four rebounds, to the nearest hundredth of a metre. (These are the peaks your sketch must show.)', f, [chk(1), chk(2), chk(3), chk(4)], keys,
-          keys.map(function (k, i) { return t(k + units('m')); }).join(', '),
-          'Multiply by ' + t(dn(b.p)) + ' for each bounce: ' + t([b.H0].concat(hs).map(function (h, i) { return i ? (Math.round(h * 10000) / 10000) : h; }).join('\\to ')) + '. Rounded: ' + keys.map(function (k) { return t(k + units('m')); }).join(', ') + '.',
-          ['Rebounding to ' + t(b.pct + '\\%') + ' means multiplying the previous height by ' + t(dn(b.p)) + '.'], 'bounce heights ' + b.H0 + ' m at ' + b.pct + '%');
-        p.bad = [[String(b.H0 * b.p), String(b.H0 * b.p), String(b.H0 * b.p), String(b.H0 * b.p)]];
-        return p;
-      } },
-      { id: '5b', level: 'EMG', make: function (r, b) {
-        return mcG(r, 'Which graph best shows the ball’s height (vertical axis) as a function of time (horizontal axis), for the first four bounces?', [
-          { html: ballFig(b.H0, b.p, 'right'), right: true },
-          { html: ballFig(b.H0, b.p, 'same'), code: 'same', why: 'Every bounce here reaches the full ' + t(b.H0 + units('m')) + '. The ball only rebounds to ' + t(b.pct + '\\%') + ' of the previous height, so each peak is lower.' },
-          { html: ballFig(b.H0, b.p, 'ground'), code: 'ground', why: 'This graph starts on the ground. The ball is <b>dropped</b> from ' + t(b.H0 + units('m')) + ', so at time ' + t('0') + ' its height is ' + t(b.H0 + units('m')) + '.' },
-          { html: ballFig(b.H0, b.p, 'float'), code: 'float', why: 'Here the ball never comes back down to height ' + t('0') + '. A bounce happens when the ball hits the ground, so the graph must touch the axis between arches.' }],
-          'The graph starts at ' + t(b.H0 + units('m')) + ' and falls to ' + t('0') + ' (the drop). Then come arches of height about ' + [1, 2, 3, 4].map(function (k) { return t(dn(Math.round(b.H0 * Math.pow(b.p, k) * 100 + 1e-6) / 100)); }).join(', ') + ' m, each touching ' + t('h=0') + ' at a bounce. Lower bounces take less time, so the arches also get narrower.',
-          ['Where does the ball start? What happens at every bounce? How do the peaks change?'], 'bouncing ball graph');
+      shared: function (r) { var bk = r.chance(0.3), c = bk ? { H0: 12, pct: 65 } : r.pick(BALL); return { H0: c.H0, pct: c.pct, p: c.pct / 100 }; }, parts: [
+      { id: '5', level: 'PRG', make: function (r, b) {
+        var g = b.H0 <= 12 ? 1 : 2, hs = [1, 2, 3, 4].map(function (k) { return b.H0 * Math.pow(b.p, k); }), pk = hs.map(function (h) { return Math.round(h / g) * g; }), Y = b.H0 + g;
+        var inp = { x: [0, 13], y: [0, Y], grid: 1, gridY: g, labels: 2, labelsY: 2 * g, firstQuadrant: true, xName: ' ', yName: ' ', xTitle: 'Time (s)', yTitle: 'Height (m)', unitX: 23, unitY: 210 / Y, snapX: 1, snapY: g,
+          defaultEnd: 'none', tools: ['line'], max: 360, help: 'Tap where the graph starts, then each corner in turn (the top of each bounce, each landing); tap the last point again to finish.' };
+        var hm2 = function (h) { return dn(Math.round(h * 100 + 1e-6) / 100); };
+        var ph = [{ dir: 'down', text: 'the drop from ' + b.H0 + ' m' }];
+        for (var k = 1; k <= 4; k++) ph.push({ dir: 'up', text: 'rebound ' + k }, { dir: 'down', text: 'falling back to the ground' });
+        var chk = story({ phases: ph, start: b.H0, startHint: 'The ball is <b>dropped</b> from ' + t(b.H0 + units('m')) + ': at time ' + t('0') + ' its height is ' + t(b.H0 + units('m')) + ', and the first thing it does is fall.',
+          prep: function (G) {
+            G = trimFlat(false, true, function (f) { return near(f.y0, 0); })(G);
+            if (G.length > 9) { // more bounces than asked: fine if they keep alternating and getting lower
+              for (var i = 9; i < G.length; i++) if (G[i].dir !== (i % 2 ? 'up' : 'down')) return null;
+              for (i = 9; i < G.length; i += 2) if (G[i].y1 >= G[i - 2].y1 - 1e-9) return { code: 'story-peaks', hint: 'Each rebound is lower than the one before — keep that going for the extra bounces too.' };
+              G = G.slice(0, 9);
+            }
+            return G;
+          },
+          after: function (G) {
+            for (var i = 0; i < 9; i += 2) if (!near(G[i].y1, 0)) return { code: 'story-zero', hint: 'A bounce happens when the ball <b>hits the ground</b>: after the drop and after every rebound the graph must come all the way down to height ' + t('0') + '.' };
+            var P = [1, 3, 5, 7].map(function (j) { return G[j].y1; });
+            for (var k = 0; k < 4; k++) {
+              if (Math.abs(P[k] - hs[k]) <= g + 1e-9) continue;
+              var n = k + 1;
+              if (P.every(function (q) { return Math.abs(q - b.H0) <= g; })) return { code: 'pct-original', hint: 'Every bounce here goes back up to the full ' + t(b.H0 + units('m')) + '. The ball only rebounds to ' + t(b.pct + '\\%') + ' of the previous height, so each peak is lower.' };
+              if (k > 0 && Math.abs(P[k] - b.H0 * b.p) <= g) return { code: 'pct-original', hint: 'Rebound ' + n + ' is ' + t(b.pct + '\\%') + ' of the <b>previous</b> rebound, not of the first drop: multiply by ' + t(dn(b.p)) + ' again each time.' };
+              if (Math.abs(P[k] - b.H0 * Math.pow(1 - b.p, n)) <= g) return { code: 'pct-lost', hint: 'The ball <b>keeps</b> ' + t(b.pct + '\\%') + ' of its height: multiply by ' + t(dn(b.p)) + ', not ' + t(dn(1 - b.p)) + '.' };
+              if (Math.abs(P[k] - (b.H0 - n * b.H0 * (1 - b.p))) <= g / 2) return { code: 'pct-linear', hint: 'The ball doesn’t lose the same number of metres each time: it keeps ' + t(b.pct + '\\%') + ' of whatever height it just had, so multiply by ' + t(dn(b.p)) + ' every bounce.' };
+              return { code: 'story-peaks', hint: 'Check the top of rebound ' + n + ': it should be at about ' + t(hm2(hs[k]) + units('m')) + ' (' + t(b.pct + '\\%') + ' of ' + t(hm2(k ? hs[k - 1] : b.H0) + units('m')) + '). Put it on the nearest grid line.' };
+            }
+            return null;
+          } });
+        var key = [[0, b.H0], [1, 0]]; pk.forEach(function (h, i) { key.push([2 + 2 * i, h], [3 + 2 * i, 0]); });
+        var arch = function (hh) { var v = [[0, b.H0], [1, 0]]; hh.forEach(function (h, i) { v.push([2 + 2 * i, h], [3 + 2 * i, 0]); }); return poly(v); };
+        var rg = function (h) { return Math.max(g, Math.round(h / g) * g); };
+        var bad = [arch([b.H0, b.H0, b.H0, b.H0]), arch(pk.map(function (h) { return h; }).map(function (h, i) { return i ? pk[0] : h; })), arch([1, 2, 3, 4].map(function (k) { return rg(b.H0 * Math.pow(1 - b.p, k)); })),
+          poly([[0, 0], [1, b.H0], [2, 0]].concat(pk.reduce(function (a, h, i) { return a.concat([[3 + 2 * i, h], [4 + 2 * i, 0]]); }, []))),
+          poly([[0, b.H0], [1, g]].concat(pk.reduce(function (a, h, i) { return a.concat([[2 + 2 * i, h + g], [3 + 2 * i, g]]); }, [])))];
+        return storyPart('Sketch the ball’s height (vertical axis) as a function of time (horizontal axis), showing the first four bounces. Work out each rebound height and put the top of each bounce on the nearest grid line.', inp, chk, poly(key),
+          'Multiply by ' + t(dn(b.p)) + ' for each bounce: ' + t([b.H0].concat(hs).map(function (h, i) { return i ? (Math.round(h * 10000) / 10000) : h; }).join('\\to ')) + ', so the rebounds reach about ' + hs.map(function (h) { return t(hm2(h) + units('m')); }).join(', ') + '. ' +
+          'The graph starts at ' + t(b.H0 + units('m')) + ' and falls to ' + t('0') + ' (the drop). Then come four arches, each touching ' + t('h=0') + ' at a bounce and each lower than the one before. (Lower bounces also take less time, so the arches get narrower.)',
+          ['Rebounding to ' + t(b.pct + '\\%') + ' means multiplying the previous height by ' + t(dn(b.p)) + '.', 'Where does the ball start? What happens at every bounce? How do the peaks change?'], 'bouncing ball sketch ' + b.H0 + ' m at ' + b.pct + '%', bad);
       } }] },
 
     { num: '6', section: 'Part B — Matching descriptions and graphs', stem: 'Each graph below shows a real-world relationship. Choose a situation the graph could represent.', parts: [

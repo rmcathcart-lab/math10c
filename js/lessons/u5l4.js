@@ -6,7 +6,8 @@
  * A domain-and-range question is one part with two boxes (Domain, Range) on the set keypad (K.set from js/relfn.js):
  * set-builder, inequality, interval and list forms are all accepted. Following the booklet's rule, a list with a value
  * written twice, or not in increasing order, gets a nudge that does not use a try.
- * Sketches (EP 10) become multiple choice between small graphs; explain-questions become multiple choice with
+ * Sketches (EP 10, EP 14a) are open drawings on the graph pad (js/draw.js), checked by rules (K.graphRules: domain,
+ * range, function or not) with targeted hints; EP 10(e) adds "sketch a function"; explain-questions become multiple choice with
  * misconception hints; "give an example" (EP 11) is a typed set of ordered pairs checked for its counts.
  * Levels: LIM BEG EMG PRG ADV MAS. */
 (function (root) {
@@ -25,7 +26,9 @@
     'nr-all-pairs': 'Counted repeated values', 'nr-sum': 'Added instead of multiplying', 'nr-repeat': 'Counted a repeated value twice',
     'nr-lower': 'Used the lower bounds', 'nr-centre': 'Left out the radius / centre', 'cnt-zero': 'Forgot n = 0', 'cnt-extra': 'Counted one too many',
     'ea-outside': 'Value outside the bounds', 'ea-output': 'Value is an output', 'pairs-count': 'Ordered pairs with the wrong counts',
-    'empty-time': 'Divided the wrong way', 'empty-vol': 'Gave the volume instead of the time', 'dr-scale': 'Misread the axis scale'
+    'empty-time': 'Divided the wrong way', 'empty-vol': 'Gave the volume instead of the time', 'dr-scale': 'Misread the axis scale',
+    'sk-swap': 'Sketch: domain and range swapped', 'sk-join': 'Sketch: joined points for a list domain', 'sk-points': 'Sketch: points instead of a line for an interval',
+    'sk-ends': 'Sketch: wrong end dots / arrows', 'sk-same-range': 'Sketch: same range as the given graph'
   });
 
   /* ---------------- numbers ---------------- */
@@ -310,6 +313,7 @@
       if (extra) { h = extra(v, res, dd, rr); if (h) return wrong(h.code, h.hint); }
       if (dP && rP && !Dr.partsSame(dP, rP) && Dr.partsSame(dd, rP) && Dr.partsSame(rr, dP)) return wrong('sk-swap', 'Your graph has the domain and range swapped. The <b>domain</b> is read along the ' + t('x') + '-axis (left to right), the <b>range</b> along the ' + t('y') + '-axis (bottom to top).');
       if (dP && dP.every(isPt) && (v.pieces.length || v.join !== 'none')) return wrong('sk-join', 'This domain is a <b>list</b>, so the relation is separate points: a line would use every ' + t('x') + ' in between. Use <b>● Point</b> only.');
+      if (dP && !dP.every(isPt) && !v.pieces.length && v.join === 'none') return wrong('sk-points', 'Separate points only give a <b>list</b> of ' + t('x') + '-values. This domain is a whole interval, so draw a <b>line</b> (╱ Line) that uses every ' + t('x') + ' in between.');
       if (res.code === 'rule-domain' && dP) { h = bndHint(dd, dP, 'x'); if (h) return wrong('sk-ends', h); }
       if (res.code === 'rule-range' && rP) { h = bndHint(rr, rP, 'y'); if (h) return wrong('sk-ends', h); }
       return res;
@@ -753,51 +757,54 @@
               ['A line with no restrictions goes on forever in both directions.'], 'pure-math line domain and range');
           } }] },
       /* ---------- EP Part D ---------- */
-      { num: '10', section: 'Extra practice D — Working backwards', stem: 'Which graph has exactly the domain and range given?', parts: [
-        { id: 'e10a', level: 'EMG', make: function (r) {
+      { num: '10', section: 'Extra practice D — Working backwards', stem: 'Sketch <b>one</b> relation on each grid that has exactly the domain and range given. Mark every endpoint solid or hollow as required, and use an arrow wherever the relation continues forever.', parts: [
+        { id: 'e10a', level: 'PRG', make: function (r) {
           var a = r.int(-4, -2), b = r.int(2, 4), c = r.int(-3, -1), d = r.int(3, 5); while (b - a === d - c && a === c) d = r.int(3, 5);
           var Dt = bld('x', a, b), Rt = bld('y', c, d);
-          return graphMC(r, t('D=' + Dt) + ' and ' + t('R=' + Rt), [
-            { g: { segs: [{ pts: [[a, c], [b, d]], start: 'closed', end: 'closed' }] }, right: true },
-            { g: { segs: [{ pts: [[c, a], [d, b]], start: 'closed', end: 'closed' }] }, why: 'This graph runs from ' + t('x=' + c) + ' to ' + t('x=' + d) + ': the domain and range are swapped. The domain is read along the ' + t('x') + '-axis.' },
-            { g: { segs: [{ pts: [[a, c], [b, d]], start: 'open', end: 'open' }] }, why: 'Hollow dots exclude the endpoints, so this graph has ' + t(a + '<x<' + b) + '. The given sets use ' + t('\\le') + '.' },
-            { g: { segs: [{ pts: [[a, c], toEdge([a, c], [b - a, d - c])], start: 'closed', end: 'arrow' }] }, why: 'The arrow means this graph goes on forever, so its domain has no upper bound.' }],
-            'The segment from ' + t(ptT([a, c])) + ' to ' + t(ptT([b, d])) + ' with both endpoints <b>solid</b> uses exactly ' + t(a + '\\le x\\le ' + b) + ' and ' + t(c + '\\le y\\le ' + d) + '. (Other drawings work too — any unbroken graph with those extremes and solid endpoints.)',
-            ['Check each graph’s leftmost and rightmost points, then its lowest and highest, and the type of each end.'], 'graph with given closed D & R');
+          return sketchPart('(a) ' + t('D=' + Dt) + ' and ' + t('R=' + Rt), { domain: Dt, range: Rt }, drw([seg([a, c], [b, d])]),
+            [drw([seg([c, a], [d, b])]), drw([seg([a, c], [b, d], 'open', 'open')]), drw([seg([a, c], [b, d], 'closed', 'arrow')]), drw([], [[a, c], [b, d]])],
+            'The graph must reach exactly from ' + t('x=' + a) + ' to ' + t('x=' + b) + ' and from ' + t('y=' + c) + ' to ' + t('y=' + d) + ', with every end included (' + t('\\le') + ') and no gaps. The simplest drawing is the segment from ' + t(ptT([a, c])) + ' to ' + t(ptT([b, d])) + ' with both endpoints <b>solid</b>. Any unbroken graph with those extremes works too — for example one that zig-zags between the same lowest and highest heights.',
+            ['Start with the extremes: leftmost ' + t('x=' + a) + ', rightmost ' + t('x=' + b) + ', lowest ' + t('y=' + c) + ', highest ' + t('y=' + d) + '.', 'Both sets use ' + t('\\le') + ', so the end dots are solid. An unbroken line uses every value in between.'], 'sketch: closed D & R');
         } },
         { id: 'e10b', level: 'EMG', make: function (r) {
-          var c = r.pick(nz(-4, 4));
-          return graphMC(r, t('D=\\{x\\mid x\\in\\mathbb{R}\\}') + ' and ' + t('R=\\{' + c + '\\}'), [
-            { g: { segs: [{ pts: [[-EDGE, c], [EDGE, c]], start: 'arrow', end: 'arrow' }] }, right: true },
-            { g: { segs: [line(null, c)] }, why: 'That is the vertical line ' + t('x=' + c) + ': its domain is ' + t('\\{' + c + '\\}') + ' and its range is all real numbers — swapped.' },
-            { g: { segs: [{ pts: [[-3, c], [3, c]], start: 'closed', end: 'closed' }] }, why: 'This segment stops at ' + t('x=-3') + ' and ' + t('x=3') + ', so its domain is not all real numbers.' },
-            { g: { segs: [line(1, c)] }, why: 'A slanted line produces every ' + t('y') + '-value, so its range is all real numbers, not ' + t('\\{' + c + '\\}') + '.' }],
-            'Every real ' + t('x') + ' but only the output ' + t(c) + ': the horizontal line ' + t('y=' + c) + ' with arrows on both ends.',
-            ['Only one ' + t('y') + '-value is allowed. Which graph keeps the same height everywhere and never stops?'], 'graph with D = R, R = {c}');
+          var c = r.pick(nz(-4, 4)), Dt = all('x'), Rt = '\\{' + c + '\\}';
+          return sketchPart('(b) ' + t('D=' + Dt) + ' and ' + t('R=' + Rt), { domain: Dt, range: Rt }, drw([seg([-5, c], [5, c], 'arrow', 'arrow')]),
+            [drw([seg([c, -5], [c, 5], 'arrow', 'arrow')]), drw([seg([-3, c], [3, c])]), drw([seg([0, c], [1, c + 1], 'arrow', 'arrow')])],
+            'Every real ' + t('x') + ' but only the output ' + t(c) + ': the horizontal line ' + t('y=' + c) + ' with <b>arrows</b> on both ends.',
+            ['Only one ' + t('y') + '-value is allowed: the graph stays at the same height everywhere.', 'Every real ' + t('x') + ': it never stops on the left or the right, so both ends are arrows.'], 'sketch: D = R, R = {c}');
         } },
-        { id: 'e10c', level: 'EMG', make: function (r) {
+        { id: 'e10c', level: 'PRG', make: function (r) {
           var xs = r.sample(range(-4, 5), 4).sort(function (a, b) { return a - b; }), yv = r.sample(range(-3, 4), 2).sort(function (a, b) { return a - b; });
           var ys; do { ys = xs.map(function () { return r.pick(yv); }); } while (uniq(ys).length < 2);
-          var pts = xs.map(function (x, i) { return [x, ys[i]]; }), P = function (ps) { return ps.map(function (q) { return { x: q[0], y: q[1] }; }); };
+          var pts = xs.map(function (x, i) { return [x, ys[i]]; });
           var other = pts.map(function (q, i) { return [q[0], i === 0 ? yv[0] - 2 >= -5 ? yv[0] - 2 : yv[1] + 2 : q[1]]; });
-          return graphMC(r, t('D=' + lst(xs)) + ' and ' + t('R=' + lst(yv)), [
-            { g: { points: P(pts) }, right: true },
-            { g: { segs: [{ pts: pts, start: 'closed', end: 'closed' }] }, why: 'Joining the points makes an unbroken path: every ' + t('x') + ' between ' + t(xs[0]) + ' and ' + t(xs[3]) + ' would be used, so the domain would be an inequality, not a list.' },
-            { g: { points: P(pts.map(function (q) { return [q[1], q[0]]; })) }, why: 'These points have ' + t('x') + '-values ' + t(lst(ys)) + ' — the coordinates are swapped.' },
-            { g: { points: P(other) }, why: 'One of these points has ' + t('y=' + other[0][1]) + ', which is not in the range ' + t(lst(yv)) + '.' }],
-            'Four separate (unjoined) points with ' + t('x') + '-values ' + t(xs.join(',\\ ')) + ', each with a ' + t('y') + '-value of ' + t(yv[0]) + ' or ' + t(yv[1]) + ', both used. One answer: ' + ptsH(pts) + '.',
-            ['A list domain means separate points, not a line.', 'Check that every ' + t('y') + '-value used is in the range, and both are used.'], 'points with a list D & R');
+          return sketchPart('(c) ' + t('D=' + lst(xs)) + ' and ' + t('R=' + lst(yv)), { domain: lst(xs), range: lst(yv) }, drw([], pts),
+            [drw([{ v: pts, s: 'closed', e: 'closed' }]), drw([], pts.map(function (q) { return [q[1], q[0]]; })), drw([], other)],
+            'Separate (unjoined) points: one for each ' + t('x') + '-value ' + t(xs.join(',\\ ')) + ', each with ' + t('y=' + yv[0]) + ' or ' + t('y=' + yv[1]) + ', and both ' + t('y') + '-values used. One answer: ' + ptsH(pts) + '.',
+            ['A list domain means separate points, not a line.', 'Every point’s ' + t('y') + '-value must be ' + t(yv[0]) + ' or ' + t(yv[1]) + ', and both must be used.'], 'sketch: points with list D & R');
         } },
-        { id: 'e10d', level: 'PRG', make: function (r) {
+        { id: 'e10d', level: 'ADV', make: function (r) {
           var a = r.int(-3, -1), b = r.int(2, 4), lo = r.int(-4, -2), hi = r.int(1, 3);
           var Dt = bld('x', a, b, false, true), Rt = bld('y', lo, hi, true, false);
-          return graphMC(r, t('D=' + Dt) + ' and ' + t('R=' + Rt), [
-            { g: { segs: [{ pts: [[a, hi], [b, lo]], start: 'open', end: 'closed' }] }, right: true },
-            { g: { segs: [{ pts: [[a, hi], [b, lo]], start: 'closed', end: 'open' }] }, why: 'Here the hollow dot is on the right, so ' + t('x=' + b) + ' would be excluded and ' + t('x=' + a) + ' included — the opposite of ' + t(a + '<x\\le ' + b) + '.' },
-            { g: { segs: [{ pts: [[a, lo], [b, hi]], start: 'open', end: 'closed' }] }, why: 'This segment rises, so its hollow end ' + t(ptT([a, lo])) + ' excludes ' + t('y=' + lo) + ' and its solid end keeps ' + t('y=' + hi) + ': range ' + t(lo + '<y\\le ' + hi) + '. We need the top excluded.' },
-            { g: { segs: [{ pts: [[a, hi], [b, lo]], start: 'closed', end: 'closed' }] }, why: 'Both dots are solid, so both bounds would use ' + t('\\le') + '. The domain needs ' + t('x=' + a) + ' excluded.' }],
-            'The left end ' + t('x=' + a) + ' must be excluded and the top ' + t('y=' + hi) + ' excluded, so the hollow dot is at ' + t(ptT([a, hi])) + '; the solid dot is at ' + t(ptT([b, lo])) + ', keeping ' + t('x=' + b) + ' and ' + t('y=' + lo) + '. A falling segment from the hollow ' + t(ptT([a, hi])) + ' to the solid ' + t(ptT([b, lo])) + ' does it.',
-            ['Which ' + t('x') + '-value and which ' + t('y') + '-value are excluded? They must belong to the same hollow dot.'], 'graph with half-open D & R');
+          return sketchPart('(d) ' + t('D=' + Dt) + ' and ' + t('R=' + Rt), { domain: Dt, range: Rt }, drw([seg([a, hi], [b, lo], 'open', 'closed')]),
+            [drw([seg([a, hi], [b, lo], 'closed', 'open')]), drw([seg([a, lo], [b, hi], 'open', 'closed')]), drw([seg([a, hi], [b, lo])])],
+            'The left end ' + t('x=' + a) + ' must be excluded and the top ' + t('y=' + hi) + ' excluded, so put one hollow dot at ' + t(ptT([a, hi])) + '; the solid dot at ' + t(ptT([b, lo])) + ' keeps ' + t('x=' + b) + ' and ' + t('y=' + lo) + '. A falling segment from the hollow ' + t(ptT([a, hi])) + ' to the solid ' + t(ptT([b, lo])) + ' does it. (Other drawings work too, as long as ' + t('x=' + a) + ' and ' + t('y=' + hi) + ' are never reached while ' + t('x=' + b) + ' and ' + t('y=' + lo) + ' are.)',
+            ['Which ' + t('x') + '-value and which ' + t('y') + '-value are excluded? A falling segment can put both at the same hollow dot.', 'Use <b>●○ Ends</b>: tap an end once to make it hollow.'], 'sketch: half-open D & R');
+        } },
+        { id: 'e10e', level: 'MAS', make: function (r) {
+          if (r.chance(0.5)) {
+            var k = r.pick(nz(-3, 3)), h = r.int(-2, 2), up = r.chance(0.5), s = up ? 1 : -1, Dt = all('x'), Rt = up ? bld('y', k, null) : bld('y', null, k);
+            var vee = function (e) { return { v: [[h - 3, k + 3 * s], [h, k], [h + 3, k + 3 * s]], s: e, e: e }; };
+            return sketchPart('(e) Now sketch a <b>function</b> with ' + t('D=' + Dt) + ' and ' + t('R=' + Rt) + '.', { fn: true, domain: Dt, range: Rt }, drw([vee('arrow')]),
+              [drw([seg([h, k], [h + 1, k + 1], 'arrow', 'arrow')]), drw([vee('closed')]), drw([seg([h, k], [h, k + s], 'closed', 'arrow')])],
+              'All real ' + t('x') + ': the graph goes on forever to the left and to the right (arrows). ' + t('R=' + Rt) + ': it reaches ' + t('y=' + k) + ' but never goes ' + (up ? 'below' : 'above') + ' it, and keeps going ' + (up ? 'up' : 'down') + ' forever. A “V” with its corner on the graph at ' + t(ptT([h, k])) + ' and both arms going ' + (up ? 'up' : 'down') + ' with arrows does it, and every vertical line crosses it once, so it is a function. (A U-shaped curve works too.)',
+              ['All real ' + t('x') + ' needs arrows going left and right. Where is the ' + (up ? 'lowest' : 'highest') + ' point?', 'A straight line with arrows has every real ' + t('y') + ' — bend it at ' + t('y=' + k) + '.'], 'sketch a function: D = R, half-line range');
+          }
+          var a = r.int(-5, -3), b = r.int(3, 5), m = r.int(a + 2, b - 2), cs = r.sample(nz(-4, 4), 2), Dt2 = bld('x', a, b), Rt2 = lst(cs);
+          return sketchPart('(e) Now sketch a <b>function</b> with ' + t('D=' + Dt2) + ' and ' + t('R=' + Rt2) + '.', { fn: true, domain: Dt2, range: Rt2 }, drw([seg([a, cs[0]], [m, cs[0]], 'closed', 'open'), seg([m, cs[1]], [b, cs[1]])]),
+            [drw([seg([a, cs[0]], [m, cs[0]]), seg([m, cs[1]], [b, cs[1]])]), drw([seg([a, cs[0]], [b, cs[1]])]), drw([], [[a, cs[0]], [b, cs[1]]])],
+            'Every ' + t('x') + ' from ' + t(a) + ' to ' + t(b) + ' is used, but there are only two outputs, so the graph is two flat (horizontal) pieces: one at ' + t('y=' + cs[0]) + ' and one at ' + t('y=' + cs[1]) + ', for example from ' + t('x=' + a) + ' to ' + t('x=' + m) + ' and from ' + t('x=' + m) + ' to ' + t('x=' + b) + '. Where they meet only one piece may include ' + t('x=' + m) + ' — the other end is hollow — or that input would have two outputs and it would not be a function.',
+            ['Only the two ' + t('y') + '-values are allowed, so the graph is made of horizontal pieces.', 'Every ' + t('x') + ' from ' + t(a) + ' to ' + t(b) + ' must be used exactly once: where one piece stops and the next starts, make one of the two ends hollow.'], 'sketch a function: interval D, two-value R');
         } }] },
       { num: '11', stem: 'Answer each question with an example: give a set of ordered pairs.', parts: [
         { id: 'e11a', level: 'EMG', make: function (r) { return countPairsPart(r, r.pick([3, 4, 4, 5]), 1); } },
@@ -859,27 +866,33 @@
           } }] },
       /* ---------- EP Part F ---------- */
       { num: '14', section: 'Extra practice F — A stretch, and two for the test', stem: function (sh) {
-          return 'Domain and range are independent of one another. Both relations below have domain ' + t(bld('x', -sh.a, sh.a)) + '.' +
-            flexFigs(['<b>Graph 1</b>' + G({ max: 280, segs: [{ pts: [[-sh.a, sh.y1], [sh.a, sh.y2]], start: 'closed', end: 'closed' }] }), '<b>Graph 2</b>' + G({ max: 280, segs: [{ pts: [[-sh.a, sh.c], [sh.a, sh.c]], start: 'closed', end: 'closed' }] })], 250);
+          return 'Domain and range are independent of one another — fixing one of them does not fix the other. <b>Graph 1</b> below has domain ' + t(bld('x', -sh.a, sh.a)) + '.' +
+            '<div style="max-width:280px"><b>Graph 1</b>' + G({ max: 280, segs: [{ pts: [[-sh.a, sh.y1], [sh.a, sh.y2]], start: 'closed', end: 'closed' }] }) + '</div>';
         },
         shared: function (r) { var a = r.pick([2, 3, 3, 4]), y1 = r.int(-4, -1), y2 = r.int(1, 4), c = r.pick(nz(-4, 4)); return { a: a, y1: y1, y2: y2, c: c }; },
         parts: [
-          { id: 'e14a', level: 'EMG', make: function (r, sh) {
-            var R1 = bld('y', sh.y1, sh.y2), R2 = lst([sh.c]);
-            var c1 = setChk(R1, { v: 'y', other: bld('x', -sh.a, sh.a), otherName: 'domain' }), c2 = setChk(R2, { v: 'y', other: bld('x', -sh.a, sh.a), otherName: 'domain', ctx: { 'set-discrete': 'Every point of Graph 2 has the same ' + t('y') + '-value, so its range is one value: a list.' } });
-            var fl = [{ label: 'Range of Graph 1', name: 'Graph 1', mode: 'math', keys: 'set', vars: ['y'], placeholder: ph('y') }, { label: 'Range of Graph 2', name: 'Graph 2', mode: 'math', keys: 'set', vars: ['y'], placeholder: ph('y') }];
-            var p = B.fields('(a) State the range of each graph.', fl, [c1, c2], [R1, R2], 'Graph 1: ' + t('R=' + R1) + '<br>Graph 2: ' + t('R=' + R2),
-              'Graph 1 rises from ' + t(ptT([-sh.a, sh.y1])) + ' to ' + t(ptT([sh.a, sh.y2])) + ': ' + t('R=' + R1) + '. Graph 2 stays at ' + t('y=' + sh.c) + ': ' + t('R=' + R2) + '. Same domain, different ranges.',
-              ['Read each graph from its lowest point to its highest point.'], 'same domain, two ranges');
-            p.good = [[ivAlt(R1), 'y=' + sh.c]]; p.bad = [[R1, all('y')], [R2, R1]].concat(sh.y1 === -sh.a && sh.y2 === sh.a ? [] : [[bld('y', -sh.a, sh.a), R2]]);
+          { id: 'e14r', level: 'BEG', make: function (r, sh) {
+            var R1 = bld('y', sh.y1, sh.y2);
+            return setPart('(a) State the range of Graph 1.', R1, { v: 'y', before: t('R='), other: bld('x', -sh.a, sh.a), otherName: 'domain', bad: [bld('y', -sh.a, sh.a), all('y')].filter(function (w) { return !S.eq(S.parse(w).set, S.parse(R1).set); }) },
+              'Graph 1 rises from ' + t(ptT([-sh.a, sh.y1])) + ' to ' + t(ptT([sh.a, sh.y2])) + ', both ends solid: ' + t('R=' + R1) + '.',
+              ['Read the graph from its lowest point to its highest point.'], 'range of Graph 1');
+          } },
+          { id: 'e14s', level: 'PRG', make: function (r, sh) {
+            var Dt = bld('x', -sh.a, sh.a), R1 = bld('y', sh.y1, sh.y2), r1 = Dr.setParts(S.parse(R1).set), g1 = drw([seg([-sh.a, sh.y1], [sh.a, sh.y2])]);
+            var p = sketchPart('(a) Now sketch <b>Graph 2</b>: a relation with the same domain ' + t(Dt) + ' but a <b>different range</b> from Graph 1.', { domain: Dt, custom: function (v) {
+                return Dr.partsSame(Dr.range(v).parts, r1) ? { code: 'sk-same-range', hint: 'Your graph has the same range as Graph 1, ' + t(R1) + '. Keep the left and right ends at ' + t('x=' + (-sh.a)) + ' and ' + t('x=' + sh.a) + ', but change how low or high it goes.' } : null; } },
+              drw([seg([-sh.a, sh.c], [sh.a, sh.c])]),
+              [g1, drw([seg([sh.a, sh.y1], [-sh.a, sh.y2])]), drw([seg([-sh.a, sh.c], [sh.a, sh.c], 'closed', 'open')]), drw([seg([-sh.a - 1, sh.c], [sh.a, sh.c])])],
+              'Any graph that runs from ' + t('x=' + (-sh.a)) + ' to ' + t('x=' + sh.a) + ' (solid ends, no gaps) but does not reach exactly from ' + t('y=' + sh.y1) + ' to ' + t('y=' + sh.y2) + '. For example the horizontal segment from ' + t(ptT([-sh.a, sh.c])) + ' to ' + t(ptT([sh.a, sh.c])) + ': its range is ' + t('\\{' + sh.c + '\\}') + ', different from Graph 1’s ' + t(R1) + '. Same domain, different ranges.',
+              ['Keep the leftmost and rightmost points at ' + t('x=' + (-sh.a)) + ' and ' + t('x=' + sh.a) + ' with solid dots.', 'Change the heights: a flat segment, or one that goes higher or lower than Graph 1.'], 'sketch same domain, different range');
             return p;
           } },
           { id: 'e14b', level: 'EMG', make: function (r, sh) {
-            var tv = r.chance(0.5), ex = ' In (a) the same domain ' + t(bld('x', -sh.a, sh.a)) + ' gave two different ranges, ' + t(bld('y', sh.y1, sh.y2)) + ' and ' + t('\\{' + sh.c + '\\}') + '. Likewise two segments can share the range ' + t(bld('y', -1, 2)) + ' with different domains, e.g. from ' + t('(0,\\ -1)') + ' to ' + t('(3,\\ 2)') + ' and from ' + t('(-5,\\ 2)') + ' to ' + t('(-2,\\ -1)') + '.';
-            if (tv) return B.tf(r, '(b) True or false: “Two relations can have the same domain but different ranges.”', true, 'Look at part (a): the same domain gave two different ranges.',
-              '<b>True.</b>' + ex, ['Do the two graphs in (a) have the same range?'], 'same domain, different ranges? (true)');
-            return B.tf(r, '(b) True or false: “If I tell you the domain of a relation, you can tell me its range.”', false, 'Look at part (a): the same domain gave two different ranges.',
-              '<b>False.</b>' + ex, ['Do the two graphs in (a) have the same range?'], 'domain decides range? (false)');
+            var tv = r.chance(0.5), ex = ' In (a) Graph 1 and, for example, the flat segment at ' + t('y=' + sh.c) + ' share the domain ' + t(bld('x', -sh.a, sh.a)) + ' but have the different ranges ' + t(bld('y', sh.y1, sh.y2)) + ' and ' + t('\\{' + sh.c + '\\}') + '. Likewise two segments can share the range ' + t(bld('y', -1, 2)) + ' with different domains, e.g. from ' + t('(0,\\ -1)') + ' to ' + t('(3,\\ 2)') + ' and from ' + t('(-5,\\ 2)') + ' to ' + t('(-2,\\ -1)') + '.';
+            if (tv) return B.tf(r, '(b) True or false: “Two relations can have the same domain but different ranges.”', true, 'Look at part (a): Graph 1 and your Graph 2 have the same domain but different ranges.',
+              '<b>True.</b>' + ex, ['Do Graph 1 and your Graph 2 have the same range?'], 'same domain, different ranges? (true)');
+            return B.tf(r, '(b) True or false: “If I tell you the domain of a relation, you can tell me its range.”', false, 'Look at part (a): Graph 1 and your Graph 2 have the same domain but different ranges.',
+              '<b>False.</b>' + ex, ['Do Graph 1 and your Graph 2 have the same range?'], 'domain decides range? (false)');
           } }] },
       { num: '15', stem: 'True or false? (If false, think of a counterexample.)', parts: [
         { id: 'e15a', level: 'EMG', make: function (r) { var c = r.pick(nz(-6, 9));

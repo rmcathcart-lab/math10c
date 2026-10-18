@@ -9,8 +9,11 @@
  * "Solve f(x) = b" answers are solution lists (K.valueSet) with a "none" key for no solution; statements such as
  * q(−8) = 4 are typed and read back (name, input, output). Domain/range answers use the set keypad; a range may be
  * written with q(x) (as the booklet does) or with y.
- * Sketches become multiple choice between four small graphs; explain / interpret questions become multiple choice with
- * misconception hints. Levels: LIM BEG EMG PRG ADV MAS. */
+ * Sketches of the models (13a, 14a, 15a, 16a, Extra 13a) are drawn on the graph pad (js/draw.js) on the context's own
+ * axes: a linear model is one segment over its realistic domain with solid end dots; the falling case (16a) is plotted
+ * from a table of values and joined. True end values are often off the tappable grid, so each point must be on the grid
+ * point nearest the true one (half a snap step) — exact whenever the true point is on the grid. Explain / interpret
+ * questions become multiple choice with misconception hints. Levels: LIM BEG EMG PRG ADV MAS. */
 (function (root) {
   'use strict';
   var HW = root.HW, ex = HW.ex, F = HW.fmt, K = HW.kit, t = K.t, ok = K.ok, wrong = K.wrong, form = K.form, B = K.P, S = HW.sets, PL = HW.poly;
@@ -27,7 +30,12 @@
     'ext-half': 'Stopped at a^(1/2)', 'ext-quarter': 'Gave a^(1/4)', 'ext-sign': 'Sign error solving for a', 'no-fixed': 'Left out the fixed cost', 'extra-costs': 'Left out extra costs',
     'profit-one': 'Left out one of the extra costs', 'revenue': 'Gave the revenue, not the profit', 'no-square': 'Did not square t', 'sq-coef': 'Squared the coefficient too',
     'neg-time': 'Kept the negative root for time', 'root-missing': 'Did not take the square root', 'dr-context': 'Domain/range does not fit the situation', 'dr-range-match': 'Range does not match the domain',
-    'nr-yint': 'Gave the y-intercept', 'nr-flip': 'Divided the wrong way', 'nr-const': 'Gave the constant', 'stretch-b': 'Wrong set of heights'
+    'nr-yint': 'Gave the y-intercept', 'nr-flip': 'Divided the wrong way', 'nr-const': 'Gave the constant', 'stretch-b': 'Wrong set of heights',
+    'sk-points': 'Sketch: plotted points only, no graph', 'sk-straight': 'Sketch: not one straight segment (linear) / straight instead of a curve', 'sk-vertical': 'Sketch: vertical line', 'sk-gap': 'Sketch: gap in the graph',
+    'sk-extra': 'Sketch: extra point off the graph', 'sk-arrow': 'Sketch: arrow where the model stops', 'sk-dir': 'Sketch: rises/falls the wrong way', 'sk-startx': 'Sketch: domain starts at the wrong value',
+    'sk-endx': 'Sketch: domain ends at the wrong value', 'sk-starty': 'Sketch: wrong starting value', 'sk-endy': 'Sketch: wrong end value (rate)', 'sk-lines': 'Sketch: straight pieces instead of a joined curve',
+    'sk-after': 'Sketch: continued after landing', 'sk-up': 'Sketch: graphed 4.9t² (rising)', 'sk-shape': 'Sketch: curve falls fastest at the start', 'sk-point': 'Sketch: a plotted point is off the curve',
+    'sk-start': 'Sketch: release point missing', 'sk-land': 'Sketch: landing point missing', 'sk-few': 'Sketch: too few points for a curve'
   });
 
   /* ---------------- keypads (namespaced, registered once) ---------------- */
@@ -830,15 +838,20 @@
       /* ---------------- Q14 t-shirts ---------------- */
       { num: '14', shared: shirtShared,
         stem: function (sh) { return 'Fresh Print Co. produces custom t-shirts for local sports teams. The cost of production is modelled by ' + t('C(n)=' + F(sh.Fc) + '+' + sh.rate + 'n') + ', where ' + t('C(n)') + ' is the cost, in dollars, of printing ' + t('n') + ' t-shirts.'; }, parts: [
-        { id: '14a', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
-          var N = sh.max, top = sh.C(N), o = { x: [0, 900], y: [0, 9000], gx: 100, gy: 1000, lx: 400, ly: 4000, xName: 'n', yName: 'C' };
-          var G = function (segs) { return ctxGraph(o, segs); };
-          return graphMC(r, '(a) Which graph shows the function for a maximum of ' + t(N) + ' t-shirts?', [
-            { html: G([{ pts: [[0, sh.Fc], [N, top]], start: 'closed', end: 'closed' }]), right: true },
-            { html: G([{ pts: [[0, 0], [N, sh.rate * N]], start: 'closed', end: 'closed' }]), why: 'Before any shirt is printed the cost is already ' + t('C(0)=' + F(sh.Fc)) + ' dollars.' },
-            { html: G([{ pts: [[0, top], [N, sh.Fc]], start: 'closed', end: 'closed' }]), why: 'Printing more shirts costs more, so the graph rises.' },
-            { html: G([{ pts: [[0, sh.Fc], [N, cl(sh.Fc + sh.rate * N / 2)]], start: 'closed', end: 'closed' }]), why: 'Check the end point: ' + t('C(' + N + ')=' + F(sh.Fc) + '+' + sh.rate + '(' + N + ')=' + F(top)) + '.' }],
-            'The graph starts at ' + t('(0,\\ ' + F(sh.Fc) + ')') + ' and rises ' + t('\\$' + sh.rate) + ' per shirt, ending at ' + t('(' + N + ',\\ ' + F(top) + ')') + '.', ['Find ' + t('C(0)') + ' and ' + t('C(' + N + ')') + '.'], 'sketch t-shirt cost');
+        { id: '14a', level: 'PRG', outcome: 'RF1', make: function (r, sh) {
+          var N = sh.max, top = sh.C(N), SY = 1000, ym = Math.ceil((top + 500) / 1000) * 1000;
+          var I = padIn({ x: [0, 900], y: [0, ym], sx: 100, sy: SY, lx: 200, ly: 2000, v: 'n', w: 'C(n)', xTitle: 'n (t-shirts)', yTitle: 'C(n) (dollars)' });
+          var S = segSketch({ f: sh.C, X0: 0, X1: N, sx: 100, sy: SY, name: 'C', v: 'n',
+            start0: 'Before any shirt is printed the cost is already ' + t('C(0)=' + F(sh.Fc)) + ' dollars (the fixed cost), so the graph starts up the vertical axis, not at the origin.',
+            endX: 'The question asks for a maximum of ' + t(N) + ' t-shirts: end the segment at ' + t('n=' + N) + '.', arrow: 'The graph stops at the maximum of ' + t(N) + ' t-shirts: end it with a solid dot, not an arrow.',
+            dir: 'Printing more shirts costs more, so the graph rises from ' + t('C(0)=' + F(sh.Fc)) + ' to ' + t('C(' + N + ')=' + F(top)) + '.' });
+          var half = snapTo(sh.Fc + sh.rate * N / 2, SY);
+          var p = B.graph('(a) Sketch the graph of the function for a maximum of ' + t(N) + ' t-shirts.' + LINE_HELP, I, S.check, S.key,
+            t('C(0)=' + F(sh.Fc)) + ' and ' + t('C(' + N + ')=' + F(sh.Fc) + '+' + sh.rate + '(' + N + ')=' + F(top)) + '. The graph is a segment that starts at ' + t('(0,\\ ' + F(sh.Fc) + ')') + ' and rises ' + t('\\$' + sh.rate) + ' per shirt, ending with a solid dot at ' + t('(' + N + ',\\ ' + F(top) + ')') + '. On this grid each end goes on the nearest grid point: ' + t(ptT(S.A)) + ' and ' + t(ptT(S.B)) + '.',
+            ['Find ' + t('C(0)') + ' and ' + t('C(' + N + ')') + ': those are the two ends.', 'Read the scales: each grid square is ' + t('100') + ' shirts across and ' + t('\\$1000') + ' up.'], 'sketch t-shirt cost');
+          p.bad = [drawing([seg([0, 0], [N, snapTo(sh.rate * N, SY)])]), drawing([seg([0, S.B[1]], [N, S.A[1]])]), drawing([seg(S.A, [900, snapTo(sh.C(900), SY)], 'closed', 'arrow')]), drawing([seg(S.A, [900, snapTo(sh.C(900), SY)])])];
+          if (Math.abs(half - S.B[1]) > 1e-9) p.bad.push(drawing([seg(S.A, [N, half])]));
+          return p;
         } },
         { id: '14b', level: 'BEG', make: function (r, sh) {
           var v = sh.C(sh.n1);
@@ -885,16 +898,21 @@
       /* ---------------- Q15 cocoa ---------------- */
       { num: '15', shared: cocoaShared,
         stem: function (sh) { return 'A ski resort tracks how the number of hot cocoa packets sold in its lodge depends on the average daily temperature. The relationship is modelled by ' + t('P(t)=' + sh.A + '-' + sh.Bc + 't') + ', where ' + t('P(t)') + ' is the number of packets sold when the average daily temperature is ' + t('t\\,^{\\circ}\\text{C}') + '.'; }, parts: [
-        { id: '15a', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
-          var L = -20, top = sh.P(L), z = sh.z, ym = Math.ceil((top + 2 * sh.Bc * 20) / 100) * 100;
-          var o = { x: [-25, Math.max(30, Math.ceil(z / 5) * 5 + 5)], y: [0, Math.max(ym, 400)], gx: 5, gy: 100, lx: 20, ly: 200, xName: 't', yName: 'P', fq: false };
-          var G = function (segs) { return ctxGraph(o, segs); };
-          return graphMC(r, '(a) Which graph shows the function, from a cold day of ' + t('-20\\,^{\\circ}\\text{C}') + ' until sales drop to zero?', [
-            { html: G([{ pts: [[L, top], [z, 0]], start: 'closed', end: 'closed' }]), right: true },
-            { html: G([{ pts: [[L, 0], [z, top]], start: 'closed', end: 'closed' }]), why: 'The rule subtracts ' + t(sh.Bc + 't') + ': as it gets warmer, fewer packets are sold, so the graph falls.' },
-            { html: G([{ pts: [[0, sh.A], [z, 0]], start: 'closed', end: 'closed' }]), why: 'Below-zero temperatures are common at a ski resort, and ' + t('t') + ' can be negative: the graph should continue to the left of the vertical axis.' },
-            { html: G([{ pts: [[L, sh.A - 2 * sh.Bc * L], [cl(sh.A / (2 * sh.Bc)), 0]], start: 'closed', end: 'closed' }]), why: 'Check where it crosses the ' + t('t') + '-axis: ' + t('P(t)=0') + ' when ' + t('t=' + nf(z)) + '.' }],
-            t('P(0)=' + sh.A) + ' and ' + t('P(t)=0') + ' at ' + t('t=' + nf(z)) + '. Each degree warmer means ' + t(sh.Bc) + ' fewer packets, so the line falls from ' + t(ptT([L, top])) + ' to ' + t(ptT([z, 0])) + '.', ['Find ' + t('P(0)') + ' and where ' + t('P(t)=0') + '.'], 'sketch cocoa');
+        { id: '15a', level: 'PRG', outcome: 'RF1', make: function (r, sh) {
+          var L = -20, top = sh.P(L), z = sh.z, SY = 50, ym = Math.ceil((top + 50) / 100) * 100, xm = Math.ceil(z / 5) * 5 + 5;
+          var I = padIn({ x: [-25, xm], y: [0, ym], sx: 5, sy: SY, lx: 10, ly: 100, v: 't', w: 'P(t)', xTitle: 't (°C)', yTitle: 'P(t) (packets)', fq: false });
+          var S = segSketch({ f: sh.P, X0: L, X1: z, sx: 5, sy: SY, name: 'P', v: 't',
+            startX: 'Start on a cold day, ' + t('t=-20') + ': below-zero temperatures are common at a ski resort, so the graph continues to the <b>left</b> of the vertical axis.',
+            endX: 'Stop where sales drop to zero: ' + t('P(t)=0') + ' when ' + t(sh.A + '-' + sh.Bc + 't=0') + ', i.e. ' + t('t=' + nf(z)) + '. End the segment on the ' + t('t') + '-axis at the grid point nearest ' + t('t=' + nf(z)) + '.',
+            arrow: 'The graph stops where sales reach zero (' + t('t=' + nf(z)) + ') — a negative number of packets is impossible. End it with a solid dot on the ' + t('t') + '-axis.',
+            dir: 'The rule subtracts ' + t(sh.Bc + 't') + ': as it gets warmer, fewer packets are sold, so the graph <b>falls</b> from left to right.' });
+          var half = cl(sh.A / (2 * sh.Bc));
+          var p = B.graph('(a) Sketch the graph of the function from a cold day of ' + t('-20\\,^{\\circ}\\text{C}') + ' until sales drop to zero.' + LINE_HELP, I, S.check, S.key,
+            t('P(-20)=' + sh.A + '-' + sh.Bc + '(-20)=' + top) + ', and ' + t('P(t)=0') + ' when ' + t('t=' + nf(sh.A) + '\\div ' + sh.Bc + '=' + nf(z)) + '. Each degree warmer means ' + t(sh.Bc) + ' fewer packets, so the segment falls from ' + t(ptT([L, top])) + ' to ' + t(ptT([z, 0])) + ' (on this grid: ' + t(ptT(S.A)) + ' to ' + t(ptT(S.B)) + ').',
+            ['Find ' + t('P(-20)') + ' and the temperature where ' + t('P(t)=0') + ': those are the two ends.'], 'sketch cocoa');
+          p.bad = [drawing([seg([L, 0], [S.B[0], S.A[1]])]), drawing([seg([0, snapTo(sh.A, SY)], S.B)]), drawing([seg(S.A, [S.B[0] - 5, snapTo(sh.P(S.B[0] - 5), SY)], 'closed', 'arrow')]), drawing([seg(S.A, S.B, 'open', 'closed')])];
+          if (Math.abs(snapTo(half, 5) - S.B[0]) > 1e-9) p.bad.push(drawing([seg([L, snapTo(sh.A + 20 * 2 * sh.Bc, SY)], [snapTo(half, 5), 0])]));
+          return p;
         } },
         { id: '15b', level: 'BEG', make: function (r, sh) {
           var v = sh.P(sh.t1);
@@ -962,16 +980,45 @@
       /* ---------------- Q16 drop ---------------- */
       { num: '16', shared: dropShared,
         stem: function (sh) { return 'As part of a design test, a ' + t('12') + ' kg equipment case is dropped from a hovering helicopter. The height of the case above the ground is described by part of the graph of ' + t('h(t)=' + F(sh.H0) + '-4.9t^{2}') + ', where ' + t('h(t)') + ' is the height, in metres, of the case ' + t('t') + ' seconds after it is released.'; }, parts: [
-        { id: '16a', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
-          var T = sh.T, H0 = sh.H0, ym = Math.ceil(H0 * 1.1 / 100) * 100, gy = ym > 1500 ? 200 : 100;
-          var o = { x: [0, T * 1.25], y: [0, ym], gx: T / 10, gy: gy, lx: T / 2, ly: 4 * gy, xName: 't', yName: 'h' };
-          var G = function (segs, fns) { return ctxGraph(o, segs, fns); };
-          return graphMC(r, '(a) Which graph shows the height of the case from its release until it reaches the ground?', [
-            { html: G([], [{ f: sh.h, from: 0, to: T, start: 'closed', end: 'closed' }]), right: true },
-            { html: G([{ pts: [[0, H0], [T, 0]], start: 'closed', end: 'closed' }]), why: 'The rule has ' + t('t^{2}') + ', so the graph is a curve: the case falls slowly at first and faster and faster.' },
-            { html: G([], [{ f: function (x) { return H0 * (1 - x / T) * (1 - x / T); }, from: 0, to: T, start: 'closed', end: 'closed' }]), why: 'This one falls fastest at the start. A dropped case starts slowly and speeds up, so the curve is flat at the top and steepest at the ground.' },
-            { html: G([], [{ f: function (x) { return 4.9 * x * x; }, from: 0, to: T, start: 'closed', end: 'closed' }]), why: 'At ' + t('t=0') + ' the case is at the release height, ' + t('h(0)=' + F(H0)) + ' m, and it falls.' }],
-            'The graph is part of a downward parabola: it starts at its peak ' + t('(0,\\ ' + F(H0) + ')') + ' on the vertical axis and reaches ' + t('h=0') + ' at ' + t('t=' + T) + ' s.', ['Find ' + t('h(0)') + ' and the time when ' + t('h(t)=0') + '.'], 'sketch drop');
+        { id: '16a', level: 'PRG', outcome: 'RF1', make: function (r, sh) {
+          /* a curve can't be drawn exactly on a tappable grid: students plot points from a table of values (each on the grid
+           * point nearest the true value) and press Join; checked point by point against h(t) within half a snap step */
+          var T = sh.T, H0 = sh.H0, h = sh.h, sx = { 10: 1, 12: 2, 14: 2, 15: 3, 16: 2, 18: 2, 20: 2 }[T] || 2;
+          var sy = [50, 100, 200, 250, 500].filter(function (s) { return Math.ceil(H0 * 1.1 / s) <= 14; })[0], ym = Math.ceil(H0 * 1.1 / sy) * sy, xm = Math.ceil(T * 1.2 / sx) * sx;
+          var tx = 1e-6, ty = sy / 2 + 1e-6, n = Math.round(T / sx), stp = sx * Math.ceil(n / 4), xs = [];
+          for (var x = 0; x < T - 1e-9; x += stp) xs.push(cl(x)); xs.push(T);
+          var I = padIn({ x: [0, xm], y: [0, ym], sx: sx, sy: sy, lx: 2 * sx, ly: 2 * sy, v: 't', w: 'h(t)', xTitle: 't (s)', yTitle: 'h(t) (m)', extra: { mode: 'points', join: true } });
+          var keyPts = xs.map(function (x) { return [x, snapTo(h(x), sy)]; }), key = drawing([], keyPts, 'curve');
+          var lineF = function (x) { return H0 * (1 - x / T); }, fastF = function (x) { return H0 * (1 - x / T) * (1 - x / T); }, upF = function (x) { return 4.9 * x * x; };
+          var onF = function (f, ps) { return ps.every(function (q) { return Math.abs(q[1] - f(q[0])) <= ty; }); };
+          var check = function (resp) {
+            if (HW.draw.empty(resp)) return form('empty', 'Plot points from a table of values first (tap the grid), then press <b>Join</b>.');
+            var v = HW.draw.norm(resp), ps = v.pts.slice().sort(function (a, b) { return a[0] - b[0]; });
+            if (v.pieces.length) return wrong('sk-lines', 'Plot points and press <b>Join</b> — the graph is a curve, not straight pieces.');
+            var after = ps.filter(function (q) { return q[0] > T + tx; });
+            if (after.length) return wrong('sk-after', 'The case reaches the ground at ' + t('t=' + T) + ' s. After that the rule gives a negative height, so the graph stops at ' + t(ptT([T, 0])) + ' — remove ' + t(ptT(after[0])) + '.');
+            var off = ps.filter(function (q) { return Math.abs(q[1] - h(q[0])) > ty; });
+            if (off.length) {
+              var mid = ps.filter(function (q) { return q[0] > tx && q[0] < T - tx; });
+              if (Math.abs(ps[0][1]) <= ty && onF(upF, ps)) return wrong('sk-up', 'At ' + t('t=0') + ' the case is at the release height, ' + t('h(0)=' + F(H0)) + ' m, and then it <b>falls</b>. You graphed ' + t('4.9t^{2}') + ' instead of ' + t(F(H0) + '-4.9t^{2}') + '.');
+              if (mid.length && onF(lineF, mid) && !onF(h, mid)) return wrong('sk-straight', 'Those points lie on a straight line. The rule has ' + t('t^{2}') + ': the case falls slowly at first and faster and faster, so the curve stays high longer — check e.g. ' + t('h(' + nf(mid[0][0]) + ')=' + nf(h(mid[0][0]))) + '.');
+              if (mid.length && onF(fastF, mid) && !onF(h, mid)) return wrong('sk-shape', 'Your curve falls fastest at the start. A dropped case starts slowly and speeds up: the curve is flat at the top and steepest at the ground. Recompute your table of values.');
+              var q0 = off[0];
+              return wrong('sk-point', 'Check ' + t(ptT(q0)) + ': ' + t('h(' + nf(q0[0]) + ')=' + F(H0) + '-4.9(' + nf(q0[0]) + ')^{2}=' + nf(h(q0[0]))) + ', so plot it at the grid point nearest ' + t(ptT([q0[0], h(q0[0])])) + '.');
+            }
+            if (!ps.some(function (q) { return Math.abs(q[0]) <= tx; })) return wrong('sk-start', 'Start with the release point: ' + t('h(0)=' + F(H0)) + ', so plot the grid point nearest ' + t(ptT([0, H0])) + '.');
+            if (!ps.some(function (q) { return Math.abs(q[0] - T) <= tx; })) return wrong('sk-land', 'Include the landing point: the case reaches the ground when ' + t('h(t)=0') + ', at ' + t('t=' + T) + ' s. Plot ' + t(ptT([T, 0])) + '.');
+            if (ps.length < 4) return wrong('sk-few', 'Plot more points between release and landing (at least two, e.g. every ' + t(nf(stp)) + ' s) so the shape of the curve shows.');
+            if (v.join === 'none') return wrong('graph-not-joined', 'Your points are right — now press <b>Join</b>: time is continuous, so the case has a height at every moment in between.');
+            return ok();
+          };
+          var p = B.graph('(a) Sketch the graph of the function from release until the case reaches the ground. Make a table of values (e.g. every ' + t(nf(stp)) + ' s), plot each point on the grid point nearest its true value, then press <b>Join</b>.', I, check, key,
+            'Table of values: ' + xs.map(function (x) { return t('h(' + nf(x) + ')=' + nf(h(x))); }).join(', ') + '. The graph is part of a downward parabola: it starts at its peak ' + t('(0,\\ ' + F(H0) + ')') + ' on the vertical axis, falls slowly at first and faster and faster, and reaches ' + t('h=0') + ' at ' + t('t=' + T) + ' s. The points are joined because time is continuous.',
+            ['Find ' + t('h(0)') + ' and the time when ' + t('h(t)=0') + ' (part (e)) — those are the two ends.', 'Fill in a table for a few times in between, e.g. ' + t('t=' + nf(xs[1])) + ': ' + t('h(' + nf(xs[1]) + ')=' + F(H0) + '-4.9(' + nf(xs[1]) + ')^{2}') + '.'], 'sketch drop', { fns: [{ f: h, from: 0, to: T, dash: true }] });
+          var snapAll = function (f) { return xs.map(function (x) { return [x, Math.max(0, snapTo(f(x), sy))]; }); };
+          p.bad = [drawing([], keyPts, 'none'), drawing([], snapAll(lineF), 'curve'), drawing([], snapAll(fastF), 'curve'), drawing([], snapAll(upF).filter(function (q) { return q[1] <= ym; }), 'curve'),
+            drawing([], keyPts.concat([[cl(T + sx), 0]]), 'curve'), drawing([], [keyPts[0], keyPts[2], keyPts[keyPts.length - 1]], 'curve'), drawing([], keyPts.slice(0, -1), 'curve')];
+          return p;
         } },
         { id: '16b', level: 'EMG', make: function (r, sh) {
           var v = sh.h(sh.t1);
@@ -1403,14 +1450,19 @@
       { num: '13', shared: function (r) { var rate = r.pick([15, 15, 10, 12, 20]), fix = r.pick([40, 40, 20, 25, 30]), mx = r.pick([8, 8, 6]); return { rate: rate, fix: fix, mx: mx, C: function (h) { return cl(rate * h + fix); }, h1: r.pick([3, 3, 2, 4]), h2: r.pick([5, 5, 4]) }; },
         stem: function (sh) { return 'A guide service rents sea kayaks. The charge is modelled by ' + t('C(h)=' + sh.rate + 'h+' + sh.fix) + ', where ' + t('C(h)') + ' is the cost, in dollars, of a rental lasting ' + t('h') + ' hours. Rentals are limited to ' + t(sh.mx) + ' hours.'; }, parts: [
         { id: 'e13a', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
-          var top = sh.C(sh.mx), o = { x: [0, 10], y: [0, Math.ceil((Math.max(top + 40, sh.C(10)) + 10) / 40) * 40], gx: 1, gy: 20, lx: 2, ly: 40, xName: 'h', yName: 'C' };
-          var G = function (segs) { return ctxGraph(o, segs); };
-          return graphMC(r, '(a) Which graph shows the rental cost?', [
-            { html: G([{ pts: [[0, sh.fix], [sh.mx, top]], start: 'closed', end: 'closed' }]), right: true },
-            { html: G([{ pts: [[0, 0], [sh.mx, sh.rate * sh.mx]], start: 'closed', end: 'closed' }]), why: 'There is a base charge: ' + t('C(0)=' + sh.fix) + '.' },
-            { html: G([{ pts: [[0, sh.fix], [10, sh.C(10)]], start: 'closed', end: 'arrow' }]), why: 'Rentals stop at ' + t(sh.mx) + ' hours, so the graph ends there.' },
-            { html: G([{ pts: [[0, sh.fix], [sh.mx, sh.fix + sh.rate * sh.mx / 2]], start: 'closed', end: 'closed' }]), why: 'Check the end: ' + t('C(' + sh.mx + ')=' + top) + '.' }],
-            t('C(0)=' + sh.fix) + ' and ' + t('C(' + sh.mx + ')=' + top) + ': a segment from ' + t(ptT([0, sh.fix])) + ' to ' + t(ptT([sh.mx, top])) + '.', ['Find the cost at ' + t('0') + ' and at ' + t(sh.mx) + ' hours.'], 'EP sketch kayak');
+          var top = sh.C(sh.mx), SY = 20, ym = Math.ceil((top + 20) / 20) * 20;
+          var I = padIn({ x: [0, 10], y: [0, ym], sx: 1, sy: SY, lx: 2, ly: 40, v: 'h', w: 'C(h)', xTitle: 'h (hours)', yTitle: 'C(h) (dollars)' });
+          var S = segSketch({ f: sh.C, X0: 0, X1: sh.mx, sx: 1, sy: SY, name: 'C', v: 'h',
+            start0: 'There is a base charge: ' + t('C(0)=' + sh.fix) + ', so the graph starts up the vertical axis, not at the origin.',
+            endX: 'Rentals are limited to ' + t(sh.mx) + ' hours, so the graph ends at ' + t('h=' + sh.mx) + '.', arrow: 'Rentals stop at ' + t(sh.mx) + ' hours: end the graph with a solid dot there, not an arrow.',
+            dir: 'A longer rental costs more, so the graph rises.' });
+          var half = snapTo(sh.fix + sh.rate * sh.mx / 2, SY);
+          var p = B.graph('(a) Sketch the graph of the rental cost.' + LINE_HELP, I, S.check, S.key,
+            t('C(0)=' + sh.fix) + ' and ' + t('C(' + sh.mx + ')=' + sh.rate + '(' + sh.mx + ')+' + sh.fix + '=' + top) + ': a segment from ' + t(ptT([0, sh.fix])) + ' to ' + t(ptT([sh.mx, top])) + ' with solid dots at both ends' + (S.A[1] !== sh.fix || S.B[1] !== top ? ' (on this grid: ' + t(ptT(S.A)) + ' to ' + t(ptT(S.B)) + ')' : '') + '.',
+            ['Find the cost at ' + t('0') + ' and at ' + t(sh.mx) + ' hours: those are the two ends.'], 'EP sketch kayak');
+          p.bad = [drawing([seg([0, 0], [sh.mx, snapTo(sh.rate * sh.mx, SY)])]), drawing([seg(S.A, [10, snapTo(sh.C(10), SY)], 'closed', 'arrow')]), drawing([seg(S.A, [10, snapTo(sh.C(10), SY)])])];
+          if (Math.abs(half - S.B[1]) > 1e-9) p.bad.push(drawing([seg(S.A, [sh.mx, half])]));
+          return p;
         } },
         { id: 'e13b', level: 'BEG', make: function (r, sh) {
           var v = sh.C(sh.h1);

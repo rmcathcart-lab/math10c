@@ -7,9 +7,10 @@
  * a closed curve, a steep-but-not-vertical segment …); where a representation can go either way, the verdict is
  * random (with or without a repeated x), and the booklet's own relation is one of the possible versions.
  * "Give a reason" → 4-option multiple choice (verdict + reason). "State which are functions" → one Function / Not a
- * function choice per relation. "Draw an arrow diagram" → choose the right diagram. "Name the input that breaks the
- * test" → two boxes (input, its outputs; none for a function). "Draw your own mapping diagram" / "change one pair" →
- * the student types ordered pairs, checked for the property. Explain-questions → MC with misconception hints.
+ * function choice per relation. "Draw an arrow diagram" and "draw your own mapping diagram" → drawn with the arrow-diagram
+ * input (js/draw.js; own diagrams checked for the property). "Name the input that breaks the test" → two boxes (input,
+ * its outputs; none for a function). "Change one pair" → the student types ordered pairs, checked for the property.
+ * EP 21(e) adds an open sketch: a relation with a given domain and range that is not a function (K.graphRules). Explain-questions → MC with misconception hints.
  * Levels: LIM BEG EMG PRG ADV MAS. */
 (function (root) {
   'use strict';
@@ -37,6 +38,7 @@
     'still-fn': 'New set is still a function', 'same-y': 'Gave the same y-value twice', 'not-on': 'Point does not satisfy the equation', 'no-y': 'x-value with no real y',
     'mc-swap-same': 'Thought swapping letters changes nothing', 'mc-missing-inputs': 'Blamed missing inputs', 'mc-shared-sq': 'Thought a shared output breaks the test',
     'mc-sqrt-both': 'Thought √ gives two values', 'mc-neg': 'Blamed negative inputs', 'mc-side-out': 'Thought the definition restricts outputs', 'mc-side-both': 'Confused function with one-to-one',
+    'ad-wrong-mom': 'Arrow diagram: paired a child with the wrong mother', 'ad-two-moms': 'Arrow diagram: gave a child two mothers',
     'mc-side-none': 'Thought every relation is a function', 'mc-many-many': 'Thought one-to-one and one-to-many can coexist', 'mc-hlt-ok': 'Thought the horizontal line test decides functions'
   });
 
@@ -339,8 +341,8 @@
     if (miss.length) return wrong('dom-missing', 'Every element of the domain needs an arrow: you have no pair that starts with ' + t(nT(miss[0])) + '.');
     return null;
   }
-  function makeKind(D, kind) {
-    return pairsCheck(function (ps, I) {
+  function kindTest(D, kind) {
+    return function (ps, I) {
       var d = domainTest(D, ps, I); if (d) return d;
       if (kind === 'm1') {
         if (!I.isFn) return wrong('m1-notfn', 'The input ' + t(nT(I.breakers[0].x)) + ' has two outputs, so this is not a function. Give every input exactly one output.');
@@ -350,7 +352,23 @@
         if (I.shared.length) return wrong('11-m1', andT(I.shared[0].xs) + ' share the output ' + t(nT(I.shared[0].y)) + ' — that is many-to-one. Give every input a different output.');
       } else if (I.isFn) return wrong('1m-fn', 'Every input has exactly one output, so this is a function. One-to-many needs one input with two or more outputs — give one input a second arrow.');
       return ok();
-    });
+    };
+  }
+  /* the same test for a drawn arrow diagram (arrowpad value: [[left, right], …] as strings) */
+  function arrowsKind(D, kind) {
+    var test = kindTest(D, kind);
+    return function (resp) {
+      resp = resp || []; if (!resp.length) return form('empty', 'Draw the arrows first: tap a domain value on the left, then an output on the right.');
+      var ps = resp.map(function (q) { return [Number(q[0]), Number(q[1])]; });
+      return test(ps, info(ps));
+    };
+  }
+  /* EP 9: draw a mapping diagram of the given kind; outs = the values offered on the right */
+  function buildArrows(D, outs, kind, prompt, key, sol, hints, text, good, bad) {
+    var S = function (ps) { return ps.map(function (q) { return [String(q[0]), String(q[1])]; }); };
+    var p = B.arrows(prompt + ' Draw it: tap a domain value on the left, then its output on the right. You don’t have to use every output.', { left: D.map(String), right: outs.map(String), leftTitle: 'Domain', rightTitle: 'Range' }, S(key), sol, hints, text);
+    p.check = arrowsKind(D, kind); p.answer = 'One possible answer:' + p.answer; p.good = good.map(S); p.bad = bad.map(S);
+    return p;
   }
 
   /* ---------------- relations for Q4 (mothers and children) ---------------- */
@@ -447,18 +465,16 @@
         },
         parts: [
           { id: '4ai', sub: 'a i', level: 'BEG', make: function (r, sh) {
-            var M = sh.moms, kidsAll = sh.kids[0].concat(sh.kids[1]), pr = [];
-            sh.kids.forEach(function (ks, i) { ks.forEach(function (k) { pr.push([M[i], k]); }); });
+            var M = sh.moms, kidsAll = sh.kids[0].concat(sh.kids[1]).sort(), pr = [], momOf = {};
+            sh.kids.forEach(function (ks, i) { ks.forEach(function (k) { pr.push([M[i], k]); momOf[k] = M[i]; }); });
             var bi = sh.big, moved = sh.kids[bi][sh.kids[bi].length - 1];
             var wrongMom = pr.map(function (p) { return p[1] === moved ? [M[1 - bi], moved] : p; }), firstOnly = sh.kids.map(function (ks, i) { return [M[i], ks[0]]; });
-            var opts = [
-              { html: nameDiagram(M, kidsAll, pr), right: true },
-              { html: nameDiagram(kidsAll, M, pr.map(function (p) { return [p[1], p[0]]; })), code: 'reversed', why: 'That diagram goes from the children to the mothers — that is “is the child of”. “Is the mother of” starts at the mothers.' },
-              { html: nameDiagram(M, kidsAll, wrongMom), code: 'wrong-mom', why: 'Check who belongs to whom: ' + moved + ' is ' + M[bi] + '’s child.' },
-              { html: nameDiagram(M, kidsAll, firstOnly), code: 'missing-arrows', why: 'Every mother–child pair needs its own arrow: ' + M[bi] + ' has ' + sh.kids[bi].length + ' children, so ' + sh.kids[bi].length + ' arrows leave ' + M[bi] + '.' }];
-            return B.mc(r, 'Which arrow diagram shows the relation “is the mother of”, from the set of mothers to the set of children?', opts,
+            var p = B.arrows('Draw the arrow diagram for the relation “is the mother of”, from the set of mothers to the set of children.', { left: M, right: kidsAll, leftTitle: 'Mothers', rightTitle: 'Children' }, pr,
               'The domain is the mothers and the range is the children. One arrow goes from each mother to each of her children:' + nameDiagram(M, kidsAll, pr),
-              ['“Is the mother of” starts at a mother and points to her child.', 'Draw one arrow for every mother–child pair.'], 'arrow diagram: is the mother of');
+              ['“Is the mother of” starts at a mother and points to her child.', 'Draw one arrow for every mother–child pair.'], 'arrow diagram: is the mother of',
+              { diag: function (resp) { var b = resp.filter(function (q) { return momOf[q[1]] && momOf[q[1]] !== q[0]; })[0]; return b ? { code: 'ad-wrong-mom', hint: 'Check who belongs to whom: ' + b[1] + ' is ' + momOf[b[1]] + '’s child, not ' + b[0] + '’s.' } : null; } });
+            p.answer = nameDiagram(M, kidsAll, pr); p.bad = [wrongMom, firstOnly];
+            return p;
           } },
           { id: '4aii', sub: 'a ii', level: 'EMG', make: function (r, sh) {
             var M = sh.moms, bi = sh.big, nb = sh.kids[bi].length;
@@ -471,18 +487,21 @@
               HARR, 'is the mother of: function?');
           } },
           { id: '4bi', sub: 'b i', level: 'BEG', make: function (r, sh) {
-            var M = sh.moms, kidsAll = sh.kids[0].concat(sh.kids[1]), pr = [];
-            sh.kids.forEach(function (ks, i) { ks.forEach(function (k) { pr.push([k, M[i]]); }); });
+            var M = sh.moms, kidsAll = sh.kids[0].concat(sh.kids[1]).sort(), pr = [], momOf = {};
+            sh.kids.forEach(function (ks, i) { ks.forEach(function (k) { pr.push([k, M[i]]); momOf[k] = M[i]; }); });
             var bi = sh.big, moved = sh.kids[bi][0], other = sh.kids[1 - bi][0];
             var wrongMom = pr.map(function (p) { return p[0] === moved ? [moved, M[1 - bi]] : p; }), twoMoms = pr.concat([[other, M[bi]]]);
-            var opts = [
-              { html: nameDiagram(kidsAll, M, pr), right: true },
-              { html: nameDiagram(M, kidsAll, pr.map(function (p) { return [p[1], p[0]]; })), code: 'reversed', why: 'That diagram goes from the mothers to the children — that is “is the mother of”. “Is the child of” starts at the children.' },
-              { html: nameDiagram(kidsAll, M, wrongMom), code: 'wrong-mom', why: 'Check who belongs to whom: ' + moved + ' is ' + M[bi] + '’s child.' },
-              { html: nameDiagram(kidsAll, M, twoMoms), code: 'two-moms', why: other + ' has only one mother, ' + M[1 - bi] + ', so only one arrow should leave ' + other + '.' }];
-            return B.mc(r, 'Which arrow diagram shows the relation “is the child of”, from the set of children to the set of mothers?', opts,
+            var p = B.arrows('Draw the arrow diagram for the relation “is the child of”, from the set of children to the set of mothers.', { left: kidsAll, right: M, leftTitle: 'Children', rightTitle: 'Mothers' }, pr,
               'Now the domain is the children and the range is the mothers. One arrow goes from each child to their mother:' + nameDiagram(kidsAll, M, pr),
-              ['“Is the child of” starts at a child and points to the mother.', 'Each child gets one arrow, to their own mother.'], 'arrow diagram: is the child of');
+              ['“Is the child of” starts at a child and points to the mother.', 'Each child gets one arrow, to their own mother.'], 'arrow diagram: is the child of',
+              { diag: function (resp) {
+                var cnt = {}; resp.forEach(function (q) { cnt[q[0]] = (cnt[q[0]] || 0) + 1; });
+                var two = kidsAll.filter(function (k) { return cnt[k] > 1; })[0];
+                if (two) return { code: 'ad-two-moms', hint: two + ' has only one mother, ' + momOf[two] + ', so only one arrow should leave ' + two + '.' };
+                var b = resp.filter(function (q) { return momOf[q[0]] && momOf[q[0]] !== q[1]; })[0];
+                return b ? { code: 'ad-wrong-mom', hint: 'Check who belongs to whom: ' + b[0] + ' is ' + momOf[b[0]] + '’s child, not ' + b[1] + '’s.' } : null; } });
+            p.answer = nameDiagram(kidsAll, M, pr); p.bad = [wrongMom, twoMoms];
+            return p;
           } },
           { id: '4bii', sub: 'b ii', level: 'EMG', make: function (r, sh) {
             var M = sh.moms, bi = sh.big, nb = sh.kids[bi].length;
@@ -696,30 +715,36 @@
             return typeMC(r, '<p>' + psH(pairs) + '</p>', pairs, 'pairs', psT(pairs));
           } };
         }) },
-      { num: '9', stem: function (sh) { return 'Build your own relations. Every relation must use the domain ' + t('\\{' + sh.D.join(',\\ ') + '\\}') + ': each of these numbers is an input, and no other number is. Type each relation as a set of ordered pairs.'; },
-        shared: function (r) { return { D: r.chance(0.4) ? [2, 4, 6, 8] : r.pick([[1, 3, 5, 7], [0, 2, 4, 6], [1, 2, 3, 4], [3, 6, 9, 12], [-2, -1, 1, 2], [5, 10, 15, 20]]) }; },
+      { num: '9', stem: function (sh) { return 'Draw your own mapping diagrams. Every diagram must use the domain ' + t('\\{' + sh.D.join(',\\ ') + '\\}') + ': each of these numbers is an input, and no other number is.'; },
+        shared: function (r) { return { D: r.chance(0.4) ? [2, 4, 6, 8] : r.pick([[1, 3, 5, 7], [0, 2, 4, 6], [1, 2, 3, 4], [3, 6, 9, 12], [-2, -1, 1, 2], [5, 10, 15, 20]]), R: r.sample(range(1, 12), 5).sort(num) }; },
         parts: [
           { id: 'e9a', level: 'PRG', make: function (r, sh) {
-            var D = sh.D, key = [[D[0], 1], [D[1], 1], [D[2], 5], [D[3], 5]];
-            var p9 = B.math('A relation that is <b>many-to-one</b>, and a function.', makeKind(D, 'm1'), setT(key), 'Answers vary. Give every input exactly one output, and let at least two inputs share an output, e.g. ' + t(setT(key)) + '.',
-              ['Each input gets exactly one arrow.', 'Make two (or more) of the arrows end at the same output.'], 'build many-to-one, domain ' + D.join(','), { keys: 'pairs', placeholder: 'e.g. {(2, 1), (4, 3), …}' });
-            return Object.assign(p9, { good: [psT(D.map(function (x) { return [x, 7]; })), setT([[D[0], 2], [D[1], 3], [D[2], 3], [D[3], 3]])], bad: [setT(D.map(function (x) { return [x, x + 1]; })), setT([[D[0], 1], [D[0], 2], [D[1], 1], [D[2], 1], [D[3], 1]]), setT([[D[0], 1], [D[1], 1], [D[2], 1]])] });
+            var D = sh.D, R = sh.R, key = [[D[0], R[0]], [D[1], R[0]], [D[2], R[2]], [D[3], R[2]]];
+            return buildArrows(D, R, 'm1', '(a) A relation that is <b>many-to-one</b>, and a function.', key,
+              'Answers vary. Give every input exactly one arrow, and let at least two arrows end at the same output, e.g. ' + t(setT(key)) + '.',
+              ['Each input gets exactly one arrow.', 'Make two (or more) of the arrows end at the same output.'], 'draw many-to-one, domain ' + D.join(','),
+              [D.map(function (x) { return [x, R[3]]; }), [[D[0], R[1]], [D[1], R[4]], [D[2], R[4]], [D[3], R[4]]]],
+              [D.map(function (x, i) { return [x, R[i]]; }), [[D[0], R[0]], [D[0], R[1]], [D[1], R[0]], [D[2], R[0]], [D[3], R[0]]], [[D[0], R[0]], [D[1], R[0]], [D[2], R[0]]]]);
           } },
           { id: 'e9b', level: 'EMG', make: function (r, sh) {
-            var D = sh.D, key = D.map(function (x) { return [x, x + 1]; });
-            var p9 = B.math('A relation that is <b>one-to-one</b>.', makeKind(D, '11'), setT(key), 'Answers vary. Give every input its own, different output, e.g. ' + t(setT(key)) + '.',
-              ['Each input gets exactly one arrow, and no two arrows end at the same output.'], 'build one-to-one, domain ' + D.join(','), { keys: 'pairs', placeholder: 'e.g. {(2, 3), (4, 5), …}' });
-            return Object.assign(p9, { good: [setT(D.map(function (x) { return [x, -x]; }))], bad: [setT(D.map(function (x) { return [x, 7]; })), setT([[D[0], 1], [D[1], 2], [D[2], 3], [D[3], 4], [D[3] + 1, 5]])] });
+            var D = sh.D, R = sh.R, key = D.map(function (x, i) { return [x, R[i]]; });
+            return buildArrows(D, R, '11', '(b) A relation that is <b>one-to-one</b>.', key,
+              'Answers vary. Give every input its own, different output, e.g. ' + t(setT(key)) + '.',
+              ['Each input gets exactly one arrow, and no two arrows end at the same output.'], 'draw one-to-one, domain ' + D.join(','),
+              [D.map(function (x, i) { return [x, R[4 - i]]; })],
+              [D.map(function (x) { return [x, R[2]]; }), [[D[0], R[0]], [D[1], R[1]], [D[2], R[2]]], [[D[0], R[0]], [D[0], R[4]], [D[1], R[1]], [D[2], R[2]], [D[3], R[3]]]]);
           } },
           { id: 'e9c', level: 'PRG', make: function (r, sh) {
-            var D = sh.D, key = [[D[0], 1], [D[0], 3], [D[1], 5], [D[2], 7], [D[3], 9]];
-            var p9 = B.math('A relation that is <b>one-to-many</b>.', makeKind(D, '1m'), setT(key), 'Answers vary. Give at least one input two (or more) outputs, e.g. ' + t(setT(key)) + '.',
-              ['One-to-many needs one input with two or more arrows leaving it.', 'Every domain value still needs at least one pair.'], 'build one-to-many, domain ' + D.join(','), { keys: 'pairs', placeholder: 'e.g. {(2, 1), (2, 3), …}' });
-            return Object.assign(p9, { good: [setT([[D[3], 0], [D[3], 1], [D[3], 2], [D[0], 0], [D[1], 0], [D[2], 0]])], bad: [setT(D.map(function (x) { return [x, x + 1]; })), setT([[D[0], 1], [D[0], 3], [D[1], 5]])] });
+            var D = sh.D, R = sh.R, key = [[D[0], R[0]], [D[0], R[1]], [D[1], R[2]], [D[2], R[3]], [D[3], R[4]]];
+            return buildArrows(D, R, '1m', '(c) A relation that is <b>one-to-many</b>.', key,
+              'Answers vary. Give at least one input two (or more) arrows, and every input at least one, e.g. ' + t(setT(key)) + '.',
+              ['One-to-many needs one input with two or more arrows leaving it.', 'Every domain value still needs at least one arrow.'], 'draw one-to-many, domain ' + D.join(','),
+              [[[D[3], R[0]], [D[3], R[1]], [D[3], R[2]], [D[0], R[0]], [D[1], R[0]], [D[2], R[0]]]],
+              [D.map(function (x, i) { return [x, R[i]]; }), [[D[0], R[0]], [D[0], R[2]], [D[1], R[4]]]]);
           } },
           { id: 'e9d', level: 'EMG', make: function (r, sh) {
             var D = sh.D;
-            return B.mc(r, 'Exactly one of your three relations fails the function test. Which one, and why?', [
+            return B.mc(r, 'Exactly one of your three diagrams fails the function test. Which one, and why?', [
               { html: 'The one-to-many relation: a domain element such as ' + t(D[0]) + ' is paired with two range elements, but a function pairs each element of the domain with exactly one element of the range.', right: true },
               { html: 'The many-to-one relation: two domain elements share a range element.', code: 'shared-out', why: 'Sharing an output is allowed — many-to-one relations are functions.' },
               { html: 'The one-to-one relation: it has too many different outputs.', code: 'sizes', why: 'One-to-one relations are functions: each input has exactly one output.' },
@@ -768,7 +793,7 @@
               solution: 'Answers vary. For example, replace ' + t(pT(O[2])) + ' with ' + t(pT([-sh.a, sh.q])) + ': ' + t(setT(key)) + '. Now the input ' + t(-sh.a) + ' has two outputs, ' + t(sh.p) + ' and ' + t(sh.q) + ', so the relation is not a function.',
               hints: ['To break the test, make one of the inputs appear twice — with a different output each time.'], text: 'change one pair to break the test' };
           } }] },
-      { num: '21', section: 'Extra practice D — Reasoning about the definition', stem: 'Choose the answer that is correct and supported by a correct example.', parts: [
+      { num: '21', section: 'Extra practice D — Reasoning about the definition', stem: 'Answer each question. In (a)–(d), choose the answer that is correct and supported by a correct example.', parts: [
         { id: 'e21a', level: 'EMG', make: function (r) {
           var y = r.int(2, 9), xs = r.sample(range(1, 6), 3).sort(num), ex1 = xs.map(function (x) { return [x, y]; }), ex2 = [[y, xs[0]], [y, xs[1]]];
           return B.mc(r, 'Can a function have two <b>different inputs</b> that produce the <b>same output</b>?', [
@@ -806,6 +831,18 @@
             { html: 'It does not decide the function test; it only finds the ' + t('x') + '-intercepts.', code: 'forms', why: 'Only the line ' + t('y=0') + ' finds the ' + t('x') + '-intercepts. What does a horizontal line crossing twice really show?' }],
             'A horizontal line ' + t('y=k') + ' collects points that share the output ' + t('k') + ', and sharing outputs is allowed. So it can’t decide whether a relation is a function. Two crossings show two inputs sharing an output: it decides <b>one-to-one versus many-to-one</b>.',
             HVLT, 'horizontal line test');
+        } },
+        { id: 'e21e', level: 'MAS', make: function (r) {
+          var a = r.int(-4, -2), b = r.int(1, 4), c = r.int(-4, -2), d = r.int(1, 4), m = r.int(c + 1, d - 1);
+          var Dt = '\\{x\\mid ' + a + '\\le x\\le ' + b + ',\\ x\\in\\mathbb{R}\\}', Rt = '\\{y\\mid ' + c + '\\le y\\le ' + d + ',\\ y\\in\\mathbb{R}\\}';
+          var vee = function (s0, x0) { return { v: [[b, c], [x0, m], [b, d]], s: s0, e: s0 }; }, dr = function (pcs) { return { pts: [], pieces: pcs, join: 'none' }; };
+          var p = B.graph('(e) Sketch a relation with domain ' + t(Dt) + ' and range ' + t(Rt) + ' that is <b>not</b> a function.<div class="muted">Many different drawings are right. Use <b>╱ Line</b> to draw (tap each corner; tap the last point again to finish) and <b>●○ Ends</b> to change an end.</div>',
+            { x: [-6, 6], y: [-6, 6], labels: 2 }, K.graphRules({ fn: false, domain: Dt, range: Rt }), dr([vee('closed', a)]),
+            'It must fail the vertical line test somewhere, use every ' + t('x') + ' from ' + t(a) + ' to ' + t(b) + ' and every ' + t('y') + ' from ' + t(c) + ' to ' + t(d) + '. One way: a sideways “V” with its corner at ' + t(pT([a, m])) + ' and solid ends at ' + t(pT([b, c])) + ' and ' + t(pT([b, d])) + '. The vertical line ' + t('x=' + b) + ' meets it twice, so the input ' + t(b) + ' has two outputs. (A closed shape such as a triangle or a rectangle with those extremes works too.)',
+            ['First make it fail the test: some vertical line must cross your graph twice.', 'Then check the extremes: leftmost ' + t('x=' + a) + ', rightmost ' + t('x=' + b) + ', lowest ' + t('y=' + c) + ', highest ' + t('y=' + d) + ', all solid.'], 'sketch a non-function with given D & R');
+          p.answer = 'One possible answer:' + p.answer;
+          p.bad = [dr([{ v: [[a, c], [b, d]], s: 'closed', e: 'closed' }]), dr([{ v: [[a, c], [a, d]], s: 'closed', e: 'closed' }]), dr([vee('open', a)]), dr([vee('closed', a + 1)])];
+          return p;
         } }] }
     ]
   });
