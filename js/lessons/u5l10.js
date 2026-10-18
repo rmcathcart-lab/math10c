@@ -298,7 +298,7 @@
    * the grid edge where there is an arrow, shading to the end where the graph stops).
    * tapPart: tap the intercepts of a given graph (graph pad in points mode with the graph underneath). */
   var DW = HW.draw;
-  var HINT_SHADOW = 'Shine a light straight down onto the graph: its shadow on the ' + t('x') + '-axis is the <b>domain</b>. Shine it from the side: its shadow on the ' + t('y') + '-axis is the <b>range</b>.';
+  function shadowHint(dv, rv) { return 'Shine a light straight down onto the graph: its shadow on the ' + t(dv || 'x') + '-axis is the <b>domain</b>. Shine it from the side: its shadow on the ' + t(rv || 'y') + '-axis is the <b>range</b>.'; }
   var HINT_SH_DOTS = 'Copy the graph’s ends onto the number lines: solid end → solid dot, hollow end → open dot (tap the dot a second time), arrow → shade right to the end of the number line, with no dot.';
   var SH_PROMPT = 'Show the domain and the range on the two number lines: a dot at each end value (solid or open), shaded in between. Then write them in set notation in the next part.';
   function isPt(p) { return Math.abs(p.lo - p.hi) < 1e-9; }
@@ -320,8 +320,8 @@
     var g = Object.assign({ x: [-6, 6], y: [-6, 6], labels: 2 }, spec); g.max = 300;
     var inp = { graph: g, v: dv, w: rv, dom: Object.assign({ labels: 2 }, o.dom || {}), ran: Object.assign({ labels: 2 }, o.ran || {}) };
     if (o.hideGraph !== false) inp.hideGraph = true; // every shading part here repeats the graph its question stem already shows
-    var hm = function (h) { return h === HINT_DOTS ? HINT_SH_DOTS : h === HINT_DR ? HINT_SHADOW : h; };
-    var hs = (hints || []).map(hm); if (hs.indexOf(HINT_SH_DOTS) < 0) hs.push(HINT_SH_DOTS); if (hs.indexOf(HINT_SHADOW) < 0) hs.unshift(HINT_SHADOW);
+    var HS = shadowHint(dv, rv), hm = function (h) { return h === HINT_DOTS ? HINT_SH_DOTS : h === HINT_DR ? HS : h; };
+    var hs = (hints || []).map(hm); if (hs.indexOf(HINT_SH_DOTS) < 0) hs.push(HINT_SH_DOTS); if (hs.indexOf(HS) < 0) hs.unshift(HS);
     var p = B.domrange(prompt || SH_PROMPT, inp, D, R, sol, hs, (text || 'domain and range') + ' (shade)');
     var parts = function (tex) { return DW.setParts(S.parse(tex).set); }, TD = parts(D), TR = parts(R);
     var prep = function (W, T) { return (W || []).map(function (w) { var q = S.parse(w.is); return q.ok ? { parts: DW.setParts(q.set), code: w.code, hint: shWord(w.sh || w.hint) } : null; }).filter(function (w) { return w && !DW.partsSame(w.parts, T); }); };
@@ -1185,7 +1185,7 @@
     extra: subs([
       /* ================= EP Part A ================= */
       { num: '1', section: 'Extra practice A — One relation, every question', shared: function (r) { return ep1Shared(r, false); },
-        stem: function (sh) { return 'The graph below shows every point of a relation ' + t('f') + '. The dots are separate and are not joined. Answer every part from the graph.' + ep1Fig(sh, false, 'the dots of f'); }, parts: [
+        stem: function (sh) { return 'The graph below shows every point of a relation ' + t('f') + '. The dots are separate and are not joined. Answer every part from the graph.' + (sh.onPad ? '' : ep1Fig(sh, false, 'the dots of f')); }, parts: [
         { id: 'e1a', level: 'BEG', outcome: 'RF2', make: function (r, sh) {
           var p = B.pairs('(a) Write the relation as a set of ordered pairs.', sh.pts, {}, 'List each dot as ' + t('(x,\\ y)') + ', from left to right:<br>' + t('\\{' + sh.pts.map(ptT).join(',\\ ') + '\\}'), ['Read across to the ' + t('x') + '-coordinate first, then up or down to the ' + t('y') + '-coordinate.'], 'graph to ordered pairs');
           p.bad = ['\\{' + sh.pts.map(function (q) { return ptK([q[1], q[0]]); }).join(', ') + '\\}', '\\{' + sh.pts.slice(0, 6).map(ptK).join(', ') + '\\}'];
@@ -1233,8 +1233,9 @@
             ['Count the dots at each height.'], 'why two solutions');
         } },
         { id: 'e1f', level: 'BEG', outcome: 'RF1', make: function (r, sh) {
+          sh.onPad = true; // the graph is drawn on the pad, not repeated in the stem
           var onG = function (p) { return sh.pts.some(function (q) { return same(q[0], p[0]) && same(q[1], p[1]); }); };
-          return tapPart('(f) Tap every ' + t('x') + '-intercept and the ' + t('y') + '-intercept of ' + t('f') + '.', { x: [-6, 6], y: [-sh.L - 2, sh.top + 1], labels: 2, bg: { points: sh.pts.map(function (p) { return { x: p[0], y: p[1] }; }) } }, [[sh.x3, 0], [sh.x6, 0]], [[0, -sh.L]], { onGraph: onG, offHint: 'The graph is only the dots: an intercept must be one of them.' },
+          return tapPart('(f) Tap every ' + t('x') + '-intercept and the ' + t('y') + '-intercept of ' + t('f') + ' on the graph.', { x: [-6, 6], y: [-sh.L - 2, sh.top + 1], labels: 2, bg: { points: sh.pts.map(function (p) { return { x: p[0], y: p[1] }; }) } }, [[sh.x3, 0], [sh.x6, 0]], [[0, -sh.L]], { onGraph: onG, offHint: 'The graph is only the dots: an intercept must be one of them.' },
             t('x') + '-intercepts: the dots on the ' + t('x') + '-axis (' + t('y=0') + '): ' + t(ptT([sh.x3, 0]) + ',\\ ' + ptT([sh.x6, 0])) + '.<br>' + t('y') + '-intercept: the dot on the ' + t('y') + '-axis (' + t('x=0') + '): ' + t(ptT([0, -sh.L])) + '.',
             ['An ' + t('x') + '-intercept is a point with ' + t('y=0') + '; a ' + t('y') + '-intercept is a point with ' + t('x=0') + '.'], 'intercepts of dots');
         } },
@@ -1372,7 +1373,7 @@
             { html: 'None — all four representations show the whole relation.', why: 'The table, graph and diagram show only five pairs; the equation alone covers every input.' }],
             'The table, graph and mapping diagram each show only the five given pairs, so none says what happens at any other input (e.g. ' + t('x=0.5') + '). Only the equation, IV, gives an output for every real ' + t('x') + '.', ['Which representations show only five pairs?'], 'which representation shows all');
         } }] },
-      { num: '4a', stem: function (sh) { return 'For the graph below state (i) the domain and range, (ii) whether the relation is a function, and (iii) every ' + t('x') + '-intercept and every ' + t('y') + '-intercept, as ordered pairs.' + fig(G({ x: [-6, 6], y: [-5, 5], labels: 2, max: 260, segs: [{ pts: sh.pts, start: 'closed', end: 'closed' }], aria: 'sideways parabola' })); }, shared: ep4aShared, parts: [
+      { num: '4a', stem: function (sh) { return 'For the graph below state (i) the domain and range, (ii) whether the relation is a function, and (iii) every ' + t('x') + '-intercept and every ' + t('y') + '-intercept.' + (sh.onPad ? '' : fig(G({ x: [-6, 6], y: [-5, 5], labels: 2, max: 260, segs: [{ pts: sh.pts, start: 'closed', end: 'closed' }], aria: 'sideways parabola' }))); }, shared: ep4aShared, parts: [
         { id: 'e4a0', sub: 'i, shade', level: 'EMG', outcome: 'RF2', make: function (r, sh) { return e4aDR(sh, true); } },
         { id: 'e4a1', sub: 'i', level: 'PRG', outcome: 'RF2', make: function (r, sh) { return e4aDR(sh, false); } },
         { id: 'e4a2', sub: 'ii', level: 'BEG', outcome: 'RF2', make: function (r, sh) {
@@ -1381,11 +1382,12 @@
             (neg ? '<b>True</b> — ' : '<b>False</b> — ') + '<b>not a function:</b> the vertical line ' + t('x=0') + ' meets the curve at ' + t('(0,\\ -' + sh.k + ')') + ' and ' + t('(0,\\ ' + sh.k + ')') + '.', ['Try a vertical line near the middle of the curve.'], 'VLT sideways parabola' + (neg ? ' (not a function?)' : ''));
         } },
         { id: 'e4a3', sub: 'iii', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
+          sh.onPad = true; // the graph is drawn on the pad, not repeated in the stem
           var onG = function (p) { return same(p[0], sh.s * (p[1] * p[1] - sh.k * sh.k)) && Math.abs(p[1]) <= sh.m; };
-          return tapPart('(iii) Tap every ' + t('x') + '-intercept and every ' + t('y') + '-intercept.', { x: [-6, 6], y: [-5, 5], labels: 2, bg: { segs: [{ pts: sh.pts, start: 'closed', end: 'closed' }] } }, [[sh.xv, 0]], [[0, -sh.k], [0, sh.k]], { onGraph: onG },
+          return tapPart('(iii) Tap every ' + t('x') + '-intercept and every ' + t('y') + '-intercept on the graph.', { x: [-6, 6], y: [-5, 5], labels: 2, bg: { segs: [{ pts: sh.pts, start: 'closed', end: 'closed' }] } }, [[sh.xv, 0]], [[0, -sh.k], [0, sh.k]], { onGraph: onG },
             t('x') + '-int: the turning point on the ' + t('x') + '-axis, ' + t(ptT([sh.xv, 0])) + '.<br>' + t('y') + '-ints: ' + t(ptT([0, -sh.k]) + ',\\ ' + ptT([0, sh.k])) + ' — a relation can meet the ' + t('y') + '-axis twice when it isn’t a function.', ['Look for every point where the curve meets each axis.'], 'intercepts of sideways parabola');
         } }] },
-      { num: '4b', stem: function (sh) { return 'For the graph below state (i) the domain and range, (ii) whether the relation is a function, and (iii) every intercept as ordered pairs.' + fig(G({ x: [-6, 6], y: [-5, 6], labels: 2, max: 260, segs: [{ pts: sh.pts, start: sh.start, end: sh.end }], aria: 'V-shaped relation with a hollow end' })); }, shared: ep4bShared, parts: [
+      { num: '4b', stem: function (sh) { return 'For the graph below state (i) the domain and range, (ii) whether the relation is a function, and (iii) every intercept.' + (sh.onPad ? '' : fig(G({ x: [-6, 6], y: [-5, 6], labels: 2, max: 260, segs: [{ pts: sh.pts, start: sh.start, end: sh.end }], aria: 'V-shaped relation with a hollow end' }))); }, shared: ep4bShared, parts: [
         { id: 'e4b0', sub: 'i, shade', level: 'EMG', outcome: 'RF2', make: function (r, sh) { return e4bDR(sh, true); } },
         { id: 'e4b1', sub: 'i', level: 'PRG', outcome: 'RF2', make: function (r, sh) { return e4bDR(sh, false); } },
         { id: 'e4b2', sub: 'ii', level: 'BEG', outcome: 'RF2', make: function (r) {
@@ -1394,12 +1396,13 @@
             (neg ? '<b>False</b> — ' : '<b>True</b> — ') + 'it <b>is a function:</b> no vertical line meets the graph twice.', ['Imagine sliding a vertical line across the graph.'], 'VLT V-shape' + (neg ? ' (not a function?)' : ''));
         } },
         { id: 'e4b3', sub: 'iii', level: 'BEG', outcome: 'RF1', make: function (r, sh) {
+          sh.onPad = true; // the graph is drawn on the pad, not repeated in the stem
           var xs = sh.xi.map(function (x) { return [x, 0]; }), ys = [[0, sh.yi]], lo = Math.min(sh.hollow[0], sh.solid[0]), hi = Math.max(sh.hollow[0], sh.solid[0]);
           var onG = function (p) { return p[0] >= lo - 1e-9 && p[0] <= hi + 1e-9 && !(same(p[0], sh.hollow[0]) && same(p[1], sh.hollow[1])) && same(p[1], pwAt(sh.pts.slice().sort(function (a, b) { return a[0] - b[0]; }), p[0])); };
-          return tapPart('(iii) Tap every ' + t('x') + '-intercept and every ' + t('y') + '-intercept.', { x: [-6, 6], y: [-5, 6], labels: 2, bg: { segs: [{ pts: sh.pts, start: sh.start, end: sh.end }] } }, xs, ys, { onGraph: onG },
+          return tapPart('(iii) Tap every ' + t('x') + '-intercept and every ' + t('y') + '-intercept on the graph.', { x: [-6, 6], y: [-5, 6], labels: 2, bg: { segs: [{ pts: sh.pts, start: sh.start, end: sh.end }] } }, xs, ys, { onGraph: onG },
             t('x') + '-ints: ' + t(xs.map(ptT).join(',\\ ')) + '.<br>' + t('y') + '-int: ' + t(ptT([0, sh.yi])) + (sh.yi === 0 ? ' — the same point as one of the ' + t('x') + '-intercepts (the origin).' : '.'), ['Check where each straight piece crosses the axes.'], 'intercepts of a V');
         } }] },
-      { num: '4c', stem: function (sh) { return 'For the graph below state (i) the domain and range, (ii) whether the relation is a function, and (iii) every intercept as ordered pairs. If an intercept does not exist, say so.' + fig(G({ x: [-5, 5], y: [-5, 5], labels: 1, max: 260, points: sh.pts.map(function (p) { return { x: p[0], y: p[1] }; }), aria: 'six dots' })); }, shared: ep4cShared, parts: [
+      { num: '4c', stem: function (sh) { return 'For the graph below state (i) the domain and range, (ii) whether the relation is a function, and (iii) every intercept. Some intercepts may not exist.' + (sh.onPad ? '' : fig(G({ x: [-5, 5], y: [-5, 5], labels: 1, max: 260, points: sh.pts.map(function (p) { return { x: p[0], y: p[1] }; }), aria: 'six dots' }))); }, shared: ep4cShared, parts: [
         { id: 'e4c1', sub: 'i', level: 'BEG', outcome: 'RF2', make: function (r, sh) {
           var raw = '\\{' + sh.pts.map(function (p) { return p[1]; }).join(', ') + '\\}';
           return drPart('(i) State the domain and the range.', sh.D, sh.R, { bad: raw === sh.R ? [] : [[sh.D, raw]] },
@@ -1411,8 +1414,9 @@
             (neg ? '<b>True</b> — ' : '<b>False</b> — ') + '<b>not a function:</b> ' + t(sh.dbl[0]) + ' and ' + t(sh.dbl[1]) + ' are each paired with two outputs.', ['Is any vertical line through two dots?'], 'VLT six dots' + (neg ? ' (not a function?)' : ''));
         } },
         { id: 'e4c3', sub: 'iii', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
+          sh.onPad = true; // the graph is drawn on the pad, not repeated in the stem
           var onG = function (p) { return sh.pts.some(function (q) { return same(q[0], p[0]) && same(q[1], p[1]); }); };
-          return tapPart('(iii) Tap every ' + t('x') + '-intercept and every ' + t('y') + '-intercept. If one kind does not exist, there is nothing to tap for it.', { x: [-5, 5], y: [-5, 5], labels: 1, bg: { points: sh.pts.map(function (p) { return { x: p[0], y: p[1] }; }) } }, [[sh.z, 0]], [], { onGraph: onG, offHint: function (p) { return Math.abs(p[0]) < 1e-9 ? 'The graph is only the dots, and no dot lies on the ' + t('y') + '-axis — so there is <b>no</b> ' + t('y') + '-intercept.' : 'The graph is only the dots: an intercept must be one of them.'; } },
+          return tapPart('(iii) Tap every ' + t('x') + '-intercept and every ' + t('y') + '-intercept on the graph. If one kind does not exist, there is nothing to tap for it.', { x: [-5, 5], y: [-5, 5], labels: 1, bg: { points: sh.pts.map(function (p) { return { x: p[0], y: p[1] }; }) } }, [[sh.z, 0]], [], { onGraph: onG, offHint: function (p) { return Math.abs(p[0]) < 1e-9 ? 'The graph is only the dots, and no dot lies on the ' + t('y') + '-axis — so there is <b>no</b> ' + t('y') + '-intercept.' : 'The graph is only the dots: an intercept must be one of them.'; } },
             t('x') + '-int: the dot on the ' + t('x') + '-axis, ' + t(ptT([sh.z, 0])) + '.<br><b>No ' + t('y') + '-intercept:</b> no dot has ' + t('x=0') + ' (the graph is only the dots).', ['Is there a dot exactly on each axis?'], 'intercepts of dots, none');
         } }] },
       { num: '5', stem: '', parts: [
@@ -1558,7 +1562,7 @@
           return p;
         } }] },
       { num: '8', shared: ep8Shared,
-        stem: function (sh) { return 'The graph below is the whole graph of a function ' + t('h') + '. Its equation is ' + t('h(x)=' + dfr(sh.rule)) + '.' + fig(G({ x: [-7, 9], y: [-2, 8], labels: 2, max: 320, segs: [{ pts: [[sh.xL, sh.yL], [sh.X0, 0]], start: 'closed', end: 'closed' }], aria: 'segment of a line' })); }, parts: [
+        stem: function (sh) { return 'The graph below is the whole graph of a function ' + t('h') + '. Its equation is ' + t('h(x)=' + dfr(sh.rule)) + '.' + (sh.onPad ? '' : fig(G({ x: [-7, 9], y: [-2, 8], labels: 2, max: 320, segs: [{ pts: [[sh.xL, sh.yL], [sh.X0, 0]], start: 'closed', end: 'closed' }], aria: 'segment of a line' }))); }, parts: [
         { id: 'e8as', sub: 'a, shade', level: 'BEG', outcome: 'RF2', make: function (r, sh) { return e8aDR(sh, true); } },
         { id: 'e8a', level: 'EMG', outcome: 'RF2', make: function (r, sh) { return e8aDR(sh, false); } },
         { id: 'e8b', level: 'BEG', make: function (r, sh) {
@@ -1567,8 +1571,9 @@
             'Graph: the line crosses ' + t('x=0') + ' at ' + t('y=' + sh.b) + ' and passes through ' + t(ptT([sh.x1, v1])) + '.<br>Check: ' + t('h(0)=' + dfr(frT(-sh.p, sh.q)) + '(0)+' + sh.b + '=' + sh.b) + ' ✓, ' + t('h(' + sh.x1 + ')=' + dfr(frT(-sh.p, sh.q)) + '(' + sh.x1 + ')+' + sh.b + '=' + nf(v1)) + ' ✓', ['Go to the input on the ' + t('x') + '-axis, then up or down to the line.'], 'read h(a) off a segment');
         } },
         { id: 'e8c', level: 'BEG', outcome: 'RF1', make: function (r, sh) {
+          sh.onPad = true; // the graph is drawn on the pad, not repeated in the stem
           var onG = function (p) { return p[0] >= sh.xL - 1e-9 && p[0] <= sh.X0 + 1e-9 && same(p[1], sh.h(p[0])); };
-          return tapPart('(c) Tap both intercepts of ' + t('h') + '.', { x: [-7, 9], y: [-2, 8], labels: 2, bg: { segs: [{ pts: [[sh.xL, sh.yL], [sh.X0, 0]], start: 'closed', end: 'closed' }] } }, [[sh.X0, 0]], [[0, sh.b]], { onGraph: onG },
+          return tapPart('(c) Tap both intercepts of ' + t('h') + ' on the graph.', { x: [-7, 9], y: [-2, 8], labels: 2, bg: { segs: [{ pts: [[sh.xL, sh.yL], [sh.X0, 0]], start: 'closed', end: 'closed' }] } }, [[sh.X0, 0]], [[0, sh.b]], { onGraph: onG },
             t('x') + '-int: ' + t(dfr(sh.rule) + '=0\\Rightarrow x=' + sh.X0) + ': ' + t(ptT([sh.X0, 0])) + '.<br>' + t('y') + '-int: ' + t('h(0)=' + sh.b) + ': ' + t(ptT([0, sh.b])) + '.<br>' + t(ptT([sh.X0, 0])) + ' is also the right endpoint. It is solid, so it is on the graph and still counts. (If it were hollow, there would be no ' + t('x') + '-intercept.)',
             ['An intercept at an endpoint counts if the endpoint is solid.'], 'intercepts at an endpoint');
         } },
@@ -1794,7 +1799,7 @@
             'Look at the variables: books sold (' + t('n') + ') are counted, so Question 11 is dots; playback time (' + t('t') + ') is measured, so Question 10 is an unbroken line.', ['Is the input counted or measured?'], 'dots vs line');
         } }] },
       { num: '12', shared: ep12Shared, outcome: 'RF1',
-        stem: function (sh) { return 'A diver’s position relative to the surface of a lake, ' + t('y') + ' metres, is graphed against time ' + t('t') + ' minutes. Below the surface counts as negative.' + ep12Fig(sh); }, parts: [
+        stem: function (sh) { return 'A diver’s position relative to the surface of a lake, ' + t('y') + ' metres, is graphed against time ' + t('t') + ' minutes. Below the surface counts as negative.' + (sh.onPad ? '' : ep12Fig(sh)); }, parts: [
         { id: 'e12a', level: 'EMG', outcome: 'RF8', make: function (r, sh) {
           var ta = sh.a / 2, tb = sh.a + r.int(1, sh.h1 - 1), s3 = sh.a + sh.h1 + sh.b, tc = s3 + r.int(1, sh.h2 - 1);
           if (sh.D === 12 && sh.a === 4 && sh.h1 === 6 && sh.b === 4 && sh.h2 === 4 && r.chance(0.6)) { tb = 6; tc = 16; }
@@ -1827,8 +1832,9 @@
             good: ['t=' + nf(tp) + ', ' + cond('t', I[0], I[1]), '\\{' + nf(tp) + '\\}\\cup[' + I[0] + ', ' + I[1] + ']', nf(tp) + '\\ \\text{or}\\ ' + cond('t', I[0], I[1])], bad: ['t=' + nf(tp) + ', t=' + I[0] + ', t=' + I[1], cond('t', I[0], I[1]), 't=' + nf(tp)] };
         } },
         { id: 'e12f', level: 'BEG', make: function (r, sh) {
+          sh.onPad = true; // the graph is drawn on the pad, not repeated in the stem
           var onG = function (p) { var v = pwAt(sh.V, p[0]); return isFinite(v) && same(v, p[1]); };
-          return tapPart('(f) Tap every ' + t('t') + '-intercept and the ' + t('y') + '-intercept.', { x: [0, 24], y: [-sh.D - 2, 2], labels: 2, unitX: 12, unitY: 12, xName: 't', yName: 'y', xTitle: 'Time (min)', yTitle: 'Position (m)', bg: { segs: [{ pts: sh.V, start: 'closed', end: 'closed' }] } }, [[0, 0], [sh.tot, 0]], [[0, 0]], { onGraph: onG, xName: 't' },
+          return tapPart('(f) Tap every ' + t('t') + '-intercept and the ' + t('y') + '-intercept on the graph.', { x: [0, 24], y: [-sh.D - 2, 2], labels: 2, unitX: 12, unitY: 12, xName: 't', yName: 'y', xTitle: 'Time (min)', yTitle: 'Position (m)', bg: { segs: [{ pts: sh.V, start: 'closed', end: 'closed' }] } }, [[0, 0], [sh.tot, 0]], [[0, 0]], { onGraph: onG, xName: 't' },
             t('t') + '-ints: ' + t('(0,\\ 0)') + ' and ' + t(ptT([sh.tot, 0])) + ' — the diver is at the surface at the start and again when she comes back up at ' + t(sh.tot) + ' min.<br>' + t('y') + '-int: ' + t('(0,\\ 0)') + ' — at time ' + t('0') + ' she is at the surface.', ['Where does the graph meet each axis?'], 'intercepts of diver');
         } },
         { id: 'e12g', level: 'PRG', make: function (r, sh) {

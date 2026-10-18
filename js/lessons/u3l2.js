@@ -803,7 +803,7 @@
         shared: function (r) {
           var o1 = pickWhere(function () { return { a: r.int(2, 4), b: r.int(1, 5), c: r.int(2, 3), d: r.int(1, 7) }; }, function (o) { return o.a * o.d !== o.b * o.c && HW.ex.gcd(o.a, o.b) === 1 && HW.ex.gcd(o.c, o.d) === 1; });
           var o2 = pickWhere(function () { return { p: r.int(2, 5), q: r.int(2, 5), s: r.int(2, 3), u: r.int(2, 7) }; }, function (o) { return o.p * o.u !== o.q * o.s && HW.ex.gcd(o.p, o.q) === 1 && HW.ex.gcd(o.s, o.u) === 1; });
-          var o3 = pickWhere(function () { return { p: r.int(2, 6), q: r.int(2, 4), s: r.int(2, 9) }; }, function (o) { return o.s !== o.p * o.q; });
+          var o3 = pickWhere(function () { return { p: r.int(2, 6), q: r.int(2, 4), s: r.int(2, 9) }; }, function (o) { return o.s !== o.p * o.q && HW.ex.gcd(o.q, o.s) === 1; });   // gcd 1: the side terms are unique up to sign (as in a, b)
           return { a: [xm(o1.a), N(o1.b), xm(o1.c), N(-o1.d)], b: [xm(o2.p, 1, 'a'), M(-o2.q, { b: 1 }), xm(o2.s, 1, 'a'), M(o2.u, { b: 1 })], c: [xm(1, 2), N(-o3.p), xm(o3.q, 2), N(o3.s)] };
         },
         parts: ['a', 'b', 'c'].map(function (k) {

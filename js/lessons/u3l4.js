@@ -76,7 +76,7 @@
     var key = { rows: Rt, cols: Ct, cells: Mt };
     var list = []; A.forEach(function (a, i) { B.forEach(function (b, j) { list.push(t('(' + tx(a) + ')(' + tx(b) + ')=' + Mt[i][j])); }); });
     var p = KP.areabox(prompt, { rows: Rt, cols: Ct, cells: Mt.map(function (rw) { return rw.map(function () { return null; }); }), keys: 'poly', vars: vs.length ? vs : ['x'] }, {}, key,
-      grid(A, B, true) + 'Each box is (row term) × (column term): ' + list.join(', &nbsp;') + '.', hints || ['Each box is its row term times its column term — six boxes in all, sign included.', 'Multiply the coefficients and add the exponents: ' + t('p\cdot p^{2}=p^{3}') + '.'], text);
+      grid(A, B, true) + 'Each box is (row term) × (column term): ' + list.join(', &nbsp;') + '.', hints || ['Each box is its row term times its column term — six boxes in all, sign included.', 'Multiply the coefficients and add the exponents: ' + t('p\\cdot p^{2}=p^{3}') + '.'], text);
     var copy = function () { return { rows: Rt.slice(), cols: Ct.slice(), cells: Mt.map(function (rw) { return rw.slice(); }) }; }, bads = [];
     var cells = []; A.forEach(function (a, i) { B.forEach(function (b, j) { cells.push([i, j]); }); });
     var nc = cells.filter(function (c) { var q = HW.poly.terms(Mp[c[0]][c[1]])[0]; return q && q.c[0] < 0; })[0] || cells[0], b1 = copy(); b1.cells[nc[0]][nc[1]] = tx(P.neg(Mp[nc[0]][nc[1]])); bads.push(b1);
