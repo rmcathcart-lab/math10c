@@ -483,7 +483,7 @@
         } },
         { id: 'e13c2', sub: 'c: factors', level: 'PRG', make: function (r, o) {
           var g = grouping({ A: [M(o.p, 'x'), M(o.q)], B: [M(o.g, 'x'), M(o.s)] });
-          return fpart('With the value of ' + t('k') + ' from part (c), ' + t(q13cShown(o)) + ' becomes ' + t(g.shown) + '. Write it in factored form.', g.target, g.key, g.ws, g.sol, GRP_HINTS, 'factors of the completed polynomial', g.good);
+          return fpart('With the value of ' + t('k') + ' that lets it factor by grouping, ' + t(q13cShown(o)) + ' becomes ' + t(g.shown) + '. Write it in factored form.', g.target, g.key, g.ws, g.sol, GRP_HINTS, 'factors of the completed polynomial', g.good);
         } }] },
 
       /* ---------- EP Part G: find the error ---------- */

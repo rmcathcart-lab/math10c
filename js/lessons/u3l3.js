@@ -351,7 +351,7 @@
               ['Increase = new area − old area. The old patio had area ' + t('x^{2}') + '.'], 'patio increase in area');
             p.bad = [P.tex(V(n * n)), P.tex(V(2 * n, 'x')), 'x^{2}+' + 2 * n + 'x+' + n * n]; return p; } },
           { id: '7c', level: 'BEG', make: function (r, sh) { var n = sh.n, s = sh.s, ans = 2 * n * s + n * n;
-            return B.number('Check your answer to (b) for a patio that was ' + t(s) + ' m by ' + t(s) + ' m: by how many square metres does the area increase?', ans,
+            return B.number('Suppose the original patio was ' + t(s) + ' m by ' + t(s) + ' m. By how many square metres does the area increase? (Your expression for the increase in area should give the same number.)', ans,
               numDiag([[(s + n) * (s + n), 'new-area', 'That is the area of the new patio. Subtract the old area, ' + t(s + '\\times ' + s + '=' + s * s) + '.'], [2 * n * s, 'no-corner', 'Don’t forget the corner square, ' + t(n + '\\times ' + n) + '.'], [n * n, 'corner-only', 'The increase includes the two strips along the sides, not just the corner.']]),
               'New patio: ' + t((s + n) + '\\times ' + (s + n) + '=' + (s + n) * (s + n)) + ' m², old: ' + t(s * s) + ' m², increase ' + t((s + n) * (s + n) + '-' + s * s + '=' + ans) + ' m².<br>Check with (b): ' + t(2 * n + '(' + s + ')+' + n * n + '=' + ans) + ' ✓',
               ['Work out the new area and the old area, then subtract — or substitute ' + t('x=' + s) + ' into your answer to (b).'], 'patio increase at x=' + s, { after: t('\\text{ m}^{2}') }); } }] },
@@ -492,7 +492,7 @@
           return B.poly('Subtract ' + t('a^{2}+b^{2}') + ' from the correct expansion of ' + t('(a+b)^{2}') + ' to get a formula for the gap.', P.parse('2ab'), { vars: ['a', 'b'], wrong: [{ is: P.num(0), code: 'sq-no-middle', hint: 'Use the <b>correct</b> expansion ' + t('(a+b)^{2}=a^{2}+2ab+b^{2}') + ', then subtract ' + t('a^{2}+b^{2}') + '.' }, { is: P.parse('ab'), code: 'sq-not-doubled', hint: 'The middle term of ' + t('(a+b)^{2}') + ' is ' + t('2ab') + '.' }, { is: P.parse('2a^2+2ab+2b^2'), code: 'minus-ignored', hint: '<b>Subtract</b> ' + t('a^{2}+b^{2}') + ' — don’t add it.' }] },
             t('(a+b)^{2}-(a^{2}+b^{2})') + '<br>' + t('=a^{2}+2ab+b^{2}-a^{2}-b^{2}') + '<br>' + t('=2ab'), ['Expand ' + t('(a+b)^{2}') + ' first, then subtract each term of ' + t('a^{2}+b^{2}') + '.'], 'gap formula 2ab'); } },
         { id: 'e5d', sub: 'c ii', level: 'PRG', make: function (r) {
-          return B.mc(r, 'Use the gap formula: exactly when are ' + t('(a+b)^{2}') + ' and ' + t('a^{2}+b^{2}') + ' equal?', [
+          return B.mc(r, 'The gap between them is ' + t('(a+b)^{2}-(a^{2}+b^{2})=2ab') + '. Use this gap formula: exactly when are ' + t('(a+b)^{2}') + ' and ' + t('a^{2}+b^{2}') + ' equal?', [
             { html: 'When ' + t('a=0') + ' or ' + t('b=0') + '.', right: true },
             { html: 'When ' + t('a=b') + '.', why: 'Try ' + t('a=b=1') + ': ' + t('(1+1)^{2}=4') + ' but ' + t('1^{2}+1^{2}=2') + '. The gap ' + t('2ab') + ' is zero only when a factor is zero.' },
             { html: 'Never.', why: 'Try ' + t('a=0') + ': both sides become ' + t('b^{2}') + '.' },
@@ -601,9 +601,9 @@
         { id: 'e12e', level: 'EMG', make: function (r) { var L = r.pick([['x', 'y'], ['a', 'b'], ['m', 'n']]), a = V(1, L[0]), b = V(1, L[1]), a2 = {}, b2 = {}; a2[L[0]] = 2; b2[L[1]] = 2;
           return ex([T(1, 1, [bin(a, b)], true), T(-1, 1, [grp([V(1, a2), V(1, b2)])])]); } },
         { id: 'e12f', level: 'EMG', make: function (r) { var n = r.int(2, 9); return ex([T(1, 1, [bin(V(1, 'a'), V(n))], true), T(1, 1, [bin(V(1, 'a'), V(-n))], true), T(-1, 1, [mono(V(2, { a: 2 }))])]); } }] },
-      { num: '13', stem: 'Read your answers to question 12 back.', parts: [
+      { num: '13', stem: 'Question 12 added pairs of squared binomials such as ' + t('(x+2)^{2}+(x-2)^{2}') + ' and ' + t('(5m+6n)^{2}+(5m-6n)^{2}') + '.', parts: [
         { id: 'e13a', level: 'EMG', make: function (r) {
-          return B.mc(r, 'In 12(a)–(d) every middle term vanished. Why, and what is the general result for ' + t('(a+b)^{2}+(a-b)^{2}') + '?', [
+          return B.mc(r, 'In each of those sums every middle term vanished. Why, and what is the general result for ' + t('(a+b)^{2}+(a-b)^{2}') + '?', [
             { html: 'The middle terms are ' + t('+2ab') + ' and ' + t('-2ab') + ', so they cancel: ' + t('(a+b)^{2}+(a-b)^{2}=2a^{2}+2b^{2}') + '.', right: true },
             { html: 'Both squares have the same middle term, so it doubles: ' + t('2a^{2}+4ab+2b^{2}') + '.', why: 'The middle term of ' + t('(a-b)^{2}') + ' is ' + t('-2ab') + ' — opposite to the one in ' + t('(a+b)^{2}') + '.' },
             { html: 'Squared binomials have no middle terms: ' + t('a^{2}+b^{2}') + '.', why: 'Every squared binomial has a middle term ' + t('\\pm 2ab') + '; here they cancel, and the squares double.' },
@@ -642,12 +642,12 @@
             t('\\big((a+b)+c\\big)^{2}=(a+b)^{2}+2(a+b)c+c^{2}') + '<br>' + t('=a^{2}+2ab+b^{2}+2ac+2bc+c^{2}') + '<br>' + t('=a^{2}+b^{2}+c^{2}+2ab+2ac+2bc'), ['Let ' + t('A=a+b') + '. Then ' + t('(A+c)^{2}=A^{2}+2Ac+c^{2}') + '; expand ' + t('A^{2}') + ' and ' + t('2Ac') + '.'], '(a+b+c)^2');
           p.bad = ['a^2+b^2+c^2', 'a^2+b^2+c^2+ab+ac+bc']; return p; } },
         { id: 'e15b', level: 'EMG', make: function (r) {
-          return B.fields('State the result as a rule: how many squared terms, how many cross terms, and what coefficient does each cross term carry?',
+          return B.fields('State the expansion of ' + t('(a+b+c)^{2}') + ' as a rule: how many squared terms, how many cross terms, and what coefficient does each cross term carry?',
             [{ name: 'Squared terms', label: 'Number of squared terms' }, { name: 'Cross terms', label: 'Number of cross terms' }, { name: 'Coefficient', label: 'Coefficient of each cross term' }],
             [K.number(3), K.number(3, numDiag([[6, 'cross', 'Count each <b>pair</b> once: ' + t('ab, ac, bc') + '.']])), K.number(2, numDiag([[1, 'cross-not-doubled', 'Look at ' + t('2ab') + ' in your expansion.']]))],
             ['3', '3', '2'], '3 squared terms, 3 cross terms, each with coefficient 2',
             '<b>Three squared terms</b> (' + t('a^{2},b^{2},c^{2}') + '), <b>three cross terms</b> — one for every pair (' + t('ab,ac,bc') + ') — and each cross term has coefficient <b>2</b>.',
-            ['Read them off your answer to (a).'], 'trinomial square rule'); } },
+            ['Expand ' + t('(a+b+c)^{2}') + ' completely (or read your expansion back) and count.'], 'trinomial square rule'); } },
         { id: 'e15c', level: 'BEG', make: function (r) { var a = r.int(1, 3), b = r.int(2, 4), c = r.int(3, 5); if (b <= a) b = a + 1; if (c <= b) c = b + 1; var s = (a + b + c) * (a + b + c);
           return B.fields('Check the rule with ' + t('a=' + a) + ', ' + t('b=' + b) + ', ' + t('c=' + c) + ' by evaluating both sides.',
             [{ name: '(a+b+c)²', before: t('(a+b+c)^{2}=') }, { name: 'Expansion', before: t('a^{2}+b^{2}+c^{2}+2ab+2ac+2bc='), wide: true }],
@@ -657,7 +657,7 @@
             ['Substitute into both expressions.'], 'check trinomial rule'); } },
         { id: 'e15d', level: 'ADV', make: function (r) { var p = r.int(2, 4), q = r.int(2, 5), c = r.int(2, 7), A = V(p, 'x'), Bq = V(-q, 'y'), C = V(c);
           var tg = P.pow(P.add(A, Bq, C), 2), sqs = P.add(P.pow(A, 2), P.pow(Bq, 2), P.pow(C, 2)), cr = P.add(P.mul(A, Bq), P.mul(A, C), P.mul(Bq, C));
-          var p2 = B.poly('Use the rule to expand ' + t('(' + p + 'x-' + q + 'y+' + c + ')^{2}') + ' in one pass.', tg, { vars: ['x', 'y'], wrong: [
+          var p2 = B.poly('Use the rule ' + t('(a+b+c)^{2}=a^{2}+b^{2}+c^{2}+2ab+2ac+2bc') + ' to expand ' + t('(' + p + 'x-' + q + 'y+' + c + ')^{2}') + ' in one pass.', tg, { vars: ['x', 'y'], wrong: [
             { is: sqs, code: 'no-cross', hint: 'You have the three squares; now add the three cross terms ' + t('2ab+2ac+2bc') + '.' },
             { is: P.add(sqs, cr), code: 'cross-not-doubled', hint: 'Each cross term is <b>doubled</b>: ' + t('2ab') + ', not ' + t('ab') + '.' },
             { is: P.add(P.mul(V(p), V(1, { x: 2 })), P.mul(V(q), V(1, { y: 2 })), V(c * c), P.scale(cr, 2)), code: 'coef-not-squared', hint: 'Square the <b>whole</b> term: ' + t('(' + p + 'x)^{2}=' + p * p + 'x^{2}') + '.' }] },

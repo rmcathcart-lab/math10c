@@ -397,20 +397,20 @@
           } },
           { id: '5b', level: 'PRG', make: function (r, sh) {
             var a = sh.a, per = sh.per;
-            return KP.number('If the perimeter of the deck is ' + t(per) + ' feet, form an equation in ' + t('p') + ' and ' + t('q') + ' and solve for ' + t('p') + '.', sh.p, function (v) {
+            return KP.number('The length and width of the deck are ' + t('(' + tx(sh.Lp) + ')') + ' ft and ' + t('(' + tx(sh.Wp) + ')') + ' ft. If the perimeter of the deck is ' + t(per) + ' feet, form an equation in ' + t('p') + ' and ' + t('q') + ' and solve for ' + t('p') + '.', sh.p, function (v) {
               if (v === per / (2 * a)) return { code: 'perim-half', hint: 'The perimeter goes around <b>all four</b> sides: ' + t('P=2(L+W)') + ', not ' + t('L+W') + '.' };
               if (v === per / a) return { code: 'perim-half', hint: 'Add the length and width first — the ' + t('q') + ' terms cancel — then double: ' + t('2\\left[(' + tx(sh.Lp) + ')+(' + tx(sh.Wp) + ')\\right]') + '.' };
               return null;
             }, t('P=2(L+W)=2\\left[(' + tx(sh.Lp) + ')+(' + tx(sh.Wp) + ')\\right]=2(' + 2 * a + 'p)=' + 4 * a + 'p') + ' — the ' + t('q') + ' terms cancel.<br>' + t(4 * a + 'p=' + per) + ', so ' + t('p=' + per + '\\div ' + 4 * a + '=' + sh.p) + '.',
-              ['Perimeter = ' + t('2(L+W)') + '. Use your expressions from (a).', 'When you add the length and width, the ' + t('q') + ' terms cancel.'], 'deck perimeter ' + per + ' → p', { before: t('p=') });
+              ['Perimeter = ' + t('2(L+W)') + '. Use the expressions for the length and width.', 'When you add the length and width, the ' + t('q') + ' terms cancel.'], 'deck perimeter ' + per + ' → p', { before: t('p=') });
           } },
           { id: '5c', level: 'ADV', make: function (r, sh) {
             var a = sh.a, b = sh.b, p0 = sh.p;
             var nL = K.number(sh.Lv), nW = K.number(sh.Wv), both = K.fields([nL, nW], { labels: ['Length', 'Width'] });
-            var part = KP.fields('Use your value of ' + t('p') + ' from (b). Determine the length and width of the deck if the length is twice the width.', [nbox('Length (ft):', 'Length'), nbox('Width (ft):', 'Width')],
+            var part = KP.fields('The length and width of the deck are ' + t('(' + tx(sh.Lp) + ')') + ' ft and ' + t('(' + tx(sh.Wp) + ')') + ' ft, and a perimeter of ' + t(sh.per) + ' feet gives ' + t('p=' + p0) + '. Determine the length and width of the deck if the length is twice the width.', [nbox('Length (ft):', 'Length'), nbox('Width (ft):', 'Width')],
               [], [String(sh.Lv), String(sh.Wv)], 'Length ' + t(sh.Lv) + ' ft, width ' + t(sh.Wv) + ' ft',
               '“Length is twice the width”: ' + t(tx(sh.Lp) + '=2(' + tx(sh.Wp) + ')=' + tx(P.scale(sh.Wp, 2))) + ', so ' + t(3 * b + 'q=' + a + 'p') + '.<br>With ' + t('p=' + p0) + ': ' + t(3 * b + 'q=' + a * p0) + ', so ' + t('q=' + sh.q) + '.<br>Length ' + t('=' + a + '(' + p0 + ')+' + b + '(' + sh.q + ')=' + sh.Lv) + ' ft, width ' + t('=' + a + '(' + p0 + ')-' + b + '(' + sh.q + ')=' + sh.Wv) + ' ft.<br>Check: ' + t(sh.Lv + '=2\\times ' + sh.Wv) + ' ✓ and ' + t('2(' + sh.Lv + '+' + sh.Wv + ')=' + sh.per) + ' ✓',
-              ['Write “length = 2 × width” with your expressions from (a), and solve for ' + t('q') + ' using ' + t('p=' + p0) + '.', 'Then substitute ' + t('p') + ' and ' + t('q') + ' into the length and width.'], 'deck: length twice width');
+              ['Write “length = 2 × width” with the expressions for the length and width, and solve for ' + t('q') + ' using ' + t('p=' + p0) + '.', 'Then substitute ' + t('p') + ' and ' + t('q') + ' into the length and width.'], 'deck: length twice width');
             part.check = function (resp) {
               resp = resp || [];
               if (String(resp[0] == null ? '' : resp[0]).trim() === '' || String(resp[1] == null ? '' : resp[1]).trim() === '') return both(resp);
@@ -461,7 +461,7 @@
               { is: 'w(R-r)^{2}', code: 'dsq-square', hint: 'A squared bracket has a middle term: ' + t('(R-r)^{2}=R^{2}-2Rr+r^{2}') + '. Use one minus bracket and one plus bracket.' },
               { is: '(R-r)(R+r)', code: 'no-pi', hint: 'Your brackets are right, but the common factor ' + t('\\pi') + ' has gone missing.' },
               { is: 'w(r-R)(r+R)', code: 'rev-order', hint: 'That multiplies to ' + t('\\pi r^{2}-\\pi R^{2}') + ', the opposite. Keep ' + t('R') + ' first.' }] }));
-            var p = KP.math('Write the expression in (a) in factored form.', chk, '\\pi(R-r)(R+r)',
+            var p = KP.math('The shaded area is ' + t('\\pi R^{2}-\\pi r^{2}') + '. Write this expression in factored form.', chk, '\\pi(R-r)(R+r)',
               'Common factor ' + t('\\pi') + ' first, then the pattern:<br>' + t('A=\\pi R^{2}-\\pi r^{2}=\\pi(R^{2}-r^{2})') + '<br>' + t('=\\pi(R-r)(R+r)'),
               ['Both terms have a factor ' + t('\\pi') + ': take it out first.', 'What is left, ' + t('R^{2}-r^{2}') + ', is a difference of squares.'], 'ring area factored', { keys: 'expo', vars: ['R', 'r'], pi: true });
             p.good = ['\\pi(R+r)(R-r)', '(R-r)(R+r)\\pi'];
@@ -732,12 +732,12 @@
           { id: 'e9b', level: 'PRG', make: function (r, sh) { return fxPart(S(L(1, 'x'), N(sh.n), 2), { prompt: 'Finish the question properly: factor ' + t('x^{4}-' + Math.pow(sh.n, 4)) + ' completely.' }); } },
           { id: 'e9c', level: 'EMG', make: function (r, sh) {
             var n = sh.n;
-            return mc(r, 'Compare with the student in question 8, who wrote something like ' + t('x^{2}+25=(x+5)(x-5)') + '. They made opposite mistakes. Which describes them?', [
-              { html: 'Question 8: factored something that <b>does not factor</b> (a sum of squares). Question 9: <b>stopped too soon</b>, leaving a difference of squares unfactored.', right: true },
-              { html: 'Question 8: stopped too soon. Question 9: factored a sum of squares that doesn’t factor.', why: 'Swap them: ' + t('x^{2}+25') + ' is the sum of squares; ' + t('x^{2}-' + n * n) + ' is the bracket that was left unfactored.' },
+            return mc(r, 'Compare with another student, who wrote ' + t('x^{2}+25=(x+5)(x-5)') + '. That student and this one made opposite mistakes. Which describes them?', [
+              { html: 'The ' + t('x^{2}+25') + ' student: factored something that <b>does not factor</b> (a sum of squares). This student: <b>stopped too soon</b>, leaving a difference of squares unfactored.', right: true },
+              { html: 'The ' + t('x^{2}+25') + ' student: stopped too soon. This student: factored a sum of squares that doesn’t factor.', why: 'Swap them: ' + t('x^{2}+25') + ' is the sum of squares; ' + t('x^{2}-' + n * n) + ' is the bracket that was left unfactored.' },
               { html: 'Both students forgot to take out a common factor.', why: 'Neither expression has a common factor. Look at what kind of bracket each one is.' },
-              { html: 'Both students made sign errors inside the brackets.', why: 'Question 9’s line is correct — it just isn’t finished. Question 8’s problem isn’t a sign slip: a sum of squares has no factoring at all.' }],
-              'Student 8 factored something that <b>does not factor</b> (a sum of squares). Student 9 <b>stopped too soon</b>: ' + t('x^{2}-' + n * n) + ' is still a difference of squares, so ' + t('x^{4}-' + Math.pow(n, 4) + '=(x-' + n + ')(x+' + n + ')(x^{2}+' + n * n + ')') + '.',
+              { html: 'Both students made sign errors inside the brackets.', why: 'This student’s line is correct — it just isn’t finished. The ' + t('x^{2}+25') + ' student’s problem isn’t a sign slip: a sum of squares has no factoring at all.' }],
+              'The ' + t('x^{2}+25') + ' student factored something that <b>does not factor</b> (a sum of squares). This student <b>stopped too soon</b>: ' + t('x^{2}-' + n * n) + ' is still a difference of squares, so ' + t('x^{4}-' + Math.pow(n, 4) + '=(x-' + n + ')(x+' + n + ')(x^{2}+' + n * n + ')') + '.',
               ['One factored too much, one too little.'], 'opposite mistakes');
           } }] },
       /* ---------- Part D: coefficients, two variables, fractions ---------- */

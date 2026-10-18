@@ -272,11 +272,11 @@
             var g = sh.a, A = lin(1, -g.a, 'x'), B = quad(1, -g.b, g.c, 'x'), lead = br(A) + br(B), T = P.mul(sum(A), sum(B)), v = (1 - g.a) * (1 - g.b + g.c);
             var vb = (1 - g.a) * (1 + g.b + g.c);
             var diag = function (x) { return x === -v ? { code: 'sign', hint: 'Check the sign: ' + t(pv(1 - g.a)) + ' is negative.' } : x === vb && vb !== v ? { code: 'sub', hint: 'At ' + t('x=1') + ', ' + t('-' + g.b + 'x') + ' is ' + t('-' + g.b) + ', not ' + t('+' + g.b) + '.' } : null; };
-            var p = KP.fields('Check your answer to (a) by substituting ' + t('x=1') + ' into both ' + t(lead) + ' and your expansion.',
-              [box('Product ' + t(lead) + ' at ' + t('x=1') + ':', ['x'], { name: 'Product at x = 1' }), box('Your expansion at ' + t('x=1') + ':', ['x'], { name: 'Expansion at x = 1' })],
+            var p = KP.fields('The expansion of ' + t(lead) + ' is ' + t(tx(T)) + '. Check it by substituting ' + t('x=1') + ' into both ' + t(lead) + ' and the expansion.',
+              [box('Product ' + t(lead) + ' at ' + t('x=1') + ':', ['x'], { name: 'Product at x = 1' }), box('Expansion at ' + t('x=1') + ':', ['x'], { name: 'Expansion at x = 1' })],
               [intChk(v, diag), intChk(v, diag)], [String(v), String(v)], 'Both sides equal ' + t(v) + '.',
               'Product: ' + t('(1-' + g.a + ')(1-' + g.b + '+' + g.c + ')=(' + (1 - g.a) + ')(' + (1 - g.b + g.c) + ')=' + v) + '<br>Expansion: ' + t(atTex(T, 1, 'x') + '=' + v) + '<br>Both sides are ' + t(v) + ', so the expansion checks. ✓',
-              ['Replace every ' + t('x') + ' with ' + t('1') + ' and work out each side.', 'If the two values don’t match, there is a mistake in your expansion.'], 'check at x=1: ' + plain(lead));
+              ['Replace every ' + t('x') + ' with ' + t('1') + ' and work out each side.', 'The two values must match.'], 'check at x=1: ' + plain(lead));
             p.bad = [[String(-v), String(-v)]];
             return p;
           } }] },
@@ -536,7 +536,7 @@
           } },
           { id: 'e4d', level: 'EMG', make: function (r, sh) {
             var F3 = [lin(1, sh.a, 'x'), lin(1, -sh.a, 'x'), lin(1, sh.b, 'x')], Q = P.mul(sum(F3[1]), sum(F3[2])), T = P.mul(sum(F3[0]), Q), lead = F3.map(br).join('');
-            var p = KP.fields('Expand ' + t(lead) + ' (part (a)) a second time, this time multiplying the <b>second</b> and <b>third</b> brackets first.',
+            var p = KP.fields('Expand ' + t(lead) + ' by multiplying the <b>second</b> and <b>third</b> brackets first.',
               [box(t(br(F3[1]) + br(F3[2]) + '='), ['x'], { name: 'Second × third' }), box('Then ' + t(br(F3[0]) + '\\times') + ' that ' + t('='), ['x'], { name: 'The cubic' }),
                 box('Terms carried through the middle step this way:', ['x'], { name: 'Terms (2nd × 3rd first)' }), box('Terms carried when the 1st and 2nd are paired first:', ['x'], { name: 'Terms (1st × 2nd first)' })],
               [polyChk(Q, [{ is: P.sub(M(1, 'x', 2), N(sh.a * sh.b)), code: 'foil-only', hint: 'Don’t forget the Outer and Inner products: ' + t(tx(M(sh.b, 'x')) + '+' + tx(M(-sh.a, 'x'))) + '.' }]), polyChk(T),
@@ -590,7 +590,7 @@
         { id: 'e6b', level: 'EMG', make: function (r) { return cubePart(lin(1, -r.int(2, 5), 'x')); } },
         { id: 'e6c', level: 'PRG', make: function (r) { var v = pickWhere(function () { return [r.int(2, 3), r.int(1, 3)]; }, function (v) { return gcd(v[0], v[1]) === 1; }); return cubePart(lin(v[0], v[1], 'x')); } },
         { id: 'e6d', level: 'PRG', make: function (r) { var L = r.pick([['a', 'b'], ['a', 'b'], ['m', 'n'], ['p', 'q'], ['x', 'y']]); return cubePart(lin2(1, L[0], 1, L[1]), 'Keep ' + t(L[0]) + ' and ' + t(L[1]) + ' as letters.'); } }] },
-      { num: '7', stem: 'Look back at your expansions of cubes in Question 6.', parts: [
+      { num: '7', stem: 'Look back at your expansions of cubes in Question 6 (or expand ' + t('(a+b)^{3}=(a+b)(a^{2}+2ab+b^{2})') + ' once more).', parts: [
         { id: 'e7a', level: 'EMG', make: function (r) {
           var L = r.pick([['a', 'b'], ['a', 'b'], ['m', 'n'], ['p', 'q']]), a = L[0], b = L[1];
           return mc(r, 'Every expansion of ' + t('(' + a + '+' + b + ')^{3}') + ' has four terms. Which describes the pattern?', [
@@ -614,7 +614,7 @@
         } },
         { id: 'e7c', level: 'EMG', make: function (r) {
           var k = r.int(2, 6), A = lin(1, k, 'x'), T = P.pow(sum(A), 3);
-          return polyPart('Use the pattern (don’t multiply out in stages) to write ' + t(br(A) + '^{3}') + '.', T, [
+          return polyPart('Use the pattern ' + t('(a+b)^{3}=a^{3}+3a^{2}b+3ab^{2}+b^{3}') + ' (don’t multiply out in stages) to write ' + t(br(A) + '^{3}') + '.', T, [
             { is: P.add(M(1, 'x', 3), N(k * k * k)), code: 'cube-each', hint: 'The pattern has four terms: ' + t('a^{3}+3a^{2}b+3ab^{2}+b^{3}') + '.' },
             { is: sum([M(1, 'x', 3), M(k, 'x', 2), M(k * k, 'x'), N(k * k * k)]), code: 'no-3', hint: 'You forgot the coefficients ' + t('1,3,3,1') + ': the middle terms are ' + t('3x^{2}(' + k + ')') + ' and ' + t('3x(' + k + ')^{2}') + '.' }],
             t(br(A) + '^{3}=x^{3}+3x^{2}(' + k + ')+3x(' + k + ')^{2}+' + k + '^{3}=' + tx(T)),
@@ -622,7 +622,7 @@
         } },
         { id: 'e7d', level: 'PRG', make: function (r) {
           var pq = pickWhere(function () { return [r.int(2, 3), r.int(1, 3)]; }, function (v) { return gcd(v[0], v[1]) === 1; }), p = pq[0], q = pq[1], A = lin2(p, 'm', -q, 'n'), T = P.pow(sum(A), 3), pm = p + 'm', qs = (q === 1 ? '' : q) + 'n', qn = '(-' + qs + ')';
-          return polyPart('Use the pattern (don’t multiply out in stages) to write ' + t(br(A) + '^{3}') + '.', T, [
+          return polyPart('Use the pattern ' + t('(a+b)^{3}=a^{3}+3a^{2}b+3ab^{2}+b^{3}') + ' (don’t multiply out in stages) to write ' + t(br(A) + '^{3}') + '.', T, [
             { is: P.sub(MM(p * p * p, { m: 3 }), MM(q * q * q, { n: 3 })), code: 'cube-each', hint: 'The pattern has four terms: ' + t('a^{3}+3a^{2}b+3ab^{2}+b^{3}') + ' with ' + t('a=' + pm) + ', ' + t('b=-' + qs) + '.' },
             { is: sum([MM(p, { m: 3 }), MM(-3 * p * q, { m: 2, n: 1 }), MM(3 * p * q * q, { m: 1, n: 2 }), MM(-q * q * q, { n: 3 })]), code: 'coef-in', hint: 'Raise the whole term to the power: ' + t('(' + pm + ')^{3}=' + p * p * p + 'm^{3}') + ' and ' + t('(' + pm + ')^{2}=' + p * p + 'm^{2}') + '.' }],
             t(br(A) + '^{3}=(' + pm + ')^{3}+3(' + pm + ')^{2}' + qn + '+3(' + pm + ')' + qn + '^{2}+' + qn + '^{3}') + '<br>' + t('=' + tx(T)),
@@ -630,7 +630,7 @@
         } },
         { id: 'e7e', level: 'EMG', make: function (r) {
           var k = r.int(2, 6), A = lin(1, -k, 'x'), T = P.pow(sum(A), 3), v = Math.pow(1 - k, 3);
-          var p = KP.fields('Write ' + t(br(A) + '^{3}') + ' from the pattern, then check by substituting ' + t('x=1') + ' into both.',
+          var p = KP.fields('Write ' + t(br(A) + '^{3}') + ' from the pattern ' + t('(a-b)^{3}=a^{3}-3a^{2}b+3ab^{2}-b^{3}') + ', then check by substituting ' + t('x=1') + ' into both.',
             [box(t(br(A) + '^{3}='), ['x'], { name: 'Expansion' }), box(t(br(A) + '^{3}') + ' at ' + t('x=1') + ':', ['x'], { name: 'Product at x = 1' }), box('Your four terms at ' + t('x=1') + ':', ['x'], { name: 'Expansion at x = 1' })],
             [polyChk(T, [{ is: P.sub(M(1, 'x', 3), N(k * k * k)), code: 'cube-each', hint: 'Four terms: ' + t('a^{3}-3a^{2}b+3ab^{2}-b^{3}') + '.' }]), intChk(v), intChk(v)], [tx(T), String(v), String(v)],
             t(br(A) + '^{3}=' + tx(T)) + '; both sides equal ' + t(v) + ' at ' + t('x=1') + '.',

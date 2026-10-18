@@ -569,7 +569,7 @@
         } },
         { id: '4b', level: 'LIM', make: function (r, sh) {
           var pr = sh.xs.map(function (x) { return [x, pwAt(sh.V, x)]; });
-          return B.pairs('(b) Write the ordered pairs associated with i), ii) and iii) in (a).', pr, {},
+          return B.pairs('(b) Write the ordered pairs associated with ' + sh.xs.map(function (x, i) { return ['i)', 'ii)', 'iii)'][i] + ' ' + t(sh.n + '(' + x + ')'); }).join(', ') + ' (read the outputs off the graph).', pr, {},
             'In ' + t(sh.n + '(a)=b') + ' the input comes first: ' + pr.map(function (p) { return t(ptT(p)); }).join(', ') + '.', ['An ordered pair is (input, output).'], 'pairs from ' + sh.n + '(a)');
         } },
         { id: '4c', level: 'EMG', make: function (r, sh) {
@@ -586,7 +586,7 @@
         { id: '4d', level: 'EMG', make: function (r, sh) {
           var P0 = sh.V[0], P4 = sh.V[4], n = sh.n;
           var fl = [{ label: 'Point ' + sh.ends[0] + ':', name: 'Point ' + sh.ends[0], mode: 'math', keys: EQK, vars: [n] }, { label: 'Point ' + sh.ends[1] + ':', name: 'Point ' + sh.ends[1], mode: 'math', keys: EQK, vars: [n] }];
-          var p = BF('(d) Use the notation in (a) to make a statement about the points ' + sh.ends[0] + ' and ' + sh.ends[1] + ' on the graph.', fl,
+          var p = BF('(d) Use function notation, ' + t(sh.n + '(a)=b') + ', to make a statement about the points ' + sh.ends[0] + ' and ' + sh.ends[1] + ' on the graph.', fl,
             [stmtChk(n, P0[0], P0[1]), stmtChk(n, P4[0], P4[1])], [n + '(' + P0[0] + ')=' + P0[1], n + '(' + P4[0] + ')=' + P4[1]], t(n + '(' + P0[0] + ')=' + P0[1]) + ', ' + t(n + '(' + P4[0] + ')=' + P4[1]),
             sh.ends[0] + ' is ' + t(ptT(P0)) + ', so ' + t(n + '(' + P0[0] + ')=' + P0[1]) + '.<br>' + sh.ends[1] + ' is ' + t(ptT(P4)) + ', so ' + t(n + '(' + P4[0] + ')=' + P4[1]) + '.',
             ['A point ' + t('(a,\\ b)') + ' on the graph means ' + t(n + '(a)=b') + '.'], 'statements for endpoints of ' + n);
@@ -648,7 +648,7 @@
         } },
         { id: '6b', sub: 'a ii', level: 'LIM', make: function (r, sh) {
           var pr = sh.rows.map(function (row) { return row[0] === 'x' ? [row[1], sh.f(row[1])] : [cl((row[1] - sh.b) / sh.m), row[1]]; });
-          return B.pairs('(a) Write the ordered pair for each row of the table.', pr, {}, pr.map(function (p) { return t(ptT(p)); }).join(', '), ['Each row gives one point (' + t('x') + ', ' + t('r(x)') + ').'], 'pairs from table of r');
+          return B.pairs('(a) Each row of the table gives one value: ' + sh.rows.map(function (row) { return row[0] === 'x' ? t('x=' + row[1]) : t('r(x)=' + row[1]); }).join(', ') + '. Use the graph to write the ordered pair ' + t('(x,\\ r(x))') + ' for each row.', pr, {}, pr.map(function (p) { return t(ptT(p)); }).join(', '), ['Each row gives one point (' + t('x') + ', ' + t('r(x)') + ').'], 'pairs from table of r');
         } },
         { id: '6c', sub: 'b', level: 'EMG', make: function (r, sh) {
           var y = sh.f(sh.Xs);
@@ -656,7 +656,7 @@
             'Read across at height ' + t(y) + ': the line reaches it once, at ' + t('x=' + sh.Xs) + ' (check: ' + t(sh.m + '(' + sh.Xs + ')' + (sh.b < 0 ? '' : '+') + sh.b + '=' + y) + ').', ['Start on the vertical axis at ' + t(y) + '.'], 'solve r(x)=b', { before: t('x=') });
         } },
         { id: '6d', sub: 'b ii', level: 'EMG', make: function (r, sh) {
-          return mc(r, '(b) Why does this equation have exactly one solution, unlike the zigzag graph in Question 4?', [
+          return mc(r, '(b) Why does ' + t('r(x)=' + sh.f(sh.Xs)) + ' have exactly one solution, unlike a zigzag graph (such as the one in Question 4), which can reach one height several times?', [
             { html: 'The graph of ' + t('r') + ' is a straight line that keeps rising, so each height is reached by exactly one input.', right: true },
             { html: 'Because ' + t('r') + ' is a function, and a function can only have one input for each output.', why: 'The zigzag in Question 4 is also a function, yet one height was reached three times. A function allows one <b>output</b> per input — not one input per output.' },
             { html: 'Because the arrows show the line goes on forever.', why: 'The arrows tell you about the domain. What matters is whether the graph ever doubles back to the same height.' },
@@ -1248,7 +1248,9 @@
             'The graph runs from ' + t('x=-6') + ' to ' + t('x=6') + '; its lowest point is at ' + t(pwMin(sh.V)) + ' and its highest at ' + t(pwMax(sh.V)) + '.<br>' + t(bld('x', -6, 6)) + '<br>' + t('\\{f(x)\\mid ' + cond('f(x)', pwMin(sh.V), pwMax(sh.V)) + ',\\ f(x)\\in\\mathbb{R}\\}'), ['Left to right for the domain; bottom to top for the range.'], 'EP domain/range');
         } },
         { id: 'e6f', level: 'PRG', make: function (r, sh) {
-          return mc(r, '(h) Your answers to (a) each contained one number, while the “solve” answers contained different amounts. Why did that have to happen?', [
+          var xs = [-5, -3, 0, 3, 6].map(function (x) { return x * sh.sx; }).sort(function (a, b) { return a - b; });
+          var cnt = [0, 4 * sh.sy, -5 * sh.sy].map(function (b) { var so = pwSols(sh.V, b), n = so.pts.length; return t('f(x)=' + b) + ' has ' + (so.ints.length ? 'infinitely many solutions' : n === 0 ? 'no solution' : n === 1 ? 'one solution' : n + ' solutions'); });
+          return mc(r, '(h) On this graph each value such as ' + t('f(' + xs[0] + ')') + ' or ' + t('f(' + xs[2] + ')') + ' is exactly one number, while the “solve” answers come in different amounts: ' + cnt.join(', ') + '. Why does that have to happen?', [
             { html: 'A function pairs each input with exactly one output, so asking for an output gives one number. Nothing limits how many inputs share an output, so “solve” can give none, one, several or infinitely many.', right: true },
             { html: 'Because the graph is made of straight pieces.', why: 'A curved graph behaves the same way. Think about the definition of a function.' },
             { html: 'Because ' + t('f(a)') + ' is read on the vertical axis and ' + t('f(x)=b') + ' on the horizontal axis.', why: 'It is the other way round: ' + t('f(a)') + ' starts on the horizontal axis. And the axis alone does not explain the number of answers.' },
@@ -1274,7 +1276,7 @@
         } },
         { id: 'e7b', level: 'LIM', make: function (r, sh) {
           var xs = [-6, -4, 0, 2].map(function (x) { return (sh.mi ? -x : x) * sh.sx; }).sort(function (a, b) { return a - b; }), pr = xs.map(function (x) { return [x, pwAt(sh.V, x)]; });
-          return B.pairs('(b) Write the ordered pairs belonging to the four values in (a).', pr, {}, pr.map(function (p) { return t(ptT(p)); }).join(', '), ['(input, output)'], 'EP pairs scaled');
+          return B.pairs('(b) Write the ordered pairs belonging to the four values ' + xs.map(function (x) { return t('g(' + x + ')'); }).join(', ') + ' (read them off the graph).', pr, {}, pr.map(function (p) { return t(ptT(p)); }).join(', '), ['(input, output)'], 'EP pairs scaled');
         } },
         { id: 'e7c', level: 'PRG', make: function (r, sh) {
           var bs = [2 * sh.sy, 4 * sh.sy, -5 * sh.sy], lab = ['(c)', '(d)', '(e)'];
@@ -1336,7 +1338,7 @@
         } },
         { id: 'e9b', level: 'EMG', make: function (r, sh) {
           var v = sh.C(sh.m1);
-          return meaningMC(r, '(b) Which sentence gives the meaning of your answer to (a)?', 'Shipping a ' + t(sh.m1) + ' kg parcel costs ' + t('\\$' + v) + '.', [
+          return meaningMC(r, '(b) What is the meaning of ' + t('C(' + sh.m1 + ')=' + v) + '?', 'Shipping a ' + t(sh.m1) + ' kg parcel costs ' + t('\\$' + v) + '.', [
             { html: 'A parcel that costs ' + t('\\$' + sh.m1) + ' has a mass of ' + t(v) + ' kg.', why: 'Input and output are swapped: the input ' + t(sh.m1) + ' is a mass in kilograms.' },
             { html: 'Each kilogram costs ' + t('\\$' + v) + ' to ship.', why: t(v) + ' is the cost of the whole ' + t(sh.m1) + ' kg parcel.' },
             { html: t(v) + ' parcels of ' + t(sh.m1) + ' kg can be shipped.', why: 'The output of ' + t('C') + ' is a cost in dollars.' }],

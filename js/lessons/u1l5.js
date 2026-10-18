@@ -597,18 +597,18 @@
             return p;
           } },
           { id: 'e7b', level: 'EMG', make: function (r, sh) {
-            return mcPart(r, 'Which statement explains the pattern in the table, using only the index?', [
+            return mcPart(r, 'For ' + t('n=2,3,4,5,6,7') + ', the radical ' + t('\\sqrt[n]{-' + sh.M + '}') + ' is not possible for some indices and a real number for the others. Which statement explains the pattern, using only the index?', [
               { html: 'Even index: not possible, because an even power of any real number is never negative. Odd index: a real negative root, because an odd power of a negative number is negative.', right: true },
               { html: 'The root exists only when ' + t(sh.M) + ' is a perfect power of the index.', why: 'For ' + t('n=5') + ' and ' + t('n=7') + ' the root exists even though it isn’t an integer. And for ' + t('n=6') + ', ' + t(sh.M) + ' <i>is</i> a perfect sixth power, yet the root is not possible.' },
               { html: 'Small indices give real roots and large indices don’t.', why: 'Compare ' + t('n=2') + ' (not possible) with ' + t('n=7') + ' (real).' },
               { html: 'Even index: the root is positive. Odd index: the root is negative.', why: 'With a negative radicand an even index gives no real root at all — not a positive one.' }],
-              'Only the parity of the index matters. An even power of a real number is never negative, so an even root of a negative number is not real. An odd power keeps the sign, so an odd root of a negative number is a real negative number.', ['Look down the table: which rows are “not possible”? What do their indices have in common?'], 'pattern even/odd index');
+              'Only the parity of the index matters. An even power of a real number is never negative, so an even root of a negative number is not real. An odd power keeps the sign, so an odd root of a negative number is a real negative number.', ['Which indices give “not possible”? What do they have in common?'], 'pattern even/odd index');
           } },
           { id: 'e7c', level: 'EMG', make: function (r, sh) {
             var M = sh.M, b = sh.b;
             return mcPart(r, 'A classmate says “' + t(-M) + ' has no roots at all.” Which is the best correction?', [
               { html: t(-M) + ' has one real root for every <b>odd</b> index, e.g. ' + t('\\sqrt[3]{-' + M + '}=' + (-b * b)) + '; it has no roots of <b>even</b> index.', right: true },
-              { html: 'The classmate is right: negative numbers have no roots.', why: 'Check the table: ' + t('(' + (-b * b) + ')^{3}=-' + M) + ', so ' + t('\\sqrt[3]{-' + M + '}') + ' exists.' },
+              { html: 'The classmate is right: negative numbers have no roots.', why: 'Check: ' + t('(' + (-b * b) + ')^{3}=-' + M) + ', so ' + t('\\sqrt[3]{-' + M + '}') + ' exists.' },
               { html: t(-M) + ' has roots of every index, because ' + t('(-' + b + ')^{6}=-' + M) + '.', why: t('(-' + b + ')^{6}=+' + M) + ': an even power of a negative number is positive.' },
               { html: t(-M) + ' only has a cube root; every other root is not possible.', why: 'The fifth and seventh roots exist too — they just aren’t integers.' }],
               'Every odd index gives a real root (e.g. ' + t('\\sqrt[3]{-' + M + '}=' + (-b * b)) + ', and irrational fifth and seventh roots); only the even-index roots are not possible.', ['Use your table: which rows had a real answer?'], 'correct “no roots”');

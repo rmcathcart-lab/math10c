@@ -589,7 +589,7 @@
         { id: 'e3b', level: 'PRG', make: function (r) { return kPart(r.pick([70, 14, 28, 35, 140])); } },
         { id: 'e3c', level: 'PRG', make: function (r) { return kPart(r.pick([24, 12, 48, 15, 30])); } },
         { id: 'e3d', level: 'PRG', make: function (r) { return kPart(r.pick([45, 72, 225])); } }] },
-      { num: '4', stem: 'In Question 3 the numerator always had to be a multiple of something.', parts: [
+      { num: '4', stem: 'A denominator with a prime other than ' + t('2') + ' or ' + t('5') + ' (such as ' + t('\\dfrac{k}{18}') + ' or ' + t('\\dfrac{k}{140}') + ') can still give a terminating decimal, but only when the numerator is a multiple of something.', parts: [
         { id: 'e4', level: 'PRG', make: function (r) {
           var d = r.pick([60, 140, 90, 120, 66, 84]), s = split25(d), m = s.m, tw = d / m;
           return P.mc(r, 'For the denominator ' + t(d + '=' + texFacs(d)) + ', which numerators ' + t('k') + ' make ' + t('\\dfrac{k}{' + d + '}') + ' terminate?', [
@@ -640,7 +640,7 @@
       { num: '10', stem: 'Same method, watching the sign and the whole-number part. Give the answer as an improper fraction in lowest terms.', parts: [
         { id: 'e10a', level: 'ADV', make: function (r) { var l = String(r.int(1, 9)); return algebraPart(repInfo(r.int(1, 9), l, randBlock(r, 1, l), true)); } },
         { id: 'e10b', level: 'EMG', make: function (r) { return algebraPart(repInfo(r.int(1, 9), '', randBlock(r, 3, '', true))); } }] },
-      { num: '11', stem: 'In Question 9 every subtraction left ' + t('990x') + ' or ' + t('900x') + ' on the left side.', parts: [
+      { num: '11', stem: 'When a decimal has a non-repeating lead, subtracting the two multiples of ' + t('x') + ' leaves a number like ' + t('990x') + ' or ' + t('900x') + ' on the left side.', parts: [
         { id: 'e11a', level: 'PRG', make: function (r) {
           return P.mc(r, 'A decimal has ' + t('p') + ' non-repeating digits after the point, then a repeating block of ' + t('q') + ' digits. What is the number in front of ' + t('x') + ' after subtracting?', [
             { html: t('10^{p+q}-10^{p}') + ': ' + t('q') + ' nines followed by ' + t('p') + ' zeros', right: true },

@@ -264,7 +264,7 @@
               if (v.join === 'none') return wrong('graph-not-joined', 'Your points are right — now press <b>Join</b>: the domain is ' + t('x\\in\\mathbb{R}') + ', so every value in between is an input too and the graph is a smooth curve.');
               return ok();
             };
-            var key = joined(pts), p = B.graph('Plot the ordered pairs ' + t('(x,\\ f(x))') + ' for ' + t('x=3,\\ 2,\\ 1,\\ -1,\\ -2,\\ -3') + ' (your table of values), then draw a smooth curve through them (press <b>Join</b>) to show ' + t('f(x)=x^{2}' + sg(c) + ',\\ x\\in\\mathbb{R}') + '. You may plot more points of the graph if you like.', padIn(win), check, key,
+            var key = joined(pts), p = B.graph('Plot the ordered pairs ' + t('(x,\\ f(x))') + ' for ' + t('x=3,\\ 2,\\ 1,\\ -1,\\ -2,\\ -3') + ', then draw a smooth curve through them (press <b>Join</b>) to show ' + t('f(x)=x^{2}' + sg(c) + ',\\ x\\in\\mathbb{R}') + '. You may plot more points of the graph if you like.', padIn(win), check, key,
               'The points ' + t(ptsTex(pts)) + ' are symmetric about the ' + t('y') + '-axis (' + t('f(-x)=f(x)') + '). The domain is all real numbers, so they are joined by a smooth curve: a U-shaped parabola whose lowest point (vertex) is ' + t('(0,\\ ' + c + ')') + ' — you may plot that point too.',
               ['Use your table: each column gives one point ' + t('(x,\\ f(x))') + '.', 'With domain ' + t('x\\in\\mathbb{R}') + ' the graph is a smooth curve, not separate dots.'], 'smooth curve x^2' + sg(c));
             p.good = [joined(pts.concat([[0, c]]))];

@@ -432,7 +432,7 @@
           var v = sh.v, S = sh.S;
           var g = HW.graph({ x: sh.xr, y: sh.yr, labels: 2, max: 240, segs: [{ pts: v.concat([v[0]]) }], points: v.map(function (p) { return { x: p[0], y: p[1] }; }), aria: 'the plotted figure' });
           return KP.mc(r, 'What geometric figure do the points outline?',
-            [{ html: S.name, right: true }].concat(S.wrong(v)), g + '<br>The segments outline ' + S.name + '.', ['Look at your drawing in (a).', 'Count the corners, then check which sides are parallel.'], 'plot and name: ' + sh.fam);
+            [{ html: S.name, right: true }].concat(S.wrong(v)), g + '<br>The segments outline ' + S.name + '.', ['Sketch the path: join the points in order, and the last back to the first.', 'Count the corners, then check which sides are parallel.'], 'plot and name: ' + sh.fam);
         } }] },
       /* ===================== Q4 ===================== */
       { num: '4', section: 'Part B — Growing patterns: table, graph and equation', stem: function (sh) {
@@ -463,7 +463,7 @@
               { is: from0, code: 'off-by-one', hint: 'The figures start at ' + t('N=1') + ', not ' + t('N=0') + ': Figure 1 goes at ' + t(pt([1, sh.S(1)])) + '.' }] }), diag = pointsDiag(tp, 'N', 'S');
             var check = function (resp) { var res = base(resp); if (res.v === 'wrong' && (!res.hint || res.code === 'graph-points')) { var h = diag(resp); if (h) return wrong('graph-points', h); } return res; };
             var inp = patternPad(6, sh.S(5) + 1 + (sh.S(5) + 1) % 2, 1, { xName: 'N', yName: 'S' });
-            return drawPart('Represent the data from the table on the grid. Decide whether to join the points (the <b>Join</b> button).', inp, check, target,
+            return drawPart('On the grid, plot the number of dots, ' + t('S') + ', for Figures ' + t('1') + ' to ' + t('5') + '. Decide whether to join the points (the <b>Join</b> button).', inp, check, target,
               'Plot ' + tp.map(function (p) { return t(pt(p)); }).join(', ') + ' and leave them as separate points: the figure number is a whole number (there is no Figure 2.5), so nothing in between has meaning.',
               ['Each column of the table is a point ' + t('(N,\\ S)') + ': Figure 1 is ' + t(pt([1, sh.S(1)])) + '.', 'Is there a Figure 2.5? If not, don’t join the points.'], 'plot S=' + lin(sh.a, sh.b, 'N'), [gv(tp, [], 'curve'), noC, shift, gv(tp.map(function (p) { return [p[1], p[0]]; }))]);
           } },
@@ -499,16 +499,16 @@
           } },
           { id: '4f', level: 'BEG', make: function (r, sh) {
             var n = sh.f50, ans = sh.S(n);
-            return KP.number('Use the equation to determine the number of dots in Figure ' + t(n) + '.', ans, function (v) {
+            return KP.number('Use the equation ' + t('S=' + lin(sh.a, sh.b, 'N')) + ' to determine the number of dots in Figure ' + t(n) + '.', ans, function (v) {
               if (v === sh.a * n) return { code: 'no-constant', hint: 'You found ' + t(sh.a + '(' + n + ')') + '. Now add the ' + t(sh.b) + '.' };
               if (v === sh.S(1) * n) return { code: 'times-first', hint: 'Use the equation ' + t('S=' + lin(sh.a, sh.b, 'N')) + ' — multiplying by the Figure 1 count doesn’t work.' };
               if (v === n + sh.a || v === n * sh.a + sh.S(1)) return { code: 'value', hint: 'Substitute ' + t('N=' + n) + ' into ' + t('S=' + lin(sh.a, sh.b, 'N')) + '.' };
               return null;
-            }, t('S=' + sh.a + '(' + n + ')+' + sh.b + '=' + (sh.a * n) + '+' + sh.b + '=' + ans) + ' dots.', ['Substitute ' + t('N=' + n) + ' into your equation.'], 'S(' + n + ')');
+            }, t('S=' + sh.a + '(' + n + ')+' + sh.b + '=' + (sh.a * n) + '+' + sh.b + '=' + ans) + ' dots.', ['Substitute ' + t('N=' + n) + ' into the equation.'], 'S(' + n + ')');
           } },
           { id: '4g', level: 'EMG', make: function (r, sh) {
             var N = sh.Ng, Sv = sh.S(N), a = sh.a, b = sh.b;
-            return KP.number('Use the equation to determine the figure number if there are ' + t(Sv) + ' dots.', N, function (v) {
+            return KP.number('Use the equation ' + t('S=' + lin(a, b, 'N')) + ' to determine the figure number if there are ' + t(Sv) + ' dots.', N, function (v) {
               if (feq(v, (Sv + b) / a)) return { code: 'add-not-sub', hint: 'To undo the “' + t('+' + b) + '”, <b>subtract</b> ' + b + ' from both sides first.' };
               if (feq(v, Sv - b)) return { code: 'no-divide', hint: 'You have ' + t(a + 'N=' + (Sv - b)) + '. Now divide both sides by ' + a + '.' };
               if (feq(v, Sv / a)) return { code: 'no-subtract', hint: 'Subtract the ' + t(b) + ' before you divide by ' + a + '.' };
@@ -665,7 +665,7 @@
           } },
           { id: '6d', level: 'BEG', make: function (r, sh) {
             var D = sh.D10, ans = stairP(D, sh.w0), c = 2 * (sh.w0 - 1);
-            return KP.number('Use the equation to determine the perimeter of Diagram ' + t(D) + '.', ans, function (v) {
+            return KP.number('Use the equation ' + t('P=' + lin(4, c, 'D')) + ' to determine the perimeter of Diagram ' + t(D) + '.', ans, function (v) {
               if (c && v === 4 * D) return { code: 'no-constant', hint: 'You found ' + t('4(' + D + ')') + '. Now add ' + t(c) + '.' };
               if (v === stairP(1, sh.w0) * D) return { code: 'times-first', hint: 'Use the equation ' + t('P=' + lin(4, c, 'D')) + '.' };
               if (v === stairArea(D, sh.w0)) return { code: 'area-count', hint: 'That is the number of squares. Use the perimeter equation.' };
@@ -674,7 +674,7 @@
           } },
           { id: '6e', level: 'EMG', make: function (r, sh) {
             var D = sh.Dt, Pv = stairP(D, sh.w0), c = 2 * (sh.w0 - 1);
-            return KP.number('Use the equation to determine the diagram number if the perimeter is ' + t(Pv) + ' cm.', D, function (v) {
+            return KP.number('Use the equation ' + t('P=' + lin(4, c, 'D')) + ' to determine the diagram number if the perimeter is ' + t(Pv) + ' cm.', D, function (v) {
               if (c && feq(v, (Pv + c) / 4)) return { code: 'add-not-sub', hint: 'To undo the “' + t('+' + c) + '”, subtract ' + c + ' first.' };
               if (c && feq(v, Pv / 4)) return { code: 'no-subtract', hint: 'Subtract the ' + t(c) + ' before dividing by 4.' };
               if (feq(v, Pv - c) && c) return { code: 'no-divide', hint: 'You have ' + t('4D=' + (Pv - c)) + '. Now divide by 4.' };
@@ -1072,7 +1072,9 @@
           key: dec(ans), answer: t(dec(ans)) + ' cm', solution: 'From ' + t('t=' + sh.tq) + ' go up to the line, then across: ' + t('h=' + dec(ans)) + ' cm.', hints: ['Find ' + t(sh.tq) + ' on the time axis, go up to the line, then across.'], text: 'candle h at t=' + sh.tq, bad: [String(ans + 2)] };
       } },
       { id: 'e5d', level: 'EMG', make: function (r, sh) {
-        return { prompt: '<b>Read off</b> the time at which the height is ' + t(dec(sh.hq)) + ' cm (use the graph in (c)).', input: { type: 'number', after: 'h' }, check: estCheck(sh.tt, 0.4, function (v) { return Math.abs(v - sh.hq) < 0.01 ? { code: 'value', hint: 'Start at ' + dec(sh.hq) + ' on the <b>height</b> axis, go across to the line, then down.' } : null; }),
+        var g = HW.graph({ x: [0, sh.T + 1], y: [0, sh.H0 + 2], grid: 1, gridY: 1, labels: 1, labelsX: 2, labelsY: 2, unitX: 300 / (sh.T + 1), unitY: 260 / (sh.H0 + 2), xName: 't', yName: 'h', firstQuadrant: true, xTitle: 'Time, t (h)', yTitle: 'Height, h (cm)', max: 360,
+          points: sh.ts.map(function (x) { return { x: x, y: sh.h(x) }; }), segs: [{ pts: [[0, sh.H0], [sh.T, 0]] }], aria: 'candle height graph' });
+        return { prompt: g + '<br><b>Read off</b> the time at which the height is ' + t(dec(sh.hq)) + ' cm.', input: { type: 'number', after: 'h' }, check: estCheck(sh.tt, 0.4, function (v) { return Math.abs(v - sh.hq) < 0.01 ? { code: 'value', hint: 'Start at ' + dec(sh.hq) + ' on the <b>height</b> axis, go across to the line, then down.' } : null; }),
           key: String(sh.tt), answer: t(sh.tt) + ' h', solution: 'From ' + t('h=' + dec(sh.hq)) + ' go across to the line, then down: ' + t('t=' + sh.tt) + ' h.', hints: ['This time start on the height axis.'], text: 'candle t at h=' + sh.hq, bad: [String(sh.tt + 2)] };
       } },
       { id: 'e5e', level: 'EMG', outcome: 'RF2', make: function (r, sh) {
@@ -1093,7 +1095,7 @@
           { html: 'A graph reading is quick and shows the trend, so it is good for estimating and checking; a calculation is exact, so use it when the precise value is needed.', right: true },
           { html: 'A graph reading is always exact, so you never need the equation.', why: 'A reading is only as accurate as the grid — between grid lines you have to estimate.' },
           { html: 'Graph readings are useless; always calculate.', why: 'Graphs show the whole trend at a glance and are a quick check that a calculation is reasonable.' },
-          { html: 'They always give different answers, so one of them must be wrong.', why: 'In (c) and (d) the reading and the equation agree. They usually match closely.' }],
+          { html: 'They always give different answers, so one of them must be wrong.', why: 'For this candle, a value read off the graph and the value from the equation agree. They usually match closely.' }],
           '<b>Graph reading:</b> fast, shows the trend, good for estimating and checking — but only as accurate as the grid. <b>Calculation:</b> exact; use it when the precise value is needed.', ['Think about what each one is good for.'], 'graph vs calculation');
       } }] });
 
@@ -1378,7 +1380,7 @@
       } },
       { id: 'e15d', level: 'PRG', make: function (r, sh) {
         var q = sh.p * sh.m;
-        return KP.number('At which figure number do the two patterns have the same number of dots? Solve ' + t('A=B') + '.', sh.ns, function (v) {
+        return KP.number('Figure ' + t('n') + ' of Pattern ' + t('A') + ' has ' + t('A=' + lin(sh.p, q, 'n')) + ' dots and Figure ' + t('n') + ' of Pattern ' + t('B') + ' has ' + t('B=' + lin(sh.c, sh.t, 'n')) + ' dots. At which figure number do the two patterns have the same number of dots? Solve ' + t('A=B') + '.', sh.ns, function (v) {
           if (feq(v, (q + sh.t) / (sh.c - sh.p))) return { code: 'sign', hint: 'Collect the constants on one side: ' + t(q + '-' + sh.t) + ', not ' + t(q + '+' + sh.t) + '.' };
           if (feq(v, (q - sh.t) / (sh.c + sh.p))) return { code: 'sign', hint: 'Move ' + t(sh.p + 'n') + ' to the other side by <b>subtracting</b> it.' };
           return null;
@@ -1386,8 +1388,8 @@
       } },
       { id: 'e15e', level: 'EMG', make: function (r, sh) {
         var v = sh.A(sh.ns);
-        return KP.number('How many dots does each pattern have at that figure?', v, function (x) { return x === sh.ns ? { code: 'value', hint: 'That is the figure number. Substitute it into either equation.' } : null; },
-          t('A=' + sh.p + '(' + sh.ns + ')+' + sh.p * sh.m + '=' + v) + ', ' + t('B=' + sh.c + '(' + sh.ns + ')+' + sh.t + '=' + sh.B(sh.ns)) + ' ✓ — ' + v + ' dots each.', ['Substitute your figure number into both equations.'], 'dots at the match', { after: 'dots' });
+        return KP.number('At the figure where Pattern ' + t('A') + ' and Pattern ' + t('B') + ' have the same number of dots, how many dots does each pattern have?', v, function (x) { return x === sh.ns ? { code: 'value', hint: 'That is the figure number. Substitute it into either equation.' } : null; },
+          t('A=' + sh.p + '(' + sh.ns + ')+' + sh.p * sh.m + '=' + v) + ', ' + t('B=' + sh.c + '(' + sh.ns + ')+' + sh.t + '=' + sh.B(sh.ns)) + ' ✓ — ' + v + ' dots each.', ['First find the figure number where ' + t(lin(sh.p, sh.p * sh.m, 'n') + '=' + lin(sh.c, sh.t, 'n')) + ', then substitute it into both expressions.'], 'dots at the match', { after: 'dots' });
       } },
       { id: 'e15f', level: 'PRG', make: function (r, sh) {
         var opts = []; for (var n = 1; n <= sh.ns + 3; n++) opts.push(String(n));

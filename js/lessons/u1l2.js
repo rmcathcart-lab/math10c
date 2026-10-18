@@ -584,7 +584,7 @@
           } },
           { id: '17b', level: 'PRG', make: function (r, sh) {
             var x = sh.a / sh.g, y = sh.b / sh.g, n = x * y;
-            return P.number('How many of these tiles are needed?', n, function (v) {
+            return P.number('Using tiles of the largest possible side length, how many tiles are needed?', n, function (v) {
               if (v === sh.a * sh.b / sh.g) return { code: 'area-by-side', hint: 'You divided the floor’s area by the tile’s <b>side length</b>. Divide by the tile’s <b>area</b> — or count tiles along each side and multiply.' };
               if (v === x + y) return { code: 'added', hint: 'You found the tiles along each side. The floor is a grid of tiles, so <b>multiply</b> them.' };
               if (v === 2 * (x + y)) return { code: 'perimeter', hint: 'That counts tiles around the edge only. The whole floor is covered: multiply the tiles along each side.' };
@@ -809,7 +809,7 @@
         } },
         { id: 'e12b', level: 'MAS', make: function (r) { var n = r.pick([540, 1350, 600, 1500, 2160]); return multPart(n, 3, t(F(n))); } },
         { id: 'e12c', level: 'ADV', make: function (r) { var n = r.pick([2205, 1575, 2450, 980, 1100]); return multPart(n, 3, t(F(n))); } }] },
-      { num: '13', stem: function (sh) { return 'Dividing works the same way — strip off just enough to leave the exponents where you need them. Use ' + t(F(sh.n)) + ' for parts (a) and (b).'; },
+      { num: '13', stem: function (sh) { return 'Dividing works the same way — strip off just enough to leave the exponents where you need them.'; },
         shared: function (r) { var pq = r.pick([[2, 5], [2, 5], [2, 3], [3, 2], [2, 7], [5, 2], [3, 5]]); return { p: pq[0], q: pq[1], n: Math.pow(pq[0], 4) * Math.pow(pq[1], 3) }; },
         parts: [
           { id: 'e13a', level: 'PRG', make: function (r, sh) { return divPart(sh.n, 2); } },
@@ -832,7 +832,7 @@
           } },
           { id: 'e14b', level: 'PRG', make: function (r, sh) {
             var x = sh.a / sh.g, y = sh.b / sh.g;
-            return P.number('How many tiles does the sheet produce at that size?', x * y, function (v) {
+            return P.number('If the tiles are the largest possible size, how many tiles does the sheet produce?', x * y, function (v) {
               if (v === x + y) return { code: 'added', hint: 'Those are the tiles along each side. The tiles form a grid, so multiply.' };
               if (v === sh.a * sh.b / sh.g) return { code: 'area-by-side', hint: 'Divide the sheet’s area by the tile’s <b>area</b>, not its side length.' };
               return null;
@@ -863,7 +863,7 @@
           } },
           { id: 'e15b', level: 'EMG', make: function (r, sh) {
             var v = sh.v, L = lcmA(v);
-            return P.fields('How many departures has each route made by that moment (not counting the one at ' + fmtTime(sh.start) + ')?', [{ name: 'Route A', before: 'A:' }, { name: 'Route B', before: 'B:' }, { name: 'Route C', before: 'C:' }],
+            return P.fields('How many departures has each route made by the next time all three leave together (not counting the one at ' + fmtTime(sh.start) + ')?', [{ name: 'Route A', before: 'A:' }, { name: 'Route B', before: 'B:' }, { name: 'Route C', before: 'C:' }],
               v.map(function (x) { return K.number(L / x, function (q) { return q === L / x + 1 ? { code: 'value', hint: 'Don’t count the departure at ' + fmtTime(sh.start) } : null; }); }), v.map(function (x) { return String(L / x); }),
               'A: ' + t(L / v[0]) + ', B: ' + t(L / v[1]) + ', C: ' + t(L / v[2]),
               v.map(function (x, i) { return 'ABC'[i] + ': ' + t(L + '\\div ' + x + '=' + L / x); }).join('<br>'), ['Divide the time until they meet again (the LCM) by each route’s interval.'], 'departures by LCM');
@@ -910,7 +910,7 @@
           { id: 'e17a', level: 'PRG', make: function (r, sh) { return P.number('What is the greatest number of bags possible?', sh.g, gcfDiag(sh.v), 'Each total must split evenly into the bags, and we want the most bags: the GCF.<br>' + gcfSol(sh.v) + ' <b>' + sh.g + ' bags</b>', ['The number of bags must divide evenly into each total.'], 'bags GCF ' + sh.v.join(','), { after: 'bags' }); } },
           { id: 'e17b', level: 'EMG', make: function (r, sh) {
             var v = sh.v, g = sh.g;
-            return P.fields('What goes into each bag?', [{ name: 'Pencils', after: 'pencils' }, { name: 'Erasers', after: 'erasers' }, { name: 'Stickers', after: 'stickers' }],
+            return P.fields('If she makes the greatest possible number of bags, what goes into each bag?', [{ name: 'Pencils', after: 'pencils' }, { name: 'Erasers', after: 'erasers' }, { name: 'Stickers', after: 'stickers' }],
               v.map(function (x) { return K.number(x / g); }), v.map(function (x) { return String(x / g); }), t(v[0] / g) + ' pencils, ' + t(v[1] / g) + ' erasers, ' + t(v[2] / g) + ' stickers',
               v.map(function (x) { return t(x + '\\div ' + g + '=' + x / g); }).join('<br>'), ['Divide each total by the number of bags.'], 'bag contents');
           } },

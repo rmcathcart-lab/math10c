@@ -266,7 +266,7 @@
             return base(resp);
           };
           var inp = ctxPad(T + 1, V + R, 1, R, k, R * k, { xn: 't', yn: 'V', xt: 'Time, t (min)', yt: 'Volume, V (L)', mode: 'lines' });
-          return drawPart('Plot the ordered pairs from your table on the grid and complete the graph.', inp, check, target,
+          return drawPart('Plot the ordered pairs ' + t('(t,\\ V)') + ' for ' + t('t=0,\\ 1,\\ 2,\\ 3,\\ 4') + ' on the grid and complete the graph.', inp, check, target,
             'Plot ' + tp.map(pt).map(function (s) { return t(s); }).join(', ') + '. The water drains continuously, so join them with a straight line, and continue it down to ' + t('(' + T + ',\\ 0)') + ', when the barrel is empty — the graph stops there.',
             ['Where does the graph start? Does it go up or down?', 'The volume falls ' + t(R) + ' L every minute. When does it reach ' + t('0') + '?'], 'barrel graph',
             [gv(tp), gv([], [segv([0, V], [4, V - 4 * R])]), gv([], [segv([0, V], [T, 0], 'closed', 'arrow')]), gv([], [segv([0, 0], [T, V])])]);
@@ -370,7 +370,7 @@
         { id: 'e3f', sub: 'f', level: 'EMG', make: function (r, sh) {
           var m = sh.m, b = sh.b, X = r.int(5, 8), xi = r.pick([-7, -6, -5, -4, -3].filter(function (x) { return m * (m * x + b) + b !== x; })), Y = m * xi + b;
           var fields = [nbox('Output when the input is ' + t(X) + ':', 'Output'), nbox('Input that gives an output of ' + t(Y) + ':', 'Input')];
-          return { prompt: 'Use your equation. Determine the output when the input is ' + t(X) + ', and the input that gives an output of ' + t(Y) + '.', input: { type: 'fields', fields: fields }, key: [String(m * X + b), String(xi)], text: 'evaluate and solve y=' + lin(m, b),
+          return { prompt: 'The relation’s equation is ' + t('y=' + lin(m, b)) + '. Use it to determine the output when the input is ' + t(X) + ', and the input that gives an output of ' + t(Y) + '.', input: { type: 'fields', fields: fields }, key: [String(m * X + b), String(xi)], text: 'evaluate and solve y=' + lin(m, b),
             answer: 'Output ' + t(m * X + b) + '; input ' + t(xi), bad: [[String(m * X + b), String(m * Y + b)]],
             check: K.fields([vchk(m * X + b), vchk(xi, function (v) {
               if (v === m * Y + b) return { code: 'solve-sub-y', hint: t(Y) + ' is the <b>output</b>: solve ' + t(lin(m, b) + '=' + Y) + '.' };
@@ -697,7 +697,7 @@
         } },
         { id: 'e15f', sub: 'f', level: 'EMG', make: function (r, sh) {
           var D = sh.D, R = sh.rate, x = sh.tf, ans = D - R * x;
-          return K.P.number('Use your equation to find ' + t('D') + ' when ' + t('t=' + num(x)) + '. (This value can’t be read exactly off the grid.)', ans, function (v) {
+          return K.P.number('Use the equation ' + t('D=' + num(D) + '-' + num(R) + 't') + ' to find ' + t('D') + ' when ' + t('t=' + num(x)) + '. (This value can’t be read exactly off the grid.)', ans, function (v) {
             if (Math.abs(v - (D + R * x)) < 1e-9) return { code: 'ctx-add', hint: 'The depth is falling: subtract.' };
             if (Math.abs(v - R * x) < 1e-9) return { code: 'ctx-part', hint: 'That’s how much the depth dropped. What depth is <b>left</b>?' };
             if (Math.abs(v - (D - R)) < 1e-9) return { code: 'ctx-part', hint: 'Multiply the rate by ' + t(num(x)) + ' minutes.' };
@@ -850,7 +850,7 @@
           } },
           { id: '6c', level: 'BEG', make: function (r, sh) {
             var k = sh.k, c = sh.c, v = k * k + c, C = term(c, '', false);
-            return mc(r, '(c) Which substitution correctly verifies your answer to (b)?', [
+            return mc(r, '(c) Which substitution correctly verifies the output of ' + t('y=x^{2}' + C) + ' when ' + t('x=-' + k) + '?', [
               { html: t('y=(-' + k + ')^{2}' + C + '=' + (k * k) + C + '=' + v), right: true },
               { html: t('y=-' + k + '^{2}' + C + '=-' + (k * k) + C + '=' + (-k * k + c)), why: 'Without brackets only the ' + t(k) + ' is squared. Substitute ' + t('x=-' + k) + ' in brackets: ' + t('(-' + k + ')^{2}=' + k * k) + '.' },
               { html: t('y=2(-' + k + ')' + C + '=' + (-2 * k + c)), why: t('x^{2}') + ' means ' + t('x\\times x') + ', not ' + t('2x') + '.' },

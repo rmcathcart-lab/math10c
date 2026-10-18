@@ -680,18 +680,18 @@
             var check = function (resp) {
               var res = base(resp); if (res.v !== 'wrong' || res.hint) return res;
               var S = DR.norm(resp);
-              if (S.pieces.length && !S.pts.length && S.join === 'none') return wrong('graph-lines', 'Plot the points from your table first, then press <b>Join</b> to join them with a smooth curve.');
+              if (S.pieces.length && !S.pts.length && S.join === 'none') return wrong('graph-lines', 'Plot the points first (one for each whole second), then press <b>Join</b> to join them with a smooth curve.');
               if (S.pts.some(function (p) { return same(p[0], 0) && same(p[1], 0); })) return wrong('graph', 'At ' + t('t=0') + ' the ball is on the platform, ' + t(h0) + ' m above the ground — the graph starts at ' + t('(0,\\ ' + h0 + ')') + ', not at the origin.');
               for (var i = 0; i < tp.length; i++) {
                 var p = tp[i], at = S.pts.filter(function (q) { return same(q[0], p[0]); });
-                if (!at.length) return wrong('graph-missing', 'Plot a point for every value of ' + t('t') + ' in your table — ' + t('t=' + p[0]) + ' is missing.');
+                if (!at.length) return wrong('graph-missing', 'Plot a point for every whole second from ' + t('t=0') + ' to ' + t('t=' + L) + ' — ' + t('t=' + p[0]) + ' is missing.');
                 if (!at.some(function (q) { return same(q[1], p[1]); })) return wrong('graph-points', 'Check your point at ' + t('t=' + p[0]) + ': ' + t('h=-5(' + p[0] + ')^{2}+' + o.b + '(' + p[0] + ')+' + o.c + '=' + p[1]) + '.');
               }
-              return wrong('graph-extra', 'Plot only the points from your table (one for each whole second from ' + t('0') + ' to ' + t(L) + ').');
+              return wrong('graph-extra', 'Plot only the points for whole seconds (one for each whole second from ' + t('0') + ' to ' + t(L) + ').');
             };
             var inp = { x: [0, L + 1], y: [0, top], grid: 1, gridY: 5, labels: 1, labelsX: 1, labelsY: top > 60 ? 20 : 10, snapX: 1, snapY: 5, unitX: Math.min(40, 300 / (L + 1)), unitY: Math.min(4.6, 330 / top), firstQuadrant: true,
               xName: 't', yName: 'h', xTitle: 'Time, t (s)', yTitle: 'Height, h (m)', mode: 'points', join: true };
-            return drawPart('Plot the points of your table on the grid and join them with a smooth curve (plot the points, then press <b>Join</b>).', inp, check, target,
+            return drawPart('Plot the points ' + t('(t,\\ h)') + ' for every whole second from ' + t('t=0') + ' to ' + t('t=' + L) + ' on the grid and join them with a smooth curve (plot the points, then press <b>Join</b>).', inp, check, target,
               'Plot ' + tp.map(function (p) { return t(ptT(p)); }).join(', ') + ' and join them with a smooth curve: it starts at the platform height, rises to ' + t(hm) + ' m at ' + t('t=' + o.v) + ', and falls to the ground at ' + t('t=' + L) + '.',
               ['Where is the ball at ' + t('t=0') + '? Where is it at ' + t('t=' + L) + '?', 'The grid lines go up in steps of ' + t('5') + ' m.'], 'ball graph',
               [gv(tp), gv(ts.map(function (x) { return [x, -5 * x * (x - L)]; }), [], 'curve'), gv(ts.map(function (x) { return [x, o.h(L - x)]; }), [], 'curve'), gv([], [segv([0, h0], [L, 0])])]);
@@ -1013,11 +1013,11 @@
             return interceptsPart('State the same two intercepts <b>as ordered pairs</b>.', [o.xi], [o.yi], { text: 'points for ' + o.eq, sol: t('x') + '-intercept ' + t(ptT([o.xi, 0])) + ', ' + t('y') + '-intercept ' + t(ptT([0, o.yi])) + '. Each value gets its partner coordinate ' + t('0') + '.' });
           } },
           { id: 'e3c', level: 'EMG', make: function (r, o) {
-            return mcPart(r, 'Only your answers in (b), not those in (a), could be marked as dots on a grid. Why?', [
+            return mcPart(r, 'The intercepts of this line can be given as <b>values</b>, ' + t(o.xi) + ' and ' + t(o.yi) + ', or as <b>ordered pairs</b>, ' + t(ptT([o.xi, 0])) + ' and ' + t(ptT([0, o.yi])) + '. Only the ordered pairs, not the values, could be marked as dots on a grid. Why?', [
               { html: 'A dot needs <b>two</b> coordinates. The value ' + t(o.xi) + ' is one number — it fits every point with ' + t('x=' + o.xi) + '. The ordered pair ' + t(ptT([o.xi, 0])) + ' adds the ' + t('0') + ' that puts the point on the ' + t('x') + '-axis.', right: true },
-              { html: 'The values in (a) are only estimates; the ordered pairs are exact.', why: 'Both are exact. The difference is how many coordinates they give.' },
+              { html: 'The values are only estimates; the ordered pairs are exact.', why: 'Both are exact. The difference is how many coordinates they give.' },
               { html: 'Values are used for lines and ordered pairs for curves.', why: 'Lines and curves both have intercept values and intercept points. The difference is how many coordinates you give.' },
-              { html: 'The values in (a) could be plotted too — they are the same thing as the points.', why: 'Try to plot “' + t(o.xi) + '”: is it ' + t('(' + o.xi + ',\\ 0)') + ', ' + t('(' + o.xi + ',\\ 5)') + ', …? One number doesn’t pick out a single point.' }],
+              { html: 'The values could be plotted too — they are the same thing as the points.', why: 'Try to plot “' + t(o.xi) + '”: is it ' + t('(' + o.xi + ',\\ 0)') + ', ' + t('(' + o.xi + ',\\ 5)') + ', …? One number doesn’t pick out a single point.' }],
               'A point on a grid needs two coordinates. A value such as ' + t(o.xi) + ' is a single number — it could belong to any point on the vertical line ' + t('x=' + o.xi) + '. The ordered pair ' + t(ptT([o.xi, 0])) + ' carries the extra information: its ' + t('y') + '-coordinate is ' + t('0') + ', which is what puts it on the ' + t('x') + '-axis.',
               ['How many numbers does it take to locate one point on a grid?'], 'value vs point');
           } }] },
@@ -1099,7 +1099,7 @@
               { html: 'The points should be written the other way round.', why: 'The points are correct as written. The issue is the <b>form</b>: the question asked for values.' },
               { html: 'Points can only be read off a graph, not a table.', why: 'That isn’t a rule. Look at what kind of answer the question asked for.' },
               { html: 'It is fine — values and points are the same thing.', why: 'A value is one number; a point is an ordered pair. On a test the wording decides which form gets the mark.' }],
-              'Part (a) asked for <b>values</b>, which are single numbers: ' + t(o.p) + ' and ' + t(o.q) + '. The classmate gave points. The mathematics is right, but the form doesn’t answer the question asked.', ['Read the question again: “value” or “ordered pair”?'], 'points given for values');
+              'The question asked for <b>values</b>, which are single numbers: ' + t(o.p) + ' and ' + t(o.q) + '. The classmate gave points. The mathematics is right, but the form doesn’t answer the question asked.', ['Read the question again: “value” or “ordered pair”?'], 'points given for values');
           } }] },
       /* ---------- Part C: intercepts that don't exist ---------- */
       { num: '7', section: 'Extra practice C — When an intercept does not exist', stem: 'Determine the ' + t('x') + '-intercept(s) and the ' + t('y') + '-intercept(s) of each graph <b>as ordered pairs</b>. Press <b>none</b> where there is no such intercept.', parts: [
@@ -1192,9 +1192,9 @@
             var inp = { x: [0, o.T + o.s], y: [0, o.F0 + dy], grid: o.s, gridY: dy, labels: 1, labelsX: o.s, labelsY: dy * (o.F0 / dy > 8 ? 2 : 1), snapX: o.s, snapY: dy, unitX: 300 / (o.T + o.s),
               firstQuadrant: true, xName: 'h', yName: 'F', xTitle: 'Time, h (hours)', yTitle: 'Fuel left, F (L)', join: true };
             inp.unitY = Math.min(22, 320 / ((o.F0 + dy) / dy)) / dy;
-            return drawPart('Plot the points from your table on the grid and join them with a straight line.', inp, check, target,
+            return drawPart('Plot the points ' + t('(h,\\ F)') + ' for ' + t('h=' + hs.join(',\\ ')) + ' on the grid and join them with a straight line.', inp, check, target,
               'Plot ' + tp.map(function (p) { return t(ptT(p)); }).join(', ') + ' and join them: a straight line from ' + t(ptT([0, o.F0])) + ' down to ' + t(ptT([o.T, 0])) + ', where the tank is empty.',
-              ['Use your table: one point for each row, ' + t('(h,\\ F)') + '.', 'Then join them with <b>╱ Line</b> (or press <b>Join</b>).'], 'generator graph',
+              ['Substitute each value of ' + t('h') + ' to find its point ' + t('(h,\\ F)') + '.', 'Then join them with <b>╱ Line</b> (or press <b>Join</b>).'], 'generator graph',
               [gv(tp), gv([], [segv([0, o.F0], [o.T, 0], 'closed', 'arrow')]), gv([], [segv([0, 0], [o.T, o.F0])])]);
           } },
           { id: 'e9b', sub: 'b', level: 'BEG', make: function (r, o) {
@@ -1224,7 +1224,7 @@
               t(nT(Fr) + '=' + o.F0 + '-' + nT(o.rate) + 'h') + ', ' + t(nT(o.rate) + 'h=' + nT(o.F0 - Fr)) + ', ' + t('h=' + x) + ' hours.', ['Substitute ' + t('F=' + nT(Fr)) + ' and solve for ' + t('h') + '.'], 'hours until ' + Fr + ' L', { after: 'h' });
           } },
           { id: 'e9g', sub: 'g', level: 'PRG', make: function (r, o) {
-            return mcPart(r, 'Both intercepts matter here, but for the moving company (' + t('C=150+0.25n') + ', Question 4 of the assignment) the ' + t('n') + '-intercept did not. What is different?', [
+            return mcPart(r, 'Both intercepts matter here. Compare a moving company whose cost, ' + t('C') + ' dollars, for a move of ' + t('n') + ' km is ' + t('C=150+0.25n') + ': its ' + t('n') + '-intercept, ' + t('-600') + ', has no meaning in context. What is different?', [
               { html: 'Here the fuel really reaches ' + t('0') + ' at a positive time (the tank empties). The moving cost never reaches ' + t('\\$0') + ' for a real distance — its ' + t('n') + '-intercept was a negative distance.', right: true },
               { html: 'This graph decreases and the moving graph increases; only decreasing graphs have intercepts.', why: 'Increasing lines have intercepts too — the moving line’s ' + t('n') + '-intercept was ' + t('-600') + '. The question is whether the value makes sense.' },
               { html: 'The fuel model has no starting value.', why: 'It does: the full tank, ' + t(o.F0) + ' L, is its ' + t('F') + '-intercept. Think about whether each intercept is a value the situation can actually reach.' },

@@ -888,7 +888,7 @@
         } },
         { id: '10e', level: 'PRG', make: function (r, sh) {
           var o = 2 * sh.p - sh.q;
-          return B.number('(e) At what other time during the dive does the plane reach this same height?', o, function (u) {
+          return B.number('(e) ' + t(sh.q) + ' second' + (sh.q === 1 ? '' : 's') + ' into the dive, the plane is at a height of ' + t(sh.hq) + ' m. At what other time during the dive does the plane reach this same height?', o, function (u) {
             if (same(u, sh.q)) return { code: 'same-time', hint: 'That is the time in (d). Find the <b>other</b> time the height is ' + t(sh.hq) + ' m.' };
             if (same(u, 2 * sh.p)) return { code: 'end-time', hint: 'At ' + t('t=' + 2 * sh.p) + ' the plane is back at ' + t(sh.c) + ' m. Use the symmetry of the parabola about ' + t('t=' + sh.p) + '.' };
             if (same(u, sh.p + sh.q) && sh.p + sh.q !== o) return { code: 'diag', hint: 'Count from the vertex: ' + t('t=' + sh.q) + ' is ' + t(sh.p - sh.q) + ' s <b>before</b> ' + t('t=' + sh.p) + ', so the same height comes ' + t(sh.p - sh.q) + ' s after it.' };
@@ -958,7 +958,7 @@
           return p;
         } },
         { id: '11g', level: 'EMG', outcome: 'RF1', make: function (r, sh) {
-          return intPart('(g) State the ' + t('x') + '-intercept and the ' + t('y') + '-intercept of that line as ordered pairs.', [[sh.k, 0]], [[0, sh.b]], {},
+          return intPart('(g) State the ' + t('x') + '-intercept and the ' + t('y') + '-intercept of the line through these points as ordered pairs.', [[sh.k, 0]], [[0, sh.b]], {},
             t('x') + '-int: set ' + t('y=0') + ': ' + t('0=' + lin([[sh.m, 'x'], [sh.b, '']]) + '\\Rightarrow x=' + sh.k) + ', so ' + t(ptT([sh.k, 0])) + '.<br>' + t('y') + '-int: ' + t('f(0)=' + sh.b) + ', so ' + t(ptT([0, sh.b])) + '.',
             ['For the ' + t('x') + '-intercept set ' + t('f(x)=0') + '; for the ' + t('y') + '-intercept evaluate ' + t('f(0)') + '.'], 'intercepts of the line');
         } }] },
@@ -1365,8 +1365,8 @@
             rW: [{ is: sh.R, code: 'set-continuous', hint: 'With every real input, the outputs fill a whole interval.' }, { is: all('y'), code: 'set-values', hint: t('x^{2}\\ge 0') + ', so ' + t('y') + ' can never go ' + (sh.a > 0 ? 'below' : 'above') + ' ' + t(sh.c) + '.' }] },
             'Any real ' + t('x') + ' can be squared: ' + t('D=' + Dn) + '.<br>' + t('x^{2}\\ge 0') + ', so ' + t('y=' + sh.rule) + (sh.a > 0 ? '\\ge ' : '\\le ') + sh.c + ', with ' + t('y=' + sh.c) + ' at ' + t('x=0') + ': ' + t('R=' + Rn) + '.', ['What values can ' + t('x^{2}') + ' take?'], 'D and R of y=ax^2+c');
         } },
-        { id: 'e3f', level: 'EMG', outcome: 'RF2', make: function (r) {
-          return mc(r, '(f) Which of the four representations could <b>not</b> have told you the answer to (e)?', [
+        { id: 'e3f', level: 'EMG', outcome: 'RF2', make: function (r, sh) {
+          return mc(r, '(f) With the stated domain deleted, ' + t('y=' + sh.rule) + ' has domain ' + t('\\{x\\mid x\\in\\mathbb{R}\\}') + ' and range ' + t('\\{y\\mid y' + (sh.a > 0 ? '\\ge ' : '\\le ') + sh.c + ',\\ y\\in\\mathbb{R}\\}') + '. Which of the four representations could <b>not</b> have told you that?', [
             { html: 'I, II and III — they show only the five given pairs, not what happens at any other input.', right: true },
             { html: 'Only IV, the equation.', why: 'The equation is the only one that gives an output for <b>every</b> real ' + t('x') + ' — it is exactly what you used in (e).' },
             { html: 'Only II, the graph.', why: 'The table and the mapping diagram show the same five pairs as the graph — none of them says anything about ' + t('x=0.5') + ' or ' + t('x=10') + '.' },
@@ -1463,7 +1463,7 @@
           return p;
         } },
         { id: 'e6b2', sub: 'b ii', level: 'EMG', outcome: 'RF2', make: function (r) {
-          return mc(r, '(b) What is the one feature that makes the difference between a graph for (a) and a graph for (b)?', [
+          return mc(r, '(b) In (a) you sketched a <b>function</b>, and in (b) a relation that is <b>not</b> a function, both with the same domain and range. What is the one feature that makes the difference between a graph for (a) and a graph for (b)?', [
             { html: 'In (b) some vertical line meets the graph twice — one input with two outputs.', right: true },
             { html: 'In (b) the graph has endpoints.', why: 'Both graphs have endpoints (both domains are restricted).' },
             { html: 'In (b) the graph has two ' + t('x') + '-intercepts.', why: 'Functions can have two ' + t('x') + '-intercepts — (a) does.' },
@@ -1508,7 +1508,7 @@
         } },
         { id: 'e7b2', sub: 'b ii', level: 'EMG', make: function (r, sh) {
           var fa = sh.c - sh.m * sh.a1;
-          return mc(r, '(b) What did part (a) already tell you about the solution of ' + t('f(x)=' + fa) + '?', [
+          return mc(r, '(b) In part (a) you found ' + t('f(' + sh.a1 + ')=' + fa) + '. What did that already tell you about the solution of ' + t('f(x)=' + fa) + '?', [
             { html: 'Part (a) showed ' + t('f(' + sh.a1 + ')=' + fa) + ': the point ' + t(ptT([sh.a1, fa])) + ' is on the graph, so ' + t('x=' + sh.a1) + ' had to be a solution.', right: true },
             { html: 'Nothing — evaluating and solving are unrelated.', why: 'They are reverse questions: (a) went from input to output, (b) goes from that output back to the input.' },
             { html: 'It told us the solution is ' + t('x=' + fa) + '.', why: t(fa) + ' is the output. The input that produced it was ' + t(sh.a1) + '.' },
@@ -1791,7 +1791,7 @@
             good: [String(key === 100 ? 1 : 100)].filter(function (v) { return chk(v).v === 'correct'; }), bad: [String(sh.P1), String(-sh.F - 1)] };
         } },
         { id: 'e11f', level: 'EMG', make: function (r) {
-          return mc(r, '(f) Compare this question with Question 10 (the tablet). Which has a graph made of separate dots, and which is an unbroken line?', [
+          return mc(r, '(f) Question 10 modelled a tablet’s battery charge, ' + t('C') + ' percent, after ' + t('t') + ' hours of video playback. Compare that model with this one (profit on ' + t('n') + ' yearbooks sold). Which has a graph made of separate dots, and which is an unbroken line?', [
             { html: 'Question 11 is separate dots (' + t('n') + ' counts books — discrete); Question 10 is an unbroken line (' + t('t') + ' is measured time — continuous).', right: true },
             { html: 'Both are unbroken lines, because both rules are linear.', why: 'A linear rule doesn’t decide it — the variable does. You can’t sell 150.5 yearbooks.' },
             { html: 'Question 10 is dots and Question 11 is a line.', why: 'That is reversed: time is continuous, a count of books is discrete.' },

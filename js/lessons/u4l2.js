@@ -452,7 +452,7 @@
               ['Multiplying tiles works like multiplying numbers: same signs give positive, different signs give negative.'], 'why unit tiles negative');
           } },
           { id: '4d', sub: 'd', level: 'EMG', make: function (r, sh) { return negBuildPart(spec({ p: sh.n.u, q: sh.n.w })); } },
-          { id: '4e', sub: 'e', level: 'BEG', make: function (r, sh) { var s = spec({ p: sh.n.u, q: sh.n.w }); return facPart(s, { prompt: 'Use your rectangle from (d) to write ' + t(tx(s.inner)) + ' in factored form.', text: 'negative tile rectangle → factored form' }); } }] },
+          { id: '4e', sub: 'e', level: 'BEG', make: function (r, sh) { var s = spec({ p: sh.n.u, q: sh.n.w }); return facPart(s, { prompt: 'Use the length and width of a tile rectangle for ' + t(tx(s.inner)) + ' to write it in factored form.', text: 'negative tile rectangle → factored form' }); } }] },
 
       /* ---------------- Part B ---------------- */
       { num: '5', section: 'Part B — Factoring x² + bx + c', stem: 'Complete the following.', parts: [
@@ -603,7 +603,7 @@
           } },
           { id: '13e', sub: 'S', level: 'PRG', make: function (r, sh) {
             var L = sh.L, inner = P.mul(bin(V('x'), L.S), bin(V('x'), -L.T)), s = spec({ p: L.S, q: -L.T });
-            return B.number('Use ' + t(sh.e[4]) + ' to find ' + t('S') + '. (Check that the value of ' + t('T') + ' agrees with part (d).)', L.S, function (v) {
+            return B.number('Use ' + t(sh.e[4]) + ' to find ' + t('S') + '. (Check that the value of ' + t('T') + ' agrees with ' + t(sh.e[3]) + '.)', L.S, function (v) {
               if (v === L.T) return { code: 'swap-letters', hint: t(v) + ' is ' + t('T') + ' (it is in the bracket ' + t('(x-T)') + '). ' + t('S') + ' is in the other bracket.' };
               if (v === -L.S) return { code: 'sign', hint: 'Letters are whole numbers from ' + t('1') + ' to ' + t('9') + ' — the bracket ' + t('(x+S)') + ' already shows the sign.' };
               return null;
@@ -761,7 +761,7 @@
     extra: [
       { num: '1', section: 'Extra practice A — Reading the Signs Before You Hunt',
         shared: function (r) { var m = r.int(1, 3), u = r.int(3, 6); return { m: m, n: r.int(m + 3, 9), u: u, v: pickWhere(function () { return r.int(u + 1, u + 4); }, function (v) { return posPairs(u * v).length >= 2; }) }; },
-        stem: function (sh) { var r1 = spec({ p: sh.m, q: sh.n }); return 'Rows 1 and 2 hide the same two integers, up to sign, and so do rows 3 and 4. Row 1 is done for you: in ' + t(tx(r1.full)) + ', ' + t('b>0') + ' and ' + t('c>0') + ', so both integers are positive and it factors as ' + t(r1.key) + '. (“Mixed” below means one positive and one negative integer.)'; },
+        stem: function (sh) { var r1 = spec({ p: sh.m, q: sh.n }), rows = [r1, spec({ p: -sh.m, q: -sh.n }), spec({ p: -sh.u, q: sh.v }), spec({ p: sh.u, q: -sh.v })]; return 'Four trinomials: ' + rows.map(function (x, i) { return 'Row ' + (i + 1) + ': ' + t(tx(x.full)); }).join(', &nbsp;') + '.<br>Rows 1 and 2 hide the same two integers, up to sign, and so do rows 3 and 4. Row 1 is done for you: in ' + t(tx(r1.full)) + ', ' + t('b>0') + ' and ' + t('c>0') + ', so both integers are positive and it factors as ' + t(r1.key) + '. (“Mixed” below means one positive and one negative integer.)'; },
         parts: [
           { id: 'e1', sub: 'signs', level: 'BEG', make: function (r, sh) {
             var R = [{ id: '2', s: spec({ p: -sh.m, q: -sh.n }), want: 'nn' }, { id: '3', s: spec({ p: -sh.u, q: sh.v }), want: 'op' }, { id: '4', s: spec({ p: sh.u, q: -sh.v }), want: 'on' }];
@@ -809,7 +809,7 @@
           { id: 'e2d', level: 'BEG', make: function (r, sh) { return facPart(spec({ p: sh.pr[0], q: -sh.pr[1] })); } },
           { id: 'e2e', level: 'BEG', make: function (r, sh) { return facPart(spec({ p: 1, q: -sh.N })); } },
           { id: 'e2f', level: 'BEG', make: function (r) { return facPart(spec({ p: r.int(2, 4), q: r.pick([11, 13, 17]) })); } }] },
-      { num: '3', stem: 'All four of these are built from the <b>same</b> two numbers.',
+      { num: '3', stem: function (sh) { return 'All four of these are built from the <b>same</b> two numbers: ' + [spec({ p: sh.u, q: sh.v }), spec({ p: -sh.u, q: -sh.v }), spec({ p: -sh.u, q: sh.v }), spec({ p: sh.u, q: -sh.v })].map(function (x, i) { return '(' + 'abcd'[i] + ') ' + t(tx(x.full)); }).join(', &nbsp;') + '.'; },
         shared: function (r) { var u = r.int(2, 5); return { u: u, v: r.int(u + 2, 9) }; },
         parts: [
           { id: 'e3', sub: 'a–d', level: 'BEG', make: function (r, sh) {

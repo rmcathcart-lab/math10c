@@ -824,7 +824,7 @@
         { id: 'e3b', sub: 'b i', level: 'PRG', make: function (r, sh) { var f = sh.b; return partBox(f[0], f[1], f[2], f[3], { cols: [1], rows: [0], cells: [[0, 0], [1, 0], [1, 1]] }, 'part-filled grid (b)'); } },
         { id: 'e3bp', sub: 'b ii', level: 'EMG', make: function (r, sh) { var f = sh.b; return partProd(f[0], f[1], f[2], f[3], { cols: [1], rows: [0], cells: [[0, 0], [1, 0], [1, 1]] }); } },
         { id: 'e3c', sub: 'c', level: 'PRG', make: function (r) {
-          return KP.mc(r, 'In part (a) you found a missing cell from two side lengths, and a missing side length from a cell. Which job is harder, and why can a grid with several entries missing still be solvable?', [
+          return KP.mc(r, 'In a part-filled grid you can find a missing cell from two side lengths, and a missing side length from a cell. Which job is harder, and why can a grid with several entries missing still be solvable?', [
             { html: 'A missing <b>side length</b> is harder: it is a division, and you first need a cell whose other side is known. A grid is solvable as long as each missing side borders a known cell whose other side is known.', right: true },
             { html: 'A missing <b>cell</b> is harder, because you have to divide; a grid is solvable only when at most one entry is missing.', why: 'A missing cell is just (top) × (side) — one multiplication. And part (a) had three entries missing and was still solvable.' },
             { html: 'They are equally hard; a grid can only be solved when all four cells are given.', why: 'In part (a) a cell was missing and you still recovered everything, one division or multiplication at a time.' },
@@ -860,12 +860,12 @@
         { id: 'e5f', level: 'PRG', make: function (r, sh) { return twoProducts(M(-sh.k, { r: 1, s: 2 }), [M(sh.a, { r: 1 }), M(-1, { s: 1 })], M(-1, { r: 1, s: 1 }), [M(1, { s: 2 }), M(-sh.a * sh.k, { r: 1, s: 1 })], '-'); } },
         { id: 'e5g', level: 'EMG', make: function (r, sh) {
           var k = sh.k, a = sh.a, big = a * k;
-          return KP.mc(r, 'Part (f) collapses to a single term. Which two terms cancelled, and why?', [
+          return KP.mc(r, 'When ' + t('-' + k + 'rs^{2}(' + a + 'r-s)-rs(s^{2}-' + big + 'rs)') + ' is expanded and simplified, it collapses to a single term. Which two terms cancelled, and why?', [
             { html: 'The two ' + t('r^{2}s^{2}') + ' terms: ' + t('(-' + k + 'rs^{2})(' + a + 'r)=-' + big + 'r^{2}s^{2}') + ' and ' + t('(-rs)(-' + big + 'rs)=+' + big + 'r^{2}s^{2}') + ' — the same size with opposite signs.', right: true },
             { html: 'The two ' + t('rs^{3}') + ' terms, because they have the same variables.', why: 'Like terms combine, but these two are ' + t(k + 'rs^{3}') + ' and ' + t('-rs^{3}') + ' — they add to ' + t(tx(M(k - 1, { r: 1, s: 3 }))) + ', which is the answer, not zero.' },
             { html: 'The two monomials in front cancel because both are negative.', why: 'Monomials in front don’t cancel each other — each one multiplies its own bracket. Look for two equal-and-opposite terms after expanding.' },
             { html: 'Nothing cancelled; the answer has one term because the brackets had two terms each.', why: 'Expanding gives four terms. Two of them must have cancelled to leave one term (after the other two combined).' }],
-            t('-' + k + 'rs^{2}(' + a + 'r-s)=-' + big + 'r^{2}s^{2}+' + k + 'rs^{3}') + ' and ' + t('-rs(s^{2}-' + big + 'rs)=-rs^{3}+' + big + 'r^{2}s^{2}') + '. The ' + t('r^{2}s^{2}') + ' terms are equal and opposite, so they cancel; the ' + t('rs^{3}') + ' terms combine to ' + t(tx(M(k - 1, { r: 1, s: 3 }))) + '.', ['Write out all four terms of part (f) and look for an equal-and-opposite pair.'], 'which terms cancelled (MC)');
+            t('-' + k + 'rs^{2}(' + a + 'r-s)=-' + big + 'r^{2}s^{2}+' + k + 'rs^{3}') + ' and ' + t('-rs(s^{2}-' + big + 'rs)=-rs^{3}+' + big + 'r^{2}s^{2}') + '. The ' + t('r^{2}s^{2}') + ' terms are equal and opposite, so they cancel; the ' + t('rs^{3}') + ' terms combine to ' + t(tx(M(k - 1, { r: 1, s: 3 }))) + '.', ['Write out all four terms of the expansion and look for an equal-and-opposite pair.'], 'which terms cancelled (MC)');
         } }],
         shared: function (r) { var k = r.int(2, 5), a = r.int(2, 4); if (r.chance(0.15)) { k = 3; a = 2; } return { k: k, a: a }; } },
       { num: '6', section: 'Extra practice C — Binomial times binomial', stem: 'Expand and simplify.', parts: [
@@ -1013,12 +1013,12 @@
           } },
           { id: 'e10d', level: 'EMG', make: function (r, sh) {
             var L = tx(sh.cw) + '\\text{ by }' + tx(sh.bh);
-            return KP.mc(r, 'All three answers agree. One of the pieces in (b) or (c) has a monomial side, so its area takes a single distribution instead of a binomial-times-binomial expansion. Which piece, and what does that tell you about where to cut?', [
-              { html: 'The left piece in (c), ' + t(L) + ': cut along an edge that leaves a piece with a monomial side when you can — it saves a full four-product expansion.', right: true },
-              { html: 'The top piece in (b): it is beside the shed, so it is always the smallest.', why: 'Its sides are ' + t(tx(sh.tw)) + ' and ' + t(tx(sh.chh)) + ' — both binomials, so it needs four products.' },
-              { html: 'The bottom piece in (b), because it is the full length of the lot.', why: 'Its sides are ' + t(tx(sh.W)) + ' and ' + t(tx(sh.bh)) + ' — both binomials.' },
-              { html: 'None of them: every piece needs a binomial-times-binomial expansion.', why: 'Look at the piece directly under the shed in (c): one side is ' + t(tx(sh.cw)) + ', a monomial.' }],
-              'The left piece in (c) is ' + t(L) + '; one side is the monomial ' + t(tx(sh.cw)) + ', so ' + t(tx(sh.cw) + pf(sh.bh)) + ' is one distribution. Cutting along the shed’s edge produced that monomial side, so choose cuts like that when you can.', ['Look at the side lengths of each piece. Which piece has a side with just one term?'], 'choosing the cut (MC)');
+            return KP.mc(r, 'The lawn area can be found as the whole lot minus the shed, or by cutting the lawn into two rectangles. One <b>horizontal</b> cut gives a bottom piece (the full length of the lot) and a top piece (beside the shed); one <b>vertical</b> cut gives a left piece (directly under the shed) and a right piece (the full width of the lot). All three ways give the same area. One of these four pieces has a monomial side, so its area takes a single distribution instead of a binomial-times-binomial expansion. Which piece, and what does that tell you about where to cut?', [
+              { html: 'The left piece from the vertical cut, ' + t(L) + ': cut along an edge that leaves a piece with a monomial side when you can — it saves a full four-product expansion.', right: true },
+              { html: 'The top piece from the horizontal cut: it is beside the shed, so it is always the smallest.', why: 'Its sides are ' + t(tx(sh.tw)) + ' and ' + t(tx(sh.chh)) + ' — both binomials, so it needs four products.' },
+              { html: 'The bottom piece from the horizontal cut, because it is the full length of the lot.', why: 'Its sides are ' + t(tx(sh.W)) + ' and ' + t(tx(sh.bh)) + ' — both binomials.' },
+              { html: 'None of them: every piece needs a binomial-times-binomial expansion.', why: 'Look at the piece directly under the shed (vertical cut): one side is ' + t(tx(sh.cw)) + ', a monomial.' }],
+              'The left piece from the vertical cut is ' + t(L) + '; one side is the monomial ' + t(tx(sh.cw)) + ', so ' + t(tx(sh.cw) + pf(sh.bh)) + ' is one distribution. Cutting along the shed’s edge produced that monomial side, so choose cuts like that when you can.', ['Look at the side lengths of each piece. Which piece has a side with just one term?'], 'choosing the cut (MC)');
           } }] },
       { num: '11', section: 'Extra practice E — Working backwards', stem: 'One factor is missing. Determine it. (Check by expanding.)', parts: [
         { id: 'e11a', level: 'PRG', make: function (r) { var a = r.int(2, 9), b = pickWhere(function () { return r.int(2, 9); }, function (v) { return v !== a; }); return missF([xm(1), N(b)], [xm(1), N(a)], function (T) { return t(br([xm(1), N(a)]) + '(\\underline{\\qquad})=') + T; }); } },

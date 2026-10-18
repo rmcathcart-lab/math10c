@@ -1273,7 +1273,7 @@
           'Flat at ' + L.v + ' m/s: a <b>steady speed</b>. Flat at ' + t('0') + ': <b>stopped</b>. Same shape, different height, completely different meaning.', ['Read how high each flat part is.'], 'train: two flat parts');
       } },
       { id: 'e12d', level: 'EMG', make: function (r, L) {
-        return K.P.fields('Over which seconds is the <b>distance</b>–time graph flat?', [numBox('From:', 's'), numBox('To:', 's')],
+        return K.P.fields('Picture the train’s <b>distance</b> travelled–time graph for the same journey. Over which seconds is that graph flat?', [numBox('From:', 's'), numBox('To:', 's')],
           [K.number(L.t[3], numDiag(L.t[3], [{ v: L.t[1], code: 'wrong-line', hint: 'The speed graph is flat there, but the train is moving at ' + L.v + ' m/s, so its distance is still increasing.' }])), K.number(L.t[4], numDiag(L.t[4], [{ v: L.t[2], code: 'wrong-line', hint: 'The train is still moving then. The distance is flat only while the speed is ' + t('0') + '.' }]))],
           [String(L.t[3]), String(L.t[4])], t(L.t[3]) + ' s to ' + t(L.t[4]) + ' s',
           'From ' + t(L.t[3]) + ' to ' + t(L.t[4]) + ' s only: the only stretch where the speed is ' + t('0') + '. At any other time the train is moving, so its distance is increasing.', ['When is the speed zero?'], 'train: distance flat');
@@ -1460,7 +1460,7 @@
           [poly(w ? [[0, 0], [3, 3], [11, 6]] : [[0, 0], [8, 3], [11, 6]]), poly([[0, 0], [11, 6]]), poly([[0, 0], [3, 1], [6, 3], [8, 5], [9, 6]]), poly(w ? [[0, 0], [6, 4], [8, 6]] : [[0, 0], [2, 4], [8, 6]]), poly(w ? [[0, 0], [8, 3], [10, 5]] : [[0, 0], [3, 3], [9, 5]])]);
       } },
       { id: 'e16b', level: 'EMG', make: function (r, f) {
-        return K.P.mc(r, 'The graph has a sharp corner, not a smooth bend. Where is it, and why is the change sudden?', [
+        return K.P.mc(r, 'The graph of the water’s height against time for this flask has a sharp corner, not a smooth bend. Where is it, and why is the change sudden?', [
           { html: 'At half the height (the shoulder): the width changes suddenly there, so the rate of change jumps from one constant value to another.', right: true },
           { html: 'At the top, because the flask is full.', why: 'Being full ends the graph. Look for where the steepness changes.' },
           { html: 'At half the height, because the water slows down there.', why: 'The tap’s rate never changes. It is the <b>width</b> that changes suddenly at the shoulder.' },

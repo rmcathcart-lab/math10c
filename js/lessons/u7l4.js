@@ -649,7 +649,7 @@
           } },
           { id: 'e4f', sub: 'f', level: 'EMG', make: function (r, sh) {
             var p0 = sh.pts[sh.odd];
-            return mcPart(r, 'Exactly one ingredient — the slope or the point — differs in the odd equation. How is the odd line related to the other three?', [
+            return mcPart(r, 'The odd one out is ' + t(sh.eqs[sh.odd]) + '. Exactly one ingredient — the slope or the point — differs in the odd equation. How is the odd line related to the other three?', [
               { html: 'The slope is the same but its point is not on the other line, so the odd line is <b>parallel</b> to the other three.', right: true },
               { html: 'The slope differs, so the odd line crosses the others.', why: 'Look again: all four equations have the slope ' + t(mT(sh.m)) + '.' },
               { html: 'The point differs, so the odd line is perpendicular to the others.', why: 'Perpendicular lines need negative-reciprocal slopes. These slopes are equal.' },

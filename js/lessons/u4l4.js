@@ -422,8 +422,8 @@
               if (C.v !== T.ac) return wrong('ax-ac-wrong', '<b>' + t('ac') + ':</b> for ' + t(T.innerTex) + ', ' + t('a=' + T.a) + ' and ' + t('c=' + T.c) + '.');
               return ok();
             };
-            var p = fieldsPart('(b) The trinomial is ' + t(T.innerTex) + '. Show that the two middle coefficients multiply to ' + t('ac') + '.', [nbox(lb[0]), nbox(lb[1])], chk, [String(T.m * T.n), String(T.ac)], t(pn(T.m) + '\\times ' + pn(T.n) + '=' + T.ac) + ' and ' + t('ac=' + T.a + '(' + T.c + ')=' + T.ac),
-              t('(' + T.m + ')(' + T.n + ')=' + T.m * T.n) + ' and ' + t('ac=' + T.a + '(' + T.c + ')=' + T.ac) + ' ✓ — they are equal. (The middle coefficients also add to ' + t('b=' + T.b) + '.)', ['Multiply the two numbers in front of the middle terms from (a). Then multiply the first and last coefficients.'], 'middle product = ac');
+            var p = fieldsPart('(b) Collecting the two middle terms of the expansion of ' + t(br(T.F1) + br(T.F2)) + ' gives the trinomial ' + t(T.innerTex) + '. Show that the coefficients of those two middle terms multiply to ' + t('ac') + '.', [nbox(lb[0]), nbox(lb[1])], chk, [String(T.m * T.n), String(T.ac)], t(pn(T.m) + '\\times ' + pn(T.n) + '=' + T.ac) + ' and ' + t('ac=' + T.a + '(' + T.c + ')=' + T.ac),
+              t('(' + T.m + ')(' + T.n + ')=' + T.m * T.n) + ' and ' + t('ac=' + T.a + '(' + T.c + ')=' + T.ac) + ' ✓ — they are equal. (The middle coefficients also add to ' + t('b=' + T.b) + '.)', ['Expand ' + t(br(T.F1) + br(T.F2)) + ' without collecting, and multiply the two numbers in front of the middle terms. Then multiply the first and last coefficients.'], 'middle product = ac');
             p.bad = [[String(T.m + T.n), String(T.ac)], [String(T.ac), String(T.a + T.c)]];
             return p;
           } },
@@ -530,16 +530,16 @@
             var wr = [{ is: outer, code: 'ax-outer', hint: 'That is the area of the bed <b>and</b> the path together. Subtract the bed’s area.' },
               { is: PL.sub(PL.mul(PL.add(T.F1, N(w)), PL.add(T.F2, N(w))), T.inner), code: 'ax-one-side', hint: 'The path goes along <b>both</b> sides, so each dimension grows by ' + t(2 * w) + ' m, not ' + t(w) + ' m.' },
               { is: PL.sub(PL.add(outer, T.inner), PL.scale(M(T.a, { a: 2 }), 2)), code: 'ax-minus-first', hint: 'When you subtract ' + t('(' + T.innerTex + ')') + ', change the sign of <b>every</b> term in the bracket.' }].filter(function (x) { return !PL.eq(x.is, path); });
-            return B.poly('(b) The bed is to be completely surrounded by a path ' + w + ' m wide. Find and simplify an expression for the area of the path.', path, { wrong: wr, after: t('\\text{ m}^{2}') },
+            return B.poly('(b) The bed measures ' + t(br(T.F1)) + ' m by ' + t(br(T.F2)) + ' m. It is to be completely surrounded by a path ' + w + ' m wide. Find and simplify an expression for the area of the path.', path, { wrong: wr, after: t('\\text{ m}^{2}') },
               'A ' + w + ' m path adds ' + w + ' m at each end, so each dimension grows by ' + t(2 * w) + ':<br>outer ' + t('=' + (PL.count(Wo) === 1 ? tx(Wo) + br(Lo) : br(Lo) + br(Wo)) + '=' + tx(outer)) + '<br>path ' + t('=(' + tx(outer) + ')-(' + T.innerTex + ')=' + tx(path)) + ' m².',
               ['Path = (bed + path) − bed. Each dimension of the outer rectangle is ' + t(2 * w) + ' m longer than the bed.'], 'path area');
           } },
           { id: '11c', level: 'EMG', make: function (r, sh) {
             var T = sh.T, w = sh.w, path = PL.sub(PL.mul(PL.add(T.F1, N(2 * w)), PL.add(T.F2, N(2 * w))), T.inner), A = sh.A, area = PL.at(path, { a: A }), d = sh.d, vol = area * d / 100;
             var bed = PL.at(T.inner, { a: A }), out = area + bed;
-            return B.number('(c) The path is poured concrete to a depth of ' + d + ' cm. Calculate the volume of concrete used if ' + t('a=' + A) + '.', vol, function (v) {
+            return B.number('(c) The bed is surrounded by a path ' + w + ' m wide, whose area is ' + t('(' + tx(path) + ')\\ \\text{m}^{2}') + '. The path is poured concrete to a depth of ' + d + ' cm. Calculate the volume of concrete used if ' + t('a=' + A) + '.', vol, function (v) {
               if (Math.abs(v - area * d) < 1e-9) return { code: 'ax-cm', hint: 'Convert the depth to metres first: ' + t(d + '\\text{ cm}=' + (d / 100) + '\\text{ m}') + '.' };
-              if (Math.abs(v - bed * d / 100) < 1e-9) return { code: 'ax-bed-area', hint: 'That uses the area of the <b>bed</b>. The concrete is the path: use your answer to (b).' };
+              if (Math.abs(v - bed * d / 100) < 1e-9) return { code: 'ax-bed-area', hint: 'That uses the area of the <b>bed</b>. The concrete is the path: use the path’s area, ' + t(tx(path)) + '.' };
               if (Math.abs(v - out * d / 100) < 1e-9) return { code: 'ax-outer-area', hint: 'That uses the outer rectangle. The concrete covers only the path.' };
               if (Math.abs(v - area) < 1e-9) return { code: 'value', hint: 'That is the area of the path. Multiply by the depth (in metres) to get the volume.' };
               return null;
@@ -569,7 +569,7 @@
               ['Volume of the tank = product of its three dimensions. The block fills the part the water doesn’t.'], 'block volume');
           } },
           { id: '12b', level: 'PRG', make: function (r, sh) {
-            var T = sh.T, p = factorPart(T, { prompt: '(b) Factor your expression from (a) completely to determine the dimensions of the wooden block.' });
+            var T = sh.T, p = factorPart(T, { prompt: '(b) The volume of the wooden block is ' + t(tx(sh.block)) + ' cubic metres. Factor this expression completely to determine the dimensions of the block.' });
             p.solution = 'Take out the common factor ' + t('x') + ': ' + t(tx(sh.block) + '=x(' + T.innerTex + ')') + '.<br>For ' + t(T.innerTex) + ': ' + pairLine(T) + '<br>' + t(T.innerTex + '=' + splitTex(T) + '=' + groupTex(T) + '=' + br(T.F2) + br(T.F1)) + '<br>So ' + t(tx(sh.block) + '=' + T.key) + ': the block is ' + t('x') + ' by ' + t(tx(T.F1)) + ' by ' + t(tx(T.F2)) + ' metres.';
             return p;
           } }] },
@@ -692,19 +692,19 @@
           { id: 'e7b', level: 'PRG', make: function (r, sh) {
             var T = sh.T, k = PL.terms(T.gm)[0].c[0], big = Math.abs(T.a * k * T.c * k), small = Math.abs(T.ac), db = nt.numDivisors(big), ds = nt.numDivisors(small);
             var one = function (n, d) { return function (s) { var x = readInt(s); if (x.res) return x.res; if (x.v === d) return ok(); if (x.v === Math.ceil(d / 2)) return wrong('ax-pairs-not-divisors', 'Count one candidate for <b>each</b> positive divisor ' + t('d') + ' of ' + t(n) + ' (so ' + t('\\{1, -' + n + '\\}') + ' and ' + t('\\{' + n + ', -1\\}') + ' count separately).'); return wrong('value', 'Use the prime factorization of ' + t(n) + ' and the rule ' + t('(a+1)(b+1)(c+1)\\cdots') + '.'); }; };
-            var p = fieldsPart('A candidate pair for step (2) is ' + t('\\{d,\\ ac\\div d\\}') + ' for each positive divisor ' + t('d') + ' of ' + t('|ac|') + '. Count the candidates for each of your two values of ' + t('ac') + '.', [{ label: 'For ' + t('|ac|=' + big), name: 'Large ac' }, { label: 'For ' + t('|ac|=' + small), name: 'Small ac' }], K.fields([one(big, db), one(small, ds)], { labels: ['For ' + big, 'For ' + small] }), [String(db), String(ds)], t(db) + ' and ' + t(ds),
+            var p = fieldsPart('A candidate pair for step (2) is ' + t('\\{d,\\ ac\\div d\\}') + ' for each positive divisor ' + t('d') + ' of ' + t('|ac|') + '. Count the candidates for each of the two values of ' + t('ac') + ' (as written, and inside the bracket).', [{ label: 'For ' + t('|ac|=' + big), name: 'Large ac' }, { label: 'For ' + t('|ac|=' + small), name: 'Small ac' }], K.fields([one(big, db), one(small, ds)], { labels: ['For ' + big, 'For ' + small] }), [String(db), String(ds)], t(db) + ' and ' + t(ds),
               t(big + '=' + K.fac(big)) + ', so it has ' + t(nt.factor(big).map(function (pe) { return '(' + pe[1] + '+1)'; }).join('') + '=' + db) + ' divisors.<br>' + t(small + '=' + K.fac(small)) + ' has ' + t(ds) + ' divisors.<br>Taking out the common factor first cuts the search from ' + t(db) + ' candidates to ' + t(ds) + '.',
               ['Number of divisors: write the number as a product of primes, add 1 to each exponent and multiply.'], 'count candidates');
             return p;
           } },
           { id: 'e7c', level: 'EMG', make: function (r, sh) {
             var T = sh.T, k = PL.terms(T.gm)[0].c[0], big = Math.abs(T.a * k * T.c * k), db = nt.numDivisors(big), ds = nt.numDivisors(Math.abs(T.ac));
-            return mcPart(r, 'What does part (b) show about <b>when</b> to remove a common factor?', [
+            return mcPart(r, 'For ' + t(T.tex) + ' as written, ' + t('|ac|=' + big) + ' gives ' + t(db) + ' candidate pairs; after the common factor comes out, ' + t('|ac|=' + Math.abs(T.ac)) + ' gives only ' + t(ds) + '. What does this show about <b>when</b> to remove a common factor?', [
               { html: 'Remove it <b>first</b>, before decomposing: it shrinks ' + t('ac') + ', leaving far fewer pairs to test.', right: true },
-              { html: 'Remove it <b>last</b>: taking it out first doesn’t change the number of pairs.', why: 'Part (b) shows the candidates drop from ' + t(db) + ' to ' + t(ds) + '.' },
+              { html: 'Remove it <b>last</b>: taking it out first doesn’t change the number of pairs.', why: 'The candidates drop from ' + t(db) + ' to ' + t(ds) + '.' },
               { html: 'It doesn’t matter when — both ways test the same pairs.', why: 'The two values of ' + t('ac') + ' have ' + t(db) + ' and ' + t(ds) + ' candidates — very different searches.' },
               { html: 'Only remove a common factor when ' + t('ac') + ' is negative.', why: 'The sign of ' + t('ac') + ' has nothing to do with it; the size of ' + t('ac') + ' does.' }],
-              'Removing the common factor first shrinks ' + t('ac') + ' (and the search from ' + t(db) + ' candidates to ' + t(ds) + '), so always look for a common factor before decomposing.', ['Compare the two counts from part (b).'], 'GCF first');
+              'Removing the common factor first shrinks ' + t('ac') + ' (and the search from ' + t(db) + ' candidates to ' + t(ds) + '), so always look for a common factor before decomposing.', ['Compare the two counts.'], 'GCF first');
           } }] },
       { num: '8', section: 'Extra practice C — Two variables', stem: 'Factor. The method is unchanged — the two split pieces each carry one of each variable.', parts: [
         { id: 'e8a', level: 'PRG', make: function (r) { return factorPart(tri(r, { p: [2, 4], q: [1, 6], r: [2, 4], s: [-6, -1], test: function (o) { return o.b > 0 && o.ac <= -30; }, book: { p: 2, q: 5, r: 3, s: -2 } }, { v: 'x', w: 'y' })); } },
@@ -719,7 +719,7 @@
             var T = sh.T, pc = tx(M(T.m, { p: 1, q: 2 })), pd = tx(M(T.n, { p: 1, q: 2 }));
             var chk = K.fields([function (s) { var x = readInt(s); if (x.res) return x.res; return x.v === T.ac ? ok() : wrong('ax-ac-wrong', 'For the bracket ' + t(T.innerTex) + ': ' + t('a=' + T.a) + ', ' + t('c=' + T.c) + '.'); },
               function (s) { var x = readInt(s); if (x.res) return x.res; if (x.v === T.m * T.n) return wrong('ax-sum-not-product', 'That is the product. Add the two integers.'); return x.v === T.b ? ok() : wrong('value', 'The integers in the pieces are ' + t(T.m) + ' and ' + t(T.n) + '.'); }], { labels: ['ac', 'Sum of the pair'] });
-            var p = fieldsPart('In part (a) the two split pieces are ' + t(pc) + ' and ' + t(pd) + '. State ' + t('ac') + ' for the trinomial inside the bracket, and the sum of the two integers in the pieces.', [nbox(t('ac')), nbox('Sum of the pair')], chk, [String(T.ac), String(T.b)], t('ac=' + T.ac) + ', sum ' + t(T.b),
+            var p = fieldsPart('To factor ' + t(T.tex) + ', the middle term is split into the two pieces ' + t(pc) + ' and ' + t(pd) + '. State ' + t('ac') + ' for the trinomial inside the bracket, and the sum of the two integers in the pieces.', [nbox(t('ac')), nbox('Sum of the pair')], chk, [String(T.ac), String(T.b)], t('ac=' + T.ac) + ', sum ' + t(T.b),
               'Inside the bracket, ' + t(T.innerTex) + ': ' + t('ac=' + T.a + '(' + T.c + ')=' + T.ac) + ' and ' + t('b=' + T.b) + '.<br>' + t(pc + '=q(' + tx(M(T.m, { p: 1, q: 1 })) + ')') + ' and ' + t(pd + '=q(' + tx(M(T.n, { p: 1, q: 1 })) + ')') + ', so the pair is ' + t(T.m) + ' and ' + t(T.n) + ': product ' + t(T.m * T.n + '=ac') + ' ✓, sum ' + t(T.b + '=b') + ' ✓.',
               ['Take the common factor ' + t('q') + ' out first. Then ' + t('a') + ' and ' + t('c') + ' are the coefficients of ' + t('p^{2}') + ' and ' + t('q^{2}') + ' in the bracket.'], 'check the pair');
             p.bad = [[String(T.ac * 1), String(T.m * T.n)]];
@@ -795,7 +795,7 @@
           } },
           { id: 'e12c', level: 'PRG', make: function (r, sh) {
             var b = sh.bs[0], F = factorInt(sh.a, b, sh.c), T = Tri(F);
-            var p = factorPart(T, { prompt: 'Factor the trinomial for the <b>smallest positive</b> value of ' + t('b') + ' you found.' });
+            var p = factorPart(T, { prompt: 'The <b>smallest positive</b> value of ' + t('b') + ' that works is ' + t('b=' + b) + '. Factor ' + t(T.tex) + '.' });
             p.solution = 'The smallest positive ' + t('b') + ' is ' + t(b) + ' (from the pair closest to ' + t('\\sqrt{' + sh.ac + '}') + '): ' + t(T.tex) + '.<br>' + solDecomp(T);
             p.hints = ['The smallest positive sum comes from the factor pair of ' + t(sh.ac) + ' whose numbers are closest together.', hintsFor(T)[0]];
             return p;
@@ -941,7 +941,7 @@
               return ok();
             };
             var key = FX.tex([sh.G2, sh.G1]);
-            var p = B.math('Replace ' + t('u') + ' with ' + t('m' + sg(-sh.h)) + ' in your answer to (a) and simplify each bracket.', chk, key,
+            var p = B.math('With ' + t('u=m' + sg(-sh.h)) + ', ' + t(T.tex + '=' + T.key) + '. Replace ' + t('u') + ' with ' + t('m' + sg(-sh.h)) + ' in ' + t(T.key) + ' and simplify each bracket.', chk, key,
               t(br(T.F2) + '\\to ' + T.r + sh.ub + sg(T.s) + '=' + tx(sh.G2)) + ' and ' + t(br(T.F1) + '\\to ' + T.p + sh.ub + sg(T.q) + '=' + tx(sh.G1)) + '.<br>So ' + t(sh.disp + '=' + key) + '.',
               ['Substitute ' + t('m' + sg(-sh.h)) + ' for ' + t('u') + ' in each bracket, then expand and collect inside the bracket.'], 'substitution factoring', { keys: 'poly', vars: ['m'] });
             p.bad = ['(' + T.r + sh.ub + sg(T.s) + ')(' + T.p + sh.ub + sg(T.q) + ')', FX.tex([lin(T.p, T.q + T.p * sh.h, 'm'), lin(T.r, T.s + T.r * sh.h, 'm')])];

@@ -798,7 +798,7 @@
           } },
           { id: 'e1d', level: 'EMG', make: function (r, sh) {
             var x2 = sh.a * sh.c === 1 ? 'x^{2}' : sh.a * sh.c + 'x^{2}';
-            return mcPart(r, 'Your answer to (b) is not a quadratic — the ' + t('x^{2}') + ' terms cancelled. Why does a mat of <b>constant</b> width force that?', [
+            return mcPart(r, 'The shaded mat area is not a quadratic — when you subtract the photograph’s area from the outer area, the ' + t('x^{2}') + ' terms cancel. Why does a mat of <b>constant</b> width force that?', [
               { html: 'The mat adds only a <b>number</b> to each side, so the outer sides still start with ' + t(sh.a + 'x') + ' and ' + t(sh.c === 1 ? 'x' : sh.c + 'x') + '. Both areas have the same ' + t(x2) + ', and subtracting removes it.', right: true },
               { html: 'Because the mat width ' + t(sh.w) + ' is a whole number.', why: 'A width of ' + t('2.5') + ' would cancel just the same. What matters is that the width is a constant, not that it is whole.' },
               { html: 'Because the ' + t('x^{2}') + ' terms always cancel when one area is subtracted from another.', why: 'Not always — in Question 4 the path is ' + t('x') + ' wide and the ' + t('x^{2}') + ' terms do <b>not</b> cancel.' },
@@ -993,7 +993,7 @@
           } },
           { id: 'e6c', level: 'BEG', make: function (r, sh) {
             var X = sh.X2, v = at(sh.V, X);
-            return numPart('Now substitute ' + t('x=' + X) + '. What number does your expression produce?', v, [[-v, 'sign', 'Check the signs: one of the dimensions is negative at ' + t('x=' + X) + '.']],
+            return numPart('Now substitute ' + t('x=' + X) + ' into the volume expression. What number does it produce?', v, [[-v, 'sign', 'Check the signs: one of the dimensions is negative at ' + t('x=' + X) + '.']],
               t(tx(sh.V).replace(/x/g, '(' + X + ')') + '=' + v) + '.', ['Substitute carefully; the answer can be negative.'], 'bin expression at x=' + X);
           } },
           { id: 'e6d', level: 'EMG', make: function (r, sh) {
@@ -1098,14 +1098,15 @@
               ['Multiply two brackets first on each side, then the third.', 'Cancel everything that matches on both sides.'], 'solve three-binomial equation', 'n=');
           } },
           { id: 'e8g', level: 'PRG', make: function (r, sh) {
-            var s = sh.F;
-            return mcPart(r, 'In parts (e) and (f) <b>two</b> degrees cancelled, not one. Which two, and what has to be true of the two sides?', [
-              { html: 'The cubic terms <b>and</b> the squared terms: the two sides must have the same leading coefficient and the same ' + t('n^{2}') + ' coefficient (in (f), ' + t(s.a + '+' + s.b + '+' + s.c + '=' + s.d + '+' + s.e) + ').', right: true },
-              { html: 'Only the cubic terms; the squared terms happened to be zero.', why: 'Expand (f): both sides have ' + t(s.S + 'n^{2}') + '. They aren’t zero — they are equal, so they cancel.' },
+            var s = sh.F, e = sh.E, eR = P.add(mono(1, 'x', 3), mono(3 * e.a, 'x', 2), P.num(e.R));
+            var eqF = '(n+' + s.a + ')(n+' + s.b + ')(n+' + s.c + ')=n(n+' + s.d + ')(n+' + s.e + ')';
+            return mcPart(r, 'When you expand and solve ' + t('(x+' + e.a + ')^{3}=' + tx(eR)) + ' or ' + t(eqF) + ', <b>two</b> degrees cancel, not one. Which two, and what has to be true of the two sides?', [
+              { html: 'The cubic terms <b>and</b> the squared terms: the two sides must have the same leading coefficient and the same ' + t('n^{2}') + ' coefficient (in the second equation, ' + t(s.a + '+' + s.b + '+' + s.c + '=' + s.d + '+' + s.e) + ').', right: true },
+              { html: 'Only the cubic terms; the squared terms happened to be zero.', why: 'Expand the second equation: both sides have ' + t(s.S + 'n^{2}') + '. They aren’t zero — they are equal, so they cancel.' },
               { html: 'The linear terms and the constants, because the brackets hold the same numbers.', why: 'If the linear terms cancelled there would be nothing left to solve for.' },
               { html: 'The squared and linear terms; the cubes stay, so it is really a cubic equation.', why: t('n^{3}') + ' appears on both sides with coefficient ' + t(1) + ', so it cancels first.' }],
-              'The ' + t('n^{3}') + ' terms and the ' + t('n^{2}') + ' terms cancelled. That needs the same leading coefficient and the same next coefficient on both sides: in (f) each side is ' + t('n^{3}+' + s.S + 'n^{2}+\\cdots') + ' because ' + t(s.a + '+' + s.b + '+' + s.c + '=' + s.d + '+' + s.e + '=' + s.S) + '.',
-              ['Write both sides of (f) in expanded form and compare them term by term.'], 'which degrees cancel');
+              'The ' + t('n^{3}') + ' terms and the ' + t('n^{2}') + ' terms cancelled. That needs the same leading coefficient and the same next coefficient on both sides: in the second equation each side is ' + t('n^{3}+' + s.S + 'n^{2}+\\cdots') + ' because ' + t(s.a + '+' + s.b + '+' + s.c + '=' + s.d + '+' + s.e + '=' + s.S) + '.',
+              ['Write both sides of the second equation in expanded form and compare them term by term.'], 'which degrees cancel');
           } }] },
       /* ---------- EP9: square = rectangle ---------- */
       { num: '9', stem: function (sh) {
@@ -1334,13 +1335,13 @@
           } },
           { id: 'e15c', level: 'PRG', make: function (r, sh) {
             var D = sh.d * sh.d;
-            return mcPart(r, 'What does your answer to (b) mean about these two figures? Would making ' + t('x') + ' enormous ever let the rectangle catch up?', [
+            return mcPart(r, 'The square’s area minus the rectangle’s area simplifies to ' + t(D) + ' cm². What does that mean about these two figures? Would making ' + t('x') + ' enormous ever let the rectangle catch up?', [
               { html: 'The square is <b>always exactly ' + t(D) + ' cm²</b> bigger, whatever ' + t('x') + ' is, so the rectangle never catches up.', right: true },
               { html: 'The two areas are equal once ' + t('x') + ' is large enough.', why: 'The difference has no ' + t('x') + ' in it, so it never changes.' },
-              { html: 'The rectangle is bigger, because its longer side wins as ' + t('x') + ' grows.', why: 'Check the sign of your answer to (b): square minus rectangle is positive.' },
+              { html: 'The rectangle is bigger, because its longer side wins as ' + t('x') + ' grows.', why: 'Check the sign: square minus rectangle is positive.' },
               { html: 'The gap grows as ' + t('x') + ' grows, since both areas grow.', why: 'Both areas grow by exactly the same ' + t('x^{2}+' + 2 * sh.a + 'x') + ', so the gap stays the same.' }],
               'Both areas share ' + t('x^{2}+' + 2 * sh.a + 'x') + '; only the constants differ (' + t(sh.a * sh.a) + ' against ' + t(sh.a * sh.a - D) + '). The square is always ' + t(D) + ' cm² larger, and making ' + t('x') + ' enormous grows both equally.',
-              ['Look at your answer to (b): does it depend on ' + t('x') + '?'], 'constant gap');
+              ['Look at the difference of the areas: does it depend on ' + t('x') + '?'], 'constant gap');
           } }] },
       /* ---------- EP16: growing a rectangle ---------- */
       { num: '16', stem: function (sh) { return 'A rectangle has length ' + t('l') + ' and width ' + t('w') + '. Both the length and the width are increased by ' + t(sh.k) + '.' + figGrow(3, 2, 0.45, String(sh.k)); },
@@ -1365,7 +1366,7 @@
           } },
           { id: 'e16d', level: 'EMG', make: function (r, sh) {
             var k = sh.k, kl = k === 1 ? 'l' : k + 'l', kw = k === 1 ? 'w' : k + 'w';
-            return mcPart(r, 'The shaded part of the figure is exactly the increase. How do its three pieces match the terms of your answer to (b)?', [
+            return mcPart(r, 'The shaded part of the figure is exactly the increase. How do its three pieces match the terms of the increase, ' + t(kl + '+' + kw + '+' + k * k) + '?', [
               { html: 'Top strip ' + t('l') + ' by ' + t(k) + ' gives ' + t(kl) + '; side strip ' + t(k) + ' by ' + t('w') + ' gives ' + t(kw) + '; the corner ' + t(k) + ' by ' + t(k) + ' gives ' + t(k * k) + '.', right: true },
               { html: 'Top strip gives ' + t('lw') + ', side strip gives ' + t(kw) + ', corner gives ' + t(k) + '.', why: t('lw') + ' is the original (white) rectangle, not part of the increase.' },
               { html: 'The two strips give ' + t(kl) + ' and ' + t(kw) + '; the corner is counted inside the strips.', why: 'Look at the dashed lines: the corner is a separate piece of area ' + t(k * k) + '.' },
