@@ -35,7 +35,7 @@
   function xint(L) { return Q(-L.C, L.A); }
   function onL(L, p) { return qv(qa(qa(qm(L.A, p[0]), qm(L.B, p[1])), L.C)) === 0; }
   function sameL(a, b) { return a.A === b.A && a.B === b.B && a.C === b.C; }
-  function gT(L, vars) { if (L.B === 0 && L.A != null) { var V = L3(L.A, 0, L.C); return pol([[V.A, (vars || ['x'])[0]], [V.C, '']]) + '=0'; } return LN.tex(L, 'general', null, vars); }   // (lines.js gives x = k for a vertical line even in general form)
+  function gT(L, vars) { return LN.tex(L.B === 0 && L.A != null ? L3(L.A, 0, L.C) : L, 'general', null, vars); }   // (lines.js writes a vertical line as x-5=0 in general form)
   function sT(L, vars) { return LN.tex(L, 'slope-intercept', null, vars); }
   function pT(L, pt, vars) { return LN.tex(L, 'point-slope', pt, vars); }
   function perpS(m) { m = Q(m); return Q(-m[1], m[0]); }
@@ -178,7 +178,7 @@
   function distT(p, q) { var dx = q[0] - p[0], dy = q[1] - p[1]; return '\\sqrt{(' + dx + ')^{2}+(' + dy + ')^{2}}=\\sqrt{' + (dx * dx + dy * dy) + '}'; }
   function dist2(p, q) { var dx = q[0] - p[0], dy = q[1] - p[1]; return dx * dx + dy * dy; }
   function radTex(n2) { var k = 1, m = n2; for (var f = 2; f * f <= m; f++) while (m % (f * f) === 0) { m /= f * f; k *= f; } return m === 1 ? String(k) : (k === 1 ? '' : k) + '\\sqrt{' + m + '}'; }
-  function setOk(targetTex, opt) { var c = K.set(targetTex, opt); return function (resp) { var r = c(resp); if (r.v === 'form' && r.code === 'set-tag' && !/\\mid/.test(targetTex)) return ok(); return r; }; }
+  function setOk(targetTex, opt) { return K.set(targetTex, opt); }   // (K.set no longer asks for “∈ ℝ” on a single-value set)
 
   function ep1(r) {
     for (var g = 0; g < 400; g++) {
@@ -399,7 +399,7 @@
           return lineP('through ' + t(ptT(o.P)) + ', <b>parallel</b> to the ' + t('x') + '-axis', { y: o.P[1] }, { form: 'general' }, 'Parallel to the ' + t('x') + '-axis: horizontal, ' + t('y=' + o.P[1]) + ', so ' + t(gT(L3(0, 1, -o.P[1])) ) + '.', ['A line parallel to the ' + t('x') + '-axis is horizontal: ' + t('y=k') + '.'], 'horizontal through point (general)');
         } },
         { id: 'e3e2', sub: 'e ii', level: 'EMG', outcome: 'RF7', make: function (r, sh) { var o = sh.P;
-          return lineP('through ' + t(ptT(o.P)) + ', <b>perpendicular</b> to the ' + t('x') + '-axis', { x: o.P[0] }, { form: 'general', keyTex: gT(L3(1, 0, -o.P[0])) }, 'Perpendicular to the ' + t('x') + '-axis: vertical, ' + t('x=' + o.P[0]) + ', so ' + t(gT(L3(1, 0, -o.P[0]))) + '.', ['A line perpendicular to the ' + t('x') + '-axis is vertical: ' + t('x=k') + '.'], 'vertical through point (general)');
+          return lineP('through ' + t(ptT(o.P)) + ', <b>perpendicular</b> to the ' + t('x') + '-axis', { x: o.P[0] }, { form: 'general' }, 'Perpendicular to the ' + t('x') + '-axis: vertical, ' + t('x=' + o.P[0]) + ', so ' + t(gT(L3(1, 0, -o.P[0]))) + '.', ['A line perpendicular to the ' + t('x') + '-axis is vertical: ' + t('x=k') + '.'], 'vertical through point (general)');
         } },
         { id: 'e3f', sub: 'f', level: 'EMG', outcome: 'RF6', make: function (r, sh) { var o = sh.P;
           var v = o.P[1];
@@ -514,7 +514,7 @@
           return lineP('Write ' + t('\\ell_1') + ' in <b>slope–intercept form</b>.', o.L1, { form: 'slope-intercept' }, slopeSteps(o.A1, o.X) + '. ' + t(o.X[1] + '=' + qT(o.m1) + '(' + o.X[0] + ')+b') + ', so ' + t('b=0') + ': ' + t(sT(o.L1)) + '.', ['Find the slope from the two marked points, then the ' + t('y') + '-intercept.'], 'slope-intercept from graph');
         } },
         { id: 'e5a2', sub: 'a ii', level: 'EMG', outcome: 'RF6', make: function (r, o) {
-          return lineP('Write ' + t('\\ell_1') + ' in <b>general form</b>.', o.L1, { form: 'general' }, t(sT(o.L1)) + ' ⟹ ' + t(o.m1[1] + 'y=' + pol([[o.m1[0], 'x']])) + ' ⟹ ' + t(gT(o.L1)), ['Clear the fraction and move everything to one side.'], 'general form, through origin');
+          return lineP('Write ' + t('\\ell_1') + ' in <b>general form</b>.', o.L1, { form: 'general' }, t(sT(o.L1)) + ' ⟹ ' + (o.m1[1] === 1 ? '' : t(o.m1[1] + 'y=' + pol([[o.m1[0], 'x']])) + ' ⟹ ') + t(gT(o.L1)), ['Clear the fraction and move everything to one side.'], 'general form, through origin');
         } },
         { id: 'e5a3', sub: 'a iii', level: 'EMG', outcome: 'RF6', make: function (r, o) {
           return psAnyP('Write ' + t('\\ell_1') + ' in <b>slope–point form</b>, using one marked point.', o.L1, [o.X, o.A1], {}, t(pT(o.L1, o.X)) + ' (or ' + t(pT(o.L1, o.A1)) + ')', ['Use ' + t('m=' + qT(o.m1)) + ' and either marked point.'], 'slope-point from graph');
@@ -571,17 +571,17 @@
         } },
         { id: 'e6b', sub: 'b', level: 'PRG', outcome: 'RF7', make: function (r, o) {
           var x = o.xs[2], y = o.ys[2];
-          return valP('Determine ' + t('b') + ' (it cannot simply be read off this table).', qv(o.b), qT(o.b), t('x=0') + ' is not in the table, so ' + t('b') + ' must be worked out. Substitute ' + t(ptT([x, y])) + ': ' + t(y + '=' + qT(o.m) + '(' + x + ')+b') + ' ⟹ ' + t('b=' + qT(o.b)) + '.<br>Check ' + t(ptT([o.xs[4], o.ys[4]])) + ': ' + t(qT(o.m) + '(' + o.xs[4] + ')+' + qT(o.b) + '=' + o.ys[4]) + ' ✓',
+          return valP('Determine ' + t('b') + ' (it cannot simply be read off this table).', qv(o.b), qT(o.b), t('x=0') + ' is not in the table, so ' + t('b') + ' must be worked out. Substitute ' + t(ptT([x, y])) + ': ' + t(y + '=' + qT(o.m) + '(' + x + ')+b') + ' ⟹ ' + t('b=' + qT(o.b)) + '.<br>Check ' + t(ptT([o.xs[4], o.ys[4]])) + ': ' + t(qT(o.m) + '(' + o.xs[4] + ')' + (qv(o.b) < 0 ? '' : '+') + qT(o.b) + '=' + o.ys[4]) + ' ✓',
             ['Substitute any table point and the slope into ' + t('y=mx+b') + '.'], 'b from table', { before: 'b=' });
         } },
-        { id: 'e6c', sub: 'c i', level: 'PRG', outcome: 'RF7', make: function (r, o) { return lineP('Write the relation in <b>slope–intercept form</b>.', o.L, { form: 'slope-intercept' }, t(sT(o.L)), ['Use the slope from (a) and ' + t('b') + ' from (b).'], 'slope-intercept from table'); } },
+        { id: 'e6c', sub: 'c i', level: 'EMG', outcome: 'RF7', make: function (r, o) { return lineP('Write the relation in <b>slope–intercept form</b>.', o.L, { form: 'slope-intercept' }, t(sT(o.L)), ['Use the slope from (a) and ' + t('b') + ' from (b).'], 'slope-intercept from table'); } },
         { id: 'e6c2', sub: 'c ii', level: 'EMG', outcome: 'RF6', make: function (r, o) { return lineP('Write the relation in <b>general form</b>.', o.L, { form: 'general' }, 'Multiply ' + t(sT(o.L)) + ' by ' + t(o.s) + ' and move everything to one side: ' + t(gT(o.L)), ['Multiply every term by ' + t(o.s) + ' to clear the fractions.'], 'general from table'); } },
         { id: 'e6c3', sub: 'c iii', level: 'EMG', outcome: 'RF6', make: function (r, o) {
           var pts = o.xs.map(function (x, j) { return [x, o.ys[j]]; });
           return psAnyP('Write the relation in <b>slope–point form</b>, using a point from the table.', o.L, pts, {}, t(pT(o.L, pts[2])) + ' (any table point works)', ['Use the slope and any column of the table.'], 'slope-point from table');
         } },
         { id: 'e6d', sub: 'd', level: 'EMG', outcome: 'RF4', make: function (r, o) {
-          return B.number('Determine ' + t('y') + ' when ' + t('x=' + o.Xd) + '.', o.Yd, null, 'Slope–intercept form: ' + t('y=' + qT(o.m) + '(' + o.Xd + ')+' + qT(o.b) + '=' + o.Yd), ['Substitute into the slope–intercept form.'], 'evaluate from table model');
+          return B.number('Determine ' + t('y') + ' when ' + t('x=' + o.Xd) + '.', o.Yd, null, 'Slope–intercept form: ' + t('y=' + qT(o.m) + '(' + o.Xd + ')' + (qv(o.b) < 0 ? '' : '+') + qT(o.b) + '=' + o.Yd), ['Substitute into the slope–intercept form.'], 'evaluate from table model');
         } },
         { id: 'e6e', sub: 'e', level: 'EMG', outcome: 'RF4', make: function (r, o) {
           var L = o.L;
@@ -954,7 +954,7 @@
       },
       stem: function (o) { return '<b>A triangle delivered as three equations.</b> The three lines ' + t('\\textbf{L1}:\\ ' + gT(o.L1)) + ', ' + t('\\textbf{L2}:\\ ' + gT(o.L2)) + ' and ' + t('\\textbf{L3}:\\ ' + gT(o.L3)) + ' bound a triangle.'; },
       parts: [
-        { id: 'e14a', sub: 'a', level: 'ADV', outcome: 'RF7', make: function (r, o) {
+        { id: 'e14a', sub: 'a', level: 'ADV', outcome: 'EXT', make: function (r, o) {
           return B.fields('Determine the three vertices algebraically.', [fld('L1 and L2 meet at', 'pairs'), fld('L1 and L3 meet at', 'pairs'), fld('L2 and L3 meet at', 'pairs')], [ptChk(o.V), ptChk(o.P2), ptChk(o.P3)], [ptK(o.V), ptK(o.P2), ptK(o.P3)], t(ptT(o.V)) + ', ' + t(ptT(o.P2)) + ', ' + t(ptT(o.P3)),
             'Solve each pair by substitution (isolate one variable in one equation and substitute into the other):<br>L1 & L2: ' + t(ptT(o.V)) + ' (check: ' + t(sub(o.L1, o.V) + '=0') + ', ' + t(sub(o.L2, o.V) + '=0') + ')<br>L1 & L3: ' + t(ptT(o.P2)) + '<br>L2 & L3: ' + t(ptT(o.P3)),
             ['Solve one equation for ' + t('y') + ' (or ' + t('x') + ') and substitute into the other. Check each vertex in both equations.'], 'triangle vertices');
@@ -1025,7 +1025,7 @@
           return lineP('Determine the equation, in general form, of the line through ' + t('P') + ' perpendicular to ' + t('\\ell') + '.', o.Lp, { form: 'general', wrong: [{ is: lineMP(m, o.P), code: 'line-parallel', hint: 'That line is parallel to ' + t('\\ell') + '. Use the negative reciprocal slope.' }] },
             t('\\ell') + ': ' + t('m=' + qT(m)) + ', so ' + t('m_{\\perp}=' + qT(n)) + '.<br>' + psSteps(n, o.P), ['Slope of ' + t('\\ell') + ' is ' + t('-\\frac{A}{B}') + '; take the negative reciprocal.'], 'perpendicular through P');
         } },
-        { id: 'e15b', sub: 'b', level: 'ADV', outcome: 'RF7', make: function (r, o) {
+        { id: 'e15b', sub: 'b', level: 'ADV', outcome: 'EXT', make: function (r, o) {
           return ptP('Determine the point ' + t('F') + ' where that perpendicular meets ' + t('\\ell') + ', by solving the two equations together.', o.F, 'Solve ' + t(gT(o.L)) + ' and ' + t(gT(o.Lp)) + ' together (substitution): ' + t('F' + ptT(o.F)) + '.<br>Check on ' + t('\\ell') + ': ' + t(sub(o.L, o.F) + '=0') + ' ✓; on the perpendicular: ' + t(sub(o.Lp, o.F) + '=0') + ' ✓', ['Solve one equation for ' + t('y') + ' and substitute into the other.'], 'foot of perpendicular');
         } },
         { id: 'e15c', sub: 'c', level: 'EMG', outcome: 'EXT', make: function (r, o) {
@@ -1035,7 +1035,7 @@
           var d2 = dist2(o.P, o.G);
           return valP('The point ' + t('G' + ptT(o.G)) + ' is also on ' + t('\\ell') + '. Compute ' + t('PG') + ' exactly (and confirm it is longer than ' + t('PF') + ').', Math.sqrt(d2), radTex(d2), t(sub(o.L, o.G) + '=0') + ' ✓ so ' + t('G') + ' is on ' + t('\\ell') + '. ' + t('PG=' + distT(o.P, o.G) + (radTex(d2) !== '\\sqrt{' + d2 + '}' ? '=' + radTex(d2) : '') + '\\approx ' + (Math.round(Math.sqrt(d2) * 100) / 100)) + ' > ' + t('5') + ' ✓', ['Distance formula with ' + t('P') + ' and ' + t('G') + '.'], 'distance PG', { keys: 'radical' });
         } },
-        { id: 'e15f', sub: 'f', level: 'ADV', outcome: 'RF7', make: function (r, o) {
+        { id: 'e15f', sub: 'f', level: 'PRG', outcome: 'EXT', make: function (r, o) {
           var st = [o.F[0] - o.P[0], o.F[1] - o.P[1]];
           return ptP('Determine the point ' + t("P'") + ' obtained by continuing from ' + t('P') + ' through ' + t('F') + ' the same distance again — the mirror image of ' + t('P') + ' in ' + t('\\ell') + '.', o.P2, 'Step from ' + t('P') + ' to ' + t('F') + ': ' + t('(' + st[0] + ',\\ ' + st[1] + ')') + '. Repeat it from ' + t('F') + ': ' + t("P'" + ptT(o.P2)) + '.<br>On the perpendicular: ' + t(sub(o.Lp, o.P2) + '=0') + ' ✓', ['' + t('F') + ' is the midpoint of ' + t("PP'") + '.'], 'mirror image');
         } }] },
@@ -1096,7 +1096,7 @@
       shared: function (r) {
         var a1 = r.int(2, 5), a2 = r.int(2, 5) * 3, a3 = r.int(1, 5); if (a2 % a1 === 0 && a3 % a1 === 0) a3++;
         var s = {};
-        s.a = { tex: a1 + 'y=' + a2 + '-' + a3 + 'x', L: L3(a3, a1, -a2), kind: 'lin' };
+        s.a = { tex: a1 + 'y=' + a2 + '-' + (a3 === 1 ? '' : a3) + 'x', L: L3(a3, a1, -a2), kind: 'lin' };
         s.b = { tex: 'y=\\dfrac{' + r.int(2, 9) + '}{x}' + (r.chance(0.5) ? '-' : '+') + r.int(1, 6), kind: 'non' };
         var c1 = r.int(2, 6), c2 = rnz(r, -11, 11); while (c2 % c1 === 0) c2++;
         s.c = { tex: pol([[c1, 'x'], [c2, '']]) + '=0', L: L3(c1, 0, c2), kind: 'vert', k: Q(-c2, c1) };
@@ -1162,7 +1162,7 @@
           return B.number('Calculate pond A’s <b>average</b> rate of change over the whole eight weeks.', o.avg, function (v) { return Math.abs(v - 15 * o.a0) < 1e-9 ? { code: 'rate-step', hint: 'Divide the change in mass by the ' + t('8') + ' weeks.' } : null; },
             t('\\frac{' + 16 * o.a0 + '-' + o.a0 + '}{8-0}=\\frac{' + 15 * o.a0 + '}{8}=' + numDec(o.avg)) + ': over the eight weeks pond A gained an average of ' + t(numDec(o.avg)) + ' kg of algae per week.', ['Use the first and last readings only.'], 'average rate', { after: 'kg/week' });
         } },
-        { id: 'e20c', sub: 'c i', level: 'PRG', outcome: 'RF7', make: function (r, o) {
+        { id: 'e20c', sub: 'c i', level: 'EMG', outcome: 'RF7', make: function (r, o) {
           return lineP('Write pond B’s model as ' + t('M=mt+b') + '.', { m: Q(15 * o.a0, 8), b: o.a0 }, { vars: ['t', 'M'], form: 'slope-intercept', keyTex: 'M=' + numDec(o.avg) + 't+' + o.a0 },
             t('m=\\frac{' + 16 * o.a0 + '-' + o.a0 + '}{8-0}=' + numDec(o.avg)) + ', ' + t('b=' + o.a0) + ': ' + t('M=' + numDec(o.avg) + 't+' + o.a0) + '. Rate: ' + t(numDec(o.avg)) + ' kg per week.', ['Slope from the two given values; ' + t('b') + ' is the mass at ' + t('t=0') + '.'], 'model pond B');
         } },
@@ -1325,7 +1325,7 @@
         } }] },
       /* ---------- 8 ---------- */
       { num: '8', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: '8', level: 'ADV', outcome: 'RF7', make: function (r) {
+        { id: '8', level: 'PRG', outcome: 'RF7', make: function (r) {
           var m, b, x1, g = 0;
           do { m = r.pick([2, 3, 4, 5, 6]) * (r.chance(0.6) ? -1 : 1); b = rnz(r, -25, 25); x1 = r.int(-5, -2); g++; } while ((b % m === 0 || Math.abs(m * (x1 + 6) + b) > 45 || Math.abs(m * x1 + b) > 30) && g < 200);
           var x2 = x1 + 2, P1 = [x1, m * x1 + b], P2 = [x2, m * x2 + b], xp = x2 + 4, yp = m * xp + b, xi = Q(-b, m), c = rnz(r, -6, 6);
@@ -1395,7 +1395,7 @@
             var p = B.fields('State a suitable window, ' + t('x:[x_{\\min},x_{\\max},x_{\\text{scl}}],\\ y:[y_{\\min},y_{\\max},y_{\\text{scl}}]') + ', for graphing both lines so that the ' + t('x') + '- and ' + t('y') + '-intercepts of each line are visible.',
               [{ label: t('x_{\\min}') }, { label: t('x_{\\max}') }, { label: t('x_{\\text{scl}}') }, { label: t('y_{\\min}') }, { label: t('y_{\\max}') }, { label: t('y_{\\text{scl}}') }], [num(0), num(0), num(0), num(0), num(0), num(0)], kx.concat(ky).map(String),
               'e.g. ' + t('x:[' + kx.join(',') + '],\\ y:[' + ky.join(',') + ']'),
-              t('L_1') + ': ' + t('x') + '-int ' + t('0=' + sT(o.L1).slice(2)) + ' ⟹ ' + t('x=' + qT(xint(o.L1))) + '; ' + t('y') + '-int ' + t(o.b1) + '.<br>' + t('L_2') + ': ' + t('x') + '-int ' + t('x=' + qT(xint(o.L2)) + '\\approx ' + dec(Math.round(qv(xint(o.L2)) * 10) / 10)) + '; ' + t('y') + '-int ' + t(qT(o.b2)) + '.<br>The window must reach from ' + t('x=' + dec(Math.round(xlo * 10) / 10)) + ' to ' + t('x=' + dec(Math.round(xhi * 10) / 10)) + ' and from ' + t('y=' + dec(Math.round(ylo * 10) / 10)) + ' to ' + t('y=' + dec(Math.round(yhi * 10) / 10)) + ', e.g. ' + t('x:[' + kx.join(',') + '],\\ y:[' + ky.join(',') + ']') + '.',
+              t('L_1') + ': ' + t('x') + '-int ' + t('0=' + sT(o.L1).slice(2)) + ' ⟹ ' + t('x=' + qT(xint(o.L1))) + '; ' + t('y') + '-int ' + t(o.b1) + '.<br>' + t('L_2') + ': ' + t('x') + '-int ' + t('x=' + qT(xint(o.L2)) + (isInt(xint(o.L2)) ? '' : '\\approx ' + dec(Math.round(qv(xint(o.L2)) * 10) / 10))) + '; ' + t('y') + '-int ' + t(qT(o.b2)) + '.<br>The window must reach from ' + t('x=' + dec(Math.round(xlo * 10) / 10)) + ' to ' + t('x=' + dec(Math.round(xhi * 10) / 10)) + ' and from ' + t('y=' + dec(Math.round(ylo * 10) / 10)) + ' to ' + t('y=' + dec(Math.round(yhi * 10) / 10)) + ', e.g. ' + t('x:[' + kx.join(',') + '],\\ y:[' + ky.join(',') + ']') + '.',
               ['Find all four intercepts (set ' + t('y=0') + ', then ' + t('x=0') + ', in each equation). The window must contain all of them, and both axes.'], 'window for both lines');
             p.check = chk; p.good = [[String(Math.floor(xlo) - 3), String(Math.ceil(xhi) + 3), '1', String(Math.floor(ylo) - 2), String(Math.ceil(yhi) + 4), '1']];
             p.bad = [[String(Math.ceil(xlo) + 1), String(Math.ceil(xhi) + 1), '2', String(Math.floor(ylo) - 1), String(Math.ceil(yhi) + 1), '2'], ['-1000', '1000', '1', '-1000', '1000', '1']];
@@ -1470,7 +1470,7 @@
           { id: '11d', sub: 'd', level: 'EMG', outcome: 'RF6', make: function (r, o) {
             return mc(r, 'Explain why one of these two lines cannot be written in the form ' + t('y=mx+b') + '.', [
               { html: t('AB') + ', the vertical line: its slope is undefined, so there is no value of ' + t('m') + ' to substitute. It is written ' + t('x=' + o.A[0]) + ' instead.', right: true },
-              { html: t('AC') + ', the horizontal line: its slope is ' + t('0') + ', and ' + t('y=mx+b') + ' cannot have ' + t('m=0') + '.', why: t('m=0') + ' is fine: ' + t('y=0x+' + o.A[1]) + ' is just ' + t('y=' + o.A[1]) + '. The problem is a slope with <b>no</b> value at all.' },
+              { html: t('AC') + ', the horizontal line: its slope is ' + t('0') + ', and ' + t('y=mx+b') + ' cannot have ' + t('m=0') + '.', why: t('m=0') + ' is fine: ' + t('y=0x' + (o.A[1] < 0 ? '' : '+') + o.A[1]) + ' is just ' + t('y=' + o.A[1]) + '. The problem is a slope with <b>no</b> value at all.' },
               { html: t('AB') + ', because it has no ' + t('x') + '-intercept.', why: 'It does have an ' + t('x') + '-intercept, ' + t(ptT([o.A[0], 0])) + '. What it lacks is a numerical slope (and a ' + t('y') + '-intercept).' },
               { html: t('AC') + ', because it has no ' + t('y') + '-intercept.', why: t('AC') + ' crosses the ' + t('y') + '-axis at ' + t(ptT([0, o.A[1]])) + '. Look at the line whose slope is undefined.' }],
               t('AB') + ' is vertical. The form ' + t('y=mx+b') + ' needs a number for ' + t('m') + ', and the slope of a vertical line is undefined, so no such number exists. Every vertical line is written ' + t('x=k') + ' instead.', ['Which slope from (c) has no numerical value?'], 'why vertical isn’t y=mx+b');
@@ -1485,7 +1485,7 @@
           } }] },
       /* ---------- 12 ---------- */
       { num: '12', stem: 'Graph each line on the grid, using the method best suited to the form the equation is given in.', parts: [
-        { id: '12a', sub: 'a', level: 'EMG', outcome: 'RF6', make: function (r) {
+        { id: '12a', sub: 'a', level: 'BEG', outcome: 'RF6', make: function (r) {
           var m, b, g = 0, xr = [-6, 6], yr = [-6, 6], L;
           do { m = sl(r, [[2, 3], [3, 4], [1, 2], [3, 2], [2, 5], [1, 3], [4, 3]]); if (r.chance(0.7) && m[0] > 0) m = qn(m); b = rnz(r, -4, 5); L = lineMB(m, b); g++; } while ((!okWin(L, xr, yr, 3) || Math.abs(b + m[0]) > 6) && g < 100);
           return graphLine('Graph ' + t(sT(L)) + '.', L, xr, yr, [
@@ -1627,7 +1627,7 @@
               return null;
             }, 'Pay is linear in sales, so the commission rate is the slope: ' + t('m=\\frac{' + F(o.p2) + '-' + F(o.p1) + '}{' + F(o.s2) + '-' + F(o.s1) + '}=\\frac{' + F(o.p2 - o.p1) + '}{' + F(o.s2 - o.s1) + '}=' + m) + ' = ' + t(o.pc + '\\%') + '.',
               ['The commission rate is the slope: change in pay ÷ change in sales. Then write it as a percentage.'], 'commission rate from two weeks', { after: '%' });
-            var c = p.check; p.check = function (resp) { var q = HW.parse.number(resp); if (q.ok && Math.abs(q.value - m) < 1e-9) return form('pct-decimal', 'Right rate as a decimal — now write it as a percentage (multiply by ' + t('100') + ').'); return c(resp); };
+            var c = p.check; p.check = function (resp) { resp = String(resp == null ? '' : resp).replace(/\s*\\?%\s*$/, ''); var q = HW.parse.number(resp); if (q.ok && Math.abs(q.value - m) < 1e-9) return form('pct-decimal', 'Right rate as a decimal — now write it as a percentage (multiply by ' + t('100') + ').'); return c(resp); };
             return p;
           } },
           { id: '15b', sub: 'b', level: 'PRG', outcome: 'RF7', make: function (r, o) {
