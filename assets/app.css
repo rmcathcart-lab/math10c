@@ -505,4 +505,5 @@ math-field.mf::part(menu-toggle), math-field.mf::part(virtual-keyboard-toggle) {
 .ss-lab { white-space: normal; }
 .ss-chip { max-width: 100%; overflow-wrap: anywhere; }
 .w-numplace .dr-board { position: relative; z-index: 1; }
+
 .ML__keyboard { display: none !important; } /* the site's own keypads replace MathLive's virtual keyboard */
