@@ -638,7 +638,7 @@
           } },
           { id: 'e5g', level: 'EMG', make: function (r, sh) {
             var p = sh.p, q = sh.q;
-            return numPart('In (c), a student took the square root of both sides and wrote ' + t('x+' + p + '=' + q) + ', so ' + t('x=' + (q - p)) + '. Which solution did that lose?', -(q + p), [[q - p, 'given-x', 'That is the one the student found. Two numbers square to ' + t(q * q) + ': what if ' + t('x+' + p + '=-' + q) + '?'], [q + p, 'sign', 'Solve ' + t('x+' + p + '=-' + q) + ' carefully.'], [p - q, 'sign', 'Solve ' + t('x+' + p + '=-' + q) + ': subtract ' + t(p) + ' from both sides.']],
+            return numPart('To solve ' + t('(x+' + p + ')^{2}=' + q * q) + ', a student took the square root of both sides and wrote ' + t('x+' + p + '=' + q) + ', so ' + t('x=' + (q - p)) + '. Which solution did that lose?', -(q + p), [[q - p, 'given-x', 'That is the one the student found. Two numbers square to ' + t(q * q) + ': what if ' + t('x+' + p + '=-' + q) + '?'], [q + p, 'sign', 'Solve ' + t('x+' + p + '=-' + q) + ' carefully.'], [p - q, 'sign', 'Solve ' + t('x+' + p + '=-' + q) + ': subtract ' + t(p) + ' from both sides.']],
               'Two numbers square to ' + t(q * q) + ': ' + t(q) + ' <b>and</b> ' + t(-q) + '. Taking only ' + t('+' + q) + ' threw away ' + t('x+' + p + '=-' + q) + ', which gives ' + t('x=' + (-(q + p))) + '.<br>Check: ' + t('(' + (-(q + p)) + '+' + p + ')^{2}=(-' + q + ')^{2}=' + q * q) + ' ✓', ['Which other number squares to ' + t(q * q) + '?'], 'lost root from square root');
           } }] },
       /* ================= EP Part C ================= */
@@ -927,7 +927,7 @@
               wrong: [[[sh.k + sh.p, sh.k - sh.q], 'not-zero', 'Those are the student’s answers, and they don’t work. ' + notZeroHint]],
               sol: steps(['\\text{Expand: }' + tx(O) + '=' + sh.k, polyEq(E)].concat(trin(fs[0], fs[1])).concat(zl(fs))) + '<br>So ' + t(ans('x', [sh.u, -sh.v])) + '.<br>Check: ' + t('(' + sh.u + '-' + sh.p + ')(' + sh.u + '+' + sh.q + ')=(' + (sh.u - sh.p) + ')(' + (sh.u + sh.q) + ')=' + sh.k) + ' ✓' });
           } }] },
-      { num: '17', stem: function (sh) { return 'Asked to solve ' + t(sh.a + 'x^{2}=' + sh.a * sh.n + 'x') + ', a second student wrote ' + t('\\dfrac{' + sh.a + 'x^{2}}{' + sh.a + 'x}=\\dfrac{' + sh.a * sh.n + 'x}{' + sh.a + 'x}\\ \\Rightarrow\\ x=' + sh.n) + '.'; },
+      { num: '17', stem: function (sh) { return 'Asked to solve ' + t(sh.a + 'x^{2}=' + sh.a * sh.n + 'x') + ', a student wrote ' + t('\\dfrac{' + sh.a + 'x^{2}}{' + sh.a + 'x}=\\dfrac{' + sh.a * sh.n + 'x}{' + sh.a + 'x}\\ \\Rightarrow\\ x=' + sh.n) + '.'; },
         shared: function (r) { return { a: r.int(2, 6), n: r.int(2, 9) }; },
         parts: [
           { id: 'e17a', level: 'BEG', make: function (r, sh) {

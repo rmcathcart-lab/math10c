@@ -1049,7 +1049,7 @@
           } }] },
       { num: '16',
         shared: function (r) { var p = r.int(1, 4); return { p: p, q: r.int(p + 1, 6) }; },
-        stem: function (sh) { return 'Asked to factor ' + t(triTex('x', -(sh.p + sh.q), sh.p * sh.q)) + ', a second student wrote ' + t('(x+' + sh.p + ')(x+' + sh.q + ')') + ', reasoning that ' + t(sh.p + '\\times ' + sh.q + '=' + sh.p * sh.q) + ' and ' + t(sh.p + '+' + sh.q + '=' + (sh.p + sh.q)) + '.'; },
+        stem: function (sh) { return 'Asked to factor ' + t(triTex('x', -(sh.p + sh.q), sh.p * sh.q)) + ', a student wrote ' + t('(x+' + sh.p + ')(x+' + sh.q + ')') + ', reasoning that ' + t(sh.p + '\\times ' + sh.q + '=' + sh.p * sh.q) + ' and ' + t(sh.p + '+' + sh.q + '=' + (sh.p + sh.q)) + '.'; },
         parts: [
           { id: 'e16a', sub: 'a', level: 'BEG', make: function (r, sh) {
             var o = 1 - (sh.p + sh.q) + sh.p * sh.q, st = (1 + sh.p) * (1 + sh.q);

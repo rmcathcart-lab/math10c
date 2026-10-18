@@ -572,7 +572,7 @@
           } };
         }) },
 
-      { num: '5', stem: 'Now factor expressions like B, E, F, H, I and L completely. Use the method you would assign in Question 4.', parts: [
+      { num: '5', stem: 'Factor completely. First decide which method each one needs — decomposition, grouping, difference of squares or inspection — then use it.', parts: [
         { id: 'e5a', level: 'PRG', make: function (r) { var d = decPair(r, [2, 3], [2, 3], [1, 5], [1, 5]); return fac(tri({ a: d.a, u: d.u, b: d.b, v: -d.v, X: X })); } },
         { id: 'e5b', level: 'PRG', make: function (r) { var a, u, s; do { a = r.int(2, 5); u = r.int(2, 7); s = r.int(2, 5); } while (gcd(a, u) !== 1); return fac(grp({ A1: M(a, 'a'), A2: N(u), B1: V('b'), B2: N(-s) })); } },
         { id: 'e5c', level: 'PRG', make: function (r) { var pq = cop(r, 2, 9, 2, 9); return fac(dos({ A: M(pq[0], 'm'), B: M(pq[1], 'n') })); } },
@@ -615,7 +615,7 @@
           { id: 'e7c', sub: 'c', level: 'PRG', make: function (r) { var g = r.pick([2, 3]), d = decPair(r, [2, 3], [2, 3], [1, 4], [1, 4]); return fac(tri({ k: M(-g, 'k'), a: d.a, u: -d.u, b: d.b, v: -d.v, X: V('k') })); } },
           { id: 'e7d', sub: 'd', level: 'PRG', make: function (r) { var g = r.pick([2, 3]), d = decPair(r, [1], [7, 11, 13, 14], [1, 1], [2, 5]); return fac(tri({ k: M(g, { p: 1, q: 1 }), a: 1, u: -d.u, b: d.b, v: -d.v, X: V('p') })); } }] },
 
-      { num: '8', stem: 'In Question 7 the GCF came out first every time.', parts: [
+      { num: '8', stem: 'When a trinomial has a common factor, the GCF should come out <b>before</b> you decompose.', parts: [
         { id: 'e8', level: 'EMG', make: function (r) {
           var g = r.pick([2, 3]), d = decPair(r, [2, 3], [2, 3], [2, 5], [2, 5]), pr = tri({ k: M(g, 'x'), a: d.a, u: d.u, b: d.b, v: -d.v, X: X });
           return mcPart(r, 'What goes wrong if you try decomposition on ' + t(pr.tex) + ' <b>without</b> removing ' + t(g + 'x') + ' first?', [
@@ -740,7 +740,7 @@
             return fac(pr, { prompt: 'Factor ' + t(pr.tex) + ' completely by the correct method.' });
           } }] },
 
-      { num: '14', stem: function (sh) { return 'A second student writes ' + t(sh.p * sh.p + 'x^{2}+' + sh.q * sh.q + '=(' + sh.p + 'x-' + sh.q + ')(' + sh.p + 'x+' + sh.q + ')') + '.'; },
+      { num: '14', stem: function (sh) { return 'A student writes ' + t(sh.p * sh.p + 'x^{2}+' + sh.q * sh.q + '=(' + sh.p + 'x-' + sh.q + ')(' + sh.p + 'x+' + sh.q + ')') + '.'; },
         shared: function (r) { var pq = cop(r, 2, 6, 1, 9); return { p: pq[0], q: pq[1] }; },
         parts: [
           { id: 'e14a', sub: 'a', level: 'BEG', make: function (r, sh) {
@@ -770,7 +770,7 @@
               t(e) + ' <b>does not factor over the integers</b>. Rule: ' + t('A^{2}-B^{2}=(A-B)(A+B)') + ' works only for a <b>difference</b>; a <b>sum</b> of squares ' + t('A^{2}+B^{2}') + ' does not factor over the integers.', ['Which pattern did the student use? Does it fit a sum?'], 'verdict sum of squares');
           } }] },
 
-      { num: '15', stem: function (sh) { return 'A third student factors ' + t(sh.T) + ' as ' + t(sh.stu) + '.'; },
+      { num: '15', stem: function (sh) { return 'A student factors ' + t(sh.T) + ' as ' + t(sh.stu) + '.'; },
         shared: function (r) {
           var k = r.pick([2, 3]), pq = cop(r, 1, 4, 1, 7), p = pq[0], q = pq[1];
           var T = tx(P.scale(P.sub(M(p * p, { x: 2 }), N(q * q)), k)), stu = '(' + tx(S(M(p, 'x'), N(-q))) + ')(' + tx(S(M(k * p, 'x'), N(k * q))) + ')';

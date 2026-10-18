@@ -678,7 +678,7 @@
         { id: 'e6a', level: 'PRG', make: function (r) { return factorPart(tri(r, { p: [2, 3], q: [-5, -1], r: [2, 3], s: [-5, -1], test: function (o) { return o.ac <= 40; }, book: { p: 2, q: -1, r: 3, s: -4 } }, { k: r.pick([-2, -3]) })); } },
         { id: 'e6b', level: 'PRG', make: function (r) { return factorPart(tri(r, { p: [2, 4], q: [1, 5], r: [2, 4], s: [-5, -1], test: function (o) { return o.b > 0 && o.b <= 6 && o.ac <= -60; }, book: { p: 2, q: 3, r: 4, s: -5 } }, { k: -1 })); } },
         { id: 'e6c', level: 'PRG', make: function (r) { return factorPart(tri(r, { p: [3, 4], q: [1, 3], r: [3, 4], s: [-3, -1], test: function (o) { return o.b < 0; }, book: { p: 3, q: 2, r: 4, s: -3 } }, { k: r.pick([-2, -3]), gv: { x: 1 } })); } }] },
-      { num: '7', stem: function (sh) { return 'Look again at ' + t(sh.T.tex) + ' (like Question 5(f)).'; },
+      { num: '7', stem: function (sh) { return 'Consider ' + t(sh.T.tex) + ', a trinomial with a large common factor.'; },
         shared: function (r) { return { T: tri(r, { p: [1, 4], q: [1, 5], r: [1, 4], s: [-6, -1], test: function (o) { return o.b > 0 && o.ac >= -40 && o.ac <= -12; }, book: { p: 1, q: 2, r: 4, s: -3 } }, { k: r.pick([6, 10, 12, 15]) }) }; },
         parts: [
           { id: 'e7a', level: 'BEG', make: function (r, sh) {
@@ -893,7 +893,7 @@
               t(sh.split + '=' + sh.grouped) + '. The brackets ' + t(br(sh.B1)) + ' and ' + t(br(sh.B2)) + ' are different, so step (4) is impossible. The stall signals that the pair was wrong.', ['Take the GCF of the first two terms and of the last two. Are the brackets the same?'], 'grouping stalls');
           } },
           { id: 'e15c', level: 'EMG', make: function (r, sh) { return factorPart(sh.T, { prompt: 'Factor ' + t(sh.T.tex) + ' correctly.' }); } }] },
-      { num: '16', stem: function (sh) { var T = sh.T; return 'Asked to factor ' + t(T.tex) + ', a second student wrote ' + t(T.tex + '=' + splitTex(T) + '=' + sh.stuG + '=' + sh.stuAns) + '.'; },
+      { num: '16', stem: function (sh) { var T = sh.T; return 'Asked to factor ' + t(T.tex) + ', a student wrote ' + t(T.tex + '=' + splitTex(T) + '=' + sh.stuG + '=' + sh.stuAns) + '.'; },
         shared: function (r) {
           var T = Tri(pick(r, { p: [2, 6], q: [-5, -1], r: [2, 5], s: [-5, -1], test: function (o) { return o.a <= 30; }, book: { p: 5, q: -3, r: 2, s: -1 } }));
           var wrongF = lin(T.p, -T.q);

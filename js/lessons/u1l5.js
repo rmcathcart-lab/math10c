@@ -444,7 +444,7 @@
           var k = r.pick([2, 3, 4]), j = r.pick([9, 4, 16, 5, 6, 7].filter(function (x) { return x !== k; })), m = k * j, q = nrm(m, k * k);
           return tf(r, t('\\dfrac{1}{' + k + '}\\sqrt{' + m + '}=\\sqrt{' + j + '}'), false, 'Here the ' + t('\\dfrac{1}{' + k + '}') + ' is <b>outside</b> the radical. Compare with decimals: ' + t('\\dfrac{1}{' + k + '}\\sqrt{' + m + '}\\approx ' + (Math.sqrt(m) / k).toFixed(2)) + ' and ' + t('\\sqrt{' + j + '}\\approx ' + Math.sqrt(j).toFixed(2)) + '.',
             'The ' + t('\\dfrac{1}{' + k + '}') + ' is outside the radical. To move it inside it must be squared: ' + t('\\dfrac{1}{' + k + '}\\sqrt{' + m + '}=\\sqrt{\\dfrac{' + m + '}{' + k * k + '}}=\\sqrt{' + rTex(q) + '}\\approx ' + (Math.sqrt(m) / k).toFixed(2)) + ', but ' + t('\\sqrt{' + j + '}\\approx ' + Math.sqrt(j).toFixed(2)) + '. <b>False.</b>',
-            ['Is the fraction inside or outside the radical this time? Compare with part (g).'], '1/' + k + '√' + m + ' = √' + j);
+            ['Is the fraction inside or outside the radical this time? If it is outside, take the root first, then multiply.'], '1/' + k + '√' + m + ' = √' + j);
         } }] },
       { num: '9', stem: 'Write as a single radical in the form ' + t('\\sqrt{x}') + '.', parts: [
         { id: '9a', level: 'BEG', make: function (r) { var a = r.pick([2, 3, 5, 6, 7, 10, 11]), b = r.pick([4, 9, 16, 25]); return prodPart(a, b); } },
@@ -611,7 +611,7 @@
               { html: 'The classmate is right: negative numbers have no roots.', why: 'Check: ' + t('(' + (-b * b) + ')^{3}=-' + M) + ', so ' + t('\\sqrt[3]{-' + M + '}') + ' exists.' },
               { html: t(-M) + ' has roots of every index, because ' + t('(-' + b + ')^{6}=-' + M) + '.', why: t('(-' + b + ')^{6}=+' + M) + ': an even power of a negative number is positive.' },
               { html: t(-M) + ' only has a cube root; every other root is not possible.', why: 'The fifth and seventh roots exist too — they just aren’t integers.' }],
-              'Every odd index gives a real root (e.g. ' + t('\\sqrt[3]{-' + M + '}=' + (-b * b)) + ', and irrational fifth and seventh roots); only the even-index roots are not possible.', ['Use your table: which rows had a real answer?'], 'correct “no roots”');
+              'Every odd index gives a real root (e.g. ' + t('\\sqrt[3]{-' + M + '}=' + (-b * b)) + ', and irrational fifth and seventh roots); only the even-index roots are not possible.', ['For which indices does ' + t('\\sqrt[n]{-' + sh.M + '}') + ' have a real value?'], 'correct “no roots”');
           } },
           { id: 'e7d', level: 'EMG', make: function (r, sh) {
             return P.nr('For how many of the six values of ' + t('n') + ' (2 to 7) is ' + t('\\sqrt[n]{-' + sh.M + '}') + ' an <b>integer</b>?', 1, function (v) {
@@ -619,7 +619,7 @@
               if (v === 3) return { code: 'count', hint: 'The roots for ' + t('n=5') + ' and ' + t('n=7') + ' exist, but they are irrational, not integers.' };
               if (v === 0) return { code: 'count', hint: 'Look at ' + t('n=3') + ': ' + t('(' + (-sh.b * sh.b) + ')^{3}=-' + sh.M) + '.' };
               return null;
-            }, 'Only ' + t('n=3') + ' gives an integer, ' + t(-sh.b * sh.b) + '. The roots for ' + t('n=5, 7') + ' are irrational and the even ones are not possible. Answer: ' + t('1') + '.', ['Use your table from part (a).'], 'how many integer roots');
+            }, 'Only ' + t('n=3') + ' gives an integer, ' + t(-sh.b * sh.b) + '. The roots for ' + t('n=5, 7') + ' are irrational and the even ones are not possible. Answer: ' + t('1') + '.', ['Check each index from ' + t('2') + ' to ' + t('7') + ': is the root possible, and is it an integer?'], 'how many integer roots');
           } }] },
       { num: '8', section: 'Extra practice C — Estimating irrational roots', stem: 'Each root is irrational. <b>Without a calculator</b>, state the two consecutive integers it lies between.', parts: [
         { id: 'e8a', level: 'BEG', make: function (r) { return bracketPart(2, nonPerfect(r, 20, 99, 2)); } },
@@ -639,7 +639,7 @@
             return mcPart(r, 'Bracket each root between consecutive integers. Is her <b>conclusion</b> correct?', [
               { html: 'Yes: ' + t(k + '<\\sqrt[3]{' + A + '}<' + (k + 1)) + ' and ' + t((k - 1) + '<\\sqrt{' + B + '}<' + k) + ', so ' + t('\\sqrt[3]{' + A + '}>\\sqrt{' + B + '}') + '.', right: true },
               { html: 'No: square roots are always bigger than cube roots.', why: 'Bracket them: ' + t(k + '^{3}=' + k * k * k) + ' and ' + t((k + 1) + '^{3}=' + ipow(k + 1, 3)) + ', while ' + t((k - 1) + '^{2}=' + (k - 1) * (k - 1)) + ' and ' + t(k + '^{2}=' + k * k) + '.' },
-              { html: 'Yes, because ' + t(A + '>' + B) + ', and a larger radicand always gives a larger root.', why: 'Her conclusion is right, but that is her (faulty) reasoning — see part (b). Show it by bracketing: use perfect cubes for ' + t('\\sqrt[3]{' + A + '}') + ' and perfect squares for ' + t('\\sqrt{' + B + '}') + '.' },
+              { html: 'Yes, because ' + t(A + '>' + B) + ', and a larger radicand always gives a larger root.', why: 'Her conclusion is right, but that is her (faulty) reasoning — roots with different indices can’t be compared by their radicands alone. Show it by bracketing: use perfect cubes for ' + t('\\sqrt[3]{' + A + '}') + ' and perfect squares for ' + t('\\sqrt{' + B + '}') + '.' },
               { html: 'You can’t tell without a calculator.', why: 'Bracketing is enough: find the perfect cubes around ' + t(A) + ' and the perfect squares around ' + t(B) + '.' }],
               t(k + '^{3}=' + k * k * k + '<' + A + '<' + ipow(k + 1, 3) + '=' + (k + 1) + '^{3}') + ', so ' + t(k + '<\\sqrt[3]{' + A + '}<' + (k + 1)) + '. ' + t((k - 1) + '^{2}=' + (k - 1) * (k - 1) + '<' + B + '<' + k * k + '=' + k + '^{2}') + ', so ' + t((k - 1) + '<\\sqrt{' + B + '}<' + k) + '. So her conclusion is correct — but not for her reason.',
               ['Use perfect cubes for the cube root and perfect squares for the square root.'], 'Ivy bracket ∛' + A + ' vs √' + B);
@@ -784,7 +784,7 @@
             { html: 'It has two real roots of every index.', why: 'Try an odd index: ' + t('2^{5}=32') + ' but ' + t('(-2)^{5}=-32') + ', so ' + t('32') + ' has only one real fifth root.' },
             { html: 'It has one real root of every index.', why: 'Try an even index: ' + t('3^{4}=81') + ' and ' + t('(-3)^{4}=81') + '.' },
             { html: 'It has one real root of any even index and two of any odd index.', why: 'It’s the other way round: even powers lose the sign, so two numbers share each even power.' }],
-            'Even index: the even power hides the sign, so ' + t('\\pm') + ' both work — two real roots. Odd index: the sign survives, so only the positive number works — one real root. (A negative number has no real roots of even index and one of odd index.)', ['Use your answers to the last two parts.'], 'rule for number of roots');
+            'Even index: the even power hides the sign, so ' + t('\\pm') + ' both work — two real roots. Odd index: the sign survives, so only the positive number works — one real root. (A negative number has no real roots of even index and one of odd index.)', ['How many real fourth roots does a positive number have? How many real fifth roots?'], 'rule for number of roots');
         } }] },
       { num: '16', stem: 'The identity ' + t('\\sqrt{x^{2}}=|x|') + '.', parts: [
         { id: 'e16a', level: 'EMG', make: function (r) {

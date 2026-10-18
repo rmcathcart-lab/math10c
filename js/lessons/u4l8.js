@@ -898,9 +898,9 @@
           } },
           { id: 'e9g', sub: 'g', level: 'PRG', make: function (r, sh) {
             var a = sh.s + sh.u, b = sh.s - sh.u, Ft = complete([lin(sh.r, 'x', -a), lin(sh.r, 'x', -b)]);
-            return fac('Part (c) can also be solved as a difference of squares: ' + t('(' + sh.r + 'x-' + sh.s + ')^{2}-' + sh.u + '^{2}=0') + '. Factor ' + t('(' + sh.r + 'x-' + sh.s + ')^{2}-' + sh.u + '^{2}') + ' completely.', Ft,
+            return fac('The equation ' + t('(' + sh.r + 'x-' + sh.s + ')^{2}=' + sh.u * sh.u) + ' can also be solved as a difference of squares: ' + t('(' + sh.r + 'x-' + sh.s + ')^{2}-' + sh.u + '^{2}=0') + '. Factor ' + t('(' + sh.r + 'x-' + sh.s + ')^{2}-' + sh.u + '^{2}') + ' completely.', Ft,
               [{ is: FT(null, [lin(sh.r, 'x', -sh.s - sh.u * sh.u), lin(sh.r, 'x', -sh.s + sh.u * sh.u)]), code: 'value', hint: 'Use ' + t('B=' + sh.u) + ', not ' + t(sh.u * sh.u) + ': ' + t('A^{2}-B^{2}=(A-B)(A+B)') + '.' }],
-              t('[(' + sh.r + 'x-' + sh.s + ')-' + sh.u + '][(' + sh.r + 'x-' + sh.s + ')+' + sh.u + ']=(' + seq(lin(sh.r, 'x', -a)) + ')(' + seq(lin(sh.r, 'x', -b)) + ')') + (Ft.tex !== '(' + seq(lin(sh.r, 'x', -a)) + ')(' + seq(lin(sh.r, 'x', -b)) + ')' ? '<br>Take out the common factor: ' + t('=' + Ft.tex) : '') + '<br>Setting each factor to ' + t('0') + ' gives the same pair of roots as part (c). ✓',
+              t('[(' + sh.r + 'x-' + sh.s + ')-' + sh.u + '][(' + sh.r + 'x-' + sh.s + ')+' + sh.u + ']=(' + seq(lin(sh.r, 'x', -a)) + ')(' + seq(lin(sh.r, 'x', -b)) + ')') + (Ft.tex !== '(' + seq(lin(sh.r, 'x', -a)) + ')(' + seq(lin(sh.r, 'x', -b)) + ')' ? '<br>Take out the common factor: ' + t('=' + Ft.tex) : '') + '<br>Setting each factor to ' + t('0') + ' gives the same pair of roots as expanding and factoring. ✓',
               ['Let ' + t('A=' + sh.r + 'x-' + sh.s) + ' and ' + t('B=' + sh.u) + ' in ' + t('A^{2}-B^{2}=(A-B)(A+B)') + '.', 'Check the brackets for a common factor.'], 'DoS route (' + sh.r + 'x−' + sh.s + ')²−' + sh.u * sh.u);
           } }] },
       { num: '10', section: 'Extra practice D — Geometry and applications', stem: function (sh) { return 'The area of a rectangle is ' + t('A=' + tx(sh.T) + '') + ' square centimetres, and both side lengths are binomials with integer coefficients.'; },
@@ -933,7 +933,7 @@
           } },
           { id: 'e10d', level: 'EMG', make: function (r, sh) {
             var a = sh.n * sh.x0 + sh.s, b = sh.m * sh.x0 + sh.u, per = 2 * (a + b);
-            var p = KP.fields('Using that value of ' + t('x') + ', state the two side lengths and the perimeter of the rectangle.', [numBox('Shorter side (cm):'), numBox('Longer side (cm):'), numBox('Perimeter (cm):')],
+            var p = KP.fields('Using the positive value of ' + t('x') + ' for which ' + t(tx(sh.T) + '=' + sh.A0) + ', state the two side lengths and the perimeter of the rectangle.', [numBox('Shorter side (cm):'), numBox('Longer side (cm):'), numBox('Perimeter (cm):')],
               [K.number(a), K.number(b), K.number(per, function (v) { return v === a + b ? { code: 'half-perim', hint: 'That is half the perimeter: there are two of each side.' } : v === a * b ? { code: 'area-not-perim', hint: 'That is the area.' } : null; })],
               [String(a), String(b), String(per)], t(a) + ' cm, ' + t(b) + ' cm, perimeter ' + t(per) + ' cm',
               t(seq(sh.A) + '=' + sh.n + '(' + sh.x0 + ')+' + sh.s + '=' + a) + ' cm; ' + t(seq(sh.B) + '=' + sh.m + '(' + sh.x0 + ')+' + sh.u + '=' + b) + ' cm. Check: ' + t(a + '\\times ' + b + '=' + sh.A0) + ' ✓<br>Perimeter ' + t('=2(' + a + '+' + b + ')=' + per) + ' cm.',
@@ -1039,7 +1039,7 @@
           } },
           { id: 'e13e', level: 'EMG', make: function (r, sh) {
             var X = sh.M + sh.g * sh.j;
-            return mc(r, 'Part (d) has only one answer, while ' + t('P=0') + ' had two. Why can no number of tickets give a profit of ' + t('\\$' + X) + '?', [
+            return mc(r, 'Solving ' + t('P=' + sh.M) + ' gives only one answer, ' + t('x=' + sh.h) + ', while ' + t('P=0') + ' has two. Why can no number of tickets give a profit of ' + t('\\$' + X) + '?', [
               { html: t('\\$' + sh.M) + ' is reached at only one value of ' + t('x') + ' — it is the greatest profit possible, so ' + t('\\$' + X) + ' is never reached.', right: true },
               { html: 'Because ' + t(X) + ' isn’t a multiple of the number of tickets.', why: 'Profit doesn’t have to divide evenly by anything. Try solving ' + t('P=' + X) + ': ' + t('x^{2}-' + 2 * sh.h + 'x+' + (sh.h * sh.h + sh.j) + '=(x-' + sh.h + ')^{2}+' + sh.j) + ', which is never ' + t('0') + '.' },
               { html: 'Because the answer would be a fraction of a ticket.', why: 'It’s worse than a fraction: ' + t('(x-' + sh.h + ')^{2}+' + sh.j + '=0') + ' has no solution at all.' },

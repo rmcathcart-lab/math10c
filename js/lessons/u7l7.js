@@ -588,7 +588,7 @@
           return B.number('Determine ' + t('x') + ' when ' + t('y=' + o.Ye) + '.', o.Xe, null, 'General form: ' + t(pol([[L.A, 'x'], [L.B, '(' + o.Ye + ')'], [L.C, '']]) + '=0') + ' ⟹ ' + t(pol([[L.A, 'x']]) + '=' + (-(L.B * o.Ye + L.C))) + ' ⟹ ' + t('x=' + o.Xe), ['Substitute ' + t('y=' + o.Ye) + ' into the general form and solve for ' + t('x') + '.'], 'solve for x from table model');
         } },
         { id: 'e6f', sub: 'f', level: 'EMG', outcome: 'RF6', make: function (r, o) {
-          return mc(r, 'Which forms make (d) and (e) quickest, and why are they not the same form?', [
+          return mc(r, 'Which forms make (d), finding ' + t('y') + ' when ' + t('x=' + o.Xd) + ', and (e), finding ' + t('x') + ' when ' + t('y=' + o.Ye) + ', quickest, and why are they not the same form?', [
             { html: '(d): slope–intercept form — ' + t('x') + ' is known and ' + t('y') + ' is already isolated. (e): general form — ' + t('y') + ' is known, leaving a one-step equation in ' + t('x') + ' with no fractions.', right: true },
             { html: '(d): general form; (e): slope–intercept form.', why: 'In (d) you want ' + t('y') + ': the form with ' + t('y') + ' already isolated just needs evaluating.' },
             { html: 'Slope–point form for both, because it uses a table point.', why: 'It works, but it needs extra rearranging either way.' },
@@ -623,7 +623,7 @@
         } },
         { id: 'e7b2', sub: 'b ii', level: 'EMG', outcome: 'RF6', make: function (r, o) {
           var xr = [-7, 7];
-          return graphLine('Graph ' + t('p') + ' on the grid (' + t('\\ell') + ' is shown in grey).', o.Lp, xr, xr, [{ L: o.Lq, code: 'line-perp-wrong', hint: 'That line is perpendicular to ' + t('\\ell') + '. ' + t('p') + ' is parallel: it never meets ' + t('\\ell') + '.' }, { L: lineMP(qn(o.m), o.T), code: 'graph-slope-sign', hint: 'Check the direction: ' + t('p') + ' has the same slope as ' + t('\\ell') + ', ' + t(qT(o.m)) + '.' }],
+          return graphLine('Graph ' + t('p') + ', the line through ' + t(ptT(o.T)) + ' <b>parallel</b> to ' + t('\\ell') + ', on the grid (' + t('\\ell') + ' is shown in grey).', o.Lp, xr, xr, [{ L: o.Lq, code: 'line-perp-wrong', hint: 'That line is perpendicular to ' + t('\\ell') + '. ' + t('p') + ' is parallel: it never meets ' + t('\\ell') + '.' }, { L: lineMP(qn(o.m), o.T), code: 'graph-slope-sign', hint: 'Check the direction: ' + t('p') + ' has the same slope as ' + t('\\ell') + ', ' + t(qT(o.m)) + '.' }],
             'From ' + t(ptT(o.T)) + ', step the slope ' + t(qT(o.m)) + ' (' + Math.abs(o.m[0]) + ' ' + (o.m[0] < 0 ? 'down' : 'up') + ', ' + o.m[1] + ' right).', ['Start at ' + t(ptT(o.T)) + ' and use rise over run.'], 'graph parallel line', { bg: bgLines([o.L], xr, xr) });
         } },
         { id: 'e7c', sub: 'c i', level: 'PRG', outcome: 'RF7', make: function (r, o) {
@@ -633,15 +633,15 @@
         } },
         { id: 'e7c2', sub: 'c ii', level: 'EMG', outcome: 'RF6', make: function (r, o) {
           var xr = [-7, 7], n = perpS(o.m);
-          return graphLine('Graph ' + t('q') + ' on the grid (' + t('\\ell') + ' and ' + t('p') + ' are shown in grey).', o.Lq, xr, xr, [{ L: o.Lp, code: 'line-parallel', hint: 'That line is parallel to ' + t('\\ell') + '. ' + t('q') + ' crosses ' + t('\\ell') + ' at a right angle.' }, { L: lineMP(qn(n), o.T), code: 'graph-slope-sign', hint: 'Check the direction: the slope of ' + t('q') + ' is ' + t(qT(n)) + '.' }],
+          return graphLine('Graph ' + t('q') + ', the line through ' + t(ptT(o.T)) + ' <b>perpendicular</b> to ' + t('\\ell') + ', on the grid (' + t('\\ell') + ' and ' + t('p') + ' are shown in grey).', o.Lq, xr, xr, [{ L: o.Lp, code: 'line-parallel', hint: 'That line is parallel to ' + t('\\ell') + '. ' + t('q') + ' crosses ' + t('\\ell') + ' at a right angle.' }, { L: lineMP(qn(n), o.T), code: 'graph-slope-sign', hint: 'Check the direction: the slope of ' + t('q') + ' is ' + t(qT(n)) + '.' }],
             'From ' + t(ptT(o.T)) + ', step the slope ' + t(qT(n)) + ' (' + Math.abs(n[0]) + ' ' + (n[0] < 0 ? 'down' : 'up') + ', ' + n[1] + ' right).', ['Start at ' + t(ptT(o.T)) + ' and use rise over run.'], 'graph perpendicular line', { bg: bgLines([o.L, o.Lp], xr, xr) });
         } },
         { id: 'e7d', sub: 'd', level: 'BEG', outcome: 'RF7', make: function (r, o) {
-          return ptP('State the one point ' + t('p') + ' and ' + t('q') + ' have in common, without doing any algebra.', o.T, t(ptT(o.T)) + ': both ' + t('p') + ' and ' + t('q') + ' were built to pass through it, and two lines that are not parallel meet at exactly one point.', ['Both lines were built through the same point.'], 'common point of p and q');
+          return ptP('Line ' + t('p') + ' (' + t(gT(o.Lp)) + ') was built in (b) parallel to ' + t('\\ell') + ', and line ' + t('q') + ' (' + t(gT(o.Lq)) + ') in (c) perpendicular to ' + t('\\ell') + ', both through the point ' + t(ptT(o.T)) + '. State the one point ' + t('p') + ' and ' + t('q') + ' have in common, without doing any algebra.', o.T, t(ptT(o.T)) + ': both ' + t('p') + ' and ' + t('q') + ' were built to pass through it, and two lines that are not parallel meet at exactly one point.', ['Both lines were built through the same point.'], 'common point of p and q');
         } },
         { id: 'e7e', sub: 'e', level: 'EMG', outcome: 'RF6', make: function (r, o) {
           var A = o.L.A, Bc = o.L.B;
-          return mc(r, 'Your three general forms share a pattern. Which rule writes a parallel and a perpendicular line straight from the coefficients ' + t('A') + ' and ' + t('B') + ' of ' + t(gT(o.L)) + '?', [
+          return mc(r, 'The three general forms are ' + t('\\ell:\\ ' + gT(o.L)) + ', ' + t('p:\\ ' + gT(o.Lp)) + ' (parallel to ' + t('\\ell') + ') and ' + t('q:\\ ' + gT(o.Lq)) + ' (perpendicular to ' + t('\\ell') + '). They share a pattern. Which rule writes a parallel and a perpendicular line straight from the coefficients ' + t('A') + ' and ' + t('B') + ' of ' + t(gT(o.L)) + '?', [
             { html: 'Parallel: keep ' + t('A') + ' and ' + t('B') + ' (' + t(pol([[A, 'x'], [Bc, 'y']])) + '). Perpendicular: swap them and change one sign (' + t(pol([[Bc, 'x'], [-A, 'y']])) + '). Then find ' + t('C') + ' from the point.', right: true },
             { html: 'Parallel: swap ' + t('A') + ' and ' + t('B') + '. Perpendicular: keep them.', why: 'Keeping ' + t('A') + ' and ' + t('B') + ' keeps the slope ' + t('-\\frac{A}{B}') + ' — that is the parallel line.' },
             { html: 'Parallel: keep ' + t('A') + ', ' + t('B') + ' and ' + t('C') + '. Perpendicular: change all the signs.', why: 'Keeping ' + t('C') + ' too gives the same line; changing every sign also gives the same line.' },
@@ -651,7 +651,7 @@
         { id: 'e7f', sub: 'f', level: 'EMG', outcome: 'RF6', make: function (r, o) {
           var nice = function (Z) { return Z.A !== 0 && Z.B !== 0 && isInt(xint(Z)) && isInt(yint(Z)); }, want = { l: nice(o.L) ? 'int' : 'step', p: nice(o.Lp) ? 'int' : 'step', q: nice(o.Lq) ? 'int' : 'step' };
           var desc = function (Z) { return t(ptT([xint(Z), 0])) + ', ' + t(ptT([0, yint(Z)])); };
-          return B.grid('For which line is the two-intercept strategy the clean one, and for which would you rather step the slope from a known point?', [{ id: 'l', html: t('\\ell') }, { id: 'p', html: t('p') }, { id: 'q', html: t('q') }], [{ id: 'int', html: 'two intercepts' }, { id: 'step', html: 'step the slope from a point' }], want,
+          return B.grid('The lines are ' + t('\\ell:\\ ' + gT(o.L)) + ', ' + t('p:\\ ' + gT(o.Lp)) + ' and ' + t('q:\\ ' + gT(o.Lq)) + ' (' + t('p') + ' and ' + t('q') + ' both pass through ' + t(ptT(o.T)) + '). For which line is the two-intercept strategy the clean one, and for which would you rather step the slope from a known point?', [{ id: 'l', html: t('\\ell') }, { id: 'p', html: t('p') }, { id: 'q', html: t('q') }], [{ id: 'int', html: 'two intercepts' }, { id: 'step', html: 'step the slope from a point' }], want,
             { why: function (row) { var Z = row === 'l' ? o.L : row === 'p' ? o.Lp : o.Lq; return { code: 'row', hint: 'Work out the intercepts of ' + t(row === 'l' ? '\\ell' : row) + ': ' + desc(Z) + '. Whole numbers make the intercepts clean; fractions don’t.' }; } },
             t('\\ell') + ': ' + desc(o.L) + ' — whole numbers: <b>two intercepts</b>.<br>' + t('p') + ': ' + desc(o.Lp) + '; ' + t('q') + ': ' + desc(o.Lq) + ' — fractions, so <b>step the slope</b> from ' + t(ptT(o.T)) + '.', ['Find each line’s intercepts: are they whole numbers?'], 'choose graphing strategy');
         } }] },
@@ -737,7 +737,7 @@
             t(o.m + '\\text{ m/year}\\times 100=' + F(o.m * 100) + '\\text{ m per century}=' + k + '\\text{ km per century}') + '. <b>No</b> — same glacier, same motion; only the units (and so the number) changed.', ['Multiply by 100 years, then divide by 1000 m per km.'], 'unit conversion of a rate', { after: 'km per century' });
         } },
         { id: 'e9g', sub: 'g', level: 'EMG', outcome: 'RF6', make: function (r, o) {
-          return mc(r, 'Parts (d) and (e) run the same model in opposite directions. Which describes them?', [
+          return mc(r, 'Parts (d), predicting the distance in ' + t(o.Y0 + o.tp) + ', and (e), finding the year the terminus passes ' + t(o.T / 1000) + ' km, run the same model in opposite directions. Which describes them?', [
             { html: '(d) substitutes a ' + t('t') + '-value and <b>evaluates</b>; (e) substitutes a ' + t('D') + '-value and <b>solves</b>. ' + t('D=mt+b') + ' is quickest for (d).', right: true },
             { html: '(d) solves for ' + t('t') + '; (e) evaluates ' + t('D') + '.', why: 'In (d) the year (so ' + t('t') + ') is given and you want ' + t('D') + ': that is evaluating.' },
             { html: 'Both just evaluate the model.', why: 'In (e) you know ' + t('D') + ' and must undo the operations to find ' + t('t') + ': solving.' },
@@ -793,7 +793,7 @@
             t(A + 't-2d+' + C + '=0') + ' ⟹ ' + t('2d=' + A + 't+' + C) + ' ⟹ ' + t('d=' + o.r2 + 't+' + o.b) + '. Rate ' + t(o.r2) + ' m/s down; starting depth ' + t(o.b) + ' m.', ['Solve the equation for ' + t('d') + '.'], 'rate from general form (mine)');
         } },
         { id: 'e10e', sub: 'e i', level: 'EMG', outcome: 'RF5', make: function (r, o) {
-          return mc(r, 'Which cage descends faster, and which reaches ' + t(o.Dt) + ' m first?', [
+          return mc(r, 'The first cage follows the graph; the second is modelled by ' + t(2 * o.r2 + 't-2d+' + 2 * o.b + '=0') + ' (from (d)). Which cage descends faster, and which reaches ' + t(o.Dt) + ' m first?', [
             { html: 'The first cage is faster and reaches ' + t(o.Dt) + ' m first.', right: true },
             { html: 'The second cage is faster and reaches ' + t(o.Dt) + ' m first.', why: 'Compare the rates, not the coefficients: ' + t(o.r1) + ' m/s against ' + t(o.r2) + ' m/s.' },
             { html: 'The first cage is faster, but the second reaches ' + t(o.Dt) + ' m first.', why: 'They start at the same depth, so the faster cage gets there first.' },
@@ -802,13 +802,13 @@
         } },
         { id: 'e10e2', sub: 'e ii', level: 'PRG', outcome: 'RF4', make: function (r, o) {
           var dr = o.r1 - o.r2, dt = o.tb - o.ta;
-          return B.fields('By how much is the faster cage faster? By how many seconds (to the nearest tenth) does it reach ' + t(o.Dt) + ' m sooner?', [{ label: 'faster by', after: 'm/s' }, { label: 'sooner by', after: 's' }], [K.number(dr), K.approx(dt, 1)], [String(dr), K.roundTo(dt, 1).toFixed(1)], t(dr) + ' m/s; ' + t(K.roundTo(dt, 1).toFixed(1)) + ' s',
+          return B.fields('The first cage follows the graph; the second is modelled by ' + t(2 * o.r2 + 't-2d+' + 2 * o.b + '=0') + ' (from (d)). By how much is the faster cage faster? By how many seconds (to the nearest tenth) does it reach ' + t(o.Dt) + ' m sooner?', [{ label: 'faster by', after: 'm/s' }, { label: 'sooner by', after: 's' }], [K.number(dr), K.approx(dt, 1)], [String(dr), K.roundTo(dt, 1).toFixed(1)], t(dr) + ' m/s; ' + t(K.roundTo(dt, 1).toFixed(1)) + ' s',
             'Faster by ' + t(o.r1 + '-' + o.r2 + '=' + dr) + ' m/s.<br>First: ' + t(o.r1 + 't+' + o.b + '=' + o.Dt) + ', ' + t('t=\\frac{' + (o.Dt - o.b) + '}{' + o.r1 + '}\\approx ' + dec(Math.round(o.ta * 100) / 100)) + ' s<br>Second: ' + t(o.r2 + 't+' + o.b + '=' + o.Dt) + ', ' + t('t=\\frac{' + (o.Dt - o.b) + '}{' + o.r2 + '}\\approx ' + dec(Math.round(o.tb * 100) / 100)) + ' s<br>Sooner by about ' + t(K.roundTo(dt, 1).toFixed(1)) + ' s.',
             ['Solve each model for ' + t('t') + ' when ' + t('d=' + o.Dt) + ', then subtract.'], 'compare times (mine)');
         } },
         { id: 'e10f', sub: 'f', level: 'PRG', outcome: 'RF6', make: function (r, o) {
           var A = 2 * o.r2;
-          return mc(r, 'A student compares the numbers ' + t(o.r1) + ' and ' + t(A) + ' straight off the two equations and concludes the second cage is faster. What is the mistake?', [
+          return mc(r, 'The two cages are modelled by ' + t('d=' + o.r1 + 't+' + o.b) + ' and ' + t(A + 't-2d+' + 2 * o.b + '=0') + '. A student compares the numbers ' + t(o.r1) + ' and ' + t(A) + ' straight off the two equations and concludes the second cage is faster. What is the mistake?', [
             { html: t(A) + ' is not the rate: the second equation had to be solved for ' + t('d') + ' (slope ' + t('-\\frac{A}{B}=' + o.r2) + ') before comparing.', right: true },
             { html: 'The student should have compared the starting depths instead.', why: 'Speed is the rate of change; the starting depth doesn’t tell you how fast a cage moves.' },
             { html: 'Nothing — the larger coefficient always means faster.', why: 'In ' + t(A + 't-2d+' + 2 * o.b + '=0') + ' the ' + t('d') + '-coefficient is ' + t('-2') + ', so the rate is ' + t(A) + ' ÷ ' + t('2') + '.' },
@@ -984,7 +984,7 @@
         { id: 'e14d', sub: 'd', level: 'PRG', outcome: 'RF6', make: function (r, o) {
           var xr = o.xr, yr = o.yr, key = linesDraw([o.L1, o.L2, o.L3], xr, yr);
           var bad2 = linesDraw([o.L1, o.L2], xr, yr), tri = gv([], [segv(o.V, o.P2), segv(o.P2, o.P3), segv(o.P3, o.V)]);
-          return drawPart('Graph all three lines on the grid. Your three vertices from (a) must land on the intersections you draw.' + LINEHELP, pad(xr, yr), exactChk(key, { wrong: [{ is: tri, code: 'graph-arrows', hint: 'You drew the triangle — the question asks for the three whole <b>lines</b>: put arrows on the ends.' }] }), key,
+          return drawPart('Graph all three lines on the grid. The triangle’s three vertices (found in (a)) must land on the intersections you draw.' + LINEHELP, pad(xr, yr), exactChk(key, { wrong: [{ is: tri, code: 'graph-arrows', hint: 'You drew the triangle — the question asks for the three whole <b>lines</b>: put arrows on the ends.' }] }), key,
             'L1 through ' + t(ptT(o.V)) + ' and ' + t(ptT(o.P2)) + '; L2 through ' + t(ptT(o.V)) + ' and ' + t(ptT(o.P3)) + '; L3 through ' + t(ptT(o.P2)) + ' and ' + t(ptT(o.P3)) + '. The lines cross exactly at the vertices.', ['Each line passes through two of the vertices from (a).'], 'graph three lines', [bad2, tri]);
         } },
         { id: 'e14e', sub: 'e', level: 'EMG', outcome: 'EXT', make: function (r, o) {
@@ -999,7 +999,7 @@
         } },
         { id: 'e14g', sub: 'g', level: 'PRG', outcome: 'RF7', make: function (r, o) {
           var mm = slopeOf(o.Lm), m3 = slopeOf(o.L3);
-          return mc(r, 'The line in (f) is also perpendicular to the opposite side' + (mm ? ' (' + t(qT(mm) + '\\times\\left(' + qT(m3) + '\\right)=-1') + ')' : '') + '. What does that tell you?', [
+          return mc(r, 'The line in (f), ' + t(gT(o.Lm)) + ', runs from the right-angle vertex ' + t(ptT(o.V)) + ' to the midpoint ' + t(ptT(o.M)) + ' of the opposite side. It is also perpendicular to the opposite side' + (mm ? ' (' + t(qT(mm) + '\\times\\left(' + qT(m3) + '\\right)=-1') + ')' : '') + '. What does that tell you?', [
             { html: 'The triangle is isosceles; the segment is both a <b>median</b> (vertex to midpoint) and an <b>altitude</b> (perpendicular to the opposite side).', right: true },
             { html: 'The triangle is equilateral; the segment is a side.', why: 'The segment runs from a vertex to the middle of the opposite side — it isn’t a side.' },
             { html: 'The segment is a median but not an altitude.', why: 'Perpendicular to the opposite side, from a vertex: that is exactly an altitude.' },
@@ -1026,18 +1026,18 @@
             t('\\ell') + ': ' + t('m=' + qT(m)) + ', so ' + t('m_{\\perp}=' + qT(n)) + '.<br>' + psSteps(n, o.P), ['Slope of ' + t('\\ell') + ' is ' + t('-\\frac{A}{B}') + '; take the negative reciprocal.'], 'perpendicular through P');
         } },
         { id: 'e15b', sub: 'b', level: 'ADV', outcome: 'EXT', make: function (r, o) {
-          return ptP('Determine the point ' + t('F') + ' where that perpendicular meets ' + t('\\ell') + ', by solving the two equations together.', o.F, 'Solve ' + t(gT(o.L)) + ' and ' + t(gT(o.Lp)) + ' together (substitution): ' + t('F' + ptT(o.F)) + '.<br>Check on ' + t('\\ell') + ': ' + t(sub(o.L, o.F) + '=0') + ' ✓; on the perpendicular: ' + t(sub(o.Lp, o.F) + '=0') + ' ✓', ['Solve one equation for ' + t('y') + ' and substitute into the other.'], 'foot of perpendicular');
+          return ptP('The line through ' + t('P') + ' perpendicular to ' + t('\\ell') + ' is ' + t(gT(o.Lp)) + '. Determine the point ' + t('F') + ' where that perpendicular meets ' + t('\\ell') + ', by solving the two equations together.', o.F, 'Solve ' + t(gT(o.L)) + ' and ' + t(gT(o.Lp)) + ' together (substitution): ' + t('F' + ptT(o.F)) + '.<br>Check on ' + t('\\ell') + ': ' + t(sub(o.L, o.F) + '=0') + ' ✓; on the perpendicular: ' + t(sub(o.Lp, o.F) + '=0') + ' ✓', ['Solve one equation for ' + t('y') + ' and substitute into the other.'], 'foot of perpendicular');
         } },
         { id: 'e15c', sub: 'c', level: 'EMG', outcome: 'EXT', make: function (r, o) {
-          return B.number('Use the distance formula to find ' + t('PF') + ', the distance from ' + t('P') + ' to ' + t('\\ell') + '.', 5, null, t('PF=' + distT(o.P, o.F) + '=5') + ' units. (The formula ' + t('\\frac{|Ax_1+By_1+C|}{\\sqrt{A^2+B^2}}=\\frac{|' + sub(o.L, o.P) + '|}{' + 5 + '}=5') + ' packages this whole calculation.)', ['Use ' + t('P' + ptT(o.P)) + ' and ' + t('F') + ' from (b).'], 'distance PF', { after: 'units' });
+          return B.number('The perpendicular from ' + t('P') + ' meets ' + t('\\ell') + ' at ' + t('F' + ptT(o.F)) + '. Use the distance formula to find ' + t('PF') + ', the distance from ' + t('P') + ' to ' + t('\\ell') + '.', 5, null, t('PF=' + distT(o.P, o.F) + '=5') + ' units. (The formula ' + t('\\frac{|Ax_1+By_1+C|}{\\sqrt{A^2+B^2}}=\\frac{|' + sub(o.L, o.P) + '|}{' + 5 + '}=5') + ' packages this whole calculation.)', ['Use ' + t('P' + ptT(o.P)) + ' and ' + t('F') + ' from (b).'], 'distance PF', { after: 'units' });
         } },
         { id: 'e15d', sub: 'd', level: 'EMG', outcome: 'EXT', make: function (r, o) {
           var d2 = dist2(o.P, o.G);
-          return valP('The point ' + t('G' + ptT(o.G)) + ' is also on ' + t('\\ell') + '. Compute ' + t('PG') + ' exactly (and confirm it is longer than ' + t('PF') + ').', Math.sqrt(d2), radTex(d2), t(sub(o.L, o.G) + '=0') + ' ✓ so ' + t('G') + ' is on ' + t('\\ell') + '. ' + t('PG=' + distT(o.P, o.G) + (radTex(d2) !== '\\sqrt{' + d2 + '}' ? '=' + radTex(d2) : '') + '\\approx ' + (Math.round(Math.sqrt(d2) * 100) / 100)) + ' > ' + t('5') + ' ✓', ['Distance formula with ' + t('P') + ' and ' + t('G') + '.'], 'distance PG', { keys: 'radical' });
+          return valP('The point ' + t('G' + ptT(o.G)) + ' is also on ' + t('\\ell') + '. Compute ' + t('PG') + ' exactly (and confirm it is longer than ' + t('PF=5') + ', the perpendicular distance).', Math.sqrt(d2), radTex(d2), t(sub(o.L, o.G) + '=0') + ' ✓ so ' + t('G') + ' is on ' + t('\\ell') + '. ' + t('PG=' + distT(o.P, o.G) + (radTex(d2) !== '\\sqrt{' + d2 + '}' ? '=' + radTex(d2) : '') + '\\approx ' + (Math.round(Math.sqrt(d2) * 100) / 100)) + ' > ' + t('5') + ' ✓', ['Distance formula with ' + t('P') + ' and ' + t('G') + '.'], 'distance PG', { keys: 'radical' });
         } },
         { id: 'e15f', sub: 'f', level: 'PRG', outcome: 'EXT', make: function (r, o) {
           var st = [o.F[0] - o.P[0], o.F[1] - o.P[1]];
-          return ptP('Determine the point ' + t("P'") + ' obtained by continuing from ' + t('P') + ' through ' + t('F') + ' the same distance again — the mirror image of ' + t('P') + ' in ' + t('\\ell') + '.', o.P2, 'Step from ' + t('P') + ' to ' + t('F') + ': ' + t('(' + st[0] + ',\\ ' + st[1] + ')') + '. Repeat it from ' + t('F') + ': ' + t("P'" + ptT(o.P2)) + '.<br>On the perpendicular: ' + t(sub(o.Lp, o.P2) + '=0') + ' ✓', ['' + t('F') + ' is the midpoint of ' + t("PP'") + '.'], 'mirror image');
+          return ptP('Determine the point ' + t("P'") + ' obtained by continuing from ' + t('P') + ' through ' + t('F' + ptT(o.F)) + ' (the foot of the perpendicular from ' + t('P') + ' to ' + t('\\ell') + ') the same distance again — the mirror image of ' + t('P') + ' in ' + t('\\ell') + '.', o.P2, 'Step from ' + t('P') + ' to ' + t('F') + ': ' + t('(' + st[0] + ',\\ ' + st[1] + ')') + '. Repeat it from ' + t('F') + ': ' + t("P'" + ptT(o.P2)) + '.<br>On the perpendicular: ' + t(sub(o.Lp, o.P2) + '=0') + ' ✓', ['' + t('F') + ' is the midpoint of ' + t("PP'") + '.'], 'mirror image');
         } }] },
     /* ---------------- Q16–18 ---------------- */
     { num: '16', stem: '<i>(Multiple Choice)</i>', parts: [
@@ -1178,7 +1178,7 @@
             'Pond A at ' + t('t=4') + ': ' + t(Am) + ' kg. Pond B: ' + t(numDec(o.avg) + '(4)+' + o.a0 + '=' + numDec(Bm)) + ' kg. <b>Pond B</b>, by ' + t(numDec(d)) + ' kg.', ['Evaluate pond B’s model at ' + t('t=4') + '.'], 'compare ponds at t=4');
         } },
         { id: 'e20e', sub: 'e', level: 'EMG', outcome: 'RF4', make: function (r, o) {
-          return mc(r, 'Did pond A ever actually grow at the average rate you found in (b)?', [
+          return mc(r, 'Over the whole eight weeks, pond A’s average rate of change is ' + t(numDec(o.avg)) + ' kg/week (from (b)). Did pond A ever actually grow at that average rate?', [
             { html: 'No — its interval rates were ' + t(o.rs.map(numDec).join(',\\ ')) + '; ' + t(numDec(o.avg)) + ' matches none. An average describes the whole interval, not any actual stretch.', right: true },
             { html: 'Yes — the average is one of the interval rates.', why: 'Compare ' + t(numDec(o.avg)) + ' with the four rates from (a).' },
             { html: 'Yes — in the middle of the eight weeks.', why: 'Between weeks 2–4 the rate was ' + t(numDec(o.rs[1])) + ' and between 4–6 it was ' + t(numDec(o.rs[2])) + ' — neither is ' + t(numDec(o.avg)) + '.' },
@@ -1392,7 +1392,7 @@
               if ((v[1] - v[0]) / v[2] < 1 || (v[4] - v[3]) / v[5] < 1) return wrong('win-scale', 'The scale is bigger than the window itself — there would be no tick marks.');
               return ok();
             };
-            var p = B.fields('State a suitable window, ' + t('x:[x_{\\min},x_{\\max},x_{\\text{scl}}],\\ y:[y_{\\min},y_{\\max},y_{\\text{scl}}]') + ', for graphing both lines so that the ' + t('x') + '- and ' + t('y') + '-intercepts of each line are visible.',
+            var p = B.fields('State a suitable window, ' + t('x:[x_{\\min},x_{\\max},x_{\\text{scl}}],\\ y:[y_{\\min},y_{\\max},y_{\\text{scl}}]') + ', for graphing both lines, ' + t('L_1:\\ ' + sT(o.L1)) + ' and ' + t('L_2:\\ ' + sT(o.L2)) + ', so that the ' + t('x') + '- and ' + t('y') + '-intercepts of each line are visible.',
               [{ label: t('x_{\\min}') }, { label: t('x_{\\max}') }, { label: t('x_{\\text{scl}}') }, { label: t('y_{\\min}') }, { label: t('y_{\\max}') }, { label: t('y_{\\text{scl}}') }], [num(0), num(0), num(0), num(0), num(0), num(0)], kx.concat(ky).map(String),
               'e.g. ' + t('x:[' + kx.join(',') + '],\\ y:[' + ky.join(',') + ']'),
               t('L_1') + ': ' + t('x') + '-int ' + t('0=' + sT(o.L1).slice(2)) + ' ⟹ ' + t('x=' + qT(xint(o.L1))) + '; ' + t('y') + '-int ' + t(o.b1) + '.<br>' + t('L_2') + ': ' + t('x') + '-int ' + t('x=' + qT(xint(o.L2)) + (isInt(xint(o.L2)) ? '' : '\\approx ' + dec(Math.round(qv(xint(o.L2)) * 10) / 10))) + '; ' + t('y') + '-int ' + t(qT(o.b2)) + '.<br>The window must reach from ' + t('x=' + dec(Math.round(xlo * 10) / 10)) + ' to ' + t('x=' + dec(Math.round(xhi * 10) / 10)) + ' and from ' + t('y=' + dec(Math.round(ylo * 10) / 10)) + ' to ' + t('y=' + dec(Math.round(yhi * 10) / 10)) + ', e.g. ' + t('x:[' + kx.join(',') + '],\\ y:[' + ky.join(',') + ']') + '.',

@@ -688,7 +688,7 @@
           } },
           { id: 'e4d', sub: 'd', level: 'BEG', make: function (r, s) {
             var n = s.A - s.B * s.pv;
-            return numPart('How many cases are sold at that price?', n, 2, [{ v: s.Vm, code: 'ctx-gave-h', hint: 'That is the revenue. Cases sold = ' + t(s.A + '-' + s.B + 'p') + '.' }, { v: s.pv, code: 'ctx-gave-a', hint: 'That is the price. Substitute it into ' + t(s.A + '-' + s.B + 'p') + '.' }],
+            return numPart('How many cases are sold at the price that earns the most revenue?', n, 2, [{ v: s.Vm, code: 'ctx-gave-h', hint: 'That is the revenue. Cases sold = ' + t(s.A + '-' + s.B + 'p') + '.' }, { v: s.pv, code: 'ctx-gave-a', hint: 'That is the price. Substitute it into ' + t(s.A + '-' + s.B + 'p') + '.' }],
               t(s.A + '-' + s.B + '(' + s.pv + ')=' + n) + ' cases. Check: ' + t(n + '\\times\\$' + s.pv + '=\\$' + F(s.Vm)) + ' ✓.', ['Substitute the price into the number of cases sold, ' + t(s.A + '-' + s.B + 'p') + '.'], 'cases at best price', { after: 'cases' });
           } },
           { id: 'e4e', sub: 'e', level: 'PRG', make: function (r, s) {
@@ -697,7 +697,7 @@
           } },
           { id: 'e4f', sub: 'f', level: 'PRG', make: function (r, s) {
             var c1 = s.A - s.B * s.p1, c2 = s.A - s.B * s.p2;
-            return fieldsPart('The owner says “the same money for fewer cases is better.” Which of the two prices should she charge, and how many cases does she sell?', [
+            return fieldsPart('Two prices give the same weekly revenue of ' + t(money(s.T)) + '. The owner says “the same money for fewer cases is better.” Which of the two prices should she charge, and how many cases does she sell?', [
               { label: 'Price', x: s.p2, d: 2, before: '$', cands: [{ v: s.p1, code: 'ctx-more-cases', hint: 'At ' + t(money(s.p1)) + ' she sells ' + t(c1) + ' cases. Which price sells <b>fewer</b> cases for the same money?' }] },
               { label: 'Cases sold', x: c2, d: 2, after: 'cases', cands: [{ v: c1, code: 'ctx-more-cases', hint: 'That is the number of cases at the lower price.' }] }],
               'At ' + t(money(s.p1)) + ': ' + t(s.A + '-' + s.B + '(' + s.p1 + ')=' + c1) + ' cases. At ' + t(money(s.p2)) + ': ' + t(s.A + '-' + s.B + '(' + s.p2 + ')=' + c2) + ' cases. Same ' + t(money(s.T)) + ' for fewer cases: charge ' + t(money(s.p2)) + ' and sell ' + t(c2) + ' cases.', ['Find the cases sold at each price with ' + t(s.A + '-' + s.B + 'p') + '.'], 'fewer cases price');
@@ -847,7 +847,7 @@
           } },
           { id: 'e7f', sub: 'e-i', level: 'PRG', outcome: 'RF2', make: function (r, s) {
             var hi = rd(s.tr, 2), tg = setT('t', 0, hi), rg = setT('T', s.room, s.T0);
-            return setPart('State the practical domain, using your answer to the previous part (room temperature) as the upper bound.', tg, { v: 't', other: rg, otherName: 'range', wrong: [{ is: setT('t', 0, rd(s.ti, 2)), code: 'ctx-to-empty', hint: 'The model stops being realistic at room temperature, before it reaches ' + t('0^\\circ\\text{C}') + '.' }] },
+            return setPart('State the practical domain: from the moment the coffee is poured until the line reaches room temperature, ' + t(s.room + '^\\circ\\text{C}') + ' (upper bound to the nearest hundredth).', tg, { v: 't', other: rg, otherName: 'range', wrong: [{ is: setT('t', 0, rd(s.ti, 2)), code: 'ctx-to-empty', hint: 'The model stops being realistic at room temperature, before it reaches ' + t('0^\\circ\\text{C}') + '.' }] },
               'From pouring to reaching room temperature: ' + t('D=' + tg) + '.', H_DOM, 'coffee domain');
           } },
           { id: 'e7g', sub: 'e-ii', level: 'PRG', outcome: 'RF2', make: function (r, s) {
@@ -897,11 +897,11 @@
           } },
           { id: 'e8e', sub: 'e-ii', level: 'PRG', outcome: 'RF2', make: function (r, s) {
             var tg = setT('P', s.PY, s.P0), dg = setT('t', 0, s.Y);
-            return setPart('State the practical range for those ' + t(s.Y) + ' years.', tg, { v: 'P', other: dg, otherName: 'domain', wrong: [{ is: setT('P', 0, s.P0), code: 'ctx-rng-start', hint: 'Only the first ' + t(s.Y) + ' years count: find ' + t('P') + ' at ' + t('t=' + s.Y) + '.' }] },
+            return setPart('The council trusts the model for the first ' + t(s.Y) + ' years only ' + t('(0\\le t\\le ' + s.Y + ')') + '. State the practical range for those ' + t(s.Y) + ' years.', tg, { v: 'P', other: dg, otherName: 'domain', wrong: [{ is: setT('P', 0, s.P0), code: 'ctx-rng-start', hint: 'Only the first ' + t(s.Y) + ' years count: find ' + t('P') + ' at ' + t('t=' + s.Y) + '.' }] },
               t('t=0') + ': ' + t('P=' + F(s.P0)) + '. ' + t('t=' + s.Y) + ': ' + t('P=' + F(s.P0) + '-' + s.rt + '(' + s.Y + ')=' + F(s.PY)) + '. So ' + t('R=' + tg) + '.', H_DOM, 'town range');
           } },
           { id: 'e8f', sub: 'f', level: 'EMG', outcome: 'RF2', make: function (r, s) {
-            return mc(r, 'A population is a whole number of people, yet the range above uses ' + t('P\\in\\mathbb{R}') + '. Why is that reasonable for a model?', [
+            return mc(r, 'A population is a whole number of people, yet the practical range of this model is written with ' + t('P\\in\\mathbb{R}') + '. Why is that reasonable for a model?', [
               { html: 'The model gives the trend: as ' + t('t') + ' varies continuously the line passes through every value between the ends. A real head count just rounds those values.', right: true },
               { html: 'It isn’t reasonable: a population range must always be written with ' + t('\\in I') + '.', why: 'For a model of a trend, ' + t('\\in\\mathbb{R}') + ' is a fair description; ' + t('\\in I') + ' would be a list of ' + t(F(s.P0 - s.PY + 1)) + ' values.' },
               { html: 'Because towns can contain fractions of people.', why: 'People are whole — the model’s outputs just aren’t. A count would round them.' },
