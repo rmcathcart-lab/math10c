@@ -410,7 +410,7 @@ math-field.mf::part(menu-toggle), math-field.mf::part(virtual-keyboard-toggle) {
 /* ---------- Unit 3: algebra tiles and area models ---------- */
 .tiles-svg { display: block; height: auto; margin: 8px 0; }
 .tiles-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; font-size: 13.5px; color: var(--ink2); margin: 4px 0 8px; }
-.tiles-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.tiles-legend > span { display: inline-flex; align-items: center; gap: 5px; }
 .area-model { margin: 10px 0; }
 .am-grid { display: grid; }
 .am-top { text-align: center; padding: 2px 4px 6px; font-size: 16px; }

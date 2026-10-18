@@ -1157,7 +1157,7 @@
               { x: [-4, 8], y: [-3, 9], labels: 2, defaultEnd: 'arrow', tools: ['line', 'ends'], bg: { segs: [{ pts: [A, Bp], start: 'closed', end: 'closed' }], points: [{ x: A[0], y: A[1], label: 'A' }, { x: Bp[0], y: Bp[1], label: 'B' }] } },
               check, target,
               'Start at ' + t('M' + ptT(M[0], M[1])) + ' and use the slope ' + t(nT(pm_)) + ': ' + (fv(pm_) < 0 ? 'down' : 'up') + ' ' + t(Math.abs(pm_[0])) + ', right ' + t(pm_[1]) + ' to ' + t(ptT(M[0] + pm_[1], M[1] + pm_[0])) + '. Draw the line through those points with arrows at both ends.',
-              ['Plot ' + t('M') + ' first, then step along the perpendicular slope from (c).'], 'draw perpendicular bisector');
+              ['Plot the midpoint ' + t('M') + ' first, then step along the perpendicular slope (the negative reciprocal of the slope of ' + t('AB') + ').'], 'draw perpendicular bisector');
             p.bad = wr.map(function (w) { return w.is; }).concat([{ pts: [], pieces: [{ v: [M, P2], s: 'closed', e: 'closed' }], join: 'none' }]).filter(function (b) { return !DR.same(b, target); });
             return p;
           } },
