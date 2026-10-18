@@ -28,6 +28,8 @@
     unreadable: 'I can’t read that answer. Use the keypad buttons for roots, fractions and exponents.'
   };
   K.read = function (resp) {
+    var raw = String(resp == null ? '' : resp).replace(/\\left|\\right/g, '').replace(/\s/g, '');
+    if (/^\(-?[\d.]+(\\frac\{[^{}]*\}\{[^{}]*\}|\/\d+)?,-?[\d.\\a-z{}\/]+\)$/.test(raw)) return { res: form('value-point', 'Give just the number, not a point.') };
     var p = ex.parse(resp);
     if (!p.ok) return { res: form(p.code === 'empty' ? 'empty' : 'unreadable-' + p.code, READ[p.code] || READ.unreadable) };
     return { ast: p.ast, val: ex.value(p.ast) };

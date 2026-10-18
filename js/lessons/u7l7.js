@@ -1142,7 +1142,7 @@
         } }] },
     /* ---------------- Q20 ---------------- */
     { num: '20',
-      shared: function (r) { var a0 = r.pick([2, 3, 4, 5]); return { a0: a0, A: [0, 1, 2, 3, 4].map(function (j) { return a0 * Math.pow(2, j); }), avg: 15 * a0 / 8 }; },
+      shared: function (r) { var a0 = r.pick([2, 3, 4, 5]), A = [0, 1, 2, 3, 4].map(function (j) { return a0 * Math.pow(2, j); }); return { a0: a0, A: A, avg: 15 * a0 / 8, rs: [0, 1, 2, 3].map(function (j) { return (A[j + 1] - A[j]) / 2; }) }; },   // rs: the four interval rates (kg/week)
       stem: function (o) { return '<b>Average rate against constant rate.</b> Pond A and pond B are both monitored for algae. Pond A’s readings are in the table; pond B grows at a <b>constant</b> rate, starting at ' + t(o.a0) + ' kg at ' + t('t=0') + ' and reaching ' + t(16 * o.a0) + ' kg at ' + t('t=8') + ' weeks.' + HW.valueTable([[t('t') + ' (weeks)'].concat([0, 2, 4, 6, 8].map(function (x) { return t(String(x)); })), ['Pond A, ' + t('M') + ' (kg)'].concat(o.A.map(function (y) { return t(String(y)); }))]); },
       parts: [
         { id: 'e20a', sub: 'a i', level: 'EMG', outcome: 'RF4', make: function (r, o) {
@@ -1156,7 +1156,7 @@
             { html: 'Yes — the mass increases every interval.', why: 'Increasing isn’t enough: a linear relation increases by the <b>same</b> amount each equal step.' },
             { html: 'Yes — the time values go up by a constant ' + t('2') + '.', why: 'Equal steps in ' + t('t') + ' are needed to compare, but the changes in ' + t('M') + ' must also be equal.' },
             { html: 'No — the table doesn’t start at ' + t('M=0') + '.', why: 'A linear relation can start anywhere. Look at the rates of change.' }],
-            'Equal ' + t('t') + '-steps, but the rates ' + t(o.a0 + ',\\ ' + 2 * o.a0 + ',\\ ' + 4 * o.a0 + ',\\ ' + 8 * o.a0) + ' are not equal: pond A is <b>not linear</b>.', ['Are the rates from (a) all the same?'], 'linear from rates');
+            'Equal ' + t('t') + '-steps, but the rates ' + t(o.rs.map(numDec).join(',\\ ')) + ' are not equal: pond A is <b>not linear</b>.', ['Are the rates from (a) all the same?'], 'linear from rates');
         } },
         { id: 'e20b', sub: 'b', level: 'EMG', outcome: 'RF4', make: function (r, o) {
           return B.number('Calculate pond A’s <b>average</b> rate of change over the whole eight weeks.', o.avg, function (v) { return Math.abs(v - 15 * o.a0) < 1e-9 ? { code: 'rate-step', hint: 'Divide the change in mass by the ' + t('8') + ' weeks.' } : null; },
@@ -1179,11 +1179,11 @@
         } },
         { id: 'e20e', sub: 'e', level: 'EMG', outcome: 'RF4', make: function (r, o) {
           return mc(r, 'Did pond A ever actually grow at the average rate you found in (b)?', [
-            { html: 'No — its interval rates were ' + t(o.a0 + ',\\ ' + 2 * o.a0 + ',\\ ' + 4 * o.a0 + ',\\ ' + 8 * o.a0) + '; ' + t(numDec(o.avg)) + ' matches none. An average describes the whole interval, not any actual stretch.', right: true },
+            { html: 'No — its interval rates were ' + t(o.rs.map(numDec).join(',\\ ')) + '; ' + t(numDec(o.avg)) + ' matches none. An average describes the whole interval, not any actual stretch.', right: true },
             { html: 'Yes — the average is one of the interval rates.', why: 'Compare ' + t(numDec(o.avg)) + ' with the four rates from (a).' },
-            { html: 'Yes — in the middle of the eight weeks.', why: 'Between weeks 2–4 the rate was ' + t(2 * o.a0) + ' and between 4–6 it was ' + t(4 * o.a0) + '.' },
+            { html: 'Yes — in the middle of the eight weeks.', why: 'Between weeks 2–4 the rate was ' + t(numDec(o.rs[1])) + ' and between 4–6 it was ' + t(numDec(o.rs[2])) + ' — neither is ' + t(numDec(o.avg)) + '.' },
             { html: 'Yes — an average rate is always reached at some interval.', why: 'Not for these intervals: none of the four rates equals ' + t(numDec(o.avg)) + '.' }],
-            '<b>No.</b> The interval rates were ' + t(o.a0 + ',\\ ' + 2 * o.a0 + ',\\ ' + 4 * o.a0 + ',\\ ' + 8 * o.a0) + ' kg/week; ' + t(numDec(o.avg)) + ' falls between two of them.', ['Look back at the rates in (a).'], 'average vs actual rate');
+            '<b>No.</b> The interval rates were ' + t(o.rs.map(numDec).join(',\\ ')) + ' kg/week; ' + t(numDec(o.avg)) + ' matches none of them (it falls between ' + t(numDec(o.rs[1])) + ' and ' + t(numDec(o.rs[2])) + ').', ['Look back at the rates in (a).'], 'average vs actual rate');
         } },
         { id: 'e20f', sub: 'f', level: 'EMG', outcome: 'RF4', make: function (r, o) {
           return B.approx('Express pond B’s rate in kilograms per day, to the nearest hundredth. (Is pond B growing any faster in that wording?)', o.avg / 7, 2, { after: 'kg per day', diag: function (v) { return Math.abs(v - K.roundTo(o.avg * 7, 2)) < 1e-9 ? { code: 'unit-conv', hint: 'A week is 7 days, so the rate per day is smaller: divide by 7.' } : null; } },
