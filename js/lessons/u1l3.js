@@ -309,7 +309,7 @@
     'mc-said-NT': 'Said non-repeating & terminating', 'mc-said-RN': 'Said repeating & non-terminating', 'mc-said-NN': 'Said non-repeating & non-terminating', 'mc-said-RT': 'Said repeating & terminating (impossible)',
     'as-terminating': 'Treated a repeating decimal as terminating', 'bar-all': 'Repeated the digits before the bar too', 'no-whole': 'Lost the whole-number part',
     'no-root': 'Forgot to take the square root', 'one-root': 'Took only one of two roots', 'dec-place': 'Decimal-place slip in a root',
-    'coef-inside': 'Read k√m as √(k·m)', 'no-subtract': 'Didn’t subtract the equations', 'coef-form': 'Wrong multipliers (algebraic method)', tails: 'Repeating tails don’t cancel', rhs: 'Subtraction error (algebraic method)',
+    'coef-inside': 'Read k√m as √(k·m)', 'root-small': 'Placed √0.a at 0.a', 'no-subtract': 'Didn’t subtract the equations', 'coef-form': 'Wrong multipliers (algebraic method)', tails: 'Repeating tails don’t cancel', rhs: 'Subtraction error (algebraic method)',
     unreduced: 'Didn’t reduce before b − a', 'not-reduced': 'Applied the denominator test before reducing', 'den-test': 'Misread the denominator test', swap: 'Swapped nines and zeros', 'no-zeros': 'Left out the zeros for the lead', close: 'Treated 0.(9) as less than 1', 'real-value': 'Ignored the bar placement', screen: 'Confused screen size with block length', 'no-lead-subtract': 'Forgot to subtract the lead', 'a-b': 'Found a − b', 'said-irrational': 'Called a rational number irrational', 'said-rational': 'Called an irrational number rational',
     mixed: 'Wrote a mixed number', 'irrational-answer': 'Gave an irrational number', endpoint: 'Gave an endpoint', 'not-between': 'Number not between', 'not-multiple': 'Numerator doesn’t cancel the bad prime',
     'sum-lead': 'Added a and b instead of taking the larger', 'max-block': 'Gave the maximum block length, not the actual', 'n-not-n-1': 'Counted n remainders instead of n − 1'
@@ -472,6 +472,11 @@
             for (var q = 0; q < 2; q++) {
               var x = byId[['e', 'f'][q]];
               if (resp[x.id] != null && Math.abs(resp[x.id] - x.mis) <= TOL && Math.abs(x.v - x.mis) > 2 * TOL) return wrong('coef-inside', 'It looks like you treated ' + t(x.tex) + ' as ' + t('\\sqrt{' + x.km[0] * x.km[1] + '}') + '. ' + t(x.tex) + ' means ' + t(x.km[0] + '\\times\\sqrt{' + x.km[1] + '}') + ' — find the root first, then multiply.');
+            }
+            /* √0.a placed at 0.a: a square root of a number between 0 and 1 is bigger than the number */
+            for (var q2 = 0; q2 < it.length; q2++) {
+              var y = it[q2], sq = y.v * y.v;
+              if (!y.km && y.v < 1 && resp[y.id] != null && Math.abs(resp[y.id] - sq) <= 0.06 && Math.abs(y.v - sq) > 0.1) return wrong('root-small', t(y.tex) + ' is not ' + t(String(Math.round(sq * 100) / 100)) + '. For a number between ' + t('0') + ' and ' + t('1') + ', the square root is <b>bigger</b> than the number (' + t('0.5^{2}=0.25') + ', so ' + t('\sqrt{0.25}=0.5') + ').');
             }
             return base(resp);
           };

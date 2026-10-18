@@ -61,13 +61,13 @@
   function expandT(m, p) { var mv = fv(m); return lin([[1, 'y'], [-p[1], '']]) + '=' + lin([[mv, 'x'], [-mv * p[0], '']]); }
   function siSteps(m, p) {
     var mv = fv(m), b = bOf(m, p), s = t(psT(m, p));
-    if (p[0] !== 0) s += '<br>Expand: ' + t(expandT(m, p));
+    if (p[0] !== 0 && mv !== 1) s += '<br>Expand: ' + t(expandT(m, p));
     if (p[1] !== 0) s += '<br>' + (p[1] > 0 ? 'Add ' + t(nT(p[1])) : 'Subtract ' + t(nT(-p[1]))) + ' on both sides: ' + t('y=' + lin([[mv, 'x'], [b, '']]));
     return s;
   }
   function genSteps(m, p, noCheck) {
     var f = Array.isArray(m) ? Fr(m[0], m[1]) : [m, 1], P0 = f[0], Q = f[1], G = genABC({ m: m, point: p }), s = t(psT(m, p));
-    if (Q === 1) { if (p[0] !== 0) s += '<br>Expand: ' + t(expandT(m, p)); }
+    if (Q === 1) { if (p[0] !== 0 && fv(m) !== 1) s += '<br>Expand: ' + t(expandT(m, p)); }
     else s += '<br>Multiply both sides by ' + t(Q) + ': ' + t(lin([[Q, 'y'], [-Q * p[1], '']]) + '=' + lin([[P0, 'x'], [-P0 * p[0], '']]));
     s += '<br>Move every term to one side (keep the ' + t('x') + '-term positive): ' + t(gT(G));
     if (!noCheck) s += '<br>Check ' + t(ptT(p)) + ': ' + chkT(G, p);
@@ -103,7 +103,7 @@
   function psPart(prompt, m, p, text, extraHint) {
     var key = psT(m, p), raw = rawT(m, p);
     return line(prompt, { m: m, point: p }, { form: 'point-slope', point: p, wrong: psWrongs(m, p) },
-      'Substitute ' + t('m=' + mT(m)) + ' and ' + t('(x_1,\\ y_1)=' + ptT(p)) + ' into ' + t('y-y_1=m(x-x_1)') + ':<br>' + t(raw) + (raw.replace(/\(([^()]*)\)/g, '$1') !== key ? '<br>which tidies to ' + t(key) + '.' : ''),
+      'Substitute ' + t('m=' + mT(m)) + ' and ' + t('(x_1,\\ y_1)=' + ptT(p)) + ' into ' + t('y-y_1=m(x-x_1)') + ':<br>' + t(raw) + (raw !== key ? '<br>which tidies to ' + t(key) + '.' : ''),
       extraHint ? [extraHint].concat(PS_HINTS) : PS_HINTS, text, [raw], p[0] || p[1] ? [psT(m, [-p[0], -p[1]])] : []);
   }
   function siPart(prompt, m, p, text, extra) {
@@ -230,7 +230,7 @@
     }
     var key = M + 'x+' + B;
     return { prompt: t('(0,\\ ' + B + ')') + ', slope ' + t(M), input: { type: 'math', keys: 'poly', vars: ['x', M, B], before: t('y='), placeholder: 'e.g. ' + M + 'x + ' + B }, check: chk, key: key, answer: t('y=' + key),
-      solution: t('y-' + B + '=' + M + '(x-0)') + '<br>' + t('y-' + B + '=' + M + 'x') + '<br>' + t('y=' + key) + '<br>So slope–intercept form is just slope–point form with the point ' + t('(0,\\ b)') + ' on the ' + t('y') + '-axis.',
+      solution: t('y-' + B + '=' + M + '(x-0)') + '<br>' + t('y-' + B + '=' + M + 'x') + '<br>' + t('y=' + key) + '<br>So slope–intercept form is just slope–point form with the point ' + t('(0,\\ ' + B + ')') + ' on the ' + t('y') + '-axis.',
       hints: ['Use ' + t('y-y_1=m(x-x_1)') + ' with ' + t('x_1=0') + ' and ' + t('y_1=' + B) + ', then get ' + t('y') + ' by itself.'], text: 'line through (0,' + B + ') slope ' + M,
       good: [B + '+' + M + 'x', 'y=' + M + 'x+' + B, 'x' + M + '+' + B], bad: [B + 'x+' + M, M + 'x-' + B, M + '(x+' + B + ')'] };
   }
@@ -301,7 +301,7 @@
         { id: '4b', level: 'PRG', make: function (r) { var p = [r.int(2, 6), r.int(-9, -3)], m = [1, r.int(3, 6)]; return genPart(t(ptT(p)) + ', slope ' + t(mT(m)), m, p, 'general form through ' + ptT(p) + ', m=' + mT(m)); } },
         { id: '4c', level: 'PRG', make: function (r) { var p = [r.int(-5, -1), r.int(2, 6)], m = properFr(r, [3, 4, 5], -1, 2); return genPart(t(ptT(p)) + ', slope ' + t(mT(m)), m, p, 'general form through ' + ptT(p) + ', m=' + mT(m)); } },
         { id: '4d', level: 'PRG', make: function (r) { var p = [r.int(-9, -2), r.int(-5, -1)], m = properFr(r, [5, 7, 8], 1, 2); return genPart(t(ptT(p)) + ', slope ' + t(mT(m)), m, p, 'general form through ' + ptT(p) + ', m=' + mT(m)); } },
-        { id: '4e', level: 'PRG', make: function (r) { var p = [0, r.int(-9, -2)], m = properFr(r, [5, 6, 7], -1, 2); return genPart(t(ptT(p)) + ', slope ' + t(mT(m)), m, p, 'general form through ' + ptT(p) + ', m=' + mT(m)); } },
+        { id: '4e', level: 'EMG', make: function (r) { var p = [0, r.int(-9, -2)], m = properFr(r, [5, 6, 7], -1, 2); return genPart(t(ptT(p)) + ', slope ' + t(mT(m)), m, p, 'general form through ' + ptT(p) + ', m=' + mT(m)); } },
         { id: '4f', level: 'EMG', make: function (r) { var m = improperFr(r, [2, 3], 1, 8); return genPart(t('(0,\\ 0)') + ', slope ' + t(mT(m)), m, [0, 0], 'general form through origin, m=' + mT(m), { hints: ['Through the origin: ' + t('y-0=m(x-0)') + '. Clear the fraction and move the terms to one side.', 'General form here has no constant: ' + t('C=0') + '.'] }); } }] },
       { num: '5', stem: 'Each equation below is written in slope–point form. State the slope of the line and the coordinates of the point used to write the equation.', outcome: 'RF6', parts: [
         { id: '5a', level: 'BEG', make: function (r) { return readPsPart(improperFr(r, [2, 3], -1, 8), [r.int(-9, -2), r.int(2, 9)], 'read slope & point'); } },
@@ -324,7 +324,9 @@
           { id: '6b', sub: 'ℓ₂', level: 'PRG', make: function (r, sh) { return gridLinePart(sh.l2, '\\ell_2'); } }] },
       { num: '7', section: 'Multiple choice and numerical response', stem: '<i>(Multiple Choice)</i>', parts: [
         { id: '7', level: 'EMG', make: function (r) {
-          var m = r.int(-6, -2), p = [r.int(2, 7), r.int(-7, -2)], b = bOf(m, p), b2 = -p[1] - m * p[0], A = -m;
+          var m, p, b, b2, A;
+          for (var i = 0; i < 100; i++) { m = r.int(-6, -2); p = [r.int(2, 7), r.int(-7, -2)]; b = bOf(m, p); b2 = -p[1] - m * p[0]; if (b !== 0 && distinctTex([b, -b, b2].map(String))) break; }   // b = 0 made two options identical
+          A = -m;
           return mcPart(r, 'The equation of the line passing through the point ' + t(ptT(p)) + ' with slope ' + t(m) + ' is', [
             eqOpt(gT([A, 1, -b]), true),
             eqOpt(gT([A, 1, b]), false, 'That line passes through ' + t(ptT([-p[0], -p[1]])) + ': the signs of the point were flipped. Use ' + t('y-y_1') + ' and ' + t('x-x_1') + '.'),
@@ -494,11 +496,15 @@
             var m = slope2(sh.p1, sh.p2);
             return genPart('Determine the equation of the linear relationship, in general form.', m, sh.p1, 'store credit general form', {
               pre: slopeSteps(sh.p1, sh.p2) + '<br>', noPs: true, wrong: [{ is: { m: slope2([sh.p1[1], sh.p1[0]], [sh.p2[1], sh.p2[0]]), point: [sh.p1[1], sh.p1[0]] }, code: 'pairs-flip', hint: 'Notebooks are ' + t('x') + ' and pens are ' + t('y') + ' — your line uses the points backwards.' }],
-              hints: ['Use the two points from (a): find the slope, then slope–point form.', 'Clear the fraction and write ' + t('Ax+By+C=0') + '.'] });
+              hints: ['Each purchase is a point (notebooks, pens): find the slope through the two points, then slope–point form.', 'Clear the fraction and write ' + t('Ax+By+C=0') + '.'] });
           } }] },
       { num: '19', stem: '<i>(Multiple Choice)</i>', parts: [
         { id: '19', level: 'EMG', make: function (r) {
-          var A = r.int(2, 5), B = r.pick([2, 3, 4, 5].filter(function (b) { return b !== A && coprime(A, b); })), c = r.int(1, 12), G = [A, -B, c], p = [r.int(2, 6), r.int(-9, -3)], mp = Fr(-B, A);
+          var A, B, c, G, p, mp;
+          for (var i = 0; i < 100; i++) {   // option C (through (−x₁, 0)) must not be the right line by accident: needs y₁ ≠ 2·m⊥·x₁
+            A = r.int(2, 5); B = r.pick([2, 3, 4, 5].filter(function (b) { return b !== A && coprime(A, b); })); c = r.int(1, 12); G = [A, -B, c]; p = [r.int(2, 6), r.int(-9, -3)]; mp = Fr(-B, A);
+            if (p[1] * A !== -2 * B * p[0]) break;
+          }
           var o = [psT(mp, p), psT(Fr(B, A), [p[0], -p[1]]), psT(mp, [-p[0], 0]), psT(Fr(-A, B), p)];
           return mcPart(r, 'The equation of the line through the point ' + t(ptT(p)) + ' and perpendicular to the line with equation ' + t(gT(G)) + ' can be written in the form', [
             eqOpt(o[0], true), eqOpt(o[1], false, 'Two slips: ' + t('y_1=' + p[1]) + ' gives ' + t('y+' + (-p[1])) + ', and the perpendicular slope must be negative here.'),
@@ -524,7 +530,7 @@
             { ok: t(gT([1, q, -q * b])), bad: t(gT([1, q, q * b])), conv: t(gT([1, q, -q * b])) + ' gives ' + t(q + 'y=-x+' + q * b) + ', ' + t(siT(m, pA)) },
             { ok: 'the line passing through ' + t(ptT([0, b])) + ' and ' + t(ptT([xi, 0])), bad: 'the line passing through ' + t(ptT([0, xi])) + ' and ' + t(ptT([b, 0])), conv: 'through ' + t(ptT([0, b])) + ' and ' + t(ptT([xi, 0])) + ': slope ' + t('\\frac{0-' + b + '}{' + xi + '-0}=' + mT(m)) + ', intercept ' + t(b) },
             { ok: t(siT(m, pA)), bad: t('y=' + lin([[-1 / q, 'x'], [b - 1, '']])), conv: t(siT(m, pA)) }];
-          var oddConv = ['the odd one expands to ' + t('y=' + lin([[-1 / q, 'x'], [b - 2 * j, '']])), 'the odd one gives ' + t('y=' + lin([[-1 / q, 'x'], [-b, '']])), 'the odd one has slope ' + t('-' + q) + '', 'the odd one has ' + t('y') + '-intercept ' + t(b - 1)][odd];
+          var oddConv = ['the odd one expands to ' + t('y=' + lin([[-1 / q, 'x'], [b + 2 * j, '']])), 'the odd one gives ' + t('y=' + lin([[-1 / q, 'x'], [-b, '']])), 'the odd one has slope ' + t('-' + q) + '', 'the odd one has ' + t('y') + '-intercept ' + t(b - 1)][odd];
           var opts = reps.map(function (rp, i) { return { html: i === odd ? rp.bad : rp.ok, right: i === odd, why: i === odd ? null : 'Convert it: ' + rp.conv + ' — the same line as most of the others. Look for the one that differs.' }; });
           return mcPart(r, 'Which of the following linear relations is <b>not</b> equivalent to the other three?', opts,
             'Write each one as ' + t('y=mx+b') + '. Three of them are ' + t(siT(m, pA)) + '; ' + oddConv + '.', ['Convert every option to slope–intercept form (find the slope and the ' + t('y') + '-intercept) and compare.'], 'MC not equivalent', true);
@@ -532,8 +538,9 @@
       { num: '22', stem: '<i>(Multiple Choice)</i>', parts: [
         { id: '22', level: 'BEG', make: function (r) {
           var p, m, b, vals;
-          for (var i = 0; i < 100; i++) { p = [r.int(2, 5), r.int(2, 6)]; m = r.int(-4, -2); b = bOf(m, p); vals = [b, -b, p[1] + m * p[0], p[1] + m]; if (distinctTex(vals.map(String)) && vals.every(function (v) { return v !== 0; })) break; }
-          var whys = [null, 'Check the sign: ' + t('b=y_1-mx_1=' + p[1] + '-(' + m + ')(' + p[0] + ')') + '.', 'That’s ' + t('y_1+mx_1') + '. Solve ' + t(p[1] + '=' + m + '(' + p[0] + ')+b') + ' for ' + t('b') + ': subtract ' + t(m * p[0]) + ' from both sides.', 'Multiply the slope by ' + t('x_1=' + p[0]) + ': ' + t(p[1] + '=' + m + '(' + p[0] + ')+b') + '.'];
+          // slopes of both signs + a swapped-coordinates distractor, so the sorted options don't always put the key last
+          for (var i = 0; i < 100; i++) { p = [r.int(2, 5), r.int(2, 6)]; m = r.pick([-4, -3, -2, -2, 2, 3, 4]); b = bOf(m, p); vals = [b, -b, p[1] + m * p[0], p[0] - m * p[1]]; if (distinctTex(vals.map(String)) && vals.every(function (v) { return v !== 0; })) break; }
+          var whys = [null, 'Check the sign: ' + t('b=y_1-mx_1=' + p[1] + '-(' + m + ')(' + p[0] + ')') + '.', 'That’s ' + t('y_1+mx_1') + '. Solve ' + t(p[1] + '=' + m + '(' + p[0] + ')+b') + ' for ' + t('b') + ': subtract ' + t(m * p[0]) + ' from both sides.', 'You swapped the coordinates: ' + t('x=' + p[0]) + ' and ' + t('y=' + p[1]) + ', so ' + t(p[1] + '=' + m + '(' + p[0] + ')+b') + '.'];
           var opts = vals.map(function (v, i) { return { v: v, html: t(v), right: i === 0, why: whys[i] }; }).sort(function (a, c) { return a.v - c.v; });
           return mcPart(r, 'The point ' + t(ptT(p)) + ' lies on a line with slope ' + t(m) + '. The ' + t('y') + '-intercept of the line is', opts,
             'Substitute into ' + t('y=mx+b') + ': ' + t(p[1] + '=' + m + '(' + p[0] + ')+b') + ', so ' + t(p[1] + '=' + m * p[0] + '+b') + ' and ' + t('b=' + b) + '.', ['Substitute ' + t('m') + ' and the point into ' + t('y=mx+b') + ' and solve for ' + t('b') + '.'], 'MC y-int from point & slope', true, true);
@@ -599,14 +606,14 @@
             var p = K.P.slope('Determine the slope of ' + t('AB') + '. (Do this first — slope–point form can’t start without it.)', sh.m, { diag: function (v) { var dy = sh.B[1] - sh.A[1], dx = sh.B[0] - sh.A[0]; if (near(v, dy)) return { code: 'rate-dy', hint: 'Divide the rise by the run: ' + t('m=\\frac{\\Delta y}{\\Delta x}') + '.' }; return null; } }, slopeSteps(sh.A, sh.B), ['Slope = ' + t('\\frac{y_2-y_1}{x_2-x_1}') + '. Subtract the coordinates in the same order on top and bottom.'], 'slope of AB');
             p.bad = [nT(-fv(sh.m))]; return p;
           } },
-          { id: 'e3b', level: 'BEG', make: function (r, sh) { var p = psPart('Write the slope–point equation of the line using ' + t('A') + ' as ' + t('(x_1,\\ y_1)') + '.', sh.m, sh.A, 'slope-point with A'); p.solution = t('m=' + mT(sh.m)) + ' from (a). ' + p.solution; return p; } },
-          { id: 'e3c', level: 'BEG', make: function (r, sh) { var p = psPart('Write the slope–point equation of the line using ' + t('B') + ' as ' + t('(x_1,\\ y_1)') + '.', sh.m, sh.B, 'slope-point with B'); p.solution = t('m=' + mT(sh.m)) + ' from (a). ' + p.solution; return p; } },
+          { id: 'e3b', level: 'BEG', make: function (r, sh) { var p = psPart('Write the slope–point equation of the line using ' + t('A') + ' as ' + t('(x_1,\\ y_1)') + '.', sh.m, sh.A, 'slope-point with A'); p.solution = slopeSteps(sh.A, sh.B) + '.<br>' + p.solution; return p; } },
+          { id: 'e3c', level: 'BEG', make: function (r, sh) { var p = psPart('Write the slope–point equation of the line using ' + t('B') + ' as ' + t('(x_1,\\ y_1)') + '.', sh.m, sh.B, 'slope-point with B'); p.solution = slopeSteps(sh.A, sh.B) + '.<br>' + p.solution; return p; } },
           { id: 'e3d', level: 'PRG', outcome: 'RF6', make: function (r, sh) {
-            var p = genPart('Convert your two answers to general form, ' + t('Ax+By+C=0') + '. (They should agree.) Type the general form.', sh.m, sh.A, 'general form of AB');
-            p.solution = 'From (b): ' + genSteps(sh.m, sh.A, true) + '<br>From (c): ' + genSteps(sh.m, sh.B, true) + '<br>Identical.'; return p;
+            var p = genPart('Write the slope–point equation of the line using ' + t('A') + ', and the one using ' + t('B') + ', and convert both to general form, ' + t('Ax+By+C=0') + '. (They should agree.) Type the general form.', sh.m, sh.A, 'general form of AB');
+            p.solution = slopeSteps(sh.A, sh.B) + '<br>Using ' + t('A') + ': ' + genSteps(sh.m, sh.A, true) + '<br>Using ' + t('B') + ': ' + genSteps(sh.m, sh.B, true) + '<br>Identical.'; return p;
           } },
           { id: 'e3e', level: 'EMG', outcome: 'RF6', make: function (r, sh) {
-            return mcPart(r, 'Your two slope–point equations don’t look alike. Why must they still describe the same line?', [
+            return mcPart(r, 'The slope–point equation written with ' + t('A') + ' and the one written with ' + t('B') + ' don’t look alike. Why must they still describe the same line?', [
               { html: 'Both use the same slope and a point that is on the line; a slope and one point fix exactly one line.', right: true },
               { html: 'Any two equations with the same slope describe the same line.', why: 'Parallel lines have the same slope too. The slope <b>and</b> a point on the line are needed.' },
               { html: 'They don’t — the line through ' + t('A') + ' and the line through ' + t('B') + ' are parallel lines.', why: 'Both ' + t('A') + ' and ' + t('B') + ' are on the <b>same</b> line, so the equations describe that one line — part (d) confirms it.' },
@@ -636,7 +643,7 @@
             var opts = [0, 1, 2, 3].map(function (i) { return { html: '(' + 'abcd'[i] + ') ' + t(sh.eqs[i]), right: i === sh.odd, why: i === sh.odd ? null : 'Convert (' + 'abcd'[i] + ') to general form: it gives ' + t(gT(sh.G)) + ', like two of the others. Look for the one that gives a different general form.' }; });
             return mcPart(r, 'Convert all four to general form. Which is the odd one out?', opts, [0, 1, 2, 3].map(function (i) { return '(' + 'abcd'[i] + ') ' + t(sh.eqs[i]) + ' → ' + t(gT(i === sh.odd ? sh.Go : sh.G)); }).join('<br>') + '<br>The odd one out is <b>(' + 'abcd'[sh.odd] + ')</b>.', ['Multiply each by the denominator ' + t(sh.m[1]) + ', expand and collect every term on one side.'], 'odd one out of four slope-point', true);
           } },
-          { id: 'e4e2', sub: 'e2', level: 'EMG', make: function (r, sh) {
+          { id: 'e4e2', sub: 'e2', level: 'PRG', make: function (r, sh) {
             var p0 = sh.pts[sh.odd];
             return genPart('Write the odd equation, ' + t(sh.eqs[sh.odd]) + ', in general form.', sh.m, p0, 'general form of odd slope-point');
           } },
@@ -663,11 +670,11 @@
             var p = line('Write its equation in <b>slope–point form</b>, ' + t('y-y_1=m(x-x_1)') + '. (Use either point.)', { m: sh.m, point: sh.P }, { form: 'point-slope', keyTex: psT(sh.m, sh.P), wrong: psWrongs(sh.m, sh.P) }, slopeSteps(sh.P, sh.Q) + '<br>Using ' + t(ptT(sh.P)) + ': ' + t(psT(sh.m, sh.P)) + '<br>(Using ' + t(ptT(sh.Q)) + ' gives ' + t(psT(sh.m, sh.Q)) + ' — also right.)', ['Find the slope first, then substitute it and one of the points.'], 'slope-point through two points', [psT(sh.m, sh.Q)], [siT(sh.m, sh.P)]);
             return p;
           } },
-          { id: 'e5b', level: 'PRG', outcome: 'RF6', make: function (r, sh) { return siPart('Rearrange your answer into <b>slope–intercept form</b>, ' + t('y=mx+b') + '.', sh.m, sh.P, 'two points → slope-intercept'); } },
-          { id: 'e5c', level: 'PRG', outcome: 'RF6', make: function (r, sh) { return genPart('Clear the fraction and write it in <b>general form</b>, ' + t('Ax+By+C=0') + ', with ' + t('A') + ' positive.', sh.m, sh.P, 'two points → general'); } },
+          { id: 'e5b', level: 'PRG', outcome: 'RF6', make: function (r, sh) { return siPart('Write its equation in <b>slope–intercept form</b>, ' + t('y=mx+b') + '.', sh.m, sh.P, 'two points → slope-intercept', { pre: slopeSteps(sh.P, sh.Q) + '<br>' }); } },
+          { id: 'e5c', level: 'PRG', outcome: 'RF6', make: function (r, sh) { return genPart('Write its equation in <b>general form</b>, ' + t('Ax+By+C=0') + ' (clear the fraction; ' + t('A') + ' positive).', sh.m, sh.P, 'two points → general', { pre: slopeSteps(sh.P, sh.Q) + '<br>' }); } },
           { id: 'e5d', level: 'LIM', outcome: 'RF6', make: function (r, sh) { return formsMC(r, 'Which of the three forms shows you a point on the line <b>and</b> the slope with no work at all?', 0, sh); } },
           { id: 'e5e', level: 'LIM', outcome: 'RF6', make: function (r, sh) { return formsMC(r, 'Which form hands you the ' + t('y') + '-intercept with no work at all?', 1, sh); } },
-          { id: 'e5f', level: 'BEG', outcome: 'RF6', make: function (r, sh) {
+          { id: 'e5f', level: 'EMG', outcome: 'RF6', make: function (r, sh) {
             return mcPart(r, 'Which form has no fractions anywhere, and which form is the only one of the three that a <b>vertical</b> line can be written in?', [
               { html: 'General form for both: a vertical line ' + t('x=a') + ' is ' + t('x-a=0') + ', general form with ' + t('B=0') + '.', right: true },
               { html: 'General form has no fractions; slope–point form is the only one for a vertical line.', why: 'Slope–point form needs a value of ' + t('m') + ', and a vertical line’s slope is undefined.' },
@@ -685,7 +692,7 @@
             wrong: [{ is: { m: m, point: A }, code: 'used-endpoint', hint: 'That line goes through ' + t('A') + '. The line goes through the <b>midpoint</b> of ' + t('AB') + '.' }, { is: { m: m, point: B }, code: 'used-endpoint', hint: 'That line goes through ' + t('B') + '. The line goes through the <b>midpoint</b> of ' + t('AB') + '.' }, { is: { m: slope2(A, B), point: M }, code: 'line', hint: 'Use the given slope ' + t(m) + ' — not the slope of ' + t('AB') + '.' }],
             hints: ['Find the midpoint first: average the ' + t('x') + '-values and the ' + t('y') + '-values.', 'Then slope–point form with ' + t('m=' + m) + '.'] });
         } },
-        { id: 'e6b', level: 'ADV', make: function (r) {
+        { id: 'e6b', level: 'PRG', make: function (r) {
           var c = r.int(2, 6), d = r.pick([3, 4, 5, 6, 8].filter(function (x) { return x !== c; })), mg = Fr(-c, d), mp = Fr(d, c), p = [r.int(1, 5), r.int(-5, -1)];
           return genPart('through ' + t(ptT(p)) + ', perpendicular to the line through ' + t(ptT([0, c])) + ' and ' + t(ptT([d, 0])), mp, p, 'perp to line through intercepts', {
             pre: 'Given line: ' + slopeSteps([0, c], [d, 0]) + '. Negative reciprocal: ' + t('m_{\\perp}=' + mT(mp)) + '.<br>',
@@ -701,8 +708,12 @@
         } }] },
       { num: '7', stem: 'Determine the equation of each line in general form, ' + t('Ax+By+C=0') + '.', parts: [
         { id: 'e7a', level: 'ADV', make: function (r) {
-          var a = r.int(2, 5), b = r.pick([3, 4, 5, 7, 8].filter(function (x) { return coprime(x, a); })), k = r.int(2, 5), G = [a, -b, b * k];
-          var u = r.int(2, 4), v = r.pick([3, 5, 6].filter(function (x) { return coprime(x, u) && x !== u; })), G2 = [u, v, -v * r.int(1, 3)], mp = Fr(v, u);
+          var a, b, k, G, u, v, G2, mp;
+          for (var i = 0; i < 100; i++) {   // a/b ≠ v/u: otherwise the answer is the first given line itself
+            a = r.int(2, 5); b = r.pick([3, 4, 5, 7, 8].filter(function (x) { return coprime(x, a); })); k = r.int(2, 5); G = [a, -b, b * k];
+            u = r.int(2, 4); v = r.pick([3, 5, 6].filter(function (x) { return coprime(x, u) && x !== u; })); G2 = [u, v, -v * r.int(1, 3)]; mp = Fr(v, u);
+            if (a * u !== b * v) break;
+          }
           return genPart('through the ' + t('y') + '-intercept of ' + t(gT(G)) + ', perpendicular to ' + t(gT(G2)), mp, [0, k], 'y-int of one line, perp to another', {
             pre: t('y') + '-intercept: ' + t('x=0') + ', ' + t(-b + 'y+' + b * k + '=0') + ', ' + t('y=' + k) + '; point ' + t(ptT([0, k])) + '.<br>' + givenSlopeT(G2) + ' ' + t('m_{\\perp}=' + mT(mp)) + '.<br>',
             wrong: [{ is: { m: mp, point: [-b * k / a, 0] }, code: 'used-xint', hint: 'You used the ' + t('x') + '-intercept of ' + t(gT(G)) + '. For the ' + t('y') + '-intercept set ' + t('x=0') + '.' }, { is: { m: Fr(-u, v), point: [0, k] }, code: 'used-given', hint: 'That line is parallel to ' + t(gT(G2)) + '. Use the negative reciprocal of its slope.' }, { is: { m: Fr(u, v), point: [0, k] }, code: 'perp-recip-only', hint: 'Check the perpendicular slope: change the sign <b>and</b> flip the fraction of ' + t(mT(Fr(-u, v))) + '.' }],
@@ -848,9 +859,9 @@
               'Slope–point form is ' + t('y-y_1=m(x-x_1)') + '. The student added ' + t('y_1') + ' and ' + t('x_1') + ', so their line passes through ' + t(ptT([-sh.p[0], -sh.p[1]])) + ' instead of ' + t(ptT(sh.p)) + '.', ['Compare the student’s first line with ' + t('y-y_1=m(x-x_1)') + '.'], 'error: added in slope-point');
           } },
           { id: 'e11b', level: 'PRG', make: function (r, sh) { var p = genPart('Determine the correct equation in general form.', sh.m, sh.p, 'corrected general form'); p.bad = p.bad.concat([gT(sh.Gs)]); return p; } },
-          { id: 'e11c', level: 'PRG', make: function (r, sh) {
+          { id: 'e11c', level: 'EMG', make: function (r, sh) {
             var y = sh.m * 2 * sh.p[0] - sh.p[1], G = sh.Gs, val = G[0] * sh.p[0] + G[1] * sh.p[1] + G[2];
-            return K.P.number('Substituting ' + t(ptT(sh.p)) + ' into the student’s equation gives ' + t(G[0] + '(' + sh.p[0] + ')+' + G[1] + '(' + sh.p[1] + ')' + (G[2] >= 0 ? '+' : '') + G[2] + '=' + val + '\\ne 0') + ', so it fails. Find the point on the student’s line with ' + t('x=' + sh.p[0]) + '.', y, function (v) { if (v === sh.p[1]) return { code: 'pt', hint: 'That is the given point — but it isn’t on the student’s line. Substitute ' + t('x=' + sh.p[0]) + ' into the student’s equation.' }; return null; },
+            return K.P.number('Substituting ' + t(ptT(sh.p)) + ' into the student’s equation gives ' + t(G[0] + '(' + sh.p[0] + ')+' + (G[1] === 1 ? '' : G[1]) + '(' + sh.p[1] + ')' + (G[2] >= 0 ? '+' : '') + G[2] + '=' + val + '\\ne 0') + ', so it fails. Find the point on the student’s line with ' + t('x=' + sh.p[0]) + '.', y, function (v) { if (v === sh.p[1]) return { code: 'pt', hint: 'That is the given point — but it isn’t on the student’s line. Substitute ' + t('x=' + sh.p[0]) + ' into the student’s equation.' }; return null; },
               'Student’s line: ' + t(gT(G)) + '. With ' + t('x=' + sh.p[0]) + ': ' + t(G[0] + '(' + sh.p[0] + ')+y' + (G[2] >= 0 ? '+' : '') + G[2] + '=0') + ', so ' + t('y=' + y) + '. The point is ' + t(ptT([sh.p[0], y])) + '.', ['Substitute ' + t('x=' + sh.p[0]) + ' into ' + t(gT(G)) + ' and solve for ' + t('y') + '.'], 'point on student line', { before: t('y=') });
           } }] },
       { num: '12', stem: function (sh) { return 'Asked for the equation, in general form, of the line through ' + t(ptT(sh.p)) + ' with slope ' + t(mT(sh.m)) + ', a student writes ' + t(psT(sh.m, [sh.p[1], sh.p[0]])) + '.'; },
@@ -1024,7 +1035,8 @@
     var whys = which === 0 ? [null, t(ex1[1]) + ' shows the slope and the ' + t('y') + '-intercept, but a point other than ' + t('(0,\\ b)') + ' takes work.', t(ex1[2]) + ' needs rearranging before you can read the slope.', 'One of the forms does: look at ' + t(ex1[0]) + '.']
       : [t(ex1[0]) + ' shows a point and the slope, but the ' + t('y') + '-intercept takes some work.', null, 'General form needs solving (set ' + t('x=0') + ') to find the ' + t('y') + '-intercept.', 'One of the forms does: look at ' + t(ex1[1]) + '.'];
     var opts = names.concat(['None of them']).map(function (n, i) { return { html: n + (i < 3 ? ': ' + t(ex1[i]) : ''), right: i === which, why: whys[i] }; });
-    return mcPart(r, prompt, opts, which === 0 ? '<b>Slope–point form</b>: ' + t(ex1[0]) + ' shows the point ' + t(ptT(sh.P)) + ' and the slope ' + t(mT(sh.m)) + ' directly.' : '<b>Slope–intercept form</b>: ' + t(ex1[1]) + ' shows ' + t('b=' + nT(bOf(sh.m, sh.P))) + ', the ' + t('y') + '-intercept ' + t(ptT([0, bOf(sh.m, sh.P)])) + '.', ['Look at your three answers from (a)–(c).'], 'which form shows…', true);
+    opts = r.shuffle(opts.slice(0, 3)).concat([opts[3]]);   // the three forms in random order (the key letter varies), "None" last
+    return mcPart(r, prompt, opts, which === 0 ? '<b>Slope–point form</b>: ' + t(ex1[0]) + ' shows the point ' + t(ptT(sh.P)) + ' and the slope ' + t(mT(sh.m)) + ' directly.' : '<b>Slope–intercept form</b>: ' + t(ex1[1]) + ' shows ' + t('b=' + nT(bOf(sh.m, sh.P))) + ', the ' + t('y') + '-intercept ' + t(ptT([0, bOf(sh.m, sh.P)])) + '.', ['Look at the three equations of this line in the options: what can you read straight off each one?'], 'which form shows…', true);
   }
   function twoPsPart(l, m, name) {
     var fields = [{ label: 'From ' + t(ptT(l.A)), mode: 'math', keys: 'eq', vars: ['x', 'y'], placeholder: 'y - y1 = m(x - x1)' }, { label: 'From ' + t(ptT(l.B)), mode: 'math', keys: 'eq', vars: ['x', 'y'], placeholder: 'y - y1 = m(x - x1)' }];
