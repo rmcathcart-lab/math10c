@@ -453,3 +453,16 @@ math-field.mf::part(menu-toggle), math-field.mf::part(virtual-keyboard-toggle) {
 .tp-val.neg { color: #c4532a; }
 .tp-view { margin: 6px 0; }
 .tp-cap { margin-top: 4px; }
+.tp-pal { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.tp-tile { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border: 1.5px solid #d6cfbf; border-radius: 10px; background: #fff; cursor: grab; touch-action: none; font: inherit; font-size: 15px; -webkit-user-select: none; user-select: none; }
+.tp-tile:active { border-color: var(--brand2); background: var(--brand-soft); }
+.tp-zones { display: grid; gap: 8px; margin-bottom: 8px; }
+.tp-zone { border: 2px dashed #d6cfbf; border-radius: 12px; padding: 6px 8px 8px; min-height: 64px; cursor: pointer; }
+.tp-zone.on { border-color: var(--brand2); background: #f4faf9; }
+.tp-zone.drop { border-color: #c4532a; background: #fff6f1; }
+.tp-zlab { font-size: 12.5px; font-weight: 700; color: var(--ink2); margin-bottom: 4px; }
+.tp-zbody { display: flex; flex-wrap: wrap; gap: 4px; align-items: flex-end; min-height: 36px; }
+.tp-placed { border: 0; background: none; padding: 1px; cursor: pointer; line-height: 0; }
+.tp-placed:hover svg rect { stroke: #c4532a; }
+.tp-empty { font-size: 13px; }
+.tp-ghost { position: fixed; z-index: 1000; pointer-events: none; transform: translate(-50%, -50%); filter: drop-shadow(0 2px 4px rgba(0,0,0,.25)); }

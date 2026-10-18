@@ -365,7 +365,7 @@
       resp = resp || {}; if (!resp.x2 && !resp.x && !resp.one) return form('empty', 'Add some tiles first.');
       var S = tilePolyOf(resp); if (P.eq(S, T)) return ok();
       var c = function (p, k) { return (p[k] && p[k].c[0] / p[k].c[1]) || 0; }, names = [['x2', 'x^{2}'], ['x1', 'x'], ['', '1']];
-      for (var i = 0; i < names.length; i++) { var a = c(S, names[i][0]), b = c(T, names[i][0]); if (a !== b) return wrong('tile-count', 'Check your ' + t(names[i][1]) + '-tiles: ' + (Math.abs(a) === Math.abs(b) ? 'right number, wrong colour (shaded = positive, white = negative).' : 'you have ' + Math.abs(a) + (a < 0 ? ' white' : a > 0 ? ' shaded' : '') + ', but ' + Math.abs(b) + (b < 0 ? ' white' : ' shaded') + ' are needed.')); }
+      for (var i = 0; i < names.length; i++) { var a = c(S, names[i][0]), b = c(T, names[i][0]); if (a !== b) return wrong('tile-count', 'Check your ' + t(names[i][1]) + '-tiles: ' + (Math.abs(a) === Math.abs(b) ? 'right number, wrong colour (shaded = positive, white = negative).' : 'you have ' + Math.abs(a) + (a < 0 ? ' white' : a > 0 ? ' shaded' : '') + ', but ' + Math.abs(b) + (b < 0 ? ' white' : ' shaded') + (Math.abs(b) === 1 ? ' is' : ' are') + ' needed.')); }
       return wrong('tile', null);
     };
   };
@@ -484,7 +484,7 @@
     if (tools.length > 1) tools.forEach(function (k) { var b = btn(names[k], 'dr-tool'); b.addEventListener('click', function () { setTool(k); }); toolBtns[k] = b; bar.appendChild(b); });
     var joinBtn = null;
     if (opt.join) { joinBtn = btn('Join: off', 'dr-tool', 'Join the points with a smooth curve'); joinBtn.addEventListener('click', function () { if (disabled) return; push(); state.join = state.join === 'none' ? 'curve' : 'none'; render(); }); bar.appendChild(joinBtn); }
-    var undoB = btn('↶ Undo', 'dr-act'), clearB = btn('Clear', 'dr-act');
+    var undoB = btn('Undo', 'dr-act'), clearB = btn('Clear', 'dr-act');
     undoB.addEventListener('click', function () { if (disabled || !hist.length) return; state = JSON.parse(hist.pop()); chain = null; render(); });
     clearB.addEventListener('click', function () { if (disabled) return; push(); state = { pts: [], pieces: [], join: state.join }; chain = null; render(); });
     bar.appendChild(undoB); bar.appendChild(clearB);
@@ -569,7 +569,7 @@
     opt = opt || {};
     var L = D.nlLayout(opt), wrap = el('div', 'w-numline'), bar = el('div', 'dr-bar'), board = el('div', 'dr-board'), help = el('div', 'w-help'), coord = el('div', 'dr-coord');
     var state = { dots: [], shade: [] }, tool = 'dot', hist = [], disabled = false, snap = opt.snap || L.step;
-    var bDot = btn('● Dot', 'dr-tool'), bSh = btn('▬ Shade', 'dr-tool'), undoB = btn('↶ Undo', 'dr-act'), clearB = btn('Clear', 'dr-act');
+    var bDot = btn('● Dot', 'dr-tool'), bSh = btn('▬ Shade', 'dr-tool'), undoB = btn('Undo', 'dr-act'), clearB = btn('Clear', 'dr-act');
     [bDot, bSh, undoB, clearB].forEach(function (b) { bar.appendChild(b); });
     wrap.appendChild(bar); wrap.appendChild(board); wrap.appendChild(help); board.appendChild(coord);
     var tips = { dot: 'Tap a number to put a solid dot; tap it again for an open dot; a third tap removes it.', shade: 'Tap a stretch of the line to shade it (tap again to unshade). The dots split the line into stretches.' };
@@ -627,7 +627,7 @@
     opt = opt || {};
     var left = (opt.left || []).map(String), right = (opt.right || []).map(String), wrap = el('div', 'w-arrowpad'), bar = el('div', 'dr-bar'), board = el('div', 'dr-board'), help = el('div', 'w-help');
     var state = [], sel = null, hist = [], disabled = false;
-    var undoB = btn('↶ Undo', 'dr-act'), clearB = btn('Clear', 'dr-act'); bar.appendChild(undoB); bar.appendChild(clearB);
+    var undoB = btn('Undo', 'dr-act'), clearB = btn('Clear', 'dr-act'); bar.appendChild(undoB); bar.appendChild(clearB);
     undoB.addEventListener('click', function () { if (disabled || !hist.length) return; state = JSON.parse(hist.pop()); sel = null; render(); });
     clearB.addEventListener('click', function () { if (disabled) return; hist.push(JSON.stringify(state)); state = []; sel = null; render(); });
     help.innerHTML = opt.help || 'Tap a value on the left, then the value it goes to on the right. Tap the same two again to remove that arrow.';
@@ -665,41 +665,93 @@
   W.arrowpad.text = function (v) { return (v || []).map(function (p) { return p[0] + '→' + p[1]; }).join(', '); };
   W.arrowpad.html = function (v, I) { return HW.arrowDiagram(I.left, I.right, v || [], { leftTitle: I.leftTitle, rightTitle: I.rightTitle }); };
 
-  /* ---------- algebra-tile builder ---------- */
+  /* ---------- algebra-tile builder: tap a tile to add it, or drag it into place; tap a placed tile to remove it ---------- */
+  var TCOL = { pos: '#9aa3ad', neg: '#ffffff', stroke: '#2b3340' };
+  function tileChip(tok, scale) {
+    var neg = tok.charAt(0) === '-', k = tok.replace('-', ''), s = scale || 1, w = k === 'x2' ? 26 : k === 'x' ? 9 : 9, h = k === 'x2' ? 26 : k === 'x' ? 26 : 9;
+    if (k === 'xh') { w = 26; h = 9; }
+    return '<svg viewBox="0 0 ' + (w + 2) + ' ' + (h + 2) + '" width="' + (w + 2) * s + '" height="' + (h + 2) * s + '" aria-hidden="true"><rect x="1" y="1" width="' + w + '" height="' + h + '" rx="1.5" fill="' + (neg ? TCOL.neg : TCOL.pos) + '" stroke="' + TCOL.stroke + '" stroke-width="1.3"/></svg>';
+  }
+  var TLAB = { x2: 'x^{2}', '-x2': '-x^{2}', x: 'x', '-x': '-x', '1': '1', '-1': '-1' };
+  function sortToks(a) { var order = { x2: 0, '-x2': 1, x: 2, '-x': 3, '1': 4, '-1': 5 }; return a.slice().sort(function (p, q) { return order[p] - order[q]; }); }
+  function countsOf(a) { var c = { x2: 0, x: 0, one: 0 }; a.forEach(function (tk) { var n = tk.charAt(0) === '-' ? -1 : 1, k = tk.replace('-', ''); if (k === 'x2') c.x2 += n; else if (k === 'x') c.x += n; else c.one += n; }); return c; }
   W.tilepad = function (opt) {
     opt = opt || {};
-    var rect = opt.mode === 'rect', wrap = el('div', 'w-tilepad'), ctr = el('div', 'tp-ctrls'), view = el('div', 'tp-view'), help = el('div', 'w-help'), disabled = false;
-    var state = rect ? { top: { x: 0, one: 0 }, side: { x: 0, one: 0 } } : { x2: 0, x: 0, one: 0 }, lim = opt.limit || 9;
-    function stepper(label, get, setv) {
-      var row = el('div', 'tp-row'), lab = el('span', 'tp-lab', label), minus = btn('−', 'tp-b', 'one less (or one more white tile)'), val = el('span', 'tp-val'), plus = btn('+', 'tp-b', 'one more (or one less white tile)');
-      minus.addEventListener('click', function () { if (disabled) return; setv(Math.max(-lim, get() - 1)); render(); });
-      plus.addEventListener('click', function () { if (disabled) return; setv(Math.min(lim, get() + 1)); render(); });
-      row.appendChild(lab); row.appendChild(minus); row.appendChild(val); row.appendChild(plus); row._val = val; row._get = get; return row;
-    }
-    var rows = [];
-    if (rect) {
-      ctr.appendChild(el('div', 'tp-head', 'Across the top'));
-      rows.push(stepper(HW.k('x') + '-tiles', function () { return state.top.x; }, function (v) { state.top.x = v; }), stepper(HW.k('1') + '-tiles', function () { return state.top.one; }, function (v) { state.top.one = v; }));
-      rows.slice(0, 2).forEach(function (r) { ctr.appendChild(r); });
-      ctr.appendChild(el('div', 'tp-head', 'Down the side'));
-      rows.push(stepper(HW.k('x') + '-tiles', function () { return state.side.x; }, function (v) { state.side.x = v; }), stepper(HW.k('1') + '-tiles', function () { return state.side.one; }, function (v) { state.side.one = v; }));
-      rows.slice(2).forEach(function (r) { ctr.appendChild(r); });
-    } else {
-      rows.push(stepper(HW.k('x^{2}') + '-tiles', function () { return state.x2; }, function (v) { state.x2 = v; }), stepper(HW.k('x') + '-tiles', function () { return state.x; }, function (v) { state.x = v; }), stepper(HW.k('1') + '-tiles', function () { return state.one; }, function (v) { state.one = v; }));
-      rows.forEach(function (r) { ctr.appendChild(r); });
-    }
-    help.innerHTML = HW.tex(opt.help || ((rect ? 'Set the tiles along the top and down the side; the rectangle fills in. ' : '') + 'Positive numbers are shaded tiles, negative numbers are white tiles.')) + ' ' + HW.tex(HW.tiles.legend());
-    wrap.appendChild(ctr); wrap.appendChild(view); wrap.appendChild(help);
+    var rect = opt.mode === 'rect', wrap = el('div', 'w-tilepad'), pal = el('div', 'tp-pal'), zonesBox = el('div', 'tp-zones'), view = el('div', 'tp-view'), bar = el('div', 'dr-bar'), help = el('div', 'w-help');
+    var disabled = false, hist = [], zones = rect ? ['top', 'side'] : ['mat'], active = zones[0];
+    var state = rect ? { top: [], side: [] } : { mat: [] }, lim = opt.limit || 12;
+    var kinds = rect ? ['x', '-x', '1', '-1'] : ['x2', '-x2', 'x', '-x', '1', '-1'];
+    kinds.forEach(function (k) {
+      var b = el('button', 'tp-tile'); b.type = 'button'; b.setAttribute('data-tok', k); b.title = 'Add a ' + (k.charAt(0) === '-' ? 'negative ' : '') + k.replace('-', '').replace('x2', 'x²') + '-tile';
+      b.innerHTML = tileChip(rect && k.replace('-', '') === 'x' ? (k.charAt(0) === '-' ? '-x' : 'x') : k, 1.2) + '<span>' + HW.k(TLAB[k]) + '</span>';
+      pal.appendChild(b);
+    });
+    var zoneEls = {};
+    zones.forEach(function (z) {
+      var box = el('div', 'tp-zone'); box.setAttribute('data-zone', z);
+      box.innerHTML = '<div class="tp-zlab">' + (z === 'top' ? 'Along the top' : z === 'side' ? 'Down the side' : 'Your tiles') + '</div><div class="tp-zbody"></div>';
+      box.addEventListener('click', function (e) { if (disabled) return; if (e.target.closest('.tp-placed')) return; active = z; render(); });
+      zonesBox.appendChild(box); zoneEls[z] = box;
+    });
+    var undoB = btn('Undo', 'dr-act'), clearB = btn('Clear', 'dr-act');
+    undoB.addEventListener('click', function () { if (disabled || !hist.length) return; state = JSON.parse(hist.pop()); render(); });
+    clearB.addEventListener('click', function () { if (disabled) return; push(); zones.forEach(function (z) { state[z] = []; }); render(); });
+    bar.appendChild(undoB); bar.appendChild(clearB);
+    help.innerHTML = HW.tex(opt.help || (rect ? 'Tap a tile to add it to the highlighted side (tap “Along the top” or “Down the side” to switch), or drag it there. The rectangle fills in. Tap a placed tile to remove it.' : 'Tap a tile to add it, or drag it onto the mat. Tap a placed tile to remove it.')) + ' ' + HW.tex(HW.tiles.legend());
+    wrap.appendChild(pal); wrap.appendChild(zonesBox); if (rect) wrap.appendChild(view); wrap.appendChild(bar); wrap.appendChild(help);
+    function push() { hist.push(JSON.stringify(state)); if (hist.length > 80) hist.shift(); }
+    function add(z, tok) { if (disabled) return; if (state[z].length >= lim) return; push(); state[z].push(rect ? tok.replace('x2', 'x') : tok); render(); }
     function render() {
-      rows.forEach(function (r) { var v = r._get(); r._val.innerHTML = v === 0 ? '0' : v > 0 ? String(v) : '−' + Math.abs(v); r._val.className = 'tp-val' + (v < 0 ? ' neg' : ''); });
-      view.innerHTML = D.tileSvg(opt, state) + (rect ? '<div class="tp-cap">' + (function () { var f = D.tileFactors(state); return (state.top.x || state.top.one) && (state.side.x || state.side.one) ? 'Top: ' + HW.k(P.tex(f[0])) + ' · Side: ' + HW.k(P.tex(f[1])) : ''; })() + '</div>' : '');
+      zones.forEach(function (z) {
+        var body = zoneEls[z].querySelector('.tp-zbody'), list = sortToks(state[z]);
+        zoneEls[z].classList.toggle('on', z === active && zones.length > 1);
+        body.innerHTML = list.length ? '' : '<span class="muted tp-empty">' + (rect ? 'tap or drag tiles here' : 'tap or drag tiles here') + '</span>';
+        list.forEach(function (tok) { var c = el('button', 'tp-placed'); c.type = 'button'; c.title = 'Remove'; c.innerHTML = tileChip(rect && z === 'top' ? tok.replace('x', 'xh') : tok, 1.25); c.addEventListener('click', function (e) { e.stopPropagation(); if (disabled) return; var i = state[z].indexOf(tok); if (i >= 0) { push(); state[z].splice(i, 1); render(); } }); body.appendChild(c); });
+      });
+      if (rect) {
+        var tp = sortToks(state.top), sd = sortToks(state.side);
+        view.innerHTML = tp.length && sd.length ? HW.tiles.frame(tp, sd, { fill: true }) + '<div class="tp-cap">' + HW.k('(' + P.tex(D.tileFactors(api.value())[0]) + ')(' + P.tex(D.tileFactors(api.value())[1]) + ')') + '</div>' : '<div class="muted tp-empty">Put tiles along the top and down the side to see the rectangle.</div>';
+      }
+      undoB.disabled = !hist.length;
     }
-    render();
+    // drag from the palette
+    var drag = null;
+    pal.addEventListener('pointerdown', function (e) {
+      var b = e.target.closest('.tp-tile'); if (!b || disabled) return;
+      e.preventDefault(); drag = { tok: b.getAttribute('data-tok'), x: e.clientX, y: e.clientY, moved: false, ghost: null };
+      try { b.setPointerCapture(e.pointerId); } catch (er) {}
+    });
+    pal.addEventListener('pointermove', function (e) {
+      if (!drag) return;
+      if (!drag.moved && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) > 6) { drag.moved = true; drag.ghost = el('div', 'tp-ghost'); drag.ghost.innerHTML = tileChip(drag.tok, 1.6); document.body.appendChild(drag.ghost); }
+      if (drag.ghost) { drag.ghost.style.left = e.clientX + 'px'; drag.ghost.style.top = e.clientY + 'px'; var over = document.elementFromPoint(e.clientX, e.clientY); zones.forEach(function (z) { zoneEls[z].classList.toggle('drop', !!(over && over.closest && over.closest('.tp-zone') === zoneEls[z])); }); }
+    });
+    function endDrag(e, cancel) {
+      if (!drag) return; var d = drag; drag = null;
+      if (d.ghost) { d.ghost.remove(); zones.forEach(function (z) { zoneEls[z].classList.remove('drop'); }); }
+      if (cancel) return;
+      if (!d.moved) { add(active, d.tok); return; }
+      var over = document.elementFromPoint(e.clientX, e.clientY), zone = over && over.closest ? over.closest('.tp-zone') : null;
+      if (zone && wrap.contains(zone)) { active = zone.getAttribute('data-zone'); add(active, d.tok); }
+    }
+    pal.addEventListener('pointerup', function (e) { endDrag(e, false); });
+    pal.addEventListener('pointercancel', function (e) { endDrag(e, true); });
     var api = { node: wrap, kind: 'tilepad' };
-    api.value = function () { return clone(state); }; api.set = function (v) { if (v) state = clone(v); render(); };
-    api.clear = function () { state = rect ? { top: { x: 0, one: 0 }, side: { x: 0, one: 0 } } : { x2: 0, x: 0, one: 0 }; render(); };
+    api.value = function () {
+      if (rect) { var a = countsOf(state.top), b = countsOf(state.side); return { top: { x: a.x, one: a.one }, side: { x: b.x, one: b.one }, raw: clone(state) }; }
+      var c = countsOf(state.mat); return { x2: c.x2, x: c.x, one: c.one, raw: clone(state) };
+    };
+    api.set = function (v) {
+      if (!v) return;
+      if (v.raw) state = clone(v.raw);
+      else if (rect) { var mk = function (s) { var o = []; for (var i = 0; i < Math.abs(s.x || 0); i++) o.push((s.x < 0 ? '-' : '') + 'x'); for (var j = 0; j < Math.abs(s.one || 0); j++) o.push((s.one < 0 ? '-' : '') + '1'); return o; }; state = { top: mk(v.top || {}), side: mk(v.side || {}) }; }
+      else state = { mat: HW.tiles.count({ x2: v.x2 || 0, x: v.x || 0, one: v.one || 0 }) };
+      render();
+    };
+    api.clear = function () { zones.forEach(function (z) { state[z] = []; }); hist = []; render(); };
     api.disable = function (on) { disabled = !!on; wrap.classList.toggle('off', disabled); };
     api.focus = function () {}; api.onEnter = function () {};
+    render();
     return api;
   };
   W.tilepad.text = function (v) { v = v || {}; if (v.top) { var f = D.tileFactors(v); return '(' + P.tex(f[0]) + ')(' + P.tex(f[1]) + ')'; } return P.tex(tilePolyOf(v)); };
