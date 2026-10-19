@@ -212,8 +212,8 @@
     nav.appendChild(el('div', 'tm-nav-title', 'Questions'));
     var grid = el('div', 'tm-nav-grid');
     T.order.forEach(function (k, i) {
-      var a = T.rec.ans[k], b = el('button', 'tm-qn' + (i === T.cur ? ' on' : '') + (a && a.t ? ' done' : '') + (T.rec.flags && T.rec.flags[k] ? ' flag' : ''), String(i + 1));
-      b.type = 'button'; b.title = 'Question ' + (i + 1) + (a && a.t ? ' (answered)' : ' (not answered yet)');
+      var a = T.rec.ans[k], b = el('button', 'tm-qn' + (i === T.cur ? ' on' : '') + (a && a.t ? ' done' : '') + (T.rec.flags && T.rec.flags[k] ? ' flag' : ''), esc(TC.label(T.def, T.byKey[k], i).replace(/[()\s]/g, '')));
+      b.type = 'button'; b.title = 'Question ' + TC.label(T.def, T.byKey[k], i) + (a && a.t ? ' (answered)' : ' (not answered yet)');
       b.addEventListener('click', function () { capture(); showQ(i); });
       grid.appendChild(b);
     });
@@ -225,7 +225,7 @@
     T.cur = i; var k = T.order[i], x = T.byKey[k], main = T.els.main; main.innerHTML = '';
     var card = el('article', 'qcard tm-card');
     var h = el('div', 'qhead');
-    h.appendChild(el('h2', '', 'Question ' + (i + 1) + ' <span class="tm-of">of ' + T.order.length + '</span>'));
+    h.appendChild(el('h2', '', 'Question ' + esc(TC.label(T.def, x, i)) + ' <span class="tm-of">(' + (i + 1) + ' of ' + T.order.length + ')</span>'));
     if (T.def.levels !== false) h.appendChild(el('span', 'tm-chips', '<span class="tm-out">' + esc(x.it.outcome) + '</span><span class="lvl lvl-' + x.it.level + '">' + HW.LEVEL_NAMES[x.it.level] + '</span>'));
     card.appendChild(h);
     if (x.err || !x.inst) { card.appendChild(el('div', 'notice warn', 'This question couldn’t be shown. Tell your teacher and go on to the next one.')); main.appendChild(card); drawNav(); return; }
@@ -285,7 +285,7 @@
   function confirmSubmit() {
     capture();
     var missing = [], flagged = [];
-    T.order.forEach(function (k, i) { if (!(T.rec.ans[k] && T.rec.ans[k].t)) missing.push(i + 1); if (T.rec.flags && T.rec.flags[k]) flagged.push(i + 1); });
+    T.order.forEach(function (k, i) { if (!(T.rec.ans[k] && T.rec.ans[k].t)) missing.push(TC.label(T.def, T.byKey[k], i)); if (T.rec.flags && T.rec.flags[k]) flagged.push(TC.label(T.def, T.byKey[k], i)); });
     var m = el('div', 'tm-modal'), box = el('div', 'tm-modal-box');
     box.innerHTML = '<h2>Submit your ' + (T.def.kind === 'exit' ? 'exit slip' : 'test') + '?</h2>' +
       (missing.length ? '<p class="tm-miss">Not answered: <b>' + missing.join(', ') + '</b></p>' : '<p>Every question has an answer.</p>') +
@@ -367,7 +367,7 @@
         var inst; try { inst = TC.instance(k, r.id, x.lesson, x.it); } catch (e) { return; }
         var m = (r.marks || '').charAt(idx[key]), a = r.answers[key], ok = TC.right(m);
         var card = el('article', 'qcard tm-res-q ' + (m ? (ok ? 'ok' : 'bad') : ''));
-        card.appendChild(el('div', 'qhead', '<h2>Question ' + (n + 1) + '</h2><span class="tm-chips"><span class="tm-out">' + esc(x.it.outcome) + '</span><span class="lvl lvl-' + x.it.level + '">' + HW.LEVEL_NAMES[x.it.level] + '</span></span>' + (m ? '<span class="tm-mark">' + (ok ? '✓' : '✗') + '</span>' : '')));
+        card.appendChild(el('div', 'qhead', '<h2>Question ' + esc(TC.label(r.def, x, n)) + '</h2><span class="tm-chips"><span class="tm-out">' + esc(x.it.outcome) + '</span><span class="lvl lvl-' + x.it.level + '">' + HW.LEVEL_NAMES[x.it.level] + '</span></span>' + (m ? '<span class="tm-mark">' + (ok ? '✓' : '✗') + '</span>' : '')));
         if (inst.stem) card.appendChild(el('div', 'qstem', HW.tex(inst.stem)));
         card.appendChild(el('div', 'qprompt', HW.tex(inst.prompt)));
         var ah = '—'; if (a && a.r != null) { try { ah = HW.App.answerHtml(inst, a.r); } catch (e) { ah = esc(a.t || ''); } }

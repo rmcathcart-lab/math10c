@@ -297,7 +297,7 @@
     var outs = []; items.forEach(function (x) { if (outs.indexOf(x.it.outcome) < 0) outs.push(x.it.outcome); });
     var t = el('table', 'tbl tt-res');
     var h = '<thead><tr><th>Student</th><th>Status</th><th>Score</th>' + outs.map(function (o) { return '<th>' + esc(o) + '</th>'; }).join('');
-    items.forEach(function (x, i) { h += '<th class="tt-qh" title="' + esc(partLabel(x)) + ' · ' + esc(x.it.outcome) + ' ' + x.it.level + '">' + (i + 1) + '<div class="th-sub">' + x.it.level + '</div></th>'; });
+    items.forEach(function (x, i) { h += '<th class="tt-qh" title="' + esc(partLabel(x)) + ' · ' + esc(x.it.outcome) + ' ' + x.it.level + '">' + esc(TC.label(def, x, i)) + '<div class="th-sub">' + x.it.level + '</div></th>'; });
     t.innerHTML = h + '</tr></thead>';
     var tb = el('tbody'), byName = {}; R.rows.forEach(function (r) { byName[r.name] = r; });
     var names = R.names.slice(); R.rows.forEach(function (r) { if (names.indexOf(r.name) < 0) names.push(r.name); });
@@ -331,7 +331,7 @@
     var inst; try { inst = TC.instance(TC.skey(R.session['class'], r.name), R.session.id, x.lesson, x.it); } catch (e) { inst = null; }
     var a = r.answers[x.key], m = r.final.charAt(i);
     box.classList.remove('hidden'); box.innerHTML = '';
-    box.appendChild(el('h3', '', esc(r.name) + ' · Question ' + (i + 1) + ' <span class="muted small">(' + esc(partLabel(x)) + ' · ' + esc(x.it.outcome) + ' ' + x.it.level + ')</span>'));
+    box.appendChild(el('h3', '', esc(r.name) + ' · Question ' + esc(TC.label(R.session.def, x, i)) + ' <span class="muted small">(' + esc(partLabel(x)) + ' · ' + esc(x.it.outcome) + ' ' + x.it.level + ')</span>'));
     if (inst) { if (inst.stem) box.appendChild(el('div', 'qstem', HW.tex(inst.stem))); box.appendChild(el('div', 'qprompt', HW.tex(inst.prompt))); }
     box.appendChild(el('div', 'tt-ans', '<div class="dlabel">Their answer</div><div>' + (a && a.t ? esc(a.t) : '<span class="muted">blank</span>') + '</div>'));
     if (inst) box.appendChild(el('div', 'tt-ans', '<div class="dlabel">Correct answer</div><div>' + HW.tex(inst.answer) + '</div>'));

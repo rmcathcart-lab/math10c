@@ -43,6 +43,8 @@
     if (!res) return { m: 'f' };
     return { m: res.v === 'correct' ? 'c' : res.v === 'form' ? 'f' : 'w', code: res.code || '' };
   };
+  /* how a question is numbered on screen: a ready-made paper test keeps the paper's numbers (14(b)) unless shuffled */
+  TC.label = function (def, x, i) { return x && x.lesson.test && !(def && def.shuffle) ? x.it.label : String(i + 1); };
   TC.right = function (m) { return m === 'c' || m === 'C'; };
   /* score and the outcome levels (highest level answered correctly on each outcome) */
   TC.summary = function (def, marks) {

@@ -538,7 +538,7 @@ body.tm-on .calc { z-index: 200; }
 .tm-nav { position: sticky; top: 76px; align-self: start; background: #fff; border: 1px solid var(--tm-line); border-radius: 14px; padding: 12px; }
 .tm-nav-title { font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
 .tm-nav-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-.tm-qn { height: 36px; border-radius: 8px; border: 1px solid var(--line); background: #fff; font-weight: 700; cursor: pointer; position: relative; }
+.tm-qn { height: 36px; padding: 0; white-space: nowrap; overflow: hidden; font-size: 13.5px; border-radius: 8px; border: 1px solid var(--line); background: #fff; font-weight: 700; cursor: pointer; position: relative; }
 .tm-qn.done { background: #e3f1ef; border-color: #7cc0b8; }
 .tm-qn.on { outline: 3px solid var(--brand2); outline-offset: 1px; }
 .tm-qn.flag::after { content: '⚑'; position: absolute; top: -7px; right: -4px; font-size: 12px; color: #c2410c; }
