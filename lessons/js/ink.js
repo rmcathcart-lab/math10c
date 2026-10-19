@@ -9,7 +9,6 @@
  *  - Starting a stroke on a button, link or the calculator presses it instead of writing.
  *  - Tools: pen (4 colours, 3 sizes), highlighter, stroke eraser, laser pointer (fades), hand (pencil scrolls).
  *  - Undo / redo (buttons, Cmd+Z, or a two-finger tap). Ink is saved on this device, per lesson.
- *  - Hold a finger on the page and the Pencil erases until the finger lifts (menu: "Hold a finger to erase").
  *  - Each pen colour slot can be given another colour (hold a colour in the toolbar). Strokes keep the colour they were
  *    drawn in: a stroke stores its slot name while the slot has its usual colour, otherwise the colour itself.
  */
@@ -24,7 +23,7 @@ const HL = { c: '#ffd60a', a: 0.38, size: 22 };
 
 const rid = () => Math.random().toString(36).slice(2, 10);
 const S = {
-  key: 'ink:default', readonly: false, opHook: null, tool: 'pen', color: 'ink', size: 1, finger: false, hover: true, fingerErase: true, held: 0, heldAt: 0,
+  key: 'ink:default', readonly: false, opHook: null, tool: 'pen', color: 'ink', size: 1, finger: false, hover: true,
   surfaces: new Map(), undo: [], redo: [], active: null, penDownAt: 0, listeners: new Set()
 };
 
@@ -230,7 +229,6 @@ function onDown(e) {
   sf.measure();
   const pr = pressure(e, null);
   S.penDownAt = Date.now(); hideDot();
-  if (fingerErasing(e)) { e.preventDefault(); return; } // handled from the touch events (touchErase below)
   if (S.tool === 'eraser') {
     S.active = { id: e.pointerId, sf, erase: [] }; calibrate(S.active, e);
     const [x, y] = sf.toLocal(e.clientX, e.clientY, S.active.off); eraseAt(x, y);
@@ -242,44 +240,6 @@ function onDown(e) {
   }
   try { sf.el.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
   document.body.classList.add('inking');
-}
-/* A finger held still on the page (not on a button) for a moment turns the Pencil into the eraser while it stays down.
- * Not when "Finger draws" is on (then the finger is a pen), and not for a big contact (a resting palm). */
-const HOLD_MS = 120;
-function holdReady() { return S.fingerErase && !S.finger && !S.readonly && S.held > 0 && performance.now() - S.heldAt > HOLD_MS && S.tool !== 'hand'; }
-function fingerErasing(e) { return e.pointerType === 'pen' && holdReady(); }
-/* Safari treats a second contact while a finger is down as the start of a pinch and cancels the Pencil's pointer
- * events, so an erase with a finger held runs from the touch events instead (they keep coming once the touches are
- * cancelled with preventDefault). */
-function touchErase(e) {
-  const A = S.active;
-  if (e.type === 'touchstart') {
-    if (A || !holdReady()) return false;
-    for (const t of e.changedTouches) {
-      if (t.touchType !== 'stylus') continue;
-      const sf = surfaceFor(t.target); if (!sf) continue;
-      commitPending(); sf.measure(); hideDot();
-      S.active = { id: 'touch', tid: t.identifier, sf, erase: [], off: [shift.dx, shift.dy] };
-      S.penDownAt = Date.now(); document.body.classList.add('inking');
-      const [x, y] = sf.toLocal(t.clientX, t.clientY, S.active.off); eraseAt(x, y);
-      return true;
-    }
-    return false;
-  }
-  if (!A || A.tid == null) return false;
-  const t = [...e.changedTouches].find((q) => q.identifier === A.tid); if (!t) return true;
-  if (e.type === 'touchmove') { const [x, y] = A.sf.toLocal(t.clientX, t.clientY, A.off); eraseAt(x, y); return true; }
-  S.active = null; A.sf.rect = null; document.body.classList.remove('inking'); S.penDownAt = Date.now();
-  if (A.erase.length) push({ type: 'erase', surf: A.sf.id, strokes: A.erase });
-  return true;
-}
-const holdStart = {}; // finger id -> where it touched down
-function countHeld(e) {
-  const fingers = [...e.touches].filter((t) => t.touchType !== 'stylus' && !(t.radiusX > 38) && !(t.target && t.target.closest && t.target.closest(INTERACTIVE))), n = fingers.length;
-  for (const k in holdStart) if (!fingers.some((t) => String(t.identifier) === k)) delete holdStart[k];
-  fingers.forEach((t) => { if (!holdStart[t.identifier]) holdStart[t.identifier] = [t.clientX, t.clientY]; });
-  if (n && !S.held) S.heldAt = performance.now();
-  if (n !== S.held) { S.held = n; document.body.classList.toggle('finger-erase', !!n && S.fingerErase && !S.finger); }
 }
 /* Pencil pressure, eased so a light touch still gives a solid line. A reading of 0 mid-stroke (it happens with a
  * light touch) keeps the previous value instead of jumping. */
@@ -324,7 +284,7 @@ function hoverDot(e) {
   const hr = host.getBoundingClientRect(), s = (hr.width / host.offsetWidth) || 1, z = zoom();
   const x = (e.clientX + shift.dx - hr.left) / s, y = (e.clientY + shift.dy - hr.top) / s;
   const c = S.tool === 'highlighter' ? HL.c : S.tool === 'laser' ? '#ff2d2d' : S.tool === 'hand' ? '#13807a' : slotColor(S.color);
-  const er = S.tool === 'eraser' || (S.held > 0 && S.fingerErase && !S.finger && S.tool !== 'hand');
+  const er = S.tool === 'eraser';
   dot.className = er ? 'ring show' : 'show';
   dot.style.setProperty('--dc', er ? '#6a7182' : c);
   dot.style.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + (1 / (s * z)) + ')';
@@ -344,7 +304,7 @@ function onMove(e) {
   if (!A.erase) { trail(A, e.clientX, e.clientY); if (A.dirty) schedule(); }
 }
 function onUp(e) {
-  const A = S.active; if (!A || A.tid != null || e.pointerId !== A.id) return;
+  const A = S.active; if (!A || e.pointerId !== A.id) return;
   S.active = null; document.body.classList.remove('inking'); S.penDownAt = Date.now();
   try { A.sf.el.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
   A.sf.rect = null;
@@ -384,28 +344,16 @@ function touchBlocks(e, start) {
 }
 let twoTap = null;
 function onTouchStart(e) {
-  countHeld(e);
-  if (touchErase(e)) { e.preventDefault(); return; }
   if (touchBlocks(e, true)) { e.preventDefault(); return; }
   const direct = [...e.touches].filter((t) => t.touchType !== 'stylus');
   if (direct.length === 2 && !S.active && !S.finger) twoTap = { t: Date.now(), pts: direct.map((t) => [t.clientX, t.clientY]), moved: false };
   else if (direct.length > 2) twoTap = null;
 }
-/* a finger that has stayed put is a hold, not the start of a scroll: keep Safari from turning it (plus the Pencil)
-   into a scroll or a pinch */
-function stillHold(e) { // only while the Pencil is on the glass too: a finger that pauses and then scrolls must still scroll
-  if (!holdReady() || ![...e.touches].some((t) => t.touchType === 'stylus')) return false;
-  return [...e.touches].some((t) => { const p = holdStart[t.identifier]; return p && Math.hypot(t.clientX - p[0], t.clientY - p[1]) < 12; });
-}
 function onTouchMove(e) {
-  if (S.active && S.active.tid != null) touchErase(e);
-  if (stillHold(e) && e.cancelable) e.preventDefault();
   if (S.active || touchBlocks(e, false)) { e.preventDefault(); }
   if (twoTap) for (const t of e.touches) { const q = twoTap.pts.find((p) => Math.hypot(p[0] - t.clientX, p[1] - t.clientY) < 30); if (!q) twoTap.moved = true; }
 }
 function onTouchEnd(e) {
-  countHeld(e);
-  if (S.active && S.active.tid != null) touchErase(e);
   if (twoTap && e.touches.length === 0) {
     const ok = !twoTap.moved && Date.now() - twoTap.t < 320 && Date.now() - S.penDownAt > 400;
     twoTap = null; if (ok) { undo(); toast('Undo'); }
@@ -421,13 +369,12 @@ export function setColor(c) { S.color = c; if (S.tool !== 'pen') S.tool = 'pen';
 export function setSize(i) { S.size = i; settings(); emit(); }
 export function setFinger(on) { S.finger = on; settings(); emit(); }
 export function setHover(on) { S.hover = on; if (!on) hideDot(); settings(); emit(); }
-export function setFingerErase(on) { S.fingerErase = on; settings(); emit(); }
 export { slotColor };
 export function setSlotColor(c, hex) {
   if (!hex || String(hex).toLowerCase() === String(COLORS[c]).toLowerCase()) delete S.slots[c]; else S.slots[c] = hex;
   ls('ink:slots', S.slots); S.color = c; S.tool = 'pen'; settings(); emit();
 }
-function settings() { ls('ink:settings', { tool: S.tool === 'laser' || S.tool === 'eraser' ? 'pen' : S.tool, color: S.color, size: S.size, finger: S.finger, hover: S.hover, fingerErase: S.fingerErase }); }
+function settings() { ls('ink:settings', { tool: S.tool === 'laser' || S.tool === 'eraser' ? 'pen' : S.tool, color: S.color, size: S.size, finger: S.finger, hover: S.hover }); }
 
 export function register(el) {
   const id = el.dataset.ink; if (!id || S.surfaces.has(id)) return S.surfaces.get(id);
@@ -447,36 +394,10 @@ export function clearAll() {
 export function hasInk() { for (const sf of S.surfaces.values()) if (sf.strokes.length) return true; return false; }
 
 /* opts.readonly: a student's view — no writing, nothing saved on the device (the notes come from the server). */
-/* Touch log (••• menu, for fixing the finger eraser on the iPad): every pointer and touch event the page gets, newest
- * at the top, with what the ink code made of it. Repeated moves fold into one line with a count. */
-let dbg = null;
-export function setDebug(on) {
-  if (!on) { if (dbg) { dbg.box.remove(); dbg.off(); dbg = null; } return; }
-  if (dbg) return;
-  const box = document.createElement('div'); box.className = 'ink-log no-ink';
-  box.innerHTML = '<div class="il-h"><b>Touch log</b><button type="button" data-x>Close</button></div><div class="il-b"></div>';
-  document.body.appendChild(box);
-  const body = box.querySelector('.il-b'), lines = [], t0 = performance.now();
-  const kinds = (list) => [...(list || [])].map((t) => (t.touchType === 'stylus' ? 'pencil' : 'finger') + (t.radiusX ? ' r' + Math.round(t.radiusX) : '')).join(', ');
-  const log = (key, txt) => {
-    const last = lines[0];
-    if (last && last.key === key && /move/.test(key)) { last.n++; last.txt = txt; } else { lines.unshift({ key, txt, n: 1, at: Math.round(performance.now() - t0) }); if (lines.length > 40) lines.pop(); }
-    body.innerHTML = lines.map((l) => '<div>' + l.at + ' ' + l.txt.replace(/</g, '&lt;') + (l.n > 1 ? ' ×' + l.n : '') + '</div>').join('');
-  };
-  const st = () => ' | held ' + S.held + (S.active ? ' active:' + (S.active.erase ? 'erase' : 'draw') + (S.active.tid != null ? '(touch)' : '') : '');
-  const P = (e) => log(e.type + e.pointerType, e.type.replace('pointer', 'p-') + ' ' + e.pointerType + ' #' + e.pointerId + (e.buttons ? ' btn' : '') + (e.cancelable ? '' : ' (not cancelable)') + st());
-  const T = (e) => log(e.type + kinds(e.changedTouches), e.type.replace('touch', 't-') + ' changed [' + kinds(e.changedTouches) + '] all [' + kinds(e.touches) + ']' + (e.cancelable ? '' : ' (not cancelable)') + st());
-  const evP = ['pointerdown', 'pointermove', 'pointerup', 'pointercancel'], evT = ['touchstart', 'touchmove', 'touchend', 'touchcancel'];
-  evP.forEach((t) => addEventListener(t, P, true)); evT.forEach((t) => addEventListener(t, T, true));
-  const off = () => { evP.forEach((t) => removeEventListener(t, P, true)); evT.forEach((t) => removeEventListener(t, T, true)); };
-  box.querySelector('[data-x]').onclick = () => setDebug(false);
-  dbg = { box, off };
-}
-export function debugOn() { return !!dbg; }
 export function init(key, opts = {}) {
   S.readonly = !!opts.readonly; S.key = S.readonly ? null : 'ink:' + key; S.saved = S.key ? ls(S.key) : null;
   if (S.readonly) document.body.classList.add('viewer');
-  const st = ls('ink:settings'); if (st) { S.tool = st.tool || 'pen'; S.color = st.color || 'ink'; S.size = st.size != null ? st.size : 1; S.finger = !!st.finger; S.hover = st.hover !== false; S.fingerErase = st.fingerErase !== false; }
+  const st = ls('ink:settings'); if (st) { S.tool = st.tool || 'pen'; S.color = st.color || 'ink'; S.size = st.size != null ? st.size : 1; S.finger = !!st.finger; S.hover = st.hover !== false; }
   document.querySelectorAll('[data-ink]').forEach(register);
   document.addEventListener('pointerdown', onDown, { passive: false });
   document.addEventListener('pointermove', onMove, { passive: false });
@@ -487,7 +408,7 @@ export function init(key, opts = {}) {
   if (window.visualViewport) { visualViewport.addEventListener('scroll', remeasure); visualViewport.addEventListener('resize', remeasure); }
   document.addEventListener('touchstart', onTouchStart, { passive: false });
   document.addEventListener('touchmove', onTouchMove, { passive: false });
-  document.addEventListener('touchend', onTouchEnd); document.addEventListener('touchcancel', (e) => { twoTap = null; countHeld(e); if (S.active && S.active.tid != null) touchErase(e); });
+  document.addEventListener('touchend', onTouchEnd); document.addEventListener('touchcancel', () => { twoTap = null; });
   addEventListener('pagehide', flush); document.addEventListener('visibilitychange', () => { if (document.hidden) flush(); });
   emit();
 }
