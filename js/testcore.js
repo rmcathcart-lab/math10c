@@ -45,6 +45,8 @@
   };
   /* how a question is numbered on screen: a ready-made paper test keeps the paper's numbers (14(b)) unless shuffled */
   TC.label = function (def, x, i) { return x && x.lesson.test && !(def && def.shuffle) ? x.it.label : String(i + 1); };
+  /* a short fingerprint of the question the student saw, saved with the answer: marking can tell if the question has changed since */
+  TC.qhash = function (inst) { try { return HW.hashStr(String(inst.stem || '') + '|' + inst.prompt + '|' + inst.answer).toString(36); } catch (e) { return ''; } };
   TC.right = function (m) { return m === 'c' || m === 'C'; };
   /* score and the outcome levels (highest level answered correctly on each outcome) */
   TC.summary = function (def, marks) {

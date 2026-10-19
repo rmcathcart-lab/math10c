@@ -131,12 +131,15 @@
     if (!o) { o = el('div', ''); o.id = 'testmode'; o.setAttribute('role', 'dialog'); o.setAttribute('aria-modal', 'true'); document.body.appendChild(o); }
     o.className = 'tm tm-' + (T.def.kind === 'exit' ? 'exit' : 'test');
     document.body.classList.add('tm-on');
+    try { if (HW.Calc && HW.Calc.get) HW.Calc.get().node.style.zIndex = '210'; } catch (e) {}
     T.ui = o; return o;
   }
+  function stopTimer() { if (T && T.timer) { clearInterval(T.timer); T.timer = null; } }
   function closeOverlay() {
     var o = document.getElementById('testmode'); if (o) o.remove();
     document.body.classList.remove('tm-on'); exitFull();
-    if (T && T.timer) clearInterval(T.timer);
+    try { if (HW.Calc && HW.Calc.get) HW.Calc.get().node.style.zIndex = ''; } catch (e) {}
+    stopTimer();
     T = null;
   }
   function nameBadge() { var s = session(); return '<div class="tm-name" title="Signed in as">' + esc(s.name) + '</div>'; }
@@ -166,7 +169,7 @@
     try { start.focus(); } catch (e) {}
   }
   function drawNotStartedEnded() {
-    splash('', '<p>This ' + (T.def.kind === 'exit' ? 'exit slip' : 'test') + ' has ended. You didn’t start it.</p>', [button('btn-ghost', 'Close', function () { T.dismissed = true; closeOverlay(); })]);
+    splash('', '<p>This ' + (T.def.kind === 'exit' ? 'exit slip' : 'test') + ' has ended. You didn’t start it.</p>', [button('btn-ghost', 'Close', function () { dismiss(T.sid); closeOverlay(); })]);
     T.ui.dataset.view = 'ended0';
   }
   function drawUnlocked() {
@@ -174,6 +177,11 @@
     var go = button('btn-primary tm-start', 'Continue →', function () { T.rec.unlockN = T.unlockTo; begin(true); });
     splash('Your teacher unlocked your ' + (T.def.kind === 'exit' ? 'exit slip' : 'test'), '<p>Your answers are still here and the numbers are the same.' + (limitMs() ? ' Time left: <b>' + mmss(remaining()) + '</b>.' : '') + '</p>' + rulesHtml(), [go]);
     T.ui.dataset.view = 'unlocked';
+  }
+  function drawMoved() {
+    if (T.ui && T.ui.dataset.view === 'moved') return;
+    splash('Moved to another device', '<p>Your teacher moved this ' + (T.def.kind === 'exit' ? 'exit slip' : 'test') + ' to another device. Carry on there.</p>', []);
+    T.ui.dataset.view = 'moved'; exitFull();
   }
   function drawElsewhere() {
     splash('Already open on another device', '<p>This ' + (T.def.kind === 'exit' ? 'exit slip' : 'test') + ' was started on another device. Ask your teacher to unlock it if you need to finish it here.</p>', []);
@@ -189,7 +197,7 @@
     var acts = [];
     var sig = r.st + '|' + !!T.closed;
     if (T.ui && T.ui.dataset.view === 'end' && T.ui.dataset.sig === sig) return;
-    if (T.closed || !left) acts.push(button('btn-ghost', 'Back to practice', function () { T.rec.dismissed = true; saveRec(); closeOverlay(); }));
+    if (T.closed || !left) acts.push(button('btn-ghost', 'Back to practice', function () { dismiss(T.sid); closeOverlay(); }));
     splash(END_WHY[r.st] || 'Submitted', body, acts);
     T.ui.dataset.view = 'end'; T.ui.dataset.sig = sig;
     T.ui.classList.toggle('tm-is-locked', left);
@@ -198,13 +206,17 @@
 
   /* ---------------- writing ---------------- */
   function begin(resume) {
+    if (T.live && T.live.ending) { if (T.rec && FINAL[T.rec.st]) { T.rec.unlockN = T.unlockTo || T.rec.unlockN; saveRec(); drawEnd(); } else drawNotStartedEnded(); return; }
     guardUntil = Date.now() + 1500;
     goFull().then(function (ok) {
-      var r = T.rec || (T.rec = { st: 'writing', ans: {}, used: 0, leaves: 0, started: Date.now(), unlockN: 0, submitN: T.live.submit || 0 });
+      if (ok) { try { if (navigator.keyboard && navigator.keyboard.lock) navigator.keyboard.lock(['Escape']).catch(function () {}); } catch (e) {} } // Esc must be held to leave full screen
+      var r = T.rec || (T.rec = { st: 'writing', ans: {}, used: 0, leaves: 0, started: Date.now(), unlockN: 0, rev: 0 });
       r.st = 'writing'; r.fs = ok; r.why = ''; if (!r.started) r.started = Date.now();
-      if (!resume) r.submitN = T.live.submit || 0;
-      saveRec(); guardUntil = Date.now() + 800;
+      r.submitN = T.live.submit || 0; r.order = T.order; delete r.fromServer;
+      if (resume) dropPending(T.sid);
+      saveRec(); guardUntil = Date.now() + 800; T.endingSoon = false;
       drawTest(); post(false);
+      setTimeout(recheckLeft, 900);
     });
   }
   function drawTest() {
@@ -238,7 +250,7 @@
     T.order.forEach(function (k, i) {
       var a = T.rec.ans[k], b = el('button', 'tm-qn' + (i === T.cur ? ' on' : '') + (a && a.t ? ' done' : '') + (T.rec.flags && T.rec.flags[k] ? ' flag' : ''), esc(TC.label(T.def, T.byKey[k], i).replace(/[()\s]/g, '')));
       b.type = 'button'; b.title = 'Question ' + TC.label(T.def, T.byKey[k], i) + (a && a.t ? ' (answered)' : ' (not answered yet)');
-      b.addEventListener('click', function () { capture(); showQ(i); });
+      b.addEventListener('click', function () { capture(true); showQ(i); });
       grid.appendChild(b);
     });
     nav.appendChild(grid);
@@ -262,31 +274,32 @@
     card.appendChild(el('div', 'qinput')).appendChild(w.node);
     // the keypads' "Check" key moves on to the next question in a test
     w.node.querySelectorAll('.kpk').forEach(function (b) { if (/^Check/.test(b.textContent)) b.textContent = 'Next ↵'; });
-    if (w.onEnter) w.onEnter(function () { capture(); if (T.cur < T.order.length - 1) showQ(T.cur + 1); });
+    if (w.onEnter) w.onEnter(function () { capture(true); if (T.cur < T.order.length - 1) showQ(T.cur + 1); });
     T.widget = w; T.widgetKey = k;
     var acts = el('div', 'qactions tm-acts-q');
-    var prev = button('btn-ghost', '← Previous', function () { capture(); showQ(T.cur - 1); }); prev.disabled = i === 0;
+    var prev = button('btn-ghost', '← Previous', function () { capture(true); showQ(T.cur - 1); }); prev.disabled = i === 0;
     var flag = button('btn-ghost tm-flag' + (T.rec.flags && T.rec.flags[k] ? ' on' : ''), (T.rec.flags && T.rec.flags[k] ? '⚑ Flagged' : '⚐ Flag to come back to'), function () { T.rec.flags = T.rec.flags || {}; T.rec.flags[k] = !T.rec.flags[k]; saveRec(); showQ(T.cur); });
-    var next = i < T.order.length - 1 ? button('btn-primary', 'Next →', function () { capture(); showQ(T.cur + 1); }) : button('btn-primary', 'Review and submit', function () { capture(); confirmSubmit(); });
+    var next = i < T.order.length - 1 ? button('btn-primary', 'Next →', function () { capture(true); showQ(T.cur + 1); }) : button('btn-primary', 'Review and submit', function () { capture(true); confirmSubmit(); });
     acts.appendChild(prev); acts.appendChild(flag); acts.appendChild(el('span', 'spacer')); acts.appendChild(next);
     card.appendChild(acts);
     main.appendChild(card);
     var saved = T.rec.ans[k]; if (saved && saved.r != null && w.set) { try { w.set(saved.r); } catch (e) {} }
-    try { T.lastVal = JSON.stringify(w.value()); } catch (e) { T.lastVal = null; }
+    try { T.lastVal = JSON.stringify(w.peek ? w.peek() : w.value()); } catch (e) { T.lastVal = null; }
     if (saved && !w.set) T.lastVal = '__keep__'; // can't show the saved answer again: keep it unless the student types a new one
     drawNav();
     try { main.scrollTop = 0; } catch (e) {}
   }
-  /* read the answer box into the record (called every half second and before moving) */
-  function capture() {
+  /* read the answer box into the record: every half second (peek: don't disturb what is being typed) and, committed,
+     before moving to another question or finishing */
+  function capture(commit) {
     if (!T || !T.widget || !T.rec || T.rec.st !== 'writing') return;
-    var w = T.widget, k = T.widgetKey, v; try { v = w.value(); } catch (e) { return; }
+    var w = T.widget, k = T.widgetKey, v; try { v = !commit && w.peek ? w.peek() : w.value(); } catch (e) { return; }
     if (T.lastVal === '__keep__' && TC.blank(v)) return;
     var js = JSON.stringify(v); if (js === T.lastVal) return;
     T.lastVal = js;
     var x = T.byKey[k], txt = '';
     if (!TC.blank(v)) { try { txt = HW.App.answerText(x.inst, v) || ''; } catch (e) { txt = ''; } if (!txt) txt = '…'; }
-    if (TC.blank(v)) delete T.rec.ans[k]; else T.rec.ans[k] = { r: v, t: String(txt).slice(0, 300) };
+    if (TC.blank(v)) delete T.rec.ans[k]; else T.rec.ans[k] = { r: v, t: String(txt).slice(0, 300), h: TC.qhash(x.inst) };
     saveRec(); T.dirty = true; T.changedAt = Date.now();
     drawNav();
   }
@@ -298,7 +311,7 @@
     if (Math.round(T.rec.used / 500) % 10 === 0) saveRec();
     drawTimer();
     if (limitMs() && remaining() <= 0) { finish('time', 'Time ran out.'); return; }
-    if ((T.dirty && Date.now() - (T.changedAt || 0) > 1500) || Date.now() - (T.lastPost || 0) > 15000) post(false);
+    if ((T.dirty && Date.now() - (T.changedAt || 0) > 3000) || Date.now() - (T.lastPost || 0) > 15000) post(false);
   }
   function drawTimer() {
     var t = T && T.els && T.els.timer; if (!t || !limitMs()) return;
@@ -307,7 +320,7 @@
     t.classList.toggle('low', !hide && rem < 120000);
   }
   function confirmSubmit() {
-    capture();
+    capture(true);
     var missing = [], flagged = [];
     T.order.forEach(function (k, i) { if (!(T.rec.ans[k] && T.rec.ans[k].t)) missing.push(TC.label(T.def, T.byKey[k], i)); if (T.rec.flags && T.rec.flags[k]) flagged.push(TC.label(T.def, T.byKey[k], i)); });
     var m = el('div', 'tm-modal'), box = el('div', 'tm-modal-box');
@@ -321,11 +334,12 @@
   }
   function finish(st, why, beacon) {
     if (!T || !T.rec || T.rec.st !== 'writing') return;
-    capture();
-    T.rec.st = st; T.rec.why = why || ''; T.rec.done = Date.now();
+    capture(true);
+    T.rec.st = st; T.rec.why = why || ''; T.rec.done = Date.now(); T.rec.rev = (T.rec.rev || 0) + 1; T.rec.order = T.order; T.endingSoon = false;
     if (st === 'left') T.rec.leaves = (T.rec.leaves || 0) + 1;
-    saveRec();
-    if (T.timer) { clearInterval(T.timer); T.timer = null; }
+    saveRec(); addPending(T.sid);
+    stopTimer();
+    try { if (navigator.keyboard && navigator.keyboard.unlock) navigator.keyboard.unlock(); } catch (e) {}
     post(true, beacon);
     T.widget = null;
     try { if (HW.Calc && HW.Calc.get) HW.Calc.get().hide(); } catch (e) {}
@@ -334,10 +348,20 @@
 
   /* ---------------- leaving = submit and lock ---------------- */
   function writing() { return T && T.rec && T.rec.st === 'writing' && T.ui && T.ui.dataset.view === 'test'; }
-  function left(why, beacon) { if (!writing() || Date.now() < guardUntil) return; finish('left', why, beacon); }
+  function left(why, beacon) {
+    if (!writing()) return;
+    if (Date.now() < guardUntil) { setTimeout(recheckLeft, guardUntil - Date.now() + 60); return; }
+    finish('left', why, beacon);
+  }
+  function recheckLeft() {
+    if (!writing() || Date.now() < guardUntil) return;
+    if (document.visibilityState === 'hidden') left('left the page (switched tabs or windows)', true);
+    else if (!document.hasFocus()) left('clicked out of the test window');
+    else if (T.rec.fs && !fsEl()) left('left full screen');
+  }
   document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') left('left the page (switched tabs or windows)', true); });
   root.addEventListener('blur', function () { setTimeout(function () { if (!document.hasFocus()) left('clicked out of the test window'); }, BLUR_MS); });
-  function onFs() { if (!fsEl() && writing() && T.rec.fs) left('left full screen'); }
+  function onFs() { if (!fsEl() && writing()) { if (T.rec.fs) left('left full screen'); } }
   document.addEventListener('fullscreenchange', onFs); document.addEventListener('webkitfullscreenchange', onFs);
   root.addEventListener('pagehide', function () { left('closed or reloaded the page', true); });
 
