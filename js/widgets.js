@@ -106,7 +106,8 @@
         if (!coarse()) inp.focus();
       });
     kp.classList.add('kp-small'); wrap.appendChild(kp);
-    return { node: wrap, value: function () { commit(); return items.slice(); }, focus: function () { if (!coarse()) inp.focus({ preventScroll: true }); },
+    function peek() { var t = inp.value.trim(); if (!t) return items.slice(); var p = HW.parse.numberList(t); return p.ok ? items.concat(p.values) : items.concat([t]); } // what value() would give, without touching the box
+    return { node: wrap, value: function () { commit(); return items.slice(); }, peek: peek, focus: function () { if (!coarse()) inp.focus({ preventScroll: true }); },
       clear: function () { items = []; inp.value = ''; draw(); }, disable: function (on) { inp.disabled = on; wrap.classList.toggle('off', !!on); },
       onEnter: function (fn) { enter = fn; }, set: function (arr) { items = (arr || []).slice(); draw(); }, mark: function (bad) { // highlight wrong chips
         Array.prototype.forEach.call(chips.children, function (c, i) { c.classList.toggle('bad', bad.indexOf(items[i]) >= 0); }); } };
@@ -140,7 +141,7 @@
       api.value = function () { return mf.value; };
       api.focus = function () { api.wantFocus = true; try { if (!coarse()) mf.focus({ preventScroll: true }); } catch (e) {} };
       api.clear = function () { mf.value = ''; };
-      api.set = function (v) { try { mf.value = /\\/.test(v) ? v : plainToLatex(v); } catch (e) {} };
+      api.set = function (v) { try { mf.value = /[\\{}]/.test(v) ? v : plainToLatex(v); } catch (e) {} }; // LaTeX from a saved answer goes back in as it is
       api.disable = function (on) { try { mf.readOnly = !!on; } catch (e) {} wrap.classList.toggle('off', !!on); };
       api.press = function (k) {
         try {
