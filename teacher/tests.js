@@ -1,4 +1,4 @@
-/* Practice Ledger — the Tests tab: make exit slips and tests from the practice questions (or a ready-made unit test),
+/* Teacher Ledger — the Tests tab: make exit slips and tests from the practice questions (or a ready-made unit test),
  * launch one for the class, watch it live (unlock a student who left, add time, submit, end for everyone), then mark,
  * adjust and release the results. Marks are computed here from the students' saved answers with each question's own
  * checker (the same numbers the student saw, rebuilt from the seeds). See js/testcore.js and backend/Code.gs (TEST MODE). */

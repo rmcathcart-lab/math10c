@@ -6,10 +6,10 @@ Everything for Mr. Cathcart's Math 10C, in one site: https://rmcathcart-lab.gith
 |---|---|---|
 | **Practice** (students: homework with generated questions, sign-in, progress) | `/math10c/` | root (`index.html`, `js/`, `assets/`) |
 | **Lessons** (projected from the iPad with Apple Pencil ink; students view the class notes with `?class=B`) | `/math10c/lessons/` | `lessons/` (see `lessons/README.md`, `lessons/LESSON_BRIEF.md`) |
-| **Teacher dashboard** (Practice Ledger) | `/math10c/teacher/` | `teacher/` |
+| **Teacher dashboard** (Teacher Ledger) | `/math10c/teacher/` | `teacher/` |
 
 The lesson pages share the practice site's calculator (`js/calc.js`) and KaTeX (`assets/katex`). Each has its own Apps Script
-backend (`backend/Code.gs` = Practice Ledger, `lessons/backend/Code.gs` = Teaching Ink).
+backend (`backend/Code.gs` = Teacher Ledger, `lessons/backend/Code.gs` = Teaching Ink).
 
 **Publishing:** GitHub Pages builds from the `gh-pages` branch, so push `main` to both: `git push origin main main:gh-pages`.
 (This replaces the old separate `math10C-practice` and `math10c-teaching` repos; their full history is included here.)
@@ -19,7 +19,7 @@ backend (`backend/Code.gs` = Practice Ledger, `lessons/backend/Code.gs` = Teachi
 Homework practice for every Math 10C lesson, built from the course booklets. Every question is a generator: it keeps the idea and difficulty of the booklet question and changes the numbers, so each student gets their own version (the same on every device) and a fresh one whenever they need it.
 
 - **Students:** `index.html`. Sign in with the class code (or the class link/QR code), pick your name, make a 4-digit PIN.
-- **Teacher:** `teacher/` (the Practice Ledger). Needs the teacher key from the Apps Script project.
+- **Teacher:** `teacher/` (the Teacher Ledger). Needs the teacher key from the Apps Script project.
 
 ## How a question works
 

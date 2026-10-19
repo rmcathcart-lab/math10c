@@ -14,9 +14,9 @@ const I = {
   undo: '<path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>',
   redo: '<path d="M15 14l5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/>',
   board: '<rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21l4-4 4 4"/>',
-  calc: '<rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/><path d="M8.5 13h0M12 13h0M15.5 13h0M8.5 16.5h0M12 16.5h0M15.5 16.5h0"/>',
-  more: '<circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/>',
-  home: '<path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/>'
+  // the same calculator icon as the practice site and test mode (js/calc.js HW.CALC_ICON)
+  calc: '<rect x="5" y="2.5" width="14" height="19" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="7.5" y="5" width="9" height="4" rx=".6" fill="currentColor" stroke="none" opacity=".35"/><g fill="currentColor" stroke="none"><circle cx="9" cy="12.5" r="1"/><circle cx="12" cy="12.5" r="1"/><circle cx="15" cy="12.5" r="1"/><circle cx="9" cy="15.5" r="1"/><circle cx="12" cy="15.5" r="1"/><circle cx="15" cy="15.5" r="1"/><circle cx="9" cy="18.5" r="1"/><circle cx="12" cy="18.5" r="1"/><circle cx="15" cy="18.5" r="1"/></g>',
+  more: '<circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/>'
 };
 const icon = (k) => '<svg viewBox="0 0 24 24" aria-hidden="true">' + I[k] + '</svg>';
 
@@ -28,7 +28,7 @@ export function boot({ key, homeHref = '../../', title = '' }) {
   /* ---------- toolbar ---------- */
   const tb = h('header', 'tb no-ink'); tb.id = 'tb';
   tb.innerHTML = `
-    <a class="tbtn home" href="${homeHref}" title="All lessons" aria-label="All lessons">${icon('home')}</a>
+    <a class="tbtn home" href="${homeHref}" title="All lessons" aria-label="All lessons"><img class="home-mark" src="${homeHref}assets/icon-180.png" alt="" width="34" height="34"></a>
     <div class="tb-title">${title}</div>
     <div class="share-badge"></div>
     <div class="tb-group tools">

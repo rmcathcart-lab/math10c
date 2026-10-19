@@ -1,4 +1,4 @@
-/* Practice Ledger (teacher dashboard) — builds on ../assets/app.css */
+/* Teacher Ledger (teacher dashboard) — builds on ../assets/app.css */
 body.dash { background: #f3f2ee; }
 .dash-view { max-width: 1400px; }
 .brand-mark.dark, .signin-mark.dark { background: #1c2230; }
@@ -6,7 +6,8 @@ body.dash { background: #f3f2ee; }
 .seg { display: inline-flex; background: #e9e6de; border-radius: 10px; padding: 3px; gap: 2px; }
 .seg button { border: none; background: transparent; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 13.5px; font-weight: 600; color: var(--ink2); }
 .seg button.on { background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(0, 0, 0, .1); }
-.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 18px; overflow-x: auto; }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 18px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+.tabs::-webkit-scrollbar { display: none; }
 .tab { border: none; background: none; padding: 10px 16px; font-weight: 650; font-size: 15px; color: var(--muted); cursor: pointer; border-bottom: 2.5px solid transparent; margin-bottom: -1px; white-space: nowrap; }
 .tab.on { color: var(--ink); border-bottom-color: var(--ink); }
 .tab:hover { color: var(--ink); }
@@ -42,6 +43,53 @@ th.sorted::after { content: ' ▾'; }
 .lchip.work b { color: #1a8a55; } .lchip.away b { color: #c35d1c; } .lchip.idle b { color: #a87c12; } .lchip.off b { color: var(--muted); }
 .pbar.sm { height: 7px; min-width: 120px; }
 .pcell { min-width: 150px; }
+/* Progress: unit cells open a row of that student's lessons, a lesson opens its questions */
+.tbl.prog td.uc { cursor: pointer; border-radius: 0; }
+.tbl.prog td.uc { min-width: 104px; }
+.tbl.prog thead th[data-s^="u"] { white-space: normal; min-width: 104px; vertical-align: bottom; }
+.tbl.prog td.uc .pbar.sm { min-width: 0; }
+.pd { position: sticky; left: 0; max-width: calc(min(100vw, 1400px) - 90px); box-sizing: border-box; }
+.tbl.prog td.uc:hover { background: #f2f7f6; }
+.tbl.prog td.uc.open { background: #e8f3f1 !important; box-shadow: inset 0 -3px 0 var(--first); }
+.tbl.prog td.uc:focus-visible { outline: 2px solid var(--first); outline-offset: -2px; }
+.uc-chev { display: inline-block; font-size: 10px; color: #b3ad9f; margin-left: 2px; transition: transform .15s; }
+.tbl.prog td.uc.open .uc-chev { transform: rotate(180deg); color: var(--first); }
+.tbl.prog tr.opened td { border-bottom-color: transparent; }
+.tbl.prog tr.pdrop > td { background: #f7faf9 !important; padding: 4px 10px 14px; }
+.pd { border: 1px solid #d5e6e2; border-radius: 12px; background: #fff; padding: 10px 12px 12px; }
+.pd-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; font-size: 14.5px; }
+.pd-x { margin-left: auto; border: none; background: #f0ede6; color: var(--ink2); width: 28px; height: 28px; border-radius: 8px; font-size: 18px; line-height: 1; cursor: pointer; display: grid; place-items: center; }
+.pd-x:hover { background: #e6e2d8; }
+.pd-lessons { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; }
+.pd-l { text-align: left; border: 1px solid var(--line); background: #fff; border-radius: 10px; padding: 8px 10px; cursor: pointer; font: inherit; color: var(--ink); display: flex; flex-direction: column; gap: 4px; }
+.pd-l:hover { border-color: #9ccbc3; }
+.pd-l.on { border-color: var(--first); background: #eef7f5; box-shadow: 0 0 0 1px var(--first); }
+.pd-ln { font-size: 12px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.pd-lt { font-size: 13px; font-weight: 600; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.5em; }
+.pd-l .pbar.sm { min-width: 0; }
+.pd-items { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--line); }
+.ig-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; font-size: 12.5px; color: var(--muted); }
+.ig-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.ig-legend i.ig { min-width: 0; width: 16px; height: 12px; padding: 0; border-radius: 4px; display: inline-block; }
+/* Student: collapsible units */
+.su-tools { display: flex; align-items: center; justify-content: space-between; margin: 4px 0 10px; }
+.su-tools h3 { margin: 0; font-size: 17px; }
+.panel.su { padding: 0; margin-bottom: 10px; overflow: hidden; }
+.su-head { width: 100%; display: grid; grid-template-columns: 18px minmax(0, 1fr) minmax(140px, 260px) auto; align-items: center; gap: 12px; padding: 13px 16px; border: none; background: #fff; cursor: pointer; font: inherit; color: var(--ink); text-align: left; }
+.su-head:hover { background: #fbfaf7; }
+.su-chev { color: var(--muted); transition: transform .15s; font-size: 13px; }
+.su.open .su-chev { transform: rotate(90deg); }
+.su-n { font-size: 13px; color: var(--muted); white-space: nowrap; }
+.su-n b { color: var(--ink); }
+.su-bar .pbar.sm { min-width: 0; }
+.su-body { display: none; padding: 4px 16px 14px; border-top: 1px solid var(--line2); }
+.su.open .su-body { display: block; }
+.sl { padding: 10px 0 12px; border-bottom: 1px solid var(--line2); }
+.sl:last-of-type { border-bottom: none; }
+.sl-h { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 6px; font-size: 14.5px; }
+.sl-h .pnum { margin: 0; white-space: nowrap; }
+.scope-seg { flex-shrink: 0; }
+@media (max-width: 700px) { .su-head { grid-template-columns: 18px minmax(0, 1fr); } .su-bar, .su-n { grid-column: 2; } }
 .pnum { font-size: 12.5px; color: var(--muted); margin-top: 3px; }
 .opt-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
 .stack { display: flex; gap: 3px; margin: 6px 0 6px; }
@@ -175,3 +223,4 @@ tr.detail td { background: #fcfbf8 !important; }
 .tt-m.m-s, .tt-m.m-T, .tt-m.m-f { color: #8a6100; background: #fff4d6; }
 .tt-m.m-g, .tt-m.m-O { color: #a5461f; background: #fde8dc; }
 .tt-dot.m-s, .tt-dot.m-g { background: #e0a800; }
+.tbl.prog td.uc .pnum { white-space: nowrap; }

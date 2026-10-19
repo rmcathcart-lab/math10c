@@ -58,7 +58,7 @@
     if (crumb) top.appendChild(el('div', 'crumb', crumb));
     var right = el('div', 'top-right');
     if (session) {
-      var calcB = el('button', 'btn btn-ghost top-calc', '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="5" y="2.5" width="14" height="19" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="7.5" y="5" width="9" height="4" rx=".6" fill="currentColor" opacity=".35"/><g fill="currentColor"><circle cx="9" cy="12.5" r="1"/><circle cx="12" cy="12.5" r="1"/><circle cx="15" cy="12.5" r="1"/><circle cx="9" cy="15.5" r="1"/><circle cx="12" cy="15.5" r="1"/><circle cx="15" cy="15.5" r="1"/><circle cx="9" cy="18.5" r="1"/><circle cx="12" cy="18.5" r="1"/><circle cx="15" cy="18.5" r="1"/></g></svg><span>Calculator</span>');
+      var calcB = el('button', 'btn btn-ghost top-calc', (HW.CALC_ICON || '') + '<span>Calculator</span>');
       calcB.type = 'button'; calcB.title = 'On-screen calculator (TI-30XIIS layout)'; calcB.addEventListener('click', function () { HW.Calc.toggle(); });
       right.appendChild(calcB);
       if (L.enabled) { var dot = el('span', 'sync-dot' + (L.ok === false ? ' bad' : L.ok ? ' good' : ''), ''); dot.title = L.ok === false ? 'Can’t reach your teacher’s ledger right now — your work is saved on this device and will be sent later.' : 'Your work is being saved for your teacher.'; right.appendChild(dot); }
