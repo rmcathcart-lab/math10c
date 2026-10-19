@@ -19,10 +19,36 @@
     });
     return out;
   };
+  /* the parts of one booklet question that sit next to each other in the test go on one page together */
+  function groupKeys(keys, byKey) {
+    var groups = [], last = null;
+    keys.forEach(function (k) { var x = byKey[k]; if (!x) return; var g = x.lesson.id + '#' + x.it.q.num; if (g !== last) groups.push([]); groups[groups.length - 1].push(k); last = g; });
+    return groups;
+  }
+  function keyMap(def) { var m = {}; TC.items(def).forEach(function (x) { m[x.key] = x; }); return m; }
+  /* question order for one student: shuffled question by question (parts stay together) when the test asks for it */
   TC.order = function (def, skey, sid) {
-    var keys = TC.items(def).map(function (x) { return x.key; });
-    return def && def.shuffle ? HW.rng(HW.hashStr(skey + '|' + sid + '|order')).shuffle(keys) : keys;
+    var byKey = keyMap(def), keys = TC.items(def).map(function (x) { return x.key; });
+    if (!(def && def.shuffle)) return keys;
+    return [].concat.apply([], HW.rng(HW.hashStr(skey + '|' + sid + '|order')).shuffle(groupKeys(keys, byKey)));
   };
+  /* a ready-made paper test keeps the paper's numbers and part letters; anything else is numbered 1, 2, 3… with the
+     parts of a question lettered a, b, c (like the practice) */
+  TC.paper = function (def) { var it = TC.items(def); return !(def && def.shuffle) && it.length > 0 && it.every(function (x) { return x.lesson.test && x.lesson.id === it[0].lesson.id; }); };
+  /* pages: [{ num: '3', parts: [{ key, sub: 'a' | '' , label: '3a' }] }] in the given order */
+  TC.pages = function (def, order) {
+    var byKey = keyMap(def), paper = TC.paper(def);
+    return groupKeys(order || TC.items(def).map(function (x) { return x.key; }), byKey).map(function (g, gi) {
+      var x0 = byKey[g[0]], num = paper ? String(x0.it.q.num) : String(gi + 1);
+      return { num: num, parts: g.map(function (k, pi) {
+        var x = byKey[k], sub = '';
+        if (paper) { if (x.it.q.parts.length > 1) sub = String(x.it.label).replace(/^.*?\(/, '').replace(/\)$/, ''); }
+        else if (g.length > 1) sub = String.fromCharCode(97 + pi);
+        return { key: k, sub: sub, label: num + (sub ? (/\s/.test(sub) ? '(' + sub + ')' : sub) : '') };
+      }) };
+    });
+  };
+  TC.labels = function (def, order) { var out = {}; TC.pages(def, order).forEach(function (p) { p.parts.forEach(function (q) { out[q.key] = q.label; }); }); return out; };
   TC.instance = function (skey, sid, lesson, it) {
     var seed = HW.hashStr(skey + '|' + sid + '|' + lesson.id + '|' + it.id), qseed = HW.hashStr(skey + '|' + sid + '|' + lesson.id + '|q' + it.q.num);
     var inst = HW.makeInstance(lesson, it, seed, qseed);
@@ -43,8 +69,6 @@
     if (!res) return { m: 'f' };
     return { m: res.v === 'correct' ? 'c' : res.v === 'form' ? 'f' : 'w', code: res.code || '' };
   };
-  /* how a question is numbered on screen: a ready-made paper test keeps the paper's numbers (14(b)) unless shuffled */
-  TC.label = function (def, x, i) { return x && x.lesson.test && !(def && def.shuffle) ? x.it.label : String(i + 1); };
   /* a short fingerprint of the question the student saw, saved with the answer: marking can tell if the question has changed since */
   TC.qhash = function (inst) { try { return HW.hashStr(String(inst.stem || '') + '|' + inst.prompt + '|' + inst.answer).toString(36); } catch (e) { return ''; } };
   TC.right = function (m) { return m === 'c' || m === 'C'; };

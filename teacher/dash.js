@@ -29,6 +29,7 @@
       var scope = el('div', 'seg'); [['class', 'In class only'], ['all', 'All work']].forEach(function (s) { var b = el('button', s[0] === st.scope ? 'on' : '', s[1]); b.type = 'button'; b.addEventListener('click', function () { st.scope = s[0]; ls('hw:tscope', s[0]); render(); drawTop(); }); scope.appendChild(b); });
       scope.title = 'In class only: count work done during this class’s block on the bell schedule (what you can grade). All work: include homework done outside class.';
       top.appendChild(scope);
+      if (st.D) top.appendChild(onlineChip());
     }
     var right = el('div', 'top-right');
     if (st.D) right.appendChild(el('span', 'small muted', 'Updated ' + new Date(st.D.now).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })));
@@ -37,7 +38,7 @@
   }
   function tabs() {
     var t = el('nav', 'tabs');
-    [['live', 'Live'], ['tests', 'Tests'], ['progress', 'Progress'], ['outcomes', 'Outcomes'], ['questions', 'Questions'], ['student', 'Student'], ['settings', 'Settings']].forEach(function (x) {
+    [['live', 'Live'], ['exits', 'Exit slips'], ['tests', 'Tests'], ['progress', 'Progress'], ['outcomes', 'Outcomes'], ['questions', 'Questions'], ['student', 'Student'], ['settings', 'Settings']].forEach(function (x) {
       var b = el('button', 'tab' + (st.tab === x[0] ? ' on' : ''), x[1]); b.type = 'button';
       b.addEventListener('click', function () { st.tab = x[0]; ls('hw:ttab', x[0]); render(); });
       t.appendChild(b);
@@ -81,10 +82,24 @@
       clearInterval(st.liveTimer); st.liveTimer = setInterval(pollLive, 10000);
     }).catch(function (e) { st.loading = false; if (!quiet) view.innerHTML = '<div class="panel"><h2>Couldn’t load the class</h2><p class="muted">' + esc(e.message) + '</p></div>'; });
   }
-  function pollLive() {
-    if (!st.D || document.visibilityState !== 'visible' || st.tab !== 'live') return;
-    api('live', { 'class': st.klass }).then(function (d) { if (d.ok && st.D) { st.D.live = d.live; st.D.liveNow = d.now; if (st.tab === 'live') render(); } }).catch(function () {});
+  function pollLive() { // every 10 s on any tab: the header's "signed in" count; the Live tab redraws
+    if (!st.D || document.visibilityState !== 'visible') return;
+    api('live', { 'class': st.klass }).then(function (d) { if (d.ok && st.D) { st.D.live = d.live; st.D.liveNow = d.now; updateOnline(); if (st.tab === 'live') render(); } }).catch(function () {});
   }
+  /* header chip: how many of the class are on the site right now (their page checked in within the last 90 s) */
+  function onlineCount() {
+    var D = st.D, now = D.liveNow || D.now || Date.now(), live = D.live || {}, names = D.roster.map(function (r) { return r.name; }), on = [];
+    names.forEach(function (n) { var r = live[n]; if (r && now - r.at < 90000) on.push(n); });
+    return { on: on, total: names.length, off: names.filter(function (n) { return on.indexOf(n) < 0; }) };
+  }
+  function onlineChip() { var c = el('span', 'online-chip'); c.id = 'online-chip'; fillOnline(c); return c; }
+  function fillOnline(c) {
+    var o = onlineCount();
+    c.innerHTML = '<i class="oc-dot' + (o.on.length ? ' on' : '') + '"></i><b>' + o.on.length + '</b> / ' + o.total + ' on the site';
+    c.title = o.total ? 'Signed in with the site open (checked in within the last 90 seconds).' + (o.off.length && o.off.length <= 40 ? '\nNot on yet: ' + o.off.join(', ') : '') : 'No class list yet';
+    c.classList.toggle('all', o.total > 0 && o.on.length === o.total);
+  }
+  function updateOnline() { var c = document.getElementById('online-chip'); if (c) fillOnline(c); }
   setInterval(function () { if (st.tab === 'live') document.querySelectorAll('[data-since]').forEach(function (n) { n.textContent = since(Number(n.dataset.since)); }); }, 1000);
 
   /* ---------------- derived data ---------------- */
@@ -132,7 +147,7 @@
     if (!st.D && st.tab !== 'settings') { if (!st.classes.length) st.tab = 'settings'; else return; }
     view.appendChild(tabs());
     var body = el('div', 'tab-body'); view.appendChild(body);
-    ({ live: renderLive, tests: function (b) { HW.DashTests.render(b); }, progress: renderProgress, outcomes: renderOutcomes, questions: renderQuestions, student: renderStudent, settings: renderSettings }[st.tab] || renderLive)(body);
+    ({ live: renderLive, exits: function (b) { HW.DashTests.render(b, 'exit'); }, tests: function (b) { HW.DashTests.render(b, 'test'); }, progress: renderProgress, outcomes: renderOutcomes, questions: renderQuestions, student: renderStudent, settings: renderSettings }[st.tab] || renderLive)(body);
     HW.texIn && HW.texIn(body);
   }
 

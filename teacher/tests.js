@@ -15,7 +15,7 @@
   function mmss(ms) { var neg = ms < 0, s = Math.abs(Math.round(ms / 1000)), m = Math.floor(s / 60); return (neg ? '−' : '') + m + ':' + (s % 60 < 10 ? '0' : '') + (s % 60); }
   function kindChip(k) { return '<span class="tt-kind tt-' + (k === 'exit' ? 'exit' : 'test') + '">' + (k === 'exit' ? 'Exit slip' : 'Test') + '</span>'; }
   function partLabel(x) { return 'L' + x.lesson.num + ' ' + x.it.label; }
-  function rerender() { if (st.tab === 'tests') D.render(); }
+  function rerender() { if (st.tab === 'tests' || st.tab === 'exits') D.render(); }
 
   function load(force) {
     if (TS.tests && !force) return Promise.resolve();
@@ -28,57 +28,90 @@
   function liveHere() { return TS.liveAll[cls()] || null; }
 
   /* ================= render ================= */
-  TS.render = function (body) {
+  /* two tabs share this code: Exit slips (kind 'exit', organised by unit) and Tests (kind 'test') */
+  TS.render = function (body, kind) {
+    TS.kind = kind === 'exit' ? 'exit' : 'test';
     if (TS.klass !== cls()) { TS.klass = cls(); TS.tests = null; TS.live = null; TS.res = null; if (TS.view !== 'edit') TS.view = 'home'; }
-    if (!TS.tests) { body.appendChild(el('div', 'loading', 'Loading tests…')); load(true).then(rerender, function (e) { body.innerHTML = '<div class="panel"><h3>Test mode isn’t set up yet</h3><p>' + esc(e.message) + '</p></div>'; }); return; }
+    if (!TS.tests) { body.appendChild(el('div', 'loading', 'Loading…')); load(true).then(rerender, function (e) { body.innerHTML = '<div class="panel"><h3>Test mode isn’t set up yet</h3><p>' + esc(e.message) + '</p></div>'; }); return; }
     if (TS.view === 'edit') return renderEditor(body);
     if (TS.view === 'results' && TS.res) return renderResults(body);
-    if (liveHere()) return renderLive(body);
+    var lv = liveHere();
+    if (lv && (lv.kind === 'exit' ? 'exit' : 'test') === TS.kind) return renderLive(body);
+    if (lv) { // the other kind is live: say so at the top
+      var other = lv.kind === 'exit' ? 'exit' : 'test', ban = el('div', 'tt-live-banner tt-live-' + other, '<span class="tag live-tag">LIVE</span> ' + kindChip(other) + ' <b>' + esc(lv.title) + '</b> is live in ' + esc(klassLabel()) + '.');
+      ban.appendChild(button('btn-small', 'Open it', function () { goTab(other); })); body.appendChild(ban);
+    }
     renderHome(body);
   };
-
-  /* ================= home ================= */
+  function goTab(kind) { st.tab = kind === 'exit' ? 'exits' : 'tests'; try { localStorage.setItem('hw:ttab', st.tab); } catch (e) {} D.render(); }
+  TS.goTab = goTab;
+  function kindWord(k, plural) { return k === 'exit' ? (plural ? 'exit slips' : 'exit slip') : (plural ? 'tests' : 'test'); }
+  /* which unit (and lesson) a test belongs to: its saved unit, else the first question's lesson */
+  function unitOf(def) { if (def && def.unit) return Number(def.unit); var x = TC.items(def)[0]; return x ? x.lesson.unit : 0; }
+  function lessonRank(def) { var x = TC.items(def)[0]; if (!x) return 1e9; var r = 0, found = -1; HW.CATALOG.forEach(function (u) { u.lessons.forEach(function (c) { if (c.id === x.lesson.id) found = r; r++; }); }); return found < 0 ? 1e8 : found; }
+  function lessonTag(def) { var x = TC.items(def)[0]; return x && !x.lesson.test ? 'Lesson ' + x.lesson.unit + '.' + x.lesson.num : ''; }
+  function previewDef(def) {
+    try { localStorage.setItem('hw:tmpreview', JSON.stringify({ def: def, at: Date.now() })); } catch (e) { alert('Can’t open the preview on this browser.'); return; }
+    var w = root.open('../#/preview', 'tmpreview'); if (w) { try { w.focus(); } catch (e) {} }
+  }
+  TS.previewDef = previewDef;
+  function testCard(t) {
+    var d = t.def || {}, n = (d.items || []).length, lt = lessonTag(d);
+    var card = el('div', 'tt-card tt-card-' + (d.kind === 'exit' ? 'exit' : 'test'));
+    card.innerHTML = '<div class="tt-chiprow">' + (TS.kind === 'exit' ? '' : kindChip(d.kind)) + (lt ? '<span class="tt-out">' + esc(lt) + '</span>' : '') + '</div><div class="tt-title">' + esc(d.title) + '</div><div class="small muted">' + n + ' part' + (n === 1 ? '' : 's') + ' · ' + (d.minutes ? d.minutes + ' min' : 'no time limit') + ' · ' + (d.calc ? 'calculator' : 'no calculator') + (d.shuffle ? ' · shuffled' : '') + '</div>';
+    var a = el('div', 'tt-card-acts');
+    a.appendChild(button('btn-primary btn-small', 'Launch for ' + esc(klassLabel()), function () { doLaunch(t); }));
+    a.appendChild(button('btn-small tt-preview', 'Preview', function () { previewDef(t.def); }));
+    a.appendChild(button('btn-small', 'Edit', function () { openEditor(t.id, t.def); }));
+    a.appendChild(button('btn-small', 'Copy', function () { var c = JSON.parse(JSON.stringify(t.def)); c.title = c.title + ' (copy)'; openEditor(null, c); }));
+    a.appendChild(button('btn-small btn-ghost', 'Delete', function () { if (!confirm('Delete “' + d.title + '”? Results already written stay.')) return; api('deltest', { id: t.id }).then(function () { return load(true); }).then(rerender); }));
+    card.appendChild(a); return card;
+  }
   function renderHome(body) {
+    var K = TS.kind, mine = TS.tests.filter(function (t) { return ((t.def && t.def.kind) === 'exit' ? 'exit' : 'test') === K; });
     var top = el('div', 'tt-top');
-    top.appendChild(el('div', '', '<h2 class="tt-h">Tests and exit slips</h2><div class="small muted">Launch one and it pops up, full screen, on every signed-in student’s screen in <b>' + esc(klassLabel()) + '</b>. Leaving the window ends a student’s test; you can unlock it here.</div>'));
+    top.appendChild(el('div', '', '<h2 class="tt-h">' + (K === 'exit' ? 'Exit slips' : 'Tests') + '</h2><div class="small muted">Launch one and it pops up, full screen, on every signed-in student’s screen in <b>' + esc(klassLabel()) + '</b>. Leaving the window ends a student’s ' + kindWord(K) + '; you can unlock it.</div>'));
     var acts = el('div', 'tt-acts');
-    acts.appendChild(button('btn-small tt-new-exit', '+ New exit slip', function () { openEditor(null, { kind: 'exit', minutes: 10 }); }));
-    acts.appendChild(button('btn-small tt-new-test', '+ New test', function () { openEditor(null, { kind: 'test', minutes: 60 }); }));
+    acts.appendChild(K === 'exit' ? button('btn-small tt-new-exit', '+ New exit slip', function () { openEditor(null, { kind: 'exit', minutes: 10 }); })
+      : button('btn-small tt-new-test', '+ New test', function () { openEditor(null, { kind: 'test', minutes: 60 }); }));
     top.appendChild(acts); body.appendChild(top);
-    var list = el('div', 'tt-list');
-    if (!TS.tests.length) list.appendChild(el('div', 'panel muted', 'No tests yet. Make an exit slip or a test from the practice questions, or start from a ready-made unit test below.'));
-    TS.tests.slice().sort(function (a, b) { return b.updated - a.updated; }).forEach(function (t) {
-      var d = t.def || {}, n = (d.items || []).length;
-      var card = el('div', 'tt-card tt-card-' + (d.kind === 'exit' ? 'exit' : 'test'));
-      card.innerHTML = kindChip(d.kind) + '<div class="tt-title">' + esc(d.title) + '</div><div class="small muted">' + n + ' question' + (n === 1 ? '' : 's') + ' · ' + (d.minutes ? d.minutes + ' min' : 'no time limit') + ' · ' + (d.calc ? 'calculator' : 'no calculator') + (d.shuffle ? ' · shuffled' : '') + '</div>';
-      var a = el('div', 'tt-card-acts');
-      a.appendChild(button('btn-primary btn-small', 'Launch for ' + esc(klassLabel()), function () { doLaunch(t); }));
-      a.appendChild(button('btn-small', 'Edit', function () { openEditor(t.id, t.def); }));
-      a.appendChild(button('btn-small', 'Copy', function () { var c = JSON.parse(JSON.stringify(t.def)); c.title = c.title + ' (copy)'; openEditor(null, c); }));
-      a.appendChild(button('btn-small btn-ghost', 'Delete', function () { if (!confirm('Delete “' + d.title + '”? Results already written stay.')) return; api('deltest', { id: t.id }).then(function () { return load(true); }).then(rerender); }));
-      card.appendChild(a); list.appendChild(card);
+    if (!mine.length) body.appendChild(el('div', 'panel muted', K === 'exit' ? 'No exit slips yet. Make one from a lesson’s practice questions.' : 'No tests yet. Make one from the practice questions, or start from a ready-made unit test below.'));
+    // organised by unit (exit slips in lesson order; tests newest first)
+    var byUnit = {}; mine.forEach(function (t) { var u = unitOf(t.def); (byUnit[u] = byUnit[u] || []).push(t); });
+    var units = Object.keys(byUnit).map(Number).sort(function (a, b) { return (a || 99) - (b || 99); });
+    units.forEach(function (u) {
+      var cat = HW.CATALOG.filter(function (c) { return c.unit === u; })[0];
+      var sec = el('section', 'tt-unit');
+      sec.appendChild(el('h3', 'tt-unit-h', cat ? '<span class="unit-num">Unit ' + u + '</span> ' + esc(cat.title) + ' <span class="muted small">' + byUnit[u].length + ' ' + kindWord(K, byUnit[u].length !== 1) + '</span>' : 'Other'));
+      var list = el('div', 'tt-list');
+      byUnit[u].sort(K === 'exit' ? function (a, b) { return lessonRank(a.def) - lessonRank(b.def) || String(a.def.title).localeCompare(String(b.def.title), undefined, { numeric: true }); } : function (a, b) { return b.updated - a.updated; })
+        .forEach(function (t) { list.appendChild(testCard(t)); });
+      sec.appendChild(list); body.appendChild(sec);
     });
-    body.appendChild(list);
     // ready-made unit tests (lessons marked test: true)
-    var ready = Object.keys(HW.lessons).map(function (k) { return HW.lessons[k]; }).filter(function (l) { return l.test; });
+    var ready = K === 'test' ? Object.keys(HW.lessons).map(function (k) { return HW.lessons[k]; }).filter(function (l) { return l.test; }) : [];
     if (ready.length) {
       var p = el('div', 'panel'); p.appendChild(el('h3', '', 'Ready-made unit tests'));
-      p.appendChild(el('p', 'small muted', 'Your paper unit tests, with number generators so every student gets their own version. Start from one, then trim or add questions before saving.'));
+      p.appendChild(el('p', 'small muted', 'Your paper unit tests, with number generators so every student gets their own version. Preview one, or start from it and trim or add questions before saving.'));
       ready.forEach(function (l) {
-        var row = el('div', 'tt-ready', '<b>' + esc(l.title) + '</b> <span class="muted small">' + l.items.length + ' questions · ' + esc(l.outcome || '') + '</span>');
-        row.appendChild(button('btn-small', 'Use as a test', function () { openEditor(null, { title: l.title, kind: 'test', minutes: 75, calc: true, levels: true, items: l.items.filter(function (it) { return !TC.NO_TEST[inputType(l, it)]; }).map(function (it) { return { l: l.id, i: it.id }; }) }); }));
-        p.appendChild(row);
+        var def = { title: l.title, kind: 'test', unit: l.unit, minutes: 75, calc: true, levels: true, items: l.items.filter(function (it) { return !TC.NO_TEST[inputType(l, it)]; }).map(function (it) { return { l: l.id, i: it.id }; }) };
+        var row = el('div', 'tt-ready', '<b>' + esc(l.title) + '</b> <span class="muted small">' + TC.pages(def).length + ' questions · ' + def.items.length + ' parts · ' + esc(l.outcome || '') + '</span>');
+        var ra = el('span', 'tt-ready-acts');
+        ra.appendChild(button('btn-small', 'Preview', function () { previewDef(def); }));
+        ra.appendChild(button('btn-small', 'Use as a test', function () { openEditor(null, def); }));
+        row.appendChild(ra); p.appendChild(row);
       });
       body.appendChild(p);
     }
-    // past launches
-    var ps = el('div', 'panel'); ps.appendChild(el('h3', '', 'Past launches in ' + esc(klassLabel())));
-    if (!TS.sessions || !TS.sessions.length) ps.appendChild(el('p', 'small muted', 'None yet.'));
+    // past launches of this kind
+    var past = (TS.sessions || []).filter(function (s) { return (s.kind === 'exit' ? 'exit' : 'test') === K; });
+    var ps = el('div', 'panel'); ps.appendChild(el('h3', '', 'Past ' + kindWord(K, true) + ' in ' + esc(klassLabel())));
+    if (!past.length) ps.appendChild(el('p', 'small muted', 'None yet.'));
     else {
       var t = el('table', 'tbl'); t.innerHTML = '<thead><tr><th>Launched</th><th>Title</th><th>Written</th><th>Results</th><th></th></tr></thead>';
       var tb = el('tbody');
-      TS.sessions.forEach(function (s) {
-        var tr = el('tr'); tr.innerHTML = '<td>' + new Date(s.launched).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + '</td><td>' + kindChip(s.kind) + ' ' + esc(s.title) + '</td><td>' + s.results + '</td><td>' + (s.released ? '<span class="tag good">Released</span>' : '<span class="tag">Not released</span>') + '</td><td></td>';
+      past.forEach(function (s) {
+        var tr = el('tr'); tr.innerHTML = '<td>' + new Date(s.launched).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + '</td><td>' + esc(s.title) + '</td><td>' + s.results + '</td><td>' + (s.released ? '<span class="tag good">Released</span>' : '<span class="tag">Not released</span>') + '</td><td></td>';
         tr.lastChild.appendChild(button('btn-small', 'Results', function () { openResults(s.id); }));
         tb.appendChild(tr);
       });
@@ -98,7 +131,7 @@
   /* ================= editor ================= */
   function openEditor(id, def) {
     def = def || {};
-    TS.edit = { id: id, title: def.title || '', kind: def.kind || 'test', minutes: def.minutes != null ? def.minutes : 60, calc: def.calc !== false, shuffle: !!def.shuffle, levels: def.levels !== false, items: (def.items || []).slice() };
+    TS.edit = { id: id, unit: def.unit || 0, title: def.title || '', kind: def.kind || TS.kind || 'test', minutes: def.minutes != null ? def.minutes : 60, calc: def.calc !== false, shuffle: !!def.shuffle, levels: def.levels !== false, items: (def.items || []).slice() };
     TS.view = 'edit'; rerender();
   }
   var typeCache = {};
@@ -112,13 +145,14 @@
     head.appendChild(el('h2', 'tt-h', (E.id ? 'Edit ' : 'New ') + (E.kind === 'exit' ? 'exit slip' : 'test')));
     var acts = el('div', 'tt-acts');
     acts.appendChild(button('btn-ghost btn-small', 'Cancel', function () { TS.view = 'home'; rerender(); }));
+    acts.appendChild(button('btn-small tt-preview', 'Preview', function () { if (!E.items.length) { alert('Pick at least one question first.'); return; } previewDef({ title: E.title.trim() || 'Untitled', kind: E.kind, minutes: E.minutes, calc: E.calc, shuffle: E.shuffle, levels: E.levels, items: E.items }); }));
     var save = button('btn-primary btn-small', 'Save', function () {
       if (!E.title.trim()) { alert('Give it a title.'); return; }
       if (!E.items.length) { alert('Pick at least one question.'); return; }
       save.disabled = true;
       api('savetest', { id: E.id || '', def: JSON.stringify({ title: E.title.trim(), kind: E.kind, minutes: E.minutes, calc: E.calc, shuffle: E.shuffle, levels: E.levels, items: E.items }) }).then(function (d) {
         if (!d.ok) { alert('Couldn’t save: ' + d.error); save.disabled = false; return; }
-        TS.view = 'home'; return load(true).then(rerender);
+        TS.view = 'home'; if (E.kind !== TS.kind) goTab(E.kind); return load(true).then(rerender);
       });
     });
     acts.appendChild(save); head.appendChild(acts); body.appendChild(head);
@@ -192,12 +226,12 @@
 
   /* ================= live monitor ================= */
   function pollLive() {
-    if (st.tab !== 'tests' || TS.view === 'edit' || document.visibilityState !== 'visible') return;
+    if ((st.tab !== 'tests' && st.tab !== 'exits') || TS.view === 'edit' || document.visibilityState !== 'visible') return;
     if (!liveHere() && TS.view !== 'live') return;
     api('tlive', { 'class': cls() }).then(function (d) {
       if (!d.ok) return;
       if (!d.live) { if (liveHere()) { delete TS.liveAll[cls()]; load(true).then(rerender); } return; }
-      TS.liveAll[cls()] = d.live; TS.live = d; if (st.tab === 'tests' && TS.view !== 'edit' && TS.view !== 'results') rerender();
+      TS.liveAll[cls()] = d.live; TS.live = d; if ((st.tab === 'tests' || st.tab === 'exits') && TS.view !== 'edit' && TS.view !== 'results') rerender();
     }).catch(function () {});
   }
   setInterval(pollLive, 5000);
@@ -208,6 +242,7 @@
     var m = 'b'; if (ans && ans.r != null) { try { var inst = TC.instance(TC.skey(cls(), name), sid, x.lesson, x.it); m = TC.grade(inst, ans.r).m; } catch (e) { m = 'f'; } }
     return (gradeCache[k] = m);
   }
+  function pageNum(def, order, cur) { try { var pg = TC.pages(def, order)[cur || 0]; return pg ? pg.num : String((cur || 0) + 1); } catch (e) { return String((cur || 0) + 1); } }
   function statusOf(rec, now) {
     if (!rec) return { k: 'none', t: 'Not started' };
     if (rec.st === 'writing') return now - rec.at > 45000 ? { k: 'quiet', t: 'Writing — no signal for ' + Math.round((now - rec.at) / 1000) + ' s' } : { k: 'writing', t: 'Writing' };
@@ -243,11 +278,11 @@
     rows.forEach(function (x) {
       var rec = x.rec, tr = el('tr', 'tt-st-' + x.s.k), ans = rec ? rec.ans || {} : {}, order = rec && rec.order ? rec.order : items.map(function (y) { return y.key; });
       var byKey = {}; items.forEach(function (y) { byKey[y.key] = y; });
-      var dots = order.map(function (k, i) { var y = byKey[k]; if (!y) return ''; var a = ans[k], m = a && a.t ? (TS.showMarks ? gradeOne(x.name, live.id, y, a) : 'a') : 'b'; return '<i class="tt-dot m-' + m + (rec && rec.cur === i && rec.st === 'writing' ? ' cur' : '') + '" title="Q' + (i + 1) + ': ' + esc(y.it.label) + (a && a.t ? ' — ' + esc(a.t) : ' — not answered') + '"></i>'; }).join('');
+      var pgs = TC.pages(def, order), dots = pgs.map(function (pg, pi) { return '<span class="tt-dgrp" title="Question ' + esc(pg.num) + '">' + pg.parts.map(function (q) { var y = byKey[q.key]; if (!y) return ''; var a = ans[q.key], m = a && a.t ? (TS.showMarks ? gradeOne(x.name, live.id, y, a) : 'a') : 'b'; return '<i class="tt-dot m-' + m + (rec && rec.cur === pi && rec.st === 'writing' ? ' cur' : '') + '" title="' + esc(q.label) + (a && a.t ? ': ' + esc(a.t) : ': not answered') + '"></i>'; }).join('') + '</span>'; }).join('');
       var left = '—';
       if (rec && def.minutes) { var lim = (def.minutes + (Number((live.extra || {})['*']) || 0) + (Number((live.extra || {})[x.name.toLowerCase().replace(/\s+/g, ' ').trim()]) || 0)) * 60000; left = mmss(lim - (rec.used || 0) - (rec.st === 'writing' ? Math.max(0, now - rec.at) : 0)); }
       tr.innerHTML = '<td><b>' + esc(x.name) + '</b></td><td><span class="dot ' + x.s.k + '"></span>' + esc(x.s.t) + (rec && rec.st === 'writing' && !rec.fs ? ' <span class="tag">not full screen</span>' : '') + (rec && rec.leaves ? ' <span class="warnnum" title="Times locked for leaving">' + rec.leaves + '</span>' : '') + '</td>' +
-        '<td>' + (rec ? (rec.n || 0) + ' / ' + items.length : '—') + '</td><td class="tt-dots">' + (rec ? dots : '') + '</td><td>' + (rec && rec.st === 'writing' ? 'Q' + ((rec.cur || 0) + 1) : '—') + '</td><td>' + left + '</td><td>' + (rec ? ago(rec.at) : '—') + '</td><td class="acts"></td>';
+        '<td>' + (rec ? (rec.n || 0) + ' / ' + items.length : '—') + '</td><td class="tt-dots">' + (rec ? dots : '') + '</td><td>' + (rec && rec.st === 'writing' ? 'Q' + esc(pageNum(def, order, rec.cur)) : '—') + '</td><td>' + left + '</td><td>' + (rec ? ago(rec.at) : '—') + '</td><td class="acts"></td>';
       var a = tr.lastChild;
       function reopen(msg) {
         if (msg && !confirm(msg)) return;
@@ -278,7 +313,7 @@
   }
   function computeMarks() {
     var R = TS.res, def = R.session.def, items = TC.items(def);
-    R.items = items;
+    R.items = items; R.labels = TC.labels(def);
     var byPos = {}; items.forEach(function (x) { byPos[x.pos] = x; });
     R.rows.forEach(function (r) {
       var saved = r.marks || '', n = (def.items || []).length, auto = '', fin = '';
@@ -296,7 +331,7 @@
   function renderResults(body) {
     var R = TS.res, s = R.session, items = R.items, def = s.def;
     var head = el('div', 'tt-top');
-    head.appendChild(el('div', '', '<button class="btn btn-ghost btn-small tt-back">← All tests</button><h2 class="tt-h">' + kindChip(s.kind) + ' ' + esc(s.title) + '</h2><div class="small muted">Launched ' + new Date(s.launched).toLocaleString() + (s.closed ? ' · closed ' + new Date(s.closed).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '') + ' · ' + (s.released ? '<b>Released to students</b>' : 'Not released yet') + '</div>'));
+    head.appendChild(el('div', '', '<button class="btn btn-ghost btn-small tt-back">← All ' + (s.kind === 'exit' ? 'exit slips' : 'tests') + '</button><h2 class="tt-h">' + kindChip(s.kind) + ' ' + esc(s.title) + '</h2><div class="small muted">Launched ' + new Date(s.launched).toLocaleString() + (s.closed ? ' · closed ' + new Date(s.closed).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '') + ' · ' + (s.released ? '<b>Released to students</b>' : 'Not released yet') + '</div>'));
     head.querySelector('.tt-back').addEventListener('click', function () { TS.view = 'home'; TS.res = null; load(true).then(rerender); });
     var acts = el('div', 'tt-acts');
     var dirty = R.rows.some(function (r) { return r.dirty; });
@@ -311,7 +346,7 @@
     var outs = []; items.forEach(function (x) { if (outs.indexOf(x.it.outcome) < 0) outs.push(x.it.outcome); });
     var t = el('table', 'tbl tt-res');
     var h = '<thead><tr><th>Student</th><th>Status</th><th>Score</th>' + outs.map(function (o) { return '<th>' + esc(o) + '</th>'; }).join('');
-    items.forEach(function (x, i) { h += '<th class="tt-qh" title="' + esc(partLabel(x)) + ' · ' + esc(x.it.outcome) + ' ' + x.it.level + '">' + esc(TC.label(def, x, i)) + '<div class="th-sub">' + x.it.level + '</div></th>'; });
+    items.forEach(function (x, i) { h += '<th class="tt-qh" title="' + esc(partLabel(x)) + ' · ' + esc(x.it.outcome) + ' ' + x.it.level + '">' + esc(R.labels[x.key] || '') + '<div class="th-sub">' + x.it.level + '</div></th>'; });
     t.innerHTML = h + '</tr></thead>';
     var tb = el('tbody'), byName = {}; R.rows.forEach(function (r) { byName[r.name] = r; });
     var names = R.names.slice(); R.rows.forEach(function (r) { if (names.indexOf(r.name) < 0) names.push(r.name); });
@@ -345,7 +380,7 @@
     var inst; try { inst = TC.instance(TC.skey(R.session['class'], r.name), R.session.id, x.lesson, x.it); } catch (e) { inst = null; }
     var a = r.answers[x.key], p = x.pos, m = r.final.charAt(p);
     box.classList.remove('hidden'); box.innerHTML = '';
-    box.appendChild(el('h3', '', esc(r.name) + ' · Question ' + esc(TC.label(R.session.def, x, i)) + ' <span class="muted small">(' + esc(partLabel(x)) + ' · ' + esc(x.it.outcome) + ' ' + x.it.level + ')</span>'));
+    box.appendChild(el('h3', '', esc(r.name) + ' · Question ' + esc(R.labels[x.key] || '') + ' <span class="muted small">(' + esc(partLabel(x)) + ' · ' + esc(x.it.outcome) + ' ' + x.it.level + ')</span>'));
     if (inst) { if (inst.stem) box.appendChild(el('div', 'qstem', HW.tex(inst.stem))); box.appendChild(el('div', 'qprompt', HW.tex(inst.prompt))); }
     box.appendChild(el('div', 'tt-ans', '<div class="dlabel">Their answer</div><div>' + (a && a.t ? esc(a.t) : '<span class="muted">blank</span>') + '</div>'));
     if (inst) box.appendChild(el('div', 'tt-ans', '<div class="dlabel">Correct answer</div><div>' + HW.tex(inst.answer) + '</div>'));

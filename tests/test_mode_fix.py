@@ -23,7 +23,7 @@ async def main():
         b = await p.chromium.launch()
         a = await student(b, 'Ava Brown', '1111', errs)
         # ---- 1: list typing with pauses
-        sid = launch('List', [{'l': 'u1l1', 'i': '1a'}, {'l': 'u1l1', 'i': '1b'}])
+        sid = launch('List', [{'l': 'u1l1', 'i': '1a'}, {'l': 'u1l2', 'i': '1a'}])
         await wait_view(a, 'pending', 25); await a.click('.tm-start'); await wait_view(a, 'test')
         inp = a.locator('#testmode .chip-input'); await inp.click(); await inp.type('1'); await a.wait_for_timeout(1300); await inp.type('3'); await a.wait_for_timeout(1300)
         print('peek while typing:', await a.evaluate("JSON.stringify(HW.TestMode._state().rec.ans)"), 'chips:', await a.locator('#testmode .chip').count())
