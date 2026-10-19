@@ -412,6 +412,10 @@
   }
 
   /* ---------- radicals ---------- */
+  /* [k, m] for k·ⁿ√m with k in kr, m from 2–15 with no perfect n-th power factor, and kⁿ·m between lo and hi */
+  function radPool(n, kr, lo, hi) { var o = []; for (var k = kr[0]; k <= kr[1]; k++) for (var m = 2; m <= 15; m++) { var N = Math.pow(k, n) * m; if (ex.simplest(m, n) && N >= lo && N <= hi) o.push([k, m]); } return o; }
+  var BEG_RAD = radPool(2, [2, 7], 8, 100); // √12 … √98: the Beginning-box radicals (25 of them)
+  function pick3(r, pool) { return r.sample(pool, 3).sort(function (a, b) { return a[0] * a[0] * a[1] - b[0] * b[0] * b[1]; }); }
   function mixedSol(k, n, m) { var big = Math.pow(k, n); return t(rt(n, F(big * m)) + '=' + rt(n, big + '\\times ' + m) + '=' + rt(n, big) + '\\times ' + rt(n, m) + '=' + rad(k, n, m)) + (n > 2 ? ' (' + t(k + '^{' + n + '}=' + big) + ')' : '') + '. ' + t(m) + ' has no perfect ' + powWord(n) + ' factor left, so this is simplest form.'; }
   function mixedPart(k, n, m) {
     return P.radical(t(rt(n, F(Math.pow(k, n) * m))), { k: k, n: n, m: m }, 'mixed', mixedSol(k, n, m),
@@ -450,7 +454,7 @@
           } }] },
       { num: '2', outcome: 'AN1', stem: 'Use a division ladder or a factor tree on paper.', parts: [
         { id: '2', outcome: 'AN1', level: 'BEG', make: function (r) {
-          var N = find(function () { var q = r.sample([3, 5, 7, 11, 13], 3), sq = r.pick(q); return 2 * prodOf(q) * sq; }, function (n) { return n >= 900 && n <= 2000; }, 1050);
+          var N = find(function () { var q = r.sample([3, 5, 7, 11, 13, 17, 19], 3), sq = r.pick([2].concat(q)); return 2 * prodOf(q) * sq; }, function (n) { return n >= 800 && n <= 3000; }, 1050);
           return { prompt: 'Write ' + t(F(N)) + ' as a product of prime factors.', input: { type: 'math', before: t(F(N) + '=') }, check: prodChk(N, 'either'), key: K.fac(N), answer: t(F(N) + '=' + K.fac(N)), text: 'product of primes: ' + N,
             solution: 'Divide by the smallest prime each time:' + K.ladderSolution(N) + t(F(N) + '=' + K.exp(N) + '=' + K.fac(N)),
             hints: ['Start with the smallest prime that divides ' + t(F(N)) + ' and keep dividing until you reach ' + t('1') + '.', 'Check: multiply your primes back together.'] };
@@ -473,7 +477,7 @@
         parts: [0, 1, 2, 3].map(function (i) { return { id: '4' + 'abcd'[i], outcome: 'AN1', level: 'PRG', make: function (r, s) { return q4Part(s.nums[i]); } }; }) },
       { num: '5', section: 'AN1 · Part 1 — Mastering', outcome: 'AN1', stem: 'Show your reasoning with prime factors.', parts: [
         { id: '5', outcome: 'AN1', level: 'MAS', make: function (r) {
-          var f = find(function () { var ps = [2].concat(sortN(r.sample([3, 5, 7], 2))), es = r.shuffle([1, 2, 3]); return ps.map(function (p, i) { return [p, es[i]]; }); }, function (f) { var M = fVal(f); return M >= 300 && M <= 4000; }, [[2, 3], [3, 1], [5, 2]]);
+          var f = find(function () { var ps = r.pick([[2, 3, 5], [2, 3, 7], [2, 5, 7], [2, 3, 11], [2, 5, 11], [2, 7, 11], [3, 5, 7]]), es = r.shuffle([1, 2, 3]); return ps.map(function (p, i) { return [p, es[i]]; }); }, function (f) { var M = fVal(f); return M >= 300 && M <= 6000; }, [[2, 3], [3, 1], [5, 2]]);
           var M = fVal(f), u = powerUp(f, 3), n = u.k, MN = M * n, root = u.root;
           var sqK = powerUp(f, 2).k, once = prodOf(f.filter(function (pe) { return pe[1] % 3; }).map(function (pe) { return pe[0]; })), extra = fVal(f.map(function (pe) { return [pe[0], pe[1] % 3]; })), all = prodOf(f.map(function (pe) { return pe[0]; }));
           var nAlts = [{ v: sqK, code: 'k-square', hint: 'That makes ' + t(F(M) + 'n') + ' a perfect <b>square</b>. A perfect cube needs every exponent to be a multiple of ' + t('3') + '.' },
@@ -505,19 +509,19 @@
       /* ======================= AN1 · Part 2 ======================= */
       { num: '7', section: 'AN1 · Part 2 — Beginning', outcome: 'AN1', stem: 'Find the <b>greatest common factor</b>. Use any method.', parts: [
         { id: '7a', outcome: 'AN1', level: 'BEG', make: function (r) {
-          var v = find(function () { var g = r.pick([12, 14, 15, 16, 18]), xy = r.pick([[3, 5], [3, 4], [4, 5], [2, 5]]); return [g * xy[0], g * xy[1]]; }, function (v) { return v[1] <= 100; }, [36, 60]);
+          var v = find(function () { var g = r.pick([12, 14, 15, 16, 18, 20, 21, 24]), xy = r.pick([[3, 5], [3, 4], [4, 5], [2, 5], [2, 3]]); return [g * xy[0], g * xy[1]]; }, function (v) { return v[1] <= 120; }, [36, 60]);
           return gcfPart(v);
         } },
         { id: '7b', outcome: 'AN1', level: 'BEG', make: function (r) {
-          var v = find(function () { var g = r.pick([11, 13, 14, 15, 17]), xy = r.pick([[2, 3], [2, 5], [3, 4]]); return [g * xy[0], g * xy[1]]; }, function (v) { return v[1] <= 70; }, [28, 42]);
+          var v = find(function () { var g = r.pick([7, 9, 10, 11, 13, 14, 15, 17, 19]), xy = r.pick([[2, 3], [2, 5], [3, 4], [3, 5], [2, 7]]); return [g * xy[0], g * xy[1]]; }, function (v) { return v[1] <= 80; }, [28, 42]);
           return gcfPart(v);
         } }] },
       { num: '8', outcome: 'AN1', stem: 'Find the <b>least common multiple</b>. Use any method.', parts: [
         { id: '8a', outcome: 'AN1', level: 'BEG', make: function (r) {
-          return lcmPart(find(function () { return sortN(r.sample([4, 6, 8, 9, 10, 12], 2)); }, function (v) { return gcd(v[0], v[1]) > 1 && v[1] % v[0] !== 0; }, [8, 12]));
+          return lcmPart(find(function () { return sortN(r.sample([4, 6, 8, 9, 10, 12, 14, 15], 2)); }, function (v) { return gcd(v[0], v[1]) > 1 && v[1] % v[0] !== 0 && lcm(v[0], v[1]) <= 60; }, [8, 12]));
         } },
         { id: '8b', outcome: 'AN1', level: 'BEG', make: function (r) {
-          return lcmPart(find(function () { return [r.int(4, 10), r.int(12, 20)]; }, function (v) { return gcd(v[0], v[1]) > 1 && v[1] % v[0] !== 0 && lcm(v[0], v[1]) <= 60; }, [6, 15]));
+          return lcmPart(find(function () { return [r.int(4, 10), r.int(10, 24)]; }, function (v) { return v[0] < v[1] && gcd(v[0], v[1]) > 1 && v[1] % v[0] !== 0 && lcm(v[0], v[1]) <= 72; }, [6, 15]));
         } }] },
       { num: '9', section: 'AN1 · Part 2 — Progressing', outcome: 'AN1', stem: 'Use prime factorization.', parts: [
         { id: '9', outcome: 'AN1', level: 'PRG', make: function (r) {
@@ -731,28 +735,24 @@
           } }] },
 
       /* ======================= AN2 · Part 2 ======================= */
-      { num: '19', section: 'AN2 · Part 2 — Beginning', outcome: 'AN2', stem: 'Write each as a <b>mixed radical</b> in simplest form.', parts: [
-        { id: '19a', outcome: 'AN2', level: 'BEG', make: function (r) { return mixedPart(2, 2, r.pick([3, 5, 6, 7])); } },
-        { id: '19b', outcome: 'AN2', level: 'BEG', make: function (r) { var km = r.pick([[5, 2], [3, 3], [3, 6], [3, 2], [5, 3]]); return mixedPart(km[0], 2, km[1]); } },
-        { id: '19c', outcome: 'AN2', level: 'BEG', make: function (r) { var km = r.pick([[3, 7], [7, 2], [2, 13], [2, 11], [3, 10], [2, 15]]); return mixedPart(km[0], 2, km[1]); } }] },
-      { num: '20', outcome: 'AN2', stem: 'Write each as an <b>entire radical</b>.', parts: [
-        { id: '20a', outcome: 'AN2', level: 'BEG', make: function (r) { var km = r.pick([[3, 5], [2, 7], [2, 11], [3, 2], [2, 5]]); return entirePart(km[0], 2, km[1]); } },
-        { id: '20b', outcome: 'AN2', level: 'BEG', make: function (r) { var km = r.pick([[4, 2], [3, 6], [4, 3], [5, 2]]); return entirePart(km[0], 2, km[1]); } },
-        { id: '20c', outcome: 'AN2', level: 'BEG', make: function (r) { var km = r.pick([[5, 3], [4, 5], [3, 7], [6, 2]]); return entirePart(km[0], 2, km[1]); } }] },
+      { num: '19', section: 'AN2 · Part 2 — Beginning', outcome: 'AN2', stem: 'Write each as a <b>mixed radical</b> in simplest form.', shared: function (r) { return { km: pick3(r, BEG_RAD) }; }, parts: [0, 1, 2].map(function (j) {
+        return { id: '19' + 'abc'[j], outcome: 'AN2', level: 'BEG', make: function (r, s) { return mixedPart(s.km[j][0], 2, s.km[j][1]); } }; }) },
+      { num: '20', outcome: 'AN2', stem: 'Write each as an <b>entire radical</b>.', shared: function (r) { return { km: pick3(r, BEG_RAD) }; }, parts: [0, 1, 2].map(function (j) {
+        return { id: '20' + 'abc'[j], outcome: 'AN2', level: 'BEG', make: function (r, s) { return entirePart(s.km[j][0], 2, s.km[j][1]); } }; }) },
       { num: '21', section: 'AN2 · Part 2 — Progressing', outcome: 'AN2', stem: 'Write each as a <b>mixed radical</b> in simplest form.', parts: [
-        { id: '21a', outcome: 'AN2', level: 'PRG', make: function (r) { var km = find(function () { return [r.int(6, 14), r.pick([2, 3, 5])]; }, function (v) { var N = v[0] * v[0] * v[1]; return N >= 100 && N <= 400; }, [12, 2]); return mixedPart(km[0], 2, km[1]); } },
+        { id: '21a', outcome: 'AN2', level: 'PRG', make: function (r) { var km = r.pick(radPool(2, [4, 12], 100, 500)); return mixedPart(km[0], 2, km[1]); } },
         { id: '21b', outcome: 'AN2', level: 'PRG', make: function (r) {
-          var v = find(function () { return { c: r.pick([2, 3]), s: r.pick([2, 3, 4, 5]), m: r.pick([2, 3, 5]) }; }, function (v) { return v.s * v.s * v.m <= 80; }, { c: 2, s: 5, m: 3 });
+          var sm = r.pick(radPool(2, [2, 5], 8, 75)), v = { c: r.pick([2, 3, 4, 5]), s: sm[0], m: sm[1] };
           var inner = v.s * v.s * v.m, k = v.c * v.s;
           return P.radical(t(v.c + '\\sqrt{' + inner + '}'), { k: k, n: 2, m: v.m }, 'mixed', t(v.c + '\\sqrt{' + inner + '}=' + v.c + '\\sqrt{' + v.s * v.s + '\\times ' + v.m + '}=' + v.c + '\\times ' + v.s + '\\sqrt{' + v.m + '}=' + rad(k, 2, v.m)) + '.',
             ['Simplify ' + t('\\sqrt{' + inner + '}') + ' first, then multiply by the ' + t(v.c) + ' in front.'], 'mixed radical of ' + v.c + 'sqrt' + inner,
             { diag: function (val, rr) { if (rr && rr.n === 2 && rr.m === v.m && rr.k[1] === 1 && rr.k[0] === v.s) return { code: 'coef-forgot', hint: 'You simplified the root, but the ' + t(v.c) + ' in front still multiplies it: ' + t(v.c + '\\times ' + v.s + '\\sqrt{' + v.m + '}') + '.' }; if (rr && rr.n === 2 && rr.m === v.m && rr.k[1] === 1 && rr.k[0] === v.c + v.s) return { code: 'coef-added', hint: 'Multiply the numbers in front, don’t add them: ' + t(v.c + '\\times ' + v.s) + '.' }; return null; } });
         } },
-        { id: '21c', outcome: 'AN2', level: 'PRG', make: function (r) { var km = find(function () { return [r.pick([2, 3, 4]), r.pick([2, 3, 5])]; }, function (v) { return v[0] * v[0] * v[0] * v[1] <= 200; }, [3, 2]); return mixedPart(km[0], 3, km[1]); } },
-        { id: '21d', outcome: 'AN2', level: 'PRG', make: function (r) { var km = find(function () { return [r.pick([2, 3]), r.pick([2, 3, 5])]; }, function (v) { return Math.pow(v[0], 4) * v[1] <= 250; }, [3, 2]); return mixedPart(km[0], 4, km[1]); } }] },
+        { id: '21c', outcome: 'AN2', level: 'PRG', make: function (r) { var km = r.pick(radPool(3, [2, 5], 16, 300)); return mixedPart(km[0], 3, km[1]); } },
+        { id: '21d', outcome: 'AN2', level: 'PRG', make: function (r) { var km = r.pick(radPool(4, [2, 3], 32, 600)); return mixedPart(km[0], 4, km[1]); } }] },
       { num: '22', outcome: 'AN2', stem: 'Write each as an <b>entire radical</b>.', parts: [
-        { id: '22a', outcome: 'AN2', level: 'PRG', make: function (r) { var km = find(function () { return [r.pick([2, 3, 4]), r.pick([2, 3, 5, 6, 7])]; }, function (v) { return v[0] * v[0] * v[0] * v[1] <= 200; }, [2, 5]); return entirePart(km[0], 3, km[1]); } },
-        { id: '22b', outcome: 'AN2', level: 'PRG', make: function (r) { var km = find(function () { return [r.pick([2, 3]), r.pick([2, 3, 5, 7])]; }, function (v) { return v[0] * v[0] * v[0] * v[1] <= 60; }, [3, 2]); return entirePart(-km[0], 3, km[1]); } }] },
+        { id: '22a', outcome: 'AN2', level: 'PRG', make: function (r) { var km = r.pick(radPool(3, [2, 5], 16, 400)); return entirePart(km[0], 3, km[1]); } },
+        { id: '22b', outcome: 'AN2', level: 'PRG', make: function (r) { var km = r.pick(radPool(3, [2, 4], 16, 200)); return entirePart(-km[0], 3, km[1]); } }] },
       { num: '23', section: 'AN2 · Part 2 — Mastering', outcome: 'AN2',
         shared: function (r) { return { d: r.pick([6, 8, 10, 12, 14, 16, 18, 20]), what: r.pick(['photo', 'tile', 'window', 'coaster', 'napkin']) }; },
         stem: function (s) { return 'A square ' + s.what + ' has a diagonal of ' + t(s.d) + ' cm.' + squareSvg(s.d); },
