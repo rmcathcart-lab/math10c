@@ -128,6 +128,7 @@ export function boot({ key, homeHref = '../../', title = '' }) {
       <button class="mp-item" data-m="answers">Show all answers</button>
       <button class="mp-item" data-m="hideanswers">Hide all answers</button>
       <button class="mp-item" data-m="print">Print / save as PDF</button>
+      <button class="mp-item" data-m="log">${Ink.debugOn() ? 'Hide' : 'Show'} the touch log</button>
       ${sh.readonly ? '' : `<button class="mp-item danger" data-m="clear">${sh.cls ? 'Clear all ink for ' + sh.label + '…' : 'Clear all ink on this lesson…'}</button>`}
       ${shareMenu.bottom ? shareMenu.html : ''}
       ${sh.readonly ? '' : '<div class="mp-tip">Pencil writes · finger scrolls · two-finger tap = undo · hold a finger down and the Pencil erases · hold a colour to change it.<br>Tap a button with the Pencil to press it.</div>'}`;
@@ -141,6 +142,7 @@ export function boot({ key, homeHref = '../../', title = '' }) {
     menu.querySelectorAll('[data-z]').forEach((b) => b.onclick = (e) => { e.stopPropagation(); setPageZoom(getPageZoom() + 0.1 * Number(b.dataset.z)); menu.querySelector('.mp-zbtns b').textContent = Math.round(getPageZoom() * 100) + '%'; });
     menu.querySelector('[data-m=answers]').onclick = () => { document.querySelectorAll('.part').forEach((p) => p.classList.add('shown')); showAllAnswers(true); toggleMenu(false); };
     menu.querySelector('[data-m=hideanswers]').onclick = () => { document.querySelectorAll('.part').forEach((p) => p.classList.remove('shown')); showAllAnswers(false); toggleMenu(false); };
+    menu.querySelector('[data-m=log]').onclick = () => { Ink.setDebug(!Ink.debugOn()); toggleMenu(false); };
     menu.querySelector('[data-m=print]').onclick = () => { toggleMenu(false); Ink.flush(); setTimeout(() => print(), 50); };
     const c = menu.querySelector('[data-m=clear]');
     if (c) c.onclick = () => {
