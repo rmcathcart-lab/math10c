@@ -30,15 +30,18 @@
       'ax-gcf-dropped': 1, // Dropped the common factor
       'ax-gcf-sign': 1, // Common factor with the wrong sign
       'ax-lost-negative': 1, // Lost the negative common factor
+      'ax-no-y': 1, // Left out the second variable
       'ax-pair-product-sign': 1, // Pair product has the wrong sign
       'ax-pair-signs': 1, // Pair with both signs wrong
       'ax-sign': 1, // Sign slip solving (x − h)² = …
       'calc-dec': 1, // Decimal slip
+      'calc-no-b': 1, // Left out the constant term
       'calc-noise': 1, // Copied the calculator’s approximation error
       'calc-sign': 1, // Sign of rise/run
       'chop': 1, // Chopped instead of rounding
       'cnt-extra': 1, // Counted one too many
       'cnt-zero': 1, // Forgot n = 0
+      'const-lost': 1, // Dropped the constant factor
       'const-sign': 1, // Wrong sign on the constant
       'conv-name': 1, // Wrong function name
       'conv-still-fn': 1, // Kept function notation (asked for y = …)
@@ -55,6 +58,7 @@
       'ctx-long': 1, // Line drawn past the situation
       'ctx-loss-sign': 1, // Sign of a loss
       'ctx-months': 1, // Wrong length of time interval
+      'ctx-no-c': 1, // Left out the constant term
       'ctx-not-whole': 1, // Continuous set for a whole-number count
       'ctx-open': 1, // Open dot on a real end
       'ctx-rate-sign': 1, // Rate sign doesn’t match the situation
@@ -86,6 +90,7 @@
       'ev-sign': 1, // Sign error with a negative input
       'ex-order': 1, // Example: not in descending order
       'extra-term': 1, // Extra term that should cancel
+      'fn-const': 1, // Left out the constant term
       'fn-const-sign': 1, // Wrong sign on the constant
       'fn-neg-sub': 1, // Sign slip substituting a negative
       'fn-sign': 1, // Sign slip
@@ -142,6 +147,7 @@
       'neighbour': 1, // Read the value at the wrong point
       'nl-dot': 1, // Open vs solid dot
       'no-corner': 1, // Left out the corner square
+      'no-var': 1, // Left the variable off the term
       'not-subst': 1, // Substitution slip
       'np-place': 1, // Number placed too far off
       'nr-one-sign': 1, // Used a positive value for a negative intercept
@@ -249,7 +255,6 @@
       'ax-missing-b': 1, // Missing some values of b
       'ax-no-leg': 1, // Left out the other coordinate’s difference
       'ax-no-root': 1, // Didn’t take the square root
-      'ax-no-y': 1, // Left out the second variable
       'ax-one': 1, // Gave only one of two points
       'ax-one-side': 1, // Path added on one side only
       'ax-only-positive': 1, // Left out the negative values of b
@@ -273,7 +278,6 @@
       'c-sign': 1, // Ignored the sign of c
       'calc-coef-sq': 1, // Squared the coefficient as well
       'calc-flip': 1, // Used run over rise
-      'calc-no-b': 1, // Left out the constant term
       'calc-sq-neg': 1, // Squared a negative input as a negative
       'cancel-missed': 1, // Missed terms that cancel
       'circ-noSq': 1, // Didn’t square the radius
@@ -306,7 +310,6 @@
       'conj-sign': 1, // Sum × difference written with +
       'const-add': 1, // Added constants instead of multiplying
       'const-both': 1, // Multiplied the constant factor into both brackets
-      'const-lost': 1, // Dropped the constant factor
       'const-zero': 1, // Treated a constant factor as giving a solution
       'conv-arg': 1, // Wrong variable in the brackets
       'conv-move-sign': 1, // Sign error moving terms across
@@ -343,7 +346,6 @@
       'ctx-flip': 1, // Rate units upside down
       'ctx-neg-time': 1, // Kept the negative root
       'ctx-no-b': 1, // Left out the intercept
-      'ctx-no-c': 1, // Left out the constant term
       'ctx-no-fee': 1, // Left out the fixed amount
       'ctx-no-k': 1, // Left out the factor in front of the bracket
       'ctx-no-sub': 1, // Didn’t subtract the starting amount before dividing
@@ -489,7 +491,6 @@
       'fn-binom-sq': 1, // Squared a binomial as (a+b)² = a² + b²
       'fn-coef-in': 1, // Put the coefficient inside the square: 2(x+4)² as (2x+8)²
       'fn-coef-power': 1, // Squared the coefficient with the input: (3·2)²
-      'fn-const': 1, // Left out the constant term
       'fn-cube-neg': 1, // Cube of a negative given as positive
       'fn-dist': 1, // Didn’t multiply every term of the bracket
       'fn-dist-sign': 1, // Didn’t change the sign of the second term in the bracket
@@ -768,7 +769,6 @@
       'no-square-d': 1, // Did not square d
       'no-sub32': 1, // Did not subtract 32
       'no-subtract': 1, // Didn’t subtract the constant
-      'no-var': 1, // Left the variable off the term
       'no-whole': 1, // Lost the whole-number part
       'no-x': 1, // Left out the height factor x
       'no-zero-pairs': 1, // Did not cancel zero pairs
