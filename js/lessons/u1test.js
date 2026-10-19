@@ -771,7 +771,7 @@
       { num: '24', outcome: 'AN2',
         shared: function (r) {
           var a = find(function () { var sq = r.pick([4, 6]), m = r.pick([2, 3, 5, 7]), q = r.pick(sq === 4 ? [2] : [2, 3]); return { s: sq, m: m, q: q, N: sq * sq * m }; }, function (v) { return v.N <= 120; }, { s: 4, m: 3, q: 2, N: 48 });
-          var b = { c: r.pick([2, 3]), m: r.pick([2, 3, 4, 5, 7]) };
+          var c2 = r.pick([2, 3]), b = { c: c2, m: r.pick([2, 3, 4, 5, 7].filter(function (x) { return x !== c2; })) }; // c ≠ m, so Jordan's c²·m is never a perfect cube
           return { i: a, ii: b };
         },
         stem: function (s) { var a = s.i, b = s.ii, rest = a.N / (a.q * a.q); return 'Jordan simplified two radicals. Each answer has an error.<br>(i) ' + t('\\sqrt{' + a.N + '}=\\sqrt{' + a.q * a.q + '\\times ' + rest + '}=' + a.q + '\\sqrt{' + rest + '}') + '<br>(ii) ' + t(b.c + '\\sqrt[3]{' + b.m + '}=\\sqrt[3]{' + b.c + '^{2}\\times ' + b.m + '}=\\sqrt[3]{' + b.c * b.c * b.m + '}'); },
