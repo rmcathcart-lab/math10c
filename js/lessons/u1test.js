@@ -11,12 +11,12 @@
   var HW = root.HW, nt = HW.nt, ex = HW.ex, F = HW.fmt, K = HW.kit, P = K.P, t = K.t, ok = K.ok, wrong = K.wrong, form = K.form;
 
   HW.addCodes({
-    'tree-box': 'Factor tree: a box doesn’t multiply out', 'as-number': 'Gave the number instead of its prime factorization',
+    'tree-box': 'Factor tree: a box doesn’t multiply out',
     'k-once': 'Multiplied by each missing prime only once', 'edge-third': 'Divided the volume by 3 instead of taking the cube root',
     'face-surface': 'Gave the total surface area, not one face', 'face-perimeter': 'Gave the perimeter of a face, not its area', 'face-double': 'Doubled the edge instead of squaring it',
     'kits-total': 'Gave a total instead of the amount in each group', 'lcm-units': 'Converted seconds to minutes wrongly', 'other-ratio': 'Divided the LCM by the given number (forgot the GCF)',
-    'other-gcf': 'Other number has the wrong GCF', 'other-lcm': 'Other number has the wrong LCM', 'sq-coef': 'Squared only the radicand, not the coefficient',
-    'sq-double': 'Doubled instead of squaring', 'sq-decimal': 'Squared a decimal wrongly', 'six-power': 'Raised a root to the 6th power wrongly',
+    'other-gcf': 'Other number has the wrong GCF', 'other-lcm': 'Other number has the wrong LCM', 'rsq-coef': 'Squared only the radicand, not the coefficient',
+    'rsq-double': 'Doubled instead of squaring', 'sq-decimal': 'Squared a decimal wrongly', 'six-power': 'Raised a root to the 6th power wrongly',
     'diag-square': 'Used the diagonal as the side (forgot s²+s²)', 'diag-times': 'Multiplied by √2 instead of dividing', 'diag-perim': 'Perimeter: not 4 sides'
   });
 
@@ -158,7 +158,7 @@
   }
   function squareSvg(d) {
     var body = '<rect x="40" y="20" width="130" height="130"/><line x1="40" y1="150" x2="170" y2="20" stroke-dasharray="6 4"/>' +
-      '<path stroke-width="1.1" d="M40 138 H52 V150"/>' + txt(183, 85, 's', { it: true }) + txt(105, 166, 's', { it: true }) + txt(96, 76, d + ' cm', { rot: -45, size: 15 });
+      '<path stroke-width="1.1" d="M40 138 H52 V150"/>' + txt(183, 85, 's', { it: true }) + txt(105, 166, 's', { it: true }) + txt(84, 64, d + ' cm', { rot: -45, size: 15 });
     return svgBox(200, 178, body, 'a square with a dashed diagonal of ' + d + ' cm and sides s');
   }
 
@@ -681,9 +681,9 @@
           { id: '16a', outcome: 'AN2', level: 'PRG', make: function (r, s) {
             var its = s.items.filter(function (x) { return x.kind !== 'e'; });
             var chks = its.map(function (x) {
-              if (x.kind === 'm') return numChk(x.v, [{ v: x.a * x.b, code: 'sq-coef', hint: 'Square the coefficient too: ' + t('\\left(' + x.tex + '\\right)^{2}=' + x.a + '^{2}\\times ' + x.b) + '.' }, { v: 2 * x.a * x.b, code: 'sq-double', hint: 'Squaring means multiplying by itself, not doubling: ' + t('\\left(' + x.tex + '\\right)^{2}=' + x.a + '^{2}\\times(\\sqrt{' + x.b + '})^{2}') + '.' }]);
+              if (x.kind === 'm') return numChk(x.v, [{ v: x.a * x.b, code: 'rsq-coef', hint: 'Square the coefficient too: ' + t('\\left(' + x.tex + '\\right)^{2}=' + x.a + '^{2}\\times ' + x.b) + '.' }, { v: 2 * x.a * x.b, code: 'rsq-double', hint: 'Squaring means multiplying by itself, not doubling: ' + t('\\left(' + x.tex + '\\right)^{2}=' + x.a + '^{2}\\times(\\sqrt{' + x.b + '})^{2}') + '.' }]);
               var dd = x.D / 10, ip = Math.floor(dd), fp = x.D % 10;
-              return numChk(x.v, [{ v: (ip * ip * 100 + fp * fp) / 100, code: 'sq-decimal', hint: 'Not quite: ' + t(dd.toFixed(1) + '^{2}') + ' isn’t ' + t(ip + '^{2}') + ' and ' + t('0.' + fp + '^{2}') + ' put together. Multiply ' + t(dd.toFixed(1) + '\\times ' + dd.toFixed(1)) + ' in full.' }, { v: 2 * dd, code: 'sq-double', hint: 'Squaring means ' + t(dd.toFixed(1) + '\\times ' + dd.toFixed(1)) + ', not doubling.' }]);
+              return numChk(x.v, [{ v: (ip * ip * 100 + fp * fp) / 100, code: 'sq-decimal', hint: 'Not quite: ' + t(dd.toFixed(1) + '^{2}') + ' isn’t ' + t(ip + '^{2}') + ' and ' + t('0.' + fp + '^{2}') + ' put together. Multiply ' + t(dd.toFixed(1) + '\\times ' + dd.toFixed(1)) + ' in full.' }, { v: 2 * dd, code: 'rsq-double', hint: 'Squaring means ' + t(dd.toFixed(1) + '\\times ' + dd.toFixed(1)) + ', not doubling.' }]);
             });
             return P.fields('<b>Without a calculator</b>, square each number. (This writes each one as the square root of a number you can compare.)',
               its.map(function (x) { return { name: t('\\left(' + x.tex + '\\right)^{2}'), before: t('\\left(' + x.tex + '\\right)^{2}=') }; }), chks, its.map(function (x) { return dec2(x.v); }),
