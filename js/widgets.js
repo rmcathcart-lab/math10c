@@ -206,7 +206,8 @@
     if (opt.columns) wrap.classList.add('cols-' + opt.columns);
     return { node: wrap, value: function () { return chosen; }, focus: function () {}, clear: function () { chosen = null; btns.forEach(function (x) { x.classList.remove('on'); }); },
       disable: function (on) { wrap.classList.toggle('off', !!on); btns.forEach(function (b) { b.disabled = !!on; }); }, onEnter: function (fn) { enter = fn; },
-      mark: function (key) { btns.forEach(function (b, i) { b.classList.toggle('bad', opt.options[i].key === key); }); } };
+      mark: function (key) { btns.forEach(function (b, i) { b.classList.toggle('bad', opt.options[i].key === key); }); },
+      set: function (key) { chosen = key == null ? null : key; btns.forEach(function (b, i) { b.classList.toggle('on', opt.options[i].key === chosen); }); } };
   };
 
   /* ---- choose several from a set of chips ---- */
@@ -223,7 +224,7 @@
     if (opt.help !== false) wrap.appendChild(el('div', 'w-help', opt.help || 'Tap every one that fits. Tap again to unselect.'));
     return { node: wrap, value: function () { return btns.filter(function (x) { return set[x.v]; }).map(function (x) { return x.v; }); }, focus: function () {},
       clear: function () { set = {}; btns.forEach(function (x) { x.b.classList.remove('on'); }); }, disable: function (on) { wrap.classList.toggle('off', !!on); },
-      onEnter: function (fn) { enter = fn; } };
+      onEnter: function (fn) { enter = fn; }, set: function (arr) { set = {}; (arr || []).forEach(function (v) { set[v] = true; }); btns.forEach(function (x) { x.b.classList.toggle('on', !!set[x.v]); x.b.setAttribute('aria-pressed', String(!!set[x.v])); }); } };
   };
 
   /* ---- prime or composite? A composite answer must be backed by a factor pair ---- */
@@ -244,7 +245,8 @@
     [a, b].forEach(function (x) { x.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); if (x === a && !b.value) b.focus(); else if (enter) enter(); } }); });
     return { node: wrap, value: function () { return { choice: choice, a: a.value.trim(), b: b.value.trim() }; }, focus: function () {},
       clear: function () { choice = null; a.value = b.value = ''; bp.classList.remove('on'); bc.classList.remove('on'); proof.classList.add('hidden'); },
-      disable: function (on) { wrap.classList.toggle('off', !!on); a.disabled = b.disabled = !!on; }, onEnter: function (fn) { enter = fn; } };
+      disable: function (on) { wrap.classList.toggle('off', !!on); a.disabled = b.disabled = !!on; }, onEnter: function (fn) { enter = fn; },
+      set: function (v) { v = v || {}; if (v.choice) pick(v.choice); a.value = v.a || ''; b.value = v.b || ''; } };
   };
 
   /* ---- a list of pairs ( __ , __ ) ---- */
@@ -271,6 +273,7 @@
     wrap.appendChild(el('div', 'w-help', 'Write each pair smaller number first. Press Enter to move along.'));
     return { node: wrap, value: function () { return rows.map(function (o) { return [o.a.value.trim(), o.b.value.trim()]; }).filter(function (p) { return p[0] !== '' || p[1] !== ''; }); },
       focus: function () { if (!coarse()) rows[0].a.focus({ preventScroll: true }); }, clear: function () { rows.forEach(function (o) { o.r.remove(); }); rows = []; addRow(); },
-      disable: function (on) { wrap.classList.toggle('off', !!on); rows.forEach(function (o) { o.a.disabled = o.b.disabled = !!on; }); more.disabled = !!on; }, onEnter: function (fn) { enter = fn; } };
+      disable: function (on) { wrap.classList.toggle('off', !!on); rows.forEach(function (o) { o.a.disabled = o.b.disabled = !!on; }); more.disabled = !!on; }, onEnter: function (fn) { enter = fn; },
+      set: function (arr) { rows.forEach(function (o) { o.r.remove(); }); rows = []; (arr && arr.length ? arr : [null]).forEach(function (p) { addRow(p); }); } };
   };
 })(window);

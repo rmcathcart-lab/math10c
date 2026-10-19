@@ -37,7 +37,7 @@
   }
   function tabs() {
     var t = el('nav', 'tabs');
-    [['live', 'Live'], ['progress', 'Progress'], ['outcomes', 'Outcomes'], ['questions', 'Questions'], ['student', 'Student'], ['settings', 'Settings']].forEach(function (x) {
+    [['live', 'Live'], ['tests', 'Tests'], ['progress', 'Progress'], ['outcomes', 'Outcomes'], ['questions', 'Questions'], ['student', 'Student'], ['settings', 'Settings']].forEach(function (x) {
       var b = el('button', 'tab' + (st.tab === x[0] ? ' on' : ''), x[1]); b.type = 'button';
       b.addEventListener('click', function () { st.tab = x[0]; ls('hw:ttab', x[0]); render(); });
       t.appendChild(b);
@@ -132,7 +132,7 @@
     if (!st.D && st.tab !== 'settings') { if (!st.classes.length) st.tab = 'settings'; else return; }
     view.appendChild(tabs());
     var body = el('div', 'tab-body'); view.appendChild(body);
-    ({ live: renderLive, progress: renderProgress, outcomes: renderOutcomes, questions: renderQuestions, student: renderStudent, settings: renderSettings }[st.tab] || renderLive)(body);
+    ({ live: renderLive, tests: function (b) { HW.DashTests.render(b); }, progress: renderProgress, outcomes: renderOutcomes, questions: renderQuestions, student: renderStudent, settings: renderSettings }[st.tab] || renderLive)(body);
     HW.texIn && HW.texIn(body);
   }
 
@@ -459,6 +459,6 @@
     var csv = rows.map(function (r) { return r.map(function (v) { v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(','); }).join('\n');
     var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = name; document.body.appendChild(a); a.click(); setTimeout(function () { a.remove(); }, 100);
   }
-  HW.Dash = { state: st, render: render };
+  HW.Dash = { state: st, render: render, api: api, download: download, flash: flash };
   boot();
 })(window);

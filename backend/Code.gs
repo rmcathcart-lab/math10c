@@ -87,6 +87,8 @@ function doGet(e) {
     if (a === 'setpin') return json_(setPin_(p['class'], p.name, p.pin, p.device), cb);
     if (a === 'signin') return json_(signIn_(p['class'], p.name, p.pin, p.device), cb);
     if (a === 'progress') return json_(progress_(p['class'], p.name, p.token), cb);
+    if (a === 'tcheck') return json_(tcheck_(p), cb);
+    if (a === 'myresults') return json_(myResults_(p), cb);
     if (!teacherKey_() || p.key !== teacherKey_()) return json_({ ok: false, error: 'bad key' }, cb);
     if (a === 'classes') return json_(classList_(), cb);
     if (a === 'dash') return json_(dash_(p['class']), cb);
@@ -99,6 +101,16 @@ function doGet(e) {
     if (a === 'removestudent') return json_(removeStudent_(p['class'], p.name), cb);
     if (a === 'setblock') return json_(setBlock_(p['class'], p.block), cb);
     if (a === 'setnoschool') return json_(setNoSchool_(p.dates), cb);
+    if (a === 'tests') return json_(testsList_(), cb);
+    if (a === 'savetest') return json_(saveTest_(p.id, p.def), cb);
+    if (a === 'deltest') return json_(delTest_(p.id), cb);
+    if (a === 'launch') return json_(launch_(p['class'], p.test), cb);
+    if (a === 'tlive') return json_(tlive_(p['class']), cb);
+    if (a === 'tctl') return json_(tctl_(p['class'], p.op, p.name, p.mins), cb);
+    if (a === 'sessions') return json_(sessions_(p['class']), cb);
+    if (a === 'tresults') return json_(tresults_(p.session), cb);
+    if (a === 'setmarks') return json_(setMarks_(p.session, p.data), cb);
+    if (a === 'release') return json_(release_(p.session, p.on === '1' || p.on === 'true'), cb);
     return json_({ ok: false, error: 'unknown action' }, cb);
   } catch (err) { return json_({ ok: false, error: String(err) }, cb); }
 }
@@ -155,6 +167,7 @@ function doPost(e) {
   var body;
   try { body = JSON.parse((e && e.postData && e.postData.contents) || '{}'); } catch (err) { return json_({ ok: false, error: 'bad json' }); }
   if (!body || !body.name || !body['class']) return json_({ ok: false, error: 'missing' });
+  if (body.kind === 'test') { try { return json_(testPost_(body)); } catch (err) { return json_({ ok: false, error: String(err) }); } }
   var lock = LockService.getScriptLock();
   try { lock.waitLock(20000); } catch (err) { return json_({ ok: false, error: 'busy' }); }
   try {
@@ -312,4 +325,212 @@ function setBlock_(klass, block) {
 function setNoSchool_(csv) {
   var out = []; String(csv || '').split(/[,\s]+/).forEach(function (x) { x = x.trim(); if (/^\d{4}-\d{2}-\d{2}$/.test(x) && out.indexOf(x) < 0) out.push(x); });
   out.sort(); save_('NOSCHOOL', out.slice(-300)); return { ok: true, noSchool: out.slice(-300) };
+}
+
+/* ============================================================
+ * TEST MODE (exit slips and tests written on the site)
+ * ------------------------------------------------------------
+ * The teacher saves a test (questions picked from the practice generators or a ready-made unit test), then launches it for
+ * a class. Every signed-in student's page checks for a live test every ~10 s and pops it up; each student gets their own
+ * numbers (seeded by student + session). Leaving the window ends and locks the student's test; the teacher can unlock it.
+ * While a test is live, students' answers live in the script cache (one key per student, no sheet writes, no lock), so a
+ * whole class can save every few seconds. A finished test (submitted / left / out of time / ended) is written to the
+ * TestResults sheet. Marks are computed by the teacher dashboard from the stored answers (students never see the keys
+ * during a test) and saved with setmarks; results reach students only after the teacher releases them.
+ *   Tests         saved tests: id, title, kind (exit | test), updated, def (JSON: minutes, calc, shuffle, levels, items)
+ *   TestSessions  one row per launch: id, test, class, title, kind, launched, closed, released, def (snapshot)
+ *   TestResults   one row per student per session: status, times, leaves, answers JSON, marks, score
+ * Script properties: TESTLIVE ({ class: live session }), TESTREL ({ class: release counter }).
+ * ============================================================ */
+COLS.Tests = ['id', 'title', 'kind', 'updated', 'def'];
+COLS.TestSessions = ['id', 'test', 'class', 'title', 'kind', 'launched', 'closed', 'released', 'def'];
+COLS.TestResults = ['key', 'session', 'class', 'name', 'status', 'started', 'submitted', 'usedSecs', 'leaves', 'device', 'answers', 'marks', 'score', 'total', 'updated'];
+var TEST_TTL = 21600; // cache seconds (6 h, the maximum)
+
+function cache_() { return CacheService.getScriptCache(); }
+function cget_(k) { try { var v = cache_().get(k); return v ? JSON.parse(v) : null; } catch (e) { return null; } }
+function cput_(k, v) { try { cache_().put(k, JSON.stringify(v), TEST_TTL); } catch (e) {} }
+/* token check without reading the Roster sheet on every poll */
+function authFast_(klass, name, token) {
+  var k = 'tok:' + norm_(klass) + '|' + norm_(name), c = cget_(k);
+  if (c && c.t === token && token) return { klass: c.k, name: c.n };
+  var st = authed_(klass, name, token); if (!st) return null;
+  var who = { klass: String(st.v[0]), name: String(st.v[1]) };
+  cput_(k, { t: token, k: who.klass, n: who.name });
+  return who;
+}
+/* TESTLIVE / TESTREL live in script properties (the record) and in the cache (what every poll reads: property reads have a
+ * daily quota and every signed-in student polls every 10 s) */
+function cachedProp_(p) { var c = cget_('P:' + p); if (c && typeof c === 'object') return c; var v = list_(p); v = (v && typeof v === 'object') ? v : {}; cput_('P:' + p, v); return v; }
+function saveProp_(p, v) { save_(p, v); cput_('P:' + p, v); }
+function testLive_() { return cachedProp_('TESTLIVE'); }
+function testRel_() { return cachedProp_('TESTREL'); }
+function recKey_(sid, name) { return 'tl:' + sid + ':' + norm_(name); }
+function parseDef_(s) { try { var d = typeof s === 'string' ? JSON.parse(s) : s; return d && typeof d === 'object' ? d : null; } catch (e) { return null; } }
+function cleanDef_(d) {
+  d = d || {};
+  var items = (Array.isArray(d.items) ? d.items : []).slice(0, 80).map(function (x) { return { l: clean_(x && x.l, 20), i: clean_(x && x.i, 16) }; }).filter(function (x) { return x.l && x.i; });
+  return { title: clean_(d.title || 'Test', 80) || 'Test', kind: d.kind === 'exit' ? 'exit' : 'test', minutes: Math.max(0, Math.min(240, Math.round(Number(d.minutes) || 0))),
+    calc: d.calc !== false, shuffle: !!d.shuffle, levels: d.levels !== false, items: items };
+}
+function sessionDef_(sid) {
+  var c = cget_('tsdef:' + sid); if (c) return c;
+  var rs = rows_('TestSessions'); for (var i = rs.length - 1; i >= 0; i--) if (rs[i][0] === sid) { var d = parseDef_(rs[i][8]); if (d) { cput_('tsdef:' + sid, d); return d; } }
+  return null;
+}
+function liveFor_(klass) { var l = testLive_()[norm_(klass)]; return l && l.id ? l : null; }
+
+/* ---------------- student side ---------------- */
+function tcheck_(p) {
+  var who = authFast_(p['class'], p.name, p.token); if (!who) return { ok: false, error: 'badtoken' };
+  var live = liveFor_(who.klass), rel = testRel_()[norm_(who.klass)] || 0;
+  if (!live) return { ok: true, live: null, rel: rel, now: Date.now() };
+  var def = sessionDef_(live.id), me = cget_(recKey_(live.id, who.name)), n = norm_(who.name);
+  var out = { ok: true, now: Date.now(), rel: rel, live: { id: live.id, launched: live.launched, ending: !!live.ending, def: def,
+    extra: (Number((live.extra || {})['*']) || 0) + (Number((live.extra || {})[n]) || 0), unlock: Number((live.unlock || {})[n]) || 0, submit: Number((live.submit || {})[n]) || 0 } };
+  if (me) { out.me = { st: me.st, dev: me.dev, used: me.used, unlockN: me.unlockN || 0, started: me.started }; if (p.full) { out.me.ans = me.ans || {}; out.me.leaves = me.leaves || 0; out.me.order = me.order || null; } }
+  return out;
+}
+function myResults_(p) {
+  var who = authFast_(p['class'], p.name, p.token); if (!who) return { ok: false, error: 'badtoken' };
+  var k = norm_(who.klass), n = norm_(who.name), sess = {};
+  rows_('TestSessions').forEach(function (r) { if (norm_(r[2]) === k && r[7]) sess[r[0]] = { id: r[0], title: r[3], kind: r[4], launched: ms_(r[5]), released: ms_(r[7]), def: parseDef_(r[8]) }; });
+  var out = [];
+  rows_('TestResults').forEach(function (r) {
+    var s = sess[r[1]]; if (!s || norm_(r[3]) !== n) return;
+    var ans = {}; try { ans = JSON.parse(r[10] || '{}'); } catch (e) {}
+    out.push({ id: s.id, title: s.title, kind: s.kind, launched: s.launched, released: s.released, def: s.def, status: r[4], answers: ans, marks: String(r[11] || ''), score: r[12], total: r[13] });
+  });
+  out.sort(function (a, b) { return b.launched - a.launched; });
+  return { ok: true, results: out };
+}
+/* POST { kind:'test', class, name, token, device, session, st, cur, ans, used, leaves, started, unlockN, order, fs, final } */
+function testPost_(body) {
+  var who = authFast_(body['class'], body.name, body.token); if (!who) return { ok: false, error: 'badtoken' };
+  var sid = clean_(body.session, 40); if (!sid) return { ok: false, error: 'no session' };
+  var live = liveFor_(who.klass), def = sessionDef_(sid); if (!def) return { ok: false, error: 'unknown session' };
+  var st = ['writing', 'submitted', 'left', 'time', 'ended', 'forced'].indexOf(body.st) >= 0 ? body.st : 'writing';
+  var now = Date.now(), key = recKey_(sid, who.name), prev = cget_(key) || {};
+  if (prev.st && prev.st !== 'writing' && st === 'writing' && (Number(body.unlockN) || 0) <= (prev.unlockN || 0)) return { ok: false, error: 'closed' }; // finished and not unlocked since
+  if (st === 'writing' && (!live || live.id !== sid)) return { ok: false, error: 'not live' };
+  var ans = body.ans && typeof body.ans === 'object' ? body.ans : (prev.ans || {}), answered = 0;
+  Object.keys(ans).forEach(function (k) { if (ans[k] && ans[k].t) answered++; });
+  var rec = { st: st, cur: Number(body.cur) || 0, n: answered, ans: ans, used: Math.max(0, Number(body.used) || 0), leaves: Number(body.leaves) || 0, at: now, dev: clean_(body.device, 40),
+    started: Number(body.started) || prev.started || now, unlockN: Number(body.unlockN) || 0, order: Array.isArray(body.order) ? body.order.slice(0, 80) : (prev.order || null), fs: !!body.fs,
+    done: st === 'writing' ? 0 : (prev.done && prev.st === st ? prev.done : now), why: clean_(body.why, 40) };
+  cput_(key, rec);
+  if (st !== 'writing') {
+    var lock = LockService.getScriptLock(); lock.waitLock(20000);
+    try { upsertResult_(sid, who.klass, who.name, rec); } finally { lock.releaseLock(); }
+  }
+  return { ok: true };
+}
+function upsertResult_(sid, klass, name, rec) {
+  var sh = sheet_('TestResults'), key = sid + '|' + norm_(name), last = sh.getLastRow(), row = 0;
+  if (last > 1) { var ks = sh.getRange(2, 1, last - 1, 1).getValues(); for (var i = ks.length - 1; i >= 0; i--) if (ks[i][0] === key) { row = i + 2; break; } }
+  var txt = JSON.stringify(rec.ans || {}); if (txt.length > 48000) txt = txt.slice(0, 48000);
+  var vals = [key, sid, klass, name, rec.st, rec.started ? new Date(rec.started) : '', rec.done ? new Date(rec.done) : '', Math.round((rec.used || 0) / 1000), rec.leaves || 0, rec.dev || '', txt];
+  if (row) { sh.getRange(row, 1, 1, vals.length).setValues([vals]); sh.getRange(row, 15).setValue(new Date()); }
+  else sh.getRange(sh.getLastRow() + 1, 1, 1, COLS.TestResults.length).setValues([vals.concat(['', '', '', new Date()])]);
+}
+
+/* ---------------- teacher side ---------------- */
+function testsList_() {
+  return { ok: true, tests: rows_('Tests').map(function (r) { return { id: r[0], title: r[1], kind: r[2], updated: ms_(r[3]), def: parseDef_(r[4]) }; }), live: testLive_() };
+}
+function saveTest_(id, defJson) {
+  var def = cleanDef_(parseDef_(defJson)); if (!def.items.length) return { ok: false, error: 'no questions' };
+  var lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    var sh = sheet_('Tests'), rs = rows_('Tests'), row = 0;
+    id = clean_(id, 30); if (id) rs.forEach(function (r, i) { if (r[0] === id) row = i + 2; }); else id = 'T' + Date.now().toString(36);
+    var vals = [id, def.title, def.kind, new Date(), JSON.stringify(def)];
+    if (row) sh.getRange(row, 1, 1, vals.length).setValues([vals]); else sh.getRange(sh.getLastRow() + 1, 1, 1, vals.length).setValues([vals]);
+    return { ok: true, id: id, def: def };
+  } finally { lock.releaseLock(); }
+}
+function delTest_(id) {
+  var lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try { var sh = sheet_('Tests'), rs = rows_('Tests'); for (var i = rs.length - 1; i >= 0; i--) if (rs[i][0] === id) sh.deleteRow(i + 2); return { ok: true }; }
+  finally { lock.releaseLock(); }
+}
+function launch_(klass, testId) {
+  var c = classOf_(klass); if (!c) return { ok: false, error: 'unknown class' };
+  var t = null; rows_('Tests').forEach(function (r) { if (r[0] === testId) t = { id: r[0], def: parseDef_(r[4]) }; });
+  if (!t || !t.def) return { ok: false, error: 'unknown test' };
+  var lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    var all = list_('TESTLIVE') || {}; if (all[c.code] && all[c.code].id) return { ok: false, error: 'live', live: all[c.code] };
+    var sid = 'S' + Date.now().toString(36), now = Date.now();
+    sheet_('TestSessions').appendRow([sid, t.id, c.code, t.def.title, t.def.kind, new Date(now), '', '', JSON.stringify(t.def)]);
+    cput_('tsdef:' + sid, t.def);
+    all[c.code] = { id: sid, test: t.id, title: t.def.title, kind: t.def.kind, launched: now, ending: false, extra: {}, unlock: {}, submit: {} };
+    saveProp_('TESTLIVE', all);
+    return { ok: true, live: all[c.code] };
+  } finally { lock.releaseLock(); }
+}
+function tlive_(klass) {
+  var live = liveFor_(klass), names = rosterRows_(klass).map(function (x) { return String(x.v[1]); });
+  if (!live) return { ok: true, live: null, names: names, now: Date.now() };
+  var keys = names.map(function (n) { return recKey_(live.id, n); }), got = {};
+  try { got = cache_().getAll(keys) || {}; } catch (e) { got = {}; }
+  var recs = {}; names.forEach(function (n, i) { var v = got[keys[i]]; if (v) { try { recs[n] = JSON.parse(v); } catch (e) {} } });
+  return { ok: true, live: live, def: sessionDef_(live.id), recs: recs, names: names, now: Date.now() };
+}
+/* op: unlock | time | submit | end | close | resume (cancel end) */
+function tctl_(klass, op, name, mins) {
+  var lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    var all = list_('TESTLIVE') || {}, k = norm_(klass), live = all[k]; if (!live) return { ok: false, error: 'no live test' };
+    var n = norm_(name || ''); live.extra = live.extra || {}; live.unlock = live.unlock || {}; live.submit = live.submit || {};
+    if (op === 'unlock') { if (!n) return { ok: false, error: 'no student' }; live.unlock[n] = (live.unlock[n] || 0) + 1; if (Number(mins)) live.extra[n] = (live.extra[n] || 0) + Number(mins); }
+    else if (op === 'time') live.extra[n || '*'] = (live.extra[n || '*'] || 0) + (Number(mins) || 0);
+    else if (op === 'submit') { if (!n) return { ok: false, error: 'no student' }; live.submit[n] = (live.submit[n] || 0) + 1; }
+    else if (op === 'end') live.ending = true;
+    else if (op === 'resume') live.ending = false;
+    else if (op === 'close') {
+      delete all[k]; saveProp_('TESTLIVE', all);
+      var sh = sheet_('TestSessions'), rs = rows_('TestSessions');
+      for (var i = rs.length - 1; i >= 0; i--) if (rs[i][0] === live.id) { sh.getRange(i + 2, 7).setValue(new Date()); break; }
+      // anyone still writing when the test is closed: keep what the cache has (they were told to stop)
+      rosterRows_(klass).forEach(function (x) { var rec = cget_(recKey_(live.id, x.v[1])); if (rec && rec.st === 'writing') { rec.st = 'ended'; rec.done = Date.now(); cput_(recKey_(live.id, x.v[1]), rec); upsertResult_(live.id, String(x.v[0]), String(x.v[1]), rec); } });
+      return { ok: true, closed: live.id };
+    } else return { ok: false, error: 'bad op' };
+    all[k] = live; saveProp_('TESTLIVE', all);
+    return { ok: true, live: live };
+  } finally { lock.releaseLock(); }
+}
+function sessions_(klass) {
+  var k = norm_(klass), counts = {};
+  rows_('TestResults').forEach(function (r) { if (norm_(r[2]) === k) counts[r[1]] = (counts[r[1]] || 0) + 1; });
+  return { ok: true, sessions: rows_('TestSessions').filter(function (r) { return norm_(r[2]) === k; }).map(function (r) {
+    return { id: r[0], test: r[1], title: r[3], kind: r[4], launched: ms_(r[5]), closed: ms_(r[6]), released: ms_(r[7]), results: counts[r[0]] || 0 }; }).reverse() };
+}
+function tresults_(sid) {
+  var s = null; rows_('TestSessions').forEach(function (r) { if (r[0] === sid) s = { id: r[0], test: r[1], 'class': r[2], title: r[3], kind: r[4], launched: ms_(r[5]), closed: ms_(r[6]), released: ms_(r[7]), def: parseDef_(r[8]) }; });
+  if (!s) return { ok: false, error: 'unknown session' };
+  var rows = rows_('TestResults').filter(function (r) { return r[1] === sid; }).map(function (r) {
+    var ans = {}; try { ans = JSON.parse(r[10] || '{}'); } catch (e) {}
+    return { name: r[3], status: r[4], started: ms_(r[5]), submitted: ms_(r[6]), used: Number(r[7]) || 0, leaves: Number(r[8]) || 0, device: r[9], answers: ans, marks: String(r[11] || ''), score: r[12], total: r[13] };
+  });
+  return { ok: true, session: s, rows: rows, names: rosterRows_(s['class']).map(function (x) { return String(x.v[1]); }) };
+}
+/* data = { name: { m: 'cwfb…' (one letter per question, upper case = teacher override), s: score, t: total } } */
+function setMarks_(sid, data) {
+  var d = parseDef_(data) || {}, lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    var sh = sheet_('TestResults'), rs = rows_('TestResults'), n = 0;
+    rs.forEach(function (r, i) { if (r[1] !== sid) return; var x = d[r[3]]; if (!x) return; sh.getRange(i + 2, 12, 1, 4).setValues([[clean_(x.m, 120), Number(x.s) || 0, Number(x.t) || 0, new Date()]]); n++; });
+    return { ok: true, saved: n };
+  } finally { lock.releaseLock(); }
+}
+function release_(sid, on) {
+  var lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    var sh = sheet_('TestSessions'), rs = rows_('TestSessions'), klass = '';
+    for (var i = rs.length - 1; i >= 0; i--) if (rs[i][0] === sid) { sh.getRange(i + 2, 8).setValue(on ? new Date() : ''); klass = norm_(rs[i][2]); break; }
+    if (!klass) return { ok: false, error: 'unknown session' };
+    var rel = list_('TESTREL') || {}; rel[klass] = (rel[klass] || 0) + 1; saveProp_('TESTREL', rel);
+    return { ok: true };
+  } finally { lock.releaseLock(); }
 }

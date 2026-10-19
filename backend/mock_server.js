@@ -38,7 +38,9 @@ var cache = {};
 var CacheService = { getScriptCache: function () { return {
   get: function (k) { var e = cache[k]; if (!e || e.exp < Date.now()) return null; return e.v; },
   put: function (k, v, ttl) { cache[k] = { v: String(v), exp: Date.now() + (ttl || 600) * 1000 }; },
-  remove: function (k) { delete cache[k]; } }; } };
+  remove: function (k) { delete cache[k]; },
+  getAll: function (ks) { var o = {}; ks.forEach(function (k) { var e = cache[k]; if (e && e.exp >= Date.now()) o[k] = e.v; }); return o; },
+  putAll: function (m, ttl) { Object.keys(m).forEach(function (k) { cache[k] = { v: String(m[k]), exp: Date.now() + (ttl || 600) * 1000 }; }); } }; } };
 var LockService = { getScriptLock: function () { return { waitLock: function () {}, releaseLock: function () {} }; } };
 var ContentService = { MimeType: { JAVASCRIPT: 'js', JSON: 'json' }, createTextOutput: function (t) { var o = { text: t, mime: 'json', setMimeType: function (m) { o.mime = m; return o; } }; return o; } };
 function toSigned(buf) { return Array.prototype.map.call(buf, function (b) { return b > 127 ? b - 256 : b; }); }
