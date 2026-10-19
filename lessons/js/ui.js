@@ -122,27 +122,24 @@ export function boot({ key, homeHref = '../../', title = '' }) {
       <div class="mp-secs">${secs.map((el, i) => `<button class="mp-item" data-i="${i}">${el.dataset.section}</button>`).join('')}</div>
       <div class="mp-sep"></div>
       ${sh.readonly ? '' : `<label class="mp-item tog"><span>Laser dot when the Pencil hovers</span><input type="checkbox" data-t="hover" ${s.hover ? 'checked' : ''}><i></i></label>
-      <label class="mp-item tog"><span>Hold a finger down to erase with the Pencil</span><input type="checkbox" data-t="fingererase" ${s.fingerErase ? 'checked' : ''}><i></i></label>
       <label class="mp-item tog"><span>Finger draws too</span><input type="checkbox" data-t="finger" ${s.finger ? 'checked' : ''}><i></i></label>`}
       <div class="mp-item mp-zoom"><span>Page size</span><span class="mp-zbtns"><button type="button" data-z="-1" aria-label="Smaller">−</button><b>${Math.round(getPageZoom() * 100)}%</b><button type="button" data-z="1" aria-label="Bigger">+</button></span></div>
       <button class="mp-item" data-m="answers">Show all answers</button>
       <button class="mp-item" data-m="hideanswers">Hide all answers</button>
       <button class="mp-item" data-m="print">Print / save as PDF</button>
-      <button class="mp-item" data-m="log">${Ink.debugOn() ? 'Hide' : 'Show'} the touch log</button>
       ${sh.readonly ? '' : `<button class="mp-item danger" data-m="clear">${sh.cls ? 'Clear all ink for ' + sh.label + '…' : 'Clear all ink on this lesson…'}</button>`}
       ${shareMenu.bottom ? shareMenu.html : ''}
-      ${sh.readonly ? '' : '<div class="mp-tip">Pencil writes · finger scrolls · two-finger tap = undo · hold a finger down and the Pencil erases · hold a colour to change it.<br>Tap a button with the Pencil to press it.</div>'}`;
+      ${sh.readonly ? '' : '<div class="mp-tip">Pencil writes · finger scrolls · two-finger tap = undo · hold a colour to change it.<br>Tap a button with the Pencil to press it.</div>'}`;
     menu.classList.remove('hidden');
     menu.querySelectorAll('[data-i]').forEach((b) => b.onclick = () => { toggleMenu(false); toggleBoard(false); secs[b.dataset.i].scrollIntoView({ behavior: 'smooth', block: 'start' }); });
     const tf = menu.querySelector('[data-t=finger]'), th = menu.querySelector('[data-t=hover]');
     if (tf) tf.onchange = (e) => Ink.setFinger(e.target.checked);
     if (th) th.onchange = (e) => Ink.setHover(e.target.checked);
-    const tfe = menu.querySelector('[data-t=fingererase]'); if (tfe) tfe.onchange = (e) => Ink.setFingerErase(e.target.checked);
+
     shareMenu.wire(menu, () => toggleMenu(false));
     menu.querySelectorAll('[data-z]').forEach((b) => b.onclick = (e) => { e.stopPropagation(); setPageZoom(getPageZoom() + 0.1 * Number(b.dataset.z)); menu.querySelector('.mp-zbtns b').textContent = Math.round(getPageZoom() * 100) + '%'; });
     menu.querySelector('[data-m=answers]').onclick = () => { document.querySelectorAll('.part').forEach((p) => p.classList.add('shown')); showAllAnswers(true); toggleMenu(false); };
     menu.querySelector('[data-m=hideanswers]').onclick = () => { document.querySelectorAll('.part').forEach((p) => p.classList.remove('shown')); showAllAnswers(false); toggleMenu(false); };
-    menu.querySelector('[data-m=log]').onclick = () => { Ink.setDebug(!Ink.debugOn()); toggleMenu(false); };
     menu.querySelector('[data-m=print]').onclick = () => { toggleMenu(false); Ink.flush(); setTimeout(() => print(), 50); };
     const c = menu.querySelector('[data-m=clear]');
     if (c) c.onclick = () => {
