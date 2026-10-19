@@ -598,3 +598,5 @@ body.tm-on .calc { z-index: 200; }
 .tm-pv-mark { font-weight: 800; }
 .tm-preview-bar .btn { color: #fff; border: 1px solid rgba(255, 255, 255, .35); background: transparent; }
 .tm-preview-bar .btn:hover { background: rgba(255, 255, 255, .12); }
+.tm-part.partly .tm-mark { color: #b45309; }
+.lvl-NM { background: #6b2b2b; }

@@ -372,7 +372,7 @@ function cleanDef_(d) {
   d = d || {};
   var items = (Array.isArray(d.items) ? d.items : []).slice(0, 80).map(function (x) { return { l: clean_(x && x.l, 20), i: clean_(x && x.i, 16) }; }).filter(function (x) { return x.l && x.i; });
   return { title: clean_(d.title || 'Test', 80) || 'Test', kind: d.kind === 'exit' ? 'exit' : 'test', minutes: Math.max(0, Math.min(240, Math.round(Number(d.minutes) || 0))),
-    calc: d.calc !== false, shuffle: !!d.shuffle, levels: d.levels !== false, items: items };
+    calc: d.calc !== false, shuffle: !!d.shuffle, levels: d.levels !== false, unit: Math.max(0, Math.min(20, Math.round(Number(d.unit) || 0))), items: items };
 }
 function sessionDef_(sid) {
   var c = cget_('tsdef:' + sid); if (c) return c;
@@ -545,7 +545,7 @@ function setMarks_(sid, data) {
   var d = parseDef_(data) || {}, lock = LockService.getScriptLock(); lock.waitLock(20000);
   try {
     var sh = sheet_('TestResults'), rs = rows_('TestResults'), n = 0;
-    rs.forEach(function (r, i) { if (r[1] !== sid) return; var x = d[r[3]]; if (!x) return; sh.getRange(i + 2, 12, 1, 4).setValues([[clean_(x.m, 120), Number(x.s) || 0, Number(x.t) || 0, new Date()]]); n++; });
+    rs.forEach(function (r, i) { if (r[1] !== sid) return; var x = d[r[3]]; if (!x) return; sh.getRange(i + 2, 12, 1, 4).setValues([[clean_(x.m, 600), Number(x.s) || 0, Number(x.t) || 0, new Date()]]); n++; });
     return { ok: true, saved: n };
   } finally { lock.releaseLock(); }
 }

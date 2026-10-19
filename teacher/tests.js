@@ -150,7 +150,7 @@
       if (!E.title.trim()) { alert('Give it a title.'); return; }
       if (!E.items.length) { alert('Pick at least one question.'); return; }
       save.disabled = true;
-      api('savetest', { id: E.id || '', def: JSON.stringify({ title: E.title.trim(), kind: E.kind, minutes: E.minutes, calc: E.calc, shuffle: E.shuffle, levels: E.levels, items: E.items }) }).then(function (d) {
+      api('savetest', { id: E.id || '', def: JSON.stringify({ title: E.title.trim(), kind: E.kind, unit: E.unit || 0, minutes: E.minutes, calc: E.calc, shuffle: E.shuffle, levels: E.levels, items: E.items }) }).then(function (d) {
         if (!d.ok) { alert('Couldn’t save: ' + d.error); save.disabled = false; return; }
         TS.view = 'home'; if (E.kind !== TS.kind) goTab(E.kind); return load(true).then(rerender);
       });
@@ -235,11 +235,12 @@
     }).catch(function () {});
   }
   setInterval(pollLive, 5000);
-  var gradeCache = {}, hashCache = {};
+  var gradeCache = {}, hashCache = {}, codeCache = {};
   function qhashOf(name, sid, x) { var k = name + '|' + sid + '|' + x.key; if (!(k in hashCache)) { try { hashCache[k] = TC.qhash(TC.instance(TC.skey(cls(), name), sid, x.lesson, x.it)); } catch (e) { hashCache[k] = ''; } } return hashCache[k]; }
   function gradeOne(name, sid, x, ans) {
     var k = name + '|' + sid + '|' + x.key + '|' + JSON.stringify(ans && ans.r); if (k in gradeCache) return gradeCache[k];
-    var m = 'b'; if (ans && ans.r != null) { try { var inst = TC.instance(TC.skey(cls(), name), sid, x.lesson, x.it); m = TC.grade(inst, ans.r).m; } catch (e) { m = 'f'; } }
+    var m = 'b', code = ''; if (ans && ans.r != null) { try { var inst = TC.instance(TC.skey(cls(), name), sid, x.lesson, x.it), g = TC.grade(inst, ans.r); m = g.m; code = g.code || ''; } catch (e) { m = 'w'; code = 'unreadable'; } }
+    codeCache[name + '|' + sid + '|' + x.key] = code;
     return (gradeCache[k] = m);
   }
   function pageNum(def, order, cur) { try { var pg = TC.pages(def, order)[cur || 0]; return pg ? pg.num : String((cur || 0) + 1); } catch (e) { return String((cur || 0) + 1); } }
@@ -312,22 +313,34 @@
     });
   }
   function computeMarks() {
-    var R = TS.res, def = R.session.def, items = TC.items(def);
-    R.items = items; R.labels = TC.labels(def);
+    var R = TS.res, def = R.session.def, items = TC.items(def), isTest = R.session.kind !== 'exit';
+    R.items = items; R.labels = TC.labels(def); R.isTest = isTest;
     var byPos = {}; items.forEach(function (x) { byPos[x.pos] = x; });
     R.rows.forEach(function (r) {
-      var saved = r.marks || '', n = (def.items || []).length, auto = '', fin = '';
-      r.changed = {};
+      var saved = TC.parseMarks(r.marks), n = (def.items || []).length, auto = '', fin = '';
+      r.changed = {}; r.fin = saved.fin;
       for (var pos = 0; pos < n; pos++) {
         var x = byPos[pos], a = x ? r.answers[x.key] : null, m = x ? gradeOne(r.name, R.session.id, x, a) : 'b';
         if (x && a && a.h && a.h !== qhashOf(r.name, R.session.id, x)) r.changed[pos] = 1;
-        auto += m; var sv = saved.charAt(pos); fin += sv === 'C' || sv === 'W' ? sv : m;
+        auto += m; var sv = saved.m.charAt(pos); fin += TC.over(sv) ? sv : m;
       }
       r.auto = auto; r.final = fin;
-      r.sum = TC.summary(def, r.final);
-      r.dirty = r.final !== saved;
+      // a run of blanks at the end of the student's own order: maybe they ran out of time
+      var order = TC.order(def, TC.skey(R.session['class'], r.name), R.session.id), tail = 0, posOf = {};
+      items.forEach(function (x) { posOf[x.key] = x.pos; });
+      for (var j = order.length - 1; j >= 0 && fin.charAt(posOf[order[j]]) === 'b'; j--) tail++;
+      r.tailBlank = tail >= 3 ? tail : 0;
+      regrade(r);
     });
   }
+  function regrade(r) {
+    var R = TS.res, def = R.session.def;
+    r.sum = TC.summary(def, r.final);
+    if (R.isTest) r.g = TC.outcomeGrades(def, TC.packMarks(r.final, r.fin));
+    r.dirty = TC.packMarks(r.final, r.fin) !== (r.marks || '');
+  }
+  function indName(lv) { return LVN[lv] || (lv === 'NM' ? 'Not meeting' : lv); }
+  function boxText(b) { return b.total ? TC.fmtPoints(b.earned) + '/' + b.total : '—'; }
   function renderResults(body) {
     var R = TS.res, s = R.session, items = R.items, def = s.def;
     var head = el('div', 'tt-top');
@@ -338,78 +351,105 @@
     acts.appendChild(button('btn-small', dirty ? 'Save marks' : 'Marks saved', function () { saveMarks().then(rerender, function () {}); }));
     acts.appendChild(button('btn-small btn-primary', s.released ? 'Hide results from students' : 'Release results to students', function () {
       var on = !s.released;
-      if (on && !confirm('Release the results? Each student will see their score, their answers, the correct answers and worked solutions on their home page.')) return;
+      if (on && !confirm('Release the results? Each student will see ' + (R.isTest ? 'their indicator on each outcome, their unit grade, ' : 'their score, ') + 'their answers, the correct answers and worked solutions on their home page.')) return;
       saveMarks().then(function () { return api('release', { session: s.id, on: on ? 1 : 0 }); }).then(function (d) { if (d && d.ok) s.released = on ? Date.now() : 0; else alert('Couldn’t change the release.'); rerender(); }, function () {});
     }));
     acts.appendChild(button('btn-small btn-ghost', 'Download CSV', function () { csv(); }));
     head.appendChild(acts); body.appendChild(head);
     var outs = []; items.forEach(function (x) { if (outs.indexOf(x.it.outcome) < 0) outs.push(x.it.outcome); });
     var t = el('table', 'tbl tt-res');
-    var h = '<thead><tr><th>Student</th><th>Status</th><th>Score</th>' + outs.map(function (o) { return '<th>' + esc(o) + '</th>'; }).join('');
-    items.forEach(function (x, i) { h += '<th class="tt-qh" title="' + esc(partLabel(x)) + ' · ' + esc(x.it.outcome) + ' ' + x.it.level + '">' + esc(R.labels[x.key] || '') + '<div class="th-sub">' + x.it.level + '</div></th>'; });
+    var h = '<thead><tr><th>Student</th><th>Status</th>' + (R.isTest ? '<th>Unit grade</th>' + outs.map(function (o) { return '<th class="tt-oh">' + esc(o) + '<div class="th-sub">B · P · M boxes</div></th>'; }).join('')
+      : '<th>Score</th>' + outs.map(function (o) { return '<th>' + esc(o) + '<div class="th-sub">highest right</div></th>'; }).join(''));
+    items.forEach(function (x) { h += '<th class="tt-qh" title="' + esc(partLabel(x)) + ' · ' + esc(x.it.outcome) + ' ' + x.it.level + '">' + esc(R.labels[x.key] || '') + '<div class="th-sub">' + x.it.level + '</div></th>'; });
     t.innerHTML = h + '</tr></thead>';
     var tb = el('tbody'), byName = {}; R.rows.forEach(function (r) { byName[r.name] = r; });
     var names = R.names.slice(); R.rows.forEach(function (r) { if (names.indexOf(r.name) < 0) names.push(r.name); });
     names.sort(function (a, b) { return a.localeCompare(b); });
-    var right = items.map(function () { return 0; }), wrote = 0;
+    var credit = items.map(function () { return 0; }), wrote = 0;
     names.forEach(function (n) {
       var r = byName[n], tr = el('tr');
       if (!r) { tr.innerHTML = '<td>' + esc(n) + '</td><td class="muted">Didn’t write</td><td colspan="' + (1 + outs.length + items.length) + '"></td>'; tb.appendChild(tr); return; }
       wrote++;
       var stt = { submitted: 'Submitted', left: 'Left the test', time: 'Out of time', ended: 'Ended', forced: 'Submitted by you' }[r.status] || r.status;
-      var html = '<td><b>' + esc(n) + '</b></td><td>' + esc(stt) + (r.leaves ? ' <span class="warnnum" title="Times locked for leaving">' + r.leaves + '</span>' : '') + '</td><td><b>' + r.sum.score + '</b> / ' + r.sum.total + ' <span class="muted small">' + Math.round(100 * r.sum.score / Math.max(1, r.sum.total)) + '%</span></td>';
-      outs.forEach(function (o) { var lv = r.sum.levels[o]; html += '<td>' + (lv ? '<span class="lvl lvl-' + lv + '">' + LVN[lv] + '</span>' : '<span class="muted small">—</span>') + '</td>'; });
+      var html = '<td><b>' + esc(n) + '</b></td><td>' + esc(stt) + (r.leaves ? ' <span class="warnnum" title="Times locked for leaving">' + r.leaves + '</span>' : '') + (r.tailBlank ? ' <span class="tag warn" title="The last ' + r.tailBlank + ' parts in their order are blank">Ran out of time?</span>' : '') + '</td>';
+      if (R.isTest) html += '<td class="tt-unitg"><b>' + r.g.unit + '%</b><div class="small muted">' + TC.fmtPoints(r.g.points) + ' / ' + r.g.total + ' points</div></td>';
+      else html += '<td><b>' + r.sum.score + '</b> / ' + r.sum.total + ' <span class="muted small">' + Math.round(100 * r.sum.score / Math.max(1, r.sum.total)) + '%</span></td>';
       tr.innerHTML = html;
+      outs.forEach(function (o) {
+        var td = el('td', 'tt-ocell');
+        if (!R.isTest) { var lv = r.sum.levels[o]; td.innerHTML = lv ? '<span class="lvl lvl-' + lv + '">' + LVN[lv] + '</span>' : '<span class="muted small">—</span>'; tr.appendChild(td); return; }
+        var g = r.g.outcomes.filter(function (x) { return x.outcome === o; })[0], bx = g.boxes;
+        td.innerHTML = '<div class="tt-oline"><span class="lvl lvl-' + g.ind + '">' + indName(g.ind) + '</span> <b>' + g.pct + '</b>' + (g.note && !g.set ? ' <span class="tt-flag" title="' + esc(g.note) + '">⚑ Check</span>' : '') + (g.set ? ' <span class="tag" title="You set this. The rule says ' + g.auto + ' ' + g.autoPct + '">set</span>' : '') + '</div>' +
+          '<div class="small muted">B ' + boxText(bx.B) + ' · P ' + boxText(bx.P) + ' · M ' + boxText(bx.M) + (g.mcHalved ? ' <span title="Mastery multiple choice counted half: less than half of the box’s other points">(MC ½)</span>' : '') + '</div>';
+        var sel = el('select', 'tt-osel'); sel.title = 'Set the final indicator for ' + o;
+        sel.appendChild(new Option('Rule: ' + g.auto + ' ' + g.autoPct, ''));
+        TC.LADDER.slice().reverse().forEach(function (lv) { sel.appendChild(new Option(indName(lv) + ' (' + TC.midPct(lv) + ')', lv)); });
+        sel.value = r.fin[o] || '';
+        sel.addEventListener('change', function () { if (sel.value) r.fin[o] = sel.value; else delete r.fin[o]; regrade(r); rerender(); });
+        td.appendChild(sel); tr.appendChild(td);
+      });
       items.forEach(function (x, i) {
-        var m = r.final.charAt(x.pos); if (TC.right(m)) right[i]++;
-        var td = el('td', 'tt-m m-' + m + (m === 'C' || m === 'W' ? ' over' : '') + (r.changed[x.pos] ? ' chg' : ''), ({ c: '✓', C: '✓', w: '✗', W: '✗', f: '~', b: '–' }[m] || '?') + (r.changed[x.pos] ? '!' : ''));
+        var m = r.final.charAt(x.pos); credit[i] += TC.credit(m);
+        var td = el('td', 'tt-m m-' + m + (TC.over(m) ? ' over' : '') + (r.changed[x.pos] ? ' chg' : ''), (TC.SYMBOL[m] || '?') + (r.changed[x.pos] ? '!' : ''));
         td.title = TC.MARK_NAMES[m] + (r.changed[x.pos] ? ' — this question has changed since the student answered it: check it' : '') + ' — click to see the answer and change the mark';
         td.addEventListener('click', function () { detail(r, i); });
         tr.appendChild(td);
       });
       tb.appendChild(tr);
     });
-    var fr = el('tr', 'tt-foot'); fr.innerHTML = '<td colspan="' + (3 + outs.length) + '" class="small muted">Right (of ' + wrote + ' who wrote)</td>' + items.map(function (x, i) { return '<td class="small">' + (wrote ? Math.round(100 * right[i] / wrote) + '%' : '—') + '</td>'; }).join('');
+    var fr = el('tr', 'tt-foot'); fr.innerHTML = '<td colspan="' + (3 + outs.length) + '" class="small muted">Average credit (of ' + wrote + ' who wrote)</td>' + items.map(function (x, i) { return '<td class="small">' + (wrote ? Math.round(100 * credit[i] / wrote) + '%' : '—') + '</td>'; }).join('');
     tb.appendChild(fr);
     t.appendChild(tb); var w = el('div', 'tbl-wrap'); w.appendChild(t); body.appendChild(w);
-    body.appendChild(el('p', 'small muted', '✓ right · ✗ wrong · ~ not in the right form (e.g. not simplified — counts as wrong) · – blank. Marks come from each question’s own checker. Click a mark to see the student’s question and answer and to change it (your changes show underlined). Outcome level = the hardest level answered correctly on that outcome.'));
+    body.appendChild(el('p', 'small muted', R.isTest
+      ? '✓ right · ⅔ a small recognized mistake, or the right value in the wrong form · ⅓ a bigger but reasonable mistake · ✗ wrong · – blank. Each outcome: Beginning, Progressing and Mastery box points; a box is secure at ¾ and partial at ½; the indicator and percent follow your grading rule. <b>⚑ Check</b> = a harder box done well over a hole in an easier one. Pick an indicator to set it yourself. Click a mark to see the answer and change its credit.'
+      : '✓ right · ⅔ / ⅓ partly right · ✗ wrong · – blank. Exit slips: the score counts right answers, and each outcome shows the hardest level answered correctly. Click a mark to see the answer and change it.'));
     var dbox = el('div', 'panel tt-detail hidden'); dbox.id = 'tt-detail'; body.appendChild(dbox);
   }
   function detail(r, i) {
     var R = TS.res, x = R.items[i], box = document.getElementById('tt-detail'); if (!box) return;
     var inst; try { inst = TC.instance(TC.skey(R.session['class'], r.name), R.session.id, x.lesson, x.it); } catch (e) { inst = null; }
-    var a = r.answers[x.key], p = x.pos, m = r.final.charAt(p);
+    var a = r.answers[x.key], p = x.pos, m = r.final.charAt(p), am = r.auto.charAt(p), code = codeCache[r.name + '|' + R.session.id + '|' + x.key] || '';
     box.classList.remove('hidden'); box.innerHTML = '';
     box.appendChild(el('h3', '', esc(r.name) + ' · Question ' + esc(R.labels[x.key] || '') + ' <span class="muted small">(' + esc(partLabel(x)) + ' · ' + esc(x.it.outcome) + ' ' + x.it.level + ')</span>'));
     if (inst) { if (inst.stem) box.appendChild(el('div', 'qstem', HW.tex(inst.stem))); box.appendChild(el('div', 'qprompt', HW.tex(inst.prompt))); }
     box.appendChild(el('div', 'tt-ans', '<div class="dlabel">Their answer</div><div>' + (a && a.t ? esc(a.t) : '<span class="muted">blank</span>') + '</div>'));
     if (inst) box.appendChild(el('div', 'tt-ans', '<div class="dlabel">Correct answer</div><div>' + HW.tex(inst.answer) + '</div>'));
-    box.appendChild(el('div', 'tt-ans', '<div class="dlabel">Mark</div><div>' + esc(TC.MARK_NAMES[m] || m) + (r.auto.charAt(p) !== m ? ' <span class="muted small">(checker said: ' + esc(TC.MARK_NAMES[r.auto.charAt(p)]) + ')</span>' : '') + (r.changed[p] ? '<div class="notice warn small">This question has been edited since the test, so the version shown may not be exactly what the student saw. Check the mark.</div>' : '') + '</div>'));
+    box.appendChild(el('div', 'tt-ans', '<div class="dlabel">Mark</div><div><b>' + esc(TC.MARK_NAMES[m] || m) + '</b>' + (am !== m ? ' <span class="muted small">(checker said: ' + esc(TC.MARK_NAMES[am]) + ')</span>' : '') +
+      (code && am !== 'c' ? '<div class="small muted">Checker: ' + esc((HW.CODES && HW.CODES[code]) || code) + '</div>' : '') +
+      (r.changed[p] ? '<div class="notice warn small">This question has been edited since the test, so the version shown may not be exactly what the student saw. Check the mark.</div>' : '') + '</div>'));
     var acts = el('div', 'tt-acts');
-    function setM(v) { r.final = r.final.slice(0, p) + v + r.final.slice(p + 1); r.sum = TC.summary(R.session.def, r.final); r.dirty = true; rerender(); setTimeout(function () { detail(r, i); }, 0); }
-    acts.appendChild(button('btn-small', 'Mark right', function () { setM('C'); }));
-    acts.appendChild(button('btn-small', 'Mark wrong', function () { setM('W'); }));
-    acts.appendChild(button('btn-small btn-ghost', 'Use the checker’s mark', function () { setM(r.auto.charAt(p)); }));
+    function setM(v) { r.final = r.final.slice(0, p) + v + r.final.slice(p + 1); regrade(r); rerender(); setTimeout(function () { detail(r, i); }, 0); }
+    acts.appendChild(button('btn-small', '✓ Right', function () { setM('C'); }));
+    acts.appendChild(button('btn-small', '⅔ Small mistake', function () { setM('T'); }));
+    acts.appendChild(button('btn-small', '⅓ Bigger mistake', function () { setM('O'); }));
+    acts.appendChild(button('btn-small', '✗ Wrong', function () { setM('W'); }));
+    acts.appendChild(button('btn-small btn-ghost', 'Use the checker’s mark', function () { setM(am); }));
     box.appendChild(acts);
     HW.texIn && HW.texIn(box);
     try { box.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {}
   }
   function saveMarks() {
     var R = TS.res, data = {};
-    R.rows.forEach(function (r) { data[r.name] = { m: r.final, s: r.sum.score, t: r.sum.total }; });
+    R.rows.forEach(function (r) { data[r.name] = R.isTest ? { m: TC.packMarks(r.final, r.fin), s: r.g.points, t: r.g.total } : { m: TC.packMarks(r.final, r.fin), s: r.sum.score, t: r.sum.total }; });
     return api('setmarks', { session: R.session.id, data: JSON.stringify(data) }).then(function (d) {
       if (!d.ok) { alert('Couldn’t save the marks: ' + d.error + '. Nothing was released.'); throw new Error(d.error); }
-      R.rows.forEach(function (r) { r.marks = r.final; r.dirty = false; });
+      R.rows.forEach(function (r) { r.marks = TC.packMarks(r.final, r.fin); r.dirty = false; });
     });
   }
   function csv() {
     var R = TS.res, items = R.items, outs = []; items.forEach(function (x) { if (outs.indexOf(x.it.outcome) < 0) outs.push(x.it.outcome); });
-    var rows = [['Student', 'Status', 'Score', 'Total', 'Percent'].concat(outs.map(function (o) { return o + ' level'; })).concat(items.map(function (x, i) { return 'Q' + (i + 1) + ' ' + partLabel(x) + ' ' + x.it.level; }))];
+    var head = ['Student', 'Status'];
+    if (R.isTest) { head.push('Unit grade %', 'Points', 'Total'); outs.forEach(function (o) { head.push(o + ' indicator', o + ' %', o + ' rule', o + ' BEG box', o + ' PRG box', o + ' MAS box', o + ' note'); }); }
+    else { head.push('Score', 'Total', 'Percent'); outs.forEach(function (o) { head.push(o + ' highest level'); }); }
+    var rows = [head.concat(items.map(function (x) { return 'Q' + (R.labels[x.key] || '') + ' ' + partLabel(x) + ' ' + x.it.level; }))];
     var byName = {}; R.rows.forEach(function (r) { byName[r.name] = r; });
     var names = R.names.slice(); R.rows.forEach(function (r) { if (names.indexOf(r.name) < 0) names.push(r.name); }); names.sort(function (a, b) { return a.localeCompare(b); });
     names.forEach(function (n) {
       var r = byName[n]; if (!r) { rows.push([n, 'did not write']); return; }
-      rows.push([r.name, r.status, r.sum.score, r.sum.total, Math.round(100 * r.sum.score / Math.max(1, r.sum.total))].concat(outs.map(function (o) { return r.sum.levels[o] || ''; })).concat(items.map(function (x) { var c = r.final.charAt(x.pos); return { c: 1, C: 1, w: 0, W: 0, f: 0, b: 0 }[c]; })));
+      var row = [r.name, r.status];
+      if (R.isTest) { row.push(r.g.unit, r.g.points, r.g.total); r.g.outcomes.forEach(function (g) { row.push(g.ind, g.pct, g.auto + ' ' + g.autoPct, boxText(g.boxes.B), boxText(g.boxes.P), boxText(g.boxes.M), g.note); }); }
+      else { row.push(r.sum.score, r.sum.total, Math.round(100 * r.sum.score / Math.max(1, r.sum.total))); outs.forEach(function (o) { row.push(r.sum.levels[o] || ''); }); }
+      rows.push(row.concat(items.map(function (x) { return Math.round(100 * TC.credit(r.final.charAt(x.pos))) / 100; })));
     });
     D.download(R.session.title.replace(/[^\w\- ]+/g, '') + ' results.csv', rows);
   }

@@ -430,7 +430,7 @@
       box.innerHTML = '<h2 class="tm-home-title">Your tests and exit slips</h2>';
       var grid = el('div', 'tm-home-list');
       list.forEach(function (r) {
-        var a = el('a', 'tm-res-card tm-res-' + (r.kind === 'exit' ? 'exit' : 'test'), '<span class="tm-kind">' + (r.kind === 'exit' ? 'Exit slip' : 'Test') + '</span><b>' + esc(r.title) + '</b><span class="tm-res-score">' + (r.total ? r.score + ' / ' + r.total : 'Not marked yet') + '</span><span class="muted small">' + new Date(r.launched).toLocaleDateString([], { month: 'short', day: 'numeric' }) + '</span>');
+        var a = el('a', 'tm-res-card tm-res-' + (r.kind === 'exit' ? 'exit' : 'test'), '<span class="tm-kind">' + (r.kind === 'exit' ? 'Exit slip' : 'Test') + '</span><b>' + esc(r.title) + '</b><span class="tm-res-score">' + (!r.marks ? 'Not marked yet' : r.kind === 'exit' ? r.score + ' / ' + r.total : TC.outcomeGrades(r.def, r.marks).unit + '%') + '</span><span class="muted small">' + new Date(r.launched).toLocaleDateString([], { month: 'short', day: 'numeric' }) + '</span>');
         a.href = '#/results/' + r.id; grid.appendChild(a);
       });
       box.appendChild(grid);
@@ -449,8 +449,9 @@
       var sum = TC.summary(r.def, r.marks || '');
       var head = el('div', 'tm-res-head tm-res-' + (r.kind === 'exit' ? 'exit' : 'test'));
       head.innerHTML = '<div class="tm-kind">' + (r.kind === 'exit' ? 'Exit slip' : 'Test') + '</div><h1>' + esc(r.title) + '</h1>' +
-        '<div class="tm-res-big">' + (r.marks ? sum.score + ' / ' + sum.total : 'Not marked yet') + '</div>' +
-        (r.marks ? '<div class="tm-res-levels">' + sum.outcomes.map(function (o) { var lv = sum.levels[o]; return '<span class="tm-out">' + esc(o) + '</span> ' + (lv ? '<span class="lvl lvl-' + lv + '">' + HW.LEVEL_NAMES[lv] + '</span>' : '<span class="muted">no level yet</span>'); }).join(' &nbsp; ') + '</div>' : '');
+        (!r.marks ? '<div class="tm-res-big">Not marked yet</div>' : r.kind === 'exit'
+          ? '<div class="tm-res-big">' + sum.score + ' / ' + sum.total + '</div><div class="tm-res-levels">' + sum.outcomes.map(function (o) { var lv = sum.levels[o]; return '<span class="tm-out">' + esc(o) + '</span> ' + (lv ? '<span class="lvl lvl-' + lv + '">' + HW.LEVEL_NAMES[lv] + '</span>' : '<span class="muted">no level yet</span>'); }).join(' &nbsp; ') + '</div>'
+          : (function () { var g = TC.outcomeGrades(r.def, r.marks); return '<div class="tm-res-big">' + g.unit + '%</div><div class="tm-res-levels">' + g.outcomes.map(function (o) { return '<span class="tm-out">' + esc(o.outcome) + '</span> <span class="lvl lvl-' + o.ind + '">' + TC.indName(o.ind) + '</span> <b>' + o.pct + '%</b>'; }).join(' &nbsp; ') + '</div><div class="small muted">' + TC.fmtPoints(g.points) + ' of ' + g.total + ' points</div>'; })());
       view.appendChild(head);
       TC.pages(r.def, order).forEach(function (pg) {
         var card = el('article', 'qcard tm-res-q'), nRight = 0, nMarked = 0, first = true;
@@ -458,12 +459,12 @@
         pg.parts.forEach(function (q) {
           var x = items[idx[q.key]]; if (!x) return;
           var inst; try { inst = TC.instance(k, r.id, x.lesson, x.it); } catch (e) { return; }
-          var m = (r.marks || '').charAt(x.pos), a = r.answers[q.key], ok = TC.right(m);
-          if (m) { nMarked++; if (ok) nRight++; }
+          var m = (r.marks || '').charAt(x.pos), a = r.answers[q.key], cr = TC.credit(m), ok = cr === 1;
+          if (m) { nMarked++; nRight += cr; }
           if (first && inst.stem) card.appendChild(el('div', 'qstem', HW.tex(inst.stem)));
           first = false;
-          var part = el('section', 'tm-part' + (pg.parts.length > 1 ? ' multi' : '') + (m ? (ok ? ' ok' : ' bad') : ''));
-          part.appendChild(el('div', 'tm-part-head', (q.sub ? '<span class="tm-sub">(' + esc(q.sub) + ')</span>' : '') + '<span class="tm-chips"><span class="tm-out">' + esc(x.it.outcome) + '</span><span class="lvl lvl-' + x.it.level + '">' + HW.LEVEL_NAMES[x.it.level] + '</span></span>' + (m ? '<span class="tm-mark">' + (ok ? '✓' : '✗') + '</span>' : '')));
+          var part = el('section', 'tm-part' + (pg.parts.length > 1 ? ' multi' : '') + (m ? (ok ? ' ok' : cr ? ' partly' : ' bad') : ''));
+          part.appendChild(el('div', 'tm-part-head', (q.sub ? '<span class="tm-sub">(' + esc(q.sub) + ')</span>' : '') + '<span class="tm-chips"><span class="tm-out">' + esc(x.it.outcome) + '</span><span class="lvl lvl-' + x.it.level + '">' + HW.LEVEL_NAMES[x.it.level] + '</span></span>' + (m ? '<span class="tm-mark" title="' + esc(TC.MARK_NAMES[m] || '') + '">' + (TC.SYMBOL[m] || '') + '</span>' : '')));
           part.appendChild(el('div', 'qprompt', HW.tex(inst.prompt)));
           var ah = '—'; if (a && a.r != null) { try { ah = HW.App.answerHtml(inst, a.r); } catch (e) { ah = esc(a.t || ''); } }
           part.appendChild(el('div', 'answered', '<div class="ans-label">Your answer</div><div class="ans-val">' + ah + '</div>'));
@@ -471,7 +472,7 @@
           part.appendChild(HW.App.solutionBlock(inst, false));
           card.appendChild(part);
         });
-        if (nMarked) { card.classList.add(nRight === nMarked ? 'ok' : nRight ? 'mixed' : 'bad'); head2.appendChild(el('span', 'tm-res-qscore', nRight + ' / ' + nMarked)); }
+        if (nMarked) { card.classList.add(nRight === nMarked ? 'ok' : nRight ? 'mixed' : 'bad'); head2.appendChild(el('span', 'tm-res-qscore', TC.fmtPoints(nRight) + ' / ' + nMarked)); }
         view.appendChild(card);
       });
       view.appendChild(el('p', '', '<a class="btn btn-ghost" href="#/">← Back to all lessons</a>'));
