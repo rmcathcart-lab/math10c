@@ -10,7 +10,11 @@
   function ls(k, v) { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { return null; } }
   var st = { key: ls('hw:tkey') || '', classes: [], klass: ls('hw:tclass') || '', D: null, tab: ls('hw:ttab') || 'live', scope: ls('hw:tscope') || 'class', rule: ls('hw:trule') || 'hint', lesson: Object.keys(HW.lessons)[0], student: null, loading: false, liveTimer: null, dashTimer: null, sortP: 'name' };
   var LV = HW.LEVELS, LVN = HW.LEVEL_NAMES;
-  function api(action, params) { return L.get(action, Object.assign({ key: st.key }, params || {}), 30000); }
+  function realApi(action, params) { return L.get(action, Object.assign({ key: st.key }, params || {}), 30000); }
+  /* the demo class (teacher/demo.js) answers its own requests in the browser; everything else goes to the ledger */
+  function api(action, params) { var Dm = HW.DashDemo; if (Dm && (Dm.isDemo(params) || (action === 'tests' && st.klass === Dm.CODE))) return Dm.api(action, params, realApi); return realApi(action, params); }
+  function isDemo() { return !!(HW.DashDemo && st.klass === HW.DashDemo.CODE); }
+  function demoEntry() { var Dm = HW.DashDemo; return Dm && ls('hw:nodemo') !== '1' ? [{ code: Dm.CODE, label: Dm.LABEL, students: Dm.count, block: 'B', demo: true }] : []; }
   function ago(ms) { if (!ms) return '—'; var s = Math.round((Date.now() - ms) / 1000); if (s < 60) return s + ' s ago'; var m = Math.round(s / 60); if (m < 60) return m + ' min ago'; var h = Math.round(m / 60); if (h < 36) return h + ' h ago'; return Math.round(h / 24) + ' d ago'; }
   function dur(s) { s = Math.round(s || 0); if (s < 60) return s ? s + ' s' : '0'; var m = Math.round(s / 60); return m < 60 ? m + ' min' : Math.floor(m / 60) + ' h ' + (m % 60) + ' m'; }
   function since(ms) { var s = Math.max(0, Math.round((Date.now() - ms) / 1000)); return s < 60 ? s + ' s' : Math.floor(s / 60) + ' min ' + (s % 60 < 10 ? '0' : '') + (s % 60) + ' s'; }
@@ -62,7 +66,7 @@
     view.innerHTML = '<div class="loading">Opening the ledger…</div>';
     api('classes').then(function (d) {
       if (!d.ok) { if (d.error === 'bad key') { ls('hw:tkey', null); st.key = ''; return keyScreen('That key didn’t work.'); } throw new Error(d.error); }
-      st.classes = d.classes; st.noSchool = d.noSchool; st.bell = d.bell;
+      st.classes = d.classes.concat(demoEntry()); st.noSchool = d.noSchool; st.bell = d.bell;
       if (!st.classes.length) { st.tab = 'settings'; st.D = null; drawTop(); return render(); }
       if (!st.classes.some(function (c) { return c.code === st.klass; })) st.klass = st.classes[0].code;
       loadDash();
@@ -227,11 +231,10 @@
     var us = unitsBuilt(), ss = students(); st.pOpen = st.pOpen || {};
     var bar = el('div', 'opt-row'); bar.appendChild(scopeSeg());
     bar.appendChild(el('div', 'legend', '<span><i class="lg first"></i>Right first try</span><span><i class="lg help"></i>Right after a hint or reveal</span><span><i class="lg extra"></i>Extra practice</span>'));
-    bar.appendChild(el('span', 'small muted', 'Click a unit to see its lessons.'));
     body.appendChild(bar);
     var t = el('table', 'tbl prog'), ncol = us.length + 5;
     var h = '<thead><tr><th class="sortable" data-s="name">Student</th>';
-    us.forEach(function (x) { var t0 = unitSum(x.ls); h += '<th class="sortable" data-s="u' + x.u.unit + '" title="' + esc(x.u.title) + ' (' + esc(x.u.outcomes) + ')">Unit ' + x.u.unit + '<div class="th-sub">' + esc(x.u.title) + ' · ' + t0.req + ' req</div></th>'; });
+    us.forEach(function (x) { h += '<th class="sortable" data-s="u' + x.u.unit + '" title="' + esc(x.u.title) + ' (' + esc(x.u.outcomes) + ') · click a student’s unit to see its lessons">Unit ' + x.u.unit + '<div class="th-sub">' + esc(x.u.title) + '</div></th>'; });
     h += '<th class="sortable" data-s="time">Time worked<div class="th-sub">in class / all</div></th><th class="sortable" data-s="acc">Right</th><th class="sortable" data-s="leaves">Left page</th><th>Last seen</th></tr></thead>';
     t.innerHTML = h;
     var key = st.sortP, uk = /^u\d+$/.test(key) && us.filter(function (x) { return 'u' + x.u.unit === key; })[0];
@@ -490,6 +493,13 @@
   /* ---- Settings ---- */
   function renderSettings(body) {
     var c = st.D && st.D['class'];
+    if (c && isDemo()) {
+      var pd = el('div', 'panel'); pd.appendChild(el('h3', '', esc(c.label)));
+      pd.appendChild(el('p', '', 'The demo class is made up so you can see how the ledger looks with a class in it: eleven students from strong to struggling, one who does a lot at home, one who rarely works and one who never signed in. Their work follows the real lessons (Unit 1 done, Unit 2 up to Lesson 3 today), with the questions’ real numbers and the typical mistakes the checkers recognize.'));
+      pd.appendChild(el('p', 'small muted', 'It’s built in this browser and never touches your spreadsheet. Under Exit slips and Tests it has a marked Unit 1 Test and a released exit slip; launch any test to it and the made-up students write it on a clock (one leaves and gets locked) so you can try the live monitor, unlocking, closing and marking. Reload the page to start the demo over.'));
+      var hd = el('button', 'btn btn-small', 'Hide the demo class'); hd.type = 'button'; hd.addEventListener('click', function () { ls('hw:nodemo', '1'); st.klass = ''; st.D = null; loadClasses(); }); pd.appendChild(hd);
+      body.appendChild(pd); c = null;
+    }
     if (c) {
       var link = siteUrl() + '?class=' + encodeURIComponent(c.code);
       var p1 = el('div', 'panel'); p1.appendChild(el('h3', '', 'Class link for ' + esc(c.label)));
@@ -543,6 +553,7 @@
       p5.appendChild(del); body.appendChild(p5);
     }
     var p6 = el('div', 'panel'); p6.appendChild(el('h3', '', 'This device'));
+    if (HW.DashDemo && ls('hw:nodemo') === '1') { var sd = el('button', 'btn btn-small btn-ghost', 'Show the demo class'); sd.type = 'button'; sd.style.marginRight = '8px'; sd.addEventListener('click', function () { ls('hw:nodemo', null); loadClasses(); }); p6.appendChild(sd); }
     var fk = el('button', 'btn btn-small btn-ghost', 'Forget the teacher key on this device'); fk.type = 'button'; fk.addEventListener('click', function () { ls('hw:tkey', null); st.key = ''; keyScreen(); }); p6.appendChild(fk); body.appendChild(p6);
   }
   function siteUrl() { var u = location.href.split('#')[0].split('?')[0]; return u.replace(/teacher\/?(index\.html)?$/, ''); }
