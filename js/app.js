@@ -186,7 +186,8 @@
   function route() {
     if (!session) return renderSignIn();
     var h = location.hash.replace(/^#\/?/, '').split('/');
-    if (h[0] === 'lesson' && HW.lessons[h[1]]) return openLesson(HW.lessons[h[1]], h[2]);
+    if (h[0] === 'lesson' && HW.lessons[h[1]] && !HW.lessons[h[1]].test) return openLesson(HW.lessons[h[1]], h[2]); // unit tests are only written in test mode
+    if (h[0] === 'results' && HW.TestMode) { leaveLesson(); return HW.TestMode.renderResults(view, h[1]); }
     renderHome();
   }
   root.addEventListener('hashchange', route);
@@ -224,6 +225,7 @@
     var cont = lastLesson();
     head.appendChild(el('p', 'muted', cont ? 'Pick up where you left off, or choose any lesson below.' : 'Choose a lesson to start practising.'));
     view.appendChild(head);
+    if (HW.TestMode) HW.TestMode.home(view);
     var legend = el('div', 'legend', '<span><i class="lg first"></i>Done first try</span><span><i class="lg help"></i>Done with a hint</span><span><i class="lg extra"></i>Extra practice</span><span><i class="lg empty"></i>Still to do</span>');
     view.appendChild(legend);
     HW.CATALOG.forEach(function (u) {
@@ -574,7 +576,8 @@
   L.onStatus(function () { var d = document.querySelector('.sync-dot'); if (d) { d.className = 'sync-dot' + (L.ok === false ? ' bad' : ' good'); } });
 
   /* ---------------- start ---------------- */
-  HW.App = { route: route, state: function () { return S; }, session: function () { return session; }, cur: function () { return cur; }, signOut: signOut };
+  HW.App = { route: route, state: function () { return S; }, session: function () { return session; }, cur: function () { return cur; }, signOut: signOut,
+    makeWidget: makeWidget, answerText: answerText, answerHtml: answerHtml, drawTop: drawTop, leaveLesson: leaveLesson, solutionBlock: solutionBlock };
   function boot() {
     if (root.MathfieldElement) { try { root.MathfieldElement.fontsDirectory = null; root.MathfieldElement.soundsDirectory = null; } catch (e) {} }
     var saved = null; try { saved = JSON.parse(ls(SESSION) || 'null'); } catch (e) {}
