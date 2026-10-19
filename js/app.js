@@ -186,7 +186,7 @@
   function route() {
     if (!session) return renderSignIn();
     var h = location.hash.replace(/^#\/?/, '').split('/');
-    if (h[0] === 'lesson' && HW.lessons[h[1]]) return openLesson(HW.lessons[h[1]], h[2]);
+    if (h[0] === 'lesson' && HW.lessons[h[1]] && !HW.lessons[h[1]].test) return openLesson(HW.lessons[h[1]], h[2]); // unit tests are only written in test mode
     if (h[0] === 'results' && HW.TestMode) { leaveLesson(); return HW.TestMode.renderResults(view, h[1]); }
     renderHome();
   }
