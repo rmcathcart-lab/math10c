@@ -100,7 +100,8 @@ export function boot({ key, homeHref = '../../', title = '' }) {
    * zoomed). Tap: erase one stroke, then back to the pen. Double-tap: the eraser stays on (tap again to turn it off).
    * Drag it anywhere; where it sits is remembered on this device. */
   const edot = h('button', 'edot no-ink'); edot.type = 'button';
-  edot.innerHTML = icon('eraser') + '<span class="edot-lock" aria-hidden="true"></span>';
+  // a symmetric eraser drawn on the dot's centre (the toolbar's eraser icon has a baseline that pulls it off centre)
+  edot.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><g transform="rotate(-45 12 12)"><rect x="4.5" y="8.25" width="15" height="7.5" rx="2.2"/><path d="M10.5 8.25v7.5"/></g></svg>';
   edot.title = 'Eraser: tap for one stroke, double-tap to keep it on. Drag to move.';
   edot.setAttribute('aria-label', 'Eraser (tap for one stroke, double-tap to keep it on)');
   if (sh.readonly) edot.hidden = true;
@@ -137,13 +138,13 @@ export function boot({ key, homeHref = '../../', title = '' }) {
     if (moved) { try { localStorage.setItem(EK, JSON.stringify(epos)); } catch (err) { /* ignore */ } return; }
     if (e.type === 'pointercancel') return;
     const s = Ink.state(), now = Date.now();
-    if (now - lastTap < 350) { lastTap = 0; Ink.eraserLock(); Ink.toast('Eraser stays on — tap to turn it off'); return; } // double-tap
+    if (now - lastTap < 350) { lastTap = 0; Ink.eraserLock(); return; } // double-tap
     lastTap = now;
     if (s.tool === 'eraser') Ink.eraserOff(); else Ink.eraserOnce();
   };
   edot.addEventListener('pointerup', endDrag); edot.addEventListener('pointercancel', endDrag);
   edot.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); });
-  Ink.onChange((s) => { edot.classList.toggle('on', s.tool === 'eraser'); edot.classList.toggle('once', s.tool === 'eraser' && !!s.once); edot.classList.toggle('lock', s.tool === 'eraser' && !s.once); });
+  Ink.onChange((s) => { edot.classList.toggle('on', s.tool === 'eraser'); edot.classList.toggle('is-once', s.tool === 'eraser' && !!s.once); edot.classList.toggle('is-lock', s.tool === 'eraser' && !s.once); });
 
   /* ---------- blank board ---------- */
   const board = h('div', 'board hidden');
