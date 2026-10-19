@@ -16,11 +16,11 @@ async def main():
             await pg.mouse.up(); await pg.wait_for_timeout(300)
         count = lambda: pg.evaluate("document.querySelectorAll('[data-ink] svg path').length")
         await stroke(120); await stroke(180); n0 = await count()
-        await pg.click('.edot'); assert await tool() == 'eraser' and await pg.evaluate("document.querySelector('.edot').classList.contains('once')")
+        await pg.click('.edot'); assert await tool() == 'eraser' and await pg.evaluate("document.querySelector('.edot').classList.contains('is-once')")
         await stroke(122); assert await count() == n0 - 1, 'one stroke erased'; assert await tool() == 'pen', 'back to the pen after one stroke'
         await pg.wait_for_timeout(400)
         await pg.click('.edot'); await pg.wait_for_timeout(120); await pg.click('.edot')
-        assert await tool() == 'eraser' and await pg.evaluate("document.querySelector('.edot').classList.contains('lock')"), 'double-tap locks'
+        assert await tool() == 'eraser' and await pg.evaluate("document.querySelector('.edot').classList.contains('is-lock')"), 'double-tap locks'
         await stroke(182); assert await tool() == 'eraser', 'stays on'
         await pg.wait_for_timeout(400); await pg.click('.edot'); assert await tool() == 'pen', 'tap turns it off'
         await pg.screenshot(path='/tmp/edot.png', clip={'x': 0, 'y': 0, 'width': 400, 'height': 820})
