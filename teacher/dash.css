@@ -224,3 +224,24 @@ tr.detail td { background: #fcfbf8 !important; }
 .tt-m.m-g, .tt-m.m-O { color: #a5461f; background: #fde8dc; }
 .tt-dot.m-s, .tt-dot.m-g { background: #e0a800; }
 .tbl.prog td.uc .pnum { white-space: nowrap; }
+/* results: one answer in a pop-up (tests.js detail) */
+.tt-dmodal { position: fixed; inset: 0; z-index: 50; background: rgba(28, 34, 48, .42); display: grid; place-items: center; padding: 18px; }
+.tt-dbox { width: min(780px, 100%); max-height: calc(100vh - 36px); overflow: auto; margin: 0; box-shadow: 0 24px 70px rgba(0, 0, 0, .28); }
+.tt-dtop { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+.tt-dtop h3 { margin: 4px 0 0; }
+.tt-dnav { display: flex; gap: 4px; flex-shrink: 0; }
+.tt-dnav .btn { min-width: 34px; padding: 5px 8px; font-size: 15px; }
+.tt-dnav .btn:disabled { opacity: .35; cursor: default; }
+.tt-dclose { font-size: 20px !important; line-height: 1; margin-left: 6px; }
+.tt-dgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+.tt-dbox .tt-ans { margin-top: 10px; }
+.tt-dgrid .tt-ans { margin: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: #fbfaf7; }
+.tt-their.m-c, .tt-their.m-C { border-color: #9fd3b4; background: #f1faf4; }
+.tt-their.m-w, .tt-their.m-W { border-color: #efb2ab; background: #fdf3f1; }
+.tt-their.m-s, .tt-their.m-T, .tt-their.m-f, .tt-their.m-g, .tt-their.m-O { border-color: #f0cf7a; background: #fffaeb; }
+.tt-aval { font-size: 17px; margin-top: 4px; overflow-x: auto; }
+.tt-aval > svg, .tt-aval > div > svg { max-width: 100%; height: auto; }
+.tt-dbox .tt-acts { margin-top: 14px; }
+.tt-dbox .tt-acts .btn.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+.tt-m.sel { outline: 3px solid var(--ink); outline-offset: -3px; }
+@media (max-width: 640px) { .tt-dgrid { grid-template-columns: 1fr; } .tt-dtop { flex-direction: column; } }

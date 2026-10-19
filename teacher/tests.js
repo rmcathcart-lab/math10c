@@ -33,6 +33,14 @@
     TS.kind = kind === 'exit' ? 'exit' : 'test';
     if (TS.klass !== cls()) { TS.klass = cls(); TS.tests = null; TS.live = null; TS.res = null; if (TS.view !== 'edit') TS.view = 'home'; }
     if (!TS.tests) { body.appendChild(el('div', 'loading', 'Loading…')); load(true).then(rerender, function (e) { body.innerHTML = '<div class="panel"><h3>Test mode isn’t set up yet</h3><p>' + esc(e.message) + '</p></div>'; }); return; }
+    // results or an editor belong to their own tab: switching tabs leaves them (the editor asks first if there's work in it)
+    var kOf = function (k) { return k === 'exit' ? 'exit' : 'test'; };
+    if (TS.view === 'results' && TS.res && kOf(TS.res.session.kind) !== TS.kind) { TS.view = 'home'; TS.res = null; }
+    if (TS.view === 'edit' && TS.edit && kOf(TS.edit.kind) !== TS.kind) {
+      if (!TS.edit.items.length || confirm('Leave the ' + kindWord(kOf(TS.edit.kind)) + ' you’re making? Changes you haven’t saved are lost.')) TS.view = 'home';
+      else return goTab(TS.edit.kind);
+    }
+    if (TS.view !== 'results') closeDetail();
     if (TS.view === 'edit') return renderEditor(body);
     if (TS.view === 'results' && TS.res) return renderResults(body);
     var lv = liveHere();
@@ -161,7 +169,7 @@
     var title = el('input', 'field'); title.placeholder = 'Title, e.g. Exit slip 1.3 or Unit 1 Test'; title.value = E.title; title.addEventListener('input', function () { E.title = title.value; });
     p.appendChild(el('label', 'tt-lbl', 'Title')); p.appendChild(title);
     var row = el('div', 'tt-row');
-    var kind = el('div', 'seg'); [['exit', 'Exit slip (yellow)'], ['test', 'Test (orange)']].forEach(function (k) { var b = button(E.kind === k[0] ? 'on' : '', k[1], function () { E.kind = k[0]; rerender(); }); b.className = E.kind === k[0] ? 'on' : ''; kind.appendChild(b); });
+    var kind = el('div', 'seg'); [['exit', 'Exit slip (yellow)'], ['test', 'Test (orange)']].forEach(function (k) { var b = button(E.kind === k[0] ? 'on' : '', k[1], function () { E.kind = k[0]; goTab(k[0]); }); b.className = E.kind === k[0] ? 'on' : ''; kind.appendChild(b); });
     row.appendChild(kind);
     var mins = el('input', 'field tt-mins'); mins.type = 'number'; mins.min = 0; mins.max = 240; mins.value = E.minutes; mins.addEventListener('input', function () { E.minutes = Math.max(0, Math.round(Number(mins.value) || 0)); });
     var ml = el('label', 'tt-inline', 'Time limit '); ml.appendChild(mins); ml.appendChild(document.createTextNode(' min (0 = none)')); row.appendChild(ml);
@@ -365,7 +373,7 @@
     var tb = el('tbody'), byName = {}; R.rows.forEach(function (r) { byName[r.name] = r; });
     var names = R.names.slice(); R.rows.forEach(function (r) { if (names.indexOf(r.name) < 0) names.push(r.name); });
     names.sort(function (a, b) { return a.localeCompare(b); });
-    var credit = items.map(function () { return 0; }), wrote = 0;
+    var credit = items.map(function () { return 0; }), wrote = 0; R.rowIndex = {}; names.forEach(function (n, k) { R.rowIndex[n] = k + 1; });
     names.forEach(function (n) {
       var r = byName[n], tr = el('tr');
       if (!r) { tr.innerHTML = '<td>' + esc(n) + '</td><td class="muted">Didn’t write</td><td colspan="' + (1 + outs.length + items.length) + '"></td>'; tb.appendChild(tr); return; }
@@ -392,7 +400,7 @@
         var m = r.final.charAt(x.pos); credit[i] += TC.credit(m);
         var td = el('td', 'tt-m m-' + m + (TC.over(m) ? ' over' : '') + (r.changed[x.pos] ? ' chg' : ''), (TC.SYMBOL[m] || '?') + (r.changed[x.pos] ? '!' : ''));
         td.title = TC.MARK_NAMES[m] + (r.changed[x.pos] ? ' — this question has changed since the student answered it: check it' : '') + ' — click to see the answer and change the mark';
-        td.addEventListener('click', function () { detail(r, i); });
+        td.dataset.i = i; td.addEventListener('click', function () { detail(r, i); });
         tr.appendChild(td);
       });
       tb.appendChild(tr);
@@ -403,30 +411,65 @@
     body.appendChild(el('p', 'small muted', R.isTest
       ? '✓ right · ⅔ a small recognized mistake, or the right value in the wrong form · ⅓ a bigger but reasonable mistake · ✗ wrong · – blank. Each outcome: Beginning, Progressing and Mastery box points; a box is secure at ¾ and partial at ½; the indicator and percent follow your grading rule. <b>⚑ Check</b> = a harder box done well over a hole in an easier one. Pick an indicator to set it yourself. Click a mark to see the answer and change its credit.'
       : '✓ right · ⅔ / ⅓ partly right · ✗ wrong · – blank. Exit slips: the score counts right answers, and each outcome shows the hardest level answered correctly. Click a mark to see the answer and change it.'));
-    var dbox = el('div', 'panel tt-detail hidden'); dbox.id = 'tt-detail'; body.appendChild(dbox);
+    R.order = names.filter(function (n) { return byName[n]; }).map(function (n) { return byName[n]; }); // students who wrote, in table order (for the pop-up's arrows)
   }
+  /* one student's answer to one question, in a pop-up: the question with their numbers, their answer as they wrote it
+     (typeset math, or the graph / number line they drew), the correct answer, and buttons to change the mark.
+     ← → move between questions, ↑ ↓ between students, Esc closes. */
   function detail(r, i) {
-    var R = TS.res, x = R.items[i], box = document.getElementById('tt-detail'); if (!box) return;
+    var R = TS.res; if (!R) return;
+    var x = R.items[i], ov = document.getElementById('tt-detail');
+    if (!ov) {
+      ov = el('div', 'tt-dmodal'); ov.id = 'tt-detail'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
+      ov.addEventListener('click', function (e) { if (e.target === ov) closeDetail(); });
+      document.body.appendChild(ov); document.addEventListener('keydown', detailKeys);
+    }
+    TS.det = { r: r, i: i };
     var inst; try { inst = TC.instance(TC.skey(R.session['class'], r.name), R.session.id, x.lesson, x.it); } catch (e) { inst = null; }
     var a = r.answers[x.key], p = x.pos, m = r.final.charAt(p), am = r.auto.charAt(p), code = codeCache[r.name + '|' + R.session.id + '|' + x.key] || '';
-    box.classList.remove('hidden'); box.innerHTML = '';
-    box.appendChild(el('h3', '', esc(r.name) + ' · Question ' + esc(R.labels[x.key] || '') + ' <span class="muted small">(' + esc(partLabel(x)) + ' · ' + esc(x.it.outcome) + ' ' + x.it.level + ')</span>'));
+    var ah = '<span class="muted">blank</span>';
+    if (a && a.r != null && !TC.blank(a.r)) { try { ah = inst ? HW.answerHtml(inst, a.r) : esc(a.t || ''); } catch (e) { ah = esc(a.t || ''); } if (!ah) ah = esc(a.t || ''); }
+    ov.innerHTML = '';
+    var box = el('div', 'tt-dbox panel'); ov.appendChild(box);
+    var top = el('div', 'tt-dtop');
+    top.appendChild(el('h3', '', esc(r.name) + ' · Question ' + esc(R.labels[x.key] || '') + ' <span class="muted small">(' + esc(partLabel(x)) + ' · ' + esc(x.it.outcome) + ' ' + x.it.level + ')</span>'));
+    var nav = el('div', 'tt-dnav'), ri = R.order.indexOf(r);
+    function navB(txt, title, ok, fn) { var b = button('btn-small btn-ghost', txt, fn); b.title = title; b.disabled = !ok; nav.appendChild(b); }
+    navB('←', 'Previous question (←)', i > 0, function () { detail(r, i - 1); });
+    navB('→', 'Next question (→)', i < R.items.length - 1, function () { detail(r, i + 1); });
+    navB('↑', 'Previous student (↑)', ri > 0, function () { detail(R.order[ri - 1], i); });
+    navB('↓', 'Next student (↓)', ri >= 0 && ri < R.order.length - 1, function () { detail(R.order[ri + 1], i); });
+    var cl = button('btn-small btn-ghost tt-dclose', '×', closeDetail); cl.title = 'Close (Esc)'; cl.setAttribute('aria-label', 'Close'); nav.appendChild(cl);
+    top.appendChild(nav); box.appendChild(top);
     if (inst) { if (inst.stem) box.appendChild(el('div', 'qstem', HW.tex(inst.stem))); box.appendChild(el('div', 'qprompt', HW.tex(inst.prompt))); }
-    box.appendChild(el('div', 'tt-ans', '<div class="dlabel">Their answer</div><div>' + (a && a.t ? esc(a.t) : '<span class="muted">blank</span>') + '</div>'));
-    if (inst) box.appendChild(el('div', 'tt-ans', '<div class="dlabel">Correct answer</div><div>' + HW.tex(inst.answer) + '</div>'));
+    var g = el('div', 'tt-dgrid');
+    g.appendChild(el('div', 'tt-ans tt-their m-' + m, '<div class="dlabel">Their answer</div><div class="tt-aval">' + ah + '</div>'));
+    if (inst) g.appendChild(el('div', 'tt-ans', '<div class="dlabel">Correct answer</div><div class="tt-aval">' + HW.tex(inst.answer) + '</div>'));
+    box.appendChild(g);
     box.appendChild(el('div', 'tt-ans', '<div class="dlabel">Mark</div><div><b>' + esc(TC.MARK_NAMES[m] || m) + '</b>' + (am !== m ? ' <span class="muted small">(checker said: ' + esc(TC.MARK_NAMES[am]) + ')</span>' : '') +
       (code && am !== 'c' ? '<div class="small muted">Checker: ' + esc((HW.CODES && HW.CODES[code]) || code) + '</div>' : '') +
       (r.changed[p] ? '<div class="notice warn small">This question has been edited since the test, so the version shown may not be exactly what the student saw. Check the mark.</div>' : '') + '</div>'));
     var acts = el('div', 'tt-acts');
-    function setM(v) { r.final = r.final.slice(0, p) + v + r.final.slice(p + 1); regrade(r); rerender(); setTimeout(function () { detail(r, i); }, 0); }
-    acts.appendChild(button('btn-small', '✓ Right', function () { setM('C'); }));
-    acts.appendChild(button('btn-small', '⅔ Small mistake', function () { setM('T'); }));
-    acts.appendChild(button('btn-small', '⅓ Bigger mistake', function () { setM('O'); }));
-    acts.appendChild(button('btn-small', '✗ Wrong', function () { setM('W'); }));
+    function setM(v) { r.final = r.final.slice(0, p) + v + r.final.slice(p + 1); regrade(r); rerender(); detail(r, i); }
+    [['C', '✓ Right'], ['T', '⅔ Small mistake'], ['O', '⅓ Bigger mistake'], ['W', '✗ Wrong']].forEach(function (b) { var bt = button('btn-small' + (m === b[0] ? ' on' : ''), b[1], function () { setM(b[0]); }); acts.appendChild(bt); });
     acts.appendChild(button('btn-small btn-ghost', 'Use the checker’s mark', function () { setM(am); }));
     box.appendChild(acts);
     HW.texIn && HW.texIn(box);
-    try { box.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {}
+    document.querySelectorAll('.tt-m.sel').forEach(function (n) { n.classList.remove('sel'); });
+    var cell = document.querySelector('.tt-res tbody tr:nth-child(' + (R.rowIndex ? R.rowIndex[r.name] : 0) + ') .tt-m[data-i="' + i + '"]'); if (cell) cell.classList.add('sel');
+  }
+  function closeDetail() { var ov = document.getElementById('tt-detail'); if (ov) ov.remove(); document.removeEventListener('keydown', detailKeys); TS.det = null; document.querySelectorAll('.tt-m.sel').forEach(function (n) { n.classList.remove('sel'); }); }
+  function detailKeys(e) {
+    var d = TS.det, R = TS.res; if (!d || !R) return;
+    if (e.target && /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
+    var ri = R.order.indexOf(d.r);
+    if (e.key === 'Escape') closeDetail();
+    else if (e.key === 'ArrowLeft' && d.i > 0) detail(d.r, d.i - 1);
+    else if (e.key === 'ArrowRight' && d.i < R.items.length - 1) detail(d.r, d.i + 1);
+    else if (e.key === 'ArrowUp' && ri > 0) detail(R.order[ri - 1], d.i);
+    else if (e.key === 'ArrowDown' && ri >= 0 && ri < R.order.length - 1) detail(R.order[ri + 1], d.i);
+    else return;
+    e.preventDefault();
   }
   function saveMarks() {
     var R = TS.res, data = {};
