@@ -7,7 +7,8 @@ import { wireBlocks, showAllAnswers } from './blocks.js';
 
 const I = {
   pen: '<path d="M4 20l1.2-4.6L16.4 4.2a2 2 0 0 1 2.8 0l.6.6a2 2 0 0 1 0 2.8L8.6 18.8z"/><path d="M14.5 6l3.5 3.5"/>',
-  hl: '<path d="M6 21h9"/><path d="M8.5 17.5l-2-2L15 5l4 4-10.5 8.5z"/><path d="M6.5 15.5L4 19h4l.5-1.5"/>',
+  // a chisel-tip marker over a yellow swipe
+  hl: '<rect x="3" y="18.6" width="12" height="3.4" rx="1.2" fill="#f2c200" stroke="none"/><g transform="rotate(40 14.5 9)"><rect x="11.5" y="1" width="6" height="10.5" rx="1.4"/><path d="M11.5 11.5h6l-1.2 3.2h-3.6z"/><path d="M13.4 14.7l.4 2.3h1.4l.4-2.3"/></g>',
   eraser: '<path d="M8 20h12"/><path d="M4.6 14.6l9.2-9.2a2 2 0 0 1 2.8 0l3 3a2 2 0 0 1 0 2.8L12 18.8H8.8z"/><path d="M9.3 9.9l5.8 5.8"/>',
   laser: '<circle cx="12" cy="12" r="2.6" fill="currentColor"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/>',
   hand: '<path d="M8 13V6.5a1.5 1.5 0 0 1 3 0V11"/><path d="M11 11V4.5a1.5 1.5 0 0 1 3 0V11"/><path d="M14 11V6a1.5 1.5 0 0 1 3 0v7.5c0 4-2.6 7-6.3 7-2.4 0-4-1.3-5.4-3.7L3.6 13a1.4 1.4 0 0 1 2.3-1.6L8 13.5"/>',
@@ -39,7 +40,7 @@ export function boot({ key, homeHref = '../../', title = '' }) {
       <button class="tbtn" data-tool="hand" title="Hand: the Pencil scrolls and taps instead of writing (V)" aria-label="Hand">${icon('hand')}</button>
     </div>
     <div class="tb-group colors">
-      ${Object.keys(Ink.COLORS).map((c) => `<button class="sw" data-color="${c}" style="--c:${Ink.COLORS[c]}" title="${c === 'ink' ? 'Black' : c[0].toUpperCase() + c.slice(1)} pen" aria-label="${c} pen"></button>`).join('')}
+      ${Object.keys(Ink.COLORS).map((c) => `<button class="sw" data-color="${c}" style="--c:${Ink.slotColor(c)}" title="Pen colour (hold to choose another colour)" aria-label="${c} pen"></button>`).join('')}
       <button class="tbtn size" title="Pen size" aria-label="Pen size"><i></i></button>
     </div>
     <div class="tb-group hist">
@@ -58,7 +59,35 @@ export function boot({ key, homeHref = '../../', title = '' }) {
   followZoom(hud);
   const $ = (s) => tb.querySelector(s), $$ = (s) => [...tb.querySelectorAll(s)];
   $$('[data-tool]').forEach((b) => b.addEventListener('click', () => Ink.setTool(b.dataset.tool)));
-  $$('[data-color]').forEach((b) => b.addEventListener('click', () => Ink.setColor(b.dataset.color)));
+  /* a colour: tap to use it, hold to give that slot another colour */
+  $$('[data-color]').forEach((b) => {
+    let timer = 0;
+    const cancel = () => { clearTimeout(timer); timer = 0; };
+    b.addEventListener('pointerdown', (e) => { cancel(); b._held = false; timer = setTimeout(() => { b._held = true; openPicker(b); }, 450); });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach((ev) => b.addEventListener(ev, cancel));
+    b.addEventListener('contextmenu', (e) => e.preventDefault());
+    b.addEventListener('click', (e) => { if (b._held) { b._held = false; e.preventDefault(); return; } Ink.setColor(b.dataset.color); });
+  });
+  const PALETTE = ['#1c2230', '#5b6170', '#1f5bd6', '#0891b2', '#7c3aed', '#c026d3', '#d42a2a', '#ea580c', '#b7791f', '#16884a', '#0d9488', '#65a30d', '#8b4513', '#db2777'];
+  let picker = null;
+  function closePicker() { if (picker) { picker.remove(); picker = null; } }
+  function openPicker(btn) {
+    closePicker();
+    const slot = btn.dataset.color, cur = Ink.slotColor(slot), def = Ink.COLORS[slot];
+    picker = h('div', 'cpick no-ink'); picker.setAttribute('role', 'dialog');
+    picker.innerHTML = `<div class="cp-h">Colour for this pen</div>
+      <div class="cp-grid">${PALETTE.map((c) => `<button type="button" class="cp-c${c.toLowerCase() === String(cur).toLowerCase() ? ' on' : ''}" data-c="${c}" style="--c:${c}" aria-label="${c}"></button>`).join('')}</div>
+      <div class="cp-row"><label class="cp-more">More colours…<input type="color" value="${cur}"></label><button type="button" class="cp-reset"${String(cur).toLowerCase() === def ? ' disabled' : ''}><i style="--c:${def}"></i>Original</button></div>`;
+    const grp = btn.parentNode; grp.appendChild(picker);
+    picker.style.left = Math.max(0, btn.offsetLeft + btn.offsetWidth / 2 - 118) + 'px';
+    const pick = (c) => { Ink.setSlotColor(slot, c); btn.style.setProperty('--c', Ink.slotColor(slot)); closePicker(); };
+    picker.querySelectorAll('[data-c]').forEach((x) => x.addEventListener('click', (e) => { e.stopPropagation(); pick(x.dataset.c); }));
+    const inp = picker.querySelector('input'); inp.addEventListener('click', (e) => e.stopPropagation()); inp.addEventListener('change', () => pick(inp.value));
+    picker.querySelector('.cp-reset').addEventListener('click', (e) => { e.stopPropagation(); pick(def); });
+    picker.addEventListener('click', (e) => e.stopPropagation());
+  }
+  document.addEventListener('pointerdown', (e) => { if (picker && !picker.contains(e.target) && !(e.target.closest && e.target.closest('[data-color]'))) closePicker(); }, true);
+  addEventListener('keydown', (e) => { if (e.key === 'Escape') closePicker(); });
   $('.size').addEventListener('click', () => { const s = Ink.state(); Ink.setSize((s.size + 1) % 3); if (s.tool !== 'pen') Ink.setTool('pen'); });
   $('[data-act=undo]').addEventListener('click', Ink.undo);
   $('[data-act=redo]').addEventListener('click', Ink.redo);
@@ -93,6 +122,7 @@ export function boot({ key, homeHref = '../../', title = '' }) {
       <div class="mp-secs">${secs.map((el, i) => `<button class="mp-item" data-i="${i}">${el.dataset.section}</button>`).join('')}</div>
       <div class="mp-sep"></div>
       ${sh.readonly ? '' : `<label class="mp-item tog"><span>Laser dot when the Pencil hovers</span><input type="checkbox" data-t="hover" ${s.hover ? 'checked' : ''}><i></i></label>
+      <label class="mp-item tog"><span>Hold a finger down to erase with the Pencil</span><input type="checkbox" data-t="fingererase" ${s.fingerErase ? 'checked' : ''}><i></i></label>
       <label class="mp-item tog"><span>Finger draws too</span><input type="checkbox" data-t="finger" ${s.finger ? 'checked' : ''}><i></i></label>`}
       <div class="mp-item mp-zoom"><span>Page size</span><span class="mp-zbtns"><button type="button" data-z="-1" aria-label="Smaller">−</button><b>${Math.round(getPageZoom() * 100)}%</b><button type="button" data-z="1" aria-label="Bigger">+</button></span></div>
       <button class="mp-item" data-m="answers">Show all answers</button>
@@ -100,12 +130,13 @@ export function boot({ key, homeHref = '../../', title = '' }) {
       <button class="mp-item" data-m="print">Print / save as PDF</button>
       ${sh.readonly ? '' : `<button class="mp-item danger" data-m="clear">${sh.cls ? 'Clear all ink for ' + sh.label + '…' : 'Clear all ink on this lesson…'}</button>`}
       ${shareMenu.bottom ? shareMenu.html : ''}
-      ${sh.readonly ? '' : '<div class="mp-tip">Pencil writes · finger scrolls · two-finger tap = undo.<br>Tap a button with the Pencil to press it.</div>'}`;
+      ${sh.readonly ? '' : '<div class="mp-tip">Pencil writes · finger scrolls · two-finger tap = undo · hold a finger down and the Pencil erases · hold a colour to change it.<br>Tap a button with the Pencil to press it.</div>'}`;
     menu.classList.remove('hidden');
     menu.querySelectorAll('[data-i]').forEach((b) => b.onclick = () => { toggleMenu(false); toggleBoard(false); secs[b.dataset.i].scrollIntoView({ behavior: 'smooth', block: 'start' }); });
     const tf = menu.querySelector('[data-t=finger]'), th = menu.querySelector('[data-t=hover]');
     if (tf) tf.onchange = (e) => Ink.setFinger(e.target.checked);
     if (th) th.onchange = (e) => Ink.setHover(e.target.checked);
+    const tfe = menu.querySelector('[data-t=fingererase]'); if (tfe) tfe.onchange = (e) => Ink.setFingerErase(e.target.checked);
     shareMenu.wire(menu, () => toggleMenu(false));
     menu.querySelectorAll('[data-z]').forEach((b) => b.onclick = (e) => { e.stopPropagation(); setPageZoom(getPageZoom() + 0.1 * Number(b.dataset.z)); menu.querySelector('.mp-zbtns b').textContent = Math.round(getPageZoom() * 100) + '%'; });
     menu.querySelector('[data-m=answers]').onclick = () => { document.querySelectorAll('.part').forEach((p) => p.classList.add('shown')); showAllAnswers(true); toggleMenu(false); };
@@ -123,7 +154,8 @@ export function boot({ key, homeHref = '../../', title = '' }) {
   Ink.onChange((s) => {
     $$('[data-tool]').forEach((b) => b.classList.toggle('on', b.dataset.tool === s.tool));
     $$('[data-color]').forEach((b) => b.classList.toggle('on', b.dataset.color === s.color && s.tool === 'pen'));
-    const sz = $('.size i'); sz.style.width = sz.style.height = [5, 8, 12][s.size] + 'px'; sz.style.background = Ink.COLORS[s.color] || '#1c2230';
+    const sz = $('.size i'); sz.style.width = sz.style.height = [5, 8, 12][s.size] + 'px'; sz.style.background = Ink.slotColor(s.color) || '#1c2230';
+    $$('[data-color]').forEach((b) => b.style.setProperty('--c', Ink.slotColor(b.dataset.color)));
     $('[data-act=undo]').disabled = !s.undo.length; $('[data-act=redo]').disabled = !s.redo.length;
     document.body.dataset.tool = s.tool;
   });
@@ -167,6 +199,11 @@ function followZoom(hud) {
   const place = () => {
     const s = vv.scale || 1, x = vv.offsetLeft, y = vv.offsetTop;
     const t = (Math.abs(s - 1) < 0.005 && Math.abs(x) < 0.5 && Math.abs(y) < 0.5) ? '' : 'translate(' + x + 'px,' + y + 'px) scale(' + (1 / s) + ')';
+    // size the toolbar layer to the screen, not to the page: if Safari ever lays the page out wider than the screen
+    // (and shows it zoomed out), a full-width layer scaled back up would push the right-hand buttons off the screen
+    const w = Math.round(vv.width * s) + 'px', hh = Math.round(vv.height * s) + 'px';
+    if (hud.style.width !== w) hud.style.width = w;
+    if (hud.style.height !== hh) hud.style.height = hh;
     if (t !== last) { hud.style.transform = t; last = t; }
     document.body.classList.toggle('zoomed', s > 1.005);
   };
@@ -187,6 +224,14 @@ function followZoom(hud) {
   };
   document.addEventListener('touchend', end, { passive: true }); document.addEventListener('touchcancel', end, { passive: true });
   place();
+  // opened zoomed out (the page was wider than the screen before it was fitted, or Safari restored an old zoom):
+  // nudge the viewport back to 100 %
+  setTimeout(() => {
+    if ((vv.scale || 1) > 0.98) return;
+    const m = document.querySelector('meta[name=viewport]'); if (!m) return;
+    const c = m.getAttribute('content'); m.setAttribute('content', c + ', maximum-scale=1');
+    setTimeout(() => { m.setAttribute('content', c); place(); }, 300);
+  }, 400);
 }
 
 /* The lesson is always laid out 1080 px wide and scaled down to fit narrower screens, like a PDF page. That keeps

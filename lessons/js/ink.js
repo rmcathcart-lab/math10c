@@ -9,6 +9,9 @@
  *  - Starting a stroke on a button, link or the calculator presses it instead of writing.
  *  - Tools: pen (4 colours, 3 sizes), highlighter, stroke eraser, laser pointer (fades), hand (pencil scrolls).
  *  - Undo / redo (buttons, Cmd+Z, or a two-finger tap). Ink is saved on this device, per lesson.
+ *  - Hold a finger on the page and the Pencil erases until the finger lifts (menu: "Hold a finger to erase").
+ *  - Each pen colour slot can be given another colour (hold a colour in the toolbar). Strokes keep the colour they were
+ *    drawn in: a stroke stores its slot name while the slot has its usual colour, otherwise the colour itself.
  */
 import { getStroke } from './vendor/perfect-freehand.js';
 
@@ -21,7 +24,7 @@ const HL = { c: '#ffd60a', a: 0.38, size: 22 };
 
 const rid = () => Math.random().toString(36).slice(2, 10);
 const S = {
-  key: 'ink:default', readonly: false, opHook: null, tool: 'pen', color: 'ink', size: 1, finger: false, hover: true,
+  key: 'ink:default', readonly: false, opHook: null, tool: 'pen', color: 'ink', size: 1, finger: false, hover: true, fingerErase: true, held: 0, heldAt: 0,
   surfaces: new Map(), undo: [], redo: [], active: null, penDownAt: 0, listeners: new Set()
 };
 
@@ -31,6 +34,9 @@ function ls(k, v) {
     if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v));
   } catch (e) { return null; }
 }
+/* colour slots: { blue: '#7c3aed', … } for the slots given another colour on this device */
+S.slots = (() => { const o = ls('ink:slots'); return o && typeof o === 'object' ? o : {}; })();
+function slotColor(c) { return S.slots[c] || COLORS[c] || c; }
 
 /* ---------------- strokes ---------------- */
 function strokeOpts(s, last) {
@@ -224,17 +230,28 @@ function onDown(e) {
   sf.measure();
   const pr = pressure(e, null);
   S.penDownAt = Date.now(); hideDot();
-  if (S.tool === 'eraser') {
+  if (S.tool === 'eraser' || fingerErasing(e)) {
     S.active = { id: e.pointerId, sf, erase: [] }; calibrate(S.active, e);
     const [x, y] = sf.toLocal(e.clientX, e.clientY, S.active.off); eraseAt(x, y);
   } else {
     const [x, y] = sf.toLocal(e.clientX, e.clientY);
-    const s = { id: rid(), t: S.tool === 'highlighter' ? 'hl' : S.tool === 'laser' ? 'laser' : 'pen', c: S.color, w: S.size, pen: e.pointerType === 'pen', p: [[x, y, pr]] };
+    const s = { id: rid(), t: S.tool === 'highlighter' ? 'hl' : S.tool === 'laser' ? 'laser' : 'pen', c: S.slots[S.color] || S.color, w: S.size, pen: e.pointerType === 'pen', p: [[x, y, pr]] };
     const node = sf.node(s); (s.t === 'hl' ? sf.gHl : s.t === 'laser' ? sf.gLaser : sf.gPen).appendChild(node);
     S.active = { id: e.pointerId, sf, s, node, dirty: true }; calibrate(S.active, e); trail(S.active, e.clientX, e.clientY); schedule();
   }
   try { sf.el.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
   document.body.classList.add('inking');
+}
+/* A finger held still on the page (not on a button) for a moment turns the Pencil into the eraser while it stays down.
+ * Not when "Finger draws" is on (then the finger is a pen), and not for a big contact (a resting palm). */
+const HOLD_MS = 120;
+function fingerErasing(e) {
+  return e.pointerType === 'pen' && S.fingerErase && !S.finger && S.held > 0 && performance.now() - S.heldAt > HOLD_MS && S.tool !== 'hand';
+}
+function countHeld(e) {
+  const n = [...e.touches].filter((t) => t.touchType !== 'stylus' && !(t.radiusX > 38) && !(t.target && t.target.closest && t.target.closest(INTERACTIVE))).length;
+  if (n && !S.held) S.heldAt = performance.now();
+  if (n !== S.held) { S.held = n; document.body.classList.toggle('finger-erase', !!n && S.fingerErase && !S.finger); }
 }
 /* Pencil pressure, eased so a light touch still gives a solid line. A reading of 0 mid-stroke (it happens with a
  * light touch) keeps the previous value instead of jumping. */
@@ -278,9 +295,10 @@ function hoverDot(e) {
   spaceShift(e);
   const hr = host.getBoundingClientRect(), s = (hr.width / host.offsetWidth) || 1, z = zoom();
   const x = (e.clientX + shift.dx - hr.left) / s, y = (e.clientY + shift.dy - hr.top) / s;
-  const c = S.tool === 'highlighter' ? HL.c : S.tool === 'laser' ? '#ff2d2d' : S.tool === 'hand' ? '#13807a' : (COLORS[S.color] || '#ff2d2d');
-  dot.className = S.tool === 'eraser' ? 'ring show' : 'show';
-  dot.style.setProperty('--dc', S.tool === 'eraser' ? '#6a7182' : c);
+  const c = S.tool === 'highlighter' ? HL.c : S.tool === 'laser' ? '#ff2d2d' : S.tool === 'hand' ? '#13807a' : slotColor(S.color);
+  const er = S.tool === 'eraser' || (S.held > 0 && S.fingerErase && !S.finger && S.tool !== 'hand');
+  dot.className = er ? 'ring show' : 'show';
+  dot.style.setProperty('--dc', er ? '#6a7182' : c);
   dot.style.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + (1 / (s * z)) + ')';
   clearTimeout(dotTimer); dotTimer = setTimeout(hideDot, 350);
 }
@@ -338,6 +356,7 @@ function touchBlocks(e, start) {
 }
 let twoTap = null;
 function onTouchStart(e) {
+  countHeld(e);
   if (touchBlocks(e, true)) { e.preventDefault(); return; }
   const direct = [...e.touches].filter((t) => t.touchType !== 'stylus');
   if (direct.length === 2 && !S.active && !S.finger) twoTap = { t: Date.now(), pts: direct.map((t) => [t.clientX, t.clientY]), moved: false };
@@ -348,6 +367,7 @@ function onTouchMove(e) {
   if (twoTap) for (const t of e.touches) { const q = twoTap.pts.find((p) => Math.hypot(p[0] - t.clientX, p[1] - t.clientY) < 30); if (!q) twoTap.moved = true; }
 }
 function onTouchEnd(e) {
+  countHeld(e);
   if (twoTap && e.touches.length === 0) {
     const ok = !twoTap.moved && Date.now() - twoTap.t < 320 && Date.now() - S.penDownAt > 400;
     twoTap = null; if (ok) { undo(); toast('Undo'); }
@@ -363,7 +383,13 @@ export function setColor(c) { S.color = c; if (S.tool !== 'pen') S.tool = 'pen';
 export function setSize(i) { S.size = i; settings(); emit(); }
 export function setFinger(on) { S.finger = on; settings(); emit(); }
 export function setHover(on) { S.hover = on; if (!on) hideDot(); settings(); emit(); }
-function settings() { ls('ink:settings', { tool: S.tool === 'laser' || S.tool === 'eraser' ? 'pen' : S.tool, color: S.color, size: S.size, finger: S.finger, hover: S.hover }); }
+export function setFingerErase(on) { S.fingerErase = on; settings(); emit(); }
+export { slotColor };
+export function setSlotColor(c, hex) {
+  if (!hex || String(hex).toLowerCase() === String(COLORS[c]).toLowerCase()) delete S.slots[c]; else S.slots[c] = hex;
+  ls('ink:slots', S.slots); S.color = c; S.tool = 'pen'; settings(); emit();
+}
+function settings() { ls('ink:settings', { tool: S.tool === 'laser' || S.tool === 'eraser' ? 'pen' : S.tool, color: S.color, size: S.size, finger: S.finger, hover: S.hover, fingerErase: S.fingerErase }); }
 
 export function register(el) {
   const id = el.dataset.ink; if (!id || S.surfaces.has(id)) return S.surfaces.get(id);
@@ -386,7 +412,7 @@ export function hasInk() { for (const sf of S.surfaces.values()) if (sf.strokes.
 export function init(key, opts = {}) {
   S.readonly = !!opts.readonly; S.key = S.readonly ? null : 'ink:' + key; S.saved = S.key ? ls(S.key) : null;
   if (S.readonly) document.body.classList.add('viewer');
-  const st = ls('ink:settings'); if (st) { S.tool = st.tool || 'pen'; S.color = st.color || 'ink'; S.size = st.size != null ? st.size : 1; S.finger = !!st.finger; S.hover = st.hover !== false; }
+  const st = ls('ink:settings'); if (st) { S.tool = st.tool || 'pen'; S.color = st.color || 'ink'; S.size = st.size != null ? st.size : 1; S.finger = !!st.finger; S.hover = st.hover !== false; S.fingerErase = st.fingerErase !== false; }
   document.querySelectorAll('[data-ink]').forEach(register);
   document.addEventListener('pointerdown', onDown, { passive: false });
   document.addEventListener('pointermove', onMove, { passive: false });
@@ -397,7 +423,7 @@ export function init(key, opts = {}) {
   if (window.visualViewport) { visualViewport.addEventListener('scroll', remeasure); visualViewport.addEventListener('resize', remeasure); }
   document.addEventListener('touchstart', onTouchStart, { passive: false });
   document.addEventListener('touchmove', onTouchMove, { passive: false });
-  document.addEventListener('touchend', onTouchEnd); document.addEventListener('touchcancel', () => { twoTap = null; });
+  document.addEventListener('touchend', onTouchEnd); document.addEventListener('touchcancel', (e) => { twoTap = null; countHeld(e); });
   addEventListener('pagehide', flush); document.addEventListener('visibilitychange', () => { if (document.hidden) flush(); });
   emit();
 }

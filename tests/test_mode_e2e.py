@@ -107,8 +107,9 @@ async def main():
         res = await tp.evaluate("[...document.querySelectorAll('.tt-res tbody tr')].map(r => r.innerText.replace(/\\s+/g, ' '))")
         print('results:', res)
         ava = [r for r in res if r.startswith('Ava')][0]; assert '1 / 3' in ava and '✓ ✗ –' in ava, ava
-        await tp.click('.tt-m >> nth=1'); await tp.wait_for_selector('#tt-detail:not(.hidden)')
+        await tp.click('.tt-m >> nth=1'); await tp.wait_for_selector('#tt-detail .tt-dbox')   # the answer pop-up
         await tp.screenshot(path=SHOTS + 'tm_t_results.png', full_page=True)
+        await tp.keyboard.press('Escape'); assert await tp.locator('#tt-detail').count() == 0
         await tp.click('.tt-top .btn-primary:has-text("Release")'); await tp.wait_for_timeout(1500)
         # ---- Ava sees her results ----
         await a.goto(BASE + '?class=10c-b'); await a.wait_for_selector('.tm-res-card', timeout=15000)

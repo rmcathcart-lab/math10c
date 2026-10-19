@@ -37,7 +37,7 @@ async def main():
         # Ben: set AN2 by hand, mark one part as a small mistake
         await tp.select_option('.tt-res tr:has-text("Ben Lee") .tt-osel >> nth=1', 'PRG')
         await tp.click('.tt-res tr:has-text("Ben Lee") .tt-m.m-b >> nth=0'); await tp.click('#tt-detail .btn:has-text("Small mistake")')
-        await tp.wait_for_timeout(300)
+        await tp.wait_for_timeout(300); await tp.keyboard.press('Escape')
         print('Ben after edits:', (await tp.inner_text('.tt-res tr:has-text("Ben Lee")')).replace('\n', ' ')[:200])
         await tp.click('.tt-top .btn-primary:has-text("Release")'); await tp.wait_for_timeout(1500)
         rows = get('action=tresults&key=testkey&session=' + sid)['rows']

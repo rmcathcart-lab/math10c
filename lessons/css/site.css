@@ -10,7 +10,7 @@
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-padding-top: calc(var(--tbh) + 10px); }
-body { margin: 0; background: var(--bg); color: var(--ink); font: 19px/1.5 var(--font); -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
+body { margin: 0; overflow-x: clip; background: var(--bg); color: var(--ink); font: 19px/1.5 var(--font); -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
 input, textarea { -webkit-user-select: text; user-select: text; }
 img, svg { -webkit-user-drag: none; }
 button { font: inherit; color: inherit; }
@@ -44,6 +44,19 @@ sup { font-size: .68em; line-height: 0; }
 .tbtn.size i { display: block; border-radius: 50%; background: var(--ink); }
 .sw { width: 30px; height: 30px; border-radius: 50%; border: 3px solid #fff; background: var(--c); box-shadow: 0 0 0 1.5px #d5d0c4; cursor: pointer; padding: 0; margin: 0 2px; }
 .sw.on { box-shadow: 0 0 0 2.5px var(--c); transform: scale(1.08); }
+.tb-group.colors { position: relative; }
+.cpick { position: absolute; top: calc(100% + 8px); z-index: 120; width: 236px; background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 16px 40px rgba(20,24,33,.2); padding: 10px; }
+.cp-h { font-size: 13px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); margin: 0 2px 8px; }
+.cp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.cp-c { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #fff; background: var(--c); box-shadow: 0 0 0 1.5px #d5d0c4; padding: 0; cursor: pointer; }
+.cp-c.on { box-shadow: 0 0 0 2.5px var(--c); }
+.cp-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 10px; font-size: 14px; }
+.cp-more { position: relative; color: var(--brand2); font-weight: 700; cursor: pointer; }
+.cp-more input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+.cp-reset { border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 4px 10px; font: inherit; font-size: 13.5px; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; color: var(--ink2); }
+.cp-reset:disabled { opacity: .45; cursor: default; }
+.cp-reset i { width: 12px; height: 12px; border-radius: 50%; background: var(--c); display: inline-block; }
+body.finger-erase .tbtn[data-tool=eraser] { background: #fde68a; color: var(--ink); }
 .home { color: var(--brand); }
 .tbtn.home { padding: 0 5px; }
 .home-mark { display: block; width: 34px; height: 34px; border-radius: 9px; }
