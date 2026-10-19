@@ -1,0 +1,46 @@
+"""Test-mode preview and the dashboard's Exit slips / Tests tabs and "on the site" count (mock; needs 8811 + tests/restart_mock.sh)."""
+import asyncio, json, os, urllib.request
+from playwright.async_api import async_playwright
+exec(open(os.path.join(os.path.dirname(__file__), 'test_mode_e2e.py')).read().split('async def main')[0])
+def get(q): return json.loads(urllib.request.urlopen(MOCK + '?' + q).read())
+async def main():
+    errs = []
+    get('action=setroster&key=testkey&class=10c-b&label=Block%20B&names=Ava%20Brown%0ABen%20Lee&mode=add')
+    for t, k, items in [('Exit slip 1.2', 'exit', [{'l': 'u1l2', 'i': '1a'}, {'l': 'u1l2', 'i': '1b'}]), ('Exit slip 2.1', 'exit', [{'l': 'u2l1', 'i': '1a'}]), ('Exit slip 1.1', 'exit', [{'l': 'u1l1', 'i': '1a'}]), ('Quiz', 'test', [{'l': 'u1l1', 'i': '1a'}])]:
+        get('action=savetest&key=testkey&def=' + urllib.request.quote(json.dumps({'title': t, 'kind': k, 'minutes': 5, 'items': items})))
+    async with async_playwright() as p:
+        b = await p.chromium.launch()
+        a = await student(b, 'Ava Brown', '1111', errs)
+        tctx = await b.new_context(viewport={'width': 1400, 'height': 950})
+        await tctx.add_init_script("localStorage.setItem('hw:tkey','testkey'); localStorage.setItem('hw:tclass','10c-b'); localStorage.setItem('hw:ttab','exits');")
+        await tctx.route('**/cdn.jsdelivr.net/**', lambda r: r.abort())
+        await tctx.route(BASE + 'js/config.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=CONFIG))
+        tp = await tctx.new_page(); tp.on('pageerror', lambda e: errs.append('T ' + str(e)))
+        await tp.goto(BASE + 'teacher/'); await tp.wait_for_selector('.tt-unit', timeout=15000)
+        await tp.wait_for_timeout(12000)
+        print('online chip:', await tp.inner_text('#online-chip'))
+        print('exit slip units:', await tp.evaluate("[...document.querySelectorAll('.tt-unit')].map(u => u.querySelector('h3').innerText.replace(/\\s+/g,' ') + ': ' + [...u.querySelectorAll('.tt-title')].map(t => t.textContent).join(', '))"))
+        await tp.screenshot(path='/tmp/tm_t_exits.png')
+        await tp.click('.tab:has-text("Tests")'); await tp.wait_for_selector('.tt-ready')
+        print('tests tab cards:', await tp.evaluate("[...document.querySelectorAll('.tt-title')].map(t => t.textContent)"))
+        await tp.click('.tab:has-text("Exit slips")'); await tp.wait_for_selector('.tt-unit')
+        # preview from the card
+        async with tctx.expect_page() as pi: await tp.click('.tt-card:has-text("Exit slip 1.2") .tt-preview')
+        pv = await pi.value; pv.on('pageerror', lambda e: errs.append('P ' + str(e)))
+        await pv.wait_for_selector('.tm-start', timeout=15000); await pv.click('.tm-start'); await pv.wait_for_selector('.tm-preview-bar')
+        print('preview parts on page:', await pv.locator('#testmode .tm-part').count(), '| name:', await pv.inner_text('#testmode .tm-name'))
+        p1 = await pv.inner_text('#testmode .tm-card .qprompt >> nth=0')
+        await pv.click('.tm-preview-bar .btn:has-text("Show answers")'); await pv.wait_for_timeout(300)
+        print('answers shown:', await pv.locator('#testmode .tm-pv-ans:not(.hidden)').count())
+        await pv.screenshot(path='/tmp/tm_preview.png')
+        await pv.click('.tm-preview-bar .btn:has-text("New numbers")'); await pv.click('.tm-start'); await pv.wait_for_selector('.tm-preview-bar')
+        p2 = await pv.inner_text('#testmode .tm-card .qprompt >> nth=0'); print('new numbers differ:', p1 != p2)
+        await pv.evaluate("(() => { const T = HW.TestMode._state(); T.widgets[0].w.set(T.byKey[T.widgets[0].key].inst.key); })()")
+        await pv.click('#testmode .tm-submit'); await pv.click('.tm-modal .btn-primary'); await pv.wait_for_timeout(500)
+        print('preview end:', (await pv.inner_text('#testmode .tm-splash'))[:200].replace('\n', ' | '))
+        await pv.screenshot(path='/tmp/tm_preview_end.png')
+        stats = json.loads(urllib.request.urlopen(MOCK + '__stats').read())
+        print('nothing sent from preview:', not any('preview' in k for k in stats['cache']) and not stats['sheets'].get('TestResults', [[]])[1:])
+        await b.close()
+    print('errors', errs)
+asyncio.run(main())

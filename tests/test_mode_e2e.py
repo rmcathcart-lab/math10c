@@ -35,11 +35,11 @@ async def wait_view(page, view, secs=20):
         await page.wait_for_timeout(250)
     raise AssertionError('never reached view %s: %s' % (view, await state(page)))
 
-async def answer(page, right):
-    # the current question: type the key (or a wrong answer) through the widget itself
-    return await page.evaluate("""(right) => { const T = HW.TestMode._state(), x = T.byKey[T.order[T.cur]], w = T.widget;
+async def answer(page, right, part=0):
+    # a part on the current page: put the key (or a wrong answer) in through the widget itself
+    return await page.evaluate("""([right, part]) => { const T = HW.TestMode._state(), sl = T.widgets[part], x = T.byKey[sl.key], w = sl.w;
       let v = x.inst.key; if (!right) { v = Array.isArray(v) ? [1, 999] : typeof v === 'string' ? '999' : (x.inst.input.type === 'mc' ? x.inst.input.options.map(o => o.key).find(k => k !== v) : v); }
-      w.set(v); return { type: x.inst.input.type, key: JSON.stringify(x.inst.key) }; }""", right)
+      w.set(v); return { type: x.inst.input.type, key: JSON.stringify(x.inst.key) }; }""", [right, part])
 
 async def main():
     urllib.request.urlopen(MOCK + '?action=setroster&key=testkey&class=10c-b&label=Block%20B&names=Ava%20Brown%0ABen%20Lee%0ARyan%20Cathcart&mode=add').read()
@@ -48,7 +48,7 @@ async def main():
         b = await p.chromium.launch()
         # ---- teacher builds an exit slip in the dashboard ----
         tctx = await b.new_context(viewport={'width': 1400, 'height': 950})
-        await tctx.add_init_script("localStorage.setItem('hw:tkey','testkey'); localStorage.setItem('hw:tclass','10c-b'); localStorage.setItem('hw:ttab','tests');")
+        await tctx.add_init_script("localStorage.setItem('hw:tkey','testkey'); localStorage.setItem('hw:tclass','10c-b'); localStorage.setItem('hw:ttab','exits');")
         tp = await tctx.new_page()
         tp.on('pageerror', lambda e: errs.append('teacher: ' + str(e)))
         tp.on('dialog', lambda d: asyncio.ensure_future(d.accept()))
@@ -57,7 +57,9 @@ async def main():
         await tp.click('.tt-new-exit'); await tp.wait_for_selector('.tt-part')
         await tp.fill('.tt-settings input.field', 'Exit slip 1.1')
         boxes = tp.locator('.tt-part input[type=checkbox]:not([disabled])')
-        for i in range(3): await boxes.nth(i).check()
+        for i in range(2): await boxes.nth(i).check()   # 1(a) and 1(b): one page
+        k2 = await tp.evaluate("[...document.querySelectorAll('.tt-part')].findIndex(p => /^2\\b/.test(p.querySelector('.tt-part-meta b').textContent) && !p.querySelector('input').disabled)")
+        await tp.locator('.tt-part input[type=checkbox]').nth(k2).check()   # a part of question 2: the next page
         assert await tp.locator('.tt-chosen-list li').count() == 3
         await tp.screenshot(path=SHOTS + 'tm_t_editor.png')
         await tp.click('.tt-top .btn-primary:has-text("Save")'); await tp.wait_for_selector('.tt-card')
@@ -70,19 +72,19 @@ async def main():
         assert 'Ava Brown' in await a.inner_text('#testmode .tm-name')
         await a.click('.tm-start'); s = await wait_view(a, 'test')
         print('Ava started:', s)
-        r1 = await answer(a, True); await a.wait_for_timeout(700)
+        parts = await a.locator('#testmode .tm-part').count(); assert parts == 2, 'question 1 should show both parts: %d' % parts
+        r1 = await answer(a, True, 0); await answer(a, False, 1); await a.wait_for_timeout(700)
         p1 = (await state(a))['prompt']
-        await a.click('#testmode .qactions .btn-primary'); await a.wait_for_timeout(300)   # Next
-        await answer(a, False); await a.wait_for_timeout(700)
+        await a.click('#testmode .qactions .btn-primary'); await a.wait_for_timeout(300)   # Next question
         await a.click('#testmode .tm-qn >> nth=0'); await a.wait_for_timeout(300)          # back to Q1
         s = await state(a); assert s['prompt'] == p1, 'numbers changed going back'
-        kept = await a.evaluate("() => { const T = HW.TestMode._state(); return JSON.stringify(T.widget.value()) === JSON.stringify(T.rec.ans[T.order[0]].r); }")
+        kept = await a.evaluate("() => { const T = HW.TestMode._state(); return T.widgets.every(sl => JSON.stringify(sl.w.value()) === JSON.stringify(T.rec.ans[sl.key].r)); }")
         assert kept, 'answer not restored'
         assert s['ans'] == 2, s
         await a.screenshot(path=SHOTS + 'tm_s_writing.png')
         # ---- Ben starts, then leaves the window ----
         await bn.click('.tm-start'); await wait_view(bn, 'test')
-        await answer(bn, True); await bn.wait_for_timeout(1500)
+        await answer(bn, True, 0); await bn.wait_for_timeout(1500)
         await bn.evaluate("HW.TestMode._leave('clicked out of the test window')")
         s = await wait_view(bn, 'end'); assert s['st'] == 'left', s
         await bn.screenshot(path=SHOTS + 'tm_s_locked.png')

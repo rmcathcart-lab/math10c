@@ -19,7 +19,7 @@
   function skey() { var s = session(); return TC.skey(s.klass, s.name); }
   function recStoreKey(sid) { return 'hw:test:' + skey() + ':' + sid; }
   function loadRec(sid) { try { return JSON.parse(ls(recStoreKey(sid)) || 'null'); } catch (e) { return null; } }
-  function saveRec() { if (T && T.rec) ls(recStoreKey(T.sid), JSON.stringify(T.rec)); }
+  function saveRec() { if (T && T.rec && !T.preview) ls(recStoreKey(T.sid), JSON.stringify(T.rec)); }
   function deviceId() { return ls('hw:device') || ''; }
   function fsEl() { return document.fullscreenElement || document.webkitFullscreenElement || null; }
   function goFull() {
@@ -52,9 +52,9 @@
     try { fetch(URL, { method: 'POST', mode: 'no-cors', credentials: 'omit', keepalive: txt.length < 60000, headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: txt }).catch(function () { if (T && T.sid === sid) T.dirty = true; }); }
     catch (e) { if (T && T.sid === sid) T.dirty = true; }
   }
-  function post(final, beacon) { if (!T || !T.rec) return; T.lastPost = Date.now(); T.dirty = false; postRec(T.sid, T.rec, T.order, T.cur, final, beacon); }
+  function post(final, beacon) { if (!T || !T.rec || T.preview) return; T.lastPost = Date.now(); T.dirty = false; postRec(T.sid, T.rec, T.order, T.cur, final, beacon); }
   function check(full) {
-    var s = session(); if (!URL || !s || !s.token || checking) return;
+    var s = session(); if (!URL || !s || !s.token || checking || (T && T.preview)) return;
     checking = true; lastCheck = Date.now();
     L.get('tcheck', { 'class': s.klass, name: s.name, token: s.token, full: full ? 1 : null, pend: pending().join(',') || null }, 12000).then(function (d) { checking = false; onCheck(d, full); }, function () { checking = false; });
   }
@@ -120,7 +120,7 @@
     drawPending();
   }
   function setupItems() {
-    var k = skey();
+    var k = T.skey || skey();
     T.items = TC.items(T.def); T.byKey = {}; T.items.forEach(function (x) { T.byKey[x.key] = x; });
     T.order = TC.order(T.def, k, T.sid).filter(function (key) { return T.byKey[key]; });
     T.order.forEach(function (key) { var x = T.byKey[key]; try { x.inst = TC.instance(k, T.sid, x.lesson, x.it); } catch (e) { x.err = e; } });
@@ -143,7 +143,7 @@
     stopTimer();
     T = null;
   }
-  function nameBadge() { var s = session(); return '<div class="tm-name" title="Signed in as">' + esc(s.name) + '</div>'; }
+  function nameBadge() { var s = T && T.preview ? { name: 'Preview student' } : session(); return '<div class="tm-name" title="Signed in as">' + esc(s ? s.name : '') + '</div>'; }
   function splash(title, bodyHtml, actions) {
     var o = overlay(); o.innerHTML = '';
     var c = el('div', 'tm-splash');
@@ -190,6 +190,7 @@
   }
   var END_WHY = { submitted: 'Submitted', time: 'Time ran out — submitted', ended: 'Ended by your teacher — submitted', forced: 'Submitted by your teacher', left: 'Locked — you left the test' };
   function drawEnd() {
+    if (T.preview) return drawPreviewEnd();
     var r = T.rec, n = 0; T.order.forEach(function (k) { if (r.ans[k] && r.ans[k].t) n++; });
     var left = r.st === 'left';
     var body = left
@@ -232,75 +233,113 @@
     right.appendChild(button('btn-primary tm-submit', 'Submit', confirmSubmit));
     head.appendChild(right); o.appendChild(head);
     o.appendChild(el('div', 'tm-warn', '⚠ Stay on this page. <b>Leaving this window, switching tabs or leaving full screen submits your ' + (T.def.kind === 'exit' ? 'exit slip' : 'test') + ' as it is.</b>'));
+    if (T.preview) o.appendChild(previewBar());
     var body = el('div', 'tm-body'), nav = el('nav', 'tm-nav'), main = el('div', 'tm-main');
     nav.setAttribute('aria-label', 'Questions');
     body.appendChild(nav); body.appendChild(main); o.appendChild(body);
     T.els = { timer: timer, nav: nav, main: main };
     if (!T.def.calc && HW.Calc && HW.Calc.get) { try { HW.Calc.get().hide(); } catch (e) {} }
-    T.cur = Math.min(T.cur || 0, T.order.length - 1);
-    showQ(T.cur);
+    T.pages = TC.pages(T.def, T.order); T.labels = {}; T.pages.forEach(function (pg, pi) { pg.parts.forEach(function (q) { T.labels[q.key] = q.label; q.page = pi; }); });
+    T.cur = Math.max(0, Math.min(T.cur || 0, T.pages.length - 1));
+    showPage(T.cur);
     if (T.timer) clearInterval(T.timer);
     T.tick = performance.now();
     T.timer = setInterval(tick, 500);
     drawTimer();
   }
+  function answered(k) { return !!(T.rec.ans[k] && T.rec.ans[k].t); }
+  /* question list like the practice: the number, then a pill for each part */
   function drawNav() {
     var nav = T.els && T.els.nav; if (!nav) return; nav.innerHTML = '';
     nav.appendChild(el('div', 'tm-nav-title', 'Questions'));
-    var grid = el('div', 'tm-nav-grid');
-    T.order.forEach(function (k, i) {
-      var a = T.rec.ans[k], b = el('button', 'tm-qn' + (i === T.cur ? ' on' : '') + (a && a.t ? ' done' : '') + (T.rec.flags && T.rec.flags[k] ? ' flag' : ''), esc(TC.label(T.def, T.byKey[k], i).replace(/[()\s]/g, '')));
-      b.type = 'button'; b.title = 'Question ' + TC.label(T.def, T.byKey[k], i) + (a && a.t ? ' (answered)' : ' (not answered yet)');
-      b.addEventListener('click', function () { capture(true); showQ(i); });
-      grid.appendChild(b);
+    var list = el('div', 'tm-nav-list');
+    T.pages.forEach(function (pg, pi) {
+      var row = el('div', 'tm-nrow' + (pi === T.cur ? ' on' : '') + (T.rec.flags && T.rec.flags[pg.parts[0].key] ? ' flag' : ''));
+      var num = el('button', 'tm-qn' + (pg.parts.every(function (q) { return answered(q.key); }) ? ' done' : pg.parts.some(function (q) { return answered(q.key); }) ? ' some' : ''), esc(pg.num));
+      num.type = 'button'; num.title = 'Question ' + pg.num;
+      num.addEventListener('click', function () { capture(true); showPage(pi); });
+      row.appendChild(num);
+      if (pg.parts.length > 1) {
+        var pills = el('span', 'tm-pills');
+        pg.parts.forEach(function (q) {
+          var b = el('button', 'tm-pill' + (answered(q.key) ? ' done' : ''), esc(q.sub)); b.type = 'button';
+          b.title = 'Question ' + q.label + (answered(q.key) ? ' (answered)' : ' (not answered yet)');
+          b.addEventListener('click', function () { capture(true); showPage(pi, q.key); });
+          pills.appendChild(b);
+        });
+        row.appendChild(pills);
+      }
+      list.appendChild(row);
     });
-    nav.appendChild(grid);
-    var n = T.order.filter(function (k) { return T.rec.ans[k] && T.rec.ans[k].t; }).length;
-    nav.appendChild(el('div', 'tm-nav-count', '<b>' + n + '</b> of ' + T.order.length + ' answered'));
+    nav.appendChild(list);
+    var n = T.order.filter(answered).length;
+    nav.appendChild(el('div', 'tm-nav-count', '<b>' + n + '</b> of ' + T.order.length + ' parts answered'));
   }
-  function showQ(i) {
-    T.cur = i; var k = T.order[i], x = T.byKey[k], main = T.els.main; main.innerHTML = '';
-    var card = el('article', 'qcard tm-card');
+  /* one page = one question, with all its parts */
+  function showPage(pi, focusKey) {
+    T.cur = pi; var pg = T.pages[pi], main = T.els.main; main.innerHTML = '';
+    var card = el('article', 'qcard tm-card'), first = T.byKey[pg.parts[0].key];
     var h = el('div', 'qhead');
-    h.appendChild(el('h2', '', 'Question ' + esc(TC.label(T.def, x, i)) + ' <span class="tm-of">(' + (i + 1) + ' of ' + T.order.length + ')</span>'));
-    if (T.def.levels !== false) h.appendChild(el('span', 'tm-chips', '<span class="tm-out">' + esc(x.it.outcome) + '</span><span class="lvl lvl-' + x.it.level + '">' + HW.LEVEL_NAMES[x.it.level] + '</span>'));
+    h.appendChild(el('h2', '', 'Question ' + esc(pg.num) + ' <span class="tm-of">(' + (pi + 1) + ' of ' + T.pages.length + ')</span>'));
     card.appendChild(h);
-    if (x.err || !x.inst) { card.appendChild(el('div', 'notice warn', 'This question couldn’t be shown. Tell your teacher and go on to the next one.')); main.appendChild(card); drawNav(); return; }
-    var inst = x.inst;
-    if (inst.stem) card.appendChild(el('div', 'qstem', HW.tex(inst.stem)));
-    card.appendChild(el('div', 'qprompt', HW.tex(inst.prompt)));
-    var fb = el('div', 'feedback'), w;
-    try { w = HW.App.makeWidget(inst, fb); } catch (e) { w = null; }
-    if (!w) { card.appendChild(el('div', 'notice warn', 'This question couldn’t be shown.')); main.appendChild(card); drawNav(); return; }
-    card.appendChild(el('div', 'qinput')).appendChild(w.node);
-    // the keypads' "Check" key moves on to the next question in a test
-    w.node.querySelectorAll('.kpk').forEach(function (b) { if (/^Check/.test(b.textContent)) b.textContent = 'Next ↵'; });
-    if (w.onEnter) w.onEnter(function () { capture(true); if (T.cur < T.order.length - 1) showQ(T.cur + 1); });
-    T.widget = w; T.widgetKey = k;
+    if (first.inst && first.inst.stem) card.appendChild(el('div', 'qstem', HW.tex(first.inst.stem)));
+    T.widgets = [];
+    var blocks = [];
+    pg.parts.forEach(function (q, qi) {
+      var x = T.byKey[q.key], part = el('section', 'tm-part' + (pg.parts.length > 1 ? ' multi' : ''));
+      part.dataset.key = q.key;
+      var ph = el('div', 'tm-part-head');
+      if (q.sub) ph.appendChild(el('span', 'tm-sub', '(' + esc(q.sub) + ')'));
+      if (T.def.levels !== false) ph.appendChild(el('span', 'tm-chips', '<span class="tm-out">' + esc(x.it.outcome) + '</span><span class="lvl lvl-' + x.it.level + '">' + HW.LEVEL_NAMES[x.it.level] + '</span>'));
+      part.appendChild(ph);
+      if (x.err || !x.inst) { part.appendChild(el('div', 'notice warn', 'This part couldn’t be shown. Tell your teacher and go on.')); card.appendChild(part); return; }
+      var inst = x.inst;
+      if (qi > 0 && inst.stem && inst.stem !== first.inst.stem) part.appendChild(el('div', 'qstem', HW.tex(inst.stem)));
+      part.appendChild(el('div', 'qprompt', HW.tex(inst.prompt)));
+      var w = null; try { w = HW.App.makeWidget(inst, el('div', 'feedback')); } catch (e) { w = null; }
+      if (!w) { part.appendChild(el('div', 'notice warn', 'This part couldn’t be shown.')); card.appendChild(part); return; }
+      part.appendChild(el('div', 'qinput')).appendChild(w.node);
+      // the keypads' "Check" key moves on in a test
+      w.node.querySelectorAll('.kpk').forEach(function (b) { if (/^Check/.test(b.textContent)) b.textContent = 'Next ↵'; });
+      var slot = { key: q.key, w: w, lastVal: null };
+      if (w.onEnter) w.onEnter(function () { capture(true); var nxt = T.widgets[T.widgets.indexOf(slot) + 1]; if (nxt) { try { nxt.w.focus(); nxt.w.node.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {} } else if (T.cur < T.pages.length - 1) showPage(T.cur + 1); });
+      if (T.preview) part.appendChild(previewAnswer(inst));
+      T.widgets.push(slot); blocks.push(part); card.appendChild(part);
+    });
+    var k0 = pg.parts[0].key, flagged = T.rec.flags && T.rec.flags[k0];
     var acts = el('div', 'qactions tm-acts-q');
-    var prev = button('btn-ghost', '← Previous', function () { capture(true); showQ(T.cur - 1); }); prev.disabled = i === 0;
-    var flag = button('btn-ghost tm-flag' + (T.rec.flags && T.rec.flags[k] ? ' on' : ''), (T.rec.flags && T.rec.flags[k] ? '⚑ Flagged' : '⚐ Flag to come back to'), function () { T.rec.flags = T.rec.flags || {}; T.rec.flags[k] = !T.rec.flags[k]; saveRec(); showQ(T.cur); });
-    var next = i < T.order.length - 1 ? button('btn-primary', 'Next →', function () { capture(true); showQ(T.cur + 1); }) : button('btn-primary', 'Review and submit', function () { capture(true); confirmSubmit(); });
+    var prev = button('btn-ghost', '← Previous', function () { capture(true); showPage(T.cur - 1); }); prev.disabled = pi === 0;
+    var flag = button('btn-ghost tm-flag' + (flagged ? ' on' : ''), flagged ? '⚑ Flagged' : '⚐ Flag to come back to', function () { capture(true); T.rec.flags = T.rec.flags || {}; T.rec.flags[k0] = !T.rec.flags[k0]; saveRec(); showPage(T.cur); });
+    var next = pi < T.pages.length - 1 ? button('btn-primary', 'Next question →', function () { capture(true); showPage(T.cur + 1); }) : button('btn-primary', 'Review and submit', function () { capture(true); confirmSubmit(); });
     acts.appendChild(prev); acts.appendChild(flag); acts.appendChild(el('span', 'spacer')); acts.appendChild(next);
     card.appendChild(acts);
     main.appendChild(card);
-    var saved = T.rec.ans[k]; if (saved && saved.r != null && w.set) { try { w.set(saved.r); } catch (e) {} }
-    try { T.lastVal = JSON.stringify(w.peek ? w.peek() : w.value()); } catch (e) { T.lastVal = null; }
-    if (saved && !w.set) T.lastVal = '__keep__'; // can't show the saved answer again: keep it unless the student types a new one
+    T.widgets.forEach(function (sl) {
+      var saved = T.rec.ans[sl.key];
+      if (saved && saved.r != null && sl.w.set) { try { sl.w.set(saved.r); } catch (e) {} }
+      try { sl.lastVal = JSON.stringify(sl.w.peek ? sl.w.peek() : sl.w.value()); } catch (e) { sl.lastVal = null; }
+      if (saved && !sl.w.set) sl.lastVal = '__keep__'; // can't show the saved answer again: keep it unless the student enters a new one
+    });
+    HW.texIn && HW.texIn(card);
     drawNav();
-    try { main.scrollTop = 0; } catch (e) {}
+    var target = focusKey && card.querySelector('.tm-part[data-key="' + focusKey + '"]');
+    try { if (target) target.scrollIntoView({ block: 'start' }); else T.ui.scrollTop = 0; } catch (e) {}
   }
-  /* read the answer box into the record: every half second (peek: don't disturb what is being typed) and, committed,
-     before moving to another question or finishing */
+  /* read the answer boxes on the page into the record: every half second (peek: don't disturb what is being typed) and,
+     committed, before moving to another question or finishing */
   function capture(commit) {
-    if (!T || !T.widget || !T.rec || T.rec.st !== 'writing') return;
-    var w = T.widget, k = T.widgetKey, v; try { v = !commit && w.peek ? w.peek() : w.value(); } catch (e) { return; }
-    if (T.lastVal === '__keep__' && TC.blank(v)) return;
-    var js = JSON.stringify(v); if (js === T.lastVal) return;
-    T.lastVal = js;
-    var x = T.byKey[k], txt = '';
-    if (!TC.blank(v)) { try { txt = HW.App.answerText(x.inst, v) || ''; } catch (e) { txt = ''; } if (!txt) txt = '…'; }
-    if (TC.blank(v)) delete T.rec.ans[k]; else T.rec.ans[k] = { r: v, t: String(txt).slice(0, 300), h: TC.qhash(x.inst) };
+    if (!T || !T.widgets || !T.rec || T.rec.st !== 'writing') return;
+    var changed = false;
+    T.widgets.forEach(function (sl) {
+      var w = sl.w, k = sl.key, v; try { v = !commit && w.peek ? w.peek() : w.value(); } catch (e) { return; }
+      if (sl.lastVal === '__keep__' && TC.blank(v)) return;
+      var js = JSON.stringify(v); if (js === sl.lastVal) return;
+      sl.lastVal = js; changed = true;
+      var x = T.byKey[k], txt = '';
+      if (!TC.blank(v)) { try { txt = HW.App.answerText(x.inst, v) || ''; } catch (e) { txt = ''; } if (!txt) txt = '…'; }
+      if (TC.blank(v)) delete T.rec.ans[k]; else T.rec.ans[k] = { r: v, t: String(txt).slice(0, 300), h: TC.qhash(x.inst) };
+    });
+    if (!changed) return;
     saveRec(); T.dirty = true; T.changedAt = Date.now();
     drawNav();
   }
@@ -323,7 +362,7 @@
   function confirmSubmit() {
     capture(true);
     var missing = [], flagged = [];
-    T.order.forEach(function (k, i) { if (!(T.rec.ans[k] && T.rec.ans[k].t)) missing.push(TC.label(T.def, T.byKey[k], i)); if (T.rec.flags && T.rec.flags[k]) flagged.push(TC.label(T.def, T.byKey[k], i)); });
+    T.pages.forEach(function (pg) { pg.parts.forEach(function (q) { if (!answered(q.key)) missing.push(q.label); }); if (T.rec.flags && T.rec.flags[pg.parts[0].key]) flagged.push(pg.num); });
     var m = el('div', 'tm-modal'), box = el('div', 'tm-modal-box');
     box.innerHTML = '<h2>Submit your ' + (T.def.kind === 'exit' ? 'exit slip' : 'test') + '?</h2>' +
       (missing.length ? '<p class="tm-miss">Not answered: <b>' + missing.join(', ') + '</b></p>' : '<p>Every question has an answer.</p>') +
@@ -338,17 +377,17 @@
     capture(true);
     T.rec.st = st; T.rec.why = why || ''; T.rec.done = Date.now(); T.rec.rev = (T.rec.rev || 0) + 1; T.rec.order = T.order; T.endingSoon = false;
     if (st === 'left') T.rec.leaves = (T.rec.leaves || 0) + 1;
-    saveRec(); addPending(T.sid);
+    saveRec(); if (!T.preview) addPending(T.sid);
     stopTimer();
     try { if (navigator.keyboard && navigator.keyboard.unlock) navigator.keyboard.unlock(); } catch (e) {}
     post(true, beacon);
-    T.widget = null;
+    T.widgets = null;
     try { if (HW.Calc && HW.Calc.get) HW.Calc.get().hide(); } catch (e) {}
     drawEnd();
   }
 
   /* ---------------- leaving = submit and lock ---------------- */
-  function writing() { return T && T.rec && T.rec.st === 'writing' && T.ui && T.ui.dataset.view === 'test'; }
+  function writing() { return T && !T.preview && T.rec && T.rec.st === 'writing' && T.ui && T.ui.dataset.view === 'test'; }
   function left(why, beacon) {
     if (!writing()) return;
     if (Date.now() < guardUntil) { setTimeout(recheckLeft, guardUntil - Date.now() + 60); return; }
@@ -413,24 +452,72 @@
         '<div class="tm-res-big">' + (r.marks ? sum.score + ' / ' + sum.total : 'Not marked yet') + '</div>' +
         (r.marks ? '<div class="tm-res-levels">' + sum.outcomes.map(function (o) { var lv = sum.levels[o]; return '<span class="tm-out">' + esc(o) + '</span> ' + (lv ? '<span class="lvl lvl-' + lv + '">' + HW.LEVEL_NAMES[lv] + '</span>' : '<span class="muted">no level yet</span>'); }).join(' &nbsp; ') + '</div>' : '');
       view.appendChild(head);
-      order.forEach(function (key, n) {
-        var x = items[idx[key]]; if (!x) return;
-        var inst; try { inst = TC.instance(k, r.id, x.lesson, x.it); } catch (e) { return; }
-        var m = (r.marks || '').charAt(x.pos), a = r.answers[key], ok = TC.right(m);
-        var card = el('article', 'qcard tm-res-q ' + (m ? (ok ? 'ok' : 'bad') : ''));
-        card.appendChild(el('div', 'qhead', '<h2>Question ' + esc(TC.label(r.def, x, n)) + '</h2><span class="tm-chips"><span class="tm-out">' + esc(x.it.outcome) + '</span><span class="lvl lvl-' + x.it.level + '">' + HW.LEVEL_NAMES[x.it.level] + '</span></span>' + (m ? '<span class="tm-mark">' + (ok ? '✓' : '✗') + '</span>' : '')));
-        if (inst.stem) card.appendChild(el('div', 'qstem', HW.tex(inst.stem)));
-        card.appendChild(el('div', 'qprompt', HW.tex(inst.prompt)));
-        var ah = '—'; if (a && a.r != null) { try { ah = HW.App.answerHtml(inst, a.r); } catch (e) { ah = esc(a.t || ''); } }
-        card.appendChild(el('div', 'answered', '<div class="ans-label">Your answer</div><div class="ans-val">' + ah + '</div>'));
-        if (!ok) card.appendChild(el('div', 'feedback shown', '<div class="fb-title">Correct answer</div><div class="fb-ans">' + HW.tex(inst.answer) + '</div>'));
-        card.appendChild(HW.App.solutionBlock(inst, false));
+      TC.pages(r.def, order).forEach(function (pg) {
+        var card = el('article', 'qcard tm-res-q'), nRight = 0, nMarked = 0, first = true;
+        var head2 = el('div', 'qhead', '<h2>Question ' + esc(pg.num) + '</h2>'); card.appendChild(head2);
+        pg.parts.forEach(function (q) {
+          var x = items[idx[q.key]]; if (!x) return;
+          var inst; try { inst = TC.instance(k, r.id, x.lesson, x.it); } catch (e) { return; }
+          var m = (r.marks || '').charAt(x.pos), a = r.answers[q.key], ok = TC.right(m);
+          if (m) { nMarked++; if (ok) nRight++; }
+          if (first && inst.stem) card.appendChild(el('div', 'qstem', HW.tex(inst.stem)));
+          first = false;
+          var part = el('section', 'tm-part' + (pg.parts.length > 1 ? ' multi' : '') + (m ? (ok ? ' ok' : ' bad') : ''));
+          part.appendChild(el('div', 'tm-part-head', (q.sub ? '<span class="tm-sub">(' + esc(q.sub) + ')</span>' : '') + '<span class="tm-chips"><span class="tm-out">' + esc(x.it.outcome) + '</span><span class="lvl lvl-' + x.it.level + '">' + HW.LEVEL_NAMES[x.it.level] + '</span></span>' + (m ? '<span class="tm-mark">' + (ok ? '✓' : '✗') + '</span>' : '')));
+          part.appendChild(el('div', 'qprompt', HW.tex(inst.prompt)));
+          var ah = '—'; if (a && a.r != null) { try { ah = HW.App.answerHtml(inst, a.r); } catch (e) { ah = esc(a.t || ''); } }
+          part.appendChild(el('div', 'answered', '<div class="ans-label">Your answer</div><div class="ans-val">' + ah + '</div>'));
+          if (!ok) part.appendChild(el('div', 'feedback shown', '<div class="fb-title">Correct answer</div><div class="fb-ans">' + HW.tex(inst.answer) + '</div>'));
+          part.appendChild(HW.App.solutionBlock(inst, false));
+          card.appendChild(part);
+        });
+        if (nMarked) { card.classList.add(nRight === nMarked ? 'ok' : nRight ? 'mixed' : 'bad'); head2.appendChild(el('span', 'tm-res-qscore', nRight + ' / ' + nMarked)); }
         view.appendChild(card);
       });
       view.appendChild(el('p', '', '<a class="btn btn-ghost" href="#/">← Back to all lessons</a>'));
       HW.texIn && HW.texIn(view);
     });
   };
+
+  /* ---------------- preview (the teacher's dashboard opens #/preview; nothing is saved or sent) ---------------- */
+  function previewAnswer(inst) {
+    var d = el('div', 'tm-pv-ans' + (T.showAns ? '' : ' hidden'), '<div class="dl">Answer (preview only)</div>' + HW.tex(inst.answer));
+    return d;
+  }
+  function previewBar() {
+    var bar = el('div', 'tm-preview-bar', '<b>Preview</b><span>This is what students see (preview student, version ' + (T.pv + 1) + '). Nothing is saved or sent, and leaving the window doesn’t lock it.</span>');
+    bar.appendChild(button('btn-ghost' + (T.showAns ? ' on' : ''), T.showAns ? 'Hide answers' : 'Show answers', function () { capture(true); T.showAns = !T.showAns; drawTest(); }));
+    bar.appendChild(button('btn-ghost', 'New numbers', function () { startPreview(T.pv + 1); }));
+    bar.appendChild(button('btn-ghost', 'Close preview', function () { closeOverlay(); try { root.close(); } catch (e) {} location.hash = '#/'; }));
+    return bar;
+  }
+  function drawPreviewEnd() {
+    var rows = '';
+    T.pages.forEach(function (pg) { pg.parts.forEach(function (q) { var x = T.byKey[q.key], a = T.rec.ans[q.key], g = x.inst ? TC.grade(x.inst, a ? a.r : null) : { m: 'b' };
+      rows += '<tr><td><b>' + esc(q.label) + '</b></td><td>' + esc(a && a.t ? a.t : '—') + '</td><td class="tm-pv-mark">' + esc(TC.MARK_NAMES[g.m]) + '</td><td>' + (x.inst ? HW.tex(x.inst.answer) : '') + '</td></tr>'; }); });
+    splash('Preview finished', '<p>How the checker would mark these answers:</p><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Q</th><th>Answer given</th><th>Mark</th><th>Correct answer</th></tr></thead><tbody>' + rows + '</tbody></table></div>',
+      [button('btn-primary', 'Try again with new numbers', function () { startPreview(T.pv + 1); }), button('btn-ghost', 'Close preview', function () { closeOverlay(); try { root.close(); } catch (e) {} location.hash = '#/'; })]);
+    T.ui.dataset.view = 'end';
+  }
+  function startPreview(n) {
+    var P = null; try { P = JSON.parse(ls('hw:tmpreview') || 'null'); } catch (e) {}
+    if (!P || !P.def) return;
+    if (T) closeOverlay();
+    T = { preview: true, pv: n || 0, sid: 'preview', skey: 'preview|student ' + (n || 0), def: P.def, live: { extra: 0, unlock: 0, submit: 0 }, cur: 0, widgets: [], showAns: false,
+      rec: { st: 'writing', ans: {}, used: 0, leaves: 0, started: Date.now(), unlockN: 0, rev: 0 } };
+    setupItems();
+    var start = button('btn-primary tm-start', 'Start (preview) →', function () { goFull().then(function (ok) { T.rec.fs = ok; drawTest(); }); });
+    splash('Preview of what students see when you launch', rulesHtml(), [start]);
+    T.ui.dataset.view = 'pending';
+  }
+  TM.preview = function () { startPreview(0); };
+  function maybePreview() {
+    if (!/^#\/?preview/.test(location.hash)) return;
+    var t0 = Date.now();
+    (function wait() { if (HW.App && ((root.customElements && root.customElements.get('math-field')) || Date.now() - t0 > 2700 || root.HW_NO_MATHLIVE)) startPreview(0); else setTimeout(wait, 100); })();
+  }
+  root.addEventListener('hashchange', maybePreview);
+  setTimeout(maybePreview, 0);
 
   /* test hooks (Playwright) */
   TM._state = function () { return T; };
