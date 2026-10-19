@@ -65,7 +65,7 @@
       p.appendChild(el('p', 'small muted', 'Your paper unit tests, with number generators so every student gets their own version. Start from one, then trim or add questions before saving.'));
       ready.forEach(function (l) {
         var row = el('div', 'tt-ready', '<b>' + esc(l.title) + '</b> <span class="muted small">' + l.items.length + ' questions · ' + esc(l.outcome || '') + '</span>');
-        row.appendChild(button('btn-small', 'Use as a test', function () { openEditor(null, { title: l.title, kind: 'test', minutes: 75, calc: true, levels: true, items: l.items.map(function (it) { return { l: l.id, i: it.id }; }) }); }));
+        row.appendChild(button('btn-small', 'Use as a test', function () { openEditor(null, { title: l.title, kind: 'test', minutes: 75, calc: true, levels: true, items: l.items.filter(function (it) { return !TC.NO_TEST[inputType(l, it)]; }).map(function (it) { return { l: l.id, i: it.id }; }) }); }));
         p.appendChild(row);
       });
       body.appendChild(p);
@@ -200,7 +200,8 @@
     }).catch(function () {});
   }
   setInterval(pollLive, 5000);
-  var gradeCache = {};
+  var gradeCache = {}, hashCache = {};
+  function qhashOf(name, sid, x) { var k = name + '|' + sid + '|' + x.key; if (!(k in hashCache)) { try { hashCache[k] = TC.qhash(TC.instance(TC.skey(cls(), name), sid, x.lesson, x.it)); } catch (e) { hashCache[k] = ''; } } return hashCache[k]; }
   function gradeOne(name, sid, x, ans) {
     var k = name + '|' + sid + '|' + x.key + '|' + JSON.stringify(ans && ans.r); if (k in gradeCache) return gradeCache[k];
     var m = 'b'; if (ans && ans.r != null) { try { var inst = TC.instance(TC.skey(cls(), name), sid, x.lesson, x.it); m = TC.grade(inst, ans.r).m; } catch (e) { m = 'f'; } }
@@ -247,8 +248,14 @@
       tr.innerHTML = '<td><b>' + esc(x.name) + '</b></td><td><span class="dot ' + x.s.k + '"></span>' + esc(x.s.t) + (rec && rec.st === 'writing' && !rec.fs ? ' <span class="tag">not full screen</span>' : '') + (rec && rec.leaves ? ' <span class="warnnum" title="Times locked for leaving">' + rec.leaves + '</span>' : '') + '</td>' +
         '<td>' + (rec ? (rec.n || 0) + ' / ' + items.length : '—') + '</td><td class="tt-dots">' + (rec ? dots : '') + '</td><td>' + (rec && rec.st === 'writing' ? 'Q' + ((rec.cur || 0) + 1) : '—') + '</td><td>' + left + '</td><td>' + (rec ? ago(rec.at) : '—') + '</td><td class="acts"></td>';
       var a = tr.lastChild;
-      if (rec && rec.st === 'left') a.appendChild(button('btn-small btn-primary', 'Unlock', function () { ctl('unlock', x.name, 0); }));
-      if (rec && rec.st !== 'writing' && rec.st !== 'left') a.appendChild(button('btn-small btn-ghost', 'Reopen', function () { if (confirm('Let ' + x.name + ' reopen their test and keep working?')) ctl('unlock', x.name, 0); }));
+      function reopen(msg) {
+        if (msg && !confirm(msg)) return;
+        var p0 = live.ending ? (confirm('“End for everyone” is on, so ' + x.name + ' would be ended again right away. Turn it off?') ? ctl('resume') : null) : null;
+        Promise.resolve(p0).then(function () { ctl('unlock', x.name, rec.st === 'time' ? 5 : 0); });
+      }
+      if (rec && rec.st === 'left') a.appendChild(button('btn-small btn-primary', 'Unlock', function () { reopen(''); }));
+      if (rec && rec.st !== 'writing' && rec.st !== 'left') a.appendChild(button('btn-small btn-ghost', rec.st === 'time' ? 'Reopen +5 min' : 'Reopen', function () { reopen('Let ' + x.name + ' reopen their test and keep working?' + (rec.st === 'time' ? ' They get 5 more minutes.' : '')); }));
+      if (rec && rec.st === 'writing' && x.s.k === 'quiet') a.appendChild(button('btn-small btn-primary', 'Move to another device', function () { reopen(x.name + '’s device has gone quiet. Let them carry on from another device (same answers and numbers)? Their first device stops.'); }));
       if (rec && def.minutes) a.appendChild(button('btn-small btn-ghost', '+5 min', function () { ctl('time', x.name, 5); }));
       if (rec && rec.st === 'writing') a.appendChild(button('btn-small btn-ghost', 'Submit now', function () { if (confirm('Submit ' + x.name + '’s test now?')) ctl('submit', x.name); }));
       tb.appendChild(tr);
@@ -271,10 +278,16 @@
   function computeMarks() {
     var R = TS.res, def = R.session.def, items = TC.items(def);
     R.items = items;
+    var byPos = {}; items.forEach(function (x) { byPos[x.pos] = x; });
     R.rows.forEach(function (r) {
-      var saved = r.marks || '', auto = items.map(function (x) { return gradeOne(r.name, R.session.id, x, r.answers[x.key]); }).join('');
-      r.auto = auto;
-      r.final = items.map(function (x, i) { var s = saved.charAt(i); return s === 'C' || s === 'W' ? s : auto.charAt(i); }).join('');
+      var saved = r.marks || '', n = (def.items || []).length, auto = '', fin = '';
+      r.changed = {};
+      for (var pos = 0; pos < n; pos++) {
+        var x = byPos[pos], a = x ? r.answers[x.key] : null, m = x ? gradeOne(r.name, R.session.id, x, a) : 'b';
+        if (x && a && a.h && a.h !== qhashOf(r.name, R.session.id, x)) r.changed[pos] = 1;
+        auto += m; var sv = saved.charAt(pos); fin += sv === 'C' || sv === 'W' ? sv : m;
+      }
+      r.auto = auto; r.final = fin;
       r.sum = TC.summary(def, r.final);
       r.dirty = r.final !== saved;
     });
@@ -286,11 +299,11 @@
     head.querySelector('.tt-back').addEventListener('click', function () { TS.view = 'home'; TS.res = null; load(true).then(rerender); });
     var acts = el('div', 'tt-acts');
     var dirty = R.rows.some(function (r) { return r.dirty; });
-    acts.appendChild(button('btn-small', dirty ? 'Save marks' : 'Marks saved', function () { saveMarks().then(rerender); }));
+    acts.appendChild(button('btn-small', dirty ? 'Save marks' : 'Marks saved', function () { saveMarks().then(rerender, function () {}); }));
     acts.appendChild(button('btn-small btn-primary', s.released ? 'Hide results from students' : 'Release results to students', function () {
       var on = !s.released;
       if (on && !confirm('Release the results? Each student will see their score, their answers, the correct answers and worked solutions on their home page.')) return;
-      saveMarks().then(function () { return api('release', { session: s.id, on: on ? 1 : 0 }); }).then(function () { s.released = on ? Date.now() : 0; rerender(); });
+      saveMarks().then(function () { return api('release', { session: s.id, on: on ? 1 : 0 }); }).then(function (d) { if (d && d.ok) s.released = on ? Date.now() : 0; else alert('Couldn’t change the release.'); rerender(); }, function () {});
     }));
     acts.appendChild(button('btn-small btn-ghost', 'Download CSV', function () { csv(); }));
     head.appendChild(acts); body.appendChild(head);
@@ -312,9 +325,9 @@
       outs.forEach(function (o) { var lv = r.sum.levels[o]; html += '<td>' + (lv ? '<span class="lvl lvl-' + lv + '">' + LVN[lv] + '</span>' : '<span class="muted small">—</span>') + '</td>'; });
       tr.innerHTML = html;
       items.forEach(function (x, i) {
-        var m = r.final.charAt(i); if (TC.right(m)) right[i]++;
-        var td = el('td', 'tt-m m-' + m + (m === 'C' || m === 'W' ? ' over' : ''), { c: '✓', C: '✓', w: '✗', W: '✗', f: '~', b: '–' }[m] || '?');
-        td.title = TC.MARK_NAMES[m] + ' — click to see the answer and change the mark';
+        var m = r.final.charAt(x.pos); if (TC.right(m)) right[i]++;
+        var td = el('td', 'tt-m m-' + m + (m === 'C' || m === 'W' ? ' over' : '') + (r.changed[x.pos] ? ' chg' : ''), ({ c: '✓', C: '✓', w: '✗', W: '✗', f: '~', b: '–' }[m] || '?') + (r.changed[x.pos] ? '!' : ''));
+        td.title = TC.MARK_NAMES[m] + (r.changed[x.pos] ? ' — this question has changed since the student answered it: check it' : '') + ' — click to see the answer and change the mark';
         td.addEventListener('click', function () { detail(r, i); });
         tr.appendChild(td);
       });
@@ -329,18 +342,18 @@
   function detail(r, i) {
     var R = TS.res, x = R.items[i], box = document.getElementById('tt-detail'); if (!box) return;
     var inst; try { inst = TC.instance(TC.skey(R.session['class'], r.name), R.session.id, x.lesson, x.it); } catch (e) { inst = null; }
-    var a = r.answers[x.key], m = r.final.charAt(i);
+    var a = r.answers[x.key], p = x.pos, m = r.final.charAt(p);
     box.classList.remove('hidden'); box.innerHTML = '';
     box.appendChild(el('h3', '', esc(r.name) + ' · Question ' + esc(TC.label(R.session.def, x, i)) + ' <span class="muted small">(' + esc(partLabel(x)) + ' · ' + esc(x.it.outcome) + ' ' + x.it.level + ')</span>'));
     if (inst) { if (inst.stem) box.appendChild(el('div', 'qstem', HW.tex(inst.stem))); box.appendChild(el('div', 'qprompt', HW.tex(inst.prompt))); }
     box.appendChild(el('div', 'tt-ans', '<div class="dlabel">Their answer</div><div>' + (a && a.t ? esc(a.t) : '<span class="muted">blank</span>') + '</div>'));
     if (inst) box.appendChild(el('div', 'tt-ans', '<div class="dlabel">Correct answer</div><div>' + HW.tex(inst.answer) + '</div>'));
-    box.appendChild(el('div', 'tt-ans', '<div class="dlabel">Mark</div><div>' + esc(TC.MARK_NAMES[m] || m) + (r.auto.charAt(i) !== m ? ' <span class="muted small">(checker said: ' + esc(TC.MARK_NAMES[r.auto.charAt(i)]) + ')</span>' : '') + '</div>'));
+    box.appendChild(el('div', 'tt-ans', '<div class="dlabel">Mark</div><div>' + esc(TC.MARK_NAMES[m] || m) + (r.auto.charAt(p) !== m ? ' <span class="muted small">(checker said: ' + esc(TC.MARK_NAMES[r.auto.charAt(p)]) + ')</span>' : '') + (r.changed[p] ? '<div class="notice warn small">This question has been edited since the test, so the version shown may not be exactly what the student saw. Check the mark.</div>' : '') + '</div>'));
     var acts = el('div', 'tt-acts');
-    function setM(v) { r.final = r.final.slice(0, i) + v + r.final.slice(i + 1); r.sum = TC.summary(R.session.def, r.final); r.dirty = true; rerender(); setTimeout(function () { detail(r, i); }, 0); }
+    function setM(v) { r.final = r.final.slice(0, p) + v + r.final.slice(p + 1); r.sum = TC.summary(R.session.def, r.final); r.dirty = true; rerender(); setTimeout(function () { detail(r, i); }, 0); }
     acts.appendChild(button('btn-small', 'Mark right', function () { setM('C'); }));
     acts.appendChild(button('btn-small', 'Mark wrong', function () { setM('W'); }));
-    acts.appendChild(button('btn-small btn-ghost', 'Use the checker’s mark', function () { setM(r.auto.charAt(i)); }));
+    acts.appendChild(button('btn-small btn-ghost', 'Use the checker’s mark', function () { setM(r.auto.charAt(p)); }));
     box.appendChild(acts);
     HW.texIn && HW.texIn(box);
     try { box.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {}
@@ -348,12 +361,20 @@
   function saveMarks() {
     var R = TS.res, data = {};
     R.rows.forEach(function (r) { data[r.name] = { m: r.final, s: r.sum.score, t: r.sum.total }; });
-    return api('setmarks', { session: R.session.id, data: JSON.stringify(data) }).then(function (d) { if (d.ok) R.rows.forEach(function (r) { r.marks = r.final; r.dirty = false; }); else alert('Couldn’t save marks: ' + d.error); });
+    return api('setmarks', { session: R.session.id, data: JSON.stringify(data) }).then(function (d) {
+      if (!d.ok) { alert('Couldn’t save the marks: ' + d.error + '. Nothing was released.'); throw new Error(d.error); }
+      R.rows.forEach(function (r) { r.marks = r.final; r.dirty = false; });
+    });
   }
   function csv() {
     var R = TS.res, items = R.items, outs = []; items.forEach(function (x) { if (outs.indexOf(x.it.outcome) < 0) outs.push(x.it.outcome); });
     var rows = [['Student', 'Status', 'Score', 'Total', 'Percent'].concat(outs.map(function (o) { return o + ' level'; })).concat(items.map(function (x, i) { return 'Q' + (i + 1) + ' ' + partLabel(x) + ' ' + x.it.level; }))];
-    R.rows.forEach(function (r) { rows.push([r.name, r.status, r.sum.score, r.sum.total, Math.round(100 * r.sum.score / Math.max(1, r.sum.total))].concat(outs.map(function (o) { return r.sum.levels[o] || ''; })).concat(items.map(function (x, i) { return { c: 1, C: 1, w: 0, W: 0, f: 0, b: '' }[r.final.charAt(i)]; }))); });
+    var byName = {}; R.rows.forEach(function (r) { byName[r.name] = r; });
+    var names = R.names.slice(); R.rows.forEach(function (r) { if (names.indexOf(r.name) < 0) names.push(r.name); }); names.sort(function (a, b) { return a.localeCompare(b); });
+    names.forEach(function (n) {
+      var r = byName[n]; if (!r) { rows.push([n, 'did not write']); return; }
+      rows.push([r.name, r.status, r.sum.score, r.sum.total, Math.round(100 * r.sum.score / Math.max(1, r.sum.total))].concat(outs.map(function (o) { return r.sum.levels[o] || ''; })).concat(items.map(function (x) { var c = r.final.charAt(x.pos); return { c: 1, C: 1, w: 0, W: 0, f: 0, b: 0 }[c]; })));
+    });
     D.download(R.session.title.replace(/[^\w\- ]+/g, '') + ' results.csv', rows);
   }
 

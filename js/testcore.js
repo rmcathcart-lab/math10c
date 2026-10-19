@@ -13,9 +13,9 @@
   TC.NO_TEST = { ladder: 1, tree: 1 };
   TC.items = function (def) {
     var out = [];
-    ((def && def.items) || []).forEach(function (x) {
+    ((def && def.items) || []).forEach(function (x, pos) { // pos = place in the saved test: marks are stored by it, so a question that no longer exists doesn't shift the others
       var lesson = HW.lessons[x.l], it = lesson && lesson.byId[x.i];
-      if (it) out.push({ key: TC.itemKey(x), lesson: lesson, it: it });
+      if (it) out.push({ key: TC.itemKey(x), lesson: lesson, it: it, pos: pos });
     });
     return out;
   };
@@ -51,9 +51,9 @@
   /* score and the outcome levels (highest level answered correctly on each outcome) */
   TC.summary = function (def, marks) {
     var items = TC.items(def), LV = HW.LEVELS, best = {}, outs = [], score = 0;
-    items.forEach(function (x, i) {
+    items.forEach(function (x) {
       var o = x.it.outcome; if (outs.indexOf(o) < 0) outs.push(o);
-      if (TC.right(marks.charAt(i))) { score++; if (best[o] == null || LV.indexOf(x.it.level) > LV.indexOf(best[o])) best[o] = x.it.level; }
+      if (TC.right(marks.charAt(x.pos))) { score++; if (best[o] == null || LV.indexOf(x.it.level) > LV.indexOf(best[o])) best[o] = x.it.level; }
     });
     return { score: score, total: items.length, levels: best, outcomes: outs };
   };

@@ -103,6 +103,7 @@
         T.unlockTo = live.unlock; drawUnlocked(); return;
       }
       if (r.st === 'moved') { drawMoved(); return; }
+      if (r.st === 'elsewhere' && me && FINAL[me.st]) { r.st = me.st; r.rev = me.rev || 0; saveRec(); }
       if (dismissed(T.sid)) { if (T.ui) closeOverlay(); else T = null; return; }
       if (r.st === 'elsewhere') drawElsewhere(); else drawEnd();
       return;
@@ -403,7 +404,7 @@
       view.innerHTML = '';
       if (!r) { view.appendChild(el('div', 'panel', '<p>These results aren’t available. <a href="#/">Back</a></p>')); return; }
       var s = session(), k = TC.skey(s.klass, s.name), items = TC.items(r.def), order = TC.order(r.def, k, r.id), idx = {};
-      items.forEach(function (x, i) { idx[x.key] = i; });
+      items.forEach(function (x, i) { idx[x.key] = i; });  // index into items; marks are read at items[i].pos
       var sum = TC.summary(r.def, r.marks || '');
       var head = el('div', 'tm-res-head tm-res-' + (r.kind === 'exit' ? 'exit' : 'test'));
       head.innerHTML = '<div class="tm-kind">' + (r.kind === 'exit' ? 'Exit slip' : 'Test') + '</div><h1>' + esc(r.title) + '</h1>' +
@@ -413,7 +414,7 @@
       order.forEach(function (key, n) {
         var x = items[idx[key]]; if (!x) return;
         var inst; try { inst = TC.instance(k, r.id, x.lesson, x.it); } catch (e) { return; }
-        var m = (r.marks || '').charAt(idx[key]), a = r.answers[key], ok = TC.right(m);
+        var m = (r.marks || '').charAt(x.pos), a = r.answers[key], ok = TC.right(m);
         var card = el('article', 'qcard tm-res-q ' + (m ? (ok ? 'ok' : 'bad') : ''));
         card.appendChild(el('div', 'qhead', '<h2>Question ' + esc(TC.label(r.def, x, n)) + '</h2><span class="tm-chips"><span class="tm-out">' + esc(x.it.outcome) + '</span><span class="lvl lvl-' + x.it.level + '">' + HW.LEVEL_NAMES[x.it.level] + '</span></span>' + (m ? '<span class="tm-mark">' + (ok ? '✓' : '✗') + '</span>' : '')));
         if (inst.stem) card.appendChild(el('div', 'qstem', HW.tex(inst.stem)));
