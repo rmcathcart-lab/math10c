@@ -568,7 +568,7 @@
         } }] },
       { num: '8', outcome: 'AN1', stem: 'Find the <b>least common multiple</b>. Use any method.', parts: [
         { id: '8a', outcome: 'AN1', level: 'BEG', make: function (r) {
-          return lcmPart(find(function () { return sortN(r.sample([4, 6, 8, 9, 10, 12, 14, 15], 2)); }, function (v) { return gcd(v[0], v[1]) > 1 && v[1] % v[0] !== 0 && lcm(v[0], v[1]) <= 60; }, [8, 12]));
+          return lcmPart(find(function () { return sortN(r.sample([4, 6, 8, 9, 10, 12, 14, 15, 16, 18], 2)); }, function (v) { return gcd(v[0], v[1]) > 1 && v[1] % v[0] !== 0 && lcm(v[0], v[1]) <= 72; }, [8, 12]));
         } },
         { id: '8b', outcome: 'AN1', level: 'BEG', make: function (r) {
           return lcmPart(find(function () { return [r.int(4, 10), r.int(10, 24)]; }, function (v) { return v[0] < v[1] && gcd(v[0], v[1]) > 1 && v[1] % v[0] !== 0 && lcm(v[0], v[1]) <= 72; }, [6, 15]));
