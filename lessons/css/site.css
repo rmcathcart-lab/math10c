@@ -57,6 +57,7 @@ sup { font-size: .68em; line-height: 0; }
 .cp-reset:disabled { opacity: .45; cursor: default; }
 .cp-reset i { width: 12px; height: 12px; border-radius: 50%; background: var(--c); display: inline-block; }
 body.finger-erase .tbtn[data-tool=eraser] { background: #fde68a; color: var(--ink); }
+body.finger-erase [data-ink] { touch-action: none; } /* the Pencil landing next to a held finger isn't a pinch */
 .home { color: var(--brand); }
 .tbtn.home { padding: 0 5px; }
 .home-mark { display: block; width: 34px; height: 34px; border-radius: 9px; }
