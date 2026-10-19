@@ -229,7 +229,7 @@
     var timer = el('button', 'tm-timer', ''); timer.type = 'button'; timer.title = 'Show or hide the time left';
     timer.addEventListener('click', function () { var hide = ls('hw:tm:hidetimer') === '1'; ls('hw:tm:hidetimer', hide ? '0' : '1'); drawTimer(); });
     if (limitMs()) right.appendChild(timer);
-    if (T.def.calc && HW.Calc) right.appendChild(button('btn-ghost tm-calc', '🧮 Calculator', function () { HW.Calc.toggle(); }));
+    if (T.def.calc && HW.Calc) right.appendChild(button('btn-ghost tm-calc', (HW.CALC_ICON || '') + '<span>Calculator</span>', function () { HW.Calc.toggle(); }));
     right.appendChild(button('btn-primary tm-submit', 'Submit', confirmSubmit));
     head.appendChild(right); o.appendChild(head);
     o.appendChild(el('div', 'tm-warn', '⚠ Stay on this page. <b>Leaving this window, switching tabs or leaving full screen submits your ' + (T.def.kind === 'exit' ? 'exit slip' : 'test') + ' as it is.</b>'));
@@ -353,10 +353,15 @@
     if (limitMs() && remaining() <= 0) { finish('time', 'Time ran out.'); return; }
     if ((T.dirty && Date.now() - (T.changedAt || 0) > 3000) || Date.now() - (T.lastPost || 0) > 15000) post(false);
   }
+  var SW_ICON = '<svg class="tm-sw" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 13.5V9.5M10 2.5h4M12 2.5v3.5M18.2 6.8l1.4-1.4"/></svg>';
   function drawTimer() {
     var t = T && T.els && T.els.timer; if (!t || !limitMs()) return;
     var hide = ls('hw:tm:hidetimer') === '1', rem = remaining();
-    t.innerHTML = hide ? '⏱ Show time' : '⏱ <b>' + mmss(rem) + '</b> left <span class="tm-hide">hide</span>';
+    // shown: stopwatch, time left and a round × to hide it; hidden: just the stopwatch (click it to bring the time back)
+    var html = SW_ICON + (hide ? '' : '<b>' + mmss(rem) + '</b> left<span class="tm-x" aria-hidden="true">×</span>');
+    if (t._h !== html) { t.innerHTML = html; t._h = html; }
+    t.title = hide ? 'Show the time left' : 'Hide the time left'; t.setAttribute('aria-label', hide ? 'Show the time left' : mmss(rem) + ' left. Hide the time');
+    t.classList.toggle('hidden-t', hide);
     t.classList.toggle('low', !hide && rem < 120000);
   }
   function confirmSubmit() {

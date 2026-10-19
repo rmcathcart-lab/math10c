@@ -45,6 +45,8 @@ sup { font-size: .68em; line-height: 0; }
 .sw { width: 30px; height: 30px; border-radius: 50%; border: 3px solid #fff; background: var(--c); box-shadow: 0 0 0 1.5px #d5d0c4; cursor: pointer; padding: 0; margin: 0 2px; }
 .sw.on { box-shadow: 0 0 0 2.5px var(--c); transform: scale(1.08); }
 .home { color: var(--brand); }
+.tbtn.home { padding: 0 5px; }
+.home-mark { display: block; width: 34px; height: 34px; border-radius: 9px; }
 @media (max-width: 1080px) { .tb-title { display: none; } }
 .tb-right { margin-left: auto; }
 @media (max-width: 900px) { .tbtn.wide span { display: none; } .tb-group { padding: 0 3px; } .sw { width: 26px; height: 26px; margin: 0 1px; } }
