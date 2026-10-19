@@ -378,8 +378,8 @@
         sol: '<b>True.</b> The block ' + t(a + '' + b) + ' repeats, so it can be written as a fraction: ' + fr + '.' }]);
   }
   function tfSlotC(r) {
-    var c = r.int(2, 5), q = r.int(2, 3), f = r.int(2, 4), sq = r.int(3, 9);
-    var c3 = c * c * c, q4 = Math.pow(q, 4), f5 = Math.pow(2, 5);
+    var c = r.int(2, 10), q = r.int(2, 5), f = r.int(2, 3), sq = r.int(2, 12), g = r.int(2, 10), h = r.int(2, 3);
+    var c3 = c * c * c, q4 = Math.pow(q, 4), f5 = Math.pow(f, 5), g3 = g * g * g, h6 = Math.pow(h, 6);
     return r.pick([
       { claim: t('\\sqrt[3]{-' + c3 + '}') + ' is not a real number.', opts: [
         { html: '<b>False.</b> ' + t('(-' + c + ')^{3}=-' + c3) + ', so ' + t('\\sqrt[3]{-' + c3 + '}=-' + c) + '. An odd index allows a negative radicand.', right: true },
@@ -394,17 +394,67 @@
         { html: '<b>False.</b> ' + t('\\sqrt[4]{-' + q4 + '}=' + q) + '.', why: t(q + '^{4}=' + q4) + ', not ' + t('-' + q4) + '. No real number works here.' }],
         sol: '<b>False.</b> ' + t('(-' + q + ')^{4}=+' + q4) + ', not ' + t('-' + q4) + '. No real number raised to an even power is negative, so ' + t('\\sqrt[4]{-' + q4 + '}') + ' is not a real number.' },
       { claim: t('\\sqrt[5]{-' + f5 + '}') + ' is not a real number.', opts: [
-        { html: '<b>False.</b> ' + t('(-2)^{5}=-' + f5) + ', so ' + t('\\sqrt[5]{-' + f5 + '}=-2') + '. An odd index allows a negative radicand.', right: true },
-        { html: '<b>True.</b> You can’t take a root of a negative number.', why: 'Only <b>even</b> roots of negatives are not real. ' + t('(-2)^{5}=-' + f5) + '.' },
-        { html: '<b>True.</b> ' + t('(-2)^{5}=+' + f5) + '.', why: 'Five negative factors multiply to a <b>negative</b>: ' + t('(-2)^{5}=-' + f5) + '.' },
-        { html: '<b>False.</b> ' + t('\\sqrt[5]{-' + f5 + '}=2') + '.', why: t('2^{5}=' + f5) + ', not ' + t('-' + f5) + '. The fifth root of a negative is negative.' }],
-        sol: '<b>False.</b> ' + t('(-2)^{5}=-' + f5) + ', so ' + t('\\sqrt[5]{-' + f5 + '}=-2') + '. An odd index allows a negative radicand.' },
+        { html: '<b>False.</b> ' + t('(-' + f + ')^{5}=-' + f5) + ', so ' + t('\\sqrt[5]{-' + f5 + '}=-' + f) + '. An odd index allows a negative radicand.', right: true },
+        { html: '<b>True.</b> You can’t take a root of a negative number.', why: 'Only <b>even</b> roots of negatives are not real. ' + t('(-' + f + ')^{5}=-' + f5) + '.' },
+        { html: '<b>True.</b> ' + t('(-' + f + ')^{5}=+' + f5) + '.', why: 'Five negative factors multiply to a <b>negative</b>: ' + t('(-' + f + ')^{5}=-' + f5) + '.' },
+        { html: '<b>False.</b> ' + t('\\sqrt[5]{-' + f5 + '}=' + f) + '.', why: t(f + '^{5}=' + f5) + ', not ' + t('-' + f5) + '. The fifth root of a negative is negative.' }],
+        sol: '<b>False.</b> ' + t('(-' + f + ')^{5}=-' + f5) + ', so ' + t('\\sqrt[5]{-' + f5 + '}=-' + f) + '. An odd index allows a negative radicand.' },
+      { claim: t('\\sqrt[3]{-' + g3 + '}=-' + g) + '.', opts: [
+        { html: '<b>True.</b> ' + t('(-' + g + ')^{3}=-' + g3) + ', and an odd index allows a negative radicand.', right: true },
+        { html: '<b>False.</b> You can’t take a root of a negative number.', why: 'Only <b>even</b> roots of negatives are not real. Check: ' + t('(-' + g + ')^{3}=(-' + g + ')(-' + g + ')(-' + g + ')=-' + g3) + '.' },
+        { html: '<b>False.</b> ' + t('\\sqrt[3]{-' + g3 + '}=' + g) + '.', why: t(g + '^{3}=' + g3) + ', not ' + t('-' + g3) + '.' },
+        { html: '<b>True.</b> The root of a negative number is always negative.', why: 'Right answer, wrong reason: ' + t('\\sqrt[4]{-16}') + ' is not a real number at all. This works because the index ' + t('3') + ' is odd.' }],
+        sol: '<b>True.</b> ' + t('(-' + g + ')^{3}=-' + g3) + ', so ' + t('\\sqrt[3]{-' + g3 + '}=-' + g) + '. An odd index allows a negative radicand.' },
+      { claim: t('\\sqrt[6]{-' + h6 + '}=-' + h) + '.', opts: [
+        { html: '<b>False.</b> ' + t('(-' + h + ')^{6}=+' + h6) + ', not ' + t('-' + h6) + '. An even power is never negative, so ' + t('\\sqrt[6]{-' + h6 + '}') + ' is not a real number.', right: true },
+        { html: '<b>True.</b> ' + t('(-' + h + ')^{6}=-' + h6) + '.', why: 'Six negative factors multiply to a <b>positive</b>: ' + t('(-' + h + ')^{6}=+' + h6) + '.' },
+        { html: '<b>True.</b> The root of a negative number is negative.', why: 'That only works for <b>odd</b> indexes. The index ' + t('6') + ' is even, and no real number to an even power is negative.' },
+        { html: '<b>False.</b> ' + t('\\sqrt[6]{-' + h6 + '}=' + h) + '.', why: t(h + '^{6}=' + h6) + ', not ' + t('-' + h6) + '. No real number works.' }],
+        sol: '<b>False.</b> ' + t('(-' + h + ')^{6}=+' + h6) + '. No real number raised to the 6th power is negative, so ' + t('\\sqrt[6]{-' + h6 + '}') + ' is not a real number.' },
       { claim: t('\\sqrt{-' + sq * sq + '}') + ' is not a real number.', opts: [
         { html: '<b>True.</b> No real number squared is negative: ' + t('(' + sq + ')^{2}') + ' and ' + t('(-' + sq + ')^{2}') + ' are both ' + t('+' + sq * sq) + '.', right: true },
         { html: '<b>False.</b> ' + t('\\sqrt{-' + sq * sq + '}=-' + sq) + '.', why: 'Check: ' + t('(-' + sq + ')^{2}=+' + sq * sq) + ', not ' + t('-' + sq * sq) + '.' },
         { html: '<b>True.</b> You can never take a root of a negative number.', why: 'Right answer, wrong reason: odd roots of negatives are fine (' + t('\\sqrt[3]{-8}=-2') + '). It is the <b>even</b> index that makes this one not real.' },
         { html: '<b>False.</b> ' + t('\\sqrt{-' + sq * sq + '}=' + sq) + '.', why: t(sq + '^{2}=' + sq * sq) + ', not ' + t('-' + sq * sq) + '.' }],
         sol: '<b>True.</b> A square root of ' + t('-' + sq * sq) + ' would be a number whose square is negative, but ' + t(sq + '^{2}') + ' and ' + t('(-' + sq + ')^{2}') + ' are both ' + t(sq * sq) + '. So ' + t('\\sqrt{-' + sq * sq + '}') + ' is not a real number.' }]);
+  }
+  /* more slot-a claims, with numbers in them */
+  function tfSlotA2(r) {
+    var NS = [2, 3, 5, 6, 7, 10, 11, 13, 14, 15], sq = function (x) { return '\\sqrt{' + x + '}'; };
+    var pf = r.pick([[2, 8], [3, 12], [2, 18], [5, 20], [3, 27], [2, 32], [6, 24], [7, 28], [2, 50], [3, 48], [5, 45], [6, 54], [10, 40], [7, 63], [3, 75], [11, 44]]), P0 = pf[0] * pf[1], s0 = Math.round(Math.sqrt(P0));
+    var pt = find(function () { return sortN(r.sample(NS, 2)); }, function (v) { return !isPow(v[0] * v[1], 2); }, [2, 3]), P1 = pt[0] * pt[1];
+    var p = r.int(2, 8), q = r.int(p + 1, 9), k = r.pick(NS), w = r.int(1, 9), ww = r.int(2, 9);
+    return r.pick([
+      { claim: t(sq(pf[0]) + '\\times ' + sq(pf[1])) + ' is irrational.', opts: [
+        { html: '<b>False.</b> ' + t(sq(pf[0]) + '\\times ' + sq(pf[1]) + '=' + sq(P0) + '=' + s0) + ', which is rational.', right: true },
+        { html: '<b>True.</b> Both factors are irrational, so their product is irrational.', why: 'Multiply them: ' + t(sq(pf[0]) + '\\times ' + sq(pf[1]) + '=' + sq(P0)) + ', and ' + t(P0) + ' is a perfect square.' },
+        { html: '<b>True.</b> ' + t(sq(pf[0]) + '\\times ' + sq(pf[1]) + '=' + sq(pf[0] + pf[1])) + ', which is irrational.', why: 'Square roots multiply under one root: ' + t('\\sqrt{a}\\times\\sqrt{b}=\\sqrt{ab}') + ', not ' + t('\\sqrt{a+b}') + '.' },
+        { html: '<b>False.</b> The product of two square roots is always rational.', why: 'Right answer, wrong reason: ' + t('\\sqrt{2}\\times\\sqrt{3}=\\sqrt{6}') + ' is irrational. This product is rational because ' + t(pf[0] + '\\times ' + pf[1] + '=' + P0) + ' is a perfect square.' }],
+        sol: '<b>False.</b> ' + t(sq(pf[0]) + '\\times ' + sq(pf[1]) + '=\\sqrt{' + pf[0] + '\\times ' + pf[1] + '}=' + sq(P0) + '=' + s0) + ', which is rational: both factors are irrational, but ' + t(P0) + ' is a perfect square.' },
+      { claim: t(sq(pt[0]) + '\\times ' + sq(pt[1])) + ' is irrational.', opts: [
+        { html: '<b>True.</b> ' + t(sq(pt[0]) + '\\times ' + sq(pt[1]) + '=' + sq(P1)) + ', and ' + t(P1) + ' is not a perfect square.', right: true },
+        { html: '<b>False.</b> The product of two irrational numbers is always rational.', why: 'Not always. ' + t(sq(pt[0]) + '\\times ' + sq(pt[1]) + '=' + sq(P1)) + ', and ' + t(P1) + ' is not a perfect square.' },
+        { html: '<b>True.</b> The product of two irrational numbers is always irrational.', why: 'Right answer, wrong reason: ' + t('\\sqrt{2}\\times\\sqrt{8}=\\sqrt{16}=4') + ' is rational. This one is irrational because ' + t(P1) + ' is not a perfect square.' },
+        { html: '<b>False.</b> ' + t(sq(pt[0]) + '\\times ' + sq(pt[1]) + '=' + P1) + ', which is rational.', why: t('\\sqrt{a}\\times\\sqrt{b}=\\sqrt{ab}') + ', not ' + t('ab') + '. Check: ' + t(P1 + '^{2}') + ' is not ' + t(P1) + '.' }],
+        sol: '<b>True.</b> ' + t(sq(pt[0]) + '\\times ' + sq(pt[1]) + '=' + sq(P1)) + '. ' + t(P1) + ' is not a perfect square, so ' + t(sq(P1)) + ' never ends and never repeats: it is irrational.' },
+      { claim: t(sq(p * p) + '+' + sq(q * q) + '=' + sq(p * p + q * q)), opts: [
+        { html: '<b>False.</b> ' + t(sq(p * p) + '+' + sq(q * q) + '=' + p + '+' + q + '=' + (p + q)) + ', but ' + t((p + q) + '^{2}=' + (p + q) * (p + q)) + ', not ' + t(p * p + q * q) + '.', right: true },
+        { html: '<b>True.</b> Square roots can be added by adding the numbers under them.', why: 'Test it: ' + t(sq(p * p) + '+' + sq(q * q) + '=' + (p + q)) + ', and ' + t((p + q) + '^{2}=' + (p + q) * (p + q)) + ', not ' + t(p * p + q * q) + '.' },
+        { html: '<b>True.</b> Both sides equal ' + t(p + q) + '.', why: t(sq(p * p + q * q)) + ' is not ' + t(p + q) + ': ' + t((p + q) + '^{2}=' + (p + q) * (p + q)) + '.' },
+        { html: '<b>False.</b> ' + t(sq(p * p) + '+' + sq(q * q)) + ' is irrational.', why: 'Right answer, wrong reason: ' + t(sq(p * p) + '=' + p) + ' and ' + t(sq(q * q) + '=' + q) + ' are whole numbers.' }],
+        sol: '<b>False.</b> The left side is ' + t(p + '+' + q + '=' + (p + q)) + '. The right side is ' + t(sq(p * p + q * q)) + ', and ' + t((p + q) + '^{2}=' + (p + q) * (p + q) + '\\ne ' + (p * p + q * q)) + ', so they are not equal. Square roots don’t add like that.' },
+      { claim: t('\\left(' + sq(k) + '\\right)^{2}') + ' is irrational, because ' + t(sq(k)) + ' is irrational.', opts: [
+        { html: '<b>False.</b> ' + t('\\left(' + sq(k) + '\\right)^{2}=' + sq(k) + '\\times ' + sq(k) + '=' + k) + ', which is rational.', right: true },
+        { html: '<b>True.</b> Squaring an irrational number always gives an irrational number.', why: 'Test it: ' + t('\\left(' + sq(k) + '\\right)^{2}=' + sq(k) + '\\times ' + sq(k) + '=' + k) + '.' },
+        { html: '<b>True.</b> ' + t('\\left(' + sq(k) + '\\right)^{2}=2' + sq(k)) + ', which is irrational.', why: 'Squaring means multiplying by itself, not doubling: ' + t(sq(k) + '\\times ' + sq(k) + '=' + k) + '.' },
+        { html: '<b>False.</b> ' + t(sq(k)) + ' is rational.', why: 'Right answer, wrong reason: ' + t(sq(k)) + ' is irrational (' + t(k) + ' is not a perfect square). It is its <b>square</b> that is rational.' }],
+        sol: '<b>False.</b> ' + t(sq(k)) + ' is irrational, but ' + t('\\left(' + sq(k) + '\\right)^{2}=' + sq(k) + '\\times ' + sq(k) + '=' + k) + ', which is rational.' },
+      { claim: t(w + '+' + sq(k)) + ' is irrational.', opts: [
+        { html: '<b>True.</b> If ' + t(w + '+' + sq(k)) + ' were rational, then subtracting ' + t(w) + ' would leave a rational number, but ' + t(sq(k)) + ' is irrational.', right: true },
+        { html: '<b>False.</b> ' + t(w) + ' is rational, so the sum is rational.', why: 'Adding ' + t(w) + ' changes the whole-number part, but the decimal part of ' + t(sq(k)) + ' still never ends and never repeats.' },
+        { html: '<b>False.</b> ' + t(w + '+' + sq(k) + '=' + sq(w * w + k)) + ', which is ' + (isPow(w * w + k, 2) ? 'rational.' : 'a single root.'), why: 'A whole number can’t be moved under a root by adding: ' + t(w + '+' + sq(k)) + ' is not ' + t(sq(w * w + k)) + ' (square both sides to check).' },
+        { html: '<b>True.</b> Any number written with a root sign is irrational.', why: 'Right answer, wrong reason: ' + t(w + '+\\sqrt{' + ww * ww + '}=' + (w + ww)) + ' is rational. This one is irrational because ' + t(k) + ' is not a perfect square.' }],
+        sol: '<b>True.</b> ' + t(sq(k)) + ' is irrational (' + t(k) + ' is not a perfect square). If ' + t(w + '+' + sq(k)) + ' were rational, subtracting the rational number ' + t(w) + ' would make ' + t(sq(k)) + ' rational too. So the sum is irrational.' }]);
   }
   function tfPart(r, slot, lab) {
     return P.mc(r, '<b>True or false?</b> Choose the answer with a correct reason.<br>“' + slot.claim + '”', slot.opts, slot.sol,
@@ -704,7 +754,7 @@
               ['Write each number as a square root: ' + t('a\\sqrt{b}=\\sqrt{a^{2}b}') + ' and ' + t('d=\\sqrt{d^{2}}') + '. Then compare what is under the roots.'], 'order 2 mixed, 1 entire, 1 decimal');
           } }] },
       { num: '17', section: 'AN2 · Part 1 — Mastering', outcome: 'AN2', stem: '<b>True or false?</b> Each answer must have a correct reason or counterexample.', parts: [
-        { id: '17a', outcome: 'AN2', level: 'MAS', make: function (r) { return tfPart(r, tfSlotA(r), 'a'); } },
+        { id: '17a', outcome: 'AN2', level: 'MAS', make: function (r) { return tfPart(r, r.chance(0.35) ? tfSlotA(r) : tfSlotA2(r), 'a'); } },
         { id: '17b', outcome: 'AN2', level: 'MAS', make: function (r) { return tfPart(r, tfSlotB(r), 'b'); } },
         { id: '17c', outcome: 'AN2', level: 'MAS', make: function (r) { return tfPart(r, tfSlotC(r), 'c'); } }] },
       { num: '18', outcome: 'AN2',
