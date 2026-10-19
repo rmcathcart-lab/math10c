@@ -21,6 +21,7 @@
     if (TS.tests && !force) return Promise.resolve();
     return Promise.all([api('tests'), api('sessions', { 'class': cls() })]).then(function (r) {
       if (r[0].ok) { TS.tests = r[0].tests; TS.liveAll = r[0].live || {}; }
+      else throw new Error(r[0].error === 'unknown action' ? 'The ledger (Apps Script) needs the new backend code for test mode: paste backend/Code.gs into the Apps Script project, then Deploy → Manage deployments → edit → New version.' : r[0].error);
       if (r[1].ok) TS.sessions = r[1].sessions;
     });
   }
@@ -29,7 +30,7 @@
   /* ================= render ================= */
   TS.render = function (body) {
     if (TS.klass !== cls()) { TS.klass = cls(); TS.tests = null; TS.live = null; TS.res = null; if (TS.view !== 'edit') TS.view = 'home'; }
-    if (!TS.tests) { body.appendChild(el('div', 'loading', 'Loading tests…')); load(true).then(rerender, function (e) { body.innerHTML = '<div class="panel">Couldn’t load tests: ' + esc(e.message) + '</div>'; }); return; }
+    if (!TS.tests) { body.appendChild(el('div', 'loading', 'Loading tests…')); load(true).then(rerender, function (e) { body.innerHTML = '<div class="panel"><h3>Test mode isn’t set up yet</h3><p>' + esc(e.message) + '</p></div>'; }); return; }
     if (TS.view === 'edit') return renderEditor(body);
     if (TS.view === 'results' && TS.res) return renderResults(body);
     if (liveHere()) return renderLive(body);
