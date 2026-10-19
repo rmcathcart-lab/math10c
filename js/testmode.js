@@ -367,10 +367,12 @@
   root.addEventListener('pagehide', function () { left('closed or reloaded the page', true); });
 
   /* ---------------- polling ---------------- */
+  var lastAct = Date.now();
+  ['pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(function (ev) { root.addEventListener(ev, function () { var idle = Date.now() - lastAct > 300000; lastAct = Date.now(); if (idle && session()) check(false); }, { passive: true, capture: true }); });
   setInterval(function () {
     var s = session(); if (!s || !s.token || !URL) return;
     if (document.visibilityState !== 'visible') return;
-    var gap = T && T.rec && T.rec.st === 'writing' ? 8000 : POLL_MS;
+    var gap = T && T.rec && T.rec.st === 'writing' ? 8000 : Date.now() - lastAct > 300000 ? 30000 : POLL_MS; // quieter when nobody has touched the page for 5 min
     if (Date.now() - lastCheck >= gap) check(false);
   }, 1000);
   document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && session() && Date.now() - lastCheck > 3000) check(false); });
