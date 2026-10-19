@@ -273,8 +273,11 @@ function touchErase(e) {
   if (A.erase.length) push({ type: 'erase', surf: A.sf.id, strokes: A.erase });
   return true;
 }
+const holdStart = {}; // finger id -> where it touched down
 function countHeld(e) {
-  const n = [...e.touches].filter((t) => t.touchType !== 'stylus' && !(t.radiusX > 38) && !(t.target && t.target.closest && t.target.closest(INTERACTIVE))).length;
+  const fingers = [...e.touches].filter((t) => t.touchType !== 'stylus' && !(t.radiusX > 38) && !(t.target && t.target.closest && t.target.closest(INTERACTIVE))), n = fingers.length;
+  for (const k in holdStart) if (!fingers.some((t) => String(t.identifier) === k)) delete holdStart[k];
+  fingers.forEach((t) => { if (!holdStart[t.identifier]) holdStart[t.identifier] = [t.clientX, t.clientY]; });
   if (n && !S.held) S.heldAt = performance.now();
   if (n !== S.held) { S.held = n; document.body.classList.toggle('finger-erase', !!n && S.fingerErase && !S.finger); }
 }
@@ -388,8 +391,15 @@ function onTouchStart(e) {
   if (direct.length === 2 && !S.active && !S.finger) twoTap = { t: Date.now(), pts: direct.map((t) => [t.clientX, t.clientY]), moved: false };
   else if (direct.length > 2) twoTap = null;
 }
+/* a finger that has stayed put is a hold, not the start of a scroll: keep Safari from turning it (plus the Pencil)
+   into a scroll or a pinch */
+function stillHold(e) { // only while the Pencil is on the glass too: a finger that pauses and then scrolls must still scroll
+  if (!holdReady() || ![...e.touches].some((t) => t.touchType === 'stylus')) return false;
+  return [...e.touches].some((t) => { const p = holdStart[t.identifier]; return p && Math.hypot(t.clientX - p[0], t.clientY - p[1]) < 12; });
+}
 function onTouchMove(e) {
   if (S.active && S.active.tid != null) touchErase(e);
+  if (stillHold(e) && e.cancelable) e.preventDefault();
   if (S.active || touchBlocks(e, false)) { e.preventDefault(); }
   if (twoTap) for (const t of e.touches) { const q = twoTap.pts.find((p) => Math.hypot(p[0] - t.clientX, p[1] - t.clientY) < 30); if (!q) twoTap.moved = true; }
 }
@@ -437,6 +447,32 @@ export function clearAll() {
 export function hasInk() { for (const sf of S.surfaces.values()) if (sf.strokes.length) return true; return false; }
 
 /* opts.readonly: a student's view — no writing, nothing saved on the device (the notes come from the server). */
+/* Touch log (••• menu, for fixing the finger eraser on the iPad): every pointer and touch event the page gets, newest
+ * at the top, with what the ink code made of it. Repeated moves fold into one line with a count. */
+let dbg = null;
+export function setDebug(on) {
+  if (!on) { if (dbg) { dbg.box.remove(); dbg.off(); dbg = null; } return; }
+  if (dbg) return;
+  const box = document.createElement('div'); box.className = 'ink-log no-ink';
+  box.innerHTML = '<div class="il-h"><b>Touch log</b><button type="button" data-x>Close</button></div><div class="il-b"></div>';
+  document.body.appendChild(box);
+  const body = box.querySelector('.il-b'), lines = [], t0 = performance.now();
+  const kinds = (list) => [...(list || [])].map((t) => (t.touchType === 'stylus' ? 'pencil' : 'finger') + (t.radiusX ? ' r' + Math.round(t.radiusX) : '')).join(', ');
+  const log = (key, txt) => {
+    const last = lines[0];
+    if (last && last.key === key && /move/.test(key)) { last.n++; last.txt = txt; } else { lines.unshift({ key, txt, n: 1, at: Math.round(performance.now() - t0) }); if (lines.length > 40) lines.pop(); }
+    body.innerHTML = lines.map((l) => '<div>' + l.at + ' ' + l.txt.replace(/</g, '&lt;') + (l.n > 1 ? ' ×' + l.n : '') + '</div>').join('');
+  };
+  const st = () => ' | held ' + S.held + (S.active ? ' active:' + (S.active.erase ? 'erase' : 'draw') + (S.active.tid != null ? '(touch)' : '') : '');
+  const P = (e) => log(e.type + e.pointerType, e.type.replace('pointer', 'p-') + ' ' + e.pointerType + ' #' + e.pointerId + (e.buttons ? ' btn' : '') + (e.cancelable ? '' : ' (not cancelable)') + st());
+  const T = (e) => log(e.type + kinds(e.changedTouches), e.type.replace('touch', 't-') + ' changed [' + kinds(e.changedTouches) + '] all [' + kinds(e.touches) + ']' + (e.cancelable ? '' : ' (not cancelable)') + st());
+  const evP = ['pointerdown', 'pointermove', 'pointerup', 'pointercancel'], evT = ['touchstart', 'touchmove', 'touchend', 'touchcancel'];
+  evP.forEach((t) => addEventListener(t, P, true)); evT.forEach((t) => addEventListener(t, T, true));
+  const off = () => { evP.forEach((t) => removeEventListener(t, P, true)); evT.forEach((t) => removeEventListener(t, T, true)); };
+  box.querySelector('[data-x]').onclick = () => setDebug(false);
+  dbg = { box, off };
+}
+export function debugOn() { return !!dbg; }
 export function init(key, opts = {}) {
   S.readonly = !!opts.readonly; S.key = S.readonly ? null : 'ink:' + key; S.saved = S.key ? ls(S.key) : null;
   if (S.readonly) document.body.classList.add('viewer');
