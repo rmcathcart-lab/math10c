@@ -166,3 +166,12 @@ tr.detail td { background: #fcfbf8 !important; }
 .tt-ready .btn { margin-left: 0; }
 .tt-dgrp { display: inline-block; margin-right: 5px; white-space: nowrap; }
 .tt-card .tt-chiprow { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.tt-ocell { min-width: 170px; }
+.tt-oline { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.tt-osel { margin-top: 4px; font: inherit; font-size: 12.5px; padding: 2px 4px; border: 1px solid var(--line); border-radius: 6px; background: #fff; max-width: 160px; }
+.tt-flag { font-size: 12px; font-weight: 800; color: #b45309; cursor: help; }
+.tt-unitg { white-space: nowrap; }
+.tag.warn { background: #fff4d6; color: #8a6100; }
+.tt-m.m-s, .tt-m.m-T, .tt-m.m-f { color: #8a6100; background: #fff4d6; }
+.tt-m.m-g, .tt-m.m-O { color: #a5461f; background: #fde8dc; }
+.tt-dot.m-s, .tt-dot.m-g { background: #e0a800; }

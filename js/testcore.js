@@ -63,17 +63,39 @@
     if (typeof v === 'object') { var ks = Object.keys(v); return !ks.length || ks.every(function (k) { return blank(v[k]); }); }
     return false;
   };
+  /* marks: c right · s small recognized mistake (keeps 2/3) · f right value, wrong form (2/3) · g bigger but reasonable
+     mistake (1/3) · w wrong · b blank; the teacher's overrides are C (1) T (2/3) O (1/3) W (0). Multiple choice is right or
+     wrong. Which recognized mistakes are small or bigger: js/partial.js (HW.PARTIAL). */
+  TC.CREDIT = { c: 1, C: 1, s: 2 / 3, T: 2 / 3, f: 2 / 3, g: 1 / 3, O: 1 / 3, w: 0, W: 0, b: 0 };
+  TC.credit = function (m) { return TC.CREDIT[m] || 0; };
   TC.grade = function (inst, resp) {
     if (TC.blank(resp)) return { m: 'b' };
-    var res; try { res = inst.check(resp); } catch (e) { return { m: 'f', code: 'unreadable' }; }
-    if (!res) return { m: 'f' };
-    return { m: res.v === 'correct' ? 'c' : res.v === 'form' ? 'f' : 'w', code: res.code || '' };
+    var res; try { res = inst.check(resp); } catch (e) { return { m: 'w', code: 'unreadable' }; }
+    if (!res) return { m: 'w' };
+    if (res.v === 'correct') return { m: 'c' };
+    var mc = inst.input && inst.input.type === 'mc', P = HW.PARTIAL || {};
+    if (res.v === 'form') return { m: mc ? 'w' : 'f', code: res.code || '' };
+    var code = res.code || '';
+    if (!mc && P.small && P.small[code]) return { m: 's', code: code };
+    if (!mc && P.big && P.big[code]) return { m: 'g', code: code };
+    return { m: 'w', code: code };
   };
   /* a short fingerprint of the question the student saw, saved with the answer: marking can tell if the question has changed since */
   TC.qhash = function (inst) { try { return HW.hashStr(String(inst.stem || '') + '|' + inst.prompt + '|' + inst.answer).toString(36); } catch (e) { return ''; } };
   TC.right = function (m) { return m === 'c' || m === 'C'; };
-  /* score and the outcome levels (highest level answered correctly on each outcome) */
+  TC.over = function (m) { return m === 'C' || m === 'T' || m === 'O' || m === 'W'; };
+  TC.SYMBOL = { c: '✓', C: '✓', s: '⅔', T: '⅔', f: '⅔', g: '⅓', O: '⅓', w: '✗', W: '✗', b: '–' };
+  TC.MARK_NAMES = { c: 'Correct', C: 'Correct (teacher)', s: 'Small mistake: keeps 2/3', T: '2/3 credit (teacher)', f: 'Not in the right form: keeps 2/3', g: 'Bigger mistake: keeps 1/3', O: '1/3 credit (teacher)', w: 'Wrong', W: 'Wrong (teacher)', b: 'Blank' };
+  /* saved marks = one letter per question in the test's order, then "|AN1=PRG,AN2=ADV" for indicators the teacher set */
+  TC.parseMarks = function (str) {
+    str = String(str || ''); var i = str.indexOf('|'), fin = {};
+    if (i >= 0) str.slice(i + 1).split(',').forEach(function (kv) { var p = kv.split('='); if (p[0] && p[1]) fin[p[0]] = p[1]; });
+    return { m: i >= 0 ? str.slice(0, i) : str, fin: fin };
+  };
+  TC.packMarks = function (m, fin) { var k = Object.keys(fin || {}).filter(function (o) { return fin[o]; }); return m + (k.length ? '|' + k.map(function (o) { return o + '=' + fin[o]; }).join(',') : ''); };
+  /* exit slips: the highest level answered correctly on each outcome, and the number right */
   TC.summary = function (def, marks) {
+    marks = TC.parseMarks(marks).m;
     var items = TC.items(def), LV = HW.LEVELS, best = {}, outs = [], score = 0;
     items.forEach(function (x) {
       var o = x.it.outcome; if (outs.indexOf(o) < 0) outs.push(o);
@@ -81,5 +103,68 @@
     });
     return { score: score, total: items.length, levels: best, outcomes: outs };
   };
-  TC.MARK_NAMES = { c: 'Correct', w: 'Wrong', f: 'Not in the right form', b: 'Blank', C: 'Correct (teacher)', W: 'Wrong (teacher)' };
+
+  /* ---------------- tests: an indicator per outcome from its three boxes (Ryan's rule, 2026-10-19) ----------------
+   * Each outcome's parts fall in a Beginning (LIM, BEG), Progressing (EMG, PRG) or Mastery (ADV, MAS) box. A box is
+   * secure at 3/4 of its points and partial at 1/2. Ladder: NM < LIM (B partial) < BEG (B secure) < EMG (+P partial) <
+   * PRG (+P secure) < ADV (+M partial) < MAS (+M secure). A harder box done well over a hole in an easier one: credit the
+   * harder box, then one step down per partial easier box and two per box below half, flagged "Check this". The percent
+   * sits in the indicator's band by progress toward the next rung (a stepped-down result: the band's middle). Mastery-box
+   * multiple choice counts fully only when the student has at least half of the box's other points; otherwise half.
+   * The unit grade is the average of the outcome percents (EXT outcomes left out). */
+  TC.SECURE = 3 / 4; TC.PARTIAL = 1 / 2;
+  TC.BANDS = { NM: [0, 25], LIM: [25, 45], BEG: [45, 55], EMG: [55, 65], PRG: [65, 75], ADV: [75, 85], MAS: [85, 100] };
+  TC.LADDER = ['NM', 'LIM', 'BEG', 'EMG', 'PRG', 'ADV', 'MAS'];
+  TC.indName = function (lv) { return (HW.LEVEL_NAMES && HW.LEVEL_NAMES[lv]) || (lv === 'NM' ? 'Not meeting' : lv); };
+  TC.BOX = { LIM: 'B', BEG: 'B', EMG: 'P', PRG: 'P', ADV: 'M', MAS: 'M' };
+  var typeMemo = {};
+  function isMC(x) { var k = x.key; if (!(k in typeMemo)) typeMemo[k] = TC.inputType(x.lesson, x.it) === 'mc'; return typeMemo[k]; }
+  function rung(b, p, m) { // [ladder index, progress 0..1 inside its band]
+    var S = TC.SECURE, H = TC.PARTIAL;
+    if (b < H) return [0, b / H]; if (b < S) return [1, (b - H) / (S - H)];
+    if (p < H) return [2, p / H]; if (p < S) return [3, (p - H) / (S - H)];
+    if (m < H) return [4, m / H]; if (m < S) return [5, (m - H) / (S - H)];
+    return [6, (m - S) / (1 - S)];
+  }
+  function stepsFor(f) { return f >= TC.SECURE ? 0 : f >= TC.PARTIAL ? 1 : 2; }
+  TC.indicator = function (b, p, m) {
+    var r = rung(b, p, m), best = { i: r[0], prog: r[1], note: '' };
+    var cands = [];
+    if (m >= TC.PARTIAL) cands.push([rung(1, 1, m)[0], stepsFor(b) + stepsFor(p)]);
+    if (p >= TC.PARTIAL) cands.push([rung(1, p, 0)[0], stepsFor(b)]);
+    cands.forEach(function (c) { var f = c[0] - c[1]; if (f > best.i) best = { i: f, prog: 0.5, note: 'Check this: ' + c[1] + ' step' + (c[1] === 1 ? '' : 's') + ' down from ' + TC.LADDER[c[0]] + ' for a hole in an easier box' }; });
+    var name = TC.LADDER[best.i], band = TC.BANDS[name];
+    return { ind: name, pct: Math.round(band[0] + (band[1] - band[0]) * Math.max(0, Math.min(1, best.prog))), note: best.note };
+  };
+  TC.midPct = function (ind) { var b = TC.BANDS[ind]; return b ? Math.round((b[0] + b[1]) / 2) : 0; };
+  TC.outcomeGrades = function (def, marksStr) {
+    var pm = TC.parseMarks(marksStr), marks = pm.m, items = TC.items(def), by = {}, order = [];
+    items.forEach(function (x) {
+      var o = x.it.outcome; if (!by[o]) { by[o] = { B: [], P: [], M: [] }; order.push(o); }
+      by[o][TC.BOX[x.it.level] || 'B'].push(x);
+    });
+    var outs = order.map(function (o) {
+      var bx = by[o], box = {};
+      ['B', 'P', 'M'].forEach(function (k) {
+        var list = bx[k], total = list.length, earned = 0;
+        if (k === 'M') {
+          var other = list.filter(function (x) { return !isMC(x); }), oT = other.length, oE = 0;
+          other.forEach(function (x) { oE += TC.credit(marks.charAt(x.pos)); });
+          var agree = !oT || oE >= TC.PARTIAL * oT, mcE = 0;
+          list.filter(isMC).forEach(function (x) { mcE += TC.credit(marks.charAt(x.pos)) * (agree ? 1 : 0.5); });
+          earned = oE + mcE; box.mcHalved = !agree && list.some(isMC);
+        } else list.forEach(function (x) { earned += TC.credit(marks.charAt(x.pos)); });
+        box[k] = { earned: earned, total: total };
+      });
+      // a missing box: counts as done when a harder box is on the test (it can't penalize), else as empty (it caps)
+      function frac(k, harder) { var t = box[k].total; if (t) return box[k].earned / t; return harder.some(function (h) { return box[h].total; }) ? 1 : 0; }
+      var g = TC.indicator(frac('B', ['P', 'M']), frac('P', ['M']), frac('M', []));
+      var fin = pm.fin[o];
+      return { outcome: o, boxes: box, auto: g.ind, autoPct: g.pct, note: g.note, mcHalved: box.mcHalved, ind: fin || g.ind, pct: fin ? (fin === g.ind ? g.pct : TC.midPct(fin)) : g.pct, set: !!fin };
+    });
+    var counted = outs.filter(function (x) { return x.outcome !== 'EXT'; }), points = 0;
+    items.forEach(function (x) { points += TC.credit(marks.charAt(x.pos)); });
+    return { outcomes: outs, unit: counted.length ? Math.round(counted.reduce(function (a, x) { return a + x.pct; }, 0) / counted.length) : 0, points: Math.round(points * 100) / 100, total: items.length };
+  };
+  TC.fmtPoints = function (p) { var w = Math.floor(p + 1e-9), f = p - w; return (w || !f ? String(w) : '') + (Math.abs(f - 1 / 3) < 0.02 ? '⅓' : Math.abs(f - 2 / 3) < 0.02 ? '⅔' : Math.abs(f - 0.5) < 0.02 ? '½' : Math.abs(f - 1 / 6) < 0.02 ? '⅙' : Math.abs(f - 5 / 6) < 0.02 ? '⅚' : f > 0.02 ? '.' + Math.round(f * 100) : ''); };
 })(window);
