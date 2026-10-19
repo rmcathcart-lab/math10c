@@ -34,63 +34,87 @@
   function kindName(def) { return def.kind === 'exit' ? 'Exit slip' : 'Test'; }
 
   /* ---------------- talking to the ledger ---------------- */
-  function post(final, beacon) {
-    var s = session(); if (!URL || !s || !s.token || !T) return;
-    var r = T.rec, body = { kind: 'test', 'class': s.klass, name: s.name, token: s.token, device: deviceId(), session: T.sid, st: r.st, cur: T.cur, ans: r.ans,
-      used: Math.round(r.used || 0), leaves: r.leaves || 0, started: r.started, unlockN: r.unlockN || 0, order: T.order, fs: !!r.fs, why: r.why || '', final: !!final };
-    var txt = JSON.stringify(body); T.lastPost = Date.now(); T.dirty = false;
+  /* finished tests whose final copy the ledger hasn't confirmed yet: resent at every check until it has (even after the
+     teacher closes the test), so a submit made offline still arrives */
+  function pendKey() { return 'hw:tm:pend:' + skey(); }
+  function pending() { try { var a = JSON.parse(ls(pendKey()) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+  function setPending(a) { ls(pendKey(), a.length ? JSON.stringify(a.slice(-10)) : null); }
+  function addPending(sid) { var a = pending(); if (a.indexOf(sid) < 0) { a.push(sid); setPending(a); } }
+  function dropPending(sid) { setPending(pending().filter(function (x) { return x !== sid; })); }
+  function dismissed(sid) { return ls('hw:tm:dis:' + skey() + ':' + sid) === '1'; }
+  function dismiss(sid) { ls('hw:tm:dis:' + skey() + ':' + sid, '1'); }
+  function postRec(sid, r, order, cur, final, beacon) {
+    var s = session(); if (!URL || !s || !s.token || !r) return;
+    var body = { kind: 'test', 'class': s.klass, name: s.name, token: s.token, device: deviceId(), session: sid, st: r.st, cur: cur || 0, ans: r.ans,
+      used: Math.round(r.used || 0), leaves: r.leaves || 0, started: r.started, unlockN: r.unlockN || 0, order: order || r.order || null, fs: !!r.fs, why: r.why || '', rev: r.rev || 0, final: !!final };
+    var txt = JSON.stringify(body);
     if (beacon && navigator.sendBeacon) { try { if (navigator.sendBeacon(URL, new Blob([txt], { type: 'text/plain;charset=utf-8' }))) return; } catch (e) {} }
-    try { fetch(URL, { method: 'POST', mode: 'no-cors', credentials: 'omit', keepalive: txt.length < 60000, headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: txt }).catch(function () { if (T) T.dirty = true; }); }
-    catch (e) { T.dirty = true; }
+    try { fetch(URL, { method: 'POST', mode: 'no-cors', credentials: 'omit', keepalive: txt.length < 60000, headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: txt }).catch(function () { if (T && T.sid === sid) T.dirty = true; }); }
+    catch (e) { if (T && T.sid === sid) T.dirty = true; }
   }
+  function post(final, beacon) { if (!T || !T.rec) return; T.lastPost = Date.now(); T.dirty = false; postRec(T.sid, T.rec, T.order, T.cur, final, beacon); }
   function check(full) {
     var s = session(); if (!URL || !s || !s.token || checking) return;
     checking = true; lastCheck = Date.now();
-    L.get('tcheck', { 'class': s.klass, name: s.name, token: s.token, full: full ? 1 : null }, 12000).then(function (d) { checking = false; onCheck(d); }, function () { checking = false; });
+    L.get('tcheck', { 'class': s.klass, name: s.name, token: s.token, full: full ? 1 : null, pend: pending().join(',') || null }, 12000).then(function (d) { checking = false; onCheck(d, full); }, function () { checking = false; });
   }
   TM.check = check;
+  function confirmFinals(conf) {
+    pending().forEach(function (sid) {
+      var r = loadRec(sid); if (!r || !FINAL[r.st]) { dropPending(sid); return; }
+      var c = conf && conf[sid];
+      if (c && c.saved && c.st === r.st && (c.rev || 0) >= (r.rev || 0)) { dropPending(sid); return; }
+      postRec(sid, r, r.order, 0, true);
+    });
+  }
 
   /* ---------------- what the ledger says ---------------- */
-  function onCheck(d) {
+  function onCheck(d, wasFull) {
     if (!d || !d.ok) return;
-    if (relSeen !== null && d.rel !== relSeen) { results = null; if (document.body.classList.contains('home') && HW.App) HW.App.route(); }
+    confirmFinals(d.conf);
+    if (relSeen !== null && d.rel !== relSeen) { results = null; if (!(T && T.ui) && document.body.classList.contains('home') && HW.App) HW.App.route(); }
     relSeen = d.rel;
     var live = d.live;
     if (!live || !live.def) { // nothing live (or the teacher closed it)
-      if (T && T.rec && T.rec.st === 'writing') { finish('ended', 'The teacher closed the test.'); return; }
+      if (T && T.rec && T.rec.st === 'writing') { finish('ended', 'the teacher closed the test'); return; }
       if (T && T.ui && !FINAL[T.rec && T.rec.st]) closeOverlay();
       if (T && T.rec && FINAL[T.rec.st]) { T.closed = true; drawEnd(); }
       return;
     }
-    if (T && T.sid !== live.id) closeOverlay();
+    if (T && T.sid !== live.id) { if (T.rec && T.rec.st === 'writing') finish('ended', 'the teacher closed the test'); closeOverlay(); }
     var me = d.me || null, rec = loadRec(live.id);
     if (!T) T = { sid: live.id, def: live.def, live: live, rec: rec, cur: 0, widgets: {} };
     T.def = live.def; T.live = live; T.me = me;
     if (!T.items) setupItems();
     if (!T.rec && me && me.st) { // this device has no record: the test was started on another device
-      if (!me.ans && !T.askedFull) { T.askedFull = true; check(true); return; }
-      T.rec = { st: me.st === 'writing' ? 'elsewhere' : me.st, ans: me.ans || {}, used: me.used || 0, leaves: me.leaves || 0, started: me.started, unlockN: me.unlockN || 0, submitN: 0, fs: false };
+      if (!me.ans) { if (!wasFull) check(true); return; }
+      T.rec = { st: me.st === 'writing' ? 'elsewhere' : me.st, ans: me.ans || {}, used: me.used || 0, leaves: me.leaves || 0, started: me.started, unlockN: me.unlockN || 0,
+        submitN: live.submit || 0, fs: false, rev: me.rev || 0, fromServer: true };
       saveRec();
     }
     var r = T.rec;
-    if (r && r.st === 'writing' && !T.ui) { r.st = 'left'; r.why = 'page closed or reloaded during the test'; r.leaves = (r.leaves || 0) + 1; saveRec(); post(true); } // the page was reloaded or closed mid-test
-    if (r && (FINAL[r.st] || r.st === 'elsewhere')) {
-      if ((live.unlock || 0) > (r.unlockN || 0)) { // the teacher unlocked it
-        if (me && me.ans && (!r.ans || Object.keys(me.ans).length > Object.keys(r.ans).length)) r.ans = me.ans;
-        if (r.st === 'elsewhere' && !me) { T.askedFull = false; }
+    if (r && r.st === 'writing' && !T.ui) { r.st = 'left'; r.why = 'closed or reloaded the page during the test'; r.leaves = (r.leaves || 0) + 1; r.rev = (r.rev || 0) + 1; r.order = T.order; saveRec(); addPending(T.sid); post(true); } // the page was reloaded or closed mid-test
+    if (r && (FINAL[r.st] || r.st === 'elsewhere' || r.st === 'moved')) {
+      if ((live.unlock || 0) > (r.unlockN || 0)) { // the teacher unlocked it (or moved it to this device)
+        if (r.fromServer || r.st === 'elsewhere' || r.st === 'moved') { // take the latest answers and time from the ledger first
+          if (!wasFull || !me || !me.ans) { check(true); return; }
+          r.ans = me.ans; r.used = me.used || r.used || 0; r.rev = Math.max(r.rev || 0, me.rev || 0); saveRec();
+        }
         T.unlockTo = live.unlock; drawUnlocked(); return;
       }
-      if (r.st !== 'elsewhere' && (!me || me.st !== r.st)) post(true); // make sure the final copy reached the ledger
-      if (r.dismissed) { if (T.ui) closeOverlay(); else T = null; return; }
+      if (r.st === 'moved') { drawMoved(); return; }
+      if (dismissed(T.sid)) { if (T.ui) closeOverlay(); else T = null; return; }
       if (r.st === 'elsewhere') drawElsewhere(); else drawEnd();
       return;
     }
     if (r && r.st === 'writing') {
-      if ((live.submit || 0) > (r.submitN || 0)) { r.submitN = live.submit; finish('forced', 'Your teacher submitted your test.'); return; }
-      if (live.ending) { finish('ended', 'Time is up: your teacher ended the test.'); return; }
+      if ((live.unlock || 0) > (r.unlockN || 0)) { r.st = 'moved'; r.unlockN = live.unlock; saveRec(); stopTimer(); drawMoved(); return; } // the teacher moved the test to another device
+      if ((live.submit || 0) > (r.submitN || 0)) { r.submitN = live.submit; finish('forced', 'your teacher submitted it'); return; }
+      if (live.ending && !T.endingSoon) { T.endingSoon = true; setTimeout(function () { if (T && T.endingSoon) finish('ended', 'your teacher ended the test'); }, Math.random() * 4000); return; } // spread the class's final saves over a few seconds
       drawTimer(); return;
     }
     // not started on this device or anywhere
+    if (dismissed(T.sid)) { if (T.ui) closeOverlay(); else T = null; return; }
     if (live.ending) { drawNotStartedEnded(); return; }
     drawPending();
   }

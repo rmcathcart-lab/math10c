@@ -291,9 +291,10 @@ function delClass_(klass) {
     return { ok: true };
   } finally { lock.releaseLock(); }
 }
-function resetPin_(klass, name) { var st = findStudent_(klass, name); if (!st) return { ok: false, error: 'unknown student' }; sheet_('Roster').getRange(st.row, 3, 1, 2).setValues([['', '']]); sheet_('Roster').getRange(st.row, 8, 1, 2).setValues([[0, '']]); return { ok: true }; }
+function dropTok_(klass, name) { try { cache_().remove('tok:' + norm_(klass) + '|' + norm_(name)); } catch (e) {} }
+function resetPin_(klass, name) { dropTok_(klass, name); var st = findStudent_(klass, name); if (!st) return { ok: false, error: 'unknown student' }; sheet_('Roster').getRange(st.row, 3, 1, 2).setValues([['', '']]); sheet_('Roster').getRange(st.row, 8, 1, 2).setValues([[0, '']]); return { ok: true }; }
 function removeStudent_(klass, name) { var st = findStudent_(klass, name); if (!st) return { ok: false, error: 'unknown student' }; sheet_('Roster').deleteRow(st.row); return { ok: true }; }
-function rename_(klass, name, to) { var st = findStudent_(klass, name); to = clean_(to, 60); if (!st || !to) return { ok: false, error: 'unknown student' }; sheet_('Roster').getRange(st.row, 2, 1, 2).setValues([[to, '']]); return { ok: true, note: 'PIN cleared: the student makes a new one.' }; }
+function rename_(klass, name, to) { dropTok_(klass, name); var st = findStudent_(klass, name); to = clean_(to, 60); if (!st || !to) return { ok: false, error: 'unknown student' }; sheet_('Roster').getRange(st.row, 2, 1, 2).setValues([[to, '']]); return { ok: true, note: 'PIN cleared: the student makes a new one.' }; }
 
 /* ---------------- class times: the bell schedule (2026-27) ----------------
  * Mon/Wed are Day 1, Tue/Thu Day 2, Friday has its own shorter periods. [block, start, end] in local time. */
@@ -383,12 +384,13 @@ function liveFor_(klass) { var l = testLive_()[norm_(klass)]; return l && l.id ?
 /* ---------------- student side ---------------- */
 function tcheck_(p) {
   var who = authFast_(p['class'], p.name, p.token); if (!who) return { ok: false, error: 'badtoken' };
-  var live = liveFor_(who.klass), rel = testRel_()[norm_(who.klass)] || 0;
-  if (!live) return { ok: true, live: null, rel: rel, now: Date.now() };
+  var live = liveFor_(who.klass), rel = testRel_()[norm_(who.klass)] || 0, conf = {};
+  String(p.pend || '').split(',').slice(0, 10).forEach(function (sid) { sid = clean_(sid, 40); if (!sid) return; var r = cget_(recKey_(sid, who.name)); if (r) conf[sid] = { st: r.st, rev: r.rev || 0, saved: !!r.saved }; });
+  if (!live) return { ok: true, live: null, rel: rel, conf: conf, now: Date.now() };
   var def = sessionDef_(live.id), me = cget_(recKey_(live.id, who.name)), n = norm_(who.name);
-  var out = { ok: true, now: Date.now(), rel: rel, live: { id: live.id, launched: live.launched, ending: !!live.ending, def: def,
+  var out = { ok: true, now: Date.now(), rel: rel, conf: conf, live: { id: live.id, launched: live.launched, ending: !!live.ending, def: def,
     extra: (Number((live.extra || {})['*']) || 0) + (Number((live.extra || {})[n]) || 0), unlock: Number((live.unlock || {})[n]) || 0, submit: Number((live.submit || {})[n]) || 0 } };
-  if (me) { out.me = { st: me.st, dev: me.dev, used: me.used, unlockN: me.unlockN || 0, started: me.started }; if (p.full) { out.me.ans = me.ans || {}; out.me.leaves = me.leaves || 0; out.me.order = me.order || null; } }
+  if (me) { out.me = { st: me.st, dev: me.dev, used: me.used, unlockN: me.unlockN || 0, started: me.started, rev: me.rev || 0, saved: !!me.saved }; if (p.full) { out.me.ans = me.ans || {}; out.me.leaves = me.leaves || 0; out.me.order = me.order || null; } }
   return out;
 }
 function myResults_(p) {
@@ -412,23 +414,37 @@ function testPost_(body) {
   var st = ['writing', 'submitted', 'left', 'time', 'ended', 'forced'].indexOf(body.st) >= 0 ? body.st : 'writing';
   var now = Date.now(), key = recKey_(sid, who.name), prev = cget_(key) || {};
   if (prev.st && prev.st !== 'writing' && st === 'writing' && (Number(body.unlockN) || 0) <= (prev.unlockN || 0)) return { ok: false, error: 'closed' }; // finished and not unlocked since
+  if (st !== 'writing' && prev.st && prev.st !== 'writing' && (Number(body.rev) || 0) < (prev.rev || 0)) return { ok: true, stale: true }; // an older copy of a final we already have
   if (st === 'writing' && (!live || live.id !== sid)) return { ok: false, error: 'not live' };
   var ans = body.ans && typeof body.ans === 'object' ? body.ans : (prev.ans || {}), answered = 0;
   Object.keys(ans).forEach(function (k) { if (ans[k] && ans[k].t) answered++; });
   var rec = { st: st, cur: Number(body.cur) || 0, n: answered, ans: ans, used: Math.max(0, Number(body.used) || 0), leaves: Number(body.leaves) || 0, at: now, dev: clean_(body.device, 40),
     started: Number(body.started) || prev.started || now, unlockN: Number(body.unlockN) || 0, order: Array.isArray(body.order) ? body.order.slice(0, 80) : (prev.order || null), fs: !!body.fs,
-    done: st === 'writing' ? 0 : (prev.done && prev.st === st ? prev.done : now), why: clean_(body.why, 40) };
+    done: st === 'writing' ? 0 : (prev.done && prev.st === st ? prev.done : now), why: clean_(body.why, 40), rev: Number(body.rev) || 0, saved: false };
+  if (st === 'writing') { cput_(key, rec); return { ok: true }; }
+  // a final copy: write the sheet first, and only then tell the cache (and so the student's device) it is safe
+  var lock = LockService.getScriptLock();
+  try { lock.waitLock(25000); } catch (e) { rec.saved = false; cput_(key, rec); return { ok: false, error: 'busy' }; }
+  try { upsertResult_(sid, who.klass, who.name, rec); rec.saved = true; } catch (e) { rec.saved = false; }
+  finally { lock.releaseLock(); }
   cput_(key, rec);
-  if (st !== 'writing') {
-    var lock = LockService.getScriptLock(); lock.waitLock(20000);
-    try { upsertResult_(sid, who.klass, who.name, rec); } finally { lock.releaseLock(); }
-  }
-  return { ok: true };
+  return { ok: rec.saved };
+}
+function ansJson_(ans) {
+  var txt = JSON.stringify(ans); if (txt.length <= 48000) return txt;
+  var slim = {}; Object.keys(ans).forEach(function (k) { slim[k] = { r: ans[k].r, h: ans[k].h }; }); txt = JSON.stringify(slim); if (txt.length <= 48000) return txt;
+  var out = { __trunc: 1 }; Object.keys(slim).forEach(function (k) { var t = JSON.stringify(out); var add = JSON.stringify(slim[k]); if (t.length + add.length + k.length + 6 < 48000) out[k] = slim[k]; });
+  return JSON.stringify(out);
+}
+function resultRow_(sid, name) {
+  var sh = sheet_('TestResults'), key = sid + '|' + norm_(name), last = sh.getLastRow();
+  if (last > 1) { var ks = sh.getRange(2, 1, last - 1, 5).getValues(); for (var i = ks.length - 1; i >= 0; i--) if (ks[i][0] === key) return { row: i + 2, st: ks[i][4] }; }
+  return null;
 }
 function upsertResult_(sid, klass, name, rec) {
   var sh = sheet_('TestResults'), key = sid + '|' + norm_(name), last = sh.getLastRow(), row = 0;
   if (last > 1) { var ks = sh.getRange(2, 1, last - 1, 1).getValues(); for (var i = ks.length - 1; i >= 0; i--) if (ks[i][0] === key) { row = i + 2; break; } }
-  var txt = JSON.stringify(rec.ans || {}); if (txt.length > 48000) txt = txt.slice(0, 48000);
+  var txt = ansJson_(rec.ans || {});
   var vals = [key, sid, klass, name, rec.st, rec.started ? new Date(rec.started) : '', rec.done ? new Date(rec.done) : '', Math.round((rec.used || 0) / 1000), rec.leaves || 0, rec.dev || '', txt];
   if (row) { sh.getRange(row, 1, 1, vals.length).setValues([vals]); sh.getRange(row, 15).setValue(new Date()); }
   else sh.getRange(sh.getLastRow() + 1, 1, 1, COLS.TestResults.length).setValues([vals.concat(['', '', '', new Date()])]);
@@ -485,7 +501,11 @@ function tctl_(klass, op, name, mins) {
     var n = norm_(name || ''); live.extra = live.extra || {}; live.unlock = live.unlock || {}; live.submit = live.submit || {};
     if (op === 'unlock') { if (!n) return { ok: false, error: 'no student' }; live.unlock[n] = (live.unlock[n] || 0) + 1; if (Number(mins)) live.extra[n] = (live.extra[n] || 0) + Number(mins); }
     else if (op === 'time') live.extra[n || '*'] = (live.extra[n || '*'] || 0) + (Number(mins) || 0);
-    else if (op === 'submit') { if (!n) return { ok: false, error: 'no student' }; live.submit[n] = (live.submit[n] || 0) + 1; }
+    else if (op === 'submit') {
+      if (!n) return { ok: false, error: 'no student' }; live.submit[n] = (live.submit[n] || 0) + 1;
+      var who2 = findStudent_(klass, name), rk = who2 ? recKey_(live.id, who2.v[1]) : '', rc = rk ? cget_(rk) : null;
+      if (rc && rc.st === 'writing') { rc.st = 'forced'; rc.why = 'submitted by the teacher'; rc.done = Date.now(); rc.rev = (rc.rev || 0) + 1; upsertResult_(live.id, String(who2.v[0]), String(who2.v[1]), rc); rc.saved = true; cput_(rk, rc); }
+    }
     else if (op === 'end') live.ending = true;
     else if (op === 'resume') live.ending = false;
     else if (op === 'close') {
@@ -493,7 +513,12 @@ function tctl_(klass, op, name, mins) {
       var sh = sheet_('TestSessions'), rs = rows_('TestSessions');
       for (var i = rs.length - 1; i >= 0; i--) if (rs[i][0] === live.id) { sh.getRange(i + 2, 7).setValue(new Date()); break; }
       // anyone still writing when the test is closed: keep what the cache has (they were told to stop)
-      rosterRows_(klass).forEach(function (x) { var rec = cget_(recKey_(live.id, x.v[1])); if (rec && rec.st === 'writing') { rec.st = 'ended'; rec.done = Date.now(); cput_(recKey_(live.id, x.v[1]), rec); upsertResult_(live.id, String(x.v[0]), String(x.v[1]), rec); } });
+      rosterRows_(klass).forEach(function (x) {
+        var rk = recKey_(live.id, x.v[1]), rec = cget_(rk); if (!rec) return;
+        if (rec.st === 'writing') { var have = resultRow_(live.id, x.v[1]); if (have && have.st && have.st !== 'writing') return; rec.st = 'ended'; rec.done = Date.now(); }
+        else if (rec.saved) return;
+        upsertResult_(live.id, String(x.v[0]), String(x.v[1]), rec); rec.saved = true; cput_(rk, rec);
+      });
       return { ok: true, closed: live.id };
     } else return { ok: false, error: 'bad op' };
     all[k] = live; saveProp_('TESTLIVE', all);
