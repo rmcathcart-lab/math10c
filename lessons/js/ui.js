@@ -95,6 +95,56 @@ export function boot({ key, homeHref = '../../', title = '' }) {
   $('[data-act=calc]').addEventListener('click', () => calc().toggle());
   $('[data-act=menu]').addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(); });
 
+  /* ---------- eraser dot ----------
+   * A round eraser button that floats on the left side of the screen (in the HUD, so it stays put and the same size when
+   * zoomed). Tap: erase one stroke, then back to the pen. Double-tap: the eraser stays on (tap again to turn it off).
+   * Drag it anywhere; where it sits is remembered on this device. */
+  const edot = h('button', 'edot no-ink'); edot.type = 'button';
+  edot.innerHTML = icon('eraser') + '<span class="edot-lock" aria-hidden="true"></span>';
+  edot.title = 'Eraser: tap for one stroke, double-tap to keep it on. Drag to move.';
+  edot.setAttribute('aria-label', 'Eraser (tap for one stroke, double-tap to keep it on)');
+  if (sh.readonly) edot.hidden = true;
+  hud.appendChild(edot);
+  const EK = 'ink:edot';
+  let epos = (() => { try { return JSON.parse(localStorage.getItem(EK) || 'null'); } catch (e) { return null; } })() || { x: 0, y: 0.45 };
+  const placeDot = () => {
+    const W = hud.clientWidth || innerWidth, H = hud.clientHeight || innerHeight, d = edot.offsetWidth || 56, top = 64;
+    const x = Math.max(6, Math.min(W - d - 6, 10 + epos.x * (W - d - 20))), y = Math.max(top, Math.min(H - d - 8, top + epos.y * (H - d - top - 8)));
+    edot.style.transform = 'translate(' + Math.round(x) + 'px,' + Math.round(y) + 'px)';
+  };
+  placeDot(); addEventListener('resize', placeDot); if (window.visualViewport) visualViewport.addEventListener('resize', () => setTimeout(placeDot, 0));
+  let drag = null, lastTap = 0, tapTimer = 0;
+  edot.addEventListener('pointerdown', (e) => {
+    e.preventDefault(); e.stopPropagation();
+    const r = edot.getBoundingClientRect();
+    drag = { id: e.pointerId, x0: e.clientX, y0: e.clientY, moved: false, z: (window.visualViewport && visualViewport.scale) || 1, sx: 0, sy: 0 };
+    const m = /translate\((-?[\d.]+)px,\s*(-?[\d.]+)px\)/.exec(edot.style.transform || ''); if (m) { drag.sx = +m[1]; drag.sy = +m[2]; }
+    try { edot.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+  });
+  edot.addEventListener('pointermove', (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = (e.clientX - drag.x0) * drag.z, dy = (e.clientY - drag.y0) * drag.z;
+    if (!drag.moved && Math.hypot(dx, dy) < 8) return;
+    drag.moved = true; edot.classList.add('dragging');
+    const W = hud.clientWidth || innerWidth, H = hud.clientHeight || innerHeight, d = edot.offsetWidth || 56, top = 64;
+    const x = Math.max(6, Math.min(W - d - 6, drag.sx + dx)), y = Math.max(top, Math.min(H - d - 8, drag.sy + dy));
+    edot.style.transform = 'translate(' + Math.round(x) + 'px,' + Math.round(y) + 'px)';
+    epos = { x: Math.max(0, Math.min(1, (x - 10) / Math.max(1, W - d - 20))), y: Math.max(0, Math.min(1, (y - top) / Math.max(1, H - d - top - 8))) };
+  });
+  const endDrag = (e) => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const moved = drag.moved; drag = null; edot.classList.remove('dragging');
+    if (moved) { try { localStorage.setItem(EK, JSON.stringify(epos)); } catch (err) { /* ignore */ } return; }
+    if (e.type === 'pointercancel') return;
+    const s = Ink.state(), now = Date.now();
+    if (now - lastTap < 350) { lastTap = 0; Ink.eraserLock(); Ink.toast('Eraser stays on — tap to turn it off'); return; } // double-tap
+    lastTap = now;
+    if (s.tool === 'eraser') Ink.eraserOff(); else Ink.eraserOnce();
+  };
+  edot.addEventListener('pointerup', endDrag); edot.addEventListener('pointercancel', endDrag);
+  edot.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); });
+  Ink.onChange((s) => { edot.classList.toggle('on', s.tool === 'eraser'); edot.classList.toggle('once', s.tool === 'eraser' && !!s.once); edot.classList.toggle('lock', s.tool === 'eraser' && !s.once); });
+
   /* ---------- blank board ---------- */
   const board = h('div', 'board hidden');
   board.innerHTML = `<div class="board-sheet" data-ink="board"></div>

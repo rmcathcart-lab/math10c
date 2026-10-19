@@ -9,6 +9,7 @@
  *  - Starting a stroke on a button, link or the calculator presses it instead of writing.
  *  - Tools: pen (4 colours, 3 sizes), highlighter, stroke eraser, laser pointer (fades), hand (pencil scrolls).
  *  - Undo / redo (buttons, Cmd+Z, or a two-finger tap). Ink is saved on this device, per lesson.
+ *  - Eraser dot (ui.js): tap = erase one stroke, then back to the tool you had (S.once); double-tap = stays on.
  *  - Each pen colour slot can be given another colour (hold a colour in the toolbar). Strokes keep the colour they were
  *    drawn in: a stroke stores its slot name while the slot has its usual colour, otherwise the colour itself.
  */
@@ -308,7 +309,7 @@ function onUp(e) {
   S.active = null; document.body.classList.remove('inking'); S.penDownAt = Date.now();
   try { A.sf.el.releasePointerCapture(e.pointerId); } catch (err) { /* ignore */ }
   A.sf.rect = null;
-  if (A.erase) { if (A.erase.length) push({ type: 'erase', surf: A.sf.id, strokes: A.erase }); return; }
+  if (A.erase) { if (A.erase.length) push({ type: 'erase', surf: A.sf.id, strokes: A.erase }); if (S.once) eraserOff(); return; }
   if (A.s.pen) { pending = { A, at: performance.now(), lift: A.trail && A.trail.length ? A.trail[A.trail.length - 1].slice(0, 2) : [e.clientX, e.clientY], v: liftVelocity(A), timer: setTimeout(commitPending, JOIN_MS) }; return; }
   finishStroke(A);
 }
@@ -364,7 +365,11 @@ function onTouchEnd(e) {
 function emit() { S.listeners.forEach((f) => f(S)); }
 export function onChange(f) { S.listeners.add(f); f(S); }
 export function state() { return S; }
-export function setTool(t) { S.tool = t; settings(); emit(); }
+export function setTool(t) { S.once = false; if (t !== 'eraser') S.before = null; S.tool = t; settings(); emit(); }
+/* the eraser dot: once = one stroke then back to the tool you had; lock = stays on until you turn it off */
+export function eraserOnce() { if (S.tool !== 'eraser') S.before = S.tool; S.tool = 'eraser'; S.once = true; emit(); }
+export function eraserLock() { if (S.tool !== 'eraser') S.before = S.tool; S.tool = 'eraser'; S.once = false; emit(); }
+export function eraserOff() { const b = S.before; S.once = false; S.before = null; S.tool = b && b !== 'eraser' ? b : 'pen'; emit(); }
 export function setColor(c) { S.color = c; if (S.tool !== 'pen') S.tool = 'pen'; settings(); emit(); }
 export function setSize(i) { S.size = i; settings(); emit(); }
 export function setFinger(on) { S.finger = on; settings(); emit(); }
