@@ -303,11 +303,13 @@
         var when = LAY ? LAY.dateOf[c.id] : null, stt = !when ? '' : when === TODAY ? 'today' : when < TODAY ? 'past' : 'next';
         if (stt === 'today') line.classList.add('is-today');
         if (turl) {
-          var tag = stt === 'today' ? 'Today' : stt === 'past' ? '✓ Taught' : stt === 'next' ? HW.Cal.nice(when, { month: 'short', day: 'numeric' }) : '';
-          var tc = el('a', 'lesson-teach' + (stt ? ' is-' + stt : ''), '<span class="lt-k">Lesson</span><span class="lt-n">' + esc(c.num) + '</span>' + (tag ? '<span class="lt-s">' + tag + '</span>' : ''));
+          var tag = stt === 'today' ? 'Today' : stt ? HW.Cal.nice(when, { month: 'short', day: 'numeric' }) : '';
+          // taught lessons: a check beside the number (the number and check centred together) and the date it was taught
+          var ck = stt === 'past' ? '<svg class="lt-ck" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.2 6.4 4.8 9 9.8 3.4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '';
+          var tc = el('a', 'lesson-teach' + (stt ? ' is-' + stt : ''), '<span class="lt-k">Lesson</span><span class="lt-n">' + ck + esc(c.num) + '</span>' + (tag ? '<span class="lt-s">' + tag + '</span>' : ''));
           tc.href = turl;
           tc.title = 'Open Lesson ' + c.num + ' (examples and class notes)' + (stt === 'today' ? ' — today’s lesson' : stt === 'past' ? ' — taught ' + HW.Cal.nice(when) : stt === 'next' ? ' — on ' + HW.Cal.nice(when) : '');
-          tc.setAttribute('aria-label', 'Lesson ' + c.num + ' — ' + stripTags(c.title) + (tag ? ' (' + tag.replace('✓ ', '') + ')' : ''));
+          tc.setAttribute('aria-label', 'Lesson ' + c.num + ' — ' + stripTags(c.title) + (stt === 'past' ? ' (taught ' + tag + ')' : tag ? ' (' + tag + ')' : ''));
           tc.addEventListener('click', function () { L.push({ t: 'event', type: 'notes', lesson: c.id }); });
           line.appendChild(tc);
         } else line.appendChild(el('div', 'lesson-teach none', ''));

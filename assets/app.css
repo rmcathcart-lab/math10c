@@ -650,9 +650,11 @@ body.tm-on .calc { z-index: 200; }
 .lesson-teach.none { background: none; }
 .lt-k { font-size: 11px; font-weight: 600; line-height: 1; opacity: .85; }
 .lt-n { font-size: 20px; font-weight: 800; line-height: 1; }
+.lt-n { display: inline-flex; align-items: center; justify-content: center; gap: 3px; }
+.lt-ck { width: 12px; height: 12px; flex: none; color: #2f7d58; }
 .lt-s { font-size: 10.5px; font-weight: 700; line-height: 1.1; white-space: nowrap; }
 .lesson-teach.is-past { background: #fff; border-color: var(--line); color: var(--muted); }
-.lesson-teach.is-past .lt-s { color: #2f7d58; }
+.lesson-teach.is-past .lt-s { color: var(--muted); font-weight: 600; }
 .lesson-teach.is-past:hover { border-color: var(--uc, var(--brand2)); color: var(--ucd, var(--brand)); }
 .lesson-teach.is-today { background: var(--uct, var(--brand)); color: #fff; }
 .lesson-teach.is-today:hover { background: var(--ucd, var(--brand)); }
