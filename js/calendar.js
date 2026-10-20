@@ -51,6 +51,8 @@
     }
     return INFO[k] || null;
   };
+  /* colour a chip by its unit (catalog.js HW.unitStyle) */
+  C.paint = function (node, k) { var i = C.info(k); if (node && i && HW.unitStyle) { node.setAttribute('style', (node.getAttribute('style') || '') + ';' + HW.unitStyle(i.unit)); node.classList.add('calm-u'); } return node; };
   C.label = function (k) { var i = C.info(k); return !i ? k : i.kind === 'test' ? i.title : 'U' + i.unit + ' L' + i.num; };
 
   /* ---- a calendar ---- */
@@ -144,7 +146,7 @@
       if (!we) {
         var list = el('div', 'calm-items');
         if (isOff) list.appendChild(el('div', 'calm-offl', 'No school'));
-        keys.forEach(function (key) { var c = opts.chip ? opts.chip(key, k) : el('span', 'calm-chip', C.label(key)); if (c) list.appendChild(c); });
+        keys.forEach(function (key) { var c = opts.chip ? opts.chip(key, k) : el('span', 'calm-chip', C.label(key)); if (c) list.appendChild(C.paint(c, key)); });
         cell.appendChild(list);
       }
       grid.appendChild(cell);

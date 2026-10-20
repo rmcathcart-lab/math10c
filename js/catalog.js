@@ -107,6 +107,14 @@
       { id: 'u10l8', num: '8', title: 'Surface Area and Volume of Spheres and Hemispheres' },
       { id: 'u10l9', num: '9', title: 'Measurement — A Cumulative Review' }] }
   ];
+  /* a colour for each unit (class calendar, unit headings): neighbouring units contrast, so a unit change is easy to see.
+     HW.unitStyle(u) gives CSS variables: --uc (the colour), --ucl (pale tint), --ucs (soft border), --ucd (dark text),
+     --uct (solid fill for white text, e.g. a unit test day). */
+  var UC = { 1: '#2563eb', 2: '#ea580c', 3: '#7c3aed', 4: '#16a34a', 5: '#db2777', 6: '#0d9488', 7: '#ca8a04', 8: '#4f46e5', 9: '#dc2626', 10: '#8b5e34' };
+  function mix(a, b, t) { var x = parseInt(a.slice(1), 16), y = parseInt(b.slice(1), 16), out = '#'; [16, 8, 0].forEach(function (s) { var v = Math.round(((x >> s) & 255) * (1 - t) + ((y >> s) & 255) * t); out += ('0' + v.toString(16)).slice(-2); }); return out; }
+  root.HW.UNIT_COLORS = UC;
+  root.HW.unitColor = function (u) { var c = UC[u] || '#0f766e'; return { c: c, light: mix(c, '#ffffff', 0.87), soft: mix(c, '#ffffff', 0.55), dark: mix(c, '#000000', 0.38), solid: mix(c, '#000000', 0.12) }; };
+  root.HW.unitStyle = function (u) { var x = root.HW.unitColor(u); return '--uc:' + x.c + ';--ucl:' + x.light + ';--ucs:' + x.soft + ';--ucd:' + x.dark + ';--uct:' + x.solid; };
   root.HW.OUTCOMES = {
     AN1: 'Factors of whole numbers: prime factors, GCF, LCM, square roots and cube roots',
     AN2: 'Irrational numbers: representing, identifying and simplifying; ordering real numbers',

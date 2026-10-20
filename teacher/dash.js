@@ -234,7 +234,7 @@
     body.appendChild(bar);
     var t = el('table', 'tbl prog'), ncol = us.length + 5;
     var h = '<thead><tr><th class="sortable" data-s="name">Student</th>';
-    us.forEach(function (x) { h += '<th class="sortable" data-s="u' + x.u.unit + '" title="' + esc(x.u.title) + ' (' + esc(x.u.outcomes) + ') · click a student’s unit to see its lessons">Unit ' + x.u.unit + '<div class="th-sub">' + esc(x.u.title) + '</div></th>'; });
+    us.forEach(function (x) { h += '<th class="sortable u-col" style="' + (HW.unitStyle ? HW.unitStyle(x.u.unit) : '') + '" data-s="u' + x.u.unit + '" title="' + esc(x.u.title) + ' (' + esc(x.u.outcomes) + ') · click a student’s unit to see its lessons">Unit ' + x.u.unit + '<div class="th-sub">' + esc(x.u.title) + '</div></th>'; });
     h += '<th class="sortable" data-s="time">Time worked<div class="th-sub">in class / all</div></th><th class="sortable" data-s="acc">Right</th><th class="sortable" data-s="leaves">Left page</th><th>Last seen</th></tr></thead>';
     t.innerHTML = h;
     var key = st.sortP, uk = /^u\d+$/.test(key) && us.filter(function (x) { return 'u' + x.u.unit === key; })[0];
@@ -435,7 +435,7 @@
     tog.addEventListener('click', function () { var open = !unitsBuilt().some(function (x) { return st.sOpen[x.u.unit]; }); unitsBuilt().forEach(function (x) { st.sOpen[x.u.unit] = open; }); ls('hw:tsopen', JSON.stringify(st.sOpen)); render(); });
     allBtn.appendChild(el('h3', '', 'Lessons by unit')); allBtn.appendChild(tog); uw.appendChild(allBtn);
     unitsBuilt().forEach(function (x) {
-      var u = unitSum(x.ls, s), open = !!st.sOpen[x.u.unit], sec = el('section', 'panel su' + (open ? ' open' : ''));
+      var u = unitSum(x.ls, s), open = !!st.sOpen[x.u.unit], sec = el('section', 'panel su' + (open ? ' open' : '')); if (HW.unitStyle) sec.setAttribute('style', HW.unitStyle(x.u.unit));
       var hd = el('button', 'su-head'); hd.type = 'button'; hd.setAttribute('aria-expanded', open ? 'true' : 'false');
       hd.innerHTML = '<span class="su-chev" aria-hidden="true">▸</span><span class="su-t"><b>Unit ' + x.u.unit + ' · ' + esc(x.u.title) + '</b> <span class="muted small">' + esc(x.u.outcomes) + ' · ' + x.ls.length + ' lesson' + (x.ls.length === 1 ? '' : 's') + '</span></span><span class="su-bar">' + unitBar(u) + '</span><span class="su-n">' + counts(u) + ' required</span>';
       var bd = el('div', 'su-body');

@@ -449,3 +449,7 @@ body.viewer .edot { display: none; }
 .hc-cal { --cal-h: calc(100vh - 260px); }
 .hc-cal .calm-chip { font-size: 13.5px; }
 .hc-foot { font-size: 15px; margin-top: 10px; }
+/* unit colours on All lessons (js/home-cal.js, catalog.js HW.unitStyle) */
+section.unit[style] .unit-h .badge { background: var(--uc); }
+section.unit[style] .lcard { border-left: 4px solid var(--ucs); }
+section.unit[style] .lcard:hover { border-left-color: var(--uc); }

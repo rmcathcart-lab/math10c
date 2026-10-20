@@ -87,5 +87,7 @@
       if (was !== JSON.stringify(next)) draw();
     }).catch(function () { if (!data) { data = { cal: null, loading: false }; draw(); } });
   }
+  /* unit colours on the lesson list (the same as the calendar) */
+  if (HW.unitStyle) wrap.querySelectorAll('section.unit').forEach(function (sec) { var b = sec.querySelector('.unit-h .badge'), n = b && parseInt(b.textContent, 10); if (n) sec.setAttribute('style', HW.unitStyle(n)); });
   keepClassInLinks(); draw(); load();
 })(window);

@@ -233,7 +233,7 @@
     var legend = el('div', 'legend', '<span><i class="lg first"></i>Done first try</span><span><i class="lg help"></i>Done with a hint</span><span><i class="lg extra"></i>Extra practice</span><span><i class="lg empty"></i>Still to do</span>');
     view.appendChild(legend);
     HW.CATALOG.forEach(function (u) {
-      var sec = el('section', 'unit');
+      var sec = el('section', 'unit'); if (HW.unitStyle) sec.setAttribute('style', HW.unitStyle(u.unit)); // unit colour (as on the class calendar)
       var uh = el('h2', 'unit-title', '<span class="unit-num">Unit ' + u.unit + '</span> ' + esc(u.title) + ' <span class="unit-out">' + esc(u.outcomes) + '</span>');
       sec.appendChild(uh);
       if (u.lessons.some(function (c) { return HW.lessons[c.id]; })) uh.appendChild(unitLevels(u));
