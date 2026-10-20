@@ -30,12 +30,11 @@
       st.classes.forEach(function (c) { var o = el('option', '', esc(c.label) + ' (' + c.students + ')'); o.value = c.code; if (c.code === st.klass) o.selected = true; sel.appendChild(o); });
       sel.addEventListener('change', function () { st.klass = sel.value; ls('hw:tclass', st.klass); st.student = null; loadDash(); });
       top.appendChild(sel);
-      if (st.D) top.appendChild(onlineChip());
+      if (st.D) { top.appendChild(onlineChip()); top.appendChild(el('span', 'small muted top-upd', 'Updated ' + new Date(st.D.now).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }))); }
     }
     var right = el('div', 'top-right');
-    if (st.D) right.appendChild(el('span', 'small muted top-upd', 'Updated ' + new Date(st.D.now).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })));
-    if (st.D && HW.DashCal) { HW.DashCal.topButtons(right); } // Lessons (pop-up) and Launch Today's Lesson
     var stu = el('a', 'btn btn-ghost', 'Student site ↗'); stu.href = '../'; stu.target = '_blank'; right.appendChild(stu);
+    if (st.D && HW.DashCal) { HW.DashCal.topButtons(right); } // then Lessons (pop-up) and, farthest right, Launch Today's Lesson
     top.appendChild(right);
   }
   function tabs() {

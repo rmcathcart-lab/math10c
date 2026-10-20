@@ -230,12 +230,12 @@
   }
   function topButtons(right) {
     var lb = button('btn-ghost top-lessons', 'Lessons', function () { openLessons(); }); lb.title = 'All the lessons, as cards or on the class calendar';
-    right.insertBefore(lb, right.firstChild);
+    right.appendChild(lb); // header, left to right: Student site, Lessons, Launch Today's Lesson
     var t = todayInfo(), go;
-    if (t.keys.length === 1) { go = el('a', 'btn btn-primary top-launch', '▶ Launch Today’s Lesson'); go.href = lessonUrl(t.keys[0]); var i = C.info(t.keys[0]); go.title = 'Lesson ' + i.unit + '.' + i.num + ': ' + i.title + (block() ? ' (Block ' + block() + ')' : ''); }
-    else if (t.keys.length > 1) { go = button('btn-primary top-launch', '▶ Launch Today’s Lesson', function () { openLessons('today'); }); go.title = 'Two lessons today: pick one'; }
-    else { go = button('btn-primary top-launch', '▶ Launch Today’s Lesson', function () {}); go.disabled = true; go.title = t.why; }
-    right.insertBefore(go, lb.nextSibling);
+    if (t.keys.length === 1) { go = el('a', 'btn btn-primary top-launch', 'Launch Today’s Lesson'); go.href = lessonUrl(t.keys[0]); var i = C.info(t.keys[0]); go.title = 'Lesson ' + i.unit + '.' + i.num + ': ' + i.title + (block() ? ' (Block ' + block() + ')' : ''); }
+    else if (t.keys.length > 1) { go = button('btn-primary top-launch', 'Launch Today’s Lesson', function () { openLessons('today'); }); go.title = 'Two lessons today: pick one'; }
+    else { go = button('btn-primary top-launch', 'Launch Today’s Lesson', function () {}); go.disabled = true; go.title = t.why; }
+    right.appendChild(go);
   }
   /* the Lessons pop-up: every lesson as cards (by unit, in unit colours, marked Today / Taught / its date for this class),
      or the class calendar; tap one to open it for this class */

@@ -233,9 +233,24 @@
     var legend = el('div', 'legend', '<span><i class="lg first"></i>Done first try</span><span><i class="lg help"></i>Done with a hint</span><span><i class="lg extra"></i>Extra practice</span><span><i class="lg empty"></i>Still to do</span>');
     view.appendChild(legend);
     var CD = calData(), LAY = CD && HW.Cal ? HW.Cal.layout(CD.cal, CD.noSchool) : null, TODAY = HW.Cal ? HW.Cal.today() : '';
+    /* units fold up: the current unit is open, the rest are closed; what the student opens or closes holds for today */
+    var cu = currentUnit(CD, LAY, TODAY), UK = 'hw:units:' + studentKey(), US = null;
+    try { US = JSON.parse(ls(UK) || 'null'); } catch (e) { US = null; }
+    if (!US || US.day !== TODAY) US = { day: TODAY, open: {} };
     HW.CATALOG.forEach(function (u) {
       var sec = el('section', 'unit'); if (HW.unitStyle) sec.setAttribute('style', HW.unitStyle(u.unit)); // unit colour (as on the class calendar)
-      var uh = el('h2', 'unit-title', '<span class="unit-num">Unit ' + u.unit + '</span> ' + esc(u.title) + ' <span class="unit-out">' + esc(u.outcomes) + '</span>');
+      var open = u.unit in US.open ? !!US.open[u.unit] : u.unit === cu;
+      var built = u.lessons.filter(function (c) { return HW.lessons[c.id]; }), done = built.filter(function (c) { var sm = summary(HW.lessons[c.id]); return sm.req && sm.reqDone === sm.req; }).length;
+      var uh = el('h2', 'unit-title', '<span class="ut-chev" aria-hidden="true">▸</span><span class="unit-num">Unit ' + u.unit + '</span> ' + esc(u.title) + ' <span class="unit-out">' + esc(u.outcomes) + '</span>' +
+        (u.unit === cu ? '<span class="ut-cur">Current unit</span>' : '') + '<span class="ut-sum">' + (built.length ? done + ' of ' + built.length + ' assignment' + (built.length === 1 ? '' : 's') + ' done' : u.lessons.length + ' lessons') + '</span>');
+      uh.setAttribute('role', 'button'); uh.tabIndex = 0; uh.setAttribute('aria-expanded', open ? 'true' : 'false');
+      sec.classList.toggle('closed', !open);
+      var toggle = function (e) {
+        if (e.target.closest && e.target.closest('.unit-levels')) return; // the level chips have their own tooltips
+        var o = sec.classList.contains('closed'); sec.classList.toggle('closed', !o); uh.setAttribute('aria-expanded', o ? 'true' : 'false');
+        US.open[u.unit] = o; ls(UK, JSON.stringify(US));
+      };
+      uh.addEventListener('click', toggle); uh.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(e); } });
       sec.appendChild(uh);
       if (u.lessons.some(function (c) { return HW.lessons[c.id]; })) uh.appendChild(unitLevels(u));
       if (!u.lessons.length) { sec.classList.add('soon'); sec.appendChild(el('div', 'soon-note', 'Coming soon')); view.appendChild(sec); return; }
@@ -342,6 +357,16 @@
   }
   function closeCalendar() { var o = document.getElementById('cal-pop'); if (o) o.remove(); document.removeEventListener('keydown', calKeys); }
   function calKeys(e) { if (e.key === 'Escape') closeCalendar(); }
+  /* the unit the class is on: from the class calendar (the next lesson or test from today), else the unit of the last
+     assignment the student worked on, else Unit 1 */
+  function currentUnit(CD, LAY, TODAY) {
+    if (CD && LAY) {
+      var next = CD.cal.items.filter(function (x) { var d = LAY.dateOf[x[0]]; return d && d >= TODAY; })[0] || CD.cal.items[CD.cal.items.length - 1];
+      var i = next && HW.Cal.info(next[0]); if (i) return i.unit;
+    }
+    var last = lastLesson(); if (last && HW.lessons[last]) return HW.lessons[last].unit;
+    return 1;
+  }
   function lastLesson() { var best = null; Object.keys(S.lessons).forEach(function (k) { if (!best || (S.lessons[k].updated || 0) > (S.lessons[best].updated || 0)) best = k; }); return best; }
   function mins(s) { if (s < 60) return '<1 min'; var m = Math.round(s / 60); return m < 60 ? m + ' min' : Math.floor(m / 60) + ' h ' + (m % 60) + ' min'; }
 
