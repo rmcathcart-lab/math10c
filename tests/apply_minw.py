@@ -11,6 +11,9 @@ for r in res:
     for e in r['explainers']:
         if e['status'] != 'cramped': continue
         name, w = e['name'], e['need']
+        # the defs map may rename it: mountExplainers({ box: boxEx }) / const defs = { box: boxEx }
+        ren = re.search(r'(?:mountExplainers\(\{|defs = \{)[^}]*\b%s\s*:\s*([A-Za-z_$][\w$]*)' % re.escape(name), s)
+        if ren: name = ren.group(1)
         m = re.search(r'^(?:export )?const %s = \{\n' % re.escape(name), s, re.M)
         if not m:
             # a definition made by a factory: const name = factory(...);  ->  name.minW = w; on the next line
