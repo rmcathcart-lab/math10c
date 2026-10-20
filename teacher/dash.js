@@ -558,9 +558,49 @@
       var del = el('button', 'btn btn-small', 'Delete ' + esc(c.label)); del.type = 'button'; del.addEventListener('click', function () { if (prompt('Type the class code (' + c.code + ') to delete it.') !== c.code) return; api('delclass', { 'class': c.code }).then(function () { st.klass = ''; st.D = null; loadClasses(); }); });
       p5.appendChild(del); body.appendChild(p5);
     }
+    body.appendChild(notesPanel());
     var p6 = el('div', 'panel'); p6.appendChild(el('h3', '', 'This device'));
     if (HW.DashDemo && ls('hw:nodemo') === '1') { var sd = el('button', 'btn btn-small btn-ghost', 'Show the demo class'); sd.type = 'button'; sd.style.marginRight = '8px'; sd.addEventListener('click', function () { ls('hw:nodemo', null); loadClasses(); }); p6.appendChild(sd); }
     var fk = el('button', 'btn btn-small btn-ghost', 'Forget the teacher key on this device'); fk.type = 'button'; fk.addEventListener('click', function () { ls('hw:tkey', null); st.key = ''; keyScreen(); }); p6.appendChild(fk); body.appendChild(p6);
+  }
+  /* Lesson notes: the Pencil annotations on the lesson pages live in a separate Apps Script ("Math 10C Teaching Ink",
+     lessons/backend/Code.gs) with its own teacher key (the one used to sign in on a lesson page). This clears every
+     lesson's notes for every class there, plus the copies kept on this device, e.g. at the end of a semester. */
+  function notesPanel() {
+    var p = el('div', 'panel danger'); p.appendChild(el('h3', '', 'Lesson notes'));
+    p.appendChild(el('p', 'small muted', 'Clears every annotation on every lesson page, for every class: your Pencil notes and what students see on their class links. Use it to start fresh, e.g. at the end of a semester. It can’t be undone.'));
+    var lsj = function (k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
+    var saved = String(lsj('ink:teacher') || '');
+    var row = el('div', 'linkrow'), key = el('input', 'field'); key.type = 'password'; key.autocomplete = 'off';
+    key.placeholder = saved ? 'Signed in on the lesson pages on this device' : 'Lesson-notes teacher key (the one you sign in with on a lesson page)';
+    var go = el('button', 'btn btn-small', 'Clear all lesson notes…'); go.type = 'button';
+    row.appendChild(key); row.appendChild(go); p.appendChild(row);
+    var msg = el('p', 'small'); p.appendChild(msg);
+    go.addEventListener('click', function () {
+      var k = (key.value.trim() || saved).toUpperCase();
+      if (!k) { msg.textContent = 'Enter the lesson-notes teacher key first.'; key.focus(); return; }
+      if (prompt('This erases every annotation on every lesson page, for every class. Type CLEAR to go ahead.') !== 'CLEAR') return;
+      go.disabled = true; msg.textContent = 'Clearing…';
+      import('../lessons/js/config.js').then(function (m) {
+        var url = String(lsj('ink:api') || (m.CONFIG && m.CONFIG.inkApi) || '').trim();
+        if (!url) throw new Error('nourl');
+        return fetch(url, { method: 'POST', credentials: 'omit', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ op: 'resetall', key: k }) }).then(function (r) { return r.json(); });
+      }).then(function (d) {
+        go.disabled = false;
+        if (!d || !d.ok) throw new Error(d && d.error || 'error');
+        // this device's own copies and unsent changes, so nothing old is sent back up
+        var gone = 0; Object.keys(localStorage).forEach(function (n) { if (/^ink:u\d+l\w+(:|$)/.test(n) || /^inkq:/.test(n)) { localStorage.removeItem(n); gone++; } });
+        msg.textContent = 'Cleared the notes on ' + d.cleared + ' lesson page' + (d.cleared === 1 ? '' : 's') + ' (all classes)' + (gone ? ', and this device’s copies' : '') + '. Lesson pages that are open now go blank within a few seconds; reload one to be sure.';
+      }).catch(function (e) {
+        go.disabled = false;
+        var m = String(e && e.message || e);
+        msg.textContent = m === 'badkey' ? 'That key wasn’t accepted. Use the key you sign in with on a lesson page (it’s in the Teaching Ink Apps Script: Project Settings → Script properties → TEACHER_KEY).'
+          : m === 'unknown op' ? 'The Teaching Ink Apps Script needs the new version of lessons/backend/Code.gs first (paste it, then Deploy → Manage deployments → edit → New version).'
+          : m === 'nourl' ? 'Lesson notes aren’t shared through a server yet, so there’s nothing to clear online.'
+          : 'Couldn’t reach the lesson-notes server. Try again in a moment.';
+      });
+    });
+    return p;
   }
   function siteUrl() { var u = location.href.split('#')[0].split('?')[0]; return u.replace(/teacher\/?(index\.html)?$/, ''); }
   function flash(node, msg) { var f = el('div', 'flash', esc(msg)); node.appendChild(f); setTimeout(function () { f.remove(); }, 3500); }

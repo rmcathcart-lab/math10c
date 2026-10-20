@@ -13,6 +13,8 @@
  *   GET  ?op=poll&lesson=u1l1&cls=B&epoch=<e>&since=<row>  → { ok, epoch, last, more, full, ops: [json, …] }
  *   POST text/plain { op: 'push',  key, lesson, cls, ops: [...] } → { ok, epoch, last }
  *   POST text/plain { op: 'check', key }                          → { ok }
+ *   POST text/plain { op: 'resetall', key }                       → { ok, cleared }   every lesson's notes, every class
+ *                     (the Teacher Ledger's Settings → "Clear all lesson notes", e.g. at the end of a semester)
  */
 
 var MAX_ROWS_PER_POLL = 300;
@@ -71,6 +73,7 @@ function doPost(e) {
   try { body = JSON.parse(e.postData.contents); } catch (err) { return out_({ ok: false, error: 'bad request' }); }
   if (!keyOk_(body.key)) return out_({ ok: false, error: 'badkey' });
   if (body.op === 'check') return out_({ ok: true });
+  if (body.op === 'resetall') return out_(resetAll_());
   if (body.op !== 'push') return out_({ ok: false, error: 'unknown op' });
   var lock = LockService.getScriptLock(); lock.waitLock(20000);
   try {
@@ -92,5 +95,19 @@ function doPost(e) {
     return out_({ ok: true, epoch: epoch, last: last });
   } catch (err) {
     return out_({ ok: false, error: String(err.message || err) });
+  } finally { lock.releaseLock(); }
+}
+
+/* Clear every "ink <lesson> <class>" tab. Each one gets a new epoch, so open pages (the teacher's and the students')
+ * wipe their copy the next time they check in. The tabs stay, empty. */
+function resetAll_() {
+  var lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    var n = 0, now = Date.now();
+    book_().getSheets().forEach(function (sh) {
+      var name = sh.getName(); if (!/^ink /.test(name)) return;
+      sh.clearContents(); sh.getRange(1, 1).setValue(JSON.stringify({ epoch: now + n })); remember_(name, now + n, 1); n++;
+    });
+    return { ok: true, cleared: n };
   } finally { lock.releaseLock(); }
 }

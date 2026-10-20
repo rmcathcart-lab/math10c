@@ -17,6 +17,7 @@ http.createServer((req, res) => {
     let b; try { b = JSON.parse(body); } catch (e) { return res.end('{"ok":false}'); }
     if (String(b.key || '').toUpperCase() !== KEY) return res.end(JSON.stringify({ ok: false, error: 'badkey' }));
     if (b.op === 'check') return res.end('{"ok":true}');
+    if (b.op === 'resetall') { let n = 0; Object.values(tabs).forEach((t) => { t.rows = []; t.epoch = Date.now() + n++; }); return res.end(JSON.stringify({ ok: true, cleared: n })); }
     const t = tab(b.lesson, b.cls);
     (b.ops || []).forEach((op) => { if (op.a === 'reset') { t.rows = []; t.epoch = Date.now(); } else t.rows.push(JSON.stringify(op)); });
     res.end(JSON.stringify({ ok: true, epoch: t.epoch, last: t.rows.length + 1 }));
