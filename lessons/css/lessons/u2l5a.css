@@ -200,3 +200,5 @@
 .wf .bonus-q { margin-top: 12px; }
 .wf .bonus-q .wq-a { margin-left: 38px; }
 .wf .hum { font-size: 17px; }
+.ex-side .cv-r { grid-template-columns: 112px 1fr; font-size: 16.5px; padding: 4px 10px; } /* the legend beside the sidebar */
+.ex-side .cv-k { font-size: 12.5px; }

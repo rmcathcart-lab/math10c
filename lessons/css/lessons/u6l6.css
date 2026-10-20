@@ -126,7 +126,8 @@
 .wf .wf-poll .opt { padding: 5px 12px; }
 .wf .wf-poll > .pill { margin: 0; }
 .wf-poll:not(.revealed) .poll-ans { display: none; }
-/* captions sit in the 268 px side column: let a long equation break after = or + (KaTeX's own break points) */
-.lesson.screen .ex-cap .katex { white-space: normal; }
 .wf .wf-head { grid-template-columns: auto auto minmax(0, 1fr); }
 .wf .wf-head .wf-rule { grid-column: auto; margin: 4px 0 0; font-size: 17px; line-height: 1.3; }
+/* the big one is a full-width row of the grid (so the first screen ends with the grid) */
+.wf .wf-grid { row-gap: 10px; }
+.wf .wf-grid > .wf-poll { grid-column: 1 / -1; margin-top: 0; }

@@ -150,5 +150,3 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .wf .u6l2-poll4 .poll-opts { margin: 0; }
 .wf .wf-poll > .pill { margin: 0; padding: 6px 14px; }
 .wf .wf-poll .opt { white-space: nowrap; padding: 5px 8px; }
-/* captions sit in the 268 px side column: let a long equation break after = or + (KaTeX's own break points) */
-.lesson.screen .ex-cap .katex { white-space: normal; }

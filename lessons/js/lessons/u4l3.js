@@ -45,7 +45,7 @@ const ZM = { n49: { v: 'x', k: 7 }, n25: { v: 'x', k: 5 }, n100: { v: 'x', k: 10
 const zeroMiddle = {
   title: 'The middle coefficient is 0: find the pair',
   height: 440,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar (the expand check for x^2-100 is long)
   choices: [{ v: 'n49', label: tex('x^2-49') }, { v: 'n25', label: tex('x^2-25') }, { v: 'n100', label: tex('x^2-100') }, { sep: 'Example 1 check:' }, { v: 'a', label: '(a)' }, { v: 'b', label: '(b)' }, { v: 'd', label: '(d)' }],
   intro: (key) => { const { v, k } = ZM[key]; return `Factor ${T(`${v}^2-${k * k}`)} the Lesson 2 way: find two integers whose <b>product</b> is ${T('c')} and whose <b>sum</b> is ${T('b')}.`; },
   make(stage, key, ex) {
@@ -587,7 +587,7 @@ const RG = { r1: [6.5, 3.5], r2: [10.5, 9.5], r3: [5, 3] };
 const ring = {
   title: 'The area of a ring',
   height: 450,
-  minW: 940, // drawn this wide and scaled to fit beside the sidebar
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar (the step labels need the full width)
   choices: [{ v: 'r1', label: tex('R=6.5,\\ r=3.5') }, { v: 'r2', label: tex('R=10.5,\\ r=9.5') }, { v: 'r3', label: tex('R=5,\\ r=3') }],
   intro: (key) => { const [R, r] = RG[key]; return `A circle of radius ${T(`R=${R}`)} has a circle of radius ${T(`r=${r}`)} cut out. Find the area of the ring that is left, as a multiple of ${T('\\pi')}, with no calculator.`; },
   make(stage, key, ex) {

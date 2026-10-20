@@ -203,8 +203,6 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .wf-one .wf-poll .opt { padding: 5px 12px; white-space: nowrap; }
 .wf-one .wf-poll > .pill { margin: 0; }
 .wf-poll:not(.revealed) .poll-ans { display: none; }
-/* captions sit in the 268 px side column: let a long equation break after = or + (KaTeX's own break points) */
-.lesson.screen .ex-cap .katex { white-space: normal; }
 .wf-one .wf-poll > .q-line { font-size: 16.5px; }
 .wf .u6l5-phones { --u6l5-ch: 35; }
 .wf-one .wf-poll { padding: 2px 12px 10px; }
@@ -213,3 +211,9 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .wf .u6l5-wqs { grid-template-columns: .9fr 1.2fr .9fr; }
 .wf-one .wf-poll > .q-line { font-size: 17px; }
 .lesson.screen .u6l5-ctl { gap: 5px; } .lesson.screen .u6l5-ctl .pill { padding: 6px 9px; }
+/* one column, but inside a .wf-grid so the first screen ends with the big one */
+.wf .u6l5-grid { grid-template-columns: minmax(0, 1fr); gap: 0; }
+.wf .u6l5-grid > .wf-poll { margin-top: 10px; }
+.wf .u6l5-phones { margin: 0 0 4px; }
+.wf .u6l5-clockrow { margin: 0 0 6px; }
+.wf .u6l5-grid > .wf-poll { margin-top: 8px; }

@@ -146,10 +146,11 @@ const garAxes = (o) => Object.assign({ xmin: 0, xmax: 11.6, ymin: 0, ymax: 212, 
 
 function mountStatic() {
   const wt = document.getElementById('wu-tub');
-  if (wt) makeTub(wt, { w: 380, depth: 23 });
+  if (wt) makeTub(wt, { w: Math.min(380, wt.clientWidth || 380), depth: 23 }); // CSS sets the width (smaller on one-screen pages)
   const wg = document.getElementById('wu-graph');
   if (wg) {
-    const G = storyGraph(wg, bathAxes({ width: 560, height: 360 }));
+    const gw = Math.min(560, wg.clientWidth || 560); // CSS sets the width (smaller on one-screen pages)
+    const G = storyGraph(wg, bathAxes({ width: gw, height: Math.round(gw * 360 / 560) }));
     G.polyline(BATH, { color: '#4f95d6', width: 6 });
     BATH.forEach((p) => G.point(p[0], p[1], { color: INK, r: 5.5 }));
     BATH_BADGES.forEach((p, i) => G.label(p[0], p[1], segBadge(i + 1)));
@@ -220,6 +221,7 @@ const BATHS = {
 const bath = {
   title: 'The bath, told by its graph',
   height: 490,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'bath', label: 'Sam’s bath' }, { v: 'dog', label: 'Dog jumps in' }],
   intro: (k) => (k === 'bath' ? 'Watch the tub and the graph together, one segment at a time. Press <b>Next</b>.' : 'The warm-up challenge: Sam’s dog jumps in mid-soak, then leaps out. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -266,6 +268,7 @@ const PC = {
 const pieces = {
   title: 'Rising, falling or flat?',
   height: 470,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'garage', label: 'Example 1 check: parking garage' }, { v: 'hike', label: 'A day hike' }],
   intro: (k) => (k === 'garage' ? 'Sort the six pieces of the parking-garage graph. Press <b>Next</b>.' : 'A hiker’s height above the trailhead through the day. Sort the pieces. Press <b>Next</b>.'),
   make(stage, k, ex) {

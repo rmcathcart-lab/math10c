@@ -97,3 +97,25 @@
 .u5l9-garage svg { display: block; }
 .u5l9-chip { display: inline-block; border: 2px solid; border-radius: 8px; padding: 0 6px; font-size: 17px; background: #fff; }
 .u5l9-chip.inc { border-color: #12805a; color: #12805a; } .u5l9-chip.dec { border-color: #c93a33; color: #c93a33; } .u5l9-chip.con { border-color: #5d6574; color: #5d6574; }
+
+/* ---------- one screen (main.lesson.screen): the graph and Q1–Q3 on the left, the tub and the big one on the right ---------- */
+.wf .u5l9-wtub { margin: 6px auto 0; }
+.wf .u5l9-wqs { gap: 0; }
+.wf .u5l9-wqs .q-line { margin: 6px 0 0; font-size: 17px; gap: 10px; line-height: 1.38; }
+.wf .u5l9-wqs .q-line .pill.small { margin-left: 4px; vertical-align: 1px; }
+.wf .u5l9-wqs .u5l9-wqa { margin: 2px 0 0 40px; }
+.wf .u5l9-wqs .bk-ans { margin: 0; font-size: 16px; line-height: 1.35; }
+.wf .wf-poll { margin-top: 8px; padding-bottom: 12px; }
+.wf .wf-poll .q-line { margin-top: 8px; }
+.wf .wf-poll .poll-opts.u5l9-c4 { grid-template-columns: 1fr 1fr; gap: 6px; }
+.wf .wf-poll .opt { font-size: 16.5px; padding: 6px 10px; }
+.wf .u5l9-wtub { width: 320px; margin: 0 auto 4px; }
+.wf .wf-side .u5l9-wqs .q-line { margin-top: 2px; }
+.wf .u5l9-wtub { width: 296px; }
+.wf .wf-poll .poll-opts.u5l9-c4 { grid-template-columns: repeat(4, 1fr); gap: 5px; }
+.wf .wf-poll .poll-opts.u5l9-c4 .opt { font-size: 15.5px; padding: 6px 6px; white-space: nowrap; }
+.wf .u5l9-wtub { width: 270px; }
+.wf .wf-poll .poll-opts.u5l9-c4 { grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 8px; }
+.wf .wf-poll .poll-opts.u5l9-c4 .opt { font-size: 16px; padding: 4px 10px; }
+.wf .wf-poll { margin-top: 4px; }
+.wf .wf-poll .q-line { margin: 6px 0 8px; }

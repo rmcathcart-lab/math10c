@@ -310,7 +310,7 @@ function tileEl(kind, sign, w, ht, lab) {
 const squareTiles = {
   title: 'The square picture, run backwards: can the tiles make a square?',
   height: 490,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar (the result box for 9x^2-42x+49 needs it)
   choices: [{ v: 'a', label: tex('x^2+6x+9') }, { v: 'b', label: tex('x^2+8x+16') }, { v: 'c', label: tex('x^2-6x+9') }, { v: 'd', label: tex('x^2+6x+5') },
     { sep: 'Example 1 check:' }, { v: 'e1a', label: '(a)' }, { v: 'e1b', label: '(b)' }, { v: 'e1c', label: '(c)' }, { v: 'e1d', label: '(d)' }],
   intro: (k) => `Build ${T(sqtQ(SQT[k]))} with algebra tiles. A <b>perfect square trinomial</b> is exactly a set of tiles that makes a <b>square</b>. Let’s try.`,

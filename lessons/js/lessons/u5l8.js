@@ -241,6 +241,7 @@ const subT = (d, x) => `${d.name}(${x})=${d.sub(x)}=${d.f(x)}`;
 const machine = {
   title: 'Table of values → points → graph',
   height: 450,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(MC).map((k) => ({ v: k, label: MC[k].label })),
   intro: (k) => (MC[k].calc ? 'The same function on a <b>graphing calculator</b> (TI-83/84). These keys are for the graphing calculator, not the TI-30XIIS. Press <b>Next</b>.'
     : `Feed inputs into ${T(MC[k].name + '(x)=' + (k === 'sq' ? 'x^2-4' : '2x-3'))}, record the outputs, plot, join. Press <b>Next</b>.`),
@@ -497,6 +498,7 @@ const CA = { ev: 'Evaluate ' + T('h(4)'), so: 'Solve ' + T('h(t)=8') };
 const candle = {
   title: 'Function notation tells a story',
   height: 460,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CA).map((k) => ({ v: k, label: CA[k] })),
   intro: (k) => (k === 'ev' ? `${T('h(4)')}: how tall is the candle after 4 hours? Press <b>Next</b>.` : `${T('h(t)=8')}: when is the candle 8 cm tall? Press <b>Next</b>.`),
   make(stage, k, ex) {
@@ -526,7 +528,7 @@ const candle = {
 const limits = {
   title: 'Where does the model stop?',
   height: 460,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   intro: `The rule ${T('h(t)=-2t+12')} accepts any number. The candle doesn’t. Press <b>Next</b>.`,
   make(stage, v, ex) {
     const S = candleScene(stage, ex, { xmin: -2, xmax: 8, ymin: -4, ymax: 16, ylabels: 2 }), G = S.G;

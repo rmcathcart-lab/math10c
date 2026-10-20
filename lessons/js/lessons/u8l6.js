@@ -89,7 +89,7 @@ const mobile = {
   make(stage, v, ex) {
     const isA = v === 'A', s = isA ? 46 : 38, W = isA ? 420 : 520, HH = 400;
     const host = add(stage, box(h('div', ''), W, HH), 8, 14), svg = svgEl('svg', { width: W, height: HH }, host);
-    const Mo = isA ? drawMobile(svg, 'A', 182, 470, s) : drawMobile(svg, 'B', 302, 420, s);
+    const Mo = isA ? drawMobile(svg, 'A', 204, 470, s) : drawMobile(svg, 'B', 302, 420, s); // A sits right enough for the two ghost moons by the star
     const Pn = panel(stage, W + 24, 14, ex.W - W - 34, 400, 'Equations');
     const WPOS = isA ? { s: 's', m1: 'e', m2: 'e' } : { t1: 'e', t2: 'e', c: 'e', s: 'w', t3: 'w' };
     const wl = (k, txt) => { const sh = Mo.shapes[k], p = WPOS[k], d = h('div', 'bk-lab u8l6-wlab', txt); host.appendChild(d); place(d, sh.cx + (p === 'e' ? 0.8 : p === 'w' ? -0.8 : 0) * s, sh.cy + (p === 's' ? 0.85 * s : 0), p, 4); return d; };

@@ -43,9 +43,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Roll It Two Ways" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Roll It Two Ways</h2></div>
-  <p class="big">Roll one sheet of paper (<span class="tex">21.6\ \text{cm}\times27.9\ \text{cm}</span>) into a tube. Tape the edges together, no overlap. Roll it the <b>tall</b> way, or the <b>short</b> way.</p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Roll It Two Ways" id="wu" style="--wf-side: 310px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Roll It Two Ways</h2>
+  <p class="wf-rule">Roll one sheet of paper (<span class="tex">21.6\ \text{cm}\times27.9\ \text{cm}</span>) into a tube. Tape the edges together, no overlap. Roll it the <b>tall</b> way, or the <b>short</b> way.</p></div>
+  <div class="wf-grid"><div class="wf-main">
   <div class="u10l6-wtop">
     <div id="u10l6-wfig" class="u10l6-wfig"></div>
     <div class="u10l6-wqs">
@@ -57,14 +58,16 @@
         <div class="q-line"><div class="q-num">2</div><div>How <b>tall</b> is each tube? How far is it <b>around</b> each tube?</div></div>
         <div class="u10l6-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Tall: height <span class="tex">27.9</span> cm, around <span class="tex">21.6</span> cm. Short: height <span class="tex">21.6</span> cm, around <span class="tex">27.9</span> cm. The two sides just <b>swap jobs</b>.</div></div>
       </div>
+    </div>
+  </div>
+  </div><div class="wf-side">
+    <div class="u10l6-wqs">
       <div class="bk-wq">
         <div class="q-line"><div class="q-num">3</div><div>Which tube has the <b>bigger base</b>?</div></div>
         <div class="u10l6-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">The <b>short</b> tube (radius <span class="tex">\approx4.4</span> cm vs <span class="tex">3.4</span> cm). The tall tube has the bigger height. Who wins? In <span class="tex">V=\pi r^{2}h</span> the radius gets <b>squared</b>; the height doesn’t.</div></div>
       </div>
     </div>
-  </div>
-
-  <div class="poll u10l6-poll3">
+  <div class="poll u10l6-poll3 wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Fill both tubes with rice. Which one <b>holds more</b>? <b>Guess first.</b></div></div>
     <div class="poll-opts">
       <div class="opt"><b>A</b> the tall tube</div>
@@ -75,6 +78,7 @@
     <div class="poll-ans"><b>B: the short tube, about 30% more.</b> Tall: <span class="tex">r=\frac{21.6}{2\pi}\approx3.44</span> cm, <span class="tex">V=\pi r^{2}h\approx1036\ \text{cm}^3</span>. Short: <span class="tex">r=\frac{27.9}{2\pi}\approx4.44</span> cm, <span class="tex">V\approx1338\ \text{cm}^3</span>. That is about <span class="tex">1.0</span> L against <span class="tex">1.3</span> L.<br>
       <span class="muted"><b>C</b> is the trap: same paper means the same <b>surface</b>, not the same <b>space inside</b>. <b>A</b> is the “taller looks bigger” instinct (think of tall, skinny glasses).</span></div>
   </div>
+  </div></div>
   <p class="u10l6-try">Try it: stand the tall tube inside the short one, fill it with rice, then lift it out. How full is the short tube?</p>
   <div class="explainer" data-explainer="rollit"></div>
   <div class="u10l6-early">

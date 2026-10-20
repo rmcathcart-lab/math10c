@@ -715,6 +715,7 @@ const cylnet = {
 const radius = {
   title: 'Radius first, round last',
   height: 460,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'dr', label: 'Halve the diameter' }, { v: 'round', label: 'Round only at the end' }],
   intro: (v) => (v === 'dr' ? 'Look down on the Example 4 canister. Press <b>Next</b>.' : 'Two ways to work Example 4. Press <b>Next</b>.'),
   make(stage, k, ex) {

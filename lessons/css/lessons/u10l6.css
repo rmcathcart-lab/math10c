@@ -89,3 +89,20 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u10l6-sh1 { background: var(--brand-soft); border-right: 2px solid #fff; background: #a9dcd5; }
 .u10l6-sh2 { background: #eef1f6; transition: background .4s; }
 .u10l6-share.u10l6-sh-on .u10l6-sh2 { background: #bcd2fb; }
+
+/* ---------- one screen (main.lesson.screen): the two tubes, Q1 and Q2 on the left; Q3 and the big one on the right ---------- */
+.wf .wf-rule .katex { font-size: 1em; }
+.wf .u10l6-wtop { display: block; }
+.wf .u10l6-wfig { justify-content: flex-start; margin: 4px 0 2px; }
+.wf .u10l6-wqs .q-line, .wf .u10l6-early .q-line { font-size: 17px; margin: 4px 0; gap: 10px; }
+.wf .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf .u10l6-wa { display: flex; align-items: baseline; gap: 10px; margin: 0 0 6px 40px; }
+.wf .u10l6-wa .pill.small { flex: none; }
+.wf .wf-side .u10l6-wa { display: block; }
+.wf .wf-side .u10l6-wa .bk-ans { margin-top: 4px; }
+.wf .bk-wq .bk-ans { font-size: 16px; line-height: 1.35; margin-top: 0; }
+.wf .u10l6-poll3 .poll-opts { grid-template-columns: 1fr; gap: 6px; }
+.wf .wf-poll .opt { padding: 5px 10px; font-size: 16px; }
+.wf .u10l6-try { font-size: 17.5px; margin-top: 12px; }
+.wf .u10l6-early { margin-top: 10px; }
+.wf .u10l6-social { font-size: 18px; margin-top: 10px; }

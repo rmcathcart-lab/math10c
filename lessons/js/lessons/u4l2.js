@@ -307,7 +307,7 @@ const tileNeg = makeTiles('Negative tiles, and zero pairs to finish the rectangl
   { v: 's4', label: tex('x^2+x-6') }, { v: 'm6', label: tex('x^2-x-6') }, { v: 'p3', label: tex('x^2-4x+3') },
   { sep: 'Example 8 check:' }, { v: 'e8a', label: '(a)' }, { v: 'e8c', label: '(c)' }]);
 tileRect.minW = 900; // drawn this wide and scaled to fit beside the sidebar (the side panel of labels needs it)
-tileNeg.minW = 860; // drawn this wide and scaled to fit beside the sidebar
+tileNeg.minW = 940; // drawn this wide and scaled to fit beside the sidebar (signed pair sums in the side panel)
 
 /* ============ 2. Expand (x + p)(x + q), then read it backwards ============ */
 const EG = { gen: null, a1: [3, 4], a2: [1, 9], a3: [6, 6], a4: [7, 3], a5: [-4, -3], a6: [9, -5], y9: [4, 6, 'y'], yb: [-3, 5, 'y'] };
