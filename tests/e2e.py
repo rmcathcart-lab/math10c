@@ -98,7 +98,7 @@ async def main():
         await page.click('a.lesson-row'); await page.wait_for_selector('.qcard')
         # the sidebar starts with a link to the lesson on the teaching site, for this student's block (10c-b → B)
         tl = await page.evaluate("[location.hash, (document.querySelector('.qnav a.teach-link')||{}).href, (document.querySelector('.qnav a.teach-link')||{}).target, document.querySelectorAll('.xnav').length]")
-        print('teaching link:', tl); assert tl[0].endswith('/1a') and tl[1] == BASE + 'lessons/u1/l1/?class=B' and tl[2] == '_blank' and tl[3] == 0, tl
+        print('teaching link:', tl); assert tl[0].endswith('/1a') and tl[1] == BASE + 'lessons/u1/l1/?class=B' and tl[2] == '' and tl[3] == 0, tl
         await goto_item(page, '1a'); await page.wait_for_selector('.qcard .btn-check')
 
         # 1a right first try

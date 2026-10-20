@@ -117,8 +117,8 @@
     PEOPLE.forEach(function (p, i) {
       if (p.never || p.effort < 0.3) return;
       var r0 = rnd(p.name + '|live'), its = lesson.items.filter(function (it) { return !it.extra; }), it = its[Math.min(its.length - 1, Math.floor(its.length * clamp(p.effort * 0.4, 0, 1)) + r0.int(0, 2))];
-      var kind = i === 4 ? 'away' : i === 7 ? 'home' : 'lesson';
-      out[p.name] = { view: kind === 'home' ? 'home' : 'lesson', lesson: lesson.id, item: it.id, label: it.label, away: kind === 'away', at: now - r0.int(2, 25) * 1000, since: now - r0.int(1, 9) * 60000 - r0.int(0, 59) * 1000, inClass: true, dev: 'Chromebook' };
+      var kind = i === 4 ? 'away' : i === 7 ? 'home' : i === 3 ? 'teach' : 'lesson';
+      out[p.name] = { view: kind === 'home' ? 'home' : kind === 'teach' ? 'teach' : 'lesson', lesson: lesson.id, item: it.id, label: it.label, away: kind === 'away', at: now - r0.int(2, 25) * 1000, since: now - r0.int(1, 9) * 60000 - r0.int(0, 59) * 1000, inClass: true, dev: 'Chromebook' };
     });
     return out;
   }

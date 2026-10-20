@@ -33,7 +33,8 @@
       if (st.D) top.appendChild(onlineChip());
     }
     var right = el('div', 'top-right');
-    if (st.D) right.appendChild(el('span', 'small muted', 'Updated ' + new Date(st.D.now).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })));
+    if (st.D) right.appendChild(el('span', 'small muted top-upd', 'Updated ' + new Date(st.D.now).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })));
+    if (st.D && HW.DashCal) { HW.DashCal.topButtons(right); } // Lessons (pop-up) and Launch Today's Lesson
     var stu = el('a', 'btn btn-ghost', 'Student site ↗'); stu.href = '../'; stu.target = '_blank'; right.appendChild(stu);
     top.appendChild(right);
   }
@@ -78,10 +79,15 @@
     return api('dash', { 'class': st.klass }).then(function (d) {
       st.loading = false;
       if (!d.ok) throw new Error(d.error || 'error');
-      st.D = d; st.derived = null; drawTop(); render();
+      st.D = d; st.derived = null; drawTop(); render(); loadCal();
       clearInterval(st.dashTimer); st.dashTimer = setInterval(function () { if (document.visibilityState === 'visible') loadDash(true); }, 120000);
       clearInterval(st.liveTimer); st.liveTimer = setInterval(pollLive, 10000);
     }).catch(function (e) { st.loading = false; if (!quiet) view.innerHTML = '<div class="panel"><h2>Couldn’t load the class</h2><p class="muted">' + esc(e.message) + '</p></div>'; });
+  }
+  /* the class calendar, for the header's Launch Today's Lesson and the Lessons pop-up */
+  function loadCal() {
+    var k = st.klass;
+    api('cal', { 'class': k }).then(function (d) { if (k !== st.klass || !d || !d.ok) return; st.cal = d.cal && HW.Cal ? HW.Cal.clean(d.cal) : null; st.calFor = k; drawTop(); }).catch(function () {});
   }
   function pollLive() { // every 10 s on any tab: the header's "signed in" count; the Live tab redraws
     if (!st.D || document.visibilityState !== 'visible') return;
@@ -159,16 +165,17 @@
     if (age > 90000) return { k: 'off', t: 'Offline' };
     if (rec.away) return { k: 'away', t: 'Left the page' };
     if (rec.view === 'lesson') return { k: 'work', t: 'Working' };
-    return { k: 'idle', t: 'On the lesson list' };
+    if (rec.view === 'teach') return { k: 'teach', t: 'On the lesson page' };
+    return { k: 'idle', t: 'On the assignment list' };
   }
   function renderLive(body) {
     var D = st.D, now = D.liveNow || Date.now(), live = D.live || {}, roster = students();
-    var counts = { work: 0, away: 0, idle: 0, off: 0, none: 0 };
+    var counts = { work: 0, teach: 0, away: 0, idle: 0, off: 0, none: 0 };
     var rows = roster.map(function (s) { var rec = live[s.name], ls2 = liveState(rec, now); counts[ls2.k]++; return { s: s, rec: rec, ls: ls2 }; });
-    var order = { work: 0, away: 1, idle: 2, off: 3, none: 4 };
+    var order = { work: 0, teach: 1, away: 2, idle: 3, off: 4, none: 5 };
     rows.sort(function (a, b) { return order[a.ls.k] - order[b.ls.k] || a.s.name.localeCompare(b.s.name); });
     var head = el('div', 'live-head');
-    head.innerHTML = '<div class="live-chips"><span class="lchip work"><b>' + counts.work + '</b> working</span><span class="lchip away"><b>' + counts.away + '</b> left the page</span><span class="lchip idle"><b>' + counts.idle + '</b> on the lesson list</span><span class="lchip off"><b>' + (counts.off + counts.none) + '</b> not on the site</span></div>' +
+    head.innerHTML = '<div class="live-chips"><span class="lchip work"><b>' + counts.work + '</b> working</span>' + (counts.teach ? '<span class="lchip teach"><b>' + counts.teach + '</b> on a lesson page</span>' : '') + '<span class="lchip away"><b>' + counts.away + '</b> left the page</span><span class="lchip idle"><b>' + counts.idle + '</b> on the assignment list</span><span class="lchip off"><b>' + (counts.off + counts.none) + '</b> not on the site</span></div>' +
       '<div class="small muted">' + classTimeLine() + ' · refreshes every 10 s</div>';
     body.appendChild(head);
     var t = el('table', 'tbl live');
@@ -179,11 +186,12 @@
     rows.forEach(function (x) {
       var rec = x.rec, where = '—';
       if (rec && rec.view === 'lesson') { var l = HW.lessons[rec.lesson]; where = (l ? 'L' + l.num + ' ' : '') + '<b>' + esc(rec.label || rec.item || '') + '</b>'; }
-      else if (rec && rec.view === 'home') where = '<span class="muted">Lesson list</span>';
+      else if (rec && rec.view === 'home') where = '<span class="muted">Assignment list</span>';
+      else if (rec && rec.view === 'teach') { var tl = HW.Cal && HW.Cal.info(rec.lesson); where = '<b>' + esc(tl ? 'Lesson ' + tl.unit + '.' + tl.num : rec.label || 'Lesson') + '</b> <span class="tag">lesson page</span>'; }
       var ts = todayStats[x.s.name];
       var tr = el('tr', 'lv-' + x.ls.k);
       tr.innerHTML = '<td><a href="#" class="slink">' + esc(x.s.name) + '</a></td><td><span class="dot ' + x.ls.k + '"></span>' + x.ls.t + (rec && x.ls.k !== 'off' && x.ls.k !== 'none' && rec.inClass === false ? ' <span class="tag">outside class time</span>' : '') + '</td>' +
-        '<td>' + where + '</td><td>' + (rec && (x.ls.k === 'work' || x.ls.k === 'away') ? '<span data-since="' + rec.since + '">' + since(rec.since) + '</span>' : '—') + '</td>' +
+        '<td>' + where + '</td><td>' + (rec && (x.ls.k === 'work' || x.ls.k === 'away' || x.ls.k === 'teach') ? '<span data-since="' + rec.since + '">' + since(rec.since) + '</span>' : '—') + '</td>' +
         '<td>' + (ts ? dur(ts.secs) + ' · ' + ts.right + '/' + ts.answers + ' right' : '—') + '</td><td>' + (leavesToday[x.s.name] ? '<span class="warnnum">' + leavesToday[x.s.name] + '</span>' : '0') + '</td><td>' + (rec ? ago(rec.at) : x.s.roster && x.s.roster.lastSeen ? ago(x.s.roster.lastSeen) : 'never') + '</td>';
       tr.querySelector('.slink').addEventListener('click', function (e) { e.preventDefault(); openStudent(x.s.name); });
       tb.appendChild(tr);
@@ -561,6 +569,6 @@
     var csv = rows.map(function (r) { return r.map(function (v) { v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(','); }).join('\n');
     var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = name; document.body.appendChild(a); a.click(); setTimeout(function () { a.remove(); }, 100);
   }
-  HW.Dash = { state: st, render: render, api: api, download: download, flash: flash };
+  HW.Dash = { state: st, render: render, api: api, download: download, flash: flash, drawTop: function () { drawTop(); } };
   boot();
 })(window);

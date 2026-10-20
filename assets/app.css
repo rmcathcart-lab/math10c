@@ -386,10 +386,9 @@ math-field.mf::part(menu-toggle), math-field.mf::part(virtual-keyboard-toggle) {
 
 
 /* ---------- link to the lesson on the teaching site ---------- */
-.teach-link { display: grid; grid-template-columns: 28px minmax(0, 1fr) 16px; align-items: center; gap: 8px; margin: 0 0 14px; padding: 10px 10px; border-radius: 12px; background: var(--brand-soft); border: 1.5px solid var(--brand2); color: var(--ink); text-decoration: none; line-height: 1.25; transition: background .15s, transform .15s; }
+.teach-link { display: grid; grid-template-columns: minmax(0, 1fr) 16px; align-items: center; gap: 8px; margin: 0 0 14px; padding: 10px 10px; border-radius: 12px; background: var(--brand-soft); border: 1.5px solid var(--brand2); color: var(--ink); text-decoration: none; line-height: 1.25; transition: background .15s, transform .15s; }
 .teach-link:hover { background: #fff; transform: translateY(-1px); }
 .teach-link:focus-visible { outline: 3px solid var(--brand2); outline-offset: 2px; }
-.tl-ic { font-size: 20px; text-align: center; }
 .tl-t { display: grid; }
 .tl-t b { font-size: 14.5px; color: var(--brand); }
 .tl-t span { font-size: 12.5px; color: var(--muted); }
@@ -402,10 +401,16 @@ math-field.mf::part(menu-toggle), math-field.mf::part(virtual-keyboard-toggle) {
 .lesson-teach:hover { border-color: var(--brand2); background: #fff; transform: translateY(-1px); }
 .lesson-teach:focus-visible { outline: 3px solid var(--brand2); outline-offset: 2px; }
 .lesson-teach.none { background: transparent; border: 0; padding: 0; }
-.lt-ic { font-size: 22px; line-height: 1; }
-.lt-t { font-weight: 700; font-size: 13.5px; }
-.lt-go { position: absolute; top: 5px; right: 8px; font-size: 12px; font-weight: 700; color: var(--brand2); }
-@media (max-width: 900px) { .lesson-line { grid-template-columns: 64px minmax(0, 1fr); gap: 8px; } .lt-t { font-size: 12px; } }
+.lt-k { font-size: 11.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--brand2); line-height: 1; }
+.lt-n { font-size: 24px; font-weight: 800; line-height: 1.05; color: var(--brand); }
+.lt-s { font-size: 11.5px; font-weight: 700; color: var(--muted); line-height: 1.1; margin-top: 1px; white-space: nowrap; }
+.lesson-teach.is-today { background: var(--brand); border-color: var(--brand); color: #fff; box-shadow: 0 4px 14px rgba(15, 95, 90, .3); }
+.lesson-teach.is-today .lt-k, .lesson-teach.is-today .lt-n, .lesson-teach.is-today .lt-s { color: #fff; }
+.lesson-teach.is-today:hover { background: var(--brand2); }
+.lesson-teach.is-past { background: #f1efe9; border-color: var(--line); }
+.lesson-teach.is-past .lt-k, .lesson-teach.is-past .lt-n { color: #6e8f8b; }
+.lesson-teach.is-past .lt-s { color: #2f7d58; }
+@media (max-width: 900px) { .lesson-line { grid-template-columns: 64px minmax(0, 1fr); gap: 8px; } .lt-n { font-size: 20px; } .lt-s { font-size: 10.5px; } }
 
 /* ---------- Unit 3: algebra tiles and area models ---------- */
 .tiles-svg { display: block; height: auto; margin: 8px 0; }
