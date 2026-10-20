@@ -115,31 +115,55 @@
     if (best) best.inDays = Math.max(0, C.slotOf(cal, off, best.date) - Math.max(0, C.slotOf(cal, off, C.firstClassDay(from, off) || from)));
     return best;
   };
-  /* ---- a month grid (Mon–Fri), shared by the students' calendar and the ledger's Calendar tab ----
-   * opts: { off: [days off], today, chip(key, date) → element, empty(date) → element|null, start (first class day) }
-   * Each day is a .calm-day with data-date; days off say "No school"; weekends are left out. */
+  /* ---- the calendar view: months stacked in a box that scrolls, Mon–Sun with narrow grey weekends ----
+   * opts: { off: [days off], today, chip(key, date) → element, from: 'YYYY-MM', to: 'YYYY-MM' }
+   * Each school day is a .calm-day with data-date; days off say "No school"; days outside a month are blank.
+   * Returns the scroll box; box.scrollToDate(date) brings a date's week into view. */
   C.MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
   C.month = function (cal, y, m, opts) {
     opts = opts || {};
-    var el = function (t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; };
-    var off = offSet(opts.off), today = opts.today || C.today(), L = cal ? C.layout(cal, opts.off) : { byDate: {} };
-    var box = el('div', 'calm');
-    var hd = el('div', 'calm-hd'); ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].forEach(function (d) { hd.appendChild(el('div', '', d)); }); box.appendChild(hd);
+    var off = offSet(opts.off), today = opts.today || C.today(), L = opts.layout || (cal ? C.layout(cal, opts.off) : { byDate: {} });
+    var box = el('section', 'calm'); box.dataset.ym = y + '-' + pad(m + 1);
+    box.appendChild(el('div', 'calm-mh', C.MONTHS[m] + ' <small>' + y + '</small>'));
+    var hd = el('div', 'calm-hd'); ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].forEach(function (d, i) { hd.appendChild(el('div', i > 4 ? 'calm-we' : '', i > 4 ? d.charAt(0) + d.charAt(1) : d)); }); box.appendChild(hd);
     var grid = el('div', 'calm-grid'); box.appendChild(grid);
     var d = new Date(y, m, 1, 12); while (d.getDay() !== 1) d.setDate(d.getDate() - 1);
-    var end = new Date(y, m + 1, 0, 12); while (end.getDay() !== 5) end.setDate(end.getDate() + 1);
+    var end = new Date(y, m + 1, 0, 12); while (end.getDay() !== 0) end.setDate(end.getDate() + 1);
     for (; d <= end; d.setDate(d.getDate() + 1)) {
-      var w = d.getDay(); if (w === 0 || w === 6) continue;
-      var k = C.key(d), isOff = !!off[k], keys = L.byDate[k] || [];
-      var cell = el('div', 'calm-day' + (d.getMonth() !== m ? ' out' : '') + (isOff ? ' off' : '') + (k === today ? ' today' : '') + (k < today ? ' past' : '') + (cal && k < cal.start ? ' before' : ''));
+      var w = d.getDay(), we = w === 0 || w === 6;
+      if (d.getMonth() !== m) { grid.appendChild(el('div', 'calm-day calm-blank' + (we ? ' calm-we' : ''))); continue; }
+      var k = C.key(d), isOff = !we && !!off[k], keys = we ? [] : (L.byDate[k] || []);
+      var cell = el('div', 'calm-day' + (we ? ' calm-we' : '') + (isOff ? ' calm-off' : '') + (k === today ? ' calm-today' : '') + (k < today ? ' calm-past' : '') + (cal && k < cal.start ? ' calm-before' : '')); // prefixed: lesson pages have their own .off, .blank…
       cell.dataset.date = k;
-      cell.appendChild(el('div', 'calm-n', '<span>' + d.getDate() + '</span>' + (d.getDate() === 1 || (d.getMonth() !== m && w === 1) ? ' <small>' + C.MONTHS[d.getMonth()].slice(0, 3) + '</small>' : '') + (k === today ? ' <b class="calm-tag">Today</b>' : '')));
-      var list = el('div', 'calm-items');
-      if (isOff) list.appendChild(el('div', 'calm-offl', 'No school'));
-      keys.forEach(function (key) { var c = opts.chip ? opts.chip(key, k) : el('span', 'calm-chip', C.label(key)); if (c) list.appendChild(c); });
-      if (!keys.length && !isOff && opts.empty) { var e = opts.empty(k); if (e) list.appendChild(e); }
-      cell.appendChild(list); grid.appendChild(cell);
+      cell.appendChild(el('div', 'calm-n', '<span>' + d.getDate() + '</span>' + (k === today && !we ? ' <b class="calm-tag">Today</b>' : '')));
+      if (!we) {
+        var list = el('div', 'calm-items');
+        if (isOff) list.appendChild(el('div', 'calm-offl', 'No school'));
+        keys.forEach(function (key) { var c = opts.chip ? opts.chip(key, k) : el('span', 'calm-chip', C.label(key)); if (c) list.appendChild(c); });
+        cell.appendChild(list);
+      }
+      grid.appendChild(cell);
     }
+    return box;
+  };
+  /* every month from opts.from to opts.to (default: the calendar's first to last month, and this month) in one scroll box */
+  C.view = function (cal, opts) {
+    opts = opts || {};
+    var today = opts.today || C.today(), L = cal ? C.layout(cal, opts.off) : { byDate: {}, last: today };
+    var from = opts.from || [cal ? cal.start : today, today].sort()[0].slice(0, 7), to = opts.to || [L.last || today, today].sort()[1].slice(0, 7);
+    var box = el('div', 'calv'), y = +from.slice(0, 4), m = +from.slice(5, 7) - 1;
+    for (var guard = 0; guard < 24; guard++) {
+      box.appendChild(C.month(cal, y, m, Object.assign({}, opts, { layout: L, today: today })));
+      if (y + '-' + pad(m + 1) >= to) break;
+      m++; if (m > 11) { m = 0; y++; }
+    }
+    box.scrollToDate = function (date, smooth) {
+      var c = box.querySelector('.calm-day[data-date="' + date + '"]') || box.querySelector('.calm[data-ym="' + String(date).slice(0, 7) + '"]');
+      if (!c) return;
+      var mh = c.closest('.calm'), hdH = 80, top = c.classList.contains('calm') ? c.offsetTop : (c.getBoundingClientRect().top - box.getBoundingClientRect().top + box.scrollTop - hdH);
+      box.scrollTo({ top: Math.max(0, top), behavior: smooth ? 'smooth' : 'auto' });
+    };
     return box;
   };
 

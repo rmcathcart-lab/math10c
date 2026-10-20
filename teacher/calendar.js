@@ -8,7 +8,7 @@
 (function (root) {
   'use strict';
   var HW = root.HW, el = HW.el, esc = HW.esc, C = HW.Cal, D = HW.Dash, st = D.state;
-  var K = { klass: null, cal: null, loaded: false, error: '', ym: null, undo: [], offMode: false, saving: 0, msg: '', pop: null };
+  var K = { klass: null, cal: null, loaded: false, error: '', scroll: null, undo: [], offMode: false, saving: 0, msg: '', pop: null };
   function api(a, p) { return D.api(a, p); }
   function off() { return st.noSchool || []; }
   function button(cls, html, fn) { var b = el('button', 'btn ' + cls, html); b.type = 'button'; b.addEventListener('click', fn); return b; }
@@ -16,7 +16,7 @@
   function klassLabel() { var c = (st.classes || []).filter(function (x) { return x.code === st.klass; })[0]; return c ? c.label : st.klass; }
 
   function load() {
-    K.loaded = false; K.error = ''; K.klass = st.klass; K.undo = []; K.cal = null;
+    K.loaded = false; K.error = ''; K.klass = st.klass; K.undo = []; K.cal = null; K.scroll = null;
     return api('cal', { 'class': st.klass }).then(function (d) {
       if (K.klass !== st.klass) return;
       if (!d.ok) { K.error = d.error === 'unknown action' ? 'The ledger (Apps Script) needs the new backend code for the calendar: paste backend/Code.gs into the Apps Script project, then Deploy → Manage deployments → edit → New version.' : d.error; }
@@ -50,8 +50,6 @@
     if (K.error) { body.appendChild(el('div', 'panel', '<h3>The calendar isn’t set up yet</h3><p>' + esc(K.error) + '</p>')); return; }
     if (!K.cal) return renderStart(body);
     var cal = K.cal, L = C.layout(cal, off()), today = C.today();
-    if (!K.ym) { var first = today < cal.start ? cal.start : today; K.ym = first.slice(0, 7); }
-    var y = +K.ym.slice(0, 4), mo = +K.ym.slice(5, 7) - 1;
     // top: class, first day, end of the plan, undo, days off
     var top = el('div', 'kc-top');
     var nt = C.nextTest(cal, off(), today), lastKey = cal.items.length ? cal.items[cal.items.length - 1][0] : null;
@@ -65,35 +63,34 @@
     top.appendChild(acts); body.appendChild(top);
     if (K.offMode) body.appendChild(el('div', 'kc-offnote', '<b>Days off:</b> tap a school day to mark it off, tap it again to turn it back on. Days off are for the whole school: every class’s lessons move along, and work on a day off doesn’t count as in class.'));
     if (K.msg || K.saving) body.appendChild(el('div', 'kc-msg small', K.saving ? 'Saving…' : esc(K.msg)));
-    // month nav
-    var nav = el('div', 'cal-nav');
-    var prev = button('btn-ghost kc-prev', '‹', function () { shiftMonth(-1); }); prev.dataset.nav = '-1'; prev.setAttribute('aria-label', 'Previous month');
-    var next = button('btn-ghost kc-next', '›', function () { shiftMonth(1); }); next.dataset.nav = '1'; next.setAttribute('aria-label', 'Next month');
-    nav.appendChild(prev); nav.appendChild(el('h2', '', C.MONTHS[mo] + ' ' + y)); nav.appendChild(next);
-    nav.appendChild(button('btn-ghost', 'Today', function () { K.ym = today.slice(0, 7); rerender(); }));
-    body.appendChild(nav);
-    var grid = C.month(cal, y, mo, { off: off(), today: today, chip: chip });
-    grid.classList.add('kc-grid'); if (K.offMode) grid.classList.add('kc-offmode');
-    body.appendChild(grid);
-    grid.querySelectorAll('.calm-day').forEach(function (cell) {
-      var dte = cell.dataset.date;
-      if (K.offMode) cell.addEventListener('click', function () { var o = off().slice(), i = o.indexOf(dte); if (i >= 0) o.splice(i, 1); else o.push(dte); saveOff(o); });
-    });
-    // skipped
+    // skipped lessons (up top, so it's in reach while dragging)
     var tray = el('div', 'kc-tray'); tray.dataset.tray = '1';
     tray.appendChild(el('div', 'kc-tray-h', '<b>Skipped</b> <span class="small muted">' + (cal.skipped.length ? 'drag one onto a day to put it back' : 'drag a lesson here to take it off the calendar') + '</span>'));
     var tl = el('div', 'kc-tray-list'); cal.skipped.forEach(function (k) { tl.appendChild(chip(k, null)); }); tray.appendChild(tl);
     body.appendChild(tray);
-    body.appendChild(el('p', 'small muted', 'Drag a lesson to another day and everything after it moves by the same number of days: drop it on the day before to do two lessons in one class, or later to leave room for a review day. Tap a lesson to skip it or open it. Students see this calendar on their home page (Lessons / Class calendar), with the next test.'));
+    // the months, in a box that scrolls (it keeps its place when the calendar redraws after a change)
+    var tools = el('div', 'cal-nav');
+    tools.appendChild(button('btn-ghost btn-small', 'Today', function () { v.scrollToDate(today, true); }));
+    tools.appendChild(el('span', 'small muted', 'Scroll for other months. While dragging a lesson, hold it near the top or bottom edge to scroll.'));
+    body.appendChild(tools);
+    var v = C.view(cal, { off: off(), today: today, chip: chip });
+    v.classList.add('kc-grid'); if (K.offMode) v.classList.add('kc-offmode');
+    body.appendChild(v);
+    requestAnimationFrame(function () { if (K.scroll != null) v.scrollTop = K.scroll; else v.scrollToDate(today < cal.start ? cal.start : today); });
+    v.addEventListener('scroll', function () { K.scroll = v.scrollTop; });
+    v.querySelectorAll('.calm-day[data-date]:not(.calm-we)').forEach(function (cell) {
+      var dte = cell.dataset.date;
+      if (K.offMode) cell.addEventListener('click', function () { var o = off().slice(), i = o.indexOf(dte); if (i >= 0) o.splice(i, 1); else o.push(dte); saveOff(o); });
+    });
+    body.appendChild(el('p', 'small muted', 'Drag a lesson to another day and everything after it moves by the same number of days: drop it on the day before to do two lessons in one class, or later to leave room for a review day. Tap a lesson to skip it or open it. Students see it from the Calendar button at the top of their home page (with the next test), and it’s on the lesson site’s All lessons page (Lessons / Class calendar).'));
     HW.texIn && HW.texIn(body);
   }
-  function shiftMonth(n) { var y = +K.ym.slice(0, 4), m = +K.ym.slice(5, 7) - 1 + n, d = new Date(y, m, 1); K.ym = d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2); rerender(); }
   function renderStart(body) {
     var p = el('div', 'panel kc-start');
     p.innerHTML = '<h3>Make a class calendar for ' + esc(klassLabel()) + '</h3><p>Every lesson in course order, one per class day, with a unit test after each unit’s last lesson. Weekends and days off are skipped. Then drag lessons around as the semester goes.</p>';
     var row = el('div', 'tt-row'), lab = el('label', 'tt-inline', 'First class day '), inp = el('input', 'field kc-date'); inp.type = 'date'; inp.value = defaultStart() || C.today();
     lab.appendChild(inp); row.appendChild(lab);
-    row.appendChild(button('btn-primary', 'Make the calendar', function () { var s = C.firstClassDay(inp.value, off()); if (!s) return; K.ym = null; save(C.make(s), 'Calendar made.'); }));
+    row.appendChild(button('btn-primary', 'Make the calendar', function () { var s = C.firstClassDay(inp.value, off()); if (!s) return; K.scroll = null; save(C.make(s), 'Calendar made.'); }));
     p.appendChild(row);
     var others = (st.classes || []).filter(function (c) { return c.code !== st.klass && !c.demo; });
     if (others.length) p.appendChild(el('p', 'small muted', 'Each class has its own calendar (they can drift apart). Days off are shared.'));
@@ -102,7 +99,7 @@
   function startOver() {
     var s = prompt('Start over with every lesson back in order from this first day (YYYY-MM-DD). Skipped lessons come back. Undo can bring the old plan back.', K.cal.start);
     if (!s) return; var d = C.firstClassDay(s.trim(), off()); if (!d) { alert('That isn’t a date like 2026-09-03.'); return; }
-    K.ym = null; save(C.make(d), 'Started over from ' + C.nice(d) + '.');
+    K.scroll = null; save(C.make(d), 'Started over from ' + C.nice(d) + '.');
   }
 
   /* ================= lessons on the grid: drag, tap ================= */
@@ -118,12 +115,12 @@
   function startDrag(e, node, key, fromTray) {
     if (e.button && e.button !== 0) return;
     e.preventDefault();
-    drag = { key: key, node: node, fromTray: fromTray, x0: e.clientX, y0: e.clientY, on: false, ghost: null, over: null, navT: 0, navEl: null, id: e.pointerId };
+    drag = { key: key, node: node, fromTray: fromTray, x0: e.clientX, y0: e.clientY, x: e.clientX, y: e.clientY, on: false, ghost: null, over: null, id: e.pointerId, box: document.querySelector('.kc-grid'), dir: 0, timer: 0 };
     document.addEventListener('pointermove', onMove); document.addEventListener('pointerup', onUp); document.addEventListener('pointercancel', onUp);
   }
   function target(x, y) {
     var t = document.elementFromPoint(x, y); if (!t || !t.closest) return null;
-    return t.closest('.kc-grid .calm-day') || t.closest('[data-tray]') || t.closest('[data-nav]');
+    return t.closest('.kc-grid .calm-day[data-date]:not(.calm-we)') || t.closest('[data-tray]');
   }
   function onMove(e) {
     if (!drag || e.pointerId !== drag.id) return;
@@ -135,21 +132,27 @@
       document.body.classList.add('kc-dragging');
     }
     e.preventDefault();
+    drag.x = e.clientX; drag.y = e.clientY;
     drag.ghost.style.transform = 'translate(' + (e.clientX - drag.dx) + 'px,' + (e.clientY - drag.dy) + 'px)';
-    var t = target(e.clientX, e.clientY);
-    if (t !== drag.over) { if (drag.over) drag.over.classList.remove('kc-over'); drag.over = t; if (t && !t.dataset.nav) t.classList.add('kc-over'); }
-    // hold over ‹ › to turn the month
-    if (t && t.dataset.nav) { if (drag.navEl !== t) { drag.navEl = t; clearTimeout(drag.navT); drag.navT = setTimeout(function () { if (drag && drag.navEl === t) { shiftMonth(+t.dataset.nav); drag.navEl = null; drag.over = null; } }, 550); } }
-    else { drag.navEl = null; clearTimeout(drag.navT); }
+    hover();
+    // near the top or bottom edge of the months: scroll them
+    var r = drag.box ? drag.box.getBoundingClientRect() : null, dir = 0;
+    if (r && e.clientX > r.left && e.clientX < r.right) { if (e.clientY < r.top + 70 && e.clientY > r.top - 40) dir = -1; else if (e.clientY > r.bottom - 70 && e.clientY < r.bottom + 40) dir = 1; }
+    drag.dir = dir;
+    if (dir && !drag.timer) drag.timer = setInterval(function () { if (!drag || !drag.dir) { if (drag) { clearInterval(drag.timer); drag.timer = 0; } return; } drag.box.scrollTop += drag.dir * 14; hover(); }, 16);
+  }
+  function hover() {
+    var t = target(drag.x, drag.y);
+    if (t !== drag.over) { if (drag.over) drag.over.classList.remove('kc-over'); drag.over = t; if (t) t.classList.add('kc-over'); }
   }
   function onUp(e) {
     if (!drag || e.pointerId !== drag.id) return;
     document.removeEventListener('pointermove', onMove); document.removeEventListener('pointerup', onUp); document.removeEventListener('pointercancel', onUp);
-    var d = drag; drag = null; clearTimeout(d.navT); document.body.classList.remove('kc-dragging');
+    var d = drag; drag = null; clearInterval(d.timer); document.body.classList.remove('kc-dragging');
     if (d.ghost) d.ghost.remove(); if (d.over) d.over.classList.remove('kc-over'); d.node.classList.remove('kc-src');
     if (!d.on) { if (e.type === 'pointerup') openPop(d.node, d.key, d.fromTray); return; }
     if (e.type === 'pointercancel') return;
-    var t = target(e.clientX, e.clientY); if (!t || t.dataset.nav) return;
+    var t = target(e.clientX, e.clientY); if (!t) return;
     if (t.dataset.tray) { if (!d.fromTray) skip(d.key); return; }
     dropOn(d.key, t.dataset.date, d.fromTray);
   }
