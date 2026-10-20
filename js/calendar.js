@@ -127,7 +127,9 @@
     var today = opts.today || C.today(), off = offSet(opts.off), L = cal ? C.layout(cal, opts.off) : { byDate: {}, last: today };
     var from = opts.from || [cal ? cal.start : today, today].sort()[0].slice(0, 7), to = opts.to || [L.last || today, today].sort()[1].slice(0, 7);
     var box = el('div', 'calv');
-    var head = el('div', 'calv-head'), title = el('div', 'calv-title'); head.appendChild(title);
+    var head = el('div', 'calv-head'), trow = el('div', 'calv-trow'), title = el('div', 'calv-title'), tb = el('button', 'calv-today', 'Today');
+    tb.type = 'button'; tb.title = 'Back to today'; tb.addEventListener('click', function () { box.scrollToDate(today, true); });
+    trow.appendChild(title); trow.appendChild(tb); head.appendChild(trow);
     var hd = el('div', 'calm-hd'); ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(function (d, i) { hd.appendChild(el('div', i === 0 || i === 6 ? 'calm-we' : '', d)); });
     head.appendChild(hd); box.appendChild(head);
     var grid = el('div', 'calm-grid'); box.appendChild(grid);

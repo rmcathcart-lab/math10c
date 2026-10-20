@@ -8,7 +8,10 @@
 (function (root) {
   'use strict';
   var HW = root.HW, el = HW.el, esc = HW.esc, C = HW.Cal, D = HW.Dash, st = D.state;
-  var K = { klass: null, cal: null, loaded: false, error: '', scroll: null, undo: [], offMode: false, saving: 0, msg: '', pop: null };
+  var K = { klass: null, cal: null, loaded: false, error: '', scroll: null, undo: [], offMode: false, saving: 0, msg: '', pop: null, sync: false };
+  function isDemo() { return !!(HW.DashDemo && st.klass === HW.DashDemo.CODE); }
+  function realClasses() { return (st.classes || []).filter(function (c) { return !c.demo; }); }
+  function allFlag() { return K.sync && !isDemo() ? '1' : ''; } // "keep all classes the same": every save goes to every class
   function api(a, p) { return D.api(a, p); }
   function off() { return st.noSchool || []; }
   function button(cls, html, fn) { var b = el('button', 'btn ' + cls, html); b.type = 'button'; b.addEventListener('click', fn); return b; }
@@ -20,18 +23,18 @@
     return api('cal', { 'class': st.klass }).then(function (d) {
       if (K.klass !== st.klass) return;
       if (!d.ok) { K.error = d.error === 'unknown action' ? 'The ledger (Apps Script) needs the new backend code for the calendar: paste backend/Code.gs into the Apps Script project, then Deploy → Manage deployments → edit → New version.' : d.error; }
-      else { K.cal = d.cal ? C.clean(d.cal) : null; if (d.noSchool && !(HW.DashDemo && st.klass === HW.DashDemo.CODE)) st.noSchool = d.noSchool; }
+      else { K.cal = d.cal ? C.clean(d.cal) : null; K.sync = !!d.sync; if (d.noSchool && !(HW.DashDemo && st.klass === HW.DashDemo.CODE)) st.noSchool = d.noSchool; }
       K.loaded = true; rerender();
     }, function (e) { K.error = e.message; K.loaded = true; rerender(); });
   }
   function save(next, note) {
     if (K.cal) K.undo.push(K.cal); if (K.undo.length > 40) K.undo.shift();
     K.cal = next; K.msg = note || ''; K.saving++; rerender();
-    return api('setcal', { 'class': st.klass, cal: next ? JSON.stringify(next) : '' }).then(function (d) {
+    return api('setcal', { 'class': st.klass, cal: next ? JSON.stringify(next) : '', all: allFlag() }).then(function (d) {
       K.saving--; if (!d.ok) { K.msg = 'Couldn’t save: ' + d.error; } rerender();
     }, function () { K.saving--; K.msg = 'Couldn’t reach the ledger — the change isn’t saved.'; rerender(); });
   }
-  function undo() { if (!K.undo.length) return; var prev = K.undo.pop(); K.cal = prev; K.saving++; rerender(); api('setcal', { 'class': st.klass, cal: JSON.stringify(prev) }).then(function () { K.saving--; K.msg = 'Undone.'; rerender(); }, function () { K.saving--; rerender(); }); }
+  function undo() { if (!K.undo.length) return; var prev = K.undo.pop(); K.cal = prev; K.saving++; rerender(); api('setcal', { 'class': st.klass, cal: JSON.stringify(prev), all: allFlag() }).then(function () { K.saving--; K.msg = 'Undone.'; rerender(); }, function () { K.saving--; rerender(); }); }
   function saveOff(list) {
     st.noSchool = list.slice().sort(); rerender();
     return api('setnoschool', { dates: st.noSchool.join(',') }).then(function (d) { if (d.ok) st.noSchool = d.noSchool; else K.msg = 'Couldn’t save the days off: ' + d.error; rerender(); });
@@ -61,6 +64,7 @@
     acts.appendChild(button('btn-small' + (K.offMode ? ' btn-primary' : ''), K.offMode ? 'Done with days off' : 'Days off…', function () { K.offMode = !K.offMode; rerender(); }));
     acts.appendChild(button('btn-small btn-ghost', 'Start over…', function () { startOver(); }));
     top.appendChild(acts); body.appendChild(top);
+    if (!isDemo() && realClasses().length > 1) body.appendChild(syncRow());
     if (K.offMode) body.appendChild(el('div', 'kc-offnote', '<b>Days off:</b> tap a school day to mark it off, tap it again to turn it back on. Days off are for the whole school: every class’s lessons move along, and work on a day off doesn’t count as in class.'));
     if (K.msg || K.saving) body.appendChild(el('div', 'kc-msg small', K.saving ? 'Saving…' : esc(K.msg)));
     // skipped lessons (up top, so it's in reach while dragging)
@@ -70,8 +74,7 @@
     body.appendChild(tray);
     // the months, in a box that scrolls (it keeps its place when the calendar redraws after a change)
     var tools = el('div', 'cal-nav');
-    tools.appendChild(button('btn-ghost btn-small', 'Today', function () { v.scrollToDate(today, true); }));
-    tools.appendChild(el('span', 'small muted', 'Scroll for other months. While dragging a lesson, hold it near the top or bottom edge to scroll.'));
+    tools.appendChild(el('span', 'small muted', 'Scroll for other months (Today brings this week back). While dragging a lesson, hold it near the top or bottom edge to scroll.'));
     body.appendChild(tools);
     var v = C.view(cal, { off: off(), today: today, chip: chip });
     v.classList.add('kc-grid'); if (K.offMode) v.classList.add('kc-offmode');
@@ -95,6 +98,30 @@
     var others = (st.classes || []).filter(function (c) { return c.code !== st.klass && !c.demo; });
     if (others.length) p.appendChild(el('p', 'small muted', 'Each class has its own calendar (they can drift apart). Days off are shared.'));
     body.appendChild(p);
+  }
+  /* all classes on one calendar: copy this one to every class once, or keep them the same from now on */
+  function syncRow() {
+    var n = realClasses().length, row = el('div', 'kc-sync');
+    var lab = el('label', 'tt-inline'), cb = el('input'); cb.type = 'checkbox'; cb.checked = K.sync;
+    lab.appendChild(cb); lab.appendChild(document.createTextNode(' Keep all ' + n + ' classes’ calendars the same'));
+    cb.addEventListener('change', function () {
+      if (cb.checked) {
+        if (!confirm('Keep every class on this calendar?\n\nThis copies ' + klassLabel() + '’s calendar to all ' + n + ' classes now, and from then on every change you make here is made in every class.')) { cb.checked = false; return; }
+        K.saving++; rerender();
+        api('calsync', { on: '1' }).then(function () { K.sync = true; return api('setcal', { 'class': st.klass, cal: JSON.stringify(K.cal), all: '1' }); }).then(function (d) { K.saving--; K.msg = d && d.ok ? 'All ' + n + ' classes now share this calendar.' : 'Couldn’t copy: ' + (d && d.error); rerender(); }, function () { K.saving--; K.msg = 'Couldn’t reach the ledger.'; rerender(); });
+      } else {
+        K.saving++; rerender();
+        api('calsync', { on: '0' }).then(function () { K.sync = false; K.saving--; K.msg = 'Each class has its own calendar again (they start out the same).'; rerender(); }, function () { K.saving--; rerender(); });
+      }
+    });
+    row.appendChild(lab);
+    if (!K.sync) row.appendChild(button('btn-small btn-ghost', 'Copy this calendar to every class…', function () {
+      if (!confirm('Copy ' + klassLabel() + '’s calendar to all ' + n + ' classes? Their own changes are replaced (days off are already shared).')) return;
+      K.saving++; rerender();
+      api('setcal', { 'class': st.klass, cal: JSON.stringify(K.cal), all: '1' }).then(function (d) { K.saving--; K.msg = d && d.ok ? 'Copied to all ' + n + ' classes.' : 'Couldn’t copy: ' + (d && d.error); rerender(); }, function () { K.saving--; K.msg = 'Couldn’t reach the ledger.'; rerender(); });
+    }));
+    else row.appendChild(el('span', 'small muted', 'Every change here is made in every class.'));
+    return row;
   }
   function startOver() {
     var s = prompt('Start over with every lesson back in order from this first day (YYYY-MM-DD). Skipped lessons come back. Undo can bring the old plan back.', K.cal.start);

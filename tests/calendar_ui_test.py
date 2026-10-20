@@ -14,16 +14,22 @@ async def drag(pg, src, dst):
     await pg.wait_for_timeout(500)
 async def main():
     errs = []
+    get('action=setroster&key=testkey&class=10c-d&label=Block%20D&names=Zed%20Q&mode=add')
     async with async_playwright() as p:
         b = await p.chromium.launch()
         ctx = await b.new_context(viewport={'width': 1400, 'height': 1700})
         await ctx.add_init_script("localStorage.setItem('hw:tkey','testkey'); localStorage.setItem('hw:tclass','10c-b'); localStorage.setItem('hw:ttab','calendar');")
         tp = await ctx.new_page(); tp.on('pageerror', lambda e: errs.append('T ' + str(e)))
+        tp.on('dialog', lambda d: asyncio.ensure_future(d.accept()))
         await tp.route(BASE + 'js/config.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=CONFIG))
         await tp.goto(BASE + 'teacher/'); await tp.wait_for_selector('.kc-start', timeout=15000)
         await tp.fill('.kc-date', '2026-09-03'); await tp.click('.kc-start .btn-primary'); await tp.wait_for_selector('.kc-grid')
         await tp.wait_for_timeout(600)
         cal = get('action=cal&class=10c-b')['cal']; print('saved start', cal['start'], len(cal['items']), 'items')
+        await tp.evaluate("document.querySelector('.kc-grid').scrollToDate('2026-09-01')"); await tp.wait_for_timeout(200)
+        # Today brings this week back
+        await tp.click('.kc-grid .calv-today'); await tp.wait_for_timeout(800)
+        assert await tp.evaluate("(() => { const b = document.querySelector('.kc-grid'), t = b.querySelector('.calm-day.calm-today'); if (!t) return true; const r = t.getBoundingClientRect(), q = b.getBoundingClientRect(); return r.top >= q.top && r.bottom <= q.bottom; })()"), 'today in view'
         await tp.evaluate("document.querySelector('.kc-grid').scrollToDate('2026-09-01')"); await tp.wait_for_timeout(200)
         assert await tp.locator('.calm-day.calm-we').count() > 0, 'weekends shown'
         await tp.screenshot(path=SH + 'sept.png', full_page=True)
@@ -61,6 +67,12 @@ async def main():
         await tp.screenshot(path=SH + 'edited.png', full_page=True)
         cal = get('action=cal&class=10c-b')
         print('saved:', cal['cal']['items'][:8], cal['cal']['skipped'], cal['noSchool'])
+        # keep all classes the same: copies now, then every change goes to every class
+        await tp.check('.kc-sync input[type=checkbox]'); await tp.wait_for_timeout(900)
+        a, d = get('action=cal&class=10c-b'), get('action=cal&class=10c-d'); assert a['cal'] == d['cal'] and a['sync'], 'synced'
+        await drag(tp, '.kc-grid .kc-chip[data-key=u1l6b]', '.calm-day[data-date="%s"]' % (await dateOf('u1l6a')))
+        await tp.wait_for_timeout(600); assert get('action=cal&class=10c-b')['cal'] == get('action=cal&class=10c-d')['cal'], 'a change goes to every class'
+        await tp.uncheck('.kc-sync input[type=checkbox]'); await tp.wait_for_timeout(600); assert not get('action=cal&class=10c-b')['sync']
         # ---- the student ----
         urllib.request.urlopen(MOCK + '?action=setroster&key=testkey&class=10c-b&label=Block%20B&names=Ava%20Brown&mode=add').read()
         sp = await (await b.new_context(viewport={'width': 1280, 'height': 900})).new_page(); sp.on('pageerror', lambda e: errs.append('S ' + str(e)))
