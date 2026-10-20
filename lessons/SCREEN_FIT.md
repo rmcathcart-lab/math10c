@@ -2,7 +2,7 @@
 
 Ryan presents from an **11-inch iPad in landscape in Safari**: about **684 px of lesson height** is visible under the
 toolbar (viewport 1180 × 746, lesson at scale 1, 1080 px wide). Every lesson has `<main class="lesson screen">`.
-Unit 1 (1.1–1.7) is the finished model — look at `lessons/u1/l2/`, `u1/l4/`, `u1/l5/` before starting.
+Every unit has been converted (2026-10-20); Unit 1 (1.1–1.7) is the model — look at `lessons/u1/l2/`, `u1/l4/`, `u1/l5/` before starting.
 
 ## What `screen` does already (shared code — don't edit these files)
 - `js/explain.js`: every explainer puts its number chips, caption and controls in a 268 px column to the right of the
@@ -50,6 +50,12 @@ Markup pattern (see Unit 1):
 `python3 tests/screen_shots.py ex OUT uN/lM` → contact sheets of each explainer at its first and last step.
 Fix anything cut off, overlapping or unreadable: raise/add `minW`, or (better, when it's simple) make the drawing
 use the width it's given. Explainers taller than 684 px ("TALL"): trim empty stage space (`height`) if there is any.
+
+## Checking every choice
+`screen_fit_check.py` only steps each explainer's first number choice. `python3 tests/fit_choices_minw.py out.json uN/lM …`
+steps every choice at every step and prints the smallest minW that matches the full-width picture for each one that's
+cramped (plus any caption maths too wide for the sidebar); `python3 tests/apply_minw.py out.json` writes those values in
+(it follows renamed definitions and factory-made ones; it prints any it can't place, to set by hand).
 
 ## Checking
 - `python3 tests/screen_fit_check.py uN/lM …` → warm-up height (start state) + cramped/tall explainers + page errors.
