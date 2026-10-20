@@ -25,13 +25,21 @@
       if (r[1].ok) TS.sessions = r[1].sessions;
     });
   }
-  function liveHere() { return TS.liveAll[cls()] || null; }
+  /* a retest is a live test for one student (TS.who) that runs alongside the class's own */
+  function norm(x) { return String(x == null ? '' : x).trim().toLowerCase().replace(/\s+/g, ' '); }
+  function liveKey(who) { return who ? norm(cls()) + '|' + norm(who) : cls(); }
+  function liveHere() { return TS.liveAll[liveKey(TS.who)] || null; }
+  function liveRetests() { var pre = norm(cls()) + '|', out = []; Object.keys(TS.liveAll || {}).forEach(function (k) { var l = TS.liveAll[k]; if (k.indexOf(pre) === 0 && l && l.id) out.push(l); }); return out; }
+  /* open the live monitor for one student's retest (from the Retests tab) */
+  TS.watch = function (who) { TS.klass = cls(); TS.who = who; TS.view = 'home'; TS.live = null; TS.res = null; TS.tests = null; goTab('test'); };
+  TS.openResults = function (sid) { TS.klass = cls(); st.tab = 'tests'; try { localStorage.setItem('hw:ttab', 'tests'); } catch (e) {} return openResults(sid); };
 
   /* ================= render ================= */
   /* two tabs share this code: Exit slips (kind 'exit', organised by unit) and Tests (kind 'test') */
   TS.render = function (body, kind) {
     TS.kind = kind === 'exit' ? 'exit' : 'test';
-    if (TS.klass !== cls()) { TS.klass = cls(); TS.tests = null; TS.live = null; TS.res = null; if (TS.view !== 'edit') TS.view = 'home'; }
+    if (TS.klass !== cls()) { TS.klass = cls(); TS.tests = null; TS.live = null; TS.res = null; TS.who = ''; if (TS.view !== 'edit') TS.view = 'home'; }
+    if (TS.who && TS.tests && !liveHere() && TS.view !== 'results') TS.who = ''; // that retest has been closed
     if (!TS.tests) { body.appendChild(el('div', 'loading', 'Loading…')); load(true).then(rerender, function (e) { body.innerHTML = '<div class="panel"><h3>Test mode isn’t set up yet</h3><p>' + esc(e.message) + '</p></div>'; }); return; }
     // results or an editor belong to their own tab: switching tabs leaves them (the editor asks first if there's work in it)
     var kOf = function (k) { return k === 'exit' ? 'exit' : 'test'; };
@@ -45,6 +53,10 @@
     if (TS.view === 'results' && TS.res) return renderResults(body);
     var lv = liveHere();
     if (lv && (lv.kind === 'exit' ? 'exit' : 'test') === TS.kind) return renderLive(body);
+    liveRetests().forEach(function (r) { // a student's retest running alongside: open its monitor
+      var ban = el('div', 'tt-live-banner tt-live-test', '<span class="tag live-tag">LIVE</span> <span class="tt-kind tt-retest">Retest</span> <b>' + esc(r.who || '') + '</b> is writing <b>' + esc(r.title) + '</b>.');
+      ban.appendChild(button('btn-small', 'Watch', function () { TS.watch(r.who); })); body.appendChild(ban);
+    });
     if (lv) { // the other kind is live: say so at the top
       var other = lv.kind === 'exit' ? 'exit' : 'test', ban = el('div', 'tt-live-banner tt-live-' + other, '<span class="tag live-tag">LIVE</span> ' + kindChip(other) + ' <b>' + esc(lv.title) + '</b> is live in ' + esc(klassLabel()) + '.');
       ban.appendChild(button('btn-small', 'Open it', function () { goTab(other); })); body.appendChild(ban);
@@ -119,7 +131,7 @@
       var t = el('table', 'tbl'); t.innerHTML = '<thead><tr><th>Launched</th><th>Title</th><th>Written</th><th>Results</th><th></th></tr></thead>';
       var tb = el('tbody');
       past.forEach(function (s) {
-        var tr = el('tr'); tr.innerHTML = '<td>' + new Date(s.launched).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + '</td><td>' + esc(s.title) + '</td><td>' + s.results + '</td><td>' + (s.released ? '<span class="tag good">Released</span>' : '<span class="tag">Not released</span>') + '</td><td></td>';
+        var tr = el('tr'); tr.innerHTML = '<td>' + new Date(s.launched).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + '</td><td>' + (s.student ? '<span class="tt-kind tt-retest">Retest</span> <b>' + esc(s.student) + '</b> · ' : '') + esc(s.title) + '</td><td>' + s.results + '</td><td>' + (s.released ? '<span class="tag good">Released</span>' : '<span class="tag">Not released</span>') + '</td><td></td>';
         tr.lastChild.appendChild(button('btn-small', 'Results', function () { openResults(s.id); }));
         tb.appendChild(tr);
       });
@@ -128,6 +140,7 @@
     body.appendChild(ps);
   }
   function doLaunch(t) {
+    if (TS.who) TS.who = '';
     if (liveHere()) { alert('A test is already live in this class.'); return; }
     if (!confirm('Launch “' + t.def.title + '” for ' + klassLabel() + ' now?\n\nIt pops up on every signed-in student’s screen within about 10 seconds.')) return;
     api('launch', { 'class': cls(), test: t.id }).then(function (d) {
@@ -236,10 +249,11 @@
   function pollLive() {
     if ((st.tab !== 'tests' && st.tab !== 'exits') || TS.view === 'edit' || document.visibilityState !== 'visible') return;
     if (!liveHere() && TS.view !== 'live') return;
-    api('tlive', { 'class': cls() }).then(function (d) {
-      if (!d.ok) return;
-      if (!d.live) { if (liveHere()) { delete TS.liveAll[cls()]; load(true).then(rerender); } return; }
-      TS.liveAll[cls()] = d.live; TS.live = d; if ((st.tab === 'tests' || st.tab === 'exits') && TS.view !== 'edit' && TS.view !== 'results') rerender();
+    var who = TS.who || '', lk = liveKey(who);
+    api('tlive', { 'class': cls(), who: who }).then(function (d) {
+      if (!d.ok || (TS.who || '') !== who) return;
+      if (!d.live) { if (liveHere()) { delete TS.liveAll[lk]; load(true).then(rerender); } return; }
+      TS.liveAll[lk] = d.live; TS.live = d; if ((st.tab === 'tests' || st.tab === 'exits') && TS.view !== 'edit' && TS.view !== 'results') rerender();
     }).catch(function () {});
   }
   setInterval(pollLive, 5000);
@@ -268,16 +282,20 @@
     var ord = { left: 0, quiet: 1, writing: 2, none: 3, done: 4 };
     rows.sort(function (a, b) { return ord[a.s.k] - ord[b.s.k] || a.name.localeCompare(b.name); });
     var head = el('div', 'tt-live-head tt-live-' + (def.kind === 'exit' ? 'exit' : 'test'));
-    head.innerHTML = '<div>' + kindChip(def.kind) + ' <b class="tt-live-title">' + esc(def.title) + '</b> <span class="tag live-tag">LIVE</span><div class="small muted">Launched ' + ago(live.launched) + ' · ' + items.length + ' questions · ' + (def.minutes ? def.minutes + ' min' + ((live.extra || {})['*'] ? ' + ' + live.extra['*'] + ' min for everyone' : '') : 'no time limit') + ' · ' + (def.calc ? 'calculator' : 'no calculator') + (live.ending ? ' · <b class="tt-ending">Ending: tests submit at their next check-in (≈10 s)</b>' : '') + '</div></div>';
+    head.innerHTML = '<div>' + (TS.who ? '<button class="btn btn-ghost btn-small tt-back-rt" type="button">← Retests</button> <span class="tt-kind tt-retest">Retest</span> <b>' + esc(TS.who) + '</b> · ' : '') + kindChip(def.kind) + ' <b class="tt-live-title">' + esc(def.title) + '</b> <span class="tag live-tag">LIVE</span><div class="small muted">Launched ' + ago(live.launched) + ' · ' + items.length + ' questions · ' + (def.minutes ? def.minutes + ' min' + ((live.extra || {})['*'] ? ' + ' + live.extra['*'] + ' min for everyone' : '') : 'no time limit') + ' · ' + (def.calc ? 'calculator' : 'no calculator') + (live.ending ? ' · <b class="tt-ending">Ending: tests submit at their next check-in (≈10 s)</b>' : '') + '</div></div>';
     var acts = el('div', 'tt-acts');
-    if (def.minutes) acts.appendChild(button('btn-small', '+5 min for everyone', function () { ctl('time', '', 5); }));
-    if (!live.ending) acts.appendChild(button('btn-small', 'End for everyone', function () { if (confirm('End the test for everyone? Every test still open is submitted as it is.')) ctl('end'); }));
-    else acts.appendChild(button('btn-small', 'Undo end', function () { ctl('resume'); }));
+    if (def.minutes && !TS.who) acts.appendChild(button('btn-small', '+5 min for everyone', function () { ctl('time', '', 5); }));
+    if (!TS.who) {
+      if (!live.ending) acts.appendChild(button('btn-small', 'End for everyone', function () { if (confirm('End the test for everyone? Every test still open is submitted as it is.')) ctl('end'); }));
+      else acts.appendChild(button('btn-small', 'Undo end', function () { ctl('resume'); }));
+    }
     acts.appendChild(button('btn-primary btn-small', 'Close and mark', function () {
       if (counts.writing + counts.quiet && !confirm((counts.writing + counts.quiet) + ' student(s) are still writing. Close anyway? What they have so far is kept.')) return;
-      api('tctl', { 'class': cls(), op: 'close' }).then(function (r) { delete TS.liveAll[cls()]; TS.live = null; return load(true).then(function () { return r.closed ? openResults(r.closed) : rerender(); }); });
+      var who = TS.who || '';
+      api('tctl', { 'class': cls(), op: 'close', who: who }).then(function (r) { delete TS.liveAll[liveKey(who)]; TS.live = null; return load(true).then(function () { return r.closed ? openResults(r.closed) : rerender(); }); });
     }));
     head.appendChild(acts); body.appendChild(head);
+    var bk = head.querySelector('.tt-back-rt'); if (bk) bk.addEventListener('click', function () { TS.who = ''; TS.live = null; st.tab = 'retests'; try { localStorage.setItem('hw:ttab', 'retests'); } catch (e) {} D.render(); });
     body.appendChild(el('div', 'live-chips tt-chips', '<span class="lchip"><b>' + counts.none + '</b> not started</span><span class="lchip work"><b>' + (counts.writing + counts.quiet) + '</b> writing</span><span class="lchip away"><b>' + counts.left + '</b> locked (left the test)</span><span class="lchip"><b>' + counts.done + '</b> finished</span>' +
       '<label class="tt-inline small"><input type="checkbox" class="tt-showmarks"' + (TS.showMarks ? ' checked' : '') + '> Show right/wrong as they write</label>'));
     body.querySelector('.tt-showmarks').addEventListener('change', function (e) { TS.showMarks = e.target.checked; rerender(); });
@@ -309,7 +327,8 @@
     body.appendChild(el('p', 'small muted', 'Refreshes every 5 s. A student who leaves the window, switches tabs or leaves full screen is submitted and locked; <b>Unlock</b> lets them carry on with the same numbers and answers (the time they were locked doesn’t count). Dots: grey = not answered, blue = answered' + (TS.showMarks ? ', green = right, red = wrong, amber = not in the right form' : '') + '.'));
   }
   function ctl(op, name, mins) {
-    return api('tctl', { 'class': cls(), op: op, name: name || '', mins: mins || 0 }).then(function (d) { if (!d.ok) alert(d.error); else if (d.live) TS.liveAll[cls()] = d.live; pollLive(); });
+    var who = TS.who || '';
+    return api('tctl', { 'class': cls(), op: op, name: name || '', mins: mins || 0, who: who }).then(function (d) { if (!d.ok) alert(d.error); else if (d.live) TS.liveAll[liveKey(who)] = d.live; pollLive(); });
   }
 
   /* ================= results ================= */

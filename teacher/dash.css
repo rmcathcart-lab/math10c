@@ -307,3 +307,23 @@ a.lp-card:hover { transform: translateY(-1px); border-color: var(--uc); }
 .lp-card.is-past .lp-t { color: var(--ink2); }
 .lp-card.is-past .lp-s { color: #2f7d58; }
 .lp-card.is-skip { opacity: .55; }
+
+/* ---------- Retests tab ---------- */
+.tab-badge { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; margin-left: 4px; border-radius: 999px; background: #c2410c; color: #fff; font-size: 12px; font-weight: 800; vertical-align: 1px; }
+.tt-kind.tt-retest { background: #ede4fb; color: #5b3aa6; border-color: #cdb8f2; }
+.rt-tbl td { vertical-align: top; }
+.rt-tbl tr[style] td:first-child { border-left: 4px solid var(--uc); }
+.rt-unit { font-weight: 800; color: var(--ucd, var(--ink)); }
+.rt-ok { color: #1d6b43; font-weight: 700; }
+.rt-warn { color: #b45309; font-weight: 700; }
+.rt-tests { max-width: 320px; }
+.rt-test { display: inline-block; margin: 0 4px 4px 0; padding: 2px 9px; border-radius: 999px; border: 1px solid var(--line); background: #fff; font-size: 13px; white-space: nowrap; }
+.rt-test.best { border-color: #7cc79d; background: #e9f6ef; }
+button.rt-test { font: inherit; font-size: 13px; color: inherit; cursor: pointer; }
+button.rt-test:hover { border-color: #9aa6b8; }
+.rt-test.unmarked b { font-weight: 600; color: #8a5a00; }
+.rt-tbl .rt-acts { white-space: nowrap; text-align: right; }
+.rt-tbl .rt-acts > * { margin: 0 0 4px 6px; vertical-align: middle; }
+.rt-sel { max-width: 200px; padding: 5px 8px; font-size: 14px; margin-right: 6px; }
+.rt-nochoice { max-width: 220px; white-space: normal; margin-bottom: 6px; }
+.rt-old h3 { display: flex; align-items: center; gap: 8px; }

@@ -90,6 +90,8 @@ function doGet(e) {
     if (a === 'progress') return json_(progress_(p['class'], p.name, p.token), cb);
     if (a === 'tcheck') return json_(tcheck_(p), cb);
     if (a === 'myresults') return json_(myResults_(p), cb);
+    if (a === 'myretests') return json_(myRetests_(p), cb);
+    if (a === 'reqretest') return json_(reqRetest_(p), cb);
     if (a === 'cal') return json_(cal_(p['class'] || classByBlock_(p.block)), cb);
     if (!teacherKey_() || p.key !== teacherKey_()) return json_({ ok: false, error: 'bad key' }, cb);
     if (a === 'classes') return json_(classList_(), cb);
@@ -109,8 +111,11 @@ function doGet(e) {
     if (a === 'savetest') return json_(saveTest_(p.id, p.def), cb);
     if (a === 'deltest') return json_(delTest_(p.id), cb);
     if (a === 'launch') return json_(launch_(p['class'], p.test), cb);
-    if (a === 'tlive') return json_(tlive_(p['class']), cb);
-    if (a === 'tctl') return json_(tctl_(p['class'], p.op, p.name, p.mins), cb);
+    if (a === 'tlive') return json_(tlive_(p['class'], p.who), cb);
+    if (a === 'tctl') return json_(tctl_(p['class'], p.op, p.name, p.mins, p.who), cb);
+    if (a === 'retests') return json_(retests_(p['class']), cb);
+    if (a === 'retestset') return json_(retestSet_(p.id, p.status), cb);
+    if (a === 'launchretest') return json_(launchRetest_(p.id, p.test), cb);
     if (a === 'sessions') return json_(sessions_(p['class']), cb);
     if (a === 'tresults') return json_(tresults_(p.session), cb);
     if (a === 'setmarks') return json_(setMarks_(p.session, p.data), cb);
@@ -255,7 +260,7 @@ function dash_(klass) {
     live: live_(klass), now: Date.now(), noSchool: noSchool_(), bell: BELL };
 }
 function itemsOf_(state) { // compact per-item status for the dashboard: { id: [status, credit, wrong, secs, reveals] }
-  var out = {}; try { var s = JSON.parse(state || '{}'), it = s.items || {}; Object.keys(it).forEach(function (id) { var r = it[id]; out[id] = [r.s, r.credit || '', r.wrong || 0, r.secs || 0, r.reveals || 0, r.steps || 0]; }); } catch (e) {}
+  var out = {}; try { var s = JSON.parse(state || '{}'), it = s.items || {}; Object.keys(it).forEach(function (id) { var r = it[id]; out[id] = [r.s, r.credit || '', r.wrong || 0, r.secs || 0, r.reveals || 0, r.steps || 0, r.redo ? 1 : 0]; }); } catch (e) {}
   return out;
 }
 function ms_(v) { return v instanceof Date ? v.getTime() : (v ? new Date(v).getTime() || 0 : 0); }
@@ -375,10 +380,11 @@ function setNoSchool_(csv) {
  *   Tests         saved tests: id, title, kind (exit | test), updated, def (JSON: minutes, calc, shuffle, levels, items)
  *   TestSessions  one row per launch: id, test, class, title, kind, launched, closed, released, def (snapshot)
  *   TestResults   one row per student per session: status, times, leaves, answers JSON, marks, score
- * Script properties: TESTLIVE ({ class: live session }), TESTREL ({ class: release counter }).
+ * Script properties: TESTLIVE ({ class: live session, 'class|student': a one-student retest }), TESTREL ({ class: release counter }).
+ * A retest is a launch for one student (TestSessions.student set) that runs alongside anything live for the class.
  * ============================================================ */
 COLS.Tests = ['id', 'title', 'kind', 'updated', 'def'];
-COLS.TestSessions = ['id', 'test', 'class', 'title', 'kind', 'launched', 'closed', 'released', 'def'];
+COLS.TestSessions = ['id', 'test', 'class', 'title', 'kind', 'launched', 'closed', 'released', 'def', 'student'];
 COLS.TestResults = ['key', 'session', 'class', 'name', 'status', 'started', 'submitted', 'usedSecs', 'leaves', 'device', 'answers', 'marks', 'score', 'total', 'updated'];
 var TEST_TTL = 21600; // cache seconds (6 h, the maximum)
 
@@ -413,12 +419,15 @@ function sessionDef_(sid) {
   var rs = rows_('TestSessions'); for (var i = rs.length - 1; i >= 0; i--) if (rs[i][0] === sid) { var d = parseDef_(rs[i][8]); if (d) { cput_('tsdef:' + sid, d); return d; } }
   return null;
 }
-function liveFor_(klass) { var l = testLive_()[norm_(klass)]; return l && l.id ? l : null; }
+function liveKey_(klass, who) { return norm_(klass) + (who ? '|' + norm_(who) : ''); }
+/* the live session for this student: a retest of their own first, else the class's */
+function liveFor_(klass, name) { var all = testLive_(), l = name ? all[liveKey_(klass, name)] : null; if (l && l.id) return l; l = all[norm_(klass)]; return l && l.id ? l : null; }
+function liveIs_(klass, name, sid) { var all = testLive_(), a = all[liveKey_(klass, name)], b = all[norm_(klass)]; return !!((a && a.id === sid) || (b && b.id === sid)); }
 
 /* ---------------- student side ---------------- */
 function tcheck_(p) {
   var who = authFast_(p['class'], p.name, p.token); if (!who) return { ok: false, error: 'badtoken' };
-  var live = liveFor_(who.klass), rel = testRel_()[norm_(who.klass)] || 0, conf = {};
+  var live = liveFor_(who.klass, who.name), rel = testRel_()[norm_(who.klass)] || 0, conf = {};
   String(p.pend || '').split(',').slice(0, 10).forEach(function (sid) { sid = clean_(sid, 40); if (!sid) return; var r = cget_(recKey_(sid, who.name)); if (r) conf[sid] = { st: r.st, rev: r.rev || 0, saved: !!r.saved }; });
   if (!live) return { ok: true, live: null, rel: rel, conf: conf, now: Date.now() };
   var def = sessionDef_(live.id), me = cget_(recKey_(live.id, who.name)), n = norm_(who.name);
@@ -444,12 +453,12 @@ function myResults_(p) {
 function testPost_(body) {
   var who = authFast_(body['class'], body.name, body.token); if (!who) return { ok: false, error: 'badtoken' };
   var sid = clean_(body.session, 40); if (!sid) return { ok: false, error: 'no session' };
-  var live = liveFor_(who.klass), def = sessionDef_(sid); if (!def) return { ok: false, error: 'unknown session' };
+  var def = sessionDef_(sid); if (!def) return { ok: false, error: 'unknown session' };
   var st = ['writing', 'submitted', 'left', 'time', 'ended', 'forced'].indexOf(body.st) >= 0 ? body.st : 'writing';
   var now = Date.now(), key = recKey_(sid, who.name), prev = cget_(key) || {};
   if (prev.st && prev.st !== 'writing' && st === 'writing' && (Number(body.unlockN) || 0) <= (prev.unlockN || 0)) return { ok: false, error: 'closed' }; // finished and not unlocked since
   if (st !== 'writing' && prev.st && prev.st !== 'writing' && (Number(body.rev) || 0) < (prev.rev || 0)) return { ok: true, stale: true }; // an older copy of a final we already have
-  if (st === 'writing' && (!live || live.id !== sid)) return { ok: false, error: 'not live' };
+  if (st === 'writing' && !liveIs_(who.klass, who.name, sid)) return { ok: false, error: 'not live' };
   var ans = body.ans && typeof body.ans === 'object' ? body.ans : (prev.ans || {}), answered = 0;
   Object.keys(ans).forEach(function (k) { if (ans[k] && ans[k].t) answered++; });
   var rec = { st: st, cur: Number(body.cur) || 0, n: answered, ans: ans, used: Math.max(0, Number(body.used) || 0), leaves: Number(body.leaves) || 0, at: now, dev: clean_(body.device, 40),
@@ -504,23 +513,27 @@ function delTest_(id) {
   try { var sh = sheet_('Tests'), rs = rows_('Tests'); for (var i = rs.length - 1; i >= 0; i--) if (rs[i][0] === id) sh.deleteRow(i + 2); return { ok: true }; }
   finally { lock.releaseLock(); }
 }
-function launch_(klass, testId) {
+function launch_(klass, testId, who) {
   var c = classOf_(klass); if (!c) return { ok: false, error: 'unknown class' };
   var t = null; rows_('Tests').forEach(function (r) { if (r[0] === testId) t = { id: r[0], def: parseDef_(r[4]) }; });
   if (!t || !t.def) return { ok: false, error: 'unknown test' };
   var lock = LockService.getScriptLock(); lock.waitLock(20000);
   try {
-    var all = list_('TESTLIVE') || {}; if (all[c.code] && all[c.code].id) return { ok: false, error: 'live', live: all[c.code] };
+    var lk = who ? liveKey_(c.code, who) : c.code;
+    var all = list_('TESTLIVE') || {}; if (all[lk] && all[lk].id) return { ok: false, error: 'live', live: all[lk] };
     var sid = 'S' + Date.now().toString(36), now = Date.now();
-    sheet_('TestSessions').appendRow([sid, t.id, c.code, t.def.title, t.def.kind, new Date(now), '', '', JSON.stringify(t.def)]);
+    sheet_('TestSessions').appendRow([sid, t.id, c.code, t.def.title, t.def.kind, new Date(now), '', '', JSON.stringify(t.def), who || '']);
     cput_('tsdef:' + sid, t.def);
-    all[c.code] = { id: sid, test: t.id, title: t.def.title, kind: t.def.kind, launched: now, ending: false, extra: {}, unlock: {}, submit: {} };
+    all[lk] = { id: sid, test: t.id, title: t.def.title, kind: t.def.kind, launched: now, ending: false, extra: {}, unlock: {}, submit: {} };
+    if (who) all[lk].who = who;
     saveProp_('TESTLIVE', all);
-    return { ok: true, live: all[c.code] };
+    return { ok: true, live: all[lk] };
   } finally { lock.releaseLock(); }
 }
-function tlive_(klass) {
-  var live = liveFor_(klass), names = rosterRows_(klass).map(function (x) { return String(x.v[1]); });
+function tlive_(klass, who) {
+  var live = who ? testLive_()[liveKey_(klass, who)] : liveFor_(klass), names = rosterRows_(klass).map(function (x) { return String(x.v[1]); });
+  if (live && !live.id) live = null;
+  if (who) names = names.filter(function (n) { return norm_(n) === norm_(who); });
   if (!live) return { ok: true, live: null, names: names, now: Date.now() };
   var keys = names.map(function (n) { return recKey_(live.id, n); }), got = {};
   try { got = cache_().getAll(keys) || {}; } catch (e) { got = {}; }
@@ -528,10 +541,10 @@ function tlive_(klass) {
   return { ok: true, live: live, def: sessionDef_(live.id), recs: recs, names: names, now: Date.now() };
 }
 /* op: unlock | time | submit | end | close | resume (cancel end) */
-function tctl_(klass, op, name, mins) {
+function tctl_(klass, op, name, mins, who) {
   var lock = LockService.getScriptLock(); lock.waitLock(20000);
   try {
-    var all = list_('TESTLIVE') || {}, k = norm_(klass), live = all[k]; if (!live) return { ok: false, error: 'no live test' };
+    var all = list_('TESTLIVE') || {}, k = liveKey_(klass, who), live = all[k]; if (!live) return { ok: false, error: 'no live test' };
     var n = norm_(name || ''); live.extra = live.extra || {}; live.unlock = live.unlock || {}; live.submit = live.submit || {};
     if (op === 'unlock') { if (!n) return { ok: false, error: 'no student' }; live.unlock[n] = (live.unlock[n] || 0) + 1; if (Number(mins)) live.extra[n] = (live.extra[n] || 0) + Number(mins); }
     else if (op === 'time') live.extra[n || '*'] = (live.extra[n || '*'] || 0) + (Number(mins) || 0);
@@ -546,8 +559,10 @@ function tctl_(klass, op, name, mins) {
       delete all[k]; saveProp_('TESTLIVE', all);
       var sh = sheet_('TestSessions'), rs = rows_('TestSessions');
       for (var i = rs.length - 1; i >= 0; i--) if (rs[i][0] === live.id) { sh.getRange(i + 2, 7).setValue(new Date()); break; }
+      if (who) retestsDone_(live.id);
       // anyone still writing when the test is closed: keep what the cache has (they were told to stop)
       rosterRows_(klass).forEach(function (x) {
+        if (who && norm_(x.v[1]) !== norm_(who)) return;
         var rk = recKey_(live.id, x.v[1]), rec = cget_(rk); if (!rec) return;
         if (rec.st === 'writing') { var have = resultRow_(live.id, x.v[1]); if (have && have.st && have.st !== 'writing') return; rec.st = 'ended'; rec.done = Date.now(); }
         else if (rec.saved) return;
@@ -563,16 +578,18 @@ function sessions_(klass) {
   var k = norm_(klass), counts = {};
   rows_('TestResults').forEach(function (r) { if (norm_(r[2]) === k) counts[r[1]] = (counts[r[1]] || 0) + 1; });
   return { ok: true, sessions: rows_('TestSessions').filter(function (r) { return norm_(r[2]) === k; }).map(function (r) {
-    return { id: r[0], test: r[1], title: r[3], kind: r[4], launched: ms_(r[5]), closed: ms_(r[6]), released: ms_(r[7]), results: counts[r[0]] || 0 }; }).reverse() };
+    return { id: r[0], test: r[1], title: r[3], kind: r[4], launched: ms_(r[5]), closed: ms_(r[6]), released: ms_(r[7]), results: counts[r[0]] || 0, student: String(r[9] || '') }; }).reverse() };
 }
 function tresults_(sid) {
-  var s = null; rows_('TestSessions').forEach(function (r) { if (r[0] === sid) s = { id: r[0], test: r[1], 'class': r[2], title: r[3], kind: r[4], launched: ms_(r[5]), closed: ms_(r[6]), released: ms_(r[7]), def: parseDef_(r[8]) }; });
+  var s = null; rows_('TestSessions').forEach(function (r) { if (r[0] === sid) s = { id: r[0], test: r[1], 'class': r[2], title: r[3], kind: r[4], launched: ms_(r[5]), closed: ms_(r[6]), released: ms_(r[7]), def: parseDef_(r[8]), student: String(r[9] || '') }; });
   if (!s) return { ok: false, error: 'unknown session' };
   var rows = rows_('TestResults').filter(function (r) { return r[1] === sid; }).map(function (r) {
     var ans = {}; try { ans = JSON.parse(r[10] || '{}'); } catch (e) {}
     return { name: r[3], status: r[4], started: ms_(r[5]), submitted: ms_(r[6]), used: Number(r[7]) || 0, leaves: Number(r[8]) || 0, device: r[9], answers: ans, marks: String(r[11] || ''), score: r[12], total: r[13] };
   });
-  return { ok: true, session: s, rows: rows, names: rosterRows_(s['class']).map(function (x) { return String(x.v[1]); }) };
+  var names = rosterRows_(s['class']).map(function (x) { return String(x.v[1]); });
+  if (s.student) names = names.filter(function (n) { return norm_(n) === norm_(s.student); });
+  return { ok: true, session: s, rows: rows, names: names };
 }
 /* data = { name: { m: 'cwfb…' (one letter per question, upper case = teacher override), s: score, t: total } } */
 function setMarks_(sid, data) {
@@ -592,4 +609,77 @@ function release_(sid, on) {
     var rel = list_('TESTREL') || {}; rel[klass] = (rel[klass] || 0) + 1; saveProp_('TESTREL', rel);
     return { ok: true };
   } finally { lock.releaseLock(); }
+}
+
+/* ============================================================
+ * RETESTS
+ * When a student has done every required question in a unit without seeing a solution (and, after a retest, every
+ * extra practice question too), the practice site lets them request a retest. Requests show in the Teacher Ledger's
+ * Retests tab; the teacher launches a test for that one student (launch_ with who), and closing it marks the
+ * request written.
+ *   Retests   id, class, name, unit, requested, status (requested | open | done | dismissed | cancelled), session,
+ *             updated, test, info (what the student's device reported: required / extra counts)
+ * ============================================================ */
+COLS.Retests = ['id', 'class', 'name', 'unit', 'requested', 'status', 'session', 'updated', 'test', 'info'];
+function retestRows_() { return rows_('Retests').map(function (r, i) { return { row: i + 2, id: String(r[0]), klass: String(r[1]), name: String(r[2]), unit: Number(r[3]) || 0, requested: ms_(r[4]), status: String(r[5]), session: String(r[6] || ''), updated: ms_(r[7]), test: String(r[8] || ''), info: String(r[9] || '') }; }); }
+function retestOut_(x) { return { id: x.id, name: x.name, unit: x.unit, requested: x.requested, status: x.status, session: x.session, updated: x.updated, test: x.test, info: x.info }; }
+function myRetests_(p) {
+  var who = authFast_(p['class'], p.name, p.token); if (!who) return { ok: false, error: 'badtoken' };
+  var k = norm_(who.klass), n = norm_(who.name);
+  return { ok: true, retests: retestRows_().filter(function (x) { return norm_(x.klass) === k && norm_(x.name) === n; }).map(retestOut_) };
+}
+/* ?action=reqretest&class&name&token&unit[&cancel=1][&info=…] */
+function reqRetest_(p) {
+  var who = authFast_(p['class'], p.name, p.token); if (!who) return { ok: false, error: 'badtoken' };
+  var unit = Math.round(Number(p.unit) || 0); if (unit < 1 || unit > 20) return { ok: false, error: 'bad unit' };
+  var lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    var k = norm_(who.klass), n = norm_(who.name), sh = sheet_('Retests'), now = new Date();
+    var mine = retestRows_().filter(function (x) { return norm_(x.klass) === k && norm_(x.name) === n && x.unit === unit; });
+    var active = mine.filter(function (x) { return x.status === 'requested' || x.status === 'open'; })[0];
+    if (p.cancel === '1') {
+      if (!active || active.status !== 'requested') return { ok: false, error: 'nothing to cancel' };
+      sh.getRange(active.row, 6, 1, 3).setValues([['cancelled', '', now]]);
+    } else {
+      if (active) return { ok: true, already: true, retests: myRetests_(p).retests };
+      sh.appendRow(['R' + Date.now().toString(36), who.klass, who.name, unit, now, 'requested', '', now, '', clean_(p.info, 200)]);
+    }
+    return { ok: true, retests: myRetests_(p).retests };
+  } finally { lock.releaseLock(); }
+}
+/* the Retests tab: every request for the class, and the finished tests of each requesting student (to show grades) */
+function retests_(klass) {
+  var c = classOf_(klass); if (!c) return { ok: false, error: 'unknown class' };
+  var k = norm_(c.code), list = retestRows_().filter(function (x) { return norm_(x.klass) === k; }), names = {};
+  list.forEach(function (x) { names[norm_(x.name)] = 1; });
+  var sess = {}; rows_('TestSessions').forEach(function (r) { if (norm_(r[2]) === k && r[4] !== 'exit') sess[r[0]] = { id: r[0], test: r[1], title: r[3], launched: ms_(r[5]), closed: ms_(r[6]), released: ms_(r[7]), def: parseDef_(r[8]), student: String(r[9] || '') }; });
+  var results = [];
+  rows_('TestResults').forEach(function (r) {
+    var s = sess[r[1]]; if (!s || !names[norm_(r[3])]) return;
+    results.push({ session: s.id, name: String(r[3]), status: r[4], marks: String(r[11] || ''), score: r[12], total: r[13] });
+  });
+  var used = {}; results.forEach(function (x) { used[x.session] = 1; });
+  return { ok: true, retests: list.map(retestOut_), results: results, sessions: Object.keys(used).map(function (id) { return sess[id]; }), live: testLive_() };
+}
+function retestSet_(id, status) {
+  if (['dismissed', 'requested', 'done'].indexOf(status) < 0) return { ok: false, error: 'bad status' };
+  var lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    var x = retestRows_().filter(function (r) { return r.id === id; })[0]; if (!x) return { ok: false, error: 'unknown request' };
+    sheet_('Retests').getRange(x.row, 6, 1, 3).setValues([[status, status === 'requested' ? '' : x.session, new Date()]]);
+    return { ok: true };
+  } finally { lock.releaseLock(); }
+}
+function launchRetest_(id, testId) {
+  var x = retestRows_().filter(function (r) { return r.id === id; })[0]; if (!x) return { ok: false, error: 'unknown request' };
+  if (x.status !== 'requested') return { ok: false, error: 'not requested' };
+  var d = launch_(x.klass, testId, x.name); if (!d.ok) return d;
+  var lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try { sheet_('Retests').getRange(x.row, 6, 1, 4).setValues([['open', d.live.id, new Date(), clean_(testId, 30)]]); } finally { lock.releaseLock(); }
+  return d;
+}
+/* the retest written in this session (called from tctl_ close, inside its lock) */
+function retestsDone_(sid) {
+  var sh = sheet_('Retests');
+  retestRows_().forEach(function (x) { if (x.session === sid && x.status === 'open') sh.getRange(x.row, 6, 1, 3).setValues([['done', sid, new Date()]]); });
 }
