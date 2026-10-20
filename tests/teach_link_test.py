@@ -1,7 +1,7 @@
 """The home page's lesson cards and the lesson sidebar's "Go to the lesson" link: uses the block set for the class (beats the letter in the code),
 points at the right lesson page, and is absent for lessons the teaching site doesn't have yet.
 Needs python3 -m http.server 8811 and a fresh mock (tests/restart_mock.sh)."""
-import asyncio, urllib.request
+import asyncio, json, urllib.request
 from playwright.async_api import async_playwright
 BASE = 'http://localhost:8811/'; MOCK = 'http://localhost:8765/'
 CONFIG = "var HW_CONFIG = { siteName: 'Math 10C Practice', backend: '%s' };" % MOCK
@@ -9,7 +9,7 @@ async def main():
     urllib.request.urlopen(MOCK + '?action=setblock&key=testkey&class=10c-b&block=C').read()
     errs = []
     async with async_playwright() as p:
-        b = await p.chromium.launch(); ctx = await b.new_context(viewport={'width': 1300, 'height': 950})
+        b = await p.chromium.launch(); ctx = await b.new_context(viewport={'width': 1300, 'height': 950}, service_workers='block')
         await ctx.route('**/script.google.com/**', lambda r: r.abort())  # the live Teaching Ink backend
         page = await ctx.new_page()
         page.on('pageerror', lambda e: errs.append(str(e)))
@@ -24,12 +24,14 @@ async def main():
         print('home cards:', home)
         assert len(home) == 79 and home[54].endswith('/u8/l1a/?class=C') and home[78].endswith('/u10/l9/?class=C') and home[41].endswith('/u6/l1/?class=C') and home[46].endswith('/u6/l6/?class=C') and home[47].endswith('/u7/l1/?class=C') and home[53].endswith('/u7/l7/?class=C') and home[21].endswith('/u4/l1a/?class=C') and home[29].endswith('/u4/l8/?class=C') and home[30].endswith('/u5/l1/?class=C') and home[37].endswith('/u5/l7b/?class=C') and home[40].endswith('/u5/l10/?class=C') and home[15].endswith('/u3/l1/?class=C') and home[20].endswith('/u3/l6/?class=C') and home[0].endswith('/u1/l1/?class=C') and home[5].endswith('/u1/l6a/?class=C') and home[7].endswith('/u1/l7/?class=C') and home[8].endswith('/u2/l1/?class=C') and home[14].endswith('/u2/l6/?class=C'), home
         await page.screenshot(path='/tmp/home_cards.png', full_page=False)
-        # the card opens the lesson page itself (served from the same repo) in a new tab
-        async with page.context.expect_page() as pi: await page.click('a.lesson-teach >> nth=0')
-        lp = await pi.value; await lp.wait_for_load_state('load'); await lp.wait_for_timeout(1500)
-        lesson = await lp.evaluate("[location.pathname + location.search, !!(window.HW && HW.Calc), document.querySelectorAll('.katex').length, (document.querySelector('a.assign')||{}).href]")
-        print('lesson page:', lesson); assert lesson[0] == '/lessons/u1/l1/?class=C' and lesson[1] and lesson[3] == BASE + '#/lesson/u1l1', lesson
-        await lp.close()
+        # the card opens the lesson page itself in the same tab; the student shows in the ledger as on the lesson page;
+        # the lesson's home button goes back to the assignments
+        await page.click('a.lesson-teach >> nth=0'); await page.wait_for_url('**/lessons/u1/l1/**'); await page.wait_for_timeout(2500)
+        lesson = await page.evaluate("[location.pathname + location.search, !!(window.HW && HW.Calc), document.querySelectorAll('.katex').length, (document.querySelector('a.assign')||{}).href, (document.querySelector('a.assign')||{}).target, document.querySelector('.tbtn.home').getAttribute('href')]")
+        print('lesson page:', lesson); assert lesson[0] == '/lessons/u1/l1/?class=C' and lesson[1] and lesson[3] == BASE + '#/lesson/u1l1' and lesson[4] == '' and lesson[5] == '../../../', lesson
+        live = json.loads(urllib.request.urlopen(MOCK + '?action=live&key=testkey&class=10c-b').read())['live']
+        print('live:', live); assert any(r.get('view') == 'teach' and r.get('lesson') == 'u1l1' for r in live.values()), live
+        await page.click('.tbtn.home'); await page.wait_for_selector('.lesson-row'); assert page.url.rstrip('/').split('#')[0] == BASE.rstrip('/'), page.url
         await page.set_viewport_size({'width': 390, 'height': 800}); await page.wait_for_timeout(200)
         await page.screenshot(path='/tmp/home_cards_phone.png')
         await page.set_viewport_size({'width': 1300, 'height': 950})

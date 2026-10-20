@@ -224,7 +224,7 @@
     var head = el('div', 'home-head'), hl = el('div', 'hh-text');
     hl.appendChild(el('h1', '', 'Hi, ' + esc(session.name.split(' ')[0]) + '.'));
     var cont = lastLesson();
-    hl.appendChild(el('p', 'muted', cont ? 'Pick up where you left off, or choose any lesson below.' : 'Choose a lesson to start practising.'));
+    hl.appendChild(el('p', 'muted', cont ? 'Pick up where you left off, or choose any assignment below.' : 'Choose an assignment to start practising.'));
     head.appendChild(hl);
     var acts = el('div', 'hh-cal'); acts.id = 'home-cal'; homeCalendar(acts); head.appendChild(acts); // the next test + the class calendar, on the right
     view.appendChild(head);
@@ -232,6 +232,7 @@
     if (HW.TestMode) HW.TestMode.home(view);
     var legend = el('div', 'legend', '<span><i class="lg first"></i>Done first try</span><span><i class="lg help"></i>Done with a hint</span><span><i class="lg extra"></i>Extra practice</span><span><i class="lg empty"></i>Still to do</span>');
     view.appendChild(legend);
+    var CD = calData(), LAY = CD && HW.Cal ? HW.Cal.layout(CD.cal, CD.noSchool) : null, TODAY = HW.Cal ? HW.Cal.today() : '';
     HW.CATALOG.forEach(function (u) {
       var sec = el('section', 'unit'); if (HW.unitStyle) sec.setAttribute('style', HW.unitStyle(u.unit)); // unit colour (as on the class calendar)
       var uh = el('h2', 'unit-title', '<span class="unit-num">Unit ' + u.unit + '</span> ' + esc(u.title) + ' <span class="unit-out">' + esc(u.outcomes) + '</span>');
@@ -241,18 +242,21 @@
       var list = el('div', 'lesson-list');
       u.lessons.forEach(function (c) {
         var lesson = HW.lessons[c.id], row = el(lesson ? 'a' : 'div', 'lesson-row' + (lesson ? '' : ' locked'));
-        // beside each assignment: a small card that opens the lesson itself on the teaching site (a spacer keeps the rows lined up)
+        // beside each assignment: a small card that opens the lesson itself (same tab; its home button comes back here),
+        // marked Today / Taught / its date from the class calendar (a spacer keeps the rows lined up)
         var line = el('div', 'lesson-line'), turl = teachingUrl(c);
         if (turl) {
-          var tc = el('a', 'lesson-teach', '<span class="lt-ic" aria-hidden="true">📘</span><span class="lt-t">Lesson</span><span class="lt-go" aria-hidden="true">↗</span>');
-          tc.href = turl; tc.target = '_blank'; tc.rel = 'noopener';
-          tc.title = 'Open Lesson ' + c.num + ' (examples and class notes) in a new tab';
-          tc.setAttribute('aria-label', 'Open Lesson ' + c.num + ' — ' + stripTags(c.title) + ' — on the teaching site');
+          var when = LAY ? LAY.dateOf[c.id] : null, stt = !when ? '' : when === TODAY ? 'today' : when < TODAY ? 'past' : 'next';
+          var tag = stt === 'today' ? 'Today' : stt === 'past' ? '✓ Taught' : stt === 'next' ? HW.Cal.nice(when, { month: 'short', day: 'numeric' }) : '';
+          var tc = el('a', 'lesson-teach' + (stt ? ' is-' + stt : ''), '<span class="lt-k">Lesson</span><span class="lt-n">' + esc(c.num) + '</span>' + (tag ? '<span class="lt-s">' + tag + '</span>' : ''));
+          tc.href = turl;
+          tc.title = 'Open Lesson ' + c.num + ' (examples and class notes)' + (stt === 'today' ? ' — today’s lesson' : stt === 'past' ? ' — taught ' + HW.Cal.nice(when) : stt === 'next' ? ' — on ' + HW.Cal.nice(when) : '');
+          tc.setAttribute('aria-label', 'Lesson ' + c.num + ' — ' + stripTags(c.title) + (tag ? ' (' + tag.replace('✓ ', '') + ')' : ''));
           tc.addEventListener('click', function () { L.push({ t: 'event', type: 'notes', lesson: c.id }); });
           line.appendChild(tc);
         } else line.appendChild(el('div', 'lesson-teach none', ''));
         line.appendChild(row);
-        var info = el('div', 'lr-info', '<div class="lr-num">Lesson ' + esc(c.num) + '</div><div class="lr-title">' + HW.tex(esc(c.title)) + '</div>');
+        var info = el('div', 'lr-info', '<div class="lr-num">Assignment ' + esc(c.num) + '</div><div class="lr-title">' + HW.tex(esc(c.title)) + '</div>');
         row.appendChild(info);
         if (lesson) {
           row.href = '#/lesson/' + lesson.id;
@@ -281,7 +285,7 @@
       var next = { cal: d.cal ? HW.Cal.clean(d.cal) : null, noSchool: d.noSchool || [] }, was = JSON.stringify(CAL);
       CAL = next; ls(calKey(), JSON.stringify(next));
       var h = location.hash.replace(/^#\/?/, '').split('/')[0];
-      if (was !== JSON.stringify(next) && !cur.lesson && document.body.className === 'home' && (h === '' || h === 'calendar')) { var hc = document.getElementById('home-cal'); if (hc) homeCalendar(hc); if (document.getElementById('cal-pop')) openCalendar(); }
+      if (was !== JSON.stringify(next) && !cur.lesson && document.body.className === 'home' && (h === '' || h === 'calendar')) { var pop = !!document.getElementById('cal-pop'), y = scrollY; renderHome(); scrollTo(0, y); if (pop) openCalendar(); } // redraw: the next test, and Today / Taught on the lesson cards
     }).catch(function () {});
   }
   /* beside "Hi, …" on the home page: "📝 Next test: Unit 4 Test · Wed, Oct 21" and a Calendar button (opens a pop-up) */
@@ -304,10 +308,10 @@
     var C = HW.Cal, i = C.info(key), lesson = HW.lessons[key];
     if (i.kind === 'test') return el('div', 'calm-chip test', '<b>' + esc(i.title) + '</b><span class="ct">' + esc(i.unitTitle) + '</span>');
     var turl = teachingUrl({ id: key }), a = el(lesson && !lesson.test ? 'a' : turl ? 'a' : 'div', 'calm-chip');
-    a.innerHTML = (turl && lesson ? '<span class="clk" title="Open the lesson">📘</span>' : '') + '<b>U' + i.unit + ' · Lesson ' + esc(i.num) + '</b><span class="ct">' + HW.tex(esc(i.title)) + '</span>';
-    if (lesson && !lesson.test) { a.href = '#/lesson/' + key; a.title = 'Practice: Lesson ' + i.num + ' — ' + stripTags(i.title); }
-    else if (turl) { a.href = turl; a.target = '_blank'; a.rel = 'noopener'; a.title = 'Open Lesson ' + i.num; }
-    var lk = a.querySelector('.clk'); if (lk) lk.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); root.open(turl, '_blank', 'noopener'); });
+    a.innerHTML = (turl && lesson ? '<span class="clk" title="Open the lesson">Lesson</span>' : '') + '<b>U' + i.unit + ' · ' + (lesson ? 'Assignment ' : 'Lesson ') + esc(i.num) + '</b><span class="ct">' + HW.tex(esc(i.title)) + '</span>';
+    if (lesson && !lesson.test) { a.href = '#/lesson/' + key; a.title = 'Assignment ' + i.num + ' — ' + stripTags(i.title); }
+    else if (turl) { a.href = turl; a.title = 'Open Lesson ' + i.num; }
+    var lk = a.querySelector('.clk'); if (lk) lk.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); closeCalendar(); location.href = turl; });
     return a;
   }
   /* the class calendar in a pop-up: months scroll; it opens on this week (or on a date, e.g. the next test) */
@@ -326,7 +330,7 @@
       if (nt) info.push('Next test: <b>' + esc(nt.info.title) + '</b>, ' + esc(C.nice(nt.date, { weekday: 'long', month: 'long', day: 'numeric' })));
       if (info.length) box.appendChild(el('p', 'cal-today', info.join(' · ')));
       var v = C.view(D.cal, { off: D.noSchool, today: today, chip: calChip }); box.appendChild(v);
-      box.appendChild(el('p', 'small muted cal-pop-foot', 'Scroll for other months. Tap a lesson to practise it (📘 opens the lesson itself). Dates can change as the class goes — this always shows the latest plan.'));
+      box.appendChild(el('p', 'small muted cal-pop-foot', 'Scroll for other months. Tap a day’s box to open its assignment, or “Lesson” to open the lesson itself. Dates can change as the class goes — this always shows the latest plan.'));
       v.querySelectorAll('a.calm-chip').forEach(function (a) { if (/^#\/lesson\//.test(a.getAttribute('href') || '')) a.addEventListener('click', closeCalendar); });
       requestAnimationFrame(function () { v.scrollToDate(date || today); });
     }
@@ -378,7 +382,7 @@
     cur.item = id; cur.practice = false; l.cur = id;
     if (r.s === 'new') { r.s = 'open'; r.at = Date.now(); L.push({ t: 'event', type: 'open', lesson: lesson.id, item: id }); }
     touch(lesson.id);
-    drawTop('<a href="#/">All lessons</a><span class="sep">/</span>Unit ' + lesson.unit + ' · Lesson ' + esc(lesson.num));
+    drawTop('<a href="#/">Assignments</a><span class="sep">/</span>Unit ' + lesson.unit + ' · Assignment ' + esc(lesson.num));
     if (fresh || !document.querySelector('.lesson-wrap')) buildLessonFrame(lesson);
     drawNav(); drawHeaderBar();
     drawCard();
@@ -412,10 +416,14 @@
     });
     var extraHead = false, turl = teachingUrl(lesson);
     if (turl) {
-      var tb = el('a', 'teach-link', '<span class="tl-ic" aria-hidden="true">📘</span><span class="tl-t"><b>Go to the lesson</b><span>Examples and class notes</span></span><span class="tl-go" aria-hidden="true">↗</span>');
-      tb.href = turl; tb.target = '_blank'; tb.rel = 'noopener';
-      tb.title = 'Opens Lesson ' + lesson.num + ' on the teaching site' + (studentBlock() ? ' (Block ' + studentBlock() + ' notes)' : '') + ' in a new tab';
-      tb.addEventListener('click', function () { viaNotes = Date.now(); L.push({ t: 'event', type: 'notes', lesson: lesson.id, item: cur.item }); });
+      var tb = el('a', 'teach-link', '<span class="tl-t"><b>Go to Lesson ' + esc(lesson.num) + '</b><span>Examples and class notes</span></span><span class="tl-go" aria-hidden="true">›</span>');
+      tb.href = turl;
+      tb.title = 'Opens Lesson ' + lesson.num + (studentBlock() ? ' (Block ' + studentBlock() + ' notes)' : '') + '; its home button brings you back';
+      tb.addEventListener('click', function () {
+        // the lesson opens in this tab: a question that was open gets new numbers, as if the student had left the page
+        viaNotes = Date.now(); if (working()) { var it0 = cur.lesson.byId[cur.item]; if (cur.practice) IR(cur.lesson.id, it0.id).prac++; else newVersion(cur.lesson, it0, 'notes'); touch(cur.lesson.id); saveState(); }
+        L.push({ t: 'event', type: 'notes', lesson: lesson.id, item: cur.item }); L.flush(true);
+      });
       nav.appendChild(tb);
     }
     nav.appendChild(el('div', 'qnav-title', 'Assignment'));

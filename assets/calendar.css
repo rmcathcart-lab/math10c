@@ -40,7 +40,8 @@ a.calm-chip.calm-u:hover { border-color: var(--uc); }
 .calm-chip.calm-u.test { background: var(--uct); border-color: var(--uct); color: #fff; }
 .calm-chip.calm-u.test b { color: #fff; }
 .calm-chip.calm-u.test b::before { content: '📝 '; }
-.calm-chip .clk { float: right; font-size: 12px; margin-left: 4px; text-decoration: none; }
+.calm-chip .clk { float: right; margin-left: 4px; padding: 1px 6px; border-radius: 999px; background: #fff; border: 1px solid var(--ucs, #b9ddd7); font-size: 10.5px; font-weight: 800; color: var(--ucd, #0f5f5a); cursor: pointer; }
+.calm-chip .clk:hover { border-color: var(--uc, #0f5f5a); }
 @media (max-width: 640px) {
   .calm-day { min-height: 64px; padding: 4px 3px; } .calm-chip { padding: 3px 4px; font-size: 10.5px; } .calm-chip b { font-size: 10.5px; } .calm-chip .ct, .calm-chip .clk, .calm-tag { display: none; }
   .calm-hd div { padding: 3px 2px 5px; font-size: 10px; } .calv-title { font-size: 16px; } .calm-mon { display: block; width: 100%; font-size: 10px; }

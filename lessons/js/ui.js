@@ -23,13 +23,14 @@ const icon = (k) => '<svg viewBox="0 0 24 24" aria-hidden="true">' + I[k] + '</s
 
 export function boot({ key, homeHref = '../../', title = '' }) {
   const sh = Share.setup(key);
+  presence(sh, key, homeHref, title);
   if (window.katex) renderTex(document);
   wireBlocks(document); // polls, multiple choice, numerical response, reveals, flip cards, declarative figures (blocks.js)
   fitLesson();
   /* ---------- toolbar ---------- */
   const tb = h('header', 'tb no-ink'); tb.id = 'tb';
   tb.innerHTML = `
-    <a class="tbtn home" href="${homeHref}${sh.cls ? '?class=' + sh.cls : ''}" title="All lessons" aria-label="All lessons"><img class="home-mark" src="${homeHref}assets/icon-180.png" alt="" width="34" height="34"></a>
+    <a class="tbtn home" href="${sh.role === 'teacher' ? homeHref + '../teacher/' : homeHref + '../'}" title="${sh.role === 'teacher' ? 'Teacher Ledger' : 'Your assignments'}" aria-label="${sh.role === 'teacher' ? 'Teacher Ledger' : 'Back to your assignments'}"><img class="home-mark" src="${homeHref}assets/icon-180.png" alt="" width="34" height="34"></a>
     <div class="tb-title">${title}</div>
     <div class="share-badge"></div>
     <div class="tb-group tools">
@@ -237,6 +238,17 @@ export function boot({ key, homeHref = '../../', title = '' }) {
 
   Ink.init(sh.inkKey, { readonly: sh.readonly });
   Share.start(sh, $('.share-badge'));
+}
+
+/* A signed-in student on a lesson page shows up in the Teacher Ledger's Live tab ("On the lesson page"): load the practice
+ * site's ledger client (same site, so the student's sign-in is here too) and report this page. Not on the teacher's iPad. */
+function presence(sh, key, homeHref, title) {
+  if (sh.role === 'teacher') return;
+  let sess = null; try { sess = JSON.parse(localStorage.getItem('hw:session') || 'null'); } catch (e) { sess = null; }
+  if (!sess || !sess.token) return;
+  window.HW = window.HW || {}; window.HW_PRESENCE = { lesson: key, label: String(title || '').slice(0, 30) };
+  const base = homeHref + '../', load = (src) => new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+  load(base + 'js/config.js').then(() => load(base + 'js/ledger.js')).then(() => load(base + 'js/presence.js')).catch(() => {});
 }
 
 /* Pinch zoom: Safari zooms everything, fixed toolbars included, so the toolbar would grow and slide off the top of

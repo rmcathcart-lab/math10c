@@ -29,7 +29,7 @@
   }
   function save(next, note) {
     if (K.cal) K.undo.push(K.cal); if (K.undo.length > 40) K.undo.shift();
-    K.cal = next; K.msg = note || ''; K.saving++; rerender();
+    K.cal = next; K.msg = note || ''; K.saving++; st.cal = next; st.calFor = st.klass; D.drawTop(); rerender();
     return api('setcal', { 'class': st.klass, cal: next ? JSON.stringify(next) : '', all: allFlag() }).then(function (d) {
       K.saving--; if (!d.ok) { K.msg = 'Couldn’t save: ' + d.error; } rerender();
     }, function () { K.saving--; K.msg = 'Couldn’t reach the ledger — the change isn’t saved.'; rerender(); });
@@ -214,5 +214,85 @@
   document.addEventListener('pointerdown', function (e) { if (K.pop && !K.pop.contains(e.target)) closePop(); }, true);
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closePop(); });
 
-  HW.DashCal = { render: function (body) { closePop(); render(body); }, reload: function () { K.klass = null; } };
+  /* ================= header: Lessons (pop-up) and Launch Today's Lesson ================= */
+  function block() { var c = (st.classes || []).filter(function (x) { return x.code === st.klass; })[0]; return c && c.block ? String(c.block).toUpperCase() : ''; }
+  function lessonUrl(key) { var T = HW.TEACHING, m = /^u(\d+)l(\w+)$/.exec(key); if (!T || !m || T.lessons.indexOf(key) < 0) return ''; return '../' + T.base + 'u' + m[1] + '/l' + m[2] + '/' + (block() ? '?class=' + block() : ''); }
+  function hereCal() { return st.calFor === st.klass ? st.cal : null; }
+  function todayInfo() {
+    var cal = hereCal(), today = C.today(), w = new Date().getDay();
+    if (!cal) return { keys: [], why: 'Make a class calendar first (Calendar tab) so the ledger knows today’s lesson.' };
+    var keys = C.on(cal, off(), today), lessons = keys.filter(function (k) { var i = C.info(k); return i && i.kind === 'lesson' && lessonUrl(k); });
+    if (lessons.length) return { keys: lessons };
+    if (keys.length) return { keys: [], why: 'Today is the ' + C.info(keys[0]).title + '.' };
+    if (w === 0 || w === 6) return { keys: [], why: 'No class today (weekend).' };
+    if (off().indexOf(today) >= 0) return { keys: [], why: 'No school today.' };
+    return { keys: [], why: 'Nothing is on the calendar for today.' };
+  }
+  function topButtons(right) {
+    var lb = button('btn-ghost top-lessons', 'Lessons', function () { openLessons(); }); lb.title = 'All the lessons, as cards or on the class calendar';
+    right.insertBefore(lb, right.firstChild);
+    var t = todayInfo(), go;
+    if (t.keys.length === 1) { go = el('a', 'btn btn-primary top-launch', '▶ Launch Today’s Lesson'); go.href = lessonUrl(t.keys[0]); var i = C.info(t.keys[0]); go.title = 'Lesson ' + i.unit + '.' + i.num + ': ' + i.title + (block() ? ' (Block ' + block() + ')' : ''); }
+    else if (t.keys.length > 1) { go = button('btn-primary top-launch', '▶ Launch Today’s Lesson', function () { openLessons('today'); }); go.title = 'Two lessons today: pick one'; }
+    else { go = button('btn-primary top-launch', '▶ Launch Today’s Lesson', function () {}); go.disabled = true; go.title = t.why; }
+    right.insertBefore(go, lb.nextSibling);
+  }
+  /* the Lessons pop-up: every lesson as cards (by unit, in unit colours, marked Today / Taught / its date for this class),
+     or the class calendar; tap one to open it for this class */
+  function openLessons(focus) {
+    closeLessons();
+    var view = focus === 'today' ? 'cards' : (localStorage.getItem('hw:tlview') || 'cards');
+    var ov = el('div', 'lp-modal'); ov.id = 'lp-modal'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
+    var box = el('div', 'lp-box'); ov.appendChild(box);
+    ov.addEventListener('click', function (e) { if (e.target === ov) closeLessons(); });
+    document.addEventListener('keydown', lpKeys); document.body.appendChild(ov);
+    function draw() {
+      box.innerHTML = '';
+      var cal = hereCal(), L = cal ? C.layout(cal, off()) : null, today = C.today(), skipped = cal ? cal.skipped : [];
+      var head = el('div', 'lp-head');
+      head.appendChild(el('h2', '', 'Lessons <span class="muted small">' + esc(klassLabel()) + (block() ? ' · ink for Block ' + block() : '') + '</span>'));
+      var seg = el('div', 'seg'); [['cards', 'Cards'], ['cal', 'Calendar']].forEach(function (x) { var b = el('button', x[0] === view ? 'on' : '', x[1]); b.type = 'button'; b.addEventListener('click', function () { view = x[0]; try { localStorage.setItem('hw:tlview', view); } catch (e) {} draw(); }); seg.appendChild(b); });
+      head.appendChild(seg);
+      head.appendChild(button('btn-ghost lp-x', '×', closeLessons));
+      box.appendChild(head);
+      var t = todayInfo();
+      if (t.keys.length) box.appendChild(el('div', 'lp-today', 'Today: ' + t.keys.map(function (k) { var i = C.info(k); return '<a href="' + esc(lessonUrl(k)) + '"><b>Lesson ' + i.unit + '.' + esc(i.num) + '</b> ' + esc(i.title) + '</a>'; }).join(' · ')));
+      else box.appendChild(el('div', 'lp-today muted', esc(t.why)));
+      var body = el('div', 'lp-body'); box.appendChild(body);
+      if (view === 'cal') {
+        if (!cal) { body.appendChild(el('p', 'muted', 'This class doesn’t have a calendar yet — make one in the Calendar tab.')); return; }
+        var v = C.view(cal, { off: off(), today: today, chip: function (k) {
+          var i = C.info(k), url = i.kind === 'lesson' ? lessonUrl(k) : '';
+          var c = el(url ? 'a' : 'div', 'calm-chip' + (i.kind === 'test' ? ' test' : ''), '<b>' + esc(i.kind === 'test' ? i.title : 'U' + i.unit + ' · Lesson ' + i.num) + '</b><span class="ct">' + esc(i.kind === 'test' ? i.unitTitle : i.title) + '</span>');
+          if (url) { c.href = url; c.title = 'Open Lesson ' + i.unit + '.' + i.num; }
+          return c;
+        } });
+        v.classList.add('lp-cal'); body.appendChild(v);
+        requestAnimationFrame(function () { v.scrollToDate(today < cal.start ? cal.start : today); });
+        return;
+      }
+      HW.CATALOG.forEach(function (u) {
+        if (!u.lessons.length) return;
+        var sec = el('section', 'lp-unit'); if (HW.unitStyle) sec.setAttribute('style', HW.unitStyle(u.unit));
+        sec.appendChild(el('h3', '', '<span class="lp-un">Unit ' + u.unit + '</span> ' + esc(u.title) + ' <span class="muted small">' + esc(u.outcomes) + '</span>'));
+        var grid = el('div', 'lp-grid');
+        u.lessons.forEach(function (c) {
+          var url = lessonUrl(c.id), d = L ? L.dateOf[c.id] : null, isSkip = skipped.indexOf(c.id) >= 0;
+          var stt = isSkip ? 'skip' : !d ? '' : d === today ? 'today' : d < today ? 'past' : 'next';
+          var tag = { skip: 'Skipped', today: 'Today', past: '✓ Taught ' + (d ? C.nice(d, { month: 'short', day: 'numeric' }) : ''), next: d ? C.nice(d) : '' }[stt] || '';
+          var card = el(url ? 'a' : 'div', 'lp-card' + (stt ? ' is-' + stt : ''), '<div class="lp-n">Lesson ' + u.unit + '.' + esc(c.num) + '</div><div class="lp-t">' + esc(c.title) + '</div>' + (tag ? '<div class="lp-s">' + tag + '</div>' : ''));
+          if (url) card.href = url;
+          grid.appendChild(card);
+        });
+        sec.appendChild(grid); body.appendChild(sec);
+      });
+      var tc = body.querySelector('.lp-card.is-today') || body.querySelector('.lp-card.is-next');
+      if (tc) requestAnimationFrame(function () { body.scrollTop = Math.max(0, tc.closest('.lp-unit').offsetTop - 8); });
+    }
+    draw();
+  }
+  function closeLessons() { var o = document.getElementById('lp-modal'); if (o) o.remove(); document.removeEventListener('keydown', lpKeys); }
+  function lpKeys(e) { if (e.key === 'Escape') closeLessons(); }
+
+  HW.DashCal = { render: function (body) { closePop(); render(body); }, reload: function () { K.klass = null; }, topButtons: topButtons, openLessons: openLessons };
 })(window);

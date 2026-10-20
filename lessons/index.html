@@ -2,183 +2,21 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Math 10C Lessons</title>
-<meta name="description" content="Math 10C lessons to project and write on with an Apple Pencil: explainer animations, worked examples and a TI-30XIIS calculator.">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="10C Lessons">
-<meta name="theme-color" content="#0f5f5a">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="assets/icon-180.png">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Math 10C</title>
 <link rel="icon" href="assets/icon-192.png">
-<link rel="stylesheet" href="css/site.css">
-<link rel="stylesheet" href="../assets/calendar.css">
+<link rel="apple-touch-icon" href="assets/icon-180.png">
+<meta name="robots" content="noindex">
+<!-- The lessons no longer have their own home page: students reach them from their assignments (practice site), the
+     teacher from the Teacher Ledger (Lessons, Launch Today's Lesson). This page sends old links and home-screen icons there. -->
+<script>
+  (function () {
+    var teacher = false; try { teacher = !!localStorage.getItem('ink:teacher') || !!localStorage.getItem('hw:tkey'); } catch (e) {}
+    location.replace(teacher ? '../teacher/' : '../');
+  })();
+</script>
 </head>
-<body>
-<main class="home-wrap">
-  <div class="kicker">Mr. Cathcart · Math 10C</div>
-  <h1>Math 10C Lessons</h1>
-  <p class="lede">Lessons to project from the iPad. Write on any part of the page with the Apple Pencil, step through the animations, and pull up the calculator when you need it.</p>
-  <p class="home-links"><a href="../">Practice site (students)</a> · <a href="../teacher/">Teacher dashboard</a></p>
-
-  <section class="unit">
-    <div class="unit-h"><span class="badge">1</span><h2>Number</h2></div>
-    <div class="lessons">
-      <a class="lcard" href="u1/l1/"><span class="n">Lesson 1</span><b>Prime Building Blocks of Numbers</b><span class="muted">Factors, primes and composites, division ladders and factor trees</span></a>
-      <a class="lcard" href="u1/l2/"><span class="n">Lesson 2</span><b>GCF, LCM and Perfect Powers</b><span class="muted">Prime factorizations at work: GCF, LCM, perfect squares and cubes</span></a>
-      <a class="lcard" href="u1/l3/"><span class="n">Lesson 3</span><b>Rational and Irrational Numbers</b><span class="muted">Decimals that end, repeat or wander, and repeating decimals to fractions</span></a>
-      <a class="lcard" href="u1/l4/"><span class="n">Lesson 4</span><b>Classifying the Real Number System</b><span class="muted">N, W, I, Q and Q̄; estimating square and cube roots; absolute value</span></a>
-      <a class="lcard" href="u1/l5/"><span class="n">Lesson 5</span><b>Roots of Real Numbers</b><span class="muted">Roots of any index, radical vocabulary, products and quotients</span></a>
-      <a class="lcard" href="u1/l6a/"><span class="n">Lesson 6A</span><b>Entire and Mixed Radicals</b><span class="muted">Simplifying square roots, comparing radicals, exact Pythagorean answers</span></a>
-      <a class="lcard" href="u1/l6b/"><span class="n">Lesson 6B</span><b>Index 3 and Higher</b><span class="muted">Cube roots and beyond; extension: radicals with variables</span></a>
-      <a class="lcard" href="u1/l7/"><span class="n">Lesson 7</span><b>Number Sense Check-Up</b><span class="muted">One pass through the whole unit</span></a>
-    </div>
-  </section>
-
-  <section class="unit">
-    <div class="unit-h"><span class="badge">2</span><h2>Exponents</h2></div>
-    <div class="lessons">
-      <a class="lcard" href="u2/l1/"><span class="n">Lesson 1</span><b>Powers and the Exponent Laws</b><span class="muted">Base, exponent, coefficient; negative bases; the zero exponent; the five laws</span></a>
-      <a class="lcard" href="u2/l2/"><span class="n">Lesson 2</span><b>Several Exponent Laws</b><span class="muted">Combining laws in one chain, one base at a time; variable exponents</span></a>
-      <a class="lcard" href="u2/l3/"><span class="n">Lesson 3</span><b>Negative Exponents</b><span class="muted">Where a⁻ⁿ = 1/aⁿ comes from, moving factors across the bar, fractional bases</span></a>
-      <a class="lcard" href="u2/l4/"><span class="n">Lesson 4</span><b>Scientific Notation</b><span class="muted">Application / extension: big and small numbers, multiplying and dividing</span></a>
-      <a class="lcard" href="u2/l5a/"><span class="n">Lesson 5A</span><b>Rational Exponents and Radicals</b><span class="muted">What a^(m/n) means, evaluating, converting powers and radicals</span></a>
-      <a class="lcard" href="u2/l5b/"><span class="n">Lesson 5B</span><b>Simplifying with Rational Exponents</b><span class="muted">The exponent laws with fractional exponents, roots as single powers</span></a>
-      <a class="lcard" href="u2/l6/"><span class="n">Lesson 6</span><b>Exponent Laws in Review</b><span class="muted">Every law from the unit in one place</span></a>
-    </div>
-  </section>
-
-  <section class="unit">
-    <div class="unit-h"><span class="badge">3</span><h2>Polynomial Operations</h2></div>
-    <div class="lessons">
-      <a class="lcard" href="u3/l1/"><span class="n">Lesson 1</span><b>Polynomials: Review and Preview</b><span class="muted">Terms, degree and names; algebra tiles, zero pairs, adding and subtracting</span></a>
-      <a class="lcard" href="u3/l2/"><span class="n">Lesson 2</span><b>Multiplying Monomials and Binomials</b><span class="muted">Area models, the distributive property, tiles and FOIL</span></a>
-      <a class="lcard" href="u3/l3/"><span class="n">Lesson 3</span><b>Special Products</b><span class="muted">Squaring a binomial and sum times difference, forwards and in reverse</span></a>
-      <a class="lcard" href="u3/l4/"><span class="n">Lesson 4</span><b>Binomial × Trinomial and Three Binomials</b><span class="muted">Six partial products at a time; three factors at once for volume</span></a>
-      <a class="lcard" href="u3/l5/"><span class="n">Lesson 5</span><b>Area, Volume and Equations</b><span class="muted">Composite areas, frames, boxes, and equations where the squares cancel</span></a>
-      <a class="lcard" href="u3/l6/"><span class="n">Lesson 6</span><b>Polynomial Operations in Review</b><span class="muted">Every skill from the unit, one worked example at a time</span></a>
-    </div>
-  </section>
-
-  <section class="unit">
-    <div class="unit-h"><span class="badge">4</span><h2>Factoring Polynomial Expressions</h2></div>
-    <div class="lessons">
-      <a class="lcard" href="u4/l1a/"><span class="n">Lesson 1A</span><b>Common Factors: the GCF</b><span class="muted">The GCF of monomials and polynomials; factoring is expanding run backwards</span></a>
-      <a class="lcard" href="u4/l1b/"><span class="n">Lesson 1B</span><b>Binomial Common Factors and Grouping</b><span class="muted">A whole bracket as the common factor; pairing terms to make one</span></a>
-      <a class="lcard" href="u4/l2/"><span class="n">Lesson 2</span><b>Factoring x² + bx + c</b><span class="muted">Tiles into a rectangle, then two numbers with product c and sum b</span></a>
-      <a class="lcard" href="u4/l3/"><span class="n">Lesson 3</span><b>Difference of Squares</b><span class="muted">A² − B² = (A − B)(A + B), and why a sum of squares never factors</span></a>
-      <a class="lcard" href="u4/l4/"><span class="n">Lesson 4</span><b>Factoring ax² + bx + c</b><span class="muted">Tiles, the area box and decomposition, and why the pair multiplies to ac</span></a>
-      <a class="lcard" href="u4/l5/"><span class="n">Lesson 5</span><b>Further Factoring</b><span class="muted">Perfect squares, trinomials in disguise, factoring completely</span></a>
-      <a class="lcard" href="u4/l6/"><span class="n">Lesson 6</span><b>Choosing a Factoring Strategy</b><span class="muted">A checklist and flowchart for picking the right tool</span></a>
-      <a class="lcard" href="u4/l7/"><span class="n">Lesson 7</span><b>Solving Equations by Factoring</b><span class="muted">Extension (Math 20-1 preview): the Zero Product Law</span></a>
-      <a class="lcard" href="u4/l8/"><span class="n">Lesson 8</span><b>Unit 4 Review</b><span class="muted">Laid out like the unit test: Beginning, Progressing, Mastery</span></a>
-    </div>
-  </section>
-
-  <section class="unit">
-    <div class="unit-h"><span class="badge">5</span><h2>Relations and Functions</h2></div>
-    <div class="lessons">
-      <a class="lcard" href="u5/l1/"><span class="n">Lesson 1</span><b>The Cartesian Plane, Growing Patterns and Variables</b><span class="muted">Plotting points as moves, patterns into tables and graphs, discrete vs continuous</span></a>
-      <a class="lcard" href="u5/l2/"><span class="n">Lesson 2</span><b>Describing Relationships Between Two Quantities</b><span class="muted">One relation six ways; independent vs dependent; linear or not</span></a>
-      <a class="lcard" href="u5/l3/"><span class="n">Lesson 3</span><b>Where Graphs Meet the Axes</b><span class="muted">Intercepts: set y = 0 or x = 0, and what they mean in context</span></a>
-      <a class="lcard" href="u5/l4/"><span class="n">Lesson 4</span><b>Domain and Range</b><span class="muted">The graph’s shadow on each axis, open and closed ends, set notation</span></a>
-      <a class="lcard" href="u5/l5/"><span class="n">Lesson 5</span><b>Graphing Calculator Techniques</b><span class="muted">TI-83/84: window, table, trace, value, zero, intersect, max/min</span></a>
-      <a class="lcard" href="u5/l6/"><span class="n">Lesson 6</span><b>Real-World Relations with a Graphing Calculator</b><span class="muted">The math answer vs the answer that makes sense in context</span></a>
-      <a class="lcard" href="u5/l7a/"><span class="n">Lesson 7A</span><b>What Is a Function?</b><span class="muted">One output per input, and the vertical line test</span></a>
-      <a class="lcard" href="u5/l7b/"><span class="n">Lesson 7B</span><b>Function Notation</b><span class="muted">f(x) as a machine: evaluating forwards, solving backwards</span></a>
-      <a class="lcard" href="u5/l8/"><span class="n">Lesson 8</span><b>Function Notation: Graphs and Models</b><span class="muted">f(x) ↔ y, reading graphs forwards and backwards, real-world limits</span></a>
-      <a class="lcard" href="u5/l9/"><span class="n">Lesson 9</span><b>Interpreting and Sketching Real-World Graphs</b><span class="muted">Reading a graph’s story piece by piece; sketching from a description</span></a>
-      <a class="lcard" href="u5/l10/"><span class="n">Lesson 10</span><b>Unit 5 Review</b><span class="muted">Domain, range, functions and function notation in review</span></a>
-    </div>
-  </section>
-
-  <section class="unit">
-    <div class="unit-h"><span class="badge">6</span><h2>Characteristics of Linear Relations</h2></div>
-    <div class="lessons">
-      <a class="lcard" href="u6/l1/"><span class="n">Lesson 1</span><b>Measuring the Length of a Line Segment</b><span class="muted">Extension/Foundation: counting, |x₂ − x₁|, and the right triangle under every slanted segment</span></a>
-      <a class="lcard" href="u6/l2/"><span class="n">Lesson 2</span><b>The Distance and Midpoint Formulas</b><span class="muted">Extension/Foundation: the distance formula, midpoints as averages, a missing endpoint</span></a>
-      <a class="lcard" href="u6/l3/"><span class="n">Lesson 3</span><b>Rise Over Run: Slope</b><span class="muted">Slope off a grid, the same anywhere on a line, 0 and undefined, rates of change</span></a>
-      <a class="lcard" href="u6/l4/"><span class="n">Lesson 4</span><b>Collinear, Parallel and Perpendicular</b><span class="muted">The slope formula; equal slopes and negative reciprocals</span></a>
-      <a class="lcard" href="u6/l5/"><span class="n">Lesson 5</span><b>Characteristics of Linear Graphs</b><span class="muted">Is it linear? Intercepts, domain and range, how many intercepts a line can have</span></a>
-      <a class="lcard" href="u6/l6/"><span class="n">Lesson 6</span><b>Coordinate Geometry Review</b><span class="muted">Choosing and combining the tools: shapes, collinearity, right angles</span></a>
-    </div>
-  </section>
-
-  <section class="unit">
-    <div class="unit-h"><span class="badge">7</span><h2>Equations of Linear Relations</h2></div>
-    <div class="lessons">
-      <a class="lcard" href="u7/l1/"><span class="n">Lesson 1</span><b>Slope–Intercept Form and the Graph of a Line</b><span class="muted">Reading m and b, rearranging to y = mx + b, graphing from b and rise/run</span></a>
-      <a class="lcard" href="u7/l2/"><span class="n">Lesson 2</span><b>From Slope to Equation</b><span class="muted">Building y = mx + b; parallel and perpendicular slopes; y = k and x = k</span></a>
-      <a class="lcard" href="u7/l3/"><span class="n">Lesson 3</span><b>The General Form</b><span class="muted">Ax + By + C = 0: tidying up, intercepts by covering, perpendicular lines</span></a>
-      <a class="lcard" href="u7/l4/"><span class="n">Lesson 4</span><b>Slope–Point Form</b><span class="muted">y − y₁ = m(x − x₁) from a point and a slope, two points, or a related line</span></a>
-      <a class="lcard" href="u7/l5/"><span class="n">Lesson 5</span><b>Graphing Linear Equations</b><span class="muted">A strategy for every form, matching graphs, the graphing calculator, data</span></a>
-      <a class="lcard" href="u7/l6/"><span class="n">Lesson 6</span><b>Slope in Context</b><span class="muted">Rates of change with units, average rate, base pay plus commission</span></a>
-      <a class="lcard" href="u7/l7/"><span class="n">Lesson 7</span><b>Unit 7 Review</b><span class="muted">Equations of lines: slope, intercepts and perpendicularity</span></a>
-    </div>
-  </section>
-
-  <section class="unit">
-    <div class="unit-h"><span class="badge">8</span><h2>Systems of Linear Equations</h2></div>
-    <div class="lessons">
-      <a class="lcard" href="u8/l1a/"><span class="n">Lesson 1A</span><b>Graphing Systems of Linear Equations</b><span class="muted">The solution is the crossing point; by hand and with the graphing calculator</span></a>
-      <a class="lcard" href="u8/l1b/"><span class="n">Lesson 1B</span><b>Classifying Systems</b><span class="muted">One, none or infinitely many solutions, from slopes and intercepts</span></a>
-      <a class="lcard" href="u8/l2/"><span class="n">Lesson 2</span><b>Substitution</b><span class="muted">Replace a variable with what it equals; exact answers</span></a>
-      <a class="lcard" href="u8/l3/"><span class="n">Lesson 3</span><b>Elimination</b><span class="muted">Add or subtract equations so one variable cancels; scaling first</span></a>
-      <a class="lcard" href="u8/l4/"><span class="n">Lesson 4</span><b>Word Problems</b><span class="muted">A four-step strategy: let statements, two equations, solve, check</span></a>
-      <a class="lcard" href="u8/l5/"><span class="n">Lesson 5</span><b>Mixture and Motion</b><span class="muted">Amount × rate tables; speed with and against a current or wind</span></a>
-      <a class="lcard" href="u8/l6/"><span class="n">Lesson 6</span><b>Unit 8 Review</b><span class="muted">Choosing a method, and systems in context</span></a>
-    </div>
-  </section>
-
-  <section class="unit">
-    <div class="unit-h"><span class="badge">9</span><h2>Trigonometry</h2></div>
-    <div class="lessons">
-      <a class="lcard" href="u9/l1/"><span class="n">Lesson 1</span><b>Sine, Cosine and Tangent</b><span class="muted">Similar triangles share ratios; naming opp, adj and hyp; SOH CAH TOA</span></a>
-      <a class="lcard" href="u9/l2/"><span class="n">Lesson 2</span><b>Calculator Values and Angle Patterns</b><span class="muted">Degree mode; why sine grows and cosine shrinks; 0° and 90°</span></a>
-      <a class="lcard" href="u9/l3/"><span class="n">Lesson 3</span><b>Finding a Missing Side</b><span class="muted">Unknown on top: multiply. Unknown on the bottom: divide</span></a>
-      <a class="lcard" href="u9/l4/"><span class="n">Lesson 4</span><b>Finding an Angle</b><span class="muted">Inverse ratios; angles of elevation and depression; isosceles splits</span></a>
-      <a class="lcard" href="u9/l5/"><span class="n">Lesson 5</span><b>Solving Right Triangles Completely</b><span class="muted">Choosing the tool; all three sides and all three angles</span></a>
-      <a class="lcard" href="u9/l6/"><span class="n">Lesson 6</span><b>Eye Level, Elevation and Depression</b><span class="muted">Multi-step problems, clinometers; Extension: tangents and bearings</span></a>
-      <a class="lcard" href="u9/l7/"><span class="n">Lesson 7</span><b>Chaining Right Triangles</b><span class="muted">Two triangles sharing a side; Extension: 3-D</span></a>
-      <a class="lcard" href="u9/l8/"><span class="n">Lesson 8</span><b>Unit 9 Review</b><span class="muted">Right-triangle trigonometry, cumulative review</span></a>
-    </div>
-  </section>
-
-  <section class="unit">
-    <div class="unit-h"><span class="badge">10</span><h2>Measurement</h2></div>
-    <div class="lessons">
-      <a class="lcard" href="u10/l1/"><span class="n">Lesson 1</span><b>Rounding and Formula Substitution</b><span class="muted">Place values, round at the end, brackets for negatives</span></a>
-      <a class="lcard" href="u10/l2/"><span class="n">Lesson 2</span><b>Estimating with Personal Referents</b><span class="muted">Imperial and SI; thumbs, hand spans, paces</span></a>
-      <a class="lcard" href="u10/l3/"><span class="n">Lesson 3</span><b>Precision Measuring Instruments</b><span class="muted">Vernier calipers; Extension: micrometers</span></a>
-      <a class="lcard" href="u10/l4a/"><span class="n">Lesson 4A</span><b>Metric Conversions</b><span class="muted">The prefix number line, proportions, unit analysis</span></a>
-      <a class="lcard" href="u10/l4b/"><span class="n">Lesson 4B</span><b>Imperial and Imperial–SI Conversions</b><span class="muted">Mixed units, chained factors, estimate then convert</span></a>
-      <a class="lcard" href="u10/l5/"><span class="n">Lesson 5</span><b>Square and Cubic Units</b><span class="muted">Why area factors are squared and volume factors cubed</span></a>
-      <a class="lcard" href="u10/l6/"><span class="n">Lesson 6</span><b>Prisms and Cylinders</b><span class="muted">Nets, layers of the base, working backwards</span></a>
-      <a class="lcard" href="u10/l7/"><span class="n">Lesson 7</span><b>Pyramids and Cones</b><span class="muted">One third of a prism; slant height by Pythagoras</span></a>
-      <a class="lcard" href="u10/l8/"><span class="n">Lesson 8</span><b>Spheres and Hemispheres</b><span class="muted">Four great circles; with and without the floor</span></a>
-      <a class="lcard" href="u10/l9/"><span class="n">Lesson 9</span><b>Unit 10 Review</b><span class="muted">Measurement, cumulative review</span></a>
-    </div>
-  </section>
-
-  <section class="card">
-    <h3>Using it with the Apple Pencil</h3>
-    <div class="how">
-      <div><b>Pencil writes, finger scrolls.</b> Rest your palm on the screen while you write.</div>
-      <div><b>Tap buttons with either.</b> A Pencil tap on a button presses it instead of writing.</div>
-      <div><b>Two-finger tap</b> undoes the last stroke (or use the undo button).</div>
-      <div><b>Eraser</b> removes a whole stroke when you touch it. <b>Laser</b> ink fades by itself.</div>
-      <div><b>Board</b> opens a blank grid page for questions that come up mid-lesson.</div>
-      <div><b>Your ink is saved</b> on this iPad. Clear it from the ••• menu before the next class.</div>
-      <div><b>Full screen:</b> in Safari tap Share → <b>Add to Home Screen</b>, then open it from the icon.</div>
-      <div><b>Projecting:</b> Control Centre → Screen Mirroring, same as Notability.</div>
-    </div>
-  </section>
-</main>
-<script src="../js/config.js"></script>
-<script src="../js/catalog.js"></script>
-<script src="../js/calendar.js"></script>
-<script src="js/home-cal.js"></script>
-<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function () {});</script>
+<body style="font: 18px/1.5 system-ui, sans-serif; padding: 40px;">
+<p>Opening… <a href="../">Your assignments</a> · <a href="../teacher/">Teacher Ledger</a></p>
 </body>
 </html>

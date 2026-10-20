@@ -36,5 +36,5 @@ See `LESSON_BRIEF.md` for the full checklist used to build Lessons 2–7.
 
 1. Copy `u1/l1/index.html` to `uN/lM/index.html`; every card that should take ink gets a unique `data-ink` id and a `data-section` name for the Jump menu.
 2. Write `js/lessons/uNlM.js` with explainer definitions (`{ title, height, choices, intro, make(stage, value, ex) → steps }`) and mount them on `[data-explainer]` elements.
-3. Call `boot({ key: 'uNlM', title: '…' })` and add the lesson to `index.html`.
+3. Call `boot({ key: 'uNlM', title: '…' })` and add the lesson to `HW.CATALOG` / `HW.TEACHING.lessons` in `../js/catalog.js` (there is no lesson list page any more: `lessons/index.html` only redirects — students reach lessons from their assignments, the teacher from the Teacher Ledger).
 4. Add the id to `HW.TEACHING.lessons` in the root `js/catalog.js`, so the practice site links to it.

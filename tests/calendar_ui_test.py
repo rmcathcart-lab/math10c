@@ -96,16 +96,17 @@ async def main():
         st4 = await sp.evaluate("[...document.querySelectorAll('.calm-day[data-date=\"2026-09-04\"] .calm-chip')].map(c => c.textContent)"); print('student Sept 4:', st4); assert len(st4) == 2
         assert 'No school' in await sp.inner_text('.calm-day[data-date="2026-09-07"]')
         await sp.keyboard.press('Escape'); assert await sp.locator('.cal-pop').count() == 0
-        # the teaching site's All lessons: Lessons / Class calendar toggle, by block (the mock class is block C)
+        # the old lesson home page sends people on: students to their assignments, the teacher to the ledger
         get('action=setblock&key=testkey&class=10c-b&block=C')
-        lp = await (await b.new_context(viewport={'width': 1180, 'height': 820})).new_page(); lp.on('pageerror', lambda e: errs.append('L ' + str(e)))
-        await lp.route(BASE + 'js/config.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=CONFIG))
-        await lp.goto(BASE + 'lessons/?class=C'); await lp.wait_for_selector('.hc-tog')
-        assert (await lp.get_attribute('a.lcard >> nth=0', 'href')).endswith('?class=C')
-        await lp.click('.hc-tog button:has-text("Class calendar")'); await lp.wait_for_selector('.hc-cal .calv', timeout=10000)
-        assert await lp.locator('section.unit:visible').count() == 0
-        href = await lp.get_attribute('.hc-cal a.calm-chip >> nth=0', 'href'); print('teaching chip:', href); assert href.endswith('?class=C')
-        await lp.screenshot(path=SH + 'teaching.png')
+        await sp.goto(BASE + 'lessons/'); await sp.wait_for_selector('.lesson-row'); assert sp.url.split('#')[0] == BASE, sp.url
+        # the ledger header: Lessons pop-up (cards / calendar) and Launch Today's Lesson for this class's block
+        await tp.reload(); await tp.wait_for_selector('.top-lessons', timeout=15000); await tp.wait_for_timeout(1200)
+        launch = await tp.evaluate("(() => { const b = document.querySelector('.top-launch'); return [b.tagName, b.getAttribute('href'), b.title, b.disabled]; })()"); print('launch:', launch)
+        await tp.click('.top-lessons'); await tp.wait_for_selector('.lp-card')
+        cards = await tp.evaluate("[...document.querySelectorAll('.lp-card')].slice(0, 3).map(c => [c.getAttribute('href'), c.className, c.innerText.replace(/\\n/g, ' | ')])"); print('cards:', cards)
+        assert cards[0][0] == '../lessons/u1/l1/?class=C' and 'is-past' in cards[0][1]
+        await tp.click('.lp-head .seg button:has-text("Calendar")'); await tp.wait_for_selector('.lp-cal a.calm-chip')
+        await tp.screenshot(path=SH + 'lessons_pop.png'); await tp.keyboard.press('Escape'); assert await tp.locator('#lp-modal').count() == 0
         await b.close()
     print('errors', errs); assert not errs; print('PASS')
 asyncio.run(main())
