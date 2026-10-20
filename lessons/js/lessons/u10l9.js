@@ -432,6 +432,7 @@ const WAYS = {
 const whichWay = {
   title: '★ Which conversion? Which formula?',
   height: 486,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(WAYS).map((k) => ({ v: k, label: WAYS[k].label })),
   intro: (v) => `Follow <b>${WAYS[v].label.split(':')[0]}</b> through the chart. Press <b>Next</b>.`,
   make(stage, v, ex) {
@@ -687,6 +688,7 @@ const sizeUp = {
 const micro = {
   title: 'Extension: inside the micrometer',
   height: 300,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'how', label: 'How it works' }, { v: 'e3', label: 'Example 3 check' }],
   intro: (v) => (v === 'how' ? 'Turn the thimble and watch both scales. Press <b>Next</b>.' : 'Open the micrometer to the Example 3 reading. Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -939,6 +941,7 @@ const morph = {
 const coneSphere = {
   title: 'Slant height first; radius first',
   height: 420,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'cone', label: 'Example 7(a) check: cone' }, { v: 'sph', label: 'Example 7(b) check: sphere' }],
   intro: (v) => (v === 'cone' ? 'r = 8 cm, h = 15 cm. Where is s? Press <b>Next</b>.' : 'd = 18 in. Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -1035,6 +1038,7 @@ const backwards = {
 const tank = {
   title: 'One tank, five trucks, two bids',
   height: 450,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ab', label: 'Ex 9(a)(b) check' }, { v: 'c', label: 'Ex 9(c) check' }, { v: 'd', label: 'Ex 9(d) check' }],
   intro: (v) => (v === 'ab' ? 'The tank’s diameter is three times its 5.4 m height. Press <b>Next</b>.' : v === 'c' ? 'The same volume poured into a narrower cone. Press <b>Next</b>.' : 'Two bids: one in C$ per m³, one in US$ per ft³. Press <b>Next</b>.'),
   make(stage, v, ex) {

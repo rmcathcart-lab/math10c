@@ -336,6 +336,7 @@ const MT = {
 const method = {
   title: 'Which method? Test the system against each row of the table',
   height: 452,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(MT).map((k) => ({ v: k, label: MT[k].label })),
   intro: (k) => `A system: ${T(MT[k].e1)} and ${T(MT[k].e2)}. Which method fits it best? Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -389,6 +390,7 @@ const S4 = {
 const step4 = {
   title: 'Solved correctly … but does it make sense?',
   height: 452,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(S4).map((k) => ({ v: k, label: S4[k].label })),
   intro: (k) => `${S4[k].label} Read the problem, then press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -501,6 +503,7 @@ const RC = {
 const rect = {
   title: 'Perimeter: walk the fence, then build the length from widths',
   height: 470,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex2', label: 'Example 2 check' }, { sep: 'More' }, { v: 'twice', label: RC.twice.label }, { v: 'three', label: RC.three.label }],
   intro: (k) => `Perimeter ${RC[k].P} ${RC[k].u}, and ${RC[k].cond}. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -590,6 +593,7 @@ const SW = {
 const swap = {
   title: 'One equation counts, the other totals value',
   height: 452,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex3', label: 'Example 3 check' }, { sep: 'More' }, { v: 'coins', label: SW.coins.label }],
   intro: (k) => (k === 'ex3' ? 'Maria: 23 bills, fives and twenties, worth $310. Press <b>Next</b>.' : '12 coins, loonies ($1) and toonies ($2), worth $19. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -654,6 +658,7 @@ const IV = {
 const interest = {
   title: 'Principal and interest: slide the split',
   height: 462,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex4', label: 'Example 4 check' }, { sep: 'More' }, { v: 'demo', label: IV.demo.label }],
   intro: (k) => `${money(IV[k].P)} split between ${IV[k].r1}% and ${IV[k].r2}%, earning ${money(IV[k].I)} in interest. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -719,6 +724,7 @@ const RT = {
 const rates = {
   title: 'Time line, output line: only the crossing does both',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(RT).map((k) => ({ v: k, label: RT[k].label })),
   intro: (k) => { const d = RT[k]; return `${d.names[0]} makes ${d.r[0]} ${d.rate}, ${d.names[1]} makes ${d.r[1]}. They run for a combined total of ${d.T} min and make ${f5(d.out)} ${d.item}. Press <b>Next</b>.`; },
   make(stage, k, ex) {

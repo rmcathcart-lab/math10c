@@ -171,6 +171,7 @@ const xvOf = (d) => (d.g.xtitle || 'x');
 const lift = {
   title: 'Substitution: lift the expression, drop it in',
   height: 540,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'coin', label: SUB.coin.label }, { sep: 'Example checks' }, ...['e1a', 'e1b', 'e2', 'e3', 'e4'].map((k) => ({ v: k, label: SUB[k].label }))],
   intro: (k) => SUB[k].intro || `Two equations, two unknowns. On the graph, the solution is where the ${bw(0, 'blue')} and ${bw(1, 'amber')} lines cross. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -240,6 +241,7 @@ const CH = {
 const choose = {
   title: 'Which variable should I isolate?',
   height: 360,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: ['coin', 'e1', 'e2', 'e3', 'e4'].map((k) => ({ v: k, label: CH[k].label })),
   intro: () => `Four possible choices: either variable, from either equation. Which is tidiest? Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -389,6 +391,7 @@ const EX = {
 const exact = {
   title: 'The calculator’s decimal vs the exact value',
   height: 450,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(EX).map((k) => ({ v: k, label: EX[k].label })),
   intro: (k) => (k === 'e3' ? `Lesson 1A, Example 4: ${T(tc(BL, '4x+3y=2'))} and ${T(tc(AM, '2x-y=5'))}, solved on the <b>graphing calculator</b> (TI-84). Press <b>Next</b>.`
     : `A new system: ${T(tc(BL, 'x+y=1'))} and ${T(tc(AM, 'y=2x'))}. Graphing calculator first. Press <b>Next</b>.`),
@@ -478,6 +481,7 @@ const VN = {
 const vanish = {
   title: 'When both variables disappear',
   height: 512,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(VN).map((k) => ({ v: k, label: VN[k].label })),
   intro: (k) => `${T(tc(BL, 'y=3x-1'))} and ${T(tc(AM, '6x-2y=' + VN[k].kk))}. The first is already solved for ${T('y')}. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -521,6 +525,7 @@ const vanish = {
 const three = {
   title: 'Extension: three equations, three unknowns',
   height: 500,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   intro: () => `<span class="u8l2-ext sm">Extension</span> Example 5: ${T(tc(BL, '4p-3q-2r=-9'))}, ${T(tc(AM, 'r=2p'))}, ${T(tc(GR, '3q-p-5=0'))}. Press <b>Next</b>.`,
   make(stage, k, ex) {
     const W = ex.W;

@@ -215,6 +215,7 @@ const HID = {
 const hidden = {
   title: 'Every segment hides a right triangle',
   height: 470,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(HID).map((k) => ({ v: k, label: HID[k].label })),
   intro: 'A slanted segment can’t be measured by counting along it. Watch the right triangle grow out of it. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -272,6 +273,7 @@ const LIFT = {
 const lift = {
   title: 'The distance formula: lift the triangle into symbols',
   height: 470,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(LIFT).map((k) => ({ v: k, label: LIFT[k].label })),
   intro: (k) => (LIFT[k].sym ? 'The same right triangle, but for <b>any</b> two points. Press <b>Next</b>.' : 'Check the example: the triangle, then the formula. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -345,6 +347,7 @@ const ORD = {
 const order = {
   title: 'Which point goes first? It doesn’t matter',
   height: 470,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(ORD).map((k) => ({ v: k, label: ORD[k].label })),
   intro: 'Subtract one way, then the other way. Watch the signs, then watch them disappear. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -402,6 +405,7 @@ function tower(G, x, y) {
 const map = {
   title: 'Example 2 check: the two cell towers',
   height: 480,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   intro: 'A coordinate grid over a city map: 1 unit = 1 km. Press <b>Next</b>.',
   make(stage, k, ex) {
     const H = ex.def.height, A = [-52, 134], B = [89, 61], C = corner(A, B);
@@ -447,6 +451,7 @@ const CONV = {
 const converse = {
   title: 'Squares on the sides: is there a right angle?',
   height: 470,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CONV).map((k) => ({ v: k, label: CONV[k].label })),
   intro: 'Measure the three sides, then build a square on each one. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -549,6 +554,7 @@ const CNT = {
 const count = {
   title: 'Count from both ends',
   height: 470,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CNT).map((k) => ({ v: k, label: CNT[k].label })),
   intro: 'Two walkers start at the ends and step toward each other, one square at a time. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -611,6 +617,7 @@ const WALK = {
 const walker = {
   title: 'Half the run, half the rise',
   height: 480,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(WALK).map((k) => ({ v: k, label: WALK[k].label })),
   intro: 'A hiker walks the triangle instead of the slant: across, then up. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -711,6 +718,7 @@ const BACK = {
 const backward = {
   title: 'The midpoint is halfway, so go the same again',
   height: 480,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(BACK).map((k) => ({ v: k, label: BACK[k].label })),
   intro: (k) => (k === 'ex8' ? 'Devon’s page has two coffee blots. Press <b>Next</b>.' : 'One endpoint and the midpoint are known. Where is the other end? Press <b>Next</b>.'),
   make(stage, k, ex) {

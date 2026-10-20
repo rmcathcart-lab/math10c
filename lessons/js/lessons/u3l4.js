@@ -165,6 +165,7 @@ const NAMES = { 1: 'monomial', 2: 'binomial', 3: 'trinomial' };
 const handshake = {
   title: 'Every term shakes hands with every term',
   height: 432,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   value: 'n23',
   choices: [{ v: 'n22', label: '2 × 2' }, { v: 'n23', label: '2 × 3' }, { v: 'n33', label: '3 × 3' }, { v: 'foil', label: 'Why FOIL fails' }, { sep: 'Example 1 check:' }, { v: 'ex1', label: tex('(3x+4)(x^2+3x+2)') }],
   intro: (k) => { const d = HS[k]; return d.foil ? `Try FOIL on ${T(`${par(d.A, d.v)}${par(d.B, d.v)}`)}: First, Outer, Inner, Last. Does it catch every product?` : `${T(`${par(d.A, d.v)}${par(d.B, d.v)}`)}: a ${NAMES[d.A.length]} times a ${NAMES[d.B.length]}. Every term on the left must shake hands with <b>every</b> term on the right.`; },
@@ -240,6 +241,7 @@ const GRID = {
 const grid = {
   title: 'The grid: six cells, then collect along the diagonals',
   height: 484,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n1', label: tex('(x+5)(x^2+2x+3)') }, { v: 'n2', label: tex('(2x-3)(x^2-4x+1)') }, { sep: 'Example 1 check:' }, { v: 'ex1', label: '(i)' }, { sep: 'Example 2 check:' }, { v: 'e2a', label: '(a)' }, { v: 'e2b', label: '(b)' }, { v: 'e2c', label: '(c), first part' }],
   intro: (k) => { const d = GRID[k]; return `Expand ${T(`${par(d.A, d.v)}${par(d.B, d.v)}`)} with a grid: one factor labels the <b>rows</b>, the other the <b>columns</b>. Each cell = row × column.`; },
   make(stage, key, ex) {
@@ -343,6 +345,7 @@ const DIST = {
 const distribute = {
   title: 'Distribution, one line at a time',
   height: 500,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n1', label: tex('(2x-3)(x^2-4x+1)') }, { sep: 'Example 1 check:' }, { v: 'ex1', label: '(ii)' }, { sep: 'Example 2 check:' }, { v: 'e2a', label: '(a)' }, { v: 'e2b', label: '(b)' }, { v: 'e2c', label: '(c)' }],
   intro: (k) => `Expand ${T(DIST[k].t)} with the <b>distributive property</b>. Press <b>Next</b> for each line.`,
   make(stage, key, ex) {
@@ -372,6 +375,7 @@ const distribute = {
 const core = {
   title: 'The painted cube in algebra',
   height: 452,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [3, 4, 5, { v: 10, label: '10 (the big one)' }].map((n) => (typeof n === 'object' ? n : { v: n, label: `n = ${n}` })),
   intro: (n) => `An ${T('n\\times n\\times n')} cube, here ${T(`n=${n}`)}, is painted and cut up. How many small cubes have <b>no paint</b>? Find a formula.`,
   make(stage, n, ex) {
@@ -416,6 +420,7 @@ const KX = 0.55, KY = 0.36, XV = 6;
 const box = {
   title: 'Volume = length × width × height, in two steps',
   height: 520,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n1', label: tex('(x+2)(x+3)(x+5)') }, { sep: 'Example 3 check:' }, { v: 'ex3', label: tex('(x+3)(x+4)(x+6)') }],
   intro: (k) => { const [p, q, r] = BOX[k]; return `A box is ${T(`(x+${p})`)} long, ${T(`(x+${q})`)} wide and ${T(`(x+${r})`)} high. Its volume is ${T(`V=(x+${p})(x+${q})(x+${r})`)}. Build it in <b>two steps</b>.`; },
   make(stage, key, ex) {
@@ -552,6 +557,7 @@ const ROUTES = [[[0, 1], 2], [[2, 0], 1], [[1, 2], 0]];
 const pairs = {
   title: 'Which pair first? It doesn’t matter',
   height: 452,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'easy', label: tex('(x+3)(2x-5)(2x+5)') }, { sep: 'Example 3 check:' }, { v: 'ex3', label: tex('(x+3)(x+4)(x+6)') }, { sep: 'Example 4 check:' }, { v: 'ex4', label: tex('(x-2)(x+5)(3x-1)') }],
   intro: (k) => { const d = PAIRS[k]; return `Three binomials, ${T(d.F.map((f) => par(f, d.v)).join(''))}, can be paired up <b>three</b> different ways. Let’s try all three.`; },
   make(stage, key, ex) {
@@ -618,6 +624,7 @@ const check = {
   title: 'Check it with a number',
   value: 'ex1',
   height: 384,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ sep: 'Example 1:' }, { v: 'ex1', label: tex('(3x+4)(x^2+3x+2)') }, { sep: 'Example 2:' }, { v: 'e2c', label: '(c)' }, { sep: 'Example 3:' }, { v: 'ex3', label: '(b)' }, { sep: 'Example 4:' }, { v: 'ex4', label: '(a)' }],
   intro: (k) => { const d = CHECKS[k]; return `Is ${T(d.a)} really equal to ${T(d.o)}? Equal expressions give the <b>same number</b> for <b>every</b> value of ${T(d.v)}. Substitute one and see.`; },
   make(stage, key, ex) {

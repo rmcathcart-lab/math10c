@@ -325,6 +325,7 @@ const SY = {
 const sync = {
   title: 'A story and its graph, in sync',
   height: 470,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SY).map((k) => ({ v: k, label: SY[k].label })),
   intro: (k) => `Time runs along the horizontal axis; the ${SY[k].qty} is shown beside the vertical axis, on the same scale. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -377,6 +378,7 @@ const SE = {
 const sentence = {
   title: 'A rate is a sentence with units',
   height: 450,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SE).map((k) => ({ v: k, label: SE[k].label })),
   intro: 'Four blanks: direction, number, the vertical unit and the horizontal unit. The graph fills them all. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -417,6 +419,7 @@ const vanF = (D) => 92 - 0.4 * D;
 const van = {
   title: 'The van, its fuel gauge and its graph',
   height: 470,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex2', label: 'Example 2 check' }],
   intro: 'The van drives along the distance axis; its tank sits beside the fuel axis, on the same scale. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -473,6 +476,7 @@ const RT = {
 const routes = {
   title: 'Two roads to the same equation',
   height: 414,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(RT).map((k) => ({ v: k, label: RT[k].label })),
   intro: 'Same slope, same point, two methods. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -546,6 +550,7 @@ const PT = {
 const parts = {
   title: 'Change the story, change the graph',
   height: 470,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(PT).map((k) => ({ v: k, label: PT[k].label })),
   intro: 'The grey dashed line is the original. Each step changes one part of the story. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -588,6 +593,7 @@ const legSpeed = (t) => { const { ts, ds } = TRIP; for (let i = 1; i < ts.length
 const trip = {
   title: 'Average speed on each leg of a trip',
   height: 470,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex3', label: 'Example 3 check' }],
   intro: 'The car drives up the road beside the distance axis. Watch the speedometer. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -652,6 +658,7 @@ const SC = {
 const secant = {
   title: 'Average rate of change on a curve',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SC).map((k) => ({ v: k, label: SC[k].label })),
   intro: 'Two points on a curve, joined by a straight segment (a secant). Its slope is the average rate between them. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -689,6 +696,7 @@ const payF = (S) => 0.1 * S + 280;
 const pay = {
   title: 'Base pay plus commission',
   height: 470,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex4', label: 'Example 4 check' }],
   intro: 'Maria’s weekly pay is a stack: a fixed <b class="u7l6-c-b">base</b> plus a <b class="u7l6-c-rise">commission</b> that grows with sales. Press <b>Next</b>.',
   make(stage, k, ex) {

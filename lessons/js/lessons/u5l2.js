@@ -91,6 +91,7 @@ const TABS = ['Words', 'Table', 'Ordered pairs', 'Arrow diagram', 'Equation', 'G
 const sixViews = {
   title: 'One relation, six views',
   height: 484,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SIX).map((k) => ({ v: k, label: SIX[k].label })),
   intro: 'One relation, six ways to show it. Watch the <b>same numbers</b> travel from view to view. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -211,6 +212,7 @@ const CE = {
 const causeEffect = {
   title: 'Cause → effect: which one depends on the other?',
   height: 424,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'phone', label: CE.phone.label }, { v: 'van', label: CE.van.label }, { v: 'ice', label: CE.ice.label }, { sep: 'Example check:' }, { v: 'museum', label: CE.museum.label }],
   intro: (k) => `Two quantities, named in the order the sentence gives them. Which one <b>depends on</b> the other? Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -272,6 +274,7 @@ const VAN = { xs: [20, 40, 60, 80, 100, 120, 140], ys: ['13.2', '9.2', '6.8', '6
 const fuelStory = {
   title: 'The van: points, a curve, domain and range',
   height: 446,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   intro: 'Seven test speeds. What happens <b>between</b> them, and which speeds make sense at all? Press <b>Next</b>.',
   make(stage, v, ex) {
     const W = ex.W;
@@ -305,6 +308,7 @@ const fuelStory = {
 const spotRule = {
   title: 'Where is the independent variable?',
   height: 456,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'lin', label: T('y=-2x+9') }, { v: 'gen', label: T('4x-3y+24=0') }],
   intro: (k) => (k === 'lin' ? `One relation, ${T('y=-2x+9')}, five views. Find the <b>independent</b> variable in each. Press <b>Next</b>.` : `${T('4x-3y+24=0')} is not solved for either variable. Which one is the input? Press <b>Next</b>.`),
   make(stage, k, ex) {
@@ -444,6 +448,7 @@ const pairT = (x, y) => `(${x},\\ ${y})`;
 const eqToGraph = {
   title: 'Equation → table → graph',
   height: 484,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'c', label: EG.c.label }, { sep: 'Example checks:' }, { v: 'e3', label: EG.e3.label }, { v: 'e4', label: EG.e4.label }],
   intro: (k) => `Start from the equation ${T(EG[k].tex)}. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -501,6 +506,7 @@ const sgnN = (v) => (v >= 0 ? '+' : '−') + Math.abs(v);
 const linTest = {
   title: 'The table test for linearity',
   height: 446,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   value: 'e3',
   choices: [{ sep: 'Example checks:' }, { v: 'e3', label: LT.e3.label }, { v: 'e4', label: LT.e4.label }, { sep: 'Try:' }, { v: 'c', label: LT.c.label }, { v: 'un', label: LT.un.label }],
   intro: (k) => `Is ${T(LT[k].tex)} linear? Use only the table. Press <b>Next</b>.`,

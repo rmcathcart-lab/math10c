@@ -175,6 +175,7 @@ function splitFrac(stage, v, W, H) {
 const area = {
   title: 'Cut the square into equal squares',
   height: 440,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 50, label: tex('\\sqrt{50}') }, { v: 18, label: tex('\\sqrt{18}') }, { v: 12, label: tex('\\sqrt{12}') }, { v: 36, label: tex('\\sqrt{36}') }, { v: 30, label: tex('\\sqrt{30}') },
     { sep: 'Notes:' }, { v: 180, label: tex('\\sqrt{180}') }, { sep: 'Example 2 check:' }, { v: 72, label: tex('\\sqrt{72}') }, { v: 63, label: tex('\\sqrt{63}') }, { v: 288, label: tex('\\sqrt{288}') }],
   custom: [2, 999],

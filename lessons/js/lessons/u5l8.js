@@ -182,6 +182,7 @@ const SW = {
 const swap = {
   title: 'One rule, two notations',
   height: 420,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SW).map((k) => ({ v: k, label: SW[k].label })),
   intro: (k) => (SW[k].dir === 'f2y' ? `Rewrite ${T(SW[k].name + '(' + SW[k].v + ')=' + SW[k].rhs)} in ${T('x')}-${T('y')} notation. Press <b>Next</b>.` : `Rewrite ${T('y=' + SW[k].rhs)} in function notation. Press <b>Next</b>.`),
   make(stage, k, ex) {
@@ -309,6 +310,7 @@ const FB = { fwd: 'Forwards: ' + T('F(20)'), back: 'Backwards: ' + T('F(C)=50'),
 const fwdBack = {
   title: 'Reading a graph forwards and backwards',
   height: 460,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(FB).map((k) => ({ v: k, label: FB[k] })),
   intro: (k) => (k === 'fwd' ? `Use the graph of ${T('F(C)=1.8C+32')} to find ${T('F(20)')}. Press <b>Next</b>.` : k === 'back' ? `Use the graph of ${T('F(C)=1.8C+32')} to solve ${T('F(C)=50')}. Press <b>Next</b>.` : `Where do the two scales show the same number? Press <b>Next</b>.`),
   make(stage, k, ex) {
@@ -365,6 +367,7 @@ const SWEEP_B = [[2, 'three'], [3, 'two'], [-2, 'one'], [6, 'no']];
 const sweep = {
   title: 'How many answers? Count the crossings',
   height: 460,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   intro: `The graph of a function ${T('p')}. Compare a <b>vertical</b> line (an input) with a <b>horizontal</b> line (an output). Press <b>Next</b>.`,
   make(stage, v, ex) {
     const G = new LG(stage, { x: 10, y: 10, width: 520, height: 440, xmin: -8, xmax: 8, ymin: -5, ymax: 7, xlabels: 2, ylabels: 2, xtitle: 'x', ytitle: 'p(x)' });
@@ -523,6 +526,7 @@ const candle = {
 const limits = {
   title: 'Where does the model stop?',
   height: 460,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   intro: `The rule ${T('h(t)=-2t+12')} accepts any number. The candle doesn’t. Press <b>Next</b>.`,
   make(stage, v, ex) {
     const S = candleScene(stage, ex, { xmin: -2, xmax: 8, ymin: -4, ymax: 16, ylabels: 2 }), G = S.G;

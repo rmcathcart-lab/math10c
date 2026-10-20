@@ -58,6 +58,7 @@ const LAND = 5 + Math.sqrt(33), LAND0 = 5 - Math.sqrt(33); // 10.7446…, −0.7
 const braking = {
   title: 'Double the speed, four times the distance',
   height: 430,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 50, label: '50 → 100 km/h (the big one)' }, { v: 30, label: '30 → 60 km/h' }, { v: 60, label: '60 → 120 km/h' }],
   intro: (v) => `Braking distance ${T('d=0.006v^2')}. What happens to ${T('d')} when the speed doubles from ${v} to ${2 * v} km/h? Press <b>Next</b>.`,
   make(stage, v1, ex) {
@@ -152,6 +153,7 @@ const ICPT = {
 const intercepts = {
   title: 'Where the graph meets the axes',
   height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ sep: 'Demo' }, { v: 'bat', label: 'Phone battery' }, { sep: 'Example 1 check' }, { v: 'kayak', label: 'Kayak (b), (c)' }],
   value: 'bat',
   intro: (k) => `${ICPT[k].story} Press <b>Next</b>.`,
@@ -187,6 +189,7 @@ const TRI = {
 const traceInt = {
   title: 'Trace goes forwards, intersect goes backwards',
   height: 440,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ sep: 'Demo' }, { v: 'bat', label: 'Phone battery' }, { sep: 'Example 1 check' }, { v: 'kayak', label: 'Kayak (d), (e)' }],
   value: 'bat',
   intro: (k) => `${T(TRI[k].rule)}: the output ${TRI[k].given}, then the input for a given output. Press <b>Next</b>.`,
@@ -268,6 +271,7 @@ const CTX = {
 const context = {
   title: 'The math answer vs the answer that makes sense',
   height: 470,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ sep: 'Demo' }, { v: 'bat', label: 'Battery' }, { sep: 'Example checks' }, { v: 'kayak', label: 'Ex 1 (f) kayak' }, { v: 'blaze', label: 'Ex 2 (f) Blaze' }, { sep: 'Warm-up' }, { v: 'brake', label: 'Braking' }],
   value: 'bat',
   intro: 'Start with everything the equation allows, then keep only what fits the story. Press <b>Next</b>.',
@@ -299,6 +303,7 @@ const PAIRC = ['#1f5bd6', '#13807a', '#c27a0e', '#e8a01e', '#c93a33'];
 const symmetry = {
   title: 'Vertex and axis of symmetry',
   height: 460,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ sep: 'Example 2 check' }, { v: 24, label: '(e) h = 24' }, { sep: 'Same height' }, { v: 29, label: 'h = 29' }, { v: 8, label: 'h = 8' }],
   value: 24,
   intro: `Blaze’s height, ${T('h=8+10t-t^2')}. Look for a pattern in the table. Press <b>Next</b>.`,
@@ -350,6 +355,7 @@ const CALC_ITEMS = ['1:value', '2:zero', '3:minimum', '4:maximum', '5:intersect'
 const calcMax = {
   title: 'CALC on the graphing calculator: maximum, zero, intersect',
   height: 440,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ sep: 'Example 2 check' }, { v: 'max', label: '(c) maximum' }, { v: 'zero', label: '(d) landing: zero' }, { v: 'int', label: '(e) intersect' }],
   value: 'max',
   intro: (k) => `${T('Y_1=8+10X-X^2')}, window ${T('x{:}\\,[0,11,1]')}, ${T('y{:}\\,[0,35,5]')}. ${k === 'max' ? 'Find the top.' : k === 'zero' ? 'Find the landing time.' : 'When is Blaze at 24 m?'} Press <b>Next</b>.`,

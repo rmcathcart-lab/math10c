@@ -285,6 +285,7 @@ function minusExp(kind, a, m, n, cls) {
 const minus = {
   title: 'Negative bases: where is the minus sign?',
   height: 456,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: MINUS.map((v) => (v.sep ? v : { v, label: tex(minusExp(v.split('|')[0], ...v.split('|').slice(1).map(Number))) })),
   intro: (v) => { const [k, a, m, n] = v.split('|'); return `Evaluate ${tex(minusExp(k, a, m, n))}. First question: <b>what is the base?</b>`; },
   make(stage, v, ex) {
@@ -465,12 +466,14 @@ function toPowSteps(stage, sp, W) {
 }
 const conv1 = convDef('Power → radical', ['|a|2|3', '|b|-3|4', { sep: 'Example 5(b) check:' }, '|x|1|5', '|y|3|8', '|z|-1|4', '|w|-5|6']);
 const conv2 = convDef('What’s outside stays outside', ['-|a|2|3', '|(-a)|2|3', '5|a|2|3', '|(5a)|2|3|25a^2', { sep: 'Example 6 check:' }, '|m|1|5', '-|n|3|7', '|(-p)|5|3', '|(-p)|-5|3', '4|s|2|3', '|(4s)|2|3|16s^2']);
+conv2.minW = 780; // drawn this wide and scaled to fit beside the sidebar
 const toPow = convDef('Radical → power', ['R||a|2|5', 'R||a|3|2', 'R|1|a|1|4', { sep: 'Example 7 check:' }, 'R||k|3|4', 'R||k|5|6', 'R||k|7|2', 'R|1|k|5|3']);
 
 /* ============ 4. A cube of known volume ============ */
 const cube = {
   title: 'A cube of known volume',
   height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [8, 64, 2, 1000, { sep: 'Example 4 check:' }, 100].map((v) => (v.sep ? v : { v, label: `V = ${fmt(v)}` })),
   intro: (V) => `A cube holds <b>${fmt(V)} cm³</b>. How long is each edge, and what is its surface area?`,
   make(stage, V, ex) {

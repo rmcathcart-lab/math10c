@@ -245,6 +245,7 @@ const SQ = {
 const grid = {
   title: 'Why 1 m² is 10 000 cm², not 100 cm²',
   height: 500,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SQ).map((k) => ({ v: k, label: SQ[k].label })),
   intro: (k) => (SQ[k].ex1 ? 'Check Example 1 (a) to (d). Press <b>Next</b>.' : 'Change the units on the sides, then count the little squares. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -302,6 +303,7 @@ const SC = {
 const shortcut = {
   title: 'The metric shortcut: n steps → 10ⁿ, 10²ⁿ, 10³ⁿ',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SC).map((k) => ({ v: k, label: SC[k].label })),
   intro: 'One step on the number line is ×10 for each dimension. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -414,6 +416,7 @@ const RC = {
 const rect = {
   title: 'Example 2: every square metre holds the same number of small squares',
   height: 470,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(RC).map((k) => ({ v: k, label: RC[k].label })),
   intro: 'A 7 m by 4 m rectangle, two ways. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -550,6 +553,7 @@ const CB = {
 const cube = {
   title: 'Why 1 m³ is 1 000 000 cm³: layers of little cubes',
   height: 500,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CB).map((k) => ({ v: k, label: CB[k].label })),
   intro: (k) => (CB[k].ex4 ? 'Check Example 4 (a) to (c). Press <b>Next</b>.' : 'Change the units on the edges, then fill the cube layer by layer. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -582,6 +586,7 @@ const cube = {
 const prism = {
   title: 'Example 5: 30 cubic metres, each a million cubic centimetres',
   height: 470,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex5', label: 'Example 5 check' }],
   intro: 'Build the 5 m by 2 m by 3 m prism from cubic metres. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -616,6 +621,7 @@ const IMP = {
 const imperial = {
   title: 'Imperial: square the 12 (or the 3), cube the 12 (or the 3)',
   height: 500,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(IMP).map((k) => ({ v: k, label: IMP[k].label })),
   intro: 'The same picture as Sections 1 and 2, with imperial units. Press <b>Next</b>.',
   make(stage, k, ex) { const d = IMP[k]; return d.kind === 'sq' ? squareSteps(stage, ex, d) : cubeSteps(stage, ex, Object.assign({ E: 268 }, d)); }
@@ -682,6 +688,7 @@ const WH = {
 const which = {
   title: 'Which factor, and multiply or divide?',
   height: 470,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(WH).map((k) => ({ v: k, label: WH[k].label })),
   intro: 'Two questions decide every conversion. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -717,6 +724,7 @@ const BA = { L: 1.2, H: 0.7, D: 0.9 }, BB = { L: 1.2192, H: 0.762, D: 0.9144 };
 const bins = {
   title: 'Example 9: the metric bin and the imperial bin, in one unit',
   height: 500,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'vol', label: 'Example 9(a) check: volume' }, { v: 'sa', label: 'Example 9(b) check: surface area' }],
   intro: 'Two bins, two systems. Convert both to the same unit, then compare. Press <b>Next</b>.',
   make(stage, k, ex) {

@@ -72,6 +72,7 @@ const MC = {
 const machine = {
   title: 'The function machine',
   height: 356,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(MC).map((k) => ({ v: k, label: MC[k].label })),
   intro: 'An <b>input</b> goes in, the rule acts on it, and exactly <b>one output</b> comes out. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -142,6 +143,7 @@ const AN = {
 const anatomy = {
   title: 'Reading function notation',
   height: 334,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(AN).map((k) => ({ v: k, label: AN[k].label })),
   intro: 'Every piece of the notation has a job. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -181,6 +183,7 @@ const RP = {
 const represent = {
   title: 'One function, several representations',
   height: 470,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(RP).map((k) => ({ v: k, label: RP[k].label })),
   intro: (k) => `${T(RP[k].rule)} with domain ${T('\\{' + RP[k].dom.join(',\\ ') + '\\}')}: a table, a range, an arrow diagram, ordered pairs and a graph. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -225,6 +228,7 @@ const FB = {
 const machineFB = {
   title: 'Evaluate = forwards. Solve = backwards.',
   height: 400,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(FB).map((k) => ({ v: k, label: FB[k].label })),
   intro: (k) => `To <b>evaluate</b>, push an input forwards through the machine. To <b>solve</b>, start from the output and run it backwards. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -350,6 +354,7 @@ const LE = {
 const linearExpr = {
   title: 'An expression as the input',
   height: 330,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(LE).map((k) => ({ v: k, label: LE[k].label })),
   intro: (k) => `For ${T('g(x)=5x-2')}, find an expression for ${T(LE[k].ask)}. Press <b>Next</b>.`,
   make(stage, k, ex) {

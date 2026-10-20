@@ -293,6 +293,7 @@ const WT = {
 const whichTool = {
   title: 'Which tool? Name the sides, then follow the flowchart',
   height: 490,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(WT).map((k) => ({ v: k, label: WT[k].label })),
   intro: 'One unknown. Say what is given and what is wanted, then let the questions pick the tool. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -342,6 +343,7 @@ const TR = {
 const twoRoutes = {
   title: 'Two routes to the same side',
   height: 400,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(TR).map((k) => ({ v: k, label: TR[k].label })),
   intro: 'One side, two routes. Do they land in the same place? Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -390,6 +392,7 @@ const twoRoutes = {
 const twoPieces = {
   title: 'How much do you need to know?',
   height: 440,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   intro: 'A right triangle has six measures. How many must be given before the rest are fixed? Press <b>Next</b>.',
   make(stage, v, ex) {
     const LW = 290, P = panel(stage, 0, 0, LW, 436, 'Known so far');
@@ -583,6 +586,7 @@ const SIDE_SHOW = { TW: 'WT', FW: 'WF', BT: 'BT' };
 const solveIt = {
   title: 'Solve it: fill in all six',
   height: 600,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SV).map((k) => ({ v: k, label: SV[k].label })),
   intro: 'A checklist of six measures. Tick off what is given, then let the flowchart pick a tool for each missing piece. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -647,6 +651,7 @@ const solveIt = {
 const ladder = {
   title: 'From words to a triangle: the ladder',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   intro: 'Example 5 in words. Build the triangle before you calculate anything. Press <b>Next</b>.',
   make(stage, v, ex) {
     const SW = 500, gy = 440, wx = 130, m = 56, Lm = 6.5;

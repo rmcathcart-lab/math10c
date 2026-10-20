@@ -146,6 +146,7 @@ function cityMap(host, o = {}) {
 const planner = {
   title: 'City Planner: the road at a right angle',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'build', label: 'Build the road' }, { v: 'traps', label: 'Traps B, C and D' }, { v: 'corner', label: 'Where is the corner?' }],
   intro: (v) => ({ build: 'Main St is <b>x − 2y + 4 = 0</b>; the school is at (8, 1). Press <b>Next</b>.', traps: 'Three wrong roads, three different mistakes. Press <b>Next</b>.', corner: 'Where does the new road meet Main St? Press <b>Next</b>.' })[v],
   make(stage, v, ex) {
@@ -350,6 +351,7 @@ async function cover(c, tile, lab) { const d = h('div', 'u7l7-cover', `<small>${
 const coverUp = {
   title: 'General form: cover up, or isolate y',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'cover', label: 'Cover up: both intercepts' }, { v: 'iso', label: 'Isolate y: balance moves' }, { v: 'ex1a', label: 'Example 1(a) check' }, { v: 'ex1c', label: 'Example 1(c) check' }],
   intro: (v) => ({ cover: 'Two intercepts straight from 4x + 3y − 12 = 0. Press <b>Next</b>.', iso: 'Solve 4x + 3y − 12 = 0 for y, one move at a time. Press <b>Next</b>.', ex1a: 'Example 1(a): the slope of 5y = 4x − 20. Press <b>Next</b>.', ex1c: 'Example 1(c): where 6x − 3y + 21 = 0 crosses the y-axis. Press <b>Next</b>.' })[v],
   make(stage, v, ex) {
@@ -421,6 +423,7 @@ function machine(p) {
 const graphToEq = {
   title: 'From a graph to general form',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex2a', label: 'Example 2(a) check' }, { v: 'ex2b', label: 'Example 2(b) check' }, { v: 'tidy', label: 'The tidy-up machine' }],
   intro: (v) => ({ ex2a: 'Example 2(a): read two lattice points, find the slope, then tidy up. Press <b>Next</b>.', ex2b: 'Example 2(b): the point (10.3, k) on line PQ. Press <b>Next</b>.', tidy: 'Feed y = −¾x + 5/2 into the tidy-up machine. Press <b>Next</b>.' })[v],
   make(stage, v, ex) {
@@ -673,6 +676,7 @@ const WT = {
 const whichTool = {
   title: '★ Which form? Which tool?',
   height: 486,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(WT).map((k) => ({ v: k, label: WT[k].label + ' check' })),
   intro: () => 'Each example travels the flowchart from its <b>question</b> to its <b>tool</b>. Press <b>Next</b>.',
   make(stage, v, ex) {

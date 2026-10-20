@@ -43,7 +43,7 @@ function setStyles(el, kf) { for (const k in kf) if (k !== 'offset' && k !== 'ea
 export class Explainer {
   constructor(host, def) {
     this.host = host; this.def = def; this.gen = 0; this.k = 0; this.running = false; this.auto = false;
-    host.classList.add('ex');
+    host.classList.add('ex'); host._ex = this; // (tests/screen_fit_check.py steps through it)
     const top = h('div', 'ex-top no-ink');
     if (def.title) top.appendChild(h('div', 'ex-title', def.title));
     if (def.choices) {

@@ -168,6 +168,7 @@ const WIDE = { xmin: -5, xmax: 20, xscl: 5, ymin: -15, ymax: 10, yscl: 5 };
 const setup = {
   title: 'Before you graph: MODE, FORMAT and the stat plots',
   height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   intro: 'Three quick checks on the TI-84 before graphing anything. Press <b>Next</b>.',
   make(stage, v, ex) {
     const { G, L, K, P } = rig(stage, ex, STD, { title: 'Checklist' });
@@ -248,6 +249,7 @@ const windowEx = {
 const graphIt = {
   title: 'Enter y = 0.75x − 9 and graph it',
   height: 440,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   intro: `The running example: ${T('y=0.75x-9')}, already solved for ${T('y')}. Press <b>Next</b>.`,
   make(stage, v, ex) {
     const { G, L, K, P } = rig(stage, ex, STD), f = REL.run.f;
@@ -282,6 +284,7 @@ const graphIt = {
 const adjust = {
   title: 'Three ways to change the window for y = 0.75x − 9',
   height: 440,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'custom', label: 'Custom window' }, { v: 'out', label: 'Zoom Out' }, { v: 'fit', label: 'ZoomFit' }],
   intro: (k) => ({ custom: 'Type the window you want.', out: 'Let the calculator zoom out.', fit: 'Let the calculator fit the curve.' }[k] + ' The x-intercept is cut off in the standard window. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -328,6 +331,7 @@ const adjust = {
 const table = {
   title: 'The table of values for y = 0.75x − 9',
   height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'tbl', label: 'TBLSET & TABLE' }, { v: 'ask', label: 'Ask mode: x = 500' }, { v: 'gt', label: 'G-T split screen' }],
   intro: (k) => ({ tbl: 'Set up the table, then read it.', ask: 'One far-away input, typed straight in.', gt: 'The graph and the table side by side.' }[k] + ' Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -462,6 +466,7 @@ const intersectEx = {
 const inside = {
   title: 'Stay inside the window',
   height: 440,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'tr', label: 'TRACE ' + T('x=15') }, { v: 'val', label: '1:value ' + T('x=500') }, { v: 'int', label: 'intersect ' + T('y=3') }],
   intro: (k) => ({ tr: `${T('y=0.75x-9')} in the standard window. Find ${T('y')} when ${T('x=15')}.`, val: `Find ${T('y')} when ${T('x=500')} with 1:value.`, int: `Find ${T('x')} when ${T('y=3')}.` }[k] + ' Press <b>Next</b>.'),
   make(stage, k, ex) {

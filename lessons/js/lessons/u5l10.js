@@ -115,6 +115,7 @@ const WHY = {
 const wanted = {
   title: 'Wanted: check every clue',
   height: 440,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: ['A', 'B', 'C', 'D'].map((k) => ({ v: k, label: 'Suspect ' + k })),
   intro: (k) => `Test suspect ${k} against the five clues on the poster, one at a time. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -270,6 +271,7 @@ const STM = [
 const ioAxes = {
   title: 'Inputs across, outputs up',
   height: 400,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(IO).map((k) => ({ v: k, label: IO[k].label })),
   intro: (k) => (k === 'ex2' ? 'Check each statement of Example 2 against the rule: <b>first</b> = input, <b>second</b> = output. Press <b>Next</b>.' : 'Where does each coordinate of an ordered pair go? Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -404,6 +406,7 @@ const MC = {
 const machine = {
   title: 'A function is a machine: one input in, one output out',
   height: 400,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(MC).map((k) => ({ v: k, label: MC[k].label })),
   intro: (k) => `Feed each input of the domain into ${T(MC[k].rule)} and collect the outputs. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -442,6 +445,7 @@ const machine = {
 const costModel = {
   title: 'A cost model: forwards, then domain and range',
   height: 420,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'a', label: 'Example 6(a): ' + T('n=685') }, { v: 'b', label: '6(b): domain and range' }],
   intro: `${T('C=150+0.08n')}: the cost in dollars of printing ${T('n')} newsletters. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -523,6 +527,7 @@ const FB = {
 const fwdBack = {
   title: 'Forwards and backwards through a linear function',
   height: 420,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(FB).map((k) => ({ v: k, label: FB[k].label })),
   intro: (k) => (FB[k].dir === 'f' ? `Forwards: the input is known, so substitute. Press <b>Next</b>.` : `Backwards: the output is known, so undo the steps in reverse order. Press <b>Next</b>.`),
   make(stage, k, ex) {
@@ -580,6 +585,7 @@ const E10 = {
 const vlt = {
   title: 'The vertical line test',
   height: 420,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(E10).map((k) => ({ v: k, label: k === 'P' ? 'Relation P' : 'Example 10: ' + k })),
   intro: (k) => `${E10[k].name}. Is it a function? Press <b>Next</b>.`,
   make(stage, k, ex) {

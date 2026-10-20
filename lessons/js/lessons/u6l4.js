@@ -156,6 +156,7 @@ const words = (v, pos, neg) => `${Math.abs(v)} ${v >= 0 ? pos : neg}`;
 const liftOff = {
   title: 'Rise and run, lifted off the grid',
   height: 480,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(LIFT).map((k) => ({ v: k, label: LIFT[k].label })),
   intro: 'Count the rise and the run on the grid first, then find the same numbers straight from the coordinates. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -212,6 +213,7 @@ const liftOff = {
 const sameOrder = {
   title: 'Either point first, but the same order top and bottom',
   height: 480,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'demo', label: 'Either point first' }, { v: 'ex3', label: 'Example 3 check' }],
   intro: (v) => (v === 'demo' ? 'Find the slope of <b>AB</b> starting from A, then from B, then with the order mixed up. Press <b>Next</b>.' : 'Draw each student’s answer as a line through <b>W</b>. Does it lie along <b>WZ</b>? Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -275,6 +277,7 @@ const COL = {
 const collinear = {
   title: 'Collinear: equal slopes and a shared point',
   height: 480,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(COL).map((k) => ({ v: k, label: COL[k].label })),
   intro: 'Are these points on one straight line? Measure the slope between pairs of points. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -325,6 +328,7 @@ const MISS = {
 const missing = {
   title: 'A missing coordinate',
   height: 480,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(MISS).map((k) => ({ v: k, label: MISS[k].label })),
   intro: (k) => `The point ${T(`${MISS[k].C}(${MISS[k].cx},\\ ${MISS[k].v})`)} must lie on the segment. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -367,6 +371,7 @@ const TRANS = {
 const translate = {
   title: 'Parallel lines: copies of one slope triangle',
   height: 470,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(TRANS).map((k) => ({ v: k, label: TRANS[k].label })),
   intro: 'Slide the segment, slope triangle and all, without turning it. What happens to its slope? Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -414,6 +419,7 @@ const ROT = {
 const rotate = {
   title: 'Perpendicular: turn the slope triangle 90°',
   height: 490,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(ROT).map((k) => ({ v: k, label: ROT[k].label })),
   intro: 'Rotate the segment and its slope triangle a quarter-turn clockwise about the origin. Watch what happens to the rise and the run. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -475,6 +481,7 @@ const NR = {
 const negRecip = {
   title: 'Parallel and perpendicular slopes from one slope',
   height: 480,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(NR).map((k) => ({ v: k, label: NR[k].label })),
   intro: 'Given one slope: a <b>parallel</b> line copies the slope triangle; a <b>perpendicular</b> line turns it 90°. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -529,6 +536,7 @@ const CL = {
 const classify = {
   title: 'Parallel, perpendicular, or neither?',
   height: 480,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CL).map((k) => ({ v: k, label: CL[k].label })),
   intro: 'Follow the flowchart with two slopes. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -577,6 +585,7 @@ const prodTex = (a, b) => `${a}\\times${b.startsWith('-') ? `\\left(${b}\\right)
 const rightAngle = {
   title: 'Using slope to find a right angle',
   height: 480,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(RA).map((k) => ({ v: k, label: RA[k].label })),
   intro: (k) => (k === 'ex7' ? 'Is the angle at <b>D</b> a right angle? Test the two sides that meet there. Press <b>Next</b>.' : 'Is triangle <b>JKL</b> right-angled anywhere? Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -632,6 +641,7 @@ const KD = {
 const dialK = {
   title: 'Turn the dial: find k',
   height: 490,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(KD).map((k) => ({ v: k, label: KD[k].label })),
   intro: `One line has slope ${T('-\\tfrac56')}. The other has run 9 and rise <b>k</b>. Change k until the lines are right. Press <b>Next</b>.`,
   make(stage, k, ex) {

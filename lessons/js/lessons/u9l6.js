@@ -293,6 +293,7 @@ const TC = {
 const twoCalcs = {
   title: 'Two calculations, one picture: from the eyepiece, then from the ground',
   height: 450,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(TC).map((k) => ({ v: k, label: TC[k].label })),
   intro: 'A transit sights the top of a pole. Part (a) and part (b) use <b>different triangles</b>. Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -356,6 +357,7 @@ const twoCalcs = {
 const semicircle = {
   title: 'A hidden right angle: the angle in a semicircle',
   height: 420,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   intro: 'No right angle is marked. Is there one anyway? Press <b>Next</b>.',
   make(stage, v, ex) {
     const S = new Scene(stage, { x: 10, y: 0, width: 600, height: 420, win: [-1.25, 1.25, -0.35, 1.2], pad: [20, 10, 20, 10] });
@@ -419,6 +421,7 @@ const EL = {
 const eyeLevel = {
   title: 'Measured from eye level: the triangle sits on top of the eye height',
   height: 450,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(EL).map((k) => ({ v: k, label: EL[k].label })),
   intro: 'How tall is it? You can’t climb it, but you can measure an angle. Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -489,6 +492,7 @@ const TE = {
 const twoEyes = {
   title: 'Eye level at both ends: stack the building from three pieces',
   height: 460,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(TE).map((k) => ({ v: k, label: TE[k].label })),
   intro: 'Malik looks up at his friend in a window. Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -544,6 +548,7 @@ const CL = {
 const clinometer = {
   title: 'Reading a clinometer: the string always hangs straight down',
   height: 450,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CL).map((k) => ({ v: k, label: CL[k].label })),
   intro: 'A protractor, a straw, a string and a washer. Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -610,6 +615,7 @@ const clinometer = {
 const wobble = {
   title: 'Example 3(c): what one degree of misreading does to the height',
   height: 450,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   intro: 'Ana measured 12.8 m. The caretaker says 12.5 m. Press <b>Next</b>.',
   make(stage, v, ex) {
     const eye = 1.55, d = 18, hs = [31, 32, 33].map((a) => eye + d * Math.tan(a * RAD)), cols = ['#8fa8e8', HYP, '#8fa8e8'];
@@ -659,6 +665,7 @@ const TG = { ex4: { label: 'Example 4 check', a: 64, r: 15 }, demo: { label: 'De
 const tangent = {
   title: 'Extension: a circle tangent to both arms of an angle',
   height: 450,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(TG).map((k) => ({ v: k, label: TG[k].label })),
   intro: 'No right angle is drawn. Two circle facts build one. Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -720,6 +727,7 @@ const refOf = (b) => (b <= 90 ? { r: b, from: 'north', to: 'east', how: `${b}^\\
 const compass = {
   title: 'Extension: bearings turn clockwise from north',
   height: 460,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [72, 155, 210, 318].map((b) => ({ v: b, label: String(b).padStart(3, '0') + '°' })),
   intro: 'Stand facing north. Turn clockwise until you face the direction. Press <b>Next</b>.',
   make(stage, b, ex) {
@@ -787,6 +795,7 @@ const FY = { ex5: { label: 'Example 5 check', d1: 8, b1: 130, ex: 10, v: 12 }, d
 const ferry = {
   title: 'Extension: follow the ferry, one right triangle at a time',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(FY).map((k) => ({ v: k, label: FY[k].label })),
   intro: 'A ferry leaves the dock on a bearing. Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -849,6 +858,7 @@ const TL = {
 const twoLegs = {
   title: 'Extension: two legs, split into east–west and north–south parts',
   height: 480,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(TL).map((k) => ({ v: k, label: TL[k].label })),
   intro: 'Two legs on different bearings. Where does she end up? Press <b>Next</b>.',
   make(stage, key, ex) {

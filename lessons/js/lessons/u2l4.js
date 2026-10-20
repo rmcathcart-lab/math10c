@@ -82,6 +82,7 @@ function digitRow(stage, cells, o) {
 const hops = {
   title: 'Hop the decimal point',
   height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 's:52000', label: '52 000' }, { v: 's:0.00047', label: '0.00047' }, { v: 's:36800000', label: '36 800 000' }, { v: 'e:2.9:9', label: tex('2.9\\times10^{9}') }, { v: 'e:8:-6', label: tex('8\\times10^{-6}') },
     { sep: 'Example 1 check:' }, { v: 's:84200', label: '84 200' }, { v: 's:0.00072', label: '0.00072' }, { v: 'e:6.05:2', label: tex('6.05\\times10^{2}') }, { v: 'e:4.1:-3', label: tex('4.1\\times10^{-3}') }],
   intro: (v) => {

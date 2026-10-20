@@ -223,6 +223,7 @@ function drawCliff(S, a, d) {
 const cliff = {
   title: 'The Unreachable Cliff: solve the triangle you can, hand its side on',
   height: 430,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CLIFF).map((k) => ({ v: k, label: CLIFF[k].label })),
   intro: (v) => (v === 'walk' ? 'The board picture. Answer warm-up 1–3 and guess the big one, then press <b>Next</b>.' : 'The teacher-notes follow-up: the angles are 25° then 50°, still 40 m apart. Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -264,6 +265,7 @@ const TW = {
 const towers = {
   title: 'Two towers, one shared horizontal distance',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(TW).map((k) => ({ v: k, label: TW[k].label })),
   intro: (v) => (v === 'ex1' ? 'Example 1, after the class has tried it. Press <b>Next</b>.' : 'What if the second tower is <b>shorter</b>? Look <b>down</b> to its top. Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -374,6 +376,7 @@ const CH = {
 const chain = {
   title: 'The chain: solve one triangle, hand the shared side to the other',
   height: 490,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CH).map((k) => ({ v: k, label: CH[k].label })),
   intro: (v) => (v === 'ex2' ? 'Example 2: find ' + T('QR') + '. Press <b>Next</b>.' : 'Example 3: find ' + T('\\angle BEC') + '. Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -517,6 +520,7 @@ const WH = {
 const which = {
   title: 'Which triangle first? Which ratio? How to finish?',
   height: 440,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(WH).map((k) => ({ v: k, label: WH[k].label })),
   intro: 'Follow one example through the plan. Press <b>Next</b>.',
   make(stage, v, ex) {
@@ -552,6 +556,7 @@ const H4 = 25 / (1 / tanD(32) - 1 / tanD(47)), X4 = H4 / tanD(47);
 const sightings = {
   title: 'Two sightings, 25 m apart: neither triangle has a known side',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'walk', label: 'Walk toward the building' }, { v: 'ex4', label: 'Example 4 check' }],
   intro: (v) => (v === 'walk' ? 'Watch the angle of elevation as you walk from A to B. Press <b>Next</b>.' : 'Example 4 (a), (b) and (c), after the class has tried them. Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -620,6 +625,7 @@ const BX = { ex5: { label: 'Example 5 check', l: 4, w: 3, hh: 12, s: 31 }, spin:
 const box3d = {
   title: 'A box hides two right triangles that share the base diagonal',
   height: 480,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(BX).map((k) => ({ v: k, label: BX[k].label })),
   intro: (v) => (v === 'ex5' ? 'Example 5: a box 4 cm by 3 cm by 12 cm. Press <b>Next</b>.' : 'A box 6 by 2 by 3: find the diagonal through the inside. Press <b>Next</b>.'),
   make(stage, v, ex) {

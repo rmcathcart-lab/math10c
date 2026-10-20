@@ -441,6 +441,7 @@ function squeeze(n) { // perfect squares either side
 const numline = {
   title: 'Squeeze, estimate, place',
   height: 410,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'A', label: tex('\\sqrt5,\\ \\sqrt{30},\\ \\ldots') }, { v: 'B', label: tex('\\sqrt{40},\\ \\sqrt{0.8},\\ \\ldots') }, { sep: 'Example 3 check:' }, { v: 'ex3', label: tex('\\sqrt{19},\\ \\pi,\\ \\sqrt{90},\\ 3\\sqrt8,\\ \\sqrt{0.3}') }],
   intro: (v) => `Place ${NLSETS[v].map((o) => tex(o.t)).join(', ')} on the number line. For each one: <b>squeeze</b> it between perfect squares, <b>estimate</b>, then zoom in and <b>place</b> it.`,
   make(stage, v, ex) {

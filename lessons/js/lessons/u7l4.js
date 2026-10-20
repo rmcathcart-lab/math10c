@@ -198,6 +198,7 @@ const BD = {
 const build = {
   title: 'Slope–point form: one point fixed, one point free',
   height: 530,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(BD).map((k) => ({ v: k, label: BD[k].label })),
   intro: (k) => (k === 'balloon'
     ? 'The balloon’s height–time line: one known point, <b>(5, 800)</b> (10:05, 800 m), and slope <b>−40</b> m per minute. Press <b>Next</b>.'
@@ -327,6 +328,7 @@ const AP = {
 const anyPoint = {
   title: 'Any point on the line will do',
   height: 480,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(AP).map((k) => ({ v: k, label: AP[k].label })),
   intro: 'One line. <b>Pin</b> a different point each time and write slope–point form. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -374,6 +376,7 @@ const PL = {
 const plug = {
   title: 'Into the pattern: substitute, then tidy the signs',
   height: 320,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(PL).map((k) => ({ v: k, label: PL[k].label })),
   intro: 'Three blanks in the pattern: the slope and the two coordinates of the point. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -496,6 +499,7 @@ const race = {
 const grid = {
   title: 'Example 4(a): from a grid to general form',
   height: 480,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   intro: 'Find two grid points, the slope, then the equation in every form. Press <b>Next</b>.',
   make(stage, v, ex) {
     const G = new Graph(stage, { x: 14, y: 14, width: 452, height: 452, xmin: -7, xmax: 7, ymin: -7, ymax: 7, xlabels: 2, ylabels: 2 });
@@ -535,6 +539,7 @@ const RD = {
 const read = {
   title: 'Reading m and (x₁, y₁) back out',
   height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(RD).map((k) => ({ v: k, label: RD[k].label })),
   intro: 'Line the equation up under the pattern, then read the slope and the point. Press <b>Next</b>.',
   make(stage, k, ex) {

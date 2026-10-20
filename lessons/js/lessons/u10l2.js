@@ -633,6 +633,7 @@ const LADDER = {
 const ladder = {
   title: 'A ladder of everyday referents',
   height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'all', label: 'Everyday referents' }, { v: 'towel', label: 'Example 2: the bath towel' }],
   intro: (v) => (v === 'all' ? 'Put every referent on one ladder of sizes. Press <b>Next</b>.' : 'Which referents suit a bath towel? Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -754,6 +755,7 @@ const towel = {
 const shed = {
   title: 'Example 3(a) check: heel-to-toe around the shed',
   height: 440,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   intro: 'The base of a rectangular shed, seen from above. Press <b>Next</b>.',
   make(stage, v, ex) {
     const W = ex.W, S = SV(stage, W, ex.def.height), u = 30, sx = 78, sy = 92, L = 12, Wd = 8;
@@ -872,6 +874,7 @@ const wheel = {
 const card = {
   title: 'Example 4 check: measure the scale diagram in both systems',
   height: 480,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   intro: 'The scale diagram of the access card, with a ruler drawn to the same scale. Press <b>Next</b>.',
   make(stage, v, ex) {
     const W = ex.W, S = SV(stage, W, ex.def.height), k = 80, x0 = 64, cy0 = 30, cw = 3 * k, ch = 2 * k, ry = cy0 + ch + 4;

@@ -253,6 +253,7 @@ const DL = {
 const dolls = {
   title: 'Factor completely: keep opening until every doll is solid',
   height: 500,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'mn', label: tex('m^4-81n^4') }, { v: 'x8', label: 'Warm-up: ' + tex('x^8-1') }, { sep: 'Example 6 check:' }, { v: 'w4', label: '(a)' }, { v: 'e6b', label: '(b)' }, { v: 'e6c', label: '(c)' }],
   intro: (k) => `Here is ${T(DL[k].root.t)} as a doll. Factoring a doll <b>opens</b> it. We keep opening until <b>every</b> doll is solid: that is what “factor completely” means.`,
   make(stage, k, ex) {
@@ -309,6 +310,7 @@ function tileEl(kind, sign, w, ht, lab) {
 const squareTiles = {
   title: 'The square picture, run backwards: can the tiles make a square?',
   height: 490,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'a', label: tex('x^2+6x+9') }, { v: 'b', label: tex('x^2+8x+16') }, { v: 'c', label: tex('x^2-6x+9') }, { v: 'd', label: tex('x^2+6x+5') },
     { sep: 'Example 1 check:' }, { v: 'e1a', label: '(a)' }, { v: 'e1b', label: '(b)' }, { v: 'e1c', label: '(c)' }, { v: 'e1d', label: '(d)' }],
   intro: (k) => `Build ${T(sqtQ(SQT[k]))} with algebra tiles. A <b>perfect square trinomial</b> is exactly a set of tiles that makes a <b>square</b>. Let’s try.`,
@@ -436,6 +438,7 @@ const psQ = (t) => t.join('');
 const psCheck = {
   title: 'The three-part test: is it a perfect square trinomial?',
   height: 400,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'm14', label: tex('m^2+14m+49') }, { v: 'x10', label: tex('x^2+10x+16') }, { sep: 'Example 1 check:' }, { v: 'e1a', label: '(a)' }, { v: 'e1b', label: '(b)' }, { v: 'e1c', label: '(c)' }, { v: 'e1d', label: '(d)' },
     { sep: 'Example 3 check:' }, { v: 'e3a', label: '(a)' }, { v: 'e3b', label: '(b)' }, { v: 'e3c', label: '(c)' }],
   intro: (k) => `Is ${T(psQ(PS[k].t))} a perfect square trinomial? Run the <b>three tests</b>, in order. All three must pass.`,
@@ -506,6 +509,7 @@ const GF = {
 const gapFill = {
   title: 'Fill the gap: the square picture, read backwards',
   height: 440,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'd1', label: tex('x^2+\\_\\_+36') }, { v: 'd2', label: tex('4x^2+12x+\\_\\_') }, { sep: 'Example 2 check:' }, { v: 'a', label: '(a)' }, { v: 'b', label: '(b)' }, { v: 'c', label: '(c)' }, { v: 'd', label: '(d)' }],
   intro: (k) => { const d = GF[k]; return `What goes in the blank so that ${T(d.pre + '\\_\\_' + d.post)} is a perfect square trinomial? Picture the square it must be.`; },
   make(stage, key, ex) {
@@ -675,6 +679,7 @@ function makeDisguise(title, choices) {
   };
 }
 const disguise = makeDisguise('The disguise: let u be the block', [{ v: 'm', label: tex('m^4+7m^2+12') }, { v: 'br', label: 'A bracket block: ' + tex('(x+1)^2+5(x+1)+6') }, { sep: 'Example 4 check:' }, { v: 'e4a', label: '(a)' }, { v: 'e4b', label: '(b)' }]);
+disguise.minW = 780; // drawn this wide and scaled to fit beside the sidebar
 const disguiseExt = makeDisguise('Extension: bigger blocks', [{ v: 'x6', label: tex('x^6+5x^3+6') }, { sep: 'Example 7 check:' }, { v: 'e7a', label: '(a)' }, { v: 'e7b', label: '(b)' }]);
 
 /* ---------------- decomposition in disguise: two methods side by side ---------------- */
@@ -695,6 +700,7 @@ const DC = {
 const decomp = {
   title: 'Decomposition in disguise: substitute, or split directly',
   height: 470,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n', label: tex('6m^4-7m^2-3') }, { sep: 'Example 5 check:' }, { v: 'e5a', label: '(a)' }, { v: 'e5b', label: '(b)' }, { v: 'e5c', label: '(c)' }],
   intro: (k) => `Factor ${T(DC[k].q)} two ways at once: <b>Method 1</b> wears the disguise ${T('u=' + DC[k].blk)}; <b>Method 2</b> splits the middle term directly. Watch the two columns stay in step.`,
   make(stage, key, ex) {

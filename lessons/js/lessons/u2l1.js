@@ -263,6 +263,7 @@ const SIGN_N = { 2: 6, 3: 5, 1: 6, 10: 6, 7: 4 };
 const signs = {
   title: 'Negative bases: watch the sign flip',
   height: 450,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 2, label: tex('-2') }, { v: 3, label: tex('-3') }, { v: 1, label: tex('-1') }, { v: 10, label: tex('-10') }, { sep: 'Example 3 check:' }, { v: 7, label: tex('-7') }],
   intro: (b) => `Compare ${tex(`(-${b})^{n}`)} and ${tex(`-${b}^{n}`)} as the exponent n grows. Each step adds one more factor.`,
   make(stage, b, ex) {
@@ -330,6 +331,7 @@ const signs = {
 const zero = {
   title: 'Count down the exponent',
   height: 430,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [6, 2, 3, 10],
   custom: [2, 20],
   intro: (b) => `Start at ${tex(`${b}^{4}`)} and lower the exponent one step at a time. What happens to the value each time?`,

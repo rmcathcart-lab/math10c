@@ -112,6 +112,7 @@ const LANE_NAME = { L1: 'Lane 1', L2: 'Lane 2', L3: 'Lane 3', L4: 'Lane 4' };
 const airport = {
   title: 'Route a traveller through the airport',
   height: 504,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'q1', label: '1' }, { v: 'q2', label: '2' }, { v: 'q3', label: '3' }, { sep: 'The big one:' }, ...'ABCD'.split('').map((k) => ({ v: k, label: k })), { sep: 'Follow-up:' }, { v: 'F', label: '+' }],
   intro: (k) => `${AP[k].title ? 'The follow-up traveller' : 'Traveller <b>' + AP[k].name + '</b>'} is ${T(AP[k].q)}. It starts at check-in. Every expression goes through <b>security (Lane 1)</b> first.`,
   make(stage, key) {
@@ -317,6 +318,7 @@ const FL = {
 const flow = {
   title: 'Trace it through the flowchart',
   height: 548,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'd1', label: T('5x^3-20x') }, { v: 'd2', label: T('3x^2+12x-36') }, { v: 'd3', label: T('x^3+2x^2-9x-18') }, { v: 'd4', label: T('4x^2+36') },
     { sep: 'Example check:' }, ...['1a', '1b', '2a', '2b', '3a', '3b', '4a', '4b'].map((k) => ({ v: 'e' + k, label: k[0] + '(' + k[1] + ')' }))],
   intro: (k) => `Factor ${T(FL[k].q)} completely. Every expression starts at the <b>top</b> of the chart. Press <b>Next</b>.`,

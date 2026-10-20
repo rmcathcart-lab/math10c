@@ -124,6 +124,7 @@ const LT = {
 const linTest = {
   title: 'Is the table linear?',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'mia', label: LT.mia.label }, { v: 'bend', label: LT.bend.label }, { sep: 'Example 1 check' }, ...['a', 'b', 'c'].map((k) => ({ v: k, label: '(' + k + ')' }))],
   intro: (k) => (LT[k].hx ? `Mia’s battery, hour by hour. Check the ${T('t')}-row, then the changes in ${T('B')}. Press <b>Next</b>.`
     : `A table of values. Check the ${T('x')}-row, then the changes in ${T('y')}. Press <b>Next</b>.`),
@@ -178,6 +179,7 @@ const UN = {
 const uneven = {
   title: 'Every step hides a slope triangle',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'c', label: UN.c.label }, { v: 'bend', label: UN.bend.label }],
   intro: (k) => (k === 'c' ? `The ${T('x')}-steps are ${T('+2,\\ +3,\\ +4')} and the ${T('y')}-changes are ${T('-4,\\ -6,\\ -8')}. Linear or not? Press <b>Next</b>.`
     : `Here every change in ${T('y')} is ${T('+2')}. Does that make it linear? Press <b>Next</b>.`),
@@ -438,6 +440,7 @@ function gauge(stage, kind, x, y) {
 const story = {
   title: 'Intercepts, rate, domain and range in a story',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'cooler', label: ST.cooler.label }, { v: 'phone', label: ST.phone.label }],
   intro: (k) => (k === 'cooler' ? 'An 18 L water-cooler jug, emptied at a steady rate. Press <b>Next</b>.' : 'Mia’s phone from the warm-up, 90% at noon. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -511,6 +514,7 @@ const LL = {
 const lineLab = {
   title: 'The line lab: rotate it, slide it, watch the counters',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(LL).map((k) => ({ v: k, label: LL[k].label })),
   intro: (k) => (LL[k].free ? 'Your turn: rotate and slide the line with the buttons. Press <b>Next</b> to start.' : 'Watch the counters on the right while the line moves. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -586,6 +590,7 @@ const CF = {
 const countFlow = {
   title: 'How many intercepts? Three questions',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CF).map((k) => ({ v: k, label: CF[k].label })),
   intro: 'Answer the questions from the top. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -708,6 +713,7 @@ const MD = {
 const match = {
   title: 'Match: slope sign first, then intercepts',
   height: 470,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ sep: 'Example 5 check' }, ...Object.keys(MD).map((k) => ({ v: +k, label: 'Description ' + k }))],
   value: 1,
   intro: (k) => `Description ${k}: ${MD[k].text} Press <b>Next</b>.`,

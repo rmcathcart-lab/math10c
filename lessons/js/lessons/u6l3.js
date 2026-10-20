@@ -543,6 +543,7 @@ const DIAL_TICKS = [[1, 4], [1, 2], [1, 1], [2, 1], [5, 1]];
 const dial = {
   title: 'The steepness dial',
   height: 470,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(DIAL).map((k) => ({ v: k, label: DIAL[k].label })),
   intro: 'The line turns about the origin. The dial’s needle points along the line, left to right. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -696,6 +697,7 @@ const RF = {
 const roof = {
   title: 'Slope of a roofline, and its pitch',
   height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(RF).map((k) => ({ v: k, label: RF[k].label })),
   intro: 'A grid laid over a roof. Find two points you can read <b>exactly</b>. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -748,6 +750,7 @@ const RATE = {
 const rate = {
   title: 'Slope with units: a rate of change',
   height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(RATE).map((k) => ({ v: k, label: RATE[k].label })),
   intro: 'Real axes have units, so the rise and the run do too. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -789,6 +792,7 @@ const SO = {
 const stepOff = {
   title: 'From a slope back to points',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SO).map((k) => ({ v: k, label: SO[k].label })),
   intro: 'Start at the given point and step off the run and the rise, again and again. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -841,6 +845,7 @@ const MS = {
 const missing = {
   title: 'Find the missing run',
   height: 450,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(MS).map((k) => ({ v: k, label: MS[k].label })),
   intro: 'The slope is a small triangle. The segment is that triangle copied over and over, like a staircase. Press <b>Next</b>.',
   make(stage, k, ex) {

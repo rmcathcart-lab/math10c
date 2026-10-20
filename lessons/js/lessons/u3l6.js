@@ -250,6 +250,7 @@ const prodTex = (a, b) => (P(a).length === 1 ? `${a}(${b})` : `(${a})(${b})`);
 const tileMul = {
   title: 'Rows times columns: multiplying with tiles',
   height: 400,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'a', label: T('2x(x+1)') }, { v: 'b', label: T('(x+2)(x+1)') }, { v: 'c', label: T('(x+2)(x-1)') }, { sep: 'Example 3 check:' }, { v: 'e3', label: 'the tile array' }],
   intro: (v) => (TMU[v].tag ? `Example 3’s tile array: read the factors on the frame, then check the product inside.` : `Build ${T(prodTex(TMU[v].top, TMU[v].side))} with tiles: the first factor across the top, the second down the side.`),
   make(stage, v, ex) {
@@ -420,6 +421,7 @@ const SQ = {
 const square = {
   title: 'The square of a binomial: four pieces, not two',
   height: 420,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'a', label: T('(x+3)^2') }, { v: 'b', label: T('(x-4)^2') }, { sep: 'Example 6 check:' }, { v: 'e6', label: 'the triangle' }],
   intro: (v) => (SQ[v].tri ? `Example 6: the triangle’s legs are both ${T('2x+6')}. Start with the square ${T('(2x+6)^2')}.` : `What is ${T(`(${SQ[v].a}${SQ[v].b.startsWith('-') ? '' : '+'}${SQ[v].b})^2`)}? Draw it as a square.`),
   make(stage, v, ex) {
@@ -475,6 +477,7 @@ const FRM = { a: { L: '2x+3', Wd: 'x+4', S: 'x' }, e7: { L: '3x+5', Wd: '2x+6', 
 const frame = {
   title: 'Shaded area = whole − hole',
   height: 420,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'a', label: `an ${T('x')}-by-${T('x')} hole` }, { sep: 'Example 7 check:' }, { v: 'e7', label: 'the cut-out square' }],
   intro: (v) => `A ${T(FRM[v].L)} by ${T(FRM[v].Wd)} rectangle with a square hole of side ${T(FRM[v].S)}. What area is left?`,
   make(stage, v, ex) {
@@ -666,7 +669,9 @@ function gridDef(title, choices, value) {
   };
 }
 const grid = gridDef('Six partial products on a grid', [{ v: 'g1', label: T('(x+2)(x^2+3x+1)') }, { sep: 'Example 9(a) check:' }, { v: 'e9a', label: T('(5t-2)(3t^2-4t-2)') }], 'g1');
+grid.minW = 780; // drawn this wide and scaled to fit beside the sidebar
 const three = gridDef('Three binomials: two at a time', [{ v: 't1', label: T('(x+1)(x+2)(x+3)') }, { sep: 'Example 10 check:' }, { v: 'e10', label: T('(a+2)(a-5)(3a+1)') }], 't1');
+three.minW = 860; // drawn this wide and scaled to fit beside the sidebar
 
 /* ============ 8. Extension: completing the square ============ */
 const CSQ = { a: { b: -10, c: 29 }, e11b: { b: -16, c: 70, tag: '<b>Example 11(b): p = 8, q = 6.</b>' }, e11a: { match: true } };
@@ -811,6 +816,7 @@ const STU = {
 const students = {
   title: 'Find the error: Priya, Marcus and Devon',
   height: 430,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ sep: 'Example 13 check:' }, { v: 'priya', label: '(a) Priya' }, { v: 'marcus', label: '(b) Marcus' }, { v: 'devon', label: '(c) Devon' }, { v: 'fix', label: '(d)–(e) correct + check' }],
   value: 'priya',
   intro: (v) => (v === 'fix' ? `Example 13(d) and (e): expand ${T('6(3y-2)^2')} the right way, then <b>check</b> it by substituting ${T('y=-3')}.` : `${STU[v].name} expanded ${T('6(3y-2)^2')}. Exactly one step is wrong. Which one, and why?`),

@@ -231,6 +231,7 @@ function mountWarm() {
 const kite = {
   title: 'Kite height: 50 m of string',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   intro: '<b>50 m</b> of string. The angle with the level ground changes. How high is the kite above your hand? Press <b>Next</b>.',
   make(stage, v, ex) {
     const W = ex.W, S = kiteScene(stage, { x: 0, y: 0, w: 590, h: 470, L: 280, th: 60, hTxt: '' });
@@ -277,6 +278,7 @@ const sq2 = (v) => texNum(v * v, 4);
 const pyth = {
   title: 'Two sides known: the Pythagorean theorem',
   height: 450,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ sep: 'Check' }, { v: 'a', label: 'Example 1(a)' }, { v: 'b', label: 'Example 1(b)' }, { sep: 'Idea' }, { v: 'leg', label: 'A leg unknown: subtract' }],
   intro: (k) => (k === 'leg' ? 'Hypotenuse <b>10</b>, one leg <b>6</b>. Find the other leg <b>x</b>. Press <b>Next</b>.' : 'Two legs are known, no angle is given. Find the hypotenuse. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -531,6 +533,7 @@ const solveBot = solveDef('Unknown on the bottom → divide', [{ sep: 'Idea' }, 
 const solve7 = {
   title: 'More than one side: start each from the given side',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ sep: 'Check' }, { v: 'e6', label: 'Example 6' }, { v: 'e7a', label: 'Example 7(a)' }, { v: 'e7b', label: 'Example 7(b)' }, { v: 'chk', label: 'Check Example 7' }],
   intro: (k) => (k === 'chk' ? 'Both answers to Example 7, checked without trig. Press <b>Next</b>.' : 'Set the ratio up from the <b>given</b> side and the <b>given</b> angle. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -665,6 +668,7 @@ function coverTri(host, fn, x, y, w, hh) {
 const cover = {
   title: 'Cover-up triangles: SOH · CAH · TOA',
   height: 430,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ sep: 'Check' }, { v: 'e2', label: 'Example 2' }, { v: 'e3b', label: 'Example 3(b)' }, { v: 'e4', label: 'Example 4' }, { v: 'e6', label: 'Example 6' }, { v: 'e7a', label: 'Example 7(a)' }, { v: 'e7b', label: 'Example 7(b)' }],
   intro: 'Each letter group is a little triangle: the side on top, the ratio and the side on the bottom. Cover what you want to find. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -760,6 +764,7 @@ const FL = {
 const tool = {
   title: 'Which tool? Where is the unknown?',
   height: 460,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ sep: 'Check' }, { v: 'e1a', label: 'Example 1(a)' }, { v: 'e2', label: 'Example 2' }, { v: 'e4', label: 'Example 4' }, { v: 'e6', label: 'Example 6' }, { sep: 'Idea' }, { v: 'none', label: 'Only angles' }],
   intro: 'Start at the top: what does the question give you? Press <b>Next</b>.',
   make(stage, k, ex) {

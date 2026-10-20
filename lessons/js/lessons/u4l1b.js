@@ -176,6 +176,7 @@ const BO = {
 const blockOut = {
   title: 'The bracket is one block',
   height: 340,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n', label: tex('5x(x+2)-3(x+2)') }, { sep: 'Example 1 check:' }, { v: 'a', label: '(a)' }, { v: 'b', label: '(b)' }, { v: 'c', label: '(c)' }],
   intro: (k) => `Factor ${T(join(BO[k].r0))}. Look for what <b>both</b> terms have in common.`,
   make(stage, key) {
@@ -277,6 +278,7 @@ const FB = {
 const flipBlock = {
   title: 'Opposite blocks: flip one over',
   height: 400,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n', label: tex('4x(x-3)+5(3-x)') }, { sep: 'Example 2 check:' }, { v: 'c', label: '(c)' }],
   intro: (k) => `Factor ${T(join(FB[k].r0))}. Do the two brackets match?`,
   make(stage, key, ex) {
@@ -513,6 +515,7 @@ const RA = {
 const rearrange = {
   title: 'No match? Rearrange and try again',
   height: 420,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n1', label: tex('ab+12+3a+4b') }, { v: 'n2', label: 'another way' }, { sep: 'Example 3 check:' }, { v: 'e', label: '(e)' }],
   intro: (k) => `Factor ${T(join(RA[k].r0))} by grouping.`,
   make(stage, key, ex) {

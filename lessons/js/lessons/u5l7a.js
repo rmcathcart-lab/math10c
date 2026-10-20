@@ -95,6 +95,7 @@ const ex2Graph = (host, size, o = {}) => new Graph(host, { width: size, height: 
 const birthday = {
   title: 'Person → birthday, then flip the arrows',
   height: 450,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   intro: 'Each person has one birthday. Is <b>person → birthday</b> a function? What about <b>birthday → person</b>? Press <b>Next</b>.',
   make(stage, v, ex) {
     const W = ex.W, mw = 380, gx = mw + 26, gw = W - gx - 10;
@@ -130,6 +131,7 @@ const birthday = {
 const twoRel = {
   title: 'Ask the question for every input',
   height: 462,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'mult', label: '(i) is a multiple of' }, { v: 'cube', label: '(ii) is the cube of' }],
   intro: (k) => `${T('D=\\{1,8,27,64\\}')}, ${T('R=\\{1,2,3,4\\}')}. Relation ${REL[k].name}: for each domain element ask the question, and draw an arrow for every <b>yes</b>. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -253,6 +255,7 @@ const WV = {
 const whyVertical = {
   title: 'Why a vertical line?',
   height: 460,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(WV).map((k) => ({ v: k, label: WV[k].label + ': ' + T(WV[k].pts.map((p) => pairTex(p[0], p[1]).replace(/\\ /g, '')).join(',')) })),
   intro: 'A vertical line is every point with the <b>same input</b>. Watch which ordered pairs it catches. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -295,6 +298,7 @@ const ANS2 = { A: 'TFT', B: 'TTT', C: 'FFF', D: 'FTF' };
 const vlt = {
   title: 'Example 2 check: sweep a vertical line, then a horizontal line',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   value: 'A',
   choices: [{ sep: 'Example 2 check:' }, ...'ABCD'.split('').map((k) => ({ v: k, label: EX2[k].name }))],
   intro: (k) => `${EX2[k].name}. Fill in its column of the table. Press <b>Next</b>.`,
@@ -400,6 +404,7 @@ const plateItem = (i) => `<span class="u5l7a-plate">${PLATES[i]}</span>`;
 const sixForms = {
   title: 'Example 3 check: one test, six forms',
   height: 440,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   value: 'a',
   choices: [{ sep: 'Example 3 check:' }, ...['a', 'b', 'c', 'd', 'e', 'f'].map((k) => ({ v: k, label: `(${k})` }))],
   intro: (k) => ({ a: 'Part (a): a list of ordered pairs.', b: 'Part (b): a list of ordered pairs.', c: 'Part (c): an arrow diagram.', d: 'Part (d): a graph of points.', e: 'Part (e): a description in words.', f: 'Part (f): a closed curve.' }[k]) + ' Press <b>Next</b>.',

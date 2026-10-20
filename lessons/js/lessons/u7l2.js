@@ -290,6 +290,7 @@ const AS = {
 const assemble = {
   title: 'The equation builds itself',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(AS).map((k) => ({ v: k, label: AS[k].label })),
   intro: 'Two empty slots: one for the slope, one for the y-intercept. Watch each number travel from the graph into the equation. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -345,6 +346,7 @@ const RG = {
 const readGraph = {
   title: 'Read b, count m, write the equation',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(RG).map((k) => ({ v: k, label: RG[k].label })),
   intro: 'First find where the line crosses the y-axis, then count the slope to a second grid point. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -392,6 +394,7 @@ const SE = [
 const spotError = {
   title: 'Spot the mistake',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   intro: 'Four equations for one line, but only one is right. Graph each one and compare. Press <b>Next</b>.',
   make(stage, k, ex) {
     const G = new Graph(stage, { x: 14, y: 14, width: 440, height: 440, xmin: -8, xmax: 8, ymin: -8, ymax: 8, xlabels: 2, ylabels: 2 });
@@ -432,6 +435,7 @@ const CP = {
 const copyTri = {
   title: 'Parallel: copy the slope triangle',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CP).map((k) => ({ v: k, label: CP[k].label })),
   intro: 'A parallel line climbs exactly as steeply, so it has the very same slope triangle. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -488,6 +492,7 @@ const TT = {
 const turnTri = {
   title: 'Perpendicular: turn the slope triangle 90°',
   height: 490,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(TT).map((k) => ({ v: k, label: TT[k].label })),
   intro: 'Turn a slope triangle a quarter-turn and its line turns with it, to a right angle. Watch the rise and the run. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -616,6 +621,7 @@ const FP = {
 const strategy = {
   title: 'Where do m and b come from?',
   height: 470,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(FP).map((k) => ({ v: k, label: FP[k].label })),
   intro: (k) => `Trace ${FP[k].label}: one path finds ${T('m')}, the other finds ${T('b')}. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -635,6 +641,7 @@ const strategy = {
 const flatten = {
   title: 'Flatten it: the x term vanishes',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   intro: 'A line through (0, 3). Keep the y-intercept, shrink the slope to zero. This is Example 4(a)–(c). Press <b>Next</b>.',
   make(stage, k, ex) {
     const G = new Graph(stage, { x: 14, y: 14, width: 440, height: 440, xmin: -8, xmax: 8, ymin: -8, ymax: 8, xlabels: 2, ylabels: 2 });
@@ -694,6 +701,7 @@ const SM = [1, 2, 5, 50];
 const steepen = {
   title: 'Stand it up: no m, no b',
   height: 470,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   intro: 'A line through (−3, 0). Make it steeper and steeper, and watch m and b in the table. This is Example 4(d)–(f). Press <b>Next</b>.',
   make(stage, k, ex) {
     const G = new Graph(stage, { x: 14, y: 14, width: 440, height: 440, xmin: -8, xmax: 8, ymin: -8, ymax: 8, xlabels: 2, ylabels: 2 });

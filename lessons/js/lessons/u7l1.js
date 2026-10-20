@@ -265,6 +265,7 @@ const LT = {
 const linTest = {
   title: 'Is it a straight line?',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(LT).map((k) => ({ v: k, label: LT[k].label })),
   intro: 'Look at what happens to <b>x</b> in each equation, then check with the graph. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -362,6 +363,7 @@ const RM = {
 const readMB = {
   title: 'Read b where it crosses, count m from there',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(RM).map((k) => ({ v: k, label: RM[k].label })),
   intro: 'Find the <b>y-intercept</b> first, then count a slope triangle to the next grid point on the line. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -490,6 +492,7 @@ const DL = {
 const dials = {
   title: 'Two dials: m tilts the line, b slides it',
   height: 500,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(DL).map((k) => ({ v: k, label: DL[k].label })),
   intro: 'Press <b>Next</b> to turn the dials, or <b>drag either dial</b> yourself at any time.',
   make(stage, k, ex) {
@@ -600,6 +603,7 @@ const BL = {
 const balance = {
   title: 'Get y alone, and keep the balance',
   height: 470,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(BL).map((k) => ({ v: k, label: BL[k].label })),
   intro: 'An equation is a balance. Whatever you do to one side, do to the <b>whole</b> other side. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -672,6 +676,7 @@ const SG = {
 const stepGraph = {
   title: 'Plot b, then step rise over run',
   height: 500,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SG).map((k) => ({ v: k, label: SG[k].label })),
   intro: 'Two numbers draw the whole line: <b>b</b> says where to start, <b>m</b> says how to step. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -726,6 +731,7 @@ const IC = {
 const intercepts = {
   title: 'Two intercepts, one line',
   height: 500,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(IC).map((k) => ({ v: k, label: IC[k].label })),
   intro: 'Every point on the <b>y-axis</b> has <b>x = 0</b>; every point on the <b>x-axis</b> has <b>y = 0</b>. Press <b>Next</b>.',
   make(stage, k, ex) {

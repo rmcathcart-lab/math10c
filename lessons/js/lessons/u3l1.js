@@ -339,6 +339,7 @@ const ltRes = (d) => { const S = ltSum(d), out = []; d.fams.forEach((f) => { if 
 const likeTerms = {
   title: 'Collect like terms: one family at a time',
   height: 446,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'sock', label: 'Warm-up socks' }, { sep: 'Example 7 check:' }, { v: 'e7a', label: '(a)' }, { v: 'e7b', label: '(b)' }, { sep: 'Example 8 check:' }, { v: 'e8a', label: '(a)' }, { v: 'e8b', label: '(b)' }],
   intro: (k) => `Simplify ${T(ltQ(LT[k]))}. <b>Like terms</b> have the same variable(s) with the same exponent(s): sort the terms into families.`,
   make(stage, key, ex) {
@@ -430,6 +431,7 @@ const pcQ = (k) => PC[k].terms.map((t) => t.t).join('');
 const polyCheck = {
   title: 'Polynomial or not? Check every exponent',
   height: 410,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 's1', label: tex('y^2-6y-11') }, { v: 's2', label: tex('\\frac{3}{x}-2') }, { v: 's3', label: tex('0.75m^3+xyz') }, { sep: 'Example 1 check:' }, ...'abcde'.split('').map((k) => ({ v: k, label: '(' + k + ')' }))],
   intro: (k) => `Is ${T(pcQ(k))} a polynomial? Every exponent on a <b>variable</b> must be a <b>positive integer</b> (1, 2, 3, …), and no variable may be in a denominator.`,
   make(stage, key, ex) {

@@ -83,6 +83,7 @@ function drawMobile(svg, key, ox, oy, s) {
 const mobile = {
   title: 'Balance the Mobile: each level bar is an equation',
   height: 430,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'A', label: 'Mobile A' }, { v: 'Bs', label: 'Mobile B: substitution' }, { v: 'Be', label: 'Mobile B: elimination' }],
   intro: (v) => (v === 'A' ? 'One level bar, one total: two equations. Press <b>Next</b>.' : v === 'Bs' ? 'Two level bars and a total. Swap shapes for shapes (substitution). Press <b>Next</b>.' : 'The same mobile, solved by subtracting two equations (elimination). Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -211,6 +212,7 @@ const howMany = {
 const methods = {
   title: 'One system, three roads to the same point',
   height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'graph', label: 'Graphing' }, { v: 'sub', label: 'Substitution' }, { v: 'elim', label: 'Elimination' }],
   intro: () => `The system ${T(cB('y=2x-1'))}, ${T(cA('x+y=5'))}. Pick a road. Press <b>Next</b>.`,
   make(stage, v, ex) {
@@ -330,6 +332,7 @@ const NODE_NAME = { gr: 'graphing', sub: 'substitution', elim: 'elimination' };
 const choose = {
   title: '★ Which method? A system travels the flowchart',
   height: 510,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SYS).map((k) => ({ v: k, label: SYS[k].label })),
   intro: (v) => `The system ${T(cB(SYS[v].e[0]))}, ${T(cA(SYS[v].e[1]))} answers each question. Press <b>Next</b>.`,
   make(stage, v, ex) {
@@ -445,6 +448,7 @@ const TIX = {
 const ti84 = {
   title: 'Graphing calculator: Y=, WINDOW, 5:intersect',
   height: 440,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(TIX).map((k) => ({ v: k, label: TIX[k].label })),
   intro: (v) => `Find the crossing of ${T(cB(TIX[v].y1.replace('X', 'x')))} and ${T(cA(TIX[v].y2.replace('X', 'x')))} on a TI-84. Press <b>Next</b>.`,
   make(stage, v, ex) {
@@ -492,6 +496,7 @@ const ti84 = {
 const trip = {
   title: 'A trip out and a trip back (Example 3)',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'set', label: 'Set up the equations' }, { v: 'solve', label: 'Solve and race the clock' }],
   intro: (v) => (v === 'set' ? 'Draw both trips, organize distance, speed and time, write two equations. Press <b>Next</b>.' : 'Solve the system, then run both trips with a clock to check. Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -572,6 +577,7 @@ const bestAt = (x) => (x < 17.5 ? 1 : x <= 90 ? 0 : 2);
 const plans = {
   title: '★ Three plans on one graph: the lowest line wins',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'lines', label: 'Example 4 (b)–(d) check' }, { v: 'sweep', label: 'Example 4 (e)–(f): sweep' }],
   intro: (v) => (v === 'lines' ? 'Three equations, three lines, and where they cross. Press <b>Next</b>.' : 'Slide across the graph: which line is lowest? Press <b>Next</b>.'),
   make(stage, v, ex) {

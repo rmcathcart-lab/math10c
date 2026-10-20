@@ -94,6 +94,7 @@ const MEET = {
 const meetAxes = {
   title: 'Where a graph meets the axes',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(MEET).map((k) => ({ v: k, label: MEET[k].label })),
   intro: 'A point rides along the graph, showing its coordinates. Watch them as it meets each axis. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -178,6 +179,7 @@ const subst = {
 const sameLine = {
   title: 'Two forms, one line',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   intro: `Are ${T('y=\\tfrac43x+8')} and ${T('4x-3y+24=0')} really the same line? Press <b>Next</b>.`,
   make(stage, v, ex) {
     const LW = ex.W - 474;
@@ -287,6 +289,7 @@ const LC = {
 const lineCount = {
   title: 'How many intercept points can a line have?',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'typ', label: LC.typ.label }, { sep: 'Example 4 check' }, ...['a', 'b', 'c', 'd'].map((k) => ({ v: k, label: LC[k].label }))],
   intro: (k) => `Substitute ${T('y=0')} and ${T('x=0')} into ${T(LC[k].lab[2])}, then count the intercept points. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -334,6 +337,7 @@ const CTXS = {
 const context = {
   title: 'What the intercepts mean',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CTXS).map((k) => ({ v: k, label: CTXS[k].label })),
   intro: (k) => `Each intercept of ${k === 'dive' ? T('h=10+5t-5t^2') : T('h=800-40t')} tells part of the story. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -407,6 +411,7 @@ const IP = {
 const interp = {
   title: 'Interpolation or extrapolation?',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(IP).map((k) => ({ v: k, label: IP[k].label })),
   intro: 'The table of values plotted four points, from <b>t = 0</b> to <b>t = 15</b>. Press <b>Next</b>.',
   make(stage, k, ex) {

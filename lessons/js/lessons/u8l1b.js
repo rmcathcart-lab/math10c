@@ -168,6 +168,7 @@ const miniSvg = (k) => ({
 const turnSlide = {
   title: 'Turn one line, then slide it: how many solutions?',
   height: 480,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(TS).map((k) => ({ v: k, label: TS[k].label })),
   intro: (k) => (TS[k].free ? 'Your turn: turn and slide the amber line with the buttons. Press <b>Next</b> to start.' : 'Watch the count and the chart on the right while the amber line moves. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -248,6 +249,7 @@ const RC = {
 const races = {
   title: 'The warm-up races as lines: speed = slope, head start = intercept',
   height: 500,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(RC).map((k) => ({ v: k, label: RC[k].label })),
   intro: () => 'Distance–time lines for the two runners. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -385,6 +387,7 @@ const GP = {
 const gap = {
   title: 'The gap between the lines',
   height: 480,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   value: 'a',
   choices: [{ sep: 'Example 1' }, ...Object.keys(GP).map((k) => ({ v: k, label: GP[k].label }))],
   intro: () => 'Measure the vertical gap between the lines at several values of x. Press <b>Next</b>.',
@@ -435,6 +438,7 @@ const CH = [
 const chart = {
   title: 'Example 2 check: the classification chart',
   height: 500,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   intro: () => 'The three systems from Example 1, side by side. Press <b>Next</b> to fill the chart.',
   make(stage, k, ex) {
     const W = ex.W, cw = (W - 16) / 3;
@@ -516,6 +520,7 @@ const CL = {
 const classify = {
   title: 'Example 3 check: same slope? same intercept?',
   height: 470,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ sep: 'Warm-up' }, { v: 'jo', label: CL.jo.label }, { sep: 'Example 3 check' }, ...['a', 'b', 'c'].map((k) => ({ v: k, label: CL[k].label }))],
   value: 'a',
   intro: () => 'Rearrange both equations, then answer two questions. Press <b>Next</b>.',
@@ -576,6 +581,7 @@ const DG = {
 const disguise = {
   title: 'The same line in disguise',
   height: 470,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(DG).map((k) => ({ v: k, label: DG[k].label })),
   intro: () => 'Two equations that look different. Do they describe the same line? Press <b>Next</b>.',
   make(stage, k, ex) {

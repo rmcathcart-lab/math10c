@@ -231,6 +231,7 @@ const MO = {
 const morph = {
   title: 'One line, three forms',
   height: 470,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(MO).map((k) => ({ v: k, label: MO[k].label })),
   intro: 'Watch the <b>equation</b> change shape while the <b>line</b> on the grid never moves. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -328,6 +329,7 @@ const FP = {
 const flow = {
   title: 'Which strategy? Read the form',
   height: 400,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(FP).map((k) => ({ v: k, label: FP[k].label })),
   intro: (k) => `Follow the chart for ${T(FP[k].eq)}. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -347,6 +349,7 @@ const ST = {
 const step = {
   title: 'Plot the start point, step the slope',
   height: 470,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(ST).map((k) => ({ v: k, label: ST[k].label })),
   intro: (k) => `Graph ${T(ST[k].eq)} without rearranging it. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -387,6 +390,7 @@ const CV = {
 const cover = {
   title: 'General form: cover x, cover y',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CV).map((k) => ({ v: k, label: CV[k].label })),
   intro: (k) => `Graph ${T(CV[k].eq)} from its intercepts. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -458,6 +462,7 @@ const DI = {
 const dials = {
   title: 'Read the line from m and b',
   height: 470,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(DI).map((k) => ({ v: k, label: DI[k].label })),
   intro: (k) => (k === 'm' ? 'Keep <b>b</b> fixed and turn the <b>m</b> dial. Press <b>Next</b>.' : 'Keep <b>m</b> fixed and slide <b>b</b>. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -517,6 +522,7 @@ const MCOL = [COLORS.red, COLORS.teal, COLORS.purple, COLORS.amber];
 const match = {
   title: 'Example 3 check: match by m and b',
   height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex3', label: 'Example 3 check' }],
   intro: 'Four graphs, four equations. Solve each for <b>y</b> and read <b>m</b> and <b>b</b>. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -582,6 +588,7 @@ const TI = {
 const ti84 = {
   title: 'On the TI-84 graphing calculator: solve for y, Y=, WINDOW, GRAPH',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(TI).map((k) => ({ v: k, label: TI[k].label })),
   intro: 'These keystrokes are for a <b>TI-83/84 graphing calculator</b>. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -694,6 +701,7 @@ const DA = {
 const data = {
   title: 'From a table of data to an equation',
   height: 470,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(DA).map((k) => ({ v: k, label: DA[k].label })),
   intro: 'Plot, check the steps, find the slope and intercept, then general form. Press <b>Next</b>.',
   make(stage, k, ex) {

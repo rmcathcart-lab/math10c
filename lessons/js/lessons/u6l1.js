@@ -219,6 +219,7 @@ function mountFigs() {
 const segment = {
   title: 'Line or line segment?',
   height: 450,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   intro: 'What makes a <b>segment</b> different from a <b>line</b>? Press <b>Next</b>.',
   make(stage, v, ex) {
     const G = new Graph(stage, { x: 10, y: 6, width: 440, height: 440, xmin: -6, xmax: 6, ymin: -6, ymax: 6, xlabels: 2, ylabels: 2 });
@@ -376,6 +377,7 @@ const ABS = {
 const whyAbs = {
   title: 'Why the absolute value?',
   height: 400,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(ABS).map((k) => ({ v: k, label: ABS[k].label })),
   intro: 'Two endpoints on the x-axis. Subtract them both ways. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -416,6 +418,7 @@ const LET = {
 const letters = {
   title: 'Letters for coordinates: slide the segment',
   height: 480,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(LET).map((k) => ({ v: k, label: LET[k].label })),
   intro: 'Pick values for the letters, plot the segment, and measure it. Then pick new values. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -477,6 +480,7 @@ const HID = {
 const hidden = {
   title: 'The right triangle hiding under a slanted segment',
   height: 500,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(HID).map((k) => ({ v: k, label: HID[k].label })),
   intro: 'A slanted segment has no row of squares to count. But it hides something. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -562,6 +566,7 @@ const PY = { p34: { label: 'a = 3, b = 4', a: 3, b: 4 }, p25: { label: 'a = 2, b
 const pythag = {
   title: 'Why does a² + b² = c²?',
   height: 420,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(PY).map((k) => ({ v: k, label: PY[k].label })),
   intro: 'Four copies of one right triangle, and two ways to fit them in a square. Press <b>Next</b>.',
   make(stage, k, ex) {

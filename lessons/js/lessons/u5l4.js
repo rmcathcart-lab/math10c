@@ -109,6 +109,7 @@ const COLL = {
 const collect = {
   title: 'Domain and range from pairs, a table or an arrow diagram',
   height: 380,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'pairs', label: 'Ordered pairs' }, { v: 'table', label: 'Table' }, { v: 'map', label: 'Arrow diagram' }, { sep: 'Check:' },
     { v: 'e1a', label: 'Example 1(a)' }, { v: 'e1b', label: 'Example 1(b)' }, { v: 'e4c', label: 'Example 4(c)' }],
   intro: (k) => (COLL[k].ex ? `${COLL[k].name}: check the class’s lists. Press <b>Next</b>.` : `One relation, shown as ${COLL[k].name}. The same relation is behind all three forms. Press <b>Next</b>.`),
@@ -226,6 +227,7 @@ const SH = {
 const shadow = {
   title: 'Domain and range are shadows',
   height: 470,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'zig', label: 'A zigzag' }, { sep: 'Check:' }, { v: 'e2b', label: 'Example 2(b)' }],
   intro: (k) => (SH[k].ex ? 'Example 2(b): the tent. Press <b>Next</b>.' : 'A graph with two <b>solid</b> endpoints. Where does its shadow fall? Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -262,6 +264,7 @@ const DT = {
 const dots = {
   title: 'Separate points cast separate shadows',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'pts', label: 'Five points' }, { sep: 'Check:' }, { v: 'e2a', label: 'Example 2(a)' }],
   intro: (k) => (DT[k].ex ? 'Example 2(a): five isolated points. Press <b>Next</b>.' : 'Five <b>isolated</b> points: no line joins them. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -314,6 +317,7 @@ const AR = {
 const arrows = {
   title: 'Arrows mean “forever”',
   height: 470,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ray', label: 'A ray' }, { sep: 'Check:' }, { v: 'e2c', label: 'Example 2(c)' }, { v: 'e3b', label: 'Example 3(b)' }, { v: 'e4a', label: 'Example 4(a)' }],
   intro: (k) => (AR[k].ex ? 'Check an example with arrows. Press <b>Next</b>.' : 'What does an arrow do to the shadow? Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -344,6 +348,7 @@ const EN = {
 const ends = {
   title: 'Solid and hollow endpoints',
   height: 470,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'seg', label: 'A segment' }, { sep: 'Check:' }, { v: 'e3a', label: 'Example 3(a)' }],
   intro: (k) => (EN[k].ex ? 'Example 3(a): a solid end and a hollow end. Press <b>Next</b>.' : 'One end solid, one end hollow. What changes? Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -389,6 +394,7 @@ const pm = (a, s, r) => `${nT(a)}${s}${nT(r)}=${nT(s === '-' ? a - r : a + r)}`;
 const circle = {
   title: 'Circles and ellipses: centre, then reach',
   height: 470,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'cir', label: 'A circle' }, { sep: 'Check:' }, { v: 'e4b', label: 'Example 4(b)' }, { v: 'e4d', label: 'Example 4(d)' }],
   intro: (k) => (k === 'e4d' ? 'Example 4(d): no picture given, so draw one. Press <b>Next</b>.' : k === 'e4b' ? 'Example 4(b): the ellipse. Press <b>Next</b>.' : 'A circle: find its shadows from the centre and radius. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -501,6 +507,7 @@ const WH = {
 const which = {
   title: 'List or set-builder? Which signs? Which numbers?',
   height: 400,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(WH).map((k) => ({ v: k, label: WH[k].label })),
   intro: (k) => WH[k].what + ' Press <b>Next</b>.',
   make(stage, k, ex) {

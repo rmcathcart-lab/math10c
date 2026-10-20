@@ -385,6 +385,7 @@ function mountStatics() {
 const precision = {
   title: 'One millimetre, three instruments',
   height: 430,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   intro: 'A rod is a bit longer than 25 mm. How exactly can each instrument say? Press <b>Next</b>.',
   make(stage, v, ex) {
     const W = ex.W, ov = overlay(stage, W, 430), x0 = 40, u = (W - 80) / 60, rY = 70, LEN = 25.32;
@@ -432,6 +433,7 @@ const precision = {
 const mtour = {
   title: 'Extension: inside a micrometer',
   height: 420,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   intro: 'The object goes between the <b>anvil</b> and the <b>spindle</b>. Turning the thimble moves the spindle. Press <b>Next</b>.',
   make(stage, v, ex) {
     const W = ex.W, M = new Micrometer(stage, { s: 5.5, x: 6, y: 58, r: 3, rmax: 4.2 });
@@ -475,6 +477,7 @@ const MREAD = {
 const mread = {
   title: 'Extension: sleeve + thimble',
   height: 360,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(MREAD).map((k) => ({ v: k, label: MREAD[k].label })),
   intro: (k) => (MREAD[k].trap ? 'Two readings with the <b>same</b> thimble number. Press <b>Next</b>.' : 'Turn the thimble to the reading, then read the <b>sleeve</b> and the <b>thimble</b>. Press <b>Next</b>.'),
   make(stage, key, ex) {
@@ -521,6 +524,7 @@ const mread = {
 const vtour = {
   title: 'A vernier caliper: outside, inside and depth',
   height: 420,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   intro: 'A caliper is a ruler with a <b>slider</b> on it. Press <b>Next</b>.',
   make(stage, v, ex) {
     const W = ex.W, s = (W - 24) / 162, C = new Caliper(stage, { s, x: 12, y: 56, L: 112, open: 0, rod: true, rodMax: 31 });
@@ -575,6 +579,7 @@ const VREAD = {
 const vread = {
   title: 'Reading a vernier caliper',
   height: 440,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(VREAD).map((k) => ({ v: k, label: VREAD[k].label })),
   intro: 'Close the jaws, then read the <b>main scale</b>, then the <b>vernier</b>, then add. Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -613,6 +618,7 @@ const vread = {
 const why = {
   title: 'Why each vernier division is worth 0.05 mm',
   height: 440,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   intro: 'The secret is that vernier divisions are a little <b>shorter</b> than main-scale divisions. Press <b>Next</b>.',
   make(stage, v, ex) {
     const W = ex.W, u1 = (W - 60) / 22.6;
@@ -779,6 +785,7 @@ const choose = {
 const bearing = {
   title: 'Example 4 check: the ball bearing',
   height: 420,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   intro: 'Choose the instrument, then read it. Press <b>Next</b>.',
   make(stage, v, ex) {
     const W = ex.W, R = 4.63, r0 = 5.6;

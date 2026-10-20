@@ -571,6 +571,7 @@ const RICECFG = { kind: 'pyr', W: 4, D: 3, H: 3.6, S: 40, c0: '#b89a4a', c1: RIC
 const third = {
   title: 'One third: three pyramids fill the prism',
   height: 490,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'rice', label: 'Rice: funnel into planter box' }, { v: 'cube', label: 'Why ⅓? Cut a cube into 3' }, { v: 'ex1', label: 'Example 1(a) check: the skylight' }],
   intro: (v) => (v === 'rice' ? 'Mr. Halden’s woodworking class. Press <b>Next</b>.' : v === 'cube' ? 'A cube cut into three identical pyramids. Press <b>Next</b>.' : 'The skylight inside the prism on the same base. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -830,6 +831,7 @@ const WH = {
 const which = {
   title: 'Which height do I need?',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(WH).map((k) => ({ v: k, label: WH[k].label })),
   intro: 'Volume or surface area? That decides which height. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -989,6 +991,7 @@ const scale = {
 const shed = {
   title: 'Example 5 check: the garden shed',
   height: 480,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   intro: 'A prism with a pyramid roof. Volumes add; hidden faces don’t count. Press <b>Next</b>.',
   make(stage, k, ex) {
     const Hs = ex.def.height, P = panel(stage, ex.W - 380, 14, 366, Hs - 28, '');

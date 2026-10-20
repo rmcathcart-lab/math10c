@@ -274,6 +274,7 @@ const OVF = { mika: { label: 'Mika: 480 mL', total: 480 }, disc: { label: 'For d
 const overflow = {
   title: 'Mika’s overflow test',
   height: 440,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(OVF).map((k) => ({ v: k, label: OVF[k].label })),
   intro: 'A ball and a cylinder with the <b>same radius</b>; the cylinder is as tall as the ball. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -351,6 +352,7 @@ const DER = {
 const derive = {
   title: 'From the snug cylinder to the sphere formula',
   height: 420,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(DER).map((k) => ({ v: k, label: DER[k].label })),
   intro: 'Mika’s test works for every ball. Turn it into a formula. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -596,6 +598,7 @@ const slice = {
 const string = {
   title: 'Example 3 check: from a string to the volume',
   height: 430,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex3', label: 'Example 3 check' }, { v: 'early', label: `Round ${T('r')} too early?` }],
   intro: (v) => (v === 'ex3' ? 'A string wrapped once around a soccer ball measures 70 cm. Press <b>Next</b>.' : 'What changes if you round the radius before cubing it? Press <b>Next</b>.'),
   make(stage, k, ex) {

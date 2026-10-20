@@ -407,6 +407,7 @@ const prop = {
 const ratio = {
   title: 'Ratios from the question: a scale and a recipe',
   height: 420,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'whale', label: 'Example 5 check: the whale' }, { v: 'smoothie', label: 'Example 6 check: the smoothie' }],
   intro: (v) => (v === 'whale' ? 'A double number line: photo centimetres on top, real metres below. Press <b>Next</b>.' : 'A tape diagram: equal-sized parts of yogurt and juice. Press <b>Next</b>.'),
   make(stage, v, ex) { return v === 'whale' ? whaleSteps(stage, ex) : smoothieSteps(stage, ex); }
@@ -493,6 +494,7 @@ function drawMap(stage, x, y, w, hh) {
 const map = {
   title: 'Map scales: 1 : 250 000',
   height: 420,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'cm', label: 'What 1 map cm stands for' }, { v: 'a', label: 'Example 7(a) check: towns' }, { v: 'b', label: 'Example 7(b) check: lakes' }],
   intro: 'The same unit on both sides of the ratio; convert to a convenient unit at the end. Press <b>Next</b>.',
   make(stage, v, ex) {
@@ -555,6 +557,7 @@ const ONE = {
 const one = {
   title: 'A conversion fraction is a fancy 1',
   height: 330,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(ONE).map((k) => ({ v: k, label: ONE[k].label })),
   intro: 'Two names for the same amount make a fraction equal to 1. Press <b>Next</b>.',
   make(stage, k, ex) {

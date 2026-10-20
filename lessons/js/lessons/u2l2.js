@@ -135,6 +135,7 @@ const CANCEL = {
 const cancel = {
   title: 'Cancel the factors in pairs',
   height: 360,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n1', label: tex('12a^5\\div3a^2') }, { v: 'n2', label: tex('15b^6\\div5b^4') }, { sep: 'Example 2 check:' }, { v: 'ex2', label: tex('10a^8\\div5a^3') }],
   intro: (k) => { const d = CANCEL[k]; return `Write ${T(`\\dfrac{${d.a}${d.v}^{${d.m}}}{${d.b}${d.v}^{${d.n}}}`)} in <b>expanded factor form</b>, top and bottom.`; },
   make(stage, key, ex) {
@@ -398,6 +399,7 @@ const CHECKS = {
 const check = {
   title: 'Check it with a number',
   height: 430,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   value: 'ex1',
   choices: [{ sep: 'Example 1:' }, { v: 'ex1', label: tex('5x^2\\times4x^4') }, { sep: 'Example 4:' }, { v: 'a', label: tex('(2x^3)^4') }, { v: 'e', label: '(e)' }],
   intro: (k) => { const d = CHECKS[k]; return `We simplified ${T(d.o)} to ${T(d.a)}. ${d.who} got ${T(d.w)}. Substitute a number to see which one is really <b>equal</b> to the original.`; },

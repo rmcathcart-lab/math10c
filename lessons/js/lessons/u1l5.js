@@ -178,6 +178,7 @@ const groups = {
 const signs = {
   title: 'Negative radicands: why the index matters',
   height: 440,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [[4, -16], [3, -8], [5, -32], [2, -9], [6, -64], { sep: 'Example 1 check:' }, [4, -81], [3, -125]]
     .map((c) => (Array.isArray(c) ? { v: c.join(','), label: gLabel(c[0], c[1]) } : c)),
   intro: (v) => { const [n, x] = String(v).split(',').map(Number); return `Can ${K(rad(n, tn(x)))} be worked out? Look for a number that, used as a factor <b>${n} times</b>, makes <b>${mn(x)}</b>.`; },
@@ -252,6 +253,7 @@ const ENTRY = { '2nd': '', '^': 'ˣ√', '(−)': '⁻', '×': '*', '÷': '/', E
 const calckeys = {
   title: 'On the TI-30XIIS: key it in, then round',
   height: 400,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'demo', label: K(CK.demo.t) }, { sep: 'Example 2 check:' }, ...['a1', 'a2', 'a3', 'a4', 'b1', 'b2', 'b3'].map((k) => ({ v: k, label: `(${k[0]})(${['i', 'ii', 'iii', 'iv'][Number(k[1]) - 1]})` }))],
   intro: (v) => `Let’s evaluate ${K(CK[v].t)}${CK[v].round ? ' to the nearest hundredth' : ' exactly'}. Watch the order of the keys.`,
   make(stage, v, ex) {
@@ -397,6 +399,7 @@ const anatomy = {
 const area = {
   title: 'Why the product rule works: blocks of tiles',
   height: 440,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [[4, 9], [9, 4], [16, 9], [4, 25]].map(([a, b]) => ({ v: a + ',' + b, label: K(`\\sqrt{${a}}\\times\\sqrt{${b}}`) })),
   intro: (v) => { const [a, b] = String(v).split(',').map(Number); return `Is ${K(`\\sqrt{${a}}\\times\\sqrt{${b}}`)} the same as ${K(`\\sqrt{${a}\\times${b}}`)}? Build it out of square tiles and measure the side.`; },
   make(stage, v, ex) {

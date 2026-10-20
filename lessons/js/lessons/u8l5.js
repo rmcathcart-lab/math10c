@@ -158,6 +158,7 @@ const RT = {
 const roundTrip = {
   title: 'There and back: does the wind cancel out?',
   height: 410,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'big', label: RT.big.label }, { v: 'strong', label: RT.strong.label }, { v: 'kayak', label: RT.kayak.label }],
   intro: (k) => `Two trips, ${RT[k].d} km each way: one in ${RT[k].calm.toLowerCase()}, one with a ${RT[k].w} km/h ${RT[k].med} that helps out and fights back. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -288,6 +289,7 @@ class Mixer {
 const mixPour = {
   title: 'Two ingredients, one mixture',
   height: 490,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'trail', label: MX.trail.label }, { sep: 'Check' }, { v: 'ex1', label: MX.ex1.label }, { v: 'ex2', label: MX.ex2.label }],
   intro: (k) => `${MX[k].A.name} and ${MX[k].B.name.toLowerCase()} are about to be mixed. Watch the organizer fill as they pour. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -335,6 +337,7 @@ const MS = {
 const mixSolve = {
   title: 'Substitute, graph, check both',
   height: 490,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex1', label: MS.ex1.label }, { v: 'ex2', label: MS.ex2.label }],
   intro: (k) => `The system from Example ${k === 'ex1' ? 1 : 2} (a). One variable has coefficient 1, so substitution is quick. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -386,6 +389,7 @@ const ML = {
 const mixLever = {
   title: 'The mixture rate is the balance point',
   height: 430,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex1', label: ML.ex1.label }, { v: 'ex2', label: ML.ex2.label }, { sep: 'Compare' }, { v: 'eq', label: ML.eq.label }],
   intro: 'Each ingredient sits at its rate on a number line, weighed down by its amount. Where does the beam balance? Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -450,6 +454,7 @@ const mixLever = {
 const dstTri = {
   title: 'Cover the quantity you want',
   height: 420,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   intro: 'One relationship, three forms. Cover the letter you want; what is left shows how to build it. Press <b>Next</b>.',
   make(stage, _v, ex) {
     const svg = S('svg', { width: 400, height: 400, viewBox: '0 0 400 400', class: 'u8l5-dstsvg' }); add(stage, svg, 20, 10);
@@ -500,6 +505,7 @@ const TR = {
 const trip = {
   title: 'Stopped time is not driving time',
   height: 540,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex3', label: TR.ex3.label }, { sep: 'Another' }, { v: 'bus', label: TR.bus.label }],
   intro: (k) => (k === 'ex3' ? 'The trucker’s 11.5 hours, Edmonton to Regina. Press <b>Next</b>.' : `A bus drives ${TR.bus.D} km in ${TR.bus.total} h, including a 1-hour lunch stop, at ${TR.bus.s1} km/h on the highway and ${TR.bus.s2} km/h on town roads. Press <b>Next</b>.`),
   make(stage, k, ex) {
@@ -584,6 +590,7 @@ const CU = {
 const current = {
   title: 'The current adds or subtracts',
   height: 530,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'kayak', label: CU.kayak.label }, { sep: 'Check' }, { v: 'ex4', label: CU.ex4.label }, { v: 'ex5', label: CU.ex5.label }],
   intro: (k) => (k === 'kayak' ? 'The warm-up kayak: 6 km/h in still water, a 2 km/h current. Press <b>Next</b>.'
     : k === 'ex4' ? 'The ferry: 96 km downstream in 4 h, back upstream in 6 h. Press <b>Next</b>.' : 'The plane: 600 km into a headwind in 2.5 h, back with the wind in 2 h. Press <b>Next</b>.'),

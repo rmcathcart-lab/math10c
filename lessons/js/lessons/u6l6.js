@@ -145,6 +145,7 @@ function parkGraph(host, o = {}) {
 const hunt = {
   title: 'Geocache Hunt: one tool per clue',
   height: 448,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'hunt', label: 'Follow the three clues' }, { v: 'B', label: 'Hunter B’s mistake' }],
   intro: (v) => (v === 'hunt' ? 'Three clues, three tools: <b>midpoint</b>, <b>distance</b>, <b>slope</b>. Press <b>Next</b>.' : 'Hunter B dug at (8, 0). Where did B go wrong? Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -204,6 +205,7 @@ const hunt = {
 const distance = {
   title: 'Length: count, subtract, or find the hidden right triangle',
   height: 520,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'a', label: 'Example 1(a) check' }, { v: 'b', label: 'Example 1(b) check' }],
   intro: (v) => (v === 'a' ? 'Four horizontal and vertical segments. Press <b>Next</b>.' : 'A slanted segment. Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -487,6 +489,7 @@ const parPerp = {
 const linear = {
   title: 'Characteristics of a linear graph',
   height: 500,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex4', label: 'Example 4(a)–(c) check' }, { v: 'ex4d', label: 'Example 4(d) check' }, { v: 'count', label: 'How many intercepts?' }],
   intro: (v) => ({ ex4: 'Snow melting on a deck: table, slope, intercepts, domain and range. Press <b>Next</b>.', ex4d: 'The horizontal line through (5, −2). Press <b>Next</b>.', count: 'Slide and turn a line. Count its intercepts. Press <b>Next</b>.' })[v],
   make(stage, v, ex) {
@@ -589,6 +592,7 @@ function analyse(q) {
 const whichTool = {
   title: '★ Which tool? Classifying a quadrilateral',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(QUADS).map((k) => ({ v: k, label: QUADS[k].label })),
   intro: (v) => `Follow ${T(QUADS[v].N.join(''))} through the flowchart. Each side’s <b>slope</b> and <b>length</b> appear on the grid. Press <b>Next</b>.`,
   make(stage, v, ex) {
@@ -737,6 +741,7 @@ const TRI = {
 const triangle = {
   title: 'Classify a triangle: lengths, then a right angle two ways',
   height: 486,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex7', label: 'Example 7 check' }, { v: 'fail', label: 'A triangle that fails both tests' }],
   intro: (v) => (v === 'ex7' ? 'Triangle DEF. Press <b>Next</b>.' : 'Triangle RST: is there a right angle? Press <b>Next</b>.'),
   make(stage, v, ex) {

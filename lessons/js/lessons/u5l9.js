@@ -413,6 +413,7 @@ const GAR_CAPS = [
 const garage = {
   title: 'A day at the parking garage',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   intro: 'Example 1: one car in the picture is one car in the garage. Press <b>Next</b> to run the clock.',
   make(stage, v, ex) {
     const LW = 380;
@@ -458,6 +459,7 @@ const VL = {
 const vlt = {
   title: 'One instant, one value',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'circle', label: 'The circle' }, { v: 'bath', label: 'The bath graph' }, { v: 'jump', label: 'A vertical jump' }],
   intro: (k) => (k === 'jump' ? 'Someone drew Sam getting in as a perfectly <b>vertical</b> line. Can that be right? Press <b>Next</b>.' : `Slide a vertical line across ${VL[k].name}. Press <b>Next</b>.`),
   make(stage, k, ex) {

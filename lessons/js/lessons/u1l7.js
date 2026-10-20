@@ -39,6 +39,7 @@ const LADDER_Q = {
 const ladder = {
   title: 'Remember: the division ladder',
   height: 500,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [1001, 2310, { sep: 'Example 1 check:' }, 2574, 4290, 43010, { sep: 'Example 3 check:' }, 3003, 3135],
   custom: [4, 999999],
   intro: (n) => `Divide <b>${fmt(n)}</b> by the <b>smallest prime</b> that goes in evenly, write the answer underneath, and repeat until you reach <b>1</b>. The primes collect <b>down the left side</b>.`,
@@ -331,7 +332,7 @@ const powers = {
 const treeFill = {
   title: `Fill in the tree: what must ${T('d')} be?`,
   height: 440,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'sq', label: '(a) x is a perfect square' }, { v: 'cu', label: '(b) x is a perfect cube' }],
   intro: (m) => `Read the tree from the bottom up to write <b>x</b> as a product of primes. Then choose <b>d</b> (exactly two primes) so that x is a perfect <b>${m === 'sq' ? 'square' : 'cube'}</b>.`,
   make(stage, mode, ex) {
@@ -396,7 +397,7 @@ const treeFill = {
 const decimals = {
   title: 'Decimals that stop, decimals that repeat, and decimals that do neither',
   height: 440,
-  minW: 800, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   intro: 'Watch each decimal appear digit by digit. Does it <b>stop</b>? Does a block of digits <b>repeat</b> forever? Or neither?',
   make(stage, v, ex) {
     const W = ex.W;

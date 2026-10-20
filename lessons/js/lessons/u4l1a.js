@@ -500,6 +500,7 @@ const FE = {
 const findErr = {
   title: 'Find the error: check by expanding',
   height: 410,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(FE).map((k) => ({ v: k, label: FE[k].who })),
   intro: (k) => { const d = FE[k]; return `${d.who} says ${T(`${polyT(parsePoly(d.poly))}=${d.g}(${polyT(parsePoly(d.br))})`)}. Is it right?`; },
   make(stage, key, ex) {

@@ -265,6 +265,7 @@ function rulesPanel(stage, x, y, w, hh) {
 const tidyUp = {
   title: 'The tidy-up machine',
   height: 450,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(TU).map((k) => ({ v: k, label: TU[k].label })),
   intro: 'Feed in any equation of a line. Four stations tidy it into general form, and the checklist shows which rules it meets. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -370,6 +371,7 @@ const RULE_CAP = [
 const costumes = {
   title: 'One line, many equations',
   height: 440,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CO).map((k) => ({ v: k, label: CO[k].label })),
   intro: 'A line can be written with many different equations. The general-form rules pick out exactly one. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -417,6 +419,7 @@ const SY = {
 const solveY = {
   title: 'Solve for y: isolate By, then divide by B',
   height: 430,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SY).map((k) => ({ v: k, label: SY[k].label })),
   intro: 'General form hides the slope and the y-intercept. Get y alone (the reverse of the tidy-up machine) and they appear. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -484,6 +487,7 @@ const CV = {
 const cover = {
   title: 'Intercepts: cover x, then cover y',
   height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CV).map((k) => ({ v: k, label: CV[k].label })),
   intro: 'Every point on the <b>y</b>-axis has x = 0, and every point on the <b>x</b>-axis has y = 0. A sticky note does the substituting. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -537,6 +541,7 @@ const cover = {
 const sameInt = {
   title: 'Example 2(c): find k for the same y-intercept',
   height: 450,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   intro: 'One line is fixed. The other has a k in it, so it is really a whole family of lines. Press <b>Next</b>.',
   make(stage, v, ex) {
     const W = ex.W;
@@ -584,6 +589,7 @@ const TESTS = [
 const perp = {
   title: 'Perpendicular lines in general form',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(PP).map((k) => ({ v: k, label: PP[k].label })),
   intro: 'Two lines are perpendicular when their slopes are negative reciprocals: they multiply to −1. Turning a slope triangle a quarter-turn shows why. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -653,6 +659,7 @@ const BL = {
 const build = {
   title: 'Build a line in four steps',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(BL).map((k) => ({ v: k, label: BL[k].label })),
   intro: 'One line gives the slope, another gives the y-intercept. Find each, assemble y = mx + b, then tidy it. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -704,6 +711,7 @@ const JD = {
 const judge = {
   title: 'Judge the statements about 4x − 3y + 18 = 0',
   height: 460,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(JD).map((k) => ({ v: k, label: JD[k].label })),
   intro: 'General form answers questions fast: slope and intercepts by the rule, and a point by substituting. Press <b>Next</b>.',
   make(stage, k, ex) {

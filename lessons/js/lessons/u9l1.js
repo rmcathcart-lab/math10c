@@ -320,6 +320,7 @@ const WHY = {
 const why = {
   title: 'Same angle, similar triangles, same ratio',
   height: 400,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(WHY).map((k) => ({ v: k, label: WHY[k].label })),
   intro: 'Two triangles from Example 1. Why must their ratios agree? Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -372,6 +373,7 @@ const fmtL = (v) => (Math.abs(v * 100 - Math.round(v * 100)) < 1e-6 ? String(+v.
 const grow = {
   title: 'Grow the triangle: the ratios stay put',
   height: 520,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(GROW).map((k) => ({ v: k, label: GROW[k].label })),
   intro: 'One right triangle, three ratios of its sides. What happens to them when the triangle grows? Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -490,6 +492,7 @@ const NAMES = {
 const name = {
   title: 'The labelling routine: hyp, then opp, then adj',
   height: 430,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(NAMES).map((k) => ({ v: k, label: NAMES[k].label })),
   intro: 'Three steps, in the same order every time. Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -621,6 +624,7 @@ const SIZE = {
 const size = {
   title: 'Size check: swing one side onto another',
   height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SIZE).map((k) => ({ v: k, label: SIZE[k].label })),
   intro: 'Why can’t a sine or a cosine reach 1? Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -673,6 +677,7 @@ const RAT = {
 const ratios = {
   title: 'Label, write, simplify',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(RAT).map((k) => ({ v: k, label: RAT[k].label })),
   intro: 'Label the sides first, then SOH CAH TOA does the rest. Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -738,6 +743,7 @@ const HF = {
 const hypFirst = {
   title: 'Missing hypotenuse: Pythagoras, then SOH CAH TOA',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(HF).map((k) => ({ v: k, label: HF[k].label })),
   intro: 'Two legs given, no hypotenuse. Sine and cosine need it. Press <b>Next</b>.',
   make(stage, key, ex) {

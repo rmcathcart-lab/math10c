@@ -156,6 +156,7 @@ function screen(p, digits, label) {
 const exact = {
   title: 'Use the exact factor',
   height: 440,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(EXA).map((k) => ({ v: k, label: EXA[k].label })),
   intro: 'Two facts in the table connect the same pair of units. Do they give the same answer? Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -258,6 +259,7 @@ function weight(g, x, w, hh, color, text, y = 122) {
 const bench = {
   title: 'Side by side: imperial units against SI benchmarks',
   height: 460,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(BEN).map((k) => ({ v: k, label: BEN[k].label })),
   intro: 'How big is each imperial unit compared with an SI unit you already know? Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -357,6 +359,7 @@ async function reach(c, S, path, u, html, from) {
 const ladder = {
   title: 'The imperial staircase: four multipliers',
   height: 446,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(LAD).map((k) => ({ v: k, label: LAD[k].label })),
   intro: 'Each step down the staircase is a smaller unit, with its own multiplier. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -484,6 +487,7 @@ for (const d of Object.values(TWO)) { d.m1 = d.v * d.k[0]; d.m2 = d.m1 * d.k[1];
 const twoways = {
   title: 'One chain, two methods',
   height: 500,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(TWO).map((k) => ({ v: k, label: TWO[k].label })),
   intro: 'Two facts are needed, so the conversion is a chain. Do it both ways. Press <b>Next</b>.',
   make(stage, k, ex) {

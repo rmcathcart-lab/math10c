@@ -188,6 +188,7 @@ function lSetup(stage, S) {
 const notch = {
   title: 'Strategy B: the bounding box minus the notch',
   height: 440,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: lChoices,
   intro: (k) => `This L is a rectangle with its top-right corner cut away. <b>Strategy B:</b> find the area of the whole <b>bounding box</b>, then take away the <b>notch</b>.`,
   make(stage, key, ex) {
@@ -227,6 +228,7 @@ const notch = {
 const pieces = {
   title: 'Strategy A: slice it into rectangles and add',
   height: 400,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: lChoices,
   intro: `<b>Strategy A:</b> slice the L into rectangles that don’t overlap, find each area, and <b>add</b>.`,
   make(stage, key) {
@@ -271,6 +273,7 @@ const FR = {
 const frame = {
   title: 'A frame: the outer area minus the opening',
   height: 460,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'photo', label: 'The warm-up photo frame' }, { v: 'mat', label: 'A picture mat' }, { sep: 'Example 2 check:' }, { v: 'ex2', label: 'Example 2' }],
   intro: (k) => { const S = FR[k]; return `The frame is a big rectangle, ${T(`(${S.W})`)} by ${T(`(${S.H})`)}, with an opening cut out of it. Shaded area = <b>outer − opening</b>. First we need the opening’s size.`; },
   make(stage, key, ex) {
@@ -336,6 +339,7 @@ const GD = {
 const garden = {
   title: 'Grass = garden − flower beds',
   height: 470,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'two', label: 'Two flower beds' }, { sep: 'Example 3 check:' }, { v: 'ex3', label: 'Example 3' }],
   intro: (k) => { const S = GD[k]; return `A garden ${T(`(${S.L})`)} m by ${T(`(${S.W})`)} m holds <b>${S.k}</b> square flower beds, each ${T(`(${S.s})`)} m on a side. How much is <b>grass</b>?`; },
   make(stage, key, ex) {
@@ -392,6 +396,7 @@ const BX = {
 const box = {
   title: 'Volume = base area × height',
   height: 430,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'a', label: tex('(x+1)(x+2)(x+3)') }, { v: 'b', label: tex('(2x+1)(x+3)(x-1)') }, { v: 'c', label: 'a cube, ' + tex('(x+2)^3') }],
   intro: (k) => { const S = BX[k]; return S.cube ? `A cube with edges ${T(`(${S.l})`)}: its volume is ${T(`(${S.l})^3=(${S.l})(${S.l})(${S.l})`)}. Three factors, so we multiply <b>twice</b>.` : `A box ${T(`(${S.l})`)} long, ${T(`(${S.w})`)} wide and ${T(`(${S.h})`)} high. Three factors, so we multiply <b>twice</b>.`; },
   make(stage, key) {

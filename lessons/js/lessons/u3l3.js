@@ -50,6 +50,7 @@ const SQ = {
 const squareSplit = {
   title: 'One square, four pieces',
   height: 430,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ab', label: tex('(a+b)^2') }, { v: 'x3', label: tex('(x+3)^2') }, { v: 'n35', label: 'Warm-up: ' + tex('35^2') }, { sep: 'Example 1 check:' }, { v: 'ex1a', label: '(a) ' + tex('(x+9)^2') }],
   intro: (k) => { const d = SQ[k]; return `Here is a square with side ${T(`${d.A}+${d.B}`)}. Its area is ${T(d.num ? '35^2' : d.head)}. Let’s find that area <b>another way</b>, piece by piece.`; },
   make(stage, key, ex) {
@@ -102,6 +103,7 @@ const squareSplit = {
 const classicError = {
   title: 'Where did the middle go?',
   height: 420,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: '3,4', label: tex('(3+4)^2') }, { v: '2,5', label: tex('(2+5)^2') }, { v: '6,3', label: tex('(6+3)^2') }],
   intro: (k) => { const [a, b] = k.split(',').map(Number); return `Is ${T(`(${a}+${b})^2`)} the same as ${T(`${a}^2+${b}^2`)}? Count the small squares and see.`; },
   make(stage, key, ex) {
@@ -159,6 +161,7 @@ const MS = {
 const minusSquare = {
   title: 'Cut two strips, put the corner back',
   height: 440,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ab', label: tex('(a-b)^2') }, { v: 'n', label: tex('(10-3)^2') }, { sep: 'Example 1 check:' }, { v: 'ex1b', label: '(b) ' + tex('(4x-1)^2') }, { v: 'ex1c', label: '(c) ' + tex('(3m-2n)^2') }],
   intro: (k) => { const d = MS[k]; return `We want ${T(`(${d.A}-${d.B})^2`)}. Start with a bigger square of side ${T(d.A)}: its area is ${T(d.AA)}. Then cut away what we don’t want.`; },
   make(stage, key, ex) {
@@ -226,6 +229,7 @@ const SD = {
 const sumDiff = {
   title: 'Sum times difference: cancel, then cut and move',
   height: 450,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ab', label: tex('(a+b)(a-b)') }, { v: 'n', label: tex('13\\times7') }, { sep: 'Example 1 check:' }, { v: 'ex1d', label: '(d)' }, { v: 'ex1e', label: '(e)' }],
   intro: (k) => { const d = SD[k]; return `Expand ${T(d.head)} with FOIL${d.num ? ` (that’s ${T('13\\times7')})` : ''}, then look at it as an area.`; },
   make(stage, key, ex) {
@@ -435,6 +439,7 @@ const OUT = {
 const outside = {
   title: 'Expand first, then distribute',
   height: 446,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n1', label: tex('2(x+3)^2') }, { v: 'n2', label: tex('-(x-4)(x+4)') }, { sep: 'Example 2 check:' }, { v: 'a', label: '(a) ' + tex('3(4x-5)(x-2)') }, { v: 'b', label: '(b) ' + tex('-6(5p+2)^2') }],
   intro: (key) => { const d = OUT[key]; return `Expand ${T(d.k + d.prod)}. The ${d.kw ? 'negative sign' : T(d.k)} out front is a <b>factor</b> of the whole product.`; },
   make(stage, key, ex) {
@@ -590,6 +595,7 @@ const CS = { ex4: { k: 16, c: 70 }, n1: { k: 6, c: 11 }, n2: { k: 4, c: 1 } };
 const complete = {
   title: 'Extension: complete the square with tiles',
   height: 470,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n1', label: tex('x^2+6x+11') }, { v: 'n2', label: tex('x^2+4x+1') }, { sep: 'Example 4 check:' }, { v: 'ex4', label: tex('x^2+16x+70') }],
   intro: (key) => { const { k, c } = CS[key]; return `Build ${T(`x^2+${k}x+${c}`)} with algebra tiles, then rearrange the tiles into the biggest square we can.`; },
   make(stage, key, ex) {

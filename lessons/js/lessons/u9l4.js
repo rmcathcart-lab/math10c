@@ -226,6 +226,7 @@ const BW = {
 const backwards = {
   title: 'The calculator run backwards',
   height: 480,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(BW).map((k) => ({ v: k, label: BW[k].label })),
   intro: 'Forwards, an angle goes in and a ratio comes out. Can the calculator run the other way? Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -346,6 +347,7 @@ const RB = {
 const readBack = {
   title: 'Read the ratio graph forwards and backwards',
   height: 460,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(RB).map((k) => ({ v: k, label: RB[k].label })),
   intro: 'Each ratio has a graph for angles from 0° to 90°. Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -405,6 +407,7 @@ const NF = {
 const nameFirst = {
   title: 'Name the sides first, then choose the ratio',
   height: 500,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(NF).map((k) => ({ v: k, label: NF[k].label })),
   intro: 'Two sides are known and the angle is not. Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -463,6 +466,7 @@ const nameFirst = {
 const sunElev = {
   title: 'Angle of elevation of the sun',
   height: 450,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex3', label: 'Example 3 check' }],
   intro: 'A flagpole, its shadow and the sun. Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -532,6 +536,7 @@ const CZ = { demo: { label: 'Demo: the Z, paddling in', ex: false }, ex4: { labe
 const cliffZ = {
   title: 'Angle of depression = angle of elevation: the Z',
   height: 430,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CZ).map((k) => ({ v: k, label: CZ[k].label })),
   intro: 'A cliff 68 m high, and a kayak on the water 155 m from its base. Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -616,6 +621,7 @@ const IS = {
 const isoSplit = {
   title: 'Split the isosceles triangle, solve half, double',
   height: 470,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(IS).map((k) => ({ v: k, label: IS[k].label })),
   intro: (k) => (k === 'roof' ? 'The gable end of a 6/12 roof: 24 across, 6 up to the peak. What is the angle at the peak? Press <b>Next</b>.' : 'Isosceles triangle PQR: what is the angle at Q? Press <b>Next</b>.'),
   make(stage, key, ex) {
@@ -691,6 +697,7 @@ const isoSplit = {
 const chain = {
   title: 'Two right triangles sharing a side',
   height: 490,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex6', label: 'Example 6 check' }],
   intro: 'Angle BAC spans two right triangles that share side AD. Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -755,6 +762,7 @@ const CH = {
 const choose = {
   title: 'Which inverse ratio?',
   height: 440,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CH).map((k) => ({ v: k, label: CH[k].label })),
   intro: (k) => `${CH[k].q} Press <b>Next</b>.`,
   make(stage, key, ex) {

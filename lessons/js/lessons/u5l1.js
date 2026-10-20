@@ -253,6 +253,7 @@ const UPDOWN = (y) => (y > 0 ? `up ${y}` : y < 0 ? `down ${-y}` : 'no move');
 const plotPoint = {
   title: 'Plotting a point: across, then up or down',
   height: 480,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(PP).map((k) => ({ v: k, label: PP[k].label })),
   intro: (k) => (k === 'ex1' ? 'Read each point of Example 1 as two moves from the origin. Press <b>Next</b>.'
     : 'Start at the origin. The <b>first</b> number moves you <b>across</b>; the <b>second</b> moves you <b>up or down</b>. Press <b>Next</b>.'),
@@ -314,6 +315,7 @@ const word = (s) => (s === '+' ? 'positive' : 'negative');
 const quadrants = {
   title: 'The four quadrants',
   height: 470,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'q', label: 'The four quadrants' }, { v: 'ex1', label: 'Example 1 check' }],
   intro: (k) => (k === 'ex1' ? 'Sort the points of Example 1 into quadrants, and fill in the table of signs (part d). Press <b>Next</b>.'
     : 'The axes cut the plane into four <b>quadrants</b>. Press <b>Next</b>.'),
@@ -377,6 +379,7 @@ const quadrants = {
 const matchGrow = {
   title: 'Growing the matchstick pattern',
   height: 370,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   intro: 'Figure 1 is a single square: <b>4 matchsticks</b>. Watch what each new square costs. Press <b>Next</b>.',
   make(stage, v, ex) {
     const W = ex.W, u = 44, gap = 46, ns = [1, 2, 3, 4, 5];
@@ -411,6 +414,7 @@ const matchGrow = {
 const matchGraph = {
   title: 'Plot the table. Join the dots?',
   height: 470,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   intro: 'Example 2 (c) and Example 3 (d) check. Press <b>Next</b>.',
   make(stage, v, ex) {
     const rows = [1, 2, 3, 4, 5].map((s) => [s, 3 * s + 1]);
@@ -501,6 +505,7 @@ const gasGraph = (stage, x, y, w, hh) => new Graph(stage, { x, y, width: w, heig
 const gasLine = {
   title: 'Gasoline: join the points?',
   height: 470,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   intro: 'Example 4 (a) and (b) check: plot the table, then decide whether to join the points. Press <b>Next</b>.',
   make(stage, v, ex) {
     const G = gasGraph(stage, 10, 6, 470, 456);
@@ -530,6 +535,7 @@ const gasLine = {
 const gasRead = {
   title: 'Reading the gas graph forwards and backwards',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'c', label: 'Example 4 (c) check: 5 L' }, { v: 'd', label: 'Example 4 (d) check: $10.15' }],
   intro: (k) => (k === 'c' ? 'How much do <b>5 L</b> cost? Read the graph <b>forwards</b>: from V up to the line, then across. Press <b>Next</b>.'
     : 'How many litres for <b>$10.15</b>? Read the graph <b>backwards</b>: from C across to the line, then down. Press <b>Next</b>.'),
@@ -565,6 +571,7 @@ const gasRead = {
 const gasRate = {
   title: 'The price per litre: C = 1.45V',
   height: 430,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   intro: 'Example 4 (e) and (g) check. Is every litre the same price? Press <b>Next</b>.',
   make(stage, v, ex) {
     const rows = GAS.map(([a, b]) => [a, b.toFixed(2), '1.45']);
@@ -651,6 +658,7 @@ const SORT = {
 const sortVars = {
   title: 'Discrete or continuous?',
   height: 420,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SORT).map((k) => ({ v: k, label: SORT[k].label })),
   intro: 'Each card asks: do you <b>count</b> it or <b>measure</b> it? Guess before each reveal. Press <b>Next</b>.',
   make(stage, k, ex) {
