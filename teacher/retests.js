@@ -138,12 +138,12 @@
     var t = (R.tests || []).filter(function (q) { return q.id === testId; })[0]; if (!t) return;
     if (!confirm('Open “' + t.def.title + '” for ' + x.name + ' now?\n\nIt pops up on ' + x.name.split(' ')[0] + '’s screen within about 10 seconds, with new numbers. The rest of the class isn’t affected.')) return;
     btn.disabled = true;
-    api('launchretest', { id: x.id, test: testId }).then(function (d) {
+    api('launchretest', { 'class': cls(), id: x.id, test: testId }).then(function (d) {
       if (!d.ok) { btn.disabled = false; alert(d.error === 'live' ? x.name + ' already has a retest open.' : 'Couldn’t open it: ' + d.error); return; }
       return load().then(function () { HW.DashTests.watch(x.name); });
     });
   }
-  function setStatus(x, status) { api('retestset', { id: x.id, status: status }).then(function (d) { if (!d.ok) alert(d.error); return load(); }).then(rerender); }
+  function setStatus(x, status) { api('retestset', { 'class': cls(), id: x.id, status: status }).then(function (d) { if (!d.ok) alert(d.error); return load(); }).then(rerender); }
 
   HW.DashRetests = { render: render, load: load };
 })(window);

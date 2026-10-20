@@ -106,6 +106,17 @@
       });
       roster.push({ name: p.name, pin: true, firstSeen: first, lastSeen: last, devices: p.home > 0.3 ? 2 : 1 });
     });
+    // the two who asked for a Unit 1 retest (retestList) finished its required practice: anything left done, and the
+    // ones whose solution was shown redone without it
+    ['Ava Martin', 'Maya Patel'].forEach(function (name) {
+      HW.CATALOG.filter(function (c) { return c.unit === 1; }).forEach(function (cat) { cat.lessons.forEach(function (c) {
+        var lesson = HW.lessons[c.id]; if (!lesson || lesson.test) return;
+        var pr = prog[name + '|' + lesson.id] || (prog[name + '|' + lesson.id] = { name: name, lesson: lesson.id, items: {} });
+        lesson.items.forEach(function (it) { if (it.extra) return; var x = pr.items[it.id];
+          if (!x || x[0] !== 'done') pr.items[it.id] = ['done', 'first', 0, 45, 0, 0];
+          else if (x[1] === 'shown') x[6] = now - 30 * 3600000; });
+      }); });
+    });
     att.sort(function (a, b) { return a[0] - b[0]; });
     return { att: att, evs: evs, days: Object.keys(dayAgg).map(function (k) { return dayAgg[k]; }), prog: Object.keys(prog).map(function (k) { return prog[k]; }), roster: roster, pace: PACE, dayList: days };
   }
