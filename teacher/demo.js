@@ -269,6 +269,8 @@
       case 'setmarks': return ok(setMarks(p.session, p.data));
       case 'release': return ok(release(p.session, p.on === 1 || p.on === '1' || p.on === true));
       case 'tlive': return ok(tlive());
+      case 'cal': return ok({ ok: true, cal: calendar(), noSchool: [] });
+      case 'setcal': try { T.cal = p.cal ? JSON.parse(p.cal) : null; } catch (e) { return ok({ ok: false, error: 'bad calendar' }); } T.calSet = true; return ok({ ok: true, cal: T.cal });
       case 'tctl': return ok(tctl(p.op, p.name, p.mins));
       case 'tests': return real('tests', p).then(function (d) { if (d && d.ok) { d.live = Object.assign({}, d.live || {}); if (T.live) d.live[CODE] = liveInfo(); } return d; });
       case 'launch': return real('tests', {}).then(function (d) {
@@ -278,6 +280,8 @@
       default: return ok({ ok: false, error: 'The demo class is made up, so it can’t be changed. Use one of your real classes for that.' });
     }
   }
+  /* the demo class's calendar: the same pace as its made-up work (one lesson a school day, Unit 1 Test, today Unit 2 L3) */
+  function calendar() { if (!T.calSet && HW.Cal) { T.cal = HW.Cal.make(schoolDays(PACE.length)[0] ? HW.Cal.key(schoolDays(PACE.length)[0]) : HW.Cal.today()); T.calSet = true; } return T.cal; }
   function isDemo(p) { p = p || {}; return p['class'] === CODE || /^DEMO-/.test(String(p.session || '')); }
 
   HW.DashDemo = { CODE: CODE, LABEL: LABEL, count: PEOPLE.length, api: api, isDemo: isDemo, _model: model };

@@ -188,6 +188,7 @@
     var h = location.hash.replace(/^#\/?/, '').split('/');
     if (h[0] === 'lesson' && HW.lessons[h[1]] && !HW.lessons[h[1]].test) return openLesson(HW.lessons[h[1]], h[2]); // unit tests are only written in test mode
     if (h[0] === 'results' && HW.TestMode) { leaveLesson(); return HW.TestMode.renderResults(view, h[1]); }
+    if (h[0] === 'calendar') return renderCalendar(h[1]);
     renderHome();
   }
   root.addEventListener('hashchange', route);
@@ -225,6 +226,7 @@
     var cont = lastLesson();
     head.appendChild(el('p', 'muted', cont ? 'Pick up where you left off, or choose any lesson below.' : 'Choose a lesson to start practising.'));
     view.appendChild(head);
+    homeBar('list');
     if (HW.TestMode) HW.TestMode.home(view);
     var legend = el('div', 'legend', '<span><i class="lg first"></i>Done first try</span><span><i class="lg help"></i>Done with a hint</span><span><i class="lg extra"></i>Extra practice</span><span><i class="lg empty"></i>Still to do</span>');
     view.appendChild(legend);
@@ -263,6 +265,64 @@
       sec.appendChild(list); view.appendChild(sec);
     });
     L.setStatus({ view: 'home' }, false);
+  }
+  /* ---------------- class calendar ----------------
+   * The teacher plans it in the ledger (Calendar tab); here it's read-only. "All lessons" has a Lessons / Calendar
+   * toggle and says when the next unit test is. The calendar is kept on the device too, so it shows straight away. */
+  var CAL = null; // { cal, noSchool } for this class
+  function calKey() { return 'hw:cal:' + String(session && session.klass || '').toLowerCase(); }
+  function calData() { if (!CAL) { try { CAL = JSON.parse(ls(calKey()) || 'null'); } catch (e) { CAL = null; } } return CAL && CAL.cal ? CAL : null; }
+  function loadCal() {
+    if (!L.enabled || !session || !session.klass || !HW.Cal) return;
+    L.get('cal', { 'class': session.klass }, 15000).then(function (d) {
+      if (!d || !d.ok) return;
+      var next = { cal: d.cal ? HW.Cal.clean(d.cal) : null, noSchool: d.noSchool || [] }, was = JSON.stringify(CAL);
+      CAL = next; ls(calKey(), JSON.stringify(next));
+      var h = location.hash.replace(/^#\/?/, '').split('/')[0];
+      if (was !== JSON.stringify(next) && !cur.lesson && (h === '' || h === 'calendar') && document.body.className === 'home') route();
+    }).catch(function () {});
+  }
+  function homeBar(which) {
+    var C = HW.Cal, D = calData(); if (!C || !D) { if (which === 'list') loadCal(); return; }
+    var bar = el('div', 'home-bar');
+    bar.appendChild(el('div', 'vtog', '<a href="#/" class="' + (which === 'list' ? 'on' : '') + '">Lessons</a><a href="#/calendar" class="' + (which === 'cal' ? 'on' : '') + '">📅 Class calendar</a>'));
+    var nt = C.nextTest(D.cal, D.noSchool, C.today());
+    if (nt) {
+      var when = nt.date === C.today() ? '<b>today</b>' : C.nice(nt.date, { weekday: 'long', month: 'short', day: 'numeric' }) + (nt.inDays === 1 ? ' · next class' : nt.inDays > 1 ? ' · in ' + nt.inDays + ' classes' : '');
+      bar.appendChild(el('div', 'next-test' + (nt.inDays <= 2 ? ' soon' : ''), '📝 Next test: <b>' + esc(nt.info.title) + '</b> · ' + when));
+    }
+    view.appendChild(bar);
+    if (which === 'list') loadCal();
+  }
+  function calChip(key) {
+    var C = HW.Cal, i = C.info(key), lesson = HW.lessons[key];
+    if (i.kind === 'test') return el('div', 'calm-chip test', '<b>' + esc(i.title) + '</b><span class="ct">' + esc(i.unitTitle) + '</span>');
+    var turl = teachingUrl({ id: key }), a = el(lesson && !lesson.test ? 'a' : turl ? 'a' : 'div', 'calm-chip');
+    a.innerHTML = (turl && lesson ? '<span class="clk" title="Open the lesson">📘</span>' : '') + '<b>U' + i.unit + ' · Lesson ' + esc(i.num) + '</b><span class="ct">' + HW.tex(esc(i.title)) + '</span>';
+    if (lesson && !lesson.test) { a.href = '#/lesson/' + key; a.title = 'Practice: Lesson ' + i.num + ' — ' + stripTags(i.title); }
+    else if (turl) { a.href = turl; a.target = '_blank'; a.rel = 'noopener'; a.title = 'Open Lesson ' + i.num; }
+    var lk = a.querySelector('.clk'); if (lk) lk.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); root.open(turl, '_blank', 'noopener'); });
+    return a;
+  }
+  function renderCalendar(ym) {
+    leaveLesson(); document.body.className = 'home';
+    drawTop('<a href="#/">All lessons</a><span class="sep">/</span>Class calendar'); view.innerHTML = '';
+    var C = HW.Cal, D = calData();
+    var head = el('div', 'home-head'); head.appendChild(el('h1', '', 'Class calendar')); view.appendChild(head);
+    if (!C || !D) { view.appendChild(el('p', 'muted', 'Your teacher hasn’t put up the class calendar yet.')); loadCal(); return; }
+    homeBar('cal');
+    var today = C.today(), on = C.on(D.cal, D.noSchool, today);
+    if (on.length) view.appendChild(el('p', 'cal-today', 'Today: ' + on.map(function (k) { var i = C.info(k); return '<b>' + esc(i.kind === 'test' ? i.title : 'Lesson ' + i.num + ' — ' + stripTags(i.title)) + '</b>'; }).join(' and ')));
+    var m = /^(\d{4})-(\d{2})$/.exec(ym || ''), d0 = m ? new Date(+m[1], +m[2] - 1, 1) : new Date(), y = d0.getFullYear(), mo = d0.getMonth();
+    var nav = el('div', 'cal-nav');
+    function ymOf(yy, mm) { var t = new Date(yy, mm, 1); return t.getFullYear() + '-' + ('0' + (t.getMonth() + 1)).slice(-2); }
+    nav.innerHTML = '<a class="btn btn-ghost" href="#/calendar/' + ymOf(y, mo - 1) + '" aria-label="Previous month">‹</a><h2>' + C.MONTHS[mo] + ' ' + y + '</h2><a class="btn btn-ghost" href="#/calendar/' + ymOf(y, mo + 1) + '" aria-label="Next month">›</a>' + (m ? '<a class="btn btn-ghost" href="#/calendar">This month</a>' : '');
+    view.appendChild(nav);
+    view.appendChild(C.month(D.cal, y, mo, { off: D.noSchool, today: today, chip: calChip }));
+    view.appendChild(el('p', 'small muted', 'Tap a lesson to practise it' + (HW.TEACHING ? ' (📘 opens the lesson itself)' : '') + '. Dates can change as the class goes — this calendar always shows the latest plan.'));
+    HW.texIn && HW.texIn(view);
+    L.setStatus({ view: 'home' }, false);
+    loadCal();
   }
   function lastLesson() { var best = null; Object.keys(S.lessons).forEach(function (k) { if (!best || (S.lessons[k].updated || 0) > (S.lessons[best].updated || 0)) best = k; }); return best; }
   function mins(s) { if (s < 60) return '<1 min'; var m = Math.round(s / 60); return m < 60 ? m + ' min' : Math.floor(m / 60) + ' h ' + (m % 60) + ' min'; }

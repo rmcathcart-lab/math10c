@@ -1,5 +1,6 @@
 /* The course: units and lessons in booklet order. A lesson with a lesson file (HW.lessons[id]) is open;
- * the rest show as "coming soon". Titles match the revised booklets. */
+ * the rest show as "coming soon" (with their teaching-site lesson card). The class calendar (js/calendar.js) plans every
+ * lesson listed here, plus a unit test after each unit. Titles match the revised booklets. */
 (function (root) {
   'use strict';
   root.HW = root.HW || {};
@@ -77,9 +78,34 @@
       { id: 'u7l5', num: '5', title: 'Graphing Linear Equations: A Strategy for Every Form' },
       { id: 'u7l6', num: '6', title: 'Slope in Context: Interpreting Rates of Change' },
       { id: 'u7l7', num: '7', title: 'Equations of Lines Review: Slope, Intercepts, and Perpendicularity' }] },
-    { unit: 8, title: 'Systems of Linear Equations', outcomes: 'RF9', lessons: [] },
-    { unit: 9, title: 'Trigonometry', outcomes: 'M4', lessons: [] },
-    { unit: 10, title: 'Measurement', outcomes: 'M1 · M2 · M3', lessons: [] }
+    { unit: 8, title: 'Systems of Linear Equations', outcomes: 'RF9', lessons: [
+      { id: 'u8l1a', num: '1A', title: 'Graphing Systems of Linear Equations' },
+      { id: 'u8l1b', num: '1B', title: 'Classifying Systems: How Many Solutions?' },
+      { id: 'u8l2', num: '2', title: 'Solving Systems of Equations by Substitution' },
+      { id: 'u8l3', num: '3', title: 'Combining Equations: The Elimination Method' },
+      { id: 'u8l4', num: '4', title: 'Solving Word Problems with Systems of Equations' },
+      { id: 'u8l5', num: '5', title: 'Mixture and Motion: More Applications of Linear Systems' },
+      { id: 'u8l6', num: '6', title: 'Systems of Linear Equations: Cumulative Review' }] },
+    { unit: 9, title: 'Trigonometry', outcomes: 'M4', lessons: [
+      { id: 'u9l1', num: '1', title: 'Right-Triangle Trigonometry: Sine, Cosine, and Tangent' },
+      { id: 'u9l2', num: '2', title: 'Trig Ratios: Calculator Values and Angle Patterns' },
+      { id: 'u9l3', num: '3', title: 'Finding a Missing Side Length in a Right Triangle' },
+      { id: 'u9l4', num: '4', title: 'Finding the Measure of an Angle in a Right Triangle' },
+      { id: 'u9l5', num: '5', title: 'Solving Right Triangles Completely' },
+      { id: 'u9l6', num: '6', title: 'Multi-Step Trigonometry: Eye Level, Elevation and Depression' },
+      { id: 'u9l7', num: '7', title: 'Chaining Right Triangles Together' },
+      { id: 'u9l8', num: '8', title: 'Right Triangle Trigonometry: A Cumulative Review' }] },
+    { unit: 10, title: 'Measurement', outcomes: 'M1 · M2 · M3', lessons: [
+      { id: 'u10l1', num: '1', title: 'Rounding and Formula Substitution' },
+      { id: 'u10l2', num: '2', title: 'Estimating Length with Personal Referents' },
+      { id: 'u10l3', num: '3', title: 'Reading Precision Measuring Instruments' },
+      { id: 'u10l4a', num: '4A', title: 'Converting Units Within the Metric (SI) System' },
+      { id: 'u10l4b', num: '4B', title: 'Imperial Units and Converting Between Imperial and SI' },
+      { id: 'u10l5', num: '5', title: 'Converting Square and Cubic Units: SI and Imperial Systems' },
+      { id: 'u10l6', num: '6', title: 'Surface Area and Volume of Prisms and Cylinders' },
+      { id: 'u10l7', num: '7', title: 'Surface Area and Volume of Pyramids and Cones' },
+      { id: 'u10l8', num: '8', title: 'Surface Area and Volume of Spheres and Hemispheres' },
+      { id: 'u10l9', num: '9', title: 'Measurement — A Cumulative Review' }] }
   ];
   root.HW.OUTCOMES = {
     AN1: 'Factors of whole numbers: prime factors, GCF, LCM, square roots and cube roots',
