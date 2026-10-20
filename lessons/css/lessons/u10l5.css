@@ -115,7 +115,7 @@ h2 .katex, h3 .katex { font-size: .95em; }
 /* ---------- one screen (main.lesson.screen): carpet and Q1–Q3 on the left; price tags and the big one on the right ---------- */
 .wf .u10l5-wtop { display: block; margin-top: 2px; }
 .wf .u10l5-wfig { flex-direction: row; align-items: center; gap: 16px; }
-.wf #u10l5-carpet { zoom: .7; margin-bottom: 26px; } /* room for the "Store A: 9 × $3" total, drawn below the square */
+.wf #u10l5-carpet { zoom: .67; margin-bottom: 26px; } /* room for the "Store A: 9 × $3" total, drawn below the square */
 .wf .u10l5-wbtns { flex-direction: column; align-items: stretch; }
 .wf .u10l5-wbtns .pill { margin: 0; padding: 6px 14px; font-size: 15px; }
 .wf .u10l5-wqs { margin-top: 2px; }

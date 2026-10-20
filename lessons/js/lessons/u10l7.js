@@ -500,7 +500,7 @@ function crossDef(DATA, title) {
 const hs = crossDef(HS, 'The right triangle inside a pyramid');
 const hsc = crossDef(HSC, 'The right triangle inside a cone');
 hs.minW = 900; // drawn this wide and scaled to fit beside the sidebar
-hsc.minW = 860;
+hsc.minW = 900;
 
 /* =============================== pouring: funnel → box, cone → cylinder =============================== */
 /** one scene with a container on the left and a pourer that fills it in three pours. cfg: { kind: 'pyr'|'cone', W, D, r, H, S, fill colours } */

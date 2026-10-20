@@ -343,6 +343,7 @@ function truckFig(host) {
 const fill = {
   title: 'Fill the classroom',
   height: 440,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'grid', label: 'Stack them in a grid' }, { v: 'box', label: 'Cube boxes' }, { v: 'oops', label: 'The two traps' }],
   intro: (v) => (v === 'grid' ? 'Count the balls row by row, layer by layer. Press <b>Next</b>.' : v === 'box' ? 'A second way: give every ball its own box. Press <b>Next</b>.' : 'Why answer D, and why not divide by a ball’s volume? Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -432,7 +433,7 @@ const WAYS = {
 const whichWay = {
   title: '★ Which conversion? Which formula?',
   height: 486,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(WAYS).map((k) => ({ v: k, label: WAYS[k].label })),
   intro: (v) => `Follow <b>${WAYS[v].label.split(':')[0]}</b> through the chart. Press <b>Next</b>.`,
   make(stage, v, ex) {
@@ -876,6 +877,7 @@ const SHAPES = {
 const morph = {
   title: '★ One solid, five shapes',
   height: 450,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'tour', label: 'Tour all five (and a half)' }, { v: 'third', label: 'Pointed = one third' }, { v: 'arch', label: 'Sphere in a cylinder' }],
   intro: (v) => (v === 'tour' ? 'Watch one solid change shape and its formula change with it. Press <b>Next</b>.' : v === 'third' ? 'The same base and height, with and without a point. Press <b>Next</b>.' : 'A sphere packed exactly into a cylinder. Press <b>Next</b>.'),
   make(stage, v, ex) {
