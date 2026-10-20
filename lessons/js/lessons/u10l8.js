@@ -274,7 +274,7 @@ const OVF = { mika: { label: 'Mika: 480 mL', total: 480 }, disc: { label: 'For d
 const overflow = {
   title: 'Mika’s overflow test',
   height: 440,
-  minW: 900, // drawn this wide and scaled to fit beside the sidebar
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(OVF).map((k) => ({ v: k, label: OVF[k].label })),
   intro: 'A ball and a cylinder with the <b>same radius</b>; the cylinder is as tall as the ball. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -352,7 +352,7 @@ const DER = {
 const derive = {
   title: 'From the snug cylinder to the sphere formula',
   height: 420,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(DER).map((k) => ({ v: k, label: DER[k].label })),
   intro: 'Mika’s test works for every ball. Turn it into a formula. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -467,6 +467,7 @@ const peel = {
 const halve = {
   title: 'Example 1 check: halve the diameter first',
   height: 420,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex1', label: 'Example 1 check' }, { v: 'oops', label: 'Forget to halve?' }],
   intro: (v) => (v === 'ex1' ? 'The propane tank: diameter 5.8 m. Press <b>Next</b>.' : 'What if you put the diameter into the formulas? Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -655,6 +656,7 @@ const string = {
 const domes = {
   title: 'Example 4 check: Sana’s and Tavi’s sheds',
   height: 450,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   intro: 'Two domes, both 12 ft across. Only one has a floor. Press <b>Next</b>.',
   make(stage, k, ex) {
     const W = ex.W, Hh = ex.def.height, svg = svgOn(stage, 0, 0, W, Hh), g = G(svg);
@@ -699,6 +701,7 @@ const FL = {
 const floor = {
   title: 'Does the flat base count?',
   height: 400,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(FL).map((k) => ({ v: k, label: FL[k].label })),
   intro: 'Read the wording, then follow the chart. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -733,6 +736,7 @@ const BK = {
 const backwards = {
   title: 'Example 5 check: from the volume back to the radius',
   height: 440,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(BK).map((k) => ({ v: k, label: BK[k].label })),
   intro: 'The volume formula is a machine: radius in, volume out. Run it backwards. Press <b>Next</b>.',
   make(stage, k, ex) {
