@@ -236,3 +236,9 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .wf .wf-poll .opt { padding: 5px 10px; }
 .wf .wf-poll:not(.revealed) .poll-ans { display: none; }
 .wf .u8l4-early { margin-top: 14px; }
+
+/* explainers beside the sidebar: the facts table shares the panel width instead of fixed 88 px columns, and the
+   panel titles are a little tighter so "Step 4 · Answer and check against the story" fits */
+.u8l4-tl { width: 104px; }
+.u8l4-tc { flex: 1 1 0; width: auto; min-width: 0; }
+.u8l4-ph { font-size: 13px; letter-spacing: .03em; }

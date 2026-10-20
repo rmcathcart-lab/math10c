@@ -791,7 +791,8 @@ const triangle = {
 
 /* =============================== static figures =============================== */
 function mountStatic() {
-  const park = document.getElementById('u6l6-park'); if (park) parkGraph(park);
+  const park = document.getElementById('u6l6-park');
+  if (park) { const w = Math.min(620, park.clientWidth || 620); parkGraph(park, { width: w, height: Math.round(w * 420 / 620) }); } // the one-screen layout gives it a narrower column
   // tools at a glance
   const mini = (host, o) => new Graph(host, Object.assign({ width: 176, height: 132, numbers: false, xtitle: '', ytitle: '', arrows: false, xmin: -1, xmax: 7, ymin: -1, ymax: 5 }, o));
   const M = {

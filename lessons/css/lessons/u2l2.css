@@ -224,3 +224,5 @@
 .wf .wq-wide { margin-top: 12px; }
 .wf .wq-wide .wq-a { margin-left: 38px; }
 .wf .wq-wide .q-ans { font-size: 16.5px; }
+.ex-side .cn-k { min-width: 0; margin-right: 8px; } /* "cancel": narrower panel beside the sidebar */
+.ex-side .cn-row { white-space: nowrap; }

@@ -599,7 +599,7 @@ const swap = {
   intro: (k) => (k === 'ex3' ? 'Maria: 23 bills, fives and twenties, worth $310. Press <b>Next</b>.' : '12 coins, loonies ($1) and toonies ($2), worth $19. Press <b>Next</b>.'),
   make(stage, k, ex) {
     const d = SW[k], W = ex.W, all = d.n * d.lo, short = d.total - all, step = d.hi - d.lo, nh = short / step, nl = d.n - nh;
-    const coin = d.kind === 'coin', per = coin ? 12 : 12, bw = coin ? 62 : 68, bh = coin ? 62 : 38, gap = coin ? 12 : 8;
+    const coin = d.kind === 'coin', per = coin ? 12 : 12, bw = coin ? 62 : Math.min(68, Math.floor((W - 28 - 11 * 8) / 12)), bh = coin ? 62 : 38, gap = coin ? 12 : 8;
     const rowsN = Math.ceil(d.n / per), totW = per * (bw + gap) - gap, x0 = (W - totW) / 2;
     const items = [];
     for (let i = 0; i < d.n; i++) {
@@ -644,8 +644,8 @@ const swap = {
         await pulse(c, cVal, 1.1);
       } },
       { cap: `That is exactly the algebra: substitute ${T(`${vl}=${d.n}-${vh}`)}, and ${T(String(all))} is “all ${d.plLo}”, ${T(`${cf(step)}${vh}`)} is the swaps.`, run: async (c) => { await show(c, l3); await show(c, l4); } },
-      { cap: `${T(`${vh}=${nh}`)} ${d.plHi} and ${T(`${vl}=${nl}`)} ${d.plLo}. Check: ${T(`${nl}+${nh}=${d.n}`)} ✓ and ${T(`${d.lo}(${nl})+${d.hi}(${nh})=${d.lo * nl}+${d.hi * nh}=${d.total}`)} ✓.`, run: async (c) => {
-        await show(c, l5); const s = stamp(stage, `${nl} ${d.plLo}, ${nh} ${d.plHi}`, { ok: true, x: W - 250, y: 396 }); await stampIn(c, s);
+      { cap: `${T(`${vh}=${nh}`)} ${d.plHi} and ${T(`${vl}=${nl}`)} ${d.plLo}. Check: ${T(`${nl}+${nh}=${d.n}`)} ✓ and ${T(`${d.lo}(${nl})+${d.hi}(${nh})`)} ${T(`=${d.lo * nl}+${d.hi * nh}=${d.total}`)} ✓.`, run: async (c) => {
+        await show(c, l5); const s = stamp(stage, `${nl} ${d.plLo}, ${nh} ${d.plHi}`, { ok: true, x: W - 270, y: 410 }); // low in the work panel, clear of the last line await stampIn(c, s);
       } }
     ];
   }
@@ -788,13 +788,13 @@ const rates = {
 /* =============================== mount =============================== */
 mountWarm();
 export const explainers = mountExplainers({
-  pipeline: pipeDef(['snack', 'sam']),
+  pipeline: pipeDef(['snack', 'sam'], { minW: 860 }),
   method, step4, translate, rect, swap, interest, rates,
-  ex1chk: pipeDef(['ex1'], { sep: 'Example 1 check' }),
-  ex2chk: pipeDef(['ex2'], { sep: 'Example 2 check' }),
-  ex3chk: pipeDef(['ex3'], { sep: 'Example 3 check' }),
-  ex4chk: pipeDef(['ex4'], { sep: 'Example 4 check' }),
-  ex5chk: pipeDef(['ex5'], { sep: 'Example 5 check' })
+  ex1chk: pipeDef(['ex1'], { sep: 'Example 1 check', minW: 860 }),
+  ex2chk: pipeDef(['ex2'], { sep: 'Example 2 check', minW: 860 }),
+  ex3chk: pipeDef(['ex3'], { sep: 'Example 3 check', minW: 860 }),
+  ex4chk: pipeDef(['ex4'], { sep: 'Example 4 check', minW: 860 }),
+  ex5chk: pipeDef(['ex5'], { sep: 'Example 5 check', minW: 860 })
 });
 export const _test = { PIPE, MT, S4, TR, RC, SW, IV, RT };
 void liveCtx; void GRN; void RED;

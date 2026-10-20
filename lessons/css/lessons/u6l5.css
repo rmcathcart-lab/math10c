@@ -212,3 +212,4 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .wf-one .wf-poll > .q-line { font-size: 16px; }
 .wf .u6l5-wqs { grid-template-columns: .9fr 1.2fr .9fr; }
 .wf-one .wf-poll > .q-line { font-size: 17px; }
+.lesson.screen .u6l5-ctl { gap: 5px; } .lesson.screen .u6l5-ctl .pill { padding: 6px 9px; }

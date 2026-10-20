@@ -181,7 +181,7 @@ const UN = {
 const uneven = {
   title: 'Every step hides a slope triangle',
   height: 470,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'c', label: UN.c.label }, { v: 'bend', label: UN.bend.label }],
   intro: (k) => (k === 'c' ? `The ${T('x')}-steps are ${T('+2,\\ +3,\\ +4')} and the ${T('y')}-changes are ${T('-4,\\ -6,\\ -8')}. Linear or not? Press <b>Next</b>.`
     : `Here every change in ${T('y')} is ${T('+2')}. Does that make it linear? Press <b>Next</b>.`),
@@ -279,6 +279,7 @@ const TI = {
 const tableInts = {
   title: 'Intercepts in a table of values',
   height: 470,
+  minW: 920, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex2', label: TI.ex2.label }, { sep: 'Warm-up' }, { v: 'mia', label: 'Mia’s phone' }, { v: 'leo', label: 'Leo’s phone' }],
   intro: (k) => (k === 'ex2' ? 'Is it linear? Then where are the zeros? Press <b>Next</b>.' : `${TI[k].who}’s battery: ${T('t')} hours after noon, ${T('B')} percent. Press <b>Next</b>.`),
   make(stage, k, ex) {
@@ -343,6 +344,7 @@ const DR = {
 const domRange = {
   title: 'Squash the graph onto each axis',
   height: 470,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [...['slant', 'hor', 'ver', 'seg'].map((k) => ({ v: k, label: DR[k].label })), { sep: 'Example 3 check' }, ...['a', 'b', 'c'].map((k) => ({ v: k, label: DR[k].label }))],
   intro: `<b>Domain:</b> which ${T('x')}-values does the graph use? <b>Range:</b> which ${T('y')}-values? Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -516,7 +518,7 @@ const LL = {
 const lineLab = {
   title: 'The line lab: rotate it, slide it, watch the counters',
   height: 470,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(LL).map((k) => ({ v: k, label: LL[k].label })),
   intro: (k) => (LL[k].free ? 'Your turn: rotate and slide the line with the buttons. Press <b>Next</b> to start.' : 'Watch the counters on the right while the line moves. Press <b>Next</b>.'),
   make(stage, k, ex) {

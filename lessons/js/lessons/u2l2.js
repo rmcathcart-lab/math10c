@@ -135,7 +135,7 @@ const CANCEL = {
 const cancel = {
   title: 'Cancel the factors in pairs',
   height: 360,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 920, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n1', label: tex('12a^5\\div3a^2') }, { v: 'n2', label: tex('15b^6\\div5b^4') }, { sep: 'Example 2 check:' }, { v: 'ex2', label: tex('10a^8\\div5a^3') }],
   intro: (k) => { const d = CANCEL[k]; return `Write ${T(`\\dfrac{${d.a}${d.v}^{${d.m}}}{${d.b}${d.v}^{${d.n}}}`)} in <b>expanded factor form</b>, top and bottom.`; },
   make(stage, key, ex) {
@@ -576,6 +576,7 @@ const linVal = (e, vals) => Object.keys(e).reduce((s, k) => s + e[k] * (k === ''
 const varExp = {
   title: 'All the work happens up in the exponent',
   height: 486,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n1', label: tex('n^{3k+4}\\cdot n^{k-1}') }, { v: 'n2', label: tex('\\frac{y^{6p+1}}{y^{2p-5}}') }, { sep: 'Example 6 check:' }, { v: 'a', label: '(a)' }, { v: 'b', label: '(b)' }, { v: 'c', label: '(c)' }],
   intro: (k) => `Simplify ${T(VX[k].t)}. Every power has the <b>same base</b> ${T(VX[k].base)}, so the exponent laws still work: we just add and subtract <b>expressions</b>.`,
   make(stage, key, ex) {

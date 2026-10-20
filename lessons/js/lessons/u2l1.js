@@ -62,7 +62,7 @@ const anLabel = (v) => { const s = AN[v]; return tex(s.pre ? '\\tfrac{3y^{9}}{7}
 const anatomy = {
   title: 'Anatomy of a power',
   height: 400,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar (t^12 and (-w)^7 need the room)
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar (t^12 and (-w)^7 need the room)
   choices: [{ v: '6^4', label: anLabel('6^4') }, { v: 'p^5', label: anLabel('p^5') }, { v: '9m^4', label: anLabel('9m^4') },
     { sep: 'Example 1 check:' }, ...['9^4', 't^12', '5^y', '(-w)^7', '(2/5)^8', '6x^5', '-4z^3', '3y^9/7'].map((v) => ({ v, label: anLabel(v) }))],
   intro: (v) => `Every power has the same parts. Let’s name each part of ${anLabel(v)}.`,

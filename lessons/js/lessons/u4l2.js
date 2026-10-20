@@ -306,6 +306,8 @@ const tileRect = makeTiles('From a pile of tiles to a rectangle', [
 const tileNeg = makeTiles('Negative tiles, and zero pairs to finish the rectangle', [
   { v: 's4', label: tex('x^2+x-6') }, { v: 'm6', label: tex('x^2-x-6') }, { v: 'p3', label: tex('x^2-4x+3') },
   { sep: 'Example 8 check:' }, { v: 'e8a', label: '(a)' }, { v: 'e8c', label: '(c)' }]);
+tileRect.minW = 900; // drawn this wide and scaled to fit beside the sidebar (the side panel of labels needs it)
+tileNeg.minW = 860; // drawn this wide and scaled to fit beside the sidebar
 
 /* ============ 2. Expand (x + p)(x + q), then read it backwards ============ */
 const EG = { gen: null, a1: [3, 4], a2: [1, 9], a3: [6, 6], a4: [7, 3], a5: [-4, -3], a6: [9, -5], y9: [4, 6, 'y'], yb: [-3, 5, 'y'] };
@@ -389,6 +391,7 @@ const expandGrid = makeExpand('Expand, then read it backwards', [{ v: 'gen', lab
   { v: 'a1', label: tex('(x+3)(x+4)') }, { v: 'a2', label: tex('(x+1)(x+9)') }, { v: 'a3', label: tex('(x+6)(x+6)') }, { v: 'a4', label: tex('(x+7)(x+3)') }, { v: 'a5', label: tex('(x-4)(x-3)') }, { v: 'a6', label: tex('(x+9)(x-5)') }]);
 const twoVar = makeExpand('Why the second variable tags along', [{ sep: 'Example 9 check:' }, { v: 'y9', label: tex('(x+4y)(x+6y)') }, { sep: 'Another:' }, { v: 'yb', label: tex('(x-3y)(x+5y)') }], 'y9');
 twoVar.minW = 940; // drawn this wide and scaled to fit beside the sidebar
+expandGrid.minW = 940; // drawn this wide and scaled to fit beside the sidebar (as twoVar: the sum and product boxes need it)
 
 /* ============ 2. The sum–product search (Example 4's tables) ============ */
 const PT = { d: [7, 12], a2: [13, 40], a3: [9, 18], a4: [6, 9], b1: [-10, 21], b2: [-13, 12], b3: [1, -12], b4: [-22, 40] };

@@ -478,7 +478,7 @@ const graphToEq = {
       { cap: `<b>One side</b>, ${T('x')}-term positive: subtract ${T('3y')} from both sides, ${T('0=2x-3y+18')}. So ${T('2x-3y+18=0')}; no common factor.`,
         run: async (c) => { await say(c, Pn, T('2x-3y+18=0'), 'u7l7-mline u7l7-good'); await mac.light(c, 3); await mac.light(c, 1); await mac.light(c, 2); } },
       { cap: `Check both points. ${T('P')}: ${T('2(-9)-3(0)+18=0')} ✓. ${T('Q')}: ${T('2(0)-3(6)+18=0')} ✓.`,
-        run: async (c) => { await say(c, Pn, `${T('P')}: ${T('-18-0+18=0')} ${OK} &ensp; ${T('Q')}: ${T('0-18+18=0')} ${OK}`, 'u7l7-small'); } }
+        run: async (c) => { await say(c, Pn, `${T('P')}: ${T('-18-0+18=0')} ${OK}<br>${T('Q')}: ${T('0-18+18=0')} ${OK}`, 'u7l7-small'); } }
     ];
   }
 };

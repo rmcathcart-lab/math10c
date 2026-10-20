@@ -119,3 +119,15 @@
 .u9l8-exrow.u9l8-xwide { grid-template-columns: 600px 1fr; }
 /* sidebar captions are only 268 px wide: let a long formula break after = or ≈ instead of running out of the box */
 .ex-panel .ex-cap .katex { white-space: normal; }
+
+/* ---------- one screen (main.lesson.screen): the pyramid (drawn at the column width) and the big one left; Q1–Q3
+   right; the explainer, the calculator tip and early finishers below ---------- */
+.wf .u9l8-pyrfig { margin: 4px 0 6px; }
+.wf .wf-poll { margin-top: 8px; }
+.wf .wf-poll .poll-opts.u9l8-c4 { gap: 6px; margin: 0 0 10px; }
+.wf .wf-poll .opt { padding: 5px 6px; white-space: nowrap; }
+.wf .u9l8-wqs { grid-template-columns: 1fr; gap: 10px; margin: 0; }
+.wf .u9l8-wqs .bk-wq { padding: 2px 12px 6px; }
+.wf .u9l8-wqs .q-line { margin: 6px 0 2px; font-size: 17px; gap: 10px; }
+.wf .u9l8-wqs .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf .u9l8-wqs .bk-ans { font-size: 15.5px; line-height: 1.32; margin: 0 0 0 40px; min-height: 0; }
