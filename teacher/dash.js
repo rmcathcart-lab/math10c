@@ -39,7 +39,8 @@
   }
   function tabs() {
     var t = el('nav', 'tabs');
-    [['live', 'Live'], ['exits', 'Exit slips'], ['tests', 'Tests'], ['calendar', 'Calendar'], ['progress', 'Progress'], ['outcomes', 'Outcomes'], ['questions', 'Questions'], ['student', 'Student'], ['settings', 'Settings']].forEach(function (x) {
+    var nrt = HW.Dash && HW.Dash.retestCount;
+    [['live', 'Live'], ['exits', 'Exit slips'], ['tests', 'Tests'], ['retests', 'Retests' + (nrt ? ' <span class="tab-badge" title="Retest requests waiting">' + nrt + '</span>' : '')], ['calendar', 'Calendar'], ['progress', 'Progress'], ['outcomes', 'Outcomes'], ['questions', 'Questions'], ['student', 'Student'], ['settings', 'Settings']].forEach(function (x) {
       var b = el('button', 'tab' + (st.tab === x[0] ? ' on' : ''), x[1]); b.type = 'button';
       b.addEventListener('click', function () { st.tab = x[0]; ls('hw:ttab', x[0]); render(); });
       t.appendChild(b);
@@ -151,9 +152,11 @@
   function render() {
     view.innerHTML = '';
     if (!st.D && st.tab !== 'settings') { if (!st.classes.length) st.tab = 'settings'; else return; }
+    // how many retest requests are waiting (the tab's badge): asked once per class, then kept fresh by the tab itself
+    if (HW.DashRetests && st.klass && st.rtAsked !== st.klass) { st.rtAsked = st.klass; HW.Dash.retestCount = 0; HW.DashRetests.load().then(function () { if (st.tab !== 'retests') render(); }, function () {}); }
     view.appendChild(tabs());
     var body = el('div', 'tab-body'); view.appendChild(body);
-    ({ live: renderLive, exits: function (b) { HW.DashTests.render(b, 'exit'); }, tests: function (b) { HW.DashTests.render(b, 'test'); }, calendar: function (b) { HW.DashCal.render(b); }, progress: renderProgress, outcomes: renderOutcomes, questions: renderQuestions, student: renderStudent, settings: renderSettings }[st.tab] || renderLive)(body);
+    ({ live: renderLive, exits: function (b) { HW.DashTests.render(b, 'exit'); }, tests: function (b) { HW.DashTests.render(b, 'test'); }, retests: function (b) { HW.DashRetests.render(b); }, calendar: function (b) { HW.DashCal.render(b); }, progress: renderProgress, outcomes: renderOutcomes, questions: renderQuestions, student: renderStudent, settings: renderSettings }[st.tab] || renderLive)(body);
     HW.texIn && HW.texIn(body);
   }
 

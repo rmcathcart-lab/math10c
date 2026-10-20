@@ -106,6 +106,17 @@
       });
       roster.push({ name: p.name, pin: true, firstSeen: first, lastSeen: last, devices: p.home > 0.3 ? 2 : 1 });
     });
+    // the two who asked for a Unit 1 retest (retestList) finished its required practice: anything left done, and the
+    // ones whose solution was shown redone without it
+    ['Ava Martin', 'Maya Patel'].forEach(function (name) {
+      HW.CATALOG.filter(function (c) { return c.unit === 1; }).forEach(function (cat) { cat.lessons.forEach(function (c) {
+        var lesson = HW.lessons[c.id]; if (!lesson || lesson.test) return;
+        var pr = prog[name + '|' + lesson.id] || (prog[name + '|' + lesson.id] = { name: name, lesson: lesson.id, items: {} });
+        lesson.items.forEach(function (it) { if (it.extra) return; var x = pr.items[it.id];
+          if (!x || x[0] !== 'done') pr.items[it.id] = ['done', 'first', 0, 45, 0, 0];
+          else if (x[1] === 'shown') x[6] = now - 30 * 3600000; });
+      }); });
+    });
     att.sort(function (a, b) { return a[0] - b[0]; });
     return { att: att, evs: evs, days: Object.keys(dayAgg).map(function (k) { return dayAgg[k]; }), prog: Object.keys(prog).map(function (k) { return prog[k]; }), roster: roster, pace: PACE, dayList: days };
   }
@@ -189,19 +200,22 @@
   }
   /* a live test: each made-up student starts within a minute, answers every 15–40 s; one leaves about a minute in and stays
      locked until you unlock them; one never shows up */
-  function launch(def, testId) {
+  function launch(def, testId, who) {
     if (T.live) return { ok: false, error: 'live', live: liveInfo() };
     var id = 'DEMO-L' + (++T.n), now = Date.now(), plan = {};
     PEOPLE.forEach(function (p, i) {
-      if (p.never) return;
+      if (p.never || (who && p.name !== who)) return;
       var r0 = rnd(p.name + '|' + id), A = answersFor(p, def, id, now, 0);
       var ethan = p.name === 'Ethan Wilson';
-      plan[p.name] = { start: ethan ? 8000 : r0.int(5, 45) * 1000, gap: Math.round(r0.int(15, 40) / p.speed) * 1000, A: A, leaveAt: ethan ? 50000 : 0 };
+      plan[p.name] = { start: ethan && !who ? 8000 : r0.int(5, 45) * 1000, gap: Math.round(r0.int(15, 40) / p.speed) * 1000, A: A, leaveAt: ethan && !who ? 50000 : 0 };
     });
-    T.live = { id: id, test: testId, title: def.title, kind: def.kind, def: def, launched: now, ending: 0, extra: {}, unlock: {}, submit: {}, plan: plan, done: {} };
+    T.live = { id: id, test: testId, title: def.title, kind: def.kind, def: def, launched: now, ending: 0, extra: {}, unlock: {}, submit: {}, plan: plan, done: {}, who: who || '' };
     return { ok: true, live: liveInfo() };
   }
-  function liveInfo() { var L = T.live; if (!L) return null; return { id: L.id, test: L.test, title: L.title, kind: L.kind, launched: L.launched, ending: !!L.ending, extra: L.extra, unlock: L.unlock, submit: L.submit }; }
+  function liveInfo() { var L = T.live; if (!L) return null; var o = { id: L.id, test: L.test, title: L.title, kind: L.kind, launched: L.launched, ending: !!L.ending, extra: L.extra, unlock: L.unlock, submit: L.submit }; if (L.who) o.who = L.who; return o; }
+  function liveKeyOf(who) { return who ? CODE + '|' + key(who) : CODE; }
+  function liveMap() { var m = {}; if (T.live) m[liveKeyOf(T.live.who)] = liveInfo(); return m; }
+  function isMine(who) { return T.live && (T.live.who || '') === (who || ''); }
   function key(n) { return String(n).toLowerCase().replace(/\s+/g, ' ').trim(); }
   function recOf(name, now) {
     var L = T.live, P = L.plan[name]; if (!P) return null;
@@ -222,14 +236,14 @@
     pages.forEach(function (pg, pi) { if (pg.parts.some(function (q) { return q.key === nextKey; })) cur = pi; });
     return { st: st, why: why, ans: ans, n: n, order: P.A.order, cur: cur, at: st === 'writing' ? now - (n * 7919 % 9000) : doneAt, used: Math.min(work, lim || work), leaves: P.leaveAt && el > P.leaveAt ? 1 : 0, fs: true, started: L.launched + P.start, done: doneAt };
   }
-  function tlive() {
-    var names = PEOPLE.map(function (p) { return p.name; }), now = Date.now();
-    if (!T.live) return { ok: true, live: null, names: names, now: now };
+  function tlive(who) {
+    var names = PEOPLE.map(function (p) { return p.name; }).filter(function (n) { return !who || n === who; }), now = Date.now();
+    if (!isMine(who)) return { ok: true, live: null, names: names, now: now };
     var recs = {}; names.forEach(function (n) { var r = recOf(n, now); if (r) recs[n] = r; });
     return { ok: true, live: liveInfo(), def: T.live.def, recs: recs, names: names, now: now };
   }
-  function tctl(op, name, mins) {
-    var L = T.live; if (!L) return { ok: false, error: 'no live test' };
+  function tctl(op, name, mins, who) {
+    var L = T.live; if (!L || !isMine(who)) return { ok: false, error: 'no live test' };
     var n = key(name || ''), now = Date.now();
     if (op === 'unlock') { L.unlock[n] = now; delete L.submit[n]; if (Number(mins)) L.extra[n] = (L.extra[n] || 0) + Number(mins); }
     else if (op === 'time') L.extra[n || '*'] = (L.extra[n || '*'] || 0) + (Number(mins) || 0);
@@ -239,10 +253,12 @@
     else if (op === 'close') {
       var rows = [];
       PEOPLE.forEach(function (p) {
+        if (L.who && p.name !== L.who) return;
         var r = recOf(p.name, now); if (!r) return;
         rows.push({ name: p.name, status: r.st === 'writing' || r.st === 'left' ? 'ended' : r.st, started: r.started, submitted: r.done || now, used: Math.round(r.used / 1000), leaves: r.leaves, device: 'Chromebook', answers: r.ans, marks: '', score: '', total: '' });
       });
-      sessions().push({ id: L.id, test: L.test, title: L.title, kind: L.kind, launched: L.launched, closed: now, released: 0, def: L.def, rows: rows });
+      sessions().push({ id: L.id, test: L.test, title: L.title, kind: L.kind, launched: L.launched, closed: now, released: 0, def: L.def, rows: rows, student: L.who || '' });
+      if (L.who) retestList().forEach(function (x) { if (x.session === L.id && x.status === 'open') { x.status = 'done'; x.updated = now; } });
       T.live = null;
       return { ok: true, closed: L.id };
     } else return { ok: false, error: 'bad op' };
@@ -256,6 +272,22 @@
   }
   function release(sid, on) { var s = sessions().filter(function (x) { return x.id === sid; })[0]; if (!s) return { ok: false, error: 'unknown session' }; s.released = on ? Date.now() : 0; return { ok: true }; }
 
+  /* retest requests: two made-up students who finished Unit 1's practice */
+  function retestList() {
+    if (!T.rt) { var now = Date.now(); T.rt = [
+      { id: 'DEMO-R1', name: 'Ava Martin', unit: 1, requested: now - 26 * 3600000, status: 'requested', session: '', updated: now - 26 * 3600000, test: '', info: '' },
+      { id: 'DEMO-R2', name: 'Maya Patel', unit: 1, requested: now - 3 * 3600000, status: 'requested', session: '', updated: now - 3 * 3600000, test: '', info: '' }]; }
+    return T.rt;
+  }
+  function retests() {
+    var names = {}; retestList().forEach(function (x) { names[key(x.name)] = 1; });
+    var res = [], used = {};
+    sessions().forEach(function (s) { if (s.kind === 'exit') return; s.rows.forEach(function (r) { if (!names[key(r.name)]) return; res.push({ session: s.id, name: r.name, status: r.status, marks: r.marks || '', score: r.score, total: r.total }); used[s.id] = 1; }); });
+    return { ok: true, retests: retestList().map(function (x) { return Object.assign({}, x); }), results: res, live: liveMap(),
+      sessions: sessions().filter(function (s) { return used[s.id]; }).map(function (s) { return { id: s.id, test: s.test, title: s.title, launched: s.launched, closed: s.closed, released: s.released, def: s.def, student: s.student || '' }; }) };
+  }
+  function retestSet(id, status) { var x = retestList().filter(function (r) { return r.id === id; })[0]; if (!x) return { ok: false, error: 'unknown request' }; x.status = status; x.updated = Date.now(); if (status === 'requested') x.session = ''; return { ok: true }; }
+
   /* the requests the dashboard makes, answered for the demo class. real = the real ledger (for the list of your tests). */
   function api(action, p, real) {
     p = p || {};
@@ -268,12 +300,19 @@
       case 'tresults': return ok(tresults(p.session));
       case 'setmarks': return ok(setMarks(p.session, p.data));
       case 'release': return ok(release(p.session, p.on === 1 || p.on === '1' || p.on === true));
-      case 'tlive': return ok(tlive());
+      case 'tlive': return ok(tlive(p.who));
       case 'cal': return ok({ ok: true, cal: calendar(), noSchool: [] });
       case 'calsync': return ok({ ok: true, sync: false });
       case 'setcal': try { T.cal = p.cal ? JSON.parse(p.cal) : null; } catch (e) { return ok({ ok: false, error: 'bad calendar' }); } T.calSet = true; return ok({ ok: true, cal: T.cal });
-      case 'tctl': return ok(tctl(p.op, p.name, p.mins));
-      case 'tests': return real('tests', p).then(function (d) { if (d && d.ok) { d.live = Object.assign({}, d.live || {}); if (T.live) d.live[CODE] = liveInfo(); } return d; });
+      case 'tctl': return ok(tctl(p.op, p.name, p.mins, p.who));
+      case 'tests': return real('tests', p).then(function (d) { if (d && d.ok) { d.live = Object.assign({}, d.live || {}, liveMap()); } return d; });
+      case 'retests': return ok(retests());
+      case 'retestset': return ok(retestSet(p.id, p.status));
+      case 'launchretest': return real('tests', {}).then(function (d) {
+        var x = retestList().filter(function (r) { return r.id === p.id; })[0]; if (!x || x.status !== 'requested') return { ok: false, error: 'not requested' };
+        var t = d && d.ok ? (d.tests || []).filter(function (q) { return q.id === p.test; })[0] : null; if (!t || !t.def) return { ok: false, error: 'unknown test' };
+        var r = launch(t.def, t.id, x.name); if (r.ok) { x.status = 'open'; x.session = r.live.id; x.updated = Date.now(); x.test = t.id; } return r;
+      });
       case 'launch': return real('tests', {}).then(function (d) {
         var t = d && d.ok ? (d.tests || []).filter(function (x) { return x.id === p.test; })[0] : null;
         return t && t.def ? launch(t.def, t.id) : { ok: false, error: 'unknown test' };

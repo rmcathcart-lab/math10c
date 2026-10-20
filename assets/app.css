@@ -697,3 +697,17 @@ a.lesson-row:focus-visible, .lesson-teach:focus-visible { outline: 3px solid var
   .lr-info { grid-column: 1 / -1; }
   .lr-go { padding: 5px 12px; font-size: 13.5px; }
 }
+
+/* ---------- retests: the request button on the right of a unit's level row ---------- */
+.unit-body .unit-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; padding: 10px 16px; background: #fbfaf7; border-bottom: 1px solid var(--line2); }
+.unit-body .unit-meta .unit-levels { padding: 0; background: none; border: 0; margin: 0; }
+.retest { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+.retest .rt-ask { border-radius: 999px; padding: 7px 16px; }
+.retest.rt-asked, .retest.rt-open { padding: 5px 6px 5px 12px; border-radius: 999px; background: #e9f6ef; border: 1px solid #b9e0c8; color: #1d6b43; }
+.retest.rt-open { background: #fff3c4; border-color: #e9cf6b; color: #6b5200; padding-right: 12px; }
+.retest .rt-cancel { padding: 3px 10px; font-size: 13px; }
+.retest .rt-locked-btn { border-radius: 999px; padding: 5px 12px; font-size: 13px; color: var(--muted); border: 1px dashed var(--line); background: #fff; }
+.retest .rt-locked-btn:hover { color: var(--ink2); border-color: #cfc9bb; }
+.rt-ic { font-size: 14px; }
+.redo-note { margin: 10px 0 0; }
+@media (max-width: 640px) { .retest { margin-left: 0; } }

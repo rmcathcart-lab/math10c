@@ -257,7 +257,7 @@
     head.appendChild(hl);
     var acts = el('div', 'hh-cal'); acts.id = 'home-cal'; homeCalendar(acts); head.appendChild(acts); // the next test + the class calendar, on the right
     view.appendChild(head);
-    loadCal();
+    loadCal(); loadRetests();
     var td = homeToday(); if (td) view.appendChild(td);
     if (HW.TestMode) HW.TestMode.home(view);
     var uhead = el('div', 'units-head', '<h2>Units</h2>');
@@ -292,7 +292,7 @@
       uh.addEventListener('click', toggle); uh.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
       sec.appendChild(uh);
       var body = el('div', 'unit-body'); sec.appendChild(body);
-      if (built.length) body.appendChild(unitLevels(u));
+      if (built.length) { var meta = el('div', 'unit-meta'); meta.appendChild(unitLevels(u)); var rc = retestCtl(u); if (rc) meta.appendChild(rc); body.appendChild(meta); }
       if (!u.lessons.length) { sec.classList.add('soon'); body.appendChild(el('div', 'soon-note', 'Coming soon')); units.appendChild(sec); return; }
       var list = el('div', 'lesson-list');
       u.lessons.forEach(function (c) {
@@ -331,6 +331,81 @@
     });
     L.setStatus({ view: 'home' }, false);
   }
+  /* ---------------- retests ----------------
+   * A unit's retest unlocks when every required question in it is done without seeing the solution (one whose
+   * solution was shown counts once a new version is done without it: r.redo) — and, once the student has written a
+   * retest for that unit, every extra practice question is done too. The request goes to the Teacher Ledger's Retests
+   * tab; the teacher launches the retest, and it pops up like any test (testmode.js). */
+  var RT = null, rtAt = 0, rtBusy = false; // my requests from the ledger (null = not loaded yet)
+  function loadRetests(force) {
+    if (!L.enabled || !session || !session.token || rtBusy) return;
+    if (!force && RT && Date.now() - rtAt < 60000) return;
+    rtBusy = true;
+    L.get('myretests', { 'class': session.klass, name: session.name, token: session.token }, 15000).then(function (d) {
+      rtBusy = false; if (!d || !d.ok) return;
+      var was = JSON.stringify(RT); RT = d.retests || []; rtAt = Date.now();
+      if (was !== JSON.stringify(RT) && !cur.lesson && document.body.className === 'home') { var y = scrollY; renderHome(); scrollTo(0, y); }
+    }).catch(function () { rtBusy = false; });
+  }
+  function retestNeed(u) {
+    var n = { req: 0, reqLeft: 0, redo: 0, extra: 0, extraLeft: 0, first: null };
+    u.lessons.forEach(function (c) {
+      var lesson = HW.lessons[c.id]; if (!lesson || lesson.test) return;
+      var items = (S.lessons[lesson.id] || { items: {} }).items;
+      lesson.items.forEach(function (it) {
+        var r = items[it.id], done = r && r.s === 'done';
+        if (it.extra) { n.extra++; if (!done) n.extraLeft++; return; }
+        n.req++;
+        if (!done) { n.reqLeft++; if (!n.first) n.first = [lesson.id, it.id]; }
+        else if (r.credit === 'shown' && !r.redo) { n.redo++; if (!n.first) n.first = [lesson.id, it.id]; }
+      });
+    });
+    return n;
+  }
+  function retestCtl(u) {
+    if (!L.enabled || !session || !session.token || !RT) return null;
+    var mine = RT.filter(function (x) { return x.unit === u.unit; }), n = retestNeed(u);
+    var active = mine.filter(function (x) { return x.status === 'requested' || x.status === 'open'; })[0];
+    var written = mine.filter(function (x) { return x.status === 'done'; }).length;
+    var box = el('div', 'retest');
+    if (active && active.status === 'open') { box.classList.add('rt-open'); box.innerHTML = '<span class="rt-ic" aria-hidden="true">📝</span><span><b>Your retest is open.</b> It pops up on your screen.</span>'; return box; }
+    if (active) {
+      box.classList.add('rt-asked');
+      box.innerHTML = '<span class="rt-ic" aria-hidden="true">✓</span><span><b>Retest requested</b> <span class="muted">· ' + esc(new Date(active.requested).toLocaleDateString([], { month: 'short', day: 'numeric' })) + '</span></span>';
+      var cx = el('button', 'btn btn-ghost btn-small rt-cancel', 'Cancel'); cx.type = 'button';
+      cx.addEventListener('click', function () { if (confirm('Cancel your retest request for Unit ' + u.unit + '?')) askRetest(u, true, cx); });
+      box.appendChild(cx); return box;
+    }
+    var left = n.reqLeft + n.redo + (written ? n.extraLeft : 0);
+    if (!left) {
+      var b = el('button', 'btn btn-primary btn-small rt-ask', written ? 'Request another retest' : 'Request retest'); b.type = 'button';
+      b.title = 'All the ' + (written ? 'practice' : 'required practice') + ' for Unit ' + u.unit + ' is done. Ask for a retest.';
+      b.addEventListener('click', function () { askRetest(u, false, b, n); });
+      box.appendChild(b); return box;
+    }
+    // locked: say what's left, and jump to the first question that still needs doing
+    box.classList.add('rt-locked');
+    var bits = [];
+    if (n.reqLeft) bits.push(n.reqLeft + ' required question' + (n.reqLeft === 1 ? '' : 's') + ' left');
+    if (n.redo) bits.push(n.redo + ' to redo without the solution');
+    if (written && n.extraLeft) bits.push(n.extraLeft + ' extra practice left');
+    var go = el('button', 'btn btn-ghost btn-small rt-locked-btn', '<span class="rt-ic" aria-hidden="true">🔒</span> ' + (written ? 'Another retest' : 'Retest') + ': ' + esc(bits.join(' · '))); go.type = 'button';
+    go.title = written ? 'You’ve written a retest for this unit. To ask for another, finish every question in the unit, including the extra practice.' : 'Finish all the required practice for this unit, without seeing solutions, to unlock a retest.';
+    var first = n.first;
+    if (!first && written) u.lessons.some(function (c) { var lesson = HW.lessons[c.id]; if (!lesson || lesson.test) return false; var items = (S.lessons[lesson.id] || { items: {} }).items; return lesson.items.some(function (it) { var r = items[it.id]; if (it.extra && !(r && r.s === 'done')) { first = [lesson.id, it.id]; return true; } return false; }); });
+    if (first) go.addEventListener('click', function () { location.hash = '#/lesson/' + first[0] + '/' + first[1]; });
+    box.appendChild(go); return box;
+  }
+  function askRetest(u, cancel, btn, n) {
+    btn.disabled = true; var t0 = btn.textContent; btn.textContent = cancel ? 'Cancelling…' : 'Sending…';
+    var p = { 'class': session.klass, name: session.name, token: session.token, unit: u.unit };
+    if (cancel) p.cancel = 1; else if (n) p.info = 'required ' + n.req + '/' + n.req + ', extra ' + (n.extra - n.extraLeft) + '/' + n.extra;
+    L.get('reqretest', p, 15000).then(function (d) {
+      if (!d || !d.ok) { btn.disabled = false; btn.textContent = t0; alert('That didn’t go through. Check your connection and try again.'); return; }
+      RT = d.retests || RT; rtAt = Date.now(); var y = scrollY; renderHome(); scrollTo(0, y);
+    }, function () { btn.disabled = false; btn.textContent = t0; alert('That didn’t go through. Check your connection and try again.'); });
+  }
+
   /* ---------------- class calendar ----------------
    * The teacher plans it in the ledger (Calendar tab); here it's read-only. "All lessons" has a Lessons / Calendar
    * toggle and says when the next unit test is. The calendar is kept on the device too, so it shows straight away. */
@@ -531,11 +606,13 @@
     if (done) {
       card.appendChild(el('div', 'answered', '<div class="ans-label">Your answer</div><div class="ans-val">' + (r.ansHtml || '—') + '</div>'));
       fb.className = 'feedback good';
-      fb.innerHTML = '<div class="fb-title">' + (r.credit === 'first' ? '✓ Correct on the first try' : r.credit === 'shown' ? '✓ Correct (after the answer was shown)' : '✓ Correct') + '</div>';
+      var needRedo = r.credit === 'shown' && !r.redo && !it.extra;
+      fb.innerHTML = '<div class="fb-title">' + (r.credit === 'first' ? '✓ Correct on the first try' : r.credit === 'shown' ? (r.redo ? '✓ Correct (redone without the solution)' : '✓ Correct (after the answer was shown)') : '✓ Correct') + '</div>';
       card.appendChild(fb);
+      if (needRedo) card.appendChild(el('div', 'notice redo-note', 'You saw the solution for this one. Do one new version <b>without</b> seeing the solution and it counts toward a unit retest.'));
       card.appendChild(solutionBlock(inst, false));
       var acts = el('div', 'qactions');
-      var again = el('button', 'btn btn-ghost', 'Try another one like this'); again.type = 'button';
+      var again = el('button', 'btn ' + (needRedo ? 'btn-primary' : 'btn-ghost'), needRedo ? 'Redo it without the solution' : 'Try another one like this'); again.type = 'button';
       again.addEventListener('click', function () { r.prac = (r.prac || 0) + 1; cur.practice = true; touch(lesson.id); drawCard(); });
       acts.appendChild(again); acts.appendChild(nextBtn(it)); card.appendChild(acts);
       main.appendChild(card); return;
@@ -627,7 +704,11 @@
     }
     if (res.v === 'correct') {
       logAttempt(it, 'correct', '', ansT, (cur.practice ? cur.ptv || 0 : r.tv) + 1);
-      if (cur.practice) { r.pracRight = (r.pracRight || 0) + 1; cur.ptv = 0; touch(lesson.id); showFb(fb, 'good', '✓ Correct', ''); fb.appendChild(solutionBlock(inst, false)); w.disable(true); swapToNext(it); return; }
+      if (cur.practice) {
+        // a question done after seeing its solution counts toward a retest once a new version is done without it
+        var redone = r.credit === 'shown' && !r.redo && !it.extra; if (redone) r.redo = Date.now();
+        r.pracRight = (r.pracRight || 0) + 1; cur.ptv = 0; touch(lesson.id); showFb(fb, 'good', '✓ Correct', redone ? 'Done without the solution: this question now counts toward a unit retest.' : ''); fb.appendChild(solutionBlock(inst, false)); w.disable(true); swapToNext(it); if (redone) drawNav(); return;
+      }
       r.s = 'done'; r.credit = r.reveals ? 'shown' : (r.wrong || r.steps) ? 'hint' : 'first'; r.done = Date.now(); r.ansHtml = answerHtml(inst, resp); r.ans = ansT;
       touch(lesson.id); drawNav(); drawHeaderBar();
       showFb(fb, 'good', r.credit === 'first' ? '✓ Correct on the first try!' : '✓ Correct', r.credit === 'first' ? '' : 'Nice work sticking with it.');
@@ -702,7 +783,7 @@
 
   /* ---------------- start ---------------- */
   HW.App = { route: route, state: function () { return S; }, session: function () { return session; }, cur: function () { return cur; }, signOut: signOut,
-    makeWidget: makeWidget, answerText: answerText, answerHtml: answerHtml, drawTop: drawTop, leaveLesson: leaveLesson, solutionBlock: solutionBlock };
+    makeWidget: makeWidget, answerText: answerText, answerHtml: answerHtml, drawTop: drawTop, leaveLesson: leaveLesson, solutionBlock: solutionBlock, save: saveState, pushProgress: pushProgress };
   function boot() {
     if (root.MathfieldElement) { try { root.MathfieldElement.fontsDirectory = null; root.MathfieldElement.soundsDirectory = null; } catch (e) {} }
     var saved = null; try { saved = JSON.parse(ls(SESSION) || 'null'); } catch (e) {}
