@@ -45,6 +45,7 @@ const ZM = { n49: { v: 'x', k: 7 }, n25: { v: 'x', k: 5 }, n100: { v: 'x', k: 10
 const zeroMiddle = {
   title: 'The middle coefficient is 0: find the pair',
   height: 440,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar (the expand check for x^2-100 is long)
   choices: [{ v: 'n49', label: tex('x^2-49') }, { v: 'n25', label: tex('x^2-25') }, { v: 'n100', label: tex('x^2-100') }, { sep: 'Example 1 check:' }, { v: 'a', label: '(a)' }, { v: 'b', label: '(b)' }, { v: 'd', label: '(d)' }],
   intro: (key) => { const { v, k } = ZM[key]; return `Factor ${T(`${v}^2-${k * k}`)} the Lesson 2 way: find two integers whose <b>product</b> is ${T('c')} and whose <b>sum</b> is ${T('b')}.`; },
   make(stage, key, ex) {
@@ -109,6 +110,7 @@ const TR = { n4: 2, n9: 3, n1: 1, n16: 4 };
 const tileRect = {
   title: 'Build the rectangle: add a zero pair',
   height: 470,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n9', label: tex('x^2-9') }, { v: 'n4', label: tex('x^2-4') }, { v: 'n1', label: tex('x^2-1') }, { v: 'n16', label: tex('x^2-16') }],
   intro: (key) => `Model ${T(`x^2-${TR[key] ** 2}`)} with algebra tiles, then try to arrange the tiles into a <b>rectangle</b>. The side lengths will be the factors.`,
   make(stage, key, ex) {
@@ -184,6 +186,7 @@ const CM = {
 const cutMove = {
   title: 'Cut the L-shape and move a piece',
   height: 470,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ab', label: tex('A^2-B^2') }, { v: 'n64', label: tex('6^2-4^2') }, { v: 'n103', label: tex('10^2-3^2') }, { sep: 'Example 1 check:' }, { v: 'a', label: '(a)' }, { v: 'c', label: '(c)' }],
   intro: (key) => { const d = CM[key]; return `Show ${T(`${d.AA}-${d.BB}=(${d.A}-${d.B})(${d.A}+${d.B})`)} with a picture: same pieces, same area.`; },
   make(stage, key, ex) {
@@ -262,6 +265,7 @@ const SN = {
 const sumNever = {
   title: 'Can a sum of squares factor?',
   height: 450,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n16', label: tex('x^2+16') }, { v: 'n9', label: tex('x^2+9') }, { sep: 'Example 2 check:' }, { v: 'e', label: '(e)' }],
   intro: (key) => `${T(SN[key].e)} is a <b>sum</b> of two squares. Try every way the difference of squares pattern could fit, then ask the sum–product question.`,
   make(stage, key, ex) {
@@ -334,6 +338,7 @@ const DT = {
 const detector = {
   title: 'The perfect-square detector',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'x6', label: tex(DT.x6) }, { v: 'x12', label: tex(DT.x12) }, { v: 'a3', label: tex(DT.a3) }, { v: 'g18', label: tex(DT.g18) }, { sep: 'Example 2 check:' }, ...['a', 'b', 'c', 'd', 'e'].map((k) => ({ v: k, label: `(${k})` }))],
   intro: (key) => `Is ${T(DT[key])} a difference of squares? Check <b>each term</b>, then the <b>sign</b> between them.`,
   make(stage, key, ex) {
@@ -422,6 +427,7 @@ const GF_ITEMS = ['GCF out front', 'Difference of squares?', 'Every bracket chec
 const gcfFirst = {
   title: 'GCF first, then the pattern, then check every bracket',
   height: 440,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n7', label: tex('7x^2-28') }, { v: 'nx', label: tex('x^3-25x') }, { v: 'n16', label: tex('x^4-16') }, { sep: 'Example 3 check:' }, ...['a', 'b', 'c', 'd'].map((k) => ({ v: k, label: `(${k})` }))],
   intro: (key) => `Factor ${T(GF[key][0][1])} completely.`,
   make(stage, key, ex) {
@@ -459,6 +465,7 @@ const RK = {
 const rink = {
   title: 'Side lengths from a factored area',
   height: 470,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'g', label: 'a garden' }, { sep: 'Example 4 check:' }, { v: 'ex4', label: 'the rink' }],
   intro: (key) => { const d = RK[key]; return `A rectangular ${d.name} has area ${T(d.area)} m² and perimeter ${d.P} m. Find its length and width if ${d.cond}.`; },
   make(stage, key, ex) {
@@ -581,6 +588,7 @@ const RG = { r1: [6.5, 3.5], r2: [10.5, 9.5], r3: [5, 3] };
 const ring = {
   title: 'The area of a ring',
   height: 450,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar (the step labels need the full width)
   choices: [{ v: 'r1', label: tex('R=6.5,\\ r=3.5') }, { v: 'r2', label: tex('R=10.5,\\ r=9.5') }, { v: 'r3', label: tex('R=5,\\ r=3') }],
   intro: (key) => { const [R, r] = RG[key]; return `A circle of radius ${T(`R=${R}`)} has a circle of radius ${T(`r=${r}`)} cut out. Find the area of the ring that is left, as a multiple of ${T('\\pi')}, with no calculator.`; },
   make(stage, key, ex) {

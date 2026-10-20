@@ -188,3 +188,25 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u10l4b-fill { position: absolute; left: 0; right: 0; bottom: 0; height: 0; background: linear-gradient(#7aa0ee, #1f5bd6); opacity: .65; }
 .u10l4b-rtx { font: 700 13px var(--round); fill: var(--ink2); }
 .u10l4b-pbig .u10l4b-line.u10l4b-frl { font-size: 24px; }
+
+/* ---------- one screen (main.lesson.screen): track, races and Q1–Q3 on the left; the big one on the right ---------- */
+.wf .u10l4b-wtop { grid-template-columns: 230px 1fr; gap: 14px; margin: 6px 0 6px; }
+.wf .u10l4b-track { width: 230px; height: 161px; }
+.wf .u10l4b-races { gap: 10px; }
+.wf .u10l4b-race { padding: 26px 6px 8px; font-size: 17px; gap: 2px; }
+.wf .u10l4b-rl { width: 32px; height: 32px; font-size: 18px; line-height: 32px; top: -14px; }
+.wf .u10l4b-rs { font-size: 14px; }
+.wf .u10l4b-rd { font-size: 24px; margin-top: 2px; }
+.wf .u10l4b-bm { font-size: 17.5px; margin: 4px 0 4px; }
+.wf .bk-wq .q-line { font-size: 17px; margin: 4px 0; gap: 10px; }
+.wf .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf .u10l4b-wa { display: flex; align-items: baseline; gap: 10px; margin: 0 0 6px 40px; }
+.wf .u10l4b-wa .pill.small { flex: none; }
+.wf .bk-wq .bk-ans { font-size: 16px; line-height: 1.35; margin-top: 0; }
+.wf .wf-poll .poll-opts { gap: 6px; }
+.wf .wf-poll .opt { padding: 5px 10px; font-size: 16.5px; }
+.wf .u10l4b-racebox { margin: 12px 0 0 0; }
+.wf .u10l4b-early { margin-top: 10px; }
+.wf .u10l4b-social { font-size: 18px; margin-top: 10px; }
+/* the staircase's Work panel is narrow: its final line a little smaller so it fits */
+.u10l4b-pnar .u10l4b-line.u10l4b-big { font-size: 20px; }

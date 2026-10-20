@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,14 +43,11 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: The Carpet Deal" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Carpet Deal</h2></div>
-  <p class="big">You need new carpet for your bedroom. Two stores sell the <b>same</b> carpet.</p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Carpet Deal" id="wu" style="--wf-side: 300px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Carpet Deal</h2>
+  <p class="wf-rule">You need new carpet for your bedroom. Two stores sell the <b>same</b> carpet.</p></div>
+  <div class="wf-grid"><div class="wf-main">
   <div class="u10l5-wtop">
-    <div class="u10l5-tags">
-      <div class="u10l5-tag u10l5-tagA"><div class="u10l5-tagS">Store A</div><div class="u10l5-tagP">$3.00</div><div class="u10l5-tagU">per square foot</div></div>
-      <div class="u10l5-tag u10l5-tagB"><div class="u10l5-tagS">Store B</div><div class="u10l5-tagP">$25.00</div><div class="u10l5-tagU">per square yard</div></div>
-    </div>
     <div class="u10l5-wfig">
       <div id="u10l5-carpet"></div>
       <div class="u10l5-wbtns">
@@ -74,8 +71,12 @@
       <div class="u10l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">1\text{ yd}^2=3\times3=\mathbf{9}\text{ ft}^2</span>. Area has <b>two</b> dimensions: the square is 3 ft wide <b>and</b> 3 ft tall, so the factor 3 is used twice. Three square feet is only one row.</div></div>
     </div>
   </div>
-
-  <div class="poll">
+  </div><div class="wf-side">
+    <div class="u10l5-tags">
+      <div class="u10l5-tag u10l5-tagA"><div class="u10l5-tagS">Store A</div><div class="u10l5-tagP">$3.00</div><div class="u10l5-tagU">per square foot</div></div>
+      <div class="u10l5-tag u10l5-tagB"><div class="u10l5-tagS">Store B</div><div class="u10l5-tagP">$25.00</div><div class="u10l5-tagU">per square yard</div></div>
+    </div>
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Same carpet, two prices. Which store is <b>cheaper</b>? <b>Guess first.</b></div></div>
     <div class="poll-opts">
       <div class="opt"><b>A</b> Store A ($3.00 per <span class="tex">\text{ft}^2</span>)</div>
@@ -83,10 +84,10 @@
       <div class="opt"><b>C</b> They cost exactly the same</div>
     </div>
     <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>B: Store B.</b> Put both prices in the same unit: <span class="tex">\$3.00\text{ per ft}^2\times9\text{ ft}^2\text{ per yd}^2=\$27.00\text{ per yd}^2</span>. Store B charges $25.00 per <span class="tex">\text{yd}^2</span>, so it is <b>$2.00 cheaper</b> on every square yard. Tap <b>Price it at Store A</b>.<br>
+    <div class="poll-ans"><b>B: Store B.</b> Put both prices in the same unit: <span class="tex">\$3.00\text{ per ft}^2</span> <span class="tex">\times9\text{ ft}^2\text{ per yd}^2</span> <span class="tex">=\$27.00\text{ per yd}^2</span>. Store B charges $25.00 per <span class="tex">\text{yd}^2</span>, so it is <b>$2.00 cheaper</b> on every square yard. Tap <b>Price it at Store A</b>.<br>
       <span class="muted"><b>A</b> comes from the classic slip <span class="tex">1\text{ yd}^2=3\text{ ft}^2</span>: then Store A looks like only $9 per <span class="tex">\text{yd}^2</span>. <b>C</b> comes from “$3 is about $25 split into 9 pieces”: close, but <span class="tex">25\div9\approx\$2.78</span> per <span class="tex">\text{ft}^2</span>, not $3.</span></div>
   </div>
-
+  </div></div>
   <div class="u10l5-early">
     <div class="bk-wq">
       <div class="q-line"><div class="q-num bonus">+</div><div><b>A real room.</b> Your bedroom is 12 ft by 15 ft. How much does carpet cost at each store?</div></div>

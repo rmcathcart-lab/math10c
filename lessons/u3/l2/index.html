@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,17 +43,16 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Grow the Garden">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Grow the Garden</h2></div>
-  <p class="big">A <b>10 m by 6 m</b> garden gets <b>2 m longer</b> and <b>2 m wider</b>. Each little square is 1 m². <span class="muted">Tap the buttons to grow one side at a time.</span></p>
-
-  <div class="u3l2-wu">
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Grow the Garden" style="--wf-side: 370px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Grow the Garden</h2>
+  <p class="wf-rule">A <b>10 m by 6 m</b> garden gets <b>2 m longer</b> and <b>2 m wider</b>. Each little square is 1 m². <span class="muted">Tap the buttons to grow one side at a time.</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
     <div class="u3l2-gd" id="garden"></div>
-    <div class="u3l2-wqs">
       <div class="wq">
         <div class="q-line"><div class="q-num">1</div><div>What is the area of the old (green) garden?</div></div>
         <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">10\times6=\boldsymbol{60}</span> m²</div></div>
       </div>
+  </div><div class="wf-side">
       <div class="wq">
         <div class="q-line"><div class="q-num">2</div><div>Suppose only the <b>10 m</b> side grew, to 12 m. How much area would be added?</div></div>
         <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">12\times6=72</span>, so <b>12 m²</b> is added: one strip, 2 m by 6 m.</div></div>
@@ -62,10 +61,7 @@
         <div class="q-line"><div class="q-num">3</div><div>Suppose only the <b>6 m</b> side grew, to 8 m. How much area would be added?</div></div>
         <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">10\times8=80</span>, so <b>20 m²</b> is added: one strip, 10 m by 2 m.</div></div>
       </div>
-    </div>
-  </div>
-
-  <div class="poll">
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Now <b>both</b> sides grow by 2 m. How much garden area is added? <b>Guess first.</b></div></div>
     <div class="poll-opts">
       <div class="opt"><b>A</b> 4 m²</div>
@@ -76,6 +72,7 @@
     <div class="poll-ans"><b>C, 36 m².</b> The new garden is <span class="tex">12\times8=96</span> m², and <span class="tex">96-60=36</span>. Grow both sides in the picture: the new land is <b>three</b> pieces, <span class="tex">20+12+4=36</span>.<br>
       <span class="muted"><b>B</b> adds the answers to 2 and 3 (<span class="tex">12+20</span>) and forgets the <b>2 × 2 corner</b>. <b>A</b> is only the corner. The corner is today’s whole lesson.</span></div>
   </div>
+  </div></div>
 
   <div class="wq wq-wide">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Challenge your neighbour.</b> A 10 m by 10 m garden grows 3 m each way. How much area is added?</div></div>

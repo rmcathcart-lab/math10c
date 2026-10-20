@@ -78,12 +78,14 @@ function mountWarm() {
   const host = document.getElementById('u6l5-phones'); if (!host) return;
   const P = [{ name: 'Mia', act: 'gaming', b0: 90, r: 15 }, { name: 'Leo', act: 'texting', b0: 40, r: 5 }];
   const times = ['12:00', '1:00', '2:00', '3:00'];
+  // table cell size: the one-screen layout sets smaller ones in CSS (--u6l5-cw / --u6l5-ch on #u6l5-phones)
+  const hcs = getComputedStyle(host), cellW = parseFloat(hcs.getPropertyValue('--u6l5-cw')) || 112, cellH = parseFloat(hcs.getPropertyValue('--u6l5-ch')) || 50;
   const sides = P.map((p) => {
     const wrap = h('div', 'u6l5-pside');
     const ph = h('div', 'u6l5-phone', `<div class="u6l5-pname">${p.name}</div><div class="u6l5-pbody"><div class="u6l5-pscreen">` +
       '<div class="u6l5-bat"><div class="u6l5-batfill"></div></div><div class="u6l5-pct"></div>' +
       `<div class="u6l5-act">${p.act}</div></div><div class="u6l5-pbtn"></div></div>`);
-    const tb = new ValueTable(null, { headers: [{ html: 'Time' }, { html: 'Battery' }], rows: times.map((t, i) => [{ html: t }, { html: (p.b0 - p.r * i) + '%' }]), layout: 'v', cellW: 112, cellH: 50, hide: [[3, 1]], q: '?', cls: 'u6l5-wtab' });
+    const tb = new ValueTable(null, { headers: [{ html: 'Time' }, { html: 'Battery' }], rows: times.map((t, i) => [{ html: t }, { html: (p.b0 - p.r * i) + '%' }]), layout: 'v', cellW, cellH, hide: [[3, 1]], q: '?', cls: 'u6l5-wtab' });
     wrap.append(ph, tb.el);
     const fill = ph.querySelector('.u6l5-batfill'), pct = ph.querySelector('.u6l5-pct'), scr = ph.querySelector('.u6l5-pscreen');
     const set = (v) => {
@@ -124,6 +126,7 @@ const LT = {
 const linTest = {
   title: 'Is the table linear?',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'mia', label: LT.mia.label }, { v: 'bend', label: LT.bend.label }, { sep: 'Example 1 check' }, ...['a', 'b', 'c'].map((k) => ({ v: k, label: '(' + k + ')' }))],
   intro: (k) => (LT[k].hx ? `Mia’s battery, hour by hour. Check the ${T('t')}-row, then the changes in ${T('B')}. Press <b>Next</b>.`
     : `A table of values. Check the ${T('x')}-row, then the changes in ${T('y')}. Press <b>Next</b>.`),
@@ -178,6 +181,7 @@ const UN = {
 const uneven = {
   title: 'Every step hides a slope triangle',
   height: 470,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'c', label: UN.c.label }, { v: 'bend', label: UN.bend.label }],
   intro: (k) => (k === 'c' ? `The ${T('x')}-steps are ${T('+2,\\ +3,\\ +4')} and the ${T('y')}-changes are ${T('-4,\\ -6,\\ -8')}. Linear or not? Press <b>Next</b>.`
     : `Here every change in ${T('y')} is ${T('+2')}. Does that make it linear? Press <b>Next</b>.`),
@@ -275,6 +279,7 @@ const TI = {
 const tableInts = {
   title: 'Intercepts in a table of values',
   height: 470,
+  minW: 920, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex2', label: TI.ex2.label }, { sep: 'Warm-up' }, { v: 'mia', label: 'Mia’s phone' }, { v: 'leo', label: 'Leo’s phone' }],
   intro: (k) => (k === 'ex2' ? 'Is it linear? Then where are the zeros? Press <b>Next</b>.' : `${TI[k].who}’s battery: ${T('t')} hours after noon, ${T('B')} percent. Press <b>Next</b>.`),
   make(stage, k, ex) {
@@ -339,6 +344,7 @@ const DR = {
 const domRange = {
   title: 'Squash the graph onto each axis',
   height: 470,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [...['slant', 'hor', 'ver', 'seg'].map((k) => ({ v: k, label: DR[k].label })), { sep: 'Example 3 check' }, ...['a', 'b', 'c'].map((k) => ({ v: k, label: DR[k].label }))],
   intro: `<b>Domain:</b> which ${T('x')}-values does the graph use? <b>Range:</b> which ${T('y')}-values? Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -438,6 +444,7 @@ function gauge(stage, kind, x, y) {
 const story = {
   title: 'Intercepts, rate, domain and range in a story',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'cooler', label: ST.cooler.label }, { v: 'phone', label: ST.phone.label }],
   intro: (k) => (k === 'cooler' ? 'An 18 L water-cooler jug, emptied at a steady rate. Press <b>Next</b>.' : 'Mia’s phone from the warm-up, 90% at noon. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -511,6 +518,7 @@ const LL = {
 const lineLab = {
   title: 'The line lab: rotate it, slide it, watch the counters',
   height: 470,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(LL).map((k) => ({ v: k, label: LL[k].label })),
   intro: (k) => (LL[k].free ? 'Your turn: rotate and slide the line with the buttons. Press <b>Next</b> to start.' : 'Watch the counters on the right while the line moves. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -586,6 +594,7 @@ const CF = {
 const countFlow = {
   title: 'How many intercepts? Three questions',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CF).map((k) => ({ v: k, label: CF[k].label })),
   intro: 'Answer the questions from the top. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -708,6 +717,7 @@ const MD = {
 const match = {
   title: 'Match: slope sign first, then intercepts',
   height: 470,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ sep: 'Example 5 check' }, ...Object.keys(MD).map((k) => ({ v: +k, label: 'Description ' + k }))],
   value: 1,
   intro: (k) => `Description ${k}: ${MD[k].text} Press <b>Next</b>.`,

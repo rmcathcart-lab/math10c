@@ -499,6 +499,8 @@ function crossDef(DATA, title) {
 }
 const hs = crossDef(HS, 'The right triangle inside a pyramid');
 const hsc = crossDef(HSC, 'The right triangle inside a cone');
+hs.minW = 900; // drawn this wide and scaled to fit beside the sidebar
+hsc.minW = 900;
 
 /* =============================== pouring: funnel → box, cone → cylinder =============================== */
 /** one scene with a container on the left and a pourer that fills it in three pours. cfg: { kind: 'pyr'|'cone', W, D, r, H, S, fill colours } */
@@ -571,13 +573,14 @@ const RICECFG = { kind: 'pyr', W: 4, D: 3, H: 3.6, S: 40, c0: '#b89a4a', c1: RIC
 const third = {
   title: 'One third: three pyramids fill the prism',
   height: 490,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'rice', label: 'Rice: funnel into planter box' }, { v: 'cube', label: 'Why ⅓? Cut a cube into 3' }, { v: 'ex1', label: 'Example 1(a) check: the skylight' }],
   intro: (v) => (v === 'rice' ? 'Mr. Halden’s woodworking class. Press <b>Next</b>.' : v === 'cube' ? 'A cube cut into three identical pyramids. Press <b>Next</b>.' : 'The skylight inside the prism on the same base. Press <b>Next</b>.'),
   make(stage, k, ex) {
     if (k === 'cube') return cubeSteps(stage, ex);
     if (k === 'ex1') return skyThirdSteps(stage, ex);
     const p = pourScene(stage, ex, RICECFG), { S, st } = p;
-    const P = panel(stage, ex.W - 300, 14, 286, 150, '');
+    const P = panel(stage, ex.W - 300, 14, 286, 180, '');
     return [
       { cap: `A planter box (a prism) and a funnel (a pyramid): <b>same base</b>, <b>same height</b>.`, run: async (c) => { st.guides = true; S.render(); await appear(c, S.L('same')); } },
       { cap: `Fill the funnel with rice.`, run: async (c) => { st.guides = false; await tw(c, 1200, S, (t) => (st.fill = t)); } },
@@ -696,6 +699,7 @@ const NET = {
 const net = {
   title: 'Unfold the pyramid into its net',
   height: 480,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(NET).map((k) => ({ v: k, label: NET[k].label })),
   intro: (v) => (NET[v].base ? 'A closed square pyramid: base 6 cm, height 4 cm. Press <b>Next</b>.' : 'The glass skylight: base 16 m by 16 m, height 6 m. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -830,6 +834,7 @@ const WH = {
 const which = {
   title: 'Which height do I need?',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(WH).map((k) => ({ v: k, label: WH[k].label })),
   intro: 'Volume or surface area? That decides which height. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -866,6 +871,7 @@ const which = {
 const hex = {
   title: 'Example 3 check: from hexagon to pyramid',
   height: 480,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   intro: 'A regular hexagon with sides of 6 cm, seen from directly above. Press <b>Next</b>.',
   make(stage, k, ex) {
     const Hs = ex.def.height, sc = 23, base = regPoly(6, 6, 0), A = [0, 12, 0];
@@ -989,6 +995,7 @@ const scale = {
 const shed = {
   title: 'Example 5 check: the garden shed',
   height: 480,
+  minW: 840, // drawn this wide and scaled to fit beside the sidebar
   intro: 'A prism with a pyramid roof. Volumes add; hidden faces don’t count. Press <b>Next</b>.',
   make(stage, k, ex) {
     const Hs = ex.def.height, P = panel(stage, ex.W - 380, 14, 366, Hs - 28, '');

@@ -145,3 +145,22 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u7l6-lm, .u7l6-lb { font-size: 21px !important; }
 .u7l6-hist { margin-top: auto; background: #f6f5f1; border-radius: 12px; padding: 8px 12px; display: flex; flex-direction: column; gap: 4px; }
 .u7l6-l21 { font-size: 21px; }
+
+/* ---------- one screen (main.lesson.screen): the four tiles across the top (pictures a little smaller), Q1–Q3 on the
+   left and the big one on the right; the cm-per-month bars (a check, after the guesses) sit below the first screen ---------- */
+.wf .u7l6-grow { gap: 12px; margin: 4px 0 12px; }
+.wf .u7l6-gtile { padding: 6px 10px 8px; gap: 2px; }
+.wf .u7l6-gtile svg { width: 118px; height: 93px; }
+.wf .u7l6-gname { font-size: 19px; }
+.wf .u7l6-grate { font-size: 16.5px; }
+.wf .u7l6-wqs .q-line { margin: 0 0 2px; font-size: 17.5px; gap: 10px; }
+.wf .u7l6-wqs .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf .u7l6-wa { display: flex; align-items: flex-start; gap: 12px; margin: 0 0 10px 40px; }
+.wf .u7l6-wa .pill.small { flex: none; }
+.wf .u7l6-wa .bk-ans { margin-top: 2px; font-size: 16.5px; line-height: 1.35; }
+.wf .wf-poll { margin-top: 0; }
+.wf .wf-poll .poll-opts { grid-template-columns: 1fr 1fr; gap: 6px; }
+.wf .wf-poll .poll-opts .opt { padding: 6px 8px; }
+.wf .u7l6-barbox { margin-top: 14px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; align-items: start; }
+.wf .u7l6-wbtns { flex-direction: column; align-items: flex-start; }
+.wf .u7l6-early { margin-top: 12px; }

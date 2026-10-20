@@ -75,14 +75,14 @@ button.u3t { cursor: pointer; font: inherit; }
 .u3s-box { position: relative; height: 450px; background: #fffdf6; border: 1px solid var(--line2); border-radius: 14px; margin: 6px 0 16px; overflow: hidden; }
 .u3s-box > * { position: absolute; }
 .u3s-rope { left: 0; top: 0; pointer-events: none; }
-.u3s-sock { width: 86px; height: 120px; padding: 0; border: none; background: none; cursor: pointer; transform-origin: 50% 0; z-index: 2; transition: left .5s cubic-bezier(.25, .75, .3, 1), top .5s cubic-bezier(.25, .75, .3, 1), transform .5s, opacity .3s; }
-.u3s-svg { position: absolute; left: 0; top: 0; width: 86px; height: 120px; }
-.u3s-t { position: absolute; left: 4px; top: 30px; width: 60px; height: 46px; display: grid; place-items: center; font-size: 23px; font-weight: 700; white-space: nowrap; }
+.u3s-sock { width: calc(86px * var(--sk, 1)); height: calc(120px * var(--sk, 1)); padding: 0; border: none; background: none; cursor: pointer; transform-origin: 50% 0; z-index: 2; transition: left .5s cubic-bezier(.25, .75, .3, 1), top .5s cubic-bezier(.25, .75, .3, 1), transform .5s, opacity .3s; }
+.u3s-svg { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+.u3s-t { position: absolute; left: calc(4px * var(--sk, 1)); top: calc(30px * var(--sk, 1)); width: calc(60px * var(--sk, 1)); height: calc(46px * var(--sk, 1)); display: grid; place-items: center; font-size: calc(23px * var(--sk, 1)); font-weight: 700; white-space: nowrap; }
 .u3s-t .katex { font-size: 1em; }
-.u3s-peg { position: absolute; left: 29px; top: -6px; width: 9px; height: 18px; border-radius: 2px; background: #b9874a; border: 1.5px solid #1e2d46; }
+.u3s-peg { position: absolute; left: calc(29px * var(--sk, 1)); top: -6px; width: 9px; height: calc(18px * var(--sk, 1)); border-radius: 2px; background: #b9874a; border: 1.5px solid #1e2d46; }
 .u3s-sock.sorted .u3s-peg { opacity: 0; }
 .u3s-sock:not(.sorted):hover { transform: translateY(-3px); }
-.u3s-sock.sq .u3s-t { font-size: 22px; color: var(--red); }
+.u3s-sock.sq .u3s-t { font-size: calc(22px * var(--sk, 1)); color: var(--red); }
 .u3s-pile { top: 0; height: 168px; border: 2.5px dashed #ddd2b8; border-radius: 16px; background: transparent; opacity: 0; transition: opacity .3s, background .3s, border-color .3s; }
 .u3s-pile.on { opacity: 1; background: #fff8e6; border-color: #e3c785; }
 .u3s-ph { position: absolute; left: 0; right: 0; top: 4px; text-align: center; font: 800 16px var(--round); color: #9a7a2c; }
@@ -223,3 +223,29 @@ button.u3t { cursor: pointer; font: inherit; }
 .u3m-mat > * { position: absolute; }
 .u3m-read { height: 62px; overflow: hidden; font-size: 20px; text-align: center; line-height: 1.5; }
 .u3m-pairs { font-size: 16px; color: var(--ok); font-weight: 700; margin-left: 10px; }
+
+/* ---------- one screen (main.lesson.screen): socks + Q1–Q2 on the left, Q3 and the big one on the right ---------- */
+.wf .u3s-box { margin: 10px 0 10px; }
+.wf .u3s-ctl { left: 12px; }
+.wf .u3s-read { right: 12px; font-size: 16px; }
+.wf .u3s-hint { font-size: 19px; }
+.wf .u3s-ph { font-size: 14.5px; }
+.wf .wq { padding: 6px 12px 8px; }
+.wf .wf-main .wq + .wq { margin-top: 8px; }
+.wf .wq .q-line { margin: 2px 0 4px; font-size: 17px; gap: 10px; }
+.wf .wf-main .wq-a { flex-direction: row; align-items: flex-start; gap: 10px; margin-left: 40px; }
+.wf .wf-main .q-ans { min-height: 2.6em; font-size: 15.5px; line-height: 1.3; }
+.wf .wf-side .wq-a { margin-left: 40px; }
+.wf .wf-side .q-ans { min-height: 0; font-size: 15.5px; line-height: 1.3; }
+.wf .wf-poll .poll-opts.c4 { grid-template-columns: 1fr 1fr; gap: 6px; }
+.wf .wf-poll .poll-opts.c4 .opt { font-size: 17px; padding: 6px 4px; }
+.wf .wf-poll .poll-ans { min-height: 0; }
+.wf .wf-poll:not(.revealed) .poll-ans { display: none; }
+.wf .wq-wide { margin-top: 14px; }
+.wf .u3s-t { font-size: 18px; left: 0; width: calc(64px * var(--sk, 1)); }
+.wf .u3s-sock.sq .u3s-t { font-size: 18px; }
+/* Q1 and Q2 under the socks: the Answer button sits at the end of the question line, the answer below it */
+.wf .wf-main .wq { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 10px; align-items: center; }
+.wf .wf-main .wq-a { display: contents; }
+.wf .wf-main .wq-a .pill { grid-column: 2; grid-row: 1; }
+.wf .wf-main .q-ans { grid-column: 1 / -1; margin-left: 40px; min-height: 0; }

@@ -219,6 +219,7 @@ function mountWarm() {
 const pets = {
   title: 'The pets, solved by combining scales',
   height: 450,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'sub', label: 'Who is heavier? Scale B − Scale C' }, { v: 'big', label: 'The big one: all on one scale' }],
   intro: (k) => (k === 'sub' ? 'Scales B and C share the rabbit. What happens if we <b>subtract</b> one scale from the other? Press <b>Next</b>.'
     : 'Put every pet from all three scales onto one big scale. Press <b>Next</b>.'),
@@ -323,6 +324,7 @@ const BAL = {
 const balance = {
   title: 'Two balances, added pan to pan',
   height: 508,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'idea', label: 'The idea' }, { sep: 'Check' }, { v: 'ex1', label: 'Example 1 (add)' }, { v: 'ex2', label: 'Example 2 (subtract)' }, { v: 'ex3', label: 'Example 3 (scale, then add)' }],
   intro: (k) => (k === 'idea' ? 'Two level balances: each equation says <b>left side = right side</b>. Press <b>Next</b>.'
     : `${TAG1} ${T(k1(eqT(BAL[k].e1)))} and ${TAG2} ${T(k2(eqT(BAL[k].e2)))}, each a level balance. Press <b>Next</b>.`),
@@ -407,6 +409,7 @@ const SG = {
 const signs = {
   title: 'Subtract = flip every sign, then add',
   height: 430,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ sep: 'Check' }, ...Object.keys(SG).map((k) => ({ v: k, label: SG[k].label }))],
   value: 'ex2',
   intro: (k) => `${SG[k].n1} minus ${SG[k].n2}. Line the equations up in columns. Press <b>Next</b>.`,
@@ -487,6 +490,7 @@ const plain = (v) => pm((Math.round(v * 10) / 10).toFixed(1));
 const pencil = {
   title: 'Adding equations turns a line about the crossing',
   height: 476,
+  minW: 820, // the side panel needs ~250 px for "Eq. 1 + k × Eq. 2"
   choices: [{ sep: 'Check' }, ...Object.keys(PC).map((k) => ({ v: k, label: PC[k].label }))],
   value: 'ex1',
   intro: (k) => `${TAG1} ${T(k1(eqT(PC[k].e1)))} and ${TAG2} ${T(k2(eqT(PC[k].e2)))}. Press <b>Next</b>.`,
@@ -555,6 +559,7 @@ const SC = {
 const scale = {
   title: 'Scaling an equation copies the whole balance',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar (the graph takes what is left beside the 520 px balance)
   choices: Object.keys(SC).map((k) => ({ v: k, label: SC[k].label })),
   intro: (k) => `${tag(SC[k].n, 'Eq. ' + SC[k].n)} ${T(tc(SC[k].n === 1 ? B1 : A2, eqT(SC[k].e)))} as a level balance. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -564,7 +569,7 @@ const scale = {
     const det = e1.a * e2.b - e1.b * e2.a, S = [(e1.c * e2.b - e1.b * e2.c) / det, (e1.a * e2.c - e1.c * e2.a) / det];
     const bal = new Balance(stage, { x: 10, y: 6, w: 520, h: 300, top: 104, label: `${tag(d.n, 'Eq. ' + d.n)} ${T(tc(col, eqT(e)))}` });
     bal.fill(e, d.n);
-    const G = new Graph(stage, Object.assign({ x: W - 440, y: 6, width: 430, height: 458, xlabels: 2, ylabels: 2, fontSize: 16 }, d.win));
+    const GW = Math.min(430, W - 550), G = new Graph(stage, Object.assign({ x: W - GW - 10, y: 6, width: GW, height: 458, xlabels: 2, ylabels: 2, fontSize: 16 }, d.win));
     const V = add(stage, box(h('div', 'u8l3-verd'), 520, 140), 10, 320);
     const steps = [
       { cap: `${tag(d.n, 'Eq. ' + d.n)} ${T(tc(col, eqT(e)))} is a level balance. On the graph it is the ${d.n === 1 ? 'blue' : 'amber'} line through the solution ${T(ks(pairTex(...S)))}.`,
@@ -750,7 +755,9 @@ function walkDef(keys, title) {
   };
 }
 const walk = walkDef(['ex3', 'ex4', 'ex5b', 'ex5d'], 'The four steps, line by line');
+walk.minW = 900; // drawn this wide and scaled to fit beside the sidebar
 const walk6 = walkDef(['ex6a', 'ex6b'], 'Prepare, then the four steps');
+walk6.minW = 940; // drawn this wide and scaled to fit beside the sidebar
 
 /* =============================== explainer: getting the system ready =============================== */
 const PR = {
@@ -772,6 +779,7 @@ const PR = {
 const prep = {
   title: 'Getting each equation ready: Ax + By = C',
   height: 420,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(PR).map((k) => ({ v: k, label: PR[k].label })),
   intro: (k) => `${tag(PR[k].n, 'Eq. ' + PR[k].n)} is not in the form ${T('Ax+By=C')} yet. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -822,6 +830,7 @@ const SP = {
 const special = {
   title: 'When both variables disappear',
   height: 470,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SP).map((k) => ({ v: k, label: SP[k].label })),
   intro: (k) => `${TAG1} ${T(k1(eqT(SP[k].e1)))} and ${TAG2} ${T(k2(eqT(SP[k].e2)))}. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -866,6 +875,7 @@ const CH = {
 const choose = {
   title: 'Which method?',
   height: 480,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CH).map((k) => ({ v: k, label: CH[k].label })),
   intro: 'Ask the questions from the top. Press <b>Next</b>.',
   make(stage, k, ex) {

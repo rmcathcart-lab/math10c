@@ -138,3 +138,24 @@ code.u8l6-c { font: 600 .9em ui-monospace, "SF Mono", Menlo, Consolas, monospace
 .u8l6-review-grid small { display: block; color: var(--muted); font-weight: 500; font-size: 13px; }
 .u8l6-test { display: block; background: #fff8e6; border: 1.5px solid #e9cf8f; border-radius: 10px; padding: 8px 12px; font-size: 16px; font-weight: 600; line-height: 1.3; }
 .u8l6-test .u8l6-rn { color: var(--amber); }
+
+/* ---------- one screen (main.lesson.screen): one column: the two mobiles (scaled down), Q1–Q3 side by side, the big one with Reveal on the options row; the explainer and early finishers below ---------- */
+.wf-one .u8l6-mobfig { width: 768px; height: 240px; margin: 0 auto 4px; }
+.wf-one .u8l6-mobfig svg { width: 100%; height: 100%; }
+.wf-one .u8l6-wqs { gap: 14px; }
+.wf-one .u8l6-wqs .q-line { margin: 4px 0 4px; font-size: 17.5px; gap: 10px; line-height: 1.38; }
+.wf-one .u8l6-wqs .pill.small { margin-left: 40px; }
+.wf-one .u8l6-wqs .bk-ans { font-size: 16px; line-height: 1.32; margin: 4px 0 0 40px; }
+.wf-one .wf-poll { margin-top: 10px; padding: 2px 16px 12px; display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; align-items: center; }
+.wf-one .wf-poll > .q-line, .wf-one .wf-poll > .poll-ans { grid-column: 1 / -1; }
+.wf-one .wf-poll .q-line { margin: 10px 0 8px; font-size: 18px; }
+.wf-one .wf-poll .poll-opts { margin: 0 0 0 40px; gap: 10px; }
+.wf-one .wf-poll .opt { padding: 6px 12px; font-size: 18px; }
+.wf-one .wf-poll > .pill { margin: 0; }
+.wf-one .wf-poll .poll-ans { margin-left: 40px; }
+.wf-one .u8l6-gap { margin-top: 18px; }
+.wf-one .u8l6-mobfig { width: 736px; height: 230px; }
+.wf-one .wf-poll { margin-top: 4px; }
+.wf-one .wf-poll .q-line { margin: 8px 0 6px; }
+/* the first screen is wrapped in .wf-grid.wf-solo (one column) so the checker can measure it */
+.wf .wf-grid.wf-solo { display: block; }

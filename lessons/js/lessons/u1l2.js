@@ -250,7 +250,9 @@ function vennDef(mode, title, choices) {
   };
 }
 const vennG = vennDef('g', 'GCF with a Venn diagram of prime factors', [{ v: '60,90', label: '60 & 90' }, { v: '12,18', label: '12 & 18' }, { v: '45,75', label: '45 & 75' }, { sep: 'Example 2 check:' }, { v: '126,210', label: '126 & 210' }, { v: '165,275', label: '165 & 275' }]);
+vennG.minW = 860; // drawn this wide and scaled to fit beside the sidebar
 const vennL = vennDef('l', 'LCM with a Venn diagram: everything in the picture', [{ v: '60,90', label: '60 & 90' }, { v: '9,12', label: '9 & 12' }, { v: '15,18', label: '15 & 18' }, { sep: 'Example 4 check:' }, { v: '18,45', label: '18 & 45' }, { v: '84,126', label: '84 & 126' }]);
+vennL.minW = 940; // drawn this wide and scaled to fit beside the sidebar
 
 /* ============ 1 & 2. The exponent table: lowest power (GCF), highest power (LCM) ============ */
 function tableDef(title, choices) {
@@ -468,6 +470,7 @@ function pilesDef(k, title, choices) {
 }
 const squares = pilesDef(2, 'Perfect square? Deal the primes into two identical piles', [144, 4, 100, 36, 12, 48, { sep: 'Example 5 check:' }, { v: 15876, label: '15 876' }, { sep: 'Example 6 check:' }, { v: 1089, label: '1 089' }, { v: 2028, label: '2 028' }]);
 const cubes = pilesDef(3, 'Perfect cube? Deal the primes into three identical piles', [{ v: 1000, label: '1 000' }, 8, 125, 27, 18, 54, { sep: 'Example 7 check:' }, { v: 5832, label: '5 832' }, { v: 39304, label: '39 304' }]);
+cubes.minW = 780; // drawn this wide and scaled to fit beside the sidebar
 
 /* ============ 4. Square, cube, both or neither: read the exponents ============ */
 const tester = {

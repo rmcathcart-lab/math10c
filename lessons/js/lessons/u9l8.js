@@ -158,7 +158,8 @@ function tikzDraw(host, S, k) {
 
 /* the warm-up pyramid: cross-section, and one half slid out (same scale) */
 function pyramidFig(host) {
-  const k = 1.62, G = new Geo(host, { w: 900, h: 330, k, ox: 34, oy: 262 });
+  const w = Math.min(900, host.clientWidth || 900), sc = w / 900;   // drawn at the width it is given (one-screen warm-up: narrower)
+  const k = 1.62 * sc, G = new Geo(host, { w, h: sc < 1 ? Math.round(330 * sc + 30) : 330, k, ox: 34 * sc, oy: sc < 1 ? 262 * sc + 18 : 262 });
   G.fill([[-12, 0], [535, 0], [535, -14], [-12, -14]], '#ecd296', 0.6);
   G.seg([-12, 0], [535, 0], { color: '#8a6a1a', width: 2 });
   // sun
@@ -186,6 +187,7 @@ function pyramidFig(host) {
 const pyramid = {
   title: 'The Great Pyramid: halve it, then TOA',
   height: 400,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   intro: 'Guess first in the poll above, then press <b>Next</b>.',
   make(stage, v, ex) {
     const k = 1.8, G = new Geo(stage, { x: 0, y: 0, w: 500, h: 400, k, ox: 40, oy: 318 });
@@ -267,6 +269,7 @@ const WT = {
 const whichTool = {
   title: '★ Which tool? Follow the triangle',
   height: 500,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(WT).map((k) => ({ v: k, label: WT[k].label })),
   intro: (v) => `${WT[v].label.replace(' check', '')}: the triangle travels through the chart, one question at a time. Press <b>Next</b>.`,
   make(stage, v, ex) {
@@ -369,6 +372,7 @@ const NM = {
 const names = {
   title: 'Stand at the angle, then name the sides',
   height: 410,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(NM).map((k) => ({ v: k, label: NM[k].label })),
   intro: (v) => `${v === 'ex1' ? 'Example 1: ' : ''}${T('\\triangle ' + [NM[v].R, NM[v].V1, NM[v].V2].sort().join(''))}, right angle at ${T(NM[v].R)}. Press <b>Next</b>.`,
   make(stage, v, ex) {
@@ -426,6 +430,7 @@ const names = {
 const cofunction = {
   title: 'An angle dial: sin x° = cos(90 − x)°',
   height: 400,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [20, 35, 60, 75].map((v) => ({ v, label: v + '°' })),
   intro: (v) => `The hypotenuse is <b>1</b> unit long, so each leg <b>is</b> a ratio. Angle ${T(v + '^\\circ')}. Press <b>Next</b>.`,
   make(stage, x, ex) {
@@ -505,6 +510,7 @@ const SS = {
 const solveSide = {
   title: 'Unknown on top: multiply. Unknown on the bottom: divide.',
   height: 420,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SS).map((k) => ({ v: k, label: SS[k].label })),
   intro: (v) => `Example 2${v === 'a' ? '(a)' : '(b)'}: the ${v === 'a' ? 'opposite side' : 'hypotenuse'} from ${T('42^\\circ')} and 11 cm adjacent. Press <b>Next</b>.`,
   make(stage, v, ex) {
@@ -564,6 +570,7 @@ const SA = {
 const solveAngle = {
   title: 'Inverse ratio: run the calculator backwards',
   height: 430,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SA).map((k) => ({ v: k, label: SA[k].label })),
   intro: (v) => (v === 'ex3' ? `Example 3: legs 5.3 cm and 7.8 cm, angle ${T('\\theta^\\circ')} wanted.` : `Example 1(c): ${T('\\sin B=\\frac45')}, angle ${T('B')} wanted.`) + ' Press <b>Next</b>.',
   make(stage, v, ex) {
@@ -624,6 +631,7 @@ const EL = { cliff: { label: 'Elevation = depression' }, eye: { label: 'Eye leve
 const elevation = {
   title: 'Elevation, depression, and the eye-level triangle',
   height: 420,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(EL).map((k) => ({ v: k, label: EL[k].label })),
   intro: (v) => (v === 'cliff' ? 'A lookout on a cliff spots a boat.' : v === 'eye' ? 'A student measures a flagpole with a clinometer.' : 'Example 4: a guy cable on a tower.') + ' Press <b>Next</b>.',
   make(stage, v, ex) {
@@ -703,6 +711,7 @@ const SP = { ex5: { label: 'Example 5 check', A: 48, C: 34, h: 22 }, other: { la
 const split = {
   title: '★ No right angle? Split it along the altitude',
   height: 450,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SP).map((k) => ({ v: k, label: SP[k].label })),
   intro: (v) => `${v === 'ex5' ? 'Example 5: ' : ''}${T(`\\angle A=${SP[v].A}^\\circ`)}, ${T(`\\angle C=${SP[v].C}^\\circ`)}, altitude ${T(`BD=${SP[v].h}`)} m. Press <b>Next</b>.`,
   make(stage, v, ex) {
@@ -745,6 +754,7 @@ const IS = { ex6: { label: 'Example 6 check', b: 15, A: 54 }, other: { label: 'A
 const iso = {
   title: 'Isosceles: area → height → two congruent halves',
   height: 430,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(IS).map((k) => ({ v: k, label: IS[k].label })),
   intro: (v) => `${v === 'ex6' ? 'Example 6: i' : 'I'}sosceles ${T('KLM')}, base ${T(`LM=${IS[v].b}`)} cm, area ${T(`${IS[v].A}\\text{ cm}^2`)}. Press <b>Next</b>.`,
   make(stage, v, ex) {
@@ -793,6 +803,7 @@ const BR = { b40: { label: '040°, 10 km', b: 40, d: 10 }, b120: { label: '120°
 const bearings = {
   title: 'Extension: bearings in a right triangle',
   height: 430,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(BR).map((k) => ({ v: k, label: BR[k].label })),
   intro: (v) => `A boat leaves harbour ${T('H')} on a bearing of ${T(String(BR[v].b).padStart(3, '0') + '^\\circ')} and sails ${T(String(BR[v].d))} km. Press <b>Next</b>.`,
   make(stage, v, ex) {

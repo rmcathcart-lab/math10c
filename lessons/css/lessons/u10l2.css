@@ -106,3 +106,26 @@
 .u10l2-tag { font: 800 16px var(--round); color: #fff; background: var(--purple, #7b4fc4); border-radius: 8px; padding: 1px 8px; }
 .u10l2-cnt { font-size: 16px; }
 .u10l2-cnt .u10l2-line { margin: 1px 0; }
+
+/* ---------- one screen (main.lesson.screen): figure and Q1–Q3 on the left; body rulers and the big one on the right ---------- */
+.wf .u10l2-wrow { display: block; position: relative; margin-top: 4px; }
+.wf .u10l2-wfig svg { width: 100%; height: auto; }
+.wf .u10l2-wbtns { position: absolute; left: 0; top: 0; margin: 0; }
+.wf .u10l2-wbtns .pill { margin: 0; padding: 6px 14px; font-size: 15px; }
+.wf .u10l2-wqs { grid-template-columns: 1fr 1fr; gap: 0 18px; margin-top: 4px; }
+.wf .u10l2-wq3 { grid-column: 1 / -1; }
+.wf .u10l2-wqs .q-line { font-size: 17px; margin: 4px 0; gap: 10px; }
+.wf .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf .u10l2-wa { display: flex; align-items: baseline; gap: 10px; margin: 0 0 6px 40px; }
+.wf .u10l2-wa .pill.small { flex: none; }
+.wf .bk-wq .bk-ans { font-size: 16px; line-height: 1.35; margin-top: 0; }
+.wf .u10l2-rulers { padding: 8px 14px; font-size: 17px; line-height: 1.25; margin-top: 4px; }
+.wf .u10l2-rulers > div { margin: 3px 0; }
+.wf .u10l2-rulers i { font-size: 14.5px; }
+.wf .u10l2-rh { font-size: 18px; }
+.wf .wf-poll .poll-opts { gap: 6px; }
+.wf .wf-poll .opt { padding: 5px 10px; font-size: 16.5px; }
+.wf .u10l2-social { margin: 10px 0 0; font-size: 18px; }
+.wf .u10l2-rulers > div { margin: 2px 0; }
+.wf .u10l2-rulers i { line-height: 1.15; }
+.wf .wf-poll .q-line { margin: 10px 0 8px; }

@@ -190,3 +190,40 @@
 .ck-e { font-size: 22px; min-height: 64px; display: grid; place-items: center; }
 .ck-s { font-size: 17px; line-height: 2; }
 .ck-v { font-size: 28px; margin-top: 2px; }
+
+/* ---------- one screen (main.lesson.screen): the cube + Q1–Q2 on the left, Q3 and the big one on the right ---------- */
+.wf .pcw { grid-template-columns: 250px 1fr; gap: 12px; padding: 8px 10px; margin: 8px 0 10px; }
+.wf .pcw-stage { width: 250px; height: 236px; }
+.wf .pcw-dim { font-size: 15px; }
+.wf .pcw-right { gap: 6px; }
+.wf .pcw-sizes { gap: 4px; }
+.wf .pcw-sizes .chip { padding: 3px 9px; font-size: 14px; }
+.wf .pcw-cats { gap: 5px; }
+.wf .pcw-cat { grid-template-columns: 36px 1fr auto; gap: 8px; min-height: 46px; padding: 3px 10px 3px 6px; border-radius: 12px; }
+.wf .pcw-cat .pc-ico { width: 36px; height: 36px; }
+.wf .pcw-cn { font-size: 16.5px; line-height: 1.15; }
+.wf .pcw-where { font-size: 14px; }
+.wf .pcw-num { font-size: 22px; min-width: 80px; }
+.wf .pcw-num small { font-size: 13px; }
+.wf .pcw-sum { font-size: 15.5px; min-height: 22px; padding: 0 2px; }
+.wf .wq { padding: 6px 12px 8px; }
+.wf .wf-main .wq + .wq, .wf .wf-side .wq + .wf-poll { margin-top: 10px; }
+.wf .wq .q-line { margin: 2px 0 4px; font-size: 17px; gap: 10px; }
+.wf .wq-a { margin-left: 40px; gap: 4px; }
+.wf .wf-main .wq-a { flex-direction: row; align-items: flex-start; gap: 10px; }
+.wf .q-ans { font-size: 15.5px; line-height: 1.3; min-height: 1.3em; }
+.wf .wf-poll .poll-opts.c4 { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.wf .wf-poll .poll-opts.c4 .opt { font-size: 19px; padding: 6px 2px; }
+.wf .wf-poll .poll-opts.c4 .opt b { margin-right: 4px; }
+.wf .wf-poll .poll-ans { min-height: 0; }
+.wf .wf-poll:not(.revealed) .poll-ans { display: none; }
+.wf .wq-wide { margin-top: 14px; }
+.wf .pcw { grid-template-rows: auto 1fr auto; row-gap: 6px; }
+.wf .pcw-right { display: contents; }
+.wf .pcw-left { grid-column: 1; grid-row: 1 / 3; }
+.wf .pcw-stage { height: 214px; }
+.wf .pcw-sizes { grid-column: 2; grid-row: 1; }
+.wf .pcw-cats { grid-column: 2; grid-row: 2 / 4; align-self: start; }
+.wf .pcw-sum { grid-column: 1; grid-row: 3; text-align: center; line-height: 1.3; font-size: 15px; }
+/* explainer captions beside the picture (one-screen layout): long formulas wrap instead of running out of the 268 px column */
+.ex-side .ex-cap .katex { white-space: normal; }

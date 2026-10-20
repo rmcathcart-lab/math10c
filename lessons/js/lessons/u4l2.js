@@ -306,6 +306,8 @@ const tileRect = makeTiles('From a pile of tiles to a rectangle', [
 const tileNeg = makeTiles('Negative tiles, and zero pairs to finish the rectangle', [
   { v: 's4', label: tex('x^2+x-6') }, { v: 'm6', label: tex('x^2-x-6') }, { v: 'p3', label: tex('x^2-4x+3') },
   { sep: 'Example 8 check:' }, { v: 'e8a', label: '(a)' }, { v: 'e8c', label: '(c)' }]);
+tileRect.minW = 900; // drawn this wide and scaled to fit beside the sidebar (the side panel of labels needs it)
+tileNeg.minW = 940; // drawn this wide and scaled to fit beside the sidebar (signed pair sums in the side panel)
 
 /* ============ 2. Expand (x + p)(x + q), then read it backwards ============ */
 const EG = { gen: null, a1: [3, 4], a2: [1, 9], a3: [6, 6], a4: [7, 3], a5: [-4, -3], a6: [9, -5], y9: [4, 6, 'y'], yb: [-3, 5, 'y'] };
@@ -388,12 +390,15 @@ function makeExpand(title, choices, value) {
 const expandGrid = makeExpand('Expand, then read it backwards', [{ v: 'gen', label: tex('(x+p)(x+q)') }, { sep: 'Example 3 check:' },
   { v: 'a1', label: tex('(x+3)(x+4)') }, { v: 'a2', label: tex('(x+1)(x+9)') }, { v: 'a3', label: tex('(x+6)(x+6)') }, { v: 'a4', label: tex('(x+7)(x+3)') }, { v: 'a5', label: tex('(x-4)(x-3)') }, { v: 'a6', label: tex('(x+9)(x-5)') }]);
 const twoVar = makeExpand('Why the second variable tags along', [{ sep: 'Example 9 check:' }, { v: 'y9', label: tex('(x+4y)(x+6y)') }, { sep: 'Another:' }, { v: 'yb', label: tex('(x-3y)(x+5y)') }], 'y9');
+twoVar.minW = 966; // drawn this wide and scaled to fit beside the sidebar
+expandGrid.minW = 966; // drawn this wide and scaled to fit beside the sidebar (as twoVar: the sum and product boxes need it)
 
 /* ============ 2. The sum–product search (Example 4's tables) ============ */
 const PT = { d: [7, 12], a2: [13, 40], a3: [9, 18], a4: [6, 9], b1: [-10, 21], b2: [-13, 12], b3: [1, -12], b4: [-22, 40] };
 const pairTable = {
   title: 'The sum–product search',
   height: 360,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'd', label: 'sum 7, product 12' }, { sep: 'Example 4 check (sum, product):' }, ...['a2', 'a3', 'a4', 'b1', 'b2', 'b3', 'b4'].map((k) => ({ v: k, label: tex(`${PT[k][0]},\\ ${PT[k][1]}`) }))],
   intro: (k) => `Find two integers with <b>sum</b> ${T(String(PT[k][0]))} and <b>product</b> ${T(String(PT[k][1]))}. Guessing works for small numbers; a <b>list</b> never misses.`,
   make(stage, key, ex) {
@@ -505,8 +510,11 @@ function makeInspect(title, choices) {
   };
 }
 const inspectA = makeInspect('Factoring by inspection', [{ v: 'd1', label: tex(IN.d1) }, { sep: 'Example 5 check:' }, ...['a5', 'c5', 'd5', 'g5', 'h5'].map((k) => ({ v: k, label: '(' + k[0] + ')' }))]);
+inspectA.minW = 940; // drawn this wide and scaled to fit beside the sidebar
 const inspectB = makeInspect('Negative c, and every case at once', [{ v: 'n15', label: tex(IN.n15) }, { sep: 'Example 6 check:' }, ...['a6', 'b6', 'c6'].map((k) => ({ v: k, label: '(' + k[0] + ')' })), { sep: 'Example 7 check:' }, ...['a7', 'b7', 'c7', 'd7'].map((k) => ({ v: k, label: '(' + k[0] + ')' }))]);
+inspectB.minW = 940; // drawn this wide and scaled to fit beside the sidebar
 const inspectC = makeInspect('Two variables, by inspection', [{ v: 'n10', label: tex(IN.n10) }, { sep: 'Example 10 check:' }, ...['a10', 'b10', 'c10'].map((k) => ({ v: k, label: '(' + k[0] + ')' }))]);
+inspectC.minW = 940; // drawn this wide and scaled to fit beside the sidebar
 
 /* ============ 3. Check by expanding: catch the error ============ */
 const EC = {
@@ -518,6 +526,7 @@ const EC = {
 const errorCheck = {
   title: 'Check by expanding: catch the error',
   height: 456,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ok', label: tex('(x-5)(x+3)') }, { sep: 'Find the error:' }, { v: 'e1', label: tex('(x+5)(x-3)') }, { v: 'e2', label: tex('(x+24)(x+1)') }, { v: 'e3', label: tex('(x+2)(x+3)') }],
   intro: (k) => { const d = EC[k]; return `Someone wrote ${T(`${d.o}=${'(' + binT('x', d.f[0]) + ')(' + binT('x', d.f[1]) + ')'}`)}. Is it right? Don’t trust it: <b>expand it and compare</b>.`; },
   make(stage, key, ex) {

@@ -401,6 +401,7 @@ const LAY = {
 const layers = {
   title: 'Volume: stack layers of the base',
   height: 470,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(LAY).map((k) => ({ v: k, label: LAY[k].label })),
   intro: 'Each layer is 1 unit thick. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -519,6 +520,7 @@ const NETS = {
 const net = {
   title: 'Unfold it: surface area is every face added up',
   height: 480,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(NETS).map((k) => ({ v: k, label: NETS[k].label })),
   intro: 'Cut along some edges and lay the prism flat. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -713,6 +715,7 @@ const cylnet = {
 const radius = {
   title: 'Radius first, round last',
   height: 460,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'dr', label: 'Halve the diameter' }, { v: 'round', label: 'Round only at the end' }],
   intro: (v) => (v === 'dr' ? 'Look down on the Example 4 canister. Press <b>Next</b>.' : 'Two ways to work Example 4. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -872,6 +875,7 @@ const label = {
 const solveh = {
   title: 'Example 8 check: the height from the surface area',
   height: 480,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   intro: 'A closed can: 250 cm² of metal, radius 3.5 cm. Press <b>Next</b>.',
   make(stage, v, ex) {
     const H = ex.def.height, PW = 380, W = ex.W - PW - 20, r = 3.5, Cw = 2 * PI * r, hT = (250 - 2 * PI * r * r) / Cw, circ = PI * r * r;

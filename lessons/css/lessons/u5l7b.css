@@ -142,3 +142,34 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u5l7b-mn { display: flex; align-items: center; justify-content: center; font-size: 30px; border-radius: 12px; background: #f6f5f1; box-sizing: border-box; }
 .u5l7b-mn.hd { background: none; font: 800 17px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
 .u5l7b-mn.map { background: #efe8fb; }
+
+/* ---------- one screen (main.lesson.screen): keypad, rule card and Q1–Q4 on the left, the big one on the right ---------- */
+.wf .u5l7b-wtop { grid-template-columns: 236px minmax(0, 1fr); gap: 14px; margin: 2px 0 0; }
+.wf .u5l7b-phone { border-radius: 20px; padding: 10px 12px 8px; }
+.wf .u5l7b-scr { font-size: 22px; padding: 3px 8px; margin-bottom: 8px; }
+.wf .u5l7b-pad { gap: 6px; }
+.wf .u5l7b-key { height: 46px; }
+.wf .u5l7b-key b { font-size: 20px; }
+.wf .u5l7b-key i { font-size: 12px; margin-top: 1px; }
+.wf .u5l7b-rulecap { font-size: 15px; margin-top: 6px; }
+.wf .u5l7b-wright { gap: 8px; }
+.wf .u5l7b-namecard { padding: 6px 12px; font-size: 16px; line-height: 1.35; }
+.wf .u5l7b-nc-h { font-size: 17px; margin-bottom: 2px; }
+.wf .u5l7b-nc-eg { gap: 22px; font-size: 18px; margin-bottom: 2px; }
+.wf .u5l7b-sign { padding: 6px 12px; font-size: 16px; line-height: 1.35; }
+.wf .u5l7b-kctl { gap: 6px; }
+.wf .u5l7b-kctl .pill.small { margin: 0; }
+.wf .u5l7b-kout { min-height: 0; height: 4.2em; font-size: 15.5px; line-height: 1.35; padding: 6px 12px; overflow: hidden; }
+.wf .u5l7b-wqs { gap: 0 18px; margin-top: 4px; }
+.wf .u5l7b-wqs .q-line { margin: 8px 0 0; font-size: 17px; gap: 10px; line-height: 1.38; }
+.wf .u5l7b-wqs .q-line .pill.small { margin-left: 4px; vertical-align: 1px; }
+.wf .u5l7b-wqs .u5l7b-wa { margin: 2px 0 0 40px; }
+.wf .u5l7b-wqs .bk-ans { margin: 0; font-size: 16px; line-height: 1.35; }
+.wf .wf-poll { margin-top: 0; padding-bottom: 12px; }
+.wf .wf-poll .q-line { margin-top: 8px; }
+.wf .wf-poll .poll-opts.c4 { grid-template-columns: 1fr 1fr; gap: 6px; }
+.wf .wf-poll .opt { font-size: 16.5px; padding: 6px 10px; }
+.wf .u5l7b-wqs { grid-template-columns: 1fr; }
+.wf .wf-side .u5l7b-wqs { margin-top: 0; }
+.wf .wf-side .u5l7b-wqs .bk-wq:first-child .q-line { margin-top: 0; }
+.wf .wf-side .wf-poll { margin-top: 10px; }

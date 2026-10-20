@@ -146,6 +146,7 @@ function cityMap(host, o = {}) {
 const planner = {
   title: 'City Planner: the road at a right angle',
   height: 470,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'build', label: 'Build the road' }, { v: 'traps', label: 'Traps B, C and D' }, { v: 'corner', label: 'Where is the corner?' }],
   intro: (v) => ({ build: 'Main St is <b>x − 2y + 4 = 0</b>; the school is at (8, 1). Press <b>Next</b>.', traps: 'Three wrong roads, three different mistakes. Press <b>Next</b>.', corner: 'Where does the new road meet Main St? Press <b>Next</b>.' })[v],
   make(stage, v, ex) {
@@ -201,6 +202,7 @@ const FORMS = [
 const forms = {
   title: 'Three forms of one line',
   height: 470,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'morph', label: 'One line, three forms' }, { v: 'graph', label: 'Graph each form as it is' }, { v: 'hv', label: 'Horizontal and vertical' }],
   intro: (v) => ({ morph: 'The bike path from the warm-up: through the school (8, 1), parallel to Main St. Press <b>Next</b>.', graph: 'Graph the same line three times, once from each form, without converting. Press <b>Next</b>.', hv: 'Turn a line through (−2, 4) until it is flat, then until it stands up. Press <b>Next</b>.' })[v],
   make(stage, v, ex) {
@@ -278,6 +280,7 @@ const forms = {
 const dials = {
   title: 'y = mx + b: b slides the line, m tilts it',
   height: 470,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'dials', label: 'Two dials' }, { v: 'ex1b', label: 'Example 1(b) check' }, { v: 'ex1d', label: 'Example 1(d) check' }],
   intro: (v) => ({ dials: 'Watch what each number in <b>y = mx + b</b> does to the line. Press <b>Next</b>.', ex1b: 'Example 1(b): the y-intercept of y = −3x + 18. Press <b>Next</b>.', ex1d: 'Example 1(d): slope −5 and y-intercept 7. Press <b>Next</b>.' })[v],
   make(stage, v, ex) {
@@ -350,6 +353,7 @@ async function cover(c, tile, lab) { const d = h('div', 'u7l7-cover', `<small>${
 const coverUp = {
   title: 'General form: cover up, or isolate y',
   height: 470,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'cover', label: 'Cover up: both intercepts' }, { v: 'iso', label: 'Isolate y: balance moves' }, { v: 'ex1a', label: 'Example 1(a) check' }, { v: 'ex1c', label: 'Example 1(c) check' }],
   intro: (v) => ({ cover: 'Two intercepts straight from 4x + 3y − 12 = 0. Press <b>Next</b>.', iso: 'Solve 4x + 3y − 12 = 0 for y, one move at a time. Press <b>Next</b>.', ex1a: 'Example 1(a): the slope of 5y = 4x − 20. Press <b>Next</b>.', ex1c: 'Example 1(c): where 6x − 3y + 21 = 0 crosses the y-axis. Press <b>Next</b>.' })[v],
   make(stage, v, ex) {
@@ -421,6 +425,7 @@ function machine(p) {
 const graphToEq = {
   title: 'From a graph to general form',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex2a', label: 'Example 2(a) check' }, { v: 'ex2b', label: 'Example 2(b) check' }, { v: 'tidy', label: 'The tidy-up machine' }],
   intro: (v) => ({ ex2a: 'Example 2(a): read two lattice points, find the slope, then tidy up. Press <b>Next</b>.', ex2b: 'Example 2(b): the point (10.3, k) on line PQ. Press <b>Next</b>.', tidy: 'Feed y = −¾x + 5/2 into the tidy-up machine. Press <b>Next</b>.' })[v],
   make(stage, v, ex) {
@@ -473,7 +478,7 @@ const graphToEq = {
       { cap: `<b>One side</b>, ${T('x')}-term positive: subtract ${T('3y')} from both sides, ${T('0=2x-3y+18')}. So ${T('2x-3y+18=0')}; no common factor.`,
         run: async (c) => { await say(c, Pn, T('2x-3y+18=0'), 'u7l7-mline u7l7-good'); await mac.light(c, 3); await mac.light(c, 1); await mac.light(c, 2); } },
       { cap: `Check both points. ${T('P')}: ${T('2(-9)-3(0)+18=0')} ✓. ${T('Q')}: ${T('2(0)-3(6)+18=0')} ✓.`,
-        run: async (c) => { await say(c, Pn, `${T('P')}: ${T('-18-0+18=0')} ${OK} &ensp; ${T('Q')}: ${T('0-18+18=0')} ${OK}`, 'u7l7-small'); } }
+        run: async (c) => { await say(c, Pn, `${T('P')}: ${T('-18-0+18=0')} ${OK}<br>${T('Q')}: ${T('0-18+18=0')} ${OK}`, 'u7l7-small'); } }
     ];
   }
 };
@@ -482,6 +487,7 @@ const graphToEq = {
 const perpTest = {
   title: 'Perpendicular: slopes multiply to −1',
   height: 470,
+  minW: 840, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'why', label: 'Why −1? Turn the triangle' }, { v: 'ex3a', label: 'Example 3(a) check' }, { v: 'ex3b', label: 'Example 3(b) check' }, { v: 'ex3c', label: 'Example 3(c) check' }],
   intro: (v) => ({ why: 'Main St from the warm-up has slope ½. Turn its slope triangle 90°. Press <b>Next</b>.', ex3a: 'Example 3(a): perpendicular to 4y + x + 8 = 0. Press <b>Next</b>.', ex3b: 'Example 3(b): which pairs of the four lines are perpendicular? Press <b>Next</b>.', ex3c: 'Example 3(c): perpendicular to 6x + y + 5 = 0. Press <b>Next</b>.' })[v],
   make(stage, v, ex) {
@@ -556,6 +562,7 @@ const TRI = { D: [-7, -3], E: [3, 1], F: [-6, 9] };
 const altitude = {
   title: '★ The altitude: the side’s slope triangle, turned 90°',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex4a', label: 'Example 4(a) check: altitude from F' }, { v: 'ex4b', label: 'Example 4(b) check: ⊥ through C' }, { v: 'three', label: 'All three altitudes' }],
   intro: (v) => ({ ex4a: 'DE has slope 2/5 and F is (−6, 9). (D and E are drawn for illustration: only DE’s slope and F matter.) Press <b>Next</b>.', ex4b: 'AB is x − 3y + 6 = 0; CD is perpendicular to AB at C. Press <b>Next</b>.', three: 'Every vertex has an altitude. Where do the three meet? Press <b>Next</b>.' })[v],
   make(stage, v, ex) {
@@ -624,6 +631,7 @@ const altitude = {
 const rate = {
   title: 'A rate of change from two measurements',
   height: 470,
+  minW: 880, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex5', label: 'Example 5 check' }, { v: 'units', label: 'Per metre or per kilometre?' }],
   intro: (v) => ({ ex5: 'Base of the trail: 15.4 °C. 2 400 m higher: 1.0 °C. Press <b>Next</b>.', units: 'Same two measurements, two different units for the run. Press <b>Next</b>.' })[v],
   make(stage, v, ex) {
@@ -672,7 +680,9 @@ const WT = {
 };
 const whichTool = {
   title: '★ Which form? Which tool?',
-  height: 486,
+  height: 430,
+  side: false, // the flowchart needs the full width: beside the sidebar its text would shrink to about 12 px
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(WT).map((k) => ({ v: k, label: WT[k].label + ' check' })),
   intro: () => 'Each example travels the flowchart from its <b>question</b> to its <b>tool</b>. Press <b>Next</b>.',
   make(stage, v, ex) {
@@ -705,8 +715,8 @@ const whichTool = {
       ]
     });
     F.el.classList.add('u7l7-flow');
-    const w = WT[v].win, G = new Graph(stage, { x: 8, y: 306, width: 250, height: 176, ...w, numbers: false, xtitle: '', ytitle: '', arrows: false });
-    const Wk = add(stage, box(h('div', 'u7l7-work'), ex.W - 282, 176), 270, 306);
+    const w = WT[v].win, G = new Graph(stage, { x: 8, y: 298, width: 250, height: 128, ...w, numbers: false, xtitle: '', ytitle: '', arrows: false });
+    const Wk = add(stage, box(h('div', 'u7l7-work'), ex.W - 282, 128), 270, 298);
     const wl = (c, html, cls) => say(c, Wk, html, cls);
     const path = (c, ids) => F.light(c, ids, { pause: 80 });
     if (v === '1ab') {
@@ -766,7 +776,7 @@ const whichTool = {
 /* =============================== static figures =============================== */
 function mountStatic() {
   const city = document.getElementById('u7l7-city');
-  if (city) { const G = cityMap(city); G.label(7.05, 2.35, '?', { cls: 'u7l7-qmark' }); }
+  if (city) { const G = cityMap(city, { width: city.clientWidth || 645, height: city.clientHeight || 457 }); G.label(7.05, 2.35, '?', { cls: 'u7l7-qmark' }); }
   const e2 = document.getElementById('u7l7-ex2fig');
   if (e2) {
     const G = new Graph(e2, { width: 440, height: 305, xmin: -12, xmax: 6, ymin: -3, ymax: 9, xlabels: 2, ylabels: 2, fontSize: 15 });

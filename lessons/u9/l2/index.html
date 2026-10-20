@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,26 +43,29 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: The 4-to-1 Ladder Rule" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The 4-to-1 Ladder Rule</h2></div>
-  <p class="u9l2-sticker">Safety sticker: <b>“For every 4 m up the wall, put the foot 1 m out.”</b></p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The 4-to-1 Ladder Rule" id="wu" style="--wf-side: 330px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The 4-to-1 Ladder Rule</h2>
+  <p class="wf-rule">Safety sticker: <b>“For every 4 m up the wall, put the foot 1 m out.”</b></p></div>
+  <div class="wf-grid"><div class="wf-main">
   <div class="u9l2-wfig" id="u9l2-wfig"></div>
   <div class="u9l2-wqs">
     <div class="bk-wq">
-      <div class="q-line"><div class="q-num">1</div><div>A ladder reaches <b>12 m</b> up a wall. How far out should its foot be?</div></div>
-      <div class="u9l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>3 m.</b> 12 m up is three groups of “4 up”, so three groups of “1 out”.</div></div>
+      <div class="q-line"><div class="q-num">1</div><div>A ladder reaches <b>12 m</b> up a wall. How far out should its foot be? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l2-wa"><div class="bk-ans"><b>3 m.</b> 12 m up is three groups of “4 up”, so three groups of “1 out”.</div></div>
     </div>
     <div class="bk-wq">
-      <div class="q-line"><div class="q-num">2</div><div>Which of ladders <b>A–D</b> follow the rule?</div></div>
-      <div class="u9l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>A</b> (<span class="tex">4:1</span>) and <b>C</b> (<span class="tex">8:2=4:1</span>). B is <span class="tex">6:3=2:1</span>, too shallow (it could slide out). D is <span class="tex">5:0.5=10:1</span>, too steep (it could tip backward).</div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">3</div><div>Two of the ladders are different sizes but both follow the rule. Do they lean at the <b>same angle</b>? Why?</div></div>
-      <div class="u9l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>Yes.</b> Both have up <span class="tex">\div</span> out <span class="tex">=4</span>, so C is just A scaled by 2: similar triangles, same angles.</div></div>
+      <div class="q-line"><div class="q-num">2</div><div>Which of ladders <b>A–D</b> follow the rule? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l2-wa"><div class="bk-ans"><b>A</b> (<span class="tex">4:1</span>) and <b>C</b> (<span class="tex">8:2=4:1</span>). B is <span class="tex">6:3=2:1</span>, too shallow (it could slide out). D is <span class="tex">5:0.5=10:1</span>, too steep (it could tip backward).</div></div>
     </div>
   </div>
-
-  <div class="poll u9l2-poll4">
+  </div><div class="wf-side">
+  <div class="u9l2-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>Two of the ladders are different sizes but both follow the rule. Do they lean at the <b>same angle</b>? Why? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l2-wa"><div class="bk-ans"><b>Yes.</b> Both have up <span class="tex">\div</span> out <span class="tex">=4</span>, so C is just A scaled by 2: similar triangles, same angles.</div></div>
+    </div>
+  </div>
+  <div class="poll u9l2-poll4 wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> A ladder that follows the 4-to-1 rule makes what angle with the <b>ground</b>? <b>Guess first.</b></div></div>
     <div class="poll-opts">
       <div class="opt"><b>A</b> about <span class="tex">14^\circ</span></div>
@@ -76,6 +79,7 @@
       <span class="muted"><b>A</b> (about <span class="tex">14^\circ</span>) is out over up: the angle at the <em>top</em>, between the ladder and the wall (<span class="tex">14^\circ+76^\circ=90^\circ</span>). <b>B</b> is “<span class="tex">\tfrac14</span> of <span class="tex">90^\circ</span>” and <b>C</b> is “<span class="tex">\tfrac45</span> of <span class="tex">90^\circ</span>”: both assume the angle grows in step with the ratio. It doesn’t, and that is what this lesson is about.</span></div>
   </div>
 
+  </div></div>
   <div class="bk-wq u9l2-early">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Some safety guides measure the 4 <b>along the ladder</b> instead: foot out <span class="tex">=\tfrac14</span> of the ladder’s length. Which ratio is that, and about what angle?</div></div>
     <div class="u9l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Out is <b class="u9l2-a">adjacent</b> and the ladder is the <b class="u9l2-h">hypotenuse</b>: <span class="tex">\cos\theta=0.25</span>. <span class="tex">\cos75^\circ\approx0.26</span> and <span class="tex">\cos76^\circ\approx0.24</span>, so about <span class="tex">75.5^\circ</span>. (The <span class="tex">\cos^{-1}</span> key does this directly in Lesson 4.)</div></div>

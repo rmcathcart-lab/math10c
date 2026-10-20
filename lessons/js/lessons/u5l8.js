@@ -182,6 +182,7 @@ const SW = {
 const swap = {
   title: 'One rule, two notations',
   height: 420,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SW).map((k) => ({ v: k, label: SW[k].label })),
   intro: (k) => (SW[k].dir === 'f2y' ? `Rewrite ${T(SW[k].name + '(' + SW[k].v + ')=' + SW[k].rhs)} in ${T('x')}-${T('y')} notation. Press <b>Next</b>.` : `Rewrite ${T('y=' + SW[k].rhs)} in function notation. Press <b>Next</b>.`),
   make(stage, k, ex) {
@@ -240,6 +241,7 @@ const subT = (d, x) => `${d.name}(${x})=${d.sub(x)}=${d.f(x)}`;
 const machine = {
   title: 'Table of values → points → graph',
   height: 450,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(MC).map((k) => ({ v: k, label: MC[k].label })),
   intro: (k) => (MC[k].calc ? 'The same function on a <b>graphing calculator</b> (TI-83/84). These keys are for the graphing calculator, not the TI-30XIIS. Press <b>Next</b>.'
     : `Feed inputs into ${T(MC[k].name + '(x)=' + (k === 'sq' ? 'x^2-4' : '2x-3'))}, record the outputs, plot, join. Press <b>Next</b>.`),
@@ -309,6 +311,7 @@ const FB = { fwd: 'Forwards: ' + T('F(20)'), back: 'Backwards: ' + T('F(C)=50'),
 const fwdBack = {
   title: 'Reading a graph forwards and backwards',
   height: 460,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(FB).map((k) => ({ v: k, label: FB[k] })),
   intro: (k) => (k === 'fwd' ? `Use the graph of ${T('F(C)=1.8C+32')} to find ${T('F(20)')}. Press <b>Next</b>.` : k === 'back' ? `Use the graph of ${T('F(C)=1.8C+32')} to solve ${T('F(C)=50')}. Press <b>Next</b>.` : `Where do the two scales show the same number? Press <b>Next</b>.`),
   make(stage, k, ex) {
@@ -365,6 +368,7 @@ const SWEEP_B = [[2, 'three'], [3, 'two'], [-2, 'one'], [6, 'no']];
 const sweep = {
   title: 'How many answers? Count the crossings',
   height: 460,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   intro: `The graph of a function ${T('p')}. Compare a <b>vertical</b> line (an input) with a <b>horizontal</b> line (an output). Press <b>Next</b>.`,
   make(stage, v, ex) {
     const G = new LG(stage, { x: 10, y: 10, width: 520, height: 440, xmin: -8, xmax: 8, ymin: -5, ymax: 7, xlabels: 2, ylabels: 2, xtitle: 'x', ytitle: 'p(x)' });
@@ -412,6 +416,7 @@ const E3 = { a: '(a)(b) check', c: '(c) check', de: '(d)(e) check', f: '(f) chec
 const exThree = {
   title: 'Example 3 check',
   height: 460,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(E3).map((k) => ({ v: k, label: E3[k] })),
   intro: (k) => ({ a: 'Forwards: read the outputs for the inputs −3, 1 and 4.', c: 'Backwards: find every input with output 6, 0 and 8.', de: 'Points and intercepts in function notation.', f: 'Domain and range as shadows on the axes.' }[k] + ' Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -494,6 +499,7 @@ const CA = { ev: 'Evaluate ' + T('h(4)'), so: 'Solve ' + T('h(t)=8') };
 const candle = {
   title: 'Function notation tells a story',
   height: 460,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CA).map((k) => ({ v: k, label: CA[k] })),
   intro: (k) => (k === 'ev' ? `${T('h(4)')}: how tall is the candle after 4 hours? Press <b>Next</b>.` : `${T('h(t)=8')}: when is the candle 8 cm tall? Press <b>Next</b>.`),
   make(stage, k, ex) {
@@ -523,6 +529,7 @@ const candle = {
 const limits = {
   title: 'Where does the model stop?',
   height: 460,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   intro: `The rule ${T('h(t)=-2t+12')} accepts any number. The candle doesn’t. Press <b>Next</b>.`,
   make(stage, v, ex) {
     const S = candleScene(stage, ex, { xmin: -2, xmax: 8, ymin: -4, ymax: 16, ylabels: 2 }), G = S.G;
@@ -556,6 +563,7 @@ const PO = { abc: '(a)–(c) check', d: '(d) check', e: '(e) check', f: '(f) che
 const pool = {
   title: 'Example 4 check: draining a pool',
   height: 470,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(PO).map((k) => ({ v: k, label: PO[k] })),
   intro: (k) => ({ abc: 'Sketch the graph, then find and explain ' + T('V(6)') + '.', d: 'Evaluate ' + T('V(0)') + ', ' + T('V(15)') + ' and ' + T('V(22)') + '.', e: 'When is ' + T('V(t)=1\\,350') + '?', f: 'A sensible domain and range.' }[k] + ' Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -620,6 +628,7 @@ const CO = { a: '(a) check', b: '(b)(c) check', d: '(d) check', e: '(e) check' }
 const cost = {
   title: 'Example 5 check: cost of production',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CO).map((k) => ({ v: k, label: CO[k] })),
   intro: (k) => ({ a: 'Sketch the graph for up to 5 000 pairs.', b: 'Find and explain ' + T('C(120)') + '.', d: 'What does ' + T('C(0)') + ' mean?', e: 'How many pairs for ' + T('\\$29\\,200') + '?' }[k] + ' Press <b>Next</b>.'),
   make(stage, k, ex) {

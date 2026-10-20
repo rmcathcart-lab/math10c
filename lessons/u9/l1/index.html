@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -42,9 +42,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Shadow Height" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Shadow Height</h2></div>
-  <p class="big">Same sunny moment. A student and the school flagpole both cast shadows.</p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Shadow Height" id="wu" style="--wf-side: 330px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Shadow Height</h2>
+  <p class="wf-rule">Same sunny moment. A student and the school flagpole both cast shadows.</p></div>
+  <div class="wf-grid"><div class="wf-main">
   <div class="u9l1-wfig" id="u9l1-wfig"></div>
   <div class="u9l1-wbtns">
     <button type="button" class="pill" id="u9l1-wtri">Show the two right triangles</button>
@@ -53,20 +54,22 @@
   </div>
   <div class="u9l1-wqs">
     <div class="bk-wq">
-      <div class="q-line"><div class="q-num">1</div><div>A kid <b>0.8 m</b> tall stands beside the student. How long is the kid’s shadow?</div></div>
-      <div class="u9l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>1 m.</b> Half the height, so half the shadow: <span class="tex">2\div2=1</span>.</div></div>
+      <div class="q-line"><div class="q-num">1</div><div>A kid <b>0.8 m</b> tall stands beside the student. How long is the kid’s shadow? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l1-wa"><div class="bk-ans"><b>1 m.</b> Half the height, so half the shadow: <span class="tex">2\div2=1</span>.</div></div>
     </div>
     <div class="bk-wq">
-      <div class="q-line"><div class="q-num">2</div><div>For the student: height <span class="tex">\div</span> shadow <span class="tex">=</span> ?</div></div>
-      <div class="u9l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">1.6\div2=\boldsymbol{0.8}</span>. Right now, everything is 0.8 times as tall as its shadow.</div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">3</div><div>Right now, would a tree give the <b>same</b> height <span class="tex">\div</span> shadow? Why?</div></div>
-      <div class="u9l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>Yes.</b> The sun’s rays arrive parallel, so every upright object and its shadow make a right triangle with the <b>same angle</b> <span class="tex">\theta</span>. Same angles, similar triangles, same ratio.</div></div>
+      <div class="q-line"><div class="q-num">2</div><div>For the student: height <span class="tex">\div</span> shadow <span class="tex">=</span> ? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l1-wa"><div class="bk-ans"><span class="tex">1.6\div2=\boldsymbol{0.8}</span>. Right now, everything is 0.8 times as tall as its shadow.</div></div>
     </div>
   </div>
-
-  <div class="poll">
+  </div><div class="wf-side">
+  <div class="u9l1-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>Right now, would a tree give the <b>same</b> height <span class="tex">\div</span> shadow? Why? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l1-wa"><div class="bk-ans"><b>Yes.</b> The sun’s rays arrive parallel, so every upright object and its shadow make a right triangle with the <b>same angle</b> <span class="tex">\theta</span>. Same angles, similar triangles, same ratio.</div></div>
+    </div>
+  </div>
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> At that same moment, the flagpole’s shadow is <b>15 m</b> long. How tall is the flagpole? <b>Guess first.</b></div></div>
     <div class="poll-opts">
       <div class="opt right"><b>A</b> 12 m</div>
@@ -78,10 +81,11 @@
     <div class="poll-ans"><b>A: 12 m.</b> Height <span class="tex">=0.8\times15=12</span> m. Check: <span class="tex">12\div15=0.8</span>, the same ratio as the student. The flagpole’s triangle is the student’s triangle scaled up <span class="tex">\times7.5</span>.<br>
       <span class="muted"><b>B</b> is the adding trap (“the shadow is 0.4 m longer, so <span class="tex">15-0.4</span>”): similar shapes scale by <b>multiplying</b>, not adding. <b>C</b> flips the ratio, <span class="tex">15\div0.8</span>, but the pole must be shorter than its shadow, like the student. <b>D</b> is <span class="tex">15\times1.6</span>: the height instead of the ratio.</span></div>
   </div>
+  </div></div>
 
   <div class="bk-wq u9l1-early">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Later that day the student’s shadow is <b>3.2 m</b>. How long is the flagpole’s shadow now? At what sun angle is your shadow exactly as long as you are?</div></div>
-    <div class="u9l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Now height <span class="tex">\div</span> shadow <span class="tex">=1.6\div3.2=0.5</span>, so the pole’s shadow is <span class="tex">12\div0.5=\boldsymbol{24}</span> m. Shadow = height when the ratio is 1: the sun is <span class="tex">45^\circ</span> up.</div></div>
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Later that day the student’s shadow is <b>3.2 m</b>. How long is the flagpole’s shadow now? At what sun angle is your shadow exactly as long as you are? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+    <div class="u9l1-wa"><div class="bk-ans">Now height <span class="tex">\div</span> shadow <span class="tex">=1.6\div3.2=0.5</span>, so the pole’s shadow is <span class="tex">12\div0.5=\boldsymbol{24}</span> m. Shadow = height when the ratio is 1: the sun is <span class="tex">45^\circ</span> up.</div></div>
   </div>
   <p class="u9l1-social">At lunch: measure a friend and their shadow. How tall is our school?</p>
 </section>

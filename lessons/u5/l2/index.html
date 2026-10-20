@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson u5l2">
+<main class="lesson screen u5l2">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,10 +43,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Does It Depend?" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Does It Depend?</h2></div>
-  <p class="big">Two quantities change together. Does one <b>cause</b> the other?</p>
-  <div class="u5l2-wtop">
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Does It Depend?" id="wu" style="--wf-side: 460px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Does It Depend?</h2>
+  <p class="wf-rule">Two quantities change together. Does one <b>cause</b> the other?</p></div>
+  <div class="wf-grid"><div class="wf-main">
     <div class="u5l2-pcs">
       <div class="u5l2-pc" id="pc1">
         <button type="button" class="u5l2-q" data-side="l"><span class="u5l2-ic" data-icon="thermo"></span><span class="u5l2-qn">temperature<br>(°C)</span><span class="u5l2-qt"></span></button>
@@ -60,19 +60,19 @@
       </div>
       <div class="u5l2-tiptxt">Tap the quantity you think is the <b>cause</b>.</div>
     </div>
-    <div class="u5l2-beach" id="beach"></div>
-  </div>
 
   <div class="u5l2-wqs">
-    <div class="bk-wq" id="wq1"><div class="q-line"><div class="q-num">1</div><div>Temperature and ice cream sales: which one <b>depends on</b> the other?</div></div>
-      <div class="u5l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Ice cream sales <b>depend on</b> temperature. Hot days sell more cones, but selling cones doesn’t heat up the day.</div></div></div>
-    <div class="bk-wq" id="wq2"><div class="q-line"><div class="q-num">2</div><div>Minutes charging and battery level: which one do you <b>control</b>?</div></div>
-      <div class="u5l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">You control the <b>minutes charging</b>. The battery level is the result.</div></div></div>
-    <div class="bk-wq" id="wq3"><div class="q-line"><div class="q-num">3</div><div>Graphing the charging data, which quantity goes on the <b>horizontal</b> axis?</div></div>
-      <div class="u5l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>Minutes charging</b> on the horizontal axis; battery level on the vertical axis.</div></div></div>
+    <div class="bk-wq" id="wq1"><div class="q-line"><div class="q-num">1</div><div>Temperature and ice cream sales: which one <b>depends on</b> the other? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l2-wa"><div class="bk-ans">Ice cream sales <b>depend on</b> temperature. Hot days sell more cones, but selling cones doesn’t heat up the day.</div></div></div>
+    <div class="bk-wq" id="wq2"><div class="q-line"><div class="q-num">2</div><div>Minutes charging and battery level: which one do you <b>control</b>? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l2-wa"><div class="bk-ans">You control the <b>minutes charging</b>. The battery level is the result.</div></div></div>
+    <div class="bk-wq" id="wq3"><div class="q-line"><div class="q-num">3</div><div>Graphing the charging data, which quantity goes on the <b>horizontal</b> axis? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l2-wa"><div class="bk-ans"><b>Minutes charging</b> on the horizontal axis; battery level on the vertical axis.</div></div></div>
   </div>
 
-  <div class="poll" id="wpoll">
+  </div><div class="wf-side">
+    <div class="u5l2-beach" id="beach"></div>
+  <div class="poll wf-poll" id="wpoll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> In the beach town, ice cream sales and shark attacks rise and fall <b>together</b>. So… <b>Guess first.</b></div></div>
     <div class="poll-opts u5l2-c2">
       <div class="opt"><b>A</b> Ice cream causes shark attacks.</div>
@@ -85,6 +85,7 @@
       <span class="muted"><b>A</b> and <b>B</b> are the classic trap: “they rise together, so one must cause the other.” Rising together is <i>correlation</i>, not <i>causation</i>. <b>D</b> is tempting, but there is a real reason they match, just not a direct one. (The graph uses made-up data.)</span><br>
       <b>Today’s lesson:</b> the quantity that <b>depends on</b> the other is the <b class="u5l2-dvt">dependent variable</b>; the one it depends on is the <b class="u5l2-ivt">independent variable</b>.</div>
   </div>
+  </div></div>
 
   <div class="bk-wq u5l2-early"><div class="q-line"><div class="q-num u5l2-bonus">+</div><div><b>Early finishers.</b> In a K–12 school, students with bigger shoes read at higher levels. Should the school buy everyone bigger shoes?</div></div>
     <div class="u5l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">No. The hidden variable is <b>age</b>: older students have bigger feet <b>and</b> read at higher levels.</div></div></div>

@@ -156,3 +156,16 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u7l1-dial-b .u7l1-dtick { font-size: 16px; }
 .u7l1-dname { font-size: 19px; }
 .u7l1-ro-r .katex { font-size: .95em; }
+
+/* ---------- one screen (main.lesson.screen): the cups with Q1 and Q2 on the left, Q3 and the big one on the right ---------- */
+.wf .u7l1-wqs .q-line { margin: 8px 0 2px; font-size: 17.5px; gap: 10px; }
+.wf .u7l1-wqs .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf .u7l1-wa { margin: 0 0 4px 40px; }
+.wf .bk-wq .bk-ans { font-size: 16px; line-height: 1.35; }
+.wf .wf-main .u7l1-wqs { margin-top: 6px; }
+.wf .wf-main .u7l1-wa { display: flex; align-items: baseline; gap: 12px; }
+.wf .wf-main .u7l1-wa .bk-ans { margin-top: 0; }
+.wf .wf-side .u7l1-wqs .q-line { margin-top: 0; }
+.wf .wf-poll .poll-opts.c4 { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.wf .wf-poll .poll-opts.c4 .opt { padding: 6px 8px; }
+.wf .u7l1-early { margin-top: 12px; }

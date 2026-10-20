@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,9 +43,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Frame It">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Frame It</h2></div>
-  <p class="big">A <b>20 cm by 30 cm</b> photo gets a frame of the same width, <span class="tex">w</span>, all the way around. <span class="muted">Tap a width to try it on.</span></p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Frame It" style="--wf-side: 300px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Frame It</h2>
+  <p class="wf-rule">A <b>20 cm by 30 cm</b> photo gets a frame of the same width, <span class="tex">w</span>, all the way around. <span class="muted">Tap a width to try it on.</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
 
   <div class="fi-wrap">
     <div class="fi-pic" id="fi-pic"></div>
@@ -69,7 +70,6 @@
     </div>
   </div>
 
-  <div class="wu-grid">
     <div class="wq">
       <div class="q-line"><div class="q-num">1</div><div>What is the area of the photo?</div></div>
       <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">20\times30=\mathbf{600}</span> cm². Every frame in the table is built around these 600 cm².</div></div>
@@ -78,13 +78,13 @@
       <div class="q-line"><div class="q-num">2</div><div>Look at the <span class="tex">w=1</span> row. Where do 22, 32 and 104 come from?</div></div>
       <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans">The frame adds <span class="tex">w</span> on <b>both</b> ends: <span class="tex">20+2(1)=22</span>, <span class="tex">30+2(1)=32</span>. Then <span class="tex">22\times32=704</span>, and the frame is <b>outside − photo</b>: <span class="tex">704-600=104</span>.</div></div>
     </div>
+
+  </div><div class="wf-side">
     <div class="wq">
       <div class="q-line"><div class="q-num">3</div><div>Fill in the rows for <span class="tex">w=2</span> and <span class="tex">w=3</span>.</div></div>
       <div class="wq-a"><button class="pill small" type="button" data-wq="fill">Answer</button><div class="q-ans"><span class="tex">w=2</span>: <span class="tex">24\times34=816</span>, frame <b>216</b>.<br><span class="tex">w=3</span>: <span class="tex">26\times36=936</span>, frame <b>336</b>.</div></div>
     </div>
-  </div>
-
-  <div class="poll">
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> What frame width makes the <b>frame’s area</b> equal to the <b>photo’s area</b>? <b>Guess first.</b> Then test each guess: tap its width to add its row to the table.</div></div>
     <div class="poll-opts">
       <div class="opt right"><b>A</b> 5 cm</div>
@@ -95,6 +95,7 @@
     <div class="poll-ans"><b>A, 5 cm.</b> Outside <span class="tex">30\times40=1\,200</span>, and <span class="tex">1\,200-600=600</span>: exactly the photo’s area. The framed picture is <b>double</b> the photo, yet the border is only 5 cm wide.<br>
       <span class="muted"><b>B</b> feels right (“10 is half of 20”), but <span class="tex">40\times50=2\,000</span>, so the frame is 1 400 cm², more than twice the photo. <b>C</b> (half of 30): <span class="tex">50\times60=3\,000</span>, frame 2 400, four photos’ worth. A thin border wraps around a <b>long</b> perimeter, so its area adds up fast.</span></div>
   </div>
+  </div></div>
 
   <div class="wq wq-wide">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Any width at all.</b> Write the frame’s area for a frame <span class="tex">w</span> cm wide, as a polynomial.</div></div>

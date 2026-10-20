@@ -151,3 +151,38 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u8l2-ckc .u8l2-gut { width: 104px; white-space: nowrap; }
 .u8l2-p4 .poll-opts { display: grid; grid-template-columns: repeat(4, 1fr); }
 .u8l2-early { margin-top: 14px; }
+
+/* ---------- one screen (main.lesson.screen): one column, jar beside Q1–Q3, the big one under them; the swap tray (testing the guesses) below ---------- */
+.wf-one .u8l2-wgrid { grid-template-columns: 240px 1fr; gap: 24px; margin: 2px 0 6px; }
+.wf-one .u8l2-jar svg { width: 208px; height: 240px; }
+.wf-one .u8l2-coins { margin-top: 4px; font-size: 17px; }
+.wf-one .u8l2-nk { width: 40px; height: 40px; }
+.wf-one .u8l2-dm { width: 34px; height: 34px; }
+.wf-one .u8l2-wqs .q-line { margin: 8px 0 2px; font-size: 18px; gap: 10px; }
+.wf-one .u8l2-wa { display: flex; align-items: baseline; gap: 12px; margin: 0 0 8px 40px; }
+.wf-one .u8l2-wa .pill.small { flex: none; }
+.wf-one .bk-wq .bk-ans { font-size: 17px; margin-top: 0; }
+.wf-one .wf-poll { margin-top: 4px; padding: 2px 16px 12px; }
+.wf-one .wf-poll .q-line { margin: 10px 0 8px; font-size: 18px; }
+.wf-one .wf-poll .poll-opts { grid-template-columns: repeat(4, 1fr); margin: 0 0 10px 40px; gap: 10px; }
+.wf-one .wf-poll .opt { padding: 6px 12px; font-size: 18px; }
+.wf-one .wf-poll > .pill { margin-left: 40px; }
+.wf-one .wf-poll .poll-ans { margin-left: 40px; }
+.wf-one .u8l2-swap { margin-top: 14px; }
+.wf-one .u8l2-wgrid { grid-template-columns: 270px 1fr; margin-bottom: 10px; }
+.wf-one .u8l2-jar svg { width: 236px; height: 272px; }
+.wf-one .u8l2-wqs .q-line { margin-top: 12px; font-size: 18.5px; }
+
+/* one screen: the equation cards are narrower beside the sidebar, so the "only d left!" tag sits top-right (left of the colour swatch) instead of over the end of the equation */
+.lesson.screen .u8l2-tag { top: 4px; bottom: auto; right: 54px; font-size: 15px; }
+/* the six-key 5:intersect sequence fits on one row under the 400 px calculator screen */
+.u8l2-keys { gap: 5px; flex-wrap: nowrap; }
+.u8l2-keys kbd { font-size: 16px; padding: 3px 7px; }
+/* "Which variable should I isolate?": the four worked choices 2 x 2, so they stay readable at the sidebar width */
+.u8l2-opts { grid-template-columns: repeat(2, 1fr); }
+.u8l2-opt { height: 125px; gap: 4px; }
+.u8l2-opt { height: 132px; }
+.u8l2-opt .u8l2-on { padding-right: 100px; line-height: 1.25; }
+.u8l2-opt { height: auto; min-height: 132px; }
+/* the first screen is wrapped in .wf-grid.wf-solo (one column) so the checker can measure it */
+.wf .wf-grid.wf-solo { display: block; }

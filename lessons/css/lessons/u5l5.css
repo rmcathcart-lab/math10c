@@ -117,3 +117,27 @@ code { font: 600 .9em ui-monospace, "SF Mono", Menlo, Consolas, monospace; backg
 .u5l5-cr, .u5l5-cy { translate: -100% 0; }
 .u5l5-note { font-size: 24px; text-align: center; }
 .u5l5-diff { font: 800 18px var(--round); color: #c27a0e; background: #fff4dd; border-radius: 8px; padding: 1px 7px; }
+
+/* ---------- one screen (main.lesson.screen): each screen beside its question on the left, the big one on the right ---------- */
+.wf .u5l5-wscr { display: flex; flex-direction: column; gap: 8px; margin: 4px 0 0; }
+.wf .u5l5-wr { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: start; }
+.wf .u5l5-wr figure { margin: 0; }
+.wf .u5l5-fig { --calc-w: 196; padding: 6px; }
+.wf .u5l5-cap { font-size: 16px; line-height: 1.35; }
+.wf .u5l5-cap .u5l5-wl { width: 24px; height: 24px; font-size: 14px; margin-right: 6px; }
+.wf .u5l5-wtx .q-line { margin: 4px 0 0; font-size: 17px; gap: 10px; line-height: 1.38; }
+.wf .u5l5-wtx .q-line .pill.small { margin-left: 4px; vertical-align: 1px; }
+.wf .u5l5-wa { margin: 2px 0 0 40px; }
+.wf .u5l5-wa .bk-ans { margin-top: 0; font-size: 16px; line-height: 1.35; }
+.wf .wf-poll { margin-top: 4px; padding: 2px 14px 12px; }
+.wf .wf-poll .q-line { margin-top: 8px; }
+.wf .wf-poll .poll-opts.u5l5-c4 { grid-template-columns: 1fr 1fr; gap: 6px; }
+.wf .wf-poll .opt { font-size: 16.5px; padding: 6px 10px; }
+.wf .u5l5-wctl { margin: 0 0 10px; gap: 6px; font-size: 15px; }
+.wf .u5l5-wctl .pill.small { margin: 0; font-size: 13.5px; padding: 4px 9px; }
+.wf .u5l5-wqside .q-line { margin: 0; font-size: 17px; gap: 10px; line-height: 1.38; }
+.wf .u5l5-wqside .q-line .pill.small { margin-left: 4px; vertical-align: 1px; }
+.wf .wf-poll { margin-top: 8px; }
+.wf .u5l5-fig { --calc-w: 186; }
+.wf .wf-poll { margin-top: 4px; }
+.wf .u5l5-wctl { gap: 5px; margin-bottom: 8px; }

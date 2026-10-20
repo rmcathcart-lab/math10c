@@ -117,3 +117,24 @@ h2 .katex, h3 .katex { font-size: .95em; }
 /* keep wide KaTeX from stretching grid columns (answers wrap between spans instead) */
 .parts.c2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 .u9l5-exrow { grid-template-columns: 330px minmax(0, 1fr); }
+/* sidebar captions are only 268 px wide: let a long formula break after = or ≈ instead of running out of the box */
+.ex-panel .ex-cap .katex { white-space: normal; }
+
+/* ---------- one screen (main.lesson.screen): tower, table, buttons, Q1 and Q2 left; Q3 and the big one right;
+   early finishers below ---------- */
+.wf .u9l5-wgrid { grid-template-columns: 320px 1fr; gap: 14px; }
+.wf .u9l5-wfig { width: 320px; height: auto; aspect-ratio: 450 / 440; }
+.wf .u9l5-wfig > svg { width: 100%; height: 100%; }
+.wf .u9l5-wtab-h { font-size: 17px; padding: 6px 12px; }
+.wf .u9l5-wrow { padding: 6px 12px; font-size: 16px; min-height: 0; gap: 8px; line-height: 1.25; }
+.wf .u9l5-wrow > b { font-size: 18px; }
+.wf .u9l5-wbtns { gap: 8px; margin-top: 10px; }
+.wf .u9l5-wbtns .pill { font-size: 15px; padding: 7px 14px; }
+.wf .u9l5-wqs { grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
+.wf .u9l5-wqs .bk-wq { padding: 2px 12px 6px; }
+.wf .u9l5-wqs .q-line { margin: 6px 0 2px; font-size: 17px; gap: 10px; }
+.wf .u9l5-wqs .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf .u9l5-wqs .bk-ans { font-size: 15.5px; line-height: 1.32; margin-left: 40px; }
+.wf-side .u9l5-wqs { margin-top: 0; }
+.wf .wf-poll .poll-opts { grid-template-columns: 1fr 1fr; gap: 6px; margin: 0 0 10px; }
+.wf .wf-poll .opt { padding: 5px 8px; white-space: nowrap; }

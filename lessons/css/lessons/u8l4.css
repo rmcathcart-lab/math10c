@@ -212,3 +212,33 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u8l4-rrow b { font-size: 22px; margin-left: 6px; }
 .u8l4-ok { color: var(--ok); } .u8l4-no { color: var(--red); }
 .u8l4-rsense { font-size: 18px; background: var(--u8l4-ps); border: 2px solid var(--u8l4-p); border-radius: 10px; padding: 6px 10px; }
+
+/* ---------- one screen (main.lesson.screen): the ages scene across the top; Q1–Q3 left and the big one right; early finishers below ---------- */
+.wf .wf-rule { font-size: 18.5px; }
+.wf .u8l4-ages { grid-template-columns: 150px 1fr 250px; gap: 14px; margin: 2px 0 8px; }
+.wf .u8l4-tbtns { gap: 6px; }
+.wf .u8l4-tbtns .pill { padding-top: 6px; padding-bottom: 6px; }
+.wf .u8l4-scene { height: 214px; padding-bottom: 10px; }
+.wf .u8l4-ground { bottom: 10px; }
+.wf .u8l4-badge { font-size: 17px; }
+.wf .u8l4-age { font-size: 21px; }
+.wf .u8l4-read { gap: 6px; }
+.wf .u8l4-when { font-size: 21px; }
+.wf .u8l4-rd { font-size: 18px; padding: 6px 12px; }
+.wf .u8l4-rd b { font-size: 23px; }
+.wf .u8l4-wqs .q-line { margin: 6px 0 2px; font-size: 17.5px; gap: 10px; }
+.wf .u8l4-wa { display: flex; align-items: baseline; gap: 10px; margin: 0 0 4px 40px; }
+.wf .u8l4-wa .pill.small { flex: none; }
+.wf .bk-wq .bk-ans { font-size: 16px; line-height: 1.32; margin-top: 0; }
+.wf .wf-poll { margin-top: 0; }
+.wf .wf-poll .q-line { margin: 10px 0 8px; }
+.wf .u8l4-poll .poll-opts { grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+.wf .wf-poll .opt { padding: 5px 10px; }
+.wf .wf-poll:not(.revealed) .poll-ans { display: none; }
+.wf .u8l4-early { margin-top: 14px; }
+
+/* explainers beside the sidebar: the facts table shares the panel width instead of fixed 88 px columns, and the
+   panel titles are a little tighter so "Step 4 · Answer and check against the story" fits */
+.u8l4-tl { width: 104px; }
+.u8l4-tc { flex: 1 1 0; width: auto; min-width: 0; }
+.u8l4-ph { font-size: 13px; letter-spacing: .03em; }

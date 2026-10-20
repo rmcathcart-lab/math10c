@@ -139,6 +139,9 @@ function board(stage, o) {
       const y = p.y != null ? p.y : o.y + rows.length * o.lh;
       const el = add(stage, h('div', 'u5-line' + (p.cls ? ' ' + p.cls : ''), K(src)), (p.x != null ? p.x : o.x) + (p.ind ? o.ind || 56 : 0), y); el.style.fontSize = (p.fs || o.fs) + 'px';
       hide(el); const r = { el, q: (s) => el.querySelector(s), qa: (s) => [...el.querySelectorAll(s)] }; rows.push(r); return r;
+    },
+    fit(maxR) { // a line that would run past maxR (a narrower stage) is set smaller, just enough to fit
+      rows.forEach((r) => { const f = (maxR - r.el.offsetLeft) / (r.el.offsetWidth || 1); if (f < 1) r.el.style.fontSize = Math.floor(parseFloat(r.el.style.fontSize) * f * 10) / 10 + 'px'; });
     }
   };
 }
@@ -188,6 +191,7 @@ function lSetup(stage, S) {
 const notch = {
   title: 'Strategy B: the bounding box minus the notch',
   height: 440,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: lChoices,
   intro: (k) => `This L is a rectangle with its top-right corner cut away. <b>Strategy B:</b> find the area of the whole <b>bounding box</b>, then take away the <b>notch</b>.`,
   make(stage, key, ex) {
@@ -227,9 +231,10 @@ const notch = {
 const pieces = {
   title: 'Strategy A: slice it into rectangles and add',
   height: 400,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: lChoices,
   intro: `<b>Strategy A:</b> slice the L into rectangles that don’t overlap, find each area, and <b>add</b>.`,
-  make(stage, key) {
+  make(stage, key, ex) {
     const S = LS[key], L = lSetup(stage, S), { V, W, H, NW, NH, F, w, hh, nw, nh } = L;
     const wA = W.minus(NW), hB = H.minus(NH), A = wA.times(H), Bp = NW.times(hB), sum = A.plus(Bp);
     const cut = F.line(w - nw, hh - nh, w - nw, 0, 'u5-cut'); hide(cut);
@@ -239,6 +244,7 @@ const pieces = {
     const r1 = B.line(`\\text{width of A}=(${S.W})-${br(S.nw)}=${wA.tex()}`), r2 = B.line(`\\text{height of B}=(${S.H})-${br(S.nh)}=${hB.tex()}`);
     const r3 = B.line(`A=${prodT(wA.tex(), S.H)}=${A.tex({ color: 1 })}`), r4 = B.line(`B=${prodT(S.nw, hB.tex())}=${Bp.tex({ color: 1 })}`);
     const r5 = B.line(`\\text{Area}=(${A.tex({ color: 1 })})+(${Bp.tex({ color: 1 })})`), r6 = B.line(`=${sum.tex({ color: 1 })}`, { ind: 1, cls: 'u5-res' });
+    B.fit(ex.W - 10);
     const same = add(stage, h('div', 'u5-same', `✓ same as Strategy B`), 408 + 62, 18 + 5 * 50 + 60); hide(same);
     return [{
       cap: `Slice straight down from the inside corner. Now there are two rectangles: <b>A</b> (tall) and <b>B</b> (short).`,
@@ -271,6 +277,7 @@ const FR = {
 const frame = {
   title: 'A frame: the outer area minus the opening',
   height: 460,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'photo', label: 'The warm-up photo frame' }, { v: 'mat', label: 'A picture mat' }, { sep: 'Example 2 check:' }, { v: 'ex2', label: 'Example 2' }],
   intro: (k) => { const S = FR[k]; return `The frame is a big rectangle, ${T(`(${S.W})`)} by ${T(`(${S.H})`)}, with an opening cut out of it. Shaded area = <b>outer − opening</b>. First we need the opening’s size.`; },
   make(stage, key, ex) {
@@ -295,6 +302,7 @@ const frame = {
     const r1 = B.line(`\\text{opening width}=(${S.W})-${twice(S.sx, SX)}=${iW.tex()}`), r2 = B.line(`\\text{opening height}=(${S.H})-${twice(S.sy, SY)}=${iH.tex()}`);
     const r3 = B.line(`\\text{Outer}=${prodT(S.W, S.H)}=${outer.tex({ color: 1 })}`), r4 = B.line(`\\text{Opening}=${prodT(iW.tex(), iH.tex())}=${inner.tex({ color: 1 })}`);
     const r5 = B.line(`\\text{Frame}=(${outer.tex({ color: 1 })})-${brT(inner, { color: 1 })}`), r6 = B.line(`=${fr.tex({ color: 1 })}`, { ind: 1, cls: 'u5-res' });
+    B.fit(ex.W - 10);
     const vs = V.map((v, i) => `${v}=${nv(cv[i])}`).join(',\\ '), ow = t.W - 2 * t.sx, oh = t.H - 2 * t.sy;
     const chk = chkBox(stage, 16, 386, ex.W - 32, `<b>Check at ${T(vs)}:</b> outer ${T(`${nv(t.W)}\\times${nv(t.H)}=${nv(t.W * t.H)}`)}, opening ${T(`${nv(ow)}\\times${nv(oh)}=${nv(ow * oh)}`)}, frame ${T(`=${nv(t.W * t.H - ow * oh)}`)}. &nbsp; <span class="nw">Polynomial: ${subCap(fr, cv)} <b class="ok">✓</b></span>`);
     const morph = async (c) => {
@@ -336,6 +344,7 @@ const GD = {
 const garden = {
   title: 'Grass = garden − flower beds',
   height: 470,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'two', label: 'Two flower beds' }, { sep: 'Example 3 check:' }, { v: 'ex3', label: 'Example 3' }],
   intro: (k) => { const S = GD[k]; return `A garden ${T(`(${S.L})`)} m by ${T(`(${S.W})`)} m holds <b>${S.k}</b> square flower beds, each ${T(`(${S.s})`)} m on a side. How much is <b>grass</b>?`; },
   make(stage, key, ex) {
@@ -392,6 +401,7 @@ const BX = {
 const box = {
   title: 'Volume = base area × height',
   height: 430,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'a', label: tex('(x+1)(x+2)(x+3)') }, { v: 'b', label: tex('(2x+1)(x+3)(x-1)') }, { v: 'c', label: 'a cube, ' + tex('(x+2)^3') }],
   intro: (k) => { const S = BX[k]; return S.cube ? `A cube with edges ${T(`(${S.l})`)}: its volume is ${T(`(${S.l})^3=(${S.l})(${S.l})(${S.l})`)}. Three factors, so we multiply <b>twice</b>.` : `A box ${T(`(${S.l})`)} long, ${T(`(${S.w})`)} wide and ${T(`(${S.h})`)} high. Three factors, so we multiply <b>twice</b>.`; },
   make(stage, key) {
@@ -452,6 +462,7 @@ const fracT = (p, q) => { const g = (a, b) => (b ? g(b, a % b) : Math.abs(a)); c
 const cancel = {
   title: 'Expand both sides, and watch the squares cancel',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar (Example 4's long second line)
   choices: [{ v: 'grow', label: 'A growing square' }, { v: 'photo', label: 'Framed photo' }, { sep: 'Example 4 check:' }, { v: 'ex4', label: 'Example 4' }],
   intro: (k) => ({
     grow: `A square’s sides grow by 2 cm, and its area grows by 24 cm². How long were the sides? The rule: <b>new area = old area + 24</b>.`,
@@ -502,6 +513,7 @@ const cancel = {
     const r0 = B.line(S.src), r1 = B.line(e1), r2 = showE2 ? B.line(e2) : null;
     const r3 = cross ? B.line(`${Ll.tex({ color: 1 })}=${Rl.tex({ color: 1 })}`) : null;
     const r4 = B.line(`${one(A, [1], V)}=${numT(Bc)}`), r5 = B.line(`${v}=${fracT(Bc, A)}`, { cls: 'u5-res' });
+    B.fit(ex.W - 10);
     const cr = cross ? (r2 || r1) : r1, Dt = (p) => T(p.only(D).tex());
     // check
     let chkHtml;
@@ -640,7 +652,7 @@ function mountFrameIt() {
   const chips = [...document.querySelectorAll('[data-w]')];
   const choose = (w) => {
     chips.forEach((b) => b.classList.toggle('on', Number(b.dataset.w) === w));
-    go(w); const r = fiRow(w), ratio = r.frame / PHOTO, maxA = 2400, bw = 290;
+    go(w); const r = fiRow(w), ratio = r.frame / PHOTO, maxA = 2400, bw = Math.max(100, Math.min(290, (read.clientWidth || 460) - 170)); // bar length follows the read-out's width
     read.innerHTML = `<div class="fi-eq"><b>${w} cm:</b> outside ${r.out} = <b>${fmt(r.area)}</b>; frame ${fmt(r.area)} − 600 = <b>${fmt(r.frame)}</b> cm²</div>
       <div class="fi-bar"><span>photo</span><i class="ph" style="width:${(bw * PHOTO) / maxA}px"></i><em>600</em></div>
       <div class="fi-bar"><span>frame</span><i class="fr${r.frame === PHOTO ? ' eq' : ''}" style="width:${(bw * r.frame) / maxA}px"></i><em>${fmt(r.frame)}${r.frame === PHOTO ? ' <b class="ok">= photo!</b>' : ratio > 1 ? ` <b class="red">${nv(Math.round(ratio * 100) / 100)} photos</b>` : ''}</em></div>`;

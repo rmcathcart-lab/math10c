@@ -20,6 +20,8 @@ import {
 } from '../blocks.js';
 
 const T = (s) => tex(s);
+/** a caption equation that may wrap before each = or \approx (the sidebar caption is narrow) */
+const TQ = (s) => s.split(/(?==|\\approx)/).map((q) => T(q)).join(' ');
 const RT = COLORS.blue, LT = COLORS.purple, PT = COLORS.red, KEEP = COLORS.green, INK = COLORS.ink, AMB = COLORS.amber, TEAL = COLORS.teal;
 const panel = (stage, x, y, w, hh, title, cls = '') => add(stage, box(h('div', 'u10l4a-panel ' + cls, title ? `<div class="u10l4a-ph">${title}</div>` : ''), w, hh), x, y);
 const line = (p, html, cls = '') => { const d = h('div', 'u10l4a-line ' + cls, html); p.appendChild(d); return d; };
@@ -190,13 +192,13 @@ const ZOOM = {
   m: { label: 'Zoom into a metre', rows: [['1\\text{ m}', 10, '1\\text{ dm}', '=10\\text{ dm}'], ['1\\text{ dm}', 10, '1\\text{ cm}', '=10\\text{ cm}'], ['1\\text{ cm}', 10, '1\\text{ mm}', '=10\\text{ mm}']],
     caps: ['One <b>metre</b>, split into <b>10 equal parts</b>. Each part is a <b>decimetre</b> (deci = a tenth): ' + T('1\\text{ m}=10\\text{ dm}') + '.',
       'Zoom into one decimetre: 10 parts again, each a <b>centimetre</b>. ' + T('1\\text{ dm}=10\\text{ cm}') + ', so ' + T('1\\text{ m}=10\\times10=100\\text{ cm}') + '.',
-      'Zoom into one centimetre: 10 <b>millimetres</b>. So ' + T('1\\text{ m}=10\\times10\\times10=1000\\text{ mm}') + '.',
+      'Zoom into one centimetre: 10 <b>millimetres</b>. So ' + TQ('1\\text{ m}=10\\times10\\times10=1000\\text{ mm}') + '.',
       'Every step down the chart is <b>×10</b>: that is why the prefixes are powers of ten (centi ' + T('10^{-2}') + ', milli ' + T('10^{-3}') + '). The same prefixes work for grams and litres.'],
     eq: '1\\text{ m}=10\\text{ dm}=100\\text{ cm}=1000\\text{ mm}' },
   km: { label: 'Zoom out to a kilometre', rows: [['1\\text{ km}', 10, '1\\text{ hm}', '=10\\text{ hm}'], ['1\\text{ hm}', 10, '1\\text{ dam}', '=10\\text{ dam}'], ['1\\text{ dam}', 10, '1\\text{ m}', '=10\\text{ m}']],
     caps: ['One <b>kilometre</b>, split into 10: each part is a <b>hectometre</b>. ' + T('1\\text{ km}=10\\text{ hm}') + '.',
       'Zoom into one hectometre: 10 <b>decametres</b>. ' + T('1\\text{ hm}=10\\text{ dam}') + '.',
-      'Zoom into one decametre: 10 <b>metres</b>. So ' + T('1\\text{ km}=10\\times10\\times10=1000\\text{ m}') + '.',
+      'Zoom into one decametre: 10 <b>metres</b>. So ' + TQ('1\\text{ km}=10\\times10\\times10=1000\\text{ m}') + '.',
       '<b>kilo</b> means ' + T('10^{3}=1000') + ' for any base unit: ' + T('1\\text{ kg}=1000\\text{ g}') + ' and ' + T('1\\text{ kL}=1000\\text{ L}') + '.'],
     eq: '1\\text{ km}=10\\text{ hm}=100\\text{ dam}=1000\\text{ m}' },
   ext: { label: 'Extension: milli → micro → nano', rows: [['1\\text{ mm}', 1000, '1\\ \\mu\\text{m}', '=1000\\ \\mu\\text{m}'], ['1\\ \\mu\\text{m}', 1000, '1\\text{ nm}', '=1000\\text{ nm}']],
@@ -242,18 +244,18 @@ const zoom = {
 /* =============================== explainer: hop (the star) =============================== */
 const HOP = {
   notes: { label: `The notes: ${T('1\\text{ km}\\to\\text{mm}')}`, D: '1', p: 1, from: 'k', to: 'm', base: 'm' },
-  e1a: { label: `Example 1(a) check: ${T('1\\text{ m}\\to\\text{cm}')}`, D: '1', p: 1, from: '', to: 'c', base: 'm' },
-  e1b: { label: `Example 1(b) check: ${T('1\\text{ cm}\\to\\text{m}')}`, D: '1', p: 1, from: 'c', to: '', base: 'm' },
-  e1c: { label: `Example 1(c) check: ${T('1\\text{ kL}\\to\\text{L}')}`, D: '1', p: 1, from: 'k', to: '', base: 'L' },
-  e2a: { label: `Example 2(a) check: ${T('4.6\\text{ m}\\to\\text{cm}')}`, D: '46', p: 1, from: '', to: 'c', base: 'm' },
-  e2b: { label: `Example 2(b) check: ${T('58\\,400\\text{ mg}\\to\\text{kg}')}`, D: '58400', p: 5, from: 'm', to: 'k', base: 'g' },
-  e2c: { label: `Ext: Example 2(c) check: ${T('215\\ \\mu\\text{m}\\to\\text{nm}')}`, D: '215', p: 3, from: '\\mu', to: 'n', base: 'm' }
+  e1a: { label: `Example 1(a): ${T('1\\text{ m}\\to\\text{cm}')}`, D: '1', p: 1, from: '', to: 'c', base: 'm' },
+  e1b: { label: `Example 1(b): ${T('1\\text{ cm}\\to\\text{m}')}`, D: '1', p: 1, from: 'c', to: '', base: 'm' },
+  e1c: { label: `Example 1(c): ${T('1\\text{ kL}\\to\\text{L}')}`, D: '1', p: 1, from: 'k', to: '', base: 'L' },
+  e2a: { label: `Example 2(a): ${T('4.6\\text{ m}\\to\\text{cm}')}`, D: '46', p: 1, from: '', to: 'c', base: 'm' },
+  e2b: { label: `Example 2(b): ${T('58\\,400\\text{ mg}\\to\\text{kg}')}`, D: '58400', p: 5, from: 'm', to: 'k', base: 'g' },
+  e2c: { label: `Ext: Example 2(c): ${T('215\\ \\mu\\text{m}\\to\\text{nm}')}`, D: '215', p: 3, from: '\\mu', to: 'n', base: 'm' }
 };
 const hop = {
   title: 'The metric number line: count the steps, hop the point',
   height: 400,
   choices: Object.keys(HOP).map((k) => ({ v: k, label: HOP[k].label })),
-  intro: 'Find the two units on the line, count the steps, and watch the decimal point hop one place per step. Press <b>Next</b>.',
+  intro: 'Find both units on the line, count the steps, and watch the point hop one place per step. Press <b>Next</b>.',
   make(stage, key, ex) {
     const d = HOP[key], W = ex.W, a = pos(d.from), b = pos(d.to), k = b - a, n = Math.abs(k), dir = Math.sign(k), right = k > 0;
     const val = d.p < d.D.length ? d.D.slice(0, d.p) + '.' + d.D.slice(d.p) : d.D;
@@ -286,7 +288,7 @@ const hop = {
         run: async (c) => {
           for (let i = 0; i < n; i++) await Promise.all([N.hop(c, a + dir * i, a + dir * (i + 1), { label: right ? '×10' : '÷10', color: right ? RT : LT, height: 20, ms: 380 }), tape.hop(c, dir)]);
         } },
-      { cap: `Re-write it: ${tidyNote}. ${calcT ? T(calcT) + ', so ' : ''}${T(eqT)}.`,
+      { cap: `Re-write it: ${tidyNote}. ${calcT ? TQ(calcT) + ', so ' : ''}${TQ(eqT)}.`,
         run: async (c) => { if (!right) await tape.lead(c); await tape.tidy(c); await tape.setUnit(c, T(u1)); await pop(c, fin, 420); const s = stamp(stage, '✓', { x: W - 70, y: 336 }); await stampIn(c, s); } }
     ];
   }
@@ -358,11 +360,12 @@ function pFrac(host, x, y, nTex, dTex) {
 const prop = {
   title: 'Two correct arrangements of the same proportion',
   height: 430,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar (Sam's fractions are laid out on a fixed 400 px row)
   choices: Object.keys(PROP).map((k) => ({ v: k, label: PROP[k].label })),
   intro: 'Sam cross-multiplies; Priya builds a table with headers. Same ratio, two layouts. Press <b>Next</b>.',
   make(stage, key, ex) {
-    const d = PROP[key], W = ex.W, pw = (W - 42) / 2, H = ex.def.height;
-    const S = panel(stage, 14, 12, pw, H - 24, 'Sam · cross multiplication'), P = panel(stage, 28 + pw, 12, pw, H - 24, 'Priya · table of headers');
+    const d = PROP[key], W = ex.W, pw = (W - 42) * 0.55, pw2 = W - 42 - pw, H = ex.def.height;
+    const S = panel(stage, 14, 12, pw, H - 24, 'Sam · cross multiplication'), P = panel(stage, 28 + pw, 12, pw2, H - 24, 'Priya · table of headers');
     const row = h('div', 'u10l4a-eqrow'); S.appendChild(row);
     const fA = pFrac(row, 6, 0, d.A[0], d.A[1]), eq = add(row, h('div', 'u10l4a-peq', '='), 190, 34), fB = pFrac(row, 250, 0, d.B[0], d.B[1]);
     const X = svgEl('svg', { width: 400, height: 112, style: 'position:absolute;left:0;top:0;overflow:visible' }, row);
@@ -396,7 +399,7 @@ const prop = {
         } },
       { cap: `Different layouts, <b>the same answer</b>: ${T(d.fin)}. Any arrangement works as long as matching units sit in matching positions.`,
         run: async (c) => {
-          sa = stamp(S, 'same ✓', { x: pw - 70, y: H - 70 }); sb = stamp(P, 'same ✓', { x: pw - 70, y: H - 70 });
+          sa = stamp(S, 'same ✓', { x: pw - 70, y: H - 70 }); sb = stamp(P, 'same ✓', { x: pw2 - 70, y: H - 70 });
           await Promise.all([stampIn(c, sa), stampIn(c, sb)]);
         } }
     ];
@@ -407,6 +410,7 @@ const prop = {
 const ratio = {
   title: 'Ratios from the question: a scale and a recipe',
   height: 420,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'whale', label: 'Example 5 check: the whale' }, { v: 'smoothie', label: 'Example 6 check: the smoothie' }],
   intro: (v) => (v === 'whale' ? 'A double number line: photo centimetres on top, real metres below. Press <b>Next</b>.' : 'A tape diagram: equal-sized parts of yogurt and juice. Press <b>Next</b>.'),
   make(stage, v, ex) { return v === 'whale' ? whaleSteps(stage, ex) : smoothieSteps(stage, ex); }
@@ -493,6 +497,7 @@ function drawMap(stage, x, y, w, hh) {
 const map = {
   title: 'Map scales: 1 : 250 000',
   height: 420,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'cm', label: 'What 1 map cm stands for' }, { v: 'a', label: 'Example 7(a) check: towns' }, { v: 'b', label: 'Example 7(b) check: lakes' }],
   intro: 'The same unit on both sides of the ratio; convert to a convenient unit at the end. Press <b>Next</b>.',
   make(stage, v, ex) {
@@ -541,7 +546,7 @@ const map = {
       { cap: 'Two lakes are <b>32 km</b> apart on the ground. How far apart on the map?', run: async (c) => { await appear(c, sg, 400); await pop(c, lb); } },
       { cap: 'The scale compares <b>cm to cm</b>, so first write 32 km in centimetres: km to cm is <b>5 steps right</b>, ×1000 then ×100.', run: async (c) => { await show(c, l1); await show(c, l2); } },
       { cap: `Now the proportion: ${T('\\dfrac{1}{250\\,000}=\\dfrac{x}{3\\,200\\,000}')}.`, run: async (c) => { await show(c, l3); } },
-      { cap: `${T('x=3\\,200\\,000\\div250\\,000=12.8')}: the lakes are <b>12.8 cm</b> apart on the map. (Check: ${T('12.8\\times2.5=32')} km.)`,
+      { cap: `${TQ('x=3\\,200\\,000\\div250\\,000=12.8')}: the lakes are <b>12.8 cm</b> apart on the map. (Check: ${T('12.8\\times2.5=32')} km.)`,
         run: async (c) => { await pop(c, l4); hide(lb); await pop(c, lb2); const s = stamp(P, '12.8 cm ✓'); s.style.alignSelf = 'center'; await stampIn(c, s); } }
     ];
   }
@@ -555,6 +560,7 @@ const ONE = {
 const one = {
   title: 'A conversion fraction is a fancy 1',
   height: 330,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(ONE).map((k) => ({ v: k, label: ONE[k].label })),
   intro: 'Two names for the same amount make a fraction equal to 1. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -609,7 +615,7 @@ const cancel = {
       steps.push({ cap: `<b>${u}</b> on top and <b>${u}</b> on the bottom: they <b>cancel</b>, just like ${T('\\dfrac{5}{5}=1')}.`,
         run: async (c) => { await Promise.all([strike(c, fr[i - 1].nu, i > 1), strike(c, fr[i].du, i > 1)]); } });
     }
-    steps.push({ cap: `Only <b>${d.keep}</b> is left, exactly the unit we want. Tops multiply, bottoms divide: ${T(d.calc)}.`,
+    steps.push({ cap: `Only <b>${d.keep}</b> is left, exactly the unit we want. Tops multiply, bottoms divide: ${TQ(d.calc)}.`,
       run: async (c) => { fr[n - 1].nu.classList.add('keep'); await pulse(c, fr[n - 1].nu, 1.2, 380); await pop(c, res, 420); await stampIn(c, stamp(stage, '✓', { x: W - 90, y: 230 })); } });
     return steps;
   }
@@ -633,7 +639,7 @@ function flipSteps(stage, ex, d) {
         bad.row.style.display = 'none'; good.fr[0].nu.classList.add('hl'); good.fr[1].du.classList.add('hl');
         await anim(c, good.row, [{ opacity: 0, transform: 'rotateX(90deg)' }, { opacity: 1, transform: 'rotateX(0deg)' }], 300);
       } },
-    { cap: `km cancels and <b>m</b> is left: ${T(d.calc)}. If the units come out strange, a fraction is upside down.`,
+    { cap: `km cancels and <b>m</b> is left: ${TQ(d.calc)}. If the units come out strange, a fraction is upside down.`,
       run: async (c) => { await Promise.all([strike(c, good.fr[0].nu), strike(c, good.fr[1].du)]); good.fr[1].nu.classList.add('keep'); await pop(c, res); await stampIn(c, stamp(stage, '✓', { x: W - 90, y: 230 })); } }
   ];
 }
@@ -728,16 +734,16 @@ const which = {
   choices: Object.keys(WHICH).map((k) => ({ v: k, label: WHICH[k].label })),
   intro: 'Ask what the question gives you, then pick the method. Press <b>Next</b>.',
   make(stage, k, ex) {
-    const d = WHICH[k], W = ex.W, cx = [W * 0.18, W * 0.5, W * 0.82];
+    const d = WHICH[k], W = ex.W, cx = [W * 0.18, W * 0.5, W * 0.82], nw = Math.min(270, (W - 40) / 3 - 8);
     const F = new Flowchart(stage, { x: 10, y: 6, width: W - 20, height: 340,
       nodes: {
         start: { x: (W - 20) / 2, y: 36, w: 360, h: 52, html: '<b>What does the question give you?</b>', cls: 'bk-round' },
-        n1: { x: cx[0] - 10, y: 148, w: 270, h: 72, html: '<b>A prefix change</b>one metric unit to another' },
-        n2: { x: cx[1] - 10, y: 148, w: 270, h: 72, html: '<b>A ratio in the question</b>scale, map, recipe, exchange rate' },
-        n3: { x: cx[2] - 10, y: 148, w: 270, h: 72, html: '<b>A chain or a rate</b>two or more units change' },
-        m1: { x: cx[0] - 10, y: 280, w: 270, h: 72, html: '<b>Number line</b>count steps, move the point', color: 'blue' },
-        m2: { x: cx[1] - 10, y: 280, w: 270, h: 72, html: '<b>Proportion</b>matching units, cross-multiply', color: 'amber' },
-        m3: { x: cx[2] - 10, y: 280, w: 270, h: 72, html: '<b>Unit analysis</b>fractions whose units cancel', color: 'green' }
+        n1: { x: cx[0] - 10, y: 148, w: nw, h: 72, html: '<b>A prefix change</b>one metric unit to another' },
+        n2: { x: cx[1] - 10, y: 148, w: nw, h: 72, html: '<b>A ratio in the question</b>scale, map, recipe, exchange rate' },
+        n3: { x: cx[2] - 10, y: 148, w: nw, h: 72, html: '<b>A chain or a rate</b>two or more units change' },
+        m1: { x: cx[0] - 10, y: 280, w: nw, h: 72, html: '<b>Number line</b>count steps, move the point', color: 'blue' },
+        m2: { x: cx[1] - 10, y: 280, w: nw, h: 72, html: '<b>Proportion</b>matching units, cross-multiply', color: 'amber' },
+        m3: { x: cx[2] - 10, y: 280, w: nw, h: 72, html: '<b>Unit analysis</b>fractions whose units cancel', color: 'green' }
       },
       edges: [{ from: 'start', to: 'n1', route: 'vhv' }, { from: 'start', to: 'n2' }, { from: 'start', to: 'n3', route: 'vhv' }, { from: 'n1', to: 'm1' }, { from: 'n2', to: 'm2' }, { from: 'n3', to: 'm3' }] });
     return [

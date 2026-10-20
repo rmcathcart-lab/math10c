@@ -91,12 +91,13 @@ const TABS = ['Words', 'Table', 'Ordered pairs', 'Arrow diagram', 'Equation', 'G
 const sixViews = {
   title: 'One relation, six views',
   height: 484,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SIX).map((k) => ({ v: k, label: SIX[k].label })),
   intro: 'One relation, six ways to show it. Watch the <b>same numbers</b> travel from view to view. Press <b>Next</b>.',
   make(stage, k, ex) {
     const d = SIX[k], W = ex.W, H = 484, n = d.xs.length;
-    const tw = (W - 32 - 5 * 8) / 6;
-    const tabs = TABS.map((t, i) => add(stage, box(h('div', 'u5l2-tab6', `<b>${i + 1}</b>${t}`), tw, 38), 16 + i * (tw + 8), 10));
+    const wt = TABS.map((t) => t.length + 4), u = (W - 32 - 5 * 8) / wt.reduce((a, b) => a + b, 0); // tab widths follow the label lengths
+    let tx = 16; const tabs = TABS.map((t, i) => { const el = add(stage, box(h('div', 'u5l2-tab6', `<b>${i + 1}</b>${t}`), wt[i] * u, 38), tx, 10); tx += wt[i] * u + 8; return el; });
     const setTab = (i) => tabs.forEach((t, j) => { t.classList.toggle('on', j === i); t.classList.toggle('done', j < i || i > 5); });
     const words = add(stage, box(h('div', 'u5l2-words', `<div>${d.words}</div>`), W - 32, 62), 16, 58); words.style.opacity = 0;
     const y0 = 132, wv = Math.floor((W - 48) / 2), hv = H - y0 - 10, xL = 16, xR = 32 + wv, dx = xR - xL;
@@ -211,6 +212,7 @@ const CE = {
 const causeEffect = {
   title: 'Cause → effect: which one depends on the other?',
   height: 424,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'phone', label: CE.phone.label }, { v: 'van', label: CE.van.label }, { v: 'ice', label: CE.ice.label }, { sep: 'Example check:' }, { v: 'museum', label: CE.museum.label }],
   intro: (k) => `Two quantities, named in the order the sentence gives them. Which one <b>depends on</b> the other? Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -229,8 +231,8 @@ const causeEffect = {
     // the two tests
     const P = panel(stage, 18, 226, 532, 190, 'Test it both ways', 'u5l2-tests');
     // graph
-    const gx = W - 410, indQ = d.dep === 'A' ? d.B : d.A, depQ = d.dep === 'A' ? d.A : d.B;
-    const G = new Graph(stage, { x: gx, y: 12, width: 396, height: 400, xmin: 0, xmax: 10, ymin: 0, ymax: 10, grid: false, numbers: false, xtitle: `\\textcolor{${IV}}{\\text{${indQ.ax}}}`, ytitle: `\\textcolor{${DV}}{\\text{${depQ.ax}}}` });
+    const gx = Math.max(W - 410, 566), indQ = d.dep === 'A' ? d.B : d.A, depQ = d.dep === 'A' ? d.A : d.B; // right of the cards and tests
+    const G = new Graph(stage, { x: gx, y: 12, width: Math.min(396, W - gx - 12), height: 400, xmin: 0, xmax: 10, ymin: 0, ymax: 10, grid: false, numbers: false, xtitle: `\\textcolor{${IV}}{\\text{${indQ.ax}}}`, ytitle: `\\textcolor{${DV}}{\\text{${depQ.ax}}}` });
     G.el.style.opacity = 0;
     let tr = []; const trace = G.curve(() => ({ subs: [tr.map((p) => G.toPx(p[0], p[1]))] }), { color: TEAL, width: 4 }, 'u5l2-trace', G.layers.data);
     const X = (u) => 1 + 8 * (u - 0.1) / 0.8, Y = (u) => 10 * d.f(u);
@@ -272,6 +274,7 @@ const VAN = { xs: [20, 40, 60, 80, 100, 120, 140], ys: ['13.2', '9.2', '6.8', '6
 const fuelStory = {
   title: 'The van: points, a curve, domain and range',
   height: 446,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   intro: 'Seven test speeds. What happens <b>between</b> them, and which speeds make sense at all? Press <b>Next</b>.',
   make(stage, v, ex) {
     const W = ex.W;
@@ -305,6 +308,7 @@ const fuelStory = {
 const spotRule = {
   title: 'Where is the independent variable?',
   height: 456,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'lin', label: T('y=-2x+9') }, { v: 'gen', label: T('4x-3y+24=0') }],
   intro: (k) => (k === 'lin' ? `One relation, ${T('y=-2x+9')}, five views. Find the <b>independent</b> variable in each. Press <b>Next</b>.` : `${T('4x-3y+24=0')} is not solved for either variable. Which one is the input? Press <b>Next</b>.`),
   make(stage, k, ex) {
@@ -444,6 +448,7 @@ const pairT = (x, y) => `(${x},\\ ${y})`;
 const eqToGraph = {
   title: 'Equation → table → graph',
   height: 484,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'c', label: EG.c.label }, { sep: 'Example checks:' }, { v: 'e3', label: EG.e3.label }, { v: 'e4', label: EG.e4.label }],
   intro: (k) => `Start from the equation ${T(EG[k].tex)}. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -501,6 +506,7 @@ const sgnN = (v) => (v >= 0 ? '+' : '−') + Math.abs(v);
 const linTest = {
   title: 'The table test for linearity',
   height: 446,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   value: 'e3',
   choices: [{ sep: 'Example checks:' }, { v: 'e3', label: LT.e3.label }, { v: 'e4', label: LT.e4.label }, { sep: 'Try:' }, { v: 'c', label: LT.c.label }, { v: 'un', label: LT.un.label }],
   intro: (k) => `Is ${T(LT[k].tex)} linear? Use only the table. Press <b>Next</b>.`,
@@ -569,10 +575,11 @@ function miniPlot(f, r, w = 132, hh = 70) {
 const linOrNot = {
   title: 'From the equation: linear or nonlinear?',
   height: 486,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   intro: 'Sort the equations. Is the input only to the <b>first power</b>, or is it <b>squared</b>? Press <b>Next</b>.',
   make(stage, v, ex) {
     const W = ex.W, cw = Math.floor((W - 28 - 3 * 10) / 4);
-    const chips = LN.map((e, i) => { const d = add(stage, box(h('div', 'u5l2-lnchip', T(e.t)), cw, 42), 14 + (i % 4) * (cw + 10) + (i >= 4 ? (cw + 10) / 2 : 0), 8 + Math.floor(i / 4) * 50); if (e.t.length > 14) d.style.fontSize = '15px'; return d; });
+    const chips = LN.map((e, i) => { const d = add(stage, box(h('div', 'u5l2-lnchip', T(e.t)), cw, 42), 14 + (i % 4) * (cw + 10) + (i >= 4 ? (cw + 10) / 2 : 0), 8 + Math.floor(i / 4) * 50); if (e.t.length > 14) d.style.fontSize = '15px'; fit(d, d.clientWidth, 12); return d; });
     const bw = Math.floor((W - 42) / 2), by = 112, bh = 366;
     const bins = [panel(stage, 14, by, bw, bh, '<b>Linear</b>: a straight line', 'u5l2-bin u5l2-bin-l'), panel(stage, 28 + bw, by, bw, bh, '<b>Nonlinear</b>: a curve', 'u5l2-bin u5l2-bin-n')];
     const sw = Math.floor((bw - 36) / 2), shh = 146;
@@ -580,7 +587,7 @@ const linOrNot = {
     const slots = LN.map((e) => {
       const b = e.lin ? 0 : 1, j = cnt[b]++, x = (b ? 28 + bw : 14) + 12 + (j % 2) * (sw + 12), y = by + 44 + Math.floor(j / 2) * (shh + 10);
       const s = add(stage, box(h('div', 'u5l2-slot2', `<div class="u5l2-s2eq">${T(e.t)}</div>${miniPlot(e.f, e.r)}<div class="u5l2-s2why">${e.why}</div>`), sw, shh), x, y);
-      if (e.t.length > 14) s.firstChild.style.fontSize = '15px'; s.style.opacity = 0; return s;
+      if (e.t.length > 14) s.firstChild.style.fontSize = '15px'; fit(s.firstChild, s.firstChild.clientWidth, 12); s.style.opacity = 0; return s;
     });
     const steps = LN.map((e, i) => ({
       cap: `${T(e.t)}: ${e.why}. ${e.lin ? 'Its graph is a straight line: <b>linear</b>.' : 'Its graph is a curve: <b>nonlinear</b>.'}`,

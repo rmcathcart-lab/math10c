@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,9 +43,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: The Tennis Ball Can" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Tennis Ball Can</h2></div>
-  <p class="big">Three tennis balls fit <b>snugly</b> in a can: touching the sides, the bottom and the lid. One ball is <b>about 6.7 cm</b> across.</p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Tennis Ball Can" id="wu" style="--wf-side: 300px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Tennis Ball Can</h2>
+  <p class="wf-rule">Three tennis balls fit <b>snugly</b> in a can: touching the sides, the bottom and the lid. One ball is <b>about 6.7 cm</b> across.</p></div>
+  <div class="wf-grid"><div class="wf-main">
   <div class="u10l8-wtop">
     <div class="u10l8-wfig">
       <div id="u10l8-can"></div>
@@ -63,14 +64,17 @@
         <div class="q-line"><div class="q-num">2</div><div>What is the <b>radius</b> of one ball? Of the can?</div></div>
         <div class="u10l8-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">6.7\div2=\boldsymbol{3.35}</span> cm for <b>both</b>: the balls touch the sides, so the can’s radius equals the ball’s.</div></div>
       </div>
-      <div class="bk-wq">
-        <div class="q-line"><div class="q-num">3</div><div>Guess: what fraction of the can do the balls fill? <span class="tex">\tfrac12</span>? <span class="tex">\tfrac23</span>? <span class="tex">\tfrac34</span>?</div></div>
-        <div class="u10l8-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b><span class="tex">\tfrac23</span>.</b> Can: <span class="tex">\pi r^2(6r)=6\pi r^3</span>. Balls: <span class="tex">3\times\tfrac43\pi r^3=4\pi r^3</span>. <span class="tex">4\div6=\tfrac23</span>. With numbers: balls <span class="tex">\approx472</span> cm³, can <span class="tex">\approx709</span> cm³. That is today’s first big idea.</div></div>
-      </div>
     </div>
   </div>
 
-  <div class="poll u10l8-poll3">
+  <div class="u10l8-wqs u10l8-wq3">
+    <div class="bk-wq">
+        <div class="q-line"><div class="q-num">3</div><div>Guess: what fraction of the can do the balls fill? <span class="tex">\tfrac12</span>? <span class="tex">\tfrac23</span>? <span class="tex">\tfrac34</span>?</div></div>
+        <div class="u10l8-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b><span class="tex">\tfrac23</span>.</b> Can: <span class="tex">\pi r^2(6r)=6\pi r^3</span>. Balls: <span class="tex">3\times\tfrac43\pi r^3=4\pi r^3</span>. <span class="tex">4\div6=\tfrac23</span>. With numbers: balls <span class="tex">\approx472</span> cm³, can <span class="tex">\approx709</span> cm³. That is today’s first big idea.</div></div>
+      </div>
+  </div>
+  </div><div class="wf-side">
+  <div class="poll u10l8-poll3 wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which is <b>longer</b>: the can’s <b>height</b>, or the <b>distance around</b> the can? <b>Guess first.</b></div></div>
     <div class="poll-opts">
       <div class="opt"><b>A</b> the height</div>
@@ -81,6 +85,7 @@
     <div class="poll-ans"><b>B: the distance around.</b> Height <span class="tex">=3d</span>. Distance around <span class="tex">=\pi d\approx3.14d</span>. Since <span class="tex">\pi&gt;3</span>, the circumference always wins: <span class="tex">\pi(6.7)\approx21.0</span> cm vs <span class="tex">3(6.7)=20.1</span> cm. Tap <b>Unroll the string</b> to see it.<br>
       <span class="muted"><b>A</b> is what almost everyone picks: a tall, skinny can <em>looks</em> much taller than it is wide. <b>C</b> is close (only about 1 cm apart), and it would be exactly right if <span class="tex">\pi</span> were 3.</span></div>
   </div>
+  </div></div>
 
   <div class="u10l8-early">
     <div class="bk-wq">

@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -44,11 +44,12 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: The Nesting Dolls">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Nesting Dolls</h2></div>
-  <p class="big">Factor a doll to <b>open</b> it. A doll is <b style="color:var(--sol)">solid</b> when it can’t be factored any further. <span class="muted">Tap a doll to open it.</span></p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Nesting Dolls" style="--wf-side: 300px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Nesting Dolls</h2>
+  <p class="wf-rule">Factor a doll to <b>open</b> it. A doll is <b style="color:var(--sol)">solid</b> when it can’t be factored any further. <span class="muted">Tap a doll to open it.</span></p></div>
 
   <div class="u4l5-shelf" id="shelf"></div>
+  <div class="wf-grid"><div class="wf-main">
 
   <div class="u4l5-wqs">
     <div class="wq">
@@ -65,7 +66,9 @@
     </div>
   </div>
 
-  <div class="poll">
+  </div><div class="wf-side">
+
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Keep opening the doll <span class="tex">x^8-1</span> until every doll is solid. How many solid dolls are inside? <b>Guess first.</b></div></div>
     <div class="poll-opts c4">
       <div class="opt"><b>A</b> 2</div>
@@ -77,6 +80,7 @@
     <div class="poll-ans"><b>C, 4 solid dolls.</b> <span class="tex">x^8-1=(x^4-1)(x^4+1)=(x^2-1)(x^2+1)(x^4+1)=(x-1)(x+1)(x^2+1)(x^4+1)</span>. Each time only the “minus” doll opens; the “plus” dolls are sums of squares and stay shut. <span class="muted">(Open “The big one” on the shelf to watch it.)</span><br>
       <span class="muted"><b>A</b> stops after the first opening: the classic “not factored completely” mistake. <b>B</b> stops one step early, leaving <span class="tex">x^2-1</span> unopened. <b>D</b> comes from the exponent 8, as if <span class="tex">x^8-1</span> split into eight brackets.</span></div>
   </div>
+  </div></div>
 
   <div class="wq u4l5-bonus">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Race a neighbour.</b> How many solid dolls are inside <span class="tex">x^{16}-1</span>? <span class="muted">Can you see the pattern without opening them all?</span></div></div>

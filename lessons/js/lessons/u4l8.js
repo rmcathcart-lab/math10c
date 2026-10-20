@@ -109,6 +109,7 @@ const FLOW = {
 const flow = {
   title: 'The checklist, one expression at a time',
   height: 414,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar (otherwise "the work" column is squeezed to unreadable)
   value: 'e1',
   choices: [{ v: 'e1', label: T('-2x^2+10x+28') }, { v: 'e2', label: T('6x^2+7x-3') }, { v: 'e3', label: T('16x^2-24x+9') }, { v: 'e4', label: T('x^4-13x^2+36') }, { v: 'e5', label: T('x^3+2x^2-9x-18') },
     { sep: 'Review check:' }, { v: 'r1', label: T('81a^4-16') }, { v: 'r2', label: T('8x^4-12x^3+4x^2') }, { v: 'r3', label: T('-3x^2+12x+36') }],
@@ -183,6 +184,7 @@ const TL = {
 const tilesEx = {
   title: 'Arrange the tiles into a rectangle',
   height: 350,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   value: 't1',
   choices: [{ v: 't1', label: T('x^2+5x+6') }, { v: 't2', label: T('x^2+2x-8') }, { v: 't3', label: T('x^2-9') }, { sep: 'Review check:' }, { v: 't14', label: T('x^2+7x+10') }],
   intro: (v) => { const d = TL[v]; return `The tiles for ${T(tri(1, d.b, d.c))}. Can they make one rectangle? Its side lengths will be the factors.`; },
@@ -268,6 +270,7 @@ function pairList(ac, b) {
 const boxEx = {
   title: 'Decomposition and the area box',
   height: 352,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   value: 'b1',
   choices: [{ v: 'b1', label: T('6x^2-x-2') }, { v: 'b2', label: T('2x^2+11x+12') }, { v: 'b3', label: T('12x^2-17x+6') }, { sep: 'Review check:' }, { v: 'r1', label: T('10x^2-x-3') }, { v: 'r2', label: T('8y^2-2y-1') }, { v: 'r3', label: T('3t^2-5t-2') }],
   intro: (v) => { const d = BX[v]; return `Factor ${T(tri(d.a, d.b, d.c, d.v))}. With ${T(`a=${d.a}`)}, inspection isn’t enough — decompose the middle term.`; },
@@ -322,6 +325,7 @@ const BV = { c12: { c: 12 }, cm12: { c: -12 }, r15: { c: 24, q: 15 }, r16: { c: 
 const bvals = {
   title: 'Every middle term that works',
   height: 312,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar (four factor-pair columns, the long note for Q21)
   value: 'c12',
   choices: [{ v: 'c12', label: T('x^2+bx+12') }, { v: 'cm12', label: T('x^2+bx-12') }, { sep: 'Review check:' }, { v: 'r15', label: T('x^2+px+24') }, { v: 'r16', label: T('x^2-wx+55') }, { v: 'r21', label: T('x^2+bx+20') }],
   intro: (v) => { const c = BV[v].c; return `For which integers ${T('b')} does ${T(`x^2+bx${sgn(c)}`)} factor over the integers? We need two integers with product ${T(String(c))} — and their sum is ${T('b')}.`; },
@@ -346,7 +350,7 @@ const bvals = {
       cap: c > 0 ? `${T(String(c))} is <b>positive</b>, so the two integers have the <b>same sign</b>: both positive, or both negative.` : `${T(String(c))} is <b>negative</b>, so the two integers have <b>opposite signs</b> — and either one can be the negative one.`,
       run: (cc) => Promise.all([cc.fadeIn(rh[1]), ...cards[1].map((e, i) => cc.pop(e, 320, { delay: i * 110 }))])
     }, {
-      cap: `Add each pair. These sums are the <b>only</b> middle terms that work: ${T(`b\\in\\{${sums.join(',')}\\}`)}.`,
+      cap: `Add each pair. These sums are the <b>only</b> middle terms that work: ${T('b\\in\\{') + sums.map((x) => T(String(x))).join(', ') + T('\\}')}.`, // pieces, so the list can wrap in the sidebar
       run: async (cc) => {
         const all = cards.flat(); all.forEach((e) => { e.classList.add('sum'); e.querySelector('small').style.visibility = 'visible'; });
         await Promise.all(all.map((e, i) => flash(cc, e.querySelector('small'), i)));

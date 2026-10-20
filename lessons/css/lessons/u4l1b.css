@@ -151,3 +151,34 @@
 [data-ink=ex2] .ans { min-height: 104px; }
 [data-ink=ex3] .parts.c3 .ans { min-height: 56px; }
 .sum-grid .katex, .goals .katex, .u4l1b-wqs .katex, .tip .katex, .lede .katex { white-space: nowrap; }
+
+/* ---------- one screen (main.lesson.screen): menu + Q1 | receipt, Q2 below; Q3 and the big one right; the race below ---------- */
+.wf .u4l1b-wu { grid-template-columns: 316px minmax(0, 1fr); gap: 12px; margin: 4px 0 0; }
+.wf .u4l1b-mt { font-size: 26px; }
+.wf .u4l1b-mt.big { font-size: 30px; }
+.wf .u4l1b-mt.op { font-size: 50px; }
+.wf .u4l1b-mt.team { font-size: 26px; }
+.wf .u4l1b-wl { display: flex; flex-direction: column; gap: 10px; }
+.wf .u4l1b-rcpt { font-size: 16.5px; padding: 6px 10px 14px; column-gap: 6px; }
+.wf .u4l1b-rh { font-size: 19px; padding-bottom: 4px; margin-bottom: 2px; }
+.wf .u4l1b-rl { grid-template-columns: 1fr 46px 46px; column-gap: 4px; padding: 1px 4px; }
+.wf .u4l1b-brace { width: 84px; }
+.wf .u4l1b-brace span { font-size: 14.5px; width: 70px; left: 9px; }
+.wf .u4l1b-rt { font-size: 19px; margin-top: 4px; padding-top: 2px; }
+.wf .u4l1b-rt b { font-size: 28px; }
+.wf .u4l1b-rbox { gap: 6px; }
+.wf .u4l1b-rctl { gap: 6px; }
+.wf .u4l1b-rctl .pill { font-size: 15px; padding: 6px 12px; }
+.wf .u4l1b-rwork { font-size: 16px; line-height: 1.35; min-height: 2.7em; }
+.wf .u4l1b-wqs { display: block; margin-top: 10px; }
+.wf .wq { padding: 6px 12px 6px; }
+.wf .wq .q-line { margin: 2px 0 4px; font-size: 17px; gap: 10px; }
+.wf .wq .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf .wq-a { margin-left: 40px; gap: 4px; }
+.wf .q-ans { font-size: 15.5px; line-height: 1.32; min-height: 0; }
+.wf .u4l1b-wqs .wq-a { flex-direction: row; align-items: flex-start; gap: 12px; }
+.wf .wf-poll .poll-opts.c4 { gap: 6px; }
+.wf .wf-poll .poll-opts.c4 .opt { font-size: 18px; padding: 5px 8px; }
+.wf .wf-poll:not(.revealed) .poll-ans { display: none; }
+.wf .wf-poll .poll-ans { min-height: 0; }
+.wf .wq-wide { margin-top: 14px; }

@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -48,10 +48,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Wanted: One Graph" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Wanted: One Graph</h2></div>
-  <p class="big">Four suspects. Only one matches <b>every</b> clue on the poster.</p>
-  <div class="u5l10-wtop">
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Wanted: One Graph" id="wu">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Wanted: One Graph</h2>
+  <p class="wf-rule">Four suspects. Only one matches <b>every</b> clue on the poster.</p></div>
+  <div class="wf-grid u5l10-wgrid"><div class="u5l10-wleft">
     <div class="u5l10-poster">
       <div class="u5l10-pin l"></div><div class="u5l10-pin r"></div>
       <div class="u5l10-wanted">WANTED</div>
@@ -64,24 +64,22 @@
         <li><b><span class="tex">y</span>-intercept:</b> <span class="tex">2</span></li>
       </ul>
     </div>
+  </div><div class="u5l10-wright">
     <div class="u5l10-suspects">
       <div class="u5l10-sus"><div class="u5l10-susfig" data-suspect="A"></div><b class="u5l10-tagl">A</b></div>
       <div class="u5l10-sus"><div class="u5l10-susfig" data-suspect="B"></div><b class="u5l10-tagl">B</b></div>
       <div class="u5l10-sus"><div class="u5l10-susfig" data-suspect="C"></div><b class="u5l10-tagl">C</b></div>
       <div class="u5l10-sus"><div class="u5l10-susfig" data-suspect="D"></div><b class="u5l10-tagl">D</b></div>
     </div>
-  </div>
-
   <div class="u5l10-wqs">
-    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Read suspect C’s <span class="tex">x</span>-intercepts.</div></div>
-      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">-2</span> and <span class="tex">2</span>: C crosses the <span class="tex">x</span>-axis at <span class="tex">(-2,\ 0)</span> and <span class="tex">(2,\ 0)</span>.</div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>What is suspect D’s <span class="tex">y</span>-intercept?</div></div>
-      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">1</span>. D crosses the <span class="tex">y</span>-axis at <span class="tex">(0,\ 1)</span>, in the dip between its two peaks.</div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Which one fails the <b>vertical line test</b>?</div></div>
-      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><b>A</b>. Its hook runs back along <span class="tex">y=-2</span> from <span class="tex">x=4</span> to <span class="tex">x=1</span>, so the line <span class="tex">x=3</span> hits it twice: <span class="tex">(3,\ -1)</span> and <span class="tex">(3,\ -2)</span>.</div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Read suspect C’s <span class="tex">x</span>-intercepts. <button class="pill small" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l10-wa"><div class="bk-ans"><span class="tex">-2</span> and <span class="tex">2</span>: C crosses the <span class="tex">x</span>-axis at <span class="tex">(-2,\ 0)</span> and <span class="tex">(2,\ 0)</span>.</div></div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>What is suspect D’s <span class="tex">y</span>-intercept? <button class="pill small" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l10-wa"><div class="bk-ans"><span class="tex">1</span>. D crosses the <span class="tex">y</span>-axis at <span class="tex">(0,\ 1)</span>, in the dip between its two peaks.</div></div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Which one fails the <b>vertical line test</b>? <button class="pill small" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l10-wa"><div class="bk-ans"><b>A</b>. Its hook runs back along <span class="tex">y=-2</span> from <span class="tex">x=4</span> to <span class="tex">x=1</span>, so the line <span class="tex">x=3</span> hits it twice: <span class="tex">(3,\ -1)</span> and <span class="tex">(3,\ -2)</span>.</div></div></div>
   </div>
-
-  <div class="poll">
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which suspect matches <b>every</b> clue on the poster? <b>Guess first.</b></div></div>
     <div class="poll-opts u5l10-c4">
       <div class="opt"><b>A</b> suspect A</div>
@@ -94,6 +92,7 @@
       <span class="muted"><b>A</b> is not a function (its domain, range and intercepts all match, which makes it the sneakiest). <b>B</b>’s range is <span class="tex">\{y\mid -3\le y\le 2,\ y\in\mathbb{R}\}</span>: its ends sit one unit too low. <b>D</b>’s <span class="tex">y</span>-intercept is <span class="tex">1</span>, not <span class="tex">2</span>.</span><br>
       <b>Today’s lesson:</b> the poster is a checklist of the whole unit. Check <b>every</b> clue.</div>
   </div>
+  </div></div>
 
   <h3 class="sub u5l10-gap">Check every clue</h3>
   <div class="explainer" data-explainer="wanted"></div>

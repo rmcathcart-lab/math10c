@@ -119,6 +119,7 @@ const AMD = {
 const areaMono = {
   title: 'Split the rectangle, add the pieces',
   height: 340,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'demo', label: tex('5(x+2)') }, { sep: 'Example 1 check:' }, ...'abcde'.split('').map((k) => ({ v: k, label: '(' + k + ')' }))],
   intro: (k) => { const d = AMD[k]; return `Find ${T(d.right ? `(${d.p})(${d.m})` : `${d.m}(${d.p})`)} with an <b>area model</b>: a rectangle whose sides are the two factors.`; },
   make(stage, key, ex) {
@@ -292,6 +293,7 @@ const COMP = { demoA: ['demo', 'add'], demoS: ['demo', 'sub'], i: ['ex4', 'add']
 const composite = {
   title: 'One shape, two ways',
   height: 420,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'demoA', label: 'add two rectangles' }, { v: 'demoS', label: 'big minus corner' }, { sep: 'Example 4 check:' }, { v: 'i', label: '(i) add' }, { v: 'ii', label: '(ii) subtract' }],
   intro: (k) => COMP[k][1] === 'add' ? 'Find the area by cutting the shape into <b>two rectangles</b> and adding them.' : 'Find the area by filling in the missing corner to make <b>one big rectangle</b>, then subtracting the corner.',
   make(stage, key, ex) {
@@ -365,6 +367,7 @@ const GROW = {
 const areaGrow = {
   title: 'From one strip to four pieces',
   height: 470,
+  minW: 890, // drawn this wide and scaled to fit beside the sidebar (the four-cell grid sits at W - 312)
   choices: [{ v: 'bk', label: tex('(x+4)(x+1)') }, { v: 'n2', label: tex('(x+2)(x+3)') }, { sep: 'Example 6 check:' }, { v: 'a6', label: '(a)' }, { v: 'b6', label: '(b)' }, { v: 'c6', label: '(c)' }, { sep: 'Example 10 check:' }, { v: 'e10', label: '(i)' }],
   intro: (k) => `Think of ${T(`(${GROW[k].top})(${GROW[k].side})`)} as the area of a rectangle, ${T(GROW[k].top)} by ${T(GROW[k].side)}.`,
   make(stage, key, ex) {
@@ -459,6 +462,7 @@ const tileName = (t) => (t.x ? T('x') + '-tile' : 'unit tile');
 const tiles = {
   title: 'Fill the frame with the shading rule',
   height: 460,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'demo', label: tex('(x+2)(x+3)') }, { v: 'n2', label: tex('(x+1)(x-3)') }, { sep: 'Example 5 check:' }, { v: 'a', label: '(a)' }, { v: 'b', label: '(b)' }],
   intro: (k) => { const d = TL[k]; return `Multiply ${T(`(${tilesT(parseTiles(d.top))})(${tilesT(parseTiles(d.side))})`)} with algebra tiles: one factor across the top of the frame, the other down the side.`; },
   make(stage, key, ex) {
@@ -553,6 +557,7 @@ const DG = { n: [41, 53], n2: [23, 17], a7: [32, 45], b7: [67, 84] };
 const digits = {
   title: 'Two-digit multiplication is a binomial product',
   height: 400,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n', label: '41 × 53' }, { v: 'n2', label: '23 × 17' }, { sep: 'Example 7 check:' }, { v: 'a7', label: '(a)' }, { v: 'b7', label: '(b)' }],
   intro: (k) => `Multiply ${DG[k][0]} × ${DG[k][1]} with no calculator, using an area model.`,
   make(stage, key, ex) {
@@ -626,6 +631,7 @@ const foilCol = (L) => ({ F: CELL[0][0], O: CELL[1][0], I: CELL[0][1], L: CELL[1
 const foil = {
   title: 'Four arrows, four cells',
   height: 420,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'gen', label: 'FOIL' }, { v: 'genD', label: 'Distribute' }, { sep: 'Example 8 check:' }, ...'abcd'.split('').map((k) => ({ v: k + '8', label: '(' + k + ')' })), { sep: 'Example 9 check:' }, ...'abcd'.split('').map((k) => ({ v: k + '9', label: '(' + k + ')' })), { sep: 'Example 10 check:' }, { v: 'e10', label: '(iii)' }],
   intro: (k) => { const d = FO[k]; return d.mode === 'foil' ? `Use <b>FOIL</b> on ${T(d.sq ? `(${d.f1})^2` : `(${d.f1})(${d.f2})`)}: First, Outside, Inside, Last.` : `Use the <b>distributive property</b> on ${T(`(${d.f1})(${d.f2})`)}: distribute each term of the first binomial.`; },
   make(stage, key, ex) {
@@ -690,6 +696,7 @@ const foil = {
 const foilLimit = {
   title: 'What FOIL misses',
   height: 450,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   intro: `Compare a binomial × binomial with a binomial × <b>trinomial</b>. Each cell of an area model is one product.`,
   make(stage, key, ex) {
     const W = ex.W, hw = 64, ch = 66, hh = 46;

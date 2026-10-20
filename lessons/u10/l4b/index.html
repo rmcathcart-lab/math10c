@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -44,9 +44,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: The Metric Mile" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Metric Mile</h2></div>
-  <p class="big">Track races are run in metres now, but the old races were in miles and feet.</p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Metric Mile" id="wu" style="--wf-side: 300px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Metric Mile</h2>
+  <p class="wf-rule">Track races are run in metres now, but the old races were in miles and feet.</p></div>
+  <div class="wf-grid"><div class="wf-main">
   <div class="u10l4b-wtop">
     <svg class="u10l4b-track" viewBox="0 0 300 210" aria-hidden="true">
       <path d="M90 15 H210 A90 90 0 0 1 210 195 H90 A90 90 0 0 1 90 15 Z" fill="#c45c46"/>
@@ -77,8 +78,8 @@
     <div class="q-line"><div class="q-num">3</div><div>Which number is bigger: your height in <b>feet</b>, or in <b>centimetres</b>? Why?</div></div>
     <div class="u10l4b-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">The <b>centimetres</b> number (about 170 vs about <span class="tex">5\tfrac12</span>). A centimetre is a much <b>smaller</b> unit, so it takes many more of them. <b>Smaller unit ⇒ bigger number.</b></div></div>
   </div>
-
-  <div class="poll">
+  </div><div class="wf-side">
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Three races: <b>1 mile</b>, <b>1500 m</b>, and <b>5000 feet</b>. Which race is the <b>longest</b>? <b>Guess first</b>, then check with the benchmarks (no calculator!).</div></div>
     <div class="poll-opts">
       <div class="opt right"><b>A</b> The Mile</div>
@@ -89,6 +90,7 @@
     <div class="poll-ans"><b>A, the mile.</b> Benchmarks: 1 mi ≈ 1.6 km = 1600 m, and 5000 ft ≈ <span class="tex">5000\times30</span> cm = 150 000 cm = 1500 m. Exactly: 1 mi ≈ 1609.3 m and <span class="tex">5000\text{ ft}\times0.3048\ \tfrac{\text{m}}{\text{ft}}=1524</span> m, so <b>mile (1609 m) &gt; 5000 ft (1524 m) &gt; 1500 m</b>. Tap <b>Race them to scale</b>.<br>
       <span class="muted"><b>B</b> is the trap: the 1500 m is <i>called</i> the “metric mile”, but it is about 109 m short. <b>C</b> tempts because 5000 is the biggest number, but a foot is a small unit (5280 ft make a mile).</span></div>
   </div>
+  </div></div>
   <div class="u10l4b-racebox">
     <button type="button" class="pill" id="u10l4b-race">Race them to scale</button>
     <div id="u10l4b-lanes" class="u10l4b-lanes"></div>

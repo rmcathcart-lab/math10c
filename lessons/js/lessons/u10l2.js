@@ -15,6 +15,8 @@ import {
 } from '../blocks.js';
 
 const T = (s) => tex(s);
+/** a caption equation that may wrap before each = or \approx (the sidebar caption is narrow) */
+const TQ = (s) => s.split(/(?==|\\approx)/).map((q) => T(q)).join(' ');
 const IMP = COLORS.blue, SI = COLORS.teal, REF = COLORS.amber, TRUE = COLORS.red, INK = COLORS.ink, GRN = COLORS.green;
 const SKIN = '#f3c9a5', NAIL = '#fdeae4', TAPE = '#f6d55c';
 
@@ -402,7 +404,7 @@ function layH(stage, k0, ex) {
       obj: (x, y, w, hh) => drawHall(S, x, y, w, hh), tapeMax: 3000, ticks: () => cmTicks(3000, 100, 500, 500, (v) => v / 100 + ' m'),
       caps: ['A hallway is far too long for a span. Pick the <b>pace</b>, about 90 cm.',
         'Walk the hallway with normal paces and <b>count</b>… <b>30</b> paces.',
-        `<b>Multiply</b>: ${T('30\\times90\\text{ cm}=2\\,700\\text{ cm}=27\\text{ m}')}.`,
+        `<b>Multiply</b>: ${TQ('30\\times90\\text{ cm}=2\\,700\\text{ cm}=27\\text{ m}')}.`,
         `The tape says <b>28.2 m</b>: off by ${T('1.2')} m (about ${T('4\\%')}). This student’s pace is really <b>94 cm</b>, not 90 cm. An estimate is only as good as its referent.`],
       est: `Estimate: ${T('30\\times90\\text{ cm}=2\\,700\\text{ cm}=27\\text{ m}')}`, tru: `Tape: <b>28.2 m</b> &nbsp;·&nbsp; ${T('30\\times94\\text{ cm}=28.2\\text{ m}')}`, trueLab: '28.2 m' },
     usb: { L: 5.08, r: 2.54, n: 2, room: 5.6, ref: 'thumb', refHtml: `<b>thumb width</b> ≈ 1 in`, oy: 168, oh: 112, ty: 100, th: 64,
@@ -526,6 +528,7 @@ function layPony(stage, ex) {
 const lay = {
   title: 'Lay a referent end to end: count, then multiply',
   height: 450,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(LAY).map((k) => ({ v: k, label: LAY[k].label })),
   intro: (k) => ({ desk: 'Warm-up question 1, for real: a desk, 3 hand spans wide. Press <b>Next</b>.', hall: 'Warm-up question 2: a hallway, 30 paces long. Press <b>Next</b>.', usb: 'How long is a USB flash drive? Press <b>Next</b>.', pony: 'How tall is a pony? Press <b>Next</b>.' })[k],
   make(stage, k, ex) { return k === 'pony' ? layPony(stage, ex) : layH(stage, k, ex); }
@@ -625,7 +628,7 @@ const fit = {
 
 /* =============================== explainer: ladder of everyday referents =============================== */
 const LADDER = {
-  imp: [{ n: 'thumb', v: '1 in', cm: 2.54 }, { n: 'adult foot', v: '1 ft', cm: 30.48 }, { n: 'pace', v: '1 yd', cm: 91.44 }],
+  imp: [{ n: 'thumb', v: '1 in', cm: 2.54 }, { n: 'adult foot', v: '1 ft', cm: 30.48, dx: -12 }, { n: 'pace', v: '1 yd', cm: 91.44, dx: 12 }],
   si: [{ n: 'dime (thick)', v: '1 mm', cm: 0.1, lv: 0 }, { n: 'pinky nail', v: '1 cm', cm: 1, lv: 0 }, { n: 'hockey puck', v: '7.6 cm', cm: 7.6, lv: 0, up: true },
     { n: 'five toes', v: '1 dm', cm: 10, lv: 0 }, { n: 'workbook', v: '20 cm', cm: 20, lv: 1, dx: 22 }, { n: '4-year-old', v: '1 m', cm: 100, lv: 0 },
     { n: 'doorway', v: 'about 2 m', cm: 200, lv: 1, dx: 34 }, { n: 'Olympic pool', v: '50 m', cm: 5000, lv: 0 }]
@@ -633,6 +636,7 @@ const LADDER = {
 const ladder = {
   title: 'A ladder of everyday referents',
   height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'all', label: 'Everyday referents' }, { v: 'towel', label: 'Example 2: the bath towel' }],
   intro: (v) => (v === 'all' ? 'Put every referent on one ladder of sizes. Press <b>Next</b>.' : 'Which referents suit a bath towel? Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -754,6 +758,7 @@ const towel = {
 const shed = {
   title: 'Example 3(a) check: heel-to-toe around the shed',
   height: 440,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   intro: 'The base of a rectangular shed, seen from above. Press <b>Next</b>.',
   make(stage, v, ex) {
     const W = ex.W, S = SV(stage, W, ex.def.height), u = 30, sx = 78, sy = 92, L = 12, Wd = 8;
@@ -788,7 +793,7 @@ const shed = {
           await walk(c, L, sx + L * u, sy + Wd * u + 16, -1, 0, 180, true); await walk(c, Wd, sx - 16, sy + Wd * u, 0, -1, -90, true);
           await show(c, lab(stage, sx + L * u / 2, sy + Wd * u - 10, '12', 'n', 'u10l2-side u10l2-ghost', 2)); await show(c, lab(stage, sx + 10, sy + Wd * u / 2, '8', 'e', 'u10l2-side u10l2-ghost', 2));
         } },
-      { cap: `${T('P\\approx12+8+12+8=2(8+12)=40')} ft.`,
+      { cap: `${TQ('P\\approx12+8+12+8=2(8+12)=40')} ft.`,
         run: async (c) => { await show(c, line(P, T('P\\approx12+8+12+8'))); await show(c, line(P, T('=2(8+12)=\\boldsymbol{40\\text{ ft}}'), 'u10l2-lest')); } },
       { cap: 'For a big shed, switch to <b>paces</b> (≈ 1 yd = 3 ft): the long side is only 4 paces, so the counts stay small.',
         run: async (c) => {
@@ -872,6 +877,7 @@ const wheel = {
 const card = {
   title: 'Example 4 check: measure the scale diagram in both systems',
   height: 480,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   intro: 'The scale diagram of the access card, with a ruler drawn to the same scale. Press <b>Next</b>.',
   make(stage, v, ex) {
     const W = ex.W, S = SV(stage, W, ex.def.height), k = 80, x0 = 64, cy0 = 30, cw = 3 * k, ch = 2 * k, ry = cy0 + ch + 4;
@@ -927,6 +933,7 @@ const card = {
 const km = {
   title: 'Example 5 check: build a kilometre out of a smaller referent',
   height: 420,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'pool', label: 'From pool lengths' }, { v: 'pace', label: 'From paces' }],
   intro: (v) => (v === 'pool' ? 'Nothing Marcus knows is 1 km long. Press <b>Next</b>.' : 'Try the same thing with a much smaller referent. Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -946,7 +953,7 @@ const km = {
           run: async (c) => { await appear(c, cnt.el, 200); const t = G(S); poolTile(t, x0, by, pw, bh, 1); cnt.set(1); await pop(c, t); await show(c, lab(stage, x0 + pw / 2, by + bh + 34, '50 m', 's', 'u10l2-sm u10l2-csi', 0)); } },
         { cap: `Lay pool lengths end to end and count: … <b>20</b> of them reach ${T('1')} km.`,
           run: async (c) => { for (let i = 1; i < 20; i++) { const t = G(S); poolTile(t, x0 + i * pw, by, pw, bh, i + 1); cnt.set(i + 1); await pop(c, t, 220); await sleep(c, 40); } } },
-        { cap: `${T('1\\,000\\text{ m}\\div50\\text{ m per pool length}=20')}. So ${T('1')} km is about <b>20 pool lengths</b>.`,
+        { cap: `${T('1\\,000\\text{ m}\\div50\\text{ m}')} per pool length ${T('=20')}. So ${T('1')} km is about <b>20 pool lengths</b>.`,
           run: async (c) => { await show(c, line(P, `${T('1\\,000\\text{ m}\\div50\\text{ m}=\\boldsymbol{20}')} pool lengths`, 'u10l2-lest')); } }
       ];
     }

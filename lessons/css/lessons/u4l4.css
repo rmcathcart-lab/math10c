@@ -166,3 +166,26 @@
 
 /* Example 3 / Example 4 answer rows line up */
 [data-ink=ex3] .ans { min-height: 190px; }
+
+/* ---------- one screen (main.lesson.screen): the three boxes and Q1–Q4 left; the big one right; "test an option" below ---------- */
+.wf .u4l4-wboxes { gap: 8px; margin: 2px 0 0; }
+.wf .u4l4-wb { padding: 4px 4px 4px; }
+.wf .u4l4-wbt { font-size: 18px; margin: 0; line-height: 1.2; }
+.wf .u4l4-wfig { zoom: .66; }
+.wf .u4l4-wtot { font-size: 15.5px; margin-top: 0; min-height: 26px; gap: 4px; }
+.wf .u4l4-wtot .u4l4-qm { min-width: 32px; height: 26px; font-size: 17px; }
+.wf .u4l4-wqs { gap: 5px 10px; margin-top: 6px; }
+.wf .u4l4-wq { padding: 2px 12px 3px; }
+.wf .u4l4-wq .q-line { margin: 2px 0 4px; font-size: 17px; gap: 10px; }
+.wf .u4l4-wq .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf .u4l4-wqa { margin-left: 40px; gap: 4px; }
+.wf .u4l4-qa { font-size: 15.5px; line-height: 1.28; min-height: 0; }
+.wf .u4l4-bigq { display: block; }
+.wf .u4l4-mini { display: inline-grid; margin: 8px 0 0 34px; grid-template-columns: 64px 44px; grid-template-rows: 40px 32px; font-size: 16px; }
+.wf .wf-poll .q-line { display: block; }
+.wf .wf-poll .poll-opts { grid-template-columns: 1fr 1fr; gap: 6px; }
+.wf .wf-poll .poll-opts .opt { font-size: 19px; padding: 5px 8px; }
+.wf .wf-poll:not(.revealed) .poll-ans { display: none; }
+.wf .wf-poll .poll-ans { min-height: 0; }
+.wf > .u4l4-test { margin: 14px 0 0; background: #fff8f7; border: 2px solid #f2c9c4; border-radius: 14px; padding: 10px 16px; }
+.wf > .u4l4-test .u4l4-tout { min-height: 70px; }

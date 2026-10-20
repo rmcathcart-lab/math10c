@@ -5,7 +5,7 @@
  *   intercept points), context (what the intercepts mean in a story), interp (interpolation vs extrapolation). */
 import {
   h, tex, add, box, Graph, ValueTable, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep, tween,
-  pairTex, texNum, svgEl, liveCtx, pulse, arrowHead, COLORS
+  pairTex, texNum, svgEl, liveCtx, pulse, arrowHead, COLORS, fit
 } from '../blocks.js';
 
 const T = (s) => tex(s);
@@ -21,7 +21,8 @@ const n = (v) => texNum(v).replace('-', '−');            // plain-text number 
 const dive = (t) => 10 + 5 * t - 5 * t * t;
 function mountDive() {
   const host = document.getElementById('u5l3-dive'); if (!host) return;
-  const G = new Graph(host, { width: 560, height: 430, xmin: -0.62, xmax: 2.45, ymin: -1.75, ymax: 12.9, grid: false, axes: false, numbers: false, xtitle: '', ytitle: '', pad: [8, 8, 34, 8] });
+  const GW = Math.min(560, host.clientWidth || 560); // CSS sets the figure width (smaller on one-screen pages)
+  const G = new Graph(host, { width: GW, height: Math.round(GW * 430 / 560), xmin: -0.62, xmax: 2.45, ymin: -1.75, ymax: 12.9, grid: false, axes: false, numbers: false, xtitle: '', ytitle: '', pad: [8, 8, 34, 8] });
   const P = (x, y) => G.toPx(x, y), bg = G.layers.bg, ax = G.layers.axes;
   const [x0, y0] = P(0, 0), [xR] = P(2.42, 0), [, yTop] = P(0, 12.9), [xL, yB] = P(-0.62, -1.75);
   // sky grid
@@ -94,6 +95,7 @@ const MEET = {
 const meetAxes = {
   title: 'Where a graph meets the axes',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(MEET).map((k) => ({ v: k, label: MEET[k].label })),
   intro: 'A point rides along the graph, showing its coordinates. Watch them as it meets each axis. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -145,6 +147,7 @@ const ptsTex = (ps) => ps.map((p) => pairTex(p[0], p[1])).join(',\\ ');
 const subst = {
   title: 'Substitute y = 0, then x = 0',
   height: 500,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'sec1', label: SUB.sec1.label }, { v: 'demo', label: SUB.demo.label }, { sep: 'Examples' }, { v: 'ex1', label: SUB.ex1.label }, { v: 'ex2', label: SUB.ex2.label }, { v: 'ex3', label: SUB.ex3.label }],
   intro: (k) => `Find the intercepts of ${T(SUB[k].eq)} algebraically, then see them on the graph. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -178,12 +181,14 @@ const subst = {
 const sameLine = {
   title: 'Two forms, one line',
   height: 470,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   intro: `Are ${T('y=\\tfrac43x+8')} and ${T('4x-3y+24=0')} really the same line? Press <b>Next</b>.`,
   make(stage, v, ex) {
     const LW = ex.W - 474;
     const A = add(stage, h('div', 'u5l3-form u5l3-fa', `<b>A</b>${T('y=\\tfrac43x+8')}`), 14, 12);
     const B = add(stage, h('div', 'u5l3-form u5l3-fb', `<b>B</b>${T('4x-3y+24=0')}`), 14 + LW / 2 + 6, 12);
     box(A, LW / 2 - 6); box(B, LW / 2 - 6);
+    [A, B].forEach((e) => { e.style.whiteSpace = 'nowrap'; fit(e, e.clientWidth, 16); }); // one line, shrunk when the box is narrow
     const PR = panel(stage, 14, 72, LW, 156, 'Rearrange form B: solve for y');
     const steps = ['4x+24=3y', 'y=\\dfrac{4x+24}{3}', 'y=\\tfrac43x+8\\ \\checkmark'].map((s) => hidden(line(PR, T(s), 'u5l3-mline')));
     const xs = [-6, -3, 0, 3];
@@ -229,6 +234,7 @@ const CTX = {
 const crossTouch = {
   title: 'Cross, touch, or miss',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CT).map((k) => ({ v: k, label: CT[k].label })),
   intro: (k) => (k === 'para' ? `Slide ${T('y=x^2+k')} down and count its ${T('x')}-intercepts. Press <b>Next</b>.` : `Slide a circle of radius 5 toward the ${T('y')}-axis and count its ${T('y')}-intercepts. Press <b>Next</b>.`),
   make(stage, k, ex) {
@@ -287,6 +293,7 @@ const LC = {
 const lineCount = {
   title: 'How many intercept points can a line have?',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'typ', label: LC.typ.label }, { sep: 'Example 4 check' }, ...['a', 'b', 'c', 'd'].map((k) => ({ v: k, label: LC[k].label }))],
   intro: (k) => `Substitute ${T('y=0')} and ${T('x=0')} into ${T(LC[k].lab[2])}, then count the intercept points. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -334,6 +341,7 @@ const CTXS = {
 const context = {
   title: 'What the intercepts mean',
   height: 470,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CTXS).map((k) => ({ v: k, label: CTXS[k].label })),
   intro: (k) => `Each intercept of ${k === 'dive' ? T('h=10+5t-5t^2') : T('h=800-40t')} tells part of the story. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -407,6 +415,7 @@ const IP = {
 const interp = {
   title: 'Interpolation or extrapolation?',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(IP).map((k) => ({ v: k, label: IP[k].label })),
   intro: 'The table of values plotted four points, from <b>t = 0</b> to <b>t = 15</b>. Press <b>Next</b>.',
   make(stage, k, ex) {

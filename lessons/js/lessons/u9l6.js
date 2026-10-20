@@ -152,8 +152,8 @@ const tagAt = (S, x, y, txt, color, pos = 'c') => { const t = S.lab(x, y, txt, {
 /* =============================== warm-up: Lighthouse Lookout =============================== */
 function mountWarm() {
   const host = document.getElementById('u9l6-wfig'); if (!host) return;
-  const W = Math.max(700, host.clientWidth || 1000);
-  const S = new Scene(host, { width: W, height: 330, win: [-16, 160, -6, 50], pad: [14, 20, 6, 20] });
+  const W = Math.max(700, host.clientWidth || 1000), H = parseFloat(getComputedStyle(host).getPropertyValue('--scene-h')) || 330;   // one-screen CSS can make it shorter
+  const S = new Scene(host, { width: W, height: H, win: [-16, 160, -6, 50], pad: [14, 20, 6, 34] });
   const [sx0, sy0] = S.P(-16, 0), [sx1] = S.P(160, 0);
   svgEl('rect', { x: sx0, y: sy0, width: sx1 - sx0, height: 60, fill: '#d6e7f6' }, S.bg);
   svgEl('path', { d: `M${sx0} ${sy0}L${sx1} ${sy0}`, stroke: '#5f8fbf', 'stroke-width': 2.5 }, S.bg);
@@ -167,19 +167,19 @@ function mountWarm() {
   S.dim([-6, 0], [-6, 40], '<b>40 m</b>', { off: -10, pos: 'w' });
   S.line([0, 40], [158, 40], { color: SLATE, dash: '9 7', width: 2 });
   S.lab(157, 40, 'horizontal', { pos: 'nw', cls: 'u9l6-lab u9l6-muted' });
-  const boats = [[40, 45, 'A', 150], [85.78, 25, 'B', 230], [149.28, 15, 'C', 330]];
+  const boats = [[40, 45, 'A', 150], [85.78, 25, 'B', 230], [149.28, 15, 'C', 330]], rk = Math.min(1, S.s / 5.26);   // arc radii shrink with a narrower scene
   boats.forEach(([x, a, n, r]) => {
     S.line([0, 40], [x, 0], { color: ANG, width: 2.5 });
     const [bx, by] = S.P(x, 0);
     svgEl('path', { d: `M${bx - 16} ${by - 2}L${bx + 16} ${by - 2}L${bx + 21} ${by - 10}L${bx - 21} ${by - 10}Z`, fill: '#fbe7a8', stroke: INK, 'stroke-width': 1.5 }, S.fg);
     svgEl('path', { d: `M${bx + 2} ${by - 10}L${bx + 2} ${by - 32}L${bx + 15} ${by - 13}Z`, fill: '#fff', stroke: INK, 'stroke-width': 1.3 }, S.fg);
-    S.hlabel(bx, by - 46, n, { cls: 'u9l6-boatn' });
-    S.arc([0, 40], 0, -a, r, { color: ANG, width: 2.5, label: T(deg(a)), la: -a - (a === 45 ? 14 : 7), lr: 4 });
+    S.hlabel(bx + (rk < 1 ? 32 : 0), by - (rk < 1 ? 28 : 46), n, { cls: 'u9l6-boatn' });   // narrow scene: letter beside the sail, clear of the angle labels
+    S.arc([0, 40], 0, -a, r * rk, { color: ANG, width: 2.5, label: T(deg(a)), la: -a - (a === 45 ? 14 : 7), lr: 4 });
   });
   // toggles: alternate angle at C, and C's triangle
   const zg = svgEl('g', { class: 'u9l6-tog' }, S.fg), tg = svgEl('g', { class: 'u9l6-tog' }, S.bg);
   S.line([118, 0], [158, 0], { color: SLATE, width: 2, layer: zg, dash: '9 7' });
-  const za = S.arc([149.28, 0], 180, 165, 120, { color: ANG, width: 3.5, label: T(deg(15)), layer: zg, lr: 26 });
+  const za = S.arc([149.28, 0], 180, 165, 120 * rk, { color: ANG, width: 3.5, label: T(deg(15)), layer: zg, lr: 26 });
   S.line([0, 40], [149.28, 0], { color: ANG, width: 4.5, layer: zg });
   S.line([0, 40], [158, 40], { color: SLATE, width: 3.5, layer: zg });
   const zl = za.label; zl.classList.add('u9l6-tog');
@@ -293,6 +293,7 @@ const TC = {
 const twoCalcs = {
   title: 'Two calculations, one picture: from the eyepiece, then from the ground',
   height: 450,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(TC).map((k) => ({ v: k, label: TC[k].label })),
   intro: 'A transit sights the top of a pole. Part (a) and part (b) use <b>different triangles</b>. Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -345,7 +346,7 @@ const twoCalcs = {
           await say(c, pB, T(`\\theta=\\tan^{-1}(${f6(ratio)})=${f2(th)}^\\circ\\approx\\boldsymbol{${Math.round(th)}^\\circ}`));
         } },
       { cap: `Check: from lower down you must look up <b>more steeply</b>, so ${T(`${Math.round(th)}^\\circ>${deg(a)}`)} makes sense.`,
-        run: async (c) => { const s = stamp(pB, `${Math.round(th)}° > ${a}° ✓`, { ok: true, x: pw - 80, y: 106, size: 'sm' }); await stampIn(c, s); } }
+        run: async (c) => { const s = stamp(pB, `${Math.round(th)}° > ${a}° ✓`, { ok: true, x: pw - 80, y: 46, size: 'sm' }); await stampIn(c, s); } }
     ];
   }
 };
@@ -356,6 +357,7 @@ const twoCalcs = {
 const semicircle = {
   title: 'A hidden right angle: the angle in a semicircle',
   height: 420,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   intro: 'No right angle is marked. Is there one anyway? Press <b>Next</b>.',
   make(stage, v, ex) {
     const S = new Scene(stage, { x: 10, y: 0, width: 600, height: 420, win: [-1.25, 1.25, -0.35, 1.2], pad: [20, 10, 20, 10] });
@@ -419,6 +421,7 @@ const EL = {
 const eyeLevel = {
   title: 'Measured from eye level: the triangle sits on top of the eye height',
   height: 450,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(EL).map((k) => ({ v: k, label: EL[k].label })),
   intro: 'How tall is it? You can’t climb it, but you can measure an angle. Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -489,6 +492,7 @@ const TE = {
 const twoEyes = {
   title: 'Eye level at both ends: stack the building from three pieces',
   height: 460,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(TE).map((k) => ({ v: k, label: TE[k].label })),
   intro: 'Malik looks up at his friend in a window. Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -544,6 +548,7 @@ const CL = {
 const clinometer = {
   title: 'Reading a clinometer: the string always hangs straight down',
   height: 450,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CL).map((k) => ({ v: k, label: CL[k].label })),
   intro: 'A protractor, a straw, a string and a washer. Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -610,6 +615,7 @@ const clinometer = {
 const wobble = {
   title: 'Example 3(c): what one degree of misreading does to the height',
   height: 450,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   intro: 'Ana measured 12.8 m. The caretaker says 12.5 m. Press <b>Next</b>.',
   make(stage, v, ex) {
     const eye = 1.55, d = 18, hs = [31, 32, 33].map((a) => eye + d * Math.tan(a * RAD)), cols = ['#8fa8e8', HYP, '#8fa8e8'];
@@ -659,6 +665,7 @@ const TG = { ex4: { label: 'Example 4 check', a: 64, r: 15 }, demo: { label: 'De
 const tangent = {
   title: 'Extension: a circle tangent to both arms of an angle',
   height: 450,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(TG).map((k) => ({ v: k, label: TG[k].label })),
   intro: 'No right angle is drawn. Two circle facts build one. Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -720,6 +727,7 @@ const refOf = (b) => (b <= 90 ? { r: b, from: 'north', to: 'east', how: `${b}^\\
 const compass = {
   title: 'Extension: bearings turn clockwise from north',
   height: 460,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [72, 155, 210, 318].map((b) => ({ v: b, label: String(b).padStart(3, '0') + '°' })),
   intro: 'Stand facing north. Turn clockwise until you face the direction. Press <b>Next</b>.',
   make(stage, b, ex) {
@@ -787,6 +795,7 @@ const FY = { ex5: { label: 'Example 5 check', d1: 8, b1: 130, ex: 10, v: 12 }, d
 const ferry = {
   title: 'Extension: follow the ferry, one right triangle at a time',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(FY).map((k) => ({ v: k, label: FY[k].label })),
   intro: 'A ferry leaves the dock on a bearing. Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -849,6 +858,7 @@ const TL = {
 const twoLegs = {
   title: 'Extension: two legs, split into east–west and north–south parts',
   height: 480,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(TL).map((k) => ({ v: k, label: TL[k].label })),
   intro: 'Two legs on different bearings. Where does she end up? Press <b>Next</b>.',
   make(stage, key, ex) {

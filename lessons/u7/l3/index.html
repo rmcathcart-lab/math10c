@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -44,11 +44,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Concert Ticket Combos" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Concert Ticket Combos</h2></div>
-  <p class="big">Two kinds of tickets: <b>LAWN $5</b> and <b>FLOOR $8</b>. Spend an <b>$80</b> gift card <b>exactly</b>, with nothing left over.</p>
-  <div class="u7l3-wtop">
-    <div class="u7l3-wfig">
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Concert Ticket Combos" id="wu" style="--wf-side: 470px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Concert Ticket Combos</h2>
+  <p class="wf-rule">Two kinds of tickets: <b>LAWN $5</b> and <b>FLOOR $8</b>. Spend an <b>$80</b> gift card <b>exactly</b>, with nothing left over.</p></div>
+  <div class="wf-grid"><div class="wf-main">
       <div class="u7l3-shop">
         <div class="u7l3-tkrow">
           <div class="u7l3-tk u7l3-tk-lawn"><span class="u7l3-tk-a">ADMIT ONE</span><b>LAWN</b><span class="u7l3-tk-p">$5</span></div>
@@ -62,12 +61,6 @@
         </div>
         <div class="u7l3-total">Total <b id="u7l3-tot">$0</b> <span class="u7l3-of">of $80</span></div>
       </div>
-      <div id="u7l3-wgraph"></div>
-      <div class="u7l3-wbtns">
-        <button type="button" class="pill" id="u7l3-wall">Show every $80 combo</button>
-        <button type="button" class="pill" id="u7l3-wreset">Reset</button>
-      </div>
-    </div>
     <div class="u7l3-wqs">
       <div class="bk-wq">
         <div class="q-line"><div class="q-num">1</div><div>What do <b>4</b> lawn and <b>3</b> floor tickets cost?</div></div>
@@ -82,11 +75,15 @@
         <div class="u7l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">5x+8y=80</span>. Move the 80 across: <span class="tex">5x+8y-80=0</span>. That is today’s <b>general form</b>.</div></div>
       </div>
     </div>
-  </div>
-
-  <div class="poll">
+  </div><div class="wf-side">
+      <div id="u7l3-wgraph"></div>
+      <div class="u7l3-wbtns">
+        <button type="button" class="pill" id="u7l3-wall">Show every $80 combo</button>
+        <button type="button" class="pill" id="u7l3-wreset">Reset</button>
+      </div>
+    <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> How many different combos of lawn and floor tickets spend <b>exactly $80</b>? (Zero of one kind is allowed.) <b>Guess first.</b></div></div>
-    <div class="poll-opts">
+    <div class="poll-opts c4">
       <div class="opt"><b>A</b> 2</div>
       <div class="opt right"><b>B</b> 3</div>
       <div class="opt"><b>C</b> 5</div>
@@ -96,6 +93,7 @@
     <div class="poll-ans"><b>B: 3 combos.</b> List by floor tickets <span class="tex">y</span>: the $80 left after the floor tickets must split into $5 lawn tickets, and <span class="tex">8y</span> is a multiple of 5 only when <span class="tex">y</span> is. <span class="tex">y=0</span>: 16 lawn. <span class="tex">y=5</span>: $40 left, 8 lawn. <span class="tex">y=10</span>: 0 lawn. The combos are the three whole-number points <span class="tex">(0,\ 10)</span>, <span class="tex">(8,\ 5)</span>, <span class="tex">(16,\ 0)</span> on the line.<br>
       <span class="muted"><b>A</b> counts only the “all one kind” answers. <b>C</b> is a round-number guess. <b>D</b> gives one combo for every lawn count from 0 to 16, forgetting the floor count must come out whole.</span></div>
   </div>
+  </div></div>
 
   <div class="bk-wq u7l3-early">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Challenge a neighbour.</b> Find an amount under $30 you <em>can’t</em> spend exactly.</div></div>

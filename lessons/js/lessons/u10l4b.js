@@ -13,6 +13,8 @@ import {
 } from '../blocks.js';
 
 const T = (s) => tex(s);
+/** a caption equation that may wrap before each = or \approx (the sidebar caption is narrow) */
+const TQ = (s) => s.split(/(?==|\\approx)/).map((q) => T(q)).join(' ');
 const IMP = COLORS.amber, SI = COLORS.blue, RED = COLORS.red, GRN = COLORS.green, INK = COLORS.ink;
 
 /* ---------------- number formatting ---------------- */
@@ -156,6 +158,7 @@ function screen(p, digits, label) {
 const exact = {
   title: 'Use the exact factor',
   height: 440,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(EXA).map((k) => ({ v: k, label: EXA[k].label })),
   intro: 'Two facts in the table connect the same pair of units. Do they give the same answer? Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -258,6 +261,7 @@ function weight(g, x, w, hh, color, text, y = 122) {
 const bench = {
   title: 'Side by side: imperial units against SI benchmarks',
   height: 460,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(BEN).map((k) => ({ v: k, label: BEN[k].label })),
   intro: 'How big is each imperial unit compared with an SI unit you already know? Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -357,11 +361,12 @@ async function reach(c, S, path, u, html, from) {
 const ladder = {
   title: 'The imperial staircase: four multipliers',
   height: 446,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(LAD).map((k) => ({ v: k, label: LAD[k].label })),
   intro: 'Each step down the staircase is a smaller unit, with its own multiplier. Press <b>Next</b>.',
   make(stage, k, ex) {
     const S = staircase(stage, ex.W), A = S.arrows;
-    const P = panel(stage, ex.W - 290, 16, 274, 190, 'Work');
+    const P = panel(stage, ex.W - 290, 16, 282, 190, 'Work', 'u10l4b-pnar');
     if (k === 'down') return [
       { cap: 'Going <b>down</b> the stairs (to a smaller unit) means <b>multiply</b>: more of the smaller units fit.',
         run: async (c) => { await reach(c, S, null, 'mi', T(q(2, 'mi'))); await say(c, P, T('2\\text{ mi}\\to\\ ?\\text{ in}')); } },
@@ -484,13 +489,14 @@ for (const d of Object.values(TWO)) { d.m1 = d.v * d.k[0]; d.m2 = d.m1 * d.k[1];
 const twoways = {
   title: 'One chain, two methods',
   height: 500,
+  minW: 800, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(TWO).map((k) => ({ v: k, label: TWO[k].label })),
   intro: 'Two facts are needed, so the conversion is a chain. Do it both ways. Press <b>Next</b>.',
   make(stage, k, ex) {
-    const d = TWO[k], H = ex.def.height, PW = (ex.W - 54) / 2, [u0, u1, u2] = d.u;
+    const d = TWO[k], H = ex.def.height, PW = (ex.W - 54) * 0.415, PR = ex.W - 54 - PW, [u0, u1, u2] = d.u;
     const route = add(stage, h('div', 'u10l4b-route', `<span class="u10l4b-ru">${tn(d.v)} ${u0}</span><span class="u10l4b-ra">${T('\\times' + tn(d.k[0]))}</span><span class="u10l4b-ru">${u1}</span><span class="u10l4b-ra">${T('\\times' + tn(d.k[1]))}</span><span class="u10l4b-ru">${u2}</span>`), 18, 12);
     route.style.opacity = 0;
-    const L = panel(stage, 18, 70, PW, H - 86, 'Proportional reasoning', 'u10l4b-pbig'), R = panel(stage, 36 + PW, 70, PW, H - 86, 'Unit analysis', 'u10l4b-pbig');
+    const L = panel(stage, 18, 70, PW, H - 86, 'Proportional reasoning', 'u10l4b-pbig'), R = panel(stage, 36 + PW, 70, PR, H - 86, 'Unit analysis', 'u10l4b-pbig');
     const row = h('div', 'u10l4b-chain u10l4b-chsm'); R.appendChild(row);
     const f0 = fracEl({ n: tn(d.v), u: u0 }, { n: '1' }), f1 = fracEl({ n: tn(d.k[0]), u: u1 }, { n: '1', u: u0 }), f2 = fracEl({ n: tn(d.k[1]), u: u2 }, { n: '1', u: u1 });
     const o1 = op('\\times'), o2 = op('\\times');
@@ -533,6 +539,7 @@ const CH = {
 const chain = {
   title: 'Unit analysis: snap on a factor, cancel a unit',
   height: 450,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CH).map((k) => ({ v: k, label: CH[k].label })),
   intro: 'Each conversion factor is worth 1. Choose it so the unit you want gone is on the bottom. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -601,7 +608,7 @@ const chain = {
       { cap: 'Snap on <b>100 cm per 1 m</b>: m cancels.', run: async (c) => { await appear(c, o1); await snap(c, f1); await cancelU(c, f0.top.unit, f1.bot.unit); } },
       { cap: 'Snap on <b>1 in per 2.54 cm</b> (the exact fact, upside down so cm is on the bottom): cm cancels.',
         run: async (c) => { await appear(c, o2); await snap(c, f2); await cancelU(c, f1.top.unit, f2.bot.unit); keep(f2.top.unit); } },
-      { cap: `Tops over bottoms: ${T('\\dfrac{3.15\\times100}{2.54}=124.0157\\ldots\\approx124')} in (nearest inch).`,
+      { cap: `Tops over bottoms: ${TQ('\\dfrac{3.15\\times100}{2.54}=124.0157\\ldots\\approx124')} in (nearest inch).`,
         run: async (c) => { await appear(c, eq); await pop(c, ans); } },
       { cap: `Split into feet: ${T('124\\div12=10')} remainder 4. On the tape, 315 cm sits just past the 10 ft mark: <b>10 ft 4 in</b>.`,
         run: async (c) => { await tape.mark(c, 315 / 2.54, T('124\\text{ in}=10\\text{ ft }4\\text{ in}'), T('315\\text{ cm}')); await result(c, T('3.15\\text{ m}\\approx10\\text{ ft }4\\text{ in}')); } }
@@ -656,7 +663,7 @@ const estimate = {
       { cap: `Estimate with the benchmark ${T(d.bench)}: ${T(d.est[1])}.`,
         run: async (c) => { for (const s of d.est) await say(c, A, T(s)); } },
       { cap: 'Mark the estimate on the number line.', run: async (c) => { await reveal(c, pt(d.ev, IMP, `est. ${T(d.evTex)}`, 'n')); } },
-      { cap: `Now convert exactly: ${T(d.capX)}.`,
+      { cap: `Now convert exactly: ${TQ(d.capX)}.`,
         run: async (c) => { for (const s of d.exa) await say(c, B, T(s)); } },
       { cap: 'Mark the exact answer. How far is it from the estimate?',
         run: async (c) => { await reveal(c, pt(d.xv, SI, `<b>${T(d.xvTex)}</b>`, 's')); } },
@@ -685,11 +692,12 @@ function person(svg, x, floor, hpx, color, op = 1) {
 const heights = {
   title: 'Heights on a growth chart, masses on a scale',
   height: 500,
+  minW: 880, // drawn this wide and scaled to fit beside the sidebar (the chart is 570 px, the work panel sits to its right)
   choices: [{ sep: 'Example 6 check:' }, ...Object.keys(HT).map((k) => ({ v: k, label: HT[k].label }))],
   intro: 'Read the same height (or mass) on an imperial scale and an SI scale. Press <b>Next</b>.',
   make(stage, k, ex) {
     const d = HT[k], H = ex.def.height, W = ex.W;
-    const P = panel(stage, W - 400, 20, 384, H - 40, d.who ? d.who : 'a ' + d.what);
+    const P = panel(stage, W - 306, 20, 296, H - 40, d.who ? d.who : 'a ' + d.what);
     if (d.who) {
       const svg = add(stage, svgEl('svg', { width: 560, height: H, viewBox: `0 0 560 ${H}` }), 10, 0);
       const floor = H - 34, top = 30, ppi = (floor - top) / 96, sx = 130;
@@ -781,7 +789,7 @@ const roundup = {
     return [
       { cap: `${hn(d.m)} m of film, but the DVD capacity is in <b>feet</b>. Convert first.`,
         run: async (c) => { await anim(c, film, [{ opacity: 0, transform: 'scaleX(0)', transformOrigin: 'left' }, { opacity: 1, transform: 'scaleX(1)', transformOrigin: 'left' }], 900); } },
-      { cap: `Exact fact 1 ft = 0.3048 m: ${T(`${tn(d.m)}\\div0.3048=${tn(ft, 4)}\\ldots\\approx${tn(ft, 2)}`)} ft.`,
+      { cap: `Exact fact 1 ft = 0.3048 m: ${TQ(`${tn(d.m)}\\div0.3048=${tn(ft, 4)}\\ldots\\approx${tn(ft, 2)}`)} ft.`,
         run: async (c) => { await appear(c, ruler); film.innerHTML = `<span>${T(`\\approx${tn(ft, 2)}\\text{ ft}`)}</span>`; await pulse(c, film, 1.03); await say(c, P, T(`${tn(d.m)}\\text{ m}\\times\\dfrac{1\\text{ ft}}{0.3048\\text{ m}}=${tn(ft, 4)}\\ldots\\approx${tn(ft, 2)}\\text{ ft}`), 'u10l4b-frl'); } },
       { cap: `Cut the film into 1200 ft DVD loads: <b>${full}</b> full DVDs.`,
         run: async (c) => {

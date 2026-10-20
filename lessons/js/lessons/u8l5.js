@@ -158,6 +158,7 @@ const RT = {
 const roundTrip = {
   title: 'There and back: does the wind cancel out?',
   height: 410,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'big', label: RT.big.label }, { v: 'strong', label: RT.strong.label }, { v: 'kayak', label: RT.kayak.label }],
   intro: (k) => `Two trips, ${RT[k].d} km each way: one in ${RT[k].calm.toLowerCase()}, one with a ${RT[k].w} km/h ${RT[k].med} that helps out and fights back. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -216,7 +217,7 @@ const roundTrip = {
           await show(c, res);
         } },
       { cap: `The <b>speeds</b> cancel, but the <b>times</b> don’t: the slow leg lasts longer, so the ${d.med} gets more time to hurt than to help. <b>C</b>: more than ${fmtHM(2 * calm)}.`,
-        run: async (c) => { const s = stamp(ov, 'Answer C', { ok: true, x: W - 120, y: 372 }); await stampIn(c, s); } }
+        run: async (c) => { const s = stamp(ov, 'Answer C', { ok: true, x: W - 95, y: 372 }); await stampIn(c, s); } }
     ];
   }
 };
@@ -288,6 +289,7 @@ class Mixer {
 const mixPour = {
   title: 'Two ingredients, one mixture',
   height: 490,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'trail', label: MX.trail.label }, { sep: 'Check' }, { v: 'ex1', label: MX.ex1.label }, { v: 'ex2', label: MX.ex2.label }],
   intro: (k) => `${MX[k].A.name} and ${MX[k].B.name.toLowerCase()} are about to be mixed. Watch the organizer fill as they pour. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -335,6 +337,7 @@ const MS = {
 const mixSolve = {
   title: 'Substitute, graph, check both',
   height: 490,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar (the check cards need ~410 px)
   choices: [{ v: 'ex1', label: MS.ex1.label }, { v: 'ex2', label: MS.ex2.label }],
   intro: (k) => `The system from Example ${k === 'ex1' ? 1 : 2} (a). One variable has coefficient 1, so substitution is quick. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -386,6 +389,7 @@ const ML = {
 const mixLever = {
   title: 'The mixture rate is the balance point',
   height: 430,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex1', label: ML.ex1.label }, { v: 'ex2', label: ML.ex2.label }, { sep: 'Compare' }, { v: 'eq', label: ML.eq.label }],
   intro: 'Each ingredient sits at its rate on a number line, weighed down by its amount. Where does the beam balance? Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -441,7 +445,7 @@ const mixLever = {
           top.innerHTML = `${T(`${d.aLo}\\times${dLo}=${pr}`)} &nbsp;and&nbsp; ${T(`${d.aHi}\\times${dHi}=${pr}`)}: <b>balanced</b>`; await show(c, top);
         } },
       { cap: `So the mixture rate is always <b>between</b> the two rates, <b>closer to the bigger amount</b>. ${th0 ? `${d.f(d.mix)} is closer to ${d.f(d.aLo > d.aHi ? d.lo : d.hi)}: more ${d.aLo > d.aHi ? d.nLo : d.nHi}.` : 'Same amounts, exactly halfway.'}`,
-        run: async (c) => { const s = stamp(ov, 'makes sense', { ok: true, x: 150, y: 44 }); await stampIn(c, s); } }
+        run: async (c) => { const s = stamp(ov, 'makes sense', { ok: true, x: W - 130, y: 44 }); await stampIn(c, s); } }
     ];
   }
 };
@@ -450,6 +454,7 @@ const mixLever = {
 const dstTri = {
   title: 'Cover the quantity you want',
   height: 420,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   intro: 'One relationship, three forms. Cover the letter you want; what is left shows how to build it. Press <b>Next</b>.',
   make(stage, _v, ex) {
     const svg = S('svg', { width: 400, height: 400, viewBox: '0 0 400 400', class: 'u8l5-dstsvg' }); add(stage, svg, 20, 10);
@@ -500,6 +505,7 @@ const TR = {
 const trip = {
   title: 'Stopped time is not driving time',
   height: 540,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex3', label: TR.ex3.label }, { sep: 'Another' }, { v: 'bus', label: TR.bus.label }],
   intro: (k) => (k === 'ex3' ? 'The trucker’s 11.5 hours, Edmonton to Regina. Press <b>Next</b>.' : `A bus drives ${TR.bus.D} km in ${TR.bus.total} h, including a 1-hour lunch stop, at ${TR.bus.s1} km/h on the highway and ${TR.bus.s2} km/h on town roads. Press <b>Next</b>.`),
   make(stage, k, ex) {
@@ -533,11 +539,11 @@ const trip = {
     d.stops.forEach((s) => { const e = seg(s.at, s.at + s.len, 'u8l5-tstop'); const l = add(tl, h('div', 'u8l5-tstoplab', s.name)); l.style.left = tx(s.at + s.len / 2) + 'px'; l.style.opacity = 0; stops.push({ e, l }); });
     const hw = hide0(seg(0, d.t1, 'u8l5-tshw', `${d.n1.toLowerCase()} ${d.t1} h`)), sr = hide0(seg(d.t1, d.drive, 'u8l5-tssr', `${d.t2} h`));
     // organizer + panel
-    const OY = 262, colW = [176, 128, 140, 120];
+    const OY = 234, colW = [176, 128, 140, 120]; // starts a little higher so the solution panel holds all its lines
     const tb = new Org(stage, { x: 12, y: OY, colW, cellH: 58, tap: false, q: '', cls: 'u8l5-orgx',
       headers: [{ html: '' }, th('Distance', '(km)'), th(`${OP('=')} Speed`, '(km/h)'), th(`${OP('×')} Time`, '(h)')],
       rows: [[{ html: d.n1 }, `${d.s1}h`, d.s1, 'h'], [{ html: d.n2 }, `${d.s2}r`, d.s2, 'r'], [{ html: 'Total' }, d.D, { html: '—' }, d.drive]], hide: (r, c) => c > 0 });
-    const PX = 12 + colW.reduce((a, b) => a + b, 0) + 22, P = panel(stage, PX, OY, W - PX - 12, 266, 'System and solution');
+    const PX = 12 + colW.reduce((a, b) => a + b, 0) + 22, P = panel(stage, PX, OY, W - PX - 12, 296, 'System and solution');
     const e1 = hide0(line(P, `<span class="u8l5-tag u8l5-tb">time</span> ${T(tc(BLUE, `h+r=${d.drive}`))}`)), e2 = hide0(line(P, `<span class="u8l5-tag u8l5-ta">distance</span> ${T(tc(AMB, `${d.s1}h+${d.s2}r=${d.D}`))}`));
     const sl = d.solve.map((s, i) => hide0(line(P, `<span class="u8l5-tag"></span> ${T(i === 3 || i === 4 ? tc(PUR, s) : s)}`, 'u8l5-sm')));
     const d1 = d.s1 * d.t1, d2 = d.s2 * d.t2;
@@ -584,6 +590,7 @@ const CU = {
 const current = {
   title: 'The current adds or subtracts',
   height: 530,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar (vectors 600 px + the "In general" panel)
   choices: [{ v: 'kayak', label: CU.kayak.label }, { sep: 'Check' }, { v: 'ex4', label: CU.ex4.label }, { v: 'ex5', label: CU.ex5.label }],
   intro: (k) => (k === 'kayak' ? 'The warm-up kayak: 6 km/h in still water, a 2 km/h current. Press <b>Next</b>.'
     : k === 'ex4' ? 'The ferry: 96 km downstream in 4 h, back upstream in 6 h. Press <b>Next</b>.' : 'The plane: 600 km into a headwind in 2.5 h, back with the wind in 2 h. Press <b>Next</b>.'),
@@ -611,7 +618,7 @@ const current = {
     const v = drawVehicle(svg, d.veh); v.at(XA, VY);
     const clk = hide0(lab(SW / 2, 8, '', 's', 'u8l5-clock'));
     // vector panel + equation panel
-    const PY = 242, PH = 276, VW = 600;
+    const PY = 242, PH = 276, VW = Math.min(600, W - 260); // leaves the "In general" panel ~230 px beside the sidebar
     const VP = panel(stage, 12, PY, VW, PH, 'Ground speed');
     const vs = S('svg', { width: VW - 24, height: PH - 44, viewBox: `0 0 ${VW - 24} ${PH - 44}` }, VP);
     const vov = add(VP, box(h('div', 'u8l5-ov'), VW - 24, PH - 44)); vov.style.top = '38px'; vov.style.left = '12px';
@@ -696,12 +703,13 @@ const SS = {
 const speedSolve = {
   title: 'Halfway between: add the equations',
   height: 530,
+  minW: 930, // the two check cards side by side need ~560 px beside the graph
   choices: [{ v: 'kayak', label: SS.kayak.label }, { sep: 'Check' }, { v: 'ex4', label: SS.ex4.label }, { v: 'ex5', label: SS.ex5.label }],
   intro: 'Two ground speeds: one with the current or wind, one against it. Press <b>Next</b>.',
   make(stage, k, ex) {
     const d = SS[k], W = ex.W, b = d.vb, cc = d.vc;
     const N = new NumberLine(stage, Object.assign({ x: 12, y: 8, width: W - 24, height: 140, axisY: 96, fontSize: 18 }, d.nl));
-    const GW = 336, G = new Graph(stage, Object.assign({ x: W - GW - 12, y: 158, width: GW, height: 364, fontSize: 15 }, d.g));
+    const GW = Math.min(336, W - 630), G = new Graph(stage, Object.assign({ x: W - GW - 12, y: 158, width: GW, height: 364, fontSize: 15 }, d.g)); // the check panel keeps ~595 px
     const P = panel(stage, 12, 158, W - GW - 36, 364, 'Add the equations');
     const work = add(P, h('div', 'u8l5-work')), checks = add(P, h('div', 'u8l5-checks u8l5-checks2'));
     const eq = { with: { sym: '+', v: d.with, col: BLUE }, against: { sym: '-', v: d.ag, col: AMB } };

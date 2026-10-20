@@ -108,6 +108,7 @@ const swExpr = (d) => (d.k ? d.k : '') + d.f.map((f) => (d.k || d.f.length > 1 ?
 const sweep = {
   title: 'Slide x along: when is the product 0?',
   height: 420,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar (13 product cells, and the two little equations side by side)
   choices: [{ v: 'a', label: tex('(x-6)(x+2)') }, { v: 'b', label: tex('3(x-6)(x+2)') }, { v: 'c', label: tex('x(x-5)') }],
   intro: (k) => `Try whole numbers for ${T('x')} in ${T(swExpr(SW[k]))}. Which values make the product <b>zero</b>?`,
   make(stage, key, ex) {
@@ -186,6 +187,7 @@ const sweep = {
 const whyZero = {
   title: 'Why the other side has to be 0',
   height: 460,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar (the last check line needs the full width)
   intro: 'What do we learn about two factors from their product? Compare a product of <b>6</b> with a product of <b>0</b>.',
   make(stage, v, ex) {
     const W = ex.W, pw = (W - 48) / 2;
@@ -257,6 +259,7 @@ const RECIPE = ['i) make one side 0', 'ii) factor completely', 'iii) each factor
 const solve = {
   title: 'Solve by factoring: one equation becomes two',
   height: 530,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n1', label: tex('x^2-4x-12=0') }, { v: 'n2', label: tex('x^2+5x=6') },
     { sep: 'Example 1 check:' }, { v: 'e1', label: '1' },
     { sep: 'Example 2 check:' }, { v: 'e2a', label: '(a)' }, { v: 'e2b', label: '(b)' }, { v: 'e2c', label: '(c)' }, { v: 'e2d', label: '(d)' },
@@ -347,6 +350,7 @@ function arcPath(cx, cy, r, a0, a1) { // degrees, screen coordinates (y down)
 const trough = {
   title: 'Why the area is x(40 − x): cut, turn and slide',
   height: 430,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 10, label: 'depth 10' }, { v: 14, label: 'depth 14' }, { sep: 'Example 5 check:' }, { v: 6, label: '(b) area 204' }],
   intro: (x) => `A trough with top ${T('DC=40')} cm, depth ${T('x')} (shown here with ${T('x=' + x)} cm), and sides sloping at ${T('45^\\circ')}. Why is its area ${T('x(40-x)')}?`,
   make(stage, x, ex) {
@@ -415,6 +419,7 @@ const STORY = {
 const story = {
   title: 'Two roots: does each one fit the story?',
   height: 470,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar (the answer bar needs it)
   choices: [{ v: 'demo', label: 'rectangle, area 48' }, { sep: 'Example 4 check:' }, { v: 'banner', label: 'banner' }, { sep: 'Example 5 check:' }, { v: 'trough', label: 'trough' }, { sep: 'Example 6 check:' }, { v: 'even', label: 'even integers' }],
   intro: (k) => ({
     demo: `A rectangle’s length is ${T('2')} cm more than its width, and its area is ${T('48\\text{ cm}^2')}. Find its perimeter.`,

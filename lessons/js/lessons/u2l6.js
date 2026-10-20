@@ -77,6 +77,7 @@ const EXPD = {
 const expand = {
   title: 'Expand it: what does the exponent repeat?',
   height: 400,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar (nine tiles + the claim and its stamp)
   choices: [{ v: 'm5', label: T('(5m)^3') }, { v: 'xy', label: T('2x^3y^2') }, { sep: 'Example 2 check:' }, { v: 's1', label: 'Statement 1' }, { v: 's2', label: 'Statement 2' }],
   intro: (v) => `Write ${T(EXPD[v].main)} as a <b>repeated multiplication</b>. Each exponent repeats only the thing it touches — a whole bracket, or a single letter.`,
   make(stage, v, ex) {
@@ -330,9 +331,9 @@ const radical = {
     const nT = add(stage, h('div', 'rd-ex c n', String(d.n)), ex0, py - 18);
     const sBar = add(stage, h('div', 'rd-sbar c'), ex0, py - 38);
     const minus = d.neg ? add(stage, h('div', 'rd-ex c neg', '−'), ex0 - 24, py - 58) : null;
-    add(stage, h('div', 'rd-eq c', '='), W * 0.38, py);
+    const eqX = Math.max(W * 0.38, ex0 + 50); add(stage, h('div', 'rd-eq c', '='), eqX, py); // clear of a wide base's exponent
     // radical form: ( ⁿ√ radicand )^m  or  ⁿ√( radicand^m ) for a symbolic base
-    const rx = W * 0.46, top = py - (d.sym ? 64 : 42), bot = py + 36;
+    const rx = Math.max(W * 0.46, eqX + 52), top = py - (d.sym ? 64 : 42), bot = py + 36;
     const rad = add(stage, h('div', 'rd-rad c', T(d.rad)), 0, py); const rw = rad.offsetWidth || 60;
     const lp = add(stage, h('div', 'rd-par c', '('), rx, py + 2);
     const sx = rx + 22, rcx = sx + 42 + rw / 2;

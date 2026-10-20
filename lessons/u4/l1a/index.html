@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,9 +43,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Tile the Floor">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Tile the Floor</h2></div>
-  <p class="big">Cover a <b>240 cm by 180 cm</b> floor with identical <b>square</b> tiles. <b>No cutting</b> allowed! <span class="muted">Tap a tile size to try it.</span></p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Tile the Floor" style="--wf-side: 310px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Tile the Floor</h2>
+  <p class="wf-rule">Cover a <b>240 cm by 180 cm</b> floor with identical <b>square</b> tiles. <b>No cutting</b> allowed! <span class="muted">Tap a tile size to try it.</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
 
   <div class="u4l1a-wu">
     <div class="u4l1a-fl" id="floor"></div>
@@ -58,14 +59,17 @@
         <div class="q-line"><div class="q-num">2</div><div>Why won’t <b>50 cm</b> tiles work? Will <b>40 cm</b> tiles work?</div></div>
         <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">240\div50=4.8</span>: the last tile in each row would be cut. 40 cm fails too: <span class="tex">240\div40=6</span> is fine, but <span class="tex">180\div40=4.5</span>. A size must fit <b>both</b> sides.</div></div>
       </div>
-      <div class="wq">
-        <div class="q-line"><div class="q-num">3</div><div>A size works if it divides exactly into <span class="u4l1a-bl"></span> <em>and</em> into <span class="u4l1a-bl"></span>.</div></div>
-        <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><b>240</b><span> and <b>180</b>: it must be a <b>common factor</b>. Sizes that work: 1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30 and 60 cm.</span></div></div>
-      </div>
     </div>
   </div>
 
-  <div class="poll">
+  </div><div class="wf-side">
+
+    <div class="wq wq-side">
+        <div class="q-line"><div class="q-num">3</div><div>A size works if it divides exactly into <span class="u4l1a-bl"></span> <em>and</em> into <span class="u4l1a-bl"></span>.</div></div>
+        <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><b>240</b><span> and <b>180</b>: it must be a <b>common factor</b>. Sizes that work: 1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30 and 60 cm.</span></div></div>
+    </div>
+
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> What is the <b>biggest</b> square tile that fits with no cutting? And how many of them do you need? <b>Guess first.</b></div></div>
     <div class="poll-opts c4">
       <div class="opt"><b>A</b><span> 30 cm</span></div>
@@ -78,6 +82,7 @@
       <span class="muted"><b>A</b> works, but 30 is only <em>a</em> common factor, not the greatest: <span class="tex">8\times6=48</span> tiles. <b>C</b> fits the 180 side, but <span class="tex">240\div90\approx2.67</span>. <b>D</b> fits across, but <span class="tex">180\div120=1.5</span>.</span><br>
       Today, the same idea with algebra: <span class="tex">240x+180y=60(4x+3y)</span>. The 4 and 3 left in the bracket are the tiles <b>across</b> and <b>up</b>.</div>
   </div>
+  </div></div>
 
   <div class="wq wq-wide">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Challenge your neighbour.</b> A hallway is <b>210 cm by 150 cm</b>. What is the biggest square tile, and how many does it take?</div></div>

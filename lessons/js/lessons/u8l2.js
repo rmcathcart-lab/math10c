@@ -171,6 +171,7 @@ const xvOf = (d) => (d.g.xtitle || 'x');
 const lift = {
   title: 'Substitution: lift the expression, drop it in',
   height: 540,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'coin', label: SUB.coin.label }, { sep: 'Example checks' }, ...['e1a', 'e1b', 'e2', 'e3', 'e4'].map((k) => ({ v: k, label: SUB[k].label }))],
   intro: (k) => SUB[k].intro || `Two equations, two unknowns. On the graph, the solution is where the ${bw(0, 'blue')} and ${bw(1, 'amber')} lines cross. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -239,7 +240,7 @@ const CH = {
 };
 const choose = {
   title: 'Which variable should I isolate?',
-  height: 360,
+  height: 446, // the four choices sit 2 x 2 beside the sidebar (no minW: the cards stay full size)
   choices: ['coin', 'e1', 'e2', 'e3', 'e4'].map((k) => ({ v: k, label: CH[k].label })),
   intro: () => `Four possible choices: either variable, from either equation. Which is tidiest? Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -254,7 +255,7 @@ const choose = {
       });
       R.appendChild(e);
     });
-    const O = add(stage, box(h('div', 'u8l2-opts'), ex.W - 28, 200), 14, 140);
+    const O = add(stage, box(h('div', 'u8l2-opts'), ex.W - 28, 300), 14, 132);
     const cards = d.opts.map(([eqi, v, t, ok, note]) => {
       const eqTex = d.eqs[eqi].map((p) => p[0]).join('');
       const cd = h('div', 'u8l2-opt' + (eqi ? ' u8l2-o2' : ''), `<div class="u8l2-oh">solve ${T(tc(EQC[eqi], eqTex))} for ${T(v)}</div><div class="u8l2-ot">${T(tc(EQC[eqi], t))}</div><div class="u8l2-on">${note}</div>`);
@@ -290,7 +291,7 @@ const CK = {
     c: [{ eq: '4x+3y=2', L: ['4\\left(\\dfrac{17}{10}\\right)+3\\left(-\\dfrac{8}{5}\\right)', '=\\dfrac{68}{10}-\\dfrac{48}{10}=\\dfrac{20}{10}=2'], v: '2', R: '2', ok: true },
       { eq: '2x-y=5', L: ['2\\left(\\dfrac{17}{10}\\right)-\\left(-\\dfrac{8}{5}\\right)', '=\\dfrac{34}{10}+\\dfrac{16}{10}=\\dfrac{50}{10}=5'], v: '5', R: '5', ok: true }] },
   e4: { label: 'Example 4 (b)', sys: SUB.e4, at: 'a=4,\\ b=1', pt: [4, 1], ptTex: '(4,\\ 1)', orig: true,
-    c: [{ eq: 'a-2(b-3)=8', L: ['4-2(1-3)=4-2(-2)=4+4=8'], v: '8', R: '8', ok: true }, { eq: '4a+3(b-2)=13', L: ['4(4)+3(1-2)=16+3(-1)=16-3=13'], v: '13', R: '13', ok: true }] }
+    c: [{ eq: 'a-2(b-3)=8', L: ['4-2(1-3)=4-2(-2)', '=4+4=8'], v: '8', R: '8', ok: true }, { eq: '4a+3(b-2)=13', L: ['4(4)+3(1-2)=16+3(-1)', '=16-3=13'], v: '13', R: '13', ok: true }] }
 };
 /** a check card: left side worked out, the right side, then the verdict (rows hidden until played) */
 function ckCard(stage, q, i, at, x, y, w, hh) {
@@ -306,6 +307,7 @@ function ckCard(stage, q, i, at, x, y, w, hh) {
 const checkBoth = {
   title: 'Check the solution in BOTH equations',
   height: 500,
+  minW: 900, // the check cards need ~470 px beside the graph
   choices: [{ v: 'e1', label: CK.e1.label }, { v: 'wrong', label: CK.wrong.label }, { sep: 'Example checks' }, ...['e2', 'e3', 'e4'].map((k) => ({ v: k, label: CK[k].label }))],
   intro: (k) => (CK[k].orig ? `Example 4 (b): check ${T('a=4,\\ b=1')} in the <b>original</b> equations, brackets and all. Press <b>Next</b>.` : `Is ${T(CK[k].ptTex)} the solution? It must balance <b>both</b> equations. Press <b>Next</b>.`),
   make(stage, k, ex) {
@@ -389,6 +391,7 @@ const EX = {
 const exact = {
   title: 'The calculator’s decimal vs the exact value',
   height: 450,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(EX).map((k) => ({ v: k, label: EX[k].label })),
   intro: (k) => (k === 'e3' ? `Lesson 1A, Example 4: ${T(tc(BL, '4x+3y=2'))} and ${T(tc(AM, '2x-y=5'))}, solved on the <b>graphing calculator</b> (TI-84). Press <b>Next</b>.`
     : `A new system: ${T(tc(BL, 'x+y=1'))} and ${T(tc(AM, 'y=2x'))}. Graphing calculator first. Press <b>Next</b>.`),
@@ -478,6 +481,7 @@ const VN = {
 const vanish = {
   title: 'When both variables disappear',
   height: 512,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(VN).map((k) => ({ v: k, label: VN[k].label })),
   intro: (k) => `${T(tc(BL, 'y=3x-1'))} and ${T(tc(AM, '6x-2y=' + VN[k].kk))}. The first is already solved for ${T('y')}. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -521,6 +525,7 @@ const vanish = {
 const three = {
   title: 'Extension: three equations, three unknowns',
   height: 500,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar (the unknowns panel needs ~150 px)
   intro: () => `<span class="u8l2-ext sm">Extension</span> Example 5: ${T(tc(BL, '4p-3q-2r=-9'))}, ${T(tc(AM, 'r=2p'))}, ${T(tc(GR, '3q-p-5=0'))}. Press <b>Next</b>.`,
   make(stage, k, ex) {
     const W = ex.W;

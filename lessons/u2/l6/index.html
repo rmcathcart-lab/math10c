@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,9 +43,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Power Rankings">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Power Rankings</h2></div>
-  <p class="big">Eight powers enter. In every match, the <b>bigger number</b> moves on. No calculator — they’re far too big!</p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Power Rankings" style="--wf-side: 290px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Power Rankings</h2>
+  <p class="wf-rule">Eight powers enter. In every match, the <b>bigger number</b> moves on. No calculator — they’re far too big!</p></div>
+  <div class="wf-grid"><div class="wf-main">
 
   <div class="pr" id="bracket">
     <div class="pr-stage"></div>
@@ -60,11 +61,14 @@
       <div class="rv" id="wq1"><span class="tex">3^2=9</span> beats <span class="tex">2^3=8</span>.<br>A bigger exponent doesn’t always win!</div></div></div>
     <div class="q-line"><div class="q-num">2</div><div>Write <span class="tex">8^{33}</span> and <span class="tex">16^{24}</span> as powers of <b>2</b>. Who wins? <button class="pill small" data-rv="wq2">Reveal</button>
       <div class="rv" id="wq2"><span class="tex">8^{33}=(2^3)^{33}=2^{99}</span><br><span class="tex">16^{24}=(2^4)^{24}=2^{96}</span><br>Same base: <b><span class="tex">8^{33}</span></b> wins.</div></div></div>
+  </div>
+
+  </div><div class="wf-side">
+  <div class="pr-qs pr-qs-side">
     <div class="q-line"><div class="q-num">3</div><div>Write <span class="tex">3^{60}</span> and <span class="tex">2^{90}</span> as “something<span class="tex">^{30}</span>”. Who wins? <button class="pill small" data-rv="wq3">Reveal</button>
       <div class="rv" id="wq3"><span class="tex">3^{60}=(3^2)^{30}=9^{30}</span><br><span class="tex">2^{90}=(2^3)^{30}=8^{30}</span><br>Same exponent: <b><span class="tex">3^{60}</span></b> wins.</div></div></div>
   </div>
-
-  <div class="poll pr-poll">
+  <div class="poll pr-poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Predict the result of the whole tournament. <b>Guess first!</b></div></div>
     <div class="poll-opts four">
       <div class="opt"><b>A</b> <span class="tex">10^{30}</span> wins</div>
@@ -75,6 +79,7 @@
     <button class="pill" data-poll>Reveal</button>
     <div class="poll-ans"><b>D — a tie.</b> <span class="tex">4^{50}=(2^2)^{50}=2^{100}</span>: the finalists are the <b>same number</b>, about <span class="tex">1.27\times10^{30}</span>. Base 10 <i>feels</i> huge, but <span class="tex">10^{30}=1000^{10}</span> loses to <span class="tex">2^{100}=1024^{10}</span> in round 1.</div>
   </div>
+  </div></div>
 
   <div class="pr-bridge">
     <div class="pr-chal"><b>Challenge your neighbour:</b> invent a new player that would <b>tie</b> with <span class="tex">2^{100}</span>. <span class="muted">Tap for ideas:</span>

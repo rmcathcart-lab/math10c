@@ -95,6 +95,7 @@ const ex2Graph = (host, size, o = {}) => new Graph(host, { width: size, height: 
 const birthday = {
   title: 'Person → birthday, then flip the arrows',
   height: 450,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   intro: 'Each person has one birthday. Is <b>person → birthday</b> a function? What about <b>birthday → person</b>? Press <b>Next</b>.',
   make(stage, v, ex) {
     const W = ex.W, mw = 380, gx = mw + 26, gw = W - gx - 10;
@@ -130,6 +131,7 @@ const birthday = {
 const twoRel = {
   title: 'Ask the question for every input',
   height: 462,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'mult', label: '(i) is a multiple of' }, { v: 'cube', label: '(ii) is the cube of' }],
   intro: (k) => `${T('D=\\{1,8,27,64\\}')}, ${T('R=\\{1,2,3,4\\}')}. Relation ${REL[k].name}: for each domain element ask the question, and draw an arrow for every <b>yes</b>. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -253,7 +255,8 @@ const WV = {
 const whyVertical = {
   title: 'Why a vertical line?',
   height: 460,
-  choices: Object.keys(WV).map((k) => ({ v: k, label: WV[k].label + ': ' + T(WV[k].pts.map((p) => pairTex(p[0], p[1]).replace(/\\ /g, '')).join(',')) })),
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  choices: Object.keys(WV).map((k) => ({ v: k, label: WV[k].label + ': ' + WV[k].pts.map((p) => T(pairTex(p[0], p[1]).replace(/\\ /g, ''))).join(', ') })), // one pair per piece: the chip can wrap
   intro: 'A vertical line is every point with the <b>same input</b>. Watch which ordered pairs it catches. Press <b>Next</b>.',
   make(stage, k, ex) {
     const W = ex.W, d = WV[k], pts = d.pts, two = pts.filter((p) => p[0] === 1).length > 1;
@@ -295,6 +298,7 @@ const ANS2 = { A: 'TFT', B: 'TTT', C: 'FFF', D: 'FTF' };
 const vlt = {
   title: 'Example 2 check: sweep a vertical line, then a horizontal line',
   height: 470,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   value: 'A',
   choices: [{ sep: 'Example 2 check:' }, ...'ABCD'.split('').map((k) => ({ v: k, label: EX2[k].name }))],
   intro: (k) => `${EX2[k].name}. Fill in its column of the table. Press <b>Next</b>.`,
@@ -351,6 +355,7 @@ const SIX = {
 const sixWays = {
   title: 'One relation, six forms',
   height: 486,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SIX).map((k) => ({ v: k, label: SIX[k].label })),
   intro: (k) => `${SIX[k].words} Build it in six forms, then apply the function test to every one. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -400,6 +405,7 @@ const plateItem = (i) => `<span class="u5l7a-plate">${PLATES[i]}</span>`;
 const sixForms = {
   title: 'Example 3 check: one test, six forms',
   height: 440,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   value: 'a',
   choices: [{ sep: 'Example 3 check:' }, ...['a', 'b', 'c', 'd', 'e', 'f'].map((k) => ({ v: k, label: `(${k})` }))],
   intro: (k) => ({ a: 'Part (a): a list of ordered pairs.', b: 'Part (b): a list of ordered pairs.', c: 'Part (c): an arrow diagram.', d: 'Part (d): a graph of points.', e: 'Part (e): a description in words.', f: 'Part (f): a closed curve.' }[k]) + ' Press <b>Next</b>.',
@@ -505,7 +511,8 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 const dayName = (n) => { let m = 0; while (n >= MDAYS[m]) { n -= MDAYS[m]; m++; } return MONTHS[m] + ' ' + (n + 1); };
 function mountWarmup() {
   const map = document.getElementById('wu-map');
-  if (map) new MappingDiagram(map, { width: 400, height: 330, domain: PEOPLE, range: DATES, pairs: PEOPLE.map((p, i) => [p, DATES[BDAY[i]]]), titles: ['Person', 'Birthday'], tex: false, color: COLORS.red });
+  const mw = map ? Math.min(400, (map.clientWidth || 408) - 8) : 400; // CSS sets the box width (smaller on one-screen pages)
+  if (map) new MappingDiagram(map, { width: mw, height: Math.round(mw * 330 / 400), domain: PEOPLE, range: DATES, pairs: PEOPLE.map((p, i) => [p, DATES[BDAY[i]]]), titles: ['Person', 'Birthday'], tex: false, color: COLORS.red });
   const svg = document.getElementById('wu-faces'), out = document.getElementById('wu-out'); if (!svg || !out) return;
   const HATS = ['#5a96d2', '#3ca05a', '#965ab4', '#e68228'], faces = [];
   for (let r = 0; r < 3; r++) for (let cI = 0; cI < 10; cI++) {

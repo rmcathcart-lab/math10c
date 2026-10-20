@@ -83,12 +83,13 @@ function drawMobile(svg, key, ox, oy, s) {
 const mobile = {
   title: 'Balance the Mobile: each level bar is an equation',
   height: 430,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'A', label: 'Mobile A' }, { v: 'Bs', label: 'Mobile B: substitution' }, { v: 'Be', label: 'Mobile B: elimination' }],
   intro: (v) => (v === 'A' ? 'One level bar, one total: two equations. Press <b>Next</b>.' : v === 'Bs' ? 'Two level bars and a total. Swap shapes for shapes (substitution). Press <b>Next</b>.' : 'The same mobile, solved by subtracting two equations (elimination). Press <b>Next</b>.'),
   make(stage, v, ex) {
     const isA = v === 'A', s = isA ? 46 : 38, W = isA ? 420 : 520, HH = 400;
     const host = add(stage, box(h('div', ''), W, HH), 8, 14), svg = svgEl('svg', { width: W, height: HH }, host);
-    const Mo = isA ? drawMobile(svg, 'A', 182, 470, s) : drawMobile(svg, 'B', 302, 420, s);
+    const Mo = isA ? drawMobile(svg, 'A', 204, 470, s) : drawMobile(svg, 'B', 302, 420, s); // A sits right enough for the two ghost moons by the star
     const Pn = panel(stage, W + 24, 14, ex.W - W - 34, 400, 'Equations');
     const WPOS = isA ? { s: 's', m1: 'e', m2: 'e' } : { t1: 'e', t2: 'e', c: 'e', s: 'w', t3: 'w' };
     const wl = (k, txt) => { const sh = Mo.shapes[k], p = WPOS[k], d = h('div', 'bk-lab u8l6-wlab', txt); host.appendChild(d); place(d, sh.cx + (p === 'e' ? 0.8 : p === 'w' ? -0.8 : 0) * s, sh.cy + (p === 's' ? 0.85 * s : 0), p, 4); return d; };
@@ -156,6 +157,7 @@ const HM = {
 const howMany = {
   title: 'How many solutions? Graph, slopes, algebra',
   height: 450,
+  minW: 820, // the compare panel needs ~350 px beside the graph
   choices: Object.keys(HM).map((k) => ({ v: k, label: HM[k].label })),
   intro: (v) => (v === 'turn' ? 'Start with two crossing lines, then turn and slide line 2. Press <b>Next</b>.' : 'Line 1 is always ' + T(cB('y=2x-1')) + '. Compare line 2 three ways. Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -211,6 +213,7 @@ const howMany = {
 const methods = {
   title: 'One system, three roads to the same point',
   height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'graph', label: 'Graphing' }, { v: 'sub', label: 'Substitution' }, { v: 'elim', label: 'Elimination' }],
   intro: () => `The system ${T(cB('y=2x-1'))}, ${T(cA('x+y=5'))}. Pick a road. Press <b>Next</b>.`,
   make(stage, v, ex) {
@@ -330,6 +333,7 @@ const NODE_NAME = { gr: 'graphing', sub: 'substitution', elim: 'elimination' };
 const choose = {
   title: '★ Which method? A system travels the flowchart',
   height: 510,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SYS).map((k) => ({ v: k, label: SYS[k].label })),
   intro: (v) => `The system ${T(cB(SYS[v].e[0]))}, ${T(cA(SYS[v].e[1]))} answers each question. Press <b>Next</b>.`,
   make(stage, v, ex) {
@@ -445,6 +449,7 @@ const TIX = {
 const ti84 = {
   title: 'Graphing calculator: Y=, WINDOW, 5:intersect',
   height: 440,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(TIX).map((k) => ({ v: k, label: TIX[k].label })),
   intro: (v) => `Find the crossing of ${T(cB(TIX[v].y1.replace('X', 'x')))} and ${T(cA(TIX[v].y2.replace('X', 'x')))} on a TI-84. Press <b>Next</b>.`,
   make(stage, v, ex) {
@@ -492,6 +497,7 @@ const ti84 = {
 const trip = {
   title: 'A trip out and a trip back (Example 3)',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'set', label: 'Set up the equations' }, { v: 'solve', label: 'Solve and race the clock' }],
   intro: (v) => (v === 'set' ? 'Draw both trips, organize distance, speed and time, write two equations. Press <b>Next</b>.' : 'Solve the system, then run both trips with a clock to check. Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -572,11 +578,13 @@ const bestAt = (x) => (x < 17.5 ? 1 : x <= 90 ? 0 : 2);
 const plans = {
   title: '★ Three plans on one graph: the lowest line wins',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'lines', label: 'Example 4 (b)–(d) check' }, { v: 'sweep', label: 'Example 4 (e)–(f): sweep' }],
   intro: (v) => (v === 'lines' ? 'Three equations, three lines, and where they cross. Press <b>Next</b>.' : 'Slide across the graph: which line is lowest? Press <b>Next</b>.'),
   make(stage, v, ex) {
-    const G = new Graph(stage, { x: 6, y: 8, width: 600, height: 450, xmin: 0, xmax: 100, ymin: 0, ymax: 80, xstep: 10, ystep: 10, fontSize: 15, xtitle: 'x\\text{ (GB)}', ytitle: 'y\\text{ (\\$)}' });
-    const Pn = panel(stage, 620, 8, ex.W - 628, 450, v === 'lines' ? 'Equations' : 'Cost at this many GB');
+    const GW = Math.min(600, ex.W - 330); // the panel keeps ~300 px beside the sidebar
+    const G = new Graph(stage, { x: 6, y: 8, width: GW, height: 450, xmin: 0, xmax: 100, ymin: 0, ymax: 80, xstep: 10, ystep: 10, fontSize: 15, xtitle: 'x\\text{ (GB)}', ytitle: 'y\\text{ (\\$)}' });
+    const Pn = panel(stage, GW + 20, 8, ex.W - GW - 28, 450, v === 'lines' ? 'Equations' : 'Cost at this many GB');
     const Ls = PLAN.map((p) => G.fn(p.f, { color: p.color, width: 3.5, arrows: false }));
     const labs = [lineLab(G, 96, 73, T(cB('\\text{Plan 1}')), BLUE, 'n'), lineLab(G, 58, 70, T(cA('\\text{Plan 2}')), AMB, 'w'), lineLab(G, 30, 70, T(cG('\\text{Plan 3}')), GRN, 'n')];
     labs[1].gx = 36; labs[1].gy = 58; labs[1]._bkDraw();

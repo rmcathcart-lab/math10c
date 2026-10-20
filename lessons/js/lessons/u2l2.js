@@ -135,6 +135,7 @@ const CANCEL = {
 const cancel = {
   title: 'Cancel the factors in pairs',
   height: 360,
+  minW: 920, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n1', label: tex('12a^5\\div3a^2') }, { v: 'n2', label: tex('15b^6\\div5b^4') }, { sep: 'Example 2 check:' }, { v: 'ex2', label: tex('10a^8\\div5a^3') }],
   intro: (k) => { const d = CANCEL[k]; return `Write ${T(`\\dfrac{${d.a}${d.v}^{${d.m}}}{${d.b}${d.v}^{${d.n}}}`)} in <b>expanded factor form</b>, top and bottom.`; },
   make(stage, key, ex) {
@@ -359,10 +360,10 @@ const chain = {
   choices: [{ v: 'copy', label: tex('(2^3s)^2') }, { sep: 'Example 4 check:' }, ...'abcdefg'.split('').map((k) => ({ v: k, label: '(' + k + ')' })), { sep: 'Example 5 check:' }, { v: 'd5', label: '(d)' }],
   intro: (k) => CHAINS[k].intro || `Simplify ${T(CHAINS[k].t)}, one law at a time. Press <b>Next</b> for each line.`,
   make(stage, key, ex) {
-    const W = ex.W, d = CHAINS[key], bw = (W - 24 - 5 * 8) / 6;
+    const W = ex.W, d = CHAINS[key], two = W < 900, per = two ? 3 : 6, bw = (W - 24 - (per - 1) * 8) / per; // narrow stage (beside the sidebar): the laws in two rows of 3
     const badges = {};
-    LAWS.forEach(([k, name, f], i) => { const b = add(stage, h('div', 'ch-law ch-' + k, `<b>${name}</b><span>${K(f)}</span>`), 12 + i * (bw + 8), 12); b.style.width = bw + 'px'; badges[k] = b; });
-    const lx = 26, ly = 104, lh = 84, nx = Math.round(W * 0.56), nw = W - nx - 16;
+    LAWS.forEach(([k, name, f], i) => { const b = add(stage, h('div', 'ch-law ch-' + k, `<b>${name}</b><span>${K(f)}</span>`), 12 + (i % per) * (bw + 8), 12 + Math.floor(i / per) * 58); b.style.width = bw + 'px'; if (two) b.style.height = '52px'; badges[k] = b; });
+    const lx = 26, ly = two ? 136 : 104, lh = two ? 79 : 84, nx = Math.round(W * 0.56), nw = W - nx - 16;
     const all = [[d.t, [], 'the question', '']].concat(d.lines);
     const rows = all.map(([t, , note], i) => {
       const el = add(stage, h('div', 'ch-line', K(t)), lx, ly + i * lh); el.style.height = (lh - 8) + 'px';
@@ -398,6 +399,7 @@ const CHECKS = {
 const check = {
   title: 'Check it with a number',
   height: 430,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   value: 'ex1',
   choices: [{ sep: 'Example 1:' }, { v: 'ex1', label: tex('5x^2\\times4x^4') }, { sep: 'Example 4:' }, { v: 'a', label: tex('(2x^3)^4') }, { v: 'e', label: '(e)' }],
   intro: (k) => { const d = CHECKS[k]; return `We simplified ${T(d.o)} to ${T(d.a)}. ${d.who} got ${T(d.w)}. Substitute a number to see which one is really <b>equal</b> to the original.`; },
@@ -412,7 +414,8 @@ const check = {
     const V0 = d.f(2), V1 = d.g(2), V2 = d.wf(2);
     const fill = (C, S, M, V) => { C.s.innerHTML = K(`=${S}`) + '<br>' + K(`=${M}`); C.v.innerHTML = K(`=\\boldsymbol{${tn(V)}}`); hide(C.s, C.v); };
     fill(C0, d.oS, d.oM, V0); fill(C1, d.aS, d.aM, V1); fill(C2, d.wS, d.wM, V2);
-    const st1 = add(stage, h('div', 'xp-stamp ok', '✓'), 20 + 2 * cw + 10 - 64, cy + 6), st2 = add(stage, h('div', 'xp-stamp no', '✗'), 20 + 3 * cw + 20 - 64, cy + 6); hide(st1, st2);
+    const sy = cy + (W < 960 ? 36 : 6); // narrower cards: the stamps sit below the card heading, not on it
+    const st1 = add(stage, h('div', 'xp-stamp ok', '✓'), 20 + 2 * cw + 10 - 64, sy), st2 = add(stage, h('div', 'xp-stamp no', '✗'), 20 + 3 * cw + 20 - 64, sy); hide(st1, st2);
     const strip = add(stage, h('div', 'ck-strip'), 20, 370); strip.style.width = (W - 40) + 'px'; hide(strip);
     const steps = [{
       cap: `Pick a test value: ${T(d.x + '=2')}. <b>Not 0 or 1</b>: ${T('1')} to any power is ${T('1')}, so those can hide a wrong exponent.`,
@@ -446,6 +449,7 @@ const sgT = (k, n) => (k === 'p' ? `(-a)^{${n}}` : `-a^{${n}}`);
 const signs = {
   title: 'Where does the negative sign go?',
   height: 420,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'p4', label: tex('(-a)^4') }, { v: 'p5', label: tex('(-a)^5') }, { v: 'm4', label: tex('-a^4') }, { v: 'm5', label: tex('-a^5') },
     { sep: 'Example 5 check:' }, { v: 'qa', label: '(a)' }, { v: 'qb', label: '(b)' }, { v: 'qc', label: '(c)' }],
   intro: (k) => { const d = SIGNS[k]; return d.kind === 'q' ? `Simplify ${T(d.t)}. Rewrite the top and the bottom with their sign <b>out front</b>, then count the negatives.` : `What does ${T(sgT(d.kind, d.n))} mean? Is it positive or negative?`; },
@@ -572,6 +576,7 @@ const linVal = (e, vals) => Object.keys(e).reduce((s, k) => s + e[k] * (k === ''
 const varExp = {
   title: 'All the work happens up in the exponent',
   height: 486,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n1', label: tex('n^{3k+4}\\cdot n^{k-1}') }, { v: 'n2', label: tex('\\frac{y^{6p+1}}{y^{2p-5}}') }, { sep: 'Example 6 check:' }, { v: 'a', label: '(a)' }, { v: 'b', label: '(b)' }, { v: 'c', label: '(c)' }],
   intro: (k) => `Simplify ${T(VX[k].t)}. Every power has the <b>same base</b> ${T(VX[k].base)}, so the exponent laws still work: we just add and subtract <b>expressions</b>.`,
   make(stage, key, ex) {
@@ -652,7 +657,10 @@ const varExp = {
 /* ============ warm-up: the photocopier ============ */
 function mountCopier() {
   const box = document.getElementById('copier'); if (!box) return;
-  const S = 36, base = 330, xs = [262, 346, 474, 672], names = ['Original', 'Copy 1', 'Copy 2', 'Copy 3'];
+  // sizes can come from the box's CSS (--pc-s, --pc-base, --pc-x0, --pc-gap) so the one-screen layout can shrink it
+  const cs = getComputedStyle(box), cv = (n) => parseFloat(cs.getPropertyValue(n));
+  const S = cv('--pc-s') || 36, base = cv('--pc-base') || 330, gap = cv('--pc-gap'), x0 = cv('--pc-x0') || 262;
+  const xs = gap ? [0, 1, 2, 3].map((i) => x0 + S * (2 ** i - 1) + gap * i) : [262, 346, 474, 672], names = ['Original', 'Copy 1', 'Copy 2', 'Copy 3'];
   box.innerHTML = `
     <svg class="pc-mach" viewBox="0 0 150 172" width="150" height="172" aria-hidden="true">
       <rect x="10" y="66" width="130" height="96" rx="6" fill="#c8cdd4" stroke="#1e2d46" stroke-width="2"/>

@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,11 +43,11 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: How Fast Does It Grow?" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>How Fast Does It Grow?</h2></div>
-  <p class="big">Too slow to watch, but every one of these has a <b>speed</b>.</p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: How Fast Does It Grow?" id="wu" style="--wf-side: 420px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>How Fast Does It Grow?</h2>
+  <p class="wf-rule">Too slow to watch, but every one of these has a <b>speed</b>.</p></div>
   <div class="u7l6-grow" id="u7l6-grow"></div>
-  <div class="u7l6-wtop">
+  <div class="wf-grid"><div class="wf-main">
     <div class="u7l6-wqs">
       <div class="bk-wq">
         <div class="q-line"><div class="q-num">1</div><div>How much longer is your hair after <b>6 months</b>?</div></div>
@@ -62,28 +62,29 @@
         <div class="u7l6-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>The lawn</b>, by far. In cm per month: nail <span class="tex">\approx0.3</span>, hair <span class="tex">\approx1</span>, lawn <span class="tex">\approx5\times4=20</span>. The lawn’s “5” looks small, but its time unit is a <b>week</b>. Rates only compare in the <b>same units</b>.</div></div>
       </div>
     </div>
-    <div class="u7l6-barbox">
+  </div><div class="wf-side">
+    <div class="poll wf-poll">
+      <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> North America and Europe are slowly drifting apart, so the Atlantic gets a little wider every year. Their speed is closest to… <b>Guess first.</b></div></div>
+      <div class="poll-opts">
+        <div class="opt"><b>A</b> a snail crawling</div>
+        <div class="opt"><b>B</b> your hair growing</div>
+        <div class="opt right"><b>C</b> your nails growing</div>
+        <div class="opt"><b>D</b> the lawn growing</div>
+      </div>
+      <button class="pill" type="button" data-poll-reveal>Reveal</button>
+      <div class="poll-ans"><b>C: your fingernails.</b> The Atlantic widens by about <b>2.5 cm per year</b>; nails grow about <b>3.6 cm per year</b> (question 2).<br>
+        <span class="muted"><b>A</b> a snail covers about 1 mm per <em>second</em>: tens of kilometres a year. <b>B</b> hair is about 12 cm per year, roughly 5 times the drift. <b>D</b> the lawn would be over 2 m a year: about 100 times too fast (question 3’s trap).</span><br>
+        Over 100 years that is only about 2.5 m, but over 100 million years it is about <span class="tex">2\,500</span> km: enough to open an ocean.</div>
+    </div>
+  </div></div>
+
+  <div class="u7l6-barbox">
       <div class="u7l6-bars" id="u7l6-bars"></div>
       <div class="u7l6-wbtns">
         <button type="button" class="pill" id="u7l6-bmonth">Same units: cm per month</button>
         <button type="button" class="pill" id="u7l6-bzoom">Zoom in on the slow ones</button>
       </div>
     </div>
-  </div>
-
-  <div class="poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> North America and Europe are slowly drifting apart, so the Atlantic gets a little wider every year. Their speed is closest to… <b>Guess first.</b></div></div>
-    <div class="poll-opts">
-      <div class="opt"><b>A</b> a snail crawling</div>
-      <div class="opt"><b>B</b> your hair growing</div>
-      <div class="opt right"><b>C</b> your nails growing</div>
-      <div class="opt"><b>D</b> the lawn growing</div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>C: your fingernails.</b> The Atlantic widens by about <b>2.5 cm per year</b>; nails grow about <b>3.6 cm per year</b> (question 2).<br>
-      <span class="muted"><b>A</b> a snail covers about 1 mm per <em>second</em>: tens of kilometres a year. <b>B</b> hair is about 12 cm per year, roughly 5 times the drift. <b>D</b> the lawn would be over 2 m a year: about 100 times too fast (question 3’s trap).</span><br>
-      Over 100 years that is only about 2.5 m, but over 100 million years it is about <span class="tex">2\,500</span> km: enough to open an ocean.</div>
-  </div>
 
   <div class="bk-wq u7l6-early">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> At 2.5 cm per year, how many years does it take the Atlantic to widen by <b>1 m</b>?</div></div>

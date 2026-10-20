@@ -141,3 +141,19 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u6l3-dialrow .u6l3-dm { font-size: 27px; }
 .u6l3-dialrow .u6l3-ds { font-size: 17px; }
 .u6l3-dialrow .u6l3-rulebox { font-size: 17px; padding: 6px 10px; }
+
+/* ---------- one screen (main.lesson.screen): the ramps + buttons left; Q1–Q3 and the big one right ---------- */
+.wf .u6l3-wfig { gap: 8px; margin-top: 6px; }
+.wf .u6l3-wbtns { gap: 8px; }
+.wf .u6l3-wbtns .pill { font-size: 15px; padding: 6px 12px; }
+.wf .u6l3-wqs .q-line { font-size: 17px; margin: 6px 0 2px; gap: 10px; }
+.wf .u6l3-wqs .q-line .pill.small { padding: 2px 10px; }
+.wf .u6l3-wa { margin: 0 0 6px 40px; }
+.wf .u6l3-wqs .bk-ans { font-size: 15.5px; line-height: 1.32; margin-top: 2px; }
+.wf .wf-poll { margin-top: 8px; padding: 2px 14px 12px; display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 8px; align-items: center; }
+.wf .wf-poll > .q-line, .wf .wf-poll > .poll-ans { grid-column: 1 / -1; }
+.wf .wf-poll > .q-line { font-size: 17px; margin: 8px 0 8px; }
+.wf .wf-poll .poll-opts { grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 0; }
+.wf .wf-poll .opt { white-space: nowrap; padding: 5px 8px; font-size: 16.5px; }
+.wf .wf-poll > .pill { margin: 0; padding: 6px 14px; }
+.wf-poll:not(.revealed) .poll-ans { display: none; }

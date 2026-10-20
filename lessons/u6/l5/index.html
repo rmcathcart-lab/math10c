@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -44,9 +44,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Low Battery" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Low Battery</h2></div>
-  <p class="big">At noon, Mia and Leo forget their chargers. Each phone drains <b>steadily</b>. <span class="muted small">(tap a ? to fill it in)</span></p>
+<section class="card warm wf wf-one" data-ink="warm" data-section="Warm-up: Low Battery" id="wu">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Low Battery</h2>
+  <p class="wf-rule">At noon, Mia and Leo forget their chargers. Each phone drains <b>steadily</b>. <span class="muted small">(tap a ? to fill it in)</span></p></div>
+  <div class="wf-grid u6l5-grid">
   <div id="u6l5-phones" class="u6l5-phones"></div>
   <div class="u6l5-clockrow">
     <button type="button" class="pill" id="u6l5-run">Run the clock ▸</button>
@@ -56,20 +57,20 @@
 
   <div class="u6l5-wqs">
     <div class="bk-wq">
-      <div class="q-line"><div class="q-num">1</div><div>What will each phone read at <b>3:00</b>?</div></div>
-      <div class="u6l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Mia <b>45%</b> (down 15 each hour); Leo <b>25%</b> (down 5 each hour).</div></div>
+      <div class="q-line"><div class="q-num">1</div><div>What will each phone read at <b>3:00</b>? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u6l5-wa"><div class="bk-ans">Mia <b>45%</b> (down 15 each hour); Leo <b>25%</b> (down 5 each hour).</div></div>
     </div>
     <div class="bk-wq">
-      <div class="q-line"><div class="q-num">2</div><div>How many percent does each phone lose <b>every hour</b>? Is it the same every hour?</div></div>
-      <div class="u6l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Mia loses <b>15%</b> per hour and Leo <b>5%</b> per hour: the <b>same</b> drop every hour, so each pattern is <b>linear</b>.</div></div>
+      <div class="q-line"><div class="q-num">2</div><div>How many percent does each phone lose <b>every hour</b>? Is it the same every hour? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u6l5-wa"><div class="bk-ans">Mia loses <b>15%</b> per hour and Leo <b>5%</b> per hour: the <b>same</b> drop every hour, so each pattern is <b>linear</b>.</div></div>
     </div>
     <div class="bk-wq">
-      <div class="q-line"><div class="q-num">3</div><div>At what time was Mia’s phone at <b>100%</b>?</div></div>
-      <div class="u6l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>11:20 am.</b> From 100% to 90% is 10 points, and at 15 points per hour that takes <span class="tex">\tfrac{10}{15}=\tfrac23</span> h <span class="tex">=40</span> min before noon.</div></div>
+      <div class="q-line"><div class="q-num">3</div><div>At what time was Mia’s phone at <b>100%</b>? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u6l5-wa"><div class="bk-ans"><b>11:20 am.</b> From 100% to 90% is 10 points, and at 15 points per hour that takes <span class="tex">\tfrac{10}{15}=\tfrac23</span> h <span class="tex">=40</span> min before noon.</div></div>
     </div>
   </div>
 
-  <div class="poll">
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Mia’s phone has more than <b>twice</b> the charge of Leo’s. If neither stops, whose phone hits <b>0%</b> first? <b>Guess first.</b></div></div>
     <div class="poll-opts">
       <div class="opt right"><b>A</b> Mia’s</div>
@@ -79,6 +80,7 @@
     <button class="pill" type="button" data-poll-reveal>Reveal</button>
     <div class="poll-ans"><b>A: Mia’s phone.</b> Mia: <span class="tex">90\div15=6</span> hours, so it dies at <b>6:00 pm</b>. Leo: <span class="tex">40\div5=8</span> hours, so <b>8:00 pm</b>. The fuller phone dies first because it drains <b>3 times as fast</b>.<br>
       <span class="muted"><b>B</b> looks only at the starting value (“less charge dies first”) and ignores the rate. <b>C</b> guesses that the bigger charge and the faster drain cancel out. They don’t: 6 h for Mia, 8 h for Leo.</span></div>
+  </div>
   </div>
 
   <div class="bk-wq u6l5-early">

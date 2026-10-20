@@ -105,3 +105,21 @@ b.u9l1-cr, .u9l1-cr { color: #c93a33; }
 .u9l1-fb.no { color: var(--red); }
 .u9l1-gbtns { display: flex; gap: 10px; flex-wrap: wrap; }
 .u9l1-score { font: 700 18px var(--round); color: var(--muted); }
+
+/* ---------- one screen (main.lesson.screen): shadow picture, buttons and Q3 left; Q1, Q2 and the big one right;
+   early finishers below ---------- */
+.wf .u9l1-wfig { height: auto; }
+.wf .u9l1-wfig > svg { position: static; display: block; width: 100%; height: auto; }
+.wf .u9l1-wbtns { gap: 8px; margin: 8px 0 4px; flex-wrap: nowrap; }
+.wf .u9l1-wbtns .pill { font-size: 14px; padding: 7px 12px; }
+.wf .u9l1-wqs { grid-template-columns: 1fr; gap: 10px; margin-top: 8px; }
+.wf .u9l1-wqs .bk-wq { padding: 2px 12px 8px; }
+.wf .u9l1-wqs .q-line { margin: 6px 0 4px; font-size: 17px; gap: 10px; }
+.wf .u9l1-wqs .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf .u9l1-wqs .bk-ans { font-size: 15.5px; line-height: 1.32; margin-left: 40px; }
+.wf-side .u9l1-wqs { margin-top: 0; }
+.wf .wf-poll .poll-opts { grid-template-columns: 1fr 1fr; gap: 6px; }
+.wf .wf-poll .opt { padding: 5px 10px; }
+.wf .u9l1-early { margin-top: 16px; }
+/* sidebar captions are only 268 px wide: let a long formula break after = or ≈ instead of running out of the box */
+.ex-panel .ex-cap .katex { white-space: normal; }

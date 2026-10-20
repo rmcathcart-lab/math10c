@@ -125,3 +125,20 @@ h2 .katex, h3 .katex { font-size: .95em; }
 
 /* the stamps used in this lesson sit on a graph: keep them small */
 .ex-stage .bk-stamp.bk-sm { font-size: 18px; }
+
+/* ---------- one screen (main.lesson.screen): the thermometer across the top, Q1–Q3 left and the big one right below it ---------- */
+.wf .u5l8-thermo { margin: 0; display: flex; justify-content: center; }
+.wf .u5l8-tsvg { width: 850px; height: auto; }
+.wf .u5l8-tctl { margin: 0 0 4px; gap: 6px; font-size: 15.5px; }
+.wf .u5l8-tctl .pill.small { margin: 0; }
+.wf .u5l8-tread { font-size: 17px; }
+.wf .u5l8-rulebox { margin: 0 auto 4px; padding: 3px 14px; font-size: 19px; }
+.wf .u5l8-wqs .q-line { margin: 6px 0 0; font-size: 17px; gap: 10px; line-height: 1.38; }
+.wf .u5l8-wqs .q-line .pill.small { margin-left: 4px; vertical-align: 1px; }
+.wf .u5l8-wqs .u5l8-wqa { margin: 2px 0 0 40px; }
+.wf .u5l8-wqs .bk-ans { margin: 0; font-size: 16px; line-height: 1.35; }
+.wf .wf-poll { margin-top: 4px; padding-bottom: 12px; }
+.wf .wf-poll .q-line { margin-top: 8px; }
+.wf .wf-poll .poll-opts.u5l8-c4 { grid-template-columns: 1fr 1fr; gap: 6px; }
+.wf .wf-poll .opt { font-size: 16.5px; padding: 6px 10px; }
+.wf .wf-side .u5l8-pa { grid-template-columns: 1fr; }

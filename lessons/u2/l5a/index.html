@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,9 +43,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: The Piano Puzzle">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Piano Puzzle</h2></div>
-  <p class="big">Each step to the next key multiplies the pitch by the <b>same number</b>, <span class="tex">r</span>. <span class="muted">(Black keys count as steps too. Tap a key to hear it.)</span></p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Piano Puzzle" style="--wf-side: 300px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Piano Puzzle</h2>
+  <p class="wf-rule">Each step to the next key multiplies the pitch by the <b>same number</b>, <span class="tex">r</span>. <span class="muted">(Black keys count as steps too. Tap a key to hear it.)</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
   <div class="pn-wrap">
     <div class="pn" id="piano"></div>
     <div class="pn-bar no-ink">
@@ -64,13 +65,16 @@
       <div class="q-line"><div class="q-num">2</div><div>Count the steps (<span class="tex">\times r</span>) from one A up to the next A.</div></div>
       <div class="wq-a"><button class="pill small" data-wq="count">Answer</button><div class="q-ans"><b>12 steps</b>: A, A♯, B, C, C♯, D, D♯, E, F, F♯, G, G♯, A.</div></div>
     </div>
+  </div>
+
+  </div><div class="wf-side">
+  <div class="wq-grid wq-side">
     <div class="wq">
       <div class="q-line"><div class="q-num">3</div><div>Fill in the exponent: <span class="nw"><span class="tex">r^{\,\textcolor{#c93a33}{?}}=2</span></span></div></div>
       <div class="wq-a"><button class="pill small" data-wq="12">Answer</button><div class="q-ans"><span class="tex">r^{12}=2</span>. Twelve equal multiplications take 440 to 880.</div></div>
     </div>
   </div>
-
-  <div class="poll">
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> The <b class="red">red key</b> is <b>6 steps</b> up, exactly halfway. Its frequency is about… <b>Guess first.</b></div></div>
     <div class="poll-opts">
       <div class="opt"><b>A</b> 587 Hz</div>
@@ -80,6 +84,7 @@
     <button class="pill" data-poll>Reveal</button>
     <div class="poll-ans"><b>B, about 622 Hz.</b> Six steps multiply by <span class="tex">r^6</span>, and <span class="tex">r^6\times r^6=r^{12}=2</span>, so <span class="tex">r^6</span> is the number that squares to 2: <span class="tex">r^6=\sqrt{2}\approx1.414</span> and <span class="tex">440\times\sqrt{2}\approx622.3</span> Hz. <b>C</b> is halfway by <em>adding</em>, but the keys <em>multiply</em> (660 Hz is about 7 steps up). <b>A</b> is 5 steps up. <span class="muted">Tap the keys: the frequencies now show.</span></div>
   </div>
+  </div></div>
 
   <div class="wq bonus-q">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Bonus.</b> So what is <span class="tex">r</span> itself? It’s the number that, used <b>12 times</b> as a factor, gives 2. And which key is <span class="tex">440\times\sqrt[3]{2}</span> Hz?</div></div>

@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -44,10 +44,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: The High Dive" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The High Dive</h2></div>
-  <p class="big">A diver jumps off a tower. The graph shows her height above the water.</p>
-  <div class="u5l3-wtop">
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The High Dive" id="wu" style="--wf-side: 515px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The High Dive</h2>
+  <p class="wf-rule">A diver jumps off a tower. The graph shows her height above the water.</p></div>
+  <div class="wf-grid"><div class="wf-main">
     <div class="u5l3-wfig">
       <div id="u5l3-dive"></div>
       <div class="u5l3-wbtns">
@@ -57,23 +57,24 @@
     </div>
     <div class="u5l3-wqs">
       <div class="bk-wq">
-        <div class="q-line"><div class="q-num">1</div><div>How high is the diving platform?</div></div>
-        <div class="u5l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>10 m.</b> The graph starts on the vertical axis at <span class="tex">(0,\ 10)</span>.</div></div>
-      </div>
-      <div class="bk-wq">
-        <div class="q-line"><div class="q-num">2</div><div>After how many seconds does she hit the water?</div></div>
-        <div class="u5l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>2 s.</b> The graph meets the horizontal axis (the water) at <span class="tex">(2,\ 0)</span>.</div></div>
-      </div>
-      <div class="bk-wq">
-        <div class="q-line"><div class="q-num">3</div><div>Fill in the blanks. <span class="muted small">(tap a blank)</span><br>
-          At the <b>splash</b>, height <span class="tex">=</span> <span data-reveal><b class="u5l3-blank">0</b></span> m.<br>
-          At the <b>jump</b>, time <span class="tex">=</span> <span data-reveal><b class="u5l3-blank">0</b></span> s.</div></div>
-        <div class="u5l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Both blanks are <b>0</b>. That is the whole lesson in two blanks: where a graph meets one axis, the <b>other</b> coordinate is zero.</div></div>
+        <div class="q-line"><div class="q-num">1</div><div>How high is the diving platform? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+        <div class="u5l3-wa"><div class="bk-ans"><b>10 m.</b> The graph starts on the vertical axis at <span class="tex">(0,\ 10)</span>.</div></div>
       </div>
     </div>
-  </div>
-
-  <div class="poll">
+  </div><div class="wf-side">
+    <div class="u5l3-wqs">
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">2</div><div>After how many seconds does she hit the water? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+        <div class="u5l3-wa"><div class="bk-ans"><b>2 s.</b> The graph meets the horizontal axis (the water) at <span class="tex">(2,\ 0)</span>.</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">3</div><div>Fill in the blanks. <span class="muted small">(tap a blank)</span> <button class="pill small" type="button" data-bk-toggle>Answer</button><br>
+          At the <b>splash</b>, height <span class="tex">=</span> <span data-reveal><b class="u5l3-blank">0</b></span> m.<br>
+          At the <b>jump</b>, time <span class="tex">=</span> <span data-reveal><b class="u5l3-blank">0</b></span> s.</div></div>
+        <div class="u5l3-wa"><div class="bk-ans">Both blanks are <b>0</b>. That is the whole lesson in two blanks: where a graph meets one axis, the <b>other</b> coordinate is zero.</div></div>
+      </div>
+    </div>
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> The graph’s rule is <span class="tex">h=10+5t-5t^2</span>. Setting <span class="tex">h=0</span> gives <b>two</b> answers: <span class="tex">t=2</span> and <span class="tex">t=-1</span>. What does <span class="tex">t=-1</span> mean for the dive? <b>Guess first.</b></div></div>
     <div class="poll-opts">
       <div class="opt"><b>A</b> She goes 1 m under water.</div>
@@ -85,6 +86,7 @@
       <span class="muted"><b>A</b> mixes up the variables: <span class="tex">-1</span> is a <b>time</b>, not a height. <b>B</b> reads the minus sign as “early”, but she can’t splash before she jumps.</span><br>
       <b>Bonus trap:</b> the highest point is <b>not</b> an intercept. She rises to <span class="tex">11.25</span> m at <span class="tex">t=0.5</span> s before falling.</div>
   </div>
+  </div></div>
 
   <div class="bk-wq u5l3-early">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> A 3 m springboard diver follows <span class="tex">h=3+2t-5t^2</span>. Find both intercepts and say what each one means.</div></div>

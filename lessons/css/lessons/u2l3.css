@@ -181,3 +181,27 @@
 .hp-hop.two { color: var(--brand); font-size: 17px; }
 .so-bin.tight .so-terms, .so-bin.tight .so-coef { font-size: 19px; }
 .so-bin.tight .so-pow { font-size: 28px; }
+
+/* ---------- one screen (main.lesson.screen): the ball + Q1, Q2 left; Q3 and the big one right; "keep halving" below ---------- */
+.wf .bb-scene { height: 330px; margin: 6px 0 0; }
+.wf .bb-lab { font-size: 18px; }
+.wf .bb-lab.num { font-size: 17px; }
+.wf .bb-q { min-width: 34px; height: 34px; font-size: 19px; }
+.wf .bb-q.open { font-size: 17px; }
+.wf .bb-drop { right: 10px; top: 10px; font-size: 15px; padding: 6px 14px; }
+.wf .bb-mtext { font-size: 16px; }
+.wf .wq-row { grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.wf .wq-side { grid-template-columns: 1fr; margin-top: 0; }
+.wf .wq { padding: 4px 12px 6px; }
+.wf .wq .q-line { margin: 4px 0 4px; font-size: 17px; gap: 10px; }
+.wf .wq .q-num { width: 28px; height: 28px; font-size: 15px; }
+.wf .wq-a { margin-left: 0; gap: 4px; }
+.wf .q-ans { font-size: 15.5px; line-height: 1.32; min-height: 0; }
+.wf .wf-poll .poll-opts.c4 { grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+.wf .wf-poll .poll-opts.c4 .opt { font-size: 17px; padding: 6px 10px; }
+.wf .wf-poll .poll-ans { min-height: 0; }
+.wf .wf-poll:not(.revealed) .poll-ans { display: none; }
+.wf .halve-card { margin-top: 14px; }
+.wf .try-it { font-size: 17px; }
+.ex-side .so-bin.tight .so-terms, .ex-side .so-bin.tight .so-coef { font-size: 16.5px; } /* four bins beside the sidebar */
+.ex-side .so-bin.tight .so-bb { padding: 4px 3px; }

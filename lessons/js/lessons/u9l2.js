@@ -306,6 +306,7 @@ const SIDECOL = { opp: OPP, adj: ADJ, hyp: HYP };
 const calc = {
   title: 'Press the keys, read the screen, name the ratio',
   height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [CALC.s24, CALC.c24, CALC.s67, CALC.c67].map((d, i) => ({ v: Object.keys(CALC)[i], label: d.label })).concat([{ sep: 'Demos' }, { v: 's30', label: CALC.s30.label }, { v: 't45', label: CALC.t45.label }]),
   intro: 'A trig ratio on the calculator is a <b>side ratio</b> in disguise. Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -380,6 +381,7 @@ const calc = {
 const rescale = {
   title: 'Shrink the triangle until the hypotenuse is 1',
   height: 450,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 24, label: 'Example 1 → 2: the 24° triangle' }, { v: 67, label: 'the 67° triangle' }],
   intro: 'Same angle, any size: the ratios never change. So pick the size that makes them easiest to see. Press <b>Next</b>.',
   make(stage, a, ex) {
@@ -431,6 +433,7 @@ const DIAL = { sweep: 'Sweep 0° → 90°', ex2: 'Example 2: 24° → 67°', swa
 const dial = {
   title: 'Open the dial: the hypotenuse stays 1',
   height: 480,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(DIAL).map((k) => ({ v: k, label: DIAL[k] })),
   intro: (v) => v === 'swap' ? 'Flip a triangle over the 45° line: what happens to its sine and cosine? Press <b>Next</b>.' : 'The hypotenuse is a radius, so it is always 1. Press <b>Next</b> and watch the legs.',
   make(stage, key, ex) {
@@ -546,6 +549,7 @@ const CMP = {
 const compare = {
   title: 'Compare the legs, not the decimals',
   height: 460,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CMP).map((k) => ({ v: k, label: CMP[k].label })),
   intro: 'Draw the angles with the <b>same hypotenuse</b> and the comparison is a matter of looking. Press <b>Next</b>.',
   make(stage, key, ex) {
@@ -613,6 +617,7 @@ const compare = {
 const extremes = {
   title: 'Sweep the segment r: flat, then standing up',
   height: 450,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   intro: `A segment of length ${T('r')} rotates about ${T('O')}. Press <b>Next</b>.`,
   make(stage, v, ex) {
     const W = ex.W, H = 450, svg = stageSvg(stage, W, H), D = new Dial(stage, svg, { ox: 64, oy: H - 52, R: 320, ticks: false, unit: 'r' });
@@ -685,6 +690,7 @@ const TROWS = [45, 80, 89, 89.9, 89.99];
 const tan90 = {
   title: 'Extension: tangent near 90°',
   height: 470,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   intro: 'Tangent is opp ÷ adj. What happens when adj gets really small? Press <b>Next</b>.',
   make(stage, v, ex) {
     const W = ex.W, H = 470;
@@ -722,6 +728,7 @@ const COF = { gen: { label: 'Example 5(b): why', x: null }, c1: { label: '5(c)(i
 const cofn = {
   title: 'One side, two names',
   height: 440,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(COF).map((k) => ({ v: k, label: COF[k].label })),
   intro: `Triangle ${T('DEF')}: right angle at ${T('D')}, angle ${T('x^\\circ')} at ${T('F')}. Press <b>Next</b>.`,
   make(stage, key, ex) {

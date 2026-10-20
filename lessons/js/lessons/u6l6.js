@@ -145,6 +145,7 @@ function parkGraph(host, o = {}) {
 const hunt = {
   title: 'Geocache Hunt: one tool per clue',
   height: 448,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'hunt', label: 'Follow the three clues' }, { v: 'B', label: 'Hunter B’s mistake' }],
   intro: (v) => (v === 'hunt' ? 'Three clues, three tools: <b>midpoint</b>, <b>distance</b>, <b>slope</b>. Press <b>Next</b>.' : 'Hunter B dug at (8, 0). Where did B go wrong? Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -204,6 +205,7 @@ const hunt = {
 const distance = {
   title: 'Length: count, subtract, or find the hidden right triangle',
   height: 520,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'a', label: 'Example 1(a) check' }, { v: 'b', label: 'Example 1(b) check' }],
   intro: (v) => (v === 'a' ? 'Four horizontal and vertical segments. Press <b>Next</b>.' : 'A slanted segment. Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -327,6 +329,7 @@ const midpoint = {
 const stairEx = {
   title: 'Slope: rise over run, the same everywhere',
   height: 480,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'same', label: 'Same everywhere' }, { v: 'dial', label: 'Steepness dial' }, { v: 'ex3a', label: 'Example 3(a) check' }],
   intro: (v) => ({ same: 'Slide and stretch a slope triangle along a line. Press <b>Next</b>.', dial: 'Turn a line from flat to vertical and watch its slope. Press <b>Next</b>.', ex3a: 'The slope from A to B. Press <b>Next</b>.' })[v],
   make(stage, v, ex) {
@@ -487,6 +490,7 @@ const parPerp = {
 const linear = {
   title: 'Characteristics of a linear graph',
   height: 500,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex4', label: 'Example 4(a)–(c) check' }, { v: 'ex4d', label: 'Example 4(d) check' }, { v: 'count', label: 'How many intercepts?' }],
   intro: (v) => ({ ex4: 'Snow melting on a deck: table, slope, intercepts, domain and range. Press <b>Next</b>.', ex4d: 'The horizontal line through (5, −2). Press <b>Next</b>.', count: 'Slide and turn a line. Count its intercepts. Press <b>Next</b>.' })[v],
   make(stage, v, ex) {
@@ -589,6 +593,7 @@ function analyse(q) {
 const whichTool = {
   title: '★ Which tool? Classifying a quadrilateral',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(QUADS).map((k) => ({ v: k, label: QUADS[k].label })),
   intro: (v) => `Follow ${T(QUADS[v].N.join(''))} through the flowchart. Each side’s <b>slope</b> and <b>length</b> appear on the grid. Press <b>Next</b>.`,
   make(stage, v, ex) {
@@ -647,7 +652,7 @@ const whichTool = {
       };
     };
     const steps = [
-      { cap: `Plot ${T(q.N.map((n, i) => n + pairTex(...q.P[i])).join(',\\ '))}. First tool for every side: <b>slope</b> (and length).`,
+      { cap: `Plot ${q.N.map((n, i) => T(n + pairTex(...q.P[i]))).join(', ')}. First tool for every side: <b>slope</b> (and length).`,
         run: async (c) => {
           for (let i = 0; i < 4; i++) await G.reveal(G.point(...q.P[i], { color: INK, r: 6.5, label: T(q.N[i]), pos: q.pos[i] }), c, 200);
           for (let i = 0; i < 4; i++) { segs[i] = G.segment(S[i].a, S[i].b, { color: BLUE, width: 3.5 }); await G.drawIn(segs[i], 260, c); }
@@ -693,6 +698,7 @@ const COL = {
 const collinear = {
   title: 'Which point does not belong?',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex6', label: 'Example 6 check' }, { v: 'fixed', label: 'When the fixed point is the odd one' }],
   intro: (v) => (v === 'ex6' ? 'Three points share a line. Find the slope from A to each of the others. Press <b>Next</b>.' : 'What if the point you fix is the odd one? Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -737,6 +743,7 @@ const TRI = {
 const triangle = {
   title: 'Classify a triangle: lengths, then a right angle two ways',
   height: 486,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex7', label: 'Example 7 check' }, { v: 'fail', label: 'A triangle that fails both tests' }],
   intro: (v) => (v === 'ex7' ? 'Triangle DEF. Press <b>Next</b>.' : 'Triangle RST: is there a right angle? Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -786,7 +793,8 @@ const triangle = {
 
 /* =============================== static figures =============================== */
 function mountStatic() {
-  const park = document.getElementById('u6l6-park'); if (park) parkGraph(park);
+  const park = document.getElementById('u6l6-park');
+  if (park) { const w = Math.min(620, park.clientWidth || 620); parkGraph(park, { width: w, height: Math.round(w * 420 / 620) }); } // the one-screen layout gives it a narrower column
   // tools at a glance
   const mini = (host, o) => new Graph(host, Object.assign({ width: 176, height: 132, numbers: false, xtitle: '', ytitle: '', arrows: false, xmin: -1, xmax: 7, ymin: -1, ymax: 5 }, o));
   const M = {

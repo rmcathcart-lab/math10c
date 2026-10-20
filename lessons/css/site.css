@@ -507,3 +507,5 @@ body.viewer .edot { display: none; }
 .wf-side .q-num { width: 30px; height: 30px; font-size: 16px; }
 .wf-poll .poll-opts.c4 { grid-template-columns: 1fr 1fr; }
 .wf-poll .traps { grid-template-columns: 1fr; font-size: 15px; gap: 6px; }
+/* long formulas in a sidebar caption may break (several lessons set .lesson .katex { white-space: nowrap }) */
+.lesson .ex-panel .ex-cap .katex { white-space: normal; }

@@ -39,6 +39,7 @@ const LADDER_Q = {
 const ladder = {
   title: 'Remember: the division ladder',
   height: 500,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [1001, 2310, { sep: 'Example 1 check:' }, 2574, 4290, 43010, { sep: 'Example 3 check:' }, 3003, 3135],
   custom: [4, 999999],
   intro: (n) => `Divide <b>${fmt(n)}</b> by the <b>smallest prime</b> that goes in evenly, write the answer underneath, and repeat until you reach <b>1</b>. The primes collect <b>down the left side</b>.`,
@@ -122,6 +123,7 @@ const VENN_X = {
 const venn = {
   title: 'GCF and LCM from a prime-factor Venn diagram',
   height: 440,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: '12,18', label: '12 &amp; 18' }, { v: '60,84', label: '60 &amp; 84' }, { v: '36,120', label: '36 &amp; 120' },
     { sep: 'Example 2 check:' }, { v: '10,21', label: '10 &amp; 21' }, { sep: 'Example 3:' }, { v: '3003,3135', label: '3 003 &amp; 3 135' }, { sep: 'Example 4:' }, { v: '9,20', label: '9 &amp; 20' }],
   intro: 'Each circle holds one number’s prime factors. Primes the numbers <b>share</b> go in the overlap. Then the <b>GCF</b> and <b>LCM</b> can be read straight off the picture.',
@@ -331,7 +333,7 @@ const powers = {
 const treeFill = {
   title: `Fill in the tree: what must ${T('d')} be?`,
   height: 440,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'sq', label: '(a) x is a perfect square' }, { v: 'cu', label: '(b) x is a perfect cube' }],
   intro: (m) => `Read the tree from the bottom up to write <b>x</b> as a product of primes. Then choose <b>d</b> (exactly two primes) so that x is a perfect <b>${m === 'sq' ? 'square' : 'cube'}</b>.`,
   make(stage, mode, ex) {
@@ -396,7 +398,7 @@ const treeFill = {
 const decimals = {
   title: 'Decimals that stop, decimals that repeat, and decimals that do neither',
   height: 440,
-  minW: 800, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   intro: 'Watch each decimal appear digit by digit. Does it <b>stop</b>? Does a block of digits <b>repeat</b> forever? Or neither?',
   make(stage, v, ex) {
     const W = ex.W;
@@ -516,6 +518,7 @@ const sort = {
 const repFrac = {
   title: 'Repeating decimal → fraction: line up the tails',
   height: 420,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: '0|7', label: T('0.\\overline{7}') }, { v: '0|45', label: T('0.\\overline{45}') }, { v: '1|6', label: T('1.\\overline{6}') },
     { sep: 'Example 7 check:' }, { v: '0|47', label: T('0.\\overline{47}') }, { sep: 'Example 8 check:' }, { v: '2|36', label: T('2.\\overline{36}') }],
   intro: (v) => { const [w, b] = v.split('|'); return `Write ${T(w + '.\\overline{' + b + '}')} as a fraction. Call the number <b>x</b>, then make a second copy whose repeating tail <b>lines up</b> exactly.`; },

@@ -211,3 +211,59 @@
 /* laws in the hero lede etc. */
 .lede .katex { font-size: 1.04em; }
 .nw { white-space: nowrap; }
+
+/* ---------- one screen (main.lesson.screen): the phones + Q1, Q2 left; Q3 and the big one right ---------- */
+.wf .ph-row { gap: 10px; margin: 4px 0 0; }
+.wf .ph { width: 124px; height: 204px; border-radius: 22px; }
+.wf .ph-notch { top: 7px; }
+.wf .ph-home { bottom: 6px; width: 12px; height: 12px; margin-left: -6px; }
+.wf .ph-screen { left: 8px; right: 8px; top: 17px; bottom: 22px; border-radius: 10px; padding-top: 7px; }
+.wf .ph-title { font-size: 14px; }
+.wf .ph-slots { margin: 4px 0 5px; height: 24px; gap: 3px; }
+.wf .ph-slots:not(.pw) i { width: 12px; height: 12px; }
+.wf .ph-slots:not(.pw) i.lit { width: 17px; height: 20px; font-size: 10px; border-radius: 5px; }
+.wf .ph-keys { grid-template-columns: repeat(3, 24px); gap: 2px 9px; }
+.wf .ph-keys u { width: 24px; height: 24px; font-size: 14px; }
+.wf .ph-field { width: 104px; margin: 8px 0 8px; }
+.wf .ph-slots.pw { gap: 2px; margin: 3px 0; height: 24px; }
+.wf .ph-slots.pw i { width: 12px; }
+.wf .ph-slots.pw i.lit { width: 15px; height: 19px; font-size: 10px; }
+.wf .ph-kb { gap: 4px; margin-top: 4px; }
+.wf .ph-kb > span { gap: 1.5px; }
+.wf .ph-kb u { width: 9px; height: 16px; font-size: 8px; border-radius: 2px; }
+.wf .ph-kb u.sp { width: 54px; font-size: 8px; margin-top: 4px; }
+.wf .ph-lab { margin-top: 4px; }
+.wf .ph-lab b { font-size: 17px; }
+.wf .ph-lab span { font-size: 14.5px; }
+.wf .ph-res { height: 78px; margin-top: 2px; }
+.wf .ph-prod { font-size: 13px; }
+.wf .ph-pow { font-size: 17px; }
+.wf .ph-time { font-size: 13.5px; line-height: 1.2; }
+.wf .wq-grid { grid-template-columns: 1fr; gap: 8px; margin-top: 6px; }
+.wf .wq { padding: 2px 12px 6px; }
+.wf .wq .q-line { margin: 6px 0 4px; font-size: 17px; gap: 10px; }
+.wf .wq .q-num { width: 28px; height: 28px; font-size: 15px; }
+.wf .wq-a { margin-left: 38px; gap: 8px; }
+.wf .q-ans { font-size: 16px; line-height: 1.3; min-height: 2.6em; }
+.wf .wf-main .wq-grid { grid-template-columns: 1fr 1fr; }
+.wf .wf-main .wq-a { margin-left: 0; flex-direction: column; gap: 4px; }
+.wf .wf-main .q-ans { min-height: 2.6em; font-size: 15.5px; }
+.wf .wf-side .wq-grid { margin-top: 0; }
+.wf .wf-side .wq-a { margin-left: 0; flex-direction: column; gap: 4px; }
+.wf .wf-side .q-ans { min-height: 0; font-size: 15.5px; }
+.wf .tfill-wrap { margin: 0 0 6px 0; padding: 0 10px; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.wf .tfill-wrap .pill.small { position: static; translate: none; flex: none; }
+.wf .tfill { font-size: 24px; }
+.wf .tfill .katex-display { margin: .2em 0; }
+.wf .wf-poll { margin-top: 10px; }
+.wf .wf-poll .opt { font-size: 16.5px; padding: 5px 10px; line-height: 1.3; }
+.wf .wf-poll .poll-opts { gap: 5px; margin-bottom: 8px; }
+.wf .wf-poll .q-line { margin: 10px 0 8px; }
+.wf .wf-poll { padding-bottom: 12px; }
+.wf .wf-poll:not(.revealed) .poll-ans { display: none; }
+.wf .cb-row { grid-template-columns: 62px minmax(0, 1fr) 96px; gap: 6px; }
+.wf .cb-l { font-size: 16px; }
+.wf .cb-track { height: 22px; }
+.wf .cb-v { font-size: 14px; }
+.wf .cb-v small { font-size: 12.5px; }
+.wf .poll-room { font-size: 16.5px; margin: 7px 0 0 !important; }

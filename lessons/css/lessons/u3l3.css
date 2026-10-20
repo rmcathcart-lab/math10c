@@ -225,3 +225,42 @@
 
 .sp-eqs { display: inline-block; margin-right: 6px; }
 .nw { white-space: nowrap; }
+
+/* ---------- one screen (main.lesson.screen): the trick strip, the 35 × 35 square, Q1 and Q2 on the left; Q3 and the big one on the right ---------- */
+.wf .sp-trick { padding: 8px 12px 10px; margin: 8px 0 12px; }
+.wf .sp-tr-top { margin-bottom: 8px; gap: 5px; }
+.wf .sp-tr-top .chip { padding: 3px 10px; }
+.wf .sp-tr-row { gap: 5px; }
+.wf .sp-tr-v { height: 56px; font-size: 24px; border-radius: 12px; }
+.wf .sp-tr-box.b0 .sp-tr-v, .wf .sp-tr-box.b3 .sp-tr-v { font-size: 28px; }
+.wf .sp-tr-box.b2 .sp-tr-v { line-height: 1.02; }
+.wf .sp-tr-c { font-size: 13.5px; }
+.wf .sp-tr-ar { font-size: 26px; line-height: 56px; }
+.wf .sp-wu { grid-template-columns: auto 1fr; gap: 16px; }
+.wf .sp-sq { --sq: 200px; padding: 26px 0 0 30px; }
+.wf .sp-sqp { font-size: 22px; }
+.wf .sp-sqp.aa { font-size: 36px; }
+.wf .sp-sqp.aa.open .v { font-size: 28px; }
+.wf .sp-sqp.ab.open .v, .wf .sp-sqp.bb.open .v { font-size: 16px; }
+.wf .sp-sqp.ab.open .v small, .wf .sp-sqp.bb.open .v small { font-size: 10px; }
+.wf .sp-sql { font-size: 18px; }
+.wf .sp-sql.t { top: -26px; }
+.wf .sp-sql.l { left: -27px; }
+.wf .sp-sq-sum { margin: 6px 0 4px -30px; font-size: 17px; min-height: 2.6em; }
+.wf .sp-sq-note { font-size: 15px; }
+.wf .sp-sq-all { margin-left: -30px; }
+.wf .wq { padding: 6px 12px 8px; }
+.wf .sp-wqs { gap: 10px; }
+.wf .wq .q-line { margin: 2px 0 4px; font-size: 17px; gap: 10px; }
+.wf .wq-a { margin-left: 40px; gap: 4px; }
+.wf .q-ans { font-size: 15.5px; line-height: 1.3; min-height: 2.6em; }
+.wf .wf-side .q-ans { min-height: 3.9em; }
+.wf .wf-poll .poll-opts { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.wf .wf-poll .poll-opts .opt { font-size: 18px; padding: 6px 2px; white-space: nowrap; }
+.wf .wf-poll .poll-opts .opt b { margin-right: 4px; }
+.wf .wf-poll .poll-ans { min-height: 0; }
+.wf .wf-poll:not(.revealed) .poll-ans { display: none; }
+.wf .sp-bonus { margin-top: 14px; }
+.wf .sp-sq { --sq: 210px; }
+.wf .sp-tr-v { height: 60px; font-size: 26px; }
+.wf .sp-tr-ar { line-height: 60px; }

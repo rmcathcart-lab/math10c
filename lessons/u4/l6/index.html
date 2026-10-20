@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -42,28 +42,29 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Factoring Airport">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Factoring Airport</h2></div>
-  <p class="big">Every expression must clear security before it can board: <b>fully factored</b>. Lane 1 is security (common factor). Then count the terms to pick Lane 2, 3 or 4. The final check sends anything that can still factor <b>back through the lanes</b>.</p>
-
-  <div class="explainer" data-explainer="airport"></div>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Factoring Airport" style="--wf-side: 420px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Factoring Airport</h2>
+  <p class="wf-rule">Every expression must clear security before it can board: <b>fully factored</b>. Lane 1 is security (common factor). Then count the terms to pick Lane 2, 3 or 4. The final check sends anything that can still factor <b>back through the lanes</b>.</p></div>
+  <div class="wf-grid"><div class="wf-main">
 
   <div class="u4l6-wqs">
     <div class="wq">
-      <div class="q-line"><div class="q-num">1</div><div>Which lane does <span class="tex">x^2-25</span> need?</div></div>
-      <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><b>Lane 2</b> (no common factor, two terms): <span class="tex">(x-5)(x+5)</span></div></div>
+      <div class="q-line"><div class="q-num">1</div><div>Which lane does <span class="tex">x^2-25</span> need? <button class="pill small" type="button" data-wq>Answer</button></div></div>
+      <div class="wq-a"><div class="q-ans"><b>Lane 2</b> (no common factor, two terms): <span class="tex">(x-5)(x+5)</span></div></div>
     </div>
     <div class="wq">
-      <div class="q-line"><div class="q-num">2</div><div>Which lane does <span class="tex">x^2+7x+12</span> need? Factor it.</div></div>
-      <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><b>Lane 3</b>: product 12, sum 7 gives 3 and 4, so <span class="tex">(x+3)(x+4)</span></div></div>
+      <div class="q-line"><div class="q-num">2</div><div>Which lane does <span class="tex">x^2+7x+12</span> need? Factor it. <button class="pill small" type="button" data-wq>Answer</button></div></div>
+      <div class="wq-a"><div class="q-ans"><b>Lane 3</b>: product 12, sum 7 gives 3 and 4, so <span class="tex">(x+3)(x+4)</span></div></div>
     </div>
     <div class="wq">
-      <div class="q-line"><div class="q-num">3</div><div>This traveller <b>skipped Lane 1</b>: <span class="tex">4x^2-36=(2x-6)(2x+6)</span>. Can it board yet?</div></div>
-      <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><b>Not yet!</b> Each bracket still has a factor 2: <span class="tex">2(x-3)\cdot2(x+3)=4(x-3)(x+3)</span></div></div>
+      <div class="q-line"><div class="q-num">3</div><div>This traveller <b>skipped Lane 1</b>: <span class="tex">4x^2-36=(2x-6)(2x+6)</span>. Can it board yet? <button class="pill small" type="button" data-wq>Answer</button></div></div>
+      <div class="wq-a"><div class="q-ans"><b>Not yet!</b> Each bracket still has a factor 2: <span class="tex">2(x-3)\cdot2(x+3)=4(x-3)(x+3)</span></div></div>
     </div>
   </div>
 
-  <div class="poll u4l6-poll4">
+  </div><div class="wf-side">
+
+  <div class="poll u4l6-poll4 wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> A lane stamps your passport if its tool does some factoring. Who gets stamps from <b>three different</b> lanes? <b>Guess first.</b></div></div>
     <div class="poll-opts">
       <div class="opt"><b>A</b> <span class="tex">x^2-9x+20</span></div>
@@ -73,8 +74,11 @@
     </div>
     <button class="pill" type="button" data-poll>Reveal</button>
     <div class="poll-ans"><b>D.</b> Lane 1: <span class="tex">2(x^4-5x^2+4)</span>. Lane 3: <span class="tex">2(x^2-1)(x^2-4)</span>. Lane 2, twice: <span class="tex">2(x-1)(x+1)(x-2)(x+2)</span>.<br>
-      <span class="muted"><b>A</b> uses Lane 3 only. <b>B</b> uses two lanes (1, then 2): <span class="tex">5(x-3)(x+3)</span>. <b>C is the trap:</b> two trips, but both through Lane 2: <span class="tex">(x-3)(x+3)(x^2+9)</span>, and <span class="tex">x^2+9</span> can’t be factored. Route each traveller through the airport above.</span></div>
+      <span class="muted"><b>A</b> uses Lane 3 only. <b>B</b> uses two lanes (1, then 2): <span class="tex">5(x-3)(x+3)</span>. <b>C is the trap:</b> two trips, but both through Lane 2: <span class="tex">(x-3)(x+3)(x^2+9)</span>, and <span class="tex">x^2+9</span> can’t be factored. Route each traveller through the airport below.</span></div>
   </div>
+  </div></div>
+
+  <div class="explainer" data-explainer="airport"></div>
 
   <div class="wq wq-wide">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Follow-up.</b> Route <span class="tex">3x^3+3x^2-12x-12</span> through the airport. How many different lanes stamp it?</div></div>

@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,10 +43,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Trees in a Row" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Trees in a Row</h2></div>
-  <p class="big">A farmer planted five fruit trees at grid points in her orchard. <span class="u6l4-farmer">“All five trees are in one <b>perfect straight row!</b>”</span></p>
-  <div class="u6l4-wtop">
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Trees in a Row" id="wu" style="--wf-side: 362px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Trees in a Row</h2>
+  <p class="wf-rule">A farmer planted five fruit trees at grid points in her orchard. <span class="u6l4-farmer">“All five trees are in one <b>perfect straight row!</b>”</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
     <div class="u6l4-wfig">
       <div id="u6l4-orchard"></div>
       <div class="u6l4-wbtns">
@@ -54,23 +54,22 @@
         <button type="button" class="pill" id="u6l4-wruler">Hold up a ruler</button>
       </div>
     </div>
+  </div><div class="wf-side">
     <div class="u6l4-wqs">
       <div class="bk-wq">
-        <div class="q-line"><div class="q-num">1</div><div>Apple → Cherry: rise? run? slope?</div></div>
-        <div class="u6l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Rise <span class="tex">2</span>, run <span class="tex">3</span>, slope <span class="tex">\tfrac{2}{3}</span>.</div></div>
+        <div class="q-line"><div class="q-num">1</div><div>Apple → Cherry: rise? run? slope? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+        <div class="u6l4-wa"><div class="bk-ans">Rise <span class="tex">2</span>, run <span class="tex">3</span>, slope <span class="tex">\tfrac{2}{3}</span>.</div></div>
       </div>
       <div class="bk-wq">
-        <div class="q-line"><div class="q-num">2</div><div>Cherry → Plum: slope?</div></div>
-        <div class="u6l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Rise <span class="tex">2</span>, run <span class="tex">3</span> again: slope <span class="tex">\tfrac{2}{3}</span>.</div></div>
+        <div class="q-line"><div class="q-num">2</div><div>Cherry → Plum: slope? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+        <div class="u6l4-wa"><div class="bk-ans">Rise <span class="tex">2</span>, run <span class="tex">3</span> again: slope <span class="tex">\tfrac{2}{3}</span>.</div></div>
       </div>
       <div class="bk-wq">
-        <div class="q-line"><div class="q-num">3</div><div>If trees are in one straight row, what must be true about the slopes between them?</div></div>
-        <div class="u6l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Every pair must give the <b>same slope</b>. Apple, Cherry and Plum pass.</div></div>
+        <div class="q-line"><div class="q-num">3</div><div>If trees are in one straight row, what must be true about the slopes between them? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+        <div class="u6l4-wa"><div class="bk-ans">Every pair must give the <b>same slope</b>. Apple, Cherry and Plum pass.</div></div>
       </div>
     </div>
-  </div>
-
-  <div class="poll u6l4-poll4">
+  <div class="poll wf-poll u6l4-poll4">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Is the farmer right? If a tree is out of line, which one? <b>Guess first.</b></div></div>
     <div class="poll-opts">
       <div class="opt"><b>A</b> Plum</div>
@@ -83,6 +82,7 @@
       <span class="muted"><b>D</b> is the eyeball answer: it <em>looks</em> straight. <b>C</b> is tempting because the slope from Pear to Peach is <span class="tex">\tfrac12</span>, so the row seems to “bend” at the end, but Peach is back on Apple’s line. <b>A</b> is a guess for the middle tree.</span><br>
       <b>The lesson:</b> slopes settle it when eyes can’t.</div>
   </div>
+  </div></div>
 
   <div class="bk-wq u6l4-early">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> (1) Move the Pear to the nearest grid point that <em>is</em> in the row. (2) A second row starts at <span class="tex">(1,\ 4)</span> and runs <b>parallel</b> to the first. Where is its next grid-point tree? (3) What slope would an irrigation pipe crossing the row at a right angle have?</div></div>

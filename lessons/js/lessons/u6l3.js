@@ -126,7 +126,7 @@ function mountRamps() {
   // "same run" comparison: all three slopes over a run of 12 cm, from one corner
   const cmp = h('div', 'u6l3-rcmp'); box(cmp, W, H); wrap.appendChild(cmp); cmp.style.opacity = 0; cmp.style.pointerEvents = 'none';
   const cs = svgEl('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}` }, cmp);
-  const ox = 60, oy = 250, runPx = 420, upPx = 150;  // 12 cm across → 420 px; 1 cm up → 150 px (exaggerated)
+  const ox = 60, oy = 250, runPx = 360, upPx = 150;  // 12 cm across → 360 px (room for the labels inside the 580 px box); 1 cm up → 150 px (exaggerated)
   svgEl('rect', { x: 0, y: 0, width: W, height: H, fill: '#fffdf7', rx: 12 }, cs);
   svgEl('line', { x1: ox, x2: ox + runPx, y1: oy, y2: oy, stroke: INK, 'stroke-width': 2.5 }, cs);
   const chtml = h('div', 'bk-html'); cmp.appendChild(chtml);
@@ -246,6 +246,7 @@ const CNT = {
 const count = {
   title: 'Count the run, then the rise',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CNT).map((k) => ({ v: k, label: CNT[k].label })),
   intro: 'Start at one endpoint and count squares to the other: <b>across</b> first (the run), then <b>up or down</b> (the rise). Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -312,6 +313,7 @@ const SL = {
 const slide = {
   title: 'Slide it, scale it: the slope stays the same',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SL).map((k) => ({ v: k, label: SL[k].label })),
   intro: 'A slope triangle sits on a line. Watch the fraction as the triangle <b>slides</b> and <b>grows</b>. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -388,6 +390,7 @@ const ZC = {
 const zeroCase = {
   title: 'Why 0, and why undefined?',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(ZC).map((k) => ({ v: k, label: ZC[k].label })),
   intro: (k) => (k === 'ex3' ? 'Count each segment of Example 3. Press <b>Next</b>.' : 'One endpoint stays put; the other moves. Watch <b>rise ÷ run</b>. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -478,6 +481,7 @@ function walker(G) {
 const leftRight = {
   title: 'Read it left to right',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(LR).map((k) => ({ v: k, label: LR[k].label })),
   intro: (k) => (k === 'ex4' ? 'Slope triangles on the four lines of Example 4, each from its left marked point. Press <b>Next</b>.' : 'A hiker walks each line from <b>left to right</b>. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -543,6 +547,7 @@ const DIAL_TICKS = [[1, 4], [1, 2], [1, 1], [2, 1], [5, 1]];
 const dial = {
   title: 'The steepness dial',
   height: 470,
+  minW: 880, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(DIAL).map((k) => ({ v: k, label: DIAL[k].label })),
   intro: 'The line turns about the origin. The dial’s needle points along the line, left to right. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -645,6 +650,7 @@ const OCOL = [COLORS.red, COLORS.green, COLORS.blue, COLORS.amber];
 const order = {
   title: 'Compare steepness: ignore the sign',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(ORD).map((k) => ({ v: k, label: ORD[k].label })),
   intro: 'Lines through the origin, then their <b>sizes</b> on a steepness line. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -696,6 +702,7 @@ const RF = {
 const roof = {
   title: 'Slope of a roofline, and its pitch',
   height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(RF).map((k) => ({ v: k, label: RF[k].label })),
   intro: 'A grid laid over a roof. Find two points you can read <b>exactly</b>. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -748,6 +755,7 @@ const RATE = {
 const rate = {
   title: 'Slope with units: a rate of change',
   height: 440,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(RATE).map((k) => ({ v: k, label: RATE[k].label })),
   intro: 'Real axes have units, so the rise and the run do too. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -789,6 +797,7 @@ const SO = {
 const stepOff = {
   title: 'From a slope back to points',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SO).map((k) => ({ v: k, label: SO[k].label })),
   intro: 'Start at the given point and step off the run and the rise, again and again. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -841,6 +850,7 @@ const MS = {
 const missing = {
   title: 'Find the missing run',
   height: 450,
+  minW: 880, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(MS).map((k) => ({ v: k, label: MS[k].label })),
   intro: 'The slope is a small triangle. The segment is that triangle copied over and over, like a staircase. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -868,7 +878,7 @@ const missing = {
           const B = new SlopeTri(G, { x: 0, y: 0, run, rise: d.rise }, { fillOp: 0.06, w: 5, runSide: 'n', runText: (v) => `<b>run</b> ${n(v)}${u}`, riseText: (v) => `<b>rise</b> ${n(v)}${u}` }); await B.drawIn(c, 700);
           await show(c, line(eq, T(`\\dfrac{${cR(d.r0)}}{${cU(d.u0)}}\\xrightarrow{\\ \\times${kk}\\ }\\dfrac{${cR(d.rise)}}{${cU(run)}}`), 'u6l3-mline'));
         } },
-      { cap: `Check: ${T(`\\dfrac{${d.rise}}{${run}}=${fr(d.rise, run)}`)} ✓. Or in one line: ${T(`\\text{run}=\\text{rise}\\div\\text{slope}=${d.rise}\\div\\left(${fr(ma, mb)}\\right)=${run}`)}.`,
+      { cap: `Check: ${T(`\\dfrac{${d.rise}}{${run}}=${fr(d.rise, run)}`)} ✓. Or in one line: ${T('\\text{run}=\\text{rise}\\div\\text{slope}')}\u200b${T(`=${d.rise}\\div\\left(${fr(ma, mb)}\\right)=${run}`)}.`,
         run: async (c) => { await show(c, line(eq, T(`\\text{run}=${d.rise}\\div\\left(${fr(ma, mb)}\\right)=${run}`), 'u6l3-mline u6l3-soft')); const s = stamp(P, `run ${n(run)}`, { ok: true }); s.classList.add('u6l3-stampb'); await stampIn(c, s); } }
     ];
     return steps;

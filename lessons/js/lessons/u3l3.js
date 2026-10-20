@@ -50,6 +50,7 @@ const SQ = {
 const squareSplit = {
   title: 'One square, four pieces',
   height: 430,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ab', label: tex('(a+b)^2') }, { v: 'x3', label: tex('(x+3)^2') }, { v: 'n35', label: 'Warm-up: ' + tex('35^2') }, { sep: 'Example 1 check:' }, { v: 'ex1a', label: '(a) ' + tex('(x+9)^2') }],
   intro: (k) => { const d = SQ[k]; return `Here is a square with side ${T(`${d.A}+${d.B}`)}. Its area is ${T(d.num ? '35^2' : d.head)}. Let’s find that area <b>another way</b>, piece by piece.`; },
   make(stage, key, ex) {
@@ -102,6 +103,7 @@ const squareSplit = {
 const classicError = {
   title: 'Where did the middle go?',
   height: 420,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: '3,4', label: tex('(3+4)^2') }, { v: '2,5', label: tex('(2+5)^2') }, { v: '6,3', label: tex('(6+3)^2') }],
   intro: (k) => { const [a, b] = k.split(',').map(Number); return `Is ${T(`(${a}+${b})^2`)} the same as ${T(`${a}^2+${b}^2`)}? Count the small squares and see.`; },
   make(stage, key, ex) {
@@ -159,6 +161,7 @@ const MS = {
 const minusSquare = {
   title: 'Cut two strips, put the corner back',
   height: 440,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ab', label: tex('(a-b)^2') }, { v: 'n', label: tex('(10-3)^2') }, { sep: 'Example 1 check:' }, { v: 'ex1b', label: '(b) ' + tex('(4x-1)^2') }, { v: 'ex1c', label: '(c) ' + tex('(3m-2n)^2') }],
   intro: (k) => { const d = MS[k]; return `We want ${T(`(${d.A}-${d.B})^2`)}. Start with a bigger square of side ${T(d.A)}: its area is ${T(d.AA)}. Then cut away what we don’t want.`; },
   make(stage, key, ex) {
@@ -226,6 +229,7 @@ const SD = {
 const sumDiff = {
   title: 'Sum times difference: cancel, then cut and move',
   height: 450,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ab', label: tex('(a+b)(a-b)') }, { v: 'n', label: tex('13\\times7') }, { sep: 'Example 1 check:' }, { v: 'ex1d', label: '(d)' }, { v: 'ex1e', label: '(e)' }],
   intro: (k) => { const d = SD[k]; return `Expand ${T(d.head)} with FOIL${d.num ? ` (that’s ${T('13\\times7')})` : ''}, then look at it as an area.`; },
   make(stage, key, ex) {
@@ -254,10 +258,14 @@ const sumDiff = {
     hide(...dT, ...dL, ...dC);
     const fT = dimH(stage, X0, Y0 - 18, S + bw, `${A}+${B}`), fL = dimV(stage, X0 - 18, Y0, r, `${A}-${B}`);
     hide(...fT, ...fL);
-    const px = 500, pw = W - px - 20;
-    const P1 = add(stage, h('div', 'sp-note', `<b>Before:</b> a square with a corner cut out. Area ${KN(d.ds)}.`), px, 196); P1.style.width = pw + 'px';
+    const px = Math.min(500, W - 386), pw = W - px - 20; // narrower stages (beside the sidebar): the notes move left and stack by height
+    const P1 = add(stage, h('div', 'sp-note', `<b>Before:</b> a square with a corner cut out. Area ${KN(d.ds)}.`), px, px < 500 ? 160 : 196); P1.style.width = pw + 'px';
     const P2 = add(stage, h('div', 'sp-note', `<b>After:</b> one rectangle, ${KN(`${A}+${B}`)} long and ${KN(`${A}-${B}`)} tall. Area ${KN(d.head)}.`), px, 270); P2.style.width = pw + 'px';
     const P3 = add(stage, h('div', 'sp-eq sp-boxed', K(`${d.head}=${d.ds}`)), px, 352);
+    if (px < 500) {
+      P2.style.top = Math.max(270, P1.offsetTop + P1.offsetHeight + 10) + 'px'; P3.style.top = Math.max(352, P2.offsetTop + P2.offsetHeight + 12) + 'px';
+      if (P3.offsetWidth > pw) P3.style.fontSize = Math.floor(26 * (pw - 40) / (P3.offsetWidth - 40)) + 'px';
+    }
     hide(P1, P2, P3);
     return [{
       cap: `FOIL gives four products: <b>F</b> ${T(d.F)}, <b>O</b> ${T(d.O)}, <b>I</b> ${T(d.I)}, <b>L</b> ${T(d.L)}.`,
@@ -316,6 +324,7 @@ const BINS = [['sq', 'Square of a binomial', '(a\\pm b)^2=a^2\\pm2ab+b^2'], ['sd
 const recognizer = {
   title: 'Which pattern is this?',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n1', label: tex('(x+7)(x-7)') }, { v: 'n2', label: tex('(2y+3)^2') }, { v: 'n3', label: tex('(x+2)(x+6)') }, { v: 'n4', label: tex('(5+n)(n-5)') },
     { sep: 'Example 1 check:' }, ...'abcdefgh'.split('').map((k) => ({ v: k, label: `(${k})` }))],
   intro: (k) => `Which pattern fits ${T(RZ[k].e)}? Check the <b>terms</b> first, then the <b>signs</b>.`,
@@ -435,6 +444,7 @@ const OUT = {
 const outside = {
   title: 'Expand first, then distribute',
   height: 446,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n1', label: tex('2(x+3)^2') }, { v: 'n2', label: tex('-(x-4)(x+4)') }, { sep: 'Example 2 check:' }, { v: 'a', label: '(a) ' + tex('3(4x-5)(x-2)') }, { v: 'b', label: '(b) ' + tex('-6(5p+2)^2') }],
   intro: (key) => { const d = OUT[key]; return `Expand ${T(d.k + d.prod)}. The ${d.kw ? 'negative sign' : T(d.k)} out front is a <b>factor</b> of the whole product.`; },
   make(stage, key, ex) {
@@ -499,6 +509,7 @@ const DEGN = ['numbers', 'x terms', 'x² terms', 'x³ terms'];
 const combine = {
   title: 'Expand every product, flip the signs, then collect',
   height: 478,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n1', label: tex('(x+5)^2-(x-5)^2') }, { v: 'n2', label: tex('(x+1)(x+2)+(x-3)^2') }, { sep: 'Example 3 check:' }, { v: 'a', label: '(a)' }, { v: 'b', label: '(b)' }, { v: 'c', label: '(c)' }],
   intro: (k) => `Simplify ${T(CB[k].e)}. Expand each product <b>completely</b> before collecting anything.`,
   make(stage, key, ex) {
@@ -590,6 +601,7 @@ const CS = { ex4: { k: 16, c: 70 }, n1: { k: 6, c: 11 }, n2: { k: 4, c: 1 } };
 const complete = {
   title: 'Extension: complete the square with tiles',
   height: 470,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n1', label: tex('x^2+6x+11') }, { v: 'n2', label: tex('x^2+4x+1') }, { sep: 'Example 4 check:' }, { v: 'ex4', label: tex('x^2+16x+70') }],
   intro: (key) => { const { k, c } = CS[key]; return `Build ${T(`x^2+${k}x+${c}`)} with algebra tiles, then rearrange the tiles into the biggest square we can.`; },
   make(stage, key, ex) {
@@ -615,6 +627,7 @@ const complete = {
     const e1 = E(72, `${K(`2a=${k}`)}, so ${K(`a=${a}`)}`);
     const e2 = E(118, `corner needs ${K(`a^2=${a * a}`)}`);
     const e3 = E(166, K(`${poly}=(x+${a})^2${b < 0 ? '' : '+'}${b}`), 'big sp-boxed');
+    if (e3.offsetWidth > W - PX - 12) e3.style.fontSize = Math.floor(32 * (W - PX - 12 - 42) / (e3.offsetWidth - 42)) + 'px'; // keep the boxed line inside the stage
     const bs = `${b < 0 ? '' : '+'}${b}`;
     const e4 = E(354, `<span class="sp-stl">Check</span>${KN(`(x+${a})^2${bs}`)} ${KN(`=x^2+${k}x+${a * a}${bs}`)} <span class="nw">${K(`=${poly}`)} <b class="ok">✓</b></span>`, 'sp-chkline');
     e4.style.width = pw + 'px';
@@ -686,7 +699,7 @@ function mountTrick() {
 
 function mountSquare35() {
   const host = document.getElementById('sq35'); if (!host) return;
-  const S = 300, pa = 228, pb = S - pa;
+  const S = parseFloat(getComputedStyle(host).getPropertyValue('--sq')) || 300, pa = Math.round(S * 0.76), pb = S - pa; // the size comes from the CSS (--sq), so the one-screen layout can shrink it
   const pcs = [[0, 0, pa, pa, 'aa', '30 × 30', 900], [pa, 0, pb, pa, 'ab', '30 × 5', 150], [0, pa, pa, pb, 'ab', '5 × 30', 150], [pa, pa, pb, pb, 'bb', '5 × 5', 25]];
   host.innerHTML = `<div class="sp-sq-in" style="width:${S}px;height:${S}px">
       ${pcs.map(([x, y, w, ht, cls, m, v], i) => `<button type="button" class="sp-sqp ${cls}" data-i="${i}" style="left:${x}px;top:${y}px;width:${w}px;height:${ht}px"><span class="q">?</span><span class="v"><small>${m}</small>${v}</span></button>`).join('')}

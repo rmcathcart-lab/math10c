@@ -172,3 +172,33 @@
 .wr-chk-h { font-size: 14px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
 .wr-chk-n { font-size: 16px; color: var(--amber); font-weight: 700; }
 .mc-head.fr { font-size: 34px; }
+
+/* ---------- one screen (main.lesson.screen): the piano (drawn 968 wide, scaled to the column) + Q1, Q2 left; Q3 and the big one right; the bonus below ---------- */
+.wf .pn-wrap { padding: 6px 0 6px; margin: 6px 0 0; }
+.wf .pn { width: auto; height: auto; margin: 0 8px; }
+.wf .pn-svg { width: 100%; height: auto; }
+.wf .pn-wl { font-size: 32px; }
+.wf .pn-r { font-size: 23px; }
+.wf .pn-num text { font-size: 18px; }
+.wf .pn-lab text { font-size: 25px; }
+.wf .pn-q { font-size: 46px; }
+.wf .pn-q.done { font-size: 26px; }
+.wf .pn-bar { padding: 2px 12px 0; gap: 6px; }
+.wf .pn-read { font-size: 16.5px; min-height: 36px; }
+.wf .pn-bar .pill.small { font-size: 14px; padding: 5px 10px; }
+.wf .wq-grid { grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.wf .wq-side { grid-template-columns: 1fr; margin-top: 0; }
+.wf .wq { padding: 4px 12px 6px; }
+.wf .wq .q-line { margin: 4px 0 4px; font-size: 17px; gap: 10px; }
+.wf .wq .q-num { width: 28px; height: 28px; font-size: 15px; }
+.wf .wq-a { margin-left: 0; gap: 4px; }
+.wf .q-ans { font-size: 15.5px; line-height: 1.32; min-height: 0; }
+.wf .wf-poll .poll-opts { gap: 6px; margin-bottom: 10px; }
+.wf .wf-poll .opt { font-size: 17px; padding: 6px 10px; }
+.wf .wf-poll .poll-ans { min-height: 0; }
+.wf .wf-poll:not(.revealed) .poll-ans { display: none; }
+.wf .bonus-q { margin-top: 12px; }
+.wf .bonus-q .wq-a { margin-left: 38px; }
+.wf .hum { font-size: 17px; }
+.ex-side .cv-r { grid-template-columns: 112px 1fr; font-size: 16.5px; padding: 4px 10px; } /* the legend beside the sidebar */
+.ex-side .cv-k { font-size: 12.5px; }

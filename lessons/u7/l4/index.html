@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,10 +43,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Hot Air Balloon" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Hot Air Balloon</h2></div>
-  <p class="big">At <b>10:05</b> the balloon is <b>800 m</b> up, dropping a steady <b>40 m every minute</b>.</p>
-  <div class="u7l4-wtop">
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Hot Air Balloon" id="wu" style="--wf-side: 400px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Hot Air Balloon</h2>
+  <p class="wf-rule">At <b>10:05</b> the balloon is <b>800 m</b> up, dropping a steady <b>40 m every minute</b>.</p></div>
+  <div class="wf-grid"><div class="wf-main">
     <div class="u7l4-wfig">
       <div id="u7l4-sky"></div>
       <div class="u7l4-wbtns">
@@ -61,6 +61,7 @@
         <tr><th>Height (m)</th><td><span data-reveal><b>1&#8239;000</b></span></td><td>800</td><td><span data-reveal><b>760</b></span></td><td><span data-reveal><b>600</b></span></td><td>0 (landed)</td></tr>
       </table>
     </div>
+  </div><div class="wf-side">
     <div class="u7l4-wright">
       <div class="bk-wq">
         <div class="q-line"><div class="q-num">1</div><div>How high is the balloon at <b>10:06</b>?</div></div>
@@ -75,9 +76,8 @@
         <div class="u7l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Run the clock backwards: <span class="tex">800+5(40)=1\,000</span> m.</div></div>
       </div>
     </div>
-  </div>
 
-  <div class="poll">
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> If it keeps dropping at the same rate, at what time does the balloon <b>touch down</b>? <b>Guess first.</b></div></div>
     <div class="poll-opts">
       <div class="opt"><b>A</b> 10:20</div>
@@ -88,6 +88,7 @@
     <div class="poll-ans"><b>B: 10:25.</b> From 10:05 it must lose all 800 m: <span class="tex">800\div40=20</span> minutes after 10:05. Check from Q3: 1&#8239;000 m at 10:00, and <span class="tex">1\,000\div40=25</span> minutes after 10:00, also 10:25.<br>
       <span class="muted"><b>A</b> counted the 20 minutes from 10:00, as if 10:00 were the start. <b>C</b> used the 25 minutes from 10:00 but added them to 10:05. The one reading we have is in the <b>middle</b> of the story, not at time zero.</span></div>
   </div>
+  </div></div>
 
   <div class="bk-wq u7l4-early">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> At what time is the balloon at <b>300 m</b>?</div></div>

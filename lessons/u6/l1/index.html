@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -48,31 +48,34 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: The Spider and the Fly" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Spider and the Fly</h2></div>
-  <p class="big">The spider wants the fly. It can only <b>crawl</b>: on walls, floor and ceiling. The room is 30 m long, 12 m wide and 12 m high, and each bug is in the middle of its end wall.</p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Spider and the Fly" id="wu" style="--wf-side: 262px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Spider and the Fly</h2></div>
+  <div class="wf-grid"><div class="wf-main">
   <div class="u6l1-wfig" id="u6l1-wfig"></div>
+  </div><div class="wf-side">
+  <p class="wf-rule">The spider wants the fly. It can only <b>crawl</b>: on walls, floor and ceiling. The room is 30 m long, 12 m wide and 12 m high, and each bug is in the middle of its end wall.</p>
   <div class="u6l1-wbtns">
     <button type="button" class="pill" id="u6l1-wwall">Straight crawl on the flat wall</button>
     <button type="button" class="pill" id="u6l1-wflat">Open the room out flat</button>
     <button type="button" class="pill" id="u6l1-wtri">Show the hidden right triangle</button>
   </div>
+  </div>
   <div class="u6l1-wqs">
     <div class="bk-wq">
-      <div class="q-line"><div class="q-num">1</div><div>The obvious route: up, across the ceiling, down. How long is it?</div></div>
-      <div class="u6l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">1+30+11=\boldsymbol{42}</span> m: a vertical piece, a horizontal piece and a vertical piece, each just counted or subtracted.</div></div>
+      <div class="q-line"><div class="q-num">1</div><div>The obvious route: up, across the ceiling, down. How long is it? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u6l1-wa"><div class="bk-ans"><span class="tex">1+30+11=\boldsymbol{42}</span> m: a vertical piece, a horizontal piece and a vertical piece, each just counted or subtracted.</div></div>
     </div>
     <div class="bk-wq">
-      <div class="q-line"><div class="q-num">2</div><div>On the flat wall, how long is the <b>straight</b> crawl from corner to corner?</div></div>
-      <div class="u6l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>5 m.</b> It is the hypotenuse of a right triangle with legs 4 and 3: <span class="tex">\sqrt{4^2+3^2}=\sqrt{25}=5</span>. It saves 2 m over the edges.</div></div>
+      <div class="q-line"><div class="q-num">2</div><div>On the flat wall, how long is the <b>straight</b> crawl from corner to corner? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u6l1-wa"><div class="bk-ans"><b>5 m.</b> It is the hypotenuse of a right triangle with legs 4 and 3: <span class="tex">\sqrt{4^2+3^2}=\sqrt{25}=5</span>. It saves 2 m over the edges.</div></div>
     </div>
     <div class="bk-wq">
-      <div class="q-line"><div class="q-num">3</div><div>Open the room out flat, like a box. What does the shortest crawl look like?</div></div>
-      <div class="u6l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">A <b>straight line</b> on the flat net: the hypotenuse of a right triangle whose legs are a horizontal and a vertical segment.</div></div>
+      <div class="q-line"><div class="q-num">3</div><div>Open the room out flat, like a box. What does the shortest crawl look like? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u6l1-wa"><div class="bk-ans">A <b>straight line</b> on the flat net: the hypotenuse of a right triangle whose legs are a horizontal and a vertical segment.</div></div>
     </div>
   </div>
 
-  <div class="poll">
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Can the spider beat the obvious route? How long is the <b>shortest</b> possible crawl to the fly? <b>Guess first.</b></div></div>
     <div class="poll-opts">
       <div class="opt"><b>A</b> 42 m</div>
@@ -82,6 +85,7 @@
     <button class="pill" type="button" data-poll-reveal>Reveal</button>
     <div class="poll-ans"><b>B: 40 m.</b> Crawl up onto the ceiling, slant down across a side wall, then across the floor and onto the far end wall: <b>5 of the 6 faces</b>. Opened out flat, that path is one straight segment with run <span class="tex">1+30+1=32</span> and rise <span class="tex">6+12+6=24</span>, so it is <span class="tex">\sqrt{32^2+24^2}=\sqrt{1600}=40</span> m.<br>
       <span class="muted"><b>A</b> is the gut feeling: crossing more walls “must” be longer. <b>C</b> is the straight line through the <b>air</b>, <span class="tex">\sqrt{30^2+10^2}\approx31.6</span> m: only if the spider could fly.</span> (Henry Dudeney’s puzzle, about 1903.)</div>
+  </div>
   </div>
 
   <div class="bk-wq u6l1-early">

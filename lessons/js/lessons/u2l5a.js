@@ -209,6 +209,7 @@ const baseT = (b, small) => (b.q === 1 ? (b.p < 0 ? `(${tn(b.p)})` : tn(b.p)) : 
 const machine = {
   title: 'Flip, root, power: one job at a time',
   height: 450,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: ['27|-2/3', '16|-3/4', '1/9|-1/2', { sep: 'Example 1 check:' }, '16|3/2', '1000|2/3', '8|-4/3', { sep: 'Example 3 check:' }, '16/25|3/2', '16/25|-3/2']
     .map((v) => (v.sep ? v : { v, label: tex(mExp(v, false, false, true)) })),
   intro: (v) => `${tex(mExp(v, true, false, true))}: the <b class="red">sign</b> of the exponent says whether to flip, the <b class="teal">denominator</b> says which root, the <b class="amb">numerator</b> says which power.`,
@@ -285,6 +286,7 @@ function minusExp(kind, a, m, n, cls) {
 const minus = {
   title: 'Negative bases: where is the minus sign?',
   height: 456,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: MINUS.map((v) => (v.sep ? v : { v, label: tex(minusExp(v.split('|')[0], ...v.split('|').slice(1).map(Number))) })),
   intro: (v) => { const [k, a, m, n] = v.split('|'); return `Evaluate ${tex(minusExp(k, a, m, n))}. First question: <b>what is the base?</b>`; },
   make(stage, v, ex) {
@@ -381,9 +383,10 @@ function convDef(title, list) {
     make(stage, sp, ex) { return sp[0] === 'R' ? toPowSteps(stage, sp, ex.W) : toRadSteps(stage, sp, ex.W); }
   };
 }
+const lgX = (W) => (W < 900 ? 0.5 : 0.58); // where the legend / result column starts (further left on a narrow stage)
 function legend(stage, W, rows) {
-  const lg = add(stage, h('div', 'cv-lg', rows.map(([cls, k, val]) => `<div class="cv-r ${cls}"><span class="cv-k">${k}</span><span class="cv-v">${val}</span></div>`).join('')), W * 0.58, 16);
-  lg.style.width = (W * 0.42 - 30) + 'px';
+  const lg = add(stage, h('div', 'cv-lg', rows.map(([cls, k, val]) => `<div class="cv-r ${cls}"><span class="cv-k">${k}</span><span class="cv-v">${val}</span></div>`).join('')), W * lgX(W), 16);
+  lg.style.width = (W * (1 - lgX(W)) - 30) + 'px';
   return lg;
 }
 function toRadSteps(stage, sp, W) {
@@ -407,8 +410,8 @@ function toRadSteps(stage, sp, W) {
   const L3 = tidy ? B.line(`=\\boldsymbol{${wrap(`\\sqrt${n === 2 ? '' : `[${n}]`}{${tidy}}`)}}`) : null;
   const finalT = wrap(`\\sqrt${n === 2 ? '' : `[${n}]`}{${tidy || `${b}${m === 1 ? '' : `^{${m}}`}`}}`);
   const altT = m > 1 ? wrap(`\\left(\\sqrt${n === 2 ? '' : `[${n}]`}{${b}}\\right)^{${m}}`) : null;
-  const res = add(stage, h('div', 'cv-res', `${K(`${powT(sp)}=${finalT}`)}${altT ? `<div class="cv-alt">also correct: ${K(altT)}</div>` : ''}`), W * 0.58, 214); hide(res);
-  res.style.width = (W * 0.42 - 30) + 'px';
+  const res = add(stage, h('div', 'cv-res', `${K(`${powT(sp)}=${finalT}`)}${altT ? `<div class="cv-alt">also correct: ${K(altT)}</div>` : ''}`), W * lgX(W), 214); hide(res);
+  res.style.width = (W * (1 - lgX(W)) - 30) + 'px';
   const capRead = (co === '-' ? `The exponent sits on ${tex(b)} only, so the <b>minus sign</b> isn’t part of the base: it stays outside. ` : isNum ? `The exponent sits on ${tex(b)} only, so the <b>${co}</b> isn’t part of the base: it stays in front. ` : bracket ? `The <b>brackets</b> make ${tex(b)} the whole base, so everything inside goes under the root. ` : '')
     + `<b class="amb">Numerator ${m}</b> is the power; <b class="teal">denominator ${n}</b> is the index.`;
   const steps = [{
@@ -448,7 +451,7 @@ function toPowSteps(stage, sp, W) {
   const L1 = B.line(`=${rc ? `\\dfrac{1}{${pT}}` : pT}`, { y: rc ? 150 : 128 });
   const L2 = rc ? B.line(`=\\boldsymbol{${b}^{${cR('-')}${m}/${n}}}`, { y: 266 }) : null;
   const fin = `${b}^{${rc ? '-' : ''}${m}/${n}}`;
-  const res = add(stage, h('div', 'cv-res', K(`${radT(sp)}=${fin}`)), W * 0.58, 214); hide(res); res.style.width = (W * 0.42 - 30) + 'px';
+  const res = add(stage, h('div', 'cv-res', K(`${radT(sp)}=${fin}`)), W * lgX(W), 214); hide(res); res.style.width = (W * (1 - lgX(W)) - 30) + 'px';
   const steps = [{
     cap: (n === 2 ? `A plain square root has index <b class="teal">2</b>, even though it isn’t written. ` : `The <b class="teal">index ${n}</b> becomes the denominator. `) + (m === 1 ? `There’s no power written inside, so the numerator is <b class="amb">1</b>.` : `The <b class="amb">power ${m}</b> inside becomes the numerator.`),
     run: async (c) => { L0.qa('.tk-n').forEach((e) => e.classList.add('lit-n')); L0.qa('.tk-m').forEach((e) => e.classList.add('lit-m')); await Promise.all(lrows.map((r, i) => c.fadeIn(r, 300, { delay: i * 150, from: 'translateX(10px)' }))); }
@@ -465,12 +468,14 @@ function toPowSteps(stage, sp, W) {
 }
 const conv1 = convDef('Power → radical', ['|a|2|3', '|b|-3|4', { sep: 'Example 5(b) check:' }, '|x|1|5', '|y|3|8', '|z|-1|4', '|w|-5|6']);
 const conv2 = convDef('What’s outside stays outside', ['-|a|2|3', '|(-a)|2|3', '5|a|2|3', '|(5a)|2|3|25a^2', { sep: 'Example 6 check:' }, '|m|1|5', '-|n|3|7', '|(-p)|5|3', '|(-p)|-5|3', '4|s|2|3', '|(4s)|2|3|16s^2']);
+conv2.minW = 780; // drawn this wide and scaled to fit beside the sidebar
 const toPow = convDef('Radical → power', ['R||a|2|5', 'R||a|3|2', 'R|1|a|1|4', { sep: 'Example 7 check:' }, 'R||k|3|4', 'R||k|5|6', 'R||k|7|2', 'R|1|k|5|3']);
 
 /* ============ 4. A cube of known volume ============ */
 const cube = {
   title: 'A cube of known volume',
   height: 440,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [8, 64, 2, 1000, { sep: 'Example 4 check:' }, 100].map((v) => (v.sep ? v : { v, label: `V = ${fmt(v)}` })),
   intro: (V) => `A cube holds <b>${fmt(V)} cm³</b>. How long is each edge, and what is its surface area?`,
   make(stage, V, ex) {
@@ -484,7 +489,7 @@ const cube = {
     // the net: six faces laid flat
     const u = 70, nx = 44, ny = 60, cells = [[1, 0], [0, 1], [1, 1], [2, 1], [3, 1], [1, 2]];
     const net = cells.map(([i, j]) => { const d = add(stage, h('div', 'cb-n', K(`${tn(V)}^{2/3}`)), nx + i * u, ny + j * u); d.style.width = d.style.height = u + 'px'; hide(d); return d; });
-    const fz = 25, Bd = board(stage, { x: 380, y: 20, lh: 68, fs: fz });
+    const fz = W < 900 ? 21 : 25, Bd = board(stage, { x: W < 900 ? 362 : 380, y: 20, lh: 68, fs: fz }); // a narrow stage: smaller working so the longest line fits
     const vT = tn(V), d2 = (x) => (Math.abs(x - Math.round(x)) < 1e-9 ? tn(Math.round(x)) : x.toFixed(2));
     const L1 = Bd.line(`V=e^3=${vT}\\text{ cm}^3`);
     const L2 = Bd.line(`e=${vT}^{1/3}=\\sqrt[3]{${vT}}${ex3 != null ? '=' : '\\approx'}\\mathbf{${d2(e)}}\\text{ cm}`);

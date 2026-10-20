@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -44,21 +44,12 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: The Great Pyramid" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Great Pyramid</h2></div>
-  <p class="big">Egypt’s Great Pyramid: about <b>146 m</b> tall, square base about <b>230 m</b> wide.</p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Great Pyramid" id="wu" style="--wf-side: 330px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Great Pyramid</h2>
+  <p class="wf-rule">Egypt’s Great Pyramid: about <b>146 m</b> tall, square base about <b>230 m</b> wide.</p></div>
+  <div class="wf-grid"><div class="wf-main">
   <div id="u9l8-pyr" class="u9l8-pyrfig"></div>
-
-  <div class="u9l8-wqs">
-    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>How far is a base corner from the spot right under the tip?</div></div>
-      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><b>115 m</b>: half of 230, because the tip is centred over the base.</div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>In one half, which two sides do you know?</div></div>
-      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">The height, <b>146 m</b>, and the half-base, <b>115 m</b>. (The sloping face is unknown.)</div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Which ratio (SOH, CAH or TOA) uses those two sides?</div></div>
-      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><b>TOA.</b> From the base angle, 146 is <b class="u9l8-o">opposite</b> and 115 is <b class="u9l8-a">adjacent</b>.</div></div>
-  </div>
-
-  <div class="poll">
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Is the face steeper or shallower than <span class="tex">45^\circ</span>? What angle does it make with the ground? <b>Guess first.</b></div></div>
     <div class="poll-opts u9l8-c4">
       <div class="opt"><b>A</b> about <span class="tex">32^\circ</span></div>
@@ -71,6 +62,16 @@
       <span class="muted"><b>A</b> uses the <i>whole</i> base, <span class="tex">\tan^{-1}\!\left(\frac{146}{230}\right)</span>: forgetting to halve. <b>B</b> flips the ratio, <span class="tex">\tan^{-1}\!\left(\frac{115}{146}\right)</span>: that is the angle at the <i>tip</i>. <b>C</b> would need height = half-base.</span></div>
   </div>
 
+  </div><div class="wf-side">
+  <div class="u9l8-wqs">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>How far is a base corner from the spot right under the tip? <button class="pill small" data-bk-toggle>Answer</button></div></div>
+      <div class="bk-ans"><b>115 m</b>: half of 230, because the tip is centred over the base.</div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>In one half, which two sides do you know? <button class="pill small" data-bk-toggle>Answer</button></div></div>
+      <div class="bk-ans">The height, <b>146 m</b>, and the half-base, <b>115 m</b>. (The sloping face is unknown.)</div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Which ratio (SOH, CAH or TOA) uses those two sides? <button class="pill small" data-bk-toggle>Answer</button></div></div>
+      <div class="bk-ans"><b>TOA.</b> From the base angle, 146 is <b class="u9l8-o">opposite</b> and 115 is <b class="u9l8-a">adjacent</b>.</div></div>
+  </div>
+  </div></div>
   <h3 class="sub u9l8-gap">Halve it, then TOA</h3>
   <div class="explainer" data-explainer="pyramid"></div>
   <div class="tip calc-tip">

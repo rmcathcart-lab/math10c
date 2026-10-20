@@ -265,6 +265,7 @@ const LT = {
 const linTest = {
   title: 'Is it a straight line?',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(LT).map((k) => ({ v: k, label: LT[k].label })),
   intro: 'Look at what happens to <b>x</b> in each equation, then check with the graph. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -310,7 +311,8 @@ const linTest = {
 /* =============================== explainer: cups → h = 2n + 10 =============================== */
 const cups = {
   title: 'From cup stacks to h = 2n + 10',
-  height: 470,
+  height: 480,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar (the graph needs room for its h = 2n + 10 label)
   intro: 'Stack the cups, fill the table, plot the points. Press <b>Next</b>.',
   make(stage, k, ex) {
     const s = 10, base = 420, cx = 120;
@@ -333,7 +335,7 @@ const cups = {
     const GX = 520, GW = ex.W - GX - 14;
     const G = new Graph(stage, { x: GX, y: 14, width: GW, height: 440, xmin: 0, xmax: 6, ymin: 0, ymax: 22, ystep: 2, ylabels: 4, xtitle: 'n', ytitle: 'h', origin: true });
     const pt = (k2) => G.point(k2, 10 + 2 * k2, { color: INK, r: 6.5 });
-    const doors = h('div', 'u7l1-panel u7l1-cdoor'); add(stage, box(doors, 214, 120), TX, 340); hide(doors);
+    const doors = h('div', 'u7l1-panel u7l1-cdoor'); add(stage, box(doors, 214, 130), TX, 338); hide(doors);
     return [
       { cap: `One cup is <b>12 cm</b> tall. In the table and on the graph: ${T('n=1')}, ${T('h=12')}.`,
         run: async (c) => { await appear(c, addCup(1), 300); setDim(12); setN(1); await show(c, rows[1]); await G.reveal(pt(1), c); } },
@@ -362,6 +364,7 @@ const RM = {
 const readMB = {
   title: 'Read b where it crosses, count m from there',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(RM).map((k) => ({ v: k, label: RM[k].label })),
   intro: 'Find the <b>y-intercept</b> first, then count a slope triangle to the next grid point on the line. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -490,6 +493,7 @@ const DL = {
 const dials = {
   title: 'Two dials: m tilts the line, b slides it',
   height: 500,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(DL).map((k) => ({ v: k, label: DL[k].label })),
   intro: 'Press <b>Next</b> to turn the dials, or <b>drag either dial</b> yourself at any time.',
   make(stage, k, ex) {
@@ -600,6 +604,7 @@ const BL = {
 const balance = {
   title: 'Get y alone, and keep the balance',
   height: 470,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(BL).map((k) => ({ v: k, label: BL[k].label })),
   intro: 'An equation is a balance. Whatever you do to one side, do to the <b>whole</b> other side. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -672,6 +677,7 @@ const SG = {
 const stepGraph = {
   title: 'Plot b, then step rise over run',
   height: 500,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SG).map((k) => ({ v: k, label: SG[k].label })),
   intro: 'Two numbers draw the whole line: <b>b</b> says where to start, <b>m</b> says how to step. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -726,6 +732,7 @@ const IC = {
 const intercepts = {
   title: 'Two intercepts, one line',
   height: 500,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(IC).map((k) => ({ v: k, label: IC[k].label })),
   intro: 'Every point on the <b>y-axis</b> has <b>x = 0</b>; every point on the <b>x-axis</b> has <b>y = 0</b>. Press <b>Next</b>.',
   make(stage, k, ex) {

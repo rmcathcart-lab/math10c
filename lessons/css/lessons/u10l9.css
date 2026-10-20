@@ -161,3 +161,18 @@
 .u10l9-inl .bk-nl-lab { font-size: 24px; }
 .parts > .part.span2 { grid-column: 1 / -1; }
 .parts.c2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+
+/* ---------- one screen (main.lesson.screen): one column; the room a little smaller, the big one on two rows ---------- */
+.wf-one .u10l9-roomwrap { margin: 2px 0 4px; }
+.wf-one #u10l9-room { zoom: .85; }
+.wf-one .u10l9-wqs { gap: 14px; }
+.wf-one .u10l9-wqs .q-line { margin: 4px 0; font-size: 17px; gap: 10px; }
+.wf-one .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf-one .u10l9-wqs .pill.small { margin-left: 40px; }
+.wf-one .u10l9-wqs .bk-ans { margin-left: 40px; font-size: 16px; line-height: 1.35; }
+.wf-one > .poll { margin-top: 8px; padding: 2px 16px 12px; display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 10px; align-items: center; }
+.wf-one > .poll > .q-line, .wf-one > .poll > .poll-ans { grid-column: 1 / -1; }
+.wf-one > .poll > .q-line { margin: 10px 0 8px; font-size: 18px; }
+.wf-one > .poll .poll-opts { margin: 0 0 0 50px; }
+.wf-one > .poll .opt { padding: 5px 12px; }
+.wf-one > .poll > .pill { margin: 0; }

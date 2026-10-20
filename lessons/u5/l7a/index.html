@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,9 +43,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: The Birthday Match" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Birthday Match</h2></div>
-  <p class="big">Everyone has a birthday. But can two people <b>share</b> one?</p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Birthday Match" id="wu" style="--wf-side: 320px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Birthday Match</h2>
+  <p class="wf-rule">Everyone has a birthday. But can two people <b>share</b> one?</p></div>
+  <div class="wf-grid"><div class="wf-main">
   <div class="u5l7a-wtop">
     <div class="u5l7a-wmap" id="wu-map"></div>
     <div class="u5l7a-class">
@@ -59,17 +60,18 @@
       <div class="u5l7a-cout" id="wu-out">Deal random birthdays to the class. Does anyone match?</div>
     </div>
   </div>
-
   <div class="u5l7a-wqs">
-    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Can one person have <b>two</b> different birthdays?</div></div>
-      <button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">No. Each person has exactly <b>one</b> birthday, so person → birthday <b>is a function</b>.</div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>In the diagram, does any birthday have <b>two</b> people?</div></div>
-      <button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Yes: Ben and Cleo both map to Jul 14. That’s allowed. <b>Two inputs may share an output.</b></div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Flip the arrows: birthday → person. Could you tell <em>who</em> was born on July 14?</div></div>
-      <button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">No. July 14 would point to <b>two</b> people, Ben and Cleo. One input with two outputs: birthday → person is <b>not a function</b>.</div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Can one person have <b>two</b> different birthdays? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l7a-wa"><div class="bk-ans">No. Each person has exactly <b>one</b> birthday, so person → birthday <b>is a function</b>.</div></div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>In the diagram, does any birthday have <b>two</b> people? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l7a-wa"><div class="bk-ans">Yes: Ben and Cleo both map to Jul 14. That’s allowed. <b>Two inputs may share an output.</b></div></div></div>
   </div>
-
-  <div class="poll">
+  </div><div class="wf-side">
+  <div class="u5l7a-wqs">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Flip the arrows: birthday → person. Could you tell <em>who</em> was born on July 14? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l7a-wa"><div class="bk-ans">No. July 14 would point to <b>two</b> people, Ben and Cleo. One input with two outputs: birthday → person is <b>not a function</b>.</div></div></div>
+  </div>
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> In a class of <b>30</b>, what is the chance that at least two people <b>share</b> a birthday? <b>Guess first.</b></div></div>
     <div class="poll-opts u5l7a-c4">
       <div class="opt"><b>A</b> about 8%</div>
@@ -82,6 +84,7 @@
       <div class="u5l7a-prob"><span class="tex">P(\text{no match})=\frac{365}{365}\cdot\frac{364}{365}\cdots\frac{336}{365}\approx0.294,</span> so <span class="tex">P(\text{match})\approx1-0.294=0.706</span>, about <b>71%</b>.</div>
       <span class="muted"><b>A</b> comes from <span class="tex">30\div365\approx8\%</span>, but that only asks whether someone matches <em>you</em>. There are <b>435</b> different <em>pairs</em> in a class of 30, and any pair can match. <b>B</b> and <b>C</b> feel “reasonable”, but the 50% mark is reached with only <b>23</b> people. (This assumes 365 equally likely birthdays and ignores Feb 29.)</span></div>
   </div>
+  </div></div>
 
   <div class="bk-wq u5l7a-extra">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Is student → student ID number a function? What about ID number → student?</div></div>

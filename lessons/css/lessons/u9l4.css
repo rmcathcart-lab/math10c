@@ -91,3 +91,20 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u9l4-soh.u9l4-on { background: #fff4dd; border-color: #e8a01e; box-shadow: 0 0 0 4px rgba(232, 160, 30, .45); }
 .u9l4-soh.u9l4-dim { opacity: .35; }
 .u9l4-panel .u9l4-keys { white-space: normal; line-height: 1.9; }
+
+/* ---------- one screen (main.lesson.screen): the roofs (drawn 860 wide, scaled to the 618 px column), buttons, Q1
+   and Q2 left; Q3 and the big one right; early finishers below ---------- */
+.wf .u9l4-wfig { height: 268px; }
+.wf .u9l4-roofbox { transform: scale(.7186); transform-origin: 0 0; }
+.wf .u9l4-wbtns { margin: 8px 0 4px; gap: 8px; }
+.wf .u9l4-wbtns .pill { font-size: 15px; padding: 7px 14px; }
+.wf .u9l4-wqs { grid-template-columns: 1fr; gap: 10px; margin-top: 8px; }
+.wf .u9l4-wqs .bk-wq { padding: 2px 12px 6px; }
+.wf .u9l4-wqs .q-line { margin: 6px 0 2px; font-size: 17px; gap: 10px; }
+.wf .u9l4-wqs .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf .u9l4-wqs .bk-ans { font-size: 15.5px; line-height: 1.32; margin-left: 40px; }
+.wf-side .u9l4-wqs { margin-top: 0; }
+.wf .wf-poll .poll-opts { grid-template-columns: .9fr 1.1fr 1.45fr; gap: 6px; margin: 0 0 10px; }
+.wf .wf-poll .opt { padding: 5px 7px; white-space: nowrap; }
+/* sidebar captions are only 268 px wide: let a long formula break after = or ≈ instead of running out of the box */
+.ex-panel .ex-cap .katex { white-space: normal; }

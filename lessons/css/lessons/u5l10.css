@@ -131,3 +131,29 @@
 .u5l10-test { display: block; background: #fff8e6; border: 1.5px solid #e9cf8f; border-radius: 10px; padding: 8px 12px; font-size: 16px; font-weight: 600; line-height: 1.3; }
 .u5l10-test .u5l10-rn { color: var(--amber); }
 .sum-grid .katex { white-space: nowrap; }
+
+/* ---------- one screen (main.lesson.screen): the poster on the left; the suspects, Q1–Q3 and the big one on the right ---------- */
+.wf .u5l10-wgrid { grid-template-columns: 220px minmax(0, 1fr); gap: 16px; }
+.wf .u5l10-poster { padding: 12px 12px 10px; }
+.wf .u5l10-wanted { font-size: 34px; }
+.wf .u5l10-one { font-size: 18px; margin: 0 0 6px; padding-bottom: 6px; }
+.wf .u5l10-clues { padding-left: 18px; font-size: 16px; line-height: 1.3; }
+.wf .u5l10-clues li { margin: 6px 0; }
+.wf .u5l10-suspects { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.wf .u5l10-sus { padding: 2px; border-radius: 8px; }
+.wf .u5l10-tagl { top: 3px; right: 4px; width: 26px; height: 26px; font-size: 15px; }
+.wf .u5l10-wqs { gap: 12px; margin-top: 4px; }
+.wf .u5l10-wqs .q-line { margin: 6px 0 0; font-size: 17px; gap: 8px; line-height: 1.38; }
+.wf .u5l10-wqs .q-line .q-num { width: 28px; height: 28px; font-size: 15px; }
+.wf .u5l10-wqs .q-line .pill.small { margin-left: 4px; vertical-align: 1px; }
+.wf .u5l10-wa { margin: 2px 0 0 36px; }
+.wf .u5l10-wa .bk-ans { margin: 0; font-size: 15.5px; line-height: 1.33; }
+.wf .wf-poll { margin-top: 6px; padding-bottom: 12px; }
+.wf .wf-poll .q-line { margin-top: 8px; }
+.wf .wf-poll .poll-opts.u5l10-c4 { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.wf .wf-poll .opt { font-size: 16.5px; padding: 6px 10px; }
+.wf .u5l10-wgrid { grid-template-columns: 250px minmax(0, 1fr); }
+.wf .u5l10-clues .katex { font-size: 1.08em; }
+/* ioAxes role cards: the detail line a little smaller so it fits the card at the sidebar width */
+.u5l10-role > div { font-size: 17px; line-height: 1.3; }
+.u5l10-role > div b { font-size: inherit; }

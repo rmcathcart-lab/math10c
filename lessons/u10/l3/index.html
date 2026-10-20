@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,9 +43,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: The Loonie Stack" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Loonie Stack</h2></div>
-  <p class="big">One loonie is too thin to measure well with a ruler. So stack a bunch of them!</p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Loonie Stack" id="wu" style="--wf-side: 300px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Loonie Stack</h2>
+  <p class="wf-rule">One loonie is too thin to measure well with a ruler. So stack a bunch of them!</p></div>
+  <div class="wf-grid"><div class="wf-main">
   <div class="u10l3-wtop">
     <div class="u10l3-wfig" id="u10l3-warmfig"></div>
     <div class="u10l3-wbtns"><button type="button" class="pill" id="u10l3-stack">Stack 20 loonies</button></div>
@@ -64,8 +65,8 @@
       <div class="u10l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">1\text{ mm}+0.75\text{ mm}=\boldsymbol{1.75}\text{ mm}</span>: the same answer, from a single coin. A ruler only reads to the nearest millimetre, so one loonie would read “about 2 mm”; stacking 20 spreads that error over 20 coins. The caliper gets the same precision in one go.</div></div>
     </div>
   </div>
-
-  <div class="poll">
+  </div><div class="wf-side">
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> You stack <b>$1000</b> in loonies. How tall is the tower? <b>Guess first:</b> about as tall as…</div></div>
     <div class="poll-opts">
       <div class="opt"><b>A</b> a water bottle</div>
@@ -76,7 +77,7 @@
     <div class="poll-ans"><b>B, a grown-up.</b> <span class="tex">1000\times1.75\text{ mm}=1750\text{ mm}=1.75\text{ m}</span>, about the height of an adult. A thousand dollars in loonies is about as tall as you!<br>
       <span class="muted"><b>A</b> (17.5 cm) is Q2’s $100 stack: it forgets the extra factor of 10. <b>C</b> (17.5 m) is a millimetre-to-metre slip: dividing by 100 instead of 1000.</span></div>
   </div>
-
+  </div></div>
   <div class="u10l3-early">
     <div class="bk-wq">
       <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> How many loonies would stack to <b>1 km</b>?</div></div>

@@ -190,3 +190,36 @@
 .u5l2-s2eq { font-size: 20px; white-space: nowrap; }
 .u5l2-s2why { font-size: 17px; color: var(--ink2); text-align: center; line-height: 1.2; }
 .u5l2-flychip { font-size: 20px; }
+
+/* ---------- one screen (main.lesson.screen): the two pairs + Q1–Q3 on the left, the beach graph and the big one on the right ---------- */
+.wf .u5l2-pcs { gap: 8px; margin-top: 4px; }
+.wf .u5l2-pc { grid-template-columns: 1fr 92px 1fr; padding: 4px 10px; border-radius: 14px; }
+.wf .u5l2-q { padding: 3px 4px; gap: 0; }
+.wf .u5l2-ic, .wf .u5l2-ic svg { width: 48px; height: 48px; }
+.wf .u5l2-qn { font-size: 17px; }
+.wf .u5l2-qt { min-height: 18px; font-size: 13px; }
+.wf .u5l2-mid svg { width: 80px; height: 34px; }
+.wf .u5l2-tiptxt { font-size: 15.5px; }
+.wf .u5l2-wqs { margin-top: 0; }
+.wf .u5l2-wqs .q-line { margin: 10px 0 0; font-size: 17px; gap: 10px; line-height: 1.38; }
+.wf .u5l2-wqs .q-line .pill.small { margin-left: 4px; vertical-align: 1px; }
+.wf .u5l2-wqs .u5l2-wa { margin-left: 40px; }
+.wf .u5l2-wqs .bk-ans { margin-top: 2px; font-size: 16px; line-height: 1.35; }
+.wf .u5l2-beach-h { font-size: 17px; margin-bottom: 2px; }
+.wf .u5l2-beach svg { width: 100%; height: auto; }
+.wf .wf-poll { margin-top: 10px; padding-bottom: 12px; }
+.wf .wf-poll .q-line { margin-top: 8px; }
+.wf .wf-poll .poll-opts.u5l2-c2 { grid-template-columns: 1fr 1fr; gap: 6px; }
+.wf .wf-poll .poll-opts.u5l2-c2 .opt { font-size: 16px; padding: 5px 8px; line-height: 1.3; }
+.wf .u5l2-pc { grid-template-columns: 1fr 64px 1fr; padding: 4px 6px; }
+.wf .u5l2-mid svg { width: 60px; height: 30px; }
+.wf .u5l2-qt { font-size: 12.5px; letter-spacing: 0; white-space: nowrap; }
+.wf .u5l2-beach svg { max-width: 400px; margin: 0 auto; }
+.wf .wf-poll { margin-top: 8px; }
+.wf .u5l2-q { flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: center; column-gap: 6px; text-align: left; }
+.wf .u5l2-qn { text-align: left; }
+.wf .u5l2-ic, .wf .u5l2-ic svg { width: 42px; height: 42px; }
+.wf .u5l2-qt { flex: 1 1 100%; text-align: center; }
+.wf .u5l2-beach svg { max-width: 372px; }
+.wf .u5l2-beach svg { max-width: 345px; }
+.wf .wf-poll { margin-top: 6px; }

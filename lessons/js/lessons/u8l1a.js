@@ -81,7 +81,8 @@ function mountWarm() {
   });
   const right = h('div', 'u8l1a-tright'); host.appendChild(right);
   const clock = h('div', 'u8l1a-clock'); right.appendChild(clock);
-  const G = new Graph(right, { width: 380, height: 300, xmin: 0, xmax: 20.5, ymin: 0, ymax: 90, xstep: 1, ystep: 10, xlabels: 5, ylabels: 20, fontSize: 15, origin: true, xtitle: 't', ytitle: 'T', pad: [16, 18, 30, 40] });
+  const cs = getComputedStyle(host), GW = parseFloat(cs.getPropertyValue('--gw')) || 380, GH = parseFloat(cs.getPropertyValue('--gh')) || 300; // the one-screen layout draws a smaller graph
+  const G = new Graph(right, { width: GW, height: GH, xmin: 0, xmax: 20.5, ymin: 0, ymax: 90, xstep: 1, ystep: 10, xlabels: 5, ylabels: 20, fontSize: 15, origin: true, xtitle: 't', ytitle: 'T', pad: [16, 18, 30, 40] });
   const st = { t: 0 };
   D.forEach((d) => {
     G.curve(() => { const a = G.toPx(0, d.T0), b = G.toPx(st.t, d.T0 + d.r * st.t); return { subs: [[a, b]] }; }, { color: d.col, width: 4 }, 'u8l1a-wline', G.layers.data);
@@ -114,7 +115,8 @@ const OP = {
 };
 const onePair = {
   title: 'Many solutions each, one solution for both',
-  height: 470,
+  height: 490,
+  minW: 860, // the tables + check panel need ~370 px beside the graph
   choices: [{ v: 's1', label: OP.s1.label }, { v: 'tea', label: OP.tea.label }],
   intro: (k) => (k === 'tea' ? `The warm-up drinks: hot ${T(k1('T=80-4t'))} and iced ${T(k2('T=5+t'))}, where ${T('t')} is minutes and ${T('T')} is °C. When do they match? Press <b>Next</b>.`
     : `Two equations, ${T(k1('x+2y=8'))} and ${T(k2('2x-y=1'))}. Each has many solutions. Which pair works for <b>both</b>? Press <b>Next</b>.`),
@@ -129,7 +131,7 @@ const onePair = {
       void col; return tb;
     };
     const t1 = mkT(0, d.e1, BLUE), t2 = mkT(1, d.e2, AMB);
-    const P = panel(stage, x0, 248, W, 208, 'Check in both', 'u8l1a-cp');
+    const P = panel(stage, x0, 248, W, 228, 'Check in both', 'u8l1a-cp');
     let L1, L2, S;
     const plot = async (c, tb, ps, col) => { for (const p of ps) { await tb.addRow(p, c); await pop(c, G.point(p[0], p[1], { color: col, r: 6.5 }), 220); } };
     const lab = (eq, l, col) => G.label(l[0], l[1], T(eq.tex), { pos: l[2], cls: 'bk-ptlab', color: col });
@@ -167,6 +169,7 @@ const DL = {
 const dragLab = {
   title: 'Drag the point: ✓ or ✗ for each equation',
   height: 480,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 's1', label: DL.s1.label }, { sep: 'Check' }, { v: 'ex1', label: DL.ex1.label }, { v: 'ex2', label: DL.ex2.label }, { v: 'ex3', label: DL.ex3.label }],
   intro: (k) => `Drag the point anywhere on the grid, or press <b>Next</b> for a tour. ${T(k1(DL[k].e1.tex))} and ${T(k2(DL[k].e2.tex))}: which points check in <b>both</b>?`,
   make(stage, k, ex) {
@@ -225,6 +228,7 @@ const E1 = { e1: YF(1, 5, 'y=x+5'), e2: YF(-2, -1, 'y=-2x-1'), sol: [-2, 3] };
 const readGraph = {
   title: 'Read the crossing point, then verify it',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex1', label: 'Example 1 check' }, { v: 'swap', label: 'The slip: ' + T('(3,\\ -2)') + '?' }],
   intro: (k) => (k === 'ex1' ? `${T(k1('y=x+5'))} and ${T(k2('y=-2x-1'))}. Where do they cross? Press <b>Next</b>.`
     : `Someone wrote the answer as ${T('(3,\\ -2)')}. Is that the solution? Press <b>Next</b>.`),
@@ -318,6 +322,7 @@ const SY = {
 const sameY = {
   title: 'Same y at the crossing: set the expressions equal',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'bk', label: SY.bk.label }, { v: 'tea', label: SY.tea.label }, { v: 'ex5', label: SY.ex5.label }],
   intro: (k) => `${T(k1(SY[k].n1 + '=' + SY[k].t1))} and ${T(k2(SY[k].n2 + '=' + SY[k].t2))}. Both are in the form "${SY[k].form || T(SY[k].n1)} = …". Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -363,6 +368,7 @@ const E2 = { e1: STD(1, -1, 2, 'x-y=2'), e2: STD(3, 1, -10, '3x+y=-10'), sol: [-
 const byHand = {
   title: 'Example 2 check: graph both, read, verify',
   height: 480,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'si', label: 'Slope and ' + T('y') + '-intercept' }, { v: 'tv', label: 'Tables of values' }],
   intro: (k) => `${T(k1('x-y=2'))} and ${T(k2('3x+y=-10'))}, by ${k === 'si' ? 'slope and intercept' : 'tables of values'}. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -410,6 +416,7 @@ const E3 = { e1: STD(2, 1, 9, '2x+y=9'), e2: STD(1, 3, 7, 'x+3y=7') };
 const tickets = {
   title: 'Example 3 check: two families, two ticket prices',
   height: 480,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   intro: `Two unknowns: ${T('x')} = adult fee, ${T('y')} = child fee (dollars). Two conditions: one for each family. Press <b>Next</b>.`,
   make(stage, k, ex) {
     const G = new Graph(stage, { x: 14, y: 14, width: 452, height: 452, xmin: 0, xmax: 10.5, ymin: 0, ymax: 10.5, xlabels: 2, ylabels: 2, origin: true });
@@ -511,6 +518,7 @@ const TI = {
 const ti84 = {
   title: 'TI-84: Y=, WINDOW, GRAPH, then 2nd CALC 5:intersect',
   height: 450,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'bk', label: TI.bk.label }, { sep: 'Check' }, { v: 'ex4', label: TI.ex4.label }, { v: 'ex5', label: TI.ex5.label }],
   intro: 'Graphing calculator (TI-83/84) keystrokes. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -567,6 +575,7 @@ const E4 = { e1: STD(4, 3, 2, '4x+3y=2'), e2: STD(2, -1, 5, '2x-y=5'), sol: [1.7
 const zoomIn = {
   title: 'Example 4 check: a guess by eye, then zoom in',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   intro: `${T(k1('4x+3y=2'))} and ${T(k2('2x-y=5'))}, graphed by hand. Press <b>Next</b>.`,
   make(stage, k, ex) {
     const G = new Graph(stage, { x: 14, y: 14, width: 442, height: 442, xmin: -2.5, xmax: 4.5, ymin: -5.5, ymax: 1.5 });
@@ -602,6 +611,7 @@ const BEW = { xmin: 0, xmax: 125, ymin: 0, ymax: 1260, xstep: 10, ystep: 100, xl
 const breakEven = {
   title: 'Example 5 check: cost, revenue and the gap between them',
   height: 480,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'b', label: '(b) 30 and 90 mugs' }, { v: 'ce', label: '(c)–(e) break-even' }, { v: 'f', label: '(f) 250 mugs' }],
   intro: `Cost ${T(k1('C=450+3n'))} and revenue ${T(k2('R=9n'))}, in dollars, for ${T('n')} mugs. Press <b>Next</b>.`,
   make(stage, k, ex) {

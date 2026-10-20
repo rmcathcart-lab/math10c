@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,30 +43,30 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: The Bathtub Graph" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Bathtub Graph</h2></div>
-  <p class="big">Sam takes a bath. The graph shows the water’s depth the whole time.</p>
-  <div class="u5l9-wtop">
-    <div class="u5l9-wtub" id="wu-tub"></div>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Bathtub Graph" id="wu" style="--wf-side: 470px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Bathtub Graph</h2>
+  <p class="wf-rule">Sam takes a bath. The graph shows the water’s depth the whole time.</p></div>
+  <div class="wf-grid"><div class="wf-main">
     <div id="wu-graph"></div>
-  </div>
-
   <div class="u5l9-wqs">
     <div class="bk-wq">
-      <div class="q-line"><div class="q-num">1</div><div>Which segment shows the tap <b>filling</b> the tub?</div></div>
-      <div class="u5l9-wqa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>Segment 1.</b> The depth increases steadily from 0 to 20 cm over 8 minutes.</div></div>
+      <div class="q-line"><div class="q-num">1</div><div>Which segment shows the tap <b>filling</b> the tub? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l9-wqa"><div class="bk-ans"><b>Segment 1.</b> The depth increases steadily from 0 to 20 cm over 8 minutes.</div></div>
     </div>
     <div class="bk-wq">
-      <div class="q-line"><div class="q-num">2</div><div>How deep is the water when the tap is turned <b>off</b>?</div></div>
-      <div class="u5l9-wqa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>20 cm.</b> Segment 2 is flat at 20: the tap is off and the depth is constant.</div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">3</div><div>Which is faster, filling <span class="u5l9-seg sm">1</span> or draining <span class="u5l9-seg sm">6</span>? How do you know?</div></div>
-      <div class="u5l9-wqa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>Draining is faster:</b> segment 6 is <b>steeper</b>. It drops 20 cm in 4.5 min, about 4.4 cm/min. Filling rises 20 cm in 8 min, 2.5 cm/min.</div></div>
+      <div class="q-line"><div class="q-num">2</div><div>How deep is the water when the tap is turned <b>off</b>? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l9-wqa"><div class="bk-ans"><b>20 cm.</b> Segment 2 is flat at 20: the tap is off and the depth is constant.</div></div>
     </div>
   </div>
-
-  <div class="poll">
+  </div><div class="wf-side">
+    <div class="u5l9-wtub" id="wu-tub"></div>
+  <div class="u5l9-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>Which is faster, filling <span class="u5l9-seg sm">1</span> or draining <span class="u5l9-seg sm">6</span>? How do you know? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l9-wqa"><div class="bk-ans"><b>Draining is faster:</b> segment 6 is <b>steeper</b>. It drops 20 cm in 4.5 min, about 4.4 cm/min. Filling rises 20 cm in 8 min, 2.5 cm/min.</div></div>
+    </div>
+  </div>
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which segment shows the moment Sam <b>gets into</b> the tub? <b>Guess first.</b></div></div>
     <div class="poll-opts u5l9-c4">
       <div class="opt"><b>A</b> segment <span class="u5l9-seg sm">1</span></div>
@@ -78,6 +78,7 @@
     <div class="poll-ans"><b>B, segment 3.</b> Sam’s body pushes the water up (it is <b>displaced</b>), so the depth jumps from 20 to 28 cm almost instantly. Segment 4 (constant at 28 cm) is Sam soaking, segment 5 (a sudden drop back to 20) is Sam getting out, and segment 6 is the plug pulled.<br>
       <span class="muted"><b>A</b> mixes up Sam and the tap: filling is slow and steady, while getting in is almost vertical. <b>C</b> is Sam <i>staying</i> in, not getting in. <b>D</b>: the water level doesn’t drop as you sink in; it rises.</span></div>
   </div>
+  </div></div>
 
   <div class="bk-wq" style="margin-top:16px">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Challenge a neighbour.</b> Sam’s dog jumps in mid-soak, then leaps out. Sketch the new graph.</div></div>

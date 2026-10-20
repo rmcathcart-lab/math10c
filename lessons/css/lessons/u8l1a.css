@@ -156,3 +156,29 @@ kbd.u8l1a-k2 { background: #3d86d6; }
 .u8l1a-keys { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; overflow: hidden; }
 .u8l1a-keys kbd { font-size: 17px; padding: 3px 9px; min-width: 32px; }
 .u8l1a-kl { font: 800 14px var(--round); color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-right: 4px; }
+
+/* ---------- one screen (main.lesson.screen): drinks, graph, Q1–Q2 left; Q3 and the big one right; hands-up + bridge below ---------- */
+.wf .u8l1a-tea { --gw: 300; --gh: 250; grid-template-columns: 1fr 1fr 300px; gap: 8px; margin: 4px 0 6px; }
+.wf .u8l1a-drink { padding: 6px 4px 8px; gap: 2px; border-radius: 12px; }
+.wf .u8l1a-dn { font-size: 19px; }
+.wf .u8l1a-dpic { height: 112px; gap: 6px; }
+.wf .u8l1a-pic { width: 80px; height: 80px; }
+.wf .u8l1a-th { width: 18px; height: 100px; border-width: 2.5px; }
+.wf .u8l1a-thb { width: 24px; height: 24px; margin-left: -12px; bottom: -13px; border-width: 2.5px; }
+.wf .u8l1a-dt { font-size: 26px; margin-top: 6px; }
+.wf .u8l1a-dr { font-size: 15px; line-height: 1.25; }
+.wf .u8l1a-clock { font-size: 17px; padding: 0 12px; }
+.wf .u8l1a-clock b { font-size: 21px; }
+.wf .u8l1a-bigq { font-size: 44px; }
+.wf .u8l1a-clockrow { margin: 0 0 4px; gap: 8px; }
+.wf .u8l1a-wqs .q-line { margin: 6px 0 2px; font-size: 17.5px; gap: 10px; }
+.wf .u8l1a-wa { display: flex; align-items: baseline; gap: 10px; margin: 0 0 4px 40px; }
+.wf .u8l1a-wa .pill.small { flex: none; }
+.wf .bk-wq .bk-ans { font-size: 16px; line-height: 1.32; margin-top: 0; }
+.wf .wf-side .u8l1a-wa { display: block; margin-left: 40px; }
+.wf .wf-side .u8l1a-wa .bk-ans { margin-top: 4px; }
+.wf .wf-poll:not(.revealed) .poll-ans { display: none; }
+.wf .u8l1a-early { margin-top: 16px; }
+.wf .wf-poll .poll-opts { gap: 6px; margin-bottom: 10px; }
+.wf .wf-poll .opt { padding: 5px 10px; }
+.wf .u8l1a-social { margin-top: 20px; }

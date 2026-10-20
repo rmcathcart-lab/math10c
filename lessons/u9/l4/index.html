@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,9 +43,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Roof Pitch" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Roof Pitch</h2></div>
-  <p class="big">A roof’s <b>pitch</b> is how far it rises for every <b>12</b> across. (6/12: up 6, across 12.)</p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Roof Pitch" id="wu" style="--wf-side: 330px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Roof Pitch</h2>
+  <p class="wf-rule">A roof’s <b>pitch</b> is how far it rises for every <b>12</b> across. (6/12: up 6, across 12.)</p></div>
+  <div class="wf-grid"><div class="wf-main">
   <div class="u9l4-wfig" id="u9l4-roofs"></div>
   <div class="u9l4-wbtns">
     <button type="button" class="pill" id="u9l4-wroof">Build the 24/12 roof</button>
@@ -53,20 +54,22 @@
   </div>
   <div class="u9l4-wqs">
     <div class="bk-wq">
-      <div class="q-line"><div class="q-num">1</div><div>A <b>6/12</b> roof goes <b>36</b> across. How far up does it rise?</div></div>
-      <div class="u9l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>18.</b> Three groups of 12 across, so three groups of 6 up.</div></div>
+      <div class="q-line"><div class="q-num">1</div><div>A <b>6/12</b> roof goes <b>36</b> across. How far up does it rise? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l4-wa"><div class="bk-ans"><b>18.</b> Three groups of 12 across, so three groups of 6 up.</div></div>
     </div>
     <div class="bk-wq">
-      <div class="q-line"><div class="q-num">2</div><div>Write each pitch as a decimal (rise <span class="tex">\div</span> run): 4/12, 6/12, 12/12.</div></div>
-      <div class="u9l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">4/12\approx0.33</span>, <span class="tex">6/12=0.5</span>, <span class="tex">12/12=1</span>.</div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">3</div><div>On the <b>12/12</b> roof, rise = run. What angle does the roof make with the horizontal?</div></div>
-      <div class="u9l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">\mathbf{45^\circ}</span>. Rise = run makes an isosceles right triangle, so its two acute angles are equal: <span class="tex">90^\circ\div2=45^\circ</span>.</div></div>
+      <div class="q-line"><div class="q-num">2</div><div>Write each pitch as a decimal (rise <span class="tex">\div</span> run): 4/12, 6/12, 12/12. <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l4-wa"><div class="bk-ans"><span class="tex">4/12\approx0.33</span>, <span class="tex">6/12=0.5</span>, <span class="tex">12/12=1</span>.</div></div>
     </div>
   </div>
-
-  <div class="poll">
+  </div><div class="wf-side">
+  <div class="u9l4-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>On the <b>12/12</b> roof, rise = run. What angle does the roof make with the horizontal? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l4-wa"><div class="bk-ans"><span class="tex">\mathbf{45^\circ}</span>. Rise = run makes an isosceles right triangle, so its two acute angles are equal: <span class="tex">90^\circ\div2=45^\circ</span>.</div></div>
+    </div>
+  </div>
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> A <b>24/12</b> roof is twice as steep as a 12/12 roof. So is it a <span class="tex">90^\circ</span> wall of shingles? <b>Guess first:</b> the 24/12 roof’s angle is…</div></div>
     <div class="poll-opts">
       <div class="opt"><b>A</b> <span class="tex">90^\circ</span></div>
@@ -78,6 +81,7 @@
       <span class="muted"><b>A</b> is “twice as steep, so twice the angle, <span class="tex">2\times45^\circ</span>”: doubling the ratio does <b>not</b> double the angle, and a <span class="tex">90^\circ</span> roof would need an endless pitch. <b>B</b> is “halfway from <span class="tex">45^\circ</span> to <span class="tex">90^\circ</span>”: the same straight-line thinking, softened.</span></div>
   </div>
 
+  </div></div>
   <div class="bk-wq u9l4-early">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Double the 4/12 roof to 8/12. Does its angle double from <span class="tex">18.4^\circ</span> to <span class="tex">36.9^\circ</span>? And what pitch gives a <span class="tex">30^\circ</span> roof?</div></div>
     <div class="u9l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>No:</b> <span class="tex">\tan^{-1}\!\left(\tfrac{8}{12}\right)\approx33.7^\circ</span>. A <span class="tex">30^\circ</span> roof rises <span class="tex">12\tan30^\circ\approx6.9</span>, so about a <b>7/12</b> pitch.</div></div>

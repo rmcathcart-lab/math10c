@@ -272,3 +272,31 @@ button.ms-cell { cursor: pointer; }
   .rg { height: auto; }
   .ms .pill { display: none !important; }
 }
+
+/* ---------- one screen (main.lesson.screen): one column, tightened so the two squares, Q1–Q3 and the big one fit together ---------- */
+.wf-one .ms { gap: 22px; margin: 6px 0 2px; justify-content: center; }
+.wf-one .ms-col { gap: 4px; }
+.wf-one .ms-grid.num { grid-template-columns: repeat(3, 70px); grid-auto-rows: 70px; }
+.wf-one .ms-grid.alg { grid-template-columns: repeat(3, 180px); grid-auto-rows: 70px; }
+.wf-one .ms-cell { font-size: 24px; }
+.wf-one .num .ms-cell { font-size: 29px; }
+.wf-one .ms-cell .ms-q { font-size: 29px; }
+.wf-one .ms-cell.corner .ms-q { font-size: 34px; }
+.wf-one .ms-x2 { font-size: 15px; }
+.wf-one .ms-h { font-size: 16.5px; }
+.wf-one .ms-note { font-size: 15.5px; min-height: 22px; }
+.wf-one .ms-qs { gap: 0 16px; }
+.wf-one .ms-qs .q-line { font-size: 17.5px; margin: 4px 0 4px; gap: 10px; }
+.wf-one .ms-qs .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf-one .ms-qs .rv { min-height: 0; margin-top: 4px; font-size: 16px; padding: 4px 10px; line-height: 1.3; }
+.wf-one .ms-poll { margin-top: 10px; padding: 2px 16px 12px; display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 10px; align-items: center; }
+.wf-one .ms-poll > .q-line, .wf-one .ms-poll > .poll-ans { grid-column: 1 / -1; }
+.wf-one .ms-poll > .q-line { margin: 10px 0 8px; font-size: 18px; }
+.wf-one .ms-poll .poll-opts { margin: 0 0 0 50px; gap: 8px; }
+.wf-one .ms-poll .opt { padding: 5px 12px; font-size: 18px; }
+.wf-one .ms-poll > .pill { margin: 0; }
+.wf-one .ms-poll .poll-ans { min-height: 0; font-size: 17px; }
+.wf-one .ms-poll:not(.revealed) .poll-ans { display: none; }
+.wf-one .ms-bridge { margin-top: 14px; }
+.wf-one .ms-grid.num { grid-template-columns: repeat(3, 76px); grid-auto-rows: 76px; }
+.wf-one .ms-grid.alg { grid-template-columns: repeat(3, 190px); grid-auto-rows: 76px; }

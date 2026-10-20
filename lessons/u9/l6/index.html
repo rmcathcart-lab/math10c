@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,9 +43,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Lighthouse Lookout" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Lighthouse Lookout</h2></div>
-  <p class="big">The keeper’s eyes are <b>40 m</b> above the water. She looks <b>down</b> at three boats.</p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Lighthouse Lookout" id="wu" style="--wf-side: 330px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Lighthouse Lookout</h2>
+  <p class="wf-rule">The keeper’s eyes are <b>40 m</b> above the water. She looks <b>down</b> at three boats.</p></div>
+  <div class="wf-grid"><div class="wf-main">
   <div class="u9l6-wfig" id="u9l6-wfig"></div>
   <div class="u9l6-wbtns">
     <button type="button" class="pill" id="u9l6-wz">Move the 15° down to boat C</button>
@@ -53,20 +54,22 @@
   </div>
   <div class="u9l6-wqs">
     <div class="bk-wq">
-      <div class="q-line"><div class="q-num">1</div><div>Each angle is measured down from which line?</div></div>
-      <div class="u9l6-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">The <b>horizontal</b> through the keeper’s eyes (the dashed line), never the lighthouse wall.</div></div>
+      <div class="q-line"><div class="q-num">1</div><div>Each angle is measured down from which line? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l6-wa"><div class="bk-ans">The <b>horizontal</b> through the keeper’s eyes (the dashed line), never the lighthouse wall.</div></div>
     </div>
     <div class="bk-wq">
-      <div class="q-line"><div class="q-num">2</div><div>Boat <b>A</b> is <span class="tex">45^\circ</span> down. How far is it from the lighthouse?</div></div>
-      <div class="u9l6-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>40 m.</b> At <span class="tex">45^\circ</span> the triangle is isosceles: distance <span class="tex">=</span> height.</div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">3</div><div>As a boat sails away, does its angle get bigger or smaller?</div></div>
-      <div class="u9l6-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>Smaller.</b> Farther boats need a shallower look down, so the <b>biggest</b> angle belongs to the <b>closest</b> boat.</div></div>
+      <div class="q-line"><div class="q-num">2</div><div>Boat <b>A</b> is <span class="tex">45^\circ</span> down. How far is it from the lighthouse? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l6-wa"><div class="bk-ans"><b>40 m.</b> At <span class="tex">45^\circ</span> the triangle is isosceles: distance <span class="tex">=</span> height.</div></div>
     </div>
   </div>
-
-  <div class="poll">
+  </div><div class="wf-side">
+  <div class="u9l6-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>As a boat sails away, does its angle get bigger or smaller? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l6-wa"><div class="bk-ans"><b>Smaller.</b> Farther boats need a shallower look down, so the <b>biggest</b> angle belongs to the <b>closest</b> boat.</div></div>
+    </div>
+  </div>
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Boat C’s angle (<span class="tex">15^\circ</span>) is one third of boat A’s (<span class="tex">45^\circ</span>). How far is C from the lighthouse? <b>Guess first.</b></div></div>
     <div class="poll-opts">
       <div class="opt"><b>A</b> about 11 m</div>
@@ -78,6 +81,7 @@
       <span class="muted"><b>A</b> is <span class="tex">40\tan15^\circ\approx10.7</span>: multiplying instead of dividing (a boat 11 m out would be almost straight down). <b>B</b> is “a third of the angle, so three times as far”: distance is not proportional to the angle. (Boat B: <span class="tex">40\div\tan25^\circ\approx85.8</span> m.)</span>
       <div class="u9l6-inl"><button class="pill small" type="button" data-keys="40 ÷ tan 15 ) =">Show me 40 ÷ tan 15°</button></div></div>
   </div>
+  </div></div>
   <p class="u9l6-social">Look down at your feet, then at the floor by the door. Which angle of depression is bigger?</p>
 </section>
 

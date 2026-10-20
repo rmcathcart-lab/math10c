@@ -223,6 +223,7 @@ function pipeDef(keys, o = {}) {
   return {
     title: o.title || 'Four steps: words → let → table → equations → solve → check',
     height: 528,
+    minW: o.minW, // drawn this wide and scaled to fit beside the sidebar
     value: keys[0],
     choices: o.sep ? [{ sep: o.sep }, ...ch] : ch,
     intro: (k) => `${PIPE[k].label}: read the problem first. Press <b>Next</b> to send it through the four steps.`,
@@ -336,6 +337,7 @@ const MT = {
 const method = {
   title: 'Which method? Test the system against each row of the table',
   height: 452,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(MT).map((k) => ({ v: k, label: MT[k].label })),
   intro: (k) => `A system: ${T(MT[k].e1)} and ${T(MT[k].e2)}. Which method fits it best? Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -389,6 +391,7 @@ const S4 = {
 const step4 = {
   title: 'Solved correctly … but does it make sense?',
   height: 452,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(S4).map((k) => ({ v: k, label: S4[k].label })),
   intro: (k) => `${S4[k].label} Read the problem, then press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -442,6 +445,7 @@ const TR = {
 const translate = {
   title: 'From words to symbols',
   height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(TR).map((k) => ({ v: k, label: TR[k].label })),
   intro: (k) => `${TR[k].lets.replace(/\$(\w)\$/g, (m, v) => T(v))} Press <b>Next</b> to translate.`,
   make(stage, k, ex) {
@@ -501,6 +505,7 @@ const RC = {
 const rect = {
   title: 'Perimeter: walk the fence, then build the length from widths',
   height: 470,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex2', label: 'Example 2 check' }, { sep: 'More' }, { v: 'twice', label: RC.twice.label }, { v: 'three', label: RC.three.label }],
   intro: (k) => `Perimeter ${RC[k].P} ${RC[k].u}, and ${RC[k].cond}. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -590,11 +595,12 @@ const SW = {
 const swap = {
   title: 'One equation counts, the other totals value',
   height: 452,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex3', label: 'Example 3 check' }, { sep: 'More' }, { v: 'coins', label: SW.coins.label }],
   intro: (k) => (k === 'ex3' ? 'Maria: 23 bills, fives and twenties, worth $310. Press <b>Next</b>.' : '12 coins, loonies ($1) and toonies ($2), worth $19. Press <b>Next</b>.'),
   make(stage, k, ex) {
     const d = SW[k], W = ex.W, all = d.n * d.lo, short = d.total - all, step = d.hi - d.lo, nh = short / step, nl = d.n - nh;
-    const coin = d.kind === 'coin', per = coin ? 12 : 12, bw = coin ? 62 : 68, bh = coin ? 62 : 38, gap = coin ? 12 : 8;
+    const coin = d.kind === 'coin', per = coin ? 12 : 12, bw = coin ? 62 : Math.min(68, Math.floor((W - 28 - 11 * 8) / 12)), bh = coin ? 62 : 38, gap = coin ? 12 : 8;
     const rowsN = Math.ceil(d.n / per), totW = per * (bw + gap) - gap, x0 = (W - totW) / 2;
     const items = [];
     for (let i = 0; i < d.n; i++) {
@@ -639,8 +645,8 @@ const swap = {
         await pulse(c, cVal, 1.1);
       } },
       { cap: `That is exactly the algebra: substitute ${T(`${vl}=${d.n}-${vh}`)}, and ${T(String(all))} is “all ${d.plLo}”, ${T(`${cf(step)}${vh}`)} is the swaps.`, run: async (c) => { await show(c, l3); await show(c, l4); } },
-      { cap: `${T(`${vh}=${nh}`)} ${d.plHi} and ${T(`${vl}=${nl}`)} ${d.plLo}. Check: ${T(`${nl}+${nh}=${d.n}`)} ✓ and ${T(`${d.lo}(${nl})+${d.hi}(${nh})=${d.lo * nl}+${d.hi * nh}=${d.total}`)} ✓.`, run: async (c) => {
-        await show(c, l5); const s = stamp(stage, `${nl} ${d.plLo}, ${nh} ${d.plHi}`, { ok: true, x: W - 250, y: 396 }); await stampIn(c, s);
+      { cap: `${T(`${vh}=${nh}`)} ${d.plHi} and ${T(`${vl}=${nl}`)} ${d.plLo}. Check: ${T(`${nl}+${nh}=${d.n}`)} ✓ and ${T(`${d.lo}(${nl})+${d.hi}(${nh})`)} ${T(`=${d.lo * nl}+${d.hi * nh}=${d.total}`)} ✓.`, run: async (c) => {
+        await show(c, l5); const s = stamp(stage, `${nl} ${d.plLo}, ${nh} ${d.plHi}`, { ok: true, x: W - 270, y: 410 }); // low in the work panel, clear of the last line await stampIn(c, s);
       } }
     ];
   }
@@ -654,6 +660,7 @@ const IV = {
 const interest = {
   title: 'Principal and interest: slide the split',
   height: 462,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex4', label: 'Example 4 check' }, { sep: 'More' }, { v: 'demo', label: IV.demo.label }],
   intro: (k) => `${money(IV[k].P)} split between ${IV[k].r1}% and ${IV[k].r2}%, earning ${money(IV[k].I)} in interest. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -702,8 +709,8 @@ const interest = {
       { cap: `Each dollar moved from ${d.r2}% to ${d.r1}% earns ${T(dD)} more. We need ${money(need)} more than ${money(lo)}: ${T(`${tnum(need)}\\div${dD}=${tnum(x)}`)}.`, run: async (c) => {
         await slide(c, 0, 500); await slide(c, x, 1400); await show(c, r2); await show(c, r3);
       } },
-      { cap: `Check: ${T(`${dA}(${tnum(x)})+${dB}(${tnum(y)})=${tnum(a * x)}+${tnum(b * y)}=${tnum(d.I)}`)} ✓. Overall rate ${T(`${tnum(d.I)}\\div${tnum(d.P)}=${+(d.I / d.P * 100).toFixed(2)}\\%`)}, between ${d.r2}% and ${d.r1}% ✓.`, run: async (c) => {
-        const s = stamp(stage, `${money(x)} at ${d.r1}%, ${money(y)} at ${d.r2}%`, { ok: true, x: W - 250, y: 194, size: 'sm' }); await stampIn(c, s);
+      { cap: `Check: ${T(`${dA}(${tnum(x)})+${dB}(${tnum(y)})`)} ${T(`=${tnum(a * x)}+${tnum(b * y)}=${tnum(d.I)}`)} ✓. Overall rate ${T(`${tnum(d.I)}\\div${tnum(d.P)}=${+(d.I / d.P * 100).toFixed(2)}\\%`)}, between ${d.r2}% and ${d.r1}% ✓.`, run: async (c) => {
+        const s = stamp(stage, `${money(x)} at ${d.r1}%, ${money(y)} at ${d.r2}%`, { ok: true, x: 210, y: 286, size: 'sm', rotate: -3 }); await stampIn(c, s); // left of the interest readout, clear of the Eq. 2 line
       } }
     ];
   }
@@ -719,6 +726,7 @@ const RT = {
 const rates = {
   title: 'Time line, output line: only the crossing does both',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(RT).map((k) => ({ v: k, label: RT[k].label })),
   intro: (k) => { const d = RT[k]; return `${d.names[0]} makes ${d.r[0]} ${d.rate}, ${d.names[1]} makes ${d.r[1]}. They run for a combined total of ${d.T} min and make ${f5(d.out)} ${d.item}. Press <b>Next</b>.`; },
   make(stage, k, ex) {
@@ -781,13 +789,13 @@ const rates = {
 /* =============================== mount =============================== */
 mountWarm();
 export const explainers = mountExplainers({
-  pipeline: pipeDef(['snack', 'sam']),
+  pipeline: pipeDef(['snack', 'sam'], { minW: 966 }),
   method, step4, translate, rect, swap, interest, rates,
-  ex1chk: pipeDef(['ex1'], { sep: 'Example 1 check' }),
-  ex2chk: pipeDef(['ex2'], { sep: 'Example 2 check' }),
-  ex3chk: pipeDef(['ex3'], { sep: 'Example 3 check' }),
-  ex4chk: pipeDef(['ex4'], { sep: 'Example 4 check' }),
-  ex5chk: pipeDef(['ex5'], { sep: 'Example 5 check' })
+  ex1chk: pipeDef(['ex1'], { sep: 'Example 1 check', minW: 900 }),
+  ex2chk: pipeDef(['ex2'], { sep: 'Example 2 check', minW: 940 }),
+  ex3chk: pipeDef(['ex3'], { sep: 'Example 3 check', minW: 966 }),
+  ex4chk: pipeDef(['ex4'], { sep: 'Example 4 check', minW: 900 }),
+  ex5chk: pipeDef(['ex5'], { sep: 'Example 5 check', minW: 940 })
 });
 export const _test = { PIPE, MT, S4, TR, RC, SW, IV, RT };
 void liveCtx; void GRN; void RED;

@@ -237,3 +237,26 @@
 .sn-col { height: 172px; border-radius: 14px; background: #fff; border: 1.5px solid var(--line2); }
 .sn-d { width: 30px; }
 .tip .katex { white-space: nowrap; }
+
+/* ---------- one screen (main.lesson.screen): the bracket (drawn 968 wide, scaled to the column) + Q1, Q2 left; Q3 and the big one right; the challenges below ---------- */
+.wf .pr { padding: 4px 8px 8px; margin: 6px 0 0; }
+.wf .pr-stage { --k: .675; width: 968px; transform: scale(var(--k)); transform-origin: 0 0; margin-bottom: calc(410px * (var(--k) - 1)); }
+.wf .pr-bar { gap: 10px; padding-top: 6px; }
+.wf .pr-note { font-size: 16px; min-height: 44px; line-height: 1.3; }
+.wf .pr-btns .exb { height: 38px; font-size: 15px; }
+.wf .pr-qs { grid-template-columns: 1fr 1fr; gap: 0 14px; margin-top: 6px; }
+.wf .pr-qs .q-line { font-size: 17px; margin: 6px 0 2px; gap: 10px; }
+.wf .pr-qs .q-num { width: 28px; height: 28px; font-size: 15px; }
+.wf .pr-qs .rv { min-height: 0; font-size: 16px; padding: 4px 10px; margin-top: 4px; }
+.wf .pr-qs-side { grid-template-columns: 1fr; margin-top: 0; }
+.wf .wf-poll .poll-opts.four { grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 10px; }
+.wf .wf-poll .opt { font-size: 16.5px; padding: 6px 8px; }
+.wf .wf-poll .poll-ans { min-height: 0; }
+.wf .wf-poll:not(.revealed) .poll-ans { display: none; }
+.wf .pr-bridge { margin-top: 12px; }
+.wf .pr-p { font-size: 30px; } /* sizes inside the scaled bracket (shown at 0.675) */
+.wf .pr-box.empty .pr-p { font-size: 30px; }
+.wf .pr-rw { font-size: 18.5px; white-space: nowrap; }
+.wf .pr-vs { width: 54px; height: 54px; font-size: 19px; }
+.wf .pr-round { font-size: 19px; }
+.wf .pr-handy { font-size: 24px; }

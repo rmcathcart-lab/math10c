@@ -190,3 +190,30 @@
 .u4l6-xsub { box-sizing: border-box; background: #edf1f7; border-radius: 12px; padding: 6px 16px 8px; font-size: 20px; line-height: 1.45; }
 .u4l6-xsh { font: 800 14px var(--round); text-transform: uppercase; letter-spacing: .06em; color: #2e3c4f; }
 .u4l6-xsh .katex { text-transform: none; }
+
+/* ---------- one screen (main.lesson.screen): the airport explainer is too tall to sit beside the questions, so
+   Q1–Q3 (left) and the big one (right) come first and the airport sits under them; its flowchart is still on the
+   first screen. The follow-up and the footnote are below. ---------- */
+.wf .wf-rule { font-size: 17.5px; }
+.wf .u4l6-wqs { display: flex; flex-direction: column; gap: 6px; margin: 2px 0 0; }
+.wf .wq { padding: 3px 12px 4px; }
+.wf .wq .q-line { margin: 2px 0 2px; font-size: 17px; gap: 10px; }
+.wf .wq .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf .u4l6-wqs .q-line .pill.small { margin: -2px 0 0 6px; padding: 3px 10px; vertical-align: 1px; }
+.wf .u4l6-wqs .wq-a { margin-left: 40px; }
+.wf .u4l6-wqs .q-ans { font-size: 15.5px; line-height: 1.32; min-height: 1.32em; }
+.wf .u4l6-wqs .wq:nth-child(3) .q-ans { min-height: 2.64em; }
+.wf .u4l6-poll4 { margin-top: 0; padding-bottom: 12px; }
+.wf .u4l6-poll4 .q-line { margin-top: 10px; }
+.wf .u4l6-poll4 { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 10px; align-items: end; }
+.wf .u4l6-poll4 > .q-line, .wf .u4l6-poll4 > .poll-ans { grid-column: 1 / -1; }
+.wf .u4l6-poll4 > .pill { margin: 0; }
+.wf .u4l6-poll4 .poll-opts { grid-template-columns: 1fr 1fr; gap: 6px; margin: 0; }
+.wf .u4l6-poll4 .opt { font-size: 16px; padding: 4px 2px; white-space: nowrap; }
+.wf .u4l6-poll4 .opt b { margin-right: 3px; }
+.wf .u4l6-poll4 .opt .katex { font-size: 1.05em; }
+.wf .wf-poll:not(.revealed) .poll-ans { display: none; }
+.wf .wf-poll .poll-ans { min-height: 0; }
+.wf > .explainer { margin-top: 8px; }
+.wf .wq-wide { margin-top: 14px; }
+.wf .wq-wide .q-ans { min-height: 1.4em; font-size: 16.5px; }

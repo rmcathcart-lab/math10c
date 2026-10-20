@@ -161,6 +161,7 @@ const LAWS = {
 const laws = {
   title: 'Same law, now with fractions',
   height: 460,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'product', label: 'Product' }, { v: 'quotient', label: 'Quotient' }, { v: 'power', label: 'Power of a power' }, { v: 'prod', label: 'Power of a product' },
     { v: 'quot', label: 'Power of a quotient' }, { v: 'neg', label: 'Negative' }, { sep: 'Warm-up check:' }, { v: 'w1', label: tex('10^{3/2}\\cdot10^{3/2}') }, { v: 'w2', label: tex('\\left(10^{3/2}\\right)^{2}') }],
   intro: (v) => `<b>${LAWS[v].name}.</b> First with whole-number exponents, then the <b>same law</b> with fractions. Press <b>Next</b>.`,
@@ -522,6 +523,7 @@ function lanesFinal(D, P) {
 const lanes = {
   title: 'Multi-law chains: one base at a time',
   height: 470,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 't1', label: tex('\\left(16x^4y^{-8}\\right)^{3/4}\\cdot y^{1/2}') }, { v: 't2', label: tex('\\left(125a^{-3}b^{6}\\right)^{2/3}\\div5a^{1/2}') },
     { sep: 'Example 5 check:' }, { v: 'e5a', label: '(a)' }, { v: 'e5b', label: '(b)' }],
   intro: (v) => `Simplify ${tex(LN[v].q())}. Each base gets its <b>own lane</b>: the <b class="am">number</b>, then each variable.`,

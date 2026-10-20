@@ -274,6 +274,7 @@ const OVF = { mika: { label: 'Mika: 480 mL', total: 480 }, disc: { label: 'For d
 const overflow = {
   title: 'Mika’s overflow test',
   height: 440,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(OVF).map((k) => ({ v: k, label: OVF[k].label })),
   intro: 'A ball and a cylinder with the <b>same radius</b>; the cylinder is as tall as the ball. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -351,6 +352,7 @@ const DER = {
 const derive = {
   title: 'From the snug cylinder to the sphere formula',
   height: 420,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(DER).map((k) => ({ v: k, label: DER[k].label })),
   intro: 'Mika’s test works for every ball. Turn it into a formula. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -397,6 +399,7 @@ const derive = {
 const peel = {
   title: 'Why 4πr²? Four great circles',
   height: 430,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'peel', label: 'The orange-peel test' }, { v: 'arch', label: 'Archimedes: unroll the snug cylinder' }],
   intro: (v) => (v === 'peel' ? 'Peel an orange and flatten the peel. How many circles of the same radius does it cover? Press <b>Next</b>.' : 'Another way to see 4πr². Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -465,6 +468,7 @@ const peel = {
 const halve = {
   title: 'Example 1 check: halve the diameter first',
   height: 420,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex1', label: 'Example 1 check' }, { v: 'oops', label: 'Forget to halve?' }],
   intro: (v) => (v === 'ex1' ? 'The propane tank: diameter 5.8 m. Press <b>Next</b>.' : 'What if you put the diameter into the formulas? Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -522,6 +526,7 @@ const halve = {
 const slice = {
   title: 'Example 2 check: half a sphere',
   height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'vol', label: '(a) Volume' }, { v: 'sa', label: '(b), (c) Surface area' }],
   intro: (v) => (v === 'vol' ? 'Slice a sphere exactly through its centre. Press <b>Next</b>.' : 'A hemisphere has a curved dome and a flat floor. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -596,6 +601,7 @@ const slice = {
 const string = {
   title: 'Example 3 check: from a string to the volume',
   height: 430,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex3', label: 'Example 3 check' }, { v: 'early', label: `Round ${T('r')} too early?` }],
   intro: (v) => (v === 'ex3' ? 'A string wrapped once around a soccer ball measures 70 cm. Press <b>Next</b>.' : 'What changes if you round the radius before cubing it? Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -652,6 +658,7 @@ const string = {
 const domes = {
   title: 'Example 4 check: Sana’s and Tavi’s sheds',
   height: 450,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   intro: 'Two domes, both 12 ft across. Only one has a floor. Press <b>Next</b>.',
   make(stage, k, ex) {
     const W = ex.W, Hh = ex.def.height, svg = svgOn(stage, 0, 0, W, Hh), g = G(svg);
@@ -696,6 +703,7 @@ const FL = {
 const floor = {
   title: 'Does the flat base count?',
   height: 400,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(FL).map((k) => ({ v: k, label: FL[k].label })),
   intro: 'Read the wording, then follow the chart. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -730,6 +738,7 @@ const BK = {
 const backwards = {
   title: 'Example 5 check: from the volume back to the radius',
   height: 440,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(BK).map((k) => ({ v: k, label: BK[k].label })),
   intro: 'The volume formula is a machine: radius in, volume out. Run it backwards. Press <b>Next</b>.',
   make(stage, k, ex) {

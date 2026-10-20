@@ -159,3 +159,24 @@
 .ln-lab { display: flex; align-items: center; font-size: 16px; font-weight: 700; color: var(--ink2); line-height: 1.25; border-top: 1px dashed var(--line); }
 .ln-cell { display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 25px; white-space: nowrap; border-top: 1px dashed var(--line); line-height: 1.3; }
 .ln-cell .katex { font-size: 1.04em; }
+
+/* ---------- one screen (main.lesson.screen): one column; the quake picture (drawn 968 wide) scaled down, Q1–Q3 and the big one tightened; the challenge below ---------- */
+.wf-one .quake { transform: scale(.72); transform-origin: 50% 0; margin: 0 auto -92px; } /* 330 px tall drawn, 238 px shown */
+.wf-one .wq-grid { gap: 6px; margin-top: 2px; }
+.wf-one .wq { padding: 2px 12px 4px; }
+.wf-one .wq .q-line { margin: 4px 0 2px; font-size: 17.5px; gap: 10px; }
+.wf-one .wq .q-num { width: 28px; height: 28px; font-size: 15px; }
+.wf-one .wq-a { margin-left: 38px; gap: 8px; align-items: center; }
+.wf-one .q-ans { font-size: 16.5px; min-height: 1.4em; }
+.wf-one .wq-fill { font-size: 21px; }
+.wf-one .poll { margin-top: 6px; padding: 0 16px 8px; display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; align-items: center; }
+.wf-one .poll > .q-line, .wf-one .poll > .poll-ans { grid-column: 1 / -1; }
+.wf-one .poll .q-line { margin: 8px 0 6px; font-size: 18px; }
+.wf-one .poll-opts { margin: 0 0 0 50px; gap: 10px; }
+.wf-one .opt { padding: 6px 12px; }
+.wf-one .poll > .pill { margin: 0; }
+.wf-one .poll-ans { min-height: 0; }
+.wf-one .poll:not(.revealed) .poll-ans { display: none; }
+.wf-one .qc-card { margin-top: 14px; }
+.wf-one .qk-tip { font-size: 17px; }
+.wf-one .qk-l { font-size: 21px; }

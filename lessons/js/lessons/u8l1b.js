@@ -168,6 +168,7 @@ const miniSvg = (k) => ({
 const turnSlide = {
   title: 'Turn one line, then slide it: how many solutions?',
   height: 480,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(TS).map((k) => ({ v: k, label: TS[k].label })),
   intro: (k) => (TS[k].free ? 'Your turn: turn and slide the amber line with the buttons. Press <b>Next</b> to start.' : 'Watch the count and the chart on the right while the amber line moves. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -248,6 +249,7 @@ const RC = {
 const races = {
   title: 'The warm-up races as lines: speed = slope, head start = intercept',
   height: 500,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(RC).map((k) => ({ v: k, label: RC[k].label })),
   intro: () => 'Distance–time lines for the two runners. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -317,6 +319,7 @@ const E1 = {
 const ex1 = {
   title: 'Example 1 check: graph both lines, then count',
   height: 480,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   value: 'a',
   choices: [{ sep: 'Example 1 check' }, ...Object.keys(E1).map((k) => ({ v: k, label: E1[k].label }))],
   intro: () => 'Graph each line from its <b>y-intercept</b> and <b>slope</b>, then count the crossing points. Press <b>Next</b>.',
@@ -385,6 +388,7 @@ const GP = {
 const gap = {
   title: 'The gap between the lines',
   height: 480,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   value: 'a',
   choices: [{ sep: 'Example 1' }, ...Object.keys(GP).map((k) => ({ v: k, label: GP[k].label }))],
   intro: () => 'Measure the vertical gap between the lines at several values of x. Press <b>Next</b>.',
@@ -435,6 +439,7 @@ const CH = [
 const chart = {
   title: 'Example 2 check: the classification chart',
   height: 500,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   intro: () => 'The three systems from Example 1, side by side. Press <b>Next</b> to fill the chart.',
   make(stage, k, ex) {
     const W = ex.W, cw = (W - 16) / 3;
@@ -487,6 +492,7 @@ const RA = {
 const rearr = {
   title: 'Into y = mx + b: get y alone',
   height: 430,
+  minW: 900, // the step notes need ~570 px beside the graph
   choices: [{ v: 's1', label: RA.s1.label }, { v: 's2', label: RA.s2.label }, { v: 's3', label: RA.s3.label }, { sep: 'Example 1 (c)' }, { v: 'e1c', label: RA.e1c.label }],
   intro: (k) => `Goal: ${T('y')} alone on the left, everything else on the right. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -516,11 +522,12 @@ const CL = {
 const classify = {
   title: 'Example 3 check: same slope? same intercept?',
   height: 470,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ sep: 'Warm-up' }, { v: 'jo', label: CL.jo.label }, { sep: 'Example 3 check' }, ...['a', 'b', 'c'].map((k) => ({ v: k, label: CL[k].label }))],
   value: 'a',
   intro: () => 'Rearrange both equations, then answer two questions. Press <b>Next</b>.',
   make(stage, k, ex) {
-    const d = CL[k], W = ex.W, FW = W - 470;
+    const d = CL[k], W = ex.W, FW = W - 470, IX = Math.min(FW / 2 + 158, FW - 96), NX = Math.min(FW / 2 - 36, IX - 180); // bottom boxes fit the width given
     const P = panel(stage, 8, 6, 444, 458, '', 'u8l1b-clp');
     const blk = (rows, col) => { const b = h('div', 'u8l1b-cblk u8l1b-cb' + col); rows.forEach((r, i) => b.appendChild(h('div', 'u8l1b-cr' + (i === rows.length - 1 && rows.length > 1 ? ' u8l1b-cfin' : ''), T((col === 1 ? c1 : c2)(r))))); P.appendChild(b); return b; };
     const B1k = blk(d.e1, 1), B2k = blk(d.e2, 2);
@@ -532,13 +539,13 @@ const classify = {
       q1: { x: FW / 2, y: 132, w: 210, h: 52, html: '<b>Same slope?</b>', color: 'purple' },
       one: { x: 84, y: 250, w: 150, h: 84, html: '<b>One solution</b>lines cross once', color: 'green' },
       q2: { x: FW / 2 + 64, y: 250, w: 250, h: 52, html: `<b>Same ${T('y')}-intercept?</b>`, color: 'purple' },
-      none: { x: FW / 2 - 36, y: 392, w: 170, h: 84, html: '<b>No solution</b>parallel lines', color: 'red' },
-      inf: { x: FW / 2 + 158, y: 392, w: 180, h: 84, html: '<b>Infinitely many</b>the same line', color: 'teal' } },
+      none: { x: NX, y: 392, w: 170, h: 84, html: '<b>No solution</b>parallel lines', color: 'red' },
+      inf: { x: IX, y: 392, w: 180, h: 84, html: '<b>Infinitely many</b>the same line', color: 'teal' } },
     edges: [{ from: 'start', to: 'q1' },
       { from: 'q1', to: 'one', label: 'no', pts: [[FW / 2 - 108, 132], [84, 132], [84, 205]] },
       { from: 'q1', to: 'q2', label: 'yes', pts: [[FW / 2, 161], [FW / 2, 221]] },
-      { from: 'q2', to: 'none', label: 'no', pts: [[FW / 2 - 36, 279], [FW / 2 - 36, 347]] },
-      { from: 'q2', to: 'inf', label: 'yes', pts: [[FW / 2 + 158, 279], [FW / 2 + 158, 347]] }] });
+      { from: 'q2', to: 'none', label: 'no', pts: [[NX, 279], [NX, 347]] },
+      { from: 'q2', to: 'inf', label: 'yes', pts: [[IX, 279], [IX, 347]] }] });
     const sameM = d.m[0] === d.m[1], sameB = d.b[0] === d.b[1];
     const stp = verdict(P, d.kind);
     const steps = [
@@ -576,6 +583,7 @@ const DG = {
 const disguise = {
   title: 'The same line in disguise',
   height: 470,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(DG).map((k) => ({ v: k, label: DG[k].label })),
   intro: () => 'Two equations that look different. Do they describe the same line? Press <b>Next</b>.',
   make(stage, k, ex) {

@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -44,10 +44,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Ramp Rules" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Ramp Rules</h2></div>
-  <p class="big">A common rule: a ramp may rise <b>at most 1 cm for every 12 cm</b> across.</p>
-  <div class="u6l3-wtop">
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Ramp Rules" id="wu" style="--wf-side: 382px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Ramp Rules</h2>
+  <p class="wf-rule">A common rule: a ramp may rise <b>at most 1 cm for every 12 cm</b> across.</p></div>
+  <div class="wf-grid"><div class="wf-main">
     <div class="u6l3-wfig">
       <div id="u6l3-ramps"></div>
       <div class="u6l3-wbtns">
@@ -55,23 +55,22 @@
         <button type="button" class="pill" id="u6l3-r12">Give every ramp the same run</button>
       </div>
     </div>
+  </div><div class="wf-side">
     <div class="u6l3-wqs">
       <div class="bk-wq">
-        <div class="q-line"><div class="q-num">1</div><div>Which ramp climbs the <b>highest</b>?</div></div>
-        <div class="u6l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>Ramp C</b> (25 cm). But highest is not steepest!</div></div>
+        <div class="q-line"><div class="q-num">1</div><div>Which ramp climbs the <b>highest</b>? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+        <div class="u6l3-wa"><div class="bk-ans"><b>Ramp C</b> (25 cm). But highest is not steepest!</div></div>
       </div>
       <div class="bk-wq">
-        <div class="q-line"><div class="q-num">2</div><div>Which ramp is the <b>steepest</b>? <span class="muted">(Hint: compare <span class="tex">\tfrac{\text{rise}}{\text{run}}</span> for each.)</span></div></div>
-        <div class="u6l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>Ramp B.</b> <span class="tex">A:\ \tfrac{10}{120}=\tfrac{1}{12}</span>, <span class="tex">B:\ \tfrac{20}{180}=\tfrac{1}{9}</span>, <span class="tex">C:\ \tfrac{25}{400}=\tfrac{1}{16}</span>. Since <span class="tex">\tfrac19&gt;\tfrac1{12}&gt;\tfrac1{16}</span> (about <span class="tex">0.11</span>, <span class="tex">0.08</span>, <span class="tex">0.06</span>), B is steepest and C is gentlest.</div></div>
+        <div class="q-line"><div class="q-num">2</div><div>Which ramp is the <b>steepest</b>? <span class="muted">(Hint: compare <span class="tex">\tfrac{\text{rise}}{\text{run}}</span> for each.)</span> <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+        <div class="u6l3-wa"><div class="bk-ans"><b>Ramp B.</b> <span class="tex">A:\ \tfrac{10}{120}=\tfrac{1}{12}</span>, <span class="tex">B:\ \tfrac{20}{180}=\tfrac{1}{9}</span>, <span class="tex">C:\ \tfrac{25}{400}=\tfrac{1}{16}</span>. Since <span class="tex">\tfrac19&gt;\tfrac1{12}&gt;\tfrac1{16}</span> (about <span class="tex">0.11</span>, <span class="tex">0.08</span>, <span class="tex">0.06</span>), B is steepest and C is gentlest.</div></div>
       </div>
       <div class="bk-wq">
-        <div class="q-line"><div class="q-num">3</div><div>Which ramps follow the 1-in-12 rule?</div></div>
-        <div class="u6l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>A</b> (exactly <span class="tex">\tfrac{1}{12}</span>, right at the limit) and <b>C</b> (gentler). B is too steep: it would need a run of <span class="tex">20\times12=240</span> cm.</div></div>
+        <div class="q-line"><div class="q-num">3</div><div>Which ramps follow the 1-in-12 rule? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+        <div class="u6l3-wa"><div class="bk-ans"><b>A</b> (exactly <span class="tex">\tfrac{1}{12}</span>, right at the limit) and <b>C</b> (gentler). B is too steep: it would need a run of <span class="tex">20\times12=240</span> cm.</div></div>
       </div>
     </div>
-  </div>
-
-  <div class="poll">
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> A café door is up one <b>60 cm</b> step. To follow the rule, at least how far out from the step must the ramp start? <b>Guess first.</b></div></div>
     <div class="poll-opts">
       <div class="opt"><b>A</b> 72 cm</div>
@@ -83,6 +82,7 @@
       <span class="muted"><b>A</b> added <span class="tex">60+12</span> instead of multiplying. <b>B</b> divided <span class="tex">60\div12=5</span>, then guessed the unit.</span><br>
       Most people badly underestimate how long a gentle ramp is. (The sloped surface itself is <span class="tex">\sqrt{720^2+60^2}\approx722</span> cm: still about 7.2 m.)</div>
   </div>
+  </div></div>
 
   <div class="bk-wq u6l3-early">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> A school has only <b>3.6 m</b> of sidewalk in front of a step. What is the tallest step a ramp there can climb and still follow the rule?</div></div>

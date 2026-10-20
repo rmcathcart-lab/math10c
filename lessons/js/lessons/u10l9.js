@@ -343,6 +343,7 @@ function truckFig(host) {
 const fill = {
   title: 'Fill the classroom',
   height: 440,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'grid', label: 'Stack them in a grid' }, { v: 'box', label: 'Cube boxes' }, { v: 'oops', label: 'The two traps' }],
   intro: (v) => (v === 'grid' ? 'Count the balls row by row, layer by layer. Press <b>Next</b>.' : v === 'box' ? 'A second way: give every ball its own box. Press <b>Next</b>.' : 'Why answer D, and why not divide by a ball’s volume? Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -432,6 +433,7 @@ const WAYS = {
 const whichWay = {
   title: '★ Which conversion? Which formula?',
   height: 486,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(WAYS).map((k) => ({ v: k, label: WAYS[k].label })),
   intro: (v) => `Follow <b>${WAYS[v].label.split(':')[0]}</b> through the chart. Press <b>Next</b>.`,
   make(stage, v, ex) {
@@ -596,6 +598,7 @@ const HORSE_LEGS = [[[0.2, 0.5], [0.23, 0.3], [0.22, 0.04], [0.24, 0], [0.31, 0]
 const sizeUp = {
   title: 'Sizing up: units, instruments, referents',
   height: 420,
+  minW: 800, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'unit', label: 'Ex 2(a) check: units' }, { v: 'tool', label: 'Ex 2(b) check: instruments' }, { v: 'hand', label: 'Ex 2(c) check: hands' }],
   intro: (v) => (v === 'unit' ? 'Try every imperial unit; keep the one that gives a friendly number. Press <b>Next</b>.' : v === 'tool' ? 'Match each job to the instrument with the right precision and reach. Press <b>Next</b>.' : 'A hand is a 4-inch referent. Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -687,6 +690,7 @@ const sizeUp = {
 const micro = {
   title: 'Extension: inside the micrometer',
   height: 300,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'how', label: 'How it works' }, { v: 'e3', label: 'Example 3 check' }],
   intro: (v) => (v === 'how' ? 'Turn the thimble and watch both scales. Press <b>Next</b>.' : 'Open the micrometer to the Example 3 reading. Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -715,6 +719,7 @@ const micro = {
 const ratioMap = {
   title: 'A ratio that cancels, and a map scale',
   height: 400,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'e4a', label: 'Example 4(a) check' }, { v: 'e4b', label: 'Example 4(b) check' }],
   intro: (v) => (v === 'e4a' ? 'Turn 1032 km into miles with 5 mi = 8 km. Press <b>Next</b>.' : 'A map at 1 : 1 500 000. Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -873,6 +878,7 @@ const SHAPES = {
 const morph = {
   title: '★ One solid, five shapes',
   height: 450,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'tour', label: 'Tour all five (and a half)' }, { v: 'third', label: 'Pointed = one third' }, { v: 'arch', label: 'Sphere in a cylinder' }],
   intro: (v) => (v === 'tour' ? 'Watch one solid change shape and its formula change with it. Press <b>Next</b>.' : v === 'third' ? 'The same base and height, with and without a point. Press <b>Next</b>.' : 'A sphere packed exactly into a cylinder. Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -939,6 +945,7 @@ const morph = {
 const coneSphere = {
   title: 'Slant height first; radius first',
   height: 420,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'cone', label: 'Example 7(a) check: cone' }, { v: 'sph', label: 'Example 7(b) check: sphere' }],
   intro: (v) => (v === 'cone' ? 'r = 8 cm, h = 15 cm. Where is s? Press <b>Next</b>.' : 'd = 18 in. Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -986,6 +993,7 @@ const coneSphere = {
 const backwards = {
   title: 'A radical base; a formula run backwards',
   height: 420,
+  minW: 800, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'e8a', label: 'Example 8(a) check' }, { v: 'e8b', label: 'Example 8(b) check: undo the formula' }],
   intro: (v) => (v === 'e8a' ? 'An equilateral base, side 8 m, height 15 m. Press <b>Next</b>.' : 'V = 1526.8 m³. Find r. Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -1035,6 +1043,7 @@ const backwards = {
 const tank = {
   title: 'One tank, five trucks, two bids',
   height: 450,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ab', label: 'Ex 9(a)(b) check' }, { v: 'c', label: 'Ex 9(c) check' }, { v: 'd', label: 'Ex 9(d) check' }],
   intro: (v) => (v === 'ab' ? 'The tank’s diameter is three times its 5.4 m height. Press <b>Next</b>.' : v === 'c' ? 'The same volume poured into a narrower cone. Press <b>Next</b>.' : 'Two bids: one in C$ per m³, one in US$ per ft³. Press <b>Next</b>.'),
   make(stage, v, ex) {
