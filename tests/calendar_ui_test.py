@@ -16,7 +16,7 @@ async def main():
     errs = []
     async with async_playwright() as p:
         b = await p.chromium.launch()
-        ctx = await b.new_context(viewport={'width': 1400, 'height': 1500})
+        ctx = await b.new_context(viewport={'width': 1400, 'height': 1700})
         await ctx.add_init_script("localStorage.setItem('hw:tkey','testkey'); localStorage.setItem('hw:tclass','10c-b'); localStorage.setItem('hw:ttab','calendar');")
         tp = await ctx.new_page(); tp.on('pageerror', lambda e: errs.append('T ' + str(e)))
         await tp.route(BASE + 'js/config.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=CONFIG))
@@ -24,8 +24,8 @@ async def main():
         await tp.fill('.kc-date', '2026-09-03'); await tp.click('.kc-start .btn-primary'); await tp.wait_for_selector('.kc-grid')
         await tp.wait_for_timeout(600)
         cal = get('action=cal&class=10c-b')['cal']; print('saved start', cal['start'], len(cal['items']), 'items')
-        await tp.click('.kc-prev'); await tp.wait_for_timeout(200)
-        while (await tp.inner_text('.cal-nav h2')) != 'September 2026': await tp.click('.kc-prev'); await tp.wait_for_timeout(150)
+        await tp.evaluate("document.querySelector('.kc-grid').scrollToDate('2026-09-01')"); await tp.wait_for_timeout(200)
+        assert await tp.locator('.calm-day.calm-we').count() > 0, 'weekends shown'
         await tp.screenshot(path=SH + 'sept.png', full_page=True)
         dateOf = lambda k: tp.evaluate("(k) => { const c = document.querySelector('.kc-grid .kc-chip[data-key=' + k + ']'); return c ? c.closest('.calm-day').dataset.date : null; }", k)
         keysOn = lambda d: tp.evaluate("(d) => [...document.querySelectorAll('.calm-day[data-date=\"' + d + '\"] .kc-chip')].map(c => c.dataset.key)", d)
@@ -35,7 +35,7 @@ async def main():
         print(d3, await keysOn(d3)); assert await keysOn(d3) == ['u1l3', 'u1l4']
         d5b = await dateOf('u1l5'); print('L5 moved from', d5, 'to', d5b); assert d5b < d5
         # drag Lesson 5 two class days later: the days between stay empty, what follows falls in line
-        days = await tp.evaluate("[...document.querySelectorAll('.kc-grid .calm-day:not(.off):not(.out)')].map(c => c.dataset.date)")
+        days = await tp.evaluate("[...document.querySelectorAll('.kc-grid .calm-day:not(.calm-off):not(.calm-blank):not(.calm-we)')].map(c => c.dataset.date)")
         i5 = days.index(d5b); target = days[i5 + 2]
         await drag(tp, '.kc-chip[data-key=u1l5]', '.calm-day[data-date="%s"]' % target)
         assert await dateOf('u1l5') == target and await keysOn(days[i5]) == [] and await keysOn(days[i5 + 1]) == [] and await dateOf('u1l6a') == days[i5 + 3]
@@ -68,15 +68,27 @@ async def main():
         await sp.route(BASE + 'js/config.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=CONFIG))
         await sp.goto(BASE + '?class=10c-b'); await sp.wait_for_selector('.name-btn', timeout=10000)
         await sp.click('.name-btn:has-text("Ava Brown")'); pins = sp.locator('.field.pin'); await pins.nth(0).fill('1111'); await pins.nth(1).fill('1111')
-        await sp.click('.btn-primary'); await sp.wait_for_selector('.lesson-row'); await sp.wait_for_selector('.home-bar', timeout=10000)
-        print('home bar:', await sp.inner_text('.home-bar'))
+        await sp.click('.btn-primary'); await sp.wait_for_selector('.lesson-row'); await sp.wait_for_selector('.top-cal', timeout=10000)
+        await sp.wait_for_selector('.top-cal'); print('top bar:', (await sp.inner_text('.top-right')).replace('\n', ' '))
+        assert await sp.locator('.vtog').count() == 0, 'no toggle on the student home'
         await sp.screenshot(path=SH + 'student_home.png')
-        await sp.click('.vtog a:has-text("Class calendar")'); await sp.wait_for_selector('.calm')
-        await sp.screenshot(path=SH + 'student_cal.png', full_page=True)
-        await sp.goto(BASE + '#/calendar/2026-09'); await sp.wait_for_selector('.calm'); await sp.wait_for_timeout(300)
+        await sp.click('.top-cal'); await sp.wait_for_selector('.cal-pop .calv'); await sp.wait_for_timeout(300)
+        await sp.screenshot(path=SH + 'student_pop.png')
+        months = await sp.evaluate("[...document.querySelectorAll('.cal-pop .calm')].map(m => m.dataset.ym)"); print('months:', months); assert '2026-09' in months and len(months) >= 4
+        await sp.evaluate("document.querySelector('.cal-pop .calv').scrollToDate('2026-09-04')"); await sp.wait_for_timeout(200)
         st4 = await sp.evaluate("[...document.querySelectorAll('.calm-day[data-date=\"2026-09-04\"] .calm-chip')].map(c => c.textContent)"); print('student Sept 4:', st4); assert len(st4) == 2
         assert 'No school' in await sp.inner_text('.calm-day[data-date="2026-09-07"]')
-        await sp.screenshot(path=SH + 'student_sept.png', full_page=True)
+        await sp.keyboard.press('Escape'); assert await sp.locator('.cal-pop').count() == 0
+        # the teaching site's All lessons: Lessons / Class calendar toggle, by block (the mock class is block C)
+        get('action=setblock&key=testkey&class=10c-b&block=C')
+        lp = await (await b.new_context(viewport={'width': 1180, 'height': 820})).new_page(); lp.on('pageerror', lambda e: errs.append('L ' + str(e)))
+        await lp.route(BASE + 'js/config.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=CONFIG))
+        await lp.goto(BASE + 'lessons/?class=C'); await lp.wait_for_selector('.hc-tog')
+        assert (await lp.get_attribute('a.lcard >> nth=0', 'href')).endswith('?class=C')
+        await lp.click('.hc-tog button:has-text("Class calendar")'); await lp.wait_for_selector('.hc-cal .calv', timeout=10000)
+        assert await lp.locator('section.unit:visible').count() == 0
+        href = await lp.get_attribute('.hc-cal a.calm-chip >> nth=0', 'href'); print('teaching chip:', href); assert href.endswith('?class=C')
+        await lp.screenshot(path=SH + 'teaching.png')
         await b.close()
     print('errors', errs); assert not errs; print('PASS')
 asyncio.run(main())

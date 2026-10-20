@@ -1,0 +1,39 @@
+/* Class calendar (js/calendar.js): stacked months that scroll, Mon–Sun with narrow grey weekends.
+ * Used by the practice site (pop-up), the Teacher Ledger (Calendar tab) and the teaching site's All lessons page,
+ * so colours fall back to the practice site's values when a page doesn't define them. */
+.calv { position: relative; overflow-y: auto; overscroll-behavior: contain; max-height: var(--cal-h, 70vh); border: 1px solid var(--line, #e2ddd1); border-radius: 14px; background: #fff; box-shadow: var(--shadow, 0 1px 2px rgba(20,24,33,.05)); -webkit-overflow-scrolling: touch; }
+.calm-mh { position: sticky; top: 0; z-index: 3; display: flex; align-items: baseline; gap: 8px; padding: 10px 12px 6px; background: rgba(255, 255, 255, .96); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); font-size: 18px; font-weight: 800; color: var(--ink, #1c2230); border-bottom: 1px solid var(--line2, #efece5); }
+.calm-mh small { font-size: 13px; font-weight: 600; color: var(--muted, #6a7182); }
+.calm { }
+.calm-hd, .calm-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)) repeat(2, minmax(0, .42fr)); }
+.calm-hd { position: sticky; top: 41px; z-index: 2; }
+.calm-hd div { padding: 6px 8px; font-size: 11.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted, #6a7182); background: #faf9f6; border-bottom: 1px solid var(--line, #e2ddd1); }
+.calm-hd div.calm-we { color: #b3ad9f; text-align: center; padding-left: 2px; padding-right: 2px; }
+.calm-day { min-height: 96px; padding: 6px 7px 8px; border-right: 1px solid var(--line2, #efece5); border-bottom: 1px solid var(--line2, #efece5); display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.calm-day:nth-child(7n) { border-right: none; }
+.calm-day.calm-blank { background: #fcfbf8; }
+.calm-day.calm-we { background: #f3f1ec; padding: 6px 3px; }
+.calm-day.calm-we .calm-n { justify-content: center; color: #b3ad9f; }
+.calm-day.calm-past:not(.calm-today) .calm-items { opacity: .62; }
+.calm-day.calm-off { background: repeating-linear-gradient(135deg, #f6f4ef 0 8px, #efece5 8px 16px); }
+.calm-day.calm-today { box-shadow: inset 0 0 0 2px var(--brand, #0f5f5a); background: #f4fbf9; }
+.calm-n { font-size: 13px; font-weight: 700; color: var(--ink2, #3a4254); display: flex; align-items: center; gap: 5px; }
+.calm-tag { font-size: 10.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: #fff; background: var(--brand, #0f5f5a); border-radius: 999px; padding: 1px 7px; }
+.calm-items { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.calm-offl { font-size: 12px; font-weight: 700; color: #8b8474; }
+.calm-chip { display: block; min-width: 0; padding: 5px 7px; border-radius: 8px; background: #e3f1ef; color: var(--ink, #1c2230); text-decoration: none; font-size: 12.5px; line-height: 1.25; border: 1px solid #b9ddd7; }
+.calm-chip b { display: block; font-size: 11.5px; color: var(--brand, #0f5f5a); letter-spacing: .02em; }
+.calm-chip .ct { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.calm-chip.test { background: #ffe2c6; border-color: #f0ad6e; }
+.calm-chip.test b { color: #8a3d00; }
+a.calm-chip:hover { border-color: var(--brand, #0f5f5a); }
+.calm-chip .clk { float: right; font-size: 12px; margin-left: 4px; text-decoration: none; }
+@media (max-width: 640px) {
+  .calm-day { min-height: 64px; padding: 4px 3px; } .calm-chip { padding: 3px 4px; font-size: 10.5px; } .calm-chip b { font-size: 10.5px; } .calm-chip .ct, .calm-chip .clk, .calm-tag { display: none; }
+  .calm-hd div { padding: 5px 3px; font-size: 10px; } .calm-hd { top: 37px; } .calm-mh { font-size: 16px; }
+}
+/* the next test */
+.next-test { display: inline-block; line-height: 1.4; padding: 6px 13px; border-radius: 999px; background: #ffe2c6; border: 1px solid #f0ad6e; color: #6b2f00; font-size: 14px; white-space: nowrap; }
+.next-test b { color: #8a3d00; }
+.next-test.soon { background: #ffd2a8; }
+.cal-today { margin: 0 0 10px; font-size: 15px; }

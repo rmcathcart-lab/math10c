@@ -90,7 +90,7 @@ function doGet(e) {
     if (a === 'progress') return json_(progress_(p['class'], p.name, p.token), cb);
     if (a === 'tcheck') return json_(tcheck_(p), cb);
     if (a === 'myresults') return json_(myResults_(p), cb);
-    if (a === 'cal') return json_(cal_(p['class']), cb);
+    if (a === 'cal') return json_(cal_(p['class'] || classByBlock_(p.block)), cb);
     if (!teacherKey_() || p.key !== teacherKey_()) return json_({ ok: false, error: 'bad key' }, cb);
     if (a === 'classes') return json_(classList_(), cb);
     if (a === 'dash') return json_(dash_(p['class']), cb);
@@ -328,10 +328,17 @@ function setBlock_(klass, block) {
   finally { lock.releaseLock(); }
 }
 /* the class calendar (students read it; the teacher saves it from the ledger's Calendar tab). Days off are NOSCHOOL. */
+/* the teaching site knows a class by its block letter (?class=B): the class set to that block in the ledger */
+function classByBlock_(block) {
+  var b = String(block || '').toUpperCase(), bl = blocks_(), hit = '';
+  if (!/^[A-D]$/.test(b)) return '';
+  classes_().forEach(function (c) { if (!hit && String(bl[c.code] || '').toUpperCase() === b) hit = c.code; });
+  return hit;
+}
 function cal_(klass) {
-  var c = classOf_(klass); if (!c) return { ok: false, error: 'unknown class' };
+  var c = classOf_(klass); if (!c) return { ok: true, cal: null, noSchool: noSchool_(), error: 'unknown class' };
   var v = cachedProp_('CAL:' + c.code);
-  return { ok: true, cal: v && v.start ? v : null, noSchool: noSchool_() };
+  return { ok: true, 'class': c.code, label: c.label || c.code, cal: v && v.start ? v : null, noSchool: noSchool_() };
 }
 function setCal_(klass, json) {
   var c = classOf_(klass); if (!c) return { ok: false, error: 'unknown class' };

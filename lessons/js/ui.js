@@ -29,7 +29,7 @@ export function boot({ key, homeHref = '../../', title = '' }) {
   /* ---------- toolbar ---------- */
   const tb = h('header', 'tb no-ink'); tb.id = 'tb';
   tb.innerHTML = `
-    <a class="tbtn home" href="${homeHref}" title="All lessons" aria-label="All lessons"><img class="home-mark" src="${homeHref}assets/icon-180.png" alt="" width="34" height="34"></a>
+    <a class="tbtn home" href="${homeHref}${sh.cls ? '?class=' + sh.cls : ''}" title="All lessons" aria-label="All lessons"><img class="home-mark" src="${homeHref}assets/icon-180.png" alt="" width="34" height="34"></a>
     <div class="tb-title">${title}</div>
     <div class="share-badge"></div>
     <div class="tb-group tools">

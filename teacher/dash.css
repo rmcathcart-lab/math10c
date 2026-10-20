@@ -249,18 +249,19 @@ tr.detail td { background: #fcfbf8 !important; }
 .kc-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
 .kc-msg { margin: 0 0 8px; color: var(--ink2); min-height: 18px; }
 .kc-offnote { background: #fff7e6; border: 1px dashed #e0a800; border-radius: 10px; padding: 8px 12px; margin: 0 0 10px; font-size: 14px; }
-.kc-grid .calm-day { min-height: 116px; transition: background .1s; }
+.kc-grid { --cal-h: calc(100vh - 380px); min-height: 420px; }
+.kc-grid .calm-day { min-height: 104px; transition: background .1s; }
 .kc-grid .kc-chip { cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
-.kc-grid.kc-offmode .calm-day { cursor: pointer; }
-.kc-grid.kc-offmode .calm-day:not(.off):hover { background: #fff3d1; }
+.kc-grid.kc-offmode .calm-day[data-date]:not(.calm-we) { cursor: pointer; }
+.kc-grid.kc-offmode .calm-day[data-date]:not(.calm-we):not(.calm-off):hover { background: #fff3d1; }
 .kc-grid.kc-offmode .kc-chip { pointer-events: none; }
 .calm-day.kc-over { background: #e3f1ef !important; box-shadow: inset 0 0 0 2px var(--brand2, #13807a); }
 .kc-src { opacity: .35; }
 .kc-ghost { position: fixed; left: 0; top: 0; z-index: 100; pointer-events: none; box-shadow: 0 10px 26px rgba(20, 24, 33, .28); transform-origin: 0 0; opacity: .95; }
 body.kc-dragging, body.kc-dragging * { cursor: grabbing !important; }
-.kc-tray { margin-top: 14px; background: #fff; border: 1px dashed #cfc8b8; border-radius: 12px; padding: 10px 12px; min-height: 64px; }
+.kc-tray { margin: 0 0 10px; background: #fff; border: 1px dashed #cfc8b8; border-radius: 12px; padding: 8px 12px; min-height: 48px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .kc-tray.kc-over { background: #fdebe1 !important; border-color: #e0732a; }
-.kc-tray-h { margin-bottom: 8px; }
+.kc-tray-h { margin: 0; }
 .kc-tray-list { display: flex; flex-wrap: wrap; gap: 6px; }
 .kc-tray-list .kc-chip { width: 170px; cursor: grab; touch-action: none; }
 .kc-pop { position: absolute; z-index: 60; width: 280px; background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 14px 40px rgba(20, 24, 33, .22); padding: 10px 12px; }
