@@ -477,7 +477,7 @@ const MREAD = {
 const mread = {
   title: 'Extension: sleeve + thimble',
   height: 360,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(MREAD).map((k) => ({ v: k, label: MREAD[k].label })),
   intro: (k) => (MREAD[k].trap ? 'Two readings with the <b>same</b> thimble number. Press <b>Next</b>.' : 'Turn the thimble to the reading, then read the <b>sleeve</b> and the <b>thimble</b>. Press <b>Next</b>.'),
   make(stage, key, ex) {

@@ -360,11 +360,12 @@ function pFrac(host, x, y, nTex, dTex) {
 const prop = {
   title: 'Two correct arrangements of the same proportion',
   height: 430,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar (Sam's fractions are laid out on a fixed 400 px row)
   choices: Object.keys(PROP).map((k) => ({ v: k, label: PROP[k].label })),
   intro: 'Sam cross-multiplies; Priya builds a table with headers. Same ratio, two layouts. Press <b>Next</b>.',
   make(stage, key, ex) {
-    const d = PROP[key], W = ex.W, pw = (W - 42) / 2, H = ex.def.height;
-    const S = panel(stage, 14, 12, pw, H - 24, 'Sam · cross multiplication'), P = panel(stage, 28 + pw, 12, pw, H - 24, 'Priya · table of headers');
+    const d = PROP[key], W = ex.W, pw = (W - 42) * 0.55, pw2 = W - 42 - pw, H = ex.def.height;
+    const S = panel(stage, 14, 12, pw, H - 24, 'Sam · cross multiplication'), P = panel(stage, 28 + pw, 12, pw2, H - 24, 'Priya · table of headers');
     const row = h('div', 'u10l4a-eqrow'); S.appendChild(row);
     const fA = pFrac(row, 6, 0, d.A[0], d.A[1]), eq = add(row, h('div', 'u10l4a-peq', '='), 190, 34), fB = pFrac(row, 250, 0, d.B[0], d.B[1]);
     const X = svgEl('svg', { width: 400, height: 112, style: 'position:absolute;left:0;top:0;overflow:visible' }, row);
@@ -398,7 +399,7 @@ const prop = {
         } },
       { cap: `Different layouts, <b>the same answer</b>: ${T(d.fin)}. Any arrangement works as long as matching units sit in matching positions.`,
         run: async (c) => {
-          sa = stamp(S, 'same ✓', { x: pw - 70, y: H - 70 }); sb = stamp(P, 'same ✓', { x: pw - 70, y: H - 70 });
+          sa = stamp(S, 'same ✓', { x: pw - 70, y: H - 70 }); sb = stamp(P, 'same ✓', { x: pw2 - 70, y: H - 70 });
           await Promise.all([stampIn(c, sa), stampIn(c, sb)]);
         } }
     ];
@@ -496,7 +497,7 @@ function drawMap(stage, x, y, w, hh) {
 const map = {
   title: 'Map scales: 1 : 250 000',
   height: 420,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'cm', label: 'What 1 map cm stands for' }, { v: 'a', label: 'Example 7(a) check: towns' }, { v: 'b', label: 'Example 7(b) check: lakes' }],
   intro: 'The same unit on both sides of the ratio; convert to a convenient unit at the end. Press <b>Next</b>.',
   make(stage, v, ex) {

@@ -708,8 +708,8 @@ const interest = {
       { cap: `Each dollar moved from ${d.r2}% to ${d.r1}% earns ${T(dD)} more. We need ${money(need)} more than ${money(lo)}: ${T(`${tnum(need)}\\div${dD}=${tnum(x)}`)}.`, run: async (c) => {
         await slide(c, 0, 500); await slide(c, x, 1400); await show(c, r2); await show(c, r3);
       } },
-      { cap: `Check: ${T(`${dA}(${tnum(x)})+${dB}(${tnum(y)})=${tnum(a * x)}+${tnum(b * y)}=${tnum(d.I)}`)} ✓. Overall rate ${T(`${tnum(d.I)}\\div${tnum(d.P)}=${+(d.I / d.P * 100).toFixed(2)}\\%`)}, between ${d.r2}% and ${d.r1}% ✓.`, run: async (c) => {
-        const s = stamp(stage, `${money(x)} at ${d.r1}%, ${money(y)} at ${d.r2}%`, { ok: true, x: W - 250, y: 194, size: 'sm' }); await stampIn(c, s);
+      { cap: `Check: ${T(`${dA}(${tnum(x)})+${dB}(${tnum(y)})`)} ${T(`=${tnum(a * x)}+${tnum(b * y)}=${tnum(d.I)}`)} ✓. Overall rate ${T(`${tnum(d.I)}\\div${tnum(d.P)}=${+(d.I / d.P * 100).toFixed(2)}\\%`)}, between ${d.r2}% and ${d.r1}% ✓.`, run: async (c) => {
+        const s = stamp(stage, `${money(x)} at ${d.r1}%, ${money(y)} at ${d.r2}%`, { ok: true, x: 210, y: 286, size: 'sm', rotate: -3 }); await stampIn(c, s); // left of the interest readout, clear of the Eq. 2 line
       } }
     ];
   }

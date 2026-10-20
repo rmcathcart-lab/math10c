@@ -69,7 +69,11 @@ async def check_lesson(ctx, path, base):
     await page.goto(base + 'lessons/' + path + '/'); await page.wait_for_timeout(1800)
     info = await page.evaluate("""() => ({
       screen: !!document.querySelector('main.lesson.screen'),
-      warm: (() => { const w = document.querySelector('section.warm'); return w ? Math.round(w.getBoundingClientRect().height) : 0; })(),
+      // the first screen: from the top of the warm-up card to the bottom of its grid (+ the card's bottom padding);
+      // material placed after the grid (follow-ups that come after the big one) doesn't count
+      warm: (() => { const w = document.querySelector('section.warm'); if (!w) return 0; const r = w.getBoundingClientRect(), g = w.querySelector(':scope > .wf-grid');
+        if (!g || g === w.lastElementChild) return Math.round(r.height);
+        return Math.round(g.getBoundingClientRect().bottom - r.top + parseFloat(getComputedStyle(w).paddingBottom)); })(),
       ex: [...document.querySelectorAll('.ex')].map((e, i) => ({ i, name: e.dataset.explainer || e.id || '', side: e.classList.contains('ex-side'), api: !!e._ex, minW: e._ex && e._ex.def.minW || null }))
     })""")
     res = []

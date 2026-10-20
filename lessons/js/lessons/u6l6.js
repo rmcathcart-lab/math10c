@@ -329,6 +329,7 @@ const midpoint = {
 const stairEx = {
   title: 'Slope: rise over run, the same everywhere',
   height: 480,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'same', label: 'Same everywhere' }, { v: 'dial', label: 'Steepness dial' }, { v: 'ex3a', label: 'Example 3(a) check' }],
   intro: (v) => ({ same: 'Slide and stretch a slope triangle along a line. Press <b>Next</b>.', dial: 'Turn a line from flat to vertical and watch its slope. Press <b>Next</b>.', ex3a: 'The slope from A to B. Press <b>Next</b>.' })[v],
   make(stage, v, ex) {
@@ -651,7 +652,7 @@ const whichTool = {
       };
     };
     const steps = [
-      { cap: `Plot ${T(q.N.map((n, i) => n + pairTex(...q.P[i])).join(',\\ '))}. First tool for every side: <b>slope</b> (and length).`,
+      { cap: `Plot ${q.N.map((n, i) => T(n + pairTex(...q.P[i]))).join(', ')}. First tool for every side: <b>slope</b> (and length).`,
         run: async (c) => {
           for (let i = 0; i < 4; i++) await G.reveal(G.point(...q.P[i], { color: INK, r: 6.5, label: T(q.N[i]), pos: q.pos[i] }), c, 200);
           for (let i = 0; i < 4; i++) { segs[i] = G.segment(S[i].a, S[i].b, { color: BLUE, width: 3.5 }); await G.drawIn(segs[i], 260, c); }
@@ -697,6 +698,7 @@ const COL = {
 const collinear = {
   title: 'Which point does not belong?',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex6', label: 'Example 6 check' }, { v: 'fixed', label: 'When the fixed point is the odd one' }],
   intro: (v) => (v === 'ex6' ? 'Three points share a line. Find the slope from A to each of the others. Press <b>Next</b>.' : 'What if the point you fix is the odd one? Press <b>Next</b>.'),
   make(stage, v, ex) {

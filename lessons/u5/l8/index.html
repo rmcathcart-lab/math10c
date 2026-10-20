@@ -43,9 +43,9 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Celsius vs Fahrenheit" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Celsius vs Fahrenheit</h2></div>
-  <p class="big">Canada reads the <b>top</b> scale. The United States reads the <b style="color:#1e6eb4">bottom</b> one.</p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Celsius vs Fahrenheit" id="wu" style="--wf-side: 390px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Celsius vs Fahrenheit</h2>
+  <p class="wf-rule">Canada reads the <b>top</b> scale. The United States reads the <b style="color:#1e6eb4">bottom</b> one.</p></div>
   <div class="u5l8-thermo" id="u5l8-thermo"></div>
   <div class="u5l8-tctl no-ink">
     <span class="muted">Move the red fluid to:</span>
@@ -56,21 +56,21 @@
     <span class="u5l8-tread" id="u5l8-tread"></span>
   </div>
   <div class="u5l8-rulebox">The conversion is a function: <span class="tex">F(C)=1.8\,C+32</span></div>
-
+  <div class="wf-grid"><div class="wf-main u5l8-wqs">
   <div class="bk-wq">
-    <div class="q-line"><div class="q-num">1</div><div>Find <span class="tex">F(0)</span>. Check it on the picture.</div></div>
-    <div class="u5l8-wqa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">F(0)=1.8(0)+32=32</span>. Water freezes at <span class="tex">0^{\circ}\text{C}</span>, which is <span class="tex">32^{\circ}\text{F}</span>: the 0 on top sits right above the 32 on the bottom.</div></div>
+    <div class="q-line"><div class="q-num">1</div><div>Find <span class="tex">F(0)</span>. Check it on the picture. <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+    <div class="u5l8-wqa"><div class="bk-ans"><span class="tex">F(0)=1.8(0)+32=32</span>. Water freezes at <span class="tex">0^{\circ}\text{C}</span>, which is <span class="tex">32^{\circ}\text{F}</span>: the 0 on top sits right above the 32 on the bottom.</div></div>
   </div>
   <div class="bk-wq">
-    <div class="q-line"><div class="q-num">2</div><div>Find <span class="tex">F(100)</span>. What happens to water at <span class="tex">100^{\circ}\text{C}</span>?</div></div>
-    <div class="u5l8-wqa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">F(100)=180+32=212</span>. Water <b>boils</b> at <span class="tex">100^{\circ}\text{C}</span>, which is <span class="tex">212^{\circ}\text{F}</span> (at sea level).</div></div>
+    <div class="q-line"><div class="q-num">2</div><div>Find <span class="tex">F(100)</span>. What happens to water at <span class="tex">100^{\circ}\text{C}</span>? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+    <div class="u5l8-wqa"><div class="bk-ans"><span class="tex">F(100)=180+32=212</span>. Water <b>boils</b> at <span class="tex">100^{\circ}\text{C}</span>, which is <span class="tex">212^{\circ}\text{F}</span> (at sea level).</div></div>
   </div>
   <div class="bk-wq">
-    <div class="q-line"><div class="q-num">3</div><div>Finish the sentence: “<span class="tex">F(20)=</span> ____ means a ____ °C room is ____ °F.”</div></div>
-    <div class="u5l8-wqa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">“<span class="tex">F(20)=68</span> means a <b>20 °C</b> room is <b>68 °F</b>.” The number in the brackets is the <b>input</b> (Celsius); <span class="tex">68</span> is the <b>output</b> (Fahrenheit).</div></div>
+    <div class="q-line"><div class="q-num">3</div><div>Finish the sentence: “<span class="tex">F(20)=</span> ____ means a ____ °C room is ____ °F.” <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+    <div class="u5l8-wqa"><div class="bk-ans">“<span class="tex">F(20)=68</span> means a <b>20 °C</b> room is <b>68 °F</b>.” The number in the brackets is the <b>input</b> (Celsius); <span class="tex">68</span> is the <b>output</b> (Fahrenheit).</div></div>
   </div>
-
-  <div class="poll">
+  </div><div class="wf-side">
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Is there a temperature where the two scales show the <b>same</b> number? <b>Guess first.</b></div></div>
     <div class="poll-opts u5l8-c4">
       <div class="opt"><b>A</b> yes, at <span class="tex">0^{\circ}</span></div>
@@ -90,6 +90,7 @@
       </div>
     </div>
   </div>
+  </div></div>
 
   <div class="bk-wq" style="margin-top:14px">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> A US forecast says <span class="tex">95^{\circ}\text{F}</span>. Is that hot?</div></div>

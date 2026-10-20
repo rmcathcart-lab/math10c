@@ -261,7 +261,7 @@ function weight(g, x, w, hh, color, text, y = 122) {
 const bench = {
   title: 'Side by side: imperial units against SI benchmarks',
   height: 460,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(BEN).map((k) => ({ v: k, label: BEN[k].label })),
   intro: 'How big is each imperial unit compared with an SI unit you already know? Press <b>Next</b>.',
   make(stage, k, ex) {

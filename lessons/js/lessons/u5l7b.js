@@ -3,7 +3,7 @@
  * Colour code for the notation (whole lesson): the function's NAME purple, the INPUT blue, the OUTPUT amber. */
 import {
   h, tex, add, box, Graph, ValueTable, MappingDiagram, stamp, stampIn, checkCard, mountExplainers,
-  pop, fadeIn, pulse, sleep, pairTex, svgEl, arrowHead, liveCtx, drawIn
+  pop, fadeIn, pulse, sleep, pairTex, svgEl, arrowHead, liveCtx, drawIn, fit
 } from '../blocks.js';
 
 const T = (s) => tex(s);
@@ -23,6 +23,7 @@ const KL = (src) => K(src.replace(/=\\htmlClass/g, '=\\;\\htmlClass')); // keep 
 
 const panel = (stage, x, y, w, hh, title) => add(stage, box(h('div', 'u5l7b-panel', title ? `<div class="u5l7b-ph">${title}</div>` : ''), w, hh), x, y);
 const line = (p, html, cls = '') => { const d = h('div', 'u5l7b-pl ' + cls, html); p.appendChild(d); return d; };
+const inner = (el) => { const cs = getComputedStyle(el); return el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight); }; // content width of a panel
 const hide = (...els) => els.forEach((e) => { if (e) e.style.opacity = 0; });
 const keysHTML = (s) => `<span class="keys">${s.split(' ').map((k) => `<kbd>${k === '=' ? 'ENTER' : k}</kbd>`).join('')}</span>`;
 /* an element's box in stage coordinates (the lesson page may be scaled) */
@@ -72,7 +73,7 @@ const MC = {
 const machine = {
   title: 'The function machine',
   height: 356,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(MC).map((k) => ({ v: k, label: MC[k].label })),
   intro: 'An <b>input</b> goes in, the rule acts on it, and exactly <b>one output</b> comes out. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -256,7 +257,7 @@ const machineFB = {
         if (i === 1) await pulse(c, fO2, 1.08);
         if (i === 2) { fOut.innerHTML = K(d.fwd[2]); await pop(c, fOut.firstChild, 420); }
       }
-      for (const s of d.alg1) await fadeIn(c, line(P, K(s), 'u5l7b-fw'), 260);
+      for (const s of d.alg1) { const e = line(P, K(s), 'u5l7b-fw'); fit(e, inner(P), 13); await fadeIn(c, e, 260); } // shrink a long line to the panel
     };
     const bwd = async (c) => {
       bOut.innerHTML = K(d.bwd[0]); await pop(c, bOut.firstChild);
@@ -267,7 +268,7 @@ const machineFB = {
         if (i === 1) await pulse(c, bO1, 1.08);
         if (i === 2) { bIn.innerHTML = K(d.bwd[2]); bIn.classList.toggle('two', k === 's'); await pop(c, bIn.firstChild, 420); }
       }
-      for (const s of d.alg2) await fadeIn(c, line(P, K(s), 'u5l7b-bw'), 260);
+      for (const s of d.alg2) { const e = line(P, K(s), 'u5l7b-bw'); fit(e, inner(P), 13); await fadeIn(c, e, 260); }
     };
     return [
       { cap: d.what, run: async (c) => { await pulse(c, fO1, 1.08); await pulse(c, fO2, 1.08); } },
@@ -275,7 +276,7 @@ const machineFB = {
       { cap: `<b>Solve</b> ${T(d.bq)}: now the <b>output</b> is known. Go <b>backwards</b>, undoing each step in <b>reverse</b> order: ${T(d.undo[1])} first, then ${T(d.undo[0])}.`,
         run: async (c) => { await fadeIn(c, head2); await Promise.all([bOut, bO2, bO1, bIn].map((e, i) => fadeIn(c, e, 300, { delay: i * 90 }))); } },
       { cap: `${T(d.bwd[0])} → ${T(d.bwd[1])} → ${T(d.bwd[2])}. ${d.back}`, run: bwd },
-      { cap: `Check by going forwards: ${T(d.check)} ✓`, run: async (c) => { const l = line(P, K(d.check) + ' ✓', 'u5l7b-ck'); await fadeIn(c, l); const s = stamp(stage, 'checks out', { ok: true, x: 340, y: 372, size: 'sm' }); await stampIn(c, s); } }
+      { cap: `Check by going forwards: ${T(d.check)} ✓`, run: async (c) => { const l = line(P, K(d.check) + ' ✓', 'u5l7b-ck'); fit(l, inner(P), 13); await fadeIn(c, l); const s = stamp(stage, 'checks out', { ok: true, x: 340, y: 372, size: 'sm' }); await stampIn(c, s); } }
     ];
   }
 };
@@ -466,6 +467,7 @@ const NL = {
 const nonlinearSub = {
   title: 'Extension: an expression into a non-linear function',
   height: 400,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(NL).map((k) => ({ v: k, label: NL[k].label })),
   intro: (k) => `For ${T(NL[k].f.replace(/\\htmlClass\{u5l7b-slot\}\{x\}/g, 'x'))}, put in ${T(NL[k].inp)}. Press <b>Next</b>.`,
   make(stage, k, ex) {
