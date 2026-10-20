@@ -96,9 +96,15 @@ async def main():
         st4 = await sp.evaluate("[...document.querySelectorAll('.calm-day[data-date=\"2026-09-04\"] .calm-chip')].map(c => c.textContent)"); print('student Sept 4:', st4); assert len(st4) == 2
         assert 'No school' in await sp.inner_text('.calm-day[data-date="2026-09-07"]')
         await sp.keyboard.press('Escape'); assert await sp.locator('.cal-pop').count() == 0
+        # units fold: only the current unit (from the calendar) is open; a unit opens when tapped
+        await sp.goto(BASE); await sp.wait_for_selector('.unit')
+        units = await sp.evaluate("[...document.querySelectorAll('section.unit')].map(s => [s.querySelector('.unit-num').textContent, s.classList.contains('closed'), !!s.querySelector('.ut-cur')])"); print('units:', units[:6])
+        assert sum(1 for u in units if not u[1]) == 1 and [u for u in units if not u[1]][0][2], 'only the current unit is open'
+        await sp.click('section.unit >> nth=0 >> .unit-title'); assert not await sp.evaluate("document.querySelector('section.unit').classList.contains('closed')")
+        await sp.screenshot(path=SH + 'units.png')
         # the old lesson home page sends people on: students to their assignments, the teacher to the ledger
         get('action=setblock&key=testkey&class=10c-b&block=C')
-        await sp.goto(BASE + 'lessons/'); await sp.wait_for_selector('.lesson-row'); assert sp.url.split('#')[0] == BASE, sp.url
+        await sp.goto(BASE + 'lessons/'); await sp.wait_for_selector('.lesson-row', state='attached'); assert sp.url.split('#')[0] == BASE, sp.url
         # the ledger header: Lessons pop-up (cards / calendar) and Launch Today's Lesson for this class's block
         await tp.reload(); await tp.wait_for_selector('.top-lessons', timeout=15000); await tp.wait_for_timeout(1200)
         launch = await tp.evaluate("(() => { const b = document.querySelector('.top-launch'); return [b.tagName, b.getAttribute('href'), b.title, b.disabled]; })()"); print('launch:', launch)

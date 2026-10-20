@@ -628,3 +628,15 @@ body.tm-on .calc { z-index: 200; }
 .unit[style] .unit-title::before { content: ''; align-self: stretch; width: 5px; border-radius: 3px; background: var(--uc); margin-right: -2px; }
 .unit[style] .lesson-row { border-left: 4px solid var(--ucs); }
 .unit[style] a.lesson-row:hover { border-color: var(--uc); }
+/* units fold up on the home page (the current unit is open) */
+.unit > .unit-title { cursor: pointer; user-select: none; -webkit-user-select: none; border-radius: 10px; padding: 4px 6px; margin-left: -6px; margin-right: -6px; }
+.unit > .unit-title:hover { background: rgba(0, 0, 0, .03); }
+.unit > .unit-title:focus-visible { outline: 3px solid var(--brand2); outline-offset: 2px; }
+.ut-chev { display: inline-block; font-size: 14px; color: var(--muted); transition: transform .15s; align-self: center; }
+.unit:not(.closed) .ut-chev { transform: rotate(90deg); }
+.ut-cur { font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: #fff; background: var(--uc, var(--brand)); border-radius: 999px; padding: 2px 9px; align-self: center; }
+.ut-sum { font-size: 13px; font-weight: 600; color: var(--muted); }
+.unit:not(.closed) .ut-sum { display: none; }
+.unit.closed { margin-bottom: 8px; }
+.unit.closed > .lesson-list, .unit.closed > .soon-note { display: none; }
+.unit.closed .unit-title { margin-bottom: 0; }
