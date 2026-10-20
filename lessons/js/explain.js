@@ -6,6 +6,7 @@
  * know how to move forward. Steps animate through c.anim / c.sleep, which stop quietly if the explainer is reset.
  */
 
+import { state as inkState } from './ink.js';
 export const h = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
 export const fmt = (n) => (Math.abs(n) >= 1000 ? n.toLocaleString('en-CA').replace(/,/g, '\u202f') : String(n)); // narrow no-break space thousands, like the booklet
 const CANCEL = { cancelled: true };
@@ -69,12 +70,44 @@ export class Explainer {
     this.count = h('span', 'ex-count'); ctl.appendChild(this.count);
     this.bNext = B('next', 'Next <svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>', 'Next step', () => { this.stop(); this.next(); });
     this.bPlay = B('play', '<svg viewBox="0 0 24 24"><path d="M7 5l12 7-12 7z"/></svg>', 'Play to the end', () => this.togglePlay());
-    host.append(top, this.stage, this.cap, ctl);
+    /* Screen-fit lessons (<main class="lesson screen">): the number chips, the caption and the controls sit in a column
+     * beside the picture, so the whole explainer fits on one screen and Next stays in the same place every step. */
+    if (def.side !== false && host.closest('.lesson.screen')) {
+      host.classList.add('ex-side');
+      const body = h('div', 'ex-body'), panel = h('div', 'ex-panel');
+      const chips = top.querySelector('.ex-chips'); if (chips) panel.appendChild(chips);
+      ctl.appendChild(h('span', 'ex-tapnote', def.tap === false ? '' : 'or tap the picture'));
+      panel.append(this.cap, ctl); body.append(this.stage, panel);
+      host.append(top, body);
+    } else host.append(top, this.stage, this.cap, ctl);
+    this.tapToNext();
     const first = def.choices ? def.choices.find((c) => !(c && typeof c === 'object' && c.sep)) : undefined; // skip { sep } headings
     this.value = def.value != null ? def.value : first !== undefined ? (typeof first === 'object' ? first.v : first) : null;
     this.lastW = 0;
     const ro = new ResizeObserver(() => { const w = this.stage.clientWidth; if (w && Math.abs(w - this.lastW) > 2) { const first = !this.lastW; this.lastW = w; if (first) this.build(0); else { this.stop(); this.build(this.k); } } });
     ro.observe(this.stage);
+  }
+  /* A finger tap on the picture does Next (like a clicker). Not for a Pencil or mouse (they write), not while
+   * "Finger draws too" is on, not on anything tappable in the picture (buttons, [data-tap]), not for a two-finger tap
+   * (undo) or a scroll; an explainer whose picture is itself interactive can turn it off with tap: false. */
+  tapToNext() {
+    if (this.def.tap === false || !this.host.closest('.lesson.screen')) return;
+    const st = this.stage, TAPPABLE = 'button, a, input, select, label, [data-tap], .no-ink';
+    let t = null, n = 0;
+    st.classList.add('ex-tap');
+    st.addEventListener('pointerdown', (e) => {
+      if (e.pointerType !== 'touch') return;
+      n++; t = n === 1 && !(e.target.closest && e.target.closest(TAPPABLE)) ? { id: e.pointerId, x: e.clientX, y: e.clientY, at: Date.now() } : null;
+    });
+    st.addEventListener('pointermove', (e) => { if (t && e.pointerId === t.id && Math.hypot(e.clientX - t.x, e.clientY - t.y) > 12) t = null; });
+    const end = (e) => {
+      if (e.pointerType !== 'touch') return;
+      n = Math.max(0, n - 1);
+      const ok = t && e.type === 'pointerup' && e.pointerId === t.id && Date.now() - t.at < 600 && !inkState().finger;
+      t = null;
+      if (ok) { this.stop(); if (this.k < (this.steps || []).length) { this.next(); } else this.stage.animate([{ opacity: 1 }, { opacity: .6 }, { opacity: 1 }], 300); }
+    };
+    st.addEventListener('pointerup', end); st.addEventListener('pointercancel', end);
   }
   choose(v) { this.stop(); this.value = v; this.build(0); }
   ctx(g, fast) {

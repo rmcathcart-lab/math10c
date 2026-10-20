@@ -439,3 +439,68 @@ body.board-open { overflow: hidden; }
 body.viewer .edot { display: none; }
 @media print { .edot { display: none !important; } }
 
+
+/* ---------- screen-fit lessons (<main class="lesson screen">) ----------
+   Each explainer, and the warm-up, fits on one iPad screen under the toolbar (about 680 px of lesson height on an
+   11-inch iPad in Safari, landscape). Explainers put the number chips, the caption and the controls in a column beside
+   the picture (explain.js), and a finger tap on the picture does Next. */
+.lesson.screen .card { padding: 26px 30px 28px; }
+.ex-side { margin: 14px 0 4px; }
+.ex-side .ex-top { margin-bottom: 8px; }
+.ex-body { display: grid; grid-template-columns: minmax(0, 1fr) 268px; gap: 16px; align-items: stretch; }
+.ex-panel { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.ex-panel .ex-chips { gap: 5px; }
+.ex-panel .ex-chips .chip { min-width: 0; padding-left: 11px; padding-right: 11px; }
+.ex-panel .ex-sep { width: 100%; margin: 4px 0 0; }
+.ex-panel .ex-custom { margin-left: 0; }
+.ex-panel .ex-cap { flex: 1 1 auto; min-height: 0; padding: 12px 14px; font-size: 18.5px; line-height: 1.42; background: #f6f5f0; border-radius: 12px; }
+.ex-panel .ex-ctl { display: grid; grid-template-columns: auto auto 1fr auto; gap: 8px; align-items: center; }
+.ex-panel .exb.next { grid-column: 1 / -1; order: -1; height: 58px; font-size: 19px; }
+.ex-panel .ex-count { min-width: 0; }
+.ex-tapnote { grid-column: 1 / -1; font-size: 13px; color: var(--muted); text-align: center; margin-top: -2px; }
+.ex-tapnote:empty { display: none; }
+.ex-tap { touch-action: manipulation; }
+/* the warm-up on one screen: the rule under the title, Q1 and Q2 with the two trees on the left, the big one beside them */
+.wf .wf-head { display: grid; grid-template-columns: auto 1fr; column-gap: 14px; align-items: center; margin-bottom: 6px; }
+.wf .wf-head h2 { margin: 0; }
+.wf .wf-rule { grid-column: 1 / -1; margin: 8px 0 0; font-size: 19px; }
+.wf-grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 18px; align-items: start; }
+.wf .seal-q { margin: 14px 0 4px; font-size: 19px; }
+.wf-q1 { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px 16px; }
+.wf-hint { font-size: 16px; }
+.wf .gift-row { margin: 0 0 22px; gap: 7px; }
+.wf .giftbtn { width: 62px; height: 54px; font-size: 21px; }
+.wf .giftbtn small { bottom: -22px; font-size: 14px; }
+.wf .q-line { margin: 6px 0 10px; font-size: 18.5px; }
+.wf .two-trees { gap: 12px; }
+.wf .tree-card { position: relative; padding: 6px 6px 2px; }
+.wf .tree-name { line-height: 34px; }
+.wf .ft-ctl { position: absolute; top: 6px; right: 6px; gap: 5px; }
+.wf .ft-ctl .exb { height: 34px; min-width: 34px; padding: 0 9px; font-size: 14px; border-radius: 10px; }
+.wf .ft-ctl .exb svg { width: 16px; height: 16px; }
+.wf .ft-tray { min-height: 36px; padding: 2px 6px; font-size: 15px; }
+.wf .tree-name { font-size: 18px; }
+.wf .compare { margin: 12px 0 0; padding: 10px 14px; font-size: 17px; }
+.wf-side .compare + .wf-poll { margin-top: 10px; }
+.wf-poll { margin-top: 12px; padding: 4px 16px 16px; }
+.wf-poll .q-line { font-size: 17.5px; margin: 12px 0 10px; gap: 10px; }
+.wf-poll .poll-opts { grid-template-columns: 1fr; margin: 0 0 12px; gap: 8px; }
+.wf-poll .opt { font-size: 17px; }
+.wf-poll > .pill { margin-left: 0; }
+.wf-poll .poll-ans { margin: 10px 0 0; font-size: 16.5px; line-height: 1.42; }
+.wf-poll.revealed .opt:not(.right) { display: none; }
+.wf .ft-tray { font-size: 14.5px; }
+.wf-poll { position: relative; }
+.wf-poll.revealed > .pill { position: absolute; top: 8px; right: 8px; padding: 3px 10px; font-size: 0; }
+.wf-poll.revealed > .pill::after { content: 'Hide'; font-size: 13px; }
+.wf-poll.revealed .q-line { padding-right: 44px; }
+.lesson.screen .card.wf { padding-top: 20px; padding-bottom: 20px; }
+.wf .ft-tray { font-size: 13.5px; gap: 4px; }
+.wf .seal-q { margin-top: 10px; }
+.wf .q-line { margin-bottom: 8px; }
+.wf .ft-eq { font-size: 15px; white-space: nowrap; }
+.wf-poll .q-line { display: block; }
+.wf-poll .q-line .q-num { float: left; width: 30px; height: 30px; font-size: 16px; margin: 0 8px 0 0; }
+.wf .compare { font-size: 16px; padding: 8px 12px; }
+.wf-poll .q-line .q-num { width: 26px; height: 26px; font-size: 15px; margin-top: 0; }
+.wf .ft-gift.ft-tight .ftn { width: 50px; }
