@@ -71,7 +71,9 @@ async def check_lesson(ctx, path, base):
       screen: !!document.querySelector('main.lesson.screen'),
       // the first screen: from the top of the warm-up card to the bottom of its grid (+ the card's bottom padding);
       // material placed after the grid (follow-ups that come after the big one) doesn't count
-      warm: (() => { const w = document.querySelector('section.warm'); if (!w) return 0; const r = w.getBoundingClientRect(), g = w.querySelector(':scope > .wf-grid');
+      warm: (() => { const w = document.querySelector('section.warm'); if (!w) return 0; const r = w.getBoundingClientRect();
+        // a one-column warm-up (wf-one) ends at its big-one poll
+        const g = w.querySelector(':scope > .wf-grid') || (w.classList.contains('wf-one') ? w.querySelector(':scope > .poll') : null);
         if (!g || g === w.lastElementChild) return Math.round(r.height);
         return Math.round(g.getBoundingClientRect().bottom - r.top + parseFloat(getComputedStyle(w).paddingBottom)); })(),
       ex: [...document.querySelectorAll('.ex')].map((e, i) => ({ i, name: e.dataset.explainer || e.id || '', side: e.classList.contains('ex-side'), api: !!e._ex, minW: e._ex && e._ex.def.minW || null }))
