@@ -103,7 +103,8 @@ function doGet(e) {
     if (a === 'removestudent') return json_(removeStudent_(p['class'], p.name), cb);
     if (a === 'setblock') return json_(setBlock_(p['class'], p.block), cb);
     if (a === 'setnoschool') return json_(setNoSchool_(p.dates), cb);
-    if (a === 'setcal') return json_(setCal_(p['class'], p.cal), cb);
+    if (a === 'setcal') return json_(setCal_(p['class'], p.cal, p.all === '1'), cb);
+    if (a === 'calsync') return json_(setCalSync_(p.on === '1'), cb);
     if (a === 'tests') return json_(testsList_(), cb);
     if (a === 'savetest') return json_(saveTest_(p.id, p.def), cb);
     if (a === 'deltest') return json_(delTest_(p.id), cb);
@@ -338,19 +339,23 @@ function classByBlock_(block) {
 function cal_(klass) {
   var c = classOf_(klass); if (!c) return { ok: true, cal: null, noSchool: noSchool_(), error: 'unknown class' };
   var v = cachedProp_('CAL:' + c.code);
-  return { ok: true, 'class': c.code, label: c.label || c.code, cal: v && v.start ? v : null, noSchool: noSchool_() };
+  return { ok: true, 'class': c.code, label: c.label || c.code, cal: v && v.start ? v : null, noSchool: noSchool_(), sync: calSync_() };
 }
-function setCal_(klass, json) {
+/* CALSYNC: "keep all class calendars the same" (the ledger then saves every change to every class with all=1) */
+function calSync_() { return props_().getProperty('CALSYNC') === '1'; }
+function setCalSync_(on) { props_().setProperty('CALSYNC', on ? '1' : '0'); return { ok: true, sync: on }; }
+function setCal_(klass, json, all) {
   var c = classOf_(klass); if (!c) return { ok: false, error: 'unknown class' };
-  if (json === '' || json === 'null') { props_().deleteProperty('CAL:' + c.code); cput_('P:CAL:' + c.code, {}); return { ok: true, cal: null }; }
+  var targets = all ? classes_() : [c];
+  if (json === '' || json === 'null') { targets.forEach(function (t) { props_().deleteProperty('CAL:' + t.code); cput_('P:CAL:' + t.code, {}); }); return { ok: true, cal: null }; }
   var d = parseDef_(json); if (!d || !/^\d{4}-\d{2}-\d{2}$/.test(String(d.start || ''))) return { ok: false, error: 'bad calendar' };
   var items = [], skipped = [];
   (Array.isArray(d.items) ? d.items : []).slice(0, 400).forEach(function (x) { if (Array.isArray(x) && /^[a-z0-9]{1,10}$/.test(String(x[0]))) items.push([String(x[0]), Math.max(0, Math.min(2000, Math.round(Number(x[1]) || 0)))]); });
   (Array.isArray(d.skipped) ? d.skipped : []).slice(0, 400).forEach(function (k) { if (/^[a-z0-9]{1,10}$/.test(String(k))) skipped.push(String(k)); });
   var cal = { v: 1, start: String(d.start), items: items, skipped: skipped };
   if (JSON.stringify(cal).length > 8500) return { ok: false, error: 'calendar too big' };
-  saveProp_('CAL:' + c.code, cal);
-  return { ok: true, cal: cal };
+  targets.forEach(function (t) { saveProp_('CAL:' + t.code, cal); });
+  return { ok: true, cal: cal, saved: targets.length };
 }
 function setNoSchool_(csv) {
   var out = []; String(csv || '').split(/[,\s]+/).forEach(function (x) { x = x.trim(); if (/^\d{4}-\d{2}-\d{2}$/.test(x) && out.indexOf(x) < 0) out.push(x); });

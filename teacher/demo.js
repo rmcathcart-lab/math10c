@@ -270,6 +270,7 @@
       case 'release': return ok(release(p.session, p.on === 1 || p.on === '1' || p.on === true));
       case 'tlive': return ok(tlive());
       case 'cal': return ok({ ok: true, cal: calendar(), noSchool: [] });
+      case 'calsync': return ok({ ok: true, sync: false });
       case 'setcal': try { T.cal = p.cal ? JSON.parse(p.cal) : null; } catch (e) { return ok({ ok: false, error: 'bad calendar' }); } T.calSet = true; return ok({ ok: true, cal: T.cal });
       case 'tctl': return ok(tctl(p.op, p.name, p.mins));
       case 'tests': return real('tests', p).then(function (d) { if (d && d.ok) { d.live = Object.assign({}, d.live || {}); if (T.live) d.live[CODE] = liveInfo(); } return d; });
