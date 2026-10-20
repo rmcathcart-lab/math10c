@@ -308,7 +308,7 @@ function toEntireMake(stage, spec, ex) {
   });
   steps.push({
     cap: (R.neg && !R.evenNeg ? `The index is <b>odd</b>, so the − can go inside too. ` : '')
-      + `Write the coefficient as a ${n === 2 ? 'square root' : n === 3 ? 'cube root' : 'root with index ' + n}: it goes in <b>${word(n)} times</b>, ${tex(R.kcT + '=' + rt(n, numeric ? Array(n).fill(R.kc.q === 1 && R.kc.p > 0 ? R.kcT : '\\left(' + R.kcT + '\\right)').join('\\cdot ') : R.base))}.`,
+      + `Write the coefficient as a ${n === 2 ? 'square root' : n === 3 ? 'cube root' : 'root with index ' + n}: it goes in <b>${word(n)} times</b>, ${n >= 4 ? '<span style="font-size:.78em">' : '<span>'}${tex(R.kcT + '=' + rt(n, numeric ? Array(n).fill(R.kc.q === 1 && R.kc.p > 0 ? R.kcT : '\\left(' + R.kcT + '\\right)').join('\\cdot ') : R.base))}</span>.`, // smaller for index 4+, so the radical fits the sidebar
     run: async (c) => {
       await B.morph(c, () => {
         const fly = [];

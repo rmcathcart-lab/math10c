@@ -350,7 +350,7 @@ const bvals = {
       cap: c > 0 ? `${T(String(c))} is <b>positive</b>, so the two integers have the <b>same sign</b>: both positive, or both negative.` : `${T(String(c))} is <b>negative</b>, so the two integers have <b>opposite signs</b> — and either one can be the negative one.`,
       run: (cc) => Promise.all([cc.fadeIn(rh[1]), ...cards[1].map((e, i) => cc.pop(e, 320, { delay: i * 110 }))])
     }, {
-      cap: `Add each pair. These sums are the <b>only</b> middle terms that work: ${T(`b\\in\\{${sums.join(',')}\\}`)}.`,
+      cap: `Add each pair. These sums are the <b>only</b> middle terms that work: ${T('b\\in\\{') + sums.map((x) => T(String(x))).join(', ') + T('\\}')}.`, // pieces, so the list can wrap in the sidebar
       run: async (cc) => {
         const all = cards.flat(); all.forEach((e) => { e.classList.add('sum'); e.querySelector('small').style.visibility = 'visible'; });
         await Promise.all(all.map((e, i) => flash(cc, e.querySelector('small'), i)));
