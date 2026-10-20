@@ -9,7 +9,7 @@ const plural = (k, w) => k + ' ' + w + (k === 1 ? '' : 's');
 const rectangles = {
   title: 'Factors make rectangles',
   height: 420,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [12, 18, 36, 11, 16, 40, 28],
   intro: (n) => `Here are <b>${n}</b> square tiles. Arrange <b>all</b> of them into equal rows to make a rectangle. Each rectangle that works is a <b>factor pair</b> of ${n}.`,
   make(stage, n, ex) {

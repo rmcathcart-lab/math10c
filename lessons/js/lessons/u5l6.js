@@ -357,7 +357,7 @@ const CALC_ITEMS = ['1:value', '2:zero', '3:minimum', '4:maximum', '5:intersect'
 const calcMax = {
   title: 'CALC on the graphing calculator: maximum, zero, intersect',
   height: 440,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ sep: 'Example 2 check' }, { v: 'max', label: '(c) maximum' }, { v: 'zero', label: '(d) landing: zero' }, { v: 'int', label: '(e) intersect' }],
   value: 'max',
   intro: (k) => `${T('Y_1=8+10X-X^2')}, window ${T('x{:}\\,[0,11,1]')}, ${T('y{:}\\,[0,35,5]')}. ${k === 'max' ? 'Find the top.' : k === 'zero' ? 'Find the landing time.' : 'When is Blaze at 24 m?'} Press <b>Next</b>.`,

@@ -718,6 +718,7 @@ const ITEMS = [
 const choose = {
   title: 'Choosing the right device',
   height: 470,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ladder', label: 'Size and precision' }, { v: 'ex3', label: 'Example 3 check' }, { v: 'ex4a', label: 'Example 4(a) check' }],
   intro: (k) => (k === 'ladder' ? 'Each device suits a range of sizes and reads to its own precision. Press <b>Next</b>.' : 'Two questions: <b>how big</b> is it, and <b>how precise</b> must the reading be? Press <b>Next</b>.'),
   make(stage, key, ex) {

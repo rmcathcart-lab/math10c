@@ -90,7 +90,7 @@ const trTri = (d) => { const a = d.p * d.r, b = d.r * d.q + d.p * d.s, c = d.q *
 const tileRect = {
   title: 'Arrange the tiles into a rectangle',
   height: 470,
-  minW: 940, // drawn this wide and scaled to fit beside the sidebar
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'demo', label: tex('2x^2+7x+3') }, { v: 'sq', label: tex('4x^2+8x+3') }, { v: 'zero', label: tex('2x^2+x-3') }, { sep: 'Example 1 check:' }, { v: 'e1', label: '(b)' }, { sep: 'Example 2 check:' }, { v: 'e2', label: tex('4x^2+13x+3') }],
   intro: (k) => `Factor ${T(trTri(TRD[k]).t)} with algebra tiles: build a <b>rectangle</b> with every tile and no gaps. Its sides are the factors.`,
   make(stage, key, ex) {
@@ -271,7 +271,7 @@ const WA = { gen: null, s1: { p: 3, q: 2, r: 2, s: 5 }, s1b: { p: 4, q: -1, r: 3
 const whyAC = {
   title: 'Why the middle pieces multiply to ac',
   height: 420,
-  minW: 900, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'gen', label: tex('(px+q)(rx+s)') }, { v: 's1', label: tex('(3x+2)(2x+5)') }, { v: 's1b', label: tex('(4x-1)(3x+2)') }],
   intro: (k) => (k === 'gen' ? `Expand ${T('(px+q)(rx+s)')} in an area box, and <b>don’t</b> collect the middle terms.` : `Expand ${T(k === 's1' ? '(3x+2)(2x+5)' : '(4x-1)(3x+2)')} in an area box, and <b>don’t</b> collect the middle terms.`),
   make(stage, key, ex) {

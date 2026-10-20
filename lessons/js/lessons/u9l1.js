@@ -743,7 +743,7 @@ const HF = {
 const hypFirst = {
   title: 'Missing hypotenuse: Pythagoras, then SOH CAH TOA',
   height: 470,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(HF).map((k) => ({ v: k, label: HF[k].label })),
   intro: 'Two legs given, no hypotenuse. Sine and cosine need it. Press <b>Next</b>.',
   make(stage, key, ex) {

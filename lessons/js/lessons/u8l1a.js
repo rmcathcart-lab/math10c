@@ -518,7 +518,7 @@ const TI = {
 const ti84 = {
   title: 'TI-84: Y=, WINDOW, GRAPH, then 2nd CALC 5:intersect',
   height: 450,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'bk', label: TI.bk.label }, { sep: 'Check' }, { v: 'ex4', label: TI.ex4.label }, { v: 'ex5', label: TI.ex5.label }],
   intro: 'Graphing calculator (TI-83/84) keystrokes. Press <b>Next</b>.',
   make(stage, k, ex) {

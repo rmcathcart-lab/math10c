@@ -510,6 +510,7 @@ const SS = {
 const solveSide = {
   title: 'Unknown on top: multiply. Unknown on the bottom: divide.',
   height: 420,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SS).map((k) => ({ v: k, label: SS[k].label })),
   intro: (v) => `Example 2${v === 'a' ? '(a)' : '(b)'}: the ${v === 'a' ? 'opposite side' : 'hypotenuse'} from ${T('42^\\circ')} and 11 cm adjacent. Press <b>Next</b>.`,
   make(stage, v, ex) {

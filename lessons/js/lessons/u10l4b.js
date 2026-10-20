@@ -261,7 +261,7 @@ function weight(g, x, w, hh, color, text, y = 122) {
 const bench = {
   title: 'Side by side: imperial units against SI benchmarks',
   height: 460,
-  minW: 940, // drawn this wide and scaled to fit beside the sidebar
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(BEN).map((k) => ({ v: k, label: BEN[k].label })),
   intro: 'How big is each imperial unit compared with an SI unit you already know? Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -539,6 +539,7 @@ const CH = {
 const chain = {
   title: 'Unit analysis: snap on a factor, cancel a unit',
   height: 450,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CH).map((k) => ({ v: k, label: CH[k].label })),
   intro: 'Each conversion factor is worth 1. Choose it so the unit you want gone is on the bottom. Press <b>Next</b>.',
   make(stage, k, ex) {

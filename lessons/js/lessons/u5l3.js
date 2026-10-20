@@ -147,6 +147,7 @@ const ptsTex = (ps) => ps.map((p) => pairTex(p[0], p[1])).join(',\\ ');
 const subst = {
   title: 'Substitute y = 0, then x = 0',
   height: 500,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'sec1', label: SUB.sec1.label }, { v: 'demo', label: SUB.demo.label }, { sep: 'Examples' }, { v: 'ex1', label: SUB.ex1.label }, { v: 'ex2', label: SUB.ex2.label }, { v: 'ex3', label: SUB.ex3.label }],
   intro: (k) => `Find the intercepts of ${T(SUB[k].eq)} algebraically, then see them on the graph. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -233,6 +234,7 @@ const CTX = {
 const crossTouch = {
   title: 'Cross, touch, or miss',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CT).map((k) => ({ v: k, label: CT[k].label })),
   intro: (k) => (k === 'para' ? `Slide ${T('y=x^2+k')} down and count its ${T('x')}-intercepts. Press <b>Next</b>.` : `Slide a circle of radius 5 toward the ${T('y')}-axis and count its ${T('y')}-intercepts. Press <b>Next</b>.`),
   make(stage, k, ex) {

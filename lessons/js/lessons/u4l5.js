@@ -253,7 +253,7 @@ const DL = {
 const dolls = {
   title: 'Factor completely: keep opening until every doll is solid',
   height: 500,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'mn', label: tex('m^4-81n^4') }, { v: 'x8', label: 'Warm-up: ' + tex('x^8-1') }, { sep: 'Example 6 check:' }, { v: 'w4', label: '(a)' }, { v: 'e6b', label: '(b)' }, { v: 'e6c', label: '(c)' }],
   intro: (k) => `Here is ${T(DL[k].root.t)} as a doll. Factoring a doll <b>opens</b> it. We keep opening until <b>every</b> doll is solid: that is what “factor completely” means.`,
   make(stage, k, ex) {
@@ -509,7 +509,7 @@ const GF = {
 const gapFill = {
   title: 'Fill the gap: the square picture, read backwards',
   height: 440,
-  minW: 900, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'd1', label: tex('x^2+\\_\\_+36') }, { v: 'd2', label: tex('4x^2+12x+\\_\\_') }, { sep: 'Example 2 check:' }, { v: 'a', label: '(a)' }, { v: 'b', label: '(b)' }, { v: 'c', label: '(c)' }, { v: 'd', label: '(d)' }],
   intro: (k) => { const d = GF[k]; return `What goes in the blank so that ${T(d.pre + '\\_\\_' + d.post)} is a perfect square trinomial? Picture the square it must be.`; },
   make(stage, key, ex) {
@@ -679,7 +679,7 @@ function makeDisguise(title, choices) {
   };
 }
 const disguise = makeDisguise('The disguise: let u be the block', [{ v: 'm', label: tex('m^4+7m^2+12') }, { v: 'br', label: 'A bracket block: ' + tex('(x+1)^2+5(x+1)+6') }, { sep: 'Example 4 check:' }, { v: 'e4a', label: '(a)' }, { v: 'e4b', label: '(b)' }]);
-disguise.minW = 780; // drawn this wide and scaled to fit beside the sidebar
+disguise.minW = 940; // drawn this wide and scaled to fit beside the sidebar
 const disguiseExt = makeDisguise('Extension: bigger blocks', [{ v: 'x6', label: tex('x^6+5x^3+6') }, { sep: 'Example 7 check:' }, { v: 'e7a', label: '(a)' }, { v: 'e7b', label: '(b)' }]);
 
 /* ---------------- decomposition in disguise: two methods side by side ---------------- */

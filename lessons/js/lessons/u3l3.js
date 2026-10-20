@@ -50,7 +50,7 @@ const SQ = {
 const squareSplit = {
   title: 'One square, four pieces',
   height: 430,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ab', label: tex('(a+b)^2') }, { v: 'x3', label: tex('(x+3)^2') }, { v: 'n35', label: 'Warm-up: ' + tex('35^2') }, { sep: 'Example 1 check:' }, { v: 'ex1a', label: '(a) ' + tex('(x+9)^2') }],
   intro: (k) => { const d = SQ[k]; return `Here is a square with side ${T(`${d.A}+${d.B}`)}. Its area is ${T(d.num ? '35^2' : d.head)}. Let’s find that area <b>another way</b>, piece by piece.`; },
   make(stage, key, ex) {
@@ -103,7 +103,7 @@ const squareSplit = {
 const classicError = {
   title: 'Where did the middle go?',
   height: 420,
-  minW: 900, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: '3,4', label: tex('(3+4)^2') }, { v: '2,5', label: tex('(2+5)^2') }, { v: '6,3', label: tex('(6+3)^2') }],
   intro: (k) => { const [a, b] = k.split(',').map(Number); return `Is ${T(`(${a}+${b})^2`)} the same as ${T(`${a}^2+${b}^2`)}? Count the small squares and see.`; },
   make(stage, key, ex) {
@@ -161,7 +161,7 @@ const MS = {
 const minusSquare = {
   title: 'Cut two strips, put the corner back',
   height: 440,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ab', label: tex('(a-b)^2') }, { v: 'n', label: tex('(10-3)^2') }, { sep: 'Example 1 check:' }, { v: 'ex1b', label: '(b) ' + tex('(4x-1)^2') }, { v: 'ex1c', label: '(c) ' + tex('(3m-2n)^2') }],
   intro: (k) => { const d = MS[k]; return `We want ${T(`(${d.A}-${d.B})^2`)}. Start with a bigger square of side ${T(d.A)}: its area is ${T(d.AA)}. Then cut away what we don’t want.`; },
   make(stage, key, ex) {
@@ -324,6 +324,7 @@ const BINS = [['sq', 'Square of a binomial', '(a\\pm b)^2=a^2\\pm2ab+b^2'], ['sd
 const recognizer = {
   title: 'Which pattern is this?',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n1', label: tex('(x+7)(x-7)') }, { v: 'n2', label: tex('(2y+3)^2') }, { v: 'n3', label: tex('(x+2)(x+6)') }, { v: 'n4', label: tex('(5+n)(n-5)') },
     { sep: 'Example 1 check:' }, ...'abcdefgh'.split('').map((k) => ({ v: k, label: `(${k})` }))],
   intro: (k) => `Which pattern fits ${T(RZ[k].e)}? Check the <b>terms</b> first, then the <b>signs</b>.`,
@@ -443,7 +444,7 @@ const OUT = {
 const outside = {
   title: 'Expand first, then distribute',
   height: 446,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n1', label: tex('2(x+3)^2') }, { v: 'n2', label: tex('-(x-4)(x+4)') }, { sep: 'Example 2 check:' }, { v: 'a', label: '(a) ' + tex('3(4x-5)(x-2)') }, { v: 'b', label: '(b) ' + tex('-6(5p+2)^2') }],
   intro: (key) => { const d = OUT[key]; return `Expand ${T(d.k + d.prod)}. The ${d.kw ? 'negative sign' : T(d.k)} out front is a <b>factor</b> of the whole product.`; },
   make(stage, key, ex) {
@@ -508,6 +509,7 @@ const DEGN = ['numbers', 'x terms', 'x² terms', 'x³ terms'];
 const combine = {
   title: 'Expand every product, flip the signs, then collect',
   height: 478,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n1', label: tex('(x+5)^2-(x-5)^2') }, { v: 'n2', label: tex('(x+1)(x+2)+(x-3)^2') }, { sep: 'Example 3 check:' }, { v: 'a', label: '(a)' }, { v: 'b', label: '(b)' }, { v: 'c', label: '(c)' }],
   intro: (k) => `Simplify ${T(CB[k].e)}. Expand each product <b>completely</b> before collecting anything.`,
   make(stage, key, ex) {

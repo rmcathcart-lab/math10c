@@ -198,7 +198,7 @@ const BD = {
 const build = {
   title: 'Slope–point form: one point fixed, one point free',
   height: 530,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(BD).map((k) => ({ v: k, label: BD[k].label })),
   intro: (k) => (k === 'balloon'
     ? 'The balloon’s height–time line: one known point, <b>(5, 800)</b> (10:05, 800 m), and slope <b>−40</b> m per minute. Press <b>Next</b>.'
@@ -328,7 +328,7 @@ const AP = {
 const anyPoint = {
   title: 'Any point on the line will do',
   height: 480,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(AP).map((k) => ({ v: k, label: AP[k].label })),
   intro: 'One line. <b>Pin</b> a different point each time and write slope–point form. Press <b>Next</b>.',
   make(stage, k, ex) {

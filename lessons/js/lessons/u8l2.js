@@ -391,7 +391,7 @@ const EX = {
 const exact = {
   title: 'The calculator’s decimal vs the exact value',
   height: 450,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(EX).map((k) => ({ v: k, label: EX[k].label })),
   intro: (k) => (k === 'e3' ? `Lesson 1A, Example 4: ${T(tc(BL, '4x+3y=2'))} and ${T(tc(AM, '2x-y=5'))}, solved on the <b>graphing calculator</b> (TI-84). Press <b>Next</b>.`
     : `A new system: ${T(tc(BL, 'x+y=1'))} and ${T(tc(AM, 'y=2x'))}. Graphing calculator first. Press <b>Next</b>.`),

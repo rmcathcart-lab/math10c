@@ -184,7 +184,7 @@ const TL = {
 const tilesEx = {
   title: 'Arrange the tiles into a rectangle',
   height: 350,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   value: 't1',
   choices: [{ v: 't1', label: T('x^2+5x+6') }, { v: 't2', label: T('x^2+2x-8') }, { v: 't3', label: T('x^2-9') }, { sep: 'Review check:' }, { v: 't14', label: T('x^2+7x+10') }],
   intro: (v) => { const d = TL[v]; return `The tiles for ${T(tri(1, d.b, d.c))}. Can they make one rectangle? Its side lengths will be the factors.`; },

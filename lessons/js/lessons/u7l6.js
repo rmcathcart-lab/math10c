@@ -378,7 +378,7 @@ const SE = {
 const sentence = {
   title: 'A rate is a sentence with units',
   height: 450,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SE).map((k) => ({ v: k, label: SE[k].label })),
   intro: 'Four blanks: direction, number, the vertical unit and the horizontal unit. The graph fills them all. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -550,7 +550,7 @@ const PT = {
 const parts = {
   title: 'Change the story, change the graph',
   height: 470,
-  minW: 900, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(PT).map((k) => ({ v: k, label: PT[k].label })),
   intro: 'The grey dashed line is the original. Each step changes one part of the story. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -658,7 +658,7 @@ const SC = {
 const secant = {
   title: 'Average rate of change on a curve',
   height: 470,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SC).map((k) => ({ v: k, label: SC[k].label })),
   intro: 'Two points on a curve, joined by a straight segment (a secant). Its slope is the average rate between them. Press <b>Next</b>.',
   make(stage, k, ex) {

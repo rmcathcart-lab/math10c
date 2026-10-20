@@ -337,7 +337,7 @@ const adjust = {
 const table = {
   title: 'The table of values for y = 0.75x − 9',
   height: 440,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'tbl', label: 'TBLSET & TABLE' }, { v: 'ask', label: 'Ask mode: x = 500' }, { v: 'gt', label: 'G-T split screen' }],
   intro: (k) => ({ tbl: 'Set up the table, then read it.', ask: 'One far-away input, typed straight in.', gt: 'The graph and the table side by side.' }[k] + ' Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -581,7 +581,7 @@ const YI = { run: REL.run, ex2a: REL.ex2a, ex2b: REL.ex2b };
 const yintEx = {
   title: 'The y-intercept: the output when x = 0',
   height: 440,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'run', label: T('y=0.75x-9') }, { v: 'ex2a', label: 'Example 2(a) check' }, { v: 'ex2b', label: 'Example 2(b) check' }],
   intro: (k) => `Three ways to read the y-intercept of ${T(YI[k].t)}. Press <b>Next</b>.`,
   make(stage, k, ex) {

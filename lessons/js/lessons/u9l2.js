@@ -433,6 +433,7 @@ const DIAL = { sweep: 'Sweep 0° → 90°', ex2: 'Example 2: 24° → 67°', swa
 const dial = {
   title: 'Open the dial: the hypotenuse stays 1',
   height: 480,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(DIAL).map((k) => ({ v: k, label: DIAL[k] })),
   intro: (v) => v === 'swap' ? 'Flip a triangle over the 45° line: what happens to its sine and cosine? Press <b>Next</b>.' : 'The hypotenuse is a radius, so it is always 1. Press <b>Next</b> and watch the legs.',
   make(stage, key, ex) {
@@ -548,6 +549,7 @@ const CMP = {
 const compare = {
   title: 'Compare the legs, not the decimals',
   height: 460,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CMP).map((k) => ({ v: k, label: CMP[k].label })),
   intro: 'Draw the angles with the <b>same hypotenuse</b> and the comparison is a matter of looking. Press <b>Next</b>.',
   make(stage, key, ex) {

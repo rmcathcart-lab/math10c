@@ -265,7 +265,7 @@ function rulesPanel(stage, x, y, w, hh) {
 const tidyUp = {
   title: 'The tidy-up machine',
   height: 450,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(TU).map((k) => ({ v: k, label: TU[k].label })),
   intro: 'Feed in any equation of a line. Four stations tidy it into general form, and the checklist shows which rules it meets. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -419,7 +419,7 @@ const SY = {
 const solveY = {
   title: 'Solve for y: isolate By, then divide by B',
   height: 430,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SY).map((k) => ({ v: k, label: SY[k].label })),
   intro: 'General form hides the slope and the y-intercept. Get y alone (the reverse of the tidy-up machine) and they appear. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -711,7 +711,7 @@ const JD = {
 const judge = {
   title: 'Judge the statements about 4x − 3y + 18 = 0',
   height: 460,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(JD).map((k) => ({ v: k, label: JD[k].label })),
   intro: 'General form answers questions fast: slope and intercepts by the rule, and a point by substituting. Press <b>Next</b>.',
   make(stage, k, ex) {

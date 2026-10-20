@@ -249,7 +249,7 @@ const RC = {
 const races = {
   title: 'The warm-up races as lines: speed = slope, head start = intercept',
   height: 500,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(RC).map((k) => ({ v: k, label: RC[k].label })),
   intro: () => 'Distance–time lines for the two runners. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -319,6 +319,7 @@ const E1 = {
 const ex1 = {
   title: 'Example 1 check: graph both lines, then count',
   height: 480,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   value: 'a',
   choices: [{ sep: 'Example 1 check' }, ...Object.keys(E1).map((k) => ({ v: k, label: E1[k].label }))],
   intro: () => 'Graph each line from its <b>y-intercept</b> and <b>slope</b>, then count the crossing points. Press <b>Next</b>.',

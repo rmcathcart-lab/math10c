@@ -109,7 +109,7 @@ const COLL = {
 const collect = {
   title: 'Domain and range from pairs, a table or an arrow diagram',
   height: 380,
-  minW: 940, // drawn this wide and scaled to fit beside the sidebar
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'pairs', label: 'Ordered pairs' }, { v: 'table', label: 'Table' }, { v: 'map', label: 'Arrow diagram' }, { sep: 'Check:' },
     { v: 'e1a', label: 'Example 1(a)' }, { v: 'e1b', label: 'Example 1(b)' }, { v: 'e4c', label: 'Example 4(c)' }],
   intro: (k) => (COLL[k].ex ? `${COLL[k].name}: check the class’s lists. Press <b>Next</b>.` : `One relation, shown as ${COLL[k].name}. The same relation is behind all three forms. Press <b>Next</b>.`),

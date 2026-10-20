@@ -85,6 +85,7 @@ function radSign(stage, x, y, w, ht, cls) { // a hand-drawn root sign whose bar 
 const split = {
   title: 'Splitting a root: which split is sensible?',
   height: 430,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 72, label: tex('\\sqrt{72}') }, { v: 48, label: tex('\\sqrt{48}') }, { v: 100, label: tex('\\sqrt{100}') }, { v: 30, label: tex('\\sqrt{30}') },
     { sep: 'Example 1 check:' }, { v: 63, label: tex('\\sqrt{63}') }, { v: 32, label: tex('\\sqrt{32}') }, { v: '17/9', label: tex('\\sqrt{\\tfrac{17}{9}}') }],
   custom: [4, 200],
@@ -320,6 +321,7 @@ const PAIRC = ['#e0574b', '#3b78d8', '#2f9e6a', '#8a58c9', '#e8932a', '#d0477a']
 const pairs = {
   title: 'Prime factors: each pair comes out as one number',
   height: 450,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 72, label: tex('\\sqrt{72}') }, { v: 180, label: tex('\\sqrt{180}') }, { v: 200, label: tex('\\sqrt{200}') }, { v: 540, label: tex('\\sqrt{540}') },
     { sep: 'Examples 2–3 check:' }, { v: 63, label: tex('\\sqrt{63}') }, { v: 288, label: tex('\\sqrt{288}') }, { v: 128, label: tex('\\sqrt{128}') }, { v: 252, label: tex('\\sqrt{252}') }],
   custom: [4, 9999],
@@ -503,6 +505,7 @@ const ROMAN = ['i', 'ii', 'iii', 'iv', 'v'];
 const numline = {
   title: 'Convert to entire radicals, then line them up',
   height: 480,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'more', label: 'Warm-up set' }, { sep: 'Example 5 check:' }, { v: 'ex5', label: 'Example 5' }],
   intro: (v) => `Order ${SETS[v].map(([a, r]) => tex(mixT(a, r))).join(', ')} from <b>greatest to least</b>, without a calculator.`,
   make(stage, v, ex) {
@@ -546,7 +549,7 @@ const numline = {
 const pyth = {
   title: 'Squares on the sides: keep the answer exact',
   height: 470,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: '1|1', label: 'legs 1 and 1' }, { v: '2|4', label: 'legs 2 and 4' }, { v: '3|6', label: 'legs 3 and 6' }, { v: '5|5', label: 'legs 5 and 5' }, { sep: 'Example 6 check:' }, { v: 'ex6', label: 'Example 6' }],
   intro: (v) => (v === 'ex6' ? 'Example 6: find the exact length of <b>AB</b>. Two right triangles share the altitude <b>AD</b>.' : `A right triangle has legs <b>${v.split('|')[0]}</b> and <b>${v.split('|')[1]}</b>. How long is the hypotenuse, <b>exactly</b>?`),
   make(stage, v, ex) { return v === 'ex6' ? pythEx6(stage, ex.W) : pythLegs(stage, v, ex.W); }

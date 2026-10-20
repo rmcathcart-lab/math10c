@@ -467,6 +467,7 @@ const FR = { letters: { label: 'The frame, in letters' }, nums: { label: 'Try nu
 const frame = {
   title: 'Reading the shared side off both triangles',
   height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(FR).map((k) => ({ v: k, label: FR[k].label })),
   intro: (v) => (v === 'letters' ? 'The frame from the booklet. Press <b>Next</b>.' : 'The same frame with numbers (not from the assignment). Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -557,7 +558,7 @@ const H4 = 25 / (1 / tanD(32) - 1 / tanD(47)), X4 = H4 / tanD(47);
 const sightings = {
   title: 'Two sightings, 25 m apart: neither triangle has a known side',
   height: 470,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'walk', label: 'Walk toward the building' }, { v: 'ex4', label: 'Example 4 check' }],
   intro: (v) => (v === 'walk' ? 'Watch the angle of elevation as you walk from A to B. Press <b>Next</b>.' : 'Example 4 (a), (b) and (c), after the class has tried them. Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -685,7 +686,7 @@ const HEE = atanD(7 / 6);
 const wedge = {
   title: 'The wedge: rectangles, and a right triangle hiding in a side face',
   height: 470,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'a', label: '(a) The four rectangles' }, { v: 'bc', label: '(b)–(c) The side face' }],
   intro: (v) => (v === 'a' ? 'Example 6 (a): which faces are rectangles? Press <b>Next</b>.' : 'Example 6 (b) and (c): work in the side face ' + T('ADHE') + '. Press <b>Next</b>.'),
   make(stage, v, ex) {

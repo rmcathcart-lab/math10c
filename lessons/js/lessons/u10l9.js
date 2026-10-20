@@ -719,6 +719,7 @@ const micro = {
 const ratioMap = {
   title: 'A ratio that cancels, and a map scale',
   height: 400,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'e4a', label: 'Example 4(a) check' }, { v: 'e4b', label: 'Example 4(b) check' }],
   intro: (v) => (v === 'e4a' ? 'Turn 1032 km into miles with 5 mi = 8 km. Press <b>Next</b>.' : 'A map at 1 : 1 500 000. Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -944,7 +945,7 @@ const morph = {
 const coneSphere = {
   title: 'Slant height first; radius first',
   height: 420,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'cone', label: 'Example 7(a) check: cone' }, { v: 'sph', label: 'Example 7(b) check: sphere' }],
   intro: (v) => (v === 'cone' ? 'r = 8 cm, h = 15 cm. Where is s? Press <b>Next</b>.' : 'd = 18 in. Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -1042,7 +1043,7 @@ const backwards = {
 const tank = {
   title: 'One tank, five trucks, two bids',
   height: 450,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ab', label: 'Ex 9(a)(b) check' }, { v: 'c', label: 'Ex 9(c) check' }, { v: 'd', label: 'Ex 9(d) check' }],
   intro: (v) => (v === 'ab' ? 'The tank’s diameter is three times its 5.4 m height. Press <b>Next</b>.' : v === 'c' ? 'The same volume poured into a narrower cone. Press <b>Next</b>.' : 'Two bids: one in C$ per m³, one in US$ per ft³. Press <b>Next</b>.'),
   make(stage, v, ex) {

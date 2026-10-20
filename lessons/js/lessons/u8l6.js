@@ -83,7 +83,7 @@ function drawMobile(svg, key, ox, oy, s) {
 const mobile = {
   title: 'Balance the Mobile: each level bar is an equation',
   height: 430,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'A', label: 'Mobile A' }, { v: 'Bs', label: 'Mobile B: substitution' }, { v: 'Be', label: 'Mobile B: elimination' }],
   intro: (v) => (v === 'A' ? 'One level bar, one total: two equations. Press <b>Next</b>.' : v === 'Bs' ? 'Two level bars and a total. Swap shapes for shapes (substitution). Press <b>Next</b>.' : 'The same mobile, solved by subtracting two equations (elimination). Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -333,7 +333,7 @@ const NODE_NAME = { gr: 'graphing', sub: 'substitution', elim: 'elimination' };
 const choose = {
   title: '★ Which method? A system travels the flowchart',
   height: 510,
-  minW: 900, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SYS).map((k) => ({ v: k, label: SYS[k].label })),
   intro: (v) => `The system ${T(cB(SYS[v].e[0]))}, ${T(cA(SYS[v].e[1]))} answers each question. Press <b>Next</b>.`,
   make(stage, v, ex) {

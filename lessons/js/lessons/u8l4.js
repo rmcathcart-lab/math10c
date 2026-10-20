@@ -337,7 +337,7 @@ const MT = {
 const method = {
   title: 'Which method? Test the system against each row of the table',
   height: 452,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(MT).map((k) => ({ v: k, label: MT[k].label })),
   intro: (k) => `A system: ${T(MT[k].e1)} and ${T(MT[k].e2)}. Which method fits it best? Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -445,6 +445,7 @@ const TR = {
 const translate = {
   title: 'From words to symbols',
   height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(TR).map((k) => ({ v: k, label: TR[k].label })),
   intro: (k) => `${TR[k].lets.replace(/\$(\w)\$/g, (m, v) => T(v))} Press <b>Next</b> to translate.`,
   make(stage, k, ex) {
@@ -788,13 +789,13 @@ const rates = {
 /* =============================== mount =============================== */
 mountWarm();
 export const explainers = mountExplainers({
-  pipeline: pipeDef(['snack', 'sam'], { minW: 860 }),
+  pipeline: pipeDef(['snack', 'sam'], { minW: 966 }),
   method, step4, translate, rect, swap, interest, rates,
-  ex1chk: pipeDef(['ex1'], { sep: 'Example 1 check', minW: 860 }),
-  ex2chk: pipeDef(['ex2'], { sep: 'Example 2 check', minW: 860 }),
-  ex3chk: pipeDef(['ex3'], { sep: 'Example 3 check', minW: 860 }),
-  ex4chk: pipeDef(['ex4'], { sep: 'Example 4 check', minW: 860 }),
-  ex5chk: pipeDef(['ex5'], { sep: 'Example 5 check', minW: 860 })
+  ex1chk: pipeDef(['ex1'], { sep: 'Example 1 check', minW: 900 }),
+  ex2chk: pipeDef(['ex2'], { sep: 'Example 2 check', minW: 940 }),
+  ex3chk: pipeDef(['ex3'], { sep: 'Example 3 check', minW: 966 }),
+  ex4chk: pipeDef(['ex4'], { sep: 'Example 4 check', minW: 900 }),
+  ex5chk: pipeDef(['ex5'], { sep: 'Example 5 check', minW: 940 })
 });
 export const _test = { PIPE, MT, S4, TR, RC, SW, IV, RT };
 void liveCtx; void GRN; void RED;

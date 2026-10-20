@@ -499,7 +499,7 @@ function exprExplainer(title, keys, sepAt, sepLabel) {
   };
 }
 const exprSq = exprExplainer('Estimate the whole expression, then check', ['d1', 'd2', '2b', '2c', '2d'], 2, 'Example 2 check:');
-exprSq.minW = 780; // drawn this wide and scaled to fit beside the sidebar
+exprSq.minW = 820; // drawn this wide and scaled to fit beside the sidebar
 const exprCb = exprExplainer('Estimate with squares and cubes, then check', ['d3', '4c'], 1, 'Example 4 check:');
 exprCb.minW = 780; // drawn this wide and scaled to fit beside the sidebar
 
@@ -610,6 +610,7 @@ function isoCube(svg, P, L, k, cls) {
 const cubes = {
   title: 'Cube roots: stacks of cubes',
   height: 480,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 64, label: T('\\sqrt[3]{64}') }, { v: 20, label: T('\\sqrt[3]{20}') }, { v: -64, label: T('\\sqrt[3]{-64}') }, { v: -20, label: T('\\sqrt[3]{-20}') }, { sep: 'Example 4 check:' }, { v: 30, label: T('\\sqrt[3]{30}') }, { v: 150, label: T('\\sqrt[3]{150}') }, { v: 50, label: T('\\sqrt[3]{50}') }],
   custom: [1, 1000],
   intro: (n) => `${T('\\sqrt[3]{' + n + '}')} is the edge of a cube built from ${n < 0 ? '' : 'exactly '}<b>${fmtS(Math.abs(n))}</b> small cubes${n < 0 ? ' — with a negative sign to deal with' : ''}. Which perfect cubes is it between?`,

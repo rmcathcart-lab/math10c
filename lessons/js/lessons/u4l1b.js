@@ -236,6 +236,7 @@ const LO = {
 const leftover = {
   title: 'Is the leftover bracket finished?',
   height: 400,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n', label: tex('4x(x+3)+8(x+3)') }, { sep: 'Example 2 check:' }, { v: 'a', label: '(a)' }, { v: 'b', label: '(b)' }],
   intro: (k) => `Factor ${T(join(LO[k].r0))} into <b>simplest factored form</b>.`,
   make(stage, key, ex) {
@@ -319,6 +320,7 @@ const TG = { n: { b: 3, d: 4 }, n2: { b: 5, d: 2 }, a: { b: 4, d: 5 } };
 const tileGroup = {
   title: 'Two rectangles, one shared side',
   height: 500,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n', label: tex('x^2+3x+4x+12') }, { v: 'n2', label: tex('x^2+5x+2x+10') }, { sep: 'Example 3 check:' }, { v: 'a', label: '(a)' }],
   intro: (k) => { const { b, d } = TG[k]; return `Algebra tiles for ${T(`x^2+${b}x+${d}x+${b * d}`)}: one ${T('x^2')}-tile, ${b + d} ${T('x')}-tiles and ${b * d} unit tiles. Can they make <b>one</b> rectangle?`; },
   make(stage, key, ex) {
@@ -442,6 +444,7 @@ const GR = {
 const grouping = {
   title: 'Grouping, one move at a time',
   height: 400,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n', label: tex('x^2+3x+4x+12') }, { v: 'rc', label: 'the combo receipt' }, { sep: 'Example 3 check:' }, { v: 'a', label: '(a)' }, { v: 'b', label: '(b)' }, { v: 'c', label: '(c)' }, { v: 'd', label: '(d)' }],
   intro: (k) => `Factor ${T(join(GR[k].r0))} by grouping.`,
   make(stage, key, ex) {
@@ -515,7 +518,7 @@ const RA = {
 const rearrange = {
   title: 'No match? Rearrange and try again',
   height: 420,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n1', label: tex('ab+12+3a+4b') }, { v: 'n2', label: 'another way' }, { sep: 'Example 3 check:' }, { v: 'e', label: '(e)' }],
   intro: (k) => `Factor ${T(join(RA[k].r0))} by grouping.`,
   make(stage, key, ex) {

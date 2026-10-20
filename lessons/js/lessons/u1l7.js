@@ -123,6 +123,7 @@ const VENN_X = {
 const venn = {
   title: 'GCF and LCM from a prime-factor Venn diagram',
   height: 440,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: '12,18', label: '12 &amp; 18' }, { v: '60,84', label: '60 &amp; 84' }, { v: '36,120', label: '36 &amp; 120' },
     { sep: 'Example 2 check:' }, { v: '10,21', label: '10 &amp; 21' }, { sep: 'Example 3:' }, { v: '3003,3135', label: '3 003 &amp; 3 135' }, { sep: 'Example 4:' }, { v: '9,20', label: '9 &amp; 20' }],
   intro: 'Each circle holds one number’s prime factors. Primes the numbers <b>share</b> go in the overlap. Then the <b>GCF</b> and <b>LCM</b> can be read straight off the picture.',
@@ -517,6 +518,7 @@ const sort = {
 const repFrac = {
   title: 'Repeating decimal → fraction: line up the tails',
   height: 420,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: '0|7', label: T('0.\\overline{7}') }, { v: '0|45', label: T('0.\\overline{45}') }, { v: '1|6', label: T('1.\\overline{6}') },
     { sep: 'Example 7 check:' }, { v: '0|47', label: T('0.\\overline{47}') }, { sep: 'Example 8 check:' }, { v: '2|36', label: T('2.\\overline{36}') }],
   intro: (v) => { const [w, b] = v.split('|'); return `Write ${T(w + '.\\overline{' + b + '}')} as a fraction. Call the number <b>x</b>, then make a second copy whose repeating tail <b>lines up</b> exactly.`; },

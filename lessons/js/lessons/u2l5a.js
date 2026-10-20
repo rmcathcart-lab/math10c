@@ -286,7 +286,7 @@ function minusExp(kind, a, m, n, cls) {
 const minus = {
   title: 'Negative bases: where is the minus sign?',
   height: 456,
-  minW: 940, // drawn this wide and scaled to fit beside the sidebar
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: MINUS.map((v) => (v.sep ? v : { v, label: tex(minusExp(v.split('|')[0], ...v.split('|').slice(1).map(Number))) })),
   intro: (v) => { const [k, a, m, n] = v.split('|'); return `Evaluate ${tex(minusExp(k, a, m, n))}. First question: <b>what is the base?</b>`; },
   make(stage, v, ex) {

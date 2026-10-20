@@ -435,6 +435,7 @@ const numT = (n) => String(n);
 const expand = {
   title: 'Run it backwards: expand the answer',
   height: 412,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(EXP).map((k) => ({ v: k, label: 'Example ' + k[0] + '(' + k[1] + ')' })),
   intro: (k) => `Check the answer to Example ${k[0]}(${k[1]}): ${T(EXP[k].f)}. If it is right, expanding it must give back the question, ${T(EXP[k].q)}.`,
   make(stage, key, ex) {

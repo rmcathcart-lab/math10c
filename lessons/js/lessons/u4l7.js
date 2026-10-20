@@ -259,7 +259,7 @@ const RECIPE = ['i) make one side 0', 'ii) factor completely', 'iii) each factor
 const solve = {
   title: 'Solve by factoring: one equation becomes two',
   height: 530,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n1', label: tex('x^2-4x-12=0') }, { v: 'n2', label: tex('x^2+5x=6') },
     { sep: 'Example 1 check:' }, { v: 'e1', label: '1' },
     { sep: 'Example 2 check:' }, { v: 'e2a', label: '(a)' }, { v: 'e2b', label: '(b)' }, { v: 'e2c', label: '(c)' }, { v: 'e2d', label: '(d)' },

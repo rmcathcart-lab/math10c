@@ -191,7 +191,7 @@ function lSetup(stage, S) {
 const notch = {
   title: 'Strategy B: the bounding box minus the notch',
   height: 440,
-  minW: 940, // drawn this wide and scaled to fit beside the sidebar
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: lChoices,
   intro: (k) => `This L is a rectangle with its top-right corner cut away. <b>Strategy B:</b> find the area of the whole <b>bounding box</b>, then take away the <b>notch</b>.`,
   make(stage, key, ex) {

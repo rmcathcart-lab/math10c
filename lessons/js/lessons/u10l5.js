@@ -647,6 +647,7 @@ const EX8 = {
 const cancel = {
   title: 'Unit analysis: square or cube the factor, then cancel',
   height: 480,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(EX8).map((k) => ({ v: k, label: EX8[k].label })),
   intro: 'Pick the row of the table, square or cube it, then let the units cancel. Press <b>Next</b>.',
   make(stage, k, ex) {

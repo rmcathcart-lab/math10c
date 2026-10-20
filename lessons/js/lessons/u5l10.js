@@ -158,6 +158,7 @@ const DC = {
 const discCont = {
   title: 'Discrete or continuous? Counted or measured?',
   height: 380,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(DC).map((k) => ({ v: k, label: DC[k].label })),
   intro: (k) => `${DC[k].name}. Can it take <b>any</b> value, or only separate ones? Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -215,6 +216,7 @@ const NOT = {
 const notation = {
   title: 'How the answer is written: a list or set-builder notation',
   height: 420,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(NOT).map((k) => ({ v: k, label: NOT[k].label })),
   intro: 'Finitely many values: a <b>list</b>. Infinitely many: <b>set-builder notation</b>. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -590,7 +592,7 @@ const E10 = {
 const vlt = {
   title: 'The vertical line test',
   height: 420,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(E10).map((k) => ({ v: k, label: k === 'P' ? 'Relation P' : 'Example 10: ' + k })),
   intro: (k) => `${E10[k].name}. Is it a function? Press <b>Next</b>.`,
   make(stage, k, ex) {

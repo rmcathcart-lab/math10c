@@ -324,7 +324,7 @@ const BAL = {
 const balance = {
   title: 'Two balances, added pan to pan',
   height: 508,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'idea', label: 'The idea' }, { sep: 'Check' }, { v: 'ex1', label: 'Example 1 (add)' }, { v: 'ex2', label: 'Example 2 (subtract)' }, { v: 'ex3', label: 'Example 3 (scale, then add)' }],
   intro: (k) => (k === 'idea' ? 'Two level balances: each equation says <b>left side = right side</b>. Press <b>Next</b>.'
     : `${TAG1} ${T(k1(eqT(BAL[k].e1)))} and ${TAG2} ${T(k2(eqT(BAL[k].e2)))}, each a level balance. Press <b>Next</b>.`),
@@ -409,7 +409,7 @@ const SG = {
 const signs = {
   title: 'Subtract = flip every sign, then add',
   height: 430,
-  minW: 900, // drawn this wide and scaled to fit beside the sidebar
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ sep: 'Check' }, ...Object.keys(SG).map((k) => ({ v: k, label: SG[k].label }))],
   value: 'ex2',
   intro: (k) => `${SG[k].n1} minus ${SG[k].n2}. Line the equations up in columns. Press <b>Next</b>.`,
@@ -755,7 +755,7 @@ function walkDef(keys, title) {
   };
 }
 const walk = walkDef(['ex3', 'ex4', 'ex5b', 'ex5d'], 'The four steps, line by line');
-walk.minW = 820; // drawn this wide and scaled to fit beside the sidebar
+walk.minW = 900; // drawn this wide and scaled to fit beside the sidebar
 const walk6 = walkDef(['ex6a', 'ex6b'], 'Prepare, then the four steps');
 walk6.minW = 940; // drawn this wide and scaled to fit beside the sidebar
 

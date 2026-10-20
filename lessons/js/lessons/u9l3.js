@@ -387,6 +387,7 @@ const SW = { tri: 'sw' };
 const pick = {
   title: 'Which ratio? Name the sides, then look for both',
   height: 400,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ sep: 'Idea' }, { v: 'sw', label: 'The angle switches corners' }, { sep: 'Check' }, { v: 'e3a', label: 'Example 3(a)' }, { v: 'e3b', label: 'Example 3(b)' }, { v: 'e6', label: 'Example 6' }, { v: 'e7a', label: 'Example 7(a)' }, { v: 'e7b', label: 'Example 7(b)' }],
   intro: (k) => (k === 'sw' ? 'The names <b>opposite</b> and <b>adjacent</b> depend on which angle you stand at. Press <b>Next</b>.' : 'Name each side from the given angle, then find the ratio that holds the known side <b>and</b> the unknown. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -529,7 +530,7 @@ const solveTop = solveDef('Unknown on top → multiply', [{ sep: 'Idea' }, { v: 
   (k) => (k === 'itop' ? 'Hypotenuse <b>10</b>, angle <b>30°</b>. Find <b>x</b>, the side opposite the angle. Press <b>Next</b>.' : 'Name the sides, pick the ratio, then free the unknown on a balance. Press <b>Next</b>.'));
 const solveBot = solveDef('Unknown on the bottom → divide', [{ sep: 'Idea' }, { v: 'ibot', label: 'Unknown on the bottom' }, { sep: 'Check' }, { v: 'e4', label: 'Example 4' }, { v: 'e5', label: 'Example 5' }],
   (k) => (k === 'ibot' ? 'The same 30° triangle, but now the opposite leg is <b>5</b> and the hypotenuse <b>x</b> is unknown. Press <b>Next</b>.' : 'The unknown lands in the denominator. Press <b>Next</b>.'));
-solveTop.minW = 780; solveBot.minW = 820; // drawn this wide and scaled to fit beside the sidebar
+solveTop.minW = 820; solveBot.minW = 860; // drawn this wide and scaled to fit beside the sidebar
 
 /* =============================== Example 7: two sides, and the check =============================== */
 const solve7 = {
@@ -597,6 +598,7 @@ function ladderScene(stage, x, y, w, hh, k) {
 const ladder = {
   title: 'Example 3: the ladder',
   height: 450,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ sep: 'Idea' }, { v: 'slide', label: 'Slide the ladder' }, { sep: 'Check' }, { v: 'ab', label: 'Example 3(a)–(b)' }, { v: 'cd', label: 'Example 3(c)–(d)' }],
   intro: (k) => (k === 'slide' ? 'The ladder is always <b>6.8 m</b> long. Watch the height and the distance as the angle changes. Press <b>Next</b>.'
     : k === 'ab' ? 'A 6.8 m ladder at 68° to the ground. How high? How far out? Press <b>Next</b>.' : 'Why do (b) and (c) disagree? Press <b>Next</b>.'),
@@ -670,7 +672,7 @@ function coverTri(host, fn, x, y, w, hh) {
 const cover = {
   title: 'Cover-up triangles: SOH · CAH · TOA',
   height: 430,
-  minW: 940, // drawn this wide and scaled to fit beside the sidebar
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ sep: 'Check' }, { v: 'e2', label: 'Example 2' }, { v: 'e3b', label: 'Example 3(b)' }, { v: 'e4', label: 'Example 4' }, { v: 'e6', label: 'Example 6' }, { v: 'e7a', label: 'Example 7(a)' }, { v: 'e7b', label: 'Example 7(b)' }],
   intro: 'Each letter group is a little triangle: the side on top, the ratio and the side on the bottom. Cover what you want to find. Press <b>Next</b>.',
   make(stage, k, ex) {

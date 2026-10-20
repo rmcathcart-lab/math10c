@@ -158,7 +158,7 @@ const RT = {
 const roundTrip = {
   title: 'There and back: does the wind cancel out?',
   height: 410,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'big', label: RT.big.label }, { v: 'strong', label: RT.strong.label }, { v: 'kayak', label: RT.kayak.label }],
   intro: (k) => `Two trips, ${RT[k].d} km each way: one in ${RT[k].calm.toLowerCase()}, one with a ${RT[k].w} km/h ${RT[k].med} that helps out and fights back. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -289,7 +289,7 @@ class Mixer {
 const mixPour = {
   title: 'Two ingredients, one mixture',
   height: 490,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'trail', label: MX.trail.label }, { sep: 'Check' }, { v: 'ex1', label: MX.ex1.label }, { v: 'ex2', label: MX.ex2.label }],
   intro: (k) => `${MX[k].A.name} and ${MX[k].B.name.toLowerCase()} are about to be mixed. Watch the organizer fill as they pour. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -389,7 +389,7 @@ const ML = {
 const mixLever = {
   title: 'The mixture rate is the balance point',
   height: 430,
-  minW: 940, // drawn this wide and scaled to fit beside the sidebar
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex1', label: ML.ex1.label }, { v: 'ex2', label: ML.ex2.label }, { sep: 'Compare' }, { v: 'eq', label: ML.eq.label }],
   intro: 'Each ingredient sits at its rate on a number line, weighed down by its amount. Where does the beam balance? Press <b>Next</b>.',
   make(stage, k, ex) {

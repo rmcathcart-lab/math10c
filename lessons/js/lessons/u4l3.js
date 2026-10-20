@@ -186,7 +186,7 @@ const CM = {
 const cutMove = {
   title: 'Cut the L-shape and move a piece',
   height: 470,
-  minW: 900, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ab', label: tex('A^2-B^2') }, { v: 'n64', label: tex('6^2-4^2') }, { v: 'n103', label: tex('10^2-3^2') }, { sep: 'Example 1 check:' }, { v: 'a', label: '(a)' }, { v: 'c', label: '(c)' }],
   intro: (key) => { const d = CM[key]; return `Show ${T(`${d.AA}-${d.BB}=(${d.A}-${d.B})(${d.A}+${d.B})`)} with a picture: same pieces, same area.`; },
   make(stage, key, ex) {
@@ -427,6 +427,7 @@ const GF_ITEMS = ['GCF out front', 'Difference of squares?', 'Every bracket chec
 const gcfFirst = {
   title: 'GCF first, then the pattern, then check every bracket',
   height: 440,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n7', label: tex('7x^2-28') }, { v: 'nx', label: tex('x^3-25x') }, { v: 'n16', label: tex('x^4-16') }, { sep: 'Example 3 check:' }, ...['a', 'b', 'c', 'd'].map((k) => ({ v: k, label: `(${k})` }))],
   intro: (key) => `Factor ${T(GF[key][0][1])} completely.`,
   make(stage, key, ex) {
@@ -464,7 +465,7 @@ const RK = {
 const rink = {
   title: 'Side lengths from a factored area',
   height: 470,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'g', label: 'a garden' }, { sep: 'Example 4 check:' }, { v: 'ex4', label: 'the rink' }],
   intro: (key) => { const d = RK[key]; return `A rectangular ${d.name} has area ${T(d.area)} m² and perimeter ${d.P} m. Find its length and width if ${d.cond}.`; },
   make(stage, key, ex) {

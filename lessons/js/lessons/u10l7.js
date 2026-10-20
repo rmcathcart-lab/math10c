@@ -699,6 +699,7 @@ const NET = {
 const net = {
   title: 'Unfold the pyramid into its net',
   height: 480,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(NET).map((k) => ({ v: k, label: NET[k].label })),
   intro: (v) => (NET[v].base ? 'A closed square pyramid: base 6 cm, height 4 cm. Press <b>Next</b>.' : 'The glass skylight: base 16 m by 16 m, height 6 m. Press <b>Next</b>.'),
   make(stage, k, ex) {

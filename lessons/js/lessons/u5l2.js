@@ -91,7 +91,7 @@ const TABS = ['Words', 'Table', 'Ordered pairs', 'Arrow diagram', 'Equation', 'G
 const sixViews = {
   title: 'One relation, six views',
   height: 484,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SIX).map((k) => ({ v: k, label: SIX[k].label })),
   intro: 'One relation, six ways to show it. Watch the <b>same numbers</b> travel from view to view. Press <b>Next</b>.',
   make(stage, k, ex) {

@@ -470,6 +470,7 @@ function pilesDef(k, title, choices) {
 }
 const squares = pilesDef(2, 'Perfect square? Deal the primes into two identical piles', [144, 4, 100, 36, 12, 48, { sep: 'Example 5 check:' }, { v: 15876, label: '15 876' }, { sep: 'Example 6 check:' }, { v: 1089, label: '1 089' }, { v: 2028, label: '2 028' }]);
 const cubes = pilesDef(3, 'Perfect cube? Deal the primes into three identical piles', [{ v: 1000, label: '1 000' }, 8, 125, 27, 18, 54, { sep: 'Example 7 check:' }, { v: 5832, label: '5 832' }, { v: 39304, label: '39 304' }]);
+cubes.minW = 780; // drawn this wide and scaled to fit beside the sidebar
 
 /* ============ 4. Square, cube, both or neither: read the exponents ============ */
 const tester = {

@@ -584,6 +584,7 @@ const SF = {
 const subfirst = {
   title: 'Substitute, then undo',
   height: 450,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SF).map((k) => ({ v: k, label: SF[k].label })),
   intro: (k) => (k === 'units' ? 'Units are part of the substitution too. Press <b>Next</b>.' : 'Substitute the value, then undo whatever is being done to the unknown. Press <b>Next</b>.'),
   make(stage, key, ex) {

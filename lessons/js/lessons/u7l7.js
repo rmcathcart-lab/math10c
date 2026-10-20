@@ -146,7 +146,7 @@ function cityMap(host, o = {}) {
 const planner = {
   title: 'City Planner: the road at a right angle',
   height: 470,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'build', label: 'Build the road' }, { v: 'traps', label: 'Traps B, C and D' }, { v: 'corner', label: 'Where is the corner?' }],
   intro: (v) => ({ build: 'Main St is <b>x − 2y + 4 = 0</b>; the school is at (8, 1). Press <b>Next</b>.', traps: 'Three wrong roads, three different mistakes. Press <b>Next</b>.', corner: 'Where does the new road meet Main St? Press <b>Next</b>.' })[v],
   make(stage, v, ex) {
@@ -202,7 +202,7 @@ const FORMS = [
 const forms = {
   title: 'Three forms of one line',
   height: 470,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'morph', label: 'One line, three forms' }, { v: 'graph', label: 'Graph each form as it is' }, { v: 'hv', label: 'Horizontal and vertical' }],
   intro: (v) => ({ morph: 'The bike path from the warm-up: through the school (8, 1), parallel to Main St. Press <b>Next</b>.', graph: 'Graph the same line three times, once from each form, without converting. Press <b>Next</b>.', hv: 'Turn a line through (−2, 4) until it is flat, then until it stands up. Press <b>Next</b>.' })[v],
   make(stage, v, ex) {
@@ -562,6 +562,7 @@ const TRI = { D: [-7, -3], E: [3, 1], F: [-6, 9] };
 const altitude = {
   title: '★ The altitude: the side’s slope triangle, turned 90°',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex4a', label: 'Example 4(a) check: altitude from F' }, { v: 'ex4b', label: 'Example 4(b) check: ⊥ through C' }, { v: 'three', label: 'All three altitudes' }],
   intro: (v) => ({ ex4a: 'DE has slope 2/5 and F is (−6, 9). (D and E are drawn for illustration: only DE’s slope and F matter.) Press <b>Next</b>.', ex4b: 'AB is x − 3y + 6 = 0; CD is perpendicular to AB at C. Press <b>Next</b>.', three: 'Every vertex has an altitude. Where do the three meet? Press <b>Next</b>.' })[v],
   make(stage, v, ex) {

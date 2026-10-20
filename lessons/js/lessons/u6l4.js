@@ -277,7 +277,7 @@ const COL = {
 const collinear = {
   title: 'Collinear: equal slopes and a shared point',
   height: 480,
-  minW: 880, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(COL).map((k) => ({ v: k, label: COL[k].label })),
   intro: 'Are these points on one straight line? Measure the slope between pairs of points. Press <b>Next</b>.',
   make(stage, k, ex) {

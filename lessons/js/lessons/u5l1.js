@@ -316,7 +316,7 @@ const word = (s) => (s === '+' ? 'positive' : 'negative');
 const quadrants = {
   title: 'The four quadrants',
   height: 470,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'q', label: 'The four quadrants' }, { v: 'ex1', label: 'Example 1 check' }],
   intro: (k) => (k === 'ex1' ? 'Sort the points of Example 1 into quadrants, and fill in the table of signs (part d). Press <b>Next</b>.'
     : 'The axes cut the plane into four <b>quadrants</b>. Press <b>Next</b>.'),

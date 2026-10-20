@@ -528,6 +528,7 @@ function layPony(stage, ex) {
 const lay = {
   title: 'Lay a referent end to end: count, then multiply',
   height: 450,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(LAY).map((k) => ({ v: k, label: LAY[k].label })),
   intro: (k) => ({ desk: 'Warm-up question 1, for real: a desk, 3 hand spans wide. Press <b>Next</b>.', hall: 'Warm-up question 2: a hallway, 30 paces long. Press <b>Next</b>.', usb: 'How long is a USB flash drive? Press <b>Next</b>.', pony: 'How tall is a pony? Press <b>Next</b>.' })[k],
   make(stage, k, ex) { return k === 'pony' ? layPony(stage, ex) : layH(stage, k, ex); }
@@ -932,6 +933,7 @@ const card = {
 const km = {
   title: 'Example 5 check: build a kilometre out of a smaller referent',
   height: 420,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'pool', label: 'From pool lengths' }, { v: 'pace', label: 'From paces' }],
   intro: (v) => (v === 'pool' ? 'Nothing Marcus knows is 1 km long. Press <b>Next</b>.' : 'Try the same thing with a much smaller referent. Press <b>Next</b>.'),
   make(stage, v, ex) {

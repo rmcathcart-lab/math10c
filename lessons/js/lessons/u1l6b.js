@@ -582,6 +582,7 @@ const revLabel = (s) => tex(qTerm(s.k.c, s.k.vars || []) + rt(s.n, qTerm(s.r.c, 
 const toEntire = {
   title: 'Mixed → entire: the coefficient goes back in',
   height: 470,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'e32', label: revLabel(TE.e32) }, { v: 'e25', label: revLabel(TE.e25) }, { v: 'en24', label: revLabel(TE.en24) }, { sep: 'Example 2 check:' }, { v: 'e2a', label: revLabel(TE.e2a) }, { v: 'e2b', label: revLabel(TE.e2b) }, { v: 'e2c', label: revLabel(TE.e2c) }, { v: 'e2d', label: revLabel(TE.e2d) }],
   intro: (v) => `Write ${revLabel(TE[v])} as an <b>entire radical</b>: everything under one root.`,
   make(stage, v, ex) { return toEntireMake(stage, TE[v], ex); }
@@ -647,6 +648,7 @@ const MG = { e: { n: 2, vars: [['x', 8], ['y', 7]] }, f: { n: 2, c: 50, vars: [[
 const mixedGroups = {
   title: 'Numbers and variables: every factor gets grouped',
   height: 500,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'd', label: lab(MG.d) }, { sep: 'Example 3 check:' }, { v: 'e', label: lab(MG.e) }, { v: 'f', label: lab(MG.f) }, { v: 'g', label: lab(MG.g) }, { v: 'h', label: lab(MG.h) }],
   intro: (v) => `Simplify ${lab(MG[v])}. Prime factors and variables all go into <b>groups of ${word(MG[v].n)}</b>.`,
   make(stage, v, ex) { return simplifyMake(stage, MG[v], ex); }

@@ -293,7 +293,7 @@ const WT = {
 const whichTool = {
   title: 'Which tool? Name the sides, then follow the flowchart',
   height: 490,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(WT).map((k) => ({ v: k, label: WT[k].label })),
   intro: 'One unknown. Say what is given and what is wanted, then let the questions pick the tool. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -587,7 +587,7 @@ const SIDE_SHOW = { TW: 'WT', FW: 'WF', BT: 'BT' };
 const solveIt = {
   title: 'Solve it: fill in all six',
   height: 600,
-  minW: 900, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SV).map((k) => ({ v: k, label: SV[k].label })),
   intro: 'A checklist of six measures. Tick off what is given, then let the flowchart pick a tool for each missing piece. Press <b>Next</b>.',
   make(stage, k, ex) {

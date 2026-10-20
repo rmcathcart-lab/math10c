@@ -251,6 +251,7 @@ const LO = { d1: ['14p^2q^3', '21pq^4'], d2: ['12a^4', '18a^2b'], i: ['16ab', '2
 const lowest = {
   title: 'The shortcut: GCF of the numbers, lowest power of each letter',
   height: 400,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'd1', label: tex('14p^2q^3,\\ 21pq^4') }, { v: 'd2', label: tex('12a^4,\\ 18a^2b') }, { sep: 'Example 1 check:' }, { v: 'i', label: '(b)(i)' }, { v: 'ii', label: '(ii)' }, { v: 'iii', label: '(iii)' }, { v: 'iv', label: '(iv)' }],
   intro: (k) => `State the GCF of ${listAnd(LO[k].map((s) => T(s)))} by inspection, one piece at a time.`,
   make(stage, key, ex) {
@@ -332,6 +333,7 @@ const trPoly = (d) => (d.q ? `${d.a}x^2+${d.b}x` : `${d.a}x+${d.b}`);
 const tileRect = {
   title: 'Factoring with tiles: arrange them into a rectangle',
   height: 450,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: ['a', 'b', 'c', 'd'].map((k) => ({ v: k, label: tex(trPoly(TR[k])) })),
   intro: (k) => { const d = TR[k]; return `Here are the tiles for ${T(trPoly(d))}: ${d.a} ${T(d.q ? 'x^2' : 'x')}-tiles and ${d.b} ${d.q ? T('x') + '-tiles' : 'unit tiles'}. <b>Factoring</b> means arranging them into one <b>rectangle</b>: its side lengths are the factors.`; },
   make(stage, key, ex) {

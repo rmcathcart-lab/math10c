@@ -298,7 +298,7 @@ const ANS2 = { A: 'TFT', B: 'TTT', C: 'FFF', D: 'FTF' };
 const vlt = {
   title: 'Example 2 check: sweep a vertical line, then a horizontal line',
   height: 470,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   value: 'A',
   choices: [{ sep: 'Example 2 check:' }, ...'ABCD'.split('').map((k) => ({ v: k, label: EX2[k].name }))],
   intro: (k) => `${EX2[k].name}. Fill in its column of the table. Press <b>Next</b>.`,
@@ -355,7 +355,7 @@ const SIX = {
 const sixWays = {
   title: 'One relation, six forms',
   height: 486,
-  minW: 900, // drawn this wide and scaled to fit beside the sidebar
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SIX).map((k) => ({ v: k, label: SIX[k].label })),
   intro: (k) => `${SIX[k].words} Build it in six forms, then apply the function test to every one. Press <b>Next</b>.`,
   make(stage, k, ex) {

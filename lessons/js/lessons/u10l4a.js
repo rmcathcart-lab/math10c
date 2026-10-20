@@ -410,7 +410,7 @@ const prop = {
 const ratio = {
   title: 'Ratios from the question: a scale and a recipe',
   height: 420,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'whale', label: 'Example 5 check: the whale' }, { v: 'smoothie', label: 'Example 6 check: the smoothie' }],
   intro: (v) => (v === 'whale' ? 'A double number line: photo centimetres on top, real metres below. Press <b>Next</b>.' : 'A tape diagram: equal-sized parts of yogurt and juice. Press <b>Next</b>.'),
   make(stage, v, ex) { return v === 'whale' ? whaleSteps(stage, ex) : smoothieSteps(stage, ex); }

@@ -399,6 +399,7 @@ const derive = {
 const peel = {
   title: 'Why 4πr²? Four great circles',
   height: 430,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'peel', label: 'The orange-peel test' }, { v: 'arch', label: 'Archimedes: unroll the snug cylinder' }],
   intro: (v) => (v === 'peel' ? 'Peel an orange and flatten the peel. How many circles of the same radius does it cover? Press <b>Next</b>.' : 'Another way to see 4πr². Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -525,6 +526,7 @@ const halve = {
 const slice = {
   title: 'Example 2 check: half a sphere',
   height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'vol', label: '(a) Volume' }, { v: 'sa', label: '(b), (c) Surface area' }],
   intro: (v) => (v === 'vol' ? 'Slice a sphere exactly through its centre. Press <b>Next</b>.' : 'A hemisphere has a curved dome and a flat floor. Press <b>Next</b>.'),
   make(stage, k, ex) {

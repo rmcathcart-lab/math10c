@@ -401,7 +401,7 @@ const LAY = {
 const layers = {
   title: 'Volume: stack layers of the base',
   height: 470,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(LAY).map((k) => ({ v: k, label: LAY[k].label })),
   intro: 'Each layer is 1 unit thick. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -520,7 +520,7 @@ const NETS = {
 const net = {
   title: 'Unfold it: surface area is every face added up',
   height: 480,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(NETS).map((k) => ({ v: k, label: NETS[k].label })),
   intro: 'Cut along some edges and lay the prism flat. Press <b>Next</b>.',
   make(stage, k, ex) {

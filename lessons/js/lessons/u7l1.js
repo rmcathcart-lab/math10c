@@ -677,7 +677,7 @@ const SG = {
 const stepGraph = {
   title: 'Plot b, then step rise over run',
   height: 500,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SG).map((k) => ({ v: k, label: SG[k].label })),
   intro: 'Two numbers draw the whole line: <b>b</b> says where to start, <b>m</b> says how to step. Press <b>Next</b>.',
   make(stage, k, ex) {
