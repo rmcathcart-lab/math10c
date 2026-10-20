@@ -258,10 +258,14 @@ const sumDiff = {
     hide(...dT, ...dL, ...dC);
     const fT = dimH(stage, X0, Y0 - 18, S + bw, `${A}+${B}`), fL = dimV(stage, X0 - 18, Y0, r, `${A}-${B}`);
     hide(...fT, ...fL);
-    const px = 500, pw = W - px - 20;
-    const P1 = add(stage, h('div', 'sp-note', `<b>Before:</b> a square with a corner cut out. Area ${KN(d.ds)}.`), px, 196); P1.style.width = pw + 'px';
+    const px = Math.min(500, W - 386), pw = W - px - 20; // narrower stages (beside the sidebar): the notes move left and stack by height
+    const P1 = add(stage, h('div', 'sp-note', `<b>Before:</b> a square with a corner cut out. Area ${KN(d.ds)}.`), px, px < 500 ? 160 : 196); P1.style.width = pw + 'px';
     const P2 = add(stage, h('div', 'sp-note', `<b>After:</b> one rectangle, ${KN(`${A}+${B}`)} long and ${KN(`${A}-${B}`)} tall. Area ${KN(d.head)}.`), px, 270); P2.style.width = pw + 'px';
     const P3 = add(stage, h('div', 'sp-eq sp-boxed', K(`${d.head}=${d.ds}`)), px, 352);
+    if (px < 500) {
+      P2.style.top = Math.max(270, P1.offsetTop + P1.offsetHeight + 10) + 'px'; P3.style.top = Math.max(352, P2.offsetTop + P2.offsetHeight + 12) + 'px';
+      if (P3.offsetWidth > pw) P3.style.fontSize = Math.floor(26 * (pw - 40) / (P3.offsetWidth - 40)) + 'px';
+    }
     hide(P1, P2, P3);
     return [{
       cap: `FOIL gives four products: <b>F</b> ${T(d.F)}, <b>O</b> ${T(d.O)}, <b>I</b> ${T(d.I)}, <b>L</b> ${T(d.L)}.`,
@@ -621,6 +625,7 @@ const complete = {
     const e1 = E(72, `${K(`2a=${k}`)}, so ${K(`a=${a}`)}`);
     const e2 = E(118, `corner needs ${K(`a^2=${a * a}`)}`);
     const e3 = E(166, K(`${poly}=(x+${a})^2${b < 0 ? '' : '+'}${b}`), 'big sp-boxed');
+    if (e3.offsetWidth > W - PX - 12) e3.style.fontSize = Math.floor(32 * (W - PX - 12 - 42) / (e3.offsetWidth - 42)) + 'px'; // keep the boxed line inside the stage
     const bs = `${b < 0 ? '' : '+'}${b}`;
     const e4 = E(354, `<span class="sp-stl">Check</span>${KN(`(x+${a})^2${bs}`)} ${KN(`=x^2+${k}x+${a * a}${bs}`)} <span class="nw">${K(`=${poly}`)} <b class="ok">✓</b></span>`, 'sp-chkline');
     e4.style.width = pw + 'px';
@@ -692,7 +697,7 @@ function mountTrick() {
 
 function mountSquare35() {
   const host = document.getElementById('sq35'); if (!host) return;
-  const S = 300, pa = 228, pb = S - pa;
+  const S = parseFloat(getComputedStyle(host).getPropertyValue('--sq')) || 300, pa = Math.round(S * 0.76), pb = S - pa; // the size comes from the CSS (--sq), so the one-screen layout can shrink it
   const pcs = [[0, 0, pa, pa, 'aa', '30 × 30', 900], [pa, 0, pb, pa, 'ab', '30 × 5', 150], [0, pa, pa, pb, 'ab', '5 × 30', 150], [pa, pa, pb, pb, 'bb', '5 × 5', 25]];
   host.innerHTML = `<div class="sp-sq-in" style="width:${S}px;height:${S}px">
       ${pcs.map(([x, y, w, ht, cls, m, v], i) => `<button type="button" class="sp-sqp ${cls}" data-i="${i}" style="left:${x}px;top:${y}px;width:${w}px;height:${ht}px"><span class="q">?</span><span class="v"><small>${m}</small>${v}</span></button>`).join('')}

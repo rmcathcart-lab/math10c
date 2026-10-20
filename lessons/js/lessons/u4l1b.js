@@ -278,7 +278,7 @@ const FB = {
 const flipBlock = {
   title: 'Opposite blocks: flip one over',
   height: 400,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar (the table of values needs the room)
   choices: [{ v: 'n', label: tex('4x(x-3)+5(3-x)') }, { sep: 'Example 2 check:' }, { v: 'c', label: '(c)' }],
   intro: (k) => `Factor ${T(join(FB[k].r0))}. Do the two brackets match?`,
   make(stage, key, ex) {

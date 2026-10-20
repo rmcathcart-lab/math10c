@@ -78,12 +78,14 @@ function mountWarm() {
   const host = document.getElementById('u6l5-phones'); if (!host) return;
   const P = [{ name: 'Mia', act: 'gaming', b0: 90, r: 15 }, { name: 'Leo', act: 'texting', b0: 40, r: 5 }];
   const times = ['12:00', '1:00', '2:00', '3:00'];
+  // table cell size: the one-screen layout sets smaller ones in CSS (--u6l5-cw / --u6l5-ch on #u6l5-phones)
+  const hcs = getComputedStyle(host), cellW = parseFloat(hcs.getPropertyValue('--u6l5-cw')) || 112, cellH = parseFloat(hcs.getPropertyValue('--u6l5-ch')) || 50;
   const sides = P.map((p) => {
     const wrap = h('div', 'u6l5-pside');
     const ph = h('div', 'u6l5-phone', `<div class="u6l5-pname">${p.name}</div><div class="u6l5-pbody"><div class="u6l5-pscreen">` +
       '<div class="u6l5-bat"><div class="u6l5-batfill"></div></div><div class="u6l5-pct"></div>' +
       `<div class="u6l5-act">${p.act}</div></div><div class="u6l5-pbtn"></div></div>`);
-    const tb = new ValueTable(null, { headers: [{ html: 'Time' }, { html: 'Battery' }], rows: times.map((t, i) => [{ html: t }, { html: (p.b0 - p.r * i) + '%' }]), layout: 'v', cellW: 112, cellH: 50, hide: [[3, 1]], q: '?', cls: 'u6l5-wtab' });
+    const tb = new ValueTable(null, { headers: [{ html: 'Time' }, { html: 'Battery' }], rows: times.map((t, i) => [{ html: t }, { html: (p.b0 - p.r * i) + '%' }]), layout: 'v', cellW, cellH, hide: [[3, 1]], q: '?', cls: 'u6l5-wtab' });
     wrap.append(ph, tb.el);
     const fill = ph.querySelector('.u6l5-batfill'), pct = ph.querySelector('.u6l5-pct'), scr = ph.querySelector('.u6l5-pscreen');
     const set = (v) => {

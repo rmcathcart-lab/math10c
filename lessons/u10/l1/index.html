@@ -44,9 +44,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Your Age in Seconds" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Your Age in Seconds</h2></div>
-  <p class="big">Since you were born, your <b>seconds counter</b> has gone up by 1 every second.</p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Your Age in Seconds" id="wu" style="--wf-side: 310px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Your Age in Seconds</h2>
+  <p class="wf-rule">Since you were born, your <b>seconds counter</b> has gone up by 1 every second.</p></div>
+  <div class="wf-grid"><div class="wf-main">
   <div class="u10l1-wtop">
     <div class="u10l1-odo-wrap">
       <div class="u10l1-odo" id="u10l1-odo" aria-label="seconds counter"></div>
@@ -77,17 +78,18 @@
       <div class="q-line"><div class="q-num">2</div><div>How many seconds are in <b>1 day</b>?</div></div>
       <div class="u10l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">3\,600\times24=86\,400</span> s</div></div>
     </div>
-    <div class="bk-wq">
+    <div class="bk-wq u10l1-wq3">
       <div class="q-line"><div class="q-num">3</div><div>How many seconds are in <b>1 year</b>? Use scientific notation, <span class="tex">a\times10^{n}</span>.</div></div>
       <div class="u10l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">86\,400\times365=31\,536\,000</span> s <span class="tex">\approx\mathbf{3.2\times10^{7}}</span> s. (With leap years, 365.25 days gives <span class="tex">31\,557\,600</span> s: still <span class="tex">3.2\times10^{7}</span>.)</div></div>
     </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">4</div><div><b>1 million</b> s <span class="tex">\approx</span> how many days?</div></div>
-      <div class="u10l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">1\,000\,000\div86\,400\approx11.6</span> days: under two weeks.</div></div>
-    </div>
+  </div>
+  </div><div class="wf-side">
+  <div class="bk-wq u10l1-wq4">
+    <div class="q-line"><div class="q-num">4</div><div><b>1 million</b> s <span class="tex">\approx</span> how many days?</div></div>
+    <div class="u10l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">1\,000\,000\div86\,400\approx11.6</span> days: under two weeks.</div></div>
   </div>
 
-  <div class="poll u10l1-poll4">
+  <div class="poll u10l1-poll4 wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> The counter reads <b>1 000 000 000</b>. You are <b>one billion seconds</b> old! How old are you in <b>years</b>? <b>Guess first.</b></div></div>
     <div class="poll-opts">
       <div class="opt"><b>A</b> about 3 years</div>
@@ -99,6 +101,7 @@
     <div class="poll-ans"><b>C: about 32 years.</b> <span class="tex">1\,000\,000\,000\div31\,536\,000\approx31.7</span> years (31.69 with leap years). A billion is a <b>thousand</b> millions, so it is <span class="tex">1000\times11.6</span> days <span class="tex">\approx11\,574</span> days.<br>
       <span class="muted"><b>B (12)</b> is the trap: “a million seconds is 11.6 days, so a billion is about 12 of something.” <b>A (3)</b> slips one power of ten. <b>D (100)</b> is the “a billion is unimaginably huge” gut feeling.</span></div>
   </div>
+  </div></div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
     <div><b>Seconds in a year, then a billion seconds in years.</b> <span class="keys"><kbd>6</kbd><kbd>0</kbd><kbd>×</kbd><kbd>6</kbd><kbd>0</kbd><kbd>×</kbd><kbd>2</kbd><kbd>4</kbd><kbd>×</kbd><kbd>3</kbd><kbd>6</kbd><kbd>5</kbd><kbd>ENTER</kbd></span> gives 31536000. Then <span class="keys"><kbd>1</kbd><kbd>2nd</kbd><kbd>EE</kbd><kbd>9</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>1</kbd><kbd>5</kbd><kbd>3</kbd><kbd>6</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives 31.70979198 years. <kbd>EE</kbd> (<kbd>2nd</kbd> above <kbd>x⁻¹</kbd>) means “times ten to the power”.</div>

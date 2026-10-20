@@ -44,14 +44,21 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Ride Restrictions" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Ride Restrictions</h2></div>
-  <div class="u5l4-sign"><b>THE CYCLONE:</b> riders must be <b class="u5l4-acc">at least 120&nbsp;cm</b> and <b class="u5l4-acc">no taller than 195&nbsp;cm</b></div>
-  <div class="u5l4-wtop">
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Ride Restrictions" id="wu" style="--wf-side: 330px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Ride Restrictions</h2>
+  <div class="u5l4-sign"><b>THE CYCLONE:</b> riders must be <b class="u5l4-acc">at least 120&nbsp;cm</b> and <b class="u5l4-acc">no taller than 195&nbsp;cm</b></div></div>
+  <div class="wf-grid"><div class="wf-main u5l4-wcols">
+  <div class="u5l4-wcol">
     <div class="u5l4-kidsbox">
       <div id="u5l4-kids"></div>
       <div class="u5l4-tiny">Tap a rider to check them at the gate.</div>
     </div>
+    <div class="u5l4-wqs">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Which of the four friends may ride? <button class="pill small" type="button" data-bk-toggle data-wu="1">Answer</button></div></div>
+      <div class="u5l4-wa"><div class="bk-ans"><b>Ben and Cleo.</b> Ava (118) is too short. Ben (exactly 120) counts: “at least 120” <b>includes</b> 120. Dev (196) is 1&nbsp;cm too tall.</div></div></div>
+    </div>
+  </div>
+  <div class="u5l4-wcol">
     <div class="u5l4-trackbox">
       <div class="u5l4-trh">The Cyclone’s track <span class="u5l4-trsub">height <span class="tex">h</span> (m) against distance along the ride <span class="tex">d</span> (m)</span></div>
       <div id="u5l4-track"></div>
@@ -61,18 +68,17 @@
         <button type="button" class="pill small" data-track="y">Light from the side</button>
       </div>
     </div>
+    <div class="u5l4-wqs">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>How high is the track’s <b>highest</b> point? Its <b>lowest</b> point? <button class="pill small" type="button" data-bk-toggle data-wu="2">Answer</button></div></div>
+      <div class="u5l4-wa"><div class="bk-ans">Highest: <span class="tex">40</span>&nbsp;m, at the top of the lift hill. Lowest: <span class="tex">-6</span>&nbsp;m, in the tunnel 6&nbsp;m underground.</div></div></div>
+    </div>
   </div>
-
+  </div><div class="wf-side">
   <div class="u5l4-wqs">
-    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Which of the four friends may ride?</div></div>
-      <div class="u5l4-wa"><button class="pill small" type="button" data-bk-toggle data-wu="1">Answer</button><div class="bk-ans"><b>Ben and Cleo.</b> Ava (118) is too short. Ben (exactly 120) counts: “at least 120” <b>includes</b> 120. Dev (196) is 1&nbsp;cm too tall.</div></div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>How high is the track’s <b>highest</b> point? Its <b>lowest</b> point?</div></div>
-      <div class="u5l4-wa"><button class="pill small" type="button" data-bk-toggle data-wu="2">Answer</button><div class="bk-ans">Highest: <span class="tex">40</span>&nbsp;m, at the top of the lift hill. Lowest: <span class="tex">-6</span>&nbsp;m, in the tunnel 6&nbsp;m underground.</div></div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>The graph covers distances from <span class="u5l4-blank"></span> to <span class="u5l4-blank"></span>&nbsp;m, and heights from <span class="u5l4-blank"></span> to <span class="u5l4-blank"></span>&nbsp;m.</div></div>
-      <div class="u5l4-wa"><button class="pill small" type="button" data-bk-toggle data-wu="3">Answer</button><div class="bk-ans">Distances from <span class="tex">0</span> to <span class="tex">800</span>&nbsp;m. Heights from <span class="tex">-6</span> to <span class="tex">40</span>&nbsp;m. Those are the graph’s two <b>shadows</b>: try the light buttons.</div></div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>The graph covers distances from <span class="u5l4-blank"></span> to <span class="u5l4-blank"></span>&nbsp;m, and heights from <span class="u5l4-blank"></span> to <span class="u5l4-blank"></span>&nbsp;m. <button class="pill small" type="button" data-bk-toggle data-wu="3">Answer</button></div></div>
+      <div class="u5l4-wa"><div class="bk-ans">Distances from <span class="tex">0</span> to <span class="tex">800</span>&nbsp;m. Heights from <span class="tex">-6</span> to <span class="tex">40</span>&nbsp;m. Those are the graph’s two <b>shadows</b>: try the light buttons.</div></div></div>
   </div>
-
-  <div class="poll">
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which set is <b>exactly</b> the rider heights <span class="tex">h</span> (in cm) allowed on The Cyclone? <b>Guess first.</b></div></div>
     <div class="poll-opts u5l4-p2">
       <div class="opt"><b>A</b> <span class="tex">\{h\mid 120&lt;h&lt;195,\ h\in\mathbb{R}\}</span></div>
@@ -85,6 +91,7 @@
       <span class="muted"><b>A</b> uses <span class="tex">&lt;</span>, which would turn Ben away at exactly 120&nbsp;cm. <b>C</b> uses <span class="tex">I</span> (integers), but height is <b>measured</b>: a rider who is 150.5&nbsp;cm tall may ride, and C leaves them out. <b>D</b> lists only the two boundary heights, not everything in between.</span><br>
       <b>Today’s lesson:</b> the distances a graph uses are its <b>domain</b> and the heights it produces are its <b>range</b>: <span class="tex">D=\{d\mid 0\le d\le 800,\ d\in\mathbb{R}\}</span>, <span class="tex">R=\{h\mid -6\le h\le 40,\ h\in\mathbb{R}\}</span>.</div>
   </div>
+  </div></div>
 
   <div class="bk-wq u5l4-bonus">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> A Cyclone train holds at most 24 riders and never runs empty. Write the set of possible numbers of riders <span class="tex">n</span>.</div></div>

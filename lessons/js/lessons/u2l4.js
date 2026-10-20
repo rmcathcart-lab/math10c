@@ -1,6 +1,7 @@
 /* Math 10C · Unit 2 · Lesson 4 — Scientific Notation (Application / Extension): the explainers and warm-up on this page. */
 import { h, fmt, Explainer } from '../explain.js';
 import { tex } from '../tex.js';
+const texEq = (s) => s.split('=').map((p, i) => tex((i ? '=' : '') + p)).join(' '); // a chain of equations that can wrap at each "=" (the side caption is narrow)
 
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
@@ -111,6 +112,7 @@ const hops = {
     const yPF = 262, yOut = 348;
     const lPF = lab('Product form', yPF + 10), pf = add(stage, h('div', 'hp-math'), 250, yPF);
     const lOut = lab(mode === 's' ? 'Scientific notation' : 'Standard notation', yOut + 6), out = add(stage, h('div', 'hp-math out'), 250, yOut);
+    const setPF = (html) => { pf.innerHTML = html; pf.style.fontSize = ''; const room = W - 264; if (pf.offsetWidth > room) pf.style.fontSize = (30 * room / pf.offsetWidth) + 'px'; }; // a long product shrinks to fit
     hide(lPF, lOut);
     const tens = (k) => Array(k).fill('10').join('\\times');
     const pfT = (k) => (k === 0 ? coef : big ? `${coef}\\times${tens(k)}` : `\\dfrac{${coef}}{${tens(k)}}`);
@@ -135,9 +137,9 @@ const hops = {
           dot.style.opacity = 1;
           await Promise.all([c.fadeIn(lPF, 300), c.fadeIn(pf, 300)]);
           for (let i = 0; i < nh; i++) {
-            pf.innerHTML = K(pfT(i));
+            setPF(K(pfT(i)));
             await row.hop(c, dot, cIdx + i * dir, dir, big ? '×10' : '÷10');
-            pf.innerHTML = K(pfT(i + 1));
+            setPF(K(pfT(i + 1)));
             if (!c.fast) pf.animate([{ opacity: 0.4 }, { opacity: 1 }], 200);
           }
           ghost.style.opacity = 0;
@@ -147,7 +149,7 @@ const hops = {
         cap: big ? `<b>${plural(nh, 'hop')}</b> to the right means ${nh === 1 ? 'one 10' : nh + ' tens multiplied together'}: ${tex(`10^{${nh}}`)}. So ${stdOf(sig, e)} = <b>${tex(sciT(coef, e))}</b>.`
           : `Dividing by ${nh === 1 ? 'one 10' : nh + ' tens'} is the same as multiplying by ${tex(`10^{${e}}`)}. So ${stdOf(sig, e)} = <b>${tex(sciT(coef, e))}</b>.`,
         run: async (c) => {
-          pf.innerHTML = K(`${pfT(nh)}=${sciT(coef, e)}`); out.innerHTML = K(`\\mathbf{${sciT(coef, e)}}`);
+          setPF(K(`${pfT(nh)}=${sciT(coef, e)}`)); out.innerHTML = K(`\\mathbf{${sciT(coef, e)}}`);
           out.classList.add('done');
           await Promise.all([c.fadeIn(pf, 300), c.pop(out, 420)]);
         }
@@ -170,9 +172,9 @@ const hops = {
     row.els.forEach((el, i) => { if (pad(i)) { el.textContent = '0'; el.classList.add('ph'); hide(el); } });
     row.els.forEach((el, i) => { if (i === cIdx - 1) el.classList.add('lead'); });
     steps.push({
-      cap: big ? `${tex(`10^{${e}}`)} means <b>multiply by 10, ${plural(nh, 'time')}</b>. In product form: ${tex(pfT(nh))}.`
+      cap: big ? `${tex(`10^{${e}}`)} means <b>multiply by 10, ${plural(nh, 'time')}</b>. In product form: ${[coef, ...Array(nh).fill('10')].map((t) => tex(t)).join(' × ')}.` // factor by factor, so it can wrap
         : `${tex(`10^{${e}}`)} means <b>divide by 10, ${plural(nh, 'time')}</b>. In product form: ${tex(pfT(nh))}.`,
-      run: async (c) => { pf.innerHTML = K(pfT(nh)); await Promise.all([c.fadeIn(lPF, 300), c.fadeIn(pf, 400)]); }
+      run: async (c) => { setPF(K(pfT(nh))); await Promise.all([c.fadeIn(lPF, 300), c.fadeIn(pf, 400)]); }
     });
     const crossings = []; for (let i = 0; i < nh; i++) { const k = cIdx + i * dir; crossings.push(big ? k : k - 1); }
     const fills = crossings.filter((i) => pad(i)).length;
@@ -235,6 +237,7 @@ const ZOOM = [ // log10 of the size in metres places it on the scale
 const zoom = {
   title: 'From an atom to the Sun: a powers-of-ten scale (metres)',
   height: 470,
+  minW: 920, // drawn this wide and scaled to fit beside the sidebar (the cards need room not to overlap)
   intro: 'Every measurement goes on the scale at the tick for its <b>power of 10</b>. Press <b>Next</b> to place them one at a time.',
   make(stage, v, ex) {
     stage.classList.remove('zm-done');
@@ -265,7 +268,7 @@ const zoom = {
     }));
     const a = items.find((o) => o.it.k === 'atom'), b = items.find((o) => o.it.k === 'orbit');
     steps.push({
-      cap: `The whole scale: the Earth–Sun distance is about ${tex('10^{11}\\div10^{-10}=10^{11-(-10)}=10^{21}')} times an atom’s width. That’s <b>21 jumps of × 10</b>, done in one line with the <b>Quotient Law</b>.`,
+      cap: `The whole scale: the Earth–Sun distance is about ${texEq('10^{11}\\div10^{-10}=10^{11-(-10)}=10^{21}')} times an atom’s width. That’s <b>21 jumps of × 10</b>, done in one line with the <b>Quotient Law</b>.`,
       run: async (c) => {
         const top = 60, p = svgEl('path', { d: `M ${a.x} ${ay - 10} C ${a.x + 80} ${top - 40}, ${b.x - 80} ${top - 40}, ${b.x} ${ay - 10}`, class: 'zm-span' }); svg.appendChild(p);
         const len = p.getTotalLength ? p.getTotalLength() || 1200 : 1200; p.style.strokeDasharray = len; p.style.strokeDashoffset = len;
@@ -329,7 +332,7 @@ const renorm = {
         await c.anim(sup, [{ transform: 'scale(1.6)', color: '#12805a' }, { transform: 'scale(1)', color: '#12805a' }], 450);
       }
     }, {
-      cap: `Check with the exponent laws: ${tex(`${aS}=${sciT(coef2, k)}`)}, so ${tex(`${sciT(aS, n)}=${sciT(coef2, k)}\\times10^{${n}}=${sciT(coef2, n2)}`)}. Both are <b>${stdOf(sig, ae + n)}</b>.`,
+      cap: `Check with the exponent laws: ${tex(`${aS}=${sciT(coef2, k)}`)}, so ${texEq(`${sciT(aS, n)}=${sciT(coef2, k)}\\times10^{${n}}=${sciT(coef2, n2)}`)}. Both are <b>${stdOf(sig, ae + n)}</b>.`,
       run: async (c) => {
         w1.innerHTML = K(`${sciT(aS, n)}=${coef2}\\times10^{${k}}\\times10^{${n}}=\\mathbf{${sciT(coef2, n2)}}`);
         w2.innerHTML = `Same value: both are <b>${stdOf(sig, ae + n)}</b> <b class="ok">✓</b>`; w2.classList.add('val');
@@ -406,7 +409,7 @@ const muldiv = {
         run: async (c) => { chk.innerHTML = `<b class="red">✗</b> ${K(cr)} is ${e > 0 ? '10 or more' : 'less than 1'}`; await c.fadeIn(chk, 350); await c.shake(chk); }
       });
       steps.push({
-        cap: `<b>Renormalize</b>: ${tex(`${cr}=${sciT(coef2, e)}`)}, so the exponent goes <b>${e > 0 ? 'up' : 'down'} ${Math.abs(e)}</b>: ${tex(`${sciT(coef2, e)}\\times10^{${er}}=${sciT(coef2, n2)}`)}.${p.tail || ''}`,
+        cap: `<b>Renormalize</b>: ${tex(`${cr}=${sciT(coef2, e)}`)}, so the exponent goes <b>${e > 0 ? 'up' : 'down'} ${Math.abs(e)}</b>: ${texEq(`${sciT(coef2, e)}\\times10^{${er}}=${sciT(coef2, n2)}`)}.${p.tail || ''}`,
         run: async (c) => {
           chk.innerHTML = K(`${sciT(cr, er)}=${sciT(coef2, e)}\\times10^{${er}}`);
           fin.innerHTML = K(`=\\mathbf{${sciT(coef2, n2)}}`);

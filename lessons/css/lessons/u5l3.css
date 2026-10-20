@@ -82,3 +82,24 @@ h2 .katex, h3 .katex { font-size: .95em; }
 /* context scene */
 .u5l3-scene { overflow: visible; }
 .u5l3-sctxt { font: 800 17px var(--round); fill: #1e2d46; }
+
+/* ---------- one screen (main.lesson.screen): the dive + Q1–Q2 on the left, Q3 and the big one on the right ---------- */
+.wf #u5l3-dive { width: 440px; }
+.wf .u5l3-wfig { gap: 6px; }
+.wf .u5l3-wbtns { gap: 8px; }
+.wf .u5l3-wbtns .pill { font-size: 15px; padding: 6px 14px; }
+.wf .u5l3-wqs .q-line { margin: 10px 0 0; font-size: 17px; gap: 10px; line-height: 1.38; }
+.wf .u5l3-wqs .q-line .pill.small { margin-left: 4px; vertical-align: 1px; }
+.wf .u5l3-wa { margin: 2px 0 4px 40px; }
+.wf .u5l3-wa .bk-ans { margin-top: 0; font-size: 16px; line-height: 1.35; }
+.wf .wf-side .u5l3-wqs .q-line { margin-top: 0; }
+.wf .wf-poll { margin-top: 10px; padding-bottom: 12px; }
+.wf .wf-poll .q-line { margin-top: 8px; }
+.wf .wf-poll .poll-opts { gap: 6px; }
+.wf .wf-poll .opt { font-size: 16.5px; padding: 6px 10px; }
+.wf .u5l3-wbtns { flex-wrap: nowrap; }
+.wf .u5l3-wbtns .pill { font-size: 14.5px; padding: 6px 12px; margin: 0; white-space: nowrap; }
+.wf .wf-side .u5l3-wqs .bk-wq:first-child .q-line { margin-top: 0; }
+.wf .wf-side .u5l3-wqs .bk-wq + .bk-wq .q-line { margin-top: 10px; }
+.wf #u5l3-dive { width: 470px; }
+.wf #u5l3-dive { width: 456px; }

@@ -116,6 +116,7 @@ const TW = {
 const twoWay = {
   title: 'Expanding and factoring: one rectangle, two directions',
   height: 420,
+  minW: 820, // the two 300 px form boxes need room for the arrows between them
   choices: [{ v: 'm', label: tex('3x(x+4)') }, { v: 't1', label: tex('(x+2)(x+6)') }, { v: 't2', label: tex('(3x+2)(x+5)') }, { v: 'd', label: tex('(x-7)(x+7)') }],
   intro: (k) => `${T(TW[k].prod)} is a <b>product</b>: the area of a rectangle whose sides are the factors. Watch it expand, then run backwards.`,
   make(stage, key, ex) {
@@ -441,7 +442,7 @@ function makePull(title, choices, first) {
       [...cParts.e, ...cParts.g, ...cParts.b, ...cParts.q.flat()].forEach((e) => hide(e));
       const stamp = add(stage, h('div', 'u4l1a-stamp ok', 'FACTORED<small>completely ✓</small>'), W - 22, yC - 40); stamp.style.translate = '-100% 0'; hide(stamp);
       // the check: a rectangle whose side is the GCF and whose pieces are the original terms
-      const pw = Math.min(232, (W - x0 - 30) / n), rx = x0 + 36, ry = yD + 22, rh2 = 82;
+      const pw = Math.min(232, (W - x0 - 50) / n), rx = x0 + 36, ry = yD + 22, rh2 = 82;
       const side = add(stage, h('div', 'u4l1a-rsd', K(gT)), rx - 10, ry + rh2 / 2); side.style.translate = '-100% -50%'; hide(side);
       const pieces = P.map((t, i) => {
         const e = add(stage, box(h('div', 'u4l1a-rp' + (t.n < 0 ? ' neg' : ''), `<span>${K(termT(t, true))}</span>`), pw, rh2), rx + i * pw, ry); e.style.setProperty('--pc', PCOL[i % 4]);
@@ -489,6 +490,7 @@ const pullA = makePull('Pull it out front: divide every term by the GCF',
   [{ v: 'd', label: tex('18a^3b+24a^2b^2') }, { v: 'neg', label: tex('-4x^2+10x') }, { sep: 'Example 2 check:' }, ...['a', 'b', 'c', 'd', 'e', 'f'].map((k) => ({ v: k + '2', label: `(${k})` }))], 'd');
 const pullB = makePull('Factor completely, then check by expanding',
   [{ v: 'd3', label: tex('-6x^3+9x^2-12x') }, { sep: 'Example 3 check:' }, { v: 'a3', label: '(a)' }, { v: 'b3', label: '(b)' }, { v: 'c3', label: '(c)' }, { v: 'd3b', label: '(d)' }, { v: 'e3', label: '(e)' }], 'd3');
+pullB.minW = 860; // the longest example (e) needs it: three wide terms side by side
 
 /* ============ 3. Find the error: expanding catches most mistakes ============ */
 const FE = {
@@ -500,7 +502,7 @@ const FE = {
 const findErr = {
   title: 'Find the error: check by expanding',
   height: 410,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar (the stamp needs room beside the expansion)
   choices: Object.keys(FE).map((k) => ({ v: k, label: FE[k].who })),
   intro: (k) => { const d = FE[k]; return `${d.who} says ${T(`${polyT(parsePoly(d.poly))}=${d.g}(${polyT(parsePoly(d.br))})`)}. Is it right?`; },
   make(stage, key, ex) {

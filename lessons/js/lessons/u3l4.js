@@ -60,6 +60,12 @@ function drawLine(c, ln, ms = 420, o = {}) {
   return c.anim(ln, [{ strokeDashoffset: len }, { strokeDashoffset: 0 }], ms, o);
 }
 
+/* a line of maths that is wider than its space (a narrow stage beside the sidebar) is set just small enough to fit */
+function shrinkToFit(el, max) {
+  const w = el.scrollWidth; if (!max || w <= max) return;
+  el.style.fontSize = Math.floor(parseFloat(getComputedStyle(el).fontSize) * max / w * 10) / 10 + 'px';
+}
+
 /* =====================================================================
    Painted cubes: an isometric stack of unit cubes, each tagged by how many painted faces it has
    ===================================================================== */
@@ -127,7 +133,7 @@ function mountPaint() {
   });
   function setSize(sz) {
     cur = sz; sel = null; shown = new Set();
-    stage.innerHTML = ''; stack = cubeStack(stage, sz.d, { w: 440, h: 384 });
+    stage.innerHTML = ''; stack = cubeStack(stage, sz.d, { w: stage.clientWidth || 440, h: stage.clientHeight || 384 }); // size from the CSS
     sizeBtns.forEach((b, i) => b.classList.toggle('on', SIZES[i] === sz));
     const [A, B, C] = sz.d;
     dimEl.innerHTML = `${A} × ${B} × ${C} = <b>${fmt(A * B * C)}</b> small cubes`;
@@ -165,7 +171,7 @@ const NAMES = { 1: 'monomial', 2: 'binomial', 3: 'trinomial' };
 const handshake = {
   title: 'Every term shakes hands with every term',
   height: 432,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   value: 'n23',
   choices: [{ v: 'n22', label: '2 × 2' }, { v: 'n23', label: '2 × 3' }, { v: 'n33', label: '3 × 3' }, { v: 'foil', label: 'Why FOIL fails' }, { sep: 'Example 1 check:' }, { v: 'ex1', label: tex('(3x+4)(x^2+3x+2)') }],
   intro: (k) => { const d = HS[k]; return d.foil ? `Try FOIL on ${T(`${par(d.A, d.v)}${par(d.B, d.v)}`)}: First, Outer, Inner, Last. Does it catch every product?` : `${T(`${par(d.A, d.v)}${par(d.B, d.v)}`)}: a ${NAMES[d.A.length]} times a ${NAMES[d.B.length]}. Every term on the left must shake hands with <b>every</b> term on the right.`; },
@@ -184,7 +190,7 @@ const handshake = {
       ln.style.opacity = 0; svg.appendChild(ln); return ln;
     }));
     // partial products: one column per left-hand term
-    const px = 470, pw = W - px - 10, colW = pw / m;
+    const px = 440, pw = W - px - 10, colW = pw / m;
     add(stage, h('div', 'hs-ph', 'Partial products'), px, 64);
     const chips = A.map((a, i) => B.map((b, j) => {
       const p = mulT(a, b);
@@ -241,7 +247,7 @@ const GRID = {
 const grid = {
   title: 'The grid: six cells, then collect along the diagonals',
   height: 484,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  minW: 880, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'n1', label: tex('(x+5)(x^2+2x+3)') }, { v: 'n2', label: tex('(2x-3)(x^2-4x+1)') }, { sep: 'Example 1 check:' }, { v: 'ex1', label: '(i)' }, { sep: 'Example 2 check:' }, { v: 'e2a', label: '(a)' }, { v: 'e2b', label: '(b)' }, { v: 'e2c', label: '(c), first part' }],
   intro: (k) => { const d = GRID[k]; return `Expand ${T(`${par(d.A, d.v)}${par(d.B, d.v)}`)} with a grid: one factor labels the <b>rows</b>, the other the <b>columns</b>. Each cell = row × column.`; },
   make(stage, key, ex) {
@@ -277,7 +283,7 @@ const grid = {
     const rows = groups.map((g) => {
       const sumC = g.cl.reduce((s, cl) => s + cl.p[0], 0);
       const src = g.cl.length > 1 ? `${polyT(g.cl.map((cl) => cl.p), v)}=${sumC === 0 ? '0' : termT([sumC, g.e], v, true)}` : termT(g.cl[0].p, v, true);
-      const r = h('div', 'gr-row', K(`\\textcolor{${degCol(g.e)}}{${src}}`)); panel.appendChild(r); hide(r); return r;
+      const r = h('div', 'gr-row', K(`\\textcolor{${degCol(g.e)}}{${src}}`)); panel.appendChild(r); hide(r); shrinkToFit(r, r.clientWidth); return r;
     });
     const res = polyMul(A, B);
     const fin = add(stage, h('div', 'gr-fin c', K(`${par(A, v)}${par(B, v)}=\\boldsymbol{${polyT(res, v)}}`)), W / 2, 448); hide(fin);
@@ -352,7 +358,7 @@ const distribute = {
     const W = ex.W, d = DIST[key], all = [[d.t, 'the question', '']].concat(d.lines), N = all.length;
     const lx = 26, ly = 18, lh = Math.min(84, (500 - 26) / N), nw = 252, nx = W - nw - 16;
     const rows = all.map(([t, note], i) => {
-      const el = add(stage, h('div', 'ds-line' + (N > 6 ? ' tight' : ''), K(t)), lx, ly + i * lh); el.style.height = (lh - 8) + 'px'; el.style.maxWidth = (nx - lx - 12) + 'px';
+      const el = add(stage, h('div', 'ds-line' + (N > 6 ? ' tight' : ''), K(t)), lx, ly + i * lh); el.style.height = (lh - 8) + 'px'; el.style.maxWidth = (nx - lx - 12) + 'px'; shrinkToFit(el, nx - lx - 12);
       const n = add(stage, h('div', 'ds-note', `<div>${note}</div>`), nx, ly + i * lh); n.style.width = nw + 'px'; n.style.height = (lh - 14) + 'px';
       if (i) hide(el, n); else n.classList.add('start');
       return { el, n };
@@ -375,7 +381,7 @@ const distribute = {
 const core = {
   title: 'The painted cube in algebra',
   height: 452,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  minW: 880, // drawn this wide and scaled to fit beside the sidebar
   choices: [3, 4, 5, { v: 10, label: '10 (the big one)' }].map((n) => (typeof n === 'object' ? n : { v: n, label: `n = ${n}` })),
   intro: (n) => `An ${T('n\\times n\\times n')} cube, here ${T(`n=${n}`)}, is painted and cut up. How many small cubes have <b>no paint</b>? Find a formula.`,
   make(stage, n, ex) {

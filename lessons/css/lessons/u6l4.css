@@ -100,3 +100,22 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u6l4-pstamp { align-self: center; margin-top: 10px; }
 .u6l4-sm .u6l4-line { font-size: 19px; }
 .ans .katex { display: inline-block; margin: 2px 0; }
+
+/* ---------- one screen (main.lesson.screen): the orchard + buttons left; Q1–Q3 and the big one right ---------- */
+.wf .u6l4-farmer { margin-left: 4px; }
+.wf .u6l4-wfig { gap: 6px; margin-top: 2px; }
+.wf .u6l4-wbtns { gap: 8px; }
+.wf .u6l4-wbtns .pill { font-size: 15px; padding: 6px 12px; }
+.wf .u6l4-wqs .q-line { font-size: 17px; margin: 6px 0 2px; gap: 10px; }
+.wf .u6l4-wqs .q-line .pill.small { padding: 2px 10px; }
+.wf .u6l4-wa { margin: 0 0 6px 40px; }
+.wf .u6l4-wqs .bk-ans { font-size: 15.5px; line-height: 1.32; margin-top: 2px; }
+.wf .wf-poll { margin-top: 8px; padding: 2px 14px 12px; }
+.wf .wf-poll > .q-line { font-size: 17px; margin: 8px 0 8px; }
+.wf .u6l4-poll4 .poll-opts { grid-template-columns: 1fr 1fr; gap: 6px; margin: 0 0 8px; }
+.wf .wf-poll .opt { padding: 5px 9px; font-size: 16.5px; }
+.wf .wf-poll > .pill { margin: 0; padding: 6px 14px; }
+.wf-poll:not(.revealed) .poll-ans { display: none; }
+/* captions sit in the 268 px side column: let a long equation break after = or + (KaTeX's own break points) */
+.lesson.screen .ex-cap .katex { white-space: normal; }
+.u6l4-l2 { margin-top: 8px; }

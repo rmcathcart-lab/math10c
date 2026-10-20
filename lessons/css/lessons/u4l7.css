@@ -241,3 +241,32 @@
 
 /* keep short inline math from breaking across lines */
 .def .katex, .card > p .katex, .tip .katex, .pl .katex, .ans .katex, .u4l7-qans .katex, .poll-ans .katex, .u4l7-recipe .katex, .sum-grid .katex { white-space: nowrap; display: inline-block; }
+
+/* ---------- one screen (main.lesson.screen): scene | formula, table, Launch, Q1 — then Q3 — left; Q2 and the big one
+   right; the bonus and the "try it" prompt below ---------- */
+.wf .u4l7-wu { grid-template-columns: 350px minmax(0, 1fr); gap: 12px; margin: 2px 0 0; }
+.wf .u4l7-wsvg { width: 350px; height: auto; }
+.wf .u4l7-wside { gap: 8px; }
+.wf .u4l7-formula { padding: 4px 10px 6px; }
+.wf .u4l7-fbig .katex { font-size: 1.6em; }
+.wf .u4l7-fkey { font-size: 15px; }
+.wf .u4l7-trow { grid-template-columns: 62px repeat(5, minmax(0, 1fr)); gap: 4px; }
+.wf .u4l7-th { font-size: 16px; }
+.wf .u4l7-tc { height: 36px; font-size: 19px; }
+.wf .u4l7-tq { font-size: 20px; }
+.wf .u4l7-wctl { font-size: 14px; gap: 8px; line-height: 1.25; }
+.wf .u4l7-wctl .pill { flex: none; padding: 6px 12px; }
+.wf .u4l7-wq { padding: 4px 12px 6px; }
+.wf .u4l7-wq .q-line { margin: 2px 0 4px; font-size: 17px; gap: 10px; }
+.wf .u4l7-wq .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf .u4l7-wqa { margin-left: 40px; gap: 4px; }
+.wf .u4l7-qans { font-size: 15.5px; line-height: 1.32; min-height: 0; }
+.wf .u4l7-wq-wide { margin-top: 8px; }
+.wf .u4l7-wq-wide .u4l7-qans { font-size: 15.5px; min-height: 0; }
+.wf .u4l7-wq2 { margin-bottom: 10px; }
+.wf .wf-poll { margin-top: 0; }
+.wf .u4l7-poll .poll-opts { grid-template-columns: 1fr 1fr; gap: 6px; }
+.wf .u4l7-poll .opt { font-size: 19px; padding: 5px 8px; }
+.wf .u4l7-poll:not(.revealed) .poll-ans { display: none; }
+.wf .u4l7-poll .poll-ans { min-height: 0; }
+.wf > .u4l7-wq-wide { margin-top: 14px; }

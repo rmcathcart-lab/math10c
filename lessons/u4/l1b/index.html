@@ -43,12 +43,19 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: The Combo Receipt">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Combo Receipt</h2></div>
-  <p class="big">One <b>combo</b> = one burger (<b>$6</b>) + one fries (<b>$3</b>). <span class="muted">Tap the buttons under the receipt to total it two different ways.</span></p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Combo Receipt" style="--wf-side: 300px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Combo Receipt</h2>
+  <p class="wf-rule">One <b>combo</b> = one burger (<b>$6</b>) + one fries (<b>$3</b>). <span class="muted">Tap the buttons under the receipt to total it two different ways.</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
 
   <div class="u4l1b-wu">
+    <div class="u4l1b-wl">
     <div class="u4l1b-menu" id="wu-menu"></div>
+    <div class="wq">
+      <div class="q-line"><div class="q-num">1</div><div>What does Team A pay for <b>7 combos</b>? Team B for <b>5 combos</b>?</div></div>
+      <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans">A: <span class="tex">7\times\$9=\$63</span><br>B: <span class="tex">5\times\$9=\$45</span></div></div>
+    </div>
+    </div>
     <div class="u4l1b-rbox">
       <div class="u4l1b-rcpt" id="receipt">
         <div class="u4l1b-rh">BIG ORDER</div>
@@ -71,20 +78,21 @@
 
   <div class="u4l1b-wqs">
     <div class="wq">
-      <div class="q-line"><div class="q-num">1</div><div>What does Team A pay for <b>7 combos</b>? Team B for <b>5 combos</b>?</div></div>
-      <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans">A: <span class="tex">7\times\$9=\$63</span><br>B: <span class="tex">5\times\$9=\$45</span></div></div>
-    </div>
-    <div class="wq">
       <div class="q-line"><div class="q-num">2</div><div>Both teams’ total, two ways: <span class="tex">7\times9+5\times9</span> and <span class="tex">(7+5)\times9</span>.</div></div>
       <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">63+45=\$108</span> and <span class="tex">12\times9=\$108</span>. Same answer; the second way is <b>one</b> multiplication.</div></div>
     </div>
+  </div>
+
+  </div><div class="wf-side">
+
+  <div class="wq-side">
     <div class="wq">
       <div class="q-line"><div class="q-num">3</div><div>4 burgers, 4 fries, 9 burgers, 9 fries: how many <b>combos</b> is that?</div></div>
       <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans">Pair each burger with a fries: <span class="tex">4+9=\boldsymbol{13}</span> combos, so <span class="tex">13\times\$9=\$117</span>.</div></div>
     </div>
   </div>
 
-  <div class="poll">
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> What is the <b>TOTAL</b> on the big order? No calculator: do it in your head! <b>Guess first.</b></div></div>
     <div class="poll-opts c4">
       <div class="opt"><b>A</b> $600</div>
@@ -97,6 +105,7 @@
       <span class="muted"><b>A</b> ($600) counts the 100 burgers and forgets the fries. <b>C</b> ($1 200) prices all 200 items as burgers. <b>D</b> ($1 800) treats every one of the 200 items as a whole $9 combo.</span><br>
       <span class="u4l1b-bridge">Counting combos <b>is</b> today’s lesson: <span class="tex">37\cdot6+37\cdot3+63\cdot6+63\cdot3=37(6+3)+63(6+3)=(6+3)(37+63)</span>. Pair the lines, pull out a factor from each pair, then pull out the shared bracket.</span></div>
   </div>
+  </div></div>
 
   <div class="wq wq-wide">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Race your neighbour.</b> One of you adds the four lines, the other counts combos. Then try this one in your head: <span class="tex">48\cdot7+48\cdot3+52\cdot7+52\cdot3</span></div></div>

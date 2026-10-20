@@ -44,9 +44,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Hot Tea, Iced Tea" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Hot Tea, Iced Tea</h2></div>
-  <p class="big">Poured at the same moment. Pretend each drink changes at a <b>steady</b> rate.</p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Hot Tea, Iced Tea" id="wu" style="--wf-side: 360px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Hot Tea, Iced Tea</h2>
+  <p class="wf-rule">Poured at the same moment. Pretend each drink changes at a <b>steady</b> rate.</p></div>
+  <div class="wf-grid"><div class="wf-main">
   <div id="u8l1a-tea" class="u8l1a-tea"></div>
   <div class="u8l1a-clockrow">
     <button type="button" class="pill" id="u8l1a-plus">+1 minute</button>
@@ -63,13 +64,18 @@
       <div class="q-line"><div class="q-num">2</div><div>How cold is the iced tea after <b>5</b> min?</div></div>
       <div class="u8l1a-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">5+1(5)=</span> <b>10 °C</b></div></div>
     </div>
+  </div>
+
+  </div><div class="wf-side">
+
+  <div class="u8l1a-wqs u8l1a-wqs-side">
     <div class="bk-wq">
       <div class="q-line"><div class="q-num">3</div><div>At the start the drinks are <b>75 °C</b> apart. By how much does that gap shrink <b>each minute</b>?</div></div>
       <div class="u8l1a-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>5 °C per minute</b>: the hot tea comes down 4 and the iced tea comes up 1, so they close in by <span class="tex">4+1</span>. (After 5 min: <span class="tex">60-10=50=75-5(5)</span>.)</div></div>
     </div>
   </div>
 
-  <div class="poll">
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> When are the two drinks the <b>same</b> temperature? <b>Guess first.</b></div></div>
     <div class="poll-opts">
       <div class="opt"><b>A</b> after 7.5 min, at 42.5 °C</div>
@@ -80,6 +86,7 @@
     <div class="poll-ans"><b>B: after 15 minutes, both at 20 °C.</b> The 75 °C gap closes 5 °C a minute: <span class="tex">75\div5=15</span> min. Hot: <span class="tex">80-4(15)=20</span>. Iced: <span class="tex">5+15=20</span> ✓<br>
       <span class="muted"><b>A</b> is exactly halfway between 80 and 5, but that only works if both drinks change equally fast (at 7.5 min they are at 50 and 12.5). <b>C</b> counts only the hot tea, <span class="tex">75\div4\approx19</span>, and forgets the iced tea is climbing to meet it.</span></div>
   </div>
+  </div></div>
 
   <div class="bk-wq u8l1a-early">
     <div class="q-line"><div class="q-num u8l1a-hands">✋</div><div><b>Hands up:</b> two <b>hot</b> teas at 80 °C and 70 °C both cool 4 °C a minute. Will they ever match?</div></div>

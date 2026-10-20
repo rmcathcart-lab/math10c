@@ -190,7 +190,7 @@ const trailLine = (host, texStr, tag = '', cls = '') => { const d = h('div', 'u7
 /* =============================== warm-up: concert ticket counter =============================== */
 function mountTickets() {
   const host = document.getElementById('u7l3-wgraph'); if (!host) return;
-  const G = new Graph(host, { width: 470, height: 330, xmin: 0, xmax: 18, ymin: 0, ymax: 11, xlabels: 2, ylabels: 2, xtitle: '\\text{lawn}', ytitle: '\\text{floor}' });
+  const G = new Graph(host, { width: host.clientWidth || 470, height: host.clientHeight || 330, xmin: 0, xmax: 18, ymin: 0, ymax: 11, xlabels: 2, ylabels: 2, xtitle: '\\text{lawn}', ytitle: '\\text{floor}' });
   let nx = 0, ny = 0, pt = null, okStamp = null, all = [];
   const vx = document.getElementById('u7l3-nx'), vy = document.getElementById('u7l3-ny'), tot = document.getElementById('u7l3-tot');
   const upd = () => {
@@ -214,7 +214,7 @@ function mountTickets() {
     const s = G.segment([0, 10], [16, 0], { color: LINE, width: 3.5, dash: true }); all.push(s);
     await G.drawIn(s, 900, c);
     const lab = G.label(11, 3.2, T('5x+8y=80'), { pos: 'ne', cls: 'bk-ptlab u7l3-glab' }); all.push(lab); await fadeIn(c, lab);
-    for (const [x, y] of [[0, 10], [8, 5], [16, 0]]) { const p = G.point(x, y, { color: YI, r: 7, coords: true, pos: x === 16 ? 'nw' : 'ne' }); all.push(p); await pop(c, p); }
+    for (const [x, y] of [[0, 10], [8, 5], [16, 0]]) { const p = G.point(x, y, { color: YI, r: 7, coords: true, pos: x === 16 ? 'nw' : x === 0 ? 'e' : 'ne' }); all.push(p); await pop(c, p); }
   });
   document.getElementById('u7l3-wreset').addEventListener('click', () => { nx = 0; ny = 0; G.remove(all); all = []; upd(); });
   upd();

@@ -621,7 +621,7 @@ const IS = {
 const isoSplit = {
   title: 'Split the isosceles triangle, solve half, double',
   height: 470,
-  minW: 940, // drawn this wide and scaled to fit beside the sidebar
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(IS).map((k) => ({ v: k, label: IS[k].label })),
   intro: (k) => (k === 'roof' ? 'The gable end of a 6/12 roof: 24 across, 6 up to the peak. What is the angle at the peak? Press <b>Next</b>.' : 'Isosceles triangle PQR: what is the angle at Q? Press <b>Next</b>.'),
   make(stage, key, ex) {

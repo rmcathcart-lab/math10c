@@ -44,48 +44,48 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Speed Sketch" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Speed Sketch</h2></div>
-  <p class="big">Four cars, four equations. Sketch each line <b>fast</b>, with <b>no</b> rearranging!</p>
-  <div class="u7l5-wtop">
-    <div class="u7l5-wfig">
-      <div id="u7l5-wgraph"></div>
-      <div class="u7l5-wbtns"><button type="button" class="pill small" id="u7l5-wclear">Clear the grid</button></div>
-    </div>
-    <div class="u7l5-cars" id="u7l5-cars">
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Speed Sketch" id="wu">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Speed Sketch</h2>
+  <p class="wf-rule">Four cars, four equations. Sketch each line <b>fast</b>, with <b>no</b> rearranging!</p></div>
+  <div class="u7l5-cars" id="u7l5-cars">
       <div class="u7l5-car u7l5-car1" data-car="1"><div class="u7l5-carh"><span class="u7l5-carn">#1</span><span class="u7l5-carsvg"></span></div><div class="u7l5-careq"><span class="tex">y=-\tfrac{1}{2}x+3</span></div><button type="button" class="pill small" data-sketch="1">Sketch #1</button></div>
       <div class="u7l5-car u7l5-car2" data-car="2"><div class="u7l5-carh"><span class="u7l5-carn">#2</span><span class="u7l5-carsvg"></span></div><div class="u7l5-careq"><span class="tex">2x+3y-12=0</span></div><button type="button" class="pill small" data-sketch="2">Sketch #2</button></div>
       <div class="u7l5-car u7l5-car3" data-car="3"><div class="u7l5-carh"><span class="u7l5-carn">#3</span><span class="u7l5-carsvg"></span></div><div class="u7l5-careq"><span class="tex">y-1=2(x-3)</span></div><button type="button" class="pill small" data-sketch="3">Sketch #3</button></div>
       <div class="u7l5-car u7l5-car4" data-car="4"><div class="u7l5-carh"><span class="u7l5-carn">#4</span><span class="u7l5-carsvg"></span></div><div class="u7l5-careq"><span class="tex">4x-2y-10=0</span></div><button type="button" class="pill small" data-sketch="4">Sketch #4</button></div>
     </div>
-  </div>
-  <div class="u7l5-wqs">
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">1</div><div>Car #1: where does it cross the <span class="tex">y</span>-axis? Uphill or downhill?</div></div>
-      <div class="u7l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">At <span class="tex">(0,3)</span>. Slope <span class="tex">-\tfrac12</span>: <b>downhill</b> (down 1, right 2).</div></div>
+  <div class="wf-grid u7l5-wgrid"><div class="wf-main">
+    <div class="u7l5-wfig">
+      <div id="u7l5-wgraph"></div>
+      <div class="u7l5-wbtns"><button type="button" class="pill small" id="u7l5-wclear">Clear the grid</button></div>
     </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">2</div><div>Car #2: put <span class="tex">x=0</span>, then <span class="tex">y=0</span>. Where does it cross each axis?</div></div>
-      <div class="u7l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">x=0</span>: <span class="tex">3y=12</span>, <span class="tex">y=4</span>, so <span class="tex">(0,4)</span>. <span class="tex">y=0</span>: <span class="tex">2x=12</span>, <span class="tex">x=6</span>, so <span class="tex">(6,0)</span>. Join them.</div></div>
+  </div><div class="wf-side">
+    <div class="u7l5-wqs">
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">1</div><div>Car #1: where does it cross the <span class="tex">y</span>-axis? Uphill or downhill?</div></div>
+        <div class="u7l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">At <span class="tex">(0,3)</span>. Slope <span class="tex">-\tfrac12</span>: <b>downhill</b> (down 1, right 2).</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">2</div><div>Car #2: put <span class="tex">x=0</span>, then <span class="tex">y=0</span>. Where does it cross each axis?</div></div>
+        <div class="u7l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">x=0</span>: <span class="tex">3y=12</span>, <span class="tex">y=4</span>, so <span class="tex">(0,4)</span>. <span class="tex">y=0</span>: <span class="tex">2x=12</span>, <span class="tex">x=6</span>, so <span class="tex">(6,0)</span>. Join them.</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">3</div><div>Car #3: which point can you plot <b>first</b>, with no algebra at all?</div></div>
+        <div class="u7l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">(3,1)</span>, read straight off <span class="tex">y-1=2(x-3)</span> (watch the signs). Then step up 2, right 1.</div></div>
+      </div>
     </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">3</div><div>Car #3: which point can you plot <b>first</b>, with no algebra at all?</div></div>
-      <div class="u7l5-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">(3,1)</span>, read straight off <span class="tex">y-1=2(x-3)</span> (watch the signs). Then step up 2, right 1.</div></div>
+    <div class="poll wf-poll">
+      <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Two of the cars are secretly driving on <b>exactly the same line</b>. Which two? <b>Guess first.</b></div></div>
+      <div class="poll-opts u7l5-c4">
+        <div class="opt"><b>A</b> #1 and #3</div>
+        <div class="opt"><b>B</b> #2 and #4</div>
+        <div class="opt right"><b>C</b> #3 and #4</div>
+        <div class="opt"><b>D</b> no two match</div>
+      </div>
+      <button class="pill" type="button" data-poll-reveal>Reveal</button>
+      <div class="poll-ans"><b>C: cars #3 and #4.</b> Solve each for <span class="tex">y</span>: #1 <span class="tex">y=-\tfrac12x+3</span>; #2 <span class="tex">y=-\tfrac23x+4</span>; #3 <span class="tex">y-1=2x-6\Rightarrow y=2x-5</span>; #4 <span class="tex">2y=4x-10\Rightarrow y=2x-5</span>. Same slope <b>and</b> same intercept: one line. Quick check: <span class="tex">(3,1)</span> from #3 fits #4, since <span class="tex">12-2-10=0</span>.<br>
+        <span class="muted"><b>A</b>: slopes <span class="tex">-\tfrac12</span> and <span class="tex">2</span> are negative reciprocals, so those lines are <em>perpendicular</em>, not the same. <b>B</b>: “same form, so same line”, but the form says nothing about the line. <b>D</b>: #3 and #4 look nothing alike, which is the whole surprise.</span></div>
     </div>
-  </div>
-
-  <div class="poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Two of the cars are secretly driving on <b>exactly the same line</b>. Which two? <b>Guess first.</b></div></div>
-    <div class="poll-opts u7l5-c4">
-      <div class="opt"><b>A</b> #1 and #3</div>
-      <div class="opt"><b>B</b> #2 and #4</div>
-      <div class="opt right"><b>C</b> #3 and #4</div>
-      <div class="opt"><b>D</b> no two match</div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>C: cars #3 and #4.</b> Solve each for <span class="tex">y</span>: #1 <span class="tex">y=-\tfrac12x+3</span>; #2 <span class="tex">y=-\tfrac23x+4</span>; #3 <span class="tex">y-1=2x-6\Rightarrow y=2x-5</span>; #4 <span class="tex">2y=4x-10\Rightarrow y=2x-5</span>. Same slope <b>and</b> same intercept: one line. Quick check: <span class="tex">(3,1)</span> from #3 fits #4, since <span class="tex">12-2-10=0</span>.<br>
-      <span class="muted"><b>A</b>: slopes <span class="tex">-\tfrac12</span> and <span class="tex">2</span> are negative reciprocals, so those lines are <em>perpendicular</em>, not the same. <b>B</b>: “same form, so same line”, but the form says nothing about the line. <b>D</b>: #3 and #4 look nothing alike, which is the whole surprise.</span></div>
-  </div>
+  </div></div>
 
   <div class="bk-wq u7l5-early">
     <div class="q-line"><div class="q-num u7l5-bonus">+</div><div><b>Early finishers.</b> Write car #1 in the other two forms.</div></div>

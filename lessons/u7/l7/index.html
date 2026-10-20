@@ -47,10 +47,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: City Planner" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>City Planner</h2></div>
-  <p class="big">Plan a new road from the <b>school</b> that meets Main St at a <b>right angle</b>.</p>
-  <div class="u7l7-wtop">
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: City Planner" id="wu" style="--wf-side: 450px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>City Planner</h2>
+  <p class="wf-rule">Plan a new road from the <b>school</b> that meets Main St at a <b>right angle</b>.</p></div>
+  <div class="wf-grid"><div class="wf-main">
     <div id="u7l7-city" class="u7l7-cityfig"></div>
     <div class="u7l7-memo">
       <div class="u7l7-memo-h">City Hall Memo</div>
@@ -63,30 +63,29 @@
       </ul>
       <div class="u7l7-memo-f">Map: 1 square = 1 block</div>
     </div>
-  </div>
-
-  <div class="u7l7-wqs">
-    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Where does Main St cross the <span class="tex">y</span>-axis?</div></div>
-      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">At <span class="tex">(0,\ 2)</span>. From the equation: <span class="tex">x=0</span> gives <span class="tex">-2y+4=0</span>, so <span class="tex">y=2</span>.</div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>What is the slope of Main St? (Use the map <i>or</i> the equation.)</div></div>
-      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">\frac12</span>. Map: up 1 block for every 2 across. Equation: <span class="tex">2y=x+4</span>, so <span class="tex">y=\frac12x+2</span>.</div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>A road at a right angle to Main St: what is <i>its</i> slope?</div></div>
-      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">-2</span>: flip <span class="tex">\frac12</span> to <span class="tex">2</span> and change the sign. Check: <span class="tex">\frac12\times(-2)=-1</span>.</div></div>
-  </div>
-
-  <div class="poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which equation is the new road? <b>Guess first.</b></div></div>
-    <div class="poll-opts u7l7-c4">
-      <div class="opt right"><b>A</b> <span class="tex">y=-2x+17</span></div>
-      <div class="opt"><b>B</b> <span class="tex">y=2x-15</span></div>
-      <div class="opt"><b>C</b> <span class="tex">y=-\frac12x+5</span></div>
-      <div class="opt"><b>D</b> <span class="tex">y=-2x+2</span></div>
+  </div><div class="wf-side">
+    <div class="u7l7-wqs">
+      <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Where does Main St cross the <span class="tex">y</span>-axis?</div></div>
+        <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">At <span class="tex">(0,\ 2)</span>. From the equation: <span class="tex">x=0</span> gives <span class="tex">-2y+4=0</span>, so <span class="tex">y=2</span>.</div></div>
+      <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>What is the slope of Main St? (Use the map <i>or</i> the equation.)</div></div>
+        <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">\frac12</span>. Map: up 1 block for every 2 across. Equation: <span class="tex">2y=x+4</span>, so <span class="tex">y=\frac12x+2</span>.</div></div>
+      <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>A road at a right angle to Main St: what is <i>its</i> slope?</div></div>
+        <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">-2</span>: flip <span class="tex">\frac12</span> to <span class="tex">2</span> and change the sign. Check: <span class="tex">\frac12\times(-2)=-1</span>.</div></div>
     </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>A, <span class="tex">y=-2x+17</span>.</b> Slope <span class="tex">-2</span> through the school <span class="tex">(8,\ 1)</span>: <span class="tex">y-1=-2(x-8)</span>, so <span class="tex">y=-2x+17</span>. Check the school: <span class="tex">-2(8)+17=1</span> ✓. In general form, <span class="tex">2x+y-17=0</span>.<br>
-      <span class="muted"><b>B</b> passes the school, but slope <span class="tex">2</span> only flips <span class="tex">\frac12</span> and forgets the sign: it crosses Main St at a slant. <b>C</b> passes the school, but only changes the sign and forgets to flip. <b>D</b> has the right slope but copies Main St’s intercept of 2: that road misses the school.</span><br>
-      <b>Today’s lesson:</b> reading an equation (Questions 1 and 2), perpendicular slopes (Question 3), and the new road <i>is</i> an altitude: a perpendicular dropped from a point to a line.</div>
-  </div>
+    <div class="poll wf-poll">
+      <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which equation is the new road? <b>Guess first.</b></div></div>
+      <div class="poll-opts u7l7-c4">
+        <div class="opt right"><b>A</b> <span class="tex">y=-2x+17</span></div>
+        <div class="opt"><b>B</b> <span class="tex">y=2x-15</span></div>
+        <div class="opt"><b>C</b> <span class="tex">y=-\frac12x+5</span></div>
+        <div class="opt"><b>D</b> <span class="tex">y=-2x+2</span></div>
+      </div>
+      <button class="pill" type="button" data-poll-reveal>Reveal</button>
+      <div class="poll-ans"><b>A, <span class="tex">y=-2x+17</span>.</b> Slope <span class="tex">-2</span> through the school <span class="tex">(8,\ 1)</span>: <span class="tex">y-1=-2(x-8)</span>, so <span class="tex">y=-2x+17</span>. Check the school: <span class="tex">-2(8)+17=1</span> ✓. In general form, <span class="tex">2x+y-17=0</span>.<br>
+        <span class="muted"><b>B</b> passes the school, but slope <span class="tex">2</span> only flips <span class="tex">\frac12</span> and forgets the sign: it crosses Main St at a slant. <b>C</b> passes the school, but only changes the sign and forgets to flip. <b>D</b> has the right slope but copies Main St’s intercept of 2: that road misses the school.</span><br>
+        <b>Today’s lesson:</b> reading an equation (Questions 1 and 2), perpendicular slopes (Question 3), and the new road <i>is</i> an altitude: a perpendicular dropped from a point to a line.</div>
+    </div>
+  </div></div>
 
   <h3 class="sub u7l7-gap">Build the road</h3>
   <div class="explainer" data-explainer="planner"></div>

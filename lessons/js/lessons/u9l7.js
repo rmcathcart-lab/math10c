@@ -343,11 +343,12 @@ const NR = {
 const noround = {
   title: 'Never round the shared side',
   height: 450,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(NR).map((k) => ({ v: k, label: NR[k].label })),
   intro: 'The same problem worked twice: once with every digit kept, once rounded partway. Press <b>Next</b>.',
   make(stage, v, ex) {
     const o = NR[v], w = (ex.W - 30) / 2;
-    const Lp = panel(stage, 8, 8, w, 196, '<span class="u9l7-good">Keep every digit</span>'), Rp = panel(stage, w + 22, 8, w, 196, '<span class="u9l7-bad">Round too early</span>');
+    const Lp = panel(stage, 8, 8, w, 210, '<span class="u9l7-good">Keep every digit</span>'), Rp = panel(stage, w + 22, 8, w, 210, '<span class="u9l7-bad">Round too early</span>');
     const N = new NumberLine(stage, { x: 20, y: 214, width: ex.W - 40, height: 200, min: o.nl[0], max: o.nl[1], step: v === 'ex3' ? 0.1 : 0.5, labels: v === 'ex3' ? [{ v: 63, html: T('63^\\circ') }, { v: 63.5, html: T('63.5^\\circ') }, { v: 64, html: T('64^\\circ') }] : [35, 35.5, 36, 36.5, 37, 37.5, 38].map((x) => ({ v: x, html: T(String(x)) })), axisY: 130 });
     const bandG = N.interval(o.band[0], o.band[1], { color: 'green', width: 12, openB: true }), bandL = N.mark((o.band[0] + o.band[1]) / 2, `rounds to ${T(o.ga)}`, { lift: 62, color: GRN });
     const lo = v === 'ex3' ? [63, 63.5] : [35.5, 36.5], bandR = N.interval(lo[0], lo[1], { color: 'red', width: 12, openB: true }), bandRL = N.mark((lo[0] + lo[1]) / 2, `rounds to ${T(o.ba)}`, { lift: 62, color: RED });
@@ -625,7 +626,7 @@ const BX = { ex5: { label: 'Example 5 check', l: 4, w: 3, hh: 12, s: 31 }, spin:
 const box3d = {
   title: 'A box hides two right triangles that share the base diagonal',
   height: 480,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(BX).map((k) => ({ v: k, label: BX[k].label })),
   intro: (v) => (v === 'ex5' ? 'Example 5: a box 4 cm by 3 cm by 12 cm. Press <b>Next</b>.' : 'A box 6 by 2 by 3: find the diagonal through the inside. Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -684,6 +685,7 @@ const HEE = atanD(7 / 6);
 const wedge = {
   title: 'The wedge: rectangles, and a right triangle hiding in a side face',
   height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'a', label: '(a) The four rectangles' }, { v: 'bc', label: '(b)–(c) The side face' }],
   intro: (v) => (v === 'a' ? 'Example 6 (a): which faces are rectangles? Press <b>Next</b>.' : 'Example 6 (b) and (c): work in the side face ' + T('ADHE') + '. Press <b>Next</b>.'),
   make(stage, v, ex) {

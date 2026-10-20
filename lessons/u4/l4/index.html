@@ -43,9 +43,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: The Area Box Mystery">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Area Box Mystery</h2></div>
-  <p class="big">Each rectangle is cut into <b>4 boxes</b>. Area of a box = (its width) × (its height). <span class="muted">Tap a <b class="red">?</b> to reveal it.</span></p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Area Box Mystery" style="--wf-side: 290px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Area Box Mystery</h2>
+  <p class="wf-rule">Each rectangle is cut into <b>4 boxes</b>. Area of a box = (its width) × (its height). <span class="muted">Tap a <b class="red">?</b> to reveal it.</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
 
   <div class="u4l4-wboxes">
     <div class="u4l4-wb"><div class="u4l4-wbt">Box A</div><div class="u4l4-wfig" id="wbA"></div><div class="u4l4-wtot">total = <button class="u4l4-qm" type="button" data-a="6x^2+11x+3">?</button></div></div>
@@ -72,7 +73,9 @@
     </div>
   </div>
 
-  <div class="poll">
+  </div><div class="wf-side">
+
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div class="u4l4-bigq"><div><b>The big one.</b> Four boxes, all with corners <span class="tex">6x^2</span> and <span class="tex">3</span>. The two blanks must add to… <b>One</b> of these can’t be done with whole numbers. <b>Guess first:</b> which?</div>
       <div class="u4l4-mini"><div><span class="tex">6x^2</span></div><div class="m">?</div><div class="m">?</div><div><span class="tex">3</span></div></div></div></div>
     <div class="poll-opts">
@@ -83,11 +86,13 @@
     </div>
     <button class="pill" type="button" data-poll>Reveal</button>
     <div class="poll-ans"><b>C, <span class="tex">10x</span>, is impossible.</b> The blanks must multiply to <span class="tex">6x^2\cdot3=18x^2</span> (Question 3!). The pairs for 18 are <span class="tex">1\cdot18,\ 2\cdot9,\ 3\cdot6</span>, with sums 19, 11 and 9. No pair adds to 10. <span class="muted">Each table: test one option below.</span></div>
-    <div class="u4l4-test no-ink">
+  </div>
+  </div></div>
+
+  <div class="u4l4-test no-ink">
       <div><b>Test an option:</b> <button class="pill small" type="button" data-t="19">A <span class="tex">19x</span></button> <button class="pill small" type="button" data-t="11">B <span class="tex">11x</span></button> <button class="pill small" type="button" data-t="10">C <span class="tex">10x</span></button> <button class="pill small" type="button" data-t="9">D <span class="tex">9x</span></button></div>
       <div class="u4l4-tout" aria-live="polite"></div>
     </div>
-  </div>
 </section>
 
 <!-- ================= 1. Expanding backwards ================= -->

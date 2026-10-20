@@ -42,11 +42,11 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: The Cricket Thermometer" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Cricket Thermometer</h2></div>
-  <p class="big">This made-up cricket chirps <b>faster</b> when it’s <b>warmer</b>, at a steady rate.</p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Cricket Thermometer" id="wu" style="--wf-side: 420px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Cricket Thermometer</h2>
+  <p class="wf-rule">This made-up cricket chirps <b>faster</b> when it’s <b>warmer</b>, at a steady rate.</p></div>
   <div id="u7l2-crickets" class="u7l2-crickets"></div>
-  <div class="u7l2-wtop">
+  <div class="wf-grid"><div class="wf-main">
     <div class="u7l2-wqs">
       <div class="bk-wq">
         <div class="q-line"><div class="q-num">1</div><div>How warm is it at <b>40</b> chirps per minute?</div></div>
@@ -61,9 +61,10 @@
         <div class="u7l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">5\ ^\circ\text{C}</span>. From 20 chirps, drop 20 more chirps: that is <span class="tex">20\div4=5</span> degrees colder than <span class="tex">10\ ^\circ\text{C}</span>.</div></div>
       </div>
     </div>
-    <div class="poll">
+  </div><div class="wf-side">
+    <div class="poll wf-poll">
       <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> You hear the cricket chirp <b>100</b> times in one minute. How warm is it? <b>Guess first.</b></div></div>
-      <div class="poll-opts">
+      <div class="poll-opts c4">
         <div class="opt"><b>A</b> <span class="tex">25\ ^\circ\text{C}</span></div>
         <div class="opt right"><b>B</b> <span class="tex">30\ ^\circ\text{C}</span></div>
         <div class="opt"><b>C</b> <span class="tex">33\ ^\circ\text{C}</span></div>
@@ -74,7 +75,7 @@
         <span class="muted"><b>A</b> did <span class="tex">100\div4</span>: the slope without the <span class="tex">+5</span> starting value. <b>C</b> and <b>D</b> scaled as if doubling the chirps doubled the temperature (<span class="tex">\tfrac{100}{60}\times20</span> or <span class="tex">\tfrac{100}{20}\times10</span>). The line does <b>not</b> pass through <span class="tex">(0,\ 0)</span>.</span><br>
         Real crickets really do this: Dolbear’s law (1897) for the snowy tree cricket.</div>
     </div>
-  </div>
+  </div></div>
 
   <div class="u7l2-wplot">
     <div class="u7l2-wgraph"><div id="u7l2-wgraph"></div></div>

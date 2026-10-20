@@ -169,9 +169,9 @@ function mountShelf() {
   function build(k) {
     gen++; key = k; busy = false; stage.innerHTML = '';
     chips.forEach((b) => b.classList.toggle('on', b.dataset.k === k));
-    const W = stage.clientWidth || 960, LW = 372;
-    row = new DollRow(stage, SHELF[k], { W: W - LW - 20, base: 282, x0: 0, gap: 24, tap: true });
-    ledger = add(stage, h('div', 'u4l5-ledger'), W - LW, 58); ledger.style.width = LW - 14 + 'px'; ledger.style.fontSize = '22px';
+    const W = stage.clientWidth || 960, LW = 372, M = Math.min(1, (stage.clientHeight || 330) / 330); // M < 1 when CSS makes the shelf shorter (one-screen warm-up)
+    row = new DollRow(stage, SHELF[k], { W: W - LW - 20, base: Math.round(282 * M), x0: 0, gap: 24, tap: true, mult: M });
+    ledger = add(stage, h('div', 'u4l5-ledger'), W - LW, Math.round(58 * M)); ledger.style.width = LW - 14 + 'px'; ledger.style.fontSize = Math.max(18, Math.round(22 * M)) + 'px';
     count = add(stage, h('div', 'u4l5-count'), 0, 10); count.style.left = 'auto';
     addLine(SHELF[k].t); setCount();
     row.items.forEach(wire);

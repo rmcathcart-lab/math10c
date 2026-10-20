@@ -43,15 +43,18 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Upstream, Downstream" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Upstream, Downstream</h2></div>
-  <p class="big">Moving water and moving air can <b>help</b> you or <b>fight</b> you.</p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Upstream, Downstream" id="wu" style="--wf-side: 400px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Upstream, Downstream</h2>
+  <p class="wf-rule">Moving water and moving air can <b>help</b> you or <b>fight</b> you.</p></div>
+  <div class="u8l5-wtop">
   <div id="u8l5-scene" class="u8l5-scene"></div>
   <div class="u8l5-scenebtns">
     <button type="button" class="pill" id="u8l5-down">Paddle downstream ▸</button>
     <button type="button" class="pill" id="u8l5-up">◂ Paddle upstream</button>
     <span class="u8l5-scenemsg" id="u8l5-scenemsg"></span>
   </div>
+  </div>
+  <div class="wf-grid"><div class="wf-main">
 
   <div class="u8l5-wqs">
     <div class="bk-wq">
@@ -68,7 +71,9 @@
     </div>
   </div>
 
-  <div class="poll">
+  </div><div class="wf-side">
+
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> In still air the plane flies <b>300 km/h</b>: there and back takes <b>4 h</b>. Today a <b>60 km/h</b> wind helps one way and fights the other. The round trip takes… <b>Guess first.</b></div></div>
     <div class="poll-opts">
       <div class="opt"><b>A</b> less than 4 h</div>
@@ -79,6 +84,7 @@
     <div class="poll-ans"><b>C: 4 h 10 min, longer than calm air.</b> Out with the wind: <span class="tex">300+60=360</span> km/h, so <span class="tex">600\div360=1\tfrac23</span> h <span class="tex">=</span> 1 h 40 min. Back into the wind: <span class="tex">300-60=240</span> km/h, so <span class="tex">600\div240=2.5</span> h <span class="tex">=</span> 2 h 30 min.<br>
       <span class="muted"><b>B</b> is the popular answer: “the wind helps as much as it hurts.” The <b>speeds</b> cancel, but the <b>times</b> don’t: the plane spends longer on the slow headwind leg, so the wind gets more time to hurt than to help. <b>A</b> comes from focusing on the exciting fast leg.</span></div>
   </div>
+  </div></div>
   <div class="explainer" data-explainer="roundTrip"></div>
 
   <div class="bk-wq u8l5-early">

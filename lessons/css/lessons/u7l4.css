@@ -126,3 +126,18 @@ h2 .katex, h3 .katex { font-size: .95em; }
 /* strategy flowchart */
 .u7l4-flow .bk-fc-node { font-size: 17px; }
 .u7l4-flow .bk-fc-in b { font-size: 17px; }
+
+/* ---------- one screen (main.lesson.screen): the sky, the time buttons and the log on the left; Q1–Q3 and the big one
+   on the right ---------- */
+.wf .u7l4-wfig { gap: 8px; }
+.wf .u7l4-wlog { font-size: 19px; margin: 0; }
+.wf .u7l4-wlog th, .wf .u7l4-wlog td { height: 40px; padding: 2px 6px; }
+.wf .u7l4-wright .q-line { margin: 0 0 2px; font-size: 17.5px; gap: 10px; }
+.wf .u7l4-wright .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf .u7l4-wa { display: flex; align-items: flex-start; gap: 12px; margin: 0 0 12px 40px; }
+.wf .u7l4-wa .pill.small { flex: none; }
+.wf .u7l4-wa .bk-ans { margin-top: 2px; font-size: 16.5px; line-height: 1.35; }
+.wf .wf-poll { margin-top: 6px; }
+.wf .wf-poll .poll-opts { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.wf .wf-poll .poll-opts .opt { padding: 6px 8px; }
+.wf .u7l4-early { margin-top: 12px; }

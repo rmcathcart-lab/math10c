@@ -6,6 +6,7 @@
 import { Graph, ValueTable, Flowchart, mountExplainers, h, tex, add, box, pop, fadeIn, sleep, tween, pairTex, texNum, svgEl, liveCtx, calcNum } from '../blocks.js';
 
 const T = (s) => tex(s);
+const TS = (s) => s.split(',\\ ').map((p, i, a) => T(p + (i < a.length - 1 ? ',' : ''))).join(' '); // a set in a caption: may wrap after its comma
 const KCLS = { 'Y=': 't', WINDOW: 't', ZOOM: 't', TRACE: 't', GRAPH: 't', '2ND': 's' };
 const key = (k) => `<kbd class="u5l6-k${KCLS[k] ? ' ' + KCLS[k] : /^[0-9.]+$/.test(k) ? ' n' : ''}">${k}</kbd>`;
 const keys = (s) => s.split(' ').map(key).join(' ');
@@ -58,7 +59,7 @@ const LAND = 5 + Math.sqrt(33), LAND0 = 5 - Math.sqrt(33); // 10.7446…, −0.7
 const braking = {
   title: 'Double the speed, four times the distance',
   height: 430,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 50, label: '50 → 100 km/h (the big one)' }, { v: 30, label: '30 → 60 km/h' }, { v: 60, label: '60 → 120 km/h' }],
   intro: (v) => `Braking distance ${T('d=0.006v^2')}. What happens to ${T('d')} when the speed doubles from ${v} to ${2 * v} km/h? Press <b>Next</b>.`,
   make(stage, v1, ex) {
@@ -111,6 +112,7 @@ const winTex = (w) => `x{:}\\,[${tn(w.xmin)},\\,${tn(w.xmax)},\\,${tn(w.xscl)}],
 const window_ = {
   title: 'Finding a window that fits the situation',
   height: 450,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ sep: 'Example 1 check' }, { v: 'kayak', label: 'Kayak' }, { sep: 'Example 2 check' }, { v: 'blaze', label: 'Blaze' }, { sep: 'Warm-up' }, { v: 'brake', label: 'Braking' }],
   value: 'kayak',
   intro: 'Graph the model, then fix the window until the part that matters is on screen. Press <b>Next</b>.',
@@ -290,9 +292,9 @@ const context = {
         run: async (c) => { const z = badZone(G, M.b, w.xmax, M.right); bz.push(z); await Promise.all([fadeIn(c, z.r, 400), fadeIn(c, z.lab, 400)]); } },
       { cap: `What’s left is a piece from the <b>start</b> to the <b>end</b> of the story, with <b>closed dots</b>: both ends really happen.`,
         run: async (c) => { await c.anim(full, [{ opacity: 1 }, { opacity: 0.28 }], 400); await G.drawIn(G.fn(M.f, { from: M.a, to: M.b, ends: ['closed', 'closed'], color: 'teal', width: 5.5 }), 900, c); } },
-      { cap: `<b>Domain</b>: the piece’s shadow on the ${T(M.iv)}-axis. ${T('D=' + M.D)}`,
+      { cap: `<b>Domain</b>: the piece’s shadow on the ${T(M.iv)}-axis. ${TS('D=' + M.D)}`,
         run: async (c) => { await G.drawIn(G.shadeX(M.a, M.b), 700, c); P.appendChild(hd('Makes sense', '#12805a')); await show(c, pline(P, T('D=' + M.D), 'ok')); } },
-      { cap: `<b>Range</b>: its shadow on the ${T(M.ov)}-axis, lowest to highest output. ${T('R=' + M.R)}${M.c6}`,
+      { cap: `<b>Range</b>: its shadow on the ${T(M.ov)}-axis, lowest to highest output. ${TS('R=' + M.R)}${M.c6}`,
         run: async (c) => { await G.drawIn(G.shadeY(M.lo, M.hi), 700, c); await show(c, pline(P, T('R=' + M.R), 'ok')); } }
     ];
   }

@@ -367,6 +367,7 @@ const GROW = {
 const areaGrow = {
   title: 'From one strip to four pieces',
   height: 470,
+  minW: 890, // drawn this wide and scaled to fit beside the sidebar (the four-cell grid sits at W - 312)
   choices: [{ v: 'bk', label: tex('(x+4)(x+1)') }, { v: 'n2', label: tex('(x+2)(x+3)') }, { sep: 'Example 6 check:' }, { v: 'a6', label: '(a)' }, { v: 'b6', label: '(b)' }, { v: 'c6', label: '(c)' }, { sep: 'Example 10 check:' }, { v: 'e10', label: '(i)' }],
   intro: (k) => `Think of ${T(`(${GROW[k].top})(${GROW[k].side})`)} as the area of a rectangle, ${T(GROW[k].top)} by ${T(GROW[k].side)}.`,
   make(stage, key, ex) {

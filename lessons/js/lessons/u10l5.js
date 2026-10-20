@@ -15,6 +15,8 @@ import {
 } from '../blocks.js';
 
 const T = (s) => tex(s);
+/** a caption equation that may wrap before each = or \approx (the sidebar caption is narrow) */
+const TQ = (s) => s.split(/(?==|\\approx)/).map((q) => T(q)).join(' ');
 const INK = COLORS.ink, BLUE = COLORS.blue, RED = COLORS.red, AMB = COLORS.amber, TEAL = COLORS.teal, PUR = COLORS.purple, GRN = COLORS.green;
 let UID = 0;
 
@@ -203,11 +205,11 @@ function squareSteps(stage, ex, d) {
   const K = squareKit(stage, ex, d), { P, Q, x0, y0, k } = K, big = d.big, sm = d.small, kk = k * k, cont = k > 20;
   let counter, strip, call, wrongL;
   return [
-    { cap: `A square <b>1 ${big}</b> by <b>1 ${big}</b>. Its area is ${T(`1${U(big)}\\times1${U(big)}=1${U(big, 2)}`)}.`,
+    { cap: `A square <b>1 ${big}</b> by <b>1 ${big}</b>. Its area is ${TQ(`1${U(big)}\\times1${U(big)}=1${U(big, 2)}`)}.`,
       run: async (c) => { await pulse(c, K.lb, 1.15); await say(c, P, T(`A=1${U(big)}\\times1${U(big)}=1${U(big, 2)}`)); } },
-    { cap: `Measure the sides in ${sm === 'in' ? 'inches' : sm === 'ft' ? 'feet' : sm === 'cm' ? 'centimetres' : 'millimetres'}: ${T(`1${U(big)}=${k}${U(sm)}`)}, so each side is <b>${k} ${sm}</b>.`,
+    { cap: `Measure the sides in ${sm === 'in' ? 'inches' : sm === 'ft' ? 'feet' : sm === 'cm' ? 'centimetres' : 'millimetres'}: ${TQ(`1${U(big)}=${k}${U(sm)}`)}, so each side is <b>${k} ${sm}</b>.`,
       run: async (c) => { await appear(c, K.ticks(), 400); await Promise.all([swap(c, K.lb, T(`${k}${U(sm)}`)), swap(c, K.ll, T(`${k}${U(sm)}`))]); await say(c, P, T(`1${U(big)}=${k}${U(sm)}`)); } },
-    { cap: `The tempting answer: “multiply by ${k}”, so ${T(`1${U(big, 2)}=${k}${U(sm, 2)}`)}. But ${T(`${k}${U(sm, 2)}`)} is only <b>one row</b> of ${k} little squares along the bottom.`,
+    { cap: `The tempting answer: “multiply by ${k}”, so ${TQ(`1${U(big, 2)}=${k}${U(sm, 2)}`)}. But ${TQ(`${k}${U(sm, 2)}`)} is only <b>one row</b> of ${k} little squares along the bottom.`,
       run: async (c) => {
         strip = svgEl('rect', { x: x0, y: y0 + Q - Q / k, width: Q, height: Q / k, fill: RED, 'fill-opacity': cont ? 1 : 0.55, stroke: cont ? 'none' : RED, 'stroke-width': 2 }, K.gMid);
         await appear(c, strip, 300);
@@ -224,7 +226,7 @@ function squareSteps(stage, ex, d) {
         set(k);
         await say(c, P, T(`${k}\\text{ rows}\\times${k}${U(sm, 2)}=${tn(kk)}${U(sm, 2)}`));
       } },
-    ...(cont ? [{ cap: `Check with bigger tiles, 10 ${sm} by 10 ${sm}: 10 across and 10 up make <b>100 tiles</b>, each ${T(`10\\times10=100${U(sm, 2)}`)}.`,
+    ...(cont ? [{ cap: `Check with bigger tiles, 10 ${sm} by 10 ${sm}: 10 across and 10 up make <b>100 tiles</b>, each ${TQ(`10\\times10=100${U(sm, 2)}`)}.`,
       run: async (c) => {
         await fade(c, counter);
         let dd = ''; for (let i = 1; i < 10; i++) dd += `M${x0 + Q * i / 10} ${y0}V${y0 + Q}M${x0} ${y0 + Q * i / 10}H${x0 + Q}`;
@@ -233,7 +235,7 @@ function squareSteps(stage, ex, d) {
         await pop(c, lab(stage, x0 + 6, y0 + Q * 0.9 - 8, T(`100${U(sm, 2)}`), 'u10l5-call u10l5-calla', 'bl'));
         await say(c, P, T(`100\\text{ tiles}\\times100${U(sm, 2)}=${tn(kk)}${U(sm, 2)}`));
       } }] : []),
-    { cap: `${T(`1${U(big, 2)}=${k}\\times${k}=${k}^2=${tn(kk)}${U(sm, 2)}`)}. The factor ${k} is used <b>twice</b>: once for each dimension.`,
+    { cap: `${TQ(`1${U(big, 2)}=${k}\\times${k}=${k}^2=${tn(kk)}${U(sm, 2)}`)}. The factor ${k} is used <b>twice</b>: once for each dimension.`,
       run: async (c) => { const r = line(P, T(`1${U(big, 2)}=${k}^2${U(sm, 2)}=${tn(kk)}${U(sm, 2)}`), 'u10l5-boxed'); await pop(c, r, 450); await stampIn(c, stampP(P, `× ${k}², not × ${k}`)); } }
   ];
 }
@@ -254,15 +256,15 @@ const grid = {
     const K = squareKit(stage, ex, d), { P, Q, x0, y0 } = K;
     let counter;
     return [
-      { cap: `(a) ${T('A=1\\text{ m}\\times1\\text{ m}=1\\text{ m}^2')}.`, run: (c) => say(c, P, '(a) ' + T('A=1\\times1=1\\text{ m}^2')) },
-      { cap: `(b) Each side is <b>100 cm</b>. Fill the square: <b>100 rows</b> of 100 squares, ${T('100\\times100=10\\,000\\text{ cm}^2')}.`,
+      { cap: `(a) ${TQ('A=1\\text{ m}\\times1\\text{ m}=1\\text{ m}^2')}.`, run: (c) => say(c, P, '(a) ' + T('A=1\\times1=1\\text{ m}^2')) },
+      { cap: `(b) Each side is <b>100 cm</b>. Fill the square: <b>100 rows</b> of 100 squares, ${TQ('100\\times100=10\\,000\\text{ cm}^2')}.`,
         run: async (c) => {
           await appear(c, K.ticks(), 300); await Promise.all([swap(c, K.lb, T('100\\text{ cm}')), swap(c, K.ll, T('100\\text{ cm}'))]);
           counter = lab(stage, x0 + Q / 2, y0 + Q - 18, '', 'u10l5-call', 'c');
           await tween(c, 1800, (t) => { const r = 1 + 99 * t; K.fillRows(r); counter.innerHTML = `<b>${Math.round(r)}</b> rows`; counter.style.top = Math.max(y0 + 22, y0 + Q - Q * r / 100 - 18) + 'px'; }, (t) => t);
           await say(c, P, '(b) ' + T('100\\times100=10\\,000\\text{ cm}^2'));
         } },
-      { cap: `(b) In millimetres each side is <b>1000 mm</b>. Zoom in on one ${T('\\text{cm}^2')}: it is 10 mm by 10 mm, so ${T('1\\text{ cm}^2=100\\text{ mm}^2')}.`,
+      { cap: `(b) In millimetres each side is <b>1000 mm</b>. Zoom in on one ${TQ('\\text{cm}^2')}: it is 10 mm by 10 mm, so ${TQ('1\\text{ cm}^2=100\\text{ mm}^2')}.`,
         run: async (c) => {
           await fade(c, counter);
           const cx = x0 + Q * 0.24, cy = y0 + Q * 0.62, cw = Q / 100, ix = x0 + Q - 196, iy = y0 + 14, iw = 176;
@@ -278,11 +280,11 @@ const grid = {
           await pop(c, lab(stage, ix + iw / 2, iy + iw + 8, T('1\\text{ cm}^2=10\\times10=100\\text{ mm}^2'), 'u10l5-call u10l5-callr', 't'));
           await say(c, P, T('1\\text{ m}=1000\\text{ mm}'));
         } },
-      { cap: `So ${T('1\\text{ m}^2=10\\,000\\times100=1000\\times1000=1\\,000\\,000\\text{ mm}^2')}.`,
+      { cap: `So ${TQ('1\\text{ m}^2=10\\,000\\times100=1000\\times1000=1\\,000\\,000\\text{ mm}^2')}.`,
         run: (c) => say(c, P, '(b) ' + T('1000\\times1000=1\\,000\\,000\\text{ mm}^2')) },
-      { cap: `(c) ${T('1\\text{ m}^2=10\\,000\\text{ cm}^2=1\\,000\\,000\\text{ mm}^2')}: the linear factors 100 and 1000, <b>squared</b>.`,
+      { cap: `(c) ${TQ('1\\text{ m}^2=10\\,000\\text{ cm}^2=1\\,000\\,000\\text{ mm}^2')}: the linear factors 100 and 1000, <b>squared</b>.`,
         run: async (c) => { const r = line(P, '(c) ' + T('1\\text{ m}^2=100^2\\text{ cm}^2=1000^2\\text{ mm}^2'), 'u10l5-boxed'); await pop(c, r, 450); } },
-      { cap: `(d) km² to m²: the length is ×1000 <b>and</b> the width is ×1000, so the area is ${T('\\times1000^2=\\times1\\,000\\,000')}. Multiplying by 1000 once only converts a length.`,
+      { cap: `(d) km² to m²: the length is ×1000 <b>and</b> the width is ×1000, so the area is ${TQ('\\times1000^2=\\times1\\,000\\,000')}. Multiplying by 1000 once only converts a length.`,
         run: async (c) => { await say(c, P, '(d) ' + T('1\\text{ km}^2=1000\\times1000\\text{ m}^2')); await say(c, P, T('=1\\,000\\,000\\text{ m}^2')); await stampIn(c, stampP(P, 'factor used twice')); } }
     ];
   }
@@ -326,10 +328,10 @@ const shortcut = {
     return [
       { cap: `${a} to ${b}: <b>${n} steps</b> right on the metric number line, to a smaller unit.`,
         run: async (c) => { for (let i = 0; i < n; i++) await NL.hop(c, d.from + i, d.from + i + 1, { label: T('\\times10'), color: STEPC[i % 3], height: 30 }); } },
-      { cap: `<b>Length</b> has one dimension: ×10 per step, so ${T(`1${U(a)}=10^{${n}}${U(b)}`)}. One zero per step.`, run: (c) => runRow(c, rows[0]) },
-      { cap: `<b>Area</b> has two dimensions: each step is ${T('\\times10')} twice, ${T('\\times10^2')}. Two zeros per step: ${T(`1${U(a, 2)}=10^{${2 * n}}${U(b, 2)}`)}.`, run: (c) => runRow(c, rows[1]) },
-      { cap: `<b>Volume</b> has three dimensions: ${T('\\times10^3')} per step. Three zeros per step: ${T(`1${U(a, 3)}=10^{${3 * n}}${U(b, 3)}`)}.`, run: (c) => runRow(c, rows[2]) },
-      { cap: `The rule: <b>${T('n')} steps apart</b> → length ${T('10^{n}')}, area ${T('10^{2n}')}, volume ${T('10^{3n}')}. Here ${T(`n=${n}`)}.`,
+      { cap: `<b>Length</b> has one dimension: ×10 per step, so ${TQ(`1${U(a)}=10^{${n}}${U(b)}`)}. One zero per step.`, run: (c) => runRow(c, rows[0]) },
+      { cap: `<b>Area</b> has two dimensions: each step is ${TQ('\\times10')} twice, ${TQ('\\times10^2')}. Two zeros per step: ${TQ(`1${U(a, 2)}=10^{${2 * n}}${U(b, 2)}`)}.`, run: (c) => runRow(c, rows[1]) },
+      { cap: `<b>Volume</b> has three dimensions: ${TQ('\\times10^3')} per step. Three zeros per step: ${TQ(`1${U(a, 3)}=10^{${3 * n}}${U(b, 3)}`)}.`, run: (c) => runRow(c, rows[2]) },
+      { cap: `The rule: <b>${TQ('n')} steps apart</b> → length ${TQ('10^{n}')}, area ${TQ('10^{2n}')}, volume ${TQ('10^{3n}')}. Here ${TQ(`n=${n}`)}.`,
         run: async (c) => { for (const R of rows) await pulse(c, R.pw, 1.12); const s = stamp(stage, '', { x: ex.W - 150, y: 430 }); s.innerHTML = T(`10^{${n}},\\ 10^{${2 * n}},\\ 10^{${3 * n}}`); await stampIn(c, s); } }
     ];
   }
@@ -366,11 +368,11 @@ function shiftDef(p, data, title) {
       };
       const intRes = !cells.some((v, j) => j >= pe && v !== '0');
       return [
-        { cap: `${T(d.vt + U(PRE[d.from], p))} to ${toU}. Find both units on the metric number line.`,
+        { cap: `${TQ(d.vt + U(PRE[d.from], p))} to ${toU}. Find both units on the metric number line.`,
           run: async (c) => { await pop(c, NL.point(d.from, { color: INK })); await pop(c, NL.point(d.to, { color: BLUE })); } },
         { cap: `${fromU} to ${toU} is <b>${n} step${n > 1 ? 's' : ''} ${right ? 'right' : 'left'}</b>: to a ${right ? '<b>smaller</b> unit, so the number gets bigger (multiply)' : '<b>bigger</b> unit, so the number gets smaller (divide)'}.`,
           run: async (c) => { for (let i = 0; i < n; i++) { const a = d.from + (right ? i : -i), b = a + (right ? 1 : -1); await NL.hop(c, a, b, { label: T((right ? '\\times' : '\\div') + per), color: STEPC[i % 3], height: 28 }); } } },
-        { cap: `For ${p === 2 ? 'area' : 'volume'} each step is ${T('\\times10')} in each of <b>${p} dimensions</b>: ${T(per + '=' + (p === 2 ? '100' : '1000'))} per step. ${n} step${n > 1 ? 's' : ''}: ${T(n > 1 ? `(${per})^{${n}}=${fac}` : fac)}.`,
+        { cap: `For ${p === 2 ? 'area' : 'volume'} each step is ${TQ('\\times10')} in each of <b>${p} dimensions</b>: ${TQ(per + '=' + (p === 2 ? '100' : '1000'))} per step. ${n} step${n > 1 ? 's' : ''}: ${TQ(n > 1 ? `(${per})^{${n}}=${fac}` : fac)}.`,
           run: (c) => say(c, P, T(`${right ? '\\times' : '\\div'}${n > 1 ? `(${per})^{${n}}=${right ? '\\times' : '\\div'}${fac}` : per}=${right ? '\\times' : '\\div'}${tn(String(10 ** (p * n)))}`)) },
         { cap: `Move the decimal point <b>${Math.abs(m)} places ${right ? 'right' : 'left'}</b>: ${p} places for each step.`,
           run: async (c) => {
@@ -387,7 +389,7 @@ function shiftDef(p, data, title) {
             if (intRes) await fade(c, dot, 0.15);
             await say(c, P, T(`${d.vt}${right ? '\\times' : '\\div'}${fac}=${d.std}${U(PRE[d.to], p)}`));
           } },
-        { cap: d.sci ? `Standard notation: <b>${T(d.std + U(PRE[d.to], p))}</b>. Scientific notation: <b>${T(d.sci + U(PRE[d.to], p))}</b>.` : `${T(`${d.vt}${U(PRE[d.from], p)}=${d.std}${U(PRE[d.to], p)}`)}.`,
+        { cap: d.sci ? `Standard notation: <b>${TQ(d.std + U(PRE[d.to], p))}</b>. Scientific notation: <b>${TQ(d.sci + U(PRE[d.to], p))}</b>.` : `${TQ(`${d.vt}${U(PRE[d.from], p)}=${d.std}${U(PRE[d.to], p)}`)}.`,
           run: async (c) => { if (d.sci) await say(c, P, T(`=${d.sci}${U(PRE[d.to], p)}`)); await stampIn(c, stampP(P, `${n} step${n > 1 ? 's' : ''} → ${p * n} places`)); } }
       ];
     }
@@ -429,19 +431,19 @@ const rect = {
     for (let r = 0; r < 4; r++) for (let q = 0; q < 7; q++) { const t = svgEl('rect', { x: x0 + q * s, y: y0 + r * s, width: s, height: s, fill: TEAL, 'fill-opacity': 0.12, stroke: TEAL, 'stroke-width': 1.6 }, gTiles); t.style.opacity = 0; tiles.push(t); }
     const fine = (q, r) => { let dd = ''; const n = 10; for (let i = 1; i < n; i++) dd += `M${x0 + q * s + s * i / n} ${y0 + r * s}v${s}M${x0 + q * s} ${y0 + r * s + s * i / n}h${s}`; return svgEl('path', { d: dd, stroke: BLUE, 'stroke-width': 0.8, 'stroke-opacity': 0.7, fill: 'none' }, gTop); };
     return [
-      { cap: `${T('7\\times4=28')} squares of ${T('1\\text{ m}^2')}: ${T('A=28\\text{ m}^2')}.`,
+      { cap: `${TQ('7\\times4=28')} squares of ${TQ('1\\text{ m}^2')}: ${TQ('A=28\\text{ m}^2')}.`,
         run: async (c) => { for (const t of tiles) { await appear(c, t, 90); } await say(c, P, '(a) ' + T('A=7\\times4=28\\text{ m}^2')); } },
-      { cap: `<b>Way 1:</b> convert the sides first: ${T(`7\\text{ m}=${d.sides[0]}${U(d.sm)}`)} and ${T(`4\\text{ m}=${d.sides[1]}${U(d.sm)}`)}.`,
+      { cap: `<b>Way 1:</b> convert the sides first: ${TQ(`7\\text{ m}=${d.sides[0]}${U(d.sm)}`)} and ${TQ(`4\\text{ m}=${d.sides[1]}${U(d.sm)}`)}.`,
         run: async (c) => { await Promise.all([swap(c, lb, T(`${d.sides[0]}${U(d.sm)}`)), swap(c, ll, T(`${d.sides[1]}${U(d.sm)}`))]); await say(c, P, '<b>1</b> ' + T(`A=${d.sides[0]}\\times${d.sides[1]}`)); await say(c, P, T(`\\phantom{A}=${d.prod}${U(d.sm, 2)}`)); } },
-      { cap: `<b>Way 2:</b> each square metre holds ${T(`${d.f}^2=${d.ff}${U(d.sm, 2)}`)} (Example 1).`,
+      { cap: `<b>Way 2:</b> each square metre holds ${TQ(`${d.f}^2=${d.ff}${U(d.sm, 2)}`)} (Example 1).`,
         run: async (c) => {
           const f = fine(0, 3); if (d.sm === 'mm') f.setAttribute('stroke-width', 0.5);
           await appear(c, f, 300); svgEl('rect', { x: x0 + 2, y: y0 + 3 * s + 2, width: s - 4, height: s - 4, fill: AMB, 'fill-opacity': 0.3, stroke: AMB, 'stroke-width': 4 }, gTop);
           const l = lab(stage, x0 + s / 2, y0 + 3 * s - 6, T(`${d.ff}${U(d.sm, 2)}`), 'u10l5-call u10l5-calla', 'b'); l.style.translate = '-12% -100%'; await pop(c, l);
         } },
-      { cap: `28 squares, each ${T(`${d.ff}${U(d.sm, 2)}`)}: ${T(`28\\times${d.ff}=${d.prod}${U(d.sm, 2)}`)}. The same answer ✓`,
+      { cap: `28 squares, each ${TQ(`${d.ff}${U(d.sm, 2)}`)}: ${TQ(`28\\times${d.ff}=${d.prod}${U(d.sm, 2)}`)}. The same answer ✓`,
         run: async (c) => { for (let r = 0; r < 4; r++) for (let q = 0; q < 7; q++) if (q || r !== 3) fine(q, r).style.opacity = 0; for (const e of [...gTop.querySelectorAll('path')].slice(1)) await appear(c, e, 40); await say(c, P, '<b>2</b> ' + T(`28\\times${d.ff}=${d.prod}${U(d.sm, 2)}`)); } },
-      { cap: `“Times ${d.f}” once would give ${T(`28\\times${d.f}=${d.wrong}${U(d.sm, 2)}`)}: far too small, because it scales only one side.`,
+      { cap: `“Times ${d.f}” once would give ${TQ(`28\\times${d.f}=${d.wrong}${U(d.sm, 2)}`)}: far too small, because it scales only one side.`,
         run: async (c) => { const w2 = line(P, T(`28\\times${d.f}=${d.wrong}${U(d.sm, 2)}`), 'u10l5-wrong'); await show(c, w2); await strike(c, w2); await stampIn(c, stampP(P, 'ways 1 and 2 agree ✓')); } }
     ];
   }
@@ -485,12 +487,12 @@ function cubeSteps(stage, ex, d) {
   const smName = { in: 'inches', ft: 'feet', cm: 'centimetres', mm: 'millimetres' }[sm];
   let wrong, call, slab, counter, layers = [];
   const steps = [
-    { cap: `A cube <b>1 ${big}</b> on every edge: ${T(`V=1\\times1\\times1=1${U(big, 3)}`)}.`,
+    { cap: `A cube <b>1 ${big}</b> on every edge: ${TQ(`V=1\\times1\\times1=1${U(big, 3)}`)}.`,
       run: async (c) => { await pulse(c, K.L.b, 1.15); await say(c, Pn, T(`V=1\\times1\\times1=1${U(big, 3)}`)); } },
     { cap: `Measure the edges in ${smName}: every edge is <b>${k} ${sm}</b>.`,
       run: async (c) => { await appear(c, K.ticks(), 400); await K.relabel(c, T(`${k}${U(sm)}`)); await say(c, Pn, T(`1${U(big)}=${k}${U(sm)}`)); } },
     cont
-      ? { cap: `The tempting answer: “times 100”, so ${T(`1${U(big, 3)}=100${U(sm, 3)}`)}. But a ${T(`100${U(sm, 3)}`)} cube is only about <b>4.6 cm</b> on an edge: this speck.`,
+      ? { cap: `The tempting answer: “times 100”, so ${TQ(`1${U(big, 3)}=100${U(sm, 3)}`)}. But a ${TQ(`100${U(sm, 3)}`)} cube is only about <b>4.6 cm</b> on an edge: this speck.`,
         run: async (c) => {
           const e = 0.0464; wrong = drawBox(K.gMid, P, [0, e, 0, e, 0, e], { fill: REDF, stroke: RED, sw: 1.2 }); await pop(c, wrong);
           const p = P(e, e, 0); call = lab(stage, p[0] + 18, p[1] - 60, `${T(`100${U(sm, 3)}`)}: a cube about 4.6 cm wide`, 'u10l5-call u10l5-callr', 'l');
@@ -498,13 +500,13 @@ function cubeSteps(stage, ex, d) {
           await Promise.all([pop(c, call), appear(c, ar)]); call.ar = ar;
           const w = line(Pn, T(`1${U(big, 3)}=100${U(sm, 3)}`), 'u10l5-wrong'); await show(c, w); await strike(c, w);
         } }
-      : { cap: `The tempting answer: “times ${k}”, so ${T(`1${U(big, 3)}=${k}${U(sm, 3)}`)}. But ${k} little cubes make only <b>one row</b> along the front edge.`,
+      : { cap: `The tempting answer: “times ${k}”, so ${TQ(`1${U(big, 3)}=${k}${U(sm, 3)}`)}. But ${k} little cubes make only <b>one row</b> along the front edge.`,
         run: async (c) => {
           wrong = K.layer(0, { z1: 1, fill: REDF, stroke: RED }); K.gMid.appendChild(wrong); await appear(c, wrong, 300);
           const p = P(0.5, 1 / k, 0); call = lab(stage, p[0], p[1] - 10, `${T(`${k}${U(sm, 3)}`)} = one row`, 'u10l5-call u10l5-callr', 'b'); await pop(c, call);
           const w = line(Pn, T(`1${U(big, 3)}=${k}${U(sm, 3)}`), 'u10l5-wrong'); await show(c, w); await strike(c, w);
         } },
-    { cap: `Lay down one floor, 1 ${sm} thick: ${T(`${k}\\times${k}=${tn(k2)}`)} cubes. ${cont ? 'It is the square from Section 1, one centimetre deep.' : ''}`,
+    { cap: `Lay down one floor, 1 ${sm} thick: ${TQ(`${k}\\times${k}=${tn(k2)}`)} cubes. ${cont ? 'It is the square from Section 1, one centimetre deep.' : ''}`,
       run: async (c) => {
         await Promise.all([fade(c, wrong), fade(c, call), call.ar ? fade(c, call.ar) : null]);
         if (cont) {
@@ -529,7 +531,7 @@ function cubeSteps(stage, ex, d) {
         await say(c, Pn, T(`${k}\\text{ layers}\\times${tn(k2)}=${tn(k3)}${U(sm, 3)}`));
       } }
   ];
-  if (cont) steps.push({ cap: `Check with 10 cm blocks: ${T('10\\times10\\times10=1000')} blocks, each ${T(`10^3=1000${U(sm, 3)}`)}.`,
+  if (cont) steps.push({ cap: `Check with 10 cm blocks: ${TQ('10\\times10\\times10=1000')} blocks, each ${TQ(`10^3=1000${U(sm, 3)}`)}.`,
     run: async (c) => {
       await fade(c, counter);
       let dd = ''; const seg = (a, b) => `M${a[0].toFixed(1)} ${a[1].toFixed(1)}L${b[0].toFixed(1)} ${b[1].toFixed(1)}`;
@@ -541,7 +543,7 @@ function cubeSteps(stage, ex, d) {
       await pop(c, lab(stage, tp[0], ly, T(`10\\times10\\times10=1000${U(sm, 3)}`), 'u10l5-call u10l5-calla', 'b'));
       await say(c, Pn, T(`1000\\text{ blocks}\\times1000${U(sm, 3)}`));
     } });
-  steps.push({ cap: `${T(`1${U(big, 3)}=${k}\\times${k}\\times${k}=${k}^3=${tn(k3)}${U(sm, 3)}`)}. The factor ${k} is used <b>three times</b>: once for each dimension.`,
+  steps.push({ cap: `${TQ(`1${U(big, 3)}=${k}\\times${k}\\times${k}=${k}^3=${tn(k3)}${U(sm, 3)}`)}. The factor ${k} is used <b>three times</b>: once for each dimension.`,
     run: async (c) => { const r = line(Pn, T(`1${U(big, 3)}=${k}^3${U(sm, 3)}=${tn(k3)}${U(sm, 3)}`), 'u10l5-boxed'); await pop(c, r, 450); await stampIn(c, stampP(Pn, `× ${k}³, not × ${k}`)); } });
   return steps;
 }
@@ -562,21 +564,21 @@ const cube = {
     const K = cubeKit(stage, ex, d), { P, Pn } = K;
     let slab, pills = [];
     return [
-      { cap: `(a) ${T('V=1\\times1\\times1=1\\text{ m}^3')}.`, run: (c) => say(c, Pn, '(a) ' + T('V=1\\times1\\times1=1\\text{ m}^3')) },
-      { cap: `(b) Every edge is <b>100 cm</b>. One floor 1 cm thick is ${T('100\\times100=10\\,000\\text{ cm}^3')}; stack <b>100</b> of them.`,
+      { cap: `(a) ${TQ('V=1\\times1\\times1=1\\text{ m}^3')}.`, run: (c) => say(c, Pn, '(a) ' + T('V=1\\times1\\times1=1\\text{ m}^3')) },
+      { cap: `(b) Every edge is <b>100 cm</b>. One floor 1 cm thick is ${TQ('100\\times100=10\\,000\\text{ cm}^3')}; stack <b>100</b> of them.`,
         run: async (c) => {
           await appear(c, K.ticks(), 300); await K.relabel(c, T('100\\text{ cm}'));
           slab = drawBox(K.gFill, P, [0, 1, 0, 0.01, 0, 1], { fill: { front: '#7ea6ea', top: '#c8daf8', side: '#6a93dc' }, stroke: BLUE, sw: 1.2 });
           await appear(c, slab, 300); await tween(c, 2000, (t) => slab.set([0, 1, 0, 0.01 + 0.99 * t, 0, 1]), (t) => t); await fade(c, K.hid, 0.25);
           await say(c, Pn, '(b) ' + T('100\\times100\\times100=100^3')); await say(c, Pn, T('\\phantom{(b)}=1\\,000\\,000\\text{ cm}^3'));
         } },
-      { cap: `(c) ${T('1\\text{ m}^3=1\\,000\\,000\\text{ cm}^3')}. In millimetres every edge is 1000 mm: the factor 1000, once for <b>each</b> edge.`,
+      { cap: `(c) ${TQ('1\\text{ m}^3=1\\,000\\,000\\text{ cm}^3')}. In millimetres every edge is 1000 mm: the factor 1000, once for <b>each</b> edge.`,
         run: async (c) => {
           await K.relabel(c, T('1000\\text{ mm}'));
           const at = [P(0.5, 0.1, 0), P(0.13, 0.5, 0), P(1, 0.18, 0.5)];
           for (let i = 0; i < 3; i++) { const e = lab(stage, at[i][0], at[i][1], T('\\times1000'), 'u10l5-call u10l5-calla', 'c'); pills.push(e); await pop(c, e); }
         } },
-      { cap: `So ${T('1\\text{ m}^3=1000\\times1000\\times1000=1000^3=10^{9}\\text{ mm}^3')}, that is ${T('1\\,000\\,000\\,000\\text{ mm}^3')}.`,
+      { cap: `So ${TQ('1\\text{ m}^3=1000\\times1000\\times1000=1000^3=10^{9}\\text{ mm}^3')}, that is ${TQ('1\\,000\\,000\\,000\\text{ mm}^3')}.`,
         run: async (c) => { const r = line(Pn, '(c) ' + T('1\\text{ m}^3=1000^3\\text{ mm}^3'), ''); await show(c, r); const r2 = line(Pn, T('=10^{9}=1\\,000\\,000\\,000\\text{ mm}^3'), 'u10l5-boxed'); await pop(c, r2, 450); await stampIn(c, stampP(Pn, 'factor used 3 times')); } }
     ];
   }
@@ -598,14 +600,14 @@ const prism = {
     const layer = (y) => { const g = svgEl('g', {}, gF); for (let z = 1; z >= 0; z--) for (let x = 0; x < 5; x++) { const f = ['top']; if (z === 0) f.unshift('front'); if (x === 4) f.push('side'); drawBox(g, P, [x, x + 1, y, y + 1, z, z + 1], { fill: { front: '#bfe3df', top: '#e2f3f1', side: '#9fd2cc' }, stroke: TEAL, sw: 1.6, faces: f }); } g.style.opacity = 0; return g; };
     const Ls = [];
     return [
-      { cap: `The floor: ${T('5\\times2=10')} cubes of ${T('1\\text{ m}^3')}.`, run: async (c) => { Ls[0] = layer(0); await anim(c, Ls[0], [{ opacity: 0, transform: 'translateY(-20px)' }, { opacity: 1, transform: 'none' }], 500); await say(c, Pn, T('5\\times2=10\\text{ cubes per layer}')); } },
-      { cap: `3 layers: ${T('V=5\\times2\\times3=30\\text{ m}^3')}.`,
+      { cap: `The floor: ${TQ('5\\times2=10')} cubes of ${TQ('1\\text{ m}^3')}.`, run: async (c) => { Ls[0] = layer(0); await anim(c, Ls[0], [{ opacity: 0, transform: 'translateY(-20px)' }, { opacity: 1, transform: 'none' }], 500); await say(c, Pn, T('5\\times2=10\\text{ cubes per layer}')); } },
+      { cap: `3 layers: ${TQ('V=5\\times2\\times3=30\\text{ m}^3')}.`,
         run: async (c) => { for (const y of [1, 2]) { Ls[y] = layer(y); await anim(c, Ls[y], [{ opacity: 0, transform: 'translateY(-20px)' }, { opacity: 1, transform: 'none' }], 450); } await fade(c, hid, 0.25); await say(c, Pn, '(a) ' + T('V=5\\times2\\times3=30\\text{ m}^3')); } },
-      { cap: `Each of those cubes is ${T('1\\text{ m}^3=1\\,000\\,000\\text{ cm}^3')} (Example 4). <b>Way 1:</b> ${T('30\\times1\\,000\\,000=30\\,000\\,000\\text{ cm}^3')}.`,
+      { cap: `Each of those cubes is ${TQ('1\\text{ m}^3=1\\,000\\,000\\text{ cm}^3')} (Example 4). <b>Way 1:</b> ${TQ('30\\times1\\,000\\,000=30\\,000\\,000\\text{ cm}^3')}.`,
         run: async (c) => { const b = drawBox(gO, P, [4, 5, 2, 3, 0, 1], { fill: AMBF, sw: 2.4 }); await pop(c, b); const q = P(4.5, 3, 0.5); await pop(c, lab(stage, q[0], q[1] - 14, T('10^{6}\\text{ cm}^3'), 'u10l5-call u10l5-calla', 'b')); await say(c, Pn, '<b>1</b> ' + T('30\\times1\\,000\\,000=30\\,000\\,000\\text{ cm}^3')); } },
-      { cap: `<b>Way 2:</b> convert the edges: 500 cm, 200 cm and 300 cm. ${T('500\\times200\\times300=30\\,000\\,000\\text{ cm}^3')}.`,
+      { cap: `<b>Way 2:</b> convert the edges: 500 cm, 200 cm and 300 cm. ${TQ('500\\times200\\times300=30\\,000\\,000\\text{ cm}^3')}.`,
         run: async (c) => { await Promise.all([swap(c, L.b, T('500\\text{ cm}')), swap(c, L.l, T('300\\text{ cm}')), swap(c, L.d, T('200\\text{ cm}'))]); await say(c, Pn, '<b>2</b> ' + T('500\\times200\\times300')); await say(c, Pn, T('\\phantom{2}=30\\,000\\,000\\text{ cm}^3')); } },
-      { cap: `“Times 100” once would give ${T('30\\times100=3000\\text{ cm}^3')}: a cube only about 14 cm on an edge, not a room-sized prism.`,
+      { cap: `“Times 100” once would give ${TQ('30\\times100=3000\\text{ cm}^3')}: a cube only about 14 cm on an edge, not a room-sized prism.`,
         run: async (c) => { const w = line(Pn, T('30\\times100=3000\\text{ cm}^3'), 'u10l5-wrong'); await show(c, w); await strike(c, w); await stampIn(c, stampP(Pn, 'ways 1 and 2 agree ✓')); } }
     ];
   }
@@ -663,15 +665,15 @@ const cancel = {
     const res = add(stage, h('div', 'u10l5-ures'), 20, 380); res.style.width = (W - 40) + 'px'; hide(res);
     const lin = cellsT[d.row][0], sqc = cellsT[d.row][p - 1];
     return [
-      { cap: `Convert ${T(`${d.v}${U(d.from, p)}`)} to ${T(UU(d.to, p))}. Start from the linear fact: ${T(`1${U(r.big)}=${r.k}${U(r.small)}`)}.`,
+      { cap: `Convert ${TQ(`${d.v}${U(d.from, p)}`)} to ${TQ(UU(d.to, p))}. Start from the linear fact: ${TQ(`1${U(r.big)}=${r.k}${U(r.small)}`)}.`,
         run: async (c) => { lin.classList.add('u10l5-hl1'); await pulse(c, lin, 1.08); } },
-      { cap: `${p === 2 ? 'Square' : 'Cubic'} units, so ${sqw} it: ${T(`1${U(r.big, p)}=${r.k}^${p}=${fac}${U(r.small, p)}`)}.`,
+      { cap: `${p === 2 ? 'Square' : 'Cubic'} units, so ${sqw} it: ${TQ(`1${U(r.big, p)}=${r.k}^${p}=${fac}${U(r.small, p)}`)}.`,
         run: async (c) => { sqc.classList.add('u10l5-hl2'); await pulse(c, sqc, 1.08); } },
-      { cap: `Write the given over 1. The conversion fraction puts ${T(UU(d.from, p))} on the <b>bottom</b>, so it cancels.`,
+      { cap: `Write the given over 1. The conversion fraction puts ${TQ(UU(d.from, p))} on the <b>bottom</b>, so it cancels.`,
         run: async (c) => { for (const e of parts.slice(0, 3)) await fadeIn(c, e); } },
-      { cap: `${T(UU(d.from, p))} on the top and on the bottom cancel, leaving ${T(UU(d.to, p))}.`,
+      { cap: `${TQ(UU(d.from, p))} on the top and on the bottom cancel, leaving ${TQ(UU(d.to, p))}.`,
         run: async (c) => { for (const e of cutU) await strike(c, e); } },
-      { cap: `${T(`${d.calc}=${d.res}`)}, so ${T(`${d.v}${U(d.from, p)}=${d.res}${U(d.to, p)}`)}${d.sci ? `${T(`=${d.sci}${U(d.to, p)}`)} (2 d.p.)` : ''}.`,
+      { cap: `${TQ(`${d.calc}=${d.res}`)}, so ${TQ(`${d.v}${U(d.from, p)}=${d.res}${U(d.to, p)}`)}${d.sci ? `${TQ(`=${d.sci}${U(d.to, p)}`)} (2 d.p.)` : ''}.`,
         run: async (c) => { await fadeIn(c, parts[3]); await fadeIn(c, parts[4]); res.innerHTML = T(`=${d.res}${U(d.to, p)}${d.sci ? `=${d.sci}${U(d.to, p)}` : ''}`); await pop(c, res, 450); const s = stamp(stage, `${down ? '×' : '÷'} ${r.k}${p === 2 ? '²' : '³'}`, { x: W - 110, y: 420 }); await stampIn(c, s); } }
     ];
   }
@@ -709,12 +711,12 @@ const which = {
     const Pn = panel(stage, FW + 22, 12, ex.W - FW - 34, H - 24, 'Convert');
     const kn = { len: 'length', area: 'square', vol: 'cubic' }[d.kind], fw = { len: 'used once', area: '<b>squared</b>', vol: '<b>cubed</b>' }[d.kind];
     return [
-      { cap: `Convert ${T(d.given)} to ${T(d.to)}.`, run: async (c) => { await F.visit(c, 'start'); await say(c, Pn, T(`${d.given}\\to${d.to}`)); } },
-      { cap: `${d.kind === 'len' ? 'A length' : `${T(d.to)} is a ${kn} unit`}, so the linear factor is ${fw}: ${T(d.f2 || d.f1)}.`,
+      { cap: `Convert ${TQ(d.given)} to ${TQ(d.to)}.`, run: async (c) => { await F.visit(c, 'start'); await say(c, Pn, T(`${d.given}\\to${d.to}`)); } },
+      { cap: `${d.kind === 'len' ? 'A length' : `${TQ(d.to)} is a ${kn} unit`}, so the linear factor is ${fw}: ${TQ(d.f2 || d.f1)}.`,
         run: async (c) => { await F.go(c, 'start', d.kind); await F.visit(c, d.kind); await say(c, Pn, T(d.f1)); if (d.f2) await say(c, Pn, T(d.f2)); } },
       { cap: `${d.down ? 'Going to a <b>smaller</b> unit: there will be more of them, so <b>multiply</b>.' : 'Going to a <b>bigger</b> unit: there will be fewer of them, so <b>divide</b>.'}`,
         run: async (c) => { await F.go(c, d.kind, 'dir'); await F.visit(c, 'dir'); const e = d.down ? 'mul' : 'div'; await F.go(c, 'dir', e); await F.visit(c, e); } },
-      { cap: `${T(d.calc)}.`, run: async (c) => { const r = line(Pn, T(d.calc), 'u10l5-boxed'); await pop(c, r, 450); await stampIn(c, stampP(Pn, d.down ? 'multiply' : 'divide')); } }
+      { cap: `${TQ(d.calc)}.`, run: async (c) => { const r = line(Pn, T(d.calc), 'u10l5-boxed'); await pop(c, r, 450); await stampIn(c, stampP(Pn, d.down ? 'multiply' : 'divide')); } }
     ];
   }
 };
@@ -749,29 +751,29 @@ const bins = {
     const diff = async (c, txt) => { const x1 = bx + bw * vals[0] / max, x2 = bx + bw; const br = svgEl('path', { d: `M${x1} ${by[1] + 44}v8H${x2}v-8`, stroke: RED, 'stroke-width': 2.6, fill: 'none' }, S); await appear(c, br); await pop(c, lab(stage, (x1 + x2) / 2 + 30, by[1] + 62, txt, 'u10l5-call u10l5-callr', 't')); };
     if (k === 'vol') return [
       { cap: 'Bin A is measured in metres and Bin B in feet. To compare, put both in the <b>same unit</b>: cubic centimetres.', run: (c) => say(c, Pn, '<b>Common unit:</b> ' + T('\\text{cm}^3')) },
-      { cap: `Bin A: ${T('V=1.2\\times0.9\\times0.7=0.756\\text{ m}^3')}.`, run: (c) => say(c, Pn, T('V=1.2\\times0.9\\times0.7=0.756\\text{ m}^3'), 'u10l5-la') },
-      { cap: `${T('1\\text{ m}^3=100^3=10^{6}\\text{ cm}^3')}, so Bin A is ${T('0.756\\times10^{6}=756\\,000\\text{ cm}^3')}.`,
+      { cap: `Bin A: ${TQ('V=1.2\\times0.9\\times0.7=0.756\\text{ m}^3')}.`, run: (c) => say(c, Pn, T('V=1.2\\times0.9\\times0.7=0.756\\text{ m}^3'), 'u10l5-la') },
+      { cap: `${TQ('1\\text{ m}^3=100^3=10^{6}\\text{ cm}^3')}, so Bin A is ${TQ('0.756\\times10^{6}=756\\,000\\text{ cm}^3')}.`,
         run: async (c) => { await say(c, Pn, T('0.756\\times10^{6}=756\\,000\\text{ cm}^3'), 'u10l5-la'); await grow(c, 0, T('756\\,000\\text{ cm}^3')); } },
-      { cap: `Bin B: ${T('V=4\\times3\\times2.5=30\\text{ ft}^3')}.`, run: (c) => say(c, Pn, T('V=4\\times3\\times2.5=30\\text{ ft}^3'), 'u10l5-lb') },
-      { cap: `${T('1\\text{ ft}=30.48\\text{ cm}')}, so ${T('1\\text{ ft}^3=30.48^3=28\\,316.846\\,592\\text{ cm}^3')}. Bin B is ${T('30\\times28\\,316.846\\,592\\approx849\\,505\\text{ cm}^3')}.`,
+      { cap: `Bin B: ${TQ('V=4\\times3\\times2.5=30\\text{ ft}^3')}.`, run: (c) => say(c, Pn, T('V=4\\times3\\times2.5=30\\text{ ft}^3'), 'u10l5-lb') },
+      { cap: `${TQ('1\\text{ ft}=30.48\\text{ cm}')}, so ${TQ('1\\text{ ft}^3=30.48^3=28\\,316.846\\,592\\text{ cm}^3')}. Bin B is ${TQ('30\\times28\\,316.846\\,592\\approx849\\,505\\text{ cm}^3')}.`,
         run: async (c) => { await say(c, Pn, T('1\\text{ ft}^3=30.48^3\\text{ cm}^3'), 'u10l5-lb'); await say(c, Pn, T('30\\times28\\,316.846\\,592'), 'u10l5-lb'); await say(c, Pn, T('\\approx849\\,505\\text{ cm}^3'), 'u10l5-lb'); await grow(c, 1, T('849\\,505\\text{ cm}^3')); } },
       { cap: 'Bin B drawn to the same scale on top of Bin A: a little longer, deeper <b>and</b> taller (4 ft is 1.22 m, 3 ft is 0.91 m, 2.5 ft is 0.76 m).',
         run: async (c) => { const o = drawBox(gTop, PA, [0, BB.L, 0, BB.H, 0, BB.D], { stroke: PUR, sw: 2.6 }); o.setAttribute('stroke-dasharray', '8 6'); o.style.opacity = 0; await appear(c, o, 500); } },
-      { cap: `Bin B is greater, by ${T('849\\,505-756\\,000=93\\,505\\text{ cm}^3')}.`,
+      { cap: `Bin B is greater, by ${TQ('849\\,505-756\\,000=93\\,505\\text{ cm}^3')}.`,
         run: async (c) => { await diff(c, T('93\\,505\\text{ cm}^3')); const r = line(Pn, '<b>B</b> greater by ' + T('93\\,505\\text{ cm}^3'), 'u10l5-boxed'); await pop(c, r, 450); } }
     ];
     return [
       { cap: 'Surface area: six faces in three matching pairs. Put both bins in the <b>same unit</b>: square inches.', run: (c) => say(c, Pn, '<b>Common unit:</b> ' + T('\\text{in}^2')) },
-      { cap: `Bin A’s faces: top ${T('1.2\\times0.9=1.08')}, front ${T('1.2\\times0.7=0.84')}, end ${T('0.9\\times0.7=0.63')} (all in ${T('\\text{m}^2')}).`,
+      { cap: `Bin A’s faces: top ${TQ('1.2\\times0.9=1.08')}, front ${TQ('1.2\\times0.7=0.84')}, end ${TQ('0.9\\times0.7=0.63')} (all in ${TQ('\\text{m}^2')}).`,
         run: async (c) => { const b = [0, BA.L, 0, BA.H, 0, BA.D]; await faceHL(c, PA, b, 'top', AMB, '1.08'); await faceHL(c, PA, b, 'front', TEAL, '0.84'); await faceHL(c, PA, b, 'side', PUR, '0.63'); } },
-      { cap: `Each face has a matching one on the hidden side: ${T('SA=2(1.08+0.84+0.63)=5.10\\text{ m}^2')}.`, run: (c) => say(c, Pn, T('SA=2(1.08+0.84+0.63)'), 'u10l5-la').then(() => say(c, Pn, T('\\phantom{SA}=5.10\\text{ m}^2'), 'u10l5-la')) },
-      { cap: `${T('1\\text{ m}^2\\approx1550.003\\,1\\text{ in}^2')}, so Bin A is ${T('5.10\\times1550.003\\,1\\approx7905\\text{ in}^2')}.`,
+      { cap: `Each face has a matching one on the hidden side: ${TQ('SA=2(1.08+0.84+0.63)=5.10\\text{ m}^2')}.`, run: (c) => say(c, Pn, T('SA=2(1.08+0.84+0.63)'), 'u10l5-la').then(() => say(c, Pn, T('\\phantom{SA}=5.10\\text{ m}^2'), 'u10l5-la')) },
+      { cap: `${TQ('1\\text{ m}^2\\approx1550.003\\,1\\text{ in}^2')}, so Bin A is ${TQ('5.10\\times1550.003\\,1\\approx7905\\text{ in}^2')}.`,
         run: async (c) => { await say(c, Pn, T('5.10\\times1550.003\\,1\\approx7905\\text{ in}^2'), 'u10l5-la'); await grow(c, 0, T('7905\\text{ in}^2')); } },
-      { cap: `Bin B’s faces: ${T('4\\times3=12')}, ${T('4\\times2.5=10')}, ${T('3\\times2.5=7.5')}, so ${T('SA=2(29.5)=59\\text{ ft}^2')}.`,
+      { cap: `Bin B’s faces: ${TQ('4\\times3=12')}, ${TQ('4\\times2.5=10')}, ${TQ('3\\times2.5=7.5')}, so ${TQ('SA=2(29.5)=59\\text{ ft}^2')}.`,
         run: async (c) => { const b = [0, BB.L, 0, BB.H, 0, BB.D]; await faceHL(c, PB, b, 'top', AMB, '12'); await faceHL(c, PB, b, 'front', TEAL, '10'); await faceHL(c, PB, b, 'side', PUR, '7.5'); await say(c, Pn, T('SA=2(12+10+7.5)=59\\text{ ft}^2'), 'u10l5-lb'); } },
-      { cap: `${T('1\\text{ ft}^2=12^2=144\\text{ in}^2')}, so Bin B is ${T('59\\times144=8496\\text{ in}^2')}.`,
+      { cap: `${TQ('1\\text{ ft}^2=12^2=144\\text{ in}^2')}, so Bin B is ${TQ('59\\times144=8496\\text{ in}^2')}.`,
         run: async (c) => { await say(c, Pn, T('59\\times144=8496\\text{ in}^2'), 'u10l5-lb'); await grow(c, 1, T('8496\\text{ in}^2')); } },
-      { cap: `Bin B is greater, by ${T('8496-7905=591\\text{ in}^2')}.`,
+      { cap: `Bin B is greater, by ${TQ('8496-7905=591\\text{ in}^2')}.`,
         run: async (c) => { await diff(c, T('591\\text{ in}^2')); const r = line(Pn, '<b>B</b> greater by ' + T('591\\text{ in}^2'), 'u10l5-boxed'); await pop(c, r, 450); } }
     ];
   }

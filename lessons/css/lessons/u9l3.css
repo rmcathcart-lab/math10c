@@ -127,3 +127,20 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u9l3-tbl th, .u9l3-tbl td { border: 1px solid var(--line2); padding: 8px 12px; vertical-align: top; text-align: left; }
 .u9l3-tbl th { background: #f3f2ee; font-family: var(--round); }
 .u9l3-tbl .u9l3-mul { color: #12805a; font-weight: 800; } .u9l3-tbl .u9l3-div { color: #c93a33; font-weight: 800; }
+
+/* ---------- one screen (main.lesson.screen): kite scene and the big one left; the table and Q1–Q3 right;
+   early finishers below ---------- */
+.wf .u9l3-wfig { --kite-h: 290px; display: block; }
+.wf .wf-poll { margin-top: 12px; }
+.wf .wf-poll .poll-opts { grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 0 0 10px; }
+.wf .wf-poll .opt { padding: 5px 8px; }
+.wf .u9l3-wtab .u9l3-ktab { gap: 4px; font-size: 18px; }
+.wf .u9l3-kth { font-size: 14px; padding: 0 0 2px; }
+.wf .u9l3-ktd { padding: 2px 0; min-height: 28px; }
+.wf .u9l3-wqs { grid-template-columns: 1fr; gap: 8px; margin-top: 8px; }
+.wf .u9l3-wqs .bk-wq { padding: 2px 12px 6px; }
+.wf .u9l3-wqs .q-line { margin: 6px 0 2px; font-size: 17px; gap: 10px; }
+.wf .u9l3-wqs .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf .u9l3-wqs .bk-ans { font-size: 15.5px; line-height: 1.32; margin-left: 40px; min-height: 0; }
+/* sidebar captions are only 268 px wide: let a long formula break after = or ≈ instead of running out of the box */
+.ex-panel .ex-cap .katex { white-space: normal; }

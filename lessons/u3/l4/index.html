@@ -43,13 +43,13 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: The Painted Cube">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Painted Cube</h2></div>
-  <p class="big">A <b>3 by 3 by 3</b> cube is dipped in paint, then cut into <b>27</b> small cubes. Some small cubes got paint on 3 faces, some on 2, some on 1… and some on none. <span class="muted">Tap a kind of cube to find them all.</span></p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Painted Cube" style="--wf-side: 330px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Painted Cube</h2>
+  <p class="wf-rule">A <b>3 by 3 by 3</b> cube is dipped in paint, then cut into <b>27</b> small cubes. Some small cubes got paint on 3 faces, some on 2, some on 1… and some on none. <span class="muted">Tap a kind of cube to find them all.</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
 
   <div class="pcw" id="paint"></div>
 
-  <div class="wu-grid">
     <div class="wq">
       <div class="q-line"><div class="q-num">1</div><div>How many small cubes have paint on <b>3</b> faces? Where are they?</div></div>
       <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><b>8</b>, one at each <b>corner</b> of the big cube.</div></div>
@@ -58,13 +58,13 @@
       <div class="q-line"><div class="q-num">2</div><div>How many have exactly <b>2</b> painted faces? Exactly <b>1</b>?</div></div>
       <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans">Two faces: <b>12</b>, the middle of each of the 12 edges. One face: <b>6</b>, the centre of each of the 6 faces.</div></div>
     </div>
+
+  </div><div class="wf-side">
     <div class="wq">
       <div class="q-line"><div class="q-num">3</div><div>How many have <b>no</b> paint? What if the big cube were 4 by 4 by 4?</div></div>
       <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><b>1</b>, the hidden centre cube. Check: <span class="tex">8+12+6+1=27</span>. For 4 by 4 by 4 the core is <span class="tex">2\times2\times2=\boldsymbol{8}</span>.</div></div>
     </div>
-  </div>
-
-  <div class="poll">
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> A <b>10 by 10 by 10</b> cube is painted, then cut into 1000 small cubes. How many small cubes have <b>no paint</b>? <b>Guess first.</b></div></div>
     <div class="poll-opts c4">
       <div class="opt"><b>A</b> 100</div>
@@ -76,6 +76,7 @@
     <div class="poll-ans"><b>C, 512: more than half!</b> Peel one layer off <b>every</b> side: <span class="tex">10-2=8</span> each way, so the unpainted core is <span class="tex">8\times8\times8=512</span>. <button class="pill small" type="button" data-showcube="10,10,10|0">Show it on the cube</button><br>
       <span class="muted"><b>B</b> takes away <span class="tex">6\times100=600</span> outside cubes, but edge and corner cubes sit on 2 or 3 faces and get taken away more than once (only 488 are painted). <b>D</b> is <span class="tex">9^3</span>: a layer peeled off only <b>one</b> side each way. <b>A</b> is the “the paint must get most of them” gut feeling.</span></div>
   </div>
+  </div></div>
 
   <div class="wq wq-wide">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Challenge your neighbour.</b> A <b>3 × 4 × 5</b> box is painted and cut into 60 cubes. How many have no paint? <span class="muted">(It’s on the cube above too.)</span></div></div>

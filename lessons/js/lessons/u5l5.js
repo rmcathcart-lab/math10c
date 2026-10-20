@@ -6,6 +6,11 @@
 import { Graph, h, tex, add, box, pop, fadeIn, sleep, tween, pulse, shake, svgEl, stamp, stampIn, mountExplainers, liveCtx, calcNum, texNum, intersect } from '../blocks.js';
 
 const T = (s) => tex(s);
+const TW = (s) => { // a long chain in a caption, in pieces that can wrap (before each ⇒, else before each later =)
+  s = String(s); const ar = s.includes('\\Rightarrow'); let p = ar ? s.split(/(?=\\ \\Rightarrow)/) : s.split(/(?==)/);
+  if (!ar && p.length > 2) p = [p[0] + p[1], ...p.slice(2)];
+  return p.map((q) => T(q)).join(' ');
+};
 const STD = { xmin: -10, xmax: 10, ymin: -10, ymax: 10, xscl: 1, yscl: 1 };
 const M = (s) => String(s).replace(/-/g, '−'); // calculator text: real minus signs
 
@@ -201,6 +206,7 @@ const setup = {
 const windowEx = {
   title: 'The WINDOW screen sets what part of the plane you see',
   height: 450,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   intro: `Left: the ${kk('WINDOW')} editor. Right: the graph screen it controls. Press <b>Next</b>.`,
   make(stage, v, ex) {
     const ed = add(stage, box(h('div', 'u5l5-scr'), 310, 300), 26, 40), E = lcd(ed);
@@ -249,7 +255,7 @@ const windowEx = {
 const graphIt = {
   title: 'Enter y = 0.75x − 9 and graph it',
   height: 440,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   intro: `The running example: ${T('y=0.75x-9')}, already solved for ${T('y')}. Press <b>Next</b>.`,
   make(stage, v, ex) {
     const { G, L, K, P } = rig(stage, ex, STD), f = REL.run.f;
@@ -351,7 +357,7 @@ const table = {
           run: async (c) => { for (let i = 0; i < 6; i++) { const d = add(stage, h('div', 'u5l5-diff', '+0.75'), 540, rowY(i + 1) - 13); diffs.push(d); await pop(c, d, 200); } } },
         { cap: `${kk('▼')} scrolls down: the next row is x = 4, y = −6.`,
           run: async (c) => { await K.set(c, ['▼', '▼', '▼', '▼', '▼', '▼', '▼']); diffs.forEach((d) => d.remove()); L.html(tableHTML(rowsFrom(-2), { bottom: 'X=4', hl: 6 }), 'u5l5-tbl'); } },
-        { cap: `Check that row: ${T('y=0.75(4)-9=3-9=-6')} ✓`,
+        { cap: `Check that row: ${TW('y=0.75(4)-9=3-9=-6')} ✓`,
           run: async (c) => { await line(c, P, T('y=0.75(4)-9')); await line(c, P, T('=3-9')); await line(c, P, T('=-6') + ' ✓', 'u5l5-big'); } }
       ];
     }
@@ -366,7 +372,7 @@ const table = {
           let s = ''; await typeKeys(c, K, ['5', '0', '0'], (k2) => { s += k2; L.html(tableHTML([], { bottom: 'X=' + s }), 'u5l5-tbl'); });
           await K.set(c, ['ENTER'], true); L.html(tableHTML([[500, f(500)]], { bottom: 'Y1=366', hl: 0 }), 'u5l5-tbl');
         } },
-      { cap: `Check: ${T('y=0.75(500)-9=375-9=366')} ✓`,
+      { cap: `Check: ${TW('y=0.75(500)-9=375-9=366')} ✓`,
         run: async (c) => { await line(c, P, T('y=0.75(500)-9')); await line(c, P, T('=375-9')); await line(c, P, T('=366') + ' ✓', 'u5l5-big'); } },
       { cap: `Type more inputs, in any order: ${T('x=-200')} gives ${T('y=-159')}.`,
         run: async (c) => { let s = ''; await typeKeys(c, K, ['(−)', '2', '0', '0', 'ENTER'], (k2) => { if (k2 !== 'ENTER') { s += k2 === '(−)' ? '−' : k2; L.html(tableHTML([[500, f(500)]], { bottom: 'X=' + s }), 'u5l5-tbl'); } }); L.html(tableHTML([[500, f(500)], [-200, f(-200)]], { bottom: 'Y1=-159', hl: 1 }), 'u5l5-tbl'); } }
@@ -401,6 +407,7 @@ function gtSteps(stage, ex, f, rowsFrom) {
 const traceEx = {
   title: 'TRACE: type the x, read the y',
   height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'run', label: T('y=0.75x-9,\\ x=4') }, { v: 'ex1', label: 'Example 1 check: ' + T('x=4.2') }],
   intro: (k) => (k === 'run' ? `Find ${T('y')} when ${T('x=4')} for ${T('y=0.75x-9')}.` : `Example 1(b): ${T('y')} when ${T('x=4.2')} for ${T('y=4x-30')}.`) + ' Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -419,7 +426,7 @@ const traceEx = {
         run: async (c) => { let s = ''; await typeKeys(c, K, String(x0).split(''), (ch) => { s += ch; H.bot('', null, `<i>X=${s}</i>`); }); } },
       { cap: `${kk('ENTER')}: the cursor jumps to x = ${x0}. Read the output: <b>Y = ${M(ys)}</b>.`,
         run: async (c) => { await K.set(c, ['ENTER']); H.bot(null); await tr.glide(c, x0, 700); tr.show(); await pulse(c, H.el, 1.12); } },
-      { cap: `Check algebraically: ${T(sub.join(''))} ✓`,
+      { cap: `Check algebraically: ${TW(sub.join(''))} ✓`,
         run: async (c) => { for (const s of sub) await line(c, P, T(s), s === sub[2] ? 'u5l5-big' : ''); await stampIn(c, stamp(P, '✓ Matches', { ok: true, cls: 'u5l5-pstamp' })); } }
     ];
   }
@@ -431,6 +438,7 @@ const traceEx = {
 const intersectEx = {
   title: '5:intersect: set Y2 to the output, find the input',
   height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'run', label: T('y=0.75x-9,\\ y=-3') }, { v: 'ex1', label: 'Example 1 check: ' + T('y=-5.4') }],
   intro: (k) => (k === 'run' ? `Find ${T('x')} when ${T('y=-3')} for ${T('y=0.75x-9')}.` : `Example 1(d): ${T('x')} when ${T('y=-5.4')} for ${T('y=4x-30')}.`) + ' Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -454,7 +462,7 @@ const intersectEx = {
         run: async (c) => { await K.set(c, ['▶', '▶', '▶', 'ENTER']); tr.title = 'Guess?'; await tr.glide(c, xg, 1000); } },
       { cap: `<b>Intersection</b> X = ${M(calcNum(it.x))}, Y = ${y2}. So ${T('x=' + texNum(it.x))} when ${T('y=' + yT)}.`,
         run: async (c) => { tr.remove(); await G.reveal(G.point(it.x, it.y, { color: 'ink', r: 7, label: T(`(${texNum(it.x)},\\ ${yT})`), pos: 'se' }), c); H.bot('Intersection', it); await pulse(c, H.el, 1.12); } },
-      { cap: `Check algebraically: ${T(alg.join('\\ \\Rightarrow\\ '))} ✓`,
+      { cap: `Check algebraically: ${TW(alg.join('\\ \\Rightarrow\\ '))} ✓`,
         run: async (c) => { for (const s of alg) await line(c, P, T(s), s === alg[2] ? 'u5l5-big' : ''); await stampIn(c, stamp(P, '✓ Matches', { ok: true, cls: 'u5l5-pstamp' })); } }
     ];
   }
@@ -482,7 +490,7 @@ const inside = {
         run: async (c) => { await K.set(c, ['ENTER', 'WINDOW', 'GRAPH']); L.show(winLines(WIDE)); await sleep(c, 500); L.hide(); tr.remove(); H.eq(null); H.bot(null); await G.setWindow(WIDE, c, 1200); } },
       { cap: `${kk('TRACE')} ${kk('1', '5')} ${kk('ENTER')} works now: <b>Y = 2.25</b>.`,
         run: async (c) => { await K.set(c, ['TRACE', '1', '5', 'ENTER']); H.eq('Y1=0.75X-9'); tr = cursor(G, H, f, G.mid, ''); await tr.glide(c, 15, 800); await pulse(c, H.el, 1.12); } },
-      { cap: `Check: ${T('y=0.75(15)-9=11.25-9=2.25')} ✓`,
+      { cap: `Check: ${TW('y=0.75(15)-9=11.25-9=2.25')} ✓`,
         run: async (c) => { await line(c, P, T('y=0.75(15)-9')); await line(c, P, T('=11.25-9=2.25') + ' ✓', 'u5l5-big'); } }
     ];
     if (k === 'val') return [
@@ -491,7 +499,7 @@ const inside = {
       { cap: `${kk('ENTER')}: <b>ERR:INVALID</b>. And a window wide enough to reach 500 would squash the whole graph.`, run: async (c) => { await K.set(c, ['ENTER']); H.bot(null); H.eq(null); await err(c); } },
       { cap: `Better: the <b>table in Ask mode</b>. ${kk('2nd', 'GRAPH')}, type ${kk('5', '0', '0')} ${kk('ENTER')}: <b>y = 366</b>.`,
         run: async (c) => { await K.set(c, ['2nd', 'GRAPH', '5', '0', '0', 'ENTER']); L.html(tableHTML([[500, f(500)]], { bottom: 'Y1=366', hl: 0 }), 'u5l5-tbl'); await line(c, P, 'The table works for <b>any</b> input.'); } },
-      { cap: `Check: ${T('y=0.75(500)-9=375-9=366')} ✓`, run: async (c) => { await line(c, P, T('0.75(500)-9=366') + ' ✓', 'u5l5-big'); } }
+      { cap: `Check: ${TW('y=0.75(500)-9=375-9=366')} ✓`, run: async (c) => { await line(c, P, T('0.75(500)-9=366') + ' ✓', 'u5l5-big'); } }
     ];
     const g = () => 3, it = intersect(f, g, 10); let off;
     return [
@@ -506,7 +514,7 @@ const inside = {
         run: async (c) => { await K.set(c, ['WINDOW', 'GRAPH']); tr.remove(); if (off) off.remove(); H.eq(null); H.bot(null); await G.setWindow(WIDE, c, 1200); } },
       { cap: `<b>5:intersect</b> (First curve?, Second curve?, Guess?) finds <b>(16, 3)</b>: ${T('x=16')} when ${T('y=3')}.`,
         run: async (c) => { await K.set(c, ['2nd', 'TRACE', '5', 'ENTER', 'ENTER', 'ENTER']); await G.reveal(G.point(it.x, it.y, { color: 'ink', r: 7, label: T('(16,\\ 3)'), pos: 'nw' }), c); H.bot('Intersection', it); } },
-      { cap: `Check: ${T('3=0.75x-9\\ \\Rightarrow\\ 12=0.75x\\ \\Rightarrow\\ x=16')} ✓`,
+      { cap: `Check: ${TW('3=0.75x-9\\ \\Rightarrow\\ 12=0.75x\\ \\Rightarrow\\ x=16')} ✓`,
         run: async (c) => { await line(c, P, T('3=0.75x-9')); await line(c, P, T('12=0.75x')); await line(c, P, T('x=16') + ' ✓', 'u5l5-big'); } }
     ];
   }
@@ -523,6 +531,7 @@ const ZERO = {
 const zeroEx = {
   title: '2:zero finds the x-intercepts',
   height: 450,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'run', label: T('y=0.75x-9') }, { v: 'ex2a', label: 'Example 2(a) check' }, { v: 'ex2b', label: 'Example 2(b) check' }],
   intro: (k) => `Find the x-intercept${k === 'ex2b' ? 's' : ''} of ${T(ZERO[k].R.t)}. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -557,7 +566,7 @@ const zeroEx = {
       steps.push({ cap: `<b>Zero</b> X = ${M(calcNum(z))}, Y = 0: the x-intercept ${T(`(${texNum(z)},\\ 0)`)}.`,
         run: async (c) => { tr.remove(); await G.reveal(G.point(z, 0, { color: 'ink', r: 7, label: T(`(${texNum(z)},\\ 0)`), pos: z < G.mid ? 'nw' : 'ne' }), c); H.bot('Zero', { x: z, y: 0 }); await pulse(c, H.el, 1.12); } });
     });
-    steps.push({ cap: `Check algebraically: set ${T('y=0')}. ${T(Z.alg.join('\\ \\Rightarrow\\ '))} ✓`,
+    steps.push({ cap: `Check algebraically: set ${T('y=0')}. ${TW(Z.alg.join('\\ \\Rightarrow\\ '))} ✓`,
       run: async (c) => { for (const s of Z.alg) await line(c, P, T(s), s === Z.alg[Z.alg.length - 1] ? 'u5l5-big' : ''); } });
     steps.push({ cap: `Or: set <b>Y2 = 0</b> (that is the x-axis) and use <b>5:intersect</b>. It lands on the same point${zs.length > 1 ? 's' : ''}.`,
       run: async (c) => { bl.forEach((b) => b.remove()); H.bot(null); H.eq('Y2=0'); await G.drawIn(G.fn(() => 0, { color: 'red', width: 4 }), 800, c); await stampIn(c, stamp(P, '✓ Same answer', { ok: true, cls: 'u5l5-pstamp' })); } });
@@ -572,6 +581,7 @@ const YI = { run: REL.run, ex2a: REL.ex2a, ex2b: REL.ex2b };
 const yintEx = {
   title: 'The y-intercept: the output when x = 0',
   height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'run', label: T('y=0.75x-9') }, { v: 'ex2a', label: 'Example 2(a) check' }, { v: 'ex2b', label: 'Example 2(b) check' }],
   intro: (k) => `Three ways to read the y-intercept of ${T(YI[k].t)}. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -591,7 +601,7 @@ const yintEx = {
         } },
       { cap: `<b>Table:</b> TblStart = 0. The first row is x = 0, y = ${M(bs)}.`,
         run: async (c) => { await K.set(c, ['2nd', 'GRAPH']); L.html(tableHTML(Array.from({ length: 7 }, (_, i) => [i, R.f(i)]), { bottom: 'X=0', hl: 0 }), 'u5l5-tbl'); await fill(c, 2); } },
-      { cap: `Three ways, one answer: the y-intercept is ${T(`(0,\\ ${bs})`)}. Check: ${T(sub)} ✓`,
+      { cap: `Three ways, one answer: the y-intercept is ${T(`(0,\\ ${bs})`)}. Check: ${TW(sub)} ✓`,
         run: async (c) => { L.hide(); tr.remove(); H.bot(null); H.eq(null); await G.reveal(G.point(0, b, { color: 'ink', r: 7, label: T(`(0,\\ ${bs})`), pos: 'e' }), c); await line(c, P, T(sub) + ' ✓', 'u5l5-big'); } }
     ];
   }
@@ -607,6 +617,7 @@ const FR = {
 const fracEx = {
   title: 'Exact intercepts: ▸Frac on the home screen',
   height: 450,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex3', label: 'Example 3 check' }, { v: 'fr2', label: T('y=\\frac{2x+7}{6}') }],
   intro: (k) => `Exact intercepts of ${T(FR[k].R.t)}. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -642,6 +653,7 @@ const MX = {
 const maxminEx = {
   title: 'The vertex with 4:maximum or 3:minimum',
   height: 450,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex4', label: 'Example 4 check: maximum' }, { v: 'mn', label: '3:minimum ' + T('y=x^2-2x-3') }],
   intro: (k) => `Find the ${MX[k].max ? 'maximum' : 'minimum'} point of ${T(MX[k].R.t)}. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -674,7 +686,8 @@ const maxminEx = {
 function mountWarm() {
   const q = (s) => document.querySelector(s);
   const A = q('[data-wu="A"]'), B = q('[data-wu="B"]'), Cf = q('[data-wu="C"]'); if (!A || !B || !Cf) return;
-  const sq = (x) => x * x, p2 = (x) => 2 ** x, size = { width: 290, height: 196 };
+  const cw = parseFloat(getComputedStyle(A).getPropertyValue('--calc-w')) || 290; // CSS can shrink the screens (one-screen pages)
+  const sq = (x) => x * x, p2 = (x) => 2 ** x, size = { width: cw, height: Math.round(cw * 196 / 290) };
   new Calc(A, { ...size, ...STD }).fn(sq);
   new Calc(B, { ...size, xmin: 0.95, xmax: 1.05, ymin: 0.88, ymax: 1.12 }).fn(sq);
   const C = new Calc(Cf, { ...size, ...STD });

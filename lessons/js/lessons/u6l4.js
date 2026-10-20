@@ -156,7 +156,7 @@ const words = (v, pos, neg) => `${Math.abs(v)} ${v >= 0 ? pos : neg}`;
 const liftOff = {
   title: 'Rise and run, lifted off the grid',
   height: 480,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 880, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(LIFT).map((k) => ({ v: k, label: LIFT[k].label })),
   intro: 'Count the rise and the run on the grid first, then find the same numbers straight from the coordinates. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -200,7 +200,7 @@ const liftOff = {
       { cap: `No grid needed: subtract the coordinates, <b>y on top, x underneath, same order</b>. ${T(`m_{${an}${bn}}=${s.val}`)}.`,
         run: async (c) => {
           await c.anim(G.layers.grid, [{ opacity: 1 }, { opacity: 0.15 }], 700);
-          fBox = line(P, `${T(`m_{${an}${bn}}=\\dfrac{y_${bn}-y_${an}}{x_${bn}-x_${an}}`)}<br>${T(`\\phantom{m_{${an}${bn}}}=${s.all}`)}`, 'u6l4-big');
+          fBox = line(P, `${T(`m_{${an}${bn}}=\\dfrac{y_${bn}-y_${an}}{x_${bn}-x_${an}}`)}<div class="u6l4-l2">${T(`\\phantom{m_{${an}${bn}}}=${s.all}`)}</div>`, 'u6l4-big');
           await show(c, fBox);
         } },
       { cap: `That is the <b>slope formula</b>: rise and run lifted off the grid. It works for any two points, even far apart or with negative coordinates.`,
@@ -277,7 +277,7 @@ const COL = {
 const collinear = {
   title: 'Collinear: equal slopes and a shared point',
   height: 480,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 880, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(COL).map((k) => ({ v: k, label: COL[k].label })),
   intro: 'Are these points on one straight line? Measure the slope between pairs of points. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -328,7 +328,7 @@ const MISS = {
 const missing = {
   title: 'A missing coordinate',
   height: 480,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(MISS).map((k) => ({ v: k, label: MISS[k].label })),
   intro: (k) => `The point ${T(`${MISS[k].C}(${MISS[k].cx},\\ ${MISS[k].v})`)} must lie on the segment. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -585,7 +585,7 @@ const prodTex = (a, b) => `${a}\\times${b.startsWith('-') ? `\\left(${b}\\right)
 const rightAngle = {
   title: 'Using slope to find a right angle',
   height: 480,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(RA).map((k) => ({ v: k, label: RA[k].label })),
   intro: (k) => (k === 'ex7' ? 'Is the angle at <b>D</b> a right angle? Test the two sides that meet there. Press <b>Next</b>.' : 'Is triangle <b>JKL</b> right-angled anywhere? Press <b>Next</b>.'),
   make(stage, k, ex) {

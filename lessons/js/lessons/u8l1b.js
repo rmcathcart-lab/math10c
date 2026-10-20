@@ -491,6 +491,7 @@ const RA = {
 const rearr = {
   title: 'Into y = mx + b: get y alone',
   height: 430,
+  minW: 900, // the step notes need ~570 px beside the graph
   choices: [{ v: 's1', label: RA.s1.label }, { v: 's2', label: RA.s2.label }, { v: 's3', label: RA.s3.label }, { sep: 'Example 1 (c)' }, { v: 'e1c', label: RA.e1c.label }],
   intro: (k) => `Goal: ${T('y')} alone on the left, everything else on the right. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -525,7 +526,7 @@ const classify = {
   value: 'a',
   intro: () => 'Rearrange both equations, then answer two questions. Press <b>Next</b>.',
   make(stage, k, ex) {
-    const d = CL[k], W = ex.W, FW = W - 470;
+    const d = CL[k], W = ex.W, FW = W - 470, IX = Math.min(FW / 2 + 158, FW - 96), NX = Math.min(FW / 2 - 36, IX - 180); // bottom boxes fit the width given
     const P = panel(stage, 8, 6, 444, 458, '', 'u8l1b-clp');
     const blk = (rows, col) => { const b = h('div', 'u8l1b-cblk u8l1b-cb' + col); rows.forEach((r, i) => b.appendChild(h('div', 'u8l1b-cr' + (i === rows.length - 1 && rows.length > 1 ? ' u8l1b-cfin' : ''), T((col === 1 ? c1 : c2)(r))))); P.appendChild(b); return b; };
     const B1k = blk(d.e1, 1), B2k = blk(d.e2, 2);
@@ -537,13 +538,13 @@ const classify = {
       q1: { x: FW / 2, y: 132, w: 210, h: 52, html: '<b>Same slope?</b>', color: 'purple' },
       one: { x: 84, y: 250, w: 150, h: 84, html: '<b>One solution</b>lines cross once', color: 'green' },
       q2: { x: FW / 2 + 64, y: 250, w: 250, h: 52, html: `<b>Same ${T('y')}-intercept?</b>`, color: 'purple' },
-      none: { x: FW / 2 - 36, y: 392, w: 170, h: 84, html: '<b>No solution</b>parallel lines', color: 'red' },
-      inf: { x: FW / 2 + 158, y: 392, w: 180, h: 84, html: '<b>Infinitely many</b>the same line', color: 'teal' } },
+      none: { x: NX, y: 392, w: 170, h: 84, html: '<b>No solution</b>parallel lines', color: 'red' },
+      inf: { x: IX, y: 392, w: 180, h: 84, html: '<b>Infinitely many</b>the same line', color: 'teal' } },
     edges: [{ from: 'start', to: 'q1' },
       { from: 'q1', to: 'one', label: 'no', pts: [[FW / 2 - 108, 132], [84, 132], [84, 205]] },
       { from: 'q1', to: 'q2', label: 'yes', pts: [[FW / 2, 161], [FW / 2, 221]] },
-      { from: 'q2', to: 'none', label: 'no', pts: [[FW / 2 - 36, 279], [FW / 2 - 36, 347]] },
-      { from: 'q2', to: 'inf', label: 'yes', pts: [[FW / 2 + 158, 279], [FW / 2 + 158, 347]] }] });
+      { from: 'q2', to: 'none', label: 'no', pts: [[NX, 279], [NX, 347]] },
+      { from: 'q2', to: 'inf', label: 'yes', pts: [[IX, 279], [IX, 347]] }] });
     const sameM = d.m[0] === d.m[1], sameB = d.b[0] === d.b[1];
     const stp = verdict(P, d.kind);
     const steps = [

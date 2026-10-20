@@ -81,3 +81,19 @@
 .u9l6-mini > div { font-size: 14px; line-height: 1.25; text-align: center; border: 1.5px solid #c6cad3; border-radius: 8px; padding: 4px 2px; color: #5b6475; }
 .u9l6-mini > div.on { border-color: var(--u9l6-r); background: #fdeef3; color: var(--ink); font-weight: 700; }
 .u9l6-reasons ul { margin: 0; padding-left: 20px; columns: 2; column-gap: 26px; font-size: 17px; line-height: 1.35; }
+/* sidebar captions are only 268 px wide: let a long formula break after = or ≈ instead of running out of the box */
+.ex-panel .ex-cap .katex { white-space: normal; }
+
+/* ---------- one screen (main.lesson.screen): lighthouse scene (drawn at its 700 px minimum, scaled to the 618 px column), buttons, Q1 and Q2 left; Q3 and the big one right; the social prompt below ---------- */
+.wf .u9l6-wfig { --scene-h: 234px; height: 207px; }
+.wf .u9l6-wfig > .u9l6-scene { transform: scale(.883); transform-origin: 0 0; }
+.wf .u9l6-wbtns { margin: 8px 0 4px; gap: 8px; }
+.wf .u9l6-wbtns .pill { font-size: 15px; padding: 7px 14px; }
+.wf .u9l6-wqs { grid-template-columns: 1fr; gap: 10px; margin-top: 8px; }
+.wf .u9l6-wqs .bk-wq { padding: 2px 12px 6px; }
+.wf .u9l6-wqs .q-line { margin: 6px 0 2px; font-size: 17px; gap: 10px; }
+.wf .u9l6-wqs .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf .u9l6-wqs .bk-ans { font-size: 15.5px; line-height: 1.32; margin-left: 40px; }
+.wf-side .u9l6-wqs { margin-top: 0; }
+.wf .wf-poll .poll-opts { grid-template-columns: 1fr 1fr; gap: 6px; margin: 0 0 10px; }
+.wf .wf-poll .opt { padding: 5px 8px; white-space: nowrap; }

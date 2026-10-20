@@ -223,6 +223,7 @@ function pipeDef(keys, o = {}) {
   return {
     title: o.title || 'Four steps: words → let → table → equations → solve → check',
     height: 528,
+    minW: o.minW, // drawn this wide and scaled to fit beside the sidebar
     value: keys[0],
     choices: o.sep ? [{ sep: o.sep }, ...ch] : ch,
     intro: (k) => `${PIPE[k].label}: read the problem first. Press <b>Next</b> to send it through the four steps.`,

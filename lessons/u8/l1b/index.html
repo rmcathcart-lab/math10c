@@ -42,16 +42,17 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Head Start" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Head Start</h2></div>
-  <p class="big">Three races on a <b>200 m</b> track. Every runner keeps a <b>steady</b> pace.</p>
-  <div id="u8l1b-races" class="u8l1b-races"></div>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Head Start" id="wu" style="--wf-side: 364px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Head Start</h2>
   <div class="u8l1b-clockrow">
     <button type="button" class="pill" id="u8l1b-run">Run the races ▸</button>
     <button type="button" class="pill" id="u8l1b-step">+5 s</button>
     <button type="button" class="pill" id="u8l1b-reset">Back to the start</button>
     <span class="u8l1b-clock" id="u8l1b-clock"><span class="u8l1b-ck-k">time</span> <b id="u8l1b-clockv">0 s</b></span>
   </div>
+  <p class="wf-rule">Three races on a <b>200 m</b> track. Every runner keeps a <b>steady</b> pace.</p></div>
+  <div id="u8l1b-races" class="u8l1b-races"></div>
+  <div class="wf-grid"><div class="wf-main">
 
   <div class="u8l1b-wqs">
     <div class="bk-wq">
@@ -68,7 +69,9 @@
     </div>
   </div>
 
-  <div class="poll">
+  </div><div class="wf-side">
+
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> How often are the two runners <b>side by side</b>? <b>Guess first.</b></div></div>
     <div class="u8l1b-pollhead"><span></span><b>Race 1</b><b>Race 2</b><b>Race 3</b></div>
     <div class="poll-opts u8l1b-popts">
@@ -81,6 +84,7 @@
     <div class="poll-ans"><b>C.</b> Race 1: Max catches Rosa once, when <span class="tex">30+4t=6t</span>, at <span class="tex">t=15</span> s, 90 m from the start. Race 2: never. Race 3: Jo and Kai run step for step the whole race; they are side by side at <b>every</b> moment.<br>
       <span class="muted"><b>B</b> is the popular trap: Jo’s coach’s formula <i>looks</i> different, so it seems they meet once. Simplify it first. <b>A</b> assumes any two runners must pass each other eventually; not if their speeds are equal.</span></div>
   </div>
+  </div></div>
 
   <div class="bk-wq u8l1b-early">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> How fast must Max run to catch Rosa <b>exactly at the 200 m finish</b>?</div></div>

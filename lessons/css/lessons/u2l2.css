@@ -195,3 +195,32 @@
 .vx-flip { display: inline-block; outline: 2.5px solid var(--red); outline-offset: 1px; border-radius: 6px; background: #fff1ef; }
 .vx-check { font-size: 18px; background: #f2faf6; border: 1.5px solid #b9dcc8; border-radius: 12px; padding: 6px 16px; }
 .part.think.span2 { margin-bottom: 0; }
+
+/* ---------- one screen (main.lesson.screen): the copier + the big one left; Q1–Q3 right; the challenge below ---------- */
+.wf .pc-box { --pc-s: 30; --pc-x0: 30; --pc-gap: 42; --pc-base: 278; height: 328px; margin: 6px 0 0; }
+.wf .pc-mach { left: 14px; top: 10px; width: 80px; height: 92px; }
+.wf .pc-ctl { left: 14px; top: 112px; gap: 6px; }
+.wf .pc-ctl .pill { font-size: 15px; padding: 6px 14px; }
+.wf .pc-ctl .exb { height: 36px; min-width: 36px; }
+.wf .pc-read { left: 104px; top: 10px; max-width: 236px; font-size: 15.5px; line-height: 1.4; padding: 3px 10px; min-height: 0; }
+.wf .pc-lab { font-size: 14.5px; }
+.wf .pc-badge { font-size: 13.5px; top: -27px; padding: 1px 8px; }
+.wf .pc-arrow { font-size: 22px; }
+.wf .pc-arrow span { font-size: 12px; }
+.wf .pc-ph { font-size: 24px; }
+.wf .wu-grid { grid-template-columns: 1fr; gap: 8px; }
+.wf .wq { padding: 4px 12px 6px; }
+.wf .wq .q-line { margin: 4px 0 4px; font-size: 17px; gap: 10px; }
+.wf .wq .q-num { width: 28px; height: 28px; font-size: 15px; }
+.wf .wq-a { margin-left: 0; gap: 4px; }
+.wf .wf-side .q-ans { font-size: 15.5px; line-height: 1.32; min-height: 0; }
+.wf .wf-poll { margin-top: 10px; display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; align-items: center; padding-bottom: 12px; }
+.wf .wf-poll > .q-line, .wf .wf-poll > .poll-ans { grid-column: 1 / -1; }
+.wf .wf-poll .q-line { margin: 10px 0 8px; }
+.wf .wf-poll .poll-opts.c4 { grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 0; }
+.wf .wf-poll .opt { padding: 5px 10px; font-size: 18px; }
+.wf .wf-poll > .pill { margin: 0; }
+.wf .wf-poll:not(.revealed) .poll-ans { display: none; }
+.wf .wq-wide { margin-top: 12px; }
+.wf .wq-wide .wq-a { margin-left: 38px; }
+.wf .wq-wide .q-ans { font-size: 16.5px; }

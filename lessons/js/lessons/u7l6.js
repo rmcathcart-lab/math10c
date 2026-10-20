@@ -325,7 +325,7 @@ const SY = {
 const sync = {
   title: 'A story and its graph, in sync',
   height: 470,
-  minW: 900, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SY).map((k) => ({ v: k, label: SY[k].label })),
   intro: (k) => `Time runs along the horizontal axis; the ${SY[k].qty} is shown beside the vertical axis, on the same scale. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -476,7 +476,7 @@ const RT = {
 const routes = {
   title: 'Two roads to the same equation',
   height: 414,
-  minW: 900, // drawn this wide and scaled to fit beside the sidebar
+  minW: 960, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(RT).map((k) => ({ v: k, label: RT[k].label })),
   intro: 'Same slope, same point, two methods. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -759,6 +759,7 @@ const MC = {
 const machine = {
   title: 'The equation as a machine: forwards and backwards',
   height: 440,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar (the end ovals sit at fractions of the width)
   choices: Object.keys(MC).map((k) => ({ v: k, label: MC[k].label })),
   intro: (k) => `${T(MC[k].eq)}: multiply, then add. Backwards, undo the last step first. Press <b>Next</b>.`,
   make(stage, k, ex) {

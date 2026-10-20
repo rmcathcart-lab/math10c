@@ -62,6 +62,7 @@ const anLabel = (v) => { const s = AN[v]; return tex(s.pre ? '\\tfrac{3y^{9}}{7}
 const anatomy = {
   title: 'Anatomy of a power',
   height: 400,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar (t^12 and (-w)^7 need the room)
   choices: [{ v: '6^4', label: anLabel('6^4') }, { v: 'p^5', label: anLabel('p^5') }, { v: '9m^4', label: anLabel('9m^4') },
     { sep: 'Example 1 check:' }, ...['9^4', 't^12', '5^y', '(-w)^7', '(2/5)^8', '6x^5', '-4z^3', '3y^9/7'].map((v) => ({ v, label: anLabel(v) }))],
   intro: (v) => `Every power has the same parts. Let’s name each part of ${anLabel(v)}.`,
@@ -336,7 +337,7 @@ const zero = {
   custom: [2, 20],
   intro: (b) => `Start at ${tex(`${b}^{4}`)} and lower the exponent one step at a time. What happens to the value each time?`,
   make(stage, b, ex) {
-    const W = ex.W, top = 4, rowH = 62, y0 = 16, fs = b >= 10 ? 26 : 30;
+    const W = ex.W, top = 4, rowH = 62, y0 = 16, fs = b >= 10 ? (W < 900 ? 22 : 26) : 30; // two-digit bases: smaller factors on a narrow stage
     const vRight = W - 250, rows = [];
     for (let e = top; e >= 0; e--) {
       const i = top - e, y = y0 + i * rowH;
@@ -565,11 +566,12 @@ const which = {
     const cards = LAWCARDS.map(([n, f], i) => { const e = add(stage, h('div', 'wl-card', `<div class="wl-n">${n}</div><div class="wl-f">${K(f)}</div>`), cx0, 14 + i * 79); e.style.width = CW + 'px'; return e; });
     const e0 = add(stage, h('div', 'wl-expr', K(s.ex)), 36, tall ? 14 : 26);
     const clue = add(stage, h('div', 'p1-tag amber wl-clue', s.clue), 0, 0); clue.style.translate = '0 -50%'; hide(clue);
-    const fl = s.lines.some((l) => /dfrac/.test(l[0])), lh = fl ? 96 : 70, ly = tall ? 150 : 120;
+    const under = 36 + e0.offsetWidth + 26 + clue.offsetWidth > cx0 - 8; // no room beside the expression (sidebar width): the clue goes under it
+    const fl = s.lines.some((l) => /dfrac/.test(l[0])), lh = fl ? 96 : 70, ly = (tall ? 150 : 120) + (under ? 34 : 0);
     const rows = s.lines.map(([src], i) => { const e = add(stage, h('div', 'wl-line' + (fl ? ' tall' : ''), K(src)), 36, ly + i * lh); hide(e); return e; });
     return [{
       cap: s.cap,
-      run: (c) => { const r = rel(stage, e0); at(clue, r.x + r.w + 26, r.y + r.h / 2); cards.forEach((e, i) => e.classList.toggle(i === s.law ? 'on' : 'off', true)); return Promise.all([c.fadeIn(clue, 350), c.anim(cards[s.law], [{ transform: 'scale(1)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], 450)]); }
+      run: (c) => { const r = rel(stage, e0); if (under) at(clue, r.x, r.y + r.h + 18); else at(clue, r.x + r.w + 26, r.y + r.h / 2); cards.forEach((e, i) => e.classList.toggle(i === s.law ? 'on' : 'off', true)); return Promise.all([c.fadeIn(clue, 350), c.anim(cards[s.law], [{ transform: 'scale(1)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], 450)]); }
     }].concat(s.lines.map(([, cap], i) => ({ cap, run: (c) => c.fadeIn(rows[i], 400, { from: 'translateX(-12px)' }) })));
   }
 };

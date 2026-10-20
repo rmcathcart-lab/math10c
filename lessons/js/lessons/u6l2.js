@@ -126,7 +126,8 @@ function router(G, x, y) {
 const circlePath = (G, r) => G.curve(() => ({ subs: [Array.from({ length: 121 }, (_, i) => G.toPx(r * Math.cos(i * Math.PI / 60), r * Math.sin(i * Math.PI / 60)))], closed: true }), { color: TEAL, width: 3, dash: '10 7', fill: TEAL, fillOpacity: 0.07 }, 'u6l2-edge', G.layers.data);
 function mountWifi() {
   const host = document.getElementById('u6l2-wifi'); if (!host) return;
-  const G = sqGraph(host, { xmin: -8, xmax: 8, ymin: -6, ymax: 6 }, 560, 440, { g: { xlabels: 2, ylabels: 2 } });
+  const w = Math.min(560, host.clientWidth || 560); // the one-screen layout gives it a narrower column
+  const G = sqGraph(host, { xmin: -8, xmax: 8, ymin: -6, ymax: 6 }, w, w * 440 / 560, { g: { xlabels: 2, ylabels: 2 } });
   const [x0, y0] = G.toPx(-8, 6), [x1, y1] = G.toPx(8, -6);
   svgEl('rect', { x: x0, y: y0, width: x1 - x0, height: y1 - y0, fill: '#eef7e6' }, G.layers.bg);
   HOUSES.forEach((d) => { house(G, d.p[0], d.p[1], d.col); G.label(d.p[0], d.p[1], `<b>${d.n}</b>`, { pos: d.pos, cls: 'u6l2-hlab', gap: 17, dy: -12 }); });
@@ -215,7 +216,7 @@ const HID = {
 const hidden = {
   title: 'Every segment hides a right triangle',
   height: 470,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(HID).map((k) => ({ v: k, label: HID[k].label })),
   intro: 'A slanted segment can’t be measured by counting along it. Watch the right triangle grow out of it. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -273,7 +274,7 @@ const LIFT = {
 const lift = {
   title: 'The distance formula: lift the triangle into symbols',
   height: 470,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(LIFT).map((k) => ({ v: k, label: LIFT[k].label })),
   intro: (k) => (LIFT[k].sym ? 'The same right triangle, but for <b>any</b> two points. Press <b>Next</b>.' : 'Check the example: the triangle, then the formula. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -352,7 +353,8 @@ const order = {
   intro: 'Subtract one way, then the other way. Watch the signs, then watch them disappear. Press <b>Next</b>.',
   make(stage, k, ex) {
     const d = ORD[k], A = d.A, B = d.B, C = corner(A, B), H = ex.def.height;
-    const G = sqGraph(stage, d.win, 470, H - 20, { x: 10, y: 10, center: true });
+    // the graph gives up width below 966 so the table keeps its full-width room
+    const G = sqGraph(stage, d.win, Math.min(470, ex.W - 496), H - 20, { x: 10, y: 10, center: true });
     const P = panel(stage, G.W + 30, 14, ex.W - G.W - 44, H - 28, '');
     const tb = h('div', 'u6l2-otab'); P.appendChild(tb);
     const cell = (html, cls = '') => { const e = h('div', 'u6l2-oc ' + cls, html); tb.appendChild(e); return e; };
@@ -405,7 +407,7 @@ function tower(G, x, y) {
 const map = {
   title: 'Example 2 check: the two cell towers',
   height: 480,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   intro: 'A coordinate grid over a city map: 1 unit = 1 km. Press <b>Next</b>.',
   make(stage, k, ex) {
     const H = ex.def.height, A = [-52, 134], B = [89, 61], C = corner(A, B);
@@ -511,6 +513,7 @@ const COL = {
 const collinear = {
   title: 'Straight through, or a detour?',
   height: 470,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(COL).map((k) => ({ v: k, label: COL[k].label })),
   intro: 'Compare the trip through the middle point with the straight trip. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -554,7 +557,7 @@ const CNT = {
 const count = {
   title: 'Count from both ends',
   height: 470,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CNT).map((k) => ({ v: k, label: CNT[k].label })),
   intro: 'Two walkers start at the ends and step toward each other, one square at a time. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -617,7 +620,7 @@ const WALK = {
 const walker = {
   title: 'Half the run, half the rise',
   height: 480,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  minW: 880, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(WALK).map((k) => ({ v: k, label: WALK[k].label })),
   intro: 'A hiker walks the triangle instead of the slant: across, then up. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -667,6 +670,7 @@ const AVG = {
 const average = {
   title: 'The midpoint formula: average the x’s, average the y’s',
   height: 480,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(AVG).map((k) => ({ v: k, label: AVG[k].label })),
   intro: 'Split the two points into their x-values and their y-values, and find the middle of each. Press <b>Next</b>.',
   make(stage, k, ex) {

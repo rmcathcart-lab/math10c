@@ -206,3 +206,21 @@
 
 /* Example 1: line the Answer buttons up across a row */
 [data-ink=ex1] .ans { min-height: 134px; }
+
+/* ---------- one screen (main.lesson.screen): the garden + Q1 on the left, Q2, Q3 and the big one on the right ---------- */
+.wf .u3l2-gd { padding: 6px 10px 8px; }
+.wf .u3l2-gsvg { max-width: 520px; margin: 0 auto; }
+.wf .u3l2-gctl { margin-top: 0; }
+.wf .u3l2-gread { font-size: 16.5px; min-height: 2.7em; margin-top: 4px; line-height: 1.35; }
+.wf .wq { padding: 6px 12px 8px; }
+.wf .wf-main .wq { margin-top: 10px; }
+.wf .wf-side .wq + .wq { margin-top: 10px; }
+.wf .wq .q-line { margin: 2px 0 4px; font-size: 17px; gap: 10px; }
+.wf .wq-a { flex-direction: row; align-items: flex-start; gap: 10px; margin-left: 40px; }
+.wf .q-ans { min-height: 2.6em; font-size: 15.5px; line-height: 1.3; }
+.wf .wf-main .q-ans { min-height: 1.3em; }
+.wf .wf-poll .poll-opts { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.wf .wf-poll .poll-opts .opt { font-size: 18px; padding: 6px 4px; }
+.wf .wf-poll .poll-ans { min-height: 0; }
+.wf .wf-poll:not(.revealed) .poll-ans { display: none; }
+.wf .wq-wide { margin-top: 14px; }

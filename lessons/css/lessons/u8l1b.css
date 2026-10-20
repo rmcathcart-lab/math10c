@@ -197,3 +197,42 @@ h2 .katex, h3 .katex { font-size: .95em; }
 /* disguise */
 .u8l1b-dtab .bk-th, .u8l1b-dtab .bk-td { font-size: 19px; }
 .u8l1b-dhead { font-size: 22px; margin-bottom: 4px; }
+
+/* ---------- one screen (main.lesson.screen): races + controls across the top; Q1–Q3 left and the big one right below; early finishers below ---------- */
+.wf .u8l1b-races { gap: 5px; margin: 0 0 4px; }
+.wf .u8l1b-scale, .wf .u8l1b-race { grid-template-columns: 62px 1fr 330px; gap: 10px; }
+.wf .u8l1b-scl { height: 18px; margin: 0 18px; }
+.wf .u8l1b-scl i { font-size: 14px; }
+.wf .u8l1b-rn { font-size: 17px; }
+.wf .u8l1b-track { height: 60px; padding: 0 18px; }
+.wf .u8l1b-start { left: 18px; }
+.wf .u8l1b-fin { right: 18px; width: 14px; margin-right: -7px; background: repeating-linear-gradient(#fff 0 6px, #1c2230 6px 12px); }
+.wf .u8l1b-tok { width: 28px; height: 28px; font-size: 15px; line-height: 23px; border-width: 2px; }
+.wf .u8l1b-tok.u8l1b-myst { font-size: 18px; }
+.wf .u8l1b-rule { font-size: 14.5px; line-height: 1.28; padding: 3px 8px; }
+.wf .u8l1b-pos { font-size: 14px; min-height: 18px; margin-top: 0; white-space: nowrap; }
+.wf .u8l1b-meet { font-size: 13px; }
+.wf .u8l1b-clockrow { margin: 2px 0 4px; gap: 8px; }
+.wf .u8l1b-clockrow .pill { padding-top: 5px; padding-bottom: 5px; }
+.wf .u8l1b-clock { font-size: 18px; padding: 1px 10px; min-width: 100px; }
+.wf .u8l1b-wqs .q-line { margin: 4px 0 2px; font-size: 17px; gap: 10px; }
+.wf .u8l1b-wa { display: flex; align-items: baseline; gap: 10px; margin: 0 0 2px 40px; }
+.wf .u8l1b-wa .pill.small { flex: none; }
+.wf .bk-wq .bk-ans { font-size: 15.5px; line-height: 1.3; margin-top: 0; }
+.wf .wf-poll { margin-top: 0; }
+.wf .wf-poll .q-line { margin: 8px 0 4px; }
+.wf .u8l1b-pollhead { margin: 2px 0 2px; font-size: 15px; max-width: none; grid-template-columns: 34px repeat(3, 1fr); padding: 0 10px; }
+.wf .u8l1b-popts { max-width: none; gap: 4px; margin-bottom: 8px; }
+.wf .u8l1b-popts .opt { padding: 3px 10px; font-size: 16px; }
+.wf .u8l1b-popts .opt > b { width: 34px; }
+.wf .u8l1b-o3 { grid-template-columns: 1fr 1fr 1.3fr; }
+.wf .u8l1b-pollhead { grid-template-columns: 34px 1fr 1fr 1.3fr; }
+.wf .wf-poll:not(.revealed) .poll-ans { display: none; }
+.wf .u8l1b-early { margin-top: 14px; }
+.wf .wf-head { grid-template-columns: auto 1fr auto; }
+.wf .wf-head .u8l1b-clockrow { grid-column: 3; grid-row: 1; margin: 0; }
+.wf .u8l1b-o3, .wf .u8l1b-pollhead { grid-template-columns: 1fr 1fr 1.7fr; }
+.wf .u8l1b-pollhead { grid-template-columns: 34px 1fr 1fr 1.7fr; }
+.wf .u8l1b-rule { line-height: 1.22; }
+.wf .u8l1b-clock { width: 118px; min-width: 0; box-sizing: border-box; white-space: nowrap; }
+.wf .u8l1b-meet { bottom: 50%; translate: 22px 50%; z-index: 3; background: #7b4fc4; color: #fff; border-radius: 8px; padding: 1px 7px; font-size: 13.5px; }

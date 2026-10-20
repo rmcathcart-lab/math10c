@@ -43,9 +43,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: The Bouncing Ball">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Bouncing Ball</h2></div>
-  <p class="big">A super ball drops from <b>16 m</b>. Each bounce reaches <b>half</b> the height of the last one. <span class="muted">Tap a <b class="red">?</b> to reveal it.</span></p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Bouncing Ball" style="--wf-side: 340px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Bouncing Ball</h2>
+  <p class="wf-rule">A super ball drops from <b>16 m</b>. Each bounce reaches <b>half</b> the height of the last one. <span class="muted">Tap a <b class="red">?</b> to reveal it.</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
   <div class="bb-scene" id="bb-scene"><button class="pill bb-drop" type="button">Drop the ball</button></div>
 
   <div class="wq-row">
@@ -57,13 +58,16 @@
       <div class="q-line"><div class="q-num">2</div><div>Bounce 4 reaches <b>1 m</b>. Continue the pattern: <span class="tex">2^3,\ 2^2,\ 2^1,\ 2^{\color{#c93a33}?}</span></div></div>
       <div class="wq-a"><button class="pill small" data-wq="4">Answer</button><div class="q-ans"><span class="tex">2^0</span>. The exponent drops by 1 every bounce (4, 3, 2, 1, <b>0</b>), and bounce 4 is 1 m, so <span class="tex">2^0=1</span>.</div></div>
     </div>
+  </div>
+
+  </div><div class="wf-side">
+  <div class="wq-row wq-side">
     <div class="wq">
       <div class="q-line"><div class="q-num">3</div><div>Bounce 5 reaches <span class="tex">\tfrac12</span> m. Write <span class="tex">\tfrac12</span> as a <b>power of 2</b>.</div></div>
       <div class="wq-a"><button class="pill small" data-wq="5">Answer</button><div class="q-ans"><span class="tex">\tfrac12=2^{-1}</span>. One more step down the pattern: exponent <span class="tex">0-1=-1</span>.</div></div>
     </div>
   </div>
-
-  <div class="poll">
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which bounce is the <b>first</b> one that rises less than <b>1 cm</b>? <b>Guess first.</b></div></div>
     <div class="poll-opts c4">
       <div class="opt"><b>A</b> bounce 7</div>
@@ -74,6 +78,7 @@
     <button class="pill" data-poll>Reveal</button>
     <div class="poll-ans"><b>B, bounce 11.</b> Bounce <span class="tex">n</span> reaches <span class="tex">2^{4-n}</span> m, so keep halving: bounce 10 is <span class="tex">2^{-6}=\tfrac{1}{64}</span> m ≈ 1.6 cm, and bounce 11 is <span class="tex">2^{-7}=\tfrac{1}{128}</span> m ≈ <b>0.8 cm</b>. <b>A</b>: <span class="tex">2^{-3}=\tfrac18</span> m is still 12.5 cm, a hand-width. <b>D</b>: halving never reaches zero, but it gets below 1 cm fast. A negative exponent means <b>small</b>, not negative: the ball never goes underground!</div>
   </div>
+  </div></div>
 
   <div class="halve-card">
     <div class="q-line"><div class="q-num ok-n">✓</div><div><b>Check it: keep halving.</b> <span class="muted">Tap a bounce to fill in its height.</span> <button class="pill small" id="halve-all">Fill all</button></div></div>

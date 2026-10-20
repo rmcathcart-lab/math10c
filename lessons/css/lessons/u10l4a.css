@@ -129,3 +129,21 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u10l4a-zlab { font: 800 22px var(--round); white-space: nowrap; }
 .u10l4a-zsub { font: 700 16px var(--round); color: var(--muted); white-space: nowrap; }
 .u10l4a-zeq { font-size: 22px; white-space: nowrap; }
+
+/* ---------- one screen (main.lesson.screen): one column; road a little smaller, Q1–Q3 beside the big one ---------- */
+.wf-one .u10l4a-road { margin: 4px 0 4px; }
+.wf-one .u10l4a-road svg { max-width: 740px; margin: 0 auto; }
+.wf-one .u10l4a-roadbtns { margin: 2px 0 0; }
+.wf-one .u10l4a-roadbtns .pill { padding: 6px 14px; font-size: 15px; }
+.wf-one .u10l4a-roadout { min-height: 74px; font-size: 17px; }
+.wf-one .u10l4a-roadout .u10l4a-fr, .wf-one .u10l4a-roadout .u10l4a-op, .wf-one .u10l4a-roadout .u10l4a-res { font-size: 24px; }
+.wf-one .u10l4a-wtop { gap: 20px; }
+.wf-one .u10l4a-wqs .q-line, .wf-one .u10l4a-early .q-line { font-size: 17px; margin: 4px 0; gap: 10px; }
+.wf-one .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf-one .u10l4a-wa { display: flex; align-items: baseline; gap: 10px; margin: 0 0 6px 40px; }
+.wf-one .u10l4a-wa .pill.small { flex: none; }
+.wf-one .bk-wq .bk-ans { font-size: 16px; line-height: 1.35; margin-top: 0; }
+.wf-one .u10l4a-poll { margin-top: 4px; }
+.wf-one .u10l4a-poll .poll-opts { margin-left: 0; gap: 6px; }
+.wf-one .u10l4a-poll .opt { padding: 5px 10px; font-size: 16.5px; }
+.wf-one .u10l4a-social { font-size: 18px; margin-top: 10px; }

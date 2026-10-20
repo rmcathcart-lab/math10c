@@ -43,9 +43,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Stopping Distance" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Stopping Distance</h2></div>
-  <p class="big">Two cars slam on the brakes at the same line. How far until they stop?</p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Stopping Distance" id="wu" style="--wf-side: 320px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Stopping Distance</h2>
+  <p class="wf-rule">Two cars slam on the brakes at the same line. How far until they stop?</p></div>
+  <div class="wf-grid"><div class="wf-main">
   <div class="u5l6-road">
     <svg viewBox="0 0 1000 262" aria-label="A two-lane road seen from above. Both cars brake at the same line. The blue car at 50 km/h skids 15 m. The orange car at 100 km/h stops after an unknown distance. A ruler from 0 to 70 m runs under the road.">
       <defs>
@@ -86,17 +87,18 @@
     </svg>
   </div>
   <div class="u5l6-model">Braking-distance model (dry road): <span class="tex">\boldsymbol{d=0.006\,v^{2}}</span> <span class="muted">&nbsp;<span class="tex">d</span> in metres, <span class="tex">v</span> in km/h</span></div>
-
-  <div class="u5l6-wgrid">
-    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Use the model: how far does the <b>50 km/h</b> car skid? Check the ruler.</div></div>
-      <button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">d=0.006(50)^2=0.006(2500)=15</span> m. Yes: the skid marks end at 15 m on the ruler.</div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>How far does a car skid from <b>30 km/h</b> (a school zone)?</div></div>
-      <button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">d=0.006(30)^2=0.006(900)=5.4</span> m.</div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Graphing <span class="tex">d=0.006v^2</span> on a graphing calculator, should <code class="u5l6-m">Xmin</code> be negative? Why?</div></div>
-      <button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>No.</b> A speed can’t be negative, so <code class="u5l6-m">Xmin=0</code>. A sensible window: <span class="tex">x{:}\,[0,\,120,\,10]</span>, <span class="tex">y{:}\,[0,\,100,\,10]</span>.</div></div>
+  <div class="u5l6-wqs">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Use the model: how far does the <b>50 km/h</b> car skid? Check the ruler. <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l6-wa"><div class="bk-ans"><span class="tex">d=0.006(50)^2=0.006(2500)=15</span> m. Yes: the skid marks end at 15 m on the ruler.</div></div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>How far does a car skid from <b>30 km/h</b> (a school zone)? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l6-wa"><div class="bk-ans"><span class="tex">d=0.006(30)^2=0.006(900)=5.4</span> m.</div></div></div>
   </div>
-
-  <div class="poll">
+  </div><div class="wf-side">
+  <div class="u5l6-wqs">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Graphing <span class="tex">d=0.006v^2</span> on a graphing calculator, should <code class="u5l6-m">Xmin</code> be negative? Why? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l6-wa"><div class="bk-ans"><b>No.</b> A speed can’t be negative, so <code class="u5l6-m">Xmin=0</code>. A sensible window: <span class="tex">x{:}\,[0,\,120,\,10]</span>, <span class="tex">y{:}\,[0,\,100,\,10]</span>.</div></div></div>
+  </div>
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> The orange car goes <b>twice as fast</b>. About how far does it skid before it stops? <b>Guess first.</b></div></div>
     <div class="poll-opts c4">
       <div class="opt"><b>A</b> about 30 m</div>
@@ -109,6 +111,7 @@
       <span class="muted"><b>A</b> (30 m) is the “double the speed, double the distance” trap: it treats the relation as a straight line. <b>B</b> is a “bit more than double” hedge. <b>D</b> overshoots, usually from “100 km/h means 100 m”.</span><br>
       <span class="muted">A simplified dry-road model: real braking distances depend on the car, tires and road, but they do grow roughly with the square of the speed. Total stopping distance also adds the reaction distance before the brakes go on.</span></div>
   </div>
+  </div></div>
 
   <div class="explainer" data-explainer="braking"></div>
 

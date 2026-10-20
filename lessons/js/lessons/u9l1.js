@@ -373,7 +373,7 @@ const fmtL = (v) => (Math.abs(v * 100 - Math.round(v * 100)) < 1e-6 ? String(+v.
 const grow = {
   title: 'Grow the triangle: the ratios stay put',
   height: 520,
-  minW: 900, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(GROW).map((k) => ({ v: k, label: GROW[k].label })),
   intro: 'One right triangle, three ratios of its sides. What happens to them when the triangle grows? Press <b>Next</b>.',
   make(stage, key, ex) {

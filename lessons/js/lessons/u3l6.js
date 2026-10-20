@@ -164,6 +164,7 @@ const zdim = (k) => (k === 2 ? [ZX, ZX] : k === 1 ? [ZU, ZX] : [ZU, ZU]);
 const zeroPairs = {
   title: 'Zero pairs: adding and subtracting with tiles',
   height: 400,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar (the sum box sits at the right edge)
   choices: [{ v: 'a1', label: T('(2x^2+3x-4)+(x^2-5x+1)') }, { v: 's1', label: T('(3x^2+2x-1)-(x^2-x+2)') }, { v: 's2', label: T('(x^2-4x+3)-(2x^2-x-2)') }],
   intro: (v) => { const d = ZP[v]; return `${T(`(${d.A})${d.op > 0 ? '+' : '-'}(${d.B})`)} with tiles. <b>Shaded</b> tiles are positive, <b>unshaded</b> tiles are negative.`; },
   make(stage, v, ex) {
@@ -250,7 +251,7 @@ const prodTex = (a, b) => (P(a).length === 1 ? `${a}(${b})` : `(${a})(${b})`);
 const tileMul = {
   title: 'Rows times columns: multiplying with tiles',
   height: 400,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'a', label: T('2x(x+1)') }, { v: 'b', label: T('(x+2)(x+1)') }, { v: 'c', label: T('(x+2)(x-1)') }, { sep: 'Example 3 check:' }, { v: 'e3', label: 'the tile array' }],
   intro: (v) => (TMU[v].tag ? `Example 3’s tile array: read the factors on the frame, then check the product inside.` : `Build ${T(prodTex(TMU[v].top, TMU[v].side))} with tiles: the first factor across the top, the second down the side.`),
   make(stage, v, ex) {

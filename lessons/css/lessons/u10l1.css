@@ -219,3 +219,28 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u10l1-unval { font-size: 19px; background: #fff; border: 2px solid var(--u10l1-purple); color: var(--u10l1-purple); border-radius: 8px; padding: 0 7px; white-space: nowrap; }
 .u10l1-unp { justify-content: center; gap: 2px; }
 .u10l1-unp .u10l1-line { line-height: 1.35; }
+
+/* ---------- one screen (main.lesson.screen): counter, chain and Q1–Q3 on the left; Q4 and the big one on the right ---------- */
+.wf .u10l1-wtop { margin: 8px 0 10px; gap: 14px; }
+.wf .u10l1-odo-wrap { padding: 12px 14px 8px; }
+.wf .u10l1-odo { gap: 5px; }
+.wf .u10l1-od { width: 40px; height: 60px; }
+.wf .u10l1-od.u10l1-odgap { margin-left: 10px; }
+.wf .u10l1-rd { height: 60px; font-size: 42px; }
+.wf .u10l1-odo-cap { font-size: 16px; margin-top: 6px; }
+.wf .u10l1-odo-sub { font-size: 15.5px; }
+.wf .u10l1-wbtns { gap: 6px; }
+.wf .u10l1-wbtns .pill { margin: 0; padding: 6px 14px; font-size: 15px; }
+.wf .u10l1-chain { margin: 0 0 10px; gap: 4px; justify-content: flex-start; }
+.wf .u10l1-unit { font-size: 17px; padding: 4px 9px; }
+.wf .u10l1-wqs { gap: 0 18px; }
+.wf .u10l1-wq3 { grid-column: 1 / -1; }
+.wf .q-line { font-size: 17px; margin: 4px 0 4px; gap: 10px; }
+.wf .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf .u10l1-wa { display: flex; align-items: baseline; gap: 10px; margin: 0 0 8px 40px; }
+.wf .u10l1-wa .pill.small { flex: none; }
+.wf .bk-wq .bk-ans { font-size: 16px; line-height: 1.35; margin-top: 0; }
+.wf-side .u10l1-wq4 { margin-top: 4px; }
+.wf .u10l1-poll4 .poll-opts { grid-template-columns: 1fr; gap: 6px; }
+.wf .u10l1-poll4 .opt { padding: 5px 10px; font-size: 16.5px; }
+.wf .u10l1-poll4 .q-line b { white-space: nowrap; }

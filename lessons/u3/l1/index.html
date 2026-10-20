@@ -43,13 +43,13 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Sort the Socks">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Sort the Socks</h2></div>
-  <p class="big">Laundry day! Pair the socks by their <b>letters and exponents</b>, not their colours. <span class="muted">(Tap a sock to put it on a pile.)</span></p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Sort the Socks" style="--wf-side: 285px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Sort the Socks</h2>
+  <p class="wf-rule">Laundry day! Pair the socks by their <b>letters and exponents</b>, not their colours. <span class="muted">(Tap a sock to put it on a pile.)</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
 
   <div class="u3s-box" id="socks"></div>
 
-  <div class="wu-grid">
     <div class="wq">
       <div class="q-line"><div class="q-num">1</div><div>How many socks are on the line?</div></div>
       <div class="wq-a"><button class="pill small" type="button" data-wq="1">Answer</button><div class="q-ans"><b>10 socks.</b> Each sock is one <b>term</b>; the whole line is one polynomial with 10 terms.</div></div>
@@ -58,13 +58,15 @@
       <div class="q-line"><div class="q-num">2</div><div>Sort them into piles of matching socks. How many piles? Which is the <b>odd sock</b> with no partner?</div></div>
       <div class="wq-a"><button class="pill small" type="button" data-wq="2">Answer</button><div class="q-ans"><b>4 piles:</b> <span class="tex">x^2</span>, <span class="tex">x</span>, numbers, and the odd sock <span class="tex">xy</span>. Colours are a decoy: <span class="tex">3x</span> and <span class="tex">7x^2</span> are both blue but don’t match.</div></div>
     </div>
+
+  </div><div class="wf-side">
+
     <div class="wq">
       <div class="q-line"><div class="q-num">3</div><div>Squash each pile into <b>one</b> sock (add them up). What socks are left?</div></div>
       <div class="wq-a"><button class="pill small" type="button" data-wq="3">Answer</button><div class="q-ans"><span class="tex">6x^2</span>, <span class="tex">-2x</span>, <span class="tex">-2</span> and <span class="tex">xy</span>: <span class="tex">6x^2+xy-2x-2</span>, <b>4 socks</b>. A bare <span class="tex">x</span> counts as <span class="tex">1x</span>.</div></div>
     </div>
-  </div>
 
-  <div class="poll">
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Only <b>one</b> of these is a true matching pair. <b>Guess first:</b> which one?</div></div>
     <div class="poll-opts c4">
       <div class="opt"><b>A</b> <span class="tex">x^2</span> and <span class="tex">2x</span></div>
@@ -76,6 +78,7 @@
     <div class="poll-ans"><b>B.</b> <span class="tex">yx</span> is the same as <span class="tex">xy</span> (you can multiply in either order), so they match: <span class="tex">3xy-5yx=-2xy</span>.<br>
       <span class="muted"><b>A</b> both have an <span class="tex">x</span> and a 2, but the exponents differ. <b>C</b> same number, different letter: the number never decides a match. <b>D</b> the 3 is an exponent in one and a coefficient in the other.</span></div>
   </div>
+  </div></div>
 
   <div class="wq wq-wide">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Hang <b>one</b> more sock so that, after squashing, only <b>3</b> socks are left. Four different socks work. Find them all.</div></div>

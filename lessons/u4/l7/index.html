@@ -43,9 +43,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: When Does It Land?">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>When Does It Land?</h2></div>
-  <p class="big">A ball is launched <b>straight up</b> from the ground. How long is it in the air? <span class="muted">Tap a <b>?</b> in the table to see the ball at that moment.</span></p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: When Does It Land?" style="--wf-side: 300px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>When Does It Land?</h2>
+  <p class="wf-rule">A ball is launched <b>straight up</b> from the ground. How long is it in the air? <span class="muted">Tap a <b>?</b> in the table to see the ball at that moment.</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
 
   <div class="u4l7-wu">
     <div class="u4l7-scene" id="wu-scene"></div>
@@ -57,10 +58,6 @@
         <div class="q-line"><div class="q-num">1</div><div>How high is the ball after <b>1</b> second?</div></div>
         <div class="u4l7-wqa"><button class="pill small" type="button" data-wq>Answer</button><div class="u4l7-qans"><span class="tex">-5(1)^2+20(1)=-5+20=\boldsymbol{15}</span> m</div></div>
       </div>
-      <div class="u4l7-wq">
-        <div class="q-line"><div class="q-num">2</div><div>After <b>3</b> seconds? Why the same?</div></div>
-        <div class="u4l7-wqa"><button class="pill small" type="button" data-wq>Answer</button><div class="u4l7-qans"><span class="tex">-5(9)+60=\boldsymbol{15}</span> m again. At 1 s it is on the way <b>up</b>; at 3 s it passes the same height on the way <b>down</b>.</div></div>
-      </div>
     </div>
   </div>
   <div class="u4l7-wq u4l7-wq-wide">
@@ -68,7 +65,14 @@
     <div class="u4l7-wqa"><button class="pill small" type="button" data-wq>Answer</button><div class="u4l7-qans"><span class="tex">-5t^2+20t=-5t\,(t-4)</span>. Check by expanding: <span class="tex">-5t\cdot t=-5t^2</span> and <span class="tex">-5t\cdot(-4)=+20t</span> ✓</div></div>
   </div>
 
-  <div class="poll u4l7-poll">
+  </div><div class="wf-side">
+
+  <div class="u4l7-wq u4l7-wq2">
+        <div class="q-line"><div class="q-num">2</div><div>After <b>3</b> seconds? Why the same?</div></div>
+        <div class="u4l7-wqa"><button class="pill small" type="button" data-wq>Answer</button><div class="u4l7-qans"><span class="tex">-5(9)+60=\boldsymbol{15}</span> m again. At 1 s it is on the way <b>up</b>; at 3 s it passes the same height on the way <b>down</b>.</div></div>
+      </div>
+
+  <div class="poll u4l7-poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> When does the ball <b>land</b> (back at <span class="tex">h=0</span>)? <b>Guess first.</b></div></div>
     <div class="poll-opts">
       <div class="opt"><b>A</b> 2 s</div>
@@ -80,6 +84,7 @@
     <div class="poll-ans"><b>B, 4 s.</b> Landing means <span class="tex">h=0</span>: &nbsp;<span class="tex">-5t(t-4)=0</span>, so <span class="tex">-5t=0</span> or <span class="tex">t-4=0</span>, giving <span class="tex">t=0</span> or <span class="tex">t=4</span>. <span class="tex">t=0</span> is the launch, so it lands at <b>4 s</b>.<br>
       <span class="muted"><b>A</b> (2 s) is the <em>top</em> of the flight, not the landing. <b>C</b> is read off the <span class="tex">-5</span> and <b>D</b> off the <span class="tex">20</span>. Turning “when is it 0?” into “which <b>factor</b> is 0?” is today’s whole lesson.</span></div>
   </div>
+  </div></div>
 
   <div class="u4l7-wq u4l7-wq-wide">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Bonus:</b> how high does it get?</div></div>

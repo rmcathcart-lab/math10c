@@ -104,3 +104,16 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u9l2-ctl input[type=range] { width: 380px; height: 40px; accent-color: var(--u9l2-ang); }
 .u9l2-ctl .pill.on { background: var(--brand); color: #fff; }
 .u9l2-ctl .u9l2-cv { font: 800 22px var(--round); color: var(--u9l2-ang); min-width: 62px; }
+
+/* ---------- one screen (main.lesson.screen): ladders, Q1 and Q2 left; Q3 and the big one right; early finishers below ---------- */
+.wf .u9l2-wfig { height: auto; aspect-ratio: 1000 / 330; }
+.wf .u9l2-wqs { grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
+.wf .u9l2-wqs .bk-wq { padding: 2px 12px 8px; }
+.wf .u9l2-wqs .q-line { margin: 6px 0 4px; font-size: 17px; gap: 10px; }
+.wf .u9l2-wqs .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf .u9l2-wqs .bk-ans { font-size: 15.5px; line-height: 1.32; margin-left: 40px; }
+.wf-side .u9l2-wqs { margin-top: 0; }
+.wf .wf-poll .poll-opts { grid-template-columns: 1fr 1fr; gap: 6px; }
+.wf .wf-poll .opt { padding: 5px 10px; }
+/* sidebar captions are only 268 px wide: let a long formula break after = or ≈ instead of running out of the box */
+.ex-panel .ex-cap .katex { white-space: normal; }

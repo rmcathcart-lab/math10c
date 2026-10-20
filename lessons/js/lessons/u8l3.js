@@ -490,6 +490,7 @@ const plain = (v) => pm((Math.round(v * 10) / 10).toFixed(1));
 const pencil = {
   title: 'Adding equations turns a line about the crossing',
   height: 476,
+  minW: 820, // the side panel needs ~250 px for "Eq. 1 + k × Eq. 2"
   choices: [{ sep: 'Check' }, ...Object.keys(PC).map((k) => ({ v: k, label: PC[k].label }))],
   value: 'ex1',
   intro: (k) => `${TAG1} ${T(k1(eqT(PC[k].e1)))} and ${TAG2} ${T(k2(eqT(PC[k].e2)))}. Press <b>Next</b>.`,
@@ -558,7 +559,7 @@ const SC = {
 const scale = {
   title: 'Scaling an equation copies the whole balance',
   height: 470,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar (the graph takes what is left beside the 520 px balance)
   choices: Object.keys(SC).map((k) => ({ v: k, label: SC[k].label })),
   intro: (k) => `${tag(SC[k].n, 'Eq. ' + SC[k].n)} ${T(tc(SC[k].n === 1 ? B1 : A2, eqT(SC[k].e)))} as a level balance. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -568,7 +569,7 @@ const scale = {
     const det = e1.a * e2.b - e1.b * e2.a, S = [(e1.c * e2.b - e1.b * e2.c) / det, (e1.a * e2.c - e1.c * e2.a) / det];
     const bal = new Balance(stage, { x: 10, y: 6, w: 520, h: 300, top: 104, label: `${tag(d.n, 'Eq. ' + d.n)} ${T(tc(col, eqT(e)))}` });
     bal.fill(e, d.n);
-    const G = new Graph(stage, Object.assign({ x: W - 440, y: 6, width: 430, height: 458, xlabels: 2, ylabels: 2, fontSize: 16 }, d.win));
+    const GW = Math.min(430, W - 550), G = new Graph(stage, Object.assign({ x: W - GW - 10, y: 6, width: GW, height: 458, xlabels: 2, ylabels: 2, fontSize: 16 }, d.win));
     const V = add(stage, box(h('div', 'u8l3-verd'), 520, 140), 10, 320);
     const steps = [
       { cap: `${tag(d.n, 'Eq. ' + d.n)} ${T(tc(col, eqT(e)))} is a level balance. On the graph it is the ${d.n === 1 ? 'blue' : 'amber'} line through the solution ${T(ks(pairTex(...S)))}.`,

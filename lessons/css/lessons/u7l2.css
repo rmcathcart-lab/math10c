@@ -116,3 +116,21 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u7l2-stab { border-collapse: collapse; font-size: 21px; width: 100%; }
 .u7l2-stab th, .u7l2-stab td { border-bottom: 1px solid var(--line2); padding: 4px 6px; text-align: center; height: 44px; }
 .u7l2-stab th { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+
+/* ---------- one screen (main.lesson.screen): the crickets across the top, Q1–Q3 under them, the big one beside;
+   the graph helper and the early finishers sit below the first screen ---------- */
+.wf .u7l2-crickets { margin: 4px 0 8px; }
+.wf .u7l2-crwrap { zoom: .92; }
+.wf .u7l2-wqs .q-line { margin: 4px 0 2px; font-size: 17.5px; gap: 10px; }
+.wf .u7l2-wqs .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf .u7l2-wa { display: flex; align-items: flex-start; gap: 12px; margin: 0 0 8px 40px; }
+.wf .u7l2-wa .pill.small { flex: none; }
+.wf .u7l2-wa .bk-ans { margin-top: 2px; font-size: 16px; line-height: 1.35; }
+.wf .wf-poll { margin-top: 0; }
+.wf .wf-poll .poll-opts.c4 { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.wf .wf-poll .poll-opts.c4 .opt { padding: 6px 8px; }
+.wf .u7l2-wplot { margin-top: 14px; }
+
+/* ---------- one screen: explainer tables that sit in the narrower panel beside the sidebar ---------- */
+.lesson.screen .u7l2-stab { font-size: 19px; }
+.lesson.screen .u7l2-stab th, .lesson.screen .u7l2-stab td { padding: 4px 3px; }

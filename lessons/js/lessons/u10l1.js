@@ -15,6 +15,8 @@ import {
 } from '../blocks.js';
 
 const T = (s) => tex(s);
+/** a caption equation that may wrap before each = or \approx (the sidebar caption is narrow) */
+const TQ = (s) => s.split(/(?==|\\approx)/).map((q) => T(q)).join(' ');
 const C = COLORS;
 const show = (c, el, ms = 320) => fadeIn(c, el, ms);
 const hide = (el) => { el.style.opacity = 0; return el; };
@@ -422,13 +424,13 @@ const RN = {
   b: { label: 'Example 4(b)', v0: 7.36 / 4.21,
     steps: [
       [`Divide the coefficients: ${T('7.36\\div4.21=1.7482\\ldots')}.`, '7.36\\div4.21=1.7482\\ldots', 'v0'],
-      [`Subtract the exponents: ${T('10^{-3}\\div10^{-9}=10^{-3-(-9)}=10^{6}')}.`, '10^{-3}\\div10^{-9}=10^{-3-(-9)}=10^{6}'],
+      [`Subtract the exponents: ${TQ('10^{-3}\\div10^{-9}=10^{-3-(-9)}=10^{6}')}.`, '10^{-3}\\div10^{-9}=10^{-3-(-9)}=10^{6}'],
       [`${T('1.7482\\ldots')} is already between 1 and 10, so there is nothing to re-normalize: ${T('1.7482\\ldots\\times10^{6}')}.`, '=1.7482\\ldots\\times10^{6}', 'good'],
       [`Round to one decimal place: test digit <b>4</b> is less than 5, round down: ${T('1.7\\times10^{6}')}.`, '\\approx\\mathbf{1.7\\times10^{6}}', 'fin']
     ] },
   c: { label: 'Example 4(c)', v0: 84.216 * 12.5073, v1: 84.216 * 12.5073 / 1000,
     steps: [
-      [`Multiply in standard notation: ${T('84.216\\times12.5073=1\\,053.3147768')}. Far bigger than 10.`, '84.216\\times12.5073=1\\,053.3147768', 'v0'],
+      [`Multiply in standard notation: ${TQ('84.216\\times12.5073=1\\,053.3147768')}. Far bigger than 10.`, '84.216\\times12.5073=1\\,053.3147768', 'v0'],
       [`Hop the decimal point <b>3 places left</b>, so ${T('n=3')}: ${T('1.0533147768\\times10^{3}')}. Now ${T('1\\le a<10')}.`, '=1.0533147768\\times10^{3}', 'v1'],
       [`Round to one decimal place: test digit <b>5</b>, so round <b>up</b>: ${T('1.1\\times10^{3}')}.`, '\\approx\\mathbf{1.1\\times10^{3}}', 'fin']
     ] }

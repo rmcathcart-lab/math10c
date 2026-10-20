@@ -188,3 +188,33 @@ kbd.u7l5-ka { background: #3f9a52; }
 .u7l5-mout { font-size: 26px; background: #fff4dd; border-radius: 12px; padding: 4px 16px; }
 .u7l5-mft { align-self: flex-start; margin-left: 8px; }
 .u7l5-rules { margin-top: auto; display: flex; flex-direction: column; gap: 6px; font-size: 18px; background: #f9f8f4; border-radius: 12px; padding: 10px 14px; }
+
+/* ---------- one screen (main.lesson.screen): the four cars across the top; the sketch grid (its size is read from
+   #u7l5-wgraph) on the left, Q1–Q3 and the big one on the right ---------- */
+#u7l5-wgraph { width: 400px; }
+.wf #u7l5-wgraph { width: 300px; }
+.wf .u7l5-wgrid { grid-template-columns: 300px minmax(0, 1fr); gap: 24px; }
+.wf .u7l5-cars { grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 6px 0 12px; }
+.wf .u7l5-car { padding: 6px 10px 8px; gap: 4px; border-width: 2.5px; }
+.wf .u7l5-carh { padding: 2px 10px; }
+.wf .u7l5-carn { font-size: 21px; }
+.wf .u7l5-careq { font-size: 23px; min-height: 44px; }
+.wf .u7l5-wbtns { margin-top: 2px; }
+.wf .u7l5-wqs .q-line { margin: 0 0 2px; font-size: 17.5px; gap: 10px; }
+.wf .u7l5-wqs .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf .u7l5-wa { display: flex; align-items: flex-start; gap: 12px; margin: 0 0 10px 40px; }
+.wf .u7l5-wa .pill.small { flex: none; }
+.wf .u7l5-wa .bk-ans { margin-top: 2px; font-size: 16.5px; line-height: 1.35; }
+.wf .wf-poll { margin-top: 4px; }
+.wf .wf-poll .poll-opts.u7l5-c4 { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.wf .wf-poll .poll-opts .opt { padding: 6px 8px; }
+.wf .u7l5-early { margin-top: 12px; }
+.wf .u7l5-car { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 6px; row-gap: 2px; align-items: center; justify-items: center; }
+.wf .u7l5-carh { grid-row: 1; grid-column: 1; padding: 2px 8px; }
+.wf .u7l5-car .pill { grid-row: 1; grid-column: 2; margin: 0; padding-left: 10px; padding-right: 10px; }
+.wf .u7l5-careq { grid-row: 2; grid-column: 1 / -1; }
+.wf .wf-poll { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 10px; align-items: center; }
+.wf .wf-poll > .q-line, .wf .wf-poll > .poll-ans { grid-column: 1 / -1; }
+.wf .wf-poll .poll-opts.u7l5-c4 { margin: 0; }
+.wf .wf-poll .poll-opts .opt { white-space: nowrap; padding: 6px 7px; font-size: 16.5px; }
+.wf .wf-poll > .pill { margin: 0; }

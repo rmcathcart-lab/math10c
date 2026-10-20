@@ -110,7 +110,8 @@ function carSVG(col) {
 function mountWarm() {
   const host = document.getElementById('u7l5-wgraph'); if (!host) return;
   document.querySelectorAll('.u7l5-car').forEach((e) => { e.querySelector('.u7l5-carsvg').innerHTML = carSVG(CARCOL[e.dataset.car]); });
-  const G = new Graph(host, { width: 400, height: 400, xmin: -6.5, xmax: 6.5, ymin: -6.5, ymax: 6.5, xlabels: 2, ylabels: 2, fontSize: 15 });
+  const GW = host.clientWidth || 400; // the size comes from the CSS (smaller on the one-screen warm-up)
+  const G = new Graph(host, { width: GW, height: GW, xmin: -6.5, xmax: 6.5, ymin: -6.5, ymax: 6.5, xlabels: 2, ylabels: 2, fontSize: 15 });
   let busy = false;
   const SK = {
     1: async (c, col) => { const p = G.point(0, 3, { color: col, coords: true, pos: 'ne' }); await G.reveal(p, c);
@@ -328,12 +329,13 @@ const FP = {
 };
 const flow = {
   title: 'Which strategy? Read the form',
-  height: 400,
+  height: 384,
+  side: false, // the flowchart needs the full width: beside the sidebar its text would shrink to about 13 px
   minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(FP).map((k) => ({ v: k, label: FP[k].label })),
   intro: (k) => `Follow the chart for ${T(FP[k].eq)}. Press <b>Next</b>.`,
   make(stage, k, ex) {
-    const d = FP[k], F = new Flowchart(stage, { x: Math.max(0, (ex.W - 940) / 2), y: 2, width: 940, height: 390, nodes: FN, edges: FE });
+    const d = FP[k], F = new Flowchart(stage, { x: Math.max(0, (ex.W - 940) / 2), y: 2, width: 940, height: 382, nodes: FN, edges: FE });
     add(stage, h('div', 'u7l5-fceq', T(d.eq)), 12, 10);
     return d.path.map((id, i) => ({ cap: d.caps[i], run: async (c) => { if (i) await F.go(c, d.path[i - 1], id); await F.visit(c, id); } }));
   }
@@ -390,7 +392,7 @@ const CV = {
 const cover = {
   title: 'General form: cover x, cover y',
   height: 470,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 840, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CV).map((k) => ({ v: k, label: CV[k].label })),
   intro: (k) => `Graph ${T(CV[k].eq)} from its intercepts. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -441,7 +443,7 @@ const cover = {
       { cap: `Find <b>lattice points</b> instead: try convenient ${T('x')}-values until ${T('y=\\dfrac{4-2x}{3}')} is an integer.`,
         run: async (c) => {
           E.uncover();
-          tb = new ValueTable(P, { headers: ['x', 'y'], rows, layout: 'h', cellW: 54, cellH: 46, headW: 46, hide: 1, tap: false, cls: 'u7l5-ctab' });
+          tb = new ValueTable(P, { headers: ['x', 'y'], rows, layout: 'h', cellW: Math.min(54, Math.floor((ex.W - 488 - 34 - 46) / rows.length)), cellH: 46, headW: 46, hide: 1, tap: false, cls: 'u7l5-ctab' });
           await show(c, tb.el); await tb.fill(c, { stagger: 160 });
         } },
       { cap: `${T('x=-1')} gives ${T('y=2')} and ${T('x=5')} gives ${T('y=-2')}: plot ${T('(-1,2)')} and ${T('(5,-2)')}.`,
@@ -522,7 +524,7 @@ const MCOL = [COLORS.red, COLORS.teal, COLORS.purple, COLORS.amber];
 const match = {
   title: 'Example 3 check: match by m and b',
   height: 440,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 880, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex3', label: 'Example 3 check' }],
   intro: 'Four graphs, four equations. Solve each for <b>y</b> and read <b>m</b> and <b>b</b>. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -549,7 +551,7 @@ const match = {
         const t = h('div', 'u7l5-mtag u7l5-mtag2', `Eqn ${i + 1}`); t.style.background = MCOL[i]; frames[d.g].appendChild(t); await pop(c, t);
       }
     }));
-    steps.push({ cap: `Each graph used once: ${T('1\\to D,\\ 2\\to A,\\ 3\\to C,\\ 4\\to B')}. Eqns 1 and 3 share ${T('b=2')}, so the <b>sign</b> of ${T('m')} decided between D and C.`,
+    steps.push({ cap: `Each graph used once: ${T('1\\to D,')} ${T('2\\to A,')} ${T('3\\to C,')} ${T('4\\to B')}. Eqns 1 and 3 share ${T('b=2')}, so the <b>sign</b> of ${T('m')} decided between D and C.`,
       run: async (c) => { W.innerHTML = ''; const r = h('div', 'u7l5-mrow u7l5-msum', MT.map((d, i) => `<span><span class="u7l5-mtag" style="background:${MCOL[i]}">Eqn ${i + 1}</span> → <b>${d.g}</b></span>`).join('')); W.appendChild(r); await show(c, r); const s = stamp(W, 'matched ✓', { ok: true }); s.classList.add('u7l5-mst'); await stampIn(c, s); } });
     return steps;
   }
@@ -588,7 +590,7 @@ const TI = {
 const ti84 = {
   title: 'On the TI-84 graphing calculator: solve for y, Y=, WINDOW, GRAPH',
   height: 470,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 840, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(TI).map((k) => ({ v: k, label: TI[k].label })),
   intro: 'These keystrokes are for a <b>TI-83/84 graphing calculator</b>. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -701,7 +703,7 @@ const DA = {
 const data = {
   title: 'From a table of data to an equation',
   height: 470,
-  minW: 900, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(DA).map((k) => ({ v: k, label: DA[k].label })),
   intro: 'Plot, check the steps, find the slope and intercept, then general form. Press <b>Next</b>.',
   make(stage, k, ex) {

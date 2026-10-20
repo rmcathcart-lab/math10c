@@ -206,3 +206,38 @@
 .lt-t { color: #fff; font: 800 24px var(--round); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .lt-sp { color: #ffe27a; font-size: 13px; font-weight: 700; white-space: nowrap; }
 .lt-work { font-size: 26px; white-space: nowrap; }
+
+/* ---------- one screen (main.lesson.screen): one column, tightened so the chain, Q1–Q3 and the big one fit; "Try it" below ---------- */
+.wf-one .hb-top { gap: 14px; margin: 4px 0 8px; }
+.wf-one .hb-heart { width: 76px; height: 76px; }
+.wf-one .hb-heart svg { width: 68px; height: 72px; }
+.wf-one .hb-monitor { height: 76px; }
+.wf-one .hb-trace { top: 4px; height: 56px; }
+.wf-one .hb-bpm { font-size: 17px; bottom: 5px; }
+.wf-one .hb-chain { margin: 4px 0 0; }
+.wf-one .hb-card { width: 128px; min-height: 80px; padding: 4px; }
+.wf-one .hb-card.big { width: 176px; }
+.wf-one .hb-t { font-size: 18px; }
+.wf-one .hb-v { font-size: 16.5px; line-height: 1.2; }
+.wf-one .hb-v small { font-size: 14px; }
+.wf-one .hb-x { font-size: 16px; }
+.wf-one .hb-hint { margin: 3px 0 6px !important; font-size: 15px; }
+.wf-one .wq-grid { gap: 10px; }
+.wf-one .wq { padding: 2px 12px 4px; margin-bottom: 8px; }
+.wf-one .wq .q-line { margin: 4px 0 2px; font-size: 17.5px; gap: 10px; }
+.wf-one .wq .q-num { width: 28px; height: 28px; font-size: 15px; }
+.wf-one .wq-a { margin-left: 38px; gap: 8px; }
+.wf-one .q-ans { font-size: 16px; line-height: 1.3; min-height: 2.6em; }
+.wf-one .q3-opts { margin: 2px 0 4px 38px; gap: 10px; }
+.wf-one .q3-opt { padding: 4px 8px 4px; gap: 2px; }
+.wf-one .q3-opt .katex { font-size: 1.3em; }
+.wf-one .q3-opt small { font-size: 14.5px; min-height: 2.5em; }
+.wf-one .poll { margin-top: 0; padding: 2px 16px 12px; display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; align-items: center; }
+.wf-one .poll > .q-line, .wf-one .poll > .poll-ans { grid-column: 1 / -1; }
+.wf-one .poll .q-line { margin: 10px 0 8px; font-size: 18px; }
+.wf-one .poll-opts { margin: 0 0 0 50px; gap: 10px; }
+.wf-one .opt { padding: 6px 12px; }
+.wf-one .poll > .pill { margin: 0; }
+.wf-one .poll:not(.revealed) .poll-ans { display: none; }
+.wf-one .pulse-card { margin-top: 14px; }
+.ex-side .md-row { font-size: 24px; } /* the powers-of-10 box beside the sidebar */

@@ -47,10 +47,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Can You Get Wi-Fi?" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Can You Get Wi-Fi?</h2></div>
-  <p class="big">The router at <span class="tex">(0,\ 0)</span> reaches <b>up to 5 units</b> in a <b>straight line</b>, in every direction. Each house sits on a grid point; 1 square = 1 unit.</p>
-  <div class="u6l2-wtop">
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Can You Get Wi-Fi?" id="wu" style="--wf-side: 440px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Can You Get Wi-Fi?</h2>
+  <p class="wf-rule">The router at <span class="tex">(0,\ 0)</span> reaches <b>up to 5 units</b> in a <b>straight line</b>, in every direction. Each house sits on a grid point; 1 square = 1 unit.</p></div>
+  <div class="wf-grid"><div class="wf-main">
     <div class="u6l2-wfig">
       <div id="u6l2-wifi"></div>
       <div class="u6l2-wbtns">
@@ -59,23 +59,22 @@
         <button type="button" class="pill" id="u6l2-w12">All the edge points</button>
       </div>
     </div>
+  </div><div class="wf-side">
     <div class="u6l2-wqs">
       <div class="bk-wq">
-        <div class="q-line"><div class="q-num">1</div><div>How far is house <b>A</b> from the router? Does it get Wi-Fi?</div></div>
-        <div class="u6l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">A is at <span class="tex">(-4,\ 0)</span>: a horizontal segment, <b>4 units</b>. <b>Yes.</b></div></div>
+        <div class="q-line"><div class="q-num">1</div><div>How far is house <b>A</b> from the router? Does it get Wi-Fi? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+        <div class="u6l2-wa"><div class="bk-ans">A is at <span class="tex">(-4,\ 0)</span>: a horizontal segment, <b>4 units</b>. <b>Yes.</b></div></div>
       </div>
       <div class="bk-wq">
-        <div class="q-line"><div class="q-num">2</div><div>House <b>B</b> is 3 right and 4 up. Wi-Fi?</div></div>
-        <div class="u6l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">A right triangle with legs 3 and 4: <span class="tex">\sqrt{9+16}=\sqrt{25}=5</span>. <b>Yes</b>, exactly on the edge.</div></div>
+        <div class="q-line"><div class="q-num">2</div><div>House <b>B</b> is 3 right and 4 up. Wi-Fi? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+        <div class="u6l2-wa"><div class="bk-ans">A right triangle with legs 3 and 4: <span class="tex">\sqrt{9+16}=\sqrt{25}=5</span>. <b>Yes</b>, exactly on the edge.</div></div>
       </div>
       <div class="bk-wq">
-        <div class="q-line"><div class="q-num">3</div><div>House <b>C</b> is only 4 left and 4 up. Both are less than 5. Does C get Wi-Fi?</div></div>
-        <div class="u6l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>No!</b> <span class="tex">\sqrt{16+16}=\sqrt{32}\approx5.66&gt;5</span>. The straight-line distance is the <b>hypotenuse</b>, longer than either leg. (D at <span class="tex">(-3,\ -4)</span> is exactly 5: yes. E at <span class="tex">(5,\ -3)</span>: <span class="tex">\sqrt{34}\approx5.83</span>, no.)</div></div>
+        <div class="q-line"><div class="q-num">3</div><div>House <b>C</b> is only 4 left and 4 up. Both are less than 5. Does C get Wi-Fi? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+        <div class="u6l2-wa"><div class="bk-ans"><b>No!</b> <span class="tex">\sqrt{16+16}=\sqrt{32}\approx5.66&gt;5</span>. The straight-line distance is the <b>hypotenuse</b>, longer than either leg. (D at <span class="tex">(-3,\ -4)</span> is exactly 5: yes. E at <span class="tex">(5,\ -3)</span>: <span class="tex">\sqrt{34}\approx5.83</span>, no.)</div></div>
       </div>
     </div>
-  </div>
-
-  <div class="poll u6l2-poll4">
+  <div class="poll wf-poll u6l2-poll4">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> How many grid points are <b>exactly 5 units</b> from the router, right on the edge of the signal? <b>Guess first.</b></div></div>
     <div class="poll-opts">
       <div class="opt"><b>A</b> 4</div>
@@ -87,6 +86,7 @@
     <div class="poll-ans"><b>C: 12.</b> We need whole numbers with <span class="tex">x^2+y^2=25</span>: <span class="tex">(\pm5,\ 0)</span>, <span class="tex">(0,\ \pm5)</span>, <span class="tex">(\pm3,\ \pm4)</span>, <span class="tex">(\pm4,\ \pm3)</span>. That’s <span class="tex">2+2+4+4=12</span> points (B and D are two of them). Tap <b>All the edge points</b> to see them.<br>
       <span class="muted"><b>A</b> only goes straight up, down, left and right. <b>B</b> adds the “diagonal” corners but misses that <span class="tex">(3,\ 4)</span> and <span class="tex">(4,\ 3)</span> are different points. <b>D</b> is true for the whole circle, but it passes through only 12 <b>grid</b> points.</span></div>
   </div>
+  </div></div>
 
   <div class="u6l2-early">
     <div class="bk-wq">

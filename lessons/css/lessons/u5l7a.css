@@ -125,3 +125,25 @@
 .u5l7a-forms > div { background: var(--brand-soft); border-radius: 12px; padding: 8px 12px; font-size: 17px; line-height: 1.35; }
 .u5l7a-forms b:first-child { display: block; font: 800 17px var(--round); color: var(--brand); margin-bottom: 2px; }
 .bk-stamp.u5l7a-midstamp { font-size: 30px; border-width: 4px; padding: 4px 14px; }
+
+/* ---------- one screen (main.lesson.screen): diagram, class and Q1–Q2 on the left, Q3 and the big one on the right ---------- */
+.wf .u5l7a-wtop { grid-template-columns: 290px minmax(0, 1fr); gap: 12px; margin: 2px 0 0; }
+.wf .u5l7a-class { padding: 6px 10px 8px; }
+.wf .u5l7a-ch { font-size: 17px; }
+.wf .u5l7a-cctl { gap: 5px; margin: 2px 0 4px; }
+.wf .u5l7a-cctl .pill.small { margin: 0; padding: 4px 9px; font-size: 13.5px; white-space: nowrap; }
+.wf .u5l7a-cout { font-size: 15px; line-height: 1.35; min-height: 4.05em; }
+.wf .u5l7a-wqs { margin-top: 2px; }
+.wf .u5l7a-wqs .bk-wq { display: block; }
+.wf .u5l7a-wqs .q-line { margin: 8px 0 0; font-size: 17px; gap: 10px; line-height: 1.38; }
+.wf .wf-side .u5l7a-wqs .q-line { margin-top: 0; }
+.wf .u5l7a-wqs .q-line .pill.small { margin-left: 4px; vertical-align: 1px; }
+.wf .u5l7a-wa { margin: 2px 0 0 40px; }
+.wf .u5l7a-wa .bk-ans { margin: 0; font-size: 16px; line-height: 1.35; }
+.wf .wf-poll { margin-top: 10px; padding-bottom: 12px; }
+.wf .wf-poll .q-line { margin-top: 8px; }
+.wf .wf-poll .poll-opts.u5l7a-c4 { grid-template-columns: 1fr 1fr; gap: 6px; }
+.wf .wf-poll .opt { font-size: 16.5px; padding: 6px 10px; white-space: nowrap; }
+.wf .u5l7a-wtop { grid-template-columns: 340px minmax(0, 1fr); }
+.wf .u5l7a-wmap .bk-map-item { font-size: 19px; }
+.wf .u5l7a-cctl { flex-wrap: wrap; row-gap: 4px; }

@@ -256,7 +256,7 @@ const whyVertical = {
   title: 'Why a vertical line?',
   height: 460,
   minW: 860, // drawn this wide and scaled to fit beside the sidebar
-  choices: Object.keys(WV).map((k) => ({ v: k, label: WV[k].label + ': ' + T(WV[k].pts.map((p) => pairTex(p[0], p[1]).replace(/\\ /g, '')).join(',')) })),
+  choices: Object.keys(WV).map((k) => ({ v: k, label: WV[k].label + ': ' + WV[k].pts.map((p) => T(pairTex(p[0], p[1]).replace(/\\ /g, ''))).join(', ') })), // one pair per piece: the chip can wrap
   intro: 'A vertical line is every point with the <b>same input</b>. Watch which ordered pairs it catches. Press <b>Next</b>.',
   make(stage, k, ex) {
     const W = ex.W, d = WV[k], pts = d.pts, two = pts.filter((p) => p[0] === 1).length > 1;
@@ -355,6 +355,7 @@ const SIX = {
 const sixWays = {
   title: 'One relation, six forms',
   height: 486,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SIX).map((k) => ({ v: k, label: SIX[k].label })),
   intro: (k) => `${SIX[k].words} Build it in six forms, then apply the function test to every one. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -510,7 +511,8 @@ const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', '
 const dayName = (n) => { let m = 0; while (n >= MDAYS[m]) { n -= MDAYS[m]; m++; } return MONTHS[m] + ' ' + (n + 1); };
 function mountWarmup() {
   const map = document.getElementById('wu-map');
-  if (map) new MappingDiagram(map, { width: 400, height: 330, domain: PEOPLE, range: DATES, pairs: PEOPLE.map((p, i) => [p, DATES[BDAY[i]]]), titles: ['Person', 'Birthday'], tex: false, color: COLORS.red });
+  const mw = map ? Math.min(400, (map.clientWidth || 408) - 8) : 400; // CSS sets the box width (smaller on one-screen pages)
+  if (map) new MappingDiagram(map, { width: mw, height: Math.round(mw * 330 / 400), domain: PEOPLE, range: DATES, pairs: PEOPLE.map((p, i) => [p, DATES[BDAY[i]]]), titles: ['Person', 'Birthday'], tex: false, color: COLORS.red });
   const svg = document.getElementById('wu-faces'), out = document.getElementById('wu-out'); if (!svg || !out) return;
   const HATS = ['#5a96d2', '#3ca05a', '#965ab4', '#e68228'], faces = [];
   for (let r = 0; r < 3; r++) for (let cI = 0; cI < 10; cI++) {

@@ -311,7 +311,8 @@ const linTest = {
 /* =============================== explainer: cups → h = 2n + 10 =============================== */
 const cups = {
   title: 'From cup stacks to h = 2n + 10',
-  height: 470,
+  height: 480,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar (the graph needs room for its h = 2n + 10 label)
   intro: 'Stack the cups, fill the table, plot the points. Press <b>Next</b>.',
   make(stage, k, ex) {
     const s = 10, base = 420, cx = 120;
@@ -334,7 +335,7 @@ const cups = {
     const GX = 520, GW = ex.W - GX - 14;
     const G = new Graph(stage, { x: GX, y: 14, width: GW, height: 440, xmin: 0, xmax: 6, ymin: 0, ymax: 22, ystep: 2, ylabels: 4, xtitle: 'n', ytitle: 'h', origin: true });
     const pt = (k2) => G.point(k2, 10 + 2 * k2, { color: INK, r: 6.5 });
-    const doors = h('div', 'u7l1-panel u7l1-cdoor'); add(stage, box(doors, 214, 120), TX, 340); hide(doors);
+    const doors = h('div', 'u7l1-panel u7l1-cdoor'); add(stage, box(doors, 214, 130), TX, 338); hide(doors);
     return [
       { cap: `One cup is <b>12 cm</b> tall. In the table and on the graph: ${T('n=1')}, ${T('h=12')}.`,
         run: async (c) => { await appear(c, addCup(1), 300); setDim(12); setN(1); await show(c, rows[1]); await G.reveal(pt(1), c); } },

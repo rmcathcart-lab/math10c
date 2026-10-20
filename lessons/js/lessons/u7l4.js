@@ -198,7 +198,7 @@ const BD = {
 const build = {
   title: 'Slope–point form: one point fixed, one point free',
   height: 530,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(BD).map((k) => ({ v: k, label: BD[k].label })),
   intro: (k) => (k === 'balloon'
     ? 'The balloon’s height–time line: one known point, <b>(5, 800)</b> (10:05, 800 m), and slope <b>−40</b> m per minute. Press <b>Next</b>.'
@@ -291,8 +291,8 @@ const build = {
           ro.innerHTML = T(gen ? `\\dfrac{y_1-y_1}{x_1-x_1}=\\dfrac{0}{0}\\ \\ \\textcolor{${MOV}}{\\text{no value}}`
             : `\\dfrac{${tn(y1)}-${par(y1)}}{${tn(x1)}-${par(x1)}}=\\dfrac{0}{0}\\ \\ \\textcolor{${MOV}}{\\text{no value}}`);
           await pulse(c, ro, 1.05);
-          const chk = gen ? `y_1-y_1=m(x_1-x_1)\\ \\Rightarrow\\ 0=0\\ \\checkmark` : `${tn(y1)}-${par(y1)}=${qT(m)}(${tn(x1)}-${par(x1)})\\ \\Rightarrow\\ 0=0\\ \\checkmark`;
-          await show(c, line(final, T(chk), 'u7l4-chk'));
+          const chk = gen ? `y_1-y_1=m(x_1-x_1)` : `${tn(y1)}-${par(y1)}=${qT(m)}(${tn(x1)}-${par(x1)})`;
+          await show(c, line(final, `${T(chk)} ${T('\\Rightarrow\\ 0=0\\ \\checkmark')}`, 'u7l4-chk'));
         } }
     ];
     // the last step depends on the chip
@@ -467,6 +467,7 @@ const toMxB = {
 const race = {
   title: 'Two methods, line by line',
   height: 480,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   intro: 'Slope <b>−5</b>, point <b>(4, −2)</b>. Priya uses <b>y = mx + b</b>; Deshawn uses <b>slope–point form</b>. Press <b>Next</b>.',
   make(stage, v, ex) {
     const w = (ex.W - 42) / 2;
@@ -523,7 +524,7 @@ const grid = {
         run: async (c) => { await show(c, line(Pn, T(`y-4=2x-2\\ \\Rightarrow\\ y=2x${cG('+2')}`), 'u7l4-mline')); await pop(c, G.point(0, 2, { color: YI, r: 7.5, label: T(cG('(0,2)')), pos: 'nw' })); } },
       { cap: `General form: move ${T('y')} to the side with the ${T('x')}-term so ${T('A')} stays positive: ${T('0=2x-y+2')}, that is ${T('\\boldsymbol{2x-y+2=0}')}.`,
         run: async (c) => { await show(c, line(Pn, T('\\boldsymbol{2x-y+2=0}'), 'u7l4-mline u7l4-boxed')); } },
-      { cap: `Check with the <b>other</b> point, ${T('(-3,-4)')}: ${T('2(-3)-(-4)+2=-6+4+2=0')} ✓.`,
+      { cap: `Check with the <b>other</b> point, ${T('(-3,-4)')}: ${T('2(-3)-(-4)+2')} ${T('=-6+4+2=0')} ✓.`,
         run: async (c) => { await pulse(c, G.point(-3, -4, { color: YI, r: 9 }), 1.4); await show(c, line(Pn, `Check ${T('(-3,-4)')}: ${T('2(-3)-(-4)+2=0')} ✓`, 'u7l4-chk')); await stampIn(c, okStamp(Pn, 'on the line')); } }
     ];
   }
@@ -539,7 +540,7 @@ const RD = {
 const read = {
   title: 'Reading m and (x₁, y₁) back out',
   height: 440,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(RD).map((k) => ({ v: k, label: RD[k].label })),
   intro: 'Line the equation up under the pattern, then read the slope and the point. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -647,7 +648,7 @@ const SV = {
       { cap: `Expand: ${T('y+3=-2x+8')}.`, run: async (c) => { await show(c, line(Pn, T('y+3=-2x+8'), 'u7l4-mline')); } },
       { cap: `Collect on the left, ${T('x')}-term positive: add ${T('2x')}, subtract ${T('8')}. ${T('\\boldsymbol{2x+y-5=0}')}.`,
         run: async (c) => { await show(c, line(Pn, T('\\boldsymbol{2x+y-5=0}'), 'u7l4-mline u7l4-boxed')); } },
-      { cap: `Check with the <b>other</b> point, ${T('Q(-2,9)')}: ${T('2(-2)+9-5=-4+9-5=0')} ✓.`,
+      { cap: `Check with the <b>other</b> point, ${T('Q(-2,9)')}: ${T('2(-2)+9-5')} ${T('=-4+9-5=0')} ✓.`,
         run: async (c) => { await show(c, line(Pn, `Check ${T('Q(-2,9)')}: ${T('2(-2)+9-5=0')} ✓`, 'u7l4-chk')); await stampIn(c, okS()); } }
     ]
   },
@@ -673,7 +674,7 @@ const SV = {
     intro: 'Perpendicular: give the slope triangle a <b>quarter turn</b>. Press <b>Next</b>.',
     steps: (G, Pn, okS) => [
       { cap: `The given line: ${T('2x-3y+12=0')}. Solve for ${T('y')}: ${T('y=\\dfrac{2x+12}{3}=\\tfrac{2}{3}x+4')}, slope ${T('\\tfrac{2}{3}')}.`,
-        run: async (c) => { await G.drawIn(G.line({ m: 2 / 3, b: 4 }, { color: GRAY, width: 3.5 }), 700, c); G.label(1.2, 6.4, T('2x-3y+12=0'), { pos: 'w', cls: 'bk-ptlab u7l4-gl' }); await show(c, line(Pn, T('y=\\tfrac{2}{3}x+4,\\quad m_{\\text{given}}=\\tfrac{2}{3}'), 'u7l4-mline')); } },
+        run: async (c) => { await G.drawIn(G.line({ m: 2 / 3, b: 4 }, { color: GRAY, width: 3.5 }), 700, c); G.label(1.2, 6.4, T('2x-3y+12=0'), { pos: 'w', cls: 'bk-ptlab u7l4-gl' }); await show(c, line(Pn, `${T('y=\\tfrac{2}{3}x+4,')} ${T('m_{\\text{given}}=\\tfrac{2}{3}')}`, 'u7l4-mline')); } },
       { cap: `Its slope triangle: run ${T(cU('3'))}, rise ${T(cR('2'))}. Copy it to the point ${T(cF('(-4,2)'))}.`,
         run: async (c) => {
           const t = new SlopeTri(G, { x: -6, y: 0, run: 3, rise: 2 }, { labels: false, fillOp: 0.1 }); await t.drawIn(c, 350);
@@ -690,7 +691,7 @@ const SV = {
       { cap: `Clear the fraction: ${T('\\times2')} on both sides, ${T('2y-4=-3(x+4)=-3x-12')}.`,
         run: async (c) => { await show(c, line(Pn, `${T('2y-4=-3x-12')}<span class="u7l4-badge">${T('\\times2')}</span>`, 'u7l4-mline')); } },
       { cap: `Add ${T('3x+12')} to both sides: ${T('\\boldsymbol{3x+2y+8=0}')}.`, run: async (c) => { await show(c, line(Pn, T('\\boldsymbol{3x+2y+8=0}'), 'u7l4-mline u7l4-boxed')); } },
-      { cap: `Check ${T('(-4,2)')}: ${T('3(-4)+2(2)+8=-12+4+8=0')} ✓.`, run: async (c) => { await show(c, line(Pn, `Check ${T('(-4,2)')}: ${T('-12+4+8=0')} ✓`, 'u7l4-chk')); await stampIn(c, okS()); } }
+      { cap: `Check ${T('(-4,2)')}: ${T('3(-4)+2(2)+8')} ${T('=-12+4+8=0')} ✓.`, run: async (c) => { await show(c, line(Pn, `Check ${T('(-4,2)')}: ${T('-12+4+8=0')} ✓`, 'u7l4-chk')); await stampIn(c, okS()); } }
     ]
   },
   e8: {
@@ -701,13 +702,13 @@ const SV = {
         run: async (c) => {
           await G.drawIn(G.line({ m: 0.6, b: -3 }, { color: GRAY, width: 3, dash: '7 6' }), 600, c); G.label(10.9, 5.0, T('3x-5y-15=0'), { pos: 'w', cls: 'bk-ptlab u7l4-gl' });
           await pop(c, G.point(5, 0, { color: FIX, r: 7.5, label: T(cF('(5,0)')), pos: 'nw' }));
-          await show(c, line(Pn, T('3x-15=0\\ \\Rightarrow\\ x=5,\\ \\text{point }(5,0)'), 'u7l4-mline'));
+          await show(c, line(Pn, `${T('3x-15=0\\ \\Rightarrow\\ x=5,')} ${T('\\text{point }(5,0)')}`, 'u7l4-mline'));
         } },
       { cap: `The slope of ${T('4x-9y-27=0')}: ${T('y=\\dfrac{4x-27}{9}=\\tfrac{4}{9}x-3')}, slope ${T('\\tfrac{4}{9}')}: run ${T(cU('9'))}, rise ${T(cR('4'))}.`,
         run: async (c) => {
           await G.drawIn(G.line({ m: 4 / 9, b: -3 }, { color: GRAY, width: 3.5 }), 600, c); G.label(3.6, -2.2, T('4x-9y-27=0'), { pos: 'c', cls: 'bk-ptlab u7l4-gl' });
           const t = new SlopeTri(G, { x: 0, y: -3, run: 9, rise: 4 }, { labels: false, fillOp: 0.1 }); await t.drawIn(c, 350);
-          await show(c, line(Pn, T('y=\\tfrac{4}{9}x-3,\\quad m_{\\text{given}}=\\tfrac{4}{9}'), 'u7l4-mline'));
+          await show(c, line(Pn, `${T('y=\\tfrac{4}{9}x-3,')} ${T('m_{\\text{given}}=\\tfrac{4}{9}')}`, 'u7l4-mline'));
         } },
       { cap: `A <b>quarter turn</b> at ${T('(5,0)')}: run ${T(cU('9'))}, rise ${T(cR('4'))} becomes run ${T(cU('-4'))}, rise ${T(cR('9'))}. ${T('m_{\\perp}=\\dfrac{9}{-4}=-\\tfrac{9}{4}')}.`,
         run: async (c) => {
@@ -723,9 +724,11 @@ const SV = {
     ]
   }
 };
+const SV_MINW = { e5: 860, e6: 820, e7: 820, e8: 940 }; // each drawn this wide and scaled to fit beside the sidebar
 const solveDef = (k) => ({
   title: SV[k].title,
   height: 520,
+  minW: SV_MINW[k],
   intro: SV[k].intro,
   make(stage, v, ex) {
     const d = SV[k];

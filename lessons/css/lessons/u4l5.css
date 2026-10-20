@@ -220,3 +220,29 @@
 .parts.c4 .pl .tex { white-space: nowrap; }
 .ex-cap .katex, .u4l5-key .katex, .tip .katex, .sum-grid .katex, .q-ans .katex, .ans .katex, .def .katex, .u4l5-tq .katex { white-space: nowrap; }
 .u4l5-arr { flex: none; white-space: nowrap; }
+
+/* ---------- one screen (main.lesson.screen): a shorter shelf across the top (the JS scales the dolls to its height);
+   Q1–Q3 left, the big one right; the race and the neighbour prompt below ---------- */
+.wf .u4l5-shelf { padding: 6px 12px 4px; margin: 2px 0 8px; }
+.wf .u4l5-shtop { margin-bottom: 2px; gap: 5px 6px; }
+.wf .u4l5-shl { font-size: 14px; }
+.wf .u4l5-shtop .chip { padding: 3px 10px; }
+.wf .u4l5-shstage { height: 194px; }
+.wf .u4l5-shmsg { font-size: 16.5px; margin-top: 4px; min-height: 1.4em; }
+.wf .u4l5-count { font-size: 15.5px; top: 6px; padding: 2px 10px; }
+.wf .u4l5-wqs { display: flex; flex-direction: column; gap: 6px; }
+.wf .u4l5-wqs .wq { padding: 4px 12px 4px; }
+.wf .u4l5-wqs .wq-a { flex-direction: row; align-items: flex-start; gap: 12px; margin-left: 40px; }
+.wf .u4l5-wqs .wq-a .pill { flex: none; }
+.wf .wq { padding: 6px 12px 6px; }
+.wf .wq .q-line { margin: 2px 0 4px; font-size: 17px; gap: 10px; }
+.wf .wq .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf .wq-a { gap: 4px; }
+.wf .q-ans, .wf .u4l5-wqs .q-ans { font-size: 15.5px; line-height: 1.32; min-height: 0; }
+.wf .wf-poll .poll-opts.c4 { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.wf .wf-poll .poll-opts.c4 .opt { font-size: 20px; padding: 5px 4px; }
+.wf .wf-poll .poll-opts.c4 .opt b { margin-right: 4px; }
+.wf .wf-poll:not(.revealed) .poll-ans { display: none; }
+.wf .wf-poll .poll-ans { min-height: 0; }
+.wf .u4l5-bonus { margin-top: 14px; }
+.wf .u4l5-bonus .q-ans { font-size: 16.5px; }

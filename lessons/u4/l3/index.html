@@ -43,9 +43,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Square Differences">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Square Differences</h2></div>
-  <p class="big">Square minus square: <span class="tex">16-9=7</span>. Which numbers can you make? <span class="muted">(Whole numbers only: <span class="tex">0^2</span> counts.)</span></p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Square Differences" style="--wf-side: 300px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Square Differences</h2>
+  <p class="wf-rule">Square minus square: <span class="tex">16-9=7</span>. Which numbers can you make? <span class="muted">(Whole numbers only: <span class="tex">0^2</span> counts.)</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
 
   <div class="u4l3-wu">
     <div class="u4l3-wtiles">
@@ -62,21 +63,24 @@
         <div class="q-line"><div class="q-num">1</div><div>A 6 by 6 square has a 4 by 4 corner lifted out. <span class="tex">6^2-4^2=\,?</span> How many tiles are left?</div></div>
         <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><span class="tex">36-16=\boldsymbol{20}</span> tiles. Tap <b>Cut and move</b>: they make a 2 by 10 rectangle.</div></div>
       </div>
-      <div class="wq">
+    </div>
+  </div>
+  <div class="wq u4l3-wq2">
         <div class="q-line"><div class="q-num">2</div><div><b>Which cards can you make?</b> Which seem impossible? <span class="muted">Tap a card. Three are done for you.</span></div></div>
         <div class="u4l3-cards" id="wu-cards"></div>
         <div class="u4l3-cards-ctl no-ink"><button class="pill small" type="button" id="wu-cards-all">Show all</button><button class="pill small" type="button" id="wu-cards-odd">Odds vs evens</button></div>
         <div class="u4l3-cards-note" id="wu-cards-note"></div>
       </div>
-    </div>
-  </div>
+
+  </div><div class="wf-side">
 
   <div class="wq u4l3-wq-wide">
     <div class="q-line"><div class="q-num">3</div><div><b>Neighbours:</b> <span class="tex">5^2-4^2</span>, &nbsp;<span class="tex">10^2-9^2</span>, &nbsp;<span class="tex">50^2-49^2</span>. Spot the shortcut?</div></div>
     <div class="wq-a"><button class="pill small" type="button" data-wq>Answer</button><div class="q-ans"><b>9, 19, 99.</b> Neighbours always give their <b>sum</b>: <span class="tex">50^2-49^2=50+49</span>. So every odd number can be made.</div></div>
   </div>
 
-  <div class="poll">
+
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> It’s <b>2026</b>. Can <em>this year</em> be written as a difference of two whole-number squares? <b>Guess first.</b></div></div>
     <div class="poll-opts">
       <div class="opt"><b>A</b> Yes: <span class="tex">1013^2-1012^2</span></div>
@@ -87,6 +91,7 @@
     <div class="poll-ans"><b>C, 2026 is impossible.</b> <span class="tex">a^2-b^2=(a-b)(a+b)</span>, and the two brackets differ by <span class="tex">2b</span>, so they are both odd or both even. Both odd: the product is odd. Both even: it’s a multiple of 4. But <span class="tex">2026=2\times1013</span> is even and <span class="tex">2026\div4=506.5</span>. No luck either way.<br>
       <span class="muted"><b>A</b> is the neighbour shortcut: <span class="tex">1013+1012=2025</span>, one short. <b>B</b> is <span class="tex">(2)(1012)=2024</span>, two short. 2024, 2025 and 2027 (<span class="tex">1014^2-1013^2</span>) all work, but this year doesn’t!</span></div>
   </div>
+  </div></div>
 
   <div class="wq u4l3-bonus">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Challenge your neighbour.</b> 2024 can be written as a difference of two squares in four different ways. Find the one with the smallest numbers. <span class="muted">Or: work out <span class="tex">99^2-1</span> in your head.</span></div></div>

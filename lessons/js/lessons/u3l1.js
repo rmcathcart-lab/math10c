@@ -353,6 +353,7 @@ const likeTerms = {
       g.t.forEach(([c, f], i) => { const first = i === 0 && (gi === 0 || g.br); terms.push({ el: span(K((first ? '' : '{}') + ftT(c, f, first)), 'u3-ltt'), c, f, g, first, gi }); });
       if (g.br) ops.push(span(K(')'), 'u3-ltop'));
     });
+    if (row.offsetWidth > W - 16) row.style.fontSize = Math.floor(32 * (W - 16) / row.offsetWidth) + 'px'; // the 10 warm-up socks: shrink the row to fit
     const NF = d.fams.length, gap = 16, bw = Math.min(250, (W - 40 - gap * (NF - 1)) / NF), bx = (W - (bw * NF + gap * (NF - 1))) / 2;
     const bins = d.fams.map((f, i) => {
       const terms_ = terms.filter((t) => t.f === f);
@@ -398,6 +399,7 @@ const likeTerms = {
         run: async (c) => {
           bins.forEach((x) => x.b.classList.toggle('on', x === b));
           b.l.innerHTML = K(b.terms.map((t, i) => ftT(t.c, t.f, i === 0, colOf(t.f))).join(''));
+          const lw = b.l.firstElementChild ? b.l.firstElementChild.offsetWidth : 0; if (lw > bw - 14) b.l.style.fontSize = Math.floor(25 * (bw - 14) / lw) + 'px';
           hide(b.l, b.s);
           await Promise.all(b.terms.map((t, i) => fly(c, stage, t.el, b.l, K(ftT(t.c, t.f, false, colOf(t.f))), { fs: 30, delay: i * 140 })));
           b.terms.forEach((t) => t.el.classList.add('used'));
@@ -796,28 +798,33 @@ const SOCK_FILL = { b: '#bed4f5', p: '#fad2d7', y: '#ffecb3', g: '#c8ebc8' };
 const sockSVG = (fill) => `<svg viewBox="0 0 86 120" class="u3s-svg" aria-hidden="true"><path d="M4 4h60v80h12a8 8 0 0 1 8 8v16a8 8 0 0 1-8 8H12a8 8 0 0 1-8-8z" fill="${fill}" stroke="#1e2d46" stroke-width="2.2" stroke-linejoin="round"/><rect x="4" y="4" width="60" height="16" fill="#fff" stroke="#1e2d46" stroke-width="2.2"/><path d="M14 7v10M24 7v10M34 7v10M44 7v10M54 7v10" stroke="#9aa6b8" stroke-width="2"/></svg>`;
 function mountSocks() {
   const box = document.getElementById('socks'); if (!box) return;
-  const W = box.clientWidth || 966, N = SOCKS.length, sw = 86, shh = 120, gap = (W - 40 - N * sw) / (N - 1), lineY = 30;
+  // sizes follow the box width (the one-screen layout gives it ~650 px): sk scales the socks, the rows stack under them
+  const W = box.clientWidth || 966, N = SOCKS.length, sk = Math.min(1, (W - 20) / (N * 86 + (N - 1) * 4)), mg = sk < 1 ? 10 : 20, sw = 86 * sk, shh = 120 * sk, gap = (W - 2 * mg - N * sw) / (N - 1), lineY = 30 * sk;
+  box.style.setProperty('--sk', sk);
   box.innerHTML = `<svg class="u3s-rope" width="${W}" height="60" aria-hidden="true"><path d="M8 ${lineY + 4} Q ${W / 2} ${lineY + 18} ${W - 8} ${lineY + 4}" fill="none" stroke="#6b7487" stroke-width="2.5"/></svg>
     <div class="u3s-ctl no-ink"><button class="pill small" type="button" data-a="sort">Sort them all</button><button class="pill small" type="button" data-a="squash" disabled>Squash each pile</button><button class="exb" type="button" data-a="reset" title="Start over" aria-label="Start over"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/></svg></button></div>
     <div class="u3s-read" aria-live="polite"></div><div class="u3s-hint">The piles go here.</div>`;
   const read = box.querySelector('.u3s-read'), hint = box.querySelector('.u3s-hint');
-  const PW = 214, PG = (W - 40 - PILES.length * PW) / (PILES.length - 1), pileY = 232;
+  const ctlY = lineY + 16 + shh + 6, PW = Math.min(214, (W - 2 * mg - 3 * 10) / PILES.length), PG = (W - 2 * mg - PILES.length * PW) / (PILES.length - 1), pileY = ctlY + 60 * sk;
+  const psc = Math.min(1, 0.7 / sk), qsc = Math.min(1.1, 0.86 / sk), pileH = sk < 1 ? 26 + shh * Math.max(psc, qsc) + 10 : 168;
+  box.querySelector('.u3s-ctl').style.top = ctlY + 'px'; read.style.top = ctlY + 6 + 'px'; hint.style.top = pileY + pileH / 2 - 16 + 'px';
+  if (sk < 1) box.style.height = pileY + pileH + 14 + 'px';
   const piles = PILES.map((f, i) => {
-    const el = h('div', 'u3s-pile', `<div class="u3s-ph">${f === 'x2' ? K('x^2') + '-socks' : f === 'x' ? K('x') + '-socks' : PILE_NAME[f]}</div>`); at(el, 20 + i * (PW + PG), pileY); el.style.width = PW + 'px';
-    box.appendChild(el); return { f, el, x: 20 + i * (PW + PG), socks: [] };
+    const el = h('div', 'u3s-pile', `<div class="u3s-ph">${f === 'x2' ? K('x^2') + '-socks' : f === 'x' ? K('x') + '-socks' : PILE_NAME[f]}</div>`); at(el, mg + i * (PW + PG), pileY); el.style.width = PW + 'px'; el.style.height = pileH + 'px';
+    box.appendChild(el); return { f, el, x: mg + i * (PW + PG), socks: [] };
   });
   const socks = SOCKS.map(([t, f, c, col], i) => {
     const el = h('button', 'u3s-sock', `${sockSVG(SOCK_FILL[col])}<span class="u3s-t">${K(t)}</span><i class="u3s-peg"></i>`); el.type = 'button'; el.title = 'Tap to sort this sock';
-    const x = 20 + i * (sw + gap), y = lineY + 4 + Math.sin((i + 0.5) / N * Math.PI) * 12;
+    const x = mg + i * (sw + gap), y = lineY + 4 + Math.sin((i + 0.5) / N * Math.PI) * 12;
     at(el, x, y); el._home = [x, y]; box.appendChild(el);
     const s = { el, t, f, c, sorted: false }; el.addEventListener('click', () => sortOne(s)); return s;
   });
   let squashed = false;
   const placeIn = (p) => p.socks.forEach((s, j) => {
-    const n = p.socks.length, sc = 0.7, w = sw * sc, gx = Math.min(w + 8, (PW - 16 - w) / Math.max(1, n - 1));
+    const n = p.socks.length, sc = psc, w = sw * sc, gx = Math.min(w + 8, (PW - 16 - w) / Math.max(1, n - 1));
     const x0 = p.x + (PW - (w + (n - 1) * gx)) / 2;
     s.el.style.transition = 'left .5s cubic-bezier(.25,.75,.3,1), top .5s cubic-bezier(.25,.75,.3,1), transform .5s';
-    at(s.el, x0 + j * gx - sw * (1 - sc) / 2, pileY + 40 - shh * (1 - sc) / 2); s.el.style.transform = `scale(${sc})`;
+    at(s.el, x0 + j * gx - sw * (1 - sc) / 2, pileY + (sk < 1 ? 28 : 40) - shh * (1 - sc) / 2); s.el.style.transform = `scale(${sc})`;
   });
   function status() {
     const left = socks.filter((s) => !s.sorted).length;
@@ -837,8 +844,8 @@ function mountSocks() {
   box.querySelector('[data-a=squash]').addEventListener('click', () => {
     if (squashed) return; squashed = true;
     piles.forEach((p) => {
-      const sum = p.socks.reduce((t, s) => t + s.c, 0), keep = p.socks[0], sc = 0.86;
-      const x = p.x + (PW - sw) / 2, y = pileY + 34;
+      const sum = p.socks.reduce((t, s) => t + s.c, 0), keep = p.socks[0], sc = qsc;
+      const x = p.x + (PW - sw) / 2, y = pileY + (sk < 1 ? 26 : 34);
       p.socks.forEach((s) => { at(s.el, x, y); s.el.style.transform = `scale(${sc})`; });
       setTimeout(() => {
         p.socks.slice(1).forEach((s) => { s.el.style.opacity = 0; });

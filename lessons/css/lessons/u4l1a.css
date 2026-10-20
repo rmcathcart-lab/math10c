@@ -221,3 +221,25 @@
 .u4l1a-rp.neg > span { background: rgba(255, 255, 255, .88); border-radius: 8px; padding: 0 8px; }
 [data-ink=ex4] .ans { min-height: 5.4em; }
 .u4l1a-gbox.ext .u4l1a-gbv { font-size: 32px; }
+
+/* ---------- one screen (main.lesson.screen): floor + Q1/Q2 left, Q3 and the big one right; the challenge below ---------- */
+.wf .u4l1a-wu { display: block; margin: 4px 0 0; }
+.wf .u4l1a-fl { display: grid; grid-template-columns: 400px minmax(0, 1fr); grid-template-rows: auto 1fr; column-gap: 14px; padding: 8px 12px 8px 6px; }
+.wf .u4l1a-fsvg { grid-row: 1 / 3; }
+.wf .u4l1a-fctl { margin-top: 2px; gap: 5px; }
+.wf .u4l1a-fctl .chip { padding: 4px 9px; font-size: 15px; }
+.wf .u4l1a-fctl .ex-custom input { width: 62px; }
+.wf .u4l1a-fcl { flex-basis: 100%; }
+.wf .u4l1a-fread { font-size: 15.5px; line-height: 1.38; margin-top: 8px; min-height: 0; }
+.wf .u4l1a-wqs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+.wf .wq { padding: 6px 12px 6px; }
+.wf .wq .q-line { margin: 2px 0 4px; font-size: 17px; gap: 10px; }
+.wf .wq .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf .wq-a { margin-left: 40px; gap: 4px; }
+.wf .q-ans { font-size: 15.5px; line-height: 1.32; min-height: 0; }
+.wf .u4l1a-bl { width: 54px; }
+.wf .wf-poll .poll-opts.c4 { gap: 6px; }
+.wf .wf-poll .poll-opts.c4 .opt { font-size: 18px; padding: 5px 8px; }
+.wf .wf-poll:not(.revealed) .poll-ans { display: none; }
+.wf .wf-poll .poll-ans { min-height: 0; }
+.wf .wq-wide { margin-top: 14px; }

@@ -160,6 +160,7 @@ const SR = {
 const setRead = {
   title: 'Reading a set out loud',
   height: 380,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SR).map((k) => ({ v: k, label: SR[k].name })),
   intro: (k) => (SR[k].kind === 'list' ? 'A set written as a <b>list</b>. Press <b>Next</b>.' : 'Read the set one piece at a time, and draw it on the number line. Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -441,6 +442,7 @@ const RW = {
 const realWorld = {
   title: 'Counted or measured?',
   height: 470,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'bath', label: 'Filling a bath' }, { sep: 'Check:' }, { v: 'e5', label: 'Example 5' }],
   intro: (k) => (k === 'e5' ? `Example 5: ${T('C=350+25n')} for ${T('n')} guests, from 50 to 300. Press <b>Next</b>.`
     : `A bath already has 20 L in it and fills at 8 L per minute for 15 minutes: ${T('V=20+8t')}. Press <b>Next</b>.`),
@@ -448,8 +450,8 @@ const realWorld = {
     const d = RW[k], [u, v] = d.v, ys = d.xs.map(d.f), W = ex.W;
     const tb = new ValueTable(stage, { x: 12, y: 40, headers: [u, v], rows: d.xs.map((x, i) => [x, nT(ys[i])]), hide: 1, tap: false, cellW: 70, cellH: 50 });
     add(stage, h('div', 'u5l4-formtag', T(d.eq)), 14, 8);
-    const G = new TGraph(stage, { x: 166, y: 14, width: 380, height: 440, xmin: d.win[0], xmax: d.win[1], ymin: d.win[2], ymax: d.win[3], xstep: d.steps[0], ystep: d.steps[1], xtitle: u, ytitle: v });
-    const P = panel(stage, 560, 14, W - 574, 440, 'Write it down');
+    const G = new TGraph(stage, { x: 178, y: 14, width: 380, height: 440, xmin: d.win[0], xmax: d.win[1], ymin: d.win[2], ymax: d.win[3], xstep: d.steps[0], ystep: d.steps[1], xtitle: u, ytitle: v });
+    const P = panel(stage, 572, 14, W - 586, 440, 'Write it down');
     const yLo = d.f(d.lo), yHi = d.f(d.hi);
     const all = svgEl('g', { class: 'u5l4-all' }, G.layers.data); G.layers.all = all;
     const zoomWin = { xmin: d.zoom[0], xmax: d.zoom[1], ymin: d.zoom[2], ymax: d.zoom[3] };
@@ -507,7 +509,7 @@ const WH = {
 const which = {
   title: 'List or set-builder? Which signs? Which numbers?',
   height: 400,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 920, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(WH).map((k) => ({ v: k, label: WH[k].label })),
   intro: (k) => WH[k].what + ' Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -556,7 +558,8 @@ function mountWarm() {
 
   // the track
   const tr = document.getElementById('u5l4-track'); if (!tr) return;
-  const G = new Graph(tr, { width: 500, height: 330, xmin: 0, xmax: 800, ymin: -14, ymax: 46, xstep: 100, ystep: 10, xlabels: 200, ylabels: 10, xtitle: 'd', ytitle: 'h', fontSize: 17 });
+  const TW = Math.min(500, tr.clientWidth || 500); // CSS sets the track width (smaller on one-screen pages)
+  const G = new Graph(tr, { width: TW, height: Math.round(TW * 330 / 500), xmin: 0, xmax: 800, ymin: -14, ymax: 46, xstep: 100, ystep: 10, xlabels: 200, ylabels: 10, xtitle: 'd', ytitle: 'h', fontSize: 17 });
   const [ux0, uy0] = G.toPx(0, 0), [ux1, uy1] = G.toPx(800, -14);
   svgEl('rect', { x: ux0, y: uy0, width: ux1 - ux0, height: uy1 - uy0, fill: '#966e46', 'fill-opacity': 0.18 }, G.layers.bg);
   G.label(660, -8, '<i>underground</i>', { cls: 'u5l4-under' });

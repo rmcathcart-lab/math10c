@@ -225,8 +225,9 @@ function kiteTable(host, x, y, w, rows) {
 }
 function mountWarm() {
   const host = document.getElementById('u9l3-wfig'); if (!host) return;
-  kiteScene(host, { w: 620, h: 360, L: 250, th: 40, ghost: true, hTxt: '? m' });
-  const tb = h('div', 'u9l3-wtab'); host.appendChild(tb); kiteTable(tb, null, null, 330, [90, 0, 30, 40]);
+  const kh = parseFloat(getComputedStyle(host).getPropertyValue('--kite-h')) || 360;   // one-screen CSS can make the scene shorter
+  kiteScene(host, { w: 620, h: kh, L: 250, th: 40, ghost: true, hTxt: '? m' });
+  const tb = h('div', 'u9l3-wtab'); (document.getElementById('u9l3-wtab') || host).appendChild(tb); kiteTable(tb, null, null, 330, [90, 0, 30, 40]);
 }
 const kite = {
   title: 'Kite height: 50 m of string',
@@ -528,6 +529,7 @@ const solveTop = solveDef('Unknown on top → multiply', [{ sep: 'Idea' }, { v: 
   (k) => (k === 'itop' ? 'Hypotenuse <b>10</b>, angle <b>30°</b>. Find <b>x</b>, the side opposite the angle. Press <b>Next</b>.' : 'Name the sides, pick the ratio, then free the unknown on a balance. Press <b>Next</b>.'));
 const solveBot = solveDef('Unknown on the bottom → divide', [{ sep: 'Idea' }, { v: 'ibot', label: 'Unknown on the bottom' }, { sep: 'Check' }, { v: 'e4', label: 'Example 4' }, { v: 'e5', label: 'Example 5' }],
   (k) => (k === 'ibot' ? 'The same 30° triangle, but now the opposite leg is <b>5</b> and the hypotenuse <b>x</b> is unknown. Press <b>Next</b>.' : 'The unknown lands in the denominator. Press <b>Next</b>.'));
+solveTop.minW = 780; solveBot.minW = 820; // drawn this wide and scaled to fit beside the sidebar
 
 /* =============================== Example 7: two sides, and the check =============================== */
 const solve7 = {
@@ -764,7 +766,7 @@ const FL = {
 const tool = {
   title: 'Which tool? Where is the unknown?',
   height: 460,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ sep: 'Check' }, { v: 'e1a', label: 'Example 1(a)' }, { v: 'e2', label: 'Example 2' }, { v: 'e4', label: 'Example 4' }, { v: 'e6', label: 'Example 6' }, { sep: 'Idea' }, { v: 'none', label: 'Only angles' }],
   intro: 'Start at the top: what does the question give you? Press <b>Next</b>.',
   make(stage, k, ex) {

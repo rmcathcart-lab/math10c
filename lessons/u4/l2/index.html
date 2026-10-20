@@ -43,9 +43,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: The Census Taker’s Riddle" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Census Taker’s Riddle</h2></div>
-  <p class="big">A census taker knocks on a door. The parent answers only in clues…</p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Census Taker’s Riddle" id="wu" style="--wf-side: 300px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Census Taker’s Riddle</h2>
+  <p class="wf-rule">A census taker knocks on a door. The parent answers only in clues…</p></div>
+  <div class="wf-grid"><div class="wf-main">
   <div class="u4l2-wtop">
     <div class="u4l2-house">
       <svg viewBox="0 0 400 300" aria-label="A house with a hidden house number, a parent at the door and a census taker on the path">
@@ -108,12 +109,17 @@
         <div class="wq-a"><button class="pill small" type="button" data-wq="q1">Answer</button><div class="q-ans"><span class="tex">1\times36,\ 2\times18,\ 3\times12,\ 4\times9,\ 6\times6</span>: <b>five pairs</b>.</div></div></div>
       <div class="wq"><div class="q-line"><div class="q-num">2</div><div>Which pair has the smallest <b>sum</b>?</div></div>
         <div class="wq-a"><button class="pill small" type="button" data-wq="q2">Answer</button><div class="q-ans"><b>6 and 6</b>: sum 12. (The sums are 37, 20, 15, 13, 12.)</div></div></div>
-      <div class="wq"><div class="q-line"><div class="q-num">3</div><div>Product 36 <b>and</b> sum 13: which pair? Could any other pair do that?</div></div>
-        <div class="wq-a"><button class="pill small" type="button" data-wq="q3">Answer</button><div class="q-ans"><b>4 and 9</b>, and no other: every pair has a different sum. Product <b>and</b> sum together pin down the pair.</div></div></div>
     </div>
   </div>
 
-  <div class="poll">
+  </div><div class="wf-side">
+
+  <div class="wq-side">
+      <div class="wq"><div class="q-line"><div class="q-num">3</div><div>Product 36 <b>and</b> sum 13: which pair? Could any other pair do that?</div></div>
+        <div class="wq-a"><button class="pill small" type="button" data-wq="q3">Answer</button><div class="q-ans"><b>4 and 9</b>, and no other: every pair has a different sum. Product <b>and</b> sum together pin down the pair.</div></div></div>
+  </div>
+
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> The census taker knows the house number, yet clue 2 wasn’t enough. Clue 3 cracked it. How old are the kids? <b>Guess first.</b></div></div>
     <div class="poll-opts c4">
       <div class="opt"><b>A</b> 6, 6, 1</div>
@@ -121,6 +127,13 @@
       <div class="opt"><b>C</b> 4, 3, 3</div>
       <div class="opt"><b>D</b> 9, 4, 1</div>
     </div>
+    <button class="pill" type="button" data-poll>Reveal</button>
+    <div class="poll-ans"><b>B: the kids are 9, 2 and 2.</b> Only one sum appears twice: <b>13</b> (1, 6, 6 and 2, 2, 9). The census taker could see the house number, 13, and was still stuck. “My <b>oldest</b>” rules out 1, 6, 6, where two kids tie for oldest.<br>
+      <span class="muted"><b>A</b> is the other sum-13 trio, but it has no single oldest. <b>C</b> and <b>D</b> multiply to 36, but their sums (10 and 14) are unique, so clue 2 alone would have been enough.</span><br>
+      <b>Today’s lesson:</b> a <b>product</b> and a <b>sum</b> together pin down a pair. <span class="tex">x^2+13x+36=(x+4)(x+9)</span>, because 4 and 9 multiply to 36 and add to 13.</div>
+  </div>
+  </div></div>
+
     <div class="u4l2-trbox">
       <div class="u4l2-ph">Every trio of ages with product 36 <span class="muted">(tap a card to open it)</span></div>
       <div class="u4l2-trios">
@@ -135,11 +148,6 @@
       </div>
       <div class="u4l2-trctl"><button type="button" class="pill small" data-tr="all">Show all 8</button><button type="button" class="pill small" data-tr="sums">Show the sums</button><button type="button" class="pill small" data-tr="clue">Use clue 3</button><span class="muted">Which sum would leave the census taker stuck?</span></div>
     </div>
-    <button class="pill" type="button" data-poll>Reveal</button>
-    <div class="poll-ans"><b>B: the kids are 9, 2 and 2.</b> Only one sum appears twice: <b>13</b> (1, 6, 6 and 2, 2, 9). The census taker could see the house number, 13, and was still stuck. “My <b>oldest</b>” rules out 1, 6, 6, where two kids tie for oldest.<br>
-      <span class="muted"><b>A</b> is the other sum-13 trio, but it has no single oldest. <b>C</b> and <b>D</b> multiply to 36, but their sums (10 and 14) are unique, so clue 2 alone would have been enough.</span><br>
-      <b>Today’s lesson:</b> a <b>product</b> and a <b>sum</b> together pin down a pair. <span class="tex">x^2+13x+36=(x+4)(x+9)</span>, because 4 and 9 multiply to 36 and add to 13.</div>
-  </div>
 
   <div class="wq" style="margin-top:14px">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Same riddle, but the product of the ages is <b>72</b>. How old are the kids?</div></div>

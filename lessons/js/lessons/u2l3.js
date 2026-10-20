@@ -49,8 +49,8 @@ const pulse = (c, el, ms = 420) => c.anim(el, [{ transform: 'scale(1)' }, { tran
  * ===================================================================== */
 function mountBall() {
   const host = document.getElementById('bb-scene'); if (!host) return;
-  const W = host.clientWidth || 966, H = 430, G = 360;
-  const SX = (W - 70) / 15.3, X0 = 52, MY = 300 / 16;
+  const W = host.clientWidth || 966, H = host.clientHeight || 430, G = H - 70; // sizes come from the box (CSS), 966 × 430 by default
+  const SX = (W - 70) / 15.3, X0 = 52, MY = (G - 60) / 16;
   const px = (u) => X0 + u * SX, py = (m) => G - m * MY;
   const svg = svgEl('svg', { class: 'bb-svg', width: W, height: H, viewBox: `0 0 ${W} ${H}` });
   const defs = svgEl('defs');
@@ -193,6 +193,7 @@ const CANCEL = { a: ['6', 3, 8], b: ['2', 2, 5], c: ['10', 1, 4], d: ['x', 3, 7]
 const cancel = {
   title: 'Expand, cancel, and compare with the quotient law',
   height: 410,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: ['a', 'b', 'c', 'd', 'e'].map((k) => ({ v: k, label: tex(`${CANCEL[k][0]}^{${CANCEL[k][1]}}\\div ${CANCEL[k][0]}^{${CANCEL[k][2]}}`) })),
   intro: (k) => { const [b, m, n] = CANCEL[k]; return `Two ways to work out ${tex(`${b}^{${m}}\\div ${b}^{${n}}`)}: write out every factor and cancel, or use the quotient law. They must give the <b>same answer</b>.`; },
   make(stage, k, ex) {
@@ -500,6 +501,7 @@ const VCOL = ['v1', 'v2', 'v3'];
 const sorter = {
   title: 'Sort it out: numbers together, each letter on its own',
   height: 430,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 't1', label: tex(SO.t1.orig) }, { sep: 'Example 4 check:' }, ...['a', 'b', 'c', 'd', 'e', 'f'].map((k) => ({ v: k, label: `(${k})` })), { sep: 'Example 5 check:' }, { v: 'e5', label: 'Ex. 5' }],
   intro: (k) => `Simplify ${tex(SO[k].orig)} and write it with positive exponents. Plan: <b>numbers</b> together, then <b>each variable</b> on its own.`,
   make(stage, k, ex) {
@@ -643,7 +645,7 @@ const flip = {
     const parens = add(stage, svgEl('svg', { class: 'fl-par', width: bw + 80, height: 172 }), cx - bw / 2 - 40, cy - 86);
     parens.append(svgEl('path', { d: 'M24 6 Q4 86 24 166' }), svgEl('path', { d: `M${bw + 56} 6 Q${bw + 76} 86 ${bw + 56} 166` }));
     const expo = add(stage, h('div', 'fl-exp', K(`-${n}`)), cx + bw / 2 + 40, cy - 98);
-    const tag = add(stage, h('div', 'fl-tag c', 'flip!'), cx + bw / 2 + 92, cy + 4); hide(tag);
+    const tag = add(stage, h('div', 'fl-tag c', 'flip!'), Math.min(cx + bw / 2 + 92, W - 46), cy + 4); hide(tag); // kept inside a narrow stage
     const valEl = add(stage, h('div', 'fl-val c'), cx, cy + 148); hide(valEl);
     const A = f.alg ? null : f.a ** n, B = f.alg ? null : f.b ** n;
     const frac = (p, q) => (q === 1 ? String(p) : `\\dfrac{${p}}{${q}}`);

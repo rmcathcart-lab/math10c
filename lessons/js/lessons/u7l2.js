@@ -290,7 +290,7 @@ const AS = {
 const assemble = {
   title: 'The equation builds itself',
   height: 470,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 840, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(AS).map((k) => ({ v: k, label: AS[k].label })),
   intro: 'Two empty slots: one for the slope, one for the y-intercept. Watch each number travel from the graph into the equation. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -346,7 +346,7 @@ const RG = {
 const readGraph = {
   title: 'Read b, count m, write the equation',
   height: 470,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 840, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(RG).map((k) => ({ v: k, label: RG[k].label })),
   intro: 'First find where the line crosses the y-axis, then count the slope to a second grid point. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -435,7 +435,7 @@ const CP = {
 const copyTri = {
   title: 'Parallel: copy the slope triangle',
   height: 470,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 840, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(CP).map((k) => ({ v: k, label: CP[k].label })),
   intro: 'A parallel line climbs exactly as steeply, so it has the very same slope triangle. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -620,14 +620,15 @@ const FP = {
 };
 const strategy = {
   title: 'Where do m and b come from?',
-  height: 470,
+  height: 458,
+  side: false, // the flowchart needs the full width: beside the sidebar its text would shrink to about 12 px
   minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(FP).map((k) => ({ v: k, label: FP[k].label })),
   intro: (k) => `Trace ${FP[k].label}: one path finds ${T('m')}, the other finds ${T('b')}. Press <b>Next</b>.`,
   make(stage, k, ex) {
     const d = FP[k], W = 960;
     const F = new Flowchart(stage, { x: Math.max(0, (ex.W - W) / 2), y: 2, width: W, height: 372, nodes: FN, edges: FE });
-    const res = add(stage, h('div', 'u7l2-fcres'), Math.max(0, (ex.W - 560) / 2), 386); box(res, 560, 70); hide(res);
+    const res = add(stage, h('div', 'u7l2-fcres'), Math.max(0, (ex.W - 560) / 2), 380); box(res, 560, 70); hide(res);
     return [
       { cap: `${T('m')}: ${d.mCap}`, run: (c) => F.light(c, ['top', 'mQ', ...d.m]) },
       { cap: `${T('b')}: ${d.bCap}`, run: async (c) => { F.fade(); await F.light(c, ['top', 'bQ', ...d.b]); } },
@@ -682,7 +683,7 @@ const flatten = {
         } },
       { cap: `Every point on ${T('L_1')} has ${T('y')}-coordinate ${T('3')}, whatever ${T('x')} is. That is exactly what ${T('y=3')} says.`,
         run: async (c) => {
-          tb = new ValueTable(stage, { x: PX + 24, y: 290, headers: ['x', 'y'], rows: [[-5, 3], [0, 3], [4, 3], [7, 3]], layout: 'h', cellW: 74, cellH: 48, hide: 1, tap: false });
+          tb = new ValueTable(stage, { x: PX + 24, y: 290, headers: ['x', 'y'], rows: [[-5, 3], [0, 3], [4, 3], [7, 3]], layout: 'h', cellW: Math.min(74, Math.floor((PW - 40) / 5)), cellH: 48, hide: 1, tap: false });
           for (const p of [[-5, 3], [4, 3], [7, 3]]) await G.reveal(G.point(p[0], p[1], { color: INK, r: 6 }), c);
           await tb.fill(c);
         } },

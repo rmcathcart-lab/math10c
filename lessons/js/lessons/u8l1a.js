@@ -81,7 +81,8 @@ function mountWarm() {
   });
   const right = h('div', 'u8l1a-tright'); host.appendChild(right);
   const clock = h('div', 'u8l1a-clock'); right.appendChild(clock);
-  const G = new Graph(right, { width: 380, height: 300, xmin: 0, xmax: 20.5, ymin: 0, ymax: 90, xstep: 1, ystep: 10, xlabels: 5, ylabels: 20, fontSize: 15, origin: true, xtitle: 't', ytitle: 'T', pad: [16, 18, 30, 40] });
+  const cs = getComputedStyle(host), GW = parseFloat(cs.getPropertyValue('--gw')) || 380, GH = parseFloat(cs.getPropertyValue('--gh')) || 300; // the one-screen layout draws a smaller graph
+  const G = new Graph(right, { width: GW, height: GH, xmin: 0, xmax: 20.5, ymin: 0, ymax: 90, xstep: 1, ystep: 10, xlabels: 5, ylabels: 20, fontSize: 15, origin: true, xtitle: 't', ytitle: 'T', pad: [16, 18, 30, 40] });
   const st = { t: 0 };
   D.forEach((d) => {
     G.curve(() => { const a = G.toPx(0, d.T0), b = G.toPx(st.t, d.T0 + d.r * st.t); return { subs: [[a, b]] }; }, { color: d.col, width: 4 }, 'u8l1a-wline', G.layers.data);
@@ -114,7 +115,8 @@ const OP = {
 };
 const onePair = {
   title: 'Many solutions each, one solution for both',
-  height: 470,
+  height: 490,
+  minW: 860, // the tables + check panel need ~370 px beside the graph
   choices: [{ v: 's1', label: OP.s1.label }, { v: 'tea', label: OP.tea.label }],
   intro: (k) => (k === 'tea' ? `The warm-up drinks: hot ${T(k1('T=80-4t'))} and iced ${T(k2('T=5+t'))}, where ${T('t')} is minutes and ${T('T')} is °C. When do they match? Press <b>Next</b>.`
     : `Two equations, ${T(k1('x+2y=8'))} and ${T(k2('2x-y=1'))}. Each has many solutions. Which pair works for <b>both</b>? Press <b>Next</b>.`),
@@ -129,7 +131,7 @@ const onePair = {
       void col; return tb;
     };
     const t1 = mkT(0, d.e1, BLUE), t2 = mkT(1, d.e2, AMB);
-    const P = panel(stage, x0, 248, W, 208, 'Check in both', 'u8l1a-cp');
+    const P = panel(stage, x0, 248, W, 228, 'Check in both', 'u8l1a-cp');
     let L1, L2, S;
     const plot = async (c, tb, ps, col) => { for (const p of ps) { await tb.addRow(p, c); await pop(c, G.point(p[0], p[1], { color: col, r: 6.5 }), 220); } };
     const lab = (eq, l, col) => G.label(l[0], l[1], T(eq.tex), { pos: l[2], cls: 'bk-ptlab', color: col });

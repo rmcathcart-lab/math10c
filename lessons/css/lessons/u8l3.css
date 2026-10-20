@@ -201,3 +201,23 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u8l3-tok.u8l3-hop { background: #fff1c9; position: relative; z-index: 3; }
 .u8l3-pfin { position: relative; display: flex; align-items: center; justify-content: center; gap: 14px; font-size: 24px; background: #f4fbf8; border: 2px solid #9fd3bd; border-radius: 14px; box-sizing: border-box; }
 .u8l3-pfin .bk-stamp { position: absolute; right: 24px; top: 12px; }
+
+/* ---------- one screen (main.lesson.screen): one column: the three scales, Q1–Q3 with answers beside their buttons, the big one; early finishers below ---------- */
+.wf-one .u8l3-pets { margin: 4px 0 8px; }
+.wf-one .u8l3-wqs .q-line { margin: 8px 0 2px; font-size: 18px; gap: 10px; }
+.wf-one .u8l3-wa { display: flex; align-items: baseline; gap: 12px; margin: 0 0 6px 40px; }
+.wf-one .u8l3-wa .pill.small { flex: none; }
+.wf-one .bk-wq .bk-ans { font-size: 17px; margin-top: 0; line-height: 1.35; }
+.wf-one .wf-poll { margin-top: 8px; padding: 2px 16px 12px; }
+.wf-one .wf-poll .q-line { margin: 10px 0 8px; font-size: 18px; }
+.wf-one .wf-poll .poll-opts { grid-template-columns: repeat(3, 1fr); margin: 0 0 10px 40px; gap: 10px; }
+.wf-one .wf-poll .opt { padding: 6px 12px; font-size: 18px; }
+.wf-one .wf-poll > .pill { margin-left: 40px; }
+.wf-one .wf-poll .poll-ans { margin-left: 40px; }
+.wf-one .wf-poll { margin-top: 4px; }
+
+/* explainer "pets": the result row fits its box at the sidebar width (minW 940) */
+.u8l3-petfin { gap: 14px; padding: 6px 10px; }
+.u8l3-pf .u8l3-psvg { width: 72px; height: 66px; }
+/* explainer "prep": text starts at the left so the "Ax + By = C" stamp on the right never covers C */
+.u8l3-pfin { justify-content: flex-start; padding-left: 24px; }

@@ -42,26 +42,12 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Kite Height" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Kite Height</h2></div>
-  <p class="big">You let out all <b>50 m</b> of string. It makes a <b><span class="tex">40^\circ</span></b> angle with the level ground.</p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Kite Height" id="wu" style="--wf-side: 330px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Kite Height</h2>
+  <p class="wf-rule">You let out all <b>50 m</b> of string. It makes a <b><span class="tex">40^\circ</span></b> angle with the level ground.</p></div>
+  <div class="wf-grid"><div class="wf-main">
   <div class="u9l3-wfig" id="u9l3-wfig"></div>
-  <div class="u9l3-wqs">
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">1</div><div>If the string went <b>straight up</b> (<span class="tex">90^\circ</span>), how high is the kite?</div></div>
-      <div class="u9l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>50 m</b>: all of the string is height.</div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">2</div><div>If the string lay <b>flat</b> (<span class="tex">0^\circ</span>), how high is it?</div></div>
-      <div class="u9l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>0 m</b>: the kite is at hand height.</div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">3</div><div>At <span class="tex">30^\circ</span>, the kite’s height is exactly <b>half</b> the string’s length. How high is it?</div></div>
-      <div class="u9l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>25 m.</b> This is <span class="tex">\sin30^\circ=\tfrac12</span> stated in words.</div></div>
-    </div>
-  </div>
-
-  <div class="poll">
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> At <span class="tex">40^\circ</span>, about how high is the kite above your hand? <b>Guess first.</b></div></div>
     <div class="poll-opts">
       <div class="opt"><b>A</b> about 22 m</div>
@@ -74,6 +60,23 @@
       <span class="muted"><b>A</b> is <span class="tex">\tfrac{40}{90}\times50</span>: “height grows in step with the angle.” <b>B</b> is a straight line between the <span class="tex">30^\circ</span> (25 m) and <span class="tex">90^\circ</span> (50 m) rows, but sine is not linear: the height climbs fast at low angles and levels off near <span class="tex">90^\circ</span> (at <span class="tex">60^\circ</span> it is already 43 m). <b>D</b> is <span class="tex">50\cos40^\circ\approx38.3</span>: the <b>adjacent</b> side, the ground distance to the spot under the kite. Wrong side.</span></div>
   </div>
 
+  </div><div class="wf-side">
+  <div id="u9l3-wtab"></div>
+  <div class="u9l3-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>If the string went <b>straight up</b> (<span class="tex">90^\circ</span>), how high is the kite? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l3-wa"><div class="bk-ans"><b>50 m</b>: all of the string is height.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>If the string lay <b>flat</b> (<span class="tex">0^\circ</span>), how high is it? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l3-wa"><div class="bk-ans"><b>0 m</b>: the kite is at hand height.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>At <span class="tex">30^\circ</span>, the kite’s height is exactly <b>half</b> the string’s length. How high is it? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u9l3-wa"><div class="bk-ans"><b>25 m.</b> This is <span class="tex">\sin30^\circ=\tfrac12</span> stated in words.</div></div>
+    </div>
+  </div>
+  </div></div>
   <div class="bk-wq u9l3-early">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> At the same <span class="tex">40^\circ</span>, how much string do you need for the kite to be <b>40 m</b> up?</div></div>
     <div class="u9l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">\sin40^\circ=\dfrac{40}{x}\ \Rightarrow\ x=\dfrac{40}{\sin40^\circ}\approx62.2</span> m. The unknown is now on the <b>bottom</b>: a preview of Section 3.</div></div>

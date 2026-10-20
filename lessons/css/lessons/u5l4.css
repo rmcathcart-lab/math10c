@@ -101,3 +101,37 @@
 .u5l4-acard .u5l4-pl { font-size: 20px; }
 .u5l4-nw { white-space: nowrap; }
 .u5l4-trsub { font: 500 15px var(--round); color: var(--muted); margin-left: 6px; }
+
+/* ---------- one screen (main.lesson.screen): riders + Q1 | track + Q2 | Q3 + the big one ---------- */
+.wf .u5l4-sign { grid-column: 1 / -1; justify-self: start; margin: 8px 0 0; padding: 4px 14px; font-size: 18px; }
+.wf .u5l4-wcols { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 14px; align-items: start; }
+.wf .u5l4-kidsbox, .wf .u5l4-trackbox { padding: 6px 8px; }
+.wf .u5l4-kidsvg { width: 272px; height: auto; }
+.wf .u5l4-why { font-size: 15px; line-height: 1.3; min-height: 2.6em; margin: 2px 2px 0; }
+.wf .u5l4-tiny { font-size: 14px; }
+.wf .u5l4-trh { font-size: 16px; margin: 0 2px 2px; line-height: 1.25; }
+.wf .u5l4-trsub { display: block; margin: 0; font-size: 13.5px; }
+.wf #u5l4-track { width: 356px; }
+.wf .u5l4-trctl { gap: 5px; margin: 4px 0 0; flex-wrap: nowrap; }
+.wf .u5l4-trctl .pill.small { margin: 0; padding: 4px 8px; font-size: 13px; white-space: nowrap; }
+.wf .u5l4-wqs { margin-top: 10px; gap: 0; }
+.wf .wf-side .u5l4-wqs { margin-top: 0; }
+.wf .u5l4-wqs .q-line { margin: 0; font-size: 17px; gap: 10px; line-height: 1.38; }
+.wf .u5l4-wqs .q-line .pill.small { margin-left: 4px; vertical-align: 1px; }
+.wf .u5l4-wa { margin: 2px 0 0 40px; }
+.wf .u5l4-wa .bk-ans { margin-top: 0; font-size: 16px; line-height: 1.35; }
+.wf .u5l4-blank { width: 46px; }
+.wf .wf-poll { margin-top: 10px; padding: 2px 12px 12px; }
+.wf .wf-poll .q-line { margin-top: 8px; }
+.wf .wf-poll .poll-opts.u5l4-p2 { grid-template-columns: 1fr; gap: 6px; }
+.wf .wf-poll .opt { font-size: 15.5px; padding: 6px 8px; white-space: nowrap; }
+.wf .u5l4-wcols { grid-template-columns: 286px minmax(0, 1fr); }
+.wf .u5l4-kidsvg { width: 268px; }
+.wf .u5l4-kn { font-size: 25px; }
+.wf .u5l4-kc { font-size: 22px; }
+.wf .u5l4-kt { font-size: 20px; }
+.wf #u5l4-track { width: 334px; }
+.wf .u5l4-trctl { flex-wrap: wrap; }
+.wf .u5l4-kc { font-size: 19px; }
+.wf .wf-poll { margin-top: 6px; }
+.wf .u5l4-sign { margin-top: 6px; }

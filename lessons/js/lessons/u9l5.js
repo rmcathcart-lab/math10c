@@ -150,7 +150,7 @@ function toolChart(stage, x, y, w = 560) {
 function mountWarm() {
   const host = document.getElementById('u9l5-wfig'); if (!host) return;
   const W = 450, H = 440, gy = 405, bx = 175, L = 330, u = L / 8.4, lean = 4 * DEG;
-  const svg = svgEl('svg', { width: W, height: H }, host);
+  const svg = svgEl('svg', { width: W, height: H, viewBox: `0 0 ${W} ${H}` }, host);   // viewBox: one-screen CSS can shrink it
   svgEl('rect', { x: 0, y: gy, width: W, height: H - gy, fill: '#cfe3bf' }, svg);
   svgEl('line', { x1: 0, x2: W, y1: gy, y2: gy, stroke: INK, 'stroke-width': 2 }, svg);
   const tower = svgEl('g', { class: 'u9l5-wfade', transform: `rotate(4 ${bx} ${gy})` }, svg);
@@ -343,7 +343,7 @@ const TR = {
 const twoRoutes = {
   title: 'Two routes to the same side',
   height: 400,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(TR).map((k) => ({ v: k, label: TR[k].label })),
   intro: 'One side, two routes. Do they land in the same place? Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -499,6 +499,7 @@ const FG = {
 const fromGiven = {
   title: 'Build on the given data, not on a rounded answer',
   height: 430,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(FG).map((k) => ({ v: k, label: FG[k].label })),
   intro: 'Two ways to find the second unknown. Watch where each one starts. Press <b>Next</b>.',
   make(stage, k, ex) {

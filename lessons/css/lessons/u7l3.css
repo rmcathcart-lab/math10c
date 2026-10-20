@@ -146,3 +146,22 @@
 .u7l3-sv { margin-top: 4px; font-size: 19px; color: var(--ink2); }
 .u7l3-sst { position: absolute; right: 10px; bottom: 8px; }
 .u7l3-ansC { font: 800 22px var(--round); color: var(--ok); text-align: center; margin-top: auto; }
+
+/* ---------- one screen (main.lesson.screen): the ticket counter with Q1–Q3 on the left; the graph (shorter: its size
+   is read from #u7l3-wgraph) and the big one on the right ---------- */
+.wf .u7l3-shop { padding: 10px 14px; gap: 6px; }
+.wf .u7l3-tk { height: 64px; }
+#u7l3-wgraph { width: 470px; height: 330px; }
+.wf #u7l3-wgraph { width: 470px; height: 256px; }
+.wf .u7l3-wbtns { margin: 6px 0 0; }
+.wf .u7l3-wbtns .pill { padding-top: 6px; padding-bottom: 6px; }
+.wf .u7l3-wqs { margin-top: 12px; }
+.wf .u7l3-wqs .q-line { margin: 6px 0 2px; font-size: 17.5px; gap: 10px; }
+.wf .u7l3-wqs .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf .u7l3-wa { display: flex; align-items: flex-start; gap: 12px; margin: 0 0 6px 40px; }
+.wf .u7l3-wa .pill.small { flex: none; }
+.wf .u7l3-wa .bk-ans { margin-top: 2px; font-size: 16px; line-height: 1.35; }
+.wf .wf-poll { margin-top: 10px; }
+.wf .wf-poll .poll-opts.c4 { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.wf .wf-poll .poll-opts.c4 .opt { padding: 6px 8px; }
+.wf .u7l3-early { margin-top: 12px; }

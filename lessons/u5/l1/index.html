@@ -43,10 +43,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Battleship" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Battleship</h2></div>
-  <p class="big">The enemy fleet hides on a grid. Every shot is an ordered pair <span class="tex">(x,\ y)</span>. <b>Tap a point to fire.</b></p>
-  <div class="u5l1-wtop">
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Battleship" id="wu" style="--wf-side: 560px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Battleship</h2>
+  <p class="wf-rule">The enemy fleet hides on a grid. Every shot is an ordered pair <span class="tex">(x,\ y)</span>. <b>Tap a point to fire.</b></p></div>
+  <div class="wf-grid"><div class="wf-main">
     <div class="u5l1-bwrap">
       <div class="u5l1-board" id="bship" data-tap></div>
       <div class="u5l1-bctl no-ink">
@@ -57,18 +57,18 @@
       </div>
       <div class="u5l1-blog" id="bs-log">One ship is sunk. We’ve hit the <b>cruiser</b> once. Your shot!</div>
     </div>
+  </div><div class="wf-side">
     <div class="u5l1-wqs">
       <div class="u5l1-legend"><span class="u5l1-lg-miss"></span> miss <span class="u5l1-lg-hit"></span> hit</div>
-      <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Name the point of our <b class="u5l1-red">hit</b>. Which quadrant is it in?</div></div>
-        <button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">(-3,\ 1)</span>: 3 left, 1 up, so <b>Quadrant II</b>.</div></div>
-      <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>Next shots: <span class="tex">(4,\ -2)</span> and <span class="tex">(0,\ -5)</span>. Which quadrant is each in?</div></div>
-        <button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">(4,\ -2)</span> is in <b>Quadrant IV</b>. <span class="tex">(0,\ -5)</span> is <b>on the <span class="tex">y</span>-axis</b>, so it is in <b>no quadrant</b>: the axes are borders, not regions.</div></div>
-      <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Shots must land on whole-number points. Are the coordinates <b>discrete</b> or <b>continuous</b>? A submarine’s depth?</div></div>
-        <button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Shot coordinates are <b>discrete</b>: there is no shot at <span class="tex">(2.5,\ -3)</span>. A submarine’s depth is <b>continuous</b>: it can be 41.37 m, or any value in between.</div></div>
+      <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Name the point of our <b class="u5l1-red">hit</b>. Which quadrant is it in? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+        <div class="bk-ans"><span class="tex">(-3,\ 1)</span>: 3 left, 1 up, so <b>Quadrant II</b>.</div></div>
+      <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>Next shots: <span class="tex">(4,\ -2)</span> and <span class="tex">(0,\ -5)</span>. Which quadrant is each in? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+        <div class="bk-ans"><span class="tex">(4,\ -2)</span> is in <b>Quadrant IV</b>. <span class="tex">(0,\ -5)</span> is <b>on the <span class="tex">y</span>-axis</b>, so it is in <b>no quadrant</b>: the axes are borders, not regions.</div></div>
+      <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Shots must land on whole-number points. Are the coordinates <b>discrete</b> or <b>continuous</b>? A submarine’s depth? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+        <div class="bk-ans">Shot coordinates are <b>discrete</b>: there is no shot at <span class="tex">(2.5,\ -3)</span>. A submarine’s depth is <b>continuous</b>: it can be 41.37 m, or any value in between.</div></div>
     </div>
-  </div>
 
-  <div class="poll">
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> The last ship, a <b>cruiser</b>, is 3 points in a straight line (across or up-down). We’ve hit it <b>once</b>. Which shot is <b>sure</b> to hit it again? <b>Guess first.</b></div></div>
     <div class="poll-opts c4">
       <div class="opt"><b>A</b> <span class="tex">(-3,\ 2)</span></div>
@@ -81,6 +81,8 @@
       <button type="button" class="pill small no-ink" data-bs="logic">Show why on the board ▸</button><br>
       <span class="muted"><b>A</b> and <b>C</b> each hit in only one of the two placements: 50–50 guesses. <b>D</b> is “next to” the hit, but diagonally, and ships can’t bend.</span></div>
   </div>
+
+  </div></div>
 
   <div class="bk-wq u5l1-bonus">
     <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Our next shot at <span class="tex">(-3,\ 0)</span> hits. In the worst case, how many <b>more</b> shots to sink the cruiser?</div></div>

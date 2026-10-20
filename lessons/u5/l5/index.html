@@ -42,25 +42,32 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Zoom and Enhance" id="wu">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Zoom and Enhance</h2></div>
-  <p class="big">Three graphing-calculator screens. Can you trust what you see?</p>
-  <div class="u5l5-wscr">
-    <figure><div class="u5l5-fig" data-wu="A"></div><figcaption><b class="u5l5-wl">A</b><span class="tex">y=x^2</span><br><span class="tex">x:[-10,\ 10]</span>, <span class="tex">y:[-10,\ 10]</span></figcaption></figure>
-    <figure><div class="u5l5-fig" data-wu="B"></div><figcaption><b class="u5l5-wl">B</b>same graph, <span class="tex">y=x^2</span><br><span class="tex">x:[0.95,\ 1.05]</span>, <span class="tex">y:[0.88,\ 1.12]</span></figcaption></figure>
-    <figure><div class="u5l5-fig" data-wu="C"></div><figcaption><b class="u5l5-wl">C</b><span class="tex u5l5-blue">y=x^2</span> and <span class="tex u5l5-red">y=2^x</span><br><span class="u5l5-wwin"><span class="tex">x:[-10,\ 10]</span>, <span class="tex">y:[-10,\ 10]</span></span></figcaption></figure>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Zoom and Enhance" id="wu" style="--wf-side: 390px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Zoom and Enhance</h2>
+  <p class="wf-rule">Three graphing-calculator screens. Can you trust what you see?</p></div>
+  <div class="wf-grid"><div class="wf-main u5l5-wscr">
+    <div class="u5l5-wr">
+      <figure><div class="u5l5-fig" data-wu="A"></div></figure>
+      <div class="u5l5-wtx"><div class="u5l5-cap"><b class="u5l5-wl">A</b><span class="tex">y=x^2</span><br><span class="tex">x:[-10,\ 10]</span>, <span class="tex">y:[-10,\ 10]</span></div>
+        <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Screen A shows <span class="tex">y=x^2</span>. What are the coordinates of its lowest point? <button class="pill small" data-bk-toggle>Answer</button></div></div>
+        <div class="u5l5-wa"><div class="bk-ans"><span class="tex">(0,\ 0)</span>: the vertex sits at the origin.</div></div></div></div>
+    </div>
+    <div class="u5l5-wr">
+      <figure><div class="u5l5-fig" data-wu="B"></div></figure>
+      <div class="u5l5-wtx"><div class="u5l5-cap"><b class="u5l5-wl">B</b>same graph, <span class="tex">y=x^2</span><br><span class="tex">x:[0.95,\ 1.05]</span>, <span class="tex">y:[0.88,\ 1.12]</span></div>
+        <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>Screen B is the <b>same</b> graph, zoomed in near <span class="tex">(1,\ 1)</span>. What shape do you see? <button class="pill small" data-bk-toggle>Answer</button></div></div>
+        <div class="u5l5-wa"><div class="bk-ans">A <b>straight line</b>. Over <span class="tex">0.95\le x\le 1.05</span> the curve bends away from a straight line by at most <span class="tex">0.0025</span>, about 1% of the screen’s height.</div></div></div></div>
+    </div>
+    <div class="u5l5-wr">
+      <figure><div class="u5l5-fig" data-wu="C"></div></figure>
+      <div class="u5l5-wtx"><div class="u5l5-cap"><b class="u5l5-wl">C</b><span class="tex u5l5-blue">y=x^2</span> and <span class="tex u5l5-red">y=2^x</span><br><span class="u5l5-wwin"><span class="tex">x:[-10,\ 10]</span>, <span class="tex">y:[-10,\ 10]</span></span></div></div>
+    </div>
+  </div><div class="wf-side">
+  <div class="u5l5-wqside">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Name something real that looks flat up close but is really curved. <button class="pill small" data-bk-toggle>Answer</button></div></div>
+        <div class="u5l5-wa"><div class="bk-ans">The Earth (a lake, the prairie horizon), a big ball, a highway curve seen from a car… Any smooth curve looks straight if you zoom in far enough.</div></div></div>
   </div>
-
-  <div class="u5l5-wqs">
-    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Screen A shows <span class="tex">y=x^2</span>. What are the coordinates of its lowest point?</div></div>
-      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">(0,\ 0)</span>: the vertex sits at the origin.</div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>Screen B is the <b>same</b> graph, zoomed in near <span class="tex">(1,\ 1)</span>. What shape do you see?</div></div>
-      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">A <b>straight line</b>. Over <span class="tex">0.95\le x\le 1.05</span> the curve bends away from a straight line by at most <span class="tex">0.0025</span>, about 1% of the screen’s height.</div></div>
-    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Name something real that looks flat up close but is really curved.</div></div>
-      <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">The Earth (a lake, the prairie horizon), a big ball, a highway curve seen from a car… Any smooth curve looks straight if you zoom in far enough.</div></div>
-  </div>
-
-  <div class="poll">
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> On Screen C the graphs cross twice. How many times do <span class="tex">y=2^x</span> and <span class="tex">y=x^2</span> <b>really</b> cross? <b>Guess first.</b></div></div>
     <div class="poll-opts u5l5-c4">
       <div class="opt"><b>A</b> 1</div>
@@ -79,6 +86,7 @@
       <span class="muted"><b>B</b> trusts the screen. <b>D</b> guesses the graphs keep weaving. <b>A</b> notices only the crossing near the origin.</span><br>
       <b>Today’s lesson:</b> the default window rarely shows every feature worth seeing, so learn to <b>choose the window</b>.</div>
   </div>
+  </div></div>
 
   <div class="bk-wq" style="margin-top:14px">
     <div class="q-line"><div class="q-num u5l5-bonus">+</div><div><b>Early finishers.</b> Find a window where <span class="tex">y=2^x</span> and <span class="tex">y=x^2</span> look like they <b>never</b> cross.</div></div>

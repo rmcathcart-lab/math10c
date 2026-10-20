@@ -62,11 +62,12 @@ const SCENE = {
 const FLEET = [['battleship', 4], ['cruiser', 3], ['submarine', 3], ['destroyer', 2]];
 function mountBattleship() {
   const host = document.getElementById('bship'); if (!host) return;
-  const G = new Graph(host, { width: 470, height: 470, xmin: -5.5, xmax: 5.5, ymin: -5.5, ymax: 5.5, numbers: false, pad: [16, 18, 38, 46], cls: 'u5l1-sea' });
+  const BW = Math.min(470, host.clientWidth || 470); // CSS sets the board width (smaller on one-screen pages)
+  const G = new Graph(host, { width: BW, height: BW, xmin: -5.5, xmax: 5.5, ymin: -5.5, ymax: 5.5, numbers: false, pad: [16, 18, 38, 46], cls: 'u5l1-sea' });
   // numbers along the bottom and left edges, like the board
   for (let k = -5; k <= 5; k++) {
     const [px] = G.toPx(k, 0), [, py] = G.toPx(0, k);
-    svgEl('text', { class: 'bk-num u5l1-edge', x: px, y: 470 - 8, 'text-anchor': 'middle' }, G.layers.axes).textContent = mns(k);
+    svgEl('text', { class: 'bk-num u5l1-edge', x: px, y: BW - 8, 'text-anchor': 'middle' }, G.layers.axes).textContent = mns(k);
     svgEl('text', { class: 'bk-num u5l1-edge', x: 26, y: py + 6, 'text-anchor': 'end' }, G.layers.axes).textContent = mns(k);
   }
   const hullL = svgEl('g', { class: 'u5l1-hulls' }, G.layers.data), logicL = svgEl('g', { class: 'u5l1-logic' }, G.layers.data), markL = svgEl('g', { class: 'u5l1-marks' }, G.layers.top);

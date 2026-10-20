@@ -98,3 +98,21 @@ code.u5l6-m { font: 700 .9em ui-monospace, "SF Mono", Menlo, Consolas, monospace
 .u5l6-calcnum { font: 700 15px ui-monospace, "SF Mono", Menlo, Consolas, monospace; color: #1c2230; background: rgba(255, 255, 255, .9); padding: 0 3px; }
 /* the answer pill on the "which tool" flowchart */
 .u5l6-ans { font: 800 19px var(--round); color: #fff; background: var(--ok); border-radius: 12px; padding: 4px 14px; white-space: nowrap; }
+
+/* ---------- one screen (main.lesson.screen): road, model and Q1–Q2 on the left, Q3 and the big one on the right ---------- */
+.wf .u5l6-road { margin: 2px 0 4px; }
+.wf .u5l6-model { margin: 2px 0 6px; padding: 5px 12px; font-size: 17px; }
+.wf .u5l6-wqs .q-line { margin: 8px 0 0; font-size: 17px; gap: 10px; line-height: 1.38; }
+.wf .wf-side .u5l6-wqs .q-line { margin-top: 0; }
+.wf .u5l6-wqs .q-line .pill.small { margin-left: 4px; vertical-align: 1px; }
+.wf .u5l6-wa { margin: 2px 0 0 40px; }
+.wf .u5l6-wa .bk-ans { margin-top: 0; font-size: 16px; line-height: 1.35; }
+.wf .wf-poll { margin-top: 10px; padding-bottom: 12px; }
+.wf .wf-poll .q-line { margin-top: 8px; }
+.wf .wf-poll .poll-opts.c4 { grid-template-columns: 1fr 1fr; gap: 6px; }
+.wf .wf-poll .opt { font-size: 16.5px; padding: 6px 10px; }
+.wf .u5l6-rn { font-size: 24px; }
+.wf .u5l6-rb { font-size: 27px; }
+.wf .u5l6-rt { font-size: 31px; }
+.wf .u5l6-rq { font-size: 42px; }
+.wf .wf-poll .opt { white-space: nowrap; padding: 6px 8px; font-size: 16px; }

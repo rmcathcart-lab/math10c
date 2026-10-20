@@ -170,3 +170,19 @@
 .u10l3-idxOnT { font-weight: 800; font-size: 18px; }
 .u10l3-hiFt { font-size: 19px; }
 .u10l3-svg text { transform-box: fill-box; transform-origin: center; }
+
+/* ---------- one screen (main.lesson.screen): stack, caliper and Q1–Q3 on the left; the big one on the right ---------- */
+.wf .u10l3-wtop { position: relative; margin-top: 2px; gap: 0; }
+.wf .u10l3-wfig { zoom: .8; }
+.wf .u10l3-wbtns { position: absolute; right: 0; top: 0; margin: 0; }
+.wf .u10l3-wbtns .pill { margin: 0; padding: 6px 14px; font-size: 15px; }
+.wf .u10l3-wqs { margin-top: 6px; }
+.wf .u10l3-wqs .q-line, .wf .u10l3-early .q-line { font-size: 17px; margin: 4px 0; gap: 10px; }
+.wf .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf .u10l3-wa { display: flex; align-items: baseline; gap: 10px; margin: 0 0 6px 40px; }
+.wf .u10l3-wa .pill.small { flex: none; }
+.wf .bk-wq .bk-ans { font-size: 16px; line-height: 1.35; margin-top: 0; }
+.wf .wf-poll .poll-opts { gap: 6px; }
+.wf .wf-poll .opt { padding: 5px 10px; font-size: 16.5px; }
+.wf .u10l3-early { margin-top: 10px; }
+.wf .u10l3-social { margin: 10px 0 0; font-size: 18px; }
