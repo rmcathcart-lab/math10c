@@ -217,51 +217,92 @@
     });
     return wrap;
   }
+  /* where each assignment is in the catalog: { u: unit, c: catalog entry } */
+  function catEntry(id) { var hit = null; HW.CATALOG.some(function (u) { return u.lessons.some(function (c) { if (c.id === id) { hit = { u: u, c: c }; return true; } }); }); return hit; }
+  function goLabel(s) { return s.reqDone || s.extraDone ? (s.reqDone === s.req ? 'Review' : 'Continue') : 'Start'; }
+  /* the panel at the top of the home page: today's lesson from the class calendar (open the lesson, start its assignment),
+     or the unit test if that's today; with no class today, the assignment the student was last working on */
+  function homeToday() {
+    var C = HW.Cal, D = calData(), key = null, kind = 'today';
+    if (C && D) { var on = C.on(D.cal, D.noSchool, C.today()); key = on.filter(function (k) { return C.info(k).kind !== 'test'; })[0] || on[0] || null; }
+    if (!key) { var last = lastLesson(), ls0 = last && HW.lessons[last]; if (ls0) { var s0 = summary(ls0); if (s0.reqDone < s0.req && (s0.reqDone || s0.extraDone)) { key = last; kind = 'resume'; } } }
+    if (!key) return null;
+    var info = C ? C.info(key) : null;
+    if (info && info.kind === 'test') {
+      var tb = el('section', 'today is-test'); if (HW.unitStyle) tb.setAttribute('style', HW.unitStyle(info.unit));
+      tb.innerHTML = '<div class="td-badge" aria-hidden="true">📝</div><div class="td-main"><div class="td-when">Today in class</div><h2 class="td-title">' + esc(info.title) + '</h2><div class="td-sub">' + esc(info.unitTitle || '') + '</div></div>';
+      return tb;
+    }
+    var ce = catEntry(key); if (!ce) return null;
+    var c = ce.c, lesson = HW.lessons[key], turl = teachingUrl(c);
+    var box = el('section', 'today' + (kind === 'resume' ? ' is-resume' : '')); if (HW.unitStyle) box.setAttribute('style', HW.unitStyle(ce.u.unit));
+    var when = kind === 'resume' ? 'Pick up where you left off' : 'Today in class';
+    box.appendChild(el('div', 'td-badge', '<span class="td-k">' + (kind === 'resume' ? 'Assignment' : 'Lesson') + '</span><span class="td-n">' + esc(c.num) + '</span>'));
+    var main = el('div', 'td-main', '<div class="td-when">' + when + ' · Unit ' + ce.u.unit + '</div><h2 class="td-title">' + HW.tex(esc(c.title)) + '</h2>');
+    if (lesson) { var s = summary(lesson), pr = el('div', 'td-prog'); pr.appendChild(bar(lesson)); pr.appendChild(el('span', 'td-count', '<b>' + s.reqDone + '</b>/' + s.req + ' required done')); main.appendChild(pr); }
+    box.appendChild(main);
+    var acts = el('div', 'td-acts');
+    if (turl && kind !== 'resume') { var a1 = el('a', 'btn td-lesson', 'Open Lesson ' + esc(c.num)); a1.href = turl; a1.addEventListener('click', function () { L.push({ t: 'event', type: 'notes', lesson: c.id }); }); acts.appendChild(a1); }
+    if (lesson) { var a2 = el('a', 'btn btn-primary td-go', goLabel(summary(lesson)) + ' Assignment ' + esc(c.num)); a2.href = '#/lesson/' + lesson.id; acts.appendChild(a2); }
+    if (acts.children.length) box.appendChild(acts);
+    return box;
+  }
   function renderHome() {
     leaveLesson(); document.body.className = 'home';
     drawTop(); top.dataset.crumb = '';
     view.innerHTML = '';
     var head = el('div', 'home-head'), hl = el('div', 'hh-text');
     hl.appendChild(el('h1', '', 'Hi, ' + esc(session.name.split(' ')[0]) + '.'));
-    var cont = lastLesson();
-    hl.appendChild(el('p', 'muted', cont ? 'Pick up where you left off, or choose any assignment below.' : 'Choose an assignment to start practising.'));
+    hl.appendChild(el('p', 'hh-date', esc(new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }))));
     head.appendChild(hl);
     var acts = el('div', 'hh-cal'); acts.id = 'home-cal'; homeCalendar(acts); head.appendChild(acts); // the next test + the class calendar, on the right
     view.appendChild(head);
     loadCal();
+    var td = homeToday(); if (td) view.appendChild(td);
     if (HW.TestMode) HW.TestMode.home(view);
-    var legend = el('div', 'legend', '<span><i class="lg first"></i>Done first try</span><span><i class="lg help"></i>Done with a hint</span><span><i class="lg extra"></i>Extra practice</span><span><i class="lg empty"></i>Still to do</span>');
-    view.appendChild(legend);
+    var uhead = el('div', 'units-head', '<h2>Units</h2>');
+    uhead.appendChild(el('div', 'legend', '<span><i class="lg first"></i>Done first try</span><span><i class="lg help"></i>Done with a hint</span><span><i class="lg extra"></i>Extra practice</span><span><i class="lg empty"></i>Still to do</span>'));
+    view.appendChild(uhead);
+    var units = el('div', 'home-units'); view.appendChild(units);
     var CD = calData(), LAY = CD && HW.Cal ? HW.Cal.layout(CD.cal, CD.noSchool) : null, TODAY = HW.Cal ? HW.Cal.today() : '';
     /* units fold up: the current unit is open, the rest are closed; what the student opens or closes holds for today */
     var cu = currentUnit(CD, LAY, TODAY), UK = 'hw:units:' + studentKey(), US = null;
     try { US = JSON.parse(ls(UK) || 'null'); } catch (e) { US = null; }
     if (!US || US.day !== TODAY) US = { day: TODAY, open: {} };
     HW.CATALOG.forEach(function (u) {
-      var sec = el('section', 'unit'); if (HW.unitStyle) sec.setAttribute('style', HW.unitStyle(u.unit)); // unit colour (as on the class calendar)
+      var sec = el('section', 'unit' + (u.unit === cu ? ' is-cur' : '')); if (HW.unitStyle) sec.setAttribute('style', HW.unitStyle(u.unit)); // unit colour (as on the class calendar)
       var open = u.unit in US.open ? !!US.open[u.unit] : u.unit === cu;
-      var built = u.lessons.filter(function (c) { return HW.lessons[c.id]; }), done = built.filter(function (c) { var sm = summary(HW.lessons[c.id]); return sm.req && sm.reqDone === sm.req; }).length;
-      var uh = el('h2', 'unit-title', '<span class="ut-chev" aria-hidden="true">▸</span><span class="unit-num">Unit ' + u.unit + '</span> ' + esc(u.title) + ' <span class="unit-out">' + esc(u.outcomes) + '</span>' +
-        (u.unit === cu ? '<span class="ut-cur">Current unit</span>' : '') + '<span class="ut-sum">' + (built.length ? done + ' of ' + built.length + ' assignment' + (built.length === 1 ? '' : 's') + ' done' : u.lessons.length + ' lessons') + '</span>');
+      var built = u.lessons.filter(function (c) { return HW.lessons[c.id]; });
+      // one segment per assignment: full when its required questions are done, half when it's started
+      var segs = '', done = 0;
+      built.forEach(function (c) { var sm = summary(HW.lessons[c.id]), full = sm.req && sm.reqDone === sm.req; if (full) done++; segs += '<i class="' + (full ? 'full' : sm.reqDone || sm.extraDone ? 'some' : '') + '"></i>'; });
+      var prog = built.length ? '<span class="ut-segs" aria-hidden="true">' + segs + '</span><span class="ut-sum">' + done + ' of ' + built.length + ' done</span>'
+        : '<span class="ut-sum">' + u.lessons.length + ' lessons · assignments coming soon</span>';
+      var uh = el('h2', 'unit-title', '<span class="unit-num"><span class="sr">Unit </span>' + u.unit + '</span>' +
+        '<span class="ut-main"><span class="ut-name">' + esc(u.title) + '</span><span class="ut-meta"><span class="unit-out">' + esc(u.outcomes) + '</span>' + (u.unit === cu ? '<span class="ut-cur">Current unit</span>' : '') + '</span></span>' +
+        '<span class="ut-prog">' + prog + '</span>' +
+        '<svg class="ut-chev" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 4.5 12.5 10 7 15.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>');
       uh.setAttribute('role', 'button'); uh.tabIndex = 0; uh.setAttribute('aria-expanded', open ? 'true' : 'false');
+      uh.title = built.length ? done + ' of ' + built.length + ' assignments done (all required questions)' : '';
       sec.classList.toggle('closed', !open);
-      var toggle = function (e) {
-        if (e.target.closest && e.target.closest('.unit-levels')) return; // the level chips have their own tooltips
+      var toggle = function () {
         var o = sec.classList.contains('closed'); sec.classList.toggle('closed', !o); uh.setAttribute('aria-expanded', o ? 'true' : 'false');
         US.open[u.unit] = o; ls(UK, JSON.stringify(US));
       };
-      uh.addEventListener('click', toggle); uh.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(e); } });
+      uh.addEventListener('click', toggle); uh.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
       sec.appendChild(uh);
-      if (u.lessons.some(function (c) { return HW.lessons[c.id]; })) uh.appendChild(unitLevels(u));
-      if (!u.lessons.length) { sec.classList.add('soon'); sec.appendChild(el('div', 'soon-note', 'Coming soon')); view.appendChild(sec); return; }
+      var body = el('div', 'unit-body'); sec.appendChild(body);
+      if (built.length) body.appendChild(unitLevels(u));
+      if (!u.lessons.length) { sec.classList.add('soon'); body.appendChild(el('div', 'soon-note', 'Coming soon')); units.appendChild(sec); return; }
       var list = el('div', 'lesson-list');
       u.lessons.forEach(function (c) {
         var lesson = HW.lessons[c.id], row = el(lesson ? 'a' : 'div', 'lesson-row' + (lesson ? '' : ' locked'));
         // beside each assignment: a small card that opens the lesson itself (same tab; its home button comes back here),
         // marked Today / Taught / its date from the class calendar (a spacer keeps the rows lined up)
         var line = el('div', 'lesson-line'), turl = teachingUrl(c);
+        var when = LAY ? LAY.dateOf[c.id] : null, stt = !when ? '' : when === TODAY ? 'today' : when < TODAY ? 'past' : 'next';
+        if (stt === 'today') line.classList.add('is-today');
         if (turl) {
-          var when = LAY ? LAY.dateOf[c.id] : null, stt = !when ? '' : when === TODAY ? 'today' : when < TODAY ? 'past' : 'next';
           var tag = stt === 'today' ? 'Today' : stt === 'past' ? '✓ Taught' : stt === 'next' ? HW.Cal.nice(when, { month: 'short', day: 'numeric' }) : '';
           var tc = el('a', 'lesson-teach' + (stt ? ' is-' + stt : ''), '<span class="lt-k">Lesson</span><span class="lt-n">' + esc(c.num) + '</span>' + (tag ? '<span class="lt-s">' + tag + '</span>' : ''));
           tc.href = turl;
@@ -275,15 +316,16 @@
         row.appendChild(info);
         if (lesson) {
           row.href = '#/lesson/' + lesson.id;
-          var s = summary(lesson), right = el('div', 'lr-progress');
+          var s = summary(lesson), right = el('div', 'lr-progress'), g = goLabel(s);
+          row.classList.add(g === 'Review' ? 'st-done' : g === 'Continue' ? 'st-going' : 'st-new');
           right.appendChild(bar(lesson));
           right.appendChild(el('div', 'lr-counts', '<b>' + s.reqDone + '</b>/' + s.req + ' required' + (s.extra ? ' · <b>' + s.extraDone + '</b>/' + s.extra + ' extra' : '') + (s.secs ? ' · ' + mins(s.secs) : '')));
           row.appendChild(right);
-          row.appendChild(el('span', 'lr-go', s.reqDone || s.extraDone ? (s.reqDone === s.req ? 'Review' : 'Continue') : 'Start'));
+          row.appendChild(el('span', 'lr-go', (g === 'Review' ? '<span aria-hidden="true">✓ </span>' : '') + g));
         } else row.appendChild(el('span', 'lr-soon', 'Coming soon'));
         list.appendChild(line);
       });
-      sec.appendChild(list); view.appendChild(sec);
+      body.appendChild(list); units.appendChild(sec);
     });
     L.setStatus({ view: 'home' }, false);
   }
