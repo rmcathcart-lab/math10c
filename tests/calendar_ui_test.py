@@ -68,14 +68,19 @@ async def main():
         await sp.route(BASE + 'js/config.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=CONFIG))
         await sp.goto(BASE + '?class=10c-b'); await sp.wait_for_selector('.name-btn', timeout=10000)
         await sp.click('.name-btn:has-text("Ava Brown")'); pins = sp.locator('.field.pin'); await pins.nth(0).fill('1111'); await pins.nth(1).fill('1111')
-        await sp.click('.btn-primary'); await sp.wait_for_selector('.lesson-row'); await sp.wait_for_selector('.top-cal', timeout=10000)
-        await sp.wait_for_selector('.top-cal'); print('top bar:', (await sp.inner_text('.top-right')).replace('\n', ' '))
+        await sp.click('.btn-primary'); await sp.wait_for_selector('.lesson-row'); await sp.wait_for_selector('.hh-calbtn', timeout=10000)
+        print('beside the greeting:', (await sp.inner_text('.home-head .hh-cal')).replace('\n', ' ')); assert await sp.locator('.top-right .hh-calbtn').count() == 0
         assert await sp.locator('.vtog').count() == 0, 'no toggle on the student home'
         await sp.screenshot(path=SH + 'student_home.png')
-        await sp.click('.top-cal'); await sp.wait_for_selector('.cal-pop .calv'); await sp.wait_for_timeout(300)
+        await sp.click('.hh-calbtn'); await sp.wait_for_selector('.cal-pop .calv'); await sp.wait_for_timeout(300)
         await sp.screenshot(path=SH + 'student_pop.png')
-        months = await sp.evaluate("[...document.querySelectorAll('.cal-pop .calm')].map(m => m.dataset.ym)"); print('months:', months); assert '2026-09' in months and len(months) >= 4
-        await sp.evaluate("document.querySelector('.cal-pop .calv').scrollToDate('2026-09-04')"); await sp.wait_for_timeout(200)
+        hd = await sp.evaluate("[...document.querySelectorAll('.cal-pop .calm-hd div')].map(d => d.textContent)"); assert hd[0] == 'Sun' and hd[6] == 'Sat', hd
+        await sp.evaluate("document.querySelector('.cal-pop .calv').scrollToDate('2026-09-04')"); await sp.wait_for_timeout(300)
+        t1 = await sp.inner_text('.cal-pop .calv-title'); print('header:', t1); assert t1.startswith('September')
+        await sp.evaluate("document.querySelector('.cal-pop .calv').scrollToDate('2026-11-16')"); await sp.wait_for_timeout(300)
+        t2 = await sp.inner_text('.cal-pop .calv-title'); print('header:', t2); assert t2.startswith('November')
+        assert await sp.locator('.cal-pop .calm-grid').count() == 1, 'one continuous grid'
+        await sp.evaluate("document.querySelector('.cal-pop .calv').scrollToDate('2026-09-04')"); await sp.wait_for_timeout(300)
         st4 = await sp.evaluate("[...document.querySelectorAll('.calm-day[data-date=\"2026-09-04\"] .calm-chip')].map(c => c.textContent)"); print('student Sept 4:', st4); assert len(st4) == 2
         assert 'No school' in await sp.inner_text('.calm-day[data-date="2026-09-07"]')
         await sp.keyboard.press('Escape'); assert await sp.locator('.cal-pop').count() == 0

@@ -62,7 +62,6 @@
       calcB.type = 'button'; calcB.title = 'On-screen calculator (TI-30XIIS layout)'; calcB.addEventListener('click', function () { HW.Calc.toggle(); });
       right.appendChild(calcB);
       if (L.enabled) { var dot = el('span', 'sync-dot' + (L.ok === false ? ' bad' : L.ok ? ' good' : ''), ''); dot.title = L.ok === false ? 'Can’t reach your teacher’s ledger right now — your work is saved on this device and will be sent later.' : 'Your work is being saved for your teacher.'; right.appendChild(dot); }
-      if (!crumb) topCalendar(right); // the home page: the next test and the class calendar, beside the name
       var who = el('button', 'btn btn-ghost who', esc(session.name) + (session.klass ? ' <span class="muted">· ' + esc(session.klass) + '</span>' : '')); who.type = 'button'; who.title = 'Sign out';
       who.addEventListener('click', function () { if (confirm('Sign out of ' + session.name + '?')) signOut(); });
       right.appendChild(who);
@@ -222,10 +221,12 @@
     leaveLesson(); document.body.className = 'home';
     drawTop(); top.dataset.crumb = '';
     view.innerHTML = '';
-    var head = el('div', 'home-head');
-    head.appendChild(el('h1', '', 'Hi, ' + esc(session.name.split(' ')[0]) + '.'));
+    var head = el('div', 'home-head'), hl = el('div', 'hh-text');
+    hl.appendChild(el('h1', '', 'Hi, ' + esc(session.name.split(' ')[0]) + '.'));
     var cont = lastLesson();
-    head.appendChild(el('p', 'muted', cont ? 'Pick up where you left off, or choose any lesson below.' : 'Choose a lesson to start practising.'));
+    hl.appendChild(el('p', 'muted', cont ? 'Pick up where you left off, or choose any lesson below.' : 'Choose a lesson to start practising.'));
+    head.appendChild(hl);
+    var acts = el('div', 'hh-cal'); acts.id = 'home-cal'; homeCalendar(acts); head.appendChild(acts); // the next test + the class calendar, on the right
     view.appendChild(head);
     loadCal();
     if (HW.TestMode) HW.TestMode.home(view);
@@ -280,21 +281,22 @@
       var next = { cal: d.cal ? HW.Cal.clean(d.cal) : null, noSchool: d.noSchool || [] }, was = JSON.stringify(CAL);
       CAL = next; ls(calKey(), JSON.stringify(next));
       var h = location.hash.replace(/^#\/?/, '').split('/')[0];
-      if (was !== JSON.stringify(next) && !cur.lesson && document.body.className === 'home' && (h === '' || h === 'calendar')) { drawTop(); if (document.getElementById('cal-pop')) openCalendar(); }
+      if (was !== JSON.stringify(next) && !cur.lesson && document.body.className === 'home' && (h === '' || h === 'calendar')) { var hc = document.getElementById('home-cal'); if (hc) homeCalendar(hc); if (document.getElementById('cal-pop')) openCalendar(); }
     }).catch(function () {});
   }
-  /* top bar (home page): "📝 Unit 4 Test · Wed, Oct 21" and a Calendar button that opens the calendar in a pop-up */
-  function topCalendar(right) {
+  /* beside "Hi, …" on the home page: "📝 Next test: Unit 4 Test · Wed, Oct 21" and a Calendar button (opens a pop-up) */
+  function homeCalendar(right) {
+    right.innerHTML = '';
     var C = HW.Cal, D = calData(); if (!C || !D) return;
     var nt = C.nextTest(D.cal, D.noSchool, C.today());
     if (nt) {
       var when = nt.date === C.today() ? 'today' : C.nice(nt.date) + (nt.inDays === 1 ? ' · next class' : nt.inDays > 1 ? ' · in ' + nt.inDays + ' classes' : '');
-      var n = el('button', 'next-test top-test' + (nt.inDays <= 2 ? ' soon' : ''), '📝 <span class="tt-l">Next test: </span><b>' + esc(nt.info.title) + '</b><span class="tt-w"> · ' + esc(when) + '</span>');
+      var n = el('button', 'next-test hh-test' + (nt.inDays <= 2 ? ' soon' : ''), '📝 <span class="tt-l">Next test: </span><b>' + esc(nt.info.title) + '</b><span class="tt-w"> · ' + esc(when) + '</span>');
       n.type = 'button'; n.title = 'Next test: ' + nt.info.title + ', ' + C.nice(nt.date, { weekday: 'long', month: 'long', day: 'numeric' }) + ' — open the class calendar';
       n.addEventListener('click', function () { openCalendar(nt.date); });
       right.appendChild(n);
     }
-    var b = el('button', 'btn btn-ghost top-cal', '<span aria-hidden="true">📅</span><span class="tc-l">Calendar</span>'); b.type = 'button'; b.title = 'Class calendar';
+    var b = el('button', 'btn hh-calbtn', '<span aria-hidden="true">📅</span><span class="tc-l">Class calendar</span>'); b.type = 'button'; b.title = 'Class calendar';
     b.addEventListener('click', function () { openCalendar(); });
     right.appendChild(b);
   }
