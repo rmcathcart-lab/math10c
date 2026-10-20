@@ -15,7 +15,8 @@
  *   Days      one row per student per lesson per day: seconds worked (all / in class), answers, right, first try
  *
  * Script properties: SHEET_ID, TEACHER_KEY, SECRET (token signing), CLASSES (list of class codes with a roster),
- *   BLOCKS ({ class: 'A'..'D' }), NOSCHOOL (["2026-10-12", …]). Live "who is on right now" lives in the script cache.
+ *   BLOCKS ({ class: 'A'..'D' }), NOSCHOOL (["2026-10-12", …]), CAL:<class> (the class calendar, see js/calendar.js:
+ *   { v, start, items: [[lesson or test key, class-day slot]…], skipped }). Live "who is on right now" lives in the script cache.
  * In class: an answer counts as in class when the student's device stamped it inside the class's block on the bell
  * schedule AND it reached the server inside the block (+5 min for batching). A class with no block = always in class.
  * ============================================================ */
@@ -89,6 +90,7 @@ function doGet(e) {
     if (a === 'progress') return json_(progress_(p['class'], p.name, p.token), cb);
     if (a === 'tcheck') return json_(tcheck_(p), cb);
     if (a === 'myresults') return json_(myResults_(p), cb);
+    if (a === 'cal') return json_(cal_(p['class']), cb);
     if (!teacherKey_() || p.key !== teacherKey_()) return json_({ ok: false, error: 'bad key' }, cb);
     if (a === 'classes') return json_(classList_(), cb);
     if (a === 'dash') return json_(dash_(p['class']), cb);
@@ -101,6 +103,7 @@ function doGet(e) {
     if (a === 'removestudent') return json_(removeStudent_(p['class'], p.name), cb);
     if (a === 'setblock') return json_(setBlock_(p['class'], p.block), cb);
     if (a === 'setnoschool') return json_(setNoSchool_(p.dates), cb);
+    if (a === 'setcal') return json_(setCal_(p['class'], p.cal), cb);
     if (a === 'tests') return json_(testsList_(), cb);
     if (a === 'savetest') return json_(saveTest_(p.id, p.def), cb);
     if (a === 'deltest') return json_(delTest_(p.id), cb);
@@ -287,6 +290,7 @@ function delClass_(klass) {
   var code = norm_(klass), lock = LockService.getScriptLock(); lock.waitLock(20000);
   try {
     save_('CLASSES', classes_().filter(function (c) { return c.code !== code; }));
+    try { props_().deleteProperty('CAL:' + code); cache_().remove('P:CAL:' + code); } catch (e) {}
     var sh = sheet_('Roster'); rosterRows_(code).sort(function (a, b) { return b.row - a.row; }).forEach(function (x) { sh.deleteRow(x.row); });
     return { ok: true };
   } finally { lock.releaseLock(); }
@@ -322,6 +326,24 @@ function setBlock_(klass, block) {
   var lock = LockService.getScriptLock(); lock.waitLock(15000);
   try { var all = blocks_(); if (b) all[k] = b; else delete all[k]; save_('BLOCKS', all); return { ok: true, blocks: all }; }
   finally { lock.releaseLock(); }
+}
+/* the class calendar (students read it; the teacher saves it from the ledger's Calendar tab). Days off are NOSCHOOL. */
+function cal_(klass) {
+  var c = classOf_(klass); if (!c) return { ok: false, error: 'unknown class' };
+  var v = cachedProp_('CAL:' + c.code);
+  return { ok: true, cal: v && v.start ? v : null, noSchool: noSchool_() };
+}
+function setCal_(klass, json) {
+  var c = classOf_(klass); if (!c) return { ok: false, error: 'unknown class' };
+  if (json === '' || json === 'null') { props_().deleteProperty('CAL:' + c.code); cput_('P:CAL:' + c.code, {}); return { ok: true, cal: null }; }
+  var d = parseDef_(json); if (!d || !/^\d{4}-\d{2}-\d{2}$/.test(String(d.start || ''))) return { ok: false, error: 'bad calendar' };
+  var items = [], skipped = [];
+  (Array.isArray(d.items) ? d.items : []).slice(0, 400).forEach(function (x) { if (Array.isArray(x) && /^[a-z0-9]{1,10}$/.test(String(x[0]))) items.push([String(x[0]), Math.max(0, Math.min(2000, Math.round(Number(x[1]) || 0)))]); });
+  (Array.isArray(d.skipped) ? d.skipped : []).slice(0, 400).forEach(function (k) { if (/^[a-z0-9]{1,10}$/.test(String(k))) skipped.push(String(k)); });
+  var cal = { v: 1, start: String(d.start), items: items, skipped: skipped };
+  if (JSON.stringify(cal).length > 8500) return { ok: false, error: 'calendar too big' };
+  saveProp_('CAL:' + c.code, cal);
+  return { ok: true, cal: cal };
 }
 function setNoSchool_(csv) {
   var out = []; String(csv || '').split(/[,\s]+/).forEach(function (x) { x = x.trim(); if (/^\d{4}-\d{2}-\d{2}$/.test(x) && out.indexOf(x) < 0) out.push(x); });

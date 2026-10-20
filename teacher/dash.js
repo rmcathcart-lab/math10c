@@ -39,7 +39,7 @@
   }
   function tabs() {
     var t = el('nav', 'tabs');
-    [['live', 'Live'], ['exits', 'Exit slips'], ['tests', 'Tests'], ['progress', 'Progress'], ['outcomes', 'Outcomes'], ['questions', 'Questions'], ['student', 'Student'], ['settings', 'Settings']].forEach(function (x) {
+    [['live', 'Live'], ['exits', 'Exit slips'], ['tests', 'Tests'], ['calendar', 'Calendar'], ['progress', 'Progress'], ['outcomes', 'Outcomes'], ['questions', 'Questions'], ['student', 'Student'], ['settings', 'Settings']].forEach(function (x) {
       var b = el('button', 'tab' + (st.tab === x[0] ? ' on' : ''), x[1]); b.type = 'button';
       b.addEventListener('click', function () { st.tab = x[0]; ls('hw:ttab', x[0]); render(); });
       t.appendChild(b);
@@ -148,7 +148,7 @@
     if (!st.D && st.tab !== 'settings') { if (!st.classes.length) st.tab = 'settings'; else return; }
     view.appendChild(tabs());
     var body = el('div', 'tab-body'); view.appendChild(body);
-    ({ live: renderLive, exits: function (b) { HW.DashTests.render(b, 'exit'); }, tests: function (b) { HW.DashTests.render(b, 'test'); }, progress: renderProgress, outcomes: renderOutcomes, questions: renderQuestions, student: renderStudent, settings: renderSettings }[st.tab] || renderLive)(body);
+    ({ live: renderLive, exits: function (b) { HW.DashTests.render(b, 'exit'); }, tests: function (b) { HW.DashTests.render(b, 'test'); }, calendar: function (b) { HW.DashCal.render(b); }, progress: renderProgress, outcomes: renderOutcomes, questions: renderQuestions, student: renderStudent, settings: renderSettings }[st.tab] || renderLive)(body);
     HW.texIn && HW.texIn(body);
   }
 
@@ -516,9 +516,8 @@
       var bsel = el('select', 'class-pick'); ['', 'A', 'B', 'C', 'D'].forEach(function (b) { var o = el('option', '', b ? 'Block ' + b : 'No block (everything counts)'); o.value = b; if ((c.block || '') === b) o.selected = true; bsel.appendChild(o); });
       bsel.addEventListener('change', function () { api('setblock', { 'class': c.code, block: bsel.value }).then(function () { flash(p2, 'Saved. New work is tagged with this block from now on.'); loadClasses(); }); });
       p2.appendChild(bsel);
-      p2.appendChild(el('div', 'lbl', 'No-school days (in-class time doesn’t apply)'));
-      var ns = el('textarea', 'field'); ns.rows = 2; ns.placeholder = '2026-10-12, 2026-11-11'; ns.value = (st.D.noSchool || []).join(', '); p2.appendChild(ns);
-      var nsb = el('button', 'btn btn-small', 'Save no-school days'); nsb.type = 'button'; nsb.addEventListener('click', function () { api('setnoschool', { dates: ns.value }).then(function (d) { if (d.ok) { st.D.noSchool = d.noSchool; flash(p2, 'Saved ' + d.noSchool.length + ' dates.'); } }); }); p2.appendChild(nsb);
+      var nsn = (st.noSchool || []).length, nsr = el('p', 'small', 'No-school days: <b>' + nsn + '</b> set. They’re picked on a month view in the <b>Calendar</b> tab (Days off…), and they apply to every class: lessons move along and in-class time doesn’t count on those days. ');
+      var nsb = el('button', 'btn btn-small', 'Open the calendar'); nsb.type = 'button'; nsb.addEventListener('click', function () { st.tab = 'calendar'; ls('hw:ttab', 'calendar'); render(); }); nsr.appendChild(nsb); p2.appendChild(nsr);
       body.appendChild(p2);
 
       var p3 = el('div', 'panel'); p3.appendChild(el('h3', '', 'Students in ' + esc(c.label)));

@@ -33,7 +33,7 @@ var SS = {
 };
 var SpreadsheetApp = { create: function () { return SS; }, openById: function () { return SS; } };
 var props = { TEACHER_KEY: 'testkey', SHEET_ID: 'mock-sheet', SECRET: 'mocksecret' };
-var PropertiesService = { getScriptProperties: function () { return { getProperty: function (k) { return props[k] == null ? null : props[k]; }, setProperty: function (k, v) { props[k] = String(v); } }; } };
+var PropertiesService = { getScriptProperties: function () { return { getProperty: function (k) { return props[k] == null ? null : props[k]; }, setProperty: function (k, v) { props[k] = String(v); }, deleteProperty: function (k) { delete props[k]; } }; } };
 var cache = {};
 var CacheService = { getScriptCache: function () { return {
   get: function (k) { var e = cache[k]; if (!e || e.exp < Date.now()) return null; return e.v; },
