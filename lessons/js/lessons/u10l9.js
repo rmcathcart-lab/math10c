@@ -597,6 +597,7 @@ const HORSE_LEGS = [[[0.2, 0.5], [0.23, 0.3], [0.22, 0.04], [0.24, 0], [0.31, 0]
 const sizeUp = {
   title: 'Sizing up: units, instruments, referents',
   height: 420,
+  minW: 800, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'unit', label: 'Ex 2(a) check: units' }, { v: 'tool', label: 'Ex 2(b) check: instruments' }, { v: 'hand', label: 'Ex 2(c) check: hands' }],
   intro: (v) => (v === 'unit' ? 'Try every imperial unit; keep the one that gives a friendly number. Press <b>Next</b>.' : v === 'tool' ? 'Match each job to the instrument with the right precision and reach. Press <b>Next</b>.' : 'A hand is a 4-inch referent. Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -989,6 +990,7 @@ const coneSphere = {
 const backwards = {
   title: 'A radical base; a formula run backwards',
   height: 420,
+  minW: 800, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'e8a', label: 'Example 8(a) check' }, { v: 'e8b', label: 'Example 8(b) check: undo the formula' }],
   intro: (v) => (v === 'e8a' ? 'An equilateral base, side 8 m, height 15 m. Press <b>Next</b>.' : 'V = 1526.8 m³. Find r. Press <b>Next</b>.'),
   make(stage, v, ex) {
