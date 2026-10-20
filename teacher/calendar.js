@@ -133,7 +133,7 @@
   function chip(key, date) {
     var i = C.info(key); if (!i) return null;
     var c = el('div', 'calm-chip kc-chip' + (i.kind === 'test' ? ' test' : ''), '<b>' + esc(i.kind === 'test' ? i.title : 'U' + i.unit + ' · L' + i.num) + '</b><span class="ct">' + (i.kind === 'test' ? esc(i.unitTitle) : HW.tex(esc(i.title))) + '</span>');
-    c.dataset.key = key; if (date) c.dataset.date = date; c.dataset.skipped = date ? '' : '1';
+    c.dataset.key = key; if (date) c.dataset.date = date; c.dataset.skipped = date ? '' : '1'; C.paint(c, key);
     c.title = (i.kind === 'test' ? i.title : 'Unit ' + i.unit + ', Lesson ' + i.num + ': ' + i.title.replace(/<[^>]+>/g, '')) + ' — drag to move, tap for options';
     if (!K.offMode) c.addEventListener('pointerdown', function (e) { startDrag(e, c, key, !date); });
     return c;

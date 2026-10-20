@@ -618,3 +618,8 @@ body.tm-on .calc { z-index: 200; }
 .cal-pop-x { font-size: 24px; line-height: 1; padding: 4px 12px; }
 .cal-pop-foot { margin: 8px 2px 0; }
 @media (max-width: 640px) { .hh-cal { margin-top: 0; justify-content: flex-start; } .hh-test .tt-l { display: none; } .cal-pop { padding: 0; } .cal-pop-box { border-radius: 0; max-height: 100vh; height: 100vh; padding: 12px 10px; --cal-h: calc(100vh - 150px); } }
+/* unit colours (catalog.js HW.unitStyle, the same as the class calendar) */
+.unit[style] .unit-num { color: var(--uc); }
+.unit[style] .unit-title::before { content: ''; align-self: stretch; width: 5px; border-radius: 3px; background: var(--uc); margin-right: -2px; }
+.unit[style] .lesson-row { border-left: 4px solid var(--ucs); }
+.unit[style] a.lesson-row:hover { border-color: var(--uc); }
