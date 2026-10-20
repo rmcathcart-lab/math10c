@@ -709,6 +709,7 @@ const ABS = {
 const absval = {
   title: 'Absolute value is a distance',
   height: 340,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'five', label: T(ABS.five.label) }, { sep: 'Example 5 check:' }, { v: 'a', label: '(a) ' + T(ABS.a.label) }, { v: 'b', label: '(b) ' + T(ABS.b.label) }, { v: 'c', label: '(c) ' + T(ABS.c.label) }],
   intro: (k) => `How far from 0? Absolute value measures <b>distance</b>, so it doesn’t care which side of 0 a number is on. Evaluate ${T(ABS[k].label)}.`,
   make(stage, k, ex) {

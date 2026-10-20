@@ -62,6 +62,8 @@ export class Explainer {
       top.appendChild(chips);
     }
     this.stage = h('div', 'ex-stage'); this.stage.style.height = def.height + 'px';
+    // the stage sits in a holder; a picture drawn for a wider stage (def.minW) is drawn at that width and scaled down
+    this.hold = h('div', 'ex-hold'); this.hold.appendChild(this.stage);
     this.cap = h('div', 'ex-cap');
     const ctl = h('div', 'ex-ctl no-ink');
     const B = (cls, html, title, fn) => { const b = h('button', 'exb ' + cls, html); b.type = 'button'; b.title = title; b.setAttribute('aria-label', title); b.onclick = fn; ctl.appendChild(b); return b; };
@@ -77,15 +79,15 @@ export class Explainer {
       const body = h('div', 'ex-body'), panel = h('div', 'ex-panel');
       const chips = top.querySelector('.ex-chips'); if (chips) panel.appendChild(chips);
       ctl.appendChild(h('span', 'ex-tapnote', def.tap === false ? '' : 'or tap the picture'));
-      panel.append(this.cap, ctl); body.append(this.stage, panel);
+      panel.append(this.cap, ctl); body.append(this.hold, panel);
       host.append(top, body);
-    } else host.append(top, this.stage, this.cap, ctl);
+    } else host.append(top, this.hold, this.cap, ctl);
     this.tapToNext();
     const first = def.choices ? def.choices.find((c) => !(c && typeof c === 'object' && c.sep)) : undefined; // skip { sep } headings
     this.value = def.value != null ? def.value : first !== undefined ? (typeof first === 'object' ? first.v : first) : null;
     this.lastW = 0;
-    const ro = new ResizeObserver(() => { const w = this.stage.clientWidth; if (w && Math.abs(w - this.lastW) > 2) { const first = !this.lastW; this.lastW = w; if (first) this.build(0); else { this.stop(); this.build(this.k); } } });
-    ro.observe(this.stage);
+    const ro = new ResizeObserver(() => { const w = this.hold.clientWidth; if (w && Math.abs(w - this.lastW) > 2) { const first = !this.lastW; this.lastW = w; this.fitStage(w); if (first) this.build(0); else { this.stop(); this.build(this.k); } } });
+    ro.observe(this.hold);
   }
   /* A finger tap on the picture does Next (like a clicker). Not for a Pencil or mouse (they write), not while
    * "Finger draws too" is on, not on anything tappable in the picture (buttons, [data-tap]), not for a two-finger tap
@@ -108,6 +110,13 @@ export class Explainer {
       if (ok) { this.stop(); if (this.k < (this.steps || []).length) { this.next(); } else this.stage.animate([{ opacity: 1 }, { opacity: .6 }, { opacity: 1 }], 300); }
     };
     st.addEventListener('pointerup', end); st.addEventListener('pointercancel', end);
+  }
+  /* def.minW: the narrowest stage the picture was laid out for. A narrower holder (e.g. beside the sidebar) draws the
+   * picture at minW and scales the whole stage down to fit, so nothing is cut off or overlaps. */
+  fitStage(w) {
+    const m = this.def.minW, st = this.stage;
+    if (m && w < m - 1) { const s = w / m; st.style.width = m + 'px'; st.style.transform = 'scale(' + s + ')'; st.style.transformOrigin = '0 0'; this.hold.style.height = this.def.height * s + 'px'; this.scale = s; }
+    else { st.style.width = st.style.transform = this.hold.style.height = ''; this.scale = 1; }
   }
   choose(v) { this.stop(); this.value = v; this.build(0); }
   ctx(g, fast) {

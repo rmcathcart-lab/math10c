@@ -186,3 +186,22 @@
 .wk-check .sp-box-h { font-size: 13px; }
 /* KaTeX draws the root sign's bar as a wide SVG that would swallow taps meant for the blank underneath it */
 .tfill .katex svg, .tfill .katex .hide-tail { pointer-events: none; }
+
+/* ---------- one screen (main.lesson.screen): the spiral left; the questions and the big one right; the paper strip below ---------- */
+.wf .snail-box { margin-top: 8px; }
+.wf .snail-qs { margin-top: 8px; }
+.wf .wq { padding: 6px 12px 6px; margin-bottom: 8px; }
+.wf .snail-qs .q-line { margin: 0 0 2px; font-size: 16.5px; gap: 10px; }
+.wf .q-num { width: 28px; height: 28px; font-size: 15px; }
+.wf .wq-a { margin-left: 38px; gap: 8px; }
+.wf .q-ans { font-size: 15.5px; min-height: 0; }
+.wf .wf-poll { margin-top: 4px; }
+.wf .wf-poll .poll-opts.c4 { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.wf .wf-poll .poll-opts.c4 .opt { padding: 4px 8px; }
+.wf .wf-poll .poll-ans { min-height: 0; }
+.wf .strip-card { margin-top: 14px; }
+.wf .wf-grid { grid-template-columns: 410px minmax(0, 1fr); }
+.wf .snail-box { width: 410px; height: 440px; }
+.wf .sp-lab { font-size: 15.5px; }
+.wf .sp-read { font-size: 19px; min-height: 34px; }
+.wf .wf-poll:not(.revealed) .poll-ans { display: none; }

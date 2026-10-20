@@ -264,3 +264,33 @@
 .js-note { font: 700 16px var(--font); color: var(--brand); background: var(--brand-soft); padding: 3px 10px; border-radius: 10px; text-align: center; max-width: 190px; }
 .js-cell.bonus .js-note { color: var(--muted); background: #eeece6; }
 .js-cell.js-ans .js-note { color: var(--ok); background: #e3f4ea; }
+
+/* ---------- one screen (main.lesson.screen): calculators + Q1–Q3 left; the big one and the calculator tip right ---------- */
+.wf .wc-row { height: 214px; margin: 6px 0 0; }
+.wf .wc-lab { font-size: 14px; padding: 2px 10px; }
+.wf .wcalc { top: 44px; width: 96px; height: 160px; border-radius: 13px; }
+.wf .wc-letter { width: 30px; height: 30px; top: -15px; font-size: 16px; }
+.wf .wc-lcd { left: 7px; right: 7px; top: 18px; height: 74px; padding: 4px 6px; }
+.wf .wc-exp { font-size: 18px; }
+.wf .wc-res { font-size: 18px; }
+.wf .wc-keys { left: 10px; right: 10px; bottom: 10px; gap: 4px; }
+.wf .wc-keys i { height: 10px; }
+.wf .wc-ctl .pill { padding: 6px 14px; font-size: 15px; }
+.wf .wq { margin: 10px 0 2px; font-size: 17.5px; gap: 10px; }
+.wf .wq .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf .wq .reveal { margin-top: 0; }
+.wf .wf-poll .poll-opts.c4 { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.wf .wf-poll .poll-opts.c4 .opt { padding: 6px 8px; }
+.wf .wf-side .calc-tip { margin-top: 12px; display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; font-size: 15.5px; padding: 10px 12px; }
+.wf .wf-side .calc-tip .pill { grid-column: 1 / -1; justify-self: start; padding: 6px 12px; font-size: 14.5px; }
+.wf .wf-side .calc-tip .pill + .pill { grid-column: 1 / -1; margin-top: -2px; }
+.wf .wf-side .calc-tip { display: flex; flex-wrap: wrap; align-items: flex-start; }
+.wf .wf-side .calc-tip > div:nth-child(2) { flex: 1 1 200px; }
+.wf .wf-side .calc-tip .pill, .wf .wf-side .calc-tip .pill + .pill { margin: 0 0 0 40px; }
+.wf .wf-side .calc-tip .pill + .pill { margin-left: 4px; }
+.wf .wc-note { font-size: 16px; min-height: 0; }
+.wf .wq-a { font-size: 16px; }
+.wf .wc-row { height: 204px; }
+.wf .wcalc { top: 38px; }
+.wf .wq { margin: 6px 0 0; }
+.wf .wc-note { margin-top: 4px; }

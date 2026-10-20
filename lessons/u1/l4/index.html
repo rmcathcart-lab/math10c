@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,17 +43,18 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Guess Who?">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Guess Who? Number Edition</h2></div>
-  <p class="big">I’m thinking of one of these <b>12 numbers</b>. You may only ask <b>yes / no</b> questions. <span class="muted">Tap a face to flip it down.</span></p>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Guess Who?" style="--wf-side: 330px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Guess Who? Number Edition</h2>
+  <p class="wf-rule">I’m thinking of one of these <b>12 numbers</b>. You may only ask <b>yes / no</b> questions. <span class="muted">Tap a face to flip it down.</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
   <div class="gw-board" id="gw"></div>
   <div class="gw-tools">
     <button class="pill" data-gw="values">Show what each face equals</button>
     <button class="pill" data-gw="reset">Stand them all up</button>
   </div>
-
   <div class="q-line"><div class="q-num">1</div><div class="gw-qtext"><b>Which two faces are negative?</b> <button class="pill small" data-gw="neg">Show</button> <span class="gw-ans" id="gw-a-neg"><span class="tex">-\sqrt{9} = -3</span> and <span class="tex">-7</span></span></div></div>
   <div class="q-line"><div class="q-num">2</div><div class="gw-qtext"><b>Which two faces are the same number?</b> <button class="pill small" data-gw="same">Show</button> <span class="gw-ans" id="gw-a-same"><span class="tex">\sqrt{16}</span> and <span class="tex">\tfrac{12}{3}</span>: both are <b>4</b></span></div></div>
+  </div><div class="wf-side">
   <div class="q-line"><div class="q-num">3</div><div class="gw-qtext"><b>Find my mystery face from my answers.</b> <span class="muted">Tap each answer to flip down the faces it rules out.</span>
     <div class="gw-qs">
       <button class="gw-q" data-q="rat">Rational? <b>YES</b></button>
@@ -63,8 +64,7 @@
     </div>
     <div class="gw-result" id="gw-result"></div>
   </div></div>
-
-  <div class="poll" id="gw-poll">
+  <div class="poll wf-poll" id="gw-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> How many of the 12 faces are secretly <b>integers</b>? <b>Guess first.</b></div></div>
     <div class="poll-opts c4">
       <div class="opt"><b>A</b> 2</div>
@@ -76,6 +76,7 @@
     <div class="poll-ans"><b>D — five integers:</b> <span class="tex">\sqrt{16} = 4</span>, <span class="tex">-\sqrt{9} = -3</span>, <span class="tex">\tfrac{12}{3} = 4</span>, <span class="tex">0</span> and <span class="tex">-7</span>. Roots and fractions can <b>hide</b> integers, and 0 and negatives count too. Watch out: <span class="tex">\sqrt{\tfrac14}</span> isn’t irrational just because it has a root sign — it’s exactly <span class="tex">\tfrac12</span>.</div>
   </div>
   <p class="gw-play">Play a round: pick a secret face. Can a neighbour find it in 4 questions?</p>
+  </div></div>
 </section>
 
 <!-- ================= 1. The real number system ================= -->

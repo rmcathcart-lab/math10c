@@ -56,6 +56,7 @@ async function tween(c, ms, fn) { // frame-by-frame animation that respects Back
 const longdiv = {
   title: 'Long division, one digit at a time',
   height: 540,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [fc(1, 7), fc(5, 11), fc(3, 8), fc(2, 3), fc(7, 12), fc(1, 13), { sep: 'Starter check:' }, fc(17, 6), fc(17, 4), { sep: 'Example 1 check:' }, fc(1, 4), fc(3, 11), fc(5, 6)],
   intro: (v) => { const [a, d] = v.split('/'); return `Divide <b>${a} ÷ ${d}</b> one digit at a time. Keep an eye on the <b>remainders</b> — they decide everything.`; },
   setup(ex) { addCustom(ex, 'a/b', (s) => { const f = parseFrac(s); return f && expand(f[0], f[1], 10).done ? f.join('/') : null; }, 'e.g. 4/9'); },
@@ -373,6 +374,7 @@ const FLOW = {
 const flow = {
   title: 'Follow the arrows',
   height: 430,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: [tc('pi', '\\pi'), tc('r311', '\\dfrac{3}{11}'), tc('sqrt12', '\\sqrt{12}'), tc('r025', '\\sqrt{0.25}'), tc('d068', '0.68'), { sep: 'Example 2 check:' }, tc('d2375', '2.375'), tc('sqrt7', '\\sqrt{7}'), tc('d512', '1.512\\,512\\ldots'), tc('nsq121', '-\\sqrt{121}'), tc('sq289', '\\sqrt{2.89}'), tc('grow', '-7.12\\,112\\ldots')],
   intro: (v) => `Is ${tex(FLOW[v].t)} rational or irrational? Start at the top and answer one question at a time.`,
   make(stage, v, ex) {

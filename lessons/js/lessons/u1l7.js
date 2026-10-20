@@ -194,6 +194,7 @@ const venn = {
 const backwards = {
   title: `What a GCF of 180 forces on ${T('P')} and ${T('Q')}`,
   height: 480,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
   intro: 'The LCM of 9 and 20 is the GCF of P and Q. Work out what that number is — then what it <b>forces</b> P and Q to be.',
   make(stage, v, ex) {
     const W = ex.W;
@@ -262,6 +263,7 @@ const backwards = {
 const powers = {
   title: 'Perfect square? Perfect cube? Deal the primes into equal groups',
   height: 410,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [144, 216, 64, 72, { sep: 'Example 5 check:' }, 2025, 3375],
   custom: [4, 99999],
   intro: (n) => `A square root splits the prime factors into <b>2 identical groups</b>; a cube root into <b>3</b>. Factor <b>${fmt(n)}</b> and try both.`,
@@ -329,6 +331,7 @@ const powers = {
 const treeFill = {
   title: `Fill in the tree: what must ${T('d')} be?`,
   height: 440,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'sq', label: '(a) x is a perfect square' }, { v: 'cu', label: '(b) x is a perfect cube' }],
   intro: (m) => `Read the tree from the bottom up to write <b>x</b> as a product of primes. Then choose <b>d</b> (exactly two primes) so that x is a perfect <b>${m === 'sq' ? 'square' : 'cube'}</b>.`,
   make(stage, mode, ex) {
@@ -393,6 +396,7 @@ const treeFill = {
 const decimals = {
   title: 'Decimals that stop, decimals that repeat, and decimals that do neither',
   height: 440,
+  minW: 800, // drawn this wide and scaled to fit beside the sidebar
   intro: 'Watch each decimal appear digit by digit. Does it <b>stop</b>? Does a block of digits <b>repeat</b> forever? Or neither?',
   make(stage, v, ex) {
     const W = ex.W;

@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -44,10 +44,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: The Four Fours">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Four Fours</h2></div>
-  <p class="big">Make every number from <b>0</b> to <b>10</b> using <b>exactly four 4s</b>. No other digits!</p>
-
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Four Fours" style="--wf-side: 300px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Four Fours</h2>
+  <p class="wf-rule">Make every number from <b>0</b> to <b>10</b> using <b>exactly four 4s</b>. No other digits!</p></div>
+  <div class="wf-grid"><div class="wf-main">
   <div class="ff-board">
     <div class="ff-fours"><span class="ff-four">4</span><span class="ff-four">4</span><span class="ff-four">4</span><span class="ff-four">4</span></div>
     <div class="ff-tools">
@@ -56,7 +56,6 @@
         <span class="ff-glue"><span>44</span><i></i><small>no gluing!</small></span></div>
     </div>
   </div>
-
   <div class="ff-targets">
     <button class="ff-t done" data-n="0"><span class="n">0</span><span class="e"><span class="tex">4+4-4-4</span></span></button>
     <button class="ff-t" data-n="1"><span class="n">1</span><span class="e"><span class="tex">(4+4)\div(4+4)</span></span></button>
@@ -71,7 +70,6 @@
     <button class="ff-t ten" data-n="10"><span class="n">10</span><span class="e"><span class="ten-wait">Hmm… see <b>the big one</b></span><span class="ten-ok"><span class="tex">4+4+4-\sqrt{4}</span></span></span></button>
     <div class="ff-side"><span class="muted">Tap a target to see one way.</span><button class="pill small" data-ffall>Show all</button></div>
   </div>
-
   <div class="ff-qs">
     <div class="q-line"><div class="q-num">1</div><div>Make <b>1</b> and <b>8</b>.</div></div>
     <div class="q-line"><div class="q-num">2</div><div>Make <b>3</b> and <b>9</b>.</div></div>
@@ -79,8 +77,16 @@
       <button class="pill small" data-rv="q3">Reveal</button>
       <div class="rv" id="q3"><span class="tex">\sqrt{4}=2</span> (the principal root, not −2). &nbsp;<span class="tex">6=4+\sqrt{4}+4-4</span> &nbsp;or&nbsp; <span class="tex">4+\sqrt{4}\times4\div4</span>. <span class="red">Careful:</span> <span class="tex">4\times\sqrt{4}-\sqrt{4}=6</span> uses only <b>three</b> 4s!</div></div></div>
   </div>
-
-  <div class="poll ff-poll">
+  <div class="ff-more">
+    <span class="ff-more-h">Finished? Try</span>
+    <button class="ff-x" data-x="12"><b>12</b><span><span class="tex">4\times(4-4\div4)</span></span></button>
+    <button class="ff-x" data-x="15"><b>15</b><span><span class="tex">4\times4-4\div4</span></span></button>
+    <button class="ff-x" data-x="16"><b>16</b><span><span class="tex">4+4+4+4</span></span></button>
+    <button class="ff-x" data-x="17"><b>17</b><span><span class="tex">4\times4+4\div4</span></span></button>
+    <button class="ff-x" data-x="20"><b>20</b><span><span class="tex">(4+4\div4)\times4</span></span></button>
+  </div>
+  </div><div class="wf-side">
+  <div class="poll ff-poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> With only <b>+ − × ÷</b> and brackets (no roots or powers), exactly <b>one</b> target from 0 to 10 is <b>impossible</b>. Which one? Then rescue it! <b>Guess first.</b></div></div>
     <div class="poll-opts four">
       <div class="opt"><b>A</b> 5</div>
@@ -91,16 +97,7 @@
     <button class="pill" data-poll>Reveal</button>
     <div class="poll-ans"><b>D — 10.</b> A computer check of every bracket arrangement reaches 0 to 9, but never 10. A square root rescues it: <span class="tex">10=4+4+4-\sqrt{4}</span> or <span class="tex">(4\times4+4)\div\sqrt{4}</span>. The traps: 5 and 7 <i>feel</i> hard, but <span class="tex">5=(4\times4+4)\div4</span> and <span class="tex">7=4+4-4\div4</span>.</div>
   </div>
-
-  <div class="ff-more">
-    <span class="ff-more-h">Finished? Try</span>
-    <button class="ff-x" data-x="12"><b>12</b><span><span class="tex">4\times(4-4\div4)</span></span></button>
-    <button class="ff-x" data-x="15"><b>15</b><span><span class="tex">4\times4-4\div4</span></span></button>
-    <button class="ff-x" data-x="16"><b>16</b><span><span class="tex">4+4+4+4</span></span></button>
-    <button class="ff-x" data-x="17"><b>17</b><span><span class="tex">4\times4+4\div4</span></span></button>
-    <button class="ff-x" data-x="20"><b>20</b><span><span class="tex">(4+4\div4)\times4</span></span></button>
-  </div>
-
+  </div></div>
   <div class="bridge">
     <div class="bridge-h">From four 4s to today’s check-up <span class="muted">(tap a card)</span></div>
     <div class="bridge-grid">

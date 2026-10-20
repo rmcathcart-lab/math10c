@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,11 +43,12 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: The Snail Spiral">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Snail Spiral</h2></div>
-  <p class="big">Stick right triangles together. Every <b>outside edge</b> is <b>1</b> unit long. <span class="muted">Tap a spoke’s label to measure it.</span></p>
-  <div class="snail">
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Snail Spiral" style="--wf-side: 1fr">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Snail Spiral</h2>
+  <p class="wf-rule">Stick right triangles together. Every <b>outside edge</b> is <b>1</b> unit long. <span class="muted">Tap a spoke’s label to measure it.</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
     <div class="snail-box" id="spiral"></div>
+  </div><div class="wf-side">
     <div class="snail-qs">
       <div class="wq">
         <div class="q-line"><div class="q-num">1</div><div>How long is the <span class="tex">\sqrt{4}</span> spoke?</div></div>
@@ -66,9 +67,7 @@
         <div class="wq-a"><button class="pill small" data-wq="2,8">Answer</button><div class="q-ans"><span class="tex">\sqrt{8}=\sqrt{4}\times\sqrt{2}=2\sqrt{2}</span>: twice the <span class="tex">\sqrt{2}</span> spoke.</div></div>
       </div>
     </div>
-  </div>
-
-  <div class="poll">
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Which spoke is exactly <b>twice</b> as long as the <b class="red">red <span class="tex">\sqrt{3}</span></b> spoke? <b>Guess first.</b></div></div>
     <div class="poll-opts c4">
       <div class="opt"><b>A</b> <span class="tex">\sqrt{5}</span></div>
@@ -79,7 +78,7 @@
     <button class="pill" data-poll>Reveal</button>
     <div class="poll-ans"><b>D, <span class="tex">\sqrt{12}</span>.</b> Twice <span class="tex">\sqrt{3}</span> is <span class="tex">2\sqrt{3}=\sqrt{4}\times\sqrt{3}=\sqrt{12}</span>. Check: <span class="tex">2\times1.732\approx3.464</span> and <span class="tex">\sqrt{12}\approx3.464</span>. <b>B</b> doubles the inside: <span class="tex">\sqrt{6}\approx2.45</span>, too short. <b>C</b> looks tidy, but <span class="tex">\sqrt{9}=3</span> is too short too. Today: <span class="tex">\sqrt{12}</span> is an <b>entire radical</b>, <span class="tex">2\sqrt{3}</span> is a <b>mixed radical</b>, and they’re the <b>same length</b>.</div>
   </div>
-
+  </div></div>
   <div class="strip-card">
     <div class="q-line"><div class="q-num ok-n">✓</div><div><b>Check it with a paper strip.</b> Mark the red spoke twice, end to end. Which spoke matches? <span class="muted">Tap a spoke to lay it under the strip.</span></div></div>
     <div class="strip" id="strip"></div>

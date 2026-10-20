@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -43,10 +43,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: The Cyclic Number">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>The Cyclic Number 142857</h2></div>
-  <p class="big">Divide by 7 and the same six digits go round and round, like a clock. <b>Same digits, same order</b> — each fraction just starts at a different spot on the clock.</p>
-
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Cyclic Number" style="--wf-side: 310px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Cyclic Number 142857</h2>
+  <p class="wf-rule">Divide by 7 and the same six digits go round and round, like a clock. <b>Same digits, same order</b> — each fraction just starts at a different spot on the clock.</p></div>
+  <div class="wf-grid"><div class="wf-main">
   <div class="cy-top">
     <div class="cy-clockcol">
       <div id="cy-clock" class="cy-clock"></div>
@@ -60,17 +60,21 @@
       <div class="cy-row"><span class="tex">\dfrac{4}{7}=</span><span class="cy-dec">0.<span class="cy-blanks"><button class="blank" data-a="5"></button><button class="blank" data-a="7"></button><button class="blank" data-a="1"></button><button class="blank" data-a="4"></button><button class="blank" data-a="2"></button><button class="blank" data-a="8"></button></span>…</span></div>
     </div>
   </div>
-
-  <div class="cy-qs">
-    <div class="cy-qcol">
+  <div class="cy-qcol">
       <div class="q-line"><div class="q-num">1</div><div>Use the clock to write <span class="tex">\dfrac{4}{7}</span> as a decimal. <span class="muted">(Tap the blanks, or tap <span class="tex">\dfrac{4}{7}</span> under the clock.)</span></div></div>
       <div class="q-line"><div class="q-num">2</div><div>Predict <b>142857 × 3</b> <em>without</em> multiplying.
         <div class="cy-ans" id="cy-a2"><button class="pill small" data-toggle="cy-a2">Reveal</button><span><b>428571</b> — it’s the <span class="tex">\dfrac37</span> row, because <span class="tex">3\times\dfrac17=\dfrac37</span>.</span></div></div></div>
       <div class="q-line"><div class="q-num">3</div><div>In <span class="tex">\dfrac17</span>, what is the <b>7th</b> digit after the decimal point? The <b>12th</b>?
         <div class="cy-ans" id="cy-a3"><button class="pill small" data-toggle="cy-a3">Reveal</button><span><b>7th: 1</b> (the block starts over) &nbsp; <b>12th: 7</b> (end of the 2nd block)</span></div></div></div>
       <div class="cy-strip" id="cy-strip"></div>
-    </div>
-    <div class="poll cy-poll">
+  </div>
+  </div><div class="wf-side">
+  <div class="cy-bet">
+    <div><b>Bet a neighbour:</b> what is <b>142857 × 7</b>? Both predict, <b>then</b> check.</div>
+    <button class="pill" data-keys="142857 × 7 =">Show me</button><button class="pill" data-toggle="cy-a4">Why?</button>
+    <div class="cy-ans" id="cy-a4"><span><b>999 999.</b> Because <span class="tex">7\times\dfrac17=\dfrac77=1</span>, and <span class="tex">1=0.999999\ldots</span> So <span class="tex">\dfrac17=0.\overline{142857}</span> is <b>repeating</b>, <b>non-terminating</b> — and still a fraction.</span></div>
+  </div>
+    <div class="poll cy-poll wf-poll">
       <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> What is the <b>100th</b> digit after the decimal point in <span class="tex">\dfrac{1}{7}</span>? <b>Guess first.</b></div></div>
       <div class="poll-opts cy-opts">
         <div class="opt"><b>A</b> 1</div>
@@ -83,13 +87,7 @@
       <div class="poll-ans"><b>D — 8.</b> The block has 6 digits. <b>100 = 16 × 6 + 4</b>: sixteen full trips round the clock (96 digits), then 4 more: 1, 4, 2, <b>8</b>.
         <div class="muted small">Traps: A — “100 is round, so it starts over”; B — counting 3 instead of 4; C — the end of a block is at 96, not 100.</div></div>
     </div>
-  </div>
-
-  <div class="cy-bet">
-    <div><b>Bet a neighbour:</b> what is <b>142857 × 7</b>? Both predict, <b>then</b> check.</div>
-    <button class="pill" data-keys="142857 × 7 =">Show me</button><button class="pill" data-toggle="cy-a4">Why?</button>
-    <div class="cy-ans" id="cy-a4"><span><b>999 999.</b> Because <span class="tex">7\times\dfrac17=\dfrac77=1</span>, and <span class="tex">1=0.999999\ldots</span> So <span class="tex">\dfrac17=0.\overline{142857}</span> is <b>repeating</b>, <b>non-terminating</b> — and still a fraction.</span></div>
-  </div>
+  </div></div>
 </section>
 
 <!-- ================= 1. Starter ================= -->

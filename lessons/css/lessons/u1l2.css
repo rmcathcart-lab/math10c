@@ -193,3 +193,37 @@
 
 /* keep short inline formulas on one line */
 .sum-grid .katex, .tip .katex, .ans .katex, .ex-cap .katex { white-space: nowrap; }
+
+/* ---------- one screen (main.lesson.screen): lockers on the left, the questions and the big one on the right ---------- */
+.wf .lk-box { margin: 10px 0 0; padding: 12px 8px 8px; }
+.wf .lockers { grid-template-columns: repeat(20, 30px); gap: 9px 3px; }
+.wf .lk { width: 30px; height: 48px; }
+.wf .lk span { font-size: 11px; min-width: 20px; }
+.wf .lk-status { font-size: 16px; }
+.wf .lk-hist { height: 70px; font-size: 16px; }
+.wf .wq { margin-top: 12px; }
+.wf .w-ans { font-size: 16px; }
+.wf-poll .poll-opts.c4 .opt { font-size: 19px; padding: 6px 10px; }
+.wf .lockers { grid-template-columns: repeat(20, 28px); gap: 9px 3px; }
+.wf .lk { width: 28px; height: 46px; }
+.wf .lk span { min-width: 19px; font-size: 10.5px; padding: 0 1px; }
+.wf .wf-poll .poll-opts.c4 { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.wf .wf-poll .poll-opts.c4 .opt { padding: 6px 4px; }
+.wf-side .wq .q-line { font-size: 17px; margin-bottom: 10px; }
+.wf .lk-bar { flex-wrap: wrap; }
+.wf .lk-status { flex: 1 1 100%; height: auto; min-height: 42px; }
+.wf .w-ans { font-size: 15.5px; line-height: 1.3; }
+.wf .wf-main .wq { margin-top: 10px; }
+.wf .wf-main .wq .q-line { margin: 0 0 4px; font-size: 17px; gap: 10px; }
+.wf .wf-main .w-ans { margin-top: 0; }
+.wf .lk-hist { height: 48px; }
+.wf .lockers { grid-template-columns: repeat(20, 27px); gap: 7px 3px; }
+.wf .lk { width: 27px; height: 42px; }
+.wf .lk-bar { flex-wrap: nowrap; margin-top: 8px; }
+.wf .lk-status { flex: 1 1 auto; font-size: 15px; height: 40px; min-height: 0; line-height: 1.3; }
+.wf .lk-bar .exb { height: 40px; font-size: 15px; padding: 0 10px; }
+.wf .lk-hist { height: 44px; font-size: 15px; padding-top: 4px; }
+.wf .lk-bar .exb { flex: none; white-space: nowrap; }
+.wf .wq-side { margin-top: 14px; }
+.wf .wq-side .q-line { font-size: 17px; gap: 10px; }
+.wf .wq-side { margin: 0 0 10px; }

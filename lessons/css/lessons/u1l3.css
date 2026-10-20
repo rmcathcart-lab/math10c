@@ -246,3 +246,53 @@
 .def .eg .katex { font-size: 1.18em; }
 .cy-div { text-anchor: start; font-size: 28px; }
 .cy-read { display: block; padding-top: 4px; }
+
+/* ---------- one screen (main.lesson.screen): clock + table + Q1 left; Q2, Q3, the big one and the bet right ---------- */
+.wf .cy-top { grid-template-columns: 250px 1fr; gap: 16px; margin: 8px 0 0; }
+.wf .cy-clock { width: 236px; height: 236px; }
+.wf .cy-chips { margin-top: 6px; gap: 4px; }
+.wf .cy-chips .chip { min-width: 36px; padding: 2px 6px; }
+.wf .cy-read { font-size: 17px; min-height: 30px; margin-top: 4px; }
+.wf .cy-table { padding: 10px 16px; }
+.wf .cy-row { min-height: 54px; font-size: 22px; gap: 8px; }
+.wf .cy-row .tex { width: 52px; }
+.wf .cy-dec { font-size: 23px; }
+.wf .cy-blanks { gap: 4px; }
+.wf .cy-blanks .blank { width: 25px; height: 34px; font-size: 23px; }
+.wf .cy-qcol .q-line { margin: 10px 0 6px; font-size: 17.5px; gap: 10px; }
+.wf .cy-ans { min-height: 0; margin-top: 4px; }
+.wf .cy-poll { margin-top: 10px; }
+.wf .cy-poll .poll-opts.cy-opts { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.wf .cy-poll .opt { padding: 6px 8px; }
+.wf .cy-poll > .pill { padding: 7px 14px; font-size: 15px; }
+.wf .cy-poll > .pill + .pill { margin-left: 4px; }
+.wf .cy-bet { margin-top: 10px; padding: 10px 14px; font-size: 17px; gap: 8px; }
+.wf .cy-bet .pill { padding: 6px 12px; font-size: 15px; }
+.wf .cy-dec { font-size: 20px; white-space: nowrap; letter-spacing: 0; }
+.wf .cy-row .tex { width: 44px; }
+.wf .cy-table { padding: 10px 12px; }
+.wf .wf-main .cy-bet { margin-top: 14px; }
+.wf .cy-top { grid-template-columns: 236px 1fr; align-items: start; }
+.wf .cy-clock { width: 212px; height: 212px; }
+.wf .cy-read { font-size: 15.5px; min-height: 0; }
+.wf .cy-chips .chip { min-width: 33px; padding: 2px 5px; }
+.wf .cy-table { margin-top: 10px; }
+.wf .wf-main .cy-bet { font-size: 16px; padding: 8px 12px; margin-top: 10px; }
+.wf .cy-ans > span { font-size: 16px; }
+.wf .cy-strip { margin: 6px 0 0 40px; flex-wrap: wrap; }
+.wf .cy-clock { width: 196px; height: 196px; }
+.wf .cy-top { grid-template-columns: 226px 1fr; }
+.wf .cy-row { min-height: 50px; }
+.wf .cy-poll:not(.revealed) .poll-ans { display: none; }
+.wf .wf-side .cy-bet { margin: 0 0 4px; }
+.wf .wf-main .cy-ans { margin-top: 2px; min-height: 30px; }
+.wf .wf-main .cy-ans { display: inline; margin: 0 0 0 6px; }
+.wf .wf-main .cy-ans > .pill { vertical-align: 1px; margin-right: 6px; }
+.wf .cy-read { white-space: nowrap; font-size: 15px; }
+.wf .cy-qcol .q-line { margin: 8px 0 4px; }
+.wf .cy-strip:not(.show) { display: none; }
+.wf .cy-row { min-height: 47px; }
+.wf .cy-table { padding: 6px 12px; }
+.wf .cy-qcol .q-line { margin: 6px 0 2px; font-size: 17px; }
+.wf .cy-clockcol { margin-top: -6px; }
+.wf .cy-top { margin-top: 4px; }

@@ -464,7 +464,7 @@ body.viewer .edot { display: none; }
 .wf .wf-head { display: grid; grid-template-columns: auto 1fr; column-gap: 14px; align-items: center; margin-bottom: 6px; }
 .wf .wf-head h2 { margin: 0; }
 .wf .wf-rule { grid-column: 1 / -1; margin: 8px 0 0; font-size: 19px; }
-.wf-grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 18px; align-items: start; }
+.wf-grid { display: grid; grid-template-columns: minmax(0, 1fr) var(--wf-side, 300px); gap: 18px; align-items: start; }
 .wf .seal-q { margin: 14px 0 4px; font-size: 19px; }
 .wf-q1 { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px 16px; }
 .wf-hint { font-size: 16px; }
@@ -488,12 +488,7 @@ body.viewer .edot { display: none; }
 .wf-poll .opt { font-size: 17px; }
 .wf-poll > .pill { margin-left: 0; }
 .wf-poll .poll-ans { margin: 10px 0 0; font-size: 16.5px; line-height: 1.42; }
-.wf-poll.revealed .opt:not(.right) { display: none; }
 .wf .ft-tray { font-size: 14.5px; }
-.wf-poll { position: relative; }
-.wf-poll.revealed > .pill { position: absolute; top: 8px; right: 8px; padding: 3px 10px; font-size: 0; }
-.wf-poll.revealed > .pill::after { content: 'Hide'; font-size: 13px; }
-.wf-poll.revealed .q-line { padding-right: 44px; }
 .lesson.screen .card.wf { padding-top: 20px; padding-bottom: 20px; }
 .wf .ft-tray { font-size: 13.5px; gap: 4px; }
 .wf .seal-q { margin-top: 10px; }
@@ -504,3 +499,11 @@ body.viewer .edot { display: none; }
 .wf .compare { font-size: 16px; padding: 8px 12px; }
 .wf-poll .q-line .q-num { width: 26px; height: 26px; font-size: 15px; margin-top: 0; }
 .wf .ft-gift.ft-tight .ftn { width: 50px; }
+.ex-hold { position: relative; min-width: 0; }
+/* shared by the one-screen warm-ups: questions in the side column. Hidden answers keep their space (as in the
+   original lessons), so revealing one never moves ink written below it. */
+.wf-side .q-line { font-size: 17.5px; }
+.wf-side .wq .q-line { margin: 0 0 12px; gap: 10px; }
+.wf-side .q-num { width: 30px; height: 30px; font-size: 16px; }
+.wf-poll .poll-opts.c4 { grid-template-columns: 1fr 1fr; }
+.wf-poll .traps { grid-template-columns: 1fr; font-size: 15px; gap: 6px; }

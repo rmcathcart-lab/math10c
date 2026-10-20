@@ -293,3 +293,31 @@
 .lt-t .nq { fill: #fff; stroke: #b9b3a6; stroke-width: 2; stroke-dasharray: 3 3; }
 .example .pl { font-weight: 500; }
 .example .pl .mc { font-weight: 500; }
+
+/* ---------- one screen (main.lesson.screen): fours, targets, Q1–Q3 and "Finished?" left; the big one right; the bridge below ---------- */
+.wf .ff-board { gap: 14px; margin: 8px 0 10px; }
+.wf .ff-fours { gap: 7px; }
+.wf .ff-four { width: 50px; height: 50px; font-size: 34px; }
+.wf .ff-tools-h { font-size: 15px; margin-bottom: 4px; }
+.wf .ff-tool-row { gap: 5px; }
+.wf .ff-tool { min-width: 36px; height: 36px; font-size: 18px; padding: 0 6px; }
+.wf .ff-glue { width: 54px; height: 36px; margin-left: 6px; font-size: 20px; }
+.wf .ff-glue small { font-size: 12px; top: -17px; }
+.wf .ff-targets { gap: 7px; }
+.wf .ff-t { height: 82px; }
+.wf .ff-t .n { font-size: 30px; }
+.wf .ff-t .e { font-size: 12.5px; margin-top: 4px; }
+.wf .ff-t.ten .ten-wait { font-size: 12px; }
+.wf .ff-side { font-size: 13.5px; gap: 4px; }
+.wf .ff-qs .q-line { margin: 8px 0 2px; font-size: 17.5px; gap: 10px; }
+.wf .ff-qs .rv { font-size: 15.5px; }
+.wf .ff-more { margin-top: 10px; gap: 6px; }
+.wf .ff-x { width: 118px; height: 40px; gap: 6px; padding: 0 8px; }
+.wf .ff-x b { font-size: 18px; }
+.wf .ff-x > span { font-size: 10.5px; }
+.wf .ff-poll .poll-opts.four { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.wf .ff-poll .opt { padding: 5px 8px; }
+.wf .ff-poll:not(.revealed) .poll-ans { display: none; }
+.wf .bridge { margin-top: 16px; }
+.wf .ff-x { width: 104px; }
+.wf .ff-more-h { font-size: 15px; }

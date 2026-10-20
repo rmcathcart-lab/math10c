@@ -22,7 +22,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -44,10 +44,10 @@
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Error or Not?">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Error or Not?</h2></div>
-  <p class="big">Six calculators, six roots. Some show a number. Some show <b class="red">ERROR</b>. <span class="muted">Tap a calculator to press ENTER.</span></p>
-
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Error or Not?" style="--wf-side: 300px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Error or Not?</h2>
+  <p class="wf-rule">Six calculators, six roots. Some show a number. Some show <b class="red">ERROR</b>. <span class="muted">Tap a calculator to press ENTER.</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
   <div class="wc-row" id="wc-row">
     <div class="wc-lab even">Even index</div>
     <div class="wc-lab odd">Odd index</div>
@@ -60,12 +60,11 @@
   </div>
   <div class="wc-ctl"><button class="pill" data-wc="all">Press ENTER on all six</button><button class="pill" data-wc="sort">Sort by index</button><button class="pill" data-wc="reset">Reset</button></div>
   <div class="wc-note" id="wc-note"><b class="red">Even index</b> (A, C, E): a negative radicand gives ERROR — but zero is fine. <b class="teal">Odd index</b> (B, D, F): always a real answer.</div>
-
   <div class="wq"><div class="q-num">1</div><div class="wq-body">What does screen <b>E</b> show? <div class="wq-a"><span class="tex">\sqrt{0}=0</span>, since <span class="tex">0\times0=0</span>. No error.</div></div><button class="reveal" data-wq>Answer</button></div>
   <div class="wq"><div class="q-num">2</div><div class="wq-body">Screen <b>B</b>: <span class="tex">\square\times\square\times\square=-8</span>. What is <span class="tex">\square</span>? <div class="wq-a"><b>−2</b>, since <span class="tex">(-2)(-2)(-2)=-8</span>.</div></div><button class="reveal" data-wq>Answer</button></div>
   <div class="wq"><div class="q-num">3</div><div class="wq-body">Screen <b>A</b>: can <em>any</em> number times itself make −9? Try 3, then try −3. <div class="wq-a"><b>No.</b> <span class="tex">3\times3=9</span> and <span class="tex">(-3)(-3)=9</span>. Same signs always multiply to a positive, so <span class="tex">\sqrt{-9}</span> is ERROR (not a real number).</div></div><button class="reveal" data-wq>Answer</button></div>
-
-  <div class="poll">
+  </div><div class="wf-side">
+  <div class="poll wf-poll">
     <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> How many of the six screens show <b class="red">ERROR</b>? <b>Guess first.</b> <span class="muted">Hands up for C… now D. Any switchers?</span></div></div>
     <div class="poll-opts c4">
       <div class="opt"><b>A</b> 1</div>
@@ -84,6 +83,7 @@
     <div><b>Test C and D on the TI-30XIIS.</b> <span class="muted">Some phone apps show an error for <span class="tex">\sqrt[5]{-32}</span> even though the real answer is −2 — worth a quick chat.</span></div>
     <button class="pill" data-keys="CLEAR 4 ˣ√ (−) 16 =">Screen C</button><button class="pill" data-keys="CLEAR 5 ˣ√ (−) 32 =">Screen D</button>
   </div>
+  </div></div>
 </section>
 
 <!-- ================= 1. Recap ================= -->

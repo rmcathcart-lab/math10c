@@ -609,9 +609,10 @@ function mountExplainers() {
 function mountWarmup() {
   const row = document.getElementById('wc-row'); if (!row) return;
   const calcs = [...row.querySelectorAll('.wcalc')], labs = row.querySelectorAll('.wc-lab'), note = document.getElementById('wc-note');
-  const CW = 140; let sorted = false;
+  let CW = 140, sorted = false;
   const place = () => {
     const W = row.clientWidth; if (!W) return;
+    CW = calcs[0].offsetWidth || 140; // the one-screen layout draws smaller calculators
     if (!sorted) { const g = 16, x0 = (W - (6 * CW + 5 * g)) / 2; calcs.forEach((c, i) => (c.style.transform = `translateX(${x0 + i * (CW + g)}px)`)); }
     const g = 12, mid = 64, gw = 3 * CW + 2 * g, x0 = (W - (2 * gw + mid)) / 2;
     labs[0].style.left = (x0 + gw / 2) + 'px'; labs[1].style.left = (x0 + gw + mid + gw / 2) + 'px';

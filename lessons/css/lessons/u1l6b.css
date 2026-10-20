@@ -164,3 +164,23 @@
 @media print { .xm-ctl, .tapq-row + .small { display: none; } .tapq .rhs { visibility: visible; } }
 .ex-cap { min-height: 96px; }
 .fd-q .katex { font-size: 1.2em; }
+
+/* ---------- one screen (main.lesson.screen): one column, tightened so the stacks, Q3 and the big one fit together ---------- */
+.wf-one > .q-line { margin: 8px 0 4px; font-size: 18px; }
+.wf-one .stack-row { margin: 6px 0 10px 50px; gap: 12px; }
+.wf-one .stack { padding: 8px 8px 6px; gap: 2px; }
+.wf-one .st-pic { height: 96px; }
+.wf-one .st-pic svg { max-height: 96px; width: auto; }
+.wf-one .st-dim { font-size: 18px; }
+.wf-one .st-n { font-size: 16px; }
+.wf-one .build { padding: 8px 14px; }
+.wf-one .bd-q { font-size: 19px; }
+.wf-one .poll { margin-top: 12px; padding: 2px 16px 12px; }
+.wf-one .poll .q-line { margin: 10px 0 8px; font-size: 18px; }
+.wf-one .poll-opts { margin-bottom: 8px; }
+.wf-one .opt { padding: 5px 12px; }
+.wf-one .build { min-height: 0; }
+.wf-one .poll { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 10px; align-items: center; }
+.wf-one .poll > .q-line, .wf-one .poll > .poll-ans { grid-column: 1 / -1; }
+.wf-one .poll-opts { margin: 0 0 0 50px; }
+.wf-one .poll > .pill { margin: 0; }

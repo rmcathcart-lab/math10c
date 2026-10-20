@@ -248,6 +248,7 @@ const area = {
 const finder = {
   title: 'Find the largest perfect square',
   height: 470,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 200, label: tex('\\sqrt{200}') }, { v: 48, label: tex('\\sqrt{48}') }, { v: 180, label: tex('\\sqrt{180}') }, { v: 70, label: tex('\\sqrt{70}') },
     { sep: 'Examples 2–3 check:' }, { v: 72, label: tex('\\sqrt{72}') }, { v: 63, label: tex('\\sqrt{63}') }, { v: 288, label: tex('\\sqrt{288}') }, { v: 128, label: tex('\\sqrt{128}') }, { v: 252, label: tex('\\sqrt{252}') }],
   custom: [4, 999],
@@ -461,6 +462,7 @@ const ENT = ['4|11', 'sep', '3|8', '5|6', '9|5', '5/2|8', '0.6|75', '-7|5'];
 const entire = {
   title: 'Mixed → entire: the number outside goes in as its square',
   height: 400,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: ENT.map((v) => (v === 'sep' ? { sep: 'Example 4 check:' } : { v, label: cLabel(v) })),
   intro: (v) => `Run Section 3 backwards. Push the coefficient of ${cLabel(v)} back <b>under</b> the root sign.`,
   make(stage, v, ex) {
@@ -543,6 +545,7 @@ const numline = {
 const pyth = {
   title: 'Squares on the sides: keep the answer exact',
   height: 470,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: '1|1', label: 'legs 1 and 1' }, { v: '2|4', label: 'legs 2 and 4' }, { v: '3|6', label: 'legs 3 and 6' }, { v: '5|5', label: 'legs 5 and 5' }, { sep: 'Example 6 check:' }, { v: 'ex6', label: 'Example 6' }],
   intro: (v) => (v === 'ex6' ? 'Example 6: find the exact length of <b>AB</b>. Two right triangles share the altitude <b>AD</b>.' : `A right triangle has legs <b>${v.split('|')[0]}</b> and <b>${v.split('|')[1]}</b>. How long is the hypotenuse, <b>exactly</b>?`),
   make(stage, v, ex) { return v === 'ex6' ? pythEx6(stage, ex.W) : pythLegs(stage, v, ex.W); }
@@ -636,7 +639,7 @@ function mountSpiral() {
   const labPt = (k, d = 0.5) => { const [x, y] = Rt[k], r = Math.hypot(x, y), f = (r + d) / r; return [x * f, y * f]; };
   const xs = [0], ys = [0];
   for (let k = 1; k <= N; k++) { const l = labPt(k, 0.62); xs.push(Rt[k][0], l[0]); ys.push(Rt[k][1], l[1]); }
-  const BW = 470, BH = 460, minx = Math.min(...xs), maxx = Math.max(...xs), miny = Math.min(...ys), maxy = Math.max(...ys);
+  const BW = host.clientWidth || 470, BH = (host.clientHeight || 500) - 40, minx = Math.min(...xs), maxx = Math.max(...xs), miny = Math.min(...ys), maxy = Math.max(...ys);
   const sc = Math.min(BW / (maxx - minx), BH / (maxy - miny)), offx = (BW - (maxx - minx) * sc) / 2, offy = (BH - (maxy - miny) * sc) / 2;
   const X = (x) => offx + (x - minx) * sc, Y = (y) => offy + (maxy - y) * sc, pt = (p) => `${X(p[0])},${Y(p[1])}`;
   const svg = svgEl('svg', { class: 'sp-svg', viewBox: `0 0 ${BW} ${BH}`, width: BW, height: BH }); host.appendChild(svg);

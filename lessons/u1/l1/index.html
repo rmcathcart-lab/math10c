@@ -19,7 +19,7 @@
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
 <body>
-<main class="lesson">
+<main class="lesson screen">
 
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
@@ -38,40 +38,43 @@
   <div class="outcome"><b>AN1</b> Demonstrate an understanding of factors of whole numbers by determining the prime factors, greatest common factor, least common multiple, square root and cube root.</div>
 </section>
 
-<!-- ================= warm-up ================= -->
-<section class="card warm" data-ink="warm" data-section="Warm-up: Unwrap the Number">
-  <div class="sec-h"><span class="badge warm-b">Warm-up</span><h2>Unwrap the Number</h2></div>
-  <p class="big">Open any box into <b>two smaller boxes that multiply</b> to it. <b class="teal">Prime</b> boxes are <b class="teal">sealed</b>: they can’t be opened. <span class="muted">(No 1 boxes! 7 = 1 × 7 doesn’t make anything smaller.)</span></p>
-
-  <div class="seal-q">
-    <div class="q-num">1</div>
-    <div><b>Which of these are sealed?</b> <span class="muted">Tap a box to try to open it.</span>
-      <div class="gift-row">
-        <button class="giftbtn" data-v="9"><span>9</span><small>&nbsp;</small></button>
-        <button class="giftbtn" data-v="11"><span>11</span><small>&nbsp;</small></button>
-        <button class="giftbtn" data-v="15"><span>15</span><small>&nbsp;</small></button>
-        <button class="giftbtn" data-v="17"><span>17</span><small>&nbsp;</small></button>
-        <button class="giftbtn" data-v="21"><span>21</span><small>&nbsp;</small></button>
+<!-- ================= warm-up (one screen: the questions and the picture together) ================= -->
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Unwrap the Number">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Unwrap the Number</h2>
+    <p class="wf-rule">Open any box into <b>two smaller boxes that multiply</b> to it. <b class="teal">Prime</b> boxes are <b class="teal">sealed</b>. <span class="muted">(No 1 boxes!)</span></p></div>
+  <div class="wf-grid">
+    <div class="wf-main">
+      <div class="seal-q">
+        <div class="q-num">1</div>
+        <div class="wf-q1"><div><b>Which of these are sealed?</b><div class="muted wf-hint">Tap a box to try to open it.</div></div>
+          <div class="gift-row">
+            <button class="giftbtn" data-v="9"><span>9</span><small>&nbsp;</small></button>
+            <button class="giftbtn" data-v="11"><span>11</span><small>&nbsp;</small></button>
+            <button class="giftbtn" data-v="15"><span>15</span><small>&nbsp;</small></button>
+            <button class="giftbtn" data-v="17"><span>17</span><small>&nbsp;</small></button>
+            <button class="giftbtn" data-v="21"><span>21</span><small>&nbsp;</small></button>
+          </div>
+        </div>
+      </div>
+      <div class="q-line"><div class="q-num">2</div><div><b>Unwrap 360 all the way.</b> Maya opened it as 2 × 180. Leo opened it as 10 × 36. Tap a box that can still open and pick how to split it.</div></div>
+      <div class="two-trees">
+        <div class="tree-card"><div class="tree-name">Maya</div><div id="tree-maya" class="ft-host" style="--fth:252px"></div></div>
+        <div class="tree-card"><div class="tree-name">Leo</div><div id="tree-leo" class="ft-host" style="--fth:252px"></div></div>
       </div>
     </div>
-  </div>
-
-  <div class="q-line"><div class="q-num">2</div><div><b>Unwrap 360 all the way.</b> Maya opened it as 2 × 180. Leo opened it as 10 × 36. Tap a box that can still open and pick how to split it.</div></div>
-  <div class="two-trees">
-    <div class="tree-card"><div class="tree-name">Maya</div><div id="tree-maya" class="ft-host" style="--fth:330px"></div></div>
-    <div class="tree-card"><div class="tree-name">Leo</div><div id="tree-leo" class="ft-host" style="--fth:330px"></div></div>
-  </div>
-  <div id="compare" class="compare"></div>
-
-  <div class="poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Everyone in the class unwraps 360 their own way. How many <b>different sets</b> of sealed boxes will we get? <b>Guess first.</b></div></div>
-    <div class="poll-opts">
-      <div class="opt"><b>A</b> Lots — about one per student</div>
-      <div class="opt"><b>B</b> A few — it depends on the first split</div>
-      <div class="opt right"><b>C</b> Just one set</div>
+    <div class="wf-side">
+    <div id="compare" class="compare"></div>
+    <aside class="poll wf-poll">
+      <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Everyone in the class unwraps 360 their own way. How many <b>different sets</b> of sealed boxes will we get? <b>Guess first.</b></div></div>
+      <div class="poll-opts">
+        <div class="opt"><b>A</b> Lots — about one per student</div>
+        <div class="opt"><b>B</b> A few — it depends on the first split</div>
+        <div class="opt right"><b>C</b> Just one set</div>
+      </div>
+      <button class="pill" data-poll>Reveal</button>
+      <div class="poll-ans"><b>C — just one set.</b> Every route ends at 360 = 2 × 2 × 2 × 3 × 3 × 5. The trees look different, but the sealed boxes never change. <b>Every composite number has exactly one set of prime building blocks.</b></div>
+    </aside>
     </div>
-    <button class="pill" data-poll>Reveal</button>
-    <div class="poll-ans"><b>C — just one set.</b> Every route ends at 360 = 2 × 2 × 2 × 3 × 3 × 5. The trees look different, but the sealed boxes never change. 10 isn’t sealed: it opens to 2 × 5. <b>Every composite number has exactly one set of prime building blocks.</b></div>
   </div>
 </section>
 
