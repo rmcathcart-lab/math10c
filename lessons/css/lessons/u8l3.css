@@ -221,3 +221,9 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u8l3-pf .u8l3-psvg { width: 72px; height: 66px; }
 /* explainer "prep": text starts at the left so the "Ax + By = C" stamp on the right never covers C */
 .u8l3-pfin { justify-content: flex-start; padding-left: 24px; }
+/* the first screen is wrapped in .wf-grid.wf-solo (one column) so the checker can measure it */
+.wf .wf-grid.wf-solo { display: block; }
+.wf-one .u8l3-pets { margin-bottom: 4px; }
+.wf-one .u8l3-wqs .q-line { margin-top: 6px; }
+.wf-one .wf-poll .q-line { margin: 8px 0 6px; }
+.wf-one .wf-poll .opt { padding: 5px 12px; }

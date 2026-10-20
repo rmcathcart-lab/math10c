@@ -499,6 +499,8 @@ function crossDef(DATA, title) {
 }
 const hs = crossDef(HS, 'The right triangle inside a pyramid');
 const hsc = crossDef(HSC, 'The right triangle inside a cone');
+hs.minW = 900; // drawn this wide and scaled to fit beside the sidebar
+hsc.minW = 860;
 
 /* =============================== pouring: funnel → box, cone → cylinder =============================== */
 /** one scene with a container on the left and a pourer that fills it in three pours. cfg: { kind: 'pyr'|'cone', W, D, r, H, S, fill colours } */
@@ -578,7 +580,7 @@ const third = {
     if (k === 'cube') return cubeSteps(stage, ex);
     if (k === 'ex1') return skyThirdSteps(stage, ex);
     const p = pourScene(stage, ex, RICECFG), { S, st } = p;
-    const P = panel(stage, ex.W - 300, 14, 286, 150, '');
+    const P = panel(stage, ex.W - 300, 14, 286, 180, '');
     return [
       { cap: `A planter box (a prism) and a funnel (a pyramid): <b>same base</b>, <b>same height</b>.`, run: async (c) => { st.guides = true; S.render(); await appear(c, S.L('same')); } },
       { cap: `Fill the funnel with rice.`, run: async (c) => { st.guides = false; await tw(c, 1200, S, (t) => (st.fill = t)); } },
@@ -868,6 +870,7 @@ const which = {
 const hex = {
   title: 'Example 3 check: from hexagon to pyramid',
   height: 480,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
   intro: 'A regular hexagon with sides of 6 cm, seen from directly above. Press <b>Next</b>.',
   make(stage, k, ex) {
     const Hs = ex.def.height, sc = 23, base = regPoly(6, 6, 0), A = [0, 12, 0];
@@ -991,7 +994,7 @@ const scale = {
 const shed = {
   title: 'Example 5 check: the garden shed',
   height: 480,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 840, // drawn this wide and scaled to fit beside the sidebar
   intro: 'A prism with a pyramid roof. Volumes add; hidden faces don’t count. Press <b>Next</b>.',
   make(stage, k, ex) {
     const Hs = ex.def.height, P = panel(stage, ex.W - 380, 14, 366, Hs - 28, '');

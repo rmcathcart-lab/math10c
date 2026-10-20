@@ -257,17 +257,15 @@
 .wf .u4l3-wright .wq { height: 100%; box-sizing: border-box; }
 .wf .u4l3-wq2 { margin-top: 10px; }
 .wf .u4l3-cards { grid-template-columns: repeat(8, 1fr); gap: 6px; margin: 4px 0 6px 40px; }
-.wf .u4l3-card { height: 52px; border-radius: 9px; }
-.wf .u4l3-card b { font-size: 22px; }
-.wf .u4l3-card small { font-size: 12.5px; min-height: 15px; margin-top: 2px; white-space: nowrap; }
+.wf .u4l3-card { height: 46px; border-radius: 9px; }
+.wf .u4l3-card b { font-size: 21px; }
+.wf .u4l3-card small { font-size: 12.5px; min-height: 14px; margin-top: 1px; white-space: nowrap; }
 .wf .u4l3-cards-ctl { margin-left: 40px; gap: 6px; }
 .wf .u4l3-cards-note { margin: 6px 0 2px 40px; font-size: 15.5px; min-height: 0; line-height: 1.32; }
 .wf .u4l3-wq-wide { margin-top: 0; }
 .wf .wf-poll .poll-opts { gap: 6px; }
-.wf .wf-poll .opt { padding: 5px 10px; }
+.wf .wf-poll .opt { padding: 3px 10px; }
+.wf .wf-poll .q-line { margin: 10px 0 8px; }
 .wf .wf-poll:not(.revealed) .poll-ans { display: none; }
 .wf .u4l3-bonus { margin-top: 14px; }
 .wf .u4l3-bonus .wq-a { flex-direction: row; gap: 12px; }
-
-/* one screen: long equations in the 268 px sidebar caption may wrap at = and + (KaTeX's own break points) instead of running off the edge */
-.ex-panel .ex-cap .katex { white-space: normal; }

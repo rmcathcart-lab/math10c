@@ -17,6 +17,7 @@ BASE = 'http://localhost:8811/'; SCREEN = 684
 async def warm(ctx, path, out):
     pg = await ctx.new_page(); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
     await pg.goto(BASE + 'lessons/' + path + '/'); await pg.wait_for_timeout(1800)
+    await pg.add_style_tag(content='#tb, .hud { visibility: hidden !important; }')  # the sticky toolbar would cover the card
     w = pg.locator('section.warm').first
     h = await w.evaluate("e => Math.round(e.getBoundingClientRect().height)")
     f = os.path.join(out, 'W_' + path.replace('/', '') + '.png')

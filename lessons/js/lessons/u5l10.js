@@ -43,7 +43,9 @@ const drawSuspect = (G, k, o = {}) => G.polyline(SUS[k].pts, Object.assign({ end
 /* =============================== static figures =============================== */
 function mountStatic() {
   document.querySelectorAll('[data-suspect]').forEach((el) => {
-    const G = new Graph(el, { width: 318, height: 232, xmin: -5, xmax: 5, ymin: -4, ymax: 3, xlabels: 2, ylabels: 2, fontSize: 15 });
+    const sw = Math.min(318, (el.parentNode.clientWidth || 326) - 8); // CSS sets the card width (smaller on one-screen pages)
+    const sm = sw < 300; // a small card: a little taller and smaller numbers, so the labels don't collide
+    const G = new Graph(el, { width: sw, height: Math.round(sw * (sm ? 0.95 : 232 / 318)), xmin: -5, xmax: 5, ymin: -4, ymax: 3, xlabels: 2, ylabels: 2, fontSize: sm ? 13 : 15 });
     drawSuspect(G, el.dataset.suspect, { width: 3.5 });
   });
   // rules at a glance
@@ -271,7 +273,7 @@ const STM = [
 const ioAxes = {
   title: 'Inputs across, outputs up',
   height: 400,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(IO).map((k) => ({ v: k, label: IO[k].label })),
   intro: (k) => (k === 'ex2' ? 'Check each statement of Example 2 against the rule: <b>first</b> = input, <b>second</b> = output. Press <b>Next</b>.' : 'Where does each coordinate of an ordered pair go? Press <b>Next</b>.'),
   make(stage, k, ex) {
@@ -327,6 +329,7 @@ const SH = {
 const shadow = {
   title: 'Domain and range: the graph’s shadows',
   height: 460,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(SH).map((k) => ({ v: k, label: SH[k].label })),
   intro: (k) => `${SH[k].look} Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -374,6 +377,7 @@ const listT = (arr) => arr.map((v) => T(tn(v))).join(' and ');
 const intercepts = {
   title: 'Intercepts: where the graph meets the axes',
   height: 440,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(INT).map((k) => ({ v: k, label: INT[k].label })),
   intro: (k) => `Find the intercepts of ${T(INT[k].eq)}: ${T('y=0')} for the ${T('x')}-intercepts, ${T('x=0')} for the ${T('y')}-intercepts. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -445,7 +449,7 @@ const machine = {
 const costModel = {
   title: 'A cost model: forwards, then domain and range',
   height: 420,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'a', label: 'Example 6(a): ' + T('n=685') }, { v: 'b', label: '6(b): domain and range' }],
   intro: `${T('C=150+0.08n')}: the cost in dollars of printing ${T('n')} newsletters. Press <b>Next</b>.`,
   make(stage, k, ex) {
@@ -481,6 +485,7 @@ const DOTS8 = [[-3, 5], [-2, 3], [-1, 1], [0, -1], [1, -3], [2, -5]];
 const readGraph = {
   title: 'Reading function values off a graph',
   height: 460,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'ex8', label: 'Example 8 check' }, { v: 'back', label: 'Backwards: ' + T('f(x)=1') }, { v: 'dr', label: 'Domain and range of the dots' }],
   intro: 'Forwards: across the bottom, up to the graph, over to the side. Backwards: the reverse. Press <b>Next</b>.',
   make(stage, k, ex) {
@@ -527,7 +532,7 @@ const FB = {
 const fwdBack = {
   title: 'Forwards and backwards through a linear function',
   height: 420,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(FB).map((k) => ({ v: k, label: FB[k].label })),
   intro: (k) => (FB[k].dir === 'f' ? `Forwards: the input is known, so substitute. Press <b>Next</b>.` : `Backwards: the output is known, so undo the steps in reverse order. Press <b>Next</b>.`),
   make(stage, k, ex) {

@@ -700,7 +700,7 @@ const DC = {
 const decomp = {
   title: 'Decomposition in disguise: substitute, or split directly',
   height: 470,
-  minW: 900, // drawn this wide and scaled to fit beside the sidebar
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar (the pair table sits beside method 2)
   choices: [{ v: 'n', label: tex('6m^4-7m^2-3') }, { sep: 'Example 5 check:' }, { v: 'e5a', label: '(a)' }, { v: 'e5b', label: '(b)' }, { v: 'e5c', label: '(c)' }],
   intro: (k) => `Factor ${T(DC[k].q)} two ways at once: <b>Method 1</b> wears the disguise ${T('u=' + DC[k].blk)}; <b>Method 2</b> splits the middle term directly. Watch the two columns stay in step.`,
   make(stage, key, ex) {

@@ -108,6 +108,7 @@ const swExpr = (d) => (d.k ? d.k : '') + d.f.map((f) => (d.k || d.f.length > 1 ?
 const sweep = {
   title: 'Slide x along: when is the product 0?',
   height: 420,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar (13 product cells, and the two little equations side by side)
   choices: [{ v: 'a', label: tex('(x-6)(x+2)') }, { v: 'b', label: tex('3(x-6)(x+2)') }, { v: 'c', label: tex('x(x-5)') }],
   intro: (k) => `Try whole numbers for ${T('x')} in ${T(swExpr(SW[k]))}. Which values make the product <b>zero</b>?`,
   make(stage, key, ex) {
@@ -186,7 +187,7 @@ const sweep = {
 const whyZero = {
   title: 'Why the other side has to be 0',
   height: 460,
-  minW: 940, // drawn this wide and scaled to fit beside the sidebar
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar (the last check line needs the full width)
   intro: 'What do we learn about two factors from their product? Compare a product of <b>6</b> with a product of <b>0</b>.',
   make(stage, v, ex) {
     const W = ex.W, pw = (W - 48) / 2;
@@ -418,7 +419,7 @@ const STORY = {
 const story = {
   title: 'Two roots: does each one fit the story?',
   height: 470,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar (the answer bar needs it)
   choices: [{ v: 'demo', label: 'rectangle, area 48' }, { sep: 'Example 4 check:' }, { v: 'banner', label: 'banner' }, { sep: 'Example 5 check:' }, { v: 'trough', label: 'trough' }, { sep: 'Example 6 check:' }, { v: 'even', label: 'even integers' }],
   intro: (k) => ({
     demo: `A rectangle’s length is ${T('2')} cm more than its width, and its area is ${T('48\\text{ cm}^2')}. Find its perimeter.`,

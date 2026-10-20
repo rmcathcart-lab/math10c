@@ -157,6 +157,7 @@ const HM = {
 const howMany = {
   title: 'How many solutions? Graph, slopes, algebra',
   height: 450,
+  minW: 820, // the compare panel needs ~350 px beside the graph
   choices: Object.keys(HM).map((k) => ({ v: k, label: HM[k].label })),
   intro: (v) => (v === 'turn' ? 'Start with two crossing lines, then turn and slide line 2. Press <b>Next</b>.' : 'Line 1 is always ' + T(cB('y=2x-1')) + '. Compare line 2 three ways. Press <b>Next</b>.'),
   make(stage, v, ex) {
@@ -581,8 +582,9 @@ const plans = {
   choices: [{ v: 'lines', label: 'Example 4 (b)–(d) check' }, { v: 'sweep', label: 'Example 4 (e)–(f): sweep' }],
   intro: (v) => (v === 'lines' ? 'Three equations, three lines, and where they cross. Press <b>Next</b>.' : 'Slide across the graph: which line is lowest? Press <b>Next</b>.'),
   make(stage, v, ex) {
-    const G = new Graph(stage, { x: 6, y: 8, width: 600, height: 450, xmin: 0, xmax: 100, ymin: 0, ymax: 80, xstep: 10, ystep: 10, fontSize: 15, xtitle: 'x\\text{ (GB)}', ytitle: 'y\\text{ (\\$)}' });
-    const Pn = panel(stage, 620, 8, ex.W - 628, 450, v === 'lines' ? 'Equations' : 'Cost at this many GB');
+    const GW = Math.min(600, ex.W - 330); // the panel keeps ~300 px beside the sidebar
+    const G = new Graph(stage, { x: 6, y: 8, width: GW, height: 450, xmin: 0, xmax: 100, ymin: 0, ymax: 80, xstep: 10, ystep: 10, fontSize: 15, xtitle: 'x\\text{ (GB)}', ytitle: 'y\\text{ (\\$)}' });
+    const Pn = panel(stage, GW + 20, 8, ex.W - GW - 28, 450, v === 'lines' ? 'Equations' : 'Cost at this many GB');
     const Ls = PLAN.map((p) => G.fn(p.f, { color: p.color, width: 3.5, arrows: false }));
     const labs = [lineLab(G, 96, 73, T(cB('\\text{Plan 1}')), BLUE, 'n'), lineLab(G, 58, 70, T(cA('\\text{Plan 2}')), AMB, 'w'), lineLab(G, 30, 70, T(cG('\\text{Plan 3}')), GRN, 'n')];
     labs[1].gx = 36; labs[1].gy = 58; labs[1]._bkDraw();

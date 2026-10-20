@@ -157,3 +157,5 @@ code.u8l6-c { font: 600 .9em ui-monospace, "SF Mono", Menlo, Consolas, monospace
 .wf-one .u8l6-mobfig { width: 736px; height: 230px; }
 .wf-one .wf-poll { margin-top: 4px; }
 .wf-one .wf-poll .q-line { margin: 8px 0 6px; }
+/* the first screen is wrapped in .wf-grid.wf-solo (one column) so the checker can measure it */
+.wf .wf-grid.wf-solo { display: block; }

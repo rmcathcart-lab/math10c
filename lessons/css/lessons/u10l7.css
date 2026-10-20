@@ -64,10 +64,11 @@
 .u10l7 .bk-stamp { text-transform: none; }
 .u10l7-panel .bk-stamp { margin-top: 16px !important; margin-bottom: 12px; }
 
-/* ---------- one screen (main.lesson.screen): popcorn picture, Q1, Q2 and Q3 on the left; calculator tip and the big one on the right ---------- */
-.wf .u10l7-wtop { grid-template-columns: auto 1fr; gap: 12px; }
-.wf .u10l7-wfig { gap: 6px; }
-.wf #u10l7-pop { zoom: .8; }
+/* ---------- one screen (main.lesson.screen): popcorn picture and Q3 on the left; Q1, Q2 and the big one on the right ---------- */
+.wf .u10l7-wtop { display: block; }
+.wf .u10l7-wfig { flex-direction: row; align-items: flex-end; gap: 8px; }
+.wf #u10l7-pop { zoom: .8; flex: none; }
+.wf .u10l7-wbtns { flex-direction: column; align-items: stretch; align-self: flex-start; margin-top: 90px; }
 .wf .u10l7-wbtns .pill { margin: 0; padding: 6px 12px; font-size: 15px; }
 .wf .u10l7-wqs .q-line, .wf .u10l7-early .q-line { font-size: 17px; margin: 4px 0; gap: 10px; }
 .wf .q-num { width: 30px; height: 30px; font-size: 16px; }
@@ -82,7 +83,6 @@
 .wf .wf-main .u10l7-poll3 .poll-ans { margin: 10px 0 0 40px; font-size: 16.5px; }
 .wf .wf-side .u10l7-poll3 .poll-opts { grid-template-columns: 1fr; gap: 6px; }
 .wf .wf-side .u10l7-poll3 .opt { padding: 5px 10px; font-size: 16px; }
-.wf .wf-side .tip { margin: 6px 0 0; padding: 10px 12px; font-size: 15.5px; grid-template-columns: 1fr auto; gap: 8px; }
-.wf .wf-side .tip .tip-ic { display: none; }
+.wf > .tip { margin-top: 14px; }
 .wf .u10l7-early { margin-top: 10px; }
 .wf .u10l7-social { font-size: 18px; margin-top: 10px; }

@@ -171,15 +171,15 @@
 .wf .u4l4-wboxes { gap: 8px; margin: 2px 0 0; }
 .wf .u4l4-wb { padding: 4px 4px 4px; }
 .wf .u4l4-wbt { font-size: 18px; margin: 0; line-height: 1.2; }
-.wf .u4l4-wfig { zoom: .7; }
-.wf .u4l4-wtot { font-size: 15.5px; margin-top: 0; min-height: 28px; gap: 4px; }
-.wf .u4l4-wtot .u4l4-qm { min-width: 32px; height: 28px; font-size: 17px; }
+.wf .u4l4-wfig { zoom: .66; }
+.wf .u4l4-wtot { font-size: 15.5px; margin-top: 0; min-height: 26px; gap: 4px; }
+.wf .u4l4-wtot .u4l4-qm { min-width: 32px; height: 26px; font-size: 17px; }
 .wf .u4l4-wqs { gap: 7px 10px; margin-top: 7px; }
-.wf .u4l4-wq { padding: 4px 12px 4px; }
+.wf .u4l4-wq { padding: 2px 12px 3px; }
 .wf .u4l4-wq .q-line { margin: 2px 0 4px; font-size: 17px; gap: 10px; }
 .wf .u4l4-wq .q-num { width: 30px; height: 30px; font-size: 16px; }
 .wf .u4l4-wqa { margin-left: 40px; gap: 4px; }
-.wf .u4l4-qa { font-size: 15.5px; line-height: 1.32; min-height: 0; }
+.wf .u4l4-qa { font-size: 15.5px; line-height: 1.28; min-height: 0; }
 .wf .u4l4-bigq { display: block; }
 .wf .u4l4-mini { display: inline-grid; margin: 8px 0 0 34px; grid-template-columns: 64px 44px; grid-template-rows: 40px 32px; font-size: 16px; }
 .wf .wf-poll .q-line { display: block; }

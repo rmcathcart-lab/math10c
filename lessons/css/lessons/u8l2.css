@@ -184,3 +184,5 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .u8l2-opt { height: 132px; }
 .u8l2-opt .u8l2-on { padding-right: 100px; line-height: 1.25; }
 .u8l2-opt { height: auto; min-height: 132px; }
+/* the first screen is wrapped in .wf-grid.wf-solo (one column) so the checker can measure it */
+.wf .wf-grid.wf-solo { display: block; }

@@ -236,3 +236,7 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .wf .u8l1b-rule { line-height: 1.22; }
 .wf .u8l1b-clock { width: 118px; min-width: 0; box-sizing: border-box; white-space: nowrap; }
 .wf .u8l1b-meet { bottom: 50%; translate: 22px 50%; z-index: 3; background: #7b4fc4; color: #fff; border-radius: 8px; padding: 1px 7px; font-size: 13.5px; }
+.wf .u8l1b-track { height: 56px; }
+.wf .u8l1b-tok { width: 26px; height: 26px; line-height: 21px; font-size: 14px; }
+.wf .u8l1b-rule { line-height: 1.16; padding: 2px 8px; }
+.wf .u8l1b-races { gap: 4px; }

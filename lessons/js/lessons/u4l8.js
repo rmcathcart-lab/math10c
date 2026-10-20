@@ -109,7 +109,7 @@ const FLOW = {
 const flow = {
   title: 'The checklist, one expression at a time',
   height: 414,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar (otherwise "the work" column is squeezed to unreadable)
   value: 'e1',
   choices: [{ v: 'e1', label: T('-2x^2+10x+28') }, { v: 'e2', label: T('6x^2+7x-3') }, { v: 'e3', label: T('16x^2-24x+9') }, { v: 'e4', label: T('x^4-13x^2+36') }, { v: 'e5', label: T('x^3+2x^2-9x-18') },
     { sep: 'Review check:' }, { v: 'r1', label: T('81a^4-16') }, { v: 'r2', label: T('8x^4-12x^3+4x^2') }, { v: 'r3', label: T('-3x^2+12x+36') }],

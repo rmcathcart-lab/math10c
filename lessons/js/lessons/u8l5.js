@@ -590,7 +590,7 @@ const CU = {
 const current = {
   title: 'The current adds or subtracts',
   height: 530,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar (vectors 600 px + the "In general" panel)
   choices: [{ v: 'kayak', label: CU.kayak.label }, { sep: 'Check' }, { v: 'ex4', label: CU.ex4.label }, { v: 'ex5', label: CU.ex5.label }],
   intro: (k) => (k === 'kayak' ? 'The warm-up kayak: 6 km/h in still water, a 2 km/h current. Press <b>Next</b>.'
     : k === 'ex4' ? 'The ferry: 96 km downstream in 4 h, back upstream in 6 h. Press <b>Next</b>.' : 'The plane: 600 km into a headwind in 2.5 h, back with the wind in 2 h. Press <b>Next</b>.'),
