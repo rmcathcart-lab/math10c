@@ -173,3 +173,30 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .wf .wf-side .u5l7b-wqs { margin-top: 0; }
 .wf .wf-side .u5l7b-wqs .bk-wq:first-child .q-line { margin-top: 0; }
 .wf .wf-side .wf-poll { margin-top: 10px; }
+
+/* ---------- Math History box (Euler's f(x)): the function-machine animation ---------- */
+.history .u5l7bh-n { color: #7b4fc4; } .history .u5l7bh-i { color: #1f5bd6; }
+.u5l7bh-cap { font: 600 13px var(--font); fill: #8a6440; }
+.u5l7bh-year { font: 700 30px Georgia, "Iowan Old Style", serif; fill: #4a2c14; }
+.u5l7bh-note { font: 700 15px var(--round); fill: #b07a12; transition: opacity .3s; }
+.u5l7bh-belt { stroke: #e3d2b8; stroke-width: 2; stroke-dasharray: 2 6; }
+.u5l7bh-tok { transition: opacity .25s; }
+.u5l7bh-tok rect { stroke-width: 2; }
+.u5l7bh-tok text { font: italic 600 20px Georgia, "Iowan Old Style", serif; }
+.u5l7bh-tin rect { fill: #e8f0fc; stroke: #1f5bd6; } .u5l7bh-tin text { fill: #1f5bd6; }
+.u5l7bh-tout rect { fill: #fff3dc; stroke: #c27a0e; } .u5l7bh-tout text { fill: #a8650a; }
+.u5l7bh-tout.u5l7bh-tokw rect { fill: #fbf3e4; stroke: #9a7a58; stroke-dasharray: 5 4; } .u5l7bh-tout.u5l7bh-tokw text { fill: #6b4a2c; font-size: 17px; }
+.u5l7bh-box { fill: #efe0c8; stroke: #7a4a26; stroke-width: 3; }
+.u5l7bh-hop { fill: #e3cba6; stroke: #7a4a26; stroke-width: 3; stroke-linejoin: round; }
+.u5l7bh-port { fill: #7a4a26; }
+.u5l7bh-lword { font: italic 700 24px Georgia, "Iowan Old Style", serif; fill: #6b4a2c; transition: opacity .5s; }
+.u5l7bh-lf { font: italic 700 56px Georgia, "Iowan Old Style", serif; fill: #7b4fc4; transition: opacity .5s; }
+.u5l7bh-rule { font: 700 15px var(--round); fill: #4a2c14; transition: opacity .4s; }
+.u5l7bh-capl { font: 600 15px var(--round); fill: #4a2c14; }
+.u5l7bh-cb { font-weight: 800; } .u5l7bh-cn { fill: #7b4fc4; font: italic 800 17px Georgia, serif; } .u5l7bh-ci { fill: #1f5bd6; font-weight: 800; } .u5l7bh-co { fill: #a8650a; font-weight: 800; }
+.u5l7bh-rule0 { stroke: #dcc5a3; stroke-width: 1.5; }
+.u5l7bh-rec { opacity: 0; transition: opacity .5s; } .u5l7bh-rec.on { opacity: 1; }
+.u5l7bh-ry { font: 700 13px var(--round); fill: #b07a12; letter-spacing: .04em; }
+.u5l7bh-rt { font: italic 600 18px Georgia, "Iowan Old Style", serif; fill: #a8650a; } .u5l7bh-rtw { fill: #6b4a2c; font-size: 16px; }
+.u5l7bh-rarr { font: 700 18px var(--round); fill: #c9a77d; }
+@media (prefers-reduced-motion: reduce) { .u5l7bh-rec, .u5l7bh-tok, .u5l7bh-lword, .u5l7bh-lf, .u5l7bh-rule, .u5l7bh-note { transition: none; } }

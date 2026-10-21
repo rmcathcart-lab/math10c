@@ -556,3 +556,110 @@ function mountExplainers() {
 }
 
 mountExplainers(); mountWarmup();
+
+/* ---------- Math History (the brown box): Archimedes' Sand Reckoner ----------
+ * A powers-of-ten zoom-out: one grain → a poppy seed (at most 10^4 grains) → a ball one finger wide (10^9) → a ball one
+ * stadium wide (10^21) → Aristarchus's universe (10^63). The counter climbs with each step, the chips along the bottom
+ * light up, and the multipliers between them (×10^4, ×10^5, ×10^12, ×10^42) add up in the exponent: 4 + 5 + 12 + 42 = 63. */
+(function sandReckoner() {
+  const svg = document.getElementById('sand-anim'); if (!svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); Object.keys(attrs || {}).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
+  const txt = (s, attrs, parent) => { const e = mk('text', attrs, parent); e.textContent = s; return e; };
+  let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  const CX = 444, CY = 116, R = 96;
+  const inDisc = (n, r, f) => { for (let i = 0; i < n; i++) { const a = rnd() * 2 * Math.PI, d = Math.sqrt(rnd()) * r; f(d * Math.cos(a), d * Math.sin(a), i); } };
+  const STAGES = [
+    { name: 'one grain of sand', e: 0, chip: '1 grain', v: '1', notes: ['(drawn very, very big)'] },
+    { name: 'a poppy seed', e: 4, chip: 'poppy seed', v: '10⁴', notes: ['his guess: no more than', '10 000 grains inside'] },
+    { name: 'a ball one finger wide', e: 9, chip: 'finger', v: '10⁹', notes: ['40 poppy seeds across:', 'under 10⁹ grains'] },
+    { name: 'a ball one stadium wide', e: 21, chip: 'stadium', v: '10²¹', notes: ['a Greek race track, under', '10 000 fingers long'] },
+    { name: 'the whole universe', e: 63, chip: 'universe', v: '10⁶³', notes: ['as Aristarchus pictured it:', '10¹⁴ stadia across'] },
+  ];
+  const MULT = ['×10⁴', '×10⁵', '×10¹²', '×10⁴²'];
+
+  // the left side: the counter and the words
+  txt('GRAINS OF SAND, AT MOST', { x: 24, y: 34, class: 'u2l4h-cap' });
+  const count = txt('10', { x: 24, y: 104, class: 'u2l4h-count' });
+  const expT = mk('tspan', { dy: -32, class: 'u2l4h-exp' }, count); expT.textContent = '0';
+  const nameT = txt('', { x: 24, y: 146, class: 'u2l4h-name' });
+  const noteT = [txt('', { x: 24, y: 170, class: 'u2l4h-note' }), txt('', { x: 24, y: 189, class: 'u2l4h-note' })];
+  const sumT = txt('exponents add: 4 + 5 + 12 + 42 = 63', { x: 24, y: 216, class: 'u2l4h-sum' });
+
+  // the pictures, each drawn with radius R around (0, 0)
+  const scene = mk('g', {});
+  const objs = STAGES.map((st, k) => {
+    const at = mk('g', { class: 'u2l4h-obj' }, scene); scene.insertBefore(at, scene.firstChild); // smaller things on top
+    if (k === 0) { // one grain, magnified
+      const pts = []; for (let i = 0; i < 11; i++) { const a = (i / 11) * 2 * Math.PI, r = R * (0.62 + rnd() * 0.18); pts.push(`${(r * Math.cos(a)).toFixed(1)},${(r * Math.sin(a) * 0.86).toFixed(1)}`); }
+      mk('polygon', { points: pts.join(' '), class: 'u2l4h-grain' }, at);
+      inDisc(26, R * 0.5, (x, y) => mk('circle', { cx: x, cy: y * 0.86, r: 1.6 + rnd() * 2.2, class: 'u2l4h-speck' }, at));
+    } else if (k === 1) { // a poppy seed full of sand
+      mk('circle', { r: R, class: 'u2l4h-poppy' }, at);
+      inDisc(260, R - 6, (x, y) => mk('circle', { cx: x, cy: y, r: 2.1, class: 'u2l4h-sand' }, at));
+    } else if (k === 2) { // a finger-wide ball: 40 poppy seeds across
+      mk('circle', { r: R, class: 'u2l4h-finger' }, at);
+      inDisc(150, R - 6, (x, y) => mk('circle', { cx: x, cy: y, r: 2, class: 'u2l4h-seed', opacity: 0.35 }, at));
+      for (let i = 0; i < 40; i++) mk('circle', { cx: -R + 2.4 + i * ((2 * R - 4.8) / 39), cy: 0, r: 2.3, class: 'u2l4h-seed' }, at);
+    } else if (k === 3) { // a stadium-wide ball with the race track across it
+      mk('circle', { r: R, class: 'u2l4h-stad' }, at);
+      inDisc(110, R - 6, (x, y) => mk('circle', { cx: x, cy: y, r: 1.8, class: 'u2l4h-fball' }, at));
+      mk('rect', { x: -R + 4, y: -17, width: 2 * R - 8, height: 34, rx: 4, class: 'u2l4h-track' }, at);
+      for (let l = 1; l < 4; l++) mk('line', { x1: -R + 8, x2: R - 8, y1: -17 + l * 8.5, y2: -17 + l * 8.5, class: 'u2l4h-lane' }, at);
+      mk('line', { x1: -R + 10, x2: -R + 10, y1: -17, y2: 17, class: 'u2l4h-start' }, at); mk('line', { x1: R - 10, x2: R - 10, y1: -17, y2: 17, class: 'u2l4h-start' }, at);
+    } else { // the universe of Aristarchus: the Sun in the middle, the stars far out
+      mk('circle', { r: R, class: 'u2l4h-sky' }, at);
+      inDisc(70, R - 5, (x, y) => mk('circle', { cx: x, cy: y, r: 0.7 + rnd() * 1.3, class: 'u2l4h-star' }, at));
+      mk('circle', { r: 15, class: 'u2l4h-orbit' }, at); mk('circle', { cx: 15, cy: 0, r: 2.4, fill: '#7fb3e6' }, at);
+      mk('circle', { r: 5.5, fill: '#f0b429' }, at);
+    }
+    return at;
+  });
+
+  // the chips along the bottom, with the multipliers between them
+  const CW = 92, chips = STAGES.map((st, k) => {
+    const x = 56 + k * 121, g = mk('g', { class: 'u2l4h-chip' });
+    mk('rect', { x: x - CW / 2, y: 252, width: CW, height: 40, rx: 9 }, g);
+    txt(st.chip, { x, y: 268, 'text-anchor': 'middle', class: 'u2l4h-chip-n' }, g);
+    txt(st.v, { x, y: 286, 'text-anchor': 'middle', class: 'u2l4h-chip-v' }, g);
+    return g;
+  });
+  const mults = MULT.map((m, k) => txt(m, { x: 56 + k * 121 + 60.5, y: 245, 'text-anchor': 'middle', class: 'u2l4h-mult' }));
+
+  // timing: hold the grain, then four zoom-outs, each with a pause
+  const H0 = 1300, Z = 1300, H = 1300, END = H0 + 4 * (Z + H);
+  const ease = (p) => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2);
+  const place = (g, s, o) => { g.setAttribute('transform', `translate(${CX} ${CY}) scale(${s.toFixed(4)})`); g.style.opacity = o; };
+  function draw(ms) {
+    let k = 0, p = 1;
+    if (ms >= H0) { const j = Math.min(3, Math.floor((ms - H0) / (Z + H))); const into = ms - H0 - j * (Z + H); k = j + 1; p = Math.min(1, into / Z); }
+    const q = ease(p);
+    objs.forEach((g, i) => {
+      if (i === k) place(g, 0.3 + 0.7 * q, Math.min(1, q * 1.6));
+      else if (i === k - 1) place(g, 1 - 0.95 * q, q < 0.7 ? 1 : 1 - (q - 0.7) / 0.3); // shrinks to a speck, then fades
+      else place(g, 1, 0);
+    });
+    const st = STAGES[k], prev = STAGES[Math.max(0, k - 1)];
+    expT.textContent = String(Math.round(prev.e + (st.e - prev.e) * q));
+    const shown = p > 0.5 ? st : prev;
+    nameT.textContent = shown.name; noteT[0].textContent = shown.notes[0] || ''; noteT[1].textContent = shown.notes[1] || '';
+    chips.forEach((c, i) => c.classList.toggle('on', i < k || (i === k && p > 0.5)));
+    mults.forEach((m, i) => m.classList.toggle('on', i < k - 1 || (i === k - 1 && p > 0.5)));
+    const done = ms >= END;
+    count.classList.toggle('gold', done); sumT.classList.toggle('on', done);
+  }
+  let t0 = 0, raf = 0;
+  function frame(now) { if (!t0) t0 = now; const ms = now - t0; draw(ms); if (ms < END) raf = requestAnimationFrame(frame); }
+  function play() {
+    cancelAnimationFrame(raf); t0 = 0;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(END); return; }
+    raf = requestAnimationFrame(frame);
+  }
+  draw(0);
+  svg.addEventListener('click', play);
+  const btn = svg.closest('.hist-anim') && svg.closest('.hist-anim').querySelector('.hist-play'); if (btn) btn.addEventListener('click', play);
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 });
+    io.observe(svg);
+  } else play();
+})();

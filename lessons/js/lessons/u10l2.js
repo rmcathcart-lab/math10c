@@ -989,3 +989,99 @@ function poolTile(g, x, y, w, hh, n) {
 mountWarm();
 mountFive();
 export const explainers = mountExplainers({ imperial, metric, lay, fit, ladder, towel, shed, wheel, card, km });
+
+/* =============================== Math History: the royal cubit (u10l2-hist) =============================== */
+(function royalCubit() {
+  const svg = document.getElementById('u10l2-hist'); if (!svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); Object.keys(attrs || {}).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
+  const txt = (s, attrs, parent) => { const e = mk('text', attrs, parent); e.textContent = s; return e; };
+  const seg = (t, a, b) => Math.max(0, Math.min(1, (t - a) / (b - a)));
+  const ease = (p) => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2);
+  const op = (el, v) => { el.style.opacity = v; };
+  const X0 = 40, L = 176, P = L / 7, RY = 76, RH = 22, AY = 87; // rod: 7 palms; arm along y = AY
+  // ----- the forearm, elbow to fingertip -----
+  const arm = mk('g', {});
+  mk('path', { d: `M${X0 - 8},${AY - 12} L${X0 - 20},20 L${X0 + 8},20 L${X0 + 14},${AY - 12} Z`, class: 'u10l2h-skin' }, arm); // upper arm, up from the elbow
+  mk('path', { d: `M${X0 - 10},${AY} Q${X0 - 10},${AY - 14} ${X0 + 6},${AY - 14} L${X0 + 118},${AY - 8} L${X0 + 118},${AY + 8} L${X0 + 6},${AY + 13} Q${X0 - 10},${AY + 13} ${X0 - 10},${AY} Z`, class: 'u10l2h-skin' }, arm);
+  mk('path', { d: `M${X0 + 116},${AY - 10} L${X0 + 146},${AY - 10} L${X0 + 176},${AY - 5} Q${X0 + 180},${AY - 1} ${X0 + 176},${AY + 3} L${X0 + 146},${AY + 6} Q${X0 + 140},${AY + 14} ${X0 + 128},${AY + 11} L${X0 + 116},${AY + 9} Z`, class: 'u10l2h-skin' }, arm);
+  for (const dy of [-2, 1]) mk('line', { x1: X0 + 148, x2: X0 + 172, y1: AY + dy, y2: AY + dy - 1, class: 'u10l2h-crease' }, arm);
+  const ends = mk('g', {});
+  mk('circle', { cx: X0, cy: AY, r: 4, class: 'u10l2h-dot' }, ends); mk('circle', { cx: X0 + L, cy: AY - 1, r: 4, class: 'u10l2h-dot' }, ends);
+  txt('elbow', { x: X0 - 6, y: AY + 34, 'text-anchor': 'middle', class: 'u10l2h-small' }, ends);
+  txt('fingertip', { x: X0 + L, y: AY + 34, 'text-anchor': 'middle', class: 'u10l2h-small' }, ends);
+  const brace = mk('path', { d: '', class: 'u10l2h-brace' });
+  // ----- the royal cubit rod -----
+  const rod = mk('g', {});
+  mk('rect', { x: X0, y: RY, width: L, height: RH, rx: 2, class: 'u10l2h-wood' }, rod);
+  const fingers = [], palms = [];
+  for (let i = 1; i < 28; i++) if (i % 4) fingers.push(mk('line', { x1: X0 + (i * L) / 28, x2: X0 + (i * L) / 28, y1: RY + RH - 6, y2: RY + RH, class: 'u10l2h-tick' }, rod));
+  for (let i = 0; i < 7; i++) {
+    const g = mk('g', {}, rod);
+    if (i) mk('line', { x1: X0 + i * P, x2: X0 + i * P, y1: RY, y2: RY + RH, class: 'u10l2h-palm' }, g);
+    txt(String(i + 1), { x: X0 + (i + 0.5) * P, y: RY + 15, 'text-anchor': 'middle', class: 'u10l2h-pnum' }, g);
+    palms.push(g);
+  }
+  // ----- words on the right -----
+  const W = 250;
+  const t1 = mk('g', {});
+  txt('A cubit:', { x: W, y: 52, class: 'u10l2h-head' }, t1); txt('elbow to fingertip', { x: W, y: 78, class: 'u10l2h-head2' }, t1);
+  txt('a personal referent, but arms differ', { x: W, y: 100, class: 'u10l2h-sub' }, t1);
+  const t2 = mk('g', {});
+  txt('The royal cubit rod', { x: W, y: 52, class: 'u10l2h-head' }, t2);
+  const t2a = txt('7 palms', { x: W, y: 78, class: 'u10l2h-head2' }, t2);
+  const t2b = txt('× 4 fingers = 28 fingers', { x: W + 70, y: 78, class: 'u10l2h-head2' }, t2);
+  const t2c = txt('≈ 52.5 cm', { x: W, y: 108, class: 'u10l2h-gold' }, t2);
+  // ----- the stone block, measured in cubits -----
+  const BY = 190, BH = 58, GY = BY + BH;
+  mk('line', { x1: 16, x2: 584, y1: GY, y2: GY, class: 'u10l2h-ground' });
+  const block = mk('g', {});
+  mk('rect', { x: X0, y: BY, width: 3 * L, height: BH, class: 'u10l2h-stone' }, block);
+  txt('a stone block', { x: X0 + 3 * L, y: BY - 32, 'text-anchor': 'end', class: 'u10l2h-small' }, block);
+  const slots = [0, 1, 2].map((k) => {
+    const g = mk('g', {});
+    mk('rect', { x: X0 + k * L, y: BY - RH + 4, width: L, height: RH - 4, rx: 2, class: 'u10l2h-ghost' }, g);
+    if (k) mk('line', { x1: X0 + k * L, x2: X0 + k * L, y1: BY, y2: GY, class: 'u10l2h-cut' }, g);
+    txt(String(k + 1), { x: X0 + (k + 0.5) * L, y: BY + 40, 'text-anchor': 'middle', class: 'u10l2h-count' }, g);
+    return g;
+  });
+  const mover = mk('g', {});
+  mk('rect', { x: 0, y: 0, width: L, height: RH - 4, rx: 2, class: 'u10l2h-wood' }, mover);
+  for (let i = 1; i < 7; i++) mk('line', { x1: i * P, x2: i * P, y1: 0, y2: RH - 4, class: 'u10l2h-palm' }, mover);
+  const total = txt('3 royal cubits ≈ 3 × 52.5 cm ≈ 158 cm', { x: 300, y: 282, 'text-anchor': 'middle', class: 'u10l2h-total' });
+  const T = 11400;
+  function draw(t) {
+    // the arm, then the brace from elbow to fingertip
+    const a = 1 - seg(t, 2500, 3100); op(arm, a); op(ends, a * seg(t, 300, 700));
+    const b = ease(seg(t, 700, 1700)), by = AY + 18;
+    brace.setAttribute('d', b > 0 ? `M${X0},${by - 5} L${X0},${by} L${(X0 + L * b).toFixed(1)},${by}` + (b >= 1 ? ` L${X0 + L},${by - 5}` : '') : '');
+    op(brace, a);
+    op(t1, seg(t, 900, 1300) * (1 - seg(t, 2500, 2800)));
+    op(rod, seg(t, 2700, 3200)); op(t2, seg(t, 2900, 3300));
+    palms.forEach((g, i) => op(g, seg(t, 3300 + 280 * i, 3500 + 280 * i)));
+    op(t2a, seg(t, 3300, 3600));
+    fingers.forEach((f, i) => op(f, seg(t, 5400 + 25 * i, 5500 + 25 * i)));
+    op(t2b, seg(t, 5400, 5800)); op(t2c, seg(t, 6300, 6700));
+    // lay the rod along the block three times
+    const legs = [[6900, 7700, X0, RY, X0, BY - RH + 4], [8000, 8700, X0, BY - RH + 4, X0 + L, BY - RH + 4], [9000, 9700, X0 + L, BY - RH + 4, X0 + 2 * L, BY - RH + 4]];
+    let mx = X0, my = RY; let shown = -1;
+    legs.forEach(([s, e, x1, y1, x2, y2], k) => { if (t >= s) { const p = ease(seg(t, s, e)); mx = x1 + (x2 - x1) * p; my = y1 + (y2 - y1) * p; if (t >= e) shown = k; } });
+    mover.setAttribute('transform', `translate(${mx.toFixed(1)} ${my.toFixed(1)})`); op(mover, t >= 6900 ? 1 : 0);
+    slots.forEach((g, k) => op(g, k <= shown ? 1 : 0));
+    op(total, seg(t, 10000, 10500));
+  }
+  let t0 = 0, raf = 0;
+  function frame(now) { if (!t0) t0 = now; const t = Math.min(T, now - t0); draw(t); if (t < T) raf = requestAnimationFrame(frame); }
+  function play() {
+    cancelAnimationFrame(raf); t0 = 0;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(T); return; }
+    draw(0); raf = requestAnimationFrame(frame);
+  }
+  draw(0);
+  svg.addEventListener('click', play);
+  const btn = svg.closest('.hist-anim') && svg.closest('.hist-anim').querySelector('.hist-play'); if (btn) btn.addEventListener('click', play);
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 });
+    io.observe(svg);
+  } else play();
+})();

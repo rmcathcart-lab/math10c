@@ -1,0 +1,20 @@
+/* Lesson 1.1 — page-specific styles (most of this lesson's styles are shared, in site.css) */
+
+/* ---------- Math History box: Euclid's "multiply the primes and add 1" (animation in u1l1.js) ---------- */
+.u1l1h-hint { font-weight: 600; color: #8a6440; }
+.u1l1h-hd { font: 700 15px var(--round); fill: #8a6440; }
+.u1l1h-rule { stroke: #eadbc4; stroke-width: 1.5; }
+.u1l1h-ex { font: 700 20px var(--round); fill: #4a2c14; font-variant-numeric: tabular-nums; }
+.u1l1h-ex .u1l1h-op { fill: #9a7a58; font-weight: 600; }
+.u1l1h-res { font: 800 20px var(--round); fill: #4a2c14; font-variant-numeric: tabular-nums; }
+.u1l1h-tok { fill-opacity: 0; transition: fill-opacity .3s; }
+.u1l1h-tok.on { fill-opacity: 1; }
+.u1l1h-g { opacity: 0; transform: scale(.6); transform-box: fill-box; transform-origin: center; transition: opacity .3s, transform .4s cubic-bezier(.3, 1.6, .5, 1); }
+.u1l1h-g.on { opacity: 1; transform: none; }
+.u1l1h-pill { fill: #efe0c8; stroke: #c9a77d; stroke-width: 1.2; }
+.u1l1h-pt { font: 700 15px var(--round); fill: #7a4a26; }
+.u1l1h-no .u1l1h-pill { fill: #f4d9c9; stroke: #d39a86; }
+.u1l1h-no .u1l1h-pt { fill: #8b2f1c; }
+.u1l1h-ring { fill: none; stroke: #d49a1c; stroke-width: 3; }
+.u1l1h-final { font: 800 19px var(--round); fill: #b07a12; }
+@media (prefers-reduced-motion: reduce) { .u1l1h-tok, .u1l1h-g { transition: none; } }

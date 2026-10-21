@@ -15,6 +15,7 @@
 <link rel="icon" href="../../assets/icon-192.png">
 <link rel="stylesheet" href="../../css/site.css">
 <link rel="stylesheet" href="../../css/calc.css">
+<link rel="stylesheet" href="../../css/lessons/u1l1.css">
 <script src="../../../js/calc.js"></script>
 <script src="../../js/vendor/qrcode.js"></script>
 </head>
@@ -167,6 +168,29 @@
   </div>
   <div class="space" id="ex2-space"></div>
   <button class="more" data-more="ex2-space">+ More space</button>
+</section>
+
+<!-- sources: https://mathcs.clarku.edu/~djoyce/java/elements/bookIX/propIX20.html (Euclid, Elements IX.20, D. Joyce, Clark University)
+     https://en.wikipedia.org/wiki/Euclid_number (3, 7, 31, 211, 2311 prime; 30031 = 59 × 509 is the first composite one)
+     https://britannica.com/biography/Euclid-Greek-mathematician/Introduction (Euclid fl. c. 300 BCE)
+     https://mathshistory.st-andrews.ac.uk/SH/euclid_sh.pdf (MacTutor: the Elements was the centre of math teaching for 2000 years) -->
+<!-- ================= Math History box (brown) ================= -->
+<section class="card history" data-ink="hist" data-section="Math History: Euclid">
+  <div class="hist-head"><span class="hist-tag">Math History</span><span class="hist-dates">c. 300 BCE · Euclid’s Elements, Book IX</span></div>
+  <div class="hist-grid">
+    <div class="hist-text">
+      <h3 class="hist-title">Euclid’s proof: the primes never run out</h3>
+      <p>Around 300 BCE, the Greek mathematician <b>Euclid</b> wrote the <i>Elements</i>, a math book that was still used in schools 2 000 years later. In it he proved there is <b>no largest prime</b>.</p>
+      <p>His idea: take any list of primes, <b>multiply them and add 1</b>. None of the primes on the list divides the new number (each leaves a remainder of 1). So the new number is a new prime, or its prime factors are new primes.</p>
+      <div class="part hist-q"><div class="pl">2 × 3 × 5 × 7 × 11 × 13 + 1 = 30&nbsp;031. Is 30&nbsp;031 prime? <span class="u1l1h-hint">(Hint: try 59.)</span></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans">30&nbsp;031 ÷ 59 = 509, so it is <b>composite</b>: 30&nbsp;031&nbsp;=&nbsp;59&nbsp;×&nbsp;509. And 509 is prime (no prime up to √509 ≈ 22.6 divides it). So 59 and 509 are <b>new primes</b>, just as Euclid said.</div></div></div>
+    </div>
+    <figure class="hist-anim">
+      <svg id="u1l1-hist" viewBox="0 0 600 300" role="img" aria-label="Multiply the first primes and add 1: 2×3+1 = 7, 2×3×5+1 = 31, 2×3×5×7+1 = 211 and 2×3×5×7×11+1 = 2311 are new primes; 2×3×5×7×11×13+1 = 30 031 is not prime, but it equals 59 × 509, two new primes."></svg>
+      <figcaption><button class="hist-play" type="button">Replay</button><span>Tap the picture to play it again.</span></figcaption>
+      <p class="hist-note">Euclid never said these numbers are always prime. 30&nbsp;031 is the first one that isn’t, and his proof still works.</p>
+    </figure>
+  </div>
 </section>
 
 <!-- ================= 3. Prime factors ================= -->

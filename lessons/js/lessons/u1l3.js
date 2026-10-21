@@ -701,3 +701,73 @@ function mountExplainers() {
 }
 
 mountExplainers(); mountWarmup(); mountCircles(); mountExampleLine();
+
+/* ---------- Math History (the brown box): Archimedes' 22/7 and Zu Chongzhi's 355/113 race π digit by digit ----------
+ * The decimals appear one place at a time; a fraction's digits stay gold while they still match π. It pauses where 22/7
+ * (2 places) and 355/113 (6 places) stop matching, then bars mark 22/7's repeating block 142857. Plays once when the box is
+ * half in view; a tap or Replay plays it again; reduced motion shows the finished picture. */
+(function piRace() {
+  const svg = document.getElementById('u1l3-hist'); if (!svg) return;
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(SVGNS, tag); Object.keys(attrs || {}).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
+  const txt = (s, attrs, parent) => { const e = mk('text', attrs, parent); e.textContent = s; return e; };
+  const N = 20; // decimal places shown
+  const decs = (n, d) => { let r = n % d, s = ''; for (let i = 0; i < N; i++) { r *= 10; s += Math.floor(r / d); r %= d; } return s; };
+  const PI = '14159265358979323846';
+  const ROWS = [
+    { y: 84, digits: PI, ref: true, sub: 'never ends, never repeats: π is irrational' },
+    { y: 162, digits: decs(355, 113), n: 355, d: 113, sub: 'Zu Chongzhi · repeats too, but only after a block of 112 digits' },
+    { y: 240, digits: decs(22, 7), n: 22, d: 7, sub: 'Archimedes · the block 142857 repeats forever' },
+  ];
+  // when each decimal place appears: slow at first, a pause after place 3 (22/7 misses) and place 7 (355/113 misses)
+  const T = []; let t = 600;
+  for (let i = 0; i < N; i++) { T.push(t); t += i < 7 ? 420 : 210; if (i === 2) t += 500; if (i === 6) t += 900; }
+  const steps = [], at = (el, ms) => { steps.push({ el, t: ms }); return el; };
+  const tDone = T[N - 1] + 600;
+  txt('Decimal by decimal', { x: 24, y: 30, class: 'u1l3h-hd' });
+  const count = txt('', { x: 576, y: 30, 'text-anchor': 'end', class: 'u1l3h-count' });
+  const X0 = 146, DX = 13.6, XD = 183; // "3" at X0, decimals from XD
+  ROWS.forEach((r, k) => {
+    if (r.ref) txt('π', { x: 70, y: r.y + 5, 'text-anchor': 'middle', class: 'u1l3h-pi' });
+    else {
+      txt(String(r.n), { x: 70, y: r.y - 8, 'text-anchor': 'middle', class: 'u1l3h-fr' });
+      mk('line', { x1: 50, x2: 90, y1: r.y - 2, y2: r.y - 2, class: 'u1l3h-bar' });
+      txt(String(r.d), { x: 70, y: r.y + 16, 'text-anchor': 'middle', class: 'u1l3h-fr' });
+    }
+    txt('=', { x: 108, y: r.y + 5, 'text-anchor': 'middle', class: 'u1l3h-fr' });
+    at(txt('3.', { x: X0, y: r.y + 6, class: 'u1l3h-d ref' }), 300);
+    let match = 0, still = true;
+    for (let i = 0; i < N; i++) {
+      const ok = r.ref || (still && r.digits[i] === PI[i]); if (!ok) still = false; else match = i + 1;
+      at(txt(r.digits[i], { x: XD + i * DX, y: r.y + 6, 'text-anchor': 'middle', class: 'u1l3h-d ' + (r.ref ? 'ref' : ok ? 'hit' : 'miss') }), T[i]);
+    }
+    // how many places match π
+    const g = at(mk('g', { class: 'u1l3h-g' }), r.ref ? tDone : T[match] + 150);
+    mk('rect', { x: 470, y: r.y - 13, width: 112, height: 26, rx: 13, class: 'u1l3h-pill' + (r.ref ? ' pi' : '') }, g);
+    txt(r.ref ? 'the real π' : match + ' places ✓', { x: 526, y: r.y + 5, 'text-anchor': 'middle', class: 'u1l3h-pt' }, g);
+    // what its decimal does
+    const sub = at(mk('g', { class: 'u1l3h-g' }), tDone + 500 + (2 - k) * 1100);
+    txt(r.sub, { x: X0, y: r.y + 32, class: 'u1l3h-sub' }, sub);
+    if (r.d === 7) for (let b = 0; b + 6 <= N; b += 6) mk('line', { x1: XD + b * DX - 4, x2: XD + (b + 5) * DX + 4, y1: r.y - 15, y2: r.y - 15, class: 'u1l3h-ob' + (b ? ' u1l3h-ob2' : '') }, sub);
+  });
+  const END = tDone + 500 + 2 * 1100 + 600;
+  let t0 = 0, raf = 0;
+  function draw(ms) {
+    steps.forEach((s) => s.el.classList.toggle('on', s.t <= ms));
+    const shown = T.filter((x) => x <= ms).length;
+    count.textContent = shown ? `decimal places: ${shown}` : '';
+  }
+  function frame(now) { if (!t0) t0 = now; const ms = now - t0; draw(ms); if (ms < END) raf = requestAnimationFrame(frame); }
+  function play() {
+    cancelAnimationFrame(raf); t0 = 0;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(END); return; }
+    draw(-1); raf = requestAnimationFrame(frame);
+  }
+  draw(-1);
+  svg.addEventListener('click', play);
+  const btn = svg.closest('.hist-anim') && svg.closest('.hist-anim').querySelector('.hist-play'); if (btn) btn.addEventListener('click', play);
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 });
+    io.observe(svg);
+  } else play();
+})();

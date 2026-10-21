@@ -129,3 +129,23 @@
 .wf .u10l2-rulers > div { margin: 2px 0; }
 .wf .u10l2-rulers i { line-height: 1.15; }
 .wf .wf-poll .q-line { margin: 10px 0 8px; }
+/* Math History: the royal cubit (the animation in u10l2.js) */
+.u10l2h-skin { fill: #e3b48a; stroke: #7a4a26; stroke-width: 1.6; stroke-linejoin: round; }
+.u10l2h-crease { stroke: #a8754c; stroke-width: 1; }
+.u10l2h-dot { fill: #b07a12; }
+.u10l2h-small { font: 600 12px var(--font); fill: #8a6440; }
+.u10l2h-brace { fill: none; stroke: #b07a12; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.u10l2h-wood { fill: #c89a5e; stroke: #7a4a26; stroke-width: 1.6; }
+.u10l2h-tick { stroke: #4a2c14; stroke-width: 1; }
+.u10l2h-palm { stroke: #4a2c14; stroke-width: 1.6; }
+.u10l2h-pnum { font: 700 12px var(--round); fill: #3d2817; }
+.u10l2h-head { font: 700 21px Georgia, "Iowan Old Style", serif; fill: #4a2c14; }
+.u10l2h-head2 { font: 700 17px var(--round); fill: #4a2c14; }
+.u10l2h-sub { font: 600 14px var(--font); fill: #8a6440; }
+.u10l2h-gold { font: 800 22px var(--round); fill: #b07a12; }
+.u10l2h-ground { stroke: #8a6440; stroke-width: 2; }
+.u10l2h-stone { fill: #e8dcc6; stroke: #8a6440; stroke-width: 1.6; }
+.u10l2h-ghost { fill: rgba(200, 154, 94, .35); stroke: #9a7a58; stroke-width: 1; stroke-dasharray: 3 3; }
+.u10l2h-cut { stroke: #b07a12; stroke-width: 1.5; stroke-dasharray: 4 3; }
+.u10l2h-count { font: 700 26px Georgia, "Iowan Old Style", serif; fill: #b07a12; }
+.u10l2h-total { font: 800 16px var(--round); fill: #b07a12; }

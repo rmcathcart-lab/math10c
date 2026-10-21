@@ -777,3 +777,92 @@ const backwards = {
 mountWarm();
 mountStatics();
 export const explainers = mountExplainers({ overflow, derive, peel, halve, slice, string, domes, floor, backwards });
+
+/* =============================== Math History: Archimedes' tomb (u10l8-hist) =============================== */
+(function archimedesTomb() {
+  const svg = document.getElementById('u10l8-hist'); if (!svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); Object.keys(attrs || {}).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
+  const txt = (s, attrs, parent) => { const e = mk('text', attrs, parent); e.textContent = s; return e; };
+  const seg = (t, a, b) => Math.max(0, Math.min(1, (t - a) / (b - a)));
+  const ease = (p) => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2);
+  const op = (el, v) => { el.style.opacity = v; };
+  // ----- left: the tomb in Syracuse -----
+  const GY = 272, TX = 110;
+  mk('line', { x1: 14, x2: 214, y1: GY, y2: GY, class: 'u10l8h-ground' });
+  const head = txt('Syracuse, 75 BCE', { x: 18, y: 30, class: 'u10l8h-head' });
+  const sub1 = txt('Cicero has the brambles cleared…', { x: 18, y: 50, class: 'u10l8h-sub' });
+  const sub2 = txt('…a sphere in a cylinder!', { x: 18, y: 50, class: 'u10l8h-sub u10l8h-gold' });
+  mk('rect', { x: TX - 40, y: GY - 14, width: 80, height: 14, class: 'u10l8h-stone' });
+  mk('rect', { x: TX - 24, y: 150, width: 48, height: GY - 14 - 150, class: 'u10l8h-stone' });
+  for (let x = TX - 14; x <= TX + 14; x += 14) mk('line', { x1: x, x2: x, y1: 156, y2: GY - 20, class: 'u10l8h-flute' });
+  mk('rect', { x: TX - 31, y: 140, width: 62, height: 10, class: 'u10l8h-stone' });
+  const top = mk('g', { class: 'u10l8h-top' });
+  mk('rect', { x: TX - 26, y: 86, width: 52, height: 52, class: 'u10l8h-cylbody' }, top);
+  mk('circle', { cx: TX, cy: 112, r: 26, class: 'u10l8h-ball' }, top);
+  mk('ellipse', { cx: TX, cy: 86, rx: 26, ry: 6, class: 'u10l8h-cyltop' }, top);
+  mk('path', { d: `M${TX - 26},138 A26,6 0 0 0 ${TX + 26},138`, class: 'u10l8h-cylline' }, top);
+  // brambles: tangled loops over the whole column
+  const BR = [[74, 256], [104, 260], [136, 256], [166, 254], [60, 228], [92, 232], [124, 230], [156, 226], [74, 200], [108, 204], [142, 198], [86, 172], [122, 170], [154, 166], [70, 146], [104, 142], [138, 140], [64, 172]];
+  const brambles = BR.map(([x, y], i) => {
+    const g = mk('g', { class: 'u10l8h-bramble' }), r = 14 + (i % 3) * 3;
+    mk('path', { d: `M${x - r},${y} c${r * 0.4},${-r * 1.4} ${r * 1.8},${-r * 1.2} ${r * 1.4},${r * 0.2} s${-r * 1.6},${r * 1.1} ${-r * 1.2},${-r * 0.6} s${r * 1.5},${-r * 0.9} ${r * 1.9},${r * 0.5}`, class: 'u10l8h-vine' }, g);
+    mk('path', { d: `M${x - r * 0.6},${y + r * 0.5} q${r * 0.5},${-r} ${r * 1.3},${-r * 0.2}`, class: 'u10l8h-vine2' }, g);
+    mk('ellipse', { cx: x + r * 0.5, cy: y - r * 0.5, rx: 4, ry: 2.4, transform: `rotate(${(i * 47) % 180} ${x + r * 0.5} ${y - r * 0.5})`, class: 'u10l8h-leaf' }, g);
+    mk('ellipse', { cx: x - r * 0.6, cy: y + r * 0.2, rx: 4, ry: 2.4, transform: `rotate(${(i * 83) % 180} ${x - r * 0.6} ${y + r * 0.2})`, class: 'u10l8h-leaf' }, g);
+    return g;
+  });
+  // ----- right: the snug cylinder, filled by the sphere's volume -----
+  const CX = 356, R = 64, YT = 78, YB = 206, RY = 13, LEVEL = YB - (2 / 3) * (YB - YT);
+  const fig = mk('g', {});
+  const link = mk('path', { d: 'M146,118 C 210,100 250,150 288,150', class: 'u10l8h-link' }, fig);
+  mk('path', { d: 'M281,144 L290,150 L281,156', class: 'u10l8h-link' }, fig);
+  const clip = mk('clipPath', { id: 'u10l8h-clip' }, mk('defs', {}, fig));
+  mk('rect', { x: CX - R, y: YT, width: 2 * R, height: YB - YT }, clip); mk('ellipse', { cx: CX, cy: YB, rx: R, ry: RY }, clip);
+  mk('path', { d: `M${CX - R},${YT} L${CX - R},${YB} A${R},${RY} 0 0 0 ${CX + R},${YB} L${CX + R},${YT}`, class: 'u10l8h-glass' }, fig);
+  const liquid = mk('rect', { x: CX - R, y: YB + RY, width: 2 * R, height: 0, 'clip-path': 'url(#u10l8h-clip)', class: 'u10l8h-liquid' }, fig);
+  const surf = mk('ellipse', { cx: CX, cy: YB, rx: R, ry: RY, class: 'u10l8h-surf' }, fig);
+  const ball = mk('circle', { cx: CX, cy: (YT + YB) / 2, r: R, class: 'u10l8h-ball' }, fig);
+  mk('ellipse', { cx: CX, cy: YT, rx: R, ry: RY, class: 'u10l8h-cyltop' }, fig);
+  mk('path', { d: `M${CX - R},${YB} A${R},${RY} 0 0 0 ${CX + R},${YB}`, class: 'u10l8h-cylline' }, fig);
+  mk('line', { x1: CX, x2: CX + R, y1: YT, y2: YT, class: 'u10l8h-rad' }, fig);
+  txt('r', { x: CX + R / 2, y: YT - RY - 4, 'text-anchor': 'middle', class: 'u10l8h-dim' }, fig);
+  mk('line', { x1: CX + R + 10, x2: CX + R + 10, y1: YT, y2: YB, class: 'u10l8h-rad' }, fig);
+  txt('2r', { x: CX + R + 15, y: (YT + YB) / 2 + 5, class: 'u10l8h-dim' }, fig);
+  const pourT = txt('pour in the sphere’s volume', { x: CX, y: 34, 'text-anchor': 'middle', class: 'u10l8h-sub' }, fig);
+  const mark = mk('g', {}, fig);
+  mk('line', { x1: CX - R - 12, x2: CX + R, y1: LEVEL, y2: LEVEL, class: 'u10l8h-mark' }, mark);
+  txt('2/3', { x: CX - R - 16, y: LEVEL + 6, 'text-anchor': 'end', class: 'u10l8h-frac' }, mark);
+  // the algebra
+  const EX = 470, eq1 = mk('g', {}), eq2 = mk('g', {}), eq3 = mk('g', {});
+  txt('cylinder', { x: EX, y: 92, class: 'u10l8h-cap' }, eq1); txt('πr² × 2r = 2πr³', { x: EX, y: 112, class: 'u10l8h-eq' }, eq1);
+  txt('sphere', { x: EX, y: 146, class: 'u10l8h-cap' }, eq2); txt('⁴⁄₃πr³', { x: EX, y: 168, class: 'u10l8h-eq u10l8h-big' }, eq2);
+  txt('sphere ÷ cylinder', { x: EX, y: 204, class: 'u10l8h-cap' }, eq3); txt('⁴⁄₃ ÷ 2 = ⅔', { x: EX, y: 230, class: 'u10l8h-eq u10l8h-gold u10l8h-big' }, eq3);
+  const burst = mk('circle', { cx: CX, cy: LEVEL, r: 60, class: 'u10l8h-burst' });
+  const T = 11600;
+  function draw(t) {
+    brambles.forEach((g, i) => { const p = ease(seg(t, 500 + i * 100, 900 + i * 100)); g.style.opacity = 1 - p; g.style.transform = `scale(${1 - 0.6 * p})`; });
+    op(sub1, 1 - seg(t, 2700, 2900)); op(sub2, seg(t, 2900, 3200)); top.classList.toggle('on', t >= 2900);
+    op(fig, seg(t, 3300, 4100));
+    op(eq1, seg(t, 4300, 4800)); op(eq2, seg(t, 4900, 5400));
+    const f = ease(seg(t, 5800, 9600)), lv = YB - f * (YB - LEVEL);
+    liquid.setAttribute('y', lv.toFixed(1)); liquid.setAttribute('height', (YB + RY - lv).toFixed(1));
+    surf.setAttribute('cy', lv.toFixed(1)); op(surf, f > 0.01 ? 1 : 0);
+    ball.style.opacity = 1 - 0.85 * f; op(pourT, seg(t, 5600, 6000));
+    op(mark, seg(t, 9700, 10100)); op(eq3, seg(t, 10000, 10500)); burst.classList.toggle('on', t >= 9700);
+  }
+  let t0 = 0, raf = 0;
+  function frame(now) { if (!t0) t0 = now; const t = Math.min(T, now - t0); draw(t); if (t < T) raf = requestAnimationFrame(frame); }
+  function play() {
+    cancelAnimationFrame(raf); t0 = 0;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(T); return; }
+    draw(0); raf = requestAnimationFrame(frame);
+  }
+  draw(0);
+  svg.addEventListener('click', play);
+  const btn = svg.closest('.hist-anim') && svg.closest('.hist-anim').querySelector('.hist-play'); if (btn) btn.addEventListener('click', play);
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 });
+    io.observe(svg);
+  } else play();
+})();

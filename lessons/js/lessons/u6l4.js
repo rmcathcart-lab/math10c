@@ -691,3 +691,79 @@ mountOrchard();
 mountFigures();
 export const explainers = mountExplainers({ liftOff, sameOrder, collinear, missing, translate, rotate, negRecip, classify, rightAngle, dialK });
 export const _test = { LIFT, COL, MISS, TRANS, ROT, NR, CL, RA, KD, frac, slopeOf };
+
+/* ---------- Math History box: Recorde's equals sign (1557) ----------
+ * "is equalle to" → two long twin lines → today's short "=" → tilted onto a grid (rise 4, run 8: both slopes 1/2). */
+(function recordeEquals() {
+  const svg = document.getElementById('u6l4-hist'); if (!svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); Object.keys(attrs || {}).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
+  const txt = (s, attrs, parent) => { const e = mk('text', attrs, parent); e.textContent = s; return e; };
+  const ease = (u) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));
+  const lerp = (a, b, u) => a + (b - a) * u;
+  // grid: 24 px per unit, origin at (204, 250)
+  const U = 24, OX = 204, OY = 250, P = (x, y) => [OX + x * U, OY - y * U];
+  const grid = mk('g', { class: 'u6l4h-grid' });
+  for (let i = -1; i <= 9; i++) mk('line', { x1: OX + i * U, x2: OX + i * U, y1: OY + U, y2: OY - 8 * U }, grid);
+  for (let j = -1; j <= 8; j++) mk('line', { x1: OX - U, x2: OX + 9 * U, y1: OY - j * U, y2: OY - j * U }, grid);
+  // header
+  txt('The Whetstone of Witte', { x: 40, y: 32, class: 'u6l4h-cap' });
+  txt('1557', { x: 40, y: 62, class: 'u6l4h-year' });
+  const note = txt('', { x: 562, y: 36, 'text-anchor': 'end', class: 'u6l4h-note' });
+  // rise/run triangles (top line: up then across; bottom line: across then up, so their labels never cross the other line)
+  const [b0, b1, t0p, t1p] = [P(0, 0), P(8, 4), P(0, 3), P(8, 7)];
+  const triT = mk('g', { class: 'u6l4h-tri' }), triB = mk('g', { class: 'u6l4h-tri' });
+  mk('path', { d: `M${t0p[0]} ${t0p[1]} V${t1p[1]} H${t1p[0]}`, class: 'u6l4h-leg' }, triT);
+  txt('rise 4', { x: t0p[0] - 8, y: (t0p[1] + t1p[1]) / 2 + 5, 'text-anchor': 'end', class: 'u6l4h-lab' }, triT);
+  txt('run 8', { x: (t0p[0] + t1p[0]) / 2, y: t1p[1] - 9, 'text-anchor': 'middle', class: 'u6l4h-lab' }, triT);
+  mk('path', { d: `M${b0[0]} ${b0[1]} H${b1[0]} V${b1[1]}`, class: 'u6l4h-leg' }, triB);
+  txt('run 8', { x: (b0[0] + b1[0]) / 2, y: b0[1] + 19, 'text-anchor': 'middle', class: 'u6l4h-lab' }, triB);
+  txt('rise 4', { x: b1[0] + 8, y: (b0[1] + b1[1]) / 2 + 5, class: 'u6l4h-lab' }, triB);
+  const slT = txt('m = 4/8 = 1/2', { x: t1p[0] + 14, y: t1p[1] + 18, class: 'u6l4h-slope' });
+  const slB = txt('m = 4/8 = 1/2', { x: b1[0] + 14, y: b1[1] + 4, class: 'u6l4h-slope' });
+  // the equation and the two lines
+  const eqL = txt('14x + 15', { x: 180, y: 160, 'text-anchor': 'end', class: 'u6l4h-eq' });
+  const eqR = txt('71', { x: 420, y: 160, class: 'u6l4h-eq' });
+  const words = txt('is equalle to', { x: 300, y: 158, 'text-anchor': 'middle', class: 'u6l4h-words' });
+  const lnT = mk('line', { class: 'u6l4h-ln' }), lnB = mk('line', { class: 'u6l4h-ln' });
+  // key shapes: [x1, y1, x2, y2] for the top line and the bottom line
+  const LONG = [[190, 140, 410, 140], [190, 162, 410, 162]];
+  const DOT = [[300, 140, 300, 140], [300, 162, 300, 162]];
+  const TILT = [[...t0p, ...t1p], [...b0, ...b1]];
+  const SHORT = [[278, 143, 322, 143], [278, 159, 322, 159]];
+  const mix = (A, B, u) => A.map((r, i) => r.map((v, j) => lerp(v, B[i][j], u)));
+  const setLn = (S) => [lnT, lnB].forEach((l, i) => { l.setAttribute('x1', S[i][0]); l.setAttribute('y1', S[i][1]); l.setAttribute('x2', S[i][2]); l.setAttribute('y2', S[i][3]); });
+  const op = (el, v) => { el.style.opacity = v; };
+  const END = 10400;
+  function draw(t) {
+    const w = (a, b) => ease((t - a) / (b - a));
+    // lines: draw in (1900–2900), shrink to today's "=" (3600–5000), grow and tilt onto the grid (6000–7600)
+    let S = mix(DOT, LONG, w(1900, 2900));
+    if (t >= 3600) S = mix(LONG, SHORT, w(3600, 5000));
+    if (t >= 6000) S = mix(SHORT, TILT, w(6000, 7600));
+    setLn(S); [lnT, lnB].forEach((l) => l.classList.toggle('u6l4h-gold', t >= 5000 && t < 6000));
+    op(lnT, t >= 1900 ? 1 : 0); op(lnB, t >= 1900 ? 1 : 0);
+    op(words, 1 - w(1200, 1800));
+    // the equation hugs the sign as it shrinks, then fades while the sign goes onto the grid
+    const sh = w(3600, 5000);
+    eqL.setAttribute('x', lerp(180, 264, sh)); eqR.setAttribute('x', lerp(420, 336, sh));
+    const eqOp = 1 - w(5900, 6300); op(eqL, eqOp); op(eqR, eqOp);
+    op(grid, w(6000, 6600));
+    op(triT, w(7800, 8300)); op(triB, w(8200, 8700)); op(slT, w(8800, 9200)); op(slB, w(9000, 9400));
+    note.textContent = t < 1200 ? 'in words' : t < 3600 ? 'twin lines of one length' : t < 6000 ? (t < 5000 ? '' : 'today’s =') : t < 7800 ? 'tilt the sign onto a grid' : 'equal slopes: parallel';
+  }
+  let st = 0, raf = 0;
+  function frame(now) { if (!st) st = now; const t = Math.min(END, now - st); draw(t); if (t < END) raf = requestAnimationFrame(frame); }
+  function play() {
+    cancelAnimationFrame(raf); st = 0;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(END); return; }
+    raf = requestAnimationFrame(frame);
+  }
+  draw(0);
+  svg.addEventListener('click', play);
+  const btn = svg.closest('.hist-anim') && svg.closest('.hist-anim').querySelector('.hist-play'); if (btn) btn.addEventListener('click', play);
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 });
+    io.observe(svg);
+  } else play();
+})();

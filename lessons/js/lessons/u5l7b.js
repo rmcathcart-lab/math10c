@@ -528,3 +528,97 @@ mountFigures();
 mountWarm();
 export const explainers = mountExplainers({ machine, anatomy, represent, machineFB, substitute, linearExpr, graphFB, mapNote, nonlinearSub });
 export const _test = { MC, RP, FB, SB, LE, GF, NL, OK };
+
+/* ---------- Math History box: Leibniz's word (1673) → Euler's f(x) (1734) → today's f(4) = 13 ----------
+ * A function machine, three passes: words only, then Euler's f( x/a + c ), then the lesson's f(x) = 3x + 1. */
+(function eulerMachine() {
+  const svg = document.getElementById('u5l7b-hist'); if (!svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); Object.keys(attrs || {}).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
+  const txt = (s, attrs, parent) => { const e = mk('text', attrs, parent); e.textContent = s; return e; };
+  const NOW = new Date().getFullYear();
+  const IN_X = 100, MID = 300, OUT_X = 488, Y = 124;
+  const STAGES = [
+    { at: 0, len: 3400, y0: 1673, y1: 1673, inT: 'x', outT: '“a function of x”', outC: 'u5l7bh-tokw', inAt: 300, move: [700, 1700], out: [1900, 2900],
+      note: 'Leibniz: just a word', cap: [['A ', ''], ['“function”', 'b'], [' has a name in words, but no symbol yet.', '']] },
+    { at: 3400, len: 4300, y0: 1673, y1: 1734, inT: 'x/a + c', outT: 'f(x/a + c)', outC: '', inAt: 1300, move: [1700, 2700], out: [2900, 3900],
+      note: 'Euler: a symbol', cap: [['f', 'n'], [' = the name of the function   ', ''], ['( )', 'i'], [' = the input goes inside', '']] },
+    { at: 7700, len: 4100, y0: 1734, y1: NOW, inT: '4', outT: 'f(4) = 13', outC: '', inAt: 1200, move: [1500, 2500], out: [2700, 3700],
+      note: 'Today: the same f(x)', cap: [['f(4) = 13', 'o'], [': input ', ''], ['4', 'i'], [', output ', ''], ['13', 'o'], [', for f(x) = 3x + 1', '']] },
+  ];
+  const END = 11800;
+  const ease = (u) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));
+  // header
+  txt('Year', { x: 40, y: 34, class: 'u5l7bh-cap' });
+  const yearT = txt('1673', { x: 84, y: 38, class: 'u5l7bh-year' });
+  const note = txt('', { x: 562, y: 36, 'text-anchor': 'end', class: 'u5l7bh-note' });
+  // chutes and tokens sit BEHIND the machine, so the input vanishes into it and the output slides out of it
+  mk('line', { x1: 40, x2: 560, y1: Y + 24, y2: Y + 24, class: 'u5l7bh-belt' });
+  const token = (cls) => { const g = mk('g', { class: 'u5l7bh-tok ' + cls }); const r = mk('rect', { x: -40, y: -20, width: 80, height: 40, rx: 10 }, g); const t = txt('', { x: 0, y: 7, 'text-anchor': 'middle' }, g); return { g, r, t, w: 80 }; };
+  const tin = token('u5l7bh-tin'), tout = token('u5l7bh-tout');
+  function setTok(tk, s, extra) {
+    tk.t.textContent = s; tk.g.setAttribute('class', 'u5l7bh-tok ' + (tk === tin ? 'u5l7bh-tin' : 'u5l7bh-tout') + (extra ? ' ' + extra : ''));
+    let w = 0; try { w = tk.t.getComputedTextLength(); } catch (e) { /* not rendered yet */ }
+    tk.w = Math.max(44, (w || s.length * 10.5) + 26); tk.r.setAttribute('x', -tk.w / 2); tk.r.setAttribute('width', tk.w);
+  }
+  // the machine
+  const body = mk('g', { class: 'u5l7bh-mach' });
+  mk('path', { d: 'M262 76 L250 54 H350 L338 76 Z', class: 'u5l7bh-hop' }, body);
+  mk('rect', { x: 224, y: 76, width: 152, height: 100, rx: 16, class: 'u5l7bh-box' }, body);
+  mk('rect', { x: 212, y: Y - 2, width: 14, height: 30, rx: 3, class: 'u5l7bh-port' }, body);
+  mk('rect', { x: 374, y: Y - 2, width: 14, height: 30, rx: 3, class: 'u5l7bh-port' }, body);
+  const lblWord = txt('function', { x: MID, y: 134, 'text-anchor': 'middle', class: 'u5l7bh-lword' }, body);
+  const lblF = txt('f', { x: MID, y: 144, 'text-anchor': 'middle', class: 'u5l7bh-lf' }, body);
+  const rule = txt('3x + 1', { x: MID, y: 166, 'text-anchor': 'middle', class: 'u5l7bh-rule' }, body);
+  // caption under the machine
+  const cap = txt('', { x: MID, y: 210, 'text-anchor': 'middle', class: 'u5l7bh-capl' });
+  // the record row: each pass leaves its output behind, so the finished picture reads words → symbol → today
+  mk('line', { x1: 40, x2: 560, y1: 230, y2: 230, class: 'u5l7bh-rule0' });
+  const recs = STAGES.map((S, i) => {
+    const g = mk('g', { class: 'u5l7bh-rec' }), x = 110 + i * 190;
+    txt(i === 2 ? 'today' : String(S.y1), { x, y: 254, 'text-anchor': 'middle', class: 'u5l7bh-ry' }, g);
+    txt(S.outT, { x, y: 282, 'text-anchor': 'middle', class: 'u5l7bh-rt' + (i === 0 ? ' u5l7bh-rtw' : '') }, g);
+    if (i < 2) txt('→', { x: x + 95, y: 280, 'text-anchor': 'middle', class: 'u5l7bh-rarr' }, g);
+    return g;
+  });
+  const CAPC = { b: 'u5l7bh-cb', n: 'u5l7bh-cn', i: 'u5l7bh-ci', o: 'u5l7bh-co', '': '' };
+  let shown = -1, tokSet = '';
+  function stageAt(t) { let k = 0; STAGES.forEach((s, i) => { if (t >= s.at) k = i; }); return k; }
+  function draw(t) {
+    const k = stageAt(t), S = STAGES[k], u = t - S.at;
+    const yr = Math.round(S.y0 + (S.y1 - S.y0) * ease(u / (k === 2 ? 800 : 1000)));
+    yearT.textContent = String(yr);
+    if (shown !== k) {
+      shown = k; note.textContent = S.note; cap.textContent = '';
+      S.cap.forEach(([s, c]) => { const ts = mk('tspan', { class: CAPC[c] }, cap); ts.textContent = s; });
+    }
+    if (tokSet !== String(k)) { tokSet = String(k); setTok(tin, S.inT); setTok(tout, S.outT, S.outC); }
+    lblWord.style.opacity = k === 0 ? 1 : 0;
+    lblF.style.opacity = k === 0 ? 0 : 1;
+    rule.style.opacity = k === 2 && u > 900 ? 1 : 0;
+    // input: waits on the left, then slides into the machine
+    const mi = ease((u - S.move[0]) / (S.move[1] - S.move[0]));
+    tin.g.setAttribute('transform', `translate(${(IN_X + (MID - IN_X) * mi).toFixed(1)} ${Y})`);
+    tin.g.style.opacity = u >= S.inAt ? 1 : 0;
+    // output: slides out of the machine to the right
+    const mo = ease((u - S.out[0]) / (S.out[1] - S.out[0]));
+    tout.g.setAttribute('transform', `translate(${(MID + (OUT_X - MID) * mo).toFixed(1)} ${Y})`);
+    tout.g.style.opacity = u >= S.out[0] ? 1 : 0;
+    note.style.opacity = u > 400 || k === 0 ? 1 : 0;
+    recs.forEach((g, i) => g.classList.toggle('on', i < k || (i === k && u >= S.out[1] + 200)));
+  }
+  let t0 = 0, raf = 0;
+  function frame(now) { if (!t0) t0 = now; const t = Math.min(END, now - t0); draw(t); if (t < END) raf = requestAnimationFrame(frame); }
+  function play() {
+    cancelAnimationFrame(raf); t0 = 0;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(END); return; }
+    raf = requestAnimationFrame(frame);
+  }
+  draw(0);
+  svg.addEventListener('click', play);
+  const btn = svg.closest('.hist-anim') && svg.closest('.hist-anim').querySelector('.hist-play'); if (btn) btn.addEventListener('click', play);
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 });
+    io.observe(svg);
+  } else play();
+})();

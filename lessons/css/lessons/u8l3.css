@@ -227,3 +227,26 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .wf-one .u8l3-wqs .q-line { margin-top: 6px; }
 .wf-one .wf-poll .q-line { margin: 8px 0 6px; }
 .wf-one .wf-poll .opt { padding: 5px 12px; }
+
+/* ---------- Math History box (the Nine Chapters): the counting-board animation ---------- */
+.u8l3h-cap { font: 600 13px var(--font); fill: #8a6440; }
+.u8l3h-note { font: 700 15px var(--round); fill: #b07a12; }
+.u8l3h-row { font: 700 13px var(--round); fill: #8a6440; }
+.u8l3h-board { fill: #f3e3c8; stroke: #9a7a58; stroke-width: 2; }
+.u8l3h-sep { stroke: #dcc5a3; stroke-width: 1; }
+.u8l3h-col { transition: opacity .4s; }
+.u8l3h-frame { fill: none; stroke: transparent; stroke-width: 3; transition: stroke .4s; }
+.u8l3h-frame.u8l3h-f1.on { stroke: #1f5bd6; } .u8l3h-frame.u8l3h-f2.on { stroke: #c27a0e; } .u8l3h-frame.u8l3h-f2.u8l3h-done { stroke: #12805a; }
+.u8l3h-eqn { font: 700 13px var(--round); fill: #8a6440; }
+.u8l3h-c1 { fill: #1f5bd6; } .u8l3h-c2 { fill: #c27a0e; }
+.u8l3h-rods line { stroke: #6b4a2c; stroke-width: 3; stroke-linecap: round; }
+.u8l3h-ghost { transition: opacity .2s; } .u8l3h-ghost line { stroke: #1f5bd6; stroke-width: 3; stroke-linecap: round; }
+.u8l3h-num { font: 600 12px var(--font); fill: #9a7a58; }
+.u8l3h-glow { fill: rgba(240, 180, 41, .18); stroke: #d49a1c; stroke-width: 3; opacity: 0; transition: opacity .4s; }
+.u8l3h-glow.on { opacity: 1; }
+.u8l3h-badge { font: 800 16px var(--round); fill: #b07a12; }
+.u8l3h-pl { font: 800 13px var(--round); letter-spacing: .03em; }
+.u8l3h-pe { font: 600 17px Georgia, "Iowan Old Style", serif; }
+.u8l3h-fin { font: 700 24px Georgia, "Iowan Old Style", serif; fill: #12805a; }
+.u8l3h-fin2 { font: 700 14px var(--round); fill: #b07a12; }
+@media (prefers-reduced-motion: reduce) { .u8l3h-col, .u8l3h-frame, .u8l3h-glow, .u8l3h-ghost { transition: none; } }

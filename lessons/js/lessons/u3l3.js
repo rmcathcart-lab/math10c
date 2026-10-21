@@ -732,3 +732,80 @@ function mountExplainers() {
 }
 
 mountTrick(); mountSquare35(); mountReveals(); mountExplainers();
+
+/* ---------- Math History (the brown box): Euclid II.4 and al-Khwarizmi ----------
+ * Part 1: a square of side a + b is cut into a², ab, ab, b², and the equation builds beside it. Part 2: the cut slides so
+ * the same picture is x² + 5x + 5x = 39 (al-Khwarizmi's “a square and ten roots equal thirty-nine”); the empty 5 × 5 corner
+ * fills in gold (+25), the whole square is 64 = 8², so x + 5 = 8 and x = 3. Colours match the lesson's square pictures. */
+(function squareHistory() {
+  const svg = document.getElementById('square-anim'); if (!svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); Object.keys(attrs || {}).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
+  const txt = (s, attrs, parent) => { const e = mk('text', attrs, parent); e.textContent = s; return e; };
+  const X0 = 36, Y0 = 40, S = 240, U1 = 154, U2 = S * 3 / 8; // part 1: a = 150, b = 82; part 2: x : 5 = 3 : 5
+  const P = {
+    aa: mk('rect', { class: 'u3l3h-p u3l3h-aa' }), ab1: mk('rect', { class: 'u3l3h-p u3l3h-ab' }),
+    ab2: mk('rect', { class: 'u3l3h-p u3l3h-ab' }), bb: mk('rect', { class: 'u3l3h-p u3l3h-bb' }),
+  };
+  const outline = mk('rect', { x: X0, y: Y0, width: S, height: S, class: 'u3l3h-out' });
+  const L = { aa: txt('', { class: 'u3l3h-l u3l3h-laa', 'text-anchor': 'middle' }), ab1: txt('', { class: 'u3l3h-l u3l3h-lab', 'text-anchor': 'middle' }),
+    ab2: txt('', { class: 'u3l3h-l u3l3h-lab', 'text-anchor': 'middle' }), bb: txt('', { class: 'u3l3h-l u3l3h-lbb', 'text-anchor': 'middle' }) };
+  const side = { t1: txt('', { y: Y0 - 9, 'text-anchor': 'middle', class: 'u3l3h-side' }), t2: txt('', { y: Y0 - 9, 'text-anchor': 'middle', class: 'u3l3h-side' }),
+    l1: txt('', { x: X0 - 10, 'text-anchor': 'end', class: 'u3l3h-side' }), l2: txt('', { x: X0 - 10, 'text-anchor': 'end', class: 'u3l3h-side' }) };
+  const eight = txt('8', { x: X0 + S + 13, y: Y0 + S / 2 + 6, class: 'u3l3h-eight' });
+  mk('line', { x1: X0 + S + 6, x2: X0 + S + 6, y1: Y0, y2: Y0 + S, class: 'u3l3h-brace' }, svg).classList.add('u3l3h-eightl');
+  const eightL = svg.querySelector('.u3l3h-eightl');
+  // the words on the right
+  const head = txt('', { x: 324, y: 50, class: 'u3l3h-head' }), sub = txt('', { x: 324, y: 72, class: 'u3l3h-sub' });
+  const lines = [0, 1, 2, 3].map((i) => txt('', { x: 324, y: 118 + i * 42, class: 'u3l3h-eq' }));
+  const T1 = ['(a + b)²', '= a² + ab + ab + b²', '= a² + 2ab + b²', ''];
+  const T2 = ['x² + 10x = 39', 'corner: 39 + 25 = 64', '(x + 5)² = 64 = 8²', 'x + 5 = 8, so x = 3'];
+
+  const at = (u) => {
+    const v = S - u;
+    const set = (r, x, y, w, h) => { r.setAttribute('x', x); r.setAttribute('y', y); r.setAttribute('width', w); r.setAttribute('height', h); };
+    set(P.aa, X0, Y0, u, u); set(P.ab1, X0 + u, Y0, v, u); set(P.ab2, X0, Y0 + u, u, v); set(P.bb, X0 + u, Y0 + u, v, v);
+    const c = (l, x, y) => { l.setAttribute('x', x); l.setAttribute('y', y + 7); };
+    c(L.aa, X0 + u / 2, Y0 + u / 2); c(L.ab1, X0 + u + v / 2, Y0 + u / 2); c(L.ab2, X0 + u / 2, Y0 + u + v / 2); c(L.bb, X0 + u + v / 2, Y0 + u + v / 2);
+    side.t1.setAttribute('x', X0 + u / 2); side.t2.setAttribute('x', X0 + u + v / 2);
+    side.l1.setAttribute('y', Y0 + u / 2 + 6); side.l2.setAttribute('y', Y0 + u + v / 2 + 6);
+  };
+  const on = (el, b) => el.classList.toggle('on', !!b);
+  const END = 12600;
+  const ease = (p) => (p <= 0 ? 0 : p >= 1 ? 1 : p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2);
+  function draw(ms) {
+    const part2 = ms >= 5600;
+    const u = U1 + (U2 - U1) * ease((ms - 5000) / 1200);
+    at(u);
+    on(outline, true);
+    // part 1: pieces fill one by one; part 2: x², the two 5x strips, then the gold corner
+    on(P.aa, ms >= 900); on(P.ab1, ms >= 1500); on(P.ab2, ms >= 2100); on(P.bb, ms >= 2700 && (!part2 || ms >= 8000));
+    P.bb.classList.toggle('u3l3h-gold', part2); P.bb.classList.toggle('u3l3h-empty', part2 && ms < 8000);
+    if (part2 && ms < 8000) P.bb.classList.add('on');
+    const fade = ms >= 4800 && ms < 6400; // labels hide while the cut slides
+    L.aa.textContent = part2 ? 'x²' : 'a²'; L.ab1.textContent = L.ab2.textContent = part2 ? '5x' : 'ab'; L.bb.textContent = part2 ? (ms >= 8000 ? '25' : '?') : 'b²';
+    on(L.aa, ms >= 900 && !fade); on(L.ab1, ms >= 1500 && !fade); on(L.ab2, ms >= 2100 && !fade); on(L.bb, ms >= 2700 && !fade);
+    L.bb.classList.toggle('u3l3h-lgold', part2);
+    side.t1.textContent = side.l1.textContent = part2 ? 'x' : 'a'; side.t2.textContent = side.l2.textContent = part2 ? '5' : 'b';
+    [side.t1, side.t2, side.l1, side.l2].forEach((e) => on(e, ms >= 300 && !fade));
+    on(eight, ms >= 9500); on(eightL, ms >= 9500);
+    head.textContent = part2 ? 'al-Khwarizmi, Baghdad' : 'Euclid, Elements II.4'; sub.textContent = part2 ? 'c. 820 · “a square and ten roots”' : 'c. 300 BCE · a line cut in two';
+    on(head, !fade); on(sub, !fade);
+    const T = part2 ? T2 : T1, when = part2 ? [6600, 8000, 9500, 11000] : [600, 1500, 3300, 99999];
+    lines.forEach((l, i) => { l.textContent = T[i]; on(l, ms >= when[i] && !fade); l.classList.toggle('u3l3h-key', (part2 && i === 3) || (!part2 && i === 2)); });
+  }
+  let t0 = 0, raf = 0;
+  function frame(now) { if (!t0) t0 = now; const ms = now - t0; draw(ms); if (ms < END) raf = requestAnimationFrame(frame); }
+  function play() {
+    cancelAnimationFrame(raf); t0 = 0;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(END); return; }
+    raf = requestAnimationFrame(frame);
+  }
+  draw(0);
+  svg.addEventListener('click', play);
+  const btn = svg.closest('.hist-anim') && svg.closest('.hist-anim').querySelector('.hist-play'); if (btn) btn.addEventListener('click', play);
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 });
+    io.observe(svg);
+  } else play();
+})();

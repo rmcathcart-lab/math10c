@@ -916,3 +916,95 @@ const choose = {
 
 mountWarm();
 export const explainers = mountExplainers({ pets, balance, signs, pencil, scale, lcm, walk, walk6, prep, special, choose });
+
+/* ---------- Math History box: the Nine Chapters' counting board (Chapter 8, Problem 1) ----------
+ * Three columns of rod numerals, right to left. The middle column is multiplied by 3, then the right column is
+ * subtracted from it twice: (2, 3, 1, 34) → (6, 9, 3, 102) → (3, 7, 2, 63) → (0, 5, 1, 24). The top grade is gone. */
+(function fangchengBoard() {
+  const svg = document.getElementById('u8l3-hist'); if (!svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); Object.keys(attrs || {}).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
+  const txt = (s, attrs, parent) => { const e = mk('text', attrs, parent); e.textContent = s; return e; };
+  const ease = (u) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));
+  // rod numerals: units and hundreds upright, tens lying down; 6–9 use a crossing "five" rod; 0 is an empty space
+  function rodDigit(g, d, cx, cy, upright) {
+    const L = (x1, y1, x2, y2) => mk('line', { x1: cx + x1, y1: cy + y1, x2: cx + x2, y2: cy + y2 }, g);
+    const n = d > 5 ? d - 5 : d, s = 6, off = (i) => (i - (n - 1) / 2) * s;
+    if (upright) {
+      if (d > 5) { L(-10, -11, 10, -11); for (let i = 0; i < n; i++) L(off(i), -6, off(i), 11); }
+      else for (let i = 0; i < n; i++) L(off(i), -11, off(i), 11);
+    } else if (d > 5) { L(0, -11, 0, 11 - n * s); for (let i = 0; i < n; i++) L(-10, 11 - i * s, 10, 11 - i * s); }
+    else for (let i = 0; i < n; i++) L(-10, off(i), 10, off(i));
+  }
+  function rods(g, v, cx, cy) {
+    while (g.firstChild) g.removeChild(g.firstChild);
+    const ds = String(v).split('').map(Number), W = 22, G = 5, tot = ds.length * W + (ds.length - 1) * G;
+    if (v === 0) return;
+    ds.forEach((d, i) => { const place = ds.length - 1 - i; if (d) rodDigit(g, d, cx - tot / 2 + W / 2 + i * (W + G), cy, place % 2 === 0); });
+  }
+  const ROWS = ['top', 'medium', 'low', 'dou'], RY = [106, 160, 214, 268], CX = [356, 264, 172], CW = 86;
+  const COLS = [[3, 2, 1, 39], [2, 3, 1, 34], [1, 2, 3, 26]];
+  const MID = [[2, 3, 1, 34], [6, 9, 3, 102], [3, 7, 2, 63], [0, 5, 1, 24]];
+  txt('A counting board', { x: 40, y: 32, class: 'u8l3h-cap' });
+  const note = txt('', { x: 562, y: 32, 'text-anchor': 'end', class: 'u8l3h-note' });
+  ROWS.forEach((r, i) => txt(r, { x: 118, y: RY[i] + 5, 'text-anchor': 'end', class: 'u8l3h-row' }));
+  mk('rect', { x: 126, y: 74, width: 276, height: 220, rx: 8, class: 'u8l3h-board' });
+  const cols = CX.map((cx, c) => {
+    const g = mk('g', { class: 'u8l3h-col' });
+    const frame = mk('rect', { x: cx - CW / 2 + 2, y: 78, width: CW - 4, height: 212, rx: 6, class: 'u8l3h-frame' + (c === 0 ? ' u8l3h-f1' : c === 1 ? ' u8l3h-f2' : '') }, g);
+    txt('Eq. ' + (c + 1), { x: cx, y: 64, 'text-anchor': 'middle', class: 'u8l3h-eqn' + (c === 0 ? ' u8l3h-c1' : c === 1 ? ' u8l3h-c2' : '') }, g);
+    const cells = RY.map((y) => ({ r: mk('g', { class: 'u8l3h-rods' }, g), n: txt('', { x: cx + CW / 2 - 6, y: y + 22, 'text-anchor': 'end', class: 'u8l3h-num' }, g), y }));
+    return { g, frame, cells, cx, v: null };
+  });
+  for (let i = 1; i < 4; i++) mk('line', { x1: 130, x2: 398, y1: RY[i] - 27, y2: RY[i] - 27, class: 'u8l3h-sep' });
+  const glow = mk('rect', { x: CX[1] - CW / 2 + 6, y: RY[0] - 23, width: CW - 12, height: 36, rx: 8, class: 'u8l3h-glow' });
+  // the ghost copy of Eq. 1 that slides onto the middle column to be subtracted
+  const ghost = mk('g', { class: 'u8l3h-ghost' }), ghostCells = RY.map(() => mk('g', {}, ghost));
+  ghostCells.forEach((g, i) => rods(g, COLS[0][i], 0, RY[i]));
+  const badge = txt('', { x: CX[1], y: 44, 'text-anchor': 'middle', class: 'u8l3h-badge' });
+  function setCol(c, vals) {
+    const C = cols[c], key = vals.join(); if (C.v === key) return; C.v = key;
+    C.cells.forEach((cell, i) => { rods(cell.r, vals[i], C.cx, cell.y - 4); cell.n.textContent = String(vals[i]); });
+  }
+  // the same steps in today's symbols
+  txt('Eq. 1', { x: 418, y: 96, class: 'u8l3h-pl u8l3h-c1' });
+  txt('3x + 2y + z = 39', { x: 418, y: 118, class: 'u8l3h-pe u8l3h-c1' });
+  const pLab = txt('Eq. 2', { x: 418, y: 158, class: 'u8l3h-pl u8l3h-c2' });
+  const pEq = txt('', { x: 418, y: 180, class: 'u8l3h-pe u8l3h-c2' });
+  const fin = txt('', { x: 418, y: 236, class: 'u8l3h-fin' }), fin2 = txt('', { x: 418, y: 258, class: 'u8l3h-fin2' });
+  const EQ = ['2x + 3y + z = 34', '6x + 9y + 3z = 102', '3x + 7y + 2z = 63', '0x + 5y + z = 24'];
+  const LAB = ['Eq. 2', 'Eq. 2 × 3', '− Eq. 1', '− Eq. 1 again'];
+  const T = { in: [200, 600, 1000], x3: 3000, g1: [4000, 4800], s1: 4900, g2: [5800, 6600], s2: 6700, end: 9600 };
+  function draw(t) {
+    cols.forEach((C, c) => { C.g.style.opacity = t >= T.in[c] ? 1 : 0; });
+    setCol(0, COLS[0]); setCol(2, COLS[2]);
+    const k = t < T.x3 ? 0 : t < T.s1 ? 1 : t < T.s2 ? 2 : 3;
+    setCol(1, MID[k]);
+    pEq.textContent = EQ[k]; pLab.textContent = LAB[k];
+    pLab.style.opacity = pEq.style.opacity = t >= T.in[1] ? 1 : 0;
+    cols[0].frame.classList.toggle('on', t >= 2000); cols[1].frame.classList.toggle('on', t >= 2000);
+    cols[1].frame.classList.toggle('u8l3h-done', k === 3);
+    // ghost slides from the right column onto the middle one
+    let gx = null;
+    [T.g1, T.g2].forEach(([a, b]) => { if (t >= a && t < b + 100) gx = CX[0] + (CX[1] - CX[0]) * ease((t - a) / (b - a)); });
+    ghost.style.opacity = gx === null ? 0 : 0.7; ghost.setAttribute('transform', `translate(${gx === null ? CX[0] : gx} -4)`);
+    badge.textContent = t >= 2300 && t < T.g1[0] ? '× 3' : (t >= T.g1[0] && t < T.s1 + 300) || (t >= T.g2[0] && t < T.s2 + 300) ? '− Eq. 1' : '';
+    glow.classList.toggle('on', k === 3);
+    note.textContent = t < 2000 ? 'one equation per column, right to left' : t < T.g1[0] ? 'multiply the middle column by 3' : t < T.s2 ? 'subtract the right column' : 'the top grade is eliminated';
+    fin.textContent = t >= T.s2 + 600 ? '5y + z = 24' : ''; fin2.textContent = t >= T.s2 + 1300 ? 'one fewer variable' : '';
+  }
+  let st = 0, raf = 0;
+  function frame(now) { if (!st) st = now; const t = Math.min(T.end, now - st); draw(t); if (t < T.end) raf = requestAnimationFrame(frame); }
+  function play() {
+    cancelAnimationFrame(raf); st = 0;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(T.end); return; }
+    raf = requestAnimationFrame(frame);
+  }
+  draw(0);
+  svg.addEventListener('click', play);
+  const btn = svg.closest('.hist-anim') && svg.closest('.hist-anim').querySelector('.hist-play'); if (btn) btn.addEventListener('click', play);
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 });
+    io.observe(svg);
+  } else play();
+})();

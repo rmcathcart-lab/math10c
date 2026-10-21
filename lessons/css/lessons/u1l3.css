@@ -296,3 +296,27 @@
 .wf .cy-qcol .q-line { margin: 6px 0 2px; font-size: 17px; }
 .wf .cy-clockcol { margin-top: -6px; }
 .wf .cy-top { margin-top: 4px; }
+
+/* ---------- Math History box: π, 355/113 and 22/7 racing digit by digit (animation in u1l3.js) ---------- */
+.u1l3h-hd { font: 700 15px var(--round); fill: #8a6440; }
+.u1l3h-count { font: 700 15px var(--round); fill: #b07a12; }
+.u1l3h-pi { font: italic 700 34px Georgia, "Iowan Old Style", serif; fill: #4a2c14; }
+.u1l3h-fr { font: 700 18px var(--round); fill: #4a2c14; }
+.u1l3h-bar { stroke: #4a2c14; stroke-width: 2; }
+.u1l3h-d { font: 700 22px ui-monospace, "SF Mono", Menlo, monospace; fill: #6b4a2c; opacity: 0; transition: opacity .2s; }
+.u1l3h-d.on { opacity: 1; }
+.u1l3h-d.ref { fill: #4a2c14; }
+.u1l3h-d.hit { fill: #b07a12; }
+.u1l3h-d.miss { fill: #a8907a; font-weight: 600; }
+.u1l3h-g { opacity: 0; transition: opacity .35s; }
+.u1l3h-g.on { opacity: 1; }
+.u1l3h-pill { fill: #fbeccb; stroke: #d49a1c; stroke-width: 1.4; }
+.u1l3h-pill.pi { fill: #efe0c8; stroke: #c9a77d; }
+.u1l3h-pt { font: 700 14px var(--round); fill: #8a5a0c; }
+.u1l3h-pill.pi + .u1l3h-pt { fill: #7a4a26; }
+.u1l3h-ob { stroke: #b0563a; stroke-width: 2.5; stroke-linecap: round; }
+.u1l3h-ob2 { opacity: .4; }
+.u1l3h-nw { white-space: nowrap; }
+.u1l3h-sub { font: italic 600 13.5px var(--font); fill: #7a5a3a; }
+.u1l3h-sub b { font-style: normal; }
+@media (prefers-reduced-motion: reduce) { .u1l3h-d, .u1l3h-g { transition: none; } }

@@ -812,3 +812,82 @@ const roundup = {
 mountRace();
 export const explainers = mountExplainers({ exact, bench, ladder, mixed, twoways, chain, estimate, heights, roundup });
 export const _test = { EXA, BEN, MIX, TWO, CH, EST, HT, RU };
+
+/* =============================== Math History: the Gimli Glider (u10l4b-hist) =============================== */
+(function gimliGlider() {
+  const svg = document.getElementById('u10l4b-hist'); if (!svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); Object.keys(attrs || {}).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
+  const txt = (s, attrs, parent) => { const e = mk('text', attrs, parent); e.textContent = s; return e; };
+  const seg = (t, a, b) => Math.max(0, Math.min(1, (t - a) / (b - a)));
+  const ease = (p) => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2);
+  const op = (el, v) => { el.style.opacity = v; };
+  const fmt = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  // the fuel bar: 0 to 24 000 kg
+  const BX = 24, BW = 552, BY = 40, BH = 32, KG = (k) => BX + (BW * k) / 24000, NEED = 22300, REAL = 10100;
+  txt('Fuel needed: 22 300 kg', { x: BX, y: 28, class: 'u10l4bh-title' });
+  mk('rect', { x: BX, y: BY, width: BW, height: BH, rx: 7, class: 'u10l4bh-tank' });
+  const fill = mk('rect', { x: BX, y: BY, width: 0, height: BH, rx: 7, class: 'u10l4bh-fill' });
+  const half = mk('g', {});
+  mk('line', { x1: KG(NEED / 2), x2: KG(NEED / 2), y1: BY - 4, y2: BY + BH + 4, class: 'u10l4bh-half' }, half);
+  txt('half', { x: KG(NEED / 2), y: BY + BH + 16, 'text-anchor': 'middle', class: 'u10l4bh-small' }, half);
+  mk('line', { x1: KG(NEED), x2: KG(NEED), y1: BY - 6, y2: BY + BH + 6, class: 'u10l4bh-need' });
+  txt('needed', { x: KG(NEED), y: BY + BH + 18, 'text-anchor': 'middle', class: 'u10l4bh-small' });
+  const val = txt('', { x: 0, y: BY + 22, 'text-anchor': 'end', class: 'u10l4bh-val' });
+  const st1 = txt('Crew’s sums: litres × 1.77 → “22 300 kg”. Enough!', { x: BX, y: 114, class: 'u10l4bh-st' });
+  const st2 = txt('But 1.77 is pounds per litre: 22 300 lb ≈ 10 100 kg.', { x: BX, y: 114, class: 'u10l4bh-st u10l4bh-bad' });
+  // the glide
+  const GY = 276, glide = mk('g', {});
+  mk('line', { x1: 0, x2: 600, y1: GY, y2: GY, class: 'u10l4bh-ground' }, glide);
+  mk('rect', { x: 440, y: GY - 5, width: 150, height: 9, rx: 2, class: 'u10l4bh-runway' }, glide);
+  for (let x = 452; x < 584; x += 22) mk('line', { x1: x, x2: x + 10, y1: GY, y2: GY, class: 'u10l4bh-dash' }, glide);
+  txt('Gimli, Manitoba', { x: 515, y: 296, 'text-anchor': 'middle', class: 'u10l4bh-place' }, glide);
+  txt('41 000 ft', { x: 24, y: 158, class: 'u10l4bh-alt' }, glide);
+  const path = mk('path', { d: 'M60,170 C210,178 380,236 486,270', class: 'u10l4bh-path' }, glide);
+  const trail = mk('path', { d: 'M60,170 C210,178 380,236 486,270', class: 'u10l4bh-trail' }, glide);
+  const out = txt('both engines stop', { x: 96, y: 160, class: 'u10l4bh-out' }, glide);
+  const clock = txt('', { x: 590, y: 158, 'text-anchor': 'end', class: 'u10l4bh-clock' }, glide);
+  const safe = txt('landed: all 69 on board survive', { x: 590, y: 184, 'text-anchor': 'end', class: 'u10l4bh-safe' }, glide);
+  const plane = mk('g', {}, glide), body = mk('g', { transform: 'scale(1.25)' }, plane);
+  mk('path', { d: 'M-22,-2.5 L14,-3 Q23,-2.5 25,0.5 Q23,3.5 14,3.5 L-22,3 Z', class: 'u10l4bh-jet' }, body);
+  mk('path', { d: 'M-22,-1 L-27,-12 L-20,-12 L-12,-2 Z', class: 'u10l4bh-jet' }, body);
+  mk('path', { d: 'M-3,1 L7,1 L-5,10 L-11,10 Z', class: 'u10l4bh-wing' }, body);
+  mk('path', { d: 'M17,-2.2 L21,-2 L22.5,0 L17,0 Z', class: 'u10l4bh-win' }, body);
+  const LEN = path.getTotalLength ? path.getTotalLength() : 470;
+  trail.style.strokeDasharray = `${LEN} ${LEN}`;
+  const T = 13400;
+  function draw(t) {
+    // fill up to the crew's number, then drop to what was really there
+    const up = ease(seg(t, 400, 3200)), down = ease(seg(t, 4300, 6100));
+    const kg = NEED * up - (NEED - REAL) * down, w = KG(kg) - BX;
+    fill.setAttribute('width', Math.max(0, w).toFixed(1));
+    fill.classList.toggle('bad', t >= 4300);
+    val.setAttribute('x', (BX + w - 8).toFixed(1)); op(val, w > 90 ? 1 : 0);
+    val.textContent = t < 4300 ? fmt(kg) : fmt(kg) + ' kg';
+    op(st1, t < 4300 ? seg(t, 900, 1300) : 0); op(st2, seg(t, 4300, 4700)); op(half, seg(t, 5600, 6100));
+    // the glide
+    op(glide, seg(t, 6400, 6900));
+    const g = ease(seg(t, 7300, 12500)), pt = path.getPointAtLength ? path.getPointAtLength(g * LEN) : { x: 60, y: 170 }, pt2 = path.getPointAtLength ? path.getPointAtLength(Math.min(LEN, g * LEN + 2)) : { x: 61, y: 170 };
+    const ang = g >= 1 ? 0 : (Math.atan2(pt2.y - pt.y, pt2.x - pt.x) * 180) / Math.PI;
+    const p = g >= 1 ? { x: 520, y: GY - 6 } : g > 0.97 ? { x: pt.x + (520 - pt.x) * ((g - 0.97) / 0.03), y: pt.y + (GY - 6 - pt.y) * ((g - 0.97) / 0.03) } : { x: pt.x, y: pt.y - 6 };
+    plane.setAttribute('transform', `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) rotate(${ang.toFixed(1)})`);
+    trail.style.strokeDashoffset = (LEN * (1 - g)).toFixed(1);
+    op(out, seg(t, 6900, 7300) * (1 - seg(t, 9000, 9600)));
+    clock.textContent = t < 7300 ? '' : 'gliding: ' + Math.floor(17 * g) + ' min';
+    op(safe, seg(t, 12600, 13000));
+  }
+  let t0 = 0, raf = 0;
+  function frame(now) { if (!t0) t0 = now; const t = Math.min(T, now - t0); draw(t); if (t < T) raf = requestAnimationFrame(frame); }
+  function play() {
+    cancelAnimationFrame(raf); t0 = 0;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(T); return; }
+    draw(0); raf = requestAnimationFrame(frame);
+  }
+  draw(0);
+  svg.addEventListener('click', play);
+  const btn = svg.closest('.hist-anim') && svg.closest('.hist-anim').querySelector('.hist-play'); if (btn) btn.addEventListener('click', play);
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 });
+    io.observe(svg);
+  } else play();
+})();

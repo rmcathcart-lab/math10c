@@ -210,3 +210,28 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .wf .u10l4b-social { font-size: 18px; margin-top: 10px; }
 /* the staircase's Work panel is narrow: its final line a little smaller so it fits */
 .u10l4b-pnar .u10l4b-line.u10l4b-big { font-size: 20px; }
+/* Math History: the Gimli Glider (the animation in u10l4b.js) */
+.u10l4bh-title { font: 700 18px Georgia, "Iowan Old Style", serif; fill: #4a2c14; }
+.u10l4bh-tank { fill: #fff; stroke: #8a6440; stroke-width: 2; }
+.u10l4bh-fill { fill: #d49a1c; transition: fill .4s; }
+.u10l4bh-fill.bad { fill: #b5462e; }
+.u10l4bh-need { stroke: #4a2c14; stroke-width: 3; stroke-linecap: round; }
+.u10l4bh-half { stroke: #8a6440; stroke-width: 1.5; stroke-dasharray: 4 3; }
+.u10l4bh-small { font: 600 12px var(--font); fill: #8a6440; }
+.u10l4bh-val { font: 800 16px var(--round); fill: #fff; }
+.u10l4bh-st { font: 700 15px var(--round); fill: #6b4a2c; }
+.u10l4bh-st.u10l4bh-bad { fill: #b5462e; }
+.u10l4bh-ground { stroke: #8a6440; stroke-width: 2; }
+.u10l4bh-runway { fill: #6b5a48; }
+.u10l4bh-dash { stroke: #fffaf1; stroke-width: 1.5; }
+.u10l4bh-place { font: 700 13px var(--round); fill: #6b4a2c; }
+.u10l4bh-alt { font: 700 13px var(--round); fill: #8a6440; }
+.u10l4bh-path { fill: none; stroke: #e3d2b8; stroke-width: 1.5; stroke-dasharray: 2 5; }
+.u10l4bh-trail { fill: none; stroke: #b07a12; stroke-width: 2.5; stroke-linecap: round; }
+.u10l4bh-out { font: 700 14px var(--round); fill: #b5462e; }
+.u10l4bh-clock { font: 700 22px Georgia, "Iowan Old Style", serif; fill: #4a2c14; }
+.u10l4bh-safe { font: 800 15px var(--round); fill: #b07a12; }
+.u10l4bh-jet { fill: #5a4632; }
+.u10l4bh-wing { fill: #7a6450; }
+.u10l4bh-win { fill: #cfe0e8; }
+@media (prefers-reduced-motion: reduce) { .u10l4bh-fill { transition: none; } }

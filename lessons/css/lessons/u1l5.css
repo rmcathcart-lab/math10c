@@ -294,3 +294,27 @@
 .wf .wcalc { top: 38px; }
 .wf .wq { margin: 6px 0 0; }
 .wf .wc-note { margin-top: 4px; }
+
+/* ---------- Math History box: the YBC 7289 tablet and its base-60 √2 (animation in u1l5.js) ---------- */
+.u1l5h-clay { stroke: #a07a4f; stroke-width: 2; }
+.u1l5h-line { fill: none; stroke: #6b4a2c; stroke-width: 2.6; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1s ease-in-out; }
+.u1l5h-line.on { stroke-dashoffset: 0; }
+.u1l5h-wedge { fill: #5a3a1e; }
+.u1l5h-wedge line { stroke: #5a3a1e; stroke-width: 1.6; stroke-linecap: round; }
+.u1l5h-g { opacity: 0; transition: opacity .35s; }
+.u1l5h-g.on { opacity: 1; }
+.u1l5h-faint.on { opacity: .45; }
+.u1l5h-glow { opacity: 0; transition: opacity .35s; }
+.u1l5h-glow.on { opacity: .3; }
+.u1l5h-cap { font: 600 13px var(--font); fill: #8a6440; }
+.u1l5h-b60 { font: 700 24px Georgia, "Iowan Old Style", serif; fill: #4a2c14; }
+.u1l5h-term { font: 700 18px var(--round); fill: #4a2c14; }
+.u1l5h-sum { font: 600 17px ui-monospace, "SF Mono", Menlo, monospace; fill: #6b4a2c; }
+.u1l5h-cmp { font: 700 18px ui-monospace, "SF Mono", Menlo, monospace; fill: #4a2c14; }
+.u1l5h-lab { font: 700 15px var(--round); fill: #7a4a26; }
+.u1l5h-hit { transition: fill .4s; }
+.u1l5h-hit.on { fill: #b07a12; }
+.u1l5h-final { font: 800 16px var(--round); fill: #b07a12; }
+.u1l5h-rule { stroke: #eadbc4; stroke-width: 1.5; }
+@media (prefers-reduced-motion: reduce) { .u1l5h-line, .u1l5h-g, .u1l5h-glow, .u1l5h-hit { transition: none; } }
+.u1l5h-nw { white-space: nowrap; }
