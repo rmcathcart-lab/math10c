@@ -804,3 +804,61 @@ const tool = {
 figures();
 mountWarm();
 export const explainers = mountExplainers({ kite, pyth, pick, solveTop, ladder, solveBot, cover, letters, solve7, tool });
+
+/* ---------- Math History (the brown box): Aristarchus and the half-moon triangle ----------
+ * The right triangle Earth–Moon–Sun at half moon (right angle at the Moon), and a graph of Sun ÷ Moon = 1 ÷ cos θ:
+ * Aristarchus's 87° gives about 19; the angle climbs to the real 89.85° and the answer shoots up to about 382. */
+(function sunDistance() {
+  const svg = document.getElementById('sun-anim'); if (!svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); Object.keys(attrs || {}).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
+  const txt = (s, attrs, parent) => { const e = mk('text', attrs, parent); e.textContent = s; return e; };
+  const ratio = (deg) => 1 / Math.cos(deg * Math.PI / 180);
+  // the triangle (not to scale)
+  const E = { x: 46, y: 252 }, Mo = { x: 46, y: 104 }, S = { x: 252, y: 104 };
+  mk('polygon', { points: `${E.x},${E.y} ${Mo.x},${Mo.y} ${S.x},${S.y}`, class: 'u9l3h-tri' });
+  mk('path', { d: `M${Mo.x + 12},${Mo.y} v12 h-12`, class: 'u9l3h-right' });
+  mk('circle', { cx: S.x, cy: S.y, r: 22, class: 'u9l3h-sun' });
+  mk('circle', { cx: Mo.x, cy: Mo.y, r: 11, fill: '#5d4a3a' });
+  mk('path', { d: `M${Mo.x},${Mo.y - 11} a11 11 0 0 1 0 22 z`, fill: '#f4e7c9' });  // the half facing the Sun is lit
+  mk('circle', { cx: E.x, cy: E.y, r: 12, class: 'u9l3h-earth' });
+  txt('Sun', { x: S.x, y: S.y - 30, 'text-anchor': 'middle', class: 'u9l3h-lab' });
+  txt('Moon (half lit)', { x: Mo.x - 10, y: Mo.y - 20, class: 'u9l3h-lab' });
+  txt('Earth', { x: E.x + 18, y: E.y + 5, class: 'u9l3h-lab' });
+  txt('adjacent', { x: Mo.x - 8, y: 186, transform: `rotate(-90 ${Mo.x - 8} 186)`, 'text-anchor': 'middle', class: 'u9l3h-side' });
+  txt('hypotenuse', { x: 165, y: 196, transform: 'rotate(-35.7 165 196)', 'text-anchor': 'middle', class: 'u9l3h-side' });
+  mk('path', { d: `M${E.x},${E.y - 30} A30 30 0 0 1 ${E.x + 30 * Math.sin(54.3 * Math.PI / 180)},${E.y - 30 * Math.cos(54.3 * Math.PI / 180)}`, class: 'u9l3h-arc' });
+  txt('θ', { x: E.x + 9, y: E.y - 36, class: 'u9l3h-ang' });
+  const angT = txt('', { x: 584, y: 54, 'text-anchor': 'end', class: 'u9l3h-ang' });
+  txt('not to scale', { x: 252, y: 284, 'text-anchor': 'end', class: 'u9l3h-note' });
+  // the graph of 1 ÷ cos θ, 80° to 90°
+  const GX0 = 326, GX1 = 584, GY0 = 238, GY1 = 58, VMAX = 400;
+  const gx = (d) => GX0 + ((d - 80) / 10) * (GX1 - GX0), gy = (v) => GY0 - (Math.min(v, VMAX) / VMAX) * (GY0 - GY1);
+  mk('line', { x1: GX0, x2: GX1, y1: GY0, y2: GY0, class: 'u9l3h-axis' }); mk('line', { x1: GX0, x2: GX0, y1: GY0, y2: GY1 - 6, class: 'u9l3h-axis' });
+  [80, 85, 90].forEach((d) => txt(d + '°', { x: gx(d), y: GY0 + 17, 'text-anchor': 'middle', class: 'u9l3h-tick' }));
+  [100, 200, 300, 400].forEach((v) => { txt(String(v), { x: GX0 - 6, y: gy(v) + 4, 'text-anchor': 'end', class: 'u9l3h-tick' }); mk('line', { x1: GX0, x2: GX1, y1: gy(v), y2: gy(v), class: 'u9l3h-grid' }); });
+  txt('Sun ÷ Moon = 1 ÷ cos θ', { x: GX0 + 6, y: 30, class: 'u9l3h-cap' });
+  let d = ''; for (let a = 80; a <= 89.88; a += 0.02) d += (d ? 'L' : 'M') + gx(a).toFixed(1) + ',' + gy(ratio(a)).toFixed(1);
+  mk('path', { d, class: 'u9l3h-curve' });
+  const ar = mk('g', {}); mk('circle', { cx: gx(87), cy: gy(ratio(87)), r: 5, class: 'u9l3h-old' }, ar);
+  txt('87°: about 19 (Aristarchus)', { x: gx(87) - 8, y: gy(ratio(87)) - 12, 'text-anchor': 'end', class: 'u9l3h-oldT' }, ar);
+  const dot = mk('circle', { cx: gx(87), cy: gy(ratio(87)), r: 7, class: 'u9l3h-dot' });
+  const valT = txt('', { x: GX1, y: 30, 'text-anchor': 'end', class: 'u9l3h-val' });
+  const endT = txt('89.85°: about 382 (real: about 390)', { x: gx(89.85) - 12, y: gy(382) + 22, 'text-anchor': 'end', class: 'u9l3h-endT' });
+  const HOLD = 2600, CLIMB = 6200, END = HOLD + CLIMB + 600;
+  const ease = (u) => u * u * u * (u * (u * 6 - 15) + 10);
+  let raf = 0, t0 = 0;
+  function draw(ms) {
+    const u = Math.max(0, Math.min(1, (ms - HOLD) / CLIMB)), deg = 87 + 2.85 * ease(u), v = ratio(deg);
+    angT.textContent = 'θ = ' + deg.toFixed(deg < 87.005 ? 0 : 2) + '°';
+    dot.setAttribute('cx', gx(deg)); dot.setAttribute('cy', gy(v));
+    valT.textContent = '≈ ' + Math.round(v);
+    ar.style.opacity = ms > 400 ? 1 : 0; endT.style.opacity = u >= 1 ? 1 : 0;
+  }
+  function frame(now) { if (!t0) t0 = now; const ms = now - t0; draw(ms); if (ms < END) raf = requestAnimationFrame(frame); }
+  function play() { cancelAnimationFrame(raf); t0 = 0; if (matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(END); return; } draw(0); raf = requestAnimationFrame(frame); }
+  draw(0);
+  svg.addEventListener('click', play);
+  const btn = svg.closest('.hist-anim') && svg.closest('.hist-anim').querySelector('.hist-play'); if (btn) btn.addEventListener('click', play);
+  if ('IntersectionObserver' in window) { const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 }); io.observe(svg); } else play();
+})();

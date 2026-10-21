@@ -144,3 +144,25 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .wf .u9l3-wqs .bk-ans { font-size: 15.5px; line-height: 1.32; margin-left: 40px; min-height: 0; }
 /* sidebar captions are only 268 px wide: let a long formula break after = or ≈ instead of running out of the box */
 .ex-panel .ex-cap .katex { white-space: normal; }
+
+/* Math History: Aristarchus and the half-moon triangle */
+.u9l3h-tri { fill: #fff3dc; stroke: #7a4a26; stroke-width: 2.5; stroke-linejoin: round; }
+.u9l3h-right { fill: none; stroke: #7a4a26; stroke-width: 1.8; }
+.u9l3h-sun { fill: #f0b429; stroke: #d48a10; stroke-width: 2; }
+.u9l3h-earth { fill: #3b78d8; stroke: #2c5aa8; stroke-width: 2; }
+.u9l3h-lab { font: 700 14px var(--round); fill: #4a2c14; }
+.u9l3h-side { font: 600 13px var(--round); fill: #8a6440; }
+.u9l3h-arc { fill: none; stroke: #b07a12; stroke-width: 2.5; }
+.u9l3h-ang { font: 800 15px var(--round); fill: #b07a12; }
+.u9l3h-note { font: italic 12px var(--font); fill: #9a7a58; }
+.u9l3h-axis { stroke: #8a6440; stroke-width: 2; }
+.u9l3h-grid { stroke: #ead9bf; stroke-width: 1; }
+.u9l3h-tick { font: 600 12px var(--font); fill: #9a7a58; }
+.u9l3h-cap { font: 700 15px Georgia, "Iowan Old Style", serif; fill: #4a2c14; }
+.u9l3h-val { font: 700 28px Georgia, "Iowan Old Style", serif; fill: #4a2c14; }
+.u9l3h-curve { fill: none; stroke: #7a4a26; stroke-width: 2.5; }
+.u9l3h-old { fill: #fff; stroke: #7a4a26; stroke-width: 2; }
+.u9l3h-oldT { font: 700 13px var(--round); fill: #7a4a26; transition: opacity .4s; }
+.u9l3h-dot { fill: #f0b429; stroke: #b07a12; stroke-width: 2.5; }
+.u9l3h-endT { font: 800 13.5px var(--round); fill: #b07a12; transition: opacity .5s; }
+.u9l3h-endT { dominant-baseline: middle; }

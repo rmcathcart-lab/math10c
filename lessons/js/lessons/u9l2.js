@@ -803,3 +803,61 @@ mountFigs();
 mountPlay();
 export const explainers = mountExplainers({ calc, rescale, dial, compare, extremes, pattern, tan90, cofn });
 export const _test = { CALC, CMP, COF, scr, sn, cs, tn };
+
+/* ---------- Math History (the brown box): Hipparchus's table of chords ----------
+ * A chord sweeps around a circle in steps of 7.5° while the table of chord lengths (radius 3438) fills in; at 60° the
+ * chord equals the radius, and half of it over the radius is sin 30° = 0.5. */
+(function chordTable() {
+  const svg = document.getElementById('chord-anim'); if (!svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); Object.keys(attrs || {}).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
+  const txt = (s, attrs, parent) => { const e = mk('text', attrs, parent); e.textContent = s; return e; };
+  const O = { x: 150, y: 168 }, R = 112, RAD = 3438;
+  const P = (deg) => ({ x: O.x + R * Math.cos(deg * Math.PI / 180), y: O.y - R * Math.sin(deg * Math.PI / 180) });
+  const crd = (deg) => Math.round(2 * RAD * Math.sin(deg * Math.PI / 360));
+  txt('A table of chords', { x: 24, y: 30, class: 'u9l2h-cap' });
+  mk('circle', { cx: O.x, cy: O.y, r: R, class: 'u9l2h-circle' });
+  const A = P(0);
+  mk('line', { x1: O.x, y1: O.y, x2: A.x, y2: A.y, class: 'u9l2h-rad' });
+  txt('radius 3438', { x: O.x + 18, y: O.y + 18, class: 'u9l2h-small' });
+  mk('circle', { cx: O.x, cy: O.y, r: 3, fill: '#4a2c14' });
+  const rad2 = mk('line', { x1: O.x, y1: O.y, x2: A.x, y2: A.y, class: 'u9l2h-rad u9l2h-rad2' });
+  const chord = mk('line', { x1: A.x, y1: A.y, x2: A.x, y2: A.y, class: 'u9l2h-chord' });
+  const angT = txt('', { x: O.x + 26, y: O.y - 8, class: 'u9l2h-ang' });
+  // the right triangle at 60°: O, the midpoint of the chord, A
+  const tri = mk('g', { class: 'u9l2h-tri' }), B60 = P(60), M = { x: (A.x + B60.x) / 2, y: (A.y + B60.y) / 2 };
+  mk('line', { x1: O.x, y1: O.y, x2: M.x, y2: M.y, class: 'u9l2h-bis' }, tri);
+  mk('line', { x1: M.x, y1: M.y, x2: A.x, y2: A.y, class: 'u9l2h-half' }, tri);
+  txt('1719', { x: (M.x + A.x) / 2 + 8, y: (M.y + A.y) / 2 - 2, class: 'u9l2h-halfT' }, tri);
+  txt('30°', { x: O.x + 34, y: O.y - 6, class: 'u9l2h-ang' }, tri);
+  // the table
+  const T0 = 336, rows = [];
+  txt('angle', { x: T0, y: 30, class: 'u9l2h-th' }); txt('chord', { x: T0 + 150, y: 30, 'text-anchor': 'end', class: 'u9l2h-th' });
+  mk('line', { x1: T0, x2: T0 + 156, y1: 37, y2: 37, class: 'u9l2h-rule' });
+  for (let k = 1; k <= 8; k++) {
+    const g = mk('g', { class: 'u9l2h-row' }), y = 37 + k * 24;
+    txt((k * 7.5).toString().replace('.5', '½') + '°', { x: T0, y, class: 'u9l2h-td' }, g);
+    txt(crd(k * 7.5).toLocaleString('en-CA').replace(/,/g, ' '), { x: T0 + 150, y, 'text-anchor': 'end', class: 'u9l2h-td' }, g);
+    rows.push(g);
+  }
+  const fin = mk('g', { class: 'u9l2h-fin' });
+  txt('sin 30° = 1719 ÷ 3438 = 0.5', { x: T0 - 6, y: 278, class: 'u9l2h-big' }, fin);
+  const STEP = 750, PAUSE = 900;
+  let raf = 0, t0 = 0;
+  function draw(ms) {
+    const k = Math.min(8, ms / STEP), deg = Math.max(0.01, k * 7.5), B = P(deg);
+    chord.setAttribute('x2', B.x); chord.setAttribute('y2', B.y); rad2.setAttribute('x2', B.x); rad2.setAttribute('y2', B.y);
+    angT.textContent = deg < 59.99 ? (Math.round(deg * 2) / 2) + '°' : '60°';
+    rows.forEach((r, i) => r.classList.toggle('on', ms >= (i + 1) * STEP - 60));
+    const done = ms >= 8 * STEP + PAUSE;
+    tri.classList.toggle('on', done); fin.classList.toggle('on', ms >= 8 * STEP + PAUSE + 900);
+    rows[7].classList.toggle('hl', ms >= 8 * STEP); angT.style.opacity = done ? 0 : 1;
+  }
+  const END = 8 * STEP + PAUSE + 1000;
+  function frame(now) { if (!t0) t0 = now; const ms = now - t0; draw(ms); if (ms < END) raf = requestAnimationFrame(frame); }
+  function play() { cancelAnimationFrame(raf); t0 = 0; if (matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(END); return; } draw(0); raf = requestAnimationFrame(frame); }
+  draw(0);
+  svg.addEventListener('click', play);
+  const btn = svg.closest('.hist-anim') && svg.closest('.hist-anim').querySelector('.hist-play'); if (btn) btn.addEventListener('click', play);
+  if ('IntersectionObserver' in window) { const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 }); io.observe(svg); } else play();
+})();
