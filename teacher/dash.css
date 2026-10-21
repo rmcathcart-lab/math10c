@@ -327,3 +327,30 @@ button.rt-test:hover { border-color: #9aa6b8; }
 .rt-sel { max-width: 200px; padding: 5px 8px; font-size: 14px; margin-right: 6px; }
 .rt-nochoice { max-width: 220px; white-space: normal; margin-bottom: 6px; }
 .rt-old h3 { display: flex; align-items: center; gap: 8px; }
+
+/* calendar: pop-ups for Start over and the teacher's own entries */
+.kc-modal { position: fixed; inset: 0; z-index: 70; background: rgba(28, 34, 48, .42); display: grid; place-items: center; padding: 16px; overflow: auto; }
+.kc-modal-box { width: min(440px, 100%); background: var(--card, #fff); border-radius: 16px; padding: 18px 20px 16px; box-shadow: 0 24px 70px rgba(0, 0, 0, .3); display: grid; gap: 12px; }
+.kc-modal-box h3 { margin: 0; font-size: 19px; }
+.kc-modal-box p { margin: 0; }
+.kc-modal-acts { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
+.kc-sp { flex: 1; }
+.kc-field { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
+.kc-field input { font-size: 16px; color: var(--ink); }
+.kc-field-l { font-size: 13px; color: var(--muted); margin-bottom: -6px; }
+.kc-need { border-color: #dc2626 !important; }
+.kc-kinds { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.kc-kind { display: flex; gap: 8px; align-items: flex-start; border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; cursor: pointer; }
+.kc-kind:has(input:checked) { border-color: #0f766e; background: #ecf7f5; }
+.kc-kind span { display: grid; font-size: 14px; }
+.kc-kind small { color: var(--muted); font-size: 12px; }
+.kc-takes { font-size: 14px; }
+.kc-del { color: #b91c1c; }
+.kc-evchip { cursor: pointer; }
+.kc-startrow { align-items: flex-start; flex-direction: column; gap: 10px; }
+
+/* Settings: class times */
+.bell-tbl td.bell-cell { white-space: nowrap; }
+.bell-t { width: 8.6em; padding: 5px 6px; font-size: 14px; }
+.bell-to { margin: 0 5px; color: var(--muted); }
+.bell-acts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }

@@ -5,7 +5,10 @@
  * Class days are the weekdays from the start that aren't no-school days, so adding a day off pushes every later lesson
  * back by itself. Moving a lesson moves everything after it by the same number of days; skipping one pulls everything
  * after it up a day (unless it shared its day with another lesson). Shared by the practice site (students' calendar),
- * the Teacher Ledger (Calendar tab) and the demo class. */
+ * the Teacher Ledger (Calendar tab) and the demo class.
+ * events (optional): the teacher's own entries, [{ id, date, title, kind: 'exam' | 'event', takes }]. One that takes the
+ * class (a cumulative exam) works like a day off for this class: lessons move to the next class day. An exam counts as the
+ * next test. */
 (function (root) {
   'use strict';
   var HW = root.HW = root.HW || {};
@@ -66,13 +69,31 @@
     var last = items.reduce(function (m, x) { return Math.max(m, x[1]); }, -1);
     C.sequence().forEach(function (k) { if (!seen[k]) items.push([k, ++last]); });
     sortItems(items);
-    return { v: 1, start: cal.start, items: items, skipped: skipped };
+    var out = { v: 1, start: cal.start, items: items, skipped: skipped }, ev = C.cleanEvents(cal.events);
+    if (ev.length) out.events = ev;
+    return out;
   };
+  C.cleanEvents = function (list) {
+    var out = [];
+    (Array.isArray(list) ? list : []).forEach(function (e, i) {
+      if (!e || !C.parse(e.date) || !String(e.title || '').trim()) return;
+      out.push({ id: String(e.id || 'e' + i), date: e.date, title: String(e.title).trim().slice(0, 60), kind: e.kind === 'exam' ? 'exam' : 'event', takes: !!e.takes });
+    });
+    return out.sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+  };
+  /* days with no lessons for this class: the school's days off plus the class's own events that take the class */
+  C.offFor = function (cal, off) {
+    var ev = (cal && cal.events || []).filter(function (e) { return e.takes; }).map(function (e) { return e.date; });
+    return ev.length ? (off || []).concat(ev) : (off || []);
+  };
+  C.eventsOn = function (cal, date) { return (cal && cal.events || []).filter(function (e) { return e.date === date; }); };
   function sortItems(items) { items.forEach(function (x, i) { x.i = i; }); items.sort(function (a, b) { return a[1] - b[1] || a.i - b.i; }); items.forEach(function (x) { delete x.i; }); }
-  function copy(cal) { return { v: 1, start: cal.start, items: cal.items.map(function (x) { return [x[0], x[1]]; }), skipped: cal.skipped.slice() }; }
+  function copy(cal) { var c = { v: 1, start: cal.start, items: cal.items.map(function (x) { return [x[0], x[1]]; }), skipped: cal.skipped.slice() }; if (cal.events && cal.events.length) c.events = cal.events.map(function (e) { return Object.assign({}, e); }); return c; }
+  C.copy = copy;
 
   /* dates: { days: [date per slot], byDate: { date: [keys] }, dateOf: { key: date } } */
   C.layout = function (cal, off) {
+    off = C.offFor(cal, off);
     var n = cal.items.reduce(function (m, x) { return Math.max(m, x[1]); }, -1) + 1;
     var days = C.classDays(cal.start, off, Math.max(n, 1)), byDate = {}, dateOf = {};
     cal.items.forEach(function (x) { var d = days[x[1]]; if (!d) return; (byDate[d] = byDate[d] || []).push(x[0]); dateOf[x[0]] = d; });
@@ -80,7 +101,7 @@
   };
   /* the slot of a date (-1 if it isn't a class day) */
   C.slotOf = function (cal, off, date) {
-    var o = offSet(off); if (!C.isWeekday(date) || o[date] || date < cal.start) return -1;
+    var o = offSet(C.offFor(cal, off)); if (!C.isWeekday(date) || o[date] || date < cal.start) return -1;
     var d = C.parse(cal.start), n = 0;
     for (var guard = 0; guard < 3000; guard++) { var k = C.key(d), w = d.getDay(); if (k === date) return n; if (w >= 1 && w <= 5 && !o[k]) n++; d.setDate(d.getDate() + 1); }
     return -1;
@@ -114,7 +135,14 @@
   C.nextTest = function (cal, off, from) {
     var L = C.layout(cal, off), best = null;
     cal.items.forEach(function (x) { var i = C.info(x[0]), d = L.dateOf[x[0]]; if (i && i.kind === 'test' && d && d >= from && (!best || d < best.date)) best = { key: x[0], date: d, info: i }; });
-    if (best) best.inDays = Math.max(0, C.slotOf(cal, off, best.date) - Math.max(0, C.slotOf(cal, off, C.firstClassDay(from, off) || from)));
+    (cal.events || []).forEach(function (e) {   // an exam counts as a test
+      if (e.kind === 'exam' && e.date >= from && (!best || e.date < best.date)) best = { key: 'ev:' + e.id, date: e.date, info: { kind: 'exam', title: e.title, unit: 0, unitTitle: '' }, event: e };
+    });
+    if (best) {   // school days from today (or the next school day) to it
+      var o = offSet(off), a = C.firstClassDay(from, off) || from, n = 0, d = C.parse(a);
+      for (var g = 0; g < 400 && C.key(d) < best.date; g++) { var k = C.key(d), w = d.getDay(); if (w >= 1 && w <= 5 && !o[k]) n++; d.setDate(d.getDate() + 1); }
+      best.inDays = n;
+    }
     return best;
   };
   /* ---- the calendar view: one continuous run of weeks (Sun–Sat, weekends narrow and grey) that scrolls like a phone
@@ -146,6 +174,7 @@
       if (!we) {
         var list = el('div', 'calm-items');
         if (isOff) list.appendChild(el('div', 'calm-offl', 'No school'));
+        C.eventsOn(cal, k).forEach(function (e) { var c = opts.eventChip ? opts.eventChip(e, k) : C.eventChip(e); if (c) list.appendChild(c); });
         keys.forEach(function (key) { var c = opts.chip ? opts.chip(key, k) : el('span', 'calm-chip', C.label(key)); if (c) list.appendChild(C.paint(c, key)); });
         cell.appendChild(list);
       }
@@ -174,6 +203,40 @@
     box.refreshMonth = update;
     requestAnimationFrame(update);
     return box;
+  };
+
+  /* one of the teacher's own entries on the calendar */
+  C.eventChip = function (e) {
+    var c = el('div', 'calm-chip calm-ev calm-ev-' + e.kind, '<b>' + esc(e.title) + '</b><span class="ct">' + (e.kind === 'exam' ? 'Exam' : 'Event') + (e.takes ? ' · no lesson' : '') + '</span>');
+    c.title = e.title + (e.kind === 'exam' ? ' (exam)' : '') + (e.takes ? ': no lesson that day' : ''); return c;
+  };
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+  /* a month you can pick a day from: ‹ October 2026 › with Sun–Sat; weekends and days off can't be picked.
+     opts: { value: 'YYYY-MM-DD', off: [days off], onPick(date) }. Returns the element; el.value() is the picked day. */
+  C.picker = function (opts) {
+    var sel = opts.value && C.parse(opts.value) ? opts.value : C.today(), shown = sel.slice(0, 7), o = offSet(opts.off), box = el('div', 'calp');
+    function draw() {
+      box.innerHTML = '';
+      var y = +shown.slice(0, 4), m = +shown.slice(5, 7) - 1, head = el('div', 'calp-head');
+      var pv = el('button', 'calp-nav', '‹'), nx = el('button', 'calp-nav', '›'); pv.type = nx.type = 'button'; pv.setAttribute('aria-label', 'Previous month'); nx.setAttribute('aria-label', 'Next month');
+      pv.addEventListener('click', function () { shown = C.key(new Date(y, m - 1, 1, 12)).slice(0, 7); draw(); });
+      nx.addEventListener('click', function () { shown = C.key(new Date(y, m + 1, 1, 12)).slice(0, 7); draw(); });
+      head.appendChild(pv); head.appendChild(el('div', 'calp-title', C.MONTHS[m] + ' ' + y)); head.appendChild(nx); box.appendChild(head);
+      var g = el('div', 'calp-grid');
+      ['S', 'M', 'T', 'W', 'T', 'F', 'S'].forEach(function (d) { g.appendChild(el('div', 'calp-hd', d)); });
+      var d = new Date(y, m, 1, 12); for (var i = 0; i < d.getDay(); i++) g.appendChild(el('div', 'calp-blank'));
+      for (; d.getMonth() === m; d.setDate(d.getDate() + 1)) {
+        var k = C.key(d), w = d.getDay(), no = w === 0 || w === 6 || o[k];
+        var b = el('button', 'calp-day' + (k === sel ? ' calp-on' : '') + (k === C.today() ? ' calp-today' : '') + (o[k] ? ' calp-off' : ''), String(d.getDate()));
+        b.type = 'button'; b.dataset.date = k; b.disabled = !!no; if (o[k]) b.title = 'No school';
+        b.addEventListener('click', (function (k) { return function () { sel = k; draw(); if (opts.onPick) opts.onPick(k); }; })(k));
+        g.appendChild(b);
+      }
+      box.appendChild(g);
+    }
+    box.value = function () { return sel; };
+    draw(); return box;
   };
 
   /* what's on today (or the next class day) */

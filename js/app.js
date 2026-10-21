@@ -224,6 +224,12 @@
      or the unit test if that's today; with no class today, the assignment the student was last working on */
   function homeToday() {
     var C = HW.Cal, D = calData(), key = null, kind = 'today';
+    var evs = C && D ? C.eventsOn(D.cal, C.today()) : [], ev = evs.filter(function (e) { return e.takes || e.kind === 'exam'; })[0];
+    if (ev) {   // the teacher's own entry that takes the class today (a cumulative exam)
+      var eb = el('section', 'today is-test');
+      eb.innerHTML = '<div class="td-badge" aria-hidden="true">📝</div><div class="td-main"><div class="td-when">Today in class</div><h2 class="td-title">' + esc(ev.title) + '</h2><div class="td-sub">' + (ev.kind === 'exam' ? 'Exam' : '') + '</div></div>';
+      return eb;
+    }
     if (C && D) { var on = C.on(D.cal, D.noSchool, C.today()); key = on.filter(function (k) { return C.info(k).kind !== 'test'; })[0] || on[0] || null; }
     if (!key) { var last = lastLesson(), ls0 = last && HW.lessons[last]; if (ls0) { var s0 = summary(ls0); if (s0.reqDone < s0.req && (s0.reqDone || s0.extraDone)) { key = last; kind = 'resume'; } } }
     if (!key) return null;
@@ -534,6 +540,7 @@
     if (!D) { box.appendChild(el('p', 'muted', 'Your teacher hasn’t put up the class calendar yet.')); }
     else {
       var today = C.today(), on = C.on(D.cal, D.noSchool, today), nt = C.nextTest(D.cal, D.noSchool, today), info = [];
+      C.eventsOn(D.cal, today).forEach(function (e) { info.push('Today: <b>' + esc(e.title) + '</b>'); });
       if (on.length) info.push('Today: ' + on.map(function (k) { var i = C.info(k); return '<b>' + esc(i.kind === 'test' ? i.title : 'Lesson ' + i.num + ' — ' + stripTags(i.title)) + '</b>'; }).join(' and '));
       if (nt) info.push('Next test: <b>' + esc(nt.info.title) + '</b>, ' + esc(C.nice(nt.date, { weekday: 'long', month: 'long', day: 'numeric' })));
       if (info.length) box.appendChild(el('p', 'cal-today', info.join(' · ')));

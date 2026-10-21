@@ -11,6 +11,16 @@
   TC.itemKey = function (x) { return x.l + ':' + x.i; };
   /* questions that cannot be written as a test question (they give step-by-step feedback as you go) */
   TC.NO_TEST = { ladder: 1, tree: 1 };
+  /* when a test ends: 'period' (the default: when the class period ends, live.endsAt from the ledger; none outside class
+     time), 'minutes' (def.minutes from when each student starts) or 'none' */
+  TC.timing = function (def) { var t = def && def.timing; return t === 'minutes' || t === 'none' ? t : 'period'; };
+  TC.clock = function (ms) { return new Date(ms).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); };
+  TC.timingText = function (def, live) {
+    var t = TC.timing(def);
+    if (t === 'minutes') return (def.minutes || 0) + ' min';
+    if (t === 'none') return 'no time limit';
+    return live ? (live.endsAt ? 'until the end of class (' + TC.clock(live.endsAt) + ')' : 'no time limit (launched outside class time)') : 'until the end of class';
+  };
   TC.items = function (def) {
     var out = [];
     ((def && def.items) || []).forEach(function (x, pos) { // pos = place in the saved test: marks are stored by it, so a question that no longer exists doesn't shift the others

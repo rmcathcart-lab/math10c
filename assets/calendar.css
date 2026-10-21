@@ -51,3 +51,24 @@ a.calm-chip.calm-u:hover { border-color: var(--uc); }
 .next-test b { color: #8a3d00; }
 .next-test.soon { background: #ffd2a8; }
 .cal-today { margin: 0 0 10px; font-size: 15px; }
+
+/* the teacher's own entries (exams, events) */
+.calm-chip.calm-ev { background: #fff; border: 1.5px dashed #64748b; }
+.calm-chip.calm-ev b { color: #1e293b; }
+.calm-chip.calm-ev-exam { background: #fde8e8; border: 1.5px solid #dc2626; }
+.calm-chip.calm-ev-exam b { color: #991b1b; }
+
+/* a month to pick a day from (HW.Cal.picker) */
+.calp { width: 100%; max-width: 300px; user-select: none; }
+.calp-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.calp-title { font-weight: 700; font-size: 15px; }
+.calp-nav { width: 34px; height: 34px; border-radius: 8px; border: 1px solid var(--line, #e2ded4); background: var(--card, #fff); font-size: 20px; line-height: 1; cursor: pointer; color: inherit; }
+.calp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.calp-hd { text-align: center; font-size: 11px; color: var(--muted, #6a7182); padding-bottom: 2px; }
+.calp-day { height: 36px; border-radius: 8px; border: 1px solid transparent; background: var(--card, #fff); font: inherit; font-size: 14px; cursor: pointer; color: inherit; }
+.calp-day:hover:not(:disabled) { border-color: #94a3b8; }
+.calp-day:disabled { background: transparent; color: #b4b9c2; cursor: default; }
+.calp-day.calp-off { text-decoration: line-through; }
+.calp-day.calp-today { font-weight: 800; }
+.calp-day.calp-on { background: #0f766e; color: #fff; font-weight: 700; }
+.calp-day:focus-visible, .calp-nav:focus-visible { outline: 3px solid #2563eb; outline-offset: 1px; }

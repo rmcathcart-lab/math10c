@@ -67,7 +67,7 @@
     view.innerHTML = '<div class="loading">Opening the ledger…</div>';
     api('classes').then(function (d) {
       if (!d.ok) { if (d.error === 'bad key') { ls('hw:tkey', null); st.key = ''; return keyScreen('That key didn’t work.'); } throw new Error(d.error); }
-      st.classes = d.classes.concat(demoEntry()); st.noSchool = d.noSchool; st.bell = d.bell;
+      st.classes = d.classes.concat(demoEntry()); st.noSchool = d.noSchool; st.bell = d.bell; st.bellCustom = !!d.bellCustom;
       if (!st.classes.length) { st.tab = 'settings'; st.D = null; drawTop(); return render(); }
       if (!st.classes.some(function (c) { return c.code === st.klass; })) st.klass = st.classes[0].code;
       loadDash();
@@ -529,6 +529,7 @@
       var nsn = (st.noSchool || []).length, nsr = el('p', 'small', 'No-school days: <b>' + nsn + '</b> set. They’re picked on a month view in the <b>Calendar</b> tab (Days off…), and they apply to every class: lessons move along and in-class time doesn’t count on those days. ');
       var nsb = el('button', 'btn btn-small', 'Open the calendar'); nsb.type = 'button'; nsb.addEventListener('click', function () { st.tab = 'calendar'; ls('hw:ttab', 'calendar'); render(); }); nsr.appendChild(nsb); p2.appendChild(nsr);
       body.appendChild(p2);
+      if (st.bell) body.appendChild(bellPanel());
 
       var p3 = el('div', 'panel'); p3.appendChild(el('h3', '', 'Students in ' + esc(c.label)));
       var t = el('table', 'tbl'); t.innerHTML = '<thead><tr><th>Name</th><th>PIN</th><th>Devices</th><th>Last seen</th><th></th></tr></thead>';
@@ -565,6 +566,48 @@
     var p6 = el('div', 'panel'); p6.appendChild(el('h3', '', 'This device'));
     if (HW.DashDemo && ls('hw:nodemo') === '1') { var sd = el('button', 'btn btn-small btn-ghost', 'Show the demo class'); sd.type = 'button'; sd.style.marginRight = '8px'; sd.addEventListener('click', function () { ls('hw:nodemo', null); loadClasses(); }); p6.appendChild(sd); }
     var fk = el('button', 'btn btn-small btn-ghost', 'Forget the teacher key on this device'); fk.type = 'button'; fk.addEventListener('click', function () { ls('hw:tkey', null); st.key = ''; keyScreen(); }); p6.appendChild(fk); body.appendChild(p6);
+  }
+  /* Class times: the bell schedule (start and end of each block on each kind of day), for every class. It decides what
+     counts as in class and when a test "until the end of class" ends. Saved in the ledger (setbell). */
+  function bellPanel() {
+    var DAYS = [['day1', 'Mon / Wed', 'Day 1'], ['day2', 'Tue / Thu', 'Day 2'], ['fri', 'Friday', 'short periods']];
+    var p = el('div', 'panel bell-panel'); p.appendChild(el('h3', '', 'Class times'));
+    p.appendChild(el('p', 'small muted', 'The bell schedule for every class: it decides what counts as in class, and when a test or exit slip set to “until the end of class” ends. ' + (st.bellCustom ? 'You’ve changed these from the 2026–27 schedule.' : 'These are the 2026–27 bell times.')));
+    var t = el('table', 'tbl bell-tbl'), head = '<thead><tr><th>Block</th>';
+    DAYS.forEach(function (d) { head += '<th>' + d[1] + '<div class="th-sub">' + d[2] + '</div></th>'; });
+    t.innerHTML = head + '</tr></thead>';
+    var tb = el('tbody'), ins = {};
+    ['A', 'B', 'C', 'D'].forEach(function (b) {
+      var tr = el('tr'); tr.appendChild(el('td', '', '<b>Block ' + b + '</b>'));
+      DAYS.forEach(function (d) {
+        var row = (st.bell[d[0]] || []).filter(function (x) { return x[0] === b; })[0] || [b, '', ''], td = el('td', 'bell-cell');
+        var a = el('input', 'field bell-t'), e = el('input', 'field bell-t'); a.type = e.type = 'time'; a.value = row[1]; e.value = row[2];
+        a.setAttribute('aria-label', 'Block ' + b + ' ' + d[1] + ' start'); e.setAttribute('aria-label', 'Block ' + b + ' ' + d[1] + ' end');
+        td.appendChild(a); td.appendChild(el('span', 'bell-to', '–')); td.appendChild(e); tr.appendChild(td);
+        ins[b + d[0]] = [a, e];
+      });
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb); p.appendChild(wrapTbl(t));
+    var acts = el('div', 'bell-acts'), sv = el('button', 'btn btn-small btn-primary', 'Save class times'); sv.type = 'button';
+    sv.addEventListener('click', function () {
+      var out = {}, bad = '';
+      DAYS.forEach(function (d) {
+        out[d[0]] = ['A', 'B', 'C', 'D'].map(function (b) { var x = ins[b + d[0]]; if (!x[0].value || !x[1].value || x[0].value >= x[1].value) bad = bad || ('Block ' + b + ', ' + d[1]); return [b, x[0].value, x[1].value]; })
+          .sort(function (a, b) { return a[1] < b[1] ? -1 : 1; });
+      });
+      if (bad) { flash(p, 'Check ' + bad + ': it needs a start time before its end time.'); return; }
+      sv.disabled = true;
+      api('setbell', { bell: JSON.stringify(out) }).then(function (d) { sv.disabled = false; if (!d.ok) { flash(p, d.error === 'unknown action' ? 'The ledger needs the new backend code (Code.gs) for this.' : 'Couldn’t save: ' + d.error); return; } st.bell = d.bell; st.bellCustom = true; flash(p, 'Saved. The new times apply from now on.'); }, function () { sv.disabled = false; flash(p, 'Couldn’t reach the ledger.'); });
+    });
+    acts.appendChild(sv);
+    if (st.bellCustom) {
+      var rs = el('button', 'btn btn-small btn-ghost', 'Go back to the 2026–27 times'); rs.type = 'button';
+      rs.addEventListener('click', function () { if (!confirm('Go back to the 2026–27 bell times?')) return; api('setbell', { bell: 'reset' }).then(function (d) { if (d.ok) { st.bell = d.bell; st.bellCustom = false; render(); } }); });
+      acts.appendChild(rs);
+    }
+    p.appendChild(acts);
+    return p;
   }
   /* Lesson notes: the Pencil annotations on the lesson pages live in a separate Apps Script ("Math 10C Teaching Ink",
      lessons/backend/Code.gs) with its own teacher key (the one used to sign in on a lesson page). This clears every

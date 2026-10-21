@@ -105,6 +105,7 @@ function doGet(e) {
     if (a === 'removestudent') return json_(removeStudent_(p['class'], p.name), cb);
     if (a === 'setblock') return json_(setBlock_(p['class'], p.block), cb);
     if (a === 'setnoschool') return json_(setNoSchool_(p.dates), cb);
+    if (a === 'setbell') return json_(setBell_(p.bell), cb);
     if (a === 'setcal') return json_(setCal_(p['class'], p.cal, p.all === '1'), cb);
     if (a === 'calsync') return json_(setCalSync_(p.on === '1'), cb);
     if (a === 'tests') return json_(testsList_(), cb);
@@ -245,7 +246,7 @@ function live_(klass) { try { return JSON.parse(CacheService.getScriptCache().ge
 /* ---------------- teacher ---------------- */
 function classList_() {
   var counts = {}; rows_('Roster').forEach(function (r) { var k = norm_(r[0]); counts[k] = (counts[k] || 0) + 1; });
-  return { ok: true, classes: classes_().map(function (c) { return { code: c.code, label: c.label || c.code, students: counts[c.code] || 0, block: blockFor_(c.code) }; }), noSchool: noSchool_(), bell: BELL };
+  return { ok: true, classes: classes_().map(function (c) { return { code: c.code, label: c.label || c.code, students: counts[c.code] || 0, block: blockFor_(c.code) }; }), noSchool: noSchool_(), bell: bell_(), bellCustom: !!(cachedProp_('BELL').day1) };
 }
 function dash_(klass) {
   var k = norm_(klass), c = classOf_(klass); if (!c) return { ok: false, error: 'unknown class' };
@@ -257,7 +258,7 @@ function dash_(klass) {
   return { ok: true, 'class': { code: c.code, label: c.label || c.code, block: blockFor_(klass) }, roster: roster, progress: prog, days: days,
     attempts: att, attemptCols: ['time', 'name', 'lesson', 'item', 'outcome', 'level', 'extra', 'practice', 'ver', 'verdict', 'code', 'tryNo', 'answer', 'prompt', 'inClass'],
     events: evs, eventCols: ['time', 'name', 'lesson', 'item', 'type', 'secs', 'inClass'], dayCols: ['date', 'name', 'lesson', 'secs', 'secsIn', 'answers', 'right', 'firstTry'],
-    live: live_(klass), now: Date.now(), noSchool: noSchool_(), bell: BELL };
+    live: live_(klass), now: Date.now(), noSchool: noSchool_(), bell: bell_(), bellCustom: !!(cachedProp_('BELL').day1) };
 }
 function itemsOf_(state) { // compact per-item status for the dashboard: { id: [status, credit, wrong, secs, reveals] }
   var out = {}; try { var s = JSON.parse(state || '{}'), it = s.items || {}; Object.keys(it).forEach(function (id) { var r = it[id]; out[id] = [r.s, r.credit || '', r.wrong || 0, r.secs || 0, r.reveals || 0, r.steps || 0, r.redo ? 1 : 0]; }); } catch (e) {}
@@ -314,13 +315,35 @@ var BELL = {
   fri:  [['A', '09:00', '10:07'], ['B', '10:11', '11:18'], ['C', '11:48', '12:55'], ['D', '12:58', '14:05']]
 };
 var BELL_GRACE = 2; // minutes either side of the bells
+/* the bell schedule in use: the one saved in the ledger's Settings (property BELL), else the 2026-27 one above */
+function bell_() { var b = cachedProp_('BELL'); return b && b.day1 && b.day2 && b.fri ? b : BELL; }
+function setBell_(json) {
+  if (json === '' || json === 'reset') { props_().deleteProperty('BELL'); cput_('P:BELL', {}); return { ok: true, bell: BELL, custom: false }; }
+  var d = parseDef_(json), out = {}, bad = '';
+  if (!d) return { ok: false, error: 'bad schedule' };
+  ['day1', 'day2', 'fri'].forEach(function (k) {
+    out[k] = (Array.isArray(d[k]) ? d[k] : []).slice(0, 8).map(function (x) {
+      var b = String(x && x[0] || '').toUpperCase(), a = String(x && x[1] || ''), e = String(x && x[2] || '');
+      if (!/^[A-D]$/.test(b) || !/^\d{2}:\d{2}$/.test(a) || !/^\d{2}:\d{2}$/.test(e) || a >= e) bad = bad || (b + ' ' + a + '–' + e);
+      return [b, a, e];
+    });
+  });
+  if (bad) return { ok: false, error: 'bad class time: ' + bad };
+  saveProp_('BELL', out); return { ok: true, bell: out, custom: true };
+}
+/* when the class period that's on now (or starts within 15 minutes) ends, as a time in ms; 0 if there isn't one */
+function periodEnd_(block, off, ms) {
+  if (!block) return 0;
+  var p = period_(block, off, ms); if (!p || p.now < p.start - 15 || p.now >= p.end) return 0;
+  return ms - (ms % 60000) + (p.end - p.now) * 60000;
+}
 function blocks_() { var b = list_('BLOCKS'); return (b && typeof b === 'object') ? b : {}; }
 function blockFor_(klass) { return blocks_()[norm_(klass)] || ''; }
 function noSchool_() { var d = list_('NOSCHOOL'); return Array.isArray(d) ? d : []; }
 function period_(block, off, ms) {
   var parts = Utilities.formatDate(new Date(ms), TZ, 'u|HH|mm|yyyy-MM-dd').split('|'), dow = Number(parts[0]);
   if (dow > 5 || off.indexOf(parts[3]) >= 0) return null;
-  var day = dow === 5 ? BELL.fri : (dow === 1 || dow === 3) ? BELL.day1 : BELL.day2, mins = Number(parts[1]) * 60 + Number(parts[2]);
+  var B = bell_(), day = dow === 5 ? B.fri : (dow === 1 || dow === 3) ? B.day1 : B.day2, mins = Number(parts[1]) * 60 + Number(parts[2]);
   for (var i = 0; i < day.length; i++) if (day[i][0] === block) { var a = day[i][1].split(':'), b = day[i][2].split(':'); return { now: mins, start: a[0] * 60 + Number(a[1]), end: b[0] * 60 + Number(b[1]) }; }
   return null;
 }
@@ -357,7 +380,14 @@ function setCal_(klass, json, all) {
   var items = [], skipped = [];
   (Array.isArray(d.items) ? d.items : []).slice(0, 400).forEach(function (x) { if (Array.isArray(x) && /^[a-z0-9]{1,10}$/.test(String(x[0]))) items.push([String(x[0]), Math.max(0, Math.min(2000, Math.round(Number(x[1]) || 0)))]); });
   (Array.isArray(d.skipped) ? d.skipped : []).slice(0, 400).forEach(function (k) { if (/^[a-z0-9]{1,10}$/.test(String(k))) skipped.push(String(k)); });
+  var events = [];   // the teacher's own entries: { id, date, title, kind: exam | event, takes (lessons move to the next day) }
+  (Array.isArray(d.events) ? d.events : []).slice(0, 60).forEach(function (e) {
+    if (!e || !/^\d{4}-\d{2}-\d{2}$/.test(String(e.date || ''))) return;
+    var title = clean_(e.title, 60); if (!title) return;
+    events.push({ id: clean_(e.id, 12) || ('e' + events.length), date: String(e.date), title: title, kind: e.kind === 'exam' ? 'exam' : 'event', takes: !!e.takes });
+  });
   var cal = { v: 1, start: String(d.start), items: items, skipped: skipped };
+  if (events.length) cal.events = events;
   if (JSON.stringify(cal).length > 8500) return { ok: false, error: 'calendar too big' };
   targets.forEach(function (t) { saveProp_('CAL:' + t.code, cal); });
   return { ok: true, cal: cal, saved: targets.length };
@@ -412,6 +442,7 @@ function cleanDef_(d) {
   d = d || {};
   var items = (Array.isArray(d.items) ? d.items : []).slice(0, 80).map(function (x) { return { l: clean_(x && x.l, 20), i: clean_(x && x.i, 16) }; }).filter(function (x) { return x.l && x.i; });
   return { title: clean_(d.title || 'Test', 80) || 'Test', kind: d.kind === 'exit' ? 'exit' : 'test', minutes: Math.max(0, Math.min(240, Math.round(Number(d.minutes) || 0))),
+    timing: ['period', 'minutes', 'none'].indexOf(d.timing) >= 0 ? d.timing : 'period',
     calc: d.calc !== false, shuffle: !!d.shuffle, levels: d.levels !== false, unit: Math.max(0, Math.min(20, Math.round(Number(d.unit) || 0))), items: items };
 }
 function sessionDef_(sid) {
@@ -431,7 +462,7 @@ function tcheck_(p) {
   String(p.pend || '').split(',').slice(0, 10).forEach(function (sid) { sid = clean_(sid, 40); if (!sid) return; var r = cget_(recKey_(sid, who.name)); if (r) conf[sid] = { st: r.st, rev: r.rev || 0, saved: !!r.saved }; });
   if (!live) return { ok: true, live: null, rel: rel, conf: conf, now: Date.now() };
   var def = sessionDef_(live.id), me = cget_(recKey_(live.id, who.name)), n = norm_(who.name);
-  var out = { ok: true, now: Date.now(), rel: rel, conf: conf, live: { id: live.id, launched: live.launched, ending: !!live.ending, def: def,
+  var out = { ok: true, now: Date.now(), rel: rel, conf: conf, live: { id: live.id, launched: live.launched, ending: !!live.ending, def: def, endsAt: live.endsAt || 0,
     extra: (Number((live.extra || {})['*']) || 0) + (Number((live.extra || {})[n]) || 0), unlock: Number((live.unlock || {})[n]) || 0, submit: Number((live.submit || {})[n]) || 0 } };
   if (me) { out.me = { st: me.st, dev: me.dev, used: me.used, unlockN: me.unlockN || 0, started: me.started, rev: me.rev || 0, saved: !!me.saved }; if (p.full) { out.me.ans = me.ans || {}; out.me.leaves = me.leaves || 0; out.me.order = me.order || null; } }
   return out;
@@ -525,6 +556,8 @@ function launch_(klass, testId, who) {
     sheet_('TestSessions').appendRow([sid, t.id, c.code, t.def.title, t.def.kind, new Date(now), '', '', JSON.stringify(t.def), who || '']);
     cput_('tsdef:' + sid, t.def);
     all[lk] = { id: sid, test: t.id, title: t.def.title, kind: t.def.kind, launched: now, ending: false, extra: {}, unlock: {}, submit: {} };
+    // "until the end of class" (the default): the end of the class period that's on now; none outside class time
+    if ((t.def.timing || 'period') === 'period') all[lk].endsAt = periodEnd_(blockFor_(c.code), noSchool_(), now);
     if (who) all[lk].who = who;
     saveProp_('TESTLIVE', all);
     return { ok: true, live: all[lk] };
