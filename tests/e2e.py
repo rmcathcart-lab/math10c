@@ -13,6 +13,7 @@ async def setup(page, errs):
     page.on('pageerror', lambda e: errs.append('pageerror: ' + str(e)))
     page.on('console', lambda m: errs.append('console: ' + m.text) if m.type == 'error' and 'jsdelivr' not in m.text and 'ERR_FAILED' not in m.text else None)
     await page.route('**/cdn.jsdelivr.net/**', lambda r: r.abort())
+    await page.route('**/fonts.googleapis.com/**', lambda r: r.abort())
     await page.route('**/cdnjs.cloudflare.com/**', lambda r: r.abort())
     await page.route(BASE + 'js/config.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=CONFIG))
 

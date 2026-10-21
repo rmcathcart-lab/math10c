@@ -252,7 +252,8 @@
     drawTop(); top.dataset.crumb = '';
     view.innerHTML = '';
     var head = el('div', 'home-head'), hl = el('div', 'hh-text');
-    hl.appendChild(el('h1', '', 'Hi, ' + esc(session.name.split(' ')[0]) + '.'));
+    var nm = el('div', 'hh-name'); nm.appendChild(el('h1', '', 'Hi, ' + esc(session.name.split(' ')[0]) + '.'));
+    var md = el('div', 'hh-medals'); nm.appendChild(md); hl.appendChild(nm); homeMedals(md);
     hl.appendChild(el('p', 'hh-date', esc(new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' }))));
     head.appendChild(hl);
     var acts = el('div', 'hh-cal'); acts.id = 'home-cal'; homeCalendar(acts); head.appendChild(acts); // the next test + the class calendar, on the right
@@ -331,6 +332,64 @@
     });
     L.setStatus({ view: 'home' }, false);
   }
+  /* ---------------- outcome medals (js/medals.js) ----------------
+   * One medal per outcome beside "Hi, …", at the student's best level: the higher of their practice level (the hardest
+   * question right on the first try or after a hint, as in "Your level") and their level on released tests and exit slips.
+   * A medal that's new or higher since this device last showed them opens big, once. */
+  function practiceTiers() {
+    var best = {};
+    Object.keys(HW.lessons).forEach(function (lid) {
+      var lesson = HW.lessons[lid]; if (lesson.test) return;
+      var items = (S.lessons[lid] || { items: {} }).items;
+      lesson.items.forEach(function (it) {
+        var r = items[it.id]; if (!r || r.s !== 'done' || (r.credit !== 'first' && r.credit !== 'hint') || it.outcome === 'EXT') return;
+        var t = HW.Medals.tierOf(it.level); if (best[it.outcome] == null || t > best[it.outcome].tier) best[it.outcome] = { tier: t, src: 'from practice' };
+      });
+    });
+    return best;
+  }
+  function medalList(results) {
+    var best = practiceTiers(), TC = HW.TestCore;
+    (results || []).forEach(function (r) {
+      if (!r.marks || !r.def || !TC) return;
+      var got = {};
+      try {
+        if (r.kind === 'exit') { var lv = TC.summary(r.def, r.marks).levels || {}; Object.keys(lv).forEach(function (o) { if (lv[o]) got[o] = lv[o]; }); }
+        else TC.outcomeGrades(r.def, r.marks).outcomes.forEach(function (x) { got[x.outcome] = x.ind; });
+      } catch (e) { return; }
+      Object.keys(got).forEach(function (o) {
+        var t = HW.Medals.tierOf(got[o]); if (o === 'EXT' || t < 0) return;
+        if (!best[o] || t > best[o].tier) best[o] = { tier: t, src: 'from ' + (r.title || (r.kind === 'exit' ? 'an exit slip' : 'a test')) };
+      });
+    });
+    var order = []; HW.CATALOG.forEach(function (u) { String(u.outcomes || '').split(/\s*·\s*/).forEach(function (o) { if (o && order.indexOf(o) < 0) order.push(o); }); });
+    Object.keys(best).forEach(function (o) { if (order.indexOf(o) < 0) order.push(o); });
+    return order.filter(function (o) { return best[o]; }).map(function (o) { return { o: o, tier: best[o].tier, src: best[o].src }; });
+  }
+  function homeMedals(box) {
+    if (!HW.Medals) return;
+    var key = 'hw:medals:' + studentKey(), sig = '';
+    function draw(list) {
+      var s2 = JSON.stringify(list.map(function (x) { return [x.o, x.tier]; })); if (s2 === sig) return; sig = s2;
+      box.innerHTML = ''; if (list.length) box.appendChild(HW.Medals.row(list));
+    }
+    draw(medalList([]));
+    var res = HW.TestMode && HW.TestMode.loadResults ? HW.TestMode.loadResults() : Promise.resolve([]);
+    res.then(function (r) { return r || []; }, function () { return []; }).then(function (results) {
+      if (!box.isConnected) return;
+      var list = medalList(results); draw(list);
+      // new or higher since last time on this device: show them big (the first time, just remember what there is)
+      var seen = null; try { seen = JSON.parse(ls(key) || 'null'); } catch (e) { seen = null; }
+      var now = {}; list.forEach(function (x) { now[x.o] = x.tier; });
+      var fresh = seen ? list.filter(function (x) { return seen[x.o] == null || x.tier > seen[x.o]; }) : [];
+      if (!fresh.length) { ls(key, JSON.stringify(now)); return; }
+      if (document.querySelector('#testmode, .medal-pop, #cal-pop')) return;   // not over a test or another pop-up; next time
+      ls(key, JSON.stringify(now));
+      box.querySelectorAll('.medal-btn').forEach(function (b, i) { if (fresh.some(function (f) { return f.o === list[i].o; })) b.classList.add('is-new'); });
+      HW.Medals.open(fresh, 0, { title: fresh.length > 1 ? 'New medals!' : 'New medal!' });
+    });
+  }
+
   /* ---------------- retests ----------------
    * A unit's retest unlocks when every required question in it is done without seeing the solution (one whose
    * solution was shown counts once a new version is done without it: r.redo) — and, once the student has written a

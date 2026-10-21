@@ -427,6 +427,7 @@
     if (results && Date.now() - resultsAt < 120000) return Promise.resolve(results);
     return L.get('myresults', { 'class': s.klass, name: s.name, token: s.token }, 15000).then(function (d) { results = d && d.ok ? d.results : []; resultsAt = Date.now(); return results; }, function () { return results || []; });
   }
+  TM.loadResults = loadResults;
   TM.home = function (view) {
     var box = el('section', 'tm-home hidden'); view.appendChild(box);
     loadResults().then(function (list) {

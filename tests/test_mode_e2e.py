@@ -9,8 +9,11 @@ BASE = 'http://localhost:8811/'; MOCK = 'http://localhost:8765/'
 CONFIG = "var HW_CONFIG = { siteName: 'Math 10C Practice', backend: '%s' };" % MOCK
 SHOTS = '/tmp/'
 
-async def student(b, name, pin, errs):
+async def student(b, name, pin, errs, medal_pops=False):
     ctx = await b.new_context(viewport={'width': 1280, 'height': 860})
+    if not medal_pops:   # "New medal!" pop-ups would cover the page these tests click on (tests/medals_home_test.py covers them)
+        await ctx.add_init_script("addEventListener('DOMContentLoaded', () => { if (window.HW && HW.Medals) HW.Medals.open = function () {}; })")
+    await ctx.route('**/fonts.googleapis.com/**', lambda r: r.abort())
     await ctx.route('**/script.google.com/**', lambda r: r.abort())
     page = await ctx.new_page()
     page.on('pageerror', lambda e: errs.append(name + ': ' + str(e)))
