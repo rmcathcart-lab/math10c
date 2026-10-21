@@ -667,3 +667,100 @@ function mountChecks() {
 }
 
 mountExplainers(); mountWarmup(); mountBlanks(); mountPowers(); mountChecks();
+
+/* ---------- Math History (the brown box): YBC 7289, a Babylonian school tablet (c. 1800–1600 BCE) ----------
+ * The round tablet is drawn: a square, its diagonals, 30 by a side, and in cuneiform along the diagonal 1; 24, 51, 10
+ * (base 60) with 42; 25, 35 under it. Then the base-60 digits are added up, 1 + 24/60 + 51/60² + 10/60³ = 1.41421296…,
+ * and compared with √2 = 1.41421356…: the same to 5 decimal places. Plays once when the box is half in view; a tap or
+ * Replay plays it again; reduced motion shows the finished picture. */
+(function babylonRoot2() {
+  const svg = document.getElementById('u1l5-hist'); if (!svg) return;
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(SVGNS, tag); Object.keys(attrs || {}).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
+  const txt = (s, attrs, parent, tag) => { const e = mk(tag || 'text', attrs, parent); e.textContent = s; return e; };
+  const tsp = (s, attrs, parent) => txt(s, attrs, parent, 'tspan');
+  const steps = [], when = (el, ms) => { steps.push({ el, t: ms }); return el; };
+  const GCOL = ['#4a2c14', '#0f8a8a', '#8a58c9', '#d0477a'];
+  // ---- the tablet ----
+  const defs = mk('defs');
+  const rg = mk('radialGradient', { id: 'u1l5h-clayg', cx: '42%', cy: '38%', r: '70%' }, defs);
+  mk('stop', { offset: '0%', 'stop-color': '#e6cfa6' }, rg); mk('stop', { offset: '100%', 'stop-color': '#c9a678' }, rg);
+  const CX = 150, CY = 152, H = 104; // the square is turned 45°: its diagonals are horizontal and vertical, H = half a diagonal
+  mk('ellipse', { cx: CX, cy: CY, rx: 132, ry: 128, fill: 'url(#u1l5h-clayg)', class: 'u1l5h-clay' });
+  const P = (x, y) => `${x.toFixed(1)} ${y.toFixed(1)}`;
+  when(mk('path', { d: `M${P(CX - H, CY)} L${P(CX, CY - H)} L${P(CX + H, CY)} L${P(CX, CY + H)} Z`, pathLength: 1, class: 'u1l5h-line' }), 200);
+  when(mk('path', { d: `M${P(CX - H, CY)} L${P(CX + H, CY)}`, pathLength: 1, class: 'u1l5h-line' }), 1300);
+  when(mk('path', { d: `M${P(CX, CY - H)} L${P(CX, CY + H)}`, pathLength: 1, class: 'u1l5h-line' }), 1300);
+  // cuneiform: a vertical wedge is 1, a corner wedge (chevron) is 10
+  const one = (g, x, y, s) => { const w = mk('g', { class: 'u1l5h-wedge', transform: `translate(${x} ${y}) scale(${s})` }, g); mk('path', { d: 'M-3.6 -8 L3.6 -8 L0 -3.2 Z' }, w); mk('line', { x1: 0, y1: -4, x2: 0, y2: 8 }, w); };
+  const ten = (g, x, y, s) => { const w = mk('g', { class: 'u1l5h-wedge', transform: `translate(${x} ${y}) scale(${s})` }, g); mk('path', { d: 'M5 -7 L-5 0 L5 7 L1.5 0 Z' }, w); };
+  // draw the number n (0–59) with its left edge at x, size S; returns its width. Chevrons (tens) first, then the
+  // vertical wedges (ones); more than 2 of a kind sit in two rows, like a scribe stacks them.
+  function cune(g, n, x, y, S) {
+    let cx = x;
+    [[Math.floor(n / 10), ten, 10], [n % 10, one, 7.5]].forEach(([k, f, dx]) => {
+      if (!k) return;
+      const rows = k <= 3 ? [k] : k === 4 ? [2, 2] : [Math.ceil(k / 2), Math.floor(k / 2)];
+      const two = rows.length > 1, s = S * (two ? 0.62 : 1), step = dx * s;
+      rows.forEach((m, r) => { for (let i = 0; i < m; i++) f(g, cx + step / 2 + i * step, y + (two ? (r ? 5.5 : -5.5) * S : 0), s); });
+      cx += Math.max(...rows) * step + 2 * S;
+    });
+    return cx - x;
+  }
+  // 30 by the upper-left side (turned to follow the side)
+  const side = when(mk('g', { class: 'u1l5h-g', transform: `translate(${CX - H / 2 - 17} ${CY - H / 2 - 17}) rotate(-45)` }), 2200);
+  cune(side, 30, -24, 0, 1.5);
+  // 1; 24, 51, 10 above the horizontal diagonal, 42; 25, 35 below it
+  const groups = [];
+  let x = CX - 78;
+  [1, 24, 51, 10].forEach((n, i) => {
+    const g = when(mk('g', { class: 'u1l5h-g' }), 2600 + i * 450);
+    const glow = mk('rect', { x: x - 3, y: CY - 44, width: 10, height: 34, rx: 7, fill: GCOL[i], class: 'u1l5h-glow' }, g);
+    const w = cune(g, n, x, CY - 27, 1.35); glow.setAttribute('width', w + 2);
+    groups.push(glow); x += w + 8;
+    if (i === 1) x = Math.max(x, CX + 7); // keep the vertical diagonal between 24 and 51
+  });
+  const lower = when(mk('g', { class: 'u1l5h-g u1l5h-faint' }), 4500);
+  x = CX - 52; [42, 25, 35].forEach((n, i) => { x += cune(lower, n, x, CY + 26, 1.1) + 7; if (!i) x = CX + 7; });
+  txt('YBC 7289', { x: CX, y: 296, 'text-anchor': 'middle', class: 'u1l5h-cap' });
+  // ---- the arithmetic ----
+  const XR = 318;
+  const head = when(mk('g', { class: 'u1l5h-g' }), 4900);
+  txt('base 60', { x: XR, y: 22, class: 'u1l5h-cap' }, head);
+  const b = txt('', { x: XR, y: 50, class: 'u1l5h-b60' }, head);
+  ['1', '; ', '24', ', ', '51', ', ', '10'].forEach((s, i) => tsp(s, i % 2 ? { fill: '#9a7a58' } : { fill: GCOL[i / 2] }, b));
+  const TERMS = [['1', '= 1'], ['+ 24 ÷ 60', '= 1.4'], ['+ 51 ÷ 60²', '= 1.414 166…'], ['+ 10 ÷ 60³', '= 1.414 212 96…']];
+  TERMS.forEach(([term, sum], i) => {
+    const t = 5600 + i * 1150, y = 88 + i * 31;
+    const g = when(mk('g', { class: 'u1l5h-g' }), t);
+    txt(term, { x: XR, y, class: 'u1l5h-term', fill: GCOL[i] }, g);
+    txt(sum.replace(/ (?=\d)/g, ' '), { x: 424, y, class: 'u1l5h-sum' }, g);
+    when(groups[i], t);
+  });
+  when(mk('line', { x1: XR, x2: 586, y1: 204, y2: 204, class: 'u1l5h-rule u1l5h-g' }), 9900);
+  const cmp = (label, digits, y, t) => {
+    const g = when(mk('g', { class: 'u1l5h-g' }), t);
+    txt(label, { x: XR, y, class: 'u1l5h-lab' }, g);
+    const e = txt('', { x: 392, y, class: 'u1l5h-cmp' }, g);
+    when(tsp('1.414 21', { class: 'u1l5h-hit' }, e), 11000); tsp(digits, {}, e);
+  };
+  cmp('tablet', '2 96…', 232, 9900);
+  cmp('√2', '3 56…', 260, 10400);
+  when(txt('the same to 5 decimal places!', { x: XR, y: 288, class: 'u1l5h-final u1l5h-g' }), 11400);
+  const END = 12200;
+  let t0 = 0, raf = 0;
+  const draw = (ms) => steps.forEach((s) => s.el.classList.toggle('on', s.t <= ms));
+  function frame(now) { if (!t0) t0 = now; const ms = now - t0; draw(ms); if (ms < END) raf = requestAnimationFrame(frame); }
+  function play() {
+    cancelAnimationFrame(raf); t0 = 0;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(END); return; }
+    draw(-1); raf = requestAnimationFrame(frame);
+  }
+  draw(-1);
+  svg.addEventListener('click', play);
+  const btn = svg.closest('.hist-anim') && svg.closest('.hist-anim').querySelector('.hist-play'); if (btn) btn.addEventListener('click', play);
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 });
+    io.observe(svg);
+  } else play();
+})();

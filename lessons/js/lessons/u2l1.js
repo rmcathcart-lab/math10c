@@ -701,3 +701,68 @@ function mountExplainers() {
 }
 
 mountFigures(); mountPhones(); mountCrackPoll(); mountTexBlanks(); mountLawTable(); mountExplainers();
+
+/* ---------- Math History (the brown box): the legend of the wheat on the chessboard ----------
+ * The board fills square by square (slowly for the first row, then faster): square n holds 2^(n−1) grains and gets more
+ * golden; the panel shows the square, its power of 2 (exact, with BigInt) and the running total 2^n − 1, ending at
+ * 2^64 − 1 = 18 446 744 073 709 551 615. Plays once when the box is half in view; a tap or Replay plays it again; reduced
+ * motion shows the finished picture. */
+(function wheatChessboard() {
+  const svg = document.getElementById('u2l1-hist'); if (!svg) return;
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(SVGNS, tag); Object.keys(attrs || {}).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
+  const txt = (s, attrs, parent) => { const e = mk('text', attrs, parent); e.textContent = s; return e; };
+  const SUP = '⁰¹²³⁴⁵⁶⁷⁸⁹', sup = (k) => String(k).split('').map((d) => SUP[d]).join('');
+  const group = (b) => b.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  const X0 = 18, Y0 = 18, C = 33; // the board: 8 × 8 squares of 33, filled in reading order
+  const T = []; // when square n (1–64) fills
+  for (let n = 1; n <= 64; n++) T.push(n <= 8 ? 500 + (n - 1) * 520 : 4500 + (n - 9) * 100);
+  const cells = [];
+  for (let n = 1; n <= 64; n++) {
+    const r = Math.floor((n - 1) / 8), c = (n - 1) % 8, x = X0 + c * C, y = Y0 + r * C;
+    mk('rect', { x, y, width: C, height: C, class: (r + c) % 2 ? 'u2l1h-dark' : 'u2l1h-light' });
+    const f = mk('rect', { x, y, width: C, height: C, class: 'u2l1h-fill' });
+    const v = n <= 8 ? String(2 ** (n - 1)) : '2' + sup(n - 1);
+    const lab = txt(v, { x: x + C / 2, y: y + C / 2 + 5, 'text-anchor': 'middle', class: 'u2l1h-lab' + (n <= 8 ? ' big' : '') });
+    cells.push({ f, lab, op: (0.12 + 0.8 * (n / 64)).toFixed(2) });
+  }
+  mk('rect', { x: X0, y: Y0, width: 8 * C, height: 8 * C, class: 'u2l1h-edge' });
+  const ring = mk('rect', { x: X0 + 7 * C + 1.5, y: Y0 + 7 * C + 1.5, width: C - 3, height: C - 3, rx: 3, class: 'u2l1h-ring' });
+  // the panel
+  const XR = 318;
+  txt('square', { x: XR, y: 32, class: 'u2l1h-cap' });
+  const sqT = txt('', { x: XR, y: 64, class: 'u2l1h-sq' });
+  txt('grains on this square', { x: XR, y: 102, class: 'u2l1h-cap' });
+  const powT = txt('', { x: XR, y: 134, class: 'u2l1h-pow' });
+  const numT = txt('', { x: XR, y: 158, class: 'u2l1h-num' });
+  txt('total on the board so far', { x: XR, y: 198, class: 'u2l1h-cap' });
+  const totT = txt('', { x: XR, y: 228, class: 'u2l1h-tot' });
+  const totN = txt('', { x: XR, y: 252, class: 'u2l1h-num' });
+  const fin = txt('≈ 18.4 quintillion grains of wheat!', { x: XR, y: 286, class: 'u2l1h-final' });
+  const TRING = T[63] + 500, TFIN = T[63] + 1100, END = T[63] + 1800;
+  function draw(ms) {
+    let n = 0;
+    cells.forEach((cl, i) => { const on = T[i] <= ms; if (on) n = i + 1; cl.f.style.opacity = on ? cl.op : 0; cl.lab.classList.toggle('u2l1h-on', on); });
+    ring.style.opacity = ms >= TRING ? 1 : 0; fin.classList.toggle('u2l1h-on', ms >= TFIN);
+    if (!n) { [sqT, powT, numT, totT, totN].forEach((e) => { e.textContent = ''; }); return; }
+    sqT.textContent = n + (n === 64 ? ' (the last)' : '');
+    powT.textContent = '2' + sup(n - 1);
+    numT.textContent = '= ' + group(1n << BigInt(n - 1));
+    totT.textContent = '2' + sup(n) + ' − 1';
+    totN.textContent = '= ' + group((1n << BigInt(n)) - 1n);
+  }
+  let t0 = 0, raf = 0;
+  function frame(now) { if (!t0) t0 = now; const ms = now - t0; draw(ms); if (ms < END) raf = requestAnimationFrame(frame); }
+  function play() {
+    cancelAnimationFrame(raf); t0 = 0;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(END); return; }
+    draw(-1); raf = requestAnimationFrame(frame);
+  }
+  draw(-1);
+  svg.addEventListener('click', play);
+  const btn = svg.closest('.hist-anim') && svg.closest('.hist-anim').querySelector('.hist-play'); if (btn) btn.addEventListener('click', play);
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 });
+    io.observe(svg);
+  } else play();
+})();

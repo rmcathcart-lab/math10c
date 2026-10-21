@@ -97,3 +97,33 @@
 .wf-side .u9l6-wqs { margin-top: 0; }
 .wf .wf-poll .poll-opts { grid-template-columns: 1fr 1fr; gap: 6px; margin: 0 0 10px; }
 .wf .wf-poll .opt { padding: 5px 8px; white-space: nowrap; }
+/* Math History: measuring Everest (the animation in u9l6.js) */
+.u9l6h-plain { fill: #f3e6cd; }
+.u9l6h-ground { stroke: #8a6440; stroke-width: 2; }
+.u9l6h-mtn { fill: #c9b294; stroke: #7a5a3c; stroke-width: 1.5; stroke-linejoin: round; }
+.u9l6h-snow { fill: #fffaf1; stroke: #9a7a58; stroke-width: .8; }
+.u9l6h-peak { font: 700 16px Georgia, "Iowan Old Style", serif; fill: #4a2c14; }
+.u9l6h-leg { stroke: #4a2c14; stroke-width: 2; stroke-linecap: round; }
+.u9l6h-scope { fill: #7a4a26; }
+.u9l6h-head { fill: #4a2c14; }
+.u9l6h-sight { stroke: #b07a12; stroke-width: 2.5; stroke-linecap: round; }
+.u9l6h-arc { fill: none; stroke: #b07a12; stroke-width: 2; }
+.u9l6h-theta { font: italic 700 18px Georgia, serif; fill: #b07a12; paint-order: stroke; stroke: #fffaf1; stroke-width: 4px; }
+.u9l6h-eye { stroke: #8a6440; stroke-width: 1.5; stroke-dasharray: 5 4; }
+.u9l6h-rise { stroke: #d49a1c; stroke-width: 4; stroke-linecap: round; }
+.u9l6h-dim { stroke: #8a6440; stroke-width: 1.5; }
+.u9l6h-lab { font: 700 14px var(--round); fill: #6b4a2c; paint-order: stroke; stroke: #fffaf1; stroke-width: 4px; stroke-linejoin: round; }
+.u9l6h-gold { fill: #b07a12; }
+.u9l6h-small { font: italic 600 12px var(--font); fill: #9a7a58; }
+.u9l6h-formula { font: 700 15px var(--round); fill: #4a2c14; }
+.u9l6h-six { stroke: #b07a12; stroke-width: 1; opacity: 0; }
+.u9l6h-stn { fill: #7a4a26; }
+.u9l6h-row { font: 600 13px var(--font); fill: #8a6440; }
+.u9l6h-rowh { font-weight: 800; fill: #4a2c14; }
+.u9l6h-avg { font: 800 15px var(--round); fill: #b07a12; }
+.u9l6h-res { font: 700 16px Georgia, "Iowan Old Style", serif; fill: #4a2c14; }
+.u9l6h-res2 { font: 700 15px var(--round); fill: #b07a12; }
+.u9l6h-burst { fill: none; stroke: #f0b429; stroke-width: 3; opacity: 0; transform-box: fill-box; transform-origin: center; }
+.u9l6h-burst.on { animation: u9l6h-burst 1.1s ease-out; }
+@keyframes u9l6h-burst { 0% { opacity: .9; transform: scale(.2); } 100% { opacity: 0; transform: scale(1.4); } }
+@media (prefers-reduced-motion: reduce) { .u9l6h-burst.on { animation: none; } }

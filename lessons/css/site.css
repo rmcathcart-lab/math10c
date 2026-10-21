@@ -525,7 +525,7 @@ body.viewer .edot { display: none; }
 .history .part.shown .reveal { background: #f4d9c9; color: #8b2f1c; }
 .history .ans { color: #8b2f1c; }
 .hist-anim { margin: 0; background: #fffaf1; border: 1.5px solid #dcc5a3; border-radius: 14px; padding: 8px 8px 6px; }
-.hist-anim svg { display: block; width: 100%; height: auto; cursor: pointer; }
+.hist-anim > svg { display: block; width: 100%; height: auto; cursor: pointer; }
 .hist-anim figcaption { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #8a6440; padding: 2px 4px 0; }
 .hist-play { border: 1.5px solid #c9a77d; background: #fff; color: var(--hist); font: 700 14px var(--round); padding: 3px 12px; border-radius: 14px; cursor: pointer; }
 .hist-note { margin: 10px 4px 4px !important; font-size: 15.5px; line-height: 1.45; color: #6b4a2c; font-style: italic; }

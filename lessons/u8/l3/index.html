@@ -212,6 +212,28 @@
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
+<!-- sources: https://en.wikipedia.org/wiki/Fangcheng_(mathematics) (Chapter 8, Problem 1: 3, 2, 1 bundles → 39; 2, 3, 1 → 34; 1, 2, 3 → 26; answers 9 1/4, 4 1/4, 2 3/4; fang = rectangle/square, "rectangular arrays"; procedure resembles Gaussian elimination)
+     https://legacy-www.math.harvard.edu/~knill/teaching/math22a2018/exhibits/gaussjordan/SchwarzNineChapters.pdf (R. K. Schwartz, MAA: "Yield: 39 dou of grain"; probably written shortly after 200 BC; columns multiplied and subtracted, reduced to triangular form)
+     https://www.nationalacademies.org/read/11540/chapter/14 (Derbyshire, Unknown Quantity: Former Han dynasty 202 BCE–9 CE, existed by the 1st century CE; multiply the second equation by 3 and subtract the first twice; now called Gaussian elimination)
+     https://old.maa.org/node/1635497 (coefficients of each equation stored in one column, columns filled right to left; same process Europeans later called Gaussian elimination) -->
+<!-- ================= Math History box (brown) ================= -->
+<section class="card history" data-ink="hist" data-section="Math History: the Nine Chapters">
+  <div class="hist-head"><span class="hist-tag">Math History</span><span class="hist-dates">China · about 2000 years ago</span></div>
+  <div class="hist-grid">
+    <div class="hist-text">
+      <h3 class="hist-title">Elimination with counting rods</h3>
+      <p><i>The Nine Chapters on the Mathematical Art</i> is a Chinese book about 2000 years old. Chapter 8, Problem 1: 3 bundles of top-grade grain, 2 of medium and 1 of low yield <b>39 dou</b>; 2, 3 and 1 yield <b>34</b>; 1, 2 and 3 yield <b>26</b>.</p>
+      <p>Each equation became a column of counting rods. Multiply a column, subtract another, until a number is <b>0</b>: that is <b>elimination</b>.</p>
+      <div class="part hist-q"><div class="pl">With <span class="tex">x</span>, <span class="tex">y</span>, <span class="tex">z</span> the dou per bundle of top, medium and low grain, subtract <span class="tex">2x+3y+z=34</span> from <span class="tex">3x+2y+z=39</span>. What is left, and what does it mean?</div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\boldsymbol{x-y=5}</span> (<span class="tex">z</span> is eliminated): a top bundle yields 5 dou more than a medium one. The book’s answers: <span class="tex">9\tfrac14</span>, <span class="tex">4\tfrac14</span>, <span class="tex">2\tfrac34</span>.</div></div></div>
+    </div>
+    <figure class="hist-anim">
+      <svg id="u8l3-hist" viewBox="0 0 600 300" role="img" aria-label="A counting board with three columns of rods, one equation per column, right to left. The middle column is multiplied by 3, then the right column is subtracted from it twice, until its top number is 0: the top-grade variable is eliminated, leaving 5y plus z equals 24."></svg>
+      <figcaption><button class="hist-play" type="button">Replay</button><span>Tap the picture to play it again.</span></figcaption>
+      <p class="hist-note">Europeans later named this method after Carl Friedrich Gauss (1777–1855), about 1700 years later. A dou was a measure of grain; the columns ran right to left.</p>
+    </figure>
+  </div>
+</section>
+
 <!-- ================= 4. Scale both ================= -->
 <section class="card" data-ink="s4" data-section="4. Scaling Both Equations">
   <div class="sec-h"><span class="badge">4</span><h2>When Both Equations Need to Be Scaled</h2></div>

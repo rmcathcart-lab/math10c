@@ -264,3 +264,28 @@
 .wf .sp-sq { --sq: 210px; }
 .wf .sp-tr-v { height: 60px; font-size: 26px; }
 .wf .sp-tr-ar { line-height: 60px; }
+
+/* ---------- Math History box: Euclid's square and al-Khwarizmi's corner (u3l3h-) ---------- */
+.u3l3h-out { fill: none; stroke: #4a2c14; stroke-width: 2.5; }
+.u3l3h-p { stroke-width: 2; opacity: 0; transition: opacity .45s; }
+.u3l3h-p.on { opacity: 1; }
+.u3l3h-aa { fill: #bed4f5; stroke: #3c64aa; }
+.u3l3h-ab { fill: #ffecb3; stroke: #c88c14; }
+.u3l3h-bb { fill: #f6cfc9; stroke: #c0392b; }
+.u3l3h-bb.u3l3h-gold { fill: #f0c75e; stroke: #b07a12; stroke-width: 3; }
+.u3l3h-bb.u3l3h-empty { fill: #fffaf1; stroke: #b07a12; stroke-dasharray: 6 5; }
+.u3l3h-l { font: 700 24px Georgia, "Iowan Old Style", serif; opacity: 0; transition: opacity .35s; }
+.u3l3h-l.on { opacity: 1; }
+.u3l3h-laa { fill: #2f5394; } .u3l3h-lab { fill: #a8650a; } .u3l3h-lbb { fill: #b0342a; }
+.u3l3h-lbb.u3l3h-lgold { fill: #7a4a0a; }
+.u3l3h-side { font: italic 700 18px Georgia, "Iowan Old Style", serif; fill: #6b4a2c; opacity: 0; transition: opacity .35s; }
+.u3l3h-side.on { opacity: 1; }
+.u3l3h-brace { stroke: #b07a12; stroke-width: 3; opacity: 0; transition: opacity .4s; }
+.u3l3h-eight { font: 800 20px var(--round); fill: #b07a12; opacity: 0; transition: opacity .4s; }
+.u3l3h-brace.on, .u3l3h-eight.on { opacity: 1; }
+.u3l3h-head { font: 700 20px Georgia, "Iowan Old Style", serif; fill: #4a2c14; opacity: 0; transition: opacity .35s; }
+.u3l3h-sub { font: 600 13.5px var(--font); fill: #8a6440; opacity: 0; transition: opacity .35s; }
+.u3l3h-eq { font: 700 21px Georgia, "Iowan Old Style", serif; fill: #3d2817; opacity: 0; transition: opacity .4s; }
+.u3l3h-head.on, .u3l3h-sub.on, .u3l3h-eq.on { opacity: 1; }
+.u3l3h-eq.u3l3h-key { fill: #b07a12; }
+@media (prefers-reduced-motion: reduce) { .u3l3h-p, .u3l3h-l, .u3l3h-side, .u3l3h-brace, .u3l3h-eight, .u3l3h-head, .u3l3h-sub, .u3l3h-eq { transition: none; } }

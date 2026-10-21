@@ -779,3 +779,83 @@ mountWarm();
 mountFigs();
 mountGame();
 export const explainers = mountExplainers({ why, grow, name, soh, size, ratios, hypFirst });
+
+/* ---------- Math History box: where the word "sine" comes from ----------
+ * A bow on a circle: its string is a chord (jyā, "bowstring"). Half the chord is the OPP side of a right triangle whose
+ * HYP is the radius. Meanwhile the word travels: jyā → jība → jayb → sinus → sine. Colours as in the lesson. */
+(function sineWord() {
+  const svg = document.getElementById('u9l1-hist'); if (!svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); Object.keys(attrs || {}).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
+  const txt = (s, attrs, parent) => { const e = mk('text', attrs, parent); e.textContent = s; return e; };
+  const ease = (u) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));
+  const O = [136, 160], R = 112, A = (60 * Math.PI) / 180;
+  const P = [O[0] + R * Math.cos(A), O[1] - R * Math.sin(A)], Q = [P[0], O[1] + R * Math.sin(A)], M = [P[0], O[1]];
+  const f = (n) => n.toFixed(1);
+  // the circle and the triangle (appear after the bow is shot)
+  const tri = mk('g', { class: 'u9l1h-tri' });
+  mk('circle', { cx: O[0], cy: O[1], r: R, class: 'u9l1h-circ' }, tri);
+  mk('line', { x1: O[0], y1: O[1], x2: P[0], y2: P[1], class: 'u9l1h-hyp' }, tri);
+  mk('line', { x1: O[0], y1: O[1], x2: M[0], y2: M[1], class: 'u9l1h-adj' }, tri);
+  mk('path', { d: `M${f(M[0] - 11)} ${M[1]} V${M[1] - 11} H${f(M[0])}`, class: 'u9l1h-sq' }, tri);
+  mk('path', { d: `M${O[0] + 28} ${O[1]} A28 28 0 0 0 ${f(O[0] + 28 * Math.cos(A))} ${f(O[1] - 28 * Math.sin(A))}`, class: 'u9l1h-ang' }, tri);
+  txt('θ', { x: O[0] + 34, y: O[1] - 9, class: 'u9l1h-th' }, tri);
+  mk('circle', { cx: O[0], cy: O[1], r: 3.5, class: 'u9l1h-dot' }, tri);
+  txt('hyp', { x: (O[0] + P[0]) / 2 - 8, y: (O[1] + P[1]) / 2 - 2, 'text-anchor': 'end', class: 'u9l1h-lab u9l1h-ch' }, tri);
+  txt('adj', { x: (O[0] + M[0]) / 2, y: O[1] + 20, 'text-anchor': 'middle', class: 'u9l1h-lab u9l1h-ca' }, tri);
+  mk('line', { x1: M[0], y1: M[1], x2: P[0], y2: P[1], class: 'u9l1h-opp' }, tri);
+  // the bow, its string and an arrow
+  const bow = mk('path', { d: `M${f(Q[0])} ${f(Q[1])} A${R} ${R} 0 0 0 ${f(P[0])} ${f(P[1])}`, class: 'u9l1h-bow' });
+  const str = mk('polyline', { class: 'u9l1h-str' });
+  // opp / half-chord labels go on top of the bow: "opp" between string and bow, "half-chord" just outside the bow
+  const labs = mk('g', { class: 'u9l1h-tri u9l1h-labs' }), LY = (P[1] + M[1]) / 2 + 5;
+  txt('opp', { x: P[0] + 7, y: LY, class: 'u9l1h-lab u9l1h-co' }, labs);
+  txt('half-chord', { x: O[0] + Math.sqrt(R * R - (O[1] - LY) ** 2) + 9, y: LY, class: 'u9l1h-sm u9l1h-co' }, labs);
+  const arrow = mk('g', { class: 'u9l1h-arrow' });
+  mk('line', { x1: 0, y1: 0, x2: 112, y2: 0 }, arrow);
+  mk('path', { d: 'M112 0 l-12 -6 v12 z' }, arrow);
+  mk('path', { d: 'M0 0 l-8 -5 M0 0 l-8 5 M8 0 l-8 -5 M8 0 l-8 5', class: 'u9l1h-fl' }, arrow);
+  // the word's journey
+  const WORDS = [['jyā', 'Sanskrit: bowstring'], ['jība', 'Arabic: the same sound'], ['jayb', 'read as: fold, pocket'], ['sinus', 'Latin: fold, curve'], ['sine', 'English, today']];
+  const rows = WORDS.map(([w, g], i) => {
+    const y = 50 + i * 48, el = mk('g', { class: 'u9l1h-row' + (i === 4 ? ' u9l1h-last' : '') });
+    if (i) mk('path', { d: `M362 ${y - 38} v14 m-5 -6 l5 6 l5 -6`, class: 'u9l1h-down' }, el);
+    txt(w, { x: 350, y, class: 'u9l1h-word' }, el);
+    txt(g, { x: 428, y: y - 1, class: 'u9l1h-gloss' }, el);
+    return el;
+  });
+  const formula = txt('sin θ = opp ÷ hyp = half-chord ÷ radius', { x: 40, y: 26, class: 'u9l1h-form' });
+  let bowLen = 0; try { bowLen = bow.getTotalLength(); } catch (e) { bowLen = 0; }
+  const T = { bow: [0, 800], str: 900, pull: [1100, 2000], rel: 2000, tri: 3200, rows: [2300, 4500, 5700, 6900, 8100], form: 9100, end: 10400 };
+  function draw(t) {
+    const w = (a, b) => ease((t - a) / (b - a));
+    if (bowLen) { bow.style.strokeDasharray = bowLen; bow.style.strokeDashoffset = bowLen * (1 - w(...T.bow)); }
+    // string: pulled back to the left, then released with a damped wobble
+    let sx = M[0];
+    if (t < T.rel) sx = M[0] - 38 * w(...T.pull);
+    else { const u = (t - T.rel) / 1000; sx = M[0] - 38 * Math.exp(-4.5 * u) * Math.cos(16 * u); }
+    str.setAttribute('points', `${f(P[0])},${f(P[1])} ${f(sx)},${M[1]} ${f(Q[0])},${f(Q[1])}`);
+    str.style.opacity = t >= T.str ? 1 : 0;
+    const fly = t < T.rel ? 0 : w(T.rel, T.rel + 650);
+    const ax = (t < T.rel ? sx : M[0] - 38) + fly * 360;
+    arrow.setAttribute('transform', `translate(${f(ax)} ${M[1]})`);
+    arrow.style.opacity = t < T.str ? 0 : 1 - fly;
+    tri.classList.toggle('on', t >= T.tri); labs.classList.toggle('on', t >= T.tri + 800);
+    rows.forEach((r, i) => r.classList.toggle('on', t >= T.rows[i]));
+    formula.classList.toggle('on', t >= T.form);
+  }
+  let st = 0, raf = 0;
+  function frame(now) { if (!st) st = now; const t = Math.min(T.end, now - st); draw(t); if (t < T.end) raf = requestAnimationFrame(frame); }
+  function play() {
+    cancelAnimationFrame(raf); st = 0;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(T.end); return; }
+    raf = requestAnimationFrame(frame);
+  }
+  draw(0);
+  svg.addEventListener('click', play);
+  const btn = svg.closest('.hist-anim') && svg.closest('.hist-anim').querySelector('.hist-play'); if (btn) btn.addEventListener('click', play);
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 });
+    io.observe(svg);
+  } else play();
+})();

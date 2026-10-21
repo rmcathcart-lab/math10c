@@ -117,3 +117,17 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .wf .wf-poll > .pill { margin: 0; padding: 6px 14px; }
 .wf-poll:not(.revealed) .poll-ans { display: none; }
 .u6l4-l2 { margin-top: 8px; }
+
+/* ---------- Math History box (Recorde's equals sign): the animation ---------- */
+.u6l4h-cap { font: 600 13px var(--font); fill: #8a6440; }
+.u6l4h-year { font: 700 30px Georgia, "Iowan Old Style", serif; fill: #4a2c14; }
+.u6l4h-note { font: 700 15px var(--round); fill: #b07a12; }
+.u6l4h-grid line { stroke: #eadbc4; stroke-width: 1; }
+.u6l4h-eq { font: 600 30px Georgia, "Iowan Old Style", serif; fill: #3d2817; }
+.u6l4h-words { font: italic 600 26px Georgia, "Iowan Old Style", serif; fill: #7a4a26; }
+.u6l4h-ln { stroke: #7a4a26; stroke-width: 5; stroke-linecap: round; transition: stroke .4s; }
+.u6l4h-ln.u6l4h-gold { stroke: #b07a12; }
+.u6l4h-leg { fill: none; stroke: #d49a1c; stroke-width: 2.5; stroke-dasharray: 6 5; }
+.u6l4h-lab { font: 700 14px var(--round); fill: #b07a12; }
+.u6l4h-slope { font: 800 15px var(--round); fill: #4a2c14; }
+@media (prefers-reduced-motion: reduce) { .u6l4h-ln { transition: none; } }

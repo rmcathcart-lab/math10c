@@ -123,3 +123,31 @@ b.u9l1-cr, .u9l1-cr { color: #c93a33; }
 .wf .u9l1-early { margin-top: 16px; }
 /* sidebar captions are only 268 px wide: let a long formula break after = or ≈ instead of running out of the box */
 .ex-panel .ex-cap .katex { white-space: normal; }
+
+/* ---------- Math History box (the word "sine"): bow, chord and the word's journey ---------- */
+.u9l1h-tri > * { opacity: 0; transition: opacity .5s; }
+.u9l1h-tri.on > * { opacity: 1; }
+.u9l1h-tri.on > :nth-child(n+5) { transition-delay: .5s; } .u9l1h-tri.on > :nth-child(n+10) { transition-delay: 1s; }
+.u9l1h-circ { fill: none; stroke: #c9a77d; stroke-width: 1.5; stroke-dasharray: 4 5; }
+.u9l1h-hyp { stroke: #1f5bd6; stroke-width: 3.5; stroke-linecap: round; }
+.u9l1h-adj { stroke: #c27a0e; stroke-width: 3.5; stroke-linecap: round; }
+.u9l1h-opp { stroke: #7b4fc4; stroke-width: 6; stroke-linecap: round; }
+.u9l1h-sq { fill: none; stroke: #6b4a2c; stroke-width: 1.5; }
+.u9l1h-ang { fill: none; stroke: #6b4a2c; stroke-width: 1.5; }
+.u9l1h-th { font: italic 700 16px Georgia, "Iowan Old Style", serif; fill: #4a2c14; }
+.u9l1h-dot { fill: #4a2c14; }
+.u9l1h-lab { font: 800 15px var(--round); } .u9l1h-sm { font: 800 13px var(--round); }
+.u9l1h-labs text { paint-order: stroke; stroke: #fffaf1; stroke-width: 4px; stroke-linejoin: round; }
+.u9l1h-ch { fill: #1f5bd6; } .u9l1h-ca { fill: #c27a0e; } .u9l1h-co { fill: #7b4fc4; }
+.u9l1h-bow { fill: none; stroke: #8a5a2b; stroke-width: 8; stroke-linecap: round; }
+.u9l1h-str { fill: none; stroke: #4a2c14; stroke-width: 2; stroke-linejoin: round; transition: opacity .3s; }
+.u9l1h-arrow line { stroke: #6b4a2c; stroke-width: 3; } .u9l1h-arrow path { fill: #6b4a2c; } .u9l1h-arrow .u9l1h-fl { fill: none; stroke: #b07a12; stroke-width: 2; }
+.u9l1h-row { opacity: 0; transform: translateX(10px); transition: opacity .5s, transform .5s; }
+.u9l1h-row.on { opacity: 1; transform: none; }
+.u9l1h-word { font: italic 700 24px Georgia, "Iowan Old Style", serif; fill: #4a2c14; }
+.u9l1h-gloss { font: 600 13px var(--font); fill: #8a6440; }
+.u9l1h-last .u9l1h-word { fill: #b07a12; font-size: 28px; font-style: normal; } .u9l1h-last .u9l1h-gloss { fill: #b07a12; font-weight: 800; }
+.u9l1h-down { fill: none; stroke: #c9a77d; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.u9l1h-form { font: 800 15px var(--round); fill: #b07a12; opacity: 0; transition: opacity .5s; }
+.u9l1h-form.on { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .u9l1h-tri > *, .u9l1h-row, .u9l1h-form, .u9l1h-str { transition: none !important; } }

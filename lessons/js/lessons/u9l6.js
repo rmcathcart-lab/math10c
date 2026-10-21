@@ -929,3 +929,81 @@ mountWarm();
 mountFigs();
 export const explainers = mountExplainers({ twoCalcs, semicircle, eyeLevel, twoEyes, clinometer, wobble, tangent, compass, ferry, twoLegs });
 export const _test = { TC, EL, TE, CL, TG, FY, TL, refOf };
+
+/* =============================== Math History: measuring Everest (u9l6-hist) =============================== */
+(function everestSurvey() {
+  const svg = document.getElementById('u9l6-hist'); if (!svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); Object.keys(attrs || {}).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
+  const txt = (s, attrs, parent) => { const e = mk('text', attrs, parent); e.textContent = s; return e; };
+  const seg = (t, a, b) => Math.max(0, Math.min(1, (t - a) / (b - a)));
+  const ease = (p) => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2);
+  const op = (el, v) => { el.style.opacity = v; };
+  const GY = 246, E = { x: 64, y: 232 }, S = { x: 500, y: 64 };
+  const A = Math.atan2(E.y - S.y, S.x - E.x), L = Math.hypot(S.x - E.x, E.y - S.y);
+  // the plains and the Himalaya
+  mk('rect', { x: 0, y: GY, width: 600, height: 300 - GY, class: 'u9l6h-plain' });
+  mk('polygon', { points: '350,246 392,196 412,206 446,150 470,112 500,64 528,116 548,100 574,150 600,176 600,246', class: 'u9l6h-mtn' });
+  mk('polygon', { points: '486,90 500,64 516,94 507,88 500,96 493,88', class: 'u9l6h-snow' });
+  mk('line', { x1: 0, x2: 600, y1: GY, y2: GY, class: 'u9l6h-ground' });
+  txt('Peak XV', { x: 512, y: 62, class: 'u9l6h-peak' });
+  // the six stations (one is ours, the others sight the summit later)
+  const STNS = [{ x: 34, h: '28 991' }, { x: 49, h: '29 005' }, { x: E.x, h: '29 001' }, { x: 79, h: '28 998' }, { x: 94, h: '29 026' }, { x: 109, h: '28 990' }]; // Washburn's table of the 1849–50 sightings
+  const sights = STNS.map((s, i) => {
+    const ln = mk('line', { x1: s.x, y1: GY - 4, x2: S.x, y2: S.y, class: 'u9l6h-six' });
+    if (s.x !== E.x) mk('polygon', { points: `${s.x - 4},${GY} ${s.x + 4},${GY} ${s.x},${GY - 9}`, class: 'u9l6h-stn' });
+    const row = txt('', { x: 24, y: 64 + 17 * i, class: 'u9l6h-row' });
+    mk('tspan', {}, row).textContent = 'station ' + (i + 1) + ':  ';
+    mk('tspan', { class: 'u9l6h-rowh' }, row).textContent = s.h + ' ft';
+    return { ln, row };
+  });
+  const avg = txt('average: 29 002 ft', { x: 24, y: 172, class: 'u9l6h-avg' });
+  // the triangle pieces
+  const eye = mk('line', { x1: E.x, y1: E.y, x2: S.x, y2: E.y, class: 'u9l6h-eye' });
+  const rise = mk('line', { x1: S.x, y1: S.y + 2, x2: S.x, y2: E.y, class: 'u9l6h-rise' });
+  const riseT = txt('rise', { x: S.x + 8, y: 186, class: 'u9l6h-lab u9l6h-gold' });
+  const distG = mk('g', {});
+  mk('line', { x1: E.x, x2: S.x, y1: 262, y2: 262, class: 'u9l6h-dim' }, distG);
+  mk('line', { x1: E.x, x2: E.x, y1: 256, y2: 268, class: 'u9l6h-dim' }, distG); mk('line', { x1: S.x, x2: S.x, y1: 256, y2: 268, class: 'u9l6h-dim' }, distG);
+  txt('distance: 174 to 190 km', { x: (E.x + S.x) / 2, y: 284, 'text-anchor': 'middle', class: 'u9l6h-lab' }, distG);
+  txt('not to scale', { x: 592, y: 292, 'text-anchor': 'end', class: 'u9l6h-small' });
+  const formula = txt('height = station + distance × tan θ', { x: 22, y: 32, class: 'u9l6h-formula' });
+  // the theodolite: a tripod and a telescope that swings up
+  mk('line', { x1: E.x, y1: E.y, x2: E.x - 10, y2: GY, class: 'u9l6h-leg' }); mk('line', { x1: E.x, y1: E.y, x2: E.x + 10, y2: GY, class: 'u9l6h-leg' }); mk('line', { x1: E.x, y1: E.y, x2: E.x, y2: GY, class: 'u9l6h-leg' });
+  const sight = mk('line', { x1: E.x, y1: E.y, x2: E.x + L, y2: E.y, class: 'u9l6h-sight' });
+  const arc = mk('path', { d: '', class: 'u9l6h-arc' });
+  const thT = txt('θ', { x: E.x + 64, y: E.y - 8, class: 'u9l6h-theta' });
+  const scope = mk('g', {});
+  mk('rect', { x: E.x - 6, y: E.y - 3.5, width: 28, height: 7, rx: 2, class: 'u9l6h-scope' }, scope);
+  mk('circle', { cx: E.x, cy: E.y, r: 4.5, class: 'u9l6h-head' });
+  const burst = mk('circle', { cx: S.x, cy: S.y, r: 34, class: 'u9l6h-burst' });
+  const y1856 = txt('1856: 29 002 ft = 8840 m', { x: 592, y: 22, 'text-anchor': 'end', class: 'u9l6h-res' });
+  const y2020 = txt('today: 8848.86 m', { x: 592, y: 42, 'text-anchor': 'end', class: 'u9l6h-res2' });
+  const T = 12600, SIX0 = 5800, SIXD = 600;
+  function draw(t) {
+    const a = A * ease(seg(t, 600, 3400)), deg = (a * 180) / Math.PI;
+    sight.setAttribute('x2', (E.x + L * Math.cos(a)).toFixed(1)); sight.setAttribute('y2', (E.y - L * Math.sin(a)).toFixed(1));
+    scope.setAttribute('transform', `rotate(${(-deg).toFixed(2)} ${E.x} ${E.y})`);
+    const R = 54; arc.setAttribute('d', a > 0.001 ? `M${E.x + R},${E.y} A${R},${R} 0 0 0 ${(E.x + R * Math.cos(a)).toFixed(1)},${(E.y - R * Math.sin(a)).toFixed(1)}` : '');
+    op(thT, seg(t, 3000, 3400));
+    const tri = seg(t, 3400, 4600); op(eye, tri); op(rise, tri); op(riseT, tri); op(distG, tri);
+    op(formula, seg(t, 4600, 5300));
+    sights.forEach((s, i) => { const p = seg(t, SIX0 + SIXD * i, SIX0 + SIXD * i + 300); op(s.ln, p); op(s.row, p); });
+    op(avg, seg(t, 9500, 9900)); burst.classList.toggle('on', t >= 9500);
+    op(y1856, seg(t, 10400, 10800)); op(y2020, seg(t, 11400, 11800));
+  }
+  let t0 = 0, raf = 0;
+  function frame(now) { if (!t0) t0 = now; const t = Math.min(T, now - t0); draw(t); if (t < T) raf = requestAnimationFrame(frame); }
+  function play() {
+    cancelAnimationFrame(raf); t0 = 0;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(T); return; }
+    draw(0); raf = requestAnimationFrame(frame);
+  }
+  draw(0);
+  svg.addEventListener('click', play);
+  const btn = svg.closest('.hist-anim') && svg.closest('.hist-anim').querySelector('.hist-play'); if (btn) btn.addEventListener('click', play);
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 });
+    io.observe(svg);
+  } else play();
+})();

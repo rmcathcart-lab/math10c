@@ -730,3 +730,61 @@ function mountExplainers() {
 }
 
 mountExplainers(); mountWarmTiles(); mountWarmCards(); mountKey(); mountSquares(); mountReveals();
+
+/* ---------- Math History (the brown box): Fermat's method on 5959 ----------
+ * √5959 ≈ 77.2, so try a = 78, 79, 80 in turn: a² − 5959 is 125 (between 11² and 12²), 282 (between 16² and 17²), then
+ * 441 = 21². Pause on the square, then 5959 = 80² − 21² = (80 − 21)(80 + 21) = 59 × 101 builds along the bottom. */
+(function fermatHunt() {
+  const svg = document.getElementById('fermat-anim'); if (!svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); Object.keys(attrs || {}).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
+  const txt = (s, attrs, parent) => { const e = mk('text', attrs, parent); e.textContent = s; return e; };
+  const N = 5959, A0 = Math.ceil(Math.sqrt(N));
+  const isq = (n) => Math.round(Math.sqrt(n)) ** 2 === n;
+  const rows = []; for (let a = A0; ; a++) { rows.push(a); if (isq(a * a - N)) break; }
+  const COL = [44, 128, 236, 300], RY = (i) => 140 + i * 38;
+  const head = txt(`N = ${N}`, { x: 24, y: 42, class: 'u4l3h-n' });
+  const root = txt(`√${N} ≈ ${Math.sqrt(N).toFixed(1)}, so start at a = ${A0}`, { x: 172, y: 40, class: 'u4l3h-root' });
+  const hdr = mk('g', { class: 'u4l3h-fade' });
+  [['a', COL[0], 'middle'], ['a²', COL[1], 'middle'], [`a² − ${N}`, COL[2], 'middle'], ['a perfect square?', COL[3], 'start']].forEach(([s, x, an]) => txt(s, { x, y: 96, 'text-anchor': an, class: 'u4l3h-th' }, hdr));
+  mk('line', { x1: 16, x2: 584, y1: 106, y2: 106, class: 'u4l3h-rule' }, hdr);
+  const R = rows.map((a, i) => {
+    const d = a * a - N, r = Math.sqrt(d), lo = Math.floor(r), win = isq(d), y = RY(i);
+    const band = mk('rect', { x: 16, y: y - 26, width: 568, height: 36, rx: 8, class: 'u4l3h-band' });
+    const cells = [
+      txt(String(a), { x: COL[0], y, 'text-anchor': 'middle', class: 'u4l3h-td u4l3h-a' }),
+      txt(String(a * a), { x: COL[1], y, 'text-anchor': 'middle', class: 'u4l3h-td' }),
+      txt(String(d), { x: COL[2], y, 'text-anchor': 'middle', class: 'u4l3h-td u4l3h-d' }),
+      txt(win ? `${d} = ${r}²  ✓` : `between ${lo}² = ${lo * lo} and ${lo + 1}² = ${(lo + 1) ** 2}  ✗`, { x: COL[3], y, class: 'u4l3h-v' + (win ? ' u4l3h-yes' : ' u4l3h-no') }),
+    ];
+    return { band, cells, win };
+  });
+  const a = rows[rows.length - 1], b = Math.sqrt(a * a - N);
+  const fin = txt('', { x: 24, y: 274, class: 'u4l3h-fin' });
+  const F = [`${N} = ${a}² − ${b}²`, ` = (${a} − ${b})(${a} + ${b})`, ` = ${a - b} × ${a + b}`].map((s, i) => { const t = mk('tspan', { class: 'u4l3h-ft' + (i === 2 ? ' u4l3h-gold' : '') }, fin); t.textContent = s; return t; });
+  const on = (el, b) => el.classList.toggle('on', !!b);
+  const R0 = 2200, RS = 2100, FT = R0 + rows.length * RS + 900, END = FT + 3200;
+  function draw(ms) {
+    on(head, true); on(root, ms >= 500); on(hdr, ms >= 1300);
+    R.forEach((r, i) => {
+      const t = ms - (R0 + i * RS);
+      r.cells.forEach((c, j) => on(c, t >= j * 380 + (j === 3 ? 250 : 0)));
+      on(r.band, r.win && t >= 1400);
+    });
+    F.forEach((f, i) => on(f, ms >= FT + i * 1100));
+  }
+  let t0 = 0, raf = 0;
+  function frame(now) { if (!t0) t0 = now; const ms = now - t0; draw(ms); if (ms < END) raf = requestAnimationFrame(frame); }
+  function play() {
+    cancelAnimationFrame(raf); t0 = 0;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(END); return; }
+    raf = requestAnimationFrame(frame);
+  }
+  draw(0);
+  svg.addEventListener('click', play);
+  const btn = svg.closest('.hist-anim') && svg.closest('.hist-anim').querySelector('.hist-play'); if (btn) btn.addEventListener('click', play);
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 });
+    io.observe(svg);
+  } else play();
+})();

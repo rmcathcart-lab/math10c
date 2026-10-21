@@ -411,3 +411,67 @@ function mountPrimeList() {
 }
 
 mountExplainers(); mountTree(); mountWarmup(); mountPrimeList();
+
+/* ---------- Math History (the brown box): Euclid, Elements IX.20 — multiply the primes on a list and add 1 ----------
+ * Row by row: 2×3+1 = 7, 2×3×5+1 = 31, 2×3×5×7+1 = 211, 2×3×5×7×11+1 = 2311 (each a new prime), then
+ * 2×3×5×7×11×13+1 = 30 031: not prime, but 30 031 = 59 × 509, and both of those are new primes. Plays once when the box is
+ * half in view; a tap or Replay plays it again; reduced motion shows the finished picture. */
+(function euclidPrimes() {
+  const svg = document.getElementById('u1l1-hist'); if (!svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); Object.keys(attrs || {}).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
+  const txt = (s, attrs, parent, tag) => { const e = mk(tag || 'text', attrs, parent); e.textContent = s; return e; };
+  const tsp = (s, attrs, parent) => txt(s, attrs, parent, 'tspan');
+  const PCOL = { 2: '#3b78d8', 3: '#e0841a', 5: '#8a58c9', 7: '#d0477a', 11: '#2f9e6a', 13: '#0f8a8a' };
+  const ROWS = [[2, 3], [2, 3, 5], [2, 3, 5, 7], [2, 3, 5, 7, 11], [2, 3, 5, 7, 11, 13]];
+  const fmt = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  const steps = []; // { el, t }: el gets class "on" once the clock passes t (ms)
+  const at = (el, t) => { steps.push({ el, t }); return el; };
+  txt('Multiply the primes on the list, then add 1:', { x: 24, y: 30, class: 'u1l1h-hd' });
+  const XE = 318, Y0 = 72, DY = 41;
+  let t = 400;
+  ROWS.forEach((ps, k) => {
+    const y = Y0 + k * DY, last = k === ROWS.length - 1, n = ps.reduce((a, b) => a * b, 1) + 1;
+    if (k) mk('line', { x1: 24, x2: 576, y1: y - 27, y2: y - 27, class: 'u1l1h-rule' });
+    const ex = txt('', { x: XE, y, 'text-anchor': 'end', class: 'u1l1h-ex' });
+    const gap = last ? 170 : 130;
+    ps.forEach((p, i) => {
+      if (i) at(tsp(' × ', { class: 'u1l1h-tok u1l1h-op' }, ex), t + i * gap);
+      at(tsp(String(p), { class: 'u1l1h-tok', fill: PCOL[p] }, ex), t + i * gap);
+    });
+    const tPlus = t + ps.length * gap + 100;
+    at(tsp(' + ', { class: 'u1l1h-tok u1l1h-op' }, ex), tPlus); at(tsp('1', { class: 'u1l1h-tok' }, ex), tPlus);
+    const tEq = tPlus + (last ? 650 : 450);
+    const res = txt('', { x: XE + 12, y, class: 'u1l1h-res' });
+    const eq = at(tsp('= ', { class: 'u1l1h-tok u1l1h-op' }, res), tEq), num = at(tsp(fmt(n), { class: 'u1l1h-tok' }, res), tEq);
+    const g = at(mk('g', { class: 'u1l1h-g' + (last ? ' u1l1h-no' : '') }), tEq + (last ? 700 : 380));
+    mk('rect', { x: 452, y: y - 20, width: 112, height: 27, rx: 13.5, class: 'u1l1h-pill' }, g);
+    txt(last ? 'not prime!' : 'new prime ✓', { x: 508, y: y - 1.5, 'text-anchor': 'middle', class: 'u1l1h-pt' }, g);
+    if (last) {
+      const tKey = tEq + 1700;
+      let rx = XE + 34, rw = 66; // ring the number itself (measured when the page can lay it out)
+      try { const ew = eq.getComputedTextLength(), nw = num.getComputedTextLength(); if (nw > 0) { rx = XE + 12 + ew; rw = nw; } } catch (e) { /* keep the estimate */ }
+      at(mk('rect', { x: rx - 6, y: y - 24, width: rw + 12, height: 34, rx: 9, class: 'u1l1h-ring u1l1h-g' }), tKey);
+      const f = txt('', { x: 300, y: y + 46, 'text-anchor': 'middle', class: 'u1l1h-final' });
+      at(tsp('30 031 = 59 × 509', { class: 'u1l1h-tok' }, f), tKey);
+      at(tsp('  → 59 and 509 are new primes!', { class: 'u1l1h-tok' }, f), tKey + 1100);
+      t = tKey + 1100;
+    } else t = tEq + 800;
+  });
+  const END = t + 400;
+  let t0 = 0, raf = 0;
+  const draw = (ms) => steps.forEach((s) => s.el.classList.toggle('on', s.t <= ms));
+  function frame(now) { if (!t0) t0 = now; const ms = now - t0; draw(ms); if (ms < END) raf = requestAnimationFrame(frame); }
+  function play() {
+    cancelAnimationFrame(raf); t0 = 0;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(END); return; }
+    draw(-1); raf = requestAnimationFrame(frame);
+  }
+  draw(-1);
+  svg.addEventListener('click', play);
+  const btn = svg.closest('.hist-anim') && svg.closest('.hist-anim').querySelector('.hist-play'); if (btn) btn.addEventListener('click', play);
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 });
+    io.observe(svg);
+  } else play();
+})();

@@ -269,3 +269,23 @@
 .wf .wf-poll:not(.revealed) .poll-ans { display: none; }
 .wf .u4l3-bonus { margin-top: 14px; }
 .wf .u4l3-bonus .wq-a { flex-direction: row; gap: 12px; }
+
+/* ---------- Math History box: Fermat's method on 5959 (u4l3h-) ---------- */
+.u4l3h-n { font: 700 30px Georgia, "Iowan Old Style", serif; fill: #4a2c14; }
+.u4l3h-root { font: 600 15px var(--font); fill: #6b4a2c; }
+.u4l3h-th { font: 700 13.5px var(--round); fill: #8a6440; letter-spacing: .02em; }
+.u4l3h-rule { stroke: #c9a77d; stroke-width: 1.5; }
+.u4l3h-td { font: 700 22px Georgia, "Iowan Old Style", serif; fill: #3d2817; }
+.u4l3h-a { fill: #7a4a26; }
+.u4l3h-v { font: 700 15px var(--round); }
+.u4l3h-no { fill: #9a7a58; } .u4l3h-yes { fill: #b07a12; font-size: 17px; }
+.u4l3h-band { fill: #f6e3bf; stroke: #d49a1c; stroke-width: 2; }
+.u4l3h-fin { font: 700 23px Georgia, "Iowan Old Style", serif; fill: #3d2817; white-space: pre; }
+.u4l3h-ft { fill-opacity: 0; transition: fill-opacity .45s; }
+.u4l3h-ft.on { fill-opacity: 1; }
+.u4l3h-gold { fill: #b07a12; }
+.u4l3h-root, .u4l3h-fade, .u4l3h-td, .u4l3h-v, .u4l3h-band { opacity: 0; transition: opacity .35s; }
+.u4l3h-root.on, .u4l3h-fade.on, .u4l3h-td.on, .u4l3h-v.on, .u4l3h-band.on { opacity: 1; }
+.u4l3h-n { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .u4l3h-ft, .u4l3h-root, .u4l3h-fade, .u4l3h-td, .u4l3h-v, .u4l3h-band { transition: none; } }
+.u4l3h-nw { white-space: nowrap; }

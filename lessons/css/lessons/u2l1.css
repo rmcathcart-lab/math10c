@@ -267,3 +267,19 @@
 .wf .cb-v { font-size: 14px; }
 .wf .cb-v small { font-size: 12.5px; }
 .wf .poll-room { font-size: 16.5px; margin: 7px 0 0 !important; }
+
+/* ---------- Math History box: wheat on a chessboard, doubling square by square (animation in u2l1.js) ---------- */
+.u2l1h-light { fill: #f6ead2; } .u2l1h-dark { fill: #dcc29a; }
+.u2l1h-edge { fill: none; stroke: #7a4a26; stroke-width: 2.5; }
+.u2l1h-fill { fill: #e0a526; opacity: 0; transition: opacity .25s; }
+.u2l1h-lab { font: 700 14px var(--round); fill: #4a2c14; opacity: 0; transition: opacity .25s; }
+.u2l1h-lab.big { font-size: 15px; }
+.u2l1h-on, .u2l1h-final.u2l1h-on { opacity: 1; }
+.u2l1h-ring { fill: none; stroke: #b0563a; stroke-width: 3.5; opacity: 0; transition: opacity .3s; }
+.u2l1h-cap { font: 600 13px var(--font); fill: #8a6440; }
+.u2l1h-sq { font: 700 30px Georgia, "Iowan Old Style", serif; fill: #4a2c14; }
+.u2l1h-pow { font: 700 28px Georgia, "Iowan Old Style", serif; fill: #b07a12; }
+.u2l1h-num { font: 600 15px ui-monospace, "SF Mono", Menlo, monospace; fill: #6b4a2c; }
+.u2l1h-tot { font: 700 24px Georgia, "Iowan Old Style", serif; fill: #4a2c14; }
+.u2l1h-final { font: 800 16px var(--round); fill: #b07a12; opacity: 0; transition: opacity .4s; }
+@media (prefers-reduced-motion: reduce) { .u2l1h-fill, .u2l1h-lab, .u2l1h-ring, .u2l1h-final { transition: none; } }
