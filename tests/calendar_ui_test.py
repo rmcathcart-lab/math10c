@@ -23,7 +23,7 @@ async def main():
         tp.on('dialog', lambda d: asyncio.ensure_future(d.accept()))
         await tp.route(BASE + 'js/config.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=CONFIG))
         await tp.goto(BASE + 'teacher/'); await tp.wait_for_selector('.kc-start', timeout=15000)
-        await tp.fill('.kc-date', '2026-09-03'); await tp.click('.kc-start .btn-primary'); await tp.wait_for_selector('.kc-grid')
+        await tp.click('.kc-start .calp-day[data-date="2026-09-03"]'); await tp.click('.kc-start .btn-primary'); await tp.wait_for_selector('.kc-grid')
         await tp.wait_for_timeout(600)
         cal = get('action=cal&class=10c-b')['cal']; print('saved start', cal['start'], len(cal['items']), 'items')
         await tp.evaluate("document.querySelector('.kc-grid').scrollToDate('2026-09-01')"); await tp.wait_for_timeout(200)

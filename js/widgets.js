@@ -121,8 +121,16 @@
     s = s.replace(/\^\(?(\d+)\)?/g, '^{$1}').replace(/\*/g, '\\times ');
     return s;
   }
+  /* MathLive's own on-screen keyboard never shows: every math question has the site's keypad under it. On phones and
+     tablets MathLive could still open its keyboard a moment after a tap (after our hide), so its show() does nothing. */
+  function noMathKeyboard() {
+    var kb = root.mathVirtualKeyboard; if (!kb || kb.__hwOff) return;
+    try { kb.hide(); } catch (e) {}
+    try { kb.show = function () {}; kb.__hwOff = true; } catch (e) {}
+  }
   W.math = function (opt) {
     opt = opt || {};
+    if (mathReady()) noMathKeyboard();
     var wrap = el('div', 'w-math'), enter = null, api = {};
     if (mathReady()) {
       var mf = document.createElement('math-field'); mf.className = 'mf';

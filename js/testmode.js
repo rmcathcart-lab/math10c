@@ -28,9 +28,15 @@
     try { var p = f.call(d, { navigationUI: 'hide' }); return (p && p.then ? p : Promise.resolve()).then(function () { return true; }, function () { return false; }); } catch (e) { return Promise.resolve(false); }
   }
   function exitFull() { try { if (fsEl()) (document.exitFullscreen || document.webkitExitFullscreen).call(document); } catch (e) {} }
-  function mmss(ms) { var s = Math.max(0, Math.ceil(ms / 1000)), m = Math.floor(s / 60); return m + ':' + (s % 60 < 10 ? '0' : '') + (s % 60); }
-  function limitMs() { return T && T.def.minutes ? (T.def.minutes + (T.live ? T.live.extra || 0 : 0)) * 60000 : 0; }
-  function remaining() { return limitMs() ? limitMs() - (T.rec.used || 0) : Infinity; }
+  function mmss(ms) { var s = Math.max(0, Math.ceil(ms / 1000)), m = Math.floor(s / 60), p2 = function (x) { return (x < 10 ? '0' : '') + x; }; return m >= 60 ? Math.floor(m / 60) + ':' + p2(m % 60) + ':' + p2(s % 60) : m + ':' + p2(s % 60); }
+  /* the time limit: minutes from when the student starts, or (the default) until the class period ends (TC.timing) */
+  function limitMs() { if (!T) return 0; var t = TC.timing(T.def); return t === 'minutes' ? (T.def.minutes ? 1 : 0) : t === 'period' ? (T.live && T.live.endsAt ? 1 : 0) : 0; }
+  function remaining() {
+    if (!limitMs()) return Infinity;
+    var ex = (T.live ? T.live.extra || 0 : 0) * 60000;
+    if (TC.timing(T.def) === 'period') return T.live.endsAt + ex - (Date.now() + (T.skew || 0));
+    return T.def.minutes * 60000 + ex - ((T.rec && T.rec.used) || 0);
+  }
   function kindName(def) { return def.kind === 'exit' ? 'Exit slip' : 'Test'; }
 
   /* ---------------- talking to the ledger ---------------- */
@@ -84,7 +90,7 @@
     if (T && T.sid !== live.id) { if (T.rec && T.rec.st === 'writing') finish('ended', 'the teacher closed the test'); closeOverlay(); }
     var me = d.me || null, rec = loadRec(live.id);
     if (!T) T = { sid: live.id, def: live.def, live: live, rec: rec, cur: 0, widgets: {} };
-    T.def = live.def; T.live = live; T.me = me;
+    T.def = live.def; T.live = live; T.me = me; if (d.now) T.skew = d.now - Date.now();
     if (!T.items) setupItems();
     if (!T.rec && me && me.st) { // this device has no record: the test was started on another device
       if (!me.ans) { if (!wasFull) check(true); return; }
@@ -156,7 +162,7 @@
   function rulesHtml() {
     var d = T.def, n = T.order.length;
     return '<ul class="tm-rules">' +
-      '<li><b>' + n + ' question' + (n === 1 ? '' : 's') + '</b>' + (d.minutes ? ' · <b>' + (d.minutes + (T.live.extra || 0)) + ' minutes</b>' : ' · no time limit') + ' · ' + (d.calc ? 'on-screen calculator allowed' : '<b>no calculator</b>') + '</li>' +
+      '<li><b>' + n + ' question' + (n === 1 ? '' : 's') + '</b>' + (!limitMs() ? ' · no time limit' : TC.timing(d) === 'minutes' ? ' · <b>' + (d.minutes + (T.live.extra || 0)) + ' minutes</b>' : ' · <b>until the end of class (' + TC.clock(T.live.endsAt + (T.live.extra || 0) * 60000) + ')</b>') + ' · ' + (d.calc ? 'on-screen calculator allowed' : '<b>no calculator</b>') + '</li>' +
       '<li>The test opens in <b>full screen</b>. <b>Leaving this window, switching tabs or leaving full screen submits your test as it is</b> and locks it.</li>' +
       '<li>You can move back and forth between questions and change answers until you submit. Your numbers stay the same.</li>' +
       '<li>Make sure the name above is yours.</li></ul>';

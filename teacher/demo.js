@@ -210,9 +210,10 @@
       plan[p.name] = { start: ethan && !who ? 8000 : r0.int(5, 45) * 1000, gap: Math.round(r0.int(15, 40) / p.speed) * 1000, A: A, leaveAt: ethan && !who ? 50000 : 0 };
     });
     T.live = { id: id, test: testId, title: def.title, kind: def.kind, def: def, launched: now, ending: 0, extra: {}, unlock: {}, submit: {}, plan: plan, done: {}, who: who || '' };
+    if (HW.TestCore.timing(def) === 'period') T.live.endsAt = now + 45 * 60000;   // the demo class's period: 45 minutes from now
     return { ok: true, live: liveInfo() };
   }
-  function liveInfo() { var L = T.live; if (!L) return null; var o = { id: L.id, test: L.test, title: L.title, kind: L.kind, launched: L.launched, ending: !!L.ending, extra: L.extra, unlock: L.unlock, submit: L.submit }; if (L.who) o.who = L.who; return o; }
+  function liveInfo() { var L = T.live; if (!L) return null; var o = { id: L.id, test: L.test, title: L.title, kind: L.kind, launched: L.launched, ending: !!L.ending, extra: L.extra, unlock: L.unlock, submit: L.submit, endsAt: L.endsAt || 0 }; if (L.who) o.who = L.who; return o; }
   function liveKeyOf(who) { return who ? CODE + '|' + key(who) : CODE; }
   function liveMap() { var m = {}; if (T.live) m[liveKeyOf(T.live.who)] = liveInfo(); return m; }
   function isMine(who) { return T.live && (T.live.who || '') === (who || ''); }
@@ -220,7 +221,8 @@
   function recOf(name, now) {
     var L = T.live, P = L.plan[name]; if (!P) return null;
     var el = now - L.launched - P.start; if (el < 0) return null;
-    var total = P.A.order.length, lim = (L.def.minutes ? (L.def.minutes + (L.extra['*'] || 0) + (L.extra[key(name)] || 0)) * 60000 : 0);
+    var ex = ((L.extra['*'] || 0) + (L.extra[key(name)] || 0)) * 60000, tm = HW.TestCore.timing(L.def);
+    var total = P.A.order.length, lim = tm === 'minutes' && L.def.minutes ? L.def.minutes * 60000 + ex : tm === 'period' && L.endsAt ? L.endsAt + ex - L.launched - P.start : 0;
     var locked = P.leaveAt && el > P.leaveAt && !(L.unlock[key(name)] > L.launched + P.start + P.leaveAt) ? 1 : 0;
     var lost = P.leaveAt && L.unlock[key(name)] ? Math.max(0, L.unlock[key(name)] - (L.launched + P.start + P.leaveAt)) : 0;
     var work = locked ? P.leaveAt : el - lost, n = Math.min(P.A.list.length, Math.floor(work / P.gap));

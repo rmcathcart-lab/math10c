@@ -78,7 +78,7 @@
   function testCard(t) {
     var d = t.def || {}, n = (d.items || []).length, lt = lessonTag(d);
     var card = el('div', 'tt-card tt-card-' + (d.kind === 'exit' ? 'exit' : 'test'));
-    card.innerHTML = '<div class="tt-chiprow">' + (TS.kind === 'exit' ? '' : kindChip(d.kind)) + (lt ? '<span class="tt-out">' + esc(lt) + '</span>' : '') + '</div><div class="tt-title">' + esc(d.title) + '</div><div class="small muted">' + n + ' part' + (n === 1 ? '' : 's') + ' · ' + (d.minutes ? d.minutes + ' min' : 'no time limit') + ' · ' + (d.calc ? 'calculator' : 'no calculator') + (d.shuffle ? ' · shuffled' : '') + '</div>';
+    card.innerHTML = '<div class="tt-chiprow">' + (TS.kind === 'exit' ? '' : kindChip(d.kind)) + (lt ? '<span class="tt-out">' + esc(lt) + '</span>' : '') + '</div><div class="tt-title">' + esc(d.title) + '</div><div class="small muted">' + n + ' part' + (n === 1 ? '' : 's') + ' · ' + TC.timingText(d) + ' · ' + (d.calc ? 'calculator' : 'no calculator') + (d.shuffle ? ' · shuffled' : '') + '</div>';
     var a = el('div', 'tt-card-acts');
     a.appendChild(button('btn-primary btn-small', 'Launch for ' + esc(klassLabel()), function () { doLaunch(t); }));
     a.appendChild(button('btn-small tt-preview', 'Preview', function () { previewDef(t.def); }));
@@ -152,7 +152,7 @@
   /* ================= editor ================= */
   function openEditor(id, def) {
     def = def || {};
-    TS.edit = { id: id, unit: def.unit || 0, title: def.title || '', kind: def.kind || TS.kind || 'test', minutes: def.minutes != null ? def.minutes : 60, calc: def.calc !== false, shuffle: !!def.shuffle, levels: def.levels !== false, items: (def.items || []).slice() };
+    TS.edit = { id: id, unit: def.unit || 0, title: def.title || '', kind: def.kind || TS.kind || 'test', minutes: def.minutes || (def.kind === 'exit' ? 10 : 60), timing: TC.timing(def), calc: def.calc !== false, shuffle: !!def.shuffle, levels: def.levels !== false, items: (def.items || []).slice() };
     TS.view = 'edit'; rerender();
   }
   var typeCache = {};
@@ -166,12 +166,12 @@
     head.appendChild(el('h2', 'tt-h', (E.id ? 'Edit ' : 'New ') + (E.kind === 'exit' ? 'exit slip' : 'test')));
     var acts = el('div', 'tt-acts');
     acts.appendChild(button('btn-ghost btn-small', 'Cancel', function () { TS.view = 'home'; rerender(); }));
-    acts.appendChild(button('btn-small tt-preview', 'Preview', function () { if (!E.items.length) { alert('Pick at least one question first.'); return; } previewDef({ title: E.title.trim() || 'Untitled', kind: E.kind, minutes: E.minutes, calc: E.calc, shuffle: E.shuffle, levels: E.levels, items: E.items }); }));
+    acts.appendChild(button('btn-small tt-preview', 'Preview', function () { if (!E.items.length) { alert('Pick at least one question first.'); return; } previewDef({ title: E.title.trim() || 'Untitled', kind: E.kind, minutes: E.minutes, timing: E.timing, calc: E.calc, shuffle: E.shuffle, levels: E.levels, items: E.items }); }));
     var save = button('btn-primary btn-small', 'Save', function () {
       if (!E.title.trim()) { alert('Give it a title.'); return; }
       if (!E.items.length) { alert('Pick at least one question.'); return; }
       save.disabled = true;
-      api('savetest', { id: E.id || '', def: JSON.stringify({ title: E.title.trim(), kind: E.kind, unit: E.unit || 0, minutes: E.minutes, calc: E.calc, shuffle: E.shuffle, levels: E.levels, items: E.items }) }).then(function (d) {
+      api('savetest', { id: E.id || '', def: JSON.stringify({ title: E.title.trim(), kind: E.kind, unit: E.unit || 0, minutes: E.minutes, timing: E.timing, calc: E.calc, shuffle: E.shuffle, levels: E.levels, items: E.items }) }).then(function (d) {
         if (!d.ok) { alert('Couldn’t save: ' + d.error); save.disabled = false; return; }
         TS.view = 'home'; if (E.kind !== TS.kind) goTab(E.kind); return load(true).then(rerender);
       });
@@ -184,8 +184,14 @@
     var row = el('div', 'tt-row');
     var kind = el('div', 'seg'); [['exit', 'Exit slip (yellow)'], ['test', 'Test (orange)']].forEach(function (k) { var b = button(E.kind === k[0] ? 'on' : '', k[1], function () { E.kind = k[0]; goTab(k[0]); }); b.className = E.kind === k[0] ? 'on' : ''; kind.appendChild(b); });
     row.appendChild(kind);
-    var mins = el('input', 'field tt-mins'); mins.type = 'number'; mins.min = 0; mins.max = 240; mins.value = E.minutes; mins.addEventListener('input', function () { E.minutes = Math.max(0, Math.round(Number(mins.value) || 0)); });
-    var ml = el('label', 'tt-inline', 'Time limit '); ml.appendChild(mins); ml.appendChild(document.createTextNode(' min (0 = none)')); row.appendChild(ml);
+    // when it ends: at the end of the class period (the default), after a set time, or never
+    var tsel = el('select', 'field tt-timing'); [['period', 'Ends at the end of class'], ['minutes', 'Time limit'], ['none', 'No time limit']].forEach(function (o) { var x = el('option', '', o[1]); x.value = o[0]; if (E.timing === o[0]) x.selected = true; tsel.appendChild(x); });
+    tsel.title = 'Ends at the end of class: it closes when this class’s period ends on the bell schedule (Settings → Class times). Launched outside class time, it has no time limit.';
+    var mins = el('input', 'field tt-mins'); mins.type = 'number'; mins.min = 1; mins.max = 240; mins.value = E.minutes; mins.addEventListener('input', function () { E.minutes = Math.max(1, Math.round(Number(mins.value) || 0)); });
+    var ml = el('label', 'tt-inline tt-timing-l', ''); ml.appendChild(tsel);
+    var mw = el('span', 'tt-mins-w'); mw.appendChild(mins); mw.appendChild(document.createTextNode(' min')); ml.appendChild(mw);
+    mw.hidden = E.timing !== 'minutes'; tsel.addEventListener('change', function () { E.timing = tsel.value; mw.hidden = E.timing !== 'minutes'; });
+    row.appendChild(ml);
     function check(lbl, key, tip) { var l = el('label', 'tt-inline'), c = el('input'); c.type = 'checkbox'; c.checked = !!E[key]; c.addEventListener('change', function () { E[key] = c.checked; }); l.appendChild(c); l.appendChild(document.createTextNode(' ' + lbl)); if (tip) l.title = tip; return l; }
     row.appendChild(check('Calculator allowed', 'calc', 'Shows the on-screen TI-30XIIS on the test. Untick for a no-calculator test.'));
     row.appendChild(check('Shuffle question order', 'shuffle', 'Every student gets the questions in a different order (their numbers are always their own).'));
@@ -281,10 +287,12 @@
     var rows = names.map(function (n) { var rec = d.recs[n], s = statusOf(rec, now); counts[s.k]++; return { name: n, rec: rec, s: s }; });
     var ord = { left: 0, quiet: 1, writing: 2, none: 3, done: 4 };
     rows.sort(function (a, b) { return ord[a.s.k] - ord[b.s.k] || a.name.localeCompare(b.name); });
+    if (!live.endsAt && d.live && d.live.endsAt) live.endsAt = d.live.endsAt;
+    var timed = TC.timing(def) === 'minutes' ? !!def.minutes : TC.timing(def) === 'period' ? !!live.endsAt : false;
     var head = el('div', 'tt-live-head tt-live-' + (def.kind === 'exit' ? 'exit' : 'test'));
-    head.innerHTML = '<div>' + (TS.who ? '<button class="btn btn-ghost btn-small tt-back-rt" type="button">← Retests</button> <span class="tt-kind tt-retest">Retest</span> <b>' + esc(TS.who) + '</b> · ' : '') + kindChip(def.kind) + ' <b class="tt-live-title">' + esc(def.title) + '</b> <span class="tag live-tag">LIVE</span><div class="small muted">Launched ' + ago(live.launched) + ' · ' + items.length + ' questions · ' + (def.minutes ? def.minutes + ' min' + ((live.extra || {})['*'] ? ' + ' + live.extra['*'] + ' min for everyone' : '') : 'no time limit') + ' · ' + (def.calc ? 'calculator' : 'no calculator') + (live.ending ? ' · <b class="tt-ending">Ending: tests submit at their next check-in (≈10 s)</b>' : '') + '</div></div>';
+    head.innerHTML = '<div>' + (TS.who ? '<button class="btn btn-ghost btn-small tt-back-rt" type="button">← Retests</button> <span class="tt-kind tt-retest">Retest</span> <b>' + esc(TS.who) + '</b> · ' : '') + kindChip(def.kind) + ' <b class="tt-live-title">' + esc(def.title) + '</b> <span class="tag live-tag">LIVE</span><div class="small muted">Launched ' + ago(live.launched) + ' · ' + items.length + ' questions · ' + TC.timingText(def, live) + (timed && (live.extra || {})['*'] ? ' + ' + live.extra['*'] + ' min for everyone' : '') + ' · ' + (def.calc ? 'calculator' : 'no calculator') + (live.ending ? ' · <b class="tt-ending">Ending: tests submit at their next check-in (≈10 s)</b>' : '') + '</div></div>';
     var acts = el('div', 'tt-acts');
-    if (def.minutes && !TS.who) acts.appendChild(button('btn-small', '+5 min for everyone', function () { ctl('time', '', 5); }));
+    if (timed && !TS.who) acts.appendChild(button('btn-small', '+5 min for everyone', function () { ctl('time', '', 5); }));
     if (!TS.who) {
       if (!live.ending) acts.appendChild(button('btn-small', 'End for everyone', function () { if (confirm('End the test for everyone? Every test still open is submitted as it is.')) ctl('end'); }));
       else acts.appendChild(button('btn-small', 'Undo end', function () { ctl('resume'); }));
@@ -307,7 +315,9 @@
       var byKey = {}; items.forEach(function (y) { byKey[y.key] = y; });
       var pgs = TC.pages(def, order), dots = pgs.map(function (pg, pi) { return '<span class="tt-dgrp" title="Question ' + esc(pg.num) + '">' + pg.parts.map(function (q) { var y = byKey[q.key]; if (!y) return ''; var a = ans[q.key], m = a && a.t ? (TS.showMarks ? gradeOne(x.name, live.id, y, a) : 'a') : 'b'; return '<i class="tt-dot m-' + m + (rec && rec.cur === pi && rec.st === 'writing' ? ' cur' : '') + '" title="' + esc(q.label) + (a && a.t ? ': ' + esc(a.t) : ': not answered') + '"></i>'; }).join('') + '</span>'; }).join('');
       var left = '—';
-      if (rec && def.minutes) { var lim = (def.minutes + (Number((live.extra || {})['*']) || 0) + (Number((live.extra || {})[x.name.toLowerCase().replace(/\s+/g, ' ').trim()]) || 0)) * 60000; left = mmss(lim - (rec.used || 0) - (rec.st === 'writing' ? Math.max(0, now - rec.at) : 0)); }
+      var ex = ((Number((live.extra || {})['*']) || 0) + (Number((live.extra || {})[x.name.toLowerCase().replace(/\s+/g, ' ').trim()]) || 0)) * 60000;
+      if (rec && timed && TC.timing(def) === 'minutes') left = mmss(def.minutes * 60000 + ex - (rec.used || 0) - (rec.st === 'writing' ? Math.max(0, now - rec.at) : 0));
+      else if (timed && TC.timing(def) === 'period' && (!rec || rec.st === 'writing' || rec.st === 'left')) left = mmss(live.endsAt + ex - now);
       tr.innerHTML = '<td><b>' + esc(x.name) + '</b></td><td><span class="dot ' + x.s.k + '"></span>' + esc(x.s.t) + (rec && rec.st === 'writing' && !rec.fs ? ' <span class="tag">not full screen</span>' : '') + (rec && rec.leaves ? ' <span class="warnnum" title="Times locked for leaving">' + rec.leaves + '</span>' : '') + '</td>' +
         '<td>' + (rec ? (rec.n || 0) + ' / ' + items.length : '—') + '</td><td class="tt-dots">' + (rec ? dots : '') + '</td><td>' + (rec && rec.st === 'writing' ? 'Q' + esc(pageNum(def, order, rec.cur)) : '—') + '</td><td>' + left + '</td><td>' + (rec ? ago(rec.at) : '—') + '</td><td class="acts"></td>';
       var a = tr.lastChild;
@@ -319,7 +329,7 @@
       if (rec && rec.st === 'left') a.appendChild(button('btn-small btn-primary', 'Unlock', function () { reopen(''); }));
       if (rec && rec.st !== 'writing' && rec.st !== 'left') a.appendChild(button('btn-small btn-ghost', rec.st === 'time' ? 'Reopen +5 min' : 'Reopen', function () { reopen('Let ' + x.name + ' reopen their test and keep working?' + (rec.st === 'time' ? ' They get 5 more minutes.' : '')); }));
       if (rec && rec.st === 'writing' && x.s.k === 'quiet') a.appendChild(button('btn-small btn-primary', 'Move to another device', function () { reopen(x.name + '’s device has gone quiet. Let them carry on from another device (same answers and numbers)? Their first device stops.'); }));
-      if (rec && def.minutes) a.appendChild(button('btn-small btn-ghost', '+5 min', function () { ctl('time', x.name, 5); }));
+      if (rec && timed) a.appendChild(button('btn-small btn-ghost', '+5 min', function () { ctl('time', x.name, 5); }));
       if (rec && rec.st === 'writing') a.appendChild(button('btn-small btn-ghost', 'Submit now', function () { if (confirm('Submit ' + x.name + '’s test now?')) ctl('submit', x.name); }));
       tb.appendChild(tr);
     });

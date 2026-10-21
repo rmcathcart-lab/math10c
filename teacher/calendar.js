@@ -4,6 +4,8 @@
  *    Drag a skipped lesson onto a day to put it back.
  *  - "Days off": tap school days to mark them off (or back on). Days off are the school's NOSCHOOL list, shared by every
  *    class and by the in-class time, so a day off moves every class's lessons along.
+ *  - "Add to calendar": the teacher's own entries (a cumulative exam, an assembly, a reminder). An exam or anything that
+ *    takes the class moves the lessons to the next class day; tap an entry to change or remove it.
  *  - Every change saves straight away (setcal); Undo steps back. */
 (function (root) {
   'use strict';
@@ -60,7 +62,8 @@
       'Starts ' + esc(C.nice(cal.start, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })) + ' · ' + cal.items.length + ' class days planned, ending ' + esc(C.nice(L.last, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })) + (lastKey ? ' (' + esc(C.label(lastKey)) + ')' : '') +
       (nt ? ' · next test: <b>' + esc(nt.info.title) + '</b> ' + esc(C.nice(nt.date)) : '') + '</div>'));
     var acts = el('div', 'tt-acts');
-    var ub = button('btn-small', '↶ Undo', undo); ub.disabled = !K.undo.length; acts.appendChild(ub);
+    var ub = button('btn-small', 'Undo', undo); ub.disabled = !K.undo.length; acts.appendChild(ub);
+    acts.appendChild(button('btn-small kc-add', 'Add to calendar…', function () { editEvent(null); }));
     acts.appendChild(button('btn-small' + (K.offMode ? ' btn-primary' : ''), K.offMode ? 'Done with days off' : 'Days off…', function () { K.offMode = !K.offMode; rerender(); }));
     acts.appendChild(button('btn-small btn-ghost', 'Start over…', function () { startOver(); }));
     top.appendChild(acts); body.appendChild(top);
@@ -76,7 +79,7 @@
     var tools = el('div', 'cal-nav');
     tools.appendChild(el('span', 'small muted', 'Scroll for other months (Today brings this week back). While dragging a lesson, hold it near the top or bottom edge to scroll.'));
     body.appendChild(tools);
-    var v = C.view(cal, { off: off(), today: today, chip: chip });
+    var v = C.view(cal, { off: off(), today: today, chip: chip, eventChip: eventChip });
     v.classList.add('kc-grid'); if (K.offMode) v.classList.add('kc-offmode');
     body.appendChild(v);
     requestAnimationFrame(function () { if (K.scroll != null) v.scrollTop = K.scroll; else v.scrollToDate(today < cal.start ? cal.start : today); });
@@ -91,9 +94,9 @@
   function renderStart(body) {
     var p = el('div', 'panel kc-start');
     p.innerHTML = '<h3>Make a class calendar for ' + esc(klassLabel()) + '</h3><p>Every lesson in course order, one per class day, with a unit test after each unit’s last lesson. Weekends and days off are skipped. Then drag lessons around as the semester goes.</p>';
-    var row = el('div', 'tt-row'), lab = el('label', 'tt-inline', 'First class day '), inp = el('input', 'field kc-date'); inp.type = 'date'; inp.value = defaultStart() || C.today();
-    lab.appendChild(inp); row.appendChild(lab);
-    row.appendChild(button('btn-primary', 'Make the calendar', function () { var s = C.firstClassDay(inp.value, off()); if (!s) return; K.scroll = null; save(C.make(s), 'Calendar made.'); }));
+    var row = el('div', 'tt-row kc-startrow'), pick = C.picker({ value: defaultStart() || C.today(), off: off() });
+    row.appendChild(el('div', 'kc-field-l', 'First class day')); row.appendChild(pick);
+    row.appendChild(button('btn-primary', 'Make the calendar', function () { var s = C.firstClassDay(pick.value(), off()); if (!s) return; K.scroll = null; save(C.make(s), 'Calendar made.'); }));
     p.appendChild(row);
     var others = (st.classes || []).filter(function (c) { return c.code !== st.klass && !c.demo; });
     if (others.length) p.appendChild(el('p', 'small muted', 'Each class has its own calendar (they can drift apart). Days off are shared.'));
@@ -124,9 +127,64 @@
     return row;
   }
   function startOver() {
-    var s = prompt('Start over with every lesson back in order from this first day (YYYY-MM-DD). Skipped lessons come back. Undo can bring the old plan back.', K.cal.start);
-    if (!s) return; var d = C.firstClassDay(s.trim(), off()); if (!d) { alert('That isn’t a date like 2026-09-03.'); return; }
-    K.scroll = null; save(C.make(d), 'Started over from ' + C.nice(d) + '.');
+    var pick = C.picker({ value: K.cal.start, off: off() });
+    modal('Start over', [el('p', 'small muted', 'Every lesson goes back in order, one per class day, from the first class day you pick. Skipped lessons come back; your own entries (exams, events) stay. Undo can bring the old plan back.'), pick],
+      'Start over from this day', function () {
+        var d = C.firstClassDay(pick.value(), off()); if (!d) return false;
+        var next = C.make(d); if (K.cal.events) next.events = K.cal.events.slice();
+        K.scroll = null; save(next, 'Started over from ' + C.nice(d) + '.'); return true;
+      });
+  }
+  /* a small pop-up: title, content, a main button (fn returns false to stay open), Cancel, and extra buttons */
+  function modal(title, content, okText, fn, extra) {
+    closeModal();
+    var ov = el('div', 'kc-modal'); ov.id = 'kc-modal'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
+    var box = el('div', 'kc-modal-box'); ov.appendChild(box);
+    box.appendChild(el('h3', '', esc(title)));
+    content.forEach(function (c) { box.appendChild(c); });
+    var a = el('div', 'kc-modal-acts');
+    (extra || []).forEach(function (b) { a.appendChild(b); });
+    a.appendChild(el('span', 'kc-sp'));
+    a.appendChild(button('btn-ghost', 'Cancel', closeModal));
+    a.appendChild(button('btn-primary kc-ok', okText, function () { if (fn() !== false) closeModal(); }));
+    box.appendChild(a);
+    ov.addEventListener('click', function (e) { if (e.target === ov) closeModal(); });
+    document.body.appendChild(ov);
+    var f = box.querySelector('input'); setTimeout(function () { try { (f || box.querySelector('.kc-ok')).focus(); } catch (e) {} }, 30);
+    return box;
+  }
+  function closeModal() { var o = document.getElementById('kc-modal'); if (o) o.remove(); }
+  /* add or change one of the teacher's own entries */
+  function editEvent(ev) {
+    var e = ev ? Object.assign({}, ev) : { id: 'e' + Date.now().toString(36), date: C.today() < K.cal.start ? K.cal.start : C.today(), title: '', kind: 'exam', takes: true };
+    var title = el('input', 'field kc-ev-title'); title.type = 'text'; title.maxLength = 60; title.placeholder = 'e.g. Cumulative exam, Assembly, Bring a calculator'; title.value = e.title;
+    var tl = el('label', 'kc-field', '<span>What</span>'); tl.appendChild(title);
+    var kinds = el('div', 'kc-kinds');
+    [['exam', 'Exam', 'Takes the class; counts as the next test for students'], ['event', 'Event or reminder', 'Shows on the calendar']].forEach(function (k) {
+      var lab = el('label', 'kc-kind'), r = el('input'); r.type = 'radio'; r.name = 'kc-kind'; r.value = k[0]; r.checked = e.kind === k[0];
+      r.addEventListener('change', function () { e.kind = k[0]; if (k[0] === 'exam') { e.takes = true; tk.checked = true; } });
+      lab.appendChild(r); lab.appendChild(el('span', '', '<b>' + k[1] + '</b><small>' + k[2] + '</small>')); kinds.appendChild(lab);
+    });
+    var tkl = el('label', 'tt-inline kc-takes'), tk = el('input'); tk.type = 'checkbox'; tk.checked = e.takes; tk.addEventListener('change', function () { e.takes = tk.checked; });
+    tkl.appendChild(tk); tkl.appendChild(document.createTextNode(' No lesson that day (the lessons move to the next class day)'));
+    var pick = C.picker({ value: e.date, off: off() });
+    var extra = ev ? [button('btn-ghost kc-del', 'Remove', function () {
+      var next = C.copy(K.cal); next.events = (next.events || []).filter(function (x) { return x.id !== ev.id; }); if (!next.events.length) delete next.events;
+      closeModal(); save(next, '“' + ev.title + '” removed.');
+    })] : [];
+    modal(ev ? 'Change calendar entry' : 'Add to the calendar', [tl, kinds, tkl, el('div', 'kc-field-l', 'Day'), pick], ev ? 'Save' : 'Add', function () {
+      e.title = title.value.trim(); e.date = pick.value();
+      if (!e.title) { title.focus(); title.classList.add('kc-need'); return false; }
+      var next = C.copy(K.cal), list = (next.events || []).filter(function (x) { return x.id !== e.id; }); list.push(e);
+      next.events = C.cleanEvents(list);
+      save(next, '“' + e.title + '” ' + (ev ? 'saved' : 'added') + ' on ' + C.nice(e.date) + (e.takes ? '; the lessons that day moved to the next class day.' : '.'));
+      return true;
+    }, extra);
+  }
+  function eventChip(e) {
+    var c = C.eventChip(e); c.classList.add('kc-evchip'); c.title = e.title + ' — tap to change or remove';
+    c.addEventListener('click', function () { if (!K.offMode) editEvent(e); });
+    return c;
   }
 
   /* ================= lessons on the grid: drag, tap ================= */
@@ -212,7 +270,7 @@
     HW.texIn && HW.texIn(p);
   }
   document.addEventListener('pointerdown', function (e) { if (K.pop && !K.pop.contains(e.target)) closePop(); }, true);
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closePop(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closePop(); closeModal(); } });
 
   /* ================= header: Lessons (pop-up) and Launch Today's Lesson ================= */
   function block() { var c = (st.classes || []).filter(function (x) { return x.code === st.klass; })[0]; return c && c.block ? String(c.block).toUpperCase() : ''; }
@@ -224,6 +282,7 @@
     var keys = C.on(cal, off(), today), lessons = keys.filter(function (k) { var i = C.info(k); return i && i.kind === 'lesson' && lessonUrl(k); });
     if (lessons.length) return { keys: lessons };
     if (keys.length) return { keys: [], why: 'Today is the ' + C.info(keys[0]).title + '.' };
+    var evs = C.eventsOn(cal, today); if (evs.length) return { keys: [], why: 'Today: ' + evs[0].title + '.' };
     if (w === 0 || w === 6) return { keys: [], why: 'No class today (weekend).' };
     if (off().indexOf(today) >= 0) return { keys: [], why: 'No school today.' };
     return { keys: [], why: 'Nothing is on the calendar for today.' };
