@@ -571,3 +571,73 @@ function mountExplainers() {
 }
 
 mountFigures(); mountExplainers(); mountLockers(); mountWarmup();
+
+/* ---------- Fun fact (the brown box): two cicada broods, every 13 and every 17 years, meet every LCM = 221 years ----------
+ * A timeline from 1803 to 2245 fills in when the box scrolls into view (or on Replay / a tap): a cicada for every year each
+ * brood comes out, and a gold line where they come out together (1803, 2024, 2245). Years after this one are faded. */
+(function cicadaTimeline() {
+  const svg = document.getElementById('cicada-anim'); if (!svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); Object.keys(attrs || {}).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
+  const txt = (s, attrs, parent) => { const e = mk('text', attrs, parent); e.textContent = s; return e; };
+  const Y0 = 1803, Y1 = 2245, X0 = 40, X1 = 568, NOW = new Date().getFullYear(), JOINT = [1803, 2024, 2245];
+  const X = (y) => X0 + ((y - Y0) / (Y1 - Y0)) * (X1 - X0);
+  const ROWS = [{ n: 13, y: 112, c: '#0f7f80', name: 'Brood XIX: every 13 years' }, { n: 17, y: 184, c: '#a8482a', name: 'Brood XIII: every 17 years' }];
+  txt('Year', { x: X0, y: 34, class: 'ci-cap' });
+  const yearT = txt(String(Y0), { x: X0 + 44, y: 38, class: 'ci-year' });
+  const note = txt('', { x: X1, y: 36, 'text-anchor': 'end', class: 'ci-note' });
+  // the axis
+  mk('line', { x1: X0, x2: X1, y1: 226, y2: 226, class: 'ci-axis' });
+  for (let y = 1850; y <= 2200; y += 50) { mk('line', { x1: X(y), x2: X(y), y1: 222, y2: 230, class: 'ci-axis' }); if (y !== 2000) txt(String(y), { x: X(y), y: 246, 'text-anchor': 'middle', class: 'ci-tick' }); }
+  if (NOW > Y0 && NOW < Y1) { mk('line', { x1: X(NOW), x2: X(NOW), y1: 74, y2: 226, class: 'ci-now' }); txt('now', { x: X(NOW) + 4, y: 82, class: 'ci-tick' }); }
+  // where they meet
+  const joints = JOINT.map((y) => {
+    const g = mk('g', { class: 'ci-j' });
+    mk('line', { x1: X(y), x2: X(y), y1: 92, y2: 226, class: 'ci-jline' }, g);
+    mk('circle', { cx: X(y), cy: 148, r: 46, class: 'ci-burst' }, g);
+    txt(String(y), { x: X(y), y: 268, 'text-anchor': y === Y0 ? 'start' : y === Y1 ? 'end' : 'middle', class: 'ci-jyear' }, g);
+    return { y, g };
+  });
+  // the two broods
+  const bugs = [];
+  ROWS.forEach((r) => {
+    txt(r.name, { x: X0, y: r.y - 24, class: 'ci-row', fill: r.c });
+    mk('line', { x1: X0, x2: X1, y1: r.y, y2: r.y, class: 'ci-track' });
+    for (let y = Y0; y <= Y1; y += r.n) {
+      const at = mk('g', { transform: `translate(${X(y).toFixed(1)} ${r.y})` }), g = mk('g', { class: 'ci-bug' + (y > NOW ? ' ci-future' : '') }, at);
+      mk('ellipse', { cx: -3.2, cy: 1, rx: 3.2, ry: 8.5, transform: 'rotate(18 -3.2 1)', class: 'ci-wing' }, g);
+      mk('ellipse', { cx: 3.2, cy: 1, rx: 3.2, ry: 8.5, transform: 'rotate(-18 3.2 1)', class: 'ci-wing' }, g);
+      mk('ellipse', { cx: 0, cy: 1, rx: 3.6, ry: 7, fill: r.c }, g);
+      mk('circle', { cx: 0, cy: -6.5, r: 3.4, fill: '#3d2817' }, g);
+      mk('circle', { cx: -2.4, cy: -7.5, r: 1.3, fill: '#e2462e' }, g); mk('circle', { cx: 2.4, cy: -7.5, r: 1.3, fill: '#e2462e' }, g);
+      bugs.push({ y, g });
+    }
+  });
+  const cursor = mk('line', { x1: X0, x2: X0, y1: 74, y2: 226, class: 'ci-cursor' });
+  // play: 1803 → 2024 (pause there: they meet again) → 2245
+  const A = 6500, P = 1500, B = 3800;
+  const yearAt = (ms) => (ms < A ? Y0 + ((2024 - Y0) * ms) / A : ms < A + P ? 2024 : Math.min(Y1, 2024 + ((Y1 - 2024) * (ms - A - P)) / B));
+  let t0 = 0, raf = 0;
+  function draw(t) {
+    const yr = Math.floor(t + 1e-6);
+    yearT.textContent = String(yr);
+    cursor.setAttribute('x1', X(t)); cursor.setAttribute('x2', X(t)); cursor.style.opacity = t >= Y1 ? 0 : 1;
+    bugs.forEach((b) => b.g.classList.toggle('on', b.y <= t + 1e-6));
+    joints.forEach((j) => j.g.classList.toggle('on', j.y <= t + 1e-6));
+    note.textContent = yr === 2024 ? 'together again: 221 years later' : yr >= Y1 ? 'next time: 2245' : yr === Y0 ? 'both come out' : '';
+  }
+  function frame(now) { if (!t0) t0 = now; const t = yearAt(now - t0); draw(t); if (t < Y1) raf = requestAnimationFrame(frame); }
+  function play() {
+    cancelAnimationFrame(raf); t0 = 0;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(Y1); return; }
+    bugs.forEach((b) => b.g.classList.remove('on')); joints.forEach((j) => j.g.classList.remove('on'));
+    raf = requestAnimationFrame(frame);
+  }
+  draw(Y0);
+  svg.addEventListener('click', play);
+  const btn = svg.closest('.hist-anim') && svg.closest('.hist-anim').querySelector('.hist-play'); if (btn) btn.addEventListener('click', play);
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 });
+    io.observe(svg);
+  } else play();
+})();

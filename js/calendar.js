@@ -171,6 +171,7 @@
       var cell = el('div', 'calm-day' + (we ? ' calm-we' : '') + (isOff ? ' calm-off' : '') + (k === today ? ' calm-today' : '') + (k < today ? ' calm-past' : '') + (first ? ' calm-first' : '') + (d.getDate() <= 7 ? ' calm-wk1' : '') + (d.getMonth() % 2 ? ' calm-odd' : ''));   // calm-wk1: the first 7 days of a month draw the line where it starts // prefixed: lesson pages have their own .off, .first…
       cell.dataset.date = k; cell.dataset.ym = k.slice(0, 7);
       cell.appendChild(el('div', 'calm-n', (first ? '<b class="calm-mon">' + C.MONTHS[d.getMonth()].slice(0, 3) + '</b> ' : '') + '<span>' + d.getDate() + '</span>' + (k === today && !we ? ' <b class="calm-tag">Today</b>' : '')));
+      if (first) cell.appendChild(el('div', 'calm-mbig', C.MONTHS[d.getMonth()]));   // the month's name, big while the calendar scrolls
       if (!we) {
         var list = el('div', 'calm-items');
         if (isOff) list.appendChild(el('div', 'calm-offl', 'No school'));
@@ -195,6 +196,7 @@
     var raf = 0, still = 0;
     box.addEventListener('scroll', function () {
       if (!raf) raf = requestAnimationFrame(function () { raf = 0; update(); });
+      if (box._quiet) { box._quiet = false; return; }   // jumping to a date isn't scrolling
       box.classList.add('calv-scrolling'); clearTimeout(still); still = setTimeout(function () { box.classList.remove('calv-scrolling'); }, 500);   // the month name grows while scrolling
     }, { passive: true });
     /* make a day flash for a moment (e.g. the next test, opened from its notice) */
@@ -206,7 +208,8 @@
     box.scrollToDate = function (date, smooth) {
       var c = grid.querySelector('.calm-day[data-date="' + date + '"]'); if (!c) return;
       var row = grid.children[Math.floor([].indexOf.call(grid.children, c) / 7) * 7];
-      box.scrollTo({ top: Math.max(0, row.offsetTop - head.offsetHeight - 8), behavior: smooth ? 'smooth' : 'auto' });
+      var top = Math.max(0, row.offsetTop - head.offsetHeight - 8); if (!smooth && Math.abs(top - box.scrollTop) > 1) box._quiet = true;
+      box.scrollTo({ top: top, behavior: smooth ? 'smooth' : 'auto' });
       if (!smooth) update();
     };
     box.refreshMonth = update;

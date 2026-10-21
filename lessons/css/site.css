@@ -509,3 +509,46 @@ body.viewer .edot { display: none; }
 .wf-poll .traps { grid-template-columns: 1fr; font-size: 15px; gap: 6px; }
 /* long formulas in a sidebar caption may break (several lessons set .lesson .katex { white-space: nowrap }) */
 .lesson .ex-panel .ex-cap .katex { white-space: normal; }
+
+/* ---------- math history and fun-fact boxes: brown, like old paper (card.history; animations in the lesson's JS) ---------- */
+.card.history { --hist: #7a4a26; --hist-ink: #3d2817; --hist-soft: #efe0c8; background: linear-gradient(180deg, #fbf3e4, #f6e9d3); border: 2px solid #b48a5f; box-shadow: 0 1px 2px rgba(61, 40, 23, .08), 0 10px 28px rgba(61, 40, 23, .12); color: var(--hist-ink); }
+.hist-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.hist-tag { background: var(--hist); color: #fff6e6; font: 800 14px var(--round); letter-spacing: .1em; text-transform: uppercase; padding: 5px 12px; border-radius: 8px; }
+.hist-dates { font: 600 15px Georgia, "Iowan Old Style", "Times New Roman", serif; color: #8a6440; letter-spacing: .06em; }
+.hist-grid { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.25fr); gap: 26px; align-items: start; }
+.hist-title { margin: 0 0 10px; font: 700 28px/1.2 Georgia, "Iowan Old Style", "Times New Roman", serif; color: #4a2c14; }
+.hist-text p { font-size: 18.5px; line-height: 1.5; }
+.history .c13 { color: #0f7f80; } .history .c17 { color: #a8482a; }
+.hist-q { margin-top: 4px; }
+.hist-q .pl { font-weight: 700; font-size: 17.5px; margin-bottom: 6px; }
+.history .reveal { background: var(--hist-soft); color: var(--hist); }
+.history .part.shown .reveal { background: #f4d9c9; color: #8b2f1c; }
+.history .ans { color: #8b2f1c; }
+.hist-anim { margin: 0; background: #fffaf1; border: 1.5px solid #dcc5a3; border-radius: 14px; padding: 8px 8px 6px; }
+.hist-anim svg { display: block; width: 100%; height: auto; cursor: pointer; }
+.hist-anim figcaption { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #8a6440; padding: 2px 4px 0; }
+.hist-play { border: 1.5px solid #c9a77d; background: #fff; color: var(--hist); font: 700 14px var(--round); padding: 3px 12px; border-radius: 14px; cursor: pointer; }
+.hist-note { margin: 10px 4px 4px !important; font-size: 15.5px; line-height: 1.45; color: #6b4a2c; font-style: italic; }
+@media (max-width: 860px) { .hist-grid { grid-template-columns: 1fr; } }
+/* the cicada timeline (u1l2) */
+.ci-cap { font: 600 13px var(--font); fill: #8a6440; }
+.ci-year { font: 700 30px Georgia, "Iowan Old Style", serif; fill: #4a2c14; }
+.ci-note { font: 700 15px var(--round); fill: #b07a12; }
+.ci-axis { stroke: #8a6440; stroke-width: 2; }
+.ci-tick { font: 600 12px var(--font); fill: #9a7a58; }
+.ci-now { stroke: #9a7a58; stroke-width: 1.5; stroke-dasharray: 4 4; }
+.ci-row { font: 700 14px var(--round); }
+.ci-track { stroke: #e3d2b8; stroke-width: 2; stroke-dasharray: 2 5; }
+.ci-wing { fill: rgba(255, 255, 255, .7); stroke: #9a7a58; stroke-width: .8; }
+.ci-bug { opacity: 0; transform: scale(.17); transform-box: fill-box; transform-origin: center; transition: opacity .25s, transform .4s cubic-bezier(.3, 1.7, .5, 1); }
+.ci-bug.on { opacity: 1; transform: scale(.85); }
+.ci-bug.ci-future.on { opacity: .42; }
+.ci-cursor { stroke: #7a4a26; stroke-width: 2; }
+.ci-j { opacity: 0; transition: opacity .3s; }
+.ci-j.on { opacity: 1; }
+.ci-jline { stroke: #d49a1c; stroke-width: 4; stroke-linecap: round; }
+.ci-burst { fill: none; stroke: #f0b429; stroke-width: 3; opacity: 0; transform-box: fill-box; transform-origin: center; }
+.ci-j.on .ci-burst { animation: ci-burst 1.1s ease-out; }
+@keyframes ci-burst { 0% { opacity: .9; transform: scale(.2); } 100% { opacity: 0; transform: scale(1.4); } }
+.ci-jyear { font: 800 15px var(--round); fill: #b07a12; }
+@media (prefers-reduced-motion: reduce) { .ci-bug { transition: none; } .ci-j.on .ci-burst { animation: none; } }
