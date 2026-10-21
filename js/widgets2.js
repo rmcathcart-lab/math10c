@@ -116,7 +116,19 @@
   };
 
   /* ---------- several labelled boxes. f.mode: 'number' (default), 'text', or 'math' (a math box; f.keys picks the keypad,
-   * f.none adds a "none" key). Math boxes share one keypad that types into whichever math box was used last. ---------- */
+   * f.none adds a "none" key). The boxes share one keypad that types into whichever box was used last; on phones and
+   * tablets the number boxes don't open the device's keyboard (the keypad is right there). ---------- */
+  /* a keypad key typed into a plain text box */
+  function typeInto(t, k) {
+    if (!t || t.disabled) return;
+    var st = t.selectionStart == null ? t.value.length : t.selectionStart, en = t.selectionEnd == null ? st : t.selectionEnd;
+    if (k.fn === 'clear') { t.value = ''; st = 0; }
+    else if (k.fn === 'del') { if (st === en && st > 0) st--; t.value = t.value.slice(0, st) + t.value.slice(en); }
+    else if (k.fn === 'left' || k.fn === 'right') { st = Math.max(0, Math.min(t.value.length, st + (k.fn === 'left' ? -1 : 1))); }
+    else { var v = k.plain != null ? k.plain : k.v != null ? k.v : String(k.label || '').replace(/<[^>]+>/g, ''); t.value = t.value.slice(0, st) + v + t.value.slice(en); st += v.length; }
+    try { t.setSelectionRange(st, st); } catch (e) {}
+    t.dispatchEvent(new Event('input')); if (!coarse()) t.focus();
+  }
   W.fields = function (opt) {
     var wrap = el('div', 'w-fields'), enter = null, boxes = [], active = null, mathKeys = null, wantNone = false, activeText = null, numBoxes = 0;
     function next(i) { for (var j = i + 1; j < boxes.length; j++) { var b = boxes[j]; if (!b.get()) { b.focus(); return; } } if (enter) enter(); }
@@ -139,11 +151,12 @@
         if (!active) active = box;
       } else {
         var inp = el('input', 'ans-input ' + (f.wide ? '' : 'ans-short')); inp.type = 'text'; inp.autocomplete = 'off'; inp.spellcheck = false;
-        inp.setAttribute('autocapitalize', 'off'); inp.setAttribute('inputmode', f.mode === 'text' ? 'text' : 'decimal'); if (f.placeholder) inp.placeholder = f.placeholder;
+        inp.setAttribute('autocapitalize', 'off'); inp.setAttribute('inputmode', f.mode === 'text' ? 'text' : coarse() ? 'none' : 'decimal'); if (f.placeholder) inp.placeholder = f.placeholder;
         inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); next(i); } });
         row.appendChild(inp);
-        if (f.mode !== 'text') { numBoxes++; inp.addEventListener('focusin', function () { activeText = inp; }); if (!activeText) activeText = inp; }
-        box = { kind: 'text', get: function () { return inp.value.trim(); }, focus: function () { inp.focus(); }, clear: function () { inp.value = ''; }, disable: function (on) { inp.disabled = !!on; }, set: function (v) { inp.value = v; } };
+        box = { kind: 'text', get: function () { return inp.value.trim(); }, focus: function () { inp.focus(); }, clear: function () { inp.value = ''; }, disable: function (on) { inp.disabled = !!on; }, set: function (v) { inp.value = v; },
+          w: { press: function (k) { typeInto(inp, k); } } };   // the shared keypad types here when this box was used last
+        if (f.mode !== 'text') { numBoxes++; (function (b) { var use = function () { activeText = inp; active = b; }; inp.addEventListener('focusin', use); inp.addEventListener('pointerdown', use); })(box); if (!activeText) activeText = inp; }
       }
       if (f.after) row.appendChild(el('span', 'ans-affix', HW.tex(f.after)));
       boxes.push(box); wrap.appendChild(row);
@@ -162,13 +175,7 @@
       var kpn = W.keypad([[nk('7'), nk('8'), nk('9'), { label: '⌫', fn: 'del', title: 'Delete' }], [nk('4'), nk('5'), nk('6'), nk('-')], [nk('1'), nk('2'), nk('3'), nk('.')],
         [{ label: '0', v: '0', wide: true }, { label: 'clear', fn: 'clear' }, { label: 'Check ↵', fn: 'enter' }]], function (k) {
         if (k.fn === 'enter') { if (enter) enter(); return; }
-        var t = activeText; if (!t || t.disabled) return;
-        var st = t.selectionStart == null ? t.value.length : t.selectionStart, en = t.selectionEnd == null ? st : t.selectionEnd;
-        if (k.fn === 'clear') { t.value = ''; st = 0; }
-        else if (k.fn === 'del') { if (st === en && st > 0) st--; t.value = t.value.slice(0, st) + t.value.slice(en); }
-        else { t.value = t.value.slice(0, st) + k.v + t.value.slice(en); st += k.v.length; }
-        try { t.setSelectionRange(st, st); } catch (e) {}
-        t.dispatchEvent(new Event('input')); if (!coarse()) t.focus();
+        typeInto(activeText, k);
       });
       kpn.classList.add('kp-small'); wrap.appendChild(kpn);
       wrap.appendChild(el('div', 'w-help', 'Tap a box, then type with the keypad or your keyboard.'));

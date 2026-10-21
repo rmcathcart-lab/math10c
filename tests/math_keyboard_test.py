@@ -29,7 +29,26 @@ async def main():
         vis = await pg.evaluate("(() => { const kb = window.mathVirtualKeyboard; const el = document.querySelector('.ML__keyboard'); return { visible: !!(kb && kb.visible), shown: !!(el && el.offsetHeight > 0) }; })()")
         print('keyboard:', vis); await pg.screenshot(path='/tmp/mk_phone.png')
         assert not vis['visible'] and not vis['shown'], vis
-        await pg.click('.qcard .kp-key >> nth=0') if await pg.locator('.qcard .kp-key').count() else None
+        # the question in Ryan's screenshot: 54 = [math], 96 = [math], LCM = [number]. The number box doesn't open the
+        # phone's keypad, and the shared keypad types into it once it's been tapped
+        q = None
+        for lid in ['u1l2']:
+            for i in await pg.evaluate("(l) => HW.lessons[l].items.map(it => it.id)", lid):
+                await pg.evaluate("([l, i]) => location.hash = '#/lesson/' + l + '/' + i", [lid, i]); await pg.wait_for_timeout(250)
+                if await pg.locator('.qcard math-field').count() and await pg.locator('.qcard .w-fields input.ans-input').count(): q = (lid, i); break
+        print('mixed question:', q); assert q
+        box = pg.locator('.qcard .w-fields input.ans-input').first
+        print('number box inputmode:', await box.get_attribute('inputmode')); assert await box.get_attribute('inputmode') == 'none'
+        await box.tap(); await pg.wait_for_timeout(300)
+        for d in ['4', '3', '2']: await pg.locator('.qcard .kp .kpk', has_text=d).first.tap(); await pg.wait_for_timeout(80)
+        v = await box.input_value(); print('typed with the keypad:', v); assert v == '432', v
+        mf = await pg.evaluate("document.querySelector('.qcard math-field').value"); print('math box untouched:', repr(mf)); assert mf == ''
+        await pg.screenshot(path='/tmp/mk_fields.png')
+        # a single-number question
+        for i in await pg.evaluate("HW.lessons['u1l3'].items.map(it => it.id)"):
+            await pg.evaluate("(i) => location.hash = '#/lesson/u1l3/' + i", i); await pg.wait_for_timeout(250)
+            if await pg.locator('.qcard .w-number input').count(): break
+        if await pg.locator('.qcard .w-number input').count(): print('number widget inputmode:', await pg.locator('.qcard .w-number input').get_attribute('inputmode')); assert await pg.locator('.qcard .w-number input').get_attribute('inputmode') == 'none'
         print('errors', errs); assert not errs; print('PASS')
         await b.close()
 asyncio.run(main())

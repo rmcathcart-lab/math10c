@@ -42,13 +42,15 @@
     inp.setAttribute('inputmode', mode || 'decimal');
     return inp;
   }
+  /* on phones and tablets a box with the site's keypad under it doesn't open the device's keyboard */
+  function keypadOnly(inp) { if (coarse()) inp.setAttribute('inputmode', 'none'); return inp; }
 
   /* ---- a single number ---- */
   W.number = function (opt) {
     opt = opt || {};
     var wrap = el('div', 'w-number'), row = el('div', 'ans-row'), enter = null;
     if (opt.before) row.appendChild(el('span', 'ans-affix', HW.tex(opt.before)));
-    var inp = plainInput(opt.placeholder || 'Your answer'); row.appendChild(inp);
+    var inp = keypadOnly(plainInput(opt.placeholder || 'Your answer')); row.appendChild(inp);
     if (opt.after) row.appendChild(el('span', 'ans-affix', HW.tex(opt.after)));
     wrap.appendChild(row);
     if (opt.nr) wrap.appendChild(el('div', 'nr-note', 'Numerical response: up to 4 characters, written from the left.'));
@@ -68,7 +70,7 @@
   W.list = function (opt) {
     opt = opt || {};
     var wrap = el('div', 'w-list'), box = el('div', 'chipbox'), chips = el('div', 'chips'), enter = null, items = [];
-    var inp = plainInput(opt.placeholder || 'Type a number, then press Enter or comma', 'numeric'); inp.classList.add('chip-input');
+    var inp = keypadOnly(plainInput(opt.placeholder || 'Type a number, then press Enter or comma', 'numeric')); inp.classList.add('chip-input');
     box.appendChild(chips); box.appendChild(inp); wrap.appendChild(box);
     var hint = el('div', 'w-help', opt.help || 'Add each number with <b>Enter</b> or a comma. Tap a number to remove it.'); wrap.appendChild(hint);
     function draw() {
@@ -163,7 +165,7 @@
       };
       api.kind = 'mathlive';
     } else {
-      var inp = plainInput(opt.placeholder || ({ radical: 'e.g. 3sqrt(5)', fraction: 'e.g. 3/4', decimal: 'e.g. 0.1\\overline{6}', expr: 'Your answer', var: 'e.g. 3x sqrt(2x)', abs: 'Your answer', expo: 'e.g. 3x^4/(2y^2)', poly: 'e.g. 3x^2 - 5x + 4', sci: 'e.g. 3.2 × 10^5', set: 'e.g. {x | -2 <= x < 5, x in R}', solutions: 'e.g. x = 3, x = -5', pairs: 'e.g. (1, 4), (2, 7)' })[opt.keys] || 'e.g. 2^3 × 3 × 11', 'text'); inp.classList.add('ans-wide');
+      var inp = keypadOnly(plainInput(opt.placeholder || ({ radical: 'e.g. 3sqrt(5)', fraction: 'e.g. 3/4', decimal: 'e.g. 0.1\\overline{6}', expr: 'Your answer', var: 'e.g. 3x sqrt(2x)', abs: 'Your answer', expo: 'e.g. 3x^4/(2y^2)', poly: 'e.g. 3x^2 - 5x + 4', sci: 'e.g. 3.2 × 10^5', set: 'e.g. {x | -2 <= x < 5, x in R}', solutions: 'e.g. x = 3, x = -5', pairs: 'e.g. (1, 4), (2, 7)' })[opt.keys] || 'e.g. 2^3 × 3 × 11', 'text')); inp.classList.add('ans-wide');
       var prev = el('div', 'preview muted', 'Your answer will appear here as math.');
       var row2 = el('div', 'ans-row'); if (opt.before) row2.appendChild(el('span', 'ans-affix', HW.tex(opt.before)));
       row2.appendChild(inp); if (opt.after) row2.appendChild(el('span', 'ans-affix', HW.tex(opt.after))); wrap.appendChild(row2); wrap.appendChild(prev);
