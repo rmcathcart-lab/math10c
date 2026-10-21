@@ -724,7 +724,8 @@ a.lesson-row:focus-visible, .lesson-teach:focus-visible { outline: 3px solid var
 .medal-c.medal-off { visibility: hidden; }
 .medal-pop { position: fixed; inset: 0; z-index: 60; background: rgba(10, 12, 16, .62); display: grid; place-items: center; padding: 16px; overflow: auto; }
 .medal-box { position: relative; width: min(560px, 100%); background: radial-gradient(120% 80% at 50% 25%, #1c222b, #0f1217 72%); color: #eef0f3; border-radius: 22px; padding: 22px 18px 18px; display: grid; justify-items: center; gap: 4px; box-shadow: 0 30px 80px rgba(0, 0, 0, .45); }
-.medal-x { position: absolute; top: 10px; right: 12px; width: 40px; height: 40px; border: 0; border-radius: 50%; background: rgba(255, 255, 255, .08); color: #eef0f3; font-size: 26px; line-height: 1; cursor: pointer; }
+.medal-x { position: absolute; top: 10px; right: 12px; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%; background: rgba(255, 255, 255, .08); color: #eef0f3; display: grid; place-items: center; cursor: pointer; z-index: 1; }
+.medal-x svg { display: block; }
 .medal-x:hover { background: rgba(255, 255, 255, .16); }
 .medal-x:focus-visible { outline: 3px solid #8fb4ff; }
 .medal-new { font-family: "Barlow Condensed", "Arial Narrow", sans-serif; font-weight: 800; font-size: 22px; letter-spacing: .06em; text-transform: uppercase; color: #ffd36b; }
@@ -735,6 +736,10 @@ a.lesson-row:focus-visible, .lesson-teach:focus-visible { outline: 3px solid var
 .medal-out { font-size: 13.5px; color: #9aa3b0; text-align: center; max-width: 46ch; }
 .medal-ladder { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; width: 100%; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, .1); }
 .medal-rung { display: grid; justify-items: center; gap: 1px; padding: 4px 0 6px; border-radius: 10px; }
+button.medal-rung { appearance: none; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+button.medal-rung:hover { background: rgba(255, 255, 255, .05); }
+button.medal-rung:focus-visible { outline: 2px solid #8fb4ff; outline-offset: 1px; }
+.medal-herowrap { line-height: 0; }
 .medal-rung .medal-c { width: 52px; height: 52px; filter: grayscale(1) brightness(.55); opacity: .55; }
 .medal-rung.got .medal-c { filter: none; opacity: 1; }
 .medal-rung.here { background: rgba(255, 255, 255, .07); }

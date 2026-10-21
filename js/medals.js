@@ -428,25 +428,36 @@
     opt = opt || {}; close();
     var ov = document.createElement('div'); ov.className = 'medal-pop'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
     var box = document.createElement('div'); box.className = 'medal-box'; ov.appendChild(box);
-    var x = document.createElement('button'); x.type = 'button'; x.className = 'medal-x'; x.setAttribute('aria-label', 'Close'); x.textContent = '×'; x.addEventListener('click', close);
+    var x = document.createElement('button'); x.type = 'button'; x.className = 'medal-x'; x.setAttribute('aria-label', 'Close'); x.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>'; x.addEventListener('click', close);
     ov.addEventListener('click', function (e) { if (e.target === ov) close(); });
     function show(k) {
       i = (k + list.length) % list.length; var it = list[i], t = TIERS[it.tier], d = design(it.o);
       box.innerHTML = ''; box.appendChild(x);
       box.style.setProperty('--mc', d.c);
       if (opt.title) box.appendChild(h('div', 'medal-new', esc(opt.title)));
-      var hero = slot(it.o, it.tier, { big: true, drag: true, cls: 'medal-hero' }); hero.setAttribute('role', 'img'); hero.setAttribute('aria-label', label(it) + ' medal'); box.appendChild(hero); spinOnce(hero);
-      box.appendChild(h('div', 'medal-metal', esc(t.metal)));
-      box.appendChild(h('div', 'medal-level', '<b>' + esc(t.name) + '</b> on ' + esc(it.o) + (it.src ? ' <span class="medal-src">· ' + esc(it.src) + '</span>' : '')));
+      var heroWrap = h('div', 'medal-herowrap', ''), metal = h('div', 'medal-metal', ''), level = h('div', 'medal-level', '');
+      box.appendChild(heroWrap); box.appendChild(metal); box.appendChild(level);
       if (HW.OUTCOMES && HW.OUTCOMES[it.o]) box.appendChild(h('div', 'medal-out', esc(it.o) + ' · ' + esc(HW.OUTCOMES[it.o])));
-      var lad = h('div', 'medal-ladder', '');
+      // the seven levels: every one reached is lit, and tapping one shows it big (until the viewer closes)
+      var lad = h('div', 'medal-ladder', ''), rungs = [];
       TIERS.forEach(function (tt, k2) {
-        var got = k2 === it.tier || (k2 > 0 && k2 < it.tier);   // Rust is only lit when it's the level
-        var cell = h('div', 'medal-rung' + (got ? ' got' : '') + (k2 === it.tier ? ' here' : ''), '');
+        var got = k2 <= it.tier, cell = h(got ? 'button' : 'div', 'medal-rung' + (got ? ' got' : ''), '');
         cell.appendChild(slot(it.o, k2)); cell.appendChild(h('div', 'medal-rung-m', esc(tt.metal))); cell.appendChild(h('div', 'medal-rung-l', esc(tt.name)));
-        cell.title = tt.metal + ' · ' + tt.name + (got || k2 < it.tier ? '' : ' (not yet)'); lad.appendChild(cell);
+        cell.title = tt.metal + ' · ' + tt.name + (got ? (k2 < it.tier ? ' (tap to see it)' : '') : ' (not yet)');
+        if (got) { cell.type = 'button'; cell.addEventListener('click', function () { pick(k2); }); }
+        lad.appendChild(cell); rungs.push(cell);
       });
       box.appendChild(lad);
+      function pick(tk) {
+        var tt = TIERS[tk], mine = { o: it.o, tier: tk };
+        heroWrap.innerHTML = '';
+        var hero = slot(it.o, tk, { big: true, drag: true, cls: 'medal-hero' }); hero.setAttribute('role', 'img'); hero.setAttribute('aria-label', label(mine) + ' medal');
+        heroWrap.appendChild(hero); spinOnce(hero);
+        metal.textContent = tt.metal;
+        level.innerHTML = '<b>' + esc(tt.name) + '</b> on ' + esc(it.o) + (tk === it.tier ? (it.src ? ' <span class="medal-src">· ' + esc(it.src) + '</span>' : '') : ' <span class="medal-src">· a level you’ve passed</span>');
+        rungs.forEach(function (c, k2) { c.classList.toggle('here', k2 === tk); if (c.tagName === 'BUTTON') c.setAttribute('aria-pressed', String(k2 === tk)); });
+      }
+      pick(it.tier);
       box.appendChild(h('div', 'medal-hint', 'Drag or flick the medal to spin it.' + (list.length > 1 ? ' ' + (i + 1) + ' of ' + list.length + '.' : '')));
       if (list.length > 1) {
         var nav = h('div', 'medal-nav', '');

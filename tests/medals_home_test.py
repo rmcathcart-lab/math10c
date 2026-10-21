@@ -39,7 +39,15 @@ async def main():
         await a.wait_for_timeout(15000); await a.screenshot(path='/tmp/md_new.png')
         await a.keyboard.press('Escape'); assert await a.locator('.medal-pop').count() == 0
         await a.click('.hh-medals .medal-btn >> nth=0'); await a.wait_for_selector('.medal-pop .medal-ladder')
-        got = await a.evaluate("[...document.querySelectorAll('.medal-rung')].map(r => r.className.includes('got') ? 1 : 0).join('')"); print('ladder:', got); assert got == '0111000', got
+        got = await a.evaluate("[...document.querySelectorAll('.medal-rung')].map(r => r.className.includes('got') ? 1 : 0).join('')"); print('ladder:', got); assert got == '1111000', got
+        # tap a level already passed: it becomes the big one
+        await a.click('.medal-rung.got >> nth=1'); await a.wait_for_timeout(400)
+        print('picked:', await a.inner_text('.medal-metal'), '|', await a.inner_text('.medal-level')); assert (await a.inner_text('.medal-metal')) == 'Steel'
+        assert await a.evaluate("[...document.querySelectorAll('.medal-rung')].findIndex(r => r.classList.contains('here'))") == 1
+        assert await a.locator('div.medal-rung').count() == 3   # the levels not reached can't be tapped
+        xb = await a.evaluate("(() => { const b = document.querySelector('.medal-x').getBoundingClientRect(), s = document.querySelector('.medal-x svg').getBoundingClientRect(); return [Math.round((s.left + s.width / 2) - (b.left + b.width / 2)), Math.round((s.top + s.height / 2) - (b.top + b.height / 2))]; })()")
+        print('X off centre by', xb); assert xb == [0, 0]
+        await a.wait_for_timeout(9000); await a.locator('.medal-box').screenshot(path='/tmp/md_pick.png')
         await a.click('.medal-next'); await a.wait_for_timeout(500); print('next:', (await a.inner_text('.medal-metal')), await a.inner_text('.medal-level'))
         await a.wait_for_timeout(12000); await a.screenshot(path='/tmp/md_viewer.png')
         await a.click('.medal-x'); assert await a.locator('.medal-pop').count() == 0
