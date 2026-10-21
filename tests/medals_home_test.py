@@ -1,4 +1,4 @@
-"""Medals on the student home page (mock ledger): none at first; practice earns AN1 (shown quietly the first time);
+"""Medals on the student home page (mock ledger): Unit 1's outcomes start at Rust (no pop-up); practice earns AN1 (shown quietly the first time);
 a released exit slip (stubbed) adds AN3 and more practice adds AN2 → "New medals!" opens big; Esc closes; tapping a medal
 opens the viewer with the seven levels. Needs the static server on 8811 and a fresh mock (tests/restart_mock.sh).
 Screenshots /tmp/md_*.png."""
@@ -14,10 +14,12 @@ async def main():
     async with async_playwright() as p:
         b = await p.chromium.launch(args=['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'])
         a = await student(b, 'Ava Brown', '1111', errs, medal_pops=True); a.set_default_timeout(120000)
-        await a.wait_for_timeout(1500); m = await medals(a); print('start:', m); assert m == [], m
+        await a.wait_for_timeout(1500); m = await medals(a); print('start:', m)
+        assert m == ['AN1 · Rust · Not meeting', 'AN2 · Rust · Not meeting'], m          # Unit 1 has started, no practice yet
+        assert await a.locator('.medal-pop').count() == 0, 'Rust should not pop up'
         print('levels done:', await a.evaluate(FILL, ['u1l1', 12]))
         await a.evaluate("location.hash = '#/x'; location.hash = '#/'"); await a.wait_for_timeout(2500)
-        m = await medals(a); print('after practice:', m); assert len(m) == 1 and m[0].startswith('AN1'), m
+        m = await medals(a); print('after practice:', m); assert m[0].startswith('AN1 · Silver · Emerging') and m[1].startswith('AN2 · Rust'), m
         t = await a.inner_text('.medal-pop'); assert 'new medal!' in t.lower(), t   # her first medal (the device had seen none)
         await a.keyboard.press('Escape')
         # a device that has never shown medals (the feature arriving) just remembers what there is: no pop-up

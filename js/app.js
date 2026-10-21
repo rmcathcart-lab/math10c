@@ -362,9 +362,24 @@
         if (!best[o] || t > best[o].tier) best[o] = { tier: t, src: 'from ' + (r.title || (r.kind === 'exit' ? 'an exit slip' : 'a test')) };
       });
     });
-    var order = []; HW.CATALOG.forEach(function (u) { String(u.outcomes || '').split(/\s*·\s*/).forEach(function (o) { if (o && order.indexOf(o) < 0) order.push(o); }); });
+    var order = [], started = startedUnits();
+    HW.CATALOG.forEach(function (u) {
+      String(u.outcomes || '').split(/\s*·\s*/).forEach(function (o) {
+        if (!o) return; if (order.indexOf(o) < 0) order.push(o);
+        // a unit that has started: its outcomes begin at Rust until practice (or a test) gives a level
+        if (started[u.unit] && !best[o]) best[o] = { tier: 0, src: 'Unit ' + u.unit + ' has started: practise to move up' };
+      });
+    });
     Object.keys(best).forEach(function (o) { if (order.indexOf(o) < 0) order.push(o); });
     return order.filter(function (o) { return best[o]; }).map(function (o) { return { o: o, tier: best[o].tier, src: best[o].src }; });
+  }
+  /* the units the class has started: by the class calendar (a lesson or test of the unit on or before today), else every
+     unit up to the one the student is on */
+  function startedUnits() {
+    var out = {}, CD = calData(), LAY = CD && HW.Cal ? HW.Cal.layout(CD.cal, CD.noSchool) : null, TODAY = HW.Cal ? HW.Cal.today() : '';
+    if (CD && LAY) { CD.cal.items.forEach(function (x) { var d = LAY.dateOf[x[0]], i = d && d <= TODAY ? HW.Cal.info(x[0]) : null; if (i && i.unit) out[i.unit] = 1; }); return out; }
+    for (var u = 1, cu = currentUnit(null, null, TODAY); u <= cu; u++) out[u] = 1;
+    return out;
   }
   function homeMedals(box) {
     if (!HW.Medals) return;
@@ -381,7 +396,7 @@
       // new or higher since last time on this device: show them big (the first time, just remember what there is)
       var seen = null; try { seen = JSON.parse(ls(key) || 'null'); } catch (e) { seen = null; }
       var now = {}; list.forEach(function (x) { now[x.o] = x.tier; });
-      var fresh = seen ? list.filter(function (x) { return seen[x.o] == null || x.tier > seen[x.o]; }) : [];
+      var fresh = seen ? list.filter(function (x) { return x.tier > 0 && (seen[x.o] == null || x.tier > seen[x.o]); }) : [];   // Rust doesn't pop up
       if (!fresh.length) { ls(key, JSON.stringify(now)); return; }
       if (document.querySelector('#testmode, .medal-pop, #cal-pop')) return;   // not over a test or another pop-up; next time
       ls(key, JSON.stringify(now));
