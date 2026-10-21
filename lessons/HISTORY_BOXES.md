@@ -53,4 +53,20 @@ of `lessons/js/lessons/u1l2.js` before making one.
 ## Where they are
 | Lesson | Story |
 |---|---|
+| 1.1 | Euclid: multiply the primes and add 1, so the primes never run out (30 031 = 59 × 509) |
 | 1.2 | Cicadas every 13 and 17 years meet every LCM = 221 years (1803, 2024, 2245) |
+| 1.3 | Chasing π with fractions: Archimedes' 22/7, Zu Chongzhi's 355/113 |
+| 1.5 | √2 on the Babylonian tablet YBC 7289 (base 60, right to 5 decimal places) |
+| 2.1 | The chessboard full of wheat (legend): 2⁶³ on the last square, 2⁶⁴ − 1 in all |
+| 2.4 | Archimedes' Sand Reckoner: at most 10⁶³ grains fill the universe |
+| 3.3 | (a + b)² as a square: Euclid II.4 and al-Khwarizmi completing the square |
+| 4.3 | Fermat's factoring by difference of squares (2 027 651 281 = 44 021 × 46 061) |
+| 5.1 | Descartes, La Géométrie (1637) and the fly on the ceiling (legend) |
+| 5.7B | Leibniz's word "function" (1673), Euler's f(x) (1734) |
+| 6.4 | Recorde's equals sign (1557): two parallel lines of one length |
+| 8.3 | The Nine Chapters: elimination with counting rods |
+| 9.1 | How a bowstring became "sine" (jyā → jība → jayb → sinus) |
+| 9.6 | Measuring Everest with angles of elevation (29 002 ft, 1856) |
+| 10.2 | The Egyptian royal cubit: a forearm made official |
+| 10.4B | The Gimli Glider (Air Canada 143, 1983): pounds instead of kilograms |
+| 10.8 | Archimedes' sphere and cylinder on his tomb (2/3) |

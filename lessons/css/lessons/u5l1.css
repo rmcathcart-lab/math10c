@@ -170,3 +170,27 @@
 .wf .wf-poll { margin-top: 8px; }
 .wf .wf-poll .q-line { margin-top: 8px; }
 .wf .wf-poll { padding-bottom: 12px; }
+
+/* ---------- Math History box: Descartes' fly (u5l1h-) ---------- */
+.u5l1h-ceil { fill: #fffdf7; }
+.u5l1h-grid { stroke: #e6d5bb; stroke-width: 1.2; }
+.u5l1h-wall { fill: #8a6440; }
+.u5l1h-num { font: 600 12.5px var(--font); fill: #9a7a58; }
+.u5l1h-wl { font: 700 12.5px var(--round); fill: #8a6440; letter-spacing: .06em; text-transform: uppercase; }
+.u5l1h-trail { fill: none; stroke: #b48a5f; stroke-width: 1.6; stroke-dasharray: 1 5; stroke-linecap: round; }
+.u5l1h-mx, .u5l1h-my { stroke-width: 3; stroke-dasharray: 7 5; transition: opacity .2s; }
+.u5l1h-mx { stroke: #2f6fd0; } .u5l1h-my { stroke: #7b4fc4; }
+.u5l1h-lx, .u5l1h-ly { font: 800 17px var(--round); opacity: 0; transition: opacity .3s; paint-order: stroke; stroke: #fffdf7; stroke-width: 4px; }
+.u5l1h-lx { fill: #2f6fd0; } .u5l1h-ly { fill: #7b4fc4; }
+.u5l1h-cap { font: 700 12.5px var(--round); letter-spacing: .08em; fill: #8a6440; }
+.u5l1h-pair { font: 700 40px Georgia, "Iowan Old Style", serif; fill: #4a2c14; }
+.u5l1h-cx { fill: #2f6fd0; } .u5l1h-cy { fill: #7b4fc4; }
+.u5l1h-rx, .u5l1h-ry { font: 700 14.5px var(--round); }
+.u5l1h-rx { fill: #2f6fd0; } .u5l1h-ry { fill: #7b4fc4; }
+.u5l1h-hint { font: italic 600 14px var(--font); fill: #b07a12; }
+.u5l1h-pair, .u5l1h-rx, .u5l1h-ry, .u5l1h-hint { opacity: 0; transition: opacity .35s; }
+.u5l1h-pair.on, .u5l1h-rx.on, .u5l1h-ry.on, .u5l1h-hint.on, .u5l1h-lx.on, .u5l1h-ly.on { opacity: 1; }
+.u5l1h-wing { fill: rgba(255, 255, 255, .75); stroke: #9a7a58; stroke-width: 1; transform-box: fill-box; transform-origin: right center; }
+.u5l1h-fly.moving .u5l1h-wing { animation: u5l1h-buzz .09s linear infinite alternate; }
+@keyframes u5l1h-buzz { from { opacity: 1; } to { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .u5l1h-fly.moving .u5l1h-wing { animation: none; } .u5l1h-lx, .u5l1h-ly, .u5l1h-pair, .u5l1h-rx, .u5l1h-ry, .u5l1h-hint { transition: none; } }

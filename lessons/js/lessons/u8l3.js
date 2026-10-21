@@ -953,7 +953,7 @@ export const explainers = mountExplainers({ pets, balance, signs, pencil, scale,
     const g = mk('g', { class: 'u8l3h-col' });
     const frame = mk('rect', { x: cx - CW / 2 + 2, y: 78, width: CW - 4, height: 212, rx: 6, class: 'u8l3h-frame' + (c === 0 ? ' u8l3h-f1' : c === 1 ? ' u8l3h-f2' : '') }, g);
     txt('Eq. ' + (c + 1), { x: cx, y: 64, 'text-anchor': 'middle', class: 'u8l3h-eqn' + (c === 0 ? ' u8l3h-c1' : c === 1 ? ' u8l3h-c2' : '') }, g);
-    const cells = RY.map((y) => ({ r: mk('g', { class: 'u8l3h-rods' }, g), n: txt('', { x: cx + CW / 2 - 6, y: y + 22, 'text-anchor': 'end', class: 'u8l3h-num' }, g), y }));
+    const cells = RY.map((y) => ({ r: mk('g', { class: 'u8l3h-rods' }, g), n: txt('', { x: cx + CW / 2 - 9, y: y + 22, 'text-anchor': 'end', class: 'u8l3h-num' }, g), y }));
     return { g, frame, cells, cx, v: null };
   });
   for (let i = 1; i < 4; i++) mk('line', { x1: 130, x2: 398, y1: RY[i] - 27, y2: RY[i] - 27, class: 'u8l3h-sep' });

@@ -689,3 +689,96 @@ const sortVars = {
 mountBattleship();
 mountFigures();
 export const explainers = mountExplainers({ plotPoint, quadrants, matchGrow, matchGraph, matchRule, gasLine, gasRead, gasRate, zoomIn, sortVars });
+
+/* ---------- Math History (the brown box): Descartes' fly (a legend) ----------
+ * A fly wanders over a tiled ceiling. At each stop, dashed lines measure how many tiles it is from the left wall (x) and
+ * from the bottom wall (y), and the ordered pair appears: (3, 4), then (10, 5), then (7, 2). */
+(function flyOnCeiling() {
+  const svg = document.getElementById('fly-anim'); if (!svg) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); Object.keys(attrs || {}).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
+  const txt = (s, attrs, parent) => { const e = mk('text', attrs, parent); e.textContent = s; return e; };
+  const T = 30, GX = 52, GY = 24, NX = 11, NY = 7; // tiles of 30; the corner (0, 0) is at the bottom left
+  const X = (x) => GX + x * T, Y = (y) => GY + (NY - y) * T;
+  // the ceiling tiles, the two walls, the tile counts
+  mk('rect', { x: GX, y: GY, width: NX * T, height: NY * T, class: 'u5l1h-ceil' });
+  for (let i = 1; i < NX; i++) mk('line', { x1: X(i), x2: X(i), y1: GY, y2: Y(0), class: 'u5l1h-grid' });
+  for (let j = 1; j < NY; j++) mk('line', { x1: GX, x2: X(NX), y1: Y(j), y2: Y(j), class: 'u5l1h-grid' });
+  mk('rect', { x: GX - 9, y: GY, width: 9, height: NY * T + 9, class: 'u5l1h-wall' });
+  mk('rect', { x: GX - 9, y: Y(0), width: NX * T + 9, height: 9, class: 'u5l1h-wall' });
+  for (let i = 1; i <= NX; i++) txt(String(i), { x: X(i), y: Y(0) + 25, 'text-anchor': 'middle', class: 'u5l1h-num' });
+  for (let j = 1; j <= NY; j++) txt(String(j), { x: GX - 15, y: Y(j) + 4.5, 'text-anchor': 'end', class: 'u5l1h-num' });
+  txt('bottom wall', { x: X(NX / 2), y: 290, 'text-anchor': 'middle', class: 'u5l1h-wl' });
+  txt('left wall', { x: 0, y: 0, 'text-anchor': 'middle', class: 'u5l1h-wl', transform: `translate(14 ${Y(NY / 2)}) rotate(-90)` });
+  // the measuring lines and the readout
+  const trail = mk('polyline', { class: 'u5l1h-trail', points: '' });
+  const mx = mk('line', { class: 'u5l1h-mx' }), my = mk('line', { class: 'u5l1h-my' });
+  const lx = txt('', { 'text-anchor': 'middle', class: 'u5l1h-lx' }), ly = txt('', { class: 'u5l1h-ly' });
+  const RX = 420;
+  txt('THE FLY IS AT', { x: RX, y: 64, class: 'u5l1h-cap' });
+  const pair = txt('', { x: RX, y: 112, class: 'u5l1h-pair' });
+  const p0 = mk('tspan', {}, pair), px = mk('tspan', { class: 'u5l1h-cx' }, pair), p1 = mk('tspan', {}, pair), py = mk('tspan', { class: 'u5l1h-cy' }, pair), p2 = mk('tspan', {}, pair);
+  p0.textContent = '('; p1.textContent = ', '; p2.textContent = ')';
+  const rx = txt('', { x: RX, y: 146, class: 'u5l1h-rx' }), ry = txt('', { x: RX, y: 168, class: 'u5l1h-ry' });
+  const hint = txt('across first, then up', { x: RX, y: 204, class: 'u5l1h-hint' });
+  // the fly
+  const fly = mk('g', { class: 'u5l1h-fly' });
+  const body = mk('g', {}, fly);
+  mk('ellipse', { cx: -3, cy: -6, rx: 4.5, ry: 9, transform: 'rotate(-28 -3 -6)', class: 'u5l1h-wing' }, body);
+  mk('ellipse', { cx: -3, cy: 6, rx: 4.5, ry: 9, transform: 'rotate(28 -3 6)', class: 'u5l1h-wing' }, body);
+  mk('ellipse', { cx: -2, cy: 0, rx: 9, ry: 5, fill: '#3d2817' }, body);
+  mk('circle', { cx: 8, cy: 0, r: 4.2, fill: '#2b1b0e' }, body);
+  mk('circle', { cx: 9.5, cy: -2.6, r: 1.6, fill: '#c0392b' }, body); mk('circle', { cx: 9.5, cy: 2.6, r: 1.6, fill: '#c0392b' }, body);
+  // the flight: three legs, each a smooth wiggly curve ending at a whole-number stop
+  const LEGS = [
+    [[5.5, 7.3], [6.6, 6.1], [4.4, 5.6], [3.4, 4.9], [3, 4]],
+    [[3, 4], [4.6, 2.3], [7.6, 2.9], [8.9, 4.4], [10, 5]],
+    [[10, 5], [9.4, 6.4], [6.6, 5.6], [5.6, 3.4], [7, 2]],
+  ];
+  const STOPS = LEGS.map((l) => l[l.length - 1]);
+  const cr = (p0, p1, p2, p3, t) => { const t2 = t * t, t3 = t2 * t; return 0.5 * ((2 * p1) + (-p0 + p2) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 + (-p0 + 3 * p1 - 3 * p2 + p3) * t3); };
+  const along = (pts, u) => { // Catmull–Rom through the points, u from 0 to 1
+    const n = pts.length - 1, s = Math.min(n - 1e-9, u * n), i = Math.floor(s), t = s - i;
+    const P = (k) => pts[Math.max(0, Math.min(n, k))];
+    return [0, 1].map((c) => cr(P(i - 1)[c], P(i)[c], P(i + 1)[c], P(i + 2)[c], t));
+  };
+  const FLY = 1900, STAY = 2300, END = LEGS.length * (FLY + STAY);
+  let ang = 200;
+  const ease = (p) => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2);
+  function draw(ms) {
+    const leg = Math.min(LEGS.length - 1, Math.floor(ms / (FLY + STAY))), into = ms - leg * (FLY + STAY);
+    const moving = into < FLY && ms < END, u = moving ? ease(into / FLY) : 1;
+    const [x, y] = along(LEGS[leg], u);
+    if (moving) { const [x2, y2] = along(LEGS[leg], Math.min(1, u + 0.02)); if (Math.hypot(x2 - x, y2 - y) > 1e-4) ang = (Math.atan2(-(y2 - y), x2 - x) * 180) / Math.PI; }
+    fly.setAttribute('transform', `translate(${X(x).toFixed(1)} ${Y(y).toFixed(1)}) rotate(${ang.toFixed(1)}) scale(1.25)`);
+    fly.classList.toggle('moving', moving);
+    // trail of this leg so far
+    const pts = []; for (let k = 0; k <= 40; k++) { const v = (k / 40) * u; const [a, b] = along(LEGS[leg], v); pts.push(`${X(a).toFixed(1)},${Y(b).toFixed(1)}`); }
+    trail.setAttribute('points', pts.join(' '));
+    // at a stop: grow the measuring lines, then show the numbers and the pair
+    const [sx, sy] = STOPS[leg], g = moving ? 0 : Math.min(1, (into - FLY) / 600), show = !moving && into - FLY > 650;
+    mx.setAttribute('x1', X(sx)); mx.setAttribute('y1', Y(sy)); mx.setAttribute('x2', X(sx) - (X(sx) - GX) * g); mx.setAttribute('y2', Y(sy));
+    my.setAttribute('x1', X(sx)); my.setAttribute('y1', Y(sy)); my.setAttribute('x2', X(sx)); my.setAttribute('y2', Y(sy) + (Y(0) - Y(sy)) * g);
+    mx.style.opacity = my.style.opacity = moving ? 0 : 1;
+    lx.textContent = String(sx); lx.setAttribute('x', (X(sx) + GX) / 2); lx.setAttribute('y', Y(sy) - 8);
+    ly.textContent = String(sy); ly.setAttribute('x', X(sx) + 8); ly.setAttribute('y', (Y(sy) + Y(0)) / 2 + 5);
+    [lx, ly].forEach((e) => e.classList.toggle('on', show));
+    px.textContent = String(sx); py.textContent = String(sy);
+    [pair, rx, ry, hint].forEach((e) => e.classList.toggle('on', show));
+    rx.textContent = `${sx} from the left wall`; ry.textContent = `${sy} from the bottom wall`;
+  }
+  let t0 = 0, raf = 0;
+  function frame(now) { if (!t0) t0 = now; const ms = now - t0; draw(ms); if (ms < END) raf = requestAnimationFrame(frame); }
+  function play() {
+    cancelAnimationFrame(raf); t0 = 0;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(END); return; }
+    raf = requestAnimationFrame(frame);
+  }
+  draw(0);
+  svg.addEventListener('click', play);
+  const btn = svg.closest('.hist-anim') && svg.closest('.hist-anim').querySelector('.hist-play'); if (btn) btn.addEventListener('click', play);
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 });
+    io.observe(svg);
+  } else play();
+})();
