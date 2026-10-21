@@ -547,7 +547,7 @@
       var v = C.view(D.cal, { off: D.noSchool, today: today, chip: calChip }); box.appendChild(v);
       box.appendChild(el('p', 'small muted cal-pop-foot', 'Scroll for other months. Tap a day’s box to open its assignment, or “Lesson” to open the lesson itself. Dates can change as the class goes — this always shows the latest plan.'));
       v.querySelectorAll('a.calm-chip').forEach(function (a) { if (/^#\/lesson\//.test(a.getAttribute('href') || '')) a.addEventListener('click', closeCalendar); });
-      requestAnimationFrame(function () { v.scrollToDate(date || today); });
+      requestAnimationFrame(function () { v.scrollToDate(date || today); if (date) setTimeout(function () { v.flashDate(date); }, 200); });
     }
     ov.addEventListener('click', function (e) { if (e.target === ov) closeCalendar(); });
     document.addEventListener('keydown', calKeys);

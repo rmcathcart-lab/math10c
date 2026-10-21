@@ -458,7 +458,7 @@
         rungs.forEach(function (c, k2) { c.classList.toggle('here', k2 === tk); if (c.tagName === 'BUTTON') c.setAttribute('aria-pressed', String(k2 === tk)); });
       }
       pick(it.tier);
-      box.appendChild(h('div', 'medal-hint', 'Drag or flick the medal to spin it.' + (list.length > 1 ? ' ' + (i + 1) + ' of ' + list.length + '.' : '')));
+      box.appendChild(h('div', 'medal-hint', 'Drag the medal to spin it.' + (list.length > 1 ? ' ' + (i + 1) + ' of ' + list.length + '.' : '')));
       if (list.length > 1) {
         var nav = h('div', 'medal-nav', '');
         var pv = h('button', 'btn btn-ghost medal-prev', '‹ Previous'), nx = h('button', 'btn btn-ghost medal-next', 'Next ›'); pv.type = nx.type = 'button';

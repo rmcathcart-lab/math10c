@@ -168,7 +168,7 @@
     while (end.getDay() !== 6) end.setDate(end.getDate() + 1);
     for (; d <= end; d.setDate(d.getDate() + 1)) {
       var w = d.getDay(), we = w === 0 || w === 6, k = C.key(d), isOff = !we && !!off[k], keys = we ? [] : (L.byDate[k] || []), first = d.getDate() === 1;
-      var cell = el('div', 'calm-day' + (we ? ' calm-we' : '') + (isOff ? ' calm-off' : '') + (k === today ? ' calm-today' : '') + (k < today ? ' calm-past' : '') + (first ? ' calm-first' : '') + (d.getMonth() % 2 ? ' calm-odd' : '')); // prefixed: lesson pages have their own .off, .first…
+      var cell = el('div', 'calm-day' + (we ? ' calm-we' : '') + (isOff ? ' calm-off' : '') + (k === today ? ' calm-today' : '') + (k < today ? ' calm-past' : '') + (first ? ' calm-first' : '') + (d.getDate() <= 7 ? ' calm-wk1' : '') + (d.getMonth() % 2 ? ' calm-odd' : ''));   // calm-wk1: the first 7 days of a month draw the line where it starts // prefixed: lesson pages have their own .off, .first…
       cell.dataset.date = k; cell.dataset.ym = k.slice(0, 7);
       cell.appendChild(el('div', 'calm-n', (first ? '<b class="calm-mon">' + C.MONTHS[d.getMonth()].slice(0, 3) + '</b> ' : '') + '<span>' + d.getDate() + '</span>' + (k === today && !we ? ' <b class="calm-tag">Today</b>' : '')));
       if (!we) {
@@ -192,8 +192,17 @@
         [].forEach.call(cells, function (c) { c.classList.toggle('calm-other', c.dataset.ym !== best); });
       }
     }
-    var raf = 0;
-    box.addEventListener('scroll', function () { if (!raf) raf = requestAnimationFrame(function () { raf = 0; update(); }); }, { passive: true });
+    var raf = 0, still = 0;
+    box.addEventListener('scroll', function () {
+      if (!raf) raf = requestAnimationFrame(function () { raf = 0; update(); });
+      box.classList.add('calv-scrolling'); clearTimeout(still); still = setTimeout(function () { box.classList.remove('calv-scrolling'); }, 500);   // the month name grows while scrolling
+    }, { passive: true });
+    /* make a day flash for a moment (e.g. the next test, opened from its notice) */
+    box.flashDate = function (date) {
+      var c = grid.querySelector('.calm-day[data-date="' + date + '"]'); if (!c) return;
+      c.classList.remove('calm-flash'); void c.offsetWidth; c.classList.add('calm-flash');
+      setTimeout(function () { c.classList.remove('calm-flash'); }, 3200);
+    };
     box.scrollToDate = function (date, smooth) {
       var c = grid.querySelector('.calm-day[data-date="' + date + '"]'); if (!c) return;
       var row = grid.children[Math.floor([].indexOf.call(grid.children, c) / 7) * 7];

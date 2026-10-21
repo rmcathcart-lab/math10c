@@ -7,8 +7,9 @@
 .calv-trow { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px 2px 12px; }
 .calv-today { border: 1px solid var(--line, #e2ddd1); background: #fff; color: var(--ink, #1c2230); border-radius: 999px; padding: 4px 14px; font: inherit; font-size: 13.5px; font-weight: 700; cursor: pointer; }
 .calv-today:hover { border-color: var(--brand, #0f5f5a); color: var(--brand, #0f5f5a); }
-.calv-title { padding: 2px 0; font-size: 19px; font-weight: 800; color: var(--ink, #1c2230); }
-.calv-title small { font-size: 14px; font-weight: 600; color: var(--muted, #6a7182); }
+.calv-title { padding: 2px 0; font-size: 23px; font-weight: 800; color: var(--ink, #1c2230); transform-origin: left center; transition: transform .22s ease; }
+.calv-scrolling .calv-title { transform: scale(1.4); }
+.calv-title small { font-size: 15px; font-weight: 600; color: var(--muted, #6a7182); }
 .calm-hd, .calm-grid { display: grid; grid-template-columns: minmax(0, .42fr) repeat(5, minmax(0, 1fr)) minmax(0, .42fr); }
 .calm-hd div { padding: 4px 8px 6px; font-size: 11.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted, #6a7182); }
 .calm-hd div.calm-we { color: var(--muted, #6a7182); padding-left: 6px; padding-right: 2px; }
@@ -16,14 +17,13 @@
 .calm-day:nth-child(7n) { border-right: none; }
 .calm-day.calm-we { background: #f3f1ec; padding: 6px 3px; }
 .calm-day.calm-we .calm-n { color: var(--ink2, #3a4254); }
-.calm-day.calm-first { box-shadow: inset 3px 0 0 #d8d2c4; }
 .calm-day.calm-other .calm-n { opacity: .55; }
 .calm-day.calm-past:not(.calm-today) .calm-items { opacity: .62; }
 .calm-day.calm-off { background: repeating-linear-gradient(135deg, #f6f4ef 0 8px, #efece5 8px 16px); }
 .calm-day.calm-today { box-shadow: inset 0 0 0 2px var(--brand, #0f5f5a); background: #f4fbf9; }
 .calm-n { font-size: 13px; font-weight: 700; color: var(--ink2, #3a4254); display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
-.calm-mon { color: var(--brand, #0f5f5a); font-weight: 800; }
-.calm-we .calm-mon { display: block; width: 100%; font-size: 10.5px; }
+.calm-mon { color: var(--brand, #0f5f5a); font-weight: 800; font-size: 15px; letter-spacing: .01em; }
+.calm-we .calm-mon { display: block; width: 100%; font-size: 12px; }
 .calm-tag { font-size: 10.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; color: #fff; background: var(--brand, #0f5f5a); border-radius: 999px; padding: 1px 7px; }
 .calm-items { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .calm-offl { font-size: 12px; font-weight: 700; color: #8b8474; }
@@ -44,7 +44,7 @@ a.calm-chip.calm-u:hover { border-color: var(--uc); }
 .calm-chip .clk:hover { border-color: var(--uc, #0f5f5a); }
 @media (max-width: 640px) {
   .calm-day { min-height: 64px; padding: 4px 3px; } .calm-chip { padding: 3px 4px; font-size: 10.5px; } .calm-chip b { font-size: 10.5px; } .calm-chip .ct, .calm-chip .clk, .calm-tag { display: none; }
-  .calm-hd div { padding: 3px 2px 5px; font-size: 10px; } .calv-title { font-size: 16px; } .calm-mon { display: block; width: 100%; font-size: 10px; }
+  .calm-hd div { padding: 3px 2px 5px; font-size: 10px; } .calv-title { font-size: 19px; } .calm-mon { display: block; width: 100%; font-size: 12px; }
 }
 /* the next test */
 .next-test { display: inline-block; line-height: 1.4; padding: 6px 13px; border-radius: 999px; background: #ffe2c6; border: 1px solid #f0ad6e; color: #6b2f00; font-size: 14px; white-space: nowrap; }
@@ -72,3 +72,13 @@ a.calm-chip.calm-u:hover { border-color: var(--uc); }
 .calp-day.calp-today { font-weight: 800; }
 .calp-day.calp-on { background: #0f766e; color: #fff; font-weight: 700; }
 .calp-day:focus-visible, .calp-nav:focus-visible { outline: 3px solid #2563eb; outline-offset: 1px; }
+
+/* where a month starts: a line along the top of its first week and down the left of the 1st */
+.calm-day.calm-wk1 { box-shadow: inset 0 3px 0 #9fb8b4; }
+.calm-day.calm-first { box-shadow: inset 3px 3px 0 #9fb8b4; }
+.calm-day.calm-today { box-shadow: inset 0 0 0 2px var(--brand, #0f5f5a); }
+.calm-day.calm-today.calm-wk1 { box-shadow: inset 0 3px 0 #9fb8b4, inset 0 0 0 2px var(--brand, #0f5f5a); }
+/* the next test, opened from its notice: flash it */
+@keyframes calm-flash { 0%, 100% { box-shadow: inset 0 0 0 0 rgba(234, 88, 12, 0); } 30%, 70% { background-color: #ffe2c6; box-shadow: inset 0 0 0 4px #ea580c; } }
+.calm-day.calm-flash { animation: calm-flash 1s ease-in-out 3; }
+@media (prefers-reduced-motion: reduce) { .calv-title { transition: none; } .calv-scrolling .calv-title { transform: none; } .calm-day.calm-flash { animation: none; box-shadow: inset 0 0 0 3px #ea580c; } }
