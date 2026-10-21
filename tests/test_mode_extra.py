@@ -7,7 +7,7 @@ def get(q): return json.loads(urllib.request.urlopen(MOCK + '?' + q).read())
 async def main():
     errs = []
     get('action=setroster&key=testkey&class=10c-b&label=Block%20B&names=Ava%20Brown%0ABen%20Lee%0ARyan%20Cathcart&mode=add')
-    get('action=savetest&key=testkey&def=' + urllib.request.quote(json.dumps({'title': 'Extra', 'kind': 'test', 'minutes': 5, 'items': [{'l': 'u1l2', 'i': '1a'}, {'l': 'u1l2', 'i': '1b'}]})))
+    get('action=savetest&key=testkey&def=' + urllib.request.quote(json.dumps({'title': 'Extra', 'kind': 'test', 'timing': 'minutes', 'minutes': 5, 'items': [{'l': 'u1l2', 'i': '1a'}, {'l': 'u1l2', 'i': '1b'}]})))
     tid = [t for t in get('action=tests&key=testkey')['tests'] if t['title'] == 'Extra'][0]['id']
     live = get('action=tlive&key=testkey&class=10c-b')['live']
     if live: get('action=tctl&key=testkey&class=10c-b&op=close')
