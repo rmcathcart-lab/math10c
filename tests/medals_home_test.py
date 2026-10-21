@@ -13,7 +13,7 @@ async def main():
     errs = []
     async with async_playwright() as p:
         b = await p.chromium.launch(args=['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'])
-        a = await student(b, 'Ava Brown', '1111', errs); a.set_default_timeout(120000)
+        a = await student(b, 'Ava Brown', '1111', errs, medal_pops=True); a.set_default_timeout(120000)
         await a.wait_for_timeout(1500); m = await medals(a); print('start:', m); assert m == [], m
         print('levels done:', await a.evaluate(FILL, ['u1l1', 12]))
         await a.evaluate("location.hash = '#/x'; location.hash = '#/'"); await a.wait_for_timeout(2500)
