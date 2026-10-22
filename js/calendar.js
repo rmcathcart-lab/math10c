@@ -56,7 +56,7 @@
   };
   /* colour a chip by its unit (catalog.js HW.unitStyle) */
   C.paint = function (node, k) { var i = C.info(k); if (node && i && HW.unitStyle) { node.setAttribute('style', (node.getAttribute('style') || '') + ';' + HW.unitStyle(i.unit)); node.classList.add('calm-u'); } return node; };
-  C.label = function (k) { var i = C.info(k); return !i ? k : i.kind === 'test' ? i.title : 'U' + i.unit + ' L' + i.num; };
+  C.label = function (k) { var i = C.info(k); return !i ? k : i.kind === 'test' ? i.title : i.intro ? 'Day one' : 'U' + i.unit + ' L' + i.num; };
 
   /* ---- a calendar ---- */
   C.make = function (start) { return { v: 1, start: start, items: C.sequence().map(function (k, i) { return [k, i]; }), skipped: [] }; };

@@ -15,7 +15,7 @@ async def main():
         await pg.route(BASE + 'js/config.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=CONFIG))
         await pg.route('**/fonts.googleapis.com/**', lambda r: r.abort()); await pg.route('**/fonts.gstatic.com/**', lambda r: r.abort())
         # a calendar for block B: day one Feb 1 2027, plus a cumulative exam
-        await pg.goto(BASE + 'lessons/u1/l0/'); await pg.wait_for_selector('.u1l0-unit')
+        await pg.goto(BASE + 'lessons/u1/l0/'); await pg.wait_for_selector('.u1l0-ou')
         cal = await pg.evaluate("() => { const c = HW.Cal.make('2027-02-01'); c.events = [{ id: 'e1', date: '2027-06-18', title: 'Final exam', kind: 'exam', takes: true }]; return c; }")
         get('action=setblock&' + urllib.parse.urlencode({'class': '10c-b', 'block': 'B'}))
         print(get('action=setcal&' + urllib.parse.urlencode({'class': '10c-b', 'cal': json.dumps(cal)}))['ok'])
@@ -25,7 +25,7 @@ async def main():
         print('outline:', ' | '.join((await pg.inner_text('#u1l0-outline')).split('\n'))[:600])
         print('url:', await pg.inner_text('#u1l0-url'))
         # every explainer to the end
-        for k in ['pathways', 'period', 'grade', 'testmode', 'retest']:
+        for k in ['pathways', 'period', 'grade', 'testmode', 'retest']:  # (all five explainers)
             n = 0
             for _ in range(20):
                 done = await pg.evaluate("(k) => { const e = document.querySelector('[data-explainer=' + k + ']')._ex; return e.k >= (e.steps || []).length; }", k)

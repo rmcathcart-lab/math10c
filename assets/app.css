@@ -755,3 +755,7 @@ button.medal-rung:focus-visible { outline: 2px solid #8fb4ff; outline-offset: 1p
   .medal-rung-l { display: none; }
   .medal-pop { padding: 8px; }
 }
+
+/* the course introduction, linked at the very bottom of the student home */
+.home-about { display: flex; justify-content: center; margin: 28px 0 40px; }
+.home-about-btn { text-decoration: none; }

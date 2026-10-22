@@ -1,8 +1,8 @@
 /* Math 10C · Day One — Welcome to Math 10C (u1l0): the course introduction (no assignment).
- *   warm-up   — the ten units as tiles (tap to open: lessons and outcomes), built from the course catalog
  *   outline   — the course outline with this class's unit test dates (and the teacher's exams) from the class calendar,
  *               when the page is opened with ?class=<block>; without one, the units and lesson counts
- *   QR        — the class link (the class code comes with the calendar), else the site
+ *   QR        — the class link (the class code comes with the calendar), else the site; Lorebound's link
+ *   Google Classroom — the class code for this block (GC_CODES below; a blank box to write it on until it's set)
  *   medals    — the seven levels of one outcome's medal, spinning (js/medals.js); tap one for the viewer
  * Explainers:
  *   pathways  — Math 10C opens the -1 and -2 routes; the -3 route; 100 credits and a 20-level math to graduate
@@ -22,20 +22,6 @@ const CAT = (HW.CATALOG || []);
 const unitStyle = (u) => (HW.unitStyle ? HW.unitStyle(u) : '');
 const lessonsOf = (u) => u.lessons.filter((c) => !c.intro);
 const outsOf = (u) => String(u.outcomes || '').split(/\s*·\s*/).filter(Boolean);
-
-/* ================= warm-up: the ten units ================= */
-(function units() {
-  const host = $('u1l0-units'); if (!host) return;
-  const tiles = CAT.map((u) => {
-    const b = h('button', 'u1l0-unit', `<span class="u1l0-un">${u.unit}</span><span class="u1l0-ut">${esc(u.title)}</span><span class="u1l0-ud"><b>${lessonsOf(u).length} lessons</b> · ${outsOf(u).join(' · ')}</span>`);
-    b.type = 'button'; b.setAttribute('style', unitStyle(u.unit)); b.setAttribute('aria-expanded', 'false');
-    b.addEventListener('click', () => { const o = !b.classList.contains('open'); b.classList.toggle('open', o); b.setAttribute('aria-expanded', o ? 'true' : 'false'); });
-    host.appendChild(b); return b;
-  });
-  const set = (o) => tiles.forEach((b) => { b.classList.toggle('open', o); b.setAttribute('aria-expanded', o ? 'true' : 'false'); });
-  $('u1l0-openall')?.addEventListener('click', () => set(true));
-  $('u1l0-closeall')?.addEventListener('click', () => set(false));
-})();
 
 /* ================= this class: calendar, class code (?class=B) ================= */
 const BLOCK = (() => { const v = (new URLSearchParams(location.search).get('class') || '').toUpperCase(); return /^[A-D]$/.test(v) ? v : ''; })();
@@ -76,6 +62,18 @@ function drawQR(code) {
   const u = $('u1l0-url'); if (u) u.innerHTML = esc(url.replace(/^https?:\/\//, '')).replace(/\?class=(.*)$/, '?class=<b>$1</b>') + (code ? '' : '<br><span class="muted">then type our class code</span>');
 }
 drawOutline(null, []); drawQR('');
+
+/* Google Classroom class codes, one per block (fill in when the classrooms exist) */
+const GC_CODES = { A: '', B: '', C: '', D: '' };
+(function gc() {
+  const host = $('u1l0-gccode'); if (!host) return;
+  const code = GC_CODES[BLOCK] || '';
+  host.textContent = code; host.classList.toggle('blank', !code);
+})();
+(function lbqr() {
+  const host = $('u1l0-lbqr'); if (!host) return;
+  try { const q = window.qrcode(0, 'M'); q.addData('https://rmcathcart-lab.github.io/lorebound/'); q.make(); host.innerHTML = q.createSvgTag({ cellSize: 6, margin: 1, scalable: true }); } catch (e) {}
+})();
 if (BLOCK) jsonp({ action: 'cal', block: BLOCK }).then((d) => {
   if (!d || !d.ok) return;
   if (d['class']) drawQR(d['class']);
@@ -100,7 +98,7 @@ if (BLOCK) jsonp({ action: 'cal', block: BLOCK }).then((d) => {
 const ICONS = {
   pencil: '<svg viewBox="0 0 92 92"><g transform="rotate(-38 46 46)"><rect x="14" y="38" width="56" height="16" rx="2" fill="#f2b632"/><rect x="14" y="38" width="56" height="5.3" fill="#f7cd62"/><path d="M70 38l14 8-14 8z" fill="#f3d7a6"/><path d="M80 43.7l4 2.3-4 2.3z" fill="#3a4254"/><rect x="6" y="38" width="10" height="16" rx="2" fill="#e88b9a"/><rect x="14" y="38" width="4" height="16" fill="#b8bcc3"/></g></svg>',
   paper: '<svg viewBox="0 0 92 92"><rect x="22" y="12" width="50" height="66" rx="4" fill="#fff" stroke="#c9c3b6" stroke-width="2.5"/><path d="M30 28h34M30 38h34M30 48h34M30 58h22" stroke="#a9c7e8" stroke-width="2.5"/><path d="M28 12v66" stroke="#e8a1a1" stroke-width="2"/><text x="52" y="72" font-size="16" font-weight="800" fill="#13807a" font-family="ui-rounded, system-ui">x²</text></svg>',
-  calc: '<svg viewBox="0 0 92 92"><rect x="22" y="8" width="48" height="76" rx="7" fill="#2c3e5c"/><rect x="28" y="14" width="36" height="16" rx="2" fill="#c9d8c3"/><text x="61" y="27" font-size="11" text-anchor="end" fill="#1c2230" font-family="monospace">4.24264</text>' +
+  calc: '<svg viewBox="0 0 92 92"><rect x="22" y="8" width="48" height="76" rx="7" fill="#2c3e5c"/><rect x="28" y="14" width="36" height="16" rx="2" fill="#c9d8c3"/><text x="61" y="26" font-size="8" text-anchor="end" fill="#1c2230" font-family="monospace">4.24264</text>' +
     [0, 1, 2, 3].map((r) => [0, 1, 2, 3].map((c) => `<rect x="${28 + c * 9.5}" y="${36 + r * 11}" width="7" height="8" rx="1.5" fill="${r === 3 && c === 3 ? '#e8a01e' : '#c9ccd2'}"/>`).join('')).join('') + '</svg>',
   laptop: '<svg viewBox="0 0 92 92"><rect x="16" y="20" width="60" height="40" rx="4" fill="#1c2230"/><rect x="20" y="24" width="52" height="32" rx="1.5" fill="#e3f1ef"/><rect x="25" y="29" width="22" height="5" rx="2" fill="#13807a"/><rect x="25" y="38" width="40" height="4" rx="2" fill="#b9d8d4"/><rect x="25" y="45" width="32" height="4" rx="2" fill="#b9d8d4"/><path d="M8 64h76l-6 8H14z" fill="#c9ccd2"/></svg>',
   graph: '<svg viewBox="0 0 92 92"><rect x="24" y="4" width="44" height="84" rx="8" fill="#1c2230"/><rect x="29" y="10" width="34" height="26" rx="2" fill="#dfe8d2"/><path d="M31 32 Q40 8 48 22 T61 14" stroke="#1f5bd6" stroke-width="2" fill="none"/><path d="M29 23h34M46 10v26" stroke="#9aa69a" stroke-width="1"/>' +
@@ -120,6 +118,10 @@ function link(svg, a, b, color, k, dash) { // from the right edge of a to the le
   const p = svgEl('path', { d: `M${ax + 3} ${ay} C${mx} ${ay} ${mx} ${by} ${bx - 6} ${by}`, fill: 'none', stroke: color, 'stroke-width': 3, 'marker-end': `url(#u1l0-ah${k})`, 'stroke-dasharray': dash || null }, svg);
   return p;
 }
+function vlink(svg, a, b, color) { // from the bottom of a to the top of b
+  const x = a.offsetLeft + a.offsetWidth / 2, y1 = a.offsetTop + a.offsetHeight, y2 = b.offsetTop;
+  return svgEl('path', { d: `M${x} ${y1 + 3} L${x} ${y2 - 6}`, fill: 'none', stroke: color, 'stroke-width': 3, 'marker-end': 'url(#u1l0-ah3)' }, svg);
+}
 const drawLine = (c, p, ms = 500) => { const L = p.getTotalLength ? p.getTotalLength() : 200, dash = p.getAttribute('stroke-dasharray');
   if (dash) return appear(c, p, ms);
   p.style.strokeDasharray = L; return anim(c, p, [{ strokeDashoffset: L, opacity: 1 }, { strokeDashoffset: 0, opacity: 1 }], ms); };
@@ -133,22 +135,27 @@ const pathways = {
   make(stage, v, ex) {
     const W = ex.W, k = W / 735, X = (x) => Math.round(x * k), nh = 58, y1 = 46, y2 = 190, y3 = 322, ym = (y1 + y2) / 2;
     const s = arrows(stage, W, 460);
-    const g9 = node(stage, '', '<b>Math 9</b><small>last year</small>', X(4), ym, X(100), nh);
-    const m10 = node(stage, 'here', '<b>Math 10C</b><small>this semester · 5 credits</small>', X(126), ym - 8, X(146), nh + 16);
-    tag(stage, 'here', 'You are here', X(150), ym - 42);
-    const a20 = node(stage, 'p1', '<b>Math 20-1</b>', X(312), y1, X(124), nh), a30 = node(stage, 'p1', '<b>Math 30-1</b>', X(470), y1, X(124), nh), a31 = node(stage, 'p1 opt', '<b>Math 31</b><small>optional</small>', X(620), y1, X(112), nh);
+    const g9 = node(stage, '', '<b>Math 9</b><small>last year</small>', X(4), ym - 56, X(104), nh);
+    const m15 = node(stage, 'u1l0-dash', '<b>Math 15</b><small>optional</small>', X(4), ym + 38, X(104), nh);
+    const m10 = node(stage, 'here', '<b>Math 10C</b><small>this semester · 5 credits</small>', X(140), ym - 8, X(146), nh + 16);
+    tag(stage, 'here', 'You are here', X(164), ym - 42);
+    const a20 = node(stage, 'p1', '<b>Math 20-1</b>', X(312), y1, X(124), nh), a30 = node(stage, 'p1', '<b>Math 30-1</b>', X(470), y1, X(124), nh), a31 = node(stage, 'p1 u1l0-dash', '<b>Math 31</b><small>optional</small>', X(620), y1, X(112), nh);
     const b20 = node(stage, 'p2', '<b>Math 20-2</b>', X(312), y2, X(124), nh), b30 = node(stage, 'p2', '<b>Math 30-2</b>', X(470), y2, X(124), nh);
-    const c10 = node(stage, 'p3', '<b>Math 10-3</b>', X(126), y3, X(146), nh), c20 = node(stage, 'p3', '<b>Math 20-3</b>', X(312), y3, X(124), nh), c30 = node(stage, 'p3', '<b>Math 30-3</b>', X(470), y3, X(124), nh);
-    const t1 = tag(stage, 'p1', '−1 route · pre-calculus', X(312), y1 - 32), t2 = tag(stage, 'p2', '−2 route', X(312), y2 - 32), t3 = tag(stage, 'p3', '−3 route', X(126), y3 - 32);
+    const c10 = node(stage, 'p3', '<b>Math 10-3</b>', X(140), y3, X(146), nh), c20 = node(stage, 'p3', '<b>Math 20-3</b>', X(312), y3, X(124), nh), c30 = node(stage, 'p3', '<b>Math 30-3</b>', X(470), y3, X(124), nh);
+    const t1 = tag(stage, 'p1', '−1 route · pre-calculus', X(312), y1 - 32), t2 = tag(stage, 'p2', '−2 route', X(312), y2 - 32), t3 = tag(stage, 'p3', '−3 route', X(140), y3 - 32);
     const n1 = add(stage, box(h('div', 'u1l0-note', 'For programs that need <b>calculus</b>: engineering, sciences and many university programs.'), X(420)), X(312), y1 + nh + 6);
     const n2 = add(stage, box(h('div', 'u1l0-note', 'Accepted for many university, college and technical programs that <b>don’t</b> need calculus.'), X(420)), X(312), y2 + nh + 6);
-    const n3 = add(stage, box(h('div', 'u1l0-note', 'Built with <b>trades and apprenticeship</b> programs. It starts at 10-3, not here.'), X(600)), X(126), y3 + nh + 6);
+    const n3 = add(stage, box(h('div', 'u1l0-note', 'Built with <b>trades and apprenticeship</b> programs. It starts at 10-3, not here.'), X(560)), X(140), y3 + nh + 6);
     const cred = add(stage, box(h('div', 'u1l0-credit', '<div class="u1l0-cbar"><div class="u1l0-cfill" style="width:5%"></div></div><div class="u1l0-clab"><b>To graduate:</b> 100 credits, including a <b>20-level math</b> (20-1, 20-2 or 20-3). Math 10C is worth <b>5</b>.</div>'), W - X(24)), X(12), 404);
     link(s, g9, m10, '#13807a', 0);
+    const L15a = vlink(s, g9, m15, '#9aa0ab'), L15b = link(s, m15, m10, '#9aa0ab', 3, '6 5');
+    const n15 = add(stage, box(h('div', 'u1l0-note', 'Builds the Grade 9 skills first.'), X(118)), X(0), ym + 38 + nh + 4);
     const La = link(s, m10, a20, '#2563eb', 1), Lb = link(s, m10, b20, '#7c3aed', 2), La2 = link(s, a20, a30, '#2563eb', 1), La3 = link(s, a30, a31, '#2563eb', 1, '6 5'), Lb2 = link(s, b20, b30, '#7c3aed', 2);
     const Lc1 = link(s, c10, c20, '#b9b3a6', 3), Lc2 = link(s, c20, c30, '#b9b3a6', 3);
-    hide(a20, a30, a31, b20, b30, c10, c20, c30, t1, t2, t3, n1, n2, n3, cred, La, Lb, La2, La3, Lb2, Lc1, Lc2);
+    hide(m15, L15a, L15b, n15, a20, a30, a31, b20, b30, c10, c20, c30, t1, t2, t3, n1, n2, n3, cred, La, Lb, La2, La3, Lb2, Lc1, Lc2);
     return [
+      { cap: 'Most students come to Math 10C straight from Math 9. Some take <b>Math 15</b> first: an optional course that rebuilds the Grade 9 skills.',
+        run: async (c) => { await drawLine(c, L15a); await pop(c, m15); await drawLine(c, L15b); await fadeIn(c, n15); } },
       { cap: 'Math 10C is <b>one course</b> that leads to <b>two</b> routes.', run: async (c) => { await Promise.all([drawLine(c, La), drawLine(c, Lb)]); await Promise.all([pop(c, a20), pop(c, b20)]); } },
       { cap: '<b>The −1 route</b> (pre-calculus): Math 20-1, then Math 30-1. Math 31 (calculus) is an extra you can add after 30-1.',
         run: async (c) => { await fadeIn(c, t1); await drawLine(c, La2); await pop(c, a30); await drawLine(c, La3); await pop(c, a31); await fadeIn(c, n1); } },
@@ -164,9 +171,9 @@ const pathways = {
 const PER = [
   { k: 'Arrive ready', m: [0, 3], c: '#9aa0ab', t: 'Use the bathroom on the break. Get your materials out and ready to go <b>before</b> the bell.' },
   { k: 'Warm-up', m: [3, 15], c: '#c27a0e', t: 'A warm-up is on the screen (like today’s). Work on it <b>while I take attendance</b>. If the bell goes and you aren’t here, you’re marked <b>late or absent</b>.' },
-  { k: 'Lesson', m: [15, 48], c: '#13807a', t: 'I teach from the lesson page and write on it. You take notes on paper — or on a lesson you printed. Some days we work in groups on the whiteboards.' },
-  { k: 'Practice', m: [48, 80], c: '#1f5bd6', t: '<b>The most important part!</b> The lesson’s assignment, on our website. Ask questions — this is when I can help you most.' },
-  { k: 'Exit slip', m: [80, 88], c: '#7b4fc4', t: 'Some days: a short check on today’s outcome pops up on your laptop for the last few minutes.' }
+  { k: 'Lesson', m: [15, 48], c: '#13807a', t: 'I teach from the lesson page and write on it. You take notes on paper — or on a lesson you printed. Some days we might work in groups on the whiteboards around the room.' },
+  { k: 'Practice', m: [48, 78], c: '#1f5bd6', t: '<b>The most important part!</b> The lesson’s assignment, on our website. Ask questions — this is when I can help you most.' },
+  { k: 'Exit slip', m: [78, 88], c: '#7b4fc4', t: 'Almost every day: a short check on today’s outcome pops up on your laptop for the last few minutes.' }
 ];
 const period = {
   title: 'A class, bell to bell',
@@ -180,7 +187,7 @@ const period = {
     });
     const cx = x0 + rw + 22, cw = W - cx - 12;
     const cards = PER.map((p, i) => { const e = add(stage, box(h('div', 'u1l0-card', `<div class="u1l0-ch" style="color:${p.c}">${i + 1} · ${p.k}</div>${p.t}`), cw), cx, y0); e.style.borderColor = p.c; return e; });
-    const fin = add(stage, box(h('div', 'u1l0-card', '<div class="u1l0-ch">Every class, the same shape</div>Arrive ready → warm-up while I take attendance → lesson → practice → sometimes an exit slip. About <b>88 minutes</b>, bell to bell. You always know what’s next.'), cw), cx, y0);
+    const fin = add(stage, box(h('div', 'u1l0-card', '<div class="u1l0-ch">Every class, the same shape</div>Arrive ready → warm-up while I take attendance → lesson → practice → exit slip. About <b>88 minutes</b>, bell to bell. You always know what’s next.'), cw), cx, y0);
     hide(...cards, fin);
     const on = (i) => rows.forEach((r, j) => { r.classList.toggle('on', j === i); r.classList.toggle('done', j < i); });
     return PER.map((p, i) => ({ cap: `<b>${p.k}</b>${i === 3 ? ' — the most important part.' : '.'}`, run: async (c) => { cards.forEach((e, j) => { if (j !== i) e.style.opacity = 0; }); on(i); await pulse(c, rows[i], 1.03, 360); await fadeIn(c, cards[i]); } })).concat([
@@ -275,7 +282,7 @@ const testmode = {
       { cap: 'Switch tabs, open another window or leave full screen, and the test <b>locks</b>.', run: async (c) => { await appear(c, lock, 300); await fadeIn(c, c3); } },
       { cap: 'Tests end at the <b>end of class</b>, so there’s no rush to leave early.', run: async (c) => { lock.style.opacity = 0; await fadeIn(c, c4); } },
       { cap: 'When you submit, there’s no mark yet: your results show up <b>after I release them</b>, once everyone has written.', run: (c) => appear(c, done, 300) },
-      { cap: 'Exit slips work the same way — they’re <b>yellow</b> and short, usually at the end of a lesson.', run: async (c) => { done.style.opacity = 0; test.style.opacity = 0; await anim(c, exit, [{ opacity: 0, transform: 'scale(.6)' }, { opacity: 1, transform: 'none' }], 450); } }
+      { cap: 'Exit slips work the same way — they’re <b>yellow</b> and short, at the end of almost every class.', run: async (c) => { done.style.opacity = 0; test.style.opacity = 0; await anim(c, exit, [{ opacity: 0, transform: 'scale(.6)' }, { opacity: 1, transform: 'none' }], 450); } }
     ];
   }
 };

@@ -21,13 +21,14 @@ async def main():
         await page.click('.btn-primary'); await page.wait_for_selector('.lesson-row')
         # home page: a lesson card to the left of each assignment (Unit 1 only so far)
         home = await page.evaluate("[...document.querySelectorAll('.lesson-line')].map(l => { const a = l.querySelector('a.lesson-teach'); return a ? a.getAttribute('href') : null; })")
-        assert home[0].endswith('/u1/l0/?class=C'), home[0]; home = home[1:]  # day one (Lesson 0) comes first
+        about = await page.evaluate("(document.querySelector('.home-about a') || {}).getAttribute ? document.querySelector('.home-about a').getAttribute('href') : null")
+        print('about the course:', about); assert about and about.endswith('/u1/l0/?class=C'), about  # the course intro is at the bottom, not in Unit 1
         print('home cards:', home)
         assert len(home) == 79 and home[54].endswith('/u8/l1a/?class=C') and home[78].endswith('/u10/l9/?class=C') and home[41].endswith('/u6/l1/?class=C') and home[46].endswith('/u6/l6/?class=C') and home[47].endswith('/u7/l1/?class=C') and home[53].endswith('/u7/l7/?class=C') and home[21].endswith('/u4/l1a/?class=C') and home[29].endswith('/u4/l8/?class=C') and home[30].endswith('/u5/l1/?class=C') and home[37].endswith('/u5/l7b/?class=C') and home[40].endswith('/u5/l10/?class=C') and home[15].endswith('/u3/l1/?class=C') and home[20].endswith('/u3/l6/?class=C') and home[0].endswith('/u1/l1/?class=C') and home[5].endswith('/u1/l6a/?class=C') and home[7].endswith('/u1/l7/?class=C') and home[8].endswith('/u2/l1/?class=C') and home[14].endswith('/u2/l6/?class=C'), home
         await page.screenshot(path='/tmp/home_cards.png', full_page=False)
         # the card opens the lesson page itself in the same tab; the student shows in the ledger as on the lesson page;
         # the lesson's home button goes back to the assignments
-        await page.click('a.lesson-teach >> nth=1'); await page.wait_for_url('**/lessons/u1/l1/**'); await page.wait_for_timeout(2500)
+        await page.click('a.lesson-teach >> nth=0'); await page.wait_for_url('**/lessons/u1/l1/**'); await page.wait_for_timeout(2500)
         lesson = await page.evaluate("[location.pathname + location.search, !!(window.HW && HW.Calc), document.querySelectorAll('.katex').length, (document.querySelector('a.assign')||{}).href, (document.querySelector('a.assign')||{}).target, document.querySelector('.tbtn.home').getAttribute('href')]")
         print('lesson page:', lesson); assert lesson[0] == '/lessons/u1/l1/?class=C' and lesson[1] and lesson[3] == BASE + '#/lesson/u1l1' and lesson[4] == '' and lesson[5] == '../../../', lesson
         live = json.loads(urllib.request.urlopen(MOCK + '?action=live&key=testkey&class=10c-b').read())['live']

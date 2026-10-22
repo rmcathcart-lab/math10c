@@ -190,7 +190,7 @@
   /* ================= lessons on the grid: drag, tap ================= */
   function chip(key, date) {
     var i = C.info(key); if (!i) return null;
-    var c = el('div', 'calm-chip kc-chip' + (i.kind === 'test' ? ' test' : ''), '<b>' + esc(i.kind === 'test' ? i.title : 'U' + i.unit + ' · L' + i.num) + '</b><span class="ct">' + (i.kind === 'test' ? esc(i.unitTitle) : HW.tex(esc(i.title))) + '</span>');
+    var c = el('div', 'calm-chip kc-chip' + (i.kind === 'test' ? ' test' : ''), '<b>' + esc(i.kind === 'test' ? i.title : i.intro ? 'Day one' : 'U' + i.unit + ' · L' + i.num) + '</b><span class="ct">' + (i.kind === 'test' ? esc(i.unitTitle) : HW.tex(esc(i.title))) + '</span>');
     c.dataset.key = key; if (date) c.dataset.date = date; c.dataset.skipped = date ? '' : '1'; C.paint(c, key);
     c.title = (i.kind === 'test' ? i.title : 'Unit ' + i.unit + ', Lesson ' + i.num + ': ' + i.title.replace(/<[^>]+>/g, '')) + ' — drag to move, tap for options';
     if (!K.offMode) c.addEventListener('pointerdown', function (e) { startDrag(e, c, key, !date); });
@@ -322,7 +322,7 @@
         if (!cal) { body.appendChild(el('p', 'muted', 'This class doesn’t have a calendar yet — make one in the Calendar tab.')); return; }
         var v = C.view(cal, { off: off(), today: today, chip: function (k) {
           var i = C.info(k), url = i.kind === 'lesson' ? lessonUrl(k) : '';
-          var c = el(url ? 'a' : 'div', 'calm-chip' + (i.kind === 'test' ? ' test' : ''), '<b>' + esc(i.kind === 'test' ? i.title : 'U' + i.unit + ' · Lesson ' + i.num) + '</b><span class="ct">' + esc(i.kind === 'test' ? i.unitTitle : i.title) + '</span>');
+          var c = el(url ? 'a' : 'div', 'calm-chip' + (i.kind === 'test' ? ' test' : ''), '<b>' + esc(i.kind === 'test' ? i.title : i.intro ? 'Day one' : 'U' + i.unit + ' · Lesson ' + i.num) + '</b><span class="ct">' + esc(i.kind === 'test' ? i.unitTitle : i.title) + '</span>');
           if (url) { c.href = url; c.title = 'Open Lesson ' + i.unit + '.' + i.num; }
           return c;
         } });
@@ -330,23 +330,29 @@
         requestAnimationFrame(function () { v.scrollToDate(today < cal.start ? cal.start : today); });
         return;
       }
+      // the course introduction (day one) sits above Unit 1, outside every unit
+      HW.CATALOG.forEach(function (u) { u.lessons.forEach(function (c) { if (!c.intro) return;
+        var sec = el('section', 'lp-unit lp-intro'), grid = el('div', 'lp-grid'); sec.appendChild(grid); grid.appendChild(lpCard(c, 'Course introduction')); body.appendChild(sec); }); });
       HW.CATALOG.forEach(function (u) {
         if (!u.lessons.length) return;
         var sec = el('section', 'lp-unit'); if (HW.unitStyle) sec.setAttribute('style', HW.unitStyle(u.unit));
         sec.appendChild(el('h3', '', '<span class="lp-un">Unit ' + u.unit + '</span> ' + esc(u.title) + ' <span class="muted small">' + esc(u.outcomes) + '</span>'));
         var grid = el('div', 'lp-grid');
-        u.lessons.forEach(function (c) {
-          var url = lessonUrl(c.id), d = L ? L.dateOf[c.id] : null, isSkip = skipped.indexOf(c.id) >= 0;
-          var stt = isSkip ? 'skip' : !d ? '' : d === today ? 'today' : d < today ? 'past' : 'next';
-          var tag = { skip: 'Skipped', today: 'Today', past: '✓ Taught ' + (d ? C.nice(d, { month: 'short', day: 'numeric' }) : ''), next: d ? C.nice(d) : '' }[stt] || '';
-          var card = el(url ? 'a' : 'div', 'lp-card' + (stt ? ' is-' + stt : ''), '<div class="lp-n">Lesson ' + u.unit + '.' + esc(c.num) + '</div><div class="lp-t">' + esc(c.title) + '</div>' + (tag ? '<div class="lp-s">' + tag + '</div>' : ''));
-          if (url) card.href = url;
-          grid.appendChild(card);
-        });
+        u.lessons.forEach(function (c) { if (!c.intro) grid.appendChild(lpCard(c, 'Lesson ' + u.unit + '.' + c.num)); });
         sec.appendChild(grid); body.appendChild(sec);
       });
       var tc = body.querySelector('.lp-card.is-today') || body.querySelector('.lp-card.is-next');
       if (tc) requestAnimationFrame(function () { body.scrollTop = Math.max(0, tc.closest('.lp-unit').offsetTop - 8); });
+      function lpCard(c, kicker) {
+      var url = lessonUrl(c.id), d = L ? L.dateOf[c.id] : null, isSkip = skipped.indexOf(c.id) >= 0;
+      var stt = isSkip ? 'skip' : !d ? '' : d === today ? 'today' : d < today ? 'past' : 'next';
+      // a skipped course intro is just "not on the calendar" (it's still there to open)
+      if (c.intro && isSkip) stt = '';
+      var tag = { skip: 'Skipped', today: 'Today', past: '✓ Taught ' + (d ? C.nice(d, { month: 'short', day: 'numeric' }) : ''), next: d ? C.nice(d) : '' }[stt] || '';
+      var card = el(url ? 'a' : 'div', 'lp-card' + (stt ? ' is-' + stt : '') + (c.intro ? ' lp-introcard' : ''), '<div class="lp-n">' + esc(kicker) + '</div><div class="lp-t">' + esc(c.title) + '</div>' + (tag ? '<div class="lp-s">' + tag + '</div>' : ''));
+      if (url) card.href = url;
+      return card;
+      }
     }
     draw();
   }

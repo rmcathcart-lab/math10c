@@ -303,6 +303,7 @@
       if (!u.lessons.length) { sec.classList.add('soon'); body.appendChild(el('div', 'soon-note', 'Coming soon')); units.appendChild(sec); return; }
       var list = el('div', 'lesson-list');
       u.lessons.forEach(function (c) {
+        if (c.intro) return; // the course introduction is linked at the bottom of the page (About the course)
         var lesson = HW.lessons[c.id], row = el(lesson ? 'a' : 'div', 'lesson-row' + (lesson ? '' : ' locked'));
         // beside each assignment: a small card that opens the lesson itself (same tab; its home button comes back here),
         // marked Today / Taught / its date from the class calendar (a spacer keeps the rows lined up)
@@ -321,7 +322,7 @@
           line.appendChild(tc);
         } else line.appendChild(el('div', 'lesson-teach none', ''));
         line.appendChild(row);
-        var info = el('div', 'lr-info', '<div class="lr-num">' + (c.intro ? 'Day one' : 'Assignment ' + esc(c.num)) + '</div><div class="lr-title">' + HW.tex(esc(c.title)) + '</div>');
+        var info = el('div', 'lr-info', '<div class="lr-num">Assignment ' + esc(c.num) + '</div><div class="lr-title">' + HW.tex(esc(c.title)) + '</div>');
         row.appendChild(info);
         if (lesson) {
           row.href = '#/lesson/' + lesson.id;
@@ -331,11 +332,20 @@
           right.appendChild(el('div', 'lr-counts', '<b>' + s.reqDone + '</b>/' + s.req + ' required' + (s.extra ? ' · <b>' + s.extraDone + '</b>/' + s.extra + ' extra' : '') + (s.secs ? ' · ' + mins(s.secs) : '')));
           row.appendChild(right);
           row.appendChild(el('span', 'lr-go', (g === 'Review' ? '<span aria-hidden="true">✓ </span>' : '') + g));
-        } else row.appendChild(el('span', 'lr-soon', c.intro ? 'No assignment' : 'Coming soon'));
+        } else row.appendChild(el('span', 'lr-soon', 'Coming soon'));
         list.appendChild(line);
       });
       body.appendChild(list); units.appendChild(sec);
     });
+    // the course introduction (day one): how the course works, for anyone who missed it or wants to look again
+    var intro = null; HW.CATALOG.some(function (u) { return u.lessons.some(function (c) { if (c.intro) { intro = c; return true; } }); });
+    var iurl = intro ? teachingUrl(intro) : '';
+    if (iurl) {
+      var foot = el('div', 'home-about');
+      var ab = el('a', 'btn home-about-btn', 'About the course'); ab.href = iurl; ab.title = 'How Math 10C works: the class website, how you’re assessed, calculators, retests and more';
+      ab.addEventListener('click', function () { L.push({ t: 'event', type: 'notes', lesson: intro.id }); });
+      foot.appendChild(ab); view.appendChild(foot);
+    }
     L.setStatus({ view: 'home' }, false);
   }
   /* ---------------- outcome medals (js/medals.js) ----------------
