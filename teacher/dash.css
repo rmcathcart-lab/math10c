@@ -405,3 +405,6 @@ button.rt-test:hover { border-color: #9aa6b8; }
 .lvlbg-NM { background: #9a5a3c; color: #fff; }
 .rc-ev { margin-top: 4px; max-width: 210px; }
 .rc-text { overflow: hidden; min-height: 64px; }
+/* a question done outside class while "In class only" is on: still coloured, but striped and faded (not counted) */
+.ig.home { background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, .55) 0 3px, transparent 3px 7px); opacity: .62; }
+.pd-home { font-size: 12px; font-weight: 600; color: #8b6d3a; white-space: nowrap; }

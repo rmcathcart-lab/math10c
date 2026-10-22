@@ -132,9 +132,10 @@
     function S(n) { return stu[n] || (stu[n] = { name: n, roster: null, lessons: {}, outcomes: {}, levelAcc: {}, secs: 0, secsIn: 0, answers: 0, right: 0, leaves: 0, leavesIn: 0, reveals: 0 }); }
     Object.keys(items).forEach(function (k) {
       var r = items[k], s = S(r.name), counted = r.correctAt && (!inOnly || r.correctIn);
-      var ls2 = s.lessons[r.lesson] || (s.lessons[r.lesson] = { done: 0, first: 0, extra: 0, items: {} });
+      var ls2 = s.lessons[r.lesson] || (s.lessons[r.lesson] = { done: 0, first: 0, extra: 0, home: 0, items: {} });
       ls2.items[r.id] = r;
       if (counted) { if (r.extra) ls2.extra++; else { ls2.done++; if (r.credit === 'first') ls2.first++; } }
+      else if (r.correctAt) ls2.home++; // right, but outside class: not counted while "In class only" is on
       var la = s.levelAcc[r.outcome + '|' + r.level] || (s.levelAcc[r.outcome + '|' + r.level] = { tried: 0, first: 0, hint: 0, shown: 0, right: 0 });
       if (r.attempts && (!inOnly || r.correctIn || !r.correctAt)) { la.tried++; if (counted) { la[r.credit]++; if (allow[r.credit]) la.right++; } }
       if (counted && allow[r.credit]) { var cur = s.outcomes[r.outcome]; if (!cur || LV.indexOf(r.level) > LV.indexOf(cur)) s.outcomes[r.outcome] = r.level; }
@@ -221,13 +222,14 @@
     var grid = el('div', 'item-grid');
     l.items.forEach(function (it) {
       var rec = r && r.items[it.id], cls = !rec ? 'new' : rec.correctAt ? 'c-' + rec.credit : rec.errors >= 3 ? 'stuck' : 'open';
-      var b = el('div', 'ig ' + cls + (it.extra ? ' ex' : ''), esc(it.label.replace('Extra ', 'E')));
-      b.title = it.label + ' · ' + it.level + ' · ' + (!rec ? 'not started' : rec.correctAt ? ({ first: 'right first try', hint: 'right after ' + rec.errors + ' mistake(s)', shown: 'right after the answer was shown' }[rec.credit]) : rec.errors + ' wrong so far');
+      var home = rec && rec.correctAt && !rec.correctIn && st.scope === 'class'; // done outside class: shown, but not counted in the bars
+      var b = el('div', 'ig ' + cls + (it.extra ? ' ex' : '') + (home ? ' home' : ''), esc(it.label.replace('Extra ', 'E')));
+      b.title = it.label + ' · ' + it.level + ' · ' + (!rec ? 'not started' : rec.correctAt ? ({ first: 'right first try', hint: 'right after ' + rec.errors + ' mistake(s)', shown: 'right after the answer was shown' }[rec.credit]) : rec.errors + ' wrong so far') + (home ? ' · done outside class (not counted while “In class only” is on)' : '');
       grid.appendChild(b);
     });
     return grid;
   }
-  function igLegend() { return el('div', 'ig-legend', '<span><i class="ig c-first"></i>Right first try</span><span><i class="ig c-hint"></i>After a hint</span><span><i class="ig c-shown"></i>Answer shown</span><span><i class="ig stuck"></i>Stuck (3+ wrong)</span><span><i class="ig open"></i>Started</span><span><i class="ig new"></i>Not started</span><span><i class="ig ex"></i>Extra (dashed)</span>'); }
+  function igLegend() { return el('div', 'ig-legend', '<span><i class="ig c-first"></i>Right first try</span><span><i class="ig c-hint"></i>After a hint</span><span><i class="ig c-shown"></i>Answer shown</span><span><i class="ig stuck"></i>Stuck (3+ wrong)</span><span><i class="ig open"></i>Started</span><span><i class="ig new"></i>Not started</span><span><i class="ig ex"></i>Extra (dashed)</span>' + (st.scope === 'class' ? '<span><i class="ig c-first home"></i>Done outside class (striped: not counted while “In class only” is on)</span>' : '')); }
 
   /* ---- Progress ---- */
   function barHtml(req, ex, done, first, extra) {
@@ -286,7 +288,7 @@
       x.ls.forEach(function (l) {
         var r = s.lessons[l.id], b = el('button', 'pd-l' + (o.lesson === l.id ? ' on' : ''));
         b.type = 'button'; b.setAttribute('aria-expanded', o.lesson === l.id ? 'true' : 'false');
-        b.innerHTML = '<div class="pd-ln">Lesson ' + esc(l.num) + '</div><div class="pd-lt">' + esc(l.title) + '</div>' + miniBar(l, r) + '<div class="pnum">' + (r ? r.done : 0) + '/' + l.required.length + (r && r.extra ? ' · +' + r.extra : '') + '</div>';
+        b.innerHTML = '<div class="pd-ln">Lesson ' + esc(l.num) + '</div><div class="pd-lt">' + esc(l.title) + '</div>' + miniBar(l, r) + '<div class="pnum">' + (r ? r.done : 0) + '/' + l.required.length + (r && r.extra ? ' · +' + r.extra : '') + (r && r.home ? ' <span class="pd-home" title="Right, but done outside class: not counted while “In class only” is on">+' + r.home + ' outside class</span>' : '') + '</div>';
         b.title = 'Lesson ' + l.num + ': ' + l.title;
         b.addEventListener('click', function () { o.lesson = o.lesson === l.id ? null : l.id; drawDrop(tr, s); });
         row.appendChild(b);
