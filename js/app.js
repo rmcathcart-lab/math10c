@@ -339,13 +339,17 @@
     });
     // the course introduction (day one): how the course works, for anyone who missed it or wants to look again
     var intro = null; HW.CATALOG.some(function (u) { return u.lessons.some(function (c) { if (c.intro) { intro = c; return true; } }); });
-    var iurl = intro ? teachingUrl(intro) : '';
+    var iurl = intro ? teachingUrl(intro) : '', foot = el('div', 'home-about');
     if (iurl) {
-      var foot = el('div', 'home-about');
       var ab = el('a', 'btn home-about-btn', 'About the course'); ab.href = iurl; ab.title = 'How Math 10C works: the class website, how you’re assessed, calculators, retests and more';
       ab.addEventListener('click', function () { L.push({ t: 'event', type: 'notes', lesson: intro.id }); });
-      foot.appendChild(ab); view.appendChild(foot);
+      foot.appendChild(ab);
     }
+    // email the teacher: opens the student's mail app with a subject that says who it's from
+    var em = el('a', 'btn home-about-btn', 'Email the Teacher');
+    em.href = 'mailto:' + TEACHER_EMAIL + '?subject=' + encodeURIComponent('Math 10C' + (session && session.name ? ' question from ' + session.name : ' question'));
+    em.title = 'Email Mr. Cathcart (' + TEACHER_EMAIL + ')';
+    foot.appendChild(em); view.appendChild(foot);
     L.setStatus({ view: 'home' }, false);
   }
   /* ---------------- outcome medals (js/medals.js) ----------------
@@ -590,6 +594,7 @@
     var m = /(?:^|[^a-z0-9])([a-d])$/i.exec(session.klass || '') || /block\s*([a-d])\b/i.exec(session.label || '');
     return m ? m[1].toUpperCase() : '';
   }
+  var TEACHER_EMAIL = 'rcathcart@rvschools.ab.ca';
   function teachingUrl(lesson) {
     var T = HW.TEACHING; if (!T || T.lessons.indexOf(lesson.id) < 0) return '';
     var m = /^u(\d+)l(\w+)$/.exec(lesson.id), b = studentBlock();

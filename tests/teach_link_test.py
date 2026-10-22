@@ -23,6 +23,8 @@ async def main():
         home = await page.evaluate("[...document.querySelectorAll('.lesson-line')].map(l => { const a = l.querySelector('a.lesson-teach'); return a ? a.getAttribute('href') : null; })")
         about = await page.evaluate("(document.querySelector('.home-about a') || {}).getAttribute ? document.querySelector('.home-about a').getAttribute('href') : null")
         print('about the course:', about); assert about and about.endswith('/u1/l0/?class=C'), about  # the course intro is at the bottom, not in Unit 1
+        mail = await page.evaluate("[...document.querySelectorAll('.home-about a')].map(a => [a.textContent, a.getAttribute('href')])")
+        print('bottom buttons:', mail); assert mail[1][0] == 'Email the Teacher' and mail[1][1].startswith('mailto:rcathcart@rvschools.ab.ca?subject=Math%2010C%20question%20from%20'), mail
         print('home cards:', home)
         assert len(home) == 79 and home[54].endswith('/u8/l1a/?class=C') and home[78].endswith('/u10/l9/?class=C') and home[41].endswith('/u6/l1/?class=C') and home[46].endswith('/u6/l6/?class=C') and home[47].endswith('/u7/l1/?class=C') and home[53].endswith('/u7/l7/?class=C') and home[21].endswith('/u4/l1a/?class=C') and home[29].endswith('/u4/l8/?class=C') and home[30].endswith('/u5/l1/?class=C') and home[37].endswith('/u5/l7b/?class=C') and home[40].endswith('/u5/l10/?class=C') and home[15].endswith('/u3/l1/?class=C') and home[20].endswith('/u3/l6/?class=C') and home[0].endswith('/u1/l1/?class=C') and home[5].endswith('/u1/l6a/?class=C') and home[7].endswith('/u1/l7/?class=C') and home[8].endswith('/u2/l1/?class=C') and home[14].endswith('/u2/l6/?class=C'), home
         await page.screenshot(path='/tmp/home_cards.png', full_page=False)
