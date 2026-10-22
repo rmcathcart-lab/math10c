@@ -805,7 +805,7 @@ export const explainers = mountExplainers({ calc, rescale, dial, compare, extrem
 export const _test = { CALC, CMP, COF, scr, sn, cs, tn };
 
 /* ---------- Math History (the brown box): Hipparchus, from a chord to the Moon ----------
- * Four parts, played one after another (tap a part to jump to it):
+ * Four parts. Each one plays and stops; Next part (or a tap on the picture, or a part's button) goes on:
  *  1. a chord opens up in a circle;  2. the picture turns so the chord stands upright and is cut in half: half-chord ÷ radius
  *  is today's sine, the other side ÷ radius the cosine;  3. the line touching the circle cuts off the tangent;
  *  4. the eclipse of 190 BCE: total at the Hellespont, about 4/5 at Alexandria, so the Moon was 0.1° apart from the two
@@ -940,17 +940,26 @@ export const _test = { CALC, CMP, COF, scr, sn, cs, tn };
     const k = SCENES.filter((s) => ms >= s).length - 1;
     if (k !== shownScene) { shownScene = k; cap.innerHTML = CAPS[k]; chips.forEach((c, i) => c.classList.toggle('on', i === k)); }
   }
-  let raf = 0, t0 = 0, from = 0;
-  function frame(now) { if (!t0) t0 = now; const ms = from + now - t0; draw(ms); if (ms < END) raf = requestAnimationFrame(frame); }
+  // play one part and stop at its end; the teacher moves on when ready
+  let raf = 0, t0 = 0, from = 0, until = 0, part = 0, playing = false;
+  const nextBtn = fig.querySelector('.hpc-next'), againBtn = fig.querySelector('.hist-play');
+  const partEnd = (k) => (k + 1 < SCENES.length ? SCENES[k + 1] - 1 : END);
+  function settle() { playing = false; nextBtn.textContent = part + 1 < SCENES.length ? 'Next part ›' : 'Start over'; nextBtn.classList.add('ready'); }
+  function frame(now) { if (!t0) t0 = now; const ms = Math.min(until, from + now - t0); draw(ms); if (ms < until) raf = requestAnimationFrame(frame); else settle(); }
   const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
-  function play(start) {
-    cancelAnimationFrame(raf); t0 = 0; from = start || 0;
-    if (reduced()) { draw(start ? SCENES[SCENES.indexOf(start) + 1] - 1 || END : END); return; }
-    draw(from); raf = requestAnimationFrame(frame);
+  function playPart(k) {
+    cancelAnimationFrame(raf); part = k; from = SCENES[k]; until = partEnd(k); t0 = 0;
+    nextBtn.classList.remove('ready');
+    if (reduced()) { draw(until); settle(); return; }
+    playing = true; draw(from); raf = requestAnimationFrame(frame);
+  }
+  function next() {
+    if (playing) { cancelAnimationFrame(raf); draw(until); settle(); return; }   // still playing: finish this part first
+    playPart(part + 1 < SCENES.length ? part + 1 : 0);
   }
   draw(0);
-  chips.forEach((c, i) => c.addEventListener('click', () => play(SCENES[i])));
-  svg.addEventListener('click', () => play(0));
-  const btn = fig.querySelector('.hist-play'); if (btn) btn.addEventListener('click', () => play(0));
-  if ('IntersectionObserver' in window) { const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(0); } }, { threshold: 0.4 }); io.observe(svg); } else play(0);
+  chips.forEach((c, i) => c.addEventListener('click', () => playPart(i)));
+  svg.addEventListener('click', next); nextBtn.addEventListener('click', next);
+  againBtn.addEventListener('click', () => playPart(part));
+  if ('IntersectionObserver' in window) { const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); playPart(0); } }, { threshold: 0.4 }); io.observe(svg); } else playPart(0);
 })();
