@@ -401,13 +401,27 @@
     for (var u = 1, cu = currentUnit(null, null, TODAY); u <= cu; u++) out[u] = 1;
     return out;
   }
+  /* lots of medals: a little smaller, and on their own line under "Hi, …" in even rows (9 + 9, never 17 + 1) */
+  function fitMedals(box) {
+    var row = box.firstChild, nm = box.parentNode; box.classList.remove('stacked'); box.style.removeProperty('--medal');
+    if (!row || !nm || !nm.clientWidth) return; row.style.maxWidth = '';
+    var n = row.children.length, size = n > 12 ? 40 : n > 8 ? 44 : 50, cell = size + 6, W = nm.clientWidth, h1 = nm.querySelector('h1');
+    box.style.setProperty('--medal', size + 'px');
+    var c0 = row.querySelector('canvas'); if (c0 && c0.offsetWidth) { size = c0.offsetWidth; cell = size + 6; }   // phones cap them smaller
+    if (n * cell - 2 <= W - (h1 ? h1.offsetWidth + 16 : 0)) return;   // they fit beside the name in one line
+    box.classList.add('stacked');
+    var per = Math.max(1, Math.floor((W + 2) / cell)), rows = Math.ceil(n / per);
+    if (rows > 1) row.style.maxWidth = (Math.ceil(n / rows) * cell - 2) + 'px';
+  }
   function homeMedals(box) {
     if (!HW.Medals) return;
     var key = 'hw:medals:' + studentKey(), sig = '';
     function draw(list) {
       var s2 = JSON.stringify(list.map(function (x) { return [x.o, x.tier]; })); if (s2 === sig) return; sig = s2;
       box.innerHTML = ''; if (list.length) box.appendChild(HW.Medals.row(list));
+      fitMedals(box);
     }
+    if (window.ResizeObserver) new ResizeObserver(function () { fitMedals(box); }).observe(box.parentNode);
     draw(medalList([]));
     var res = HW.TestMode && HW.TestMode.loadResults ? HW.TestMode.loadResults() : Promise.resolve([]);
     res.then(function (r) { return r || []; }, function () { return []; }).then(function (results) {

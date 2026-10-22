@@ -588,6 +588,7 @@ body.tm-on .calc { z-index: 200; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .home-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px 18px; flex-wrap: wrap; margin: 10px 0 20px; }
 .home-head h1 { margin: 0; font-size: 34px; line-height: 1.1; letter-spacing: -.02em; font-weight: 800; }
+.hh-text { flex: 1 1 380px; min-width: 0; }   /* the next test + calendar stay on the right while there's room */
 .hh-date { margin: 5px 0 0; color: var(--muted); font-size: 15px; }
 .hh-cal { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
 .hh-cal:empty { display: none; }
@@ -715,12 +716,13 @@ a.lesson-row:focus-visible, .lesson-teach:focus-visible { outline: 3px solid var
 /* ---------- outcome medals (js/medals.js) ---------- */
 .hh-name { display: flex; align-items: center; gap: 6px 16px; flex-wrap: wrap; }
 .hh-medals:empty { display: none; }
+.hh-medals.stacked { flex-basis: 100%; }
 .medal-row { display: flex; flex-wrap: wrap; gap: 2px; }
 .medal-btn { appearance: none; border: 0; background: none; padding: 2px; border-radius: 12px; cursor: pointer; position: relative; line-height: 0; }
 .medal-btn:hover { background: rgba(28, 34, 48, .06); }
 .medal-btn:focus-visible { outline: 3px solid #2563eb; outline-offset: 1px; }
 .medal-btn.is-new::after { content: ''; position: absolute; top: 3px; right: 3px; width: 9px; height: 9px; border-radius: 50%; background: #e11d48; box-shadow: 0 0 0 2px var(--bg, #f5f3ee); }
-.medal-c { display: block; width: 50px; height: 50px; }
+.medal-c { display: block; width: var(--medal, 50px); height: var(--medal, 50px); }
 .medal-c.medal-off { visibility: hidden; }
 .medal-pop { position: fixed; inset: 0; z-index: 60; background: rgba(10, 12, 16, .62); display: grid; place-items: center; padding: 16px; overflow: auto; }
 .medal-box { position: relative; width: min(560px, 100%); background: radial-gradient(120% 80% at 50% 25%, #1c222b, #0f1217 72%); color: #eef0f3; border-radius: 22px; padding: 22px 18px 18px; display: grid; justify-items: center; gap: 4px; box-shadow: 0 30px 80px rgba(0, 0, 0, .45); }
@@ -750,7 +752,7 @@ button.medal-rung:focus-visible { outline: 2px solid #8fb4ff; outline-offset: 1p
 .medal-nav { display: flex; gap: 10px; margin-top: 4px; }
 .medal-nav .btn { color: #eef0f3; border-color: rgba(255, 255, 255, .2); background: rgba(255, 255, 255, .06); }
 @media (max-width: 640px) {
-  .medal-c { width: 38px; height: 38px; }
+  .medal-c { width: min(var(--medal, 50px), 38px); height: min(var(--medal, 50px), 38px); }
   .medal-rung .medal-c { width: 40px; height: 40px; }
   .medal-rung-l { display: none; }
   .medal-pop { padding: 8px; }
