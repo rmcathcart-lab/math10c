@@ -49,7 +49,9 @@ async def main():
         print('comments csv:', rows[0]); print(rows[1][:3]); 
         sophie = [r for r in rows if r[1] == 'Sophie Nguyen'][0]; print('Sophie:', sophie[2])
         assert 'individual program plan (IPP)' in sophie[2]
-        assert [r for r in rows if r[1] == 'Ava Martin'][0][4] == 'Ava wrote this herself.'
+        assert [r for r in rows if r[1] == 'Ava Martin'][0][2].startswith('Ava wrote this herself.')
+        assert 'for her success' in sophie[2] and sophie[2].count('Sophie is on an individual program plan') == 1
+        bad = [r[1] for r in rows[1:] if any(w in r[2] for w in ['finish the semester strong', 'look forward', 'this term'])]; assert not bad, bad
         await b.close()
     errs = [e for e in errs if 'ERR_TUNNEL' not in e and 'Failed to load resource' not in e]
     print('errors', errs); assert not errs; print('PASS')

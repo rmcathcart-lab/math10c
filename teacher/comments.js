@@ -1,24 +1,21 @@
 /* Teacher Ledger — report card comments.
  * The school's guidelines (RVS): a comment speaks to the learning in the course and to the opportunities for growth that
- * assessment found. The usual shape: a course-content part (the same for the class) and a personal part with one area
- * of strength and one area for growth; students on an IPP also get the required IPP sentence, word for word.
+ * assessment found. The shape here: a course overview (it needn't be the same for everyone) and one area of strength
+ * and one area for growth; students on an IPP also get the IPP sentence (first name and pronoun), and a sign-off ends it.
  * Example the school gives: "In English 20-1 we have focused on … Our study of Macbeth was a highlight of the term and one
  * in which Philip showed particular interest and strength. In his formal writing, Philip organizes his thoughts well, but
  * at times does not provide the details required to fully explore a concept."
  * Not for comments: streaming recommendations.
  *
- * HW.Comments.course(courseName, units) → the course part.
+ * Comments are written at the end of the semester: nothing in them may suggest the student can still turn things around.
+ * HW.Comments.courseLine(course, name, rot) → an overview of the whole course (several wordings).
  * HW.Comments.personal(st) → { text, strength, growth } where st = { name, pronouns: he | she | they | '', ipp,
  *   strength: { outcome, level, src: test | practice | exit, unit, skill (a lesson id) }, growth: { …, noWork } }
- * Wording is picked by the student's name, so neighbours in the list don't read the same. */
+ * Wording is shared out across the class (C.rotation), so neighbours in the list don't read the same. */
 (function (root) {
   'use strict';
   var HW = root.HW = root.HW || {}, C = HW.Comments = {};
 
-  /* what each unit was about (the course part) */
-  C.UNITS = { 1: ['prime factorization', 'irrational numbers'], 2: ['the exponent laws'], 3: ['multiplying polynomials'],
-    4: ['factoring'], 5: ['graphs of relations', 'function notation'], 6: ['slope'], 7: ['equations of lines'], 8: ['linear systems'],
-    9: ['right-triangle trigonometry'], 10: ['unit conversions', 'surface area', 'volume'] };
   /* each outcome as a parent would read it (Alberta Math 10 C program of studies) */
   C.TOPIC = {
     AN1: 'factors, multiples and roots of whole numbers',
@@ -97,12 +94,18 @@
   }
   function be(P) { return P.s ? 'is' : 'are'; }
 
-  C.course = function (courseName, units) {
-    var t = []; (units || []).forEach(function (u) { (C.UNITS[u] || []).forEach(function (x) { if (t.indexOf(x) < 0) t.push(x); }); });
-    var name = courseName || 'Mathematics 10C';
-    if (!t.length) return 'In ' + name + ' this semester, we have built a foundation in number, algebra and measurement.';
-    return 'In ' + name + ' this semester, we have focused on ' + list(t) + '.';
-  };
+  /* the course overview that opens each comment: report cards come at the end of the semester, so it covers the whole
+     course; several wordings, shared out across the class like the rest */
+  var COURSE = [
+    'In {course} this semester, we studied number and algebra, relations and functions, and measurement, from exponents and factoring to linear relations, systems of equations and right-triangle trigonometry.',
+    '{course} covered a wide range of topics this semester, including exponents and radicals, polynomials and factoring, linear relations and functions, systems of equations, measurement and trigonometry.',
+    'This semester in {course}, we built skills in number sense and algebra, explored linear relations and functions, and applied measurement and trigonometry to real-world problems.',
+    'Our work in {course} this semester ranged from roots, exponents and polynomials to linear relations, systems of equations, measurement and right-triangle trigonometry.',
+    'In {course}, we worked through number and algebra, relations and functions, and measurement and trigonometry this semester, with a focus on solving problems and explaining our thinking.',
+    '{course} this semester brought together algebra, linear relations, systems of equations, measurement and trigonometry, building a strong foundation in mathematical problem solving.'
+  ];
+  C.COURSE = COURSE;
+  C.courseLine = function (courseName, who, rot) { return choose(COURSE, C.forms(who, ''), { course: courseName || 'Mathematics 10C' }, 'course', who, rot); };
   function group(lv) { var i = LADDER.indexOf(lv); return i >= 5 ? 'high' : i >= 3 ? 'mid' : 'low'; }
   function sgroup(lv) { var i = LADDER.indexOf(lv); return i >= 5 ? 'high' : i === 4 ? 'mid' : i === 3 ? 'emg' : 'low'; }
 
@@ -146,18 +149,18 @@
   };
   var GROWTH = {
     none: [
-      '{First} has not yet completed the practice for {topic}; finishing it in class will help {obj} build these skills.',
-      'A next step for {first} is completing the practice for {topic}, which {subj} {v:have} not started yet.',
-      'Completing the class practice for {topic} is an important next step for {first}.',
-      '{First} still needs to work through the practice for {topic}; doing so in class will make the unit test much more manageable.'
+      '{First} did not complete the practice for {topic}, so there was little evidence of {poss} learning in this area.',
+      'An area for growth is {topic}: {first} did not complete the practice for it, and working through more of these questions would have built {poss} skills.',
+      '{First} completed little of the practice for {topic}, which made this outcome more difficult to demonstrate.',
+      'More consistent practice, especially with {topic}, would have helped {first} show more of what {subj} can do.'
     ],
     low: [
-      'An area for growth is {what}: {subj} {be} still building the basic skills here and would benefit from more practice with the class examples.',
+      'An area for growth is {what}: {subj} {be} still building the basic skills here and would benefit from more practice.',
       '{Subj} would benefit from more practice with {what}, where {poss} work is currently at the {L} level.',
-      'Going forward, {first} should focus on {what}; reviewing the class examples and completing the practice will help build confidence.',
-      '{First} still finds {what} challenging, and working through the practice questions in class will help.',
-      'With {what}, {first} {v:need} more support; asking questions in class and using the worked examples will help.',
-      '{First} can strengthen {poss} skills with {what} by completing the practice and checking each answer as {subj} {v:go}.'
+      'Going forward, {first} should focus on {what}; reviewing worked examples and practising regularly will help build confidence.',
+      '{First} found {what} challenging, and more practice with these questions would strengthen this skill.',
+      'With {what}, {first} needed more support; asking questions early and working through examples will help in future math courses.',
+      '{First} can strengthen {poss} skills with {what} by practising regularly and checking each answer along the way.'
     ],
     mid: [
       '{Subj} {v:complete} familiar questions on {topic} well but at times {v:find} multi-step problems{suchc} more difficult.',
@@ -181,7 +184,7 @@
   };
   /* one sentence for both, sometimes (for variety) */
   var JOINED = [
-    '{First} has done well with {stopic}{sesp}, but at times {v:find} {gwhat} more challenging; more practice there will help.',
+    '{First} did well with {stopic}{sesp}, but at times found {gwhat} more challenging.',
     'While {first} {v:show} real confidence with {stopic}, {subj} would benefit from more practice with {gwhat}.',
     '{First} {v:handle} {stopic} with confidence, and {poss} next step is building the same confidence with {gwhat}.',
     '~{First}’s work with {stopic} has been a strength this semester; {subj} would benefit from bringing that same care to {gwhat}.'
@@ -192,9 +195,10 @@
       'Great job this semester, {first}!'],
     good: ['Nice job this semester, {first}.', 'Good work this semester, {first}. Keep it up!', 'Overall, a solid semester, {first}. Keep it up!',
       'Keep up the good work, {first}!', 'Nice work this semester, {first}; keep building on it.', 'Well done this semester, {first}. Keep it going!'],
-    keep: ['Keep working hard, {first}; I know you can finish the semester strong.', 'Keep at it, {first}. Your effort will pay off!',
-      'Keep asking questions and practising, {first}. You can do this!', 'I look forward to seeing you build on this, {first}.',
-      'Keep going, {first}. Every bit of practice helps!']
+    keep: ['Thank you for your effort this semester, {first}.', 'Best of luck in your next math course, {first}.',
+      'Thanks for a good semester, {first}. All the best next semester!', 'I appreciated having you in class this semester, {first}. Best of luck!',
+      'Keep working at it in your next math course, {first}. All the best!'],
+    none: ['Best of luck in your next math course, {first}.', 'All the best next semester, {first}.']
   };
   C.SIGNOFF = SIGNOFF;
 
@@ -236,7 +240,8 @@
     x.L = e.level === 'NM' ? '' : (LNAME[e.level] || ''); x.unit = e.src === 'test' && e.unit ? e.unit : '';
     return x;
   }
-  C.ipp = function (name) { return name + ' is on an individual program plan (IPP) and accommodations have been provided for their success. Please see the IPP for details regarding goals and progress.'; };
+  /* the school's required IPP sentence, with the student's first name and pronoun ("their" when none is set) */
+  C.ipp = function (name, pronouns) { var P = C.forms(name, pronouns); return P.first + ' is on an individual program plan (IPP) and accommodations have been provided for ' + (P.none ? 'their' : P.poss) + ' success. Please see the IPP for details regarding goals and progress.'; };
   /* st = { name, pronouns, strength, growth } (see the top); rot = C.rotation() shared by the class (optional) */
   C.personal = function (st, rot) {
     var P = C.forms(st.name, st.pronouns), who = st.name, S = st.strength, G = st.growth;
@@ -259,11 +264,11 @@
   };
   /* a closing line that fits how the student is doing overall (0–100, the average of their outcome scores; null = no work) */
   C.signoff = function (st, overall, rot) {
-    var tier = overall == null ? 'keep' : overall >= 72 ? 'strong' : overall >= 55 ? 'good' : 'keep';
+    var tier = overall == null ? 'none' : overall >= 72 ? 'strong' : overall >= 55 ? 'good' : 'keep'; // none: no work to speak of
     return choose(SIGNOFF[tier], C.forms(st.name, st.pronouns), {}, 'o-' + tier, st.name, rot);
   };
-  /* course part + personal part + the IPP sentence + the sign-off */
-  C.full = function (course, personal, st, signoff) { return [course, personal, st && st.ipp ? C.ipp(st.name) : '', signoff || ''].filter(Boolean).join(' '); };
+  /* the comment (course overview + strength + growth) + the IPP sentence + the sign-off */
+  C.full = function (body, st, signoff) { return [body, st && st.ipp ? C.ipp(st.name, st.pronouns) : '', signoff || ''].filter(Boolean).join(' '); };
 
   /* choose the strength and the growth outcome from a student's evidence:
      ev = { outcome: { score (0–100), level, src, unit, noWork, good: [{ lesson, mean, n }], weak: [{ lesson, mean, n }] } } */

@@ -6,7 +6,8 @@
  *      <outcome> Unit n Test   the indicator from the test's boxes, best attempt (class test or a retest)
  *      Unit n Test             the unit grade, best attempt
  *    Students need their PowerSchool student number (Settings → class list, or upload a scores template).
- * 2. Report card comments: the course part (same for the class) + one strength and one area for growth per student,
+ * 2. Report card comments (written at the end of the semester): a course overview (several wordings, shared out) + one
+ *    strength and one area for growth per student,
  *    from their outcome evidence, with their pronouns; the IPP sentence for students on an IPP. Edits stay in this
  *    browser until downloaded.
  * Exit slip and test results are marked the same way the Results view marks them (HW.DashTests.grade). */
@@ -282,8 +283,7 @@
   }
 
   /* ---------------- report card comments ---------------- */
-  function courseKey() { return 'hw:rc-course:' + st.klass; }
-  function editsKey() { return 'hw:rc-edit:' + st.klass; }
+  function editsKey() { return 'hw:rc-edit2:' + st.klass; } // (2: the edited text now includes the course overview)
   function picksKey() { return 'hw:rc-pick:' + st.klass; }
   function overallOf(B, sum) { // the average outcome score (no work on an outcome = 0); null when there is nothing at all
     var outs = B.outcomes.filter(function (o) { return sum[o]; }), any = outs.some(function (o) { return !sum[o].noWork; });
@@ -304,16 +304,13 @@
     if (go === so && !gk && G && !G.noWork && LADDER.indexOf(G.level) < 6) stG.skill = ''; // one outcome only: a general next step in it
     return { text: C.personal({ name: s.name, pronouns: s.pronouns, strength: stS, growth: stG }, RP.rot), strength: so, growth: go };
   }
+  function bodyFor(gen, s, courseName) { // the course overview + the personal part (what the comment box holds)
+    return [C.courseLine(courseName, s.name, RP.rot), gen.empty ? '' : gen.text].filter(Boolean).join(' ');
+  }
   function commentsPanel(B) {
     var p = el('section', 'panel rc-panel'); p.appendChild(el('h3', '', 'Report card comments'));
-    p.appendChild(el('p', 'small muted', 'Each comment is the course part (the same for the class), one area of strength and one area for growth from the student’s outcome levels, the IPP sentence for students on an IPP, and a sign-off. The wording is shared out across the class so students get different sentences. The levels come from the best unit test result where there is one, otherwise practice and exit slips. Read each one before it goes on a report card: change the strength or growth, or edit the words. Your edits stay in this browser.'));
-    var auto = C.course(headInfo().course, B.units), course = ls(courseKey()) || auto;
-    p.appendChild(el('div', 'lbl', 'Course part'));
-    var ct = el('textarea', 'field rc-course'); ct.rows = 2; ct.value = course; p.appendChild(ct);
-    var cr = el('div', 'rc-crow');
-    var reset = button('btn-xs btn-ghost', 'Use the suggested wording', function () { ls(courseKey(), null); ct.value = auto; refreshAll(); });
-    cr.appendChild(el('span', 'small muted', 'Suggested from the units the class has worked on: ' + (B.units.length ? B.units.map(function (u) { return 'Unit ' + u; }).join(', ') : 'none yet') + '.')); cr.appendChild(reset); p.appendChild(cr);
-    ct.addEventListener('input', function () { if (ct.value.trim() && ct.value.trim() !== auto) ls(courseKey(), ct.value.trim()); else ls(courseKey(), null); refreshAll(); });
+    p.appendChild(el('p', 'small muted', 'Comments are for the end of the semester. Each one is an overview of the course, one area of strength and one area for growth from the student’s outcome levels, the IPP sentence for students on an IPP, and a sign-off. The wording is shared out across the class so students get different sentences. The levels come from the best unit test result where there is one, otherwise practice and exit slips. Read each one before it goes on a report card: change the strength or growth, or edit the words. Your edits stay in this browser.'));
+    var courseName = headInfo().course;
     var noPro = B.roster.filter(function (s) { return !s.pronouns; }).length;
     if (noPro) p.appendChild(el('p', 'small ps-warn', noPro + ' student' + (noPro === 1 ? ' has' : 's have') + ' no pronouns set, so ' + (noPro === 1 ? 'that comment uses the student’s' : 'those comments use the student’s') + ' first name instead. Set them here or in Settings.'));
 
@@ -344,28 +341,30 @@
       var sS = sel('s'), sG = sel('g'), eS = el('div', 'rc-ev small muted'), eG = el('div', 'rc-ev small muted');
       tr.querySelector('.rc-s').appendChild(sS); tr.querySelector('.rc-s').appendChild(eS); tr.querySelector('.rc-g').appendChild(sG); tr.querySelector('.rc-g').appendChild(eG);
       var cc = tr.querySelector('.rc-c'), ta = el('textarea', 'field rc-text'); ta.rows = 4; ta.setAttribute('aria-label', 'Comment for ' + s.name);
-      var meta = el('div', 'rc-meta small muted'), so = el('input', 'field rc-sign'); so.setAttribute('aria-label', 'Sign-off for ' + s.name);
-      cc.appendChild(ta); cc.appendChild(so); cc.appendChild(meta);
+      var meta = el('div', 'rc-meta small muted'), so = el('input', 'field rc-sign'), ippP = el('div', 'rc-ippline small'); so.setAttribute('aria-label', 'Sign-off for ' + s.name);
+      cc.appendChild(ta); cc.appendChild(ippP); cc.appendChild(so); cc.appendChild(meta);
       so.addEventListener('input', function () { signs[s.name] = so.value; ls(signKey(), JSON.stringify(signs)); draw(); });
       var rec = { s: s }; rowsOut.push(rec);
       function draw() {
-        var gen = personalFor(B, s, sum, pk), crs = ct.value.trim();
-        rec.gen = gen; rec.course = crs;
+        var gen = personalFor(B, s, sum, pk);
+        rec.gen = gen;
         eS.textContent = gen.strength ? evLabel(sum[gen.strength]).replace(/^\w+ · /, '') : ''; eG.textContent = gen.growth ? evLabel(sum[gen.growth]).replace(/^\w+ · /, '') : '';
         sS.options[0].text = 'Automatic' + (gen.strength && !pk.s ? ': ' + gen.strength : ''); sG.options[0].text = 'Automatic' + (gen.growth && !pk.g ? ': ' + gen.growth : '');
-        var personal = edits[s.name] != null ? edits[s.name] : gen.empty ? '' : gen.text;
+        var personal = edits[s.name] != null ? edits[s.name] : bodyFor(gen, s, courseName);
         rec.personal = personal;
         if (document.activeElement !== ta) ta.value = personal;
-        ta.style.height = 'auto'; ta.style.height = Math.max(64, ta.scrollHeight + 2) + 'px';
-        ta.placeholder = gen.empty ? 'Not enough evidence yet for a personal comment: write one here.' : '';
+        fit(); requestAnimationFrame(fit); // (the row may not be on the page yet the first time)
+        ta.placeholder = '';
+        ippP.hidden = !s.ipp; ippP.textContent = s.ipp ? C.ipp(s.name, s.pronouns) : '';
         var autoSign = C.signoff(s, overallOf(B, sum), RP.rot), sign = signOn ? (signs[s.name] != null ? signs[s.name] : autoSign) : '';
         so.hidden = !signOn; if (document.activeElement !== so) so.value = sign; rec.sign = sign;
-        var full = C.full(crs, personal, s, sign);
+        var full = C.full(personal, s, sign);
         rec.full = full;
-        meta.innerHTML = (s.ipp ? '<span class="rc-ipptag">+ IPP sentence</span> ' : '') + full.length + ' characters' + (edits[s.name] != null || (signOn && signs[s.name] != null) ? ' · edited <a href="#" class="rc-undo">use the suggested wording</a>' : '');
+        meta.innerHTML = (gen.empty && edits[s.name] == null ? '<span class="rc-ipptag">Not enough evidence for a strength or growth: add your own.</span> ' : '') + full.length + ' characters' + (edits[s.name] != null || (signOn && signs[s.name] != null) ? ' · edited <a href="#" class="rc-undo">use the suggested wording</a>' : '');
         var u = meta.querySelector('.rc-undo'); if (u) u.addEventListener('click', function (e) { e.preventDefault(); delete edits[s.name]; delete signs[s.name]; ls(editsKey(), JSON.stringify(edits)); ls(signKey(), JSON.stringify(signs)); so.value = ''; draw(); });
-        tr.classList.toggle('rc-empty', !personal);
+        tr.classList.toggle('rc-empty', !!gen.empty && edits[s.name] == null);
       }
+      function fit() { if (!ta.isConnected) return; ta.style.height = 'auto'; ta.style.height = Math.max(64, ta.scrollHeight + 2) + 'px'; }
       ta.addEventListener('input', function () { edits[s.name] = ta.value; ls(editsKey(), JSON.stringify(edits)); draw(); });
       rec.draw = draw; draw();
       tb.appendChild(tr);
@@ -374,13 +373,13 @@
     p.appendChild(D.wrapTbl(t));
     var bar = el('div', 'ps-acts');
     bar.appendChild(button('btn-primary btn-small', 'Download comments (.csv)', function () {
-      var rows = [['Student Num', 'Student Name', 'Comment', 'Course part', 'Personal part', 'IPP sentence', 'Sign-off', 'Strength', 'Area for growth']];
-      rowsOut.forEach(function (r) { rows.push([r.s.num || '', r.s.name, r.full, r.course, r.personal, r.s.ipp ? C.ipp(r.s.name) : '', r.sign || '', r.gen.strength || '', r.gen.growth || '']); });
+      var rows = [['Student Num', 'Student Name', 'Comment', 'IPP sentence', 'Sign-off', 'Strength', 'Area for growth']];
+      rowsOut.forEach(function (r) { rows.push([r.s.num || '', r.s.name, r.full, r.s.ipp ? C.ipp(r.s.name, r.s.pronouns) : '', r.sign || '', r.gen.strength || '', r.gen.growth || '']); });
       var csv = '﻿' + rows.map(function (r) { return r.map(function (v) { v = String(v == null ? '' : v); return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(','); }).join('\r\n') + '\r\n';
       PS.save(PS.fileName(klass().label + ' report card comments') + '.csv', csv);
     }));
-    var em = rowsOut.filter(function (r) { return !r.personal; }).length;
-    if (em) bar.appendChild(el('span', 'small muted', em + ' without a personal part yet'));
+    var em = rowsOut.filter(function (r) { return r.gen.empty && edits[r.s.name] == null; }).length;
+    if (em) bar.appendChild(el('span', 'small muted', em + ' without a strength or growth yet'));
     p.appendChild(bar);
     return p;
   }

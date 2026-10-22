@@ -409,3 +409,4 @@ button.rt-test:hover { border-color: #9aa6b8; }
 .ig.home { background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, .55) 0 3px, transparent 3px 7px); opacity: .62; }
 .pd-home { font-size: 12px; font-weight: 600; color: #8b6d3a; white-space: nowrap; }
 .rc-sign { margin: 6px 0 0; width: 100%; font-size: 14px; padding: 6px 9px; }
+.rc-ippline { margin-top: 6px; padding: 6px 9px; border-radius: 8px; background: #f4f0fa; color: #4c3a75; line-height: 1.4; }
