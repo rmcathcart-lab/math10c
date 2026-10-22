@@ -165,10 +165,10 @@
   /* ---------------- tests: two finished ones, and a live one on a clock when you launch ---------------- */
   var T = { sessions: null, live: null, n: 0 };
   function testable(l, it) { try { return !TC.NO_TEST[HW.makeInstance(l, it, 1, 1).input.type]; } catch (e) { return false; } }
-  function exitDef() {
-    var l = HW.lessons.u2l2, want = ['BEG', 'EMG', 'PRG', 'ADV'], items = [];
+  function exitDef(id, num) {
+    var l = HW.lessons[id || 'u2l2'], want = ['BEG', 'EMG', 'PRG', 'ADV'], items = [];
     want.forEach(function (lv) { var it = l.items.filter(function (x) { return !x.extra && x.level === lv && testable(l, x) && items.indexOf(x) < 0; })[0]; if (it) items.push(it); });
-    return { title: 'Exit slip 2.2', kind: 'exit', unit: 2, minutes: 10, calc: true, shuffle: false, levels: true, items: items.map(function (it) { return { l: l.id, i: it.id }; }) };
+    return { title: 'Exit slip ' + (num || '2.2'), kind: 'exit', unit: 2, minutes: 10, calc: true, shuffle: false, levels: true, items: items.map(function (it) { return { l: l.id, i: it.id }; }) };
   }
   function unitTestDef() {
     var l = HW.lessons.u1test; if (!l) return null;
@@ -205,6 +205,8 @@
     var ti = PACE.indexOf('#u1test'), ud = unitTestDef();
     if (ud && ti >= 0) { var s1 = at(days[ti], 10, 40); out.push({ id: 'DEMO-T1', test: '', title: ud.title, kind: 'test', launched: s1, closed: s1 + 78 * 60000, released: 0, def: ud, rows: finishedRows(ud, 'DEMO-T1', s1 + 60000) }); }
     var ed = exitDef(), s2 = at(days[PACE.indexOf('u2l2')], 11, 45);
+    var e0 = exitDef('u2l1', '2.1'), s0 = at(days[PACE.indexOf('u2l1')], 11, 45);
+    if (e0.items.length) out.push({ id: 'DEMO-X0', test: '', title: e0.title, kind: 'exit', launched: s0, closed: s0 + 11 * 60000, released: s0 + 3 * 3600000, def: e0, rows: finishedRows(e0, 'DEMO-X0', s0 + 30000) });
     if (ed.items.length) out.push({ id: 'DEMO-X1', test: '', title: ed.title, kind: 'exit', launched: s2, closed: s2 + 11 * 60000, released: s2 + 3 * 3600000, def: ed, rows: finishedRows(ed, 'DEMO-X1', s2 + 30000) });
     return (T.sessions = out);
   }

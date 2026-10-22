@@ -139,7 +139,7 @@
       course: saved.course != null ? saved.course : (ps.course || 'Mathematics 10C'),
       due: saved.due || today(), points: saved.points || ps.points || '10.0', extra: '0.0',
       type: saved.type || ps.type || 'GRADESCALE', mode: saved.mode || ((saved.type || ps.type || 'GRADESCALE').toUpperCase() === 'GRADESCALE' ? 'ind' : (saved.type || ps.type) === 'PERCENT' ? 'pct' : 'pts'),
-      blankNM: !!saved.blankNM
+      blankNM: !!saved.blankNM, exitRule: saved.exitRule || 'best'
     };
   }
   function saveHead(h) { ls('hw:ps-head:' + st.klass, JSON.stringify(h)); if (h.teacher) ls('hw:ps-teacher', h.teacher); }
@@ -160,13 +160,18 @@
       var sc = {}; names.forEach(function (n) { var lv = B.E[n].prac[o]; if (lv) sc[n] = { ind: lv }; else if (h.blankNM && B.E[n].tried[o] === undefined) sc[n] = { ind: 'NM' }; });
       add('hw|' + o, 'hw', o + ' HW', sc, '');
     });
-    B.exits.forEach(function (ex) {
-      var s = ex.R.session;
-      ex.outs.forEach(function (o) {
-        var sc = {}; Object.keys(ex.lv).forEach(function (n) { sc[n] = { ind: ex.lv[n][o] }; });
-        if (h.blankNM) names.forEach(function (n) { if (!sc[n]) sc[n] = { ind: 'NM' }; });
-        add('exit|' + s.id + '|' + o, 'exit', o + ' ' + s.title, sc, day(s.launched) + (s.released ? '' : ' · not released'));
+    // exit slips: one summary per outcome over every exit slip that had it (h.exitRule: best | avg | recent)
+    var exitOuts = []; B.exits.forEach(function (ex) { ex.outs.forEach(function (o) { if (exitOuts.indexOf(o) < 0) exitOuts.push(o); }); });
+    exitOuts.sort(byOutcome).forEach(function (o) {
+      var slips = B.exits.filter(function (ex) { return ex.outs.indexOf(o) >= 0; }), sc = {};
+      names.forEach(function (n) {
+        var lvs = slips.map(function (ex) { return ex.lv[n] ? ex.lv[n][o] : null; }).filter(Boolean); // in the order they were written
+        if (!lvs.length) { if (h.blankNM) sc[n] = { ind: 'NM' }; return; }
+        if (h.exitRule === 'avg') { var pct = lvs.reduce(function (a, l) { return a + TC.midPct(l); }, 0) / lvs.length; sc[n] = { ind: indOf(pct), pct: Math.round(pct), n: lvs.length }; }
+        else if (h.exitRule === 'recent') sc[n] = { ind: lvs[lvs.length - 1], n: lvs.length };
+        else { var best = lvs.reduce(function (a, l) { return LADDER.indexOf(l) > LADDER.indexOf(a) ? l : a; }); sc[n] = { ind: best, n: lvs.length }; }
       });
+      add('exits|' + o, 'exit', o + ' Exit slips', sc, slips.length + ' exit slip' + (slips.length === 1 ? '' : 's') + ': ' + slips.map(function (ex) { return ex.R.session.title; }).join(', '));
     });
     B.tests.forEach(function (T) {
       var title = T.sessions[0].session.title && /unit\s*\d+/i.test(T.sessions[0].session.title) ? T.sessions[0].session.title.replace(/\s*\(.*\)\s*$/, '') : 'Unit ' + T.unit + ' Test';
@@ -220,8 +225,11 @@
     field('Points possible', 'points', 'number'); field('Score type', 'type', null, [['GRADESCALE', 'GRADESCALE'], ['POINTS', 'POINTS'], ['PERCENT', 'PERCENT']]);
     field('Write each score as', 'mode', null, [['ind', 'Indicator (MAS, ADV, PRG…)'], ['pct', 'Percent'], ['pts', 'Points out of ' + (Number(h.points) || 10)]]);
     p.appendChild(g);
+    var er = el('label', 'ps-f ps-rule'); er.appendChild(el('span', 'lbl', 'Exit slip summary per outcome'));
+    var es = el('select', 'field'); [['best', 'Highest level shown'], ['avg', 'Average of the levels'], ['recent', 'Most recent exit slip']].forEach(function (o) { var x = new Option(o[1], o[0]); if (h.exitRule === o[0]) x.selected = true; es.appendChild(x); });
+    es.addEventListener('change', function () { h.exitRule = es.value; saveHead(h); rerender(); }); er.appendChild(es); g.appendChild(er);
     var bl = el('label', 'tt-inline small'), bc = el('input'); bc.type = 'checkbox'; bc.checked = h.blankNM; bc.addEventListener('change', function () { h.blankNM = bc.checked; saveHead(h); rerender(); });
-    bl.appendChild(bc); bl.appendChild(document.createTextNode(' Fill NM for a student with no practice on an outcome or who missed an exit slip (otherwise it’s left blank to excuse or enter later)')); p.appendChild(bl);
+    bl.appendChild(bc); bl.appendChild(document.createTextNode(' Fill NM for a student with no practice on an outcome, or who wrote none of its exit slips (otherwise it’s left blank to excuse or enter later)')); p.appendChild(bl);
     var noNum = B.roster.filter(function (s) { return !s.num; });
     if (noNum.length) {
       var w = el('p', 'small ps-warn', '<b>' + noNum.length + ' student' + (noNum.length === 1 ? '' : 's') + ' without a PowerSchool student number</b> (left out of the files): ' + noNum.map(function (s) { return esc(s.name); }).join(', ') + '. ');
@@ -230,7 +238,7 @@
     var A = assignments(B, h), checked = lsJ('hw:ps-off:' + st.klass, {});
     if (!A.length) { p.appendChild(el('p', 'muted', 'Nothing to send yet: no practice levels, exit slips or tests for this class.')); return p; }
     var groups = [['hw', 'Homework (practice)', 'The highest level each student answered correctly in the practice for that outcome — ' + (st.scope === 'class' ? 'in class only' : 'all work') + ', counting ' + (st.rule === 'first' ? 'first-try answers' : st.rule === 'any' ? 'any right answer' : 'first-try answers and answers after a hint') + ' (change this on the Outcomes tab).'],
-      ['exit', 'Exit slips', 'The highest level answered right on each outcome; a student who wrote it but got none right on an outcome gets NM.'],
+      ['exit', 'Exit slips', 'One grade per outcome, summing up every exit slip that had that outcome: ' + ({ avg: 'the average of the student’s levels on those slips', recent: 'the level on the most recent slip the student wrote' }[h.exitRule] || 'the highest level the student showed on any of them') + '. On each slip, a student who got nothing right on the outcome counts as NM; slips a student missed are left out.'],
       ['test', 'Unit tests', 'Each outcome’s indicator from its Beginning, Progressing and Mastery boxes, and the unit grade. A student’s best sitting counts (the class test or a retest).']];
     var t = el('table', 'tbl ps-list'), tb = el('tbody'); t.appendChild(tb);
     groups.forEach(function (gr) {
@@ -277,6 +285,12 @@
   function courseKey() { return 'hw:rc-course:' + st.klass; }
   function editsKey() { return 'hw:rc-edit:' + st.klass; }
   function picksKey() { return 'hw:rc-pick:' + st.klass; }
+  function overallOf(B, sum) { // the average outcome score (no work on an outcome = 0); null when there is nothing at all
+    var outs = B.outcomes.filter(function (o) { return sum[o]; }), any = outs.some(function (o) { return !sum[o].noWork; });
+    if (!outs.length || !any) return null;
+    return outs.reduce(function (a, o) { return a + (sum[o].noWork ? 0 : sum[o].score); }, 0) / outs.length;
+  }
+  function signKey() { return 'hw:rc-sign:' + st.klass; }
   function personalFor(B, s, sum, pk) {
     var outs = B.outcomes.filter(function (o) { return sum[o]; });
     var auto = C.choose(sum), so = pk.s && sum[pk.s] ? pk.s : auto.strength, go = pk.g && sum[pk.g] ? pk.g : auto.growth;
@@ -288,11 +302,11 @@
     var stS = S ? { outcome: so, level: S.level, src: S.src, unit: S.unit, skill: sk } : null;
     var stG = G ? { outcome: go, level: G.level, src: G.src, unit: G.unit, skill: gk, noWork: G.noWork } : null;
     if (go === so && !gk && G && !G.noWork && LADDER.indexOf(G.level) < 6) stG.skill = ''; // one outcome only: a general next step in it
-    return { text: C.personal({ name: s.name, pronouns: s.pronouns, strength: stS, growth: stG }), strength: so, growth: go };
+    return { text: C.personal({ name: s.name, pronouns: s.pronouns, strength: stS, growth: stG }, RP.rot), strength: so, growth: go };
   }
   function commentsPanel(B) {
     var p = el('section', 'panel rc-panel'); p.appendChild(el('h3', '', 'Report card comments'));
-    p.appendChild(el('p', 'small muted', 'Each comment is the course part (the same for the class), one area of strength and one area for growth from the student’s outcome levels, and the IPP sentence for students on an IPP. The levels come from the best unit test result where there is one, otherwise practice and exit slips. Read each one before it goes on a report card: change the strength or growth, or edit the words. Your edits stay in this browser.'));
+    p.appendChild(el('p', 'small muted', 'Each comment is the course part (the same for the class), one area of strength and one area for growth from the student’s outcome levels, the IPP sentence for students on an IPP, and a sign-off. The wording is shared out across the class so students get different sentences. The levels come from the best unit test result where there is one, otherwise practice and exit slips. Read each one before it goes on a report card: change the strength or growth, or edit the words. Your edits stay in this browser.'));
     var auto = C.course(headInfo().course, B.units), course = ls(courseKey()) || auto;
     p.appendChild(el('div', 'lbl', 'Course part'));
     var ct = el('textarea', 'field rc-course'); ct.rows = 2; ct.value = course; p.appendChild(ct);
@@ -303,7 +317,12 @@
     var noPro = B.roster.filter(function (s) { return !s.pronouns; }).length;
     if (noPro) p.appendChild(el('p', 'small ps-warn', noPro + ' student' + (noPro === 1 ? ' has' : 's have') + ' no pronouns set, so ' + (noPro === 1 ? 'that comment uses the student’s' : 'those comments use the student’s') + ' first name instead. Set them here or in Settings.'));
 
-    var edits = lsJ(editsKey(), {}), picks = lsJ(picksKey(), {}), rowsOut = [];
+    var edits = lsJ(editsKey(), {}), picks = lsJ(picksKey(), {}), signs = lsJ(signKey(), {}), rowsOut = [];
+    RP.rot = C.rotation(); // the class shares the templates out, so neighbours don't read the same
+    var signOn = ls('hw:rc-signon:' + st.klass) !== '0';
+    var sl = el('label', 'tt-inline small'), sc = el('input'); sc.type = 'checkbox'; sc.checked = signOn;
+    sc.addEventListener('change', function () { signOn = sc.checked; ls('hw:rc-signon:' + st.klass, signOn ? '1' : '0'); refreshAll(); });
+    sl.appendChild(sc); sl.appendChild(document.createTextNode(' End each comment with a sign-off (“Overall, great work this semester, …!”), matched to how the student is doing')); p.appendChild(sl);
     var t = el('table', 'tbl rc-tbl'); t.innerHTML = '<thead><tr><th>Student</th><th>Pronouns</th><th>IPP</th><th>Strength</th><th>Area for growth</th><th>Comment</th></tr></thead>';
     var tb = el('tbody'); t.appendChild(tb);
     var c = klass();
@@ -325,8 +344,9 @@
       var sS = sel('s'), sG = sel('g'), eS = el('div', 'rc-ev small muted'), eG = el('div', 'rc-ev small muted');
       tr.querySelector('.rc-s').appendChild(sS); tr.querySelector('.rc-s').appendChild(eS); tr.querySelector('.rc-g').appendChild(sG); tr.querySelector('.rc-g').appendChild(eG);
       var cc = tr.querySelector('.rc-c'), ta = el('textarea', 'field rc-text'); ta.rows = 4; ta.setAttribute('aria-label', 'Comment for ' + s.name);
-      var meta = el('div', 'rc-meta small muted');
-      cc.appendChild(ta); cc.appendChild(meta);
+      var meta = el('div', 'rc-meta small muted'), so = el('input', 'field rc-sign'); so.setAttribute('aria-label', 'Sign-off for ' + s.name);
+      cc.appendChild(ta); cc.appendChild(so); cc.appendChild(meta);
+      so.addEventListener('input', function () { signs[s.name] = so.value; ls(signKey(), JSON.stringify(signs)); draw(); });
       var rec = { s: s }; rowsOut.push(rec);
       function draw() {
         var gen = personalFor(B, s, sum, pk), crs = ct.value.trim();
@@ -338,10 +358,12 @@
         if (document.activeElement !== ta) ta.value = personal;
         ta.style.height = 'auto'; ta.style.height = Math.max(64, ta.scrollHeight + 2) + 'px';
         ta.placeholder = gen.empty ? 'Not enough evidence yet for a personal comment: write one here.' : '';
-        var full = C.full(crs, personal, s);
+        var autoSign = C.signoff(s, overallOf(B, sum), RP.rot), sign = signOn ? (signs[s.name] != null ? signs[s.name] : autoSign) : '';
+        so.hidden = !signOn; if (document.activeElement !== so) so.value = sign; rec.sign = sign;
+        var full = C.full(crs, personal, s, sign);
         rec.full = full;
-        meta.innerHTML = (s.ipp ? '<span class="rc-ipptag">+ IPP sentence</span> ' : '') + full.length + ' characters' + (edits[s.name] != null ? ' · edited <a href="#" class="rc-undo">use the suggested wording</a>' : '');
-        var u = meta.querySelector('.rc-undo'); if (u) u.addEventListener('click', function (e) { e.preventDefault(); delete edits[s.name]; ls(editsKey(), JSON.stringify(edits)); draw(); });
+        meta.innerHTML = (s.ipp ? '<span class="rc-ipptag">+ IPP sentence</span> ' : '') + full.length + ' characters' + (edits[s.name] != null || (signOn && signs[s.name] != null) ? ' · edited <a href="#" class="rc-undo">use the suggested wording</a>' : '');
+        var u = meta.querySelector('.rc-undo'); if (u) u.addEventListener('click', function (e) { e.preventDefault(); delete edits[s.name]; delete signs[s.name]; ls(editsKey(), JSON.stringify(edits)); ls(signKey(), JSON.stringify(signs)); so.value = ''; draw(); });
         tr.classList.toggle('rc-empty', !personal);
       }
       ta.addEventListener('input', function () { edits[s.name] = ta.value; ls(editsKey(), JSON.stringify(edits)); draw(); });
@@ -352,8 +374,8 @@
     p.appendChild(D.wrapTbl(t));
     var bar = el('div', 'ps-acts');
     bar.appendChild(button('btn-primary btn-small', 'Download comments (.csv)', function () {
-      var rows = [['Student Num', 'Student Name', 'Comment', 'Course part', 'Personal part', 'IPP sentence', 'Strength', 'Area for growth']];
-      rowsOut.forEach(function (r) { rows.push([r.s.num || '', r.s.name, r.full, r.course, r.personal, r.s.ipp ? C.ipp(r.s.name) : '', r.gen.strength || '', r.gen.growth || '']); });
+      var rows = [['Student Num', 'Student Name', 'Comment', 'Course part', 'Personal part', 'IPP sentence', 'Sign-off', 'Strength', 'Area for growth']];
+      rowsOut.forEach(function (r) { rows.push([r.s.num || '', r.s.name, r.full, r.course, r.personal, r.s.ipp ? C.ipp(r.s.name) : '', r.sign || '', r.gen.strength || '', r.gen.growth || '']); });
       var csv = '﻿' + rows.map(function (r) { return r.map(function (v) { v = String(v == null ? '' : v); return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(','); }).join('\r\n') + '\r\n';
       PS.save(PS.fileName(klass().label + ' report card comments') + '.csv', csv);
     }));

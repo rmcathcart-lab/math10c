@@ -408,3 +408,4 @@ button.rt-test:hover { border-color: #9aa6b8; }
 /* a question done outside class while "In class only" is on: still coloured, but striped and faded (not counted) */
 .ig.home { background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, .55) 0 3px, transparent 3px 7px); opacity: .62; }
 .pd-home { font-size: 12px; font-weight: 600; color: #8b6d3a; white-space: nowrap; }
+.rc-sign { margin: 6px 0 0; width: 100%; font-size: 14px; padding: 6px 9px; }

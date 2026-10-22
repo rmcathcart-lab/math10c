@@ -75,7 +75,6 @@
   C.LADDER = LADDER; C.LNAME = LNAME;
 
   function hash(s) { var h = 2166136261; s = String(s); for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
-  function pick(list, seed) { return list[hash(seed) % list.length]; }
   function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
   function list(xs) { return xs.length < 2 ? xs.join('') : xs.slice(0, -1).join(', ') + ' and ' + xs[xs.length - 1]; }
   C.firstName = function (name) { return String(name || '').trim().split(/\s+/)[0] || 'This student'; };
@@ -101,77 +100,170 @@
   C.course = function (courseName, units) {
     var t = []; (units || []).forEach(function (u) { (C.UNITS[u] || []).forEach(function (x) { if (t.indexOf(x) < 0) t.push(x); }); });
     var name = courseName || 'Mathematics 10C';
-    if (!t.length) return 'In ' + name + ' this term, we have built a foundation in number, algebra and measurement.';
-    return 'In ' + name + ' this term, we have focused on ' + list(t) + '.';
+    if (!t.length) return 'In ' + name + ' this semester, we have built a foundation in number, algebra and measurement.';
+    return 'In ' + name + ' this semester, we have focused on ' + list(t) + '.';
   };
   function group(lv) { var i = LADDER.indexOf(lv); return i >= 5 ? 'high' : i >= 3 ? 'mid' : 'low'; }
   function sgroup(lv) { var i = LADDER.indexOf(lv); return i >= 5 ? 'high' : i === 4 ? 'mid' : i === 3 ? 'emg' : 'low'; }
 
-  function strengthSentence(st, P, seed) {
-    var e = st.strength, topic = C.TOPIC[e.outcome] || e.outcome, sk = e.skill && C.SKILL[e.skill], L = LNAME[e.level] || '', g = sgroup(e.level);
-    var esp = sk ? ', especially ' + sk : '';
-    var onTest = e.src === 'test' && e.unit ? 'on the Unit ' + e.unit + ' test' : '';
-    var T = {
-      high: [
-        P.first + ' showed particular strength in ' + topic + esp + ', where ' + P.poss + ' work reached the ' + L + ' level.',
-        P.first + '’s strongest area this term was ' + topic + esp + '. ' + cap(P.subj) + ' ' + v(P, 'handle') + ' even the more challenging questions with confidence.',
-        'A highlight of the term for ' + P.first + ' was ' + topic + esp + ', where ' + P.subj + ' consistently ' + v(P, 'work') + ' at the ' + L + ' level.',
-        onTest ? P.first + ' showed real strength ' + onTest + ', where ' + P.poss + ' work with ' + topic + ' reached the ' + L + ' level.' : null
-      ],
-      mid: [
-        P.first + ' showed strength in ' + topic + esp + ', where ' + P.subj + ' ' + v(P, 'handle') + ' most questions with confidence.',
-        P.first + '’s strongest area this term was ' + topic + (sk ? ', particularly ' + sk + ',' : '') + ' where ' + P.poss + ' work is at the ' + L + ' level.',
-        P.first + ' has done well with ' + topic + (sk ? esp + ',' : '') + ' and ' + be(P) + ' working at the ' + L + ' level there.'
-      ],
-      emg: [
-        P.first + '’s strongest area this term was ' + topic + esp + ', where ' + P.subj + ' ' + be(P) + ' developing a solid understanding.',
-        P.first + ' has made good progress with ' + topic + (sk ? esp + ',' : '') + ' and ' + be(P) + ' working at the ' + L + ' level there.'
-      ],
-      low: [
-        P.first + '’s most secure work this term has been in ' + topic + esp + ', where ' + P.subj + ' ' + be(P) + ' building a good foundation.',
-        P.first + ' has made the most progress with ' + topic + esp + '.'
-      ]
-    }[g].filter(function (t) { return t && (L || t.indexOf('the  level') < 0); });
-    return pick(T, seed + '|s');
+  /* ---- templates ----
+   * {First} {first} the first name; {Subj} {subj} {obj} {poss} pronoun forms (the name when none is set); {v:verb} a verb
+   * that agrees (handles / handle); {be} is / are; {have} has / have; {topic} the outcome; {skill} the lesson skill;
+   * {esp} ", especially <skill>" (or nothing); {espc} the same with a closing comma; {what} the skill, else the outcome;
+   * {L} the level name; {unit} the unit number (a test). A template that needs {skill}, {L} or {unit} is skipped when it
+   * isn't known; one starting with ~ is skipped when the student has no pronouns set (it would repeat the name). */
+  var STRENGTH = {
+    high: [
+      '{First} showed particular strength in {topic}{esp}, where {poss} work reached the {L} level.',
+      '{First}’s strongest area this semester was {topic}{esp}. {Subj} {v:handle} even the more challenging questions with confidence.',
+      'A highlight of the semester for {First} was {topic}{esp}, where {subj} consistently {v:work} at the {L} level.',
+      '{First} showed real strength on the Unit {unit} test, where {poss} work with {topic} reached the {L} level.',
+      '{First} has a strong command of {topic}{espc} and {v:solve} challenging problems accurately and independently.',
+      '~{First} has excelled with {topic}; {subj} {v:apply} {poss} understanding of {skill} with skill and care.',
+      'In {topic}, {first} {v:work} at the {L} level and {v:handle} multi-step problems with ease.',
+      '{First} has been especially strong in {topic}{esp}, where {subj} can take on complex questions with confidence.'
+    ],
+    mid: [
+      '{First} showed strength in {topic}{esp}, where {subj} {v:handle} most questions with confidence.',
+      '{First}’s strongest area this semester was {topic}{espc} where {poss} work is at the {L} level.',
+      '{First} has done well with {topic}{espc} and {be} working at the {L} level there.',
+      '{First} is confident with {topic} and {v:solve} familiar problems accurately{esp}.',
+      'One of {first}’s strengths this semester has been {topic}{esp}, where {subj} {v:show} a clear understanding.',
+      'In {topic}, {first} {v:work} carefully and accurately{esp}.'
+    ],
+    emg: [
+      '{First}’s strongest area this semester was {topic}{esp}, where {subj} {be} developing a solid understanding.',
+      '{First} has made good progress with {topic}{espc} and {be} working at the {L} level there.',
+      '{First} is building a good understanding of {topic}{esp}.',
+      'In {topic}, {first} {v:show} a growing understanding and can complete many familiar questions{esp}.'
+    ],
+    low: [
+      '{First}’s most secure work this semester has been in {topic}{esp}, where {subj} {be} building a good foundation.',
+      '{First} has made the most progress with {topic}{esp}.',
+      '{First} has shown the most confidence with {topic}{esp}.',
+      'In {topic}, {first} is beginning to build a foundation{esp}.'
+    ]
+  };
+  var GROWTH = {
+    none: [
+      '{First} has not yet completed the practice for {topic}; finishing it in class will help {obj} build these skills.',
+      'A next step for {first} is completing the practice for {topic}, which {subj} {v:have} not started yet.',
+      'Completing the class practice for {topic} is an important next step for {first}.',
+      '{First} still needs to work through the practice for {topic}; doing so in class will make the unit test much more manageable.'
+    ],
+    low: [
+      'An area for growth is {what}: {subj} {be} still building the basic skills here and would benefit from more practice with the class examples.',
+      '{Subj} would benefit from more practice with {what}, where {poss} work is currently at the {L} level.',
+      'Going forward, {first} should focus on {what}; reviewing the class examples and completing the practice will help build confidence.',
+      '{First} still finds {what} challenging, and working through the practice questions in class will help.',
+      'With {what}, {first} {v:need} more support; asking questions in class and using the worked examples will help.',
+      '{First} can strengthen {poss} skills with {what} by completing the practice and checking each answer as {subj} {v:go}.'
+    ],
+    mid: [
+      '{Subj} {v:complete} familiar questions on {topic} well but at times {v:find} multi-step problems{suchc} more difficult.',
+      'A next step for {first} is more practice with {what}: {subj} {v:understand} the main ideas but at times {v:find} multi-step questions difficult.',
+      'In {topic}, {first} {v:understand} the basic steps but at times {v:make} errors in more complex questions{esp}.',
+      'With {what}, {first} is on the right track; slowing down and checking each step will help {obj} avoid small errors.',
+      'An area for growth is {what}, where {first} {v:know} the process but would benefit from practising questions that combine several steps.',
+      '{First} can take {poss} work with {what} to the next level by practising questions that are less familiar.'
+    ],
+    adv: [
+      'To reach the Mastery level in {topic}, {subj} should keep practising complex, unfamiliar problems{esp}.',
+      'A next step for {first} is applying {topic} to more complex, unfamiliar problems{such}.',
+      'In {topic}, {first} is close to Mastery; showing every step clearly on harder problems will help {obj} get there.',
+      '{First} can push further in {topic} by taking on the challenge questions{esp}.'
+    ],
+    mas: [
+      'To keep growing, {first} can take on extension questions that apply {topic} in new ways.',
+      '~A next step for {first} is to explain {poss} reasoning in {topic} as clearly as {subj} {v:solve} the problems.',
+      '{First} is ready for enrichment in {topic} and would enjoy the extension questions in each lesson.'
+    ]
+  };
+  /* one sentence for both, sometimes (for variety) */
+  var JOINED = [
+    '{First} has done well with {stopic}{sesp}, but at times {v:find} {gwhat} more challenging; more practice there will help.',
+    'While {first} {v:show} real confidence with {stopic}, {subj} would benefit from more practice with {gwhat}.',
+    '{First} {v:handle} {stopic} with confidence, and {poss} next step is building the same confidence with {gwhat}.',
+    '~{First}’s work with {stopic} has been a strength this semester; {subj} would benefit from bringing that same care to {gwhat}.'
+  ];
+  var SIGNOFF = {
+    strong: ['Overall, great work this semester, {first}!', 'Excellent work this semester, {first}!', 'Fantastic effort this semester, {first}. Keep it up!',
+      'Well done this semester, {first}!', 'Keep up the excellent work, {first}!', 'It has been a pleasure having {first} in class. Great work this semester!',
+      'Great job this semester, {first}!'],
+    good: ['Nice job this semester, {first}.', 'Good work this semester, {first}. Keep it up!', 'Overall, a solid semester, {first}. Keep it up!',
+      'Keep up the good work, {first}!', 'Nice work this semester, {first}; keep building on it.', 'Well done this semester, {first}. Keep it going!'],
+    keep: ['Keep working hard, {first}; I know you can finish the semester strong.', 'Keep at it, {first}. Your effort will pay off!',
+      'Keep asking questions and practising, {first}. You can do this!', 'I look forward to seeing you build on this, {first}.',
+      'Keep going, {first}. Every bit of practice helps!']
+  };
+  C.SIGNOFF = SIGNOFF;
+
+  function fill(t, P, x) {
+    return t.replace(/\{(v:)?(\w+)\}/g, function (m, isV, k) {
+      if (isV) return v(P, k);
+      switch (k) {
+        case 'First': return P.first; case 'first': return P.first;
+        case 'Subj': return cap(P.subj); case 'subj': return P.subj; case 'obj': return P.obj; case 'poss': return P.poss;
+        case 'be': return be(P); case 'have': return P.s ? 'has' : 'have';
+        default: return x[k] != null ? x[k] : '';
+      }
+    });
   }
-  function growthSentence(st, P, seed) {
-    var e = st.growth, topic = C.TOPIC[e.outcome] || e.outcome, sk = e.skill && C.SKILL[e.skill], what = sk || topic, L = e.level === 'NM' ? '' : LNAME[e.level] || '';
-    var Subj = cap(P.subj);
-    if (e.noWork) return pick([
-      P.first + ' has not yet completed the practice for ' + topic + '; finishing it in class will help ' + P.obj + ' build these skills.',
-      'A next step for ' + P.first + ' is completing the practice for ' + topic + ', which ' + P.subj + ' ' + v(P, 'have') + ' not started yet.'
-    ], seed + '|g');
-    var g = group(e.level), T;
-    if (g === 'low') T = [
-      'An area for growth is ' + what + ': ' + P.subj + ' ' + be(P) + ' still building the basic skills here and would benefit from more practice with the class examples.',
-      Subj + ' would benefit from more practice with ' + what + ', where ' + P.poss + ' work is currently at the ' + L + ' level.',
-      'Going forward, ' + P.first + ' should focus on ' + what + '; reviewing the class examples and completing the practice will help ' + (P.none ? '' : P.obj + ' ') + 'build confidence.'
-    ];
-    else if (g === 'mid') T = [
-      Subj + ' ' + v(P, 'complete') + ' familiar questions on ' + topic + ' well but at times ' + v(P, 'find') + ' multi-step problems' + (sk ? ', such as ' + sk + ',' : '') + ' more difficult.',
-      'A next step for ' + P.first + ' is more practice with ' + what + ': ' + P.subj + ' ' + v(P, 'understand') + ' the main ideas but at times ' + v(P, 'find') + ' multi-step questions difficult.',
-      'In ' + topic + ', ' + P.first + ' ' + v(P, 'understand') + ' the basic steps but at times ' + v(P, 'make') + ' errors in more complex questions' + (sk ? ', especially ' + sk : '') + '.'
-    ];
-    else if (e.level === 'MAS') T = [
-      'To keep growing, ' + P.first + ' can take on extension questions that apply ' + topic + ' in new ways.',
-      P.none ? null : 'A next step for ' + P.first + ' is to explain ' + P.poss + ' reasoning in ' + topic + ' as clearly as ' + P.subj + ' ' + v(P, 'solve') + ' the problems.'
-    ];
-    else T = [
-      'To reach the Mastery level in ' + topic + ', ' + P.subj + ' should keep practising complex, unfamiliar problems' + (sk ? ', especially ' + sk : '') + '.',
-      'A next step for ' + P.first + ' is applying ' + topic + ' to more complex, unfamiliar problems' + (sk ? ', such as ' + sk : '') + '.'
-    ];
-    T = T.filter(function (t) { return t && (L || t.indexOf('the  level') < 0); });
-    return pick(T, seed + '|g');
+  function usable(t, P, x) {
+    if (t.charAt(0) === '~') { if (P.none) return false; }
+    if (/\{skill\}/.test(t) && !x.skill) return false;
+    if (/\{L\}/.test(t) && !x.L) return false;
+    if (/\{unit\}/.test(t) && !x.unit) return false;
+    return true;
+  }
+  /* spread the templates over a class: rot keeps, per kind of sentence, the next template to hand out and which one each
+     student already has (so redrawing one student keeps their wording) */
+  C.rotation = function () { return { next: {}, got: {} }; };
+  function choose(list, P, x, key, who, rot) {
+    var T = list.filter(function (t) { return usable(t, P, x); }); if (!T.length) return '';
+    var i;
+    if (rot) {
+      var ck = who + '|' + key;
+      if (rot.got[ck] == null) { var n = rot.next[key] || 0; rot.next[key] = n + 1; rot.got[ck] = (n + hash(key)) % 997; }
+      i = rot.got[ck] % T.length;
+    } else i = hash(who + '|' + key) % T.length;
+    return fill(T[i].replace(/^~/, ''), P, x);
+  }
+  function vars(e, prefix) {
+    var sk = e.skill && C.SKILL[e.skill], topic = C.TOPIC[e.outcome] || e.outcome, x = {};
+    x.topic = topic; x.skill = sk || ''; x.what = sk || topic; x.esp = sk ? ', especially ' + sk : ''; x.espc = sk ? ', especially ' + sk + ',' : '';
+    x.such = sk ? ', such as ' + sk : ''; x.suchc = sk ? ', such as ' + sk + ',' : '';
+    x.L = e.level === 'NM' ? '' : (LNAME[e.level] || ''); x.unit = e.src === 'test' && e.unit ? e.unit : '';
+    return x;
   }
   C.ipp = function (name) { return name + ' is on an individual program plan (IPP) and accommodations have been provided for their success. Please see the IPP for details regarding goals and progress.'; };
-  C.personal = function (st) {
-    var P = C.forms(st.name, st.pronouns), seed = st.name, out = [];
-    if (st.strength) out.push(strengthSentence(st, P, seed));
-    if (st.growth) out.push(growthSentence(st, P, seed));
-    return out.join(' ');
+  /* st = { name, pronouns, strength, growth } (see the top); rot = C.rotation() shared by the class (optional) */
+  C.personal = function (st, rot) {
+    var P = C.forms(st.name, st.pronouns), who = st.name, S = st.strength, G = st.growth;
+    var sx = S ? vars(S) : null, gx = G ? vars(G) : null;
+    // now and then one joined sentence, when both are ordinary (a level, not "no work", growth below Mastery)
+    if (S && G && !G.noWork && S.outcome !== G.outcome && sgroup(S.level) !== 'low' && LADDER.indexOf(G.level) <= 4 && LADDER.indexOf(G.level) >= 1) {
+      var shape = choose(['two', 'two', 'joined'], P, {}, 'shape', who, rot);
+      if (shape === 'joined') {
+        var jx = { stopic: sx.topic, sesp: sx.esp, gwhat: gx.what };
+        return choose(JOINED, P, jx, 'joined', who, rot);
+      }
+    }
+    var out = [];
+    if (S) out.push(choose(STRENGTH[sgroup(S.level)], P, sx, 's-' + sgroup(S.level), who, rot));
+    if (G) {
+      var gk = G.noWork ? 'none' : G.level === 'MAS' ? 'mas' : G.level === 'ADV' ? 'adv' : group(G.level) === 'mid' ? 'mid' : 'low';
+      out.push(choose(GROWTH[gk], P, gx, 'g-' + gk, who, rot));
+    }
+    return out.filter(Boolean).join(' ');
   };
-  /* course part + personal part (+ the IPP sentence) */
-  C.full = function (course, personal, st) { return [course, personal, st && st.ipp ? C.ipp(st.name) : ''].filter(Boolean).join(' '); };
+  /* a closing line that fits how the student is doing overall (0–100, the average of their outcome scores; null = no work) */
+  C.signoff = function (st, overall, rot) {
+    var tier = overall == null ? 'keep' : overall >= 72 ? 'strong' : overall >= 55 ? 'good' : 'keep';
+    return choose(SIGNOFF[tier], C.forms(st.name, st.pronouns), {}, 'o-' + tier, st.name, rot);
+  };
+  /* course part + personal part + the IPP sentence + the sign-off */
+  C.full = function (course, personal, st, signoff) { return [course, personal, st && st.ipp ? C.ipp(st.name) : '', signoff || ''].filter(Boolean).join(' '); };
 
   /* choose the strength and the growth outcome from a student's evidence:
      ev = { outcome: { score (0–100), level, src, unit, noWork, good: [{ lesson, mean, n }], weak: [{ lesson, mean, n }] } } */
