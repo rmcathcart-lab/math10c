@@ -8,7 +8,8 @@
  * and logs both (View → Logs / Execution log).
  *
  * Sheets (created automatically):
- *   Roster    one row per student: class, name, PIN (salted hash), first/last seen, devices
+ *   Roster    one row per student: class, name, PIN (salted hash), first/last seen, devices, and from the class list:
+ *             PowerSchool student number, pronouns (he | she | they | blank), IPP (Y or blank)
  *   Attempts  one row per answer checked (right, wrong, format nudge, ladder/tree step), tagged in class Y/N
  *   Events    question opened, left the page (new numbers), answer revealed, new version, away
  *   Progress  one row per student per lesson: counts + the lesson state (for resuming on another device)
@@ -22,7 +23,7 @@
  * ============================================================ */
 
 var COLS = {
-  Roster: ['class', 'name', 'pin', 'pinSet', 'firstSeen', 'lastSeen', 'devices', 'fails', 'lockUntil'],
+  Roster: ['class', 'name', 'pin', 'pinSet', 'firstSeen', 'lastSeen', 'devices', 'fails', 'lockUntil', 'num', 'pronouns', 'ipp'],
   Attempts: ['time', 'class', 'name', 'lesson', 'item', 'label', 'outcome', 'level', 'extra', 'practice', 'ver', 'verdict', 'code', 'tryNo', 'answer', 'prompt', 'inClass', 'device'],
   Events: ['time', 'class', 'name', 'lesson', 'item', 'type', 'secs', 'inClass'],
   Progress: ['key', 'class', 'name', 'lesson', 'reqDone', 'req', 'reqFirst', 'extraDone', 'extra', 'clientSecs', 'updated', 'state'],
@@ -44,6 +45,11 @@ function sheet_(name) {
   var ss = ss_(), sh = ss.getSheetByName(name), cols = COLS[name];
   if (!sh) { sh = ss.insertSheet(name); sh.appendRow(cols); sh.setFrozenRows(1); sh.getRange(1, 1, 1, cols.length).setFontWeight('bold'); }
   return (SHEETS_[name] = sh);
+}
+function header_(name) { // a sheet made before new columns were added: write the full header row once
+  var sh = sheet_(name), cols = COLS[name];
+  if (String(sh.getRange(1, cols.length).getValue()) !== cols[cols.length - 1]) sh.getRange(1, 1, 1, cols.length).setValues([cols]);
+  return sh;
 }
 function rows_(name) { var sh = sheet_(name), n = sh.getLastRow() - 1; return n > 0 ? sh.getRange(2, 1, n, COLS[name].length).getValues() : []; }
 function col_(name, c) { return COLS[name].indexOf(c); }
@@ -98,11 +104,12 @@ function doGet(e) {
     if (a === 'dash') return json_(dash_(p['class']), cb);
     if (a === 'live') return json_({ ok: true, live: live_(p['class']), now: Date.now() }, cb);
     if (a === 'student') return json_(student_(p['class'], p.name), cb);
-    if (a === 'setroster') return json_(setRoster_(p['class'], p.label, p.names, p.mode), cb);
+    if (a === 'setroster') return json_(setRoster_(p['class'], p.label, p.names, p.mode, p.students, p.ps), cb);
     if (a === 'delclass') return json_(delClass_(p['class']), cb);
     if (a === 'resetpin') return json_(resetPin_(p['class'], p.name), cb);
     if (a === 'rename') return json_(rename_(p['class'], p.name, p.to), cb);
     if (a === 'removestudent') return json_(removeStudent_(p['class'], p.name), cb);
+    if (a === 'setstudent') return json_(setStudent_(p['class'], p.name, p), cb);
     if (a === 'setblock') return json_(setBlock_(p['class'], p.block), cb);
     if (a === 'setnoschool') return json_(setNoSchool_(p.dates), cb);
     if (a === 'setbell') return json_(setBell_(p.bell), cb);
@@ -246,16 +253,16 @@ function live_(klass) { try { return JSON.parse(CacheService.getScriptCache().ge
 /* ---------------- teacher ---------------- */
 function classList_() {
   var counts = {}; rows_('Roster').forEach(function (r) { var k = norm_(r[0]); counts[k] = (counts[k] || 0) + 1; });
-  return { ok: true, classes: classes_().map(function (c) { return { code: c.code, label: c.label || c.code, students: counts[c.code] || 0, block: blockFor_(c.code) }; }), noSchool: noSchool_(), bell: bell_(), bellCustom: !!(cachedProp_('BELL').day1) };
+  return { ok: true, classes: classes_().map(function (c) { return { code: c.code, label: c.label || c.code, students: counts[c.code] || 0, block: blockFor_(c.code), ps: c.ps || null }; }), noSchool: noSchool_(), bell: bell_(), bellCustom: !!(cachedProp_('BELL').day1) };
 }
 function dash_(klass) {
   var k = norm_(klass), c = classOf_(klass); if (!c) return { ok: false, error: 'unknown class' };
-  var roster = rosterRows_(klass).map(function (x) { var d = []; try { d = JSON.parse(x.v[6] || '[]'); } catch (e) {} return { name: x.v[1], pin: !!x.v[2], firstSeen: ms_(x.v[4]), lastSeen: ms_(x.v[5]), devices: d.length }; });
+  var roster = rosterRows_(klass).map(function (x) { var d = []; try { d = JSON.parse(x.v[6] || '[]'); } catch (e) {} return { name: x.v[1], pin: !!x.v[2], firstSeen: ms_(x.v[4]), lastSeen: ms_(x.v[5]), devices: d.length, num: String(x.v[9] || ''), pronouns: String(x.v[10] || ''), ipp: x.v[11] === 'Y' }; });
   var prog = rows_('Progress').filter(function (r) { return norm_(r[1]) === k; }).map(function (r) { return { name: r[2], lesson: r[3], reqDone: r[4], req: r[5], reqFirst: r[6], extraDone: r[7], extra: r[8], secs: r[9], updated: ms_(r[10]), items: itemsOf_(r[11]) }; });
   var days = rows_('Days').filter(function (r) { return norm_(r[2]) === k; }).map(function (r) { return [r[1] instanceof Date ? Utilities.formatDate(r[1], TZ, 'yyyy-MM-dd') : String(r[1]), r[3], r[4], r[5], r[6], r[7], r[8], r[9]]; });
   var att = rows_('Attempts').filter(function (r) { return norm_(r[1]) === k; }).map(function (r) { return [ms_(r[0]), r[2], r[3], r[4], r[6], r[7], r[8] === 'Y' ? 1 : 0, r[9] === 'Y' ? 1 : 0, r[10], r[11], r[12], r[13], r[14], r[15], r[16] === 'Y' ? 1 : 0]; });
   var evs = rows_('Events').filter(function (r) { return norm_(r[1]) === k && r[5] !== 'open'; }).map(function (r) { return [ms_(r[0]), r[2], r[3], r[4], r[5], r[6], r[7] === 'Y' ? 1 : 0]; });
-  return { ok: true, 'class': { code: c.code, label: c.label || c.code, block: blockFor_(klass) }, roster: roster, progress: prog, days: days,
+  return { ok: true, 'class': { code: c.code, label: c.label || c.code, block: blockFor_(klass), ps: c.ps || null }, roster: roster, progress: prog, days: days,
     attempts: att, attemptCols: ['time', 'name', 'lesson', 'item', 'outcome', 'level', 'extra', 'practice', 'ver', 'verdict', 'code', 'tryNo', 'answer', 'prompt', 'inClass'],
     events: evs, eventCols: ['time', 'name', 'lesson', 'item', 'type', 'secs', 'inClass'], dayCols: ['date', 'name', 'lesson', 'secs', 'secsIn', 'answers', 'right', 'firstTry'],
     live: live_(klass), now: Date.now(), noSchool: noSchool_(), bell: bell_(), bellCustom: !!(cachedProp_('BELL').day1) };
@@ -272,25 +279,49 @@ function student_(klass, name) {
   return { ok: true, attempts: att, attemptCols: ['time', 'lesson', 'item', 'label', 'outcome', 'level', 'practice', 'ver', 'verdict', 'code', 'tryNo', 'answer', 'prompt', 'inClass', 'device'], events: evs, eventCols: ['time', 'lesson', 'item', 'type', 'secs', 'inClass'] };
 }
 /* Teacher: create or update a class roster. names = one per line (or separated by ;). mode = 'replace' removes students who
- * aren't listed (their work stays in the sheets), 'add' only adds. */
-function setRoster_(klass, label, names, mode) {
+ * aren't listed (their work stays in the sheets), 'add' only adds.
+ * students = JSON [{ n: name, num: PowerSchool student number, as: the name already on the list it matches }] (from a
+ * PowerSchool scores template; used instead of names). ps = JSON { teacher, course, points, type } from that template
+ * (the header lines of the score files the ledger makes for PowerSchool). */
+function setRoster_(klass, label, names, mode, students, ps) {
   var code = norm_(klass).replace(/[^a-z0-9\-_ ]/g, '').slice(0, 24); if (!code) return { ok: false, error: 'no class code' };
   var lock = LockService.getScriptLock(); lock.waitLock(20000);
   try {
     var cs = classes_(), c = null; cs.forEach(function (x) { if (x.code === code) c = x; });
     if (!c) { c = { code: code, label: clean_(label || klass, 40) }; cs.push(c); } else if (label) c.label = clean_(label, 40);
+    var pi = parseDef_(ps); if (pi) c.ps = { teacher: clean_(pi.teacher, 60), course: clean_(pi.course, 60), points: clean_(pi.points, 10), type: clean_(pi.type, 20) };
     save_('CLASSES', cs);
-    var want = String(names || '').split(/\r?\n|;/).map(function (s) { return clean_(s, 60); }).filter(Boolean), seen = {};
-    want = want.filter(function (s) { var k = norm_(s); if (seen[k]) return false; seen[k] = 1; return true; });
-    var sh = sheet_('Roster'), have = rosterRows_(code), haveNames = {}; have.forEach(function (x) { haveNames[norm_(x.v[1])] = x; });
-    var add = want.filter(function (s) { return !haveNames[norm_(s)]; }).map(function (s) { return [code, s, '', '', '', '', '[]', 0, '']; });
+    var list = [], given = parseDef_(students);
+    if (Array.isArray(given)) given.slice(0, 200).forEach(function (x) { var n = clean_(x && x.n, 60); if (n) list.push({ n: n, num: String(x.num == null ? '' : x.num).replace(/[^0-9A-Za-z]/g, '').slice(0, 15), as: clean_(x.as, 60) }); });
+    else String(names || '').split(/\r?\n|;/).forEach(function (s) { s = clean_(s, 60); if (s) list.push({ n: s, num: '', as: '' }); });
+    var seen = {}; list = list.filter(function (x) { var k = norm_(x.as || x.n); if (seen[k]) return false; seen[k] = 1; return true; });
+    var sh = header_('Roster'), have = rosterRows_(code), haveNames = {}; have.forEach(function (x) { haveNames[norm_(x.v[1])] = x; });
+    var add = [], numbered = 0, keep = {};
+    list.forEach(function (x) {
+      var hit = haveNames[norm_(x.as || x.n)];
+      if (hit) { keep[norm_(hit.v[1])] = 1; if (x.num && String(hit.v[9]) !== x.num) { sh.getRange(hit.row, 10).setValue(x.num); numbered++; } return; }
+      keep[norm_(x.n)] = 1; add.push([code, x.n, '', '', '', '', '[]', 0, '', x.num, '', '']);
+    });
     if (add.length) sh.getRange(sh.getLastRow() + 1, 1, add.length, COLS.Roster.length).setValues(add);
     var removed = 0;
     if (mode === 'replace') {
-      var keep = {}; want.forEach(function (s) { keep[norm_(s)] = 1; });
       have.filter(function (x) { return !keep[norm_(x.v[1])]; }).sort(function (a, b) { return b.row - a.row; }).forEach(function (x) { sh.deleteRow(x.row); removed++; });
     }
-    return { ok: true, 'class': c, added: add.length, removed: removed };
+    return { ok: true, 'class': c, added: add.length, removed: removed, numbered: numbered };
+  } finally { lock.releaseLock(); }
+}
+/* one student's class-list details: num (PowerSchool student number), pronouns (he | she | they | ''), ipp ('1' or '0').
+ * Only the fields sent are changed. */
+function setStudent_(klass, name, p) {
+  var lock = LockService.getScriptLock(); lock.waitLock(20000);
+  try {
+    var st = findStudent_(klass, name); if (!st) return { ok: false, error: 'unknown student' };
+    var sh = header_('Roster'), v = [String(st.v[9] || ''), String(st.v[10] || ''), String(st.v[11] || '')];
+    if (p.num != null) v[0] = String(p.num).replace(/[^0-9A-Za-z]/g, '').slice(0, 15);
+    if (p.pronouns != null) { if (['', 'he', 'she', 'they'].indexOf(String(p.pronouns)) < 0) return { ok: false, error: 'bad pronouns' }; v[1] = String(p.pronouns); }
+    if (p.ipp != null) v[2] = p.ipp === '1' || p.ipp === 'true' ? 'Y' : '';
+    sh.getRange(st.row, 10, 1, 3).setValues([v]);
+    return { ok: true, num: v[0], pronouns: v[1], ipp: v[2] === 'Y' };
   } finally { lock.releaseLock(); }
 }
 function delClass_(klass) {

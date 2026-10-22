@@ -133,9 +133,25 @@
     });
     return out;
   }
+  /* class-list details: made-up student numbers, pronouns for most (two left unset), one student on an IPP; changes
+     made in the ledger stay in this page */
+  var PRO = { 'Ava Martin': 'she', 'Liam Chen': 'he', 'Noah Singh': 'he', 'Emma Johnson': 'she', 'Olivia Brown': 'she', 'Lucas Tremblay': 'he', 'Maya Patel': 'she', 'Ethan Wilson': 'he', 'Sophie Nguyen': 'she' };
+  function info(name) {
+    T.info = T.info || {};
+    if (!T.info[name]) { var i = PEOPLE.map(function (p) { return p.name; }).indexOf(name); T.info[name] = { num: String(99000101 + i * 7), pronouns: PRO[name] || '', ipp: name === 'Sophie Nguyen' }; }
+    return T.info[name];
+  }
+  function setStudent(p) {
+    if (!PEOPLE.some(function (x) { return x.name === p.name; })) return { ok: false, error: 'unknown student' };
+    var x = info(p.name);
+    if (p.num != null) x.num = String(p.num).replace(/[^0-9A-Za-z]/g, '');
+    if (p.pronouns != null) { if (['', 'he', 'she', 'they'].indexOf(p.pronouns) < 0) return { ok: false, error: 'bad pronouns' }; x.pronouns = p.pronouns; }
+    if (p.ipp != null) x.ipp = p.ipp === '1';
+    return { ok: true, num: x.num, pronouns: x.pronouns, ipp: x.ipp };
+  }
   function dash() {
     var m = model(), now = Date.now(), lv = live();
-    return { ok: true, demo: true, 'class': { code: CODE, label: LABEL, block: 'B' }, roster: m.roster.map(function (r) { return Object.assign({}, r, { lastSeen: lv[r.name] ? lv[r.name].at : r.lastSeen }); }),
+    return { ok: true, demo: true, 'class': { code: CODE, label: LABEL, block: 'B' }, roster: m.roster.map(function (r) { return Object.assign({}, r, info(r.name), { lastSeen: lv[r.name] ? lv[r.name].at : r.lastSeen }); }),
       progress: m.prog, days: m.days.map(function (d) { return d.slice(); }),
       attempts: m.att.map(function (a) { return a.slice(0, 15); }), events: m.evs.filter(function (e) { return e[4] !== 'open'; }).map(function (e) { return e.slice(); }),
       live: lv, now: now, liveNow: now, noSchool: [], bell: null };
@@ -309,6 +325,7 @@
       case 'tctl': return ok(tctl(p.op, p.name, p.mins, p.who));
       case 'tests': return real('tests', p).then(function (d) { if (d && d.ok) { d.live = Object.assign({}, d.live || {}, liveMap()); } return d; });
       case 'retests': return ok(retests());
+      case 'setstudent': return ok(setStudent(p));
       case 'retestset': return ok(retestSet(p.id, p.status));
       case 'launchretest': return real('tests', {}).then(function (d) {
         var x = retestList().filter(function (r) { return r.id === p.id; })[0]; if (!x || x.status !== 'requested') return { ok: false, error: 'not requested' };

@@ -1,7 +1,8 @@
 /* Teacher Ledger — the teacher dashboard for Math 10C Practice.
  * Tabs: Live (who is working right now), Progress (every student × lesson), Outcomes (highest level reached per
- * outcome), Questions (item analysis and the most common errors), Student (one student's full record), Settings
- * (class lists, PIN resets, class times, the class link + QR code).
+ * outcome), Questions (item analysis and the most common errors), Student (one student's full record), PowerSchool
+ * (score files to import, report card comments; reports.js), Settings (class lists with PowerSchool student numbers,
+ * pronouns and IPP, PIN resets, class times, the class link + QR code).
  * "In class only" uses the server's in-class tag (the class's block on the bell schedule). */
 (function (root) {
   'use strict';
@@ -40,7 +41,7 @@
   function tabs() {
     var t = el('nav', 'tabs');
     var nrt = HW.Dash && HW.Dash.retestCount;
-    [['live', 'Live'], ['exits', 'Exit slips'], ['tests', 'Tests'], ['retests', 'Retests' + (nrt ? ' <span class="tab-badge" title="Retest requests waiting">' + nrt + '</span>' : '')], ['calendar', 'Calendar'], ['progress', 'Progress'], ['outcomes', 'Outcomes'], ['questions', 'Questions'], ['student', 'Student'], ['settings', 'Settings']].forEach(function (x) {
+    [['live', 'Live'], ['exits', 'Exit slips'], ['tests', 'Tests'], ['retests', 'Retests' + (nrt ? ' <span class="tab-badge" title="Retest requests waiting">' + nrt + '</span>' : '')], ['calendar', 'Calendar'], ['progress', 'Progress'], ['outcomes', 'Outcomes'], ['questions', 'Questions'], ['student', 'Student'], ['powerschool', 'PowerSchool'], ['settings', 'Settings']].forEach(function (x) {
       var b = el('button', 'tab' + (st.tab === x[0] ? ' on' : ''), x[1]); b.type = 'button';
       b.addEventListener('click', function () { st.tab = x[0]; ls('hw:ttab', x[0]); render(); });
       t.appendChild(b);
@@ -79,7 +80,7 @@
     return api('dash', { 'class': st.klass }).then(function (d) {
       st.loading = false;
       if (!d.ok) throw new Error(d.error || 'error');
-      st.D = d; st.derived = null; drawTop(); render(); loadCal();
+      st.D = d; st.derived = null; drawTop(); if (!(quiet && (st.tab === 'powerschool' || st.tab === 'settings'))) render(); loadCal(); // the 2-minute refresh leaves forms being filled in alone
       clearInterval(st.dashTimer); st.dashTimer = setInterval(function () { if (document.visibilityState === 'visible') loadDash(true); }, 120000);
       clearInterval(st.liveTimer); st.liveTimer = setInterval(pollLive, 10000);
     }).catch(function (e) { st.loading = false; if (!quiet) view.innerHTML = '<div class="panel"><h2>Couldn’t load the class</h2><p class="muted">' + esc(e.message) + '</p></div>'; });
@@ -156,7 +157,7 @@
     if (HW.DashRetests && st.klass && st.rtAsked !== st.klass) { st.rtAsked = st.klass; HW.Dash.retestCount = 0; HW.DashRetests.load().then(function () { if (st.tab !== 'retests') render(); }, function () {}); }
     view.appendChild(tabs());
     var body = el('div', 'tab-body'); view.appendChild(body);
-    ({ live: renderLive, exits: function (b) { HW.DashTests.render(b, 'exit'); }, tests: function (b) { HW.DashTests.render(b, 'test'); }, retests: function (b) { HW.DashRetests.render(b); }, calendar: function (b) { HW.DashCal.render(b); }, progress: renderProgress, outcomes: renderOutcomes, questions: renderQuestions, student: renderStudent, settings: renderSettings }[st.tab] || renderLive)(body);
+    ({ live: renderLive, exits: function (b) { HW.DashTests.render(b, 'exit'); }, tests: function (b) { HW.DashTests.render(b, 'test'); }, retests: function (b) { HW.DashRetests.render(b); }, calendar: function (b) { HW.DashCal.render(b); }, progress: renderProgress, outcomes: renderOutcomes, questions: renderQuestions, student: renderStudent, powerschool: function (b) { HW.DashReports.render(b); }, settings: renderSettings }[st.tab] || renderLive)(body);
     HW.texIn && HW.texIn(body);
   }
 
@@ -531,30 +532,33 @@
       body.appendChild(p2);
       if (st.bell) body.appendChild(bellPanel());
 
-      var p3 = el('div', 'panel'); p3.appendChild(el('h3', '', 'Students in ' + esc(c.label)));
-      var t = el('table', 'tbl'); t.innerHTML = '<thead><tr><th>Name</th><th>PIN</th><th>Devices</th><th>Last seen</th><th></th></tr></thead>';
-      var tb = el('tbody');
-      st.D.roster.slice().sort(function (a, b) { return a.name.localeCompare(b.name); }).forEach(function (s) {
-        var tr = el('tr'); tr.innerHTML = '<td>' + esc(s.name) + '</td><td>' + (s.pin ? 'set' : '<span class="muted">not yet</span>') + '</td><td>' + s.devices + '</td><td>' + (s.lastSeen ? ago(s.lastSeen) : 'never') + '</td><td class="acts"></td>';
-        var acts = tr.querySelector('.acts');
-        if (s.pin) { var rp = el('button', 'btn btn-small', 'Reset PIN'); rp.type = 'button'; rp.addEventListener('click', function () { if (!confirm('Reset ' + s.name + '’s PIN? They’ll make a new one next time they sign in (their work is kept).')) return; api('resetpin', { 'class': c.code, name: s.name }).then(function () { loadDash(); }); }); acts.appendChild(rp); }
-        var rm = el('button', 'btn btn-small btn-ghost', 'Remove'); rm.type = 'button'; rm.addEventListener('click', function () { if (!confirm('Remove ' + s.name + ' from the class list? Their answers stay in the spreadsheet.')) return; api('removestudent', { 'class': c.code, name: s.name }).then(function () { loadDash(); }); }); acts.appendChild(rm);
-        tb.appendChild(tr);
-      });
-      t.appendChild(tb); p3.appendChild(wrapTbl(t));
-      p3.appendChild(el('div', 'lbl', 'Add students (one name per line — first and last name)'));
-      var add = el('textarea', 'field'); add.rows = 4; p3.appendChild(add);
-      var ab = el('button', 'btn btn-small', 'Add to the class'); ab.type = 'button'; ab.addEventListener('click', function () { if (!add.value.trim()) return; api('setroster', { 'class': c.code, names: add.value, mode: 'add' }).then(function (d) { flash(p3, 'Added ' + d.added + '.'); loadDash(); loadClasses(); }); }); p3.appendChild(ab);
-      body.appendChild(p3);
+      body.appendChild(studentsPanel(c));
     }
     var p4 = el('div', 'panel'); p4.appendChild(el('h3', '', 'New class'));
     p4.appendChild(el('p', 'small muted', 'A class code is what students type (or what the class link carries). Use something short like <code>10c-b</code>. Paste the class list from PowerSchool — one name per line.'));
     var g = el('div', 'grid2');
     var code = el('input', 'field'); code.placeholder = 'Class code, e.g. 10c-b'; var label = el('input', 'field'); label.placeholder = 'Name shown, e.g. Math 10C · Block B';
     g.appendChild(code); g.appendChild(label); p4.appendChild(g);
+    var tplRow = el('div', 'ps-up'), tpl = null;
+    tplRow.appendChild(fileButton('Fill from a PowerSchool scores template…', function (text, fname) {
+      var t = HW.PS.parse(text); if (t.error) { flash(p4, t.error); return; }
+      tpl = t; names.value = t.students.map(function (x) { return x.name; }).join('\n');
+      if (!label.value.trim() && t.course) label.value = t.course;
+      tplNote.innerHTML = '<b>' + t.students.length + ' students</b> from <i>' + esc(fname) + '</i>' + (t.course ? ' (' + esc(t.course) + ')' : '') + '. Their PowerSchool student numbers are saved with the class list.';
+    }));
+    var tplNote = el('span', 'small muted', 'In PowerSchool, export the scores template of any assignment in this class (a .csv file), then pick it here.'); tplRow.appendChild(tplNote); p4.appendChild(tplRow);
     var names = el('textarea', 'field'); names.rows = 8; names.placeholder = 'Jordan Smith\nPriya Patel\n…'; p4.appendChild(names);
     var mk = el('button', 'btn btn-primary', 'Create class'); mk.type = 'button';
-    mk.addEventListener('click', function () { if (!code.value.trim()) { code.focus(); return; } api('setroster', { 'class': code.value.trim(), label: label.value.trim() || code.value.trim(), names: names.value, mode: 'add' }).then(function (d) { if (!d.ok) { flash(p4, d.error); return; } st.klass = d['class'].code; ls('hw:tclass', st.klass); loadClasses(); }); });
+    mk.addEventListener('click', function () {
+      if (!code.value.trim()) { code.focus(); return; }
+      var q = { 'class': code.value.trim(), label: label.value.trim() || code.value.trim(), names: names.value, mode: 'add' };
+      if (tpl) { // keep the student numbers of the names still in the box
+        var byName = {}; tpl.students.forEach(function (x) { byName[x.name.toLowerCase()] = x.num; });
+        q.students = JSON.stringify(names.value.split(/\r?\n|;/).map(function (n) { n = n.trim(); return n ? { n: n, num: byName[n.toLowerCase()] || '' } : null; }).filter(Boolean));
+        q.ps = JSON.stringify(psInfo(tpl));
+      }
+      api('setroster', q).then(function (d) { if (!d.ok) { flash(p4, d.error); return; } st.klass = d['class'].code; ls('hw:tclass', st.klass); loadClasses(); });
+    });
     p4.appendChild(mk); body.appendChild(p4);
     if (c) {
       var p5 = el('div', 'panel danger'); p5.appendChild(el('h3', '', 'Delete this class'));
@@ -566,6 +570,93 @@
     var p6 = el('div', 'panel'); p6.appendChild(el('h3', '', 'This device'));
     if (HW.DashDemo && ls('hw:nodemo') === '1') { var sd = el('button', 'btn btn-small btn-ghost', 'Show the demo class'); sd.type = 'button'; sd.style.marginRight = '8px'; sd.addEventListener('click', function () { ls('hw:nodemo', null); loadClasses(); }); p6.appendChild(sd); }
     var fk = el('button', 'btn btn-small btn-ghost', 'Forget the teacher key on this device'); fk.type = 'button'; fk.addEventListener('click', function () { ls('hw:tkey', null); st.key = ''; keyScreen(); }); p6.appendChild(fk); body.appendChild(p6);
+  }
+  /* ---- the class list: names, PowerSchool student numbers, pronouns (for report card comments), IPP ---- */
+  var PRONOUNS = [['', '—'], ['he', 'he/him'], ['she', 'she/her'], ['they', 'they/them']];
+  function psInfo(t) { return { teacher: t.teacher || '', course: t.course || '', points: t.points || '', type: t.type || '' }; }
+  function fileButton(label, onText) {
+    var lab = el('label', 'btn btn-small ps-file'), inp = el('input'); inp.type = 'file'; inp.accept = '.csv,text/csv,text/plain';
+    lab.appendChild(document.createTextNode(label)); lab.appendChild(inp);
+    inp.addEventListener('change', function () {
+      var f = inp.files && inp.files[0]; if (!f) return;
+      var r = new FileReader(); r.onload = function () { onText(String(r.result || ''), f.name); inp.value = ''; }; r.readAsText(f);
+    });
+    return lab;
+  }
+  /* save one student's class-list details (num / pronouns / ipp); the demo class keeps them in this browser */
+  function setStudent(c, s, field, value, node) {
+    var p = { 'class': c.code, name: s.name }; p[field] = value;
+    return api('setstudent', p).then(function (d) {
+      if (!d || !d.ok) { flash(node, (d && d.error) || 'Couldn’t save.'); return false; }
+      s.num = d.num; s.pronouns = d.pronouns; s.ipp = d.ipp; st.derived = null; return true;
+    }, function (e) { flash(node, e.message); return false; });
+  }
+  function studentsPanel(c) {
+    var p3 = el('div', 'panel'); p3.appendChild(el('h3', '', 'Students in ' + esc(c.label)));
+    var roster = st.D.roster.slice().sort(function (a, b) { return a.name.localeCompare(b.name); });
+    var up = el('div', 'ps-up');
+    up.appendChild(fileButton('Update from a PowerSchool scores template…', function (text, fname) { var t = HW.PS.parse(text); if (t.error) { flash(p3, t.error); return; } importPreview(c, t, fname, box); }));
+    var noNum = roster.filter(function (s) { return !s.num; }).length, noPro = roster.filter(function (s) { return !s.pronouns; }).length;
+    up.appendChild(el('span', 'small muted', 'Adds anyone new and saves each student’s PowerSchool number (needed for the score files).' + (c.ps && c.ps.course ? ' PowerSchool class: <b>' + esc(c.ps.course) + '</b>.' : '')));
+    p3.appendChild(up);
+    var box = el('div', 'ps-preview'); p3.appendChild(box);
+    if (roster.length && (noNum || noPro)) p3.appendChild(el('p', 'small ps-warn', [noNum ? noNum + ' without a student number' : '', noPro ? noPro + ' without pronouns (their report card comments use their name instead)' : ''].filter(Boolean).join(' · ')));
+    var t = el('table', 'tbl roster-tbl'); t.innerHTML = '<thead><tr><th>Name</th><th>Student #</th><th>Pronouns</th><th title="On an individual program plan: the report card comment gets the IPP sentence">IPP</th><th>PIN</th><th>Devices</th><th>Last seen</th><th></th></tr></thead>';
+    var tb = el('tbody');
+    roster.forEach(function (s) {
+      var tr = el('tr'); tr.innerHTML = '<td>' + esc(s.name) + '</td><td class="rs-num"></td><td class="rs-pro"></td><td class="rs-ipp"></td><td>' + (s.pin ? 'set' : '<span class="muted">not yet</span>') + '</td><td>' + s.devices + '</td><td>' + (s.lastSeen ? ago(s.lastSeen) : 'never') + '</td><td class="acts"></td>';
+      var num = el('input', 'field rs-numin'); num.value = s.num || ''; num.inputMode = 'numeric'; num.placeholder = '—'; num.setAttribute('aria-label', 'Student number for ' + s.name);
+      num.addEventListener('change', function () { setStudent(c, s, 'num', num.value.trim(), p3).then(function (ok) { num.value = s.num || ''; if (ok) num.classList.add('saved'); }); });
+      tr.querySelector('.rs-num').appendChild(num);
+      tr.querySelector('.rs-pro').appendChild(pronounSelect(c, s, p3));
+      tr.querySelector('.rs-ipp').appendChild(ippBox(c, s, p3));
+      var acts = tr.querySelector('.acts');
+      if (s.pin) { var rp = el('button', 'btn btn-small', 'Reset PIN'); rp.type = 'button'; rp.addEventListener('click', function () { if (!confirm('Reset ' + s.name + '’s PIN? They’ll make a new one next time they sign in (their work is kept).')) return; api('resetpin', { 'class': c.code, name: s.name }).then(function () { loadDash(); }); }); acts.appendChild(rp); }
+      var rm = el('button', 'btn btn-small btn-ghost', 'Remove'); rm.type = 'button'; rm.addEventListener('click', function () { if (!confirm('Remove ' + s.name + ' from the class list? Their answers stay in the spreadsheet.')) return; api('removestudent', { 'class': c.code, name: s.name }).then(function () { loadDash(); }); }); acts.appendChild(rm);
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb); p3.appendChild(wrapTbl(t));
+    p3.appendChild(el('div', 'lbl', 'Add students (one name per line — first and last name)'));
+    var add = el('textarea', 'field'); add.rows = 4; p3.appendChild(add);
+    var ab = el('button', 'btn btn-small', 'Add to the class'); ab.type = 'button'; ab.addEventListener('click', function () { if (!add.value.trim()) return; api('setroster', { 'class': c.code, names: add.value, mode: 'add' }).then(function (d) { flash(p3, 'Added ' + d.added + '.'); loadDash(); loadClasses(); }); }); p3.appendChild(ab);
+    return p3;
+  }
+  function pronounSelect(c, s, node) {
+    var sel = el('select', 'field rs-prosel'); sel.setAttribute('aria-label', 'Pronouns for ' + s.name);
+    PRONOUNS.forEach(function (x) { var o = new Option(x[1], x[0]); if ((s.pronouns || '') === x[0]) o.selected = true; sel.appendChild(o); });
+    sel.addEventListener('change', function () { var v = sel.value; setStudent(c, s, 'pronouns', v, node).then(function (ok) { sel.value = s.pronouns || ''; if (ok && sel.onsaved) sel.onsaved(); }); });
+    return sel;
+  }
+  function ippBox(c, s, node) {
+    var lab = el('label', 'rs-ippl'), cb = el('input'); cb.type = 'checkbox'; cb.checked = !!s.ipp; cb.setAttribute('aria-label', s.name + ' is on an IPP');
+    cb.addEventListener('change', function () { setStudent(c, s, 'ipp', cb.checked ? '1' : '0', node).then(function (ok) { cb.checked = !!s.ipp; if (ok && cb.onsaved) cb.onsaved(); }); });
+    lab.appendChild(cb); return lab;
+  }
+  /* what a template would change, before anything is saved */
+  function importPreview(c, t, fname, box) {
+    var m = HW.PS.match(t.students, st.D.roster), add = m.rows.filter(function (r) { return r.how === 'new'; }), close = m.rows.filter(function (r) { return r.how === 'close'; });
+    var numbered = m.rows.filter(function (r) { return r.as && r.num && !st.D.roster.some(function (s) { return s.name === r.as && String(s.num) === r.num; }); });
+    box.innerHTML = '';
+    var h = '<p><b>' + t.students.length + ' students</b> in <i>' + esc(fname) + '</i>' + (t.course ? ' · ' + esc(t.course) : '') + (t.assignment ? ' · ' + esc(t.assignment) : '') + '</p><ul class="ps-sum">';
+    h += '<li>' + (m.rows.length - add.length) + ' already on the class list' + (numbered.length ? ' (' + numbered.length + ' get their student number)' : '') + '</li>';
+    if (close.length) h += '<li>Matched by a slightly different name: ' + close.map(function (r) { return esc(r.name) + ' → <b>' + esc(r.as) + '</b>'; }).join(', ') + '</li>';
+    h += '<li>' + (add.length ? add.length + ' new, added: ' + add.map(function (r) { return esc(r.name); }).join(', ') : 'No one new') + '</li>';
+    if (m.missing.length) h += '<li>On the class list but not in the file: ' + m.missing.map(esc).join(', ') + '</li>';
+    box.innerHTML = h + '</ul>';
+    var rmL = null;
+    if (m.missing.length) { rmL = el('label', 'tt-inline'); var rc = el('input'); rc.type = 'checkbox'; rmL.appendChild(rc); rmL.appendChild(document.createTextNode(' Also remove the ' + m.missing.length + ' not in the file (their work stays in the spreadsheet)')); box.appendChild(rmL); }
+    var row = el('div', 'ps-acts');
+    var go = el('button', 'btn btn-primary btn-small', 'Update the class list'); go.type = 'button';
+    go.addEventListener('click', function () {
+      go.disabled = true;
+      api('setroster', { 'class': c.code, students: JSON.stringify(m.rows.map(function (r) { return { n: r.name, num: r.num, as: r.as }; })), ps: JSON.stringify(psInfo(t)), mode: rmL && rmL.querySelector('input').checked ? 'replace' : 'add' }).then(function (d) {
+        if (!d.ok) { go.disabled = false; flash(box, d.error); return; }
+        box.innerHTML = ''; flash(box, 'Class list updated: ' + d.added + ' added' + (d.numbered ? ', ' + d.numbered + ' student numbers saved' : '') + (d.removed ? ', ' + d.removed + ' removed' : '') + '.');
+        loadDash(); loadClasses();
+      }, function (e) { go.disabled = false; flash(box, e.message); });
+    });
+    var no = el('button', 'btn btn-small btn-ghost', 'Cancel'); no.type = 'button'; no.addEventListener('click', function () { box.innerHTML = ''; });
+    row.appendChild(go); row.appendChild(no); box.appendChild(row);
   }
   /* Class times: the bell schedule (start and end of each block on each kind of day), for every class. It decides what
      counts as in class and when a test "until the end of class" ends. Saved in the ledger (setbell). */
@@ -654,6 +745,6 @@
     var csv = rows.map(function (r) { return r.map(function (v) { v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; }).join(','); }).join('\n');
     var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = name; document.body.appendChild(a); a.click(); setTimeout(function () { a.remove(); }, 100);
   }
-  HW.Dash = { state: st, render: render, api: api, download: download, flash: flash, drawTop: function () { drawTop(); } };
+  HW.Dash = { state: st, render: render, api: api, download: download, flash: flash, drawTop: function () { drawTop(); }, students: students, derive: derive, scopeSeg: scopeSeg, pronounSelect: pronounSelect, ippBox: ippBox, wrapTbl: wrapTbl, openStudent: function (n) { openStudent(n); } };
   boot();
 })(window);

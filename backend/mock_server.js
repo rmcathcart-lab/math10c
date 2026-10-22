@@ -17,6 +17,7 @@ Sheet.prototype = {
     var rg = {
       getValues: function () { var out = []; for (var i = 0; i < nr; i++) { var row = sh.rows[r - 1 + i] || [], o = []; for (var j = 0; j < nc; j++) { var v = row[c - 1 + j]; o.push(v === undefined ? '' : v); } out.push(o); } return out; },
       setValues: function (vals) { for (var i = 0; i < nr; i++) { var row = sh.rows[r - 1 + i] = sh.rows[r - 1 + i] || []; for (var j = 0; j < nc; j++) row[c - 1 + j] = vals[i][j]; } return rg; },
+      getValue: function () { var row = sh.rows[r - 1] || []; return row[c - 1] === undefined ? '' : row[c - 1]; },
       setValue: function (v) { var row = sh.rows[r - 1] = sh.rows[r - 1] || []; row[c - 1] = v; return rg; },
       setFontWeight: function () { return rg; }
     };

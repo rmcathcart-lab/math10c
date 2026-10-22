@@ -32,6 +32,9 @@
   function liveRetests() { var pre = norm(cls()) + '|', out = []; Object.keys(TS.liveAll || {}).forEach(function (k) { var l = TS.liveAll[k]; if (k.indexOf(pre) === 0 && l && l.id) out.push(l); }); return out; }
   /* open the live monitor for one student's retest (from the Retests tab) */
   TS.watch = function (who) { TS.klass = cls(); TS.who = who; TS.view = 'home'; TS.live = null; TS.res = null; TS.tests = null; goTab('test'); };
+  /* a session's results (a tresults reply) marked the same way the Results view marks them: each row gets final (marks),
+     sum (exit slip: highest level right per outcome) and, for a test, g (indicator per outcome and the unit grade) */
+  TS.grade = function (d) { return computeMarks(d); };
   TS.openResults = function (sid) { TS.klass = cls(); st.tab = 'tests'; try { localStorage.setItem('hw:ttab', 'tests'); } catch (e) {} return openResults(sid); };
 
   /* ================= render ================= */
@@ -349,8 +352,8 @@
       TS.res = d; computeMarks(); rerender();
     });
   }
-  function computeMarks() {
-    var R = TS.res, def = R.session.def, items = TC.items(def), isTest = R.session.kind !== 'exit';
+  function computeMarks(R) {
+    R = R || TS.res; var def = R.session.def, items = TC.items(def), isTest = R.session.kind !== 'exit';
     R.items = items; R.labels = TC.labels(def); R.isTest = isTest;
     var byPos = {}; items.forEach(function (x) { byPos[x.pos] = x; });
     R.rows.forEach(function (r) {
@@ -367,11 +370,12 @@
       items.forEach(function (x) { posOf[x.key] = x.pos; });
       for (var j = order.length - 1; j >= 0 && fin.charAt(posOf[order[j]]) === 'b'; j--) tail++;
       r.tailBlank = tail >= 3 ? tail : 0;
-      regrade(r);
+      regrade(r, R);
     });
+    return R;
   }
-  function regrade(r) {
-    var R = TS.res, def = R.session.def;
+  function regrade(r, R) {
+    R = R || TS.res; var def = R.session.def;
     r.sum = TC.summary(def, r.final);
     if (R.isTest) r.g = TC.outcomeGrades(def, TC.packMarks(r.final, r.fin));
     r.dirty = TC.packMarks(r.final, r.fin) !== (r.marks || '');
@@ -506,6 +510,7 @@
     return api('setmarks', { session: R.session.id, data: JSON.stringify(data) }).then(function (d) {
       if (!d.ok) { alert('Couldn’t save the marks: ' + d.error + '. Nothing was released.'); throw new Error(d.error); }
       R.rows.forEach(function (r) { r.marks = TC.packMarks(r.final, r.fin); r.dirty = false; });
+      if (HW.DashReports) HW.DashReports.cache = {}; // the PowerSchool tab re-marks with these
     });
   }
   function csv() {
