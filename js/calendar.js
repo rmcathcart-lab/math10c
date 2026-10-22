@@ -48,7 +48,7 @@
     if (!INFO) {
       INFO = {}; var order = 0;
       (HW.CATALOG || []).forEach(function (u) {
-        (u.lessons || []).forEach(function (c) { INFO[c.id] = { key: c.id, kind: 'lesson', unit: u.unit, unitTitle: u.title, num: c.num, title: c.title, order: order++ }; });
+        (u.lessons || []).forEach(function (c) { INFO[c.id] = { key: c.id, kind: 'lesson', unit: u.unit, unitTitle: u.title, num: c.num, title: c.title, intro: !!c.intro, order: order++ }; });
         if (u.lessons && u.lessons.length) INFO['t' + u.unit] = { key: 't' + u.unit, kind: 'test', unit: u.unit, unitTitle: u.title, num: 'Test', title: 'Unit ' + u.unit + ' Test', order: order++ };
       });
     }
@@ -67,7 +67,9 @@
     (cal.items || []).forEach(function (x) { if (Array.isArray(x) && C.info(x[0]) && !seen[x[0]]) { seen[x[0]] = 1; items.push([x[0], Math.max(0, Math.round(Number(x[1]) || 0))]); } });
     var skipped = (cal.skipped || []).filter(function (k) { if (!C.info(k) || seen[k]) return false; seen[k] = 1; return true; });
     var last = items.reduce(function (m, x) { return Math.max(m, x[1]); }, -1);
-    C.sequence().forEach(function (k) { if (!seen[k]) items.push([k, ++last]); });
+    // lessons new in the catalog go at the end; the course introduction (day one) goes to Skipped instead, so a calendar
+    // made before it existed doesn't get it tacked on at the end (drag it in if it's wanted)
+    C.sequence().forEach(function (k) { if (seen[k]) return; if (C.info(k).intro) skipped.push(k); else items.push([k, ++last]); });
     sortItems(items);
     var out = { v: 1, start: cal.start, items: items, skipped: skipped }, ev = C.cleanEvents(cal.events);
     if (ev.length) out.events = ev;

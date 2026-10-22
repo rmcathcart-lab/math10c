@@ -321,7 +321,7 @@
           line.appendChild(tc);
         } else line.appendChild(el('div', 'lesson-teach none', ''));
         line.appendChild(row);
-        var info = el('div', 'lr-info', '<div class="lr-num">Assignment ' + esc(c.num) + '</div><div class="lr-title">' + HW.tex(esc(c.title)) + '</div>');
+        var info = el('div', 'lr-info', '<div class="lr-num">' + (c.intro ? 'Day one' : 'Assignment ' + esc(c.num)) + '</div><div class="lr-title">' + HW.tex(esc(c.title)) + '</div>');
         row.appendChild(info);
         if (lesson) {
           row.href = '#/lesson/' + lesson.id;
@@ -331,7 +331,7 @@
           right.appendChild(el('div', 'lr-counts', '<b>' + s.reqDone + '</b>/' + s.req + ' required' + (s.extra ? ' · <b>' + s.extraDone + '</b>/' + s.extra + ' extra' : '') + (s.secs ? ' · ' + mins(s.secs) : '')));
           row.appendChild(right);
           row.appendChild(el('span', 'lr-go', (g === 'Review' ? '<span aria-hidden="true">✓ </span>' : '') + g));
-        } else row.appendChild(el('span', 'lr-soon', 'Coming soon'));
+        } else row.appendChild(el('span', 'lr-soon', c.intro ? 'No assignment' : 'Coming soon'));
         list.appendChild(line);
       });
       body.appendChild(list); units.appendChild(sec);

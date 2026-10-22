@@ -7,7 +7,7 @@
   /* lessons that have a lesson page under lessons/ (examples + the teacher's class notes); the home page and the
    * lesson sidebar link to it as lessons/u1/l6a/?class=<block> */
   root.HW.TEACHING = { base: 'lessons/',
-    lessons: ['u1l1', 'u1l2', 'u1l3', 'u1l4', 'u1l5', 'u1l6a', 'u1l6b', 'u1l7',
+    lessons: ['u1l0', 'u1l1', 'u1l2', 'u1l3', 'u1l4', 'u1l5', 'u1l6a', 'u1l6b', 'u1l7',
       'u2l1', 'u2l2', 'u2l3', 'u2l4', 'u2l5a', 'u2l5b', 'u2l6', 'u3l1', 'u3l2', 'u3l3', 'u3l4', 'u3l5', 'u3l6',
       'u4l1a', 'u4l1b', 'u4l2', 'u4l3', 'u4l4', 'u4l5', 'u4l6', 'u4l7', 'u4l8',
       'u5l1', 'u5l2', 'u5l3', 'u5l4', 'u5l5', 'u5l6', 'u5l7a', 'u5l7b', 'u5l8', 'u5l9', 'u5l10',
@@ -18,6 +18,7 @@
       'u10l1', 'u10l2', 'u10l3', 'u10l4a', 'u10l4b', 'u10l5', 'u10l6', 'u10l7', 'u10l8', 'u10l9'] };
   root.HW.CATALOG = [
     { unit: 1, title: 'Number', outcomes: 'AN1 · AN2', lessons: [
+      { id: 'u1l0', num: '0', title: 'Welcome to Math 10C', intro: true }, // day one: the course introduction (no assignment)
       { id: 'u1l1', num: '1', title: 'Prime Building Blocks of Numbers' },
       { id: 'u1l2', num: '2', title: 'Prime Factorization at Work: GCF, LCM, and Perfect Powers' },
       { id: 'u1l3', num: '3', title: 'Rational Numbers, Irrational Numbers, and Decimal Patterns' },

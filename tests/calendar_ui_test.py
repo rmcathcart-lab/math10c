@@ -23,8 +23,10 @@ async def main():
         tp.on('dialog', lambda d: asyncio.ensure_future(d.accept()))
         await tp.route(BASE + 'js/config.js', lambda r: r.fulfill(status=200, content_type='application/javascript', body=CONFIG))
         await tp.goto(BASE + 'teacher/'); await tp.wait_for_selector('.kc-start', timeout=15000)
-        await tp.click('.kc-start .calp-day[data-date="2026-09-03"]'); await tp.click('.kc-start .btn-primary'); await tp.wait_for_selector('.kc-grid')
-        await tp.wait_for_timeout(600)
+        await tp.click('.kc-start .calp-day[data-date="2026-09-02"]'); await tp.click('.kc-start .btn-primary'); await tp.wait_for_selector('.kc-grid')  # day one (the course introduction, Lesson 0) on Sept 2, Lesson 1.1 on Sept 3
+        for _ in range(30):
+            if get('action=cal&class=10c-b')['cal']: break
+            await tp.wait_for_timeout(300)
         cal = get('action=cal&class=10c-b')['cal']; print('saved start', cal['start'], len(cal['items']), 'items')
         await tp.evaluate("document.querySelector('.kc-grid').scrollToDate('2026-09-01')"); await tp.wait_for_timeout(200)
         # Today brings this week back
@@ -110,7 +112,7 @@ async def main():
         launch = await tp.evaluate("(() => { const b = document.querySelector('.top-launch'); return [b.tagName, b.getAttribute('href'), b.title, b.disabled]; })()"); print('launch:', launch)
         await tp.click('.top-lessons'); await tp.wait_for_selector('.lp-card')
         cards = await tp.evaluate("[...document.querySelectorAll('.lp-card')].slice(0, 3).map(c => [c.getAttribute('href'), c.className, c.innerText.replace(/\\n/g, ' | ')])"); print('cards:', cards)
-        assert cards[0][0] == '../lessons/u1/l1/?class=C' and 'is-past' in cards[0][1]
+        assert cards[0][0] == '../lessons/u1/l0/?class=C' and 'is-past' in cards[0][1] and cards[1][0] == '../lessons/u1/l1/?class=C'
         await tp.click('.lp-head .seg button:has-text("Calendar")'); await tp.wait_for_selector('.lp-cal a.calm-chip')
         await tp.screenshot(path=SH + 'lessons_pop.png'); await tp.keyboard.press('Escape'); assert await tp.locator('#lp-modal').count() == 0
         await b.close()

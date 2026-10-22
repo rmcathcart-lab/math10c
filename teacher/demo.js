@@ -342,7 +342,8 @@
     }
   }
   /* the demo class's calendar: the same pace as its made-up work (one lesson a school day, Unit 1 Test, today Unit 2 L3) */
-  function calendar() { if (!T.calSet && HW.Cal) { T.cal = HW.Cal.make(schoolDays(PACE.length)[0] ? HW.Cal.key(schoolDays(PACE.length)[0]) : HW.Cal.today()); T.calSet = true; } return T.cal; }
+  function calendar() { // starts the school day before the made-up work: day one is the course introduction (Lesson 0)
+    if (!T.calSet && HW.Cal) { var d0 = schoolDays(PACE.length + 1)[0]; T.cal = HW.Cal.make(d0 ? HW.Cal.key(d0) : HW.Cal.today()); T.calSet = true; } return T.cal; }
   function isDemo(p) { p = p || {}; return p['class'] === CODE || /^DEMO-/.test(String(p.session || '')); }
 
   HW.DashDemo = { CODE: CODE, LABEL: LABEL, count: PEOPLE.length, api: api, isDemo: isDemo, _model: model };
