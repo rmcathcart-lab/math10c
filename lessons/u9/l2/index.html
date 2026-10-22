@@ -130,25 +130,33 @@
 </section>
 
 <!-- ================= 2. How the ratios change ================= -->
-<!-- ================= Math History box (brown) ================= -->
-<!-- sources: https://mathshistory.st-andrews.ac.uk/Biographies/Hipparchus/ (first table of chords, probably every 7.5°, radius ≈ 3438; table lost;
-     Moon 59–67 Earth radii from the eclipse of 190 BCE) · https://en.wikipedia.org/wiki/Hipparchus · https://en.wikipedia.org/wiki/On_the_Sizes_and_Distances_(Aristarchus) -->
-<section class="card history" data-ink="hist" data-section="Math History: the first trig table">
-  <div class="hist-head"><span class="hist-tag">Math History</span><span class="hist-dates">c. 190–120 BCE · Rhodes</span></div>
-  <div class="hist-grid">
+<!-- ================= Math History box (brown): Hipparchus, from a chord to the Moon ================= -->
+<!-- sources: https://mathshistory.st-andrews.ac.uk/Biographies/Hipparchus/ (c. 190–120 BCE; "highly probable that Hipparchus was the first to
+     construct a table of chords"; table lost) · https://en.wikipedia.org/wiki/On_Sizes_and_Distances_(Hipparchus) (eclipse of 14 March 190 BCE:
+     total at the Hellespont, about 4/5 at Alexandria, per Pappus; Book 1: Moon 71 to 83 Earth radii, mean 77; Book 2: 62 to 72⅔)
+     · https://www.michaelbeeson.com/interests/GreatMoments/Hipparchus.pdf (the reconstruction: latitudes 41° and 31°, Moon's declination −3°,
+     0.1° = 1/5 of the Sun's 0.5° width). Our check: parallax (sin 44° − sin 34°)·R/d = 0.1° gives d ≈ 0.1355 ÷ tan 0.1° ≈ 78 Earth radii. -->
+<section class="card history hist-wide" data-ink="hist" data-section="Math History: from a chord to the Moon">
+  <div class="hist-head"><span class="hist-tag">Math History</span><span class="hist-dates">c. 190–120 BCE · Rhodes · the eclipse of 190 BCE</span></div>
+  <div class="hpc-top">
     <div class="hist-text">
-      <h3 class="hist-title">The first trig table</h3>
-      <p>Before calculators, people looked trig values up in tables. The first we know of was made by <b>Hipparchus</b>, a Greek astronomer on Rhodes often called the <b>father of trigonometry</b>. It is lost; later writers describe it.</p>
-      <p>It listed the <b>chord</b> (the line straight across a circle) for angles, probably every 7½°. Half a chord is our <b>opposite</b> side. With it he found the Moon is 59 to 67 Earth radii away; the real value is about 60.</p>
-      <div class="part hist-q"><div class="pl">His circle's radius was 3438. A 60° slice has a chord of 3438. Half of it, 1719, is opposite 30°. What is sin 30°?</div>
-        <div class="ansrow"><button class="reveal">Answer</button><div class="ans">sin 30° = opp ÷ hyp = 1719 ÷ 3438 = <b>0.5</b>, the same as your calculator.</div></div></div>
+      <h3 class="hist-title">Hipparchus: from a chord to the Moon</h3>
+      <p><b>Hipparchus</b>, a Greek astronomer on Rhodes often called the father of trigonometry, made the <b>first known trig table</b> (a table of chords) and used it to measure how far away the <b>Moon</b> is.</p>
+      <p class="hpc-lost">His books are lost; historians rebuilt his method from later writers.</p>
     </div>
-    <figure class="hist-anim">
-      <svg id="chord-anim" viewBox="0 0 600 300" role="img" aria-label="A chord sweeping around a circle in steps of 7.5 degrees while a table of chord lengths fills in; at 60 degrees the chord equals the radius and half of it gives sin 30 degrees = 0.5."></svg>
-      <figcaption><button class="hist-play" type="button">Replay</button><span>Tap the picture to play it again.</span></figcaption>
-      <p class="hist-note">Why 3438? He measured the radius in the same units as the arc: a circle of 360 × 60 = 21 600 minutes has a radius of 21 600 ÷ 2π ≈ 3438.</p>
-    </figure>
+    <div class="part hist-q"><div class="pl">From the Moon, the two cities were 0.135 Earth radii apart, at an angle of 0.1°. Use tan 0.1° = gap ÷ distance: how far away is the Moon?</div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">0.135 ÷ tan 0.1° ≈ <b>77 Earth radii</b>, in Hipparchus's range of 71 to 83 (today: about 60).</div></div></div>
   </div>
+  <figure class="hist-anim hpc">
+    <div class="hpc-bar">
+      <div class="hpc-chips" role="group" aria-label="Parts of the story">
+        <button type="button" class="hpc-chip" data-k="0">1 · A chord</button><button type="button" class="hpc-chip" data-k="1">2 · Half a chord: sine and cosine</button><button type="button" class="hpc-chip" data-k="2">3 · Tangent</button><button type="button" class="hpc-chip" data-k="3">4 · To the Moon</button>
+      </div>
+      <button class="hist-play" type="button">Replay</button>
+    </div>
+    <p class="hpc-cap" aria-live="polite"></p>
+    <svg id="hipparchus-anim" viewBox="0 14 1000 290" role="img" aria-label="A chord in a circle turns into a right triangle: half the chord is the sine, the other side the cosine, and the line touching the circle gives the tangent. Then two cities see an eclipse differently, and the thin triangle to the Moon gives its distance."></svg>
+  </figure>
 </section>
 
 <section class="card" data-ink="s2" data-section="2. How the Ratios Change">

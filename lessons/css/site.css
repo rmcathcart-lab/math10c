@@ -552,3 +552,11 @@ body.viewer .edot { display: none; }
 @keyframes ci-burst { 0% { opacity: .9; transform: scale(.2); } 100% { opacity: 0; transform: scale(1.4); } }
 .ci-jyear { font: 800 15px var(--round); fill: #b07a12; }
 @media (prefers-reduced-motion: reduce) { .ci-bug { transition: none; } .ci-j.on .ci-burst { animation: none; } }
+/* a wide Math History box: the story and question on top, the animation across the whole card */
+.hist-wide .hpc-top { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 24px; align-items: start; margin-bottom: 10px; }
+.hist-wide .hist-text p { margin-bottom: 0; }
+.hist-wide .hist-title { margin-bottom: 6px; }
+@media (max-width: 860px) { .hist-wide .hpc-top { grid-template-columns: 1fr; } }
+.card.history.hist-wide { padding: 22px 30px 20px; }
+.hist-wide .hist-head { margin-bottom: 6px; }
+.hist-wide .hist-q .pl { font-size: 16.5px; }

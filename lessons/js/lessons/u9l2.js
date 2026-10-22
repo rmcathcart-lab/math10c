@@ -804,60 +804,153 @@ mountPlay();
 export const explainers = mountExplainers({ calc, rescale, dial, compare, extremes, pattern, tan90, cofn });
 export const _test = { CALC, CMP, COF, scr, sn, cs, tn };
 
-/* ---------- Math History (the brown box): Hipparchus's table of chords ----------
- * A chord sweeps around a circle in steps of 7.5° while the table of chord lengths (radius 3438) fills in; at 60° the
- * chord equals the radius, and half of it over the radius is sin 30° = 0.5. */
-(function chordTable() {
-  const svg = document.getElementById('chord-anim'); if (!svg) return;
+/* ---------- Math History (the brown box): Hipparchus, from a chord to the Moon ----------
+ * Four parts, played one after another (tap a part to jump to it):
+ *  1. a chord opens up in a circle;  2. the picture turns so the chord stands upright and is cut in half: half-chord ÷ radius
+ *  is today's sine, the other side ÷ radius the cosine;  3. the line touching the circle cuts off the tangent;
+ *  4. the eclipse of 190 BCE: total at the Hellespont, about 4/5 at Alexandria, so the Moon was 0.1° apart from the two
+ *  cities, and distance = gap ÷ tan 0.1° ≈ 77 Earth radii (Hipparchus: 71 to 83; today about 60). */
+(function hipparchus() {
+  const svg = document.getElementById('hipparchus-anim'); if (!svg) return;
+  const fig = svg.closest('.hpc'), cap = fig.querySelector('.hpc-cap'), chips = [...fig.querySelectorAll('.hpc-chip')];
   const NS = 'http://www.w3.org/2000/svg';
   const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); Object.keys(attrs || {}).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
-  const txt = (s, attrs, parent) => { const e = mk('text', attrs, parent); e.textContent = s; return e; };
-  const O = { x: 150, y: 168 }, R = 112, RAD = 3438;
-  const P = (deg) => ({ x: O.x + R * Math.cos(deg * Math.PI / 180), y: O.y - R * Math.sin(deg * Math.PI / 180) });
-  const crd = (deg) => Math.round(2 * RAD * Math.sin(deg * Math.PI / 360));
-  txt('A table of chords', { x: 24, y: 30, class: 'u9l2h-cap' });
-  mk('circle', { cx: O.x, cy: O.y, r: R, class: 'u9l2h-circle' });
-  const A = P(0);
-  mk('line', { x1: O.x, y1: O.y, x2: A.x, y2: A.y, class: 'u9l2h-rad' });
-  txt('radius 3438', { x: O.x + 18, y: O.y + 18, class: 'u9l2h-small' });
-  mk('circle', { cx: O.x, cy: O.y, r: 3, fill: '#4a2c14' });
-  const rad2 = mk('line', { x1: O.x, y1: O.y, x2: A.x, y2: A.y, class: 'u9l2h-rad u9l2h-rad2' });
-  const chord = mk('line', { x1: A.x, y1: A.y, x2: A.x, y2: A.y, class: 'u9l2h-chord' });
-  const angT = txt('', { x: O.x + 26, y: O.y - 8, class: 'u9l2h-ang' });
-  // the right triangle at 60°: O, the midpoint of the chord, A
-  const tri = mk('g', { class: 'u9l2h-tri' }), B60 = P(60), M = { x: (A.x + B60.x) / 2, y: (A.y + B60.y) / 2 };
-  mk('line', { x1: O.x, y1: O.y, x2: M.x, y2: M.y, class: 'u9l2h-bis' }, tri);
-  mk('line', { x1: M.x, y1: M.y, x2: A.x, y2: A.y, class: 'u9l2h-half' }, tri);
-  txt('1719', { x: (M.x + A.x) / 2 + 8, y: (M.y + A.y) / 2 - 2, class: 'u9l2h-halfT' }, tri);
-  txt('30°', { x: O.x + 34, y: O.y - 6, class: 'u9l2h-ang' }, tri);
-  // the table
-  const T0 = 336, rows = [];
-  txt('angle', { x: T0, y: 30, class: 'u9l2h-th' }); txt('chord', { x: T0 + 150, y: 30, 'text-anchor': 'end', class: 'u9l2h-th' });
-  mk('line', { x1: T0, x2: T0 + 156, y1: 37, y2: 37, class: 'u9l2h-rule' });
-  for (let k = 1; k <= 8; k++) {
-    const g = mk('g', { class: 'u9l2h-row' }), y = 37 + k * 24;
-    txt((k * 7.5).toString().replace('.5', '½') + '°', { x: T0, y, class: 'u9l2h-td' }, g);
-    txt(crd(k * 7.5).toLocaleString('en-CA').replace(/,/g, ' '), { x: T0 + 150, y, 'text-anchor': 'end', class: 'u9l2h-td' }, g);
-    rows.push(g);
-  }
-  const fin = mk('g', { class: 'u9l2h-fin' });
-  txt('sin 30° = 1719 ÷ 3438 = 0.5', { x: T0 - 6, y: 278, class: 'u9l2h-big' }, fin);
-  const STEP = 750, PAUSE = 900;
-  let raf = 0, t0 = 0;
+  const txt = (s, attrs, parent) => { const e = mk('text', attrs, parent); e.innerHTML = s; return e; };
+  const clamp = (x) => Math.max(0, Math.min(1, x)), ease = (u) => u * u * (3 - 2 * u);
+  const P = (a, b, ms) => ease(clamp((ms - a) / (b - a)));
+  const setLine = (l, x1, y1, x2, y2) => { l.setAttribute('x1', x1); l.setAttribute('y1', y1); l.setAttribute('x2', x2); l.setAttribute('y2', y2); };
+  const grow = (l, x1, y1, x2, y2, u) => setLine(l, x1, y1, x1 + (x2 - x1) * u, y1 + (y2 - y1) * u);
+  const show = (e, o) => { e.style.opacity = o; };
+  const SCENES = [0, 6000, 14000, 20000], END = 34500;
+  const CAPS = [
+    'Hipparchus worked with <b>chords</b>: the straight line across a circle for each angle at its centre. In the 100s BCE he made the first known table of them.',
+    'Turn the picture and cut the chord in half: now there is a <b>right triangle</b>. Half-chord ÷ radius is today’s <b class="c-sin">sine</b>; the other side ÷ radius is the <b class="c-cos">cosine</b>.',
+    'Add the line that just <b>touches</b> the circle: the piece it cuts off ÷ radius is the <b class="c-tan">tangent</b>. Later mathematicians in India and the Islamic world named these and made a table for each.',
+    '14 March 190 BCE: an eclipse was <b>total</b> at the Hellespont, but at Alexandria about <b>1/5 of the Sun</b> still showed. So from the two cities the Moon was 0.1° apart, and that long, thin triangle gives its distance.'
+  ];
+  /* ---- parts 1–3: the circle ---- */
+  const O = { x: 300, y: 166 }, R = 132, HALF = 38, rad = Math.PI / 180;
+  const S1 = mk('g', {});
+  const circle = mk('circle', { cx: O.x, cy: O.y, r: R, class: 'hpc-circle' }, S1);
+  const rot = mk('g', {}, S1);   // the radii and chord, turned in part 2
+  const arc = mk('path', { class: 'hpc-arc' }, rot);
+  const rA = mk('line', { class: 'hpc-rad' }, rot), rB = mk('line', { class: 'hpc-rad' }, rot), chord = mk('line', { class: 'hpc-chord' }, rot);
+  mk('circle', { cx: O.x, cy: O.y, r: 3.5, fill: '#4a2c14' }, S1);
+  const chordT = txt('chord', { class: 'hpc-l', fill: '#b07a12' }, S1);
+  // after the turn (final coordinates): B up, A down, M the midpoint of the chord
+  const cx = O.x + R * Math.cos(HALF * rad), up = R * Math.sin(HALF * rad), B = { x: cx, y: O.y - up }, A = { x: cx, y: O.y + up }, M = { x: cx, y: O.y };
+  const lowA = mk('line', { class: 'hpc-faint' }, S1), lowC = mk('line', { class: 'hpc-faint hpc-faintc' }, S1);
+  const om = mk('line', { class: 'hpc-cos' }, S1), mb = mk('line', { class: 'hpc-sin' }, S1), ob = mk('line', { class: 'hpc-hyp' }, S1);
+  const sq = mk('path', { d: `M${M.x - 13},${M.y} v-13 h13`, class: 'hpc-sq' }, S1);
+  const aArc = mk('path', { d: `M${O.x + 40},${O.y} A40 40 0 0 0 ${O.x + 40 * Math.cos(HALF * rad)},${O.y - 40 * Math.sin(HALF * rad)}`, class: 'hpc-arc2' }, S1);
+  const aT = txt('38°', { x: O.x + 46, y: O.y - 10, class: 'hpc-s', fill: '#7a4a26' }, S1);
+  const sinT = txt('half-chord', { x: M.x - 9, y: (M.y + B.y) / 2, 'text-anchor': 'middle', transform: `rotate(-90 ${M.x - 9} ${(M.y + B.y) / 2})`, class: 'hpc-s', fill: '#8a58c9' }, S1);
+  const cosT = txt('other side', { x: (O.x + M.x) / 2, y: O.y + 22, 'text-anchor': 'middle', class: 'hpc-l', fill: '#2f72c4' }, S1);
+  const hypT = txt('radius', { x: (O.x + B.x) / 2 - 14, y: (O.y + B.y) / 2 - 14, 'text-anchor': 'end', class: 'hpc-l', fill: '#7a4a26' }, S1);
+  // part 3: the line touching the circle
+  const T = { x: O.x + R, y: O.y }, Q = { x: O.x + R, y: O.y - R * Math.tan(HALF * rad) };
+  const touch = mk('line', { class: 'hpc-touch' }, S1), ext = mk('line', { class: 'hpc-ext' }, S1), tq = mk('line', { class: 'hpc-tan' }, S1);
+  const tDot = mk('circle', { cx: T.x, cy: T.y, r: 4.5, fill: '#1f8a5b' }, S1);
+  const tanT = txt('tangent', { x: T.x + 12, y: (T.y + Q.y) / 2 + 6, class: 'hpc-l', fill: '#1f8a5b' }, S1);
+  const touchT = txt('touches the circle', { x: T.x + 12, y: T.y + 22, class: 'hpc-s', fill: '#1f8a5b' }, S1);
+  // the ratios, on the right
+  const PX = 600;
+  const r1 = txt('<tspan fill="#8a58c9" font-weight="800">sin 38°</tspan> = half-chord ÷ radius = 0.616', { x: PX, y: 96, class: 'hpc-mid' }, S1);
+  const r2 = txt('<tspan fill="#2f72c4" font-weight="800">cos 38°</tspan> = other side ÷ radius = 0.788', { x: PX, y: 140, class: 'hpc-mid' }, S1);
+  const r3 = txt('<tspan fill="#1f8a5b" font-weight="800">tan 38°</tspan> = tangent ÷ radius = 0.781', { x: PX, y: 184, class: 'hpc-mid' }, S1);
+  const r4 = txt('One circle, three ratios.', { x: PX, y: 250, class: 'hpc-big' }, S1);
+  const tbl = txt('A table of chords: an angle in, a length out.', { x: PX, y: 268, class: 'hpc-mid' }, S1);
+  const TB = mk('g', {}, S1), tRows = [];
+  txt('angle', { x: PX + 20, y: 62, class: 'hpc-l', fill: '#7a4a26' }, TB); txt('chord (radius 1)', { x: PX + 250, y: 62, 'text-anchor': 'end', class: 'hpc-l', fill: '#7a4a26' }, TB);
+  mk('line', { x1: PX + 20, x2: PX + 250, y1: 70, y2: 70, stroke: '#c9a77d', 'stroke-width': 1.5 }, TB);
+  [15, 30, 45, 60, 76].forEach((d, i) => { const g = mk('g', {}, TB); txt(d + '°', { x: PX + 20, y: 98 + i * 30, class: 'hpc-mid' }, g); txt((2 * Math.sin(d * Math.PI / 360)).toFixed(3), { x: PX + 250, y: 98 + i * 30, 'text-anchor': 'end', class: 'hpc-mid' }, g); tRows.push([g, d]); });
+  /* ---- part 4: the Moon ---- */
+  const S4 = mk('g', {});
+  const E = { x: 132, y: 176 }, RE = 112, H = { x: E.x + RE * Math.cos(41 * rad), y: E.y - RE * Math.sin(41 * rad) }, AL = { x: E.x + RE * Math.cos(31 * rad), y: E.y - RE * Math.sin(31 * rad) };
+  const MN = { x: 620, y: 166 }, SUN = { x: MN.x + 50, y: MN.y + (MN.y - H.y) * 46 / (MN.x - H.x) };
+  mk('circle', { cx: SUN.x, cy: SUN.y, r: 36, class: 'hpc-sun' }, S4);
+  mk('circle', { cx: E.x, cy: E.y, r: RE, class: 'hpc-earth' }, S4);
+  txt('Earth', { x: E.x - 40, y: E.y + 50, class: 'hpc-l', fill: '#e8f0fb' }, S4);
+  const lH = mk('line', { class: 'hpc-sight' }, S4), lA = mk('line', { class: 'hpc-sight' }, S4);
+  mk('circle', { cx: MN.x, cy: MN.y, r: 15, class: 'hpc-moon' }, S4);
+  txt('Moon', { x: MN.x - 8, y: MN.y - 24, 'text-anchor': 'middle', class: 'hpc-l', fill: '#4a2c14' }, S4);
+  txt('Sun', { x: SUN.x + 24, y: SUN.y - 42, 'text-anchor': 'middle', class: 'hpc-l', fill: '#b07a12' }, S4);
+  [[H, 'Hellespont', -10], [AL, 'Alexandria', 14]].forEach(([p, name, dy]) => { mk('circle', { cx: p.x, cy: p.y, r: 5, fill: '#fff6e6', stroke: '#4a2c14', 'stroke-width': 2 }, S4); txt(name, { x: p.x - 14, y: p.y + dy, 'text-anchor': 'end', class: 'hpc-s', fill: '#fff6e6' }, S4); });
+  const angG = mk('g', {}, S4);
+  mk('path', { d: `M${MN.x - 70},${MN.y - 9} A70 70 0 0 0 ${MN.x - 70},${MN.y + 3}`, class: 'hpc-arc2' }, angG);
+  txt('0.1° at the Moon', { x: MN.x - 100, y: MN.y + 30, 'text-anchor': 'middle', class: 'hpc-l', fill: '#b07a12' }, angG);
+  txt('(drawn much bigger)', { x: MN.x - 100, y: MN.y + 50, 'text-anchor': 'middle', class: 'hpc-s', fill: '#8a6440' }, angG);
+  // what the eclipse looked like from each city
+  const view = (x, y, total, label) => {
+    const g = mk('g', {}, S4);
+    mk('circle', { cx: x, cy: y, r: 22, fill: '#2a1d14' }, g);
+    if (total) { mk('circle', { cx: x, cy: y, r: 17, fill: 'none', stroke: '#ffe9a8', 'stroke-width': 3, opacity: .9 }, g); mk('circle', { cx: x, cy: y, r: 15.5, fill: '#2a1d14' }, g); }
+    else { mk('circle', { cx: x, cy: y, r: 14, fill: '#f0b429' }, g); mk('circle', { cx: x - 10, cy: y, r: 14.5, fill: '#2a1d14' }, g); }
+    txt(label, { x: x + 30, y: y + 5, class: 'hpc-s', fill: '#4a2c14' }, g);
+    return g;
+  };
+  const vH = view(300, 38, true, 'Hellespont: total eclipse'), vA = view(300, 279, false, 'Alexandria: about 1/5 of the Sun shows');
+  const QX = 760;
+  const m1 = txt('angle at the Moon: <tspan class="hpc-gold" font-weight="700">0.1°</tspan>', { x: QX, y: 50, class: 'hpc-mid' }, S4);
+  const m1b = txt('(1/5 of the Sun’s width, 0.5°)', { x: QX, y: 72, class: 'hpc-s', fill: '#8a6440' }, S4);
+  const m2 = txt('tan 0.1° = gap ÷ distance', { x: QX, y: 114, class: 'hpc-mid' }, S4);
+  const m3 = txt('distance = 0.135 ÷ tan 0.1°', { x: QX, y: 150, class: 'hpc-mid' }, S4);
+  const m4 = txt('≈ 77 Earth radii', { x: QX, y: 198, class: 'hpc-big hpc-gold' }, S4);
+  const m5 = txt('Hipparchus: 71 to 83', { x: QX, y: 248, class: 'hpc-mid' }, S4);
+  const m6 = txt('Today: about 60', { x: QX, y: 276, class: 'hpc-mid' }, S4);
+  txt('not to scale', { x: 700, y: 300, 'text-anchor': 'end', class: 'hpc-s', fill: '#9a7a58' }, S4);
+
+  let shownScene = -1;
   function draw(ms) {
-    const k = Math.min(8, ms / STEP), deg = Math.max(0.01, k * 7.5), B = P(deg);
-    chord.setAttribute('x2', B.x); chord.setAttribute('y2', B.y); rad2.setAttribute('x2', B.x); rad2.setAttribute('y2', B.y);
-    angT.textContent = deg < 59.99 ? (Math.round(deg * 2) / 2) + '°' : '60°';
-    rows.forEach((r, i) => r.classList.toggle('on', ms >= (i + 1) * STEP - 60));
-    const done = ms >= 8 * STEP + PAUSE;
-    tri.classList.toggle('on', done); fin.classList.toggle('on', ms >= 8 * STEP + PAUSE + 900);
-    rows[7].classList.toggle('hl', ms >= 8 * STEP); angT.style.opacity = done ? 0 : 1;
+    // parts 1–3
+    show(S1, 1 - P(20000, 20700, ms)); show(S4, P(20500, 21300, ms));
+    show(circle, P(0, 500, ms));
+    const phi = 2 * HALF * P(800, 3800, ms), turn = HALF * P(6000, 7500, ms);
+    const pt = (deg) => ({ x: O.x + R * Math.cos(deg * rad), y: O.y - R * Math.sin(deg * rad) });
+    const a0 = pt(0), b0 = pt(Math.max(phi, 0.01));
+    setLine(rA, O.x, O.y, a0.x, a0.y); setLine(rB, O.x, O.y, b0.x, b0.y); setLine(chord, a0.x, a0.y, b0.x, b0.y);
+    arc.setAttribute('d', `M${O.x + 28},${O.y} A28 28 0 0 0 ${O.x + 28 * Math.cos(phi * rad)},${O.y - 28 * Math.sin(phi * rad)}`);
+    rot.setAttribute('transform', `rotate(${turn} ${O.x} ${O.y})`);
+    show(rot, ms < 7500 ? 1 : 1 - 0.85 * P(7500, 8200, ms));
+    // the chord label: beside the chord's midpoint, outward
+    const mid = { x: (a0.x + b0.x) / 2, y: (a0.y + b0.y) / 2 }, ang = (phi / 2 - turn) * rad;
+    chordT.setAttribute('x', mid.x + 0 + Math.cos(ang) * 0 + 14); chordT.setAttribute('y', mid.y + 6);
+    show(chordT, P(2000, 2600, ms) * (1 - P(6000, 6600, ms)));
+    // part 2 (final coordinates)
+    const f2 = P(7500, 8200, ms);
+    setLine(lowA, O.x, O.y, A.x, A.y); setLine(lowC, M.x, M.y, A.x, A.y); show(lowA, f2 * 0.5); show(lowC, f2 * 0.6);
+    setLine(ob, O.x, O.y, B.x, B.y); show(ob, f2); show(hypT, P(8000, 8600, ms));
+    grow(om, O.x, O.y, M.x, M.y, P(8200, 9200, ms)); show(om, f2);
+    grow(mb, M.x, M.y, B.x, B.y, P(9200, 10200, ms)); show(mb, f2);
+    show(sq, P(9000, 9500, ms)); show(aArc, P(8600, 9200, ms)); show(aT, P(8600, 9200, ms));
+    show(sinT, P(10000, 10600, ms)); show(cosT, P(9000, 9600, ms));
+    show(tbl, P(3800, 4400, ms) * (1 - P(6000, 6500, ms)));
+    show(TB, 1 - P(6000, 6500, ms)); tRows.forEach(([g, d]) => show(g, phi >= d - 0.01 ? 1 : 0));
+    show(r1, P(10600, 11300, ms)); show(r2, P(11800, 12500, ms));
+    // part 3
+    grow(touch, T.x, 300, T.x, 24, P(14000, 15200, ms)); show(touch, P(14000, 14300, ms)); show(tDot, P(14000, 14500, ms)); show(touchT, P(14600, 15200, ms) * (1 - P(17000, 17500, ms)));
+    grow(ext, B.x, B.y, Q.x, Q.y, P(15200, 16400, ms)); show(ext, P(15200, 15400, ms));
+    grow(tq, T.x, T.y, Q.x, Q.y, P(16400, 17400, ms)); show(tq, P(16400, 16600, ms)); show(tanT, P(17200, 17800, ms));
+    show(r3, P(17600, 18300, ms)); show(r4, P(18600, 19300, ms));
+    // part 4
+    grow(lH, H.x, H.y, SUN.x, SUN.y, P(21500, 23000, ms)); grow(lA, AL.x, AL.y, MN.x, MN.y, P(21800, 23300, ms));
+    show(vH, P(23200, 23800, ms)); show(vA, P(24200, 24800, ms)); show(angG, P(25400, 26000, ms));
+    [[m1, 26200], [m1b, 26400], [m2, 27800], [m3, 29200], [m4, 30600], [m5, 32200], [m6, 32900]].forEach(([e, t]) => show(e, P(t, t + 600, ms)));
+    // which part, its caption, its chip
+    const k = SCENES.filter((s) => ms >= s).length - 1;
+    if (k !== shownScene) { shownScene = k; cap.innerHTML = CAPS[k]; chips.forEach((c, i) => c.classList.toggle('on', i === k)); }
   }
-  const END = 8 * STEP + PAUSE + 1000;
-  function frame(now) { if (!t0) t0 = now; const ms = now - t0; draw(ms); if (ms < END) raf = requestAnimationFrame(frame); }
-  function play() { cancelAnimationFrame(raf); t0 = 0; if (matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(END); return; } draw(0); raf = requestAnimationFrame(frame); }
+  let raf = 0, t0 = 0, from = 0;
+  function frame(now) { if (!t0) t0 = now; const ms = from + now - t0; draw(ms); if (ms < END) raf = requestAnimationFrame(frame); }
+  const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function play(start) {
+    cancelAnimationFrame(raf); t0 = 0; from = start || 0;
+    if (reduced()) { draw(start ? SCENES[SCENES.indexOf(start) + 1] - 1 || END : END); return; }
+    draw(from); raf = requestAnimationFrame(frame);
+  }
   draw(0);
-  svg.addEventListener('click', play);
-  const btn = svg.closest('.hist-anim') && svg.closest('.hist-anim').querySelector('.hist-play'); if (btn) btn.addEventListener('click', play);
-  if ('IntersectionObserver' in window) { const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 }); io.observe(svg); } else play();
+  chips.forEach((c, i) => c.addEventListener('click', () => play(SCENES[i])));
+  svg.addEventListener('click', () => play(0));
+  const btn = fig.querySelector('.hist-play'); if (btn) btn.addEventListener('click', () => play(0));
+  if ('IntersectionObserver' in window) { const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(0); } }, { threshold: 0.4 }); io.observe(svg); } else play(0);
 })();

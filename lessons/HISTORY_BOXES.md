@@ -66,7 +66,7 @@ of `lessons/js/lessons/u1l2.js` before making one.
 | 6.4 | Recorde's equals sign (1557): two parallel lines of one length |
 | 8.3 | The Nine Chapters: elimination with counting rods |
 | 9.1 | How a bowstring became "sine" (jyā → jība → jayb → sinus) |
-| 9.2 | Hipparchus, the first trig table (chords, radius 3438; sin 30° = 1719 ÷ 3438) |
+| 9.2 | Hipparchus, from a chord to the Moon: a chord → half-chord (sine), other side (cosine), the touching line (tangent); the 190 BCE eclipse, 0.1° apart → about 77 Earth radii (his 71 to 83). A wide box (`.hist-wide`) with four parts to jump between |
 | 9.3 | Aristarchus and the half-moon triangle: Sun ÷ Moon = 1 ÷ cos θ (87° → 19; 89.85° → 382) |
 | 9.6 | Measuring Everest with angles of elevation (29 002 ft, 1856) |
 | 10.2 | The Egyptian royal cubit: a forearm made official |
