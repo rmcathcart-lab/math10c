@@ -110,10 +110,10 @@
   }
   function numsP(prompt, fields, want, opt, sol, hints, text) {
     opt = opt || {};
-    var show = function (v) { return opt.money ? m2(v) : N(v); };
+    var show = function (v) { return opt.money ? mon(v) : N(v); };
     return { prompt: prompt, input: { type: 'fields', fields: fields.map(function (f) { return { label: f.label, before: f.before, after: f.after }; }) },
       check: numsCheck(want, opt), key: want.map(function (v) { return opt.money && !Number.isInteger(v) ? m2(v) : plain(v); }),
-      answer: fields.map(function (f, i) { return f.label + ': ' + (f.before ? f.before : '') + t(show(want[i])) + (f.after ? ' ' + f.after : ''); }).join('<br>'),
+      answer: fields.map(function (f, i) { return f.label + (f.before === '=' ? ' ' : ': ') + (f.before ? f.before : '') + t(show(want[i])) + (f.after ? ' ' + f.after : ''); }).join('<br>'),
       solution: sol, hints: hints || [], text: text, bad: (opt.bad || []).concat(want.length === 2 && !near(want[0], want[1]) ? [[plain(want[1]), plain(want[0])]] : []) };
   }
   function money(f) { return { label: f, before: '$' }; }
@@ -126,6 +126,7 @@
   }
   function mc(r, prompt, opts, sol, hints, text) { return K.P.mc(r, prompt, opts, sol, hints, text); }
   function chk(s) { return s + ' ✓'; }
+  function cf(c, v) { return c === 1 ? v : c === -1 ? '-' + v : c + v; }   // coefficient: 1x -> x
 
   HW.addCodes({
     'perim-half': 'Perimeter: used l + w instead of 2l + 2w', 'more-than-flip': '“More than” put on the wrong quantity', 'more-times': '“More than” written as times', 'times-more': '“Times” written as more than',
@@ -306,7 +307,7 @@
             var g = gcd(o.a1, o.b1);
             return numsP('Let ' + t('x') + ' be the price of one notebook and ' + t('y') + ' the price of one folder. Solve the system for both prices.', [money('Notebook'), money('Folder')], [o.n, o.f],
               { names: ['notebook price', 'folder price'], money: true, sys: [[o.a1, o.b1, -o.T1], [o.a2, o.b2, -o.T2]], sysNames: ['the first purchase', 'the second purchase'], swapHint: 'Right prices, wrong boxes — check which one is the notebook.' },
-              t(o.a1 + 'x+' + o.b1 + 'y=' + mon(o.T1)) + ' and ' + t(o.a2 + 'x+' + o.b2 + 'y=' + mon(o.T2)) + '.<br>' + (g > 1 ? 'Divide the first by ' + t(g) + ': ' + t((o.a1 / g) + 'x+' + (o.b1 / g) + 'y=' + mon(o.T1 / g)) + '. ' : '') +
+              t(o.a1 + 'x+' + o.b1 + 'y=' + mon(o.T1)) + ' and ' + t(o.a2 + 'x+' + o.b2 + 'y=' + mon(o.T2)) + '.<br>' + (g > 1 ? 'Divide the first by ' + t(g) + ': ' + t(cf(o.a1 / g, 'x') + '+' + cf(o.b1 / g, 'y') + '=' + m2(o.T1 / g)) + '. ' : '') +
               'Eliminate ' + t('x') + ': multiply the first by ' + t(o.a2) + ' and the second by ' + t(o.a1) + ', then subtract: ' + t((o.a1 * o.b2 - o.a2 * o.b1) + 'y=' + m2(o.a1 * o.T2 - o.a2 * o.T1)) + ' ⟹ ' + t('y=' + m2(o.f)) + '. Substitute back: ' + t('x=' + m2(o.n)) + '.<br>' + chk('Check: ' + t(o.a1 + '(' + m2(o.n) + ')+' + o.b1 + '(' + m2(o.f) + ')=' + m2(o.T1))) + ', ' + chk(t(o.a2 + '(' + m2(o.n) + ')+' + o.b2 + '(' + m2(o.f) + ')=' + m2(o.T2))) +
               '<br><b>A notebook costs ' + Dh(o.n) + ' and a folder costs ' + Dh(o.f) + '.</b>',
               ['One equation per purchase: ' + t(o.a1 + 'x+' + o.b1 + 'y=' + mon(o.T1)) + ' and ' + t(o.a2 + 'x+' + o.b2 + 'y=' + mon(o.T2)) + '.', 'Elimination works well: make the ' + t('x') + '-coefficients match.'], 'notebook and folder prices');
@@ -363,7 +364,7 @@
             return numP('Find the cost of a main-floor seat.', o.m, function (v) {
               if (v === o.b) return { code: 'answered-other', hint: 'That’s the <b>balcony</b> price. The question asks for a main-floor seat.' };
               return null;
-            }, 'Let ' + t('m') + ' and ' + t('b') + ' be the prices in dollars: ' + t('m=' + o.k + 'b') + ' and ' + t(o.p + 'm=' + o.q + 'b+' + o.D) + '.<br>Substitute: ' + t(o.p + '(' + o.k + 'b)=' + o.q + 'b+' + o.D) + ' ⟹ ' + t((o.p * o.k - o.q) + 'b=' + o.D) + ' ⟹ ' + t('b=' + o.b) + ', so ' + t('m=' + o.k + '(' + o.b + ')=' + o.m) + '.<br>' +
+            }, 'Let ' + t('m') + ' and ' + t('b') + ' be the prices in dollars: ' + t('m=' + o.k + 'b') + ' and ' + t(o.p + 'm=' + o.q + 'b+' + o.D) + '.<br>Substitute: ' + t(o.p + '(' + o.k + 'b)=' + o.q + 'b+' + o.D) + ' ⟹ ' + t(cf(o.p * o.k - o.q, 'b') + '=' + o.D) + ' ⟹ ' + t('b=' + o.b) + ', so ' + t('m=' + o.k + '(' + o.b + ')=' + o.m) + '.<br>' +
               chk('Check: ' + t(o.p + '(' + o.m + ')=' + o.p * o.m) + ' and ' + t(o.q + '(' + o.b + ')+' + o.D + '=' + (o.q * o.b + o.D))) + '<br><b>A main-floor seat costs ' + Dh(o.m) + '</b> (a balcony seat costs ' + Dh(o.b) + ').',
               ['Substitute ' + t('m=' + o.k + 'b') + ' into the second equation, solve for ' + t('b') + ', then find ' + t('m') + '.'], 'main-floor seat cost', { money: true, before: '$' });
           } }] },
@@ -576,25 +577,25 @@
         } }] },
       /* ---------- 15 ---------- */
       { num: '15', shared: function (r) { return gen(function () { var A = r.int(2, 15), B = r.int(1, 5); if (A === B) return null; return { A: A, B: B }; }, { A: 5, B: 2 }); },
-        stem: function (o) { var h = [1, 2, 3, 4].map(function (n) { return N((o.A + o.B * n * n) / 10); }); return '<i>(Extension)</i> The heights, in metres, of the vertical support rods of a footbridge canopy, measured as you move out from the centre, form the sequence ' + t(h.join(',\\ ') + ',\\ \\ldots') + '.'; },
+        stem: function (o) { var h = [1, 2, 3, 4].map(function (n) { return ((o.A + o.B * n * n) / 10).toFixed(1); }); return '<i>(Extension)</i> The heights, in metres, of the vertical support rods of a footbridge canopy, measured as you move out from the centre, form the sequence ' + t(h.join(',\\ ') + ',\\ \\ldots') + '.'; },
         parts: [
           { id: '15a', sub: 'a', level: 'EMG', outcome: 'EXT', make: function (r, o) {
-            var h = function (n) { return (o.A + o.B * n * n) / 10; }, d3 = h(4) - h(3);
+            var h = function (n) { return (o.A + o.B * n * n) / 10; }, d3 = h(4) - h(3), f1 = function (v) { return rnd(v).toFixed(1); };
             return numsP('Without a calculator, determine the next two terms of the sequence.', [{ label: '5th term', after: 'm' }, { label: '6th term', after: 'm' }], [rnd(h(5)), rnd(h(6))],
               { names: ['5th term', '6th term'], wrong: [{ v: [rnd(h(4) + d3), rnd(h(4) + 2 * d3)], code: 'first-diff-const', hint: 'The first differences aren’t constant — each one is ' + t(N(o.B * 2 / 10)) + ' more than the last. Find the next differences first.' }] },
-              'First differences: ' + t([N(h(2) - h(1)), N(h(3) - h(2)), N(h(4) - h(3))].join(',\\ ')) + ' — each is ' + t(N(2 * o.B / 10)) + ' more than the last, so the next two are ' + t(N(h(5) - h(4))) + ' and ' + t(N(h(6) - h(5))) + '.<br>' + t(N(h(4)) + '+' + N(h(5) - h(4)) + '=' + N(h(5))) + ', ' + t(N(h(5)) + '+' + N(h(6) - h(5)) + '=' + N(h(6))) + '.',
+              'First differences: ' + t([f1(h(2) - h(1)), f1(h(3) - h(2)), f1(h(4) - h(3))].join(',\\ ')) + ' — each is ' + t(N(2 * o.B / 10)) + ' more than the last, so the next two are ' + t(f1(h(5) - h(4))) + ' and ' + t(f1(h(6) - h(5))) + '.<br>' + t(f1(h(4)) + '+' + f1(h(5) - h(4)) + '=' + f1(h(5))) + ', ' + t(f1(h(5)) + '+' + f1(h(6) - h(5)) + '=' + f1(h(6))) + '.',
               ['Look at the differences between terms, then at how those differences change.'], 'next terms of quadratic sequence');
           } },
           { id: '15b', sub: 'b', level: 'PRG', outcome: 'EXT', make: function (r, o) {
             var h1 = (o.A + o.B) / 10, h2 = (o.A + 4 * o.B) / 10;
-            return numsP('The height, ' + t('h') + ' metres, of the ' + t('n^{\\text{th}}') + ' rod is given by ' + t('h=a+bn^2') + '. Using two terms of the sequence, form a system of equations and determine ' + t('a') + ' and ' + t('b') + '.', [{ label: t('a') + ' =' }, { label: t('b') + ' =' }], [o.A / 10, o.B / 10],
+            return numsP('The height, ' + t('h') + ' metres, of the ' + t('n^{\\text{th}}') + ' rod is given by ' + t('h=a+bn^2') + '. Using two terms of the sequence, form a system of equations and determine ' + t('a') + ' and ' + t('b') + '.', [{ label: t('a'), before: '=' }, { label: t('b'), before: '=' }], [o.A / 10, o.B / 10],
               { names: ['value of a', 'value of b'], sys: [[1, 1, -h1], [1, 4, -h2]], sysNames: ['the first term', 'the second term'], swapHint: t('a') + ' is the constant and ' + t('b') + ' multiplies ' + t('n^2') + ' — check which is which.' },
               t('n=1,\\ h=' + N(h1)) + ': ' + t('a+b=' + N(h1)) + '. ' + t('n=2,\\ h=' + N(h2)) + ': ' + t('a+4b=' + N(h2)) + '.<br>Subtract: ' + t('3b=' + N(h2 - h1)) + ' ⟹ ' + t('b=' + N(o.B / 10)) + ', so ' + t('a=' + N(o.A / 10)) + ': ' + t('h=' + N(o.A / 10) + '+' + N(o.B / 10) + 'n^2') + '.<br>' + chk('Test: ' + t('h(3)=' + N(o.A / 10) + '+' + N(9 * o.B / 10) + '=' + N((o.A + 9 * o.B) / 10))),
               ['Substitute ' + t('n=1') + ' and ' + t('n=2') + ' (with their heights) into ' + t('h=a+bn^2') + '.'], 'solve for a and b');
           } },
           { id: '15c', sub: 'c', level: 'BEG', outcome: 'EXT', make: function (r, o) {
             var a = o.A / 10, b = o.B / 10, h = function (n) { return rnd((o.A + o.B * n * n) / 10); };
-            return numsP('The formula is ' + t('h=' + N(a) + '+' + N(b) + 'n^2') + '. Use it to find ' + t('h(5)') + ' and ' + t('h(6)') + ', to verify the next two terms of the sequence.', [{ label: t('h(5)') + ' =', after: 'm' }, { label: t('h(6)') + ' =', after: 'm' }], [h(5), h(6)],
+            return numsP('The formula is ' + t('h=' + N(a) + '+' + N(b) + 'n^2') + '. Use it to find ' + t('h(5)') + ' and ' + t('h(6)') + ', to verify the next two terms of the sequence.', [{ label: t('h(5)'), before: '=', after: 'm' }, { label: t('h(6)'), before: '=', after: 'm' }], [h(5), h(6)],
               { names: ['value of h(5)', 'value of h(6)'], wrong: [{ v: [h(4), h(5)], code: 'n-offset', hint: 'Substitute ' + t('n=5') + ' and ' + t('n=6') + ' (the 5th and 6th rods).' }, { v: [rnd(a + b * 10), rnd(a + b * 12)], code: 'n-offset', hint: 'Square ' + t('n') + ' first: ' + t('5^2=25') + ', not ' + t('5\\times 2') + '.' }] },
               t('h(5)=' + N(a) + '+' + N(b) + '(25)=' + N(h(5))) + ' and ' + t('h(6)=' + N(a) + '+' + N(b) + '(36)=' + N(h(6))) + ' — they match the next two terms found from the differences.',
               ['Square ' + t('n') + ' first, multiply by ' + t(N(b)) + ', then add ' + t(N(a)) + '.'], 'verify with formula');
@@ -937,7 +938,7 @@
           { id: 'e10c', sub: 'c', level: 'EMG', make: function (r, o) {
             return numsP('Solve the system. How many sponsors of each kind does Dana have?', [{ label: 'Gold' }, { label: 'Silver' }], [o.g, o.s],
               { names: ['number of Gold sponsors', 'number of Silver sponsors'], sys: [[1, 1, -o.N], [o.AG, o.AS, -o.T]], sysNames: ['the number of sponsors', 'the total pledged'] },
-              'Each Gold sponsor owes ' + Dh(o.AG) + ', each Silver ' + Dh(o.AS) + ': ' + t('g+s=' + o.N) + ', ' + t(o.AG + 'g+' + o.AS + 's=' + o.T) + '.<br>' + t('s=' + o.N + '-g') + ': ' + t(o.AG + 'g+' + o.AS + '(' + o.N + '-g)=' + o.T) + ' ⟹ ' + t((o.AG - o.AS) + 'g=' + (o.T - o.AS * o.N)) + ' ⟹ ' + t('g=' + o.g) + ', ' + t('s=' + o.s) + '.<br>' + chk('Check: ' + t(o.g + '+' + o.s + '=' + o.N)) + ', ' + chk(t(o.AG + '(' + o.g + ')+' + o.AS + '(' + o.s + ')=' + o.T)) + ' Both are whole and positive.',
+              'Each Gold sponsor owes ' + Dh(o.AG) + ', each Silver ' + Dh(o.AS) + ': ' + t('g+s=' + o.N) + ', ' + t(o.AG + 'g+' + o.AS + 's=' + o.T) + '.<br>' + t('s=' + o.N + '-g') + ': ' + t(o.AG + 'g+' + o.AS + '(' + o.N + '-g)=' + o.T) + ' ⟹ ' + t(cf(o.AG - o.AS, 'g') + '=' + (o.T - o.AS * o.N)) + ' ⟹ ' + t('g=' + o.g) + ', ' + t('s=' + o.s) + '.<br>' + chk('Check: ' + t(o.g + '+' + o.s + '=' + o.N)) + ', ' + chk(t(o.AG + '(' + o.g + ')+' + o.AS + '(' + o.s + ')=' + o.T)) + ' Both are whole and positive.',
               ['Work out what one Gold and one Silver sponsor owe (flat + per book × ' + o.B + '), then write the count and money equations.'], 'sponsor counts');
           } },
           { id: 'e10d', sub: 'd', level: 'PRG', make: function (r, o) {
@@ -956,7 +957,7 @@
           { id: 'e11a', sub: 'a', level: 'EMG', make: function (r, o) {
             return numsP('Write the system and solve it.', [{ label: 'Hot chocolate, ' + t('h') }, { label: 'Cookies, ' + t('c') }], [o.h, o.c],
               { names: ['value of h', 'value of c'], sys: [[1, 1, -o.N], [o.p1, o.p2, -o.T]], sysNames: ['the item count', 'the money total'], wrong: [{ v: [-o.h, o.c], code: 'sign-count', hint: 'Check the sign: ' + t('h=' + o.N + '-' + o.c) + '. Substitute into both equations.' }] },
-              t('h+c=' + o.N) + ', ' + t(o.p1 + 'h+' + o.p2 + 'c=' + o.T) + '. ' + t('h=' + o.N + '-c') + ': ' + t(o.p1 + '(' + o.N + '-c)+' + o.p2 + 'c=' + o.T) + ' ⟹ ' + t((o.p1 * o.N) + '+' + (o.p2 - o.p1 === 1 ? '' : o.p2 - o.p1) + 'c=' + o.T) + ' ⟹ ' + t('c=' + o.c) + ', ' + t('h=' + o.N + '-' + o.c + '=' + o.h) + '.',
+              t('h+c=' + o.N) + ', ' + t(cf(o.p1, 'h') + '+' + o.p2 + 'c=' + o.T) + '. ' + t('h=' + o.N + '-c') + ': ' + t((o.p1 === 1 ? '' : o.p1) + '(' + o.N + '-c)+' + o.p2 + 'c=' + o.T) + ' ⟹ ' + t((o.p1 * o.N) + '+' + (o.p2 - o.p1 === 1 ? '' : o.p2 - o.p1) + 'c=' + o.T) + ' ⟹ ' + t('c=' + o.c) + ', ' + t('h=' + o.N + '-' + o.c + '=' + o.h) + '.',
               ['Count equation and money equation, then substitute. Don’t worry if a value looks strange — report what the algebra gives.'], 'cash sheet solve');
           } },
           { id: 'e11b', sub: 'b', level: 'EMG', make: function (r, o) {
@@ -1213,7 +1214,7 @@
             var c1 = o.k + 1, c2 = o.ps + o.k * o.pl;
             return numsP('Solve the reduced system ' + t(c1 + 's+m=' + o.N) + ', ' + t(c2 + 's+' + o.pm + 'm=' + N(o.T)) + '.', [{ label: 'Small, ' + t('s') }, { label: 'Medium, ' + t('m') }], [o.s, o.m],
               { names: ['number of small hoodies', 'number of medium hoodies'], sys: [[c1, 1, -o.N], [c2, o.pm, -o.T]], sysNames: ['the count equation', 'the money equation'] },
-              t('m=' + o.N + '-' + c1 + 's') + ': ' + t(c2 + 's+' + o.pm + '(' + o.N + '-' + c1 + 's)=' + N(o.T)) + ' ⟹ ' + t((c2 - o.pm * c1) + 's=' + (o.T - o.pm * o.N)) + ' ⟹ ' + t('s=' + o.s) + ', ' + t('m=' + o.m) + '.',
+              t('m=' + o.N + '-' + c1 + 's') + ': ' + t(c2 + 's+' + o.pm + '(' + o.N + '-' + c1 + 's)=' + N(o.T)) + ' ⟹ ' + t(cf(c2 - o.pm * c1, 's') + '=' + (o.T - o.pm * o.N)) + ' ⟹ ' + t('s=' + o.s) + ', ' + t('m=' + o.m) + '.',
               ['Isolate ' + t('m') + ' in the count equation and substitute.'], 'reduced system solve');
           } },
           { id: 'e18c', sub: 'c', level: 'BEG', make: function (r, o) {
