@@ -617,7 +617,7 @@
           } },
           { id: 'e7c', sub: 'c', level: 'EMG', make: function (r, sh) {
             var A = T.asin(sh.l / sh.h), rA = rd(A, 0), y = rd(sh.h * T.cos(rA), 1), x = rd(Math.sqrt(sh.h * sh.h - sh.l * sh.l), 1), dd = Math.abs(y - x).toFixed(1);
-            return mc(r, '<b>Route 1</b> (the Pythagorean theorem on ' + t(seg(sh.P, sh.Q)) + ' and ' + t(seg(sh.Q, sh.R)) + ') gives ' + t(seg(sh.P, sh.R) + '\\approx ' + x.toFixed(1)) + '. <b>Route 2</b> (' + t('\\angle ' + sh.P) + ' found and rounded to ' + t(dg(rA)) + ', then used with ' + t(seg(sh.P, sh.Q)) + ') gives ' + t(seg(sh.P, sh.R) + '\\approx ' + y.toFixed(1)) + '. The two routes disagree by ' + t(dd) + '. Where did the error enter?', [
+            return mc(r, 'Two routes to ' + t(seg(sh.P, sh.R)) + ': <b>Route 1</b> uses the Pythagorean theorem on ' + t(seg(sh.P, sh.Q)) + ' and ' + t(seg(sh.Q, sh.R)) + '; <b>Route 2</b> first finds ' + t('\\angle ' + sh.P) + ' to the nearest degree, then uses that rounded angle with ' + t(seg(sh.P, sh.Q)) + '. The two routes disagree by ' + t(dd) + '. Where did the error enter?', [
               { html: 'When ' + t('\\angle ' + sh.P + '=' + fl(A) + '^\\circ') + ' was rounded to ' + t(dg(rA)) + ' and then used. Take every unknown from the original given data, never from a rounded value.', right: true },
               { html: 'In Route 1: the Pythagorean theorem is less accurate than trigonometry.', why: 'Route 1 used only the exact given numbers — nothing was rounded until the end. It is the trustworthy one.' },
               { html: 'When ' + t(fx(sh.h, 1)) + ' was squared: squaring big numbers loses accuracy.', why: 'Squaring is exact (your calculator keeps every digit). Nothing was rounded in Route 1.' },
@@ -654,16 +654,16 @@
             return fieldsPart('By trigonometry again, but round ' + t('\\angle ' + sh.P) + ' to the nearest degree <b>before</b> using it. Find the rounded angle, then ' + t(nm) + ' from it.', [
               { tex: '\\angle ' + sh.P, name: '∠' + sh.P, x: Z, dp: 0, unit: '°', alts: ac.alts },
               { tex: nm, name: nm, x: y, dp: 1, unit: '', alts: [{ v: sh.h * T.sin(Z), code: 'used-unrounded', hint: 'That is the full-precision answer. This route deliberately uses the angle rounded to ' + t(dg(rZ)) + '.' }, { v: sh.h * T.cos(rZ), code: 'wrong-ratio', hint: t(nm) + ' is <b>opposite</b> ' + t('\\angle ' + sh.P) + ' ⇒ sine.' }] }],
-              t('\\angle ' + sh.P + '=' + fl(Z) + '^\\circ\\approx ' + dg(rZ)) + ', and only then ' + t(nm + '=' + fx(sh.h, 1) + '\\sin ' + dg(rZ) + '=' + fl(y) + '\\ldots\\approx ' + fx(y, 1)) + ' — a tenth off the true ' + t(fx(Math.sqrt(sh.h * sh.h - sh.l * sh.l), 1)) + '.',
+              t('\\angle ' + sh.P + '=' + fl(Z) + '^\\circ\\approx ' + dg(rZ)) + ', and only then ' + t(nm + '=' + fx(sh.h, 1) + '\\sin ' + dg(rZ) + '=' + fl(y) + '\\ldots\\approx ' + fx(y, 1)) + ' — ' + t(Math.abs(rd(y, 1) - rd(Math.sqrt(sh.h * sh.h - sh.l * sh.l), 1)).toFixed(1)) + ' off the true ' + t(fx(Math.sqrt(sh.h * sh.h - sh.l * sh.l), 1)) + '.',
               ['Round the angle to a whole degree, then use SOH with that rounded angle.'], 'route (c) rounded angle');
           } },
           { id: 'e8d', sub: 'd', level: 'PRG', make: function (r, sh) {
-            return mc(r, 'Verdict: which routes are trustworthy, and why can’t the Pythagorean route drift?', [
+            return mc(r, 'Three routes to ' + t(seg(sh.Q, sh.R)) + ': (a) the Pythagorean theorem on the two given sides; (b) trigonometry with ' + t('\\angle ' + sh.P) + ' kept at full calculator precision; (c) trigonometry with ' + t('\\angle ' + sh.P) + ' rounded to the nearest degree first. Routes (a) and (b) give the same answer; route (c) gives a different tenths digit. Verdict: which routes are trustworthy, and why can’t the Pythagorean route drift?', [
               { html: '(a) and (b) are trustworthy, (c) is not. Pythagoras uses only the given lengths, so there is no intermediate value to round.', right: true },
               { html: 'Only (a): trigonometry always introduces some error.', why: 'Route (b) gave exactly the same answer as (a). Trigonometry is safe as long as nothing is rounded early.' },
               { html: 'All three: the differences are just rounding at the end.', why: 'Route (c) rounded the <b>angle</b> in the middle, and that changed the reported answer.' },
               { html: '(b) and (c) are trustworthy; (a) is not, because squaring loses accuracy.', why: 'Squaring is exact. Route (a) used only the given data — it is the one that cannot drift.' }],
-              'Routes (a) and (b) agree; route (c) rounded the angle before using it and drifted a tenth. Pythagoras’ only inputs are the given lengths, so however the arithmetic is sequenced, the single rounding happens at the end. Trigonometry is equally safe only with the discipline of never rounding the angle.',
+              'Routes (a) and (b) agree; route (c) rounded the angle before using it and drifted. Pythagoras’ only inputs are the given lengths, so however the arithmetic is sequenced, the single rounding happens at the end. Trigonometry is equally safe only with the discipline of never rounding the angle.',
               ['Compare your three answers. Which one used a value rounded in the middle?'], 'verdict on three routes');
           } }] },
       { num: '9', stem: function (sh) {
@@ -698,13 +698,14 @@
               ['First ' + t(O) + ' = hypotenuse × sin of the angle, rounded to a tenth. Then use it in the Pythagorean theorem.'], 'rounded-QR route');
           } },
           { id: 'e9d', sub: 'c(ii)', level: 'PRG', make: function (r, sh) {
-            return mc(r, 'The student’s method agreed with the direct answer this time. Why is it still the wrong habit?', [
-              { html: 'The rounding error just happened not to cross a tenth boundary — luck, not method. In question 7 the same move changed the answer.', right: true },
-              { html: 'It isn’t wrong: agreeing once proves the method is reliable.', why: 'Question 7 used exactly this kind of move and the answer changed by ' + t('0.1') + ' or more.' },
+            var O = seg(sh.Q, sh.R), A = seg(sh.P, sh.R), k = fx(sh.k, 1), b = rd(sh.k * T.sin(sh.th), 1).toFixed(1);
+            return mc(r, 'A student found ' + t(O + '=' + k + '\\sin ' + dg(sh.th)) + ', rounded it to ' + t(b) + ', then got ' + t(A + '=\\sqrt{' + k + '^{2}-' + b + '^{2}}\\approx ' + fx(sh.k * T.cos(sh.th), 1)) + ' — the same tenth as the direct answer ' + t(A + '=' + k + '\\cos ' + dg(sh.th)) + ' this time. Why is the method still the wrong habit?', [
+              { html: 'The rounding error just happened not to cross a tenth boundary — luck, not method. With other numbers the same move changes the answer.', right: true },
+              { html: 'It isn’t wrong: agreeing once proves the method is reliable.', why: 'With other numbers, building on a rounded value shifts the answer by ' + t('0.1') + ' or more — nothing in the working warns you when.' },
               { html: 'Pythagoras should never be used after trigonometry.', why: 'Pythagoras is fine — on <b>given</b> lengths. The problem is feeding it a rounded value.' },
               { html: 'It takes more keystrokes, so it is more likely to have a typing slip.', why: 'Keystrokes aren’t the issue: a rounded number has already thrown information away.' }],
               'The rounded value was off by only a few hundredths, too little to change the tenths digit here. Nothing in the working tells you in advance which case you are in, so the safe habit is to take every unknown from the original data every time.',
-              ['Look back at question 7: what happened there with the same move?'], 'why still a bad habit');
+              ['Is there anything in the working that guarantees the rounding error stays too small to change the tenths digit?'], 'why still a bad habit');
           } }] },
       /* ---------- Part D ---------- */
       { num: '10', section: 'Extra practice D — The three self-checks', stem: function (sh) {
@@ -876,13 +877,13 @@
               ['Rectangle area = ' + t('AB\\times BC') + '.', 'First box: ' + t('BC=' + ab + '\\tan ' + dg(sh.th)) + ' unrounded. Second box: ' + t('BC=' + rb.toFixed(1)) + '.'], 'lot area two ways');
           } },
           { id: 'e14d', sub: 'c (explain)', level: 'PRG', make: function (r, sh) {
-            var ab = sh.ab.toFixed(1);
-            return mc(r, 'Why does multiplying by a large number turn an invisible rounding error into a visible one?', [
+            var ab = sh.ab.toFixed(1), bc = sh.ab * T.tan(sh.th), rb = rd(bc, 1), er = Math.abs(rb - bc).toFixed(4);
+            return mc(r, 'The lot’s area is ' + t('AB\\times BC') + '. Using the rounded ' + t('BC=' + rb.toFixed(1)) + ' instead of the full-precision ' + t('BC=' + ab + '\\tan ' + dg(sh.th)) + ' changes the area’s tenths digit, even though ' + t('BC') + ' itself was off by less than ' + t('0.05\\text{ m}') + '. Why does multiplying by a large number turn an invisible rounding error into a visible one?', [
               { html: 'Multiplying by ' + t(ab) + ' multiplies the tiny error in ' + t('BC') + ' by ' + t(ab) + ' too, so it can reach the first decimal place.', right: true },
               { html: 'Multiplication is less accurate on a calculator than division.', why: 'The calculator multiplies exactly. The error was already in the rounded ' + t('BC') + '.' },
               { html: 'It doesn’t — the two areas only differ because of the final rounding.', why: 'The two areas differ before the final rounding, because one factor was already rounded.' },
               { html: 'Large numbers have more digits, so they round differently.', why: 'The size of the error matters, not the number of digits. Multiplying scales the error.' }],
-              'Rounding ' + t('BC') + ' introduced an error of a few thousandths of a metre — invisible at the reported precision. Multiplying by ' + t(ab) + ' multiplies that error by ' + t(ab) + ', enough to change the tenths of the area. Round once, at the end.', ['If BC is off by 0.003, how far off is ' + t(ab) + ' × BC?'], 'error amplification');
+              'Rounding ' + t('BC') + ' introduced an error of only ' + t(er + '\\text{ m}') + ' — invisible at the reported precision. Multiplying by ' + t(ab) + ' multiplies that error by ' + t(ab) + ', enough to change the tenths of the area. Round once, at the end.', ['If BC is off by 0.003, how far off is ' + t(ab) + ' × BC?'], 'error amplification');
           } }] },
       /* ---------- Part F: error analysis ---------- */
       { num: '15', section: 'Extra practice F — Error analysis', stem: function (sh) {

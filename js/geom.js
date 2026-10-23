@@ -54,7 +54,9 @@
     var o = {}; Object.keys(opt).forEach(function (k) { o[k] = opt[k]; });
     var base = opt.diag;
     o.diag = function (v) {
-      for (var i = 0; i < alts.length; i++) { var a = alts[i]; if ((Math.abs(K.roundTo(v, dp) - K.roundTo(a.v, dp)) < 1e-9 || Math.abs(v - a.v) <= Math.max(tol, Math.abs(a.v) * 0.0015)) && Math.abs(v - a.v) < Math.abs(v - x)) return { code: a.code || 'alt', hint: a.hint }; }
+      var best = null, bd = Infinity;
+      for (var i = 0; i < alts.length; i++) { var a = alts[i], d = Math.abs(v - a.v); if ((Math.abs(K.roundTo(v, dp) - K.roundTo(a.v, dp)) < 1e-9 || d <= Math.max(tol, Math.abs(a.v) * 0.0015)) && d < Math.abs(v - x)) { var rm = Math.abs(K.roundTo(v, dp) - K.roundTo(a.v, dp)) < 1e-9 ? 0 : 1; if (rm * 1e9 + d < bd) { bd = rm * 1e9 + d; best = a; } } }
+      if (best) return { code: best.code || 'alt', hint: best.hint };
       return base ? base(v) : null;
     };
     o.diagFirst = true;

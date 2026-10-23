@@ -480,7 +480,7 @@
         { id: 'e3d', level: 'EMG', make: function (r) { return e3Part(r, { kRole: 'hyp', uRole: 'adj', deg: [55, 75], k: [200, 400] }); } },
         { id: 'e3e', level: 'PRG', make: function (r) { return e3Part(r, { kRole: 'opp', uRole: 'adj', deg: [15, 35], k: [30, 90] }); } },
         { id: 'e3f', level: 'EMG', make: function (r) { return e3Part(r, { kRole: 'hyp', uRole: 'adj', deg: [62, 80], k: [50, 120] }); } },
-        { id: 'e3g', level: 'PRG', make: function (r) {
+        { id: 'e3g', level: 'EMG', make: function (r) {
           return mc(r, 'Some of these questions finish with a multiplication and some with a division. What single feature of the <b>given information</b> decides which?', [
             { html: 'Where the <b>known</b> side sits in the ratio: if it is the bottom, the unknown is on top and you multiply; if it is the top, the unknown is underneath and you divide.', right: true },
             { html: 'Which ratio is used: sine and cosine multiply, tangent divides.', why: 'Each ratio can go either way: ' + t('\\tan\\theta=\\frac{x}{k}') + ' multiplies, ' + t('\\tan\\theta=\\frac{k}{x}') + ' divides. Look at where the known side sits.' },
@@ -537,7 +537,7 @@
             return sidePart({ prompt: 'Relative to the given angle of ' + t(dg(sh.deg)) + ', name the sides, then determine ' + t(O) + ' to the nearest tenth of a metre.', deg: sh.deg, k: sh.k, kStr: k, kRole: 'adj', uRole: 'opp', kName: sideOf(n, 'adj'), uName: O, unit: 'm', dp: 1, angTex: '\\angle ' + n.ang + '=' + dg(sh.deg),
               alts: [{ v: sh.k / TR.tan(sh.deg), code: 'other-angle', hint: 'That treats the ' + t(dg(sh.deg)) + ' as the angle at ' + t(n.oth) + '. The marked angle is at ' + t(n.ang) + ': from there, ' + t(sideOf(n, 'adj')) + ' is adjacent and ' + t(O) + ' is opposite.' }], text: O + ' = ' + k + ' tan ' + sh.deg });
           } },
-          { id: 'e6b', level: 'BEG', make: function (r, sh) {
+          { id: 'e6b', level: 'EMG', make: function (r, sh) {
             var n = sh.n, O = sideOf(n, 'opp'), A = sideOf(n, 'adj'), k = sh.k.toFixed(1), w = sh.k / TR.tan(sh.deg), c = sh.k * TR.tan(sh.deg);
             return nearPart('A student read the ' + t(dg(sh.deg)) + ' as the angle at ' + t(n.oth) + ' instead. Then ' + t(A) + ' looks <i>opposite</i> and ' + t(O) + ' looks <i>adjacent</i>. What value of ' + t(O) + ' does that student get, to the nearest tenth?', w, 1,
               { unit: 'm', alts: [{ v: c, code: 'skip-given', hint: 'That is the <b>correct</b> length. This part asks what the student gets when the ' + t(dg(sh.deg)) + ' is read as the angle at ' + t(n.oth) + ': then ' + t(O) + ' is in the denominator, ' + t('\\tan ' + dg(sh.deg) + '=\\dfrac{' + k + '}{' + O + '}') + '.' },
@@ -631,7 +631,7 @@
             return sidePart({ prompt: 'Determine the distance ' + t('d') + ' from the base of the tower to the anchor point, to the nearest tenth of a metre, working from the given ' + t(hs + '\\text{ m}') + '.', deg: sh.deg, k: sh.h, kStr: hs, kRole: 'opp', uRole: 'adj', uName: 'd', unit: 'm', dp: 1,
               alts: [{ v: wR * TR.cos(sh.deg), code: 'round-early', hint: 'Work from the given ' + t(hs + '\\text{ m}') + ', not from a rounded wire length.' }], solPre: wireFig(r, sh.deg, 'w', hs + ' m', 'd'), text: 'anchor d = ' + hs + ' / tan ' + sh.deg });
           } },
-          { id: 'e9c', level: 'PRG', make: function (r, sh) {
+          { id: 'e9c', level: 'EMG', make: function (r, sh) {
             return mc(r, 'A second wire is anchored the <b>same distance</b> from the base but runs to a point higher up the tower, so it makes a <b>larger</b> angle with the ground. Is it longer or shorter than the first wire?', [
               { html: 'Longer: wire ' + t('=d\\div\\cos\\theta') + ', and as ' + t('\\theta') + ' grows, ' + t('\\cos\\theta') + ' shrinks — dividing by a smaller number gives a longer wire.', right: true },
               { html: 'Shorter: wire ' + t('=d\\div\\cos\\theta') + ', and a larger angle makes ' + t('\\cos\\theta') + ' larger.', why: 'Check on your calculator: ' + t('\\cos 50^\\circ\\approx 0.64') + ' but ' + t('\\cos 70^\\circ\\approx 0.34') + '. Cosine gets <b>smaller</b> as the angle grows.' },
@@ -665,7 +665,7 @@
           { id: 'e11a', level: 'PRG', make: function (r, sh) {
             return sidePart({ prompt: 'Determine the length ' + t('s') + ' of string let out, to the nearest tenth of a metre.', deg: sh.deg, k: sh.h, kStr: String(sh.h), kRole: 'opp', uRole: 'hyp', uName: 's', unit: 'm', dp: 1, solPre: kiteFig(r, sh.deg, 's', sh.h + ' m'), text: 'string = ' + sh.h + ' / sin ' + sh.deg });
           } },
-          { id: 'e11b', level: 'EMG', make: function (r, sh) {
+          { id: 'e11b', level: 'PRG', make: function (r, sh) {
             return sidePart({ prompt: 'Determine the horizontal distance ' + t('d') + ' from the hand to the point directly beneath the kite, to the nearest tenth of a metre.', deg: sh.deg, k: sh.h, kStr: String(sh.h), kRole: 'opp', uRole: 'adj', uName: 'd', unit: 'm', dp: 1, text: 'kite d = ' + sh.h + ' / tan ' + sh.deg });
           } }] },
       { num: '12', shared: function (r) { return { h: tenth(r, 40, 95), deg: angle(r, 25, 55, true) }; },
@@ -886,7 +886,7 @@
               t('x^2=(' + dots(AB) + ')^2-' + Ls + '^2=' + fx(AB * AB, 0) + '-' + fx(sh.L * sh.L, 0) + '=' + fx(x2, 0)) + ', so ' + t('x=\\sqrt{' + fx(x2, 0) + '}=' + dots(Math.sqrt(x2)) + '\\approx ' + fx(Math.sqrt(x2), 1)) + ' ✓',
               ['Square the full value of ' + t('AB') + ' (use the calculator’s answer memory), then subtract ' + t(Ls + '^2') + '.'], 'x squared by Pythagoras');
           } },
-          { id: 'e18e', level: 'PRG', make: function (r, sh) {
+          { id: 'e18e', level: 'EMG', make: function (r, sh) {
             var long = sh.short === 'BC' ? 'AC' : 'BC', fn = sh.short === 'BC' ? 'sin' : 'cos';
             return mc(r, 'Would ' + t('\\angle A') + ' change if ' + t(long) + ' were ' + t('40\\text{ cm}') + ' instead of ' + t(sh.L.toFixed(1) + '\\text{ cm}') + '?', [
               { html: 'No: ' + t('\\' + fn + ' A=\\frac{x}{2x}=\\frac12') + ' no matter what ' + t('x') + ' is, so ' + t('\\angle A=' + dg(sh.A)) + ' for every such triangle. Changing ' + t(long) + ' only rescales it.', right: true },
