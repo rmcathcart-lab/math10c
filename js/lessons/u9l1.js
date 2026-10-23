@@ -419,7 +419,7 @@
 
       { num: '8', stem: function (sh) { return 'Several right triangles of different sizes all have a ' + t(sh.th + '^\\circ') + ' angle.'; },
         shared: function (r) { return { th: r.chance(0.4) ? 31 : r.pick([27, 36, 42, 53, 64]), f: r.pick(['sin', 'sin', 'cos', 'tan']) }; },
-        parts: [{ id: '8', level: 'PRG', make: function (r, sh) {
+        parts: [{ id: '8', level: 'EMG', make: function (r, sh) {
           var th = sh.th, f = sh.f, other2 = 90 - th, rat = { sin: 'opp ÷ hyp', cos: 'adj ÷ hyp', tan: 'opp ÷ adj' }[f], kt = { sin: '\\frac{k\\cdot\\text{opp}}{k\\cdot\\text{hyp}}=\\frac{\\text{opp}}{\\text{hyp}}', cos: '\\frac{k\\cdot\\text{adj}}{k\\cdot\\text{hyp}}=\\frac{\\text{adj}}{\\text{hyp}}', tan: '\\frac{k\\cdot\\text{opp}}{k\\cdot\\text{adj}}=\\frac{\\text{opp}}{\\text{adj}}' }[f];
           return mc(r, 'Which explains why the size of the triangle does not change the value of ' + t(FT[f] + ' ' + th + '^\\circ') + '?', [
             { html: 'Every right triangle with a ' + t(th + '^\\circ') + ' angle has angles ' + t('90^\\circ') + ', ' + t(th + '^\\circ') + ', ' + t(other2 + '^\\circ') + ', so they are all similar: every side is multiplied by the same factor, which cancels in ' + rat + '.', right: true },
@@ -604,7 +604,7 @@
           acc.push({ id: 'e1' + L + '1', sub: L + ' i', level: 'BEG', make: function (r, sh) { return sideGrid(r, sh[i].T, ['hyp', 'opp', 'adj'], 'x^\\circ', 'State the hypotenuse, the opposite side and the adjacent side relative to the marked angle ' + t('x^\\circ') + '.' + fig(sh)); } });
           acc.push({ id: 'e1' + L + '2', sub: L + ' ii', level: 'BEG', make: function (r, sh) { return ratioGrid(r, sh[i].T, 'x^\\circ', 'Write ' + t('\\sin x^\\circ') + ', ' + t('\\cos x^\\circ') + ' and ' + t('\\tan x^\\circ') + ' as ratios of side names.' + fig(sh)); } });
           return acc;
-        }, []).concat([{ id: 'e1e', sub: 'e', level: 'BEG', make: function (r, sh) {
+        }, []).concat([{ id: 'e1e', sub: 'e', level: 'LIM', make: function (r, sh) {
           var q = sh[r.int(0, 3)], T = q.T;
           return mc(r, 'Without measuring anything, which side of this triangle is the longest, and what settles it?' + triFig(T, { rot: q.or.rot, flip: q.or.flip, angA: 'x°', shape: q.sh }), [
             { html: t(T.hyp) + ' — it is across from the right angle, the largest angle of the triangle, so it is the hypotenuse.', right: true },
@@ -1009,7 +1009,7 @@
               { html: 'Used ' + t(T.hyp + '=' + T.h) + '; the adjacent side is ' + t(T.opp + '=' + T.o) + '.', why: t(T.opp) + ' doesn’t touch ' + t(T.A) + ' — it is the opposite side.' }],
               'The student’s denominator ' + t(T.h) + ' is ' + t(T.hyp) + ', the <b>hypotenuse</b>. The side actually adjacent to ' + t('\\angle ' + T.A) + ' is ' + t(T.adj + '=' + T.a) + ': the leg that touches ' + t(T.A) + ' and isn’t the hypotenuse.', ['What is the bottom of the student’s fraction?'], 'tan error: which side');
           } },
-          { id: 'e14b', sub: 'b', level: 'BEG', make: function (r, sh) {
+          { id: 'e14b', sub: 'b', level: 'LIM', make: function (r, sh) {
             return mc(r, 'Which one-line check on the <b>letters</b> of SOH CAH TOA would have caught this before any arithmetic?', [
               { html: 'TOA: tangent is Opposite over Adjacent — there is no H, so the hypotenuse can never appear in a tangent.', right: true },
               { html: 'SOH: the opposite side always goes on top.', why: 'True, and the student did put the opposite on top. The problem is the bottom: TOA has no H.' },
@@ -1060,7 +1060,7 @@
           return { L: L, T: fromTriple(r, { A: L[2], B: L[0], R: L[1] }, tr, 1, false), or: ori(r, false) };
         },
         parts: [
-          { id: 'e16a', sub: 'a', level: 'BEG', make: function (r, sh) {
+          { id: 'e16a', sub: 'a', level: 'LIM', make: function (r, sh) {
             return mc(r, 'SOH CAH TOA: which letter pair did the student use for sine, and which one should they have used?', [
               { html: 'They used <b>OA</b> (opposite over adjacent — tangent’s pair); sine is <b>OH</b>, opposite over hypotenuse.', right: true },
               { html: 'They used <b>AH</b> (cosine’s pair); sine is <b>OH</b>.', why: 'The student wrote opposite over <b>adjacent</b> — that’s the OA pair from TOA.' },
@@ -1151,7 +1151,7 @@
             p.bad = [String(K.roundTo(T.o / T.a + T.a / T.o, 3))];
             return p;
           } },
-          { id: 'e18d2', sub: 'd ii', level: 'PRG', make: function (r, sh) {
+          { id: 'e18d2', sub: 'd ii', level: 'EMG', make: function (r, sh) {
             var A = sh.T.A, B = sh.T.B;
             return mc(r, 'Since ' + t('\\angle ' + A + '+\\angle ' + B + '=90^\\circ') + ', we have ' + t('\\angle ' + B + '=(90-' + A + ')^\\circ') + '. Which is equal to ' + t('\\cos ' + B + '=\\cos(90-' + A + ')^\\circ') + '?', [
               { html: t('\\sin ' + A), right: true },
