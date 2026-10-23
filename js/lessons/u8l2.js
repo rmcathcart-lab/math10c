@@ -927,7 +927,7 @@
       else if (which === 'c') c = [r.int(3, 7), -1, r.int(2, 5), r.int(2, 4)];
       else c = [r.int(5, 9), r.int(2, 3), 1, r.int(2, 5)];
       if (c[0] * c[3] - c[1] * c[2] === 0) continue;
-      var S = make(c.concat([x0, y0])); if (S.Es.some(function (e) { return qv(e.c) === 0; })) continue;
+      var S = make(c.concat([x0, y0])); if (S.Es.some(function (e) { return qv(e.c) === 0 || gcd(gcd(e.a[0], e.b[0]), e.c[0]) > 1; })) continue;
       return S;
     }
     return make(spec.book);
@@ -973,7 +973,7 @@
       else if (which === 'c') { A1 = 2; B1 = r.pick([3, 5, 7]); A2 = r.int(3, 5) * (r.chance(0.7) ? 1 : -1); B2 = -r.int(2, 5); if (Math.abs(A2) % 2 === 0) continue; }
       else { A1 = 2 * r.int(2, 4); B1 = -r.pick([3, 5, 7]); A2 = 2; B2 = r.pick([3, 5]); }
       if (A1 * B2 - A2 * B1 === 0) continue;
-      var C1 = -(A1 * x0 + B1 * y0), C2 = -(A2 * x0 + B2 * y0); if (!C1 || !C2) continue;
+      var C1 = -(A1 * x0 + B1 * y0), C2 = -(A2 * x0 + B2 * y0); if (!C1 || !C2 || gcd(gcd(A1, B1), C1) > 1 || gcd(gcd(A2, B2), C2) > 1) continue;
       var S = make([A1, B1, C1, A2, B2, C2]); return S;
     }
     return make(book);

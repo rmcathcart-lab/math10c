@@ -93,26 +93,26 @@
 
   /* ---------------- vernier caliper (booklet \vernierScale{M}{N}: 20 divisions of 0.95 mm) ---------------- */
   function vernSvg(M, Nf) {
-    var u = 30, k = u / 0.74, lo = M - 3, hi = M + 21, padL = 20, W = (hi - lo) * u + 2 * padL;
+    var u = 32, k = u / 0.74, lo = M - 3, hi = M + 21, padL = 20, W = (hi - lo) * u + 2 * padL;
     var X = function (m) { return padL + (m - lo) * u; };
     var top = 26, y0 = top + 1.05 * k, H = y0 + 1.0 * k + 30, p = M + 0.05 * Nf, xz = X(p), xe = xz + 19 * u, s = '';
     s += R(4, top, W - 8, 1.05 * k, '#f2f3f5', { stroke: '#b9bec6' });
-    s += TX(W / 2, 12, 'Main scale (mm)', { weight: 700, size: 13 });
+    s += TX(padL, 12, 'Main scale (mm)', { weight: 700, size: 14, anchor: 'start' });
     for (var m = lo; m <= hi; m++) {
       var big = m % 5 === 0, x = X(m);
       s += L(x, y0, x, y0 - (big ? 0.55 : 0.32) * k, { w: big ? 1.5 : 1 });
-      if (big) s += TX(x, y0 - 0.55 * k - 8, String(m), { size: 12 });
+      if (big) s += TX(x, y0 - 0.55 * k - 9, String(m), { size: 14 });
     }
     s += R(xz - 1.15 * k, y0, (xe - xz) + 1.7 * k, 1.0 * k, '#dcdfe4', { stroke: '#a3a9b2' });
     for (var n = 0; n <= 20; n++) {
       var xn = xz + 0.95 * n * u, bg = n % 5 === 0;
       s += L(xn, y0, xn, y0 + (bg ? 0.55 : 0.32) * k, { w: n === 0 ? 2.2 : bg ? 1.5 : 1, c: n === 0 ? RED : INK });
-      if (bg) s += TX(xn, y0 + 0.55 * k + 8, String(n), { size: 12, c: n === 0 ? RED : INK });
+      if (bg) s += TX(xn, y0 + 0.55 * k + 9, String(n), { size: 14, c: n === 0 ? RED : INK });
     }
     s += L(4, y0, W - 4, y0, { w: 0.8, c: '#7d848e' });
-    s += TX(xz - 7, y0 + 0.78 * k, 'index', { anchor: 'end', size: 12, c: RED });
-    s += TX((xz + xe) / 2, H - 10, 'Vernier scale: 0.05 mm per division', { weight: 700, size: 13 });
-    return svgScroll(W, H, s, 'vernier caliper scale', 600);
+    s += TX(xz - 7, y0 + 0.78 * k, 'index', { anchor: 'end', size: 13, c: RED });
+    s += TX(Math.max(padL, xz - 1.15 * k + 4), H - 10, 'Vernier scale: 0.05 mm per division', { weight: 700, size: 14, anchor: 'start' });
+    return svgScroll(W, H, s, 'vernier caliper scale', W);
   }
   /* ---------------- micrometer (booklet \microScale{h}{f}: reading 0.5h + 0.01f mm) ---------------- */
   function micSvg(h, f, opt) {
@@ -124,7 +124,7 @@
     for (var kk = 2 * mlo; kk <= h; kk++) {
       var x = X((kk * 0.5 - mlo) * 0.55);
       if (kk % 2) s += L(x, Y(-0.03), x, Y(-0.26), { w: 1.2 });
-      else if ((kk / 2) % 5 === 0) { s += L(x, Y(0.03), x, Y(0.48), { w: 1.8 }); s += TX(x, Y(0.48) - 9, String(kk / 2), { size: 13 }); }
+      else if ((kk / 2) % 5 === 0) { s += L(x, Y(0.03), x, Y(0.48), { w: 1.8 }); s += TX(x, Y(0.48) - 10, String(kk / 2), { size: 16 }); }
       else s += L(x, Y(0.03), x, Y(0.30), { w: 1.2 });
     }
     s += L(X(-0.38), Y(0), X(mE), Y(0), { w: 1.8 });
@@ -133,11 +133,11 @@
     for (var d = -6; d <= 6; d++) {
       var y = Y(-d * 0.22), v = ((f + d) % 50 + 50) % 50, maj = v % 5 === 0;
       s += L(X(mE + 0.12), y, X(mE + (maj ? 0.72 : 0.5)), y, { w: maj ? 1.6 : 1.1 });
-      if (maj) s += TX(X(mE + 0.78), y, String(v), { anchor: 'start', size: 13 });
+      if (maj) s += TX(X(mE + 0.78), y, String(v), { anchor: 'start', size: 16 });
     }
     s += L(X(mE + 1.55), Y(0), X(mE + 3.0), Y(0), { c: RED, w: 1.6, dash: '5 4' });
-    s += TX(X(mE + 2.95), Y(0) - 10, 'index line', { anchor: 'end', size: 12, c: RED });
-    if (!opt.noCaption) { s += TX(W / 2, Y(-1.35) + 16, 'Sleeve: a mark every 0.5 mm', { weight: 700, size: 13 }); s += TX(W / 2, Y(-1.35) + 36, 'Thimble: 0.01 mm per division', { weight: 700, size: 13 }); }
+    s += TX(X(mE + 2.95), Y(0) - 11, 'index line', { anchor: 'end', size: 14, c: RED });
+    if (!opt.noCaption) { s += TX(W / 2, Y(-1.35) + 17, 'Sleeve: a mark every 0.5 mm', { weight: 700, size: 15 }); s += TX(W / 2, Y(-1.35) + 38, 'Thimble: 0.01 mm per division', { weight: 700, size: 15 }); }
     return svgFit(W, H, s, 'micrometer sleeve and thimble', Math.max(300, W));
   }
   /* ---------------- centimetre ruler ---------------- */
@@ -161,12 +161,12 @@
       var x = x0 + (i / 10 - from) * pxcm, isCm = i % 10 === 0, isHalf = i % 5 === 0;
       if (!mm && !isHalf) continue;
       s += L(x, y, x, y + (isCm ? 20 : isHalf ? 13 : 8), { w: isCm ? 1.4 : 1 });
-      if (isCm && (i / 10) % (labEvery || 1) === 0) s += TX(x, y + 30, String(i / 10), { size: 12 });
+      if (isCm && (i / 10) % (labEvery || 1) === 0) s += TX(x, y + 31, String(i / 10), { size: 13 });
     }
     return s;
   }
   function cmRulerSvg(o) {
-    var from = o.from, to = o.to, W = 520, pad = 18, px = (W - 2 * pad) / (to - from), X = function (c) { return pad + (c - from) * px; };
+    var from = o.from, to = o.to, W = 360, pad = 16, px = (W - 2 * pad) / (to - from), X = function (c) { return pad + (c - from) * px; };
     var oy = 14, oh = 26, ry = oy + oh + 6, s = '';
     s += objShape(X(o.a), X(o.b), oy, oh, o.obj);
     s += R(X(from) - 10, ry, (to - from) * px + 20, 44, '#fff8dc', { stroke: '#b8a46a', sw: 1.3, rx: 3 });
@@ -175,7 +175,7 @@
     [o.a, o.b].forEach(function (c) { if (c > from + 1e-9 || !o.zoom) s += L(X(c), oy - 4, X(c), ry + 22, { c: RED, w: 1.3, dash: '4 3' }); });
     var H = ry + 50;
     if (o.zoom) {
-      var z0 = Math.floor(o.b) - 1, z1 = z0 + 3, zx = 70, zw = W - 140, zpx = zw / 3, zy = H + 26, ZX = function (c) { return zx + (c - z0) * zpx; };
+      var z0 = Math.floor(o.b) - 1, z1 = z0 + 3, zx = 30, zw = W - 60, zpx = zw / 3, zy = H + 26, ZX = function (c) { return zx + (c - z0) * zpx; };
       s += '<polygon points="' + X(z0).toFixed(1) + ',' + (ry + 44) + ' ' + X(z1).toFixed(1) + ',' + (ry + 44) + ' ' + (zx + zw).toFixed(1) + ',' + (zy - 4) + ' ' + zx + ',' + (zy - 4) + '" fill="#8a909a" fill-opacity="0.12"/>';
       s += R(X(z0), ry - 1, X(z1) - X(z0), 46, 'none', { stroke: GREY, sw: 1.2 });
       s += R(zx - 8, zy - 4, zw + 16, 92, '#ffffff', { stroke: GREY, sw: 1.2, rx: 8 });
@@ -186,23 +186,23 @@
       s += TX(zx + zw + 4, zy + 82, 'zoomed in', { size: 11, c: GREY, anchor: 'end' });
       H = zy + 96;
     }
-    return svgFit(W, H, s, 'object on a centimetre ruler', W);
+    return svgFit(W, H, s, 'object on a centimetre ruler', W * 1.35);
   }
   /* ---------------- inch tape / ruler (horizontal) ---------------- */
   // o: { from, to (window, inches), end (object's end, inches), start (object's start, or null if it starts left of the window), obj }
   function inTapeSvg(o) {
-    var W = 520, pad = 20, px = (W - 2 * pad) / (o.to - o.from), X = function (v) { return pad + (v - o.from) * px; };
+    var W = 360, pad = 16, px = (W - 2 * pad) / (o.to - o.from), X = function (v) { return pad + (v - o.from) * px; };
     var oy = 12, oh = 28, ry = oy + oh + 6, s = '', x1 = o.start == null ? 0 : X(o.start);
     s += objShape(x1, X(o.end), oy, oh, o.obj || 'bar');
     s += R(4, ry, W - 8, 46, o.tape ? '#f6d55c' : '#eef4ff', { stroke: o.tape ? '#a88b1d' : '#7f9cc9', sw: 1.3, rx: 3 });
     for (var i = Math.ceil(o.from * 4); i <= Math.floor(o.to * 4); i++) {
       var x = X(i / 4), whole = i % 4 === 0, half = i % 2 === 0;
       s += L(x, ry, x, ry + (whole ? 22 : half ? 15 : 9), { w: whole ? 1.5 : 1 });
-      if (whole) s += TX(x, ry + 33, String(i / 4), { size: 12, weight: (i / 4) % 12 === 0 ? 700 : null, c: (i / 4) % 12 === 0 ? RED : INK });
+      if (whole) s += TX(x, ry + 34, String(i / 4), { size: 13, weight: (i / 4) % 12 === 0 ? 700 : null, c: (i / 4) % 12 === 0 ? RED : INK });
     }
     s += TX(W - 8, ry + 42, 'in', { size: 11, c: GREY, anchor: 'end' });
     s += L(X(o.end), oy - 4, X(o.end), ry + 24, { c: RED, w: 1.3, dash: '4 3' });
-    return svgFit(W, ry + 52, s, 'inch tape measure', W);
+    return svgFit(W, ry + 52, s, 'inch tape measure', W * 1.35);
   }
   /* ---------------- vertical height chart (inches) ---------------- */
   function heightSvg(Hin) {
@@ -400,7 +400,7 @@
       } },
       { id: '1aiii', sub: 'a iii', level: 'BEG', make: function (r, s) {
         var end = s.sAct + s.sJit;
-        return exactPart('A tape measure is stretched along the shelf, with its 0 at the shelf’s left end. Here is the tape at the shelf’s right end. What is the shelf’s actual length, to the nearest inch?' + inTapeSvg({ from: s.sAct - 7, to: s.sAct + 3, end: end, tape: true }),
+        return exactPart('A tape measure is stretched along the shelf, with its 0 at the shelf’s left end. Here is the tape at the shelf’s right end. What is the shelf’s actual length, to the nearest inch?' + inTapeSvg({ from: s.sAct - 5, to: s.sAct + 3, end: end, tape: true }),
           s.sAct, 'in', [{ v: s.sAct + 1, code: 'tape-neighbour', hint: 'Look at the inch mark <b>closest</b> to the end of the shelf.' }, { v: s.sAct - 1, code: 'tape-neighbour', hint: 'Look at the inch mark <b>closest</b> to the end of the shelf.' }],
           'The end of the shelf is closest to the ' + t(s.sAct) + ' in mark, so the shelf is about <b>' + s.sAct + ' in</b> long' + (s.sAct >= 12 ? ' ' + t('(' + Math.floor(s.sAct / 12) + '\\text{ ft }' + (s.sAct % 12) + '\\text{ in})') : '') + '. The estimate, ' + t(s.sEst) + ' in, is off by ' + t(Math.abs(s.sEst - s.sAct)) + ' in.',
           ['The tape’s numbers are inches from the shelf’s left end. Which inch mark is the end of the shelf closest to?'], 'read inch tape ' + s.sAct);
