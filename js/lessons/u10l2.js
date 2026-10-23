@@ -926,7 +926,7 @@
             sol: t('\\dfrac{' + dS(rnd(left, 4)) + '}{' + dS(sh.board) + '}\\times 100=' + dS(rnd(pc, 2)) + '\\ldots\\approx ' + rnd(pc, 0) + '\\%') + ' of a board. (Check: the quotient’s decimal part was ' + t(dS(rnd(fr, 4))) + ', and ' + t('1-' + dS(rnd(fr, 4)) + '=' + dS(rnd(1 - fr, 4))) + '.)', hints: ['Divide the leftover by the length of one board.'] });
         } },
         { id: 'e15c', sub: 'c', level: 'PRG', make: function (r, sh) {
-          return mcPart(r, 'Part (a) assumed offcuts may be joined end to end. If instead each straight run of the border had to be one uncut piece, is ' + t(sh.n) + ' boards a lower bound, an upper bound, or neither?', [
+          return mcPart(r, 'Counting total length only (offcuts joined end to end), ' + t(sh.n) + ' boards are enough. If instead each straight run of the border had to be one uncut piece, is ' + t(sh.n) + ' boards a lower bound, an upper bound, or neither?', [
             { html: 'A lower bound — joining offcuts is the most efficient use of the lumber, so forbidding it can only waste more, never less.', right: true },
             { html: 'An upper bound — uncut pieces are stronger, so fewer boards are needed.', why: 'Strength isn’t the question. Without joining, leftover pieces can be stranded, so you can only need the <b>same or more</b> boards.' },
             { html: 'Exactly ' + t(sh.n) + ' boards — the total length is still ' + Q(sh.T, 'm') + '.', why: 'The total is the same, but a short offcut can’t always be used for another run, so more boards may be needed.' },

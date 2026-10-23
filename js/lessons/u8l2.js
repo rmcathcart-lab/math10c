@@ -848,7 +848,7 @@
           } },
           { id: 'e13c', sub: 'c i', level: 'EMG', make: function (r, sh) {
             var kc = Q(-1, sh.b);
-            return B.fraction('Every answer in (a) has the denominator ' + t(pol([[sh.b, 'k'], [1, '']])) + '. For what value of ' + t('k') + ' does that denominator become ' + t('0') + '?', kc, { before: t('k=') },
+            return B.fraction('Solving this system for ' + t('x') + ' and ' + t('y') + ' in terms of ' + t('k') + ' gives answers with the denominator ' + t(pol([[sh.b, 'k'], [1, '']])) + '. For what value of ' + t('k') + ' does that denominator become ' + t('0') + '?', kc, { before: t('k=') },
               t(pol([[sh.b, 'k'], [1, '']]) + '=0') + ', so ' + t(sh.b + 'k=-1') + ' and ' + t('k=' + qT(kc)) + '.', ['Set the denominator equal to ' + t('0') + ' and solve for ' + t('k') + '.'], 'k making the denominator 0');
           } },
           { id: 'e13cc', sub: 'c ii', level: 'PRG', make: function (r, sh) {
