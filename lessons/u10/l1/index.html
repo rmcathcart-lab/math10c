@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Rounding and Formula Substitution · Math 10C 10.1</title>
-<meta name="description" content="Math 10C Unit 10 Lesson 1: rounding to a given place value on a zoomable number line, the rounding rule on the digits, rounding a calculated value only at the end, scientific notation and re-normalizing (Extension), substituting negative values in brackets, and substituting into measurement formulas: substitute first or solve first. Write on it with an Apple Pencil.">
+<title>Estimating Length with Personal Referents · Math 10C 10.1</title>
+<meta name="description" content="Math 10C Unit 10 Lesson 1: the imperial and SI systems of measurement and how their units are related, referents and personal referents, matching the size of the referent to the object, estimating a length by laying a referent end to end (count, then multiply), strategies for a perimeter and a circumference, measuring a scale diagram in both systems, and building a big referent out of a smaller one. Write on it with an Apple Pencil.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="10C Lessons">
@@ -27,325 +27,265 @@
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
   <div class="kicker">Math 10C · Unit 10 Measurement · Lesson 1</div>
-  <h1>Rounding and Formula Substitution</h1>
-  <p class="lede">Every measurement in this unit ends the same way: put numbers into a <b>formula</b>, let the calculator work, then <b>round</b> the answer sensibly. Today: round to any place value (and see <b>why</b> the rule works), keep every digit until the end, and substitute into expressions and formulas without sign slips.</p>
+  <h1>Estimating Length with Personal Referents</h1>
+  <p class="lede">No ruler? You carry a whole set of them around with you. Today: the two systems of measurement, <b class="u10l1-imp">imperial</b> and <b class="u10l1-si">SI</b>, and how to estimate a length: <b>pick</b> a referent close in size to the object, <b>count</b> how many times it fits, then <b>multiply</b> the count by the referent’s length.</p>
   <div class="goals">
     <div class="goals-h">I can…</div>
     <ul>
-      <li>round a number to any place value, and explain why it snaps to the <b>closer</b> neighbour</li>
-      <li>keep every digit through a calculation and round <b>only once, at the end</b></li>
-      <li><span class="u10l1-ext sm">Extension</span> write a number in scientific notation and re-normalize a calculated coefficient</li>
-      <li>substitute values, each in <b>brackets</b>, into an expression and evaluate it with the order of operations</li>
-      <li>substitute into a measurement formula and solve for the unknown, either <b>substituting first</b> or <b>solving first</b></li>
+      <li>name the imperial units of length (inch, foot, yard, mile) and the SI units (millimetre, centimetre, metre, kilometre) and state how they are related</li>
+      <li>explain what a <b>referent</b> is, and give a <b>personal referent</b> for common units in both systems</li>
+      <li>choose a referent that is <b>close in size</b> to the object being measured, and justify the choice</li>
+      <li>estimate a length, a <b>perimeter</b> or a <b>circumference</b> by laying a referent end to end, counting, and multiplying</li>
+      <li>measure a scale diagram in both systems and use the scale to find the actual length</li>
+      <li>build a referent for a large unit out of a referent for a smaller one</li>
     </ul>
   </div>
   <div class="outcome"><b>M1</b> Solve problems that involve linear measurement, using: SI and imperial units of measure; estimation strategies; measurement strategies.</div>
-  <p class="u10l1-skills">A <b>skills lesson</b> for the whole unit: the rounding and formula work here is used in every lesson that follows, for length (M1), conversions (M2), and surface area and volume (M3).</p>
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Your Age in Seconds" id="wu" style="--wf-side: 310px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Your Age in Seconds</h2>
-  <p class="wf-rule">Since you were born, your <b>seconds counter</b> has gone up by 1 every second.</p></div>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Your Body Is a Ruler" id="wu" style="--wf-side: 310px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Your Body Is a Ruler</h2>
+  <p class="wf-rule">No ruler? No problem. You carry a whole set of them around with you.</p></div>
   <div class="wf-grid"><div class="wf-main">
-  <div class="u10l1-wtop">
-    <div class="u10l1-odo-wrap">
-      <div class="u10l1-odo" id="u10l1-odo" aria-label="seconds counter"></div>
-      <div class="u10l1-odo-cap">SECONDS OLD</div>
-      <div class="u10l1-odo-sub" id="u10l1-odo-sub">&nbsp;</div>
-    </div>
-    <div class="u10l1-wbtns">
-      <button type="button" class="pill" id="u10l1-live">Count live</button>
-      <button type="button" class="pill" id="u10l1-y15">15 years old</button>
-      <button type="button" class="pill" id="u10l1-y16">16 years old</button>
-      <button type="button" class="pill" id="u10l1-bil">One billion!</button>
-      <button type="button" class="pill" id="u10l1-zero">Reset</button>
-    </div>
-  </div>
-  <div class="u10l1-chain">
-    <div class="u10l1-unit">1 second</div><div class="u10l1-arr"><span class="tex">\times 60</span></div>
-    <div class="u10l1-unit">1 minute</div><div class="u10l1-arr"><span class="tex">\times 60</span></div>
-    <div class="u10l1-unit">1 hour</div><div class="u10l1-arr"><span class="tex">\times 24</span></div>
-    <div class="u10l1-unit">1 day</div><div class="u10l1-arr"><span class="tex">\times 365</span></div>
-    <div class="u10l1-unit u10l1-unit-y">1 year</div>
+  <div class="u10l1-wrow">
+    <div class="u10l1-wfig" id="u10l1-wfig"></div>
+    <div class="u10l1-wbtns"><button type="button" class="pill" id="u10l1-warms">Arms out wide</button></div>
   </div>
   <div class="u10l1-wqs">
     <div class="bk-wq">
-      <div class="q-line"><div class="q-num">1</div><div>How many seconds are in <b>1 hour</b>?</div></div>
-      <div class="u10l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">60\times60=3\,600</span> s</div></div>
+      <div class="q-line"><div class="q-num">1</div><div>A desk is <b>3 hand spans</b> wide. About how many cm is that?</div></div>
+      <div class="u10l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">3\times20</span> cm <span class="tex">=</span> about <b>60 cm</b>.</div></div>
     </div>
     <div class="bk-wq">
-      <div class="q-line"><div class="q-num">2</div><div>How many seconds are in <b>1 day</b>?</div></div>
-      <div class="u10l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">3\,600\times24=86\,400</span> s</div></div>
+      <div class="q-line"><div class="q-num">2</div><div>A hallway is <b>30 paces</b> long. About how many metres is that?</div></div>
+      <div class="u10l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">30\times90</span> cm <span class="tex">=2\,700</span> cm <span class="tex">=</span> about <b>27 m</b>.</div></div>
     </div>
     <div class="bk-wq u10l1-wq3">
-      <div class="q-line"><div class="q-num">3</div><div>How many seconds are in <b>1 year</b>? Use scientific notation, <span class="tex">a\times10^{n}</span>.</div></div>
-      <div class="u10l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">86\,400\times365=31\,536\,000</span> s <span class="tex">\approx\mathbf{3.2\times10^{7}}</span> s. (With leap years, 365.25 days gives <span class="tex">31\,557\,600</span> s: still <span class="tex">3.2\times10^{7}</span>.)</div></div>
+      <div class="q-line"><div class="q-num">3</div><div>Which body ruler fits best to measure (a) a phone? (b) the gym?</div></div>
+      <div class="u10l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">(a) <b>Pinky nails</b> (a phone is about 7 of them wide). (b) <b>Paces</b> (a gym is dozens of paces long). A referent should be <b>close in size</b> to the object: nobody measures a gym in pinky nails.</div></div>
     </div>
   </div>
   </div><div class="wf-side">
-  <div class="bk-wq u10l1-wq4">
-    <div class="q-line"><div class="q-num">4</div><div><b>1 million</b> s <span class="tex">\approx</span> how many days?</div></div>
-    <div class="u10l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">1\,000\,000\div86\,400\approx11.6</span> days: under two weeks.</div></div>
-  </div>
-
-  <div class="poll u10l1-poll4 wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> The counter reads <b>1 000 000 000</b>. You are <b>one billion seconds</b> old! How old are you in <b>years</b>? <b>Guess first.</b></div></div>
+  <div class="u10l1-rulers">
+      <div class="u10l1-rh">Body rulers</div>
+      <div><b>pinky nail</b> ≈ 1 cm<i>(width of the nail)</i></div>
+      <div><b>hand span</b> ≈ 20 cm<i>(thumb to pinky)</i></div>
+      <div><b>cubit</b> ≈ 45 cm<i>(elbow to fingertip)</i></div>
+      <div><b>one pace</b> ≈ 90 cm<i>(one big step)</i></div>
+    </div>
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Stretch your arms out wide. Your <b>arm span</b>, fingertip to fingertip, is closest to… <b>Guess first.</b></div></div>
     <div class="poll-opts">
-      <div class="opt"><b>A</b> about 3 years</div>
-      <div class="opt"><b>B</b> about 12 years</div>
-      <div class="opt right"><b>C</b> about 32 years</div>
-      <div class="opt"><b>D</b> about 100 years</div>
+      <div class="opt"><b>A</b> half your height</div>
+      <div class="opt right"><b>B</b> your height</div>
+      <div class="opt"><b>C</b> double your height</div>
     </div>
     <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>C: about 32 years.</b> <span class="tex">1\,000\,000\,000\div31\,536\,000\approx31.7</span> years (31.69 with leap years). A billion is a <b>thousand</b> millions, so it is <span class="tex">1000\times11.6</span> days <span class="tex">\approx11\,574</span> days.<br>
-      <span class="muted"><b>B (12)</b> is the trap: “a million seconds is 11.6 days, so a billion is about 12 of something.” <b>A (3)</b> slips one power of ten. <b>D (100)</b> is the “a billion is unimaginably huge” gut feeling.</span></div>
+    <div class="poll-ans"><b>B: your height.</b> For most people, arm span and height are within a few centimetres of each other: the “human square” Leonardo da Vinci drew in the <i>Vitruvian Man</i>. Tap <b>Arms out wide</b> to see it.<br>
+      <span class="muted"><b>A</b> is tempting because arms hanging at your sides look short, but a span is <b>two</b> arms plus your shoulders. <b>C</b> feels right with your arms out: the span looks enormous next to your narrow body.</span></div>
   </div>
   </div></div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Seconds in a year, then a billion seconds in years.</b> <span class="keys"><kbd>6</kbd><kbd>0</kbd><kbd>×</kbd><kbd>6</kbd><kbd>0</kbd><kbd>×</kbd><kbd>2</kbd><kbd>4</kbd><kbd>×</kbd><kbd>3</kbd><kbd>6</kbd><kbd>5</kbd><kbd>ENTER</kbd></span> gives 31536000. Then <span class="keys"><kbd>1</kbd><kbd>2nd</kbd><kbd>EE</kbd><kbd>9</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>1</kbd><kbd>5</kbd><kbd>3</kbd><kbd>6</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives 31.70979198 years. <kbd>EE</kbd> (<kbd>2nd</kbd> above <kbd>x⁻¹</kbd>) means “times ten to the power”.</div>
-    <div class="pill-col"><button class="pill" data-keys="60 × 60 × 24 × 365 =">1 year</button><button class="pill" data-keys="1 EE 9 ÷ 31536000 =">1 billion s</button></div>
+  <p class="u10l1-social">Try it: partner up at the wall and compare your arm span with your height.</p>
+</section>
+
+<!-- ================= 1. Imperial ================= -->
+<section class="card" data-ink="s1" data-section="1. The Imperial System">
+  <div class="sec-h"><span class="badge">1</span><h2>The Imperial System of Measurement</h2></div>
+  <p>Before measuring instruments existed, an unknown length was compared to a familiar object or body part: a <b>referent</b>. The need for consistent, repeatable measurements produced formal <b>systems of measurement</b>. The <b class="u10l1-imp">imperial system</b>, developed in England and still in everyday use in the United States, measures length in <b>inches, feet, yards and miles</b>.</p>
+  <div class="def u10l1-units u10l1-dimp"><b>Imperial units of length</b>
+    <div class="u10l1-disp"><span class="tex">1\text{ foot}=12\text{ inches}\qquad 1\text{ yard}=3\text{ feet}\qquad 1\text{ mile}=1\,760\text{ yards}</span></div>
   </div>
-  <div class="bk-wq u10l1-social-q">
-    <div class="q-line"><div class="q-num bonus">?</div><div><b>Poll the room:</b> who has already lived <b>half a billion</b> seconds?</div></div>
-    <div class="u10l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Half a billion seconds <span class="tex">\approx15.8</span> years, about 15 years 10 months: right around the age of a Grade 10 class. Tap <b>15 years old</b> and <b>16 years old</b> above to see the counter pass 500 000 000.</div></div>
+  <p>Many imperial units began life as referents:</p>
+  <div class="u10l1-hist">
+    <div><b>Yard</b> Shortly after the Norman Conquest of 1066, legend holds that King Henry I decreed it to be the distance from the tip of his <b>nose</b> to the end of his <b>outstretched thumb</b>.</div>
+    <div><b>Furlong</b> Used by Saxon farmers before 1066 for how far a team of oxen could plow before resting. It still states the distance of horse races: <span class="tex">8</span> furlongs <span class="tex">=1</span> mile.</div>
+    <div><b>Rod</b> A pole about <span class="tex">11</span> cubits long.</div>
+    <div><b>League</b> Several personal referents, the two most common being the distance a person or a horse could walk in one hour: roughly <span class="tex">3</span> miles. No longer in common use.</div>
+    <div><b>Chain</b> The length of a cricket pitch, about <span class="tex">4</span> rods, and <span class="tex">10</span> chains <span class="tex">=1</span> furlong.</div>
+    <div><b>Hand</b> The width of a clenched fist, <span class="tex">4</span> inches. It still states the height of a horse or pony.</div>
   </div>
-  <div class="bk-wq">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> How many seconds long is an 80-minute class? How old are you at <b>2 billion</b> seconds?</div></div>
-    <div class="u10l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">80\times60=4\,800=4.8\times10^{3}</span> s. At 2 billion seconds you are about <span class="tex">63.4</span> years old.</div></div>
+  <div class="explainer" data-explainer="imperial"></div>
+</section>
+
+<!-- ================= 2. SI ================= -->
+<section class="card" data-ink="s2" data-section="2. The SI System">
+  <div class="sec-h"><span class="badge">2</span><h2>The SI System of Measurement</h2></div>
+  <p>The other major system is the <b class="u10l1-si">SI system</b> (Système International d’Unités), commonly called the <b>metric system</b>. As early as 1670 Gabriel Mouton and Jean Picard proposed a base-<span class="tex">10</span> system to replace the tangle of older, inconsistent units, and in 1790 the French Academy of Sciences was asked to design a scientific standard: a unit of length based on a fraction of the Earth’s circumference, with every related unit scaled by a power of <span class="tex">10</span>. Canada officially adopted SI in the 1970s, by which time most of the world had already switched. The common SI unit of length is the <b>metre</b>.</p>
+  <div class="def u10l1-units u10l1-dsi"><b>SI units of length</b>
+    <div class="u10l1-disp"><span class="tex">1\text{ centimetre}=10\text{ millimetres}\qquad 1\text{ metre}=100\text{ centimetres}\qquad 1\text{ kilometre}=1\,000\text{ metres}</span></div>
+  </div>
+  <p>The United States uses SI units widely in science but still relies on the imperial system for most everyday purposes, so both systems are worth knowing well.</p>
+  <div class="explainer" data-explainer="metric"></div>
+  <div class="parts c1">
+    <div class="part think"><div class="pl"><span class="think-tag">Think</span> Which system is easier to move between units in? Why?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>SI.</b> Every SI step is a power of <span class="tex">10</span> (<span class="tex">\times10,\ \times100,\ \times1\,000</span>), so changing units just moves the decimal point. The imperial steps (<span class="tex">12,\ 3,\ 1\,760</span>) are all different.</div></div></div>
   </div>
 </section>
 
-<!-- ================= 1. Rounding ================= -->
-<section class="card" data-ink="s1" data-section="1. Rounding to a Given Place Value">
-  <div class="sec-h"><span class="badge">1</span><h2>Rounding to a Given Place Value</h2></div>
-  <p>A calculation often produces far more digits than are useful: a non-terminating decimal, or a value with many decimal places. <b>Rounding</b> expresses such an answer to a sensible degree of accuracy, and gives a quick way to check whether an answer is reasonable.</p>
-  <div class="u10l1-pvrow">
-    <table class="u10l1-pv">
-      <tr><th>ten<br>thousands</th><th>thousands</th><th>hundreds</th><th>tens</th><th class="u10l1-pvbar">ones</th><th>tenths</th><th>hundredths</th><th>thousandths</th></tr>
-      <tr><td>5</td><td>2</td><td>1</td><td>4</td><td class="u10l1-pvbar">8</td><td>6</td><td>7</td><td>3</td></tr>
-    </table>
-    <div class="u10l1-pvnum"><span class="tex">52\,148.673</span></div>
+<!-- ================= 3. Referents ================= -->
+<section class="card" data-ink="s3" data-section="3. Referents: Measuring Without a Tool">
+  <div class="sec-h"><span class="badge">3</span><h2>Referents: Measuring Without a Tool</h2></div>
+  <div class="def">A <b>referent</b> is a familiar object, very often a part of your own body, used as a stand-in point of reference when no measuring tool is available. A referent taken from a person’s immediate surroundings (their own body, or an object they always carry) is a <b>personal referent</b>.
+    <div class="eg">Body-based referents are the oldest and most convenient, since they are always at hand. The five below are drawn roughly to scale relative to one another.</div>
   </div>
-  <div class="def"><b>The Rounding Rule.</b> To round a number to a given place value:
-    <ol class="u10l1-rule">
-      <li>Find the digit in that place: the <b class="u10l1-cpv">place-value digit</b>.</li>
-      <li>Look at the digit immediately to its right: the <b class="u10l1-ctd">test digit</b>.</li>
-      <li>If the test digit is <span class="tex">0,\ 1,\ 2,\ 3</span> or <span class="tex">4</span>, leave the place-value digit as it is (round <b>down</b>), and drop every digit to its right (replacing them with zeros if they lie to the left of the decimal point).</li>
-      <li>If the test digit is <span class="tex">5,\ 6,\ 7,\ 8</span> or <span class="tex">9</span>, increase the place-value digit by one (round <b>up</b>), and drop every digit to its right the same way.</li>
-    </ol>
+  <div class="u10l1-five" id="u10l1-five"></div>
+  <div class="u10l1-steps">
+    <div><span class="u10l1-sn">1</span><div><b>Pick</b> a referent close in size to the object.</div></div>
+    <div><span class="u10l1-sn">2</span><div><b>Count</b> how many times it fits, end to end.</div></div>
+    <div><span class="u10l1-sn">3</span><div><b>Multiply</b> the count by the referent’s length.</div></div>
   </div>
-  <p>To round <span class="tex">52\,148.673</span> to the nearest ten, the place-value digit is the <span class="tex">4</span> and the test digit is the <span class="tex">8</span>; since <span class="tex">8\ge5</span> we round up, giving <span class="tex">\mathbf{52\,150}</span>. For a negative number, rounding <b>up</b> means increasing the <b>magnitude</b> (moving further from <span class="tex">0</span>), so <span class="tex">-138.4562</span> rounds to <span class="tex">-138.5</span> at the tenths place, not <span class="tex">-138.4</span>.</p>
-</section>
-
-<section class="card" data-ink="s1b" data-section="1. Zoom in: which neighbour is closer?">
-  <h3 class="sub">Zoom in: which neighbour is closer?</h3>
-  <p>Rounding to a place value means: of the two numbers <b>on either side</b> at that place, which one is closer? Zoom in on the number line and the number sits between two neighbours. Past the halfway mark, it snaps to the upper one. That is all the test digit is checking.</p>
-  <div class="explainer" data-explainer="zoom"></div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>Exactly halfway goes up.</b> A test digit of <span class="tex">5</span> means the number is at (or past) the halfway mark, and the rule says round <b>up</b>. For a negative number, “up” means <b>away from 0</b>: <span class="tex">-2.86\to-2.9</span>, because <span class="tex">-2.9</span> really is the closer neighbour.</div></div>
-</section>
-
-<section class="card" data-ink="s1c" data-section="1. The rule on the digits">
-  <h3 class="sub">The rule on the digits</h3>
-  <p>The same rule, done on the digits themselves: find the place, read the test digit, roll the place-value digit up (or not), then drop everything to its right. A <span class="tex">9</span> that rolls up carries into the next place, like a car’s odometer.</p>
-  <div class="explainer" data-explainer="digits"></div>
+  <div class="explainer" data-explainer="lay"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>A pace is a normal walking step,</b> about <span class="tex">90</span> cm <span class="tex">\approx1</span> yd. Walking <b>heel-to-toe</b> measures something else: foot lengths of about <span class="tex">1</span> ft.</div></div>
 </section>
 
 <section class="card example" data-ink="ex1" data-section="Example 1">
-  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>One number, seven different place values</h3></div>
-  <p class="q">Round each number below to each place value indicated in the table.</p>
-  <div class="parts c1">
-    <div class="part">
-      <table class="u10l1-rt">
-        <tr><th class="u10l1-rtn">Number</th><th>One</th><th>Ten</th><th>Hundred</th><th>Tenth</th><th>Hundredth</th><th>1st Dec.<br>Place</th><th>2nd Dec.<br>Place</th></tr>
-        <tr><td class="u10l1-rtn"><span class="tex">837.4629</span></td>
-          <td><span class="u10l1-cans"><span class="tex">837</span></span></td><td><span class="u10l1-cans"><span class="tex">840</span></span></td><td><span class="u10l1-cans"><span class="tex">800</span></span></td>
-          <td><span class="u10l1-cans"><span class="tex">837.5</span></span></td><td><span class="u10l1-cans"><span class="tex">837.46</span></span></td><td><span class="u10l1-cans"><span class="tex">837.5</span></span></td><td><span class="u10l1-cans"><span class="tex">837.46</span></span></td></tr>
-        <tr><td class="u10l1-rtn"><span class="tex">15\,273.918</span></td>
-          <td><span class="u10l1-cans"><span class="tex">15\,274</span></span></td><td><span class="u10l1-cans"><span class="tex">15\,270</span></span></td><td><span class="u10l1-cans"><span class="tex">15\,300</span></span></td>
-          <td><span class="u10l1-cans"><span class="tex">15\,273.9</span></span></td><td><span class="u10l1-cans"><span class="tex">15\,273.92</span></span></td><td><span class="u10l1-cans"><span class="tex">15\,273.9</span></span></td><td><span class="u10l1-cans"><span class="tex">15\,273.92</span></span></td></tr>
-      </table>
-      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Each answer is the closer neighbour at that place. For example, <span class="tex">837.4\underline{6}29</span> to the nearest tenth: test digit <span class="tex">6\ge5</span>, so <span class="tex">837.5</span>; and <span class="tex">15\,2\underline{7}3.918</span> to the nearest hundred: test digit <span class="tex">7\ge5</span>, so <span class="tex">15\,300</span>.</div></div>
-    </div>
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Matching the size of the referent to the size of the object</h3></div>
+  <p class="q">For each object, state one personal referent (from the diagram above, or from the imperial units it represents) that would be reasonable to use to estimate it, and justify the choice.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) the length of a hockey rink</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A standard NHL rink is <span class="tex">200</span> ft long, far too big for a small referent. Use the <b>pace</b> (<span class="tex">\approx90</span> cm <span class="tex">\approx1</span> yd): walk the length with normal walking paces, counting, then multiply the count by about <span class="tex">1</span> yard.<br><span class="tex">200\text{ ft}\div3\text{ ft per pace}\approx\boldsymbol{67}</span> <b>paces</b>, a countable number.<br>A thumb width would need <span class="tex">200\times12=2\,400</span> repetitions: far too many to count without losing track.</div></div></div>
+    <div class="part"><div class="pl">(b) the length of a USB flash drive</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A flash drive is only an inch or two long, so a pace or a cubit is far too large to resolve it. Use the <b>width of a thumb</b> across the joint (<span class="tex">\approx2.5</span> cm <span class="tex">\approx1</span> in): lay the drive beside your thumb and compare directly.<br>About <span class="tex">2</span> thumb widths <span class="tex">\Rightarrow</span> about <b>2 in</b> (<span class="tex">\approx5</span> cm).<br>The referent should be close in size to the object.</div></div></div>
+    <div class="part"><div class="pl">(c) the height of a pony</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Horse and pony heights are traditionally given in <b>hands</b>, and <span class="tex">1</span> hand <span class="tex">=4</span> in <span class="tex">\approx10</span> cm is exactly the width of a clenched fist. Stack fists from the ground to the withers (the top of the shoulders) and count.<br>A <span class="tex">12</span>-hand pony is <span class="tex">12\times4=48</span> in <span class="tex">=</span> <b>4 ft</b> (<span class="tex">\approx122</span> cm).<br>Both the most natural referent and the standard unit for the object.</div></div></div>
   </div>
-  <p class="u10l1-note"><i>Note:</i> “Tenth” and “1st decimal place” name the <b>same</b> place, as do “hundredth” and “2nd decimal place”, so those columns get the same answers. Questions use both wordings, so the table shows both.</p>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>How many paces?</b> <span class="keys"><kbd>2</kbd><kbd>0</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> gives <span class="tex">66.67</span>, so about <span class="tex">67</span> paces. The pony: <span class="keys"><kbd>1</kbd><kbd>2</kbd><kbd>×</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> <span class="tex">=48</span> in.</div>
+    <div class="pill-col"><button class="pill" data-keys="200 ÷ 3 =">Show me (a)</button><button class="pill" data-keys="12 × 4 =">Show me (c)</button></div>
+  </div>
+  <div class="explainer" data-explainer="fit"></div>
   <div class="space" id="ex1-space"></div>
   <button class="more" data-more="ex1-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s1d" data-section="1. Rounding with a calculator">
-  <h3 class="sub">Rounding with a calculator</h3>
-  <p>Two features do this automatically. Setting a <b>fixed number of decimal places</b> in the mode/format menu rounds every displayed result to that many places: useful when every answer in a problem needs the same precision, such as money to the nearest cent. A <b>round(</b> function in the Math or numeric menu (on graphing calculators) rounds one calculation on demand, as round(expression, number of decimal places): useful when different questions call for different precision.</p>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>On the TI-30XIIS.</b> Press <kbd>2nd</kbd><kbd>FIX</kbd> (<b>FIX</b> is above the decimal-point key) to get the menu <b>F 0 1 2 3 … 9</b>, arrow to the number of decimal places and press <kbd>ENTER</kbd> (<b>FIX</b> shows on the screen). Choose <b>F</b> (floating) to go back to every digit. The calculator on this site works the same way. It has no round( key, so for a one-off rounding, read the full display and use the rounding rule.</div>
+<!-- sources: https://en.wikipedia.org/wiki/Cubit (elbow to tip of the middle finger; royal cubit rods 523.5–529.2 mm, about 52.5 cm, 7 palms of 4 fingers; used by the Step Pyramid of Djoser, c. 2700 BCE) ;
+     https://en.wikipedia.org/wiki/Ancient_Egyptian_units_of_measurement (royal cubit about 52.5 cm; 7 palms = 28 digits; rods from the tombs of Maya and Kha) ;
+     https://www.ucl.ac.uk/museums-static/digitalegypt/weights/lenght.html (UCL Petrie Museum: cubit rods about 52 cm; 7 palms; 28 fingers) ;
+     https://globalegyptianmuseum.org/record.aspx?id=4424 (a wooden cubit rod; "elbow to the fingertips", seven palms and 28 digits) ;
+     https://www.britannica.com/print/article/254079 (hand: 4 inches, fixed by a statute of Henry VIII; horses) -->
+<!-- ================= Math History box (brown) ================= -->
+<section class="card history" data-ink="hist" data-section="Math History: the royal cubit">
+  <div class="hist-head"><span class="hist-tag">Math History</span><span class="hist-dates">Egypt · c. 2700 BCE</span></div>
+  <div class="hist-grid">
+    <div class="hist-text">
+      <h3 class="hist-title">A forearm made official</h3>
+      <p>A <b>cubit</b> is the length from your elbow to your fingertip, a personal referent. Ancient Egypt was building with it by the time of the Step Pyramid of Djoser, around 2700 BCE.</p>
+      <p>Arms come in different lengths, so Egypt fixed one <b>royal cubit</b> of <b>7 palms</b>, each palm <b>4 fingers</b> wide (28 fingers in all), and marked it on rods of wood and stone. Rods that survive measure about <b>52.4 to 52.9 cm</b>.</p>
+      <div class="part hist-q"><div class="pl">Say your palm (four fingers side by side) is about 7.5 cm. How long is your 7-palm cubit? About how many royal cubits tall is a 2 m doorway?</div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">7\times7.5=\boldsymbol{52.5}</span> cm, right in the range of the real rods. Doorway: <span class="tex">200\div52.5\approx3.8</span>, so about <b>4 royal cubits</b>.</div></div></div>
+    </div>
+    <figure class="hist-anim">
+      <svg id="u10l1-hist" viewBox="0 0 600 300" role="img" aria-label="A forearm from elbow to fingertip becomes a cubit rod marked in 7 palms and 28 fingers, and the rod is laid end to end three times along a stone block."></svg>
+      <figcaption><button class="hist-play" type="button">Replay</button><span>Tap the picture to play it again.</span></figcaption>
+      <p class="hist-note">The hand used for horses is another body part made official: a law of England’s King Henry VIII fixed it at 4 inches.</p>
+    </figure>
   </div>
-  <p>Whichever you use, the calculator must still hold <b>every</b> digit while it works. Round <b>once, at the very end</b>, never part-way through.</p>
-  <div class="explainer" data-explainer="early"></div>
+</section>
+
+<!-- ================= 4. Everyday referents ================= -->
+<section class="card" data-ink="s4" data-section="4. Referents for Everyday Objects">
+  <div class="sec-h"><span class="badge">4</span><h2>Referents for Everyday Objects</h2></div>
+  <p>Connecting a unit to a concrete, familiar referent is the fastest way to build a feel for that unit. Tap a card to flip it.</p>
+  <div class="u10l1-fh u10l1-imp">Imperial referents for length</div>
+  <div class="bk-flips u10l1-flips" style="--bk-cols:3">
+    <div class="bk-flip u10l1-fimp"><div class="bk-front">the width of a thumb across the joint</div><div class="bk-back">about <b>1 inch</b></div></div>
+    <div class="bk-flip u10l1-fimp"><div class="bk-front">the length of an adult foot</div><div class="bk-back">about <b>1 foot</b></div></div>
+    <div class="bk-flip u10l1-fimp"><div class="bk-front">one adult pace</div><div class="bk-back">about <b>1 yard</b></div></div>
+  </div>
+  <div class="u10l1-fh u10l1-si">SI referents for length</div>
+  <div class="bk-flips u10l1-flips" style="--bk-cols:4">
+    <div class="bk-flip"><div class="bk-front">the width of an adult little (“pinky”) fingernail</div><div class="bk-back">about <b>1 centimetre</b></div></div>
+    <div class="bk-flip"><div class="bk-front">the width of five adult toes together</div><div class="bk-back">about <b>1 decimetre</b> (<span class="tex">\tfrac{1}{10}</span> of a metre)</div></div>
+    <div class="bk-flip"><div class="bk-front">the thickness of a dime</div><div class="bk-back">about <b>1 millimetre</b></div></div>
+    <div class="bk-flip"><div class="bk-front">the average height of a 4-year-old child</div><div class="bk-back">about <b>1 metre</b></div></div>
+    <div class="bk-flip"><div class="bk-front">the height of a standard doorway</div><div class="bk-back">about <b>2 metres</b></div></div>
+    <div class="bk-flip"><div class="bk-front">the width of this workbook</div><div class="bk-back">about <b>20 centimetres</b></div></div>
+    <div class="bk-flip"><div class="bk-front">the diameter of a hockey puck</div><div class="bk-back">about <b>7.6 centimetres</b></div></div>
+    <div class="bk-flip"><div class="bk-front">the length of an Olympic swimming pool</div><div class="bk-back"><b>50 metres</b></div></div>
+  </div>
+  <div class="explainer" data-explainer="ladder"></div>
 </section>
 
 <section class="card example" data-ink="ex2" data-section="Example 2">
-  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Rounding a stored or calculated value</h3></div>
-  <p class="q">Use a calculator to round off each of the following.</p>
-  <div class="parts c2">
-    <div class="part"><div class="pl">(a) Round <span class="tex">24.839\,17</span> to three decimal places.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The digit after the third decimal place is <span class="tex">1&lt;5</span>, so round <b>down</b>: drop it and keep the third decimal as it is.<br><span class="tex">24.839\,\underline{1}7\to\mathbf{24.839}</span></div></div></div>
-    <div class="part"><div class="pl">(b) Round <span class="tex">32.647</span> to the nearest hundredth.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Hundredths is the second decimal place, so the test digit is the thousandths digit, <span class="tex">7\ge5</span>: round <b>up</b>.<br><span class="tex">32.64\underline{7}\to\mathbf{32.65}</span></div></div></div>
-    <div class="part"><div class="pl">(c) Round <span class="tex">7\,942\div356</span> to the nearest tenth.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Divide first and keep every digit the calculator shows: <span class="tex">7\,942\div356=22.3089\ldots</span><br>Tenths place-value digit <span class="tex">3</span>, test digit <span class="tex">0&lt;5</span>, so round down: <span class="tex">\mathbf{22.3}</span></div></div></div>
-    <div class="part"><div class="pl">(d) Round <span class="tex">2.85\times3.47</span> to the second decimal place.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">2.85\times3.47=9.8895</span> exactly.<br>Second decimal place is the <span class="tex">8</span>; the test digit is the thousandths digit, <span class="tex">9\ge5</span>, so round up: <span class="tex">\mathbf{9.89}</span></div></div></div>
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>One object, one referent from each system</h3></div>
+  <p class="q">Consider the task of estimating the length of a bath towel.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) Identify a referent that could be used to estimate the length in SI units.</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A bath towel is roughly <span class="tex">1</span>–<span class="tex">1.5</span> m long, so a mid-sized SI referent fits best: the <b>width of this workbook</b>, <span class="tex">\approx20</span> cm.<br>It takes about <span class="tex">100\div20=5</span> to <span class="tex">150\div20=7.5</span> workbook widths: a small, easy count.<br>(A pinky fingernail, <span class="tex">\approx1</span> cm, would need <span class="tex">100</span>–<span class="tex">150</span> repetitions.)</div></div></div>
+    <div class="part"><div class="pl">(b) Identify a referent that could be used to estimate the length in imperial units.</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The <b>adult pace</b>, <span class="tex">\approx90</span> cm <span class="tex">\approx1</span> yd.<br>A towel of <span class="tex">1</span>–<span class="tex">1.5</span> m is about <span class="tex">1</span> to <span class="tex">1\tfrac{1}{2}</span> paces long, so the count stays small and the leftover fraction is easy to judge by eye.<br>(The thumb, <span class="tex">\approx1</span> in, would need <span class="tex">40</span>–<span class="tex">60</span> repetitions; the adult foot, <span class="tex">\approx1</span> ft, about <span class="tex">3</span>–<span class="tex">5</span>.)</div></div></div>
+    <div class="part"><div class="pl">(c) Explain the process you would use to estimate the length with your imperial referent from part (b).</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Lay the towel out flat. Starting at one end, walk along it with normal paces, counting full paces and estimating any leftover fraction. Then multiply by the referent’s length:<br><span class="tex">\text{estimated length}=(\text{number of paces})\times1\text{ yd}</span><br>E.g. <span class="tex">1\tfrac{1}{2}</span> paces gives <span class="tex">1.5\text{ yd}=1.5\times3=\boldsymbol{4.5\text{ ft}}</span> (<span class="tex">\approx1.4</span> m).<br>The estimate is only as good as the referent: treat it as approximate, not exact.</div></div></div>
   </div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Calculate first, round second.</b> (c) <span class="keys"><kbd>7</kbd><kbd>9</kbd><kbd>4</kbd><kbd>2</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>5</kbd><kbd>6</kbd><kbd>ENTER</kbd></span> shows 22.30898876, so <b>22.3</b>. (d) <span class="keys"><kbd>2</kbd><kbd>.</kbd><kbd>8</kbd><kbd>5</kbd><kbd>×</kbd><kbd>3</kbd><kbd>.</kbd><kbd>4</kbd><kbd>7</kbd><kbd>ENTER</kbd></span> shows 9.8895, so <b>9.89</b>.</div>
-    <div class="pill-col"><button class="pill" data-keys="7942 ÷ 356 =">Show me (c)</button><button class="pill" data-keys="2.85 × 3.47 =">Show me (d)</button></div>
-  </div>
+  <div class="explainer" data-explainer="towel"></div>
   <div class="space" id="ex2-space"></div>
   <button class="more" data-more="ex2-space">+ More space</button>
 </section>
 
-<!-- ================= 2. Extension: scientific notation ================= -->
-<section class="card u10l1-extcard" data-ink="s2" data-section="2. Extension: Scientific Notation">
-  <div class="sec-h"><span class="badge">2</span><h2>Scientific Notation</h2><span class="u10l1-ext-tag">Extension</span></div>
-  <div class="u10l1-extbox"><span class="u10l1-ext">Extension</span><span>This section is enrichment: the Math 10C measurement outcomes do not require scientific notation (you met it in Unit 2). Sections 1, 3 and 4 are the core of this lesson.</span></div>
-  <p class="u10l1-mt">Some measurements are extremely large (the distance between planets) or extremely small (the diameter of a cell), and standard notation is unwieldy for them. <b>Scientific notation</b> writes such a number as</p>
-  <div class="u10l1-disp"><span class="tex">a\times10^{n},\qquad 1\le a&lt;10,\ \ n\text{ an integer,}</span></div>
-  <p>where <span class="tex">a</span> is the <b>coefficient</b>. Neptune’s average distance from the sun, about <span class="tex">4\,500\,000\,000</span> km, becomes</p>
-  <div class="u10l1-disp"><span class="tex">4\,500\,000\,000=\underbrace{4.5}_{1\,\le\,a\,&lt;\,10}\times\underbrace{10^{9}}_{\text{power of ten}}.</span></div>
-  <div class="explainer" data-explainer="sci"></div>
-</section>
-
-<section class="card example u10l1-extcard" data-ink="ex3" data-section="Example 3">
-  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Standard notation to scientific notation</h3><span class="u10l1-ext-tag">Extension</span></div>
-  <p class="q">Express each number in scientific notation, rounded to the nearest tenth.</p>
+<section class="card example" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Strategies for a perimeter and a circumference</h3></div>
   <div class="parts c2">
-    <div class="part"><div class="pl">(a) <span class="tex">68\,400\,000</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Move the decimal point so the coefficient lands in <span class="tex">[1,\ 10)</span>: from <span class="tex">68\,400\,000</span> it moves <span class="tex">7</span> places left, so <span class="tex">n=7</span>.<br><span class="tex">68\,400\,000=6.84\times10^{7}</span><br>Round the coefficient to the nearest tenth: test digit <span class="tex">4&lt;5</span>, round down: <span class="tex">\mathbf{6.8\times10^{7}}</span></div></div></div>
-    <div class="part"><div class="pl">(b) <span class="tex">0.000\,051\,27</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The decimal point moves <span class="tex">5</span> places <b>right</b> to reach <span class="tex">5.127</span>, so <span class="tex">n=-5</span>.<br><span class="tex">0.000\,051\,27=5.127\times10^{-5}</span><br>Coefficient to the nearest tenth: test digit <span class="tex">2&lt;5</span>, round down: <span class="tex">\mathbf{5.1\times10^{-5}}</span></div></div></div>
+    <div class="part"><div class="pl">(a) Describe and explain a personal strategy that could be used to estimate the perimeter of the base of a rectangular tool shed, using one of the referents above.</div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Use the <b>adult foot</b> (<span class="tex">\approx1</span> ft): walk heel-to-toe along each side of the shed’s base, counting foot lengths. Multiply each count by about <span class="tex">1</span> ft, then add:<br><span class="tex">P\approx(\text{count}_1+\text{count}_2+\text{count}_3+\text{count}_4)\times1\text{ ft}</span><br>Because the base is a <b>rectangle</b>, only two adjacent sides need to be counted: <span class="tex">P\approx2(\ell+w)</span>. A shed measuring <span class="tex">8</span> heel-to-toe steps by <span class="tex">12</span> gives <span class="tex">P\approx2(8+12)=\boldsymbol{40\text{ ft}}</span>.<br>For a large shed the <b>pace</b> (<span class="tex">\approx1</span> yd) keeps the counts smaller.</div></div></div>
+    <div class="part"><div class="pl">(b) Describe and explain a personal strategy that could be used to estimate the circumference of a bicycle wheel, using one of the referents above.</div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A rim is curved, so no straight referent can be laid along it. <b>Wrap a string</b> once around the outside of the tire, mark where it meets itself, then lay the string out straight.<br>Measure the string with a small SI referent, the <b>width of a pinky fingernail</b> (<span class="tex">\approx1</span> cm), counting how many fit. The count <b>is</b> the circumference in centimetres.<br>A <span class="tex">700</span> mm road wheel has circumference <span class="tex">\pi(70)\approx220</span> cm, so expect roughly <b>220</b> fingernail widths.</div></div></div>
   </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Circumference of the wheel.</b> <span class="tex">C=\pi d</span> with <span class="tex">d=700</span> mm <span class="tex">=70</span> cm: <span class="keys"><kbd>π</kbd><kbd>×</kbd><kbd>7</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives <span class="tex">219.911\ldots\approx220</span> cm.</div>
+    <div class="pill-col"><button class="pill" data-keys="π × 70 =">Show me</button></div>
+  </div>
+  <div class="explainer" data-explainer="shed"></div>
+  <div class="explainer" data-explainer="wheel"></div>
   <div class="space" id="ex3-space"></div>
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
-<section class="card example u10l1-extcard" data-ink="ex4" data-section="Example 4">
-  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Calculating, then re-normalizing the coefficient</h3><span class="u10l1-ext-tag">Extension</span></div>
-  <p class="q">Perform each calculation and express the answer in scientific notation, rounded to one decimal place.</p>
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Measuring a scale diagram in both systems</h3></div>
+  <p class="q">Shown below is a scale diagram of a sample access card, drawn at a scale of <span class="tex">1:3</span>. Measure the printed diagram itself: it is reproduced at full size.</p>
+  <div class="u10l1-cardrow">
+    <div class="u10l1-card"><div class="u10l1-cardt">sample card</div></div>
+    <div class="u10l1-cardnote">In the booklet this diagram is printed at its true size, <b>3.0 cm</b> long. On a screen it is not, so measure the booklet’s copy, or use the on-screen ruler in the explainer below.</div>
+  </div>
   <div class="parts c3">
-    <div class="part"><div class="pl">(a) <span class="tex">(3.24\times10^{3})(6.15\times10^{-7})</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Multiply coefficients, add exponents.<br><span class="tex">3.24\times6.15=19.926</span> and <span class="tex">10^{3}\times10^{-7}=10^{-4}</span><br><span class="tex">=19.926\times10^{-4}</span>, but <span class="tex">19.926\not&lt;10</span>, so re-normalize:<br><span class="tex">=1.9926\times10^{-3}</span><br>To one decimal place the test digit is <span class="tex">9\ge5</span>, and the <span class="tex">9</span> carries: <span class="tex">\mathbf{2.0\times10^{-3}}</span></div></div></div>
-    <div class="part"><div class="pl">(b) <span class="tex">\dfrac{7.36\times10^{-3}}{4.21\times10^{-9}}</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Divide coefficients, subtract exponents.<br><span class="tex">7.36\div4.21=1.7482\ldots</span> and <span class="tex">10^{-3}\div10^{-9}=10^{6}</span><br><span class="tex">=1.7482\ldots\times10^{6}</span><br>Test digit <span class="tex">4&lt;5</span>, so round down: <span class="tex">\mathbf{1.7\times10^{6}}</span></div></div></div>
-    <div class="part"><div class="pl">(c) <span class="tex">84.216\times12.5073</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">84.216\times12.5073=1053.3147768</span><br>The decimal point moves <span class="tex">3</span> places left:<br><span class="tex">=1.0533147\ldots\times10^{3}</span><br>To one decimal place the test digit is <span class="tex">5</span>, so round <b>up</b>: <span class="tex">\mathbf{1.1\times10^{3}}</span></div></div></div>
+    <div class="part"><div class="pl">(a) Measure the length of the scale diagram above, in both SI units and imperial units.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A ruler laid along the longer edge reads <b>3.0 cm</b>.<br>Converting with <span class="tex">1\text{ in}=2.54</span> cm:<br><span class="tex">3.0\text{ cm}\div2.54\text{ cm/in}=1.1811\ldots\approx\boldsymbol{1.18\text{ in}}</span><br>(On a ruler marked in sixteenths, this is just short of <span class="tex">1\tfrac{3}{16}</span> in.)</div></div></div>
+    <div class="part"><div class="pl">(b) Use your answer from part (a) to determine the actual length of the access card.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The scale is <span class="tex">1:3</span>, so every <span class="tex">1</span> cm on the diagram stands for <span class="tex">3</span> cm on the real card.<br><span class="tex">3.0\text{ cm}\times3=\boldsymbol{9.0\text{ cm}}</span><br>In imperial units: <span class="tex">9.0\div2.54=3.5433\ldots\approx\boldsymbol{3.54\text{ in}}</span>, the same as <span class="tex">1.18\times3</span>.<br>The length is multiplied by the scale factor; the <b>unit</b> does not change.</div></div></div>
+    <div class="part"><div class="pl">(c) Could the length of this access card be used as a referent in either system of measurement? Explain.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Yes.</b> Access cards of this type are manufactured to a fixed, standard size, so the length is the same from card to card: exactly the consistency a referent needs. A card kept in a wallet is always at hand, so it is a <b>personal</b> referent.<br>In SI it stands for <span class="tex">\approx9</span> cm; in imperial units for <span class="tex">\approx3\tfrac12</span> in.<br>(A Canadian bank note works for the same reason.)</div></div></div>
   </div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Type scientific notation with <kbd>EE</kbd>.</b> (a) <span class="keys"><kbd>3</kbd><kbd>.</kbd><kbd>2</kbd><kbd>4</kbd><kbd>2nd</kbd><kbd>EE</kbd><kbd>3</kbd><kbd>×</kbd><kbd>6</kbd><kbd>.</kbd><kbd>1</kbd><kbd>5</kbd><kbd>2nd</kbd><kbd>EE</kbd><kbd>(−)</kbd><kbd>7</kbd><kbd>ENTER</kbd></span> shows 0.0019926, which is <span class="tex">1.9926\times10^{-3}</span>. (b) shows 1748218.527, which is <span class="tex">1.748\ldots\times10^{6}</span>. (c) shows 1053.314777. The calculator re-normalizes for you only in SCI mode; otherwise, count the hops yourself.</div>
-    <div class="pill-col"><button class="pill" data-keys="3.24 EE 3 × 6.15 EE (−) 7 =">Show me (a)</button><button class="pill" data-keys="7.36 EE (−) 3 ÷ 4.21 EE (−) 9 =">Show me (b)</button><button class="pill" data-keys="84.216 × 12.5073 =">Show me (c)</button></div>
+    <div><b>Centimetres to inches: divide by 2.54.</b> <span class="keys"><kbd>3</kbd><kbd>÷</kbd><kbd>2</kbd><kbd>.</kbd><kbd>5</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> gives <span class="tex">1.1811\ldots</span> and <span class="keys"><kbd>9</kbd><kbd>÷</kbd><kbd>2</kbd><kbd>.</kbd><kbd>5</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> gives <span class="tex">3.5433\ldots</span></div>
+    <div class="pill-col"><button class="pill" data-keys="3 ÷ 2.54 =">Show me (a)</button><button class="pill" data-keys="9 ÷ 2.54 =">Show me (b)</button></div>
   </div>
+  <div class="explainer" data-explainer="card"></div>
   <div class="space" id="ex4-space"></div>
   <button class="more" data-more="ex4-space">+ More space</button>
 </section>
 
-<section class="card u10l1-extcard" data-ink="s2b" data-section="2. Re-normalizing the coefficient">
-  <div class="u10l1-subh"><h3 class="sub">Re-normalizing: keep the coefficient between 1 and 10</h3><span class="u10l1-ext-tag">Extension</span></div>
-  <p>Multiplying or dividing the coefficients can land outside <span class="tex">1\le a&lt;10</span>. Hop the decimal point one place left (<span class="tex">\div10</span>) and raise the exponent by one (<span class="tex">\times10</span>): the two changes cancel, so the value stays the same.</p>
-  <div class="explainer" data-explainer="renorm"></div>
-</section>
-
-<!-- ================= 3. Substitution in expressions ================= -->
-<section class="card" data-ink="s3" data-section="3. Substitution in Algebraic Expressions">
-  <div class="sec-h"><span class="badge">3</span><h2>Substitution in Algebraic Expressions</h2></div>
-  <p>To evaluate an expression for given values of its variables, replace each variable with its value, <b>always enclosed in brackets</b>, then simplify using the order of operations. The brackets prevent sign errors when a value is negative. A calculator’s variable-store feature (<kbd>STO▸</kbd>) substitutes automatically once the values are stored, and applies the brackets for you.</p>
-  <div class="explainer" data-explainer="brackets"></div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>The square needs the brackets.</b> <span class="tex">(-3)^{2}=(-3)(-3)=9</span>, but <span class="tex">-3^{2}=-(3\times3)=-9</span>: without brackets the square only touches the <span class="tex">3</span>. The TI-30XIIS reads <kbd>(−)</kbd><kbd>3</kbd><kbd>x²</kbd> as <span class="tex">-9</span> too.</div></div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Brackets on the calculator.</b> <span class="keys"><kbd>(</kbd><kbd>(−)</kbd><kbd>3</kbd><kbd>)</kbd><kbd>x²</kbd><kbd>ENTER</kbd></span> gives 9; <span class="keys"><kbd>(−)</kbd><kbd>3</kbd><kbd>x²</kbd><kbd>ENTER</kbd></span> gives −9. Or store the value: <kbd>(−)</kbd><kbd>3</kbd><kbd>STO▸</kbd>, choose a letter, <kbd>ENTER</kbd>, then use <kbd>RCL</kbd> to put it in an expression.</div>
-    <div class="pill-col"><button class="pill" data-keys="( (−) 3 ) x² =">With brackets</button><button class="pill" data-keys="(−) 3 x² =">Without brackets</button></div>
-  </div>
-</section>
-
 <section class="card example" data-ink="ex5" data-section="Example 5">
-  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Substituting a negative value</h3></div>
-  <p class="q">Evaluate each expression if <span class="tex">x=-3</span> and <span class="tex">y=4</span>.</p>
-  <div class="parts c3">
-    <div class="part"><div class="pl">(a) <span class="tex">y^{2}-5x+2</span></div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">y^{2}-5x+2=(4)^{2}-5(-3)+2</span><br><span class="tex">=16+15+2</span><br><span class="tex">=\mathbf{33}</span></div></div></div>
-    <div class="part"><div class="pl">(b) <span class="tex">6x^{2}+y-y^{3}</span></div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">6x^{2}+y-y^{3}=6(-3)^{2}+(4)-(4)^{3}</span><br><span class="tex">=6(9)+4-64</span><br><span class="tex">=54+4-64=\mathbf{-6}</span><br>(The brackets matter: <span class="tex">(-3)^{2}=9</span>, not <span class="tex">-9</span>.)</div></div></div>
-    <div class="part"><div class="pl">(c) <span class="tex">3x^{2}-2y+y^{2}</span></div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">3x^{2}-2y+y^{2}=3(-3)^{2}-2(4)+(4)^{2}</span><br><span class="tex">=3(9)-8+16</span><br><span class="tex">=27-8+16=\mathbf{35}</span></div></div></div>
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Building a big referent out of a smaller one</h3></div>
+  <p class="q">Marcus was asked to give a referent for <span class="tex">1</span> kilometre. He could not think of anything that was actually <span class="tex">1</span> kilometre long, so instead he built his referent for the kilometre out of a referent for a smaller unit. Suggest how he might have done this.</p>
+  <div class="parts c1">
+    <div class="part"><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Build the large referent by repeating a smaller one whose length he already knows. Since <span class="tex">1</span> km <span class="tex">=1\,000</span> m, and an Olympic swimming pool is <span class="tex">50</span> m:<br><span class="tex">1\,000\text{ m}\div50\text{ m per pool length}=\boldsymbol{20}</span><br>So <span class="tex">1</span> kilometre is about <b>20 pool lengths</b> laid end to end.<br>The same method works from any smaller referent (with an adult pace, <span class="tex">\approx1</span> yd <span class="tex">\approx0.9</span> m: <span class="tex">1\,000\div0.9\approx1\,111</span> paces), but <span class="tex">20</span> pool lengths is by far the easier count to picture.</div></div></div>
   </div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Check on the calculator, brackets and all.</b> (a) <span class="keys"><kbd>4</kbd><kbd>x²</kbd><kbd>−</kbd><kbd>5</kbd><kbd>×</kbd><kbd>(</kbd><kbd>(−)</kbd><kbd>3</kbd><kbd>)</kbd><kbd>+</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> gives 33. (b) <span class="keys"><kbd>6</kbd><kbd>×</kbd><kbd>(</kbd><kbd>(−)</kbd><kbd>3</kbd><kbd>)</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>4</kbd><kbd>−</kbd><kbd>4</kbd><kbd>^</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> gives −6. (c) gives 35.</div>
-    <div class="pill-col"><button class="pill" data-keys="4 x² − 5 × ( (−) 3 ) + 2 =">Show me (a)</button><button class="pill" data-keys="6 × ( (−) 3 ) x² + 4 − 4 ^ 3 =">Show me (b)</button><button class="pill" data-keys="3 × ( (−) 3 ) x² − 2 × 4 + 4 x² =">Show me (c)</button></div>
+    <div><b>How many referents make a kilometre?</b> <span class="keys"><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>5</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> <span class="tex">=20</span> pool lengths; <span class="keys"><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>.</kbd><kbd>9</kbd><kbd>ENTER</kbd></span> <span class="tex">=1\,111.1\ldots</span> paces.</div>
+    <div class="pill-col"><button class="pill" data-keys="1000 ÷ 50 =">Pool lengths</button><button class="pill" data-keys="1000 ÷ 0.9 =">Paces</button></div>
   </div>
+  <div class="explainer" data-explainer="km"></div>
   <div class="space" id="ex5-space"></div>
   <button class="more" data-more="ex5-space">+ More space</button>
-</section>
-
-<!-- ================= 4. Substitution in formulas ================= -->
-<section class="card" data-ink="s4" data-section="4. Substitution in Formulas">
-  <div class="sec-h"><span class="badge">4</span><h2>Substitution in Formulas</h2></div>
-  <p>A measurement formula relates several quantities, and two tasks recur throughout this unit: <b>substitute</b> the known values directly and solve for the one remaining unknown, or first <b>solve the formula</b> in general for the unknown variable and <b>then</b> substitute. Both approaches are used below, on formulas you will meet again later in the unit.</p>
-  <div class="explainer" data-explainer="routes"></div>
-</section>
-
-<section class="card example" data-ink="ex6" data-section="Example 6">
-  <div class="ex-head"><span class="ex-tag">Example 6</span><h3>Substitute first, then solve</h3></div>
-  <p class="q">In each case: (i) substitute the given value into the formula, then (ii) solve for the indicated variable, rounding to the nearest tenth where necessary.</p>
-  <div class="parts c3">
-    <div class="part"><div class="pl">(a) The distance formula is <span class="tex">d=vt</span>. If <span class="tex">d=84</span> and <span class="tex">v=12</span>, calculate <span class="tex">t</span>.</div><div class="work" style="--h:330px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Substitute into <span class="tex">d=vt</span>:<br><span class="tex">84=(12)t</span><br><span class="tex">t=\dfrac{84}{12}=\mathbf{7}</span><br>(Exact, so no rounding is needed.)</div></div></div>
-    <div class="part"><div class="pl">(b) The circumference of a circle is <span class="tex">C=2\pi r</span>. If <span class="tex">C=100</span>, calculate <span class="tex">r</span>.</div><div class="u10l1-fig" data-u10l1-fig="circle"></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Substitute into <span class="tex">C=2\pi r</span>:<br><span class="tex">100=2\pi r</span><br><span class="tex">r=\dfrac{100}{2\pi}=\dfrac{100}{6.28318\ldots}=15.9154\ldots</span><br><span class="tex">\approx\mathbf{15.9}</span><br>Check: <span class="tex">2\pi(15.9155)=100.0</span> ✓</div></div></div>
-    <div class="part"><div class="pl">(c) The volume of a sphere is <span class="tex">V=\dfrac{4}{3}\pi r^{3}</span>. If <span class="tex">V=150</span>, calculate <span class="tex">r</span>.</div><div class="u10l1-fig" data-u10l1-fig="sphere"></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Substitute into <span class="tex">V=\frac{4}{3}\pi r^{3}</span>:<br><span class="tex">150=\frac{4}{3}\pi r^{3}</span><br><span class="tex">r^{3}=\dfrac{3(150)}{4\pi}=\dfrac{450}{12.56637\ldots}=35.8098\ldots</span><br><span class="tex">r=\sqrt[3]{35.8098\ldots}=3.2961\ldots\approx\mathbf{3.3}</span></div></div></div>
-  </div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Bracket the whole denominator, and use the <kbd>π</kbd> key.</b> (b) <span class="keys"><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>(</kbd><kbd>2</kbd><kbd>×</kbd><kbd>π</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 15.91549431. (c) The cube root is <kbd>3</kbd><kbd>2nd</kbd><kbd>^</kbd> (<span class="tex">\sqrt[x]{\ }</span>): <span class="keys"><kbd>3</kbd><kbd>ˣ√</kbd><kbd>(</kbd><kbd>3</kbd><kbd>×</kbd><kbd>1</kbd><kbd>5</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>(</kbd><kbd>4</kbd><kbd>×</kbd><kbd>π</kbd><kbd>)</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 3.296103825.</div>
-    <div class="pill-col"><button class="pill" data-keys="84 ÷ 12 =">Show me (a)</button><button class="pill" data-keys="100 ÷ ( 2 × π ) =">Show me (b)</button><button class="pill" data-keys="3 ˣ√ ( 3 × 150 ÷ ( 4 × π ) ) =">Show me (c)</button></div>
-  </div>
-  <div class="space" id="ex6-space"></div>
-  <button class="more" data-more="ex6-space">+ More space</button>
-</section>
-
-<section class="card" data-ink="s4b" data-section="4. Substitute, then undo">
-  <h3 class="sub">Substitute, then undo</h3>
-  <p>Once the numbers are in, the unknown is wrapped in operations. <b>Undo</b> them, one at a time, doing the same thing to both sides. Keep every digit, and round at the end.</p>
-  <div class="explainer" data-explainer="subfirst"></div>
-</section>
-
-<section class="card example" data-ink="ex7" data-section="Example 7">
-  <div class="ex-head"><span class="ex-tag">Example 7</span><h3>Solve for the variable first, then substitute</h3></div>
-  <p class="q">In each case: (i) solve the formula in general for the indicated variable, then (ii) substitute the given values and calculate, rounding to the nearest tenth where necessary.</p>
-  <div class="parts c3">
-    <div class="part"><div class="pl">(a) The area of a circle is <span class="tex">A=\pi r^{2}</span>, where <span class="tex">r&gt;0</span>. Solve for <span class="tex">r</span>, then calculate <span class="tex">r</span> when <span class="tex">A=60</span>.</div><div class="u10l1-fig" data-u10l1-fig="disc"></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Solve first: <span class="tex">A=\pi r^{2}\Rightarrow r^{2}=\dfrac{A}{\pi}\Rightarrow r=\sqrt{\dfrac{A}{\pi}}</span> (positive root, since <span class="tex">r&gt;0</span>).<br><span class="tex">r^{2}=\dfrac{60}{\pi}=19.0986\ldots</span><br><span class="tex">r=\sqrt{19.0986\ldots}=4.3702\ldots\approx\mathbf{4.4}</span></div></div></div>
-    <div class="part"><div class="pl">(b) The volume of a cylinder is <span class="tex">V=\pi r^{2}h</span>. Solve for <span class="tex">r</span>, then calculate <span class="tex">r</span> when <span class="tex">V=250</span> and <span class="tex">h=5</span>.</div><div class="u10l1-fig" data-u10l1-fig="cylinder"></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Solve first: <span class="tex">V=\pi r^{2}h\Rightarrow r^{2}=\dfrac{V}{\pi h}\Rightarrow r=\sqrt{\dfrac{V}{\pi h}}</span>.<br><span class="tex">r^{2}=\dfrac{250}{\pi(5)}=\dfrac{250}{15.7079\ldots}=15.9154\ldots</span><br><span class="tex">r=\sqrt{15.9154\ldots}=3.9894\ldots\approx\mathbf{4.0}</span></div></div></div>
-    <div class="part"><div class="pl">(c) The volume of a cone is <span class="tex">V=\dfrac{1}{3}\pi r^{2}h</span>. Solve for <span class="tex">h</span>, then calculate <span class="tex">h</span> when <span class="tex">V=90</span> and <span class="tex">r=6</span>.</div><div class="u10l1-fig" data-u10l1-fig="cone"></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Solve first: <span class="tex">V=\frac{1}{3}\pi r^{2}h\Rightarrow 3V=\pi r^{2}h\Rightarrow h=\dfrac{3V}{\pi r^{2}}</span>.<br><span class="tex">h=\dfrac{3(90)}{\pi(6)^{2}}=\dfrac{270}{113.0973\ldots}=2.3873\ldots</span><br><span class="tex">\approx\mathbf{2.4}</span></div></div></div>
-  </div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Type the solved formula in one line.</b> (a) <span class="keys"><kbd>√</kbd><kbd>6</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>π</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 4.370193722 (<kbd>√</kbd> opens its own bracket). (b) <span class="keys"><kbd>√</kbd><kbd>2</kbd><kbd>5</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>(</kbd><kbd>π</kbd><kbd>×</kbd><kbd>5</kbd><kbd>)</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 3.989422804. (c) <span class="keys"><kbd>3</kbd><kbd>×</kbd><kbd>9</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>(</kbd><kbd>π</kbd><kbd>×</kbd><kbd>6</kbd><kbd>x²</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 2.387324146.</div>
-    <div class="pill-col"><button class="pill" data-keys="√ 60 ÷ π ) =">Show me (a)</button><button class="pill" data-keys="√ 250 ÷ ( π × 5 ) ) =">Show me (b)</button><button class="pill" data-keys="3 × 90 ÷ ( π × 6 x² ) =">Show me (c)</button></div>
-  </div>
-  <div class="space" id="ex7-space"></div>
-  <button class="more" data-more="ex7-space">+ More space</button>
-</section>
-
-<section class="card" data-ink="s4c" data-section="4. Solve first: run the formula backwards">
-  <h3 class="sub">Solve first: run the formula backwards</h3>
-  <p>A formula is a recipe: it says what to do to the unknown to get the answer. To solve for the unknown, run the recipe <b>backwards</b>, undoing the <b>last</b> step first.</p>
-  <div class="explainer" data-explainer="undo"></div>
-  <div class="parts c1 u10l1-mt"><div class="part think"><div class="pl"><span class="think-tag">Think</span> In Example 7(a), why do we keep only the <b>positive</b> square root?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A radius is a length, so <span class="tex">r&gt;0</span>. <span class="tex">r=-4.37\ldots</span> also makes <span class="tex">\pi r^{2}=60</span>, but it isn’t a real radius.</div></div></div></div>
 </section>
 
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
   <div class="sum-grid">
-    <div><b>Rounding = the closer neighbour.</b> Find the <span class="u10l1-cpv"><b>place-value digit</b></span>, read the <span class="u10l1-ctd"><b>test digit</b></span> to its right: <span class="tex">0</span>–<span class="tex">4</span> round down, <span class="tex">5</span>–<span class="tex">9</span> round up (a <span class="tex">9</span> carries). Drop the digits to its right; zeros hold the places left of the decimal point.</div>
-    <div><b>Round once, at the end.</b> Keep every digit (and the <kbd>π</kbd> key, never 3.14) through the whole calculation. Rounding part-way through drifts the final answer.</div>
-    <div><b>Substitute in brackets.</b> <span class="tex">x=-3</span> goes in as <span class="tex">(-3)</span>, so <span class="tex">x^{2}=(-3)^{2}=9</span>. Then powers, multiply/divide, add/subtract. <span class="u10l1-ext sm">Ext</span> <span class="tex">a\times10^{n}</span> needs <span class="tex">1\le a&lt;10</span>.</div>
-    <div><b>Formulas: two routes.</b> Substitute first and undo, or solve for the unknown first and then substitute. Undo the <b>last</b> operation first. Answers keep their units.</div>
+    <div><b>Two systems.</b> <span class="u10l1-imp"><b>Imperial</b></span>: <span class="tex">1</span> ft <span class="tex">=12</span> in, <span class="tex">1</span> yd <span class="tex">=3</span> ft, <span class="tex">1</span> mi <span class="tex">=1\,760</span> yd. <span class="u10l1-si"><b>SI</b></span>: <span class="tex">1</span> cm <span class="tex">=10</span> mm, <span class="tex">1</span> m <span class="tex">=100</span> cm, <span class="tex">1</span> km <span class="tex">=1\,000</span> m: every step a power of <span class="tex">10</span>.</div>
+    <div><b>Referents.</b> A familiar object (often a body part) used as a stand-in when there is no measuring tool. Thumb <span class="tex">\approx1</span> in, adult foot <span class="tex">\approx1</span> ft, pace <span class="tex">\approx1</span> yd; pinky nail <span class="tex">\approx1</span> cm, workbook <span class="tex">\approx20</span> cm, 4-year-old <span class="tex">\approx1</span> m.</div>
+    <div><b>Pick · count · multiply.</b> Choose a referent <b>close in size</b> to the object (a countable number of copies), lay it end to end, then estimate <span class="tex">=</span> count <span class="tex">\times</span> referent length. An estimate is only as good as its referent.</div>
+    <div><b>Harder shapes.</b> Rectangle perimeter: count two adjacent sides, <span class="tex">P\approx2(\ell+w)</span>. Curve: wrap a string, straighten it, then count. Scale diagram: measure, then multiply by the scale. Big unit: repeat a smaller referent (<span class="tex">20</span> pool lengths <span class="tex">=1</span> km).</div>
   </div>
   <a class="assign" href="../../../#/lesson/u10l1">
-    <div><div class="kicker">Your turn</div><b>Assignment 1 — Rounding and Formula Substitution</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 1 — Estimating Length with Personal Referents</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l2/">
-    <div><div class="kicker">Next lesson</div><b>Lesson 2 — Estimating Length with Personal Referents</b><div class="muted">No ruler needed: your hand span, your pace and a door frame are measuring tools you always carry.</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Next lesson</div><b>Lesson 3 — Reading Precision Measuring Instruments</b><div class="muted">A referent is good to “about”. When you need more, read a ruler to the sixteenth of an inch, a vernier caliper and a micrometer.</div></div><span class="arrow">→</span>
   </a>
   <div class="space" id="sum-space" style="min-height:120px"></div>
 </section>
@@ -355,7 +295,7 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u10l1.js';
-  boot({ key: 'u10l1', homeHref: '../../', title: '10.1 Rounding and Substitution' });
+  boot({ key: 'u10l1', homeHref: '../../', title: '10.1 Personal Referents' });
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

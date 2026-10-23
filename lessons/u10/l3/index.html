@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Reading Precision Measuring Instruments · Math 10C 10.3</title>
-<meta name="description" content="Math 10C Unit 10 Lesson 3: reading precision measuring instruments. Common measuring devices and their precision, reading a micrometer (sleeve + thimble, Extension), reading a vernier caliper on its metric and inch scales, and choosing the right device for a job. Write on it with an Apple Pencil.">
+<title>Surface Area and Volume of Prisms and Cylinders · Math 10C 10.3</title>
+<meta name="description" content="Math 10C Unit 10 Lesson 3: surface area and volume of right prisms and right cylinders. Volume as base area times height (layers of the base), surface area as the sum of every face read off the net, volume versus capacity units (1 cm³ = 1 mL), a cylinder from its diameter with exact π, curved surface only, and working backwards from a volume or a surface area. Write on it with an Apple Pencil.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="10C Lessons">
@@ -27,236 +27,343 @@
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
   <div class="kicker">Math 10C · Unit 10 Measurement · Lesson 3</div>
-  <h1>Reading Precision Measuring Instruments</h1>
-  <p class="lede">Every precision instrument gives a <b>coarse reading</b> on a fixed scale and a <b>fine reading</b> on a moving scale. Add them, and state the result to the instrument’s own precision.</p>
+  <h1>Surface Area and Volume of Prisms and Cylinders</h1>
+  <p class="lede">Every right prism and every right cylinder is a <b>base pushed straight back</b>. Its <b>volume</b> is the base area times the height (layers of the base, stacked up), and its <b>surface area</b> is the area of every face added together, read off the solid or off its <b>net</b>.</p>
   <div class="goals">
     <div class="goals-h">I can…</div>
     <ul>
-      <li>choose a trundle wheel, tape measure, ruler, vernier caliper or micrometer to suit the size of an object and the precision needed</li>
-      <li>read a <b>vernier caliper</b>: main-scale coarse reading plus the vernier mark that lines up, at 0.05 mm per division</li>
-      <li>read a caliper’s <b>inch</b> scale in sixteenths plus 128ths, as a mixed fraction in lowest terms</li>
-      <li><span class="u10l3-ext sm">Extension</span> read a <b>micrometer</b>: sleeve plus thimble, at 0.01 mm per division</li>
+      <li>name the two congruent <b>bases</b> and the rectangular <b>side faces</b> of a right prism, and treat a right cylinder as a prism with a circular base</li>
+      <li>find the volume with <span class="tex">V_{\text{Prism}}=A_{\text{Base}}\times h</span> and <span class="tex">V_{\text{Cylinder}}=\pi r^{2}h</span>, and report it as a <b>capacity</b> too (<span class="tex">1\ \text{cm}^3=1\ \text{mL}</span>)</li>
+      <li>find the <b>surface area</b> by adding the area of every face, reading each face off the <b>net</b>, including <span class="tex">SA_{\text{Cylinder}}=2\pi r^{2}+2\pi rh</span></li>
+      <li>halve a <b>diameter</b> first, keep <b>exact <span class="tex">\pi</span></b>, and round only the final answer, with the right units (<span class="tex">\text{cm}^2</span> or <span class="tex">\text{cm}^3</span>)</li>
+      <li>find the <b>curved surface only</b>, and <b>work backwards</b> from a volume or a surface area to a missing side, length or height</li>
     </ul>
   </div>
-  <div class="outcome"><b>M1</b> Solve problems that involve linear measurement, using: SI and imperial units of measure; estimation strategies; measurement strategies.</div>
-  <div class="u10l3-extbox"><span class="u10l3-ext">Extension</span><span>The Math 10C outcomes name rulers, tape measures and vernier calipers; the <b>micrometer</b> (Section 2, Examples 1 and 4) is enrichment. It works on the same coarse-plus-fine idea as the caliper.</span></div>
+  <div class="outcome"><b>M3</b> Solve problems, using SI and imperial units, that involve the surface area and volume of 3-D objects, including: right cones; right cylinders; right prisms; right pyramids; spheres.</div>
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Loonie Stack" id="wu" style="--wf-side: 300px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Loonie Stack</h2>
-  <p class="wf-rule">One loonie is too thin to measure well with a ruler. So stack a bunch of them!</p></div>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Roll It Two Ways" id="wu" style="--wf-side: 310px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Roll It Two Ways</h2>
+  <p class="wf-rule">Roll one sheet of paper (<span class="tex">21.6\ \text{cm}\times27.9\ \text{cm}</span>) into a tube. Tape the edges together, no overlap. Roll it the <b>tall</b> way, or the <b>short</b> way.</p></div>
   <div class="wf-grid"><div class="wf-main">
   <div class="u10l3-wtop">
-    <div class="u10l3-wfig" id="u10l3-warmfig"></div>
-    <div class="u10l3-wbtns"><button type="button" class="pill" id="u10l3-stack">Stack 20 loonies</button></div>
-  </div>
-  <div class="u10l3-wqs">
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">1</div><div>The stack of <b>20</b> loonies is <b>35 mm</b> tall. How thick is <b>one</b> loonie?</div></div>
-      <div class="u10l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">35\div20=\boldsymbol{1.75}\text{ mm}</span></div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">2</div><div>How tall is <b>$100</b> in loonies, in cm?</div></div>
-      <div class="u10l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">100\times1.75=175\text{ mm}=\boldsymbol{17.5}\text{ cm}</span></div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">3</div><div>Add the caliper’s two readings. Does it agree with your answer to Q1?</div></div>
-      <div class="u10l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">1\text{ mm}+0.75\text{ mm}=\boldsymbol{1.75}\text{ mm}</span>: the same answer, from a single coin. A ruler only reads to the nearest millimetre, so one loonie would read “about 2 mm”; stacking 20 spreads that error over 20 coins. The caliper gets the same precision in one go.</div></div>
+    <div id="u10l3-wfig" class="u10l3-wfig"></div>
+    <div class="u10l3-wqs">
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">1</div><div>Which tube uses <b>more paper</b>?</div></div>
+        <div class="u10l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>Neither.</b> Both curved surfaces are the whole sheet: <span class="tex">21.6\times27.9\approx603\ \text{cm}^2</span>.</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">2</div><div>How <b>tall</b> is each tube? How far is it <b>around</b> each tube?</div></div>
+        <div class="u10l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Tall: height <span class="tex">27.9</span> cm, around <span class="tex">21.6</span> cm. Short: height <span class="tex">21.6</span> cm, around <span class="tex">27.9</span> cm. The two sides just <b>swap jobs</b>.</div></div>
+      </div>
     </div>
   </div>
   </div><div class="wf-side">
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> You stack <b>$1000</b> in loonies. How tall is the tower? <b>Guess first:</b> about as tall as…</div></div>
+    <div class="u10l3-wqs">
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">3</div><div>Which tube has the <b>bigger base</b>?</div></div>
+        <div class="u10l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">The <b>short</b> tube (radius <span class="tex">\approx4.4</span> cm vs <span class="tex">3.4</span> cm). The tall tube has the bigger height. Who wins? In <span class="tex">V=\pi r^{2}h</span> the radius gets <b>squared</b>; the height doesn’t.</div></div>
+      </div>
+    </div>
+  <div class="poll u10l3-poll3 wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Fill both tubes with rice. Which one <b>holds more</b>? <b>Guess first.</b></div></div>
     <div class="poll-opts">
-      <div class="opt"><b>A</b> a water bottle</div>
-      <div class="opt right"><b>B</b> a grown-up</div>
-      <div class="opt"><b>C</b> a 5-storey building</div>
+      <div class="opt"><b>A</b> the tall tube</div>
+      <div class="opt right"><b>B</b> the short tube</div>
+      <div class="opt"><b>C</b> the same (same sheet of paper!)</div>
     </div>
     <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>B, a grown-up.</b> <span class="tex">1000\times1.75\text{ mm}=1750\text{ mm}=1.75\text{ m}</span>, about the height of an adult. A thousand dollars in loonies is about as tall as you!<br>
-      <span class="muted"><b>A</b> (17.5 cm) is Q2’s $100 stack: it forgets the extra factor of 10. <b>C</b> (17.5 m) is a millimetre-to-metre slip: dividing by 100 instead of 1000.</span></div>
+    <div class="poll-ans"><b>B: the short tube, about 30% more.</b> Tall: <span class="tex">r=\frac{21.6}{2\pi}\approx3.44</span> cm, <span class="tex">V=\pi r^{2}h\approx1036\ \text{cm}^3</span>. Short: <span class="tex">r=\frac{27.9}{2\pi}\approx4.44</span> cm, <span class="tex">V\approx1338\ \text{cm}^3</span>. That is about <span class="tex">1.0</span> L against <span class="tex">1.3</span> L.<br>
+      <span class="muted"><b>C</b> is the trap: same paper means the same <b>surface</b>, not the same <b>space inside</b>. <b>A</b> is the “taller looks bigger” instinct (think of tall, skinny glasses).</span></div>
   </div>
   </div></div>
+  <p class="u10l3-try">Try it: stand the tall tube inside the short one, fill it with rice, then lift it out. How full is the short tube?</p>
+  <div class="explainer" data-explainer="rollit"></div>
   <div class="u10l3-early">
     <div class="bk-wq">
-      <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> How many loonies would stack to <b>1 km</b>?</div></div>
-      <div class="u10l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">1\text{ km}=1\,000\,000\text{ mm}</span>, and <span class="tex">1\,000\,000\div1.75\approx571\,429</span> loonies: over half a million dollars.</div></div>
+      <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Fold the sheet into a <b>square</b> tube the tall way instead (each side <span class="tex">21.6\div4=5.4</span> cm). Does it hold more or less than the tall cylinder?</div></div>
+      <div class="u10l3-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>Less.</b> <span class="tex">5.4^{2}\times27.9\approx814\ \text{cm}^3</span>, against about <span class="tex">1036\ \text{cm}^3</span>. For a fixed distance around, a circle encloses the most area.</div></div>
     </div>
+  </div>
+  <p class="u10l3-social">Talk to your neighbour: what would you change about the sheet to make the tube hold even more?</p>
+</section>
+
+<!-- ================= 1. Right prisms ================= -->
+<section class="card" data-ink="s1" data-section="1. Right Prisms">
+  <div class="sec-h"><span class="badge">1</span><h2>Right Prisms</h2></div>
+  <div class="def">A <b>prism</b> has two congruent, parallel <b>bases</b>, with every side face a parallelogram. A <b>right prism</b> is a prism whose side faces are all <b>rectangles</b>: each side face meets the base at a right angle. In the three right prisms below the two congruent bases are the front and back ends.</div>
+  <div class="u10l3-gallery">
+    <div><div class="u10l3-gt">Right Triangular Prism</div><div id="u10l3-g1" class="u10l3-fig"></div><div class="u10l3-gc">Two triangular ends, three rectangular sides.</div></div>
+    <div><div class="u10l3-gt">Right Rectangular Prism</div><div id="u10l3-g2" class="u10l3-fig"></div><div class="u10l3-gc">Two rectangular ends, four rectangular sides.</div></div>
+    <div><div class="u10l3-gt">Cube</div><div id="u10l3-g3" class="u10l3-fig"></div><div class="u10l3-gc">Two square ends, four square sides: six square faces.</div></div>
+  </div>
+  <div class="def u10l3-formula"><b>Formulas for any right prism.</b>
+    <div class="u10l3-disp"><span class="tex">V_{\text{Prism}}=A_{\text{Base}}\times h</span></div>
+    where <span class="tex">A_{\text{Base}}</span> is the area of one base and <span class="tex">h</span> is the distance between the two bases (often called the <i>length</i> of a triangular prism). For <b>surface area</b>, add together the areas of every face: the two congruent bases plus every rectangular side face.
+  </div>
+  <div class="explainer" data-explainer="prisms"></div>
+</section>
+
+<!-- ================= 2. Triangular prism ================= -->
+<section class="card" data-ink="s2" data-section="2. Volume and Surface Area of a Right Triangular Prism">
+  <div class="sec-h"><span class="badge">2</span><h2>Volume and Surface Area of a Right Triangular Prism</h2></div>
+  <p>Volume counts the <b>space inside</b> (cubic units); surface area counts the <b>covering</b> (square units). The same prism gives both.</p>
+</section>
+
+<section class="card example" data-ink="ex1" data-section="Example 1">
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Base area, then volume, then every face</h3></div>
+  <p class="q">Consider the right triangular prism shown, whose triangular base is a right triangle.</p>
+  <div class="u10l3-exrow">
+    <div id="u10l3-ex1fig" class="u10l3-fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(a) Determine the area of the triangular base of the prism.</div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The base is a right triangle with legs <span class="tex">9</span> cm and <span class="tex">12</span> cm (<span class="tex">15</span> cm is the hypotenuse).<br><span class="tex">A_{\text{Base}}=\tfrac12(9)(12)=\boldsymbol{54\ \text{cm}^{2}}</span>: an area, so <span class="tex">\text{cm}^2</span>.</div></div></div>
+      <div class="part"><div class="pl">(b) Determine the volume of the prism.</div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The length of the prism, the distance between the two triangular bases, is <span class="tex">11</span> cm.<br><span class="tex">V=A_{\text{Base}}\times h=54\times11=\boldsymbol{594\ \text{cm}^{3}}</span>: a volume, so <span class="tex">\text{cm}^3</span>.</div></div></div>
+    </div>
+  </div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(c) Determine the surface area of the prism.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Two triangular bases plus three rectangular side faces. Each side face is <span class="tex">11</span> cm long and as wide as one side of the triangle, so together they come to the triangle’s perimeter times <span class="tex">11</span>:<br>perimeter <span class="tex">=9+12+15=36</span> cm, <span class="tex">\quad</span> lateral area <span class="tex">=36\times11=396\ \text{cm}^2</span>.<br><span class="tex">SA=2(54)+396=108+396=\boldsymbol{504\ \text{cm}^{2}}</span></div></div></div>
   </div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Warm-up on the calculator.</b> One loonie: <span class="keys"><kbd>3</kbd><kbd>5</kbd><kbd>÷</kbd><kbd>2</kbd><kbd>0</kbd><kbd>ENTER</kbd></span>. The 1 km tower: <span class="keys"><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>1</kbd><kbd>.</kbd><kbd>7</kbd><kbd>5</kbd><kbd>ENTER</kbd></span> gives 571428.5714…, about 571 429 loonies.</div>
-    <div class="pill-col"><button class="pill" data-keys="35 ÷ 20 =">One loonie</button><button class="pill" data-keys="1000000 ÷ 1.75 =">1 km tower</button></div>
+    <div><b>Volume and surface area in one line each.</b> <span class="keys"><kbd>0</kbd><kbd>.</kbd><kbd>5</kbd><kbd>×</kbd><kbd>9</kbd><kbd>×</kbd><kbd>1</kbd><kbd>2</kbd><kbd>×</kbd><kbd>1</kbd><kbd>1</kbd><kbd>ENTER</kbd></span> gives 594, and <span class="keys"><kbd>2</kbd><kbd>×</kbd><kbd>5</kbd><kbd>4</kbd><kbd>+</kbd><kbd>3</kbd><kbd>6</kbd><kbd>×</kbd><kbd>1</kbd><kbd>1</kbd><kbd>ENTER</kbd></span> gives 504.</div>
+    <div class="pill-col"><button class="pill" data-keys="0.5 × 9 × 12 × 11 =">Volume</button><button class="pill" data-keys="2 × 54 + 36 × 11 =">Surface area</button></div>
   </div>
-  <p class="u10l3-social">Try it: stack 10 of any coin against a ruler, then divide by 10.</p>
-</section>
-
-<!-- ================= 1. Common measuring devices ================= -->
-<section class="card" data-ink="s1" data-section="1. Common Measuring Devices">
-  <div class="sec-h"><span class="badge">1</span><h2>Common Measuring Devices</h2></div>
-  <div class="u10l3-devs">
-    <div class="u10l3-dev"><div class="u10l3-dico" data-u10l3-fig="ico:trundle"></div><b>Trundle wheel</b><div>A wheel on a handle that clicks off each rotation as it is rolled along the ground; for long distances such as a running track or a hallway.</div></div>
-    <div class="u10l3-dev"><div class="u10l3-dico" data-u10l3-fig="ico:tape"></div><b>Tape measure</b><div>A flexible strip marked in inches, centimetres, or both, that rolls up for storage and bends around corners; for room dimensions and other medium lengths.</div></div>
-    <div class="u10l3-dev"><div class="u10l3-dico" data-u10l3-fig="ico:ruler"></div><b>Ruler</b><div>A rigid, short, straight-edged strip; for lengths that fit on a desk, and for drawing straight lines.</div></div>
-    <div class="u10l3-dev"><div class="u10l3-dico" data-u10l3-fig="ico:caliper"></div><b>Vernier caliper</b><div>A sliding two-scale tool that reads outside dimensions, inside dimensions and hole depths to a fine fraction of a millimetre.</div></div>
-    <div class="u10l3-dev"><div class="u10l3-dico" data-u10l3-fig="ico:micrometer"></div><b>Micrometer</b><div>The most precise of the five; measures the thickness or outside diameter of very small objects to the nearest hundredth of a millimetre.</div></div>
-  </div>
-  <div class="def"><b>Precision.</b> A micrometer typically reads to the nearest <span class="tex">0.01</span> mm; a vernier caliper reads to the nearest <span class="tex">0.1</span> mm or <span class="tex">0.05</span> mm. The exact precision is printed on the instrument, and a reading is always stated to that precision: <span class="tex">25.30</span> mm, not <span class="tex">25.3</span> mm, on a caliper good to <span class="tex">0.05</span> mm.</div>
-  <div class="explainer" data-explainer="precision"></div>
-</section>
-
-<!-- ================= 2. Extension: micrometer ================= -->
-<section class="card u10l3-extcard" data-ink="s2" data-section="2. Extension: Reading a Micrometer">
-  <div class="sec-h"><span class="badge">2</span><h2>Reading a Micrometer</h2><span class="u10l3-ext-tag">Extension</span></div>
-  <p class="u10l3-enote"><i>The Math 10C outcomes name rulers, tape measures and vernier calipers; the micrometer is enrichment. It works on the same coarse-plus-fine idea as the caliper in Section 3.</i></p>
-  <p>A micrometer has two scales that add together.</p>
-  <ul class="u10l3-ul">
-    <li>The <b>sleeve (barrel) scale</b> is fixed and marked every <span class="tex">0.5</span> mm. As the thimble turns, its edge slides along the sleeve and covers part of it. The <b>coarse reading</b> is the last fully visible sleeve mark, immediately to the left of the thimble’s edge.</li>
-    <li>The <b>thimble scale</b> rotates with the thimble, and a fixed <b>index line</b> crosses it. The <b>fine reading</b> is the thimble mark the index line lands on, at <span class="tex">0.01</span> mm per division.</li>
-  </ul>
-  <div class="u10l3-disp"><span class="tex">\text{reading}=\text{coarse reading (sleeve)}+\text{fine reading (thimble)}</span></div>
-  <div class="explainer" data-explainer="mtour"></div>
-</section>
-
-<section class="card u10l3-extcard" data-ink="s2b" data-section="2. Reading the sleeve and thimble">
-  <div class="u10l3-row">
-    <div class="u10l3-fig" data-u10l3-fig="micro:17,27" data-w="480"></div>
-    <div>
-      <p>The last fully visible sleeve mark to the left of the thimble body is <span class="tex">8.5</span> mm, so the coarse reading is <span class="tex">8.5</span> mm. The index line lines up with thimble mark <span class="tex">27</span>, so the fine reading is <span class="tex">27\times0.01=0.27</span> mm.</p>
-      <div class="u10l3-disp"><span class="tex">8.5\text{ mm}+0.27\text{ mm}=8.77\text{ mm}</span></div>
-      <p>Both parts are needed: the sleeve alone is only good to <span class="tex">0.5</span> mm.</p>
-    </div>
-  </div>
-  <div class="explainer" data-explainer="mread"></div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>Look below the line.</b> Whole millimetres are marked above the sleeve’s line and half millimetres below it. If a half mark shows past the last whole millimetre, the coarse reading ends in <span class="tex">.5</span>.</div></div>
-</section>
-
-<section class="card example u10l3-extcard" data-ink="ex1" data-section="Example 1">
-  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Adding the sleeve and thimble readings</h3><span class="u10l3-ext-tag">Extension</span></div>
-  <p class="q">Determine each micrometer reading, in millimetres.</p>
-  <div class="parts c2">
-    <div class="part"><div class="pl">(a)</div><div class="u10l3-fig" data-u10l3-fig="micro:23,16" data-w="420"></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Coarse (sleeve): last fully visible mark left of the thimble body <span class="tex">=11.5</span> mm.<br>Fine (thimble): index line on mark <span class="tex">16</span>, so <span class="tex">16\times0.01=0.16</span> mm.<br><span class="tex">11.5+0.16=\boldsymbol{11.66\text{ mm}}</span></div></div></div>
-    <div class="part"><div class="pl">(b)</div><div class="u10l3-fig" data-u10l3-fig="micro:12,35" data-w="420"></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Coarse (sleeve): last fully visible mark left of the thimble body <span class="tex">=6.0</span> mm.<br>Fine (thimble): index line on mark <span class="tex">35</span>, so <span class="tex">35\times0.01=0.35</span> mm.<br><span class="tex">6.0+0.35=\boldsymbol{6.35\text{ mm}}</span></div></div></div>
-  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>The 15 cm side is not a height.</b> The base area uses the two legs that meet at the right angle (<span class="tex">9</span> and <span class="tex">12</span>). The hypotenuse only matters for the surface area: it is the width of the slanted side face.</div></div>
   <div class="space" id="ex1-space"></div>
   <button class="more" data-more="ex1-space">+ More space</button>
 </section>
 
-<!-- ================= 3. Vernier caliper ================= -->
-<section class="card" data-ink="s3" data-section="3. Reading a Vernier Caliper">
-  <div class="sec-h"><span class="badge">3</span><h2>Reading a Vernier Caliper</h2></div>
-  <p>A vernier caliper also combines two readings.</p>
-  <div class="explainer" data-explainer="vtour"></div>
-  <ul class="u10l3-ul">
-    <li>The <b>main scale</b> is the fixed ruler along the body, marked in whole millimetres. The <b>coarse reading</b> is the last main-scale mark at or to the left of the <b>index</b>, the vernier’s own <span class="tex">0</span> mark.</li>
-    <li>The <b>vernier scale</b> slides along the main scale. The <b>fine reading</b> is the vernier mark that lines up most closely with a main-scale mark; look along the whole vernier to find it. On a metric caliper reading to the nearest <span class="tex">0.05</span> mm, each vernier division is worth <span class="tex">0.05</span> mm.</li>
-  </ul>
+<section class="card" data-ink="s2b" data-section="2. Volume: layers of the base">
+  <h3 class="sub">Volume: layers of the base</h3>
+  <p>Cut the prism into slices <b>1 unit thick</b>, parallel to the base. Every slice is a copy of the base, holding <span class="tex">A_{\text{Base}}</span> cubic units. There are <span class="tex">h</span> slices, so <span class="tex">V=A_{\text{Base}}\times h</span>.</p>
+  <div class="explainer" data-explainer="layers"></div>
 </section>
 
-<section class="card" data-ink="s3b" data-section="3. Reading the main scale and the vernier">
-  <div class="u10l3-fig u10l3-figC" data-u10l3-fig="vmm:54,13" data-w="900"></div>
-  <p>The index (the vernier’s <span class="tex">0</span>) sits just past the <span class="tex">54</span> mm mark, so the coarse reading is <span class="tex">54</span> mm. Vernier mark <span class="tex">13</span> lines up exactly with a main-scale mark (the <span class="tex">67</span> mm mark), so the fine reading is <span class="tex">13\times0.05=0.65</span> mm:</p>
-  <div class="u10l3-disp"><span class="tex">54\text{ mm}+0.65\text{ mm}=54.65\text{ mm}.</span></div>
-  <div class="explainer" data-explainer="vread"></div>
+<section class="card" data-ink="s2c" data-section="2. Surface area: unfold the net">
+  <h3 class="sub">Surface area: unfold the net</h3>
+  <p>Cut along some edges and fold the prism flat. The flat pattern is its <b>net</b>: every face appears exactly once, so the surface area is the total of the net’s areas.</p>
+  <div class="explainer" data-explainer="net"></div>
 </section>
 
-<section class="card" data-ink="s3c" data-section="3. Why the vernier works">
-  <h3 class="sub">Why the vernier works</h3>
-  <p>The vernier’s 20 divisions span only 19 mm of the main scale, so each one is a little shorter than a millimetre. That small difference is what the fine reading counts.</p>
-  <div class="explainer" data-explainer="why"></div>
-  <div class="parts c1">
-    <div class="part think"><div class="pl"><span class="think-tag">Think</span> Why can a caliper that reads to the nearest 0.05 mm never give a reading of <span class="tex">54.62</span> mm?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The fine reading is always a whole number of <span class="tex">0.05</span> mm steps (<span class="tex">n\times0.05</span>), so the hundredths digit of a reading is always <span class="tex">0</span> or <span class="tex">5</span>: <span class="tex">54.60</span> or <span class="tex">54.65</span>, never <span class="tex">54.62</span>.</div></div></div>
+<!-- ================= 3. Volume and capacity ================= -->
+<section class="card" data-ink="s3" data-section="3. Working With Volume and Capacity Units">
+  <div class="sec-h"><span class="badge">3</span><h2>Working With Volume and Capacity Units</h2></div>
+  <p>The volume of a solid is measured in <span class="tex">\text{cm}^3</span>, <span class="tex">\text{m}^3</span>, <span class="tex">\text{in}^3</span>, <span class="tex">\text{ft}^3</span>, and so on. The <b>capacity</b> of a container, how much liquid it holds, is measured in litres, millilitres or gallons.</p>
+  <table class="u10l3-tbl">
+    <thead><tr><th>Volume</th><th>Solid</th><th>Liquid</th></tr></thead>
+    <tbody>
+      <tr><th>Metric</th><td><span class="tex">\text{cm}^3,\ \text{m}^3,\ \text{km}^3</span>, etc.</td><td>litres (L), millilitres (mL), etc.</td></tr>
+      <tr><th>Imperial</th><td><span class="tex">\text{in}^3,\ \text{ft}^3,\ \text{yd}^3</span>, etc.</td><td>gallons, pints, etc.</td></tr>
+    </tbody>
+  </table>
+  <div class="def u10l3-conv"><b>Conversions.</b>
+    <div class="u10l3-convgrid">
+      <span><span class="tex">1\ \text{cm}^3=1\ \text{mL}</span></span>
+      <span><span class="tex">1000\ \text{mL}=1\ \text{L}</span></span>
+      <span><span class="tex">1\ \text{m}^3=1000\ \text{L}</span></span>
+      <span><span class="tex">1\ \text{US gallon}=3.7854\ \text{L}</span></span>
+      <span><span class="tex">1\ \text{imperial (UK) gallon}=4.5461\ \text{L}</span></span>
+      <span><span class="tex">1\ \text{gallon}=8\ \text{pints}</span></span>
+    </div>
+    <div class="eg">Between systems, <i>cube</i> the linear factor of Lesson 2: from <span class="tex">1\ \text{ft}=0.3048\ \text{m}</span> come <span class="tex">1\ \text{ft}^3=0.028\,316\,8\ \text{m}^3</span> and <span class="tex">1\ \text{m}^3=35.3147\ \text{ft}^3</span>; squaring it gives <span class="tex">1\ \text{ft}^2=0.092\,903\ \text{m}^2</span>.</div>
   </div>
-</section>
-
-<section class="card" data-ink="s3d" data-section="3. The inch scale">
-  <h3 class="sub">The inch scale</h3>
-  <p>Many calipers carry an inch scale as well, read the same way. Its main scale is marked every <span class="tex">\tfrac{1}{16}</span> in (<span class="tex">=\tfrac{8}{128}</span> in), and its vernier has <span class="tex">8</span> divisions, each worth <span class="tex">\tfrac{1}{128}</span> in, so the fine reading is always between <span class="tex">\tfrac{0}{128}</span> and <span class="tex">\tfrac{7}{128}</span> in. Add the coarse and fine readings in either system; an imperial reading is left as a mixed fraction in lowest terms.</p>
-  <p>The same jaw opening (<span class="tex">54.65</span> mm) on the caliper’s <b>inch</b> scale is shown below. The index sits just past the <span class="tex">2\tfrac{2}{16}=2\tfrac{1}{8}</span> in mark (coarse reading), and vernier mark <span class="tex">3</span> lines up with a main-scale mark (fine reading <span class="tex">\tfrac{3}{128}</span> in):</p>
-  <div class="u10l3-fig u10l3-figC" data-u10l3-fig="vin:2,2,3" data-w="760"></div>
-  <div class="u10l3-disp"><span class="tex">2\tfrac{1}{8}\text{ in}+\tfrac{3}{128}\text{ in}=2\tfrac{16}{128}\text{ in}+\tfrac{3}{128}\text{ in}=2\tfrac{19}{128}\text{ in}.</span></div>
-  <p>Check: <span class="tex">2\tfrac{19}{128}</span> in <span class="tex">\approx2.148</span> in and <span class="tex">54.65\div25.4\approx2.152</span> in, the same to the nearest <span class="tex">\tfrac{1}{128}</span> in.</p>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>The check on the calculator.</b> Enter the mixed number with <kbd>ab/c</kbd>: <span class="keys"><kbd>2</kbd><kbd>ab/c</kbd><kbd>1</kbd><kbd>9</kbd><kbd>ab/c</kbd><kbd>1</kbd><kbd>2</kbd><kbd>8</kbd><kbd>ENTER</kbd><kbd>2nd</kbd><kbd>F◂▸D</kbd></span> shows it as a decimal. Convert the metric reading with <span class="keys"><kbd>5</kbd><kbd>4</kbd><kbd>.</kbd><kbd>6</kbd><kbd>5</kbd><kbd>÷</kbd><kbd>2</kbd><kbd>5</kbd><kbd>.</kbd><kbd>4</kbd><kbd>ENTER</kbd></span>.</div>
-    <div class="pill-col"><button class="pill" data-keys="2 ab/c 19 ab/c 128 = F◂▸D">2 19/128 as a decimal</button><button class="pill" data-keys="54.65 ÷ 25.4 =">54.65 ÷ 25.4</button></div>
-  </div>
-  <div class="explainer" data-explainer="vinch"></div>
+  <div class="explainer" data-explainer="capacity"></div>
 </section>
 
 <section class="card example" data-ink="ex2" data-section="Example 2">
-  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Metric and imperial caliper readings</h3></div>
-  <p class="q">Determine each caliper’s metric reading from the diagram. Then use the imperial data below the diagram (the same jaw opening, read on the inch scale) to determine the imperial reading, as a mixed fraction in lowest terms.</p>
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>The same box as a volume and as a capacity</h3></div>
+  <p class="q">Vault Boxes Inc. manufactures containers in the shape of right rectangular prisms. Nova Blocks Ltd needs a cardboard container <span class="tex">20</span> cm long, <span class="tex">15</span> cm wide and <span class="tex">12</span> cm high to pack <span class="tex">1</span> cm building blocks. AquaGlow Tanks needs a small glass aquarium with the <i>same</i> dimensions, measured on the <i>inside</i> of the glass.</p>
+  <div class="u10l3-exrow">
+    <div id="u10l3-ex2fig" class="u10l3-fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="pl">(a) Calculate the volume of the container for Nova Blocks Ltd. Is <span class="tex">\text{cm}^3</span> an appropriate way to report this volume?</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">V=l\times w\times h=20\times15\times12=\boldsymbol{3\,600\ \text{cm}^{3}}</span><br><b>Yes.</b> Every dimension is given in centimetres, so <span class="tex">\text{cm}^3</span> is the natural unit here (and it is exactly the number of <span class="tex">1</span> cm blocks that fit).</div></div></div>
+    </div>
+  </div>
   <div class="parts c1">
-    <div class="part"><div class="pl">(a)</div>
-      <div class="u10l3-fig u10l3-figC" data-u10l3-fig="vmm:42,13" data-w="900"></div>
-      <div class="u10l3-imp">Imperial: coarse reading <span class="tex">=1\tfrac{5}{8}</span> in, vernier match at mark <span class="tex">7</span> (<span class="tex">\tfrac{7}{128}</span> in).</div>
-      <div class="work" style="--h:190px"></div>
-      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><i>Metric.</i> Coarse (main scale) <span class="tex">=42</span> mm; the vernier mark lining up best is <span class="tex">13</span>, so the fine reading is <span class="tex">13\times0.05=0.65</span> mm.<br><span class="tex">42+0.65=\boldsymbol{42.65\text{ mm}}</span> (stated to the caliper’s <span class="tex">0.05</span> mm precision).<br><i>Imperial.</i> Coarse <span class="tex">1\tfrac{5}{8}=1\tfrac{80}{128}</span> in, so <span class="tex">1\tfrac{80}{128}+\tfrac{7}{128}=\boldsymbol{1\tfrac{87}{128}}</span> in (<span class="tex">\gcd(87,128)=1</span>, already lowest terms).<br>Check: <span class="tex">1\tfrac{87}{128}\approx1.680</span> in and <span class="tex">42.65\div25.4\approx1.679</span> in ✓</div></div>
-    </div>
-    <div class="part"><div class="pl">(b)</div>
-      <div class="u10l3-fig u10l3-figC" data-u10l3-fig="vmm:77,4" data-w="900"></div>
-      <div class="u10l3-imp">Imperial: coarse reading <span class="tex">=3</span> in, vernier match at mark <span class="tex">5</span> (<span class="tex">\tfrac{5}{128}</span> in).</div>
-      <div class="work" style="--h:190px"></div>
-      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><i>Metric.</i> Coarse (main scale) <span class="tex">=77</span> mm; the vernier mark lining up best is <span class="tex">4</span>, so the fine reading is <span class="tex">4\times0.05=0.20</span> mm.<br><span class="tex">77+0.20=\boldsymbol{77.20\text{ mm}}</span> (stated to the caliper’s <span class="tex">0.05</span> mm precision).<br><i>Imperial.</i> Coarse <span class="tex">3</span> in, so <span class="tex">3+\tfrac{5}{128}=\boldsymbol{3\tfrac{5}{128}}</span> in (<span class="tex">\gcd(5,128)=1</span>).<br>Check: <span class="tex">3\tfrac{5}{128}\approx3.039</span> in and <span class="tex">77.20\div25.4\approx3.039</span> in ✓</div></div>
-    </div>
+    <div class="part"><div class="pl">(b) The AquaGlow aquarium will be filled with water, and its capacity is advertised in litres and in US gallons. Determine the capacity of one aquarium in both units, to two decimal places.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The dimensions are <i>inside</i> measurements, so the glass thickness does not reduce the space for water. <span class="tex">1\ \text{cm}^3=1\ \text{mL}</span>, so <span class="tex">3\,600\ \text{cm}^3=3\,600\ \text{mL}</span>, and <span class="tex">3\,600\div1000=\boldsymbol{3.60\ \text{L}}</span>.<br>In US gallons, using <span class="tex">1\ \text{US gal}=3.7854\ \text{L}</span>: <span class="tex">3.6\div3.7854=0.95102\ldots\approx\boldsymbol{0.95\ \text{US gal}}</span></div></div></div>
   </div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Check both answers.</b> Turn each imperial answer into a decimal (<kbd>ab/c</kbd>, then <kbd>2nd</kbd><kbd>F◂▸D</kbd>) and divide each metric answer by 25.4. They should agree to about three decimal places.</div>
-    <div class="u10l3-pills4"><button class="pill" data-keys="1 ab/c 87 ab/c 128 = F◂▸D">(a) 1 87/128</button><button class="pill" data-keys="42.65 ÷ 25.4 =">(a) 42.65 ÷ 25.4</button><button class="pill" data-keys="3 ab/c 5 ab/c 128 = F◂▸D">(b) 3 5/128</button><button class="pill" data-keys="77.2 ÷ 25.4 =">(b) 77.20 ÷ 25.4</button></div>
+    <div><b>Volume, then litres, then US gallons.</b> <span class="keys"><kbd>2</kbd><kbd>0</kbd><kbd>×</kbd><kbd>1</kbd><kbd>5</kbd><kbd>×</kbd><kbd>1</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> gives 3600; divide by 1000 for 3.6 L; then <span class="keys"><kbd>3</kbd><kbd>.</kbd><kbd>6</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>.</kbd><kbd>7</kbd><kbd>8</kbd><kbd>5</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> gives 0.951022349, so <b>0.95 US gal</b>.</div>
+    <div class="pill-col"><button class="pill" data-keys="20 × 15 × 12 =">cm³</button><button class="pill" data-keys="3600 ÷ 1000 =">Litres</button><button class="pill" data-keys="3.6 ÷ 3.7854 =">US gallons</button></div>
   </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Divide by the gallon, don’t multiply.</b> A gallon is <b>bigger</b> than a litre, so there are <b>fewer</b> gallons than litres: <span class="tex">3.6\div3.7854\approx0.95</span>, not <span class="tex">3.6\times3.7854\approx13.6</span>.</div></div>
   <div class="space" id="ex2-space"></div>
   <button class="more" data-more="ex2-space">+ More space</button>
 </section>
 
-<!-- ================= 4. Choosing the right device ================= -->
-<section class="card" data-ink="s4" data-section="4. Choosing the Right Device">
-  <div class="sec-h"><span class="badge">4</span><h2>Choosing the Right Device</h2></div>
-  <p>Before measuring, choose the system (metric or imperial) and the device that suit both the <b>size</b> of the object and the <b>precision</b> required.</p>
-  <div class="explainer" data-explainer="choose"></div>
+<!-- ================= 4. Right cylinder ================= -->
+<section class="card" data-ink="s4" data-section="4. Volume and Surface Area of a Right Cylinder">
+  <div class="sec-h"><span class="badge">4</span><h2>Volume and Surface Area of a Right Cylinder</h2></div>
+  <p>A right cylinder behaves exactly like a right prism whose base is a <b>circle</b> instead of a polygon: two congruent, parallel circular bases joined by a curved lateral surface. Unrolling the curved surface gives a flat <b>net</b> made of two circles and one rectangle, and that net is the key to the surface area formula.</p>
 </section>
 
 <section class="card example" data-ink="ex3" data-section="Example 3">
-  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Matching the device to the job</h3></div>
-  <p class="q">State which measuring device (trundle wheel, tape measure, ruler, vernier caliper, or micrometer) would be most appropriate for each measurement.</p>
-  <div class="parts c3 u10l3-ex3">
-    <div class="part"><div class="pl">(a) The length of a hockey rink</div><div class="work" style="--h:60px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>trundle wheel</b></div></div></div>
-    <div class="part"><div class="pl">(b) The width of a doorway</div><div class="work" style="--h:60px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>tape measure</b></div></div></div>
-    <div class="part"><div class="pl">(c) The thickness of a stack of <span class="tex">10</span> coins</div><div class="work" style="--h:60px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>vernier caliper</b></div></div></div>
-    <div class="part"><div class="pl">(d) The diameter of a small drill bit</div><div class="work" style="--h:60px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>micrometer</b></div></div></div>
-    <div class="part"><div class="pl">(e) The length of a pencil</div><div class="work" style="--h:60px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>ruler</b></div></div></div>
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Reading the surface area off the net</h3></div>
+  <p class="q">The net of a right cylinder with base radius <span class="tex">r</span> and height <span class="tex">h</span> is shown below: the circular top and bottom, and the rectangle formed by unrolling the curved side. <span class="muted">(Tap a blank to reveal it.)</span></p>
+  <div id="u10l3-ex3fig" class="u10l3-fig u10l3-netfig"></div>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) Fill in the four blanks in the diagram, in terms of <span class="tex">r</span> and <span class="tex">h</span>.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Top and bottom are circles of radius <span class="tex">r</span>, so each has area <span class="tex">\pi r^{2}</span>.<br>The rectangle wraps once around the circle, so its width is the circumference <span class="tex">2\pi r</span> and its height is <span class="tex">h</span>:<br><span class="tex">A_{\text{rect}}=l\times w=(2\pi r)(h)=2\pi rh</span></div></div></div>
+    <div class="part"><div class="pl">(b) Use the diagram to show that the surface area of a right cylinder is <span class="tex">SA_{\text{Cylinder}}=2\pi r^{2}+2\pi rh</span>.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Add the areas of the three pieces of the net: top <span class="tex">\pi r^{2}</span>, bottom <span class="tex">\pi r^{2}</span>, rectangle <span class="tex">2\pi rh</span>.<br><span class="tex">SA_{\text{Cylinder}}=\pi r^{2}+\pi r^{2}+2\pi rh</span><br><span class="tex">=2\pi r^{2}+2\pi rh\ \checkmark</span></div></div></div>
+    <div class="part"><div class="pl">(c) Use the general formula for the volume of a right prism to write the formula for the volume of a cylinder of radius <span class="tex">r</span> and height <span class="tex">h</span>.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The general prism formula is <span class="tex">V=A_{\text{Base}}\times h</span>. A cylinder’s base is a circle of area <span class="tex">\pi r^{2}</span>, so<br><span class="tex">V_{\text{Cylinder}}=\pi r^{2}\times h=\pi r^{2}h\ \checkmark</span></div></div></div>
   </div>
   <div class="space" id="ex3-space"></div>
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
-<section class="card example u10l3-extcard" data-ink="ex4" data-section="Example 4">
-  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Choose the instrument, then read it</h3><span class="u10l3-ext-tag">Extension</span></div>
-  <div class="parts c2">
-    <div class="part"><div class="pl">(a) A machinist must measure the diameter of a small steel ball bearing to the nearest <span class="tex">0.01</span> mm. Which measuring device should be used, and why is a ruler not suitable here?</div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A <b>micrometer</b>: it is the only device here that reads to the nearest <span class="tex">0.01</span> mm, which is exactly the precision asked for.<br>A ruler’s smallest divisions are <span class="tex">1</span> mm apart, <span class="tex">100</span> times coarser than <span class="tex">0.01</span> mm, and the gap between two marks cannot be split into hundredths by eye. A ruler also cannot be closed squarely onto a sphere, so it would not find the true diameter.</div></div></div>
-    <div class="part"><div class="pl">(b) The machinist’s instrument reads as shown. State the diameter of the ball bearing, in millimetres.</div><div class="u10l3-fig" data-u10l3-fig="micro:9,13" data-w="420"></div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Coarse (sleeve): last fully visible mark left of the thimble body <span class="tex">=4.5</span> mm.<br>Fine (thimble): index line on mark <span class="tex">13</span>, so <span class="tex">13\times0.01=0.13</span> mm.<br><span class="tex">4.5+0.13=\boldsymbol{4.63\text{ mm}}</span></div></div></div>
+<section class="card" data-ink="s4b" data-section="4. Cylinder formulas">
+  <div class="def u10l3-formula"><b>Formulas for a right cylinder.</b>
+    <div class="u10l3-disp"><span class="tex">V_{\text{Cylinder}}=\pi r^{2}h\qquad\qquad SA_{\text{Cylinder}}=2\pi r^{2}+2\pi rh=2\pi r(r+h)</span></div>
   </div>
-  <div class="explainer" data-explainer="bearing"></div>
+  <div class="explainer" data-explainer="cylnet"></div>
+</section>
+
+<section class="card example" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>A canister, from a diameter</h3></div>
+  <p class="q">A cylindrical storage canister has a height of <span class="tex">12.6</span> cm and a base diameter of <span class="tex">8.4</span> cm. Determine the volume and the surface area of the canister, each to the nearest tenth.</p>
+  <div class="u10l3-exrow u10l3-exrow-s">
+    <div id="u10l3-ex4fig" class="u10l3-fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="work" style="--h:300px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The diagram gives the <b>diameter</b>, so first halve it: <span class="tex">r=8.4\div2=4.2</span> cm, and <span class="tex">h=12.6</span> cm.<br><span class="tex">V=\pi r^{2}h=\pi(4.2)^{2}(12.6)=\pi(17.64)(12.6)=222.264\pi</span><br><span class="tex">=698.2629\ldots\approx\boldsymbol{698.3\ \text{cm}^{3}}</span><br><span class="tex">SA=2\pi r^{2}+2\pi rh=2\pi(17.64)+2\pi(4.2)(12.6)</span><br><span class="tex">=35.28\pi+105.84\pi=141.12\pi=443.3415\ldots\approx\boldsymbol{443.3\ \text{cm}^{2}}</span><br>Exact <span class="tex">\pi</span> is carried to the last step, and the units differ: <span class="tex">\text{cm}^3</span> for the volume, <span class="tex">\text{cm}^2</span> for the surface area.</div></div></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Use the <kbd>π</kbd> key, and round once.</b> <span class="keys"><kbd>π</kbd><kbd>×</kbd><kbd>4</kbd><kbd>.</kbd><kbd>2</kbd><kbd>x²</kbd><kbd>×</kbd><kbd>1</kbd><kbd>2</kbd><kbd>.</kbd><kbd>6</kbd><kbd>ENTER</kbd></span> gives 698.2629496. For the surface area, <span class="keys"><kbd>2</kbd><kbd>×</kbd><kbd>π</kbd><kbd>×</kbd><kbd>4</kbd><kbd>.</kbd><kbd>2</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>2</kbd><kbd>×</kbd><kbd>π</kbd><kbd>×</kbd><kbd>4</kbd><kbd>.</kbd><kbd>2</kbd><kbd>×</kbd><kbd>1</kbd><kbd>2</kbd><kbd>.</kbd><kbd>6</kbd><kbd>ENTER</kbd></span> gives 443.3415553.</div>
+    <div class="pill-col"><button class="pill" data-keys="π × 4.2 x² × 12.6 =">Volume</button><button class="pill" data-keys="2 × π × 4.2 x² + 2 × π × 4.2 × 12.6 =">Surface area</button></div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Halve the diameter first.</b> Using <span class="tex">8.4</span> as the radius makes the base <b>four times</b> too big, because the radius is squared.</div></div>
   <div class="space" id="ex4-space"></div>
   <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s4c" data-section="4. Radius first, round last">
+  <h3 class="sub">Radius first, round last</h3>
+  <p>Two habits keep cylinder answers right: <b>halve a diameter</b> before it goes into a formula, and keep <b>every digit</b> (and exact <span class="tex">\pi</span>) until the very last step.</p>
+  <div class="explainer" data-explainer="radius"></div>
+</section>
+
+<!-- ================= 5. Unknown from volume ================= -->
+<section class="card" data-ink="s5" data-section="5. Solving for an Unknown Dimension Given the Volume">
+  <div class="sec-h"><span class="badge">5</span><h2>Solving for an Unknown Dimension Given the Volume</h2></div>
+  <p>When the volume is already known and a dimension is asked for, substitute every known value into the appropriate volume formula and solve the resulting equation for the unknown.</p>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>A cube, working backwards from its volume</h3></div>
+  <p class="q">A commercial recycling bin in the shape of a cube has a volume of <span class="tex">74.5\ \text{m}^3</span>. Determine the side length <span class="tex">s</span> of the bin, to the nearest cm.</p>
+  <div class="u10l3-exrow u10l3-exrow-s">
+    <div id="u10l3-ex5fig" class="u10l3-fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">For a cube <span class="tex">V=s^{3}</span>, so <span class="tex">s=\sqrt[3]{V}</span>:<br><span class="tex">s=\sqrt[3]{74.5}=4.207770\ldots\ \text{m}</span><br>The answer is wanted in centimetres: <span class="tex">4.207770\ldots\times100=420.777\ldots\ \text{cm}\approx\boldsymbol{421\ \text{cm}}</span><br>Check: <span class="tex">4.20777^{3}=74.5\ \checkmark</span></div></div></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Cube root on the TI-30XIIS.</b> Type the root index first: <span class="keys"><kbd>3</kbd><kbd>2nd</kbd><kbd>^</kbd> (<kbd>ˣ√</kbd>)<kbd>7</kbd><kbd>4</kbd><kbd>.</kbd><kbd>5</kbd><kbd>ENTER</kbd></span> gives 4.207770949 m. Check with <kbd>^</kbd><kbd>3</kbd>: <span class="keys"><kbd>4</kbd><kbd>.</kbd><kbd>2</kbd><kbd>0</kbd><kbd>7</kbd><kbd>7</kbd><kbd>7</kbd><kbd>^</kbd><kbd>3</kbd></span> is about 74.5.</div>
+    <div class="pill-col"><button class="pill" data-keys="3 ˣ√ 74.5 =">Cube root</button><button class="pill" data-keys="3 ˣ√ 74.5 × 100 =">In cm</button><button class="pill" data-keys="4.20777 ^ 3 =">Check</button></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex6" data-section="Example 6">
+  <div class="ex-head"><span class="ex-tag">Example 6</span><h3>A triangular prism, working backwards from its volume</h3></div>
+  <p class="q">The box for a chocolate bar is shaped like a right triangular prism. The triangular ends have a base of <span class="tex">4.2</span> cm and a height of <span class="tex">3.6</span> cm. If the empty space inside the box has a volume of <span class="tex">145.3\ \text{cm}^3</span>, determine the length <span class="tex">L</span> of the box, to the nearest tenth of a cm.</p>
+  <div class="u10l3-exrow">
+    <div id="u10l3-ex6fig" class="u10l3-fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">A_{\text{Base}}=\tfrac12(4.2)(3.6)=7.56\ \text{cm}^2</span><br>Since <span class="tex">V=A_{\text{Base}}\times L</span>,<br><span class="tex">L=\dfrac{V}{A_{\text{Base}}}=\dfrac{145.3}{7.56}=19.21957\ldots\approx\boldsymbol{19.2\ \text{cm}}</span><br>Check: <span class="tex">7.56\times19.2=145.2\ \text{cm}^3\ \checkmark</span></div></div></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Divide by the whole base area.</b> <span class="keys"><kbd>1</kbd><kbd>4</kbd><kbd>5</kbd><kbd>.</kbd><kbd>3</kbd><kbd>÷</kbd><kbd>(</kbd><kbd>0</kbd><kbd>.</kbd><kbd>5</kbd><kbd>×</kbd><kbd>4</kbd><kbd>.</kbd><kbd>2</kbd><kbd>×</kbd><kbd>3</kbd><kbd>.</kbd><kbd>6</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 19.21957672. Without the brackets the calculator divides by 0.5 only, then multiplies.</div>
+    <div class="pill-col"><button class="pill" data-keys="145.3 ÷ ( 0.5 × 4.2 × 3.6 ) =">With brackets</button><button class="pill" data-keys="145.3 ÷ 0.5 × 4.2 × 3.6 =">Without</button></div>
+  </div>
+  <div class="space" id="ex6-space"></div>
+  <button class="more" data-more="ex6-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s5b" data-section="5. Working backwards">
+  <h3 class="sub">Working backwards</h3>
+  <p>Undo the formula. A cube <b>cubed</b> its side, so take the <b>cube root</b>. A prism <b>multiplied</b> its base area by the length, so <b>divide</b>: how many layers of the base fit in the volume?</p>
+  <div class="explainer" data-explainer="backwards"></div>
+</section>
+
+<!-- ================= 6. Curved surface only ================= -->
+<section class="card" data-ink="s6" data-section="6. Curved Surface Area Only">
+  <div class="sec-h"><span class="badge">6</span><h2>Curved Surface Area Only</h2></div>
+  <p>Some questions ask only for the area of the <b>curved lateral surface</b> of a cylinder: a label wrapped around a can, for instance. That area is the <b>circumference of the base times the height</b>, <i>without</i> the area of either circular end.</p>
+</section>
+
+<section class="card example" data-ink="ex7" data-section="Example 7">
+  <div class="ex-head"><span class="ex-tag">Example 7</span><h3>The label on a poster tube</h3></div>
+  <p class="q">A shipping company packs its poster tubes in cylindrical cardboard containers with a height of <span class="tex">21.5</span> in and a base circumference of <span class="tex">3.75</span> in. Every container is wrapped with a paper label that covers the entire curved surface. Calculate, to the nearest square inch, the area of the label.</p>
+  <div class="u10l3-exrow u10l3-exrow-s">
+    <div id="u10l3-ex7fig" class="u10l3-fig"></div>
+    <div class="parts c1">
+      <div class="part"><div class="work" style="--h:260px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The label covers the curved surface only (neither circular end is included), so its area is circumference <span class="tex">\times</span> height:<br>Curved <span class="tex">SA=3.75\times21.5=80.625\approx\boldsymbol{81\ \text{in}^{2}}</span><br>(No <span class="tex">\pi</span> is needed here: the circumference is given directly.)</div></div></div>
+    </div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Length times width of the unrolled label.</b> <span class="keys"><kbd>3</kbd><kbd>.</kbd><kbd>7</kbd><kbd>5</kbd><kbd>×</kbd><kbd>2</kbd><kbd>1</kbd><kbd>.</kbd><kbd>5</kbd><kbd>ENTER</kbd></span> gives 80.625, so <b>81 in²</b>.</div>
+    <div class="pill-col"><button class="pill" data-keys="3.75 × 21.5 =">Show me</button></div>
+  </div>
+  <div class="space" id="ex7-space"></div>
+  <button class="more" data-more="ex7-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s6b" data-section="6. Peel off the label">
+  <h3 class="sub">Peel off the label</h3>
+  <p>Unwrap the curved surface and it lies flat as a <b>rectangle</b>: one side is the distance around (the circumference), the other is the height. The circular ends stay behind on the tube.</p>
+  <div class="explainer" data-explainer="label"></div>
+</section>
+
+<!-- ================= 7. Unknown from SA ================= -->
+<section class="card" data-ink="s7" data-section="7. Solving for an Unknown Dimension Given the Surface Area">
+  <div class="sec-h"><span class="badge">7</span><h2>Solving for an Unknown Dimension Given the Surface Area</h2></div>
+  <p>Working backwards from a surface area is the same idea as Section 5: write the surface-area formula, substitute everything you know, and solve for the one unknown. For a cylinder, the <span class="tex">2\pi r^{2}</span> part becomes a number, so the height is left in a two-step linear equation: subtract, then divide.</p>
+</section>
+
+<section class="card example" data-ink="ex8" data-section="Example 8">
+  <div class="ex-head"><span class="ex-tag">Example 8</span><h3>The height of a can from its surface area</h3></div>
+  <p class="q">A closed cylindrical can has a surface area of <span class="tex">250\ \text{cm}^2</span> and a radius of <span class="tex">3.5</span> cm. Determine its height, to the nearest tenth of a centimetre.</p>
+  <div class="parts c1">
+    <div class="part"><div class="work" style="--h:280px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">SA=2\pi r^{2}+2\pi rh</span><br><span class="tex">250=2\pi(3.5)^{2}+2\pi(3.5)h=76.969\ldots+21.991\ldots h</span><br><span class="tex">21.991\ldots h=250-76.969\ldots=173.030\ldots</span><br><span class="tex">h=\dfrac{173.030\ldots}{21.991\ldots}=7.868\ldots\approx\boldsymbol{7.9}\ \text{cm}</span><br>Check: <span class="tex">2\pi(3.5)^{2}+2\pi(3.5)(7.868)=250.0\ \checkmark</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Subtract the circles, then divide by <span class="tex">2\pi r</span>.</b> <span class="keys"><kbd>(</kbd><kbd>2</kbd><kbd>5</kbd><kbd>0</kbd><kbd>−</kbd><kbd>2</kbd><kbd>×</kbd><kbd>π</kbd><kbd>×</kbd><kbd>3</kbd><kbd>.</kbd><kbd>5</kbd><kbd>x²</kbd><kbd>)</kbd><kbd>÷</kbd><kbd>(</kbd><kbd>2</kbd><kbd>×</kbd><kbd>π</kbd><kbd>×</kbd><kbd>3</kbd><kbd>.</kbd><kbd>5</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives 7.868210221, so <b>7.9 cm</b>.</div>
+    <div class="pill-col"><button class="pill" data-keys="2 × π × 3.5 x² =">The circles</button><button class="pill" data-keys="( 250 − 2 × π × 3.5 x² ) ÷ ( 2 × π × 3.5 ) =">Height</button></div>
+  </div>
+  <div class="space" id="ex8-space"></div>
+  <button class="more" data-more="ex8-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s7b" data-section="7. What is left for the rectangle?">
+  <h3 class="sub">What is left for the rectangle?</h3>
+  <p>The two circles take their share of the <span class="tex">250\ \text{cm}^2</span> first. Whatever is left must be the curved rectangle, and a rectangle’s height is its area divided by its width.</p>
+  <div class="explainer" data-explainer="solveh"></div>
 </section>
 
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
   <div class="sum-grid">
-    <div><b>Pick the device by size and precision.</b> Trundle wheel for long distances, tape measure for rooms, ruler for the desk (to 1 mm), vernier caliper to 0.05 mm, micrometer to 0.01 mm.</div>
-    <div><b>Coarse + fine.</b> Every precision instrument gives a coarse reading on a fixed scale and a fine reading on a moving scale. Add them, and state the result to the instrument’s precision (<span class="tex">25.30</span> mm, not <span class="tex">25.3</span> mm).</div>
-    <div><b>Vernier caliper.</b> Coarse: the last main-scale mark at or left of the index (whole mm). Fine: the vernier mark that lines up, <span class="tex">\times0.05</span> mm. Inch scale: sixteenths plus <span class="tex">\tfrac{n}{128}</span> in, as a mixed fraction in lowest terms.</div>
-    <div><span class="u10l3-ext sm">Extension</span> <b>Micrometer.</b> Coarse: the last sleeve mark showing (every 0.5 mm; look below the line for halves). Fine: the thimble mark on the index line, <span class="tex">\times0.01</span> mm.</div>
+    <div><b>Volume = layers of the base.</b> <span class="tex">V_{\text{Prism}}=A_{\text{Base}}\times h</span> for every right prism; a cylinder’s base is a circle, so <span class="tex">V_{\text{Cylinder}}=\pi r^{2}h</span>. Cubic units: <span class="tex">\text{cm}^3</span>, <span class="tex">\text{m}^3</span>, <span class="tex">\text{in}^3</span>.</div>
+    <div><b>Surface area = every face.</b> Unfold the net and add: two bases plus the side faces (together, perimeter <span class="tex">\times</span> length). Cylinder: <span class="tex">SA=2\pi r^{2}+2\pi rh</span>. Curved surface only: circumference <span class="tex">\times</span> height. Square units.</div>
+    <div><b>Capacity.</b> <span class="tex">1\ \text{cm}^3=1\ \text{mL}</span>, <span class="tex">1000\ \text{mL}=1\ \text{L}</span>, <span class="tex">1\ \text{m}^3=1000\ \text{L}</span>, <span class="tex">1\ \text{US gal}=3.7854\ \text{L}</span>. Between systems, cube the linear factor for volume, square it for area.</div>
+    <div><b>Careful habits.</b> Halve a diameter first, use the <kbd>π</kbd> key, round only at the end. Working backwards: cube root for a cube, <span class="tex">V\div A_{\text{Base}}</span> for a length, subtract the circles then <span class="tex">\div2\pi r</span> for a height.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u10l3">
-    <div><div class="kicker">Your turn</div><b>Assignment 3 — Reading Precision Measuring Instruments</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 3 — Surface Area and Volume of Prisms and Cylinders</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
-  <a class="assign next-l" href="../l4a/">
-    <div><div class="kicker">Next lesson</div><b>Lesson 4A — Converting Units Within the Metric System</b><div class="muted">Moving between millimetres, centimetres, metres and kilometres.</div></div><span class="arrow">→</span>
+  <a class="assign next-l" href="../l4/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 4 — Surface Area and Volume of Pyramids and Cones</b><div class="muted">Same bases, but the sides lean in to a point: how much of the prism is left?</div></div><span class="arrow">→</span>
   </a>
   <div class="space" id="sum-space" style="min-height:120px"></div>
 </section>
@@ -266,7 +373,7 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u10l3.js';
-  boot({ key: 'u10l3', homeHref: '../../', title: '10.3 Precision Instruments' });
+  boot({ key: 'u10l3', homeHref: '../../', title: '10.3 Prisms and Cylinders' });
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

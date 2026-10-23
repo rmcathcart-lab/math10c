@@ -1,1218 +1,1162 @@
-/* Math 10C · Unit 6 · Lesson 2 — Extension: The Distance and Midpoint Formulas (EXT)
+/* Math 10C · Unit 6 · Lesson 2 — Rise Over Run: The Slope of a Line Segment (RF3)
  * Assignment questions 1–18 (u6_L02.tex) and the Lesson 2 Extra Practice (u6_EP02.tex).
- * Every part is a generator: it keeps the booklet question's structure (which coordinates are negative, decimals,
- * halves, a right angle at a named vertex, collinear points, a parallelogram, a context and its scale) and changes the
- * numbers; the booklet's own numbers are among the possible values.
- * Answers: distances → a number, a rounded decimal (K.approx) or an exact length in simplest radical form
- * (K.radical); points → an ordered pair typed with the pairs keypad (a local reader that diagnoses subtracting instead
- * of adding, not halving, averaging instead of "double the midpoint and subtract", swapped coordinates, …);
- * several points → one box with every point. Explain / prove / "what do you notice" items → multiple choice with
- * misconception hints. The booklet asks for no drawings in this lesson, so there are no graph-pad parts; the given
- * figures are HW.graph pictures. Outcome EXT (extension lesson) on every part. Levels: LIM BEG EMG PRG ADV MAS. */
+ * Every part is a generator: it keeps the booklet question's structure (which segments rise or fall, steep or shallow,
+ * reducible counts, a negative rise or run, the context) and changes the numbers; the booklet's own numbers are among the
+ * possible values wherever they fit the grid.
+ * Inputs: rise / run / slope rows → three boxes (the slope box has the "undefined" key); slopes → K.P.slope (js/lines.js);
+ * "draw the line / segment" → graph pad (js/draw.js); "write points on the line" / "find Q" → ordered pairs checked by a
+ * rule (any correct points); rates → a number, with the units or the meaning as multiple choice; explain-questions → MC
+ * with misconception hints. Levels: LIM BEG EMG PRG ADV MAS. */
 (function (root) {
   'use strict';
-  var HW = root.HW, ex = HW.ex, F = HW.fmt, K = HW.kit, t = K.t, ok = K.ok, wrong = K.wrong, form = K.form, B = K.P, P = HW.poly;
+  var HW = root.HW, ex = HW.ex, K = HW.kit, t = K.t, ok = K.ok, wrong = K.wrong, form = K.form, B = K.P, LN = HW.lines, DR = HW.draw;
 
   HW.addCodes({
-    'd-no-root': 'Distance: forgot the square root (gave d²)', 'd-legs': 'Distance: added the run and rise', 'd-no-square': 'Distance: didn’t square the differences',
-    'd-added': 'Distance: added the coordinates instead of subtracting', 'd-sign': 'Distance: sign slip subtracting a negative coordinate',
-    'd-units': 'Distance in grid units, not converted with the scale', 'd-metres': 'Gave metres instead of kilometres', 'd-scale-div': 'Divided by the scale instead of multiplying',
-    'd-walk': 'Gave the distance walked along the streets', 'd-half': 'Gave half the distance', 'd-straight': 'Gave the straight-line distance instead of the route',
-    'd-round-early': 'Rounded each segment before adding', 'd-no-neg': 'Treated west/south as positive', 'd-diff-blocks': 'Subtracted the blocks instead of combining them',
-    'mid-subtract': 'Midpoint: subtracted the coordinates', 'mid-no-halve': 'Midpoint: didn’t divide by 2', 'mid-wrong-seg': 'Midpoint of the wrong segment',
-    'end-average': 'Missing endpoint: averaged instead of doubling and subtracting', 'end-step': 'Missing endpoint: gave the step from A to M', 'end-sign': 'Missing endpoint: added instead of subtracting',
-    'end-sum': 'Missing endpoint: added the midpoint and the endpoint', 'end-double': 'Missing endpoint: doubled the midpoint but didn’t subtract', 'end-used-x': 'Used the wrong coordinate equation',
-    'end-gave-y': 'Gave the y-value instead of x', 'pt-swap': 'Coordinates swapped', 'pt-x': 'Wrong x-coordinate', 'pt-y': 'Wrong y-coordinate', pt: 'Wrong point',
-    'pt-not-pair': 'Gave one number for a point', 'pt-brackets': 'Point without brackets', 'pt-many': 'Gave several points for one', 'pt-dir': 'West/south not written as negative',
-    'pts-missing': 'Missed a point', 'pts-extra': 'A point that doesn’t work', pts: 'Wrong points', 'ax-no-leg': 'Left out the other coordinate’s difference',
-    'ax-no-root': 'Didn’t take the square root', 'ax-sign': 'Sign slip solving (x − h)² = …', 'ax-one': 'Gave only one of two points',
-    'eq-gave-mid': 'Gave the midpoint of AB', 'eq-mid-y': 'Used the average of the y-coordinates', 'par-one-d': 'Found only one fourth vertex',
-    'road-half': 'Gave the road to one town only', 'per-side': 'Perimeter missing a side', 'ctx-swap': 'Mixed up which distance is x and which is y'
+    'rr-blank': 'Rise/run box left blank', 'rr-swap': 'Rise and run swapped', 'rr-sign': 'Rise or run with the wrong sign', 'rr-rise': 'Miscounted the rise', 'rr-run': 'Miscounted the run',
+    'pts-format': 'Points not written as ordered pairs', 'pts-dup': 'Same point twice', 'pts-given': 'Gave the given point', 'pts-int': 'Point without integer coordinates', 'pts-few': 'Not enough points',
+    'pts-sign': 'Point stepped with the wrong slope sign', 'pts-flip': 'Point stepped run-over-rise', 'pts-off': 'Point not on the line', 'pts-vh': 'Horizontal/vertical mixed up (points)',
+    'draw-point': 'Line misses the given point', 'draw-slope-sign': 'Drew the slope with the wrong sign', 'draw-slope-flip': 'Drew run over rise', 'draw-slope': 'Drew the wrong slope', 'draw-vh': 'Drew vertical for horizontal (or reverse)',
+    'draw-noline': 'Plotted points instead of drawing', 'draw-many': 'Drew more than one line', 'draw-arrows': 'Segment drawn with arrows', 'draw-short': 'Segment does not cross both axes',
+    'calc-divided': 'Divided instead of multiplying', 'calc-mult': 'Multiplied instead of dividing', 'calc-sign': 'Sign of rise/run', 'calc-flip': 'Used run over rise',
+    'rate-flip': 'Rate upside down', 'rate-sign': 'Rate with the wrong sign', 'rate-one': 'Used one coordinate, not the change',
+    'units-cm': 'Answer in cm, not m', 'units-km': 'Did not convert km to m', 'grade-whole': 'Used the percent as a whole number',
+    'area-full': 'Used the whole base as the run', 'area-noh': 'Gave the height, not the area', 'area-half': 'Forgot the ½ in the area',
+    'pyr-base': 'Used the whole base as the run', 'pyr-half': 'Used half the side instead of half the diagonal', 'pyr-diag': 'Used the whole diagonal',
+    'tri-slanted': 'Triangle legs not parallel to the axes', 'tri-ab': 'Rise–run triangle for AB missing', 'tri-ad': 'Rise–run triangle for AD missing',
+    'scale-squares': 'Counted squares instead of units', 'pt-swap': 'Point with coordinates swapped', 'pt-other': 'Point read wrongly',
+    'k-sign': 'Solved with the slope’s sign flipped', 'k-flip': 'Solved with run over rise', 'end-sign': 'Rise/run sign in the endpoint', 'end-swap': 'Added rise to x and run to y', 'end-nostart': 'Forgot to start from the given point',
+    'den-order': 'Denominator subtracted in the other order', 'ramp-max': 'Read “no greater than” as a minimum', 'pct-dec': 'Grade as a decimal, not a percent', 'fac-diff': 'Gave a difference instead of a factor'
   });
 
   /* ---------------- numbers and LaTeX ---------------- */
-  function cl(x) { return Math.round(x * 1e6) / 1e6; }
-  function same(a, b) { return Math.abs(a - b) < 1e-7; }
-  function nT(x) { return F(cl(x)); }
-  function sgp(x) { x = cl(x); return x < 0 ? '(' + nT(x) + ')' : nT(x); }
-  function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var r = a % b; a = b; b = r; } return a; }
-  function range(a, b) { var o = []; for (var i = a; i <= b; i++) o.push(i); return o; }
-  function pm(a, b) { return range(a, b).concat(range(a, b).map(function (x) { return -x; })); }
-  function pickWhere(gen, okf) { for (var i = 0; i < 4000; i++) { var o = gen(); if (okf(o)) return o; } throw new Error('u6l2: no valid numbers'); }
-  function isSq(n) { var q = Math.round(Math.sqrt(n)); return q * q === n; }
-  function radParts(n) { var k = 1, m = n; for (var f = 2; f * f <= m; f++) while (m % (f * f) === 0) { m /= f * f; k *= f; } return { k: k, m: m }; }
+  function cl(x) { return Math.round(x * 1e9) / 1e9; }
+  function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var c = a % b; a = b; b = c; } return a; }
+  function red(p, q) { if (q === 0) return null; if (q < 0) { p = -p; q = -q; } var g = gcd(p, q) || 1; return [cl(p / g), cl(q / g)]; }
+  function nT(x) { x = cl(x); if (x % 1 !== 0 && cl(x * 2) % 1 === 0) return (x < 0 ? '-' : '') + '\\frac{' + Math.abs(cl(x * 2)) + '}{2}'; return String(x); }
+  function frT(p, q) { return LN.frT(p, q); }
+  function slT(s) { return s == null ? '\\text{undefined}' : frT(s[0], s[1]); }
+  function rawFr(p, q) { return '\\frac{' + nT(p) + '}{' + nT(q) + '}'; }
+  function fracSteps(p, q) { var s = rawFr(p, q); if (q === 0) return s; var rr = red(p, q), r2 = slT(rr); return r2 === s ? s : s + '=' + r2; }
   function ptT(p) { return '(' + nT(p[0]) + ',\\ ' + nT(p[1]) + ')'; }
-  function nm(name, p) { return name + ptT(p); }
-  function ptKey(p) { return '(' + cl(p[0]) + ', ' + cl(p[1]) + ')'; }
-  function samePt(a, b) { return same(a[0], b[0]) && same(a[1], b[1]); }
-  function mid(a, b) { return [cl((a[0] + b[0]) / 2), cl((a[1] + b[1]) / 2)]; }
-  function add(a, b) { return [cl(a[0] + b[0]), cl(a[1] + b[1])]; }
-  function sub(a, b) { return [cl(a[0] - b[0]), cl(a[1] - b[1])]; }
-  function scl(a, k) { return [cl(a[0] * k), cl(a[1] * k)]; }
-  function d2(a, b) { return cl((b[0] - a[0]) * (b[0] - a[0]) + (b[1] - a[1]) * (b[1] - a[1])); }
-  function dist(a, b) { return Math.sqrt(d2(a, b)); }
-  function rd(x, dp) { return K.roundTo(x, dp); }
-  function fx(x, dp) { return rd(x, dp).toFixed(dp); }
-  /* exact length √n / den in simplest form */
-  function lenSpec(n, den) { den = den || 1; var r = radParts(n), g = gcd(r.k, den); return { k: [r.k / g, den / g], m: r.m }; }
-  function lenTex(n, den) {
-    var s = lenSpec(n, den), p = s.k[0], q = s.k[1], core = s.m === 1 ? String(p) : (p === 1 ? '' : p) + '\\sqrt{' + s.m + '}';
-    return q === 1 ? core : '\\dfrac{' + core + '}{' + q + '}';
-  }
-  function lenKey(n, den) {
-    var s = lenSpec(n, den), p = s.k[0], q = s.k[1], core = s.m === 1 ? String(p) : (p === 1 ? '' : p) + '\\sqrt{' + s.m + '}';
-    return q === 1 ? core : '\\frac{' + core + '}{' + q + '}';
-  }
-  /* "= √40 = √(4 × 10) = 2√10" (the steps after √n) */
-  function simpTail(n) {
-    if (isSq(n)) return '=' + Math.round(Math.sqrt(n));
-    var r = radParts(n); return r.k === 1 ? '' : '=\\sqrt{' + (r.k * r.k) + '\\times ' + r.m + '}=' + r.k + '\\sqrt{' + r.m + '}';
-  }
-  /* LaTeX of the distance computation from p to q: "AB = √((x2−x1)² + (y2−y1)²) = √(dx² + dy²) = √(a + b) = √n" */
-  function dLine(p, q, name) {
-    var dx = cl(q[0] - p[0]), dy = cl(q[1] - p[1]);
-    return (name ? name + '=' : '') + '\\sqrt{(' + nT(q[0]) + '-' + sgp(p[0]) + ')^{2}+(' + nT(q[1]) + '-' + sgp(p[1]) + ')^{2}}=\\sqrt{' + sgp(dx) + '^{2}+' + sgp(dy) + '^{2}}=\\sqrt{' + nT(dx * dx) + '+' + nT(dy * dy) + '}=\\sqrt{' + nT(dx * dx + dy * dy) + '}';
-  }
-  function dSteps(p, q) {
-    var dx = cl(q[0] - p[0]), dy = cl(q[1] - p[1]);
-    return t('x_2-x_1=' + nT(q[0]) + '-' + sgp(p[0]) + '=' + nT(dx)) + ', &nbsp;' + t('y_2-y_1=' + nT(q[1]) + '-' + sgp(p[1]) + '=' + nT(dy)) + '.';
-  }
-  function mLine(p, q, name) {
-    return (name ? name + '=' : '') + '\\left(\\dfrac{' + nT(p[0]) + '+' + sgp(q[0]) + '}{2},\\ \\dfrac{' + nT(p[1]) + '+' + sgp(q[1]) + '}{2}\\right)=\\left(\\dfrac{' + nT(p[0] + q[0]) + '}{2},\\ \\dfrac{' + nT(p[1] + q[1]) + '}{2}\\right)=' + ptT(mid(p, q));
-  }
+  function ptsT(arr) { return arr.map(ptT).join(',\\ '); }
+  function mn(x) { x = cl(x); return x < 0 ? '−' + Math.abs(x) : String(x); }
+  function ptPlain(p) { return '(' + mn(p[0]) + ', ' + mn(p[1]) + ')'; }
+  function subD(a, b) { a = cl(a); b = cl(b); return a + '-' + (b < 0 ? '(' + b + ')' : b); }
+  function subT(a, b) { return nT(a) + '-' + (b < 0 ? '\\left(' + nT(b) + '\\right)' : nT(b)); }
+  function formulaT(A, Bp) { return '\\frac{' + subT(Bp[1], A[1]) + '}{' + subT(Bp[0], A[0]) + '}'; }
+  function slopeOf(A, Bp) { return red(cl(Bp[1] - A[1]), cl(Bp[0] - A[0])); }
+  function sval(s) { return s == null ? null : s[0] / s[1]; }
+  function near(a, b) { return Math.abs(a - b) < 1e-9; }
+  function same(p, q) { return near(p[0], q[0]) && near(p[1], q[1]); }
+  function upDown(r) { return r > 0 ? t(r) + ' up' : r < 0 ? t(-r) + ' down' : 'no change up or down'; }
+  function sgnWord(s) { var v = sval(s); return s == null ? 'undefined' : v > 0 ? 'positive' : v < 0 ? 'negative' : 'zero'; }
+  function dec(x, d) { return String(cl(Number(x.toFixed(d)))); }
 
-  var HD = ['Distance formula: ' + t('d=\\sqrt{(x_2-x_1)^{2}+(y_2-y_1)^{2}}') + '. Find the run and the rise, square each, add, then take the square root.',
-    'Watch the signs: subtracting a negative coordinate means adding, e.g. ' + t('3-(-3)=6') + '.'];
-  var HM = ['Midpoint formula: ' + t('M\\left(\\dfrac{x_1+x_2}{2},\\ \\dfrac{y_1+y_2}{2}\\right)') + ' — average the ' + t('x') + '-coordinates and average the ' + t('y') + '-coordinates.',
-    'Add the coordinates (don’t subtract), then divide each sum by ' + t('2') + '.'];
-  var HE = ['If ' + t('M') + ' is the midpoint of ' + t('\\overline{AB}') + ', then ' + t('x_M=\\dfrac{x_A+x_B}{2}') + ', so ' + t('x_B=2x_M-x_A') + ': <b>double the midpoint, then subtract the endpoint you have</b>.',
-    'Do the same with the ' + t('y') + '-coordinates. Averaging again is the classic wrong move — the missing endpoint lies <i>beyond</i> the midpoint.'];
-
-  /* ---------------- typical wrong distances ---------------- */
-  function dCands(p, q, scale) {
-    scale = scale || 1;
-    var dx = cl(q[0] - p[0]), dy = cl(q[1] - p[1]), D = Math.sqrt(dx * dx + dy * dy) * scale, out = [];
-    function put(v, code, hint) { if (!isFinite(v) || v <= 0 || Math.abs(v - D) < 1e-6 || out.some(function (o) { return Math.abs(o[0] - v) < 1e-6; })) return; out.push([v, code, hint]); }
-    if (scale === 1) put(dx * dx + dy * dy, 'd-no-root', 'That is ' + t('d^{2}') + ' — the last step of the distance formula is to take the <b>square root</b>.');
-    put((Math.abs(dx) + Math.abs(dy)) * scale, 'd-legs', 'You added the run and the rise. The segment is the <b>hypotenuse</b> of a right triangle: square the run and the rise, add, then take the square root.');
-    put(Math.sqrt(Math.abs(dx) + Math.abs(dy)) * scale, 'd-no-square', 'Square each difference before you add them: ' + t('\\sqrt{(\\Delta x)^{2}+(\\Delta y)^{2}}') + '.');
-    var sx = cl(q[0] + p[0]), sy = cl(q[1] + p[1]);
-    put(Math.sqrt(sx * sx + sy * sy) * scale, 'd-added', 'The distance formula <b>subtracts</b> the coordinates (' + t('x_2-x_1') + ' and ' + t('y_2-y_1') + ') — it doesn’t add them.');
-    var ex1 = p[0] < 0 ? t(nT(q[0]) + '-' + sgp(p[0]) + '=' + nT(dx)) : p[1] < 0 ? t(nT(q[1]) + '-' + sgp(p[1]) + '=' + nT(dy)) : q[0] < 0 ? t(nT(p[0]) + '-' + sgp(q[0]) + '=' + nT(-dx)) : t(nT(p[1]) + '-' + sgp(q[1]) + '=' + nT(-dy));
-    var sh = 'Check your subtraction — subtracting a negative coordinate means adding: ' + ex1 + '.';
-    put(Math.sqrt(sx * sx + dy * dy) * scale, 'd-sign', sh);
-    put(Math.sqrt(dx * dx + sy * sy) * scale, 'd-sign', sh);
-    return out;
-  }
-  function matchDiag(cands, dp) {
-    return function (v) {
-      for (var i = 0; i < cands.length; i++) {
-        var c = cands[i][0];
-        if (dp == null ? Math.abs(v - c) < 1e-6 : Math.abs(v - rd(c, dp)) < 1e-9 || Math.abs(v - c) < 1e-6) return { code: cands[i][1], hint: cands[i][2] };
-      }
-      return null;
-    };
-  }
-  /* an exact length √n/den: integer, fraction or simplest mixed radical. o.cands (wrong values), o.dec (also accept a
-   * correctly rounded decimal, 1 or 2 decimal places) */
-  function lenCheck(n, den, o) {
-    o = o || {}; den = den || 1;
-    var s = lenSpec(n, den), L = Math.sqrt(n) / den, dg = matchDiag(o.cands || []);
-    var base = s.m === 1 ? (s.k[1] === 1 ? K.value(s.k[0], { only: 'integer', diag: dg }) : K.fraction(s.k, { decimalOk: true, diag: dg })) : K.radical({ k: s.k, n: 2, m: s.m }, 'mixed', { diag: dg });
-    return function (resp) {
-      if (o.dec) {
-        var pn = HW.parse.number(String(resp == null ? '' : resp));
-        if (pn.ok) { var str = HW.parse.plain(String(resp)).replace(/\s/g, ''), dp = (str.split('.')[1] || '').length; if (dp >= 1 && dp <= 3 && Math.abs(pn.value - rd(L, dp)) < 1e-9) return ok(); }
-      }
-      return base(resp);
-    };
-  }
-  function lenField(label) { return { label: t(label + '='), name: label, mode: 'math', keys: 'radical' }; }
-
-  /* ---------------- points ---------------- */
-  function stripP(s) {
-    return String(s == null ? '' : s).replace(/\\(left|right)\b\.?/g, '').replace(/\\lparen/g, '(').replace(/\\rparen/g, ')').replace(/\\[,;!: ]/g, '')
-      .replace(/\\\{|\\\}|\\lbrace|\\rbrace/g, ' ').replace(/\\text\{\s*and\s*\}/g, ',').trim();
-  }
-  function simpleNum(ast) { var sh = ex.shape(ast); if (sh.bare) return true; var pf = ex.plainFraction(ast); return !!(pf && pf[1] > 1 && gcd(pf[0], pf[1]) === 1 && !sh.decimals); }
-  function coordPair(str) {
-    var xy = str.split(','); if (xy.length !== 2 || !xy[0].trim() || !xy[1].trim()) return null;
-    var a = ex.parse(xy[0].trim()), b = ex.parse(xy[1].trim()); if (!a.ok || !b.ok) return null;
-    var va = ex.value(a.ast), vb = ex.value(b.ast); if (!isFinite(va) || !isFinite(vb)) return null;
-    return { x: va, y: vb, simple: simpleNum(a.ast) && simpleNum(b.ast) };
-  }
+  /* ---------------- ordered points typed by the student ---------------- */
   function readPts(resp) {
-    var s = stripP(resp);
-    if (/^\{[\s\S]*\}$/.test(s) && !/^\{[^{}]*\}\{/.test(s)) s = s.slice(1, -1).trim();
-    if (!s) return { empty: true };
+    var s = String(resp == null ? '' : resp).replace(/\\(left|right)/g, '').replace(/\\\{|\\\}|\\lbrace|\\rbrace/g, ' ').replace(/\\[,;:! ]|\\quad/g, ' ').replace(/−/g, '-').trim();
+    if (s.charAt(0) === '{' && s.charAt(s.length - 1) === '}') s = s.slice(1, -1);
+    if (!s.trim()) return { empty: true };
     var re = /\(([^()]*)\)/g, m, out = [];
-    while ((m = re.exec(s))) { var c = coordPair(m[1]); if (!c) return { bad: true }; out.push(c); }
-    if (!out.length) {
-      var c2 = coordPair(s); if (c2) return { pts: [c2], noParen: true };
-      var one = ex.parse(s); if (one.ok && isFinite(ex.value(one.ast))) return { single: true };
-      return { bad: true };
+    while ((m = re.exec(s))) {
+      var xy = m[1].split(','); if (xy.length !== 2) return { bad: true };
+      var a = ex.parse(xy[0].trim()), b = ex.parse(xy[1].trim()); if (!a.ok || !b.ok) return { bad: true };
+      var va = ex.value(a.ast), vb = ex.value(b.ast); if (!isFinite(va) || !isFinite(vb)) return { bad: true };
+      out.push([cl(va), cl(vb)]);
     }
-    if (s.replace(re, '').replace(/[,;\s]|and/g, '').length) return { bad: true };
+    if (s.replace(re, '').replace(/[,;\s]|and/g, '').length || !out.length) return { bad: true };
     return { pts: out };
   }
-  function readRes(L) {
-    if (L.empty) return form('empty', 'Type your answer first.');
-    if (L.single) return form('pt-not-pair', 'A point needs two coordinates: write it as an ordered pair ' + t('(x,\\ y)') + '.');
-    if (L.bad) return form('unreadable', 'Write the point as an ordered pair in brackets, e.g. ' + t('(3,\\ -2)') + ' (press <b>( )</b>, type x, comma, y).');
+  /* o: { n: how many points, test(p) -> null | {code, hint}, exclude: [points], integer: true } */
+  function ptsCheck(o) {
+    var n = o.n || 1, exc = o.exclude || [];
+    return function (resp) {
+      var L = readPts(resp);
+      if (L.empty) return form('empty', 'Type your point' + (n > 1 ? 's' : '') + ' first.');
+      if (L.bad) return form('pts-format', 'Write each point in brackets' + (n > 1 ? ', separated by commas' : '') + ', e.g. ' + t(n > 1 ? '(3,\\ 0),\\ (4,\\ 3)' : '(3,\\ 0)') + '.');
+      var P = L.pts, i, j;
+      if (n === 1 && P.length > 1) return form('pts-few', 'Give just one point.');
+      for (i = 0; i < P.length; i++) for (j = 0; j < i; j++) if (same(P[i], P[j])) return form('pts-dup', 'You wrote ' + t(ptT(P[i])) + ' twice — give ' + n + ' different points.');
+      for (i = 0; i < P.length; i++) for (j = 0; j < exc.length; j++) if (same(P[i], exc[j])) return form('pts-given', t(ptT(P[i])) + ' is the point you were given. Give ' + (n > 1 ? 'other points' : 'a different point') + '.');
+      if (o.integer) for (i = 0; i < P.length; i++) if (P[i][0] % 1 || P[i][1] % 1) return form('pts-int', 'Use points with integer coordinates — ' + t(ptT(P[i])) + ' isn’t one. Step a whole rise and run at a time.');
+      for (i = 0; i < P.length; i++) { var h = o.test(P[i]); if (h) return wrong(h.code, h.hint); }
+      if (P.length < n) return form('pts-few', (P.length === 1 ? 'That point works! ' : 'Those work! ') + 'You need ' + n + ' points in all.');
+      return ok();
+    };
+  }
+  function ptsPart(prompt, o, key, sol, hints, text) {
+    var n = o.n || 1;
+    return B.math(prompt, ptsCheck(o), ptsT(key), sol, hints, text, { keys: 'pairs', placeholder: n > 1 ? 'e.g. (3, 0), (4, 3)' : 'e.g. (3, 0)' });
+  }
+  /* is p on the line through P0 with slope sl = [p, q] (q = 0: vertical)? null = yes, else a diagnosis */
+  function onLineTest(P0, sl) {
+    var P0T = t(ptT(P0));
+    return function (p) {
+      var dx = cl(p[0] - P0[0]), dy = cl(p[1] - P0[1]);
+      if (near(dy * sl[1], sl[0] * dx)) return null;
+      if (sl[1] === 0) return dy === 0 ? { code: 'pts-vh', hint: 'From ' + P0T + ' to ' + t(ptT(p)) + ' the segment is horizontal, so its slope is ' + t('0') + '. An <b>undefined</b> slope is vertical: the run is ' + t('0') + ', so keep ' + t('x=' + nT(P0[0])) + '.' } : { code: 'pts-off', hint: 'An undefined slope means the run is ' + t('0') + ': the second point must have the same ' + t('x') + '-coordinate, ' + t(nT(P0[0])) + '.' };
+      if (sl[0] === 0) return dx === 0 ? { code: 'pts-vh', hint: 'From ' + P0T + ' to ' + t(ptT(p)) + ' the segment is vertical, so its slope is undefined. A slope of ' + t('0') + ' is horizontal: the rise is ' + t('0') + ', so keep ' + t('y=' + nT(P0[1])) + '.' } : { code: 'pts-off', hint: 'A slope of ' + t('0') + ' means the rise is ' + t('0') + ': the point must have the same ' + t('y') + '-coordinate, ' + t(nT(P0[1])) + '.' };
+      var m = sl[0] / sl[1];
+      if (dx === 0) return { code: 'pts-off', hint: 'From ' + P0T + ' to ' + t(ptT(p)) + ' the run is ' + t('0') + ' (a vertical step). Step ' + t(Math.abs(sl[1])) + ' across as well as ' + t(Math.abs(sl[0])) + ' ' + (m > 0 ? 'up' : 'down') + '.' };
+      var s = dy / dx;
+      if (near(s, -m)) return { code: 'pts-sign', hint: 'From ' + P0T + ' to ' + t(ptT(p)) + ' the slope is ' + t(fracSteps(dy, dx)) + ' — the sign is wrong. A ' + (m > 0 ? 'positive slope goes <b>up</b>' : 'negative slope goes <b>down</b>') + ' as you move right.' };
+      if (near(s, 1 / m)) return { code: 'pts-flip', hint: 'From ' + P0T + ' to ' + t(ptT(p)) + ' the slope is ' + t(fracSteps(dy, dx)) + ' — that’s run over rise. The top of the slope is the <b>rise</b> (up or down), the bottom is the <b>run</b> (across).' };
+      return { code: 'pts-off', hint: t(ptT(p)) + ' isn’t on the line: from ' + P0T + ' the rise is ' + t(nT(dy)) + ' and the run is ' + t(nT(dx)) + ', a slope of ' + t(fracSteps(dy, dx)) + ', not ' + t(slT(red(sl[0], sl[1]))) + '.' };
+    };
+  }
+  function stepPts(P0, sl, ks) { return ks.map(function (k) { return [P0[0] + k * sl[1], P0[1] + k * sl[0]]; }); }
+
+  /* ---------------- figures ---------------- */
+  function segFig(segs, names, lim) {
+    var sg = [], pts = [];
+    segs.forEach(function (s, i) { sg.push({ pts: [s[0], s[1]] }); pts.push({ x: s[0][0], y: s[0][1], label: names[i].charAt(0) }, { x: s[1][0], y: s[1][1], label: names[i].charAt(1) }); });
+    return HW.graph({ x: [-lim - 1, lim + 1], y: [-lim - 1, lim + 1], labels: 2, segs: sg, points: pts, max: 340, aria: 'line segments on a grid' });
+  }
+  function clipEnd(P, d, len, lim) {   // from P along d, at most len units, staying inside [-lim, lim]
+    var L = Math.hypot(d[0], d[1]), s = len / L;
+    [0, 1].forEach(function (k) { if (d[k] > 0) s = Math.min(s, (lim - P[k]) / d[k]); if (d[k] < 0) s = Math.min(s, (-lim - P[k]) / d[k]); });
+    return [cl(P[0] + d[0] * Math.max(0, s)), cl(P[1] + d[1] * Math.max(0, s))];
+  }
+  function pyramidFig(s, h) {
+    var half = s / 2;
+    return '<div class="fig-row" style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end">' +
+      '<svg class="fig-svg" viewBox="0 0 170 150" style="max-width:150px" role="img" aria-label="square pyramid">' +
+      '<path d="M85 12 L22 110 L80 138 L148 104 Z" fill="#f4f1ea" stroke="#2b3340" stroke-width="1.6"/><path d="M85 12 L80 138" stroke="#2b3340" stroke-width="1.6"/>' +
+      '<path d="M22 110 L88 86 L148 104" fill="none" stroke="#8a90a0" stroke-width="1.2" stroke-dasharray="4 3"/><path d="M85 12 L88 86" stroke="#8a90a0" stroke-width="1.2" stroke-dasharray="4 3"/>' +
+      '<text x="85" y="9" font-size="12" text-anchor="middle" fill="#2b3340">apex</text></svg>' +
+      '<svg class="fig-svg" viewBox="0 0 245 170" style="max-width:230px" role="img" aria-label="side view of the pyramid">' +
+      '<path d="M20 140 L200 140 L110 20 Z" fill="#f4f1ea" stroke="#2b3340" stroke-width="1.6"/><path d="M110 20 L110 140" stroke="#2b3340" stroke-width="1.3" stroke-dasharray="5 4"/>' +
+      '<path d="M110 128 L122 128 L122 140" fill="none" stroke="#2b3340" stroke-width="1.2"/><path d="M200 140 L110 20" stroke="#13807a" stroke-width="3.2"/>' +
+      '<text x="104" y="84" font-size="13" text-anchor="end" fill="#2b3340">' + mn(h) + '</text>' +
+      '<text x="65" y="156" font-size="13" text-anchor="middle" fill="#2b3340">' + mn(half) + '</text><text x="155" y="156" font-size="13" text-anchor="middle" fill="#2b3340">' + mn(half) + '</text>' +
+      '<text x="162" y="76" font-size="12" fill="#13807a">beetle’s path</text><text x="110" y="168" font-size="11.5" text-anchor="middle" fill="#6a7182">side view (m)</text></svg></div>';
+  }
+  function triFig(half, h, bcTxt, halfTxt) {   // isosceles triangle, drawn to scale
+    var hw = 130, hp = Math.max(28, Math.min(120, hw * h / half)), x0 = 20, yb = hp + 26, W = 2 * hw + 40, H = yb + 40;
+    var A = [x0 + hw, yb - hp], Bq = [x0, yb], C = [x0 + 2 * hw, yb];
+    return '<svg class="fig-svg" viewBox="0 0 ' + W + ' ' + H + '" style="max-width:320px" role="img" aria-label="isosceles triangle ABC">' +
+      '<path d="M' + A + ' L' + Bq + ' L' + C + ' Z" fill="#f4f1ea" stroke="#2b3340" stroke-width="1.8"/>' +
+      '<path d="M' + A + ' L' + (x0 + hw) + ',' + yb + '" stroke="#2b3340" stroke-width="1.3" stroke-dasharray="5 4"/>' +
+      '<path d="M' + (x0 + hw - 10) + ',' + yb + ' L' + (x0 + hw - 10) + ',' + (yb - 10) + ' L' + (x0 + hw) + ',' + (yb - 10) + '" fill="none" stroke="#2b3340" stroke-width="1.1"/>' +
+      '<text x="' + A[0] + '" y="' + (A[1] - 6) + '" font-size="14" text-anchor="middle" font-style="italic" fill="#2b3340">A</text>' +
+      '<text x="' + (Bq[0] - 4) + '" y="' + (yb + 16) + '" font-size="14" font-style="italic" fill="#2b3340">B</text><text x="' + (C[0] - 6) + '" y="' + (yb + 16) + '" font-size="14" font-style="italic" fill="#2b3340">C</text>' +
+      '<text x="' + (x0 + hw - 6) + '" y="' + (yb - hp / 2 + 4) + '" font-size="13" text-anchor="end" font-style="italic" fill="#2b3340">h</text>' +
+      '<text x="' + (x0 + 1.5 * hw) + '" y="' + (yb - 4) + '" font-size="12.5" text-anchor="middle" fill="#2b3340">' + halfTxt + '</text>' +
+      '<line x1="' + x0 + '" y1="' + (yb + 26) + '" x2="' + (x0 + 2 * hw) + '" y2="' + (yb + 26) + '" stroke="#6a7182" stroke-width="1.1"/>' +
+      '<text x="' + (x0 + hw) + '" y="' + (yb + 38) + '" font-size="12.5" text-anchor="middle" fill="#2b3340">BC = ' + bcTxt + ' cm</text></svg>';
+  }
+  function pqFig(a, b, mirror) {   // P on the y-axis, Q on the x-axis, dashed legs labelled a and b
+    var u = 22, qx = mirror ? -b : b, x0 = Math.min(0, qx) - 1.4, x1 = Math.max(0, qx) + 1.6, y0 = -1.3, y1 = a + 1.5;
+    var X = function (x) { return 12 + (x - x0) * u; }, Y = function (y) { return 12 + (y1 - y) * u; }, W = (x1 - x0) * u + 24, H = (y1 - y0) * u + 24;
+    var d = [qx, -a], e1 = [-0.28 * d[0], a - 0.28 * d[1]], e2 = [qx + 0.25 * d[0], 0.25 * d[1]];
+    var s = '<defs><marker id="u6l3ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2b3340"/></marker></defs>';
+    s += '<line x1="' + X(x0) + '" y1="' + Y(0) + '" x2="' + X(x1) + '" y2="' + Y(0) + '" stroke="#2b3340" stroke-width="1.4" marker-end="url(#u6l3ar)"/>';
+    s += '<line x1="' + X(0) + '" y1="' + Y(y0) + '" x2="' + X(0) + '" y2="' + Y(y1) + '" stroke="#2b3340" stroke-width="1.4" marker-end="url(#u6l3ar)"/>';
+    s += '<text x="' + (X(x1) - 2) + '" y="' + (Y(0) - 6) + '" font-size="13" font-style="italic" text-anchor="end" fill="#2b3340">x</text><text x="' + (X(0) + 6) + '" y="' + (Y(y1) + 10) + '" font-size="13" font-style="italic" fill="#2b3340">y</text>';
+    s += '<line x1="' + X(e1[0]) + '" y1="' + Y(e1[1]) + '" x2="' + X(e2[0]) + '" y2="' + Y(e2[1]) + '" stroke="#13807a" stroke-width="2.4"/>';
+    s += '<path d="M' + X(0) + ' ' + Y(a) + ' L' + X(0) + ' ' + Y(0) + ' L' + X(qx) + ' ' + Y(0) + '" fill="none" stroke="#c4532a" stroke-width="1.6" stroke-dasharray="5 4"/>';
+    s += '<circle cx="' + X(0) + '" cy="' + Y(a) + '" r="4" fill="#2b3340"/><circle cx="' + X(qx) + '" cy="' + Y(0) + '" r="4" fill="#2b3340"/>';
+    s += '<text x="' + (X(0) + (mirror ? 8 : -8)) + '" y="' + (Y(a) + 4) + '" font-size="14" font-style="italic" text-anchor="' + (mirror ? 'start' : 'end') + '" fill="#2b3340">P</text>';
+    s += '<text x="' + X(qx) + '" y="' + (Y(0) + 17) + '" font-size="14" font-style="italic" text-anchor="middle" fill="#2b3340">Q</text>';
+    s += '<text x="' + (X(0) + (mirror ? -6 : 6)) + '" y="' + (Y(a / 2) + 4) + '" font-size="13" text-anchor="' + (mirror ? 'end' : 'start') + '" fill="#c4532a">' + a + '</text>';
+    s += '<text x="' + X(qx / 2) + '" y="' + (Y(0) - 5) + '" font-size="13" text-anchor="middle" fill="#c4532a">' + b + '</text>';
+    return '<svg class="fig-svg" viewBox="0 0 ' + W.toFixed(0) + ' ' + H.toFixed(0) + '" style="max-width:' + Math.min(240, W).toFixed(0) + 'px" role="img" aria-label="segment PQ with its rise and run">' + s + '</svg>';
+  }
+
+  /* ---------------- rise / run / slope rows ---------------- */
+  function rrPart(nm, A, Bp) {
+    var rise = cl(Bp[1] - A[1]), run = cl(Bp[0] - A[0]), sl = slopeOf(A, Bp), slc = K.slope(sl);
+    var fields = [{ label: 'Rise', name: 'Rise' }, { label: 'Run', name: 'Run' }, { label: 'Slope', name: 'Slope', mode: 'math', keys: 'slope', placeholder: 'e.g. -2/3' }];
+    var key = [String(rise), String(run), slT(sl)];
+    var dir = run === 0 ? 'straight ' + (rise > 0 ? 'up' : 'down') : rise === 0 ? 'straight across' : (rise > 0 ? 'up' : 'down') + ' to the right';
+    var check = function (resp) {
+      resp = resp || [];
+      var plus = function (v) { return String(v == null ? '' : v).replace(/^\s*\+/, ''); }, pr = HW.parse.number(plus(resp[0])), pn = HW.parse.number(plus(resp[1]));
+      if (!pr.ok || !pn.ok) return form('rr-blank', 'Fill in the <b>rise</b> and the <b>run</b> as numbers (with a minus sign for down or left).');
+      var r = cl(pr.value), n = cl(pn.value);
+      var good = (r === rise && n === run) || (r === -rise && n === -run);
+      if (!good) {
+        if (Math.abs(r) === Math.abs(run) && Math.abs(n) === Math.abs(rise) && Math.abs(rise) !== Math.abs(run)) return wrong('rr-swap', 'Rise and run are swapped: the <b>rise</b> is the vertical change (up or down), the <b>run</b> is the horizontal change (across).');
+        if (Math.abs(r) === Math.abs(rise) && Math.abs(n) === Math.abs(run)) return wrong('rr-sign', 'Right sizes — check the signs. Count from ' + t(nm.charAt(0)) + ' to ' + t(nm.charAt(1)) + ': up and right are positive, down and left are negative. ' + t(nm) + ' goes ' + dir + '.');
+        if (Math.abs(r) !== Math.abs(rise)) return wrong('rr-rise', '<b>Rise:</b> count the squares up or down from ' + t(nm.charAt(0)) + ' to ' + t(nm.charAt(1)) + ' again.');
+        return wrong('rr-run', '<b>Run:</b> count the squares across from ' + t(nm.charAt(0)) + ' to ' + t(nm.charAt(1)) + ' again.');
+      }
+      var c = slc(resp[2] == null ? '' : resp[2]);
+      if (c.v !== 'correct') return { v: c.v, code: c.code, hint: '<b>Slope:</b> ' + (c.hint || 'divide the rise by the run: ' + t('\\frac{\\text{rise}}{\\text{run}}=' + rawFr(rise, run)) + (run === 0 ? '.' : ', then reduce.')) };
+      return ok();
+    };
+    var sol = 'Count from ' + t(nm.charAt(0)) + ' to ' + t(nm.charAt(1)) + ' (left to right' + (run === 0 ? ' — here straight ' + (rise > 0 ? 'up' : 'down') : '') + '): ' + upDown(rise) + ' and ' + (run === 0 ? 'no squares across' : t(run) + ' right') + '. Rise ' + t(rise) + ', run ' + t(run) + '.<br>' +
+      (run === 0 ? t('\\text{slope}=\\frac{' + rise + '}{0}') + ' — you can’t divide by ' + t('0') + ', so the slope is <b>undefined</b> (a vertical segment).' : t('\\text{slope}=\\frac{\\text{rise}}{\\text{run}}=' + fracSteps(rise, run)) + (rise === 0 ? ' (a horizontal segment).' : '.')) +
+      ' (Counting from ' + t(nm.charAt(1)) + ' to ' + t(nm.charAt(0)) + ' instead makes both signs change, and the slope is the same.)';
+    return { prompt: 'Segment ' + t(nm) + ': fill in its row of the table.', input: { type: 'fields', fields: fields }, check: check, key: key,
+      answer: 'Rise ' + t(rise) + ', run ' + t(run) + ', slope ' + t(slT(sl)), solution: sol, text: 'rise/run/slope of ' + nm + ' ' + ptT(A) + ptT(Bp),
+      hints: ['Start at ' + t(nm.charAt(0)) + '. Count squares up (+) or down (−) to the level of ' + t(nm.charAt(1)) + ' — that’s the rise. Then count squares right (+) or left (−) — that’s the run.', 'Slope ' + t('=\\frac{\\text{rise}}{\\text{run}}') + ', in lowest terms.'],
+      good: run !== 0 || rise !== 0 ? [[String(-rise), String(-run), slT(sl)]] : [], bad: [[String(run), String(rise), slT(sl)], [String(rise), String(-run || run), slT(sl)]].filter(function (b) { return !((b[0] === key[0] && b[1] === key[1]) || (Number(b[0]) === -rise && Number(b[1]) === -run)); }) };
+  }
+  function distSeg(p, a, b) { var dx = b[0] - a[0], dy = b[1] - a[1], L2 = dx * dx + dy * dy, u = L2 ? Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / L2)) : 0; return Math.hypot(p[0] - a[0] - u * dx, p[1] - a[1] - u * dy); }
+  /* place segments (types: {rise, run}, run >= 0) with integer endpoints in [-lim, lim], endpoints apart and off the other segments */
+  function placeSegs(r, types, lim) {
+    for (var tries = 0; tries < 400; tries++) {
+      var segs = [], bad = false;
+      types.forEach(function (ty) {
+        var xlo = -lim, xhi = lim - ty.run, ylo = Math.max(-lim, -lim - ty.rise), yhi = Math.min(lim, lim - ty.rise);
+        if (xhi < xlo || yhi < ylo) { bad = true; return; }
+        var A = [r.int(xlo, xhi), r.int(ylo, yhi)]; segs.push([A, [A[0] + ty.run, A[1] + ty.rise]]);
+      });
+      if (bad) return null;
+      var ends = []; segs.forEach(function (s) { ends.push(s[0], s[1]); });
+      for (var i = 0; i < ends.length && !bad; i++) for (var j = 0; j < i; j++) if (Math.hypot(ends[i][0] - ends[j][0], ends[i][1] - ends[j][1]) < 2) { bad = true; break; }
+      for (var k = 0; k < segs.length && !bad; k++) for (var e = 0; e < ends.length; e++) if (Math.floor(e / 2) !== k && distSeg(ends[e], segs[k][0], segs[k][1]) < 0.6) { bad = true; break; }
+      if (!bad) return segs;
+    }
     return null;
   }
-  /* one point. o.cands: [[pt, code, hint]], o.swapHint, o.xHint, o.yHint */
-  function ptCheck(W, o) {
-    o = o || {};
-    return function (resp) {
-      var L = readPts(resp), rr = readRes(L); if (rr) return rr;
-      if (L.pts.length !== 1) return form('pt-many', 'Give just one point.');
-      var p = L.pts[0], Q = [p.x, p.y];
-      if (samePt(Q, W)) {
-        if (!p.simple) return form('simplify', 'Right point — now simplify each coordinate to a single number (for example ' + t('\\frac{12}{2}=6') + ').');
-        if (L.noParen) return form('pt-brackets', 'Right coordinates — write the point in brackets: ' + t('(x,\\ y)') + '.');
-        return ok();
-      }
-      var c = o.cands || [];
-      for (var i = 0; i < c.length; i++) if (c[i][0] && samePt(Q, c[i][0])) return wrong(c[i][1], c[i][2]);
-      if (same(Q[0], W[1]) && same(Q[1], W[0])) return wrong('pt-swap', o.swapHint || 'Your coordinates are in the wrong order: the ' + t('x') + '-coordinate comes first, then the ' + t('y') + '-coordinate.');
-      if (same(Q[0], W[0])) return wrong('pt-y', 'Your ' + t('x') + '-coordinate is right — check the ' + (same(Q[1], -W[1]) ? '<b>sign</b> of the ' : '') + t('y') + '-coordinate.' + (o.yHint ? ' ' + o.yHint : ''));
-      if (same(Q[1], W[1])) return wrong('pt-x', 'Your ' + t('y') + '-coordinate is right — check the ' + (same(Q[0], -W[0]) ? '<b>sign</b> of the ' : '') + t('x') + '-coordinate.' + (o.xHint ? ' ' + o.xHint : ''));
-      return wrong('pt', null);
+
+  /* ---------------- slope parts ---------------- */
+  function slopePart(prompt, sl, sol, hints, text, opt) { return B.slope(prompt, sl == null ? null : sl, opt || {}, sol, hints, text); }
+  function coordSlopePart(prompt, A, Bp, nmA, nmB, text) {
+    var sl = slopeOf(A, Bp), rise = cl(Bp[1] - A[1]), run = cl(Bp[0] - A[0]);
+    var sol = t('m=\\frac{y_2-y_1}{x_2-x_1}=' + formulaT(A, Bp) + '=' + fracSteps(rise, run)) + (run === 0 ? '. The run is ' + t('0') + ' and you can’t divide by ' + t('0') + ': the slope is <b>undefined</b> (vertical).' : rise === 0 ? '. The rise is ' + t('0') + ', so the slope is ' + t('0') + ' (horizontal).' : '.');
+    return slopePart(prompt, sl, sol, ['Use ' + t('m=\\frac{y_2-y_1}{x_2-x_1}') + ', subtracting in the <b>same order</b> on the top and the bottom.', 'Watch the signs when you subtract a negative: ' + t('a-(-b)=a+b') + '.'], text || ('slope ' + nmA + nmB + ' ' + ptT(A) + ptT(Bp)));
+  }
+
+  /* ---------------- drawing parts ---------------- */
+  function gv(pts, pieces) { return { pts: pts || [], pieces: pieces || [], join: 'none' }; }
+  function seg(a, b, s, e) { return { v: [a, b], s: s || 'closed', e: e || 'closed' }; }
+  function lineV(a, b) { return gv([], [seg(a, b, 'arrow', 'arrow')]); }
+  var LINEHELP = '<div class="muted">Use <b>╱ Line</b>: tap the given point, tap a second point on the line, then tap it again to finish. The ends start as arrows (a line goes on forever).</div>';
+  var SEGHELP = '<div class="muted">Use <b>╱ Line</b>: tap where the segment starts, tap where it ends, then tap that end again to finish. The ends are solid dots.</div>';
+  function bgPt(P0, w) { var o = { x: P0[0], y: P0[1] }; if (P0[0] <= w.x[1] - 4 && P0[1] <= w.y[1] - 1) o.label = ptPlain(P0); return o; }
+  function inWin(p, w) { return p[0] >= w.x[0] && p[0] <= w.x[1] && p[1] >= w.y[0] && p[1] <= w.y[1]; }
+  function winFor(P0) { var w = { x: [-7, 7], y: [-7, 7] }; if (P0[1] < -7) w.y = [-9, 5]; if (P0[1] > 7) w.y = [-5, 9]; if (P0[0] < -7) w.x = [-9, 5]; if (P0[0] > 7) w.x = [-5, 9]; return w; }
+  function lineInfo(resp) { var g = DR.geom(resp), ks = Object.keys(g.lines); return { g: g, ks: ks, L: ks.length === 1 ? g.lines[ks[0]] : null }; }
+  function lineDiag(L, P0, sl) {   // one drawn line L (A x + B y = C) vs the target through P0 with slope sl = [p, q]
+    var thr = Math.abs(L.A * P0[0] + L.B * P0[1] - L.C) < 1e-6, ms = L.B === 0 ? null : -L.A / L.B, mt = sl[1] === 0 ? null : sl[0] / sl[1];
+    var sameM = (ms === null && mt === null) || (ms !== null && mt !== null && near(ms, mt));
+    if (sameM && !thr) return wrong('draw-point', 'Right steepness — but the line has to pass through the given point ' + t(ptT(P0)) + '. Start there.');
+    if (!thr) return null;
+    if (sameM) return null;
+    var pq = mt === null ? 'up or down only' : t(Math.abs(sl[0])) + ' ' + (mt >= 0 ? 'up' : 'down') + ' for every ' + t(sl[1]) + ' to the right';
+    if (mt === 0 && ms === null) return wrong('draw-vh', 'That line is vertical (undefined slope). A slope of ' + t('0') + ' is <b>horizontal</b>: the rise is ' + t('0') + '.');
+    if (mt === null && ms === 0) return wrong('draw-vh', 'That line is horizontal (slope ' + t('0') + '). An undefined slope is <b>vertical</b>: the run is ' + t('0') + '.');
+    if (ms !== null && mt !== null && mt !== 0 && near(ms, -mt)) return wrong('draw-slope-sign', 'Your line goes through ' + t(ptT(P0)) + ', but it ' + (ms > 0 ? 'rises' : 'falls') + ' from left to right. A ' + (mt > 0 ? 'positive' : 'negative') + ' slope ' + (mt > 0 ? 'rises' : 'falls') + ': step ' + pq + '.');
+    if (ms !== null && mt !== null && mt !== 0 && near(ms, 1 / mt)) return wrong('draw-slope-flip', 'Your line has rise and run swapped. From ' + t(ptT(P0)) + ' step ' + pq + ' (the top number of the slope is the rise).');
+    return wrong('draw-slope', 'Your line passes through ' + t(ptT(P0)) + ' but its slope is ' + t(ms === null ? '\\text{undefined}' : slT(LN.toFr(ms))) + '. From ' + t(ptT(P0)) + ' step ' + pq + '.');
+  }
+  /* "plot the line through P0 with slope sl" (a whole line: arrows) */
+  function lineDrawPart(prompt, P0, sl, win, P1, sol, hints, text) {
+    var target = lineV(P0, P1), W = [];
+    var flipS = sl[0] !== 0 ? [P0[0] + sl[0], P0[1] + sl[1]] : null, sgnS = [P0[0] + sl[1], P0[1] - sl[0]];
+    if (sl[0] !== 0 && sl[1] !== 0) W.push({ is: lineV(P0, sgnS), code: 'draw-slope-sign', hint: 'Check the direction: a ' + (sl[0] / sl[1] > 0 ? 'positive slope rises' : 'negative slope falls') + ' from left to right.' });
+    if (flipS && Math.abs(sl[0]) !== Math.abs(sl[1])) W.push({ is: lineV(P0, flipS), code: 'draw-slope-flip', hint: 'Rise and run are swapped: the top of the slope is the rise (up/down), the bottom is the run (across).' });
+    var exact = K.graphExact(target, { wrong: W });
+    var check = function (resp) {
+      if (DR.empty(resp)) return form('empty', 'Draw the line on the grid first.');
+      if (DR.same(resp, target)) return ok();
+      var li = lineInfo(resp);
+      if (li.L) { var d = lineDiag(li.L, P0, sl); if (d) return d; }
+      return exact(resp);
     };
+    var inp = { x: win.x, y: win.y, labels: 2, defaultEnd: 'arrow', tools: ['line', 'ends'], bg: { points: [bgPt(P0, win)] } };
+    var p = B.graph(prompt + LINEHELP, inp, check, target, sol, hints, text);
+    p.bad = [gv([], [seg(P0, P1)])].concat(W.map(function (w) { return w.is; }));
+    return p;
   }
-  /* several points in one box (any order). o.diag(list) -> {code, hint}, o.missHint */
-  function ptsCheck(want, o) {
-    o = o || {};
-    return function (resp) {
-      var L = readPts(resp), rr = readRes(L); if (rr) return rr;
-      var A = []; L.pts.forEach(function (p) { if (!A.some(function (q) { return samePt([q.x, q.y], [p.x, p.y]); })) A.push(p); });
-      var miss = want.filter(function (w) { return !A.some(function (p) { return samePt([p.x, p.y], w); }); });
-      var extra = A.filter(function (p) { return !want.some(function (w) { return samePt([p.x, p.y], w); }); });
-      if (!miss.length && !extra.length) {
-        if (A.some(function (p) { return !p.simple; })) return form('simplify', 'Right points — now simplify each coordinate to a single number.');
-        if (L.noParen) return form('pt-brackets', 'Right coordinates — write each point in brackets: ' + t('(x,\\ y)') + '.');
-        return ok();
-      }
-      if (o.diag) { var h = o.diag(A.map(function (p) { return [p.x, p.y]; })); if (h) return wrong(h.code, h.hint); }
-      if (miss.length && !extra.length) return wrong(o.missCode || 'pts-missing', o.missHint || 'Correct so far — but ' + (miss.length === 1 ? 'there is another point' : 'there are more points') + ' that works.');
-      if (extra.length && !miss.length) return wrong('pts-extra', 'One of your points doesn’t satisfy the conditions — check each one.');
-      return wrong('pts', null);
+  /* "draw a segment through P0 with slope sl that crosses both axes" */
+  function segDrawPart(prompt, P0, sl, win, key, xi, yi, sol, hints, text) {
+    var check = function (resp) {
+      if (DR.empty(resp)) return form('empty', 'Draw the segment on the grid first.');
+      var li = lineInfo(resp);
+      if (!li.ks.length) return wrong('draw-noline', 'Join your points with the <b>╱ Line</b> tool to make a segment.');
+      if (li.ks.length > 1) return wrong('draw-many', 'Draw one straight segment (every part of it on the same line).');
+      var d = lineDiag(li.L, P0, sl); if (d) return d;
+      var thr = Math.abs(li.L.A * P0[0] + li.L.B * P0[1] - li.L.C) < 1e-6;
+      if (!thr) return wrong('draw-point', 'The segment has to pass through ' + t(ptT(P0)) + '.');
+      if (!DR.contains(resp, P0)) return wrong('draw-point', 'Your segment is on the right line, but make it reach the given point ' + t(ptT(P0)) + '.');
+      var arrows = li.L.iv.some(function (iv) { return !isFinite(iv.lo) || !isFinite(iv.hi); });
+      if (!DR.contains(resp, [xi, 0]) || !DR.contains(resp, [0, yi])) return wrong('draw-short', 'Right direction — now make the segment longer: it has to cross <b>both</b> the ' + t('x') + '-axis and the ' + t('y') + '-axis. Keep stepping the rise and run.');
+      if (arrows) return form('draw-arrows', 'Right line! A <b>segment</b> stops at two end points, though — use <b>●○ Ends</b> to make each end a solid dot.');
+      return ok();
     };
+    var inp = { x: win.x, y: win.y, labels: 2, defaultEnd: 'closed', tools: ['line', 'ends'], bg: { points: [bgPt(P0, win)] } };
+    var p = B.graph(prompt + SEGHELP, inp, check, key, sol, hints, text);
+    var n1 = [P0[0] + sl[1], P0[1] + sl[0]];
+    p.bad = [gv([], [seg(P0, n1)]), gv([], [seg([P0[0] - sl[1] * 3, P0[1] + sl[0] * 3], [P0[0] + sl[1] * 3, P0[1] - sl[0] * 3])]), gv([], [seg(P0, [P0[0] + sl[0] * 3, P0[1] + sl[1] * 3])])];
+    return p;
   }
-  function ptPart(prompt, W, o, sol, hints, text) {
-    o = o || {};
-    var good = ['\\left(' + cl(W[0]) + ',' + cl(W[1]) + '\\right)'], bad = [];
-    [[W[1], W[0]]].concat((o.cands || []).map(function (c) { return c[0]; })).forEach(function (q) { if (q && !samePt(q, W)) bad.push(ptKey(q)); });
-    return { prompt: prompt, input: { type: 'math', keys: 'pairs', before: o.before, placeholder: 'e.g. (3, -2)' }, check: ptCheck(W, o), key: ptKey(W), answer: t((o.name || '') + ptT(W)),
-      solution: sol, hints: hints || HM, text: text, good: good, bad: bad };
-  }
-  function ptField(label) { return { label: label, name: label.replace(/\\\(|\\\)/g, ''), mode: 'math', keys: 'pairs', placeholder: 'e.g. (3, -2)' }; }
-  function midCands(a, b) {
-    var h = [cl((b[0] - a[0]) / 2), cl((b[1] - a[1]) / 2)], hs = 'You subtracted the coordinates. The midpoint formula <b>adds</b> them and divides by ' + t('2') + ' — it averages each coordinate.';
-    return [[h, 'mid-subtract', hs], [scl(h, -1), 'mid-subtract', hs], [add(a, b), 'mid-no-halve', 'You added the coordinates — now divide each sum by ' + t('2') + '.']];
-  }
-  function endCands(a, m) {
-    return [[mid(a, m), 'end-average', 'You averaged the endpoint and the midpoint — that gives the point halfway between them. The missing endpoint is <i>beyond</i> the midpoint: double the midpoint, then subtract the endpoint you have.'],
-      [sub(m, a), 'end-step', 'That is the step from the known endpoint to the midpoint. The missing endpoint is one more such step past the midpoint: ' + t('B=2M-A') + '.'],
-      [add(scl(m, 2), a), 'end-sign', 'Double the midpoint, then <b>subtract</b> the endpoint you have — watch the signs.'],
-      [add(m, a), 'end-sum', 'Double the midpoint first, then subtract the known endpoint: ' + t('x_B=2x_M-x_A') + '.'],
-      [scl(m, 2), 'end-double', 'You doubled the midpoint — now subtract the known endpoint.']];
-  }
-  function endNum(xA, xM) {
-    return [[(xA + xM) / 2, 'end-average', 'You averaged again. The midpoint’s coordinate is the average of the endpoints, so solve ' + t('\\dfrac{' + nT(xA) + '+x}{2}=' + nT(xM)) + ': multiply by ' + t('2') + ', then subtract ' + t(sgp(xA)) + '.'],
-      [xM - xA, 'end-step', 'Multiply both sides by ' + t('2') + ' first: ' + t(nT(xA) + '+x=' + nT(2 * xM)) + ', then subtract.'],
-      [2 * xM + xA, 'end-sign', 'After doubling, <b>subtract</b> ' + t(sgp(xA)) + ' (it moves to the other side): ' + t('x=' + nT(2 * xM) + '-' + sgp(xA)) + '.'],
-      [xM + xA, 'end-sum', 'Double the midpoint coordinate first: ' + t('x=2(' + nT(xM) + ')-' + sgp(xA)) + '.'],
-      [2 * xM, 'end-double', 'You doubled the midpoint coordinate — now subtract ' + t(sgp(xA)) + '.']];
-  }
-  function numDiag(list) { return function (v) { for (var i = 0; i < list.length; i++) if (isFinite(list[i][0]) && same(v, list[i][0])) return { code: list[i][1], hint: list[i][2] }; return null; }; }
-  function ptsOpt(r, A, B2, n) { // n random points with |PA| ≠ |PB|, distinct
-    var out = [];
-    for (var g = 0; out.length < n && g < 4000; g++) {
-      var q = [r.int(-12, 12), r.int(-12, 12)];
-      if (Math.abs(d2(q, A) - d2(q, B2)) < 4 || out.some(function (o) { return samePt(o, q); })) continue;
-      out.push(q);
+
+  /* ---------------- generators for shared questions ---------------- */
+  function q1Shared(r) {
+    for (var g = 0; g < 50; g++) {
+      var ab = r.pick([[4, 8], [2, 4], [2, 6], [4, 6], [3, 6], [2, 8], [6, 8]]), cd = r.pick([[4, 6], [2, 4], [2, 6], [3, 6], [2, 8], [4, 8], [6, 8]]);
+      var ef = r.pick([[6, 4], [4, 2], [6, 2], [8, 2], [8, 4], [8, 6]]), k = r.pick([1, 1, 2, 3]), n = k === 1 ? r.pick([4, 5, 6, 7]) : k === 2 ? r.pick([2, 3, 4]) : r.pick([2, 3]);
+      var segs = placeSegs(r, [{ rise: ab[0], run: ab[1] }, { rise: -cd[0], run: cd[1] }, { rise: -ef[0], run: ef[1] }, { rise: k * n, run: n }], 5);
+      if (segs) return { segs: segs, names: ['AB', 'CD', 'EF', 'GH'] };
     }
-    return out;
+    return { segs: [[[-5, 1], [3, 5]], [[-4, -1], [2, -5]], [[-3, 4], [1, -2]], [[-2, -3], [4, 3]]], names: ['AB', 'CD', 'EF', 'GH'] };
   }
-  function eqWhy(q, A, an, B2, bn) { return 'Squared distances from ' + t(ptT(q)) + ': to ' + t(an) + ' it is ' + t(nT(d2(q, A))) + ', to ' + t(bn) + ' it is ' + t(nT(d2(q, B2))) + ' — not equal.'; }
-  /* a coordinate grid around some points (even bounds) */
-  function win(pts, padv) {
-    padv = padv == null ? 1 : padv;
-    var xs = pts.map(function (p) { return p[0]; }).concat([0]), ys = pts.map(function (p) { return p[1]; }).concat([0]);
-    var lo = function (v) { return Math.floor((Math.min.apply(null, v) - padv) / 2) * 2; }, hi = function (v) { return Math.ceil((Math.max.apply(null, v) + padv) / 2) * 2; };
-    return { x: [lo(xs), hi(xs)], y: [lo(ys), hi(ys)] };
+  function q2Shared(r) {
+    for (var g = 0; g < 300; g++) {
+      var f1 = r.pick([[1, 2], [1, 3], [2, 3], [1, 4], [3, 4]]), j1 = f1[1] <= 2 ? 2 : r.pick([1, 2]);
+      var k2 = r.pick([2, 3, 4, 5]), f3 = r.pick([[1, 3], [1, 4], [2, 5], [1, 5], [3, 5], [1, 2], [2, 3]]), j3 = f3[1] <= 3 ? 2 : 1;
+      var k4 = r.pick([2, 3, 4]), j4 = k4 <= 3 ? r.pick([1, 2]) : 1;
+      var steps = [[f1[1] * j1, f1[0] * j1], [1, k2], [f3[1] * j3, -f3[0] * j3], [j4, -k4 * j4]];
+      if (steps.some(function (s) { return Math.abs(s[0]) > 8 || Math.abs(s[1]) > 9; })) continue;
+      var M = steps.map(function (s) { var xlo = -5, xhi = 5 - s[0], ylo = Math.max(-5, -5 - s[1]), yhi = Math.min(5, 5 - s[1]); if (xhi < xlo || yhi < ylo) return null; var A = [r.int(xlo, xhi), r.int(ylo, yhi)]; return [A, [A[0] + s[0], A[1] + s[1]]]; });
+      if (M.some(function (m) { return !m; })) continue;
+      var ends = [], bad = false; M.forEach(function (m) { ends.push(m[0], m[1]); });
+      for (var i = 0; i < ends.length && !bad; i++) for (var j = 0; j < i; j++) if (Math.hypot(ends[i][0] - ends[j][0], ends[i][1] - ends[j][1]) < 1.9) { bad = true; break; }
+      if (bad) continue;
+      // full drawn lines (a little past the marked points) must not run through another line's marked point
+      var drawn = M.map(function (m) { var d = [m[1][0] - m[0][0], m[1][1] - m[0][1]]; return [clipEnd(m[0], [-d[0], -d[1]], 1.3, 5.7), clipEnd(m[1], d, 1.3, 5.7)]; });
+      for (var a = 0; a < 4 && !bad; a++) for (var e = 0; e < ends.length; e++) if (Math.floor(e / 2) !== a && distSeg(ends[e], drawn[a][0], drawn[a][1]) < 0.45) { bad = true; break; }
+      if (bad) continue;
+      return { M: M, drawn: drawn };
+    }
+    return { M: [[[-5, 3], [-1, 5]], [[1, -5], [2, -1]], [[-5, -1], [1, -3]], [[2, 5], [4, -1]]], drawn: [[[-5.3, 2.85], [-0.6, 5.2]], [[0.9, -5.4], [2.6, 1.4]], [[-5.3, -0.9], [1.2, -3.0667]], [[1.9, 5.3], [4.4, -2.2]]] };
   }
-  function figPoly(pts, names, o) {
-    o = o || {};
-    var w = win(pts, 1.5), segs = [];
-    if (o.closed) segs.push({ pts: pts.concat([pts[0]]), start: 'none', end: 'none' });
-    else if (o.segs) o.segs.forEach(function (s) { segs.push({ pts: s, start: 'none', end: 'none', dash: s.dash }); });
-    (o.dash || []).forEach(function (s) { segs.push({ pts: s, start: 'none', end: 'none', dash: true, color: '#c4532a' }); });
-    var span = Math.max(w.x[1] - w.x[0], w.y[1] - w.y[0]);
-    return '<div class="fig">' + HW.graph({ x: w.x, y: w.y, grid: 1, labels: span > 16 ? 4 : 2, points: pts.map(function (p, i) { return { x: p[0], y: p[1], label: names[i] }; }), segs: segs, max: 340 }) + '</div>';
+  function q2Fig(sh) {
+    var segs = sh.drawn.map(function (d) { return { pts: d }; }), pts = [];
+    sh.M.forEach(function (m, i) { pts.push({ x: m[0][0], y: m[0][1] }, { x: m[1][0], y: m[1][1], label: 'Line ' + (i + 1) }); });
+    return HW.graph({ x: [-6, 6], y: [-6, 6], labels: 2, segs: segs, points: pts, max: 340, aria: 'four lines on a grid' });
+  }
+  function intPtsOn(P0, sl, win) { var out = []; for (var k = -20; k <= 20; k++) { var p = [P0[0] + k * sl[1], P0[1] + k * sl[0]]; if (inWin(p, win)) out.push(p); } return out; }
+  function q3Shared(r) {
+    var win = { x: [-7, 7], y: [-7, 7] };
+    for (var g = 0; g < 400; g++) {
+      var sl = g === 0 && r.chance(0.2) ? [2, 3] : r.pick([[2, 3], [1, 2], [3, 4], [1, 3], [3, 2], [2, 5]]), P0 = g === 0 && r.chance(0.3) ? [-6, -3] : [r.int(-7, -3), r.int(-6, -2)];
+      var m = sl[0] / sl[1], yi = cl(P0[1] - m * P0[0]), xi = cl(P0[0] - P0[1] / m);
+      if (Math.abs(yi) < 0.9 || Math.abs(yi) > 5.5 || Math.abs(xi) < 0.9 || Math.abs(xi) > 6) continue;
+      var ip = intPtsOn(P0, sl, win); if (ip.length < 4) continue;
+      var lo = ip[0], hi = ip[ip.length - 1];
+      if (!(lo[0] < Math.min(0, xi) - 0.01 && hi[0] > Math.max(0, xi) + 0.01)) continue;
+      return { sl: sl, P0: P0, win: win, ip: ip, key: gv([], [seg(lo, hi)]), xi: xi, yi: yi };
+    }
+    return { sl: [2, 3], P0: [-6, -3], win: win, ip: intPtsOn([-6, -3], [2, 3], win), key: gv([], [seg([-6, -3], [6, 5])]), xi: -1.5, yi: 1 };
+  }
+  function cfg(r, pool, xr, yr, bk) {
+    for (var g = 0; g < 300; g++) {
+      var useB = bk && g === 0 && r.chance(0.25), sl = useB ? bk[0] : r.pick(pool), P0 = useB ? bk[1] : [r.int(xr[0], xr[1]), r.int(yr[0], yr[1])];
+      if (sl[1] < 0) sl = [-sl[0], -sl[1]];
+      var win = winFor(P0); if (!inWin(P0, win)) continue;
+      var P1 = null;[1, -1, 2, -2, 3, -3].forEach(function (k) { var p = [P0[0] + k * sl[1], P0[1] + k * sl[0]]; if (!P1 && inWin(p, win)) P1 = p; });
+      if (!P1) continue;
+      return { sl: sl, P0: P0, win: win, P1: P1 };
+    }
+    return null;
+  }
+  function q4Shared(r) {
+    return {
+      a: cfg(r, [[3, 5], [2, 5], [3, 4], [2, 3], [4, 5], [1, 3]], [1, 5], [-5, -1], [[3, 5], [3, -1]]),
+      b: cfg(r, [[-1, 4], [-1, 3], [-1, 5], [-1, 2]], [2, 6], [1, 5], [[-1, 4], [5, 2]]),
+      c: cfg(r, [[-5, 2], [-3, 2], [-4, 3], [-5, 3], [-7, 4]], [-7, -3], [3, 7], [[-5, 2], [-6, 7]]),
+      d: cfg(r, [[3, 1], [2, 1], [4, 1]], [0, 0], [-6, -2], [[3, 1], [0, -5]]),
+      e: cfg(r, [[-3, 1], [-2, 1], [-4, 1]], [1, 3], [-8, -5], [[-3, 1], [1, -8]]),
+      f: cfg(r, [[0, 1]], [0, 0], [2, 7], [[0, 1], [0, 7]])
+    };
+  }
+  function q4Draw(c, L) {
+    var sl = c.sl, P0 = c.P0, P1 = c.P1;
+    var sol = (sl[0] === 0 ? 'A slope of ' + t('0') + ' is horizontal: every point on the line has ' + t('y=' + nT(P0[1])) + '.' :
+      'Write the slope as ' + t('\\frac{\\text{rise}}{\\text{run}}=' + rawFr(sl[0], sl[1])) + '. From ' + t(ptT(P0)) + ' step ' + upDown(sl[0]) + ' and ' + t(sl[1]) + ' right' + (inWin([P0[0] + sl[1], P0[1] + sl[0]], c.win) ? '' : ' (or the reverse: ' + upDown(-sl[0]) + ' and ' + t(sl[1]) + ' left)') + ' to reach ' + t(ptT(P1)) + '.') + ' Draw the line through the two points, with arrows on both ends.';
+    return lineDrawPart('Plot the line through ' + t(ptT(P0)) + ' with slope ' + t(slT(red(sl[0], sl[1]))) + '.', P0, sl, c.win, P1, sol,
+      ['Write the slope as a fraction ' + t('\\frac{\\text{rise}}{\\text{run}}') + (sl[1] === 1 && sl[0] !== 0 ? ' — for example ' + t(sl[0] + '=\\frac{' + sl[0] + '}{1}') : '') + '. Start at the given point and step the rise and the run.', sl[0] / sl[1] < 0 ? 'A negative slope: step down as you go right (or up as you go left).' : 'Two points are enough to draw a line.'], 'draw line slope ' + slT(red(sl[0], sl[1])) + ' through ' + ptT(P0));
+  }
+  function q4Pts(c, L) {
+    var sl = c.sl, P0 = c.P0, key = stepPts(P0, sl, sl[0] === 0 ? [1, -1, 2] : [1, -1, 2]);
+    var good = [ptsT(stepPts(P0, sl, [-1, -2, -3])), ptsT(stepPts(P0, sl, [3, 4, 5]))];
+    var bad = sl[0] !== 0 ? [ptsT([[P0[0] + sl[1], P0[1] - sl[0]], [P0[0] - sl[1], P0[1] + sl[0]], [P0[0] + 2 * sl[1], P0[1] - 2 * sl[0]]])] : [ptsT([[P0[0], P0[1] + 1], [P0[0], P0[1] + 2], [P0[0], P0[1] - 1]])];
+    var p = ptsPart('Line with slope ' + t(slT(red(sl[0], sl[1]))) + ' through ' + t(ptT(P0)) + ': list three other points on the line that have integer coordinates.', { n: 3, integer: true, exclude: [P0], test: onLineTest(P0, sl) }, key,
+      (sl[0] === 0 ? 'Slope ' + t('0') + ': the line is horizontal, so every point has ' + t('y=' + nT(P0[1])) + ', e.g. ' + t(ptsT(key)) + '.' : 'Step ' + t('(+' + sl[1] + ',\\ ' + (sl[0] > 0 ? '+' : '') + sl[0] + ')') + ' or ' + t('(-' + sl[1] + ',\\ ' + (sl[0] > 0 ? '-' : '+') + Math.abs(sl[0]) + ')') + ' from ' + t(ptT(P0)) + ': ' + t(ptsT(key)) + ', … (other correct points are fine).'),
+      ['Each step: add the run to ' + t('x') + ' and the rise to ' + t('y') + '. Going the other way, subtract both.', 'Check a point: from ' + t(ptT(P0)) + ', does ' + t('\\frac{\\text{change in }y}{\\text{change in }x}') + ' equal the slope?'], 'three points on line slope ' + slT(red(sl[0], sl[1])) + ' through ' + ptT(P0));
+    p.good = good; p.bad = bad; return p;
+  }
+  function q5Part(P, sl, L, lvlTxt) {
+    var key = sl[1] === 0 ? [[P[0], P[1] + 3], [P[0], P[1] - 4]] : sl[0] === 0 ? [[P[0] + 3, P[1]], [P[0] - 4, P[1]]] : stepPts(P, sl, [1, 2]);
+    var sT = sl[1] === 0 ? '\\text{undefined}' : slT(red(sl[0], sl[1]));
+    var sol = sl[1] === 0 ? 'An undefined slope means the run is ' + t('0') + ' (a vertical segment), so ' + t('Q') + ' keeps ' + t('x=' + nT(P[0])) + ': for example ' + t(ptsT(key)) + '.'
+      : sl[0] === 0 ? 'A slope of ' + t('0') + ' means the rise is ' + t('0') + ' (a horizontal segment), so ' + t('Q') + ' keeps ' + t('y=' + nT(P[1])) + ': for example ' + t(ptsT(key)) + '.'
+        : t(sT === rawFr(sl[0], sl[1]) ? sT : sT + '=' + rawFr(sl[0], sl[1])) + ', so step ' + t('(+' + sl[1] + ',\\ ' + (sl[0] > 0 ? '+' : '') + sl[0] + ')') + ' from ' + t('P' + ptT(P)) + ': ' + t(ptsT(key)) + '. (Any point you reach by stepping a multiple of the run and rise works, e.g. ' + t(ptT([P[0] - sl[1], P[1] - sl[0]])) + '.)';
+    var p = ptsPart('(' + L + ') Slope of ' + t('PQ') + ' ' + t('=' + sT) + '. Give two positions for ' + t('Q') + '.', { n: 2, exclude: [P], test: onLineTest(P, sl) }, key, sol,
+      [sl[1] === 0 ? 'Undefined slope: what has to be true about the run?' : sl[0] === 0 ? 'Slope 0: what has to be true about the rise?' : 'Write the slope as ' + t('\\frac{\\text{rise}}{\\text{run}}') + (sl[1] === 1 ? ' (' + t(sl[0] + '=\\frac{' + sl[0] + '}{1}') + ')' : '') + ', then step from ' + t('P') + '.'], 'two Q with slope ' + sT + ' from ' + ptT(P));
+    p.good = [ptsT(sl[1] === 0 ? [[P[0], P[1] + 1], [P[0], P[1] - 1]] : sl[0] === 0 ? [[P[0] + 1, P[1]], [P[0] - 1, P[1]]] : stepPts(P, sl, [-1, 3]))];
+    p.bad = [ptsT(sl[1] === 0 ? [[P[0] + 1, P[1]], [P[0] + 2, P[1]]] : sl[0] === 0 ? [[P[0], P[1] + 1], [P[0], P[1] + 2]] : [[P[0] + sl[1], P[1] - sl[0]], [P[0] + sl[0], P[1] + sl[1]]])];
+    return p;
+  }
+  function q6Part(r, L, kind) {
+    var pools = { a: [[3, 8], [2, 5], [3, 4], [5, 8], [3, 10], [4, 9], [2, 3]], b: [[2, 7], [3, 5], [2, 9], [3, 4], [4, 7], [5, 6]], c: [[5, 12], [3, 8], [4, 9], [7, 12], [5, 6], [2, 7]], d: [[7, 10], [3, 5], [5, 8], [4, 7], [2, 9], [5, 9]] };
+    var bk = { a: [[3, 8], 5], b: [[2, 7], 4], c: [[5, 12], 3], d: [[7, 10], 3] }[L];
+    var useB = r.chance(0.2), f = useB ? bk[0] : r.pick(pools[L]), k = useB ? bk[1] : r.int(L === 'a' ? 3 : 2, L === 'c' ? 4 : 6);
+    var neg = L === 'b' || L === 'c', p = neg ? -f[0] : f[0], q = f[1], m = p / q, rise = p * k, run = q * k, sT = frT(p, q);
+    if (kind === 'rise') {
+      return B.number('(' + L + ') slope ' + t('=' + sT) + ', run ' + t('=' + run) + '. Find the rise.', rise, function (v) {
+        if (near(v, run / m)) return { code: 'calc-divided', hint: 'You divided. Since ' + t('\\text{slope}=\\frac{\\text{rise}}{\\text{run}}') + ', the rise is <b>slope × run</b>.' };
+        if (near(v, -rise)) return { code: 'calc-sign', hint: 'Check the sign: a ' + (m > 0 ? 'positive' : 'negative') + ' slope with a positive run has a ' + (m > 0 ? 'positive' : 'negative') + ' rise.' };
+        return null;
+      }, t('\\text{rise}=\\text{slope}\\times\\text{run}=' + sT + '\\times ' + run + '=' + rise), ['Rearrange ' + t('\\text{slope}=\\frac{\\text{rise}}{\\text{run}}') + ': multiply both sides by the run.', 'Divide ' + t(run) + ' by ' + t(q) + ' first, then multiply by ' + t(p) + '.'], 'rise from slope ' + sT + ' run ' + run, { before: 'rise =' });
+    }
+    return B.number('(' + L + ') slope ' + t('=' + sT) + ', rise ' + t('=' + rise) + '. Find the run.', run, function (v) {
+      if (near(v, rise * m)) return { code: 'calc-mult', hint: 'You multiplied. Since ' + t('\\text{slope}=\\frac{\\text{rise}}{\\text{run}}') + ', the run is <b>rise ÷ slope</b>.' };
+      if (near(v, -run)) return { code: 'calc-sign', hint: 'Check the sign: the rise and the slope are both ' + (rise < 0 && m < 0 ? 'negative' : rise > 0 && m > 0 ? 'positive' : 'given') + ', so ' + t('\\text{run}=\\frac{\\text{rise}}{\\text{slope}}') + ' is ' + (run > 0 ? 'positive' : 'negative') + '.' };
+      return null;
+    }, t('\\text{run}=\\frac{\\text{rise}}{\\text{slope}}=\\frac{' + rise + '}{' + sT + '}=' + rise + '\\times ' + (p < 0 ? '\\left(' + frT(q, p) + '\\right)' : frT(q, p)) + '=' + run), ['Rearrange ' + t('\\text{slope}=\\frac{\\text{rise}}{\\text{run}}') + ' to get ' + t('\\text{run}=\\frac{\\text{rise}}{\\text{slope}}') + '.', 'Dividing by a fraction = multiplying by its reciprocal.'], 'run from slope ' + sT + ' rise ' + rise, { before: 'run =' });
+  }
+  /* "does the ramp meet the code?" (rise in cm, run in m; code: slope at most 1/12) */
+  function rampMC(r, R, run) {
+    var s = R / (run * 100), meets = s <= 1 / 12 + 1e-12, sD = dec(s, 3), cmRun = cl(run * 100);
+    var corr = (meets ? '<b>Yes.</b> ' : '<b>No.</b> ') + 'In the same units the slope is ' + t('\\frac{' + R + '}{' + cmRun + '}\\approx ' + sD) + ', which is ' + (meets ? 'less' : 'greater') + ' than ' + t('\\frac{1}{12}\\approx 0.083') + (meets ? ', so it is gentle enough.' : ', so the ramp is too steep.');
+    var opts = [{ html: corr, right: true },
+      { html: (meets ? '<b>No.</b> The slope ' + t('\\approx ' + sD) + ' is less than ' + t('\\frac{1}{12}') + ', so the ramp isn’t steep enough.' : '<b>Yes.</b> The slope ' + t('\\approx ' + sD) + ' is greater than ' + t('\\frac{1}{12}') + ', and the code needs at least ' + t('\\frac{1}{12}') + '.'), code: 'ramp-max', why: 'Read the rule again: the slope may be <b>no greater than</b> ' + t('\\frac{1}{12}') + ' — it is a maximum. A greater slope is steeper than allowed; a smaller one is fine.' },
+      { html: '<b>No.</b> The slope is ' + t(R + '\\div ' + run + '\\approx ' + dec(R / run, 1)) + ', far more than ' + t('\\frac{1}{12}') + '.', code: 'units-cm', why: 'The rise is in centimetres and the run is in metres. Change them to the same units before you divide: ' + t(run + '\\text{ m}=' + cmRun + '\\text{ cm}') + '.' },
+      { html: '<b>Yes.</b> Run ' + t('\\div') + ' rise ' + t('=' + cmRun + '\\div ' + R + '\\approx ' + dec(cmRun / R, 1)) + ', which is greater than ' + t('\\frac{1}{12}') + '.', code: 'calc-flip', why: 'Slope is <b>rise ÷ run</b>, not run ÷ rise. (Run ÷ rise would have to be at least ' + t('12') + '.)' }];
+    return { opts: opts, meets: meets, s: s, sD: sD, cmRun: cmRun };
   }
 
-  /* ---------------- shared generators ---------------- */
-  var FIELD = '<div class="fig"><svg class="fig-svg" viewBox="0 0 220 130" width="100%" style="max-width:240px" role="img" aria-label="corner of the field">' +
-    '<defs><marker id="u6l2A" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2b3340"/></marker></defs>' +
-    '<line x1="50" y1="100" x2="50" y2="22" stroke="#2b3340" stroke-width="1.8" marker-end="url(#u6l2A)"/><line x1="50" y1="100" x2="170" y2="100" stroke="#2b3340" stroke-width="1.8" marker-end="url(#u6l2A)"/>' +
-    '<circle cx="50" cy="100" r="3.5" fill="#2b3340"/><text x="50" y="15" font-size="13" text-anchor="middle" fill="#2b3340">Left sideline</text>' +
-    '<text x="176" y="104" font-size="13" fill="#2b3340">Back</text><text x="176" y="119" font-size="13" fill="#2b3340">line</text><text x="44" y="118" font-size="13" text-anchor="end" fill="#2b3340">Corner</text></svg></div>';
-  var TRI = [[3, 4], [4, 3], [6, 8], [8, 6], [5, 12], [12, 5], [9, 12], [12, 9], [8, 15], [15, 8]];
-  function triple(r, maxLeg) { var c = TRI.filter(function (p) { return p[0] <= maxLeg && p[1] <= maxLeg; }); return r.pick(c).slice(); }
-  function sgn(r, p) { return [p[0] * (r.chance(0.5) ? 1 : -1), p[1] * (r.chance(0.5) ? 1 : -1)]; }
-  function rot(v, dir) { return dir > 0 ? [-v[1], v[0]] : [v[1], -v[0]]; }
-  function mcPart(r, prompt, opts, sol, hints, text, keepOrder) { return B.mc(r, prompt, opts, sol, hints, text, keepOrder); }
+  function pyrShared(r) { for (var g = 0; g < 200; g++) { var o = g === 0 && r.chance(0.3) ? [10, 12] : r.pick([[10, 12], [8, 6], [10, 8], [12, 9], [6, 9], [8, 10], [10, 6], [12, 15], [16, 12], [8, 14], [6, 7], [10, 13]]); var a17 = 2 * o[1] / o[0], a18 = Math.SQRT2 * o[1] / o[0]; if (Math.abs(a17 * 10 - Math.round(a17 * 10)) > 1e-9) continue; var fr = a18 * 10 - Math.floor(a18 * 10); if (Math.abs(fr - 0.5) < 0.08) continue; return { s: o[0], h: o[1] }; } return { s: 10, h: 12 }; }
+  function pyrStem(sh) { return 'A pyramid has a square base of side length ' + t(sh.s) + ' m and a vertical height of ' + t(sh.h) + ' m.' + pyramidFig(sh.s, sh.h); }
 
-  /* Q4: collinear X, Y, Z (Y between) */
-  function q4shared(r) {
-    if (r.chance(0.15)) return { X: [-3, -4], v: [2, 3], a: 2, b: 4 };
-    return pickWhere(function () {
-      var v = [r.int(1, 3), r.int(1, 4)]; if (r.chance(0.3)) v[1] = -v[1];
-      var a = r.pick([1, 2, 2, 3]), b = r.pick([2, 3, 4]);
-      return { X: [r.int(-6, -1), v[1] > 0 ? r.int(-6, -1) : r.int(1, 8)], v: v, a: a, b: b };
-    }, function (o) { var n = o.v[0] * o.v[0] + o.v[1] * o.v[1]; if (gcd(o.v[0], o.v[1]) !== 1 || isSq(n) || radParts(n).k !== 1 || o.a === o.b || o.a + o.b > 6) return false; var Z = add(o.X, scl(o.v, o.a + o.b)); return Math.abs(Z[0]) <= 20 && Math.abs(Z[1]) <= 20; });
-  }
-  /* right angle at a vertex: V, legs u and s·rot(u) */
-  function rightTri(r, uList, sList, lim) {
-    return pickWhere(function () {
-      var u = sgn(r, r.pick(uList)), s = r.pick(sList), w = scl(rot(u, r.chance(0.5) ? 1 : -1), s), V = [r.int(-6, 6), r.int(-6, 6)];
-      return { V: V, U: add(V, u), W: add(V, w) };
-    }, function (o) { return [o.V, o.U, o.W].every(function (p) { return Math.abs(p[0]) <= lim && Math.abs(p[1]) <= lim; }); });
-  }
-
-  /* ======================================================================================== */
   HW.defineLesson({
-    id: 'u6l2', unit: 6, num: '2', title: 'Extension: The Distance and Midpoint Formulas', outcome: 'EXT',
-    blurb: 'The distance formula (the Pythagorean theorem on a coordinate grid) and the midpoint formula (average the coordinates): exact and rounded lengths, collinear points and right angles, midpoints, missing endpoints, and both formulas in context.',
+    id: 'u6l2', unit: 6, num: '2', title: 'Rise Over Run: The Slope of a Line Segment', outcome: 'RF3',
+    blurb: 'Slope as rise over run — counted off a grid, positive, negative, zero or undefined, read as a rate of change with units, and run backwards from a given slope.',
     questions: [
-      /* ---------------- Question 1: distance (whole-number answers) ---------------- */
-      { num: '1', section: 'Distance between two points', stem: 'Determine the distance between each pair of points.', parts: [
-        { id: '1a', level: 'BEG', make: function (r) {
-          var A, L;
-          if (r.chance(0.15)) { A = [1, -3]; L = [8, 6]; } else { L = triple(r, 12); A = [r.int(-3, 5), r.int(-6, -1)]; }
-          var Bp = add(A, L), D = Math.sqrt(d2(A, Bp));
-          return B.number(t(nm('A', A)) + ' and ' + t(nm('B', Bp)), D, matchDiag(dCands(A, Bp)), dSteps(A, Bp) + '<br>' + t(dLine(A, Bp, 'AB') + simpTail(d2(A, Bp))) + '.', HD, 'distance ' + ptT(A) + ' to ' + ptT(Bp));
-        } },
-        { id: '1b', level: 'BEG', make: function (r) {
-          var C, L;
-          if (r.chance(0.15)) { C = [-1, 4]; L = [12, 5]; } else { L = triple(r, 15); C = [r.int(-6, -1), r.int(1, 6)]; }
-          var D2 = add(C, L), D = Math.sqrt(d2(C, D2));
-          var p = B.number(t(nm('C', C)) + ' and ' + t(nm('D', D2)), D, matchDiag(dCands(C, D2)), dSteps(C, D2) + '<br>' + t(dLine(C, D2, 'CD') + simpTail(d2(C, D2))) + '.', HD, 'distance ' + ptT(C) + ' to ' + ptT(D2));
-          return p;
-        } }] },
-      /* ---------------- Question 2: distance to the nearest hundredth ---------------- */
-      { num: '2', stem: 'Determine the distance, to the nearest hundredth, between each pair of points.', parts: [
-        { id: '2a', level: 'BEG', make: function (r) {
-          var o = r.chance(0.15) ? { P: [5, -1], Q: [-3, 6] } : pickWhere(function () { return { P: [r.int(2, 7), r.int(-5, -1)], Q: [r.int(-6, -1), r.int(2, 8)] }; }, function (z) { return !isSq(d2(z.P, z.Q)); });
-          var D = dist(o.P, o.Q);
-          return B.approx(t(nm('P', o.P)) + ' and ' + t(nm('Q', o.Q)), D, 2, { diag: matchDiag(dCands(o.P, o.Q), 2) }, dSteps(o.P, o.Q) + '<br>' + t(dLine(o.P, o.Q, 'PQ') + '\\approx ' + fx(D, 2)) + '.', HD, 'distance ' + ptT(o.P) + ' to ' + ptT(o.Q) + ' (2 dp)');
-        } },
-        { id: '2b', level: 'EMG', make: function (r) {
-          var o = r.chance(0.15) ? { R: [-4.5, 7.2], S: [-6.1, -3.6] } : pickWhere(function () { return { R: [-r.int(10, 80) / 10, r.int(20, 90) / 10], S: [-r.int(10, 80) / 10, -r.int(10, 60) / 10] }; },
-            function (z) { return Math.abs(z.R[0] - z.S[0]) >= 0.5 && z.R[0] % 1 !== 0 && z.S[0] % 1 !== 0 && z.R[1] % 1 !== 0 && z.S[1] % 1 !== 0; });
-          var D = dist(o.R, o.S);
-          return B.approx(t(nm('R', o.R)) + ' and ' + t(nm('S', o.S)), D, 2, { diag: matchDiag(dCands(o.R, o.S), 2) }, dSteps(o.R, o.S) + '<br>' + t(dLine(o.R, o.S, 'RS') + '\\approx ' + fx(D, 2)) + '.', HD, 'distance ' + ptT(o.R) + ' to ' + ptT(o.S) + ' (decimals)');
-        } }] },
-      /* ---------------- Question 3: exact distance, simplest radical form ---------------- */
-      { num: '3', stem: 'Determine the exact distance between each pair of points. Answer in simplest radical form.', parts: [
-        { id: '3a', level: 'PRG', make: function (r) {
-          var o = r.chance(0.15) ? { E: [1, -1], L: [6, 2] } : pickWhere(function () { return { E: [r.int(-2, 4), r.int(-5, -1)], L: [r.int(2, 8), r.int(1, 6)] }; }, function (z) { var n = z.L[0] * z.L[0] + z.L[1] * z.L[1], q = radParts(n); return q.k >= 2 && q.m > 1; });
-          var E = o.E, Fp = add(E, o.L), n = d2(E, Fp), s = lenSpec(n);
-          return B.radical(t(nm('E', E)) + ' and ' + t(nm('F', Fp)), { k: s.k, n: 2, m: s.m }, 'mixed', dSteps(E, Fp) + '<br>' + t(dLine(E, Fp, 'EF') + simpTail(n)) + '.', HD.concat(['To simplify ' + t('\\sqrt{' + n + '}') + ', look for the largest perfect-square factor of ' + t(n) + '.']), 'exact distance ' + ptT(E) + ' to ' + ptT(Fp), { diag: matchDiag(dCands(E, Fp)) });
-        } },
-        { id: '3b', level: 'PRG', make: function (r) {
-          var PQ = [[5, 5], [1, 7], [7, 1], [3, 3], [3, 9], [9, 3], [7, 7], [5, 1]], o = r.chance(0.2) ? { a: 1, b: 1, p: 5, q: 5 } : pickWhere(function () { var pq = r.pick(PQ); return { a: r.pick([1, 3, 5]), b: r.pick([1, 3, 5]), p: pq[0], q: pq[1] }; }, function (z) { return z.p !== z.a && radParts(z.p * z.p + z.q * z.q).k >= 2; });
-          var Kp = [-o.a / 2, o.b / 2], Lp = [(o.p - o.a) / 2, (o.q + o.b) / 2], n = o.p * o.p + o.q * o.q, s = lenSpec(n, 2);
-          var kT = function (v) { return Number.isInteger(v) ? String(v) : (v < 0 ? '-' : '') + '\\dfrac{' + Math.abs(v * 2) + '}{2}'; };
-          var pr = t('K\\!\\left(' + kT(Kp[0]) + ',\\ ' + kT(Kp[1]) + '\\right)') + ' and ' + t('L(' + kT(Lp[0]) + ',\\ ' + kT(Lp[1]) + ')');
-          var sol = t('x_2-x_1=' + kT(Lp[0]) + '-\\left(' + kT(Kp[0]) + '\\right)=\\tfrac{' + o.p + '}{2}') + ', &nbsp;' + t('y_2-y_1=' + kT(Lp[1]) + '-' + kT(Kp[1]) + '=\\tfrac{' + o.q + '}{2}') + '.<br>' +
-            t('KL=\\sqrt{\\left(\\tfrac{' + o.p + '}{2}\\right)^{2}+\\left(\\tfrac{' + o.q + '}{2}\\right)^{2}}=\\sqrt{\\tfrac{' + o.p * o.p + '}{4}+\\tfrac{' + o.q * o.q + '}{4}}=\\sqrt{\\tfrac{' + n + '}{4}}=\\dfrac{\\sqrt{' + n + '}}{2}=' + lenTex(n, 2)) + '.';
-          var wrongs = [[n / 4, 'd-no-root', 'That is ' + t('d^{2}') + ' — take the square root.'], [Math.sqrt(n), 'd-half', 'Remember the ' + t('\\tfrac{1}{2}') + 's: ' + t('\\sqrt{\\tfrac{' + n + '}{4}}=\\dfrac{\\sqrt{' + n + '}}{\\sqrt{4}}=\\dfrac{\\sqrt{' + n + '}}{2}') + '.'], [Math.sqrt(n) / 4, 'd-half', t('\\sqrt{4}=2') + ', so ' + t('\\sqrt{\\tfrac{' + n + '}{4}}=\\dfrac{\\sqrt{' + n + '}}{2}') + ' (not ' + t('\\div 4') + ').']];
-          var p = B.radical(pr, { k: s.k, n: 2, m: s.m }, 'mixed', sol, HD.concat(['Square each fraction: ' + t('\\left(\\tfrac{5}{2}\\right)^{2}=\\tfrac{25}{4}') + '. Then ' + t('\\sqrt{\\tfrac{a}{4}}=\\tfrac{\\sqrt{a}}{2}') + '.']), 'exact distance with halves', { diag: matchDiag(wrongs) });
-          p.good = ['\\frac{' + s.k[0] + '}{' + s.k[1] + '}\\sqrt{' + s.m + '}']; p.bad = ['\\sqrt{' + n + '}', '\\frac{\\sqrt{' + n + '}}{4}'];
-          return p;
-        } }] },
-      /* ---------------- Question 4: collinear points ---------------- */
-      { num: '4', shared: q4shared,
-        stem: function (o) { var Y = add(o.X, scl(o.v, o.a)), Z = add(Y, scl(o.v, o.b)); return 'Consider the points ' + t(nm('X', o.X)) + ', ' + t(nm('Y', Y)) + ', and ' + t(nm('Z', Z)) + '.'; },
+      { num: '1', stem: function (sh) { return 'Each line segment on the grid has endpoints with integer coordinates. Find the rise, the run and the slope of each segment.' + segFig(sh.segs, sh.names, 5); },
+        shared: q1Shared,
+        parts: [0, 1, 2, 3].map(function (i) { return { id: '1' + 'abcd'.charAt(i), sub: ['AB', 'CD', 'EF', 'GH'][i], level: 'BEG', make: function (r, sh) { return rrPart(sh.names[i], sh.segs[i][0], sh.segs[i][1]); } }; }) },
+      { num: '2', stem: function (sh) { return 'Each line passes through the two marked points, which have integer coordinates. Calculate the slope of each line.' + q2Fig(sh); },
+        shared: q2Shared,
+        parts: [0, 1, 2, 3].map(function (i) {
+          return { id: '2' + 'abcd'.charAt(i), sub: 'Line ' + (i + 1), level: 'BEG', make: function (r, sh) {
+            var A = sh.M[i][0], Bp = sh.M[i][1], rise = Bp[1] - A[1], run = Bp[0] - A[0], sl = slopeOf(A, Bp);
+            return slopePart('Slope of Line ' + (i + 1) + ':', sl, 'Marked points ' + t(ptT(A)) + ' and ' + t(ptT(Bp)) + ': run ' + t(run) + ', rise ' + t(rise) + '.<br>' + t('m=' + fracSteps(rise, run)) + (sval(sl) < 0 ? ' — the line falls from left to right.' : ' — the line rises from left to right.'),
+              ['Use the two marked points. Count the run from the left point to the right point, and the rise (up +, down −).', 'Slope ' + t('=\\frac{\\text{rise}}{\\text{run}}') + ', in lowest terms.'], 'slope of line through ' + ptT(A) + ptT(Bp));
+          } };
+        }) },
+      { num: '3', stem: function (sh) { return 'A line segment passes through the point ' + t(ptT(sh.P0)) + ' and has a slope of ' + t(slT(sh.sl)) + '.'; },
+        shared: q3Shared,
         parts: [
-          { id: '4a', sub: 'a', level: 'PRG', make: function (r, o) {
-            var X = o.X, Y = add(X, scl(o.v, o.a)), Z = add(Y, scl(o.v, o.b)), n = [d2(X, Y), d2(Y, Z), d2(X, Z)];
-            var sol = [['XY', X, Y], ['YZ', Y, Z], ['XZ', X, Z]].map(function (s, i) { return t(dLine(s[1], s[2], s[0]) + simpTail(n[i])); }).join('<br>');
-            return B.fields('Calculate the exact lengths of ' + t('XY') + ', ' + t('YZ') + ', and ' + t('XZ') + ' (simplest radical form).', [lenField('XY'), lenField('YZ'), lenField('XZ')],
-              [lenCheck(n[0], 1, { cands: dCands(X, Y) }), lenCheck(n[1], 1, { cands: dCands(Y, Z) }), lenCheck(n[2], 1, { cands: dCands(X, Z) })], n.map(function (x) { return lenKey(x); }),
-              t('XY=' + lenTex(n[0]) + ',\\ YZ=' + lenTex(n[1]) + ',\\ XZ=' + lenTex(n[2])), sol, HD.concat(['Simplify each radical — then the three lengths are easy to compare.']), 'collinear lengths');
+          { id: '3a', sub: 'draw', level: 'EMG', make: function (r, sh) {
+            var sl = sh.sl;
+            return segDrawPart('Draw the segment on the grid. It must be long enough to cross both the ' + t('x') + '-axis and the ' + t('y') + '-axis.', sh.P0, sl, sh.win, sh.key, sh.xi, sh.yi,
+              'From ' + t(ptT(sh.P0)) + ' step ' + t(sl[0]) + ' up and ' + t(sl[1]) + ' right, again and again: ' + t(ptsT(sh.ip.filter(function (p) { return p[0] > sh.P0[0]; }).slice(0, 4))) + '. A segment from ' + t(ptT(sh.ip[0])) + ' to ' + t(ptT(sh.ip[sh.ip.length - 1])) + ' crosses the ' + t('y') + '-axis at ' + t('(0,\\ ' + frT.apply(null, LN.toFr(sh.yi)) + ')') + ' and the ' + t('x') + '-axis at ' + t('(' + frT.apply(null, LN.toFr(sh.xi)) + ',\\ 0)') + '.',
+              ['Slope ' + t(slT(sl)) + ': from the point, go ' + t(sl[0]) + ' up and ' + t(sl[1]) + ' right. Repeat until you are past both axes.', 'Join your first and last points with one straight segment.'], 'draw segment slope ' + slT(sl) + ' through ' + ptT(sh.P0));
           } },
-          { id: '4a2', sub: 'a, notice', level: 'EMG', make: function (r, o) {
-            var c = o.v[0] * o.v[0] + o.v[1] * o.v[1], a = o.a, b = o.b, rt = '\\sqrt{' + c + '}', L = function (k) { return (k === 1 ? '' : k) + rt; };
-            return mcPart(r, 'You found ' + t('XY=' + L(a) + ',\\ YZ=' + L(b) + ',\\ XZ=' + L(a + b)) + '. What do you notice?', [
-              { html: t('XY+YZ=XZ') + ': ' + t(L(a) + '+' + L(b) + '=' + L(a + b)) + '.', right: true },
-              { html: t('XY=YZ') + '.', why: 'Compare them: ' + t('XY=' + L(a)) + ' but ' + t('YZ=' + L(b)) + '.' },
-              { html: t('XY^{2}+YZ^{2}=XZ^{2}') + '.', why: 'Check: ' + t(a * a * c + '+' + b * b * c + '=' + (a * a + b * b) * c) + ', but ' + t('XZ^{2}=' + (a + b) * (a + b) * c) + '.' },
-              { html: t('XY\\times YZ=XZ') + '.', why: 'Check: ' + t(L(a) + '\\times ' + L(b) + '=' + a * b * c) + ', not ' + t(L(a + b)) + '.' }],
-              'Like radicals add: ' + t(L(a) + '+' + L(b) + '=' + L(a + b)) + ', so ' + t('XY+YZ=XZ') + '.', ['Try adding two of the lengths.'], 'XY + YZ = XZ');
-          } },
-          { id: '4b', sub: 'b', level: 'EMG', make: function (r, o) {
-            return mcPart(r, 'What does ' + t('XY+YZ=XZ') + ' mean with regard to the points ' + t('X') + ', ' + t('Y') + ', and ' + t('Z') + '?', [
-              { html: 'The points are <b>collinear</b>: ' + t('Y') + ' lies on segment ' + t('XZ') + ', between ' + t('X') + ' and ' + t('Z') + '.', right: true },
-              { html: t('XYZ') + ' is a right triangle with the right angle at ' + t('Y') + '.', why: 'A right angle at ' + t('Y') + ' would need ' + t('XY^{2}+YZ^{2}=XZ^{2}') + '. Here the trip ' + t('X\\to Y\\to Z') + ' is exactly as long as going straight from ' + t('X') + ' to ' + t('Z') + ', so there is no bend at ' + t('Y') + ' at all.' },
-              { html: t('Y') + ' is the midpoint of ' + t('\\overline{XZ}') + '.', why: 'The midpoint would need ' + t('XY=YZ') + ' — here they are different.' },
-              { html: 'The three points form an isosceles triangle.', why: 'There is no triangle: going via ' + t('Y') + ' adds no extra distance, so ' + t('Y') + ' is on the straight path from ' + t('X') + ' to ' + t('Z') + '.' }],
-              'Travelling ' + t('X\\to Y\\to Z') + ' covers exactly the same distance as going straight from ' + t('X') + ' to ' + t('Z') + ', so there is no bend at ' + t('Y') + ': the points are <b>collinear</b>, with ' + t('Y') + ' on segment ' + t('XZ') + '.',
-              ['If going through ' + t('Y') + ' is no longer than the straight path, where must ' + t('Y') + ' be?'], 'XY+YZ=XZ means collinear');
-          } }] },
-      /* ---------------- Question 5: prove a right angle ---------------- */
-      { num: '5', shared: function (r) {
-          if (r.chance(0.15)) return { A: [5, -1], B: [3, 5], C: [9, 7] };
-          var o = pickWhere(function () { return rightTri(r, [[2, 6], [6, 2], [2, 4], [4, 2], [3, 3], [2, 2], [4, 4], [3, 6], [6, 3], [4, 6], [6, 4]], [1, 1, 2], 12); },
-            function (z) { var n = d2(z.V, z.U), m = d2(z.V, z.W), h = d2(z.U, z.W); return !isSq(h) && radParts(h).k >= 2 && !isSq(m); });
-          return { A: o.U, B: o.V, C: o.W };
-        },
-        stem: function (o) { return t('A') + ' is the point ' + t(ptT(o.A)) + ', ' + t('B') + ' is ' + t(ptT(o.B)) + ', and ' + t('C') + ' is ' + t(ptT(o.C)) + '.'; },
-        parts: [
-          { id: '5a', sub: 'a', level: 'PRG', make: function (r, o) {
-            var n = [d2(o.A, o.B), d2(o.B, o.C), d2(o.A, o.C)];
-            var sol = [['AB', o.A, o.B], ['BC', o.B, o.C], ['AC', o.A, o.C]].map(function (s, i) { return t(dLine(s[1], s[2], s[0]) + simpTail(n[i])); }).join('<br>');
-            return B.fields('Calculate the exact lengths of ' + t('AB') + ', ' + t('BC') + ', and ' + t('AC') + ', in simplest radical form.', [lenField('AB'), lenField('BC'), lenField('AC')],
-              [lenCheck(n[0], 1, { cands: dCands(o.A, o.B) }), lenCheck(n[1], 1, { cands: dCands(o.B, o.C) }), lenCheck(n[2], 1, { cands: dCands(o.A, o.C) })], n.map(function (x) { return lenKey(x); }),
-              t('AB=' + lenTex(n[0]) + ',\\ BC=' + lenTex(n[1]) + ',\\ AC=' + lenTex(n[2])), sol, HD, 'right-angle lengths');
-          } },
-          { id: '5b', sub: 'b', level: 'EMG', make: function (r, o) {
-            var n = [d2(o.A, o.B), d2(o.B, o.C), d2(o.A, o.C)], L = n.map(function (x) { return lenTex(x); });
-            var opts = [
-              { html: t('AB^{2}+BC^{2}=' + n[0] + '+' + n[1] + '=' + (n[0] + n[1]) + '=AC^{2}') + ', so by the converse of the Pythagorean theorem the right angle is opposite ' + t('AC') + ', at ' + t('B') + '.', right: true },
-              { html: t('AB+BC>AC') + ', so ' + t('\\angle ABC') + ' is a right angle.', why: 'Two sides of <i>every</i> triangle add to more than the third side — that says nothing about a right angle. Compare the <b>squares</b> of the sides.' },
-              { html: t('AC') + ' is the longest side, so the angle opposite it must be ' + t('90^{\\circ}') + '.', why: 'Every triangle has a longest side, but most have no right angle. You have to show ' + t('AB^{2}+BC^{2}=AC^{2}') + '.' },
-              n[0] === n[1] ? { html: t('AB=BC') + ', so ' + t('\\angle ABC=90^{\\circ}') + '.', why: 'Two equal sides make the triangle isosceles, not necessarily right-angled. Test ' + t('AB^{2}+BC^{2}=AC^{2}') + '.' }
-                : { html: t('AB^{2}+AC^{2}=BC^{2}') + ', so ' + t('\\angle ABC') + ' is a right angle.', why: 'Check: ' + t('AB^{2}+AC^{2}=' + n[0] + '+' + n[2] + '=' + (n[0] + n[2])) + ', but ' + t('BC^{2}=' + n[1]) + '. The hypotenuse is the longest side, ' + t('AC') + '.' }];
-            return mcPart(r, 'The side lengths are ' + t('AB=' + L[0]) + ', ' + t('BC=' + L[1]) + ' and ' + t('AC=' + L[2]) + '. Which argument uses these lengths to prove that ' + t('\\angle ABC') + ' is a right angle?', opts,
-              t('AC') + ' is the longest side, so it is the candidate hypotenuse. ' + t('AB^{2}+BC^{2}=(' + L[0] + ')^{2}+(' + L[1] + ')^{2}=' + n[0] + '+' + n[1] + '=' + (n[0] + n[1])) + ' and ' + t('AC^{2}=(' + L[2] + ')^{2}=' + n[2]) + '. They are equal, so by the converse of the Pythagorean theorem the right angle is opposite ' + t('AC') + ', at vertex ' + t('B') + '.',
-              ['The converse of the Pythagorean theorem: if ' + t('a^{2}+b^{2}=c^{2}') + ' for the sides of a triangle, the angle opposite ' + t('c') + ' is ' + t('90^{\\circ}') + '.'], 'prove angle ABC is right');
-          } }] },
-      /* ---------------- Question 6: ultimate frisbee ---------------- */
-      { num: '6', section: 'Distance in context', shared: function (r) {
-          if (r.chance(0.15)) return { T: [12, 20], C: [33, 40] };
-          return pickWhere(function () { var T = [r.int(5, 20), r.int(10, 40)]; return { T: T, C: [r.int(T[0] + 6, 36), T[1] + r.int(8, 40)] }; }, function (z) { return z.T[0] !== z.T[1] && z.C[0] !== z.C[1]; });
-        },
-        stem: function (o) {
-          return 'In an ultimate frisbee game, a player releases a throw from a spot ' + t(o.T[1]) + '&nbsp;m from the back line and ' + t(o.T[0]) + '&nbsp;m from the left sideline. A teammate catches the disc at a spot ' + t(o.C[0]) + '&nbsp;m from the left sideline and ' + t(o.C[1]) + '&nbsp;m from the back line. The first quadrant of a coordinate grid is superimposed on the field, with the origin at the corner where the back line meets the left sideline.' +
-            FIELD;
-        },
-        parts: [
-          { id: '6a', sub: 'a', level: 'EMG', make: function (r, o) {
-            var sw = 'Careful: the ' + t('x') + '-axis runs along the back line, so an ' + t('x') + '-coordinate is the distance from the <b>left sideline</b>; a ' + t('y') + '-coordinate is the distance from the <b>back line</b>.';
-            return B.fields('State the coordinates of the thrower and of the receiver with respect to this origin.', [ptField('Thrower'), ptField('Receiver')],
-              [ptCheck(o.T, { swapHint: sw }), ptCheck(o.C, { swapHint: sw })], [ptKey(o.T), ptKey(o.C)], 'Thrower ' + t(ptT(o.T)) + ', receiver ' + t(ptT(o.C)),
-              'The ' + t('x') + '-axis runs along the back line, so ' + t('x') + ' measures the distance from the left sideline; the ' + t('y') + '-axis runs along the sideline, so ' + t('y') + ' measures the distance from the back line.<br>Thrower: ' + t(o.T[0]) + '&nbsp;m from the sideline, ' + t(o.T[1]) + '&nbsp;m from the back line ' + t('\\Rightarrow ' + ptT(o.T)) + '.<br>Receiver: ' + t(o.C[0]) + '&nbsp;m from the sideline, ' + t(o.C[1]) + '&nbsp;m from the back line ' + t('\\Rightarrow ' + ptT(o.C)) + '.',
-              ['Which line does the ' + t('x') + '-axis run along? A point’s ' + t('x') + '-coordinate is how far it is from the ' + t('y') + '-axis.'], 'frisbee coordinates');
-          } },
-          { id: '6b', sub: 'b', level: 'EMG', make: function (r, o) {
-            var D = dist(o.T, o.C), dx = o.C[0] - o.T[0], dy = o.C[1] - o.T[1];
-            return B.approx('Determine the length of the throw, to the nearest metre.', D, 0, { after: 'm', diag: matchDiag(dCands(o.T, o.C).concat([[dist([o.T[1], o.T[0]], o.C), 'ctx-swap', 'Check the thrower’s coordinates: ' + t('x') + ' is the distance from the sideline, so the thrower is at ' + t(ptT(o.T)) + '.']]), 0) },
-              t('x_2-x_1=' + o.C[0] + '-' + o.T[0] + '=' + dx) + ', ' + t('y_2-y_1=' + o.C[1] + '-' + o.T[1] + '=' + dy) + '.<br>' + t('d=\\sqrt{' + dx + '^{2}+' + dy + '^{2}}=\\sqrt{' + (dx * dx) + '+' + (dy * dy) + '}=\\sqrt{' + (dx * dx + dy * dy) + '}' + (isSq(dx * dx + dy * dy) ? '=' + D : '\\approx ' + fx(D, 2))) + '. The throw is about ' + t(fx(D, 0)) + '&nbsp;m long.',
-              HD, 'frisbee throw length');
-          } }] },
-      /* ---------------- Question 7: Maria and Nathan ---------------- */
-      { num: '7', shared: function (r) {
-          if (r.chance(0.15)) return { m: [5, 8], n: [7, 4], L: 110 };
-          return pickWhere(function () { return { m: [r.int(2, 9), r.int(2, 9)], n: [r.int(2, 9), r.int(2, 9)], L: r.pick([110, 110, 80, 90, 100, 120, 150]) }; }, function (z) { return z.m[0] !== z.m[1] && z.n[0] !== z.n[1] && (z.m[0] !== z.n[0] || z.m[1] !== z.n[1]); });
-        },
-        stem: function (o) { return 'After school, Maria walks ' + t(o.m[0]) + ' blocks east and ' + t(o.m[1]) + ' blocks north to reach her house from the school. Nathan walks ' + t(o.n[0]) + ' blocks west and ' + t(o.n[1]) + ' blocks south to reach his house from the same school.'; },
-        parts: [
-          { id: '7a', sub: 'a', level: 'BEG', make: function (r, o) {
-            var M = o.m, N = [-o.n[0], -o.n[1]];
-            return B.fields('Taking the school as the origin, list the coordinates of each house.', [ptField('Maria'), ptField('Nathan')],
-              [ptCheck(M, { swapHint: 'East–west distances are ' + t('x') + '-coordinates and north–south distances are ' + t('y') + '-coordinates: write (east, north).' }),
-                ptCheck(N, { cands: [[o.n, 'pt-dir', 'West is the <b>negative</b> ' + t('x') + '-direction and south is the <b>negative</b> ' + t('y') + '-direction.'], [[-o.n[0], o.n[1]], 'pt-dir', 'South is the negative ' + t('y') + '-direction.'], [[o.n[0], -o.n[1]], 'pt-dir', 'West is the negative ' + t('x') + '-direction.'], [[-o.n[1], -o.n[0]], 'pt-swap', 'Write (east–west, north–south): the blocks west give the ' + t('x') + '-coordinate.']] })],
-              [ptKey(M), ptKey(N)], 'Maria ' + t(ptT(M)) + ', Nathan ' + t(ptT(N)),
-              'East is ' + t('+x') + ' and north is ' + t('+y') + ', with the school at the origin; west and south are negative.<br>Maria: ' + t(o.m[0]) + ' east, ' + t(o.m[1]) + ' north ' + t('\\Rightarrow ' + ptT(M)) + '. Nathan: ' + t(o.n[0]) + ' west, ' + t(o.n[1]) + ' south ' + t('\\Rightarrow ' + ptT(N)) + '.',
-              ['East and north are positive; west and south are negative.'], 'house coordinates');
-          } },
-          { id: '7b', sub: 'b', level: 'PRG', make: function (r, o) {
-            var M = o.m, N = [-o.n[0], -o.n[1]], nb = d2(M, N), Db = Math.sqrt(nb), D = Db * o.L, dx = M[0] - N[0], dy = M[1] - N[1];
-            var c = [[Db, 'd-units', 'That is the distance in <b>blocks</b>. Multiply by ' + t(o.L) + ' to get metres.'], [(o.m[0] + o.m[1] + o.n[0] + o.n[1]) * o.L, 'd-walk', 'That is how far the two walk along the streets. The <b>direct</b> distance is a straight line between the houses — use the distance formula.'],
-              [Math.sqrt(sq(o.m[0] - o.n[0]) + sq(o.m[1] - o.n[1])) * o.L, 'd-no-neg', 'Nathan’s house has negative coordinates, ' + t(ptT(N)) + '. Then ' + t('x_2-x_1=' + M[0] + '-(' + N[0] + ')=' + dx) + '.'], [nb * o.L, 'd-no-root', 'Take the square root before converting to metres.']].concat(dCands(N, M, o.L));
-            return B.approx('If a block represents ' + t(o.L) + '&nbsp;metres, determine the direct distance, to the nearest metre, between the two houses.', D, 0, { after: 'm', diag: matchDiag(c, 0) },
-              t('x_2-x_1=' + M[0] + '-(' + N[0] + ')=' + dx) + ', ' + t('y_2-y_1=' + M[1] + '-(' + N[1] + ')=' + dy) + '.<br>' + t('d=\\sqrt{' + dx + '^{2}+' + dy + '^{2}}=\\sqrt{' + nb + '}' + simpTail(nb) + (isSq(nb) ? '' : '\\approx ' + fx(Db, 4))) + ' blocks.<br>Each block is ' + t(o.L) + '&nbsp;m: ' + t((isSq(nb) ? nT(Db) + '\\times ' + o.L + '=' : fx(Db, 4) + '\\times ' + o.L + '\\approx ') + fx(D, 0)) + '&nbsp;m.',
-              ['Find the distance in blocks with the distance formula, then multiply by the length of one block.', 'Round only at the very end.'], 'direct distance between houses');
-          } }] },
-      /* ---------------- Question 8: bush plane ---------------- */
-      { num: '8', shared: function (r) {
-          if (r.chance(0.15)) return { pts: [[0, 140], [255, 195], [300, 160], [410, 205], [495, 165]] };
-          return pickWhere(function () {
-            var y0 = 5 * r.int(20, 36), xs = [0, 5 * r.int(40, 54), 5 * r.int(6, 12), 5 * r.int(16, 24), 5 * r.int(12, 20)], dy = [5 * r.int(5, 12), -5 * r.int(5, 10), 5 * r.int(5, 12), -5 * r.int(5, 10)];
-            var pts = [[0, y0]]; for (var i = 1; i < 5; i++) pts.push([pts[i - 1][0] + xs[i], pts[i - 1][1] + dy[i - 1]]);
-            return { pts: pts };
-          }, function (z) { return z.pts.every(function (p) { return p[1] >= 60 && p[1] <= 240 && p[0] <= 520; }); });
-        },
-        stem: function (o) {
-          var N = ['A', 'B', 'C', 'D', 'E'];
-          return 'A bush plane on a survey flight records GPS checkpoints along its route. The graph shows part of the route (distances in km east and north of the airstrip it took off from): ' + o.pts.map(function (p, i) { return t(nm(N[i], p)); }).join(', ') + '.' +
-            '<div class="fig">' + HW.graph({ x: [0, 550], y: [0, 250], grid: 50, labelsX: 100, labelsY: 50, unit: 0.6, firstQuadrant: true, xTitle: 'Distance (km) east of airstrip', yTitle: 'km north', max: 380,
-              segs: [{ pts: o.pts, start: 'closed', end: 'closed' }], points: o.pts.map(function (p, i) { return { x: p[0], y: p[1], label: N[i] }; }) }) + '</div>';
-        },
-        parts: [
-          { id: '8a', sub: 'a', level: 'LIM', make: function (r, o) {
-            var y = o.pts[0][1];
-            return mcPart(r, 'Describe the position of checkpoint ' + t('A') + ' relative to the airstrip.', [
-              { html: t(y) + '&nbsp;km due north of the airstrip.', right: true },
-              { html: t(y) + '&nbsp;km due east of the airstrip.', why: 'The first coordinate is the distance east. ' + t('A') + '’s first coordinate is ' + t('0') + ', so it is not east of the airstrip at all.' },
-              { html: t(y) + '&nbsp;km north-east of the airstrip.', why: 'North-east would need a positive east coordinate too. ' + t('A') + ' is ' + t('0') + '&nbsp;km east.' },
-              { html: 'At the airstrip.', why: 'The airstrip is the origin ' + t('(0,\\ 0)') + '. ' + t('A') + ' is ' + t(y) + '&nbsp;km north of it.' }],
-              t(nm('A', o.pts[0])) + ': its east-coordinate is ' + t('0') + ' and its north-coordinate is ' + t(y) + ', so checkpoint ' + t('A') + ' is ' + t(y) + '&nbsp;km <b>due north</b> of the airstrip.', ['The first coordinate is km east, the second is km north.'], 'position of checkpoint A');
-          } },
-          { id: '8b', sub: 'b', level: 'PRG', make: function (r, o) {
-            var N = ['A', 'B', 'C', 'D', 'E'], segs = [], tot = 0, totR = 0;
-            for (var i = 0; i < 4; i++) { var dd = dist(o.pts[i], o.pts[i + 1]); segs.push(dd); tot += dd; totR += rd(dd, 0); }
-            var straight = dist(o.pts[0], o.pts[4]), hv = 0; for (var j = 0; j < 4; j++) hv += Math.abs(o.pts[j + 1][0] - o.pts[j][0]) + Math.abs(o.pts[j + 1][1] - o.pts[j][1]);
-            var c = [[straight, 'd-straight', 'That is the straight-line distance from ' + t('A') + ' to ' + t('E') + '. The plane flew along four segments: find each length and add them.'], [hv, 'd-legs', 'You added the east and north changes. Each segment is a hypotenuse: use the distance formula for each one.']];
-            if (Math.abs(rd(totR, 0) - rd(tot, 0)) > 0.5) c.push([totR, 'd-round-early', 'Close — you rounded each segment before adding. Keep the decimals and round only the total.']);
-            c.push([segs[0], 'd-straight', 'That is only ' + t('AB') + '. Add all four segments.']);
-            var sol = 'Add the four segment lengths.<br>' + segs.map(function (s, k) { var a = o.pts[k], b2 = o.pts[k + 1], dx = b2[0] - a[0], dy = b2[1] - a[1]; return t(N[k] + N[k + 1] + '=\\sqrt{' + sgp(dx) + '^{2}+' + sgp(dy) + '^{2}}=\\sqrt{' + F(dx * dx + dy * dy) + '}\\approx ' + fx(s, 2)); }).join('<br>') + '<br>Total ' + t('\\approx ' + segs.map(function (s) { return fx(s, 2); }).join('+') + '\\approx ' + fx(tot, 0)) + '&nbsp;km.';
-            return B.approx('Calculate the total distance flown by the plane from ' + t('A') + ' to ' + t('E') + ', to the nearest kilometre.', tot, 0, { after: 'km', diag: matchDiag(c, 0) }, sol,
-              ['The route is made of four straight segments: ' + t('AB') + ', ' + t('BC') + ', ' + t('CD') + ' and ' + t('DE') + '. Use the distance formula for each.', 'Keep the decimals until you have added all four, then round.'], 'total distance flown');
-          } }] },
-      /* ---------------- Question 9: MC distance ---------------- */
-      { num: '9', section: 'Multiple choice', parts: [
-        { id: '9', level: 'LIM', make: function (r) {
-          var P0, L;
-          if (r.chance(0.2)) { P0 = [3, -2]; L = [4, 3]; } else { L = triple(r, 8); P0 = [r.int(1, 6), r.int(-5, -1)]; }
-          var Q = add(P0, L), dx = L[0], dy = L[1], D = Math.sqrt(dx * dx + dy * dy);
-          return mcPart(r, '<i>(Multiple Choice)</i> The distance between the points ' + t(ptT(P0)) + ' and ' + t(ptT(Q)) + ' is', [
-            { html: t(D), right: true },
-            { html: t('\\sqrt{' + dx * dy + '}'), why: 'That multiplies the run by the rise. Square each one and add: ' + t('\\sqrt{' + dx + '^{2}+' + dy + '^{2}}') + '.' },
-            { html: t(dx + dy), why: 'That adds the run and the rise. The distance is the hypotenuse: ' + t('\\sqrt{' + dx + '^{2}+' + dy + '^{2}}') + '.' },
-            { html: t(dx * dx + dy * dy), why: 'That is ' + t('d^{2}') + '. Take the square root.' }],
-            dSteps(P0, Q) + '<br>' + t('d=\\sqrt{' + dx + '^{2}+' + dy + '^{2}}=\\sqrt{' + dx * dx + '+' + dy * dy + '}=\\sqrt{' + (dx * dx + dy * dy) + '}=' + D) + '.', HD, 'MC distance');
-        } }] },
-      /* ---------------- Question 10: MC equidistant point ---------------- */
-      { num: '10', parts: [
-        { id: '10', level: 'PRG', make: function (r) {
-          var o = r.chance(0.2) ? { A: [-3, 8], B: [-7, -4], tt: -1, dis: [[0, 0], [6, 6], [-10, -10]] } : pickWhere(function () {
-            var A = [r.int(-6, 0), r.int(3, 9)], h = [r.pick(pm(1, 3)), r.pick(pm(2, 6))];
-            return { A: A, B: add(A, scl(h, 2)), tt: r.pick([1, -1, 2]) };
-          }, function (z) { return Math.abs(z.B[1]) <= 12 && Math.abs(z.B[0]) <= 12; });
-          var M = mid(o.A, o.B), h = sub(o.B, M), g = gcd(h[0], h[1]), pp = [h[1] / g, -h[0] / g], X = add(M, scl(pp, o.tt));
-          var dis = o.dis || ([[0, 0]].filter(function (q) { return Math.abs(d2(q, o.A) - d2(q, o.B)) >= 4; }).concat(ptsOpt(r, o.A, o.B, 4))).filter(function (q, i, arr) { return !samePt(q, X) && !arr.slice(0, i).some(function (p) { return samePt(p, q); }); }).slice(0, 3);
-          var opts = [{ html: t(ptT(X)), right: true }].concat(dis.map(function (q) { return { html: t(ptT(q)), why: eqWhy(q, o.A, 'A', o.B, 'B') + ' Equidistant means the two distances are equal.' }; }));
-          return mcPart(r, '<i>(Multiple Choice)</i> Which of the following points is equidistant from ' + t(nm('A', o.A)) + ' and ' + t(nm('B', o.B)) + '?', opts,
-            'Compare <b>squared</b> distances to ' + t('A') + ' and ' + t('B') + ' (equal squares mean equal distances).<br>' + t(ptT(X)) + ': ' + t('(' + nT(X[0]) + '-' + sgp(o.A[0]) + ')^{2}+(' + nT(X[1]) + '-' + sgp(o.A[1]) + ')^{2}=' + d2(X, o.A)) + ' and ' + t('(' + nT(X[0]) + '-' + sgp(o.B[0]) + ')^{2}+(' + nT(X[1]) + '-' + sgp(o.B[1]) + ')^{2}=' + d2(X, o.B)) + '. Equal ✓<br>' + dis.map(function (q) { return t(ptT(q)) + ': ' + t(d2(q, o.A)) + ' vs ' + t(d2(q, o.B)) + '.'; }).join(' &nbsp;'),
-            ['Use the distance formula from each option to ' + t('A') + ' and to ' + t('B') + '. You can compare the squared distances — no square roots needed.'], 'MC equidistant point');
-        } }] },
-      /* ---------------- Question 11: midpoints ---------------- */
-      { num: '11', section: 'Midpoints', stem: 'Determine the coordinates of the midpoint of the line segment with the given pair of endpoints.', parts: [
-        { id: '11a', level: 'BEG', make: function (r) {
-          var o = r.chance(0.15) ? { A: [3, 5], C: [9, 13] } : pickWhere(function () { var A = [r.int(1, 8), r.int(1, 8)]; return { A: A, C: [A[0] + 2 * r.int(1, 5), A[1] + 2 * r.int(1, 6)] }; }, function () { return true; });
-          return ptPart(t(nm('A', o.A) + ',\\ ' + nm('C', o.C)), mid(o.A, o.C), { cands: midCands(o.A, o.C) }, t(mLine(o.A, o.C)) + '.', HM, 'midpoint ' + ptT(o.A) + ', ' + ptT(o.C));
-        } },
-        { id: '11b', level: 'EMG', make: function (r) {
-          var o = r.chance(0.15) ? { X: [-4, -9], Y: [-12, 3] } : pickWhere(function () { var X = [-r.int(1, 8), -r.int(2, 10)]; return { X: X, Y: [-r.int(5, 14), r.int(1, 9)] }; }, function (z) { return (z.X[0] + z.Y[0]) % 2 === 0 && (z.X[1] + z.Y[1]) % 2 === 0 && z.X[0] !== z.Y[0] && z.X[1] + z.Y[1] !== 0; });
-          return ptPart(t(nm('X', o.X) + ',\\ ' + nm('Y', o.Y)), mid(o.X, o.Y), { cands: midCands(o.X, o.Y) }, t(mLine(o.X, o.Y)) + '.', HM, 'midpoint ' + ptT(o.X) + ', ' + ptT(o.Y));
-        } },
-        { id: '11c', level: 'EMG', make: function (r) {
-          var o = r.chance(0.15) ? { K: [11, -15], L: [-9, 7] } : pickWhere(function () { return { K: [r.int(5, 14), -r.int(5, 16)], L: [-r.int(3, 12), r.int(2, 10)] }; }, function (z) { var m = mid(z.K, z.L); return Number.isInteger(m[0]) && Number.isInteger(m[1]) && m[0] !== 0 && m[1] !== 0; });
-          return ptPart(t(nm('K', o.K) + ',\\ ' + nm('L', o.L)), mid(o.K, o.L), { cands: midCands(o.K, o.L) }, t(mLine(o.K, o.L)) + '.', HM, 'midpoint ' + ptT(o.K) + ', ' + ptT(o.L));
-        } },
-        { id: '11d', level: 'BEG', make: function (r) {
-          var A = r.chance(0.15) ? [-30, 42] : [-2 * r.int(6, 25), 2 * r.int(6, 25)], O = [0, 0];
-          return ptPart(t(nm('A', A) + ',\\ ' + nm('O', O)), mid(A, O), { cands: midCands(A, O).filter(function (c) { return c[1] !== 'mid-subtract'; }) }, t(mLine(A, O)) + '.', HM, 'midpoint with the origin');
-        } },
-        { id: '11e', level: 'EMG', make: function (r) {
-          var o = r.chance(0.15) ? { P: [-3.5, 4.2], Q: [2.5, -7.8] } : pickWhere(function () { return { P: [-r.int(1, 6) - 0.5, r.int(11, 89) / 10], Q: [r.int(0, 5) + 0.5, -r.int(11, 89) / 10] }; },
-            function (z) { var sy = Math.round((z.P[1] + z.Q[1]) * 10); return sy % 2 === 0 && sy !== 0 && z.P[1] % 1 !== 0 && z.Q[1] % 1 !== 0 && Math.round(z.P[0] + z.Q[0]) % 2 !== 0; });
-          var W = mid(o.P, o.Q), p = ptPart(t(nm('P', o.P) + ',\\ ' + nm('Q', o.Q)), W, { cands: midCands(o.P, o.Q) }, t(mLine(o.P, o.Q)) + '.', HM, 'midpoint with decimals');
-          return p;
-        } },
-        { id: '11f', level: 'BEG', make: function (r) {
-          var o = r.chance(0.15) ? { E: [-4, 9], F: [8, 3] } : pickWhere(function () { return { E: [-r.int(1, 8), r.int(3, 12)], F: [r.int(2, 12), r.int(1, 10)] }; }, function (z) { return (z.E[0] + z.F[0]) % 2 === 0 && (z.E[1] + z.F[1]) % 2 === 0 && z.E[1] !== z.F[1] && z.E[0] + z.F[0] !== 0; });
-          return ptPart(t(nm('E', o.E) + ',\\ ' + nm('F', o.F)), mid(o.E, o.F), { cands: midCands(o.E, o.F) }, t(mLine(o.E, o.F)) + '.', HM, 'midpoint ' + ptT(o.E) + ', ' + ptT(o.F));
-        } }] },
-      /* ---------------- Question 12: find x ---------------- */
-      { num: '12', stem: 'In each case, ' + t('M') + ' is the midpoint of ' + t('\\overline{AB}') + '. Determine the value of ' + t('x') + '.', parts: [
-        { id: '12a', level: 'PRG', make: function (r) {
-          var o = r.chance(0.15) ? { A: [3, 7], bx: 9, my: 2 } : pickWhere(function () { var A = [r.int(1, 6), r.int(4, 10)]; return { A: A, bx: A[0] + 2 * r.int(1, 4), my: r.int(-2, A[1] - 2) }; }, function (z) { var x = 2 * z.my - z.A[1]; return x !== 0 && x !== z.my && x !== z.A[1] && z.my !== 0; });
-          var A = o.A, mx = (A[0] + o.bx) / 2, x = 2 * o.my - A[1];
-          var c = endNum(A[1], o.my).concat([[o.bx, 'end-used-x', 'Here ' + t('x') + ' is the <b>' + t('y') + '-coordinate</b> of ' + t('B') + '. The ' + t('x') + '-coordinates already check out; use the ' + t('y') + '-coordinates: ' + t('\\dfrac{' + A[1] + '+x}{2}=' + o.my) + '.'], [2 * mx - A[0], 'end-used-x', 'Use the ' + t('y') + '-coordinates — the unknown ' + t('x') + ' sits in the ' + t('y') + '-position of ' + t('B') + '.']]);
-          return B.number(t(nm('A', A) + ',\\ B(' + o.bx + ',\\ x),\\ ' + nm('M', [mx, o.my])), x, numDiag(c),
-            'The ' + t('x') + '-coordinates already check out: ' + t('\\dfrac{' + A[0] + '+' + o.bx + '}{2}=' + nT(mx)) + ' ✓. Use the ' + t('y') + '-equation:<br>' + t('\\dfrac{' + A[1] + '+x}{2}=' + o.my + '\\ \\Rightarrow\\ ' + A[1] + '+x=' + 2 * o.my + '\\ \\Rightarrow\\ x=' + x) + '.', HE, 'missing coordinate (y-position)');
-        } },
-        { id: '12b', level: 'PRG', make: function (r) {
-          var o = r.chance(0.15) ? { A: [5, 8], by: 0, mx: 0 } : pickWhere(function () { var A = [r.int(2, 9), 2 * r.int(1, 5)]; return { A: A, by: 2 * r.int(-2, 2), mx: r.pick([0, 0, -1, 1, 2, -2]) }; }, function (z) { var x = 2 * z.mx - z.A[0]; return x !== 0 && z.by !== z.A[1] && x !== z.A[0]; });
-          var A = o.A, my = (A[1] + o.by) / 2, x = 2 * o.mx - A[0];
-          var c = endNum(A[0], o.mx).concat([[2 * my - A[1], 'end-used-x', 'Use the ' + t('x') + '-coordinates here — the unknown is the ' + t('x') + '-coordinate of ' + t('B') + '.']]);
-          return B.number(t(nm('A', A) + ',\\ B(x,\\ ' + o.by + '),\\ ' + nm('M', [o.mx, my])), x, numDiag(c),
-            'The ' + t('y') + '-coordinates already check out: ' + t('\\dfrac{' + A[1] + '+' + sgp(o.by) + '}{2}=' + nT(my)) + ' ✓. Use the ' + t('x') + '-equation:<br>' + t('\\dfrac{' + A[0] + '+x}{2}=' + o.mx + '\\ \\Rightarrow\\ ' + A[0] + '+x=' + 2 * o.mx + '\\ \\Rightarrow\\ x=' + x) + '.', HE, 'missing coordinate (x-position)');
-        } }] },
-      /* ---------------- Question 13: cell tower ---------------- */
-      { num: '13', section: 'Midpoint in context', shared: function (r) {
-          if (r.chance(0.15)) return { A: [2148, 1876], B: [3562, 2394], s: 50 };
-          return pickWhere(function () { var A = [r.int(1500, 3000), r.int(1200, 2500)]; return { A: A, B: [A[0] + r.int(800, 1800), A[1] + r.int(200, 900)], s: r.pick([50, 50, 25, 40, 20]) }; }, function (z) { return (z.A[0] + z.B[0]) % 2 === 0 && (z.A[1] + z.B[1]) % 2 === 0; });
-        },
-        stem: function (o) { return 'A cell tower is to be built halfway between the rural towns of Ashford and Birchwood, with a service road connecting both towns to the tower. On a Cartesian plane, Ashford is located at ' + t(ptT(o.A)) + ' and Birchwood is located at ' + t(ptT(o.B)) + '.'; },
-        parts: [
-          { id: '13a', sub: 'a', level: 'EMG', make: function (r, o) {
-            return ptPart('What are the coordinates of the tower?', mid(o.A, o.B), { cands: midCands(o.A, o.B) }, 'The tower is the midpoint of Ashford and Birchwood:<br>' + t(mLine(o.A, o.B)) + '.', HM, 'tower midpoint');
-          } },
-          { id: '13b', sub: 'b', level: 'PRG', make: function (r, o) {
-            var u = dist(o.A, o.B), km = u * o.s / 1000, dx = o.B[0] - o.A[0], dy = o.B[1] - o.A[1];
-            var c = [[km / 2, 'road-half', 'The road connects <b>both</b> towns to the tower, so it runs the whole way from Ashford to Birchwood — not just to the halfway point.'], [u, 'd-units', 'That is the length in grid units. Multiply by ' + t(o.s) + '&nbsp;m per unit, then change metres to kilometres.'],
-              [u * o.s, 'd-metres', 'That is in metres. Divide by ' + t('1000') + ' to get kilometres.'], [u / o.s, 'd-scale-div', 'Each unit is ' + t(o.s) + '&nbsp;m, so <b>multiply</b> the number of units by ' + t(o.s) + '.'], [u * o.s / 2000, 'road-half', 'The road runs from Ashford to the tower <i>and</i> on to Birchwood: that is the full distance.']];
-            return B.approx('Determine the length of the service road, to the nearest kilometre, if the grid scale is 1 unit represents ' + t(o.s) + '&nbsp;metres.', km, 0, { after: 'km', diag: matchDiag(c, 0) },
-              'The tower sits on the straight line between the towns, so the road’s total length is the distance from Ashford to Birchwood.<br>' + t('d=\\sqrt{' + F(dx) + '^{2}+' + F(dy) + '^{2}}=\\sqrt{' + F(dx * dx) + '+' + F(dy * dy) + '}=\\sqrt{' + F(dx * dx + dy * dy) + '}\\approx ' + fx(u, 1)) + ' units.<br>' + t(fx(u, 1) + '\\times ' + o.s + '\\approx ' + F(rd(u * o.s, 0))) + '&nbsp;m ' + t('\\approx ' + fx(km, 0)) + '&nbsp;km.',
-              ['The road goes from one town to the tower and on to the other town — what total length is that?', 'Convert: units → metres (× the scale) → kilometres (÷ 1000).'], 'service road length');
-          } }] },
-      /* ---------------- Question 14: right triangle and the midpoint of its hypotenuse ---------------- */
-      { num: '14', section: 'Distance and midpoint together', shared: function (r) {
-          var o;
-          if (r.chance(0.15)) o = { V: [-2, 3], U: [1, 7], W: [-10, 9], at: 'D' };
-          else {
-            var z = pickWhere(function () { return rightTri(r, [[3, 4], [4, 3], [4, 2], [2, 4], [3, 1], [1, 3], [2, 3], [3, 2], [6, 8], [8, 6]], [2, 2, 1, 3], 13); }, function (q) { return !isSq(d2(q.U, q.W)); });
-            o = { V: z.V, U: z.U, W: z.W, at: r.pick(['D', 'D', 'E', 'F']) };
-          }
-          var pts = {}; // the right angle is at vertex o.at; the other two names in order
-          var others = ['D', 'E', 'F'].filter(function (n) { return n !== o.at; });
-          pts[o.at] = o.V; pts[others[0]] = o.U; pts[others[1]] = o.W;
-          return { P: pts, R: o.at, H: others };
-        },
-        stem: function (o) { return 'Consider ' + t('\\triangle DEF') + ' with vertices ' + t(nm('D', o.P.D)) + ', ' + t(nm('E', o.P.E)) + ', ' + t(nm('F', o.P.F)) + '.'; },
-        parts: [
-          { id: '14a', sub: 'a', level: 'PRG', make: function (r, o) {
-            var S = [['D', 'E'], ['D', 'F'], ['E', 'F']], n = S.map(function (s) { return d2(o.P[s[0]], o.P[s[1]]); });
-            return B.fields('Calculate the length of each side of the triangle (exact, or to the nearest tenth).', S.map(function (s) { return lenField(s[0] + s[1]); }),
-              S.map(function (s, i) { return lenCheck(n[i], 1, { dec: true, cands: dCands(o.P[s[0]], o.P[s[1]]) }); }), n.map(function (x) { return lenKey(x); }),
-              S.map(function (s, i) { return t(s[0] + s[1] + '=' + lenTex(n[i]) + (isSq(n[i]) ? '' : '\\approx ' + fx(Math.sqrt(n[i]), 1))); }).join(', '),
-              S.map(function (s, i) { return t(dLine(o.P[s[0]], o.P[s[1]], s[0] + s[1]) + simpTail(n[i])); }).join('<br>'), HD, 'side lengths of DEF');
-          } },
-          { id: '14a2', sub: 'a, why', level: 'EMG', make: function (r, o) {
-            var R = o.R, h = o.H, hy = h[0] + h[1], l1 = (R < h[0] ? R + h[0] : h[0] + R), l2 = (R < h[1] ? R + h[1] : h[1] + R);
-            var n1 = d2(o.P[R], o.P[h[0]]), n2 = d2(o.P[R], o.P[h[1]]), nh = d2(o.P[h[0]], o.P[h[1]]);
-            var wrongV = h[0];
-            return mcPart(r, 'Explain why the triangle is right angled.', [
-              { html: t(l1 + '^{2}+' + l2 + '^{2}=' + n1 + '+' + n2 + '=' + nh + '=' + hy + '^{2}') + ', so by the converse of the Pythagorean theorem the triangle has a right angle at ' + t(R) + '.', right: true },
-              { html: t(l1 + '^{2}+' + l2 + '^{2}=' + hy + '^{2}') + ', so the right angle is at ' + t(wrongV) + '.', why: 'The relationship is right, but the right angle is <b>opposite</b> the hypotenuse ' + t(hy) + ' — at the vertex the two shorter sides share, ' + t(R) + '.' },
-              { html: 'The three sides have different lengths, so one angle must be ' + t('90^{\\circ}') + '.', why: 'Most triangles with three different sides have no right angle. Test whether the squares of the two shorter sides add to the square of the longest.' },
-              { html: t(l1 + '+' + l2 + '>' + hy) + ', so the triangle is right angled.', why: 'That is true for every triangle. A right angle needs the <b>squares</b>: ' + t(l1 + '^{2}+' + l2 + '^{2}=' + hy + '^{2}') + '.' }],
-              t(hy) + ' is the longest side. ' + t(l1 + '^{2}+' + l2 + '^{2}=' + n1 + '+' + n2 + '=' + nh) + ' and ' + t(hy + '^{2}=' + nh) + '. They match, so ' + t('\\triangle DEF') + ' is right angled at ' + t(R) + ' — the vertex opposite the longest side.',
-              ['Use the converse of the Pythagorean theorem on your three lengths.'], 'why DEF is right angled');
-          } },
-          { id: '14b', sub: 'b', level: 'EMG', make: function (r, o) {
-            var h = o.H, Pa = o.P[h[0]], Pb = o.P[h[1]], R = o.P[o.R], N = mid(Pa, Pb);
-            var hs = 'That is the midpoint of a <b>leg</b>. The hypotenuse is the longest side, ' + t(h[0] + h[1]) + ', opposite the right angle.';
-            var c = midCands(Pa, Pb).concat([[mid(R, Pa), 'mid-wrong-seg', hs], [mid(R, Pb), 'mid-wrong-seg', hs]]);
-            var p = ptPart('Calculate the coordinates of the midpoint, ' + t('N') + ', of the hypotenuse.', N, { cands: c, before: 'N =' }, t(h[0] + h[1]) + ' is the hypotenuse, so ' + t('N') + ' is the midpoint of ' + t(nm(h[0], Pa)) + ' and ' + t(nm(h[1], Pb)) + ':<br>' + t(mLine(Pa, Pb, 'N')) + '.', HM, 'midpoint of the hypotenuse');
-            if (!Number.isInteger(N[0]) || !Number.isInteger(N[1])) p.good.push('\\left(' + (Number.isInteger(N[0]) ? N[0] : '\\frac{' + N[0] * 2 + '}{2}') + ',' + (Number.isInteger(N[1]) ? N[1] : '\\frac{' + N[1] * 2 + '}{2}') + '\\right)');
+          { id: '3b', sub: 'points', level: 'BEG', make: function (r, sh) {
+            var others = sh.ip.filter(function (p) { return !same(p, sh.P0); }), key = others.slice(0, 3), sl = sh.sl;
+            var p = ptsPart('Write the coordinates of three other points on the segment that have integer coordinates.', { n: 3, integer: true, exclude: [sh.P0], test: onLineTest(sh.P0, sl) }, key,
+              'From ' + t(ptT(sh.P0)) + ' each run of ' + t('+' + sl[1]) + ' pairs with a rise of ' + t('+' + sl[0]) + ': ' + t(ptsT(sh.ip)) + '. Any three of these (other than the given point) are correct.',
+              ['Add ' + t(sl[1]) + ' to ' + t('x') + ' and ' + t(sl[0]) + ' to ' + t('y') + ', again and again.'], 'three points slope ' + slT(sl) + ' from ' + ptT(sh.P0));
+            p.good = [ptsT(others.slice(-3))]; p.bad = [ptsT(stepPts(sh.P0, [sl[1], sl[0]], [1, 2, 3])), ptsT(stepPts(sh.P0, [-sl[0], sl[1]], [1, 2, 3]))];
             return p;
-          } },
-          { id: '14c', sub: 'c', level: 'PRG', make: function (r, o) {
-            var h = o.H, N = mid(o.P[h[0]], o.P[h[1]]), nh = d2(o.P[h[0]], o.P[h[1]]), V = ['D', 'E', 'F'];
-            var cands = [[nh / 4, 'd-no-root', 'That is the squared distance — take the square root.'], [Math.sqrt(nh), 'd-half', 'That is the whole hypotenuse. ' + t('N') + ' is its midpoint, so the distance from ' + t('N') + ' to an end is half of it.']];
-            return B.fields(t(nm('N', N)) + ' is the midpoint of the hypotenuse ' + t(h[0] + h[1]) + '. Calculate the distance from ' + t('N') + ' to each of the three vertices of the triangle (exact, or to the nearest tenth).', V.map(function (v) { return lenField('N' + v); }),
-              V.map(function () { return lenCheck(nh, 2, { dec: true, cands: cands }); }), V.map(function () { return lenKey(nh, 2); }),
-              t('ND=NE=NF=' + lenTex(nh, 2) + '\\approx ' + fx(Math.sqrt(nh) / 2, 1)),
-              V.map(function (v) { var P2 = o.P[v], dx = cl(P2[0] - N[0]), dy = cl(P2[1] - N[1]); return t('N' + v + '=\\sqrt{' + sgp(dx) + '^{2}+' + sgp(dy) + '^{2}}=\\sqrt{' + nT(dx * dx) + '+' + nT(dy * dy) + '}=\\sqrt{' + nT(nh / 4) + '}'); }).join('<br>') + '<br>All three equal ' + t('\\sqrt{' + nT(nh / 4) + '}=\\sqrt{\\tfrac{' + nh + '}{4}}=' + lenTex(nh, 2) + '\\approx ' + fx(Math.sqrt(nh) / 2, 1)) + '.',
-              HD.concat(['Use ' + t(nm('N', N)) + ' as one endpoint each time. With decimals, ' + t('2.5^{2}=6.25') + '.']), 'N to each vertex');
-          } },
-          { id: '14c2', sub: 'c, notice', level: 'EMG', make: function (r, o) {
-            var Nn = mid(o.P[o.H[0]], o.P[o.H[1]]);
-            return mcPart(r, t(nm('N', Nn)) + ' is the midpoint of the hypotenuse ' + t(o.H[0] + o.H[1]) + '. What do you notice about the three distances ' + t('ND') + ', ' + t('NE') + ' and ' + t('NF') + '?', [
-              { html: 'They are equal: the midpoint of the hypotenuse is the same distance from all three vertices (half the hypotenuse).', right: true },
-              { html: t('N') + ' is closest to the right-angle vertex ' + t(o.R) + '.', why: 'Compare your three answers — they are all the same.' },
-              { html: 'They add up to the perimeter of the triangle.', why: 'Compare your three answers with each other: what do they have in common?' },
-              { html: t('N') + ' is the same distance from only the two ends of the hypotenuse.', why: 'Check ' + t('N' + o.R) + ' as well — it matches the other two.' }],
-              t('ND=NE=NF') + ': the midpoint of the hypotenuse is equidistant from all three vertices. (It is the centre of the circle through ' + t('D') + ', ' + t('E') + ' and ' + t('F') + ', and each distance is half the hypotenuse.)', ['Find ' + t('ND') + ', ' + t('NE') + ' and ' + t('NF') + ' with the distance formula and compare them.'], 'midpoint of hypotenuse equidistant');
           } }] },
-      /* ---------------- Question 15: diagonals of a quadrilateral ---------------- */
-      { num: '15', shared: function (r) {
-          if (r.chance(0.15)) return { P: [1, 2], Q: [9, 4], R: [11, 10], S: [3, 8], para: true };
-          return pickWhere(function () {
-            var P0 = [r.int(0, 3), r.int(0, 3)], u = [r.int(5, 9), r.int(0, 3)], w = [r.int(1, 3), r.int(4, 7)], para = r.chance(0.75), sh = para ? [0, 0] : r.pick([[2, 0], [-2, 0], [0, 2], [0, -2]]);
-            return { P: P0, Q: add(P0, u), S: add(P0, w), R: add(add(add(P0, u), w), sh), para: para };
-          }, function (z) { return (z.Q[0] + z.S[0]) % 2 === 0 && (z.Q[1] + z.S[1]) % 2 === 0 && z.R[0] <= 12 && z.R[1] <= 12; });
-        },
-        stem: function (o) { return 'Quadrilateral ' + t('PQRS') + ' has vertices ' + t(nm('P', o.P)) + ', ' + t(nm('Q', o.Q)) + ', ' + t(nm('R', o.R)) + ', ' + t(nm('S', o.S)) + '.'; },
+      { num: '4', stem: 'For each slope and point, plot the line through the given point, then list three other points on it that have integer coordinates. (The line does not have to cross both axes.)',
+        shared: q4Shared,
+        parts: ['a', 'b', 'c', 'd', 'e', 'f'].reduce(function (acc, L) {
+          var lv = { a: ['EMG', 'BEG'], b: ['EMG', 'BEG'], c: ['EMG', 'BEG'], d: ['BEG', 'BEG'], e: ['BEG', 'BEG'], f: ['BEG', 'LIM'] }[L];
+          acc.push({ id: '4' + L, sub: L + ' · line', level: lv[0], make: function (r, sh) { return q4Draw(sh[L], L); } });
+          acc.push({ id: '4' + L + 'p', sub: L + ' · points', level: lv[1], make: function (r, sh) { return q4Pts(sh[L], L); } });
+          return acc;
+        }, []) },
+      { num: '5', stem: function (sh) { return t('P') + ' has coordinates ' + t(ptT(sh.P)) + '. Find two positions for point ' + t('Q') + ' so that the slope of ' + t('PQ') + ' is the value given.'; },
+        shared: function (r) { return { P: r.chance(0.25) ? [2, -3] : [r.int(-3, 4), r.int(-4, 3)], s: { a: r.pick([3, 2, 4]), b: r.pick([-2, -3, -4]), c: r.pick([[2, 5], [1, 3], [2, 3], [3, 4], [1, 4], [3, 5]]), d: r.pick([[-3, 4], [-2, 3], [-1, 4], [-3, 5], [-2, 5], [-4, 5]]) } }; },
         parts: [
-          { id: '15a', sub: 'a', level: 'BEG', make: function (r, o) {
-            var hs = 'That is the midpoint of a side. A diagonal joins <b>opposite</b> vertices: ' + t('P') + ' and ' + t('R') + '.';
-            return ptPart('Calculate the midpoint of diagonal ' + t('\\overline{PR}') + '.', mid(o.P, o.R), { cands: midCands(o.P, o.R).concat([[mid(o.P, o.Q), 'mid-wrong-seg', hs], [mid(o.P, o.S), 'mid-wrong-seg', hs]]) }, t(mLine(o.P, o.R)) + '.', HM, 'midpoint of PR');
+          { id: '5a', level: 'BEG', make: function (r, sh) { return q5Part(sh.P, [sh.s.a, 1], 'a'); } },
+          { id: '5b', level: 'BEG', make: function (r, sh) { return q5Part(sh.P, [sh.s.b, 1], 'b'); } },
+          { id: '5c', level: 'EMG', make: function (r, sh) { return q5Part(sh.P, sh.s.c, 'c'); } },
+          { id: '5d', level: 'EMG', make: function (r, sh) { return q5Part(sh.P, sh.s.d, 'd'); } },
+          { id: '5e', level: 'BEG', make: function (r, sh) { return q5Part(sh.P, [0, 1], 'e'); } },
+          { id: '5f', level: 'BEG', make: function (r, sh) { return q5Part(sh.P, [1, 0], 'f'); } }] },
+      { num: '6', stem: 'Two of the three measures rise, run and slope are given. Calculate the third measure.', parts: [
+        { id: '6a', level: 'EMG', make: function (r) { return q6Part(r, 'a', 'rise'); } },
+        { id: '6b', level: 'PRG', make: function (r) { return q6Part(r, 'b', 'run'); } },
+        { id: '6c', level: 'EMG', make: function (r) { return q6Part(r, 'c', 'rise'); } },
+        { id: '6d', level: 'PRG', make: function (r) { return q6Part(r, 'd', 'run'); } }] },
+      { num: '7', stem: '', parts: [
+        { id: '7', level: 'EMG', make: function (r) {
+          var useB = r.chance(0.25), f = useB ? [3, 5] : r.pick([[3, 5], [2, 5], [1, 4], [3, 4], [2, 3], [1, 3], [3, 8], [1, 2]]), u = useB ? 0.5 : r.pick([0.3, 0.4, 0.5, 0.6, 0.7, 0.8]);
+          var base = cl(f[1] * u), h = cl(f[0] * u), m = f[0] / f[1];
+          for (var g = 0; g < 20 && (base > 6.5 || base < 1.5); g++) { u = r.pick([0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.2]); base = cl(f[1] * u); h = cl(f[0] * u); }
+          return B.number('A skateboard ramp has a slope of ' + t(frT(f[0], f[1])) + '. Calculate the height of the ramp if its base length is ' + t(base) + ' metres.', h, function (v) {
+            if (near(v, cl(base / m))) return { code: 'calc-divided', hint: 'You divided by the slope. The height is the <b>rise</b> and the base is the <b>run</b>: rise = slope × run.' };
+            if (near(v, cl(base * f[1] / f[0]))) return { code: 'calc-flip', hint: 'Slope is rise over run: the height goes on top.' };
+            return null;
+          }, 'The height is the rise and the base length is the run, so ' + t('\\text{rise}=\\text{slope}\\times\\text{run}=' + frT(f[0], f[1]) + '\\times ' + base + '=' + h) + '. The ramp is ' + t(h) + ' m high.',
+          ['Which measure is the height — the rise or the run?', 'Multiply the slope by the base length.'], 'ramp height slope ' + f[0] + '/' + f[1] + ' base ' + base, { after: 'm' });
+        } }] },
+      { num: '8', stem: '', parts: [
+        { id: '8', level: 'ADV', make: function (r) {
+          var useB = r.chance(0.25), f = useB ? [5, 12] : r.pick([[5, 12], [3, 4], [2, 3], [3, 5], [1, 2], [4, 5], [2, 5], [5, 8]]), u = useB ? 0.3 : r.pick([0.2, 0.3, 0.4, 0.5, 0.6]);
+          var half = cl(f[1] * u); if (half > 6) { u = 0.2; half = cl(f[1] * u); }
+          var BC = cl(2 * half), h = cl(f[0] * u), area = cl(half * h);
+          return B.number('Triangle ' + t('ABC') + ' is isosceles with ' + t('AB=AC') + ' and ' + t('BC=' + BC) + ' cm. The slope of ' + t('AC') + ' is ' + t(frT(-f[0], f[1])) + '. Calculate the area of the triangle. (The height ' + t('h') + ' meets ' + t('BC') + ' at its midpoint.)' + triFig(half, h, mn(BC), mn(half)), area, function (v) {
+            if (near(v, cl(2 * area))) return { code: 'area-full', hint: 'Check two things: the run for ' + t('AC') + ' is only <b>half</b> of ' + t('BC') + ' (the height meets ' + t('BC') + ' at its midpoint), and the area of a triangle is ' + t('\\frac{1}{2}\\times\\text{base}\\times\\text{height}') + '.' };
+            if (near(v, h)) return { code: 'area-noh', hint: 'That’s the height ' + t('h') + '. Now use it to find the <b>area</b>.' };
+            if (near(v, -area)) return { code: 'calc-sign', hint: 'An area is positive. The negative slope only tells you ' + t('AC') + ' falls from left to right; use its size for the height.' };
+            if (near(v, cl(0.5 * BC * half * f[1] / f[0]))) return { code: 'calc-flip', hint: 'Slope is rise over run: ' + t('\\frac{h}{' + half + '}=\\frac{' + f[0] + '}{' + f[1] + '}') + '.' };
+            return null;
+          }, 'The height meets ' + t('BC') + ' at its midpoint, so the run from the foot of the height to ' + t('C') + ' is ' + t('\\frac{1}{2}(' + BC + ')=' + half) + ' cm.<br>The size of the slope of ' + t('AC') + ' is ' + t('\\frac{\\text{rise}}{\\text{run}}=\\frac{h}{' + half + '}') + ', so ' + t('\\frac{h}{' + half + '}=' + frT(f[0], f[1]) + '\\Rightarrow h=' + frT(f[0], f[1]) + '\\times ' + half + '=' + h) + ' cm.<br>' + t('\\text{Area}=\\frac{1}{2}\\times ' + BC + '\\times ' + h + '=' + area) + ' cm².',
+          ['Use the slope of ' + t('AC') + ' to find the height ' + t('h') + ' first. What is the run from the foot of the height to ' + t('C') + '?', 'Then area ' + t('=\\frac{1}{2}\\times\\text{base}\\times\\text{height}') + '.'], 'isosceles area BC ' + BC + ' slope ' + f[0] + '/' + f[1], { after: 'cm²' });
+        } }] },
+      { num: '9', stem: function (sh) { return 'A cyclist rides at a steady pace. Her distance–time graph passes through ' + t('(0,\\ 0)') + ' and ' + t('(' + sh.tt + ',\\ ' + sh.d + ')') + ', where time is in hours and distance is in kilometres.'; },
+        shared: function (r) { var o = r.chance(0.25) ? [18, 2.5] : r.pick([[12, 2.5], [14, 2.5], [16, 2.5], [18, 2.5], [20, 1.5], [24, 1.5], [16, 3.5], [12, 3.5], [22, 1.5], [15, 2], [18, 3]]); return { v: o[0], tt: o[1], d: cl(o[0] * o[1]) }; },
+        parts: [
+          { id: '9a', sub: 'a', level: 'BEG', make: function (r, sh) {
+            return B.number('(a) Determine the slope of the graph (the number).', sh.v, function (v) {
+              if (near(v, cl(sh.tt / sh.d)) || near(v, Number((sh.tt / sh.d).toFixed(2))) || near(v, Number((sh.tt / sh.d).toFixed(3)))) return { code: 'rate-flip', hint: 'That’s run over rise. Distance is on the vertical axis: slope ' + t('=\\frac{\\text{change in distance}}{\\text{change in time}}') + '.' };
+              if (near(v, sh.d)) return { code: 'rate-one', hint: 'That’s the distance. The slope compares the change in distance with the change in time.' };
+              return null;
+            }, 'rise ' + t('=' + sh.d + '-0=' + sh.d) + ' km, run ' + t('=' + sh.tt + '-0=' + sh.tt) + ' h. ' + t('\\text{slope}=\\frac{' + sh.d + '\\text{ km}}{' + sh.tt + '\\text{ h}}=' + sh.v) + ' km/h.', ['Slope ' + t('=\\frac{\\text{rise}}{\\text{run}}') + ' — what is on the vertical axis?'], 'cyclist slope ' + sh.d + '/' + sh.tt);
           } },
-          { id: '15b', sub: 'b', level: 'BEG', make: function (r, o) {
-            var hs = 'That is the midpoint of a side. A diagonal joins <b>opposite</b> vertices: ' + t('Q') + ' and ' + t('S') + '.';
-            return ptPart('Calculate the midpoint of diagonal ' + t('\\overline{QS}') + '.', mid(o.Q, o.S), { cands: midCands(o.Q, o.S).concat([[mid(o.Q, o.R), 'mid-wrong-seg', hs], [mid(o.P, o.Q), 'mid-wrong-seg', hs]]) }, t(mLine(o.Q, o.S)) + '.', HM, 'midpoint of QS');
+          { id: '9au', sub: 'a · units', level: 'LIM', make: function (r, sh) {
+            return B.mc(r, 'What are the units of the slope?', [{ html: 'km/h (kilometres per hour)', right: true },
+              { html: 'h/km (hours per kilometre)', why: 'Units upside down: a slope’s units are (vertical-axis units) <b>per</b> (horizontal-axis unit). Distance is on the vertical axis.' },
+              { html: 'km (kilometres)', why: 'A slope is a rise divided by a run, so its units are a ratio: km divided by h.' },
+              { html: 'km·h (kilometre-hours)', why: 'The rise is <b>divided</b> by the run, not multiplied: km ÷ h.' }],
+            'Slope ' + t('=\\frac{' + sh.d + '\\text{ km}}{' + sh.tt + '\\text{ h}}=' + sh.v + '\\text{ km/h}') + ': units of the vertical axis per unit of the horizontal axis.', ['The rise is in km and the run is in hours. What do you get when you divide them?'], 'units of cyclist slope');
           } },
-          { id: '15c', sub: 'c', level: 'EMG', make: function (r, o) {
-            var m1 = mid(o.P, o.R), m2 = mid(o.Q, o.S), eq = samePt(m1, m2);
-            return mcPart(r, 'The midpoint of diagonal ' + t('\\overline{PR}') + ' is ' + t(ptT(m1)) + ' and the midpoint of diagonal ' + t('\\overline{QS}') + ' is ' + t(ptT(m2)) + '. What does this tell you about quadrilateral ' + t('PQRS') + '? (Recall: if the diagonals of a quadrilateral bisect each other, the quadrilateral is a parallelogram.)', [
-              { html: 'The diagonals have the same midpoint, so they bisect each other: ' + t('PQRS') + ' is a parallelogram.', right: eq, why: eq ? null : 'Compare your answers: ' + t(ptT(m1)) + ' and ' + t(ptT(m2)) + ' are different points.' },
-              { html: 'The diagonals have different midpoints, so they don’t bisect each other: ' + t('PQRS') + ' is not a parallelogram.', right: !eq, why: eq ? 'Look again: both diagonals have the midpoint ' + t(ptT(m1)) + '.' : null },
-              { html: 'The diagonals are equal in length, so ' + t('PQRS') + ' is a rectangle.', why: 'Midpoints tell you where the diagonals cross, not how long they are. Lengths would need the distance formula.' },
-              { html: 'Nothing — midpoints only describe a single segment.', why: 'If both diagonals have the same midpoint, each one cuts the other exactly in half. That is a property of parallelograms.' }],
-              eq ? 'Both diagonals have the midpoint ' + t(ptT(m1)) + ', so each diagonal cuts the other in half — the diagonals <b>bisect each other</b>, and ' + t('PQRS') + ' is a <b>parallelogram</b>.' : 'The midpoints ' + t(ptT(m1)) + ' and ' + t(ptT(m2)) + ' are different, so the diagonals do not bisect each other: ' + t('PQRS') + ' is <b>not</b> a parallelogram.',
-              ['Compare the two midpoints you found.'], 'diagonals bisect → parallelogram');
+          { id: '9b', sub: 'b', level: 'LIM', make: function (r, sh) {
+            return B.mc(r, '(b) What does the slope tell you about the cyclist?', [{ html: 'She rides ' + sh.v + ' km every hour (her speed).', right: true },
+              { html: 'She rides for ' + sh.v + ' hours.', why: 'The slope compares distance with time: it is a <b>rate</b>, so it is km per hour, not a length of time.' },
+              { html: 'She ends up ' + sh.v + ' km from home.', why: 'That would be a distance. The slope tells how fast the distance changes.' },
+              { html: 'Each kilometre takes her ' + sh.v + ' hours.', why: 'That’s the rate upside down (hours per km). The slope is km per hour.' }],
+            'The slope is ' + t(sh.v) + ' km/h: she covers ' + t(sh.v) + ' km every hour — the slope of a distance–time graph is the <b>speed</b>.', ['Read the units: km per h.'], 'meaning of cyclist slope');
           } }] },
-      /* ---------------- Question 16: MC equidistant from S and a midpoint ---------------- */
-      { num: '16', section: 'Multiple choice and numerical response', parts: [
-        { id: '16', level: 'PRG', make: function (r) {
-          var o = r.chance(0.2) ? { P: [2, 11], Q: [10, 3], S: [-2, -5], tt: 2, bk: true } : pickWhere(function () {
-            var P0 = [r.int(-2, 4), r.int(6, 12)], Q0 = [r.int(6, 12), r.int(0, 5)], S0 = [r.int(-6, 0), r.int(-8, -2)];
-            return { P: P0, Q: Q0, S: S0, tt: r.pick([1, -1, 2, -2]) };
-          }, function (z) { var M = mid(z.P, z.Q), h = sub(M, z.S); return Number.isInteger(M[0]) && Number.isInteger(M[1]) && h[0] % 2 === 0 && h[1] % 2 === 0; });
-          var M = mid(o.P, o.Q), c = mid(o.S, M), h = sub(M, c), g = gcd(h[0], h[1]), pp = [h[1] / g, -h[0] / g], X = add(c, scl(pp, o.tt));
-          if (Math.abs(X[0]) > 15 || Math.abs(X[1]) > 15) X = add(c, scl(pp, o.tt > 0 ? 1 : -1));
-          var dis = [];
-          var hP = sub(o.P, o.S); if (hP[0] % 2 === 0 && hP[1] % 2 === 0) { var cP = mid(o.S, o.P), gP = gcd(hP[0], hP[1]) / 2, pP = [hP[1] / 2 / gP, -hP[0] / 2 / gP], XP = add(cP, pP); if (Math.abs(d2(XP, o.S) - d2(XP, M)) >= 4) dis.push({ q: XP, why: 'That point is equidistant from ' + t('S') + ' and ' + t('P') + ' — but the question uses ' + t('M') + ', the midpoint of ' + t('\\overline{PQ}') + ', which is ' + t(ptT(M)) + '. ' + eqWhy(XP, o.S, 'S', M, 'M') }); }
-          if (o.bk) dis = [[1, 5], [10, 0], [-4, 1]].map(function (q) { return { q: q, why: eqWhy(q, o.S, 'S', M, 'M') }; });
-          ptsOpt(r, o.S, M, 4).forEach(function (q) { if (dis.length < 3 && !samePt(q, X) && !dis.some(function (d) { return samePt(d.q, q); })) dis.push({ q: q, why: eqWhy(q, o.S, 'S', M, 'M') }); });
-          var opts = [{ html: t(ptT(X)), right: true }].concat(dis.slice(0, 3).map(function (d) { return { html: t(ptT(d.q)), why: d.why }; }));
-          return mcPart(r, '<i>(Multiple Choice)</i> ' + t('\\overline{PQ}') + ' has endpoints ' + t(nm('P', o.P)) + ' and ' + t(nm('Q', o.Q)) + '. Which of the following points is equidistant from ' + t(nm('S', o.S)) + ' and ' + t('M') + ', the midpoint of ' + t('\\overline{PQ}') + '?', opts,
-            'First, ' + t(mLine(o.P, o.Q, 'M')) + '. Now compare squared distances to ' + t('S') + ' and to ' + t('M') + ':<br>' + t(ptT(X)) + ': ' + t(d2(X, o.S)) + ' and ' + t(d2(X, M)) + '. Equal ✓<br>' + dis.slice(0, 3).map(function (d) { return t(ptT(d.q)) + ': ' + t(d2(d.q, o.S)) + ' vs ' + t(d2(d.q, M)) + '.'; }).join(' &nbsp;'),
-            ['Find ' + t('M') + ' first. Then, for each option, compare the squared distances to ' + t('S') + ' and to ' + t('M') + '.'], 'MC equidistant from S and M');
+      { num: '10', stem: function (sh) { return 'The graph shows the balance on Jaden’s bus pass during the first weeks of school.' + HW.graph({ x: [0, sh.W + 1], y: [0, sh.ytop], grid: 1, gridY: sh.gy, labelsX: 2, labelsY: sh.gy, unitX: Math.min(26, 300 / (sh.W + 1)), unitY: 230 / sh.ytop, firstQuadrant: true, xName: '', yName: '', xTitle: 'Week', yTitle: 'Balance ($)', segs: [{ pts: [[0, sh.B], [sh.W, 0]] }], points: [{ x: 0, y: sh.B, label: '(0, ' + sh.B + ')' }, { x: sh.w, y: sh.B - sh.rt * sh.w, label: '(' + sh.w + ', ' + (sh.B - sh.rt * sh.w) + ')' }], max: 360, aria: 'bus pass balance graph' }); },
+        shared: function (r) { var o = r.chance(0.25) ? [60, 6] : r.pick([[60, 6], [48, 6], [72, 6], [80, 8], [40, 4], [50, 5], [64, 8], [90, 9], [60, 5], [70, 7], [56, 7]]); var Wk = o[0] / o[1]; return { B: o[0], rt: o[1], W: Wk, w: r.chance(0.3) ? 4 : r.int(2, Math.min(5, Wk - 3)), ytop: Math.ceil((o[0] + 8) / 10) * 10, gy: 10 }; },
+        parts: [
+          { id: '10a', level: 'BEG', make: function (r, sh) {
+            var y2 = sh.B - sh.rt * sh.w;
+            return B.number('(a) Determine the slope of the graph, including its units.', -sh.rt, function (v) {
+              if (near(v, sh.rt)) return { code: 'rate-sign', hint: 'The balance goes <b>down</b> as the weeks go by, so the slope is negative.' };
+              if (near(v, cl(-1 / sh.rt)) || near(v, cl(1 / sh.rt))) return { code: 'rate-flip', hint: 'That’s run over rise. Slope ' + t('=\\frac{\\text{change in balance}}{\\text{change in weeks}}') + '.' };
+              if (near(v, -(sh.B - y2)) || near(v, sh.B - y2)) return { code: 'rate-one', hint: 'That’s the change in balance over ' + t(sh.w) + ' weeks. Divide by the run, ' + t(sh.w) + ' weeks.' };
+              return null;
+            }, 'From ' + t('(0,\\ ' + sh.B + ')') + ' to ' + t('(' + sh.w + ',\\ ' + y2 + ')') + ': rise ' + t('=' + y2 + '-' + sh.B + '=' + (y2 - sh.B)) + ' dollars, run ' + t('=' + sh.w) + ' weeks. ' + t('\\text{slope}=\\frac{' + (y2 - sh.B) + '}{' + sh.w + '}=' + (-sh.rt)) + ' dollars per week.',
+            ['Use the two marked points. Is the graph going up or down?'], 'bus pass slope', { after: 'dollars per week' });
+          } },
+          { id: '10b', level: 'EMG', make: function (r, sh) {
+            return B.mc(r, '(b) What does the slope mean in this situation?', [{ html: 'The balance goes down by $' + sh.rt + ' every week (Jaden spends $' + sh.rt + ' a week on fares).', right: true },
+              { html: 'The balance goes up by $' + sh.rt + ' every week.', why: 'The slope is negative: the balance is <b>decreasing</b>.' },
+              { html: 'The pass started with $' + sh.rt + ' on it.', why: 'The starting balance is where the graph meets the vertical axis ($' + sh.B + '). The slope is a rate: dollars per week.' },
+              { html: 'The pass lasts ' + sh.rt + ' weeks.', why: 'The slope’s units are dollars per week — it tells how fast the balance changes, not how long it lasts.' }],
+            'The slope is ' + t('-' + sh.rt) + ' dollars per week: the minus sign means the balance <b>decreases</b>, by $' + sh.rt + ' each week.', ['What do the units “dollars per week” and the negative sign tell you?'], 'meaning of negative rate');
+          } },
+          { id: '10c', level: 'EMG', make: function (r, sh) {
+            return B.number('(c) After how many weeks will the pass be empty?', sh.W, function (v) {
+              if (near(v, sh.rt)) return { code: 'rate-one', hint: 'That’s the amount spent each week. How many weeks until all $' + sh.B + ' is used up?' };
+              return null;
+            }, '$' + sh.B + ' at $' + sh.rt + ' per week lasts ' + t(sh.B + '\\div ' + sh.rt + '=' + sh.W) + ' weeks — where the graph meets the horizontal axis.', ['Where does the graph reach a balance of $0?'], 'weeks until empty', { after: 'weeks' });
+          } }] },
+      { num: '11', stem: function (sh) { return 'A highway sign warns of ' + (sh.g === 8 || sh.g === 11 || sh.g === 18 ? 'an ' : 'a ') + t(sh.g + '\\%') + ' downhill grade.'; },
+        shared: function (r) { return { g: r.chance(0.25) ? 8 : r.pick([4, 5, 6, 8, 10, 12, 15, 6, 8]), d: r.chance(0.25) ? 1.5 : r.pick([0.5, 1.5, 2, 2.5, 3, 1.2, 0.8]) }; },
+        parts: [
+          { id: '11a', level: 'BEG', make: function (r, sh) {
+            var f = red(sh.g, 100);
+            var p = B.fraction('(a) Write ' + t(sh.g + '\\%') + ' as a fraction in lowest terms.', f, { diag: function (v) { if (near(v, -f[0] / f[1])) return { code: 'calc-sign', hint: 'The grade itself, ' + t(sh.g + '\\%') + ', is positive — “downhill” tells you the direction.' }; if (near(v, sh.g / 10)) return { code: 'grade-whole', hint: 'Percent means “out of 100”: ' + t(sh.g + '\\%=\\frac{' + sh.g + '}{100}') + '.' }; return null; } },
+              t(sh.g + '\\%=\\frac{' + sh.g + '}{100}=' + frT(f[0], f[1])) + ': the road drops ' + t(f[0]) + ' m for every ' + t(f[1]) + ' m of run.', ['Percent means “out of 100”. Then reduce.'], 'grade ' + sh.g + '% as fraction');
+            p.bad = ['\\frac{' + sh.g + '}{100}'].filter(function () { return gcd(sh.g, 100) > 1; }); return p;
+          } },
+          { id: '11b', level: 'EMG', make: function (r, sh) {
+            var m = cl(sh.d * 1000), drop = cl(sh.g * sh.d * 10);
+            return B.number('(b) How many metres does the road drop over a horizontal distance of ' + t(sh.d) + ' km?', drop, function (v) {
+              if (near(v, cl(sh.g * sh.d / 100))) return { code: 'units-km', hint: 'Change ' + t(sh.d + '\\text{ km}') + ' to metres first: the answer should be in metres.' };
+              if (near(v, cl(sh.g * m))) return { code: 'grade-whole', hint: t(sh.g + '\\%') + ' is ' + t('\\frac{' + sh.g + '}{100}') + ', not ' + t(sh.g) + '.' };
+              if (near(v, -drop)) return { code: 'calc-sign', hint: 'The question asks how many metres the road <b>drops</b> — give the distance as a positive number.' };
+              if (near(v, cl(m * 100 / sh.g))) return { code: 'calc-divided', hint: 'Multiply the run by the grade: drop = ' + t('\\frac{' + sh.g + '}{100}\\times\\text{run}') + '.' };
+              return null;
+            }, t(sh.d + '\\text{ km}=' + m + '\\text{ m}') + ' of run. Drop ' + t('=\\frac{' + sh.g + '}{100}\\times ' + m + '=' + drop) + ' m.', ['Convert km to m (1 km = 1000 m).', 'drop = grade × run.'], 'drop at ' + sh.g + '% over ' + sh.d + ' km', { after: 'm' });
+          } }] },
+      { num: '12', stem: function (sh) { return 'A building code requires a wheelchair ramp to have a slope no greater than ' + t('\\frac{1}{12}') + '. A ramp must rise ' + t(sh.R) + ' cm to reach a doorway.'; },
+        shared: function (r) {
+          var R = r.chance(0.25) ? 45 : r.pick([30, 36, 40, 45, 48, 50, 54, 60, 75]), min = cl(0.12 * R), fail = r.chance(0.6), dlt = r.pick([0.3, 0.4, 0.5, 0.6, 0.8]);
+          var run = R === 45 && fail && r.chance(0.5) ? 4.8 : cl(fail ? min - dlt : min + dlt);
+          return { R: R, min: min, run: Number(run.toFixed(2)) };
+        },
+        parts: [
+          { id: '12a', level: 'PRG', make: function (r, sh) {
+            var m = rampMC(r, sh.R, sh.run);
+            return B.mc(r, '(a) A contractor plans a ramp with a run of ' + t(sh.run) + ' m. Does it meet the code? Choose the answer with correct reasoning.', m.opts,
+              'Use the same units: ' + t(sh.run + '\\text{ m}=' + m.cmRun + '\\text{ cm}') + '. ' + t('\\text{slope}=\\frac{' + sh.R + '}{' + m.cmRun + '}\\approx ' + m.sD) + ', and ' + t('\\frac{1}{12}\\approx 0.083') + '. ' + (m.meets ? t(m.sD + '\\le 0.083') + ', so the ramp <b>meets the code</b>.' : t(m.sD + '>0.083') + ', so the ramp is too steep: it <b>does not meet the code</b>.'),
+              ['Put the rise and the run in the same units, then compare the slope with ' + t('\\frac{1}{12}\\approx 0.083') + '.'], 'ramp ' + sh.R + ' cm over ' + sh.run + ' m');
+          } },
+          { id: '12b', level: 'PRG', make: function (r, sh) {
+            var ans = sh.min;
+            var p = B.number('(b) What is the shortest run, in metres, that meets the code?', ans, function (v) {
+              if (near(v, cl(12 * sh.R))) return { code: 'units-cm', hint: 'That’s in centimetres — give the run in <b>metres</b>.' };
+              if (near(v, cl(sh.R / 12)) || near(v, cl(sh.R / 1200)) || near(v, Number((sh.R / 12).toFixed(2)))) return { code: 'calc-divided', hint: 'A slope of at most ' + t('\\frac{1}{12}') + ' means at least ' + t('12') + ' cm of run for every ' + t('1') + ' cm of rise: <b>multiply</b> the rise by 12.' };
+              return null;
+            }, 'Each ' + t('1') + ' cm of rise needs at least ' + t('12') + ' cm of run: ' + t('\\text{run}=' + sh.R + '\\times 12=' + cl(12 * sh.R)) + ' cm ' + t('=' + ans) + ' m. (Any shorter run makes the slope greater than ' + t('\\frac{1}{12}') + '.)', ['Solve ' + t('\\frac{' + sh.R + '}{\\text{run}}=\\frac{1}{12}') + '.', 'Then change cm to m.'], 'shortest ramp run for ' + sh.R + ' cm', { after: 'm' });
+            p.bad = [String(cl(12 * sh.R))]; return p;
+          } }] },
+      { num: '13', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: '13', level: 'LIM', make: function (r) {
+          var ab = r.chance(0.25) ? [5, 2] : r.pick([[5, 2], [4, 3], [5, 3], [3, 2], [5, 4], [4, 5], [3, 4], [2, 5]]), a = ab[0], b = ab[1], mir = r.chance(0.3), right = mir ? frT(a, b) : frT(-a, b);
+          var opts = [[a, b], [-a, b], [b, a], [-b, a]].map(function (f) { var tx = frT(f[0], f[1]), isR = tx === right; return { html: t(tx), right: isR, why: isR ? null : (Math.abs(f[0]) === b && Math.abs(f[1]) === a ? 'That’s run over rise. The vertical leg is the rise.' : 'Right size — check the sign: does ' + t('\\overline{PQ}') + ' rise or fall from left to right?') }; });
+          return B.mc(r, 'The slope of ' + t('\\overline{PQ}') + ' is' + pqFig(a, b, mir), opts,
+            'The dashed legs give the rise and the run. ' + (mir ? 'From ' + t('Q') + ' (left) up to ' + t('P') + ' the rise is ' + t('+' + a) + ' and the run is ' + t('+' + b) + ': ' + t('\\overline{PQ}') + ' rises left to right. Slope ' + t('=\\frac{' + a + '}{' + b + '}') + '.' : 'From ' + t('P') + ' down to ' + t('Q') + ' the rise is ' + t('-' + a) + ' and the run is ' + t(b) + ': ' + t('\\overline{PQ}') + ' falls left to right. Slope ' + t('=\\frac{-' + a + '}{' + b + '}=' + right) + '.'),
+            ['Which leg is the rise (vertical)? Does the segment go up or down as you move right?'], 'slope of PQ from legs ' + a + ',' + b);
         } }] },
-      /* ---------------- Question 17: MC always true ---------------- */
-      { num: '17', parts: [
-        { id: '17', level: 'PRG', make: function (r) {
-          var FAL = [
-            { html: 'Two segments of equal length always share the same midpoint.', why: 'Two segments of length ' + t('4') + ' in different places have equal lengths but different midpoints.' },
-            { html: 'Two segments that share the same midpoint are always equal in length.', why: 'The segments from ' + t('(-1,\\ 0)') + ' to ' + t('(1,\\ 0)') + ' and from ' + t('(0,\\ -5)') + ' to ' + t('(0,\\ 5)') + ' share the midpoint ' + t('(0,\\ 0)') + ', but their lengths are ' + t('2') + ' and ' + t('10') + '.' },
-            { html: 'Any point equidistant from the endpoints of a segment must be that segment’s midpoint.', why: 'Every point on the perpendicular bisector is equidistant from the endpoints — only one of those points is the midpoint.' },
-            { html: 'The midpoint of a segment always has whole-number coordinates when both endpoints do.', why: 'The midpoint of ' + t('(0,\\ 0)') + ' and ' + t('(3,\\ 0)') + ' is ' + t('(1.5,\\ 0)') + '.' },
-            { html: 'The distance from ' + t('A') + ' to ' + t('B') + ' can be different from the distance from ' + t('B') + ' to ' + t('A') + '.', why: 'Swapping the points changes the sign of each difference, and squaring erases the sign — the distance is the same.' },
-            { html: 'If ' + t('M') + ' is the midpoint of ' + t('\\overline{AB}') + ', then ' + t('AM+MB') + ' is greater than ' + t('AB') + '.', why: t('M') + ' lies on the segment, so ' + t('AM+MB=AB') + ' exactly.' }];
-          var TRU = [
-            { html: 'The midpoint of a segment is the same distance from both endpoints.' },
-            { html: 'If ' + t('M') + ' is the midpoint of ' + t('\\overline{PQ}') + ', then ' + t('PM') + ' is half of ' + t('PQ') + '.' },
-            { html: 'Swapping which endpoint is called ' + t('(x_1,\\ y_1)') + ' does not change the distance between two points.' }];
-          var three, oneTrue = !r.chance(0.6);
-          if (!oneTrue) three = r.chance(0.5) ? FAL.slice(0, 3) : r.sample(FAL, 3);
-          else { var tr = r.pick(TRU); three = r.sample(FAL, 2).concat([{ html: tr.html, right: true }]); }
-          three = r.shuffle(three);
-          var none = { html: 'None of the above statements is always true.', right: !oneTrue, why: oneTrue ? 'One of the statements is always true — look for the one about a single segment and its own midpoint or length.' : null };
-          var opts = three.map(function (s) { return s.right ? s : { html: s.html, why: 'Not always: ' + s.why }; }).concat([none]);
-          return mcPart(r, '<i>(Multiple Choice)</i> Which statement is always true?', opts,
-            three.map(function (s, i) { return '<b>' + 'ABC'[i] + '.</b> ' + (s.right ? 'Always true.' : 'False — ' + s.why); }).join('<br>') + '<br>' + (oneTrue ? 'So the answer is the true statement, not D.' : 'All three fail, so the answer is <b>D</b>.'),
-            ['For each statement, try to find one example where it fails (a counterexample).'], 'MC always true (midpoint/distance)', true);
+      { num: '14', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: '14', level: 'BEG', make: function (r) {
+          var useB = r.chance(0.25), P = useB ? [-3, 0] : [r.int(-5, 3), r.int(-4, 4)], f = useB ? [3, 4] : r.pick([[3, 4], [2, 3], [2, 5], [1, 3], [3, 5], [4, 3], [5, 2], [1, 4]]), p = f[0], q = f[1];
+          var opts = [{ html: t(ptT([P[0] + q, P[1] - p])), right: true },
+            { html: t(ptT([P[0] + q, P[1] + p])), why: 'That point is up and to the right, so its slope from ' + t(ptT(P)) + ' is positive. A negative slope goes <b>down</b> as you move right.' },
+            { html: t(ptT([P[0] - q, P[1] + p])), why: 'That point is on the line, but it is to the <b>left</b> of ' + t(ptT(P)) + '.' },
+            { html: t(ptT([P[0] - q, P[1] - p])), why: 'That point is down and to the left, so its slope from ' + t(ptT(P)) + ' is positive.' }];
+          return B.mc(r, 'The point ' + t(ptT(P)) + ' is on a line with slope ' + t(frT(-p, q)) + '. The next point with integer coordinates on the line, to the right of ' + t(ptT(P)) + ', is', opts,
+            'Write the slope as ' + t('\\frac{\\text{rise}}{\\text{run}}=\\frac{-' + p + '}{' + q + '}') + '. The smallest whole step to the right is run ' + t('+' + q) + ', rise ' + t('-' + p) + ': ' + t('(' + nT(P[0]) + '+' + q + ',\\ ' + nT(P[1]) + '-' + p + ')=' + ptT([P[0] + q, P[1] - p])) + '.', ['To the right means the run is positive. With a negative slope, what is the sign of the rise?'], 'next point right slope -' + p + '/' + q);
         } }] },
-      /* ---------------- Question 18: NR missing endpoint ---------------- */
-      { num: '18', parts: [
-        { id: '18', level: 'PRG', make: function (r) {
-          var o = r.chance(0.2) ? { M: [2, -4], T: [-5, 3] } : pickWhere(function () { return { M: [r.int(1, 6), r.int(-8, 4)], T: [r.int(-8, -1), r.int(-6, 8)] }; }, function (z) { var x = 2 * z.M[0] - z.T[0]; return x > 0 && x < 100 && z.M[1] !== z.T[1]; });
-          var x = 2 * o.M[0] - o.T[0], y = 2 * o.M[1] - o.T[1];
-          var c = endNum(o.T[0], o.M[0]).concat([[y, 'end-gave-y', 'That is the ' + t('y') + '-coordinate of ' + t('S') + '. The question asks for ' + t('x') + '.']]);
-          return B.nr('<i>(Numerical Response)</i> The midpoint of line segment ' + t('ST') + ' is ' + t(nm('M', o.M)) + '. If the coordinates of ' + t('T') + ' are ' + t(ptT(o.T)) + ', and the coordinates of ' + t('S') + ' are ' + t('(x,\\ y)') + ', the value of ' + t('x') + ' is ______.', x, numDiag(c),
-            t('M') + ' is the midpoint of ' + t('\\overline{ST}') + ', so work backward: ' + t('S=2M-T') + '.<br>' + t('x=2(' + o.M[0] + ')-' + sgp(o.T[0]) + '=' + 2 * o.M[0] + (o.T[0] < 0 ? '+' + (-o.T[0]) : '-' + o.T[0]) + '=' + x) + ' (and ' + t('y=2(' + o.M[1] + ')-' + sgp(o.T[1]) + '=' + y) + ').', HE, 'NR missing endpoint x');
-        } }] }
+      { num: '15', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: '15', level: 'PRG', make: function (r) {
+          var L = r.chance(0.4) ? ['W', 'X', 'Y', 'Z'] : r.shuffle(['W', 'X', 'Y', 'Z']), Q = { I: L[0], II: L[1], III: L[2], IV: L[3] }, pos = r.chance(0.6);
+          var word = pos ? 'positive' : 'negative', sure = pos ? [Q.I, Q.III] : [Q.II, Q.IV], never = pos ? [Q.II, Q.IV] : [Q.I, Q.III];
+          var mix = [[Q.I, Q.II], [Q.II, Q.III], [Q.III, Q.IV], [Q.I, Q.IV]], two = r.sample(mix, 2);
+          var nm = function (pr) { return t(pr.slice().sort().join('')); };
+          var why = function (pr) { var qs = Object.keys(Q).filter(function (k) { return pr.indexOf(Q[k]) >= 0; }); var sameY = (qs.indexOf('I') >= 0 && qs.indexOf('II') >= 0) || (qs.indexOf('III') >= 0 && qs.indexOf('IV') >= 0); return 'Not guaranteed: ' + nm(pr) + ' joins quadrants ' + qs.join(' and ') + ', where both points have ' + (sameY ? 'the same sign of ' + t('y') + ', so the rise' : 'the same sign of ' + t('x') + ', so the run') + ' could be positive, negative or zero.'; };
+          var opts = [{ html: 'Line segment ' + nm(sure) + ' has a ' + word + ' slope.', right: true },
+            { html: 'Line segment ' + nm(two[0]) + ' has a ' + word + ' slope.', why: why(two[0]) },
+            { html: 'Line segment ' + nm(two[1]) + ' has a ' + word + ' slope.', why: why(two[1]) },
+            { html: 'Line segment ' + nm(never) + ' has a ' + word + ' slope.', why: nm(never) + ' joins quadrants ' + (pos ? 'II and IV' : 'I and III') + ': the rise and run always have ' + (pos ? 'opposite' : 'the same') + ' signs, so that slope is always <b>' + (pos ? 'negative' : 'positive') + '</b>.' }];
+          return B.mc(r, t(Q.I) + ' is a point in quadrant I, ' + t(Q.II) + ' is in quadrant II, ' + t(Q.III) + ' is in quadrant III and ' + t(Q.IV) + ' is in quadrant IV. Which statement <b>must</b> be true?', opts,
+            'Going from the quadrant ' + (pos ? 'III point to the quadrant I point' : 'II point to the quadrant IV point') + ', ' + (pos ? 'both ' + t('x') + ' and ' + t('y') + ' increase: run and rise are both positive' : t('x') + ' increases and ' + t('y') + ' decreases: the run is positive and the rise negative') + ', for <b>every</b> choice of points. So ' + nm(sure) + ' always has a ' + word + ' slope. Segments joining neighbouring quadrants can have any slope.',
+            ['Sketch the four quadrants and try a few different points for each pair.'], 'quadrant slope must be ' + word);
+        } }] },
+      { num: '16', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: '16', level: 'BEG', make: function (r) {
+          var useB = r.chance(0.25), a = useB ? 3 : r.pick([2, 3, 4, 5]), bb = useB ? 4 : a + r.int(1, 2), sm = useB ? [1, 5] : r.pick([[1, 5], [1, 4], [2, 5], [1, 3]]), nf = useB ? [3, 2] : r.pick([[3, 2], [5, 4], [4, 3], [5, 3]].filter(function (f) { return f[0] / f[1] < a; }));
+          var opts = [{ html: t('m=' + a), why: t(a) + ' is the greatest <b>number</b>, but steepness ignores the sign: compare the sizes ' + t('|m|') + '.' },
+            { html: t('m=-' + bb), right: true }, { html: t('m=' + frT(sm[0], sm[1])), why: 'A slope this small is close to horizontal — nearly flat.' },
+            { html: t('m=' + frT(-nf[0], nf[1])), why: 'Compare sizes: ' + t('\\left|' + frT(-nf[0], nf[1]) + '\\right|=' + frT(nf[0], nf[1])) + ', which is less than ' + t(bb) + '.' }];
+          return B.mc(r, 'Four lines have the slopes listed below. Which line is the steepest?', opts,
+            'Steepness is the size of the slope, ignoring the sign: ' + t('|' + a + '|=' + a + ',\\ |-' + bb + '|=' + bb + ',\\ \\left|' + frT(sm[0], sm[1]) + '\\right|=' + frT(sm[0], sm[1]) + ',\\ \\left|' + frT(-nf[0], nf[1]) + '\\right|=' + frT(nf[0], nf[1])) + '. The largest size is ' + t(bb) + ', so ' + t('m=-' + bb) + ' is steepest.', ['Ignore the signs and compare the sizes.'], 'steepest of four slopes');
+        } }] },
+      { num: '17', section: 'Numerical Response', stem: pyrStem, shared: pyrShared,
+        parts: [
+          { id: '17', level: 'EMG', make: function (r, sh) {
+            var ans = 2 * sh.h / sh.s;
+            return B.approx('<i>(Numerical Response)</i> A beetle starts at the midpoint of one edge of the base and climbs straight up the face to the apex, as in the side view. To the nearest tenth, the slope of the beetle’s climb is ________.', ans, 1, { nr: true, diag: function (v) {
+              if (near(v, K.roundTo(sh.h / sh.s, 1))) return { code: 'pyr-base', hint: 'The beetle starts at the middle of an edge, so the run to the point under the apex is only <b>half</b> the side length.' };
+              if (near(v, K.roundTo(sh.s / (2 * sh.h), 1))) return { code: 'calc-flip', hint: 'Slope is rise over run: the height goes on top.' };
+              return null;
+            } }, 'In the side view the run is half the base side and the rise is the height: run ' + t('=\\frac{' + sh.s + '}{2}=' + sh.s / 2) + ' m, rise ' + t('=' + sh.h) + ' m. ' + t('\\text{slope}=\\frac{' + sh.h + '}{' + sh.s / 2 + '}=' + K.roundTo(ans, 1).toFixed(1)) + '.', ['Rise = the height. Run = from the start point to the point straight under the apex.'], 'beetle slope s=' + sh.s + ' h=' + sh.h);
+          } }] },
+      { num: '18', stem: pyrStem, shared: pyrShared,
+        parts: [
+          { id: '18', level: 'ADV', make: function (r, sh) {
+            var hd = sh.s * Math.SQRT2 / 2, ans = sh.h / hd;
+            return B.approx('<i>(Numerical Response)</i> A fly starts at a corner of the base and climbs along the slanted edge to the apex. To the nearest tenth, the slope of the fly’s climb is ________.', ans, 1, { nr: true, diag: function (v) {
+              if (near(v, K.roundTo(2 * sh.h / sh.s, 1))) return { code: 'pyr-half', hint: 'That’s the beetle’s slope. The fly starts at a <b>corner</b>: its run goes from the corner to the centre of the base — half the <b>diagonal</b> of the square.' };
+              if (near(v, K.roundTo(sh.h / (2 * hd), 1))) return { code: 'pyr-diag', hint: 'The apex is above the centre of the base, so the run is <b>half</b> the diagonal.' };
+              if (near(v, K.roundTo(sh.h / sh.s, 1))) return { code: 'pyr-base', hint: 'The run is from the corner to the point under the apex (the centre of the square): half the diagonal.' };
+              if (near(v, K.roundTo(hd / sh.h, 1))) return { code: 'calc-flip', hint: 'Slope is rise over run: the height goes on top.' };
+              return null;
+            } }, 'Along a slanted edge the run is half the base diagonal. The diagonal is ' + t('\\sqrt{' + sh.s + '^2+' + sh.s + '^2}=' + sh.s + '\\sqrt{2}') + ' m, so the run is ' + t(nT(sh.s / 2) + '\\sqrt{2}\\approx ' + hd.toFixed(4)) + ' m. ' + t('\\text{slope}=\\frac{' + sh.h + '}{' + hd.toFixed(4) + '}\\approx ' + ans.toFixed(4) + '\\approx ' + K.roundTo(ans, 1).toFixed(1)) + '.', ['The apex is directly above the centre of the square base. How far is a corner from the centre?', 'Use the Pythagorean theorem for the diagonal of the base.'], 'fly slope s=' + sh.s + ' h=' + sh.h);
+          } }] }
     ],
     extra: EXTRA()
   });
-  function sq(x) { return x * x; }
 
-  /* =============================== Extra practice (u6_EP02) =============================== */
+  /* ======================= Extra practice ======================= */
   function EXTRA() {
     return [
-      /* ---- EP 1: triangle PQR ---- */
-      { num: '1', section: 'Extra practice A — One figure, two formulas', shared: function (r) {
-          if (r.chance(0.2)) return { P: [-4, -1], Q: [2, 7], R: [8, -1] };
-          var L = triple(r, 12), a = [r.int(-6, 0), r.int(-4, 3)], up = r.chance(0.75) ? 1 : -1;
-          return { P: a, Q: [a[0] + L[0], a[1] + up * L[1]], R: [a[0] + 2 * L[0], a[1]] };
+      { num: '1', section: 'Extra practice A — Counting slope off a grid', stem: function (sh) { return 'Each segment has endpoints with integer coordinates. Find the rise, the run and the slope. Write <i>undefined</i> for the slope where that is the answer (and give the rise and run anyway).' + segFig(sh.segs, sh.names, 6); },
+        shared: function (r) {
+          for (var g = 0; g < 60; g++) {
+            var ab = r.pick([[8, 6], [6, 4], [4, 2], [8, 4], [9, 6], [6, 2]]), cd = r.pick([[6, 5], [5, 3], [4, 3], [7, 4], [5, 2], [7, 5]]), ef = r.int(3, 6), gh = r.int(3, 7);
+            var segs = placeSegs(r, [{ rise: -ab[0], run: ab[1] }, { rise: cd[0], run: cd[1] }, { rise: 0, run: ef }, { rise: -gh, run: 0 }], 6);
+            if (segs) return { segs: segs, names: ['AB', 'CD', 'EF', 'GH'] };
+          }
+          return { segs: [[[-6, 3], [0, -5]], [[-5, -2], [0, 4]], [[2, 5], [6, 5]], [[3, -1], [3, -6]]], names: ['AB', 'CD', 'EF', 'GH'] };
         },
-        stem: function (o) { return t('\\triangle PQR') + ' has vertices ' + t(nm('P', o.P)) + ', ' + t(nm('Q', o.Q)) + ', and ' + t(nm('R', o.R)) + ', as shown.' + figPoly([o.P, o.Q, o.R], ['P', 'Q', 'R'], { closed: true }); },
+        parts: [0, 1, 2, 3].map(function (i) { return { id: 'e1' + 'abcd'.charAt(i), sub: ['AB', 'CD', 'EF', 'GH'][i], level: 'BEG', make: function (r, sh) { return rrPart(sh.names[i], sh.segs[i][0], sh.segs[i][1]); } }; }) },
+      { num: '2', stem: function (sh) { return 'On this grid <b>one square across represents 2 units</b>, while one square up represents 1 unit. Read the tick labels, not the squares.' + HW.graph({ x: [0, 18], y: [0, 8], grid: 2, gridY: 1, labelsX: 2, labelsY: 1, unitX: 16, unitY: 32, firstQuadrant: true, segs: [{ pts: [sh.P, sh.Q] }, { pts: [sh.R, sh.S] }], points: [{ x: sh.P[0], y: sh.P[1], label: 'P' }, { x: sh.Q[0], y: sh.Q[1], label: 'Q' }, { x: sh.R[0], y: sh.R[1], label: 'R' }, { x: sh.S[0], y: sh.S[1], label: 'S' }], max: 360, aria: 'grid with unequal scales' }); },
+        shared: function (r) {
+          for (var g = 0; g < 300; g++) {
+            var a = r.int(2, 5), b = r.int(3, 7), c = r.int(3, 6), d = r.int(3, 6);
+            var P = [2 * r.int(1, 9 - a), r.int(1, 8 - b)], Q = [P[0] + 2 * a, P[1] + b], R = [2 * r.int(0, 9 - c), r.int(d + 1, 8)], S = [R[0] + 2 * c, R[1] - d];
+            if (R[0] === 0 && S[0] === 0) continue;
+            if (b / (2 * a) === b / a || a === b || 2 * a === b) continue;
+            var pts = [P, Q, R, S], bad = false; for (var i = 0; i < 4; i++) for (var j = 0; j < i; j++) if (Math.hypot((pts[i][0] - pts[j][0]) / 2, pts[i][1] - pts[j][1]) < 2) bad = true;
+            if (pts.some(function (p) { return p[0] <= 0 || p[0] >= 18 || p[1] <= 0; })) bad = true;
+            var sc = function (p) { return [p[0] / 2, p[1]]; };
+            if (distSeg(sc(P), sc(R), sc(S)) < 1 || distSeg(sc(Q), sc(R), sc(S)) < 1 || distSeg(sc(R), sc(P), sc(Q)) < 1 || distSeg(sc(S), sc(P), sc(Q)) < 1) bad = true;
+            if (!bad) return { P: P, Q: Q, R: R, S: S };
+          }
+          return { P: [2, 1], Q: [10, 7], R: [4, 8], S: [16, 3] };
+        },
         parts: [
-          { id: 'e1a', sub: 'a', level: 'EMG', make: function (r, o) {
-            var a = dist(o.P, o.Q), b = dist(o.Q, o.R), c = dist(o.P, o.R), per = a + b + c;
-            return B.number('Determine the perimeter of ' + t('\\triangle PQR') + '.', per, numDiag([[a + c, 'per-side', 'A perimeter adds <b>all three</b> sides.'], [2 * a, 'per-side', 'Add the third side, ' + t('PR') + ', too.'], [a * a + b * b + c * c, 'd-no-root', 'Take the square root of each squared length before adding.']]),
-              t(dLine(o.P, o.Q, 'PQ') + simpTail(d2(o.P, o.Q))) + '<br>' + t(dLine(o.Q, o.R, 'QR') + simpTail(d2(o.Q, o.R))) + '<br>' + t(dLine(o.P, o.R, 'PR') + simpTail(d2(o.P, o.R))) + '<br>Perimeter ' + t('=' + a + '+' + b + '+' + c + '=' + per) + ' units.', HD, 'perimeter of PQR', { after: 'units' });
+          { id: 'e2a', sub: 'a', level: 'BEG', make: function (r, sh) {
+            var nm = ['P', 'Q', 'R', 'S'], pts = [sh.P, sh.Q, sh.R, sh.S];
+            var checks = pts.map(function (p, i) { return function (resp) {
+              var L = readPts(resp); if (L.empty) return form('empty', 'Fill in the coordinates of ' + t(nm[i]) + '.'); if (L.bad || L.pts.length !== 1) return form('pts-format', 'Write one point in brackets, e.g. ' + t('(6,\\ 2)') + '.');
+              var q = L.pts[0]; if (same(q, p)) return ok();
+              if (same(q, [p[1], p[0]])) return wrong('pt-swap', 'Coordinates swapped: ' + t('x') + ' (across) comes first.');
+              if (same(q, [p[0] / 2, p[1]])) return wrong('scale-squares', 'You counted squares across. Each square across is <b>2</b> units — read the tick labels.');
+              return wrong('pt-other', 'Read the tick labels below and beside the point again.');
+            }; });
+            return B.fields('(a) Write the coordinates of ' + t('P') + ', ' + t('Q') + ', ' + t('R') + ' and ' + t('S') + '.', nm.map(function (n) { return { label: t(n), name: n, mode: 'math', keys: 'pairs', placeholder: '(x, y)' }; }), checks, pts.map(ptT),
+              nm.map(function (n, i) { return t(n + ptT(pts[i])); }).join(', '), 'Read the tick labels (across: 2 per square; up: 1 per square): ' + nm.map(function (n, i) { return t(n + ptT(pts[i])); }).join(', ') + '.', ['Across, each square is 2 units: count squares and double.'], 'read points on 2:1 grid');
           } },
-          { id: 'e1b', sub: 'b', level: 'BEG', make: function (r, o) {
-            var S = [['P', 'Q'], ['Q', 'R'], ['P', 'R']], W = S.map(function (s) { return mid(o[s[0]], o[s[1]]); });
-            return B.fields('Determine the coordinates of the midpoint of each of the three sides.', S.map(function (s) { return ptField(t('\\overline{' + s[0] + s[1] + '}')); }),
-              S.map(function (s, i) { return ptCheck(W[i], { cands: midCands(o[s[0]], o[s[1]]) }); }), W.map(ptKey), S.map(function (s, i) { return t('\\overline{' + s[0] + s[1] + '}') + ': ' + t(ptT(W[i])); }).join('<br>'),
-              'Average each coordinate.<br>' + S.map(function (s) { return t(mLine(o[s[0]], o[s[1]])); }).join('<br>'), HM, 'midpoints of PQR');
+          { id: 'e2b', sub: 'b', level: 'EMG', make: function (r, sh) {
+            var s1 = slopeOf(sh.P, sh.Q), s2 = slopeOf(sh.R, sh.S), sq1 = red(sh.Q[1] - sh.P[1], (sh.Q[0] - sh.P[0]) / 2), sq2 = red(sh.S[1] - sh.R[1], (sh.S[0] - sh.R[0]) / 2);
+            var mk = function (sl, sq) { var c = K.slope(sl, { diag: function (v) { return near(v, sq[0] / sq[1]) ? { code: 'scale-squares', hint: 'You counted squares. Each square across is 2 units, so the run is twice the number of squares.' } : null; } }); return c; };
+            return B.fields('(b) Calculate the slope of ' + t('PQ') + ' and the slope of ' + t('RS') + '.', [{ label: t('m_{PQ}'), name: 'PQ', mode: 'math', keys: 'slope' }, { label: t('m_{RS}'), name: 'RS', mode: 'math', keys: 'slope' }], [mk(s1, sq1), mk(s2, sq2)], [slT(s1), slT(s2)],
+              t('m_{PQ}=' + slT(s1) + ',\\ m_{RS}=' + slT(s2)), t('m_{PQ}=' + formulaT(sh.P, sh.Q) + '=' + fracSteps(sh.Q[1] - sh.P[1], sh.Q[0] - sh.P[0])) + '<br>' + t('m_{RS}=' + formulaT(sh.R, sh.S) + '=' + fracSteps(sh.S[1] - sh.R[1], sh.S[0] - sh.R[0])), ['Use the coordinates from (a), not the squares.'], 'slopes on 2:1 grid');
           } },
-          { id: 'e1c', sub: 'c', level: 'BEG', make: function (r, o) {
-            var m1 = mid(o.P, o.Q), m2 = mid(o.Q, o.R), L = dist(m1, m2);
-            return B.number('Determine the length of the segment joining the midpoint of ' + t('\\overline{PQ}') + ' to the midpoint of ' + t('\\overline{QR}') + '.', L, numDiag([[dist(o.P, o.R), 'd-half', 'That is the length of ' + t('PR') + '. Use the two midpoints ' + t(ptT(m1)) + ' and ' + t(ptT(m2)) + ' as the endpoints.']]),
-              'From ' + t(ptT(m1)) + ' to ' + t(ptT(m2)) + ': ' + t(dLine(m1, m2, 'd') + '=' + nT(L)) + '.', ['Find the two midpoints first (part b), then use the distance formula between them.'], 'midsegment length', { after: 'units' });
+          { id: 'e2c', sub: 'c', level: 'EMG', make: function (r, sh) {
+            var s1 = slopeOf(sh.P, sh.Q), sq = red(sh.Q[1] - sh.P[1], (sh.Q[0] - sh.P[0]) / 2);
+            return B.mc(r, '(c) A student counts squares instead of units and reports ' + t(slT(sq)) + ' for ' + t('PQ') + '. How is that answer related to the correct one, and why?', [
+              { html: 'It is <b>twice</b> the correct slope: each square across is 2 units, so counting squares halves the run, and halving the bottom of a fraction doubles it.', right: true },
+              { html: 'It is <b>half</b> the correct slope, because the squares across are worth 2 units.', why: 'Compare the numbers: ' + t(slT(sq)) + ' vs ' + t(slT(s1)) + '. Which is bigger? A smaller run (bottom) makes a bigger fraction.' },
+              { html: 'It is the reciprocal of the correct slope.', why: 'Only the run is miscounted; the rise is still on top.' },
+              { html: 'It is the same slope written differently.', why: 'Work out both as decimals: ' + t(slT(sq) + '=' + dec(sval(sq), 3)) + ' and ' + t(slT(s1) + '=' + dec(sval(s1), 3)) + '.' }],
+              'Counting squares: rise ' + t(sh.Q[1] - sh.P[1]) + ', run ' + t((sh.Q[0] - sh.P[0]) / 2) + ' squares, so ' + t(slT(sq)) + '. But ' + t((sh.Q[0] - sh.P[0]) / 2) + ' squares across are ' + t(sh.Q[0] - sh.P[0]) + ' units, so the student’s run is half the true run, and ' + t(slT(sq) + '=2\\times ' + slT(s1)) + '.', ['Compare the run the student used with the true run.'], 'square-counting doubles slope');
           } },
-          { id: 'e1c2', sub: 'c, compare', level: 'EMG', make: function (r, o) {
-            var L = dist(mid(o.P, o.Q), mid(o.Q, o.R)), PR = dist(o.P, o.R);
-            return mcPart(r, 'The segment joining the midpoint of ' + t('\\overline{PQ}') + ' to the midpoint of ' + t('\\overline{QR}') + ' has length ' + t(nT(L)) + '. Compare that length to the length of ' + t('\\overline{PR}') + '.', [
-              { html: 'It is exactly half as long as ' + t('\\overline{PR}') + ' (and parallel to it).', right: true },
-              { html: 'It is the same length as ' + t('\\overline{PR}') + '.', why: t('PR=' + nT(PR)) + ' — compare it with ' + t(nT(L)) + '.' },
-              { html: 'It is twice as long as ' + t('\\overline{PR}') + '.', why: t('PR=' + nT(PR)) + ' is the longer one.' },
-              { html: 'There is no simple relationship.', why: 'Divide: ' + t(nT(PR) + '\\div ' + nT(L) + '=2') + '.' }],
-              t('PR=' + nT(PR)) + ' and the segment joining the midpoints is ' + t(nT(L)) + ', so it is exactly <b>half</b> as long as ' + t('\\overline{PR}') + ' (both are horizontal, so they are also parallel).', ['Find ' + t('PR') + ' and compare.'], 'midsegment is half');
+          { id: 'e2d', sub: 'd', level: 'PRG', make: function (r, sh) {
+            var s2 = slopeOf(sh.R, sh.S), sq = red(sh.S[1] - sh.R[1], (sh.S[0] - sh.R[0]) / 2), half = red(sh.S[1] - sh.R[1], 2 * (sh.S[0] - sh.R[0]));
+            return B.mc(r, '(d) What would a student who counts squares instead of units get for ' + t('RS') + '? Would <i>any</i> segment on this grid be given its correct slope by counting squares?', [
+              { html: t(slT(sq)) + ', twice the correct value. Only a <b>horizontal</b> segment comes out right (its slope is ' + t('0') + ' either way); a vertical one is undefined either way.', right: true },
+              { html: t(slT(sq)) + ', twice the correct value. No segment can ever come out right.', why: 'Try a horizontal segment: its rise is ' + t('0') + ', so ' + t('\\frac{0}{\\text{run}}=0') + ' whether you count squares or units.' },
+              { html: t(slT(half)) + ', half the correct value. Only vertical segments come out right.', why: 'Counting squares makes the run smaller, which makes the slope bigger, not smaller.' },
+              { html: t(slT(sq)) + ', twice the correct value. Segments with slope ' + t('1') + ' come out right.', why: 'A slope of ' + t('1') + ' in units would be counted as ' + t('2') + ' in squares — every non-zero slope is doubled.' }],
+              'Squares: rise ' + t(sh.S[1] - sh.R[1]) + ', run ' + t((sh.S[0] - sh.R[0]) / 2) + ', so ' + t(slT(sq)) + ' — again twice the correct ' + t(slT(s2)) + '. Every segment with a non-zero run has its run halved and its slope doubled. Only a <b>horizontal</b> segment (rise ' + t('0') + ') comes out right; a vertical one is undefined either way.', ['What happens to a slope of 0 when you halve the run?'], 'which segments survive square counting');
           } }] },
-      /* ---- EP 2: AB and its midpoint ---- */
-      { num: '2', shared: function (r) {
-          if (r.chance(0.2)) return { A: [-7, 4], h: [6, -8] };
-          var L = triple(r, 8), h = [L[0], -L[1]]; if (r.chance(0.3)) h = [L[0], L[1]];
-          return { A: [r.int(-8, -2), h[1] < 0 ? r.int(2, 8) : r.int(-8, -2)], h: h };
+      { num: '3', stem: function (sh) { return 'Four segments are given by their endpoints: ' + sh.segs.map(function (s) { return t(s.n.charAt(0) + ptT(s.A) + '\\to ' + s.n.charAt(1) + ptT(s.B)); }).join(', ') + '.'; },
+        shared: function (r) {
+          var combos = [[[-2, 5], [-1, 1], [3, 2], [-5, 2]], [[-1, 3], [-1, 1], [4, 3], [-2, 1]], [[-1, 4], [-2, 3], [3, 2], [-5, 3]], [[-2, 7], [-3, 4], [5, 4], [-3, 2]], [[-1, 2], [-4, 3], [5, 3], [-3, 1]]];
+          var sl = r.chance(0.3) ? combos[0] : r.pick(combos), names = ['JK', 'LM', 'NP', 'QR'], order = r.chance(0.3) ? [1, 2, 0, 3] : r.shuffle([0, 1, 2, 3]);
+          var segs = order.map(function (k, i) {
+            var f = sl[k], mults = [1, 2, 3, 4, 6].filter(function (m) { return Math.abs(f[0] * m) <= 12 && Math.abs(f[1] * m) <= 12 && (m > 1 || r.chance(0.5)); }), mult = mults.length ? r.pick(mults) : 1, run = f[1] * mult, rise = f[0] * mult;
+            var A = [r.int(Math.max(-8, -8 - run), Math.min(8, 8 - run)), r.int(Math.max(-8, -8 - rise), Math.min(8, 8 - rise))], Bp = [A[0] + run, A[1] + rise];
+            return { n: names[i], A: A, B: Bp, s: red(f[0], f[1]), k: k };
+          });
+          return { segs: segs };
         },
-        stem: function (o) { return t('\\overline{AB}') + ' has endpoints ' + t(nm('A', o.A)) + ' and ' + t(nm('B', add(o.A, scl(o.h, 2)))) + ', and ' + t('M') + ' is its midpoint.'; },
         parts: [
-          { id: 'e2a', sub: 'a', level: 'BEG', make: function (r, o) {
-            var Bp = add(o.A, scl(o.h, 2)), D = dist(o.A, Bp);
-            return B.number('Determine the length of ' + t('\\overline{AB}') + '.', D, matchDiag(dCands(o.A, Bp)), dSteps(o.A, Bp) + '<br>' + t(dLine(o.A, Bp, 'AB') + simpTail(d2(o.A, Bp))) + '.', HD, 'length of AB');
+          { id: 'e3a', sub: 'a', level: 'BEG', make: function (r, sh) {
+            return B.fields('(a) Calculate all four slopes.', sh.segs.map(function (s) { return { label: t('m_{' + s.n + '}'), name: s.n, mode: 'math', keys: 'slope' }; }), sh.segs.map(function (s) { return K.slope(s.s); }), sh.segs.map(function (s) { return slT(s.s); }),
+              sh.segs.map(function (s) { return t('m_{' + s.n + '}=' + slT(s.s)); }).join(', '), sh.segs.map(function (s) { return t('m_{' + s.n + '}=' + formulaT(s.A, s.B) + '=' + fracSteps(s.B[1] - s.A[1], s.B[0] - s.A[0])); }).join('<br>'), ['Use ' + t('m=\\frac{y_2-y_1}{x_2-x_1}') + ' for each segment.'], 'four slopes from endpoints');
           } },
-          { id: 'e2b', sub: 'b', level: 'BEG', make: function (r, o) {
-            var Bp = add(o.A, scl(o.h, 2));
-            return ptPart('Determine the coordinates of ' + t('M') + '.', mid(o.A, Bp), { cands: midCands(o.A, Bp), before: 'M =' }, t(mLine(o.A, Bp, 'M')) + '.', HM, 'midpoint of AB');
-          } },
-          { id: 'e2c', sub: 'c', level: 'EMG', make: function (r, o) {
-            var Bp = add(o.A, scl(o.h, 2)), M = mid(o.A, Bp), D = dist(o.A, M);
-            return B.fields('Calculate ' + t('AM') + ' and ' + t('MB') + '.', [{ label: t('AM='), name: 'AM' }, { label: t('MB='), name: 'MB' }],
-              [K.number(D, matchDiag(dCands(o.A, M))), K.number(D, matchDiag(dCands(M, Bp)))], [String(D), String(D)], t('AM=MB=' + D),
-              t(dLine(o.A, M, 'AM') + simpTail(d2(o.A, M))) + '<br>' + t(dLine(M, Bp, 'MB') + simpTail(d2(M, Bp))), HD, 'AM and MB');
-          } },
-          { id: 'e2c2', sub: 'c, explain', level: 'EMG', make: function (r, o) {
-            var Bp = add(o.A, scl(o.h, 2)), D = dist(o.A, Bp);
-            return mcPart(r, 'You found ' + t('AM=MB=' + D / 2) + ' and ' + t('AB=' + D) + '. What do these answers confirm?', [
-              { html: t('M') + ' is the same distance from both ends and each half is exactly half of ' + t('AB') + ', so ' + t('M') + ' really is the midpoint.', right: true },
-              { html: 'Only that ' + t('M') + ' is equidistant from ' + t('A') + ' and ' + t('B') + ' — it could be off the segment.', why: 'An equidistant point off the segment would make ' + t('AM+MB') + ' longer than ' + t('AB') + '. Here ' + t('AM+MB=AB') + ', so ' + t('M') + ' is on the segment, halfway along.' },
-              { html: 'That the segment ' + t('\\overline{AB}') + ' is horizontal.', why: 'Equal halves happen for any segment and its midpoint — the direction doesn’t matter.' },
-              { html: 'That the distance formula and the midpoint formula give the same answer.', why: 'One formula gives a length, the other a point. The lengths ' + t('AM') + ' and ' + t('MB') + ' check the point ' + t('M') + '.' }],
-              t('AM=MB=' + D / 2) + ', each half of ' + t('AB=' + D) + '. ' + t('M') + ' is the same distance from both ends, and the two halves add up to the whole segment, so ' + t('M') + ' is the midpoint.', ['What would be true of the real midpoint?'], 'AM = MB confirms midpoint');
-          } }] },
-      /* ---- EP 3: which formula ---- */
-      { num: '3', parts: [
-        { id: 'e3', level: 'EMG', make: function (r) {
-          var POOL = [
-            { id: 'a', html: 'Locating the centre of a circle when the endpoints of a diameter are known.', w: 'm', why: 'The centre is a <b>location</b> — the point halfway along the diameter.' },
-            { id: 'b', html: 'Deciding whether a triangle is isosceles.', w: 'd', why: 'Isosceles means two equal side <b>lengths</b>.' },
-            { id: 'c', html: 'Deciding whether the diagonals of a quadrilateral bisect each other.', w: 'm', why: '“Bisect each other” means the two diagonals have the same <b>midpoint</b>.' },
-            { id: 'd', html: 'Finding the radius of a circle when its centre and a point on it are known.', w: 'd', why: 'A radius is a <b>length</b>: the distance from the centre to a point on the circle.' },
-            { id: 'e', html: 'Deciding whether a given point is the same distance from two other points.', w: 'd', why: '“Same distance” compares two <b>lengths</b>.' },
-            { id: 'f', html: 'Finding a fourth vertex that completes a parallelogram.', w: 'm', why: 'The fourth vertex is the <b>point</b> that makes the diagonals share a midpoint.' },
-            { id: 'g', html: 'Finding the perimeter of a triangle from its vertices.', w: 'd', why: 'A perimeter adds side <b>lengths</b>.' },
-            { id: 'h', html: 'Finding where to put a water station halfway along a straight trail.', w: 'm', why: 'Halfway along is a <b>location</b>.' },
-            { id: 'i', html: 'Finding the length of a median of a triangle (from a vertex to the midpoint of the opposite side).', w: 'b', why: 'You need the <b>midpoint</b> of the opposite side first, then the <b>distance</b> to it.' },
-            { id: 'j', html: 'Finding how far a given point is from the centre of a circle when only the endpoints of a diameter are known.', w: 'b', why: 'First locate the centre (the <b>midpoint</b> of the diameter), then find the <b>distance</b> from the centre to the point.' }];
-          var rows = r.chance(0.3) ? POOL.slice(0, 6) : r.shuffle(r.sample(POOL.slice(0, 8), 5).concat([r.pick(POOL.slice(8))]));
-          var cols = [{ id: 'd', html: 'Distance' }, { id: 'm', html: 'Midpoint' }, { id: 'b', html: 'Both' }], want = {}, by = {};
-          rows.forEach(function (x) { want[x.id] = x.w; by[x.id] = x; });
-          var nmC = { d: 'distance', m: 'midpoint', b: 'both' };
-          var p = B.grid('For each task, decide which formula settles it — <b>distance</b>, <b>midpoint</b>, or <b>both</b>. (Do not calculate anything.)', rows.map(function (x) { return { id: x.id, html: x.html }; }), cols, want,
-            { why: function (rid) { return { code: 'row', hint: '“' + by[rid].html + '” — ' + by[rid].why }; } },
-            rows.map(function (x) { return '<b>' + nmC[x.w].charAt(0).toUpperCase() + nmC[x.w].slice(1) + '.</b> ' + x.html + ' ' + x.why; }).join('<br>'),
-            ['Ask: is the question asking for a <b>length</b> (distance formula) or a <b>location</b> (midpoint formula)?'], 'which formula');
-          p.tries = 3;
-          return p;
-        } }] },
-      /* ---- EP 4: find B ---- */
-      { num: '4', section: 'Extra practice B — Backwards: the midpoint is known', stem: 'In each case ' + t('M') + ' is the midpoint of ' + t('\\overline{AB}') + '. Determine the coordinates of ' + t('B') + '.', parts: [
-        { id: 'e4a', level: 'EMG', make: function (r) {
-          var o = r.chance(0.2) ? { A: [-5, 4], M: [3, -2] } : pickWhere(function () { return { A: [r.int(-8, -1), r.int(1, 8)], M: [r.int(1, 6), r.int(-6, -1)] }; }, function () { return true; });
-          var Bp = sub(scl(o.M, 2), o.A);
-          return ptPart(t(nm('A', o.A) + ',\\ ' + nm('M', o.M)), Bp, { cands: endCands(o.A, o.M), before: 'B =' }, t('x_B=2x_M-x_A=2(' + o.M[0] + ')-' + sgp(o.A[0]) + '=' + Bp[0]) + '<br>' + t('y_B=2y_M-y_A=2(' + o.M[1] + ')-' + sgp(o.A[1]) + '=' + Bp[1]) + '<br>' + t(nm('B', Bp)), HE, 'missing endpoint B');
-        } },
-        { id: 'e4b', level: 'EMG', make: function (r) {
-          var o = r.chance(0.2) ? { A: [-9, 3], M: [0, -6] } : pickWhere(function () { return { A: [r.int(-10, -2), r.int(1, 8)], M: [r.pick([0, 0, 1, -1]), r.int(-8, -2)] }; }, function () { return true; });
-          var Bp = sub(scl(o.M, 2), o.A);
-          return ptPart(t(nm('A', o.A) + ',\\ ' + nm('M', o.M)), Bp, { cands: endCands(o.A, o.M), before: 'B =' }, t('x_B=2(' + o.M[0] + ')-' + sgp(o.A[0]) + '=' + Bp[0]) + '<br>' + t('y_B=2(' + o.M[1] + ')-' + sgp(o.A[1]) + '=' + Bp[1]) + '<br>' + t(nm('B', Bp)), HE, 'missing endpoint B (zero)');
-        } },
-        { id: 'e4c', level: 'PRG', make: function (r) {
-          var o = r.chance(0.2) ? { A: [1.5, -3], M: [-4.5, 2] } : pickWhere(function () { return { A: [r.int(0, 4) + 0.5, -r.int(1, 6)], M: [-r.int(1, 6) - 0.5, r.int(1, 5)] }; }, function () { return true; });
-          var Bp = sub(scl(o.M, 2), o.A);
-          return ptPart(t(nm('A', o.A) + ',\\ ' + nm('M', o.M)), Bp, { cands: endCands(o.A, o.M), before: 'B =' }, t('x_B=2(' + nT(o.M[0]) + ')-' + sgp(o.A[0]) + '=' + nT(2 * o.M[0]) + '-' + sgp(o.A[0]) + '=' + nT(Bp[0])) + '<br>' + t('y_B=2(' + o.M[1] + ')-' + sgp(o.A[1]) + '=' + Bp[1]) + '<br>' + t(nm('B', Bp)), HE, 'missing endpoint with decimals');
-        } },
-        { id: 'e4d', level: 'ADV', make: function (r) {
-          var o = r.chance(0.25) ? { a: [5, 1], m: [2, -3] } : pickWhere(function () { return { a: [r.int(2, 6), r.pick(pm(1, 3))], m: [r.pick(pm(1, 4)), r.pick(pm(1, 4))] }; }, function (z) { var b = [2 * z.m[0] - z.a[0], 2 * z.m[1] - z.a[1]]; return b[0] !== 0 && b[1] !== 0 && z.a[0] !== z.m[0] && z.a[1] !== z.m[1]; });
-          var bx = 2 * o.m[0] - o.a[0], by = 2 * o.m[1] - o.a[1], tt = function (c) { return c === 1 ? 't' : c === -1 ? '-t' : c + 't'; };
-          var Pt = function (c) { return P.parse(tt(c)); };
-          var wr = function (c, ca, cm) { return [{ is: P.parse(tt(cm - ca === 0 ? 1 : cm - ca)), code: 'end-step', hint: 'That is the step from ' + t('A') + ' to ' + t('M') + '. Double the midpoint, then subtract: ' + t('2(' + tt(cm) + ')-' + (ca < 0 ? '(' + tt(ca) + ')' : tt(ca))) + '.' }, { is: P.parse(tt(2 * cm + ca === 0 ? 1 : 2 * cm + ca)), code: 'end-sign', hint: '<b>Subtract</b> the endpoint after doubling: ' + t('2(' + tt(cm) + ')-' + (ca < 0 ? '(' + tt(ca) + ')' : tt(ca))) + '.' }].filter(function (w) { return !P.eq(w.is, Pt(c)); }); };
-          var fl = [{ label: t('x_B='), name: 'x_B', mode: 'math', keys: 'poly', vars: ['t'] }, { label: t('y_B='), name: 'y_B', mode: 'math', keys: 'poly', vars: ['t'] }];
-          return B.fields(t('A(' + tt(o.a[0]) + ',\\ ' + tt(o.a[1]) + '),\\ M(' + tt(o.m[0]) + ',\\ ' + tt(o.m[1]) + ')') + ' — give each coordinate of ' + t('B') + ' in terms of ' + t('t') + '.', fl,
-            [K.poly(Pt(bx), { wrong: wr(bx, o.a[0], o.m[0]) }), K.poly(Pt(by), { wrong: wr(by, o.a[1], o.m[1]) })], [tt(bx), tt(by)], t('B(' + tt(bx) + ',\\ ' + tt(by) + ')'),
-            t('x_B=2x_M-x_A=2(' + tt(o.m[0]) + ')-' + (o.a[0] < 0 ? '(' + tt(o.a[0]) + ')' : tt(o.a[0])) + '=' + tt(2 * o.m[0]) + (o.a[0] > 0 ? '-' + tt(o.a[0]) : '+' + tt(-o.a[0])) + '=' + tt(bx)) + '<br>' + t('y_B=2y_M-y_A=2(' + tt(o.m[1]) + ')-' + (o.a[1] < 0 ? '(' + tt(o.a[1]) + ')' : tt(o.a[1])) + '=' + tt(2 * o.m[1]) + (o.a[1] > 0 ? '-' + tt(o.a[1]) : '+' + tt(-o.a[1])) + '=' + tt(by)) + '<br>' + t('B(' + tt(bx) + ',\\ ' + tt(by) + ')'),
-            HE.concat(['Treat ' + t('t') + ' like a unit: ' + t('2(2t)-5t=4t-5t=-t') + '.']), 'missing endpoint with variables');
-        } }] },
-      /* ---- EP 5: helicopter ---- */
-      { num: '5', parts: [
-        { id: 'e5', level: 'PRG', make: function (r) {
-          var o = r.chance(0.2) ? { H: [14, -6], C: [-3, 11] } : pickWhere(function () { return { H: [r.int(6, 18), -r.int(2, 10)], C: [-r.int(1, 8), r.int(4, 14)] }; }, function () { return true; });
-          var X = sub(scl(o.H, 2), o.C);
-          return ptPart('A search helicopter hovers at ' + t(nm('H', o.H)) + ', exactly halfway along the straight line from base camp ' + t(nm('C', o.C)) + ' to a stranded hiker. Determine the hiker’s coordinates.', X, { cands: endCands(o.C, o.H) },
-            t('H') + ' is the midpoint, so double ' + t('H') + ' and subtract ' + t('C') + ':<br>' + t('x=2(' + o.H[0] + ')-' + sgp(o.C[0]) + '=' + X[0]) + ', &nbsp;' + t('y=2(' + o.H[1] + ')-' + sgp(o.C[1]) + '=' + X[1]) + '. The hiker is at ' + t(ptT(X)) + '.<br>Check: ' + t(mLine(o.C, X)) + ' ' + t('=H') + ' ✓',
-            HE, 'hiker coordinates');
-        } }] },
-      /* ---- EP 6: A, P midpoint of AB, Q midpoint of PB ---- */
-      { num: '6', shared: function (r) {
-          if (r.chance(0.2)) return { A: [-10, 6], h: [6, -4] };
-          var v = pickWhere(function () { return [r.pick([1, 2, 3]), r.pick([1, 2, 3, 4, 5])]; }, function (z) { var n = z[0] * z[0] + z[1] * z[1]; return gcd(z[0], z[1]) === 1 && !isSq(n) && radParts(n).k === 1; });
-          var h = r.chance(0.5) ? [2 * v[0], -2 * v[1]] : [2 * v[1], -2 * v[0]];
-          return { A: [r.int(-10, -4), r.int(2, 8)], h: h };
-        },
-        stem: function (o) { var Pp = add(o.A, o.h); return t('\\overline{AB}') + ' has endpoint ' + t(nm('A', o.A)) + '. The point ' + t(nm('P', Pp)) + ' is the midpoint of ' + t('\\overline{AB}') + ', and ' + t('Q') + ' is the midpoint of ' + t('\\overline{PB}') + '.'; },
-        parts: [
-          { id: 'e6a', sub: 'a', level: 'PRG', make: function (r, o) {
-            var Pp = add(o.A, o.h), Bp = add(Pp, o.h);
-            return ptPart('Determine the coordinates of ' + t('B') + '.', Bp, { cands: endCands(o.A, Pp), before: 'B =' }, t('P') + ' is the midpoint of ' + t('\\overline{AB}') + ':<br>' + t('x_B=2(' + Pp[0] + ')-' + sgp(o.A[0]) + '=' + Bp[0]) + ', &nbsp;' + t('y_B=2(' + Pp[1] + ')-' + sgp(o.A[1]) + '=' + Bp[1]) + ', so ' + t(nm('B', Bp)) + '.', HE, 'B from A and midpoint P');
-          } },
-          { id: 'e6b', sub: 'b', level: 'EMG', make: function (r, o) {
-            var Pp = add(o.A, o.h), Bp = add(Pp, o.h), Q = mid(Pp, Bp);
-            return ptPart('Determine the coordinates of ' + t('Q') + '.', Q, { cands: midCands(Pp, Bp).concat([[mid(o.A, Pp), 'mid-wrong-seg', t('Q') + ' is the midpoint of ' + t('\\overline{PB}') + ', not of ' + t('\\overline{AP}') + '.'], [mid(o.A, Bp), 'mid-wrong-seg', 'That is ' + t('P') + ', the midpoint of ' + t('\\overline{AB}') + '. ' + t('Q') + ' is the midpoint of ' + t('\\overline{PB}') + '.']]), before: 'Q =' },
-              t('Q') + ' is the midpoint of ' + t(nm('P', Pp)) + ' and ' + t(nm('B', Bp)) + ':<br>' + t(mLine(Pp, Bp, 'Q')) + '.', ['You need ' + t('B') + ' from part (a). Then average ' + t('P') + ' and ' + t('B') + '.'].concat(HM.slice(0, 1)), 'Q midpoint of PB');
-          } },
-          { id: 'e6c', sub: 'c', level: 'ADV', make: function (r, o) {
-            var Pp = add(o.A, o.h), Bp = add(Pp, o.h), Q = mid(Pp, Bp), nQ = d2(o.A, Q), nB = d2(o.A, Bp);
-            var fl = [lenField('AQ'), lenField('AB'), { label: 'fraction of the way', name: 'fraction', mode: 'math', keys: 'radical' }];
-            return B.fields('Calculate ' + t('AQ') + ' and ' + t('AB') + ' exactly, and state what fraction of the way from ' + t('A') + ' to ' + t('B') + ' the point ' + t('Q') + ' sits.', fl,
-              [lenCheck(nQ, 1, { cands: dCands(o.A, Q) }), lenCheck(nB, 1, { cands: dCands(o.A, Bp) }), K.fraction([3, 4], { decimalOk: true, diag: function (v) { if (same(v, 4 / 3)) return { code: 'flip', hint: 'Fraction of the way = ' + t('AQ\\div AB') + ' (the part over the whole).' }; if (same(v, 0.5)) return { code: 'value', hint: t('P') + ' is halfway; ' + t('Q') + ' is halfway between ' + t('P') + ' and ' + t('B') + ' — further along.' }; return null; } })],
-              [lenKey(nQ), lenKey(nB), '\\frac{3}{4}'], t('AQ=' + lenTex(nQ) + ',\\ AB=' + lenTex(nB)) + ', ' + t('Q') + ' sits ' + t('\\tfrac{3}{4}') + ' of the way.',
-              t(dLine(o.A, Q, 'AQ') + simpTail(nQ)) + '<br>' + t(dLine(o.A, Bp, 'AB') + simpTail(nB)) + '<br>' + t('AQ\\div AB=\\dfrac{' + lenTex(nQ) + '}{' + lenTex(nB) + '}=\\dfrac{3}{4}') + ', so ' + t('Q') + ' sits ' + t('\\tfrac{3}{4}') + ' of the way from ' + t('A') + ' to ' + t('B') + '.',
-              HD.concat(['The fraction of the way is ' + t('AQ\\div AB') + '; the radicals cancel.']), 'AQ, AB and the fraction');
-          } }] },
-      /* ---- EP 7: variables ---- */
-      { num: '7', parts: [
-        { id: 'e7', level: 'ADV', make: function (r) {
-          var o = r.chance(0.25) ? { mk: 3, mc: -2, ac: 1, ay: 4 } : pickWhere(function () { return { mk: r.pick([2, 3, 4]), mc: r.pick(pm(1, 5)), ac: r.pick(pm(1, 4)), ay: r.pick(pm(1, 6)) }; }, function (z) { return 2 * z.mc - z.ay !== 0 && z.ac !== 0; });
-          var lin = function (a, b) { return P.tex(P.add(P.parse(a === 1 ? 'k' : a === -1 ? '-k' : a + 'k'), P.num(b))); };
-          var Mx = lin(o.mk, 0), My = lin(1, o.mc), Ax = lin(1, o.ac), Bx = P.add(P.parse((2 * o.mk - 1) + 'k'), P.num(-o.ac)), By = P.add(P.parse('2k'), P.num(2 * o.mc - o.ay));
-          var fl = [{ label: t('x_B='), name: 'x_B', mode: 'math', keys: 'poly', vars: ['k'] }, { label: t('y_B='), name: 'y_B', mode: 'math', keys: 'poly', vars: ['k'] }];
-          var wx = [{ is: P.add(P.parse((2 * o.mk - 1) + 'k'), P.num(o.ac)), code: 'end-sign', hint: 'Subtracting ' + t('(' + Ax + ')') + ' changes the sign of <b>both</b> terms: ' + t('-(' + Ax + ')=' + P.tex(P.neg(P.parse(Ax)))) + '.' }, { is: P.scale(P.add(P.parse(Ax), P.parse(Mx)), [1, 2]), code: 'end-average', hint: 'You averaged ' + t('A') + ' and ' + t('M') + '. Double the midpoint, then subtract ' + t('A') + '.' }].filter(function (w) { return !P.eq(w.is, Bx); });
-          var wy = [{ is: P.add(P.parse('2k'), P.num(2 * o.mc + o.ay)), code: 'end-sign', hint: 'After doubling, <b>subtract</b> ' + t(sgp(o.ay)) + '.' }, { is: P.add(P.parse('k'), P.num(o.mc - o.ay)), code: 'end-double', hint: 'Double the <b>whole</b> midpoint coordinate: ' + t('2(' + My + ')=' + P.tex(P.scale(P.parse(My), 2))) + '.' }].filter(function (w) { return !P.eq(w.is, By); });
-          return B.fields('The point ' + t('M(' + Mx + ',\\ ' + My + ')') + ' is the midpoint of ' + t('\\overline{AB}') + ', where ' + t('A') + ' is the point ' + t('(' + Ax + ',\\ ' + o.ay + ')') + '. Determine the coordinates of ' + t('B') + ' in terms of ' + t('k') + '.', fl,
-            [K.poly(Bx, { wrong: wx }), K.poly(By, { wrong: wy })], [P.tex(Bx), P.tex(By)], t('B(' + P.tex(Bx) + ',\\ ' + P.tex(By) + ')'),
-            'Double the midpoint, then subtract ' + t('A') + ':<br>' + t('x_B=2(' + Mx + ')-(' + Ax + ')=' + P.tex(P.parse(2 * o.mk + 'k')) + '-' + P.btex(P.parse(Ax)) + '=' + P.tex(Bx)) + '<br>' + t('y_B=2(' + My + ')-' + sgp(o.ay) + '=' + P.tex(P.scale(P.parse(My), 2)) + (o.ay > 0 ? '-' + o.ay : '+' + (-o.ay)) + '=' + P.tex(By)) + '<br>Check by averaging: ' + t('\\dfrac{(' + Ax + ')+(' + P.tex(Bx) + ')}{2}=' + Mx) + ' ✓',
-            HE.concat(['Use brackets: ' + t('2(k-2)=2k-4') + ' and ' + t('-(k+1)=-k-1') + '.']), 'missing endpoint in terms of k');
-        } }] },
-      /* ---- EP 8: points at a given distance on a line ---- */
-      { num: '8', section: 'Extra practice C — Backwards: the distance is known', stem: 'In each case, determine <b>all</b> points that satisfy the conditions. (Separate two points with a comma.)', parts: [
-        { id: 'e8a', level: 'ADV', make: function (r) {
-          var o = r.chance(0.2) ? { A: [2, -3], tr: [3, 4, 5] } : (function () { var tr = r.pick([[3, 4, 5], [4, 3, 5], [6, 8, 10], [8, 6, 10], [5, 12, 13], [12, 5, 13]]); return { A: [r.pick(pm(1, 5)), tr[0] * (r.chance(0.6) ? -1 : 1)], tr: tr }; })();
-          var A = o.A, k = A[1], s = o.tr[1], rr = o.tr[2], W = [[A[0] + s, 0], [A[0] - s, 0]];
-          return { prompt: t('B') + ' lies on the ' + t('x') + '-axis and ' + t('AB=' + rr) + ', where ' + t('A') + ' is ' + t(ptT(A)) + '.', input: { type: 'math', keys: 'pairs', placeholder: 'e.g. (3, 0), (-1, 0)' },
-            check: ptsCheck(W, { missCode: 'ax-one', missHint: 'Correct so far — but ' + t('x-' + sgp(A[0]) + '=\\pm ' + s) + ' gives <b>two</b> values. Find the other point.', diag: function (L) {
-              if (L.some(function (p) { return same(p[1], 0); }) && L.every(function (p) { return same(p[1], 0); })) {
-                var xs = L.map(function (p) { return p[0]; });
-                if (xs.some(function (x) { return same(x, A[0] + rr) || same(x, A[0] - rr); })) return { code: 'ax-no-leg', hint: 'Include the vertical difference: ' + t('(x-' + sgp(A[0]) + ')^{2}+(0-' + sgp(k) + ')^{2}=' + rr + '^{2}') + '.' };
-                if (xs.some(function (x) { return same(x, -A[0] + s) || same(x, -A[0] - s); })) return { code: 'ax-sign', hint: 'Check the signs: ' + t('x-' + sgp(A[0]) + '=\\pm ' + s) + ', so ' + t('x=' + A[0] + '\\pm ' + s) + '.' };
-                if (xs.some(function (x) { return same(x, A[0] + s * s) || same(x, A[0] - s * s); })) return { code: 'ax-no-root', hint: 'Take the square root: ' + t('(x-' + sgp(A[0]) + ')^{2}=' + s * s) + ' means ' + t('x-' + sgp(A[0]) + '=\\pm ' + s) + '.' };
-              }
-              if (L.some(function (p) { return !same(p[1], 0); })) return { code: 'pts', hint: 'A point on the ' + t('x') + '-axis has ' + t('y=0') + ': write it as ' + t('(x,\\ 0)') + '.' };
-              return null; } }),
-            key: ptKey(W[0]) + ', ' + ptKey(W[1]), answer: t('B' + ptT(W[0]) + '\\text{ or }B' + ptT(W[1])), text: 'points on x-axis at distance', hints: ['A point on the ' + t('x') + '-axis is ' + t('(x,\\ 0)') + '. Substitute it into the distance formula and set it equal to ' + t(rr) + '.', 'A squared equation usually has <b>two</b> solutions.'],
-            solution: 'On the ' + t('x') + '-axis: ' + t('B(x,\\ 0)') + '.<br>' + t('(x-' + sgp(A[0]) + ')^{2}+(0-' + sgp(k) + ')^{2}=' + rr + '^{2}') + '<br>' + t('(x-' + sgp(A[0]) + ')^{2}+' + k * k + '=' + rr * rr) + ', so ' + t('(x-' + sgp(A[0]) + ')^{2}=' + s * s) + '<br>' + t('x-' + sgp(A[0]) + '=\\pm ' + s) + ', so ' + t('x=' + W[0][0]) + ' or ' + t('x=' + W[1][0]) + ': ' + t('B' + ptT(W[0])) + ' or ' + t('B' + ptT(W[1])) + '.',
-            good: ['\\left(' + W[1][0] + ',0\\right),\\left(' + W[0][0] + ',0\\right)'], bad: [ptKey(W[0]), ptKey([A[0] + rr, 0]) + ', ' + ptKey([A[0] - rr, 0])] };
-        } },
-        { id: 'e8b', level: 'ADV', make: function (r) {
-          var o = r.chance(0.2) ? { C: [-1, 4], s: 4 } : pickWhere(function () { return { C: [r.pick(pm(1, 3)), r.pick(pm(1, 6))], s: r.int(2, 6) }; }, function (z) { return !isSq(z.C[0] * z.C[0] + z.s * z.s) && z.C[1] !== z.s && z.C[1] !== -z.s; });
-          var C = o.C, h = C[0], s = o.s, R = h * h + s * s, W = [[0, C[1] + s], [0, C[1] - s]];
-          return { prompt: t('D') + ' lies on the ' + t('y') + '-axis and ' + t('CD=' + lenTex(R)) + ', where ' + t('C') + ' is ' + t(ptT(C)) + '.', input: { type: 'math', keys: 'pairs', placeholder: 'e.g. (0, 3), (0, -1)' },
-            check: ptsCheck(W, { missCode: 'ax-one', missHint: 'Correct so far — ' + t('y-' + sgp(C[1]) + '=\\pm ' + s) + ' gives <b>two</b> values. Find the other point.', diag: function (L) {
-              if (L.some(function (p) { return !same(p[0], 0); })) return { code: 'pts', hint: 'A point on the ' + t('y') + '-axis has ' + t('x=0') + ': write it as ' + t('(0,\\ y)') + '.' };
-              var ys = L.map(function (p) { return p[1]; });
-              if (ys.some(function (y) { return same(y, C[1] + Math.sqrt(R)) || same(y, C[1] - Math.sqrt(R)); })) return { code: 'ax-no-leg', hint: 'Include the horizontal difference: ' + t('(0-' + sgp(h) + ')^{2}+(y-' + sgp(C[1]) + ')^{2}=' + R) + '.' };
-              if (ys.some(function (y) { return same(y, -C[1] + s) || same(y, -C[1] - s); })) return { code: 'ax-sign', hint: 'Check the signs: ' + t('y=' + C[1] + '\\pm ' + s) + '.' };
-              return null; } }),
-            key: ptKey(W[0]) + ', ' + ptKey(W[1]), answer: t('D' + ptT(W[0]) + '\\text{ or }D' + ptT(W[1])), text: 'points on y-axis at distance', hints: ['A point on the ' + t('y') + '-axis is ' + t('(0,\\ y)') + '. Square both sides of the distance: ' + t('(' + lenTex(R) + ')^{2}=' + R) + '.', 'Expect two answers.'],
-            solution: 'On the ' + t('y') + '-axis: ' + t('D(0,\\ y)') + '.<br>' + t('(0-' + sgp(h) + ')^{2}+(y-' + sgp(C[1]) + ')^{2}=(' + lenTex(R) + ')^{2}') + '<br>' + t(h * h + '+(y-' + sgp(C[1]) + ')^{2}=' + R) + ', so ' + t('(y-' + sgp(C[1]) + ')^{2}=' + s * s) + '<br>' + t('y=' + C[1] + '\\pm ' + s) + ': ' + t('D' + ptT(W[0])) + ' or ' + t('D' + ptT(W[1])) + '.',
-            good: [ptKey(W[1]) + ', ' + ptKey(W[0])], bad: [ptKey(W[1])] };
-        } },
-        { id: 'e8c', level: 'ADV', make: function (r) {
-          var o = r.chance(0.2) ? { E: [3, -2], rr: 4, dir: 1 } : { E: [r.pick(pm(1, 5)), r.pick(pm(1, 5))], rr: r.int(2, 6), dir: r.pick([1, -1]) };
-          var E = o.E, c = E[0] + o.dir * o.rr, W = [[c, E[1]]];
-          return { prompt: t('F') + ' lies on the vertical line ' + t('x=' + c) + ' and ' + t('EF=' + o.rr) + ', where ' + t('E') + ' is ' + t(ptT(E)) + '.', input: { type: 'math', keys: 'pairs', placeholder: 'e.g. (3, 0)' },
-            check: ptsCheck(W, { diag: function (L) { if (L.length === 2 && L.some(function (p) { return samePt(p, W[0]); })) return { code: 'pts-extra', hint: 'Check: ' + t('(y-' + sgp(E[1]) + ')^{2}=0') + ' has only <b>one</b> solution — the two “±” answers are the same point.' }; if (L.some(function (p) { return !same(p[0], c); })) return { code: 'pts', hint: 'Every point on the line ' + t('x=' + c) + ' has ' + t('x') + '-coordinate ' + t(c) + '.' }; return null; } }),
-            key: ptKey(W[0]), answer: t('F' + ptT(W[0])) + ' — only one point', text: 'one point at distance (tangent)', hints: ['A point on ' + t('x=' + c) + ' is ' + t('(' + c + ',\\ y)') + '. Set up the distance equation and solve.'],
-            solution: 'On ' + t('x=' + c) + ': ' + t('F(' + c + ',\\ y)') + '.<br>' + t('(' + c + '-' + sgp(E[0]) + ')^{2}+(y-' + sgp(E[1]) + ')^{2}=' + o.rr + '^{2}') + '<br>' + t(o.rr * o.rr + '+(y-' + sgp(E[1]) + ')^{2}=' + o.rr * o.rr) + ', so ' + t('(y-' + sgp(E[1]) + ')^{2}=0') + ' and ' + t('y=' + E[1]) + ' only: ' + t('F' + ptT(W[0])) + ' — one point.',
-            good: ['\\left(' + c + ',' + E[1] + '\\right)'], bad: [ptKey([c, E[1] + o.rr]) + ', ' + ptKey([c, E[1] - o.rr])] };
-        } },
-        { id: 'e8d', sub: 'd', level: 'PRG', make: function (r) {
-          var E = [r.pick(pm(1, 5)), r.pick(pm(1, 5))], d = r.int(2, 6), c = E[0] + r.pick([1, -1]) * d;
-          return mcPart(r, 'Finding all points on a line at a fixed distance from a given point usually gives <b>two</b> points. But when ' + t('F') + ' lies on the vertical line ' + t('x=' + c) + ' and ' + t('EF=' + d) + ', where ' + t('E') + ' is ' + t(ptT(E)) + ', there is only <b>one</b> point, ' + t('F' + ptT([c, E[1]])) + '. Which explanation is correct?', [
-            { html: 'The points at a fixed distance from a given point form a circle. Here ' + t('E') + ' is exactly that distance from the line, so the circle only <b>touches</b> the line once; in the two-point cases the circle crosses the line twice.', right: true },
-            { html: 'The line is vertical, and vertical lines can only contain one point at a given distance.', why: 'The direction of the line isn’t the reason — a vertical line closer to ' + t('E') + ' would cross the circle twice. What matters is how far the line is from the given point compared with the distance.' },
-            { html: 'One of the two answers was negative, so it had to be rejected.', why: 'Negative coordinates are perfectly good points. Here the equation becomes ' + t('(y-k)^{2}=0') + ', which has only one solution.' },
-            { html: 'The question has a mistake: there should be two points.', why: 'The algebra gives ' + t('(y-k)^{2}=0') + ' — only one solution. Think about the circle around ' + t('E') + ' and the line.' }],
-            'The points at a fixed distance from a given point form a <b>circle</b> around it. When the line’s distance from the point equals the radius, the circle just touches the line (one point). When the radius is greater than the gap, the circle cuts the line at two points; when it is smaller, there are none.',
-            ['Picture all the points at that distance from the given point. What shape do they make?'], 'why only one point');
-        } }] },
-      /* ---- EP 9: values of k ---- */
-      { num: '9', stem: 'Determine all values of ' + t('k') + ' for which the stated distance is correct.', shared: function (r) {
-          if (r.chance(0.2)) return { y0: 3, Q: [1, 7], rr: 3 };
-          return pickWhere(function () { var y0 = r.pick(pm(1, 5)); return { y0: y0, Q: [r.pick(pm(1, 5)), y0 + r.pick(pm(3, 6))], rr: r.int(2, 5) }; }, function (z) { return Math.abs(z.Q[1] - z.y0) > z.rr && !isSq(Math.abs(sq(z.Q[1] - z.y0) - z.rr * z.rr)); });
-        }, parts: [
-        { id: 'e9a', level: 'ADV', make: function (r) {
-          var o = r.chance(0.2) ? { y0: 3, Q: [-2, -1], tr: [4, 3, 5] } : (function () { var tr = r.pick([[4, 3, 5], [3, 4, 5], [8, 6, 10], [6, 8, 10], [5, 12, 13], [12, 5, 13]]), y0 = r.pick(pm(1, 5)); return { y0: y0, Q: [r.pick(pm(1, 5)), y0 - tr[0] * r.pick([1, -1])], tr: tr }; })();
-          var dy = o.y0 - o.Q[1], s = o.tr[1], rr = o.tr[2], ks = [o.Q[0] + s, o.Q[0] - s];
-          var p = B.valueSet('The distance from ' + t('(k,\\ ' + o.y0 + ')') + ' to ' + t(ptT(o.Q)) + ' is ' + t(rr) + '.', ks, { v: 'k', diag: function (A) {
-              if (A.some(function (x) { return same(x, o.Q[0] + rr) || same(x, o.Q[0] - rr); })) return { code: 'ax-no-leg', hint: 'Include the vertical difference: ' + t('(' + o.y0 + '-' + sgp(o.Q[1]) + ')^{2}=' + dy * dy) + '.' };
-              if (A.some(function (x) { return same(x, -o.Q[0] + s) || same(x, -o.Q[0] - s); })) return { code: 'ax-sign', hint: 'Check the signs: ' + t('k-' + sgp(o.Q[0]) + '=\\pm ' + s) + '.' };
-              return null; } },
-            t('(k-' + sgp(o.Q[0]) + ')^{2}+(' + o.y0 + '-' + sgp(o.Q[1]) + ')^{2}=' + rr + '^{2}') + '<br>' + t('(k-' + sgp(o.Q[0]) + ')^{2}+' + dy * dy + '=' + rr * rr) + ', so ' + t('(k-' + sgp(o.Q[0]) + ')^{2}=' + s * s) + '<br>' + t('k-' + sgp(o.Q[0]) + '=\\pm ' + s) + ': ' + t('k=' + ks[0]) + ' or ' + t('k=' + ks[1]) + '.',
-            ['Substitute into the distance formula, square both sides, and solve for ' + t('k') + '.', 'A squared equation usually has two solutions.'], 'values of k for a distance');
-          p.good = ['k=' + ks[1] + ', k=' + ks[0]]; p.bad = ['k=' + ks[0]];
-          return p;
-        } },
-        { id: 'e9b', level: 'ADV', make: function (r) {
-          var o = r.chance(0.2) ? { y0: 3, Q: [4, -2], s: 5 } : pickWhere(function () { var y0 = r.pick(pm(1, 5)); return { y0: y0, Q: [r.pick(pm(1, 6)), y0 - r.pick(pm(2, 6))], s: r.int(2, 7) }; }, function (z) { var dy = z.y0 - z.Q[1], R = dy * dy + z.s * z.s; return !isSq(R) && radParts(R).k >= 2; });
-          var dy = o.y0 - o.Q[1], s = o.s, R = dy * dy + s * s, ks = [o.Q[0] + s, o.Q[0] - s];
-          var p = B.valueSet('The distance from ' + t('(k,\\ ' + o.y0 + ')') + ' to ' + t(ptT(o.Q)) + ' is ' + t(lenTex(R)) + '.', ks, { v: 'k', diag: function (A) {
-              if (A.some(function (x) { return same(x, -o.Q[0] + s) || same(x, -o.Q[0] - s); })) return { code: 'ax-sign', hint: 'Check the signs: ' + t('k-' + sgp(o.Q[0]) + '=\\pm ' + s) + '.' };
-              if (A.some(function (x) { return same(x, ks[0]) || same(x, ks[1]); })) return null; return { code: 'value', hint: 'Square the radical distance carefully: ' + t('(' + lenTex(R) + ')^{2}=' + R) + '.' }; } },
-            t('(k-' + sgp(o.Q[0]) + ')^{2}+(' + o.y0 + '-' + sgp(o.Q[1]) + ')^{2}=(' + lenTex(R) + ')^{2}') + '<br>' + t('(k-' + sgp(o.Q[0]) + ')^{2}+' + dy * dy + '=' + R) + ', so ' + t('(k-' + sgp(o.Q[0]) + ')^{2}=' + s * s) + '<br>' + t('k=' + o.Q[0] + '\\pm ' + s) + ': ' + t('k=' + ks[0]) + ' or ' + t('k=' + ks[1]) + '.',
-            ['Square the given distance: ' + t('(a\\sqrt{b})^{2}=a^{2}b') + '.', 'Expect two values of ' + t('k') + '.'], 'values of k for a radical distance');
-          p.bad = ['k=' + ks[1]];
-          return p;
-        } },
-        { id: 'e9c', level: 'PRG', make: function (r, o) {
-          var dy = o.y0 - o.Q[1], neg = o.rr * o.rr - dy * dy;
-          return mcPart(r, 'The distance from ' + t('(k,\\ ' + o.y0 + ')') + ' to ' + t(ptT(o.Q)) + ' is ' + t(o.rr) + '. Which describes the values of ' + t('k') + '?', [
-            { html: 'There is no real value of ' + t('k') + '.', right: true },
-            { html: t('k=' + o.Q[0] + '\\pm\\sqrt{' + (-neg) + '}'), why: 'Check: ' + t('(k-' + sgp(o.Q[0]) + ')^{2}=' + o.rr * o.rr + '-' + dy * dy + '=' + neg) + ' — a <b>negative</b> number. You can’t take the square root of ' + t(neg) + '.' },
-            { html: t('k=' + (o.Q[0] + o.rr)) + ' or ' + t('k=' + (o.Q[0] - o.rr)), why: 'That ignores the vertical difference ' + t('(' + o.y0 + '-' + sgp(o.Q[1]) + ')^{2}=' + dy * dy) + '.' },
-            { html: t('k=' + o.Q[0]) + ' only', why: 'At ' + t('k=' + o.Q[0]) + ' the distance is ' + t(Math.abs(dy)) + ', not ' + t(o.rr) + '.' }],
-            t('(k-' + sgp(o.Q[0]) + ')^{2}+(' + o.y0 + '-' + sgp(o.Q[1]) + ')^{2}=' + o.rr + '^{2}') + '<br>' + t('(k-' + sgp(o.Q[0]) + ')^{2}+' + dy * dy + '=' + o.rr * o.rr) + ', so ' + t('(k-' + sgp(o.Q[0]) + ')^{2}=' + neg) + '.<br>A square is never negative, so there is <b>no real value</b> of ' + t('k') + '.',
-            ['Set up the equation and see what ' + t('(k-' + sgp(o.Q[0]) + ')^{2}') + ' has to equal.'], 'no value of k');
-        } },
-        { id: 'e9d', sub: 'd', level: 'PRG', make: function (r, o) {
-          var g = Math.abs(o.Q[1] - o.y0), Pq = t(ptT(o.Q)), side = o.Q[1] > o.y0 ? 'above' : 'below', foot = t(ptT([o.Q[0], o.y0]));
-          return mcPart(r, 'Solving for ' + t('k') + ' shows that no real value works. Explain, without algebra, why no point of the form ' + t('(k,\\ ' + o.y0 + ')') + ' can be ' + t(o.rr) + ' units from ' + Pq + '.', [
-            { html: 'Every point ' + t('(k,\\ ' + o.y0 + ')') + ' is on the horizontal line ' + t('y=' + o.y0) + ', and ' + Pq + ' is ' + t(g) + ' units ' + side + ' that line. No point of the line is closer than ' + t(g) + ', so none can be only ' + t(o.rr) + ' away.', right: true },
-            { html: 'Because ' + Pq + ' is not on the line ' + t('y=' + o.y0) + ', so no distance from it to the line can be calculated.', why: 'Distances from ' + Pq + ' to points on the line can be calculated — the smallest of them is ' + t(g) + '. Compare that gap with ' + t(o.rr) + '.' },
-            { html: 'Because ' + t('k') + ' would have to be negative.', why: 'Negative values of ' + t('k') + ' are allowed. The problem is that every point on ' + t('y=' + o.y0) + ' is at least ' + t(g) + ' units from ' + Pq + '.' },
-            { html: 'Because a distance can never be a whole number.', why: 'Distances can be whole numbers (' + t('3') + ', ' + t('4') + ', ' + t('5') + ' …). Think about how close the line ' + t('y=' + o.y0) + ' gets to the point.' }],
-            'The closest point of the line ' + t('y=' + o.y0) + ' to ' + Pq + ' is ' + foot + ', straight ' + (side === 'above' ? 'below' : 'above') + ' it, at a distance of ' + t(g) + '. A circle of radius ' + t(o.rr) + ' around ' + Pq + ' never reaches the line.', ['How close can a point on the line ' + t('y=' + o.y0) + ' get to ' + Pq + '?'], 'why no solution');
-        } }] },
-      /* ---- EP 10: point on the y-axis equidistant from A and B ---- */
-      { num: '10', parts: [
-        { id: 'e10', level: 'MAS', make: function (r) {
-          var o = r.chance(0.2) ? { Pp: [0, -1], u: [-4, 2], w: [2, -4] } : pickWhere(function () {
-            var u = [r.pick(pm(1, 5)), r.pick(pm(1, 5))], tf = r.pick([function (v) { return [v[1], v[0]]; }, function (v) { return [-v[1], -v[0]]; }, function (v) { return [v[1], -v[0]]; }, function (v) { return [-v[1], v[0]]; }]);
-            return { Pp: [0, r.int(-5, 5)], u: u, w: tf(u) };
-          }, function (z) { var A = add(z.Pp, z.u), Bq = add(z.Pp, z.w); return A[0] !== 0 && Bq[0] !== 0 && A[1] !== Bq[1] && A[0] !== Bq[0] && !samePt(A, Bq) && Math.abs(A[1]) <= 9 && Math.abs(Bq[1]) <= 9; });
-          var Pp = o.Pp, A = add(Pp, o.u), Bq = add(Pp, o.w), y = Pp[1], Mab = mid(A, Bq);
-          var lhs = A[0] * A[0] + A[1] * A[1], rhs = Bq[0] * Bq[0] + Bq[1] * Bq[1], ca = -2 * A[1], cb = -2 * Bq[1];
-          var c = [[Mab, 'eq-gave-mid', 'That is the midpoint of ' + t('\\overline{AB}') + ' — it is equidistant, but it isn’t on the ' + t('y') + '-axis. Use a point ' + t('(0,\\ y)') + ' and set its distances to ' + t('A') + ' and ' + t('B') + ' equal.'], [[0, Mab[1]], 'eq-mid-y', 'Averaging the ' + t('y') + '-coordinates doesn’t work here. Set ' + t('(0-' + sgp(A[0]) + ')^{2}+(y-' + sgp(A[1]) + ')^{2}=(0-' + sgp(Bq[0]) + ')^{2}+(y-' + sgp(Bq[1]) + ')^{2}') + ' and solve.']];
-          var tl = function (c0, c1) { return 'y^{2}' + (c0 === 0 ? '' : c0 > 0 ? '+' + c0 + 'y' : c0 + 'y') + '+' + c1; };
-          return ptPart('Determine the coordinates of the point on the ' + t('y') + '-axis that is equidistant from ' + t(nm('A', A)) + ' and ' + t(nm('B', Bq)) + '.', Pp, { cands: c },
-            'A point on the ' + t('y') + '-axis is ' + t('(0,\\ y)') + '. Set the squared distances to ' + t('A') + ' and ' + t('B') + ' equal:<br>' + t('(0-' + sgp(A[0]) + ')^{2}+(y-' + sgp(A[1]) + ')^{2}=(0-' + sgp(Bq[0]) + ')^{2}+(y-' + sgp(Bq[1]) + ')^{2}') + '<br>' + t(tl(ca, lhs) + '=' + tl(cb, rhs)) + '<br>' + t((ca - cb) + 'y=' + (rhs - lhs)) + ', so ' + t('y=' + y) + '. The point is ' + t(ptT(Pp)) + '.<br>Check: ' + t(dLine(Pp, A) + simpTail(d2(Pp, A))) + ' and ' + t(dLine(Pp, Bq) + simpTail(d2(Pp, Bq))) + ' ✓',
-            ['A point on the ' + t('y') + '-axis is ' + t('(0,\\ y)') + '. Write its squared distance to ' + t('A') + ' and to ' + t('B') + ', and set them equal.', 'Expand the brackets — the ' + t('y^{2}') + ' terms cancel, leaving a linear equation.'], 'equidistant point on the y-axis');
-        } }] },
-      /* ---- EP 11: parallelogram ABCD ---- */
-      { num: '11', section: 'Extra practice D — Diagonals, midpoints, and parallelograms', shared: function (r) {
-          if (r.chance(0.2)) return { A: [-6, -2], u: [8, -2], w: [4, 8] };
-          return pickWhere(function () {
-            var u = [r.int(5, 9), -r.int(0, 3)], rect = r.chance(0.25), w = rect ? scl([-u[1], u[0]], r.pick([1, 1])) : [r.int(-2, 5), r.int(5, 9)];
-                        return { A: [r.int(-7, -4), r.int(-4, 0)], u: u, w: w };
-          }, function (z) { var C = add(add(z.A, z.u), z.w), D = add(z.A, z.w), Bq = add(z.A, z.u), ac = d2(z.A, C), bd = d2(Bq, D); return (z.u[0] + z.w[0]) % 2 === 0 && (z.u[1] + z.w[1]) % 2 === 0 && [C, D, Bq].every(function (p) { return Math.abs(p[0]) <= 9 && Math.abs(p[1]) <= 9; }) && !isSq(ac) && !isSq(bd) && (radParts(ac).k > 1 || radParts(bd).k > 1); });
-        },
-        stem: function (o) { var A = o.A, Bq = add(A, o.u), C = add(Bq, o.w), D = add(A, o.w); return 'Quadrilateral ' + t('ABCD') + ' has vertices ' + t(nm('A', A)) + ', ' + t(nm('B', Bq)) + ', ' + t(nm('C', C)) + ', and ' + t(nm('D', D)) + '.' + figPoly([A, Bq, C, D], ['A', 'B', 'C', 'D'], { closed: true, dash: [[A, C], [Bq, D]] }); },
-        parts: [
-          { id: 'e11a', sub: 'a', level: 'BEG', make: function (r, o) {
-            var A = o.A, Bq = add(A, o.u), C = add(Bq, o.w), D = add(A, o.w);
-            return B.fields('Determine the midpoint of diagonal ' + t('\\overline{AC}') + ' and the midpoint of diagonal ' + t('\\overline{BD}') + '.', [ptField(t('\\overline{AC}')), ptField(t('\\overline{BD}'))],
-              [ptCheck(mid(A, C), { cands: midCands(A, C) }), ptCheck(mid(Bq, D), { cands: midCands(Bq, D) })], [ptKey(mid(A, C)), ptKey(mid(Bq, D))], t('\\overline{AC}') + ': ' + t(ptT(mid(A, C))) + ', ' + t('\\overline{BD}') + ': ' + t(ptT(mid(Bq, D))),
-              t(mLine(A, C)) + '<br>' + t(mLine(Bq, D)), HM, 'midpoints of the diagonals');
-          } },
-          { id: 'e11b', sub: 'b', level: 'EMG', make: function (r, o) {
-            var M = mid(o.A, add(add(o.A, o.u), o.w));
-            return mcPart(r, 'Both diagonals have the midpoint ' + t(ptT(M)) + '. What does this prove about ' + t('ABCD') + '?', [
-              { html: 'The diagonals bisect each other, and a quadrilateral whose diagonals bisect each other is a <b>parallelogram</b>.', right: true },
-              { html: 'It proves the diagonals are equal, so ' + t('ABCD') + ' is a rectangle.', why: 'A shared midpoint says where the diagonals cross, not how long they are.' },
-              { html: 'It proves the diagonals are perpendicular, so ' + t('ABCD') + ' is a rhombus.', why: 'Midpoints say nothing about the angle between the diagonals.' },
-              { html: 'It proves ' + t('ABCD') + ' is a square.', why: 'A square needs equal and perpendicular diagonals too — midpoints alone can’t show that.' }],
-              'The two diagonals have the same midpoint, so they bisect each other. Property: <i>a quadrilateral whose diagonals bisect each other is a parallelogram</i>. So ' + t('ABCD') + ' is a parallelogram.', ['What does it mean when two diagonals share a midpoint?'], 'shared midpoint → parallelogram');
-          } },
-          { id: 'e11c', sub: 'c', level: 'PRG', make: function (r, o) {
-            var A = o.A, Bq = add(A, o.u), C = add(Bq, o.w), D = add(A, o.w), n1 = d2(A, C), n2 = d2(Bq, D);
-            return B.fields('Calculate the exact lengths of both diagonals.', [lenField('AC'), lenField('BD')], [lenCheck(n1, 1, { cands: dCands(A, C) }), lenCheck(n2, 1, { cands: dCands(Bq, D) })], [lenKey(n1), lenKey(n2)],
-              t('AC=' + lenTex(n1) + ',\\ BD=' + lenTex(n2)), t(dLine(A, C, 'AC') + simpTail(n1)) + '<br>' + t(dLine(Bq, D, 'BD') + simpTail(n2)), HD, 'diagonal lengths');
-          } },
-          { id: 'e11c2', sub: 'c, rectangle?', level: 'EMG', make: function (r, o) {
-            var A = o.A, Bq = add(A, o.u), C = add(Bq, o.w), D = add(A, o.w), n1 = d2(A, C), n2 = d2(Bq, D), eq = n1 === n2;
-            return mcPart(r, 'Use the diagonal lengths ' + t('AC=' + lenTex(n1)) + ' and ' + t('BD=' + lenTex(n2)) + ' to decide whether ' + t('ABCD') + ' is a rectangle.', [
-              { html: 'Yes — it is a parallelogram with <b>equal</b> diagonals, so it is a rectangle.', right: eq, why: eq ? null : 'The diagonals are not equal: ' + t(lenTex(n1) + '\\ne ' + lenTex(n2)) + '.' },
-              { html: 'No — a rectangle’s diagonals are equal, and these are not.', right: !eq, why: eq ? 'Look again: ' + t('AC=BD=' + lenTex(n1)) + '.' : null },
-              { html: 'Yes — every parallelogram is a rectangle.', why: 'Most parallelograms are slanted. A rectangle is the special parallelogram whose diagonals are equal.' },
-              { html: 'You can’t tell from the diagonals.', why: 'You can: a parallelogram is a rectangle exactly when its diagonals are equal.' }],
-              'A rectangle is a parallelogram whose diagonals are equal. ' + (eq ? t('AC=BD=' + lenTex(n1)) + ', so ' + t('ABCD') + ' <b>is a rectangle</b>.' : t(lenTex(n1) + '\\ne ' + lenTex(n2)) + ', so ' + t('ABCD') + ' is <b>not a rectangle</b> — it is a parallelogram only.'), ['Which special parallelogram has equal diagonals?'], 'rectangle from diagonals');
-          } }] },
-      /* ---- EP 12: is PQRS a parallelogram? ---- */
-      { num: '12', shared: function (r) {
-          if (r.chance(0.2)) return { P: [-5, -3], Q: [3, -5], R: [7, 3], S: [-3, 5] };
-          return pickWhere(function () {
-            var P0 = [r.int(-6, -3), r.int(-4, -1)], u = [r.int(6, 9), -r.int(0, 3)], w = [r.int(1, 4), r.int(6, 9)], sh = r.chance(0.7) ? r.pick([[2, 0], [-2, 0], [0, 2], [0, -2], [2, 2]]) : [0, 0];
-            return { P: P0, Q: add(P0, u), R: add(add(P0, u), w), S: add(add(P0, w), sh) };
-          }, function (z) { return (z.P[0] + z.R[0]) % 2 === 0 && (z.P[1] + z.R[1]) % 2 === 0 && (z.Q[0] + z.S[0]) % 2 === 0 && (z.Q[1] + z.S[1]) % 2 === 0 && [z.Q, z.R, z.S].every(function (p) { return Math.abs(p[0]) <= 10 && Math.abs(p[1]) <= 10; }); });
-        },
-        stem: function (o) { return 'Quadrilateral ' + t('PQRS') + ' has vertices ' + t(nm('P', o.P)) + ', ' + t(nm('Q', o.Q)) + ', ' + t(nm('R', o.R)) + ', and ' + t(nm('S', o.S)) + '. Use the diagonals to decide whether ' + t('PQRS') + ' is a parallelogram.'; },
-        parts: [
-          { id: 'e12', sub: 'midpoints', level: 'BEG', make: function (r, o) {
-            return B.fields('Determine the midpoint of each diagonal.', [ptField(t('\\overline{PR}')), ptField(t('\\overline{QS}'))],
-              [ptCheck(mid(o.P, o.R), { cands: midCands(o.P, o.R) }), ptCheck(mid(o.Q, o.S), { cands: midCands(o.Q, o.S) })], [ptKey(mid(o.P, o.R)), ptKey(mid(o.Q, o.S))],
-              t('\\overline{PR}') + ': ' + t(ptT(mid(o.P, o.R))) + ', ' + t('\\overline{QS}') + ': ' + t(ptT(mid(o.Q, o.S))), t(mLine(o.P, o.R)) + '<br>' + t(mLine(o.Q, o.S)), ['The diagonals join opposite vertices: ' + t('P') + ' with ' + t('R') + ', and ' + t('Q') + ' with ' + t('S') + '.'].concat(HM.slice(0, 1)), 'midpoints of PR and QS');
-          } },
-          { id: 'e12b', sub: 'conclusion', level: 'EMG', make: function (r, o) {
-            var m1 = mid(o.P, o.R), m2 = mid(o.Q, o.S), eq = samePt(m1, m2);
-            return mcPart(r, 'The diagonals’ midpoints are ' + t(ptT(m1)) + ' and ' + t(ptT(m2)) + '. What is your conclusion?', [
-              { html: t('PQRS') + ' is a parallelogram: the diagonals bisect each other.', right: eq, why: eq ? null : 'The midpoints are different points, so the diagonals don’t bisect each other.' },
-              { html: t('PQRS') + ' is not a parallelogram: the diagonals do not bisect each other.', right: !eq, why: eq ? 'The two midpoints are the same point — the diagonals bisect each other.' : null },
-              { html: t('PQRS') + ' is a parallelogram because its midpoints are close together.', why: 'Close isn’t enough: the diagonals bisect each other only if the midpoints are <b>exactly</b> the same point.' },
-              { html: 'You need the side lengths before you can decide.', why: 'The diagonal test settles it: a quadrilateral is a parallelogram exactly when its diagonals bisect each other.' }],
-              eq ? 'The midpoints are the same, so the diagonals bisect each other: ' + t('PQRS') + ' <b>is a parallelogram</b>.' : 'The midpoints ' + t(ptT(m1)) + ' and ' + t(ptT(m2)) + ' are different, so the diagonals do not bisect each other: ' + t('PQRS') + ' is <b>not a parallelogram</b>.', ['Are the two midpoints the same point?'], 'parallelogram conclusion');
-          } }] },
-      /* ---- EP 13: the three fourth vertices ---- */
-      { num: '13', shared: function (r) {
-          if (r.chance(0.2)) return { A: [-3, 1], B: [5, 3], C: [1, -5] };
-          return pickWhere(function () { return { A: [r.int(-6, -1), r.int(-2, 4)], B: [r.int(2, 7), r.int(0, 6)], C: [r.int(-2, 4), r.int(-7, -2)] }; }, function (z) {
-            var cr = (z.B[0] - z.A[0]) * (z.C[1] - z.A[1]) - (z.B[1] - z.A[1]) * (z.C[0] - z.A[0]); var Ds = [add(z.A, sub(z.C, z.B)), add(z.A, sub(z.B, z.C)), add(z.B, sub(z.C, z.A))];
-            return Math.abs(cr) >= 10 && Ds.every(function (p) { return Math.abs(p[0]) <= 12 && Math.abs(p[1]) <= 12; }); });
-        },
-        stem: function (o) { return '<i>(Stretch)</i> Three vertices of a parallelogram are ' + t(nm('A', o.A)) + ', ' + t(nm('B', o.B)) + ', and ' + t(nm('C', o.C)) + '. There is more than one point ' + t('D') + ' that completes a parallelogram.'; },
-        parts: [
-          { id: 'e13a', sub: 'a', level: 'MAS', make: function (r, o) {
-            var D1 = sub(add(o.A, o.C), o.B), D2 = sub(add(o.A, o.B), o.C), D3 = sub(add(o.B, o.C), o.A), W = [D1, D2, D3];
-            var line = function (d1, d2, other, nmD, nmO, nm1, nm2) { var M = mid(d1, d2); return '<b>Diagonals ' + t('\\overline{' + nm1 + nm2 + '}') + ' and ' + t('\\overline{' + nmO + 'D}') + ':</b> midpoint of ' + t('\\overline{' + nm1 + nm2 + '}') + ' ' + t('=' + ptT(M)) + ', so ' + t('D=(2(' + nT(M[0]) + ')-' + sgp(other[0]) + ',\\ 2(' + nT(M[1]) + ')-' + sgp(other[1]) + ')=' + ptT(nmD)) + '.'; };
-            return { prompt: 'Determine <b>all three</b> possible positions of ' + t('D') + '. (Type the three points separated by commas.)', input: { type: 'math', keys: 'pairs', placeholder: 'e.g. (1, 2), (3, -4), (5, 0)' },
-              check: ptsCheck(W, { missCode: 'par-one-d', missHint: 'Correct so far — there are <b>three</b> positions. Each of the pairs ' + t('AB') + ', ' + t('AC') + ', ' + t('BC') + ' can be a diagonal; the fourth vertex is the far end of the diagonal through the remaining point.', diag: function (L) {
-                var avg = [mid(o.A, o.B), mid(o.A, o.C), mid(o.B, o.C)]; if (L.some(function (p) { return avg.some(function (q) { return samePt(p, q); }); })) return { code: 'end-average', hint: 'One of your points is the midpoint of two vertices — that is where the diagonals cross, not the fourth vertex. Double that midpoint and subtract the third vertex.' }; return null; } }),
-              key: W.map(ptKey).join(', '), answer: t(W.map(function (p) { return 'D' + ptT(p); }).join(',\\ ')),
-              solution: 'Choose which given pair is a diagonal; ' + t('D') + ' is then the other end of the diagonal through the remaining point (double the midpoint, subtract).<br>' + line(o.A, o.C, o.B, D1, 'B', 'A', 'C') + '<br>' + line(o.A, o.B, o.C, D2, 'C', 'A', 'B') + '<br>' + line(o.B, o.C, o.A, D3, 'A', 'B', 'C'),
-              hints: ['In a parallelogram the diagonals share a midpoint. Pick a pair of the given points to be a diagonal, find its midpoint, then ' + t('D=2M-') + '(the third point).', 'Do this for each of the three pairs.'], text: 'three fourth vertices', good: [ptKey(D3) + ', ' + ptKey(D1) + ', ' + ptKey(D2)], bad: [ptKey(D1), ptKey(D1) + ', ' + ptKey(D2)] };
-          } },
-          { id: 'e13b', sub: 'b', level: 'PRG', make: function (r) {
-            return mcPart(r, 'Why do exactly three points work, and not four or more?', [
-              { html: t('D') + ' must share a diagonal with one of ' + t('A') + ', ' + t('B') + ', ' + t('C') + ', and the other two then form the second diagonal. There are only three ways to choose that pair, and each choice forces one ' + t('D') + '.', right: true },
-              { html: 'A parallelogram has four vertices, and one is already used, so three are left.', why: 'Counting vertices isn’t the reason. Count the ways to choose which pair of the given points is a diagonal.' },
-              { html: 'Because three points always make a triangle, and a triangle has three sides.', why: 'Close, but the real reason is the diagonal: each choice of which given pair is a diagonal fixes exactly one ' + t('D') + '.' },
-              { html: 'There could be more — we just found three of them.', why: 'Every parallelogram through ' + t('A') + ', ' + t('B') + ', ' + t('C') + ' has one of the three pairs as a diagonal, and each pair gives exactly one ' + t('D') + '.' }],
-              t('D') + ' is the far end of a diagonal whose other end is one of ' + t('A') + ', ' + t('B') + ', ' + t('C') + '; the other two given points form the second diagonal. There are only three ways to choose which pair (' + t('AB') + ', ' + t('AC') + ' or ' + t('BC') + ') is the other diagonal, and each choice forces a single ' + t('D') + '.', ['How many ways can you pick which two given points form a diagonal?'], 'why exactly three');
-          } }] },
-      /* ---- EP 14: park map ---- */
-      { num: '14', section: 'Extra practice E — A map with a scale', shared: function (r) {
-          if (r.chance(0.2)) return { L: [-5, 8], S: [7, -1], W: [10, 8], k: 2 };
-          return pickWhere(function () {
-            var tr = r.pick([[12, 9], [8, 6], [9, 12], [6, 8], [12, 5], [4, 3]]), L0 = [r.int(-6, -3), r.int(5, 9)];
-            return { L: L0, S: [L0[0] + tr[0], L0[1] - tr[1]], W: r.chance(0.45) ? [L0[0] + r.int(-3, 5), L0[1] + r.int(1, 5)] : [r.int(4, 11), r.int(4, 9)], k: r.pick([2, 2, 3, 5]) };
-          }, function (z) { var a = dist(z.L, z.W), b = dist(z.S, z.W); return Math.abs(a - b) > 1 && !samePt(z.W, z.S) && !samePt(z.W, z.L) && z.S[1] >= -4; });
-        },
-        stem: function (o) { return 'A provincial park prints a map with a coordinate grid laid over it. A fire lookout is at ' + t(nm('L', o.L)) + ', a ranger station is at ' + t(nm('S', o.S)) + ', and a warden’s cabin is at ' + t(nm('W', o.W)) + '. On this map ' + t('1') + ' grid unit represents ' + t(o.k) + '&nbsp;km.' + figPoly([o.L, o.S, o.W], ['L', 'S', 'W'], { segs: [[o.L, o.S]] }); },
-        parts: [
-          { id: 'e14a', sub: 'a', level: 'EMG', make: function (r, o) {
-            var D = dist(o.L, o.S);
-            return B.fields('Determine the distance from ' + t('L') + ' to ' + t('S') + ' in grid units, then convert it to kilometres.', [{ label: t('LS='), name: 'units', after: 'units' }, { label: t('LS='), name: 'km', after: 'km' }],
-              [K.number(D, matchDiag(dCands(o.L, o.S))), K.number(D * o.k, numDiag([[D, 'd-units', 'Multiply the grid units by ' + t(o.k) + '&nbsp;km per unit.'], [D / o.k, 'd-scale-div', 'Each unit is ' + t(o.k) + '&nbsp;km, so <b>multiply</b> by ' + t(o.k) + '.']]))], [String(D), String(D * o.k)], t('LS=' + D) + ' units ' + t('=' + D * o.k) + '&nbsp;km',
-              dSteps(o.L, o.S) + '<br>' + t(dLine(o.L, o.S, 'LS') + '=' + D) + ' units; ' + t(D + '\\times ' + o.k + '=' + D * o.k) + '&nbsp;km.', HD, 'LS in units and km');
-          } },
-          { id: 'e14b', sub: 'b', level: 'BEG', make: function (r, o) {
-            return ptPart('A supply drop is to be made at the point exactly halfway between ' + t('L') + ' and ' + t('S') + '. State its coordinates.', mid(o.L, o.S), { cands: midCands(o.L, o.S) }, 'A location, so use the midpoint formula:<br>' + t(mLine(o.L, o.S)) + '.', HM, 'supply drop midpoint');
-          } },
-          { id: 'e14c', sub: 'c', level: 'EMG', make: function (r, o) {
-            var D = dist(o.L, o.S);
-            return B.number('A supply drop is made at the point exactly halfway between ' + t('L') + ' and ' + t('S') + '. How far, in kilometres, must a crew travel from the lookout to reach the supply drop?', D / 2 * o.k, numDiag([[D / 2, 'd-units', 'That is in grid units. Multiply by ' + t(o.k) + '&nbsp;km per unit.'], [D * o.k, 'd-half', 'That is the whole distance from ' + t('L') + ' to ' + t('S') + '. The drop is halfway.'], [D, 'd-units', 'The drop is halfway, and the answer must be in km.']]),
-              'The drop is halfway, so the distance is half of ' + t('LS') + ': ' + t('\\tfrac{1}{2}(' + D + ')=' + nT(D / 2)) + ' units ' + t('=' + nT(D / 2) + '\\times ' + o.k + '=' + nT(D / 2 * o.k)) + '&nbsp;km.', ['The drop is at the midpoint, so the trip is half of ' + t('LS') + '.', 'Then convert grid units to km.'], 'lookout to supply drop', { after: 'km' });
-          } },
-          { id: 'e14d', sub: 'd', level: 'PRG', make: function (r, o) {
-            var a = dist(o.L, o.W) * o.k, b = dist(o.S, o.W) * o.k;
-            return B.fields('Find the distance from the cabin ' + t('W') + ' to ' + t('L') + ' and to ' + t('S') + ', in kilometres to the nearest tenth.', [{ label: t('LW='), name: 'LW', after: 'km' }, { label: t('SW='), name: 'SW', after: 'km' }],
-              [K.approx(a, 1, { diag: matchDiag([[a / o.k, 'd-units', 'Convert to km: multiply the grid units by ' + t(o.k) + '.']], 1) }), K.approx(b, 1, { diag: matchDiag([[b / o.k, 'd-units', 'Convert to km: multiply the grid units by ' + t(o.k) + '.']], 1) })], [fx(a, 1), fx(b, 1)], t('LW\\approx ' + fx(a, 1)) + '&nbsp;km, ' + t('SW\\approx ' + fx(b, 1)) + '&nbsp;km',
-              t(dLine(o.L, o.W, 'LW') + simpTail(d2(o.L, o.W))) + ' units, ' + t('\\times ' + o.k + '\\approx ' + fx(a, 1)) + '&nbsp;km<br>' + t(dLine(o.S, o.W, 'SW') + simpTail(d2(o.S, o.W))) + ' units, ' + t('\\times ' + o.k + '\\approx ' + fx(b, 1)) + '&nbsp;km', HD.concat(['Multiply each length by ' + t(o.k) + ' before rounding.']), 'cabin distances in km');
-          } },
-          { id: 'e14d2', sub: 'd, closer', level: 'LIM', make: function (r, o) {
-            var a = rd(dist(o.L, o.W) * o.k, 1), b = rd(dist(o.S, o.W) * o.k, 1), toS = b < a;
-            return mcPart(r, 'With ' + t('LW\\approx ' + fx(a, 1)) + '&nbsp;km and ' + t('SW\\approx ' + fx(b, 1)) + '&nbsp;km, is the cabin closer to ' + t('L') + ' or to ' + t('S') + '?', [
-              { html: 'Closer to the lookout ' + t('L') + '.', right: !toS, why: toS ? t(fx(b, 1) + '<' + fx(a, 1)) + ', so the ranger station is closer.' : null },
-              { html: 'Closer to the ranger station ' + t('S') + '.', right: toS, why: toS ? null : t(fx(a, 1) + '<' + fx(b, 1)) + ', so the lookout is closer.' },
-              { html: 'The same distance from both.', why: 'The two distances are different.' }],
-              (toS ? t(fx(b, 1) + '<' + fx(a, 1)) + ', so the cabin is <b>closer to the ranger station ' + t('S') + '</b>.' : t(fx(a, 1) + '<' + fx(b, 1)) + ', so the cabin is <b>closer to the lookout ' + t('L') + '</b>.'), ['The smaller distance wins.'], 'which is closer');
-          } }] },
-      /* ---- EP 15: Rowan subtracted ---- */
-      { num: '15', section: 'Extra practice F — Error analysis', shared: function (r) {
-          if (r.chance(0.2)) return { A: [-6, 2], B: [4, 10] };
-          return pickWhere(function () { return { A: [r.int(-8, -2), r.int(-3, 4)], B: [r.int(1, 8), r.int(5, 12)] }; }, function (z) { return (z.A[0] + z.B[0]) % 2 === 0 && (z.A[1] + z.B[1]) % 2 === 0 && z.A[1] !== 0; });
-        },
-        stem: function (o) { var h = [(o.B[0] - o.A[0]) / 2, (o.B[1] - o.A[1]) / 2]; return 'Asked for the midpoint of ' + t('\\overline{AB}') + ' with ' + t(nm('A', o.A)) + ' and ' + t(nm('B', o.B)) + ', Rowan wrote ' + t('M=\\left(\\dfrac{x_2-x_1}{2},\\ \\dfrac{y_2-y_1}{2}\\right)=\\left(\\dfrac{' + o.B[0] + '-' + sgp(o.A[0]) + '}{2},\\ \\dfrac{' + o.B[1] + '-' + sgp(o.A[1]) + '}{2}\\right)=' + ptT(h)) + '.'; },
-        parts: [
-          { id: 'e15a', sub: 'a, error', level: 'EMG', make: function (r) {
-            return mcPart(r, 'What is Rowan’s error?', [
-              { html: 'He <b>subtracted</b> the coordinates; the midpoint formula <b>adds</b> them (it averages).', right: true },
-              { html: 'He divided by ' + t('2') + ' — the midpoint formula doesn’t divide.', why: 'The midpoint formula does divide by ' + t('2') + ': it averages. The problem is the minus signs.' },
-              { html: 'He put the ' + t('x') + '- and ' + t('y') + '-coordinates in the wrong order.', why: 'His ' + t('x') + ' comes first and his ' + t('y') + ' second — that part is fine. Look at the operation inside each bracket.' },
-              { html: 'He subtracted in the wrong order: it should be ' + t('x_1-x_2') + '.', why: 'Neither order of subtraction gives the midpoint. The midpoint formula adds: ' + t('\\dfrac{x_1+x_2}{2}') + '.' }],
-              'Rowan subtracted; the midpoint formula adds the coordinates and divides by ' + t('2') + ' — it averages.', ['Compare his work with ' + t('M\\left(\\dfrac{x_1+x_2}{2},\\ \\dfrac{y_1+y_2}{2}\\right)') + '.'], 'Rowan’s error');
-          } },
-          { id: 'e15a2', sub: 'a, correct', level: 'BEG', make: function (r, o) {
-            return ptPart('Give the correct midpoint.', mid(o.A, o.B), { cands: midCands(o.A, o.B), before: 'M =' }, t(mLine(o.A, o.B, 'M')) + '.', HM, 'correct Rowan’s midpoint');
-          } },
-          { id: 'e15b', sub: 'b', level: 'PRG', make: function (r, o) {
-            var h = [(o.B[0] - o.A[0]) / 2, (o.B[1] - o.A[1]) / 2], M = mid(o.A, o.B);
-            return mcPart(r, 'Rowan’s expression is not meaningless — it computes something. What is ' + t(ptT(h)) + '?', [
-              { html: 'Half the run and half the rise: the <b>step</b> from ' + t('A') + ' to the midpoint. Adding it to ' + t('A') + ' gives ' + t('M') + ': ' + t(ptT(o.A) + '+' + ptT(h) + '=' + ptT(M)) + '.', right: true },
-              { html: 'Half the distance from ' + t('A') + ' to ' + t('B') + '.', why: 'A distance is a single number (here ' + t('\\tfrac{1}{2}AB') + ' would need a square root). ' + t(ptT(h)) + ' is a pair: a horizontal and a vertical step.' },
-              { html: 'The slope of ' + t('\\overline{AB}') + '.', why: 'A slope is one number, rise divided by run. Rowan halved the run and the rise separately.' },
-              { html: 'The midpoint of ' + t('\\overline{AB}') + ' measured from ' + t('B') + '.', why: 'Try it: start at ' + t('A') + ' and move ' + t(nT(h[0])) + ' across and ' + t(nT(h[1])) + ' up — where do you land?' }],
-              t(ptT(h)) + ' is half the run and half the rise — the <b>step</b> (displacement) from ' + t('A') + ' to the midpoint, a movement rather than a location. Adding it to ' + t('A') + ': ' + t(ptT(o.A) + '+' + ptT(h) + '=' + ptT(M)) + ' ' + t('=M') + '.', ['Start at ' + t('A') + ' and move by Rowan’s numbers. Where do you end up?'], 'what Rowan computed');
-          } },
-          { id: 'e15c', sub: 'c', level: 'PRG', make: function (r) {
-            return mcPart(r, 'For which endpoints would Rowan’s method accidentally give the right answer?', [
-              { html: 'Only when the first endpoint ' + t('(x_1,\\ y_1)') + ' is the origin ' + t('(0,\\ 0)') + '.', right: true },
-              { html: 'When the second endpoint ' + t('(x_2,\\ y_2)') + ' is the origin.', why: 'Then Rowan gets ' + t('\\left(-\\tfrac{x_1}{2},\\ -\\tfrac{y_1}{2}\\right)') + ' but the midpoint is ' + t('\\left(\\tfrac{x_1}{2},\\ \\tfrac{y_1}{2}\\right)') + ' — the signs are wrong.' },
-              { html: 'When the segment is horizontal or vertical.', why: 'Try ' + t('(2,\\ 0)') + ' and ' + t('(6,\\ 0)') + ': Rowan gets ' + t('(2,\\ 0)') + ' but the midpoint is ' + t('(4,\\ 0)') + '.' },
-              { html: 'Never.', why: 'Solve ' + t('\\tfrac{x_2-x_1}{2}=\\tfrac{x_1+x_2}{2}') + ': it works when ' + t('x_1=0') + '.' }],
-              'Rowan’s method is right when ' + t('\\dfrac{x_2-x_1}{2}=\\dfrac{x_1+x_2}{2}') + ', i.e. ' + t('-x_1=x_1') + ', so ' + t('x_1=0') + '; likewise ' + t('y_1=0') + '. Only when the first endpoint is the <b>origin</b>.', ['Set Rowan’s expression equal to the real one and solve.'], 'when Rowan is right');
-          } }] },
-      /* ---- EP 16: Simone wrote a point for a distance ---- */
-      { num: '16', shared: function (r) {
-          if (r.chance(0.2)) return { P: [-2, 5], Q: [6, -1] };
-          var L = triple(r, 8); if (L[0] % 2 || L[1] % 2) L = [2 * L[0], 2 * L[1]];
-          var P0 = [r.int(-6, -1), r.int(2, 8)]; return { P: P0, Q: [P0[0] + L[0], P0[1] - L[1]] };
-        },
-        stem: function (o) { return 'Asked for the <b>distance</b> between ' + t(nm('P', o.P)) + ' and ' + t(nm('Q', o.Q)) + ', Simone wrote ' + t(ptT(mid(o.P, o.Q))) + ' and circled it.'; },
-        parts: [
-          { id: 'e16a', sub: 'a', level: 'EMG', make: function (r, o) {
-            return mcPart(r, 'Simone’s answer is correct arithmetic for a different question. Which one?', [
-              { html: 'The <b>midpoint</b> of ' + t('\\overline{PQ}') + '.', right: true },
-              { html: 'The slope of ' + t('\\overline{PQ}') + '.', why: 'A slope is a single number. ' + t(ptT(mid(o.P, o.Q))) + ' is an ordered pair — average the coordinates and see what you get.' },
-              { html: 'The run and the rise from ' + t('P') + ' to ' + t('Q') + '.', why: 'The run and rise are ' + t(nT(o.Q[0] - o.P[0])) + ' and ' + t(nT(o.Q[1] - o.P[1])) + '.' },
-              { html: 'Half the distance from ' + t('P') + ' to ' + t('Q') + '.', why: 'Half a distance is still one number, not an ordered pair.' }],
-              t(mLine(o.P, o.Q)) + ' — Simone found the <b>midpoint</b>.', ['Try averaging the coordinates of ' + t('P') + ' and ' + t('Q') + '.'], 'Simone answered the midpoint');
-          } },
-          { id: 'e16b', sub: 'b', level: 'BEG', make: function (r, o) {
-            var D = dist(o.P, o.Q);
-            return B.number('Give the correct answer to the question that was asked.', D, matchDiag(dCands(o.P, o.Q)), dSteps(o.P, o.Q) + '<br>' + t(dLine(o.P, o.Q, 'PQ') + simpTail(d2(o.P, o.Q))) + '.', HD, 'distance PQ');
-          } },
-          { id: 'e16c', sub: 'c', level: 'EMG', make: function (r) {
-            return mcPart(r, 'Which one-glance check on the <b>form</b> of an answer would have caught this?', [
-              { html: 'A distance is a single non-negative <b>number</b>; a midpoint is an <b>ordered pair</b>. A bracketed pair as the answer to “how far?” means the wrong formula was used.', right: true },
-              { html: 'A distance is always a whole number.', why: 'Distances are often radicals or decimals, e.g. ' + t('\\sqrt{113}\\approx 10.63') + '.' },
-              { html: 'A distance must be larger than both coordinates of each point.', why: 'That isn’t true in general — and it doesn’t check the <b>form</b> of the answer.' },
-              { html: 'The answer must contain a square root sign.', why: 'Many distances come out as whole numbers (e.g. ' + t('\\sqrt{100}=10') + ').' }],
-              'A distance is one non-negative number; a midpoint is an ordered pair ' + t('(x,\\ y)') + '. An answer with brackets and a comma for a “how far” question signals the wrong formula.', ['What kind of answer does a “how far” question need?'], 'form check: number vs pair');
-          } }] },
-      /* ---- EP 17: Theo averaged ---- */
-      { num: '17', shared: function (r) {
-          if (r.chance(0.2)) return { A: [-5, 4], M: [3, -2] };
-          return pickWhere(function () { return { A: [r.int(-8, -1), r.int(1, 8)], M: [r.int(1, 7), r.int(-7, -1)] }; }, function (z) { return (z.A[0] + z.M[0]) % 2 === 0 && (z.A[1] + z.M[1]) % 2 === 0; });
-        },
-        stem: function (o) { var th = mid(o.A, o.M); return 'Asked to find ' + t('B') + ' given ' + t(nm('A', o.A)) + ' and midpoint ' + t(nm('M', o.M)) + ', Theo averaged ' + t('A') + ' and ' + t('M') + ': ' + t('B=\\left(\\dfrac{' + o.M[0] + '+' + sgp(o.A[0]) + '}{2},\\ \\dfrac{' + o.M[1] + '+' + sgp(o.A[1]) + '}{2}\\right)=' + ptT(th)) + '.'; },
-        parts: [
-          { id: 'e17a', sub: 'a', level: 'PRG', make: function (r, o) {
-            return mcPart(r, 'Why is averaging the wrong operation here, and what is Theo’s point ' + t(ptT(mid(o.A, o.M))) + ' actually?', [
-              { html: 'Averaging finds the point <i>between</i> the two points used. ' + t('B') + ' lies <i>beyond</i> ' + t('M') + ', so Theo found the midpoint of ' + t('\\overline{AM}') + ' — only a quarter of the way from ' + t('A') + ' to ' + t('B') + '.', right: true },
-              { html: 'Averaging is right, but Theo should have averaged ' + t('M') + ' with ' + t('B') + '.', why: t('B') + ' is the unknown — you can’t average with it. Solve ' + t('\\dfrac{x_A+x_B}{2}=x_M') + ' for ' + t('x_B') + ' instead.' },
-              { html: 'Theo’s point is ' + t('B') + '; he just forgot to round.', why: 'Test it: the midpoint of ' + t('A') + ' and Theo’s point is not ' + t('M') + ' (see part b).' },
-              { html: 'Theo’s point is the midpoint of ' + t('\\overline{AB}') + '.', why: 'The midpoint of ' + t('\\overline{AB}') + ' is ' + t('M') + ' itself. Theo’s point sits halfway between ' + t('A') + ' and ' + t('M') + '.' }],
-              'Averaging finds the point halfway between the two points used. ' + t('B') + ' is not between ' + t('A') + ' and ' + t('M') + ' — it lies beyond ' + t('M') + ', twice as far from ' + t('A') + ' as ' + t('M') + ' is. Theo’s ' + t(ptT(mid(o.A, o.M))) + ' is the <b>midpoint of ' + t('\\overline{AM}') + '</b>, a quarter of the way from ' + t('A') + ' to ' + t('B') + '.', ['Where is ' + t('B') + ' compared with ' + t('A') + ' and ' + t('M') + '?'], 'why averaging is wrong');
-          } },
-          { id: 'e17b', sub: 'b', level: 'EMG', make: function (r, o) {
-            var th = mid(o.A, o.M), W = mid(o.A, th);
-            var p = ptPart('Test Theo’s answer: find the midpoint of ' + t(nm('A', o.A)) + ' and Theo’s point ' + t(ptT(th)) + '. (Is it ' + t('M') + '?)', W, { cands: midCands(o.A, th).concat([[o.M, 'pt', 'Calculate it: average ' + t('A') + ' and Theo’s point. (It is not ' + t('M') + ' — that is why Theo’s answer fails.)']]) },
-              t(mLine(o.A, th)) + '.<br>' + t(ptT(W) + '\\ne ' + ptT(o.M)) + ', so Theo’s answer fails. Correct: ' + t('B=2M-A=' + ptT(sub(scl(o.M, 2), o.A))) + '.', HM, 'test Theo’s point');
-            if (!Number.isInteger(W[0]) || !Number.isInteger(W[1])) p.good.push('\\left(' + (Number.isInteger(W[0]) ? W[0] : '\\frac{' + W[0] * 2 + '}{2}') + ',' + (Number.isInteger(W[1]) ? W[1] : '\\frac{' + W[1] * 2 + '}{2}') + '\\right)');
+          { id: 'e3b', sub: 'b', level: 'EMG', make: function (r, sh) {
+            var sorted = sh.segs.slice().sort(function (a, b) { return Math.abs(sval(a.s)) - Math.abs(sval(b.s)); });
+            var p = B.order(r, '(b) List the four segments in order from <b>least steep</b> to <b>steepest</b>.', sorted.map(function (s) { return { id: s.n, tex: s.n }; }), { first: 'least steep', last: 'steepest', why: function (a, b) { var A = sh.segs.filter(function (s) { return s.n === a; })[0], Bq = sh.segs.filter(function (s) { return s.n === b; })[0]; return t(a) + ' and ' + t(b) + ' are in the wrong order: compare the sizes ' + t('|' + slT(A.s) + '|') + ' and ' + t('|' + slT(Bq.s) + '|') + ' — ignore the signs.'; } },
+              'Compare the sizes ' + t('|m|') + ': ' + sorted.map(function (s) { return t('|m_{' + s.n + '}|=' + dec(Math.abs(sval(s.s)), 2)); }).join(', ') + '. Least steep to steepest: ' + t(sorted.map(function (s) { return s.n; }).join(',\\ ')) + '.', ['Steepness is the size of the slope, ' + t('|m|') + ', not its sign.'], 'order by steepness');
             return p;
           } },
-          { id: 'e17c', sub: 'c', level: 'EMG', make: function (r) {
-            return mcPart(r, 'Which rule recovers a missing endpoint, and why is it the opposite of averaging?', [
-              { html: 'Double the midpoint, then subtract the known endpoint: ' + t('x_B=2x_M-x_A') + '. Averaging adds then divides by ' + t('2') + '; the rule undoes those steps in reverse — multiply by ' + t('2') + ', then subtract.', right: true },
-              { html: 'Subtract the known endpoint from the midpoint: ' + t('x_B=x_M-x_A') + '.', why: 'That gives the step from ' + t('A') + ' to ' + t('M') + ', not the endpoint. You have to double the midpoint first.' },
-              { html: 'Add the midpoint and the known endpoint, then divide by ' + t('2') + '.', why: 'That is averaging again — Theo’s mistake.' },
-              { html: 'Double the known endpoint, then subtract the midpoint: ' + t('x_B=2x_A-x_M') + '.', why: 'That goes the wrong way, past ' + t('A') + '. Solve ' + t('x_M=\\dfrac{x_A+x_B}{2}') + ' for ' + t('x_B') + '.' }],
-              '<b>Rule:</b> ' + t('x_B=2x_M-x_A') + ', ' + t('y_B=2y_M-y_A') + '. Averaging adds the endpoints and then divides by ' + t('2') + '; solving ' + t('x_M=\\dfrac{x_A+x_B}{2}') + ' for ' + t('x_B') + ' undoes those steps in reverse order: multiply by ' + t('2') + ', then subtract.', ['Solve ' + t('x_M=\\dfrac{x_A+x_B}{2}') + ' for ' + t('x_B') + '.'], 'rule for a missing endpoint');
-          } }] }
+          { id: 'e3c', sub: 'c', level: 'BEG', make: function (r, sh) {
+            var byNum = sh.segs.slice().sort(function (a, b) { return sval(a.s) - sval(b.s); }), top = byNum[3], steep = sh.segs.slice().sort(function (a, b) { return Math.abs(sval(b.s)) - Math.abs(sval(a.s)); })[0];
+            return B.mc(r, '(c) Which segment has the <b>greatest</b> slope as a number?', sh.segs.map(function (s) { return { html: t(s.n), right: s === top, why: s === steep ? t(s.n) + ' is the steepest, but its slope is negative — as a number it is the least.' : 'Compare the signed values: ' + t(byNum.map(function (x) { return slT(x.s); }).join('<')) + '.' }; }),
+              'Signed values: ' + t(byNum.map(function (x) { return slT(x.s); }).join('<')) + '. The greatest is ' + t(top.n) + ' with ' + t('m=' + slT(top.s)) + '.', ['Every positive number is greater than every negative number.'], 'greatest slope as number');
+          } },
+          { id: 'e3d', sub: 'd', level: 'BEG', make: function (r, sh) {
+            var byNum = sh.segs.slice().sort(function (a, b) { return sval(a.s) - sval(b.s); }), low = byNum[0];
+            return B.mc(r, '(d) Which segment has the <b>least</b> slope as a number?', sh.segs.map(function (s) { return { html: t(s.n), right: s === low, why: Math.abs(sval(s.s)) < Math.abs(sval(low.s)) && sval(s.s) < 0 ? 'Among negative numbers, the one furthest from zero is the least: ' + t(slT(low.s) + '<' + slT(s.s)) + '.' : 'Compare the signed values: ' + t(byNum.map(function (x) { return slT(x.s); }).join('<')) + '.' }; }),
+              'From the same ordering, ' + t(byNum.map(function (x) { return slT(x.s); }).join('<')) + ', the least is ' + t(low.n) + ' with ' + t('m=' + slT(low.s)) + '.', ['On a number line, which slope is furthest left?'], 'least slope as number');
+          } },
+          { id: 'e3e', sub: 'e', level: 'EMG', make: function (r, sh) {
+            return B.mc(r, '(e) The segment with the greatest slope is not the steepest one. Why are “greatest slope” and “steepest” different questions once negatives are involved?', [
+              { html: '“Greatest” compares the signed numbers, so every negative slope loses to every positive one; “steepest” compares the sizes ' + t('|m|') + ', ignoring the sign.', right: true },
+              { html: 'They are the same question; the answers differ only because of a calculation error.', why: 'Look at your answers to (b) and (c): the steepest segment has a negative slope, so as a number it is small.' },
+              { html: '“Steepest” means the slope closest to zero.', why: 'A slope close to zero is nearly flat — the <b>least</b> steep.' },
+              { html: 'Negative slopes are never steep.', why: 'A slope of ' + t('-5') + ' falls steeply — steeper than a slope of ' + t('2') + '.' }],
+              '“Greatest” uses signed values: a negative slope is less than any positive one. “Steepest” uses ' + t('|m|') + ': a slope of ' + t('-\\frac{5}{2}') + ' is steeper than ' + t('\\frac{3}{2}') + ' because ' + t('\\frac{5}{2}>\\frac{3}{2}') + '.', ['Think about a slope of ' + t('-10') + ': is it great as a number? Is it steep?'], 'greatest vs steepest');
+          } }] },
+      { num: '4', section: 'Extra practice B — Slope from coordinates', stem: 'Calculate the slope of the segment joining each pair of points. Reduce every fraction to lowest terms.', parts: [
+        { id: 'e4a', level: 'BEG', make: function (r) { for (var g = 0; g < 100; g++) { var f = r.pick([[-1, 2], [-2, 3], [-3, 4], [-1, 3], [-2, 5]]), k = r.pick([2, 3, 4]), A = [r.int(-8, -2), r.int(-3, 6)], Bp = [A[0] + f[1] * k, A[1] + f[0] * k]; if (Math.abs(Bp[0]) <= 9 && Math.abs(Bp[1]) <= 9) break; } return coordSlopePart('(a) ' + t('A' + ptT(A)) + ', ' + t('B' + ptT(Bp)), A, Bp, 'A', 'B'); } },
+        { id: 'e4b', level: 'BEG', make: function (r) { for (var g = 0; g < 100; g++) { var f = r.pick([[3, 4], [2, 3], [1, 2], [3, 5], [1, 4]]), k = r.pick([2, 3]), A = [r.int(1, 6), r.int(-8, -2)], Bp = [A[0] - f[1] * k, A[1] + f[0] * k]; if (Math.abs(Bp[0]) <= 9 && Math.abs(Bp[1]) <= 9) break; } return coordSlopePart('(b) ' + t('C' + ptT(A)) + ', ' + t('D' + ptT(Bp)), A, Bp, 'C', 'D'); } },
+        { id: 'e4c', level: 'BEG', make: function (r) { for (var g = 0; g < 100; g++) { var f = r.pick([[12, 5], [7, 3], [9, 4], [11, 5], [8, 3], [10, 7]]), A = [r.int(-7, -3), r.int(-6, -3)], Bp = [A[0] + f[1], A[1] + f[0]]; if (Math.abs(Bp[0]) <= 9 && Math.abs(Bp[1]) <= 9) break; } return coordSlopePart('(c) ' + t('E' + ptT(A)) + ', ' + t('F' + ptT(Bp)), A, Bp, 'E', 'F'); } },
+        { id: 'e4d', level: 'EMG', make: function (r) { var a = r.pick([1, 3, -1, 5]), run = -r.pick([3, 2, 4, 5]), rise = r.pick([7, 5, 4, 2, 9]); if (gcd(rise, run) > 1 && r.chance(0.7)) rise += 1; var A = [a / 2, -r.int(1, 5)], Bp = [a / 2 + run, A[1] + rise]; return coordSlopePart('(d) ' + t('G' + ptT(A)) + ', ' + t('H' + ptT(Bp)), A, Bp, 'G', 'H'); } },
+        { id: 'e4e', level: 'BEG', make: function (r) { var y = r.int(-6, 6), A = [r.int(-9, -2), y], Bp = [r.int(2, 9), y]; return coordSlopePart('(e) ' + t('J' + ptT(A)) + ', ' + t('K' + ptT(Bp)), A, Bp, 'J', 'K'); } },
+        { id: 'e4f', level: 'BEG', make: function (r) { var x = r.int(-6, 6), A = [x, r.int(-8, -2)], Bp = [x, r.int(2, 8)]; return coordSlopePart('(f) ' + t('L' + ptT(A)) + ', ' + t('M' + ptT(Bp)), A, Bp, 'L', 'M'); } },
+        { id: 'e4g', level: 'EMG', make: function (r) {
+          return B.mc(r, '(g) Some of the slopes came out negative. If you subtract the coordinates in the <b>opposite</b> order (first point minus second), what happens to the slope?', [
+            { html: 'It stays the same: reversing the order changes the sign of <b>both</b> the rise and the run, and the two sign changes cancel.', right: true },
+            { html: 'It changes sign, because the rise becomes negative.', why: 'The run changes sign too: ' + t('\\frac{-a}{-b}=\\frac{a}{b}') + '.' },
+            { html: 'It becomes the reciprocal.', why: 'The rise is still on top — only the order of subtraction changed.' },
+            { html: 'It depends on which point is on the left.', why: 'Try it: ' + t('\\frac{4-1}{6-2}') + ' and ' + t('\\frac{1-4}{2-6}') + ' are both ' + t('\\frac{3}{4}') + '.' }],
+            'Reversing the order negates both the numerator and the denominator: ' + t('\\frac{y_1-y_2}{x_1-x_2}=\\frac{-(y_2-y_1)}{-(x_2-x_1)}=\\frac{y_2-y_1}{x_2-x_1}') + '. Just use the <b>same</b> order on top and bottom.', ['Try it with one of your pairs of points.'], 'order of subtraction');
+        } }] },
+      { num: '5', stem: 'For each pair of points, state whether the slope is ' + t('0') + ' or <b>undefined</b>, and write the value of the denominator ' + t('x_2-x_1') + ' (use the first point as ' + t('(x_1,\\ y_1)') + ').', parts: ['a', 'b', 'c', 'd', 'e', 'f'].map(function (L) {
+        return { id: 'e5' + L, level: 'BEG', make: function (r) {
+          var horiz = L === 'a' || L === 'd' || L === 'e', A, Bp;
+          if (L === 'a') { var y = r.int(-7, 7); A = [r.int(2, 6), y]; Bp = [r.int(-9, -2), y]; }
+          if (L === 'b') { var x = r.int(2, 8); A = [x, r.int(1, 5)]; Bp = [x, r.int(-11, -2)]; }
+          if (L === 'c') { A = [0, r.int(-6, -1)]; Bp = [0, r.int(2, 9)]; }
+          if (L === 'd') { A = [r.int(-9, -2), 0]; Bp = [r.int(1, 7), 0]; }
+          if (L === 'e') { var yd = r.pick([2.5, -1.5, 3.5, -4.5, 0.5]); A = [r.int(-7, -2), yd]; Bp = [r.int(4, 12), yd]; }
+          if (L === 'f') { var xd = r.pick([-1.5, 2.5, -3.5, 0.5]); A = [xd, r.int(-6, -2)]; Bp = [xd, r.int(3, 8)]; }
+          var den = cl(Bp[0] - A[0]), sl = slopeOf(A, Bp), sc = K.slope(sl);
+          var ptsTx = function (p) { return '(' + String(cl(p[0])) + ',\\ ' + String(cl(p[1])) + ')'; };
+          return B.fields('(' + L + ') ' + t(ptsTx(A)) + ' and ' + t(ptsTx(Bp)), [{ label: 'Slope', name: 'Slope', mode: 'math', keys: 'slope', placeholder: '0 or undefined' }, { label: t('x_2-x_1'), name: 'Denominator' }],
+            [sc, function (resp) { var p = HW.parse.number(resp); if (!p.ok) return form('empty', 'Write the value of ' + t('x_2-x_1') + '.'); if (near(p.value, den)) return ok(); if (den !== 0 && near(p.value, -den)) return form('den-order', 'That’s ' + t('x_1-x_2') + '. Use the first point as ' + t('(x_1,\\ y_1)') + ': ' + t('x_2-x_1=' + subD(Bp[0], A[0])) + '.'); return wrong('value', 'Subtract the ' + t('x') + '-coordinates: ' + t(subD(Bp[0], A[0])) + '.'); }],
+            [slT(sl), String(den)], 'slope ' + t(slT(sl)) + '; ' + t('x_2-x_1=' + den),
+            t('\\frac{' + subD(Bp[1], A[1]) + '}{' + subD(Bp[0], A[0]) + '}=\\frac{' + cl(Bp[1] - A[1]) + '}{' + den + '}') + (horiz ? ': the numerator is ' + t('0') + ' and the denominator isn’t, so the slope is ' + t('0') + ' (horizontal).' : ': the denominator is ' + t('0') + ', so the slope is <b>undefined</b> (vertical).'),
+            ['Which coordinates are the same in the two points?', 'Slope ' + t('0') + ': the top is ' + t('0') + '. Undefined: the bottom is ' + t('0') + '.'], 'zero or undefined ' + ptsTx(A) + ptsTx(Bp));
+        } };
+      }).concat([
+        { id: 'e5g', sub: 'g', level: 'LIM', make: function (r) {
+          return B.mc(r, '(g) Complete the sentence: “A slope of ' + t('0') + ' happens when ____, and an undefined slope happens when ____.”', [
+            { html: '…the <b>numerator</b> is ' + t('0') + ' … the <b>denominator</b> is ' + t('0') + '.', right: true },
+            { html: '…the <b>denominator</b> is ' + t('0') + ' … the <b>numerator</b> is ' + t('0') + '.', why: 'Swapped. A slope of ' + t('0') + ' is ' + t('\\frac{0}{\\text{run}}') + '; an undefined slope is ' + t('\\frac{\\text{rise}}{0}') + '.' },
+            { html: '…both are ' + t('0') + ' … neither is ' + t('0') + '.', why: 'If both were ' + t('0') + ' the two points would be the same point. A slope of ' + t('0') + ' has a zero rise and a non-zero run.' },
+            { html: '…the run is ' + t('0') + ' … the rise is ' + t('0') + '.', why: 'Swapped: a zero <b>run</b> (vertical) is the undefined one.' }],
+            'Slope ' + t('0') + ': ' + t('\\frac{0}{\\text{run}}=0') + ' — the numerator is ' + t('0') + '. Undefined: ' + t('\\frac{\\text{rise}}{0}') + ' — the denominator is ' + t('0') + '.', ['Slope = numerator over denominator = rise over run.'], 'zero vs undefined sentence');
+        } },
+        { id: 'e5h', sub: 'g · why', level: 'EMG', make: function (r) {
+          var n = r.int(3, 9);
+          return B.mc(r, 'Why is ' + t('\\frac{0}{' + n + '}') + ' a perfectly good number, but ' + t('\\frac{' + n + '}{0}') + ' is not?', [
+            { html: t('\\frac{0}{' + n + '}=0') + ' because ' + t('0\\times ' + n + '=0') + '; but ' + t('\\frac{' + n + '}{0}') + ' would need a number that gives ' + t(n) + ' when multiplied by ' + t('0') + ' — and there isn’t one.', right: true },
+            { html: 'Both are ' + t('0') + ', because anything with a ' + t('0') + ' in it is ' + t('0') + '.', why: 'Check ' + t('\\frac{' + n + '}{0}=0') + ' by multiplying back: ' + t('0\\times 0=0') + ', not ' + t(n) + '.' },
+            { html: t('\\frac{' + n + '}{0}=' + n) + ', since dividing by nothing leaves the number unchanged.', why: 'Dividing by ' + t('1') + ' leaves a number unchanged. Check: ' + t(n + '\\times 0=0') + ', not ' + t(n) + '.' },
+            { html: t('\\frac{0}{' + n + '}') + ' is undefined too; only ' + t('\\frac{0}{0}') + ' is a number.', why: t('\\frac{0}{' + n + '}=0') + ': ' + t(n) + ' groups of nothing is nothing.' }],
+            t('\\frac{0}{' + n + '}=0') + ' because ' + t('0\\times ' + n + '=0') + '. ' + t('\\frac{' + n + '}{0}') + ' would need a number ' + t('k') + ' with ' + t('k\\times 0=' + n) + ', but every number times ' + t('0') + ' is ' + t('0') + '. So a vertical segment’s slope is <b>undefined</b>, not ' + t('0') + '.', ['Check a division by multiplying back.'], 'why n/0 undefined');
+        } }]) },
+      { num: '6', stem: function (sh) { return 'A line passes through the point ' + t(ptT(sh.P)) + '.'; },
+        shared: function (r) { return { P: r.chance(0.25) ? [5, -2] : [r.pick([-6, -5, -4, -3, -2, 2, 3, 4, 5, 6]), r.pick([-6, -5, -4, -3, -2, 2, 3, 4, 5, 6])] }; },
+        parts: [
+          { id: 'e6a', level: 'BEG', make: function (r, sh) { var P = sh.P, k = [P[0] + r.pick([3, 4, 6, -3, -5]), P[1]]; var p = ptsPart('(a) Give a second point so that the slope is ' + t('0') + '.', { n: 1, exclude: [P], test: onLineTest(P, [0, 1]) }, [k], 'Slope ' + t('0') + ' needs a rise of ' + t('0') + ': keep ' + t('y=' + P[1]) + ', e.g. ' + t(ptT(k)) + '.', ['Which coordinate must stay the same for the rise to be 0?'], 'point slope 0 from ' + ptT(P)); p.bad = [ptT([P[0], P[1] + 3])]; return p; } },
+          { id: 'e6b', level: 'BEG', make: function (r, sh) { var P = sh.P, k = [P[0], P[1] + r.pick([3, 4, 6, -3, -5])]; var p = ptsPart('(b) Give a second point so that the slope is undefined.', { n: 1, exclude: [P], test: onLineTest(P, [1, 0]) }, [k], 'An undefined slope needs a run of ' + t('0') + ': keep ' + t('x=' + P[0]) + ', e.g. ' + t(ptT(k)) + '.', ['Which coordinate must stay the same for the run to be 0?'], 'point undefined slope from ' + ptT(P)); p.bad = [ptT([P[0] + 3, P[1]])]; return p; } },
+          { id: 'e6c', level: 'EMG', make: function (r, sh) {
+            var P = sh.P;
+            return B.mc(r, '(c) Which describes <b>every</b> second point that makes the slope ' + t('0') + ', and every second point that makes the slope undefined?', [
+              { html: 'Slope ' + t('0') + ': every point ' + t('(a,\\ ' + P[1] + ')') + ' with ' + t('a\\ne ' + P[0]) + ' — the horizontal line ' + t('y=' + P[1]) + '; undefined: every point ' + t('(' + P[0] + ',\\ b)') + ' with ' + t('b\\ne ' + P[1]) + ' — the vertical line ' + t('x=' + P[0]) + '.', right: true },
+              { html: 'Slope ' + t('0') + ': the vertical line ' + t('x=' + P[0]) + '; undefined: the horizontal line ' + t('y=' + P[1]) + '.', why: 'Swapped: slope ' + t('0') + ' is horizontal (same ' + t('y') + '), undefined is vertical (same ' + t('x') + ').' },
+              { html: 'Slope ' + t('0') + ': only ' + t('(' + (P[0] + 1) + ',\\ ' + P[1] + ')') + '; undefined: only ' + t('(' + P[0] + ',\\ ' + (P[1] + 1) + ')') + '.', why: 'Any distance along works, not just one step: ' + t('\\frac{0}{7}') + ' is still ' + t('0') + '.' },
+              { html: 'Slope ' + t('0') + ': every point on the ' + t('x') + '-axis; undefined: every point on the ' + t('y') + '-axis.', why: 'The points have to line up with ' + t(ptT(P)) + ', which ' + (P[1] === 0 && P[0] === 0 ? 'here is the origin — but that is a coincidence' : 'is not on the axes') + '.' }],
+              'Slope ' + t('0') + ': the rise must be ' + t('0') + ': every point with ' + t('y=' + P[1]) + ' (except ' + t(ptT(P)) + ' itself). Undefined: the run must be ' + t('0') + ': every point with ' + t('x=' + P[0]) + ' (except ' + t(ptT(P)) + ').', ['Think of all the points you could choose, not just one.'], 'all points slope 0 / undefined');
+          } },
+          { id: 'e6d', level: 'EMG', make: function (r) {
+            return B.mc(r, '(d) Why can no single line have both a slope of ' + t('0') + ' and an undefined slope?', [
+              { html: 'Slope ' + t('0') + ' needs a run that is <b>not</b> ' + t('0') + ' (horizontal); undefined needs a run that <b>is</b> ' + t('0') + ' (vertical). A line has only one slope.', right: true },
+              { html: 'It can: a line through the origin has both.', why: 'The ' + t('x') + '-axis has slope ' + t('0') + ' and the ' + t('y') + '-axis is undefined — they are two different lines.' },
+              { html: 'Because ' + t('0') + ' and undefined are the same thing.', why: 'Slope ' + t('0') + ' is flat; undefined is vertical — opposite extremes.' },
+              { html: 'Because a slope must always be positive or negative.', why: 'Horizontal lines really do have slope ' + t('0') + ' — it is neither positive nor negative.' }],
+              'Slope ' + t('0') + ' means ' + t('\\frac{0}{\\text{run}}') + ' with run ' + t('\\ne 0') + ' (horizontal); undefined means run ' + t('=0') + ' (vertical). The run can’t be both zero and non-zero, so a line can’t be both.', ['What does each one say about the run?'], 'not both 0 and undefined');
+          } }] },
+      { num: '7', section: 'Extra practice C — Running the formula backwards', stem: 'Draw the line through the given point with the given slope, long enough to reach the edges of the grid. Then list three other points on your line that have integer coordinates.',
+        shared: function (r) { return { a: cfg(r, [[5, 2], [3, 2], [4, 3], [5, 3], [7, 3]], [-5, -2], [-5, -2], [[5, 2], [-4, -3]]), b: cfg(r, [[-3, 4], [-2, 3], [-3, 5], [-1, 3], [-2, 5]], [2, 5], [1, 4], [[-3, 4], [4, 2]]) }; },
+        parts: [
+          { id: 'e7a', sub: 'a · line', level: 'EMG', make: function (r, sh) { return q4Draw(sh.a, 'a'); } },
+          { id: 'e7ap', sub: 'a · points', level: 'BEG', make: function (r, sh) { return q4Pts(sh.a, 'a'); } },
+          { id: 'e7b', sub: 'b · line', level: 'EMG', make: function (r, sh) { return q4Draw(sh.b, 'b'); } },
+          { id: 'e7bp', sub: 'b · points', level: 'BEG', make: function (r, sh) { return q4Pts(sh.b, 'b'); } },
+          { id: 'e7c', sub: 'c', level: 'EMG', make: function (r, sh) {
+            var c = sh.a, sl = c.sl, P0 = c.P0;
+            return B.mc(r, '(c) Two students each list three integer points on the line through ' + t(ptT(P0)) + ' with slope ' + t(frT(sl[0], sl[1])) + '. Their lists are probably different, yet both can be right. What do all the correct answers have in common?', [
+              { html: 'Each is reached from ' + t(ptT(P0)) + ' by moving <b>the same multiple of the rise and the run</b>: ' + t('(' + nT(P0[0]) + '+' + sl[1] + 'k,\\ ' + nT(P0[1]) + '+' + sl[0] + 'k)') + ' for a whole number ' + t('k') + ', so ' + t('\\frac{' + sl[0] + 'k}{' + sl[1] + 'k}=' + frT(sl[0], sl[1])) + ' every time.', right: true },
+              { html: 'They all have the same ' + t('x') + '-coordinate.', why: 'Points with the same ' + t('x') + '-coordinate are on a vertical line.' },
+              { html: 'Each is exactly one rise and one run from ' + t(ptT(P0)) + '.', why: 'Two or three steps (or steps backwards) land on the line too.' },
+              { html: 'They are the points where the line crosses grid lines.', why: 'A line crosses grid lines at many non-integer points too. The integer points come from whole steps of the rise and run.' }],
+              'Every correct point is ' + t('(' + nT(P0[0]) + '+' + sl[1] + 'k,\\ ' + nT(P0[1]) + '+' + sl[0] + 'k)') + ' for some whole number ' + t('k') + ' (positive or negative). Different ' + t('k') + ' give different points, but the slope from ' + t(ptT(P0)) + ' is always ' + t(frT(sl[0], sl[1])) + ', so they all lie on the one line.', ['Write down how you got from the given point to each of your points.'], 'same multiple of rise and run');
+          } }] },
+      { num: '8', stem: 'In each case the slope of the segment is given. Determine the missing coordinate.', parts: [
+        { id: 'e8a', level: 'PRG', make: function (r) {
+          var useB = r.chance(0.25), f = useB ? [-2, 3] : r.pick([[-2, 3], [-3, 4], [-1, 2], [-3, 5], [2, 3], [-4, 3]]), k = useB ? 3 : r.int(-5, 6), x1 = useB ? 3 : r.int(-4, 4), run = f[1] * (useB ? 2 : r.pick([1, 2])), x2 = x1 + run, y2 = k + f[0] * run / f[1];
+          return B.number('(a) ' + t('A(' + x1 + ',\\ k)') + ', ' + t('B' + ptT([x2, y2])) + ', ' + t('m=' + frT(f[0], f[1])), k, function (v) {
+            if (near(v, y2 + f[0] * run / f[1])) return { code: 'k-sign', hint: 'Check your signs: substitute ' + t('k=' + nT(v)) + ' back into ' + t('m=\\frac{y_2-y_1}{x_2-x_1}') + ' — do you get ' + t(frT(f[0], f[1])) + '?' };
+            if (near(v, y2 - f[1] * run / f[0])) return { code: 'k-flip', hint: 'Slope is the change in ' + t('y') + ' over the change in ' + t('x') + '.' };
+            return null;
+          }, t('\\frac{' + nT(y2) + '-k}{' + subT(x2, x1) + '}=' + frT(f[0], f[1])) + ', so ' + t(nT(y2) + '-k=' + frT(f[0], f[1]) + '\\times ' + run + '=' + (f[0] * run / f[1])) + ' and ' + t('k=' + k) + '. Check: ' + t(formulaT([x1, k], [x2, y2]) + '=' + fracSteps(y2 - k, run)) + ' ✓', ['Substitute into ' + t('m=\\frac{y_2-y_1}{x_2-x_1}') + ' and solve for ' + t('k') + '.', 'Work out the run first; then rise = slope × run.'], 'missing y with slope', { before: t('k=') });
+        } },
+        { id: 'e8b', level: 'PRG', make: function (r) {
+          var useB = r.chance(0.25), f = useB ? [3, 4] : r.pick([[3, 4], [2, 3], [3, 2], [-2, 5], [4, 3], [-3, 4]]), P = useB ? [-5, 4] : [r.int(-6, 4), r.int(-3, 6)], rise = f[0] * (useB ? -2 : r.pick([-2, 2, -1, 3])), run = rise * f[1] / f[0], tt = P[0] + run, y2 = P[1] + rise;
+          return B.number('(b) ' + t('P' + ptT(P)) + ', ' + t('Q(t,\\ ' + y2 + ')') + ', ' + t('m=' + frT(f[0], f[1])), tt, function (v) {
+            if (near(v, P[0] - run)) return { code: 'k-sign', hint: 'Check the sign of the run: substitute ' + t('t=' + nT(v)) + ' back into the slope formula.' };
+            if (near(v, P[0] + rise * f[0] / f[1])) return { code: 'calc-mult', hint: 'The run is rise <b>÷</b> slope, not rise × slope.' };
+            return null;
+          }, t('\\frac{' + subT(y2, P[1]) + '}{t-' + (P[0] < 0 ? '(' + P[0] + ')' : P[0]) + '}=' + frT(f[0], f[1])) + ': the rise is ' + t(rise) + ', so the run is ' + t('\\frac{' + rise + '}{' + frT(f[0], f[1]) + '}=' + run) + ' and ' + t('t=' + nT(P[0]) + (run < 0 ? '' : '+') + run + '=' + tt) + '. Check: ' + t(formulaT(P, [tt, y2]) + '=' + fracSteps(rise, run)) + ' ✓', ['Find the rise first, then run = rise ÷ slope.'], 'missing x2 with slope', { before: t('t=') });
+        } },
+        { id: 'e8c', level: 'PRG', make: function (r) {
+          var useB = r.chance(0.25), m = useB ? -4 : r.pick([-4, -3, 3, -2, 2, 4]), D = useB ? [2, 5] : [r.int(-4, 4), r.int(-2, 7)], run = useB ? -3 : r.pick([-3, -2, 2, 3]), w = D[0] - run, y1 = D[1] - m * run;
+          return B.number('(c) ' + t('C(w,\\ ' + y1 + ')') + ', ' + t('D' + ptT(D)) + ', ' + t('m=' + m), w, function (v) {
+            if (near(v, D[0] + run)) return { code: 'k-sign', hint: 'Check the signs: substitute ' + t('w=' + nT(v)) + ' back into ' + t('\\frac{y_2-y_1}{x_2-x_1}') + ' — do you get ' + t(m) + '?' };
+            return null;
+          }, t('\\frac{' + subT(D[1], y1) + '}{' + D[0] + '-w}=' + m) + ', so ' + t((D[1] - y1) + '=' + m + '(' + D[0] + '-w)') + ', ' + t(D[0] + '-w=' + run) + ', and ' + t('w=' + w) + '. Check: ' + t(formulaT([w, y1], D) + '=' + fracSteps(D[1] - y1, D[0] - w)) + ' ✓', ['Write the slope formula with ' + t('w') + ' in it, then solve.'], 'missing x1 with slope', { before: t('w=') });
+        } },
+        { id: 'e8d', level: 'EMG', make: function (r) {
+          var x = r.int(-7, 7), y = r.pick([-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]);   // y = 0 would duplicate the “only h = 0” option
+          return B.mc(r, '(d) ' + t('E(' + x + ',\\ h)') + ', ' + t('F' + ptT([x, y])) + ', slope undefined. What can ' + t('h') + ' be?', [
+            { html: 'Any value except ' + t(y), right: true }, { html: 'Only ' + t('h=' + y), why: 'Then ' + t('E') + ' and ' + t('F') + ' would be the same point — no segment at all.' },
+            { html: 'Only ' + t('h=0'), why: 'The run is ' + t(x + '-' + (x < 0 ? '(' + x + ')' : x) + '=0') + ' already, whatever ' + t('h') + ' is.' }, { html: 'No value — an undefined slope is impossible.', why: 'Vertical segments have undefined slopes, and both points already have ' + t('x=' + x) + '.' }],
+            'Undefined means the run is ' + t('0') + ': ' + t('x_2-x_1=0') + ' already, for every ' + t('h') + '. So ' + t('h') + ' can be any value except ' + t(y) + ' (that would make ' + t('E') + ' and ' + t('F') + ' the same point).', ['What makes a slope undefined? Is that already true here?'], 'undefined slope missing y');
+        } },
+        { id: 'e8e', level: 'BEG', make: function (r) {
+          var G = [r.int(-6, 0), 0], H = [r.int(2, 8), r.int(-6, 6)];
+          return B.number('(e) ' + t('G(' + G[0] + ',\\ y)') + ', ' + t('H' + ptT(H)) + ', ' + t('m=0'), H[1], function (v) { if (near(v, 0)) return { code: 'value', hint: 'A slope of ' + t('0') + ' means the <b>rise</b> is ' + t('0') + ' — not that ' + t('y') + ' is ' + t('0') + '.' }; return null; },
+            t('\\frac{' + H[1] + '-y}{' + subT(H[0], G[0]) + '}=0') + ', so ' + t(H[1] + '-y=0') + ' and ' + t('y=' + H[1]) + ': a horizontal segment.', ['Slope 0: the two points are at the same height.'], 'missing y slope 0', { before: t('y=') });
+        } },
+        { id: 'e8f', level: 'EMG', make: function (r) {
+          var x = r.int(-7, 7), y = r.pick([-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]), G0 = r.int(-6, 0), H = [r.int(2, 8), r.int(-6, 6)];
+          var cE = t('E(' + x + ',\\ h)') + ', ' + t('F' + ptT([x, y])) + ' with an undefined slope', cG = t('G(' + G0 + ',\\ y)') + ', ' + t('H' + ptT(H)) + ' with ' + t('m=0');
+          return B.mc(r, '(f) A missing coordinate found from a slope usually has exactly one value. Two special cases behave differently: ' + cE + ', and ' + cG + '. One of them has exactly one answer, the other infinitely many. Which is which, and why?', [
+            { html: 'The slope-' + t('0') + ' case (' + t('G, H') + ') has one answer: slope ' + t('0') + ' forces the <b>numerator</b> to be ' + t('0') + '. The undefined case (' + t('E, F') + ') has infinitely many: undefined is a condition on the <b>denominator</b>, which the given ' + t('x') + '-coordinates already meet.', right: true },
+            { html: 'The undefined case (' + t('E, F') + ') has one answer and the slope-' + t('0') + ' case (' + t('G, H') + ') infinitely many.', why: 'For ' + t('G, H') + ', only one ' + t('y') + ' makes the rise ' + t('0') + '. For ' + t('E, F') + ', ' + t('h') + ' never enters the run.' },
+            { html: 'Both have infinitely many answers, because ' + t('0') + ' and undefined are special.', why: 'For ' + t('G, H') + ' the rise ' + t(H[1] + '-y') + ' is ' + t('0') + ' for only one value of ' + t('y') + '.' },
+            { html: 'Both have exactly one answer.', why: 'For ' + t('E, F') + ', try ' + t('h=' + (y + 1)) + ' and ' + t('h=' + (y + 2)) + ': both segments are vertical.' }],
+            t('G, H') + ': ' + t('m=0') + ' means the numerator ' + t(H[1] + '-y=0') + ', and only ' + t('y=' + H[1]) + ' does that. ' + t('E, F') + ': undefined means the denominator ' + t('x_2-x_1=0') + ' — already true, and ' + t('h') + ' doesn’t appear in it, so every ' + t('h') + ' except ' + t(y) + ' (which repeats the point) works.', ['Where does the unknown appear in each slope fraction — top or bottom?'], 'one vs infinitely many');
+        } }] },
+      { num: '9', stem: 'Use ' + t('m=\\frac{\\text{rise}}{\\text{run}}') + ' in reverse.', parts: [
+        { id: 'e9a', level: 'PRG', make: function (r) {
+          var useB = r.chance(0.25), S = useB ? [-2, 5] : [r.pick([-6, -5, -4, -3, -2, -1, 1, 2, 3, 4]), r.int(-4, 8)], f = useB ? [-3, 8] : r.pick([[-3, 8], [-2, 5], [3, 4], [-5, 6], [2, 7], [-3, 4]]), run = useB ? 24 : f[1] * r.pick([2, 3, 4]), rise = f[0] * run / f[1], E = [S[0] + run, S[1] + rise];
+          var test = function (p) { if (same(p, E)) return null; if (same(p, [S[0] + run, S[1] - rise])) return { code: 'end-sign', hint: 'Check the sign of the rise: ' + t('\\text{rise}=' + frT(f[0], f[1]) + '\\times ' + run + '=' + rise) + '.' }; if (same(p, [S[0] + rise, S[1] + run])) return { code: 'end-swap', hint: 'Add the run to ' + t('x') + ' and the rise to ' + t('y') + '.' }; if (same(p, [run, rise])) return { code: 'end-nostart', hint: 'Those are the run and rise. Add them to the starting point ' + t(ptT(S)) + '.' }; return same(p, E) ? null : { code: 'pts-off', hint: 'Find the rise first (rise = slope × run), then add the run and rise to ' + t(ptT(S)) + '.' }; };
+          var p = ptsPart('(a) A segment starts at ' + t(ptT(S)) + ', has slope ' + t(frT(f[0], f[1])) + ' and a run of ' + t(run) + '. Determine the other endpoint.', { n: 1, test: test }, [E],
+            t('\\text{rise}=m\\times\\text{run}=' + frT(f[0], f[1]) + '\\times ' + run + '=' + rise) + '. Endpoint: ' + t('(' + nT(S[0]) + '+' + run + ',\\ ' + nT(S[1]) + (rise < 0 ? '' : '+') + rise + ')=' + ptT(E)) + '. Check: ' + t(formulaT(S, E) + '=' + fracSteps(rise, run)) + ' ✓', ['rise = slope × run. Then add to the starting coordinates.'], 'endpoint from run');
+          p.bad = [ptT([S[0] + run, S[1] - rise]), ptT([run, rise])]; return p;
+        } },
+        { id: 'e9b', level: 'PRG', make: function (r) {
+          var useB = r.chance(0.25), S = useB ? [7, -2] : [r.pick([-3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8]), r.int(-5, 5)], f = useB ? [5, 6] : r.pick([[5, 6], [3, 4], [2, 5], [4, 3], [3, 7]]), rise = useB ? -15 : -f[0] * r.pick([2, 3]), run = rise * f[1] / f[0], E = [S[0] + run, S[1] + rise];
+          var test = function (p) { if (same(p, E)) return null; if (same(p, [S[0] - run, S[1] + rise])) return { code: 'end-sign', hint: 'A positive slope with a negative rise needs a <b>negative</b> run: ' + t('\\text{run}=\\frac{' + rise + '}{' + frT(f[0], f[1]) + '}=' + run) + '.' }; if (same(p, [S[0] + rise, S[1] + run])) return { code: 'end-swap', hint: 'Add the run to ' + t('x') + ' and the rise to ' + t('y') + '.' }; if (same(p, [run, rise])) return { code: 'end-nostart', hint: 'Those are the run and rise. Add them to ' + t(ptT(S)) + '.' }; return same(p, E) ? null : { code: 'pts-off', hint: 'Find the run first (run = rise ÷ slope), then add the run and rise to ' + t(ptT(S)) + '.' }; };
+          var p = ptsPart('(b) A segment starts at ' + t(ptT(S)) + ', has slope ' + t(frT(f[0], f[1])) + ' and a rise of ' + t(rise) + '. Determine the other endpoint.', { n: 1, test: test }, [E],
+            t('\\text{run}=\\frac{\\text{rise}}{m}=' + rise + '\\times ' + frT(f[1], f[0]) + '=' + run) + '. Endpoint: ' + t('(' + nT(S[0]) + run + ',\\ ' + nT(S[1]) + rise + ')=' + ptT(E)) + '. Check: ' + t(rawFr(rise, run) + '=' + frT(f[0], f[1])) + ' ✓', ['run = rise ÷ slope. A negative rise with a positive slope gives a negative run.'], 'endpoint from rise');
+          p.bad = [ptT([S[0] - run, S[1] + rise])]; return p;
+        } },
+        { id: 'e9c', level: 'BEG', make: function (r) {
+          var f = r.pick([[4, 9], [2, 5], [3, 7], [5, 8]]);
+          return B.mc(r, '(c) A segment has slope ' + t(frT(f[0], f[1])) + ', and both its rise and its run are negative. In which direction does the second endpoint lie from the first?', [
+            { html: 'Down and to the left', right: true }, { html: 'Up and to the right', why: 'That would be a positive rise and a positive run.' },
+            { html: 'Down and to the right', why: 'A negative run moves <b>left</b>.' }, { html: 'Up and to the left', why: 'A negative rise moves <b>down</b>.' }],
+            'A negative run moves left and a negative rise moves down. ' + t('\\frac{-' + f[0] + '}{-' + f[1] + '}=' + frT(f[0], f[1])) + ': the two negatives cancel, so the slope is still positive.', ['Rise: up is +, down is −. Run: right is +, left is −.'], 'direction with negative rise and run');
+        } }] },
+      { num: '10', section: 'Extra practice D — Slope as a rate, with units', stem: function (sh) { return 'A loading ramp rises ' + t(sh.rise) + ' m over a horizontal run of ' + t(sh.run) + ' m.'; },
+        shared: function (r) { var useB = r.chance(0.25), f = useB ? [1, 8] : r.pick([[1, 8], [1, 5], [1, 4], [1, 10], [3, 20], [3, 8], [1, 20], [3, 10]]), u = useB ? 0.9 : r.pick([0.3, 0.4, 0.6, 0.7, 0.9, 0.8]); return { f: f, rise: cl(f[0] * u), run: cl(f[1] * u), run2: r.chance(0.3) ? 10 : r.pick([10, 12, 15, 6, 20]) }; },
+        parts: [
+          { id: 'e10a', level: 'BEG', make: function (r, sh) { return B.fraction('(a) Determine the slope of the ramp as a fraction in lowest terms.', sh.f, {}, t('m=\\frac{' + sh.rise + '}{' + sh.run + '}=\\frac{' + cl(sh.rise * 10) + '}{' + cl(sh.run * 10) + '}=' + frT(sh.f[0], sh.f[1])), ['Multiply the top and bottom by 10 to clear the decimals, then reduce.'], 'ramp slope fraction'); } },
+          { id: 'e10b', level: 'EMG', make: function (r, sh) {
+            var pct = cl(100 * sh.f[0] / sh.f[1]);
+            return B.number('(b) Engineers write the slope as a percent <i>grade</i>. Express the slope as a percent.', pct, function (v) { if (near(v, cl(sh.f[0] / sh.f[1]))) return { code: 'pct-dec', hint: 'That’s the decimal. Multiply by ' + t('100') + ' to make it a percent.' }; return null; },
+              t(frT(sh.f[0], sh.f[1]) + '=' + cl(sh.f[0] / sh.f[1]) + '=' + pct + '\\%') + ' grade.', ['Change the fraction to a decimal, then × 100.'], 'grade percent', { after: '%' });
+          } },
+          { id: 'e10c', level: 'BEG', make: function (r, sh) {
+            var a = sh.f[0], b = sh.f[1];
+            var chk = function (resp) {
+              resp = resp || []; var p = HW.parse.number(resp[0] || ''), q = HW.parse.number(resp[1] || '');
+              if (!p.ok || !q.ok) return form('empty', 'Fill in both boxes.');
+              if (near(p.value * b, q.value * a) && p.value > 0) { if (near(p.value, a) && near(q.value, b)) return ok(); return form('lowest', 'Right rate — now use the numbers of your lowest-terms fraction from (a).'); }
+              if (near(p.value * a, q.value * b)) return wrong('calc-flip', 'Upside down: the rise (up) goes first, the run (along) second.');
+              return wrong('value', null);
+            };
+            var p = B.fields('(c) The slope is a rate. Complete: “___ metre(s) up per ___ metres along”.', [{ name: 'Rate', after: 'metre(s) up per' }, { name: 'Rate', after: 'metres along' }], [], [String(a), String(b)], t(a) + ' m up per ' + t(b) + ' m along',
+              t(frT(a, b)) + ': ' + t(a) + ' m up per ' + t(b) + ' m along (the same rate as ' + t(sh.rise) + ' m up per ' + t(sh.run) + ' m along).', ['Use your fraction from (a): top = up, bottom = along.'], 'rate in words');
+            p.check = chk; p.good = []; p.bad = [[String(b), String(a)], [String(sh.rise), String(sh.run) + '1']]; return p;
+          } },
+          { id: 'e10d', level: 'EMG', make: function (r, sh) {
+            var h = cl(sh.f[0] * sh.run2 / sh.f[1]);
+            return B.number('(d) A second ramp has the same grade but a run of ' + t(sh.run2) + ' m. How high does it rise?', h, function (v) { if (near(v, cl(sh.run2 * sh.f[1] / sh.f[0]))) return { code: 'calc-divided', hint: 'rise = slope × run.' }; return null; },
+              t('\\text{rise}=' + frT(sh.f[0], sh.f[1]) + '\\times ' + sh.run2 + '=' + h) + ' m.', ['rise = slope × run.'], 'same grade new run', { after: 'm' });
+          } }] },
+      { num: '11', stem: function (sh) { return 'A wheelchair ramp must have a slope of <b>no more than</b> ' + t('\\frac{1}{12}') + ' — at most ' + t('1') + ' m of rise for every ' + t('12') + ' m of run. A doorway threshold sits ' + t(sh.H) + ' m above the sidewalk.'; },
+        shared: function (r) { var useB = r.chance(0.25), H = useB ? 0.75 : r.pick([0.5, 0.6, 0.75, 0.8, 0.9, 0.7]), g = useB ? 0.625 : r.pick([0.4, 0.45, 0.5, 0.55, 0.6, 0.625].filter(function (x) { return x < H - 0.04; })); return { H: H, g: g, rc: cl(12 * g) }; },
+        parts: [
+          { id: 'e11a', level: 'PRG', make: function (r, sh) {
+            return B.number('(a) Determine the <b>shortest</b> horizontal run a single straight ramp to the threshold may have.', cl(12 * sh.H), function (v) { if (near(v, cl(sh.H / 12)) || near(v, Number((sh.H / 12).toFixed(3)))) return { code: 'calc-divided', hint: 'Each metre of rise needs 12 m of run: multiply by 12.' }; return null; },
+              t('\\frac{' + sh.H + '}{\\text{run}}\\le\\frac{1}{12}\\Rightarrow\\text{run}\\ge 12(' + sh.H + ')=' + cl(12 * sh.H)) + '. Shortest run: ' + t(cl(12 * sh.H)) + ' m.', ['At most 1 m of rise per 12 m of run.'], 'shortest run', { after: 'm' });
+          } },
+          { id: 'e11b', level: 'PRG', make: function (r, sh) {
+            var s = sh.H / sh.rc, sD = dec(s, 3);
+            return B.mc(r, '(b) A contractor has only ' + t(sh.rc) + ' m of sidewalk to work with. Does a ramp with that run meet the rule?', [
+              { html: '<b>No.</b> ' + t('m=\\frac{' + sh.H + '}{' + sh.rc + '}\\approx ' + sD) + ', which is greater than ' + t('\\frac{1}{12}\\approx 0.083') + ': too steep.', right: true },
+              { html: '<b>Yes.</b> ' + t('m\\approx ' + sD) + ' is more than ' + t('\\frac{1}{12}') + ', so it is steep enough.', code: 'ramp-max', why: 'The rule is a <b>maximum</b>: the slope may be at most ' + t('\\frac{1}{12}') + '.' },
+              { html: '<b>Yes.</b> The run, ' + t(sh.rc) + ' m, is less than ' + t('12') + ' m.', why: 'The run has to be compared with ' + t('12\\times\\text{rise}=' + cl(12 * sh.H)) + ' m, not with ' + t('12') + ' m.' },
+              { html: '<b>Yes.</b> ' + t('m\\approx ' + sD) + ' is less than ' + t('1') + '.', why: 'Compare with ' + t('\\frac{1}{12}\\approx 0.083') + ', not with ' + t('1') + '.' }],
+              t('m=\\frac{' + sh.H + '}{' + sh.rc + '}\\approx ' + sD) + ' and ' + t('\\frac{1}{12}\\approx 0.083') + '. Since ' + t(sD + '>0.083') + ', the ramp is too steep: it does <b>not</b> meet the rule.', ['Work out the slope, then compare it with ' + t('\\frac{1}{12}') + '.'], 'short run meets rule?');
+          } },
+          { id: 'e11c', level: 'PRG', make: function (r, sh) {
+            return B.number('(c) If the contractor must use that ' + t(sh.rc) + ' m run, what is the greatest rise the ramp may have?', sh.g, function (v) { if (near(v, cl(12 * sh.rc))) return { code: 'calc-mult', hint: 'rise = slope × run with slope ' + t('\\frac{1}{12}') + ': divide the run by 12.' }; return null; },
+              t('\\text{rise}=\\frac{1}{12}\\times ' + sh.rc + '=' + sh.g) + '. Greatest rise: ' + t(sh.g) + ' m.', ['Use the greatest slope allowed, ' + t('\\frac{1}{12}') + '.'], 'greatest rise', { after: 'm' });
+          } },
+          { id: 'e11d', level: 'PRG', make: function (r) {
+            return B.mc(r, '(d) The rule is a <i>maximum</i> slope, yet it forces a <i>minimum</i> length. Which explanation is right?', [
+              { html: 'A larger slope is a steeper climb — harder and less safe. From ' + t('\\frac{\\text{rise}}{\\text{run}}\\le\\frac{1}{12}') + ', multiplying by ' + t('12\\times\\text{run}') + ' gives ' + t('\\text{run}\\ge 12\\times\\text{rise}') + ': a minimum run.', right: true },
+              { html: 'A larger slope is gentler; the rule becomes ' + t('\\text{run}\\le 12\\times\\text{rise}') + '.', why: 'More rise for the same run is <b>steeper</b>, not gentler.' },
+              { html: 'A larger slope is steeper; the rule becomes ' + t('\\text{run}\\le 12\\times\\text{rise}') + ', a maximum run.', why: 'Multiply both sides of ' + t('\\frac{\\text{rise}}{\\text{run}}\\le\\frac{1}{12}') + ' by ' + t('12\\times\\text{run}') + ' (positive): ' + t('12\\times\\text{rise}\\le\\text{run}') + '.' },
+              { html: 'A larger slope is steeper; the rule becomes ' + t('\\text{rise}\\ge 12\\times\\text{run}') + '.', why: 'The 12 belongs with the rise: ' + t('12\\times\\text{rise}\\le\\text{run}') + '.' }],
+              'More rise for the same run means a steeper climb, so the slope must be kept small. ' + t('\\frac{\\text{rise}}{\\text{run}}\\le\\frac{1}{12}') + ' times ' + t('12\\times\\text{run}') + ' gives ' + t('12\\times\\text{rise}\\le\\text{run}') + ' — a minimum run.', ['Rearrange the inequality for the run.'], 'max slope, min run');
+          } }] },
+      { num: '12', stem: function (sh) { return 'A roof described as a “' + sh.a + ' in 12” pitch rises ' + t(sh.a) + ' ft vertically for every ' + t('12') + ' ft of horizontal run.'; },
+        shared: function (r) { var useB = r.chance(0.25), a = useB ? 4 : r.pick([3, 4, 6, 8, 9, 10, 5]), bs = [5, 6, 8, 9, 10, 12].filter(function (x) { return x > a && x % a !== 0; }), b = useB ? 9 : bs.length ? r.pick(bs) : 12; return { a: a, b: b, W: useB ? 30 : r.pick([24, 30, 36, 40, 28].filter(function (w) { return (a * w) % 3 === 0; })) }; },   // a·W/24 must be a terminating decimal
+        parts: [
+          { id: 'e12a', level: 'BEG', make: function (r, sh) { var f = red(sh.a, 12); return B.fraction('(a) State the slope of that roofline in lowest terms.', f, {}, t('m=\\frac{' + sh.a + '}{12}=' + frT(f[0], f[1])), ['rise over run, then reduce.'], 'pitch slope'); } },
+          { id: 'e12b', level: 'BEG', make: function (r, sh) { var f = red(-sh.a, 12); return slopePart('(b) The far side of the roof is the mirror image. State its slope.', f, 'Read left to right, the far side falls: its rise is negative while the run stays positive. ' + t('m=-\\frac{' + sh.a + '}{12}=' + frT(f[0], f[1])) + ' — same steepness, opposite sign.', ['Read the far side from left to right: up or down?'], 'mirror roof slope'); } },
+          { id: 'e12c', level: 'EMG', make: function (r, sh) {
+            var h = cl(sh.a * sh.W / 24);
+            return B.number('(c) The house is ' + t(sh.W) + ' ft wide and the peak is centred. How far above the eaves is the peak?', h, function (v) { if (near(v, cl(sh.a * sh.W / 12))) return { code: 'area-full', hint: 'The peak is centred, so the run from the eave to the peak is only <b>half</b> the width.' }; return null; },
+              'Run to the peak ' + t('=\\frac{' + sh.W + '}{2}=' + sh.W / 2) + ' ft. ' + t('\\text{rise}=' + frT(sh.a, 12) + '\\times ' + sh.W / 2 + '=' + h) + ' ft.', ['What is the run from the eave to the peak?'], 'roof peak height', { after: 'ft' });
+          } },
+          { id: 'e12d', level: 'EMG', make: function (r, sh) {
+            var fct = red(sh.b, sh.a);
+            var p = B.math('(d) A “' + sh.b + ' in 12” roof is quoted for a different house. It is steeper. By what factor is it steeper than the “' + sh.a + ' in 12” roof?', K.value(sh.b / sh.a, { diag: function (v) { if (near(v, sh.b - sh.a)) return { code: 'fac-diff', hint: 'That’s the difference. A <b>factor</b> means “how many times as steep”: divide the slopes.' }; if (near(v, sh.a / sh.b)) return { code: 'calc-flip', hint: 'Steeper by a factor greater than 1: divide the steeper slope by the gentler one.' }; return null; } }),
+              frT(fct[0], fct[1]), t(frT(sh.b, 12) + '\\div ' + frT(sh.a, 12) + '=\\frac{' + sh.b + '}{' + sh.a + '}=' + frT(fct[0], fct[1]) + (fct[1] !== 1 ? '\\approx ' + dec(sh.b / sh.a, 2) : '')) + ': the “' + sh.b + ' in 12” roof is ' + t(frT(fct[0], fct[1])) + ' times as steep.', ['Divide one slope by the other.'], 'roof steepness factor', { keys: 'fraction' });
+            var c0 = p.check; p.check = function (resp) { var res = c0(resp), v = HW.parse.number(resp); if (res.v === 'wrong' && v.ok && Math.abs(v.value - sh.b / sh.a) < 0.006) return form('decimal-rounded', 'Close — but that decimal is rounded. Give the exact factor as a fraction.'); return res; };
+            p.good = Number((sh.b / sh.a).toFixed(4)) === sh.b / sh.a ? [String(sh.b / sh.a)] : []; p.bad = [String(sh.b - sh.a)]; return p;
+          } }] },
+      { num: '13', section: 'Extra practice E — Error analysis', stem: function (sh) { return 'Asked for the slope of the segment joining ' + t('A' + ptT(sh.A)) + ' and ' + t('B' + ptT(sh.B)) + ', a student writes ' + t('m=\\frac{x_2-x_1}{y_2-y_1}=' + '\\frac{' + subT(sh.B[0], sh.A[0]) + '}{' + subT(sh.B[1], sh.A[1]) + '}=' + fracSteps(sh.B[0] - sh.A[0], sh.B[1] - sh.A[1])) + '.'; },
+        shared: function (r) { for (var g = 0; g < 100; g++) { var A = r.chance(0.2) ? [-3, 5] : [r.int(-6, 2), r.int(0, 7)], Bp = r.chance(0.2) ? [5, -1] : [r.int(2, 8), r.int(-6, 4)]; var s = slopeOf(A, Bp); if (!s || s[0] === 0 || Math.abs(s[0]) === Math.abs(s[1]) || Bp[0] === A[0]) continue; return { A: A, B: Bp, s: s }; } return { A: [-3, 5], B: [5, -1], s: [-3, 4] }; },
+        parts: [
+          { id: 'e13a', level: 'EMG', make: function (r, sh) {
+            return B.mc(r, '(a) What is the mistake?', [{ html: 'The formula is upside down: the student found run over rise instead of rise over run.', right: true },
+              { html: 'The student subtracted in different orders on the top and bottom.', why: 'Both subtractions use point B first — the order is consistent.' },
+              { html: 'The student made a sign error subtracting a negative.', why: 'The arithmetic is right; check which change is on top.' },
+              { html: 'There is no mistake.', why: 'Slope is ' + t('\\frac{y_2-y_1}{x_2-x_1}') + ' — the change in ' + t('y') + ' goes on top.' }],
+              'The student inverted the formula: ' + t('\\frac{x_2-x_1}{y_2-y_1}') + ' is run over rise. Slope is ' + t('\\frac{\\text{rise}}{\\text{run}}=\\frac{y_2-y_1}{x_2-x_1}') + '.', ['Which change belongs on top?'], 'name the run/rise error');
+          } },
+          { id: 'e13b', level: 'BEG', make: function (r, sh) { return coordSlopePart('(b) Determine the correct slope.', sh.A, sh.B, 'A', 'B'); } },
+          { id: 'e13c', level: 'EMG', make: function (r, sh) {
+            var w = slT(red(sh.s[1], sh.s[0])), c = slT(sh.s);
+            return B.mc(r, '(c) The correct slope is ' + t(c) + '. How is the student’s answer ' + t(w) + ' related to it?', [{ html: 'It is the <b>reciprocal</b>: the product is ' + t('1') + '.', right: true },
+              { html: 'It is the negative reciprocal.', why: 'Both have the same sign, and ' + t(w + '\\times ' + c + '=1') + ', not ' + t('-1') + '.' },
+              { html: 'It is the opposite (negative).', why: 'The opposite of ' + t(c) + ' is ' + t(slT([-sh.s[0], sh.s[1]])) + '.' },
+              { html: 'They are equal.', why: 'Compare as decimals: ' + t(dec(sval(red(sh.s[1], sh.s[0])), 3)) + ' and ' + t(dec(sval(sh.s), 3)) + '.' }],
+              t(w) + ' is the reciprocal of ' + t(c) + ': ' + t(w + '\\times\\left(' + c + '\\right)=1') + '.', ['Multiply the two slopes.'], 'reciprocal relationship');
+          } },
+          { id: 'e13d', level: 'ADV', make: function (r) {
+            return B.valueSet('(d) For which slopes would this mistake go unnoticed — when does run over rise equal rise over run?', [1, -1], { v: 'm', diag: function (A) { if (A.length === 1 && near(A[0], 1)) return { code: 'sol-missing', hint: 'Right — and there is one more slope that equals its own reciprocal.' }; return null; } },
+              'We need ' + t('m=\\frac{1}{m}') + ', so ' + t('m^2=1') + ': ' + t('m=1') + ' or ' + t('m=-1') + ' (rise and run the same size).', ['When is a number equal to its reciprocal?'], 'm = 1/m');
+          } }] },
+      { num: '14', stem: function (sh) { return 'Asked for the slope of the segment joining ' + t('P' + ptT(sh.P)) + ' and ' + t('Q' + ptT(sh.Q)) + ', a student computes the rise as ' + t(Math.abs(sh.rise)) + ' and the run as ' + t(sh.run) + ' and answers ' + t(frT(Math.abs(sh.rise), sh.run)) + '.'; },
+        shared: function (r) { for (var g = 0; g < 100; g++) { var P = r.chance(0.2) ? [-2, 7] : [r.int(-6, 0), r.int(3, 8)], Q = r.chance(0.2) ? [6, 1] : [r.int(2, 8), r.int(-4, 2)]; if (Q[1] < P[1] && Q[0] > P[0] && gcd(P[1] - Q[1], Q[0] - P[0]) >= 1) return { P: P, Q: Q, rise: Q[1] - P[1], run: Q[0] - P[0] }; } return { P: [-2, 7], Q: [6, 1], rise: -6, run: 8 }; },
+        parts: [
+          { id: 'e14a', level: 'BEG', make: function (r, sh) { var s = slopeOf(sh.P, sh.Q); return slopePart('(a) The run is right. Find the correct rise, with its sign, and give the correct slope.', s, t('\\text{rise}=' + subT(sh.Q[1], sh.P[1]) + '=' + sh.rise) + ' (not ' + t(-sh.rise) + '), ' + t('\\text{run}=' + subT(sh.Q[0], sh.P[0]) + '=' + sh.run) + '. ' + t('m=' + fracSteps(sh.rise, sh.run)) + '.', ['Is ' + t('Q') + ' higher or lower than ' + t('P') + '?'], 'fix rise sign'); } },
+          { id: 'e14b', level: 'EMG', make: function (r) {
+            return B.mc(r, '(b) Describe the line the student’s answer would give, and the line the correct answer gives.', [{ html: 'The student’s line <b>climbs</b> from left to right; the correct line <b>falls</b> — same steepness, opposite tilt.', right: true },
+              { html: 'The student’s line falls; the correct line climbs.', why: 'The student’s answer is positive: positive slopes climb.' },
+              { html: 'Both lines climb, but the correct one is steeper.', why: 'The two answers have the same size; only the sign differs.' },
+              { html: 'The student’s line is horizontal.', why: 'A positive slope climbs.' }],
+              'A positive slope climbs from left to right; the correct negative slope falls. The sizes are the same, so the steepness is the same.', ['Positive: climbs. Negative: falls.'], 'student vs correct line');
+          } },
+          { id: 'e14c', level: 'EMG', make: function (r, sh) {
+            return B.mc(r, '(c) Without any calculation, how could a quick sketch of ' + t('P') + ' and ' + t('Q') + ' have caught this error?', [{ html: t('P') + ' is on the left and higher (' + t('y=' + sh.P[1]) + ') and ' + t('Q') + ' is on the right and lower (' + t('y=' + sh.Q[1]) + '), so the segment goes downhill — a positive slope is impossible.', right: true },
+              { html: 'A sketch shows the segment is steep, so the slope must be greater than ' + t('1') + '.', why: 'Steepness doesn’t tell you the sign. Look at whether it goes up or down from left to right.' },
+              { html: 'A sketch can’t catch sign errors; only the formula can.', why: 'The direction of a sketch — uphill or downhill — shows the sign at a glance.' },
+              { html: 'A sketch shows both points are in the same quadrant.', why: 'Quadrants don’t matter here; the direction of the segment does.' }],
+              'Left-to-right, ' + t('P') + ' to ' + t('Q') + ' goes down, so the slope must be negative.', ['Imagine walking from ' + t('P') + ' to ' + t('Q') + ': uphill or downhill?'], 'sketch check sign');
+          } }] },
+      { num: '15', stem: function (sh) { return 'Asked for the slope of the segment joining ' + t(ptT(sh.A)) + ' and ' + t(ptT(sh.B)) + ', a student writes: “The run is ' + t('0') + '. Zero divided into anything is zero, so the slope is ' + t('0') + '.”'; },
+        shared: function (r) { var x = r.chance(0.25) ? 4 : r.int(-6, 6), y1 = r.chance(0.25) ? -3 : r.int(-6, 0), y2 = y1 + r.int(5, 12); return { A: [x, y1], B: [x, y2] }; },
+        parts: [
+          { id: 'e15a', level: 'BEG', make: function (r, sh) {
+            var rise = sh.B[1] - sh.A[1];
+            return B.fields('(a) Write the rise and the run.', [{ label: 'Rise', name: 'Rise' }, { label: 'Run', name: 'Run' }], [K.number(rise, function (v) { return near(v, -rise) ? { code: 'calc-sign', hint: 'Subtract in the order second − first: ' + t(subT(sh.B[1], sh.A[1])) + '.' } : null; }), K.number(0)], [String(rise), '0'], 'rise ' + t(rise) + ', run ' + t('0'),
+              t('\\text{rise}=' + subT(sh.B[1], sh.A[1]) + '=' + rise) + ', ' + t('\\text{run}=' + subT(sh.B[0], sh.A[0]) + '=0') + ', so the formula gives ' + t('\\frac{' + rise + '}{0}') + '.', ['Subtract the ' + t('y') + '-values, then the ' + t('x') + '-values.'], 'rise and run vertical');
+          } },
+          { id: 'e15b', level: 'EMG', make: function (r, sh) {
+            var rise = sh.B[1] - sh.A[1];
+            return B.mc(r, '(b) The fraction ' + t('\\frac{' + rise + '}{0}') + ' is not ' + t('0') + '. What is it instead, and why?', [{ html: 'The <b>denominator</b> is ' + t('0') + ', and dividing by ' + t('0') + ' gives no number at all: the slope is <b>undefined</b>.', right: true },
+              { html: 'It is ' + t(rise) + ', because dividing by ' + t('0') + ' changes nothing.', why: 'Check by multiplying back: ' + t(rise + '\\times 0=0') + ', not ' + t(rise) + '.' },
+              { html: 'It is ' + t('0') + ' after all — the student is right.', why: 'Slope ' + t('0') + ' is a zero <b>numerator</b> over a non-zero denominator, like ' + t('\\frac{0}{' + rise + '}') + '. Here the zero is on the bottom.' },
+              { html: 'It is infinity, a very large slope.', why: 'In this course we say the slope is <b>undefined</b>: there is no number that works.' }],
+              'The denominator is ' + t('0') + ', and there is no number ' + t('k') + ' with ' + t('k\\times 0=' + rise) + '. The slope is <b>undefined</b> (a vertical segment). Slope ' + t('0') + ' would be ' + t('\\frac{0}{\\text{run}}') + '.', ['Is the zero on the top or the bottom?'], 'n/0 is undefined');
+          } },
+          { id: 'e15c', level: 'BEG', make: function (r, sh) {
+            var A = sh.A, k = [[A[0], A[1]], [A[0] + 6, A[1]]];
+            var test = function (p) { return null; };
+            var c = function (resp) {
+              var L = readPts(resp); if (L.empty) return form('empty', 'Type two points.'); if (L.bad) return form('pts-format', 'Write two points in brackets, e.g. ' + t('(1,\\ 2),\\ (5,\\ 2)') + '.');
+              if (L.pts.length !== 2) return form('pts-few', 'Give exactly two points.');
+              var p = L.pts[0], q = L.pts[1]; if (same(p, q)) return form('pts-dup', 'Use two different points.');
+              if (near(p[0], q[0])) return wrong('pts-vh', 'Those two points have the same ' + t('x') + ' — another vertical segment (undefined slope). For slope ' + t('0') + ', keep the ' + t('y') + '-values the same.');
+              if (!near(p[1], q[1])) return wrong('pts-off', 'From ' + t(ptT(p)) + ' to ' + t(ptT(q)) + ' the rise isn’t ' + t('0') + '. For slope ' + t('0') + ', the two ' + t('y') + '-values must be equal.');
+              return ok();
+            };
+            var p = B.math('(c) Give two points whose segment really does have slope ' + t('0') + '.', c, ptsT(k), 'For example ' + t(ptsT(k)) + ': ' + t('m=\\frac{' + subT(A[1], A[1]) + '}{' + subT(A[0] + 6, A[0]) + '}=\\frac{0}{6}=0') + '. That segment is horizontal; the student’s segment is vertical.', ['Slope 0: rise 0. Which coordinate stays the same?'], 'two points slope 0', { keys: 'pairs', placeholder: 'e.g. (1, 2), (5, 2)' });
+            p.bad = [ptsT([[A[0], A[1]], [A[0], A[1] + 3]])]; return p;
+          } },
+          { id: 'e15d', level: 'EMG', make: function (r) {
+            return B.mc(r, '(d) Why is “no slope” also an unacceptable answer for this segment?', [{ html: '“No slope” sounds like no steepness — flat — the same mix-up as ' + t('0') + '. The segment is vertical, as steep as possible; <i>undefined</i> says exactly what went wrong: the division can’t be done.', right: true },
+              { html: 'It is acceptable — “no slope” and “undefined” mean the same to everyone.', why: 'Many people hear “no slope” as “flat”, which is a slope of ' + t('0') + ' — the opposite of vertical.' },
+              { html: 'Because vertical segments have a slope of ' + t('0') + '.', why: 'Horizontal segments have slope ' + t('0') + '. Vertical ones are undefined.' },
+              { html: 'Because every segment has a numerical slope.', why: 'Vertical segments don’t: their run is ' + t('0') + '.' }],
+              '“No slope” is easily heard as “flat” (slope ' + t('0') + '). A vertical segment is the opposite of flat. “Undefined” is precise: ' + t('\\frac{\\text{rise}}{0}') + ' can’t be calculated.', ['What would “no slope” make you picture?'], 'no slope vs undefined');
+          } }] },
+      { num: '16', section: 'Extra practice F — Stretch', stem: 'Determine the value of ' + t('k') + ' in each case, or state that every value of ' + t('k') + ' works.', parts: [
+        { id: 'e16a', level: 'PRG', make: function (r) {
+          var useB = r.chance(0.25), f = useB ? [-1, 2] : r.pick([[-1, 2], [-2, 3], [1, 3], [-3, 2], [2, 3]]), A0 = useB ? 2 : r.int(-3, 4), Bp = useB ? [-4, 3] : [A0 - f[1] * r.pick([1, 2]), r.int(-4, 5)], k = Bp[1] - f[0] * (Bp[0] - A0) / f[1];
+          return B.number('(a) The segment joining ' + t('A(' + A0 + ',\\ k)') + ' and ' + t('B' + ptT(Bp)) + ' has slope ' + t(frT(f[0], f[1])) + '.', k, function (v) { if (near(v, Bp[1] + f[0] * (Bp[0] - A0) / f[1])) return { code: 'k-sign', hint: 'Check your signs: substitute your ' + t('k') + ' back into the slope formula.' }; return null; },
+            t('\\frac{' + Bp[1] + '-k}{' + subT(Bp[0], A0) + '}=' + frT(f[0], f[1])) + ', so ' + t(Bp[1] + '-k=' + frT(f[0], f[1]) + '\\times(' + (Bp[0] - A0) + ')=' + cl(f[0] * (Bp[0] - A0) / f[1])) + ' and ' + t('k=' + k) + '. Check: ' + t(formulaT([A0, k], Bp) + '=' + fracSteps(Bp[1] - k, Bp[0] - A0)) + ' ✓', ['Substitute into the slope formula and solve.'], 'stretch k (a)', { before: t('k=') });
+        } },
+        { id: 'e16b', level: 'PRG', make: function (r) {
+          var y1 = r.int(-4, 2), run = r.pick([6, 4, 3, 2]), f = r.pick([[3, 2], [1, 2], [-1, 2], [2, 3], [5, 2]]), rise = f[0] * run / f[1]; if (rise % 1) { run = 2 * f[1]; rise = 2 * f[0]; }
+          return B.mc(r, '(b) The segment joining ' + t('A(k,\\ ' + y1 + ')') + ' and ' + t('B(k+' + run + ',\\ ' + (y1 + rise) + ')') + ' has slope ' + t(frT(f[0], f[1])) + '.', [
+            { html: 'Every value of ' + t('k') + ' works.', right: true }, { html: t('k=0') + ' only', why: 'Try ' + t('k=5') + ': the run is still ' + t(run) + ' and the rise still ' + t(rise) + '.' },
+            { html: t('k=' + run) + ' only', why: 'The ' + t('k') + ' cancels in the run: ' + t('(k+' + run + ')-k=' + run) + '.' }, { html: 'No value of ' + t('k') + ' works.', why: 'Work out the slope: ' + t('\\frac{' + rise + '}{' + run + '}=' + frT(f[0], f[1])) + ' — always.' }],
+            t('m=\\frac{' + (y1 + rise) + '-' + (y1 < 0 ? '(' + y1 + ')' : y1) + '}{(k+' + run + ')-k}=\\frac{' + rise + '}{' + run + '}=' + frT(f[0], f[1])) + '. The ' + t('k') + ' cancels, so the slope is ' + t(frT(f[0], f[1])) + ' for <b>every</b> value of ' + t('k') + '.', ['Simplify the run ' + t('(k+' + run + ')-k') + '.'], 'k cancels');
+        } },
+        { id: 'e16c', level: 'MAS', make: function (r) {
+          for (var g = 0; g < 200; g++) { var useB = g === 0 && r.chance(0.25), a = useB ? 2 : r.pick([2, 3, -2, -1]), m = useB ? -1 : r.pick([-1, 1, -2, 2, 3]), k = useB ? 1 : r.int(-3, 3), x2 = useB ? 6 : r.int(-5, 7); if (m === a || x2 === k) continue; var y2 = a * k + m * (x2 - k); if (Math.abs(y2) > 15) continue; break; }
+          var aT = a === 1 ? '' : a === -1 ? '-' : String(a);
+          return B.number('(c) The segment joining ' + t('A(k,\\ ' + aT + 'k)') + ' and ' + t('B' + ptT([x2, y2])) + ' has slope ' + t(m) + '.', k, null,
+            t('\\frac{' + y2 + '-' + (a < 0 ? '(' + aT + 'k)' : aT + 'k') + '}{' + x2 + '-k}=' + m) + ' → ' + t(y2 + (a < 0 ? '+' + (a === -1 ? '' : -a) : '-' + aT) + 'k=' + m + '(' + x2 + '-k)') + ' → ' + t('k=' + k) + '. Check: ' + t('A' + ptT([k, a * k])) + ', ' + t(formulaT([k, a * k], [x2, y2]) + '=' + fracSteps(y2 - a * k, x2 - k)) + ' ✓', ['Write the slope formula, cross-multiply, and collect the ' + t('k') + '-terms on one side.'], 'stretch k in both coords', { before: t('k=') });
+        } },
+        { id: 'e16d', level: 'MAS', make: function (r) {
+          for (var g = 0; g < 300; g++) { var useB = g === 0 && r.chance(0.25), f = useB ? [-1, 2] : r.pick([[-1, 2], [1, 2], [-2, 3], [-1, 3], [2, 3]]), k = useB ? -1 : r.int(-4, 4), d = useB ? 3 : k + f[1] * r.pick([1, 2, -1]), c = k - f[0] * (d - k) / f[1]; if (c % 1 || d === k || c === k || Math.abs(c) > 9 || Math.abs(d) > 9) continue; break; }
+          return B.number('(d) The segment joining ' + t('A(k,\\ ' + c + ')') + ' and ' + t('B(' + d + ',\\ k)') + ' has slope ' + t(frT(f[0], f[1])) + '.', k, null,
+            t('\\frac{k-' + (c < 0 ? '(' + c + ')' : c) + '}{' + d + '-k}=' + frT(f[0], f[1])) + ' → ' + t(f[1] + '(k' + (c < 0 ? '+' + (-c) : '-' + c) + ')=' + f[0] + '(' + d + '-k)') + ' → ' + t('k=' + k) + '. Check: ' + t('A' + ptT([k, c]) + ',\\ B' + ptT([d, k])) + ': ' + t(formulaT([k, c], [d, k]) + '=' + fracSteps(k - c, d - k)) + ' ✓', ['Cross-multiply: ' + t(f[1] + '(k' + (c < 0 ? '+' + (-c) : '-' + c) + ')=' + f[0] + '(' + d + '-k)') + ', then solve.'], 'stretch k in x1 and y2', { before: t('k=') });
+        } },
+        { id: 'e16e', level: 'EMG', make: function (r) {
+          var y1 = r.int(-4, 2), run = r.pick([6, 4, 3, 2]), f = r.pick([[3, 2], [1, 2], [-1, 2], [2, 3], [5, 2]]), rise = f[0] * run / f[1]; if (rise % 1) { run = 2 * f[1]; rise = 2 * f[0]; }
+          return B.mc(r, '(e) Part (b) is different from the others: any segment like the one joining ' + t('A(k,\\ ' + y1 + ')') + ' and ' + t('B(k+' + run + ',\\ ' + (y1 + rise) + ')') + ' has slope ' + t(frT(f[0], f[1])) + ' for <b>every</b> value of ' + t('k') + '. What is special about those two points?', [
+            { html: 'The same ' + t('k') + ' appears in both ' + t('x') + '-coordinates, so it cancels: the run and rise are fixed numbers, and changing ' + t('k') + ' only slides the segment sideways.', right: true },
+            { html: 'The slope is positive, so ' + t('k') + ' can be anything.', why: 'Other segments with positive slopes still give just one value of ' + t('k') + '. What matters is that ' + t('k') + ' cancels.' },
+            { html: t('k') + ' appears only in the ' + t('y') + '-coordinates.', why: 'Look again: ' + t('k') + ' is in both ' + t('x') + '-coordinates.' },
+            { html: 'There is a mistake in the question.', why: 'The question is fine — it just has infinitely many answers.' }],
+            'The run is always ' + t('(k+' + run + ')-k=' + run) + ' and the rise ' + t(rise) + ' doesn’t involve ' + t('k') + ', so the slope doesn’t depend on ' + t('k') + ' at all — the equation holds for every ' + t('k') + '.', ['Simplify the run ' + t('(k+' + run + ')-k') + '.'], 'why k cancels');
+        } }] },
+      { num: '17', stem: function (sh) { return 'The points ' + ['A', 'B', 'C', 'D'].map(function (n, i) { return t(n + ptT(sh.P[i])); }).join(', ') + ' all lie on one line.'; },
+        shared: function (r) { for (var g = 0; g < 200; g++) { var useB = g === 0 && r.chance(0.3), f = useB ? [2, 3] : r.pick([[2, 3], [1, 2], [1, 3], [3, 2], [-2, 3], [-1, 2], [-1, 3]]), A = useB ? [-6, -4] : [r.int(-7, -7 + 14 - 4 * Math.abs(f[1])), 0]; if (!useB) { var ylo = f[0] > 0 ? -7 : -7 + 4 * Math.abs(f[0]), yhi = f[0] > 0 ? 7 - 4 * f[0] : 7; if (ylo > yhi) continue; A[1] = r.int(ylo, yhi); } var P = [0, 1, 3, 4].map(function (k) { return [A[0] + k * f[1], A[1] + k * f[0]]; }); if (P.some(function (p) { return Math.abs(p[0]) > 7 || Math.abs(p[1]) > 7; })) continue; return { f: f, P: P }; } return { f: [2, 3], P: [[-6, -4], [-3, -2], [3, 2], [6, 4]] }; },
+        parts: [
+          { id: 'e17a', level: 'BEG', make: function (r, sh) {
+            var P = sh.P, pairs = [[0, 1], [0, 3], [1, 2]], nm = ['A', 'B', 'C', 'D'], s = red(sh.f[0], sh.f[1]);
+            return B.fields('(a) Calculate the slope using ' + t('A') + ' and ' + t('B') + ', then ' + t('A') + ' and ' + t('D') + ', then ' + t('B') + ' and ' + t('C') + '.', pairs.map(function (pr) { return { label: t('m_{' + nm[pr[0]] + nm[pr[1]] + '}'), name: nm[pr[0]] + nm[pr[1]], mode: 'math', keys: 'slope' }; }), pairs.map(function () { return K.slope(s); }), pairs.map(function () { return slT(s); }),
+              'All three: ' + t(slT(s)), pairs.map(function (pr) { return t('m_{' + nm[pr[0]] + nm[pr[1]] + '}=' + formulaT(P[pr[0]], P[pr[1]]) + '=' + fracSteps(P[pr[1]][1] - P[pr[0]][1], P[pr[1]][0] - P[pr[0]][0])); }).join('<br>') + '<br>All three are ' + t(slT(s)) + '.', ['Use ' + t('m=\\frac{y_2-y_1}{x_2-x_1}') + ' three times.'], 'three slopes on one line');
+          } },
+          { id: 'e17b', level: 'EMG', make: function (r, sh) {
+            var P = sh.P, A = P[0], Bp = P[1], Dp = P[3], cB = [Bp[0], A[1]], cD = [Dp[0], A[1]];
+            var key = gv([], [{ v: [A, cB, Bp], s: 'closed', e: 'closed' }, { v: [A, cD, Dp], s: 'closed', e: 'closed' }]);
+            var cov = function (resp, U, V) { for (var i = 0; i <= 4; i++) { var p = [U[0] + (V[0] - U[0]) * i / 4, U[1] + (V[1] - U[1]) * i / 4]; if (!DR.contains(resp, p)) return false; } return true; };
+            var legs = function (resp, Pp, Q) { var c1 = [Q[0], Pp[1]], c2 = [Pp[0], Q[1]]; return (cov(resp, Pp, c1) && cov(resp, c1, Q)) || (cov(resp, Pp, c2) && cov(resp, c2, Q)); };
+            var chk = function (resp) {
+              if (DR.empty(resp)) return form('empty', 'Draw the two triangles on the grid first.');
+              var g = DR.geom(resp), slant = Object.keys(g.lines).filter(function (k) { var L = g.lines[k]; if (L.A === 0 || L.B === 0) return false; return !(Math.abs(L.A * A[0] + L.B * A[1] - L.C) < 1e-6 && Math.abs(L.A * Dp[0] + L.B * Dp[1] - L.C) < 1e-6); });
+              if (slant.length) return wrong('tri-slanted', 'The legs of a rise-and-run triangle are parallel to the axes: one <b>horizontal</b> (the run) and one <b>vertical</b> (the rise).');
+              if (!legs(resp, A, Bp)) return wrong('tri-ab', 'Draw the triangle for ' + t('AB') + ': from ' + t('A') + ' go straight across to the point level with ' + t('A') + ' and below or above ' + t('B') + ', then straight up or down to ' + t('B') + '.');
+              if (!legs(resp, A, Dp)) return wrong('tri-ad', 'Good for ' + t('AB') + ' — now draw the triangle for ' + t('AD') + ' the same way.');
+              return ok();
+            };
+            var inp = { x: [-7, 7], y: [-7, 7], labels: 2, defaultEnd: 'closed', tools: ['line', 'ends'], bg: { segs: [{ pts: [clipEnd(A, [A[0] - Dp[0], A[1] - Dp[1]], 1.5, 6.8), clipEnd(Dp, [Dp[0] - A[0], Dp[1] - A[1]], 1.5, 6.8)], color: '#9aa1ad' }], points: ['A', 'B', 'C', 'D'].map(function (n, i) { return { x: P[i][0], y: P[i][1], label: n }; }) } };
+            var p = B.graph('(b) Draw the rise-and-run right triangle for ' + t('AB') + ' and the one for ' + t('AD') + '. Make each triangle’s legs parallel to the axes.<div class="muted">Use <b>╱ Line</b> and tap the corners in order (for example ' + t('A') + ', the corner, then ' + t('B') + '); tap the last point again to finish.</div>', inp, chk, key,
+              t('AB') + ': run ' + t(Bp[0] - A[0]) + ', rise ' + t(Bp[1] - A[1]) + ', right angle at ' + t(ptT(cB)) + '. ' + t('AD') + ': run ' + t(Dp[0] - A[0]) + ', rise ' + t(Dp[1] - A[1]) + ', right angle at ' + t(ptT(cD)) + '. (Going up first, then across, is fine too.)', ['Each triangle: one horizontal leg (the run) and one vertical leg (the rise); the hypotenuse is on the line.'], 'draw rise-run triangles');
+            p.bad = [gv([], [{ v: [A, cB, Bp], s: 'closed', e: 'closed' }]), gv([], [seg(A, Dp)])]; return p;
+          } },
+          { id: 'e17c', level: 'PRG', make: function (r) {
+            return B.mc(r, '(c) Picture the rise-and-run right triangle for ' + t('AB') + ' and the one for ' + t('AD') + ', each with legs parallel to the axes. Why must those two triangles be <b>similar</b>?', [
+              { html: 'Each has a right angle (horizontal and vertical legs), they share the angle at ' + t('A') + ' (both hypotenuses lie along the same line from ' + t('A') + '), so the third angles match too.', right: true },
+              { html: 'They have the same side lengths.', why: 'Same side lengths would make them congruent; the ' + t('AD') + ' triangle is bigger.' },
+              { html: 'Both are isosceles.', why: 'Their legs are different lengths (unless the slope is ' + t('\\pm 1') + ').' },
+              { html: 'Because ' + t('B') + ' is between ' + t('A') + ' and ' + t('D') + '.', why: 'That is true, but similarity needs matching angles.' }],
+              'Right angles match (horizontal leg meets vertical leg). The angle at ' + t('A') + ' is shared because both hypotenuses lie on the same line from ' + t('A') + '. The third angles are each ' + t('90^\\circ') + ' minus the angle at ' + t('A') + '. Three pairs of equal angles: similar.', ['List the three angles of each triangle.'], 'triangles similar');
+          } },
+          { id: 'e17d', level: 'PRG', make: function (r) {
+            return B.mc(r, '(d) How does similarity show that <i>any</i> two points on the line give the same slope?', [
+              { html: 'Any two points give a rise-and-run triangle similar to these, and similar triangles have proportional sides, so ' + t('\\frac{\\text{rise}}{\\text{run}}') + ' is the same for every pair.', right: true },
+              { html: 'Similar triangles have equal sides, so the rise and run are always the same.', why: 'The rise and run change (' + t('AB') + ' and ' + t('AD') + ' have different ones); only their <b>ratio</b> stays the same.' },
+              { html: 'It only works for points with integer coordinates.', why: 'Similarity works for any points on the line.' },
+              { html: 'Because the slope is always rise plus run.', why: 'Slope is a ratio: rise divided by run.' }],
+              'Every pair of points on the line makes a right triangle similar to these, and corresponding sides of similar triangles are proportional: ' + t('\\frac{\\text{rise}}{\\text{run}}') + ' is the same for all of them. That common ratio is the slope of the <i>line</i>.', ['Proportional sides → equal ratios.'], 'slope same anywhere');
+          } }] },
+      { num: '18', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: 'e18', level: 'EMG', make: function (r) {
+          var useB = r.chance(0.25), f = useB ? [3, 5] : r.pick([[3, 5], [2, 3], [3, 4], [2, 5], [4, 5]]), p = f[0], q = f[1], cmp = useB ? [1, 2] : r.pick([[1, 2], [1, 3], [1, 4]].filter(function (c) { return c[0] / c[1] < p / q; }));
+          return B.mc(r, 'A line segment has slope ' + t(frT(-p, q)) + '. Which statement must be true?', [
+            { html: 'A run of ' + t(q) + ' along the segment goes with a rise of ' + t(p) + '.', why: t('\\text{rise}=' + frT(-p, q) + '\\times ' + q + '=-' + p) + ', not ' + t(p) + '.' },
+            { html: 'A run of ' + t(-2 * q) + ' along the segment goes with a rise of ' + t(2 * p) + '.', right: true },
+            { html: 'The segment is less steep than a segment of slope ' + t(frT(cmp[0], cmp[1])) + '.', why: 'Compare sizes: ' + t(frT(p, q) + '=' + dec(p / q, 2)) + ' is more than ' + t(frT(cmp[0], cmp[1]) + '\\approx ' + dec(cmp[0] / cmp[1], 2)) + ', so it is <b>steeper</b>.' },
+            { html: 'The segment rises from left to right.', why: 'A negative slope falls from left to right.' }],
+            t('\\text{rise}=m\\times\\text{run}') + ' with ' + t('m=' + frT(-p, q)) + ': a run of ' + t(-2 * q) + ' gives ' + t(frT(-p, q) + '\\times(' + (-2 * q) + ')=' + 2 * p) + ' ✓. (A run of ' + t(q) + ' gives a rise of ' + t(-p) + '; ' + t('|' + frT(-p, q) + '|>' + frT(cmp[0], cmp[1])) + ' so it is steeper; negative slopes fall.)', ['Test each statement with rise = slope × run.'], 'must be true slope -' + p + '/' + q);
+        } }] },
+      { num: '19', stem: '<i>(Numerical Response)</i>', parts: [
+        { id: 'e19', level: 'PRG', make: function (r) {
+          for (var g = 0; g < 200; g++) { var useB = g === 0 && r.chance(0.25), f = useB ? [3, 2] : r.pick([[3, 2], [2, 3], [5, 4], [3, 4], [4, 3], [5, 2]]), x1 = useB ? -4 : r.int(-8, -1), x2 = useB ? 8 : x1 + f[1] * r.pick([2, 3, 4]), y2 = useB ? 20 : r.int(10, 30), pp = y2 - f[0] * (x2 - x1) / f[1]; if (pp < 0 || pp % 1 || pp > 99) continue; break; }
+          return B.nr('The segment joining ' + t('(' + x1 + ',\\ p)') + ' and ' + t(ptT([x2, y2])) + ' has a slope of ' + t(frT(f[0], f[1])) + '. The value of ' + t('p') + ' is ________.', pp, function (v) { if (near(v, y2 + f[0] * (x2 - x1) / f[1])) return { code: 'k-sign', hint: 'Check the signs: substitute your ' + t('p') + ' back in.' }; if (near(v, f[0] * (x2 - x1) / f[1])) return { code: 'end-nostart', hint: 'That’s the rise. Now use it to find ' + t('p') + ': ' + t(y2 + '-p=\\text{rise}') + '.' }; return null; },
+            t('\\frac{' + y2 + '-p}{' + subT(x2, x1) + '}=' + frT(f[0], f[1])) + ', so ' + t(y2 + '-p=' + frT(f[0], f[1]) + '\\times ' + (x2 - x1) + '=' + cl(f[0] * (x2 - x1) / f[1])) + ' and ' + t('p=' + pp) + '.', ['Work out the run, then the rise = slope × run.'], 'find p for slope');
+        } }] }
     ];
   }
 })(window);

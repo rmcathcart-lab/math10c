@@ -314,7 +314,7 @@
     return null;
   };
 
-  /* ---- monomials and variable radicals (Lesson 6B extension) ---- */
+  /* ---- monomials and variable radicals (Unit 1 Lesson 8 extension) ---- */
   function mono(a) { // rational × product of variable powers (integer exponents ≥ 0)
     var num = [], den = [], sign = flat(a, num, den, 1), k = [sign, 1], v = {};
     function addF(f, s) {

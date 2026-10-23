@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Slope Relationships · Math 10C 6.4</title>
-<meta name="description" content="Math 10C Unit 6 Lesson 4: the slope formula (including negative coordinates), finding errors in slope calculations, collinear points and a missing coordinate, parallel lines (equal slopes) and perpendicular lines (negative reciprocals), using slope to find a right angle, and solving for an unknown slope. Write on it with an Apple Pencil.">
+<title>Characteristics of Linear Graphs · Math 10C 6.4</title>
+<meta name="description" content="Math 10C Unit 6 Lesson 4: characteristics of linear graphs. Is a table of values linear (equal steps, constant changes, the uneven-steps trap)? Intercepts from a graph and from a table, domain and range of lines and of a real situation in set notation, how many intercepts a line can have, and matching graphs to descriptions. Write on it with an Apple Pencil.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="10C Lessons">
@@ -27,344 +27,311 @@
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
   <div class="kicker">Math 10C · Unit 6 Characteristics of Linear Relations · Lesson 4</div>
-  <h1>Slope Relationships: Collinearity, Parallel Lines, and Perpendicular Lines</h1>
-  <p class="lede">Turning rise and run into a <b>formula</b>, then using slope to test whether points are <b>collinear</b> and to compare two different lines: <b>parallel</b> lines share a slope, and <b>perpendicular</b> lines have slopes that are <b>negative reciprocals</b>.</p>
+  <h1>Characteristics of Linear Graphs</h1>
+  <p class="lede">A <b>linear relation</b> is a relation whose graph is a straight line. Today we read the key characteristics of such a graph (its <b>slope</b>, its <b>intercepts</b>, and its <b>domain and range</b>) and decide from a table of values whether a relation is linear at all.</p>
   <div class="goals">
     <div class="goals-h">I can…</div>
     <ul>
-      <li>calculate slope with the slope formula <span class="tex">m=\dfrac{y_2-y_1}{x_2-x_1}</span>, including points with negative coordinates</li>
-      <li>find and explain errors in a slope calculation (mixed order, run over rise)</li>
-      <li>prove that three points are <b>collinear</b> (equal slopes and a shared point) and find a missing coordinate</li>
-      <li>recognize <b>parallel</b> lines (equal slopes) and <b>perpendicular</b> lines (slopes with a product of <span class="tex">-1</span>)</li>
-      <li>find slopes parallel and perpendicular to a given segment, use slopes to show a right angle, and solve for an unknown slope</li>
+      <li>decide from a table of values whether a relation is <b>linear</b>, and state its slope (with unequal <span class="tex">x</span>-steps, I divide first)</li>
+      <li>state the <span class="tex">x</span>- and <span class="tex">y</span>-intercepts of a line from its <b>graph</b> or from a <b>table</b>, and explain what they mean in a real situation</li>
+      <li>state the <b>domain and range</b> of a line, a horizontal or vertical line, a segment and a real situation, in set notation</li>
+      <li>explain why a line has <b>one</b>, <b>two</b> or <b>infinitely many</b> intercepts, and sketch a line with given characteristics</li>
+      <li>match graphs with descriptions using the <b>sign of the slope</b> and the <b>intercepts</b></li>
     </ul>
   </div>
-  <div class="outcome"><b>RF3</b> Demonstrate an understanding of slope with respect to: rise and run; line segments and lines; rate of change; parallel lines; perpendicular lines.</div>
+  <div class="outcome"><b>RF4</b> Describe and represent linear relations, using: words; ordered pairs; tables of values; graphs; equations.</div>
+  <div class="outcome"><b>RF5</b> Determine the characteristics of the graphs of linear relations, including the: intercepts; slope; domain; range.</div>
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Trees in a Row" id="wu" style="--wf-side: 362px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Trees in a Row</h2>
-  <p class="wf-rule">A farmer planted five fruit trees at grid points in her orchard. <span class="u6l4-farmer">“All five trees are in one <b>perfect straight row!</b>”</span></p></div>
-  <div class="wf-grid"><div class="wf-main">
-    <div class="u6l4-wfig">
-      <div id="u6l4-orchard"></div>
-      <div class="u6l4-wbtns">
-        <button type="button" class="pill" id="u6l4-wtri">Apple → Cherry → Plum steps</button>
-        <button type="button" class="pill" id="u6l4-wruler">Hold up a ruler</button>
-      </div>
+<section class="card warm wf wf-one" data-ink="warm" data-section="Warm-up: Low Battery" id="wu">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Low Battery</h2>
+  <p class="wf-rule">At noon, Mia and Leo forget their chargers. Each phone drains <b>steadily</b>. <span class="muted small">(tap a ? to fill it in)</span></p></div>
+  <div class="wf-grid u6l4-grid">
+  <div id="u6l4-phones" class="u6l4-phones"></div>
+  <div class="u6l4-clockrow">
+    <button type="button" class="pill" id="u6l4-run">Run the clock ▸</button>
+    <button type="button" class="pill" id="u6l4-reset">Back to noon</button>
+    <span class="u6l4-clockmsg" id="u6l4-clockmsg"></span>
+  </div>
+
+  <div class="u6l4-wqs">
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">1</div><div>What will each phone read at <b>3:00</b>? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u6l4-wa"><div class="bk-ans">Mia <b>45%</b> (down 15 each hour); Leo <b>25%</b> (down 5 each hour).</div></div>
     </div>
-  </div><div class="wf-side">
-    <div class="u6l4-wqs">
-      <div class="bk-wq">
-        <div class="q-line"><div class="q-num">1</div><div>Apple → Cherry: rise? run? slope? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-        <div class="u6l4-wa"><div class="bk-ans">Rise <span class="tex">2</span>, run <span class="tex">3</span>, slope <span class="tex">\tfrac{2}{3}</span>.</div></div>
-      </div>
-      <div class="bk-wq">
-        <div class="q-line"><div class="q-num">2</div><div>Cherry → Plum: slope? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-        <div class="u6l4-wa"><div class="bk-ans">Rise <span class="tex">2</span>, run <span class="tex">3</span> again: slope <span class="tex">\tfrac{2}{3}</span>.</div></div>
-      </div>
-      <div class="bk-wq">
-        <div class="q-line"><div class="q-num">3</div><div>If trees are in one straight row, what must be true about the slopes between them? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
-        <div class="u6l4-wa"><div class="bk-ans">Every pair must give the <b>same slope</b>. Apple, Cherry and Plum pass.</div></div>
-      </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">2</div><div>How many percent does each phone lose <b>every hour</b>? Is it the same every hour? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u6l4-wa"><div class="bk-ans">Mia loses <b>15%</b> per hour and Leo <b>5%</b> per hour: the <b>same</b> drop every hour, so each pattern is <b>linear</b>.</div></div>
     </div>
-  <div class="poll wf-poll u6l4-poll4">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Is the farmer right? If a tree is out of line, which one? <b>Guess first.</b></div></div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>At what time was Mia’s phone at <b>100%</b>? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u6l4-wa"><div class="bk-ans"><b>11:20 am.</b> From 100% to 90% is 10 points, and at 15 points per hour that takes <span class="tex">\tfrac{10}{15}=\tfrac23</span> h <span class="tex">=40</span> min before noon.</div></div>
+    </div>
+  </div>
+
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Mia’s phone has more than <b>twice</b> the charge of Leo’s. If neither stops, whose phone hits <b>0%</b> first? <b>Guess first.</b></div></div>
     <div class="poll-opts">
-      <div class="opt"><b>A</b> Plum</div>
-      <div class="opt right"><b>B</b> Pear</div>
-      <div class="opt"><b>C</b> Peach</div>
-      <div class="opt"><b>D</b> None: it’s a perfect row</div>
+      <div class="opt right"><b>A</b> Mia’s</div>
+      <div class="opt"><b>B</b> Leo’s</div>
+      <div class="opt"><b>C</b> They die at the same moment</div>
     </div>
     <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>B, the Pear.</b> Trees: Apple <span class="tex">(1,\ 1)</span>, Cherry <span class="tex">(4,\ 3)</span>, Plum <span class="tex">(7,\ 5)</span>, Pear <span class="tex">(11,\ 8)</span>, Peach <span class="tex">(13,\ 9)</span>. Slopes from the Apple tree: Cherry <span class="tex">\tfrac{2}{3}</span>, Plum <span class="tex">\tfrac{4}{6}=\tfrac{2}{3}</span>, Pear <span class="tex">\tfrac{7}{10}</span>, Peach <span class="tex">\tfrac{8}{12}=\tfrac{2}{3}</span>. The row passes <span class="tex">x=11</span> at <span class="tex">y=7\tfrac{2}{3}</span>, so the Pear is only <span class="tex">\tfrac13</span> of a unit too high: invisible to most eyes.<br>
-      <span class="muted"><b>D</b> is the eyeball answer: it <em>looks</em> straight. <b>C</b> is tempting because the slope from Pear to Peach is <span class="tex">\tfrac12</span>, so the row seems to “bend” at the end, but Peach is back on Apple’s line. <b>A</b> is a guess for the middle tree.</span><br>
-      <b>The lesson:</b> slopes settle it when eyes can’t.</div>
+    <div class="poll-ans"><b>A: Mia’s phone.</b> Mia: <span class="tex">90\div15=6</span> hours, so it dies at <b>6:00 pm</b>. Leo: <span class="tex">40\div5=8</span> hours, so <b>8:00 pm</b>. The fuller phone dies first because it drains <b>3 times as fast</b>.<br>
+      <span class="muted"><b>B</b> looks only at the starting value (“less charge dies first”) and ignores the rate. <b>C</b> guesses that the bigger charge and the faster drain cancel out. They don’t: 6 h for Mia, 8 h for Leo.</span></div>
   </div>
-  </div></div>
+  </div>
 
   <div class="bk-wq u6l4-early">
-    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> (1) Move the Pear to the nearest grid point that <em>is</em> in the row. (2) A second row starts at <span class="tex">(1,\ 4)</span> and runs <b>parallel</b> to the first. Where is its next grid-point tree? (3) What slope would an irrigation pipe crossing the row at a right angle have?</div></div>
-    <div class="u6l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">(1) <span class="tex">(10,\ 7)</span>: 3 right and 2 up from the Plum. (2) <span class="tex">(4,\ 6)</span>: same slope <span class="tex">\tfrac23</span>. (3) <span class="tex">-\tfrac32</span> (Sections 3 to 5 explain why).</div></div>
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> At what time do the two phones show the <b>same</b> charge?</div></div>
+    <div class="u6l4-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>5:00 pm</b>, both at 15%: <span class="tex">90-15(5)=40-5(5)=15</span>.</div></div>
   </div>
-  <p class="u6l4-social">Guess by eye first, then hold a ruler up to the screen. Did your eyes fool you?</p>
+  <p class="u6l4-social">Check your own phone: how much battery has it lost since you woke up?</p>
 </section>
 
-<!-- ================= 1. The slope formula ================= -->
-<section class="card" data-ink="s1" data-section="1. The Slope Formula">
-  <div class="sec-h"><span class="badge">1</span><h2>The Slope Formula</h2></div>
-  <p>In Lesson 3 slope was found by counting the <span class="u6l4-rise">rise</span> and the <span class="u6l4-run">run</span> on a grid. Counting needs a graph, and it is slow when the points are far apart. Example 1 shows that the rise is simply a <b>difference of <span class="tex">y</span>-coordinates</b> and the run is a <b>difference of <span class="tex">x</span>-coordinates</b>, which turns counting into a formula.</p>
-  <div class="explainer" data-explainer="liftOff"></div>
+<!-- ================= 1. Is it linear? ================= -->
+<section class="card" data-ink="s1" data-section="1. Is It Linear?">
+  <div class="sec-h"><span class="badge">1</span><h2>Is It Linear? Tables of Values</h2></div>
+  <p>On a straight line the slope is the same everywhere (Lesson 2), so <b>equal steps</b> in <span class="tex">x</span> always produce <b>equal changes</b> in <span class="tex">y</span>. To test a table of values:</p>
+  <div class="u6l4-rules">
+    <div class="u6l4-rule"><div class="u6l4-rh">Equal <span class="tex">x</span>-steps</div><div class="u6l4-rb">Find the change in <span class="tex">y</span> from each entry to the next.</div><div class="u6l4-rf">Linear when all of these changes are <b>the same</b>.</div></div>
+    <div class="u6l4-rule u6l4-rule2"><div class="u6l4-rh">Unequal <span class="tex">x</span>-steps</div><div class="u6l4-rb">Divide each change in <span class="tex">y</span> by the matching change in <span class="tex">x</span>.</div><div class="u6l4-rf">Linear when this quotient is <b>always the same</b>.</div></div>
+  </div>
+  <div class="def">Either way, the constant value <span class="tex">\dfrac{\text{change in }y}{\text{change in }x}</span> is the <b>slope</b> of the line: its <b>rate of change</b>.</div>
+  <div class="explainer" data-explainer="linTest"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Check the <span class="tex">x</span>-row first.</b> When the <span class="tex">x</span>-steps are unequal, the changes in <span class="tex">y</span> are unequal even on a straight line. Divide before you decide.</div></div>
 </section>
 
 <section class="card example" data-ink="ex1" data-section="Example 1">
-  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Rise over run, and the same slope from the formula</h3></div>
-  <p class="q">The graph shows line segments <span class="tex">RS</span> and <span class="tex">TU</span>.</p>
-  <div class="u6l4-ex1">
-    <div id="u6l4-ex1fig"></div>
-    <div class="parts c1">
-      <div class="part"><div class="pl">(a) Count grid squares to find the rise and run of <span class="tex">RS</span>, then use <span class="tex">\dfrac{\text{rise}}{\text{run}}</span> to calculate its slope.</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">From <span class="tex">R</span> to <span class="tex">S</span> the segment rises <span class="tex">6</span> squares while running <span class="tex">8</span> squares right.<br><span class="tex">\text{slope}=\dfrac{\text{rise}}{\text{run}}=\dfrac{6}{8}=\boldsymbol{\dfrac{3}{4}}</span></div></div></div>
-      <div class="part"><div class="pl">(b) State the coordinates of <span class="tex">R</span> and <span class="tex">S</span>. Show that the rise equals <span class="tex">y_S-y_R</span> and the run equals <span class="tex">x_S-x_R</span>, and use these differences to confirm the slope from part (a).</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">R(1,\ 2)</span>, <span class="tex">S(9,\ 8)</span>.<br>rise <span class="tex">=y_S-y_R=8-2=6</span> and run <span class="tex">=x_S-x_R=9-1=8</span>: exactly the squares counted in (a).<br><span class="tex">m_{RS}=\dfrac{8-2}{9-1}=\dfrac{6}{8}=\boldsymbol{\dfrac{3}{4}}</span>, which agrees with (a).</div></div></div>
-      <div class="part"><div class="pl">(c) Without counting grid squares, subtract coordinates in the same way to calculate the slope of segment <span class="tex">TU</span>.</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">T(2,\ 9)</span>, <span class="tex">U(8,\ 1)</span>. rise <span class="tex">=y_U-y_T=1-9=-8</span>, run <span class="tex">=x_U-x_T=8-2=6</span>.<br><span class="tex">m_{TU}=\dfrac{-8}{6}=\boldsymbol{-\dfrac{4}{3}}</span></div></div></div>
-    </div>
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Linear or not?</h3></div>
+  <p class="q">Decide whether each table of values represents a linear relation. If it does, state the slope.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a)</div>
+      <div class="u6l4-tfig" data-bk-table='{"rows":[[0,-3],[1,-1],[2,1],[3,3],[4,5]],"layout":"h","cellW":46,"cellH":46,"headW":46,"tap":false}'></div>
+      <div class="work" style="--h:190px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x</span> goes up in steps of 1. Changes in <span class="tex">y</span>: <span class="tex">+2,\ +2,\ +2,\ +2</span>: all equal.<br><b>Linear</b>, slope <span class="tex">=\dfrac{2}{1}=\boldsymbol{2}</span>.</div></div></div>
+    <div class="part"><div class="pl">(b)</div>
+      <div class="u6l4-tfig" data-bk-table='{"rows":[[0,1],[1,2],[2,5],[3,10],[4,17]],"layout":"h","cellW":46,"cellH":46,"headW":46,"tap":false}'></div>
+      <div class="work" style="--h:190px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x</span> goes up in steps of 1. Changes in <span class="tex">y</span>: <span class="tex">+1,\ +3,\ +5,\ +7</span>: not equal.<br><b>Not linear</b> (the graph curves upward).</div></div></div>
+    <div class="part"><div class="pl">(c)</div>
+      <div class="u6l4-tfig" data-bk-table='{"rows":[[-2,11],[0,7],[3,1],[7,-7]],"layout":"h","cellW":52,"cellH":46,"headW":46,"tap":false}'></div>
+      <div class="work" style="--h:190px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The <span class="tex">x</span>-steps are <b>not</b> equal (<span class="tex">+2,\ +3,\ +4</span>), so divide: <span class="tex">\tfrac{-4}{2}=-2,\ \tfrac{-6}{3}=-2,\ \tfrac{-8}{4}=-2</span>.<br><b>Linear</b>, slope <span class="tex">\boldsymbol{-2}</span>. (The <span class="tex">y</span>-changes alone, <span class="tex">-4,\ -6,\ -8</span>, look unequal: a trap.)</div></div></div>
   </div>
   <div class="space" id="ex1-space"></div>
   <button class="more" data-more="ex1-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s1b" data-section="1. The formula">
-  <div class="def u6l4-formula"><b>The Slope Formula.</b> The slope <span class="tex">m</span> of the line through <span class="tex">P(x_1,\ y_1)</span> and <span class="tex">Q(x_2,\ y_2)</span> is
-    <div class="u6l4-fbig"><span class="tex">m=\dfrac{\color{#7b4fc4}\text{rise}}{\color{#c27a0e}\text{run}}=\dfrac{\color{#7b4fc4}y_2-y_1}{\color{#c27a0e}x_2-x_1}</span><span class="u6l4-for">or, with the point names,</span><span class="tex">m_{PQ}=\dfrac{\color{#7b4fc4}y_Q-y_P}{\color{#c27a0e}x_Q-x_P}</span></div>
-    Either point may be taken first, provided the coordinates are subtracted in the <b>same order</b> in the numerator and the denominator.</div>
+<section class="card" data-ink="s1b" data-section="1. The uneven-steps trap">
+  <h3 class="sub">The uneven-steps trap</h3>
+  <p>Bigger steps in <span class="tex">x</span> make bigger changes in <span class="tex">y</span>, even on a straight line. Every step hides a slope triangle: what has to match is <b>rise ÷ run</b>, not the rise alone.</p>
+  <div class="explainer" data-explainer="uneven"></div>
+</section>
+
+<!-- ================= 2. Intercepts ================= -->
+<section class="card" data-ink="s2" data-section="2. Intercepts">
+  <div class="sec-h"><span class="badge">2</span><h2>Intercepts</h2></div>
+  <div class="def-grid">
+    <div class="def u6l4-dx">The <b><span class="tex">x</span>-intercept</b> is the <span class="tex">x</span>-coordinate of the point where a graph crosses the <span class="tex">x</span>-axis; there, <span class="tex">\boldsymbol{y=0}</span>.</div>
+    <div class="def u6l4-dy">The <b><span class="tex">y</span>-intercept</b> is the <span class="tex">y</span>-coordinate of the point where a graph crosses the <span class="tex">y</span>-axis; there, <span class="tex">\boldsymbol{x=0}</span>.</div>
+  </div>
+  <div class="def amber">An intercept may be reported as a single number or as a point: “<span class="tex">x</span>-intercept <span class="tex">4</span>” or “the point <span class="tex">(4,\ 0)</span>”. In a table of values, look for the entry where <span class="tex">y=0</span> (the <span class="tex">x</span>-intercept) and the entry where <span class="tex">x=0</span> (the <span class="tex">y</span>-intercept). In a real situation the intercepts usually have a meaning: the <b>vertical intercept</b> is often the <b>starting value</b>, and the <b>horizontal intercept</b> is often the moment the quantity <b>reaches zero</b>.</div>
+  <div class="explainer" data-explainer="graphInts"></div>
 </section>
 
 <section class="card example" data-ink="ex2" data-section="Example 2">
-  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>The slope formula with negative coordinates</h3></div>
-  <p class="q">Find the slope of the line which passes through the points <span class="tex">P(-3,\ 4)</span> and <span class="tex">Q(9,\ -6)</span>.</p>
-  <div class="parts c1">
-    <div class="part"><div class="pl"><span class="tex">m_{PQ}=\dfrac{y_Q-y_P}{x_Q-x_P}=</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">m_{PQ}=\dfrac{-6-4}{9-(-3)}=\dfrac{-10}{12}=\boldsymbol{-\dfrac{5}{6}}</span></div></div></div>
-  </div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>Brackets around a negative coordinate.</b> <span class="tex">x_Q-x_P=9-(-3)=9+3=12</span>. Write the bracket every time you subtract a negative: it is the most common slip in this lesson.</div></div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>The whole formula in one go.</b> Bracket the top and the bottom: <span class="keys"><kbd>(</kbd><kbd>(−)</kbd><kbd>6</kbd><kbd>−</kbd><kbd>4</kbd><kbd>)</kbd><kbd>÷</kbd><kbd>(</kbd><kbd>9</kbd><kbd>−</kbd><kbd>(−)</kbd><kbd>3</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives <span class="tex">-0.8333…</span>; then <span class="keys"><kbd>2nd</kbd><kbd>F◂▸D</kbd></span> shows <b>−5┘6</b>, which means <span class="tex">-\dfrac{5}{6}</span>.</div>
-    <div class="pill-col"><button class="pill" data-keys="( (−) 6 − 4 ) ÷ ( 9 − (−) 3 ) = F◂▸D">Show me</button></div>
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Intercepts from a graph and from a table</h3></div>
+  <div class="u6l4-ex2">
+    <div data-bk-graph='{"width":330,"height":330,"xmin":-5.5,"xmax":5.5,"ymin":-5.5,"ymax":5.5,"xlabels":2,"ylabels":2,"fontSize":16,"items":[{"line":[[-3,0],[0,2],{"color":"blue"}]},{"point":[-3,0,{"color":"ink"}]},{"point":[0,2,{"color":"ink"}]}]}'></div>
+    <div class="parts c2">
+      <div class="part"><div class="pl">(a) For the line graphed at the left, state the <span class="tex">x</span>-intercept, the <span class="tex">y</span>-intercept and the slope.</div>
+        <div class="work" style="--h:190px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Crosses the <span class="tex">x</span>-axis at <span class="tex">(-3,\ 0)</span>: <span class="tex">x</span>-intercept <span class="tex">\boldsymbol{-3}</span>.<br>Crosses the <span class="tex">y</span>-axis at <span class="tex">(0,\ 2)</span>: <span class="tex">y</span>-intercept <span class="tex">\boldsymbol{2}</span>.<br>From <span class="tex">(-3,\ 0)</span> to <span class="tex">(0,\ 2)</span>: run 3, rise 2, slope <span class="tex">\boldsymbol{\tfrac23}</span>.</div></div></div>
+      <div class="part"><div class="pl">(b) Show that this table represents a linear relation, then state its intercepts.</div>
+        <div class="u6l4-tfig" data-bk-table='{"rows":[[-4,9],[-2,6],[0,3],[2,0],[4,-3]],"layout":"h","cellW":46,"cellH":46,"headW":44,"tap":false}'></div>
+        <div class="work" style="--h:130px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x</span> steps by 2; <span class="tex">y</span> changes by <span class="tex">-3</span> every time, so it is <b>linear</b> (slope <span class="tex">-\tfrac32</span>).<br>Entry with <span class="tex">x=0</span>: <span class="tex">y</span>-intercept <span class="tex">\boldsymbol{3}</span>. Entry with <span class="tex">y=0</span>: <span class="tex">x</span>-intercept <span class="tex">\boldsymbol{2}</span>.</div></div></div>
+    </div>
   </div>
   <div class="space" id="ex2-space"></div>
   <button class="more" data-more="ex2-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s1c" data-section="1. Same order, top and bottom">
-  <h3 class="sub">Same order, top and bottom</h3>
-  <p>The formula works whichever point you start from, because starting from the other end flips the sign of the rise <b>and</b> the run. Mixing the order (one difference each way) flips only one of them.</p>
-  <div class="explainer" data-explainer="sameOrder"></div>
+<section class="card" data-ink="s2b" data-section="2. Intercepts in a table">
+  <h3 class="sub">Intercepts hiding in a table</h3>
+  <p>A table shows the intercepts when it contains an entry with <span class="tex">x=0</span> or <span class="tex">y=0</span>. When it doesn’t, a linear table can be <b>continued</b>: keep the same change going until you reach the zero.</p>
+  <div class="explainer" data-explainer="tableInts"></div>
+</section>
+
+<!-- ================= 3. Domain and range ================= -->
+<section class="card" data-ink="s3" data-section="3. Domain and Range">
+  <div class="sec-h"><span class="badge">3</span><h2>Domain and Range of a Linear Relation</h2></div>
+  <p>Recall from the relations unit: the <b>domain</b> is the set of all <span class="tex">x</span>-values of a relation and the <b>range</b> is the set of all <span class="tex">y</span>-values.</p>
+  <div class="u6l4-drgrid">
+    <div class="u6l4-dr"><div class="u6l4-drh">Slanted line</div><div>Continues forever in both directions, so every real number is used.</div><div class="u6l4-drs"><span class="u6l4-D">D</span> <span class="tex">\{x\mid x\in\mathbb{R}\}</span></div><div class="u6l4-drs"><span class="u6l4-R">R</span> <span class="tex">\{y\mid y\in\mathbb{R}\}</span></div></div>
+    <div class="u6l4-dr"><div class="u6l4-drh">Horizontal, <span class="tex">y=3</span></div><div>Every <span class="tex">x</span>, but only one <span class="tex">y</span>-value.</div><div class="u6l4-drs"><span class="u6l4-D">D</span> <span class="tex">\{x\mid x\in\mathbb{R}\}</span></div><div class="u6l4-drs"><span class="u6l4-R">R</span> <span class="tex">\{3\}</span></div></div>
+    <div class="u6l4-dr"><div class="u6l4-drh">Vertical, <span class="tex">x=-2</span></div><div>Only one <span class="tex">x</span>-value, but every <span class="tex">y</span>.</div><div class="u6l4-drs"><span class="u6l4-D">D</span> <span class="tex">\{-2\}</span></div><div class="u6l4-drs"><span class="u6l4-R">R</span> <span class="tex">\{y\mid y\in\mathbb{R}\}</span></div></div>
+    <div class="u6l4-dr"><div class="u6l4-drh">Segment or real situation</div><div><b>Restricted</b> domain and range, read from the endpoints, e.g.</div><div class="u6l4-drs"><span class="tex">\{x\mid 0\le x\le 6,\ x\in\mathbb{R}\}</span></div></div>
+  </div>
+  <div class="explainer" data-explainer="domRange"></div>
 </section>
 
 <section class="card example" data-ink="ex3" data-section="Example 3">
-  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Finding the errors in three students’ work</h3></div>
-  <p class="q">Amara, Ben, and Chloe are each calculating the slope of the line segment with endpoints <span class="tex">W(14,\ 3)</span> and <span class="tex">Z(-6,\ 11)</span>.</p>
-  <div class="u6l4-students">
-    <div class="u6l4-stu"><div class="u6l4-stu-n">Amara</div><span class="tex">m_{WZ}=\dfrac{3-11}{-6-14}</span><span class="tex">\phantom{m_{WZ}}=\dfrac{-8}{-20}</span><span class="tex">m_{WZ}=\dfrac{8}{20}=\dfrac{2}{5}</span></div>
-    <div class="u6l4-stu"><div class="u6l4-stu-n">Ben</div><span class="tex">m_{WZ}=\dfrac{-6-14}{11-3}</span><span class="tex">\phantom{m_{WZ}}=\dfrac{-20}{8}</span><span class="tex">m_{WZ}=-\dfrac{5}{2}</span></div>
-    <div class="u6l4-stu"><div class="u6l4-stu-n">Chloe</div><span class="tex">m_{WZ}=\dfrac{11-3}{-6-14}</span><span class="tex">\phantom{m_{WZ}}=\dfrac{8}{-20}</span><span class="tex">m_{WZ}=-\dfrac{2}{5}</span></div>
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Domain and range of lines and of a real situation</h3></div>
+  <p class="q">State the domain and range of each line. (The arrows show that each line continues forever.)</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a)</div>
+      <div class="u6l4-gfig" data-bk-graph='{"width":250,"height":250,"xmin":-4.5,"xmax":4.5,"ymin":-4.5,"ymax":4.5,"xlabels":2,"ylabels":2,"fontSize":15,"items":[{"line":[[0,0],[2,3],{"color":"blue"}]}]}'></div>
+      <div class="work" style="--h:120px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Slanted line: every <span class="tex">x</span> and every <span class="tex">y</span> is used.<br>Domain <span class="tex">\{x\mid x\in\mathbb{R}\}</span><br>Range <span class="tex">\{y\mid y\in\mathbb{R}\}</span></div></div></div>
+    <div class="part"><div class="pl">(b)</div>
+      <div class="u6l4-gfig" data-bk-graph='{"width":250,"height":250,"xmin":-4.5,"xmax":4.5,"ymin":-4.5,"ymax":4.5,"xlabels":2,"ylabels":2,"fontSize":15,"items":[{"line":[{"m":0,"b":-2},{"color":"blue"}]}]}'></div>
+      <div class="work" style="--h:120px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Horizontal line <span class="tex">y=-2</span>.<br>Domain <span class="tex">\{x\mid x\in\mathbb{R}\}</span><br>Range <span class="tex">\{-2\}</span></div></div></div>
+    <div class="part"><div class="pl">(c)</div>
+      <div class="u6l4-gfig" data-bk-graph='{"width":250,"height":250,"xmin":-4.5,"xmax":4.5,"ymin":-4.5,"ymax":4.5,"xlabels":2,"ylabels":2,"fontSize":15,"items":[{"line":[{"x":3},{"color":"blue"}]}]}'></div>
+      <div class="work" style="--h:120px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Vertical line <span class="tex">x=3</span>.<br>Domain <span class="tex">\{3\}</span><br>Range <span class="tex">\{y\mid y\in\mathbb{R}\}</span></div></div></div>
   </div>
-  <p class="q">Since their answers do not all agree, at least two of the three have made an error. Describe every error you can find, and determine the correct slope of <span class="tex">WZ</span>.</p>
-  <div class="parts c1">
-    <div class="part"><div class="pl">Errors and the correct slope</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Correct slope: <span class="tex">m_{WZ}=\dfrac{y_Z-y_W}{x_Z-x_W}=\dfrac{11-3}{-6-14}=\dfrac{8}{-20}=\boldsymbol{-\dfrac{2}{5}}</span>.<br>
-      <b>Amara</b> subtracted the <span class="tex">y</span>-coordinates as <span class="tex">y_W-y_Z</span> but the <span class="tex">x</span>-coordinates as <span class="tex">x_Z-x_W</span>. Mixing the order between numerator and denominator flips the sign, giving <span class="tex">+\dfrac{2}{5}</span>. Her arithmetic is otherwise correct.<br>
-      <b>Ben</b> put the run on top and the rise underneath (run over rise instead of rise over run), so his fraction is upside down: <span class="tex">-\dfrac{5}{2}</span>. His sign is right, since he used the same point order in both.<br>
-      <b>Chloe</b> used the same point order top and bottom, so <span class="tex">m_{WZ}=-\dfrac{2}{5}</span> is correct.</div></div></div>
+  <div class="u6l4-ex3d">
+    <div data-bk-graph='{"width":340,"height":360,"xmin":0,"xmax":7.6,"ymin":0,"ymax":22.5,"xstep":1,"ystep":3,"ylabels":3,"origin":true,"fontSize":16,"xtitle":"\\text{Day}","ytitle":"\\text{Water (L)}","items":[{"segment":[[0,18],[6,0],{"color":"blue","width":4}]},{"point":[0,18,{"color":"ink"}]},{"point":[6,0,{"color":"ink"}]}]}'></div>
+    <div>
+      <p class="q u6l4-q0"><b>(d)</b> An office water cooler starts the week with a full <b>18 L</b> jug. The graph shows the amount of water left as staff drink it at a steady rate.</p>
+      <div class="parts c1">
+        <div class="part"><div class="pl">(i) State the two intercepts and explain what each one means.</div><div class="work" style="--h:90px"></div>
+          <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Vertical intercept <span class="tex">\boldsymbol{18}</span>: the jug holds 18 L at the start (day 0).<br>Horizontal intercept <span class="tex">\boldsymbol{6}</span>: the jug is empty after 6 days.</div></div></div>
+        <div class="part"><div class="pl">(ii) Determine the slope, with units, and explain what it means.</div><div class="work" style="--h:90px"></div>
+          <div class="ansrow"><button class="reveal">Answer</button><div class="ans">From <span class="tex">(0,\ 18)</span> to <span class="tex">(6,\ 0)</span>: <span class="tex">\dfrac{-18\text{ L}}{6\text{ days}}=\boldsymbol{-3}</span> <b>L per day</b>: the staff drink 3 L each day.</div></div></div>
+        <div class="part"><div class="pl">(iii) State the domain and range.</div><div class="work" style="--h:90px"></div>
+          <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The graph only runs from day 0 to day 6, and from 18 L down to 0 L. Let <span class="tex">d</span> be the day and <span class="tex">V</span> the litres of water left.<br>Domain <span class="tex">\{d\mid 0\le d\le 6,\ d\in\mathbb{R}\}</span>, Range <span class="tex">\{V\mid 0\le V\le 18,\ V\in\mathbb{R}\}</span>.</div></div></div>
+      </div>
+    </div>
   </div>
   <div class="space" id="ex3-space"></div>
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
-<!-- ================= 2. Collinear points ================= -->
-<section class="card" data-ink="s2" data-section="2. Collinear Points">
-  <div class="sec-h"><span class="badge">2</span><h2>Collinear Points</h2></div>
-  <div class="def">Points are <b>collinear</b> if one straight line passes through all of them.</div>
-  <div class="def amber"><b>Collinearity test.</b> For three points <span class="tex">P</span>, <span class="tex">Q</span> and <span class="tex">R</span>, calculate <span class="tex">m_{PQ}</span> and <span class="tex">m_{QR}</span>. If the two slopes are equal <b>and</b> the two segments share the point <span class="tex">Q</span>, then <span class="tex">P</span>, <span class="tex">Q</span> and <span class="tex">R</span> are collinear. The shared point matters: two parallel segments also have equal slopes, but they lie on two different lines.</div>
-  <div class="u6l4-colfigs">
-    <figure><div data-bk-graph='{"width":330,"height":190,"xmin":-0.6,"xmax":2.8,"ymin":-0.85,"ymax":1.45,"grid":false,"axes":false,"numbers":false,"xtitle":"","ytitle":"","pad":10,"items":[{"segment":[[0,0],[1.6,1.1],{"color":"blue"}]},{"segment":[[0.6,-0.5],[2.2,0.6],{"color":"blue"}]},{"point":[0,0,{"label":"<i>G</i>","pos":"w","color":"ink"}]},{"point":[1.6,1.1,{"label":"<i>H</i>","pos":"n","color":"ink"}]},{"point":[0.6,-0.5,{"label":"<i>I</i>","pos":"w","color":"ink"}]},{"point":[2.2,0.6,{"label":"<i>J</i>","pos":"e","color":"ink"}]}]}'></div>
-      <figcaption><span class="tex">m_{GH}=m_{IJ}</span>, but no shared point: <b>parallel</b>, not collinear</figcaption></figure>
-    <figure><div data-bk-graph='{"width":330,"height":190,"xmin":-0.5,"xmax":2.9,"ymin":-0.35,"ymax":1.95,"grid":false,"axes":false,"numbers":false,"xtitle":"","ytitle":"","pad":10,"items":[{"segment":[[0,0],[1.2,0.825],{"color":"blue"}]},{"segment":[[1.2,0.825],[2.4,1.65],{"color":"green"}]},{"point":[0,0,{"label":"<i>P</i>","pos":"w","color":"ink"}]},{"point":[1.2,0.825,{"label":"<i>Q</i>","pos":"nw","color":"ink"}]},{"point":[2.4,1.65,{"label":"<i>R</i>","pos":"e","color":"ink"}]}]}'></div>
-      <figcaption><span class="tex">m_{PQ}=m_{QR}</span> and they share <span class="tex">Q</span>: <b>collinear points</b></figcaption></figure>
+<section class="card" data-ink="s3b" data-section="3. A real situation">
+  <h3 class="sub">Reading a graph of a real situation</h3>
+  <p>In a story the graph has a <b>start</b> and an <b>end</b>. The intercepts are where the story starts and where it runs out, the slope is the rate (with units), and the domain and range stop at the endpoints.</p>
+  <div class="explainer" data-explainer="story"></div>
+</section>
+
+<!-- ================= 4. How many intercepts? ================= -->
+<section class="card" data-ink="s4" data-section="4. How Many Intercepts?">
+  <div class="sec-h"><span class="badge">4</span><h2>How Many Intercepts Can a Line Have?</h2></div>
+  <div class="u6l4-note">
+    <div class="u6l4-note-h">Summary: the number of intercepts of a line</div>
+    <div class="u6l4-five">
+      <div class="u6l4-mini"><div data-bk-graph='{"width":168,"height":168,"xmin":-3.5,"xmax":3.5,"ymin":-3.5,"ymax":3.5,"numbers":false,"fontSize":14,"items":[{"line":[[-1.5,0],[0,2],{"color":"blue"}]}]}'></div><b>Two intercepts</b><span>slanted, not through the origin: one <span class="tex">x</span>- and one <span class="tex">y</span>-intercept</span></div>
+      <div class="u6l4-mini"><div data-bk-graph='{"width":168,"height":168,"xmin":-3.5,"xmax":3.5,"ymin":-3.5,"ymax":3.5,"numbers":false,"fontSize":14,"items":[{"line":[{"m":0,"b":1.5},{"color":"blue"}]}]}'></div><b>One intercept</b><span>horizontal, not the <span class="tex">x</span>-axis: a <span class="tex">y</span>-intercept only</span></div>
+      <div class="u6l4-mini"><div data-bk-graph='{"width":168,"height":168,"xmin":-3.5,"xmax":3.5,"ymin":-3.5,"ymax":3.5,"numbers":false,"fontSize":14,"items":[{"line":[{"x":-1.5},{"color":"blue"}]}]}'></div><b>One intercept</b><span>vertical, not the <span class="tex">y</span>-axis: an <span class="tex">x</span>-intercept only</span></div>
+      <div class="u6l4-mini"><div data-bk-graph='{"width":168,"height":168,"xmin":-3.5,"xmax":3.5,"ymin":-3.5,"ymax":3.5,"numbers":false,"fontSize":14,"items":[{"line":[[0,0],[1,1.5],{"color":"blue"}]}]}'></div><b>One intercept</b><span>slanted through the origin: both intercepts are 0, one point <span class="tex">(0,\ 0)</span></span></div>
+      <div class="u6l4-mini"><div data-bk-graph='{"width":168,"height":168,"xmin":-3.5,"xmax":3.5,"ymin":-3.5,"ymax":3.5,"numbers":false,"fontSize":14,"items":[{"line":[{"m":0,"b":0},{"color":"blue","width":7,"opacity":0.7}]}]}'></div><b>Infinitely many</b><span>the <span class="tex">x</span>-axis (<span class="tex">y=0</span>) or the <span class="tex">y</span>-axis (<span class="tex">x=0</span>)</span></div>
+    </div>
+    <div class="u6l4-note-f">Every line crosses at least one axis, so every line has <b>at least one</b> intercept.</div>
   </div>
-  <div class="explainer" data-explainer="collinear"></div>
+  <p>Rotate a line and slide it around the grid, and watch what its intercepts, slope, domain and range do.</p>
+  <div class="explainer" data-explainer="lineLab"></div>
+  <div class="parts c1">
+    <div class="part think"><div class="pl"><span class="think-tag">Think</span> Could a line have <b>zero</b> intercepts? Try to draw one.</div><div class="work" style="--h:100px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No.</b> To miss the <span class="tex">x</span>-axis a line must be horizontal, and every horizontal line crosses the <span class="tex">y</span>-axis. To miss the <span class="tex">y</span>-axis it must be vertical, and every vertical line crosses the <span class="tex">x</span>-axis. A line can’t be both, so it always meets at least one axis.</div></div></div>
+  </div>
+</section>
+
+<section class="card" data-ink="s4b" data-section="4. Counting intercepts">
+  <h3 class="sub">Counting intercepts: three questions</h3>
+  <p>Ask the questions in this order and the count falls out. Each chip is one of the five summary lines.</p>
+  <div class="explainer" data-explainer="countFlow"></div>
 </section>
 
 <section class="card example" data-ink="ex4" data-section="Example 4">
-  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Proving collinearity, and a missing coordinate</h3></div>
-  <p class="q">Consider the points <span class="tex">X(-4,\ 10)</span>, <span class="tex">Y(2,\ -2)</span> and <span class="tex">Z(11,\ -20)</span>.</p>
-  <div class="parts c2">
-    <div class="part"><div class="pl">(a) Prove that <span class="tex">X</span>, <span class="tex">Y</span> and <span class="tex">Z</span> are collinear.</div><div class="work" style="--h:260px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">m_{XY}=\dfrac{-2-10}{2-(-4)}=\dfrac{-12}{6}=-2</span><br><span class="tex">m_{YZ}=\dfrac{-20-(-2)}{11-2}=\dfrac{-18}{9}=-2</span><br><span class="tex">m_{XY}=m_{YZ}</span> and the two segments share the point <span class="tex">Y</span>, so <b><span class="tex">X</span>, <span class="tex">Y</span> and <span class="tex">Z</span> are collinear</b>.</div></div></div>
-    <div class="part"><div class="pl">(b) Find the value of <span class="tex">w</span> if the point <span class="tex">W(5,\ w)</span> lies on segment <span class="tex">XZ</span>.</div><div class="work" style="--h:260px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">m_{XZ}=\dfrac{-20-10}{11-(-4)}=\dfrac{-30}{15}=-2</span>, and <span class="tex">W</span> must give the same slope from <span class="tex">X</span>:<br><span class="tex">\dfrac{w-10}{5-(-4)}=-2\ \Rightarrow\ \dfrac{w-10}{9}=-2\ \Rightarrow\ w-10=-18</span><br><span class="tex">\boldsymbol{w=-8}</span></div></div></div>
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Sketching lines with a given number of intercepts</h3></div>
+  <p class="q">On each grid, sketch a line with the given characteristics.</p>
+  <div class="parts u6l4-c4">
+    <div class="part"><div class="pl">(a) <span class="tex">x</span>-intercept 3 and <span class="tex">y</span>-intercept <span class="tex">-2</span>. State its slope.</div>
+      <div class="u6l4-sk" data-bk-graph='{"width":196,"height":196,"xmin":-4.5,"xmax":4.5,"ymin":-4.5,"ymax":4.5,"xlabels":2,"ylabels":2,"fontSize":14,"items":[{"line":[[3,0],[0,-2],{"color":"red","cls":"u6l4-ansline"}]}]}'></div>
+      <div class="work" style="--h:60px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Through <span class="tex">(3,\ 0)</span> and <span class="tex">(0,\ -2)</span>: run 3, rise 2, slope <span class="tex">\boldsymbol{\tfrac23}</span>.</div></div></div>
+    <div class="part"><div class="pl">(b) Exactly one intercept, at the point <span class="tex">(0,\ 4)</span>.</div>
+      <div class="u6l4-sk" data-bk-graph='{"width":196,"height":196,"xmin":-4.5,"xmax":4.5,"ymin":-4.5,"ymax":4.5,"xlabels":2,"ylabels":2,"fontSize":14,"items":[{"line":[{"m":0,"b":4},{"color":"red","cls":"u6l4-ansline"}]}]}'></div>
+      <div class="work" style="--h:60px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">A line with a <span class="tex">y</span>-intercept but no <span class="tex">x</span>-intercept must be <b>horizontal</b>: <span class="tex">y=4</span> (slope 0).</div></div></div>
+    <div class="part"><div class="pl">(c) Exactly one intercept, and a negative slope.</div>
+      <div class="u6l4-sk" data-bk-graph='{"width":196,"height":196,"xmin":-4.5,"xmax":4.5,"ymin":-4.5,"ymax":4.5,"xlabels":2,"ylabels":2,"fontSize":14,"items":[{"line":[[0,0],[1,-2],{"color":"red","cls":"u6l4-ansline"}]}]}'></div>
+      <div class="work" style="--h:60px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">A slanted line with only one intercept must pass through the <b>origin</b>; e.g. through <span class="tex">(0,\ 0)</span> and <span class="tex">(1,\ -2)</span>.</div></div></div>
+    <div class="part"><div class="pl">(d) Infinitely many intercepts.</div>
+      <div class="u6l4-sk" data-bk-graph='{"width":196,"height":196,"xmin":-4.5,"xmax":4.5,"ymin":-4.5,"ymax":4.5,"xlabels":2,"ylabels":2,"fontSize":14,"items":[{"line":[{"x":0},{"color":"red","width":6,"cls":"u6l4-ansline"}]}]}'></div>
+      <div class="work" style="--h:60px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The <span class="tex">y</span>-axis itself (shown), or the <span class="tex">x</span>-axis: every point on it is an intercept.</div></div></div>
   </div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>Equal slopes are not enough on their own.</b> Say <b>both</b> things in a collinearity proof: the slopes are equal <b>and</b> the segments share a point.</div></div>
   <div class="space" id="ex4-space"></div>
   <button class="more" data-more="ex4-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s2b" data-section="2. A missing coordinate">
-  <h3 class="sub">A missing coordinate: slide until the slope matches</h3>
-  <p>A point on a line must give the line’s slope from <b>any</b> other point on it. So an unknown coordinate is whatever value makes the slopes equal: write the slope with the unknown in it, set it equal to the known slope, and solve.</p>
-  <div class="explainer" data-explainer="missing"></div>
+<section class="card" data-ink="s4c" data-section="4. Example 4 check">
+  <h3 class="sub">Example 4 check: try a line, then fix it</h3>
+  <p>A first try often has one intercept too many. Rotate or slide it until it fits every condition.</p>
+  <div class="explainer" data-explainer="sketch"></div>
 </section>
 
-<!-- ================= 3. Parallel ================= -->
-<section class="card" data-ink="s3" data-section="3. Investigating Parallel Line Segments">
-  <div class="sec-h"><span class="badge">3</span><h2>Investigating Parallel Line Segments</h2></div>
-  <p>Translating a line segment slides every point of it the same distance in the same direction, without turning or resizing it. Because the whole segment moves rigidly, a translated copy always points in exactly the same direction as the original. To translate a point <span class="tex">3</span> units right and <span class="tex">4</span> units down, add <span class="tex">3</span> to its <span class="tex">x</span>-coordinate and subtract <span class="tex">4</span> from its <span class="tex">y</span>-coordinate: <span class="tex">(x,\ y)\to(x+3,\ y-4)</span>. On the grid, segment <span class="tex">AB</span> has endpoints <span class="tex">A(-4,\ 3)</span> and <span class="tex">B(4,\ -1)</span>.</p>
-  <div class="u6l4-inv">
-    <div class="u6l4-invfig"><div id="u6l4-s3fig"></div><div class="u6l4-tapnote muted">Tap the grid to plot points (tap a point to remove it). <button type="button" class="pill small" id="u6l4-s3clear">Clear</button></div></div>
-    <div class="parts c1">
-      <div class="part"><div class="pl">(a) On the grid, draw the image of <span class="tex">AB</span> after each translation, and record the coordinates of the image.<br>
-        <b>i)</b> <span class="tex">3</span> units right and <span class="tex">4</span> units down, forming <span class="tex">CD</span>.<br>
-        <span class="u6l4-blanks"><span class="tex">C(</span><span data-reveal><span class="tex">-1</span></span>, <span data-reveal><span class="tex">-1</span></span><span class="tex">)</span> &nbsp; <span class="tex">D(</span><span data-reveal><span class="tex">7</span></span>, <span data-reveal><span class="tex">-5</span></span><span class="tex">)</span></span><br>
-        <b>ii)</b> <span class="tex">5</span> units left and <span class="tex">2</span> units up, forming <span class="tex">EF</span>.<br>
-        <span class="u6l4-blanks"><span class="tex">E(</span><span data-reveal><span class="tex">-9</span></span>, <span data-reveal><span class="tex">5</span></span><span class="tex">)</span> &nbsp; <span class="tex">F(</span><span data-reveal><span class="tex">-1</span></span>, <span data-reveal><span class="tex">1</span></span><span class="tex">)</span></span></div>
-        <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">C(-4+3,\ 3-4)=C(-1,\ -1)</span>, <span class="tex">D(4+3,\ -1-4)=D(7,\ -5)</span>; <span class="tex">E(-4-5,\ 3+2)=E(-9,\ 5)</span>, <span class="tex">F(4-5,\ -1+2)=F(-1,\ 1)</span>.
-          <div class="u6l4-ansfig" data-bk-graph='{"width":420,"height":296,"xmin":-10,"xmax":8,"ymin":-6,"ymax":6,"xlabels":2,"ylabels":2,"fontSize":15,"items":[{"segment":[[-4,3],[4,-1],{"color":"blue"}]},{"segment":[[-1,-1],[7,-5],{"color":"red"}]},{"segment":[[-9,5],[-1,1],{"color":"red"}]},{"point":[-4,3,{"label":"<i>A</i>","pos":"n","color":"blue"}]},{"point":[4,-1,{"label":"<i>B</i>","pos":"s","color":"blue"}]},{"point":[-1,-1,{"label":"<i>C</i>","pos":"w","color":"red"}]},{"point":[7,-5,{"label":"<i>D</i>","pos":"s","color":"red"}]},{"point":[-9,5,{"label":"<i>E</i>","pos":"n","color":"red"}]},{"point":[-1,1,{"label":"<i>F</i>","pos":"se","color":"red"}]}]}'></div></div></div></div>
-    </div>
+<!-- ================= 5. Matching ================= -->
+<section class="card" data-ink="s5" data-section="5. Matching Graphs">
+  <div class="sec-h"><span class="badge">5</span><h2>Matching Graphs to Their Characteristics</h2></div>
+  <p>The <b>sign of the slope</b> (rising, falling, flat or vertical) and the <b>intercepts</b> together pin down which line a description fits. Check each characteristic <b>one at a time</b>.</p>
+  <div class="u6l4-signs">
+    <div class="u6l4-sign"><svg viewBox="0 0 80 60"><path d="M10 52 L70 8"/></svg><b>rising</b><span>positive slope</span></div>
+    <div class="u6l4-sign"><svg viewBox="0 0 80 60"><path d="M10 8 L70 52"/></svg><b>falling</b><span>negative slope</span></div>
+    <div class="u6l4-sign"><svg viewBox="0 0 80 60"><path d="M8 30 L72 30"/></svg><b>flat</b><span>slope 0</span></div>
+    <div class="u6l4-sign"><svg viewBox="0 0 80 60"><path d="M40 4 L40 56"/></svg><b>vertical</b><span>undefined slope</span></div>
   </div>
-  <div class="parts c2">
-    <div class="part"><div class="pl">(b) Calculate the slope of each of the three line segments.</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">m_{AB}=\dfrac{-1-3}{4-(-4)}=\dfrac{-4}{8}=-\dfrac{1}{2}</span><br><span class="tex">m_{CD}=\dfrac{-5-(-1)}{7-(-1)}=\dfrac{-4}{8}=-\dfrac{1}{2}</span><br><span class="tex">m_{EF}=\dfrac{1-5}{-1-(-9)}=\dfrac{-4}{8}=-\dfrac{1}{2}</span></div></div></div>
-    <div class="part"><div class="pl">(c) <span class="tex">AB</span>, <span class="tex">CD</span> and <span class="tex">EF</span> are parallel. Make a conjecture about the slopes of parallel line segments.</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">All three slopes are <span class="tex">-\dfrac12</span>. <b>Conjecture: parallel line segments have equal slopes.</b> A translation slides a segment rigidly without changing its direction, so every image points the same way as the original.</div></div></div>
-  </div>
-  <div class="explainer" data-explainer="translate"></div>
-</section>
-
-<!-- sources: https://en.wikipedia.org/wiki/Equals_sign (The Whetstone of Witte, 1557; "a paire of paralleles, or Gemowe lines of one lengthe, thus: =, bicauſe noe .2. thynges, can be moare equalle"; original sign much wider than today's)
-     https://mathshistory.st-andrews.ac.uk/DNB/Recorde.html (Recorde c. 1512-1558, of Tenby, Pembrokeshire; MD Cambridge 1545; the Whetstone was his last book)
-     https://blog.plover.com/math/recorde.html ("Gemowe" means twin)
-     https://chalkdustmagazine.com/features/roots-all-things-being-equal (his first equation, in modern form: 14x + 15 = 71) -->
-<!-- ================= Math History box (brown) ================= -->
-<section class="card history" data-ink="hist" data-section="Math History: the equals sign">
-  <div class="hist-head"><span class="hist-tag">Math History</span><span class="hist-dates">1557</span></div>
-  <div class="hist-grid">
-    <div class="hist-text">
-      <h3 class="hist-title">Why “=” is two parallel lines</h3>
-      <p>In <b>1557</b> the Welsh doctor Robert <b>Recorde</b> wrote an algebra book, <i>The Whetstone of Witte</i>. Tired of writing “is equalle to” again and again, he drew <b>“Gemowe</b> [twin] <b>lines of one lengthe”</b>.</p>
-      <p>His reason: “bicause noe .2. thynges, can be moare equalle.” His sign is a segment and its translation, as in Section 3: <b>parallel</b>, so their <b>slopes are equal</b>.</p>
-      <div class="part hist-q"><div class="pl">A tilted “=” has its bottom line from <span class="tex">(0,\ 0)</span> to <span class="tex">(6,\ 2)</span>. The top line starts at <span class="tex">(0,\ 3)</span>. Where must it end to be parallel and the same length? What is each slope?</div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Translate the bottom line <span class="tex">3</span> up: it ends at <span class="tex">\boldsymbol{(6,\ 5)}</span>. Both slopes are <span class="tex">\frac{2-0}{6-0}=\frac{5-3}{6-0}=\boldsymbol{\frac{1}{3}}</span>.</div></div></div>
-    </div>
-    <figure class="hist-anim">
-      <svg id="u6l4-hist" viewBox="0 0 600 300" role="img" aria-label="Recorde's first equation, 14x plus 15 is equal to 71. The words is equal to become two long parallel lines, which shrink to today's short equals sign. Then the sign tilts onto a grid: each line rises 4 and runs 8, so both have slope one half."></svg>
-      <figcaption><button class="hist-play" type="button">Replay</button><span>Tap the picture to play it again.</span></figcaption>
-      <p class="hist-note">His sign was much longer than the one we write today. His first equation with it, in today’s symbols, was <span class="tex">14x+15=71</span>.</p>
-    </figure>
-  </div>
-</section>
-
-<!-- ================= 4. Perpendicular ================= -->
-<section class="card" data-ink="s4" data-section="4. Investigating Perpendicular Line Segments">
-  <div class="sec-h"><span class="badge">4</span><h2>Investigating Perpendicular Line Segments</h2></div>
-  <p>Now consider what happens to slope when a segment is rotated <span class="tex">90^\circ</span> about the origin. A rotation of <span class="tex">90^\circ</span> clockwise about the origin sends every point <span class="tex">(x,\ y)</span> to <span class="tex">(y,\ -x)</span>: swap the coordinates, then change the sign of the new <span class="tex">y</span>-coordinate. For example, <span class="tex">(2,\ 5)\to(5,\ -2)</span>. On the grid, point <span class="tex">A(6,\ 3)</span> has been joined to the origin <span class="tex">O</span> to form segment <span class="tex">OA</span>.</p>
-  <div class="u6l4-inv u6l4-inv4">
-    <div class="u6l4-invfig"><div id="u6l4-s4fig"></div><div class="u6l4-tapnote muted">Tap to plot. <button type="button" class="pill small" id="u6l4-s4clear">Clear</button></div></div>
-    <div class="parts c1">
-      <div class="part"><div class="pl">(a) i) Rotate <span class="tex">OA</span> through <span class="tex">90^\circ</span> clockwise about <span class="tex">O</span>, draw the image on the grid, and label it <span class="tex">OA'</span>. &nbsp; <span class="u6l4-blanks"><span class="tex">A'(</span><span data-reveal><span class="tex">3</span></span>, <span data-reveal><span class="tex">-6</span></span><span class="tex">)</span></span></div>
-        <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">A(6,\ 3)\to A'(3,\ -6)</span>: swap to <span class="tex">(3,\ 6)</span>, then change the sign of the new <span class="tex">y</span>.</div></div></div>
-      <div class="part"><div class="pl">ii) Find the slopes of <span class="tex">OA</span> and <span class="tex">OA'</span>, then multiply the two slopes together.</div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">m_{OA}=\dfrac{3-0}{6-0}=\dfrac{1}{2}</span>, <span class="tex">m_{OA'}=\dfrac{-6-0}{3-0}=-2</span><br><span class="tex">m_{OA}\times m_{OA'}=\dfrac{1}{2}\times(-2)=\boldsymbol{-1}</span></div></div></div>
-      <div class="part"><div class="pl">(b) Make a conjecture about the slopes of two perpendicular line segments.</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Conjecture: the slopes of two perpendicular line segments have a product of <span class="tex">-1</span></b>: each slope is the negative reciprocal of the other.</div></div></div>
-    </div>
-  </div>
-  <div class="parts c1">
-    <div class="part"><div class="pl">(c) Complete the following to prove your conjecture algebraically. Under a rotation of <span class="tex">90^\circ</span> clockwise about <span class="tex">O</span>, point <span class="tex">P(a,\ b)\to Q(b,\ -a)</span>.
-      <div class="u6l4-proof"><span><span class="tex">m_{OP}=\dfrac{y_P-y_O}{x_P-x_O}=\dfrac{b-0}{a-0}=</span> <span data-reveal><span class="tex">\dfrac{b}{a}</span></span></span><span><span class="tex">m_{OQ}=\dfrac{y_Q-y_O}{x_Q-x_O}=\dfrac{-a-0}{b-0}=</span> <span data-reveal><span class="tex">-\dfrac{a}{b}</span></span></span><span><span class="tex">m_{OP}\times m_{OQ}=</span> <span data-reveal><span class="tex">\dfrac{b}{a}\times\left(-\dfrac{a}{b}\right)=-1\quad(a,\ b\ne0)</span></span></span></div></div>
-      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">m_{OP}=\dfrac{b}{a}</span>, <span class="tex">m_{OQ}=-\dfrac{a}{b}</span>, and <span class="tex">\dfrac{b}{a}\times\left(-\dfrac{a}{b}\right)=-\dfrac{ab}{ab}=\boldsymbol{-1}</span> for any <span class="tex">a,\ b\ne0</span>: the conjecture holds for <b>every</b> segment, not just <span class="tex">OA</span>.</div></div></div>
-  </div>
-  <div class="explainer" data-explainer="rotate"></div>
-</section>
-
-<!-- ================= 5. Parallel and perpendicular lines ================= -->
-<section class="card" data-ink="s5" data-section="5. Parallel and Perpendicular Lines">
-  <div class="sec-h"><span class="badge">5</span><h2>Parallel and Perpendicular Lines</h2></div>
-  <p>Let two lines have slopes <span class="tex">m_1</span> and <span class="tex">m_2</span>.</p>
-  <div class="u6l4-rules">
-    <div class="u6l4-rule u6l4-rpar"><div class="u6l4-rh">Parallel</div><div class="u6l4-rb">the same slope<br><span class="tex">m_1=m_2</span></div></div>
-    <div class="u6l4-rule u6l4-rperp"><div class="u6l4-rh">Perpendicular</div><div class="u6l4-rb">product of the slopes is <span class="tex">-1</span><br><span class="tex">m_1\times m_2=-1</span>, equivalently <span class="tex">m_1=-\dfrac{1}{m_2}</span></div></div>
-  </div>
-  <div class="def">For perpendicular lines each slope is the <b>negative reciprocal</b> of the other, provided neither slope is <span class="tex">0</span>.</div>
-  <div class="def amber"><b>Special case:</b> a horizontal line (slope <span class="tex">0</span>) and a vertical line (undefined slope) are <b>perpendicular</b>, even though their slopes cannot be multiplied. Two vertical lines are parallel.</div>
-  <p>Line <em>segments</em> are parallel (or perpendicular) when the lines containing them are, so the same tests apply to segments.</p>
-  <p class="u6l4-flipq"><b>Quick reps.</b> Tap a slope to see the parallel and perpendicular slopes.</p>
-  <div class="bk-flips u6l4-flips" style="--bk-cols:4">
-    <div class="bk-flip"><div class="bk-front"><span class="tex">m=\dfrac{3}{4}</span></div><div class="bk-back">∥ <span class="tex">\dfrac34</span> &nbsp; ⊥ <span class="tex">-\dfrac43</span></div></div>
-    <div class="bk-flip"><div class="bk-front"><span class="tex">m=-5</span></div><div class="bk-back">∥ <span class="tex">-5</span> &nbsp; ⊥ <span class="tex">\dfrac15</span></div></div>
-    <div class="bk-flip"><div class="bk-front"><span class="tex">m=-\dfrac{2}{9}</span></div><div class="bk-back">∥ <span class="tex">-\dfrac29</span> &nbsp; ⊥ <span class="tex">\dfrac92</span></div></div>
-    <div class="bk-flip"><div class="bk-front"><span class="tex">m=0</span></div><div class="bk-back">∥ <span class="tex">0</span> &nbsp; ⊥ undefined</div></div>
-  </div>
-  <div class="explainer" data-explainer="negRecip"></div>
 </section>
 
 <section class="card example" data-ink="ex5" data-section="Example 5">
-  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Reading parallel and perpendicular from slopes alone</h3></div>
-  <p class="q">Line segment <span class="tex">AC</span> has a slope of <span class="tex">\dfrac{5}{8}</span>.</p>
-  <div class="parts c2">
-    <div class="part"><div class="pl">(a) Write the slope of line segment <span class="tex">GH</span>, which is parallel to <span class="tex">AC</span>.</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Parallel lines have equal slopes: <span class="tex">\boldsymbol{m_{GH}=\dfrac{5}{8}}</span></div></div></div>
-    <div class="part"><div class="pl">(b) Write the slope of line segment <span class="tex">BF</span>, which is perpendicular to <span class="tex">AC</span>.</div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Perpendicular slopes are negative reciprocals: <span class="tex">\boldsymbol{m_{BF}=-\dfrac{8}{5}}</span><br>(Check: <span class="tex">\dfrac58\times\left(-\dfrac85\right)=-1</span>.)</div></div></div>
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Match each graph with its description</h3></div>
+  <div class="u6l4-four">
+    <div class="u6l4-gcard"><b>Graph A</b><div data-bk-graph='{"width":214,"height":214,"xmin":-4.5,"xmax":4.5,"ymin":-4.5,"ymax":4.5,"xlabels":2,"ylabels":2,"fontSize":14,"items":[{"line":[[1,0],[0,-2],{"color":"blue"}]}]}'></div></div>
+    <div class="u6l4-gcard"><b>Graph B</b><div data-bk-graph='{"width":214,"height":214,"xmin":-4.5,"xmax":4.5,"ymin":-4.5,"ymax":4.5,"xlabels":2,"ylabels":2,"fontSize":14,"items":[{"line":[[3,0],[0,3],{"color":"blue"}]}]}'></div></div>
+    <div class="u6l4-gcard"><b>Graph C</b><div data-bk-graph='{"width":214,"height":214,"xmin":-4.5,"xmax":4.5,"ymin":-4.5,"ymax":4.5,"xlabels":2,"ylabels":2,"fontSize":14,"items":[{"line":[{"m":0,"b":-3},{"color":"blue"}]}]}'></div></div>
+    <div class="u6l4-gcard"><b>Graph D</b><div data-bk-graph='{"width":214,"height":214,"xmin":-4.5,"xmax":4.5,"ymin":-4.5,"ymax":4.5,"xlabels":2,"ylabels":2,"fontSize":14,"items":[{"line":[[0,0],[2,-1],{"color":"blue"}]}]}'></div></div>
   </div>
-  <p class="q">Determine whether each pair of slopes below describes parallel lines, perpendicular lines, or neither.</p>
   <div class="parts c2">
-    <div class="part"><div class="pl">(c) <span class="tex">m_1=\dfrac{3}{10},\ m_2=\dfrac{9}{30}</span></div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\dfrac{9}{30}=\dfrac{3}{10}=m_1</span>, so the slopes are equal: <b>parallel</b>.</div></div></div>
-    <div class="part"><div class="pl">(d) <span class="tex">m_1=\dfrac{4}{9},\ m_2=-\dfrac{9}{4}</span></div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\dfrac{4}{9}\times\left(-\dfrac{9}{4}\right)=-1</span>, so the slopes are negative reciprocals: <b>perpendicular</b>.</div></div></div>
+    <div class="part"><div class="pl">1. Graph <span class="u6l4-blank" data-reveal><b>C</b></span> Slope 0; <span class="tex">y</span>-intercept <span class="tex">-3</span>; no <span class="tex">x</span>-intercept.</div><div class="work" style="--h:70px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>C</b>: the horizontal line <span class="tex">y=-3</span>.</div></div></div>
+    <div class="part"><div class="pl">2. Graph <span class="u6l4-blank" data-reveal><b>D</b></span> Negative slope; both intercepts are 0.</div><div class="work" style="--h:70px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>D</b>: it falls through the origin.</div></div></div>
+    <div class="part"><div class="pl">3. Graph <span class="u6l4-blank" data-reveal><b>A</b></span> Positive slope; <span class="tex">x</span>-intercept 1; <span class="tex">y</span>-intercept <span class="tex">-2</span>.</div><div class="work" style="--h:70px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>A</b>: it rises, crossing at <span class="tex">(1,\ 0)</span> and <span class="tex">(0,\ -2)</span>.</div></div></div>
+    <div class="part"><div class="pl">4. Graph <span class="u6l4-blank" data-reveal><b>B</b></span> Negative slope; <span class="tex">x</span>-intercept 3; <span class="tex">y</span>-intercept 3.</div><div class="work" style="--h:70px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>B</b>: it falls, crossing at <span class="tex">(3,\ 0)</span> and <span class="tex">(0,\ 3)</span>.</div></div></div>
   </div>
   <div class="space" id="ex5-space"></div>
   <button class="more" data-more="ex5-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s5b" data-section="5. Parallel, perpendicular, or neither?">
-  <h3 class="sub">Parallel, perpendicular, or neither?</h3>
-  <p>Simplify both slopes first. Equal means parallel; a product of <span class="tex">-1</span> means perpendicular. Watch the trap: flipping the fraction <b>without</b> changing the sign gives neither.</p>
-  <div class="explainer" data-explainer="classify"></div>
-</section>
-
-<section class="card example" data-ink="ex6" data-section="Example 6">
-  <div class="ex-head"><span class="ex-tag">Example 6</span><h3>Slopes parallel and perpendicular to a given segment</h3></div>
-  <p class="q"><span class="tex">P</span> is the point <span class="tex">(3,\ 8)</span> and <span class="tex">Q</span> is the point <span class="tex">(9,\ -4)</span>. Find the slope of a line segment</p>
-  <div class="parts c2">
-    <div class="part"><div class="pl">(a) parallel to <span class="tex">PQ</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">m_{PQ}=\dfrac{-4-8}{9-3}=\dfrac{-12}{6}=-2</span><br>A parallel segment has the same slope: <span class="tex">\boldsymbol{m=-2}</span></div></div></div>
-    <div class="part"><div class="pl">(b) perpendicular to <span class="tex">PQ</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A perpendicular segment has the negative reciprocal slope:<br><span class="tex">\boldsymbol{m=\dfrac{1}{2}}</span> (Check: <span class="tex">-2\times\dfrac12=-1</span>.)</div></div></div>
-  </div>
-  <div class="space" id="ex6-space"></div>
-  <button class="more" data-more="ex6-space">+ More space</button>
-</section>
-
-<section class="card" data-ink="s5c" data-section="5. Using slope to find a right angle">
-  <h3 class="sub">Using slope to find a right angle</h3>
-  <p>A triangle has a right angle at a vertex when the <b>two sides that meet there</b> are perpendicular: their slopes multiply to <span class="tex">-1</span>.</p>
-  <div class="explainer" data-explainer="rightAngle"></div>
-</section>
-
-<section class="card example" data-ink="ex7" data-section="Example 7">
-  <div class="ex-head"><span class="ex-tag">Example 7</span><h3>Using slope to find a right angle</h3></div>
-  <p class="q"><span class="tex">\triangle DEF</span> has coordinates <span class="tex">D(-3,\ 1)</span>, <span class="tex">E(-1,\ 5)</span> and <span class="tex">F(1,\ -1)</span>. Use slopes to show that the triangle is right-angled at <span class="tex">D</span>.</p>
-  <div class="parts c1">
-    <div class="part"><div class="pl">Show the right angle at <span class="tex">D</span></div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The angle at <span class="tex">D</span> is formed by <span class="tex">DE</span> and <span class="tex">DF</span>, so test those two slopes.<br><span class="tex">m_{DE}=\dfrac{5-1}{-1-(-3)}=\dfrac{4}{2}=2</span>, &nbsp; <span class="tex">m_{DF}=\dfrac{-1-1}{1-(-3)}=\dfrac{-2}{4}=-\dfrac{1}{2}</span><br><span class="tex">m_{DE}\times m_{DF}=2\times\left(-\dfrac12\right)=-1</span>, so <span class="tex">DE\perp DF</span> and <b><span class="tex">\triangle DEF</span> is right-angled at <span class="tex">D</span></b>.</div></div></div>
-  </div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>Pick the right pair of sides.</b> The angle at <span class="tex">D</span> is between the two sides that <b>contain</b> <span class="tex">D</span>: <span class="tex">DE</span> and <span class="tex">DF</span>. The slope of <span class="tex">EF</span> plays no part.</div></div>
-  <div class="space" id="ex7-space"></div>
-  <button class="more" data-more="ex7-space">+ More space</button>
-</section>
-
-<section class="card" data-ink="s5d" data-section="5. Solving for an unknown slope">
-  <h3 class="sub">Solving for an unknown slope</h3>
-  <p>When one slope contains an unknown, write the condition as an equation: <b>parallel</b>: set the slopes <b>equal</b>; <b>perpendicular</b>: set the <b>product equal to <span class="tex">-1</span></b> (or set the unknown slope equal to the negative reciprocal).</p>
-  <div class="explainer" data-explainer="dialK"></div>
-</section>
-
-<section class="card example" data-ink="ex8" data-section="Example 8">
-  <div class="ex-head"><span class="ex-tag">Example 8</span><h3>Solving for an unknown slope</h3></div>
-  <p class="q">Two lines have slopes of <span class="tex">-\dfrac{5}{6}</span> and <span class="tex">\dfrac{k}{9}</span> respectively. Find the value of <span class="tex">k</span> if the lines are</p>
-  <div class="parts c2">
-    <div class="part"><div class="pl">(a) parallel</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Parallel: set the slopes equal.<br><span class="tex">\dfrac{k}{9}=-\dfrac{5}{6}\ \Rightarrow\ k=9\times\left(-\dfrac{5}{6}\right)=-\dfrac{45}{6}</span><br><span class="tex">\boldsymbol{k=-\dfrac{15}{2}}</span></div></div></div>
-    <div class="part"><div class="pl">(b) perpendicular</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Perpendicular: set the product equal to <span class="tex">-1</span>.<br><span class="tex">-\dfrac{5}{6}\times\dfrac{k}{9}=-1\ \Rightarrow\ -\dfrac{5k}{54}=-1\ \Rightarrow\ 5k=54</span><br><span class="tex">\boldsymbol{k=\dfrac{54}{5}}</span></div></div></div>
-  </div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Check with fractions.</b> (a) <span class="keys"><kbd>9</kbd><kbd>×</kbd><kbd>(−)</kbd><kbd>5</kbd><kbd>÷</kbd><kbd>6</kbd><kbd>ENTER</kbd><kbd>2nd</kbd><kbd>F◂▸D</kbd></span> → <b>−15┘2</b>. (b) <span class="keys"><kbd>5</kbd><kbd>4</kbd><kbd>÷</kbd><kbd>5</kbd><kbd>ENTER</kbd></span> → <b>10.8</b>, and <span class="tex">\dfrac{10.8}{9}=1.2=\dfrac65</span>: the negative reciprocal of <span class="tex">-\dfrac56</span> ✓</div>
-    <div class="pill-col"><button class="pill" data-keys="9 × (−) 5 ÷ 6 = F◂▸D">Show (a)</button><button class="pill" data-keys="54 ÷ 5 =">Show (b)</button></div>
-  </div>
-  <div class="space" id="ex8-space"></div>
-  <button class="more" data-more="ex8-space">+ More space</button>
+<section class="card" data-ink="s5b" data-section="5. Example 5 check">
+  <h3 class="sub">Example 5 check: one characteristic at a time</h3>
+  <p>The slope sign rules out most graphs at once; the intercepts settle the rest.</p>
+  <div class="explainer" data-explainer="match"></div>
 </section>
 
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
   <div class="sum-grid">
-    <div><b>Slope formula.</b> <span class="tex">m=\dfrac{y_2-y_1}{x_2-x_1}</span>: the rise and run read straight off the coordinates. Either point first, but the <b>same order</b> top and bottom; bracket negatives: <span class="tex">9-(-3)</span>.</div>
-    <div><b>Collinear.</b> <span class="tex">m_{PQ}=m_{QR}</span> <b>and</b> the shared point <span class="tex">Q</span>. A missing coordinate: set its slope equal to the line’s slope and solve.</div>
-    <div><b>Parallel</b> lines have <b>equal slopes</b>: a translated copy of the slope triangle. Simplify first: <span class="tex">\tfrac{9}{30}=\tfrac{3}{10}</span>.</div>
-    <div><b>Perpendicular</b>: the slope triangle turned <span class="tex">90^\circ</span>. Rise and run swap and one sign flips: <b>negative reciprocals</b>, <span class="tex">m_1\times m_2=-1</span>. Horizontal <span class="tex">\perp</span> vertical (0 and undefined).</div>
+    <div><b>Is it linear?</b> Equal <span class="tex">x</span>-steps: the changes in <span class="tex">y</span> must all be the same. Unequal steps: divide, <span class="tex">\tfrac{\text{change in }y}{\text{change in }x}</span> must be constant. That constant is the <b>slope</b>, the rate of change.</div>
+    <div><b>Intercepts.</b> <span class="tex">x</span>-intercept where <span class="tex">y=0</span>; <span class="tex">y</span>-intercept where <span class="tex">x=0</span>. In a table, find (or continue to) the entry with a 0. In a story: the <b>start</b> and the moment it <b>runs out</b>.</div>
+    <div><b>Domain and range.</b> Slanted line: <span class="tex">\{x\mid x\in\mathbb{R}\}</span>, <span class="tex">\{y\mid y\in\mathbb{R}\}</span>. Horizontal <span class="tex">y=3</span>: range <span class="tex">\{3\}</span>. Vertical <span class="tex">x=-2</span>: domain <span class="tex">\{-2\}</span>. Segments and stories: read the endpoints.</div>
+    <div><b>How many intercepts?</b> Two (slanted, not through the origin), one (horizontal, vertical, or through the origin), or infinitely many (an axis). Never zero. Match graphs using the slope sign first, then the intercepts.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u6l4">
-    <div><div class="kicker">Your turn</div><b>Assignment 4 — Slope Relationships</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 4 — Characteristics of Linear Graphs</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l5/">
-    <div><div class="kicker">Next lesson</div><b>Lesson 5 — Characteristics of Linear Graphs</b><div class="muted">The orchard row rises 2 for every 3 across: the constant change that makes a relation linear</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Next lesson</div><b>Lesson 5 — Coordinate Geometry Review</b><div class="muted">Slope, intercepts, domain and range, length and midpoint: the whole unit in one lesson</div></div><span class="arrow">→</span>
   </a>
   <div class="space" id="sum-space" style="min-height:120px"></div>
 </section>
@@ -374,7 +341,7 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u6l4.js';
-  boot({ key: 'u6l4', homeHref: '../../', title: '6.4 Slope Relationships' });
+  boot({ key: 'u6l4', homeHref: '../../', title: '6.4 Characteristics of Linear Graphs' });
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

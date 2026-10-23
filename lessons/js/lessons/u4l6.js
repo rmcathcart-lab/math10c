@@ -1,548 +1,758 @@
-/* Math 10C · Unit 4 · Lesson 6 — Choosing a Factoring Strategy.
- * The Factoring Airport warm-up (a traveller routed through the lanes, with passport stamps), the factoring flowchart
- * that lights up the path for a chosen expression, the "can it board?" tickets, the departures boards (name the route
- * before factoring) and the check-by-expanding explainer. */
+/* Math 10C · Unit 4 · Lesson 6 — Further Factoring. The explainers and the nesting-doll warm-up on this page.
+ * Big idea of the unit: factoring is expanding run backwards. Every explainer ends with a check by expanding. */
 import { h, Explainer } from '../explain.js';
 import { tex } from '../tex.js';
 
-const T = (s) => tex(s);
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
+const box = (el, w, ht) => { el.style.width = w + 'px'; el.style.height = ht + 'px'; return el; };
 const hide = (...els) => els.forEach((e) => { if (e) e.style.opacity = 0; });
-const box = (el, w, hh) => { el.style.width = w + 'px'; if (hh != null) el.style.height = hh + 'px'; return el; };
-const svgEl = (tag, attrs = {}) => { const e = document.createElementNS('http://www.w3.org/2000/svg', tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
-const pulse = (c, el, s = 1.08) => c.anim(el, [{ transform: 'scale(1)' }, { transform: `scale(${s})` }, { transform: 'scale(1)' }], 460);
-const stampIn = (c, el) => c.anim(el, [{ opacity: 0, transform: 'scale(1.9) rotate(-16deg)' }, { opacity: 1, transform: 'scale(1) rotate(-7deg)' }], 420, { easing: 'cubic-bezier(.2,1.4,.4,1)' });
+const K = (s, d) => tex(s, d);
+const T = (s) => tex(s); // inline math in captions
+const KN = (s) => `<span class="nw">${K(s)}</span>`;
+const setStyles = (el, kf) => { for (const k in kf) if (k !== 'offset' && k !== 'easing') el.style[k] = kf[k]; };
 
-/* the checklist step → colour family (the same colours as the airport lanes and the flowchart boxes) */
-const KIND = { 1: 'k1', 2: 'k2', 3: 'k3', 4: 'k3', 5: 'k4', 6: 'k6' };
-const STEP = { 1: 'Common factor', 2: 'Difference of squares', 3: 'Inspection', 4: 'Decomposition', 5: 'Grouping', 6: 'Check' };
+/* where an element sits inside the stage, in stage pixels (the lesson may be scaled to fit the screen) */
+function rel(stage, el) {
+  const sr = stage.getBoundingClientRect(), k = sr.width / stage.offsetWidth || 1, r = el.getBoundingClientRect();
+  return { x: (r.left - sr.left) / k - stage.clientLeft, y: (r.top - sr.top) / k - stage.clientTop, w: r.width / k, h: r.height / k };
+}
+const widthOf = (el) => { const r = el.getBoundingClientRect(), p = el.offsetParent; const k = p ? p.getBoundingClientRect().width / (p.offsetWidth || 1) || 1 : 1; return r.width / k; };
+function stampIn(c, el) { return c.anim(el, [{ opacity: 0, transform: 'scale(1.9) rotate(-14deg)' }, { opacity: 1, transform: 'scale(1) rotate(-6deg)' }], 420, { easing: 'cubic-bezier(.2,1.4,.4,1)' }); }
+const pulse = (c, el, s = 1.08, o = {}) => c.anim(el, [{ scale: '1' }, { scale: String(s) }, { scale: '1' }], 520, o); // uses `scale`, so it never undoes a transform
+const fadeOut = (c, el, ms = 300, o = {}) => c.anim(el, [{ opacity: getComputedStyle(el).opacity }, { opacity: 0 }], ms, o);
+const moveTo = (c, el, x, y, ms = 650, o = {}) => c.anim(el, [{ left: el.style.left, top: el.style.top }, { left: x + 'px', top: y + 'px' }], ms, o);
+const showIn = (c, el, ms = 350, o = {}) => c.anim(el, [{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], ms, o);
 
-/* an arrow along a polyline: a grey base, a coloured overlay that draws itself when lit, and a head */
-function polyArrow(svg, pts, o = {}) {
-  const g = svgEl('g', { class: 'u4l6-ar' + (o.cls ? ' ' + o.cls : '') });
-  const d = 'M' + pts.map((p) => p.join(' ')).join(' L');
-  const base = svgEl('path', { d, class: 'u4l6-arb' + (o.dash ? ' dash' : '') });
-  const hot = svgEl('path', { d, class: 'u4l6-arh' });
-  const [x1, y1] = pts[pts.length - 2], [x2, y2] = pts[pts.length - 1];
-  const ang = Math.atan2(y2 - y1, x2 - x1), L = o.head || 14, wd = 0.42;
-  const head = svgEl('polygon', { class: 'u4l6-arhd', points: [[x2, y2], [x2 - L * Math.cos(ang - wd), y2 - L * Math.sin(ang - wd)], [x2 - L * Math.cos(ang + wd), y2 - L * Math.sin(ang + wd)]].map((q) => q.map((v) => v.toFixed(1)).join(',')).join(' ') });
-  g.append(base, hot, head); svg.appendChild(g);
-  let len = 0; for (let i = 1; i < pts.length; i++) len += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
-  hot.style.strokeDasharray = len; hot.style.strokeDashoffset = len;
+/* the factor ⇄ expand arrows, used wherever both forms sit side by side */
+const ARR = '<span class="u4l6-arr"><span class="xp">expand ⟶</span><span class="fa">⟵ factor</span></span>';
+const chkLine = (src, label = 'Check by expanding') => `<span class="u4l6-tag sol">${label}</span>${K(src)} <b class="ok">✓</b>`;
+
+/* dimension marks: a bar with end ticks and a label */
+function dimH(stage, x, y, w, label) {
+  const bar = add(stage, box(h('div', 'u4l6-dbar h'), w, 12), x, y);
+  const lab = add(stage, h('div', 'u4l6-dim c', K(label)), x + w / 2, y - 14);
+  return [bar, lab];
+}
+function dimV(stage, x, y, ht, label) {
+  const bar = add(stage, box(h('div', 'u4l6-dbar v'), 12, ht), x, y);
+  const lab = add(stage, h('div', 'u4l6-dim', K(label)), x - 8, y + ht / 2);
+  lab.style.translate = '-100% -50%';
+  return [bar, lab];
+}
+
+/* an animation context for the warm-up (outside an explainer): same calls as an explainer step's `c` */
+function freeCtx() {
+  const anim = (el, kf, ms = 450, o = {}) => {
+    const a = el.animate(kf, { duration: ms, delay: o.delay || 0, easing: o.easing || 'cubic-bezier(.25,.75,.3,1)', fill: 'both' });
+    return a.finished.then(() => { setStyles(el, kf[kf.length - 1]); a.cancel(); }, () => {});
+  };
   return {
-    g, len,
-    async light(c, ms = 520) { g.classList.remove('old'); g.classList.add('lit'); await c.anim(hot, [{ strokeDashoffset: len }, { strokeDashoffset: 0 }], ms); }
+    fast: false, anim,
+    sleep: (ms) => new Promise((r) => setTimeout(r, ms)),
+    pop: (el, ms = 380, o = {}) => anim(el, [{ opacity: 0, transform: 'scale(.4)' }, { opacity: 1, transform: 'scale(1.12)', offset: 0.65 }, { opacity: 1, transform: 'scale(1)' }], ms, o),
+    shake: (el) => anim(el, [{ translate: '0' }, { translate: '-7px 0' }, { translate: '7px 0' }, { translate: '-4px 0' }, { translate: '0' }], 380)
   };
 }
-/* move an absolutely-placed element through waypoints (its centre), at a steady speed */
-async function travel(c, el, from, pts, speed = 0.75, hw = 0, hh = 0) {
-  const all = [from, ...pts], d = [0];
-  for (let i = 1; i < all.length; i++) d.push(d[i - 1] + Math.hypot(all[i][0] - all[i - 1][0], all[i][1] - all[i - 1][1]));
-  const tot = d[d.length - 1] || 1;
-  const kf = all.map((p, i) => ({ transform: `translate(${p[0] - hw}px, ${p[1] - hh}px)`, offset: d[i] / tot }));
-  await c.anim(el, kf, Math.max(380, Math.min(1500, tot / speed)), { easing: 'ease-in-out' });
-}
-/* shrink a line of math until it fits its box */
-function fit(el, base, maxW) {
-  el.style.fontSize = base + 'px';
-  const lim = () => (maxW != null ? maxW : el.clientWidth + 1);
-  let f = base;
-  while (el.scrollWidth > lim() && f > 14) { f -= 1; el.style.fontSize = f + 'px'; }
-}
 
-/* =====================================================================================
- * Warm-up: the Factoring Airport
- * ===================================================================================== */
-const LANE_Y = { L2: 84, L3: 190, L4: 296 };
-const AP = {
-  q1: { name: '1', q: 'x^2-25', s: [
-    { to: 'sec', cap: `<b>Security (Lane 1).</b> Do ${T('x^2')} and ${T('25')} share a common factor? No. Nothing to take out, so <b>no stamp</b>.`, log: ['L1', '-'] },
-    { to: 'L2', cap: `<b>Two terms</b>, so Lane 2. ${T('x^2-25=x^2-5^2')} is a difference of squares: ${T('(x-5)(x+5)')}. <b>Stamp!</b>`, log: ['L2', '(x-5)(x+5)'], stamp: [2] },
-    { to: 'board', cap: `<b>Final check:</b> can ${T('x-5')} or ${T('x+5')} be factored again? No. <b>Time to board!</b> ${T('x^2-25=(x-5)(x+5)')}` }
-  ] },
-  q2: { name: '2', q: 'x^2+7x+12', s: [
-    { to: 'sec', cap: `<b>Security (Lane 1).</b> ${T('x^2')}, ${T('7x')} and ${T('12')} share no common factor. <b>No stamp.</b>`, log: ['L1', '-'] },
-    { to: 'L3', cap: `<b>Three terms</b>, so Lane 3. Two integers with product ${T('12')} and sum ${T('7')}: ${T('3')} and ${T('4')}. ${T('(x+3)(x+4)')}. <b>Stamp!</b>`, log: ['L3', '(x+3)(x+4)'], stamp: [3] },
-    { to: 'board', cap: `<b>Final check:</b> neither bracket factors again. <b>Boarded:</b> ${T('x^2+7x+12=(x+3)(x+4)')}` }
-  ] },
-  q3: { name: '3', q: '4x^2-36', s: [
-    { to: 'skip', cap: `This traveller <b>skipped security</b> and went straight to Lane 2: ${T('4x^2-36=(2x)^2-6^2=(2x-6)(2x+6)')}. <b>Stamp.</b>`, log: ['L2', '(2x-6)(2x+6)'], stamp: [2] },
-    { to: 'chk', yes: true, cap: `<b>Final check: caught!</b> Each bracket still has a common factor ${T('2')}: ${T('2x-6=2(x-3)')} and ${T('2x+6=2(x+3)')}. It can’t board yet.` },
-    { to: 'loop', cap: `<b>Back through security.</b> Lane 1 takes the ${T('2')} out of each bracket: ${T('2(x-3)\\cdot2(x+3)=4(x-3)(x+3)')}. <b>Stamp.</b>`, log: ['L1', '4(x-3)(x+3)'], stamp: [1] },
-    { to: 'board', cap: `<b>Final check:</b> ${T('4')}, ${T('x-3')} and ${T('x+3')} can’t factor again. <b>Boarded:</b> ${T('4(x-3)(x+3)')}. Lane 1 <b>first</b> is quicker: ${T('4(x^2-9)=4(x-3)(x+3)')}.` }
-  ] },
-  A: { name: 'A', q: 'x^2-9x+20', s: [
-    { to: 'sec', cap: `<b>Security (Lane 1):</b> no common factor. <b>No stamp.</b>`, log: ['L1', '-'] },
-    { to: 'L3', cap: `<b>Three terms:</b> Lane 3. Product ${T('20')}, sum ${T('-9')}: ${T('-4')} and ${T('-5')}. ${T('(x-4)(x-5)')}. <b>Stamp!</b>`, log: ['L3', '(x-4)(x-5)'], stamp: [3] },
-    { to: 'board', cap: `<b>Boarded:</b> ${T('(x-4)(x-5)')}. Traveller A gets stamps from <b>one</b> lane only.` }
-  ] },
-  B: { name: 'B', q: '5x^2-45', s: [
-    { to: 'sec', cap: `<b>Security (Lane 1):</b> both terms share ${T('5')}. ${T('5x^2-45=5(x^2-9)')}. <b>Stamp!</b>`, log: ['L1', '5(x^2-9)'], stamp: [1] },
-    { to: 'L2', cap: `Two terms left in the bracket: Lane 2. ${T('x^2-9=(x-3)(x+3)')}, so ${T('5(x-3)(x+3)')}. <b>Stamp!</b>`, log: ['L2', '5(x-3)(x+3)'], stamp: [2] },
-    { to: 'board', cap: `<b>Boarded:</b> ${T('5(x-3)(x+3)')}. Traveller B gets stamps from <b>two</b> lanes: 1 and 2.` }
-  ] },
-  C: { name: 'C', q: 'x^4-81', s: [
-    { to: 'sec', cap: `<b>Security (Lane 1):</b> no common factor. <b>No stamp.</b>`, log: ['L1', '-'] },
-    { to: 'L2', cap: `<b>Two terms:</b> Lane 2. ${T('x^4-81=(x^2)^2-9^2=(x^2-9)(x^2+9)')}. <b>Stamp!</b>`, log: ['L2', '(x^2-9)(x^2+9)'], stamp: [2] },
-    { to: 'chk', yes: true, cap: `<b>Final check:</b> ${T('x^2-9')} is <b>still</b> a difference of squares. Back through the lanes!` },
-    { to: 'loop', cap: `<b>Security again:</b> still no common factor, so no stamp.`, log: ['L1', '-'] },
-    { to: 'L2', cap: `Lane 2 again: ${T('x^2-9=(x-3)(x+3)')}. Now ${T('(x-3)(x+3)(x^2+9)')}. <b>Stamp!</b>`, log: ['L2', '(x-3)(x+3)(x^2+9)'], stamp: [2] },
-    { to: 'board', cap: `${T('x^2+9')} is a <b>sum</b> of squares: it can’t be factored. <b>Boarded.</b> The trap: two stamps, but both from Lane 2, so only <b>one</b> lane.` }
-  ] },
-  D: { name: 'D', q: '2x^4-10x^2+8', s: [
-    { to: 'sec', cap: `<b>Security (Lane 1):</b> every term shares ${T('2')}. ${T('2x^4-10x^2+8=2(x^4-5x^2+4)')}. <b>Stamp!</b>`, log: ['L1', '2(x^4-5x^2+4)'], stamp: [1] },
-    { to: 'L3', cap: `<b>Three terms</b> (degrees 4, 2, 0): Lane 3, with ${T('x^2')} as one block. Product ${T('4')}, sum ${T('-5')}: ${T('-1')} and ${T('-4')}. ${T('2(x^2-1)(x^2-4)')}. <b>Stamp!</b>`, log: ['L3', '2(x^2-1)(x^2-4)'], stamp: [3] },
-    { to: 'chk', yes: true, cap: `<b>Final check:</b> ${T('x^2-1')} and ${T('x^2-4')} are both differences of squares. Back through the lanes!` },
-    { to: 'loop', cap: `<b>Security again:</b> neither bracket has a common factor. No stamp this time.`, log: ['L1', '-'] },
-    { to: 'L2', cap: `<b>Lane 2, twice:</b> ${T('x^2-1=(x-1)(x+1)')} and ${T('x^2-4=(x-2)(x+2)')}. <b>Two stamps!</b>`, log: ['L2', '2(x-1)(x+1)(x-2)(x+2)'], stamp: [2, 2] },
-    { to: 'board', cap: `<b>Boarded:</b> ${T('2(x-1)(x+1)(x-2)(x+2)')}. Stamps from <b>three different lanes</b> (1, 3 and 2): D is the answer to the big one.` }
-  ] },
-  F: { name: '+', title: 'Follow-up', q: '3x^3+3x^2-12x-12', s: [
-    { to: 'sec', cap: `<b>Security (Lane 1):</b> every term shares ${T('3')}. ${T('3(x^3+x^2-4x-4)')}. <b>Stamp!</b>`, log: ['L1', '3(x^3+x^2-4x-4)'], stamp: [1] },
-    { to: 'L4', cap: `<b>Four terms:</b> Lane 4, grouping. ${T('x^2(x+1)-4(x+1)=(x+1)(x^2-4)')}, so ${T('3(x+1)(x^2-4)')}. <b>Stamp!</b>`, log: ['L4', '3(x+1)(x^2-4)'], stamp: [4] },
-    { to: 'chk', yes: true, cap: `<b>Final check:</b> ${T('x^2-4')} is a difference of squares. Back through!` },
-    { to: 'loop', cap: `<b>Security again:</b> no common factor in ${T('x^2-4')}. No stamp.`, log: ['L1', '-'] },
-    { to: 'L2', cap: `Lane 2: ${T('x^2-4=(x-2)(x+2)')}, so ${T('3(x+1)(x-2)(x+2)')}. <b>Stamp!</b>`, log: ['L2', '3(x+1)(x-2)(x+2)'], stamp: [2] },
-    { to: 'board', cap: `<b>Boarded:</b> ${T('3(x+1)(x-2)(x+2)')}. Three different lanes too: 1, 4 and 2.` }
-  ] }
-};
-const LANE_NAME = { L1: 'Lane 1', L2: 'Lane 2', L3: 'Lane 3', L4: 'Lane 4' };
-
-const airport = {
-  title: 'Route a traveller through the airport',
-  height: 504,
-  minW: 940, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: 'q1', label: '1' }, { v: 'q2', label: '2' }, { v: 'q3', label: '3' }, { sep: 'The big one:' }, ...'ABCD'.split('').map((k) => ({ v: k, label: k })), { sep: 'Follow-up:' }, { v: 'F', label: '+' }],
-  intro: (k) => `${AP[k].title ? 'The follow-up traveller' : 'Traveller <b>' + AP[k].name + '</b>'} is ${T(AP[k].q)}. It starts at check-in. Every expression goes through <b>security (Lane 1)</b> first.`,
-  make(stage, key) {
-    const tr = AP[key];
-    const svg = svgEl('svg', { class: 'u4l6-svg' }); stage.appendChild(svg);
-    // boxes
-    const sec = add(stage, box(h('div', 'u4l6-lane k1 u4l6-sec', '<div class="u4l6-in"><b>Lane 1</b>Common factor?<br>Take it out <em>first</em>.</div>'), 190, 144), 128, 118);
-    add(stage, box(h('div', 'u4l6-arch'), 214, 162), 116, 100);
-    add(stage, h('div', 'u4l6-archlab', 'SECURITY'), 223, 100);
-    const lanes = {
-      sec,
-      L2: add(stage, box(h('div', 'u4l6-lane k2', '<div class="u4l6-in"><b>Lane 2 · 2 terms</b>Difference of squares?</div>'), 240, 76), 400, LANE_Y.L2 - 38),
-      L3: add(stage, box(h('div', 'u4l6-lane k3', '<div class="u4l6-in"><b>Lane 3 · 3 terms</b>Trinomial</div>'), 240, 76), 400, LANE_Y.L3 - 38),
-      L4: add(stage, box(h('div', 'u4l6-lane k4', '<div class="u4l6-in"><b>Lane 4 · 4 terms</b>Grouping</div>'), 240, 76), 400, LANE_Y.L4 - 38),
-      chk: add(stage, box(h('div', 'u4l6-lane k6', '<div class="u4l6-in"><b>Final check</b>Can any piece be factored again?</div>'), 160, 132), 712, 124)
-    };
-    add(stage, h('div', 'u4l6-cilab', 'Check-in'), 62, 236);
-    // flow arrows
-    polyArrow(svg, [[98, 190], [126, 190]], { head: 11 });
-    ['L2', 'L3', 'L4'].forEach((k) => { polyArrow(svg, [[320, 190], [398, LANE_Y[k]]], { head: 12 }); polyArrow(svg, [[642, LANE_Y[k]], [710, 190]], { head: 12 }); });
-    const loopA = polyArrow(svg, [[792, 122], [792, 26], [223, 26], [223, 96]], { cls: 'red', head: 13 });
-    const loopLab = add(stage, h('div', 'u4l6-aplab red', 'YES: go back through the lanes'), 507, 26);
-    const boardA = polyArrow(svg, [[792, 258], [792, 306], [872, 306]], { cls: 'green', head: 13 });
-    const noLab = add(stage, h('div', 'u4l6-aplab green', 'NO: time to board!'), 836, 330);
-    const plane = add(stage, h('div', 'u4l6-plane', '<svg viewBox="-2 -1.3 4 2.6"><g transform="rotate(-18)"><path d="M-1.4 -.16H1.15L1.6 0L1.15 .16H-1.4Z"/><path d="M-.1 0L-.65 -1.1H-.25L.5 0L-.25 1.1H-.65Z"/><path d="M-1.4 0L-1.62 -.6H-1.27L-1 0Z"/></g></svg>'), 912, 300);
-    const planeMsg = add(stage, h('div', 'u4l6-boarded', 'BOARDED ✓'), 836, 332); hide(planeMsg);
-    // the suitcase
-    const SW = 54, SH = 38, home = [62, 190];
-    const suit = h('div', 'u4l6-suit', `<i></i><span>${tr.name}</span>`); box(suit, SW, SH); stage.appendChild(at(suit, 0, 0));
-    suit.style.transform = `translate(${home[0] - SW / 2}px, ${home[1] - SH / 2}px)`;
-    // itinerary and passport
-    const itin = add(stage, box(h('div', 'u4l6-itin', `<div class="u4l6-ith">${tr.title || 'Traveller ' + tr.name}: ${T(tr.q)}</div>`), 586, 140), 14, 354);
-    const logBox = h('div', 'u4l6-logs'); itin.appendChild(logBox);
-    const pass = add(stage, box(h('div', 'u4l6-pass', '<div class="u4l6-pph">PASSPORT</div>'), 338, 140), 614, 354);
-    const stamps = h('div', 'u4l6-stamps'); pass.appendChild(stamps);
-    const pfoot = h('div', 'u4l6-pfoot', '<span class="muted">no stamps yet</span>'); pass.appendChild(pfoot);
-    const got = [];
-    let loc = 'in', pos = home;
-    // the suitcase waits on the bottom edge of each box, so the box's words stay readable
-    const SEC = [223, 262], LB = (k) => [520, LANE_Y[k] + 38], CHK = [792, 256];
-    const toChk = (from) => [[640, LANE_Y[from] + 38], [700, 236], CHK];
-    const route = (to) => {
-      if (to === 'sec') return [[150, 236], SEC];
-      if (to === 'skip') return [[100, 150], [150, 66], [300, 66], [400, LANE_Y.L2 + 38], LB('L2')];
-      if (/^L\d/.test(to)) return [[330, 236], [400, LANE_Y[to] + 38], LB(to)];
-      if (to === 'chk') return loc === 'chk' ? [] : toChk(loc);
-      if (to === 'loop') return [[792, 190], [792, 122], [792, 26], [223, 26], [223, 96], SEC];
-      if (to === 'board') {
-        const pre = loc === 'chk' ? [] : loc === 'sec' ? [[330, 236], [400, LANE_Y.L2 + 38], [640, LANE_Y.L2 + 38], [700, 236], CHK] : toChk(loc);
-        return [...pre, [792, 306], [884, 306]];
-      }
-      return [];
-    };
-    const light = (k) => { Object.entries(lanes).forEach(([n, el]) => el.classList.toggle('on', n === k)); };
-    const steps = tr.s.map((st) => ({
-      cap: st.cap,
-      run: async (c) => {
-        const pts = route(st.to);
-        if (st.to === 'loop') loopA.light(c, 700).catch(() => {});
-        if (st.to === 'board') boardA.light(c, 1100).catch(() => {});
-        if (st.to === 'loop') c.fadeIn(loopLab, 300).catch(() => {});
-        if (st.to === 'chk' || st.to === 'board') light('chk');
-        await travel(c, suit, pos, pts, 0.7, SW / 2, SH / 2);
-        pos = pts.length ? pts[pts.length - 1] : pos;
-        loc = st.to === 'loop' ? 'sec' : st.to === 'skip' ? 'L2' : st.to;
-        const jobs = [];
-        if (st.to === 'skip') { const tag = add(stage, h('div', 'u4l6-aplab red', 'skipped!'), 223, 74); jobs.push(c.pop(tag, 360)); }
-        if (st.to !== 'board') { light(loc); jobs.push(pulse(c, lanes[loc], 1.04)); }
-        if (st.yes) { lanes.chk.classList.add('yes'); jobs.push(c.shake(lanes.chk)); }
-        else lanes.chk.classList.remove('yes');
-        if (st.log) {
-          const [ln, src] = st.log, none = src === '-';
-          const row = h('div', 'u4l6-log' + (none ? ' none' : ''), `<span class="u4l6-lg ${ln}">${LANE_NAME[ln]}</span><span class="u4l6-lm">${none ? 'no common factor: no stamp' : T(src)}</span>`);
-          logBox.appendChild(row); while (logBox.children.length > 3) logBox.firstChild.remove();
-          jobs.push(c.fadeIn(row, 300, { from: 'translateX(-10px)' }));
-        }
-        if (st.stamp) {
-          for (const k of st.stamp) {
-            got.push(k);
-            const sp = h('div', 'u4l6-stamp k' + (k === 1 ? 1 : k === 2 ? 2 : k === 3 ? 3 : 4), `LANE<b>${k}</b>`); stamps.appendChild(sp);
-            jobs.push(stampIn(c, sp));
-          }
-          pfoot.innerHTML = `${got.length} stamp${got.length > 1 ? 's' : ''}`;
-        }
-        await Promise.all(jobs);
-        if (st.to === 'board') {
-          const n = new Set(got).size;
-          pfoot.innerHTML = `${got.length} stamp${got.length === 1 ? '' : 's'} · <b>${n} different lane${n === 1 ? '' : 's'}</b>`;
-          lanes.chk.classList.remove('on');
-          await Promise.all([c.anim(suit, [{ opacity: 1, transform: suit.style.transform }, { opacity: 0, transform: `translate(${912 - SW / 2}px, ${300 - SH / 2}px) scale(.3)` }], 450),
-            c.anim(plane, [{ transform: 'translate(0,0) rotate(0deg)' }, { transform: 'translate(10px,-34px) rotate(-8deg)' }], 900, { delay: 250 }),
-            c.anim(noLab, [{ opacity: 1 }, { opacity: 0 }], 250), stampIn(c, planeMsg), pulse(c, pfoot, 1.08)]);
-        }
-      }
-    }));
-    return steps;
+/* the sum–product search: factor pairs of c (signs arranged toward b), stopping at the pair whose sum is b */
+function pairSearch(b, c) {
+  const out = [], n = Math.abs(c);
+  for (let d = 1; d * d <= n; d++) {
+    if (n % d) continue;
+    let p = d, q = n / d;
+    if (c > 0) { if (b < 0) { p = -p; q = -q; } } else if (b < 0) q = -q; else p = -p;
+    out.push([p, q, p + q]);
+    if (p + q === b) break;
   }
-};
+  return out;
+}
+const par = (n) => (n < 0 ? `(${n})` : String(n));
+function spTable(stage, b, c, x, y, w, label = '') {
+  const rows = pairSearch(b, c);
+  const t = add(stage, h('div', 'u4l6-sp'), x, y); t.style.width = w + 'px';
+  t.innerHTML = `<div class="u4l6-sph">${label}product ${K(String(c))} · sum ${K(String(b))}</div>`;
+  const els = rows.map(([p, q, s]) => {
+    const r = h('div', 'u4l6-spr ' + (s === b ? 'hit' : 'miss'), `<span>${K(`${par(p)}\\times${par(q)}`)}</span><span class="ar">→</span><span class="sm">${K(`${s}`)} ${s === b ? '✓' : ''}</span>`);
+    t.appendChild(r); r.style.opacity = 0; return r;
+  });
+  hide(t);
+  return { t, els, run: async (cx) => { await showIn(cx, t, 300); for (const r of els) await cx.anim(r, [{ opacity: 0, transform: 'translateX(-8px)' }, { opacity: 1, transform: 'none' }], 260); if (els.length) await pulse(cx, els[els.length - 1], 1.06); } };
+}
 
-/* =====================================================================================
- * 1. The flowchart: light up the path for one expression
- * ===================================================================================== */
-const FW = 640; // width of the flowchart; the written work sits to its right
-const NODES = {
-  top: { x: 324, y: 46, w: 360, h: 70, k: 'k1', n: 1, html: '<b>Common factor? Take it out first.</b><small>(Negative leading coefficient: take out a negative.)</small>' },
-  bin: { x: 110, y: 186, w: 196, h: 142, k: 'k2', n: 2, html: `<b>Binomial (2 terms)</b>Difference of squares<br>${T('A^2-B^2')}<small>(sum of squares: does not factor)</small>` },
-  tri: { x: 324, y: 186, w: 200, h: 142, k: 'k3', html: `<b>Trinomial (3 terms)</b>${T('ax^2+bx+c')}<small>(degrees 4,&nbsp;2,&nbsp;0 or 6,&nbsp;3,&nbsp;0: treat ${T('x^2')} or ${T('x^3')} as a block)</small>` },
-  four: { x: 534, y: 186, w: 150, h: 80, k: 'k4', n: 5, html: '<b>Four terms</b>Try grouping' },
-  insp: { x: 236, y: 344, w: 156, h: 68, k: 'k3', n: 3, html: `<b>${T('a=1')}:</b>inspection` },
-  dec: { x: 418, y: 344, w: 184, h: 100, k: 'k3', n: 4, html: `<b>${T('a\\neq1')}:</b>decomposition<small>(watch for perfect squares)</small>` },
-  chk: { x: 324, y: 484, w: 364, h: 66, k: 'k6 dash', n: 6, html: '<b>Always finish by checking:</b>can any factor be factored again?' }
-};
-const EDGES = {
-  'top-bin': { p: [[256, 81], [152, 114]], lab: [196, 95] },
-  'top-tri': { p: [[324, 81], [324, 114]], lab: [324, 98] },
-  'top-four': { p: [[392, 81], [510, 145]], lab: [456, 110] },
-  'tri-insp': { p: [[290, 257], [256, 309]], lab: [266, 281] },
-  'tri-dec': { p: [[358, 257], [398, 293]], lab: [390, 272] },
-  'bin-chk': { p: [[110, 257], [110, 484], [140, 484]] },
-  'four-chk': { p: [[534, 226], [534, 484], [508, 484]] },
-  'insp-chk': { p: [[244, 378], [280, 450]] },
-  'dec-chk': { p: [[402, 394], [370, 450]] },
-  loop: { p: [[324, 517], [324, 533], [627, 533], [627, 46], [506, 46]], dash: true }
-};
-const FL = {
-  d1: { q: '5x^3-20x', s: [
-    { n: 'top', cap: `<b>Step 1: common factor?</b> Both terms share ${T('5x')}. Take it out first: ${T('5x^3-20x=5x(x^2-4)')}.`, w: [1, '5x(x^2-4)'] },
-    { e: 'top-bin', lab: '2 terms', n: 'bin', cap: `Count the terms <b>left in the bracket</b>: ${T('x^2-4')} has two. ${T('x^2=(x)^2')} and ${T('4=2^2')} with a minus between: a <b>difference of squares</b>.`, w: [2, '5x(x-2)(x+2)'] },
-    { e: 'bin-chk', n: 'chk', cap: `<b>Check:</b> can ${T('5x')}, ${T('x-2')} or ${T('x+2')} be factored again? No. <b>Fully factored.</b>`, done: '5x(x-2)(x+2)' }
-  ] },
-  d2: { q: '3x^2+12x-36', s: [
-    { n: 'top', cap: `<b>Step 1:</b> every term shares ${T('3')}: ${T('3x^2+12x-36=3(x^2+4x-12)')}.`, w: [1, '3(x^2+4x-12)'] },
-    { e: 'top-tri', lab: '3 terms', n: 'tri', cap: `Three terms left in the bracket: a trinomial.` },
-    { e: 'tri-insp', lab: 'a = 1', n: 'insp', cap: `Inside the bracket ${T('a=1')}, so <b>inspection</b>: product ${T('-12')}, sum ${T('4')}: ${T('6')} and ${T('-2')}.`, w: [3, '3(x+6)(x-2)'] },
-    { e: 'insp-chk', n: 'chk', cap: `<b>Check:</b> nothing factors again. Taking the 3 out first turned a decomposition into an easy inspection.`, done: '3(x+6)(x-2)' }
-  ] },
-  d3: { q: 'x^3+2x^2-9x-18', s: [
-    { n: 'top', cap: `<b>Step 1:</b> no factor is common to all four terms (${T('x^3')} and ${T('-18')} share nothing). Nothing to take out.` },
-    { e: 'top-four', lab: '4 terms', n: 'four', cap: `Four terms: <b>grouping</b>. ${T('x^2(x+2)-9(x+2)=(x+2)(x^2-9)')}.`, w: [5, '(x+2)(x^2-9)'] },
-    { e: 'four-chk', n: 'chk', yes: true, cap: `<b>Check: not finished!</b> ${T('x^2-9')} is a difference of squares.` },
-    { e: 'loop', n: 'top', loop: true, cap: `<b>Yes</b>, so ${T('x^2-9')} goes back to the top of the chart on its own. It has no common factor…` },
-    { e: 'top-bin', lab: '2 terms', n: 'bin', cap: `…and two terms: ${T('x^2-9=(x-3)(x+3)')}.`, w: [2, '(x+2)(x-3)(x+3)'] },
-    { e: 'bin-chk', n: 'chk', cap: `<b>Check:</b> nothing factors again. <b>Fully factored.</b>`, done: '(x+2)(x-3)(x+3)' }
-  ] },
-  d4: { q: '4x^2+36', s: [
-    { n: 'top', cap: `<b>Step 1:</b> both terms share ${T('4')}: ${T('4x^2+36=4(x^2+9)')}.`, w: [1, '4(x^2+9)'] },
-    { e: 'top-bin', lab: '2 terms', n: 'bin', cap: `Two terms left, but ${T('x^2+9')} is a <b>sum</b> of squares. A sum of squares <b>does not factor</b>.` },
-    { e: 'bin-chk', n: 'chk', cap: `<b>Check:</b> nothing else factors. ${T('4(x^2+9)')} is fully factored, even though only step 1 did anything.`, done: '4(x^2+9)' }
-  ] },
-  e1a: { q: '8x^2-50', s: [
-    { n: 'top', cap: `<b>Step 1:</b> every term shares ${T('2')} (${T('8=2\\cdot4')}, ${T('50=2\\cdot25')}). Take it out first: ${T('8x^2-50=2(4x^2-25)')}.`, w: [1, '2(4x^2-25)'] },
-    { e: 'top-bin', lab: '2 terms', n: 'bin', cap: `Two terms left: ${T('4x^2-25=(2x)^2-5^2')}, a <b>difference of squares</b>.`, w: [2, '2(2x-5)(2x+5)'] },
-    { e: 'bin-chk', n: 'chk', cap: `<b>Check:</b> no bracket factors further. <b>Fully factored.</b>`, done: '2(2x-5)(2x+5)' }
-  ] },
-  e1b: { q: '-12x^2+27', s: [
-    { n: 'top', cap: `<b>Step 1:</b> the leading coefficient is <b>negative</b>, so take out a negative: GCF ${T('=-3')}. Dividing by ${T('-3')} flips <b>every</b> sign: ${T('-3(4x^2-9)')}.`, w: [1, '-3(4x^2-9)'] },
-    { e: 'top-bin', lab: '2 terms', n: 'bin', cap: `Two terms left: ${T('4x^2-9=(2x)^2-3^2')}, a difference of squares.`, w: [2, '-3(2x-3)(2x+3)'] },
-    { e: 'bin-chk', n: 'chk', cap: `<b>Check:</b> nothing factors again. <b>Fully factored.</b>`, done: '-3(2x-3)(2x+3)' }
-  ] },
-  e2a: { q: 'x^2-2x-63', s: [
-    { n: 'top', cap: `<b>Step 1:</b> ${T('x^2')}, ${T('-2x')} and ${T('-63')} share no common factor. Nothing to take out.` },
-    { e: 'top-tri', lab: '3 terms', n: 'tri', cap: `Three terms: a trinomial ${T('ax^2+bx+c')}.` },
-    { e: 'tri-insp', lab: 'a = 1', n: 'insp', cap: `${T('a=1')}, so <b>inspection</b>: two integers with product ${T('-63')} and sum ${T('-2')}: ${T('-9')} and ${T('7')}.`, w: [3, '(x-9)(x+7)'] },
-    { e: 'insp-chk', n: 'chk', cap: `<b>Check:</b> neither bracket factors again. <b>Fully factored.</b>`, done: '(x-9)(x+7)' }
-  ] },
-  e2b: { q: '-6x^2+5x+21', s: [
-    { n: 'top', cap: `<b>Step 1:</b> no common number, but the leading coefficient is <b>negative</b>: take out ${T('-1')}. Every sign flips.`, w: [1, '-(6x^2-5x-21)'] },
-    { e: 'top-tri', lab: '3 terms', n: 'tri', cap: `Three terms in the bracket: a trinomial.` },
-    { e: 'tri-dec', lab: 'a ≠ 1', n: 'dec', cap: `${T('a=6\\neq1')}: <b>decomposition</b>. ${T('ac=6\\times(-21)=-126')}; the pair with sum ${T('-5')} is ${T('-14')} and ${T('9')}. Split the middle term.`, w: [4, '-(6x^2-14x+9x-21)'] },
-    { n: 'dec', cap: `Group the pairs: ${T('2x(3x-7)+3(3x-7)=(3x-7)(2x+3)')}.`, w: [4, '-(3x-7)(2x+3)'] },
-    { e: 'dec-chk', n: 'chk', cap: `<b>Check:</b> neither bracket factors again. The ${T('-1')} can also go into the first bracket: ${T('(7-3x)(2x+3)')}.`, done: '-(3x-7)(2x+3)=(7-3x)(2x+3)' }
-  ] },
-  e3a: { q: 'x^2-xy+3x-3y', s: [
-    { n: 'top', cap: `<b>Step 1:</b> no factor is common to <b>all four</b> terms. Nothing to take out.` },
-    { e: 'top-four', lab: '4 terms', n: 'four', cap: `Four terms: <b>grouping</b>. ${T('(x^2-xy)+(3x-3y)=x(x-y)+3(x-y)')}.`, w: [5, 'x(x-y)+3(x-y)'] },
-    { n: 'four', cap: `The bracket ${T('(x-y)')} is a common factor of both groups.`, w: [5, '(x-y)(x+3)'] },
-    { e: 'four-chk', n: 'chk', cap: `<b>Check:</b> neither bracket factors again. <b>Fully factored.</b>`, done: '(x-y)(x+3)' }
-  ] },
-  e3b: { q: 'x^4-13x^2+36', s: [
-    { n: 'top', cap: `<b>Step 1:</b> no common factor. Nothing to take out.` },
-    { e: 'top-tri', lab: '3 terms', n: 'tri', cap: `Three terms with degrees 4, 2, 0: a trinomial in ${T('x^2')}. Treat ${T('x^2')} as one block.` },
-    { e: 'tri-insp', lab: 'a = 1', n: 'insp', cap: `${T('a=1')}: product ${T('36')}, sum ${T('-13')}: ${T('-9')} and ${T('-4')}.`, w: [3, '(x^2-9)(x^2-4)'] },
-    { e: 'insp-chk', n: 'chk', yes: true, cap: `<b>Check: not finished!</b> ${T('x^2-9')} and ${T('x^2-4')} are both differences of squares.` },
-    { e: 'loop', n: 'top', loop: true, cap: `<b>Yes</b>, so each bracket goes back to the top. Neither has a common factor…` },
-    { e: 'top-bin', lab: '2 terms', n: 'bin', cap: `…and each has two terms: ${T('x^2-9=(x-3)(x+3)')} and ${T('x^2-4=(x-2)(x+2)')}.`, w: [2, '(x-3)(x+3)(x-2)(x+2)'] },
-    { e: 'bin-chk', n: 'chk', cap: `<b>Check:</b> nothing factors again. <b>Fully factored.</b>`, done: '(x-3)(x+3)(x-2)(x+2)' }
-  ] },
-  e4a: { q: '4a^2-20ab+25b^2', s: [
-    { n: 'top', cap: `<b>Step 1:</b> ${T('4')}, ${T('20')} and ${T('25')} share no common factor, and no letter is in every term.` },
-    { e: 'top-tri', lab: '3 terms', n: 'tri', cap: `Three terms: a trinomial.` },
-    { e: 'tri-dec', lab: 'a ≠ 1', n: 'dec', cap: `The leading coefficient is 4, so “${T('a\\neq1')}” (that ${T('a')} means the coefficient, not the variable). <b>Watch for a perfect square:</b> ${T('4a^2=(2a)^2')}, ${T('25b^2=(5b)^2')}, ${T('-20ab=-2(2a)(5b)')}.`, w: [4, '(2a-5b)^2'] },
-    { e: 'dec-chk', n: 'chk', cap: `<b>Check:</b> ${T('2a-5b')} can’t factor again. <b>Fully factored.</b>`, done: '(2a-5b)^2' }
-  ] },
-  e4b: { q: '6t^6+5t^3p^2-6p^4', s: [
-    { n: 'top', cap: `<b>Step 1:</b> ${T('6')}, ${T('5')} and ${T('6')} share nothing. Nothing to take out.` },
-    { e: 'top-tri', lab: '3 terms', n: 'tri', cap: `Three terms: a trinomial in ${T('t^3')} (degrees 6, 3, 0 in ${T('t')}). Treat ${T('t^3')} as one block, just like ${T('x^2')}.` },
-    { e: 'tri-dec', lab: 'a ≠ 1', n: 'dec', cap: `${T('a=6\\neq1')}: decomposition. ${T('ac=6\\times(-6)=-36')}, sum ${T('5')}: ${T('9')} and ${T('-4')}.`, w: [4, '6t^6+9t^3p^2-4t^3p^2-6p^4'] },
-    { n: 'dec', cap: `Group: ${T('3t^3(2t^3+3p^2)-2p^2(2t^3+3p^2)')}.`, w: [4, '(2t^3+3p^2)(3t^3-2p^2)'] },
-    { e: 'dec-chk', n: 'chk', cap: `<b>Check:</b> ${T('2t^3+3p^2')} is a sum, and ${T('3t^3-2p^2')} isn’t a difference of squares (3 and 2 aren’t perfect squares). <b>Fully factored.</b>`, done: '(2t^3+3p^2)(3t^3-2p^2)' }
-  ] }
-};
+/* ======================================================================
+   Nesting dolls (warm-up and Section 4). A doll is a factor; opening it factors it; a solid doll can't be factored.
+   ====================================================================== */
+const D = (t, how, ...kids) => ({ t, how, kids });
+const S = (t, why) => ({ t, why });
+const isMono = (t) => /^\d+[a-z]*$/.test(t);
+function prodT(nodes) {
+  if (nodes.length === 1) return nodes[0].t;
+  if (nodes.every((n) => isMono(n.t))) return nodes.map((n) => n.t).join('\\times ');
+  return nodes.map((n) => (isMono(n.t) ? n.t : `(${n.t})`)).join('');
+}
+const DOLL_SVG = `<svg viewBox="0 0 100 140" aria-hidden="true">
+  <path class="bd" d="M50 46 C84 46 98 94 92 128 Q50 141 8 128 C2 94 16 46 50 46Z"/>
+  <path class="sh" d="M15 113 Q50 101 85 113"/>
+  <path class="sm" d="M11 81 Q50 87 89 81"/>
+  <circle class="bd" cx="50" cy="31" r="25"/>
+  <circle class="fc" cx="50" cy="33" r="16"/>
+  <circle class="ey" cx="44.5" cy="31" r="2.1"/><circle class="ey" cx="55.5" cy="31" r="2.1"/>
+  <circle class="ch" cx="40" cy="37.5" r="2.8"/><circle class="ch" cx="60" cy="37.5" r="2.8"/>
+  <path class="ln" d="M46 38.5 Q50 42.5 54 38.5"/>
+  <circle class="dot" cx="50" cy="125" r="6.5"/>
+</svg>`;
+const DSCALE = [1.32, 1.04, 0.86, 0.74];
+function dollEl(node, depth, mult = 1) {
+  const dd = Math.min(depth, 3), s = DSCALE[dd] * mult, w = Math.round(100 * s), ht = Math.round(140 * s);
+  const e = h('div', `u4l6-doll d${dd}`);
+  e.innerHTML = `<div class="dh dt">${DOLL_SVG}</div><div class="dh db">${DOLL_SVG}</div><div class="dlab">${K(node.t)}</div><div class="dwhy">${node.why || 'solid'}</div>`;
+  box(e, w, ht); e.querySelector('.dlab').style.fontSize = Math.max(18, Math.round(23 * s)) + 'px';
+  e._w = w; e._h = ht; return e;
+}
+class DollRow {
+  constructor(stage, root, o) { Object.assign(this, { stage, W: o.W, base: o.base, x0: o.x0 || 0, gap: o.gap || 26, mult: o.mult || 1, tap: !!o.tap }); this.items = [this.make(root, 0)]; this.layout(); }
+  make(n, d) { const el = dollEl(n, d, this.mult); if (this.tap) el.dataset.tap = ''; this.stage.appendChild(el); return { n, d, el }; }
+  slot(it) { const lw = widthOf(it.el.querySelector('.dlab')), ww = it.n.kids ? 0 : widthOf(it.el.querySelector('.dwhy')); return Math.max(it.el._w, lw + 14, ww + 8); }
+  xs() { const ws = this.items.map((it) => this.slot(it)), tot = ws.reduce((a, b) => a + b, 0) + this.gap * (ws.length - 1); let x = this.x0 + (this.W - tot) / 2; return ws.map((w) => { const cx = x + w / 2; x += w + this.gap; return cx; }); }
+  layout() { this.xs().forEach((cx, i) => { const it = this.items[i]; at(it.el, cx - it.el._w / 2, this.base - it.el._h); }); }
+  async open(c, idx) {
+    const it = this.items[idx], p = it.el;
+    const kids = it.n.kids.map((k) => this.make(k, it.d + 1));
+    this.items.splice(idx, 1, ...kids);
+    const xs = this.xs();
+    const pcx = parseFloat(p.style.left) + p._w / 2, pcy = parseFloat(p.style.top) + p._h * 0.62;
+    kids.forEach((k) => { at(k.el, pcx - k.el._w / 2, pcy - k.el._h / 2); k.el.style.opacity = 0; });
+    const jobs = [
+      c.anim(p.querySelector('.dt'), [{ transform: 'none', opacity: 1 }, { transform: 'translate(-6px, -46px) rotate(-16deg)', opacity: 0 }], 650),
+      c.anim(p.querySelector('.db'), [{ opacity: 1 }, { opacity: 0 }], 450, { delay: 250 }),
+      c.anim(p.querySelector('.dlab'), [{ opacity: 1 }, { opacity: 0 }], 250)
+    ];
+    this.items.forEach((k, i) => {
+      const L = xs[i] - k.el._w / 2, Tp = this.base - k.el._h;
+      if (kids.includes(k)) jobs.push(c.anim(k.el, [{ left: k.el.style.left, top: k.el.style.top, opacity: 0, transform: 'scale(.35)' }, { left: L + 'px', top: Tp + 'px', opacity: 1, transform: 'scale(1)' }], 720, { delay: 280 + kids.indexOf(k) * 90 }));
+      else jobs.push(moveTo(c, k.el, L, Tp, 600));
+    });
+    await Promise.all(jobs);
+    p.remove();
+    return kids;
+  }
+  solid(c, it, o = {}) { it.el.classList.add('solid'); it.solid = true; return pulse(c, it.el, 1.1, o); }
+  prod() { return prodT(this.items.map((it) => it.n)); }
+}
 
-const flow = {
-  title: 'Trace it through the flowchart',
-  height: 548,
-  minW: 966, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: 'd1', label: T('5x^3-20x') }, { v: 'd2', label: T('3x^2+12x-36') }, { v: 'd3', label: T('x^3+2x^2-9x-18') }, { v: 'd4', label: T('4x^2+36') },
-    { sep: 'Example check:' }, ...['1a', '1b', '2a', '2b', '3a', '3b', '4a', '4b'].map((k) => ({ v: 'e' + k, label: k[0] + '(' + k[1] + ')' }))],
-  intro: (k) => `Factor ${T(FL[k].q)} completely. Every expression starts at the <b>top</b> of the chart. Press <b>Next</b>.`,
-  make(stage, key, ex) {
-    const W = ex.W, d = FL[key];
-    const svg = svgEl('svg', { class: 'u4l6-svg' }); stage.appendChild(svg);
-    const arrows = {};
-    for (const id in EDGES) arrows[id] = polyArrow(svg, EDGES[id].p, { dash: EDGES[id].dash, cls: id === 'loop' ? 'loop' : '' });
-    const loopLab = add(stage, h('div', 'u4l6-elab loop', 'yes: back to the top'), 476, 533);
-    const nodes = {};
-    for (const id in NODES) {
-      const n = NODES[id], el = add(stage, box(h('div', 'u4l6-node ' + n.k, '<div class="u4l6-in">' + n.html + '</div>'), n.w, n.h), n.x - n.w / 2, n.y - n.h / 2);
-      if (n.n) el.appendChild(h('span', 'u4l6-nb', n.n));
-      nodes[id] = el;
+/* ---------------- warm-up: the shelf of dolls ---------------- */
+const SHELF = {
+  board: D('3x^2-12', 'common factor 3', S('3', 'prime'), D('x^2-4', 'a difference of squares', S('x-2', 'can’t open'), S('x+2', 'can’t open'))),
+  n36: D('36', '36 = 4 × 9', D('4', '4 = 2 × 2', S('2', 'prime'), S('2', 'prime')), D('9', '9 = 3 × 3', S('3', 'prime'), S('3', 'prime'))),
+  q2: D('2x^2-50', 'common factor 2', S('2', 'prime'), D('x^2-25', 'a difference of squares', S('x-5', 'can’t open'), S('x+5', 'can’t open'))),
+  q3: D('x^4-625', `a difference of squares: ${tex('(x^2)^2-25^2')}`, D('x^2-25', 'a difference of squares', S('x-5', 'can’t open'), S('x+5', 'can’t open')), S('x^2+25', 'sum of squares')),
+  big: D('x^8-1', `a difference of squares: ${tex('(x^4)^2-1^2')}`, D('x^4-1', `a difference of squares: ${tex('(x^2)^2-1^2')}`, D('x^2-1', 'a difference of squares', S('x-1', 'can’t open'), S('x+1', 'can’t open')), S('x^2+1', 'sum of squares')), S('x^4+1', 'sum of squares'))
+};
+const WHY_LONG = { prime: 'a prime number: it can’t be split', 'can’t open': 'degree 1, no common factor: nothing opens it', 'sum of squares': 'a <b>sum</b> of squares never factors' };
+function mountShelf() {
+  const host = document.getElementById('shelf'); if (!host) return;
+  host.innerHTML = `<div class="u4l6-shtop no-ink"><span class="u4l6-shl">Open a doll:</span>
+      <button class="chip" type="button" data-k="board">${tex('3x^2-12')}</button>
+      <button class="chip" type="button" data-k="n36">1. 36</button>
+      <button class="chip" type="button" data-k="q2">2. ${tex('2x^2-50')}</button>
+      <button class="chip" type="button" data-k="q3">3. ${tex('x^4-625')}</button>
+      <button class="chip big1" type="button" data-k="big">The big one: ${tex('x^8-1')}</button>
+      <span class="sp"></span><button class="pill small" type="button" data-all>Open all</button><button class="pill small" type="button" data-reset>Reset</button></div>
+    <div class="u4l6-shstage"></div><div class="u4l6-shmsg"></div>`;
+  const stage = host.querySelector('.u4l6-shstage'), msg = host.querySelector('.u4l6-shmsg'), chips = [...host.querySelectorAll('[data-k]')];
+  const c = freeCtx();
+  let row, ledger, count, key = 'board', busy = false, gen = 0;
+  const setCount = () => { const n = row.items.filter((it) => it.solid).length; count.innerHTML = `<i class="gd"></i>solid dolls: ${n}`; };
+  const done = () => row.items.every((it) => it.solid);
+  const addLine = (src) => { const l = h('div', '', K(src)); ledger.appendChild(l); l.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], 350); };
+  function build(k) {
+    gen++; key = k; busy = false; stage.innerHTML = '';
+    chips.forEach((b) => b.classList.toggle('on', b.dataset.k === k));
+    const W = stage.clientWidth || 960, LW = 372, M = Math.min(1, (stage.clientHeight || 330) / 330); // M < 1 when CSS makes the shelf shorter (one-screen warm-up)
+    row = new DollRow(stage, SHELF[k], { W: W - LW - 20, base: Math.round(282 * M), x0: 0, gap: 24, tap: true, mult: M });
+    ledger = add(stage, h('div', 'u4l6-ledger'), W - LW, Math.round(58 * M)); ledger.style.width = LW - 14 + 'px'; ledger.style.fontSize = Math.max(18, Math.round(22 * M)) + 'px';
+    count = add(stage, h('div', 'u4l6-count'), 0, 10); count.style.left = 'auto';
+    addLine(SHELF[k].t); setCount();
+    row.items.forEach(wire);
+    msg.innerHTML = 'Tap a doll to open it. Tap a doll that won’t open to mark it <b class="sol">solid</b>.';
+  }
+  function wire(it) { it.el.classList.add('tap'); it.el.setAttribute('role', 'button'); it.el.addEventListener('click', () => tap(it)); }
+  async function tap(it) {
+    if (busy || it.solid || !row.items.includes(it)) return;
+    const g = gen;
+    if (it.n.kids && it.n.kids.length) {
+      busy = true;
+      const kids = await row.open(c, row.items.indexOf(it));
+      if (g !== gen) return;
+      kids.forEach(wire); addLine('=' + row.prod());
+      msg.innerHTML = `${KN(it.n.t)} opens: ${it.n.how}.`;
+      busy = false;
+    } else {
+      busy = true; await row.solid(c, it); if (g !== gen) return; busy = false; setCount();
+      msg.innerHTML = done() ? `Every doll is <b class="sol">solid</b>: <b>${row.items.length} solid dolls</b>. ${KN(SHELF[key].t + '=' + row.prod())}`
+        : `${KN(it.n.t)} is <b class="sol">solid</b>: ${WHY_LONG[it.n.why] || it.n.why}.`;
     }
-    const labs = {};
-    // the written work
-    const px = FW + 8, pw = W - px - 10;
-    const wp = add(stage, box(h('div', 'u4l6-wp'), pw, 524), px, 12);
-    wp.innerHTML = `<div class="u4l6-wph">Factor completely</div><div class="u4l6-wpq">${T(d.q)}</div>`;
-    const wl = h('div', 'u4l6-wpl'); wp.appendChild(wl);
-    const fin = h('div', 'u4l6-wpf'); wp.appendChild(fin); hide(fin);
-    const verdict = add(stage, h('div', 'u4l6-verdict'), 196, 533); hide(verdict);
-    fit(wp.querySelector('.u4l6-wpq'), 30);
-    let cur = null;
-    const setOn = (id) => {
-      if (cur && cur !== id) { nodes[cur].classList.remove('on'); nodes[cur].classList.add('path'); }
-      nodes[id].classList.remove('path', 'old'); nodes[id].classList.add('on'); cur = id;
-    };
-    const toOld = () => {
-      Object.values(nodes).forEach((el) => { if (el.classList.contains('on') || el.classList.contains('path')) { el.classList.remove('on', 'path'); el.classList.add('old'); } });
-      Object.values(arrows).forEach((a) => { if (a.g.classList.contains('lit')) { a.g.classList.remove('lit'); a.g.classList.add('old'); } });
-      Object.values(labs).forEach((l) => l.classList.add('old'));
-      cur = null;
-    };
-    return d.s.map((st) => ({
-      cap: st.cap,
-      run: async (c) => {
-        if (st.loop) { toOld(); verdict.style.opacity = 0; }
-        const jobs = [];
-        if (st.e) {
-          await arrows[st.e].light(c, st.e === 'loop' ? 900 : 480);
-          if (st.loop) jobs.push(c.fadeIn(loopLab, 300));
-          if (st.lab && EDGES[st.e].lab) {
-            const old = labs[st.e]; if (old) old.remove();
-            const l = add(stage, h('div', 'u4l6-elab', st.lab), EDGES[st.e].lab[0], EDGES[st.e].lab[1]); labs[st.e] = l; jobs.push(c.pop(l, 320));
-          }
-        }
-        setOn(st.n);
-        jobs.push(pulse(c, nodes[st.n], 1.05));
-        if (st.w) {
-          const [k, src] = st.w;
-          const row = h('div', 'u4l6-wline', `<span class="u4l6-wt ${KIND[k]}">${k}</span><span class="u4l6-wm">${T('=' + src)}</span>`);
-          wl.appendChild(row); fit(row.querySelector('.u4l6-wm'), 23);
-          jobs.push(c.fadeIn(row, 350, { from: 'translateX(-12px)' }));
-        }
-        if (st.yes) {
-          verdict.className = 'u4l6-verdict no'; verdict.innerHTML = '✗ factor again';
-          jobs.push(c.pop(verdict, 360), c.shake(nodes.chk));
-        }
-        if (st.done) {
-          verdict.className = 'u4l6-verdict ok'; verdict.innerHTML = '✓ fully factored';
-          fin.innerHTML = `<div class="u4l6-wpfh">Answer</div>${st.done.split('=').map((p, i) => `<div class="u4l6-wpfm">${T((i ? '=' : '') + p)}</div>`).join('')}<div class="u4l6-stampff">FULLY FACTORED</div>`;
-          fin.querySelectorAll('.u4l6-wpfm').forEach((e) => fit(e, 25));
-          jobs.push(c.pop(verdict, 360), c.fadeIn(fin, 400, { delay: 150 }), stampIn(c, fin.querySelector('.u4l6-stampff')));
-        }
-        await Promise.all(jobs);
-      }
-    }));
+  }
+  async function openAll() {
+    const g = gen;
+    for (let guard = 0; guard < 30 && g === gen; guard++) {
+      const it = row.items.find((x) => !x.solid && x.n.kids && x.n.kids.length) || row.items.find((x) => !x.solid);
+      if (!it) break;
+      await tap(it); await c.sleep(220);
+    }
+  }
+  chips.forEach((b) => b.addEventListener('click', () => build(b.dataset.k)));
+  host.querySelector('[data-reset]').addEventListener('click', () => build(key));
+  host.querySelector('[data-all]').addEventListener('click', () => { if (!busy) openAll(); });
+  build('board');
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (row.items.length === 1) build(key); });
+}
+
+/* ---------------- Section 4: keep opening until nothing splits ---------------- */
+const DL = {
+  mn: {
+    root: D('m^4-81n^4', '', D('m^2-9n^2', '', S('m-3n', 'can’t open'), S('m+3n', 'can’t open')), S('m^2+9n^2', 'sum of squares')),
+    caps: [`${T('m^4-81n^4=(m^2)^2-(9n^2)^2')}: a <b>difference of squares</b> with ${T('A=m^2')} and ${T('B=9n^2')}. Open it into ${T('(A-B)(A+B)')}.`,
+      `Look inside the new dolls. ${T('m^2-9n^2=(m)^2-(3n)^2')} is <b>another</b> difference of squares, so it opens again.`],
+    solid: `${T('m-3n')} and ${T('m+3n')} are degree 1 with no common factor: nothing opens them. ${T('m^2+9n^2')} is a <b>sum</b> of squares: it never factors. Every doll is <b>solid</b>.`,
+    chk: ['m=4,\\ n=1', '4^4-81(1)^4=175', '(1)(7)(16+9)=175']
+  },
+  x8: {
+    root: SHELF.big,
+    caps: [`${T('x^8-1=(x^4)^2-1^2')}: a difference of squares. Open it: ${T('(x^4-1)(x^4+1)')}.`,
+      `${T('x^4-1=(x^2)^2-1^2')} is a difference of squares too. Open it.`,
+      `And ${T('x^2-1')} opens once more: ${T('(x-1)(x+1)')}. Notice that only the <b>minus</b> doll opens each time.`],
+    solid: `${T('x-1')} and ${T('x+1')} can’t open. ${T('x^2+1')} and ${T('x^4+1')} are <b>sums</b> of squares: they stay shut. <b>4 solid dolls</b> (answer C).`,
+    chk: ['x=2', '2^8-1=255', '(1)(3)(5)(17)=255']
+  },
+  w4: {
+    root: D('w^4-16', '', D('w^2-4', '', S('w-2', 'can’t open'), S('w+2', 'can’t open')), S('w^2+4', 'sum of squares')),
+    caps: [`${T('w^4-16=(w^2)^2-4^2')}: a difference of squares with ${T('A=w^2')}, ${T('B=4')}. Open it: ${T('(w^2-4)(w^2+4)')}.`,
+      `${T('w^2-4=w^2-2^2')} is <b>again</b> a difference of squares. Keep opening!`],
+    solid: `${T('w-2')} and ${T('w+2')} can’t open. ${T('w^2+4')} is a <b>sum</b> of squares, so it does not factor. Every doll is solid: ${T('w^4-16=(w-2)(w+2)(w^2+4)')}.`,
+    chk: ['w=3', '3^4-16=65', '(1)(5)(9+4)=65']
+  },
+  e6b: {
+    root: D('162-2x^4', '', S('2', 'common factor'), D('81-x^4', '', D('9-x^2', '', S('3-x', 'can’t open'), S('3+x', 'can’t open')), S('9+x^2', 'sum of squares'))),
+    caps: [`<b>Common factor first.</b> Neither 162 nor ${T('2x^4')} is a perfect square, but both are even: ${T('162-2x^4=2(81-x^4)')}.`,
+      `Now ${T('81-x^4=9^2-(x^2)^2')} is a difference of squares. Open it: ${T('(9-x^2)(9+x^2)')}.`,
+      `${T('9-x^2=3^2-x^2')} opens again: ${T('(3-x)(3+x)')}.`],
+    solid: `2 is the common factor, ${T('3-x')} and ${T('3+x')} can’t open, and ${T('9+x^2')} is a sum of squares. Every doll is solid: ${T('2(3-x)(3+x)(9+x^2)')}.`,
+    chk: ['x=2', '162-2(2)^4=130', '2(1)(5)(13)=130']
+  },
+  e6c: {
+    root: D('3p^5q^4-48pt^4', '', S('3p', 'common factor'), D('p^4q^4-16t^4', '', D('p^2q^2-4t^2', '', S('pq-2t', 'can’t open'), S('pq+2t', 'can’t open')), S('p^2q^2+4t^2', 'sum of squares'))),
+    caps: [`<b>GCF first:</b> both terms share ${T('3p')}. ${T('3p^5q^4-48pt^4=3p(p^4q^4-16t^4)')}.`,
+      `${T('p^4q^4-16t^4=(p^2q^2)^2-(4t^2)^2')}: a difference of squares. Open it.`,
+      `${T('p^2q^2-4t^2=(pq)^2-(2t)^2')} opens again: ${T('(pq-2t)(pq+2t)')}.`],
+    solid: `${T('3p')} is the common factor, ${T('pq\\pm2t')} can’t open, and ${T('p^2q^2+4t^2')} is a sum of squares. Done: ${T('3p(pq-2t)(pq+2t)(p^2q^2+4t^2)')}.`,
+    chk: ['p=1,\\ q=3,\\ t=1', '3(1)(3)^4-48(1)(1)^4=195', '3(1)(1)(5)(13)=195']
   }
 };
-
-/* =====================================================================================
- * 2. Check by expanding (factoring run backwards) and by substitution
- * ===================================================================================== */
-const EXP = {
-  '1a': { f: '2(2x-5)(2x+5)', q: '8x^2-50', L: [
-    [`Multiply the two brackets first. The middle terms cancel, which is exactly why ${T('4x^2-25')} was a difference of squares.`, '(2x-5)(2x+5)=4x^2+10x-10x-25=4x^2-25'],
-    [`Then multiply by the common factor ${T('2')}.`, '2(4x^2-25)=8x^2-50']],
-  v: { x: 2 }, F: ({ x }) => 2 * (2 * x - 5) * (2 * x + 5), Q: ({ x }) => 8 * x * x - 50, fs: '2(-1)(9)', qs: '8(4)-50' },
-  '1b': { f: '-3(2x-3)(2x+3)', q: '-12x^2+27', L: [
-    ['Multiply the two brackets first: a difference of squares again.', '(2x-3)(2x+3)=4x^2+6x-6x-9=4x^2-9'],
-    [`Then multiply by ${T('-3')}: every sign flips.`, '-3(4x^2-9)=-12x^2+27']],
-  v: { x: 2 }, F: ({ x }) => -3 * (2 * x - 3) * (2 * x + 3), Q: ({ x }) => -12 * x * x + 27, fs: '-3(1)(7)', qs: '-12(4)+27' },
-  '2a': { f: '(x-9)(x+7)', q: 'x^2-2x-63', L: [
-    ['FOIL the two brackets.', '(x-9)(x+7)=x^2+7x-9x-63'],
-    ['Collect the middle terms.', '=x^2-2x-63']],
-  v: { x: 2 }, F: ({ x }) => (x - 9) * (x + 7), Q: ({ x }) => x * x - 2 * x - 63, fs: '(-7)(9)', qs: '4-4-63' },
-  '2b': { f: '(7-3x)(2x+3)', q: '-6x^2+5x+21', L: [
-    ['FOIL the two brackets.', '(7-3x)(2x+3)=14x+21-6x^2-9x'],
-    ['Collect like terms and write them in descending order.', '=-6x^2+5x+21']],
-  v: { x: 2 }, F: ({ x }) => (7 - 3 * x) * (2 * x + 3), Q: ({ x }) => -6 * x * x + 5 * x + 21, fs: '(1)(7)', qs: '-6(4)+10+21' },
-  '3a': { f: '(x-y)(x+3)', q: 'x^2-xy+3x-3y', L: [
-    ['FOIL the two brackets.', '(x-y)(x+3)=x^2+3x-xy-3y'],
-    ['No like terms. The same four terms, in the question’s order:', '=x^2-xy+3x-3y']],
-  v: { x: 2, y: 1 }, F: ({ x, y }) => (x - y) * (x + 3), Q: ({ x, y }) => x * x - x * y + 3 * x - 3 * y, fs: '(1)(5)', qs: '4-2+6-3' },
-  '3b': { f: '(x-3)(x+3)(x-2)(x+2)', q: 'x^4-13x^2+36', L: [
-    ['Multiply in pairs: each pair is a difference of squares.', '(x-3)(x+3)=x^2-9,\\quad(x-2)(x+2)=x^2-4'],
-    ['Now multiply the two results.', '(x^2-9)(x^2-4)=x^4-4x^2-9x^2+36'],
-    ['Collect the middle terms.', '=x^4-13x^2+36']],
-  v: { x: 4 }, F: ({ x }) => (x - 3) * (x + 3) * (x - 2) * (x + 2), Q: ({ x }) => x ** 4 - 13 * x * x + 36, fs: '(1)(7)(2)(6)', qs: '256-208+36',
-  subNote: ` Not ${T('x=2')} or ${T('x=3')}: they make a factor ${T('0')}, so both sides give ${T('0')} and the test is weak.` },
-  '4a': { f: '(2a-5b)^2', q: '4a^2-20ab+25b^2', L: [
-    ['A square is two copies of the bracket.', '(2a-5b)^2=(2a-5b)(2a-5b)'],
-    ['FOIL: the O and I terms are the same, so the middle term is doubled.', '=4a^2-10ab-10ab+25b^2=4a^2-20ab+25b^2']],
-  v: { a: 2, b: 1 }, F: ({ a, b }) => (2 * a - 5 * b) ** 2, Q: ({ a, b }) => 4 * a * a - 20 * a * b + 25 * b * b, fs: '(-1)^2', qs: '16-40+25' },
-  '4b': { f: '(2t^3+3p^2)(3t^3-2p^2)', q: '6t^6+5t^3p^2-6p^4', L: [
-    ['FOIL. Exponents add: t³ · t³ = t⁶.', '(2t^3+3p^2)(3t^3-2p^2)=6t^6-4t^3p^2+9t^3p^2-6p^4'],
-    ['Collect the middle terms.', '=6t^6+5t^3p^2-6p^4']],
-  v: { t: 2, p: 1 }, F: ({ t, p }) => (2 * t ** 3 + 3 * p * p) * (3 * t ** 3 - 2 * p * p), Q: ({ t, p }) => 6 * t ** 6 + 5 * t ** 3 * p * p - 6 * p ** 4, fs: '(19)(22)', qs: '384+40-6' }
-};
-EXP['4b'].L[0][0] = `FOIL. Exponents add: ${T('t^3\\cdot t^3=t^6')}.`;
-const numT = (n) => String(n);
-const expand = {
-  title: 'Run it backwards: expand the answer',
-  height: 412,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
-  choices: Object.keys(EXP).map((k) => ({ v: k, label: 'Example ' + k[0] + '(' + k[1] + ')' })),
-  intro: (k) => `Check the answer to Example ${k[0]}(${k[1]}): ${T(EXP[k].f)}. If it is right, expanding it must give back the question, ${T(EXP[k].q)}.`,
-  make(stage, key, ex) {
-    const W = ex.W, d = EXP[key], cxL = Math.round(W * 0.26), cxR = Math.round(W * 0.74), bw = Math.min(360, W * 0.38);
-    const bL = add(stage, box(h('div', 'u4l6-xb', `<div class="u4l6-xbh">Our answer (factored)</div><div class="u4l6-xbm">${T(d.f)}</div>`), bw), cxL - bw / 2, 22);
-    const bR = add(stage, box(h('div', 'u4l6-xb q', `<div class="u4l6-xbh">The question (expanded)</div><div class="u4l6-xbm">${T(d.q)}</div>`), bw), cxR - bw / 2, 22);
-    [bL, bR].forEach((b) => fit(b.querySelector('.u4l6-xbm'), 28));
-    const svg = svgEl('svg', { class: 'u4l6-svg' }); stage.appendChild(svg);
-    const x1 = cxL + bw / 2 + 8, x2 = cxR - bw / 2 - 8;
-    const aE = polyArrow(svg, [[x1, 52], [x2, 52]], { cls: 'exp', head: 13 });
-    const aF = polyArrow(svg, [[x2, 84], [x1, 84]], { cls: 'fac', head: 13 });
-    aF.g.classList.add('lit'); aF.g.querySelector('.u4l6-arh').style.strokeDashoffset = 0;
-    add(stage, h('div', 'u4l6-xal exp', 'expand'), (x1 + x2) / 2, 36);
-    add(stage, h('div', 'u4l6-xal fac', 'factor'), (x1 + x2) / 2, 100);
-    const lines = d.L.map((l, i) => { const e = add(stage, h('div', 'u4l6-xl', T(l[1])), 40, 140 + i * 56); hide(e); fit(e, 27, W - 80); return e; });
-    const vars = Object.keys(d.v), vt = vars.map((k) => `${k}=${d.v[k]}`).join(',\\ '), fv = d.F(d.v), qv = d.Q(d.v);
-    const sub = add(stage, box(h('div', 'u4l6-xsub', `<div class="u4l6-xsh">Substitute ${T(vt)}</div><div>Answer: ${T(d.fs + '=' + numT(fv))}</div><div>Question: ${T(d.qs + '=' + numT(qv))} <b class="ok">${fv === qv ? '✓ same' : '✗'}</b></div>`), W - 60), 30, 314); hide(sub);
-    const steps = [{ cap: `Factoring went from the question to the answer. To <b>check</b>, go the other way: <b>expand</b> ${T(d.f)}.`, run: (c) => Promise.all([aE.light(c, 600), pulse(c, bL, 1.04)]) }];
-    d.L.forEach((l, i) => steps.push({ cap: l[0], run: (c) => c.fadeIn(lines[i], 380, { from: 'translateX(-14px)' }) }));
+const dolls = {
+  title: 'Factor completely: keep opening until every doll is solid',
+  height: 500,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
+  choices: [{ v: 'mn', label: tex('m^4-81n^4') }, { v: 'x8', label: 'Warm-up: ' + tex('x^8-1') }, { sep: 'Example 6 check:' }, { v: 'w4', label: '(a)' }, { v: 'e6b', label: '(b)' }, { v: 'e6c', label: '(c)' }],
+  intro: (k) => `Here is ${T(DL[k].root.t)} as a doll. Factoring a doll <b>opens</b> it. We keep opening until <b>every</b> doll is solid: that is what “factor completely” means.`,
+  make(stage, k, ex) {
+    const W = ex.W, d = DL[k];
+    const row = new DollRow(stage, d.root, { W, base: 282, gap: 30, mult: 1.25 });
+    const ledger = add(stage, h('div', 'u4l6-ledger'), 24, 326); ledger.style.fontSize = '24px';
+    const L0 = h('div', '', K(d.root.t)); ledger.appendChild(L0);
+    const tag = add(stage, h('div', 'u4l6-count'), 0, 14); tag.style.left = 'auto'; hide(tag);
+    const chk = add(stage, h('div', 'u4l6-chk'), 18, 14);
+    chk.innerHTML = `<span class="u4l6-tag sol">Check at ${K(d.chk[0])}</span>${K(d.chk[1])} <span class="muted">and</span> ${K(d.chk[2])} <b class="ok">✓</b>`; hide(chk);
+    const internal = []; const walk = (n) => { if (n.kids && n.kids.length) { internal.push(n); n.kids.forEach(walk); } }; walk(d.root);
+    const steps = internal.map((n, i) => ({
+      cap: d.caps[i],
+      run: async (c) => {
+        const idx = row.items.findIndex((it) => it.n === n);
+        await row.open(c, idx);
+        const l = h('div', '', K('=' + row.prod())); ledger.appendChild(l);
+        while (ledger.children.length > 4) ledger.children[1].remove();
+        await showIn(c, l, 350);
+      }
+    }));
     steps.push({
-      cap: `That is the question, ${T(d.q)}. <b>The factoring is right</b> ✓`,
-      run: async (c) => { lines[lines.length - 1].classList.add('ok'); bR.classList.add('match'); await Promise.all([pulse(c, bR, 1.06), pulse(c, lines[lines.length - 1], 1.04)]); }
+      cap: d.solid,
+      run: async (c) => {
+        await Promise.all(row.items.map((it, i) => row.solid(c, it, { delay: i * 160 })));
+        tag.innerHTML = `<i class="gd"></i>${row.items.length} solid dolls`;
+        ledger.lastChild.classList.add('u4l6-boxed');
+        await c.pop(tag, 380);
+      }
     });
     steps.push({
-      cap: `A fast second check: substitute ${T(vt)} into both forms. Both give ${T(numT(fv))}.` + (d.subNote || ''),
-      run: (c) => c.fadeIn(sub, 400)
+      cap: `Check by substituting: ${T(d.chk[0])} into both forms gives the same number. (Choose values that don’t make a factor 0, or the check is too easy to pass.)`,
+      run: (c) => showIn(c, chk, 400)
     });
     return steps;
   }
 };
 
-/* =====================================================================================
- * Departures boards: name the route before factoring
- * ===================================================================================== */
-const BOARDS = {
-  'board-ex': [
-    { f: '1(a)', q: '8x^2-50', r: [1, 2, 6] },
-    { f: '1(b)', q: '-12x^2+27', r: [[1, 'Common factor (negative)'], 2, 6] },
-    { f: '2(a)', q: 'x^2-2x-63', r: [3, 6] },
-    { f: '2(b)', q: '-6x^2+5x+21', r: [[1, 'Take out ' + T('-1')], 4, 6] },
-    { f: '3(a)', q: 'x^2-xy+3x-3y', r: [5, 6] },
-    { f: '3(b)', q: 'x^4-13x^2+36', r: [[3, 'Inspection (in ' + T('x^2') + ')'], [6, 'Factor again!'], 2, 6] },
-    { f: '4(a)', q: '4a^2-20ab+25b^2', r: [[4, 'Perfect square'], 6] },
-    { f: '4(b)', q: '6t^6+5t^3p^2-6p^4', r: [[4, 'Decomposition (in ' + T('t^3') + ')'], 6] }
-  ],
-  'board-mix': [
-    { f: 'FX 201', q: '7x^2-28', r: [1, 2, 6], a: '7(x-2)(x+2)' },
-    { f: 'FX 202', q: 'x^2+11x+24', r: [3, 6], a: '(x+3)(x+8)' },
-    { f: 'FX 203', q: '2x^2+7x+3', r: [4, 6], a: '(2x+1)(x+3)' },
-    { f: 'FX 204', q: 'xy+5x+2y+10', r: [5, 6], a: '(y+5)(x+2)' },
-    { f: 'FX 205', q: '9x^2-12x+4', r: [[4, 'Perfect square'], 6], a: '(3x-2)^2' },
-    { f: 'FX 206', q: '-x^2+x+20', r: [[1, 'Take out ' + T('-1')], 3, 6], a: '-(x-5)(x+4)' },
-    { f: 'FX 207', q: 'x^4-1', r: [2, [6, 'Factor again!'], 2, 6], a: '(x-1)(x+1)(x^2+1)' },
-    { f: 'FX 208', q: '3x^3-3x^2-18x', r: [1, 3, 6], a: '3x(x-3)(x+2)' },
-    { f: 'FX 209', q: '25x^2+16', r: [[2, 'Sum of squares: stop'], 6], a: '\\text{does not factor}' },
-    { f: 'FX 210', q: '2x^3-x^2-8x+4', r: [5, [6, 'Factor again!'], 2, 6], a: '(2x-1)(x-2)(x+2)' }
-  ]
+/* ======================================================================
+   Section 1. Perfect square trinomials
+   ====================================================================== */
+
+/* ---------------- can these tiles make a square? ---------------- */
+const SQT = {
+  a: { L: 'x', s: 1, nx: 6, nu: 9 }, b: { L: 'x', s: 1, nx: 8, nu: 16 }, c: { L: 'x', s: 1, nx: -6, nu: 9 }, d: { L: 'x', s: 1, nx: 6, nu: 5 },
+  e1a: { L: 'b', s: 1, nx: 6, nu: 9 }, e1b: { L: 'x', s: 1, nx: -11, nu: 8 }, e1c: { L: 'x', s: 3, nx: -42, nu: 49 }, e1d: { L: 'y', s: 1, nx: 6, nu: -9 }
 };
-function mountBoards() {
-  document.querySelectorAll('.u4l6-board').forEach((host) => {
-    const rows = BOARDS[host.id]; if (!rows) return;
-    const ans = host.dataset.answers === '1';
-    host.classList.toggle('with-ans', ans);
-    host.innerHTML = `<div class="u4l6-bdh no-ink"><span class="u4l6-bdt">✈ Departures</span><span class="u4l6-bdtools"><button class="pill small" type="button" data-all>Reveal all</button><button class="pill small" type="button" data-none>Hide all</button></span></div>
-      <div class="u4l6-brow u4l6-bhead"><span>${ans ? 'Flight' : 'Example'}</span><span>Traveller</span><span>Route (checklist steps)</span>${ans ? '<span>Boarding pass</span>' : ''}</div>`;
-    rows.forEach((r) => {
-      const pills = r.r.map((s, i) => { const [k, lab] = Array.isArray(s) ? s : [s, ans && s === 2 ? 'Diff. of squares' : STEP[s]]; return (i ? '<i class="u4l6-to">→</i>' : '') + `<span class="u4l6-rp ${KIND[k]}"><b>${k}</b>${lab}</span>`; }).join('');
-      const row = h('button', 'u4l6-brow', `<span class="u4l6-bf">${r.f}</span><span class="u4l6-bq">${T(r.q)}</span><span class="u4l6-br"><span class="u4l6-bwait">· · · tap to reveal · · ·</span><span class="u4l6-bshow">${pills}</span></span>${ans ? `<span class="u4l6-ba"><span class="u4l6-bshow">${T(r.a)}</span></span>` : ''}`);
-      row.type = 'button';
-      row.addEventListener('click', () => { row.classList.toggle('shown'); if (row.classList.contains('shown')) row.querySelectorAll('.u4l6-bshow').forEach((e) => e.animate([{ opacity: 0, transform: 'rotateX(80deg)' }, { opacity: 1, transform: 'none' }], 380)); });
-      host.appendChild(row);
-    });
-    const all = [...host.querySelectorAll('.u4l6-brow:not(.u4l6-bhead)')];
-    host.querySelector('[data-all]').onclick = () => all.forEach((r, i) => setTimeout(() => { if (!r.classList.contains('shown')) r.click(); }, i * 140));
-    host.querySelector('[data-none]').onclick = () => all.forEach((r) => r.classList.remove('shown'));
-  });
+const coefT = (n, v, first) => { const a = Math.abs(n), b = a === 1 && v ? '' : String(a); return (n < 0 ? '-' : first ? '' : '+') + b + v; };
+const sqtQ = (d) => coefT(d.s * d.s, d.L + '^2', true) + coefT(d.nx, d.L) + coefT(d.nu, '');
+function tileEl(kind, sign, w, ht, lab) {
+  const e = h('div', `u4l6-t u4l6-k${kind} ${sign < 0 ? 'neg' : 'pos'}${lab ? ' k2l' : ''}`, lab || '');
+  box(e, w, ht); e.style.setProperty('--ms', Math.max(10, Math.min(w, ht) * 0.95) + 'px'); return e;
 }
-
-/* ---------- the "can it board?" tickets ---------- */
-function mountTickets() {
-  document.querySelectorAll('.u4l6-tk').forEach((b) => {
-    const ok = b.dataset.ok === '1';
-    b.querySelector('.u4l6-tv').innerHTML = ok ? 'BOARD ✓' : 'BACK TO SECURITY';
-    b.classList.add(ok ? 'is-ok' : 'is-no');
-    b.addEventListener('click', () => {
-      b.classList.toggle('shown');
-      if (b.classList.contains('shown')) b.querySelector('.u4l6-tv').animate([{ opacity: 0, transform: 'scale(1.8) rotate(-8deg)' }, { opacity: 1, transform: 'none' }], { duration: 420, easing: 'cubic-bezier(.2,1.4,.4,1)' });
+const squareTiles = {
+  title: 'The square picture, run backwards: can the tiles make a square?',
+  height: 490,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar (the result box for 9x^2-42x+49 needs it)
+  choices: [{ v: 'a', label: tex('x^2+6x+9') }, { v: 'b', label: tex('x^2+8x+16') }, { v: 'c', label: tex('x^2-6x+9') }, { v: 'd', label: tex('x^2+6x+5') },
+    { sep: 'Example 1 check:' }, { v: 'e1a', label: '(a)' }, { v: 'e1b', label: '(b)' }, { v: 'e1c', label: '(c)' }, { v: 'e1d', label: '(d)' }],
+  intro: (k) => `Build ${T(sqtQ(SQT[k]))} with algebra tiles. A <b>perfect square trinomial</b> is exactly a set of tiles that makes a <b>square</b>. Let’s try.`,
+  make(stage, key, ex) {
+    const W = ex.W, d = SQT[key], { s, L } = d, q = sqtQ(d), nX = Math.abs(d.nx), sx = Math.sign(d.nx), nU = Math.abs(d.nu), su = Math.sign(d.nu);
+    const X = s === 1 ? 150 : 76, U = s === 1 ? 30 : 16, x0 = 74, y0 = 64;
+    const split = nX % (2 * s) === 0, k = split ? nX / (2 * s) : 0, kR = split ? k : Math.floor(nX / 2), kB = split ? k : nX - kR;
+    const A = s === 1 ? L : s + L, sg = sx < 0 ? '-' : '+';
+    // header
+    const hd = add(stage, h('div', 'u4l6-eq big', K(q)), W - 24, 10); hd.style.translate = '-100% 0';
+    // the tray of tiles, scaled to fit
+    const TX = 474, TY = 118, TW = W - TX - 18, TH = 300;
+    const tray = add(stage, box(h('div', 'u4l6-tray'), TW, TH + 30), TX - 10, TY - 30);
+    add(tray, h('div', 'u4l6-tray-l', 'the tiles'), 12, 4).style.position = 'absolute';
+    let f = 1, lay;
+    const layout = (f) => {
+      const g = 6 * f + 2, pos = { x2: [], x: [], u: [] }; let y = TY;
+      const row = (n, w, ht, arr) => { const per = Math.max(1, Math.floor((TW - 20 + g) / (w + g))); for (let i = 0; i < n; i++) arr.push([TX + (i % per) * (w + g), y + Math.floor(i / per) * (ht + g)]); y += Math.ceil(n / per) * (ht + g) + 10; };
+      row(s * s, X * f, X * f, pos.x2); row(nX, U * f, X * f, pos.x); row(nU, U * f, U * f, pos.u);
+      return { pos, hgt: y - TY };
+    };
+    for (; f > 0.3; f -= 0.05) { lay = layout(f); if (lay.hgt <= TH) break; }
+    const mk = (kind, sign, w, ht, p, lab) => add(stage, tileEl(kind, sign, w, ht, lab), p[0], p[1]);
+    const x2s = lay.pos.x2.map((p) => mk(2, 1, X * f, X * f, p, K(L + '^2')));
+    x2s.forEach((e) => (e.style.setProperty('--ls', Math.round(X * f * 0.24) + 'px')));
+    const xs = lay.pos.x.map((p) => mk(1, sx, U * f, X * f, p));
+    const us = lay.pos.u.map((p) => mk(0, su, U * f, U * f, p));
+    // destinations
+    const grow = (e, l, t, w, ht, ms = 750, delay = 0) => (c) => c.anim(e, [{ left: e.style.left, top: e.style.top, width: e.style.width, height: e.style.height }, { left: l + 'px', top: t + 'px', width: w + 'px', height: ht + 'px' }], ms, { delay });
+    const x2Jobs = x2s.map((e, i) => (c) => { e.style.setProperty('--ls', Math.round(X * 0.24) + 'px'); return grow(e, x0 + (i % s) * X, y0 + Math.floor(i / s) * X, X, X, 750, i * 40)(c); });
+    const right = [], bottom = [];
+    for (let cI = 0; cI < kR; cI++) for (let r = 0; r < s; r++) right.push([x0 + s * X + cI * U, y0 + r * X, U, X]);
+    for (let cI = 0; cI < kB; cI++) for (let r = 0; r < s; r++) bottom.push([x0 + r * X, y0 + s * X + cI * U, X, U]);
+    const xDest = [...right, ...bottom];
+    const xJobs = xs.map((e, i) => grow(e, ...xDest[i], 800, Math.min(i * 22, 600)));
+    const cornerCells = []; for (let r = 0; r < k; r++) for (let cI = 0; cI < k; cI++) cornerCells.push([x0 + s * X + cI * U, y0 + s * X + r * U]);
+    const uJobs = us.map((e, i) => (cornerCells[i] ? grow(e, ...cornerCells[i], U, U, 750, Math.min(i * 18, 600)) : null)).filter(Boolean);
+    const holes = cornerCells.slice(nU).map(([l, t]) => { const e = add(stage, box(h('div', 'u4l6-hole'), U, U), l, t); hide(e); return e; });
+    const side = s * X + k * U;
+    const flash = add(stage, box(h('div', 'u4l6-flash'), (split ? k : kR) * U + 8, (split ? k : kB) * U + 8), x0 + s * X - 4, y0 + s * X - 4); hide(flash);
+    // dimensions, side, equations
+    const dims = split ? [...dimH(stage, x0, y0 - 18, s * X, A), ...dimH(stage, x0 + s * X, y0 - 18, k * U, (sx < 0 ? '-' : '') + k),
+      ...dimV(stage, x0 - 18, y0, s * X, A), ...dimV(stage, x0 - 18, y0 + s * X, k * U, (sx < 0 ? '-' : '') + k)] : [];
+    hide(...dims);
+    const sideT = `${A}${sg}${k}`, res = `${q}=(${sideT})^2`;
+    const sideTag = add(stage, h('div', 'u4l6-tag c', `side ${K(sideT)}`), x0 + side / 2, y0 + side + 26); hide(sideTag); sideTag.style.fontSize = '17px'; sideTag.style.textTransform = 'none';
+    const PX = 470;
+    const eqRes = add(stage, h('div', 'u4l6-eq u4l6-boxed', K(res)), PX, 150); hide(eqRes);
+    const eqChk = add(stage, h('div', 'u4l6-chk', `${ARR}${K(`(${sideT})^2=${coefT(s * s, L + '^2', true)}${sg}2(${A})(${k})+${k * k}=${q}`)} <b class="ok">✓</b>`), PX, 236); hide(eqChk);
+    eqChk.style.width = (W - PX - 18) + 'px'; eqChk.style.whiteSpace = 'normal';
+    const stamp = add(stage, h('div', 'u4l6-stamp no', 'NOT A SQUARE'), PX + 40, 200); hide(stamp);
+    const xName = `${T(L)}-tile`, x2Name = `${T(L + '^2')}-tile`;
+    const steps = [{
+      cap: `The tiles for ${T(q)}: ${s * s === 1 ? 'one ' + x2Name : `nine ${x2Name}s`}, ${nX} ${sx < 0 ? '<b>negative</b> ' : ''}${xName}s${sx < 0 ? ' (white, with a minus sign)' : ''} and ${nU} ${su < 0 ? '<b>negative</b> ' : ''}unit tiles${su < 0 ? ' (white, with a minus sign)' : ''}.`,
+      run: (c) => Promise.all([...x2s.map((e, i) => pulse(c, e, 1.12, { delay: i * 50 })), ...xs.map((e, i) => pulse(c, e, 1.2, { delay: 350 + i * 18 })), ...us.map((e, i) => pulse(c, e, 1.3, { delay: 700 + i * 10 }))])
+    }, {
+      cap: s === 1 ? `Start the square with the ${x2Name} in the top-left corner. Its sides are ${T(L)} by ${T(L)}.`
+        : `Nine ${x2Name}s make a 3 by 3 block: a square with side ${T(A)}. ${T(`9${L}^2=(3${L})^2`)}, so the <b>first term is a perfect square</b>.`,
+      run: (c) => Promise.all(x2Jobs.map((j) => j(c)))
+    }];
+    if (!split) {
+      steps.push({
+        cap: `Share the ${nX} ${xName}s equally between the right side and the bottom? ${nX} is <b>odd</b>: ${kR} on one side, ${kB} on the other. The two sides <b>don’t match</b>, so there’s no square.`,
+        run: async (c) => { await Promise.all(xJobs.map((j) => j(c))); await showIn(c, flash, 300); }
+      });
+      steps.push({
+        cap: `${T(q)} is <b>not</b> a perfect square trinomial. (The last term fails the test too: ${nU} is not a perfect square.)`,
+        run: (c) => Promise.all([fadeOut(c, tray, 300), stampIn(c, stamp)])
+      });
+      return steps;
+    }
+    steps.push({
+      cap: `Share the ${nX} ${xName}s equally: ${s * k} along the right side and ${s * k} along the bottom.${sx < 0 ? ` They are <b>negative</b>, so each side is ${T(A)} <b>minus</b> ${k}.` : ''}`,
+      run: (c) => Promise.all(xJobs.map((j) => j(c)))
     });
-  });
-}
+    if (su < 0) {
+      steps.push({
+        cap: `The corner is a ${k} by ${k} square: ${sx < 0 ? T(`(-${k})(-${k})`) : T(`(${k})(${k})`)} ${T('=+' + k * k)}, so it needs <b>positive</b> tiles. These ${nU} unit tiles are <b>negative</b>: ${T(`-${nU}`)}. A square’s corner can never be negative.`,
+        run: async (c) => { await Promise.all(uJobs.map((j) => j(c))); await showIn(c, flash, 300); }
+      });
+      steps.push({ cap: `${T(q)} is <b>not</b> a perfect square trinomial: the last term must be a perfect square <b>and positive</b>.`, run: (c) => Promise.all([fadeOut(c, tray, 300), stampIn(c, stamp)]) });
+      return steps;
+    }
+    if (nU !== k * k) {
+      steps.push({
+        cap: `The corner is a ${k} by ${k} square: it needs ${T(`${k}^2=${k * k}`)} unit tiles. There are only ${nU}: <b>${k * k - nU} holes</b>!`,
+        run: async (c) => { await Promise.all(uJobs.map((j) => j(c))); await Promise.all(holes.map((e, i) => c.pop(e, 300, { delay: i * 80 }))); }
+      });
+      steps.push({ cap: `${T(q)} is <b>not</b> a perfect square trinomial: ${nU} isn’t ${k * k}. (These tiles do make a <b>rectangle</b>, though: ${KN('x^2+6x+5=(x+1)(x+5)')}, from Lesson 3.)`, run: (c) => Promise.all([fadeOut(c, tray, 300), stampIn(c, stamp)]) });
+      return steps;
+    }
+    steps.push({
+      cap: `The corner is a ${k} by ${k} square: it needs ${T(`${k}^2=${k * k}`)} unit tiles${sx < 0 ? ` (negative × negative, so they’re <b>positive</b>, shaded)` : ''}. There are exactly ${nU}. Every tile is used!`,
+      run: (c) => Promise.all([...uJobs.map((j) => j(c)), fadeOut(c, tray, 400, { delay: 500 })])
+    });
+    steps.push({
+      cap: `The tiles make a square with side ${T(sideT)}. So ${T(res)}: a <b>perfect square trinomial</b>.`,
+      run: (c) => Promise.all([...dims.map((e) => c.anim(e, [{ opacity: 0 }, { opacity: 1 }], 350)), c.pop(sideTag, 380, { delay: 200 }), c.pop(eqRes, 420, { delay: 300 })])
+    });
+    steps.push({
+      cap: `Check by expanding: square the first, double the product, square the last. ${T(`(${sideT})^2=${q}`)} ✓. Expanding <b>builds</b> the square; factoring <b>reads its sides</b>.`,
+      run: (c) => showIn(c, eqChk, 400)
+    });
+    return steps;
+  }
+};
 
-/* ---------- warm-up questions and poll ---------- */
-let airportEx = null;
-function mountWarmup() {
+/* ---------------- the three-part test ---------------- */
+const PS = {
+  m14: { t: ['m^2', '+14m', '+49'], r: [['\\sqrt{m^2}=m', 1], ['\\sqrt{49}=7', 1], ['2(m)(7)=14m', 1]], ans: '(m+7)^2', chk: '(m+7)^2=m^2+14m+49' },
+  x10: { t: ['x^2', '+10x', '+16'], r: [['\\sqrt{x^2}=x', 1], ['\\sqrt{16}=4', 1], ['2(x)(4)=8x\\neq10x', 0]],
+    fail: `Twice the product is ${T('2(x)(4)=8x')}, but the middle term is ${T('10x')}. The third test <b>fails</b>.`,
+    more: ` It still factors, just not as a square: ${T('(x+2)(x+8)')}.` },
+  e1a: { t: ['b^2', '+6b', '+9'], r: [['\\sqrt{b^2}=b', 1], ['\\sqrt{9}=3', 1], ['2(b)(3)=6b', 1]], ans: '(b+3)^2', chk: '(b+3)^2=b^2+6b+9' },
+  e1b: { t: ['x^2', '-11x', '+8'], r: [['\\sqrt{x^2}=x', 1], ['8\\text{ is not a perfect square}', 0], ['', 0]],
+    fail: `${T('8')} is <b>not</b> a perfect square (${T('2^2=4')}, ${T('3^2=9')}). The second test fails, so we can stop right here.` },
+  e1c: { t: ['9x^2', '-42x', '+49'], r: [['\\sqrt{9x^2}=3x', 1], ['\\sqrt{49}=7', 1], ['2(3x)(7)=42x', 1]], ans: '(3x-7)^2', chk: '(3x-7)^2=9x^2-42x+49' },
+  e1d: { t: ['y^2', '+6y', '-9'], r: [['\\sqrt{y^2}=y', 1], ['-9\\text{ is negative}', 0], ['', 0]],
+    fail: `The last term is ${T('-9')}. A square is never negative: ${T('3^2=9')} and ${T('(-3)^2=9')}. The second test fails.` },
+  e3a: { t: ['81x^2', '-18x', '+1'], r: [['\\sqrt{81x^2}=9x', 1], ['\\sqrt{1}=1', 1], ['2(9x)(1)=18x', 1]], ans: '(9x-1)^2', chk: '(9x-1)^2=81x^2-18x+1' },
+  e3b: { t: ['9', '+24x', '+16x^2'], ord: ['16x^2', '+24x', '+9'], r: [['\\sqrt{16x^2}=4x', 1], ['\\sqrt{9}=3', 1], ['2(4x)(3)=24x', 1]], ans: '(4x+3)^2', chk: '(4x+3)^2=16x^2+24x+9' },
+  e3c: { t: ['\\tfrac{1}{4}a^2', '-3ab', '+9b^2'], r: [['\\sqrt{\\tfrac{1}{4}a^2}=\\tfrac{1}{2}a', 1], ['\\sqrt{9b^2}=3b', 1], ['2\\left(\\tfrac{1}{2}a\\right)(3b)=3ab', 1]], ans: '\\left(\\tfrac{1}{2}a-3b\\right)^2', chk: '\\left(\\tfrac{1}{2}a-3b\\right)^2=\\tfrac{1}{4}a^2-3ab+9b^2' }
+};
+const psQ = (t) => t.join('');
+const psCheck = {
+  title: 'The three-part test: is it a perfect square trinomial?',
+  height: 400,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
+  choices: [{ v: 'm14', label: tex('m^2+14m+49') }, { v: 'x10', label: tex('x^2+10x+16') }, { sep: 'Example 1 check:' }, { v: 'e1a', label: '(a)' }, { v: 'e1b', label: '(b)' }, { v: 'e1c', label: '(c)' }, { v: 'e1d', label: '(d)' },
+    { sep: 'Example 3 check:' }, { v: 'e3a', label: '(a)' }, { v: 'e3b', label: '(b)' }, { v: 'e3c', label: '(c)' }],
+  intro: (k) => `Is ${T(psQ(PS[k].t))} a perfect square trinomial? Run the <b>three tests</b>, in order. All three must pass.`,
+  make(stage, key, ex) {
+    const W = ex.W, d = PS[key], cls = ['aa', 'ab', 'bb'], rcls = ['aa', 'bb', 'ab'], BX = [0, 2, 1]; // rows test first, last, middle
+    const row = add(stage, h('div', 'u4l6-terms'), 24, 20);
+    const boxes = d.t.map((t, i) => { const b = h('span', 'u4l6-term ' + cls[i], K(t)); row.appendChild(b); return b; });
+    const Q = ['Is the <b>first</b> term a perfect square?', 'Is the <b>last</b> term a perfect square (and +)?', 'Is the <b>middle</b> twice the product?'];
+    const rows = Q.map((q, i) => {
+      const r = add(stage, h('div', 'u4l6-crow ' + rcls[i], `<span class="u4l6-lamp"></span><span class="cq"><b class="n">${i + 1}</b>${q}</span><span class="r"></span>`), 24, 106 + i * 62);
+      return r;
+    });
+    const t = d.ord || d.t, q = psQ(t), q0 = psQ(d.t);
+    const failAt = d.r.findIndex((r) => !r[1]);
+    const stamp = add(stage, h('div', 'u4l6-stamp ' + (failAt < 0 ? 'yes' : 'no'), failAt < 0 ? `PERFECT SQUARE<small>${K(d.ans)}</small>` : 'NOT A PERFECT<br>SQUARE TRINOMIAL'), W - 30, failAt < 0 ? 116 : 296);
+    stamp.style.translate = '-100% 0'; hide(stamp);
+    const ans = failAt < 0 ? add(stage, h('div', 'u4l6-eq u4l6-boxed', K(`${q0}=${d.ans}`)), 24, 300) : null;
+    const chk = failAt < 0 ? add(stage, h('div', 'u4l6-chk', `${ARR}${K(d.chk)} <b class="ok">✓</b>`), 24, 300) : null;
+    if (ans) { hide(ans, chk); chk.style.left = 'auto'; chk.style.right = '22px'; chk.style.top = '304px'; }
+    const steps = [];
+    if (d.ord) steps.push({
+      cap: `Write the terms in <b>descending order</b> first: ${T(q)}. Now the first and last terms are the squared ones.`,
+      run: async (c) => { await Promise.all(boxes.map((b) => fadeOut(c, b, 250))); boxes.forEach((b, i) => { b.innerHTML = K(t[i]); }); await Promise.all(boxes.map((b, i) => c.pop(b, 380, { delay: i * 100 }))); }
+    });
+    const light = async (c, i, ok) => {
+      const r = rows[i], lamp = r.querySelector('.u4l6-lamp');
+      r.querySelector('.r').innerHTML = K(d.r[i][0]);
+      boxes.forEach((b, j) => b.classList.toggle('hot', j === BX[i]));
+      lamp.classList.add(ok ? 'ok' : 'no'); lamp.textContent = ok ? '✓' : '✗';
+      await Promise.all([c.pop(lamp, 380), showIn(c, r.querySelector('.r'), 350, { delay: 100 })]);
+      if (!ok) await c.shake(boxes[BX[i]]);
+    };
+    const caps = [
+      () => `<b>Test 1.</b> The first term is ${T(t[0])}: a perfect square, because ${T(d.r[0][0])}.`,
+      () => `<b>Test 2.</b> The last term is ${T(t[2].replace(/^\+/, ''))}: a perfect square, because ${T(d.r[1][0])}. And it’s positive.`,
+      () => `<b>Test 3.</b> Twice the product of the square roots: ${T(d.r[2][0])}. That matches the middle term${t[1][0] === '-' ? `, and its <b>minus</b> sign goes into the bracket` : ''}.`
+    ];
+    for (let i = 0; i < 3; i++) {
+      if (failAt >= 0 && i > failAt) break;
+      const ok = i !== failAt;
+      steps.push({ cap: ok ? caps[i]() : d.fail, run: (c) => light(c, i, ok) });
+    }
+    if (failAt >= 0) {
+      steps.push({
+        cap: `One failed test is enough: ${T(q0)} is <b>not</b> a perfect square trinomial.${d.more || ''}`,
+        run: async (c) => { rows.slice(failAt + 1).forEach((r) => r.classList.add('skip')); boxes.forEach((b) => b.classList.remove('hot')); await stampIn(c, stamp); }
+      });
+      return steps;
+    }
+    steps.push({
+      cap: `All three tests pass, so it is a perfect square trinomial: ${T(`${q0}=${d.ans}`)}. The bracket holds the two square roots, joined by the middle term’s sign.`,
+      run: async (c) => { boxes.forEach((b) => b.classList.remove('hot')); await Promise.all([stampIn(c, stamp), c.pop(ans, 420, { delay: 250 })]); }
+    });
+    steps.push({ cap: `Check by expanding: ${T(d.chk)} ✓. Factoring and expanding are the same equation, read in opposite directions.`, run: (c) => showIn(c, chk, 400) });
+    return steps;
+  }
+};
+
+/* ---------------- fill the gap: the square picture backwards ---------------- */
+const GF = {
+  d1: { pre: 'x^2+', post: '+36', A: 'x', B: '6', AA: 'x^2', BB: '36', AB: '6x', mid: '12x', fill: '12x', kind: 'mid', fin: 'x^2+12x+36=(x+6)^2' },
+  d2: { pre: '4x^2+12x+', post: '', A: '2x', B: '3', AA: '4x^2', BB: '9', AB: '6x', mid: '12x', fill: '9', kind: 'last', fin: '4x^2+12x+9=(2x+3)^2' },
+  a: { pre: 'x^2+', post: '+121', A: 'x', B: '11', AA: 'x^2', BB: '121', AB: '11x', mid: '22x', fill: '22x', kind: 'mid', fin: 'x^2+22x+121=(x+11)^2' },
+  b: { pre: 'x^2-', post: '+169', A: 'x', B: '-13', AA: 'x^2', BB: '169', AB: '-13x', mid: '-26x', fill: '26x', kind: 'mid', fin: 'x^2-26x+169=(x-13)^2' },
+  c: { pre: '16x^2+', post: '+81', A: '4x', B: '9', AA: '16x^2', BB: '81', AB: '36x', mid: '72x', fill: '72x', kind: 'mid', fin: '16x^2+72x+81=(4x+9)^2' },
+  d: { pre: '25m^2+40m+', post: '', A: '5m', B: '4', AA: '25m^2', BB: '16', AB: '20m', mid: '40m', fill: '16', kind: 'last', fin: '25m^2+40m+16=(5m+4)^2' }
+};
+const gapFill = {
+  title: 'Fill the gap: the square picture, read backwards',
+  height: 440,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
+  choices: [{ v: 'd1', label: tex('x^2+\\_\\_+36') }, { v: 'd2', label: tex('4x^2+12x+\\_\\_') }, { sep: 'Example 2 check:' }, { v: 'a', label: '(a)' }, { v: 'b', label: '(b)' }, { v: 'c', label: '(c)' }, { v: 'd', label: '(d)' }],
+  intro: (k) => { const d = GF[k]; return `What goes in the blank so that ${T(d.pre + '\\_\\_' + d.post)} is a perfect square trinomial? Picture the square it must be.`; },
+  make(stage, key, ex) {
+    const W = ex.W, d = GF[key], S2 = 256, pa = Math.round(S2 * 0.64), pb = S2 - pa, x0 = 100, y0 = 142;
+    const ql = add(stage, h('div', 'u4l6-qline'), 24, 18);
+    ql.innerHTML = `<span>${K(d.pre)}</span><span class="u4l6-blank">&nbsp;</span><span>${K(d.post || '\\phantom{0}')}</span>`;
+    const blank = ql.querySelector('.u4l6-blank');
+    const cell = (x, y, w, ht, cls, src) => { const e = add(stage, box(h('div', 'u4l6-cell ' + cls, src ? K(src) : '?'), w, ht), x, y); return e; };
+    const TL = cell(x0, y0, pa, pa, 'unk'), TR = cell(x0 + pa, y0, pb, pa, 'unk'), BL = cell(x0, y0 + pa, pa, pb, 'unk'), BR = cell(x0 + pa, y0 + pa, pb, pb, 'unk');
+    const fillCell = (c, e, cls, src) => { e.className = 'u4l6-cell ' + cls; e.innerHTML = K(src); return c.anim(e, [{ transform: 'scale(.9)', opacity: 0.4 }, { transform: 'scale(1)', opacity: 1 }], 420); };
+    const dA = [...dimH(stage, x0, y0 - 18, pa, d.A), ...dimV(stage, x0 - 18, y0, pa, d.A)];
+    const dB = [...dimH(stage, x0 + pa, y0 - 18, pb, d.B), ...dimV(stage, x0 - 18, y0 + pa, pb, d.B)];
+    hide(...dA, ...dB);
+    const PX = x0 + S2 + 70, L = (y, src, cls = '') => { const e = add(stage, h('div', 'u4l6-eq ' + cls, src), PX, y); hide(e); return e; };
+    const neg = d.B[0] === '-', absB = neg ? d.B.slice(1) : d.B;
+    const l1 = L(136, `${K(`\\sqrt{${d.AA}}=${d.A}`)}${d.kind === 'mid' ? ` &nbsp; ${K(`\\sqrt{${d.BB}}=${absB}`)}` : ''}`, 'mid');
+    const l2 = L(192, d.kind === 'mid' ? K(`2(${d.A})(${d.B})=${d.mid}`) : K(`${d.mid}\\div2=${d.AB}`), 'mid');
+    const l3 = d.kind === 'last' ? L(248, K(`${d.A}\\times${d.B}=${d.AB}\\ \\Rightarrow\\ ${d.B}^2=${d.BB}`), 'mid') : null;
+    const fin = L(306, K(d.fin), 'u4l6-boxed');
+    const chk = add(stage, h('div', 'u4l6-chk', chkLine(d.fin.split('=').reverse().join('='))), PX, 372); hide(chk); chk.style.fontSize = '19px';
+    const fillBlank = async (c) => { blank.textContent = ''; blank.innerHTML = K(d.fill); blank.classList.add('filled'); await c.pop(blank, 420); };
+    if (d.kind === 'mid') return [{
+      cap: `A perfect square trinomial <b>is</b> the area of a square. Its first and last terms are the two corner squares: ${T(d.AA)} and ${T(d.BB)}.`,
+      run: (c) => Promise.all([fillCell(c, TL, 'aa', d.AA), fillCell(c, BR, 'bb', d.BB)])
+    }, {
+      cap: `The sides are the square roots: ${T(`\\sqrt{${d.AA}}=${d.A}`)} and ${T(`\\sqrt{${d.BB}}=${absB}`)}.${neg ? ` The blank comes after a <b>minus</b> sign, so the square is ${T(`(${d.A}-${absB})^2`)}: the side is ${T(d.A)} and ${T(d.B)}.` : ''}`,
+      run: (c) => Promise.all([...dA, ...dB].map((e) => c.anim(e, [{ opacity: 0 }, { opacity: 1 }], 350)).concat([showIn(c, l1, 350)]))
+    }, {
+      cap: `The two other pieces are each ${T(d.A)} by ${T(d.B)}: area ${T(d.AB)} each.`,
+      run: (c) => Promise.all([fillCell(c, TR, 'ab', d.AB), fillCell(c, BL, 'ab', d.AB)])
+    }, {
+      cap: `The middle term is <b>both</b> rectangles: ${T(`2(${d.A})(${d.B})=${d.mid}`)}.${neg ? ` The minus sign is already printed, so the blank is <b>${T(d.fill)}</b>.` : ` The blank is <b>${T(d.fill)}</b>.`}`,
+      run: (c) => Promise.all([showIn(c, l2, 350), pulse(c, TR, 1.05), pulse(c, BL, 1.05), fillBlank(c)])
+    }, {
+      cap: `${T(d.fin)}. Check by expanding the square: you get the trinomial back ✓.`,
+      run: (c) => Promise.all([c.pop(fin, 420), showIn(c, chk, 400, { delay: 300 })])
+    }];
+    return [{
+      cap: `The first term is the top-left square: ${T(d.AA)}. So each side starts with ${T(`\\sqrt{${d.AA}}=${d.A}`)}.`,
+      run: (c) => Promise.all([fillCell(c, TL, 'aa', d.AA), ...dA.map((e) => c.anim(e, [{ opacity: 0 }, { opacity: 1 }], 350)), showIn(c, l1, 350)])
+    }, {
+      cap: `The middle term ${T(d.mid)} is the <b>two</b> equal rectangles together, so each one is half: ${T(`${d.mid}\\div2=${d.AB}`)}.`,
+      run: (c) => Promise.all([fillCell(c, TR, 'ab', d.AB), fillCell(c, BL, 'ab', d.AB), showIn(c, l2, 350)])
+    }, {
+      cap: `Each rectangle is ${T(d.A)} by something, with area ${T(d.AB)}: ${T(`${d.A}\\times${d.B}=${d.AB}`)}. So the other side is ${T(d.B)}.`,
+      run: (c) => Promise.all(dB.map((e) => c.anim(e, [{ opacity: 0 }, { opacity: 1 }], 350)).concat([showIn(c, l3, 350)]))
+    }, {
+      cap: `The last term is the small corner square: ${T(`${d.B}^2=${d.BB}`)}. The blank is <b>${T(d.fill)}</b>.`,
+      run: (c) => Promise.all([fillCell(c, BR, 'bb', d.BB), fillBlank(c)])
+    }, {
+      cap: `${T(d.fin)}. Check by expanding the square: you get the trinomial back ✓.`,
+      run: (c) => Promise.all([c.pop(fin, 420), showIn(c, chk, 400, { delay: 300 })])
+    }];
+  }
+};
+
+/* ======================================================================
+   Sections 2, 3 and 5. The disguise: let u = the block
+   ====================================================================== */
+const MASK_SVG = '<svg viewBox="0 0 40 18" aria-hidden="true"><path d="M2 6 Q20 0 38 6 Q39 15 30 16 Q24 16 20 11 Q16 16 10 16 Q1 15 2 6Z" fill="#3b2470"/><ellipse cx="11" cy="8.5" rx="4.2" ry="2.8" fill="#fff"/><ellipse cx="29" cy="8.5" rx="4.2" ry="2.8" fill="#fff"/></svg>';
+/* a line of segments: strings are LaTeX, { b } is a block that can wear the u-mask */
+function segLine(segs, real) {
+  const e = h('div', 'u4l6-eq'), blks = [];
+  segs.forEach((s) => {
+    if (s === 'B') { const b = h('span', 'u4l6-blk', `<span class="real">${K(real)}</span><span class="mask">${MASK_SVG}${K('u')}</span>`); e.appendChild(b); blks.push(b); }
+    else e.appendChild(h('span', 'u4l6-seg', K(/^[+-]/.test(s) ? '{}' + s : s))); // {} keeps binary spacing on a leading sign
+  });
+  e._blks = blks; return e;
+}
+async function maskOn(c, blks) {
+  await Promise.all(blks.map((b, i) => { b.classList.add('on'); return c.anim(b.querySelector('.mask'), [{ opacity: 0, transform: 'translateY(-34px) scale(1.4)' }, { opacity: 1, transform: 'none' }], 520, { delay: i * 160 }); }));
+}
+async function maskOff(c, blks) {
+  await Promise.all(blks.map((b, i) => c.anim(b.querySelector('.mask'), [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-30px) rotate(-12deg)' }], 420, { delay: i * 160 })));
+  blks.forEach((b) => b.classList.remove('on'));
+  await Promise.all(blks.map((b) => { b.classList.add('hl'); return pulse(c, b, 1.15); }));
+}
+const DG = {
+  m: { q: 'm^4+7m^2+12', terms: [['m^4', 'degree 4', 'd4'], ['+7m^2', 'degree 2', 'd2'], ['+12', 'degree 0', 'd0']], blk: 'm^2', r1: '(m^2)', r2: 'm^2',
+    L1: ['=', 'B', '{}^2+7', 'B', '+12'], b: 7, c: 12, uq: 'u^2+7u+12', L2: ['=(', 'B', '+3)(', 'B', '+4)'], uf: '(u+3)(u+4)', fin: '(m^2+3)(m^2+4)',
+    find: `Look at the exponents: <b>4, 2, 0</b>. The first is <b>double</b> the middle one, so the whole expression is built from one block, ${T('m^2')}: ${T('m^4=(m^2)^2')}.`,
+    done: `Can either bracket open? ${T('m^2+3')} and ${T('m^2+4')} are both <b>sums</b>, and a sum never splits into two integer brackets. No common factor either, so we’re done.`,
+    chk: '(m^2+3)(m^2+4)=m^4+4m^2+3m^2+12=m^4+7m^2+12' },
+  br: { q: '(x+1)^2+5(x+1)+6', terms: [['(x+1)^2', 'block²', 'd4'], ['+5(x+1)', '5 × block', 'd2'], ['+6', 'number', 'd0']], blk: 'x+1', r1: '(x+1)', r2: 'x+1',
+    L1: ['=', 'B', '{}^2+5', 'B', '+6'], b: 5, c: 6, uq: 'u^2+5u+6', L2: ['=(', 'B', '+2)(', 'B', '+3)'], uf: '(u+2)(u+3)', fin: '(x+1+2)(x+1+3)',
+    more: '=(x+3)(x+4)', moreCap: `Simplify inside each bracket: ${T('x+1+2=x+3')} and ${T('x+1+3=x+4')}. Neither ${T('x+3')} nor ${T('x+4')} can open.`,
+    rew: `It’s already written with the block showing. Highlight both copies of ${T('(x+1)')}.`,
+    find: `The same bracket, ${T('(x+1)')}, appears twice: once <b>squared</b> and once times 5. The block can be a <b>whole bracket</b>: let ${T('u=x+1')}.`,
+    chk: '(x+1)^2+5(x+1)+6=x^2+2x+1+5x+5+6=x^2+7x+12=(x+3)(x+4)',
+    chkCap: `Check by expanding <b>both</b> forms: ${T('(x+1)^2+5(x+1)+6')} and ${T('(x+3)(x+4)')} each expand to ${T('x^2+7x+12')} ✓.` },
+  e4a: { q: 'b^4-3b^2-40', terms: [['b^4', 'degree 4', 'd4'], ['-3b^2', 'degree 2', 'd2'], ['-40', 'degree 0', 'd0']], blk: 'b^2', r1: '(b^2)', r2: 'b^2',
+    L1: ['=', 'B', '{}^2-3', 'B', '-40'], b: -3, c: -40, uq: 'u^2-3u-40', L2: ['=(', 'B', '-8)(', 'B', '+5)'], uf: '(u-8)(u+5)', fin: '(b^2-8)(b^2+5)',
+    find: `Exponents <b>4, 2, 0</b>: the block is ${T('b^2')}, because ${T('b^4=(b^2)^2')}.`,
+    done: `${T('b^2-8')}: 8 isn’t a perfect square, so it isn’t a difference of squares. ${T('b^2+5')} is a sum. No common factor. Complete!`,
+    chk: '(b^2-8)(b^2+5)=b^4+5b^2-8b^2-40=b^4-3b^2-40' },
+  e4b: { q: 'y^4+3y^2-4', terms: [['y^4', 'degree 4', 'd4'], ['+3y^2', 'degree 2', 'd2'], ['-4', 'degree 0', 'd0']], blk: 'y^2', r1: '(y^2)', r2: 'y^2',
+    L1: ['=', 'B', '{}^2+3', 'B', '-4'], b: 3, c: -4, uq: 'u^2+3u-4', L2: ['=(', 'B', '+4)(', 'B', '-1)'], uf: '(u+4)(u-1)', fin: '(y^2+4)(y^2-1)',
+    more: '=(y^2+4)(y-1)(y+1)', moreCap: `Not done yet! ${T('y^2-1=y^2-1^2')} is a <b>difference of squares</b>: it opens into ${T('(y-1)(y+1)')}. ${T('y^2+4')} is a sum and stays shut.`,
+    find: `Exponents <b>4, 2, 0</b>: the block is ${T('y^2')}, because ${T('y^4=(y^2)^2')}.`,
+    chk: '(y^2+4)(y-1)(y+1)=(y^2+4)(y^2-1)=y^4+3y^2-4' },
+  x6: { q: 'x^6+5x^3+6', terms: [['x^6', 'degree 6', 'd4'], ['+5x^3', 'degree 3', 'd2'], ['+6', 'degree 0', 'd0']], blk: 'x^3', r1: '(x^3)', r2: 'x^3',
+    L1: ['=', 'B', '{}^2+5', 'B', '+6'], b: 5, c: 6, uq: 'u^2+5u+6', L2: ['=(', 'B', '+2)(', 'B', '+3)'], uf: '(u+2)(u+3)', fin: '(x^3+2)(x^3+3)',
+    find: `Exponents <b>6, 3, 0</b>: the first is double the middle, so the block is ${T('x^3')}, because ${T('x^6=(x^3)^2')}.`,
+    done: `Neither ${T('x^3+2')} nor ${T('x^3+3')} is a difference of <b>squares</b> (${T('x^3')} isn’t a square), so we’re done.`,
+    chk: '(x^3+2)(x^3+3)=x^6+3x^3+2x^3+6=x^6+5x^3+6' },
+  e7a: { q: 'x^6-7x^3-18', terms: [['x^6', 'degree 6', 'd4'], ['-7x^3', 'degree 3', 'd2'], ['-18', 'degree 0', 'd0']], blk: 'x^3', r1: '(x^3)', r2: 'x^3',
+    L1: ['=', 'B', '{}^2-7', 'B', '-18'], b: -7, c: -18, uq: 'u^2-7u-18', L2: ['=(', 'B', '-9)(', 'B', '+2)'], uf: '(u-9)(u+2)', fin: '(x^3-9)(x^3+2)',
+    find: `Exponents <b>6, 3, 0</b>: the block is ${T('x^3')}, because ${T('x^6=(x^3)^2')}.`,
+    done: `${T('x^3-9')} looks tempting, but ${T('x^3')} is <b>not</b> a square, so it isn’t a difference of squares. ${T('x^3+2')} doesn’t open either. Complete!`,
+    chk: '(x^3-9)(x^3+2)=x^6+2x^3-9x^3-18=x^6-7x^3-18' },
+  e7b: { q: 'z^{10}-3z^5-10', terms: [['z^{10}', 'degree 10', 'd4'], ['-3z^5', 'degree 5', 'd2'], ['-10', 'degree 0', 'd0']], blk: 'z^5', r1: '(z^5)', r2: 'z^5',
+    L1: ['=', 'B', '{}^2-3', 'B', '-10'], b: -3, c: -10, uq: 'u^2-3u-10', L2: ['=(', 'B', '-5)(', 'B', '+2)'], uf: '(u-5)(u+2)', fin: '(z^5-5)(z^5+2)',
+    find: `Exponents <b>10, 5, 0</b>: the block is ${T('z^5')}, because ${T('z^{10}=(z^5)^2')}.`,
+    done: `${T('z^5')} isn’t a square, so neither bracket is a difference of squares. Complete!`,
+    chk: '(z^5-5)(z^5+2)=z^{10}+2z^5-5z^5-10=z^{10}-3z^5-10' }
+};
+function makeDisguise(title, choices) {
+  return {
+    title, height: 440, choices,
+    intro: (k) => `${T(DG[k].q)} doesn’t look like a trinomial we know. But it’s one in <b>disguise</b>: find the block, call it ${T('u')}, factor, then take the disguise off.`,
+    make(stage, key, ex) {
+      const W = ex.W, d = DG[key], RX = W - 304;
+      const L0 = add(stage, h('div', 'u4l6-eq big'), 24, 16);
+      const tEls = d.terms.map(([t]) => {
+        const sg = /^[+-]/.test(t) ? t[0] : '', body = sg ? t.slice(1) : t;
+        if (sg) L0.appendChild(h('span', 'u4l6-seg u4l6-sgn', K(sg)));
+        const s = h('span', 'u4l6-seg', K(body)); L0.appendChild(s); return s;
+      });
+      const badges = d.terms.map(([, lab, cls], i) => { const r = rel(stage, tEls[i]); const b = add(stage, h('div', 'u4l6-badge ' + cls, lab), r.x + r.w / 2, 70); hide(b); return b; });
+      const L1 = add(stage, segLine(d.L1, d.r1), 24, 112); hide(L1);
+      const L2 = add(stage, segLine(d.L2, d.r2), 24, 178); hide(L2);
+      L2._blks.forEach((b) => b.classList.add('on'));
+      const L3 = d.more ? add(stage, h('div', 'u4l6-eq', K(d.more)), 24, 242) : null; if (L3) hide(L3);
+      const okT = add(stage, h('div', 'u4l6-tag sol'), 24, d.more ? 300 : 246); okT.textContent = 'factored completely'; hide(okT);
+      const ulet = add(stage, h('div', 'u4l6-ulet', `${MASK_SVG}${K(`\\text{let } u=${d.blk}`)}`), RX, 18); hide(ulet);
+      const sp = spTable(stage, d.b, d.c, RX, 84, 282);
+      const chk = add(stage, h('div', 'u4l6-chk', `${ARR}${K(d.chk)} <b class="ok">✓</b>`), 24, 350); hide(chk);
+      return [{
+        cap: d.find,
+        run: (c) => Promise.all(badges.map((b, i) => c.pop(b, 360, { delay: i * 160 })))
+      }, {
+        cap: d.rew || `Rewrite it with the block showing: ${T(`${d.q}=${d.L1.map((s) => (s === 'B' ? d.r1 : s)).join('').slice(1).replace('{}', '')}`)}.`,
+        run: async (c) => { L1._blks.forEach((b) => b.classList.add('hl')); await showIn(c, L1, 400); await Promise.all(L1._blks.map((b) => pulse(c, b, 1.12))); }
+      }, {
+        cap: `Put on the <b>disguise</b>: let ${T(`u=${d.blk}`)}. Every ${T(d.r1)} becomes ${T('u')}, and it’s a trinomial we know: ${T(d.uq)}.`,
+        run: (c) => Promise.all([c.pop(ulet, 400), maskOn(c, L1._blks)])
+      }, {
+        cap: `Factor ${T(d.uq)} the usual way: two numbers with product ${T(String(d.c))} and sum ${T(String(d.b))}.`,
+        run: (c) => sp.run(c)
+      }, {
+        cap: `So ${T(`${d.uq}=${d.uf}`)}. But there’s no ${T('u')} in the question! An answer written in ${T('u')} isn’t finished yet.`,
+        run: (c) => showIn(c, L2, 400)
+      }, {
+        cap: `Take off the disguise: replace ${T('u')} with ${T(d.blk)} again. ${T(`${d.q}=${d.fin}`)}.`,
+        run: (c) => maskOff(c, L2._blks)
+      }, d.more ? {
+        cap: d.moreCap,
+        run: (c) => Promise.all([showIn(c, L3, 400), c.pop(okT, 360, { delay: 300 })])
+      } : {
+        cap: d.done,
+        run: (c) => c.pop(okT, 360)
+      }, {
+        cap: d.chkCap || `Check by expanding: ${T(d.chk.split('=')[0])} multiplies back to ${T(d.q)} ✓. Expanding takes the disguise off in one go.`,
+        run: (c) => showIn(c, chk, 400)
+      }];
+    }
+  };
+}
+const disguise = makeDisguise('The disguise: let u be the block', [{ v: 'm', label: tex('m^4+7m^2+12') }, { v: 'br', label: 'A bracket block: ' + tex('(x+1)^2+5(x+1)+6') }, { sep: 'Example 4 check:' }, { v: 'e4a', label: '(a)' }, { v: 'e4b', label: '(b)' }]);
+disguise.minW = 940; // drawn this wide and scaled to fit beside the sidebar
+const disguiseExt = makeDisguise('Extension: bigger blocks', [{ v: 'x6', label: tex('x^6+5x^3+6') }, { sep: 'Example 7 check:' }, { v: 'e7a', label: '(a)' }, { v: 'e7b', label: '(b)' }]);
+
+/* ---------------- decomposition in disguise: two methods side by side ---------------- */
+const DC = {
+  n: { q: '6m^4-7m^2-3', blk: 'm^2', a: 6, b: -7, c: -3, U: ['6u^2-7u-3', '6u^2-9u+2u-3', '3u(2u-3)+1(2u-3)', '(2u-3)(3u+1)'], M: ['6m^4-7m^2-3', '6m^4-9m^2+2m^2-3', '3m^2(2m^2-3)+1(2m^2-3)', '(2m^2-3)(3m^2+1)'],
+    split: '-7u=-9u+2u', com: '(2u-3)', fin: '(2m^2-3)(3m^2+1)', find: `Exponents 4, 2, 0: the block is ${T('m^2')}.`,
+    done: `Neither bracket opens: in ${T('2m^2-3')}, 2 and 3 aren’t perfect squares, so it isn’t a difference of squares, and ${T('3m^2+1')} is a sum.`, chk: '(2m^2-3)(3m^2+1)=6m^4+2m^2-9m^2-3=6m^4-7m^2-3' },
+  e5a: { q: '10x^4-3x^2-4', blk: 'x^2', a: 10, b: -3, c: -4, U: ['10u^2-3u-4', '10u^2-8u+5u-4', '2u(5u-4)+1(5u-4)', '(5u-4)(2u+1)'], M: ['10x^4-3x^2-4', '10x^4-8x^2+5x^2-4', '2x^2(5x^2-4)+1(5x^2-4)', '(5x^2-4)(2x^2+1)'],
+    split: '-3u=-8u+5u', com: '(5u-4)', fin: '(5x^2-4)(2x^2+1)', find: `Exponents 4, 2, 0: the block is ${T('x^2')}.`,
+    done: `${T('5x^2-4')} is <b>not</b> a difference of squares (5 isn’t a perfect square), and ${T('2x^2+1')} is a sum. Complete.`, chk: '(5x^2-4)(2x^2+1)=10x^4+5x^2-8x^2-4=10x^4-3x^2-4' },
+  e5b: { q: '3p^2q^2-20pq+12', blk: 'pq', a: 3, b: -20, c: 12, U: ['3u^2-20u+12', '3u^2-18u-2u+12', '3u(u-6)-2(u-6)', '(u-6)(3u-2)'], M: ['3p^2q^2-20pq+12', '3p^2q^2-18pq-2pq+12', '3pq(pq-6)-2(pq-6)', '(pq-6)(3pq-2)'],
+    split: '-20u=-18u-2u', com: '(u-6)', fin: '(pq-6)(3pq-2)', find: `Here the block is a <b>product</b>: ${T('p^2q^2=(pq)^2')}, so let ${T('u=pq')}.`,
+    done: 'No common factor, and neither bracket is a difference of squares. Complete.', chk: '(pq-6)(3pq-2)=3p^2q^2-2pq-18pq+12=3p^2q^2-20pq+12' },
+  e5c: { q: '12x^4+8x^2-15', blk: 'x^2', a: 12, b: 8, c: -15, U: ['12u^2+8u-15', '12u^2+18u-10u-15', '6u(2u+3)-5(2u+3)', '(2u+3)(6u-5)'], M: ['12x^4+8x^2-15', '12x^4+18x^2-10x^2-15', '6x^2(2x^2+3)-5(2x^2+3)', '(2x^2+3)(6x^2-5)'],
+    split: '8u=18u-10u', com: '(2u+3)', fin: '(2x^2+3)(6x^2-5)', find: `Exponents 4, 2, 0: the block is ${T('x^2')}.`,
+    done: `${T('6x^2-5')}: 6 and 5 aren’t perfect squares. ${T('2x^2+3')} is a sum. Complete.`, chk: '(2x^2+3)(6x^2-5)=12x^4-10x^2+18x^2-15=12x^4+8x^2-15' }
+};
+const decomp = {
+  title: 'Decomposition in disguise: substitute, or split directly',
+  height: 470,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar (the pair table sits beside method 2)
+  choices: [{ v: 'n', label: tex('6m^4-7m^2-3') }, { sep: 'Example 5 check:' }, { v: 'e5a', label: '(a)' }, { v: 'e5b', label: '(b)' }, { v: 'e5c', label: '(c)' }],
+  intro: (k) => `Factor ${T(DC[k].q)} two ways at once: <b>Method 1</b> wears the disguise ${T('u=' + DC[k].blk)}; <b>Method 2</b> splits the middle term directly. Watch the two columns stay in step.`,
+  make(stage, key, ex) {
+    const W = ex.W, d = DC[key], ac = d.a * d.c, TX = W - 282, C1 = 24, C2 = 352;
+    add(stage, h('div', 'u4l6-eq big', K(d.q)), 24, 12);
+    const ulet = add(stage, h('div', 'u4l6-ulet', `${MASK_SVG}${K(`\\text{let } u=${d.blk}`)}`), TX, 14); hide(ulet);
+    const h1 = add(stage, h('div', 'u4l6-colh m1', `Method 1: ${K('u=' + d.blk)}`), C1, 80); h1.style.width = '300px';
+    const h2 = add(stage, h('div', 'u4l6-colh m2', 'Method 2: split directly'), C2, 80); h2.style.width = '320px';
+    hide(h1, h2);
+    const ys = [118, 166, 214, 262, 316];
+    const u = d.U.map((t, i) => { const e = add(stage, h('div', 'u4l6-dl', K((i ? '=' : '') + t)), C1, ys[i]); hide(e); return e; });
+    const m = d.M.map((t, i) => { const e = add(stage, h('div', 'u4l6-dl', K((i ? '=' : '') + t)), C2, ys[i]); hide(e); return e; });
+    const u5 = add(stage, h('div', 'u4l6-dl', `${K('=' + d.fin)}`), C1, ys[4]); hide(u5);
+    const same = add(stage, h('div', 'u4l6-same', 'same answer ✓'), C2, ys[4] + 4); hide(same);
+    const sp = spTable(stage, d.b, ac, TX, 74, 262);
+    const chk = add(stage, h('div', 'u4l6-chk', `${ARR}${K(d.chk)} <b class="ok">✓</b>`), 24, 384); hide(chk);
+    const both = (c, i) => Promise.all([showIn(c, u[i], 380), showIn(c, m[i], 380, { delay: 150 })]);
+    return [{
+      cap: `${d.find} In ${T('u')} the expression is ${T(d.U[0])}: ${T(`a=${d.a}`)}, ${T(`b=${d.b}`)}, ${T(`c=${d.c}`)}.`,
+      run: (c) => Promise.all([c.pop(ulet, 380), showIn(c, h1, 300), showIn(c, h2, 300), both(c, 0)])
+    }, {
+      cap: `Decomposition: find two numbers with product ${T(`ac=${d.a}(${d.c})=${ac}`)} and sum ${T(`b=${d.b}`)}.`,
+      run: (c) => sp.run(c)
+    }, {
+      cap: `Split the middle term with them: ${T(d.split)}. Method 2 splits it the same way, with ${T(d.blk)} in place of ${T('u')}.`,
+      run: (c) => both(c, 1)
+    }, {
+      cap: `Group the terms in pairs and take out each pair’s GCF: ${T(d.U[2])}.`,
+      run: (c) => both(c, 2)
+    }, {
+      cap: `The bracket ${T(d.com)} is common to both groups. Factor it out.`,
+      run: (c) => both(c, 3)
+    }, {
+      cap: `Method 1 is still in disguise: replace ${T('u')} with ${T(d.blk)}. Both methods give ${T(d.fin)}.`,
+      run: (c) => Promise.all([showIn(c, u5, 400), c.pop(same, 380, { delay: 300 })])
+    }, {
+      cap: `${d.done} Check by expanding ✓.`,
+      run: (c) => showIn(c, chk, 400)
+    }];
+  }
+};
+
+/* ============ wiring ============ */
+function mountReveals() {
   document.querySelectorAll('[data-wq]').forEach((b) => b.addEventListener('click', () => b.closest('.wq').classList.toggle('shown')));
-  document.querySelectorAll('[data-poll]').forEach((b) => b.addEventListener('click', () => {
-    const on = b.closest('.poll').classList.toggle('revealed');
-    if (on && airportEx && airportEx.value !== 'D') airportEx.choose('D');
-  }));
+  document.querySelectorAll('[data-poll]').forEach((b) => b.addEventListener('click', () => b.closest('.poll').classList.toggle('revealed')));
 }
-
-/* ================= wiring ================= */
 function mountExplainers() {
-  const defs = { airport, flow, expand };
-  document.querySelectorAll('[data-explainer]').forEach((el) => { const e = new Explainer(el, defs[el.dataset.explainer]); if (el.dataset.explainer === 'airport') airportEx = e; });
+  const defs = { squareTiles, psCheck, gapFill, disguise, decomp, dolls, disguiseExt };
+  const all = [...document.querySelectorAll('[data-explainer]')].map((el) => new Explainer(el, defs[el.dataset.explainer]));
+  // pieces are laid out by measuring KaTeX widths: once the math fonts arrive, redraw any explainer still at its start
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => all.forEach((x) => { if (x.steps && x.k === 0 && !x.running) x.build(0); }));
 }
-mountExplainers(); mountBoards(); mountTickets(); mountWarmup();
 
-/* exposed for automated checks (no effect on the lesson) */
-export const _test = { AP, FL, EXP, BOARDS };
+mountShelf(); mountReveals(); mountExplainers();

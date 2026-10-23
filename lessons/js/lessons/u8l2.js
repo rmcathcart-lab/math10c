@@ -393,14 +393,14 @@ const exact = {
   height: 450,
   minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(EX).map((k) => ({ v: k, label: EX[k].label })),
-  intro: (k) => (k === 'e3' ? `Lesson 1A, Example 4: ${T(tc(BL, '4x+3y=2'))} and ${T(tc(AM, '2x-y=5'))}, solved on the <b>graphing calculator</b> (TI-84). Press <b>Next</b>.`
+  intro: (k) => (k === 'e3' ? `Lesson 1, Example 4: ${T(tc(BL, '4x+3y=2'))} and ${T(tc(AM, '2x-y=5'))}, solved on the <b>graphing calculator</b> (TI-84). Press <b>Next</b>.`
     : `A new system: ${T(tc(BL, 'x+y=1'))} and ${T(tc(AM, 'y=2x'))}. Graphing calculator first. Press <b>Next</b>.`),
   make(stage, k, ex) {
     const d = EX[k], GW = 400;
     const G = new Graph(stage, { x: 14, y: 14, width: GW, height: 300, theme: 'calc', xmin: -10, xmax: 10, ymin: -10, ymax: 10 });
     const L = d.lines.map((ln, i) => G.line(ln, { color: EQC[i], width: 3 })); L.forEach((l) => (l.style.opacity = 0));
     const KB = add(stage, box(h('div', 'u8l2-keys'), GW, 44), 14, 326);
-    const note = add(stage, box(h('div', 'u8l2-calcnote', 'TI-83/84 graphing calculator keys (Lesson 1A)'), GW, 24), 14, 376);
+    const note = add(stage, box(h('div', 'u8l2-calcnote', 'TI-83/84 graphing calculator keys (Lesson 1)'), GW, 24), 14, 376);
     const P = panel(stage, GW + 34, 14, ex.W - GW - 48, ex.def.height - 28, 'Substitution: exact values');
     const keys = async (c, ks) => { KB.innerHTML = ''; for (const kk of ks) { const e = h('span', '', kbd(kk)); KB.appendChild(e); await pop(c, e, 200); } };
     const rows = k === 'e3'

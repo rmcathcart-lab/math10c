@@ -588,7 +588,7 @@
 
     /* ======================= EXTRA PRACTICE ======================= */
     extra: [
-      { num: '1', section: 'Extra practice A — Choosing and applying', stem: function (sh) { return 'Work down the Lesson 6 checklist for each expression, but <b>do not factor yet</b>. Example: ' + t('5x^{3}-45x') + ' — common factor first? yes, ' + t('5x') + '; method on what is left: difference of squares.'; },
+      { num: '1', section: 'Extra practice A — Choosing and applying', stem: function (sh) { return 'Work down the Lesson 7 checklist for each expression, but <b>do not factor yet</b>. Example: ' + t('5x^{3}-45x') + ' — common factor first? yes, ' + t('5x') + '; method on what is left: difference of squares.'; },
         shared: function (r) { return { ex: ep1Exprs(r), order: r.shuffle(['a', 'b', 'c', 'd', 'e']) }; },
         parts: [
           { id: 'e1a', sub: 'a', level: 'BEG', make: function (r, sh) {

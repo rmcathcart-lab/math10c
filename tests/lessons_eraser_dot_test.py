@@ -6,7 +6,7 @@ async def main():
     async with async_playwright() as p:
         b = await p.chromium.launch(); pg = await b.new_page(viewport={'width': 1180, 'height': 820}); pg.on('pageerror', lambda e: errs.append(str(e)))
         await pg.route('**/cdn.jsdelivr.net/**', lambda r: r.abort())
-        await pg.goto('http://localhost:8811/lessons/u4/l1a/'); await pg.evaluate("localStorage.clear(); localStorage.setItem('ink:api', JSON.stringify(' '))"); await pg.reload(); await pg.wait_for_selector('.edot')
+        await pg.goto('http://localhost:8811/lessons/u4/l1/'); await pg.evaluate("localStorage.clear(); localStorage.setItem('ink:api', JSON.stringify(' '))"); await pg.reload(); await pg.wait_for_selector('.edot')
         tool = lambda: pg.evaluate("document.body.dataset.tool")
         box = await pg.evaluate("(() => { const r = document.querySelector('[data-ink]').getBoundingClientRect(); return [r.left, r.top]; })()")
         async def stroke(y):

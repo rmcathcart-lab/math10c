@@ -14,7 +14,7 @@
     ['Maya Patel', 0.82, 0.58, 0.65, 1.05], ['Ethan Wilson', 0.46, 0.52, 0.05, 0.7], ['Sophie Nguyen', 0.36, 0.42, 0, 0.6],
     ['Jack Thompson', 0.52, 0.24, 0, 0.85], ['Zoe Campbell', 0, 0, 0, 1]
   ].map(function (p) { return { name: p[0], skill: p[1], effort: p[2], home: p[3], speed: p[4], never: p[2] === 0 }; });
-  var PACE = ['u1l1', 'u1l2', 'u1l3', 'u1l4', 'u1l5', 'u1l6a', 'u1l6b', 'u1l7', '#u1test', 'u2l1', 'u2l2', 'u2l3']; // one lesson a school day, the last is today
+  var PACE = ['u1l1', 'u1l2', 'u1l3', 'u1l4', 'u1l5', 'u1l6', 'u1l7', 'u1l8', 'u1l9', '#u1test', 'u2l1', 'u2l2', 'u2l3']; // one lesson a school day, the last is today
   var M = null; // the built class (rebuilt once per page load)
 
   function rnd(seed) { return HW.rng(HW.hashStr('demo|' + seed)); }

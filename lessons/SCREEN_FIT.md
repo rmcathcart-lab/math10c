@@ -2,7 +2,7 @@
 
 Ryan presents from an **11-inch iPad in landscape in Safari**: about **684 px of lesson height** is visible under the
 toolbar (viewport 1180 × 746, lesson at scale 1, 1080 px wide). Every lesson has `<main class="lesson screen">`.
-Every unit has been converted (2026-10-20); Unit 1 (1.1–1.7) is the model — look at `lessons/u1/l2/`, `u1/l4/`, `u1/l5/` before starting.
+Every unit has been converted (2026-10-20); Unit 1 (1.1–1.7) is the model — look at `lessons/u1/l2/`, `u1/l5/`, `u1/l6/` before starting.
 
 ## What `screen` does already (shared code — don't edit these files)
 - `js/explain.js`: every explainer puts its number chips, caption and controls in a 268 px column to the right of the
@@ -37,7 +37,7 @@ Markup pattern (see Unit 1):
   (e.g. `.wf .lk { width: 27px }`). Typical sizes: question text 17–17.5 px, `.q-num` 28–30 px, poll options 4 across.
 - A warm-up that fits in a single column can just be tightened: `class="card warm wf wf-one"` with no grid (1.6B).
 - If the lesson JS hard-codes sizes for the warm-up visual (e.g. `const CW = 140`, `BW = 470`), make it read the
-  size from the element (`el.offsetWidth`, `host.clientWidth`) so CSS can shrink it — see u1l5.js / u1l6a.js.
+  size from the element (`el.offsetWidth`, `host.clientWidth`) so CSS can shrink it — see u1l6.js / u1l7.js.
 - **Ink must stay put.** Ink is stored per card by position, so revealing an answer must never move content above or
   beside it. Hidden question answers keep their space (`visibility: hidden`, as the lessons already do) — do NOT
   switch them to `display: none`. Only something at the very bottom of a column (usually the poll answer) may

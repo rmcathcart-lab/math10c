@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Graphing Calculator Techniques · Math 10C 5.5</title>
-<meta name="description" content="Math 10C Unit 5 Lesson 5: graphing calculator (TI-83/84) techniques for relations. Window, table, trace, intersect, zero, value and maximum/minimum, each checked algebraically, shown on a TI-84-style screen. Write on it with an Apple Pencil.">
+<title>What Is a Function? · Math 10C 5.5</title>
+<meta name="description" content="Math 10C Unit 5 Lesson 5: what is a function? Each input has exactly one output: the function test in ordered pairs, tables, arrow diagrams, equations and graphs; the vertical line test; every function is a relation, but not every relation is a function. Write on it with an Apple Pencil.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="10C Lessons">
@@ -27,288 +27,243 @@
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
   <div class="kicker">Math 10C · Unit 5 Relations and Functions · Lesson 5</div>
-  <h1>Graphing Calculator Techniques for Relations</h1>
-  <p class="lede">A graphing calculator draws a relation in a second, but it only shows the part of the plane inside its <b>window</b>, and its answers are only as good as the buttons you press. Today: the TI-83/84 tools for reading a graph (<b>window, table, trace, intersect, zero, value, maximum and minimum</b>), and the habit that goes with every one of them: <b>check the answer algebraically</b>.</p>
+  <h1>What Is a Function?</h1>
+  <p class="lede">Some relations are well behaved: give them an input and you get back <b>exactly one</b> output, every time. Those relations are called <b>functions</b>. Today: how to spot one in every form a relation can take, from a list of ordered pairs to a graph, and the one-second graph check called the <b>vertical line test</b>.</p>
   <div class="goals">
     <div class="goals-h">I can…</div>
     <ul>
-      <li>set up the calculator, enter a relation in <kbd>Y=</kbd>, and choose a <b>window</b> that shows the features I need, written as <span class="tex">x:[X_{\min},X_{\max},X_{scl}]</span>, <span class="tex">y:[Y_{\min},Y_{\max},Y_{scl}]</span></li>
-      <li>find an output from an input with <b>trace</b>, <b>value</b> or the <b>table</b>, and an input from an output with <b>intersect</b></li>
-      <li>find <span class="tex">x</span>-intercepts with <b>zero</b> and the <span class="tex">y</span>-intercept at <span class="tex">x=0</span>, and turn a decimal answer into an exact <b>fraction</b></li>
-      <li>find a <b>maximum or minimum</b> point, and check every calculator answer by substituting into the equation</li>
+      <li>explain what a <b>function</b> is: a relation in which each element of the domain is paired with <b>exactly one</b> element of the range</li>
+      <li>decide whether a relation is a function from its <b>ordered pairs</b> or <b>table</b> (is an input repeated with a different output?) and from its <b>arrow diagram</b> (does any input have two arrows?)</li>
+      <li>use the <b>vertical line test</b> to decide whether a graph is a function, and name two ordered pairs that prove it is not</li>
+      <li>decide from an <b>equation</b> or a <b>description in words</b> whether one input could give two outputs</li>
+      <li>explain why <b>every function is a relation, but not every relation is a function</b></li>
     </ul>
   </div>
-  <div class="outcome"><b>RF1</b> Interpret and explain the relationships among data, graphs and situations.<br><b>RF5</b> Determine the characteristics of the graphs of linear relations, including the intercepts, slope, domain and range.</div>
+  <div class="outcome"><b>RF2</b> Demonstrate an understanding of relations and functions.</div>
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Zoom and Enhance" id="wu" style="--wf-side: 390px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Zoom and Enhance</h2>
-  <p class="wf-rule">Three graphing-calculator screens. Can you trust what you see?</p></div>
-  <div class="wf-grid"><div class="wf-main u5l5-wscr">
-    <div class="u5l5-wr">
-      <figure><div class="u5l5-fig" data-wu="A"></div></figure>
-      <div class="u5l5-wtx"><div class="u5l5-cap"><b class="u5l5-wl">A</b><span class="tex">y=x^2</span><br><span class="tex">x:[-10,\ 10]</span>, <span class="tex">y:[-10,\ 10]</span></div>
-        <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Screen A shows <span class="tex">y=x^2</span>. What are the coordinates of its lowest point? <button class="pill small" data-bk-toggle>Answer</button></div></div>
-        <div class="u5l5-wa"><div class="bk-ans"><span class="tex">(0,\ 0)</span>: the vertex sits at the origin.</div></div></div></div>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Birthday Match" id="wu" style="--wf-side: 320px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Birthday Match</h2>
+  <p class="wf-rule">Everyone has a birthday. But can two people <b>share</b> one?</p></div>
+  <div class="wf-grid"><div class="wf-main">
+  <div class="u5l5-wtop">
+    <div class="u5l5-wmap" id="wu-map"></div>
+    <div class="u5l5-class">
+      <div class="u5l5-ch">A class of 30</div>
+      <svg id="wu-faces" viewBox="0 0 520 250" aria-label="Thirty party faces in three rows of ten"></svg>
+      <div class="u5l5-cctl">
+        <button type="button" class="pill small" data-wu="one">Deal 30 birthdays</button>
+        <button type="button" class="pill small" data-wu="many">Try 100 classes</button>
+        <button type="button" class="pill small" data-wu="reset">Reset</button>
+      </div>
+      <div class="u5l5-cout" id="wu-out">Deal random birthdays to the class. Does anyone match?</div>
     </div>
-    <div class="u5l5-wr">
-      <figure><div class="u5l5-fig" data-wu="B"></div></figure>
-      <div class="u5l5-wtx"><div class="u5l5-cap"><b class="u5l5-wl">B</b>same graph, <span class="tex">y=x^2</span><br><span class="tex">x:[0.95,\ 1.05]</span>, <span class="tex">y:[0.88,\ 1.12]</span></div>
-        <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>Screen B is the <b>same</b> graph, zoomed in near <span class="tex">(1,\ 1)</span>. What shape do you see? <button class="pill small" data-bk-toggle>Answer</button></div></div>
-        <div class="u5l5-wa"><div class="bk-ans">A <b>straight line</b>. Over <span class="tex">0.95\le x\le 1.05</span> the curve bends away from a straight line by at most <span class="tex">0.0025</span>, about 1% of the screen’s height.</div></div></div></div>
-    </div>
-    <div class="u5l5-wr">
-      <figure><div class="u5l5-fig" data-wu="C"></div></figure>
-      <div class="u5l5-wtx"><div class="u5l5-cap"><b class="u5l5-wl">C</b><span class="tex u5l5-blue">y=x^2</span> and <span class="tex u5l5-red">y=2^x</span><br><span class="u5l5-wwin"><span class="tex">x:[-10,\ 10]</span>, <span class="tex">y:[-10,\ 10]</span></span></div></div>
-    </div>
+  </div>
+  <div class="u5l5-wqs">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">1</div><div>Can one person have <b>two</b> different birthdays? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l5-wa"><div class="bk-ans">No. Each person has exactly <b>one</b> birthday, so person → birthday <b>is a function</b>.</div></div></div>
+    <div class="bk-wq"><div class="q-line"><div class="q-num">2</div><div>In the diagram, does any birthday have <b>two</b> people? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l5-wa"><div class="bk-ans">Yes: Ben and Cleo both map to Jul 14. That’s allowed. <b>Two inputs may share an output.</b></div></div></div>
+  </div>
   </div><div class="wf-side">
-  <div class="u5l5-wqside">
-    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Name something real that looks flat up close but is really curved. <button class="pill small" data-bk-toggle>Answer</button></div></div>
-        <div class="u5l5-wa"><div class="bk-ans">The Earth (a lake, the prairie horizon), a big ball, a highway curve seen from a car… Any smooth curve looks straight if you zoom in far enough.</div></div></div>
+  <div class="u5l5-wqs">
+    <div class="bk-wq"><div class="q-line"><div class="q-num">3</div><div>Flip the arrows: birthday → person. Could you tell <em>who</em> was born on July 14? <button class="pill small" type="button" data-bk-toggle>Answer</button></div></div>
+      <div class="u5l5-wa"><div class="bk-ans">No. July 14 would point to <b>two</b> people, Ben and Cleo. One input with two outputs: birthday → person is <b>not a function</b>.</div></div></div>
   </div>
   <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> On Screen C the graphs cross twice. How many times do <span class="tex">y=2^x</span> and <span class="tex">y=x^2</span> <b>really</b> cross? <b>Guess first.</b></div></div>
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> In a class of <b>30</b>, what is the chance that at least two people <b>share</b> a birthday? <b>Guess first.</b></div></div>
     <div class="poll-opts u5l5-c4">
-      <div class="opt"><b>A</b> 1</div>
-      <div class="opt"><b>B</b> 2</div>
-      <div class="opt right"><b>C</b> 3</div>
-      <div class="opt"><b>D</b> infinitely many</div>
-    </div>
-    <div class="u5l5-wctl"><span class="muted">Screen C:</span>
-      <button type="button" class="pill small" data-wz="out"><kbd>ZOOM</kbd> <kbd>3</kbd> Zoom Out</button>
-      <button type="button" class="pill small" data-wz="custom">Window <span class="tex">x:[-5,5,1]</span>, <span class="tex">y:[-5,20,5]</span></button>
-      <button type="button" class="pill small" data-wz="mark">Intersect: mark the crossings</button>
-      <button type="button" class="pill small" data-wz="std"><kbd>ZOOM</kbd> <kbd>6</kbd> Standard</button>
+      <div class="opt"><b>A</b> about 8%</div>
+      <div class="opt"><b>B</b> about 30%</div>
+      <div class="opt"><b>C</b> about 50%</div>
+      <div class="opt right"><b>D</b> about 70%</div>
     </div>
     <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>C: three times.</b> At <span class="tex">x\approx-0.77</span> (where <span class="tex">2^x\approx x^2\approx0.59</span>) and at <span class="tex">x=2</span> (<span class="tex">2^2=4=2^2</span>): both visible on Screen C. The third is <b>hidden</b>: <span class="tex">x=4</span>, where <span class="tex">2^4=16=4^2</span>, and <span class="tex">y=16</span> is above <span class="tex">Y_{\max}=10</span>. After <span class="tex">x=4</span>, <span class="tex">2^x</span> pulls ahead forever (at <span class="tex">x=10</span>: 1024 vs 100).<br>
-      <span class="muted"><b>B</b> trusts the screen. <b>D</b> guesses the graphs keep weaving. <b>A</b> notices only the crossing near the origin.</span><br>
-      <b>Today’s lesson:</b> the default window rarely shows every feature worth seeing, so learn to <b>choose the window</b>.</div>
+    <div class="poll-ans"><b>D: about 70%.</b> Find the chance of <em>no</em> match. Person 2 must avoid 1 day, person 3 must avoid 2 days, and so on:
+      <div class="u5l5-prob"><span class="tex">P(\text{no match})=\frac{365}{365}\cdot\frac{364}{365}\cdots\frac{336}{365}\approx0.294,</span> so <span class="tex">P(\text{match})\approx1-0.294=0.706</span>, about <b>71%</b>.</div>
+      <span class="muted"><b>A</b> comes from <span class="tex">30\div365\approx8\%</span>, but that only asks whether someone matches <em>you</em>. There are <b>435</b> different <em>pairs</em> in a class of 30, and any pair can match. <b>B</b> and <b>C</b> feel “reasonable”, but the 50% mark is reached with only <b>23</b> people. (This assumes 365 equally likely birthdays and ignores Feb 29.)</span></div>
   </div>
   </div></div>
 
-  <div class="bk-wq" style="margin-top:14px">
-    <div class="q-line"><div class="q-num u5l5-bonus">+</div><div><b>Early finishers.</b> Find a window where <span class="tex">y=2^x</span> and <span class="tex">y=x^2</span> look like they <b>never</b> cross.</div></div>
-    <button class="pill small" data-bk-toggle>Answer</button><div class="bk-ans">For example <span class="tex">x:[5,\ 10]</span>, <span class="tex">y:[0,\ 1100]</span>: there <span class="tex">2^x</span> is above <span class="tex">x^2</span> the whole way across.</div>
+  <div class="bk-wq u5l5-extra">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> Is student → student ID number a function? What about ID number → student?</div></div>
+    <button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Both are functions: each student has one ID number, and each ID number belongs to exactly one student.</div>
   </div>
-  <p class="u5l5-social">Grab a calculator: graph both in <kbd>ZOOM</kbd> <kbd>6</kbd>, then press <kbd>ZOOM</kbd> <kbd>3</kbd> to zoom out. Count again with a neighbour!</p>
+  <p class="u5l5-social">Test it right now: call out birthday months, then days. Does anyone in this room match?</p>
 </section>
 
-<!-- ================= 1. Getting ready ================= -->
-<section class="card" data-ink="s1" data-section="1. Getting the Calculator Ready">
-  <div class="sec-h"><span class="badge">1</span><h2>Getting the Calculator Ready</h2></div>
-  <div class="tip calc-tip u5l5-ti">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="5" rx="1"/></svg></div>
-    <div><b>Today’s steps are for the TI-83/84 graphing calculator.</b> The keys look like <kbd>Y=</kbd>, <kbd class="u5l5-k2">2nd</kbd> <kbd>TRACE</kbd>; the screens in the animations look like a TI-84. The TI-30XIIS built into this page can’t graph, so we use it only for the <b>algebraic checks</b>.</div>
-  </div>
-  <p>Confirm three settings before graphing anything.</p>
-  <div class="u5l5-three">
-    <div><b class="u5l5-n">i</b><b>Mode.</b> Press <kbd>MODE</kbd> and make sure <code>Func</code> (function) is highlighted: every relation is entered <b>solved for <span class="tex">y</span></b>.</div>
-    <div><b class="u5l5-n">ii</b><b>Window.</b> Press <kbd>WINDOW</kbd>. This screen controls <b>what part of the Cartesian plane is visible</b>.</div>
-    <div><b class="u5l5-n">iii</b><b>Format.</b> Press <kbd class="u5l5-k2">2nd</kbd> <kbd>ZOOM</kbd> and confirm <code>RectGC</code>, <code>CoordOn</code>, <code>AxesOn</code> and <code>LabelOff</code> are highlighted. Then press <kbd>Y=</kbd> and check that <code>Plot1</code>, <code>Plot2</code>, <code>Plot3</code> are <b>not</b> highlighted (scroll to one and press <kbd>ENTER</kbd> to turn it off), or the calculator plots leftover statistical data along with your relation.</div>
-  </div>
-  <div class="explainer" data-explainer="setup"></div>
+<section class="card" data-ink="wub" data-section="Warm-up: flip the arrows">
+  <h3 class="sub">From the warm-up: one arrow out, or two?</h3>
+  <p>In the warm-up, every person sent out exactly one arrow, even though two arrows landed on the same date. Flip the arrows and July 14 sends out two. That difference is the whole idea of today’s lesson.</p>
+  <div class="explainer" data-explainer="birthday"></div>
 </section>
 
-<section class="card" data-ink="s1b" data-section="1. The window">
-  <h3 class="sub">The WINDOW screen</h3>
-  <div class="u5l5-wtab">
-    <div><code>Xmin</code>, <code>Xmax</code></div><div>smallest and largest <span class="tex">x</span>-value shown</div>
-    <div><code>Ymin</code>, <code>Ymax</code></div><div>smallest and largest <span class="tex">y</span>-value shown</div>
-    <div><code>Xscl</code></div><div>spacing between <span class="tex">x</span>-axis tick marks</div>
-    <div><code>Yscl</code></div><div>spacing between <span class="tex">y</span>-axis tick marks</div>
-    <div><code>Xres</code></div><div>screen resolution: leave it set to 1</div>
-  </div>
-  <div class="def">A window is abbreviated <span class="tex">x:[X_{\min},\ X_{\max},\ X_{scl}]</span>, <span class="tex">y:[Y_{\min},\ Y_{\max},\ Y_{scl}]</span>. The <b>standard window</b> is <span class="tex">x:[-10,\ 10,\ 1]</span>, <span class="tex">y:[-10,\ 10,\ 1]</span>.</div>
-  <div class="explainer" data-explainer="window"></div>
-</section>
-
-<!-- ================= 2. Entering and graphing ================= -->
-<section class="card" data-ink="s2" data-section="2. Entering and Graphing a Relation">
-  <div class="sec-h"><span class="badge">2</span><h2>Entering and Graphing a Relation</h2></div>
-  <p>A relation must first be <b>solved for <span class="tex">y</span></b>. Press <kbd>Y=</kbd> to open the equation editor, type the right-hand side into <code>Y1</code> (or another empty row), and press <kbd>GRAPH</kbd> to draw the curve in the current window.</p>
-  <div class="def amber">The running example for this lesson is <span class="tex">y=0.75x-9</span>. In the standard window <span class="tex">x:[-10,\ 10,\ 1]</span>, <span class="tex">y:[-10,\ 10,\ 1]</span> (restored any time with <kbd>ZOOM</kbd> <kbd>6</kbd>) the line is drawn, but its <span class="tex">x</span>-intercept is <b>cut off</b>, since <span class="tex">0.75x-9=0</span> gives <span class="tex">x=12</span>. <b>The default window rarely shows every feature worth seeing.</b></div>
-  <div class="explainer" data-explainer="graphIt"></div>
-</section>
-
-<!-- ================= 3. Adjusting the window ================= -->
-<section class="card" data-ink="s3" data-section="3. Adjusting the Window">
-  <div class="sec-h"><span class="badge">3</span><h2>Adjusting the Window</h2></div>
-  <div class="u5l5-three">
-    <div><b class="u5l5-n">1</b><b>Type in a custom window.</b> Press <kbd>WINDOW</kbd>, edit the values with the cursor keys, press <kbd>GRAPH</kbd>. For <span class="tex">y=0.75x-9</span>, the window <span class="tex">x:[-5,\ 20,\ 5]</span>, <span class="tex">y:[-15,\ 10,\ 5]</span> shows both intercepts comfortably.</div>
-    <div><b class="u5l5-n">2</b><b>Zoom Out.</b> Press <kbd>ZOOM</kbd> <kbd>3</kbd> (or select <code>ZoomOut</code> and press <kbd>GRAPH</kbd>) one or more times until the feature appears. <b>Fast, but rarely ideal.</b></div>
-    <div><b class="u5l5-n">3</b><b>ZoomFit.</b> Press <kbd>ZOOM</kbd> <kbd>0</kbd> to let the calculator choose <span class="tex">y</span>-bounds that fit the curve over the <b>current <span class="tex">x</span>-bounds</b>.</div>
-  </div>
-  <div class="explainer" data-explainer="adjust"></div>
-  <div class="parts c1" style="margin-top:16px">
-    <div class="part think"><div class="pl"><span class="think-tag">Think</span> ZoomFit on <span class="tex">y=0.75x-9</span> (starting from the standard window) still doesn’t show the <span class="tex">x</span>-intercept. Why not?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">ZoomFit only changes <span class="tex">Y_{\min}</span> and <span class="tex">Y_{\max}</span>. The <span class="tex">x</span>-values still run from <span class="tex">-10</span> to <span class="tex">10</span>, and the intercept is at <span class="tex">x=12</span>. (The new window, <span class="tex">-16.5\le y\le-1.5</span>, doesn’t even include the <span class="tex">x</span>-axis.)</div></div></div>
-  </div>
-</section>
-
-<!-- ================= 4. Table ================= -->
-<section class="card" data-ink="s4" data-section="4. Reading a Table of Values">
-  <div class="sec-h"><span class="badge">4</span><h2>Reading a Table of Values</h2></div>
-  <p>Press <kbd class="u5l5-k2">2nd</kbd> <kbd>WINDOW</kbd> to open <code>TBLSET</code> and set <code>TblStart</code> (the first input shown) and <code>ΔTbl</code> (the spacing between inputs). Press <kbd class="u5l5-k2">2nd</kbd> <kbd>GRAPH</kbd> to view the table, scrolling with the cursor keys. With <code>TblStart</code> <span class="tex">=-3</span> and <code>ΔTbl</code> <span class="tex">=1</span>, the table for <span class="tex">y=0.75x-9</span> reads:</p>
-  <div class="bk-fig"><div data-bk-table='{"headers":["x","y"],"rows":[[-3,-11.25],[-2,-10.5],[-1,-9.75],[0,-9],[1,-8.25],[2,-7.5],[3,-6.75],[4,-6]],"layout":"h","cellW":92,"cellH":50,"tap":false}'></div></div>
-  <div class="u5l5-two">
-    <div><b>One far-away input.</b> Switch <code>Indpnt</code> from <code>Auto</code> to <code>Ask</code> in <code>TBLSET</code>: a chosen <span class="tex">x</span>-value can then be typed straight into the table, and <kbd>ENTER</kbd> shows just that output. For <span class="tex">y=0.75x-9</span>, typing <span class="tex">x=500</span> returns <span class="tex">y=366</span>.</div>
-    <div><b>Table and graph together.</b> Press <kbd>MODE</kbd>, scroll to <code>G-T</code>, press <kbd>ENTER</kbd>, then <kbd>GRAPH</kbd>. Pressing <kbd>TRACE</kbd> and the left/right cursor keys moves along the curve while the table scrolls to match.</div>
-  </div>
-  <div class="explainer" data-explainer="table"></div>
+<!-- ================= 1. What is a function ================= -->
+<section class="card" data-ink="s1" data-section="1. What Is a Function?">
+  <div class="sec-h"><span class="badge">1</span><h2>What Is a Function?</h2></div>
+  <div class="def"><b>Function.</b> A <b>function</b> is a relation in which <u>each element of the domain</u> <u>is paired with exactly one element of the range</u>. If any element of the domain is paired with more than one element of the range, the relation is <b>not</b> a function.</div>
+  <p>Take the domain <span class="tex">D=\{1,8,27,64\}</span> and the range <span class="tex">R=\{1,2,3,4\}</span>, joined by two relations. For relation (i) we ask, for each domain element, which range elements divide it evenly; for relation (ii) we ask which range element, when cubed, produces the domain element.</p>
+  <div class="explainer" data-explainer="twoRel"></div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Check <span class="tex">x=500</span> on the TI-30XIIS.</b> <span class="keys"><kbd>.</kbd><kbd>7</kbd><kbd>5</kbd><kbd>×</kbd><kbd>5</kbd><kbd>0</kbd><kbd>0</kbd><kbd>−</kbd><kbd>9</kbd><kbd>ENTER</kbd></span> gives 366 ✓</div>
-    <button class="pill" data-keys=".75 × 500 − 9 =">Show me</button>
+    <div><b>Ask the calculator the question.</b> Is 64 a multiple of 3? <span class="keys"><kbd>6</kbd><kbd>4</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> gives 21.333…, not a whole number, so <b>no arrow</b> from 64 to 3. Is 64 the cube of 4? <span class="keys"><kbd>4</kbd><kbd>^</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> gives 64, so <b>yes</b>.</div>
+    <div class="pill-col"><button class="pill" data-keys="64 ÷ 3 =">Show 64 ÷ 3</button><button class="pill" data-keys="4 ^ 3 =">Show 4³</button></div>
   </div>
-  <p class="u5l5-asg">Complete Assignment Question 1</p>
 </section>
 
-<!-- ================= 5. Trace and intersect ================= -->
-<section class="card" data-ink="s5" data-section="5. Trace: an Output From an Input">
-  <div class="sec-h"><span class="badge">5</span><h2>An Output From Trace, an Input From Intersect</h2></div>
-  <div class="def"><b>Trace: given <span class="tex">x</span>.</b> Press <kbd>TRACE</kbd>, type the input value, press <kbd>ENTER</kbd>. The matching output appears at the <b>bottom of the screen</b>.</div>
-  <div class="explainer" data-explainer="trace"></div>
+<section class="card" data-ink="s1b" data-section="1. The two relations">
+  <h3 class="sub">The two relations, three ways each</h3>
+  <div class="u5l5-two">
+    <div class="u5l5-relcol">
+      <div class="u5l5-relh">Relation (i): “is a multiple of”</div>
+      <div data-fig="mapI"></div>
+      <div class="u5l5-pairs"><span class="tex">(1,1),\ (8,1),\ (8,2),\ (8,4),\ (27,1),</span><br><span class="tex">(27,3),\ (64,1),\ (64,2),\ (64,4)</span></div>
+      <div data-fig="grI"></div>
+    </div>
+    <div class="u5l5-relcol">
+      <div class="u5l5-relh">Relation (ii): “is the cube of”</div>
+      <div data-fig="mapII"></div>
+      <div class="u5l5-pairs"><span class="tex">(1,1),\ (8,2),\ (27,3),\ (64,4)</span><br>&nbsp;</div>
+      <div data-fig="grII"></div>
+    </div>
+  </div>
+  <p>In relation (i) the domain element <span class="tex">8</span> is paired with three different range elements (<span class="tex">1</span>, <span class="tex">2</span> and <span class="tex">4</span>), so relation (i) is <b>not</b> a function. In relation (ii) every domain element is paired with exactly one range element, so relation (ii) <b>is</b> a function.</p>
 </section>
 
-<section class="card" data-ink="s5b" data-section="5. Intersect: an Input From an Output">
-  <div class="def"><b>Intersect: given <span class="tex">y</span>.</b> Enter the relation in <code>Y1</code> and the target output (a constant) in <code>Y2</code>. Press <kbd>GRAPH</kbd>, open <code>CALC</code> with <kbd class="u5l5-k2">2nd</kbd> <kbd>TRACE</kbd> and choose <code>5:intersect</code>. The calculator prompts <code>First curve?</code>, <code>Second curve?</code> and <code>Guess?</code>: scroll near the crossing point each time and press <kbd>ENTER</kbd>. The intersection point displayed gives the input that produces that output. For <span class="tex">y=0.75x-9</span> with <span class="tex">Y_2=-3</span> the intersection point is <span class="tex">(8,\ -3)</span>, so <span class="tex">x=8</span> when <span class="tex">y=-3</span>.</div>
-  <div class="explainer" data-explainer="intersect"></div>
-</section>
-
-<section class="card" data-ink="s5c" data-section="5. Stay inside the window">
-  <h3 class="sub">Stay inside the window</h3>
-  <div class="tip watch"><div class="tip-ic">!</div><div><kbd>TRACE</kbd> and <code>1:value</code> only accept an <span class="tex">x</span>-value <b>between <code>Xmin</code> and <code>Xmax</code></b>; outside the window the calculator shows <code>ERR:INVALID</code>. Either <b>widen the window</b>, or use the <b>table in Ask mode</b> (Section 4), which works for any input. Likewise, <code>intersect</code> can only find a crossing point that is <b>visible</b> in the window.</div></div>
-  <div class="explainer" data-explainer="inside"></div>
+<section class="card" data-ink="s1c" data-section="1. Functions are relations">
+  <h3 class="sub">Functions are relations</h3>
+  <div class="u5l5-nestrow">
+    <p><b>Every function is a relation, but not every relation is a function.</b> A function is a special kind of relation — one in which no input has more than one output. In the diagram, relation (ii) belongs inside the inner oval; relation (i) is a relation but sits outside the “Functions” oval.</p>
+    <svg class="u5l5-nest" viewBox="0 0 400 190" aria-label="A Relations oval containing a smaller Functions oval">
+      <ellipse cx="200" cy="95" rx="192" ry="88" fill="#f1f0ec" stroke="#3a4254" stroke-width="2.5"/>
+      <ellipse cx="262" cy="100" rx="104" ry="60" fill="#e3ecfb" stroke="#1f5bd6" stroke-width="2.5"/>
+      <text x="58" y="64" class="u5l5-nt">Relations</text>
+      <text x="262" y="78" text-anchor="middle" class="u5l5-nt u5l5-ntb">Functions</text>
+      <text x="262" y="106" text-anchor="middle" class="u5l5-ns">(ii) “is the</text><text x="262" y="126" text-anchor="middle" class="u5l5-ns">cube of”</text>
+      <text x="92" y="100" text-anchor="middle" class="u5l5-ns">(i) “is a</text><text x="92" y="120" text-anchor="middle" class="u5l5-ns">multiple of”</text>
+    </svg>
+  </div>
+  <div class="explainer" data-explainer="nested"></div>
 </section>
 
 <section class="card example" data-ink="ex1" data-section="Example 1">
-  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Window, trace, intersect, and the algebraic check</h3></div>
-  <p class="q">Consider the relation <span class="tex">y=4x-30</span>.</p>
-  <div class="parts c1">
-    <div class="part"><div class="pl">(a) Graph the relation on a calculator, sketch it below, and record a suitable window.</div>
-      <div class="u5l5-wrow"><div class="u5l5-blank" data-blank></div>
-        <div class="u5l5-wins"><span class="tex">x:[\underline{\hspace{1.3cm}},\ \underline{\hspace{1.3cm}},\ \underline{\hspace{1.3cm}}]</span><span class="tex">y:[\underline{\hspace{1.3cm}},\ \underline{\hspace{1.3cm}},\ \underline{\hspace{1.3cm}}]</span></div></div>
-      <div class="work" style="--h:60px"></div>
-      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div class="u5l5-ansfig"><div data-fig="ex1"></div><div><span class="tex">x</span>-intercept: <span class="tex">4x-30=0\Rightarrow x=7.5</span>. <span class="tex">y</span>-intercept: <span class="tex">-30</span>.<br>A suitable window: <span class="tex">\boldsymbol{x:[-2,\ 11,\ 1]}</span>, <span class="tex">\boldsymbol{y:[-35,\ 15,\ 5]}</span><br><span class="muted">Windows may vary: both intercepts must be visible.</span></div></div></div></div></div>
-  </div>
-  <div class="parts c2">
-    <div class="part"><div class="pl">(b) Use the trace or table feature to determine <span class="tex">y</span> when <span class="tex">x=4.2</span>.</div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Trace (or the table) at <span class="tex">x=4.2</span> gives <span class="tex">\boldsymbol{y=-13.2}</span>.</div></div></div>
-    <div class="part"><div class="pl">(c) Algebraically verify the answer in (b).</div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">y=4(4.2)-30=16.8-30=-13.2</span> ✓</div></div></div>
-    <div class="part"><div class="pl">(d) Use the intersect feature, with <span class="tex">Y_2</span> set to the given output, to determine <span class="tex">x</span> when <span class="tex">y=-5.4</span>.</div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">With <span class="tex">Y_2=-5.4</span>, <code>5:intersect</code> gives the crossing point <span class="tex">(6.15,\ -5.4)</span>, so <span class="tex">\boldsymbol{x=6.15}</span>.</div></div></div>
-    <div class="part"><div class="pl">(e) Algebraically verify the answer in (d).</div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">-5.4=4x-30\Rightarrow 4x=24.6\Rightarrow x=6.15</span> ✓</div></div></div>
-  </div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>The algebraic checks on the TI-30XIIS.</b> (c) <span class="keys"><kbd>4</kbd><kbd>×</kbd><kbd>4</kbd><kbd>.</kbd><kbd>2</kbd><kbd>−</kbd><kbd>3</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> (e) <span class="keys"><kbd>(</kbd><kbd>(−)</kbd><kbd>5</kbd><kbd>.</kbd><kbd>4</kbd><kbd>+</kbd><kbd>3</kbd><kbd>0</kbd><kbd>)</kbd><kbd>÷</kbd><kbd>4</kbd><kbd>ENTER</kbd></span></div>
-    <div class="pill-col"><button class="pill" data-keys="4 × 4.2 − 30 =">Show (c)</button><button class="pill" data-keys="( (−) 5.4 + 30 ) ÷ 4 =">Show (e)</button></div>
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Reading the function test off three representations</h3></div>
+  <p class="q">Using the two relations above, explain how you can tell whether a relation is a function by examining each of the following.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) the arrow diagram</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Look at each element of the domain (left oval). If <b>every</b> domain element has exactly one arrow leaving it, the relation is a function.<br>In (i) the element <span class="tex">8</span> has three arrows leaving it (to <span class="tex">1</span>, <span class="tex">2</span> and <span class="tex">4</span>), so (i) is <b>not</b> a function.<br>In (ii) every domain element has exactly one arrow leaving it, so (ii) <b>is</b> a function.</div></div></div>
+    <div class="part"><div class="pl">(b) the list of ordered pairs</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Look at the first coordinates. If any <span class="tex">x</span>-value is repeated with two <b>different</b> second coordinates, the relation is not a function.<br>In (i) the pairs <span class="tex">(8,1)</span>, <span class="tex">(8,2)</span>, <span class="tex">(8,4)</span> share the first coordinate <span class="tex">8</span>, so (i) is <b>not</b> a function.<br>In (ii) no first coordinate repeats, so (ii) <b>is</b> a function.</div></div></div>
+    <div class="part"><div class="pl">(c) the graph</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Apply the vertical line test.<br>In (i) the vertical line through <span class="tex">x=8</span> passes through the three plotted points <span class="tex">(8,1)</span>, <span class="tex">(8,2)</span>, <span class="tex">(8,4)</span>, so (i) is <b>not</b> a function.<br>In (ii) every vertical line through a domain value meets exactly one plotted point, so (ii) <b>is</b> a function.</div></div></div>
+    <div class="part think u5l5-span3"><div class="pl"><span class="think-tag">Think</span> Reverse relation (i): send each element of <span class="tex">R</span> to the elements of <span class="tex">D</span> it divides (“is a factor of”). Is the reversed relation a function?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">No. <span class="tex">1</span> divides all four elements, so it would have <b>four</b> arrows leaving it (to <span class="tex">1</span>, <span class="tex">8</span>, <span class="tex">27</span> and <span class="tex">64</span>). One input, several outputs.</div></div></div>
   </div>
   <div class="space" id="ex1-space"></div>
   <button class="more" data-more="ex1-space">+ More space</button>
 </section>
 
-<!-- ================= 6. x-intercepts ================= -->
-<section class="card" data-ink="s6" data-section="6. Finding x-intercepts">
-  <div class="sec-h"><span class="badge">6</span><h2>Finding <span class="tex">x</span>-intercepts</h2></div>
-  <div class="u5l5-two">
-    <div><b>Zero feature.</b> With the relation in <code>Y1</code>, open <code>CALC</code> (<kbd class="u5l5-k2">2nd</kbd> <kbd>TRACE</kbd>) and choose <code>2:zero</code>. The calculator asks for a <code>Left Bound?</code> (scroll to a point left of the crossing, <kbd>ENTER</kbd>), a <code>Right Bound?</code> (scroll to a point right of the crossing, <kbd>ENTER</kbd>) and a <code>Guess?</code> (<kbd>ENTER</kbd>). The <span class="tex">x</span>-value shown is the <span class="tex">x</span>-intercept.</div>
-    <div><b>Intersect feature.</b> Alternatively set <span class="tex">Y_2=0</span> and use the intersect procedure of Section 5: the intersection with the <span class="tex">x</span>-axis is exactly the <span class="tex">x</span>-intercept.</div>
-  </div>
-  <div class="explainer" data-explainer="zero"></div>
+<section class="card" data-ink="s1d" data-section="1. One test, three pictures">
+  <h3 class="sub">One test, three pictures</h3>
+  <p>The arrow diagram, the ordered pairs and the graph are three pictures of the <b>same</b> relation, so they must give the same verdict. Each picture shows a repeated input in its own way: two arrows <b>leaving</b> one element, two pairs with the <b>same first coordinate</b>, two dots <b>stacked</b> on one vertical line.</p>
+  <div class="explainer" data-explainer="threeViews"></div>
 </section>
 
-<!-- ================= 7. y-intercepts ================= -->
-<section class="card" data-ink="s7" data-section="7. Finding y-intercepts">
-  <div class="sec-h"><span class="badge">7</span><h2>Finding <span class="tex">y</span>-intercepts</h2></div>
-  <p>The <span class="tex">y</span>-intercept is simply the <b>output when <span class="tex">x=0</span></b>, so any of these works.</p>
-  <div class="u5l5-three">
-    <div><b class="u5l5-n">T</b><b>Trace:</b> press <kbd>TRACE</kbd>, type <kbd>0</kbd>, press <kbd>ENTER</kbd>.</div>
-    <div><b class="u5l5-n">V</b><b>Value:</b> open <code>CALC</code> (<kbd class="u5l5-k2">2nd</kbd> <kbd>TRACE</kbd>), choose <code>1:value</code>, type <kbd>0</kbd>, press <kbd>ENTER</kbd>.</div>
-    <div><b class="u5l5-n">≡</b><b>Table:</b> set <code>TblStart</code> <span class="tex">=0</span> (or scroll the table to <span class="tex">x=0</span>) and read off <span class="tex">y</span>.</div>
-  </div>
-  <p class="muted" style="margin-top:8px">Trace and value need <span class="tex">x=0</span> to be inside the window (see Section 5).</p>
-  <div class="explainer" data-explainer="yint"></div>
+<!-- ================= 2. Vertical line test ================= -->
+<section class="card" data-ink="s2" data-section="2. The Vertical Line Test">
+  <div class="sec-h"><span class="badge">2</span><h2>The Vertical Line Test</h2></div>
+  <div class="def"><b>Vertical line test.</b> If every vertical line crosses the graph <u>at most once</u>, the relation <b>is</b> a function. If any vertical line crosses the graph <u>more than once</u>, the relation is <b>not</b> a function. (A vertical line outside the domain misses the graph completely — that is allowed.)</div>
+  <p>Why <b>vertical</b>? Every point on the vertical line <span class="tex">x=1</span> has first coordinate 1. So the dots that line passes through are <b>all the outputs of the input 1</b>. Two dots on it means one input with two outputs.</p>
+  <div class="explainer" data-explainer="whyVertical"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Horizontal lines don’t matter here.</b> A horizontal line crossing twice means two <b>inputs</b> share one output, like Ben and Cleo sharing July 14. That is allowed for a function. Only a <b>vertical</b> line crossing twice breaks the rule.</div></div>
 </section>
 
 <section class="card example" data-ink="ex2" data-section="Example 2">
-  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Intercepts with the zero and value features</h3></div>
-  <p class="q">Use the features of a graphing calculator to determine the <span class="tex">x</span>-intercept(s) and the <span class="tex">y</span>-intercept of each relation.</p>
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Four relations, one test</h3></div>
+  <p class="q">Each of the following is the graph of a relation. <b>(a)</b> Classify each statement in the table below as true (T) or false (F) for each graph.</p>
+  <div class="u5l5-four">
+    <div><div class="u5l5-gh">Graph A</div><div data-fig="A"></div></div>
+    <div><div class="u5l5-gh">Graph B</div><div data-fig="B"></div></div>
+    <div><div class="u5l5-gh">Graph C</div><div data-fig="C"></div></div>
+    <div><div class="u5l5-gh">Graph D</div><div data-fig="D"></div></div>
+  </div>
+  <div class="parts c1">
+    <div class="part">
+      <div class="pl">(a) True (T) or false (F)?</div>
+      <table class="u5l5-tf">
+        <tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th></tr>
+        <tr><td>For each input value there is only one output</td><td><span class="u5l5-tfa t">T</span></td><td><span class="u5l5-tfa t">T</span></td><td><span class="u5l5-tfa f">F</span></td><td><span class="u5l5-tfa f">F</span></td></tr>
+        <tr><td>For each output value there is only one input</td><td><span class="u5l5-tfa f">F</span></td><td><span class="u5l5-tfa t">T</span></td><td><span class="u5l5-tfa f">F</span></td><td><span class="u5l5-tfa t">T</span></td></tr>
+        <tr><td>The relation is a function</td><td><span class="u5l5-tfa t">T</span></td><td><span class="u5l5-tfa t">T</span></td><td><span class="u5l5-tfa f">F</span></td><td><span class="u5l5-tfa f">F</span></td></tr>
+      </table>
+      <div class="work" style="--h:40px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">A is a parabola: every vertical line crosses it once (a function), but a horizontal line can cross it twice (<span class="tex">x=1</span> and <span class="tex">x=-1</span> give the same <span class="tex">y</span>), so outputs are not unique. B is a non-vertical line: every vertical <b>and</b> horizontal line crosses it exactly once. C is a circle: a vertical line through most <span class="tex">x</span>-values crosses it twice, so it fails the vertical line test; a horizontal line also crosses it twice. D opens sideways: a vertical line crosses it twice for most <span class="tex">x</span>-values (not a function), but a <b>horizontal</b> line crosses it only once, so each output does come from a single input.</div></div>
+    </div>
+  </div>
   <div class="parts c2">
-    <div class="part"><div class="pl">(a) <span class="tex">y=\dfrac{7x+21}{3}</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div class="u5l5-ansfig"><div data-fig="ex2a"></div><div><code>2:zero</code>: <span class="tex">7x+21=0\Rightarrow x=-3</span><br><code>1:value</code> at <span class="tex">x=0</span>: <span class="tex">y=\frac{21}{3}=7</span><br><span class="tex">x</span>-int <span class="tex">\boldsymbol{-3}</span>, <span class="tex">y</span>-int <span class="tex">\boldsymbol{7}</span></div></div></div></div></div>
-    <div class="part"><div class="pl">(b) <span class="tex">y=-x^2+2x+8</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div class="u5l5-ansfig"><div data-fig="ex2b"></div><div><code>2:zero</code> twice: <span class="tex">-x^2+2x+8=0</span><br><span class="tex">\Rightarrow x^2-2x-8=0</span><br><span class="tex">\Rightarrow (x-4)(x+2)=0</span><br>so <span class="tex">\boldsymbol{x=4}</span> and <span class="tex">\boldsymbol{x=-2}</span>.<br><code>1:value</code> at <span class="tex">x=0</span>: <span class="tex">\boldsymbol{y=8}</span></div></div></div></div></div>
+    <div class="part"><div class="pl">(b) From graph C, write two ordered pairs which show that the relation is not a function.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans u5l5-figans"><div>The vertical line <span class="tex">x=0</span> crosses graph C at <span class="tex">(0,3)</span> and <span class="tex">(0,-3)</span>. These two ordered pairs share the same first coordinate but have different second coordinates, so C is not a function.</div><div data-fig="Cans"></div></div></div></div>
+    <div class="part"><div class="pl">(c) From graph D, write two ordered pairs which show that the relation is not a function.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans u5l5-figans"><div>The vertical line <span class="tex">x=1.6</span> crosses graph D at <span class="tex">(1.6,2)</span> and <span class="tex">(1.6,-2)</span>, since <span class="tex">0.4(2)^2=1.6</span> and <span class="tex">0.4(-2)^2=1.6</span>. Same first coordinate, different second coordinates, so D is not a function.</div><div data-fig="Dans"></div></div></div></div>
+  </div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(d) On graphs A and B, imagine a series of vertical lines. Do any of these lines intersect the graph of the relation at more than one point? Explain what this tells you about A and B.</div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans u5l5-figans"><div>No. On graphs A and B every vertical line drawn through the domain crosses the graph exactly once, as the dashed lines show. By the vertical line test, both A and B are <b>functions</b>.</div><div data-fig="Aans"></div><div data-fig="Bans"></div></div></div></div>
   </div>
   <div class="space" id="ex2-space"></div>
   <button class="more" data-more="ex2-space">+ More space</button>
 </section>
 
-<!-- ================= 8. Fractions ================= -->
-<section class="card" data-ink="s8" data-section="8. Decimal Intercept to a Fraction">
-  <div class="sec-h"><span class="badge">8</span><h2>Converting a Decimal Intercept to a Fraction</h2></div>
-  <p>When an intercept is not a whole number the calculator displays a decimal, which can be converted to an <b>exact fraction</b>. Find the intercept by any method above, then press <kbd class="u5l5-k2">2nd</kbd> <kbd>QUIT</kbd> <span class="muted small">(QUIT is above <kbd>MODE</kbd>)</span> to return to the home screen.</p>
-  <div class="u5l5-two">
-    <div>For an <b><span class="tex">x</span>-intercept</b>: press <kbd>X,T,θ,n</kbd> <kbd>MATH</kbd> <kbd>ENTER</kbd> <kbd>ENTER</kbd>. This recalls the most recent <span class="tex">x</span>-value the cursor sat on and converts it to a fraction.</div>
-    <div>For a <b><span class="tex">y</span>-intercept</b>: press <kbd class="u5l5-ka">ALPHA</kbd> <kbd>1</kbd> to type the letter <code>Y</code>, then <kbd>MATH</kbd> <kbd>ENTER</kbd> <kbd>ENTER</kbd>.</div>
+<section class="card" data-ink="s2b" data-section="2. Checking Example 2">
+  <h3 class="sub">Sweep the lines: checking Example 2</h3>
+  <p>A <b>vertical</b> sweep answers rows 1 and 3 of the table (one output for each input?). A <b>horizontal</b> sweep answers row 2 (one input for each output?), the row that does <b>not</b> decide whether the relation is a function.</p>
+  <div class="explainer" data-explainer="vlt"></div>
+</section>
+
+<!-- ================= 3. Different forms ================= -->
+<section class="card" data-ink="s3" data-section="3. Recognizing Functions in Different Forms">
+  <div class="sec-h"><span class="badge">3</span><h2>Recognizing Functions in Different Forms</h2></div>
+  <p>A relation may be given as a list of ordered pairs, a table, an arrow diagram (mapping diagram), a graph or a description in words. The test is the same in every case: <b>does every element of the domain appear with exactly one output?</b></p>
+  <div class="u5l5-forms">
+    <div><b>Ordered pairs / table</b>Is an input (first coordinate) repeated with a <b>different</b> output?</div>
+    <div><b>Arrow diagram</b>Does any domain element have <b>two arrows leaving</b> it?</div>
+    <div><b>Graph</b>Does any <b>vertical line</b> cross it twice?</div>
+    <div><b>Equation or words</b>Could one input give <b>two</b> outputs? Try a value.</div>
   </div>
-  <p>Multiplying the resulting fraction back out, or converting it back to a decimal, <b>checks the conversion</b>.</p>
-  <div class="explainer" data-explainer="frac"></div>
+  <div class="explainer" data-explainer="sixWays"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>A repeated output is fine.</b> In <span class="tex">(4,4),\ (1,3),\ (6,9),\ (-5,4)</span> the output 4 appears twice, and it is still a function. Only a repeated <b>input</b> with a different output breaks the rule.</div></div>
 </section>
 
 <section class="card example" data-ink="ex3" data-section="Example 3">
-  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Exact intercepts as fractions</h3></div>
-  <p class="q">Consider the relation <span class="tex">y=\dfrac{3x-13}{8}</span>.</p>
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Six relations in six forms</h3></div>
+  <p class="q">Determine which of the following relations are functions. Justify each answer.</p>
   <div class="parts c2">
-    <div class="part"><div class="pl">(a) Determine the <span class="tex">x</span>-intercept, expressed as an exact fraction.</div><div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><code>2:zero</code>: <span class="tex">3x-13=0\Rightarrow x=\frac{13}{3}</span>, shown as <code>4.333333333</code>.<br><kbd class="u5l5-k2">2nd</kbd> <kbd>QUIT</kbd>, then <kbd>X,T,θ,n</kbd> <kbd>MATH</kbd> <kbd>ENTER</kbd> <kbd>ENTER</kbd> returns <span class="tex">\boldsymbol{\frac{13}{3}}</span>.</div></div></div>
-    <div class="part"><div class="pl">(b) Determine the <span class="tex">y</span>-intercept, expressed as an exact fraction.</div><div class="work" style="--h:210px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><code>1:value</code> at <span class="tex">x=0</span>: <span class="tex">y=\frac{-13}{8}=-1.625</span>.<br><kbd class="u5l5-ka">ALPHA</kbd> <kbd>1</kbd> <kbd>MATH</kbd> <kbd>ENTER</kbd> <kbd>ENTER</kbd> returns <span class="tex">\boldsymbol{-\frac{13}{8}}</span>.</div></div></div>
-  </div>
-  <div class="parts c1"><div class="part u5l5-gpart"><div class="ansrow"><button class="reveal">Graph</button><div class="ans"><div class="u5l5-fullfig"><div data-fig="ex3"></div></div></div></div></div></div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Check the fractions on the TI-30XIIS:</b> back to decimals. <span class="keys"><kbd>1</kbd><kbd>3</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> and <span class="keys"><kbd>(−)</kbd><kbd>1</kbd><kbd>3</kbd><kbd>÷</kbd><kbd>8</kbd><kbd>ENTER</kbd></span></div>
-    <div class="pill-col"><button class="pill" data-keys="13 ÷ 3 =">Show 13/3</button><button class="pill" data-keys="(−) 13 ÷ 8 =">Show −13/8</button></div>
+    <div class="part"><div class="pl">(a) <span class="tex">(7,3),\ (5,7),\ (-2,9),\ (0,3),\ (5,4)</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The <span class="tex">x</span>-value <span class="tex">5</span> appears twice, paired with two different outputs, <span class="tex">7</span> and <span class="tex">4</span>. One input, two outputs: <b>not a function</b>.</div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">(4,4),\ (1,3),\ (6,9),\ (-5,4)</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The <span class="tex">x</span>-values <span class="tex">4,1,6,-5</span> are all different. The output <span class="tex">4</span> repeating does not matter — every input still has only one output: <b>is a function</b>.</div></div></div>
+    <div class="part"><div class="pl">(c)</div><div class="u5l5-qfig" data-fig="map3c"></div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Every domain element (<span class="tex">D</span>, <span class="tex">E</span>, <span class="tex">F</span>) has exactly one arrow leaving it; it does not matter that <span class="tex">Y</span> receives two arrows: <b>is a function</b>.</div></div></div>
+    <div class="part"><div class="pl">(d)</div><div class="u5l5-qfig" data-fig="gr3d"></div><div class="work" style="--h:110px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The plotted points <span class="tex">(1,3),(2,1),(4,4),(5,2)</span> all have different <span class="tex">x</span>-coordinates, so every vertical line meets the graph at most once: <b>is a function</b>.</div></div></div>
+    <div class="part"><div class="pl">(e) The relation pairing each vehicle registered in Alberta with its licence plate number.</div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Every vehicle registered in Alberta is issued exactly one licence plate number, so each element of the domain corresponds to exactly one element of the range: <b>is a function</b>.</div></div></div>
+    <div class="part"><div class="pl">(f)</div><div class="u5l5-qfig" data-fig="gr3f"></div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans u5l5-figans"><div>The vertical line <span class="tex">x=0</span> crosses the closed curve twice (near <span class="tex">y\approx1.4</span> and <span class="tex">y\approx-1.7</span>), so it fails the vertical line test: <b>not a function</b>.</div><div data-fig="gr3fans"></div></div></div></div>
+    <div class="part think u5l5-span2"><div class="pl"><span class="think-tag">Think</span> Swap every pair in (a) to (d), so <span class="tex">(x,y)</span> becomes <span class="tex">(y,x)</span> and every arrow turns around. Which answers change?</div><div class="work" style="--h:100px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>(b) and (c)</b> stop being functions: their repeated <b>output</b> becomes a repeated <b>input</b> (<span class="tex">(4,4)</span> and <span class="tex">(4,-5)</span>; <span class="tex">Y</span> sends arrows to <span class="tex">E</span> and <span class="tex">F</span>). (a) stays not a function (now <span class="tex">3</span> repeats) and (d) stays a function (its outputs <span class="tex">3,1,4,2</span> are all different).</div></div></div>
   </div>
   <div class="space" id="ex3-space"></div>
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
-<!-- ================= 9. Max and min ================= -->
-<section class="card" data-ink="s9" data-section="9. Maximum or Minimum">
-  <div class="sec-h"><span class="badge">9</span><h2>Finding a Maximum or Minimum Value</h2></div>
-  <p>A parabola’s vertex can also be located with the calculator. Open <code>CALC</code> (<kbd class="u5l5-k2">2nd</kbd> <kbd>TRACE</kbd>) and choose <code>4:maximum</code> for a <b>downward-opening</b> parabola or <code>3:minimum</code> for an <b>upward-opening</b> one. As with the zero feature, the calculator asks for a <code>Left Bound?</code>, a <code>Right Bound?</code> and a <code>Guess?</code> on either side of the vertex.</p>
-  <div class="tip watch"><div class="tip-ic">!</div><div>The coordinates displayed may be <b>slightly off</b> because of the calculator’s internal approximation method. Round to a sensible exact value, <b>check it by substituting</b> into the equation, and use <kbd>MATH</kbd> <code>▸Frac</code> on the coordinates to recover exact fractions if needed.</div></div>
-  <div class="explainer" data-explainer="maxmin"></div>
-</section>
-
-<section class="card example" data-ink="ex4" data-section="Example 4">
-  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>The maximum feature, then the exact vertex</h3></div>
-  <p class="q">Consider the relation <span class="tex">y=-x^2+7x+12</span>.</p>
-  <div class="parts c2">
-    <div class="part"><div class="pl">(a) Use the maximum feature to estimate the coordinates of the maximum point.</div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><code>4:maximum</code>, answering <code>Left Bound?</code> and <code>Right Bound?</code> on either side of the turning point and <code>Guess?</code> near it, locates the maximum at <span class="tex">\boldsymbol{x\approx3.5}</span>, <span class="tex">\boldsymbol{y\approx24.25}</span>.</div></div></div>
-    <div class="part"><div class="pl">(b) State the exact coordinates of the maximum point as fractions.</div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The screen shows something like <code>X=3.4999986</code>, <code>Y=24.25</code>: round to <span class="tex">x=3.5</span>.<br>Check: <span class="tex">-(3.5)^2+7(3.5)+12=-12.25+24.5+12=24.25</span> ✓, and nearby inputs give less (<span class="tex">x=3.4</span> and <span class="tex">x=3.6</span> both give <span class="tex">24.24</span>).<br><kbd>MATH</kbd> <code>1:▸Frac</code>: maximum point <span class="tex">\boldsymbol{\left(\frac{7}{2},\ \frac{97}{4}\right)}</span>.</div></div></div>
-  </div>
-  <div class="parts c1"><div class="part u5l5-gpart"><div class="ansrow"><button class="reveal">Graph</button><div class="ans"><div class="u5l5-fullfig"><div data-fig="ex4"></div></div></div></div></div></div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Substitute <span class="tex">x=3.5</span> on the TI-30XIIS.</b> <span class="keys"><kbd>0</kbd><kbd>−</kbd><kbd>3</kbd><kbd>.</kbd><kbd>5</kbd><kbd>x²</kbd><kbd>+</kbd><kbd>7</kbd><kbd>×</kbd><kbd>3</kbd><kbd>.</kbd><kbd>5</kbd><kbd>+</kbd><kbd>1</kbd><kbd>2</kbd><kbd>ENTER</kbd></span> gives 24.25, and <span class="keys"><kbd>9</kbd><kbd>7</kbd><kbd>÷</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> gives 24.25 too ✓</div>
-    <div class="pill-col"><button class="pill" data-keys="0 − 3.5 x² + 7 × 3.5 + 12 =">Show y at 3.5</button><button class="pill" data-keys="97 ÷ 4 =">Show 97/4</button></div>
-  </div>
-  <div class="space" id="ex4-space"></div>
-  <button class="more" data-more="ex4-space">+ More space</button>
+<section class="card" data-ink="s3b" data-section="3. Checking Example 3">
+  <h3 class="sub">Checking Example 3, one form at a time</h3>
+  <p>Six forms, one question each time: <b>can an input have two outputs?</b> Use the check after the class has justified each part.</p>
+  <div class="explainer" data-explainer="sixForms"></div>
 </section>
 
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
   <div class="sum-grid">
-    <div><b>Window:</b> <span class="tex">x:[X_{\min},X_{\max},X_{scl}]</span>, <span class="tex">y:[Y_{\min},Y_{\max},Y_{scl}]</span>. <kbd>ZOOM</kbd> <kbd>6</kbd> is standard, which rarely shows everything: type a <b>custom window</b> (Zoom Out is fast but rough; ZoomFit fits <span class="tex">y</span> only).</div>
-    <div><b>Given <span class="tex">x</span>, find <span class="tex">y</span>:</b> <kbd>TRACE</kbd> or <code>1:value</code> (only for <span class="tex">X_{\min}\le x\le X_{\max}</span>, else <code>ERR:INVALID</code>), or the <b>table</b> (Ask mode works for any <span class="tex">x</span>).</div>
-    <div><b>Given <span class="tex">y</span>, find <span class="tex">x</span>:</b> <span class="tex">Y_2=</span> the output, then <code>5:intersect</code>. <b>Intercepts:</b> <code>2:zero</code> (or <span class="tex">Y_2=0</span>) for <span class="tex">x</span>; the output at <span class="tex">x=0</span> for <span class="tex">y</span>.</div>
-    <div><b>Exact answers:</b> <code>X▸Frac</code>, <code>Y▸Frac</code>. <code>4:maximum</code> / <code>3:minimum</code> may be slightly off: round, then <b>check every answer by substituting</b> into the equation.</div>
+    <div><b>Function:</b> a relation in which each element of the domain is paired with <b>exactly one</b> element of the range. One input, one output.</div>
+    <div><b>Pairs, tables, arrows:</b> not a function if an input is <b>repeated</b> with a different output, or if a domain element has <b>two arrows leaving</b> it. A repeated <b>output</b> is fine.</div>
+    <div><b>Graphs:</b> the <b>vertical line test</b>. If any vertical line crosses the graph more than once, it is not a function, and those crossings give two ordered pairs that prove it, like <span class="tex">(0,3)</span> and <span class="tex">(0,-3)</span>.</div>
+    <div><b>Every function is a relation, but not every relation is a function.</b> Equations and words: try an input. <span class="tex">x=y^2</span> sends <span class="tex">4</span> to <span class="tex">2</span> and <span class="tex">-2</span>: not a function.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u5l5">
-    <div><div class="kicker">Your turn</div><b>Assignment 5 — Graphing Calculator Techniques for Relations</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 5 — What Is a Function?</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l6/">
-    <div><div class="kicker">Next lesson</div><b>Lesson 6 — Exploring Real-World Relations With a Graphing Calculator</b><div class="muted">Linear and quadratic models: windows that make sense, intercepts, trace, intersect and the vertex, with a domain and range that fit the situation</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Next lesson</div><b>Lesson 6 — Function Notation</b><div class="muted">Giving a function a name: <span class="tex">f(x)</span>, finding <span class="tex">f(a)</span>, and solving <span class="tex">f(x)=b</span></div></div><span class="arrow">→</span>
   </a>
   <div class="space" id="sum-space" style="min-height:120px"></div>
 </section>
@@ -318,7 +273,7 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u5l5.js';
-  boot({ key: 'u5l5', homeHref: '../../', title: '5.5 Graphing Calculator Techniques' });
+  boot({ key: 'u5l5', homeHref: '../../', title: '5.5 What Is a Function?' });
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

@@ -26,7 +26,7 @@ async def main():
         mail = await page.evaluate("[...document.querySelectorAll('.home-about a')].map(a => [a.textContent, a.getAttribute('href')])")
         print('bottom buttons:', mail); assert mail[1][0] == 'Email the Teacher' and mail[1][1].startswith('mailto:rcathcart@rvschools.ab.ca?subject=Math%2010C%20question%20from%20'), mail
         print('home cards:', home)
-        assert len(home) == 79 and home[54].endswith('/u8/l1a/?class=C') and home[78].endswith('/u10/l9/?class=C') and home[41].endswith('/u6/l1/?class=C') and home[46].endswith('/u6/l6/?class=C') and home[47].endswith('/u7/l1/?class=C') and home[53].endswith('/u7/l7/?class=C') and home[21].endswith('/u4/l1a/?class=C') and home[29].endswith('/u4/l8/?class=C') and home[30].endswith('/u5/l1/?class=C') and home[37].endswith('/u5/l7b/?class=C') and home[40].endswith('/u5/l10/?class=C') and home[15].endswith('/u3/l1/?class=C') and home[20].endswith('/u3/l6/?class=C') and home[0].endswith('/u1/l1/?class=C') and home[5].endswith('/u1/l6a/?class=C') and home[7].endswith('/u1/l7/?class=C') and home[8].endswith('/u2/l1/?class=C') and home[14].endswith('/u2/l6/?class=C'), home
+        assert len(home) == 79 and home[54].endswith('/u8/l1/?class=C') and home[78].endswith('/u10/l6/?class=C') and home[41].endswith('/u6/l1/?class=C') and home[46].endswith('/u6/l5/?class=C') and home[47].endswith('/u7/l1/?class=C') and home[53].endswith('/u7/l7/?class=C') and home[21].endswith('/u4/l1/?class=C') and home[29].endswith('/u4/l8/?class=C') and home[30].endswith('/u5/l1/?class=C') and home[37].endswith('/u5/l6/?class=C') and home[40].endswith('/u5/l9/?class=C') and home[15].endswith('/u3/l1/?class=C') and home[20].endswith('/u3/l6/?class=C') and home[0].endswith('/u1/l1/?class=C') and home[5].endswith('/u1/l7/?class=C') and home[7].endswith('/u1/l9/?class=C') and home[8].endswith('/u2/l1/?class=C') and home[14].endswith('/u2/l6/?class=C'), home
         await page.screenshot(path='/tmp/home_cards.png', full_page=False)
         # the card opens the lesson page itself in the same tab; the student shows in the ledger as on the lesson page;
         # the lesson's home button goes back to the assignments
@@ -40,7 +40,7 @@ async def main():
         await page.screenshot(path='/tmp/home_cards_phone.png')
         await page.set_viewport_size({'width': 1300, 'height': 950})
         out = {}
-        for lid in ['u1l1', 'u1l6a', 'u2l1']:
+        for lid in ['u1l1', 'u1l7', 'u2l1']:
             await page.evaluate("location.hash = '#/lesson/%s'" % lid); await page.wait_for_selector('.qcard'); await page.wait_for_timeout(300)
             out[lid] = await page.evaluate("(document.querySelector('.qnav a.teach-link')||{}).href || null")
         print(out)
@@ -49,7 +49,7 @@ async def main():
         await page.set_viewport_size({'width': 390, 'height': 800}); await page.evaluate("location.hash = '#/lesson/u1l2'"); await page.wait_for_timeout(500)
         await page.screenshot(path='/tmp/teach_link_phone.png')
         ok = out == {'u1l1': BASE + 'lessons/u1/l1/?class=C',
-                     'u1l6a': BASE + 'lessons/u1/l6a/?class=C', 'u2l1': BASE + 'lessons/u2/l1/?class=C'}
+                     'u1l7': BASE + 'lessons/u1/l7/?class=C', 'u2l1': BASE + 'lessons/u2/l1/?class=C'}
         print('errors:', errs); print('PASS' if ok and not errs else 'FAIL')
         await b.close()
 asyncio.run(main())

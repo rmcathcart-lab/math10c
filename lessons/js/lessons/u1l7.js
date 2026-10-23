@@ -1,759 +1,751 @@
-/* Math 10C · Unit 1 · Lesson 7 — Cumulative Number Sense Check-Up: the explainers and widgets on this page.
- * A review lesson, so each explainer is a quick "remember how…" refresher with "Example N check" chips that replay
- * the booklet's own numbers after the class has worked them by hand. */
-import { h, fmt as fmt0, Explainer, FactorTree, isPrime, primeFactors, primesUpTo, productHTML, expHTML, decimal, quickReason } from '../explain.js';
+/* Math 10C · Unit 1 · Lesson 7 — Entire and Mixed Radicals: the explainers and warm-up on this page. */
+import { h, fmt, Explainer, factors, primeFactors } from '../explain.js';
 import { tex } from '../tex.js';
 
-const fmt = (n) => fmt0(n).replace(/\u2009/g, '\u202f'); // narrow no-break space: never splits a number across lines
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
-const T = (s) => tex(s);
-const tn = (n) => fmt0(n).replace(/\u2009/g, '\\,'); // a number for TeX, thin-spaced like the booklet
-const gcd = (a, b) => { while (b) [a, b] = [b, a % b]; return a; };
-const NS = 'http://www.w3.org/2000/svg';
-const svgEl = (tag, attrs = {}) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
-const counts = (ps) => ps.reduce((m, p) => { m[p] = (m[p] || 0) + 1; return m; }, {});
-const listAnd = (a) => (a.length <= 1 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]);
-const moveTo = (c, el, x, y, ms = 600, o = {}) => c.anim(el, [{ left: el.style.left, top: el.style.top }, { left: x + 'px', top: y + 'px' }], ms, o);
-const prod = (ps) => ps.reduce((a, b) => a * b, 1);
-const uniq = (ps) => [...new Set(ps)];
-const hide = (...els) => els.forEach((e) => (e.style.opacity = 0));
+const hide = (...els) => els.forEach((e) => { if (e) e.style.opacity = 0; });
+const svgEl = (tag, attrs = {}) => { const e = document.createElementNS('http://www.w3.org/2000/svg', tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; };
 
-/* ============ 1. The division ladder, for big numbers ============ */
-const LADDER_Q = {
-  2574: {
-    cap: '<b>Example 1(a):</b> 3, 11 and 13 are on the list, but <b>19 is not</b> (2 574 ÷ 19 = 135.47…). The answer is <b>D</b>.',
-    head: 'Which is <b>not</b> a prime factor?', rows: [['A', '3', 1], ['B', '11', 1], ['C', '13', 1], ['D', '19', 0, 'not on the list']]
-  },
-  4290: {
-    cap: '<b>Example 1(b):</b> 5 and 13 are prime factors. 17 doesn’t divide 4 290, and 15 divides it but <b>isn’t prime</b>. That’s <b>2</b> of them: <b>B</b>.',
-    head: 'Prime factors among 5, 13, 17, 15?', rows: [['', '5', 1], ['', '13', 1], ['', '17', 0, 'doesn’t divide'], ['', '15', 0, '= 3 × 5, not prime']]
-  },
-  43010: {
-    cap: '<b>Example 1(c):</b> add the prime factors: 2 + 5 + 11 + 17 + 23 = <b>58</b>.',
-    head: 'Sum of the prime factors', rows: [['', '2 + 5 + 11 + 17 + 23 = <b>58</b>', 1]]
-  },
-  3003: { cap: 'Keep this for <b>Example 3</b>: 3 003 = 3 × 7 × 11 × 13. Now ladder 3 135 and look for the primes they <b>share</b>.' },
-  3135: { cap: 'For <b>Example 3</b>: 3 135 = 3 × 5 × 11 × 19. Shared with 3 003 = 3 × 7 × 11 × 13: <b>3 and 11</b>.' }
+/* KaTeX, allowing \htmlClass / \htmlData (tappable blanks, and tokens that fly from one line to the next) */
+const K = (src, display) => {
+  try { return window.katex.renderToString(String(src), { displayMode: !!display, throwOnError: false, strict: 'ignore', trust: true, output: 'html' }); }
+  catch (e) { return tex(src, display); }
 };
-const ladder = {
-  title: 'Remember: the division ladder',
-  height: 500,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
-  choices: [1001, 2310, { sep: 'Example 1 check:' }, 2574, 4290, 43010, { sep: 'Example 3 check:' }, 3003, 3135],
-  custom: [4, 999999],
-  intro: (n) => `Divide <b>${fmt(n)}</b> by the <b>smallest prime</b> that goes in evenly, write the answer underneath, and repeat until you reach <b>1</b>. The primes collect <b>down the left side</b>.`,
-  make(stage, n, ex) {
-    const W = ex.W, H = 500, rungs = [];
-    let m = n, start = 2;
-    while (m > 1) {
-      const pr = primesUpTo(Math.floor(Math.sqrt(m))).filter((q) => q >= start);
-      const p = pr.find((q) => m % q === 0) || m;
-      rungs.push({ m, p, q: m / p, tries: pr.filter((q) => q < p), start }); start = p; m /= p;
+
+/* ---------- number helpers ---------- */
+const tn = (n) => fmt(n).replace(/ /g, '\\,'); // 3 125 → 3\,125 in LaTeX
+const R = (n) => `\\sqrt{${tn(n)}}`;
+function sqPart(n) { let s = 1; for (let k = 2; k * k <= n; k++) if (n % (k * k) === 0) s = k; return { s, r: n / (s * s) }; }
+const mixT = (s, r) => (r === 1 ? tn(s) : s === 1 ? R(r) : `${tn(s)}${R(r)}`);
+const isSq = (n) => n >= 0 && Number.isInteger(Math.sqrt(n));
+const dec = (x, d = 3) => { if (x < 0) return '−' + dec(-x, d); if (Math.abs(x - Math.round(x)) < 1e-9) return fmt(Math.round(x)); return x.toFixed(d) + '…'; };
+const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
+function Q(p, q = 1) { if (q < 0) { p = -p; q = -q; } const g = gcd(p, q) || 1; return { p: p / g, q: q / g }; }
+function parseCoef(s) { // '5', '-7', '2/3', '0.6'
+  s = String(s); let r, isDec = false;
+  if (s.includes('/')) { const [a, b] = s.split('/').map(Number); r = Q(a, b); }
+  else if (s.includes('.')) { isDec = true; const d = s.split('.')[1].length; r = Q(Math.round(Number(s) * 10 ** d), 10 ** d); }
+  else r = Q(Number(s), 1);
+  return { p: r.p, q: r.q, dec: isDec, src: s, val: r.p / r.q };
+}
+const qT = (r) => { const neg = r.p < 0, p = Math.abs(r.p); return (neg ? '-' : '') + (r.q === 1 ? tn(p) : `\\tfrac{${p}}{${r.q}}`); };
+const coefT = (c) => (c.val === 1 ? '' : c.val === -1 ? '-' : c.dec ? c.src : qT(c)); // LaTeX for a coefficient written in front of a root
+const absCoefT = (c) => (c.dec ? c.src.replace('-', '') : qT({ p: Math.abs(c.p), q: c.q }));
+
+/* ---------- drawing helpers ---------- */
+function chain(stage, parts, x, y, o = {}) { // a row of LaTeX pieces that can be revealed one at a time without reflowing
+  const row = add(stage, h('div', 'l6-chain' + (o.cls ? ' ' + o.cls : '')), x, y);
+  if (o.fs) row.style.fontSize = o.fs + 'px';
+  const els = parts.map((p) => { const e = h('span', 'l6-piece', K(p)); row.appendChild(e); return e; });
+  return { row, els };
+}
+async function fly(c, stage, from, to, src, o = {}) { // a copy of `src` flies from one token to another
+  if (!to) return;
+  if (c.fast || !from) { to.style.opacity = 1; return; }
+  c.check();
+  const sr = stage.getBoundingClientRect(), k = sr.width / stage.offsetWidth || 1;
+  const a = from.getBoundingClientRect(), b = to.getBoundingClientRect();
+  const ax = (a.left + a.width / 2 - sr.left) / k, ay = (a.top + a.height / 2 - sr.top) / k;
+  const bx = (b.left + b.width / 2 - sr.left) / k, by = (b.top + b.height / 2 - sr.top) / k;
+  const g = add(stage, h('div', 'wk-fly c', K(src)), ax, ay); if (o.fs) g.style.fontSize = o.fs + 'px';
+  g.style.opacity = 0;
+  try {
+    await c.anim(g, [{ opacity: 1, transform: 'translate(0,0) scale(1.15)' }, { opacity: 1, transform: `translate(${(bx - ax) / 2}px, ${(by - ay) / 2 - 18}px) scale(1.25)`, offset: 0.5 }, { opacity: 1, transform: `translate(${bx - ax}px, ${by - ay}px) scale(1)` }], o.ms || 800, { delay: o.delay || 0 });
+  } finally { g.remove(); }
+  to.style.opacity = 1;
+}
+function board(stage, o) { // written work: one LaTeX line per row, with a short note beside it
+  const rows = [];
+  return {
+    rows,
+    line(src, note) {
+      const y = o.y + rows.length * o.lh;
+      const el = add(stage, h('div', 'wk-line', K(src)), o.x, y); el.style.fontSize = o.fs + 'px'; el.style.height = (o.lh - 6) + 'px';
+      let n = null;
+      if (note != null) { n = add(stage, h('div', 'wk-note', `<div>${note}</div>`), o.nx, y); n.style.width = o.nw + 'px'; n.style.height = (o.lh - 6) + 'px'; }
+      hide(el, n); const r = { el, n, q: (s) => el.querySelector(s) }; rows.push(r); return r;
     }
-    const R = rungs.length, rh = Math.min(50, (H - 150) / (R + 1)), fs = Math.min(30, rh * 0.62);
-    const lx = Math.min(W * 0.22, 190), y0 = 22, nums = [], divs = [];
-    const bar = add(stage, h('div', 'ld-bar'), lx + 6, y0 + 2); bar.style.height = '0px';
-    const mk = (cls, txt, x, y) => { const e = add(stage, h('div', cls, txt), x, y); e.style.fontSize = fs + 'px'; e.style.height = rh + 'px'; e.style.lineHeight = rh + 'px'; return e; };
-    nums.push(mk('ld-num', fmt(n), lx + 22, y0));
-    const nx = lx + 200;
-    const notes = add(stage, h('div', 'ld-notes'), nx, y0); notes.style.width = (W - nx - 20) + 'px';
-    const prodEl = add(stage, h('div', 'ld-prod'), 20, H - 70); prodEl.style.width = (W - 40) + 'px';
-    const steps = [];
-    rungs.forEach((r, i) => {
-      const fails = r.tries.length > 4 ? r.tries.slice(0, 3) : r.tries, skipped = r.tries.length > 4;
-      const reason = (q) => quickReason(r.m, q) || ('= ' + decimal(r.m / q));
-      const isSelf = r.p === r.m;
-      steps.push({
-        cap: (fails.length ? `Try primes on <b>${fmt(r.m)}</b>: ${fails.map((q) => `not ${q} (${reason(q)})`).join(', ')}${skipped ? ', …' : ''}. ` : '')
-          + (isSelf ? (r.tries.length ? `Nothing up to √${fmt(r.m)} works, so <b>${fmt(r.m)} is prime</b>: ` : `<b>${fmt(r.m)}</b> is prime, so divide it by itself: `)
-            : `<b>${r.p}</b> works${quickReason(r.m, r.p) ? ' (' + quickReason(r.m, r.p) + ')' : ''}: `)
-          + `${fmt(r.m)} ÷ ${fmt(r.p)} = <b>${fmt(r.q)}</b>.`,
-        run: async (c) => {
-          notes.innerHTML = '';
-          const ls = r.start > 2 && r.tries.length ? [`<span class="muted">Start at the last prime used: ${r.start}</span>`] : [];
-          ls.push(...fails.map((q) => `<span class="muted">${fmt(r.m)} ÷ ${q}?</span> ${reason(q)} <b class="red">✗</b>`));
-          if (skipped) ls.push('<span class="muted">… no prime up to √' + fmt(r.m) + ' works</span>');
-          ls.push(`<span class="muted">${fmt(r.m)} ÷ ${fmt(r.p)}?</span> ${quickReason(r.m, r.p) || (isSelf ? 'it’s prime' : '')} <b class="ok">✓</b>`);
-          ls.push(`<b>${fmt(r.m)} ÷ ${fmt(r.p)} = ${fmt(r.q)}</b>`);
-          const els = ls.map((t) => { const e = h('div', 'ld-note', t); notes.appendChild(e); e.style.opacity = 0; return e; });
-          for (const e of els) await c.fadeIn(e, 240, { from: 'translateX(-10px)' });
-          const y = y0 + i * rh, d = mk('ld-div', fmt(r.p), lx - 8, y); d.style.translate = '-100% 0'; divs.push(d);
-          const qn = mk('ld-num', fmt(r.q), lx + 22, y + rh); nums.push(qn);
-          await Promise.all([c.pop(d, 380), c.anim(bar, [{ height: bar.style.height }, { height: (i + 2) * rh - 4 + 'px' }], 400), c.anim(qn, [{ opacity: 0, transform: 'translateY(-' + rh + 'px)' }, { opacity: 1, transform: 'none' }], 500, { delay: 200 })]);
-        }
-      });
-    });
-    const ps = rungs.map((r) => r.p), rep = new Set(ps).size < ps.length, P = uniq(ps);
-    steps.push({
-      cap: `The bottom is <b>1</b>, so we’re done. Read the primes <b>down the left side</b>: ${fmt(n)} = <b>${rep ? expHTML(ps) : productHTML(ps)}</b>.`,
-      run: async (c) => {
-        notes.innerHTML = '';
-        nums[nums.length - 1].classList.add('one');
-        await c.pop(nums[nums.length - 1], 300);
-        for (const d of divs) { d.classList.add('lit'); await c.anim(d, [{ transform: 'scale(1)' }, { transform: 'scale(1.3)' }, { transform: 'scale(1)' }], 220); }
-        prodEl.innerHTML = `${fmt(n)} = ${ps.map((p) => '<span class="pchip">' + fmt(p) + '</span>').join(' × ')}${rep ? ' = <b class="ok">' + expHTML(ps) + '</b>' : ''}`;
-        await c.fadeIn(prodEl, 450);
-      }
-    });
-    const q = LADDER_Q[n];
-    steps.push({
-      cap: q ? q.cap : `The <b>prime factors</b> of ${fmt(n)} are a <b>list</b>, each prime once: <b>${listAnd(P.map(fmt))}</b>.`,
-      run: async (c) => {
-        notes.innerHTML = '';
-        const els = [h('div', 'ld-note', `<b>Prime factors of ${fmt(n)}</b> <span class="muted">(each once)</span>`), h('div', 'ld-pf', P.map((p) => '<span class="pchip">' + fmt(p) + '</span>').join(''))];
-        if (q && q.rows) {
-          els.push(h('div', 'ld-note muted', q.head));
-          q.rows.forEach(([l, v, ok, why]) => els.push(h('div', 'ld-q', `${l ? '<span class="opt-l">' + l + '</span>' : ''}${v} <span class="chk ${ok ? 'y' : 'n'}">${ok ? '✓' : '✗'}</span>${why ? ' <span class="muted small">' + why + '</span>' : ''}`)));
-        }
-        els.forEach((e) => { notes.appendChild(e); e.style.opacity = 0; });
-        for (const e of els) await c.fadeIn(e, 260, { from: 'translateX(-10px)' });
-      }
-    });
-    return steps;
-  }
-};
+  };
+}
+async function showRow(c, stage, row, flights = [], fs) {
+  flights.forEach((f) => { if (f[1]) f[1].style.opacity = 0; });
+  const jobs = [c.anim(row.el, [{ opacity: 0 }, { opacity: 1 }], 380)];
+  if (row.n) jobs.push(c.fadeIn(row.n, 380, { delay: 150, from: 'translateX(10px)' }));
+  flights.forEach(([a, b, src], i) => jobs.push(fly(c, stage, a, b, src, { fs, delay: 150 + i * 120 })));
+  await Promise.all(jobs);
+}
+function radSign(stage, x, y, w, ht, cls) { // a hand-drawn root sign whose bar spans w px
+  const s = add(stage, svgEl('svg', { class: 'l6-rad ' + (cls || ''), width: w + 4, height: ht + 4 }), x, y);
+  s.appendChild(svgEl('path', { d: `M2 ${ht * 0.6} L11 ${ht * 0.5} L24 ${ht} L40 3 L${w} 3` }));
+  return s;
+}
 
-/* ============ 1. GCF and LCM with a prime-factor Venn diagram ============ */
-const VENN_X = {
-  '10,21': ['<b>Example 2:</b> LCM = 2 × 3 × 5 × 7 is the form a × b × c × d with a &lt; b &lt; c &lt; d, so <b>c = 5</b>. The answer is <b>C</b>.', 'a × b × c × d = 2 × 3 × <b>5</b> × 7 → <b>C</b>'],
-  '3003,3135': ['<b>Example 3:</b> the overlap holds 3 and 11, so the <b>GCF is 3 × 11 = 33</b>.', 'Example 3: GCF = <b>33</b>'],
-  '9,20': ['<b>Example 4</b> starts here: LCM(9, 20) = <b>180</b>, and that 180 is the <b>GCF of P and Q</b>. Keep going in the step-by-step after Example 4.', 'Example 4: GCF(P, Q) = <b>180</b>']
-};
-const venn = {
-  title: 'GCF and LCM from a prime-factor Venn diagram',
-  height: 440,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: '12,18', label: '12 &amp; 18' }, { v: '60,84', label: '60 &amp; 84' }, { v: '36,120', label: '36 &amp; 120' },
-    { sep: 'Example 2 check:' }, { v: '10,21', label: '10 &amp; 21' }, { sep: 'Example 3:' }, { v: '3003,3135', label: '3 003 &amp; 3 135' }, { sep: 'Example 4:' }, { v: '9,20', label: '9 &amp; 20' }],
-  intro: 'Each circle holds one number’s prime factors. Primes the numbers <b>share</b> go in the overlap. Then the <b>GCF</b> and <b>LCM</b> can be read straight off the picture.',
-  make(stage, v, ex) {
-    const W = ex.W, [A, B] = String(v).split(',').map(Number);
-    const pa = primeFactors(A), pb = primeFactors(B), ca = counts(pa), cb = counts(pb);
-    const shared = []; uniq(pa).forEach((p) => { for (let i = 0; i < Math.min(ca[p], cb[p] || 0); i++) shared.push(p); });
-    const g = prod(shared), L = A * B / g;
-    const sc = counts(shared), onlyB = []; const t = {}; pb.forEach((p) => { t[p] = (t[p] || 0) + 1; if (t[p] > (sc[p] || 0)) onlyB.push(p); });
-    const all = [...pa, ...onlyB].sort((x, y) => x - y);
-    const R = 140, cy = 232, cx1 = 175, cx2 = 345, xm = (cx1 + cx2) / 2, xa = cx1 - 58, xb = cx2 + 58;
-    const s = svgEl('svg', { class: 'vn-svg' }); stage.appendChild(s);
-    s.append(svgEl('circle', { cx: cx1, cy, r: R, class: 'vn-c a' }), svgEl('circle', { cx: cx2, cy, r: R, class: 'vn-c b' }));
-    add(stage, h('div', 'vn-name a c', fmt(A)), cx1 - 40, 46); add(stage, h('div', 'vn-name b c', fmt(B)), cx2 + 40, 46);
-    const colY = (i, k) => cy + (i - (k - 1) / 2) * 46;
-    const chipsA = pa.map((p, i) => { const e = add(stage, h('div', 'vchip a', fmt(p)), xa, colY(i, pa.length)); e.style.opacity = 0; e._p = p; return e; });
-    const chipsB = pb.map((p, i) => { const e = add(stage, h('div', 'vchip b', fmt(p)), xb, colY(i, pb.length)); e.style.opacity = 0; e._p = p; return e; });
-    // matching pairs
-    const usedA = new Set(), usedB = new Set(), pairs = [];
-    shared.forEach((p) => { const ia = chipsA.findIndex((e, i) => e._p === p && !usedA.has(i)), ib = chipsB.findIndex((e, i) => e._p === p && !usedB.has(i)); usedA.add(ia); usedB.add(ib); pairs.push([chipsA[ia], chipsB[ib]]); });
-    const restA = chipsA.filter((_, i) => !usedA.has(i)), restB = chipsB.filter((_, i) => !usedB.has(i));
-    const panel = add(stage, h('div', 'vn-panel'), 520, 30); panel.style.width = (W - 540) + 'px';
-    const line = (cls, html) => { const e = h('div', 'vn-line ' + cls, html); panel.appendChild(e); e.style.opacity = 0; return e; };
-    const lA = line('', `${fmt(A)} = ${productHTML(pa)}`), lB = line('', `${fmt(B)} = ${productHTML(pb)}`);
-    const lG = line('g', shared.length ? `<b>GCF</b> = ${productHTML(shared)} = <b>${fmt(g)}</b>` : '<b>GCF</b> = <b>1</b> <span class="muted">(nothing shared)</span>');
-    const lL = line('l', `<b>LCM</b> = ${productHTML(all)} = <b>${fmt(L)}</b>`);
-    const X = VENN_X[v], lX = X ? line('x', X[1]) : null;
-    const steps = [
-      {
-        cap: `Factor both: <b>${fmt(A)} = ${productHTML(pa)}</b> and <b>${fmt(B)} = ${productHTML(pb)}</b>. Each prime goes into its own number’s circle.`,
-        run: (c) => Promise.all([c.fadeIn(lA, 300), c.fadeIn(lB, 300, { delay: 150 }), ...chipsA.map((e, i) => c.pop(e, 320, { delay: i * 80 })), ...chipsB.map((e, i) => c.pop(e, 320, { delay: 200 + i * 80 }))])
-      },
-      {
-        cap: shared.length ? `Primes in <b>both</b> lists move to the overlap — one chip for each matching pair: <b>${listAnd(shared.map(fmt))}</b>.${shared.length < Math.min(pa.length, pb.length) || new Set(shared).size < shared.length ? '' : ''}`
-          : `${fmt(A)} and ${fmt(B)} have <b>no prime in common</b>, so the overlap stays <b>empty</b>.`,
-        run: async (c) => {
-          const jobs = [];
-          pairs.forEach(([ea, eb], i) => {
-            const y = colY(i, pairs.length);
-            ea.classList.add('both');
-            jobs.push(moveTo(c, ea, xm, y, 650, { delay: i * 120 }), moveTo(c, eb, xm, y, 650, { delay: i * 120 }).then(() => c.anim(eb, [{ opacity: 1 }, { opacity: 0 }], 200)));
-          });
-          restA.forEach((e, i) => jobs.push(moveTo(c, e, xa, colY(i, restA.length), 600, { delay: 300 })));
-          restB.forEach((e, i) => jobs.push(moveTo(c, e, xb, colY(i, restB.length), 600, { delay: 300 })));
-          if (!pairs.length) jobs.push(c.shake(panel));
-          await Promise.all(jobs);
-        }
-      },
-      {
-        cap: shared.length ? `<b>GCF = multiply the overlap</b>: ${productHTML(shared)} = <b>${fmt(g)}</b>. (The shared primes, each to the <b>lowest</b> power: ${expHTML(shared)}.)`
-          : `Nothing is shared, so the only common factor is 1: <b>GCF = 1</b>.`,
-        run: async (c) => { pairs.forEach(([ea]) => ea.classList.add('lit')); await Promise.all([c.fadeIn(lG, 350), ...pairs.map(([ea], i) => c.anim(ea, [{ transform: 'scale(1)' }, { transform: 'scale(1.25)' }, { transform: 'scale(1)' }], 360, { delay: i * 90 }))]); }
-      },
-      {
-        cap: `<b>LCM = multiply everything in the picture</b>: ${productHTML(all)} = <b>${fmt(L)}</b>. (Every prime, each to the <b>highest</b> power: ${expHTML(all)}.)`,
-        run: async (c) => {
-          pairs.forEach(([ea]) => ea.classList.remove('lit'));
-          const every = [...pairs.map((p) => p[0]), ...restA, ...restB];
-          every.forEach((e) => e.classList.add('lit'));
-          await Promise.all([c.fadeIn(lL, 350), ...every.map((e, i) => c.anim(e, [{ transform: 'scale(1)' }, { transform: 'scale(1.25)' }, { transform: 'scale(1)' }], 340, { delay: i * 80 }))]);
-        }
-      }
-    ];
-    if (X) steps.push({ cap: X[0], run: (c) => c.fadeIn(lX, 400) });
-    return steps;
-  }
-};
-
-/* ============ Example 4: reasoning backwards from a GCF ============ */
-const backwards = {
-  title: `What a GCF of 180 forces on ${T('P')} and ${T('Q')}`,
-  height: 480,
-  minW: 966, // drawn this wide and scaled to fit beside the sidebar
-  intro: 'The LCM of 9 and 20 is the GCF of P and Q. Work out what that number is — then what it <b>forces</b> P and Q to be.',
-  make(stage, v, ex) {
-    const W = ex.W;
-    const top = add(stage, h('div', 'st-big', `LCM(9, 20) = <span class="muted">?</span>`), 22, 12);
-    // P/Q Venn
-    const R = 120, cy = 212, cx1 = 150, cx2 = 290, xm = 220;
-    const s = svgEl('svg', { class: 'vn-svg' }); stage.appendChild(s);
-    const c1 = svgEl('circle', { cx: cx1, cy, r: R, class: 'vn-c a' }), c2 = svgEl('circle', { cx: cx2, cy, r: R, class: 'vn-c b' });
-    s.append(c1, c2); c1.style.opacity = c2.style.opacity = 0;
-    const nP = add(stage, h('div', 'vn-name a c', T('P')), cx1 - 60, 84), nQ = add(stage, h('div', 'vn-name b c', T('Q')), cx2 + 60, 84);
-    const ov = [2, 2, 3, 3, 5].map((p, i) => { const e = add(stage, h('div', 'vchip both', p), xm + (i % 2 ? 24 : -24) + (i === 4 ? 24 : 0), cy - 46 + Math.floor(i / 2) * 46); e.style.width = '44px'; e.style.marginLeft = '-22px'; return e; });
-    const qP = add(stage, h('div', 'vchip q', '?'), cx1 - 62, cy), qQ = add(stage, h('div', 'vchip q', '?'), cx2 + 62, cy);
-    hide(nP, nQ, ...ov, qP, qQ);
-    // statements
-    const px = 470, pw = W - px - 20;
-    const st = [['A', `${T('P')} is a multiple of 5.`], ['B', `${T('Q')} is a multiple of 45.`], ['C', `${T('P')} could be less than 150.`], ['D', `${T('Q')} could be greater than 2 000.`]]
-      .map(([l, t], i) => { const e = add(stage, h('div', 'bk-stmt', `<b>${l}</b> ${t}<span class="v"></span>`), px, 64 + i * 54); e.style.width = pw + 'px'; return e; });
-    const verdict = (i, ok, txt) => { const e = st[i].querySelector('.v'); e.innerHTML = `<span class="chk ${ok ? 'y' : 'n'}">${txt}</span>`; if (!ok) st[i].classList.add('f'); return e; };
-    const stamp = add(stage, h('div', 'stamp bad', 'Answer: C'), px + pw - 230, 292); stamp.style.opacity = 0;
-    // number line of multiples of 180
-    const x0 = 40, x1 = W - 40, ay = 400, sx = (val) => x0 + val / 2300 * (x1 - x0);
-    const axis = add(stage, h('div', 'nl-ax'), x0, ay - 1); axis.style.width = (x1 - x0) + 'px';
-    const mult = []; for (let m = 0; m <= 2160; m += 180) mult.push(m);
-    mult.forEach((m) => { add(stage, h('div', 'nl-tk'), sx(m), ay); add(stage, h('div', 'nl-lab', fmt(m)), sx(m), ay + 12); });
-    const dots = mult.slice(1).map((m) => { const e = add(stage, h('div', 'nl-dot'), sx(m), ay); e.style.opacity = 0; return e; });
-    const mlab = add(stage, h('div', 'nl-flag teal', 'multiples of 180: where P and Q can be'), sx(1080), ay - 72); mlab.style.opacity = 0;
-    const zone = (a, b, cls) => { const e = add(stage, h('div', 'nl-zone ' + cls), sx(a), ay - 9); e.style.width = (sx(b) - sx(a)) + 'px'; return e; };
-    const d150 = zone(0, 150, 'red'), f150 = add(stage, h('div', 'nl-flag red', 'less than 150: no multiples of 180 here ✗'), x0 - 6, ay - 42); f150.style.translate = '0 0';
-    const d2000 = zone(2000, 2300, 'amb'), f2000 = add(stage, h('div', 'nl-flag amb', '&gt; 2 000'), sx(2150), ay + 34);
-    const fQ = add(stage, h('div', 'nl-flag ok', 'Q = 2 160 ✓'), sx(2160), ay - 42); fQ.style.translate = '-70% 0';
-    hide(f150, d150, f2000, d2000, fQ);
-    return [
-      {
-        cap: '9 = 3<sup>2</sup> and 20 = 2<sup>2</sup> × 5 share no primes, so the LCM takes everything: 2<sup>2</sup> × 3<sup>2</sup> × 5 = <b>180</b>.',
-        run: async (c) => { top.innerHTML = 'LCM(9, 20) = 2<sup>2</sup> × 3<sup>2</sup> × 5 = <b class="ok">180</b> &nbsp;<span class="muted">= GCF(P, Q)</span>'; await c.fadeIn(top, 400); }
-      },
-      {
-        cap: 'So <b>GCF(P, Q) = 180</b>. The overlap of P and Q holds exactly 180’s primes: <b>2, 2, 3, 3, 5</b>. P and Q may have other primes too — just none they share.',
-        run: (c) => Promise.all([c.anim(c1, [{ opacity: 0 }, { opacity: 1 }], 400), c.anim(c2, [{ opacity: 0 }, { opacity: 1 }], 400), c.fadeIn(nP, 300), c.fadeIn(nQ, 300),
-          ...ov.map((e, i) => c.pop(e, 340, { delay: 300 + i * 110 })), c.pop(qP, 300, { delay: 900 }), c.pop(qQ, 300, { delay: 950 })])
-      },
-      {
-        cap: 'Every prime of 180 is inside P <b>and</b> inside Q, so <b>both are multiples of 180</b>: 180, 360, 540, … The smallest either one can be is <b>180</b>.',
-        run: (c) => Promise.all([c.fadeIn(mlab, 300), ...dots.map((e, i) => c.pop(e, 300, { delay: i * 70 }))])
-      },
-      {
-        cap: '<b>A:</b> 180 = 5 × 36, so every multiple of 180 is a multiple of 5 — <b>true</b>. <b>B:</b> 180 = 45 × 4, so Q is a multiple of 45 — <b>true</b>.',
-        run: (c) => Promise.all([c.pop(verdict(0, 1, '✓ 180 = 5 × 36'), 320), c.pop(verdict(1, 1, '✓ 180 = 45 × 4'), 320, { delay: 250 })])
-      },
-      {
-        cap: '<b>C:</b> P is at least 180, so P can <b>never</b> be less than 150. This statement <b>must be false</b>.',
-        run: (c) => Promise.all([c.anim(d150, [{ opacity: 0 }, { opacity: 1 }], 300), c.fadeIn(f150, 300), c.pop(verdict(2, 0, '✗ P ≥ 180'), 320, { delay: 200 }), c.shake(st[2])])
-      },
-      {
-        cap: '<b>D:</b> Q = 2 160 = 180 × 12 works (GCF(180, 2 160) = 180), and 3 600 would too. Q can be greater than 2 000 — <b>true</b>. So the answer is <b>C</b>.',
-        run: async (c) => {
-          await Promise.all([c.anim(d2000, [{ opacity: 0 }, { opacity: 1 }], 300), c.fadeIn(f2000, 300), c.fadeIn(fQ, 300, { delay: 200 }), c.anim(dots[dots.length - 1], [{ transform: 'scale(1)' }, { transform: 'scale(1.6)' }, { transform: 'scale(1)' }], 400, { delay: 200 }), c.pop(verdict(3, 1, '✓ e.g. 2 160'), 320, { delay: 300 })]);
-          await c.anim(stamp, [{ opacity: 0, transform: 'scale(1.8)' }, { opacity: 1, transform: 'scale(1)' }], 420, { easing: 'cubic-bezier(.2,1.4,.4,1)' });
-        }
-      }
-    ];
-  }
-};
-
-/* ============ 2. Perfect square? perfect cube? Deal the primes into equal groups ============ */
-const powers = {
-  title: 'Perfect square? Perfect cube? Deal the primes into equal groups',
-  height: 410,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
-  choices: [144, 216, 64, 72, { sep: 'Example 5 check:' }, 2025, 3375],
-  custom: [4, 99999],
-  intro: (n) => `A square root splits the prime factors into <b>2 identical groups</b>; a cube root into <b>3</b>. Factor <b>${fmt(n)}</b> and try both.`,
-  make(stage, n, ex) {
-    const W = ex.W, ps = primeFactors(n), cnt = counts(ps);
-    const topLine = add(stage, h('div', 'st-big pw-top', `${fmt(n)} = ` + ps.map((p) => `<span class="pchip">${fmt(p)}</span>`).join(' × ') + (ps.length > 1 && uniq(ps).length < ps.length ? ` = ${expHTML(ps)}` : '')), 22, 12);
-    const tops = [...topLine.querySelectorAll('.pchip')]; tops.forEach((e) => (e.style.opacity = 0));
-    const pw = (W - 60) / 2;
-    const mkPanel = (px, k) => {
-      const pan = add(stage, h('div', 'pw-panel'), px, 78); pan.style.width = pw + 'px'; pan.style.height = (k === 2 ? 236 : 290) + 'px';
-      add(stage, h('div', 'pw-h', k === 2 ? 'Perfect square? <small>deal into 2 equal groups</small>' : 'Perfect cube? <small>deal into 3 equal groups</small>'), px + 14, 88);
-      const rows = [];
-      for (let i = 0; i <= k; i++) {
-        const y = 126 + i * 54, left = i === k;
-        const r = add(stage, h('div', 'pw-row' + (left ? ' left' : '')), px + 100, y); r.style.width = (pw - 114) + 'px';
-        add(stage, h('div', 'pw-rl', left ? 'left over' : 'group ' + (i + 1)), px + 12, y + 23);
-        rows.push({ y: y + 23, x: px + 100 + 26, n: 0 });
-      }
-      const verdict = add(stage, h('div', 'pw-verdict'), px + 14, 126 + (k + 1) * 54 + 4); verdict.style.opacity = 0;
-      return { rows, verdict, px };
-    };
-    const P2 = mkPanel(20, 2), P3 = mkPanel(40 + pw, 3);
-    const chipPos = (e) => [topLine.offsetLeft + e.offsetLeft + e.offsetWidth / 2, topLine.offsetTop + e.offsetTop + e.offsetHeight / 2];
-    const plan = (k) => { // which chip goes to which row
-      const out = [], seen = {};
-      ps.forEach((p, idx) => { const j = seen[p] = (seen[p] || 0) + 1, e = cnt[p], full = Math.floor(e / k) * k; out.push({ p, idx, row: j <= full ? (j - 1) % k : k }); });
-      return out;
-    };
-    const deal = async (c, P, k) => {
-      const pl = plan(k), left = pl.filter((d) => d.row === k).map((d) => d.p), group = pl.filter((d) => d.row === 0).map((d) => d.p);
-      const jobs = pl.map((d, i) => {
-        const [sx0, sy0] = chipPos(tops[d.idx]), r = P.rows[d.row];
-        const e = add(stage, h('div', 'pw-chip' + (d.row === k ? ' red' : ''), fmt(d.p)), sx0, sy0);
-        const x = r.x + r.n * 44; r.n++;
-        return moveTo(c, e, x, r.y, 620, { delay: i * 110 });
-      });
-      await Promise.all(jobs);
-      const ok = !left.length, root = prod(group);
-      P.verdict.innerHTML = ok ? `<span class="ok">✓ Perfect ${k === 2 ? 'square' : 'cube'}</span>: ${T((k === 2 ? '\\sqrt{' : '\\sqrt[3]{') + tn(n) + '}')} = ${group.length ? productHTML(group) + ' = ' : ''}<b>${fmt(root)}</b>`
-        : `<span class="red">✗ Not a perfect ${k === 2 ? 'square' : 'cube'}</span> <span class="muted">(${uniq(left).join(', ')} left over)</span>`;
-      await c.fadeIn(P.verdict, 350);
-      return { ok, root, left: uniq(left), group };
-    };
-    const exps = uniq(ps).map((p) => cnt[p]);
-    const res = { 2: null, 3: null }, pre = (k) => { const pl = plan(k); return { left: uniq(pl.filter((d) => d.row === k).map((d) => d.p)), root: prod(pl.filter((d) => d.row === 0).map((d) => d.p)) }; };
-    const r2 = pre(2), r3 = pre(3);
-    const oddList = (k, left) => left.map((p) => `${p}<sup>${cnt[p]}</sup>`).join(' and ');
-    return [
-      { cap: `Factor: <b>${fmt(n)} = ${expHTML(ps)}</b>. The exponents are <b>${listAnd(exps)}</b>.`, run: (c) => Promise.all(tops.map((e, i) => c.pop(e, 320, { delay: i * 80 }))) },
-      {
-        cap: r2.left.length ? `Deal the primes into <b>2 groups</b>: ${oddList(2, r2.left)} ${r2.left.length > 1 ? 'have' : 'has an'} <b>odd</b> exponent${r2.left.length > 1 ? 's' : ''}, so a prime is left over. ${fmt(n)} is <b>not a perfect square</b>.`
-          : `Deal the primes into <b>2 groups</b>: everything pairs up — every exponent is <b>even</b>. ${fmt(n)} is a <b>perfect square</b>, and the square root is one group: <b>${fmt(r2.root)}</b>.`,
-        run: async (c) => { res[2] = await deal(c, P2, 2); }
-      },
-      {
-        cap: r3.left.length ? `Now <b>3 groups</b>: ${oddList(3, r3.left)} — ${r3.left.length > 1 ? 'exponents that aren’t multiples' : 'an exponent that isn’t a multiple'} of 3, so a prime is left over. ${fmt(n)} is <b>not a perfect cube</b>.`
-          : `Now <b>3 groups</b>: everything shares out evenly — every exponent is a <b>multiple of 3</b>. ${fmt(n)} is a <b>perfect cube</b>, and the cube root is one group: <b>${fmt(r3.root)}</b>.`,
-        run: async (c) => { res[3] = await deal(c, P3, 3); }
-      }
-    ];
-  }
-};
-
-/* ============ Example 5: filling in the partial factor tree ============ */
-const treeFill = {
-  title: `Fill in the tree: what must ${T('d')} be?`,
-  height: 440,
-  minW: 900, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: 'sq', label: '(a) x is a perfect square' }, { v: 'cu', label: '(b) x is a perfect cube' }],
-  intro: (m) => `Read the tree from the bottom up to write <b>x</b> as a product of primes. Then choose <b>d</b> (exactly two primes) so that x is a perfect <b>${m === 'sq' ? 'square' : 'cube'}</b>.`,
-  make(stage, mode, ex) {
-    const W = ex.W, sq = mode === 'sq', d = sq ? 15 : 25, dk = sq ? [3, 5] : [5, 5];
-    const N = { x: [230, 40], a: [110, 120], b: [350, 120], a3: [55, 200], a5: [165, 200], b3: [280, 200], c: [420, 200], c3: [360, 280], d: [480, 280], dL: [430, 360], dR: [530, 360] };
-    const E = [['x', 'a'], ['x', 'b'], ['a', 'a3'], ['a', 'a5'], ['b', 'b3'], ['b', 'c'], ['c', 'c3'], ['c', 'd'], ['d', 'dL', 1], ['d', 'dR', 1]];
-    const s = svgEl('svg', { class: 'lt-svg' }); stage.appendChild(s);
-    E.forEach(([p, q, dash]) => s.appendChild(svgEl('line', { x1: N[p][0], y1: N[p][1] + 21, x2: N[q][0], y2: N[q][1] - 21, class: dash ? 'dash' : '' })));
-    const node = (k, cls, html) => add(stage, h('div', 'ltn ' + cls, html), N[k][0], N[k][1]);
-    const nd = { x: node('x', 'v', 'x'), a: node('a', 'v', 'a'), b: node('b', 'v', 'b'), c: node('c', 'v', 'c'), d: node('d', 'v', 'd') };
-    ['a3', 'b3', 'c3'].forEach((k) => node(k, 'p', '3')); node('a5', 'p', '5');
-    const dL = node('dL', 'q', '?'), dR = node('dR', 'q', '?');
-    const val = (k, v) => { const e = h('span', 'val', '= ' + v); nd[k].appendChild(e); return e; };
-    const px = 590, panel = add(stage, h('div', 'lt-panel'), px, 18); panel.style.width = (W - px - 16) + 'px';
-    const ln = (html) => { const e = h('div', 'lt-line', html); panel.appendChild(e); e.style.opacity = 0; return e; };
-    const L1 = ln(T('a = 3\\times5 = 15')), L2 = ln(T('c = 3\\times d')), L3 = ln(T('b = 3\\times c = 3\\times3\\times d'));
-    const L4 = ln(T('x = a\\times b = 3^3\\times5\\times d'));
-    const tal = (p, k) => { const e = h('div', 'tally', `<span class="tp">${p}:</span>`); for (let i = 0; i < k; i++) e.appendChild(h('span', 'dot')); e.appendChild(h('span', 'te')); panel.appendChild(e); e.style.opacity = 0; return e; };
-    const t3 = tal(3, 3), t5 = tal(5, 1);
-    const L5 = ln(T(`d = ${dk[0]}\\times${dk[1]} = ${d}`)), L6 = ln(T(sq ? 'x = 3^4\\times5^2 = 2\\,025 = 45^2' : 'x = 3^3\\times5^3 = 3\\,375 = 15^3'));
-    const L7 = ln(sq ? `d = 5 <span class="chk n">✗</span> 9 <span class="chk n">✗</span> 15 <span class="chk y">✓</span> 25 <span class="chk n">✗</span>` : `minimum <b>x = 3 375</b>`);
-    const regroup = (t, k, g) => { // gaps every g dots, exponent note
-      const dots = [...t.querySelectorAll('.dot')]; t.querySelectorAll('.gap').forEach((e) => e.remove());
-      dots.forEach((e, i) => { if (i && i % g === 0) t.insertBefore(h('span', 'gap'), e); });
-      const ok = dots.length % g === 0, te = t.querySelector('.te');
-      te.className = 'te ' + (ok ? 'ok' : 'bad'); te.innerHTML = `exponent ${dots.length} ${ok ? '✓' : '✗ ' + (g === 2 ? 'odd' : 'not ×3')}`;
-    };
-    const g = sq ? 2 : 3;
-    return [
-      { cap: 'Start at the bottom left: <b>a</b> splits into 3 and 5, so <b>a = 3 × 5 = 15</b>.', run: (c) => Promise.all([c.fadeIn(L1, 300), c.pop(val('a', 15), 320)]) },
-      { cap: '<b>c</b> splits into 3 and d, so <b>c = 3 × d</b>. Then <b>b</b> splits into 3 and c, so <b>b = 3 × c = 3 × 3 × d</b>.', run: (c) => Promise.all([c.fadeIn(L2, 300), c.fadeIn(L3, 300, { delay: 350 })]) },
-      {
-        cap: `Put it together: <b>x = a × b = 3 × 5 × 3 × 3 × d = 3<sup>3</sup> × 5 × d</b>. Count each prime: three 3s, one 5.`,
-        run: (c) => { regroup(t3, 3, g); regroup(t5, 1, g); return Promise.all([c.fadeIn(L4, 300), c.fadeIn(t3, 300, { delay: 250 }), c.fadeIn(t5, 300, { delay: 400 })]); }
-      },
-      {
-        cap: sq ? 'A perfect square needs every exponent <b>even</b>. 3<sup>3</sup> and 5<sup>1</sup> are <b>both odd</b>, and d is exactly two primes — so d must bring <b>one 3 and one 5</b>: <b>d = 15</b>.'
-          : 'A perfect cube needs every exponent to be a <b>multiple of 3</b>. 3<sup>3</sup> is already fine (adding a 3 would spoil it). 5<sup>1</sup> needs <b>two more 5s</b>: <b>d = 5 × 5 = 25</b>.',
-        run: async (c) => {
-          dk.forEach((p) => { const t = p === 3 ? t3 : t5, e = h('span', 'dot new'); t.insertBefore(e, t.querySelector('.te')); });
-          regroup(t3, 3, g); regroup(t5, 1, g);
-          [dL, dR].forEach((e, i) => { e.className = 'ltn p new'; e.textContent = dk[i]; });
-          await Promise.all([c.pop(dL, 340), c.pop(dR, 340, { delay: 120 }), c.fadeIn(L5, 300, { delay: 200 }), c.pop(val('d', d), 320, { delay: 300 }),
-            ...[...stage.querySelectorAll('.dot.new')].map((e, i) => c.pop(e, 300, { delay: 200 + i * 120 }))]);
-        }
-      },
-      {
-        cap: sq ? 'Now fill in the rest: c = 45, b = 135, and <b>x = 3<sup>4</sup> × 5<sup>2</sup> = 2 025 = 45<sup>2</sup></b>. A perfect square ✓'
-          : 'Now fill in the rest: c = 75, b = 225, and <b>x = 3<sup>3</sup> × 5<sup>3</sup> = 3 375 = 15<sup>3</sup></b>. A perfect cube ✓',
-        run: (c) => Promise.all([c.pop(val('c', 3 * d), 300), c.pop(val('b', 9 * d), 300, { delay: 200 }), c.pop(val('x', fmt(135 * d)), 300, { delay: 400 }), c.fadeIn(L6, 300, { delay: 500 })])
-      },
-      {
-        cap: sq ? 'Check the other choices: d = 5 leaves 3<sup>3</sup> odd, d = 9 leaves 5<sup>1</sup> odd, d = 25 leaves 3<sup>3</sup> odd. Only <b>d = 15</b> works → <b>C</b>.'
-          : 'd has to be exactly two primes, and 5 × 5 is the only pair that makes every exponent a multiple of 3. So the minimum is <b>x = 3 375</b>.',
-        run: (c) => c.fadeIn(L7, 350)
-      }
-    ];
-  }
-};
-
-/* ============ 3. What does an irrational decimal look like? ============ */
-const decimals = {
-  title: 'Decimals that stop, decimals that repeat, and decimals that do neither',
-  height: 440,
-  minW: 940, // drawn this wide and scaled to fit beside the sidebar
-  intro: 'Watch each decimal appear digit by digit. Does it <b>stop</b>? Does a block of digits <b>repeat</b> forever? Or neither?',
-  make(stage, v, ex) {
-    const W = ex.W;
-    const rows = [
-      { lab: T('\\frac{3}{8}'), s: '0.375', kind: 'term', tag: 'terminates', q: 1 },
-      { lab: T('\\frac{26}{11}'), s: '2.' + '36'.repeat(10), kind: 'rep', k: 2, tag: 'repeats: ' + T('2.\\overline{36}'), q: 1 },
-      { lab: T('\\frac{1}{7}'), s: '0.' + '142857'.repeat(3), kind: 'rep', k: 6, tag: 'repeats: ' + T('0.\\overline{142857}'), q: 1 },
-      { lab: T('\\sqrt{2}'), s: '1.41421356237309504880', kind: 'irr', tag: 'never stops, never repeats', q: 0 },
-      { lab: '<small>Example 7</small>(I)', s: '2.02002000200002000002', kind: 'grow', tag: 'pattern, but no repeating block', q: 0 }
-    ];
-    const cw = 19, dx = 186, tagX = 650;
-    rows.forEach((r, i) => {
-      const y = 44 + i * 64;
-      r.y = y;
-      const lab = add(stage, h('div', 'dc-lab', r.lab), 0, y), eq = add(stage, h('div', 'dc-eq', '='), 160, y);
-      r.ds = [...r.s].map((ch, j) => { const e = add(stage, h('div', 'dc-d', ch), dx + j * cw, y); e.style.opacity = 0; return e; });
-      r.end = add(stage, h('div', r.kind === 'term' ? 'dc-end' : 'dc-dots', r.kind === 'term' ? 'stops' : '…'), dx + r.s.length * cw + (r.kind === 'term' ? 10 : 2), y);
-      r.tagEl = add(stage, h('div', 'dc-tag', r.tag), tagX, y);
-      hide(lab, eq, r.end, r.tagEl); r.lab0 = lab; r.eq0 = eq;
-    });
-    const sumQ = add(stage, h('div', 'dc-sum q', `Terminating or repeating → rational ${T('Q')}`), 20, 392), sumQb = add(stage, h('div', 'dc-sum qb', `Neither → irrational ${T('\\overline{Q}')}`), W / 2 + 40, 392);
-    hide(sumQ, sumQb);
-    const stream = (c, r) => Promise.all([c.fadeIn(r.lab0, 250), c.fadeIn(r.eq0, 250), ...r.ds.map((e, j) => c.anim(e, [{ opacity: 0, transform: 'scale(1.6)' }, { opacity: 1, transform: 'none' }], 160, { delay: 120 + j * 26 }))])
-      .then(() => c.fadeIn(r.end, 250, { from: 'translateX(-6px)' }));
-    const blocks = async (c, r) => { const d0 = r.s.indexOf('.') + 1; for (let j = d0; j < r.s.length; j++) { r.ds[j].classList.add('b' + (Math.floor((j - d0) / r.k) % 2)); if ((j - d0 + 1) % r.k === 0) await c.sleep(70); } };
-    const tagIt = (c, r) => c.fadeIn(r.tagEl, 300, { from: 'translateX(-8px)' });
-    return [
-      { cap: `${T('\\tfrac38')} = <b>0.375</b> — the digits <b>stop</b>. A <b>terminating</b> decimal.`, run: async (c) => { await stream(c, rows[0]); await tagIt(c, rows[0]); } },
-      { cap: `${T('\\tfrac{26}{11}')} = <b>2.363636…</b> — the block <b>36</b> repeats forever. A <b>repeating</b> decimal, written ${T('2.\\overline{36}')}.`, run: async (c) => { await stream(c, rows[1]); await blocks(c, rows[1]); await tagIt(c, rows[1]); } },
-      { cap: `${T('\\tfrac17')} = <b>0.142857 142857…</b> — a longer block (<b>6 digits</b>), but it still repeats forever.`, run: async (c) => { await stream(c, rows[2]); await blocks(c, rows[2]); await tagIt(c, rows[2]); } },
-      {
-        cap: `${T('\\sqrt2')} = <b>1.41421356…</b> — it never stops, and <b>no block ever repeats</b>, however far you go. (Mathematicians have <b>proved</b> it.)`,
-        run: async (c) => {
-          const r = rows[3]; await stream(c, r);
-          const scan = add(stage, h('div', 'dc-scan'), dx - 2, r.y); scan.style.width = (2 * cw + 4) + 'px';
-          await c.anim(scan, [{ left: (dx + 2 * cw - 2) + 'px', opacity: 1 }, { left: (dx + (r.s.length - 2) * cw - 2) + 'px', opacity: 1 }, { left: (dx + (r.s.length - 2) * cw - 2) + 'px', opacity: 0 }], c.fast ? 0 : 1500, { easing: 'linear' });
-          scan.style.opacity = 0; await tagIt(c, r);
-        }
-      },
-      {
-        cap: `Example 7 (I): <b>2.0200200020…</b> has a <b>pattern</b>, but the runs of zeros keep <b>growing</b> (0, 00, 000, …), so no fixed block repeats. Never stops, never repeats.`,
-        run: async (c) => { const r = rows[4]; await stream(c, r); for (let j = 2; j < r.s.length; j++) if (r.s[j] === '0') { r.ds[j].classList.add('z'); if (r.s[j + 1] !== '0') await c.sleep(220); } await tagIt(c, r); }
-      },
-      {
-        cap: `<b>Terminating or repeating → rational</b> (${T('Q')}). Non-terminating <b>and</b> non-repeating → <b>irrational</b> (${T('\\overline{Q}')}). That’s <b>Example 6: D</b>.`,
-        run: async (c) => { rows.forEach((r) => r.tagEl.classList.add(r.q ? 'q' : 'qb')); await Promise.all([c.fadeIn(sumQ, 350), c.fadeIn(sumQb, 350, { delay: 200 }), ...rows.map((r, i) => c.anim(r.tagEl, [{ transform: 'scale(1)' }, { transform: 'scale(1.12)' }, { transform: 'scale(1)' }], 350, { delay: i * 90 }))]); }
-      }
-    ];
-  }
-};
-
-/* ============ 3. Sort: rational or irrational? ============ */
-const SORT = {
-  mix: [
-    { t: '\\sqrt{16}', q: 1, w: '\\sqrt{16} = 4 = \\tfrac41', n: '16 is a perfect square' },
-    { t: '\\sqrt{20}', q: 0, w: '16 < 20 < 25', n: '20 isn’t a perfect square: √20 = 4.4721… never repeats' },
-    { t: '0.\\overline{3}', q: 1, w: '0.\\overline{3} = \\tfrac13', n: 'it repeats, so it’s a fraction' },
-    { t: '\\pi', q: 0, w: '\\pi = 3.14159265\\ldots', n: 'never stops, never repeats' },
-    { t: '-\\tfrac58', q: 1, w: '-\\tfrac58 = -0.625', n: 'a fraction of integers (it terminates)' },
-    { t: '\\sqrt{0.4}', q: 0, w: '0.4 = \\tfrac{40}{100}', n: '40 isn’t a perfect square: √0.4 = 0.6324…' },
-    { t: '\\sqrt[3]{-8}', q: 1, w: '\\sqrt[3]{-8} = -2', n: 'because (−2)³ = −8' }
-  ],
-  ex7: [
-    { t: '2.02002\\ldots', l: 'I', q: 0, w: '0,\\ 00,\\ 000,\\ 0000,\\ \\ldots', n: 'the zero runs grow: never stops, never repeats' },
-    { t: '\\sqrt[3]{\\tfrac{27}{125}}', l: 'II', q: 1, w: '\\sqrt[3]{\\tfrac{27}{125}} = \\tfrac35', n: 'because 3³ = 27 and 5³ = 125' },
-    { t: '\\sqrt{0.09}', l: 'III', q: 1, w: '\\sqrt{0.09} = 0.3 = \\tfrac{3}{10}', n: 'because 0.3² = 0.09' },
-    { t: '0.\\overline{47}', l: 'IV', q: 1, w: '0.\\overline{47} = \\tfrac{47}{99}', n: 'it repeats, so it’s a fraction' }
-  ]
-};
-const sort = {
-  title: 'Sort them: rational or irrational?',
-  height: 440,
-  choices: [{ v: 'mix', label: 'Mixed set' }, { sep: 'Example 7 check:' }, { v: 'ex7', label: 'I, II, III, IV' }],
-  intro: (v) => v === 'ex7' ? 'Example 7’s four numbers. For each one: can it be written <b>exactly</b> as a fraction of integers?' : 'For each number: can it be written <b>exactly</b> as a fraction of integers? If yes, it’s <b>rational</b>.',
-  make(stage, v, ex) {
-    const W = ex.W, items = SORT[v], n = items.length, colW = (W - 40) / n, cw = Math.min(124, colW - 12);
-    const by = 222, bh = 440 - by - 12, bw = (W - 60) / 2;
-    const bins = [[20, 'q', `Rational ${T('Q')}`], [40 + bw, 'qb', `Irrational ${T('\\overline{Q}')}`]].map(([x, cls, lab]) => {
-      const b = add(stage, h('div', 'so-bin ' + cls), x, by); b.style.width = bw + 'px'; b.style.height = bh + 'px';
-      add(stage, h('div', 'so-bh ' + cls, lab), x + 14, by + 8);
-      return { x, n: 0 };
-    });
-    const cards = items.map((it, i) => {
-      const e = add(stage, h('div', 'so-card', (it.l ? `<small>${it.l}</small>` : '') + T(it.t)), 20 + (i + 0.5) * colW, 16);
-      e.style.setProperty('--cw', cw + 'px'); return e;
-    });
-    const why = add(stage, h('div', 'so-why'), W / 2, 112);
-    const res = add(stage, h('div', 'so-res'), W / 2, 130); res.style.opacity = 0;
-    const steps = items.map((it, i) => ({
-      cap: `${it.l ? '<b>' + it.l + '.</b> ' : ''}${T(it.w)} — ${it.n}. <b>${it.q ? 'Rational' : 'Irrational'}</b>.`,
-      run: async (c) => {
-        cards.forEach((e) => e.classList.remove('on'));
-        const e = cards[i]; e.classList.add('on');
-        why.innerHTML = `<div class="w">${T(it.w)}</div><div class="nt">${it.n}</div>`;
-        await c.fadeIn(why, 300);
-        await c.sleep(500);
-        const b = bins[it.q ? 0 : 1], k = b.n++, sx = b.x + bw * ((k % 3) * 2 + 1) / 6, sy = by + 44 + Math.floor(k / 3) * 84;
-        e.classList.remove('on'); e.classList.add(it.q ? 'q' : 'qb');
-        await moveTo(c, e, sx, sy, 650);
-      }
-    }));
-    const rat = items.filter((it) => it.q), irr = items.filter((it) => !it.q);
-    steps.push({
-      cap: v === 'ex7' ? 'Only I is irrational. The rational ones are <b>II, III and IV</b> → <b>B</b>.'
-        : `A root is rational only when the radicand is a <b>perfect power</b> of the right kind (16, −8). Repeating and terminating decimals are fractions in disguise.`,
-      run: async (c) => {
-        why.innerHTML = '';
-        res.innerHTML = v === 'ex7' ? 'Rational: II, III and IV → <b>B</b>' : `${rat.length} rational · ${irr.length} irrational`;
-        await c.pop(res, 400);
-      }
-    });
-    return steps;
-  }
-};
-
-/* ============ 3. A repeating decimal back to a fraction ============ */
-const repFrac = {
-  title: 'Repeating decimal → fraction: line up the tails',
-  height: 420,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: '0|7', label: T('0.\\overline{7}') }, { v: '0|45', label: T('0.\\overline{45}') }, { v: '1|6', label: T('1.\\overline{6}') },
-    { sep: 'Example 7 check:' }, { v: '0|47', label: T('0.\\overline{47}') }, { sep: 'Example 8 check:' }, { v: '2|36', label: T('2.\\overline{36}') }],
-  intro: (v) => { const [w, b] = v.split('|'); return `Write ${T(w + '.\\overline{' + b + '}')} as a fraction. Call the number <b>x</b>, then make a second copy whose repeating tail <b>lines up</b> exactly.`; },
-  make(stage, v, ex) {
-    const W = ex.W, [ws, bs] = v.split('|'), w = Number(ws), b = Number(bs), k = bs.length, P = 10 ** k;
-    const top = w * P + b, diff = top - w, g = gcd(diff, P - 1), num = diff / g, den = (P - 1) / g;
-    const X = 430, cw = 25, nt = Math.max(6, 2 * k), r1 = 62, r2 = 132, ry = 172, r3 = 210, r4 = 300;
-    const colX = (j) => (j < 0 ? X + j * cw : X + (j + 1) * cw); // j < 0: integer digits; j >= 0: tail digits
-    const tailDigit = (j) => bs[j % k];
-    const dec = T(`${ws}.\\overline{${bs}}`);
-    const labX = X - String(w * 10 ** bs.length + Number(bs)).length * cw - cw / 2 - 14;
-    // x line
-    const ws2 = String(w);
-    const xl = add(stage, h('div', 'rf-lab', T('x =')), labX, r2);
-    const xInt = [...ws2].map((ch, i) => add(stage, h('div', 'rf-ch', ch), colX(i - ws2.length), r2));
-    const xDot = add(stage, h('div', 'rf-ch dot', '.'), X, r2);
-    const xTail = []; for (let j = 0; j < nt; j++) xTail.push(add(stage, h('div', 'rf-ch b' + (Math.floor(j / k) % 2), tailDigit(j)), colX(j), r2));
-    const xDots = add(stage, h('div', 'rf-ch', '…'), colX(nt), r2);
-    hide(xl, ...xInt, xDot, ...xTail, xDots);
-    // top line (10^k x)
-    const ts = String(top);
-    const tl = add(stage, h('div', 'rf-lab', T(`${P}x =`)), labX, r1);
-    const tDot = add(stage, h('div', 'rf-ch dot', '.'), X, r1);
-    const tDots = add(stage, h('div', 'rf-ch', '…'), colX(nt), r1);
-    hide(tl, tDot, tDots);
-    const minus = add(stage, h('div', 'rf-minus', '−'), labX - 120, r2);
-    const rule = add(stage, h('div', 'rf-rule'), labX - 140, ry); rule.style.width = (colX(nt) + 20 - labX + 140) + 'px';
-    const st1 = add(stage, h('div', 'rf-strike'), X + cw / 2, r1), st2 = add(stage, h('div', 'rf-strike'), X + cw / 2, r2);
-    [st1, st2].forEach((e) => (e.style.width = (colX(nt) + 14 - X - cw / 2) + 'px'));
-    const dl = add(stage, h('div', 'rf-lab', T(`${P - 1}x =`)), labX, r3);
-    const ds = String(diff), dDig = [...ds].map((ch, i) => add(stage, h('div', 'rf-ch', ch), colX(i - ds.length), r3));
-    const res = add(stage, h('div', 'rf-res', T(`x = \\dfrac{${diff}}{${P - 1}}`)), labX - 140, r4);
-    const note = add(stage, h('div', 'rf-note'), labX - 140, r4 + 50);
-    hide(minus, rule, st1, st2, dl, ...dDig, res, note);
-    const exNote = { '2|36': `<b>Example 8:</b> ${T('\\tfrac{c}{d}=\\tfrac{26}{11}')}, so <b>c = 26</b> → <b>A</b>. Check: 26 ÷ 11 = 2.3636… ✓`, '0|47': `<b>Example 7 (IV):</b> ${T('0.\\overline{47}=\\tfrac{47}{99}')} is a fraction of integers, so it is <b>rational</b>.` }[v];
-    const steps = [
-      {
-        cap: `Call the number <b>x</b>: x = ${dec} = ${ws}.${bs.repeat(Math.ceil(nt / k)).slice(0, nt)}… The repeating block is <b>${bs}</b> — <b>${k} digit${k > 1 ? 's' : ''}</b>.`,
-        run: (c) => Promise.all([c.fadeIn(xl, 300), ...[...xInt, xDot, ...xTail, xDots].map((e, i) => c.pop(e, 260, { delay: 100 + i * 50 }))])
-      },
-      {
-        cap: `Multiply by <b>${P === 10 ? '10' : '10<sup>' + k + '</sup> = ' + P}</b> (one zero per repeating digit). The decimal point moves <b>${k} place${k > 1 ? 's' : ''}</b>, so ${P}x = ${fmt(top)}.${bs.repeat(Math.ceil(nt / k)).slice(0, nt)}… and the <b>tails line up</b>.`,
-        run: async (c) => {
-          // copy every digit of x, then slide it up and k columns left; leading zeros drop off
-          const seq = [...ws2.split('').map((ch, i) => ({ ch, col: i - ws2.length })), ...xTail.map((_, j) => ({ ch: tailDigit(j), col: j }))];
-          const jobs = [c.fadeIn(tl, 300), c.pop(tDot, 300, { delay: 300 })];
-          seq.forEach((d, i) => {
-            const nc = d.col - k; // new column (tail digits can cross into the whole-number part)
-            const lead = nc < -ts.length;
-            const e = add(stage, h('div', 'rf-ch' + (nc >= 0 ? ' b' + (Math.floor(nc / k) % 2) : ''), d.ch), colX(d.col), r2);
-            jobs.push(moveTo(c, e, colX(nc), r1, 700, { delay: i * 40 }).then(() => (lead ? c.anim(e, [{ opacity: 1 }, { opacity: 0 }], 250) : null)));
-          });
-          for (let j = nt - k; j < nt; j++) { const e = add(stage, h('div', 'rf-ch b' + (Math.floor(j / k) % 2), tailDigit(j)), colX(j), r1); jobs.push(c.pop(e, 260, { delay: 750 + (j - nt + k) * 80 })); }
-          jobs.push(c.fadeIn(tDots, 250, { delay: 900, from: 'none' }));
-          await Promise.all(jobs);
-        }
-      },
-      {
-        cap: `Subtract: ${P}x − x. The tails are <b>identical</b>, so they <b>cancel</b>: ${P}x − x = <b>${P - 1}x</b> and ${fmt(top)} − ${w} = <b>${fmt(diff)}</b>.`,
-        run: async (c) => {
-          await Promise.all([c.fadeIn(minus, 250), c.anim(rule, [{ opacity: 0, transform: 'scaleX(0)' }, { opacity: 1, transform: 'scaleX(1)' }], 400)]);
-          await Promise.all([st1, st2].map((e, i) => c.anim(e, [{ opacity: 1, transform: 'scaleX(0)' }, { opacity: 1, transform: 'scaleX(1)' }], 500, { delay: i * 150 })));
-          await Promise.all([c.fadeIn(dl, 300), ...dDig.map((e, i) => c.pop(e, 300, { delay: 100 + i * 80 }))]);
-        }
-      },
-      { cap: `Divide both sides by ${P - 1}: <b>x = ${T(`\\tfrac{${diff}}{${P - 1}}`)}</b>.`, run: (c) => c.fadeIn(res, 400) },
-      {
-        cap: g > 1 ? `Simplify: the GCF of ${diff} and ${P - 1} is <b>${g}</b>, so x = <b>${T(`\\tfrac{${num}}{${den}}`)}</b> in simplest form.` : `The GCF of ${diff} and ${P - 1} is 1, so <b>${T(`\\tfrac{${num}}{${den}}`)}</b> is already in simplest form.`,
-        run: async (c) => {
-          res.innerHTML = T(g > 1 ? `x = \\dfrac{${diff}}{${P - 1}} = \\dfrac{${diff}\\div${g}}{${P - 1}\\div${g}} = \\dfrac{${num}}{${den}}` : `x = \\dfrac{${num}}{${den}}`);
-          note.innerHTML = `So ${dec} = <b>${T(`\\tfrac{${num}}{${den}}`)}</b>`;
-          await Promise.all([c.fadeIn(res, 350), c.fadeIn(note, 350, { delay: 250 })]);
-        }
-      }
-    ];
-    if (exNote) steps.push({ cap: exNote, run: async (c) => { note.innerHTML = exNote; await c.fadeIn(note, 350); } });
-    return steps;
-  }
-};
-
-/* ============ 4. Pin radicals between perfect powers, then compare ============ */
-const RSETS = { A: [[2, 30], [3, 125], [4, 16], [3, 30]], B: [[3, 100], [2, 20], [4, 256], [5, 32]], E: [[3, 64], [4, 81], [2, 17], [5, 243]] };
-const POW = { 2: 'squares', 3: 'cubes', 4: 'fourth powers', 5: 'fifth powers' };
-const radT = ([n, r]) => (n === 2 ? `\\sqrt{${tn(r)}}` : `\\sqrt[${n}]{${tn(r)}}`);
-const lcmI = (a, b) => a * b / gcd(a, b);
-const ord = (n) => n + (n === 2 ? 'nd' : n === 3 ? 'rd' : 'th');
-const compare = {
-  title: 'Pin each radical between perfect powers, then compare',
-  height: 460,
-  choices: [{ v: 'A', label: 'Set A' }, { v: 'B', label: 'Set B' }, { sep: 'Example 10 check:' }, { v: 'E', label: T('\\sqrt[3]{64},\\ \\sqrt[4]{81},\\ \\sqrt{17},\\ \\sqrt[5]{243}') }],
-  intro: (v) => `Which is largest: ${RSETS[v].map((x) => T(radT(x))).join(', ')}? Evaluate the exact ones, pin the rest between <b>perfect powers</b>, and put them all on one number line.`,
-  make(stage, v, ex) {
-    const W = ex.W, set = RSETS[v].map(([n, r]) => {
-      const k = Math.floor(Math.pow(r, 1 / n) + 1e-9), exact = k ** n === r, val = Math.pow(r, 1 / n);
-      return { n, r, k, exact, val, t: radT([n, r]) };
-    });
-    const cnt = set.length, colW = (W - 40) / cnt, cw = Math.min(214, colW - 14);
-    const cards = set.map((it, i) => {
-      const ev = it.exact ? `${T(`${it.k}^{${it.n}} = ${tn(it.r)}`)}<span class="val">= ${it.k}</span>`
-        : `${T(`${tn(it.k ** it.n)} < ${tn(it.r)} < ${tn((it.k + 1) ** it.n)}`)}<br>between ${it.k} and ${it.k + 1}<span class="val">≈ ${it.val.toFixed(2)}</span>`;
-      const e = add(stage, h('div', 'cr-card', `<div class="cr-rad">${T(it.t)}</div><div class="cr-ev">${ev}</div>`), 20 + (i + 0.5) * colW, 12);
-      e.style.setProperty('--cw', cw + 'px'); return e;
-    });
-    const vals = set.map((s) => s.val), lo = Math.max(0, Math.floor(Math.min(...vals)) - 1), hi = Math.floor(Math.max(...vals)) + 1;
-    const x0 = 70, x1 = W - 70, ay = 336, sx = (val) => x0 + (val - lo) / (hi - lo) * (x1 - x0);
-    const axis = add(stage, h('div', 'nl-ax'), x0 - 20, ay - 1); axis.style.width = (x1 - x0 + 40) + 'px';
-    for (let t = lo; t <= hi; t++) { add(stage, h('div', 'nl-tk'), sx(t), ay); add(stage, h('div', 'nl-lab', t), sx(t), ay + 12); }
-    const placed = [];
-    const dots = set.map((it) => {
-      const d = add(stage, h('div', 'nl-dot'), sx(it.val), ay);
-      let y = ay - 58; placed.forEach((p) => { if (Math.abs(p.x - sx(it.val)) < 70 && p.y === y) y -= 48; });
-      placed.push({ x: sx(it.val), y });
-      const l = add(stage, h('div', 'cr-dl', T(it.t)), sx(it.val), y);
-      hide(d, l); return { d, l };
-    });
-    const best = vals.indexOf(Math.max(...vals));
-    const order = [...set.keys()].sort((a, b) => vals[b] - vals[a]), [i1, i2] = order;
-    const A = set[i1], B = set[i2], L = lcmI(A.n, B.n), pa = A.r ** (L / A.n), pb = B.r ** (L / B.n);
-    const powLine = add(stage, h('div', 'cr-pow', A.n === B.n ? T(`${tn(A.r)} > ${tn(B.r)}\\ \\Rightarrow\\ ${A.t} > ${B.t}`)
-      : T(`(${A.t})^{${L}} = ${tn(A.r)}^{${L / A.n}} = ${tn(pa)} \\;>\\; ${tn(pb)} = ${tn(B.r)}^{${L / B.n}} = (${B.t})^{${L}}`)), W / 2, 398);
-    powLine.style.opacity = 0;
-    const steps = set.map((it, i) => ({
-      cap: it.exact ? `${T(it.t)}: ${it.k}<sup>${it.n}</sup> = ${fmt(it.r)}, so ${T(it.t)} = <b>${it.k}</b> exactly.`
-        : `${T(it.t)}: ${fmt(it.r)} sits between the perfect ${POW[it.n]} ${fmt(it.k ** it.n)} and ${fmt((it.k + 1) ** it.n)}, so ${T(it.t)} is between <b>${it.k}</b> and <b>${it.k + 1}</b> (≈ ${it.val.toFixed(2)}).`,
-      run: async (c) => {
-        cards.forEach((e) => e.classList.remove('on')); cards[i].classList.add('on', 'done');
-        await c.fadeIn(cards[i].querySelector('.cr-ev'), 300);
-        await Promise.all([c.anim(dots[i].d, [{ opacity: 0, transform: 'translateY(-60px)' }, { opacity: 1, transform: 'none' }], 450, { easing: 'cubic-bezier(.3,1.4,.5,1)' }), c.fadeIn(dots[i].l, 350, { delay: 200 })]);
-      }
-    }));
-    const asc = order.slice().reverse(), inOrder = asc.map((j, q) => (q ? (Math.abs(vals[j] - vals[asc[q - 1]]) < 1e-9 ? ' = ' : ' &lt; ') : '') + T(set[j].t)).join('');
-    steps.push({
-      cap: `The largest is the one <b>farthest right</b>: <b>${T(set[best].t)}</b>${v === 'E' ? ' → <b>A</b>' : ''}. In order: ${inOrder}.`,
-      run: async (c) => {
-        cards.forEach((e) => e.classList.remove('on')); cards[best].classList.add('win'); dots[best].l.classList.add('win');
-        await Promise.all([c.anim(cards[best], [{ transform: 'scale(1)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], 450), c.anim(dots[best].d, [{ transform: 'scale(1)' }, { transform: 'scale(1.8)' }, { transform: 'scale(1)' }], 450)]);
-      }
-    });
-    steps.push({
-      cap: A.n === B.n ? `Same index? Then just compare the radicands: ${fmt(A.r)} &gt; ${fmt(B.r)}.`
-        : `A check with <b>no decimals</b>: raise the top two to the <b>${ord(L)} power</b> (a multiple of both indices). ${fmt(pa)} &gt; ${fmt(pb)}, so ${T(A.t)} &gt; ${T(B.t)} ✓`,
-      run: (c) => c.fadeIn(powLine, 400, { from: 'translateY(8px)' })
-    });
-    return steps;
-  }
-};
-
-/* ============ Example 9: estimating √M + √N ============ */
-const estimate = {
-  title: `Estimate ${T('\\sqrt{M}+\\sqrt{N}')} on the number line`,
+/* ============ 1. Splitting a root: every factor pair works ============ */
+const split = {
+  title: 'Splitting a root: which split is sensible?',
   height: 430,
-  intro: `${T('20<M<30')} and ${T('5<N<6')}. Squeeze each square root between numbers we know, then add.`,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  choices: [{ v: 72, label: tex('\\sqrt{72}') }, { v: 48, label: tex('\\sqrt{48}') }, { v: 100, label: tex('\\sqrt{100}') }, { v: 30, label: tex('\\sqrt{30}') },
+    { sep: 'Example 1 check:' }, { v: 63, label: tex('\\sqrt{63}') }, { v: 32, label: tex('\\sqrt{32}') }, { v: '17/9', label: tex('\\sqrt{\\tfrac{17}{9}}') }],
+  custom: [4, 200],
+  intro: (v) => (String(v).includes('/') ? `How can we split ${tex(`\\sqrt{\\tfrac{${v.split('/')[0]}}{${v.split('/')[1]}}}`)} into two square roots? It’s a <b>fraction</b>, so this is a job for the <b>quotient rule</b>.`
+    : `Split ${tex(R(v))} into a <b>product of two square roots</b>. Every <b>factor pair</b> of ${v} gives one way to do it.`),
   make(stage, v, ex) {
-    const W = ex.W, x0 = 126, x1 = W - 40, sx = (val) => x0 + val * (x1 - x0) / 10, ay = 300;
-    for (let t = 0; t <= 10; t++) { const g = add(stage, h('div', 'es-grid'), sx(t), 30); g.style.height = (ay - 30) + 'px'; }
-    const axis = add(stage, h('div', 'nl-ax'), x0 - 16, ay - 1); axis.style.width = (x1 - x0 + 26) + 'px';
-    for (let t = 0; t <= 10; t++) { add(stage, h('div', 'nl-tk'), sx(t), ay); add(stage, h('div', 'nl-lab', t), sx(t), ay + 12); }
-    const rows = { M: 70, N: 142, S: 214 };
-    add(stage, h('div', 'es-rowlab', T('\\sqrt{M}')), 8, rows.M); add(stage, h('div', 'es-rowlab', T('\\sqrt{N}')), 8, rows.N);
-    const sl = add(stage, h('div', 'es-rowlab', T('\\sqrt{M}+\\sqrt{N}')), 0, rows.S); sl.style.width = '118px'; sl.style.fontSize = '20px';
-    const band = (row, a, b, cls) => {
-      const e = add(stage, h('div', 'es-band ' + cls), sx(a), rows[row]); e.style.width = (sx(b) - sx(a)) + 'px';
-      const tight = cls.includes('tight');
-      const la = add(stage, h('div', 'es-num' + (tight ? ' t' : ''), String(a)), sx(a), rows[row] + (tight ? 15 : -36));
-      const lb = add(stage, h('div', 'es-num' + (tight ? ' t' : ''), String(b)), sx(b), rows[row] + (tight ? 15 : -36));
-      if (tight) { la.style.translate = '-100% 0'; lb.style.translate = '0 0'; }
-      hide(e, la, lb); return [e, la, lb];
-    };
-    const show = (c, [e, la, lb]) => Promise.all([c.anim(e, [{ opacity: 0, transform: 'scaleX(.2)' }, { opacity: 1, transform: 'scaleX(1)' }], 500), c.fadeIn(la, 300, { delay: 250 }), c.fadeIn(lb, 300, { delay: 250 })]);
-    const fade = (c, els, to = 0.25) => Promise.all(els.map((e) => c.anim(e, [{ opacity: e.style.opacity || 1 }, { opacity: to }], 300)));
-    const mC = band('M', 4, 6, 'coarse'), nC = band('N', 2, 3, 'coarse'), sC = band('S', 6, 9, 'sum coarse');
-    const mT = band('M', 4.47, 5.48, 'tight'), nT = band('N', 2.24, 2.45, 'tight'), sT = band('S', 6.71, 7.93, 'sum tight');
-    const pts = [['P', 3.5], ['Q', 6.2], ['R', 7.4], ['S', 9.3]].map(([n, val]) => { const d = add(stage, h('div', 'es-pt'), sx(val), ay), l = add(stage, h('div', 'es-pl', T(n)), sx(val), ay - 40); hide(d, l); return { d, l, n, val }; });
-    const ineq = add(stage, h('div', 'es-ineq'), W / 2, 350);
-    const say = (c, s) => { ineq.innerHTML = T(s); return c.fadeIn(ineq, 300); };
-    const mark = (p, cls) => { [p.d, p.l].forEach((e) => { e.classList.remove('amb', 'ok', 'dim'); if (cls) e.classList.add(cls); }); };
-    return [
-      { cap: '<b>20 &lt; M &lt; 30.</b> The perfect squares around them: 16 &lt; 20 and 30 &lt; 36. So √M is between √16 and √36: <b>4 &lt; √M &lt; 6</b>.', run: (c) => Promise.all([show(c, mC), say(c, '\\sqrt{16} < \\sqrt{M} < \\sqrt{36} \\;\\Rightarrow\\; 4 < \\sqrt{M} < 6')]) },
-      { cap: '<b>5 &lt; N &lt; 6</b> sits between the perfect squares 4 and 9, so <b>2 &lt; √N &lt; 3</b>.', run: (c) => Promise.all([show(c, nC), say(c, '\\sqrt{4} < \\sqrt{N} < \\sqrt{9} \\;\\Rightarrow\\; 2 < \\sqrt{N} < 3')]) },
-      {
-        cap: 'Add low + low and high + high: <b>6 &lt; √M + √N &lt; 9</b>. But <b>Q (≈ 6.2) and R (≈ 7.4)</b> both fit in there — we need tighter bounds!',
-        run: async (c) => { await Promise.all([show(c, sC), say(c, '4+2 < \\sqrt{M}+\\sqrt{N} < 6+3')]); await Promise.all(pts.flatMap((p, i) => [c.pop(p.d, 300, { delay: i * 120 }), c.fadeIn(p.l, 300, { delay: i * 120 })])); pts.forEach((p) => mark(p, p.n === 'Q' || p.n === 'R' ? 'amb' : null)); }
-      },
-      { cap: 'Tighten √M with the calculator: <b>√20 ≈ 4.47</b> and <b>√30 ≈ 5.48</b>, so 4.47 &lt; √M &lt; 5.48.', run: async (c) => { await fade(c, mC.slice(1), 0); await Promise.all([show(c, mT), say(c, '\\sqrt{20}\\approx4.47 < \\sqrt{M} < \\sqrt{30}\\approx5.48')]); } },
-      { cap: 'Tighten √N: <b>√5 ≈ 2.24</b> and <b>√6 ≈ 2.45</b>, so 2.24 &lt; √N &lt; 2.45.', run: async (c) => { await fade(c, nC.slice(1), 0); await Promise.all([show(c, nT), say(c, '\\sqrt{5}\\approx2.24 < \\sqrt{N} < \\sqrt{6}\\approx2.45')]); } },
-      {
-        cap: 'Add again: 4.47 + 2.24 = <b>6.71</b> and 5.48 + 2.45 = <b>7.93</b>. Q ≈ 6.2 is now too small and S ≈ 9.3 too big. Only <b>R ≈ 7.4</b> fits → <b>C</b>.',
-        run: async (c) => { await fade(c, sC.slice(1), 0); await Promise.all([show(c, sT), say(c, '6.71 < \\sqrt{M}+\\sqrt{N} < 7.93')]); pts.forEach((p) => mark(p, p.n === 'R' ? 'ok' : 'dim')); await c.anim(pts[2].d, [{ transform: 'scale(1)' }, { transform: 'scale(1.8)' }, { transform: 'scale(1)' }], 450); }
+    const W = ex.W, H = 430;
+    if (String(v).includes('/')) return splitFrac(stage, v, W, H);
+    const n = Number(v), pairs = factors(n).filter((d) => d * d <= n).map((d) => [d, n / d]);
+    const P = pairs.length, rh = Math.min(48, 320 / P), fs = Math.min(28, rh * 0.6);
+    add(stage, h('div', 'sp-head', K(`${R(n)}=\\;?`)), 36, 14);
+    const useful = (a, b) => a > 1 && (isSq(a) || isSq(b));
+    const rows = pairs.map(([a, b], i) => {
+      const row = add(stage, h('div', 'sp-row', K(`=${R(a)}\\times${R(b)}`)), 70, 82 + i * rh); row.style.fontSize = fs + 'px'; row.style.height = rh + 'px';
+      let note;
+      if (a === 1) note = `<span class="muted">${tex('\\sqrt{1}=1')}: no help</span>`;
+      else if (isSq(a) && isSq(b)) note = K(`=${Math.sqrt(a)}\\times${Math.sqrt(b)}=${Math.sqrt(n)}`);
+      else if (isSq(b)) note = K(`=${mixT(Math.sqrt(b), a)}`);
+      else if (isSq(a)) note = K(`=${mixT(Math.sqrt(a), b)}`);
+      const ne = h('span', 'sp-note', note || ''); row.appendChild(ne); hide(row, ne);
+      return { row, ne, a, b, good: useful(a, b) };
+    });
+    const box1 = add(stage, h('div', 'sp-box'), W * 0.56, 84); box1.style.width = (W * 0.44 - 30) + 'px';
+    const box2 = add(stage, h('div', 'sp-box best'), W * 0.56, 250); box2.style.width = (W * 0.44 - 30) + 'px';
+    hide(box1, box2);
+    const goods = rows.filter((x) => x.good);
+    const { s, r } = sqPart(n);
+    const chk = rows.find((x) => x.a > 1 && !isSq(x.a) && !isSq(x.b)) || rows[Math.floor(P / 2)] || rows[0];
+    const steps = [{
+      cap: P > 1 ? `${n} has <b>${P} factor pairs</b>, so there are ${P} ways to split ${tex(R(n))}. <b>All of them are true</b>: that’s the product rule.`
+        : `${n} is prime: its only factor pair is 1 × ${n}. ${tex(`${R(n)}=\\sqrt{1}\\times${R(n)}`)} is true, but it doesn’t help at all.`,
+      run: (c) => Promise.all(rows.map((x, i) => c.fadeIn(x.row, 360, { delay: i * 140, from: 'translateX(-14px)' })))
+    }, {
+      cap: `Check one with a calculator: ${tex(`${R(chk.a)}\\times${R(chk.b)}`)} ≈ ${dec(Math.sqrt(chk.a))} × ${dec(Math.sqrt(chk.b))} ≈ ${dec(Math.sqrt(n))}. That’s ${tex(R(n))} ≈ ${dec(Math.sqrt(n))}, the same number.`,
+      run: async (c) => {
+        box1.innerHTML = `<div class="sp-box-h">Calculator check</div>${K(`${R(chk.a)}\\times${R(chk.b)}`)} ≈ ${dec(Math.sqrt(chk.a))} × ${dec(Math.sqrt(chk.b))}<br>≈ <b>${dec(Math.sqrt(n))}</b><br>${K(R(n))} ≈ <b>${dec(Math.sqrt(n))}</b> <b class="ok">✓</b>`;
+        chk.row.classList.add('pick');
+        await c.fadeIn(box1, 400);
       }
-    ];
+    }];
+    if (P > 1) steps.push({
+      cap: goods.length ? `The <b>sensible</b> splits use a <b>perfect square</b> (${goods.map((g) => (isSq(g.b) ? g.b : g.a)).join(', ')}). Its root comes out as a <b>whole number</b>, so the radical gets simpler.`
+        : `None of these splits uses a perfect square bigger than 1, so ${tex(R(n))} <b>can’t be simplified</b>. It stays as it is.`,
+      run: async (c) => {
+        chk.row.classList.remove('pick');
+        rows.forEach((x) => x.row.classList.add(x.good ? 'good' : 'dim'));
+        await Promise.all(rows.map((x, i) => (x.good || x.a === 1 ? c.fadeIn(x.ne, 380, { delay: i * 120, from: 'translateX(-8px)' }) : Promise.resolve())));
+      }
+    });
+    if (goods.length) steps.push({
+      cap: r === 1 ? `${n} is itself a perfect square, so the best “split” is no split at all: ${tex(`${R(n)}=${s}`)}.`
+        : `The <b>largest</b> perfect square, <b>${s * s}</b>, leaves the smallest number under the root: ${tex(`${R(n)}=${R(s * s)}\\times${R(r)}=${mixT(s, r)}`)}. That’s Section 3!`,
+      run: async (c) => {
+        const best = rows.find((x) => x.a === r && x.b === s * s) || rows.find((x) => x.b === r && x.a === s * s) || rows.find((x) => isSq(x.a) && isSq(x.b));
+        rows.forEach((x) => x.row.classList.toggle('best', x === best));
+        box2.innerHTML = `<div class="sp-box-h">Simplest</div>` + K(r === 1 ? `${R(n)}=${s}` : `${R(n)}=${mixT(s, r)}`);
+        await Promise.all([best ? c.pop(best.row, 420) : null, c.pop(box2, 450)]);
+      }
+    });
+    return steps;
   }
 };
+function splitFrac(stage, v, W, H) {
+  const [a, b] = v.split('/').map(Number), kb = Math.sqrt(b), { s, r } = sqPart(a);
+  const ch = chain(stage, [`\\sqrt{\\dfrac{${a}}{${b}}}`, '=', `\\dfrac{${R(a)}}{${R(b)}}`, '=', `\\dfrac{${mixT(s, r)}}{${kb}}`], W / 2, 70, { fs: 44 });
+  ch.row.style.translate = '-50% 0';
+  ch.els.slice(1).forEach((e) => hide(e));
+  const n1 = add(stage, h('div', 'sp-tag', 'quotient rule'), 0, 0), n2 = add(stage, h('div', 'sp-tag', `${tex(R(b))} = ${kb}`), 0, 0);
+  hide(n1, n2);
+  const box = add(stage, h('div', 'sp-box'), W / 2, 300); box.style.width = '620px'; box.style.translate = '-50% 0'; hide(box);
+  const place = (tag, el) => { const sr = stage.getBoundingClientRect(), k = sr.width / stage.offsetWidth || 1, r0 = el.getBoundingClientRect(), rb = ch.els[2].getBoundingClientRect(); at(tag, (r0.left + r0.width / 2 - sr.left) / k, (Math.max(r0.bottom, rb.bottom) - sr.top) / k + 14); tag.style.translate = '-50% 0'; };
+  return [{
+    cap: `<b>Quotient rule:</b> the root of a fraction is the root of the top over the root of the bottom.`,
+    run: async (c) => { place(n1, ch.els[2]); await Promise.all([c.fadeIn(ch.els[1], 250), c.fadeIn(ch.els[2], 450, { delay: 150 }), c.fadeIn(n1, 350, { delay: 350 })]); }
+  }, {
+    cap: `${b} is a perfect square, so ${tex(`${R(b)}=${kb}`)}. ${s > 1 ? `And ${tex(`${R(a)}=${mixT(s, r)}`)}.` : `${a} has no perfect-square factor, so ${tex(R(a))} stays.`}`,
+    run: async (c) => { place(n2, ch.els[4]); await Promise.all([c.fadeIn(ch.els[3], 250), c.fadeIn(ch.els[4], 450, { delay: 150 }), c.fadeIn(n2, 350, { delay: 350 })]); }
+  }, {
+    cap: `Check with decimals: both sides are about <b>${dec(Math.sqrt(a / b))}</b>`,
+    run: async (c) => {
+      box.innerHTML = `<div class="sp-box-h">Calculator check</div>${K(`\\sqrt{\\tfrac{${a}}{${b}}}=\\sqrt{${dec(a / b).replace('…', '\\ldots')}}`)} ≈ <b>${dec(Math.sqrt(a / b))}</b><br>${K(`\\dfrac{${mixT(s, r)}}{${kb}}`)} ≈ ${dec(s * Math.sqrt(r))} ÷ ${kb} ≈ <b>${dec(Math.sqrt(a / b))}</b> <b class="ok">✓</b>`;
+      await c.fadeIn(box, 400);
+    }
+  }];
+}
+
+/* ============ 2. What a mixed radical means: cut the square ============ */
+const area = {
+  title: 'Cut the square into equal squares',
+  height: 440,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  choices: [{ v: 50, label: tex('\\sqrt{50}') }, { v: 18, label: tex('\\sqrt{18}') }, { v: 12, label: tex('\\sqrt{12}') }, { v: 36, label: tex('\\sqrt{36}') }, { v: 30, label: tex('\\sqrt{30}') },
+    { sep: 'Notes:' }, { v: 180, label: tex('\\sqrt{180}') }, { sep: 'Example 2 check:' }, { v: 72, label: tex('\\sqrt{72}') }, { v: 63, label: tex('\\sqrt{63}') }, { v: 288, label: tex('\\sqrt{288}') }],
+  custom: [2, 999],
+  intro: (n) => `A square has area <b>${fmt(n)}</b>. How long is its side? And what does that side look like as a <b>mixed radical</b>?`,
+  make(stage, n, ex) {
+    const W = ex.W, L = 320, x0 = 110, y0 = 28, { s, r } = sqPart(n), S = s * s, cell = L / s;
+    const sqd = add(stage, h('div', 'ar-sq'), x0, y0); sqd.style.width = sqd.style.height = L + 'px';
+    const areaL = add(stage, h('div', 'ar-area c', `Area = <b>${fmt(n)}</b>`), x0 + L / 2, y0 + L / 2);
+    const sideL = add(stage, h('div', 'ar-side', K(R(n))), x0 - 14, y0 + L / 2); sideL.style.translate = '-100% -50%'; hide(sideL);
+    const svg = add(stage, svgEl('svg', { class: 'ar-grid', width: L, height: L }), x0, y0);
+    const lines = [];
+    for (let i = 1; i < s; i++) {
+      lines.push(svg.appendChild(svgEl('line', { x1: i * cell, y1: 0, x2: i * cell, y2: L })));
+      lines.push(svg.appendChild(svgEl('line', { x1: 0, y1: i * cell, x2: L, y2: i * cell })));
+    }
+    lines.forEach((l) => (l.style.opacity = 0));
+    const nums = [];
+    if (s > 1 && cell >= 40) for (let i = 0; i < s; i++) for (let j = 0; j < s; j++) { const e = add(stage, h('div', 'ar-num c', fmt(r)), x0 + (j + 0.5) * cell, y0 + (i + 0.5) * cell); e.style.fontSize = Math.min(22, cell * 0.36) + 'px'; hide(e); nums.push(e); }
+    const hc = add(stage, h('div', 'ar-cell'), x0, y0); hc.style.width = hc.style.height = cell + 'px'; hide(hc);
+    const hcl = add(stage, h('div', 'ar-clab', K(r === 1 ? '1' : R(r))), x0 + cell / 2, y0 - 4); hcl.style.translate = '-50% -100%'; hide(hcl);
+    const segs = [], segl = [];
+    for (let i = 0; i < s; i++) {
+      const g = add(stage, h('div', 'ar-seg' + (i % 2 ? ' b' : '')), x0 + i * cell + 1.5, y0 + L + 10); g.style.width = (cell - 3) + 'px'; hide(g); segs.push(g);
+      if (cell >= 50 && s > 1) { const t = add(stage, h('div', 'ar-segl', K(r === 1 ? '1' : R(r))), x0 + (i + 0.5) * cell, y0 + L + 26); t.style.translate = '-50% 0'; hide(t); segl.push(t); }
+    }
+    const B = board(stage, { x: x0 + L + 70, y: 34, lh: 62, fs: 27 });
+    const l1 = B.line(`\\text{side}=${R(n)}${isSq(n) ? '=' : '\\approx'}${dec(Math.sqrt(n)).replace('…', '\\ldots')}`);
+    const steps = [{
+      cap: `This square has area <b>${fmt(n)}</b>. Its side is the number that squares to ${fmt(n)}: <b>${tex(R(n))}</b> ${isSq(n) ? '=' : '≈'} ${dec(Math.sqrt(n))}.`,
+      run: (c) => Promise.all([c.fadeIn(sideL, 400, { from: 'translateX(10px)' }), showRow(c, stage, l1)])
+    }];
+    if (s === 1) {
+      const l2 = B.line(`${n}=${primeFactors(n).join('\\times')}`), l3 = B.line(`\\text{no perfect-square factor}`);
+      steps.push({
+        cap: `No perfect square bigger than 1 divides ${n} (${n} = ${primeFactors(n).join(' × ')}), so we can’t cut equal smaller squares with a whole number along each side. <b>${tex(R(n))} is already simplest.</b>`,
+        run: async (c) => { await showRow(c, stage, l2); await showRow(c, stage, l3); }
+      });
+      return steps;
+    }
+    const l2 = B.line(r === 1 ? `${n}=${s}\\times${s}` : `${n}=${S}\\times${r}`);
+    const l3 = B.line(r === 1 ? `\\text{small side}=1` : `\\text{small side}=${R(r)}`);
+    const l4 = B.line(r === 1 ? `\\text{side}=${s}\\times1=${s}` : `\\text{side}=${s}\\times${R(r)}=${mixT(s, r)}`);
+    const res = add(stage, h('div', 'ar-res', K(r === 1 ? `${R(n)}=${s}` : `${R(n)}=${mixT(s, r)}`)), x0 + L + 70, 300); hide(res);
+    steps.push({
+      cap: r === 1 ? `${n} = ${s} × ${s}. Cut the square into a ${s} by ${s} grid: <b>${n} small squares</b>, each with area <b>1</b>.`
+        : `${fmt(n)} = ${S} × ${r}. Cut the square into a ${s} by ${s} grid: <b>${S} small squares</b>, each with area <b>${r}</b>.`,
+      run: async (c) => {
+        await Promise.all([c.anim(areaL, [{ opacity: 1 }, { opacity: 0 }], 300), showRow(c, stage, l2), ...lines.map((l, i) => c.anim(l, [{ opacity: 0 }, { opacity: 1 }], 300, { delay: 120 + i * 40 }))]);
+        await Promise.all(nums.map((e, i) => c.pop(e, 260, { delay: Math.min(i * 18, 500) })));
+      }
+    }, {
+      cap: r === 1 ? 'Each small square has area 1, so each small side is <b>1</b>.' : `Each small square has area ${r}, so its side is <b>${tex(R(r))}</b> ≈ ${dec(Math.sqrt(r))}.`,
+      run: (c) => Promise.all([c.fadeIn(hc, 350), c.pop(hcl, 400, { delay: 200 }), showRow(c, stage, l3)])
+    }, {
+      cap: r === 1 ? `Along the bottom edge sit <b>${s}</b> small sides, so the side is exactly <b>${s}</b>.`
+        : `Along the bottom edge sit <b>${s}</b> small sides: ${tex(R(r))} + ${tex(R(r))} + … So the side is <b>${tex(mixT(s, r))}</b>: “${s} copies of ${tex(R(r))}”.`,
+      run: async (c) => {
+        await Promise.all(segs.map((g, i) => c.pop(g, 300, { delay: i * Math.min(150, 1400 / s) })).concat(segl.map((t, i) => c.fadeIn(t, 280, { delay: 80 + i * Math.min(150, 1400 / s) }))));
+        await showRow(c, stage, l4);
+      }
+    }, {
+      cap: r === 1 ? `${tex(`${R(n)}=${s}`)}: ${n} is a perfect square, so its root is a whole number.`
+        : `Same side, two names: <b>${tex(`${R(n)}=${mixT(s, r)}`)}</b>. The <b>entire radical</b> and the <b>mixed radical</b> are the same number: ${s}&nbsp;×&nbsp;${dec(Math.sqrt(r))} ≈ ${dec(Math.sqrt(n))}.`,
+      run: (c) => c.pop(res, 480)
+    });
+    return steps;
+  }
+};
+
+/* ============ 3. Find the largest perfect square ============ */
+const finder = {
+  title: 'Find the largest perfect square',
+  height: 470,
+  minW: 900, // drawn this wide and scaled to fit beside the sidebar
+  choices: [{ v: 200, label: tex('\\sqrt{200}') }, { v: 48, label: tex('\\sqrt{48}') }, { v: 180, label: tex('\\sqrt{180}') }, { v: 70, label: tex('\\sqrt{70}') },
+    { sep: 'Examples 2–3 check:' }, { v: 72, label: tex('\\sqrt{72}') }, { v: 63, label: tex('\\sqrt{63}') }, { v: 288, label: tex('\\sqrt{288}') }, { v: 128, label: tex('\\sqrt{128}') }, { v: 252, label: tex('\\sqrt{252}') }],
+  custom: [4, 999],
+  intro: (n) => `Which perfect squares divide <b>${fmt(n)}</b>? The <b>biggest</b> one is the one we want.`,
+  make(stage, n, ex) {
+    const W = ex.W, { s, r } = sqPart(n), S = s * s;
+    const ks = []; for (let k = 2; k * k <= n / 2; k++) ks.push(k);
+    if (isSq(n) && n >= 4 && !ks.includes(Math.sqrt(n))) ks.push(Math.sqrt(n));
+    add(stage, h('div', 'fs-head', `${K(R(n))} &nbsp;Which perfect squares divide ${fmt(n)}?`), 24, 12);
+    const per = 11, tw = 74, gap = 10, rows = Math.max(1, Math.ceil(ks.length / per));
+    const tiles = ks.map((k, i) => {
+      const row = Math.floor(i / per), inRow = Math.min(per, ks.length - row * per), x = (W - (inRow * (tw + gap) - gap)) / 2 + (i % per) * (tw + gap), y = 72 + row * 92;
+      const t = add(stage, h('div', 'fs-tile', `<b>${fmt(k * k)}</b><small>${k}<sup>2</sup></small>`), x, y); t.style.width = tw + 'px';
+      const ok = n % (k * k) === 0, lab = add(stage, h('div', 'fs-res ' + (ok ? 'ok' : 'red'), ok ? '× ' + fmt(n / (k * k)) : '✗'), x + tw / 2, y + 64); lab.style.translate = '-50% 0';
+      hide(t, lab); return { k, sq: k * k, t, lab, ok };
+    });
+    const works = tiles.filter((t) => t.ok), cy = 72 + rows * 92 + 10;
+    const steps = [{
+      cap: ks.length ? `List the perfect squares: ${ks.slice(0, 4).map((k) => k * k).join(', ')}, … A square bigger than <b>half of ${fmt(n)}</b> can’t divide it${isSq(n) ? `, except ${fmt(n)} itself` : ''}, so these are all we need.`
+        : `There are no perfect squares (other than 1) small enough to divide ${n}.`,
+      run: (c) => Promise.all(tiles.map((t, i) => c.pop(t.t, 320, { delay: i * 60 })))
+    }];
+    if (!ks.length) return steps;
+    steps.push({
+      cap: works.length ? `Test each one: does it divide ${fmt(n)} evenly? ${works.map((w) => `<b>${fmt(w.sq)}</b> ✓`).join(', ')}. Under each ✓ is its partner: ${fmt(n)} = ${fmt(works[0].sq)} × ${fmt(n / works[0].sq)}.`
+        : `Test each one: <b>none</b> of them divide ${fmt(n)} evenly.`,
+      run: async (c) => {
+        for (const t of tiles) { t.t.classList.add(t.ok ? 'yes' : 'no'); await Promise.all([c.pop(t.lab, 220), c.anim(t.t, [{ transform: 'scale(1)' }, { transform: 'scale(1.1)' }, { transform: 'scale(1)' }], 220)]); await c.sleep(40); }
+      }
+    });
+    if (!works.length) {
+      const stamp = add(stage, h('div', 'fs-stamp', `ALREADY SIMPLEST<small>${K(R(n))} has no perfect-square factor</small>`), W / 2, cy + 40); stamp.style.translate = '-50% 0'; hide(stamp);
+      steps.push({
+        cap: `No perfect square divides ${fmt(n)}${n < 1000 ? ` (${fmt(n)} = ${primeFactors(n).join(' × ')})` : ''}, so ${tex(R(n))} is <b>already in simplest form</b>.`,
+        run: (c) => c.anim(stamp, [{ opacity: 0, transform: 'scale(1.6) rotate(-10deg)' }, { opacity: 1, transform: 'scale(1) rotate(-3deg)' }], 420, { easing: 'cubic-bezier(.2,1.4,.4,1)' })
+      });
+      return steps;
+    }
+    const best = works[works.length - 1];
+    steps.push({
+      cap: `The <b>largest</b> perfect square that divides ${fmt(n)} is <b>${fmt(S)}</b> = ${s}<sup>2</sup>. Use that one.`,
+      run: async (c) => { works.forEach((w) => w !== best && w.t.classList.add('meh')); best.t.classList.add('best'); await c.anim(best.t, [{ transform: 'scale(1)' }, { transform: 'scale(1.3)' }, { transform: 'scale(1.12)' }], 500); }
+    });
+    const parts = r === 1 ? [R(n), '=', `\\mathbf{${s}}`] : [R(n), '=', `\\sqrt{${tn(S)}\\times${tn(r)}}`, '=', `${R(S)}\\times${R(r)}`, '=', `\\mathbf{${mixT(s, r)}}`];
+    const ch = chain(stage, parts, 40, cy, { fs: 32 }); ch.els.forEach((e) => hide(e));
+    steps.push({
+      cap: r === 1 ? `${fmt(n)} is itself a perfect square: ${tex(`${R(n)}=${s}`)} exactly.` : `Split off ${fmt(S)}: ${tex(`${R(n)}=\\sqrt{${tn(S)}\\times${tn(r)}}=${R(S)}\\times${R(r)}`)}, and ${tex(`${R(S)}=${s}`)} comes out in front: <b>${tex(mixT(s, r))}</b>.`,
+      run: async (c) => { for (const e of ch.els) await c.fadeIn(e, 300); }
+    });
+    if (works.length > 1) {
+      const w = works[0], k = w.k, m = n / w.sq, s2 = s / k;
+      const warn = add(stage, h('div', 'fs-warn'), 40, cy + 70); warn.style.width = (W - 80) + 'px';
+      warn.innerHTML = `<div class="fs-warn-h">What if you used a smaller square, like ${fmt(w.sq)}?</div>
+        <div class="fs-warn-b"><span>${K(`${R(n)}=${R(w.sq)}\\times${R(m)}=${k}${R(m)}`)}</span><span class="red">but ${fmt(m)} = ${fmt(s2 * s2)} × ${r} still has a square inside!</span></div>
+        <div class="fs-warn-b"><span>Go again: ${K(`${k}${R(m)}=${k}\\times${mixT(s2, r)}=${mixT(s, r)}`)}</span><span class="muted">same answer, more work</span></div>`;
+      hide(warn);
+      steps.push({
+        cap: `<b>Watch out:</b> start with a smaller square like ${fmt(w.sq)} and you get ${tex(`${k}${R(m)}`)}, but ${fmt(m)} still contains ${fmt(s2 * s2)}. You must <b>go again</b>. Use the <b>largest</b> square and it’s one step.`,
+        run: (c) => c.fadeIn(warn, 450)
+      });
+    }
+    return steps;
+  }
+};
+
+/* ============ 3. Pair up the primes ============ */
+const PAIRC = ['#e0574b', '#3b78d8', '#2f9e6a', '#8a58c9', '#e8932a', '#d0477a'];
+const pairs = {
+  title: 'Prime factors: each pair comes out as one number',
+  height: 450,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  choices: [{ v: 72, label: tex('\\sqrt{72}') }, { v: 180, label: tex('\\sqrt{180}') }, { v: 200, label: tex('\\sqrt{200}') }, { v: 540, label: tex('\\sqrt{540}') },
+    { sep: 'Examples 2–3 check:' }, { v: 63, label: tex('\\sqrt{63}') }, { v: 288, label: tex('\\sqrt{288}') }, { v: 128, label: tex('\\sqrt{128}') }, { v: 252, label: tex('\\sqrt{252}') }],
+  custom: [4, 9999],
+  intro: (n) => `Write <b>${fmt(n)}</b> as a product of primes. Every <b>pair</b> of matching primes is a perfect square, so it can leave the root.`,
+  make(stage, n, ex) {
+    const W = ex.W, ps = primeFactors(n), pr = [], left = [];
+    for (let i = 0; i < ps.length;) { if (ps[i] === ps[i + 1]) { pr.push([i, i + 1]); i += 2; } else { left.push(i); i++; } }
+    const cw = (p) => Math.max(50, 22 + String(p).length * 15), sepW = 30, ch = 50;
+    const { s, r } = sqPart(n);
+    // row 1: √n = √(p × p × …)
+    const y1 = 46, lab1 = add(stage, h('div', 'pp-lab', K(`${R(n)}=`)), 0, y1 + 4);
+    const innerW = ps.reduce((a, p) => a + cw(p), 0) + (ps.length - 1) * sepW;
+    const tot = lab1.offsetWidth + 10 + 48 + innerW + 14, x1 = (W - tot) / 2; at(lab1, x1, y1 + 4);
+    const rx1 = x1 + lab1.offsetWidth + 10; radSign(stage, rx1, y1 - 12, 48 + innerW + 14, ch + 18);
+    let cx = rx1 + 48;
+    const chips = ps.map((p, i) => {
+      const e = add(stage, h('div', 'pp-chip', fmt(p)), cx, y1); e.style.width = cw(p) + 'px'; e._x = cx; cx += cw(p);
+      if (i < ps.length - 1) { add(stage, h('div', 'pp-x', '×'), cx, y1); cx += sepW; }
+      hide(e); return e;
+    });
+    const seps1 = [...stage.querySelectorAll('.pp-x')]; hide(...seps1);
+    const brs = pr.map(([i, j], k) => {
+      const b = add(stage, h('div', 'pp-br'), chips[i]._x + 4, y1 + ch + 4); b.style.width = (chips[j]._x + cw(ps[j]) - chips[i]._x - 8) + 'px'; b.style.borderColor = PAIRC[k % PAIRC.length];
+      const t = add(stage, h('div', 'pp-brl', K(`${ps[i]}\\times${ps[i]}=${ps[i] * ps[i]}`)), chips[i]._x + (chips[j]._x + cw(ps[j]) - chips[i]._x) / 2, y1 + ch + 22); t.style.translate = '-50% 0'; t.style.color = PAIRC[k % PAIRC.length];
+      hide(b, t); return { b, t };
+    });
+    // row 2: = outside × outside √(leftovers)
+    const y2 = 214, outs = pr.map(([i]) => ps[i]), lefts = left.map((i) => ps[i]);
+    const outW = outs.reduce((a, p) => a + cw(p), 0) + Math.max(0, outs.length - 1) * sepW;
+    const inW = lefts.reduce((a, p) => a + cw(p), 0) + Math.max(0, lefts.length - 1) * sepW;
+    const eq2 = add(stage, h('div', 'pp-lab', K('=')), 0, y2 + 4);
+    const tot2 = 36 + outW + (lefts.length ? 12 + 48 + inW + 14 : 0); let x2 = (W - tot2) / 2; at(eq2, x2, y2 + 4); x2 += 36;
+    const outEls = outs.map((p, k) => {
+      const e = add(stage, h('div', 'pp-chip out', fmt(p)), x2, y2); e.style.width = cw(p) + 'px'; e.style.borderColor = e.style.color = PAIRC[k % PAIRC.length]; x2 += cw(p);
+      let xs = null; if (k < outs.length - 1) { xs = add(stage, h('div', 'pp-x', '×'), x2, y2); x2 += sepW; }
+      hide(e, xs); return { e, xs };
+    });
+    let rad2 = null; const leftEls = [];
+    if (lefts.length) {
+      x2 += 12; rad2 = radSign(stage, x2, y2 - 12, 48 + inW + 14, ch + 18); hide(rad2); x2 += 48;
+      lefts.forEach((p, k) => { const e = add(stage, h('div', 'pp-chip', fmt(p)), x2, y2); e.style.width = cw(p) + 'px'; x2 += cw(p); let xs = null; if (k < lefts.length - 1) { xs = add(stage, h('div', 'pp-x', '×'), x2, y2); x2 += sepW; } hide(e, xs); leftEls.push({ e, xs }); });
+    }
+    hide(eq2);
+    const res = add(stage, h('div', 'pp-res', K(`${R(n)}=${r === 1 ? s : mixT(s, r)}`)), W / 2, 330); res.style.translate = '-50% 0'; hide(res);
+    const pT = ps.join(' × ');
+    const steps = [{
+      cap: `Write ${fmt(n)} as a product of primes (ladder or tree, like Lesson 1): ${fmt(n)} = ${pT}.`,
+      run: async (c) => { await Promise.all([...chips.map((e, i) => c.pop(e, 320, { delay: i * 90 })), ...seps1.map((e, i) => c.fadeIn(e, 200, { delay: 60 + i * 90 }))]); }
+    }];
+    if (!pr.length) {
+      steps.push({ cap: `No prime appears <b>twice</b>, so there are no pairs and nothing can come out. ${tex(R(n))} is <b>already simplest</b>.`, run: (c) => Promise.all(chips.map((e) => c.shake(e))) });
+      return steps;
+    }
+    steps.push({
+      cap: `<b>Pair up</b> matching primes. Each pair is a perfect square: ${pr.map(([i]) => `${ps[i]} × ${ps[i]} = ${ps[i] * ps[i]}`).join(', ')}.${lefts.length ? ` ${lefts.join(' × ')} ${lefts.length > 1 ? 'have' : 'has'} no partner.` : ''}`,
+      run: async (c) => {
+        pr.forEach(([i, j], k) => { [chips[i], chips[j]].forEach((e) => { e.style.borderColor = PAIRC[k % PAIRC.length]; e.style.background = PAIRC[k % PAIRC.length] + '1f'; }); });
+        left.forEach((i) => chips[i].classList.add('lone'));
+        await Promise.all(brs.flatMap(({ b, t }, k) => [c.fadeIn(b, 300, { delay: k * 220 }), c.fadeIn(t, 300, { delay: 100 + k * 220 })]));
+      }
+    }, {
+      cap: `Each pair leaves the root as <b>one</b> number, because ${tex(`\\sqrt{${ps[pr[0][0]]}\\times${ps[pr[0][0]]}}=${ps[pr[0][0]]}`)}. ${lefts.length ? 'Primes without a partner stay inside.' : 'Nothing is left inside.'}`,
+      run: async (c) => {
+        const jobs = [c.fadeIn(eq2, 300)];
+        pr.forEach(([i, j], k) => {
+          const to = outEls[k].e, from = chips[i], dx = parseFloat(from.style.left) - parseFloat(to.style.left), dy = y1 - y2;
+          jobs.push(c.anim(to, [{ opacity: 1, transform: `translate(${dx}px, ${dy}px)` }, { opacity: 1, transform: 'none' }], 750, { delay: k * 250 }));
+          jobs.push(c.anim(chips[j], [{ opacity: 1 }, { opacity: 0.25 }], 400, { delay: k * 250 }), c.anim(from, [{ opacity: 1 }, { opacity: 0.25 }], 400, { delay: k * 250 }));
+          if (outEls[k].xs) jobs.push(c.fadeIn(outEls[k].xs, 300, { delay: 600 + k * 250 }));
+        });
+        if (rad2) jobs.push(c.fadeIn(rad2, 400, { delay: 300 }));
+        left.forEach((i, k) => {
+          const to = leftEls[k].e, from = chips[i], dx = parseFloat(from.style.left) - parseFloat(to.style.left), dy = y1 - y2;
+          jobs.push(c.anim(to, [{ opacity: 1, transform: `translate(${dx}px, ${dy}px)` }, { opacity: 1, transform: 'none' }], 750, { delay: 400 + k * 150 }));
+          jobs.push(c.anim(from, [{ opacity: 1 }, { opacity: 0.25 }], 400, { delay: 400 }));
+          if (leftEls[k].xs) jobs.push(c.fadeIn(leftEls[k].xs, 300, { delay: 900 }));
+        });
+        brs.forEach(({ b, t }) => jobs.push(c.anim(b, [{ opacity: 1 }, { opacity: 0.25 }], 400), c.anim(t, [{ opacity: 1 }, { opacity: 0.35 }], 400)));
+        await Promise.all(jobs);
+      }
+    }, {
+      cap: `Multiply what’s outside${lefts.length ? ', and multiply what’s left inside' : ''}: ${outs.length > 1 ? `${outs.join(' × ')} = ${s}` : s} outside${lefts.length ? `, ${lefts.length > 1 ? `${lefts.join(' × ')} = ${r}` : r} inside` : ''}. So <b>${tex(`${R(n)}=${r === 1 ? s : mixT(s, r)}`)}</b>.`,
+      run: (c) => c.pop(res, 480)
+    });
+    return steps;
+  }
+};
+
+/* ============ 3. With a coefficient, or a fraction underneath ============ */
+const cLabel = (v) => { const [c, n] = v.split('|'), cf = parseCoef(c); return tex(coefT(cf) + (n.includes('/') ? `\\sqrt{\\tfrac{${n.split('/')[0]}}{${n.split('/')[1]}}}` : R(Number(n)))); };
+const COEF = ['3|50', '-2|45', '1/2|48', '1|8/25', 'sep', '5|128', '2/3|252', '1|11/16'];
+const coef = {
+  title: 'Simplify the root first, then multiply',
+  height: 400,
+  choices: COEF.map((v) => (v === 'sep' ? { sep: 'Example 3 check:' } : { v, label: cLabel(v) })),
+  intro: (v) => (v.split('|')[1].includes('/') ? `A <b>fraction</b> under the root: ${cLabel(v)}. Split it with the quotient rule.` : `A <b>number in front</b>: ${cLabel(v)}. The ${tex(coefT(parseCoef(v.split('|')[0])))} just waits while we simplify the root.`),
+  make(stage, v, ex) {
+    const W = ex.W, [cs, ns] = v.split('|'), c0 = parseCoef(cs), frac = ns.includes('/'), fs = frac ? 30 : 32;
+    const B = board(stage, { x: 40, y: 18, lh: 92, fs, nx: W * 0.56, nw: W * 0.44 - 30 });
+    const chk = add(stage, h('div', 'wk-check'), W * 0.56, 18); chk.style.width = (W * 0.44 - 30) + 'px'; chk.style.height = '86px'; hide(chk);
+    const steps = [];
+    if (ns.includes('/')) {
+      const [a, b] = ns.split('/').map(Number), kb = Math.sqrt(b), { s, r } = sqPart(a), fq = Q(s, kb);
+      const r0 = B.line(`\\sqrt{\\dfrac{${a}}{${b}}}`); r0.el.style.opacity = 1;
+      const r1 = B.line(`=\\dfrac{\\htmlClass{tk-t}{${R(a)}}}{\\htmlClass{tk-b}{${R(b)}}}`, 'Quotient rule: the root of the top over the root of the bottom.');
+      const r2 = B.line(`=\\dfrac{\\htmlClass{tk-t}{${mixT(s, r)}}}{\\htmlClass{tk-b}{${kb}}}`, s > 1 ? `${tex(`${R(b)}=${kb}`)}, and the top simplifies too: ${tex(`${R(a)}=${R(s * s)}\\times${R(r)}=${mixT(s, r)}`)}.` : `${b} is a perfect square: ${tex(`${R(b)}=${kb}`)}. ${a} has no square factor, so ${tex(R(a))} stays.`);
+      const r3 = B.line(`=${qT(fq)}${R(r)}`, `The same number with a fraction in front.`);
+      steps.push({ cap: `<b>Quotient rule:</b> take the root of the top and the root of the bottom separately.`, run: (cx) => showRow(cx, stage, r1, [], fs) },
+        { cap: `${b} is a perfect square, so the bottom becomes <b>${kb}</b>. ${s > 1 ? `The top has a square factor too: ${tex(`${R(a)}=${mixT(s, r)}`)}.` : `${a} has no perfect-square factor, so the top stays ${tex(R(a))}.`}`, run: (cx) => showRow(cx, stage, r2, [[r1.q('.tk-b'), r2.q('.tk-b'), String(kb)], s > 1 ? [r1.q('.tk-t'), r2.q('.tk-t'), mixT(s, r)] : [null, null]], fs) },
+        { cap: `Either form is fine: ${tex(`\\dfrac{${mixT(s, r)}}{${kb}}=${qT(fq)}${R(r)}`)}. The radicand ${r} has no perfect-square factor left, so we’re done.`, run: (cx) => showRow(cx, stage, r3, [], fs) },
+        { cap: `Check with a calculator: both give ${dec(Math.sqrt(a / b))}.`, run: (cx) => { chk.innerHTML = `<div class="sp-box-h">Calculator check</div>${K(`\\sqrt{\\tfrac{${a}}{${b}}}`)} ≈ ${dec(Math.sqrt(a / b))}<br>${K(`${qT(fq)}${R(r)}`)} ≈ ${dec(Math.sqrt(a / b))} <b class="ok">✓</b>`; return cx.fadeIn(chk, 400); } });
+      return steps;
+    }
+    const n = Number(ns), { s, r } = sqPart(n), S = s * s, ct = coefT(c0), prod = Q(c0.p * s, c0.q);
+    const resT = prod.p === prod.q ? R(r) : prod.p === -prod.q ? '-' + R(r) : qT(prod) + (r === 1 ? '' : R(r));
+    const cTok = `\\htmlClass{tk-c}{${ct}}`;
+    const r0 = B.line(`${cTok}${R(n)}`); r0.el.style.opacity = 1;
+    const r1 = B.line(`=${cTok}\\times\\sqrt{\\htmlClass{tk-S}{${tn(S)}}\\times${tn(r)}}`, `Leave the ${tex(ct)} alone for now. The largest perfect square in ${n} is <b>${S}</b>.`);
+    const r2 = B.line(`=${cTok}\\times\\htmlClass{tk-s}{${s}}${R(r)}`, `${tex(`${R(S)}=${s}`)} comes out of the root.`);
+    const r3 = B.line(`=\\htmlClass{tk-p}{${prod.p === prod.q ? '' : prod.p === -prod.q ? '-' : qT(prod)}}${r === 1 ? '' : R(r)}`, `Multiply the numbers in front: ${tex(`${ct}\\times${s}=${qT(prod)}`)}.`);
+    const val = c0.val * Math.sqrt(n);
+    steps.push({
+      cap: `<b>Simplify the radical first</b>; the ${tex(ct)} in front just waits. The largest perfect square in ${n} is <b>${S}</b>: ${n} = ${S} × ${r}.`,
+      run: (cx) => showRow(cx, stage, r1, [[r0.q('.tk-c'), r1.q('.tk-c'), ct]], fs)
+    }, {
+      cap: `${tex(`${R(S)}=${s}`)}, so a <b>${s}</b> comes out of the root. Now there are two numbers in front.`,
+      run: (cx) => showRow(cx, stage, r2, [[r1.q('.tk-c'), r2.q('.tk-c'), ct], [r1.q('.tk-S'), r2.q('.tk-s'), String(s)]], fs)
+    }, {
+      cap: `Multiply the numbers in front: ${tex(`${ct}\\times${s}=${qT(prod)}`)}. So <b>${tex(`${ct}${R(n)}=${resT}`)}</b>.`,
+      run: (cx) => showRow(cx, stage, r3, [[r2.q('.tk-c'), r3.q('.tk-p'), ct], [r2.q('.tk-s'), r3.q('.tk-p'), String(s)]], fs)
+    }, {
+      cap: `Check with a calculator: both give ${dec(val)}.`,
+      run: (cx) => { chk.innerHTML = `<div class="sp-box-h">Calculator check</div>${K(`${ct}${R(n)}`)} ≈ ${dec(val)}<br>${K(resT)} ≈ ${dec(val)} <b class="ok">✓</b>`; return cx.fadeIn(chk, 400); }
+    });
+    return steps;
+  }
+};
+
+/* ============ 4. Mixed → entire: the coefficient goes back in as its square ============ */
+const ENT = ['4|11', 'sep', '3|8', '5|6', '9|5', '5/2|8', '0.6|75', '-7|5'];
+const entire = {
+  title: 'Mixed → entire: the number outside goes in as its square',
+  height: 400,
+  minW: 820, // drawn this wide and scaled to fit beside the sidebar
+  choices: ENT.map((v) => (v === 'sep' ? { sep: 'Example 4 check:' } : { v, label: cLabel(v) })),
+  intro: (v) => `Run Section 3 backwards. Push the coefficient of ${cLabel(v)} back <b>under</b> the root sign.`,
+  make(stage, v, ex) {
+    const W = ex.W, [cs, ns] = v.split('|'), c0 = parseCoef(cs), n = Number(ns), fs = 32, neg = c0.p < 0;
+    const aT = absCoefT(c0), a = { p: Math.abs(c0.p), q: c0.q }, a2 = Q(a.p * a.p, a.q * a.q);
+    const a2T = c0.dec ? String(+((a.p / a.q) ** 2).toFixed(6)) : qT(a2);
+    const sqT = a.q === 1 || c0.dec ? `${aT}^2` : `\\left(${aT}\\right)^2`;
+    const Rv = (a.p * a.p * n) / (a.q * a.q), m = neg ? '-' : '';
+    const B = board(stage, { x: 40, y: 22, lh: 92, fs, nx: W * 0.6, nw: W * 0.4 - 30 });
+    const r0 = B.line(`${neg ? '\\htmlClass{tk-m}{-}' : ''}\\htmlClass{tk-c}{${aT}}${R(n)}`); r0.el.style.opacity = 1;
+    const r1 = B.line(`=${neg ? '\\htmlClass{tk-m}{-}' : ''}\\sqrt{\\htmlClass{tk-c}{${sqT}}}\\times${R(n)}=${m}\\sqrt{\\htmlClass{tk-a}{${a2T}}}\\times${R(n)}`,
+      neg ? `The <b>−</b> stays out front. Only the ${aT} goes in: ${tex(`${aT}=\\sqrt{${sqT}}=\\sqrt{${a2T}}`)}.` : `Any positive number is the root of its square: ${tex(`${aT}=\\sqrt{${sqT}}=\\sqrt{${a2T}}`)}.`);
+    const r2 = B.line(`=${m}\\sqrt{\\htmlClass{tk-a}{${a2T}}\\times${n}}`, 'Product rule backwards: two roots join into one.');
+    const r3 = B.line(`=${m}\\htmlClass{tk-R}{${R(Rv)}}`, `${tex(`${a2T}\\times${n}=${tn(Rv)}`)}`);
+    const chk = add(stage, h('div', 'wk-check'), W * 0.6, 22); chk.style.width = (W * 0.4 - 30) + 'px'; chk.style.height = '86px'; hide(chk);
+    const val = c0.val * Math.sqrt(n);
+    return [{
+      cap: neg ? `The <b>−</b> is not part of the coefficient that moves: a square root is never negative, so the − <b>stays outside</b>. The ${tex(aT)} goes in as ${tex(`\\sqrt{${a2T}}`)}.`
+        : `Every positive number is the square root of its square: ${tex(`${aT}=\\sqrt{${sqT}}=\\sqrt{${a2T}}`)}. So the ${tex(aT)} can go under a root sign.`,
+      run: (c) => showRow(c, stage, r1, [[r0.q('.tk-c'), r1.q('.tk-c'), aT], neg ? [r0.q('.tk-m'), r1.q('.tk-m'), '-'] : [null, null]], fs)
+    }, {
+      cap: `Run the product rule backwards: ${tex(`\\sqrt{${a2T}}\\times${R(n)}=\\sqrt{${a2T}\\times${n}}`)}.`,
+      run: (c) => showRow(c, stage, r2, [[r1.q('.tk-a'), r2.q('.tk-a'), a2T]], fs)
+    }, {
+      cap: `Multiply: ${tex(`${a2T}\\times${n}=${tn(Rv)}`)}. So <b>${tex(`${coefT(c0)}${R(n)}=${m}${R(Rv)}`)}</b>.`,
+      run: (c) => showRow(c, stage, r3, [[r2.q('.tk-a'), r3.q('.tk-R'), R(Rv)]], fs)
+    }, {
+      cap: `Check with a calculator: both give ${dec(val)}.${neg ? ' (Both negative, because the − stayed outside.)' : ''}`,
+      run: (c) => { chk.innerHTML = `<div class="sp-box-h">Calculator check</div>${K(`${coefT(c0)}${R(n)}`)} ≈ ${dec(val)}<br>${K(`${m}${R(Rv)}`)} ≈ ${dec(val)} <b class="ok">✓</b>`; return c.fadeIn(chk, 400); }
+    }];
+  }
+};
+
+/* ============ 5. Comparing radicals on a number line ============ */
+const SETS = { more: [[3, 5], [2, 10], [4, 3], [1, 42], [5, 2]], ex5: [[6, 3], [4, 5], [1, 40], [3, 6], [2, 11]] };
+const ROMAN = ['i', 'ii', 'iii', 'iv', 'v'];
+const numline = {
+  title: 'Convert to entire radicals, then line them up',
+  height: 480,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  choices: [{ v: 'more', label: 'Warm-up set' }, { sep: 'Example 5 check:' }, { v: 'ex5', label: 'Example 5' }],
+  intro: (v) => `Order ${SETS[v].map(([a, r]) => tex(mixT(a, r))).join(', ')} from <b>greatest to least</b>, without a calculator.`,
+  make(stage, v, ex) {
+    const W = ex.W, items = SETS[v].map(([a, r], i) => ({ a, r, R: a * a * r, val: Math.sqrt(a * a * r), lab: ROMAN[i] }));
+    const cw = (W - 40 - 4 * 12) / 5;
+    items.forEach((it, i) => {
+      const x = 20 + i * (cw + 12), card = add(stage, h('div', 'nl-card'), x, 14); card.style.width = cw + 'px';
+      card.innerHTML = `<div class="nl-lab">${it.lab})</div><div class="nl-m">${K(mixT(it.a, it.r))}</div><div class="nl-s">${it.a === 1 ? '<span class="muted">already entire</span>' : K(`=\\sqrt{${it.a * it.a}\\times${it.r}}`)}</div><div class="nl-e">${K('=' + R(it.R))}</div><div class="nl-rank"></div>`;
+      it.card = card; it.s = card.querySelector('.nl-s'); it.e = card.querySelector('.nl-e'); it.rk = card.querySelector('.nl-rank'); hide(it.s, it.e, it.rk);
+    });
+    const lo = Math.floor(Math.min(...items.map((t) => t.val))), hi = Math.ceil(Math.max(...items.map((t) => t.val))), xL = 60, xR = W - 60, ly = 330;
+    const X = (u) => xL + ((u - lo) / (hi - lo)) * (xR - xL);
+    const axis = add(stage, h('div', 'nl-axis'), xL - 20, ly); axis.style.width = (xR - xL + 40) + 'px';
+    for (let k = lo; k <= hi; k++) {
+      add(stage, h('div', 'nl-tick'), X(k) - 1.5, ly - 9);
+      const t = add(stage, h('div', 'nl-tl', `<b>${k}</b>${K(`\\sqrt{${k * k}}`)}`), X(k), ly + 14); t.style.translate = '-50% 0';
+    }
+    const sorted = [...items].sort((p, q) => p.val - q.val);
+    sorted.forEach((it, i) => {
+      const dot = add(stage, h('div', 'nl-dot c'), X(it.val), ly + 1.5);
+      const up = i % 2 ? 92 : 46, mk = add(stage, h('div', 'nl-mk', `<small>${it.lab})</small>${K(R(it.R))}`), X(it.val), ly - up - 18); mk.style.translate = '-50% -50%';
+      const st = add(stage, h('div', 'nl-stem'), X(it.val) - 1, ly - up); st.style.height = (up - 8) + 'px';
+      it.dot = dot; it.mk = mk; it.st = st; hide(dot, mk, st);
+    });
+    const desc = [...sorted].reverse();
+    const ord = add(stage, h('div', 'nl-ord', K(desc.map((t) => mixT(t.a, t.r)).join('\\;>\\;'))), W / 2, 428); ord.style.translate = '-50% 0'; hide(ord);
+    return [{
+      cap: `Hard to compare as they are: is ${tex(mixT(items[0].a, items[0].r))} bigger than ${tex(mixT(items[1].a, items[1].r))}? Turn every one into an <b>entire radical</b>: the coefficient goes in as its <b>square</b>.`,
+      run: async (c) => { for (const it of items) { await c.fadeIn(it.s, 260); await c.fadeIn(it.e, 260); } }
+    }, {
+      cap: `Now compare the numbers under the roots: <b>bigger radicand, bigger value</b>. ${sorted.map((t) => t.R).join(' &lt; ')}, all between ${lo * lo} and ${hi * hi}.`,
+      run: (c) => Promise.all(sorted.flatMap((it, i) => [c.anim(it.dot, [{ opacity: 0, transform: 'translateY(-40px)' }, { opacity: 1, transform: 'none' }], 450, { delay: i * 220 }), c.fadeIn(it.st, 300, { delay: 200 + i * 220 }), c.pop(it.mk, 380, { delay: 250 + i * 220 })]))
+    }, {
+      cap: `Read the number line from <b>right to left</b> for greatest to least: <b>${desc.map((t) => tex(mixT(t.a, t.r))).join(' &gt; ')}</b>.`,
+      run: async (c) => { desc.forEach((t, i) => { t.rk.textContent = i + 1; }); await Promise.all([c.fadeIn(ord, 450), ...desc.map((t, i) => c.pop(t.rk, 320, { delay: i * 120 }))]); }
+    }];
+  }
+};
+
+/* ============ 6. Pythagorean theorem with exact answers ============ */
+const pyth = {
+  title: 'Squares on the sides: keep the answer exact',
+  height: 470,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  choices: [{ v: '1|1', label: 'legs 1 and 1' }, { v: '2|4', label: 'legs 2 and 4' }, { v: '3|6', label: 'legs 3 and 6' }, { v: '5|5', label: 'legs 5 and 5' }, { sep: 'Example 6 check:' }, { v: 'ex6', label: 'Example 6' }],
+  intro: (v) => (v === 'ex6' ? 'Example 6: find the exact length of <b>AB</b>. Two right triangles share the altitude <b>AD</b>.' : `A right triangle has legs <b>${v.split('|')[0]}</b> and <b>${v.split('|')[1]}</b>. How long is the hypotenuse, <b>exactly</b>?`),
+  make(stage, v, ex) { return v === 'ex6' ? pythEx6(stage, ex.W) : pythLegs(stage, v, ex.W); }
+};
+function pythLegs(stage, v, W) {
+  const [l1, l2] = v.split('|').map(Number), RW = W * 0.54, RH = 440;
+  // choose which leg is vertical (p) so the picture is as big as possible
+  const fit = (p, q) => Math.min(110, (RW - 40) / (q + 2 * p), (RH - 20) / (2 * q + p));
+  const [p, q] = fit(l1, l2) >= fit(l2, l1) ? [l1, l2] : [l2, l1], sc = fit(p, q);
+  const ox = 20 + p * sc + (RW - 40 - (q + 2 * p) * sc) / 2, oy = 14 + (q + p) * sc + (RH - 20 - (2 * q + p) * sc) / 2;
+  const P = (x, y) => `${ox + x * sc},${oy - y * sc}`;
+  const svg = add(stage, svgEl('svg', { class: 'py-svg', width: RW, height: 470 }), 0, 0);
+  const poly = (pts, cls) => svg.appendChild(svgEl('polygon', { points: pts.map((t) => P(...t)).join(' '), class: cls }));
+  const grid = (x0, y0, nx, ny, cls) => { const g = svg.appendChild(svgEl('g', { class: cls })); for (let i = 1; i < nx; i++) g.appendChild(svgEl('line', { x1: ox + (x0 + i) * sc, y1: oy - y0 * sc, x2: ox + (x0 + i) * sc, y2: oy - (y0 + ny) * sc })); for (let j = 1; j < ny; j++) g.appendChild(svgEl('line', { x1: ox + x0 * sc, y1: oy - (y0 + j) * sc, x2: ox + (x0 + nx) * sc, y2: oy - (y0 + j) * sc })); return g; };
+  const sqA = poly([[0, 0], [q, 0], [q, -q], [0, -q]], 'py-sq a'), gA = grid(0, -q, q, q, 'py-gr');
+  const sqB = poly([[0, 0], [0, p], [-p, p], [-p, 0]], 'py-sq b'), gB = grid(-p, 0, p, p, 'py-gr');
+  const sqC = poly([[0, p], [q, 0], [q + p, q], [p, p + q]], 'py-sq hc');
+  poly([[0, 0], [q, 0], [0, p]], 'py-tri');
+  const m = Math.min(16, sc * 0.3); svg.appendChild(svgEl('path', { d: `M${ox + m} ${oy} L${ox + m} ${oy - m} L${ox} ${oy - m}`, class: 'py-ra' }));
+  [sqA, gA, sqB, gB, sqC].forEach((e) => (e.style.opacity = 0));
+  const sum = p * p + q * q, { s, r } = sqPart(sum), lab = (html, x, y, cls) => { const e = add(stage, h('div', 'py-lab c ' + (cls || ''), html), ox + x * sc, oy - y * sc); return e; };
+  lab(String(q), q / 2, 0, 'leg'); lab(String(p), 0, p / 2, 'leg');
+  const aA = lab(`${q}<sup>2</sup> = ${q * q}`, q / 2, -q / 2, 'area'), aB = lab(`${p}<sup>2</sup> = ${p * p}`, -p / 2, p / 2, 'area');
+  const aC = lab(`${p * p} + ${q * q} = <b>${sum}</b>`, (q + p) / 2 + (0.18 * p), (p + q) / 2 + (0.18 * q), 'area big');
+  const cc = Math.sqrt(sum), off = 30 / sc, hx = q / 2 + (off * p) / cc, hy = p / 2 + (off * q) / cc; // just outside the hypotenuse, inside its square
+  const cL = lab('?', hx, hy, 'hyp'); const cL2 = lab(K(R(sum)), hx, hy, 'hyp'); const cL3 = lab(K(mixT(s, r)), hx, hy, 'hyp');
+  hide(aA, aB, aC, cL2, cL3);
+  const B = board(stage, { x: RW + 20, y: 30, lh: 66, fs: 28 });
+  const L = [B.line('c^2=a^2+b^2'), B.line(`c^2=${p}^2+${q}^2=${p * p}+${q * q}=${sum}`), B.line(`c=${R(sum)}`),
+    B.line(r === 1 ? `c=${s}` : s === 1 ? `${R(sum)}\\ \\text{is simplest}` : `c=\\sqrt{${s * s}\\times${r}}=\\mathbf{${mixT(s, r)}}`), B.line(`c\\approx${Math.sqrt(sum).toFixed(2)}`)];
+  const swap = (c, a, b) => Promise.all([c.anim(a, [{ opacity: 1 }, { opacity: 0 }], 250), c.pop(b, 420, { delay: 150 })]);
+  return [{
+    cap: `Build a square on each <b>leg</b>. Count the unit squares: ${p}<sup>2</sup> = ${p * p} and ${q}<sup>2</sup> = ${q * q}.`,
+    run: (c) => Promise.all([c.fadeIn(sqA, 400), c.fadeIn(gA, 400), c.fadeIn(sqB, 400, { delay: 200 }), c.fadeIn(gB, 400, { delay: 200 }), c.pop(aA, 350, { delay: 300 }), c.pop(aB, 350, { delay: 450 }), showRow(c, stage, L[0])])
+  }, {
+    cap: `<b>Pythagorean theorem:</b> the square on the <b>hypotenuse</b> has the same area as the other two together: ${p * p} + ${q * q} = <b>${sum}</b>.`,
+    run: (c) => Promise.all([c.anim(sqC, [{ opacity: 0, transform: 'scale(.9)' }, { opacity: 1, transform: 'none' }], 500), c.pop(aC, 400, { delay: 300 }), showRow(c, stage, L[1])])
+  }, {
+    cap: `The hypotenuse is the side of a square with area ${sum}, so <b>${tex(`c=${R(sum)}`)}</b>. That is the <b>exact</b> length.`,
+    run: (c) => Promise.all([swap(c, cL, cL2), showRow(c, stage, L[2])])
+  }, {
+    cap: r === 1 ? `${sum} is a perfect square, so c = <b>${s}</b> exactly.` : s === 1 ? `${sum} has no perfect-square factor, so ${tex(R(sum))} is already simplest.${sum === 2 ? ' It’s the √2 spoke from the snail spiral!' : ''}`
+      : `Simplify: ${sum} = ${s * s} × ${r}, so <b>${tex(`c=${R(sum)}=${mixT(s, r)}`)}</b>. Leave it like this unless a decimal is asked for.`,
+    run: (c) => Promise.all([s > 1 && r > 1 ? swap(c, cL2, cL3) : null, showRow(c, stage, L[3])])
+  }, {
+    cap: `Only round when asked: ${tex(mixT(s, r))} ≈ ${Math.sqrt(sum).toFixed(2)}. The exact answer never loses accuracy; the decimal always does.`,
+    run: (c) => showRow(c, stage, L[4])
+  }];
+}
+function pythEx6(stage, W) {
+  const sc = 32, ox = 70, oy = 430, P = (x, y) => `${ox + x * sc},${oy - y * sc}`;
+  const svg = add(stage, svgEl('svg', { class: 'py-svg', width: 400, height: 470 }), 0, 0);
+  const tC = svg.appendChild(svgEl('polygon', { points: [P(4, 0), P(9, 0), P(4, 12)].join(' '), class: 'py-sq b' }));
+  const tB = svg.appendChild(svgEl('polygon', { points: [P(0, 0), P(4, 0), P(4, 12)].join(' '), class: 'py-sq a' }));
+  hide(tC, tB);
+  svg.appendChild(svgEl('path', { d: `M${P(0, 0)} L${P(9, 0)} L${P(4, 12)} Z M${P(4, 12)} L${P(4, 0)}`, class: 'py-tri', fill: 'none' }));
+  svg.appendChild(svgEl('path', { d: `M${ox + 4 * sc - 13} ${oy} L${ox + 4 * sc - 13} ${oy - 13} L${ox + 4 * sc} ${oy - 13}`, class: 'py-ra' }));
+  const lab = (html, x, y, cls) => add(stage, h('div', 'py-lab c ' + (cls || ''), html), ox + x * sc, oy - y * sc);
+  lab('A', 4, 12.7, 'pt'); lab('B', -0.6, 0, 'pt'); lab('C', 9.6, 0, 'pt'); lab('D', 4, -0.75, 'pt');
+  lab('4', 2, -0.75, 'leg'); lab('5', 6.5, -0.75, 'leg'); lab('13', 7.3, 6.3, 'leg');
+  const ad = lab('?', 4.5, 5, 'hyp'), ad2 = lab('12', 4.5, 5, 'hyp'), ab = lab('?', 1.3, 6.3, 'hyp'), ab2 = lab(K('4\\sqrt{10}'), 0.9, 6.3, 'hyp');
+  hide(ad2, ab2);
+  const B = board(stage, { x: 430, y: 34, lh: 70, fs: 27 });
+  const L = [B.line('\\triangle ADC:\\ AD^2+5^2=13^2'), B.line('AD^2=169-25=144,\\ AD=12'), B.line('\\triangle ADB:\\ AB^2=12^2+4^2=160'),
+    B.line('AB=\\sqrt{160}=\\sqrt{16\\times10}=\\mathbf{4\\sqrt{10}}'), B.line('AB=4\\times3.162\\ldots\\approx\\mathbf{12.65}')];
+  const swap = (c, a, b) => Promise.all([c.anim(a, [{ opacity: 1 }, { opacity: 0 }], 250), c.pop(b, 420, { delay: 150 })]);
+  return [{
+    cap: `Start with <b>△ADC</b>: we know two of its sides. AC = 13 is its hypotenuse (across from the right angle at D).`,
+    run: (c) => Promise.all([c.fadeIn(tC, 400), showRow(c, stage, L[0])])
+  }, {
+    cap: `${tex('AD^2=169-25=144')}, so <b>AD = 12</b>. (144 is a perfect square, so this one is a whole number.)`,
+    run: (c) => Promise.all([swap(c, ad, ad2), showRow(c, stage, L[1])])
+  }, {
+    cap: `Now <b>△ADB</b>: its legs are AD = 12 and BD = 4, and AB is the hypotenuse. ${tex('AB^2=144+16=160')}.`,
+    run: (c) => Promise.all([c.anim(tC, [{ opacity: 1 }, { opacity: 0.25 }], 400), c.fadeIn(tB, 400), showRow(c, stage, L[2])])
+  }, {
+    cap: `(a) ${tex('AB=\\sqrt{160}')}. The largest perfect square in 160 is 16: <b>${tex('AB=\\sqrt{16\\times10}=4\\sqrt{10}')}</b>.`,
+    run: (c) => Promise.all([swap(c, ab, ab2), showRow(c, stage, L[3])])
+  }, {
+    cap: `(b) Only now use decimals: ${tex('4\\sqrt{10}=4\\times3.162\\ldots=12.649\\ldots')}, so <b>AB ≈ 12.65</b>.`,
+    run: (c) => showRow(c, stage, L[4])
+  }];
+}
+
+/* ============ warm-up: the snail spiral ============ */
+function mountSpiral() {
+  const host = document.getElementById('spiral'); if (!host) return;
+  const N = 16, P = [null, [1, 0]];
+  for (let k = 1; k < N; k++) { const [x, y] = P[k], r = Math.hypot(x, y); P.push([x - y / r, y + x / r]); }
+  const Rt = P.map((p) => p && [-p[1], p[0]]); // turn it so the first spoke points up, like the board
+  const labPt = (k, d = 0.5) => { const [x, y] = Rt[k], r = Math.hypot(x, y), f = (r + d) / r; return [x * f, y * f]; };
+  const xs = [0], ys = [0];
+  for (let k = 1; k <= N; k++) { const l = labPt(k, 0.62); xs.push(Rt[k][0], l[0]); ys.push(Rt[k][1], l[1]); }
+  const BW = host.clientWidth || 470, BH = (host.clientHeight || 500) - 40, minx = Math.min(...xs), maxx = Math.max(...xs), miny = Math.min(...ys), maxy = Math.max(...ys);
+  const sc = Math.min(BW / (maxx - minx), BH / (maxy - miny)), offx = (BW - (maxx - minx) * sc) / 2, offy = (BH - (maxy - miny) * sc) / 2;
+  const X = (x) => offx + (x - minx) * sc, Y = (y) => offy + (maxy - y) * sc, pt = (p) => `${X(p[0])},${Y(p[1])}`;
+  const svg = svgEl('svg', { class: 'sp-svg', viewBox: `0 0 ${BW} ${BH}`, width: BW, height: BH }); host.appendChild(svg);
+  for (let k = 1; k < N; k++) svg.appendChild(svgEl('polygon', { points: [pt([0, 0]), pt(Rt[k]), pt(Rt[k + 1])].join(' '), class: 'sp-tri' + (k % 2 ? '' : ' b') }));
+  for (let k = 1; k < N; k++) { // right-angle marks
+    const [x, y] = Rt[k], r = Math.hypot(x, y), u = [x / r, y / r], e = [Rt[k + 1][0] - x, Rt[k + 1][1] - y], d = 0.16;
+    svg.appendChild(svgEl('path', { d: `M${pt([x - u[0] * d, y - u[1] * d])} L${pt([x - u[0] * d + e[0] * d, y - u[1] * d + e[1] * d])} L${pt([x + e[0] * d, y + e[1] * d])}`, class: 'sp-ra' }));
+  }
+  svg.appendChild(svgEl('path', { d: 'M' + Rt.slice(1).map(pt).join(' L'), class: 'sp-edge' }));
+  const spokes = [];
+  for (let k = 1; k <= N; k++) spokes[k] = svg.appendChild(svgEl('line', { x1: X(0), y1: Y(0), x2: X(Rt[k][0]), y2: Y(Rt[k][1]), class: 'sp-spoke' + (k === 3 ? ' red' : '') }));
+  svg.appendChild(svgEl('circle', { cx: X(0), cy: Y(0), r: 4.5, class: 'sp-o' }));
+  const mx = (Rt[1][0] + Rt[2][0]) / 2, my = (Rt[1][1] + Rt[2][1]) / 2, mr = Math.hypot(mx, my), f1 = (mr + 0.3) / mr; // just outside the first outer edge
+  const one = svgEl('text', { x: X(mx * f1), y: Y(my * f1) + 7, class: 'sp-one', 'text-anchor': 'middle' }); one.textContent = '1'; svg.appendChild(one);
+  const btns = [];
+  for (let k = 1; k <= N; k++) {
+    const [lx, ly] = labPt(k, 0.42), b = h('button', 'sp-lab' + (k === 3 ? ' red' : ''), tex(`\\sqrt{${k}}`)); b.type = 'button';
+    b.style.left = X(lx) + 'px'; b.style.top = Y(ly) + 'px'; b.onclick = () => select([k]); host.appendChild(b); btns[k] = b;
+  }
+  const read = h('div', 'sp-read', '<span class="muted">Tap a label</span>'); host.appendChild(read);
+  function select(ks) {
+    spokes.forEach((s, k) => s && s.classList.toggle('hl', ks.includes(k)));
+    btns.forEach((b, k) => b && b.classList.toggle('on', ks.includes(k)));
+    read.innerHTML = ks.map((k) => (isSq(k) ? tex(`\\sqrt{${k}}=${Math.sqrt(k)}`) : tex(`\\sqrt{${k}}\\approx${Math.sqrt(k).toFixed(2)}`))).join('&nbsp;&nbsp;&nbsp;');
+    read.animate([{ opacity: 0.3 }, { opacity: 1 }], 250);
+  }
+  document.querySelectorAll('[data-wq]').forEach((b) => b.addEventListener('click', () => {
+    const wq = b.closest('.wq'), on = wq.classList.toggle('shown');
+    if (on) select(b.dataset.wq.split(',').map(Number)); else select([]);
+  }));
+  document.querySelectorAll('[data-poll]').forEach((b) => b.addEventListener('click', () => b.closest('.poll').classList.toggle('revealed')));
+  mountStrip();
+}
+function mountStrip() {
+  const host = document.getElementById('strip'); if (!host) return;
+  const u = 112, x0 = 150, two = 2 * Math.sqrt(3) * u;
+  const lab = (t, y) => { const e = h('div', 'st-l', t); e.style.top = y + 'px'; host.appendChild(e); };
+  lab('Paper strip', 24); lab('Spoke', 88);
+  const r1 = h('div', 'st-bar red'); r1.style.left = x0 + 'px'; r1.style.top = '20px'; r1.style.width = (two / 2 - 2) + 'px'; r1.innerHTML = tex('\\sqrt{3}');
+  const r2 = h('div', 'st-bar red'); r2.style.left = (x0 + two / 2 + 2) + 'px'; r2.style.top = '20px'; r2.style.width = (two / 2 - 2) + 'px'; r2.innerHTML = tex('\\sqrt{3}');
+  host.append(r1, r2);
+  const mark = h('div', 'st-mark'); mark.style.left = (x0 + two) + 'px'; host.appendChild(mark);
+  const bar = h('div', 'st-bar cmp'); bar.style.left = x0 + 'px'; bar.style.top = '84px'; bar.style.width = '0px'; host.appendChild(bar);
+  const verdict = h('div', 'st-v'); host.appendChild(verdict);
+  const opts = h('div', 'st-opts no-ink'); host.appendChild(opts);
+  [5, 6, 9, 12].forEach((k, i) => {
+    const b = h('button', 'chip', `<b>${'ABCD'[i]}</b>&nbsp;${tex(`\\sqrt{${k}}`)}`); b.type = 'button'; opts.appendChild(b);
+    b.onclick = () => {
+      opts.querySelectorAll('.chip').forEach((x) => x.classList.toggle('on', x === b));
+      const w = Math.sqrt(k) * u, ok = k === 12;
+      bar.innerHTML = tex(`\\sqrt{${k}}`); bar.classList.toggle('match', ok);
+      bar.animate([{ width: bar.style.width }, { width: w + 'px' }], { duration: 600, easing: 'cubic-bezier(.25,.75,.3,1)' }); bar.style.width = w + 'px';
+      verdict.innerHTML = ok ? `<b class="ok">A perfect match!</b> ${tex('2\\sqrt{3}=\\sqrt{12}\\approx3.46')}` : `<b class="red">Too short.</b> ${tex(`\\sqrt{${k}}${isSq(k) ? '=' + Math.sqrt(k) : '\\approx' + Math.sqrt(k).toFixed(2)}`)}, but the strip is ${tex('\\approx3.46')}`;
+      verdict.animate([{ opacity: 0 }, { opacity: 1 }], 400);
+    };
+  });
+}
+
+/* ============ tap-to-fill blanks ============ */
+function replaceBlanks(src, fn) { // \blank{...} with nested braces → fn(content)
+  let out = '', i = 0;
+  while (i < src.length) {
+    const j = src.indexOf('\\blank{', i); if (j < 0) { out += src.slice(i); break; }
+    out += src.slice(i, j); let d = 1, k = j + 7;
+    for (; k < src.length && d; k++) { if (src[k] === '{') d++; else if (src[k] === '}') d--; }
+    out += fn(src.slice(j + 7, k - 1)); i = k;
+  }
+  return out;
+}
+function mountTexBlanks() {
+  document.querySelectorAll('[data-tfill]').forEach((el) => {
+    const src = el.dataset.tfill, n = (src.match(/\\blank\{/g) || []).length, state = Array(n).fill(false);
+    const render = () => {
+      let i = 0;
+      el.innerHTML = K(replaceBlanks(src, (a) => { const k = i++; return `\\htmlData{tap=1,b=${k}}{\\underline{\\;${state[k] ? `\\textcolor{#c93a33}{\\mathbf{${a}}}` : `\\phantom{\\mathbf{${a}}}`}\\;}}`; }), true);
+      el.querySelectorAll('[data-b]').forEach((b) => { b.setAttribute('role', 'button'); b.classList.toggle('filled', state[+b.dataset.b]); });
+    };
+    el.addEventListener('click', (e) => { const b = e.target.closest('[data-b]'); if (!b) return; state[+b.dataset.b] = !state[+b.dataset.b]; render(); });
+    el._fill = () => { state.fill(true); render(); };
+    render();
+  });
+}
+function mountBlanks() {
+  const grid = document.getElementById('sq-grid');
+  if (grid) for (let k = 1; k <= 15; k++) grid.insertAdjacentHTML('beforeend', `<div class="sq-c"><div class="sq-k">${tex(k + '^2')}</div><button class="blank sq" data-a="${k * k}"></button></div>`);
+  document.querySelectorAll('.blank[data-a]').forEach((b) => b.addEventListener('click', () => { b.classList.toggle('filled'); b.textContent = b.classList.contains('filled') ? b.dataset.a : ''; }));
+  document.querySelectorAll('[data-fillall]').forEach((btn) => btn.addEventListener('click', () => {
+    const scope = btn.closest('[data-fillscope]') || btn.closest('.card');
+    scope.querySelectorAll('[data-tfill]').forEach((t) => t._fill && t._fill());
+    scope.querySelectorAll('.blank[data-a]').forEach((b, i) => setTimeout(() => { b.classList.add('filled'); b.textContent = b.dataset.a; b.animate([{ transform: 'scale(1.3)' }, { transform: 'scale(1)' }], 300); }, i * 90));
+  }));
+}
 
 /* ============ wiring ============ */
 function mountExplainers() {
-  const defs = { ladder, venn, backwards, powers, treeFill, decimals, sort, repFrac, compare, estimate };
+  const defs = { split, area, finder, pairs, coef, entire, numline, pyth };
+  const tidy = (t) => String(t).replace(/…(\s*<\/b>)?\./g, '…$1'); // "7.071…." → "7.071…"
+  Object.values(defs).forEach((d) => {
+    const make = d.make;
+    d.make = function (...a) { const steps = make.apply(this, a); steps.forEach((s) => { const c0 = s.cap; s.cap = typeof c0 === 'function' ? () => tidy(c0()) : tidy(c0); }); return steps; };
+  });
   document.querySelectorAll('[data-explainer]').forEach((el) => new Explainer(el, defs[el.dataset.explainer]));
 }
 
-/* Example 5 with numbers: the partly built tree, d left for the class to split */
-function mountTree5() {
-  const host = document.getElementById('tree5'); if (!host) return;
-  let dv = 15;
-  const tree = new FactorTree(host.querySelector('.ft-host'), { n: 135 * dv, preset: [15, 9 * dv], style: 'plain', maxSlot: 92 });
-  const deepen = () => {
-    const [a, b] = tree.root.kids;
-    tree.split(a, 3, 5, true); tree.split(b, 3, 3 * dv, true); tree.split(b.kids[1], 3, dv, true);
-    tree.layout(false); tree.updateTray(true);
-  };
-  const orig = tree.reset.bind(tree);
-  tree.reset = () => { orig(); deepen(); };
-  deepen();
-  const chips = host.querySelectorAll('[data-d]');
-  chips.forEach((b) => b.addEventListener('click', () => { chips.forEach((x) => x.classList.toggle('on', x === b)); dv = Number(b.dataset.d); tree.setN(135 * dv, [15, 9 * dv]); }));
-}
-
-function mountWarmup() {
-  const ten = document.querySelector('.ff-t.ten');
-  document.querySelectorAll('.ff-t:not(.done)').forEach((b) => b.addEventListener('click', () => b.classList.toggle('shown')));
-  const all = document.querySelector('[data-ffall]');
-  if (all) all.addEventListener('click', () => document.querySelectorAll('.ff-t:not(.done)').forEach((b, i) => setTimeout(() => { b.classList.add('shown'); b.animate([{ transform: 'scale(1.08)' }, { transform: 'scale(1)' }], 260); }, i * 110)));
-  document.querySelectorAll('[data-rv]').forEach((b) => b.addEventListener('click', () => document.getElementById(b.dataset.rv).classList.toggle('on')));
-  document.querySelectorAll('[data-poll]').forEach((b) => b.addEventListener('click', () => { const p = b.closest('.poll'); p.classList.toggle('revealed'); if (ten) ten.classList.toggle('solved', p.classList.contains('revealed')); }));
-  document.querySelectorAll('.ff-x, .br-card').forEach((b) => b.addEventListener('click', () => b.classList.toggle('on')));
-}
-
-function mountBlanks() {
-  document.querySelectorAll('.pp-b[data-a]').forEach((b) => b.addEventListener('click', () => { b.classList.toggle('filled'); b.textContent = b.classList.contains('filled') ? b.dataset.a : ''; }));
-  const all = document.querySelector('[data-ppall]');
-  if (all) all.addEventListener('click', () => document.querySelectorAll('.pp-b[data-a]').forEach((b, i) => setTimeout(() => { b.classList.add('filled'); b.textContent = b.dataset.a; b.animate([{ transform: 'scale(1.3)' }, { transform: 'scale(1)' }], 260); }, i * 90)));
-}
-
-function drawNumberLine() { // Example 9's printed number line
-  const g = document.querySelector('.nl-fig .tk'); if (!g) return;
-  for (let t = 0; t <= 10; t++) { const x = 20 + t * 70; g.appendChild(svgEl('line', { x1: x, y1: 43, x2: x, y2: 57 })); const s = svgEl('text', { x, y: 76 }); s.textContent = t; g.appendChild(s); }
-}
-
-mountExplainers(); mountTree5(); mountWarmup(); mountBlanks(); drawNumberLine();
+mountTexBlanks(); mountBlanks(); mountSpiral(); mountExplainers();

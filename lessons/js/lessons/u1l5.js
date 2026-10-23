@@ -1,766 +1,897 @@
-/* Math 10C · Unit 1 · Lesson 5 — Roots of Real Numbers: the explainers and widgets on this page. */
-import { h, fmt, Explainer, primeFactors, factors } from '../explain.js';
+/* Math 10C · Unit 1 · Lesson 5 — Classifying the Real Number System: the explainers and widgets on this page. */
+import { h, fmt, Explainer } from '../explain.js';
 import { tex } from '../tex.js';
 
+const absTex = (s) => String(s).replace(/\|([^|]*)\|/g, '\\lvert $1 \\rvert');
+const T = (s) => tex(absTex(s));
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
-/* KaTeX with \htmlClass allowed (used to point at the parts of a radical) */
-const K = (s, display) => { try { return window.katex.renderToString(String(s), { displayMode: !!display, throwOnError: false, output: 'html', trust: true, strict: false }); } catch (e) { return String(s); } };
-const tn = (n) => fmt(n).replace(/ /g, '\\,'); // TeX number with a thin space, like the booklet: 6\,561
-const mn = (n) => fmt(n).replace(/^-/, '−'); // HTML number with a real minus sign
-const rad = (n, x) => (n === 2 ? `\\sqrt{${x}}` : `\\sqrt[${n}]{${x}}`);
-const nthRoot = (x, n) => (x < 0 ? -Math.pow(-x, 1 / n) : Math.pow(x, 1 / n));
-const r2 = (x) => (Math.round(x * 100) / 100).toFixed(2).replace(/^-/, '−');
-const ORD = { 2: 'square', 3: 'cube', 4: 'fourth', 5: 'fifth', 6: 'sixth', 7: 'seventh', 8: 'eighth', 9: 'ninth' };
-const ord = (n) => ORD[n] || n + 'th';
-const NUM = { 1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five', 6: 'six', 7: 'seven', 8: 'eight' };
-const plural = (k, w) => (NUM[k] || k) + ' ' + w + (k === 1 ? '' : 's');
-/* where an element sits inside the stage, in unscaled stage pixels (the lesson is scaled to fit the screen) */
-function rectIn(el, stage) {
-  const b = stage.getBoundingClientRect(), s = b.width / stage.offsetWidth || 1, a = el.getBoundingClientRect();
-  return { x: (a.left - b.left) / s - stage.clientLeft, y: (a.top - b.top) / s - stage.clientTop, w: a.width / s, h: a.height / s };
-}
 const SVGNS = 'http://www.w3.org/2000/svg';
-function svgLayer(stage, cls) { const s = document.createElementNS(SVGNS, 'svg'); s.setAttribute('class', cls); stage.appendChild(s); return s; }
-function arrow(svg, x1, y1, x2, y2, color) {
-  const g = document.createElementNS(SVGNS, 'g'), ln = document.createElementNS(SVGNS, 'line'), hd = document.createElementNS(SVGNS, 'path');
-  const a = Math.atan2(y2 - y1, x2 - x1), L = 13, sp = 0.45;
-  ln.setAttribute('x1', x1); ln.setAttribute('y1', y1); ln.setAttribute('x2', x2 - Math.cos(a) * 6); ln.setAttribute('y2', y2 - Math.sin(a) * 6); ln.setAttribute('stroke', color);
-  hd.setAttribute('d', `M ${x2} ${y2} L ${x2 - L * Math.cos(a - sp)} ${y2 - L * Math.sin(a - sp)} L ${x2 - L * Math.cos(a + sp)} ${y2 - L * Math.sin(a + sp)} Z`); hd.setAttribute('fill', color);
-  g.append(ln, hd); svg.appendChild(g); return g;
+const sv = (tag, attrs = {}, parent) => { const e = document.createElementNS(SVGNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+const svgLayer = (stage, cls = '') => { const s = sv('svg', { class: 'l4-svg ' + cls }); stage.appendChild(s); return s; };
+const neg = (s) => String(s).replace(/^-/, '−');
+const fmtS = (v) => (v < 0 ? '−' + fmt(-v) : fmt(v));
+const tenth = (x) => neg((Math.round(x * 10) / 10).toFixed(1));
+const dots = (x, d) => (x < 0 ? '−' : '') + (Math.floor(Math.abs(x) * 10 ** d) / 10 ** d).toFixed(d) + '…';
+const hide = (...els) => els.forEach((e) => (e.style.opacity = 0));
+const draw = (c, path, ms = 600, o = {}) => { // stroke-draw an svg path
+  const len = (path.getTotalLength && path.getTotalLength()) || 600;
+  path.style.strokeDasharray = len; path.style.strokeDashoffset = len; path.style.opacity = 1;
+  return c.anim(path, [{ strokeDashoffset: len }, { strokeDashoffset: 0 }], ms, o).then(() => { path.style.strokeDasharray = ''; path.style.strokeDashoffset = ''; });
+};
+const showAll = (c, els, ms = 350) => Promise.all(els.map((e) => c.fadeIn(e, ms)));
+
+/* A number line: ticks + labels. o = { x0, x1, y, lo, hi, ticks: [{ v, lab, cls, dy, small }] } */
+function nline(stage, svg, o) {
+  const { x0, x1, y, lo, hi } = o;
+  const X = (v) => x0 + ((v - lo) / (hi - lo)) * (x1 - x0);
+  const g = sv('g', { class: 'nl' + (o.cls ? ' ' + o.cls : '') }, svg);
+  sv('line', { x1: x0 - 20, x2: x1 + 20, y1: y, y2: y, class: 'nl-ax' }, g);
+  sv('path', { d: `M ${x1 + 30} ${y} l -12 -7 v 14 z`, class: 'nl-hd' }, g);
+  sv('path', { d: `M ${x0 - 30} ${y} l 12 -7 v 14 z`, class: 'nl-hd' }, g);
+  const labs = [];
+  (o.ticks || []).forEach((t) => {
+    const s = t.small ? 5 : 9;
+    sv('line', { x1: X(t.v), x2: X(t.v), y1: y - s, y2: y + s, class: 'nl-tk' + (t.small ? ' sm' : '') }, g);
+    if (t.lab != null) labs.push(add(stage, h('div', 'nl-lab c' + (t.cls ? ' ' + t.cls : ''), t.lab), X(t.v), y + (t.dy || 24)));
+  });
+  return { X, g, labs, els: [g, ...labs] };
 }
-const GEAR = '<svg viewBox="-16 -16 32 32"><g>' + [0, 45, 90, 135].map((a) => `<rect x="-3" y="-15.5" width="6" height="31" rx="1.5" transform="rotate(${a})"/>`).join('') + '<circle r="11"/></g><circle r="4" fill="rgba(0,0,0,.35)"/></svg>';
-const spin = (c, el, ms = 900) => c.anim(el, [{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }], ms, { easing: 'ease-in-out' });
 
-/* ============ 2. The power machine and its undo button ============ */
-const parseB = (s) => { const [p, q] = String(s).split('/').map(Number); return { p, q: q || 1 }; };
-const fracTex = ({ p, q }) => (q === 1 ? tn(p) : (p < 0 ? '-' : '') + `\\tfrac{${Math.abs(p)}}{${q}}`);
-const fpow = ({ p, q }, k) => ({ p: Math.pow(p, k), q: Math.pow(q, k) });
-const machine = {
-  title: 'The power machine and its undo button',
-  height: 416,
-  choices: [{ v: '2,5', label: K('2^5') }, { v: '3,4', label: K('3^4') }, { v: '4,3', label: K('4^3') }, { v: '2,7', label: K('2^7') }, { v: '-2,5', label: K('(-2)^5') },
-    { sep: 'Example 1 check:' }, { v: '11,2', label: K('\\sqrt{121}') }, { v: '-5,3', label: K('\\sqrt[3]{-125}') }, { v: '9,4', label: K('\\sqrt[4]{6\\,561}') }, { v: '1/3,5', label: K('\\sqrt[5]{\\tfrac{1}{243}}') }],
-  intro: () => 'Squaring has an undo button: the square root. Cubing has one too: the cube root. <b>Every</b> power has an undo button — a <b>root</b> with the same number as its <b>index</b>.',
-  make(stage, v, ex) {
-    const W = ex.W, [bs, ns] = String(v).split(','), b = parseB(bs), n = Number(ns), x = fpow(b, n);
-    const neg = b.p < 0, bT = fracTex(b), xT = fracTex(x), fT = neg ? `(${bT})` : b.q > 1 ? `\\left(${bT}\\right)` : bT;
-    const y1 = 72, y2 = 286, xl = 104, xr = W - 104, xm = W / 2;
-    const belt = (a, z, y, dir) => { const e = add(stage, h('div', 'pm-belt'), a, y); e.style.width = (z - a) + 'px'; add(stage, h('div', 'pm-arrow', dir), (a + z) / 2, y - 16); };
-    [[y1, '→'], [y2, '←']].forEach(([y, d]) => { belt(xl + 58, xm - 130, y, d); belt(xm + 130, xr - 58, y, d); });
-    const box = (x0, y, cls) => add(stage, h('div', 'pm-box ' + (cls || ''), ''), x0, y);
-    const inT = box(xl, y1), outT = box(xr, y1, 'out'), inB = box(xr, y2), outB = box(xl, y2, 'out');
-    const mach = (y, cls, lab, op) => { const m = add(stage, h('div', 'pm-mach ' + cls, `<small>${lab}</small><div class="pm-op">${K(op)}</div>`), xm, y); const g = h('div', 'pm-gear', GEAR); m.appendChild(g); return [m, g]; };
-    const [mT, gT] = mach(y1, '', 'POWER', `\\square^{${n}}`);
-    const [mB, gB] = mach(y2, 'root off', 'ROOT', rad(n, '\\square'));
-    add(stage, h('div', 'mut-lab', 'in'), xl - 12, y1 - 64); add(stage, h('div', 'mut-lab', 'out'), xr - 14, y1 - 64);
-    // the factors, with the running product under each one
-    const fac = add(stage, h('div', 'pm-fac'), xm, 140), fs = [], xs = [];
-    for (let k = 1; k <= n; k++) {
-      if (k > 1) { const s = h('div', 'pm-x', '×'); fac.appendChild(s); xs.push(s); }
-      const f = h('div', 'pm-f', `<b>${K(fT)}</b><span>${k === 1 ? '&nbsp;' : K(fracTex(fpow(b, k)))}</span>`); fac.appendChild(f); fs.push(f);
-    }
-    const eq = h('div', 'pm-eq', '= ' + K(xT)); fac.appendChild(eq);
-    const ban = add(stage, h('div', 'pm-ban', K(`${rad(n, xT)}=${bT}\\quad\\text{because}\\quad ${fT}^{${n}}=${xT}`)), xm, 374); ban.style.opacity = 0;
-    const bH = K(bT), xH = K(xT), prod = K(Array(n).fill(fT).join('\\times'));
-    return [
-      {
-        cap: `Put <b>${bH}</b> into the <b>power machine</b>. It’s set to the power <b>${n}</b>.`,
-        run: (c) => { inT.innerHTML = K(bT); inT.classList.add('full'); return c.pop(inT, 400); }
-      },
-      {
-        cap: `The machine uses ${bH} as a <b>factor ${n} times</b>: ${prod} = <b>${xH}</b>. So ${K(`${fT}^{${n}}=${xT}`)}.` + (neg ? ' An <b>odd</b> number of negative factors makes a negative.' : ''),
-        run: async (c) => {
-          await c.anim(inT, [{ transform: 'translateX(0)', opacity: 1 }, { transform: `translateX(${xm - xl - 40}px) scale(.5)`, opacity: 0 }], 500);
-          const sp = spin(c, gT, 300 + n * 220);
-          for (let k = 0; k < n; k++) { if (k) await c.fadeIn(xs[k - 1], 90); await c.pop(fs[k], 220); }
-          await c.fadeIn(eq, 250); await sp;
-          outT.innerHTML = K(xT); outT.classList.add('full'); await c.pop(outT, 420);
-        }
-      },
-      {
-        cap: `Now <b>undo</b> it. The undo button for “to the power ${n}” is the <b>${ord(n)} root</b>: ${K(rad(n, xT))} asks “what number, used as a factor <b>${n} times</b>, makes ${xH}?”`,
-        run: async (c) => {
-          mB.classList.remove('off'); inB.innerHTML = K(xT); inB.classList.add('full');
-          await c.anim(inB, [{ opacity: 0, transform: `translateY(${y1 - y2}px)` }, { opacity: 1, transform: 'none' }], 650);
-        }
-      },
-      {
-        cap: `Out comes <b>${bH}</b>: ${K(`${rad(n, xT)}=${bT}`)}. The little <b>${n}</b> is the <b>index</b>: it counts the factors.` + (n % 2 === 0 && !neg ? ` (${K(`(-${bT})^{${n}}`)} is ${xH} too, but the radical sign means the <b>positive</b> root.)` : ''),
-        run: async (c) => {
-          await c.anim(inB, [{ transform: 'translateX(0)', opacity: 1 }, { transform: `translateX(${xm - xr + 40}px) scale(.5)`, opacity: 0 }], 600);
-          await spin(c, gB, 800);
-          outB.innerHTML = K(bT); outB.classList.add('full');
-          await Promise.all([c.pop(outB, 420), c.fadeIn(ban, 450, { delay: 250 })]);
-        }
-      }
-    ];
-  }
+/* ====================== the set diagram (shared by "build" and "sorter") ====================== */
+const SETS = {
+  N: { sym: 'N', name: 'Natural numbers', def: 'N = \\{1, 2, 3, \\ldots\\}' },
+  W: { sym: 'W', name: 'Whole numbers', def: 'W = \\{0, 1, 2, 3, \\ldots\\}' },
+  I: { sym: 'I', name: 'Integers', def: 'I = \\{\\ldots, -2, -1, 0, 1, 2, \\ldots\\}' },
+  Q: { sym: 'Q', name: 'Rational numbers', def: 'Q = \\left\\{\\dfrac{a}{b},\\ a, b \\in I,\\ b \\neq 0\\right\\}' },
+  Qb: { sym: '\\overline{Q}', name: 'Irrational numbers', def: null },
+  R: { sym: 'R', name: 'Real numbers', def: 'R = \\{Q \\text{ and } \\overline{Q}\\}' }
 };
+const INNER = { Q: 'I', I: 'W', W: 'N', N: null };
+function setGeom(x, y, w, hh) {
+  const E = { Q: [0.37, 0.55, 0.34, 0.43], I: [0.37, 0.59, 0.265, 0.33], W: [0.37, 0.63, 0.19, 0.235], N: [0.37, 0.665, 0.11, 0.14] };
+  const g = { x, y, w, h: hh, div: x + 0.75 * w };
+  for (const k in E) { const [cx, cy, rx, ry] = E[k]; g[k] = { cx: x + cx * w, cy: y + cy * hh, rx: rx * w, ry: ry * hh }; }
+  g.ring = (outer, deg) => { // a point halfway across the band between an ellipse and the one inside it
+    const t = (deg * Math.PI) / 180, o = g[outer], i = INNER[outer] && g[INNER[outer]];
+    const po = [o.cx + o.rx * Math.cos(t), o.cy + o.ry * Math.sin(t)];
+    if (!i) return [o.cx + o.rx * 0.45 * Math.cos(t), o.cy + o.ry * 0.45 * Math.sin(t)];
+    const pi = [i.cx + i.rx * Math.cos(t), i.cy + i.ry * Math.sin(t)];
+    return [(po[0] + pi[0]) / 2, (po[1] + pi[1]) / 2];
+  };
+  g.inN = (dx, dy) => [g.N.cx + dx * g.N.rx, g.N.cy + dy * g.N.ry];
+  g.inQb = (fy) => [g.div + (g.x + g.w - g.div) / 2, g.y + fy * g.h];
+  return g;
+}
+function drawSets(stage, g) {
+  const svg = svgLayer(stage), parts = {};
+  parts.R = [sv('rect', { x: g.x, y: g.y, width: g.w, height: g.h, rx: 16, class: 'st-r' }, svg)];
+  parts.R.push(add(stage, h('div', 'st-lab r', `${T('R')}<span class="nm">Real numbers</span>`), g.x + 14, g.y + 8));
+  parts.Qb = [sv('line', { x1: g.div, x2: g.div, y1: g.y, y2: g.y + g.h, class: 'st-div' }, svg)];
+  const [qx, qy] = g.inQb(0.1);
+  parts.Qb.push(add(stage, h('div', 'st-lab qb c', `${T('\\overline{Q}')}<span class="nm">Irrational</span>`), qx, qy + 6));
+  ['Q', 'I', 'W', 'N'].forEach((k) => {
+    const e = g[k], el = sv('ellipse', { cx: e.cx, cy: e.cy, rx: e.rx, ry: e.ry, class: 'st-e ' + k.toLowerCase() }, svg);
+    const [lx, ly] = k === 'N' ? [e.cx, e.cy - e.ry * 0.58] : g.ring(k, -90);
+    parts[k] = [el, add(stage, h('div', 'st-lab c ' + k.toLowerCase(), T(k)), lx, ly)];
+  });
+  return { svg, parts };
+}
+const big = (t) => t.replace(/\\tfrac/g, '\\dfrac');
+const chipAt = (stage, t, [x, y], cls = '') => add(stage, h('div', 'st-chip c ' + cls, T(big(t))), x, y);
 
-/* ============ 2. Roots from prime factors: groups the size of the index ============ */
-const gLabel = (n, x) => K(rad(n, tn(x)));
-const groups = {
-  title: 'Find a root with prime factors: groups the size of the index',
-  height: 380,
-  choices: [[4, 1296], [3, 1728], [2, 324], [4, 2000], { sep: 'Example 1 check:' }, [2, 121], [3, -125], [4, 6561], { sep: 'Example 2 check:' }, [5, 243], [7, -128], [4, 10000]]
-    .map((c) => (Array.isArray(c) ? { v: c.join(','), label: gLabel(c[0], c[1]) } : c)),
-  intro: (v) => { const [n, x] = String(v).split(',').map(Number); return `What is ${K(rad(n, tn(x)))}? The index is <b>${n}</b>, so we need a number that, used as a factor <b>${n} times</b>, makes <b>${mn(x)}</b>.`; },
+/* ============ 1. Build the real number system ============ */
+const BUILD = [
+  { k: 'N', chips: [['1', 'n', -0.5, 0.12], ['2', 'n', 0, 0.12], ['3', 'n', 0.5, 0.12], ['47', 'n', 0, 0.6]],
+    note: 'the <b>counting</b> numbers',
+    cap: `<b>Natural numbers</b> ${T('N')}: the <b>counting</b> numbers 1, 2, 3, … They go right in the middle.` },
+  { k: 'W', chips: [['0', 'W', -150]], note: 'the naturals <b>and 0</b>',
+    cap: `<b>Whole numbers</b> ${T('W')}: the natural numbers <b>and 0</b>. W wraps around N, so every natural number is also a whole number.` },
+  { k: 'I', chips: [['-1', 'I', -150], ['-5', 'I', 180], ['-12', 'I', -32]], note: 'whole numbers and their <b>opposites</b>',
+    cap: `<b>Integers</b> ${T('I')}: the whole numbers and their <b>opposites</b> −1, −2, −3, … Every whole number is an integer.` },
+  { k: 'Q', chips: [['\\tfrac{5}{9}', 'Q', -152], ['0.25', 'Q', 180], ['-\\tfrac{3}{4}', 'Q', -30], ['0.\\overline{3}', 'Q', 3]],
+    note: 'fractions, and decimals that <b>terminate</b> or <b>repeat</b>',
+    cap: `<b>Rational numbers</b> ${T('Q')}: any number that can be written as ${T('\\tfrac{a}{b}')} with integers <i>a</i> and <i>b</i> (b ≠ 0). Every integer is rational too: ${T('-5 = \\tfrac{-5}{1}')}.` },
+  { k: 'Qb', chips: [['\\pi', 'qb', 0.32], ['\\sqrt{2}', 'qb', 0.47], ['\\sqrt{11}', 'qb', 0.62], ['1.0100100\\ldots', 'qb', 0.78]],
+    note: 'decimals that <b>never terminate</b> and <b>never repeat</b>',
+    cap: `<b>Irrational numbers</b> ${T('\\overline{Q}')}: decimals that <b>never terminate and never repeat</b>. They sit <b>beside</b> ${T('Q')}, not inside it — no number is both.` },
+  { k: 'R', chips: [], note: 'every point on the <b>number line</b>',
+    cap: `<b>Real numbers</b> ${T('R')}: the rationals and the irrationals <b>together</b>. Every number on the number line lives somewhere in this rectangle.` }
+];
+const build = {
+  title: 'Build the real number system, one set at a time',
+  height: 480,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
+  intro: `Start with the numbers we learned first, the counting numbers, and keep adding new kinds of numbers. Each new set <b>wraps around</b> the one before.`,
   make(stage, v, ex) {
-    const W = ex.W, [n, x] = String(v).split(',').map(Number), neg = x < 0, m = Math.abs(x), P = primeFactors(m);
-    const counts = new Map(); P.forEach((p) => counts.set(p, (counts.get(p) || 0) + 1));
-    const grp = [], left = [];
-    counts.forEach((k, p) => { for (let i = 0; i + n <= k; i += n) grp.push(Array(n).fill(p)); for (let i = 0; i < k % n; i++) left.push(p); });
-    const perfect = !left.length, root = grp.map((g) => g[0]).reduce((a, q) => a * q, 1), ans = neg ? -root : root;
-    // chip slots: flat row first, then grouped
-    const segs = grp.map((g) => g.slice()); if (left.length) segs.push(left.slice());
-    let s = 54, gap = 8, gg = 36;
-    const wOf = () => segs.reduce((a, g) => a + g.length * s + (g.length - 1) * gap, 0) + (segs.length - 1) * gg;
-    while (wOf() > W - 60 && s > 36) { s -= 2; gg = Math.max(18, gg - 2); }
-    const yC = 178, flatW = P.length * s + (P.length - 1) * gap, fx0 = (W - flatW) / 2 + s / 2;
-    const chips = P.map((p, i) => { const e = add(stage, h('div', 'gp-chip', p), fx0 + i * (s + gap), yC); e.style.width = e.style.height = s + 'px'; e.style.opacity = 0; return { p, e, used: false }; });
-    let x0 = (W - wOf()) / 2; const boxes = [];
-    segs.forEach((g, gi) => {
-      const lo = gi === grp.length, xs = x0;
-      g.forEach((p, k) => { const ch = chips.find((q) => q.p === p && !q.used); ch.used = true; ch.tx = x0 + s / 2 + k * (s + gap); ch.left = lo; });
-      x0 += g.length * s + (g.length - 1) * gap;
-      const bx = add(stage, h('div', 'gp-box ' + (lo ? 'lo' : 'g' + (gi % 4)), `<span class="gp-blab">${lo ? 'left over' : 'group ' + (gi + 1)}</span>`), xs - 11, yC - s / 2 - 13);
-      bx.style.width = (x0 - xs + 22) + 'px'; bx.style.height = (s + 26) + 'px'; bx.style.opacity = 0; boxes.push(bx);
-      x0 += gg;
-    });
-    const head = add(stage, h('div', 'st-q', K(rad(n, tn(x)) + '=\\ ?')), 24, 16);
-    const note = add(stage, h('div', 'gp-note', K(`${rad(n, tn(x))}=-${rad(n, tn(m))}`) + ' <span class="muted">odd index: the − comes out</span>'), 24, 84); note.style.opacity = 0;
-    const out = add(stage, h('div', 'gp-out'), W / 2, 312);
-    const steps = [];
-    if (neg) steps.push({
-      cap: `The index ${n} is <b>odd</b>, so a negative radicand is fine: the root will be <b>negative</b>. Find ${K(rad(n, tn(m)))}, then put the <b>−</b> back at the end.`,
-      run: (c) => c.fadeIn(note, 400)
-    });
-    steps.push({
-      cap: `Break <b>${mn(m)}</b> into primes: ${mn(m)} = ${P.join(' × ')}.`,
-      run: (c) => Promise.all(chips.map((ch, i) => c.pop(ch.e, 320, { delay: i * 70 })))
-    });
-    steps.push({
-      cap: perfect ? `The index is <b>${n}</b>, so make <b>groups of ${n}</b> matching primes. That makes <b>${plural(grp.length, 'group')}</b>, with nothing left over.`
-        : `Make <b>groups of ${n}</b> matching primes. ${grp.length ? `That makes ${plural(grp.length, 'group')}, but ` : ''}<b class="red">${left.join(' × ')}</b> can’t fill a group of ${n}: it’s <b class="red">left over</b>.`,
-      run: (c) => Promise.all([...chips.map((ch) => { if (ch.left) ch.e.classList.add('left'); return c.anim(ch.e, [{ left: ch.e.style.left }, { left: ch.tx + 'px' }], 600); }), ...boxes.map((bx, i) => c.fadeIn(bx, 350, { delay: 450 + i * 120 }))])
-    });
-    if (perfect) {
-      const picks = grp.map((g) => g[0]);
-      steps.push({
-        cap: grp.length > 1 ? `Each group gives <b>one</b> prime to the root. Take one from each group: ${picks.join(' × ')} = <b>${root}</b>.` : `There’s one group, so <b>one</b> ${picks[0]} comes out: the root is <b>${root}</b>.`,
-        run: async (c) => {
-          out.innerHTML = (neg ? '<span class="gp-neg">−</span>' : '') + picks.map((p) => `<span class="gp-chip">${p}</span>`).join('<span>×</span>') + `<span class="pm-eq" style="opacity:1">= ${neg ? '−' : ''}${root}</span>`;
-          const oc = [...out.querySelectorAll('.gp-chip')]; oc.forEach((e) => { e.style.width = e.style.height = s + 'px'; });
-          await c.fadeIn(out, 200);
-          await Promise.all(oc.map((e, i) => c.anim(e, [{ opacity: 0, transform: `translateY(${yC - 312}px)` }, { opacity: 1, transform: 'none' }], 520, { delay: i * 160 })));
-        }
-      });
-      const base = neg ? `(-${root})` : String(root);
-      steps.push({
-        cap: `${K(`${rad(n, tn(x))}=${ans}`)}. Check by undoing it: ${K(`${base}^{${n}}=${tn(x)}`)} ✓`,
-        run: async (c) => { head.innerHTML = K(`${rad(n, tn(x))}=${ans}`) + `<span class="chk">check: ${K(`${base}^{${n}}=${tn(x)}`)} ✓</span>`; await c.pop(head, 420); }
-      });
-    } else {
-      steps.push({
-        cap: `${left.join(' × ')} is left over, so ${mn(m)} is <b>not</b> a perfect ${ord(n)} power: ${K(rad(n, tn(x)))} is not a whole number. The calculator gives ${K(rad(n, tn(x)))} ≈ <b>${r2(nthRoot(x, n))}</b>.`,
-        run: async (c) => {
-          await Promise.all(chips.filter((ch) => ch.left).map((ch) => c.shake(ch.e)));
-          head.innerHTML = K(`${rad(n, tn(x))}\\approx ${r2(nthRoot(x, n)).replace('−', '-')}`) + '<span class="chk">not a perfect power</span>'; await c.pop(head, 420);
-        }
-      });
-    }
-    return steps;
-  }
-};
-
-/* ============ 2. Negative radicands: odd or even index ============ */
-const signs = {
-  title: 'Negative radicands: why the index matters',
-  height: 440,
-  minW: 940, // drawn this wide and scaled to fit beside the sidebar
-  choices: [[4, -16], [3, -8], [5, -32], [2, -9], [6, -64], { sep: 'Example 1 check:' }, [4, -81], [3, -125]]
-    .map((c) => (Array.isArray(c) ? { v: c.join(','), label: gLabel(c[0], c[1]) } : c)),
-  intro: (v) => { const [n, x] = String(v).split(',').map(Number); return `Can ${K(rad(n, tn(x)))} be worked out? Look for a number that, used as a factor <b>${n} times</b>, makes <b>${mn(x)}</b>.`; },
-  make(stage, v, ex) {
-    const W = ex.W, [n, x] = String(v).split(',').map(Number), r = Math.round(nthRoot(-x, n)), even = n % 2 === 0, pw = Math.pow(r, n);
-    add(stage, h('div', 'st-q', K(rad(n, tn(x)) + '=\\ ?')), 24, 14);
-    const row = (y, lab) => { const e = add(stage, h('div', 'sg-row', `<span class="mut-lab">${lab}</span>`), 24, y); e.style.opacity = 0; return e; };
-    const fill = (rw, txt, cls, eqHTML) => { const fsx = []; for (let k = 0; k < n; k++) { if (k) rw.appendChild(h('span', 'sg-x', '×')); const f = h('span', 'sg-f ' + cls, txt); rw.appendChild(f); fsx.push(f); } const q = h('span', 'sg-eq', eqHTML); rw.appendChild(q); return [fsx, q]; };
-    const r0 = row(98, 'We need'), rP = row(168, 'Try +' + r), rN = row(240, 'Try −' + r);
-    fill(r0, '?', 'blank', '= ' + mn(x));
-    const [fP, eP] = fill(rP, String(r), 'pos', `= ${mn(pw)} <b class="red">✗</b>`);
-    const [fN, eN] = fill(rN, '(−' + r + ')', 'neg', even ? `= ${mn(pw)} <b class="red">✗</b>` : `= ${mn(x)} <b class="ok">✓</b>`);
-    [...fP, eP, ...fN, eN].forEach((e) => (e.style.opacity = 0));
-    const stamp = add(stage, h('div', 'pd-stamp sg-stamp ' + (even ? 'nope' : 'yes'), even ? `NOT REAL<small>even powers are never negative</small>` : `${K(`${rad(n, tn(x))}=-${r}`)}<small>${K(`(-${r})^{${n}}=${tn(x)}`)}</small>`), W - 26, 14);
-    stamp.style.translate = '-100% 0'; stamp.style.opacity = 0;
-    const rule = add(stage, h('div', 'sg-rule', `<div class="${even ? 'hit' : 'dim'}"><b>Even index</b>: the negatives all pair up, so the power is never negative → <b>not a real number</b>.</div><div class="${even ? 'dim' : 'hit'}"><b>Odd index</b>: one negative is left over → a <b>negative root</b>.</div>`), 24, 350);
-    rule.style.width = (W - 48) + 'px'; rule.style.opacity = 0;
-    const pairEls = [];
-    const pairs = Math.floor(n / 2);
-    return [
-      {
-        cap: `${K(rad(n, tn(x)))} asks: what number, used as a factor <b>${n} times</b>, makes <b>${mn(x)}</b>?`,
-        run: (c) => c.fadeIn(r0, 350)
-      },
-      {
-        cap: `Try a <b>positive</b>: ${K(Array(n).fill(r).join('\\times'))} = ${mn(pw)}. A positive number to any power is <b>positive</b> — not ${mn(x)}.`,
-        run: async (c) => { rP.style.opacity = 1; for (const f of fP) await c.pop(f, 220); await c.fadeIn(eP, 300); }
-      },
-      {
-        cap: even ? `Try a <b>negative</b>. Pair the factors up: each pair of negatives makes a <b>positive</b>, ${K(`(-${r})(-${r})=${r * r}`)}. With ${n} factors, <b>every</b> negative has a partner, so the answer is ${mn(pw)} again.`
-          : `Try a <b>negative</b>. Pair the factors up: each pair makes a positive, ${K(`(-${r})(-${r})=${r * r}`)}. With ${n} factors, <b>one negative is left over</b>, so the product is negative: ${K(`(-${r})^{${n}}=${tn(x)}`)} ✓`,
-        run: async (c) => {
-          rN.style.opacity = 1; for (const f of fN) await c.pop(f, 200);
-          const rx = rN.offsetLeft, ry = rN.offsetTop + rN.offsetHeight;
-          for (let k = 0; k < pairs; k++) {
-            c.check(); const a = fN[2 * k], b = fN[2 * k + 1], x1 = rx + a.offsetLeft + 6, x2 = rx + b.offsetLeft + b.offsetWidth - 6;
-            const br = add(stage, h('div', 'sg-pair'), x1, ry + 2); br.style.width = (x2 - x1) + 'px';
-            const pl = add(stage, h('div', 'sg-pl', '+' + r * r), (x1 + x2) / 2, ry + 22);
-            pairEls.push(br, pl);
-            await Promise.all([c.fadeIn(br, 260), c.pop(pl, 300, { delay: 120 })]);
-          }
-          c.check(); if (!even) { const lst = fN[n - 1], lo = add(stage, h('div', 'sg-lone', 'left over'), rx + lst.offsetLeft + lst.offsetWidth / 2, ry + 8); await c.pop(lo, 300); }
-          await c.fadeIn(eN, 300);
-        }
-      },
-      {
-        cap: even ? `No real number works: an <b>even</b> power is never negative. So ${K(rad(n, tn(x)))} is <b>not a real number</b> — the booklet says “not possible”.`
-          : `${K(`${rad(n, tn(x))}=-${r}`)}. An <b>odd</b> index keeps the sign: a negative radicand gives a negative root.`,
-        run: (c) => c.anim(stamp, [{ opacity: 0, transform: 'scale(1.8) rotate(-14deg)' }, { opacity: 1, transform: 'scale(1) rotate(-5deg)' }], 420, { easing: 'cubic-bezier(.2,1.4,.4,1)' })
-      },
-      {
-        cap: '<b>The rule.</b> Even index + negative radicand → <b>not a real number</b>. Odd index + negative radicand → a <b>negative</b> root.',
-        run: (c) => c.fadeIn(rule, 400)
-      }
-    ];
-  }
-};
-
-/* ============ 3. The x-th root key, then rounding ============ */
-const CK = {
-  demo: { t: '\\sqrt[5]{161\\,051}', n: 5, x: 161051, g: [['index', ['5']], ['root', ['2nd', '^']], ['rad', ['1', '6', '1', '0', '5', '1']], ['enter', ['ENTER']]] },
-  a1: { t: '\\sqrt[5]{243}', n: 5, x: 243, g: [['index', ['5']], ['root', ['2nd', '^']], ['rad', ['2', '4', '3']], ['enter', ['ENTER']]] },
-  a2: { t: '\\sqrt[7]{-128}', n: 7, x: -128, g: [['index', ['7']], ['root', ['2nd', '^']], ['radneg', ['(−)', '1', '2', '8']], ['enter', ['ENTER']]] },
-  a3: { t: '-2\\sqrt[4]{10\\,000}', n: 4, x: 10000, co: -2, g: [['coef', ['(−)', '2', '×']], ['index', ['4']], ['root', ['2nd', '^']], ['rad', ['1', '0', '0', '0', '0']], ['enter', ['ENTER']]] },
-  a4: { t: '\\sqrt[3]{\\dfrac{64}{27}}', n: 3, x: 64 / 27, frac: [4, 3], g: [['index', ['3']], ['root', ['2nd', '^']], ['radfrac', ['(', '6', '4', '÷', '2', '7', ')']], ['enter', ['ENTER']], ['fd', ['2nd', 'F◂▸D']]] },
-  b1: { t: '\\sqrt[5]{200}', n: 5, x: 200, round: true, g: [['index', ['5']], ['root', ['2nd', '^']], ['rad', ['2', '0', '0']], ['enter', ['ENTER']]] },
-  b2: { t: '\\sqrt[6]{0.7}', n: 6, x: 0.7, round: true, g: [['index', ['6']], ['root', ['2nd', '^']], ['rad', ['0', '.', '7']], ['enter', ['ENTER']]] },
-  b3: { t: '\\dfrac{3}{4}\\sqrt[4]{500}', n: 4, x: 500, co: 0.75, round: true, g: [['coef', ['3', '÷', '4', '×']], ['index', ['4']], ['root', ['2nd', '^']], ['rad', ['5', '0', '0']], ['enter', ['ENTER']]] }
-};
-const tiDisp = (x) => { let s = Number(x.toPrecision(10)).toString(); if (Number.isInteger(x)) s += '.'; return s.replace(/^-/, '−'); };
-const ENTRY = { '2nd': '', '^': 'ˣ√', '(−)': '⁻', '×': '*', '÷': '/', ENTER: '', 'F◂▸D': '' };
-const calckeys = {
-  title: 'On the TI-30XIIS: key it in, then round',
-  height: 400,
-  minW: 900, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: 'demo', label: K(CK.demo.t) }, { sep: 'Example 2 check:' }, ...['a1', 'a2', 'a3', 'a4', 'b1', 'b2', 'b3'].map((k) => ({ v: k, label: `(${k[0]})(${['i', 'ii', 'iii', 'iv'][Number(k[1]) - 1]})` }))],
-  intro: (v) => `Let’s evaluate ${K(CK[v].t)}${CK[v].round ? ' to the nearest hundredth' : ' exactly'}. Watch the order of the keys.`,
-  make(stage, v, ex) {
-    const W = ex.W, S = CK[v], root = nthRoot(S.x, S.n), val = (S.co || 1) * root, rv = S.frac ? S.frac[0] / S.frac[1] : val;
-    const exact = !S.round, isInt = Math.abs(val - Math.round(val)) < 1e-9, valR = isInt ? Math.round(val) : val;
-    const ti = add(stage, h('div', 'ck-ti', '<div class="ck-lcd"><span class="ck-entry"><span class="cur"></span></span><span class="ck-res"></span></div>'), 20, 14);
-    const lcd = ti.querySelector('.ck-lcd'); lcd.style.position = 'relative'; const ind = h('span', 'ck-2nd', '2nd'); lcd.appendChild(ind);
-    const entryEl = ti.querySelector('.ck-entry'), resEl = ti.querySelector('.ck-res');
-    let entry = '';
-    const setEntry = (done) => { entryEl.innerHTML = entry + (done ? '' : '<span class="cur"></span>'); };
-    const keys = add(stage, h('div', 'ck-keys'), 20, 204); keys.style.width = (W - 40) + 'px';
-    const kEls = S.g.map(([, ks], gi) => {
-      if (gi) keys.appendChild(h('span', 'ck-gap'));
-      return ks.map((k) => { const e = h('span', 'ck-k' + (k === '2nd' ? ' sec' : k === 'ENTER' ? ' ent' : ''), k + (k === '^' ? '<sup class="alt">ˣ√</sup>' : '')); keys.appendChild(e); return e; });
-    });
-    add(stage, h('div', 'st-q', K(S.t) + (exact ? '' : ' <span class="muted small">nearest hundredth</span>')), 460, 22);
-    const rd = add(stage, h('div', 'ck-rd'), 460, 104); rd.style.opacity = 0;
-    const out = add(stage, h('div', 'ck-out'), 20, 286); out.style.opacity = 0;
-    const chk = add(stage, h('div', 'ck-chk'), 20, 346); chk.style.opacity = 0;
-    const kH = (ks) => ks.map((k) => `<kbd>${k}</kbd>`).join('');
-    const press = async (c, gi) => {
-      for (const [ki, k] of S.g[gi][1].entries()) {
-        const e = kEls[gi][ki]; e.classList.add('on');
-        if (k === '2nd') ind.classList.add('on'); else ind.classList.remove('on');
-        if (k === 'ENTER') { setEntry(true); resEl.textContent = tiDisp(valR); if (!c.fast) resEl.animate([{ opacity: 0 }, { opacity: 1 }], 300); }
-        else if (k === 'F◂▸D') { resEl.textContent = S.frac.join('┘'); if (!c.fast) resEl.animate([{ opacity: 0 }, { opacity: 1 }], 300); }
-        else { entry += ENTRY[k] != null ? ENTRY[k] : k; setEntry(false); }
-        await c.sleep(300); e.classList.remove('on'); e.classList.add('done'); await c.sleep(60);
-      }
+    const W = ex.W, H = 480, dw = Math.min(650, W * 0.66), g = setGeom(16, 16, dw, H - 32), { parts } = drawSets(stage, g);
+    Object.values(parts).forEach((p) => hide(...p));
+    const px = g.x + g.w + 18, pw = W - px - 14;
+    const panel = add(stage, h('div', 'set-card'), px, g.y); panel.style.width = pw + 'px'; panel.style.height = g.h + 'px'; hide(panel);
+    const pos = (ch) => (ch[1] === 'n' ? g.inN(ch[2], ch[3]) : ch[1] === 'qb' ? g.inQb(ch[2]) : g.ring(ch[1], ch[2]));
+    const fill = (b) => {
+      const s = SETS[b.k], def = b.k === 'Qb' ? `${T('\\overline{Q}')} = { non-terminating, non-repeating decimals }` : T(s.def);
+      panel.className = 'set-card k-' + b.k.toLowerCase();
+      panel.innerHTML = `<div class="sc-sym">${T(s.sym)}</div><div class="sc-name">${s.name}</div><div class="sc-def">${def}</div><div class="sc-note">${b.note}</div>`;
     };
-    const tS = S.t.replace(/dfrac/g, 'tfrac');
-    const valT = S.frac ? `\\tfrac{${S.frac[0]}}{${S.frac[1]}}` : String(valR);
-    const capOf = (kind, ks) => {
-      if (kind === 'index') return `Key the <b>index</b> first: ${kH(ks)}.`;
-      if (kind === 'root') return `Then ${kH(ks)} for the ${K('\\sqrt[x]{\\phantom{0}}')} key (the 2nd function of ^).`;
-      if (kind === 'rad') return `Then the <b>radicand</b>: ${kH(ks)}.`;
-      if (kind === 'radneg') return `Then the radicand. It’s negative, so use the <b>(−)</b> key, not subtract: ${kH(ks)}.`;
-      if (kind === 'radfrac') return `The radicand is a fraction, so put it in <b>brackets</b>: ${kH(ks)}.`;
-      if (kind === 'coef') return `The <b>coefficient</b> ${K(S.co === -2 ? '-2' : '\\tfrac{3}{4}')} goes first, then ×: ${kH(ks)}.`;
-      if (kind === 'fd') return `Press ${kH(ks)} to switch to a fraction: <b>4┘3</b> means ${K('\\tfrac{4}{3}')}. So ${K(tS + '=\\tfrac{4}{3}')} exactly.`;
-      // enter
-      if (S.frac) return `${kH(ks)}: <b>1.333333333</b>. A repeating decimal, so the exact answer is a fraction.`;
-      if (S.co === -2) return `${kH(ks)}: <b>−20.</b> The calculator does the root first (${K('\\sqrt[4]{10\\,000}=10')}), then multiplies: ${K('-2\\times10=-20')}.`;
-      if (S.co) return `${kH(ks)}: <b>${tiDisp(val)}</b>. The calculator does the root first (${K('\\sqrt[4]{500}')} = ${tiDisp(root)}…), then multiplies by ${K('\\tfrac34')}.`;
-      if (isInt) return `${kH(ks)}: <b>${tiDisp(valR)}</b> A whole number, so ${K(S.t + '=' + valR)} exactly.`;
-      return `${kH(ks)}: <b>${tiDisp(val)}</b>. It doesn’t stop, so we round.`;
-    };
-    const steps = S.g.map(([kind, ks], gi) => ({ cap: capOf(kind, ks), run: (c) => press(c, gi) }));
-    if (S.round) {
-      const str = tiDisp(val), dot = str.indexOf('.'), hi = dot + 2, ti3 = dot + 3, up = Number(str[ti3]) >= 5, rounded = r2(val);
-      rd.innerHTML = str.split('').map((ch, i) => `<span${i === hi ? ' class="h"' : ''}>${ch}</span>`).join('');
-      steps.push({
-        cap: `Round to the <b>nearest hundredth</b>. The hundredths digit is <b>${str[hi]}</b>; look at the digit after it, <b>${str[ti3]}</b>. ${up ? 'It’s 5 or more, so round <b>up</b>' : 'It’s less than 5, so <b>keep</b> the ' + str[hi]}: ${K(tS)} ≈ <b>${rounded}</b>.`,
-        run: async (c) => {
-          await c.fadeIn(rd, 300); c.check();
-          const sp = [...rd.children]; sp[ti3].classList.add('t');
-          const hx = rd.offsetLeft + sp[hi].offsetLeft + sp[hi].offsetWidth / 2, tx = rd.offsetLeft + sp[ti3].offsetLeft + sp[ti3].offsetWidth / 2;
-          const th = add(stage, h('div', 'ck-tag h', 'hundredths'), hx, 166), tt = add(stage, h('div', 'ck-tag t', up ? '5 or more → up' : 'less than 5 → keep'), tx, 166);
-          th.style.translate = '-100% 0'; tt.style.translate = '0 0'; th.style.marginLeft = '8px'; tt.style.marginLeft = '-8px';
-          await Promise.all([c.fadeIn(th, 300), c.fadeIn(tt, 300, { delay: 200 })]);
-          sp.forEach((e, i) => { if (i > hi) e.classList.add('gone'); });
-          out.innerHTML = K(`${tS}\\approx ${rounded}`); await c.fadeIn(out, 400);
-        }
-      });
-    } else {
-      steps.push({
-        cap: S.co ? `So ${K(`${tS}=${valT}`)}. A coefficient in front multiplies the root.` : `So ${K(`${tS}=${valT}`)}.`,
-        run: async (c) => { out.innerHTML = K(`${tS}=${valT}`); await c.fadeIn(out, 400); }
-      });
-    }
-    if (!S.co) {
-      const base = S.frac ? '\\left(\\tfrac{4}{3}\\right)' : S.round ? tiDisp(root) : valR < 0 ? `(${valR})` : String(valR);
-      const xT = S.frac ? '\\tfrac{64}{27}' : tn(S.x);
-      steps.push({
-        cap: S.round ? `Check by undoing the root: ${K(`${base}^{${S.n}}`)} gives back ${K(xT)} ✓ — check with the <b>unrounded</b> number.` : `Check by undoing the root with a power: ${K(`${base}^{${S.n}}=${xT}`)} ✓`,
-        run: async (c) => { chk.innerHTML = '<b>Check:</b> ' + K(`${base}^{${S.n}}${S.round ? '\\to' : '='}${xT}`) + ' ✓'; await c.fadeIn(chk, 400); }
-      });
-    }
-    return steps;
-  }
-};
-
-/* ============ 4. The parts of a radical ============ */
-const AN = { a: '5|17', b: '5|32', c: '2|19', d: '3|54', e: '6|2000000', f: '7|200', g: '2|85', h: '5|-1/9|4' };
-const anParse = (v) => {
-  const [ns, rs, co] = AN[v].split('|'), n = Number(ns);
-  const fr = rs.includes('/'), [pp, qq] = rs.split('/').map(Number), rv = fr ? pp / qq : pp;
-  const rT = fr ? `${pp < 0 ? '-' : ''}\\dfrac{${Math.abs(pp)}}{${qq}}` : tn(pp);
-  return { n, rv, rT, co: co || '', rH: fr ? K(`${pp < 0 ? '-' : ''}\\tfrac{${Math.abs(pp)}}{${qq}}`) : mn(pp) };
-};
-const anTex = (p, cls, small) => { const rT = small ? p.rT.replace('dfrac', 'tfrac') : p.rT; return (p.co ? (cls ? `\\htmlClass{an-co}{${p.co}}` : p.co) : '') + (cls ? `\\sqrt[\\htmlClass{${p.n === 2 ? 'an-ixg' : 'an-ix'}}{${p.n}}]{\\htmlClass{an-rd}{${rT}}}` : rad(p.n, rT)); };
-const anatomy = {
-  title: 'The parts of a radical',
-  height: 440,
-  choices: [...'abcde'].map((k) => ({ v: k, label: K(anTex(anParse(k), false, true)) })).concat([{ sep: 'Example 3 check:' }], [...'fgh'].map((k) => ({ v: k, label: K(anTex(anParse(k), false, true)) }))),
-  intro: (v) => `Every radical has the same parts. Let’s label ${K(anTex(anParse(v), false, true))}.`,
-  make(stage, v, ex) {
-    const W = ex.W, p = anParse(v), fs = p.rT.length > 6 ? 84 : 112;
-    const ex0 = add(stage, h('div', 'an-expr', K(anTex(p, true))), W * 0.5, 160); ex0.style.fontSize = fs + 'px';
-    const svg = svgLayer(stage, 'an-svg');
-    const lab = (cls, t, sub) => { const e = add(stage, h('div', 'an-lab ' + cls, t + (sub ? `<small>${sub}</small>` : '')), 0, 0); e.style.opacity = 0; return e; };
-    const L = { ix: lab('ix', 'Index', p.n === 2 ? 'not written: it’s 2' : 'how many factors'), sg: lab('sg', 'Radical sign'), rd: lab('rd', 'Radicand', 'the number under the sign'), co: p.co ? lab('co', 'Coefficient', 'multiplies — not the index') : null };
-    const root = nthRoot(p.rv, p.n), rr = Math.round(root), perfect = Math.abs(Math.pow(rr, p.n) - p.rv) < 1e-9;
-    const mean = add(stage, h('div', 'an-mean'), W / 2, 344); mean.style.opacity = 0;
-    const R = (sel) => rectIn(ex0.querySelector(sel), stage);
-    const show = async (c, key, cls, place, target) => {
-      ex0.classList.add(cls);
-      const e = L[key], [lx, ly] = place(); at(e, lx, ly);
-      await c.fadeIn(e, 300); c.check();
-      const lr = { x: e.offsetLeft, y: e.offsetTop, w: e.offsetWidth, h: e.offsetHeight }, [tx, ty, sx, sy] = target(lr);
-      const a = arrow(svg, sx, sy, tx, ty, getComputedStyle(e).color);
-      await c.anim(a, [{ opacity: 0 }, { opacity: 1 }], 300);
-    };
-    const rTc = p.rT.replace('dfrac', 'tfrac'), rT = rad(p.n, p.rT), rTs = rad(p.n, rTc);
-    const steps = [{
-      cap: p.n === 2 ? 'No index is written, so the <b>index is 2</b>: it’s a <b>square</b> root. (You could write the 2, but nobody does.)' : `The <b>index</b> is <b>${p.n}</b>, tucked into the notch. It tells how many times the root is used as a <b>factor</b>.`,
-      run: (c) => show(c, 'ix', 'ix-on', () => [24, 18], (lr) => { const r = R(p.n === 2 ? '.an-ixg' : '.an-ix'); return [r.x - 4, r.y + r.h / 2, lr.x + lr.w, lr.y + lr.h * 0.6]; })
-    }, {
-      cap: `The ${K('\\sqrt{\\phantom{x}}')} symbol is the <b>radical sign</b>. The bar on top stretches over the whole radicand.`,
-      run: (c) => show(c, 'sg', 'sg-on', () => [24, 236], (lr) => { const sv = rectIn(ex0.querySelector('.sqrt svg'), stage); return [sv.x + fs * 0.24, sv.y + sv.h - fs * 0.12, lr.x + lr.w, lr.y + lr.h * 0.4]; })
-    }, {
-      cap: `The <b>radicand</b> is the number under the radical sign: <b>${p.rH}</b>.` + (p.rv < 0 ? ' The negative sign is part of the radicand.' : ''),
-      run: (c) => show(c, 'rd', 'rd-on', () => { const r = R('.an-rd'); return [W - 290, Math.max(236, r.y + r.h + 22)]; }, (lr) => { const r = R('.an-rd'); return [r.x + r.w * 0.55, r.y + r.h + 4, lr.x + 30, lr.y + 2]; })
-    }];
-    if (p.co) steps.push({
-      cap: `The <b>${p.co}</b> in front is a <b>coefficient</b>: it multiplies, ${K(`${p.co}\\times${rTs}`)}. It is <b>not</b> the index and <b>not</b> part of the radicand.`,
-      run: (c) => show(c, 'co', 'co-on', () => [24, 126], (lr) => { const r = R('.an-co'); return [r.x - 4, r.y + r.h / 2, lr.x + lr.w, lr.y + lr.h / 2]; })
-    });
-    const sum = `\\text{Index}=${p.n},\\quad\\text{Radicand}=${rTc}`;
-    steps.push({
-      cap: perfect ? `${K(`${rT}=${rr}`)} because ${K(Array(p.n).fill(rr).join('\\times') + '=' + tn(p.rv))}: <b>${plural(p.n, 'factor')}</b> of ${rr}. That’s what the index ${p.n} means.`
-        : `${K(rTs)} isn’t a whole number, but the index means the same thing: used as a factor <b>${p.n} times</b>, it makes ${p.rH}. On a calculator, ${K(rTs)} ≈ ${r2(root)}.`,
+    const steps = BUILD.map((b) => ({
+      cap: b.cap,
       run: async (c) => {
-        mean.innerHTML = K(sum) + '<br>' + (perfect ? K(`${rT}=${rr}\\ \\text{ because }\\ ${Array(p.n).fill(rr).join('\\times')}=${tn(p.rv)}`) : K(`\\left(${rTs}\\right)^{${p.n}}=${rTc},\\qquad ${rTs}\\approx ${r2(root).replace('−', '-')}`));
-        await c.fadeIn(mean, 400);
+        fill(b);
+        const chips = b.chips.map((ch) => { const e = chipAt(stage, ch[0], pos(ch), b.k.toLowerCase()); e.style.opacity = 0; return e; });
+        const [shape, lab] = parts[b.k];
+        const jobs = [c.fadeIn(panel, 300)];
+        if (b.k === 'R') jobs.push(c.anim(shape, [{ opacity: 0 }, { opacity: 1 }], 500), c.fadeIn(lab, 400, { delay: 200 }), c.anim(shape, [{ strokeWidth: 3 }, { strokeWidth: 8 }, { strokeWidth: 3 }], 900, { delay: 300 }));
+        else if (b.k === 'Qb') jobs.push(draw(c, shape, 600), c.fadeIn(lab, 400, { delay: 300 }));
+        else jobs.push(c.anim(shape, [{ opacity: 0, transform: 'scale(.6)' }, { opacity: 1, transform: 'scale(1)' }], 600), c.fadeIn(lab, 400, { delay: 250 }));
+        chips.forEach((e, i) => jobs.push(c.pop(e, 380, { delay: 450 + i * 160 })));
+        await Promise.all(jobs);
+      }
+    }));
+    steps.push({
+      cap: `Each set sits <b>inside</b> the next: ${T('N')} inside ${T('W')} inside ${T('I')} inside ${T('Q')} inside ${T('R')}. A natural number like 3 belongs to <b>five sets at once</b>. ${T('\\overline{Q}')} sits beside ${T('Q')}, and both are inside ${T('R')}.`,
+      run: async (c) => {
+        panel.className = 'set-card k-all';
+        panel.innerHTML = `<div class="sc-name">Nested sets</div><div class="sc-chain">${['N', 'W', 'I', 'Q', 'R'].map((k) => `<span class="k-${k.toLowerCase()}">${T(k)}</span>`).join('<i>inside</i>')}</div><div class="sc-note">${T('\\overline{Q}')} is beside ${T('Q')}: <b>no overlap</b>.</div>`;
+        await c.fadeIn(panel, 300);
+        for (const k of ['N', 'W', 'I', 'Q']) {
+          const el = parts[k][0];
+          el.classList.add('glow');
+          await c.anim(el, [{ strokeWidth: 2.5 }, { strokeWidth: 7 }, { strokeWidth: 2.5 }], 420);
+        }
+        await c.anim(parts.R[0], [{ strokeWidth: 3 }, { strokeWidth: 8 }, { strokeWidth: 3 }], 420);
       }
     });
     return steps;
   }
 };
 
-/* ============ 5. Why √a × √b = √(ab): an area picture ============ */
-const area = {
-  title: 'Why the product rule works: blocks of tiles',
-  height: 440,
-  minW: 940, // drawn this wide and scaled to fit beside the sidebar
-  choices: [[4, 9], [9, 4], [16, 9], [4, 25]].map(([a, b]) => ({ v: a + ',' + b, label: K(`\\sqrt{${a}}\\times\\sqrt{${b}}`) })),
-  intro: (v) => { const [a, b] = String(v).split(',').map(Number); return `Is ${K(`\\sqrt{${a}}\\times\\sqrt{${b}}`)} the same as ${K(`\\sqrt{${a}\\times${b}}`)}? Build it out of square tiles and measure the side.`; },
-  make(stage, v, ex) {
-    const W = ex.W, [a, b] = String(v).split(',').map(Number), p = Math.round(Math.sqrt(a)), q = Math.round(Math.sqrt(b)), ab = a * b, pq = p * q, G = 9;
-    const t = Math.min(40, (330 - (p - 1) * G) / pq), L = pq * t + (p - 1) * G, x0 = 40, y0 = 24;
-    const blocks = [];
-    for (let bi = 0; bi < p; bi++) for (let bj = 0; bj < p; bj++) {
-      const tl = [];
-      for (let ti = 0; ti < q; ti++) for (let tj = 0; tj < q; tj++) {
-        const e = add(stage, h('div', 'ar-t' + (bi + bj ? '' : ' b0')), x0 + bj * (q * t + G) + tj * t, y0 + bi * (q * t + G) + ti * t);
-        e.style.width = e.style.height = (t - 2) + 'px'; e.style.opacity = 0.13; tl.push(e);
-      }
-      blocks.push(tl);
-    }
-    const brace = (cls, x, y, w, hh) => { const e = add(stage, h('div', 'ar-br ' + cls), x, y); if (w) e.style.width = w + 'px'; if (hh) e.style.height = hh + 'px'; e.style.opacity = 0; return e; };
-    const blab = (html, x, y, cls) => { const e = add(stage, h('div', 'ar-bl ' + (cls || ''), html), x, y); e.style.opacity = 0; return e; };
-    const bot = [], botL = [];
-    for (let j = 0; j < p; j++) { const bx = x0 + j * (q * t + G); bot.push(brace('hz amber', bx, y0 + L + 6, q * t - 2)); const l = blab(String(q), bx + q * t / 2, y0 + L + 26, 'amber'); l.style.translate = '-50% 0'; botL.push(l); }
-    const vb = brace('v', x0 + L + 6, y0, null, L - 2), vl = blab(K(`\\sqrt{${ab}}=${pq}`), x0 + L + 30, y0 + L / 2); vl.style.translate = '0 -50%';
-    const px = Math.min(x0 + L + 150, W - 420), panel = add(stage, h('div', 'ar-panel'), px, 30); panel.style.width = (W - px - 12) + 'px';
-    const line = (tx, note, cls) => { const e = h('div', 'ar-line ' + (cls || ''), K(tx) + (note ? `<small>${note}</small>` : '')); panel.appendChild(e); return e; };
-    const l1 = line(`\\sqrt{${b}}=${q}`, 'one block'), l2 = line(`\\sqrt{${a}}=${p}`, 'blocks per side'), l3 = line(`\\sqrt{${a}\\times${b}}=\\sqrt{${ab}}=${pq}`, 'big side');
-    const l4 = line(`\\sqrt{${a}}\\times\\sqrt{${b}}=${p}\\times${q}=${pq}`, `${p} blocks of ${q}`), l5 = line(`\\sqrt{${a}}\\times\\sqrt{${b}}=\\sqrt{${a}\\times${b}}`, '', 'boxed');
-    const l6 = line(`\\dfrac{\\sqrt{${ab}}}{\\sqrt{${b}}}=\\dfrac{${pq}}{${q}}=${p}=\\sqrt{\\dfrac{${ab}}{${b}}}`, '');
-    const popTiles = async (c, tl, ms) => { for (const e of tl) { c.pop(e, 260); await c.sleep(ms); } await c.sleep(200); };
-    return [
-      {
-        cap: `One <b>block</b> is ${b} tiles, arranged in a ${q} × ${q} square. Its side is <b>${K(`\\sqrt{${b}}=${q}`)}</b>.`,
-        run: async (c) => { await popTiles(c, blocks[0], 40); await Promise.all([c.fadeIn(bot[0], 300), c.fadeIn(botL[0], 300), c.fadeIn(l1, 350)]); }
-      },
-      {
-        cap: `Make <b>${a} blocks</b> and arrange them in a square: ${p} blocks along each side, because ${K(`\\sqrt{${a}}=${p}`)}.`,
-        run: async (c) => { await Promise.all(blocks.slice(1).map((tl, i) => c.sleep(i * 120).then(() => Promise.all(tl.map((e) => c.pop(e, 320)))))); await c.fadeIn(l2, 350); }
-      },
-      {
-        cap: `Altogether there are ${a} × ${b} = <b>${ab} tiles</b> in one big square. Its side is ${K(`\\sqrt{${a}\\times${b}}=\\sqrt{${ab}}=${pq}`)}.`,
-        run: (c) => Promise.all([c.fadeIn(vb, 350), c.fadeIn(vl, 350, { delay: 150 }), c.fadeIn(l3, 350, { delay: 250 })])
-      },
-      {
-        cap: `Now measure the same side by blocks: <b>${p} blocks of ${q}</b>, so the side is ${K(`\\sqrt{${a}}\\times\\sqrt{${b}}=${p}\\times${q}=${pq}`)}. <b>Same side!</b>`,
-        run: (c) => Promise.all([...bot.slice(1).map((e, i) => c.fadeIn(e, 300, { delay: i * 120 })), ...botL.slice(1).map((e, i) => c.fadeIn(e, 300, { delay: i * 120 })), ...bot.map((e) => c.anim(e, [{ transform: 'scaleY(1)' }, { transform: 'scaleY(1.4)' }, { transform: 'scaleY(1)' }], 400, { delay: 400 })), c.fadeIn(l4, 350, { delay: 300 })])
-      },
-      {
-        cap: `So ${K(`\\sqrt{${a}}\\times\\sqrt{${b}}=\\sqrt{${a}\\times${b}}`)} — the <b>product rule</b>. Division undoes multiplication, so the <b>quotient rule</b> works too: ${K(`\\sqrt{${ab}}\\div\\sqrt{${b}}=\\sqrt{${ab}\\div${b}}=${p}`)}.`,
-        run: (c) => Promise.all([c.pop(l5, 420), c.fadeIn(l6, 400, { delay: 300 })])
-      }
-    ];
+/* ============ 1. Why fractions end or repeat: the remainders ============ */
+function longDiv(a, b) {
+  const q0 = Math.floor(a / b); let r = a % b;
+  const steps = [{ kind: 'int', q: q0, r }], seen = { [r]: 0 }, digits = [];
+  let rep = -1;
+  while (r !== 0) {
+    const num = r * 10, d = Math.floor(num / b), r2 = num % b;
+    digits.push(d);
+    const again = r2 !== 0 && r2 in seen;
+    steps.push({ kind: 'dig', num, d, r: r2, again });
+    if (again) { rep = seen[r2]; break; }
+    seen[r2] = digits.length; r = r2;
   }
-};
-
-/* ============ 5. The trap: √(a + b) is not √a + √b ============ */
-const trap = {
-  title: 'The trap: the root of a sum is not the sum of the roots',
+  return { q0, digits, steps, rep };
+}
+const decTex = (q0, digits, rep) => q0 + '.' + (rep < 0 ? digits.join('') : digits.slice(0, rep).join('') + '\\overline{' + digits.slice(rep).join('') + '}');
+const remainders = {
+  title: 'Why a fraction’s decimal must end or repeat',
   height: 440,
-  choices: [{ v: '16,9', label: K('\\sqrt{16+9}') }, { v: '36,64', label: K('\\sqrt{36+64}') }, { sep: 'Example 4 check:' }, { v: '25,16', label: '(c) ' + K('\\sqrt{25+16}') }],
-  intro: (v) => { const [a, b] = String(v).split(',').map(Number); return `Is ${K(`\\sqrt{${a}}+\\sqrt{${b}}`)} the same as ${K(`\\sqrt{${a}+${b}}`)}? Use tiles again: ${a} blue tiles and ${b} orange tiles.`; },
+  choices: ['3/8', '5/9', '22/7', '2/11', '1/6'].map((f) => ({ v: f, label: T('\\dfrac{' + f.replace('/', '}{') + '}') })),
+  intro: (v) => `Divide <b>${v.replace('/', ' ÷ ')}</b> by long division, one digit at a time. Keep an eye on the <b>remainder</b> left after each step.`,
   make(stage, v, ex) {
-    const W = ex.W, H = 440, [a, b] = String(v).split(',').map(Number), p = Math.round(Math.sqrt(a)), q = Math.round(Math.sqrt(b)), s = a + b, m = Math.floor(Math.sqrt(s)), extra = s - m * m;
-    const xR = Math.round(W * 0.58), base = H - 92;
-    const t = Math.min(44, (xR - 110) / (p + q), (H - 170) / Math.max(p, q, m + (extra ? 0 : 0)), (W - xR - 30) / (m + (extra ? 1 : 0)));
-    const xA = 34, xB = xA + p * t + 2;
-    const tiles = [];
-    const sq = (x0, k, cls) => { for (let i = 0; i < k * k; i++) { const e = add(stage, h('div', 'tr-t ' + cls), x0 + (i % k) * t, base - (Math.floor(i / k) + 1) * t); e.style.width = e.style.height = (t - 2) + 'px'; e.style.opacity = 0.15; tiles.push(e); } };
-    sq(xA, p, 'a'); sq(xB, q, 'b');
-    const la = add(stage, h('div', 'tr-lab a', K(`\\sqrt{${a}}=${p}`)), xA + p * t / 2, base - p * t - 36), lb = add(stage, h('div', 'tr-lab b', K(`\\sqrt{${b}}=${q}`)), xB + q * t / 2, base - q * t - 36);
-    [la, lb].forEach((e) => (e.style.opacity = 0));
-    const bL = add(stage, h('div', 'ar-br hz'), xA, base + 8); bL.style.width = (xB + q * t - xA - 2) + 'px'; bL.style.opacity = 0;
-    const bLl = add(stage, h('div', 'tr-lab', K(`${p}+${q}=${p + q}`)), (xA + xB + q * t) / 2, base + 30); bLl.style.opacity = 0;
-    const side = Math.sqrt(s), sideT = extra ? `\\sqrt{${s}}\\approx ${side.toFixed(2)}` : `\\sqrt{${s}}=${m}`;
-    const bR = add(stage, h('div', 'ar-br hz amber'), xR, base + 8); bR.style.width = (m * t - 2) + 'px'; bR.style.opacity = 0;
-    const bRl = add(stage, h('div', 'tr-lab', K(sideT)), xR + m * t / 2, base + 30); bRl.style.opacity = 0;
-    const eqL = add(stage, h('div', 'tr-eq', K(`\\sqrt{${a}}+\\sqrt{${b}}=${p}+${q}=${p + q}`)), 24, 14), eqR = add(stage, h('div', 'tr-eq', K(`\\sqrt{${a}+${b}}=${extra ? `\\sqrt{${s}}\\approx ${side.toFixed(2)}` : `\\sqrt{${s}}=${m}`}`)), xR - 10, 14);
-    [eqL, eqR].forEach((e) => (e.style.opacity = 0));
-    const ne = add(stage, h('div', 'tr-ne', '≠'), 0, 42); ne.style.opacity = 0;
-    const clones = [];
-    return [
-      {
-        cap: `${a} tiles make a ${p} × ${p} square: side ${K(`\\sqrt{${a}}=${p}`)}. ${b} tiles make a ${q} × ${q} square: side ${K(`\\sqrt{${b}}=${q}`)}.`,
-        run: async (c) => { await Promise.all(tiles.map((e, i) => c.pop(e, 280, { delay: Math.min(i * 12, 500) }))); await Promise.all([c.fadeIn(la, 300), c.fadeIn(lb, 300)]); }
-      },
-      {
-        cap: `${K(`\\sqrt{${a}}+\\sqrt{${b}}`)} adds the <b>sides</b>: put them end to end, ${p} + ${q} = <b>${p + q}</b>.`,
-        run: (c) => Promise.all([c.fadeIn(bL, 300), c.fadeIn(bLl, 300, { delay: 150 }), c.fadeIn(eqL, 350, { delay: 250 })])
-      },
-      {
-        cap: extra ? `${K(`\\sqrt{${a}+${b}}`)} adds the <b>tiles</b> first: ${a} + ${b} = <b>${s}</b>. Try to build one square: ${m} × ${m} uses ${m * m}, and <b class="red">${extra} are left over</b> — ${s} isn’t a perfect square.`
-          : `${K(`\\sqrt{${a}+${b}}`)} adds the <b>tiles</b> first: ${a} + ${b} = <b>${s}</b> tiles. Rebuild them into <b>one</b> square: ${m} × ${m}.`,
-        run: async (c) => {
-          tiles.forEach((e) => (e.style.opacity = 0.28));
-          tiles.forEach((e, k) => {
-            const cl = e.cloneNode(); cl.style.opacity = 1; stage.appendChild(cl); clones.push(cl);
-            let tx, ty; if (k < m * m) { tx = xR + (k % m) * t; ty = base - (Math.floor(k / m) + 1) * t; } else { const j = k - m * m; tx = xR + m * t + 6; ty = base - (j + 1) * t; cl.classList.add('extra'); }
-            cl._to = [tx, ty];
-          });
-          await Promise.all(clones.map((cl, k) => c.anim(cl, [{ left: cl.style.left, top: cl.style.top }, { left: cl._to[0] + 'px', top: cl._to[1] + 'px' }], 700, { delay: Math.min(k * 14, 700) })));
-          await Promise.all([c.fadeIn(bR, 300), c.fadeIn(bRl, 300, { delay: 150 })]);
-        }
-      },
-      {
-        cap: extra ? `Its side is ${K(`\\sqrt{${s}}\\approx${side.toFixed(2)}`)} — <b>not</b> ${p + q}. So ${K(`\\sqrt{${a}+${b}}\\ne\\sqrt{${a}}+\\sqrt{${b}}`)}: that’s why <b>Example 4(c) is false</b>.`
-          : `Its side is ${K(`\\sqrt{${s}}=${m}`)} — <b>not</b> ${p + q}. So ${K(`\\sqrt{${a}+${b}}\\ne\\sqrt{${a}}+\\sqrt{${b}}`)}. Subtraction fails too: ${K(`\\sqrt{${Math.max(a, b)}}-\\sqrt{${Math.min(a, b)}}=${Math.abs(p - q)}`)}, but ${K(`\\sqrt{${Math.max(a, b)}-${Math.min(a, b)}}\\approx${Math.sqrt(Math.abs(a - b)).toFixed(2)}`)}.`,
-        run: async (c) => {
-          await c.fadeIn(eqR, 350);
-          const x1 = eqL.offsetLeft + eqL.offsetWidth, x2 = eqR.offsetLeft; at(ne, (x1 + x2) / 2, 42);
-          await c.anim(ne, [{ opacity: 0, transform: 'scale(2)' }, { opacity: 1, transform: 'scale(1)' }], 380, { easing: 'cubic-bezier(.2,1.4,.4,1)' });
-        }
-      }
-    ];
-  }
-};
-
-/* ============ 5. True or false: check both sides ============ */
-const TF = {
-  x1: { L: '\\sqrt{2}\\times\\sqrt{18}', R: '6', Ls: [['=\\sqrt{2\\times18}', 'product rule'], ['=\\sqrt{36}=6']], Rs: [], l: 6, r: 6, lc: 'the product rule joins them: ' + K('\\sqrt{2\\times18}=\\sqrt{36}=6') + '.', rc: 'it’s just 6.', why: 'Both sides are 6, so the statement is <b>true</b>.' },
-  x2: { L: '\\sqrt{100-36}', R: '\\sqrt{100}-\\sqrt{36}', Ls: [['=\\sqrt{64}', 'subtract inside first'], ['=8']], Rs: [['=10-6'], ['=4']], l: 8, r: 4, lc: 'subtract <b>inside first</b>: ' + K('\\sqrt{64}=8') + '.', rc: K('10-6=4') + '.', why: '8 ≠ 4. The root of a difference is <b>not</b> the difference of the roots: <b>false</b>.' },
-  x3: { L: '\\sqrt{50}\\div\\sqrt{2}', R: '5', Ls: [['=\\sqrt{50\\div2}', 'quotient rule'], ['=\\sqrt{25}=5']], Rs: [], l: 5, r: 5, lc: 'the quotient rule joins them: ' + K('\\sqrt{50\\div2}=\\sqrt{25}=5') + '.', rc: 'it’s just 5.', why: 'Both sides are 5: <b>true</b>.' },
-  a: { L: '\\sqrt{4}\\times\\sqrt{11}', R: '\\sqrt{44}', Ls: [['=\\sqrt{4\\times11}', 'product rule'], ['=\\sqrt{44}']], Rs: [], l: Math.sqrt(44), r: Math.sqrt(44), lc: 'the product rule joins them: ' + K('\\sqrt{4\\times11}=\\sqrt{44}') + '.', rc: K('\\sqrt{44}') + ' as it is.', why: 'Both sides are ' + K('\\sqrt{44}') + ' (≈ 6.63): <b>true</b>.' },
-  b: { L: '\\dfrac{\\sqrt{63}}{\\sqrt{7}}', R: '\\sqrt{8}', Ls: [['=\\sqrt{\\dfrac{63}{7}}', 'quotient rule'], ['=\\sqrt{9}=3']], Rs: [], l: 3, r: Math.sqrt(8), lc: 'the quotient rule: ' + K('\\sqrt{\\tfrac{63}{7}}=\\sqrt{9}=3') + '.', rc: K('\\sqrt{8}') + ' isn’t a whole number: ≈ 2.83.', why: '63 ÷ 7 is 9, not 8. ' + K('3\\ne2.83') + ': <b>false</b>.' },
-  c: { L: '\\sqrt{25+16}', R: '\\sqrt{25}+\\sqrt{16}', Ls: [['=\\sqrt{41}', 'add inside first']], Rs: [['=5+4'], ['=9']], l: Math.sqrt(41), r: 9, lc: 'add <b>inside first</b>: ' + K('\\sqrt{41}') + ' ≈ 6.40.', rc: K('5+4=9') + '.', why: K('6.40\\ne9') + '. The root of a sum is <b>not</b> the sum of the roots: <b>false</b>.' }
-};
-const tf = {
-  title: 'True or false? Work out each side',
-  height: 420,
-  choices: [{ v: 'x1', label: K('\\sqrt{2}\\times\\sqrt{18}=6') }, { v: 'x2', label: K('\\sqrt{100-36}=\\sqrt{100}-\\sqrt{36}') }, { v: 'x3', label: K('\\sqrt{50}\\div\\sqrt{2}=5') }, { sep: 'Example 4 check:' }, { v: 'a', label: '(a)' }, { v: 'b', label: '(b)' }, { v: 'c', label: '(c)' }],
-  intro: (v) => `True or false: ${K(TF[v].L + '=' + TF[v].R)}? Don’t guess — work out the <b>left side</b> and the <b>right side</b> separately.`,
-  make(stage, v, ex) {
-    const W = ex.W, S = TF[v], ok = Math.abs(S.l - S.r) < 1e-9;
-    const st = add(stage, h('div', 'tf-s', K(`\\htmlClass{tf-l}{${S.L}}=\\htmlClass{tf-r}{${S.R}}`)), 24, 18); st.style.translate = '0 0';
-    const panel = (cls, x, title, first, lines, val) => {
-      const p = add(stage, h('div', 'tf-p ' + cls, `<div class="tf-ph">${title}</div>`), x, 128); p.style.width = (W / 2 - 34) + 'px';
-      const els = [h('div', 'tf-ln', K(first))].concat(lines.map(([t, n]) => h('div', 'tf-ln', K(t) + (n ? `<small>${n}</small>` : ''))));
-      const vv = h('div', 'tf-v', Number.isInteger(Math.round(val * 1e9) / 1e9) ? '= ' + mn(Math.round(val)) : '≈ ' + r2(val));
-      els.concat(vv).forEach((e) => { p.appendChild(e); e.style.opacity = 0; }); p.style.opacity = 0; return [p, els.concat(vv)];
+    const W = ex.W, [a, b] = v.split('/').map(Number), L = longDiv(a, b);
+    const top = add(stage, h('div', 'rm-dec'), 28, 22);
+    top.innerHTML = `<span class="rm-q">${a} ÷ ${b} =</span>`;
+    const digs = h('span', 'rm-digs'); top.appendChild(digs);
+    add(stage, h('div', 'rm-lab', 'Remainders that can happen when you divide by ' + b + ':'), 28, 96);
+    const bw = Math.min(70, (W - 60) / b - 8), row = add(stage, h('div', 'rm-row'), 28, 128);
+    const boxes = []; for (let r = 0; r < b; r++) { const e = h('div', 'rm-box' + (r === 0 ? ' zero' : ''), `<span>${r}</span><i></i>`); e.style.width = bw + 'px'; row.appendChild(e); boxes.push(e); }
+    const work = add(stage, h('div', 'rm-work'), 28, 214);
+    const foot = add(stage, h('div', 'rm-foot'), 28, 300); foot.style.width = (W - 56) + 'px'; hide(foot);
+    let order = 0;
+    const hit = async (c, r, again) => {
+      const bx = boxes[r]; order++;
+      if (!again) { bx.classList.add('hit'); bx.querySelector('i').textContent = order; }
+      else bx.classList.add('again');
+      await c.anim(bx, [{ transform: 'scale(1)' }, { transform: 'scale(1.18)' }, { transform: 'scale(1)' }], 380);
     };
-    const [pL, eL] = panel('l', 24, 'Left side', S.L, S.Ls, S.l), [pR, eR] = panel('r', W / 2 + 10, 'Right side', S.R, S.Rs, S.r);
-    const stamp = add(stage, h('div', 'pd-stamp ' + (ok ? 'yes' : 'nope'), ok ? 'TRUE' : 'FALSE'), W - 30, 12); stamp.style.translate = '-100% 0'; stamp.style.opacity = 0;
-    const reveal = async (c, p, els) => { p.style.opacity = 1; for (const e of els) await c.fadeIn(e, 300, { from: 'translateX(-10px)' }); };
-    return [
-      { cap: '<b>Left side:</b> ' + S.lc, run: async (c) => { st.classList.add('l-on'); await reveal(c, pL, eL); } },
-      { cap: '<b>Right side:</b> ' + S.rc, run: async (c) => { st.classList.remove('l-on'); st.classList.add('r-on'); await reveal(c, pR, eR); } },
-      { cap: S.why, run: (c) => { st.classList.remove('r-on'); return c.anim(stamp, [{ opacity: 0, transform: 'scale(1.8) rotate(-14deg)' }, { opacity: 1, transform: 'scale(1) rotate(-5deg)' }], 420, { easing: 'cubic-bezier(.2,1.4,.4,1)' }); } }
-    ];
-  }
-};
-
-/* ============ 5. Join into one radical, or split into two ============ */
-const JS = {
-  p: { s: '\\sqrt{2}\\times\\sqrt{8}', L: [['=\\sqrt{2\\times8}', 'product rule: one radical sign', 'The <b>product rule</b> puts both radicands under <b>one</b> radical sign. The × moves inside.'], ['=\\sqrt{16}', 'multiply inside', 'Multiply inside: 2 × 8 = 16. That’s the single radical: ' + K('\\sqrt{16}') + '.', 1], ['=4', 'bonus: 16 is a perfect square', 'Bonus: 16 is a perfect square, so ' + K('\\sqrt{16}=4') + '.', 2]] },
-  q: { s: '\\dfrac{\\sqrt{20}}{\\sqrt{5}}', L: [['=\\sqrt{\\dfrac{20}{5}}', 'quotient rule: one radical sign', 'The <b>quotient rule</b> puts the whole fraction under <b>one</b> radical sign.'], ['=\\sqrt{4}', 'divide inside', 'Divide inside: 20 ÷ 5 = 4, so the single radical is ' + K('\\sqrt{4}') + '.', 1], ['=2', 'bonus: 4 is a perfect square', 'Bonus: ' + K('\\sqrt{4}=2') + '.', 2]] },
-  e5a: { s: '\\sqrt{12}\\times\\sqrt{3}', L: [['=\\sqrt{12\\times3}', 'product rule', 'The <b>product rule</b>: one radical sign, with the × inside.'], ['=\\sqrt{36}', 'multiply inside', 'Multiply inside: 12 × 3 = 36. In the form ' + K('\\sqrt{x}') + ': <b>' + K('\\sqrt{36}') + '</b>.', 1], ['=6', 'which equals 6', 'And since 36 is a perfect square, ' + K('\\sqrt{36}=6') + '.', 2]] },
-  e5b: { s: '\\sqrt{11}\\times\\sqrt{5}', L: [['=\\sqrt{11\\times5}', 'product rule', 'The <b>product rule</b>: one radical sign, with the × inside.'], ['=\\sqrt{55}', 'multiply inside', 'Multiply inside: 11 × 5 = 55, so the answer is <b>' + K('\\sqrt{55}') + '</b>. 55 isn’t a perfect square, so that’s as far as it goes.', 1]] },
-  e5c: { s: '\\dfrac{\\sqrt{72}}{\\sqrt{8}}', L: [['=\\sqrt{\\dfrac{72}{8}}', 'quotient rule', 'The <b>quotient rule</b>: one radical sign over the whole fraction.'], ['=\\sqrt{9}', 'divide inside', 'Divide inside: 72 ÷ 8 = 9. In the form ' + K('\\sqrt{x}') + ': <b>' + K('\\sqrt{9}') + '</b>.', 1], ['=3', 'which equals 3', 'And ' + K('\\sqrt{9}=3') + '.', 2]] },
-  e5d: { s: '\\dfrac{\\sqrt{\\sqrt{256}}}{\\sqrt{2}}', L: [['=\\dfrac{\\sqrt{16}}{\\sqrt{2}}', 'inside first: √256 = 16', 'Work from the <b>inside</b> out: ' + K('\\sqrt{256}=16') + ', so the top is ' + K('\\sqrt{16}') + '.'], ['=\\sqrt{\\dfrac{16}{2}}', 'quotient rule', 'Now the <b>quotient rule</b>: one radical sign over the fraction.'], ['=\\sqrt{8}', 'divide inside', 'Divide inside: 16 ÷ 2 = 8. The single radical is <b>' + K('\\sqrt{8}') + '</b>.', 1], ['=2\\sqrt{2}', 'Lesson 6 preview', 'Lesson 6 preview: ' + K('\\sqrt{8}') + ' can also be written ' + K('2\\sqrt{2}') + '.', 2]] },
-  s50: { n: 50 }, e6a: { n: 85 }, e6b: { n: 98 }, e6c: { n: 32 }
-};
-const isSq = (k) => k > 1 && Number.isInteger(Math.sqrt(k));
-const joinsplit = {
-  title: 'Join into one radical, or split into two',
-  height: 390,
-  choices: [{ v: 'p', label: K(JS.p.s) }, { v: 'q', label: K('\\sqrt{20}\\div\\sqrt{5}') }, { v: 's50', label: K('\\sqrt{50}') }, { sep: 'Example 5 check:' }, ...['a', 'b', 'c', 'd'].map((k) => ({ v: 'e5' + k, label: `(${k})` })), { sep: 'Example 6 check:' }, ...['a', 'b', 'c'].map((k) => ({ v: 'e6' + k, label: `(${k})` }))],
-  intro: (v) => (JS[v].n ? `Split ${K(`\\sqrt{${JS[v].n}}`)} into a <b>product of two radicals</b>: find a factor pair of ${JS[v].n}.` : `Write ${K(JS[v].s)} as a <b>single radical</b>.`),
-  make(stage, v, ex) {
-    const W = ex.W, S = JS[v];
-    if (!S.n) { // join: a chain of equal expressions, left to right
-      const chain = add(stage, h('div', 'js-chain'), 24, 96);
-      const cell = (t, note, cls) => { const e = h('div', 'js-cell ' + (cls || ''), `<div class="js-ex">${K(t)}</div>` + (note ? `<div class="js-note">${note}</div>` : '')); chain.appendChild(e); return e; };
-      cell(S.s, '');
-      const ls = S.L.map(([t, note, , kind]) => { const e = cell(t, note, kind === 1 ? 'js-ans' : kind === 2 ? 'bonus' : ''); e.style.opacity = 0; return e; });
-      const fit = () => { chain.style.transform = ''; const w = chain.offsetWidth; if (w > W - 40) { chain.style.transformOrigin = 'left top'; chain.style.transform = `scale(${((W - 40) / w).toFixed(3)})`; } };
-      fit();
-      return S.L.map(([, , cap, kind], i) => ({ cap, run: async (c) => { if (i === 0) fit(); await (kind === 1 ? c.pop(ls[i], 420) : c.fadeIn(ls[i], 400, { from: 'translateX(-14px)' })); } }));
-    }
-    // split
-    const n = S.n, F = factors(n), pairs = []; for (const d of F) { if (d * d > n) break; pairs.push([d, n / d]); }
-    const sqs = pairs.filter(([a, b]) => isSq(a) || isSq(b)), best = sqs.length ? sqs.reduce((m, pr) => (Math.max(...pr.filter(isSq)) > Math.max(...m.filter(isSq)) ? pr : m)) : pairs[pairs.length > 1 ? 1 : 0];
-    const sq = best.find(isSq), other = sq ? n / sq : null, ord2 = sq ? [sq, other] : best;
-    add(stage, h('div', 'st-q', K(`\\sqrt{${n}}`)), 30, 18);
-    const lab = add(stage, h('div', 'mut-lab', `factor pairs of ${n}`), 30, 102); lab.style.opacity = 0;
-    const row = add(stage, h('div', 'js-pairs'), 30, 128);
-    const pe = pairs.map(([a, b]) => { const e = h('div', 'js-pair' + (a === 1 ? ' one' : ''), [a, b].map((k) => (isSq(k) ? `<span class="sq">${k}</span>` : k)).join(' × ')); row.appendChild(e); e.style.opacity = 0; return e; });
-    const l1 = add(stage, h('div', 'js-l', `<span class="box">${K(`\\sqrt{${n}}=\\sqrt{${ord2[0]}}\\times\\sqrt{${ord2[1]}}`)}</span><span class="note">${sq ? 'perfect square first' : 'a product of two radicals'}</span>`), 30, 214); l1.style.opacity = 0;
-    const l2 = sq ? add(stage, h('div', 'js-l bonus', `${K(`=${Math.sqrt(sq)}\\sqrt{${other}}`)}<span class="note">Lesson 6 preview</span>`), 30, 300) : null; if (l2) l2.style.opacity = 0;
-    const others = pairs.filter((pr) => pr[0] !== 1 && pr !== best);
-    const steps = [
-      {
-        cap: `List the factor pairs of ${n}: ${pairs.map(([a, b]) => `${a} × ${b}`).join(', ')}. ${sqs.length ? `Perfect squares are <u>underlined</u>.` : 'None of them has a perfect square (other than 1).'}`,
-        run: async (c) => { await c.fadeIn(lab, 250); for (const e of pe) await c.pop(e, 300); }
-      },
-      {
-        cap: sq ? `Any pair except 1 × ${n} works, but the <b>most useful</b> one has the biggest perfect square: <b>${best[0]} × ${best[1]}</b>.`
-          : `Skip 1 × ${n} (that doesn’t split anything). Use <b>${best[0]} × ${best[1]}</b>.`,
-        run: async (c) => { pe.forEach((e, i) => e.classList.add(pairs[i] === best ? 'pick' : 'dim')); await c.pop(pe[pairs.indexOf(best)], 380); }
-      },
-      {
-        cap: `One radical for each factor: ${K(`\\sqrt{${n}}=\\sqrt{${ord2[0]}}\\times\\sqrt{${ord2[1]}}`)}.` + (others.length ? ` (${others.map(([a, b]) => K(`\\sqrt{${a}}\\times\\sqrt{${b}}`)).join(' and ')} ${others.length > 1 ? 'are' : 'is'} also correct.)` : ''),
-        run: (c) => c.pop(l1, 420)
+    const digitEls = [];
+    const steps = L.steps.map((s) => {
+      if (s.kind === 'int') return {
+        cap: `${a} ÷ ${b} = <b>${s.q}</b> remainder <b>${s.r}</b>. Write ${s.q} and a decimal point.`,
+        run: async (c) => {
+          const e = h('span', 'rm-d', s.q + '.'); digs.appendChild(e); work.innerHTML = `${a} ÷ ${b} = <b>${s.q}</b> <span class="rm-r">R ${s.r}</span>`;
+          await Promise.all([c.pop(e, 380), c.fadeIn(work, 300), hit(c, s.r)]);
+        }
+      };
+      return {
+        cap: `Bring down a 0: <b>${s.num} ÷ ${b} = ${s.d}</b> remainder <b>${s.r}</b>.` + (s.r === 0 ? ' Remainder <b>0</b> — nothing left to divide!' : s.again ? ` Remainder <b>${s.r}</b> <b class="red">again</b> — we’ve been here before!` : ''),
+        run: async (c) => {
+          const e = h('span', 'rm-d', s.d); digs.appendChild(e); digitEls.push(e);
+          work.innerHTML = `${s.num} ÷ ${b} = <b>${s.d}</b> <span class="rm-r">R ${s.r}</span>`;
+          await Promise.all([c.pop(e, 380), c.fadeIn(work, 300), hit(c, s.r, s.again)]);
+        }
+      };
+    });
+    const dt = decTex(L.q0, L.digits, L.rep), repBlock = L.rep >= 0 ? L.digits.slice(L.rep).join('') : '';
+    steps.push({
+      cap: L.rep < 0 ? `The remainder reached <b>0</b>, so the division stops: ${T(`\\tfrac{${a}}{${b}} = ${dt}`)}. The decimal <b>terminates</b>.`
+        : `Same remainder, same steps — the digits <b>${repBlock}</b> come round again and again forever: ${T(`\\tfrac{${a}}{${b}} = ${dt}`)}. The decimal <b>repeats</b>.`,
+      run: async (c) => {
+        if (L.rep >= 0) { digitEls.slice(L.rep).forEach((e) => e.classList.add('rep')); const more = h('span', 'rm-d ell', '…'); digs.appendChild(more); await c.fadeIn(more, 300); }
+        work.innerHTML = `${T(`\\dfrac{${a}}{${b}} = ${dt}`)} <span class="rm-tag ${L.rep < 0 ? 'end' : 'rep'}">${L.rep < 0 ? 'terminates' : 'repeats'}</span>`;
+        await c.fadeIn(work, 400);
       }
-    ];
-    if (sq) steps.push({ cap: `Bonus: ${K(`\\sqrt{${sq}}=${Math.sqrt(sq)}`)}, so ${K(`\\sqrt{${n}}=${Math.sqrt(sq)}\\sqrt{${other}}`)}. Writing radicals like this is <b>Lesson 6</b>.`, run: (c) => c.fadeIn(l2, 400, { from: 'translateX(-14px)' }) });
+    });
+    steps.push({
+      cap: `Dividing by ${b}, the only possible remainders are <b>0 to ${b - 1}</b>. So within ${b} steps the division either <b>ends</b> (remainder 0) or a remainder <b>repeats</b>. That’s why every fraction is a terminating or repeating decimal: <b>rational</b>.`,
+      run: async (c) => { row.classList.add('all'); await Promise.all(boxes.map((bx, i) => c.anim(bx, [{ transform: 'translateY(0)' }, { transform: 'translateY(-8px)' }, { transform: 'translateY(0)' }], 360, { delay: i * 50 }))); }
+    });
+    steps.push({
+      cap: `Irrational numbers like ${T('\\sqrt{2}')} and ${T('\\pi')} can’t be written as a fraction, so no remainder machine makes them. Their digits <b>never end and never repeat</b>.`,
+      run: async (c) => {
+        foot.innerHTML = `<div>${T('\\sqrt{2} = 1.414\\,213\\,562\\,373\\,095\\,048\\,801\\,688\\ldots')}</div><div>${T('\\pi = 3.141\\,592\\,653\\,589\\,793\\,238\\,462\\,643\\ldots')}</div><span class="rm-tag irr">never end, never repeat</span>`;
+        await c.fadeIn(foot, 450);
+      }
+    });
     return steps;
   }
 };
+
+/* ============ 1. The sorting machine ============ */
+const SORT = {
+  '-4': { t: '-4', v: -4 },
+  '0': { t: '0', v: 0 },
+  '7': { t: '7', v: 7 },
+  '2/3': { t: '\\tfrac{2}{3}', v: 2 / 3, why: `${T('\\tfrac{2}{3}')} is already a ratio of two integers (it’s ${T('0.\\overline{6}')}, a repeating decimal).`, between: 'between 0 and 1' },
+  '0.5r': { t: '0.\\overline{5}', v: 5 / 9, why: `${T('0.\\overline{5}')} <b>repeats</b>, so it’s a fraction in disguise: ${T('0.\\overline{5} = \\tfrac{5}{9}')}.`, between: 'between 0 and 1' },
+  'r9': { t: '\\sqrt{9}', v: 3, simp: '\\sqrt{9} = 3', simpWhy: `${T('\\sqrt{9} = 3')} because 3 × 3 = 9.` },
+  'r10': { t: '\\sqrt{10}', irr: `10 isn’t a perfect square (9 < 10 < 16), so ${T('\\sqrt{10} = 3.162\\,277\\,66\\ldots')} never ends and never repeats.` },
+  'pi': { t: '\\pi', irr: `${T('\\pi = 3.141\\,592\\,65\\ldots')} never ends and never repeats.` },
+  '-r16': { t: '-\\sqrt{16}', v: -4, simp: '-\\sqrt{16} = -4', simpWhy: `${T('\\sqrt{16} = 4')}, so ${T('-\\sqrt{16} = -4')}.` },
+  'c-8': { t: '\\sqrt[3]{-8}', v: -2, simp: '\\sqrt[3]{-8} = -2', simpWhy: `${T('\\sqrt[3]{-8} = -2')} because (−2)(−2)(−2) = −8.` },
+  '12': { t: '12', v: 12 },
+  '5/9': { t: '\\tfrac{5}{9}', v: 5 / 9, why: `${T('\\tfrac{5}{9}')} is already a ratio of two integers.`, between: 'between 0 and 1' },
+  'r11': { t: '\\sqrt{11}', irr: `11 isn’t a perfect square (9 < 11 < 16), so ${T('\\sqrt{11} = 3.316\\,624\\,79\\ldots')} never ends and never repeats.` },
+  '-8': { t: '-8', v: -8 },
+  '-12': { t: '-12', v: -12 }
+};
+const sorter = {
+  title: 'The sorting machine: which sets is it in?',
+  height: 480,
+  choices: [...['-4', '0', '7', '2/3', '0.5r', 'r9', 'r10', 'pi', '-r16', 'c-8'].map((k) => ({ v: k, label: T(big(SORT[k].t)) })), { sep: 'Example 1 check:' }, ...['12', '5/9', 'r11', '-8', '-12'].map((k) => ({ v: k, label: T(big(SORT[k].t)) }))],
+  intro: (k) => `Where does ${T(SORT[k].t)} belong? Test it from the <b>outside in</b>: real, rational, integer, whole, natural. It drops into the <b>innermost</b> set it belongs to.`,
+  make(stage, k, ex) {
+    const W = ex.W, H = 480, s = SORT[k], dw = Math.min(620, W * 0.63), g = setGeom(16, 16, dw, H - 32), { parts } = drawSets(stage, g);
+    const rat = !s.irr, isInt = rat && Number.isInteger(s.v), whole = isInt && s.v >= 0, nat = whole && s.v > 0;
+    const px = g.x + g.w + 18, pw = W - px - 14;
+    const panel = add(stage, h('div', 'sort-card'), px, g.y); panel.style.width = pw + 'px'; panel.style.height = g.h + 'px';
+    const hop = h('div', 'sort-hop', `<div class="sh-n">${T(big(s.t))}</div><div class="sh-s">${s.simp ? '&nbsp;' : ''}</div>`); panel.appendChild(hop);
+    const ROWS = [['R', 'Real?'], ['Q', 'Rational?'], ['Qb', 'Irrational?'], ['I', 'Integer?'], ['W', 'Whole?'], ['N', 'Natural?']];
+    const marks = {};
+    ROWS.forEach(([key, q]) => { const r = h('div', 'sort-row k-' + key.toLowerCase(), `<span class="sr-k">${T(SETS[key].sym)}</span><span class="sr-q">${q}</span><span class="sr-m"></span>`); panel.appendChild(r); marks[key] = r; });
+    const out = h('div', 'sort-out'); panel.appendChild(out);
+    const chip = add(stage, h('div', 'st-chip big c', T(big(s.t))), px + pw / 2, g.y + 40); hide(chip);
+    const posOf = { R: [g.x + 0.6 * g.w, g.y + 0.07 * g.h], Q: g.ring('Q', -60), I: g.ring('I', -60), W: g.ring('W', -60), N: g.inN(0, 0.2), Qb: g.inQb(0.5) };
+    const move = (c, key) => c.anim(chip, [{ left: chip.style.left, top: chip.style.top }, { left: posOf[key][0] + 'px', top: posOf[key][1] + 'px' }], 650, { easing: 'cubic-bezier(.3,.1,.3,1.25)' });
+    const mark = (c, key, ok) => { const r = marks[key], m = r.querySelector('.sr-m'); r.classList.add(ok ? 'yes' : 'no'); m.textContent = ok ? '✓' : '✗'; return c.pop(m, 320); };
+    const flash = (c, key, ok) => { const el = parts[key][0]; el.classList.add(ok ? 'lit' : 'nope'); return c.anim(el, [{ strokeWidth: 2.5 }, { strokeWidth: 7 }, { strokeWidth: 2.5 }], 480); };
+    const list = ['R'].concat(rat ? ['Q'] : ['Qb'], isInt ? ['I'] : [], whole ? ['W'] : [], nat ? ['N'] : []);
+    const steps = [];
+    if (s.simp) steps.push({
+      cap: `<b>Simplify first.</b> ${s.simpWhy} A root sign doesn’t make a number irrational!`,
+      run: async (c) => { hop.querySelector('.sh-s').innerHTML = T('= ' + String(s.v)); await c.pop(hop.querySelector('.sh-s'), 380); }
+    });
+    steps.push({
+      cap: `Every number here has a place on the number line, so ${T(s.t)} is <b>real</b>: it’s somewhere inside ${T('R')}.`,
+      run: async (c) => { chip.style.opacity = 1; await Promise.all([move(c, 'R'), mark(c, 'R', true), flash(c, 'R', true)]); }
+    });
+    const ratCap = s.irr ? `${s.irr} So it’s <b>irrational</b>: ${T('\\overline{Q}')}. An irrational number can’t be in ${T('Q')}, ${T('I')}, ${T('W')} or ${T('N')} — they’re all on the rational side.`
+      : s.why ? `${s.why} So it’s <b>rational</b>: into ${T('Q')}.`
+        : `${T(String(s.v) + ' = \\tfrac{' + s.v + '}{1}')}, a ratio of integers, so it’s <b>rational</b>: into ${T('Q')}.`;
+    steps.push({
+      cap: ratCap,
+      run: async (c) => {
+        if (s.irr) { await Promise.all([move(c, 'Qb'), mark(c, 'Q', false), mark(c, 'Qb', true)]); await Promise.all(['I', 'W', 'N'].map((q) => mark(c, q, false))); }
+        else await Promise.all([move(c, 'Q'), mark(c, 'Q', true), mark(c, 'Qb', false), flash(c, 'Q', true)]);
+      }
+    });
+    if (rat) steps.push({
+      cap: isInt ? `No fraction or decimal part left over: ${T(String(s.v))} is an <b>integer</b>. Into ${T('I')}.`
+        : `${T(s.t)} is ${s.between}, not a whole step on the number line: <b>not an integer</b>. So it can’t be whole or natural either — those sets are inside ${T('I')}.`,
+      run: async (c) => {
+        if (isInt) await Promise.all([move(c, 'I'), mark(c, 'I', true), flash(c, 'I', true)]);
+        else await Promise.all([mark(c, 'I', false), c.shake(chip), flash(c, 'I', false), mark(c, 'W', false), mark(c, 'N', false)]);
+      }
+    });
+    if (isInt) steps.push({
+      cap: whole ? `It isn’t negative, so it’s a <b>whole number</b>. Into ${T('W')}.` : `${T(String(s.v))} is <b>negative</b>, so it’s <b>not a whole number</b> — and not natural either.`,
+      run: async (c) => {
+        if (whole) await Promise.all([move(c, 'W'), mark(c, 'W', true), flash(c, 'W', true)]);
+        else await Promise.all([mark(c, 'W', false), c.shake(chip), flash(c, 'W', false), mark(c, 'N', false)]);
+      }
+    });
+    if (whole) steps.push({
+      cap: nat ? `It isn’t 0, so it’s a counting number: <b>natural</b>. Into ${T('N')}, the very middle.` : `It’s <b>0</b>, and we don’t start counting at 0: <b>not natural</b>.`,
+      run: async (c) => {
+        if (nat) await Promise.all([move(c, 'N'), mark(c, 'N', true), flash(c, 'N', true)]);
+        else await Promise.all([mark(c, 'N', false), c.shake(chip), flash(c, 'N', false)]);
+      }
+    });
+    const listTex = list.map((q) => SETS[q].sym).join(',\\ ');
+    steps.push({
+      cap: `${T(s.t)} belongs to <b>${list.length} set${list.length > 1 ? 's' : ''}</b>. Largest to smallest: <b>${T(listTex)}</b>.`,
+      run: async (c) => { out.innerHTML = `<div class="so-h">Sets, largest to smallest</div>${T(listTex)}`; chip.classList.add('done'); await Promise.all([c.fadeIn(out, 400), c.pop(chip, 420)]); }
+    });
+    return steps;
+  }
+};
+
+/* ============ 2. Square roots: tiles and a number line ============ */
+function tileSteps(stage, n, ex) {
+  const W = ex.W, a = Math.floor(Math.sqrt(n)), perfect = a * a === n, A = perfect ? a : a + 1, e = n - a * a;
+  const ts = Math.min(26, 236 / A), ox = 46, oy = 34, sz = ts * 0.86;
+  const tiles = [];
+  const cols0 = Math.ceil(Math.sqrt(n)), s0 = Math.min(22, 250 / cols0);
+  for (let i = 0; i < n; i++) {
+    const t = h('div', 'tile'), r = Math.round((Math.sin(i * 12.9898) * 43758.5453 % 1) * 24 - 12);
+    const x = ox + (i % cols0) * s0 * 1.08 + (i * 7 % 5) - 2, y = oy + Math.floor(i / cols0) * s0 * 1.08 + (i * 3 % 5) - 2;
+    t.style.width = t.style.height = s0 * 0.86 + 'px'; t._t = `translate(${x}px, ${y}px) rotate(${r}deg)`; t.style.transform = t._t;
+    stage.appendChild(t); tiles.push(t);
+  }
+  const target = (i) => { if (i < a * a) return [i % a, Math.floor(i / a)]; const j = i - a * a; return j < a ? [a, j] : [j - a, a]; };
+  const svg = svgLayer(stage);
+  const out = add(stage, h('div', 'tl-out'), ox - 3, oy - 3); out.style.width = out.style.height = A * ts + 3 + 'px'; hide(out);
+  const dimT = add(stage, h('div', 'tl-dim c', a), ox + (a * ts) / 2, oy - 16), dimL = add(stage, h('div', 'tl-dim c', a), ox - 18, oy + (a * ts) / 2); hide(dimT, dimL);
+  const dimO = add(stage, h('div', 'tl-dim amber c', A), ox + A * ts + 16, oy + (A * ts) / 2); hide(dimO);
+  const info = add(stage, h('div', 'tl-info'), 370, 14); info.style.width = (W - 390) + 'px';
+  const line = (t, cls = '') => { const e = h('div', 'tl-line ' + cls, T(t)); info.appendChild(e); return e; };
+  // number line 1 (roots below, squares above)
+  const lo = Math.max(0, a - 3), hi = Math.max(lo + 7, a + 2), y1 = 322, y2 = 404, X0 = 120;
+  const ticks = []; for (let v = lo; v <= hi; v++) { ticks.push({ v, lab: String(v) }); }
+  const NL1 = nline(stage, svg, { x0: X0, x1: W - 60, y: y1, lo, hi, ticks });
+  const sqLabs = []; for (let v = lo; v <= hi; v++) sqLabs.push(add(stage, h('div', 'nl-lab sq c' + (v === a || (!perfect && v === a + 1) ? ' key' : ''), fmt(v * v)), NL1.X(v), y1 - 24));
+  const sqTag = add(stage, h('div', 'nl-tag', 'squares'), 14, y1 - 34), rtTag = add(stage, h('div', 'nl-tag', 'roots'), 14, y1 + 14);
+  const zTag = add(stage, h('div', 'nl-tag', 'zoom in'), 14, y2 - 30); hide(zTag);
+  hide(...NL1.els, ...sqLabs, sqTag, rtTag);
+  const est = a + e / (2 * a + 1), root = Math.sqrt(n), near = e <= 2 * a + 1 - e ? a : a + 1;
+  const mk = add(stage, h('div', 'nl-mark c', `<b>${n}</b>`), NL1.X(est), y1 - 58); hide(mk);
+  const mkLine = sv('line', { x1: NL1.X(est), x2: NL1.X(est), y1: y1 - 44, y2: y1, class: 'nl-mk' }, svg); hide(mkLine);
+  // zoom line 2
+  const zt = []; for (let i = 0; i <= 10; i++) zt.push({ v: a + i / 10, lab: i % 10 === 0 ? String(a + i / 10) : (a + i / 10).toFixed(1), small: i % 10 !== 0, cls: i % 10 ? 'sm' : '' });
+  const NL2 = nline(stage, svg, { x0: X0, x1: W - 60, y: y2, lo: a, hi: a + 1, ticks: zt, cls: 'zoom' });
+  const zl = sv('path', { d: `M ${NL1.X(a)} ${y1 + 36} L ${X0} ${y2 - 14} M ${NL1.X(a + 1)} ${y1 + 36} L ${W - 60} ${y2 - 14}`, class: 'nl-zoom' }, svg);
+  hide(...NL2.els, zl);
+  const estR = Math.round(est * 10) / 10;
+  const eMk = add(stage, h('div', 'nl-est c', '≈ ' + estR.toFixed(1)), NL2.X(est), y2 - 34), eTri = add(stage, h('div', 'nl-tri c'), NL2.X(est), y2 - 12);
+  const cDot = add(stage, h('div', 'nl-dot c'), NL2.X(root), y2), cLab = add(stage, h('div', 'nl-calc c', `${T('\\sqrt{' + n + '}')} = ${dots(root, 4)}`), Math.min(W - 110, Math.max(170, NL2.X(root))), y2 + 46);
+  hide(eMk, eTri, cDot, cLab);
+  async function arrange(c) {
+    await Promise.all(tiles.map((t, i) => {
+      const [cx, cy] = target(i), x = ox + cx * ts, y = oy + cy * ts, to = `translate(${x}px, ${y}px) rotate(0deg)`, from = t._t; t._t = to;
+      if (i >= a * a) t.classList.add('xtra'); else t.classList.add('good');
+      return c.anim(t, [{ transform: from, width: t.style.width, height: t.style.height }, { transform: to, width: sz + 'px', height: sz + 'px' }], 700, { delay: Math.min(i * 5, 300) });
+    }));
+  }
+  const steps = [];
+  if (perfect) {
+    steps.push({
+      cap: `<b>${n}</b> tiles make a perfect <b>${a} × ${a}</b> square, with nothing left over. The side is ${a}.`,
+      run: async (c) => { const l1 = line(`${a}^2 = ${n}`); await Promise.all([arrange(c), c.fadeIn(dimT, 300, { delay: 600 }), c.fadeIn(dimL, 300, { delay: 600 }), c.fadeIn(l1, 300, { delay: 500 })]); }
+    });
+    steps.push({
+      cap: `So ${T('\\sqrt{' + n + '} = ' + a)} <b>exactly</b>. ${n} is a <b>perfect square</b>, so its square root is <b>rational</b>.`,
+      run: async (c) => { const l = line(`\\sqrt{${n}} = ${a}`, 'ok'); const k = NL1.labs[a - lo]; k.classList.add('hit'); await Promise.all([...NL1.els, ...sqLabs, sqTag, rtTag].map((x) => c.fadeIn(x, 400)).concat([c.fadeIn(l, 300), c.pop(k, 400, { delay: 400 })])); }
+    });
+    steps.push({
+      cap: `(−${a}) × (−${a}) = ${n} too, so ${n} has <b>two</b> square roots, ${a} and −${a}. But the symbol ${T('\\sqrt{' + n + '}')} means only the <b>principal</b> (positive) one: ${a}.`,
+      run: async (c) => { const l = line(`(-${a})^2 = ${n} \\text{ too, but } \\sqrt{${n}} = ${a}`, 'muted'); await c.fadeIn(l, 400); }
+    });
+    return steps;
+  }
+  steps.push({
+    cap: `Arrange the <b>${n}</b> tiles into the biggest square you can: <b>${a} × ${a} = ${a * a}</b>, with <b>${e}</b> left over. So ${T('\\sqrt{' + n + '}')} is a bit more than ${a}.`,
+    run: async (c) => { const l1 = line(`${a}^2 = ${a * a}`); await Promise.all([arrange(c), c.fadeIn(dimT, 300, { delay: 600 }), c.fadeIn(dimL, 300, { delay: 600 }), c.fadeIn(l1, 300, { delay: 500 })]); }
+  });
+  steps.push({
+    cap: `A <b>${A} × ${A}</b> square needs <b>${A * A}</b> tiles — ${A * A - n} more than we have. So ${T('\\sqrt{' + n + '}')} is less than ${A}.`,
+    run: async (c) => { const l = line(`${A}^2 = ${A * A}`, 'amber'); await Promise.all([c.fadeIn(out, 400), c.fadeIn(dimO, 400), c.fadeIn(l, 300)]); }
+  });
+  steps.push({
+    cap: `${T('\\sqrt{' + n + '}')} is <b>between ${a} and ${A}</b>. ${n} is ${e} above ${a * a} but ${A * A - n} below ${A * A} — closer to <b>${near === a ? a * a : A * A}</b>.`,
+    run: async (c) => {
+      const l = line(`${a * a} \\lt ${n} \\lt ${A * A} \\;\\Rightarrow\\; ${a} \\lt \\sqrt{${n}} \\lt ${A}`);
+      await Promise.all([...NL1.els, ...sqLabs, sqTag, rtTag].map((x) => c.fadeIn(x, 400)).concat([c.fadeIn(l, 300), c.fadeIn(mk, 400, { delay: 400 }), c.anim(mkLine, [{ opacity: 0 }, { opacity: 1 }], 400, { delay: 400 })]));
+    }
+  });
+  steps.push({
+    cap: `To the nearest whole number, ${T('\\sqrt{' + n + '}')} ≈ <b>${near}</b>.`,
+    run: async (c) => { const l = line(`\\sqrt{${n}} \\approx ${near}`, 'big'); const k = NL1.labs[near - lo]; k.classList.add('hit'); await Promise.all([c.fadeIn(l, 300), c.pop(k, 400)]); }
+  });
+  steps.push({
+    cap: `Zoom in between ${a} and ${A}. ${n} is <b>${e} of the ${2 * a + 1}</b> steps from ${a * a} to ${A * A}, about ${(e / (2 * a + 1)).toFixed(1)} of the way. So ${T('\\sqrt{' + n + '}')} ≈ <b>${estR.toFixed(1)}</b>.`,
+    run: async (c) => {
+      const l = line(`\\sqrt{${n}} \\approx ${a} + \\tfrac{${e}}{${2 * a + 1}} \\approx ${estR.toFixed(1)}`);
+      await Promise.all([c.anim(zl, [{ opacity: 0 }, { opacity: 1 }], 400), c.fadeIn(zTag, 300), ...NL2.els.map((x) => c.fadeIn(x, 400, { delay: 200 })), c.fadeIn(l, 300), c.pop(eMk, 400, { delay: 500 }), c.pop(eTri, 400, { delay: 500 })]);
+    }
+  });
+  const close = Math.abs(estR - Math.round(root * 10) / 10) < 0.01 ? 'Spot on' : 'Very close';
+  steps.push({
+    cap: `Calculator: ${T('\\sqrt{' + n + '} = ' + dots(root, 4).replace('…', '\\ldots'))} ≈ <b>${tenth(root)}</b>. ${close} — the estimate was reasonable. (${n} isn’t a perfect square, so this decimal never ends or repeats: ${T('\\sqrt{' + n + '}')} is <b>irrational</b>.)`,
+    run: async (c) => { const l = line(`\\sqrt{${n}} = ${dots(root, 4).replace('…', '\\ldots')} \\approx ${tenth(root)}`, 'ok'); await Promise.all([c.fadeIn(l, 300), c.pop(cDot, 400), c.fadeIn(cLab, 400, { delay: 200 })]); }
+  });
+  return steps;
+}
+const tiles = {
+  title: 'Square roots: tiles, then a number line',
+  height: 480,
+  choices: [{ v: 30, label: T('\\sqrt{30}') }, { v: 90, label: T('\\sqrt{90}') }, { v: 144, label: T('\\sqrt{144}') }, { sep: 'Example 2 check:' }, { v: 53, label: T('\\sqrt{53}') }, { v: 20, label: T('\\sqrt{20}') }, { v: 41, label: T('\\sqrt{41}') }, { v: 7, label: T('\\sqrt{7}') }, { v: 150, label: T('\\sqrt{150}') }],
+  custom: [2, 225],
+  intro: (n) => `Here are <b>${n}</b> square tiles. If they made a perfect square, how long would its side be? That side length is ${T('\\sqrt{' + n + '}')}.`,
+  make: (stage, n, ex) => tileSteps(stage, n, ex)
+};
+
+/* ============ 2 & 3. Estimate a whole expression, then check ============ */
+const sq = (t) => ({ t, kind: 'squares' }), cu = (t) => ({ t, kind: 'cubes' });
+const EXPR = {
+  d1: { e: '2\\sqrt{10} + \\sqrt{26}', steps: [
+    { tex: '\\sqrt{10} \\approx 3', note: sq('9 \\lt 10 \\lt 16'), cap: `${T('\\sqrt{10}')}: 10 is between the perfect squares 9 and 16, much closer to <b>9</b>. So ${T('\\sqrt{10}')} ≈ <b>3</b>.` },
+    { tex: '\\sqrt{26} \\approx 5', note: sq('25 \\lt 26 \\lt 36'), cap: `${T('\\sqrt{26}')}: 26 is just past <b>25</b>, so ${T('\\sqrt{26}')} ≈ <b>5</b>.` },
+    { tex: '2(3) + 5 = 11', est: 1, cap: 'Put the estimates in and do the arithmetic: 2(3) + 5 = <b>11</b>.' },
+    { tex: '6.324\\ldots + 5.099\\ldots \\approx 11.4', calc: 1, cap: `Calculator: ${T('2\\sqrt{10} + \\sqrt{26} = 11.42\\ldots')} ≈ <b>11.4</b>.` },
+    { verdict: 'REASONABLE', sub: '11 vs 11.4', cap: 'The estimate of 11 is <b>reasonable</b>.' }] },
+  d2: { e: '\\sqrt{\\sqrt{80}}', steps: [
+    { tex: '\\sqrt{80} \\approx 9', note: sq('64 \\lt 80 \\lt 81'), cap: `Work from the <b>inside out</b>. ${T('\\sqrt{80}')}: 80 is just below <b>81</b>, so ${T('\\sqrt{80}')} ≈ <b>9</b>.` },
+    { tex: '\\sqrt{\\sqrt{80}} \\approx \\sqrt{9} = 3', est: 1, cap: `Now the outer root: ${T('\\sqrt{9} = 3')}. Estimate: <b>3</b>.` },
+    { tex: '\\sqrt{8.944\\ldots} = 2.990\\ldots \\approx 3.0', calc: 1, cap: `Calculator: ${T('\\sqrt{80} = 8.944\\ldots')}, then ${T('\\sqrt{8.944\\ldots} = 2.990\\ldots')} ≈ <b>3.0</b>.` },
+    { verdict: 'SPOT ON', sub: '3 vs 3.0', cap: 'The estimate of 3 is <b>excellent</b>.' }] },
+  '2b': { e: '3\\sqrt{20} + 4\\sqrt{41}', steps: [
+    { tex: '\\sqrt{20} \\approx 4', note: sq('16 \\lt 20 \\lt 25'), cap: `${T('\\sqrt{20}')}: 20 is between 16 and 25, nearer <b>16</b>. So ${T('\\sqrt{20}')} ≈ <b>4</b>.` },
+    { tex: '\\sqrt{41} \\approx 6', note: sq('36 \\lt 41 \\lt 49'), cap: `${T('\\sqrt{41}')}: 41 is between 36 and 49, nearer <b>36</b>. So ${T('\\sqrt{41}')} ≈ <b>6</b>.` },
+    { tex: '3(4) + 4(6) = 12 + 24 = 36', est: 1, cap: 'Estimate: 3(4) + 4(6) = 12 + 24 = <b>36</b>.' },
+    { tex: '13.416\\ldots + 25.612\\ldots \\approx 39.0', calc: 1, cap: `Calculator: 3(4.4721) + 4(6.4031) = 13.42 + 25.61 ≈ <b>39.0</b>.` },
+    { verdict: 'REASONABLE', sub: '36 vs 39.0', cap: 'The estimate is a little low, but the <b>right size</b>. Both roots were rounded down, so the estimate came out low.' }] },
+  '2c': { e: '-\\sqrt{7}', steps: [
+    { tex: '\\sqrt{7} \\approx 3', note: sq('4 \\lt 7 \\lt 9'), cap: `${T('\\sqrt{7}')}: 7 is between 4 and 9, nearer <b>9</b>. So ${T('\\sqrt{7}')} ≈ <b>3</b>.` },
+    { tex: '-\\sqrt{7} \\approx -3', est: 1, cap: `The negative sign is <b>outside</b> the root, so it just comes along: ${T('-\\sqrt{7}')} ≈ <b>−3</b>.` },
+    { tex: '-\\sqrt{7} = -2.6457\\ldots \\approx -2.6', calc: 1, cap: `Calculator: ${T('\\sqrt{7} = 2.6457\\ldots')}, so ${T('-\\sqrt{7}')} ≈ <b>−2.6</b>.` },
+    { verdict: 'REASONABLE', sub: '−3 vs −2.6', cap: 'The estimate of −3 is <b>reasonably close</b>.' }] },
+  '2d': { e: '\\sqrt{\\sqrt{150}}', steps: [
+    { tex: '\\sqrt{150} \\approx 12', note: sq('144 \\lt 150 \\lt 169'), cap: `Work from the <b>inside out</b>. ${T('\\sqrt{150}')}: 150 is just past <b>144</b>, so ${T('\\sqrt{150}')} ≈ <b>12</b>.` },
+    { tex: '\\sqrt{12} \\approx 3', note: sq('9 \\lt 12 \\lt 16'), cap: `Outer root: ${T('\\sqrt{12}')}. 12 is between 9 and 16, nearer <b>9</b>, so about <b>3</b>.` },
+    { tex: '\\sqrt{\\sqrt{150}} \\approx 3', est: 1, cap: `Estimate: ${T('\\sqrt{\\sqrt{150}}')} ≈ <b>3</b>.` },
+    { tex: '\\sqrt{12.247\\ldots} = 3.4996\\ldots \\approx 3.5', calc: 1, cap: `Calculator: ${T('\\sqrt{150} = 12.247\\ldots')}, then ${T('\\sqrt{12.247\\ldots} = 3.4996\\ldots')} ≈ <b>3.5</b>.` },
+    { verdict: 'REASONABLE', sub: '3 vs 3.5', cap: 'The estimate of 3 is <b>reasonable</b> — the true value is right on the edge between 3 and 4!' }] },
+  d3: { e: '2\\sqrt[3]{100} - \\sqrt{10}', steps: [
+    { tex: '\\sqrt[3]{100} \\approx 5', note: cu('64 \\lt 100 \\lt 125'), cap: `${T('\\sqrt[3]{100}')}: use the <b>cubes</b>. 100 is between 64 and 125, nearer <b>125</b> (25 away, not 36). So ${T('\\sqrt[3]{100}')} ≈ <b>5</b>.` },
+    { tex: '\\sqrt{10} \\approx 3', note: sq('9 \\lt 10 \\lt 16'), cap: `${T('\\sqrt{10}')}: use the <b>squares</b>. 10 is just past 9, so ${T('\\sqrt{10}')} ≈ <b>3</b>.` },
+    { tex: '2(5) - 3 = 7', est: 1, cap: 'Estimate: 2(5) − 3 = <b>7</b>.' },
+    { tex: '9.283\\ldots - 3.162\\ldots \\approx 6.1', calc: 1, cap: `Calculator: ${T('2\\sqrt[3]{100} - \\sqrt{10} = 6.12\\ldots')} ≈ <b>6.1</b>.` },
+    { verdict: 'REASONABLE', sub: '7 vs 6.1', cap: 'The estimate is a bit high, but the <b>right size</b>.' }] },
+  '4c': { e: '5\\sqrt{50} - 5\\sqrt[3]{50}', steps: [
+    { tex: '\\sqrt{50} \\approx 7', note: sq('49 \\lt 50 \\lt 64'), cap: `${T('\\sqrt{50}')}: use the <b>squares</b>. 50 is just past <b>49</b>, so ${T('\\sqrt{50}')} ≈ <b>7</b>.` },
+    { tex: '\\sqrt[3]{50} \\approx 4', note: cu('27 \\lt 50 \\lt 64'), cap: `${T('\\sqrt[3]{50}')}: use the <b>cubes</b>. 50 is between 27 and 64, nearer <b>64</b> (14 away, not 23). So ${T('\\sqrt[3]{50}')} ≈ <b>4</b>.` },
+    { tex: '5(7) - 5(4) = 35 - 20 = 15', est: 1, cap: 'Estimate: 5(7) − 5(4) = 35 − 20 = <b>15</b>.' },
+    { tex: '35.355\\ldots - 18.420\\ldots \\approx 16.9', calc: 1, cap: `Calculator: 5(7.0711) − 5(3.6840) = 35.355 − 18.420 ≈ <b>16.9</b>.` },
+    { verdict: 'REASONABLE', sub: '15 vs 16.9', cap: 'The estimate of 15 is <b>in the right range</b>.' }] }
+};
+function exprExplainer(title, keys, sepAt, sepLabel) {
+  const choices = [];
+  keys.forEach((k, i) => { if (i === sepAt) choices.push({ sep: sepLabel }); choices.push({ v: k, label: T(EXPR[k].e) }); });
+  return {
+    title, height: 400, choices,
+    intro: (k) => `Estimate ${T(EXPR[k].e)} in your head first: replace each root with the nearest whole number. Then check with the calculator.`,
+    make(stage, k, ex) {
+      const W = ex.W, P = EXPR[k];
+      add(stage, h('div', 'xp-head', T(P.e)), 30, 18);
+      const nx = Math.round(W * 0.6);
+      let y = 92;
+      return P.steps.map((s) => {
+        if (s.verdict) return {
+          cap: s.cap,
+          run: async (c) => {
+            const st = add(stage, h('div', 'xp-stamp', `${s.verdict}<small>${s.sub}</small>`), W - 40, 290); st.style.translate = '-100% 0';
+            await c.anim(st, [{ opacity: 0, transform: 'scale(1.8) rotate(-14deg)' }, { opacity: 1, transform: 'scale(1) rotate(-6deg)' }], 420, { easing: 'cubic-bezier(.2,1.4,.4,1)' });
+          }
+        };
+        const yy = y; y += 62;
+        return {
+          cap: s.cap,
+          run: async (c) => {
+            const cls = s.calc ? ' xcalc' : s.est ? ' est' : '';
+            const ln = add(stage, h('div', 'xp-line' + cls, (s.calc ? '<span class="xp-ic">calculator</span>' : s.est ? '<span class="xp-ic">estimate</span>' : '') + T(s.tex)), 30, yy);
+            const jobs = [c.fadeIn(ln, 380, { from: 'translateX(-12px)' })];
+            if (s.note) { const nt = add(stage, h('div', 'xp-note ' + s.note.kind, `<span class="kd">${s.note.kind}</span>${T(s.note.t)}`), nx, yy + 4); jobs.push(c.fadeIn(nt, 380, { delay: 200 })); }
+            await Promise.all(jobs);
+          }
+        };
+      });
+    }
+  };
+}
+const exprSq = exprExplainer('Estimate the whole expression, then check', ['d1', 'd2', '2b', '2c', '2d'], 2, 'Example 2 check:');
+exprSq.minW = 820; // drawn this wide and scaled to fit beside the sidebar
+const exprCb = exprExplainer('Estimate with squares and cubes, then check', ['d3', '4c'], 1, 'Example 4 check:');
+exprCb.minW = 780; // drawn this wide and scaled to fit beside the sidebar
+
+/* ============ 2. One significant digit: pairs of digits ============ */
+function pairInfo(str) {
+  const [ip, fp = ''] = str.split('.');
+  const intGroups = []; for (let i = ip.length; i > 0; i -= 2) intGroups.unshift(ip.slice(Math.max(0, i - 2), i));
+  const fpad = fp.length % 2 ? fp + '0' : fp, padded = fp.length % 2 === 1;
+  const fracGroups = []; for (let i = 0; i < fpad.length; i += 2) fracGroups.push(fpad.slice(i, i + 2));
+  const groups = intGroups.map((d) => ({ d, int: true })).concat(fracGroups.map((d) => ({ d, int: false })));
+  const L = groups.findIndex((g) => Number(g.d) !== 0);
+  const nInt = intGroups.length, p = L < nInt ? nInt - 1 - L : -(L - nInt + 1);
+  const x = Number(str), root = Math.sqrt(x), d = Math.round(root / 10 ** p);
+  const estimate = d * 10 ** p;
+  return { groups, nInt, padded, L, p, d, root, estimate, lead: Number(groups[L].d) };
+}
+const estStr = (x, p) => (p >= 0 ? fmt(Math.round(x)) : x.toFixed(-p));
+const pairs = {
+  title: 'One significant digit: pair up the digits',
+  height: 400,
+  choices: [{ v: '2900', label: T('\\sqrt{2\\,900}') }, { v: '812000', label: T('\\sqrt{812\\,000}') }, { v: '0.36', label: T('\\sqrt{0.36}') }, { sep: 'Example 3 check:' },
+    { v: '7340', label: T('\\sqrt{7\\,340}') }, { v: '51234.6', label: T('\\sqrt{51\\,234.6}') }, { v: '0.00512', label: T('\\sqrt{0.005\\,12}') }, { v: '0.0512', label: T('\\sqrt{0.051\\,2}') }],
+  intro: (s) => `Estimate ${T('\\sqrt{' + s + '}')} to <b>one significant digit</b>. Start at the decimal point.`,
+  make(stage, s, ex) {
+    const W = ex.W, P = pairInfo(s), cw = 46, gap = 18, pw = 22;
+    const head = add(stage, h('div', 'pr-head', `${T('\\sqrt{' + fmtNum(s) + '}')} ≈ <span class="pr-q">?</span>`), 28, 16);
+    // layout: groups of digits with a gap, decimal point between int and frac groups
+    const widths = P.groups.map((g) => g.d.length * cw);
+    const total = widths.reduce((a, b) => a + b, 0) + gap * (P.groups.length - 1) + (P.groups.length > P.nInt ? pw + gap : 0);
+    let x = (W - total) / 2; const yN = 196, yR = 104;
+    const gx = [];
+    P.groups.forEach((g, i) => {
+      if (i === P.nInt) { add(stage, h('div', 'pr-pt c', '.'), x + pw / 2, yN); add(stage, h('div', 'pr-pt rpt c', '.'), x + pw / 2, yR); x += pw + gap; }
+      const lastFrac = !g.int && i === P.groups.length - 1;
+      [...g.d].forEach((ch, j) => { const e = add(stage, h('div', 'pr-dg c' + (lastFrac && P.padded && j === 1 ? ' pad' : ''), ch), x + j * cw + cw / 2, yN); if (lastFrac && P.padded && j === 1) hide(e); });
+      gx.push(x + (g.d.length * cw) / 2); x += widths[i] + gap;
+    });
+    const rootPts = [...stage.querySelectorAll('.pr-pt.rpt')]; hide(...rootPts);
+    const tagR = add(stage, h('div', 'nl-tag', 'root'), 28, yR - 8), tagN = add(stage, h('div', 'nl-tag', 'number'), 28, yN - 8); hide(tagR); void tagN;
+    const svg = svgLayer(stage);
+    const brs = P.groups.map((g, i) => { const w = g.d.length * cw - 8, x0 = gx[i] - w / 2; const p = sv('path', { d: `M ${x0} ${yN + 32} q 0 12 12 12 L ${x0 + w - 12} ${yN + 44} q 12 0 12 -12`, class: 'pr-br' + (i === P.L ? ' lead' : '') }, svg); hide(p); return p; });
+    const slots = P.groups.map((g, i) => { const e = add(stage, h('div', 'pr-slot c', ''), gx[i], yR); hide(e); return e; });
+    const arrows = P.groups.map((g, i) => { const p = sv('path', { d: `M ${gx[i]} ${yN - 34} L ${gx[i]} ${yR + 34}`, class: 'pr-ar' }, svg); hide(p); return p; });
+    const info = add(stage, h('div', 'pr-info'), 28, 276); info.style.width = (W - 56) + 'px';
+    const a = Math.floor(Math.sqrt(P.lead)), perfect = a * a === P.lead, nearSq = perfect ? a : (P.lead - a * a <= (a + 1) ** 2 - P.lead ? a : a + 1);
+    const nInt = P.nInt, digitsBefore = Math.max(0, P.p + 1);
+    const steps = [];
+    steps.push({
+      cap: `Start at the <b>decimal point</b> and mark off <b>pairs</b> of digits, going both ways.` + (P.padded ? ' Add a <b>0</b> on the end to finish the last pair.' : '') + (P.groups[0].int && P.groups[0].d.length === 1 && Number(s) >= 1 ? ` The leftmost group can be a single digit.` : ''),
+      run: async (c) => { const pad = stage.querySelector('.pr-dg.pad'); const jobs = brs.map((p, i) => draw(c, p, 380, { delay: i * 180 })); if (pad) jobs.push(c.pop(pad, 380)); await Promise.all(jobs); }
+    });
+    steps.push({
+      cap: `Each pair gives <b>one digit</b> of the square root, and the root’s decimal point lines up with this one.` + (Number(s) >= 1 ? ` ${nInt} group${nInt > 1 ? 's' : ''} before the point → <b>${nInt} digit${nInt > 1 ? 's' : ''}</b> before the point in the root.` : ''),
+      run: async (c) => { await Promise.all([c.fadeIn(tagR, 300), ...slots.map((e, i) => c.pop(e, 360, { delay: i * 120 })), ...arrows.map((p, i) => c.anim(p, [{ opacity: 0 }, { opacity: 1 }], 300, { delay: i * 120 })), ...rootPts.map((e) => c.fadeIn(e, 300))]); }
+    });
+    steps.push({
+      cap: `The first group that isn’t zero is <b>${P.groups[P.L].d}</b>. ` + (perfect ? `${T('\\sqrt{' + P.lead + '} = ' + a)} exactly, so that digit is <b>${P.d}</b>.` : `It’s between the perfect squares ${a * a} and ${(a + 1) ** 2}, closer to <b>${nearSq * nearSq}</b>, so that digit is about <b>${P.d}</b>.`),
+      run: async (c) => {
+        const sl = slots[P.L]; sl.textContent = P.d; sl.classList.add('lead');
+        info.innerHTML = '<div>' + (perfect ? T(`\\sqrt{${P.lead}} = ${a}`) : T(`${a * a} \\lt ${P.lead} \\lt ${(a + 1) ** 2}`) + ` &nbsp;→&nbsp; ` + T(`\\sqrt{${P.lead}} \\approx ${P.d}`)) + '</div>';
+        brs[P.L].classList.add('on');
+        await Promise.all([c.pop(sl, 420), c.fadeIn(info, 350)]);
+      }
+    });
+    const est = estStr(P.estimate, P.p);
+    steps.push({
+      cap: P.p >= 0 ? `Every pair after it just holds a place: write <b>0</b>. To one significant digit, ${T('\\sqrt{' + fmtNum(s) + '}')} ≈ <b>${est}</b>.`
+        : `Pairs before it are zeros, so the root has zeros there too. Pairs after it aren’t needed for one significant digit. ${T('\\sqrt{' + fmtNum(s) + '}')} ≈ <b>${est}</b>.`,
+      run: async (c) => {
+        const jobs = [];
+        slots.forEach((sl, i) => { if (i === P.L) return; if (i < P.L || (P.p >= 0 && i < nInt)) { sl.textContent = '0'; sl.classList.add('zero'); jobs.push(c.pop(sl, 300, { delay: Math.abs(i - P.L) * 120 })); } else { sl.classList.add('skip'); jobs.push(c.anim(sl, [{ opacity: 1 }, { opacity: 0.25 }], 300)); } });
+        const q = head.querySelector('.pr-q'); q.innerHTML = `<b>${est}</b>`; jobs.push(c.pop(q, 420, { delay: 300 }));
+        await Promise.all(jobs);
+      }
+    });
+    void digitsBefore;
+    steps.push({
+      cap: `Check: ${T('\\sqrt{' + fmtNum(s) + '}')} = ${dots(P.root, P.root < 1 ? 4 : 2)}, which rounds to <b>${est}</b> (one significant digit). ✓`,
+      run: async (c) => { const l = h('div', 'pr-check', `calculator: ${T('\\sqrt{' + fmtNum(s) + '} = ' + dots(P.root, P.root < 1 ? 4 : 2).replace('…', '\\ldots'))} &nbsp;→&nbsp; <b>${est}</b> ✓`); info.appendChild(l); await c.fadeIn(l, 400); }
+    });
+    return steps;
+  }
+};
+function fmtNum(s) { // 51234.6 -> 51\,234.6 ; 0.00512 -> 0.005\,12 (thin spaces like the booklet)
+  const [ip, fp] = s.split('.');
+  const i2 = ip.length > 3 ? ip.replace(/\B(?=(\d{3})+(?!\d))/g, '\\,') : ip;
+  const f2 = fp && fp.length > 3 ? fp.replace(/(\d{3})(?=\d)/g, '$1\\,') : fp;
+  return fp != null ? i2 + '.' + f2 : i2;
+}
+
+/* ============ 3. Cube roots: stacks of cubes ============ */
+function isoCube(svg, P, L, k, cls) {
+  const cs = Math.cos(Math.PI / 6), Rv = [cs * L, -0.5 * L], Lv = [-cs * L, -0.5 * L], U = [0, -L];
+  const pt = (...vs) => vs.reduce((a, v) => [a[0] + v[0], a[1] + v[1]], P);
+  const sc = (v, f) => [v[0] * f, v[1] * f];
+  const g = sv('g', { class: 'iso ' + cls }, svg);
+  const poly = (pts, c) => sv('polygon', { points: pts.map((p) => p.map((n) => n.toFixed(1)).join(',')).join(' '), class: c }, g);
+  const ln = (p, q) => sv('line', { x1: p[0], y1: p[1], x2: q[0], y2: q[1], class: 'gl' }, g);
+  poly([pt(), pt(Lv), pt(Lv, U), pt(U)], 'fl'); poly([pt(), pt(Rv), pt(Rv, U), pt(U)], 'fr'); poly([pt(U), pt(U, Lv), pt(U, Lv, Rv), pt(U, Rv)], 'ft');
+  for (let i = 1; i < k; i++) {
+    const f = i / k;
+    ln(pt(sc(Lv, f)), pt(sc(Lv, f), U)); ln(pt(sc(U, f)), pt(Lv, sc(U, f)));
+    ln(pt(sc(Rv, f)), pt(sc(Rv, f), U)); ln(pt(sc(U, f)), pt(Rv, sc(U, f)));
+    ln(pt(U, sc(Lv, f)), pt(U, sc(Lv, f), Rv)); ln(pt(U, sc(Rv, f)), pt(U, sc(Rv, f), Lv));
+  }
+  return g;
+}
+const cubes = {
+  title: 'Cube roots: stacks of cubes',
+  height: 480,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  choices: [{ v: 64, label: T('\\sqrt[3]{64}') }, { v: 20, label: T('\\sqrt[3]{20}') }, { v: -64, label: T('\\sqrt[3]{-64}') }, { v: -20, label: T('\\sqrt[3]{-20}') }, { sep: 'Example 4 check:' }, { v: 30, label: T('\\sqrt[3]{30}') }, { v: 150, label: T('\\sqrt[3]{150}') }, { v: 50, label: T('\\sqrt[3]{50}') }],
+  custom: [1, 1000],
+  intro: (n) => `${T('\\sqrt[3]{' + n + '}')} is the edge of a cube built from ${n < 0 ? '' : 'exactly '}<b>${fmtS(Math.abs(n))}</b> small cubes${n < 0 ? ' — with a negative sign to deal with' : ''}. Which perfect cubes is it between?`,
+  make(stage, n, ex) {
+    const W = ex.W, m = Math.abs(n), sg = n < 0 ? -1 : 1, a = Math.floor(Math.cbrt(m) + 1e-9), perfect = a ** 3 === m, A = perfect ? a : a + 1, e = m - a ** 3;
+    const root = Math.cbrt(n), svg = svgLayer(stage), Lb = 110, P = [150, 250];
+    const big = perfect ? null : isoCube(svg, P, Lb, A, 'ghost'), small = isoCube(svg, P, (Lb * a) / A, a, sg < 0 ? 'neg' : 'pos');
+    if (big) hide(big); hide(small);
+    const dims = add(stage, h('div', 'cb-dim c', `${a} × ${a} × ${a}`), P[0], P[1] + 18); hide(dims);
+    const bigLab = add(stage, h('div', 'cb-dim amber c', `${A} × ${A} × ${A} = ${fmt(A ** 3)}`), P[0], 14); hide(bigLab);
+    const left = []; const u = Math.min(16, (Lb / A) * 0.9);
+    if (e > 0 && e <= 12) for (let i = 0; i < e; i++) { const col = i % 3, row = Math.floor(i / 3); const g = isoCube(svg, [282 + col * u * 1.8 + (row % 2) * u * 0.9, 250 - row * u * 1.05], u, 1, 'pos one'); left.push(g); }
+    hide(...left);
+    const leftLab = add(stage, h('div', 'cb-dim c', e > 12 ? `+ ${e} more` : `+ ${e}`), 300, 270); hide(leftLab);
+    const info = add(stage, h('div', 'tl-info'), 370, 18); info.style.width = (W - 390) + 'px';
+    const line = (t, cls = '') => { const el = h('div', 'tl-line ' + cls, T(t)); info.appendChild(el); return el; };
+    const y1 = 324, y2 = 404, X0 = 120;
+    const lo = sg > 0 ? Math.max(0, a - 2) : -(a + 3), hi = sg > 0 ? a + 3 : Math.min(0, -a + 2);
+    const ticks = []; for (let v = lo; v <= hi; v++) ticks.push({ v, lab: fmtS(v) });
+    const NL1 = nline(stage, svg, { x0: X0, x1: W - 60, y: y1, lo, hi, ticks });
+    const cbLabs = []; for (let v = lo; v <= hi; v++) cbLabs.push(add(stage, h('div', 'nl-lab sq c' + (Math.abs(v) === a || Math.abs(v) === A ? ' key' : ''), fmtS(v ** 3)), NL1.X(v), y1 - 24));
+    const t1 = add(stage, h('div', 'nl-tag', 'cubes'), 14, y1 - 34), t2 = add(stage, h('div', 'nl-tag', 'roots'), 14, y1 + 14);
+    hide(...NL1.els, ...cbLabs, t1, t2);
+    const near = Math.round(Math.cbrt(m)), nearS = sg * near; // nearest whole number (closer cube isn't always the same)
+    const lin = sg * (a + e / (A ** 3 - a ** 3));
+    const mk = add(stage, h('div', 'nl-mark c', `<b>${fmtS(n)}</b>`), NL1.X(perfect ? sg * a : lin), y1 - 58); hide(mk);
+    const mkLine = sv('line', { x1: NL1.X(perfect ? sg * a : lin), x2: NL1.X(perfect ? sg * a : lin), y1: y1 - 44, y2: y1, class: 'nl-mk' }, svg); hide(mkLine);
+    const zlo = sg > 0 ? a : -A, zhi = zlo + 1;
+    const zt = []; for (let i = 0; i <= 10; i++) { const v = zlo + i / 10; zt.push({ v, lab: i % 10 === 0 ? fmtS(Math.round(v)) : neg(v.toFixed(1)), small: i % 10 !== 0, cls: i % 10 ? 'sm' : '' }); }
+    const NL2 = nline(stage, svg, { x0: X0, x1: W - 60, y: y2, lo: zlo, hi: zhi, ticks: zt, cls: 'zoom' });
+    const zl = sv('path', { d: `M ${NL1.X(zlo)} ${y1 + 36} L ${X0} ${y2 - 14} M ${NL1.X(zhi)} ${y1 + 36} L ${W - 60} ${y2 - 14}`, class: 'nl-zoom' }, svg);
+    hide(...NL2.els, zl);
+    const cDot = add(stage, h('div', 'nl-dot c'), NL2.X(root), y2), cLab = add(stage, h('div', 'nl-calc c', `${T('\\sqrt[3]{' + n + '}')} = ${dots(root, 3)}`), Math.min(W - 110, Math.max(170, NL2.X(root))), y2 + 46);
+    hide(cDot, cLab);
+    const showNL = (c) => Promise.all([...NL1.els, ...cbLabs, t1, t2].map((x) => c.fadeIn(x, 400)).concat(perfect ? [c.pop(NL1.labs[sg * a - lo], 400, { delay: 400 })] : [c.fadeIn(mk, 400, { delay: 400 }), c.anim(mkLine, [{ opacity: 0 }, { opacity: 1 }], 400, { delay: 400 })]));
+    const showCube = (c) => Promise.all([c.anim(small, [{ opacity: 0, transform: 'translateY(-30px)' }, { opacity: 1, transform: 'none' }], 600), c.fadeIn(dims, 300, { delay: 300 })]);
+    const steps = [];
+    const cb = (x) => `\\sqrt[3]{${x}}`;
+    if (perfect) {
+      steps.push({
+        cap: sg > 0 ? `<b>${fmt(m)}</b> small cubes make a perfect <b>${a} × ${a} × ${a}</b> cube — nothing left over.` : `Start with the size: <b>${a} × ${a} × ${a} = ${fmt(m)}</b>. ${fmt(m)} small cubes make a perfect cube with edge ${a}.`,
+        run: async (c) => { const l = line(`${a}^3 = ${a} \\times ${a} \\times ${a} = ${m}`); await Promise.all([showCube(c), c.fadeIn(l, 300, { delay: 300 })]); }
+      });
+      if (sg < 0) steps.push({
+        cap: `Now the sign. A negative times a negative is positive; times a negative <b>again</b> is negative: <b>(−${a})(−${a})(−${a}) = −${fmt(m)}</b>.`,
+        run: async (c) => { const l1 = line(`(-${a}) \\times (-${a}) = ${a * a}`), l2 = line(`${a * a} \\times (-${a}) = -${m}`, 'amber'); await Promise.all([c.fadeIn(l1, 300), c.fadeIn(l2, 300, { delay: 400 })]); }
+      });
+      steps.push({
+        cap: sg > 0 ? `So ${T(cb(n) + ' = ' + a)} <b>exactly</b>. ${fmt(m)} is a <b>perfect cube</b>, so its cube root is <b>rational</b>.`
+          : `So ${T(cb(n) + ' = -' + a)}. Unlike a square root, a negative number <b>has</b> a cube root — and there’s only <b>one</b>.`,
+        run: async (c) => { const l = line(`${cb(n)} = ${sg * a}`, 'ok big'); NL1.labs[sg * a - lo].classList.add('hit'); await Promise.all([c.fadeIn(l, 300), showNL(c)]); }
+      });
+      return steps;
+    }
+    const stepsTo = A ** 3 - m;
+    steps.push({
+      cap: (sg < 0 ? `Ignore the sign for now and look at ${T(cb(m))}. ` : '') + `The biggest cube we can build from <b>${fmt(m)}</b> small cubes is <b>${a} × ${a} × ${a} = ${a ** 3}</b>, with <b>${e}</b> left over.`,
+      run: async (c) => { const l = line(`${a}^3 = ${a ** 3}`); await Promise.all([showCube(c), c.fadeIn(l, 300, { delay: 300 }), ...left.map((g, i) => c.anim(g, [{ opacity: 0 }, { opacity: 1 }], 250, { delay: 600 + i * 70 })), c.fadeIn(leftLab, 300, { delay: 700 })]); }
+    });
+    steps.push({
+      cap: `A <b>${A} × ${A} × ${A}</b> cube needs <b>${fmt(A ** 3)}</b> — ${stepsTo} more than we have. So ${T(cb(m))} is between <b>${a} and ${A}</b> (${fmt(m)} is ${e} above ${a ** 3} and ${stepsTo} below ${fmt(A ** 3)}).`,
+      run: async (c) => { const l = line(`${a ** 3} \\lt ${m} \\lt ${A ** 3}`, 'amber'); await Promise.all([c.anim(big, [{ opacity: 0 }, { opacity: 1 }], 500), c.fadeIn(bigLab, 400), c.fadeIn(l, 300)]); }
+    });
+    if (sg < 0) steps.push({
+      cap: `Bring back the sign: (−${a})³ = −${a ** 3} and (−${A})³ = −${fmt(A ** 3)}. So ${T(cb(n))} is between <b>−${A} and −${a}</b>, nearest <b>−${near}</b>.`,
+      run: async (c) => { const l = line(`-${A} \\lt ${cb(n)} \\lt -${a} \\;\\Rightarrow\\; ${cb(n)} \\approx -${near}`, 'big'); const k = NL1.labs[nearS - lo]; k.classList.add('hit'); await Promise.all([c.fadeIn(l, 300), showNL(c), c.pop(k, 400, { delay: 500 })]); }
+    });
+    else steps.push({
+      cap: `To the nearest whole number, ${T(cb(n))} ≈ <b>${near}</b>.`,
+      run: async (c) => { const l = line(`${a} \\lt ${cb(n)} \\lt ${A} \\;\\Rightarrow\\; ${cb(n)} \\approx ${near}`, 'big'); const k = NL1.labs[nearS - lo]; k.classList.add('hit'); await Promise.all([c.fadeIn(l, 300), showNL(c), c.pop(k, 400, { delay: 500 })]); }
+    });
+    const verdict = Math.abs(Math.round(root) - nearS) === 0 ? (Math.abs(root - nearS) < 0.15 ? 'An excellent estimate.' : 'A good estimate.') : 'Close — the estimate was reasonable.';
+    steps.push({
+      cap: `Zoom in and check on the calculator: ${T(cb(n) + ' = ' + dots(root, 3).replace('…', '\\ldots').replace('−', '-'))} ≈ <b>${tenth(root)}</b>. ${verdict}`,
+      run: async (c) => { const l = line(`${cb(n)} = ${dots(root, 3).replace('…', '\\ldots').replace('−', '-')} \\approx ${tenth(root).replace('−', '-')}`, 'ok'); await Promise.all([c.anim(zl, [{ opacity: 0 }, { opacity: 1 }], 400), ...NL2.els.map((x) => c.fadeIn(x, 400, { delay: 200 })), c.fadeIn(l, 300), c.pop(cDot, 400, { delay: 500 }), c.fadeIn(cLab, 400, { delay: 600 })]); }
+    });
+    return steps;
+  }
+};
+
+/* ============ 4. Absolute value is distance ============ */
+const ABS = {
+  five: { label: '|-5|,\\ |5|', steps: [
+    { cap: `−5 is <b>5 units</b> from 0, so ${T('|-5| = 5')}.`, ops: [{ expr: '|-5| = 5' }, { dot: -5 }, { arc: [0, -5], lab: '5 units' }] },
+    { cap: `5 is also 5 units from 0: ${T('|5| = 5')}. A distance is <b>never negative</b>.`, ops: [{ expr: '|-5| = |5| = 5' }, { dot: 5 }, { arc: [0, 5], lab: '5 units' }] },
+    { cap: `The booklet’s way gives the same answer: square it, then take the principal square root. ${T('\\sqrt{(-5)^2} = \\sqrt{25} = 5')}.`, ops: [{ expr: '|-5| = \\sqrt{(-5)^2} = \\sqrt{25} = 5' }] }] },
+  a: { label: '|-9| + |9|', steps: [
+    { cap: `−9 is <b>9 units</b> from 0: ${T('|-9| = 9')}.`, ops: [{ expr: '|-9| + |9| = 9 + \\ ?' }, { dot: -9 }, { arc: [0, -9], lab: '9 units' }] },
+    { cap: `9 is also <b>9 units</b> from 0: ${T('|9| = 9')}.`, ops: [{ expr: '|-9| + |9| = 9 + 9' }, { dot: 9 }, { arc: [0, 9], lab: '9 units' }] },
+    { cap: `Add the two distances: 9 + 9 = <b>18</b>.`, ops: [{ expr: '|-9| + |9| = 9 + 9 = 18' }, { arc: [-9, 9], lab: '18 units in all', below: 1, cls: 'tot' }] }] },
+  b: { label: '|2 - 9|', steps: [
+    { cap: `Work <b>inside the bars first</b>: start at 2 and move 9 to the left. ${T('2 - 9 = -7')}.`, ops: [{ expr: '|2 - 9| = |-7|' }, { dot: 2, cls: 'start' }, { arc: [2, -7], lab: '− 9', below: 1, cls: 'move' }, { dot: -7 }] },
+    { cap: `−7 is <b>7 units</b> from 0, so ${T('|2 - 9| = 7')}.`, ops: [{ expr: '|2 - 9| = |-7| = 7' }, { arc: [0, -7], lab: '7 units' }] },
+    { cap: `Bonus: ${T('|2 - 9|')} is also the <b>distance between 2 and 9</b> on the number line.`, ops: [{ dot: 9, cls: 'start' }, { arc: [2, 9], lab: '7 apart', cls: 'alt' }] }] },
+  c: { label: '-|-\\sqrt{100}|', steps: [
+    { cap: `Inside the bars first: ${T('\\sqrt{100} = 10')}, so ${T('-\\sqrt{100} = -10')}.`, ops: [{ expr: '-|-\\sqrt{100}| = -|-10|' }, { dot: -10 }] },
+    { cap: `${T('|-10|')} is the distance from 0 to −10: <b>10</b>.`, ops: [{ expr: '-|-\\sqrt{100}| = -|-10| = -(10)' }, { arc: [0, -10], lab: '10 units' }] },
+    { cap: `The minus sign <b>outside</b> the bars still applies: ${T('-(10) = -10')}. So ${T('-|-\\sqrt{100}| = -10')} — the answer is negative!`, ops: [{ expr: '-|-\\sqrt{100}| = -|-10| = -(10) = -10' }, { ring: -10 }] }] }
+};
+const absval = {
+  title: 'Absolute value is a distance',
+  height: 340,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  choices: [{ v: 'five', label: T(ABS.five.label) }, { sep: 'Example 5 check:' }, { v: 'a', label: '(a) ' + T(ABS.a.label) }, { v: 'b', label: '(b) ' + T(ABS.b.label) }, { v: 'c', label: '(c) ' + T(ABS.c.label) }],
+  intro: (k) => `How far from 0? Absolute value measures <b>distance</b>, so it doesn’t care which side of 0 a number is on. Evaluate ${T(ABS[k].label)}.`,
+  make(stage, k, ex) {
+    const W = ex.W, Y = 196, svg = svgLayer(stage);
+    const defs = sv('defs', {}, svg);
+    ['ah', 'ahm', 'aht', 'aha'].forEach((id) => { const m = sv('marker', { id: 'l4' + id, viewBox: '0 0 10 10', refX: 8, refY: 5, markerUnits: 'userSpaceOnUse', markerWidth: 15, markerHeight: 15, orient: 'auto-start-reverse' }, defs); sv('path', { d: 'M0 0 L10 5 L0 10 z', class: 'mk-' + id }, m); });
+    const ticks = []; for (let v = -12; v <= 12; v++) ticks.push({ v, lab: fmtS(v), cls: v === 0 ? 'zero' : '' });
+    const NL = nline(stage, svg, { x0: 56, x1: W - 56, y: Y, lo: -12, hi: 12, ticks });
+    const X = NL.X, unit = X(1) - X(0);
+    const expr = add(stage, h('div', 'av-expr c', T(ABS[k].label)), W / 2, 40);
+    const dotsAt = {};
+    const op = async (c, o) => {
+      if (o.expr) { expr.innerHTML = T(o.expr); await c.fadeIn(expr, 300); }
+      if (o.dot != null) {
+        const d = add(stage, h('div', 'av-dot c ' + (o.cls || '')), X(o.dot), Y); dotsAt[o.dot] = d;
+        await c.pop(d, 360);
+      }
+      if (o.ring != null) { const d = dotsAt[o.ring]; d.classList.add('final'); await c.anim(d, [{ transform: 'scale(1)' }, { transform: 'scale(1.6)' }, { transform: 'scale(1)' }], 520); }
+      if (o.arc) {
+        const [p, q] = o.arc, x0 = X(p), x1 = X(q), span = Math.abs(q - p), hgt = Math.min(92, 22 + span * 6.2) * (o.below ? 1 : -1), yb = Y + (o.below ? 12 : -12);
+        const path = sv('path', { d: `M ${x0} ${yb} Q ${(x0 + x1) / 2} ${yb + hgt * 1.9} ${x1} ${yb}`, class: 'av-arc ' + (o.cls || '') }, svg);
+        const mkId = `url(#l4${o.cls === 'move' ? 'ahm' : o.cls === 'tot' ? 'aht' : o.cls === 'alt' ? 'aha' : 'ah'})`;
+        const lab = add(stage, h('div', 'av-lab c ' + (o.cls || ''), o.lab), (x0 + x1) / 2, yb + hgt * 0.95 + (o.below ? 16 : -16)); hide(lab);
+        await Promise.all([draw(c, path, 650).then(() => path.setAttribute('marker-end', mkId)), c.fadeIn(lab, 300, { delay: 400 })]);
+      }
+    };
+    void unit;
+    return ABS[k].steps.map((s) => ({ cap: s.cap, run: async (c) => { for (const o of s.ops) await op(c, o); } }));
+  }
+};
+
+/* ============ 4. Graphing absolute value inequalities ============ */
+const INEQ = {
+  a3: { v: 'a', op: '<', k: 3 }, x4: { v: 'x', op: '≥', k: 4 }, d: { v: 'x', op: '≤', k: 5, ex: '5(d)' }, e: { v: 'x', op: '>', k: 6, ex: '5(e)' }
+};
+const OPT = { '<': '\\lt', '≤': '\\le', '>': '\\gt', '≥': '\\ge' };
+const ineqTex = (q) => `|${q.v}| ${OPT[q.op]} ${q.k}`;
+const ineq = {
+  title: 'Graph an absolute value inequality',
+  height: 330,
+  choices: [{ v: 'a3', label: T(ineqTex(INEQ.a3)) }, { v: 'x4', label: T(ineqTex(INEQ.x4)) }, { sep: 'Example 5 check:' }, { v: 'd', label: '(d) ' + T(ineqTex(INEQ.d)) }, { v: 'e', label: '(e) ' + T(ineqTex(INEQ.e)) }],
+  intro: (key) => `Graph ${T(ineqTex(INEQ[key]) + ',\\ ' + INEQ[key].v + ' \\in R')}. Think <b>distance from 0</b>.`,
+  make(stage, key, ex) {
+    const W = ex.W, q = INEQ[key], k = q.k, Y = 190, svg = svgLayer(stage);
+    const lessT = q.op === '<' || q.op === '≤', incl = q.op === '≤' || q.op === '≥';
+    const defs = sv('defs', {}, svg);
+    const m = sv('marker', { id: 'l4iq', viewBox: '0 0 10 10', refX: 8, refY: 5, markerUnits: 'userSpaceOnUse', markerWidth: 17, markerHeight: 17, orient: 'auto-start-reverse' }, defs); sv('path', { d: 'M0 0 L10 5 L0 10 z', class: 'mk-ah' }, m);
+    const mr = sv('marker', { id: 'l4iqr', viewBox: '0 0 10 10', refX: 6, refY: 5, markerUnits: 'userSpaceOnUse', markerWidth: 22, markerHeight: 22, orient: 'auto-start-reverse' }, defs); sv('path', { d: 'M0 0 L10 5 L0 10 z', class: 'mk-r' }, mr);
+    const ticks = []; for (let v = -9; v <= 9; v++) ticks.push({ v, lab: fmtS(v), cls: Math.abs(v) === k ? 'kk' : v === 0 ? 'zero' : '' });
+    const NL = nline(stage, svg, { x0: 70, x1: W - 70, y: Y, lo: -9.6, hi: 9.6, ticks });
+    const X = NL.X;
+    const head = add(stage, h('div', 'av-expr c', T(ineqTex(q))), W / 2, 36);
+    const phrase = { '<': `less than ${k} units`, '≤': `at most ${k} units`, '>': `more than ${k} units`, '≥': `at least ${k} units` }[q.op];
+    const arcs = [-k, k].map((s) => { const x0 = X(0), x1 = X(s); const p = sv('path', { d: `M ${x0} ${Y - 12} Q ${(x0 + x1) / 2} ${Y - 92} ${x1} ${Y - 12}`, class: 'av-arc' }, svg); hide(p); const l = add(stage, h('div', 'av-lab c', `${k} units`), (x0 + x1) / 2, Y - 70); hide(l); return [p, l]; });
+    const shade = sv('g', { class: 'iq-shade' }, svg);
+    if (lessT) sv('line', { x1: X(-k), x2: X(k), y1: Y, y2: Y }, shade);
+    else { sv('line', { x1: X(-k), x2: 40, y1: Y, y2: Y, 'marker-end': 'url(#l4iqr)' }, shade); sv('line', { x1: X(k), x2: W - 40, y1: Y, y2: Y, 'marker-end': 'url(#l4iqr)' }, shade); }
+    hide(shade);
+    const pts = [-k, k].map((s) => { const e = add(stage, h('div', 'iq-pt c' + (incl ? ' closed' : ' open')), X(s), Y); hide(e); return e; });
+    const sat = (v) => ({ '<': Math.abs(v) < k, '≤': Math.abs(v) <= k, '>': Math.abs(v) > k, '≥': Math.abs(v) >= k }[q.op]);
+    const tests = [1, -(k + 2)].map((v) => { const ok = sat(v); const e = add(stage, h('div', 'iq-test c ' + (ok ? 'ok' : 'no'), `${q.v} = ${fmtS(v)}<br>${T(`|${v}| = ${Math.abs(v)}`)} ${ok ? '✓' : '✗'}`), X(v), Y + 76); const d = add(stage, h('div', 'iq-tdot c ' + (ok ? 'ok' : 'no')), X(v), Y); hide(e, d); return [e, d, v, ok]; });
+    const steps = [
+      { cap: `${T(ineqTex(q))} means ${T(q.v)} is <b>${phrase}</b> from 0 — on <b>either side</b>.`, run: (c) => Promise.all(arcs.flatMap(([p, l], i) => [draw(c, p, 600, { delay: i * 200 }).then(() => p.setAttribute('marker-end', 'url(#l4iq)')), c.fadeIn(l, 300, { delay: 500 })])) },
+      { cap: `The boundary points are <b>−${k} and ${k}</b>, exactly ${k} units from 0.` + (incl ? ` “Or equal to” means they’re <b>included</b>: draw <b>solid dots</b>.` : ` They’re <b>not</b> included (|${k}| = ${k} is not ${q.op === '<' ? 'less' : 'more'} than ${k}): draw <b>open circles</b>.`),
+        run: (c) => Promise.all(pts.map((e, i) => c.pop(e, 380, { delay: i * 150 }))) },
+      { cap: lessT ? `${phrase[0].toUpperCase() + phrase.slice(1)} from 0 → every point <b>between</b> −${k} and ${k}. Shade the segment.` : `${phrase[0].toUpperCase() + phrase.slice(1)} from 0 → every point <b>outside</b> −${k} and ${k}, going on forever both ways. Shade two rays with arrows.`,
+        run: async (c) => { await c.anim(shade, [{ opacity: 0 }, { opacity: 1 }], 500); arcs.forEach(([p, l]) => { p.style.opacity = 0.3; l.style.opacity = 0.3; }); } },
+      { cap: `Test a point on each side. ${tests.map(([, , v, ok]) => `${T(q.v + ' = ' + v)}: ${T('|' + v + '| = ' + Math.abs(v))}, ${ok ? '<b class="ok">works ✓</b>' : '<b class="red">doesn’t ✗</b>'}`).join(' &nbsp; ')}`,
+        run: (c) => Promise.all(tests.flatMap(([e, d], i) => [c.pop(d, 320, { delay: i * 250 }), c.fadeIn(e, 300, { delay: i * 250 + 100 })])) }
+    ];
+    if (q.ex) steps.push({ cap: `So the graph in Example ${q.ex} — ${incl ? 'solid dots' : 'open circles'} at ±${k}, shaded ${lessT ? 'between' : 'outside'} — is <b>${T(ineqTex(q))}</b>.`, run: async (c) => { head.classList.add('done'); await c.pop(head, 420); } });
+    return steps;
+  }
+};
+
+/* ====================== warm-up: Guess Who? ====================== */
+const SKIN = { A: '#fad7b4', B: '#cd966e', C: '#8c5f41' }, HAIR = { A: '#3c2819', B: '#e1aa3c', C: '#be5028', D: '#232328' };
+const GW = [
+  { t: '\\sqrt{16}', v: '= 4', s: 'A', hr: 'A', st: 0, gl: 0, rat: 1, int: 1, val: 4, ends: 1 },
+  { t: '-\\sqrt{9}', v: '= -3', s: 'B', hr: 'B', st: 1, gl: 0, rat: 1, int: 1, val: -3, ends: 1 },
+  { t: '\\dfrac{12}{3}', v: '= 4', s: 'C', hr: 'D', st: 2, gl: 1, rat: 1, int: 1, val: 4, ends: 1 },
+  { t: '0', v: '= 0', s: 'A', hr: 'C', st: 1, gl: 1, rat: 1, int: 1, val: 0, ends: 1 },
+  { t: '\\dfrac{22}{7}', v: '= 3.\\overline{142857}', s: 'B', hr: 'D', st: 3, gl: 0, rat: 1, int: 0, val: 22 / 7, ends: 0 },
+  { t: '\\pi', v: '= 3.141\\,59\\ldots', s: 'C', hr: 'A', st: 0, gl: 1, rat: 0, int: 0, val: Math.PI, ends: 0 },
+  { t: '\\sqrt{2}', v: '= 1.414\\,21\\ldots', s: 'C', hr: 'C', st: 2, gl: 0, rat: 0, int: 0, val: Math.SQRT2, ends: 0 },
+  { t: '0.25', v: '= \\tfrac{1}{4}', s: 'A', hr: 'D', st: 0, gl: 1, rat: 1, int: 0, val: 0.25, ends: 1 },
+  { t: '-7', v: '= -7', s: 'B', hr: 'A', st: 1, gl: 0, rat: 1, int: 1, val: -7, ends: 1 },
+  { t: '1.010\\,010\\,001\\ldots', v: '\\text{no repeating block}', s: 'A', hr: 'B', st: 3, gl: 1, rat: 0, int: 0, val: 1.01, ends: 0, long: 1 },
+  { t: '0.\\overline{3}', v: '= \\tfrac{1}{3}', s: 'C', hr: 'B', st: 1, gl: 0, rat: 1, int: 0, val: 1 / 3, ends: 0 },
+  { t: '\\sqrt{\\dfrac{1}{4}}', v: '= \\tfrac{1}{2} = 0.5', s: 'B', hr: 'C', st: 2, gl: 1, rat: 1, int: 0, val: 0.5, ends: 1 }
+];
+function face(skin, hair, st, gl) {
+  const ink = '#1e2d46';
+  return `<svg viewBox="0 0 100 84" class="gw-face" aria-hidden="true">
+    ${st === 1 ? `<ellipse cx="50" cy="40" rx="27" ry="28" fill="${hair}"/><rect x="23" y="40" width="54" height="30" fill="${hair}"/>` : ''}
+    <rect x="22" y="66" width="56" height="26" rx="12" fill="#9a6574"/>
+    <circle cx="50" cy="42" r="21" fill="${skin}" stroke="${ink}" stroke-width="1.8"/>
+    ${st === 0 ? `<path d="M29 40 A21 21 0 0 1 71 40 Q50 30 29 40Z" fill="${hair}"/>` : ''}
+    ${st === 1 ? `<path d="M29 38 A21 21 0 0 1 71 38 Q58 28 29 38Z" fill="${hair}"/>` : ''}
+    ${st === 2 ? `<rect x="24" y="22" width="52" height="5" rx="1" fill="${hair}" stroke="${ink}" stroke-width="1.4"/><rect x="33" y="7" width="34" height="16" rx="2" fill="${hair}" stroke="${ink}" stroke-width="1.4"/>` : ''}
+    <circle cx="42" cy="43" r="2.5" fill="${ink}"/><circle cx="58" cy="43" r="2.5" fill="${ink}"/>
+    <path d="M42 52 Q50 58 58 52" fill="none" stroke="${ink}" stroke-width="2.2" stroke-linecap="round"/>
+    ${gl ? `<circle cx="42" cy="43" r="6.3" fill="none" stroke="${ink}" stroke-width="1.8"/><circle cx="58" cy="43" r="6.3" fill="none" stroke="${ink}" stroke-width="1.8"/><path d="M48.3 43 H51.7" stroke="${ink}" stroke-width="1.8"/>` : ''}
+  </svg>`;
+}
+function mountWarmup() {
+  const board = document.getElementById('gw'); if (!board) return;
+  const cards = GW.map((g, i) => {
+    const b = h('button', 'gw-card' + (g.long ? ' long' : ''), `<div class="gw-in">${face(SKIN[g.s], HAIR[g.hr], g.st, g.gl)}<div class="gw-plate">${T(g.t)}</div><div class="gw-val">${T(g.v)}</div></div>`);
+    b.type = 'button'; b.dataset.i = i; b.setAttribute('aria-label', 'Face ' + (i + 1));
+    b.addEventListener('click', () => b.classList.toggle('down'));
+    board.appendChild(b); return b;
+  });
+  const FILTERS = { rat: (g) => g.rat, int: (g) => !g.int, gt: (g) => g.val > 0.3, ends: (g) => g.ends };
+  const used = new Set(), res = document.getElementById('gw-result');
+  const apply = () => {
+    cards.forEach((b, i) => b.classList.toggle('down', [...used].some((f) => !FILTERS[f](GW[i]))));
+    const up = cards.filter((b) => !b.classList.contains('down'));
+    if (used.size === 4 && up.length === 1) { res.innerHTML = `Only one face is left standing: ${T('\\sqrt{\\tfrac14} = \\tfrac12 = 0.5')}. Rational, not an integer, more than 0.3, and its decimal ends. <span class="muted">(${T('\\tfrac{22}{7}')} and ${T('0.\\overline{3}')} repeat; 0.25 is too small.)</span>`; res.classList.add('show'); up[0].classList.add('hl-win'); }
+    else { res.classList.remove('show'); cards.forEach((b) => b.classList.remove('hl-win')); }
+  };
+  document.querySelectorAll('.gw-q').forEach((b) => b.addEventListener('click', () => { const f = b.dataset.q; if (used.has(f)) used.delete(f); else used.add(f); b.classList.toggle('on', used.has(f)); apply(); }));
+  const hl = (cls, idx, on) => cards.forEach((b, i) => b.classList.toggle(cls, on && idx.includes(i)));
+  const tog = (btn, cls, idx, ansId) => btn.addEventListener('click', () => { const on = !btn.classList.contains('on'); btn.classList.toggle('on', on); btn.textContent = on ? 'Hide' : 'Show'; hl(cls, idx, on); document.getElementById(ansId).classList.toggle('show', on); });
+  tog(document.querySelector('[data-gw=neg]'), 'hl-neg', [1, 8], 'gw-a-neg');
+  tog(document.querySelector('[data-gw=same]'), 'hl-same', [0, 2], 'gw-a-same');
+  const vals = document.querySelector('[data-gw=values]');
+  vals.addEventListener('click', () => { const on = board.classList.toggle('show-vals'); vals.textContent = on ? 'Hide what each face equals' : 'Show what each face equals'; });
+  document.querySelector('[data-gw=reset]').addEventListener('click', () => { used.clear(); document.querySelectorAll('.gw-q').forEach((b) => b.classList.remove('on')); cards.forEach((b) => b.classList.remove('down', 'hl-win')); res.classList.remove('show'); });
+  const poll = document.getElementById('gw-poll');
+  poll.querySelector('[data-poll]').addEventListener('click', () => { const on = poll.classList.toggle('revealed'); hl('hl-int', [0, 1, 2, 3, 8], on); });
+}
+
+/* ====================== perfect squares / cubes fill-in ====================== */
+function mountPowGrid(id, n, p, sym) {
+  const el = document.getElementById(id); if (!el) return;
+  el.style.gridTemplateColumns = `auto repeat(${n}, 1fr)`;
+  let html = `<div class="pg-h">${T('n')}</div>`; for (let i = 1; i <= n; i++) html += `<div class="pg-n">${i}</div>`;
+  html += `<div class="pg-h">${T('n^' + p)}</div>`; for (let i = 1; i <= n; i++) html += `<button class="blank pg-b" data-a="${fmt(i ** p)}" data-g="${sym}"></button>`;
+  el.innerHTML = html;
+  el.querySelectorAll('.pg-b').forEach((b) => b.addEventListener('click', () => { b.classList.toggle('filled'); b.textContent = b.classList.contains('filled') ? b.dataset.a : ''; }));
+  const all = document.querySelector(`[data-fillall=${sym}]`);
+  if (all) all.addEventListener('click', () => el.querySelectorAll('.pg-b').forEach((b, i) => setTimeout(() => { b.classList.add('filled'); b.textContent = b.dataset.a; b.animate([{ transform: 'scale(1.4)' }, { transform: 'scale(1)' }], 300); }, i * 120)));
+}
+
+/* ====================== Example 5 graphs ====================== */
+function mountNumberLines() {
+  document.querySelectorAll('.nl-fig[data-nl]').forEach((el) => {
+    const [a, b, kind, region] = el.dataset.nl.split(','); const lo = Number(a), hi = Number(b);
+    const X = (v) => 230 + v * 23.5, Y = 30;
+    let s = `<svg viewBox="0 0 460 62" class="nlf"><defs><marker id="nlf-${hi}" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="13" markerHeight="13" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#1c2230"/></marker></defs>`;
+    s += `<line x1="8" x2="452" y1="${Y}" y2="${Y}" stroke="#1c2230" stroke-width="1.6" marker-start="url(#nlf-${hi})" marker-end="url(#nlf-${hi})"/>`;
+    for (let v = -8; v <= 8; v++) s += `<line x1="${X(v)}" x2="${X(v)}" y1="${Y - 5}" y2="${Y + 5}" stroke="#1c2230" stroke-width="1.3"/><text x="${X(v)}" y="${Y + 22}" text-anchor="middle" font-size="13" fill="#3a4254">${v < 0 ? '−' + -v : v}</text>`;
+    if (region === 'between') s += `<line x1="${X(lo)}" x2="${X(hi)}" y1="${Y}" y2="${Y}" stroke="#1c2230" stroke-width="5"/>`;
+    else s += `<line x1="${X(lo)}" x2="10" y1="${Y}" y2="${Y}" stroke="#1c2230" stroke-width="5" marker-end="url(#nlf-${hi})"/><line x1="${X(hi)}" x2="450" y1="${Y}" y2="${Y}" stroke="#1c2230" stroke-width="5" marker-end="url(#nlf-${hi})"/>`;
+    [lo, hi].forEach((v) => { s += `<circle cx="${X(v)}" cy="${Y}" r="6" fill="${kind === 'closed' ? '#1c2230' : '#fff'}" stroke="#1c2230" stroke-width="2.4"/>`; });
+    el.innerHTML = s + '</svg>';
+  });
+}
 
 /* ============ wiring ============ */
 function mountExplainers() {
-  const defs = { machine, groups, signs, calckeys, anatomy, area, trap, tf, joinsplit };
+  const defs = { build, remainders, sorter, tiles, exprSq, exprCb, pairs, cubes, absval, ineq };
   document.querySelectorAll('[data-explainer]').forEach((el) => new Explainer(el, defs[el.dataset.explainer]));
 }
-
-function mountWarmup() {
-  const row = document.getElementById('wc-row'); if (!row) return;
-  const calcs = [...row.querySelectorAll('.wcalc')], labs = row.querySelectorAll('.wc-lab'), note = document.getElementById('wc-note');
-  let CW = 140, sorted = false;
-  const place = () => {
-    const W = row.clientWidth; if (!W) return;
-    CW = calcs[0].offsetWidth || 140; // the one-screen layout draws smaller calculators
-    if (!sorted) { const g = 16, x0 = (W - (6 * CW + 5 * g)) / 2; calcs.forEach((c, i) => (c.style.transform = `translateX(${x0 + i * (CW + g)}px)`)); }
-    const g = 12, mid = 64, gw = 3 * CW + 2 * g, x0 = (W - (2 * gw + mid)) / 2;
-    labs[0].style.left = (x0 + gw / 2) + 'px'; labs[1].style.left = (x0 + gw + mid + gw / 2) + 'px';
-    if (sorted) {
-      calcs.filter((c) => c.dataset.even).forEach((c, i) => (c.style.transform = `translateX(${x0 + i * (CW + g)}px)`));
-      calcs.filter((c) => !c.dataset.even).forEach((c, i) => (c.style.transform = `translateX(${x0 + gw + mid + i * (CW + g)}px)`));
-    }
-  };
-  place(); new ResizeObserver(place).observe(row);
-  const show = (c, on) => {
-    c.classList.toggle('shown', on); const res = c.querySelector('.wc-res'), r = c.dataset.res;
-    c.classList.toggle('err', on && r === 'ERROR');
-    res.innerHTML = !on ? '= ?' : r === 'ERROR' ? 'ERROR' : c.dataset.texres ? tex(r) : r;
-    if (on && r === 'ERROR') c.querySelector('.wc-lcd').animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-5px)' }, { transform: 'translateX(5px)' }, { transform: 'translateX(-3px)' }, { transform: 'translateX(0)' }], 360);
-  };
-  calcs.forEach((c) => c.addEventListener('click', () => show(c, !c.classList.contains('shown'))));
-  const ctl = document.querySelector('.wc-ctl');
-  ctl.querySelector('[data-wc=all]').addEventListener('click', () => calcs.forEach((c, i) => setTimeout(() => show(c, true), i * 220)));
-  ctl.querySelector('[data-wc=sort]').addEventListener('click', (e) => { sorted = !sorted; row.classList.toggle('sorted', sorted); note.classList.toggle('on', sorted); e.target.textContent = sorted ? 'Unsort' : 'Sort by index'; place(); });
-  ctl.querySelector('[data-wc=reset]').addEventListener('click', () => { calcs.forEach((c) => show(c, false)); if (sorted) ctl.querySelector('[data-wc=sort]').click(); });
-  requestAnimationFrame(() => requestAnimationFrame(() => row.classList.add('ready')));
-  document.querySelectorAll('[data-poll]').forEach((b) => b.addEventListener('click', () => b.closest('.poll').classList.toggle('revealed')));
-  document.querySelectorAll('[data-wq]').forEach((b) => b.addEventListener('click', () => b.closest('.wq').classList.toggle('on')));
-}
-
-function mountBlanks() {
-  const blanks = [...document.querySelectorAll('.deg-grid .blank')];
-  const set = (b, on) => { b.classList.toggle('filled', on); b.innerHTML = on ? (b.dataset.tex ? tex(b.dataset.tex) : b.dataset.a) : ''; };
-  blanks.forEach((b) => b.addEventListener('click', () => set(b, !b.classList.contains('filled'))));
-  const all = document.querySelector('.deg-grid [data-fillall]');
-  if (all) all.addEventListener('click', () => blanks.forEach((b, i) => setTimeout(() => { set(b, true); b.animate([{ transform: 'scale(1.3)' }, { transform: 'scale(1)' }], 300); }, i * 160)));
-}
-
-function mountPowers() {
-  const g = document.getElementById('pw'); if (!g) return;
-  const rows = [[2, 15], [3, 10], [4, 6], [5, 4], [6, 3], [7, 2]];
-  let html = '<div class="ph">n</div>' + Array.from({ length: 15 }, (_, i) => `<div class="ph">${i + 1}</div>`).join('');
-  rows.forEach(([e, k]) => {
-    html += `<div class="pr">${tex('n^' + e)}</div>`;
-    for (let i = 1; i <= 15; i++) html += i <= k ? `<button class="${i === 1 ? '' : 'hl'}" title="${i} to the power ${e}">${fmt(Math.pow(i, e))}</button>` : '<div></div>';
-  });
-  g.innerHTML = html;
-  g.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => b.classList.toggle('on')));
-  document.querySelectorAll('[data-pw]').forEach((b) => b.addEventListener('click', () => g.querySelectorAll('button').forEach((x, i) => { const on = b.dataset.pw === 'all'; if (on) setTimeout(() => x.classList.add('on'), i * 15); else x.classList.remove('on'); })));
-}
-
-function mountChecks() {
-  document.querySelectorAll('.pq').forEach((b) => b.addEventListener('click', () => b.classList.toggle('on')));
-}
-
-mountExplainers(); mountWarmup(); mountBlanks(); mountPowers(); mountChecks();
-
-/* ---------- Math History (the brown box): YBC 7289, a Babylonian school tablet (c. 1800–1600 BCE) ----------
- * The round tablet is drawn: a square, its diagonals, 30 by a side, and in cuneiform along the diagonal 1; 24, 51, 10
- * (base 60) with 42; 25, 35 under it. Then the base-60 digits are added up, 1 + 24/60 + 51/60² + 10/60³ = 1.41421296…,
- * and compared with √2 = 1.41421356…: the same to 5 decimal places. Plays once when the box is half in view; a tap or
- * Replay plays it again; reduced motion shows the finished picture. */
-(function babylonRoot2() {
-  const svg = document.getElementById('u1l5-hist'); if (!svg) return;
-  const SVGNS = 'http://www.w3.org/2000/svg';
-  const mk = (tag, attrs, parent) => { const e = document.createElementNS(SVGNS, tag); Object.keys(attrs || {}).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
-  const txt = (s, attrs, parent, tag) => { const e = mk(tag || 'text', attrs, parent); e.textContent = s; return e; };
-  const tsp = (s, attrs, parent) => txt(s, attrs, parent, 'tspan');
-  const steps = [], when = (el, ms) => { steps.push({ el, t: ms }); return el; };
-  const GCOL = ['#4a2c14', '#0f8a8a', '#8a58c9', '#d0477a'];
-  // ---- the tablet ----
-  const defs = mk('defs');
-  const rg = mk('radialGradient', { id: 'u1l5h-clayg', cx: '42%', cy: '38%', r: '70%' }, defs);
-  mk('stop', { offset: '0%', 'stop-color': '#e6cfa6' }, rg); mk('stop', { offset: '100%', 'stop-color': '#c9a678' }, rg);
-  const CX = 150, CY = 152, H = 104; // the square is turned 45°: its diagonals are horizontal and vertical, H = half a diagonal
-  mk('ellipse', { cx: CX, cy: CY, rx: 132, ry: 128, fill: 'url(#u1l5h-clayg)', class: 'u1l5h-clay' });
-  const P = (x, y) => `${x.toFixed(1)} ${y.toFixed(1)}`;
-  when(mk('path', { d: `M${P(CX - H, CY)} L${P(CX, CY - H)} L${P(CX + H, CY)} L${P(CX, CY + H)} Z`, pathLength: 1, class: 'u1l5h-line' }), 200);
-  when(mk('path', { d: `M${P(CX - H, CY)} L${P(CX + H, CY)}`, pathLength: 1, class: 'u1l5h-line' }), 1300);
-  when(mk('path', { d: `M${P(CX, CY - H)} L${P(CX, CY + H)}`, pathLength: 1, class: 'u1l5h-line' }), 1300);
-  // cuneiform: a vertical wedge is 1, a corner wedge (chevron) is 10
-  const one = (g, x, y, s) => { const w = mk('g', { class: 'u1l5h-wedge', transform: `translate(${x} ${y}) scale(${s})` }, g); mk('path', { d: 'M-3.6 -8 L3.6 -8 L0 -3.2 Z' }, w); mk('line', { x1: 0, y1: -4, x2: 0, y2: 8 }, w); };
-  const ten = (g, x, y, s) => { const w = mk('g', { class: 'u1l5h-wedge', transform: `translate(${x} ${y}) scale(${s})` }, g); mk('path', { d: 'M5 -7 L-5 0 L5 7 L1.5 0 Z' }, w); };
-  // draw the number n (0–59) with its left edge at x, size S; returns its width. Chevrons (tens) first, then the
-  // vertical wedges (ones); more than 2 of a kind sit in two rows, like a scribe stacks them.
-  function cune(g, n, x, y, S) {
-    let cx = x;
-    [[Math.floor(n / 10), ten, 10], [n % 10, one, 7.5]].forEach(([k, f, dx]) => {
-      if (!k) return;
-      const rows = k <= 3 ? [k] : k === 4 ? [2, 2] : [Math.ceil(k / 2), Math.floor(k / 2)];
-      const two = rows.length > 1, s = S * (two ? 0.62 : 1), step = dx * s;
-      rows.forEach((m, r) => { for (let i = 0; i < m; i++) f(g, cx + step / 2 + i * step, y + (two ? (r ? 5.5 : -5.5) * S : 0), s); });
-      cx += Math.max(...rows) * step + 2 * S;
+/* line up the Answer buttons (and the work areas) across a row of parts, whatever the answer lengths */
+function equalizeParts() {
+  document.querySelectorAll('.parts').forEach((row) => {
+    ['.pl', '.ans'].forEach((sel) => {
+      const els = [...row.querySelectorAll(':scope > .part > ' + sel + ', :scope > .part > .ansrow > ' + sel)];
+      els.forEach((e) => (e.style.minHeight = ''));
+      if (els.length < 2) return;
+      const m = Math.max(...els.map((e) => e.offsetHeight));
+      els.forEach((e) => (e.style.minHeight = m + 'px'));
     });
-    return cx - x;
-  }
-  // 30 by the upper-left side (turned to follow the side)
-  const side = when(mk('g', { class: 'u1l5h-g', transform: `translate(${CX - H / 2 - 17} ${CY - H / 2 - 17}) rotate(-45)` }), 2200);
-  cune(side, 30, -24, 0, 1.5);
-  // 1; 24, 51, 10 above the horizontal diagonal, 42; 25, 35 below it
-  const groups = [];
-  let x = CX - 78;
-  [1, 24, 51, 10].forEach((n, i) => {
-    const g = when(mk('g', { class: 'u1l5h-g' }), 2600 + i * 450);
-    const glow = mk('rect', { x: x - 3, y: CY - 44, width: 10, height: 34, rx: 7, fill: GCOL[i], class: 'u1l5h-glow' }, g);
-    const w = cune(g, n, x, CY - 27, 1.35); glow.setAttribute('width', w + 2);
-    groups.push(glow); x += w + 8;
-    if (i === 1) x = Math.max(x, CX + 7); // keep the vertical diagonal between 24 and 51
   });
-  const lower = when(mk('g', { class: 'u1l5h-g u1l5h-faint' }), 4500);
-  x = CX - 52; [42, 25, 35].forEach((n, i) => { x += cune(lower, n, x, CY + 26, 1.1) + 7; if (!i) x = CX + 7; });
-  txt('YBC 7289', { x: CX, y: 296, 'text-anchor': 'middle', class: 'u1l5h-cap' });
-  // ---- the arithmetic ----
-  const XR = 318;
-  const head = when(mk('g', { class: 'u1l5h-g' }), 4900);
-  txt('base 60', { x: XR, y: 22, class: 'u1l5h-cap' }, head);
-  const b = txt('', { x: XR, y: 50, class: 'u1l5h-b60' }, head);
-  ['1', '; ', '24', ', ', '51', ', ', '10'].forEach((s, i) => tsp(s, i % 2 ? { fill: '#9a7a58' } : { fill: GCOL[i / 2] }, b));
-  const TERMS = [['1', '= 1'], ['+ 24 ÷ 60', '= 1.4'], ['+ 51 ÷ 60²', '= 1.414 166…'], ['+ 10 ÷ 60³', '= 1.414 212 96…']];
-  TERMS.forEach(([term, sum], i) => {
-    const t = 5600 + i * 1150, y = 88 + i * 31;
-    const g = when(mk('g', { class: 'u1l5h-g' }), t);
-    txt(term, { x: XR, y, class: 'u1l5h-term', fill: GCOL[i] }, g);
-    txt(sum.replace(/ (?=\d)/g, ' '), { x: 424, y, class: 'u1l5h-sum' }, g);
-    when(groups[i], t);
-  });
-  when(mk('line', { x1: XR, x2: 586, y1: 204, y2: 204, class: 'u1l5h-rule u1l5h-g' }), 9900);
-  const cmp = (label, digits, y, t) => {
-    const g = when(mk('g', { class: 'u1l5h-g' }), t);
-    txt(label, { x: XR, y, class: 'u1l5h-lab' }, g);
-    const e = txt('', { x: 392, y, class: 'u1l5h-cmp' }, g);
-    when(tsp('1.414 21', { class: 'u1l5h-hit' }, e), 11000); tsp(digits, {}, e);
-  };
-  cmp('tablet', '2 96…', 232, 9900);
-  cmp('√2', '3 56…', 260, 10400);
-  when(txt('the same to 5 decimal places!', { x: XR, y: 288, class: 'u1l5h-final u1l5h-g' }), 11400);
-  const END = 12200;
-  let t0 = 0, raf = 0;
-  const draw = (ms) => steps.forEach((s) => s.el.classList.toggle('on', s.t <= ms));
-  function frame(now) { if (!t0) t0 = now; const ms = now - t0; draw(ms); if (ms < END) raf = requestAnimationFrame(frame); }
-  function play() {
-    cancelAnimationFrame(raf); t0 = 0;
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(END); return; }
-    draw(-1); raf = requestAnimationFrame(frame);
-  }
-  draw(-1);
-  svg.addEventListener('click', play);
-  const btn = svg.closest('.hist-anim') && svg.closest('.hist-anim').querySelector('.hist-play'); if (btn) btn.addEventListener('click', play);
-  if ('IntersectionObserver' in window) {
-    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 });
-    io.observe(svg);
-  } else play();
-})();
+}
+addEventListener('load', () => setTimeout(equalizeParts, 60));
+if (document.fonts) document.fonts.ready.then(() => setTimeout(equalizeParts, 60));
+
+mountExplainers(); mountWarmup(); mountPowGrid('sq-grid', 15, 2, 'sq'); mountPowGrid('cb-grid', 10, 3, 'cb'); mountNumberLines();

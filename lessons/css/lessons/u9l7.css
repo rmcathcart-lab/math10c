@@ -1,6 +1,6 @@
 /* Math 10C · Unit 9 · Lesson 7 — Chaining Right Triangles Together: styles used only on this page (prefix u9l7-).
  * Unit 9 colours: opposite purple, adjacent amber, hypotenuse blue, reference-angle arc teal; the shared side glows gold.
- * Extension parts use the slate "Extension" pill of Unit 6 Lesson 6. */
+ * Extension parts use the slate "Extension" pill of Unit 6 Lesson 5. */
 :root { --u9l7-opp: #7b4fc4; --u9l7-adj: #b06a07; --u9l7-hyp: #1f5bd6; --u9l7-ref: #13807a; --u9l7-gold: #c99400; --u9l7-ext: #5d6475; }
 
 /* captions may run to four lines; reserve the room so nothing below an explainer moves while it plays */

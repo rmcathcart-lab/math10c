@@ -19,7 +19,7 @@
 .u9l6-ct { color: var(--u9l6-t); }
 .u9l6-eq { font-size: 22px; text-align: center; margin: 8px 0 2px; font-weight: 600; }
 
-/* ---------------- Extension styling (as in u6l6) ---------------- */
+/* ---------------- Extension styling (as in u6l5) ---------------- */
 .u9l6-ext { display: inline-block; background: var(--u9l6-ext); color: #fff; font: 800 13px var(--round); letter-spacing: .06em; text-transform: uppercase; padding: 2px 9px; border-radius: 6px; vertical-align: 2px; margin-right: 4px; }
 .u9l6-ext.sm { font-size: 11px; padding: 1px 6px; vertical-align: 1px; }
 .u9l6-extcard { border-left: 6px solid #a5a9b3; }

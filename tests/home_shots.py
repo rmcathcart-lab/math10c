@@ -8,7 +8,7 @@ PRE = sys.argv[1] if len(sys.argv) > 1 else '/tmp/home_'
 SEED = """(() => {
   const S = { v: 1, lessons: {} }, put = (lid, n, credit) => { const L = HW.lessons[lid]; if (!L) return; const l = S.lessons[lid] = S.lessons[lid] || { items: {}, qv: {}, cur: null, secs: 0, updated: Date.now() };
     L.required.slice(0, n).forEach((it, i) => l.items[it.id] = { s: 'done', v: 0, tv: 0, wrong: 0, steps: 0, forms: 0, reveals: 0, credit: i % 4 === 3 ? 'help' : credit, secs: 60, at: Date.now(), prac: 0 }); l.secs = 60 * n; };
-  ['u1l1','u1l2','u1l3','u1l4','u1l5','u1l6a','u1l6b','u1l7'].forEach(l => put(l, 99, 'first'));
+  ['u1l1','u1l2','u1l4','u1l5','u1l6','u1l7','u1l8','u1l9'].forEach(l => put(l, 99, 'first'));
   put('u2l1', 99, 'first'); put('u2l2', 99, 'first'); put('u2l3', 4, 'first');
   localStorage.setItem('hw:v1:10c-b|ben lee', JSON.stringify(S));
 })()"""

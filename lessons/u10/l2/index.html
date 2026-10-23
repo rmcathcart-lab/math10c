@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Estimating Length with Personal Referents · Math 10C 10.2</title>
-<meta name="description" content="Math 10C Unit 10 Lesson 2: the imperial and SI systems of measurement and how their units are related, referents and personal referents, matching the size of the referent to the object, estimating a length by laying a referent end to end (count, then multiply), strategies for a perimeter and a circumference, measuring a scale diagram in both systems, and building a big referent out of a smaller one. Write on it with an Apple Pencil.">
+<title>Converting Units Within the Metric (SI) System · Math 10C 10.2</title>
+<meta name="description" content="Math 10C Unit 10 Lesson 2: converting units within the metric (SI) system. The SI prefix chart, Method 1 the metric number line (count steps, move the decimal point), Method 2 proportional reasoning (two arrangements, scales, recipes and 1:n map scales), Method 3 unit analysis (conversion factors, units cancelling, rates), and Extension: large step counts in scientific notation. Write on it with an Apple Pencil.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="10C Lessons">
@@ -27,275 +27,318 @@
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
   <div class="kicker">Math 10C · Unit 10 Measurement · Lesson 2</div>
-  <h1>Estimating Length with Personal Referents</h1>
-  <p class="lede">No ruler? You carry a whole set of them around with you. Today: the two systems of measurement, <b class="u10l2-imp">imperial</b> and <b class="u10l2-si">SI</b>, and how to estimate a length: <b>pick</b> a referent close in size to the object, <b>count</b> how many times it fits, then <b>multiply</b> the count by the referent’s length.</p>
+  <h1>Converting Units Within the Metric (SI) System</h1>
+  <p class="lede">SI prefixes are <b>powers of ten</b>, so a metric conversion is a <b>shift along a number line</b>, a <b>proportion</b>, or a <b>chain of unit-analysis fractions</b>. Today: all three methods, and when each one shines.</p>
   <div class="goals">
     <div class="goals-h">I can…</div>
     <ul>
-      <li>name the imperial units of length (inch, foot, yard, mile) and the SI units (millimetre, centimetre, metre, kilometre) and state how they are related</li>
-      <li>explain what a <b>referent</b> is, and give a <b>personal referent</b> for common units in both systems</li>
-      <li>choose a referent that is <b>close in size</b> to the object being measured, and justify the choice</li>
-      <li>estimate a length, a <b>perimeter</b> or a <b>circumference</b> by laying a referent end to end, counting, and multiplying</li>
-      <li>measure a scale diagram in both systems and use the scale to find the actual length</li>
-      <li>build a referent for a large unit out of a referent for a smaller one</li>
+      <li>read the metric prefix chart from <b>kilo</b> to <b>milli</b> and say what each prefix is worth</li>
+      <li>convert by <b>counting steps</b> on the metric number line and moving the decimal point one place per step</li>
+      <li>set up and solve a <b>proportion</b> two correct ways, including scales, recipes and <span class="tex">1:n</span> map scales</li>
+      <li>convert with <b>unit analysis</b>, choosing each conversion factor so the unwanted unit <b>cancels</b>, even for rates like m/s</li>
+      <li><span class="u10l2-ext sm">Extension</span> use giga, mega, micro and nano, and give answers in scientific notation</li>
     </ul>
   </div>
   <div class="outcome"><b>M1</b> Solve problems that involve linear measurement, using: SI and imperial units of measure; estimation strategies; measurement strategies.</div>
+  <div class="outcome"><b>M2</b> Apply proportional reasoning to problems that involve conversions between SI and imperial units of measure.</div>
+  <div class="u10l2-extbox"><span class="u10l2-ext">Extension</span><span><b>Giga, mega, micro and nano</b> (each of their steps is a factor of <span class="tex">1000</span>, not <span class="tex">10</span>) and answers in <b>scientific notation</b> are Extension: Example 3, and Examples 2(c), 8(b) and 9(a). The core prefixes for this unit are kilo through milli.</span></div>
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Your Body Is a Ruler" id="wu" style="--wf-side: 310px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Your Body Is a Ruler</h2>
-  <p class="wf-rule">No ruler? No problem. You carry a whole set of them around with you.</p></div>
-  <div class="wf-grid"><div class="wf-main">
-  <div class="u10l2-wrow">
-    <div class="u10l2-wfig" id="u10l2-wfig"></div>
-    <div class="u10l2-wbtns"><button type="button" class="pill" id="u10l2-warms">Arms out wide</button></div>
+<section class="card warm wf wf-one" data-ink="warm" data-section="Warm-up: Crossing the Border" id="wu">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Crossing the Border</h2>
+  <p class="wf-rule">You drive north from the U.S. into Alberta. The speed limit sign changes…</p></div>
+  <div id="u10l2-road" class="u10l2-road"></div>
+  <div class="u10l2-wtop">
+    <div class="u10l2-wqs">
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">1</div><div>Which is longer: <b>1 mile</b> or <b>1 km</b>?</div></div>
+        <div class="u10l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>1 mile</b>. It is about <span class="tex">1.6</span> km (the bars are drawn to scale).</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">2</div><div>The next town is <b>10 miles</b> away. About how many km is that?</div></div>
+        <div class="u10l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">10\times1.6093\approx\boldsymbol{16}</span> <b>km</b>.</div></div>
+      </div>
+      <div class="bk-wq">
+        <div class="q-line"><div class="q-num">3</div><div>Driving <b>1 mile per hour</b> is the same as driving about how many <b>km per hour</b>?</div></div>
+        <div class="u10l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">About <span class="tex">\boldsymbol{1.6}</span> <b>km/h</b>. The “per hour” part doesn’t change, so only the distance converts.</div></div>
+      </div>
+    </div>
+    <div class="poll u10l2-poll wf-poll">
+      <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> You cross the border driving right at the speed limit. Which limit is <b>faster</b>? <b>Guess first.</b></div></div>
+      <div class="poll-opts">
+        <div class="opt"><b>A</b> 65 mph (U.S.)</div>
+        <div class="opt right"><b>B</b> 110 km/h (Alberta)</div>
+        <div class="opt"><b>C</b> exactly the same</div>
+      </div>
+      <button class="pill" type="button" data-poll-reveal>Reveal</button>
+      <div class="poll-ans"><b>B: 110 km/h.</b> <span class="tex">65\ \dfrac{\text{mi}}{\text{h}}\times\dfrac{1.6093\ \text{km}}{1\ \text{mi}}\approx104.6\ \dfrac{\text{km}}{\text{h}}</span>, so 110 km/h is about 5 km/h faster: you may <b>speed up</b> a little after crossing into Alberta. Tap <b>Convert 65 mph</b> under the picture to watch the miles cancel.<br>
+        <span class="muted"><b>A</b> is the “miles are bigger, so 65 mph must be faster” instinct: right idea, but a mile is only 1.6 km, so 65 mph is just under 105 km/h. <b>C</b> is tempting because the two limits <em>feel</em> like the same highway speed, and they are close.</span></div>
+    </div>
   </div>
-  <div class="u10l2-wqs">
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">1</div><div>A desk is <b>3 hand spans</b> wide. About how many cm is that?</div></div>
-      <div class="u10l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">3\times20</span> cm <span class="tex">=</span> about <b>60 cm</b>.</div></div>
-    </div>
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">2</div><div>A hallway is <b>30 paces</b> long. About how many metres is that?</div></div>
-      <div class="u10l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">30\times90</span> cm <span class="tex">=2\,700</span> cm <span class="tex">=</span> about <b>27 m</b>.</div></div>
-    </div>
-    <div class="bk-wq u10l2-wq3">
-      <div class="q-line"><div class="q-num">3</div><div>Which body ruler fits best to measure (a) a phone? (b) the gym?</div></div>
-      <div class="u10l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">(a) <b>Pinky nails</b> (a phone is about 7 of them wide). (b) <b>Paces</b> (a gym is dozens of paces long). A referent should be <b>close in size</b> to the object: nobody measures a gym in pinky nails.</div></div>
-    </div>
+  <div class="bk-wq u10l2-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Challenge a neighbour:</b> in your head, about how many mph is <b>100 km/h</b>?</div></div>
+    <div class="u10l2-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">100\times0.6214\approx\boldsymbol{62}</span> <b>mph</b>. Mental shortcut: km/h <span class="tex">\times\,0.6</span> gives mph, and mph <span class="tex">\times\,1.6</span> gives km/h.</div></div>
   </div>
-  </div><div class="wf-side">
-  <div class="u10l2-rulers">
-      <div class="u10l2-rh">Body rulers</div>
-      <div><b>pinky nail</b> ≈ 1 cm<i>(width of the nail)</i></div>
-      <div><b>hand span</b> ≈ 20 cm<i>(thumb to pinky)</i></div>
-      <div><b>cubit</b> ≈ 45 cm<i>(elbow to fingertip)</i></div>
-      <div><b>one pace</b> ≈ 90 cm<i>(one big step)</i></div>
-    </div>
-  <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> Stretch your arms out wide. Your <b>arm span</b>, fingertip to fingertip, is closest to… <b>Guess first.</b></div></div>
-    <div class="poll-opts">
-      <div class="opt"><b>A</b> half your height</div>
-      <div class="opt right"><b>B</b> your height</div>
-      <div class="opt"><b>C</b> double your height</div>
-    </div>
-    <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>B: your height.</b> For most people, arm span and height are within a few centimetres of each other: the “human square” Leonardo da Vinci drew in the <i>Vitruvian Man</i>. Tap <b>Arms out wide</b> to see it.<br>
-      <span class="muted"><b>A</b> is tempting because arms hanging at your sides look short, but a span is <b>two</b> arms plus your shoulders. <b>C</b> feels right with your arms out: the span looks enormous next to your narrow body.</span></div>
-  </div>
-  </div></div>
-  <p class="u10l2-social">Try it: partner up at the wall and compare your arm span with your height.</p>
+  <p class="u10l2-social">Today’s lesson does exactly this set-up <b>inside</b> the metric system, where every fact is a power of ten. The mile comes back in Lesson 2.</p>
 </section>
 
-<!-- ================= 1. Imperial ================= -->
-<section class="card" data-ink="s1" data-section="1. The Imperial System">
-  <div class="sec-h"><span class="badge">1</span><h2>The Imperial System of Measurement</h2></div>
-  <p>Before measuring instruments existed, an unknown length was compared to a familiar object or body part: a <b>referent</b>. The need for consistent, repeatable measurements produced formal <b>systems of measurement</b>. The <b class="u10l2-imp">imperial system</b>, developed in England and still in everyday use in the United States, measures length in <b>inches, feet, yards and miles</b>.</p>
-  <div class="def u10l2-units u10l2-dimp"><b>Imperial units of length</b>
-    <div class="u10l2-disp"><span class="tex">1\text{ foot}=12\text{ inches}\qquad 1\text{ yard}=3\text{ feet}\qquad 1\text{ mile}=1\,760\text{ yards}</span></div>
+<!-- ================= 1. Prefix chart ================= -->
+<section class="card" data-ink="s1" data-section="1. The Metric (SI) Prefix Chart">
+  <div class="sec-h"><span class="badge">1</span><h2>The Metric (SI) Prefix Chart</h2></div>
+  <p>Every SI measurement is a <b>base unit</b> (the <b>metre</b> for length, the <b>gram</b> for mass, or the <b>litre</b> for volume) carrying a <b>prefix</b> that scales it by a power of ten. The chart gives each common prefix, its symbol, and its value relative to the base unit.</p>
+  <div class="u10l2-chartwrap">
+    <table class="u10l2-chart">
+      <tr><th>Prefix</th><td class="x">giga</td><td class="x">mega</td><td>kilo</td><td>hecto</td><td>deca</td><td class="b">(base)</td><td>deci</td><td>centi</td><td>milli</td><td class="x">micro</td><td class="x">nano</td></tr>
+      <tr><th>Symbol</th><td class="x">G</td><td class="x">M</td><td>k</td><td>h</td><td>da</td><td class="b">m, g, L</td><td>d</td><td>c</td><td>m</td><td class="x"><span class="tex">\mu</span></td><td class="x">n</td></tr>
+      <tr><th>Value</th><td class="x"><span class="tex">10^{9}</span></td><td class="x"><span class="tex">10^{6}</span></td><td><span class="tex">10^{3}</span></td><td><span class="tex">10^{2}</span></td><td><span class="tex">10^{1}</span></td><td class="b"><span class="tex">10^{0}</span></td><td><span class="tex">10^{-1}</span></td><td><span class="tex">10^{-2}</span></td><td><span class="tex">10^{-3}</span></td><td class="x"><span class="tex">10^{-6}</span></td><td class="x"><span class="tex">10^{-9}</span></td></tr>
+      <tr class="u10l2-chartext"><th></th><td class="x"><span class="u10l2-ext sm">Ext</span></td><td class="x"><span class="u10l2-ext sm">Ext</span></td><td colspan="7"></td><td class="x"><span class="u10l2-ext sm">Ext</span></td><td class="x"><span class="u10l2-ext sm">Ext</span></td></tr>
+    </table>
   </div>
-  <p>Many imperial units began life as referents:</p>
-  <div class="u10l2-hist">
-    <div><b>Yard</b> Shortly after the Norman Conquest of 1066, legend holds that King Henry I decreed it to be the distance from the tip of his <b>nose</b> to the end of his <b>outstretched thumb</b>.</div>
-    <div><b>Furlong</b> Used by Saxon farmers before 1066 for how far a team of oxen could plow before resting. It still states the distance of horse races: <span class="tex">8</span> furlongs <span class="tex">=1</span> mile.</div>
-    <div><b>Rod</b> A pole about <span class="tex">11</span> cubits long.</div>
-    <div><b>League</b> Several personal referents, the two most common being the distance a person or a horse could walk in one hour: roughly <span class="tex">3</span> miles. No longer in common use.</div>
-    <div><b>Chain</b> The length of a cricket pitch, about <span class="tex">4</span> rods, and <span class="tex">10</span> chains <span class="tex">=1</span> furlong.</div>
-    <div><b>Hand</b> The width of a clenched fist, <span class="tex">4</span> inches. It still states the height of a horse or pony.</div>
-  </div>
-  <div class="explainer" data-explainer="imperial"></div>
+  <p>The core prefixes for this unit are <b>kilo</b> through <b>milli</b>. Giga, mega, micro and nano are <span class="u10l2-ext sm">Extension</span>: notice that each of their steps is a factor of <span class="tex">1000</span>, not <span class="tex">10</span>.</p>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Two different “m”s.</b> On its own, <b>m</b> is the <b>metre</b>. In front of another unit, <b>m</b> means <b>milli</b> (a thousandth): mm, mg, mL. And capital <b>M</b> is mega, a million.</div></div>
+  <div class="explainer" data-explainer="zoom"></div>
 </section>
 
-<!-- ================= 2. SI ================= -->
-<section class="card" data-ink="s2" data-section="2. The SI System">
-  <div class="sec-h"><span class="badge">2</span><h2>The SI System of Measurement</h2></div>
-  <p>The other major system is the <b class="u10l2-si">SI system</b> (Système International d’Unités), commonly called the <b>metric system</b>. As early as 1670 Gabriel Mouton and Jean Picard proposed a base-<span class="tex">10</span> system to replace the tangle of older, inconsistent units, and in 1790 the French Academy of Sciences was asked to design a scientific standard: a unit of length based on a fraction of the Earth’s circumference, with every related unit scaled by a power of <span class="tex">10</span>. Canada officially adopted SI in the 1970s, by which time most of the world had already switched. The common SI unit of length is the <b>metre</b>.</p>
-  <div class="def u10l2-units u10l2-dsi"><b>SI units of length</b>
-    <div class="u10l2-disp"><span class="tex">1\text{ centimetre}=10\text{ millimetres}\qquad 1\text{ metre}=100\text{ centimetres}\qquad 1\text{ kilometre}=1\,000\text{ metres}</span></div>
+<!-- ================= 2. Method 1: number line ================= -->
+<section class="card" data-ink="s2" data-section="2. Method 1: The Metric Number Line">
+  <div class="sec-h"><span class="badge">2</span><h2>Method 1: Using the Metric Number Line</h2></div>
+  <p>Arranging the prefixes from largest to smallest produces a <b>metric number line</b> on which each single step is one power of ten. Moving <u>right</u> (toward smaller prefixes) <b>multiplies</b> by <span class="tex">10</span> per step; moving <u>left</u> (toward larger prefixes) <b>divides</b> by <span class="tex">10</span> per step.</p>
+  <div id="u10l2-nlfig" class="u10l2-nlfig"></div>
+  <p>Kilometres to millimetres is <b>6 positions right</b> (k is 3 steps <em>left</em> of the unit and m is 3 steps <em>right</em> of it), so <span class="tex">1\text{ km}=10^{6}\text{ mm}=1\,000\,000\text{ mm}</span>; the reverse trip is 6 positions left, so <span class="tex">1\text{ mm}=10^{-6}\text{ km}</span>.</p>
+  <div class="def"><b>Count steps, move the point.</b> Each step on the line moves the <b>decimal point one place</b>, in the <b>same direction</b> you moved on the line. Right: the number gets bigger (smaller units, so you need more of them). Left: the number gets smaller.
+    <div class="eg">A whole number’s decimal point is hiding at its end: <span class="tex">58\,400=58\,400.</span> Fill any empty places with zeros.</div>
   </div>
-  <p>The United States uses SI units widely in science but still relies on the imperial system for most everyday purposes, so both systems are worth knowing well.</p>
-  <div class="explainer" data-explainer="metric"></div>
-  <div class="parts c1">
-    <div class="part think"><div class="pl"><span class="think-tag">Think</span> Which system is easier to move between units in? Why?</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>SI.</b> Every SI step is a power of <span class="tex">10</span> (<span class="tex">\times10,\ \times100,\ \times1\,000</span>), so changing units just moves the decimal point. The imperial steps (<span class="tex">12,\ 3,\ 1\,760</span>) are all different.</div></div></div>
-  </div>
-</section>
-
-<!-- ================= 3. Referents ================= -->
-<section class="card" data-ink="s3" data-section="3. Referents: Measuring Without a Tool">
-  <div class="sec-h"><span class="badge">3</span><h2>Referents: Measuring Without a Tool</h2></div>
-  <div class="def">A <b>referent</b> is a familiar object, very often a part of your own body, used as a stand-in point of reference when no measuring tool is available. A referent taken from a person’s immediate surroundings (their own body, or an object they always carry) is a <b>personal referent</b>.
-    <div class="eg">Body-based referents are the oldest and most convenient, since they are always at hand. The five below are drawn roughly to scale relative to one another.</div>
-  </div>
-  <div class="u10l2-five" id="u10l2-five"></div>
-  <div class="u10l2-steps">
-    <div><span class="u10l2-sn">1</span><div><b>Pick</b> a referent close in size to the object.</div></div>
-    <div><span class="u10l2-sn">2</span><div><b>Count</b> how many times it fits, end to end.</div></div>
-    <div><span class="u10l2-sn">3</span><div><b>Multiply</b> the count by the referent’s length.</div></div>
-  </div>
-  <div class="explainer" data-explainer="lay"></div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>A pace is a normal walking step,</b> about <span class="tex">90</span> cm <span class="tex">\approx1</span> yd. Walking <b>heel-to-toe</b> measures something else: foot lengths of about <span class="tex">1</span> ft.</div></div>
+  <div class="explainer" data-explainer="hop"></div>
 </section>
 
 <section class="card example" data-ink="ex1" data-section="Example 1">
-  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Matching the size of the referent to the size of the object</h3></div>
-  <p class="q">For each object, state one personal referent (from the diagram above, or from the imperial units it represents) that would be reasonable to use to estimate it, and justify the choice.</p>
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Reading a conversion off the number line</h3></div>
+  <p class="q">Complete each conversion. Write each answer first as a power of <span class="tex">10</span>, then in standard notation.</p>
   <div class="parts c3">
-    <div class="part"><div class="pl">(a) the length of a hockey rink</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A standard NHL rink is <span class="tex">200</span> ft long, far too big for a small referent. Use the <b>pace</b> (<span class="tex">\approx90</span> cm <span class="tex">\approx1</span> yd): walk the length with normal walking paces, counting, then multiply the count by about <span class="tex">1</span> yard.<br><span class="tex">200\text{ ft}\div3\text{ ft per pace}\approx\boldsymbol{67}</span> <b>paces</b>, a countable number.<br>A thumb width would need <span class="tex">200\times12=2\,400</span> repetitions: far too many to count without losing track.</div></div></div>
-    <div class="part"><div class="pl">(b) the length of a USB flash drive</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A flash drive is only an inch or two long, so a pace or a cubit is far too large to resolve it. Use the <b>width of a thumb</b> across the joint (<span class="tex">\approx2.5</span> cm <span class="tex">\approx1</span> in): lay the drive beside your thumb and compare directly.<br>About <span class="tex">2</span> thumb widths <span class="tex">\Rightarrow</span> about <b>2 in</b> (<span class="tex">\approx5</span> cm).<br>The referent should be close in size to the object.</div></div></div>
-    <div class="part"><div class="pl">(c) the height of a pony</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Horse and pony heights are traditionally given in <b>hands</b>, and <span class="tex">1</span> hand <span class="tex">=4</span> in <span class="tex">\approx10</span> cm is exactly the width of a clenched fist. Stack fists from the ground to the withers (the top of the shoulders) and count.<br>A <span class="tex">12</span>-hand pony is <span class="tex">12\times4=48</span> in <span class="tex">=</span> <b>4 ft</b> (<span class="tex">\approx122</span> cm).<br>Both the most natural referent and the standard unit for the object.</div></div></div>
+    <div class="part"><div class="pl">(a) <span class="tex">1\text{ m}=</span> <span data-reveal="___"><span class="tex">10^{2}</span></span> cm <span class="tex">=</span> <span data-reveal="___"><span class="tex">100</span></span> cm</div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Unit <span class="tex">\to</span> c is <b>2 steps right</b>, so multiply by <span class="tex">10^2</span>: <span class="tex">1\text{ m}=10^{2}\text{ cm}=\boldsymbol{100}\text{ cm}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">1\text{ cm}=</span> <span data-reveal="___"><span class="tex">10^{-2}</span></span> m <span class="tex">=</span> <span data-reveal="___"><span class="tex">0.01</span></span> m</div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">c <span class="tex">\to</span> Unit is <b>2 steps left</b>, so divide by <span class="tex">10^2</span>: <span class="tex">1\text{ cm}=10^{-2}\text{ m}=\boldsymbol{0.01}\text{ m}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">1\text{ kL}=</span> <span data-reveal="___"><span class="tex">10^{3}</span></span> L <span class="tex">=</span> <span data-reveal="___"><span class="tex">1000</span></span> L</div><div class="work" style="--h:120px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">k <span class="tex">\to</span> Unit is <b>3 steps right</b>, so multiply by <span class="tex">10^3</span>: <span class="tex">1\text{ kL}=10^{3}\text{ L}=\boldsymbol{1000}\text{ L}</span></div></div></div>
   </div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>How many paces?</b> <span class="keys"><kbd>2</kbd><kbd>0</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> gives <span class="tex">66.67</span>, so about <span class="tex">67</span> paces. The pony: <span class="keys"><kbd>1</kbd><kbd>2</kbd><kbd>×</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> <span class="tex">=48</span> in.</div>
-    <div class="pill-col"><button class="pill" data-keys="200 ÷ 3 =">Show me (a)</button><button class="pill" data-keys="12 × 4 =">Show me (c)</button></div>
-  </div>
-  <div class="explainer" data-explainer="fit"></div>
   <div class="space" id="ex1-space"></div>
   <button class="more" data-more="ex1-space">+ More space</button>
 </section>
 
-<!-- sources: https://en.wikipedia.org/wiki/Cubit (elbow to tip of the middle finger; royal cubit rods 523.5–529.2 mm, about 52.5 cm, 7 palms of 4 fingers; used by the Step Pyramid of Djoser, c. 2700 BCE) ;
-     https://en.wikipedia.org/wiki/Ancient_Egyptian_units_of_measurement (royal cubit about 52.5 cm; 7 palms = 28 digits; rods from the tombs of Maya and Kha) ;
-     https://www.ucl.ac.uk/museums-static/digitalegypt/weights/lenght.html (UCL Petrie Museum: cubit rods about 52 cm; 7 palms; 28 fingers) ;
-     https://globalegyptianmuseum.org/record.aspx?id=4424 (a wooden cubit rod; "elbow to the fingertips", seven palms and 28 digits) ;
-     https://www.britannica.com/print/article/254079 (hand: 4 inches, fixed by a statute of Henry VIII; horses) -->
-<!-- ================= Math History box (brown) ================= -->
-<section class="card history" data-ink="hist" data-section="Math History: the royal cubit">
-  <div class="hist-head"><span class="hist-tag">Math History</span><span class="hist-dates">Egypt · c. 2700 BCE</span></div>
-  <div class="hist-grid">
-    <div class="hist-text">
-      <h3 class="hist-title">A forearm made official</h3>
-      <p>A <b>cubit</b> is the length from your elbow to your fingertip, a personal referent. Ancient Egypt was building with it by the time of the Step Pyramid of Djoser, around 2700 BCE.</p>
-      <p>Arms come in different lengths, so Egypt fixed one <b>royal cubit</b> of <b>7 palms</b>, each palm <b>4 fingers</b> wide (28 fingers in all), and marked it on rods of wood and stone. Rods that survive measure about <b>52.4 to 52.9 cm</b>.</p>
-      <div class="part hist-q"><div class="pl">Say your palm (four fingers side by side) is about 7.5 cm. How long is your 7-palm cubit? About how many royal cubits tall is a 2 m doorway?</div>
-        <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">7\times7.5=\boldsymbol{52.5}</span> cm, right in the range of the real rods. Doorway: <span class="tex">200\div52.5\approx3.8</span>, so about <b>4 royal cubits</b>.</div></div></div>
-    </div>
-    <figure class="hist-anim">
-      <svg id="u10l2-hist" viewBox="0 0 600 300" role="img" aria-label="A forearm from elbow to fingertip becomes a cubit rod marked in 7 palms and 28 fingers, and the rod is laid end to end three times along a stone block."></svg>
-      <figcaption><button class="hist-play" type="button">Replay</button><span>Tap the picture to play it again.</span></figcaption>
-      <p class="hist-note">The hand used for horses is another body part made official: a law of England’s King Henry VIII fixed it at 4 inches.</p>
-    </figure>
-  </div>
-</section>
-
-<!-- ================= 4. Everyday referents ================= -->
-<section class="card" data-ink="s4" data-section="4. Referents for Everyday Objects">
-  <div class="sec-h"><span class="badge">4</span><h2>Referents for Everyday Objects</h2></div>
-  <p>Connecting a unit to a concrete, familiar referent is the fastest way to build a feel for that unit. Tap a card to flip it.</p>
-  <div class="u10l2-fh u10l2-imp">Imperial referents for length</div>
-  <div class="bk-flips u10l2-flips" style="--bk-cols:3">
-    <div class="bk-flip u10l2-fimp"><div class="bk-front">the width of a thumb across the joint</div><div class="bk-back">about <b>1 inch</b></div></div>
-    <div class="bk-flip u10l2-fimp"><div class="bk-front">the length of an adult foot</div><div class="bk-back">about <b>1 foot</b></div></div>
-    <div class="bk-flip u10l2-fimp"><div class="bk-front">one adult pace</div><div class="bk-back">about <b>1 yard</b></div></div>
-  </div>
-  <div class="u10l2-fh u10l2-si">SI referents for length</div>
-  <div class="bk-flips u10l2-flips" style="--bk-cols:4">
-    <div class="bk-flip"><div class="bk-front">the width of an adult little (“pinky”) fingernail</div><div class="bk-back">about <b>1 centimetre</b></div></div>
-    <div class="bk-flip"><div class="bk-front">the width of five adult toes together</div><div class="bk-back">about <b>1 decimetre</b> (<span class="tex">\tfrac{1}{10}</span> of a metre)</div></div>
-    <div class="bk-flip"><div class="bk-front">the thickness of a dime</div><div class="bk-back">about <b>1 millimetre</b></div></div>
-    <div class="bk-flip"><div class="bk-front">the average height of a 4-year-old child</div><div class="bk-back">about <b>1 metre</b></div></div>
-    <div class="bk-flip"><div class="bk-front">the height of a standard doorway</div><div class="bk-back">about <b>2 metres</b></div></div>
-    <div class="bk-flip"><div class="bk-front">the width of this workbook</div><div class="bk-back">about <b>20 centimetres</b></div></div>
-    <div class="bk-flip"><div class="bk-front">the diameter of a hockey puck</div><div class="bk-back">about <b>7.6 centimetres</b></div></div>
-    <div class="bk-flip"><div class="bk-front">the length of an Olympic swimming pool</div><div class="bk-back"><b>50 metres</b></div></div>
-  </div>
-  <div class="explainer" data-explainer="ladder"></div>
-</section>
-
 <section class="card example" data-ink="ex2" data-section="Example 2">
-  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>One object, one referent from each system</h3></div>
-  <p class="q">Consider the task of estimating the length of a bath towel.</p>
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Counting steps to convert a measurement</h3></div>
+  <p class="q">Use the metric number line to convert each measure.</p>
   <div class="parts c3">
-    <div class="part"><div class="pl">(a) Identify a referent that could be used to estimate the length in SI units.</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A bath towel is roughly <span class="tex">1</span>–<span class="tex">1.5</span> m long, so a mid-sized SI referent fits best: the <b>width of this workbook</b>, <span class="tex">\approx20</span> cm.<br>It takes about <span class="tex">100\div20=5</span> to <span class="tex">150\div20=7.5</span> workbook widths: a small, easy count.<br>(A pinky fingernail, <span class="tex">\approx1</span> cm, would need <span class="tex">100</span>–<span class="tex">150</span> repetitions.)</div></div></div>
-    <div class="part"><div class="pl">(b) Identify a referent that could be used to estimate the length in imperial units.</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The <b>adult pace</b>, <span class="tex">\approx90</span> cm <span class="tex">\approx1</span> yd.<br>A towel of <span class="tex">1</span>–<span class="tex">1.5</span> m is about <span class="tex">1</span> to <span class="tex">1\tfrac{1}{2}</span> paces long, so the count stays small and the leftover fraction is easy to judge by eye.<br>(The thumb, <span class="tex">\approx1</span> in, would need <span class="tex">40</span>–<span class="tex">60</span> repetitions; the adult foot, <span class="tex">\approx1</span> ft, about <span class="tex">3</span>–<span class="tex">5</span>.)</div></div></div>
-    <div class="part"><div class="pl">(c) Explain the process you would use to estimate the length with your imperial referent from part (b).</div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Lay the towel out flat. Starting at one end, walk along it with normal paces, counting full paces and estimating any leftover fraction. Then multiply by the referent’s length:<br><span class="tex">\text{estimated length}=(\text{number of paces})\times1\text{ yd}</span><br>E.g. <span class="tex">1\tfrac{1}{2}</span> paces gives <span class="tex">1.5\text{ yd}=1.5\times3=\boldsymbol{4.5\text{ ft}}</span> (<span class="tex">\approx1.4</span> m).<br>The estimate is only as good as the referent: treat it as approximate, not exact.</div></div></div>
+    <div class="part"><div class="pl">(a) <span class="tex">4.6\text{ m}</span> to cm</div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">m <span class="tex">\to</span> cm is <b>2 steps right</b>: <span class="tex">\times10^{2}</span>.<br><span class="tex">4.6\times100=\boldsymbol{460}\text{ cm}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">58\,400\text{ mg}</span> to kg</div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">mg <span class="tex">\to</span> kg is <b>6 steps left</b>: <span class="tex">\div10^{6}</span>.<br><span class="tex">58\,400\div1\,000\,000=\boldsymbol{0.0584}\text{ kg}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="u10l2-ext sm">Extension</span> <span class="tex">215</span> micrometres to nanometres</div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\mu\text{m}\to\text{nm}</span> is <b>3 steps right</b>: <span class="tex">\times10^{3}</span>.<br><span class="tex">215\times1000=\boldsymbol{215\,000}\text{ nm}</span></div></div></div>
   </div>
-  <div class="explainer" data-explainer="towel"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check the point you moved.</b> The number line tells you <em>what</em> to multiply or divide by; the calculator confirms it. (b): <span class="keys"><kbd>5</kbd><kbd>8</kbd><kbd>4</kbd><kbd>0</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>1</kbd><kbd>2nd</kbd><kbd>EE</kbd><kbd>6</kbd><kbd>ENTER</kbd></span> gives 0.0584. <kbd>EE</kbd> types “<span class="tex">\times10^{\square}</span>” for you.</div>
+    <div class="pill-col"><button class="pill" data-keys="4.6 × 100 =">Show (a)</button><button class="pill" data-keys="58400 ÷ 1 EE 6 =">Show (b)</button><button class="pill" data-keys="215 × 1000 =">Show (c)</button></div>
+  </div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Count every tick, even the unlabelled ones.</b> Between M and k, between m and <span class="tex">\mu</span>, and between <span class="tex">\mu</span> and n there are empty positions. They still count: mm to <span class="tex">\mu</span>m is 3 steps, not 1, which is why each Extension step is <span class="tex">\times1000</span>. And the unit itself is a position too: mg to kg is 6 steps.</div></div>
   <div class="space" id="ex2-space"></div>
   <button class="more" data-more="ex2-space">+ More space</button>
 </section>
 
-<section class="card example" data-ink="ex3" data-section="Example 3">
-  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Strategies for a perimeter and a circumference</h3></div>
-  <div class="parts c2">
-    <div class="part"><div class="pl">(a) Describe and explain a personal strategy that could be used to estimate the perimeter of the base of a rectangular tool shed, using one of the referents above.</div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Use the <b>adult foot</b> (<span class="tex">\approx1</span> ft): walk heel-to-toe along each side of the shed’s base, counting foot lengths. Multiply each count by about <span class="tex">1</span> ft, then add:<br><span class="tex">P\approx(\text{count}_1+\text{count}_2+\text{count}_3+\text{count}_4)\times1\text{ ft}</span><br>Because the base is a <b>rectangle</b>, only two adjacent sides need to be counted: <span class="tex">P\approx2(\ell+w)</span>. A shed measuring <span class="tex">8</span> heel-to-toe steps by <span class="tex">12</span> gives <span class="tex">P\approx2(8+12)=\boldsymbol{40\text{ ft}}</span>.<br>For a large shed the <b>pace</b> (<span class="tex">\approx1</span> yd) keeps the counts smaller.</div></div></div>
-    <div class="part"><div class="pl">(b) Describe and explain a personal strategy that could be used to estimate the circumference of a bicycle wheel, using one of the referents above.</div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A rim is curved, so no straight referent can be laid along it. <b>Wrap a string</b> once around the outside of the tire, mark where it meets itself, then lay the string out straight.<br>Measure the string with a small SI referent, the <b>width of a pinky fingernail</b> (<span class="tex">\approx1</span> cm), counting how many fit. The count <b>is</b> the circumference in centimetres.<br>A <span class="tex">700</span> mm road wheel has circumference <span class="tex">\pi(70)\approx220</span> cm, so expect roughly <b>220</b> fingernail widths.</div></div></div>
+<!-- ================= Extension: scientific notation ================= -->
+<section class="card u10l2-extcard" data-ink="s2x" data-section="2. Extension: Large Step Counts">
+  <div class="sec-h"><span class="badge">2</span><h2>Large Step Counts and Scientific Notation</h2><span class="u10l2-ext-tag">Extension</span></div>
+  <p>With the Extension prefixes a conversion can be 6, 8 or even 18 steps long. Instead of hopping one place at a time, <b>count the steps</b> and multiply by that power of ten all at once. Then tidy the answer into <b>scientific notation</b>, <span class="tex">a\times10^{n}</span> with <span class="tex">1\le a&lt;10</span>.</p>
+  <div class="explainer" data-explainer="sci"></div>
+</section>
+
+<section class="card example u10l2-extcard" data-ink="ex3" data-section="Example 3">
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Large step counts, answers in scientific notation</h3><span class="u10l2-ext-tag">Extension</span></div>
+  <p class="q">Convert each measure, leaving the answer in scientific notation.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">18\text{ km}</span> to mm</div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">km <span class="tex">\to</span> mm is <b>6 steps right</b>: <span class="tex">\times10^{6}</span>.<br><span class="tex">18\times10^{6}=\boldsymbol{1.8\times10^{7}}\text{ mm}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">640\ \mu\text{g}</span> to grams</div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\mu\text{g}\to\text{g}</span> is <b>6 steps left</b>: <span class="tex">\times10^{-6}</span>.<br><span class="tex">640\times10^{-6}=\boldsymbol{6.4\times10^{-4}}\text{ g}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">12\,400\text{ cL}</span> to ML</div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">cL <span class="tex">\to</span> ML is <b>8 steps left</b>: <span class="tex">\times10^{-8}</span>.<br><span class="tex">12\,400\times10^{-8}=\boldsymbol{1.24\times10^{-4}}\text{ ML}</span></div></div></div>
   </div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Circumference of the wheel.</b> <span class="tex">C=\pi d</span> with <span class="tex">d=700</span> mm <span class="tex">=70</span> cm: <span class="keys"><kbd>π</kbd><kbd>×</kbd><kbd>7</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives <span class="tex">219.911\ldots\approx220</span> cm.</div>
-    <div class="pill-col"><button class="pill" data-keys="π × 70 =">Show me</button></div>
+    <div><b>Powers of ten with <kbd>EE</kbd>.</b> (c): <span class="keys"><kbd>1</kbd><kbd>2</kbd><kbd>4</kbd><kbd>0</kbd><kbd>0</kbd><kbd>2nd</kbd><kbd>EE</kbd><kbd>(−)</kbd><kbd>8</kbd><kbd>ENTER</kbd></span> gives 0.000124, which is <span class="tex">1.24\times10^{-4}</span>. Use <kbd>(−)</kbd>, not the subtraction key, for a negative exponent.</div>
+    <div class="pill-col"><button class="pill" data-keys="18 EE 6 =">Show (a)</button><button class="pill" data-keys="640 EE (−) 6 =">Show (b)</button><button class="pill" data-keys="12400 EE (−) 8 =">Show (c)</button></div>
   </div>
-  <div class="explainer" data-explainer="shed"></div>
-  <div class="explainer" data-explainer="wheel"></div>
   <div class="space" id="ex3-space"></div>
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
+<!-- ================= 3. Method 2: proportional reasoning ================= -->
+<section class="card" data-ink="s3" data-section="3. Method 2: Proportional Reasoning">
+  <div class="sec-h"><span class="badge">3</span><h2>Method 2: Proportional Reasoning</h2></div>
+  <p>A <b>proportion</b> is a statement that two ratios are equal. Given either a known conversion (such as <span class="tex">1\text{ m}=100\text{ cm}</span>) or a ratio supplied by the question, set up</p>
+  <div class="u10l2-disp"><span class="tex">\dfrac{a}{b}=\dfrac{c}{d}</span></div>
+  <p>with <b>matching units in matching positions</b>, then cross-multiply to isolate the unknown. Scale drawings, map scales, recipes and currency exchange rates are all ratios, so each can be solved with a proportion.</p>
+  <div class="explainer" data-explainer="prop"></div>
+</section>
+
 <section class="card example" data-ink="ex4" data-section="Example 4">
-  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Measuring a scale diagram in both systems</h3></div>
-  <p class="q">Shown below is a scale diagram of a sample access card, drawn at a scale of <span class="tex">1:3</span>. Measure the printed diagram itself: it is reproduced at full size.</p>
-  <div class="u10l2-cardrow">
-    <div class="u10l2-card"><div class="u10l2-cardt">sample card</div></div>
-    <div class="u10l2-cardnote">In the booklet this diagram is printed at its true size, <b>3.0 cm</b> long. On a screen it is not, so measure the booklet’s copy, or use the on-screen ruler in the explainer below.</div>
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Two correct arrangements of the same proportion</h3></div>
+  <p class="q">Sam and Priya each convert <span class="tex">450\text{ cm}</span> into metres, using <span class="tex">1\text{ m}=100\text{ cm}</span>. Complete both students’ work.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl"><b>Sam</b> (cross multiplication)</div>
+      <div class="u10l2-given"><span class="tex">\dfrac{1\text{ m}}{100\text{ cm}}=\dfrac{x}{450\text{ cm}}</span><br><span class="tex">(1\text{ m})(450\text{ cm})=(x)(100\text{ cm})</span><br><span class="tex">x=</span> <span data-reveal="______"><span class="tex">4.5\text{ m}</span></span></div>
+      <div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x=\dfrac{(1\text{ m})(450\text{ cm})}{100\text{ cm}}=\dfrac{450}{100}=\boldsymbol{4.5}\text{ m}</span> (cm cancels).</div></div></div>
+    <div class="part"><div class="pl"><b>Priya</b> (table of headers)</div>
+      <div class="u10l2-given u10l2-prow"><table class="u10l2-htab"><tr><th>m</th><th>cm</th></tr><tr><td><span class="tex">1</span></td><td><span class="tex">100</span></td></tr><tr><td><span class="tex">x</span></td><td><span class="tex">450</span></td></tr></table>
+        <div><span class="tex">\dfrac{1}{x}=\dfrac{100}{450}</span><br><span class="tex">x=</span> <span data-reveal="______"><span class="tex">4.5\text{ m}</span></span></div></div>
+      <div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">100x=450</span>, so <span class="tex">x=\dfrac{450}{100}=\boldsymbol{4.5}\text{ m}</span>.</div></div></div>
   </div>
-  <div class="parts c3">
-    <div class="part"><div class="pl">(a) Measure the length of the scale diagram above, in both SI units and imperial units.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A ruler laid along the longer edge reads <b>3.0 cm</b>.<br>Converting with <span class="tex">1\text{ in}=2.54</span> cm:<br><span class="tex">3.0\text{ cm}\div2.54\text{ cm/in}=1.1811\ldots\approx\boldsymbol{1.18\text{ in}}</span><br>(On a ruler marked in sixteenths, this is just short of <span class="tex">1\tfrac{3}{16}</span> in.)</div></div></div>
-    <div class="part"><div class="pl">(b) Use your answer from part (a) to determine the actual length of the access card.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The scale is <span class="tex">1:3</span>, so every <span class="tex">1</span> cm on the diagram stands for <span class="tex">3</span> cm on the real card.<br><span class="tex">3.0\text{ cm}\times3=\boldsymbol{9.0\text{ cm}}</span><br>In imperial units: <span class="tex">9.0\div2.54=3.5433\ldots\approx\boldsymbol{3.54\text{ in}}</span>, the same as <span class="tex">1.18\times3</span>.<br>The length is multiplied by the scale factor; the <b>unit</b> does not change.</div></div></div>
-    <div class="part"><div class="pl">(c) Could the length of this access card be used as a referent in either system of measurement? Explain.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Yes.</b> Access cards of this type are manufactured to a fixed, standard size, so the length is the same from card to card: exactly the consistency a referent needs. A card kept in a wallet is always at hand, so it is a <b>personal</b> referent.<br>In SI it stands for <span class="tex">\approx9</span> cm; in imperial units for <span class="tex">\approx3\tfrac12</span> in.<br>(A Canadian bank note works for the same reason.)</div></div></div>
-  </div>
+  <p class="u10l2-agree">Both methods agree: <span class="tex">450\text{ cm}=</span> <span data-reveal="______"><span class="tex">4.5</span></span> m.</p>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Centimetres to inches: divide by 2.54.</b> <span class="keys"><kbd>3</kbd><kbd>÷</kbd><kbd>2</kbd><kbd>.</kbd><kbd>5</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> gives <span class="tex">1.1811\ldots</span> and <span class="keys"><kbd>9</kbd><kbd>÷</kbd><kbd>2</kbd><kbd>.</kbd><kbd>5</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> gives <span class="tex">3.5433\ldots</span></div>
-    <div class="pill-col"><button class="pill" data-keys="3 ÷ 2.54 =">Show me (a)</button><button class="pill" data-keys="9 ÷ 2.54 =">Show me (b)</button></div>
+    <div><b>Cross-multiply, then divide.</b> <span class="keys"><kbd>1</kbd><kbd>×</kbd><kbd>4</kbd><kbd>5</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives 4.5.</div>
+    <button class="pill" data-keys="1 × 450 ÷ 100 =">Show me</button>
   </div>
-  <div class="explainer" data-explainer="card"></div>
   <div class="space" id="ex4-space"></div>
   <button class="more" data-more="ex4-space">+ More space</button>
 </section>
 
-<section class="card example" data-ink="ex5" data-section="Example 5">
-  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Building a big referent out of a smaller one</h3></div>
-  <p class="q">Marcus was asked to give a referent for <span class="tex">1</span> kilometre. He could not think of anything that was actually <span class="tex">1</span> kilometre long, so instead he built his referent for the kilometre out of a referent for a smaller unit. Suggest how he might have done this.</p>
-  <div class="parts c1">
-    <div class="part"><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Build the large referent by repeating a smaller one whose length he already knows. Since <span class="tex">1</span> km <span class="tex">=1\,000</span> m, and an Olympic swimming pool is <span class="tex">50</span> m:<br><span class="tex">1\,000\text{ m}\div50\text{ m per pool length}=\boldsymbol{20}</span><br>So <span class="tex">1</span> kilometre is about <b>20 pool lengths</b> laid end to end.<br>The same method works from any smaller referent (with an adult pace, <span class="tex">\approx1</span> yd <span class="tex">\approx0.9</span> m: <span class="tex">1\,000\div0.9\approx1\,111</span> paces), but <span class="tex">20</span> pool lengths is by far the easier count to picture.</div></div></div>
+<section class="card" data-ink="s3b" data-section="3. Ratios from the Question">
+  <h3 class="sub">Ratios supplied by the question: scales and recipes</h3>
+  <p>A scale (“<span class="tex">1</span> cm represents <span class="tex">2.4</span> m”) or a recipe (“<span class="tex">240</span> mL of yogurt to <span class="tex">560</span> mL of juice”) is a ratio that must stay the same. Whatever you do to one quantity, you do to the other.</p>
+  <div class="explainer" data-explainer="ratio"></div>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Examples 5 and 6">
+  <div class="ex-head"><span class="ex-tag">Examples 5 and 6</span><h3>Proportions from a scale and from a recipe ratio</h3></div>
+  <div class="parts c2">
+    <div class="part"><div class="pl"><b>5.</b> A photograph of a blue whale uses a scale in which <span class="tex">1</span> cm on the photograph represents <span class="tex">2.4</span> m of actual length. The whale’s tail flukes measure <span class="tex">2.5</span> cm across in the photograph. Use proportional reasoning to determine the actual width of the tail flukes. Is your answer reasonable?</div><div class="work" style="--h:280px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\dfrac{1\text{ cm}}{2.4\text{ m}}=\dfrac{2.5\text{ cm}}{x}</span><br>Cross multiplying: <span class="tex">(1)(x)=(2.5)(2.4)</span><br><span class="tex">x=\boldsymbol{6}\text{ m}</span>. The flukes are <span class="tex">6</span> m across: <b>reasonable</b>, since a blue whale’s tail flukes span roughly <span class="tex">6</span> to <span class="tex">7</span> m.</div></div></div>
+    <div class="part"><div class="pl"><b>6.</b> Dana’s smoothie recipe calls for <span class="tex">240</span> mL of yogurt and <span class="tex">560</span> mL of juice. Partway through she adds an extra <span class="tex">90</span> mL of yogurt. Use proportional reasoning to determine how much extra juice she should add to keep the same ratio.</div><div class="work" style="--h:280px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Yogurt : juice <span class="tex">=240:560=3:7</span> (divide by <span class="tex">80</span>).<br>New yogurt: <span class="tex">240+90=330</span> mL. Then <span class="tex">\dfrac{3}{7}=\dfrac{330}{j}</span>, so <span class="tex">3j=7(330)=2310</span> and <span class="tex">j=770</span> mL of juice in total.<br>Extra juice <span class="tex">=770-560=\boldsymbol{210}</span> <b>mL</b>.</div></div></div>
   </div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>How many referents make a kilometre?</b> <span class="keys"><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>5</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> <span class="tex">=20</span> pool lengths; <span class="keys"><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>.</kbd><kbd>9</kbd><kbd>ENTER</kbd></span> <span class="tex">=1\,111.1\ldots</span> paces.</div>
-    <div class="pill-col"><button class="pill" data-keys="1000 ÷ 50 =">Pool lengths</button><button class="pill" data-keys="1000 ÷ 0.9 =">Paces</button></div>
+    <div><b>Solve each proportion in one line.</b> 5: <span class="keys"><kbd>2</kbd><kbd>.</kbd><kbd>5</kbd><kbd>×</kbd><kbd>2</kbd><kbd>.</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> gives 6. 6: <span class="keys"><kbd>7</kbd><kbd>×</kbd><kbd>3</kbd><kbd>3</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>ENTER</kbd></span> gives 770 mL in total; subtract the 560 mL already in.</div>
+    <div class="pill-col"><button class="pill" data-keys="2.5 × 2.4 =">Show 5</button><button class="pill" data-keys="7 × 330 ÷ 3 =">Show 6: total</button><button class="pill" data-keys="7 × 330 ÷ 3 − 560 =">Show 6: extra</button></div>
   </div>
-  <div class="explainer" data-explainer="km"></div>
   <div class="space" id="ex5-space"></div>
   <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s3c" data-section="3. Map Scales">
+  <h3 class="sub">Map scales written as a ratio, <span class="tex">1:n</span></h3>
+  <div class="def amber"><b>Map scales.</b> A map scale written as a ratio, <span class="tex">1:n</span>, means <span class="tex">1</span> unit on the map stands for <span class="tex">n</span> of the <b>same</b> unit on the ground: on a <span class="tex">1:50\,000</span> map, <span class="tex">1</span> cm on the map is <span class="tex">50\,000\text{ cm}=500\text{ m}</span> on the ground. Convert to a convenient unit only at the end.</div>
+  <div class="explainer" data-explainer="map"></div>
+</section>
+
+<section class="card example" data-ink="ex7" data-section="Example 7">
+  <div class="ex-head"><span class="ex-tag">Example 7</span><h3>A map scale written as a ratio, <span class="tex">1:n</span></h3></div>
+  <p class="q">A map of central Alberta has a scale of <span class="tex">1:250\,000</span>.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) Two towns are <span class="tex">18.4</span> cm apart on the map. How far apart are they on the ground, in kilometres?</div><div class="work" style="--h:260px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\dfrac{1\text{ cm (map)}}{250\,000\text{ cm (ground)}}=\dfrac{18.4\text{ cm}}{x}</span><br><span class="tex">x=18.4\times250\,000=4\,600\,000\text{ cm}</span><br><span class="tex">4\,600\,000\text{ cm}\times\dfrac{1\text{ m}}{100\text{ cm}}\times\dfrac{1\text{ km}}{1000\text{ m}}=\boldsymbol{46}\text{ km}</span></div></div></div>
+    <div class="part"><div class="pl">(b) Two lakes are <span class="tex">32</span> km apart. How far apart are they on the map, in centimetres?</div><div class="work" style="--h:260px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Same unit on both sides first: <span class="tex">32\text{ km}=32\times1000\times100=3\,200\,000\text{ cm}</span>.<br><span class="tex">\dfrac{1}{250\,000}=\dfrac{x}{3\,200\,000}</span><br><span class="tex">x=\dfrac{3\,200\,000}{250\,000}=\boldsymbol{12.8}\text{ cm}</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Big zeros: count them as you type.</b> (a): <span class="keys"><kbd>1</kbd><kbd>8</kbd><kbd>.</kbd><kbd>4</kbd><kbd>×</kbd><kbd>2</kbd><kbd>5</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives 4 600 000 cm, then <kbd>÷</kbd> 100 <kbd>÷</kbd> 1000 gives 46 km.</div>
+    <div class="pill-col"><button class="pill" data-keys="18.4 × 250000 =">Show (a): cm</button><button class="pill" data-keys="18.4 × 250000 ÷ 100 ÷ 1000 =">Show (a): km</button><button class="pill" data-keys="32 × 1000 × 100 ÷ 250000 =">Show (b)</button></div>
+  </div>
+  <div class="space" id="ex7-space"></div>
+  <button class="more" data-more="ex7-space">+ More space</button>
+</section>
+
+<!-- ================= 4. Method 3: unit analysis ================= -->
+<section class="card" data-ink="s4" data-section="4. Method 3: Unit Analysis">
+  <div class="sec-h"><span class="badge">4</span><h2>Method 3: Unit Analysis (Dimensional Analysis)</h2></div>
+  <p>Proportional reasoning suits a single conversion. When several conversions must be chained, <b>unit analysis</b> (also called <b>dimensional analysis</b>) is usually faster, and it is the method used in science courses. The set-up is</p>
+  <div class="u10l2-disp"><span class="tex">\text{required}=(\text{given})\times(\text{conversion}),</span></div>
+  <p>with each conversion written as a fraction arranged so the <b>unwanted unit cancels</b>. A conversion fraction such as <span class="tex">\dfrac{1000\text{ m}}{1\text{ km}}</span> has the <b>same length</b> on top and bottom, so it is just a fancy way to write <span class="tex">1</span>.</p>
+  <div class="explainer" data-explainer="one"></div>
+  <p>For example, to convert <span class="tex">640</span> mL to L using <span class="tex">1\text{ L}=1000\text{ mL}</span>,</p>
+  <div class="u10l2-disp"><span class="tex">\dfrac{640\text{ mL}}{1}\times\dfrac{1\text{ L}}{1000\text{ mL}}=\dfrac{640}{1000}\text{ L}=0.64\text{ L}\qquad(\text{mL cancels, leaving L}).</span></div>
+  <div class="explainer" data-explainer="cancel"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>The unit you don’t want goes on the bottom.</b> If a unit appears on top <em>and</em> on the bottom it cancels. If your answer’s units come out as something strange, like <span class="tex">\dfrac{\text{km}^2}{\text{m}}</span>, a conversion fraction is upside down: flip it.</div></div>
+</section>
+
+<section class="card example" data-ink="ex8" data-section="Example 8">
+  <div class="ex-head"><span class="ex-tag">Example 8</span><h3>One conversion factor</h3></div>
+  <p class="q">Convert each measurement using unit analysis.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) <span class="tex">9</span> kilometres <span class="tex">=</span> <span data-reveal="______"><span class="tex">9000</span></span> m</div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\dfrac{9\text{ km}}{1}\times\dfrac{1000\text{ m}}{1\text{ km}}</span>: km cancels, leaving m.<br><span class="tex">=9\times1000=\boldsymbol{9000}\text{ m}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="u10l2-ext sm">Extension</span> <span class="tex">3140</span> nanometres <span class="tex">=</span> <span data-reveal="______"><span class="tex">3.14\times10^{-6}</span></span> m</div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\dfrac{3140\text{ nm}}{1}\times\dfrac{1\text{ m}}{10^{9}\text{ nm}}</span>: nm cancels, leaving m.<br><span class="tex">=\dfrac{3140}{10^{9}}=\boldsymbol{3.14\times10^{-6}}\text{ m}</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Tops multiply, bottoms divide.</b> (b): <span class="keys"><kbd>3</kbd><kbd>1</kbd><kbd>4</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>1</kbd><kbd>2nd</kbd><kbd>EE</kbd><kbd>9</kbd><kbd>ENTER</kbd></span>. A very small answer may appear as a decimal or in scientific notation; both mean <span class="tex">3.14\times10^{-6}</span>.</div>
+    <div class="pill-col"><button class="pill" data-keys="9 × 1000 =">Show (a)</button><button class="pill" data-keys="3140 ÷ 1 EE 9 =">Show (b)</button></div>
+  </div>
+  <div class="space" id="ex8-space"></div>
+  <button class="more" data-more="ex8-space">+ More space</button>
+</section>
+
+<section class="card example" data-ink="ex9" data-section="Example 9">
+  <div class="ex-head"><span class="ex-tag">Example 9</span><h3>Chaining two conversion factors</h3></div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) <span class="u10l2-ext sm">Extension</span> Convert <span class="tex">0.42</span> Gm to Mm using unit analysis and known conversions involving metres.</div><div class="work" style="--h:250px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">1\text{ Gm}=10^{9}\text{ m}</span> and <span class="tex">1\text{ Mm}=10^{6}\text{ m}</span>:<br><span class="tex">\dfrac{0.42\text{ Gm}}{1}\times\dfrac{10^{9}\text{ m}}{1\text{ Gm}}\times\dfrac{1\text{ Mm}}{10^{6}\text{ m}}</span><br>Gm cancels, then m cancels, leaving Mm.<br><span class="tex">=0.42\times10^{3}=\boldsymbol{420}\text{ Mm}</span></div></div></div>
+    <div class="part"><div class="pl">(b) Complete the unit analysis below to convert <span class="tex">5.3</span> km to mm. Show the cancellation.</div>
+      <div class="u10l2-given"><span class="tex">\dfrac{5.3\text{ km}}{1}\times\dfrac{1000\text{ m}}{1\text{ km}}\times\dfrac{1000\text{ mm}}{1\text{ m}}=</span></div>
+      <div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">km cancels against km; m cancels against m; only mm is left.<br><span class="tex">=5.3\times1000\times1000=\boldsymbol{5\,300\,000}\text{ mm}=5.3\times10^{6}\text{ mm}</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>One line for the whole chain.</b> (b): <span class="keys"><kbd>5</kbd><kbd>.</kbd><kbd>3</kbd><kbd>×</kbd><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>×</kbd><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives 5 300 000.</div>
+    <div class="pill-col"><button class="pill" data-keys="0.42 × 1 EE 9 ÷ 1 EE 6 =">Show (a)</button><button class="pill" data-keys="5.3 × 1000 × 1000 =">Show (b)</button></div>
+  </div>
+  <div class="space" id="ex9-space"></div>
+  <button class="more" data-more="ex9-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s4b" data-section="4. Converting a Rate">
+  <h3 class="sub">Converting a rate: two units change at once</h3>
+  <p>A rate like <span class="tex">64</span> m/s already <b>is</b> a fraction: metres on top, seconds on the bottom. Each unit that changes needs its own conversion fraction, and each one is arranged to cancel <b>where that unit sits</b>.</p>
+  <div class="explainer" data-explainer="rate"></div>
+</section>
+
+<section class="card example" data-ink="ex10" data-section="Example 10">
+  <div class="ex-head"><span class="ex-tag">Example 10</span><h3>Converting a rate (two units change at once)</h3></div>
+  <p class="q">Priya needs to convert <span class="tex">64</span> m/s to km/min.</p>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(a) What conversions will Priya need in order to solve this problem?</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">1\text{ km}=1000\text{ m}</span> for the distance unit, and <span class="tex">1\text{ min}=60\text{ s}</span> for the time unit.</div></div></div>
+    <div class="part"><div class="pl">(b) Complete Priya’s work below, showing the cancellation of units.</div>
+      <div class="u10l2-given"><span class="tex">\dfrac{64\text{ m}}{\text{s}}\times\dfrac{\phantom{00}\text{km}}{\phantom{00}\text{m}}\times\dfrac{\phantom{00}\text{s}}{\phantom{00}\text{min}}=</span></div>
+      <div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\dfrac{64\text{ m}}{\text{s}}\times\dfrac{1\text{ km}}{1000\text{ m}}\times\dfrac{60\text{ s}}{1\text{ min}}</span><br>m cancels and s cancels, leaving km/min.<br><span class="tex">=\dfrac{64\times60}{1000}=\dfrac{3840}{1000}=\boldsymbol{3.84}\text{ km/min}</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Tops multiply, bottoms divide.</b> <span class="keys"><kbd>6</kbd><kbd>4</kbd><kbd>×</kbd><kbd>6</kbd><kbd>0</kbd><kbd>÷</kbd><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd><kbd>0</kbd><kbd>ENTER</kbd></span> gives 3.84.</div>
+    <button class="pill" data-keys="64 × 60 ÷ 1000 =">Show me</button>
+  </div>
+  <div class="space" id="ex10-space"></div>
+  <button class="more" data-more="ex10-space">+ More space</button>
+</section>
+
+<!-- ================= choosing a method ================= -->
+<section class="card" data-ink="s5" data-section="Which Method?">
+  <div class="sec-h"><span class="badge">?</span><h2>Which Method Should I Use?</h2></div>
+  <p>All three methods give the same answer for any metric conversion. Each one is <b>fastest</b> in a different situation.</p>
+  <div class="explainer" data-explainer="which"></div>
 </section>
 
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
   <div class="sum-grid">
-    <div><b>Two systems.</b> <span class="u10l2-imp"><b>Imperial</b></span>: <span class="tex">1</span> ft <span class="tex">=12</span> in, <span class="tex">1</span> yd <span class="tex">=3</span> ft, <span class="tex">1</span> mi <span class="tex">=1\,760</span> yd. <span class="u10l2-si"><b>SI</b></span>: <span class="tex">1</span> cm <span class="tex">=10</span> mm, <span class="tex">1</span> m <span class="tex">=100</span> cm, <span class="tex">1</span> km <span class="tex">=1\,000</span> m: every step a power of <span class="tex">10</span>.</div>
-    <div><b>Referents.</b> A familiar object (often a body part) used as a stand-in when there is no measuring tool. Thumb <span class="tex">\approx1</span> in, adult foot <span class="tex">\approx1</span> ft, pace <span class="tex">\approx1</span> yd; pinky nail <span class="tex">\approx1</span> cm, workbook <span class="tex">\approx20</span> cm, 4-year-old <span class="tex">\approx1</span> m.</div>
-    <div><b>Pick · count · multiply.</b> Choose a referent <b>close in size</b> to the object (a countable number of copies), lay it end to end, then estimate <span class="tex">=</span> count <span class="tex">\times</span> referent length. An estimate is only as good as its referent.</div>
-    <div><b>Harder shapes.</b> Rectangle perimeter: count two adjacent sides, <span class="tex">P\approx2(\ell+w)</span>. Curve: wrap a string, straighten it, then count. Scale diagram: measure, then multiply by the scale. Big unit: repeat a smaller referent (<span class="tex">20</span> pool lengths <span class="tex">=1</span> km).</div>
+    <div><b>Prefixes are powers of ten.</b> kilo <span class="tex">10^3</span>, hecto <span class="tex">10^2</span>, deca <span class="tex">10^1</span>, base, deci <span class="tex">10^{-1}</span>, centi <span class="tex">10^{-2}</span>, milli <span class="tex">10^{-3}</span> on a metre, gram or litre. <span class="u10l2-ext sm">Ext</span> giga, mega, micro, nano jump by <span class="tex">1000</span>.</div>
+    <div><b>Number line:</b> count the steps from the given unit to the required unit. Each step moves the decimal point <b>one place</b>, the same way you moved: right <span class="tex">\times10</span>, left <span class="tex">\div10</span>.</div>
+    <div><b>Proportion:</b> <span class="tex">\frac{a}{b}=\frac{c}{d}</span> with matching units in matching positions, then cross-multiply. Scales, recipes and <span class="tex">1:n</span> maps are ratios that must stay the same.</div>
+    <div><b>Unit analysis:</b> required = given <span class="tex">\times</span> conversion fractions, each arranged so the unwanted unit is on the opposite level and <b>cancels</b>. Chains and rates (m/s to km/min) are its specialty.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u10l2">
-    <div><div class="kicker">Your turn</div><b>Assignment 2 — Estimating Length with Personal Referents</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 2 — Converting Units Within the Metric (SI) System</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
-  <a class="assign next-l" href="../l3/">
-    <div><div class="kicker">Next lesson</div><b>Lesson 3 — Reading Precision Measuring Instruments</b><div class="muted">A referent is good to “about”. When you need more, read a ruler to the sixteenth of an inch, a vernier caliper and a micrometer.</div></div><span class="arrow">→</span>
+  <a class="assign next-l" href="../l2/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 2 — Imperial Units and Converting Between Imperial and SI</b><div class="muted">The same proportions and unit analysis, with inches, feet, yards and miles: the warm-up’s 65 mph comes back.</div></div><span class="arrow">→</span>
   </a>
   <div class="space" id="sum-space" style="min-height:120px"></div>
 </section>
-
 </main>
-
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u10l2.js';
-  boot({ key: 'u10l2', homeHref: '../../', title: '10.2 Personal Referents' });
+  boot({ key: 'u10l2', homeHref: '../../', title: '10.2 Metric Conversions' });
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

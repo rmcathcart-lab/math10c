@@ -1,858 +1,1013 @@
-/* Math 10C · Unit 2 · Lesson 4 — Scientific Notation (Application / Extension) (AN3)
- * Assignment questions 1–11 (u2_L04.tex) and the Lesson 4 Extra Practice (u2_EP04.tex, all of it).
+/* Math 10C · Unit 2 · Lesson 4 — Rational Exponents and Radicals (AN3)
+ * Assignment questions 1–19 (u2_L04.tex) and the Lesson 4 Extra Practice items about evaluating rational-exponent
+ * powers, converting between powers and radicals, negative bases and applications (u2_EP04.tex: 1–14, 19, 20, 21(c),
+ * 22, 24). The EP05 items that simplify with the exponent laws (15–18, 21(a)(b), 23) belong to Lesson 5.
  * Every part is a generator: it keeps the idea and difficulty of the booklet question (the booklet's numbers are one
- * of the possible values) and changes the numbers. Levels: LIM BEG EMG PRG ADV MAS.
- *
- * All the arithmetic is done EXACTLY on decimals stored as { m: integer, e: integer } (value m × 10^e), so keys and
- * worked solutions never show float noise. Local checkers (not the shared ones) are used for answers because
- * K.sci (without sig) and K.number compare with an absolute tolerance of 1e-9, which accepts wrong answers for
- * numbers smaller than about 10^-8 (e.g. K.sci(2.4e-13) accepts 2.4 × 10^-12):
- *   sciChk(x, opt)   scientific notation, exact (relative) value; delegates formatting nudges to K.sci
- *   stdChk(d, diag)  standard notation, compared digit by digit (exact for 0.0000000562 and for 407 000 000 000 000)
- *   prodChk(d)       product form, e.g. 2.35 × 10 × 10 × 10 or 4 / (10 × 10 × 10)
- *   linChk(c)        an exponent written in terms of k (k + c) — K.expo rejects 'k-1' as "not simplified" */
+ * of the possible values) and changes the numbers. Levels: LIM BEG EMG PRG ADV MAS. */
 (function (root) {
   'use strict';
-  var HW = root.HW, K = HW.kit, ex = HW.ex, P = K.P, F = HW.fmt, t = K.t, ok = K.ok, wrong = K.wrong, form = K.form;
-
-  /* ---------- exact decimals ---------- */
-  function P10(k) { return Math.pow(10, k); }
-  function D(m, e) { if (m === 0) return { m: 0, e: 0 }; while (m % 10 === 0) { m /= 10; e++; } return { m: m, e: e }; }
-  function dec(s) { s = String(s).replace(/\s|\\,/g, ''); var sg = s[0] === '-'; if (sg) s = s.slice(1); var p = s.split('.'), fr = p[1] || ''; var m = Number((p[0] || '0') + fr); return D(sg ? -m : m, -fr.length); }
-  function val(d) { return Number(d.m + 'e' + d.e); }
-  function nd(d) { return String(Math.abs(d.m)).length; }               // significant digits
-  function sN(d) { return d.m === 0 ? 0 : d.e + nd(d) - 1; }            // exponent in scientific notation
-  function mul(a, b) { return D(a.m * b.m, a.e + b.e); }
-  function div(a, b) { for (var k = 0; k <= 12; k++) { var n = a.m * P10(k); if (!Number.isSafeInteger(n)) return null; if (n % b.m === 0) return D(n / b.m, a.e - b.e - k); } return null; }
-  function add(a, b) { var e = Math.min(a.e, b.e); return D(a.m * P10(a.e - e) + b.m * P10(b.e - e), e); }
-  function neg(a) { return { m: -a.m, e: a.e }; }
-  function sub(a, b) { return add(a, neg(b)); }
-  function pw(a, k) { var r = D(1, 0); for (var i = 0; i < k; i++) r = mul(r, a); return r; }
-  function sh(a, k) { return { m: a.m, e: a.e + k }; }                  // × 10^k
-  function coef(d) { return D(d.m, -(nd(d) - 1)); }                     // the scientific-notation coefficient
-  function inRange(c) { var v = Math.abs(val(c)); return v >= 1 && v < 10; }
-  function std(d) {
-    if (d.m === 0) return '0';
-    var s = String(Math.abs(d.m)), sg = d.m < 0 ? '-' : '';
-    if (d.e >= 0) return sg + s + '0'.repeat(d.e);
-    var pos = s.length + d.e;
-    return pos > 0 ? sg + s.slice(0, pos) + '.' + s.slice(pos) : sg + '0.' + '0'.repeat(-pos) + s;
-  }
-  function stdTex(d) {
-    var s = std(d), sg = ''; if (s[0] === '-') { sg = '-'; s = s.slice(1); }
-    var p = s.split('.'), i = p[0], out = '';
-    if (i.length >= 4) while (i.length > 3) { out = '\\,' + i.slice(-3) + out; i = i.slice(0, -3); }
-    return sg + i + out + (p[1] ? '.' + p[1] : '');
-  }
-  function stdPlain(d) { return stdTex(d).replace(/\\,/g, ' '); }
-  function sciT(d) { return std(coef(d)) + '\\times 10^{' + sN(d) + '}'; }
-  function sciPlain(d) { return std(coef(d)) + ' × 10^' + sN(d); }
-  function pt(c, p) { return stdTex(c) + '\\times 10^{' + p + '}'; }   // c × 10^p, c not necessarily in range
-  function par(n) { return n < 0 ? '(' + n + ')' : String(n); }
-  function S(m, n) { return D(m, n - (String(m).length - 1)); }        // digits m with the decimal point after the first digit, × 10^n
-  function relEq(a, b, tol) { return isFinite(a) && isFinite(b) && Math.abs(a - b) <= (tol || 1e-9) * Math.max(Math.abs(a), Math.abs(b)); }
-
-  /* ---------- random pieces ---------- */
-  function mant(r, sig) { if (sig === 1) return r.int(1, 9); var s = String(r.int(1, 9)); for (var i = 1; i < sig - 1; i++) s += r.int(0, 9); return Number(s + r.int(1, 9)); }
-  function nz(r, lo, hi) { var v; do { v = r.int(lo, hi); } while (v % 10 === 0); return v; }
-  function find(r, gen, okf, fallback) { if (fallback && r.chance(0.12)) return fallback; for (var i = 0; i < 600; i++) { var v = gen(); if (v && okf(v)) return v; } return fallback; }
-
-  /* ---------- checkers ---------- */
-  function cands(list) { // [[value(D or number), code, hint], …] -> diag(v)
-    return function (v) {
-      for (var i = 0; i < list.length; i++) { var c = list[i]; if (c && c[0] != null && relEq(v, typeof c[0] === 'number' ? c[0] : val(c[0]))) return { code: c[1], hint: c[2] }; }
-      return null;
-    };
-  }
-  var LETTER_X = /\d\s*[xX]\s*\d/;
-  function letterX(resp) { return LETTER_X.test(String(resp || '')) ? form('letter-x', 'For “times”, use the ' + t('\\times') + ' key (or type <code>*</code>) — the letter x reads as a variable.') : null; }
-  function sciChk(x, opt) {
-    opt = opt || {};
-    var X = typeof x === 'number' ? x : val(x), base = K.sci(X, { sig: opt.sig }), want = opt.sig ? Number(X.toPrecision(opt.sig)) : X;
-    return function (resp) {
-      var lx = letterX(resp); if (lx) return lx;
-      var a = K.read(resp); if (a.res) return a.res;
-      if (relEq(a.val, want) || (opt.sig && (relEq(a.val, X, 1e-7) || Number(a.val.toPrecision(opt.sig)) === want))) return base(resp);
-      var h = opt.diag ? opt.diag(a.val, a.ast) : null;
-      if (h) return wrong(h.code || 'diag', h.hint);
-      if (relEq(-a.val, want)) return wrong('sign', 'Check the sign.');
-      var q = a.val / want, lg = Math.log10(Math.abs(q));
-      if (q > 0 && Math.abs(lg - Math.round(lg)) < 1e-9 && Math.round(lg) !== 0) return wrong('power-off', 'The digits are right, but the power of ' + t('10') + ' is off by ' + t(Math.abs(Math.round(lg))) + '. Count how many places the decimal point moves, and in which direction.');
-      if (opt.sig) for (var s = 1; s <= 6; s++) if (s !== opt.sig && relEq(a.val, Number(X.toPrecision(s)))) return form('sig', 'Round the coefficient to ' + opt.sig + ' significant digits' + (opt.place ? ' (the nearest ' + opt.place + ')' : '') + '.');
-      return wrong('value', null);
-    };
-  }
-  function stdChk(d, diag) {
-    var n = sN(d), X = val(d);
-    return function (resp) {
-      var raw = String(resp == null ? '' : resp), p = HW.parse.number(raw);
-      if (!p.ok) {
-        if (p.code === 'empty') return form('empty', 'Type your answer first.');
-        var a = K.read(raw);
-        if (!a.res && relEq(a.val, X)) return form('not-standard', 'Right value — now write it in <b>standard notation</b>: all the digits, with no power of ' + t('10') + '.');
-        return form('notnumber', 'Write the number in standard notation: digits and a decimal point only, no power of ' + t('10') + '.');
-      }
-      var g = dec(HW.parse.plain(raw).replace(/\s+/g, '').replace(/,(?=\d{3}(\D|$))/g, '').replace(/[()]/g, ''));
-      if (g.m === d.m && g.e === d.e) return ok();
-      if (g.m === -d.m && g.e === d.e) return wrong('sign', 'Check the sign.');
-      var h = diag ? diag(val(g), g) : null; if (h) return wrong(h.code || 'diag', h.hint);
-      if (g.m === d.m) {
-        var gn = sN(g);
-        if (n !== 0 && (gn === -n || (n < 0) !== (gn < 0))) return wrong('direction', n < 0 ? 'A <b>negative</b> exponent makes the number small: move the decimal point to the <b>left</b> (the answer is less than ' + t('1') + ').' : 'A <b>positive</b> exponent makes the number big: move the decimal point to the <b>right</b>.');
-        return wrong('places', 'The digits are right, but the decimal point is ' + Math.abs(gn - n) + ' place' + (Math.abs(gn - n) === 1 ? '' : 's') + ' off. Move it exactly ' + t(Math.abs(n)) + ' place' + (Math.abs(n) === 1 ? '' : 's') + ' — count the hops one at a time.');
-      }
-      return wrong('value', null);
-    };
-  }
-  function isTen(x) { return x.t === 'num' && x.v === 10; }
-  function prodTex(d) { var n = sN(d), c = stdTex(coef(d)), tens = []; for (var i = 0; i < Math.abs(n); i++) tens.push('10'); return n >= 0 ? c + (n ? '\\times ' + tens.join('\\times ') : '') : '\\dfrac{' + c + '}{' + tens.join('\\times ') + '}'; }
-  function prodKey(d) { return prodTex(d).replace(/\\dfrac/g, '\\frac').replace(/\\times /g, '\\times'); }
-  function prodChk(d) {
-    var X = val(d), n = sN(d), c = val(coef(d)), ex1 = n >= 0 ? '5.2\\times 10\\times 10' : '\\frac{5.2}{10\\times 10}';
-    return function (resp) {
-      var lx = letterX(resp); if (lx) return lx;
-      var a = K.read(resp); if (a.res) return a.res;
-      var shp = ex.shape(a.ast), f = ex.factors(a.ast);
-      var tn = f.num.filter(isTen).length, td = f.den.filter(isTen).length, on = f.num.filter(function (x) { return !isTen(x); }), od = f.den.filter(function (x) { return !isTen(x); });
-      if (relEq(a.val, X)) {
-        if (shp.pow) return form('power', 'Right value — but <b>product form</b> writes every ' + t('10') + ' out, like ' + t(ex1) + ', instead of using a power of ' + t('10') + '.');
-        if (on.length !== 1 || od.length || on[0].t !== 'num') return form('prod-shape', 'Write it as the coefficient ' + (n >= 0 ? 'times' : 'divided by') + ' a row of ' + t('10') + 's, like ' + t(ex1) + '.');
-        if (!(on[0].v >= 1 && on[0].v < 10)) return form('coef-range', 'Right value, but start from the scientific-notation coefficient (at least ' + t('1') + ' and less than ' + t('10') + '): ' + t(std(coef(d))) + '.');
-        if ((n >= 0 && td) || (n < 0 && tn)) return form('prod-shape', 'Simplify: write it with the ' + t('10') + 's ' + (n >= 0 ? 'only multiplied' : 'only in the denominator') + ', like ' + t(ex1) + '.');
-        return ok();
-      }
-      if (!shp.pow && on.length === 1 && on[0].t === 'num' && relEq(on[0].v, c) && !od.length) {
-        var got = tn - td;
-        if (n !== 0 && got === -n) return wrong('direction', n < 0 ? 'This number is less than ' + t('1') + ', so the ' + t('10') + 's go <b>under</b> the coefficient (divide), not beside it.' : 'This number is bigger than ' + t('10') + ', so the ' + t('10') + 's are <b>multiplied</b>, not dividing.');
-        return wrong('count-tens', 'Check the number of ' + t('10') + 's: the decimal point moves ' + t(Math.abs(n)) + ' place' + (Math.abs(n) === 1 ? '' : 's') + ', and each place is one ' + t('10') + '.');
-      }
-      return wrong('value', null);
-    };
-  }
-  function linChk(c) { // k + c
-    return function (resp) {
-      var p = ex.parse(resp); if (!p.ok) return K.read(resp).res || form('unreadable', 'I can’t read that.');
-      var vs = {}; (function w(x) { if (!x || typeof x !== 'object') return; if (x.t === 'var') vs[x.n] = 1; ['a', 'b', 'n'].forEach(function (k) { if (x[k]) w(x[k]); }); })(p.ast);
-      var names = Object.keys(vs);
-      if (!names.length) return wrong('no-k', 'The answer depends on ' + t('k') + ': write it in terms of ' + t('k') + ', like ' + t('k+3') + '.');
-      if (names.length > 1 || names[0] !== 'k') return form('letter', 'Use the letter ' + t('k') + ' only.');
-      var same = [0, 1, 2, 5, -3].every(function (k) { return relEq(ex.value(p.ast, { k: k }), k + c, 1e-9) || Math.abs(ex.value(p.ast, { k: k }) - (k + c)) < 1e-9; });
-      if (same) return ok();
-      var negd = [0, 1, 2, 5].every(function (k) { return Math.abs(ex.value(p.ast, { k: k }) - (k - c)) < 1e-9; });
-      if (negd) return wrong('adjust-direction', c < 0 ? 'The coefficient got <b>bigger</b>, so the exponent must get <b>smaller</b> to keep the value the same.' : 'The coefficient got <b>smaller</b>, so the exponent must get <b>bigger</b> to keep the value the same.');
-      return wrong('value', null);
-    };
-  }
-
-  /* ---------- part makers ---------- */
-  function sciPart(prompt, d, o, sol, hints, text) {
-    o = o || {};
-    var X = o.sig ? val(d) : d, key = o.sig ? K.sciTex(val(d), o.sig) : sciT(d);
-    var p = P.math(prompt, sciChk(X, { sig: o.sig, place: o.place, diag: o.diag }), key, sol, hints, text, { keys: 'sci', before: o.before });
-    p.good = [key.replace(/\\times 10\^\{(-?\d+)\}/, ' × 10^$1')];
-    p.bad = (o.bad || []).slice();
-    return p;
-  }
-  function stdPart(prompt, d, diag, sol, hints, text, inp) {
-    var p = { prompt: prompt, input: Object.assign({ type: 'number' }, inp || {}), check: stdChk(d, diag), key: std(d), answer: t(stdTex(d)), solution: sol, hints: hints || [], text: text };
-    p.good = [stdPlain(d)];
-    p.bad = [std(sh(d, 1)), std(sh(d, -1))];
-    if (sN(d) !== 0) p.bad.push(std(sh(d, -2 * sN(d))));
-    return p;
-  }
-  var SCI_HINTS = ['Move the decimal point until exactly one non-zero digit is in front of it. That gives the coefficient ' + t('a') + ', with ' + t('1\\le a<10') + '.',
-    'Count the places you moved: that is the exponent. Moving <b>left</b> (a big number) gives a positive exponent; moving <b>right</b> (a number less than 1) gives a negative one.'];
-  var STD_HINTS = ['The exponent tells you how many places to move the decimal point.',
-    'Positive exponent: move it to the <b>right</b> (a big number). Negative exponent: move it to the <b>left</b> (a number less than ' + t('1') + '). Fill the empty places with zeros.'];
-  function moveWords(d) { var n = sN(d); return t(Math.abs(n)) + ' place' + (Math.abs(n) === 1 ? '' : 's') + ' ' + (n >= 0 ? 'left' : 'right'); }
-  function signDiag(d) { // the exponent's sign flipped
-    var n = sN(d); if (!n) return null;
-    return [sh(d, -2 * n), 'exp-sign', n > 0 ? 'Your exponent is negative, but ' + t(stdTex(d)) + ' is <b>bigger</b> than ' + t('1') + ', so its exponent is positive.' : 'Your exponent is positive, but ' + t(stdTex(d)) + ' is <b>less</b> than ' + t('1') + ', so its exponent is negative.'];
-  }
-  /* standard -> scientific */
-  function toSci(d, prompt) {
-    var n = sN(d);
-    return sciPart(prompt || t(stdTex(d)), d, { diag: cands([signDiag(d), [sh(d, n >= 0 ? 1 : -1), 'counted-digits', 'Count the <b>hops</b> the decimal point makes to sit just after the first non-zero digit (' + t(std(coef(d))) + ') — not the number of digits.']]) },
-      'Move the decimal point ' + moveWords(d) + ' to get ' + t(std(coef(d))) + ', so the exponent is ' + t(n) + ':<br>' + t(stdTex(d) + '=' + sciT(d)) + '.',
-      SCI_HINTS, 'to scientific notation: ' + std(d));
-  }
-  /* scientific -> standard */
-  function toStd(d, prompt) {
-    var n = sN(d);
-    var p = stdPart(prompt || t(sciT(d)), d, null,
-      (n >= 0 ? 'The exponent is positive: move the decimal point ' + t(n) + ' place' + (n === 1 ? '' : 's') + ' <b>right</b>.' : 'The exponent is negative: move the decimal point ' + t(-n) + ' place' + (n === -1 ? '' : 's') + ' <b>left</b>.') + '<br>' + t(sciT(d) + '=' + stdTex(d)) + '.',
-      STD_HINTS, 'to standard notation: ' + sciPlain(d));
-    return p;
-  }
-  /* "not written correctly": coefficient C × 10^k (value V) -> V in scientific notation */
-  function fixPart(V, k, promptPre) {
-    var C = sh(V, -k), s = sN(C), n = sN(V), shown = pt(C, k), mv = Math.abs(s);
-    var p = sciPart((promptPre || '') + t(shown), V, { diag: cands([[sh(V, -2 * s), 'adjust-direction', s < 0 ? 'The coefficient got <b>bigger</b> (' + t(stdTex(C) + '\\to ' + std(coef(V))) + '), so the power of ' + t('10') + ' must get <b>smaller</b> by the same number of places to keep the value the same.' : 'The coefficient got <b>smaller</b> (' + t(stdTex(C) + '\\to ' + std(coef(V))) + '), so the power of ' + t('10') + ' must get <b>bigger</b> by the same number of places to keep the value the same.']]) },
-      t(stdTex(C) + '\\to ' + std(coef(V))) + ' moves the decimal point ' + t(mv) + ' place' + (mv === 1 ? '' : 's') + ' ' + (s < 0 ? 'right' : 'left') + ' (the coefficient got ' + (s < 0 ? 'bigger' : 'smaller') + '), so the exponent goes ' + (s < 0 ? 'down' : 'up') + ' by ' + t(mv) + ': ' + t(k + (s < 0 ? '-' + mv : '+' + mv) + '=' + n) + '.<br>' + t(shown + '=' + sciT(V)) + '.',
-      ['Rewrite the coefficient ' + t(stdTex(C)) + ' in scientific notation first, then multiply the powers of ' + t('10') + ' (add the exponents).', 'Each place the decimal point moves <b>right</b> makes the coefficient 10 times bigger, so the exponent must go <b>down</b> by 1 — and the other way round.'],
-      'rewrite ' + std(C) + '×10^' + k);
-    p.bad.push(std(coef(V)) + '\\times10^{' + k + '}');
-    return p;
-  }
-  /* multiply / divide two numbers a × 10^p.  A, B = { c: D, p: int, bare: bool }, op 'mul' | 'div' | 'frac' */
-  function cTex(A) { return A.bare ? stdTex(A.c) : pt(A.c, A.p); }
-  function opTex(A, B, op) { return op === 'mul' ? '(' + cTex(A) + ')(' + cTex(B) + ')' : op === 'frac' ? '\\dfrac{' + cTex(A) + '}{' + cTex(B) + '}' : (A.bare ? cTex(A) : '(' + cTex(A) + ')') + '\\div(' + cTex(B) + ')'; }
-  function opRes(A, B, op) { var m = op === 'mul'; var C = m ? mul(A.c, B.c) : div(A.c, B.c); var E = m ? A.p + B.p : A.p - B.p; return { C: C, E: E, R: sh(C, E) }; }
-  function renormSol(C, E, R, last) {
-    if (inRange(C)) return t(pt(C, E)) + ' — already in range: ' + (last ? '<b>' + t(sciT(R)) + '</b>.' : t(sciT(R)) + '.');
-    return t(pt(C, E)) + '; ' + t(stdTex(C)) + ' is not between ' + t('1') + ' and ' + t('10') + '. ' + t(stdTex(C) + '=' + sciT(C)) + ', so ' + (last ? 'the result is <b>' + t(sciT(R)) + '</b>.' : 'it is ' + t(sciT(R)) + '.');
-  }
-  function opSol(A, B, op) {
-    var o = opRes(A, B, op), m = op === 'mul';
-    return 'Coefficients: ' + t(stdTex(A.c) + (m ? '\\times ' : '\\div ') + stdTex(B.c) + '=' + stdTex(o.C)) + '. Exponents: ' + t(m ? A.p + '+' + par(B.p) + '=' + o.E : A.p + '-' + par(B.p) + '=' + o.E) + (A.bare ? ' (' + t(stdTex(A.c)) + ' has no power of ' + t('10') + ', so its exponent is ' + t('0') + ')' : '') + '.<br>' + renormSol(o.C, o.E, o.R, true);
-  }
-  function opDiag(A, B, op, extra) {
-    var o = opRes(A, B, op), m = op === 'mul', list = (extra || []).slice();
-    if (!inRange(o.C)) { var k = sN(o.C); list.push([sh(o.R, -2 * k), 'renorm-dir', k > 0 ? 'Renormalizing: ' + t(stdTex(o.C) + '\\to ' + std(coef(o.C))) + ' makes the coefficient smaller, so the exponent must go <b>up</b> by ' + t(k) + ', not down.' : 'Renormalizing: ' + t(stdTex(o.C) + '\\to ' + std(coef(o.C))) + ' makes the coefficient bigger, so the exponent must go <b>down</b> by ' + t(-k) + ', not up.']); }
-    if (m) {
-      list.push([sh(add(A.c, B.c), o.E), 'add-coef', 'The coefficients are <b>multiplied</b>, not added: ' + t(stdTex(A.c) + '\\times ' + stdTex(B.c)) + '.']);
-      list.push([sh(o.C, A.p * B.p), 'mult-exp', 'Product law: <b>add</b> the exponents (' + t('10^{m}\\times 10^{n}=10^{m+n}') + '), don’t multiply them.']);
-      list.push([sh(o.C, A.p - B.p), 'sub-exp', 'When you multiply, <b>add</b> the exponents: ' + t(A.p + '+' + par(B.p)) + '.']);
-    } else {
-      list.push([sh(o.C, A.p + B.p), 'add-exp', 'Quotient law: <b>subtract</b> the exponents (top minus bottom): ' + t(A.p + '-' + par(B.p)) + '.' + (B.p < 0 ? ' Subtracting a negative is adding.' : '')]);
-      var fl = div(B.c, A.c); if (fl) list.push([sh(fl, o.E), 'flip-ratio', 'Divide the coefficients in the right order: ' + t(stdTex(A.c) + '\\div ' + stdTex(B.c)) + '.']);
-      list.push([sh(mul(A.c, B.c), o.E), 'mult-coef', 'This is a division — divide the coefficients: ' + t(stdTex(A.c) + '\\div ' + stdTex(B.c)) + '.']);
-    }
-    return cands(list.filter(function (c) { return c[0] && !relEq(val(c[0]), val(o.R)); }));
-  }
-  var OP_HINTS = ['Work with the coefficients and the powers of ' + t('10') + ' separately: multiply (or divide) the coefficients, add (or subtract) the exponents.',
-    'Finish by checking the coefficient: if it isn’t at least ' + t('1') + ' and less than ' + t('10') + ', move the decimal point and adjust the exponent.'];
-  function opPart(A, B, op, extra) {
-    var o = opRes(A, B, op);
-    var p = sciPart(t(opTex(A, B, op)), o.R, { diag: opDiag(A, B, op, extra) }, opSol(A, B, op), OP_HINTS, (op === 'mul' ? 'multiply ' : 'divide ') + opTex(A, B, op).replace(/\\times 10\^\{(-?\d+)\}/g, 'e$1').replace(/\\[a-z]+|[{}\\]/g, ''));
-    if (!inRange(o.C)) p.bad.push(stdTex(o.C) + '\\times10^{' + o.E + '}');
-    return p;
-  }
-  function opStdPart(A, B, op) {
-    var o = opRes(A, B, op);
-    var p = stdPart(t(opTex(A, B, op)), o.R, (function (dg) { return function (v) { return dg(v); }; })(opDiag(A, B, op)),
-      opSol(A, B, op).replace(/<b>|<\/b>/g, '') + '<br>Standard notation: ' + t(sciT(o.R) + '=') + '<b>' + t(stdTex(o.R)) + '</b>.', OP_HINTS.concat(['Then write the result in standard notation.']), 'evaluate to standard: ' + opTex(A, B, op).replace(/\\[a-z]+|[{}\\]/g, ''));
-    return p;
-  }
-  function c1(r) { return D(r.int(2, 9), 0); }
-  function c2(r) { return D(nz(r, 11, 99), -1); }
-  function A_(c, p, bare) { return { c: typeof c === 'string' ? dec(c) : c, p: p, bare: !!bare }; }
-
-  /* ---------- data for context questions ---------- */
-  var INNER = [{ n: 'Mercury', d: '57.9' }, { n: 'Venus', d: '108.2' }, { n: 'Earth', d: '149.6' }, { n: 'Mars', d: '227.9' }, { n: 'Jupiter', d: '778.5' }];   // million km
-  var OUTER = [{ n: 'Saturn', d: '1.4' }, { n: 'Uranus', d: '2.9' }, { n: 'Neptune', d: '4.5' }];                                                      // billion km
-  var LONG = [['The length of the Yangtze River is approximately', 6300000, 'm'], ['The length of the Nile River is approximately', 6650000, 'm'], ['The length of the Mackenzie River is approximately', 1740000, 'm'],
-    ['The length of the Yukon River is approximately', 3190000, 'm'], ['The length of the Trans-Canada Highway is approximately', 7820000, 'm'], ['The distance from Earth to the Moon is approximately', 384400000, 'm'],
-    ['The circumference of Earth is approximately', 40075000, 'm'], ['The length of Canada’s coastline is approximately', 243000000, 'm']];
-  var STARS = [{ n: 'Wolf 359', d: '7.5', e: 16 }, { n: 'Barnard’s Star', d: '5.7', e: 16 }, { n: 'Sirius', d: '8.1', e: 16 }, { n: 'Epsilon Eridani', d: '9.9', e: 16 }, { n: 'Ross 128', d: '1.05', e: 17 }, { n: 'Procyon', d: '1.08', e: 17 }];
-  var BODIES = { Sun: { m: '1.99', me: 30, d: '1.39', de: 9 }, Earth: { m: '5.97', me: 24, d: '1.28', de: 7 }, Jupiter: { m: '1.90', me: 27, d: '1.43', de: 8 }, Saturn: { m: '5.68', me: 26, d: '1.21', de: 8 }, Moon: { m: '7.35', me: 22, d: '3.47', de: 6 }, Mars: { m: '6.42', me: 23, d: '6.79', de: 6 } };
-  function bn(x, cap) { return x === 'Sun' || x === 'Moon' ? (cap ? 'The ' : 'the ') + x : x; }
-  var BODY_PAIRS = [['Sun', 'Earth'], ['Sun', 'Jupiter'], ['Jupiter', 'Earth'], ['Earth', 'Moon'], ['Earth', 'Mars'], ['Saturn', 'Earth'], ['Jupiter', 'Moon']];
+  var HW = root.HW, ex = HW.ex, F = HW.fmt, K = HW.kit, P = K.P, t = K.t, ok = K.ok, wrong = K.wrong, form = K.form;
 
   HW.addCodes({
-    'exp-sign': 'Exponent has the wrong sign', 'counted-digits': 'Counted digits instead of places moved', direction: 'Moved the decimal point the wrong way', places: 'Decimal point moved the wrong number of places',
-    'not-standard': 'Not written in standard notation', 'adjust-direction': 'Adjusted the exponent the wrong way when renormalizing', 'renorm-dir': 'Renormalized in the wrong direction',
-    'add-coef': 'Added the coefficients instead of multiplying', 'mult-exp': 'Multiplied the exponents instead of adding', 'sub-exp': 'Subtracted exponents when multiplying', 'add-exp': 'Added exponents when dividing',
-    'mult-coef': 'Multiplied the coefficients when dividing', power: 'Used a power instead of product form', 'prod-shape': 'Product form not set up as coefficient and 10s', 'count-tens': 'Wrong number of 10s in product form',
-    'no-k': 'Gave a number instead of an expression in k', letter: 'Used another letter', 'no-align': 'Added/subtracted without a common power of 10', 'add-exps-sum': 'Added the exponents when adding',
-    'coef-not-raised': 'Did not raise the coefficient to the power', 'coef-times': 'Multiplied the coefficient by the exponent', 'power-add': 'Added the exponent and the power instead of multiplying',
-    'flip-ratio': 'Divided the wrong way round', scale: 'Lost a million/billion when converting', 'round-up': 'Rounded up a count of whole items', 'sci-not-n': 'Gave the exponent of the wrong number', 'no-renorm': 'Did not renormalize the coefficient', 'letter-x': 'Typed the letter x for times', mix: 'Mixed up the student’s answer and the correct one', 'ignored-power': 'Ignored the power of 10 already there'
+    'neg-exp-sign': 'Read a negative exponent as a negative answer', 'no-recip': 'Forgot the reciprocal (negative exponent)',
+    'times-exp': 'Multiplied the base by the exponent', swap: 'Swapped the root index and the power', 'root-only': 'Took the root but not the power',
+    'no-root': 'Forgot the root (used the numerator only)', 'square-root': 'Used a square root for every denominator', 'dec-root': 'Wrong root of a decimal',
+    'term-root': 'Took the root of each term separately', 'no-brackets': 'Calculator: exponent not in brackets', 'neg-brackets': 'Calculator: negative base not in brackets',
+    entire: 'Not written as an entire radical', 'root-first': 'Not written root-first', 'coef-inside': 'Moved the coefficient under the radical',
+    'coef-outside': 'Left the bracketed coefficient outside the radical', 'coef-not-powered': 'Didn’t raise the coefficient to the power', 'coef-times': 'Multiplied the coefficient by the exponent',
+    'coef-flipped': 'Moved the coefficient to the denominator too', 'minus-inside': 'Moved the minus sign inside the root', 'same-base': 'Used the number itself as the base',
+    exponent: 'Used a different exponent', 'six-faces': 'Forgot the cube has 6 faces', 'not-squared': 'Didn’t square the edge for the area', 'four-sides': 'Forgot the 4 sides',
+    'no-pi': 'Left out π', 'one-solution': 'Found only one solution', 'same-power': 'Raised both sides to the same power instead of the reciprocal',
+    'said-none': 'Said “no meaning” for a defined power', 'missed-none': 'Gave a value for an undefined power', 'not-power': 'Not written as a power', 'reversed': 'Ordered least to greatest',
+    'calc-sign': 'One calculation’s sign wrong', base: 'Raised the coefficient with the base', misread: 'Mixed up the two values', 'picked-defined': 'Picked a power that has meaning', missed: 'Missed one', 'all-faces': 'Gave all six faces instead of one'
   });
 
-  HW.defineLesson({
-    id: 'u2l4', unit: 2, num: '4', title: 'Scientific Notation (Application / Extension)', outcome: 'AN3',
-    blurb: 'An application of the exponent laws: writing very large and very small numbers as a × 10ⁿ, then multiplying and dividing them.',
-    questions: [
-      { num: '1', section: 'Assignment — Converting', stem: 'Complete the row of the table: standard notation, product form and scientific notation. (Product form writes every ' + t('10') + ' out, e.g. ' + t('5.2\\times 10\\times 10') + ' or ' + t('\\frac{4.7}{10\\times 10}') + '.)', parts: [
-        { id: '1a', level: 'BEG', make: function (r) { return tableRow(r.chance(0.15) ? D(235, 3) : S(mant(r, r.pick([2, 3])), r.int(3, 6)), 'std'); } },
-        { id: '1b', level: 'BEG', make: function (r) { return tableRow(r.chance(0.15) ? D(4, -7) : S(mant(r, r.pick([1, 1, 2])), -r.int(4, 7)), 'std'); } },
-        { id: '1c', level: 'BEG', make: function (r) { return tableRow(r.chance(0.15) ? D(53, 2) : S(mant(r, 2), r.int(2, 4)), 'sci'); } },
-        { id: '1d', level: 'BEG', make: function (r) { return tableRow(r.chance(0.15) ? D(73, -3) : S(mant(r, 2), -r.int(1, 3)), 'sci'); } }] },
-      { num: '2', stem: 'Express each number in scientific notation.', parts: [
-        { id: '2a', level: 'BEG', make: function (r) { return toSci(r.chance(0.15) ? D(825, 4) : S(mant(r, 3), r.int(5, 7))); } },
-        { id: '2b', level: 'BEG', make: function (r) { return toSci(r.chance(0.15) ? D(41, -6) : S(mant(r, 2), -r.int(4, 6))); } },
-        { id: '2c', level: 'BEG', make: function (r) { return toSci(r.chance(0.15) ? D(63, 9) : S(mant(r, 2), r.int(9, 11))); } },
-        { id: '2d', level: 'BEG', make: function (r) { return toSci(r.chance(0.15) ? D(362, -4) : S(mant(r, 3), -r.int(1, 3))); } }] },
-      { num: '3', stem: 'Express each number in standard notation.', parts: [
-        { id: '3a', level: 'BEG', make: function (r) { return toStd(r.chance(0.15) ? D(542, 4) : S(mant(r, 3), r.int(5, 7))); } },
-        { id: '3b', level: 'BEG', make: function (r) { return toStd(r.chance(0.15) ? D(34, -5) : S(mant(r, 2), -r.int(3, 5))); } },
-        { id: '3c', level: 'BEG', make: function (r) { return toStd(r.chance(0.15) ? D(562, -10) : S(mant(r, 3), -r.int(6, 9))); } },
-        { id: '3d', level: 'BEG', make: function (r) { return toStd(r.chance(0.15) ? D(675, 5) : S(mant(r, 3), r.int(6, 8))); } }] },
-      { num: '4', section: 'Assignment — Renormalizing, multiplying and dividing', stem: 'Each number is <i>not</i> written correctly in scientific notation. Rewrite each one correctly.', parts: [
-        { id: '4a', level: 'EMG', make: function (r) { var k = r.int(2, 5); return r.chance(0.15) ? fixPart(D(6, 1), 2) : fixPart(S(mant(r, 1), k - 1), k); } },
-        { id: '4b', level: 'EMG', make: function (r) { var k = -r.int(4, 8); return r.chance(0.15) ? fixPart(D(45, -9), -6) : fixPart(S(mant(r, 2), k - 2), k); } },
-        { id: '4c', level: 'EMG', make: function (r) { var k = -r.int(5, 9); return r.chance(0.15) ? fixPart(D(621, -9), -8) : fixPart(S(mant(r, 3), k + 1), k); } },
-        { id: '4d', level: 'EMG', make: function (r) { var k = r.int(9, 12); return r.chance(0.15) ? fixPart(D(58, 7), 11) : fixPart(S(mant(r, 2), k - 3), k); } }] },
-      { num: '5', stem: 'Evaluate and write each result in scientific notation.', parts: [
-        { id: '5a', level: 'EMG', make: function (r) {
-          var v = find(r, function () { return [A_(c2(r), r.int(4, 8)), A_(r.chance(0.7) ? c2(r) : c1(r), -r.int(1, 4))]; }, function (v) { var C = mul(v[0].c, v[1].c); return inRange(C) && nd(C) <= 2 && v[0].p + v[1].p >= 1; }, [A_('2.4', 6), A_('3.5', -2)]);
-          return opPart(v[0], v[1], 'mul');
-        } },
-        { id: '5b', level: 'EMG', make: function (r) {
-          var v = find(r, function () { var Q = r.chance(0.5) ? c1(r) : c2(r), B = c2(r), A = mul(Q, B); return [A_(A, r.int(6, 9)), A_(B, r.int(2, 4))]; }, function (v) { return inRange(v[0].c) && nd(v[0].c) <= 2 && val(v[1].c) < 5 && nd(div(v[0].c, v[1].c)) <= 2; }, [A_('4.5', 7), A_('1.5', 3)]);
-          return opPart(v[0], v[1], 'div');
-        } },
-        { id: '5c', level: 'PRG', make: function (r) {
-          var v = find(r, function () { return [A_(D(nz(r, 11, 99), -2), -r.int(1, 4)), A_(D(r.int(2, 9), -1), -r.int(6, 10))]; }, function (v) { return v[0].c.m * v[1].c.m < 100 && nd(mul(v[0].c, v[1].c)) <= 2; }, [A_('0.12', -2), A_('0.2', -9)]);
-          return opPart(v[0], v[1], 'mul');
-        } },
-        { id: '5d', level: 'PRG', make: function (r) {
-          var v = find(r, function () { var d = r.int(2, 8), Q = nz(r, 11, 99); return [A_(D(Q * d, -1), 0, true), A_(D(d, -1), r.int(4, 7))]; }, function (v) { var m = v[0].c; return val(m) >= 10 && val(m) < 100 && nd(m) === 3; }, [A_('18.4', 0, true), A_('0.4', 6)]);
-          return opPart(v[0], v[1], 'div');
-        } }] },
-      { num: '6', stem: 'Evaluate and write each result in <b>standard notation</b>.', parts: [
-        { id: '6a', level: 'PRG', make: function (r) {
-          var v = find(r, function () { var d = r.int(2, 6), Q = nz(r, 11, 99); return [A_(D(Q * d, -1), r.int(2, 5)), A_(D(d, -1), -r.int(1, 3))]; }, function (v) { var m = v[0].c; return inRange(m) && nd(m) === 2 && v[0].p - v[1].p <= 8; }, [A_('9.6', 4), A_('0.6', -2)]);
-          return opStdPart(v[0], v[1], 'div');
-        } },
-        { id: '6b', level: 'PRG', make: function (r) {
-          var v = find(r, function () { return [A_(D(r.int(2, 9), -2), -r.int(2, 4)), A_(c1(r), -r.int(1, 3))]; }, function (v) { var p = v[0].c.m * v[1].c.m; return p >= 10 && p < 100 && p % 10 !== 0; }, [A_('0.08', -3), A_('4', -2)]);
-          return opStdPart(v[0], v[1], 'mul');
-        } }] },
-      { num: '7', section: 'Assignment — In context', stem: function (s) { return s.inner.n + ' is about ' + t(s.inner.d) + ' million km from the Sun, and ' + s.outer.n + ' is about ' + t(s.outer.d) + ' billion km from the Sun.'; },
-        shared: function (r) {
-          var pairs = []; INNER.forEach(function (a) { OUTER.forEach(function (b) { var q = Number(b.d) * 1000 / Number(a.d); if (q >= 2 && Math.abs(q - Math.floor(q) - 0.5) > 0.12) pairs.push({ inner: a, outer: b }); }); });
-          return r.chance(0.15) ? { inner: INNER[1], outer: OUTER[1] } : r.pick(pairs);
-        },
-        parts: [
-          { id: '7a', level: 'EMG', make: function (r, s) {
-            var A = sh(dec(s.inner.d), 6), B = sh(dec(s.outer.d), 9), chA = sciChk(A, { diag: cands([[sh(A, -6), 'scale', 'One million is ' + t('10^{6}') + ': ' + t(s.inner.d + '\\text{ million}=' + s.inner.d + '\\times 10^{6}') + '. Now renormalize.']]) }), chB = sciChk(B, { diag: cands([[sh(B, -3), 'scale', 'One <b>billion</b> is ' + t('10^{9}') + ', not ' + t('10^{6}') + '.'], [sh(B, -9), 'scale', 'One billion is ' + t('10^{9}') + ': ' + t(s.outer.d + '\\text{ billion}=' + s.outer.d + '\\times 10^{9}') + '.']]) });
-            var p = P.fields('Write each distance in scientific notation (in km).', [{ name: s.inner.n, label: s.inner.n, mode: 'math', keys: 'sci', wide: true }, { name: s.outer.n, label: s.outer.n, mode: 'math', keys: 'sci', wide: true }],
-              [chA, chB], [sciT(A), sciT(B)], s.inner.n + ': ' + t(sciT(A) + '\\text{ km}') + '<br>' + s.outer.n + ': ' + t(sciT(B) + '\\text{ km}'),
-              s.inner.n + ': ' + t(s.inner.d + '\\text{ million km}=' + stdTex(A) + '\\text{ km}=') + '<b>' + t(sciT(A) + '\\text{ km}') + '</b>.<br>' + s.outer.n + ': ' + t(s.outer.d + '\\text{ billion km}=' + stdTex(B) + '\\text{ km}=') + '<b>' + t(sciT(B) + '\\text{ km}') + '</b>.',
-              ['One million is ' + t('10^{6}') + ' and one billion is ' + t('10^{9}') + '. Write each number out in full first if that helps.', 'Then move the decimal point so the coefficient is at least ' + t('1') + ' and less than ' + t('10') + '.'], 'planet distances in sci notation');
-            p.bad = [[sciT(sh(A, -6)), sciT(B)], [sciT(A), sciT(sh(B, -3))]];
-            return p;
-          } },
-          { id: '7b', level: 'EMG', make: function (r, s) {
-            var A = sh(dec(s.inner.d), 6), B = sh(dec(s.outer.d), 9), q = val(B) / val(A);
-            var p = P.approx('About how many times as far from the Sun as ' + s.inner.n + ' is ' + s.outer.n + '? Round to the nearest whole number.', q, 0, {
-              after: 'times', diag: function (v) {
-                if (Math.abs(v - K.roundTo(1 / q, 3)) < 0.002 || (v > 0 && v < 1)) return { code: 'flip-ratio', hint: '“How many times as far” is the bigger distance divided by the smaller one: ' + s.outer.n + ' ÷ ' + s.inner.n + '.' };
-                if (Math.abs(v - K.roundTo(q / 1000, 0)) < 1e-9 || Math.abs(v - K.roundTo(q * 1000, 0)) < 1e-9) return { code: 'scale', hint: 'A billion is a thousand million. Put both distances in scientific notation (in km) first, then divide.' };
-                return null;
-              } },
-              t('\\dfrac{' + sciT(B) + '}{' + sciT(A) + '}=\\dfrac{' + std(coef(B)) + '}{' + std(coef(A)) + '}\\times 10^{' + sN(B) + '-' + sN(A) + '}\\approx ' + (q / P10(sN(B) - sN(A))).toFixed(3) + '\\times 10^{' + (sN(B) - sN(A)) + '}\\approx ' + q.toFixed(1)) + ', so about <b>' + t(K.roundTo(q, 0)) + '</b> times as far.',
-              ['Divide the larger distance by the smaller one. Both must be in the same unit (km).', 'Divide the coefficients and subtract the exponents, then round.'], s.outer.n + '/' + s.inner.n + ' distance ratio');
-            return p;
-          } }] },
-      { num: '8', section: 'Assignment — Multiple choice and numerical response', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: '8', level: 'LIM', make: function (r) {
-          var L = r.chance(0.15) ? LONG[0] : r.pick(LONG), d = dec(String(L[1])), n = sN(d);
-          return P.mc(r, L[0] + ' ' + t(stdTex(d)) + ' ' + L[2] + '. When this number is written in scientific notation in the form ' + t('a\\times 10^{n}') + ', the value of ' + t('n') + ' is', [
-            { html: t(n - 3), why: 'Count every place the decimal point moves to get to ' + t(std(coef(d))) + ' (just after the first digit), not just some of them.' },
-            { html: t(n), right: true },
-            { html: t(n + 1), why: 'That’s the number of digits. Count the <b>hops</b> the decimal point makes to sit just after the first digit — one fewer than the number of digits.' },
-            { html: t(-n), why: 'A negative exponent is for numbers <b>less than 1</b>. This number is huge.' }],
-            t(stdTex(d) + '=' + sciT(d)) + ': the decimal point moves ' + moveWords(d) + ', so ' + t('n=' + n) + '.', ['Write the number as ' + t(std(coef(d)) + '\\times 10^{n}') + '. How many places does the decimal point move?'], 'exponent of ' + std(d), true);
-        } }] },
-      { num: '9', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: '9', level: 'BEG', make: function (r) {
-          var ctxs = [['In 2023, a certain film’s world-wide box office earnings were approximately', 4], ['A video game’s first-year sales were approximately', 4], ['Canada’s maple syrup exports in one year were worth approximately', 3], ['A city’s yearly budget is approximately', 4]];
-          var c = r.pick(ctxs), X = c[1] === 4 ? mant(r, 3) * 10 : mant(r, 3); if (r.chance(0.15)) { c = ctxs[0]; X = 2320; }
-          var dg = String(X).length, d = sh(dec(String(X)), 6), cf = std(coef(d)), ks = [dg - 1, 6, dg + 5, dg + 8];
-          var opts = ks.map(function (k) { return { html: t(cf + '\\times 10^{' + k + '}'), right: k === dg + 5,
-            why: k === dg - 1 ? 'That is only ' + t(F(X)) + '. The amount is ' + t(F(X)) + ' <b>million</b> dollars, so multiply by ' + t('10^{6}') + ' as well.' : k === 6 ? 'That would be ' + t(cf) + ' million. Write ' + t(F(X)) + ' itself in scientific notation first, then multiply by ' + t('10^{6}') + '.' : k === dg + 8 ? 'One million is ' + t('10^{6}') + ' (six zeros), not ' + t('10^{9}') + '.' : null }; });
-          return P.mc(r, c[0] + ' ' + t(F(X)) + ' million dollars. In scientific notation, the number of dollars is', opts,
-            t(F(X) + '\\text{ million}=' + F(X) + '\\times 10^{6}=' + cf + '\\times 10^{' + (dg - 1) + '}\\times 10^{6}=' + sciT(d)) + ' dollars.', ['One million is ' + t('10^{6}') + '. Write ' + t(F(X)) + ' in scientific notation, then use the product law.'], F(X) + ' million in sci', true);
-        } }] },
-      { num: '10', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: '10', level: 'PRG', make: function (r) {
-          var v = find(r, function () { var a = r.int(2, 9), b = r.int(2, 9), c = r.int(2, 9); return { a: a, b: b, c: c, x: -r.int(3, 7), y: r.int(2, 6), n: r.int(2, 7) }; },
-            function (v) { var ab = v.a * v.b; return ab >= 10 && ab % v.c === 0 && ab / v.c <= 9 && v.c !== ab / v.c && v.a !== v.b && v.c !== v.a && v.c !== v.b; }, { a: 8, b: 3, c: 6, x: -5, y: 4, n: 5 });
-          var ab = v.a * v.b, d = ab / v.c, z = v.x + v.y - v.n, n = v.n;
-          var opts = [-n, n, -(n + 1), n + 1].map(function (k) { return { html: t(k), right: k === n, why: k === -n ? 'Check the sign when you solve for ' + t('n') + ': ' + t('10^{' + v.x + '+' + v.y + '}\\div 10^{n}=10^{' + (v.x + v.y) + '-n}') + '.' : 'Watch the coefficients: ' + t(v.a + '\\times ' + v.b + '=' + ab) + ' and ' + t(ab + '\\div ' + v.c + '=' + d) + ' exactly, so no extra power of ' + t('10') + ' is needed.' }; });
-          return P.mc(r, t('p=' + v.a + '\\times 10^{' + v.x + '}') + ' and ' + t('q=' + v.b + '\\times 10^{' + v.y + '}') + '. If ' + t('r=' + v.c + '\\times 10^{n}') + ' and ' + t('\\dfrac{pq}{r}=' + d + '\\times 10^{' + z + '}') + ', then ' + t('n') + ' is equal to', opts,
-            t('pq=(' + v.a + '\\times 10^{' + v.x + '})(' + v.b + '\\times 10^{' + v.y + '})=' + ab + '\\times 10^{' + (v.x + v.y) + '}') + '.<br>' + t('\\dfrac{pq}{r}=\\dfrac{' + ab + '\\times 10^{' + (v.x + v.y) + '}}{' + v.c + '\\times 10^{n}}=' + d + '\\times 10^{' + (v.x + v.y) + '-n}') + '. Setting this equal to ' + t(d + '\\times 10^{' + z + '}') + ' gives ' + t((v.x + v.y) + '-n=' + z) + ', so ' + t('n=' + n) + '.',
-            ['Multiply ' + t('p') + ' and ' + t('q') + ' first, then divide by ' + t('r') + ' using the quotient law.', 'Match the exponents of ' + t('10') + ' on both sides and solve for ' + t('n') + '.'], 'solve pq/r for n', true);
-        } }] },
-      { num: '11', stem: '<i>(Numerical Response)</i>', parts: [
-        { id: '11', level: 'PRG', make: function (r) {
-          var c = r.int(4, 9), m = r.int(1, 4); if (r.chance(0.15)) { c = 8; m = 1; }
-          var dist = sh(D(3 * c, 0), m + 8), dm = sN(dist), what = ['A space probe', 'A space probe', 'A spacecraft', 'A distant probe'][m - 1], sig = ['a radio signal', 'a radio signal', 'a laser pulse', 'a radio signal'][m - 1];
-          var ans = c + m, a0 = std(div(coef(dist), D(3, 0)));
-          return P.nr('The speed of light is ' + t('3\\times 10^{8}') + ' m/s. ' + what + ' is ' + t(sciT(dist)) + ' m from Earth. If the time, in seconds, for ' + sig + ' to travel this distance is expressed in scientific notation in the form ' + t('a\\times 10^{n}') + ', the value of ' + t('a+n') + ' is ________.', ans, function (v) {
-            if (Math.abs(v - (Number(a0) + m + 1)) < 1e-9) return { code: 'no-renorm', hint: 'Check the coefficient: ' + t(std(coef(dist)) + '\\div 3=' + a0) + ' is less than ' + t('1') + ', so renormalize before you read off ' + t('a') + ' and ' + t('n') + '.' };
-            if (v === c + m + 1) return { code: 'renorm-dir', hint: 'When the coefficient goes from ' + t(a0) + ' up to ' + t(c) + ', the exponent must go <b>down</b> by ' + t('1') + '.' };
-            var mu = 3 * val(coef(dist)), me = dm + 8 + (mu >= 10 ? 1 : 0), ma = mu >= 10 ? mu / 10 : mu;
-            if (Math.abs(v - (ma + me)) < 1e-6) return { code: 'mult-coef', hint: 'Time = distance ÷ speed. Divide, don’t multiply.' };
-            return null;
-          }, 'Time ' + t('=') + ' distance ' + t('\\div') + ' speed ' + t('=\\dfrac{' + sciT(dist) + '}{3\\times 10^{8}}=' + a0 + '\\times 10^{' + (dm - 8) + '}=' + c + '\\times 10^{-1}\\times 10^{' + (dm - 8) + '}=' + c + '\\times 10^{' + m + '}') + ' s.<br>So ' + t('a=' + c) + ', ' + t('n=' + m) + ' and ' + t('a+n=' + ans) + '.',
-          ['Time = distance ÷ speed. Divide the coefficients and subtract the exponents.', 'Make sure the coefficient is between ' + t('1') + ' and ' + t('10') + ' before you read off ' + t('a') + ' and ' + t('n') + '.'], 'light travel time a+n');
-        } }] }
-    ],
-    extra: [
-      { num: '1', section: 'Extra practice A — Both directions, and the sign of the exponent', stem: 'Write each number in scientific notation. Keep every significant figure — nothing here is rounded.', parts: [
-        { id: 'e1a', level: 'BEG', make: function (r) { return toSci(r.chance(0.15) ? D(304, -8) : S(Number(r.int(1, 9) + '0' + r.int(1, 9)), -r.int(5, 7))); } },
-        { id: 'e1b', level: 'BEG', make: function (r) { return toSci(r.chance(0.15) ? D(85, -10) : S(mant(r, 2), -r.int(8, 10))); } },
-        { id: 'e1c', level: 'BEG', make: function (r) { return toSci(r.chance(0.15) ? D(407, 12) : S(Number(r.int(1, 9) + '0' + r.int(1, 9)), r.int(12, 14))); } },
-        { id: 'e1d', level: 'EMG', make: function (r) { return toSci(r.chance(0.15) ? D(10203, -5) : S(Number(r.int(1, 9) + '0' + r.int(1, 9) + '0' + r.int(1, 9)), -r.int(1, 2))); } },
-        { id: 'e1e', level: 'BEG', make: function (r) { return toSci(r.chance(0.15) ? D(999, -6) : S(r.pick([999, 998, 995, 99, 909]), -r.int(3, 5))); } },
-        { id: 'e1f', level: 'BEG', make: function (r) { return toSci(r.chance(0.15) ? D(607, 4) : S(Number(r.int(1, 9) + '0' + r.int(1, 9)), r.int(5, 7))); } },
-        { id: 'e1g', level: 'BEG', make: function (r) { return toSci(r.chance(0.15) ? D(5, -2) : S(r.int(1, 9), -r.int(1, 3))); } },
-        { id: 'e1h', level: 'BEG', make: function (r) { return toSci(D(1, r.chance(0.15) ? 12 : r.int(9, 13))); } }] },
-      { num: '2', stem: 'Write each number in standard notation. Watch the negative exponents — they move the decimal point the other way.', parts: [
-        { id: 'e2a', level: 'BEG', make: function (r) { return toStd(r.chance(0.15) ? D(706, -9) : S(Number(r.int(1, 9) + '0' + r.int(1, 9)), -r.int(5, 7))); } },
-        { id: 'e2b', level: 'BEG', make: function (r) { return toStd(r.chance(0.15) ? D(12, -2) : S(mant(r, 2), -1)); } },
-        { id: 'e2c', level: 'BEG', make: function (r) { return toStd(r.chance(0.15) ? D(9003, 2) : S(Number(r.int(1, 9) + '00' + r.int(1, 9)), r.int(4, 6))); } },
-        { id: 'e2d', level: 'BEG', make: function (r) { return toStd(r.chance(0.15) ? D(5, -6) : S(r.int(1, 9), -r.int(4, 7))); } },
-        { id: 'e2e', level: 'BEG', make: function (r) { return toStd(r.chance(0.15) ? D(325, -6) : S(mant(r, 3), -r.int(3, 5))); } },
-        { id: 'e2f', level: 'BEG', make: function (r) { return toStd(r.chance(0.15) ? D(6401, 6) : S(Number(String(r.int(1, 9)) + r.int(1, 9) + '0' + r.int(1, 9)), r.int(8, 10))); } }] },
-      { num: '3', stem: function (s) { return 'These numbers are all built from the same digits (and the last one is the special case): ' + s.items.map(function (d) { return t(stdTex(d)); }).join(', ') + '.'; },
-        shared: function (r) {
-          var m = r.chance(0.15) ? 805 : Number(r.int(1, 9) + '' + r.int(0, 9) + r.int(1, 9));
-          var ns = r.chance(0.15) ? [-2, 0, 1, 5, -6] : [-r.int(1, 3), 0, r.int(1, 2), r.int(4, 6), -r.int(5, 7)];
-          return { items: ns.map(function (n) { return S(m, n); }).concat([D(1, 0)]) };
-        },
-        parts: [
-          { id: 'e3a', level: 'LIM', make: function (r, s) {
-            var rows = s.items.map(function (d, i) { return { id: 'r' + i, html: t(stdTex(d)) }; }), cols = [{ id: 'pos', html: 'positive' }, { id: 'neg', html: 'negative' }, { id: 'zero', html: 'zero' }], want = {};
-            s.items.forEach(function (d, i) { var n = sN(d); want['r' + i] = n > 0 ? 'pos' : n < 0 ? 'neg' : 'zero'; });
-            return P.grid('<b>Before</b> converting: will the exponent in scientific notation be positive, negative or zero?', rows, cols, want, { colHead: 'Exponent', why: function (row) { var d = s.items[Number(row.slice(1))]; return val(d) < 1 ? t(stdTex(d)) + ' is less than ' + t('1') + ': the exponent is negative.' : val(d) >= 10 ? t(stdTex(d)) + ' is ' + t('10') + ' or more: the exponent is positive.' : t(stdTex(d)) + ' is already between ' + t('1') + ' and ' + t('10') + ': the exponent is zero.'; } },
-              'Rule: a number that is ' + t('10') + ' or more has a <b>positive</b> exponent; a number below ' + t('1') + ' has a <b>negative</b> exponent; a number from ' + t('1') + ' up to (not including) ' + t('10') + ' has exponent <b>zero</b>.', ['Compare each number with ' + t('1') + ' and with ' + t('10') + '.'], 'predict exponent sign');
-          } },
-          { id: 'e3b', level: 'EMG', make: function (r, s) {
-            var fields = s.items.map(function (d) { return { name: t(stdTex(d)), label: t(stdTex(d)), before: t('='), mode: 'math', keys: 'sci', wide: true }; });
-            var p = P.fields('Now write each number in scientific notation.', fields, s.items.map(function (d) { return sciChk(d, { diag: cands([signDiag(d)].filter(Boolean)) }); }), s.items.map(sciT),
-              s.items.map(function (d) { return t(stdTex(d) + '=' + sciT(d)); }).join('<br>'),
-              s.items.map(function (d) { var n = sN(d); return t(stdTex(d)) + ': ' + (n ? 'move ' + moveWords(d) : 'no move needed') + ', so ' + t(sciT(d)) + '.'; }).join('<br>') + '<br>A number already between ' + t('1') + ' and ' + t('10') + ' is written with ' + t('\\times 10^{0}') + ' (since ' + t('10^{0}=1') + ').',
-              SCI_HINTS.concat(['For a number already between ' + t('1') + ' and ' + t('10') + ', the decimal point doesn’t move: use ' + t('10^{0}') + '.']), 'same digits, many exponents');
-            p.bad = [s.items.map(function (d) { return sciT(d).replace(/\{(-?\d+)\}/, function (m0, e) { return '{' + (-Number(e) || 1) + '}'; }); })];
-            return p;
-          } }] },
-      { num: '4', section: 'Extra practice B — Getting the coefficient back into range', stem: 'None of these is in scientific notation, because the coefficient does not satisfy ' + t('1\\le a<10') + '. Rewrite each correctly. The <i>value</i> must not change.', parts: [
-        { id: 'e4a', level: 'EMG', make: function (r) { var k = r.int(3, 8); return r.chance(0.15) ? fixPart(D(45, 4), 6) : fixPart(S(mant(r, 2), k - 1), k); } },
-        { id: 'e4b', level: 'EMG', make: function (r) { var k = -r.int(6, 10); return r.chance(0.15) ? fixPart(D(127, -9), -9) : fixPart(S(mant(r, 3), k + 2), k); } },
-        { id: 'e4c', level: 'EMG', make: function (r) { var k = r.int(2, 4); return r.chance(0.15) ? fixPart(D(72, -1), 3) : fixPart(S(mant(r, 2), k - 3), k); } },
-        { id: 'e4d', level: 'EMG', make: function (r) { var k = -r.int(10, 14); return r.chance(0.15) ? fixPart(D(845, -11), -12) : fixPart(S(Number(mant(r, 3) + '0'), k + 3), k); } },
-        { id: 'e4e', level: 'EMG', make: function (r) { var k = -r.int(3, 6); return r.chance(0.15) ? fixPart(D(31, -9), -4) : fixPart(S(mant(r, 2), k - 4), k); } },
-        { id: 'e4f', level: 'EMG', make: function (r) { return r.chance(0.15) ? fixPart(D(963, -1), 0) : fixPart(S(mant(r, 3), 1), 0); } }] },
-      { num: '5', stem: 'Each line is a true statement once the missing exponent is filled in. Find it.', parts: [
-        { id: 'e5a', level: 'EMG', make: function (r) { var k = r.int(3, 7), m = mant(r, 2), s = r.int(2, 3); if (r.chance(0.15)) { k = 5; m = 36; s = 3; } return missingN(S(m, s), k); } },
-        { id: 'e5b', level: 'EMG', make: function (r) { var k = -r.int(1, 5), m = mant(r, 2), s = -3; if (r.chance(0.15)) { k = -2; m = 47; } return missingN(S(m, s), k); } },
-        { id: 'e5c', level: 'EMG', make: function (r) { var k = -r.int(4, 9), m = mant(r, 2); if (r.chance(0.15)) { k = -7; m = 52; } return missingN(S(m, 1), k); } },
-        { id: 'e5d', level: 'PRG', make: function (r) {
-          var s = r.chance(0.4) ? -1 : r.pick([-2, 1, 2]), dgt = r.chance(0.3) ? 9 : r.int(2, 9), C = S(dgt, s), shown = stdTex(C), c = s;
-          var p = P.math(t(shown + '\\times 10^{k}=' + dgt + '\\times 10^{n}') + ' for every integer ' + t('k') + '. Give ' + t('n') + ' in terms of ' + t('k') + '.', linChk(c), 'k' + (c < 0 ? c : '+' + c),
-            t(shown + '\\to ' + dgt) + ' moves the decimal point ' + t(Math.abs(s)) + ' place' + (Math.abs(s) === 1 ? '' : 's') + ' ' + (s < 0 ? 'right' : 'left') + ', so the coefficient is ' + t(P10(Math.abs(s))) + ' times ' + (s < 0 ? 'larger' : 'smaller') + ' and the exponent must be ' + t(Math.abs(s)) + ' ' + (s < 0 ? 'smaller' : 'larger') + ':<br>' + t('n=k' + (c < 0 ? c : '+' + c)) + '. Check: ' + t(dgt + '\\times 10^{k' + (c < 0 ? c : '+' + c) + '}=' + dgt + '\\times 10^{' + c + '}\\times 10^{k}=' + shown + '\\times 10^{k}') + '.',
-            ['Try a number for ' + t('k') + ', say ' + t('k=5') + ': what is ' + t('n') + '? Then try ' + t('k=8') + '.', 'Moving the decimal point to the right makes the coefficient bigger, so the exponent must get smaller.'], 'n in terms of k: ' + std(C), { keys: 'expo', vars: ['k'], before: t('n=') });
-          p.good = ['k' + (c < 0 ? ' - ' + (-c) : ' + ' + c), (c < 0 ? c + '+k' : c + '+k')];
-          p.bad = ['k' + (c < 0 ? '+' + (-c) : '-' + c), String(c), 'k'];
+  /* ---------- exact arithmetic ---------- */
+  function iroot(v, n) { // exact integer nth root of v (negative allowed for odd n), else null
+    if (v < 0) { if (n % 2 === 0) return null; var q = iroot(-v, n); return q == null ? null : -q; }
+    var c0 = Math.round(Math.pow(v, 1 / n));
+    for (var c = Math.max(0, c0 - 1); c <= c0 + 1; c++) if (Math.pow(c, n) === v) return c;
+    return null;
+  }
+  function ratRoot(fr, n) { var a = iroot(fr[0], n), b = iroot(fr[1], n); return a == null || b == null ? null : [a, b]; }
+  function ratPow(fr, k) { var pp = Math.pow(fr[0], Math.abs(k)), qq = Math.pow(fr[1], Math.abs(k)); return k < 0 ? ex.norm(qq, pp) : ex.norm(pp, qq); }
+  function rv(fr) { return fr[0] / fr[1]; }
+  function rpow(b, m, n) { // real value of b^(m/n); NaN when it has no real value
+    var g = ex.gcd(m, n) || 1; m /= g; n /= g; if (n < 0) { m = -m; n = -n; }
+    if (b < 0) { if (n % 2 === 0) return NaN; return Math.pow(-Math.pow(-b, 1 / n), m); }
+    return Math.pow(b, m / n);
+  }
+  function near(a, b) { return isFinite(a) && isFinite(b) && Math.abs(a - b) <= 1e-7 * Math.max(1, Math.abs(a), Math.abs(b)); }
+
+  /* ---------- LaTeX ---------- */
+  function ratTex(fr) { return fr[1] === 1 ? F(fr[0]) : (fr[0] < 0 ? '-' : '') + '\\frac{' + F(Math.abs(fr[0])) + '}{' + F(fr[1]) + '}'; }
+  function numTex(fr, dec) { return dec ? K.decTex(fr) : ratTex(fr); }
+  function baseTex(fr, dec) { var s = numTex(fr, dec); return fr[0] < 0 || dec || fr[1] !== 1 ? '\\left(' + s + '\\right)' : s; }
+  function expTex(m, n) { var g = ex.gcd(m, n) || 1; m /= g; n /= g; if (n < 0) { m = -m; n = -n; } return n === 1 ? String(m) : (m < 0 ? '-' : '') + Math.abs(m) + '/' + n; }
+  function rootTex(n, inner) { return ex.texRoot(n, inner); }
+  function rootName(n) { return K.rootName(n); }
+  function nth(n) { return n === 2 ? 'square' : n === 3 ? 'cube' : n + 'th'; }
+  function powName(n) { return n === 2 ? 'square' : n === 3 ? 'cube' : n + 'th power'; }
+  function dedupe(arr) { return arr.filter(function (x, i) { return i === 0 || x !== arr[i - 1]; }); }
+  function decStr(x) { return String(K.roundTo(x, 2).toFixed(2)); }
+  function numOr(x) { var r = Math.round(x); return Math.abs(r - x) < 1e-9 ? F(r) : (Math.round(x * 10000) / 10000).toString(); }
+  function sgn(x) { return x < 0 ? -1 : 1; }
+
+  /* ---------- evaluate b^(m/n) exactly (b a rational, possibly negative or a decimal) ----------
+   * o: { base:[p,q], m, n, outer (±1), dec (show decimals), btex (base TeX in the prompt), etex (exponent TeX in the prompt),
+   *      prompt (whole expression TeX), sbtex (base TeX in the solution), pre (first solution line), extra (more diagnoses),
+   *      ask (prompt wrapper), text } */
+  function EV(o) {
+    o.outer = o.outer || 1;
+    var n = o.n, m = o.m, rt = ratRoot(o.base, n);
+    if (!rt) throw new Error('no exact root: ' + o.base + ' index ' + n);
+    var core = ratPow(rt, m), val = o.outer < 0 ? [-core[0], core[1]] : core;
+    var bt = o.btex || baseTex(o.base, o.dec), et = o.etex || expTex(m, n);
+    var expr = o.prompt || ((o.outer < 0 ? '-' : '') + bt + '^{' + et + '}');
+    var cands = evalCands(o, rt, rv(val)).concat(o.extra || []);
+    var check = K.fraction(val, { decimalOk: !!o.dec, diag: function (v) {
+      for (var i = 0; i < cands.length; i++) if (near(v, cands[i].v)) return { code: cands[i].code, hint: cands[i].hint };
+      return null;
+    } });
+    var keyTex = o.dec ? K.decTex(val) : ex.texRat(val);
+    var hints = ['The denominator ' + t(n) + ' is the index of the root and the numerator ' + t(Math.abs(m)) + ' is the power. Take the root first to keep the numbers small.'];
+    if (m < 0) hints.push('A negative exponent means <b>reciprocal</b>: ' + t('a^{-k}=\\frac{1}{a^{k}}') + '. It doesn’t make the answer negative.');
+    else if (o.base[0] < 0) hints.push('An odd root of a negative number is negative, e.g. ' + t('\\sqrt[3]{-8}=-2') + '.');
+    else if (o.outer < 0) hints.push('The minus sign in front isn’t part of the base: work out the power, then take the opposite.');
+    var p = P.math(o.ask ? o.ask(expr) : t(expr), check, keyTex, evalSol(o, rt, core, val), hints, o.text || 'evaluate ' + expr.replace(/\\left|\\right/g, ''), { keys: o.dec ? 'decimal' : 'fraction' });
+    p.answer = t(numTex(val, o.dec));
+    p.expr = expr;
+    p.good = [val[1] === 1 ? String(val[0]) : val[0] + '/' + val[1]];
+    if (o.dec) p.good.push(K.decTex(val));
+    p.bad = cands.map(function (c) { return String(c.v); });
+    return p;
+  }
+  function evalSol(o, rt, core, val) {
+    var n = o.n, k = Math.abs(o.m), dec = o.dec;
+    var B = o.sbtex || o.btex || baseTex(o.base, dec), E = expTex(o.m, n);
+    var inner = numTex(o.base, dec), rad = rootTex(n, inner);
+    var radk = k === 1 ? rad : '\\left(' + rad + '\\right)^{' + k + '}';
+    var Rk = k === 1 ? numTex(rt, dec) : baseTex(rt, dec) + '^{' + k + '}';
+    var PK = numTex(ratPow(rt, k), dec);
+    var chain = [B + '^{' + E + '}'];
+    if (o.m > 0) chain.push(radk, Rk, PK);
+    else chain.push('\\frac{1}{' + radk + '}', '\\frac{1}{' + Rk + '}', '\\frac{1}{' + PK + '}', numTex(core, dec));
+    chain = dedupe(chain);
+    var lines = [];
+    if (o.pre) lines.push(o.pre);
+    lines.push('The denominator ' + t(n) + ' is the index: take the ' + rootName(n) + ' root' + (k > 1 ? ', then raise it to the power ' + t(k) : '') + (o.m < 0 ? '. The negative exponent means reciprocal.' : '.')
+      + (o.base[0] < 0 ? ' The index ' + t(n) + ' is odd, so the root of the negative base exists' + (k > 1 ? (k % 2 ? ' (and an odd power keeps it negative)' : ' (and the even power makes it positive)') : '') + '.' : ''));
+    lines.push(t(chain.join('=')));
+    if (o.outer < 0) lines.push('The minus sign in front is applied last: ' + t('-\\left(' + numTex(core, dec) + '\\right)=' + numTex(val, dec)) + '.');
+    return lines.join('<br>');
+  }
+  function evalCands(o, rt, T) {
+    var b = rv(o.base), m = o.m, n = o.n, k = Math.abs(m), s = o.outer || 1, out = [];
+    var B = o.sbtex || o.btex || baseTex(o.base, o.dec), inner = numTex(o.base, o.dec);
+    function add(v, code, hint) { if (isFinite(v) && !near(v, T) && !out.some(function (c) { return near(c.v, v); })) out.push({ v: v, code: code, hint: hint }); }
+    if (s < 0) add(-T, 'sign', 'Check the minus sign in front: it isn’t part of the base. Work out the power first, then take the opposite.');
+    if (m < 0) add(-s * rpow(b, k, n), 'neg-exp-sign', 'A negative exponent means <b>reciprocal</b>, not a negative answer: ' + t('a^{-k}=\\frac{1}{a^{k}}') + '.');
+    if (m < 0) add(s * rpow(b, k, n), 'no-recip', 'You found ' + t(B + '^{' + expTex(k, n) + '}') + '. The exponent is negative, so take the <b>reciprocal</b>' + (o.base[1] !== 1 ? ' (flip the fraction)' : '') + '.');
+    if (b < 0 && s > 0) add(-T, 'sign', k % 2 === 0 ? 'The ' + rootName(n) + ' root of a negative number is negative, but the even power ' + t(k) + ' makes the result positive.' : 'The ' + rootName(n) + ' root of ' + t(inner) + ' is negative, and an odd power keeps it negative.');
+    if (k > 1) add(s * rpow(b, sgn(m) * n, k), 'swap', 'It looks like the root and the power are swapped. The <b>denominator</b> ' + t(n) + ' is the index of the root; the <b>numerator</b> ' + t(k) + ' is the power.');
+    if (k > 1) add(s * rpow(b, sgn(m), n), 'root-only', 'You took the ' + rootName(n) + ' root. Now raise it to the power ' + t(k) + ' — that’s what the numerator says.');
+    add(s * Math.pow(b, m), 'no-root', 'Don’t forget the root: the denominator ' + t(n) + ' means take the ' + rootName(n) + ' root.');
+    if (n !== 2) add(s * rpow(b, m, 2), 'square-root', 'The denominator is ' + t(n) + ', so this is a <b>' + rootName(n) + '</b> root, not a square root.');
+    add(s * b * m / n, 'times-exp', 'The exponent isn’t a multiplier: ' + t(B + '^{' + expTex(m, n) + '}') + ' doesn’t mean ' + t(B + '\\times ' + (m < 0 ? '\\left(' + expTex(m, n) + '\\right)' : expTex(m, n))) + '. Denominator = index of the root, numerator = power.');
+    if (o.dec) { var w = rv(rt) / 10; add(s * Math.pow(w, m), 'dec-root', 'Check your ' + rootName(n) + ' root of ' + t(inner) + ': raise it to the power ' + t(n) + ' and see whether you get ' + t(inner) + ' back. Count the decimal places.'); }
+    return out;
+  }
+
+  /* ---------- calculator value of b^(m/n), rounded ---------- */
+  function AP(o) {
+    o.outer = o.outer || 1;
+    var b = o.b, m = o.m, n = o.n, s = o.outer, x = s * rpow(b, m, n), k = Math.abs(m);
+    var bt = b < 0 || b % 1 ? '\\left(' + b + '\\right)' : String(b), et = expTex(m, n), expr = o.prompt || ((s < 0 ? '-' : '') + bt + '^{' + et + '}');
+    var key = '(' + (b < 0 ? '(−)' + (-b) : b) + ')^(' + (m < 0 ? '(−)' + k : k) + '/' + n + ')';
+    var cands = [];
+    function add(v, code, hint) { if (isFinite(v) && K.roundTo(v, 2) !== K.roundTo(x, 2) && !cands.some(function (c) { return K.roundTo(c.v, 2) === K.roundTo(v, 2); })) cands.push({ v: v, code: code, hint: hint }); }
+    if (s < 0) add(-x, 'sign', 'Check the minus sign in front: it isn’t part of the base, so it changes the sign of the final answer.');
+    if (b < 0) add(-s * Math.pow(-b, m / n), 'neg-brackets', 'Put the negative base in brackets and use the ' + t('(-)') + ' key: <code>' + key + '</code>. Without brackets the calculator works out ' + t('-\\left(' + (-b) + '^{' + et + '}\\right)') + '.');
+    add(s * Math.pow(b, m) / n, 'no-brackets', 'Put the exponent in brackets: <code>' + key + '</code>. Without them the calculator works out ' + t(bt + '^{' + m + '}\\div ' + n) + '.');
+    if (m < 0) add(s * rpow(b, k, n), 'no-recip', 'The exponent is negative — keep the minus sign in the exponent (the answer should be the reciprocal of ' + t(bt + '^{' + expTex(k, n) + '}') + ').');
+    if (k > 1) add(s * rpow(b, sgn(m) * n, k), 'swap', 'Check the exponent: it is ' + t(et) + ' — the denominator ' + t(n) + ' is the root, the numerator ' + t(k) + ' the power.');
+    add(s * b * m / n, 'times-exp', 'The exponent isn’t a multiplier. Use the ' + t('\\wedge') + ' key: <code>' + key + '</code>.');
+    var sol = 'Type <code>' + (s < 0 ? '(−)' : '') + key + '</code>' + (b < 0 ? ' (negative base in brackets, with the ' + t('(-)') + ' key)' : '') + '.<br>' + t(expr + '\\approx ' + decStr(x))
+      + (b < 0 ? '<br>The index ' + t(n) + ' is odd, so the root exists' + (k % 2 ? ' and an odd power keeps it negative.' : ', and the even numerator ' + t(k) + ' makes the power positive.') : '')
+      + (s < 0 ? (b < 0 ? ' Then' : '<br>') + ' the minus sign in front makes the answer negative.' : '');
+    var p = P.approx(t(expr), x, 2, { diag: function (v) { for (var i = 0; i < cands.length; i++) if (Math.abs(v - K.roundTo(cands[i].v, 2)) < 1e-9 || Math.abs(v - cands[i].v) < 0.006) return { code: cands[i].code, hint: cands[i].hint }; return null; } }, sol,
+      ['Put the whole exponent in brackets: <code>' + key + '</code>.', 'Round to the nearest hundredth at the very end.'], 'calculator ' + expr.replace(/\\left|\\right/g, ''));
+    p.bad = cands.map(function (c) { return decStr(c.v); });
+    return p;
+  }
+  function roundSafe(x, dp) { var f = x * Math.pow(10, dp), fr = f - Math.floor(f); return Math.abs(fr - 0.5) > 0.01 && fr > 0.005 && fr < 0.995; }
+  function apOk(o) { return roundSafe((o.outer || 1) * rpow(o.b, o.m, o.n), 2); }
+
+  /* ---------- reading the structure of a typed answer ---------- */
+  function strip(x) { while (x && x.t === 'paren') x = x.a; return x; }
+  function kids(x) { return ['a', 'b', 'n'].filter(function (k) { return x[k] && typeof x[k] === 'object'; }).map(function (k) { return x[k]; }); }
+  function varsOf(ast) { var acc = {}; (function w(x) { if (!x || typeof x !== 'object') return; if (x.t === 'var') acc[x.n] = 1; kids(x).forEach(w); })(ast); return Object.keys(acc); }
+  function hasDiv(x) { if (!x || typeof x !== 'object') return false; if (x.t === 'div' || (x.t === 'num' && x.dec)) return true; return kids(x).some(hasDiv); }
+  function hasNum(x) { x = strip(x); if (!x) return false; if (x.t === 'num') return true; if (x.t === 'mul' || x.t === 'neg') return kids(x).some(hasNum); return false; }
+  function shapeOf(ast) {
+    var f = { roots: 0, ratExp: false, negExp: false, powOfRoot: false, unexpanded: false, idx: [] };
+    (function w(x, inRoot) {
+      if (!x || typeof x !== 'object') return;
+      if (x.t === 'root') { f.roots++; var ir = ex.rat(x.n); f.idx.push(ir && ir[1] === 1 ? ir[0] : null); }
+      if (x.t === 'pow') {
+        if (hasDiv(x.b)) f.ratExp = true;
+        var e = strip(x.b), er = ex.rat(x.b);
+        if (e.t === 'neg' || (er && er[0] < 0)) f.negExp = true;
+        var bs = strip(x.a);
+        if (bs.t === 'root') f.powOfRoot = true;
+        if (inRoot && (bs.t === 'num' || (bs.t === 'mul' && hasNum(bs)))) f.unexpanded = true;
+      }
+      kids(x).forEach(function (c) { w(c, inRoot || x.t === 'root'); });
+    })(ast, false);
+    return f;
+  }
+  function sampleEnv(vars, i, neg) {
+    var env = {}; vars.forEach(function (v, j) { var s = 0.37 + 1.13 * ((i * 7 + j * 3) % 11) / 5 + j * 0.21; env[v] = neg && neg.indexOf(v) >= 0 ? -s : s; }); return env;
+  }
+  function equivAt(a, b, vars, neg) {
+    for (var i = 0; i < 5; i++) { var env = sampleEnv(vars, i, neg); if (!near(ex.value(a, env), ex.value(b, env))) return false; }
+    return true;
+  }
+  function nanAt(a, vars, neg) { for (var i = 0; i < 3; i++) if (isFinite(ex.value(a, sampleEnv(vars, i, neg)))) return false; return true; }
+
+  /* ---------- converting: an answer equal to target, in radical form or as a power ----------
+   * opt: form 'radical' | 'power'; entire (one root, power inside); rootFirst ((ⁿ√a)^m); expand (number powers worked out
+   * under the root); index (required index); single (one base, one exponent: give a TeX example); needRat (a rational
+   * exponent must appear); neg (letters that are negative); cands [[tex, code, hint]]; nanHint */
+  function convCheck(target, opt) {
+    opt = opt || {};
+    var tp = ex.parse(target); if (!tp.ok) throw new Error('bad target ' + target);
+    var tv = varsOf(tp.ast), cands = (opt.cands || []).map(function (c) { var q = ex.parse(c[0]); if (!q.ok) throw new Error('bad cand ' + c[0]); return { ast: q.ast, code: c[1], hint: c[2] }; });
+    var T = tv.length ? null : ex.value(tp.ast);
+    return function (resp) {
+      var a = K.read(resp); if (a.res) return a.res;
+      var sv = varsOf(a.ast), extra = sv.filter(function (v) { return tv.indexOf(v) < 0; });
+      if (extra.length) return wrong('var', 'Your answer has a letter ' + t(extra[0]) + ' that isn’t in the question.');
+      var f = shapeOf(a.ast);
+      if (equivAt(a.ast, tp.ast, tv, opt.neg)) {
+        if (opt.form === 'radical') {
+          if (f.ratExp) return form('not-radical', 'Right value — now write it in <b>radical form</b> (use the root key; no fractional exponents).');
+          if (!f.roots) return form('not-radical', 'Right value — but write it with a radical sign, as the question asks.');
+          if (opt.index && f.idx.some(function (i) { return i !== opt.index; })) return form('index', 'Right value, but use a ' + rootName(opt.index) + ' root (index ' + t(opt.index) + '), as the exponent says.');
+          if (f.negExp) return form('neg-exp', 'Right value — now write it without a negative exponent: a negative exponent puts the radical in the <b>denominator</b>.');
+          if (opt.entire && f.powOfRoot) return form('entire', 'Right value — now write it as an <b>entire radical</b>, with the power inside the root: ' + t('\\left(\\sqrt[n]{a}\\right)^{m}=\\sqrt[n]{a^{m}}') + '.');
+          if (opt.rootFirst && !f.powOfRoot) return form('root-first', 'Right value — the question asks for the root taken <b>first</b>: write it as ' + t('\\left(\\sqrt[n]{a}\\right)^{m}') + '.');
+          if (opt.expand && f.unexpanded) return form('evaluate', 'Right value — now work out the number power under the root, e.g. ' + t('(2a)^{5}=32a^{5}') + '.');
+          return ok();
+        }
+        if (opt.form === 'power') {
+          if (f.roots) return form('not-power', 'Right value — now write it as a <b>power</b> with a rational exponent (no radical sign).');
+          if (opt.single && strip(a.ast).t !== 'pow') return form('single-power', 'Right value — now write it as a <b>single power</b> ' + t(opt.single) + ' (one base, one exponent).');
+          if (opt.needRat && !f.ratExp) return form('not-power', 'Right value — but write it with a <b>rational exponent</b>, as the question asks.');
+          return ok();
+        }
+        return ok();
+      }
+      for (var i = 0; i < cands.length; i++) if (equivAt(a.ast, cands[i].ast, tv, opt.neg)) return wrong(cands[i].code, cands[i].hint);
+      if (tv.length && nanAt(a.ast, tv, opt.neg)) return wrong('undefined', opt.nanHint || 'Your expression has no real value here (an even root of a negative number). Check where the minus sign goes.');
+      if (T != null && isFinite(a.val) && !f.roots && !f.ratExp && Math.abs(a.val - T) < 0.01 * Math.abs(T)) return form('decimal', 'That’s a decimal approximation. Give the <b>exact</b> form the question asks for.');
+      return wrong('value', null);
+    };
+  }
+  function convPart(promptHtml, target, opt, sol, hints, text, extraVars) {
+    var vs = varsOf(ex.parse(target).ast).concat(extraVars || []).filter(function (v, i, arr) { return arr.indexOf(v) === i; }).sort();
+    var p = P.math(promptHtml, convCheck(target, opt), target, sol, hints, text, { keys: 'expo', vars: vs.length ? vs : ['x'], before: opt.before });
+    p.bad = (opt.cands || []).map(function (c) { return c[0]; });
+    return p;
+  }
+  /* x^(m/n) as radicals: style 'entire' ⁿ√(x^m) or 'rootFirst' (ⁿ√x)^m; coefficient c outside */
+  function radOf(v, m, n, style, c) {
+    var k = Math.abs(m), entire = rootTex(n, k === 1 ? v : v + '^{' + k + '}'), rf = k === 1 ? rootTex(n, v) : '\\left(' + rootTex(n, v) + '\\right)^{' + k + '}';
+    var r = style === 'rootFirst' ? rf : entire, cc = c && c !== 1 ? String(c) : '';
+    return m < 0 ? '\\frac{' + (cc || '1') + '}{' + r + '}' : cc + r;
+  }
+  function radCands(v, m, n, style, c) { // the classic slips for x^(m/n) -> radical
+    var k = Math.abs(m), s = sgn(m), out = [];
+    if (k > 1) out.push([radOf(v, s * n, k, style, c), 'swap', 'The <b>denominator</b> ' + t(n) + ' is the index of the root and the <b>numerator</b> ' + t(k) + ' is the power — you have them the other way round.']);
+    if (m < 0) out.push(['-' + radOf(v, k, n, style, c), 'neg-exp-sign', 'A negative exponent doesn’t make the expression negative — it means <b>reciprocal</b>: the radical goes in the denominator.']);
+    if (m < 0) out.push([radOf(v, k, n, style, c), 'no-recip', 'The exponent is negative, so the radical belongs in the <b>denominator</b>: ' + t('x^{-a}=\\frac{1}{x^{a}}') + '.']);
+    if (k > 1) out.push([radOf(v, s, n, style, c), 'root-only', 'You have the root, but the numerator ' + t(k) + ' is a power that still has to appear.']);
+    out.push([(c && c !== 1 ? c : '') + v + '^{' + m + '}', 'no-root', 'The denominator ' + t(n) + ' means a ' + rootName(n) + ' root — your answer has no root.']);
+    if (n !== 2) out.push([radOf(v, m, 2, style, c), 'square-root', 'The denominator is ' + t(n) + ', so use a <b>' + rootName(n) + '</b> root (index ' + t(n) + '), not a square root.']);
+    return out;
+  }
+  function radSol(promptTex, v, m, n, ans) {
+    var k = Math.abs(m);
+    return 'Denominator ' + t(n) + ' → index of the root; numerator ' + t(k) + ' → the power' + (m < 0 ? '; the negative sign → reciprocal (the radical goes in the denominator)' : '') + '.<br>' + t(promptTex + '=' + ans);
+  }
+  var convHints = ['The denominator of the exponent is the index of the root; the numerator is the power: ' + t('x^{m/n}=\\sqrt[n]{x^{m}}=\\left(\\sqrt[n]{x}\\right)^{m}') + '.',
+    'A negative exponent puts the power in the denominator: ' + t('x^{-m/n}=\\frac{1}{\\sqrt[n]{x^{m}}}') + '.'];
+  /* radical -> power z^(m/n) */
+  function toPowPart(v, m, n, radTexStr, sol, text, more) {
+    var tgt = v + '^{' + expTex(m, n) + '}', k = Math.abs(m), s = sgn(m), cands = (more || []).slice();
+    if (k > 1 || n > 1) cands.push([v + '^{' + expTex(s * n, k) + '}', 'swap', 'The <b>index</b> of the root becomes the <b>denominator</b> of the exponent, and the power inside becomes the numerator.']);
+    cands.push([v + '^{' + expTex(-m, n) + '}', m < 0 ? 'no-recip' : 'flip-exp', m < 0 ? 'The radical is in the <b>denominator</b>, so the exponent is <b>negative</b>.' : 'Check the sign of the exponent: the radical is in the numerator, so the exponent is positive.']);
+    if (n !== 1) cands.push([v + '^{' + m * n + '}', 'times-exp', 'A root divides the exponent: the index ' + t(n) + ' goes in the <b>denominator</b>, ' + t(v + '^{' + expTex(m, n) + '}') + '.']);
+    var p = convPart(t(radTexStr), tgt, { form: 'power', single: v + '^{n}', cands: cands }, sol || 'Index ' + t(n) + ' → denominator; power ' + t(k) + ' → numerator' + (m < 0 ? '; in the denominator → negative exponent' : '') + '.<br>' + t(radTexStr + '=' + tgt), convHints, text || 'radical to power ' + radTexStr);
+    p.good = [v + '^(' + (m < 0 ? '-' : '') + k + '/' + n + ')'];
+    return p;
+  }
+
+  /* ---------- write a number as a power with a given exponent ---------- */
+  function asPowerPart(V, e, B, sol, hints, text, words) { // V (rational [p,q]) = B^(e) ; e = [p,q]
+    var eTex = e[1] === 1 ? String(e[0]) : (e[0] < 0 ? '-' : '') + '\\frac{' + Math.abs(e[0]) + '}{' + e[1] + '}', Vv = rv(V), Bt = baseTex(B), keyTex = Bt + '^{' + expTex(e[0], e[1]) + '}';
+    var check = function (resp) {
+      var a = K.read(resp); if (a.res) return a.res;
+      if (varsOf(a.ast).length) return wrong('var', 'Use numbers only.');
+      var top = strip(a.ast), veq = near(a.val, Vv);
+      if (top.t === 'neg' && strip(top.a).t === 'pow' && veq) return form('brackets', 'Right value, but a minus sign in front isn’t part of the base: ' + t('-a^{n}') + ' means ' + t('-\\left(a^{n}\\right)') + '. Put the negative base in brackets: ' + t('\\left(-a\\right)^{' + eTex + '}') + '.');
+      if (top.t !== 'pow') { if (veq) return form('single-power', 'Right value — now write it as a <b>power</b> with exponent ' + t(eTex) + ', like ' + t('b^{' + eTex + '}') + '.'); return wrong('value', 'Write it as one power: a base with the exponent ' + t(eTex) + '.'); }
+      var er = ex.rat(top.b);
+      if (!er || er[0] * e[1] !== e[0] * er[1]) { if (veq) return form('exponent', 'Right value, but use the exponent the question gives: ' + t(eTex) + '.'); return wrong('exponent', 'Use the exponent the question gives: ' + t(eTex) + '.'); }
+      if (veq) return ok();
+      var bv = ex.value(top.a);
+      if (near(bv, Vv)) return wrong('same-base', t(baseTex(V) + '^{' + eTex + '}') + ' isn’t ' + t(ratTex(V)) + '. Which base, raised to the exponent ' + t(eTex) + ', <i>gives</i> ' + t(ratTex(V)) + '? Undo the exponent: raise ' + t(ratTex(V)) + ' to the reciprocal power.');
+      if (near(a.val, 1 / Vv)) return wrong('flip', 'Your power equals ' + t(ratTex(ex.norm(V[1], V[0]))) + ', the reciprocal. With a negative exponent the base must be the <b>reciprocal</b> of what you’d use for a positive one.');
+      if (near(a.val, -Vv)) return wrong('sign', 'Your power equals ' + t(ratTex([-V[0], V[1]])) + '. Check the sign of the base.');
+      if (!isFinite(a.val)) return wrong('undefined', 'Your power has no real value — an even root of a negative number.');
+      return wrong('value', 'Check: your power works out to about ' + t(numOr(a.val)) + ', not ' + t(ratTex(V)) + '.');
+    };
+    var p = P.math(words || ('Write ' + t(ratTex(V)) + ' as a power with an exponent of ' + t(eTex) + '.'), check, keyTex, sol, hints, text, { keys: 'expo', vars: [] });
+    p.input.vars = ['x']; p.input.keys = 'expo';
+    p.bad = [ratTex(V) + '^{' + expTex(e[0], e[1]) + '}', ex.texRat(ex.norm(V[1], V[0]))];
+    return p;
+  }
+
+  /* ---------- an expression that uses V with a rational exponent and equals target ---------- */
+  function usesPowOf(ast, V) {
+    var found = false;
+    (function w(x) { if (!x || typeof x !== 'object' || found) return; if (x.t === 'pow' && hasDiv(x.b) && near(ex.value(strip(x.a)), V)) found = true; kids(x).forEach(w); })(ast);
+    return found;
+  }
+  function powOfCheck(V, target, cands, later) {
+    return function (resp) {
+      var a = K.read(resp); if (a.res) return a.res;
+      if (varsOf(a.ast).length) return wrong('var', 'Use numbers only.');
+      if (near(a.val, target)) {
+        if (!usesPowOf(a.ast, V)) return form('not-power', 'Right value — but the question asks for an expression using a <b>power of ' + t(F(V)) + '</b> with a rational exponent' + (later ? ' (you calculate it in part (c))' : '') + '.');
+        return ok();
+      }
+      for (var i = 0; i < cands.length; i++) if (near(a.val, cands[i].v)) return wrong(cands[i].code, cands[i].hint);
+      return wrong('value', null);
+    };
+  }
+
+  /* ---------- one box: a value, or "none" ---------- */
+  function noneOr(spec) { // spec: { defined, check (when defined), noneWhy (said none but defined), valWhy (gave a value but undefined) }
+    return function (resp) {
+      var s = String(resp == null ? '' : resp).trim();
+      var isNone = /^(none|no|nomeaning|no meaning|undefined|dne|no real value|\\text\{none\})$/i.test(s.replace(/\s+/g, ' ')) || /^\\text\{\s*none\s*\}$/.test(s);
+      if (!s) return form('empty', 'Type your answer first, or press <b>none</b>.');
+      if (spec.defined) { if (isNone) return wrong('said-none', spec.noneWhy); return spec.check(s); }
+      if (isNone) return ok();
+      return wrong('missed-none', spec.valWhy);
+    };
+  }
+  function meaningPart(o) { // o: an EV spec, or { undef: true, expr, why, valWhy } for a power with no real value
+    if (o.undef) {
+      var p0 = P.fields(t(o.expr), [{ name: 'Value', before: t('='), mode: 'math', keys: 'fraction', none: true }], [noneOr({ defined: false, valWhy: o.valWhy })], ['none'], '<b>no meaning</b> (no real value)', o.why,
+        ['Look at the index (the denominator). Can you take an even root of a negative number?'], 'no meaning? ' + o.expr);
+      p0.bad = [['4'], ['-4'], ['0']];
+      return p0;
+    }
+    var e = EV(o);
+    var p = P.fields(e.prompt, [{ name: 'Value', before: t('='), mode: 'math', keys: 'fraction', none: true }], [noneOr({ defined: true, check: e.check, noneWhy: o.noneWhy })], [e.key], e.answer, e.solution, e.hints, e.text);
+    p.bad = [['none']].concat(e.bad.slice(0, 3).map(function (b) { return [b]; }));
+    p.good = e.good.map(function (g) { return [g]; });
+    return p;
+  }
+
+  /* ---------- multiple choice ---------- */
+  function mc(r, prompt, opts, sol, hints, text, keepOrder) { return P.mc(r, prompt, opts, sol, hints, text, keepOrder); }
+
+  /* ---------- generators ---------- */
+  function coprimePairs(lo, hi) { var out = []; for (var a = lo; a <= hi; a++) for (var b = lo; b <= hi; b++) if (a !== b && ex.gcd(a, b) === 1) out.push([a, b]); return out; }
+  function pickWhere(r, gen, okf, tries) { for (var i = 0; i < (tries || 300); i++) { var v = gen(); if (okf(v)) return v; } return null; }
+  function coprimeMN(r, mList, nList) { return pickWhere(r, function () { return [r.pick(mList), r.pick(nList)]; }, function (v) { return ex.gcd(v[0], v[1]) === 1 && v[0] !== v[1]; }); }
+
+  /* ---------- power -> radical part makers ---------- */
+  function genRad(v, m, n, style, opt) { // v^(m/n) -> radical; style: how the answer is displayed ('entire' or 'rootFirst')
+    opt = opt || {};
+    var pr = v + '^{' + expTex(m, n) + '}', tgt = radOf(v, m, n, style);
+    return convPart(t(pr), tgt, { form: 'radical', index: n, entire: opt.entire, rootFirst: opt.rootFirst, cands: radCands(v, m, n, style) }, radSol(pr, v, m, n, tgt), convHints, 'power to radical ' + pr);
+  }
+  function coefRad(v, c, m, n, opt) { // c·v^(m/n): the coefficient stays outside
+    opt = opt || {};
+    var pr = c + v + '^{' + expTex(m, n) + '}', tgt = radOf(v, m, n, 'entire', c), k = Math.abs(m);
+    var inside = 'The exponent belongs to ' + t(v) + ' only — the ' + t(c) + ' isn’t under the power, so it stays <b>outside</b> the radical.';
+    var cands = [[rootTex(n, c + v + (k === 1 ? '' : '^{' + k + '}')), 'coef-inside', inside], [rootTex(n, Math.pow(c, k) + v + (k === 1 ? '' : '^{' + k + '}')), 'coef-inside', inside]];
+    if (m < 0) cands.unshift(['\\frac{1}{' + c + radOf(v, k, n, 'entire') + '}', 'coef-flipped', 'Only ' + t(v) + ' has the negative exponent, so only its radical moves to the denominator. The ' + t(c) + ' stays on top: ' + t(tgt) + '.']);
+    return convPart(t(pr), tgt, { form: 'radical', index: n, entire: opt.entire, cands: cands.concat(radCands(v, m, n, 'entire', c)) },
+      'The exponent applies to ' + t(v) + ' only; the coefficient ' + t(c) + ' stays where it is' + (m < 0 ? ' (on top)' : '') + '.<br>' + t(pr + '=' + tgt), convHints.concat(['Ask: what is the base of the power? Here it is just ' + t(v) + '.']), 'power to radical ' + pr);
+  }
+  function bracketRad(v, c, m, n, opt) { // (c·v)^(m/n): the coefficient goes under the root and is raised to the power
+    opt = opt || {};
+    var k = Math.abs(m), ck = Math.pow(c, k), pr = '\\left(' + c + v + '\\right)^{' + expTex(m, n) + '}';
+    var inner = F(ck) + v + (k === 1 ? '' : '^{' + k + '}'), body = opt.rootFirst ? (k === 1 ? rootTex(n, c + v) : '\\left(' + rootTex(n, c + v) + '\\right)^{' + k + '}') : rootTex(n, inner);
+    var tgt = m < 0 ? '\\frac{1}{' + body + '}' : body;
+    function wrapM(s) { return m < 0 ? '\\frac{1}{' + s + '}' : s; }
+    var cands = [[wrapM(c + radOf(v, k, n, 'entire')), 'coef-outside', 'Here the base is ' + t('(' + c + v + ')') + ': the ' + t(c) + ' is inside the brackets, so it goes under the root ' + (k > 1 ? 'and is raised to the power ' + t(k) + ' too.' : 'too.')]];
+    if (k > 1) cands.push([wrapM(rootTex(n, c + v + '^{' + k + '}')), 'coef-not-powered', 'The power ' + t(k) + ' applies to the ' + t(c) + ' as well: ' + t('(' + c + v + ')^{' + k + '}=' + F(ck) + v + '^{' + k + '}') + '.']);
+    if (k > 1 && c * k !== ck) cands.push([wrapM(rootTex(n, c * k + v + '^{' + k + '}')), 'coef-times', t(c + '^{' + k + '}') + ' means ' + t(c) + ' multiplied by itself ' + k + ' times — not ' + t(c + '\\times ' + k) + '.']);
+    if (m < 0) cands.push([body, 'no-recip', 'The exponent is negative, so the radical goes in the <b>denominator</b>.'], ['-' + body, 'neg-exp-sign', 'A negative exponent means reciprocal, not a negative value.']);
+    if (k > 1) cands.push([wrapM(rootTex(k, Math.pow(c, n) + v + '^{' + n + '}')), 'swap', 'The <b>denominator</b> ' + t(n) + ' is the index of the root; the <b>numerator</b> ' + t(k) + ' is the power.']);
+    var sol = opt.rootFirst ? 'The base is the whole bracket ' + t('(' + c + v + ')') + ', so the ' + t(c) + ' goes under the root with ' + t(v) + '. Take the ' + rootName(n) + ' root first, then the power ' + t(k) + (m < 0 ? '; the negative exponent puts it in the denominator' : '') + '.<br>' + t(pr + '=' + tgt)
+      : 'The base is the whole bracket ' + t('(' + c + v + ')') + ', so the ' + t(c) + ' goes under the root too' + (k > 1 ? ' and is raised to the power ' + t(k) + ': ' + t('(' + c + v + ')^{' + k + '}=' + F(ck) + v + '^{' + k + '}') : '') + '.<br>' + t(pr + '=' + (k > 1 ? wrapM(rootTex(n, '(' + c + v + ')^{' + k + '}')) + '=' : '') + tgt);
+    return convPart(t(pr), tgt, { form: 'radical', index: n, expand: !opt.rootFirst, rootFirst: opt.rootFirst, entire: opt.entire, cands: cands }, sol,
+      convHints.concat(['Everything inside the brackets is the base — the number too.']), 'power to radical ' + pr);
+  }
+
+  /* ---------- Question 9 / Extra 14: negative bases with a letter ---------- */
+  function q9(r) {
+    var used = {};
+    function mn(nList, mList) { var v = pickWhere(r, function () { return [r.pick(mList), r.pick(nList)]; }, function (x) { return ex.gcd(x[0], x[1]) === 1 && x[0] !== x[1] && !used[x.join('/')]; }); used[v.join('/')] = 1; return v; }
+    var a = mn([3, 5, 7], [1, 2, 4, 5, 7]), b = mn([4, 6, 8], [1, 3, 5, 7]), c = mn([3, 5, 7], [1, 2, 3, 4]), d = mn([2, 4, 6], [1, 3, 5, 7]);
+    var items = r.shuffle([
+      { tex: '(-x)^{' + a[0] + '/' + a[1] + '}', n: a[1], def: true, minus: false },
+      { tex: '(-x)^{' + b[0] + '/' + b[1] + '}', n: b[1], def: false, minus: false },
+      { tex: '-(-x)^{' + c[0] + '/' + c[1] + '}', n: c[1], def: true, minus: true },
+      { tex: '-(-x)^{' + d[0] + '/' + d[1] + '}', n: d[1], def: false, minus: true }]);
+    var L = ['a', 'b', 'c', 'd'];
+    items.forEach(function (it, i) { it.id = L[i]; });
+    var want = items.filter(function (it) { return !it.def; }).map(function (it) { return it.id; });
+    var byId = {}; items.forEach(function (it) { byId[it.id] = it; });
+    return { prompt: 'Select the two that have no meaning.', input: { type: 'select', options: items.map(function (it) { return { value: it.id, html: '(' + it.id + ')&nbsp;' + t(it.tex) }; }) },
+      check: K.selectSet(want, function (extra, missing) {
+        if (extra.length) { var e = byId[extra[0]]; return { code: 'picked-defined', hint: '(' + e.id + ') has index ' + t(e.n) + ', which is <b>odd</b>. An odd root of a negative number exists, so ' + t(e.tex) + ' has meaning' + (e.minus ? ' (the minus sign in front just changes its sign)' : '') + '.' }; }
+        return { code: 'missed', hint: 'There are two. Look at the <b>denominator</b> of each exponent: an even index on the negative base ' + t('-x') + ' has no real value.' };
+      }),
+      key: want, answer: want.map(function (id) { return '(' + id + ') ' + t(byId[id].tex); }).join(' and '),
+      solution: 'Since ' + t('x>0') + ', the base ' + t('-x') + ' is negative. The <b>denominator</b> is the index of the root:<br>' + items.map(function (it) { return '(' + it.id + ') ' + t(it.tex) + ': index ' + t(it.n) + ' is ' + (it.def ? 'odd → <b>has meaning</b>' : 'even → <b>no meaning</b>'); }).join('<br>'),
+      hints: ['The denominator of the exponent is the index of the root. Can you take an even root of a negative number?'], text: 'which have no meaning: ' + items.map(function (it) { return it.tex; }).join(', ') };
+  }
+  function e14(r) {
+    var rows = [];
+    var n1 = r.pick([[3, 8], [1, 4], [5, 6], [3, 2], [5, 4]]); rows.push({ tex: '(-x)^{' + n1[0] + '/' + n1[1] + '}', want: 'none', why: 'The index ' + t(n1[1]) + ' is even and the base ' + t('-x') + ' is negative: no meaning.' });
+    var n2 = r.pick([[8, 3], [2, 5], [4, 3], [6, 7], [5, 3], [7, 5]]), pos = n2[0] % 2 === 0;
+    rows.push({ tex: '(-x)^{' + n2[0] + '/' + n2[1] + '}', want: pos ? 'pos' : 'neg', why: 'The index ' + t(n2[1]) + ' is odd, so the root of ' + t('-x') + ' exists and is negative; the ' + (pos ? 'even' : 'odd') + ' power ' + t(n2[0]) + ' makes it ' + (pos ? '<b>positive</b>.' : 'stay <b>negative</b>.') });
+    var n3 = r.pick([4, 2, 6]); rows.push({ tex: '-(-x)^{1/' + n3 + '}', want: 'none', why: t('(-x)^{1/' + n3 + '}') + ' is an even root of a negative number, so it has no meaning — the minus sign in front can’t fix that.' });
+    var n4 = r.pick([2, 3, 4, 5]); rows.push({ tex: '-x^{1/' + n4 + '}', want: 'neg', why: 'The exponent belongs to ' + t('x') + ' only: ' + t('-x^{1/' + n4 + '}=-' + rootTex(n4, 'x')) + ', which has meaning and is <b>negative</b>.' });
+    var r5 = r.pick([['(-x^{2})^{1/2}', 'none', t('-x^{2}') + ' is negative and the index ' + t('2') + ' is even: no meaning.'], ['(-x^{2})^{1/4}', 'none', t('-x^{2}') + ' is negative and the index ' + t('4') + ' is even: no meaning.'],
+      ['(-x^{3})^{1/3}', 'neg', t('-x^{3}') + ' is negative and the index ' + t('3') + ' is odd: ' + t('(-x^{3})^{1/3}=-x') + ', <b>negative</b>.'], ['(-x^{2})^{1/3}', 'neg', t('-x^{2}') + ' is negative and the index ' + t('3') + ' is odd, so the cube root exists and is <b>negative</b>.']]);
+    rows.push({ tex: r5[0], want: r5[1], why: r5[2] });
+    var L = ['a', 'b', 'c', 'd', 'e'], want = {}, cols = [{ id: 'none', html: 'No meaning' }, { id: 'pos', html: 'Positive' }, { id: 'neg', html: 'Negative' }];
+    rows.forEach(function (x, i) { x.id = L[i]; want[x.id] = x.want; });
+    var byId = {}; rows.forEach(function (x) { byId[x.id] = x; });
+    return P.grid('For each expression, choose <b>no meaning</b>, or say whether its value is positive or negative.', rows.map(function (x) { return { id: x.id, html: '(' + x.id + ') ' + t(x.tex) }; }), cols, want,
+      { why: function (id) { var x = byId[id]; return { code: 'row', hint: 'Check (' + id + ') ' + t(x.tex) + ': ' + (x.want === 'none' ? 'what is the index, and is the number under that root negative?' : 'it does have meaning. Work out the sign step by step — the root of the base, then the power, then any minus sign in front.') }; } },
+      rows.map(function (x) { return '(' + x.id + ') ' + t(x.tex) + ': ' + x.why; }).join('<br>'),
+      ['First look at the index (denominator): an even root of a negative number has no meaning.', 'If it has meaning, decide the sign: a minus sign outside, or an odd power of a negative, makes it negative.'], 'meaning/sign of powers of −x');
+  }
+
+  /* ---------- solving x^(a/b) = v (Extra 22) ---------- */
+  function solvePart(a, b, c) { // x^(a/b) = c^a, so x = c^b (a may be -1)
+    var x = Math.pow(c, b), v = ratPow([c, 1], a), vt = ratTex(v), e1 = expTex(a, b), rec = expTex(b, a);
+    var cands = [
+      { v: rpow(rv(v), a, b), code: 'same-power', hint: 'Raising both sides to ' + t(e1) + ' again doesn’t undo it. Raise both sides to the <b>reciprocal</b> exponent ' + t(rec) + '.' },
+      { v: rpow(rv(v), 1, Math.abs(a)), code: 'root-only', hint: 'That undoes only part of the exponent. Raise both sides to ' + t(rec) + ': ' + t('\\left(x^{' + e1 + '}\\right)^{' + rec + '}=x^{1}') + '.' },
+      { v: 1 / x, code: 'flip', hint: 'Check by substituting your answer: does it give ' + t(vt) + '? Watch the sign of the exponent.' },
+      { v: rv(v) * b / a, code: 'times-exp', hint: 'The exponent isn’t a multiplier: undo it with the reciprocal power ' + t(rec) + ', not by dividing.' }].filter(function (q) { return isFinite(q.v) && !near(q.v, x); });
+    var step = a > 0 ? '\\left(' + rootTex(a, vt) + '\\right)^{' + b + '}=' + c + '^{' + b + '}=' + F(x) : '\\left(' + vt + '\\right)^{-' + b + '}=' + c + '^{' + b + '}=' + F(x);
+    var chk = a > 0 ? '\\left(' + rootTex(b, F(x)) + '\\right)^{' + a + '}=' + c + '^{' + a + '}=' + vt : '\\frac{1}{' + rootTex(b, F(x)) + '}=' + vt;
+    var p = P.math(t('x^{' + e1 + '}=' + vt), K.fraction([x, 1], { diag: function (val) { for (var i = 0; i < cands.length; i++) if (near(val, cands[i].v)) return { code: cands[i].code, hint: cands[i].hint }; return null; } }), String(x),
+      'Raise both sides to the reciprocal power ' + t(rec) + ': ' + t('\\left(x^{' + e1 + '}\\right)^{' + rec + '}=x') + ', so ' + t('x=' + baseTex(v) + '^{' + rec + '}') + '.<br>' + t(step) + '<br>Check: ' + t(F(x) + '^{' + e1 + '}=' + chk) + ' ✓',
+      ['Raise both sides to the reciprocal of ' + t(e1) + ', which is ' + t(rec) + '.', 'Check your answer by substituting it back.'], 'solve x^' + e1 + '=' + vt, { keys: 'fraction', before: t('x=') });
+    p.bad = cands.map(function (q) { return String(q.v); });
+    return p;
+  }
+  function solveTwo(a, b, c) { // x^(a/b) = c^a with a even, b odd: x = ±c^b
+    var x = Math.pow(c, b), val = Math.pow(c, a), e1 = a + '/' + b, rec = b + '/' + a;
+    var check = function (resp) {
+      resp = resp || [];
+      var s = [String(resp[0] == null ? '' : resp[0]).trim(), String(resp[1] == null ? '' : resp[1]).trim()];
+      if (!s[0] && !s[1]) return form('empty', 'Type your solutions first.');
+      var vals = s.map(function (q) { if (!q) return null; var pr = HW.parse.number(q); return pr.ok ? pr.value : NaN; });
+      if (vals.some(function (q) { return q !== null && isNaN(q); })) return form('notnumber', 'Enter a single number in each box.');
+      for (var i = 0; i < 2; i++) {
+        var q = vals[i]; if (q === null || q === x || q === -x) continue;
+        if (near(q, Math.pow(val, a / b))) return wrong('same-power', 'Raising both sides to ' + t(e1) + ' again doesn’t undo it. Raise both sides to the <b>reciprocal</b> ' + t(rec) + '.');
+        if (near(Math.abs(q), c)) return wrong('root-only', t(c) + ' is the ' + rootName(b) + ' root of ' + t('x') + '. Raise it to the power ' + t(b) + ' to find ' + t('x') + '.');
+        return wrong('value', 'Check by substituting: ' + t('(' + q + ')^{' + e1 + '}') + ' isn’t ' + t(val) + '.');
+      }
+      if (vals[0] !== null && vals[0] === vals[1]) return wrong('one-solution', 'You have the same answer twice. There is a second solution: the numerator ' + t(a) + ' is even and the index ' + t(b) + ' is odd — could a <b>negative</b> ' + t('x') + ' work too?');
+      if (vals[0] === null || vals[1] === null) return wrong('one-solution', 'That’s one solution — there’s another. The numerator ' + t(a) + ' is even and the index ' + t(b) + ' is odd: could a <b>negative</b> ' + t('x') + ' work too?');
+      return ok();
+    };
+    return { prompt: t('x^{' + e1 + '}=' + val) + ' — this one has more solutions than you might expect. Find them all.', input: { type: 'fields', fields: [{ name: 'Solution 1', label: t('x='), mode: 'number' }, { name: 'Solution 2', label: 'or ' + t('x='), mode: 'number' }] },
+      check: check, key: [String(x), String(-x)], answer: t('x=' + F(x)) + ' or ' + t('x=-' + F(x)),
+      solution: 'Raise both sides to the reciprocal ' + t(rec) + ': ' + t('x=' + val + '^{' + rec + '}=\\left(\\sqrt{' + val + '}\\right)^{' + b + '}=' + c + '^{' + b + '}=' + F(x)) + '.<br>The index ' + t(b) + ' is odd, so try ' + t('-' + F(x)) + ' too: ' + t('(-' + F(x) + ')^{' + e1 + '}=\\left(' + rootTex(b, '-' + F(x)) + '\\right)^{' + a + '}=(-' + c + ')^{' + a + '}=' + val) + ' ✓<br>So ' + t('x=' + F(x)) + ' or ' + t('x=-' + F(x)) + '.',
+      hints: ['Raise both sides to the reciprocal power ' + t(rec) + '.', 'The numerator ' + t(a) + ' is even: a negative number raised to an even power is positive.'], text: 'solve x^' + e1 + '=' + val + ' (two solutions)',
+      good: [[String(-x), String(x)]], bad: [[String(x), String(x)], [String(x), ''], [String(Math.pow(val, a / b)), String(-x)]] };
+  }
+  function misRead(c, n, m) { // a^(m/n) vs the mis-read sqrt(a^m)
+    var B = Math.pow(c, n), good = Math.pow(c, m), mis = Math.pow(c, n * m / 2), BT = F(B), e = expTex(m, n), Bm = Math.pow(B, m), sq = '\\sqrt{' + BT + '^{' + m + '}}';
+    var p = P.fields('Evaluate ' + t(BT + '^{' + e + '}') + ' correctly, then evaluate the mis-read version ' + t(sq) + ', and say what the mis-read version is really the value of.',
+      [{ name: 'Correct value', label: t(BT + '^{' + e + '}='), mode: 'number' }, { name: 'Mis-read value', label: t(sq + '='), mode: 'number' }, { name: 'Exponent', label: t(sq + '=' + BT + '^{\\,?}') + ', where ' + t('?='), mode: 'math', keys: 'fraction' }],
+      [K.number(good, function (v) { return v === mis ? { code: 'square-root', hint: 'That’s the mis-read value. The denominator ' + t(n) + ' calls for a <b>' + rootName(n) + '</b> root, not a square root.' } : v === Bm ? { code: 'no-root', hint: 'Don’t forget the ' + rootName(n) + ' root (the denominator).' } : null; }),
+        K.number(mis, function (v) { return v === good ? { code: 'misread', hint: 'That’s the correct value of ' + t(BT + '^{' + e + '}') + '. Now work out ' + t(sq) + ' exactly as written — a <b>square</b> root.' } : null; }),
+        K.value([m, 2], { diag: function (v) { return near(v, m / n) ? { code: 'exponent', hint: 'That’s the exponent in the question. A square root has index ' + t('2') + ', so ' + t(sq + '=' + BT + '^{' + m + '/2}') + '.' } : near(v, 2 / m) ? { code: 'swap', hint: 'Power → numerator, index → denominator: ' + t('\\sqrt{a^{' + m + '}}=a^{' + m + '/2}') + '.' } : null; } })],
+      [String(good), String(mis), m % 2 === 0 ? String(m / 2) : m + '/2'], t(BT + '^{' + e + '}=' + F(good)) + '; ' + t(sq + '=' + F(mis)) + ', which is really ' + t(BT + '^{' + m + '/2}'),
+      'Denominator ' + t(n) + ': a ' + rootName(n) + ' root. ' + t(BT + '^{' + e + '}=\\left(' + rootTex(n, BT) + '\\right)^{' + m + '}=' + c + '^{' + m + '}=' + F(good)) + '.<br>Mis-read: ' + t(sq + '=\\sqrt{' + F(Bm) + '}=' + F(mis)) + '.<br>The mis-read version is really ' + t(BT + '^{' + m + '/2}') + ' — the right power under the wrong (square) root.',
+      ['The denominator of the exponent is the index of the root.', 'A square root has index ' + t('2') + ': ' + t('\\sqrt{a^{m}}=a^{m/2}') + '.'], 'mis-read ' + B + '^(' + m + '/' + n + ')');
+    p.bad = [[String(mis), String(mis), String(m) + '/' + n], [String(good), String(good), m + '/2']];
+    return p;
+  }
+  function rootFirstPart(c, n, m) { // value by root first + the number power-first would need
+    var B = Math.pow(c, n), BT = F(B), v = Math.pow(c, m), Bm = Math.pow(B, m), pr = BT + '^{' + m + '/' + n + '}';
+    var p = P.fields(t(pr), [{ name: 'Value', label: 'root first: ' + t(pr + '='), mode: 'number' }, { name: 'Power first', label: 'power first you’d need the ' + rootName(n) + ' root of', mode: 'number', wide: true }],
+      [K.number(v, function (x) { return x === Math.pow(c, n * m) ? { code: 'no-root', hint: 'Take the ' + rootName(n) + ' root first: ' + t(rootTex(n, BT) + '=' + c) + '.' } : x === Math.pow(m, c) ? { code: 'swap', hint: 'It’s ' + t(c + '^{' + m + '}') + ' (' + t(c) + ' to the power ' + t(m) + ').' } : null; }),
+        K.number(Bm, function (x) { return x === B * m ? { code: 'times-exp', hint: t(BT + '^{' + m + '}') + ' means ' + t(BT) + ' multiplied by itself ' + m + ' times, not ' + t(BT + '\\times ' + m) + '.' } : x === v ? { code: 'misread', hint: 'That’s the value. Here give the number under the root if you raised ' + t(BT) + ' to the power ' + t(m) + ' <b>first</b>: ' + t(BT + '^{' + m + '}') + '.' } : null; })],
+      [String(v), String(Bm)], t(pr + '=' + F(v)) + '; power first: ' + t(rootTex(n, BT + '^{' + m + '}') + '=' + rootTex(n, F(Bm))),
+      'Root first: ' + t(pr + '=\\left(' + rootTex(n, BT) + '\\right)^{' + m + '}=' + c + '^{' + m + '}=' + F(v)) + '.<br>Power first: ' + t(rootTex(n, BT + '^{' + m + '}') + '=' + rootTex(n, F(Bm))) + ' — a much bigger number to take a root of.',
+      ['Root first: what is ' + t(rootTex(n, BT)) + '?', 'Power first: work out ' + t(BT + '^{' + m + '}') + ' (a calculator is fine for that).'], 'root first ' + pr);
+    p.bad = [[String(Bm), String(v)], [String(v), String(B * m)]];
+    return p;
+  }
+  function bothWays(c, n, m) { // entire radical, root-first radical, value
+    var B = Math.pow(c, n), BT = String(B), v = Math.pow(c, m), Bm = Math.pow(B, m), pr = F(B) + '^{' + m + '/' + n + '}', ent = rootTex(n, BT + '^{' + m + '}'), rf = '\\left(' + rootTex(n, BT) + '\\right)^{' + m + '}';
+    var sw = 'Denominator ' + t(n) + ' → index of the root; numerator ' + t(m) + ' → the power.';
+    var p = P.fields(t(pr), [{ name: 'Entire radical', label: 'entire radical', before: t('='), mode: 'math', keys: 'expo', vars: [] }, { name: 'Using radicals', label: 'root first', before: t('='), mode: 'math', keys: 'expo', vars: [] }, { name: 'Value', label: 'value', before: t('='), mode: 'number' }],
+      [convCheck(ent, { form: 'radical', index: n, entire: true, cands: [[rootTex(m, BT + '^{' + n + '}'), 'swap', sw]] }), convCheck(rf, { form: 'radical', index: n, rootFirst: true, cands: [['\\left(' + rootTex(m, BT) + '\\right)^{' + n + '}', 'swap', sw]] }),
+        K.number(v, function (x) { return x === Math.pow(c, n * m) || x === Bm ? { code: 'no-root', hint: 'Take the root: ' + t(rootTex(n, BT) + '=' + c) + '.' } : null; })],
+      [ent, rf, String(v)], t(pr + '=' + ent + '=' + rf + '=' + F(v)),
+      'Entire radical: ' + t(pr + '=' + ent + '=' + rootTex(n, F(Bm))) + '.<br>Using radicals: ' + t(pr + '=' + rf + '=' + c + '^{' + m + '}=' + F(v)) + '.<br>Only the <b>root-first</b> form can be finished by hand; the entire radical needs the ' + rootName(n) + ' root of ' + t(F(Bm)) + '.',
+      convHints.slice(0, 1), 'both radical forms of ' + B + '^' + m + '/' + n);
+    p.bad = [[rf, ent, String(v)], [ent, rf, String(v + 1)]];
+    return p;
+  }
+
+  var EXTRA = [
+    { num: '1', section: 'Extra practice A — The denominator is the index', stem: 'In ' + t('a^{m/n}') + ' the <b>denominator ' + t('n') + ' is the index of the root</b> and the numerator ' + t('m') + ' is the power. Evaluate each exactly.', parts: [
+      { id: 'e1a', level: 'EMG', make: function (r) { var cm = r.pick([[4, 2], [2, 2], [3, 2], [5, 2], [2, 4], [10, 2]]); return EV({ base: [Math.pow(cm[0], 3), 1], m: cm[1], n: 3 }); } },
+      { id: 'e1b', level: 'EMG', make: function (r) { var cm = r.pick([[2, 3], [2, 2], [2, 4], [3, 3]]); return EV({ base: [Math.pow(cm[0], 5), 1], m: cm[1], n: 5 }); } },
+      { id: 'e1c', level: 'EMG', make: function (r) { var cm = r.pick([[2, 5], [2, 3], [3, 3], [2, 7], [3, 5]]); return EV({ base: [Math.pow(cm[0], 4), 1], m: cm[1], n: 4 }); } },
+      { id: 'e1d', level: 'EMG', make: function (r) { var cm = r.pick([[3, 2], [3, 3], [2, 6], [3, 4]]); return EV({ base: [Math.pow(cm[0], 5), 1], m: cm[1], n: 5 }); } },
+      { id: 'e1e', level: 'EMG', make: function (r) { var c = r.pick([2, 3, 10]); return EV({ base: [Math.pow(c, 6), 1], m: 1, n: 6 }); } }] },
+    { num: '2', stem: 'A very common slip is to read <i>every</i> fractional exponent as a square root — to read ' + t('a^{m/n}') + ' as ' + t('\\sqrt{a^{m}}') + ' no matter what the denominator says.', parts: [
+      { id: 'e2a', level: 'EMG', make: function (r) { return misRead(r.int(2, 5), 3, 2); } },
+      { id: 'e2b', level: 'EMG', make: function (r) { return misRead(r.pick([2, 3]), 4, 3); } },
+      { id: 'e2c', level: 'PRG', make: function (r) { var v = r.pick([[5, 4, 3], [2, 6, 5], [3, 4, 5]]); return misRead(v[0], v[1], v[2]); } }] },
+    { num: '3', stem: function (sh) { return 'Evaluate ' + t(F(sh.B) + '^{' + sh.m + '/' + sh.n + '}') + ' <b>twice</b>, showing every step both times.'; },
+      shared: function (r) { var v = r.pick([[2, 6, 5], [3, 3, 4], [2, 5, 4], [2, 4, 3], [3, 4, 3], [5, 3, 4]]); return { c: v[0], n: v[1], m: v[2], B: Math.pow(v[0], v[1]) }; },
+      parts: [
+        { id: 'e3a', level: 'EMG', make: function (r, sh) { return EV({ base: [sh.B, 1], m: sh.m, n: sh.n, prompt: '\\left(' + rootTex(sh.n, F(sh.B)) + '\\right)^{' + sh.m + '}', ask: function (e) { return 'Root first: ' + t(e); } }); } },
+        { id: 'e3b', level: 'BEG', make: function (r, sh) {
+          var Bm = Math.pow(sh.B, sh.m), v = Math.pow(sh.c, sh.m), BT = F(sh.B);
+          var p = P.fields('Power first: ' + t(rootTex(sh.n, BT + '^{' + sh.m + '}')) + '. Work out ' + t(BT + '^{' + sh.m + '}') + ' (a calculator is fine for this step), then take the ' + rootName(sh.n) + ' root.',
+            [{ name: 'Power', label: t(BT + '^{' + sh.m + '}='), mode: 'number', wide: true }, { name: 'Root', label: t(rootTex(sh.n, BT + '^{' + sh.m + '}') + '='), mode: 'number' }],
+            [K.number(Bm, function (x) { return x === sh.B * sh.m ? { code: 'times-exp', hint: t(BT + '^{' + sh.m + '}') + ' means ' + t(BT) + ' multiplied by itself ' + sh.m + ' times, not ' + t(BT + '\\times ' + sh.m) + '.' } : null; }),
+              K.number(v, function (x) { return near(x, Math.sqrt(Bm)) ? { code: 'square-root', hint: 'Use the ' + rootName(sh.n) + ' root (index ' + t(sh.n) + '), not the square root.' } : null; })],
+            [String(Bm), String(v)], t(BT + '^{' + sh.m + '}=' + F(Bm)) + '; ' + t(rootTex(sh.n, F(Bm)) + '=' + F(v)),
+            t(BT + '^{' + sh.m + '}=' + F(Bm)) + ', and ' + t(rootTex(sh.n, F(Bm)) + '=' + F(v)) + '.<br>Check: ' + t(F(v) + '^{' + sh.n + '}=\\left(' + sh.c + '^{' + sh.m + '}\\right)^{' + sh.n + '}=' + sh.c + '^{' + sh.m * sh.n + '}=' + F(Bm)) + ' ✓',
+            ['Calculator: <code>' + sh.B + '^' + sh.m + '</code>, then use the ' + t('\\sqrt[x]{\\ }') + ' key with ' + t('x=' + sh.n) + '.'], 'power first ' + sh.B + '^' + sh.m + '/' + sh.n);
+          p.bad = [[String(Bm), String(v + 1)], [String(sh.B * sh.m), String(v)]];
           return p;
         } },
-        { id: 'e5e', level: 'BEG', make: function (r) {
-          return P.mc(r, '<b>State the rule.</b> When the decimal point in the coefficient moves one place to the <b>left</b>, what happens to the exponent? And one place to the <b>right</b>?', [
-            { html: 'Left: the exponent goes <b>up</b> by 1. Right: it goes <b>down</b> by 1.', right: true },
-            { html: 'Left: the exponent goes <b>down</b> by 1. Right: it goes <b>up</b> by 1.', why: 'Try it: ' + t('52\\times 10^{-7}=5.2\\times 10^{?}') + '. Moving left made the coefficient 10 times <b>smaller</b>, so the power of 10 must be 10 times <b>bigger</b>.' },
-            { html: 'The exponent doesn’t change — only the coefficient does.', why: 'Then the value would change: ' + t('5.2\\times 10^{3}') + ' is not equal to ' + t('52\\times 10^{3}') + '.' },
-            { html: 'Either way the exponent goes up by 1, because the decimal point moved.', why: 'The direction matters. Check with ' + t('0.47\\times 10^{2}=47') + ' and ' + t('4.7\\times 10^{?}=47') + '.' }],
-            'Moving the decimal point one place <b>left</b> makes the coefficient 10 times smaller, so the exponent goes <b>up by 1</b>; moving it one place <b>right</b> makes the coefficient 10 times larger, so the exponent goes <b>down by 1</b>. The value never changes.', ['Test the rule on an example you can check, like ' + t('52\\times 10^{0}=5.2\\times 10^{1}') + '.'], 'renormalizing rule');
+        { id: 'e3c', level: 'EMG', make: function (r, sh) {
+          var v = Math.pow(sh.c, sh.m), Bm = Math.pow(sh.B, sh.m), BT = F(sh.B);
+          return mc(r, 'Both routes give ' + t(F(v)) + '. Which route would you use by hand, and why?', [
+            { html: '<b>Root first</b>: ' + t(rootTex(sh.n, BT) + '=' + sh.c) + ' and ' + t(sh.c + '^{' + sh.m + '}') + ' keep every number small.', right: true },
+            { html: '<b>Power first</b>: it’s the order the expression is written in.', why: 'Both orders are allowed — but power first means taking the ' + rootName(sh.n) + ' root of ' + t(F(Bm)) + ', which you can’t reasonably do by hand.' },
+            { html: '<b>Power first</b>: bigger numbers give a more accurate answer.', why: 'Both routes are exact. The question is which one you can finish without a calculator.' },
+            { html: 'Neither — it can only be done with a calculator.', why: 'Root first works by hand: ' + t(rootTex(sh.n, BT) + '=' + sh.c) + ', then ' + t(sh.c + '^{' + sh.m + '}=' + F(v)) + '.' }],
+            '<b>Root first.</b> It keeps every number small: ' + t(rootTex(sh.n, BT) + '=' + sh.c) + ' and ' + t(sh.c + '^{' + sh.m + '}=' + F(v)) + '. Power first means taking the ' + rootName(sh.n) + ' root of ' + t(F(Bm)) + '.', ['Compare the sizes of the numbers in the two routes.'], 'root first vs power first');
         } }] },
-      { num: '6', section: 'Extra practice C — Multiplying and dividing, then renormalizing', stem: 'Multiply or divide, then check that the coefficient satisfies ' + t('1\\le a<10') + '. Write each result in scientific notation.', parts: [
-        { id: 'e6a', level: 'PRG', make: function (r) { var v = find(r, function () { return [A_(c1(r), -r.int(2, 6)), A_(c1(r), -r.int(5, 10))]; }, function (v) { return v[0].c.m * v[1].c.m >= 10 && (v[0].c.m * v[1].c.m) % 10 !== 0; }, [A_('6', -4), A_('8', -9)]); return opPart(v[0], v[1], 'mul'); } },
-        { id: 'e6b', level: 'PRG', make: function (r) { var v = find(r, function () { return [A_(c2(r), r.int(5, 9)), A_(c2(r), -r.int(2, 5))]; }, function (v) { var C = mul(v[0].c, v[1].c); return val(C) >= 10 && nd(C) <= 2; }, [A_('2.5', 7), A_('9.2', -3)]); return opPart(v[0], v[1], 'mul'); } },
-        { id: 'e6c', level: 'PRG', make: function (r) { var v = find(r, function () { var Q = D(r.int(1, 9), -1), B = c1(r); return [A_(mul(Q, B), -r.int(3, 7)), A_(B, r.int(1, 4))]; }, function (v) { return inRange(v[0].c) && nd(v[0].c) === 2; }, [A_('3.6', -5), A_('9', 2)]); return opPart(v[0], v[1], 'div'); } },
-        { id: 'e6d', level: 'EMG', make: function (r) { var v = find(r, function () { var Q = c2(r), B = c2(r); return [A_(mul(Q, B), -r.int(2, 5)), A_(B, -r.int(6, 9))]; }, function (v) { return inRange(v[0].c) && nd(v[0].c) === 3 && val(v[0].c) >= val(v[1].c); }, [A_('1.44', -3), A_('1.2', -8)]); return opPart(v[0], v[1], 'div'); } },
-        { id: 'e6e', level: 'PRG', make: function (r) { var v = find(r, function () { return [A_(c2(r), -r.int(3, 7)), A_(c1(r), -r.int(4, 8))]; }, function (v) { var C = mul(v[0].c, v[1].c); return val(C) >= 10 && nd(C) === 1; }, [A_('7.5', -6), A_('4', -7)]); return opPart(v[0], v[1], 'mul'); } },
-        { id: 'e6f', level: 'EMG', make: function (r) { var v = find(r, function () { var Q = c1(r), B = c2(r); return [A_(mul(Q, B), r.int(8, 12)), A_(B, -r.int(2, 5))]; }, function (v) { return inRange(v[0].c) && nd(v[0].c) === 2; }, [A_('8.1', 11), A_('2.7', -4)]); return opPart(v[0], v[1], 'frac'); } }] },
-      { num: '7', stem: 'A power of a number in scientific notation raises <b>both</b> the coefficient and the power of ten. Evaluate each, and renormalize where you need to.', parts: [
-        { id: 'e7a', level: 'PRG', make: function (r) { return r.chance(0.15) ? powPart(5, 6, 2) : powPart(r.int(4, 9), r.int(3, 8), 2); } },
-        { id: 'e7b', level: 'EMG', make: function (r) { return r.chance(0.15) ? powPart(2, -3, 3) : r.chance(0.5) ? powPart(2, -r.int(2, 6), 3) : powPart(r.int(2, 3), -r.int(2, 6), 2); } },
-        { id: 'e7c', level: 'PRG', make: function (r) { return r.chance(0.15) ? powPart(4, -5, 2) : powPart(r.int(4, 9), -r.int(2, 7), 2); } },
-        { id: 'e7d', level: 'PRG', make: function (r) { return r.chance(0.15) ? powPart(3, 8, 3) : powPart(r.int(3, 5), r.int(3, 9), 3); } }] },
-      { num: '8', stem: 'Two operations in one expression. Simplify the top and the bottom separately, then divide; write every result in scientific notation.', parts: [
-        { id: 'e8a', level: 'PRG', make: function (r) { var v = find(r, function () { return [A_(c1(r), r.int(3, 7)), A_(c1(r), -r.int(1, 4)), A_(c1(r), r.int(2, 6))]; }, function (v) { var T = mul(v[0].c, v[1].c), Q = div(T, v[2].c); return val(T) >= 10 && Q && nd(Q) <= 2 && v[2].c.m !== v[0].c.m && v[2].c.m !== v[1].c.m; }, [A_('8', 5), A_('3', -2), A_('6', 4)]); return twoOp(v, 'frac'); } },
-        { id: 'e8b', level: 'PRG', make: function (r) { var v = find(r, function () { return [A_(c2(r), -r.int(2, 5)), A_(c1(r), r.int(5, 9)), A_(c2(r), r.int(6, 10))]; }, function (v) { var T = mul(v[0].c, v[1].c), Q = div(T, v[2].c); return Q && nd(Q) <= 2 && nd(T) <= 2; }, [A_('1.2', -3), A_('5', 7), A_('2.4', 9)]); return twoOp(v, 'frac'); } },
-        { id: 'e8c', level: 'PRG', make: function (r) { var v = find(r, function () { return [A_(r.pick([D(25, -1), D(15, -1), D(12, -1), D(35, -1), D(45, -1), D(3, 0), D(6, 0)]), -r.int(3, 7)), null, A_(c1(r), -r.int(5, 10))]; }, function (v) { var T = pw(v[0].c, 2), Q = div(T, v[2].c); return Q && nd(Q) <= 3; }, [A_('2.5', -6), null, A_('5', -9)]); return twoOp(v, 'sq'); } },
-        { id: 'e8d', level: 'PRG', make: function (r) { var v = find(r, function () { return [A_(c1(r), -r.int(1, 4)), A_(c1(r), r.int(3, 7)), A_(c2(r), -r.int(2, 6))]; }, function (v) { var T = mul(v[0].c, v[1].c), Q = div(T, v[2].c); return val(T) >= 10 && Q && nd(Q) <= 2 && val(v[2].c) < 5; }, [A_('6', -2), A_('4', 5), A_('1.5', -4)]); return twoOp(v, 'inline'); } }] },
-      { num: '9', section: 'Extra practice D — Adding and subtracting (beyond the booklet)', stem: 'Adding and subtracting don’t work term by term: first rewrite both numbers over a <b>common power of ten</b> (usually the larger one), then add or subtract the coefficients and renormalize if needed. For example ' + t('5.2\\times 10^{6}+4\\times 10^{5}=5.2\\times 10^{6}+0.4\\times 10^{6}=5.6\\times 10^{6}') + '.', parts: [
-        { id: 'e9a', level: 'EMG', make: function (r) { var v = find(r, function () { var k = r.int(3, 8); return [S(nz(r, 11, 99), k), '+', S(nz(r, 11, 99), k)]; }, function (v) { var s = add(v[0], v[2]); return sN(s) > sN(v[0]) && nd(s) <= 3; }, [D(34, 4), '+', D(81, 4)]); return addPart(v); } },
-        { id: 'e9b', level: 'PRG', make: function (r) { var v = find(r, function () { var k = -r.int(2, 5); return [S(nz(r, 11, 99), k), '+', S(nz(r, 11, 99), k - 1)]; }, function (v) { var s = add(v[0], v[2]); return sN(s) === sN(v[0]); }, [D(72, -4), '+', D(45, -5)]); return addPart(v); } },
-        { id: 'e9c', level: 'PRG', make: function (r) { var v = find(r, function () { var k = r.int(5, 9); return [S(nz(r, 11, 99), k), '-', S(nz(r, 11, 99), k - 1)]; }, function (v) { var s = sub(v[0], v[2]); return sN(s) === sN(v[0]); }, [D(96, 7), '-', D(48, 6)]); return addPart(v); } },
-        { id: 'e9d', level: 'PRG', make: function (r) { var v = find(r, function () { var k = -r.int(3, 7), m = nz(r, 11, 99); return [S(m, k), '-', S(m, k - 1)]; }, function (v) { return val(coef(v[0])) >= 1.2; }, [D(25, -7), '-', D(25, -8)]); return addPart(v); } }] },
-      { num: '10', stem: function (s) { return 'Rewrite both numbers over the <b>larger</b> power of ten, then add or subtract the coefficients. Some of the results then need renormalizing.'; },
-        shared: function (r) {
-          var a = find(r, function () { var k = r.int(3, 6), x = nz(r, 11, 89); return [S(x, k), '+', S(nz(r, 11, 99), k)]; }, function (v) { var s = add(v[0], v[2]); return sN(s) === sN(v[0]) && nd(s) <= 2; }, [D(63, 3), '+', D(27, 3)]);
-          var b = find(r, function () { var k = -r.int(1, 4); return [S(nz(r, 11, 19), k), '-', S(nz(r, 51, 99), k - 1)]; }, function (v) { var s = sub(v[0], v[2]); return val(s) > 0 && sN(s) < sN(v[0]); }, [D(14, -3), '-', D(96, -4)]);
-          var c = find(r, function () { var k = r.int(6, 10), x = r.pick([875, 625, 750, 550, 325, 450]); return [S(x, k), '+', S(1000 - x, k)]; }, function () { return true; }, [D(875, 7), '+', D(125, 7)]);
-          var d = find(r, function () { var k = -r.int(3, 6); return [S(r.int(5, 9), k), '+', S(r.int(3, 9), k), '+', S(r.int(1, 9), k - 2)]; }, function (v) { return val(coef(v[0])) + val(coef(v[2])) >= 10; }, [D(8, -5), '+', D(3, -5), '+', D(4, -7)]);
-          return { list: [a, b, c, d] };
-        },
-        parts: [
-          { id: 'e10a', level: 'EMG', make: function (r, s) { return addPart(s.list[0]); } },
-          { id: 'e10b', level: 'PRG', make: function (r, s) { return addPart(s.list[1]); } },
-          { id: 'e10c', level: 'EMG', make: function (r, s) { return addPart(s.list[2]); } },
-          { id: 'e10d', level: 'PRG', make: function (r, s) { return addPart(s.list[3]); } },
-          { id: 'e10e', level: 'EMG', make: function (r, s) {
-            var whyR = ['', 'The coefficient left over is less than ' + t('1') + ', so it does need renormalizing.', 'The coefficients add up to exactly ' + t('10') + ', and ' + t('10') + ' is not less than ' + t('10') + ' — it needs renormalizing.', 'The coefficients add up to more than ' + t('10') + ', so it needs renormalizing.'];
-            return P.mc(r, 'Which one of these did <b>not</b> need renormalizing after combining?', s.list.map(function (v, i) { return { html: t(addTex(v)), right: i === 0, why: whyR[i] || null }; }),
-              s.list.map(function (v) { var raw = addRaw(v); return t(addTex(v) + '=' + pt(raw.c, raw.k)) + (inRange(raw.c) ? ' — already in range.' : ' — renormalize: ' + t(sciT(raw.v)) + '.'); }).join('<br>'),
-              ['Combine each one over the larger power of ten. Is the coefficient you get at least ' + t('1') + ' and less than ' + t('10') + '?'], 'which did not need renormalizing');
-          } }] },
-      { num: '11', stem: function (s) { return 'A student writes: “To add, add the coefficients and add the exponents — same as multiplying.”'; },
-        shared: function (r) { return r.chance(0.15) ? { c: 3, n: 4 } : { c: r.int(1, 4), n: r.int(2, 7) }; },
-        parts: [
-          { id: 'e11a', level: 'EMG', make: function (r, s) {
-            var tex = s.c + '\\times 10^{' + s.n + '}+' + s.c + '\\times 10^{' + s.n + '}', stu = S(2 * s.c, 2 * s.n), cor = S(2 * s.c, s.n);
-            var p = P.fields('Test the claim on ' + t(tex) + '. What does the student get, and what is the correct answer?', [{ name: 'Student’s answer', label: 'Student gets', mode: 'math', keys: 'sci', wide: true }, { name: 'Correct answer', label: 'Correct answer', mode: 'math', keys: 'sci', wide: true }],
-              [sciChk(stu, { diag: cands([[cor, 'mix', 'That’s the <b>correct</b> sum. What does the student’s rule (add the exponents too) give?']]) }), sciChk(cor, { diag: cands([[stu, 'add-exps-sum', 'That is the student’s answer. The powers of ten already match, so just add the coefficients: ' + t('(' + s.c + '+' + s.c + ')\\times 10^{' + s.n + '}') + '.']]) })],
-              [sciT(stu), sciT(cor)], 'Student: ' + t(sciT(stu)) + '<br>Correct: ' + t(sciT(cor)),
-              'Student: ' + t(s.c + '+' + s.c + '=' + 2 * s.c) + ' and ' + t(s.n + '+' + s.n + '=' + 2 * s.n) + ', giving ' + t(sciT(stu) + '=' + stdTex(stu)) + '.<br>Correct: the powers already match, so ' + t('(' + s.c + '+' + s.c + ')\\times 10^{' + s.n + '}=') + '<b>' + t(sciT(cor)) + '</b> ' + t('=' + stdTex(cor)) + '. The student’s answer is ' + t('10^{' + s.n + '}') + ' times too big.',
-              ['Follow the student’s rule exactly for the first box.', 'For the correct answer, think of ' + t('10^{' + s.n + '}') + ' as a unit, like adding 3 apples and 3 apples.'], 'test the add-the-exponents claim');
-            p.bad = [[sciT(cor), sciT(cor)], [sciT(stu), sciT(stu)]];
-            return p;
-          } },
-          { id: 'e11b', level: 'EMG', make: function (r) {
-            return P.mc(r, '<b>Explain</b> why multiplying numbers in scientific notation needs no common power of ten, but adding does.', [
-              { html: 'Multiplying uses the law ' + t('10^{m}\\times 10^{n}=10^{m+n}') + ', which works for any ' + t('m') + ' and ' + t('n') + '. There is no such law for ' + t('10^{m}+10^{n}') + ': different powers of ten are different-sized units, so they must match before the coefficients can be combined.', right: true },
-              { html: 'Adding needs a common power of ten only because the answer must be in scientific notation.', why: 'Even without scientific notation, ' + t('3\\times 10^{4}+3\\times 10^{2}') + ' is not ' + t('6\\times 10^{\\text{anything simple}}') + ' — the two terms count different-sized units.' },
-              { html: 'Multiplying also needs a common power of ten; we just usually skip that step.', why: 'Try ' + t('(2\\times 10^{3})(3\\times 10^{5})') + ': the product law gives ' + t('6\\times 10^{8}') + ' directly, no matching needed.' },
-              { html: 'For adding, you multiply the exponents instead of adding them.', why: 'No law combines exponents when you add. Try ' + t('10^{2}+10^{3}=100+1000') + '.' }],
-              'Multiplication has the product law ' + t('10^{m}\\times 10^{n}=10^{m+n}') + '. Addition has no such law — ' + t('10^{m}') + ' and ' + t('10^{n}') + ' are different-sized units, so (as with fractions and a common denominator) both numbers are first written over the <b>same</b> power of ten.', ['Try a small example both ways, e.g. ' + t('10^{2}\\times 10^{3}') + ' and ' + t('10^{2}+10^{3}') + '.'], 'why adding needs a common power');
-          } },
-          { id: 'e11c', level: 'PRG', make: function (r) {
-            return P.mc(r, 'Is ' + t('a\\times 10^{n}+a\\times 10^{n}') + ' ever equal to ' + t('2a\\times 10^{2n}') + ' (for ' + t('a\\ne 0') + ')?', [
-              { html: 'Yes, but only when ' + t('n=0') + '.', right: true },
-              { html: 'Never.', why: 'Try ' + t('n=0') + ': both sides become ' + t('2a') + '.' },
-              { html: 'Always — that is how you add powers.', why: 'Test ' + t('3\\times 10^{4}+3\\times 10^{4}') + ': the true sum is ' + t('6\\times 10^{4}') + ', not ' + t('6\\times 10^{8}') + '.' },
-              { html: 'Only when ' + t('n=1') + '.', why: 'With ' + t('n=1') + ': ' + t('2a\\times 10^{1}') + ' vs ' + t('2a\\times 10^{2}') + ' — not equal.' }],
-              'The true sum is ' + t('a\\times 10^{n}+a\\times 10^{n}=2a\\times 10^{n}') + '. This equals ' + t('2a\\times 10^{2n}') + ' only when ' + t('10^{2n}=10^{n}') + ', i.e. ' + t('2n=n') + ', so <b>only when ' + t('n=0') + '</b>.', ['Write the true sum first, then compare the powers of ten.'], 'when is the add-exponents rule right');
-          } }] },
-      { num: '12', section: 'Extra practice E — Comparing and ordering', stem: 'Order each set from <b>least to greatest</b>. Compare the exponents first; only compare coefficients when the exponents tie.', parts: [
-        { id: 'e12a', level: 'EMG', make: function (r) { return r.chance(0.15) ? orderPart(r, -6, [[87, 0], [99, 0], [2, 1], [42, 1], [13, 2]]) : orderPart(r, -r.int(4, 7), null); } },
-        { id: 'e12b', level: 'EMG', make: function (r) { return r.chance(0.15) ? orderPart(r, 6, [[98, 0], [305, 1], [31, 1], [11, 2], [29, 2]]) : orderPart(r, r.int(5, 8), null, true); } }] },
-      { num: '13', stem: '', parts: [
-        { id: 'e13a', level: 'BEG', make: function (r) {
-          var k = -r.int(2, 6), bm = nz(r, 51, 99), sm = nz(r, 11, bm - 1);
-          if (r.chance(0.15)) { k = -4; bm = 63; sm = 59; }
-          var A = D(bm, -1), B = D(sm, -1), aT = std(A) + '\\times 10^{' + k + '}', bT = std(B) + '\\times 10^{' + (k + 1) + '}';
-          return P.mc(r, 'Which is larger, ' + t(aT) + ' or ' + t(bT) + '?', [
-            { html: t(bT) + ' — its exponent is larger, and one step in the exponent is a factor of ' + t('10') + ', more than any difference in the coefficients can make up.', right: true },
-            { html: t(aT) + ' — its coefficient is larger.', why: 'Compare the exponents first: ' + t((k + 1) + '>' + k) + '. The coefficient only matters when the exponents are equal.' },
-            { html: t(aT) + ' — because ' + t(-k) + ' is greater than ' + t(-(k + 1)) + '.', why: 'The exponents are <b>negative</b>: ' + t(k) + ' is <b>less</b> than ' + t(k + 1) + '. Write both in standard notation to check.' },
-            { html: 'They are equal.', why: 'Write both in standard notation: ' + t(stdTex(sh(A, k)) + '\\text{ and }' + stdTex(sh(B, k + 1))) + '.' }],
-            'Exponents: ' + t((k + 1) + '>' + k) + ', so ' + t(bT) + ' is larger (' + t(stdTex(sh(B, k + 1)) + '>' + stdTex(sh(A, k))) + '). With both coefficients between ' + t('1') + ' and ' + t('10') + ', one step in the exponent (a factor of ' + t('10') + ') beats any difference in the coefficients.', ['Compare the exponents first. Which is bigger, ' + t(k) + ' or ' + t(k + 1) + '?'], 'compare sci numbers');
+    { num: '4', stem: 'Evaluate each power by taking the <b>root first</b>. Then write down the number you would have had to take a root of if you had done the <i>power</i> first.', parts: [
+      { id: 'e4a', level: 'EMG', make: function (r) { return rootFirstPart(2, 2, r.pick([5, 7])); } },
+      { id: 'e4b', level: 'EMG', make: function (r) { var v = r.pick([[2, 4], [2, 5], [3, 4], [3, 5]]); return rootFirstPart(v[0], 3, v[1]); } },
+      { id: 'e4c', level: 'EMG', make: function (r) { return rootFirstPart(3, 2, r.pick([5, 7])); } },
+      { id: 'e4d', level: 'EMG', make: function (r) { return rootFirstPart(5, 2, r.pick([3, 5])); } }] },
+    { num: '5', section: 'Extra practice B — Negative rational exponents', stem: 'A negative exponent still means “take the reciprocal”, and the denominator still gives the index. Determine the exact value of each.', parts: [
+      { id: 'e5a', level: 'PRG', make: function (r) { var cm = r.pick([[2, 3], [3, 3], [2, 1], [3, 1], [2, 5]]); return EV({ base: [Math.pow(cm[0], 4), 1], m: -cm[1], n: 4 }); } },
+      { id: 'e5b', level: 'PRG', make: function (r) { var c = r.int(2, 5); return EV({ base: [c * c * c, 1], m: -2, n: 3 }); } },
+      { id: 'e5c', level: 'PRG', make: function (r) { var cm = r.pick([[2, 4], [2, 2], [2, 3], [3, 2]]); return EV({ base: [Math.pow(cm[0], 5), 1], m: -cm[1], n: 5 }); } },
+      { id: 'e5d', level: 'PRG', make: function (r) { var v = r.pick([[10000, 4, 3], [1000, 3, 2], [100, 2, 3], [10000, 4, 1]]); return EV({ base: [v[0], 1], m: -v[2], n: v[1] }); } },
+      { id: 'e5e', level: 'PRG', make: function (r) { var cm = r.pick([[2, 5], [2, 1], [3, 1]]); return EV({ base: [Math.pow(cm[0], 6), 1], m: -cm[1], n: 6 }); } }] },
+    { num: '6', stem: 'With a fractional base, flip the fraction first — then the exponent is positive. Express each answer as a fraction in lowest terms (or a whole number).', parts: [
+      { id: 'e6a', level: 'PRG', make: function (r) { var ab = r.pick(coprimePairs(2, 5)); return EV({ base: [Math.pow(ab[0], 3), Math.pow(ab[1], 3)], m: -2, n: 3 }); } },
+      { id: 'e6b', level: 'PRG', make: function (r) { var ab = r.pick([[2, 3], [3, 2], [1, 2], [2, 5], [1, 3]]); return EV({ base: [Math.pow(ab[0], 4), Math.pow(ab[1], 4)], m: -3, n: 4 }); } },
+      { id: 'e6c', level: 'PRG', make: function (r) { var ab = r.pick([[5, 2], [2, 5], [3, 2], [2, 3], [4, 3]]); return EV({ base: [Math.pow(ab[0], 3), Math.pow(ab[1], 3)], m: -4, n: 3 }); } },
+      { id: 'e6d', level: 'EMG', make: function (r) { var cm = r.pick([[2, 3], [2, 2], [3, 2], [2, 4]]); return EV({ base: [1, Math.pow(cm[0], 5)], m: -cm[1], n: 5 }); } },
+      { id: 'e6e', level: 'EMG', make: function (r) { var ab = r.pick(coprimePairs(2, 12)); return EV({ base: [ab[0] * ab[0], ab[1] * ab[1]], m: -1, n: 2 }); } }] },
+    { num: '7', stem: 'Now the minus signs are in different places. Decide what each one is attached to before you evaluate.', parts: [
+      { id: 'e7a', level: 'PRG', make: function (r) { var cm = r.pick([[2, 5], [2, 4], [3, 4], [2, 2], [3, 2]]); return EV({ base: [1, Math.pow(cm[0], 3)], m: -cm[1], n: 3 }); } },
+      { id: 'e7b', level: 'EMG', make: function (r) { var c = r.int(4, 12); return EV({ base: [c * c, 1], m: -1, n: 2, outer: -1, prompt: '-\\left(' + c * c + '^{-1/2}\\right)' }); } },
+      { id: 'e7c', level: 'PRG', make: function (r) { var c = r.int(2, 5); return EV({ base: [-c * c * c, 1], m: -2, n: 3 }); } },
+      { id: 'e7d', level: 'PRG', make: function (r) { var ab = r.pick(coprimePairs(2, 5)); return EV({ base: [-Math.pow(ab[0], 3), Math.pow(ab[1], 3)], m: -1, n: 3 }); } },
+      { id: 'e7e', level: 'PRG', make: function (r) { var cm = r.pick([[2, 3], [2, 1], [3, 1], [3, 3]]); return EV({ base: [-Math.pow(cm[0], 5), 1], m: -cm[1], n: 5, outer: -1 }); } }] },
+    { num: '8', section: 'Extra practice C — Converting both ways', stem: 'Write each power as an <b>entire radical</b> — one radical sign with everything underneath it, in the form ' + t('\\sqrt[n]{a^{m}}') + '.', parts: [
+      { id: 'e8a', level: 'EMG', make: function (r) { var mn = r.pick([[4, 7], [2, 3], [3, 5], [5, 7], [3, 4], [5, 6]]); return genRad('x', mn[0], mn[1], 'entire', { entire: true }); } },
+      { id: 'e8b', level: 'EMG', make: function (r) { return genRad('y', r.pick([3, 5, 7, 9]), 2, 'entire', { entire: true }); } },
+      { id: 'e8c', level: 'PRG', make: function (r) { var mn = r.pick([[7, 4], [5, 3], [5, 4], [7, 3], [3, 2]]); return genRad('m', -mn[0], mn[1], 'entire', { entire: true }); } },
+      { id: 'e8d', level: 'PRG', make: function (r) { var mn = r.pick([[5, 3], [4, 3], [3, 2], [7, 4], [2, 5]]); return coefRad('a', r.int(2, 7), mn[0], mn[1], { entire: true }); } },
+      { id: 'e8e', level: 'PRG', make: function (r) { var v = r.pick([[2, 5, 3], [3, 4, 3], [2, 3, 2], [2, 4, 5], [5, 2, 3]]); return bracketRad('a', v[0], v[1], v[2], { entire: true }); } },
+      { id: 'e8f', level: 'PRG', make: function (r) { var v = r.pick([[5, 3, 2], [3, 3, 2], [2, 5, 2], [7, 3, 2]]); return bracketRad('c', v[0], v[1], v[2], { entire: true }); } }] },
+    { num: '9', stem: 'Write an equivalent expression <b>using radicals</b> — the root taken first, in the form ' + t('\\left(\\sqrt[n]{a}\\right)^{m}') + '.', parts: [
+      { id: 'e9a', level: 'EMG', make: function (r) { var mn = r.pick([[5, 8], [3, 4], [5, 6], [3, 8], [7, 8]]); return genRad('x', mn[0], mn[1], 'rootFirst', { rootFirst: true }); } },
+      { id: 'e9b', level: 'EMG', make: function (r) { return genRad('h', r.pick([4, 5, 7, 8]), 3, 'rootFirst', { rootFirst: true }); } },
+      { id: 'e9c', level: 'PRG', make: function (r) { var mn = r.pick([[4, 9], [2, 5], [3, 7], [5, 9], [2, 3]]); return genRad('k', -mn[0], mn[1], 'rootFirst', { rootFirst: true }); } },
+      { id: 'e9d', level: 'EMG', make: function (r) { var mn = r.pick([[3, 5], [2, 3], [3, 4], [2, 5], [4, 5]]); return genRad(String(r.pick([2, 3, 5, 6, 7, 10, 11])), mn[0], mn[1], 'rootFirst', { rootFirst: true }); } },
+      { id: 'e9e', level: 'PRG', make: function (r) { var mn = r.pick([[5, 6], [2, 3], [3, 4], [4, 5]]); return bracketRad('b', r.pick([2, 3, 5]), -mn[0], mn[1], { rootFirst: true }); } }] },
+    { num: '10', stem: 'Write each power <b>both</b> ways — as an entire radical, and using radicals (root first) — then evaluate it.', parts: [
+      { id: 'e10a', level: 'EMG', make: function (r) { var cm = r.pick([[2, 3], [2, 2], [2, 4], [3, 2], [3, 3]]); return bothWays(cm[0], 5, cm[1]); } },
+      { id: 'e10b', level: 'EMG', make: function (r) { return bothWays(r.int(11, 15), 2, 3); } }] },
+    { num: '11', stem: 'Run the conversion the other way. Write each radical as a power in the form ' + t('x^{n}') + ', where ' + t('n\\in Q') + '.', parts: [
+      { id: 'e11a', level: 'EMG', make: function (r) { var mn = r.pick([[5, 8], [3, 8], [5, 6], [2, 7], [3, 5]]); return toPowPart('x', mn[0], mn[1], rootTex(mn[1], 'x^{' + mn[0] + '}')); } },
+      { id: 'e11b', level: 'EMG', make: function (r) { var mn = r.pick([[11, 3], [7, 3], [5, 3], [7, 4], [9, 4]]); return toPowPart('x', mn[0], mn[1], rootTex(mn[1], 'x^{' + mn[0] + '}')); } },
+      { id: 'e11c', level: 'PRG', make: function (r) { var mn = r.pick([[9, 4], [7, 3], [5, 2], [7, 4], [11, 6]]); return toPowPart('x', -mn[0], mn[1], '\\dfrac{1}{' + rootTex(mn[1], 'x^{' + mn[0] + '}') + '}'); } },
+      { id: 'e11d', level: 'PRG', make: function (r) { var mn = r.pick([[7, 5], [3, 4], [5, 3], [2, 3], [4, 5]]), rad = '\\left(' + rootTex(mn[1], 'x') + '\\right)^{-' + mn[0] + '}';
+        return toPowPart('x', -mn[0], mn[1], rad, 'The root is the power ' + t('\\frac{1}{' + mn[1] + '}') + '; then multiply the exponents (power of a power):<br>' + t(rad + '=\\left(x^{1/' + mn[1] + '}\\right)^{-' + mn[0] + '}=x^{-' + mn[0] + '/' + mn[1] + '}'), null,
+          [['x^{' + mn[0] + '/' + mn[1] + '}', 'no-recip', 'The outside exponent is <b>negative</b>, so the result has a negative exponent.']]); } },
+      { id: 'e11e', level: 'PRG', make: function (r) { var pn = r.pick([[1, 3], [1, 2], [1, 4], [1, 5], [2, 3]]), p = pn[0], n = pn[1], top = p * n - 1, xt = p === 1 ? 'x' : 'x^{' + p + '}', rad = '\\dfrac{' + xt + '}{' + rootTex(n, 'x') + '}';
+        return toPowPart('x', top, n, rad, 'Write both as powers, then subtract the exponents (quotient law):<br>' + t(rad + '=\\frac{x^{' + p + '}}{x^{1/' + n + '}}=x^{' + p + '-\\frac{1}{' + n + '}}=x^{' + top + '/' + n + '}'), 'radical to power ' + rad,
+          [['x^{' + (p * n + 1) + '/' + n + '}', 'exp', 'Dividing powers with the same base: <b>subtract</b> the exponents, don’t add them.'], ['x^{' + p * n + '}', 'times-exp', 'The ' + rootName(n) + ' root of ' + t('x') + ' is ' + t('x^{1/' + n + '}') + '. Divide: subtract the exponents.']]); } }] },
+    { num: '12', section: 'Extra practice D — When the base is negative', stem: 'An <b>even index over a negative radicand has no meaning</b> as a real number; an odd index is fine with a negative base. Evaluate each exactly, or press <b>none</b> if it has no meaning.', parts: [
+      { id: 'e12a', level: 'EMG', make: function (r) { var c = r.int(3, 12), N = c * c; return meaningPart({ undef: true, expr: '(-' + N + ')^{1/2}', why: 'Base ' + t('-' + N) + ', index ' + t('2') + ' (even): no real number squares to a negative, so ' + t('(-' + N + ')^{1/2}') + ' has <b>no meaning</b>.', valWhy: 'Check: ' + t(c + '^{2}=' + N) + ' and ' + t('(-' + c + ')^{2}=' + N) + ' — neither gives ' + t('-' + N) + '. An even root of a negative number has no real value.' }); } },
+      { id: 'e12b', level: 'EMG', make: function (r) { var c = r.int(3, 12); return meaningPart({ base: [c * c, 1], m: 1, n: 2, outer: -1, noneWhy: 'Without brackets the exponent belongs to ' + t(c * c) + ' only: ' + t('-' + c * c + '^{1/2}=-\\sqrt{' + c * c + '}') + ', which has a value.' }); } },
+      { id: 'e12c', level: 'PRG', make: function (r) { var cm = r.pick([[3, 4], [2, 4], [2, 2], [4, 2], [5, 2]]); return meaningPart({ base: [-Math.pow(cm[0], 3), 1], m: cm[1], n: 3, noneWhy: 'The index ' + t('3') + ' is <b>odd</b>, so the cube root of a negative number exists.' }); } },
+      { id: 'e12d', level: 'EMG', make: function (r) { var v = r.pick([[27, 3, 4], [8, 1, 4], [64, 3, 2], [125, 1, 2], [32, 3, 4], [81, 1, 2]]), ex1 = '(-' + v[0] + ')^{' + v[1] + '/' + v[2] + '}'; return meaningPart({ undef: true, expr: ex1, why: 'The index ' + t(v[2]) + ' is even and the base ' + t('-' + v[0]) + ' is negative: <b>no meaning</b>.', valWhy: 'Look at the index: ' + t(v[2]) + ' is <b>even</b>, and no real number raised to an even power is negative.' }); } },
+      { id: 'e12e', level: 'PRG', make: function (r) { var cm = r.pick([[3, 3], [2, 3], [2, 2], [3, 2], [2, 4]]); return meaningPart({ base: [-Math.pow(cm[0], 5), 1], m: cm[1], n: 5, noneWhy: 'The index ' + t('5') + ' is <b>odd</b>, so the fifth root of a negative number exists.' }); } }] },
+    { num: '13', stem: 'Some powers of a negative base have meaning as real numbers and some do not, for example ' + t('(-32)^{2/5}=4') + ' but ' + t('(-25)^{1/2}') + ' has no real value. Now state the rule behind this.', parts: [
+      { id: 'e13a', level: 'EMG', make: function (r) {
+        var c = r.pick([2, 3, 5, 10]), C = F(c * c * c);
+        return mc(r, 'Why does ' + t('(-' + C + ')^{1/3}') + ' have meaning, but ' + t('(-' + C + ')^{1/2}') + ' does not?', [
+          { html: 'Index ' + t('3') + ' is odd and ' + t('(-' + c + ')^{3}=-' + C) + ', so ' + t('(-' + C + ')^{1/3}=-' + c) + '. Index ' + t('2') + ' is even, and no real number squared is negative.', right: true },
+          { html: 'Both have meaning: ' + t('(-' + C + ')^{1/2}=-\\sqrt{' + C + '}') + '.', why: 'Check by squaring: ' + t('\\left(-\\sqrt{' + C + '}\\right)^{2}=+' + C) + ', not ' + t('-' + C) + '.' },
+          { html: t(C) + ' is a perfect cube but not a perfect square.', why: 'Try ' + t('(-100)^{1/2}') + ': ' + t('100') + ' is a perfect square, but it still has no meaning. The index decides, not the number.' },
+          { html: 'Neither has meaning: a negative base can’t have a fractional exponent.', why: t('(-' + c + ')^{3}=-' + C) + ', so the cube root of ' + t('-' + C) + ' does exist.' }],
+          'The index of ' + t('(-' + C + ')^{1/3}') + ' is ' + t('3') + '. Every real number has one real cube root, and ' + t('(-' + c + ')^{3}=-' + C) + ', so ' + t('(-' + C + ')^{1/3}=-' + c) + '.<br>The index of ' + t('(-' + C + ')^{1/2}') + ' is ' + t('2') + '. A real number squared is never negative, so ' + t('-' + C) + ' has no real square root: <b>no meaning</b>.', ['Is the index even or odd?'], 'why odd/even root of -' + c * c * c);
+      } },
+      { id: 'e13b', level: 'EMG', make: function (r) {
+        var c = r.pick([2, 3]), C = c * c * c;
+        return mc(r, t('(-' + C + ')^{2/3}') + ' and ' + t('(-' + C + ')^{4/3}') + ' are positive, while ' + t('(-' + C + ')^{1/3}') + ' and ' + t('(-' + C + ')^{5/3}') + ' are negative. What decides the sign?', [
+          { html: 'The <b>numerator</b>: the cube root is ' + t('-' + c) + ' each time; an even power of it is positive and an odd power is negative.', right: true },
+          { html: 'The <b>denominator</b>: an index of ' + t('3') + ' makes the answer negative.', why: 'All four have the same denominator ' + t('3') + ', yet two are positive. Something else decides.' },
+          { html: 'The <b>size</b> of the exponent: exponents greater than ' + t('1') + ' give positive answers.', why: t('\\frac{5}{3}>1') + ' but ' + t('(-' + C + ')^{5/3}') + ' is negative, and ' + t('\\frac{2}{3}<1') + ' but ' + t('(-' + C + ')^{2/3}') + ' is positive.' },
+          { html: 'A negative base always gives a negative answer; the positive ones are calculator errors.', why: t('(-' + C + ')^{2/3}=(-' + c + ')^{2}=' + c * c) + ', which is exactly positive.' }],
+          'The index ' + t('3') + ' is odd, so ' + t(rootTex(3, '-' + C) + '=-' + c) + ' each time; the <b>numerator</b> then raises ' + t('-' + c) + ' to a power.<br>' + t('(-' + c + ')^{2}=' + c * c) + ', ' + t('(-' + c + ')^{4}=' + Math.pow(c, 4)) + ': even numerator, <b>positive</b>.<br>' + t('(-' + c + ')^{1}=-' + c) + ', ' + t('(-' + c + ')^{5}=-' + Math.pow(c, 5)) + ': odd numerator, <b>negative</b>.', ['Work out each one root first. What is different between the positive and negative ones?'], 'what decides the sign of (-' + C + ')^(m/3)');
+      } },
+      { id: 'e13c', level: 'PRG', make: function (r) {
+        return mc(r, 'Complete the rule: for ' + t('a>0') + ' and ' + t('\\frac{m}{n}') + ' in lowest terms, ' + t('(-a)^{m/n}') + ' has meaning exactly when …', [
+          { html: t('n') + ' is odd', right: true },
+          { html: t('m') + ' is odd', why: 'Try ' + t('(-16)^{1/2}') + ': ' + t('m=1') + ' is odd, but there is no real value.' },
+          { html: t('m') + ' is even', why: 'Try ' + t('(-8)^{1/3}=-2') + ': ' + t('m=1') + ' is odd, and it still has meaning.' },
+          { html: t('n') + ' is even', why: 'Try ' + t('(-16)^{1/2}') + ': ' + t('n=2') + ' is even, and no real number squares to ' + t('-16') + '.' }],
+          'The denominator ' + t('n') + ' is the index. An odd root of a negative number is real (e.g. ' + t('\\sqrt[3]{-8}=-2') + '); an even root of a negative number is not. The numerator only raises that root to a power, so it can’t change whether the expression has meaning. So: ' + t('n') + ' is <b>odd</b>.', ['Test each choice on ' + t('(-8)^{1/3}') + ' and ' + t('(-16)^{1/2}') + '.'], 'rule for (-a)^(m/n)');
+      } }] },
+    { num: '14', stem: 'Assume ' + t('x') + ' represents a positive integer.', parts: [
+      { id: 'e14', level: 'PRG', make: function (r) { return e14(r); } }] },
+    { num: '19', section: 'Extra practice E — Find the error', stem: function (sh) { return 'Asked to evaluate ' + t(sh.B + '^{2/3}') + ', a student wrote ' + t(sh.B + '^{2/3}=\\sqrt{' + sh.B + '^{3}}=\\sqrt{' + F(sh.B3) + '}\\approx ' + sh.apx) + '.'; },
+      shared: function (r) { var c = r.pick([2, 3, 3, 5]), B = c * c * c, B3 = B * B * B; return { c: c, B: B, B3: B3, apx: (Math.round(Math.sqrt(B3) * 10) / 10).toFixed(1) }; },
+      parts: [
+        { id: 'e19a', level: 'EMG', make: function (r, sh) {
+          return mc(r, 'What did the student swap?', [
+            { html: 'The index and the power: the numerator ' + t('2') + ' was used as the index and the denominator ' + t('3') + ' as the power.', right: true },
+            { html: 'The base and the exponent.', why: 'The base ' + t(sh.B) + ' is still the base. Look at where the ' + t('2') + ' and the ' + t('3') + ' ended up.' },
+            { html: 'Nothing — the student just rounded too early.', why: 'The exact value is a whole number (' + t(sh.c * sh.c) + '), so ' + t('\\approx ' + sh.apx) + ' should be a warning sign.' },
+            { html: 'The square root should have been taken before the cubing.', why: 'Root first or power first gives the same result. The real problem is <i>which</i> root and <i>which</i> power.' }],
+            'The student used the <b>numerator</b> ' + t('2') + ' as the index and the <b>denominator</b> ' + t('3') + ' as the power — the index and the power were swapped. In ' + t('a^{m/n}') + ', the denominator is the index.', ['In ' + t('a^{m/n}') + ', which number is the index of the root?'], 'error: swapped index/power ' + sh.B + '^(2/3)');
         } },
-        { id: 'e13b', level: 'EMG', make: function (r) {
-          var m = r.chance(0.15) ? 52 : nz(r, 11, 99), k = r.chance(0.15) ? -4 : -r.int(3, 6), a = S(m, k), b = S(m, k + 1), cT = String(m) + '\\times 10^{' + (k - 1) + '}', aT = stdTex(a), bT = sciT(b);
-          return P.mc(r, 'Put ' + t(aT) + ', ' + t(bT) + ' and ' + t(cT) + ' in order from least to greatest. (Two of the three are equal.)', [
-            { html: t(aT + '=' + cT + '<' + bT), right: true },
-            { html: t(aT + '<' + cT + '<' + bT), why: 'Rewrite ' + t(cT) + ' in scientific notation: ' + t(sciT(a)) + '. Compare it with ' + t(aT) + '.' },
-            { html: t(bT + '<' + aT + '=' + cT), why: 'Write ' + t(aT) + ' in scientific notation: ' + t(sciT(a)) + '. Its exponent is ' + t(k) + ', smaller than ' + t(k + 1) + '.' },
-            { html: t(aT + '<' + bT + '=' + cT), why: 'Rewrite ' + t(cT) + ' in scientific notation: ' + t(String(m) + '=' + std(coef(D(m, 0))) + '\\times 10^{1}') + ', so the exponent goes up by ' + t('1') + ' to ' + t(k) + '.' }],
-            'Write all three in scientific notation: ' + t(aT + '=' + sciT(a)) + ', ' + t(cT + '=' + sciT(a)) + ', and ' + t(bT) + '.<br>So ' + t(aT + '=' + cT + '<' + bT) + ': the first and third are equal.', ['Write all three in scientific notation first.'], 'order with an equal pair');
-        } },
-        { id: 'e13c', level: 'EMG', make: function (r) {
-          var rows = [], want = {}, cols = [{ id: 'lt', html: t('<') }, { id: 'eq', html: t('=') }, { id: 'gt', html: t('>') }], items = [];
-          var m1 = nz(r, 11, 99), k1 = r.int(3, 7); items.push([std(coef(D(m1, 0))) + '\\times 10^{' + k1 + '}', m1 + '\\times 10^{' + (k1 - 1) + '}', 'eq']);
-          var a2 = r.int(2, 9), b2 = r.int(1, a2 - 1), k2 = -r.int(1, 3); items.push(r.chance(0.5) ? [a2 + '\\times 10^{' + (k2 - 1) + '}', b2 + '\\times 10^{' + k2 + '}', 'lt'] : [b2 + '\\times 10^{' + k2 + '}', a2 + '\\times 10^{' + (k2 - 1) + '}', 'gt']);
-          var c3 = std(D(nz(r, 11, 99), -1)), k3 = -r.int(5, 8); items.push(r.chance(0.5) ? [c3 + '\\times 10^{' + k3 + '}', c3 + '\\times 10^{' + (k3 - 1) + '}', 'gt'] : [c3 + '\\times 10^{' + (k3 - 1) + '}', c3 + '\\times 10^{' + k3 + '}', 'lt']);
-          var k4 = r.int(2, 4), c4 = r.pick(['9.9', '9.8', '9.95']); items.push(r.chance(0.5) ? [c4 + '\\times 10^{' + k4 + '}', '1.0\\times 10^{' + (k4 + 1) + '}', 'lt'] : ['1.0\\times 10^{' + (k4 + 1) + '}', c4 + '\\times 10^{' + k4 + '}', 'gt']);
-          if (r.chance(0.15)) items = [['7.4\\times 10^{5}', '74\\times 10^{4}', 'eq'], ['3\\times 10^{-2}', '2\\times 10^{-1}', 'lt'], ['6.1\\times 10^{-7}', '6.1\\times 10^{-8}', 'gt'], ['9.9\\times 10^{3}', '1.0\\times 10^{4}', 'lt']];
-          items.forEach(function (it, i) { rows.push({ id: 'p' + i, html: t(it[0] + '\\ \\square\\ ' + it[1]) }); want['p' + i] = it[2]; });
-          var sym = { lt: '<', eq: '=', gt: '>' };
-          return P.grid('Choose ' + t('<') + ', ' + t('=') + ' or ' + t('>') + ' for each pair. Not every number is in scientific notation.', rows, cols, want, { why: function (row) { var it = items[Number(row.slice(1))]; return 'Check ' + t(it[0] + '\\ \\square\\ ' + it[1]) + ' again: write both in scientific notation (coefficient between 1 and 10), then compare the exponents first.'; } },
-            items.map(function (it) { return t(it[0] + sym[it[2]] + it[1]); }).join('<br>') + '<br>Put both sides in scientific notation and compare the exponents first; compare coefficients only when the exponents tie.', ['Rewrite any number whose coefficient is not between ' + t('1') + ' and ' + t('10') + '.', 'A larger exponent wins, whatever the coefficients are.'], 'compare pairs <,=,>');
+        { id: 'e19b', level: 'EMG', make: function (r, sh) { return EV({ base: [sh.B, 1], m: 2, n: 3, ask: function (e) { return 'Give the correct value of ' + t(e) + ', using the route that keeps the numbers smallest.'; } }); } },
+        { id: 'e19c', level: 'EMG', make: function (r, sh) {
+          var tg = sh.B + '^{3/2}';
+          var p = convPart('The student’s expression isn’t nonsense — write ' + t('\\sqrt{' + sh.B + '^{3}}') + ' as a power with a rational exponent.', tg, { form: 'power', single: 'a^{n}', needRat: true, cands: [[sh.B + '^{2/3}', 'swap', 'The square root has index ' + t('2') + ', which becomes the <b>denominator</b>; the power ' + t('3') + ' becomes the numerator.'], [sh.B + '^{6}', 'times-exp', 'A root divides the exponent: index ' + t('2') + ' → denominator.']] },
+            'Index ' + t('2') + ' → denominator, power ' + t('3') + ' → numerator: ' + t('\\sqrt{' + sh.B + '^{3}}=' + tg) + ' (' + t('\\approx ' + sh.apx) + ' — not a whole number, a warning sign that the first reading was wrong).', convHints.slice(0, 1), 'sqrt(' + sh.B + '^3) as a power');
+          p.good = [sh.B + '^(3/2)', sh.B + '^{1.5}'];
+          return p;
         } }] },
-      { num: '14', section: 'Extra practice F — Real quantities: the units must survive', stem: function (s) { return 'Light travels at ' + t('3.0\\times 10^{8}') + ' m/s. The star ' + s.n + ' is about ' + t(s.d + '\\times 10^{' + s.e + '}') + ' m from Earth.'; },
-        shared: function (r) { return r.chance(0.15) ? STARS[0] : r.pick(STARS); },
-        parts: [
-          { id: 'e14a', level: 'EMG', make: function (r, s) {
-            var dist = sh(dec(s.d), s.e), T = div(dist, D(3, 8));
-            var p = sciPart('How long does light from ' + s.n + ' take to reach Earth, in seconds?', T, { before: t('t='), diag: cands([[mul(dist, D(3, 8)), 'mult-coef', 'Time = distance ÷ speed. Divide, don’t multiply.'], [div(D(3, 8), dist), 'flip-ratio', 'Time = distance ÷ speed: the distance goes on top.']]) },
-              'Time ' + t('=\\dfrac{\\text{distance}}{\\text{speed}}=\\dfrac{' + s.d + '\\times 10^{' + s.e + '}\\text{ m}}{3.0\\times 10^{8}\\text{ m/s}}') + '. Coefficients: ' + t(s.d + '\\div 3.0=' + std(div(dec(s.d), D(3, 0)))) + '; exponents: ' + t(s.e + '-8=' + (s.e - 8)) + '.<br>' + renormSol(div(dec(s.d), D(3, 0)), s.e - 8, T, true).replace('</b>.', ' s</b>.'),
-              ['Time = distance ÷ speed.', 'Divide the coefficients and subtract the exponents. The metres cancel, leaving seconds.'], 'light time from ' + s.n);
-            return p;
-          } },
-          { id: 'e14b', level: 'EMG', make: function (r, s) {
-            var T = div(sh(dec(s.d), s.e), D(3, 8)), y = val(T) / 3.15e7;
-            return P.approx('One year is about ' + t('3.15\\times 10^{7}') + ' s. Express the light-travel time from ' + s.n + ' in years, to the nearest tenth.', y, 1, { after: 'years', diag: function (v) { if (Math.abs(v - K.roundTo(val(T) * 3.15e7, 1)) < 1e-6 || v > 1e6) return { code: 'mult-coef', hint: 'To change seconds into years, <b>divide</b> by the number of seconds in a year.' }; return null; } },
-              'Time in seconds: ' + t(sciT(T)) + ' s (from part (a)).<br>' + t('\\dfrac{' + sciT(T) + '\\text{ s}}{3.15\\times 10^{7}\\text{ s/year}}=\\dfrac{' + std(coef(T)) + '}{3.15}\\times 10^{' + sN(T) + '-7}\\approx ' + y.toFixed(3)) + ', so about <b>' + t(K.roundTo(y, 1).toFixed(1)) + '</b> years.',
-              ['Find the time in seconds first (part (a)): distance ÷ speed.', 'Then divide by the number of seconds in one year.'], 'light years to ' + s.n);
-          } },
-          { id: 'e14c', level: 'EMG', make: function (r, s) {
-            var dist = sh(dec(s.d), s.e), q = 9.0e20 / val(dist);
-            return sciPart('The Milky Way is about ' + t('9.0\\times 10^{20}') + ' m across. That distance is how many times the distance to ' + s.n + '? Answer in scientific notation to 2 significant digits.', dec(q.toPrecision(12)), { sig: 2, diag: cands([[val(dist) / 9e20, 'flip-ratio', '“How many times” is the larger distance divided by the smaller: Milky Way ÷ star distance.']]) },
-              t('\\dfrac{9.0\\times 10^{20}\\text{ m}}{' + s.d + '\\times 10^{' + s.e + '}\\text{ m}}=\\dfrac{9.0}{' + s.d + '}\\times 10^{20-' + s.e + '}\\approx ' + (9 / Number(s.d)).toFixed(3) + '\\times 10^{' + (20 - s.e) + '}') + ', so about <b>' + t(K.sciTex(q, 2)) + '</b> times (the metres cancel — no unit).',
-              ['Divide the size of the Milky Way by the distance to the star.', 'Divide the coefficients, subtract the exponents, then round the coefficient to 2 significant digits.'], 'Milky Way / ' + s.n);
-          } }] },
-      { num: '15', stem: function (s) { return 'A typical animal cell is about ' + t(sciT(s.cell)) + ' m across, a certain virus particle about ' + t(sciT(s.virus)) + ' m across, and a certain bacterium about ' + t(sciT(s.bact)) + ' m long.'; },
-        shared: function (r) {
-          return find(r, function () { return { cell: r.pick([D(5, -6), D(4, -6), D(25, -7), D(8, -6), D(2, -5), D(1, -5)]), virus: r.pick([D(25, -9), D(1, -7), D(5, -8), D(3, -8), D(2, -8)]), bact: r.pick([D(2, -6), D(1, -6), D(3, -6), D(15, -7)]) }; },
-            function (v) { var q = div(v.cell, v.virus); return val(v.cell) > val(v.bact) && q && nd(q) <= 2 && div(D(1, -2), v.cell); }, { cell: D(5, -6), virus: D(25, -9), bact: D(2, -6) });
-        },
-        parts: [
-          { id: 'e15a', level: 'EMG', make: function (r, s) {
-            var A = A_(D(1, 0), -2), B = A_(coef(s.cell), sN(s.cell)), o = opRes(A, B, 'div');
-            var p = sciPart('How many cells, placed edge to edge, span ' + t('1') + ' cm, that is ' + t('1\\times 10^{-2}') + ' m?', o.R, { diag: opDiag(A, B, 'div') },
-              t('\\dfrac{1\\times 10^{-2}\\text{ m}}{' + sciT(s.cell) + '\\text{ m}}') + ': ' + opSol(A, B, 'div').replace('</b>.', '</b> cells.'), ['Divide the length to be covered by the width of one cell.'], 'cells across 1 cm');
-            return p;
-          } },
-          { id: 'e15b', level: 'EMG', make: function (r, s) {
-            var A = A_(coef(s.cell), sN(s.cell)), B = A_(coef(s.virus), sN(s.virus)), o = opRes(A, B, 'div');
-            return sciPart('How many times wider than the virus particle is the cell?', o.R, { diag: opDiag(A, B, 'div') },
-              t('\\dfrac{' + sciT(s.cell) + '\\text{ m}}{' + sciT(s.virus) + '\\text{ m}}') + ': ' + opSol(A, B, 'div').replace('</b>.', '</b> times.'), ['“How many times wider” is a division: cell ÷ virus.'], 'cell / virus');
-          } },
-          { id: 'e15c', level: 'EMG', make: function (r, s) {
-            var p = addPart([s.cell, '-', s.bact]);
-            p.prompt = 'How much wider is the cell than the bacterium is long? (This one is a subtraction: rewrite both lengths over the same power of ten first.) Give the answer in metres.';
-            p.solution = p.solution.replace(/<\/b>\.$/, ' m</b>.');
-            p.text = 'cell − bacterium';
-            return p;
-          } }] },
-      { num: '16', stem: function (s) { return 'A video file is ' + t(sciT(s.file)) + ' bytes. A drive holds ' + t(sciT(s.drive)) + ' bytes, and one byte is ' + t('8') + ' bits.'; },
-        shared: function (r) {
-          return find(r, function () { return { file: r.pick([D(5, 9), D(2, 9), D(4, 9), D(8, 9), D(25, 8), D(12, 9)]), drive: r.pick([D(15, 11), D(1, 12), D(2, 12), D(5, 11), D(4, 12)]), rate: r.pick([D(125, 6), D(25, 7), D(5, 8), D(1, 8), D(2, 8)]) }; },
-            function (v) { var tt = div(v.file, v.rate); return tt && nd(tt) <= 2 && val(v.drive) / val(v.file) >= 20; }, { file: D(5, 9), drive: D(15, 11), rate: D(125, 6) });
-        },
-        parts: [
-          { id: 'e16a', level: 'EMG', make: function (r, s) {
-            var q = val(s.drive) / val(s.file), n = Math.floor(q + 1e-9), exact = Math.abs(q - Math.round(q)) < 1e-9;
-            var p = P.number('How many whole files of that size fit on the drive?', n, function (v) { if (!exact && v === n + 1) return { code: 'round-up', hint: 'Only <b>whole</b> files fit: the last one would be cut off. Round down.' }; if (relEq(v, val(s.file) / val(s.drive))) return { code: 'flip-ratio', hint: 'Divide the drive’s capacity by the size of one file.' }; return null; },
-              t('\\dfrac{' + sciT(s.drive) + '\\text{ bytes}}{' + sciT(s.file) + '\\text{ bytes}}=\\dfrac{' + std(coef(s.drive)) + '}{' + std(coef(s.file)) + '}\\times 10^{' + sN(s.drive) + '-' + sN(s.file) + '}' + (exact ? '=' + HW.fmt(n) : '\\approx ' + q.toFixed(2))) + (exact ? ', so <b>' + t(HW.fmt(n)) + '</b> files (exactly).' : '. Only whole files count, so <b>' + t(HW.fmt(n)) + '</b> files.'),
-              ['Divide the drive’s capacity by the size of one file.'], 'files on a drive', { after: 'files' });
-            if (!exact) p.bad = [String(n + 1)];
-            return p;
-          } },
-          { id: 'e16b', level: 'EMG', make: function (r, s) {
-            var b = mul(s.file, D(8, 0)), raw = mul(coef(s.file), D(8, 0));
-            return sciPart('How many bits are in one file?', b, { diag: cands([[div(s.file, D(8, 0)), 'flip-ratio', 'Each byte is 8 bits, so there are <b>more</b> bits than bytes: multiply by 8.']]) },
-              t('(' + sciT(s.file) + '\\text{ bytes})\\times 8\\text{ bits/byte}=' + pt(raw, sN(s.file))) + (inRange(raw) ? '' : '; ' + t(stdTex(raw) + '=' + sciT(raw))) + ', so <b>' + t(sciT(b)) + '</b> bits.', ['Multiply the number of bytes by 8, then renormalize.'], 'bits in a file');
-          } },
-          { id: 'e16c', level: 'EMG', make: function (r, s) {
-            var A = A_(coef(s.file), sN(s.file)), B = A_(coef(s.rate), sN(s.rate)), o = opRes(A, B, 'div');
-            var p = sciPart('The drive transfers ' + t(sciT(s.rate)) + ' bytes per second. How long does one file take to copy, in seconds?', o.R, { diag: opDiag(A, B, 'div') },
-              t('\\dfrac{' + sciT(s.file) + '\\text{ bytes}}{' + sciT(s.rate) + '\\text{ bytes/s}}') + ': ' + opSol(A, B, 'div').replace('</b>.', ' s</b> (' + t(stdTex(o.R)) + ' s).'), ['Time = amount ÷ rate.'], 'copy time');
-            return p;
-          } }] },
-      { num: '17', section: 'Extra practice G — Find the error', stem: function (s) { return 'Asked to evaluate ' + t(opTex(s.A, s.B, 'div')) + ', a student divided ' + t(stdTex(s.A.c)) + ' by ' + t(stdTex(s.B.c)) + ', subtracted the exponents, wrote ' + t(pt(s.q, s.E)) + ', and circled it as the final answer.'; },
-        shared: function (r) {
-          var v = find(r, function () { var B = c1(r), Q = D(nz(r, 11, 99), -2); return { A: A_(mul(Q, B), r.int(2, 6)), B: A_(B, -r.int(1, 3)) }; }, function (v) { return inRange(v.A.c) && nd(v.A.c) <= 2; }, { A: A_('1.8', 4), B: A_('4', -2) });
-          v.q = div(v.A.c, v.B.c); v.E = v.A.p - v.B.p; v.R = sh(v.q, v.E); return v;
-        },
-        parts: [
-          { id: 'e17a', level: 'BEG', make: function (r, s) {
-            return toStdNamed(s.R, 'Is the student’s <i>value</i> correct? Write the student’s answer ' + t(pt(s.q, s.E)) + ' in standard notation (then check it against ' + t(stdTex(sh(s.A.c, s.A.p)) + '\\div ' + stdTex(sh(s.B.c, s.B.p))) + ').',
-              t(pt(s.q, s.E)) + ': move the decimal point ' + t(s.E) + ' places right: <b>' + t(stdTex(s.R)) + '</b>.<br>Check: ' + t(stdTex(sh(s.A.c, s.A.p)) + '\\div ' + stdTex(sh(s.B.c, s.B.p)) + '=' + stdTex(s.R)) + ' — the value <b>is</b> correct.');
-          } },
-          { id: 'e17b', level: 'EMG', make: function (r, s) {
-            return P.mc(r, 'Why is ' + t(pt(s.q, s.E)) + ' nevertheless <b>not</b> an acceptable final answer?', [
-              { html: 'The coefficient must satisfy ' + t('1\\le a<10') + ', and ' + t(stdTex(s.q)) + ' is less than ' + t('1') + ', so it is not in scientific notation.', right: true },
-              { html: 'The exponents should have been added, not subtracted.', why: 'For division the quotient law says <b>subtract</b>: ' + t(s.A.p + '-' + par(s.B.p) + '=' + s.E) + ' is right.' },
-              { html: 'The value is wrong.', why: 'Check part (a): the value matches ' + t(stdTex(sh(s.A.c, s.A.p)) + '\\div ' + stdTex(sh(s.B.c, s.B.p))) + '.' },
-              { html: 'A coefficient can’t be a decimal.', why: 'Coefficients like ' + t('4.5') + ' are fine; the problem is that this one is less than ' + t('1') + '.' }],
-              'The value is right, but the coefficient ' + t(stdTex(s.q)) + ' is less than ' + t('1') + ', so the number is <b>not in scientific notation</b>. It still needs renormalizing.', ['Look at the coefficient. What is the rule for the coefficient in scientific notation?'], 'why 0.45×10^6 is not acceptable');
-          } },
-          { id: 'e17c', level: 'EMG', make: function (r, s) {
-            var k = sN(s.q);
-            return sciPart('Give the correct answer in scientific notation.', s.R, { diag: cands([[sh(s.R, -2 * k), 'renorm-dir', 'The coefficient got bigger (' + t(stdTex(s.q) + '\\to ' + std(coef(s.q))) + '), so the exponent must go <b>down</b>.']]) },
-              t(stdTex(s.q) + '\\to ' + std(coef(s.q))) + ' moves the decimal point ' + t(-k) + ' place' + (k === -1 ? '' : 's') + ' right, so the exponent drops by ' + t(-k) + ': ' + t(s.E + '-' + (-k) + '=' + sN(s.R)) + '.<br><b>' + t(sciT(s.R)) + '</b>', ['Renormalize: make the coefficient between ' + t('1') + ' and ' + t('10') + ' and adjust the exponent the opposite way.'], 'correct 0.45×10^6');
-          } }] },
-      { num: '18', stem: function (s) { return 'Asked to write ' + t(stdTex(s.d)) + ' in scientific notation, a student counted ' + (-sN(s.d)) + ' places correctly but moved the decimal point the wrong way and wrote ' + t(std(coef(s.d)) + '\\times 10^{' + (-sN(s.d)) + '}') + '.'; },
-        shared: function (r) { return r.chance(0.15) ? { d: D(815, -8), e: D(72, -6) } : { d: S(mant(r, 3), -r.int(5, 7)), e: S(mant(r, 2), -r.int(4, 6)) }; },
-        parts: [
-          { id: 'e18a', level: 'BEG', make: function (r, s) {
-            var w = sh(s.d, -2 * sN(s.d));
-            return toStdNamed(w, 'What number did the student actually write? Give it in standard notation.', t(sciT(w)) + ': move the decimal point ' + t(sN(w)) + ' places right: <b>' + t(stdTex(w)) + '</b>. The true value is ' + t(stdTex(s.d)) + ', so this is ' + t('10^{' + 2 * sN(w) + '}') + ' times too big.');
-          } },
-          { id: 'e18b', level: 'BEG', make: function (r, s) { return toSci(s.d, 'Give the correct scientific notation for ' + t(stdTex(s.d)) + '.'); } },
-          { id: 'e18c', level: 'LIM', make: function (r, s) {
-            return P.mc(r, 'Which quick check catches this error every time?', [
-              { html: 'A number less than ' + t('1') + ' must have a <b>negative</b> exponent (and a number ' + t('10') + ' or more a positive one).', right: true },
-              { html: 'The exponent equals the number of zeros in the number.', why: 'Count the zeros in ' + t(stdTex(s.d)) + ' — the rule doesn’t even give the right size, and says nothing about the sign.' },
-              { html: 'The coefficient must be less than ' + t('10') + '.', why: 'The student’s coefficient ' + t(std(coef(s.d))) + ' was already less than ' + t('10') + '. The mistake is in the exponent.' },
-              { html: 'The exponent is always the number of digits in the number.', why: 'That isn’t a rule. Think about whether the number is bigger or smaller than ' + t('1') + '.' }],
-              t(stdTex(s.d)) + ' is less than ' + t('1') + ', so its exponent must be negative: ' + t(sciT(s.d)) + '. Checking the sign of the exponent against the size of the number catches a wrong-way move every time.', ['Is ' + t(stdTex(s.d)) + ' bigger or smaller than 1? What does that say about the exponent?'], 'sign check rule');
-          } },
-          { id: 'e18d', level: 'BEG', make: function (r, s) {
-            var w = sh(s.e, -2 * sN(s.e));
-            var p = toStdNamed(s.e, 'A second student converts ' + t(sciT(s.e)) + ' to standard notation and writes ' + t(stdTex(w)) + '. Give the correct standard notation.',
-              'The exponent ' + t(sN(s.e)) + ' is negative, so the decimal point moves ' + t(-sN(s.e)) + ' places <b>left</b>; the student moved it right (that gives ' + t(sciT(w)) + ').<br>Correct: ' + t(sciT(s.e) + '=') + '<b>' + t(stdTex(s.e)) + '</b>.');
-            p.bad.push(std(w));
-            return p;
-          } }] },
-      { num: '19', stem: 'Decide whether each statement is true or false. If it is false, choose the correct right-hand side.', parts: [
-        { id: 'e19a', level: 'BEG', make: function (r) {
-          var d = r.chance(0.15) ? D(64, -4) : S(mant(r, 2), -r.int(2, 5)), truth = r.chance(0.5), n = sN(d);
-          var wrongs = [sh(d, -1), sh(d, 1), sh(d, -2 * n)], shown = truth ? d : r.pick(wrongs.slice(0, 2));
-          return tfFix(r, sciT(d), stdTex(shown), stdTex(d), wrongs.map(stdTex).filter(function (x) { return x !== stdTex(shown); }),
-            'The exponent is ' + t(n) + ': move the decimal point ' + t(-n) + ' places left: ' + t(sciT(d) + '=' + stdTex(d)) + '.', 'statement: sci = standard');
+    { num: '20', stem: function (sh) { return 'A second student wrote ' + t('(-' + sh.N + ')^{1/2}=-' + sh.c) + ', reasoning that “the square root of ' + t(sh.N) + ' is ' + t(sh.c) + ', and the base was negative, so the answer is negative.”'; },
+      shared: function (r) { var c = r.int(4, 9); return { c: c, N: c * c }; },
+      parts: [
+        { id: 'e20a', level: 'PRG', make: function (r, sh) {
+          var N = sh.N, c = sh.c;
+          return mc(r, 'Consider these statements:<br>I.&nbsp; ' + t('(-' + c + ')^{2}=' + N) + ', not ' + t('-' + N) + ', so ' + t('-' + c) + ' is not a square root of ' + t('-' + N) + '.<br>II.&nbsp; The index is ' + t('2') + ' (even) and the base is negative, so ' + t('(-' + N + ')^{1/2}') + ' has no real value at all.<br>III.&nbsp; A square root is never negative, so the answer should be ' + t(c) + '.<br>Which are correct reasons the answer ' + t('-' + c) + ' is wrong?', [
+            { html: 'I and II only', right: true },
+            { html: 'I only', why: 'Statement II is also true: an even root of a negative number has no real value.' },
+            { html: 'II only', why: 'Statement I is also true: check by squaring, ' + t('(-' + c + ')^{2}=+' + N) + '.' },
+            { html: 'I, II and III', why: 'Statement III is false: ' + t(c + '^{2}=' + N) + ' too, not ' + t('-' + N) + '. There is <b>no</b> real answer, positive or negative.' }],
+            '<b>I</b> is true: ' + t('(-' + c + ')^{2}=' + N) + ', not ' + t('-' + N) + '.<br><b>II</b> is true: the index ' + t('2') + ' is even and the base is negative; no real number squares to a negative, so ' + t('(-' + N + ')^{1/2}') + ' has <b>no meaning</b>.<br><b>III</b> is false: ' + t(c) + ' doesn’t work either, since ' + t(c + '^{2}=' + N) + '.', ['Check each statement by squaring.'], 'two reasons (-' + N + ')^(1/2) ≠ -' + c, true);
         } },
-        { id: 'e19b', level: 'EMG', make: function (r) {
-          var c = r.chance(0.15) ? 2 : r.int(2, 4), k = r.chance(0.15) ? 5 : r.int(2, 6), p = 3, cor = D(Math.pow(c, p), k * p), lhs = '(' + c + '\\times 10^{' + k + '})^{' + p + '}';
-          var w1 = D(c * p, k * p), w2 = D(Math.pow(c, p), k + p), w3 = S(c, k * p);   // values c^3·10^(3k), 3c·10^(3k), c^3·10^(k+3) (D, not S: 27 × 10^9 = 2.7 × 10^10)
-          var shown = r.chance(0.35) ? cor : r.pick([w1, w2]);
-          return tfFix(r, lhs, sciT(shown), sciT(cor), [w1, w2, w3].map(sciT).filter(function (x) { return x !== sciT(shown) && x !== sciT(cor); }),
-            'The cube applies to the coefficient <b>and</b> the power of ten: ' + t(lhs + '=' + c + '^{3}\\times 10^{' + k + '\\times 3}=' + pt(D(Math.pow(c, p), 0), k * p) + (Math.pow(c, p) >= 10 ? '=' + sciT(cor) : '')) + '.', 'statement: power of sci');
+        { id: 'e20b', level: 'EMG', make: function (r, sh) {
+          var N = sh.N, c = sh.c;
+          return mc(r, 'Change only the brackets in ' + t('(-' + N + ')^{1/2}') + ' so that ' + t('-' + c) + ' <b>is</b> the correct answer.', [
+            { html: t('-' + N + '^{1/2}'), right: true },
+            { html: t('-(-' + N + ')^{1/2}'), why: 'That still contains ' + t('(-' + N + ')^{1/2}') + ', which has no meaning.' },
+            { html: t('(-' + N + '^{1})^{1/2}'), why: 'The base inside the brackets is still ' + t('-' + N) + ' — an even root of a negative number.' },
+            { html: 'No change is needed: ' + t('(-' + N + ')^{1/2}=-' + c) + '.', why: 'Square ' + t('-' + c) + ': you get ' + t(N) + ', not ' + t('-' + N) + '.' }],
+            'Remove the brackets: ' + t('-' + N + '^{1/2}=-\\sqrt{' + N + '}=-' + c) + '. Now the exponent applies to ' + t(N) + ' only, and the minus sign is applied afterwards.', ['Without brackets, which number does the exponent belong to?'], 'brackets so that = -' + c);
         } },
-        { id: 'e19c', level: 'BEG', make: function (r) {
-          var k = -r.int(1, 4), a = std(D(nz(r, 11, 49), -1)), b = std(D(nz(r, 51, 99), -1)), truth = r.chance(0.5);
-          if (r.chance(0.15)) { k = -2; a = '3.5'; b = '9.9'; truth = true; }
-          var L = a + '\\times 10^{' + k + '}', R = b + '\\times 10^{' + (k - 1) + '}', stmt = truth ? L + '>' + R : R + '>' + L;
-          return P.tf(r, t(stmt), truth, truth ? 'Compare the exponents first: ' + t(k + '>' + (k - 1)) + ', so ' + t(L) + ' is the larger number.' : 'Compare the exponents first: ' + t((k - 1) + '<' + k) + ', so ' + t(R) + ' is the <b>smaller</b> number, even though its coefficient is bigger.',
-            'Exponents: ' + t(k + '>' + (k - 1)) + ', so ' + t(L + '>' + R) + ' (' + t(stdTex(sh(dec(a), k)) + '>' + stdTex(sh(dec(b), k - 1))) + '). The statement is <b>' + (truth ? 'true' : 'false') + '</b>.', ['Compare the exponents first; the coefficients only matter if the exponents are equal.'], 'statement: compare');
-        } },
-        { id: 'e19d', level: 'EMG', make: function (r) {
-          var v = find(r, function () { var b = r.int(2, 4), q = r.int(2, 4); return { a: b * q, b: b, p: r.int(4, 8), q: r.int(6, 9) }; }, function (v) { return v.a <= 9 && v.q > v.p; }, { a: 8, b: 2, p: 6, q: 8 });
-          var lhs = '(' + v.a + '\\times 10^{' + v.p + '})\\div(' + v.b + '\\times 10^{' + v.q + '})', d = v.a / v.b, cor = S(d, v.p - v.q), w1 = S(d, v.q - v.p), w2 = S(d, v.p + v.q), w3 = S(v.a * v.b, v.p - v.q);
-          var shown = r.chance(0.35) ? cor : w1;
-          return tfFix(r, lhs, sciT(shown), sciT(cor), [w1, w2, w3].map(sciT).filter(function (x) { return x !== sciT(shown) && x !== sciT(cor); }),
-            'Coefficients: ' + t(v.a + '\\div ' + v.b + '=' + d) + '. Exponents: ' + t(v.p + '-' + v.q + '=' + (v.p - v.q)) + ' (top minus bottom). So ' + t(lhs + '=' + sciT(cor)) + '.', 'statement: quotient');
+        { id: 'e20c', level: 'PRG', make: function (r, sh) {
+          var N = sh.N;
+          return mc(r, 'Keeping the base ' + t('-' + N) + ', is there any rational exponent that gives a real value?', [
+            { html: 'Yes — any exponent whose denominator (the index) is odd, e.g. ' + t('(-' + N + ')^{1/3}=' + rootTex(3, '-' + N)) + '.', right: true },
+            { html: 'No — a negative base never has a real value with a fractional exponent.', why: 'Try ' + t('(-8)^{1/3}') + ': ' + t('(-2)^{3}=-8') + ', so it equals ' + t('-2') + '. An odd index works.' },
+            { html: 'Yes — ' + t('(-' + N + ')^{1/4}') + ', because ' + t(N) + ' is a perfect square.', why: 'The index ' + t('4') + ' is even: no real number to the 4th power is negative.' },
+            { html: 'Yes — ' + t('(-' + N + ')^{2/4}') + ', because squaring first makes it positive.', why: 'Reduce the exponent first: ' + t('\\frac{2}{4}=\\frac{1}{2}') + ', so it is the same as ' + t('(-' + N + ')^{1/2}') + ' — no meaning.' }],
+            '<b>Yes</b> — any exponent whose denominator is odd, e.g. ' + t('(-' + N + ')^{1/3}=' + rootTex(3, '-' + N) + '\\approx ' + (-Math.cbrt(N)).toFixed(2)) + '. It is the index, not the base, that decides.', ['For a negative base, which part of the exponent matters: the numerator or the denominator?'], 'exponent giving a real value for -' + N);
         } }] },
-      { num: '20', section: 'Extra practice H — Stretch', stem: 'Three operations in one expression. Work the numerator and the denominator down to single powers of ten before you divide.', parts: [
-        { id: 'e20a', level: 'PRG', make: function (r) {
-          var pool = [D(6, 0), D(15, -1), D(2, 0), D(45, -1), D(3, 0), D(4, 0), D(25, -1), D(12, -1), D(8, 0), D(5, 0)];
-          var v = find(r, function () { return [A_(r.pick(pool), -r.int(2, 6)), A_(r.pick(pool), r.int(6, 10)), A_(r.pick(pool), r.int(2, 5)), A_(r.pick(pool), -r.int(1, 4))]; },
-            function (v) { var T = mul(v[0].c, v[1].c), B = mul(v[2].c, v[3].c), Q = div(T, B); return Q && nd(Q) === 1 && v[0].c.m !== v[2].c.m; }, [A_('6', -4), A_('1.5', 9), A_('2', 3), A_('4.5', -2)]);
-          return fourOp(v, false);
-        } },
-        { id: 'e20b', level: 'PRG', make: function (r) {
-          var pool = [D(8, 0), D(2, 0), D(4, 0), D(5, 0), D(16, -1), D(25, -1), D(12, -1)];
-          var v = find(r, function () { return [A_(r.pick([D(32, -1), D(16, -1), D(24, -1), D(12, -1), D(36, -1), D(48, -1)]), -r.int(3, 6)), null, A_(r.pick(pool), -r.int(2, 5)), A_(r.pick(pool), -r.int(5, 8))]; },
-            function (v) { var T = pw(v[0].c, 2), B = mul(v[2].c, v[3].c), Q = div(T, B); return Q && nd(Q) <= 2 && val(T) >= 10 && val(B) >= 10 && v[2].p !== v[3].p && v[2].c.m !== v[3].c.m; }, [A_('3.2', -5), null, A_('8', -4), A_('2', -7)]);
-          return fourOp(v, true);
-        } }] },
-      { num: '21', stem: function (s) { var a = BODIES[s[0]], b = BODIES[s[1]]; return '“How many times larger” is always a division. ' + bn(s[0], true) + '’s mass is about ' + t(a.m + '\\times 10^{' + a.me + '}') + ' kg and ' + bn(s[1]) + '’s is about ' + t(b.m + '\\times 10^{' + b.me + '}') + ' kg; ' + bn(s[0]) + '’s diameter is about ' + t(a.d + '\\times 10^{' + a.de + '}') + ' m and ' + bn(s[1]) + '’s is about ' + t(b.d + '\\times 10^{' + b.de + '}') + ' m.'; },
-        shared: function (r) {
-          var good = BODY_PAIRS.filter(function (p) { var a = BODIES[p[0]], b = BODIES[p[1]]; return [Number(a.m) / Number(b.m), Number(a.d) / Number(b.d)].every(function (q) { var c = q < 1 ? q * 10 : q, f = c * 100 - Math.floor(c * 100); return Math.abs(f - 0.5) > 0.06; }); });
-          return r.chance(0.15) ? BODY_PAIRS[0] : r.pick(good);
-        },
-        parts: [
-          { id: 'e21a', level: 'EMG', make: function (r, s) { return ratioPart(s, 'm'); } },
-          { id: 'e21b', level: 'EMG', make: function (r, s) {
-            var b = BODIES[s[1]], nm = bn(s[1]), g = r.chance(0.15) ? D(5, -5) : r.pick([D(5, -5), D(2, -5), D(4, -5), D(8, -5), D(1, -4)]), M = sh(dec(b.m), b.me), q = div(M, g);
-            return sciPart('A grain of sand has a mass of about ' + t(sciT(g)) + ' kg. How many grains would have ' + nm + '’s mass? (No rounding needed.)', q, { diag: opDiag(A_(dec(b.m), b.me), A_(coef(g), sN(g)), 'div') },
-              t('\\dfrac{' + b.m + '\\times 10^{' + b.me + '}\\text{ kg}}{' + sciT(g) + '\\text{ kg}}') + ': ' + opSol(A_(dec(b.m), b.me), A_(coef(g), sN(g)), 'div').replace('</b>.', '</b> grains.'), ['Divide the total mass by the mass of one grain.', 'Subtracting a negative exponent is adding.'], 'grains of sand');
-          } },
-          { id: 'e21c', level: 'EMG', make: function (r, s) { return ratioPart(s, 'd'); } }] },
-      { num: '22', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: 'e22', level: 'BEG', make: function (r) {
-          var v = find(r, function () { var Q = c1(r), B = c2(r); return { A: mul(Q, B), B: B, p: -r.int(2, 6), q: r.int(2, 7) }; }, function (v) { return inRange(v.A) && nd(v.A) <= 2 && v.p + v.q !== 0 && v.p !== -v.q; }, { A: D(48, -1), B: D(16, -1), p: -3, q: 5 });
-          var n = v.p - v.q, ks = [v.p + v.q, n, -(v.p + v.q), -n].filter(function (k, i, arr) { return arr.indexOf(k) === i; });
-          while (ks.length < 4) ks.push(n - ks.length);
-          var opts = ks.map(function (k) { return { html: t(k), right: k === n, why: k === v.p + v.q ? 'Dividing: <b>subtract</b> the exponents, top minus bottom: ' + t(v.p + '-' + v.q) + '.' : k === -n ? 'Top minus bottom: ' + t(v.p + '-' + v.q) + ', not the other way round.' : 'Quotient law: subtract the exponents, top minus bottom.' }; });
-          return P.mc(r, 'When ' + t('(' + pt(v.A, v.p) + ')\\div(' + pt(v.B, v.q) + ')') + ' is written in the form ' + t('a\\times 10^{n}') + ' with ' + t('1\\le a<10') + ', the value of ' + t('n') + ' is', opts,
-            'Coefficients: ' + t(stdTex(v.A) + '\\div ' + stdTex(v.B) + '=' + stdTex(div(v.A, v.B))) + '. Exponents: ' + t(v.p + '-' + v.q + '=' + n) + '. ' + t(pt(div(v.A, v.B), n)) + ' is already in range, so ' + t('n=' + n) + '.', ['Divide the coefficients and subtract the exponents (top minus bottom).'], 'exponent of a quotient', true);
-        } }] },
-      { num: '23', stem: '<i>(Numerical Response)</i>', parts: [
-        { id: 'e23', level: 'PRG', make: function (r) {
-          var v = find(r, function () { return { a: c2(r), b: c1(r), p: -r.int(2, 6), q: r.int(4, 9) }; }, function (v) {
-            var C = mul(v.a, v.b), R = sh(C, v.p + v.q), ap = val(coef(R)), n = sN(R), an = ap * n; return val(C) >= 10 && n >= 1 && Math.abs(an * 10 - Math.round(an * 10)) < 1e-9 && an < 100 && String(Math.round(an * 10) / 10).length <= 4;
-          }, { a: D(25, -1), b: D(6, 0), p: -4, q: 7 });
-          var C = mul(v.a, v.b), R = sh(C, v.p + v.q), a = val(coef(R)), n = sN(R), ans = Math.round(a * n * 10) / 10;
-          return P.nr('When ' + t('(' + pt(v.a, v.p) + ')\\times(' + pt(v.b, v.q) + ')') + ' is written in the form ' + t('a\\times 10^{n}') + ' with ' + t('1\\le a<10') + ', the value of ' + t('a\\times n') + ' is ________.', ans, function (x) {
-            if (Math.abs(x - Math.round(val(C) * (v.p + v.q) * 10) / 10) < 1e-9) return { code: 'no-renorm', hint: 'Renormalize first: ' + t(stdTex(C)) + ' is not between ' + t('1') + ' and ' + t('10') + '.' };
-            if (Math.abs(x - Math.round(a * (n - 2) * 10) / 10) < 1e-9) return { code: 'renorm-dir', hint: 'When the coefficient gets smaller (' + t(stdTex(C) + '\\to ' + std(coef(C))) + '), the exponent goes <b>up</b> by ' + t('1') + '.' };
-            return null;
-          }, 'Coefficients: ' + t(stdTex(v.a) + '\\times ' + stdTex(v.b) + '=' + stdTex(C)) + '. Exponents: ' + t(v.p + '+' + v.q + '=' + (v.p + v.q)) + '.<br>' + t(pt(C, v.p + v.q) + '=' + sciT(R)) + ', so ' + t('a=' + std(coef(R))) + ', ' + t('n=' + n) + ' and ' + t('a\\times n=' + ans) + '.',
-          ['Multiply, then renormalize so the coefficient is between ' + t('1') + ' and ' + t('10') + '.', 'Then multiply ' + t('a') + ' by ' + t('n') + '.'], 'a×n of a product');
-        } }] }
-    ]
-  });
+    { num: '21', stem: 'One more line containing an error.', parts: [
+      { id: 'e21c', sub: 'c', level: 'EMG', make: function (r) {
+        var v = r.pick([[8, 2, 3], [27, 2, 3], [16, 3, 4], [32, 2, 5], [64, 2, 3]]), p = Math.pow(iroot(v[0], v[2]), v[1]);
+        var e = EV({ base: [v[0], 1], m: -v[1], n: v[2], ask: function (x) { return 'A student wrote ' + t(x + '=-' + p) + '. Write the correct value of ' + t(x) + '.'; } });
+        e.solution = 'The mistake: a negative exponent means <b>reciprocal</b>, not a negative answer.<br>' + e.solution;
+        return e;
+      } }] },
+    { num: '22', section: 'Extra practice F — Stretch', stem: 'A rational exponent can be undone by raising both sides to its <i>reciprocal</i>. Solve for ' + t('x') + ', and check each answer by substituting it back.', parts: [
+      { id: 'e22a', level: 'ADV', make: function (r) { return solvePart(3, 2, r.int(2, 5)); } },
+      { id: 'e22b', level: 'MAS', make: function (r) { var v = r.pick([[2, 3, 5], [2, 3, 2], [2, 3, 3], [2, 3, 4], [2, 3, 6], [4, 3, 2], [2, 5, 2]]); return solveTwo(v[0], v[1], v[2]); } },
+      { id: 'e22c', level: 'ADV', make: function (r) { var v = r.pick([[2, 2], [2, 3], [2, 4], [2, 5], [3, 2], [3, 3]]); return solvePart(-1, v[0], v[1]); } },
+      { id: 'e22d', level: 'ADV', make: function (r) { var v = r.pick([[5, 3, 2], [3, 5, 2], [5, 2, 2], [3, 4, 3], [5, 3, 3]]); return solvePart(v[0], v[1], v[2]); } }] },
+    { num: '24', stem: 'Two exam-style items.', parts: [
+      { id: 'e24a', level: 'EMG', make: function (r) {
+        var pq = r.pick(coprimePairs(2, 5)), p = pq[0], q = pq[1], P3 = p * p * p, Q3 = q * q * q, bt = '\\left(\\frac{' + P3 + '}{' + Q3 + '}\\right)^{-2/3}';
+        return mc(r, '<i>(Multiple Choice)</i> ' + t(bt) + ' is equal to', [
+          { html: t('\\frac{' + q * q + '}{' + p * p + '}'), right: true },
+          { html: t('\\frac{' + p * p + '}{' + q * q + '}'), why: 'The exponent is negative: flip the base first.' },
+          { html: t('-\\frac{' + q * q + '}{' + p * p + '}'), why: 'A negative exponent means reciprocal, not a negative answer.' },
+          { html: 'has no meaning', why: 'The base is positive, so every root of it exists.' }],
+          'Flip the base to clear the negative exponent: ' + t(bt + '=\\left(\\frac{' + Q3 + '}{' + P3 + '}\\right)^{2/3}=\\left(\\frac{' + rootTex(3, Q3) + '}{' + rootTex(3, P3) + '}\\right)^{2}=\\left(\\frac{' + q + '}{' + p + '}\\right)^{2}=\\frac{' + q * q + '}{' + p * p + '}') + '. Positive and defined.', ['Negative exponent → flip the fraction. Denominator 3 → cube root.'], 'MC ' + bt);
+      } },
+      { id: 'e24b', level: 'PRG', make: function (r) {
+        var pool = [['16^{3/4}', 8, '\\left(\\sqrt[4]{16}\\right)^{3}=2^{3}'], ['64^{2/3}', 16, '\\left(\\sqrt[3]{64}\\right)^{2}=4^{2}'], ['81^{1/2}', 9, '\\sqrt{81}'], ['27^{2/3}', 9, '\\left(\\sqrt[3]{27}\\right)^{2}=3^{2}'], ['32^{3/5}', 8, '\\left(\\sqrt[5]{32}\\right)^{3}=2^{3}'],
+          ['125^{2/3}', 25, '\\left(\\sqrt[3]{125}\\right)^{2}=5^{2}'], ['8^{4/3}', 16, '\\left(\\sqrt[3]{8}\\right)^{4}=2^{4}'], ['49^{1/2}', 7, '\\sqrt{49}'], ['16^{5/4}', 32, '\\left(\\sqrt[4]{16}\\right)^{5}=2^{5}'], ['81^{3/4}', 27, '\\left(\\sqrt[4]{81}\\right)^{3}=3^{3}'], ['4^{5/2}', 32, '\\left(\\sqrt{4}\\right)^{5}=2^{5}']];
+        var tri = pickWhere(r, function () { return r.sample(pool, 3); }, function (s) { var v = s[0][1] + s[1][1] - s[2][1]; return v > 0 && v < 1000 && s[0][1] + s[1][1] + s[2][1] !== v; }) || [pool[0], pool[1], pool[2]];
+        var ans = tri[0][1] + tri[1][1] - tri[2][1], e1 = tri[0][0] + '+' + tri[1][0] + '-' + tri[2][0];
+        return P.nr('<i>(Numerical Response)</i> The value of ' + t(e1) + ' is ________.', ans, function (v) {
+          if (v === tri[0][1] + tri[1][1] + tri[2][1]) return { code: 'sign', hint: 'The last term is <b>subtracted</b>.' };
+          return null;
+        }, tri.map(function (x) { return t(x[0] + '=' + x[2] + '=' + x[1]); }).join('<br>') + '<br>' + t(tri[0][1] + '+' + tri[1][1] + '-' + tri[2][1] + '=' + ans) + '.', ['Evaluate each power root first, then add and subtract.'], 'NR ' + e1);
+      } }] }
+  ];
 
-  /* ---------- part makers that need the helpers above ---------- */
-  function tableRow(d, given) {
-    var n = sN(d), stdF = { name: 'Standard notation', label: 'Standard notation' }, prodF = { name: 'Product form', label: 'Product form', mode: 'math', keys: 'expr', wide: true }, sciF = { name: 'Scientific notation', label: 'Scientific notation', mode: 'math', keys: 'expr', wide: true };
-    var sol = 'The decimal point moves ' + moveWords(d) + ' between ' + t(stdTex(d)) + ' and ' + t(std(coef(d))) + ', so there ' + (Math.abs(n) === 1 ? 'is one ' + t('10') : 'are ' + Math.abs(n) + ' tens') + ' in the product form' + (n < 0 ? ', in the denominator' : '') + ':<br>' + t(stdTex(d) + '=' + prodTex(d) + '=' + sciT(d)) + '.';
-    var hints = ['Find the coefficient first: move the decimal point so exactly one non-zero digit is in front of it.', 'Each place the decimal point moves is one ' + t('10') + '. A number less than ' + t('1') + ' has its ' + t('10') + 's in the denominator (and a negative exponent).'];
-    var p;
-    if (given === 'std') {
-      p = P.fields('Standard notation: ' + t(stdTex(d)) + '. Fill in the product form and the scientific notation.', [prodF, sciF], [prodChk(d), sciChk(d, { diag: cands([signDiag(d)].filter(Boolean)) })], [prodKey(d), sciT(d)],
-        'Product form: ' + t(prodTex(d)) + '<br>Scientific notation: ' + t(sciT(d)), sol, hints, 'table row from ' + std(d));
-      p.bad = [[prodKey(d), sciT(sh(d, -2 * n))], [prodKey(sh(d, 1)), sciT(d)]];
-    } else {
-      p = P.fields('Scientific notation: ' + t(sciT(d)) + '. Fill in the standard notation and the product form.', [stdF, prodF], [stdChk(d), prodChk(d)], [std(d), prodKey(d)],
-        'Standard notation: ' + t(stdTex(d)) + '<br>Product form: ' + t(prodTex(d)), sol, hints, 'table row from ' + sciPlain(d));
-      p.bad = [[std(sh(d, -2 * n)), prodKey(d)], [std(d), prodKey(sh(d, -1))]];
-    }
-    return p;
-  }
-  function toStdNamed(d, prompt, sol) { var p = toStd(d, prompt); p.solution = sol; return p; }
-  function missingN(C, k) { // C × 10^k = coef × 10^n
-    var V = sh(C, k), n = sN(V), s = sN(C);
-    return P.number(t(stdTex(C) + '\\times 10^{' + k + '}=' + std(coef(V)) + '\\times 10^{n}'), n, function (v) {
-      if (v === k - s) return { code: 'adjust-direction', hint: s > 0 ? 'The coefficient got <b>smaller</b> (' + t(stdTex(C) + '\\to ' + std(coef(V))) + '), so the exponent must go <b>up</b>.' : 'The coefficient got <b>bigger</b> (' + t(stdTex(C) + '\\to ' + std(coef(V))) + '), so the exponent must go <b>down</b>.' };
-      if (v === s) return { code: 'ignored-power', hint: 'Don’t forget the ' + t('10^{' + k + '}') + ' that is already there: adjust its exponent.' };
-      return null;
-    }, t(stdTex(C) + '\\to ' + std(coef(V))) + ' moves the decimal point ' + t(Math.abs(s)) + ' place' + (Math.abs(s) === 1 ? '' : 's') + ' ' + (s > 0 ? 'left' : 'right') + ', so the exponent goes ' + (s > 0 ? 'up' : 'down') + ' by ' + t(Math.abs(s)) + ':<br>' + t('n=' + k + (s > 0 ? '+' + s : String(s)) + '=' + n) + '.',
-    ['How many places does the decimal point move to turn ' + t(stdTex(C)) + ' into ' + t(std(coef(V))) + '? In which direction?', 'Coefficient smaller → exponent bigger, and the other way round.'], 'missing exponent ' + std(C) + '×10^' + k, { before: t('n=') });
-  }
-  function powPart(c, k, p) {
-    var C = D(Math.pow(c, p), 0), R = sh(C, k * p), lhs = '(' + c + '\\times 10^{' + k + '})^{' + p + '}';
-    return sciPart(t(lhs), R, { diag: cands([[S(c, k * p), 'coef-not-raised', 'Raise the coefficient too: ' + t(c + '^{' + p + '}=' + Math.pow(c, p)) + '.'], [S(c * p, k * p), 'coef-times', t(c + '^{' + p + '}') + ' means ' + t(Array(p + 1).join(c + '\\times ').slice(0, -7)) + ', not ' + t(c + '\\times ' + p) + '.'], [sh(C, k + p), 'power-add', 'Power of a power: <b>multiply</b> the exponents, ' + t('(10^{' + k + '})^{' + p + '}=10^{' + k + '\\times ' + p + '}') + '.'], [sh(sh(C, k * p), -2 * sN(C)), 'renorm-dir', 'Renormalizing ' + t(Math.pow(c, p) + '\\to ' + std(coef(C))) + ' makes the coefficient smaller, so the exponent goes <b>up</b>.']].filter(function (x) { return !relEq(val(x[0]), val(R)); })) },
-      t(lhs + '=' + c + '^{' + p + '}\\times (10^{' + k + '})^{' + p + '}=' + pt(C, k * p)) + (inRange(C) ? ' — already in range: <b>' + t(sciT(R)) + '</b>.' : '; ' + t(Math.pow(c, p) + '=' + sciT(C)) + ', so <b>' + t(sciT(R)) + '</b>.'),
-      ['Raise the coefficient to the power, and multiply the exponent of ' + t('10') + ' by the power.', 'Then renormalize if the coefficient is ' + t('10') + ' or more.'], 'power ' + c + 'e' + k + '^' + p);
-  }
-  function twoOp(v, kind) { // kind: 'frac' (a·b)/c, 'sq' a²/c, 'inline' a·b ÷ c
-    var A = v[0], B = v[1], Cc = v[2];
-    var top = kind === 'sq' ? pw(A.c, 2) : mul(A.c, B.c), te = kind === 'sq' ? 2 * A.p : A.p + B.p, T = sh(top, te), Q = div(top, Cc.c), E = te - Cc.p, R = sh(Q, E);
-    var lhs = kind === 'sq' ? '\\dfrac{(' + cTex(A) + ')^{2}}{' + cTex(Cc) + '}' : kind === 'frac' ? '\\dfrac{(' + cTex(A) + ')(' + cTex(B) + ')}{' + cTex(Cc) + '}' : '(' + cTex(A) + ')(' + cTex(B) + ')\\div(' + cTex(Cc) + ')';
-    var s1 = kind === 'sq' ? 'Top: ' + t(stdTex(A.c) + '^{2}=' + stdTex(top)) + ', ' + t(par(A.p) + '\\times 2=' + te) + ', so ' + t(pt(top, te)) + '.' : (kind === 'inline' ? 'First product: ' : 'Top: ') + t(stdTex(A.c) + '\\times ' + stdTex(B.c) + '=' + stdTex(top)) + ', ' + t(A.p + '+' + par(B.p) + '=' + te) + ', so ' + t(pt(top, te)) + '.';
-    var s2 = 'Divide: ' + t(stdTex(top) + '\\div ' + stdTex(Cc.c) + '=' + stdTex(Q)) + ', ' + t(te + '-' + par(Cc.p) + '=' + E) + '.<br>' + renormSol(Q, E, R, true);
-    var wrongTop = sh(div(top, Cc.c), te + Cc.p);
-    return sciPart(t(lhs), R, { diag: cands([[wrongTop, 'add-exp', 'When you divide by ' + t(cTex(Cc)) + ', <b>subtract</b> its exponent: ' + t(te + '-' + par(Cc.p)) + '.'], inRange(Q) ? null : [sh(R, -2 * sN(Q)), 'renorm-dir', 'Check the direction when you renormalize ' + t(stdTex(Q)) + ': coefficient smaller → exponent bigger, and the other way round.']].filter(function (x) { return x && !relEq(val(x[0]), val(R)); })) },
-      s1 + '<br>' + s2, ['Simplify the top first: one coefficient times one power of ten.', 'Then divide the coefficients and subtract the exponents. Renormalize at the end.'], 'two operations');
-  }
-  function fourOp(v, sq) {
-    var A = v[0], B = v[1], C = v[2], E2 = v[3];
-    var top = sq ? pw(A.c, 2) : mul(A.c, B.c), te = sq ? 2 * A.p : A.p + B.p, bot = mul(C.c, E2.c), be = C.p + E2.p, Q = div(top, bot), E = te - be, R = sh(Q, E);
-    var lhs = '\\dfrac{' + (sq ? '(' + cTex(A) + ')^{2}' : '(' + cTex(A) + ')(' + cTex(B) + ')') + '}{(' + cTex(C) + ')(' + cTex(E2) + ')}';
-    function norm(x, e) { return inRange(x) ? t(pt(x, e)) : t(pt(x, e) + '=' + sciT(sh(x, e))); }
-    var sol = 'Top: ' + (sq ? t(stdTex(A.c) + '^{2}=' + stdTex(top)) + ', ' + t(par(A.p) + '\\times 2=' + te) : t(stdTex(A.c) + '\\times ' + stdTex(B.c) + '=' + stdTex(top)) + ', ' + t(A.p + '+' + par(B.p) + '=' + te)) + ', so ' + norm(top, te) + '.<br>' +
-      'Bottom: ' + t(stdTex(C.c) + '\\times ' + stdTex(E2.c) + '=' + stdTex(bot)) + ', ' + t(C.p + '+' + par(E2.p) + '=' + be) + ', so ' + norm(bot, be) + '.<br>' +
-      'Divide: ' + t(stdTex(top) + '\\div ' + stdTex(bot) + '=' + stdTex(Q)) + ', ' + t(te + '-' + par(be) + '=' + E) + '.<br>' + renormSol(Q, E, R, true);
-    return sciPart(t(lhs), R, { diag: cands([[sh(Q, te + be), 'add-exp', 'Dividing by the bottom: <b>subtract</b> its exponent, ' + t(te + '-' + par(be)) + '.'], inRange(Q) ? null : [sh(R, -2 * sN(Q)), 'renorm-dir', 'Check the direction when you renormalize ' + t(stdTex(Q)) + '.']].filter(function (x) { return x && !relEq(val(x[0]), val(R)); })) },
-      sol, ['Simplify the numerator to one coefficient times one power of ten, then the denominator the same way.', 'Then divide: coefficients divide, exponents subtract. Renormalize at the end.'], 'three operations');
-  }
-  function addTex(v) { var out = sciT(v[0]); for (var i = 1; i < v.length; i += 2) out += v[i] + sciT(v[i + 1]); return out; }
-  function addRaw(v) { // combine over the largest power of ten
-    var k = sN(v[0]), c = coef(v[0]), parts = [{ d: v[0], c: c }];
-    for (var i = 1; i < v.length; i += 2) { var x = sh(v[i + 1], -k); parts.push({ d: v[i + 1], c: x, op: v[i] }); c = v[i] === '+' ? add(c, x) : sub(c, x); }
-    return { k: k, c: c, parts: parts, v: sh(c, k) };
-  }
-  function addPart(v) {
-    var R = addRaw(v), k = R.k, res = R.v, tex = addTex(v);
-    var conv = R.parts.slice(1).filter(function (p) { return sN(p.d) !== k; }).map(function (p) { return t(sciT(p.d) + '=' + pt(p.c, k)); });
-    var line = t('(' + R.parts.map(function (p, i) { return (i ? p.op : '') + stdTex(p.c); }).join('') + ')\\times 10^{' + k + '}=' + pt(R.c, k));
-    var sol = 'Common power: ' + t('10^{' + k + '}') + (conv.length ? '. ' + conv.join(', ') + '.' : ' (already shared).') + '<br>' + line + (inRange(R.c) ? ' — already in range: <b>' + t(sciT(res)) + '</b>.' : '; ' + t(stdTex(R.c)) + ' is not between ' + t('1') + ' and ' + t('10') + ', so renormalize: <b>' + t(sciT(res)) + '</b>.');
-    // naive: combine the coefficients as written, keep the larger power
-    var naive = coef(v[0]); for (var i = 1; i < v.length; i += 2) naive = v[i] === '+' ? add(naive, coef(v[i + 1])) : sub(naive, coef(v[i + 1]));
-    var list = [];
-    if (conv.length) list.push([sh(naive, k), 'no-align', 'The powers of ten are different, so the coefficients can’t be combined yet. Rewrite ' + t(sciT(R.parts.filter(function (p) { return sN(p.d) !== k; })[0].d)) + ' over ' + t('10^{' + k + '}') + ' first.']);
-    if (v.length === 3) list.push([sh(naive, sN(v[0]) + sN(v[2])), 'add-exps-sum', 'Adding doesn’t add the exponents. Write both over the same power of ten, then add (or subtract) only the coefficients.']);
-    if (!inRange(R.c)) list.push([sh(res, -2 * sN(R.c)), 'renorm-dir', 'Check the direction when you renormalize ' + t(stdTex(R.c)) + '.']);
-    return sciPart(t(tex), res, { diag: cands(list.filter(function (x) { return val(x[0]) > 0 && !relEq(val(x[0]), val(res)); })) }, sol,
-      ['Rewrite the number with the smaller power of ten over the larger one (its coefficient gets smaller).', 'Then add or subtract the coefficients, keep the power of ten, and renormalize if needed.'], 'add/subtract: ' + tex.replace(/\\times 10\^\{(-?\d+)\}/g, 'e$1').replace(/\\[a-z]+|[{}\\]/g, ''));
-  }
-  function orderPart(r, E, fixed, posTrap) {
-    var specs = fixed;
-    if (!specs) {
-      var hi = [], lo = [];
-      while (hi.length < 2) { var h = r.int(70, 99); if (h % 10 && hi.indexOf(h) < 0) hi.push(h); }
-      var m1 = r.chance(0.5) ? r.int(2, 4) : nz(r, 15, 49), m2;
-      do { m2 = posTrap ? (r.chance(0.5) ? m1 * 10 + r.pick([-5, 5]) : nz(r, 15, 49)) : nz(r, 15, 49); } while (m2 === m1 || m2 === m1 * 10 || m1 === m2 * 10);
-      var t1 = nz(r, 11, 29);
-      specs = [[hi[0], 0], [hi[1], 0], [m1, 1], [m2, 1], [t1, 2]];
-      if (r.chance(0.5)) specs.push([nz(r, 31, 69), 2]), specs.splice(r.int(0, 1), 1);
-    }
-    var items = specs.map(function (sp, i) { var d = S(sp[0], E + sp[1]); return { id: 'n' + i, d: d, tex: sciT(d) }; });
-    items.sort(function (a, b) { return val(a.d) - val(b.d); });
-    return P.order(r, 'Order from least to greatest.', items.map(function (x) { return { id: x.id, tex: x.tex }; }), { why: function (a, b) { var A = items.filter(function (x) { return x.id === a; })[0], B = items.filter(function (x) { return x.id === b; })[0]; return sN(A.d) !== sN(B.d) ? t(A.tex) + ' comes after ' + t(B.tex) + '? Compare the exponents first: ' + t(sN(A.d)) + ' vs ' + t(sN(B.d)) + '.' : t(A.tex) + ' and ' + t(B.tex) + ' have the same exponent, so compare the coefficients.'; } },
-      'Group by exponent, then compare coefficients within a group:<br>' + items.map(function (x) { return t(x.tex); }).join(', ') + '.', ['Sort by the exponent first (remember ' + t('-6<-5') + ').', 'Only when two exponents are equal do you compare the coefficients.'], 'order sci numbers');
-  }
-  function tfFix(r, lhs, shownRhs, corRhs, wrongRhs, sol, text) {
-    var truth = shownRhs === corRhs, opts = [{ html: '<b>True</b>', right: truth, why: truth ? null : 'Work out the left side yourself and compare it with ' + t(shownRhs) + '.' }];
-    if (!truth) opts.push({ html: '<b>False</b> — it should be ' + t(corRhs), right: true });
-    wrongRhs.slice(0, truth ? 3 : 2).forEach(function (w) { opts.push({ html: '<b>False</b> — it should be ' + t(w), why: truth ? 'Check again: the statement is actually true.' : 'It is false, but ' + t(w) + ' isn’t the correct value either. Work out the left side step by step.' }); });
-    while (opts.length < 4) opts.push({ html: '<b>False</b> — it should be ' + t('0'), why: 'Work out the left side step by step.' });
-    var p = P.mc(r, t(lhs + '=' + shownRhs), opts, sol + ' The statement is <b>' + (truth ? 'true' : 'false') + '</b>.', ['Work out the left side yourself, then compare.'], text, true);
-    return p;
-  }
-  function ratioPart(s, kind) {
-    var a = BODIES[s[0]], b = BODIES[s[1]], nm = bn(s[1]), A = kind === 'm' ? a.m : a.d, B = kind === 'm' ? b.m : b.d, Ae = kind === 'm' ? a.me : a.de, Be = kind === 'm' ? b.me : b.de;
-    var q = Number(A) / Number(B) * P10(Ae - Be), raw = Number(A) / Number(B);
-    return sciPart('How many times ' + (kind === 'm' ? 'more massive' : 'wider') + ' than ' + nm + ' is ' + bn(s[0]) + '? Answer in scientific notation to the nearest hundredth (3 significant digits).', dec(q.toPrecision(12)), { sig: 3, place: 'hundredth', diag: cands([[1 / q, 'flip-ratio', '“How many times larger” is the larger quantity divided by the smaller: ' + bn(s[0]) + ' ÷ ' + nm + '.']]) },
-      t('\\dfrac{' + A + '\\times 10^{' + Ae + '}}{' + B + '\\times 10^{' + Be + '}}') + ': ' + t(A + '\\div ' + B + '=' + raw.toFixed(4) + '\\ldots') + '; ' + t(Ae + '-' + Be + '=' + (Ae - Be)) + '.<br>' + t(raw.toFixed(4) + '\\ldots\\times 10^{' + (Ae - Be) + '}' + (raw < 1 ? '=' + (raw * 10).toFixed(3) + '\\ldots\\times 10^{' + (Ae - Be - 1) + '}' : '')) + ' ' + t('\\approx') + ' <b>' + t(K.sciTex(q, 3)) + '</b> times.',
-      ['Divide: ' + bn(s[0]) + ' ÷ ' + nm + '. Divide the coefficients (calculator) and subtract the exponents.', 'Renormalize if needed, then round the coefficient to the nearest hundredth.'], s[0] + '/' + s[1] + ' ' + (kind === 'm' ? 'mass' : 'diameter'));
-  }
+  HW.defineLesson({
+    id: 'u2l4', unit: 2, num: '4', title: 'Rational Exponents and Radicals', outcome: 'AN3',
+    blurb: 'What a fractional exponent means, evaluating powers like 27^(2/3) by hand and with a calculator, converting both ways between powers and radicals, and solving problems.',
+    questions: [
+      { num: '1', section: 'Part A — Evaluating Rational-Exponent Powers', stem: 'Evaluate without the use of a calculator.', parts: [
+        { id: '1a', level: 'BEG', make: function (r) { var c = r.int(2, 12); return EV({ base: [c * c, 1], m: 1, n: 2 }); } },
+        { id: '1b', level: 'BEG', make: function (r) { var c = r.pick([11, 12, 13, 15, 20, 30, 40, 50, 60, 70, 80, 90]); return EV({ base: [c * c, 1], m: 1, n: 2 }); } },
+        { id: '1c', level: 'BEG', make: function (r) { var c = r.int(4, 10); return EV({ base: [c * c * c, 1], m: 1, n: 3 }); } },
+        { id: '1d', level: 'EMG', make: function (r) { var c = r.int(2, 5); return EV({ base: [c * c, 1], m: 3, n: 2 }); } },
+        { id: '1e', level: 'EMG', make: function (r) { var c = r.int(6, 10); return EV({ base: [c * c, 1], m: 3, n: 2 }); } },
+        { id: '1f', level: 'EMG', make: function (r) { var c = r.pick([2, 3, 5, 10]); return EV({ base: [Math.pow(c, 4), 1], m: 3, n: 4 }); } },
+        { id: '1g', level: 'EMG', make: function (r) { var cm = r.pick([[2, 2], [2, 3], [2, 4], [3, 2], [3, 3]]); return EV({ base: [Math.pow(cm[0], 5), 1], m: cm[1], n: 5 }); } },
+        { id: '1h', level: 'EMG', make: function (r) { var d = r.pick([1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12]); return EV({ base: ex.norm(d * d, 100), m: 1, n: 2, dec: true, etex: '0.5', pre: 'An exponent of ' + t('0.5') + ' is ' + t('\\frac{1}{2}') + ': a square root.' }); } }] },
+      { num: '2', stem: 'Determine the exact value without using a calculator.', parts: [
+        { id: '2a', level: 'EMG', make: function (r) { var c = r.int(2, 12); return EV({ base: [c * c, 1], m: -1, n: 2 }); } },
+        { id: '2b', level: 'PRG', make: function (r) { var cm = r.pick([[2, 3], [2, 5], [3, 3], [3, 5], [4, 3], [5, 3]]); return EV({ base: [cm[0] * cm[0], 1], m: -cm[1], n: 2 }); } },
+        { id: '2c', level: 'PRG', make: function (r) { var c = r.int(2, 5); return EV({ base: [c * c * c, 1], m: -2, n: 3 }); } },
+        { id: '2d', level: 'PRG', make: function (r) { var v = r.pick([[100, 2, 3], [10000, 4, 3], [1000, 3, 2], [10000, 2, 3]]); return EV({ base: [v[0], 1], m: -v[2], n: v[1] }); } },
+        { id: '2e', level: 'PRG', make: function (r) { var cm = r.pick([[2, 2], [2, 3], [2, 4], [3, 2], [3, 3]]); return EV({ base: [Math.pow(cm[0], 5), 1], m: -cm[1], n: 5 }); } },
+        { id: '2f', level: 'PRG', make: function (r) { var cm = r.pick([[3, 2], [4, 2], [5, 2], [6, 2], [10, 2], [2, 4]]); return EV({ base: [Math.pow(cm[0], 3), 1], m: -cm[1], n: 3 }); } },
+        { id: '2g', level: 'PRG', make: function (r) {
+          var cb = r.pick([[13, 12], [5, 4], [17, 15], [10, 8], [25, 24], [13, 5], [10, 6], [17, 8]]), d = cb[0] * cb[0] - cb[1] * cb[1];
+          return EV({ base: [d, 1], m: -1, n: 2, btex: '\\left(' + cb[0] + '^{2}-' + cb[1] + '^{2}\\right)', sbtex: String(d), pre: 'Work out the brackets first: ' + t(cb[0] + '^{2}-' + cb[1] + '^{2}=' + cb[0] * cb[0] + '-' + cb[1] * cb[1] + '=' + d) + '.',
+            extra: [{ v: 1 / (cb[0] - cb[1]), code: 'term-root', hint: 'You can’t take the root of each term separately: ' + t('\\sqrt{' + cb[0] + '^{2}-' + cb[1] + '^{2}}\\ne ' + cb[0] + '-' + cb[1]) + '. Work out the brackets first.' }] });
+        } },
+        { id: '2h', level: 'PRG', make: function (r) { return EV({ base: r.pick([[1, 4], [1, 25], [1, 100]]), m: r.pick([-1, -3]), n: 2, dec: true }); } }] },
+      { num: '3', stem: 'Determine the exact value without using a calculator.', parts: [
+        { id: '3a', level: 'EMG', make: function (r) { var c = r.int(2, 12); return EV({ base: [1, c * c], m: 1, n: 2 }); } },
+        { id: '3b', level: 'EMG', make: function (r) { var c = r.int(2, 12); return EV({ base: [1, c * c], m: -1, n: 2 }); } },
+        { id: '3c', level: 'PRG', make: function (r) { var cm = r.pick([[2, 2], [2, 4], [3, 2], [3, 4], [4, 2], [5, 2]]); return EV({ base: [1, Math.pow(cm[0], 3)], m: cm[1], n: 3 }); } },
+        { id: '3d', level: 'PRG', make: function (r) { var ab = r.pick(coprimePairs(2, 7)); return EV({ base: [ab[0] * ab[0], ab[1] * ab[1]], m: -3, n: 2 }); } },
+        { id: '3e', level: 'PRG', make: function (r) { var ab = r.pick([[3, 2], [2, 3], [5, 2], [2, 5], [5, 3], [3, 5]]); return EV({ base: [Math.pow(ab[0], 4), Math.pow(ab[1], 4)], m: -3, n: 4 }); } }] },
+      { num: '4', stem: 'Determine the exact value without using a calculator.', parts: [
+        { id: '4a', level: 'EMG', make: function (r) { var c = r.int(2, 6); return EV({ base: [-c * c * c, 1], m: 1, n: 3 }); } },
+        { id: '4b', level: 'PRG', make: function (r) { var cm = r.pick([[2, 2], [3, 2], [4, 2], [5, 2], [6, 2], [2, 4], [3, 4]]); return EV({ base: [-Math.pow(cm[0], 3), 1], m: cm[1], n: 3 }); } },
+        { id: '4c', level: 'PRG', make: function (r) { var c = r.int(2, 12); return EV({ base: [c * c, 1], m: -1, n: 2, outer: -1 }); } },
+        { id: '4d', level: 'PRG', make: function (r) { var v = r.pick([[3, 3, 5], [2, 3, 5], [2, 1, 5], [3, 1, 5], [2, 1, 3], [3, 1, 3]]); return EV({ base: [-Math.pow(v[0], v[2]), 1], m: -v[1], n: v[2], outer: -1 }); } },
+        { id: '4e', level: 'PRG', make: function (r) { var d = r.int(1, 5); return EV({ base: ex.norm(-d * d * d, 1000), m: 2, n: 3, dec: true }); } }] },
+      { num: '5', stem: 'Use a calculator to evaluate the following to the nearest hundredth.', parts: [
+        { id: '5a', level: 'BEG', make: function (r) { return AP(pickWhere(r, function () { var mn = r.pick([[2, 3], [2, 3], [3, 4], [2, 5]]); return { b: r.pick([2, 3, 5, 6, 7, 10, 11, 12]), m: mn[0], n: mn[1] }; }, apOk) || { b: 5, m: 2, n: 3 }); } },
+        { id: '5b', level: 'BEG', make: function (r) { return AP(pickWhere(r, function () { return { b: r.pick([3, 6, 7, 9, 11, 12]), m: r.int(2, 4), n: 5 }; }, apOk) || { b: 9, m: 3, n: 5 }); } },
+        { id: '5c', level: 'EMG', make: function (r) { return AP(pickWhere(r, function () { return { b: -r.pick([2, 3, 4, 5, 6, 7, 9, 10]), m: r.pick([2, 4]), n: 3 }; }, apOk) || { b: -6, m: 4, n: 3 }); } },
+        { id: '5d', level: 'BEG', make: function (r) { return AP(pickWhere(r, function () { return { b: r.pick([2, 3, 5, 6, 7, 8, 10, 12]), m: -1, n: r.pick([3, 4, 5]) }; }, function (o) { return iroot(o.b, o.n) == null && apOk(o); }) || { b: 8, m: -1, n: 5 }); } },
+        { id: '5e', level: 'EMG', make: function (r) { return AP(pickWhere(r, function () { return { b: -r.int(2, 9) / 10, m: r.pick([2, 4]), n: 5, outer: -1 }; }, apOk) || { b: -0.5, m: 4, n: 5, outer: -1 }); } }] },
+      { num: '6', stem: 'Explain your reasoning.', parts: [
+        { id: '6a', level: 'EMG', make: function (r) {
+          var c = r.pick([2, 3, 5]), b = Math.pow(c, 4), s = c * c, B = F(b);
+          return mc(r, 'Which explanation uses the exponent laws correctly to show that ' + t(B + '^{1/2}=' + s) + ' and ' + t(B + '^{1/4}=' + c) + '?', [
+            { html: t(B + '^{1/2}\\cdot ' + B + '^{1/2}=' + B + '^{1}=' + B) + ', so ' + t(B + '^{1/2}') + ' is the number that multiplies by itself to give ' + t(B) + ', which is ' + t(s) + '. Then ' + t(B + '^{1/4}=\\left(' + B + '^{1/2}\\right)^{1/2}=' + s + '^{1/2}=' + c) + '.', right: true },
+            { html: t(B + '^{1/2}') + ' means ' + t(B + '\\div 2') + ', and ' + t(B + '^{1/4}') + ' means ' + t(B + '\\div 4') + '.', why: 'Check: ' + t(B + '\\div 2=' + F(b / 2)) + ', not ' + t(s) + '. A fractional exponent isn’t division — by the product law ' + t(B + '^{1/2}\\cdot ' + B + '^{1/2}=' + B + '^{1}') + ', so it is a square root.' },
+            { html: 'Since ' + t('\\frac{1}{4}') + ' is half of ' + t('\\frac{1}{2}') + ', ' + t(B + '^{1/4}') + ' is half of ' + t(B + '^{1/2}') + '.', why: 'Halving the exponent doesn’t halve the value. By the power-of-a-power law, ' + t(B + '^{1/4}=\\left(' + B + '^{1/2}\\right)^{1/2}') + ': it is the <b>square root</b> of ' + t(s) + '.' + (c === 2 ? ' (For ' + t('16') + ' the numbers happen to match — try it with ' + t('81') + '.)' : '') },
+            { html: 'A fractional exponent works like a negative one: ' + t(B + '^{1/2}=\\frac{1}{' + B + '^{2}}') + '.', why: 'A negative exponent gives a reciprocal; a fractional exponent gives a root. ' + t('\\frac{1}{' + B + '^{2}}') + ' is a tiny number, not ' + t(s) + '.' }],
+            'Product law: ' + t(B + '^{1/2}\\cdot ' + B + '^{1/2}=' + B + '^{\\frac12+\\frac12}=' + B + '^{1}=' + B) + ', so ' + t(B + '^{1/2}') + ' is the number that, multiplied by itself, gives ' + t(B) + ': ' + t(B + '^{1/2}=' + s) + '.<br>Power of a power: ' + t(B + '^{1/4}=\\left(' + B + '^{1/2}\\right)^{1/2}=' + s + '^{1/2}=' + c) + '. Check: ' + t(c + '^{4}=' + B) + ' ✓',
+            ['What does ' + t(B + '^{1/2}\\cdot ' + B + '^{1/2}') + ' equal by the product law?'], 'why ' + b + '^(1/2) and ' + b + '^(1/4)');
+        } },
+        { id: '6b', level: 'EMG', make: function (r) {
+          var ev = r.pick([[16, 4, 2], [81, 4, 3], [16, 2, 4], [36, 2, 6], [64, 6, 2]]), od = r.pick([[8, 3, 2], [27, 3, 3], [125, 3, 5], [32, 5, 2]]);
+          var E = '(-' + ev[0] + ')^{1/' + ev[1] + '}', O = '(-' + od[0] + ')^{1/' + od[1] + '}';
+          return mc(r, 'Why does ' + t(E) + ' have no real value, while ' + t(O) + ' does?', [
+            { html: 'No real number raised to the power ' + t(ev[1]) + ' (even) is negative, so nothing works for ' + t(E) + '. But ' + t('(-' + od[2] + ')^{' + od[1] + '}=-' + od[0]) + ', so ' + t(O + '=-' + od[2]) + '.', right: true },
+            { html: 'A negative base never has a real root; ' + t(O) + ' only works because ' + t(od[0]) + ' is a perfect ' + (od[1] === 3 ? 'cube' : 'fifth power') + '.', why: t(ev[0]) + ' is a perfect power too (' + t(ev[0] + '=' + ev[2] + '^{' + ev[1] + '}') + '). What matters is whether the <b>index</b> is even or odd.' },
+            { html: t(E + '=-' + ev[2]) + ' and ' + t(O + '=-' + od[2]) + ', so both have real values.', why: 'Check: ' + t('(-' + ev[2] + ')^{' + ev[1] + '}=' + ev[0]) + ', not ' + t('-' + ev[0]) + '. An even power is never negative.' },
+            { html: 'The calculator gives an error for ' + t(E) + ' because ' + t(ev[0]) + ' is bigger than ' + t(od[0]) + '.', why: 'Size has nothing to do with it: ' + t('(-4)^{1/2}') + ' has no real value either, while ' + t('(-1000)^{1/3}=-10') + '. Look at the index.' }],
+            t(E) + ' would be a number whose ' + powName(ev[1]) + ' is ' + t('-' + ev[0]) + '. Any real number raised to an even power is ' + t('\\ge 0') + ', so no real number works.<br>' + t(O) + ' needs a number whose ' + powName(od[1]) + ' is ' + t('-' + od[0]) + ': ' + t('(-' + od[2] + ')^{' + od[1] + '}=-' + od[0]) + ', so ' + t(O + '=-' + od[2]) + '. An odd index allows a negative base.',
+            ['Try to find a number whose ' + powName(ev[1]) + ' is ' + t('-' + ev[0]) + '. Then one whose ' + powName(od[1]) + ' is ' + t('-' + od[0]) + '.'], 'why ' + E + ' undefined, ' + O + ' defined');
+        } }] },
+      { num: '7', stem: function (sh) {
+          var rt = rootTex(sh.n, sh.B);
+          return '<i>(Identify and correct the error)</i> Priya evaluated ' + t(sh.tex) + ' as shown.\\[\\begin{array}{rl}\\text{Line 1:}&' + sh.tex + '=-\\left(' + sh.B + '^{' + sh.m + '/' + sh.n + '}\\right)\\\\\\text{Line 2:}&\\phantom{' + sh.tex + '}=-\\left(' + rt + '\\right)^{' + sh.m + '}\\\\\\text{Line 3:}&\\phantom{' + sh.tex + '}=-' + sh.p + '\\end{array}\\]';
+        },
+        shared: function (r) { var v = r.pick([[8, 2, 3], [27, 2, 3], [16, 3, 4], [32, 2, 5], [25, 3, 2], [64, 2, 3]]), c = iroot(v[0], v[2]); return { B: v[0], m: v[1], n: v[2], c: c, tex: v[0] + '^{-' + v[1] + '/' + v[2] + '}', p: Math.pow(c, v[1]) }; },
+        parts: [
+          { id: '7a', level: 'EMG', make: function (r, sh) {
+            return mc(r, 'Which line has the error, and what is the mistake?', [
+              { html: '<b>Line 1:</b> a negative exponent means <b>reciprocal</b>, not a negative value.', right: true },
+              { html: '<b>Line 2:</b> the power should be taken before the root.', why: 'Root first or power first give the same result — line 2 correctly follows from line 1. Look at what happened to the negative exponent.' },
+              { html: '<b>Line 3:</b> ' + t('\\left(' + rootTex(sh.n, sh.B) + '\\right)^{' + sh.m + '}') + ' is not ' + t(sh.p) + '.', why: t(rootTex(sh.n, sh.B) + '=' + sh.c) + ' and ' + t(sh.c + '^{' + sh.m + '}=' + sh.p) + ', so that arithmetic is fine.' },
+              { html: 'There is no error.', why: 'Check: ' + t(sh.B + '^{-' + sh.m + '/' + sh.n + '}\\cdot ' + sh.B + '^{' + sh.m + '/' + sh.n + '}') + ' should be ' + t(sh.B + '^{0}=1') + ', but ' + t('(-' + sh.p + ')(' + sh.p + ')=-' + sh.p * sh.p) + '.' }],
+              '<b>Line 1.</b> A negative exponent means take the <b>reciprocal</b>: ' + t(sh.tex + '=\\frac{1}{' + sh.B + '^{' + sh.m + '/' + sh.n + '}}') + ', not ' + t('-\\left(' + sh.B + '^{' + sh.m + '/' + sh.n + '}\\right)') + '.', ['What does a negative exponent mean: ' + t('a^{-k}=\\,?') ], 'Priya error line, ' + sh.tex, true);
+          } },
+          { id: '7b', level: 'PRG', make: function (r, sh) { return EV({ base: [sh.B, 1], m: -sh.m, n: sh.n, ask: function (e) { return 'Write a correct solution: what is the exact value of ' + t(e) + '?'; } }); } }] },
+      { num: '8', section: 'Part B — Converting Between Powers and Radicals', stem: 'Write an equivalent expression using radicals.', parts: [
+        { id: '8a', level: 'BEG', make: function (r) { return genRad('p', 1, r.pick([3, 4, 5, 6, 7, 8, 9]), 'rootFirst'); } },
+        { id: '8b', level: 'BEG', make: function (r) { return genRad('q', 1, r.pick([3, 4, 5, 6, 7]), 'rootFirst'); } },
+        { id: '8c', level: 'BEG', make: function (r) { return genRad('r', 1, r.pick([5, 6, 7, 8, 9]), 'rootFirst'); } },
+        { id: '8d', level: 'EMG', make: function (r) { return genRad('s', -1, r.pick([2, 3, 4, 5, 6]), 'rootFirst'); } },
+        { id: '8e', level: 'EMG', make: function (r) { return genRad('t', -1, r.pick([3, 5, 7, 8, 9]), 'rootFirst'); } },
+        { id: '8f', level: 'EMG', make: function (r) { var mn = r.pick([[5, 6], [2, 3], [3, 4], [2, 5], [3, 5], [4, 5], [3, 7], [5, 8]]); return genRad('u', mn[0], mn[1], 'rootFirst'); } },
+        { id: '8g', level: 'EMG', make: function (r) { var mn = r.pick([[7, 4], [5, 2], [5, 3], [7, 3], [9, 4], [7, 5], [7, 6], [4, 3]]); return genRad('v', mn[0], mn[1], 'rootFirst'); } },
+        { id: '8h', level: 'PRG', make: function (r) {
+          var L = r.pick([['w', 'n', 'k'], ['x', 'a', 'b'], ['y', 'm', 'n'], ['z', 'p', 'q']]), v = L[0], a = L[1], b = L[2];
+          var pr = v + '^{' + a + '/' + b + '}', tgt = '\\left(\\sqrt[' + b + ']{' + v + '}\\right)^{' + a + '}';
+          return convPart(t(pr), tgt, { form: 'radical', cands: [['\\left(\\sqrt[' + a + ']{' + v + '}\\right)^{' + b + '}', 'swap', 'The <b>denominator</b> ' + t(b) + ' is the index of the root and the <b>numerator</b> ' + t(a) + ' is the power — you have them the other way round.'],
+            ['\\sqrt[' + b + ']{' + v + '}', 'root-only', 'You have the root; the numerator ' + t(a) + ' is still needed as a power.'], [v + '^{' + a + '}', 'no-root', 'The denominator ' + t(b) + ' means a root with index ' + t(b) + '.']] },
+            'The same rule with letters: denominator ' + t(b) + ' → index, numerator ' + t(a) + ' → power.<br>' + t(pr + '=' + tgt) + ' (or ' + t('\\sqrt[' + b + ']{' + v + '^{' + a + '}}') + ').', convHints.slice(0, 1), 'power to radical ' + pr);
+        } }] },
+      { num: '9', stem: 'Assuming ' + t('x') + ' represents a positive integer, state which <b>two</b> of the following expressions have no meaning.', parts: [
+        { id: '9', level: 'EMG', make: function (r) { return q9(r); } }] },
+      { num: '10', stem: 'Write each power in radical form.', parts: [
+        { id: '10a', level: 'EMG', make: function (r) { var mn = r.pick([[2, 3], [3, 4], [2, 5], [3, 5], [4, 5], [5, 6], [3, 7]]); return genRad('p', mn[0], mn[1], 'entire'); } },
+        { id: '10b', level: 'EMG', make: function (r) { return genRad('q', r.pick([3, 5, 7, 9]), 2, 'entire'); } },
+        { id: '10c', level: 'BEG', make: function (r) { return genRad('r', 1, r.pick([4, 5, 6, 7, 8]), 'entire'); } },
+        { id: '10d', level: 'PRG', make: function (r) { var mn = r.pick([[3, 4], [2, 3], [3, 5], [2, 5], [5, 6], [4, 7]]); return genRad('s', -mn[0], mn[1], 'entire'); } },
+        { id: '10e', level: 'EMG', make: function (r) { return genRad('t', -1, r.pick([3, 4, 5, 6, 7]), 'entire'); } },
+        { id: '10f', level: 'PRG', make: function (r) { var mn = r.pick([[4, 5], [2, 3], [3, 4], [2, 5], [5, 7], [3, 2]]); return coefRad('u', r.int(2, 7), mn[0], mn[1]); } },
+        { id: '10g', level: 'PRG', make: function (r) { var v = r.pick([[3, 4, 5], [2, 4, 5], [2, 2, 3], [3, 2, 3], [5, 2, 3], [2, 3, 4], [3, 3, 2], [5, 4, 5]]); return bracketRad('u', v[0], v[1], v[2]); } },
+        { id: '10h', level: 'PRG', make: function (r) {
+          var mn = r.pick([[3, 2], [5, 2], [3, 4], [1, 2], [5, 4]]), m = mn[0], n = mn[1], pr = '-w^{' + expTex(m, n) + '}', tgt = '-' + radOf('w', m, n, 'entire');
+          var cands = radCands('w', m, n, 'entire').map(function (c) { return ['-' + c[0], c[1], c[2]]; }).concat([[radOf('w', m, n, 'entire'), 'sign', 'Keep the minus sign: ' + t(pr) + ' means ' + t('-\\left(w^{' + expTex(m, n) + '}\\right)') + ', a negative value.']]);
+          return convPart(t(pr), tgt, { form: 'radical', index: n, cands: cands, nanHint: t(pr) + ' means ' + t('-\\left(w^{' + expTex(m, n) + '}\\right)') + ': the exponent belongs to ' + t('w') + ' only, so the minus sign stays <b>outside</b> the radical.' },
+            'The exponent belongs to ' + t('w') + ' only; the minus sign is applied afterwards.<br>' + t(pr + '=' + tgt), convHints.slice(0, 1).concat(['Is the minus sign part of the base? Without brackets, it isn’t.']), 'power to radical ' + pr);
+        } },
+        { id: '10i', level: 'PRG', make: function (r) {
+          var mn = r.pick([[3, 2], [5, 2], [1, 2], [3, 4], [1, 4]]), m = mn[0], n = mn[1], pr = '(-w)^{' + expTex(m, n) + '}', tgt = rootTex(n, m === 1 ? '-w' : '(-w)^{' + m + '}');
+          var cands = [['(-w)^{' + m + '}', 'no-root', 'The denominator ' + t(n) + ' means a ' + rootName(n) + ' root — your answer has no root.']];
+          if (m > 1) cands.push([rootTex(m, '(-w)^{' + n + '}'), 'swap', 'The <b>denominator</b> ' + t(n) + ' is the index of the root and the <b>numerator</b> ' + t(m) + ' is the power.']);
+          if (m > 1) cands.push([rootTex(n, '-w'), 'root-only', 'You have the root; the numerator ' + t(m) + ' is still needed as a power.']);
+          return convPart(t(pr) + ', where ' + t('w<0'), tgt, { form: 'radical', index: n, neg: ['w'], cands: cands, nanHint: 'Here ' + t('w<0') + ', so ' + t('-w') + ' is <b>positive</b> and the power has a real value. Keep ' + t('(-w)') + ' together as the base under the root.' },
+            'Since ' + t('w<0') + ', the base ' + t('-w') + ' is positive, so the power has a real value. The whole bracket ' + t('(-w)') + ' is the base.<br>' + t(pr + '=' + tgt), convHints.slice(0, 1).concat(['The base is the whole bracket ' + t('(-w)') + ' — keep it together under the root.']), 'power to radical ' + pr + ' (w<0)');
+        } },
+        { id: '10j', level: 'PRG', make: function (r) { var mn = r.pick([[1, 3], [1, 2], [1, 4], [1, 5], [2, 3], [2, 5]]); return coefRad('v', r.int(2, 9), -mn[0], mn[1]); } }] },
+      { num: '11', stem: 'Write each radical as a power in the form ' + t('z^{n}') + ', where ' + t('n\\in Q') + '.', parts: [
+        { id: '11a', level: 'EMG', make: function (r) { var mn = r.pick([[5, 6], [2, 3], [3, 4], [4, 5], [5, 8], [3, 5]]); return toPowPart('z', mn[0], mn[1], rootTex(mn[1], 'z^{' + mn[0] + '}')); } },
+        { id: '11b', level: 'EMG', make: function (r) { var mn = r.pick([[3, 7], [2, 7], [4, 7], [2, 9], [4, 9], [3, 8]]); return toPowPart('z', mn[0], mn[1], rootTex(mn[1], 'z^{' + mn[0] + '}')); } },
+        { id: '11c', level: 'EMG', make: function (r) { var m = r.pick([5, 7, 9, 11, 13]); return toPowPart('z', m, 2, '\\sqrt{z^{' + m + '}}'); } },
+        { id: '11d', level: 'EMG', make: function (r) { var n = r.pick([3, 4, 5, 6, 7]); return toPowPart('z', -1, n, '\\dfrac{1}{' + rootTex(n, 'z') + '}'); } },
+        { id: '11e', level: 'PRG', make: function (r) { var mn = r.pick([[4, 5], [2, 3], [3, 4], [2, 5], [3, 5], [5, 6]]); return toPowPart('z', -mn[0], mn[1], '\\dfrac{1}{' + rootTex(mn[1], 'z^{' + mn[0] + '}') + '}'); } }] },
+      { num: '12', stem: 'In each case, write the given number as a power with the given exponent.', parts: [
+        { id: '12a', level: 'EMG', make: function (r) { var v = r.int(3, 12), B = v * v; return asPowerPart([v, 1], [1, 2], [B, 1], 'A square root undoes squaring: ' + t(v + '^{2}=' + B) + ', so ' + t(B + '^{1/2}=\\sqrt{' + B + '}=' + v) + '.<br>' + t(v + '=' + B + '^{1/2}'), ['Which number has a square root of ' + t(v) + '?'], v + ' as a power with exponent 1/2'); } },
+        { id: '12b', level: 'PRG', make: function (r) { var v = r.int(2, 5), B = Math.pow(v, 4); return asPowerPart([v, 1], [1, 4], [B, 1], t(v + '^{4}=' + B) + ', so ' + t(B + '^{1/4}=' + rootTex(4, B) + '=' + v) + '.<br>' + t(v + '=' + B + '^{1/4}'), ['Which number has a fourth root of ' + t(v) + '? Raise ' + t(v) + ' to the power ' + t(4) + '.'], v + ' as a power with exponent 1/4'); } },
+        { id: '12c', level: 'PRG', make: function (r) { var v = r.int(2, 6), B = -v * v * v; return asPowerPart([-v, 1], [1, 3], [B, 1], 'An odd root of a negative number is negative: ' + t('(-' + v + ')^{3}=' + B) + ', so ' + t('(' + B + ')^{1/3}=' + rootTex(3, B) + '=-' + v) + '.<br>' + t('-' + v + '=(' + B + ')^{1/3}'), ['Cube ' + t('-' + v) + '. Keep the negative base in brackets.'], '-' + v + ' as a power with exponent 1/3'); } },
+        { id: '12d', level: 'ADV', make: function (r) { var v = r.int(3, 10), B = v * v; return asPowerPart([1, v], [-1, 2], [B, 1], 'We need ' + t('b^{-1/2}=\\frac{1}{' + v + '}') + ', i.e. ' + t('\\frac{1}{\\sqrt{b}}=\\frac{1}{' + v + '}') + ', so ' + t('\\sqrt{b}=' + v) + ' and ' + t('b=' + B) + '.<br>' + t('\\frac{1}{' + v + '}=' + B + '^{-1/2}') + ' (check: ' + t('\\frac{1}{\\sqrt{' + B + '}}=\\frac{1}{' + v + '}') + ' ✓)', ['A negative exponent means reciprocal: ' + t('b^{-1/2}=\\frac{1}{\\sqrt{b}}') + '. What must ' + t('\\sqrt{b}') + ' be?'], '1/' + v + ' as a power with exponent -1/2'); } },
+        { id: '12e', level: 'ADV', make: function (r) { var v = r.pick([2, 3, 4, 5, 8, 10]), B = v * v * v; return asPowerPart([v, 1], [-1, 3], [1, B], 'We need ' + t('b^{-1/3}=' + v) + ', i.e. ' + t('b^{1/3}=\\frac{1}{' + v + '}') + ', so ' + t('b=\\frac{1}{' + F(B) + '}') + '.<br>' + t(v + '=\\left(\\frac{1}{' + F(B) + '}\\right)^{-1/3}') + ' (check: ' + t('\\left(\\frac{1}{' + F(B) + '}\\right)^{-1/3}=' + F(B) + '^{1/3}=' + v) + ' ✓)', ['The negative exponent flips the base. Which fraction, flipped and cube-rooted, gives ' + t(v) + '?'], v + ' as a power with exponent -1/3'); } },
+        { id: '12f', level: 'ADV', make: function (r) { var a = r.pick([[2, 3, 4], [3, 3, 4], [10, 3, 4], [2, 2, 3], [5, 2, 3], [10, 2, 3], [3, 2, 5]]), c = a[0], m = a[1], n = a[2], V = Math.pow(c, m), B = Math.pow(c, n);
+          return asPowerPart([V, 1], [m, n], [B, 1], 'We need ' + t('b^{' + m + '/' + n + '}=' + F(V)) + ', i.e. ' + t('\\left(' + rootTex(n, 'b') + '\\right)^{' + m + '}=' + F(V)) + '. Since ' + t(c + '^{' + m + '}=' + F(V)) + ', ' + t(rootTex(n, 'b') + '=' + c) + ', so ' + t('b=' + c + '^{' + n + '}=' + F(B)) + '.<br>' + t(F(V) + '=' + F(B) + '^{' + m + '/' + n + '}') + ' (check: ' + t('\\left(' + rootTex(n, F(B)) + '\\right)^{' + m + '}=' + c + '^{' + m + '}=' + F(V)) + ' ✓)',
+            ['First find the number whose ' + nth(m) + ' is ' + t(F(V)) + ' — that is the ' + rootName(n) + ' root of the base.'], F(V).replace(/\\,/g, ' ') + ' as a power with exponent ' + m + '/' + n); } }] },
+      { num: '13', section: 'Part C — Solving Problems with Rational Exponents', stem: function (sh) { return 'A cube has a volume of ' + t(F(sh.V) + '\\text{ cm}^{3}') + '.'; },
+        shared: function (r) { var s = r.pick([4, 5, 6, 7, 8, 8, 9, 10, 11, 12]); return { s: s, V: s * s * s }; },
+        parts: [
+          { id: '13a', level: 'EMG', make: function (r, sh) {
+            var V = sh.V, VT = F(V);
+            var p = P.math('Write a power that represents the edge length of the cube.', powOfCheck(V, sh.s, [
+              { v: Math.sqrt(V), code: 'square-root', hint: 'The volume of a cube is ' + t('(\\text{edge})^{3}') + ', so the edge is the <b>cube</b> root: use the exponent ' + t('\\frac{1}{3}') + '.' },
+              { v: V / 3, code: 'times-exp', hint: 'Dividing by 3 doesn’t undo cubing. The edge is the cube root of the volume.' },
+              { v: Math.pow(V, 3), code: 'no-root', hint: 'That cubes the volume. The edge is the cube <b>root</b> of the volume.' }], true), VT + '^{1/3}',
+              t('V=(\\text{edge})^{3}') + ', so the edge is the cube root of the volume: ' + t('\\text{edge}=' + VT + '^{1/3}') + ' cm.', ['Volume of a cube = ' + t('(\\text{edge})^{3}') + '. Which exponent undoes cubing?'], 'cube edge power, V=' + V, { keys: 'expo', vars: [], before: t('\\text{edge}=') });
+            p.good = [V + '^(1/3)']; p.bad = [String(sh.s), V + '^{1/2}'];
+            return p;
+          } },
+          { id: '13b', level: 'PRG', make: function (r, sh) {
+            var V = sh.V, VT = F(V), SA = 6 * sh.s * sh.s;
+            var p = P.math('Write a power that represents the surface area of the cube.', powOfCheck(V, SA, [
+              { v: sh.s * sh.s, code: 'six-faces', hint: 'That’s the area of <b>one</b> face. A cube has ' + t('6') + ' faces.' },
+              { v: 6 * sh.s, code: 'not-squared', hint: 'Each face is a square with area ' + t('(\\text{edge})^{2}') + ': square the edge before multiplying by ' + t('6') + '.' },
+              { v: 4 * sh.s * sh.s, code: 'six-faces', hint: 'Count the faces of a cube: there are ' + t('6') + '.' },
+              { v: 6 * Math.pow(V, 1.5), code: 'swap', hint: 'Each face has area ' + t('\\left(' + VT + '^{1/3}\\right)^{2}=' + VT + '^{2/3}') + ' — check your exponent.' }], true), '6\\left(' + VT + '^{1/3}\\right)^{2}',
+              'Six square faces, each of area ' + t('(\\text{edge})^{2}') + ':<br>' + t('\\text{SA}=6\\left(' + VT + '^{1/3}\\right)^{2}=6\\cdot ' + VT + '^{2/3}') + ' cm².', ['A cube has 6 square faces. Write the edge as a power first, then square it.'], 'cube SA power, V=' + V, { keys: 'expo', vars: [], before: t('\\text{SA}=') });
+            p.good = ['6*' + V + '^(2/3)', '6(' + V + '^(1/3))^2']; p.bad = [String(SA), V + '^{2/3}', '6\\cdot ' + V + '^{1/3}'];
+            return p;
+          } },
+          { id: '13c', level: 'PRG', make: function (r, sh) {
+            var s = sh.s, V = sh.V, VT = F(V), SA = 6 * s * s;
+            var p = P.fields('Calculate the exact edge length and surface area of the cube.', [{ name: 'Edge', label: 'edge', before: t('='), after: 'cm' }, { name: 'Surface area', label: 'surface area', before: t('='), after: t('\\text{cm}^{2}') }],
+              [K.number(s, function (v) { return near(v, Math.sqrt(V)) || near(v, K.roundTo(Math.sqrt(V), 2)) ? { code: 'square-root', hint: 'Use the <b>cube</b> root: ' + t(VT + '^{1/3}=' + rootTex(3, VT)) + '.' } : v === V / 3 ? { code: 'times-exp', hint: 'The cube root isn’t dividing by 3. Which number cubed gives ' + t(VT) + '?' } : null; }),
+                K.number(SA, function (v) { return v === s * s ? { code: 'six-faces', hint: 'That’s one face. A cube has ' + t('6') + ' faces.' } : v === 6 * s ? { code: 'not-squared', hint: 'Each face has area ' + t('(\\text{edge})^{2}') + '.' } : v === 4 * s * s ? { code: 'six-faces', hint: 'A cube has ' + t('6') + ' faces, not 4.' } : null; })],
+              [String(s), String(SA)], 'edge ' + t(s + '\\text{ cm}') + ', surface area ' + t(F(SA) + '\\text{ cm}^{2}'),
+              t('\\text{edge}=' + VT + '^{1/3}=' + rootTex(3, VT) + '=' + s) + ' cm exactly (' + t(s + '^{3}=' + VT) + ').<br>' + t(VT + '^{2/3}=' + s + '^{2}=' + s * s) + ', so ' + t('\\text{SA}=6(' + s * s + ')=' + F(SA)) + ' cm².',
+              ['Which whole number cubed gives ' + t(VT) + '?', 'Surface area = ' + t('6\\times(\\text{edge})^{2}') + '.'], 'cube edge and SA, V=' + V);
+            p.bad = [[String(s), String(s * s)], [String(s + 1), String(SA)]];
+            return p;
+          } }] },
+      { num: '14', stem: function (sh) { return 'A cube has a volume of ' + t(sh.L + '\\text{ cm}^{3}') + '.'; },
+        shared: function (r) { return { L: r.pick(['W', 'W', 'V', 'k', 'Q']) }; },
+        parts: [
+          { id: '14a', level: 'EMG', make: function (r, sh) {
+            var L = sh.L, pw = L + '^{1/3}', rd = rootTex(3, L);
+            var p = P.fields('Write a power <b>and</b> a radical that represent the edge length of the cube.', [{ name: 'Power', label: 'power: edge', before: t('='), mode: 'math', keys: 'expo', vars: [L] }, { name: 'Radical', label: 'radical: edge', before: t('='), mode: 'math', keys: 'expo', vars: [L] }],
+              [convCheck(pw, { form: 'power', single: L + '^{n}', needRat: true, cands: [[L + '^{1/2}', 'square-root', 'Volume = ' + t('(\\text{edge})^{3}') + ', so the edge is a <b>cube</b> root: exponent ' + t('\\frac{1}{3}') + '.'], ['\\frac{' + L + '}{3}', 'times-exp', 'Dividing by 3 doesn’t undo cubing — use the exponent ' + t('\\frac{1}{3}') + '.'], [L + '^{3}', 'no-root', 'That cubes the volume. The edge is the cube <b>root</b>.']] }),
+                convCheck(rd, { form: 'radical', index: 3, cands: [['\\sqrt{' + L + '}', 'square-root', 'Use a <b>cube</b> root (index 3): ' + t(rootTex(3, L)) + '.'], ['\\frac{' + L + '}{3}', 'times-exp', 'The cube root isn’t dividing by 3.']] })],
+              [pw, rd], 'edge ' + t('=' + pw + '=' + rd), t('V=(\\text{edge})^{3}') + ', so ' + t('\\text{edge}=' + pw + '=' + rd) + '.', ['Volume = ' + t('(\\text{edge})^{3}') + '. Which exponent undoes cubing?'], 'edge of cube volume ' + L);
+            p.bad = [[L + '^{1/2}', rd], [pw, '\\sqrt{' + L + '}']];
+            return p;
+          } },
+          { id: '14b', level: 'PRG', make: function (r, sh) {
+            var L = sh.L, pw = L + '^{2/3}', rd = '\\left(' + rootTex(3, L) + '\\right)^{2}';
+            var c1 = [[L + '^{3/2}', 'swap', 'Edge ' + t('=' + L + '^{1/3}') + '; one face is the edge <b>squared</b>: ' + t('\\left(' + L + '^{1/3}\\right)^{2}') + '. Multiply the exponents.'], ['6' + L + '^{2/3}', 'all-faces', 'That’s all six faces. The question asks for the area of <b>one</b> face.'], [L + '^{1/3}', 'not-squared', 'That’s the edge. A face is a square: square the edge.'], [L + '^{2}', 'no-root', 'The edge is ' + t(L + '^{1/3}') + ', not ' + t(L) + '. Square the edge.']];
+            var c2 = [[rootTex(2, L + '^{3}'), 'swap', 'Edge ' + t('=' + rootTex(3, L)) + '; square it: ' + t('\\left(' + rootTex(3, L) + '\\right)^{2}') + '.'], ['6\\left(' + rootTex(3, L) + '\\right)^{2}', 'all-faces', 'That’s all six faces — the question asks for one face.'], [rootTex(3, L), 'not-squared', 'That’s the edge. Square it for the area of a face.']];
+            var p = P.fields('Write a power <b>and</b> a radical that represent the area of one face of the cube.', [{ name: 'Power', label: 'power: area', before: t('='), mode: 'math', keys: 'expo', vars: [L] }, { name: 'Radical', label: 'radical: area', before: t('='), mode: 'math', keys: 'expo', vars: [L] }],
+              [convCheck(pw, { form: 'power', single: L + '^{n}', needRat: true, cands: c1 }), convCheck(rd, { form: 'radical', index: 3, cands: c2 })],
+              [pw, rd], 'area ' + t('=' + pw + '=' + rd + '=' + rootTex(3, L + '^{2}')), 'One face is a square with side ' + t(L + '^{1/3}') + ':<br>' + t('\\text{area}=\\left(' + L + '^{1/3}\\right)^{2}=' + pw + '=' + rd) + ' (or ' + t(rootTex(3, L + '^{2}')) + ').',
+              ['A face is a square whose side is the edge. Find the edge length as a power of ' + t(L) + ', then square it.'], 'face area of cube volume ' + L);
+            p.bad = [[L + '^{3/2}', rd], [pw, rootTex(3, L)]];
+            return p;
+          } }] },
+      { num: '15', stem: 'The volume of a sphere is ' + t('V=\\frac{4}{3}\\pi r^{3}') + ', so its radius is ' + t('r=\\left(\\frac{3V}{4\\pi}\\right)^{1/3}') + '.', parts: [
+        { id: '15a', level: 'EMG', make: function (r) {
+          return mc(r, 'Which is the radius formula written in radical form?', [
+            { html: t('r=\\sqrt[3]{\\frac{3V}{4\\pi}}'), right: true },
+            { html: t('r=\\sqrt{\\frac{3V}{4\\pi}}'), why: 'The exponent is ' + t('\\frac{1}{3}') + ', so the index of the root is ' + t('3') + ', not ' + t('2') + '.' },
+            { html: t('r=\\frac{\\sqrt[3]{3V}}{4\\pi}'), why: 'The exponent applies to the whole fraction (it’s in brackets), so the root covers the top <b>and</b> the bottom.' },
+            { html: t('r=\\left(\\frac{3V}{4\\pi}\\right)^{3}'), why: 'An exponent of ' + t('\\frac{1}{3}') + ' is a cube <b>root</b>, not a cube.' }],
+            'The denominator ' + t('3') + ' is the index, and the exponent applies to the whole bracket: ' + t('r=\\left(\\frac{3V}{4\\pi}\\right)^{1/3}=\\sqrt[3]{\\frac{3V}{4\\pi}}') + '.', ['Exponent ' + t('\\frac{1}{3}') + ' → which root? What does the bracket tell you?'], 'sphere radius in radical form', false);
+        } },
+        { id: '15b', level: 'PRG', make: function (r) {
+          var rr = r.pick([3, 3, 6, 9, 12]), k = 4 * rr * rr * rr / 3, q = 3 * k / 4;
+          var p = P.math('A ball bearing has a volume of ' + t(F(k) + '\\pi\\text{ mm}^{3}') + '. Find its exact radius (in mm).', K.fraction([rr, 1], { diag: function (v) {
+            if (near(v, q)) return { code: 'no-root', hint: 'You found ' + t('\\frac{3V}{4\\pi}=' + F(q)) + '. Now take its cube root (the exponent ' + t('\\frac{1}{3}') + ').' };
+            if (Math.abs(v - Math.sqrt(q)) < 0.01) return { code: 'square-root', hint: 'The exponent ' + t('\\frac{1}{3}') + ' means a <b>cube</b> root.' };
+            if (near(v, Math.cbrt(3 * k / (4 * Math.PI))) || near(v, K.roundTo(Math.cbrt(3 * k / (4 * Math.PI)), 2))) return { code: 'no-pi', hint: 'The volume is ' + t(F(k) + '\\pi') + ' — include the ' + t('\\pi') + '. It cancels with the ' + t('\\pi') + ' in the denominator.' };
+            return null;
+          } }), String(rr), t('r=\\left(\\frac{3(' + F(k) + '\\pi)}{4\\pi}\\right)^{1/3}=\\left(\\frac{' + F(3 * k) + '}{4}\\right)^{1/3}=' + F(q) + '^{1/3}=' + rr) + ' mm, since ' + t(rr + '^{3}=' + F(q)) + '.',
+          ['Substitute ' + t('V=' + F(k) + '\\pi') + '. The ' + t('\\pi') + ' cancels.', 'Which whole number cubed gives ' + t(F(q)) + '?'], 'sphere radius, V=' + k + 'π', { keys: 'fraction', before: t('r=') });
+          p.answer = t(rr + '\\text{ mm}'); p.bad = [String(q), String(Math.sqrt(q))];
+          return p;
+        } },
+        { id: '15c', level: 'EMG', make: function (r) {
+          var V = pickWhere(r, function () { return 500 * r.int(2, 18); }, function (v) { return roundSafe(Math.cbrt(3 * v / (4 * Math.PI)), 1); }) || 4000, x = Math.cbrt(3 * V / (4 * Math.PI));
+          var cands = [{ v: Math.cbrt(3 * V / 4), code: 'no-pi', hint: 'Don’t forget the ' + t('\\pi') + ' in the denominator: ' + t('\\frac{3V}{4\\pi}') + '.' }, { v: Math.sqrt(3 * V / (4 * Math.PI)), code: 'square-root', hint: 'The exponent is ' + t('\\frac{1}{3}') + ': a <b>cube</b> root.' },
+            { v: 3 * V / (4 * Math.PI), code: 'no-root', hint: 'You found ' + t('\\frac{3V}{4\\pi}') + '. Now take the cube root.' }, { v: Math.cbrt(4 * Math.PI * V / 3), code: 'flip', hint: 'The formula is ' + t('\\left(\\frac{3V}{4\\pi}\\right)^{1/3}') + ': ' + t('3V') + ' on top, ' + t('4\\pi') + ' on the bottom.' }];
+          var p = P.approx('A weather balloon holds ' + t(F(V) + '\\text{ m}^{3}') + ' of gas. Find its radius to the nearest tenth of a metre.', x, 1, { after: 'm', diag: function (v) { for (var i = 0; i < cands.length; i++) if (Math.abs(v - K.roundTo(cands[i].v, 1)) < 1e-9) return { code: cands[i].code, hint: cands[i].hint }; return null; } },
+            t('r=\\left(\\frac{3(' + F(V) + ')}{4\\pi}\\right)^{1/3}=\\left(' + (3 * V / (4 * Math.PI)).toFixed(2) + '\\ldots\\right)^{1/3}\\approx ' + K.roundTo(x, 1).toFixed(1)) + ' m',
+            ['Substitute ' + t('V=' + F(V)) + ' and evaluate ' + t('\\left(\\frac{3V}{4\\pi}\\right)^{1/3}') + '. Put the exponent in brackets: <code>^(1/3)</code>.'], 'balloon radius, V=' + V);
+          p.bad = cands.map(function (c) { return K.roundTo(c.v, 1).toFixed(1); }).filter(function (b) { return b !== K.roundTo(x, 1).toFixed(1); });
+          return p;
+        } }] },
+      { num: '16', stem: function (sh) { return 'A bacteria culture starts with ' + t(sh.P0) + ' cells and doubles every ' + t(sh.d) + ' hours, so the number of cells after ' + t('t') + ' hours is ' + t('P=' + sh.P0 + '(2)^{t/' + sh.d + '}') + '.'; },
+        shared: function (r) {
+          return pickWhere(r, function () { var d = r.pick([3, 3, 4, 5]), P0 = r.pick([200, 300, 400, 500, 500, 800]), t1 = r.pick(d === 3 ? [1, 2] : d === 4 ? [1, 3] : [2, 3]), k = r.pick([3, 5]); return { d: d, P0: P0, t1: t1, k: k, t2: k * d / 2 }; },
+            function (s) { return roundSafe(s.P0 * Math.pow(2, s.t1 / s.d), 0) && roundSafe(s.P0 * Math.pow(2, s.k / 2), 0); }) || { d: 3, P0: 500, t1: 2, k: 3, t2: 4.5 };
+        },
+        parts: [
+          { id: '16a', level: 'PRG', make: function (r, sh) {
+            var e = sh.t1 + '/' + sh.d, two = Math.pow(2, sh.t1), pw = sh.P0 + '(2)^{' + e + '}', rd = sh.P0 + rootTex(sh.d, two);
+            var p = P.fields('Write the number of cells after ' + t(sh.t1) + ' hour' + (sh.t1 > 1 ? 's' : '') + ' using a rational exponent, and then in radical form.', [{ name: 'Rational exponent', label: 'rational exponent: ' + t('P'), before: t('='), mode: 'math', keys: 'expo', vars: [] }, { name: 'Radical form', label: 'radical form: ' + t('P'), before: t('='), mode: 'math', keys: 'expo', vars: [] }],
+              [convCheck(pw, { form: 'power', needRat: true, cands: [[sh.P0 + '(2)^{' + sh.d + '/' + sh.t1 + '}', 'swap', 'Substitute ' + t('t=' + sh.t1) + ' into ' + t('\\frac{t}{' + sh.d + '}') + ': the exponent is ' + t('\\frac{' + sh.t1 + '}{' + sh.d + '}') + '.'], ['(' + 2 * sh.P0 + ')^{' + e + '}', 'base', 'Only the ' + t('2') + ' is raised to the power; the ' + t(sh.P0) + ' multiplies afterwards.']] }),
+                convCheck(rd, { form: 'radical', index: sh.d, cands: [[sh.P0 + rootTex(sh.d, '2'), 'root-only', 'The numerator ' + t(sh.t1) + ' is a power: ' + t('2^{' + e + '}=' + rootTex(sh.d, '2^{' + sh.t1 + '}')) + '.'], [rootTex(sh.d, sh.P0 + '\\cdot ' + two), 'coef-inside', 'Only the ' + t('2') + ' goes under the root; ' + t(sh.P0) + ' stays outside.']] })],
+              [pw, rd], t('P=' + pw + '=' + rd), t('P=' + sh.P0 + '(2)^{' + sh.t1 + '/' + sh.d + '}') + '. Denominator ' + t(sh.d) + ' → index, numerator ' + t(sh.t1) + ' → power:<br>' + t(sh.P0 + '(2)^{' + e + '}=' + (sh.t1 > 1 ? sh.P0 + rootTex(sh.d, '2^{' + sh.t1 + '}') + '=' : '') + rd),
+              ['Substitute ' + t('t=' + sh.t1) + ' into the exponent ' + t('\\frac{t}{' + sh.d + '}') + '.', 'Only the ' + t('2') + ' is raised to the power.'], 'bacteria power and radical, t=' + sh.t1);
+            p.bad = [[sh.P0 + '(2)^{' + sh.d + '/' + sh.t1 + '}', rd], [pw, String(Math.round(sh.P0 * Math.pow(2, sh.t1 / sh.d)))]];
+            return p;
+          } },
+          { id: '16b', level: 'EMG', make: function (r, sh) {
+            var x = sh.P0 * Math.pow(2, sh.t1 / sh.d), e = sh.t1 + '/' + sh.d;
+            var cands = [{ v: sh.P0 * Math.pow(2, sh.t1) / sh.d, code: 'no-brackets', hint: 'Put the exponent in brackets: <code>2^(' + e + ')</code>.' }, { v: Math.pow(2 * sh.P0, sh.t1 / sh.d), code: 'base', hint: 'Only the ' + t('2') + ' is raised to the power: work out ' + t('2^{' + e + '}') + ', then multiply by ' + t(sh.P0) + '.' }, { v: sh.P0 * 2 * sh.t1 / sh.d, code: 'times-exp', hint: 'The exponent isn’t a multiplier: use the ' + t('\\wedge') + ' key for ' + t('2^{' + e + '}') + '.' }];
+            var p = P.approx('How many cells are there after ' + t(sh.t1) + (sh.t1 === 1 ? ' hour' : ' hours') + '? Give the answer to the nearest whole number of cells.', x, 0, { after: 'cells', diag: function (v) { for (var i = 0; i < cands.length; i++) if (Math.abs(v - Math.round(cands[i].v)) < 1e-9) return { code: cands[i].code, hint: cands[i].hint }; return null; } },
+              t(sh.P0 + '(2)^{' + e + '}\\approx ' + sh.P0 + '(' + Math.pow(2, sh.t1 / sh.d).toFixed(4) + ')\\approx ' + F(Math.round(x))) + ' cells', ['Type <code>' + sh.P0 + '×2^(' + e + ')</code> — exponent in brackets.'], 'bacteria value, t=' + sh.t1);
+            p.answer = t(F(Math.round(x))); p.bad = cands.map(function (c) { return String(Math.round(c.v)); }).filter(function (b) { return b !== String(Math.round(x)); });
+            return p;
+          } },
+          { id: '16c', level: 'EMG', make: function (r, sh) {
+            var x = sh.P0 * Math.pow(2, sh.k / 2), e = sh.k + '/2';
+            var cands = [{ v: sh.P0 * Math.pow(2, sh.t2), code: 'no-root', hint: 'Use the formula: the exponent is ' + t('\\frac{t}{' + sh.d + '}=\\frac{' + sh.t2 + '}{' + sh.d + '}') + ', not ' + t(sh.t2) + '.' }, { v: sh.P0 * Math.pow(2, sh.d / sh.t2), code: 'swap', hint: 'The exponent is ' + t('\\frac{t}{' + sh.d + '}') + ' with ' + t('t=' + sh.t2) + ' on top.' }, { v: sh.P0 * 2 * sh.t2 / sh.d, code: 'times-exp', hint: 'The exponent isn’t a multiplier: raise ' + t('2') + ' to the power ' + t('\\frac{' + sh.t2 + '}{' + sh.d + '}') + '.' }, { v: Math.pow(2 * sh.P0, sh.k / 2), code: 'base', hint: 'Only the ' + t('2') + ' is raised to the power.' }];
+            var p = P.approx('How many cells are there after ' + t(sh.t2) + ' hours, to the nearest whole number?', x, 0, { after: 'cells', diag: function (v) { for (var i = 0; i < cands.length; i++) if (Math.abs(v - Math.round(cands[i].v)) < 1e-9) return { code: cands[i].code, hint: cands[i].hint }; return null; } },
+              t('\\frac{' + sh.t2 + '}{' + sh.d + '}=\\frac{' + sh.k + '}{2}') + ', so ' + t('P=' + sh.P0 + '(2)^{' + e + '}=' + sh.P0 + '\\sqrt{2^{' + sh.k + '}}\\approx ' + F(Math.round(x))) + ' cells.', ['Substitute ' + t('t=' + sh.t2) + ' and simplify the exponent ' + t('\\frac{' + sh.t2 + '}{' + sh.d + '}') + ' first.'], 'bacteria after ' + sh.t2 + ' h');
+            p.answer = t(F(Math.round(x))); p.bad = cands.map(function (c) { return String(Math.round(c.v)); }).filter(function (b) { return b !== String(Math.round(x)); });
+            return p;
+          } }] },
+      { num: '17', stem: 'A square garden has an area of ' + t('A\\text{ m}^{2}') + '.', parts: [
+        { id: '17a', level: 'EMG', make: function (r) {
+          var p = P.fields('Write the side length as a power and as a radical.', [{ name: 'Power', label: 'power: side', before: t('='), mode: 'math', keys: 'expo', vars: ['A'] }, { name: 'Radical', label: 'radical: side', before: t('='), mode: 'math', keys: 'expo', vars: ['A'] }],
+            [convCheck('A^{1/2}', { form: 'power', single: 'A^{n}', needRat: true, cands: [['\\frac{A}{2}', 'times-exp', 'Halving isn’t a square root. Area = ' + t('(\\text{side})^{2}') + ', so the side is ' + t('A^{1/2}') + '.'], ['\\frac{A}{4}', 'four-sides', 'Dividing by 4 gives a quarter of the area, not the side. The side is the square root of the area.'], ['A^{2}', 'no-root', 'Area = ' + t('(\\text{side})^{2}') + ', so undo squaring with the exponent ' + t('\\frac{1}{2}') + '.']] }),
+              convCheck('\\sqrt{A}', { form: 'radical', index: 2, cands: [['\\frac{A}{2}', 'times-exp', 'Use a square root: ' + t('\\sqrt{A}') + '.']] })],
+            ['A^{1/2}', '\\sqrt{A}'], 'side ' + t('=A^{1/2}=\\sqrt{A}'), 'Area ' + t('=(\\text{side})^{2}') + ', so ' + t('\\text{side}=A^{1/2}=\\sqrt{A}') + '.', ['Which exponent undoes squaring?'], 'square side from area A');
+          p.bad = [['A/2', '\\sqrt{A}'], ['A^{1/2}', 'A^{1/2}']];
+          return p;
+        } },
+        { id: '17b', level: 'EMG', make: function (r) {
+          var A = pickWhere(r, function () { return r.int(20, 150); }, function (a) { return iroot(a, 2) == null && roundSafe(4 * Math.sqrt(a), 1); }) || 50, x = 4 * Math.sqrt(A);
+          var cands = [{ v: Math.sqrt(A), code: 'four-sides', hint: 'That’s one side. The fencing goes around all ' + t('4') + ' sides.' }, { v: 2 * Math.sqrt(A), code: 'four-sides', hint: 'A square has ' + t('4') + ' sides: perimeter ' + t('=4\\times\\text{side}') + '.' }, { v: Math.sqrt(4 * A), code: 'four-sides', hint: 'Find the side first (' + t('\\sqrt{' + A + '}') + '), then multiply by ' + t('4') + '.' }, { v: A / 4, code: 'times-exp', hint: 'The side is ' + t('\\sqrt{' + A + '}') + ', not a quarter of the area.' }];
+          var p = P.approx('The area is ' + t(A + '\\text{ m}^{2}') + '. How much fencing goes all the way around? Answer to the nearest tenth of a metre.', x, 1, { after: 'm', diag: function (v) { for (var i = 0; i < cands.length; i++) if (Math.abs(v - K.roundTo(cands[i].v, 1)) < 1e-9) return { code: cands[i].code, hint: cands[i].hint }; return null; } },
+            'Side ' + t('=' + A + '^{1/2}=\\sqrt{' + A + '}') + '. Perimeter ' + t('=4\\cdot ' + A + '^{1/2}=4\\sqrt{' + A + '}\\approx ' + K.roundTo(x, 1).toFixed(1)) + ' m.', ['Find the side length first, then the perimeter of the square.'], 'fencing for area ' + A);
+          p.bad = cands.map(function (c) { return K.roundTo(c.v, 1).toFixed(1); }).filter(function (b) { return b !== K.roundTo(x, 1).toFixed(1); });
+          return p;
+        } },
+        { id: '17c', level: 'EMG', make: function (r) {
+          var k = r.pick([4, 4, 9, 16, 25, 100]), s = Math.sqrt(k);
+          return mc(r, 'The area is made ' + t(k) + ' times as large. What happens to the side length?', [
+            { html: t('(' + k + 'A)^{1/2}=' + k + '^{1/2}A^{1/2}=' + s + 'A^{1/2}') + ': the side is multiplied by ' + t(s) + '.', right: true },
+            { html: t('(' + k + 'A)^{1/2}=' + k + 'A^{1/2}') + ': the side is multiplied by ' + t(k) + '.', why: 'Power of a product: the exponent ' + t('\\frac{1}{2}') + ' applies to the ' + t(k) + ' too, so ' + t(k + '^{1/2}=' + s) + '.' },
+            { html: t('(' + k + 'A)^{1/2}=' + k + '^{1/2}+A^{1/2}') + ': the side increases by ' + t(s) + '.', why: 'The exponent distributes over a <b>product</b> as a product: ' + t('(ab)^{1/2}=a^{1/2}b^{1/2}') + ', not a sum.' },
+            { html: t('(' + k + 'A)^{1/2}=' + k * k + 'A^{1/2}') + ': the side is multiplied by ' + t(k * k) + '.', why: 'An exponent of ' + t('\\frac{1}{2}') + ' takes a square root of the ' + t(k) + '; it doesn’t square it.' }],
+            'New side ' + t('=(' + k + 'A)^{1/2}=' + k + '^{1/2}A^{1/2}=' + s + 'A^{1/2}') + ' (power of a product). The side is multiplied by ' + t(s) + '.', ['Apply the exponent ' + t('\\frac{1}{2}') + ' to each factor of ' + t(k + 'A') + '.'], 'area ×' + k + ' → side', false);
+        } }] },
+      { num: '18', section: 'Part D — Multiple Choice and Numerical Response', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: '18a', level: 'EMG', make: function (r) {
+          var ab = r.pick([[4, 9], [3, 4], [2, 5], [3, 5], [4, 5], [5, 6], [4, 7], [6, 7], [5, 8], [7, 8], [5, 9], [7, 9]]); if (r.chance(0.3)) ab = [ab[1], ab[0]];
+          var a = ab[0], b = ab[1], A = a * a, B = b * b, w = ex.norm(B, 2 * A);
+          return mc(r, t('\\left(\\frac{' + A + '}{' + B + '}\\right)^{-0.5}') + ' is equal to', [
+            { html: t('\\frac{' + b + '}{' + a + '}'), right: true },
+            { html: t('\\frac{' + a + '}{' + b + '}'), why: 'The exponent is <b>negative</b>: flip the fraction first.' },
+            { html: t('-\\frac{' + a + '}{' + b + '}'), why: 'A negative exponent means reciprocal, not a negative answer.' },
+            { html: t(ex.texRat(w)), why: t('0.5') + ' isn’t a multiplier: an exponent of ' + t('0.5=\\frac{1}{2}') + ' means a square root.' }],
+            t('\\left(\\frac{' + A + '}{' + B + '}\\right)^{-0.5}=\\left(\\frac{' + B + '}{' + A + '}\\right)^{1/2}=\\frac{\\sqrt{' + B + '}}{\\sqrt{' + A + '}}=\\frac{' + b + '}{' + a + '}'), ['Negative exponent → flip the fraction. ' + t('0.5=\\frac{1}{2}') + ' → square root.'], '(' + A + '/' + B + ')^-0.5');
+        } },
+        { id: '18b', level: 'PRG', make: function (r) {
+          var v = r.pick([[3, 4, 3], [2, 4, 3], [5, 2, 3], [4, 2, 3], [2, 2, 5], [2, 4, 5], [3, 3, 3], [2, 3, 3]]), c = v[0], m = v[1], n = v[2], C = Math.pow(c, n), val = (m % 2 ? -1 : 1) * Math.pow(c, m);
+          var bt = '\\left(-\\frac{1}{' + C + '}\\right)^{-' + m + '/' + n + '}';
+          return mc(r, t(bt) + ' is equal to', [
+            { html: t(val), right: true },
+            { html: t(-val), why: m % 2 ? 'The ' + rootName(n) + ' root of ' + t('-\\frac{1}{' + C + '}') + ' is ' + t('-\\frac{1}{' + c + '}') + ', and the odd power ' + t(m) + ' keeps it negative.' : 'The ' + rootName(n) + ' root of ' + t('-\\frac{1}{' + C + '}') + ' is negative, but the even power ' + t(m) + ' makes it positive.' },
+            { html: t((val < 0 ? '-' : '') + '\\frac{1}{' + Math.abs(val) + '}'), why: 'The exponent is negative: take the reciprocal, which flips ' + t('\\frac{1}{' + Math.pow(c, m) + '}') + ' to ' + t(Math.pow(c, m)) + '.' },
+            { html: 'has no meaning', why: 'The index is ' + t(n) + ', which is <b>odd</b>, so the root of a negative number exists.' }],
+            t('\\left(-\\frac{1}{' + C + '}\\right)^{1/' + n + '}=-\\frac{1}{' + c + '}') + ', so ' + t('\\left(-\\frac{1}{' + C + '}\\right)^{' + m + '/' + n + '}=\\left(-\\frac{1}{' + c + '}\\right)^{' + m + '}=' + (val < 0 ? '-' : '') + '\\frac{1}{' + Math.abs(val) + '}') + '.<br>Reciprocal: ' + t(bt + '=' + val) + '.', ['The index ' + t(n) + ' is odd, so the root exists. Then decide the sign and take the reciprocal.'], 'MC ' + bt, true);
+        } }] },
+      { num: '19', stem: '<i>(Numerical Response)</i> Evaluate the following and arrange the answers from greatest to least.', parts: [
+        { id: '19', level: 'PRG', make: function (r) {
+          var b = r.pick([2, 3, 4, 4, 5]), B = b * b * b;
+          var calc = [{ tex: '-\\left(' + B + '^{-2/3}\\right)', v: -1 / (b * b), vt: '-\\frac{1}{' + b * b + '}', how: '-\\frac{1}{\\left(\\sqrt[3]{' + B + '}\\right)^{2}}=-\\frac{1}{' + b * b + '}', err: 1 / (b * b) },
+            { tex: '\\left(\\frac{1}{' + B + '}\\right)^{1/3}', v: 1 / b, vt: '\\frac{1}{' + b + '}', how: '\\frac{1}{\\sqrt[3]{' + B + '}}=\\frac{1}{' + b + '}', err: -1 / b },
+            { tex: '(-' + B + ')^{2/3}', v: b * b, vt: String(b * b), how: '\\left(\\sqrt[3]{-' + B + '}\\right)^{2}=(-' + b + ')^{2}=' + b * b, err: -b * b },
+            { tex: '\\left(-\\frac{1}{' + B + '}\\right)^{-1/3}', v: -b, vt: '-' + b, how: '\\frac{1}{\\sqrt[3]{-\\frac{1}{' + B + '}}}=\\frac{1}{-\\frac{1}{' + b + '}}=-' + b, err: b }];
+          calc = r.shuffle(calc); calc.forEach(function (c, i) { c.no = i + 1; });
+          function code(vals) { return calc.map(function (c, i) { return { no: c.no, v: vals[i] }; }).sort(function (x, y) { return y.v - x.v; }).map(function (x) { return x.no; }).join(''); }
+          var vals = calc.map(function (c) { return c.v; }), ans = code(vals), rev = ans.split('').reverse().join('');
+          var errs = calc.map(function (c, i) { var vv = vals.slice(); vv[i] = c.err; return { code: code(vv), no: c.no }; });
+          return P.nr('Calculation 1: ' + t(calc[0].tex) + '&emsp; Calculation 2: ' + t(calc[1].tex) + '<br>Calculation 3: ' + t(calc[2].tex) + '&emsp; Calculation 4: ' + t(calc[3].tex) + '<br>Write the calculation numbers from the greatest answer to the smallest: ________.', Number(ans), function (v) {
+            var s = String(v);
+            if (s === rev) return { code: 'reversed', hint: 'That’s least to greatest. Start with the <b>greatest</b> answer.' };
+            for (var i = 0; i < errs.length; i++) if (s === errs[i].code && s !== ans) return { code: 'calc-sign', hint: 'Check the <b>sign</b> of Calculation ' + errs[i].no + '.' };
+            return null;
+          }, calc.map(function (c) { return 'Calc ' + c.no + ': ' + t(c.tex + '=' + c.how); }).join('<br>') + '<br>Greatest to least: ' + t(calc.slice().sort(function (x, y) { return y.v - x.v; }).map(function (c) { return c.vt; }).join('>')) + ', so record <b>' + ans + '</b>.',
+          ['Evaluate each one exactly first. Watch the signs: which are negative?'], 'order four rational-exponent powers, base ' + B);
+        } }] }
+    ],
+    extra: EXTRA
+  });
 })(window);

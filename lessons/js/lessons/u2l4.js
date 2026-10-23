@@ -1,7 +1,6 @@
-/* Math 10C · Unit 2 · Lesson 4 — Scientific Notation (Application / Extension): the explainers and warm-up on this page. */
+/* Math 10C · Unit 2 · Lesson 4 — Rational Exponents and Radicals: the explainers and the piano warm-up on this page. */
 import { h, fmt, Explainer } from '../explain.js';
 import { tex } from '../tex.js';
-const texEq = (s) => s.split('=').map((p, i) => tex((i ? '=' : '') + p)).join(' '); // a chain of equations that can wrap at each "=" (the side caption is narrow)
 
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };
 const add = (stage, el, x, y) => { stage.appendChild(at(el, x, y)); return el; };
@@ -14,652 +13,596 @@ const K = (src, display) => {
   catch (e) { return tex(src, display); }
 };
 
-/* ---------- decimal helpers (strings, so nothing is lost to floating point) ----------
- * A number is { sig, e }: its significant digits and its exponent, value = sig[0].sig[1…] × 10^e. */
-function parseDec(str) {
-  const [ip, fp = ''] = String(str).split('.'), all = ip + fp;
-  let f = 0; while (f < all.length - 1 && all[f] === '0') f++;
-  return { sig: all.slice(f).replace(/0+$/, '') || '0', e: ip.length - 1 - f };
-}
-const coefOf = (sig) => sig[0] + (sig.length > 1 ? '.' + sig.slice(1) : '');
-const group = (ip, sep) => (ip.length < 4 ? ip : ip.replace(/\B(?=(\d{3})+(?!\d))/g, sep));
-function stdOf(sig, e, sep = ' ') { // standard notation, thin spaces between groups of three like the booklet
-  let ip, fp;
-  if (e >= 0) { ip = sig.slice(0, e + 1).padEnd(e + 1, '0'); fp = sig.slice(e + 1); } else { ip = '0'; fp = '0'.repeat(-e - 1) + sig; }
-  ip = group(ip, sep); return fp ? ip + '.' + fp : ip;
-}
-const stdT = (sig, e) => stdOf(sig, e, '\\,');
-const sciT = (c, n) => `${c}\\times10^{${n}}`;
-const neg = (n) => (n < 0 ? '−' + -n : String(n)); // a real minus sign in captions
-const par = (n) => (n < 0 ? `(${n})` : String(n)); // −3 + (−6), in LaTeX
-const parN = (n) => (n < 0 ? `(−${-n})` : String(n)); // the same in a caption
-const num = (x) => String(Number(Number(x).toPrecision(12))); // 2.5 × 3 → "7.5", not 7.499999…
-const plural = (k, w) => k + ' ' + w + (k === 1 ? '' : 's');
+const AM = '#c27a0e', TL = '#13807a', RD = '#c93a33';
+const cA = (s) => `\\textcolor{${AM}}{${s}}`, cT = (s) => `\\textcolor{${TL}}{${s}}`, cR = (s) => `\\textcolor{${RD}}{${s}}`;
+const cA0 = cA, cT0 = cT, cR0 = cR;
 
-/* A copy of a token flies from one place in the stage to another (like Unit 1's worked lines). */
-async function fly(c, stage, from, to, src, o = {}) {
+/* ---------- number helpers ---------- */
+const tn = (n) => (n < 0 ? '-' : '') + fmt(Math.abs(n)).replace(/\u202f/g, '\\,'); // 1 000 → 1\,000 in LaTeX
+const gcd = (a, b) => (b ? gcd(b, a % b) : Math.abs(a));
+function Q(p, q = 1) { if (q < 0) { p = -p; q = -q; } const g = gcd(p, q) || 1; return { p: p / g, q: q / g }; }
+function parseQ(s) { s = String(s); if (s.includes('/')) { const [a, b] = s.split('/').map(Number); return Q(a, b); } return Q(Number(s), 1); }
+function iroot(x, n) { // exact integer n-th root of x (odd roots of negatives too), or null
+  if (x < 0) { if (n % 2 === 0) return null; const r = iroot(-x, n); return r == null ? null : -r; }
+  const r = Math.round(Math.pow(x, 1 / n)); return r ** n === x ? r : null;
+}
+const qroot = (r, n) => { const a = iroot(r.p, n), b = iroot(r.q, n); return a == null || b == null ? null : Q(a, b); };
+const qpow = (r, m) => Q(r.p ** m, r.q ** m);
+const qT = (r, small) => (r.q === 1 ? tn(r.p) : `${r.p < 0 ? '-' : ''}\\${small ? 't' : 'd'}frac{${tn(Math.abs(r.p))}}{${tn(r.q)}}`);
+const qP = (r) => (r.q === 1 && r.p >= 0 ? tn(r.p) : `\\left(${qT(r)}\\right)`); // a value used as a base
+const rootT = (n, x) => (n === 2 ? `\\sqrt{${x}}` : `\\sqrt[${n}]{${x}}`);
+const ord = (n) => (n === 2 ? 'square' : n === 3 ? 'cube' : n + 'th');
+const sgnT = (x) => (x < 0 ? `(${tn(x)})` : tn(x));
+
+/* ---------- drawing helpers ---------- */
+function stagePos(stage, el) { // element centre and box in stage coordinates (the lesson may be scaled)
+  const sr = stage.getBoundingClientRect(), k = sr.width / stage.offsetWidth || 1, r = el.getBoundingClientRect();
+  return { x: (r.left + r.width / 2 - sr.left) / k, y: (r.top + r.height / 2 - sr.top) / k, l: (r.left - sr.left) / k, t: (r.top - sr.top) / k, r: (r.right - sr.left) / k, b: (r.bottom - sr.top) / k };
+}
+async function fly(c, stage, from, to, src, o = {}) { // a copy of `src` flies from one token to another
   if (!to) return;
   if (c.fast || !from) { to.style.opacity = 1; return; }
   c.check();
-  const sr = stage.getBoundingClientRect(), k = sr.width / stage.offsetWidth || 1;
-  const a = from.getBoundingClientRect(), b = to.getBoundingClientRect();
-  const ax = (a.left + a.width / 2 - sr.left) / k, ay = (a.top + a.height / 2 - sr.top) / k;
-  const bx = (b.left + b.width / 2 - sr.left) / k, by = (b.top + b.height / 2 - sr.top) / k;
-  const g = add(stage, h('div', 'sn-fly c' + (o.cls ? ' ' + o.cls : ''), K(src)), ax, ay); if (o.fs) g.style.fontSize = o.fs + 'px';
+  const a = stagePos(stage, from), b = stagePos(stage, to);
+  const g = add(stage, h('div', 'r5-fly c', K(src)), a.x, a.y); if (o.fs) g.style.fontSize = o.fs + 'px';
+  if (o.color) g.style.color = o.color;
+  g.style.opacity = 0;
   try {
-    await c.anim(g, [{ opacity: 1, transform: 'translate(0,0) scale(1.1)' }, { opacity: 1, transform: `translate(${(bx - ax) / 2}px, ${(by - ay) / 2 - 24}px) scale(1.2)`, offset: 0.5 }, { opacity: 1, transform: `translate(${bx - ax}px, ${by - ay}px) scale(1)` }], o.ms || 750, { delay: o.delay || 0 });
+    await c.anim(g, [{ opacity: 1, transform: 'translate(0,0) scale(1.1)' }, { opacity: 1, transform: `translate(${(b.x - a.x) / 2}px, ${(b.y - a.y) / 2 - 26}px) scale(1.3)`, offset: 0.5 }, { opacity: 1, transform: `translate(${b.x - a.x}px, ${b.y - a.y}px) scale(1)` }], o.ms || 850, { delay: o.delay || 0 });
   } finally { g.remove(); }
   to.style.opacity = 1;
 }
-
-/* A row of decimal digits with a decimal point that hops along arcs, one place at a time. */
-function digitRow(stage, cells, o) {
-  const { x0, y, cw, ch, fs } = o, svg = add(stage, svgEl('svg', { class: 'hp-svg' }), 0, 0);
-  svg.setAttribute('width', stage.clientWidth || 1000); svg.setAttribute('height', o.H);
-  const els = cells.map((d, i) => { const e = add(stage, h('div', 'hp-cell', d), x0 + i * cw, y); e.style.width = cw + 'px'; e.style.height = ch + 'px'; e.style.fontSize = fs + 'px'; e.style.lineHeight = ch + 'px'; return e; });
-  const sx = (k) => x0 + k * cw, base = y + ch * 0.86;
+function board(stage, o) { // written work: one LaTeX line per row
+  const rows = [];
   return {
-    els, sx, base, svg,
-    // move `dot` from slot k to slot k + dir, drawing the arc and its label
-    async hop(c, dot, k, dir, label, delay = 0) {
-      const x1 = sx(k), x2 = sx(k + dir), top = y - 10, mid = (x1 + x2) / 2;
-      const p = svgEl('path', { class: 'hp-arc' + (dir < 0 ? ' left' : ''), d: `M ${x1} ${base - 8} C ${x1} ${top}, ${x2} ${top}, ${x2} ${base - 8}` }); svg.appendChild(p);
-      const len = p.getTotalLength ? p.getTotalLength() || 120 : 120; p.style.strokeDasharray = len; p.style.strokeDashoffset = len;
-      const tag = add(stage, h('div', 'hp-tag c' + (dir < 0 ? ' left' : ''), label), mid, top - 6); tag.style.opacity = 0;
-      const ah = svgEl('path', { class: 'hp-head' + (dir < 0 ? ' left' : ''), d: `M ${x2 - 6} ${base - 20} L ${x2} ${base - 8} L ${x2 + 6} ${base - 20}` }); ah.style.opacity = 0; svg.appendChild(ah);
-      await c.sleep(delay);
-      await Promise.all([
-        c.anim(p, [{ strokeDashoffset: len }, { strokeDashoffset: 0 }], 420),
-        c.anim(dot, [{ transform: 'translate(0,0)' }, { transform: `translate(${(x2 - x1) / 2}px, ${top - base + 4}px)`, offset: 0.5 }, { transform: `translate(${x2 - x1}px, 0)` }], 420, { easing: 'ease-in-out' }),
-        c.anim(tag, [{ opacity: 0, transform: 'scale(.6)' }, { opacity: 1, transform: 'scale(1)' }], 260, { delay: 180 }),
-        c.anim(ah, [{ opacity: 0 }, { opacity: 1 }], 120, { delay: 330 })
-      ]);
-      dot.style.left = x2 + 'px'; dot.style.transform = 'none';
+    rows,
+    line(src, p = {}) {
+      const y = p.y != null ? p.y : o.y + rows.length * o.lh;
+      const el = add(stage, h('div', 'r5-line' + (p.cls ? ' ' + p.cls : ''), K(src)), p.x != null ? p.x : o.x, y); el.style.fontSize = (p.fs || o.fs) + 'px';
+      hide(el); const r = { el, q: (s) => el.querySelector(s), qa: (s) => [...el.querySelectorAll(s)] }; rows.push(r); return r;
     }
   };
 }
+async function showRow(c, stage, row, flights = [], fs) {
+  flights.forEach((f) => { if (f && f[1]) f[1].style.opacity = 0; });
+  const jobs = [c.anim(row.el, [{ opacity: 0 }, { opacity: 1 }], 380)];
+  flights.forEach((f, i) => { if (f) jobs.push(fly(c, stage, f[0], f[1], f[2], { fs, color: f[3], delay: 150 + i * 160 })); });
+  await Promise.all(jobs);
+}
+function chain(stage, parts, x, y, fs) { // a row of LaTeX pieces revealed one at a time without reflowing
+  const row = add(stage, h('div', 'r5-chain'), x, y); row.style.fontSize = fs + 'px';
+  const els = parts.map((p) => { const e = h('span', 'r5-piece', K(p)); row.appendChild(e); hide(e); return e; });
+  return { row, els };
+}
+const showPieces = (c, els, ms = 320) => Promise.all(els.map((e, i) => c.fadeIn(e, ms, { delay: i * 160 })));
+const stampIn = (c, el) => c.anim(el, [{ opacity: 0, transform: 'scale(1.6) rotate(-10deg)' }, { opacity: 1, transform: 'scale(1) rotate(-4deg)' }], 420, { easing: 'cubic-bezier(.2,1.4,.4,1)' });
 
-/* ============ 1. Hop the decimal point ============ */
-const hops = {
-  title: 'Hop the decimal point',
-  height: 440,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: 's:52000', label: '52 000' }, { v: 's:0.00047', label: '0.00047' }, { v: 's:36800000', label: '36 800 000' }, { v: 'e:2.9:9', label: tex('2.9\\times10^{9}') }, { v: 'e:8:-6', label: tex('8\\times10^{-6}') },
-    { sep: 'Example 1 check:' }, { v: 's:84200', label: '84 200' }, { v: 's:0.00072', label: '0.00072' }, { v: 'e:6.05:2', label: tex('6.05\\times10^{2}') }, { v: 'e:4.1:-3', label: tex('4.1\\times10^{-3}') }],
-  intro: (v) => {
-    const [mode, a, b] = v.split(':');
-    if (mode === 's') { const q = parseDec(a); return `Write <b>${stdOf(q.sig, q.e)}</b> in <b>scientific notation</b>. The decimal point will hop from ○ to ●, and we count the hops.`; }
-    return `Write ${tex(sciT(coefOf(parseDec(a).sig), b))} in <b>standard notation</b>. The exponent says how many places the point hops, and which way.`;
-  },
+/* ============ 1. Why a^(1/n) must be the n-th root ============ */
+const whyRoot = {
+  title: `Why must ${tex('a^{1/n}')} be a root?`,
+  height: 430,
+  choices: [['7', 2], ['2', 3], ['9', 2], ['8', 3], ['16', 4], { sep: 'The piano:' }, ['2', 12]].map((c) => (c.sep ? c : { v: c.join('|'), label: tex(`${c[0]}^{1/${c[1]}}`) })),
+  intro: (v) => { const [a, n] = v.split('|'); return `Suppose the exponent laws still work for fractions. Then what number is ${tex(`${a}^{1/${n}}`)}? <b>Multiply it by itself</b> and see.`; },
   make(stage, v, ex) {
-    const W = ex.W, H = 440, [mode, a, b] = v.split(':');
-    let sig, e;
-    if (mode === 's') ({ sig, e } = parseDec(a)); else { sig = parseDec(a).sig; e = Number(b); }
-    const big = e >= 0, nh = Math.abs(e), dir = big ? 1 : -1, coef = coefOf(sig);
-    const cells = big ? sig.padEnd(Math.max(sig.length, e + 1), '0').split('') : ('0'.repeat(-e) + sig).split('');
-    const cIdx = big ? 1 : -e + 1, sIdx = big ? e + 1 : 1, L = cells.length;
-    const pad = (i) => (big ? i >= sig.length : i < -e);
-    const cw = Math.min(66, (W - 200) / (L + 1)), ch = cw * 1.25, fs = Math.min(56, cw * 0.86), x0 = (W - L * cw) / 2, y = 120;
-    const row = digitRow(stage, cells, { x0, y, cw, ch, fs, H });
-    // the task, and a legend for the two points
-    add(stage, h('div', 'hp-task', mode === 's' ? `Write <b>${stdOf(sig, e)}</b> in scientific notation` : `Write ${K(sciT(coef, e))} in standard notation`), 22, 14);
-    add(stage, h('div', 'hp-legend', '<span class="hp-ring-i"></span> start: the coefficient’s point &nbsp; <span class="hp-dot-i"></span> end: the standard number’s point'), 22, 58);
-    const ring = add(stage, h('div', 'hp-ring c'), row.sx(cIdx), row.base);
-    const dot = add(stage, h('div', 'hp-dot c'), row.sx(cIdx), row.base);
-    const ghost = add(stage, h('div', 'hp-dot ghost c'), row.sx(sIdx), row.base);
-    hide(dot, ghost); if (mode === 's') hide(ring);
-    const lab = (t, yy) => { const e2 = add(stage, h('div', 'hp-lab', t), 28, yy); return e2; };
-    const yPF = 262, yOut = 348;
-    const lPF = lab('Product form', yPF + 10), pf = add(stage, h('div', 'hp-math'), 250, yPF);
-    const lOut = lab(mode === 's' ? 'Scientific notation' : 'Standard notation', yOut + 6), out = add(stage, h('div', 'hp-math out'), 250, yOut);
-    const setPF = (html) => { pf.innerHTML = html; pf.style.fontSize = ''; const room = W - 264; if (pf.offsetWidth > room) pf.style.fontSize = (30 * room / pf.offsetWidth) + 'px'; }; // a long product shrinks to fit
-    hide(lPF, lOut);
-    const tens = (k) => Array(k).fill('10').join('\\times');
-    const pfT = (k) => (k === 0 ? coef : big ? `${coef}\\times${tens(k)}` : `\\dfrac{${coef}}{${tens(k)}}`);
-    const steps = [];
+    const W = ex.W, [as, ns] = v.split('|'), a = Number(as), n = Number(ns), many = n > 4;
+    const pw = `${a}^{1/${n}}`, rt = rootT(n, a), exact = iroot(a, n), val = Math.pow(a, 1 / n);
+    const B = board(stage, { x: 34, y: 18, lh: many ? 84 : 76, fs: many ? 27 : 31 });
+    const eTok = (i) => `${a}^{\\htmlClass{e${i}}{${cA(`1/${n}`)}}}`, sTok = (i) => `\\htmlClass{s${i}}{${cA(`\\frac{1}{${n}}`)}}`;
+    const k = many ? 3 : n;
+    const facs = many ? `\\underbrace{${eTok(0)}\\times${eTok(1)}\\times\\cdots\\times${eTok(2)}}_{${n}\\text{ equal factors}}` : Array.from({ length: n }, (_, i) => eTok(i)).join('\\times');
+    const sums = many ? `${sTok(0)}+${sTok(1)}+\\cdots+${sTok(2)}` : Array.from({ length: n }, (_, i) => sTok(i)).join('+');
+    const r1 = B.line(facs), r2 = B.line(`=${a}^{${sums}}`), r3 = B.line(`=${a}^{${n}/${n}}=${a}^{1}=\\mathbf{${a}}`);
+    const rts = many ? `\\underbrace{${rt}\\times${rt}\\times\\cdots\\times${rt}}_{${n}\\text{ equal factors}}` : Array.from({ length: n }, () => rt).join('\\times');
+    const r4 = B.line(`${rts}=\\mathbf{${a}}`, { cls: 'teal-l' });
+    const res = add(stage, h('div', 'r5-res', K(`${pw}=${rt}${exact != null ? '=' + exact : '\\approx' + val.toFixed(4)}`)), 34, many ? 352 : 330); hide(res);
+    // the picture: a square of area a (n = 2) or a cube of volume a (n = 3)
+    let side = null, side2 = null;
+    if (n === 2 || n === 3) {
+      const px = W - 330, L = n === 2 ? 220 : 170;
+      if (n === 2) {
+        const sq = add(stage, h('div', 'wr-sq'), px + 40, 40); sq.style.width = sq.style.height = L + 'px';
+        add(stage, h('div', 'wr-in c', `Area = <b>${a}</b>`), px + 40 + L / 2, 40 + L / 2);
+        side = add(stage, h('div', 'wr-side c', K(pw)), px + 40 + L / 2, 40 + L + 30);
+        side2 = add(stage, h('div', 'wr-side c', K(`${rt}=${pw}`)), px + 40 + L / 2, 40 + L + 30);
+      } else {
+        const svg = add(stage, svgEl('svg', { class: 'wr-cube', width: 300, height: 290 }), px, 20);
+        const s = L, dx = 0.55 * s, dy = 0.42 * s, x0 = 40, y0 = 30 + dy;
+        const P = (pts) => pts.map((p) => p.join(',')).join(' ');
+        svg.appendChild(svgEl('polygon', { points: P([[x0, y0], [x0 + dx, y0 - dy], [x0 + s + dx, y0 - dy], [x0 + s, y0]]), class: 'f-top' }));
+        svg.appendChild(svgEl('polygon', { points: P([[x0 + s, y0], [x0 + s + dx, y0 - dy], [x0 + s + dx, y0 - dy + s], [x0 + s, y0 + s]]), class: 'f-side' }));
+        svg.appendChild(svgEl('rect', { x: x0, y: y0, width: s, height: s, class: 'f-front' }));
+        svg.appendChild(svgEl('line', { x1: x0, y1: y0 + s, x2: x0 + s, y2: y0 + s, class: 'edge' }));
+        add(stage, h('div', 'wr-in c', `Volume<br>= <b>${a}</b>`), px + x0 + s / 2, 20 + y0 + s / 2);
+        side = add(stage, h('div', 'wr-side c', K(pw)), px + x0 + s / 2, 20 + y0 + s + 30);
+        side2 = add(stage, h('div', 'wr-side c', K(`${rt}=${pw}`)), px + x0 + s / 2, 20 + y0 + s + 30);
+      }
+      side.classList.add('q'); side.innerHTML = '?'; hide(side2);
+    }
+    let chk = null;
+    if (!side) {
+      chk = add(stage, h('div', 'wr-chk', `<div class="wr-chk-h">Check it</div>${K(exact != null ? `${Array(n).fill(exact).join('\\times')}=${a}` : `${val.toFixed(6)}^{${n}}\\approx${Math.pow(Number(val.toFixed(6)), n).toFixed(3)}`)}${n === 12 ? '<div class="wr-chk-n">twelve piano steps double the pitch</div>' : ''}`), W - 330, 150);
+      chk.style.width = '300px'; hide(chk);
+    }
+    const sumWord = n === 2 ? tex('\\tfrac12+\\tfrac12') : n === 3 ? tex('\\tfrac13+\\tfrac13+\\tfrac13') : `${n} copies of ${tex(`\\tfrac{1}{${n}}`)}`;
+    return [{
+      cap: `Multiply <b>${n}</b> equal factors of ${tex(pw)}.` + (n === 2 ? ` That’s the side of a square with area ${a}: side × side = area.` : n === 3 ? ` That’s the edge of a cube with volume ${a}: edge × edge × edge = volume.` : ''),
+      run: async (c) => {
+        const jobs = [showRow(c, stage, r1)];
+        if (side) { side.innerHTML = K(pw); side.classList.remove('q'); jobs.push(c.pop(side, 420, { delay: 200 })); }
+        await Promise.all(jobs);
+      }
+    }, {
+      cap: `<b>Product law:</b> the bases are the same, so <b>add the exponents</b>: ${sumWord}.`,
+      run: (c) => showRow(c, stage, r2, Array.from({ length: k }, (_, i) => [r1.q('.e' + i), r2.q('.s' + i), `\\frac{1}{${n}}`, AM]), many ? 27 : 31)
+    }, {
+      cap: `${sumWord} ${tex(`=\\tfrac{${n}}{${n}}=1`)}. So the product is ${tex(`${a}^1`)}, which is just <b>${a}</b>.`,
+      run: (c) => showRow(c, stage, r3)
+    }, {
+      cap: `Now look at ${tex(rt)}. By definition it’s the number that gives <b>${a}</b> when ${n} copies of it are multiplied.`,
+      run: (c) => showRow(c, stage, r4)
+    }, {
+      cap: `Both numbers do the <b>same job</b>, so they are the <b>same number</b>: ${tex(`${pw}=${rt}`)}` + (exact != null ? ` = ${exact}. Check: ${Array(n).fill(exact).join(' × ')} = ${a} ✓` : ` ≈ ${val.toFixed(4)}.`) + (n === 12 ? ' That’s <b>r</b>, the step between piano keys!' : ''),
+      run: async (c) => {
+        const jobs = [c.pop(res, 480)];
+        if (side2) { jobs.push(c.anim(side, [{ opacity: 1 }, { opacity: 0 }], 250), c.pop(side2, 420, { delay: 200 })); }
+        if (chk) jobs.push(c.fadeIn(chk, 400, { delay: 250 }));
+        await Promise.all(jobs);
+      }
+    }];
+  }
+};
 
-    if (mode === 's') {
-      const first = cells.findIndex((d) => d !== '0');
-      if (!big) hide(dot); // the ghost ● marks the real point of a small number
+/* ============ 2. Root first or power first ============ */
+const routes = {
+  title: 'Root first or power first?',
+  height: 456,
+  choices: [[27, 2, 3], [8, 2, 3], [27, 4, 3], [16, 3, 4], [32, 3, 5], { sep: 'Example 1 check:' }, [16, 3, 2], [1000, 2, 3]].map((c) => (c.sep ? c : { v: c.join('|'), label: tex(`${tn(c[0])}^{${c[1]}/${c[2]}}`) })),
+  intro: (v) => { const [a, m, n] = v.split('|').map(Number); return `${tex(`${tn(a)}^{${cA(m)}/${cT(n)}}`)}: the <b>denominator ${n}</b> means a ${ord(n)} root, the <b>numerator ${m}</b> means a power of ${m}. Which should we do first?`; },
+  make(stage, v, ex) {
+    const W = ex.W, [a, m, n] = v.split('|').map(Number), r = iroot(a, n), res = r ** m, big = a ** m;
+    const lw = (W - 90) / 2, xA = 30, xB = 60 + lw, top = 76;
+    const head = add(stage, h('div', 'rt-head', K(`${tn(a)}^{${cA(m)}/${cT(n)}}`)), W / 2, 8); head.style.translate = '-50% 0';
+    const lane = (x, cls, title) => { const l = add(stage, h('div', 'rt-lane ' + cls, `<div class="rt-lt">${title}</div>`), x, top); l.style.width = lw + 'px'; return l; };
+    lane(xA, 'a', `Root first, then power`); lane(xB, 'b', `Power first, then root`);
+    const fs = 30, ln = (x, y, src) => { const e = add(stage, h('div', 'r5-line', K(src)), x + 22, y); e.style.fontSize = fs + 'px'; hide(e); return e; };
+    const nt = (x, y, html) => { const e = add(stage, h('div', 'rt-note', html), x + 22, y); e.style.width = (lw - 40) + 'px'; hide(e); return e; };
+    const A1 = ln(xA, top + 46, `=\\left(${rootT(n, tn(a))}\\right)^{${m}}`), B1 = ln(xB, top + 46, `=${rootT(n, `${tn(a)}^{${m}}`)}`);
+    const A2 = ln(xA, top + 106, `=${r}^{${m}}`), A2n = nt(xA, top + 150, `${tex(`${rootT(n, tn(a))}=${r}`)} because ${tex(`${r}^{${n}}=${tn(a)}`)}`);
+    const A3 = ln(xA, top + 184, `=\\mathbf{${tn(res)}}`), A3n = nt(xA, top + 228, `${tex(`${r}^{${m}}=${tn(res)}`)} <b class="ok">✓ easy</b>`);
+    const B2 = ln(xB, top + 106, `=${rootT(n, tn(big))}`), B2n = nt(xB, top + 150, `${tex(`${tn(a)}^{${m}}=${tn(big)}`)}`);
+    const B3 = ln(xB, top + 184, `=\\mathbf{${tn(res)}}`), B3n = nt(xB, top + 228, `${tex(`${tn(res)}^{${n}}=${tn(big)}`)} <b class="red">hard to spot!</b>`);
+    const maxA = Math.max(a, res), by = top + 274, bx = 196, maxW = W - bx - 150;
+    const bh = add(stage, h('div', 'rt-bh', 'Biggest number on the way'), 30, by); hide(bh);
+    const bar = (y, cls, lab, val) => {
+      const l = add(stage, h('div', 'rt-bl ' + cls, lab), 30, y); const b = add(stage, h('div', 'rt-bar ' + cls), bx, y + 4);
+      const w = Math.max(6, (maxW * val) / big); b.style.width = w + 'px';
+      const t = add(stage, h('div', 'rt-bv ' + cls, fmt(val)), bx + w + 10, y); hide(l, b, t); return [l, b, t];
+    };
+    const bA = bar(by + 30, 'a', 'Root first', maxA), bB = bar(by + 70, 'b', 'Power first', big);
+    return [{
+      cap: `Both orders are allowed: ${tex(`\\left(${rootT(n, tn(a))}\\right)^{${m}}`)} takes the <b>root first</b>, ${tex(rootT(n, `${tn(a)}^{${m}}`))} raises to the <b>power first</b>.`,
+      run: (c) => Promise.all([c.fadeIn(A1, 400), c.fadeIn(B1, 400, { delay: 250 })])
+    }, {
+      cap: `<b>Root first:</b> ${tex(`${rootT(n, tn(a))}=${r}`)}, because ${tex(`${Array(n).fill(sgnT(r)).join('\\times')}=${tn(a)}`)}. A small, friendly number.`,
+      run: (c) => Promise.all([c.fadeIn(A2, 400), c.fadeIn(A2n, 350, { delay: 200 })])
+    }, {
+      cap: `Then the power: ${tex(`${r}^{${m}}=${tn(res)}`)}. Done!`,
+      run: (c) => Promise.all([c.fadeIn(A3, 400), c.fadeIn(A3n, 350, { delay: 200 })])
+    }, {
+      cap: `<b>Power first:</b> ${tex(`${tn(a)}^{${m}}=${tn(big)}`)}. That number is already big.`,
+      run: (c) => Promise.all([c.fadeIn(B2, 400), c.fadeIn(B2n, 350, { delay: 200 })])
+    }, {
+      cap: `Now we need ${tex(rootT(n, tn(big)))}: which number, used ${n} times as a factor, gives ${fmt(big)}? It’s ${fmt(res)}, but that’s hard to see without a calculator.`,
+      run: (c) => Promise.all([c.fadeIn(B3, 400), c.fadeIn(B3n, 350, { delay: 200 })])
+    }, {
+      cap: `Same answer both ways: <b>${tex(`${tn(a)}^{${m}/${n}}=${tn(res)}`)}</b>. Root first, the biggest number was ${fmt(maxA)}; power first, ${fmt(big)}. <b>Take the root first.</b>`,
+      run: async (c) => {
+        await c.fadeIn(bh, 300);
+        await Promise.all([...bA, ...bB].map((e, i) => (e.classList.contains('rt-bar') ? c.anim(e, [{ opacity: 1, transform: 'scaleX(0)' }, { opacity: 1, transform: 'scaleX(1)' }], 700, { delay: i > 2 ? 250 : 0 }) : c.fadeIn(e, 300, { delay: i > 2 ? 400 : 150 }))));
+      }
+    }];
+  }
+};
+
+/* ============ 3. Flip, root, power ============ */
+const baseT = (b, small) => (b.q === 1 ? (b.p < 0 ? `(${tn(b.p)})` : tn(b.p)) : `\\left(${qT(b, small)}\\right)`);
+const machine = {
+  title: 'Flip, root, power: one job at a time',
+  height: 450,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  choices: ['27|-2/3', '16|-3/4', '1/9|-1/2', { sep: 'Example 1 check:' }, '16|3/2', '1000|2/3', '8|-4/3', { sep: 'Example 3 check:' }, '16/25|3/2', '16/25|-3/2']
+    .map((v) => (v.sep ? v : { v, label: tex(mExp(v, false, false, true)) })),
+  intro: (v) => `${tex(mExp(v, true, false, true))}: the <b class="red">sign</b> of the exponent says whether to flip, the <b class="teal">denominator</b> says which root, the <b class="amb">numerator</b> says which power.`,
+  make(stage, v, ex) {
+    const W = ex.W, [bs, es] = v.split('|'), b = parseQ(bs), mm = Number(es.split('/')[0]), n = Number(es.split('/')[1]), neg = mm < 0, m = Math.abs(mm);
+    const f = neg ? Q(b.q, b.p) : b, r = qroot(f, n), res = qpow(r, m);
+    const head = add(stage, h('div', 'mc-head' + (b.q > 1 ? ' fr' : ''), K(mExp(v, true, true))), W / 2, b.q > 1 ? 2 : 8); head.style.translate = '-50% 0';
+    const gap = 46, bw = (W - 60 - 2 * gap) / 3, y0 = 92, bhgt = 150;
+    const st = [
+      { t: '1 · Sign', s: neg ? 'negative: <b>flip</b> the base' : 'positive: nothing to flip', cls: 'sg', out: qT(f) },
+      { t: `2 · Denominator ${n}`, s: `take the <b>${ord(n)} root</b>`, cls: 'rt', out: qT(r) },
+      { t: `3 · Numerator ${m}`, s: m === 1 ? 'power 1: no change' : `raise to the <b>power ${m}</b>`, cls: 'pw', out: qT(res) }
+    ].map((o, i) => {
+      const x = 30 + i * (bw + gap), box = add(stage, h('div', 'mc-st ' + o.cls, `<div class="mc-t">${o.t}</div><div class="mc-s">${o.s}</div>`), x, y0);
+      box.style.width = bw + 'px'; box.style.height = bhgt + 'px';
+      const out = add(stage, h('div', 'mc-out c', K(o.out)), x + bw / 2, y0 + 104); hide(out);
+      if (i < 2) add(stage, h('div', 'mc-arr c', '→'), x + bw + gap / 2, y0 + bhgt / 2);
+      return Object.assign(o, { box, out });
+    });
+    const parts = [mExp(v, false)];
+    if (neg) parts.push('=', `${baseT(f)}^{${m}/${n}}`);
+    if (m > 1) parts.push('=', `${qP(r)}^{${m}}`);
+    parts.push('=', `\\mathbf{${qT(res)}}`);
+    const ch = chain(stage, parts, 40, 272, 32);
+    ch.els[0].style.opacity = 1;
+    const iF = neg ? [1, 2] : [], iP = m > 1 ? [parts.length - 4, parts.length - 3] : [], iR = [parts.length - 2, parts.length - 1];
+    const val = Math.pow(b.p / b.q, mm / n);
+    const chk = add(stage, h('div', 'mc-chk', `<b>Calculator check:</b> ${tex(mExp(v, false, false, true))} ≈ ${val.toFixed(6).replace(/0+$/, '').replace(/\.$/, '')}${res.q > 1 ? ` and ${tex(qT(res, true))} ≈ ${(res.p / res.q).toFixed(6).replace(/0+$/, '')}` : ''} <b class="ok">✓</b>`), 40, 378); hide(chk);
+    const rootWhy = f.q === 1 ? `${tex(`${rootT(n, tn(f.p))}=${r.p}`)}, because ${tex(`${r.p}^{${n}}=${tn(f.p)}`)}.`
+      : `Root the top and the bottom separately: ${tex(`${rootT(n, tn(f.p))}=${r.p}`)} and ${tex(`${rootT(n, tn(f.q))}=${r.q}`)}, so the root is ${tex(qT(r))}.`;
+    const lit = (i) => st.forEach((s, j) => s.box.classList.toggle('on', j === i));
+    return [{
+      cap: neg ? `The exponent is <b>negative</b>, so <b>flip</b> the base: ${tex(qT(b))} becomes ${tex(qT(f))}. Now the exponent is positive, ${tex(`${m}/${n}`)}.`
+        : `The exponent is <b>positive</b>, so there’s nothing to flip. The base stays ${tex(qT(b))}.`,
+      run: async (c) => {
+        lit(0); if (!neg) st[0].box.classList.add('skip');
+        await Promise.all([fly(c, stage, head.querySelector('.mc-b'), st[0].out, qT(b), { fs: 30 }), showPieces(c, iF.map((i) => ch.els[i]))]);
+        if (neg) await c.pop(st[0].out, 300);
+      }
+    }, {
+      cap: `Denominator <b>${n}</b>: take the ${ord(n)} root. ${rootWhy}`,
+      run: async (c) => {
+        lit(1); st[1].out.innerHTML = K(qT(f)); st[1].out.style.opacity = 0;
+        await fly(c, stage, st[0].out, st[1].out, qT(f), { fs: 30 });
+        st[1].out.innerHTML = K(qT(r)); await c.pop(st[1].out, 350);
+      }
+    }, {
+      cap: m === 1 ? `Numerator <b>1</b>: a power of 1 changes nothing, so the answer is ${tex(qT(r))}.` : `Numerator <b>${m}</b>: ${tex(`${qP(r)}^{${m}}=${qT(res)}`)}${r.q > 1 ? `: the power acts on the top and the bottom (${tex(`${r.p}^{${m}}=${tn(res.p)}`)}, ${tex(`${r.q}^{${m}}=${tn(res.q)}`)})` : ''}.`,
+      run: async (c) => {
+        lit(2); st[2].out.innerHTML = K(qT(r)); st[2].out.style.opacity = 0;
+        await Promise.all([fly(c, stage, st[1].out, st[2].out, qT(r), { fs: 30 }), showPieces(c, iP.map((i) => ch.els[i]))]);
+        st[2].out.innerHTML = K(qT(res)); await c.pop(st[2].out, 350);
+      }
+    }, {
+      cap: `So <b>${tex(`${mExp(v, false, false, true)}=${qT(res, true)}`)}</b>.` + (neg ? ' The negative exponent made a <b>reciprocal</b>, not a negative number.' : ' Root first kept every number small.'),
+      run: async (c) => { lit(-1); await showPieces(c, iR.map((i) => ch.els[i])); await c.fadeIn(chk, 380); }
+    }];
+  }
+};
+function mExp(v, color, cls, small) { // LaTeX for 'base|±m/n', coloured parts on request
+  const [bs, es] = v.split('|'), b = parseQ(bs), [ms, n] = es.split('/'), mm = Number(ms), m = Math.abs(mm);
+  const sg = mm < 0 ? (color ? cR('-') : '-') : '';
+  const B = cls ? `\\htmlClass{mc-b}{${baseT(b, small)}}` : baseT(b, small);
+  return `${B}^{${sg}${color ? cA(m) : m}/${color ? cT(n) : n}}`;
+}
+
+/* ============ 4. Negative bases: where is the minus sign? ============ */
+const MINUS = ['in|8|1|3', 'out|8|1|3', 'in|16|1|4', 'out|16|1|4', 'in|8|2|6', { sep: 'Example 2 check:' }, 'in|27|2|3', 'outb|27|2|3', 'in|16|3|2'];
+function minusExp(kind, a, m, n, cls) {
+  const b = cls ? (x) => `\\htmlClass{mn-b}{${x}}` : (x) => x, o = cls ? (x) => `\\htmlClass{mn-o}{${x}}` : (x) => x;
+  const e = `^{${m}/${n}}`;
+  return kind === 'in' ? `${b(`(-${a})`)}${e}` : kind === 'out' ? `${o('-')}${b(String(a))}${e}` : `${o('-')}\\left(${b(String(a))}${e}\\right)`;
+}
+const minus = {
+  title: 'Negative bases: where is the minus sign?',
+  height: 456,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
+  choices: MINUS.map((v) => (v.sep ? v : { v, label: tex(minusExp(v.split('|')[0], ...v.split('|').slice(1).map(Number))) })),
+  intro: (v) => { const [k, a, m, n] = v.split('|'); return `Evaluate ${tex(minusExp(k, a, m, n))}. First question: <b>what is the base?</b>`; },
+  make(stage, v, ex) {
+    const W = ex.W, [kind, as, ms, ns] = v.split('|'), a = Number(as), m0 = Number(ms), n0 = Number(ns), g = gcd(m0, n0), m = m0 / g, n = n0 / g, red = g > 1;
+    const inside = kind === 'in', s = inside ? -a : a, rv = iroot(s, n), real = rv != null, pv = real ? rv ** m : null, fin = real ? (inside ? pv : -pv) : null;
+    // the expression (with the reduction, if any)
+    const ex0 = chain(stage, red ? [minusExp(kind, a, m0, n0, true), '=', minusExp(kind, a, m, n, true)] : [minusExp(kind, a, m, n, true)], 40, 20, 46);
+    ex0.els[0].style.opacity = 1;
+    const tag = add(stage, h('div', 'mn-tag', inside ? `Base: ${tex(`-${a}`)} &nbsp;·&nbsp; the minus goes <b>into</b> the root` : `Base: ${tex(String(a))} &nbsp;·&nbsp; the <b class="red">minus waits outside</b>`), 40, 116); hide(tag);
+    // which roots exist?
+    const card = add(stage, h('div', 'mn-card', `<div class="mn-ch">Which roots of a negative exist?</div><div class="mn-r odd"><span>odd index</span><span>3, 5, 7, …</span><b class="ok">yes ✓</b></div><div class="mn-r even"><span>even index</span><span>2, 4, 6, …</span><b class="red">no ✗</b></div>`), W - 350, 20);
+    card.style.width = '320px';
+    // the root search
+    const q = add(stage, h('div', 'mn-q', `Which number, used <b>${n}</b> times as a factor, gives <b>${tn(s).replace('-', '−')}</b>?`), 40, 160); hide(q);
+    const k0 = iroot(a, n), cands = real ? [[rv, true]] : [[k0, false], [-k0, false]];
+    const cEls = cands.map(([cv, ok], i) => {
+      const e = add(stage, h('div', 'mn-cand ' + (ok ? 'ok' : 'no'), `${K(`${sgnT(cv)}^{${n}}=${tn(cv ** n)}`)} <b>${ok ? '✓' : `✗ not ${tn(s).replace('-', '−')}`}</b>`), 60 + i * 300, 200); hide(e); return e;
+    });
+    // the work
+    const RT = (x) => rootT(n, x);
+    const parts = [minusExp(kind, a, m, n)];
+    if (inside) { parts.push('=', m > 1 ? `\\left(${RT(`-${a}`)}\\right)^{${m}}` : RT(`-${a}`)); if (real) { if (m > 1) parts.push('=', `(${tn(rv)})^{${m}}`); parts.push('=', `\\mathbf{${tn(fin)}}`); } }
+    else { parts.push('=', m > 1 ? `-\\left(${RT(a)}\\right)^{${m}}` : `-${RT(a)}`); if (m > 1) parts.push('=', `-\\left(${tn(rv)}\\right)^{${m}}`); parts.push('=', `\\mathbf{${tn(fin)}}`); }
+    const ch = chain(stage, parts, 40, 268, 36); ch.els[0].style.opacity = 1;
+    const stamp = add(stage, h('div', 'mn-stamp', `NOT A REAL NUMBER<small>no real number to an even power is negative</small>`), W - 380, 262); hide(stamp);
+    const fact = add(stage, h('div', 'mn-fact'), 40, 370); fact.style.width = (W - 80) + 'px'; hide(fact);
+    const steps = [];
+    if (red) steps.push({
+      cap: `<b>Reduce the exponent first:</b> ${tex(`\\tfrac{${m0}}{${n0}}=\\tfrac{${m}}{${n}}`)}. (Squaring first, ${tex(`\\sqrt[6]{(-8)^2}=\\sqrt[6]{64}=2`)}, would give the wrong sign.)`,
+      run: (c) => showPieces(c, ex0.els.slice(1))
+    });
+    steps.push({
+      cap: inside ? `The <b>brackets</b> make ${tex(`-${a}`)} the base. The minus sign goes into the root with it.`
+        : `No brackets around ${tex(`-${a}`)}, so the exponent belongs to <b>${a} only</b>. The minus sign waits outside: it’s ${tex(`-1\\times${a}^{${m}/${n}}`)}.`,
+      run: async (c) => { stage.querySelectorAll('.mn-b').forEach((e) => e.classList.add('lit')); stage.querySelectorAll('.mn-o').forEach((e) => e.classList.add('lit')); await c.fadeIn(tag, 380); }
+    }, {
+      cap: n % 2 ? `The denominator, <b>${n}</b>, is the index of the root. ${n} is <b>odd</b>: ${inside ? 'a negative base is fine.' : 'any base is fine.'}`
+        : inside ? `The denominator, <b>${n}</b>, is the index of the root. ${n} is <b>even</b>, and the base is <b>negative</b>. Uh-oh…`
+          : `The denominator, <b>${n}</b>, is the index. ${n} is even, but the base, ${a}, is <b>positive</b>, so the root exists.`,
+      run: async (c) => { const row = card.querySelector(n % 2 ? '.odd' : '.even'); row.classList.add('lit'); if (!(n % 2) && inside) card.classList.add('bad'); await c.anim(row, [{ transform: 'scale(1)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], 450); }
+    }, {
+      cap: real ? `${tex(`${sgnT(rv)}^{${n}}=${tn(s)}`)}, so ${tex(`${RT(tn(s))}=${tn(rv)}`)}.` + (inside && n % 2 ? ' An odd number of negatives multiply to a negative.' : '')
+        : `Try ${k0}: ${tex(`${k0}^{${n}}=${a}`)}. Try ${tex(String(-k0))}: ${tex(`(-${k0})^{${n}}=${a}`)} too. An <b>even</b> number of factors is never negative, so <b>no real number</b> works.`,
+      run: async (c) => { await c.fadeIn(q, 300); for (const e of cEls) await c.fadeIn(e, 350, { from: 'translateX(-10px)' }); await showPieces(c, ch.els.slice(1, 3)); }
+    });
+    if (!real) {
       steps.push({
-        cap: big ? `In <b>${stdOf(sig, e)}</b> the decimal point is hiding at the <b>end</b> (●). For a coefficient between 1 and 10 the point must sit right after the <b>first non-zero digit</b> (○): <b>${coef}</b>.`
-          : `In <b>${stdOf(sig, e)}</b> the decimal point is after the first 0 (●). For a coefficient between 1 and 10 it must sit right after the <b>first non-zero digit</b>, the ${cells[first]} (○): <b>${coef}</b>.`,
-        run: async (c) => {
-          out.innerHTML = K(`${coef}\\times10^{\\,?}`);
-          row.els[first].classList.add('lead');
-          await Promise.all([c.anim(ghost, [{ opacity: 0 }, { opacity: 0.45 }], 300), c.pop(ring, 380, { delay: 250 }), c.fadeIn(lOut, 300, { delay: 400 }), c.fadeIn(out, 400, { delay: 400 }), c.anim(row.els[first], [{ transform: 'scale(1)' }, { transform: 'scale(1.18)' }, { transform: 'scale(1)' }], 420)]);
-        }
-      });
-      steps.push({
-        cap: big ? `Now hop from ○ to ●. Each hop to the <b>right</b> multiplies by 10, so write one “× 10” for every hop.`
-          : `Now hop from ○ to ●. Each hop to the <b>left</b> divides by 10, so every hop puts one more 10 in the <b>denominator</b>.`,
-        run: async (c) => {
-          dot.style.opacity = 1;
-          await Promise.all([c.fadeIn(lPF, 300), c.fadeIn(pf, 300)]);
-          for (let i = 0; i < nh; i++) {
-            setPF(K(pfT(i)));
-            await row.hop(c, dot, cIdx + i * dir, dir, big ? '×10' : '÷10');
-            setPF(K(pfT(i + 1)));
-            if (!c.fast) pf.animate([{ opacity: 0.4 }, { opacity: 1 }], 200);
-          }
-          ghost.style.opacity = 0;
-        }
-      });
-      steps.push({
-        cap: big ? `<b>${plural(nh, 'hop')}</b> to the right means ${nh === 1 ? 'one 10' : nh + ' tens multiplied together'}: ${tex(`10^{${nh}}`)}. So ${stdOf(sig, e)} = <b>${tex(sciT(coef, e))}</b>.`
-          : `Dividing by ${nh === 1 ? 'one 10' : nh + ' tens'} is the same as multiplying by ${tex(`10^{${e}}`)}. So ${stdOf(sig, e)} = <b>${tex(sciT(coef, e))}</b>.`,
-        run: async (c) => {
-          setPF(K(`${pfT(nh)}=${sciT(coef, e)}`)); out.innerHTML = K(`\\mathbf{${sciT(coef, e)}}`);
-          out.classList.add('done');
-          await Promise.all([c.fadeIn(pf, 300), c.pop(out, 420)]);
-        }
-      });
-      const nPad = cells.filter((_, i) => pad(i)).length;
-      steps.push({
-        cap: (big ? `A <b>big</b> number (10 or more) gets a <b>positive</b> exponent.` : `A number <b>less than 1</b> gets a <b>negative</b> exponent.`)
-          + (nPad ? ` The ${nPad === 1 ? 'zero was a placeholder' : nPad + ' zeros were only placeholders'}: the coefficient keeps the digits <b>${sig.split('').join(', ')}</b>.` : '')
-          + ` Check: ${tex(sciT(coef, e))} means hop ${nh} ${big ? 'right' : 'left'}, back to ${stdOf(sig, e)} ✓`,
-        run: async (c) => {
-          const ph = row.els.filter((_, i) => pad(i));
-          ph.forEach((el) => el.classList.add('ph'));
-          await Promise.all(ph.map((el, i) => c.anim(el, [{ transform: 'scale(1)' }, { transform: 'scale(.86)' }, { transform: 'scale(1)' }], 360, { delay: i * 60 })));
-        }
+        cap: `${tex(minusExp(kind, a, m, n))} needs ${tex(RT(-a))}, an <b>even</b> root of a negative number. It has <b>no meaning</b> as a real number. (Your calculator says ERROR.)`,
+        run: (c) => stampIn(c, stamp)
       });
       return steps;
     }
-
-    /* standard notation from a × 10^n */
-    row.els.forEach((el, i) => { if (pad(i)) { el.textContent = '0'; el.classList.add('ph'); hide(el); } });
-    row.els.forEach((el, i) => { if (i === cIdx - 1) el.classList.add('lead'); });
+    const rest = ch.els.slice(3);
     steps.push({
-      cap: big ? `${tex(`10^{${e}}`)} means <b>multiply by 10, ${plural(nh, 'time')}</b>. In product form: ${[coef, ...Array(nh).fill('10')].map((t) => tex(t)).join(' × ')}.` // factor by factor, so it can wrap
-        : `${tex(`10^{${e}}`)} means <b>divide by 10, ${plural(nh, 'time')}</b>. In product form: ${tex(pfT(nh))}.`,
-      run: async (c) => { setPF(K(pfT(nh))); await Promise.all([c.fadeIn(lPF, 300), c.fadeIn(pf, 400)]); }
-    });
-    const crossings = []; for (let i = 0; i < nh; i++) { const k = cIdx + i * dir; crossings.push(big ? k : k - 1); }
-    const fills = crossings.filter((i) => pad(i)).length;
-    steps.push({
-      cap: (big ? `Each × 10 moves the point <b>one place right</b>. Hop ${plural(nh, 'place')}` : `Each ÷ 10 moves the point <b>one place left</b>. Hop ${plural(nh, 'place')}`)
-        + (fills ? `, filling each empty place with a <b>zero</b>.` : '.'),
+      cap: inside ? (m > 1 ? `Numerator <b>${m}</b>: ${tex(`(${tn(rv)})^{${m}}=${tn(pv)}`)}. So ${tex(`${minusExp(kind, a, m, n)}=${tn(fin)}`)}.` : `So ${tex(`${minusExp(kind, a, m0, n0)}=${tn(fin)}`)}.`)
+        : (m > 1 ? `Numerator <b>${m}</b>: ${tex(`${tn(rv)}^{${m}}=${tn(pv)}`)}. ` : '') + `Last, the minus sign that was waiting outside: ${tex(`-(${tn(pv)})=${tn(fin)}`)}.`,
       run: async (c) => {
-        dot.style.opacity = 1;
-        for (let i = 0; i < nh; i++) {
-          const k = cIdx + i * dir, cross = big ? k : k - 1;
-          await row.hop(c, dot, k, dir, big ? '×10' : '÷10');
-          if (pad(cross)) await c.pop(row.els[cross], 260);
-        }
-      }
-    });
-    steps.push({
-      cap: big ? `Read off the number: ${tex(sciT(coef, e))} = <b>${stdOf(sig, e)}</b>. A positive exponent gives a <b>big</b> number.`
-        : `Put a <b>0</b> in front of the point and read it off: ${tex(sciT(coef, e))} = <b>${stdOf(sig, e)}</b>. A negative exponent gives a number <b>less than 1</b>.`,
-      run: async (c) => {
-        const jobs = [];
-        if (!big && row.els[0].style.opacity === '0') jobs.push(c.pop(row.els[0], 300));
-        out.innerHTML = K(`\\mathbf{${stdT(sig, e)}}`); out.classList.add('done');
-        jobs.push(c.fadeIn(lOut, 300), c.pop(out, 420, { delay: 200 }));
-        await Promise.all(jobs);
+        await showPieces(c, rest);
+        const outV = -(iroot(a, n) ** m), inV = n % 2 ? iroot(-a, n) ** m : null;
+        fact.innerHTML = inside ? (m % 2 === 0 ? `An <b>even</b> power of a negative is positive: ${tex(`(${tn(rv)})^{${m}}=${tn(pv)}`)}.` : `An <b>odd</b> root of a negative is negative.`)
+            + ` Compare, without brackets: ${tex(`-${a}^{${m}/${n}}=${tn(outV)}`)}${outV === fin ? ' (the same value here, because the root and the power are both odd, but it means something different)' : ''}.`
+          : `Compare, with brackets: ${tex(`(-${a})^{${m}/${n}}`)}${inV != null ? ` ${tex('=' + tn(inV))}${inV === fin ? ' (the same value here, because the root and the power are both odd)' : ''}` : ' is <b>not a real number</b>'}. Where the minus sign sits matters.`;
+        await c.fadeIn(fact, 380);
       }
     });
     return steps;
   }
 };
 
-/* ============ 1. A powers-of-ten scale ============ */
-const ICON = {
-  person: '<circle cx="20" cy="8" r="5" fill="#2e3c4f"/><path d="M20 14v13M20 27l-6 10M20 27l6 10M11 19h18" stroke="#2e3c4f" stroke-width="3.2" stroke-linecap="round" fill="none"/>',
-  everest: '<path d="M2 36 L16 10 L22 20 L27 13 L38 36 Z" fill="#7a8796"/><path d="M16 10 L11.5 18.5 L15 17 L17.5 19.5 L19.5 15.5 Z M27 13 L24.5 17 L27 16.5 L29 18 Z" fill="#fff"/>',
-  earth: '<circle cx="20" cy="20" r="16" fill="#3b82c8"/><path d="M10 13c4-3 7 0 6 4s-6 3-6 7-3 2-4-1 1-8 4-10zM24 8c5 1 9 5 9 9-3 0-4 4-7 3s-1-5-3-6 0-5 1-6zM22 27c3-1 6 1 5 4s-5 2-6 0 0-3 1-4z" fill="#4caf6a"/>',
-  sun: '<g stroke="#f0a020" stroke-width="2.6" stroke-linecap="round"><path d="M20 2v5M20 33v5M2 20h5M33 20h5M7.3 7.3l3.5 3.5M29.2 29.2l3.5 3.5M7.3 32.7l3.5-3.5M29.2 10.8l3.5-3.5"/></g><circle cx="20" cy="20" r="10" fill="#f7b733"/><circle cx="17" cy="17" r="3" fill="#fff" opacity=".35"/>',
-  orbit: '<circle cx="9" cy="20" r="7.5" fill="#f7b733"/><path d="M17 20h15" stroke="#9aa3b2" stroke-width="1.8" stroke-dasharray="2.5 2.5"/><circle cx="34" cy="20" r="3.6" fill="#3b82c8"/>',
-  sand: '<g fill="#d9b26f" stroke="#a9843f" stroke-width="1"><path d="M8 24l6-5 7 2 1 7-7 4-6-3z"/><path d="M24 12l5-3 6 3-1 6-6 1-4-3z"/><path d="M24 28l5-2 4 4-3 4-5-1z"/></g>',
-  cell: '<ellipse cx="20" cy="20" rx="16" ry="14" fill="#d9483b"/><ellipse cx="20" cy="20" rx="8" ry="6.5" fill="#b8352b"/><ellipse cx="15" cy="13" rx="4" ry="2" fill="#fff" opacity=".3"/>',
-  atom: '<ellipse cx="20" cy="20" rx="16" ry="6.5" fill="none" stroke="#5b4bb7" stroke-width="1.8"/><ellipse cx="20" cy="20" rx="16" ry="6.5" fill="none" stroke="#5b4bb7" stroke-width="1.8" transform="rotate(60 20 20)"/><ellipse cx="20" cy="20" rx="16" ry="6.5" fill="none" stroke="#5b4bb7" stroke-width="1.8" transform="rotate(120 20 20)"/><circle cx="20" cy="20" r="3.4" fill="#d9483b"/>'
-};
-const ZOOM = [ // log10 of the size in metres places it on the scale
-  { k: 'person', name: 'A person', sci: '1.7\\times10^{0}', std: 'about 1.7 m tall', lg: Math.log10(1.7), up: true,
-    cap: `Start with <b>you</b>: about 1.7 m tall. That’s ${tex('1.7\\times10^{0}')}: 1.7 is already between 1 and 10, so there are <b>no hops</b> and the exponent is <b>0</b>.` },
-  { k: 'everest', name: 'Mount Everest', sci: '8.8\\times10^{3}', std: '8 849 m high', lg: Math.log10(8849), up: false,
-    cap: `<b>Mount Everest</b> is 8 849 m high: about ${tex('8.8\\times10^{3}')} m. Each tick to the right is <b>× 10</b>, so it sits just below the ${tex('10^{4}')} tick.` },
-  { k: 'earth', name: 'Earth (across)', sci: '1.27\\times10^{7}', std: '12 742 000 m', lg: Math.log10(12742000), up: true,
-    cap: `<b>Earth</b> is about 12 742 000 m across: ${tex('1.27\\times10^{7}')} m. Scientific notation saves counting all those zeros.` },
-  { k: 'sun', name: 'The Sun (across)', sci: '1.39\\times10^{9}', std: '1 390 000 000 m', lg: Math.log10(1.39e9), up: false,
-    cap: `The <b>Sun</b> is about ${tex('1.39\\times10^{9}')} m across. That’s two ticks past Earth, so about ${tex('10^{2}=100')} times as wide: over 100 Earths would fit across it.` },
-  { k: 'orbit', name: 'Earth to the Sun', sci: '1.5\\times10^{11}', std: '150 000 000 000 m', lg: Math.log10(1.5e11), up: true,
-    cap: `From <b>Earth to the Sun</b> is about ${tex('1.5\\times10^{11}')} m. That’s the distance in <b>Example 4</b>.` },
-  { k: 'sand', name: 'A grain of sand', sci: '5\\times10^{-4}', std: '0.0005 m', lg: Math.log10(5e-4), up: false,
-    cap: `Now zoom <b>in</b>. A grain of <b>sand</b> is about 0.0005 m across: ${tex('5\\times10^{-4}')} m. Less than 1 m, so the exponent is <b>negative</b>.` },
-  { k: 'cell', name: 'A red blood cell', sci: '8\\times10^{-6}', std: '0.000008 m', lg: Math.log10(8e-6), up: true,
-    cap: `A <b>red blood cell</b> is about 0.000008 m across: ${tex('8\\times10^{-6}')} m. Six hops left from 8.` },
-  { k: 'atom', name: 'A hydrogen atom', sci: '1\\times10^{-10}', std: '0.0000000001 m', lg: -10, up: true,
-    cap: `A <b>hydrogen atom</b> is about 0.0000000001 m across: ${tex('1\\times10^{-10}')} m. Nine zeros after the point: much easier to read as a power of 10.` }
-];
-const zoom = {
-  title: 'From an atom to the Sun: a powers-of-ten scale (metres)',
-  height: 470,
-  minW: 920, // drawn this wide and scaled to fit beside the sidebar (the cards need room not to overlap)
-  intro: 'Every measurement goes on the scale at the tick for its <b>power of 10</b>. Press <b>Next</b> to place them one at a time.',
-  make(stage, v, ex) {
-    stage.classList.remove('zm-done');
-    const W = ex.W, ax = 50, aw = W - 100, ay = 238, lo = -10, hi = 12, X = (lg) => ax + (lg - lo) * aw / (hi - lo);
-    const svg = add(stage, svgEl('svg', { class: 'zm-svg', width: W, height: 470 }), 0, 0);
-    svg.appendChild(svgEl('line', { x1: ax - 20, y1: ay, x2: ax + aw + 24, y2: ay, class: 'zm-axis' }));
-    svg.appendChild(svgEl('path', { d: `M ${ax + aw + 16} ${ay - 7} L ${ax + aw + 26} ${ay} L ${ax + aw + 16} ${ay + 7}`, class: 'zm-axis' }));
-    for (let e = lo; e <= hi; e++) {
-      const x = X(e), major = e % 2 === 0;
-      svg.appendChild(svgEl('line', { x1: x, y1: ay - (major ? 9 : 5), x2: x, y2: ay + (major ? 9 : 5), class: 'zm-tick' + (e === 0 ? ' one' : '') }));
-      if (major) add(stage, h('div', 'zm-tl c' + (e === 0 ? ' one' : ''), K(`10^{${e}}`)), x, ay + 24);
-    }
-    add(stage, h('div', 'zm-dir l', '← smaller than 1 m'), ax, ay - 30);
-    add(stage, h('div', 'zm-dir r', 'bigger than 1 m →'), ax + aw - 150, ay - 30);
-    const cw = 150, items = ZOOM.map((it) => {
-      const x = X(it.lg), cx = Math.max(cw / 2 + 6, Math.min(W - cw / 2 - 6, x));
-      const card = add(stage, h('div', 'zm-card' + (it.up ? ' up' : ' down'), `<svg viewBox="0 0 40 40" class="zm-ic">${ICON[it.k]}</svg><div class="zm-n">${it.name}</div><div class="zm-s">${K(it.sci)} m</div><div class="zm-d">${it.std}</div>`), cx - cw / 2, it.up ? 22 : 300);
-      card.style.width = cw + 'px';
-      const ly1 = it.up ? 22 + 120 : ay + 8, ly2 = it.up ? ay - 8 : 300;
-      const lead = svgEl('line', { x1: x, y1: ly1, x2: x, y2: ly2, class: 'zm-lead' }); svg.appendChild(lead);
-      const dot = add(stage, h('div', 'zm-dot c'), x, ay);
-      hide(card, lead, dot);
-      return { it, card, lead, dot, x };
-    });
-    const steps = items.map((o) => ({
-      cap: o.it.cap,
-      run: (c) => Promise.all([c.pop(o.dot, 360), c.anim(o.lead, [{ opacity: 0 }, { opacity: 1 }], 300, { delay: 150 }), c.fadeIn(o.card, 420, { delay: 200, from: o.it.up ? 'translateY(-10px)' : 'translateY(10px)' })])
-    }));
-    const a = items.find((o) => o.it.k === 'atom'), b = items.find((o) => o.it.k === 'orbit');
-    steps.push({
-      cap: `The whole scale: the Earth–Sun distance is about ${texEq('10^{11}\\div10^{-10}=10^{11-(-10)}=10^{21}')} times an atom’s width. That’s <b>21 jumps of × 10</b>, done in one line with the <b>Quotient Law</b>.`,
-      run: async (c) => {
-        const top = 60, p = svgEl('path', { d: `M ${a.x} ${ay - 10} C ${a.x + 80} ${top - 40}, ${b.x - 80} ${top - 40}, ${b.x} ${ay - 10}`, class: 'zm-span' }); svg.appendChild(p);
-        const len = p.getTotalLength ? p.getTotalLength() || 1200 : 1200; p.style.strokeDasharray = len; p.style.strokeDashoffset = len;
-        const lab = add(stage, h('div', 'zm-big c', `× ${K('10^{21}')}`), (a.x + b.x) / 2, top + 4); lab.style.opacity = 0;
-        items.forEach((o) => o.card.classList.add('faded'));
-        stage.classList.add('zm-done');
-        await Promise.all([c.anim(p, [{ strokeDashoffset: len }, { strokeDashoffset: 0 }], 1100), c.pop(lab, 420, { delay: 800 })]);
-      }
-    });
-    return steps;
-  }
-};
-
-/* ============ 1. Renormalize a coefficient that is out of range ============ */
-const renorm = {
-  title: 'Renormalize: the point and the exponent move together',
-  height: 430,
-  choices: [{ v: '29.44:8', label: tex('29.44\\times10^{8}') }, { v: '0.072:5', label: tex('0.072\\times10^{5}') }, { v: '456:-3', label: tex('456\\times10^{-3}') },
-    { sep: 'Example 2 check:' }, { v: '0.35:-6', label: tex('0.35\\times10^{-6}') }, { v: '34.5:4', label: tex('34.5\\times10^{4}') }],
-  intro: (v) => { const [a, n] = v.split(':'); return `Is ${tex(sciT(a, n))} in scientific notation? Check the <b>coefficient</b> first.`; },
-  make(stage, v, ex) {
-    const W = ex.W, [aS, nS] = v.split(':'), n = Number(nS);
-    const [ip, fp = ''] = aS.split('.'), cells = (ip + fp).split(''), pIdx = ip.length; // point sits after the integer part
-    const { sig, e: ae } = parseDec(aS), first = cells.findIndex((d) => d !== '0'), nIdx = first + 1; // new point: after the first non-zero digit
-    const k = pIdx - nIdx, n2 = n + k, coef2 = coefOf(sig), tooBig = Number(aS) >= 10, L = cells.length;
-    const cw = 56, ch = 64, fs = 50, x0 = W / 2 - (L * cw + 150) / 2, y = 62;
-    const row = digitRow(stage, cells, { x0, y, cw, ch, fs, H: 430 });
-    const pt = add(stage, h('div', 'hp-dot c'), row.sx(pIdx), row.base);
-    const tail = add(stage, h('div', 'rn-tail', '×10<sup>' + neg(n) + '</sup>'), x0 + L * cw + 14, y); tail.style.fontSize = fs + 'px'; tail.style.lineHeight = ch + 'px';
-    const sup = tail.querySelector('sup');
-    const chg = add(stage, h('div', 'rn-chg c'), 0, 0); hide(chg);
-    // the range ruler: 0.01 … 1000 on a log scale, with 1 ≤ a < 10 shaded
-    const rx = 70, rw = W - 140, ry = 222, R = (x) => rx + (Math.log10(x) + 2) * rw / 5;
-    const band = add(stage, h('div', 'rn-band'), R(1), ry - 16); band.style.width = (R(10) - R(1)) + 'px';
-    add(stage, h('div', 'rn-band-l c', '1 ≤ <i>a</i> &lt; 10'), (R(1) + R(10)) / 2, ry + 23);
-    add(stage, h('div', 'rn-line'), rx, ry).style.width = rw + 'px';
-    [0.01, 0.1, 1, 10, 100, 1000].forEach((t) => { add(stage, h('div', 'rn-tick'), R(t), ry - 6); add(stage, h('div', 'rn-tl c', String(t)), R(t), ry + 22); });
-    const mk = add(stage, h('div', 'rn-mk' + (tooBig || Number(aS) < 1 ? ' bad' : ''), `<i></i><span>${aS}</span>`), R(Number(aS)), ry - 8); hide(mk);
-    const w1 = add(stage, h('div', 'rn-work'), 40, 290), w2 = add(stage, h('div', 'rn-work'), 40, 352); hide(w1, w2);
-    const dirW = k > 0 ? 'left' : 'right', kk = Math.abs(k), times = fmt(10 ** kk);
-    const steps = [{
-      cap: `The coefficient must be at least 1 and less than 10. <b>${aS}</b> is ${tooBig ? '<b>too big</b> (10 or more)' : '<b>too small</b> (less than 1)'}, so ${tex(sciT(aS, n))} is <b>not</b> in scientific notation yet.`,
-      run: async (c) => { row.els.forEach((el) => el.classList.add('bad')); await c.pop(mk, 380); await c.shake(mk); }
-    }, {
-      cap: `Move the point ${plural(kk, 'place')} <b>${dirW}</b>, to just after the first non-zero digit: ${aS} → <b>${coef2}</b>. That makes the coefficient <b>${times} times ${k > 0 ? 'smaller' : 'bigger'}</b>.`,
-      run: async (c) => {
-        for (let i = 0; i < kk; i++) await row.hop(c, pt, pIdx - i * Math.sign(k), -Math.sign(k), k > 0 ? '÷10' : '×10');
-        row.els.forEach((el) => el.classList.remove('bad'));
-        const zs = row.els.filter((_, i) => i < first || (i >= first + sig.length && i >= pIdx));
-        mk.classList.remove('bad'); mk.querySelector('span').textContent = coef2;
-        await Promise.all([c.anim(mk, [{ left: mk.style.left }, { left: R(Number(coef2)) + 'px' }], 700), ...zs.map((z) => c.anim(z, [{ opacity: 1 }, { opacity: 0.18 }], 400))]);
-        mk.style.left = R(Number(coef2)) + 'px';
-      }
-    }, {
-      cap: `To keep the <b>value</b> the same, the power of 10 must do the opposite: ${times} times ${k > 0 ? 'bigger' : 'smaller'}. The exponent goes <b>${k > 0 ? 'up' : 'down'} ${kk}</b>: from ${neg(n)} to <b>${neg(n2)}</b>.`,
-      run: async (c) => {
-        chg.textContent = (k > 0 ? '+' : '−') + kk; const r = sup.getBoundingClientRect(), s = stage.getBoundingClientRect(), z = s.width / stage.offsetWidth || 1;
-        at(chg, (r.left + r.width / 2 - s.left) / z + 18, (r.top - s.top) / z - 18);
-        await c.pop(chg, 360);
-        sup.textContent = neg(n2); tail.classList.add('ok');
-        await c.anim(sup, [{ transform: 'scale(1.6)', color: '#12805a' }, { transform: 'scale(1)', color: '#12805a' }], 450);
-      }
-    }, {
-      cap: `Check with the exponent laws: ${tex(`${aS}=${sciT(coef2, k)}`)}, so ${texEq(`${sciT(aS, n)}=${sciT(coef2, k)}\\times10^{${n}}=${sciT(coef2, n2)}`)}. Both are <b>${stdOf(sig, ae + n)}</b>.`,
-      run: async (c) => {
-        w1.innerHTML = K(`${sciT(aS, n)}=${coef2}\\times10^{${k}}\\times10^{${n}}=\\mathbf{${sciT(coef2, n2)}}`);
-        w2.innerHTML = `Same value: both are <b>${stdOf(sig, ae + n)}</b> <b class="ok">✓</b>`; w2.classList.add('val');
-        await Promise.all([c.fadeIn(w1, 400), c.fadeIn(w2, 400, { delay: 250 })]);
-      }
-    }];
-    return steps;
-  }
-};
-
-/* ============ 2. Multiply and divide: coefficients with coefficients, powers with powers ============ */
-const MD = {
-  hb: { a: '3.68', m: 7, op: '×', b: '8', n: 1, note: 'heartbeats in 80 years: (beats in a year) × 80', tail: ' About <b>3 billion</b> heartbeats: answer B in the warm-up.' },
-  big: { a: '6', m: 4, op: '×', b: '5', n: 3 },
-  tiny: { a: '2', m: -5, op: '÷', b: '8', n: 3 },
-  a: { a: '2.5', m: 5, op: '×', b: '3', n: 4 }, b: { a: '6.4', m: 8, op: '÷', b: '1.6', n: 3 },
-  c: { a: '4', m: -3, op: '×', b: '5', n: -6 }, d: { a: '1.2', m: -3, op: '÷', b: '4', n: 5 }
-};
-const muldiv = {
-  title: 'Coefficients with coefficients, powers of 10 with powers of 10',
-  height: 470,
-  choices: [{ v: 'hb', label: 'Warm-up: heartbeats' }, { v: 'big', label: tex('(6\\times10^{4})(5\\times10^{3})') }, { v: 'tiny', label: tex('(2\\times10^{-5})\\div(8\\times10^{3})') },
-    { sep: 'Example 3 check:' }, { v: 'a', label: '(a)' }, { v: 'b', label: '(b)' }, { v: 'c', label: '(c)' }, { v: 'd', label: '(d)' }],
-  intro: (v) => { const p = MD[v]; return `${p.note ? 'Warm-up bridge, ' + p.note + ': ' : ''}evaluate ${tex(exprT(p))} and write the answer in scientific notation.`; },
-  make(stage, v, ex) {
-    const W = ex.W, p = MD[v], mul = p.op === '×';
-    const cr = num(mul ? Number(p.a) * Number(p.b) : Number(p.a) / Number(p.b)), er = mul ? p.m + p.n : p.m - p.n;
-    const { sig, e } = parseDec(cr), coef2 = coefOf(sig), inRange = e === 0, n2 = er + e;
-    const top = add(stage, h('div', 'md-expr c', K(exprT(p, true))), W / 2, 44);
-    const bwA = (W - 70) * 0.42, bwB = (W - 70) * 0.58;
-    const boxA = add(stage, h('div', 'md-box coef', '<div class="md-h">Coefficients</div>'), 24, 92), boxB = add(stage, h('div', 'md-box pow', '<div class="md-h">Powers of 10</div>'), 46 + bwA, 92);
-    boxA.style.width = bwA + 'px'; boxB.style.width = bwB + 'px';
-    const a1 = h('div', 'md-l', K(mul ? `\\htmlClass{md-ta}{${p.a}}\\times\\htmlClass{md-tb}{${p.b}}` : `\\dfrac{\\htmlClass{md-ta}{${p.a}}}{\\htmlClass{md-tb}{${p.b}}}`)), a2 = h('div', 'md-l res', K(`=\\htmlClass{md-ra}{${cr}}`));
-    const b1 = h('div', 'md-l', K(mul ? `\\htmlClass{md-tm}{10^{${p.m}}}\\times\\htmlClass{md-tn}{10^{${p.n}}}` : `\\dfrac{\\htmlClass{md-tm}{10^{${p.m}}}}{\\htmlClass{md-tn}{10^{${p.n}}}}`));
-    const b2 = h('div', 'md-l res', K(`=10^{${p.m}${mul ? '+' : '-'}${par(p.n)}}=\\htmlClass{md-rb}{10^{${er}}}`));
-    const law = h('div', 'md-law', mul ? '<b>Product Law</b>: add the exponents' : '<b>Quotient Law</b>: subtract the exponents');
-    const rowA = h('div', 'md-row'), rowB = h('div', 'md-row'); rowA.append(a1, a2); rowB.append(b1, b2);
-    boxA.append(rowA); boxB.append(rowB, law);
-    hide(a1, a2, b1, b2, law);
-    const comb = add(stage, h('div', 'md-comb c', K(`=\\htmlClass{md-ca}{${cr}}\\times\\htmlClass{md-cb}{10^{${er}}}`)), W / 2, 300); hide(comb);
-    const chk = add(stage, h('div', 'md-chk c'), W / 2, 372); hide(chk);
-    const fin = add(stage, h('div', 'md-fin c'), W / 2, 430); hide(fin);
-    const q = (s) => stage.querySelector(s);
-    const steps = [{
-      cap: mul ? 'Multiplication can be done in any order, so <b>group</b> the <b class="sn-coef">coefficients</b> together and the <b class="sn-pow">powers of 10</b> together.'
-        : 'Split the division in two: <b class="sn-coef">coefficient ÷ coefficient</b>, and <b class="sn-pow">power of 10 ÷ power of 10</b>.',
-      run: async (c) => {
-        top.classList.add('colored');
-        const toks = ['.md-ta', '.md-tb', '.md-tm', '.md-tn'].map(q); hide(...toks); a1.style.opacity = 1; b1.style.opacity = 1;
-        await Promise.all([fly(c, stage, q('.md-expr .md-ea'), toks[0], p.a, { fs: 30, cls: 'coef' }), fly(c, stage, q('.md-expr .md-eb'), toks[1], p.b, { fs: 30, cls: 'coef', delay: 120 }),
-          fly(c, stage, q('.md-expr .md-em'), toks[2], `10^{${p.m}}`, { fs: 30, cls: 'pow', delay: 240 }), fly(c, stage, q('.md-expr .md-en'), toks[3], `10^{${p.n}}`, { fs: 30, cls: 'pow', delay: 360 })]);
-      }
-    }, {
-      cap: `Coefficients: <b>${p.a} ${p.op} ${p.b} = ${cr}</b>.`,
-      run: (c) => c.fadeIn(a2, 400, { from: 'translateX(-10px)' })
-    }, {
-      cap: mul ? `Powers of 10, <b>Product Law</b>: same base, so <b>add</b> the exponents: ${neg(p.m)} + ${parN(p.n)} = <b>${neg(er)}</b>.`
-        : `Powers of 10, <b>Quotient Law</b>: same base, so <b>subtract</b> the exponents: ${neg(p.m)} − ${parN(p.n)} = <b>${neg(er)}</b>.`,
-      run: (c) => Promise.all([c.fadeIn(b2, 400, { from: 'translateX(-10px)' }), c.fadeIn(law, 400, { delay: 300 })])
-    }, {
-      cap: `Put the two answers back together: <b>${tex(sciT(cr, er))}</b>.`,
-      run: async (c) => {
-        const ca = q('.md-ca'), cb = q('.md-cb'); hide(ca, cb);
-        await Promise.all([c.fadeIn(comb, 300), fly(c, stage, q('.md-ra'), ca, cr, { fs: 30, cls: 'coef' }), fly(c, stage, q('.md-rb'), cb, `10^{${er}}`, { fs: 30, cls: 'pow', delay: 150 })]);
-      }
-    }];
-    if (inRange) steps.push({
-      cap: `Is ${cr} between 1 and 10? <b>Yes</b>, so ${tex(sciT(cr, er))} is already in scientific notation. <b>Done!</b>`,
-      run: async (c) => { chk.innerHTML = `<b class="ok">✓</b> ${K(`1\\le${cr}\\lt10`)} &nbsp;in range`; fin.innerHTML = K(`\\mathbf{${sciT(cr, er)}}`); await c.fadeIn(chk, 350); await c.pop(fin, 420); }
-    });
-    else {
-      steps.push({
-        cap: `Is ${cr} between 1 and 10? <b>No</b>: ${cr} is ${e > 0 ? 'too big' : 'too small'}, so this isn’t scientific notation yet.`,
-        run: async (c) => { chk.innerHTML = `<b class="red">✗</b> ${K(cr)} is ${e > 0 ? '10 or more' : 'less than 1'}`; await c.fadeIn(chk, 350); await c.shake(chk); }
-      });
-      steps.push({
-        cap: `<b>Renormalize</b>: ${tex(`${cr}=${sciT(coef2, e)}`)}, so the exponent goes <b>${e > 0 ? 'up' : 'down'} ${Math.abs(e)}</b>: ${texEq(`${sciT(coef2, e)}\\times10^{${er}}=${sciT(coef2, n2)}`)}.${p.tail || ''}`,
-        run: async (c) => {
-          chk.innerHTML = K(`${sciT(cr, er)}=${sciT(coef2, e)}\\times10^{${er}}`);
-          fin.innerHTML = K(`=\\mathbf{${sciT(coef2, n2)}}`);
-          await c.fadeIn(chk, 350); await c.pop(fin, 420);
-        }
-      });
-    }
-    return steps;
-  }
-};
-function exprT(p, tagged) { // (a × 10^m)(b × 10^n) or (a × 10^m) ÷ (b × 10^n), optionally with flyable tokens
-  const T = (cls, s) => (tagged ? `\\htmlClass{${cls}}{${s}}` : s);
-  const A = `(${T('md-ea', p.a)}\\times${T('md-em', `10^{${p.m}}`)})`, B = `(${T('md-eb', p.b)}\\times${T('md-en', `10^{${p.n}}`)})`;
-  return p.op === '×' ? A + B : `${A}\\div${B}`;
+/* ============ 5–6. Converting between powers and radicals ============ */
+/* power spec 'coef|base|m|n|tidy' (m < 0 for a negative exponent); radical spec 'R|recip|base|m|n' */
+function powT(sp, cls, plain) {
+  const [co, b, ms, n] = sp.split('|'), mm = Number(ms), m = Math.abs(mm);
+  const cA = plain ? (x) => x : cA0, cT = plain ? (x) => x : cT0, cR = plain ? (x) => x : cR0;
+  const C = (x) => (cls ? `\\htmlClass{${x[0]}}{${x[1]}}` : x[1]);
+  const coef = co ? C(['tk-c', co === '-' ? cR('-') : plain ? co : `\\textcolor{#6a3fb0}{${co}}`]) : '';
+  return `${coef}${C(['tk-b', b])}^{${mm < 0 ? C(['tk-s', cR('-')]) : ''}${C(['tk-m', cA(m)])}/${C(['tk-n', cT(n)])}}`;
 }
+function radT(sp, cls, plain) {
+  const [, rc, b, ms, n] = sp.split('|'), m = Number(ms);
+  const cA = plain ? (x) => x : cA0, cT = plain ? (x) => x : cT0;
+  const C = (x, y) => (cls ? `\\htmlClass{${x}}{${y}}` : y);
+  const inner = `${b}${m === 1 ? '' : `^{${C('tk-m', cA(m))}}`}`, rad = Number(n) === 2 ? `\\sqrt{${inner}}` : `\\sqrt[${C('tk-n', cT(n))}]{${inner}}`;
+  return rc ? `\\dfrac{1}{${rad}}` : rad;
+}
+const convLabel = (sp) => tex(sp[0] === 'R' ? radT(sp, false, true) : powT(sp, false, true));
+function convDef(title, list) {
+  return {
+    title,
+    height: 430,
+    choices: list.map((v) => (v.sep ? v : { v, label: convLabel(v) })),
+    intro: (sp) => (sp[0] === 'R' ? `Write ${convLabel(sp)} as a <b>power</b>: the <b class="teal">index</b> becomes the denominator, the <b class="amb">power inside</b> becomes the numerator.`
+      : `Write ${convLabel(sp)} as a <b>radical</b>: the <b class="teal">denominator</b> becomes the index, the <b class="amb">numerator</b> stays a power.`),
+    make(stage, sp, ex) { return sp[0] === 'R' ? toPowSteps(stage, sp, ex.W) : toRadSteps(stage, sp, ex.W); }
+  };
+}
+const lgX = (W) => (W < 900 ? 0.5 : 0.58); // where the legend / result column starts (further left on a narrow stage)
+function legend(stage, W, rows) {
+  const lg = add(stage, h('div', 'cv-lg', rows.map(([cls, k, val]) => `<div class="cv-r ${cls}"><span class="cv-k">${k}</span><span class="cv-v">${val}</span></div>`).join('')), W * lgX(W), 16);
+  lg.style.width = (W * (1 - lgX(W)) - 30) + 'px';
+  return lg;
+}
+function toRadSteps(stage, sp, W) {
+  const [co, b, ms, ns, tidy] = sp.split('|'), mm = Number(ms), m = Math.abs(mm), n = Number(ns), neg = mm < 0;
+  const B = board(stage, { x: 36, y: 18, lh: 100, fs: 34 });
+  const L0 = B.line(powT(sp, true), { fs: 50 }); L0.el.style.opacity = 1;
+  const isNum = co && co !== '-', bracket = b[0] === '(';
+  const rows = [];
+  if (co) rows.push(['c', co === '-' ? 'minus sign' : 'coefficient', co === '-' ? 'stays <b>outside</b> the radical' : `${tex(co)} stays <b>in front</b>`]);
+  rows.push(['b', 'base', `${tex(b)}${bracket ? ': the brackets make it the base' : ''}`]);
+  if (neg) rows.push(['s', 'negative sign', '<b>flip</b>: one over…']);
+  rows.push(['m', 'numerator', `${tex(cA(m))}: the <b>power</b>`], ['n', 'denominator', `${tex(cT(n))}: the <b>index</b>`]);
+  const lg = legend(stage, W, rows); const lrows = [...lg.children]; hide(...lrows);
+  const pre = co === '-' ? '-' : co || '';
+  const idx = n === 2 ? '' : `[\\htmlClass{tk-i}{${cT(n)}}]`;
+  const inner = (x) => `${b}${m === 1 ? '' : `^{\\htmlClass{tk-p}{${cA(m)}}}`}`.replace(b, x || b);
+  const radi = `\\sqrt${idx}{${inner()}}`;
+  const wrap = (rad) => (neg ? (isNum ? `\\dfrac{${co}}{${rad}}` : `${co === '-' ? '-' : ''}\\dfrac{1}{${rad}}`) : `${pre}${rad}`);
+  const L1 = neg ? B.line(`=${isNum ? `\\dfrac{${co}}{${b}^{${m}/${n}}}` : `${co === '-' ? '-' : ''}\\dfrac{1}{${b}^{${m}/${n}}}`}`) : null;
+  const L2 = B.line(`=${wrap(radi)}`);
+  const L3 = tidy ? B.line(`=\\boldsymbol{${wrap(`\\sqrt${n === 2 ? '' : `[${n}]`}{${tidy}}`)}}`) : null;
+  const finalT = wrap(`\\sqrt${n === 2 ? '' : `[${n}]`}{${tidy || `${b}${m === 1 ? '' : `^{${m}}`}`}}`);
+  const altT = m > 1 ? wrap(`\\left(\\sqrt${n === 2 ? '' : `[${n}]`}{${b}}\\right)^{${m}}`) : null;
+  const res = add(stage, h('div', 'cv-res', `${K(`${powT(sp)}=${finalT}`)}${altT ? `<div class="cv-alt">also correct: ${K(altT)}</div>` : ''}`), W * lgX(W), 214); hide(res);
+  res.style.width = (W * (1 - lgX(W)) - 30) + 'px';
+  const capRead = (co === '-' ? `The exponent sits on ${tex(b)} only, so the <b>minus sign</b> isn’t part of the base: it stays outside. ` : isNum ? `The exponent sits on ${tex(b)} only, so the <b>${co}</b> isn’t part of the base: it stays in front. ` : bracket ? `The <b>brackets</b> make ${tex(b)} the whole base, so everything inside goes under the root. ` : '')
+    + `<b class="amb">Numerator ${m}</b> is the power; <b class="teal">denominator ${n}</b> is the index.`;
+  const steps = [{
+    cap: capRead,
+    run: async (c) => {
+      ['c', 'b', 's', 'm', 'n'].forEach((k) => L0.qa('.tk-' + k).forEach((e) => e.classList.add('lit-' + k)));
+      await Promise.all(lrows.map((r, i) => c.fadeIn(r, 300, { delay: i * 150, from: 'translateX(10px)' })));
+    }
+  }];
+  if (neg) steps.push({
+    cap: `The exponent is <b>negative</b>: take the reciprocal. ${tex(`${b}^{-${m}/${n}}=\\dfrac{1}{${b}^{${m}/${n}}}`)}` + (co === '-' ? ', and the minus sign still waits outside.' : isNum ? `, with the ${co} on top.` : '.'),
+    run: (c) => showRow(c, stage, L1)
+  });
+  steps.push({
+    cap: `<b class="teal">Denominator ${n}</b> → the index of the root${n === 2 ? ' (index 2 is the plain square root, so it isn’t written)' : ''}. <b class="amb">Numerator ${m}</b> → the power inside${m === 1 ? ' (a power of 1 isn’t written)' : ''}.`,
+    run: (c) => showRow(c, stage, L2, [n === 2 ? null : [L0.q('.tk-n'), L2.q('.tk-i'), cT(n), TL], m === 1 ? null : [L0.q('.tk-m'), L2.q('.tk-p'), cA(m), AM]], 34)
+  });
+  if (tidy) steps.push({
+    cap: `Tidy the inside: ${tex(`${b}^{${m}}=${tidy}`)}. The power acts on <b>every factor</b> in the brackets.`,
+    run: (c) => showRow(c, stage, L3)
+  });
+  steps.push({
+    cap: `So <b>${tex(`${powT(sp)}=${finalT}`)}</b>.` + (altT ? ` Taking the root first, ${tex(altT)}, is the same thing.` : ''),
+    run: (c) => c.pop(res, 450)
+  });
+  return steps;
+}
+function toPowSteps(stage, sp, W) {
+  const [, rc, b, ms, ns] = sp.split('|'), m = Number(ms), n = Number(ns);
+  const B = board(stage, { x: 36, y: rc ? 8 : 18, lh: 110, fs: 40 });
+  const L0 = B.line(radT(sp, true), { fs: rc ? 38 : 50 }); L0.el.style.opacity = 1;
+  const rows = [['n', 'index', n === 2 ? `${tex('\\sqrt{\\ }')} means index ${tex(cT(2))}` : `${tex(cT(n))} → the <b>denominator</b>`],
+    ['m', 'power inside', m === 1 ? `none written: it’s ${tex(cA(1))}` : `${tex(cA(m))} → the <b>numerator</b>`]];
+  if (rc) rows.push(['s', 'one over', 'a <b>negative</b> exponent']);
+  const lg = legend(stage, W, rows); const lrows = [...lg.children]; hide(...lrows);
+  const pT = `${b}^{\\htmlClass{tk-p}{${cA(m)}}/\\htmlClass{tk-d}{${cT(n)}}}`;
+  const L1 = B.line(`=${rc ? `\\dfrac{1}{${pT}}` : pT}`, { y: rc ? 150 : 128 });
+  const L2 = rc ? B.line(`=\\boldsymbol{${b}^{${cR('-')}${m}/${n}}}`, { y: 266 }) : null;
+  const fin = `${b}^{${rc ? '-' : ''}${m}/${n}}`;
+  const res = add(stage, h('div', 'cv-res', K(`${radT(sp)}=${fin}`)), W * lgX(W), 214); hide(res); res.style.width = (W * (1 - lgX(W)) - 30) + 'px';
+  const steps = [{
+    cap: (n === 2 ? `A plain square root has index <b class="teal">2</b>, even though it isn’t written. ` : `The <b class="teal">index ${n}</b> becomes the denominator. `) + (m === 1 ? `There’s no power written inside, so the numerator is <b class="amb">1</b>.` : `The <b class="amb">power ${m}</b> inside becomes the numerator.`),
+    run: async (c) => { L0.qa('.tk-n').forEach((e) => e.classList.add('lit-n')); L0.qa('.tk-m').forEach((e) => e.classList.add('lit-m')); await Promise.all(lrows.map((r, i) => c.fadeIn(r, 300, { delay: i * 150, from: 'translateX(10px)' }))); }
+  }, {
+    cap: `${tex(`\\sqrt[n]{x^m}=x^{m/n}`)}: index on the bottom, power on top. ${tex(`${rootT(n, `${b}${m === 1 ? '' : `^{${m}}`}`)}=${b}^{${m}/${n}}`)}.`,
+    run: (c) => showRow(c, stage, L1, [[L0.q('.tk-n') || L0.el, L1.q('.tk-d'), cT(n), TL], [L0.q('.tk-m') || L0.el, L1.q('.tk-p'), cA(m), AM]], 40)
+  }];
+  if (rc) steps.push({
+    cap: `A power in the <b>denominator</b> moves up with a <b>negative</b> exponent: ${tex(`\\dfrac{1}{${b}^{${m}/${n}}}=${b}^{-${m}/${n}}`)}.`,
+    run: (c) => showRow(c, stage, L2)
+  });
+  steps.push({ cap: `So <b>${tex(`${radT(sp)}=${fin}`)}</b>.`, run: (c) => c.pop(res, 450) });
+  return steps;
+}
+const conv1 = convDef('Power → radical', ['|a|2|3', '|b|-3|4', { sep: 'Example 5(b) check:' }, '|x|1|5', '|y|3|8', '|z|-1|4', '|w|-5|6']);
+const conv2 = convDef('What’s outside stays outside', ['-|a|2|3', '|(-a)|2|3', '5|a|2|3', '|(5a)|2|3|25a^2', { sep: 'Example 6 check:' }, '|m|1|5', '-|n|3|7', '|(-p)|5|3', '|(-p)|-5|3', '4|s|2|3', '|(4s)|2|3|16s^2']);
+conv2.minW = 780; // drawn this wide and scaled to fit beside the sidebar
+const toPow = convDef('Radical → power', ['R||a|2|5', 'R||a|3|2', 'R|1|a|1|4', { sep: 'Example 7 check:' }, 'R||k|3|4', 'R||k|5|6', 'R||k|7|2', 'R|1|k|5|3']);
 
-/* ============ 2. How long does light take? ============ */
-const TRIP = {
-  moon: { from: 'moon', to: 'earth', fromN: 'Moon', toN: 'Earth', d: ['3.84', 8], ms: 1280, speed: 'real time', dec: 2,
-    capGo: 'This one is in <b>real time</b>: light (or a radio signal) gets from the Moon to Earth in just <b>1.28 s</b>.',
-    last: '\\text{there and back: }2\\times1.28\\approx\\mathbf{2.6}\\text{ s}',
-    capLast: 'A radio call to the Moon and back takes about 2 × 1.28 ≈ <b>2.6 s</b>: the pause you hear in recordings of the Moon landings.' },
-  neptune: { from: 'sun', to: 'neptune', fromN: 'Sun', toN: 'Neptune', d: ['4.5', 12], ms: 6000, speed: '× 2 500 speed', dec: 0,
-    capGo: 'Sped up 2 500 times: sunlight takes <b>15 000 s</b> to reach Neptune.',
-    last: '15\\,000\\text{ s}\\div60=250\\text{ min}\\approx\\mathbf{4.2}\\text{ hours}',
-    capLast: '15 000 ÷ 60 = 250 minutes, about <b>4.2 hours</b>. When Voyager 2 flew past Neptune, its radio messages took about 4 hours to reach us.' },
-  sun: { from: 'sun', to: 'earth', fromN: 'Sun', toN: 'Earth', d: ['1.5', 11], ms: 5000, speed: '× 100 speed', dec: 0,
-    capGo: 'Sped up 100 times: the light leaves the Sun and reaches Earth after <b>500 s</b>.',
-    last: '500\\text{ s}\\div60\\approx\\mathbf{8.3}\\text{ minutes}',
-    capLast: '500 ÷ 60 ≈ <b>8.3 minutes</b>. The sunlight on your face left the Sun about 8 minutes ago!' }
-};
-const light = {
-  title: 'How long does light take to get here?',
-  height: 470,
-  choices: [{ v: 'moon', label: 'Moon → Earth' }, { v: 'neptune', label: 'Sun → Neptune' }, { sep: 'Example 4 check:' }, { v: 'sun', label: 'Sun → Earth' }],
-  intro: (v) => { const t = TRIP[v]; return `Light travels about ${tex('3\\times10^{8}')} m/s. How long does it take to get from the <b>${t.fromN}</b> to <b>${t.toN}</b>?`; },
-  make(stage, v, ex) {
-    const W = ex.W, t = TRIP[v], [dc, de] = t.d;
-    const cr = num(Number(dc) / 3), er = de - 8, { sig, e } = parseDec(cr), coef2 = coefOf(sig), n2 = er + e, secs = Number(cr) * 10 ** er;
-    const space = add(stage, h('div', 'lt-space'), 0, 0); space.style.width = W + 'px';
-    const rnd = (k) => { const x = Math.sin(k * 12.9898) * 43758.5453; return x - Math.floor(x); };
-    for (let i = 1; i <= 46; i++) { const s = h('i', 'lt-star'); at(s, rnd(i) * W, rnd(i + 100) * 192); s.style.opacity = 0.25 + rnd(i + 200) * 0.65; if (rnd(i + 300) > 0.8) s.classList.add('b'); space.appendChild(s); }
-    const BODY = { sun: { r: 74, cls: 'sun' }, earth: { r: 22, cls: 'earth' }, moon: { r: 15, cls: 'moon' }, neptune: { r: 26, cls: 'neptune' } };
-    const A = BODY[t.from], B = BODY[t.to], cy = 96;
-    const ax = t.from === 'sun' ? 4 : 60, bx = W - 70;
-    const bodyA = add(space, h('div', 'lt-body c ' + A.cls), ax, cy), bodyB = add(space, h('div', 'lt-body c ' + B.cls), bx, cy);
-    [[bodyA, A], [bodyB, B]].forEach(([el, b]) => { el.style.width = el.style.height = 2 * b.r + 'px'; });
-    add(space, h('div', 'lt-name c', t.fromN), t.from === 'sun' ? 46 : ax, cy + A.r + 18 > 186 ? 178 : cy + A.r + 18);
-    add(space, h('div', 'lt-name c', t.toN), bx, cy + B.r + 18);
-    const x1 = ax + A.r + 8, x2 = bx - B.r - 8;
-    const path = add(space, h('div', 'lt-path'), x1, cy - 1); path.style.width = (x2 - x1) + 'px';
-    const trail = add(space, h('div', 'lt-trail'), x1, cy - 3); trail.style.width = '0px';
-    const pulse = add(space, h('div', 'lt-pulse c'), x1, cy); hide(pulse);
-    const brk = add(space, h('div', 'lt-brk'), x1, 146); brk.style.width = (x2 - x1) + 'px';
-    const dLab = add(space, h('div', 'lt-dlab c', K(`d\\approx${sciT(dc, de)}\\text{ m}`)), (x1 + x2) / 2, 156);
-    const sLab = add(space, h('div', 'lt-slab', `light: ${K('3\\times10^{8}\\text{ m/s}')}`), x1 + 10, 18);
-    const timer = add(space, h('div', 'lt-timer', `<span class="lt-t">t = 0 s</span><span class="lt-sp">${t.speed}</span>`), W - 250, 14);
-    hide(brk, dLab, sLab, timer);
-    const L1 = add(stage, h('div', 'lt-work'), 30, 212), L2 = add(stage, h('div', 'lt-work'), 30, 290), L3 = add(stage, h('div', 'lt-work'), 30, 344), L4 = add(stage, h('div', 'lt-work'), 30, 398);
-    hide(L1, L2, L3, L4);
-    const tStr = (s) => (t.dec ? s.toFixed(t.dec) : fmt(Math.round(s)));
+/* ============ 4. A cube of known volume ============ */
+const cube = {
+  title: 'A cube of known volume',
+  height: 440,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  choices: [8, 64, 2, 1000, { sep: 'Example 4 check:' }, 100].map((v) => (v.sep ? v : { v, label: `V = ${fmt(v)}` })),
+  intro: (V) => `A cube holds <b>${fmt(V)} cm³</b>. How long is each edge, and what is its surface area?`,
+  make(stage, V, ex) {
+    const W = ex.W, e = Math.cbrt(V), ex3 = iroot(V, 3), face = e * e, SA = 6 * face;
+    const S = 150, sc = add(stage, h('div', 'cb-scene'), 40, 40), cb = h('div', 'cb'); sc.appendChild(cb);
+    cb.style.width = cb.style.height = S + 'px';
+    const faces = ['front', 'back', 'right', 'left', 'top', 'bottom'].map((nm) => { const f = h('div', 'cb-f ' + nm); f.style.width = f.style.height = S + 'px'; cb.appendChild(f); return f; });
+    const T0 = 'rotateX(-24deg) rotateY(-34deg)'; cb.style.transform = T0;
+    const vlab = add(stage, h('div', 'cb-v c', `V = <b>${fmt(V)}</b> cm³`), 190, 332);
+    const elab = add(stage, h('div', 'cb-e c', K(`e=${tn(V)}^{1/3}`)), 124, 286); hide(elab);
+    // the net: six faces laid flat
+    const u = 70, nx = 44, ny = 60, cells = [[1, 0], [0, 1], [1, 1], [2, 1], [3, 1], [1, 2]];
+    const net = cells.map(([i, j]) => { const d = add(stage, h('div', 'cb-n', K(`${tn(V)}^{2/3}`)), nx + i * u, ny + j * u); d.style.width = d.style.height = u + 'px'; hide(d); return d; });
+    const fz = W < 900 ? 21 : 25, Bd = board(stage, { x: W < 900 ? 362 : 380, y: 20, lh: 68, fs: fz }); // a narrow stage: smaller working so the longest line fits
+    const vT = tn(V), d2 = (x) => (Math.abs(x - Math.round(x)) < 1e-9 ? tn(Math.round(x)) : x.toFixed(2));
+    const L1 = Bd.line(`V=e^3=${vT}\\text{ cm}^3`);
+    const L2 = Bd.line(`e=${vT}^{1/3}=\\sqrt[3]{${vT}}${ex3 != null ? '=' : '\\approx'}\\mathbf{${d2(e)}}\\text{ cm}`);
+    const L3 = Bd.line(`\\text{face}=e^2=\\left(${vT}^{1/3}\\right)^2=${vT}^{2/3}${ex3 != null ? '=' : '\\approx'}${d2(face)}\\text{ cm}^2`);
+    const L4 = Bd.line(`SA=6\\left(${vT}^{2/3}\\right)${ex3 != null ? '=' : '\\approx'}\\mathbf{${ex3 != null ? tn(SA) : SA.toFixed(1)}}\\text{ cm}^2`);
+    const er = Math.round(e * 10) / 10, warn = add(stage, h('div', 'cb-warn', `<b>Don’t round early!</b> ${tex(`6(${er})^2=${(6 * er * er).toFixed(2)}`)} <span class="red">✗</span> &nbsp;vs&nbsp; ${tex(`6\\left(${vT}^{2/3}\\right)\\approx${SA.toFixed(1)}`)} <span class="ok">✓</span>`), 380, 322);
+    warn.style.width = (W - 410) + 'px'; hide(warn);
+    const spin = (c, from, to, ms) => c.anim(cb, [{ transform: from }, { transform: to }], ms, { easing: 'ease-in-out' });
     const steps = [{
-      cap: `The ${t.fromN} is about <b>${tex(sciT(dc, de))} m</b> from ${t.toN}. Light travels about <b>${tex('3\\times10^{8}')} m</b> every second.`,
-      run: (c) => Promise.all([c.fadeIn(brk, 400), c.fadeIn(dLab, 400, { delay: 150 }), c.fadeIn(sLab, 400, { delay: 300 })])
+      cap: `A cube’s volume is edge × edge × edge: ${tex(`V=e^3`)}. This one holds <b>${fmt(V)} cm³</b>.`,
+      run: (c) => Promise.all([spin(c, 'rotateX(-24deg) rotateY(-124deg)', T0, 900), showRow(c, stage, L1)])
     }, {
-      cap: 'Time = distance ÷ speed: how many “one-second trips” of 3 × 10⁸ m fit into the whole distance?',
-      run: (c) => { L1.innerHTML = K(`t=\\dfrac{\\text{distance}}{\\text{speed}}=\\dfrac{${sciT(dc, de)}}{3\\times10^{8}}`); return c.fadeIn(L1, 400); }
+      cap: `The edge is the number that <b>cubes</b> to ${fmt(V)}: ${tex(`e=${vT}^{1/3}=\\sqrt[3]{${vT}}`)}` + (ex3 != null ? ` = <b>${ex3}</b> cm, because ${tex(`${ex3}^3=${vT}`)}.` : ` ≈ <b>${e.toFixed(4)}</b> cm. (${tex(`${Math.floor(e)}^3=${Math.floor(e) ** 3}`)} and ${tex(`${Math.floor(e) + 1}^3=${(Math.floor(e) + 1) ** 3}`)}, so it’s between ${Math.floor(e)} and ${Math.floor(e) + 1}.)`),
+      run: async (c) => { faces[0].classList.add('edge'); await Promise.all([c.pop(elab, 400), showRow(c, stage, L2)]); }
     }, {
-      cap: `Divide the coefficients and <b>subtract</b> the exponents (Quotient Law): ${dc} ÷ 3 = ${cr} and ${de} − 8 = ${er}.`,
-      run: (c) => { L2.innerHTML = K(`=(${dc}\\div3)\\times10^{${de}-8}=${sciT(cr, er)}`); return c.fadeIn(L2, 400); }
+      cap: `One face is a square: ${tex(`e^2=\\left(${vT}^{1/3}\\right)^2=${vT}^{2/3}`)}` + (ex3 != null ? ` = ${d2(face)} cm².` : ` ≈ ${face.toFixed(2)} cm². The <b>denominator 3</b> is the cube root; the <b>numerator 2</b> squares it.`),
+      run: async (c) => { faces[0].classList.add('lit'); await showRow(c, stage, L3); }
     }, {
-      cap: e === 0 ? `${cr} is already between 1 and 10, so the time is <b>${tex(sciT(cr, er))} s</b>${er === 0 ? ` = ${cr} s (${tex('10^{0}=1')})` : ` = ${fmt(secs)} s`}.`
-        : `${cr} is less than 1, so <b>renormalize</b>: ${tex(`${cr}=${sciT(coef2, e)}`)}. The time is <b>${tex(sciT(coef2, n2))} s</b>, which is ${fmt(secs)} s.`,
-      run: (c) => {
-        L3.innerHTML = K(e === 0 ? `=\\mathbf{${sciT(cr, er)}}\\text{ s}=${er === 0 ? cr : stdT(sig, n2)}\\text{ s}` : `=${sciT(coef2, e)}\\times10^{${er}}=\\mathbf{${sciT(coef2, n2)}}\\text{ s}=${stdT(sig, n2)}\\text{ s}`);
-        return c.fadeIn(L3, 400);
-      }
-    }, {
-      cap: t.capGo,
+      cap: `A cube has <b>6</b> faces, so ${tex(`SA=6\\left(${vT}^{2/3}\\right)`)}` + (ex3 != null ? ` = <b>${fmt(SA)} cm²</b>.` : ` ≈ <b>${SA.toFixed(1)} cm²</b> (to the nearest tenth).`),
       run: async (c) => {
-        timer.style.opacity = 1; const tt = timer.querySelector('.lt-t');
-        const put = (f) => { const x = x1 + (x2 - x1) * f; pulse.style.left = x + 'px'; trail.style.width = (x - x1) + 'px'; tt.textContent = 't = ' + tStr(secs * f) + ' s'; };
-        pulse.style.opacity = 1;
-        if (c.fast) { put(1); bodyB.classList.add('lit'); return; }
-        const t0 = performance.now();
-        for (;;) { const f = Math.min(1, (performance.now() - t0) / t.ms); put(f); if (f >= 1) break; await c.sleep(30); }
-        bodyB.classList.add('lit'); await c.pop(timer, 300);
+        faces.forEach((f) => f.classList.add('lit'));
+        await spin(c, T0, 'rotateX(-24deg) rotateY(326deg)', 800);
+        await Promise.all([c.anim(sc, [{ opacity: 1 }, { opacity: 0 }], 300), c.anim(vlab, [{ opacity: 1 }, { opacity: 0 }], 300), c.anim(elab, [{ opacity: 1 }, { opacity: 0 }], 300),
+          ...net.map((d, i) => c.pop(d, 300, { delay: 150 + i * 90 })), showRow(c, stage, L4)]);
       }
-    }, {
-      cap: t.capLast,
-      run: (c) => { L4.innerHTML = K(t.last); return c.fadeIn(L4, 400); }
     }];
+    if (ex3 == null) steps.push({
+      cap: `<b>Watch out:</b> round the edge to ${er} first and you get ${tex(`6(${er})^2\\approx${(6 * er * er).toFixed(1)}`)}, which is wrong. Keep all the digits and round <b>once</b>, at the end.`,
+      run: (c) => c.fadeIn(warn, 400)
+    });
     return steps;
   }
 };
 
-/* ============ warm-up: how many heartbeats? ============ */
-function mountWarmup() {
-  // the heart-monitor trace: one beat every 200 units, scrolled so the spikes pass at 70 a minute
-  const tr = document.getElementById('hb-trace');
-  if (tr) {
-    tr.setAttribute('viewBox', '0 0 2400 100');
-    let d = 'M 0 60';
-    for (let i = 0; i < 12; i++) { const x = i * 200; d += ` L ${x + 40} 60 Q ${x + 52} 46 ${x + 64} 60 L ${x + 80} 60 L ${x + 88} 70 L ${x + 98} 8 L ${x + 108} 88 L ${x + 116} 60 L ${x + 136} 60 Q ${x + 152} 40 ${x + 168} 60 L ${x + 200} 60`; }
-    tr.appendChild(svgEl('path', { d, class: 'hb-line' }));
-  }
-  const warm = document.querySelector('.warm');
-  if (warm && 'IntersectionObserver' in window) new IntersectionObserver((es) => es.forEach((en) => warm.classList.toggle('paused', !en.isIntersecting))).observe(warm);
-  document.querySelectorAll('[data-hb]').forEach((b) => b.addEventListener('click', () => {
-    const on = b.classList.toggle('shown'), v = b.querySelector('.hb-v');
-    v.innerHTML = on ? `<b>${fmt(Number(b.dataset.hb))}</b>${b.dataset.sci ? '<small>' + tex(b.dataset.sci) + '</small>' : ''}` : '? beats';
-    if (on) v.animate([{ opacity: 0, transform: 'scale(.7)' }, { opacity: 1, transform: 'scale(1)' }], 320);
-  }));
-  document.querySelectorAll('[data-wq]').forEach((b) => b.addEventListener('click', () => b.closest('.wq').classList.toggle('shown')));
-  const Q3 = { sci: ['ok', '✓ = 36 800 000, and it’s in scientific notation'], eq: ['meh', '✓ = 36 800 000, but 36.8 isn’t between 1 and 10'], no: ['no', '✗ = 3 680 000: ten times too small'] };
-  document.querySelectorAll('[data-q3]').forEach((b) => b.addEventListener('click', () => {
-    const [cls, msg] = Q3[b.dataset.q3], on = !b.classList.contains(cls);
-    b.classList.toggle(cls, on); b.querySelector('small').innerHTML = on ? msg : '&nbsp;';
-    if (on) b.animate([{ transform: 'scale(1.06)' }, { transform: 'scale(1)' }], 260);
-  }));
-  document.querySelectorAll('[data-poll]').forEach((b) => b.addEventListener('click', () => b.closest('.poll').classList.toggle('revealed')));
-  // a 15-second pulse count
-  const go = document.getElementById('pulse-go'), clock = document.getElementById('pulse-clock'), msg = document.getElementById('pulse-msg');
-  if (go) {
-    let timer = null; const n = clock.querySelector('.pc-n');
-    const reset = () => { clearInterval(timer); timer = null; clock.classList.remove('run', 'end'); };
-    go.addEventListener('click', () => {
-      if (timer) { reset(); n.textContent = '15'; go.textContent = 'Start the 15-second count'; return; }
-      reset(); const t0 = Date.now(); clock.classList.add('run'); go.textContent = 'Stop';
-      msg.innerHTML = '<b>Count the beats…</b>';
-      const tick = () => {
-        const left = Math.max(0, 15 - (Date.now() - t0) / 1000); n.textContent = Math.ceil(left);
-        if (left <= 0) { reset(); clock.classList.add('end'); n.textContent = '0'; go.textContent = 'Again'; msg.innerHTML = '<b>Stop!</b> Multiply your count by <b>4</b>: that’s your beats per minute. (18 beats → 72 a minute.)'; }
-      };
-      tick(); timer = setInterval(tick, 100);
+/* ============ warm-up: the piano puzzle ============ */
+const NOTES = ['A', 'A♯', 'B', 'C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A'];
+let actx = null;
+function tone(f, dur = 1.3, when = 0) {
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === 'suspended') actx.resume();
+    const t = actx.currentTime + when, g = actx.createGain(); g.connect(actx.destination);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.32, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    [[1, 'triangle', 1], [2, 'sine', 0.35], [3, 'sine', 0.12]].forEach(([k, type, amp]) => {
+      const o = actx.createOscillator(), og = actx.createGain(); o.type = type; o.frequency.value = f * k; og.gain.value = amp; o.connect(og); og.connect(g); o.start(t); o.stop(t + dur + 0.05);
     });
+  } catch (e) { /* no audio: the picture still works */ }
+}
+function mountPiano() {
+  const host = document.getElementById('piano'); if (!host) return;
+  const Wd = 968, w = Wd / 8, KY = 92, KH = 214, bw = 62, bh = 128, Hh = KY + KH + 58;
+  const svg = svgEl('svg', { class: 'pn-svg', width: Wd, height: Hh, viewBox: `0 0 ${Wd} ${Hh}` }); host.appendChild(svg);
+  const whites = [0, 2, 3, 5, 7, 8, 10, 12], blackAt = { 1: 1, 4: 3, 6: 4, 9: 6, 11: 7 }; // step → boundary
+  const cx = []; whites.forEach((k, i) => { cx[k] = (i + 0.5) * w; }); for (const k in blackAt) cx[k] = blackAt[k] * w;
+  const keys = [];
+  const mk = (k, el) => { el.setAttribute('data-tap', ''); el.setAttribute('role', 'button'); el.setAttribute('aria-label', NOTES[k]); el.addEventListener('click', () => press(k)); keys[k] = el; svg.appendChild(el); };
+  whites.forEach((k, i) => mk(k, svgEl('rect', { x: i * w + 1.5, y: KY, width: w - 3, height: KH, rx: 6, class: 'pn-w' + (k === 0 || k === 12 ? ' a' : '') })));
+  whites.forEach((k, i) => { const t = svgEl('text', { x: (i + 0.5) * w, y: KY + KH - 18, class: 'pn-wl' }); t.textContent = NOTES[k]; svg.appendChild(t); });
+  for (const k in blackAt) mk(Number(k), svgEl('rect', { x: blackAt[k] * w - bw / 2, y: KY, width: bw, height: bh, rx: 4, class: 'pn-b' + (Number(k) === 6 ? ' red' : '') }));
+  const qm = svgEl('text', { x: cx[6], y: KY + 82, class: 'pn-q' }); qm.textContent = '?'; svg.appendChild(qm);
+  // the ×r arrows over the twelve steps
+  const arcs = [], nums = [];
+  for (let k = 0; k < 12; k++) {
+    const x1 = cx[k] + 8, x2 = cx[k + 1] - 8, y = KY - 8, mx = (x1 + x2) / 2;
+    const p = svgEl('path', { d: `M${x1} ${y} Q${mx} ${y - 40} ${x2} ${y}`, class: 'pn-arc', 'marker-end': 'url(#pn-ah)' }); svg.appendChild(p); arcs.push(p);
+    const t = svgEl('text', { x: mx, y: y - 30, class: 'pn-r' }); t.textContent = '×r'; svg.appendChild(t);
+    const nb = svgEl('g', { class: 'pn-num' }); nb.appendChild(svgEl('circle', { cx: mx, cy: y - 64, r: 13 })); const nt = svgEl('text', { x: mx, y: y - 59 }); nt.textContent = k + 1; nb.appendChild(nt); svg.appendChild(nb); nums.push(nb);
   }
+  const defs = svgEl('defs'); const mkr = svgEl('marker', { id: 'pn-ah', viewBox: '0 0 10 10', refX: 8, refY: 5, markerWidth: 5, markerHeight: 5, orient: 'auto-start-reverse' });
+  mkr.appendChild(svgEl('path', { d: 'M0 0 L10 5 L0 10 z', class: 'pn-ahp' })); defs.appendChild(mkr); svg.prepend(defs);
+  const lab = (x0, txt, cls, lw = 156) => { const x = Math.max(lw / 2 + 2, Math.min(Wd - lw / 2 - 2, x0)); const g = svgEl('g', { class: 'pn-lab ' + (cls || '') }); const r = svgEl('rect', { x: x - lw / 2, y: KY + KH + 12, width: lw, height: 38, rx: 8 }); const t = svgEl('text', { x, y: KY + KH + 38 }); t.textContent = txt; g.append(r, t); svg.appendChild(g); return g; };
+  lab(cx[0], '440 Hz'); lab(cx[12], '880 Hz'); lab(cx[6], 'halfway: ? Hz', 'red', 230);
+  const read = document.getElementById('pn-read');
+  let revealed = false;
+  const hz = (k) => 440 * 2 ** (k / 12);
+  function readout(k) {
+    const f = hz(k), head = `<b>${NOTES[k]}</b> <span class="muted">· ${k} step${k === 1 ? '' : 's'} up ·</span> `;
+    if (k === 0 || k === 12) read.innerHTML = head + `<b>${k ? 880 : 440} Hz</b>`;
+    else read.innerHTML = head + (revealed ? tex(`440\\times2^{${k}/12}\\approx${f.toFixed(1)}`) + ' Hz' : tex(`440\\times r^{${k}}`) + ' = <b>? Hz</b>');
+  }
+  function light(ks) { keys.forEach((el, k) => el && el.classList.toggle('on', ks.includes(k))); }
+  function press(k) { tone(hz(k)); light([k]); readout(k); keys[k].animate([{ opacity: 0.6 }, { opacity: 1 }], 300); }
+  let counting = 0;
+  async function count() {
+    const g = ++counting; nums.forEach((n) => n.classList.remove('on')); arcs.forEach((a) => a.classList.remove('on'));
+    press(0);
+    for (let k = 0; k < 12; k++) {
+      await new Promise((r) => setTimeout(r, 420)); if (g !== counting) return;
+      arcs[k].classList.add('on'); nums[k].classList.add('on'); press(k + 1);
+    }
+    read.innerHTML = `<b>12 steps</b> from A to A, so <span class="tex-i">${tex('r^{12}=2')}</span>`;
+  }
+  document.getElementById('pn-count').onclick = count;
+  document.getElementById('pn-play').onclick = () => { tone(440, 1.2); tone(880, 1.2, 0.7); tone(440, 1.6, 1.5); tone(880, 1.6, 1.5); light([0, 12]); read.innerHTML = '<b>A 440 Hz</b> then <b>A 880 Hz</b>: one octave up <b>doubles</b> the frequency.'; };
+  document.querySelectorAll('[data-wq]').forEach((b) => b.addEventListener('click', () => {
+    const wq = b.closest('.wq'), on = wq.classList.toggle('shown');
+    if (!on) return;
+    const v = b.dataset.wq;
+    if (v === 'count') count();
+    else { const ks = v.split(',').map(Number); light(ks); if (ks.length === 1) { tone(hz(ks[0])); readout(ks[0]); } }
+  }));
+  document.querySelectorAll('[data-poll]').forEach((b) => b.addEventListener('click', () => {
+    const p = b.closest('.poll'), on = p.classList.toggle('revealed');
+    revealed = on; qm.textContent = on ? '622' : '?'; qm.classList.toggle('done', on);
+    svg.querySelector('.pn-lab.red text').textContent = on ? 'halfway: ≈ 622 Hz' : 'halfway: ? Hz';
+    if (on) { light([6]); tone(hz(6)); readout(6); }
+  }));
 }
 
 /* ============ wiring ============ */
 function mountExplainers() {
-  const defs = { hops, zoom, renorm, muldiv, light };
+  const defs = { whyRoot, routes, machine, minus, conv1, conv2, toPow, cube };
   document.querySelectorAll('[data-explainer]').forEach((el) => new Explainer(el, defs[el.dataset.explainer]));
 }
 
-mountExplainers(); mountWarmup();
-
-/* ---------- Math History (the brown box): Archimedes' Sand Reckoner ----------
- * A powers-of-ten zoom-out: one grain → a poppy seed (at most 10^4 grains) → a ball one finger wide (10^9) → a ball one
- * stadium wide (10^21) → Aristarchus's universe (10^63). The counter climbs with each step, the chips along the bottom
- * light up, and the multipliers between them (×10^4, ×10^5, ×10^12, ×10^42) add up in the exponent: 4 + 5 + 12 + 42 = 63. */
-(function sandReckoner() {
-  const svg = document.getElementById('sand-anim'); if (!svg) return;
-  const NS = 'http://www.w3.org/2000/svg';
-  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); Object.keys(attrs || {}).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
-  const txt = (s, attrs, parent) => { const e = mk('text', attrs, parent); e.textContent = s; return e; };
-  let seed = 7; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
-  const CX = 444, CY = 116, R = 96;
-  const inDisc = (n, r, f) => { for (let i = 0; i < n; i++) { const a = rnd() * 2 * Math.PI, d = Math.sqrt(rnd()) * r; f(d * Math.cos(a), d * Math.sin(a), i); } };
-  const STAGES = [
-    { name: 'one grain of sand', e: 0, chip: '1 grain', v: '1', notes: ['(drawn very, very big)'] },
-    { name: 'a poppy seed', e: 4, chip: 'poppy seed', v: '10⁴', notes: ['his guess: no more than', '10 000 grains inside'] },
-    { name: 'a ball one finger wide', e: 9, chip: 'finger', v: '10⁹', notes: ['40 poppy seeds across:', 'under 10⁹ grains'] },
-    { name: 'a ball one stadium wide', e: 21, chip: 'stadium', v: '10²¹', notes: ['a Greek race track, under', '10 000 fingers long'] },
-    { name: 'the whole universe', e: 63, chip: 'universe', v: '10⁶³', notes: ['as Aristarchus pictured it:', '10¹⁴ stadia across'] },
-  ];
-  const MULT = ['×10⁴', '×10⁵', '×10¹²', '×10⁴²'];
-
-  // the left side: the counter and the words
-  txt('GRAINS OF SAND, AT MOST', { x: 24, y: 34, class: 'u2l4h-cap' });
-  const count = txt('10', { x: 24, y: 104, class: 'u2l4h-count' });
-  const expT = mk('tspan', { dy: -32, class: 'u2l4h-exp' }, count); expT.textContent = '0';
-  const nameT = txt('', { x: 24, y: 146, class: 'u2l4h-name' });
-  const noteT = [txt('', { x: 24, y: 170, class: 'u2l4h-note' }), txt('', { x: 24, y: 189, class: 'u2l4h-note' })];
-  const sumT = txt('exponents add: 4 + 5 + 12 + 42 = 63', { x: 24, y: 216, class: 'u2l4h-sum' });
-
-  // the pictures, each drawn with radius R around (0, 0)
-  const scene = mk('g', {});
-  const objs = STAGES.map((st, k) => {
-    const at = mk('g', { class: 'u2l4h-obj' }, scene); scene.insertBefore(at, scene.firstChild); // smaller things on top
-    if (k === 0) { // one grain, magnified
-      const pts = []; for (let i = 0; i < 11; i++) { const a = (i / 11) * 2 * Math.PI, r = R * (0.62 + rnd() * 0.18); pts.push(`${(r * Math.cos(a)).toFixed(1)},${(r * Math.sin(a) * 0.86).toFixed(1)}`); }
-      mk('polygon', { points: pts.join(' '), class: 'u2l4h-grain' }, at);
-      inDisc(26, R * 0.5, (x, y) => mk('circle', { cx: x, cy: y * 0.86, r: 1.6 + rnd() * 2.2, class: 'u2l4h-speck' }, at));
-    } else if (k === 1) { // a poppy seed full of sand
-      mk('circle', { r: R, class: 'u2l4h-poppy' }, at);
-      inDisc(260, R - 6, (x, y) => mk('circle', { cx: x, cy: y, r: 2.1, class: 'u2l4h-sand' }, at));
-    } else if (k === 2) { // a finger-wide ball: 40 poppy seeds across
-      mk('circle', { r: R, class: 'u2l4h-finger' }, at);
-      inDisc(150, R - 6, (x, y) => mk('circle', { cx: x, cy: y, r: 2, class: 'u2l4h-seed', opacity: 0.35 }, at));
-      for (let i = 0; i < 40; i++) mk('circle', { cx: -R + 2.4 + i * ((2 * R - 4.8) / 39), cy: 0, r: 2.3, class: 'u2l4h-seed' }, at);
-    } else if (k === 3) { // a stadium-wide ball with the race track across it
-      mk('circle', { r: R, class: 'u2l4h-stad' }, at);
-      inDisc(110, R - 6, (x, y) => mk('circle', { cx: x, cy: y, r: 1.8, class: 'u2l4h-fball' }, at));
-      mk('rect', { x: -R + 4, y: -17, width: 2 * R - 8, height: 34, rx: 4, class: 'u2l4h-track' }, at);
-      for (let l = 1; l < 4; l++) mk('line', { x1: -R + 8, x2: R - 8, y1: -17 + l * 8.5, y2: -17 + l * 8.5, class: 'u2l4h-lane' }, at);
-      mk('line', { x1: -R + 10, x2: -R + 10, y1: -17, y2: 17, class: 'u2l4h-start' }, at); mk('line', { x1: R - 10, x2: R - 10, y1: -17, y2: 17, class: 'u2l4h-start' }, at);
-    } else { // the universe of Aristarchus: the Sun in the middle, the stars far out
-      mk('circle', { r: R, class: 'u2l4h-sky' }, at);
-      inDisc(70, R - 5, (x, y) => mk('circle', { cx: x, cy: y, r: 0.7 + rnd() * 1.3, class: 'u2l4h-star' }, at));
-      mk('circle', { r: 15, class: 'u2l4h-orbit' }, at); mk('circle', { cx: 15, cy: 0, r: 2.4, fill: '#7fb3e6' }, at);
-      mk('circle', { r: 5.5, fill: '#f0b429' }, at);
-    }
-    return at;
-  });
-
-  // the chips along the bottom, with the multipliers between them
-  const CW = 92, chips = STAGES.map((st, k) => {
-    const x = 56 + k * 121, g = mk('g', { class: 'u2l4h-chip' });
-    mk('rect', { x: x - CW / 2, y: 252, width: CW, height: 40, rx: 9 }, g);
-    txt(st.chip, { x, y: 268, 'text-anchor': 'middle', class: 'u2l4h-chip-n' }, g);
-    txt(st.v, { x, y: 286, 'text-anchor': 'middle', class: 'u2l4h-chip-v' }, g);
-    return g;
-  });
-  const mults = MULT.map((m, k) => txt(m, { x: 56 + k * 121 + 60.5, y: 245, 'text-anchor': 'middle', class: 'u2l4h-mult' }));
-
-  // timing: hold the grain, then four zoom-outs, each with a pause
-  const H0 = 1300, Z = 1300, H = 1300, END = H0 + 4 * (Z + H);
-  const ease = (p) => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2);
-  const place = (g, s, o) => { g.setAttribute('transform', `translate(${CX} ${CY}) scale(${s.toFixed(4)})`); g.style.opacity = o; };
-  function draw(ms) {
-    let k = 0, p = 1;
-    if (ms >= H0) { const j = Math.min(3, Math.floor((ms - H0) / (Z + H))); const into = ms - H0 - j * (Z + H); k = j + 1; p = Math.min(1, into / Z); }
-    const q = ease(p);
-    objs.forEach((g, i) => {
-      if (i === k) place(g, 0.3 + 0.7 * q, Math.min(1, q * 1.6));
-      else if (i === k - 1) place(g, 1 - 0.95 * q, q < 0.7 ? 1 : 1 - (q - 0.7) / 0.3); // shrinks to a speck, then fades
-      else place(g, 1, 0);
-    });
-    const st = STAGES[k], prev = STAGES[Math.max(0, k - 1)];
-    expT.textContent = String(Math.round(prev.e + (st.e - prev.e) * q));
-    const shown = p > 0.5 ? st : prev;
-    nameT.textContent = shown.name; noteT[0].textContent = shown.notes[0] || ''; noteT[1].textContent = shown.notes[1] || '';
-    chips.forEach((c, i) => c.classList.toggle('on', i < k || (i === k && p > 0.5)));
-    mults.forEach((m, i) => m.classList.toggle('on', i < k - 1 || (i === k - 1 && p > 0.5)));
-    const done = ms >= END;
-    count.classList.toggle('gold', done); sumT.classList.toggle('on', done);
-  }
-  let t0 = 0, raf = 0;
-  function frame(now) { if (!t0) t0 = now; const ms = now - t0; draw(ms); if (ms < END) raf = requestAnimationFrame(frame); }
-  function play() {
-    cancelAnimationFrame(raf); t0 = 0;
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(END); return; }
-    raf = requestAnimationFrame(frame);
-  }
-  draw(0);
-  svg.addEventListener('click', play);
-  const btn = svg.closest('.hist-anim') && svg.closest('.hist-anim').querySelector('.hist-play'); if (btn) btn.addEventListener('click', play);
-  if ('IntersectionObserver' in window) {
-    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 });
-    io.observe(svg);
-  } else play();
-})();
+mountPiano(); mountExplainers();

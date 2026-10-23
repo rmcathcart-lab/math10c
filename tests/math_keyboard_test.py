@@ -18,7 +18,7 @@ async def main():
         await pg.click('.btn-primary'); await pg.wait_for_selector('.lesson-row')
         assert await pg.evaluate("!!customElements.get('math-field')"), 'MathLive did not load'
         found = None
-        for lid in ['u2l2', 'u2l3', 'u3l1', 'u2l1', 'u1l6a']:
+        for lid in ['u2l2', 'u2l3', 'u3l1', 'u2l1', 'u1l7']:
             ids = await pg.evaluate("(l) => HW.lessons[l].items.filter(it => !it.extra).slice(0, 12).map(it => it.id)", lid)
             for i in ids:
                 await pg.evaluate("([l, i]) => location.hash = '#/lesson/' + l + '/' + i", [lid, i]); await pg.wait_for_timeout(300)
@@ -45,8 +45,8 @@ async def main():
         mf = await pg.evaluate("document.querySelector('.qcard math-field').value"); print('math box untouched:', repr(mf)); assert mf == ''
         await pg.screenshot(path='/tmp/mk_fields.png')
         # a single-number question
-        for i in await pg.evaluate("HW.lessons['u1l3'].items.map(it => it.id)"):
-            await pg.evaluate("(i) => location.hash = '#/lesson/u1l3/' + i", i); await pg.wait_for_timeout(250)
+        for i in await pg.evaluate("HW.lessons['u1l4'].items.map(it => it.id)"):
+            await pg.evaluate("(i) => location.hash = '#/lesson/u1l4/' + i", i); await pg.wait_for_timeout(250)
             if await pg.locator('.qcard .w-number input').count(): break
         if await pg.locator('.qcard .w-number input').count(): print('number widget inputmode:', await pg.locator('.qcard .w-number input').get_attribute('inputmode')); assert await pg.locator('.qcard .w-number input').get_attribute('inputmode') == 'none'
         print('errors', errs); assert not errs; print('PASS')

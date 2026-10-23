@@ -1,900 +1,1099 @@
-/* Math 10C · Unit 4 · Lesson 6 — Choosing a Factoring Strategy (AN5)
- * Assignment questions 1–9 (u4_L06.tex) and the Lesson 6 Extra Practice (u4_EP06.tex).
- * Every part is a generator that keeps the booklet question's structure (which checklist step applies, signs, letters,
- * a GCF or a negative to take out first, the booklet's term order, perfect squares, blocks like x² or t³) and changes
- * the numbers; the booklet's own numbers are among the possible values. Expressions are built from their factors
- * (tri / dos / grp below), so keys, classic wrong answers and worked solutions all come from the same numbers.
- * "Name the method" / "explain the error" items are multiple choice or grids; "factor, or say it does not factor"
- * items use one poly box with a "none" key. Levels: LIM BEG EMG PRG ADV MAS. */
+/* Math 10C · Unit 4 · Lesson 6 — Further Factoring (AN5)
+ * Assignment questions 1–16 (u4_L06.tex) and the whole Lesson 6 Extra Practice (u4_EP06.tex, Q1–18).
+ * Every part is a generator: it keeps the structure of the booklet question (perfect squares with the booklet's sign
+ * pattern and coefficients, the block x², ab, xy, x³, z⁵ or a⁴, which brackets split again, a GCF first, two
+ * variables) and changes the numbers; the booklet's numbers are one of the possible values. Every question is built
+ * from its factors, so the keys come straight from the generated numbers. Levels: LIM BEG EMG PRG ADV MAS. */
 (function (root) {
   'use strict';
-  var HW = root.HW, K = HW.kit, t = K.t, ok = K.ok, wrong = K.wrong, form = K.form, B = K.P, P = HW.poly, FA = HW.factor;
+  var HW = root.HW, K = HW.kit, KP = K.P, t = K.t, ok = K.ok, wrong = K.wrong, form = K.form, P = HW.poly, FA = HW.factor, ex = HW.ex;
 
   HW.addCodes({
-    'swap-signs': 'Factor pair with both signs switched', 'pair-place': 'Numbers in the wrong brackets (middle term off)',
-    'gcf-missing': 'Dropped the common factor', 'drop-var': 'Left the second variable out of the brackets',
-    'dos-square': 'Wrote a difference of squares as a square', 'sum-squares': 'Factored a sum of squares as a difference',
-    'sum-as-square': 'Wrote a sum of squares as a square', 'pst-as-dos': 'Wrote a perfect square as a difference of squares',
-    'group-sign': 'Wrong sign on a group’s common factor', 'said-none': 'Said it does not factor (it does)',
-    'not-none': 'Factored something that does not factor', 'none-hint': 'Rewrote an expression that does not factor',
-    'not-finished': 'Accepted an answer that is not factored completely', 'gcf-neg': 'Positive GCF when the leading term is negative',
-    'gcf-not-greatest': 'A common factor, but not the greatest', 'gcf-not-common': 'Not a factor of every term', 'gcf-sign': 'Wrong sign on the GCF',
-    'terms-count': 'Wrong number of terms left in the bracket', 'k-half': 'Middle coefficient not doubled', 'k-squares': 'Added the squares instead of 2ab',
-    'k-four': 'Middle coefficient doubled twice', 'k-sum': 'Added the square roots instead of 2ab', 'nr-forgot-a': 'Left a out of a + b + c',
-    'nr-partial-gcf': 'Used the squares instead of their roots', 'pair-wrong': 'Pair does not multiply to ac and add to b', 'ac-wrong': 'Wrong value of ac',
-    'expand-sign': 'Expanded a sum × difference as a sum', 'sub-wrong': 'Substitution arithmetic slip', 'group-gcf': 'Wrong common factor for a group'
+    'pst-sign': 'Perfect square with the wrong sign in the bracket', 'pst-dos': 'Wrote a perfect square trinomial as a difference of squares',
+    'no-root': 'Used a term instead of its square root', 'block-back': 'Put the wrong block back after substituting', 'no-back-sub': 'Left the substitution letter in the answer',
+    'not-square': 'Split a bracket whose constant is not a perfect square', 'sum-split': 'Factored a sum of squares', 'gcf-lost': 'Lost the common factor taken out first',
+    'swap-const': 'Constants in the wrong brackets', 'not-doubled': 'Middle term not doubled', 'no-var': 'Left the variable off the term', 'not-squared': 'Didn’t square the root',
+    'not-halved': 'Didn’t halve the middle coefficient', 'half-root': 'Ignored the coefficient of the other square', 'has-var': 'Put a variable on a constant term', 'neg-square': 'Gave a negative perfect square',
+    'sign-given': 'Typed the sign that was already printed', inner: 'Like terms not collected inside a bracket', 'dos-square': 'Squared instead of using a sum and a difference',
+    'minus-bracket': 'Minus sign not applied to every term of the block', 'student-ans': 'Repeated the student’s error', 'ab-sum': 'Added A and B instead of multiplying',
+    'mid-coef': 'Gave the middle coefficient 2AB', 'ab-sq': 'Used the squares instead of the roots', 'leg': 'Gave a leg instead of the hypotenuse', 'subtracted': 'Subtracted the squares of the legs',
+    'leg-sum': 'Added the legs', 'swap-ab': 'Computed b to the power a', 'pst-half': 'Middle term is half of what a perfect square needs'
   });
 
   /* ---------------- small helpers ---------------- */
   function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var r = a % b; a = b; b = r; } return a; }
-  function M(c, v) { var o = {}; if (typeof v === 'string') { if (v) o[v] = 1; } else if (v) o = v; return P.mono(c, o); }
+  function isq(n) { if (n < 0) return null; var r = Math.round(Math.sqrt(n)); return r * r === n ? r : null; }
+  function isSq(n) { return isq(n) != null; }
+  function pickWhere(gen, test) { for (var i = 0; i < 5000; i++) { var v = gen(); if (test(v)) return v; } throw new Error('pickWhere failed'); }
+  function V(x, e) { var o = {}; o[x] = e == null ? 1 : e; return o; }
+  function M(c, v, e) { if (typeof v === 'string') v = V(v, e); return P.mono(c, v || {}); }   // c·v^e  or  c·{x:2,y:1}
   function N(c) { return P.num(c); }
   function S() { return P.add.apply(null, arguments); }
   function tx(p) { return P.tex(p); }
-  function lift(k) { return k == null ? N(1) : typeof k === 'number' ? N(k) : P.lift(k); }
-  function isOne(p) { return P.eq(p, N(1)); }
-  function lead(p) { var ts = P.sorted(p); return ts.length ? ts[0].c[0] / ts[0].c[1] : 0; }
-  function two(r, a, b) { var x = r.int(a, b), y; do { y = r.int(a, b); } while (y === x); return [x, y]; }
-  function cop(r, a, b, c, d) { var p, q; do { p = r.int(a, b); q = r.int(c, d); } while (gcd(p, q) !== 1 || p === q); return [p, q]; }
-  function isSq(n) { var s = Math.round(Math.sqrt(Math.abs(n))); return n >= 0 && s * s === n; }
-  function msqrt(m) { var T = P.terms(m)[0], v = {}; Object.keys(T.v).forEach(function (x) { v[x] = T.v[x] / 2; }); return P.mono(Math.round(Math.sqrt(T.c[0] / T.c[1])), v); }
-  function sqx(m) { var s = tx(m); return /^(\d+|[a-z])$/.test(s) ? s : '(' + s + ')'; }
-  function pz(m) { return '(' + tx(m) + ')'; }
-  function kpre(k) { var s = tx(k); return s === '1' ? '' : s === '-1' ? '-' : s; }
-  function plain(s) { return String(s).replace(/\\left|\\right|\\,/g, '').replace(/[{}]/g, ''); }
-  function lst(list) { return FA.tex(list); }
-  function nn(n) { return n < 0 ? '(' + n + ')' : String(n); }
-  function hasPair(prod, sum) { var m = Math.abs(prod); if (!m) return true; for (var d = 1; d <= m; d++) if (m % d === 0) { var e = prod / d; if (d + e === sum || -d - e === sum) return true; } return false; }
-  function pairs(n) { var out = [], m = Math.abs(n); for (var d = 1; d * d <= m; d++) if (m % d === 0) { if (n > 0) out.push([d, m / d]); else { out.push([d, -m / d]); if (d * d !== m) out.push([-d, m / d]); } } return out; }
-  /* "the pairs 1, 15 and 3, 5 give sums 16 and 8" — for a trinomial that does not factor */
-  function noPairText(prod, sum) {
-    var ps = pairs(prod), list = ps.map(function (p) { return t(p[0] + ',\\ ' + p[1]); }), sums = ps.map(function (p) { return t(p[0] + p[1]); });
-    var and = function (a) { return a.length === 1 ? a[0] : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]; };
-    return 'Product ' + t(prod) + ', sum ' + t(sum) + ': the ' + (ps.length === 1 ? 'only pair is ' : 'pairs ') + and(list) + (ps.length === 1 ? ', with sum ' : ' give sums ') + and(sums) +
-      (prod > 0 ? (ps.length === 1 ? ' (the negative pair gives the opposite sum)' : ' (the negative pairs give the opposite sums)') : '') + '. None adds to ' + t(sum) + '.';
+  function seq(a) { return P.seq(a); }
+  function br(p) { return '(' + tx(p) + ')'; }
+  function pv(n) { return n < 0 ? '(' + n + ')' : String(n); }
+  function sc1(n) { return n < 0 ? '-' + (-n) : '+' + n; }           // +1(…) / -4(…) in a grouping line
+  function plain(s) { return String(s).replace(/\\left|\\right/g, '').replace(/\\frac\{([^}]*)\}\{([^}]*)\}/g, '$1/$2').replace(/\\underline\{\\hspace\{[^}]*\}\}/g, '__').replace(/\\[a-z]+/g, '').replace(/[{}]/g, ''); }
+  var BL = '\\underline{\\hspace{1.6em}}';
+  function lead(p) { return P.sorted(p)[0]; }
+  function sgnOf(p) { var T = lead(p); return T && T.c[0] < 0 ? -1 : 1; }
+  function absM(p) { return sgnOf(p) < 0 ? P.neg(p) : p; }
+  function coefOf(m) { var T = lead(m); return T.c; }
+  function varsOf(m) { var T = lead(m); return T.v; }
+  function plus(a, b) { return S(a, b); }
+
+  /* factor objects { p, k, tex } and the product LaTeX */
+  function fo(p, k, tex) { p = P.lift(p); return { p: p, k: k || 1, tex: tex || tx(p) }; }
+  function isMono(f) { return P.count(f.p) <= 1; }
+  function fprod(list) { return list.reduce(function (acc, f) { return P.mul(acc, P.pow(f.p, f.k)); }, N(1)); }
+  function ftex(list) {
+    var mono = list.filter(isMono), brs = list.filter(function (f) { return !isMono(f); });
+    var m = fprod(mono), mt = tx(m), s = mt === '1' ? '' : mt === '-1' ? '-' : mt;
+    if (!brs.length) return mt;
+    return s + brs.map(function (f) { return '(' + f.tex + ')' + (f.k > 1 ? '^{' + f.k + '}' : ''); }).join('');
   }
-  var X = M(1, 'x');
-  function V(n) { return M(1, n); }
+  function merge(list) {
+    var out = [];
+    list.forEach(function (f) { var g = isMono(f) ? null : out.filter(function (h) { return !isMono(h) && P.eq(h.p, f.p); })[0]; if (g) g.k += f.k; else out.push({ p: f.p, k: f.k, tex: f.tex }); });
+    return out;
+  }
+  function wr(list, code, hint) { return { is: fprod(list), tex: ftex(list), code: code, hint: hint }; }
+  function cleanW(T, ws) {
+    var out = [];
+    (ws || []).forEach(function (w) { if (!w || !w.is) return; var p = P.lift(w.is); if (P.eq(p, T) || out.some(function (o) { return P.eq(o.is, p); })) return; out.push({ is: p, tex: w.tex, code: w.code, hint: w.hint }); });
+    return out;
+  }
 
-  /* ---------------- problems built from their factors ----------------
-   * Each returns { expr, tex, list, keyTex, sol, wrongs, hints, text, … }. */
-
-  /* trinomial k·(aX + uY)(bX + vY). X, Y monomials (Y = 1 by default; X may be a block like x² or t³). */
-  function tri(o) {
-    var Xm = o.X, Y = o.Y || N(1), k = lift(o.k), a = o.a, u = o.u, b = o.b, v = o.v;
-    var f1 = S(P.scale(Xm, a), P.scale(Y, u)), f2 = S(P.scale(Xm, b), P.scale(Y, v));
-    var inner = P.mul(f1, f2), expr = P.mul(k, inner), hasK = !isOne(k);
-    var A = a * b, Bm = a * v + b * u, C = u * v, pst = a === b && u === v;
-    var XX = P.pow(Xm, 2), XY = P.mul(Xm, Y), YY = P.pow(Y, 2), fix = o.fix || function (s) { return s; };
-    var list = (hasK ? [k] : []).concat(pst ? [{ p: f1, k: 2 }] : [f1, f2]);
-    var tex = fix(o.tex || P.tex(expr, { order: o.order }));
-    var keyTex = fix(o.keyTex || lst(list));
-    var blk = P.degree(Xm) > 1 ? tx(Xm) : null, twoVar = P.vars(Y).length > 0;
-    var L = [];
-    if (o.reorder) L.push('<b>Write it in descending order first:</b> ' + t(tex + '=' + fix(tx(expr))) + '.');
-    if (hasK) L.push((lead(k) < 0 ? '<b>Common factor first</b> — the leading coefficient is negative, so take out ' + t(tx(k)) + ' (every sign in the bracket changes): ' : '<b>Common factor first:</b> every term is divisible by ' + t(tx(k)) + '. ') +
-      t(fix(tx(expr)) + '=' + kpre(k) + '(' + fix(tx(inner)) + ')'));
-    var desc = (blk ? 'a trinomial in ' + t(blk) + ', ' : twoVar ? 'a trinomial in two variables, ' : '');
-    var split = fix(P.seq([P.scale(XX, A), P.scale(XY, a * v), P.scale(XY, b * u), P.scale(YY, C)]));
-    if (pst) {
-      var aX = P.scale(Xm, Math.abs(a)), uY = P.scale(Y, Math.abs(u));
-      L.push('<b>Three terms — spot the perfect square trinomial.</b> ' + t(fix(tx(P.scale(XX, A))) + '=' + sqx(aX) + '^{2}') + ', ' + t(fix(tx(P.scale(YY, C))) + '=' + sqx(uY) + '^{2}') + ' and ' +
-        t(fix(tx(P.scale(XY, Bm))) + '=' + (Bm < 0 ? '-' : '') + '2' + pz(aX) + pz(uY)) + '.');
-      if (A === 1) L.push('(By inspection: product ' + t(C) + ', sum ' + t(Bm) + ': ' + t(u) + ' and ' + t(u) + '.)');
-    } else if (A === 1) {
-      L.push('<b>Three terms — ' + desc + t('a=1') + ' ⇒ inspection.</b>' + (blk ? ' Treat ' + t(blk) + ' as one block.' : '') + ' Product ' + t(C) + ', sum ' + t(Bm) + ': ' + t(u) + ' and ' + t(v) + '.');
-    } else {
-      L.push('<b>Three terms — ' + desc + t('a\\neq 1') + ' ⇒ decomposition.</b>' + (blk ? ' Treat ' + t(blk) + ' as one block.' : '') + ' ' + t('ac=' + A + '\\times ' + nn(C) + '=' + A * C) + ', sum ' + t(Bm) + ': ' + t(a * v) + ' and ' + t(b * u) + '.');
-      var aXs = P.scale(Xm, a), uYs = P.scale(Y, u), ft = fix(tx(f2));
-      L.push(t(split + '=' + fix(tx(aXs)) + '(' + ft + ')' + (lead(uYs) > 0 ? '+' : '') + fix(tx(uYs)) + '(' + ft + ')'));
-      L.push(t('=' + fix(lst([f2, f1]))));
+  /* ---------------- the factored-answer checker ----------------
+   * K.factored plus three things this lesson needs: a bracket with a fraction coefficient such as (½x+2y)² is complete
+   * (only a whole-number or variable common factor counts as "left inside"); [(x−1)(x+1)]² counts as (x−1)²(x+1)²; and
+   * like terms must be collected inside every bracket ((x−2)−2 → x−4). A substitution letter left in the answer gets a
+   * targeted hint. */
+  function distPow(a) {
+    if (!a || typeof a !== 'object') return a;
+    if (a.t === 'pow') { var b = a.a; while (b && b.t === 'paren') b = b.a; if (b && b.t === 'mul') return { t: 'mul', a: distPow({ t: 'pow', a: b.a, b: a.b }), b: distPow({ t: 'pow', a: b.b, b: a.b }) }; }
+    var o = {}; Object.keys(a).forEach(function (k) { o[k] = (k === 'a' || k === 'b') ? distPow(a[k]) : a[k]; }); return o;
+  }
+  function sameKeys(a, b) { var ka = Object.keys(a), kb = Object.keys(b); return ka.length === kb.length && ka.every(function (k) { return a[k] === b[k]; }); }
+  function innerIssue(sp) {
+    for (var i = 0; i < sp.factors.length; i++) {
+      var f = sp.factors[i]; if (!f.ast) continue;
+      var fi = P.formIssue(f.ast);
+      if (fi && fi.code !== 'not-poly') return form('inner', 'Right factors — now simplify <b>inside each bracket</b>: collect the like terms (for example ' + t('(x-2)-2=x-4') + ').');
     }
-    L.push(t(tex + '=' + keyTex));
-    if (o.check) L.push('Check: ' + t(fix(lst([f1, f2])) + '=' + split + '=' + fix(tx(inner))) + ' ✓');
-    var W = [], pre = hasK ? [k] : [];
-    var s1 = S(P.scale(Xm, a), P.scale(Y, -u)), s2 = S(P.scale(Xm, b), P.scale(Y, -v));
-    if (!pst) W.push({ is: pre.concat([s1, s2]), code: 'swap-signs', hint: A === 1 ? 'Close — your two numbers multiply to ' + t(C) + ' but add to ' + t(-Bm) + ', not ' + t(Bm) + '. Switch the sign of both numbers.'
-      : 'Close — the first and last terms are right, but your middle term comes out as ' + t(fix(tx(P.scale(XY, -Bm)))) + '. Switch the signs in both brackets.' });
-    if (a !== b) W.push({ is: pre.concat([S(P.scale(Xm, a), P.scale(Y, v)), S(P.scale(Xm, b), P.scale(Y, u))]), code: 'pair-place',
-      hint: 'The first and last terms are right, but the middle term isn’t: the outside and inside products must add to ' + t(fix(tx(P.scale(XY, Bm)))) + '. Swap the numbers between the brackets — or decompose: split the middle term with two numbers that multiply to ' + t('ac=' + A * C) + ' and add to ' + t(Bm) + '.' });
-    if (hasK) W.push({ is: pst ? [{ p: f1, k: 2 }] : [f1, f2], code: 'gcf-missing', hint: 'Your brackets are right, but you dropped the common factor ' + t(tx(k)) + ' that you took out first. Keep it in front of the brackets.' });
-    if (twoVar) W.push({ is: pre.concat([S(P.scale(Xm, a), N(u)), S(P.scale(Xm, b), N(v))]), code: 'drop-var', hint: 'Each bracket needs ' + t(fix(tx(Y))) + ' in its second term — the last term of the trinomial is ' + t(fix(tx(P.scale(YY, C)))) + '.' });
-    if (pst) W.push({ is: pre.concat([f1, S(P.scale(Xm, a), P.scale(Y, -u))]), code: 'pst-as-dos', hint: 'A sum times a difference gives a <b>difference of squares</b> — it has no middle term. This trinomial is a perfect square: the same binomial twice, ' + t('(A' + (u < 0 ? '-' : '+') + 'B)^{2}') + '.' });
-    var H = [];
-    if (o.reorder) H.push('Write the terms in descending order first.');
-    if (hasK) H.push('Checklist step 1: every term shares a common factor. Take out ' + t(tx(k)) + ' first' + (lead(k) < 0 ? ' — a negative one, because the leading coefficient is negative' : '') + '.');
-    if (pst) H.push('Are the first and last terms perfect squares? Is the middle term twice the product of their square roots?');
-    else if (A === 1) H.push('Find two integers that multiply to ' + t(C) + ' and add to ' + t(Bm) + '.' + (blk ? ' Treat ' + t(blk) + ' as one block.' : ''));
-    else H.push('Decomposition: find two integers that multiply to ' + t('ac=' + A * C) + ' and add to ' + t(Bm) + ', split the middle term, then group.');
-    return { expr: expr, inner: inner, k: k, f1: f1, f2: f2, tex: tex, list: list, keyTex: keyTex, sol: L.join('<br>'), wrongs: W, hints: H, text: 'factor ' + plain(tex),
-      A: A, Bm: Bm, C: C, pst: pst, method: pst ? 'pst' : A === 1 ? 'insp' : 'dec', good: o.good };
+    return null;
   }
-
-  /* difference of squares k·(A² − B²), A, B monomials. o.again: A and B are squares too, so A − B factors again. */
-  function dos(o) {
-    var k = lift(o.k), A = o.A, Bq = o.B, hasK = !isOne(k), pre = hasK ? [k] : [];
-    var inner = P.sub(P.pow(A, 2), P.pow(Bq, 2)), expr = P.mul(k, inner), mi = P.sub(A, Bq), pl = P.add(A, Bq);
-    var U, Vv, list;
-    if (o.again) { U = msqrt(A); Vv = msqrt(Bq); list = pre.concat([P.sub(U, Vv), P.add(U, Vv), pl]); } else list = pre.concat([mi, pl]);
-    var tex = o.tex || P.tex(expr, { order: o.order }), io = o.reorder ? undefined : o.order;
-    var innerTex = P.tex(inner, { order: io }), sm = function (a, b) { return '(' + P.seq([a, P.neg(b)]) + ')'; }, sp = function (a, b) { return '(' + P.seq([a, b]) + ')'; };
-    var keyTex = kpre(k) + (o.again ? sm(U, Vv) + sp(U, Vv) + sp(A, Bq) : sm(A, Bq) + sp(A, Bq));
-    var L = [];
-    if (o.reorder) L.push('<b>Reorder first:</b> ' + t(tex + '=' + tx(expr)) + '.');
-    if (hasK) L.push((lead(k) < 0 ? '<b>Common factor first</b> — the leading coefficient is negative, so take out ' + t(tx(k)) + ': ' : '<b>Common factor first:</b> every term is divisible by ' + t(tx(k)) + '. ') + t((o.reorder ? tx(expr) : tex) + '=' + kpre(k) + '(' + innerTex + ')'));
-    L.push('<b>Two terms ⇒ difference of squares:</b> ' + t(innerTex + '=' + sqx(A) + '^{2}-' + sqx(Bq) + '^{2}') + '.');
-    L.push(t('=' + kpre(k) + sm(A, Bq) + sp(A, Bq)));
-    if (o.again) {
-      L.push(t(P.seq([A, P.neg(Bq)])) + ' is still a difference of squares, ' + t(sqx(U) + '^{2}-' + sqx(Vv) + '^{2}') + '; ' + t(P.seq([A, Bq])) + ' is a <b>sum</b> of squares and does not factor.');
-      L.push(t('=' + keyTex));
-    }
-    if (o.reorder || hasK || o.again) L.push(t(tex + '=' + keyTex));
-    var W = [];
-    W.push({ is: pre.concat([{ p: mi, k: 2 }]), code: 'dos-square', hint: 'A difference of squares factors into a <b>sum times a difference</b>, ' + t('A^{2}-B^{2}=(A-B)(A+B)') + '. A square like ' + t('(A-B)^{2}') + ' would have a middle term.' });
-    W.push({ is: pre.concat([{ p: pl, k: 2 }]), code: 'dos-square', hint: 'A difference of squares factors into a <b>sum times a difference</b>, ' + t('A^{2}-B^{2}=(A-B)(A+B)') + '. A square like ' + t('(A+B)^{2}') + ' would have a middle term.' });
-    if (hasK) W.push({ is: o.again ? [P.sub(U, Vv), P.add(U, Vv), pl] : [mi, pl], code: 'gcf-missing', hint: 'Your brackets are right, but you dropped the common factor ' + t(tx(k)) + ' that you took out first. Keep it in front of the brackets.' });
-    if (o.again) {
-      W.push({ is: pre.concat([P.sub(U, Vv), P.add(U, Vv), { p: P.add(U, Vv), k: 2 }]), code: 'sum-as-square', hint: t(P.seq([A, Bq])) + ' is a <b>sum</b> of squares — it does not factor. ' + t('(' + P.seq([U, Vv]) + ')^{2}') + ' would have a middle term.' });
-      W.push({ is: pre.concat([P.sub(U, Vv), P.add(U, Vv), P.sub(U, Vv), P.add(U, Vv)]), code: 'sum-squares', hint: 'Only ' + t(P.seq([A, P.neg(Bq)])) + ' is a difference of squares. ' + t(P.seq([A, Bq])) + ' is a <b>sum</b> of squares and does not factor: ' + t(sm(U, Vv) + sp(U, Vv)) + ' multiplies to ' + t(P.seq([A, P.neg(Bq)])) + ', not ' + t(P.seq([A, Bq])) + '.' });
-    }
-    var H = [];
-    if (o.reorder) H.push('Reorder the terms so the positive one comes first.');
-    if (hasK) H.push('Checklist step 1: take out the common factor ' + t(tx(k)) + ' first.');
-    H.push('Two terms with a minus sign between perfect squares: ' + t('A^{2}-B^{2}=(A-B)(A+B)') + '.');
-    if (o.again) H.push('After the first step, check every bracket: can it be factored again?');
-    return { expr: expr, inner: inner, k: k, tex: tex, list: list, keyTex: keyTex, sol: L.join('<br>'), wrongs: W, hints: H, text: 'factor ' + plain(tex), method: 'dos', A: A, B: Bq };
-  }
-
-  /* four terms (A1 + A2)(B1 + B2), written in the order A1B1, A1B2, A2B1, A2B2 (o.idx reorders the display) */
-  function grp(o) {
-    var A1 = o.A1, A2 = o.A2, B1 = o.B1, B2 = o.B2;
-    var t4 = [P.mul(A1, B1), P.mul(A1, B2), P.mul(A2, B1), P.mul(A2, B2)];
-    var f1 = S(A1, A2), f2 = S(B1, B2), expr = P.mul(f1, f2), bt = P.seq([B1, B2]);
-    var tex = P.seq(o.idx ? o.idx.map(function (i) { return t4[i]; }) : t4);
-    var list = [f2, f1], keyTex = '(' + bt + ')(' + P.seq([A1, A2]) + ')';
-    var L = ['<b>Four terms ⇒ grouping.</b>' + (lead(A2) < 0 ? ' The second pair starts with a minus sign, so take out ' + t(tx(A2)) + ' to make the brackets match.' : ''),
-      t('(' + P.seq([t4[0], t4[1]]) + ')+(' + P.seq([t4[2], t4[3]]) + ')=' + tx(A1) + '(' + bt + ')' + (lead(A2) > 0 ? '+' : '') + tx(A2) + '(' + bt + ')'), t('=' + keyTex)];
-    if (o.note) L.push(o.note);
-    var W = [{ is: [f2, S(A1, P.neg(A2))], code: 'group-sign', hint: 'Check the common factor of the second pair, ' + t(P.seq([t4[2], t4[3]])) + ': it is ' + t(tx(A2)) + (lead(A2) < 0 ? ' — negative, because that pair starts with a minus sign. Then its bracket matches ' + t('(' + bt + ')') + '.' : '.') },
-      { is: [S(B1, P.neg(B2)), f1], code: 'group-sign', hint: 'Your brackets give the wrong signs on two of the terms. Factor each pair again and make sure the two brackets match exactly.' }];
-    return { expr: expr, tex: tex, list: list, keyTex: keyTex, sol: L.join('<br>'), wrongs: W, t4: t4, f1: f1, f2: f2,
-      hints: ['Four terms: group the first two and the last two, and take the common factor out of each pair.', 'The two brackets must match. If the second pair starts with a minus sign, take out a negative.'], text: 'factor ' + plain(tex), method: 'grp' };
-  }
-
-  /* a "factor completely" part from a problem */
-  function fac(pr, o) {
+  function facChk(TF, o) {
     o = o || {};
-    var T = pr.expr, seen = [], ws = [];
-    pr.wrongs.concat(o.wrong || []).forEach(function (w) {
-      if (!w) return; var p = FA.product(w.is);
-      if (P.eq(p, T) || seen.some(function (q) { return P.eq(q, p); })) return;
-      seen.push(p); ws.push({ is: w.is, code: w.code, hint: w.hint });
-    });
-    var part = B.factored(o.prompt || t(pr.tex), pr.list, { wrong: ws, keyTex: pr.keyTex, gcfOnly: o.gcfOnly }, o.sol || pr.sol, o.hints || pr.hints, o.text || pr.text);
-    part.bad = ws.map(function (w) { return lst(w.is); }).concat(o.bad || []);
-    part.good = [lst(pr.list.slice().reverse()), lst(pr.list)].concat(pr.good || [], o.good || []);
-    return part;
-  }
-  /* a checker that turns "not factored completely" nudges into real mistakes (for "is it finished?" questions) */
-  function strict(chk, msg) {
-    return function (resp) { var r = chk(resp); if (r.v === 'form' && (r.code === 'factor-more' || r.code === 'gcf-inside')) return wrong('not-finished', (msg ? msg + ' ' : '') + r.hint.replace(/^Equal, but not factored completely: /, 'Not finished: ')); return r; };
-  }
-  function polyBox(vars, none) { return { name: '', label: '', mode: 'math', keys: 'poly', vars: vars, none: !!none, wide: true, placeholder: 'e.g. 3x(x - 4)(x + 2)' }; }
-  /* "Factor completely, or press none": pr = problem (it factors) or null with o.expr (it does not) */
-  function fnone(pr, o) {
-    o = o || {};
-    var T = pr ? pr.expr : o.expr, vars = P.vars(T), chk, key, answer;
-    if (pr) {
-      var ws = pr.wrongs.concat(o.wrong || []).filter(function (w) { return w && !P.eq(FA.product(w.is), T); });
-      var base = K.factored(pr.list, { wrong: ws });
-      chk = function (s) { if (s === 'none') return wrong('said-none', 'It does factor. ' + (o.why || pr.hints[pr.hints.length - 1])); return base(s); };
-      key = pr.keyTex; answer = t(pr.tex + '=' + pr.keyTex);
-    } else {
-      chk = function (s) {
-        if (s === 'none') return ok();
-        var a = K.read(s); if (a.res) return a.res;
-        var rd = P.read(a.ast); if (!rd.ok) return wrong('value', null);
-        if (P.eq(rd.p, T)) return form('none-hint', 'That’s the expression again. If it can’t be factored over the integers, press <b>none</b>.');
-        return wrong('not-none', 'Your factors multiply to ' + t(tx(rd.p)) + ', not ' + t(tx(T)) + '. ' + (o.whyNot || 'Check whether any factorization really works — if none does, press <b>none</b>.'));
-      };
-      key = 'none'; answer = 'Does not factor over the integers';
+    var tl = TF.map(function (f) { return { p: f.p, k: f.k }; }), T = fprod(TF), TN = FA.normal(tl), Tv = P.vars(T);
+    var base = K.factored(tl, { wrong: cleanW(T, o.wrong), gcfOnly: o.gcfOnly, diag: function (Sp, T2, sp) {
+      var extra = P.vars(Sp).filter(function (v) { return Tv.indexOf(v) < 0; });
+      if (extra.length) return { code: 'no-back-sub', hint: 'Your answer uses ' + t(extra[0]) + ', which isn’t in the question. Replace ' + t(extra[0]) + ' by the block it stands for, then simplify inside the brackets.' };
+      return o.diag ? o.diag(Sp, T2, sp) : null;
+    } });
+    function alt(resp) {
+      var pr = ex.parse(resp); if (!pr.ok) return null;
+      var sp = FA.split(distPow(pr.ast)); if (!sp.ok) return null;
+      if (!P.eq(sp.factors.reduce(function (acc, f) { return P.mul(acc, P.pow(f.p, f.k)); }, N(1)), T)) return null;
+      var SN = FA.normal(sp.factors); if (!sameKeys(SN.keys, TN.keys)) return null;
+      for (var i = 0; i < SN.raw.length; i++) { var cn = SN.raw[i].cn; if (Math.abs(cn.c[0]) !== 1 || Object.keys(cn.v).length) return null; }
+      return sp;
     }
-    var p = B.fields(o.prompt || t(pr ? pr.tex : o.tex), [polyBox(vars, true)], [chk], [key], answer, o.sol || pr.sol, o.hints || (pr ? pr.hints : []), o.text || (pr ? pr.text : 'factor or none: ' + plain(o.tex)));
-    p.bad = pr ? [['none']].concat(ws.map(function (w) { return [lst(w.is)]; })) : (o.bad || []).map(function (b) { return [b]; });
-    p.good = pr ? [[lst(pr.list.slice().reverse())]] : [];
-    return p;
-  }
-  /* GCF box checker: target monomial g (sign included) */
-  function gcfChk(g, terms) {
-    var G = P.terms(g)[0];
-    function divides(m, n) { var a = P.terms(m)[0], b = P.terms(n)[0]; if (!a || !b) return false; if (b.c[0] % a.c[0] !== 0) return false; return Object.keys(a.v).every(function (x) { return (b.v[x] || 0) >= a.v[x]; }); }
     return function (resp) {
-      var a = K.read(resp); if (a.res) return a.res;
-      var rd = P.read(a.ast); if (!rd.ok || P.count(rd.p) !== 1) return wrong('value', 'The GCF is a single term (a monomial), like ' + t('3x') + '.');
-      if (P.eq(rd.p, g)) return ok();
-      if (P.eq(rd.p, P.neg(g))) return G.c[0] < 0 ? wrong('gcf-neg', 'Right size — but the leading coefficient is negative, so take out a <b>negative</b> common factor.') : wrong('gcf-sign', 'Check the sign: the leading term is positive, so the GCF is positive.');
-      var m = rd.p, mp = P.terms(m)[0].c[0] < 0 ? P.neg(m) : m, gp = G.c[0] < 0 ? P.neg(g) : g;
-      if (!terms.every(function (T) { return divides(mp, T); })) return wrong('gcf-not-common', t(tx(m)) + ' doesn’t divide every term. Check each term’s number and each variable’s exponent.');
-      if (divides(mp, gp)) return wrong('gcf-not-greatest', t(tx(m)) + ' is a common factor, but not the <b>greatest</b> one. Is there more that every term shares (a bigger number, or more of a variable)?');
-      return wrong('value', null);
+      var r = base(resp);
+      if (r.v === 'form' && (r.code === 'gcf-inside' || r.code === 'not-factored')) { var sp = alt(resp); if (sp) return innerIssue(sp) || ok(); }
+      if (r.v === 'correct') { var pr = ex.parse(resp), sp2 = pr.ok ? FA.split(pr.ast) : null; if (sp2 && sp2.ok) { var f = innerIssue(sp2); if (f) return f; } }
+      return r;
     };
   }
-
-  /* ---------------- method choices (grids) ---------------- */
-  var MCOL = [{ id: 'gcf', html: 'GCF' }, { id: 'dos', html: 'diff.<br>sq.' }, { id: 'insp', html: 'insp.' }, { id: 'dec', html: 'dec.' }, { id: 'grp', html: 'grp.' }, { id: 'none', html: 'none' }];
-  var LEG = { gcf: '<b>GCF</b> = common factor only', dos: '<b>diff. sq.</b> = difference of squares', insp: '<b>insp.</b> = inspection', dec: '<b>dec.</b> = decomposition', grp: '<b>grp.</b> = grouping', none: '<b>none</b> = does not factor' };
-  function legend(cols, over) { return '<div class="w-help">' + cols.map(function (c) { return (over && over[c.id]) || LEG[c.id]; }).join(' · ') + '</div>'; }
-  var MNAME = { gcf: 'common factor only', dos: 'difference of squares', insp: 'inspection', dec: 'decomposition', grp: 'grouping', none: 'does not factor' };
-  var NUDGE = {
-    gcf: 'take out the GCF first — can what is left be factored at all?',
-    dos: 'two terms — are both perfect squares, with a minus sign between them?',
-    insp: 'three terms — look at the leading coefficient (after any GCF).',
-    dec: 'three terms — is the leading coefficient ' + t('1') + '?',
-    grp: 'count the terms again.',
-    none: 'two perfect squares with a <b>plus</b> sign between them — can a sum of squares be factored?'
-  };
-  function methodGrid(prompt, rows, cols, sol, text) {
-    var want = {}; rows.forEach(function (rw) { want[rw.id] = rw.m; });
-    return B.grid(prompt + legend(cols, { none: cols.length === 5 && cols[4].id === 'none' ? '<b>none</b> = nothing more to do' : null }), rows.map(function (rw) { return { id: rw.id, html: rw.label || rw.html }; }), cols, want, {
-      why: function (id) { var rw = rows.filter(function (x) { return x.id === id; })[0]; return { code: 'row', hint: 'Look at ' + rw.html + ' again: ' + (rw.nudge || NUDGE[rw.m]) }; }
-    }, sol, ['Run the checklist in order: common factor? then count the terms — two (difference of squares?), three (' + t('a=1') + ': inspection; ' + t('a\\neq1') + ': decomposition), four (grouping).'], text);
+  function facPart(prompt, TF, o) {
+    o = o || {};
+    var T = fprod(TF), ws = cleanW(T, o.wrong), keyTex = o.keyTex || ftex(TF);
+    var p = KP.math(prompt, facChk(TF, { wrong: ws, gcfOnly: o.gcfOnly, diag: o.diag }), keyTex, o.sol, o.hints || H.fac, o.text, { keys: 'poly', vars: P.vars(T), placeholder: 'e.g. (x - 2)(x + 2)(x² + 4)' });
+    p.bad = ws.map(function (w) { return w.tex; }).filter(Boolean).concat(o.bad || []);
+    p.good = o.good || [];
+    return p;
   }
+  /* one missing term: K.poly, but a negative of the answer typed after a printed sign is a nudge */
+  function termChk(T, ws, o) {
+    o = o || {}; T = P.lift(T);
+    var base = K.poly(T, { wrong: cleanW(T, ws) });
+    return function (resp) {
+      var r = typeof resp === 'string' && resp.trim() ? P.read(resp) : { ok: false };
+      if (r.ok && P.eq(r.p, P.neg(T))) return o.signGiven ? form('sign-given', 'The ' + t(o.signGiven) + ' sign in front of the blank is already printed — type just the term that goes in the blank, without a sign.')
+        : wrong('neg-square', 'A perfect square term is never negative — the missing term must be positive.');
+      return base(resp);
+    };
+  }
+  function blankPart(prompt, T, ws, o, sol, hints, text) {
+    o = o || {}; T = P.lift(T);
+    var p = KP.math(prompt, termChk(T, ws, o), tx(T), sol, hints, text, { keys: 'poly', vars: o.vars || P.vars(T).concat(['x']).filter(function (v, i, a) { return a.indexOf(v) === i; }) });
+    p.bad = cleanW(T, ws).map(function (w) { return tx(w.is); });
+    return p;
+  }
+  /* a box in a fields part */
+  function box(label, vars, name) { return { name: name || label.replace(/<[^>]*>|\\\(|\\\)/g, ''), label: label, mode: 'math', keys: 'poly', vars: vars, wide: true }; }
+
+  var H = {
+    pst: ['Run the three-part test: is the first term a perfect square? Is the last term a perfect square (and positive)? Is the middle term twice the product of the two square roots?', 'If all three hold, the trinomial is ' + t('(\\sqrt{\\text{first}}\\pm\\sqrt{\\text{last}})^{2}') + ', with the sign of the middle term.'],
+    block: ['Treat the squared monomial as one block: if the first term is ' + t('(x^{2})^{2}') + ', let ' + t('u=x^{2}') + '. Factor the trinomial in ' + t('u') + ', then put the block back.', 'Then check every bracket: a difference of two perfect squares factors again; a sum of squares does not.'],
+    dec: ['Let ' + t('u') + ' be the block, then decompose: find two numbers that multiply to ' + t('ac') + ' and add to ' + t('b') + '. Split the middle term and group in pairs.', 'Put the block back in for ' + t('u') + ', then check whether any bracket factors again.'],
+    dos: ['Take out any common factor first. Then write the binomial as ' + t('A^{2}-B^{2}') + ' and use ' + t('A^{2}-B^{2}=(A-B)(A+B)') + '.', 'Look at the new brackets: a difference of squares factors again; a sum of squares stops.'],
+    fac: ['Take out any common factor first, then look for a perfect square trinomial, a trinomial in a block, or a difference of squares.', '“Factor completely”: check every bracket before you stop.']
+  };
+
+  /* ---------------- perfect square trinomials (A + B)², B carrying the sign ---------------- */
+  function pst(A, B, order) {
+    A = P.lift(A); B = P.lift(B);
+    var A2 = P.mul(A, A), B2 = P.mul(B, B), mid = P.scale(P.mul(A, B), 2), neg = sgnOf(B) < 0, Bp = absM(B);
+    var terms = order === 'asc' ? [B2, mid, A2] : [A2, mid, B2], baseTex = tx(A) + (neg ? '-' : '+') + tx(Bp);
+    return { A: A, B: B, Bp: Bp, A2: A2, B2: B2, mid: mid, neg: neg, T: S(A2, mid, B2), expr: seq(terms), base: S(A, B), baseTex: baseTex, TF: [fo(S(A, B), 2, baseTex)], key: '(' + baseTex + ')^{2}' };
+  }
+  function pstLine(o) {
+    return t('\\sqrt{' + tx(o.A2) + '}=' + tx(o.A)) + ', ' + t('\\sqrt{' + tx(o.B2) + '}=' + tx(o.Bp)) + ', ' + t('2(' + tx(o.A) + ')(' + tx(o.Bp) + ')=' + tx(P.scale(P.mul(o.A, o.Bp), 2))) + ' ✓' + (o.neg ? ' (the middle term is negative, so the bracket has a minus sign)' : '');
+  }
+  function pstSol(o, extra) { return pstLine(o) + '<br>' + t(o.expr + '=' + o.key) + (extra || ''); }
+  function sqCoefMono(m) { var c = coefOf(m), v = varsOf(m); return P.mono([c[0] * c[0] * (c[0] < 0 ? -1 : 1), c[1] * c[1]], v); }   // 5x → 25x, -3 → -9
+  function pstWrongs(o) {
+    var out = [
+      wr([fo(S(o.A, P.neg(o.B)), 2)], 'pst-sign', 'Expand your answer: its middle term is ' + t(tx(P.neg(o.mid))) + '. The sign inside the bracket must match the sign of the middle term, ' + t(tx(o.mid)) + '.'),
+      wr([fo(S(o.A, o.B)), fo(S(o.A, P.neg(o.B)))], 'pst-dos', 'That’s a sum times a difference — it multiplies to ' + t(tx(P.sub(o.A2, o.B2))) + ', with no middle term. A perfect square trinomial is a bracket times <b>itself</b>.')];
+    var ca = coefOf(o.A); if (Math.abs(ca[0]) !== 1 || ca[1] !== 1) out.push(wr([fo(S(sqCoefMono(o.A), o.B), 2)], 'no-root', 'Use the square <b>root</b> of the first term: ' + t('\\sqrt{' + tx(o.A2) + '}=' + tx(o.A)) + '.'));
+    var cb = coefOf(o.Bp); if (Math.abs(cb[0]) !== 1 || cb[1] !== 1) out.push(wr([fo(S(o.A, sqCoefMono(o.B)), 2)], 'no-root', 'Use the square <b>root</b> of the last term: ' + t('\\sqrt{' + tx(o.B2) + '}=' + tx(o.Bp)) + '.'));
+    return out;
+  }
+  function pstPart(prompt, o, x) {
+    x = x || {};
+    return facPart(prompt, o.TF, { keyTex: x.keyTex || o.key, wrong: pstWrongs(o).concat(x.wrong || []), sol: x.sol || pstSol(o, x.solExtra), hints: x.hints || H.pst, text: x.text || 'factor PST ' + plain(o.expr), good: x.good });
+  }
+
+  /* ---------------- differences of squares, split as far as they go ---------------- */
+  function sqrtMono(T) {
+    var a = isq(T.c[0]), b = isq(T.c[1]); if (a == null || b == null) return null;
+    var v = {}; for (var x in T.v) { if (T.v[x] % 2) return null; v[x] = T.v[x] / 2; }
+    return P.mono([a, b], v);
+  }
+  function dosSplit(p) {
+    if (P.count(p) !== 2) return null;
+    var ts = P.sorted(p), pi = ts[0].c[0] > 0 ? 0 : 1, ni = 1 - pi;
+    if (!(ts[pi].c[0] > 0 && ts[ni].c[0] < 0)) return null;
+    var a = sqrtMono(ts[pi]), b = sqrtMono({ c: [-ts[ni].c[0], ts[ni].c[1]], v: ts[ni].v }); if (!a || !b) return null;
+    return { a: a, b: b, minus: fo(P.sub(a, b), 1, pi === 0 ? tx(a) + '-' + tx(b) : seq([a, P.neg(b)])), plus: fo(P.add(a, b), 1, pi === 0 ? tx(a) + '+' + tx(b) : seq([b, a])) };
+  }
+  function fullSplit(f, steps) {
+    var d = dosSplit(f.p);
+    if (!d) return [f];
+    steps.push(t(f.tex) + ' is a difference of squares: ' + t(f.tex + '=(' + tx(d.a) + ')^{2}-(' + tx(d.b) + ')^{2}=(' + d.minus.tex + ')(' + d.plus.tex + ')'));
+    return fullSplit(d.minus, steps).concat([d.plus]);
+  }
+  function stopNote(f) {
+    if (P.count(f.p) !== 2 || P.degree(f.p) < 2) return null;
+    var ts = P.sorted(f.p);
+    if (ts[0].c[0] > 0 && ts[1].c[0] > 0) return t(f.tex) + ' is a sum — it stops';
+    return t(f.tex) + ' is not a difference of two perfect squares — it stops';
+  }
+  /* classic errors on a finished factor list: splitting x²−3 as (x−3)(x+3), "factoring" a sum of squares, losing the GCF */
+  function autoWrongs(TF, g) {
+    var out = [];
+    TF.forEach(function (f, i) {
+      if (f.k !== 1 || P.count(f.p) !== 2 || P.degree(f.p) < 2) return;
+      var ts = P.sorted(f.p), others = TF.filter(function (x, j) { return j !== i; });
+      var A = ts[0].c[0] > 0 ? sqrtMono(ts[0]) : null;
+      if (A && ts[1].c[0] < 0 && !Object.keys(ts[1].v).length && ts[1].c[1] === 1 && !isSq(-ts[1].c[0])) {
+        var n = -ts[1].c[0];
+        out.push(wr(others.concat([fo(S(A, N(-n))), fo(S(A, N(n)))]), 'not-square', t(n) + ' is not a perfect square, so ' + t(f.tex) + ' does not factor: ' + t('(' + tx(S(A, N(-n))) + ')(' + tx(S(A, N(n))) + ')=' + tx(P.mul(S(A, N(-n)), S(A, N(n))))) + ', not ' + t(f.tex) + '.'));
+      }
+      if (ts[0].c[0] > 0 && ts[1].c[0] > 0) {
+        var a = sqrtMono(ts[0]), b = sqrtMono(ts[1]);
+        if (a && b) out.push(wr(others.concat([fo(S(a, b), 2)]), 'sum-split', t(f.tex) + ' is a <b>sum</b> of squares — it does not factor. ' + t('(' + tx(S(a, b)) + ')^{2}=' + tx(P.pow(S(a, b), 2))) + ' has a middle term.'));
+      }
+    });
+    if (g && tx(g) !== '1' && tx(g) !== '-1') out.push(wr(TF.filter(function (f) { return !isMono(f); }), 'gcf-lost', 'Don’t lose the common factor ' + t(tx(g)) + ' that you took out first — it is part of the answer.'));
+    return out;
+  }
+  function dosFull(core, g, expr, o) {
+    o = o || {}; g = g || N(1);
+    var steps = [], T = P.mul(g, core), gt = tx(g), gs = gt === '1' ? '' : gt === '-1' ? '-' : gt;
+    var pieces = fullSplit(fo(core, 1, o.coreTex), steps), TF = (gs ? [fo(g)] : []).concat(pieces), key = ftex(TF);
+    expr = expr || tx(T);
+    var L = [];
+    if (gs) L.push('Take out the GCF, ' + t(gt) + ': ' + t(expr + '=' + gs + '(' + (o.coreTex || tx(core)) + ')'));
+    L = L.concat(steps);
+    var notes = pieces.map(stopNote).filter(Boolean); if (notes.length) L.push(notes.join('; ') + '.');
+    L.push(t(expr + '=' + key));
+    var ws = autoWrongs(TF, gs ? g : null);
+    var d = dosSplit(core);
+    if (d) ws.push(wr((gs ? [fo(g)] : []).concat([fo(d.minus.p, 2)]), 'dos-square', 'Your factors multiply to a square, ' + t('(' + d.minus.tex + ')^{2}') + ', which has a middle term. A difference of squares is a <b>difference times a sum</b>: ' + t('(' + d.minus.tex + ')(' + d.plus.tex + ')') + '.'));
+    return { T: T, TF: TF, key: key, expr: expr, sol: L.join('<br>'), wrongs: ws };
+  }
+
+  /* ---------------- trinomials in a block u: (p u + q)(r u + s) ---------------- */
+  function triSteps(p, q, r, s, Lt) {
+    var X = M(1, Lt), X2 = P.mul(X, X), a = p * r, b = p * s + q * r, c = q * s;
+    var tri = S(P.scale(X2, a), P.scale(X, b), N(c)), f0 = S(P.scale(X, p), N(q)), f1 = S(P.scale(X, r), N(s)), out = [];
+    if (a === 1) out.push('Product ' + t(c) + ', sum ' + t(b) + ': ' + t(q) + ' and ' + t(s) + '.<br>' + t(tx(tri) + '=' + br(f0) + br(f1)));
+    else {
+      var m1 = p * s, m2 = q * r;
+      out.push(t('ac=' + a + '(' + c + ')=' + a * c) + '; product ' + t(a * c) + ', sum ' + t(b) + ': ' + t(m1) + ' and ' + t(m2) + '.');
+      out.push(t(tx(tri) + '=' + seq([P.scale(X2, a), P.scale(X, m1), P.scale(X, m2), N(c)])) + '<br>' + t('=' + tx(P.scale(X, p)) + br(f1) + sc1(q) + br(f1)) + '<br>' + t('=' + br(f1) + br(f0)));
+    }
+    return { lines: out, tri: tri, f0: f0, f1: f1, a: a, b: b, c: c };
+  }
+  /* o: { B: block monomial, Bt: its LaTeX, f: [[p,q],[r,s]], g: GCF (poly), expr, why, Bw: wrong block (e.g. x for x²), notes } */
+  function blockTri(o) {
+    var f = o.f, p = f[0][0], q = f[0][1], r = f[1][0], s = f[1][1], st = triSteps(p, q, r, s, 'u');
+    var real = f.map(function (pq) { return fo(S(P.scale(o.B, pq[0]), N(pq[1]))); });
+    var inner = P.mul(real[0].p, real[1].p), g = o.g || N(1), T = P.mul(g, inner), gt = tx(g), gs = gt === '1' ? '' : gt === '-1' ? '-' : gt;
+    var steps = [], pieces = [];
+    real.forEach(function (rf) { pieces = pieces.concat(fullSplit(rf, steps)); });
+    var TF = merge((gs ? [fo(g)] : []).concat(pieces)), expr = o.expr || tx(T), key = ftex(TF);
+    var L = [];
+    if (gs) L.push('Take out the GCF, ' + t(gt) + ': ' + t(expr + '=' + gs + '(' + tx(inner) + ')'));
+    else if (o.expr && o.expr !== tx(T)) L.push('In descending order: ' + t(tx(T)) + '.');
+    L.push((o.why ? o.why + ' ' : '') + 'Let ' + t('u=' + o.Bt) + ': ' + t(tx(st.tri)) + '.');
+    L = L.concat(st.lines);
+    L.push('Replace ' + t('u') + ' by ' + t(o.Bt) + ': ' + t(gs + br(real[0].p) + br(real[1].p)));
+    L = L.concat(steps);
+    var notes = o.notes === false ? [] : pieces.map(stopNote).filter(Boolean); if (notes.length) L.push(notes.join('; ') + '.');
+    L.push(t(expr + '=' + key));
+    var ws = autoWrongs(TF, gs ? g : null);
+    if (o.Bw) { var w0 = S(P.scale(o.Bw, p), N(q)), w1 = S(P.scale(o.Bw, r), N(s)); ws.push(wr((gs ? [fo(g)] : []).concat([fo(w0), fo(w1)]), 'block-back', 'Your brackets hold ' + t(tx(o.Bw)) + ' where they should hold the block ' + t(o.Bt) + '. When you replace ' + t('u') + ', put the whole block back.')); }
+    if (q !== s || p !== r) { var x0 = S(P.scale(o.B, p), N(s)), x1 = S(P.scale(o.B, r), N(q)); if (!P.eq(P.mul(x0, x1), inner)) ws.push(wr((gs ? [fo(g)] : []).concat([fo(x0), fo(x1)]), 'swap-const', 'The constants are in the wrong brackets: your factors give a middle term of ' + t(tx(P.mul(g, S(P.scale(o.B, p * q + r * s))))) + '. Expand to check the middle term.')); }
+    return { T: T, TF: TF, expr: expr, key: key, sol: L.join('<br>'), wrongs: ws, real: real, inner: inner, st: st };
+  }
+  function blockPart(prompt, o, x) {
+    x = x || {}; var b = blockTri(o);
+    return facPart(prompt || t(b.expr), b.TF, { wrong: b.wrongs.concat(x.wrong || []), sol: b.sol, hints: x.hints || (b.st.a === 1 ? H.block : H.dec), text: x.text || 'factor ' + plain(b.expr), good: x.good, bad: x.bad });
+  }
+  var X2 = M(1, 'x', 2);
+  function B(v, e) { return M(1, v, e); }
+
+  /* coefficient in front of a bracketed block: 2(a+b)², -(m+n), +5(a+b) */
+  function cA(c, At, pw, first) { var s = c === 1 ? '' : c === -1 ? '-' : String(c); return (first || c < 0 ? '' : '+') + s + '(' + At + ')' + (pw ? '^{2}' : ''); }
+  function cK(c) { return c === 0 ? '' : (c < 0 ? String(c) : '+' + c); }
 
   /* ---------------- multiple choice helpers ---------------- */
-  function mcPart(r, prompt, opts, sol, hints, text, keepOrder) { return B.mc(r, prompt, opts, sol, hints, text, keepOrder); }
+  function mcTex(r, prompt, opts, sol, hints, text, keepOrder) { return KP.mc(r, prompt, opts, sol, hints, text, keepOrder); }
 
-  /* ---------------- generators reused in several places ---------------- */
-  // (ax + u)(bx − v), primitive, a·b ≥ 4 (decomposition), middle ≠ 0
-  function decPair(r, A, Bs, U, Vs, sign) {
-    for (var i = 0; i < 400; i++) {
-      var a = r.pick(A), b = r.pick(Bs), u = r.int(U[0], U[1]), v = r.int(Vs[0], Vs[1]);
-      if (gcd(a, u) !== 1 || gcd(b, v) !== 1) continue;
-      var mid = -a * v + b * u; if (!mid) continue; if (sign === '+' && mid < 0) continue; if (sign === '-' && mid > 0) continue;
-      if (a === b && u === v) continue;
-      return { a: a, u: u, b: b, v: v, mid: mid };
-    }
-    return { a: 2, u: 3, b: 3, v: 4, mid: 1 };
+  /* Q1 rows: (a) monic PST (b) non-square constant (c) (ax−1)² (d) both ends square, middle half (e) negative last (f) (ax−1)² */
+  function q1Rows(r) {
+    var k = r.int(4, 10), A = pst(B('a'), N(k));
+    var mn = pickWhere(function () { return [r.int(2, 6), r.int(7, 12)]; }, function (v) { return !isSq(v[0] * v[1]); });
+    var Bt = P.mul(S(B('x'), N(-mn[0])), S(B('x'), N(-mn[1])));
+    var c1 = r.int(3, 7), C = pst(M(c1, 'x'), N(-1));
+    var d = pickWhere(function () { return [r.int(2, 7), r.int(3, 10)]; }, function (v) { return v[0] !== v[1] && gcd(v[0], v[1]) === 1; });
+    var D = S(M(d[0] * d[0], 'y', 2), M(d[0] * d[1], 'y'), N(d[1] * d[1]));
+    var e = r.int(3, 8), em = r.pick([2, 4]) * e, E = S(B('a', 2), M(em, 'a'), N(-e * e));
+    var f1 = r.pick([2, 3, 4, 5, 6, 7].filter(function (x) { return x !== c1; })), Fz = pst(M(f1, 'x'), N(-1));
+    return [
+      { tex: A.expr, yes: true, note: pstLine(A) + ' — <b>yes</b>, ' + t(A.key) + '.' },
+      { tex: tx(Bt), yes: false, note: t(mn[0] * mn[1]) + ' is not a perfect square, so condition (2) fails — <b>no</b>.' },
+      { tex: C.expr, yes: true, note: pstLine(C) + ' — <b>yes</b>, ' + t(C.key) + '.' },
+      { tex: tx(D), yes: false, note: t('\\sqrt{' + d[0] * d[0] + 'y^{2}}=' + d[0] + 'y') + ', ' + t('\\sqrt{' + d[1] * d[1] + '}=' + d[1]) + ', but ' + t('2(' + d[0] + 'y)(' + d[1] + ')=' + 2 * d[0] * d[1] + 'y\\neq ' + d[0] * d[1] + 'y') + ' — <b>no</b>.' },
+      { tex: tx(E), yes: false, note: 'The last term ' + t(-e * e) + ' is negative, so condition (2) fails — <b>no</b>.' },
+      { tex: Fz.expr, yes: true, note: pstLine(Fz) + ' — <b>yes</b>, ' + t(Fz.key) + '.' }];
   }
-  function irreducibleMonic(r, bLo, bHi, cLo, cHi, cSign) {
-    for (var i = 0; i < 400; i++) { var b = r.int(bLo, bHi) * (r.chance(0.5) && cSign === 'any' ? -1 : 1), c = r.int(cLo, cHi) * (cSign === '-' ? -1 : 1); if (!hasPair(c, b)) return { b: b, c: c }; }
-    return { b: 6, c: 15 };
+
+  /* Q14 figure: right angle at P; PQ (vertical) drawn longer than PR, as in the question */
+  var TRI_SVG = '<svg class="fig-svg" viewBox="0 0 220 170" width="100%" style="max-width:240px" role="img" aria-label="Right triangle PQR with the right angle at P">' +
+    '<polygon points="40,150 130,150 40,20" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="40,136 54,136 54,150" fill="none" stroke="currentColor" stroke-width="1.5"/>' +
+    '<text x="26" y="162" font-size="15" font-style="italic" fill="currentColor">P</text><text x="136" y="162" font-size="15" font-style="italic" fill="currentColor">R</text><text x="34" y="14" font-size="15" font-style="italic" fill="currentColor">Q</text></svg>';
+
+  /* EP14 four-term polynomials */
+  function e14Shared(r) {
+    var k = r.int(2, 9), cy = r.pick([1, 1, 2]);
+    var a = { k: k, cy: cy, T: S(B('x', 2), M(2 * k, 'x'), N(k * k), M(-cy * cy, 'y', 2)) };
+    a.TF = [fo(S(B('x'), N(k), M(-cy, 'y')), 1, 'x+' + k + '-' + tx(M(cy, 'y'))), fo(S(B('x'), N(k), M(cy, 'y')), 1, 'x+' + k + '+' + tx(M(cy, 'y')))];
+    a.expr = seq([B('x', 2), M(2 * k, 'x'), N(k * k), M(-cy * cy, 'y', 2)]);
+    var s1 = r.pick([1, 1, 2, 3]), t1 = r.pick([1, 1, 2, 3]);
+    var b = { s: s1, tt: t1, terms: [M(1, { a: 1, x: 1 }), M(s1, { a: 1, y: 1 }), M(t1, { b: 1, x: 1 }), M(s1 * t1, { b: 1, y: 1 })] };
+    b.T = S.apply(null, b.terms); b.expr = seq(b.terms); b.TF = [fo(S(B('x'), M(s1, 'y'))), fo(S(B('a'), M(t1, 'b')))];
+    var cc = pickWhere(function () { return { m: r.int(2, 5), p: r.int(1, 5), n: r.int(1, 9) }; }, function (v) { return gcd(v.m, v.n) === 1 && v.n !== v.m; });
+    var c = { m: cc.m, p: cc.p, n: cc.n, terms: [M(cc.m, 'x', 3), M(-cc.m * cc.p, 'x', 2), M(cc.n, 'x'), N(-cc.n * cc.p)] };
+    c.T = S.apply(null, c.terms); c.expr = seq(c.terms); c.TF = [fo(S(B('x'), N(-cc.p))), fo(S(M(cc.m, 'x', 2), N(cc.n)))];
+    var dk = r.int(2, 9), d = { k: dk, terms: [B('m', 2), M(-1, 'n', 2), M(2 * dk, 'n'), N(-dk * dk)] };
+    d.T = S.apply(null, d.terms); d.expr = seq(d.terms);
+    d.TF = [fo(S(B('m'), M(-1, 'n'), N(dk)), 1, 'm-n+' + dk), fo(S(B('m'), B('n'), N(-dk)), 1, 'm+n-' + dk)];
+    var ee = pickWhere(function () { return { p: r.int(2, 5), q: r.int(1, 5), r: r.int(2, 7) }; }, function (v) { return gcd(v.p, v.q) === 1 && v.p !== v.q; });
+    var base = S(M(ee.p, 'a'), M(-ee.q, 'b')), sq = P.mul(base, base), e = { p: ee.p, q: ee.q, rr: ee.r, base: base };
+    e.terms = P.sorted(sq).map(function (T) { return P.mono(T.c, T.v); }).concat([N(-ee.r * ee.r)]); e.T = S.apply(null, e.terms); e.expr = seq(e.terms);
+    e.bt = tx(base); e.TF = [fo(S(base, N(-ee.r)), 1, e.bt + '-' + ee.r), fo(S(base, N(ee.r)), 1, e.bt + '+' + ee.r)];
+    var ff = pickWhere(function () { return { s: r.int(2, 7), m: r.int(2, 5), n: r.int(1, 9) }; }, function (v) { return gcd(v.m, v.n) === 1 && v.n !== v.m; });
+    var f = { s: ff.s, m: ff.m, n: ff.n, terms: [M(ff.m, { p: 1, q: 1 }), M(-ff.m * ff.s, 'p'), M(ff.n, 'q'), N(-ff.n * ff.s)] };
+    f.T = S.apply(null, f.terms); f.expr = seq(f.terms); f.TF = [fo(S(B('q'), N(-ff.s))), fo(S(M(ff.m, 'p'), N(ff.n)))];
+    return { a: a, b: b, c: c, d: d, e: e, f: f };
+  }
+
+  /* EP16: (x² + bx)² + …, each bracket x² + bx − r = (x − u)(x − v) */
+  function e16Gen(r, wantSquare) {
+    return pickWhere(function () {
+      var b = r.pick([-6, -4, -2, 2, 4, 6]), S0 = -b, pairs = [];
+      for (var u = -7; u <= 7; u++) { var v = S0 - u; if (u > v || !u || !v || Math.abs(v) > 7) continue; pairs.push([u, v]); }
+      var sqp = pairs.filter(function (pq) { return pq[0] === pq[1]; }), nsp = pairs.filter(function (pq) { return pq[0] !== pq[1]; });
+      var A = wantSquare ? r.pick(sqp.length ? sqp : [[0, 0]]) : r.pick(nsp), Bq = r.pick(nsp);
+      return { b: b, P1: A, P2: Bq };
+    }, function (g) {
+      if (!g.P1[0] && !g.P1[1]) return false;
+      var r1 = -g.P1[0] * g.P1[1], r2 = -g.P2[0] * g.P2[1];
+      if (g.P1[0] === g.P2[0] && g.P1[1] === g.P2[1]) return false;
+      if (r1 === r2 || r1 + r2 === 0 || Math.abs(r1 * r2) > 60) return false;
+      g.r1 = r1; g.r2 = r2; return true;
+    });
   }
 
   HW.defineLesson({
-    id: 'u4l6', unit: 4, num: '6', title: 'Choosing a Factoring Strategy', outcome: 'AN5',
-    blurb: 'No new technique — a checklist for picking the right tool (common factor, difference of squares, inspection, decomposition, grouping), then a mixture of expressions to factor completely.',
+    id: 'u4l6', unit: 4, num: '6', title: 'Further Factoring', outcome: 'AN5',
+    blurb: 'Perfect square trinomials, trinomials hiding a monomial block (x², ab, x³ …), and differences of squares that keep on splitting.',
     questions: [
-      /* ---------- Part A ---------- */
-      { num: '1', section: 'Part A — Choosing and Using a Strategy', stem: 'Factor completely. Run the checklist first: common factor? Then count the terms. (For (b), the worked solution shows the check by expanding.)', parts: [
-        { id: '1a', level: 'BEG', make: function (r) { return fac(dos({ A: X, B: N(r.int(6, 15)) })); } },
-        { id: '1b', level: 'BEG', make: function (r) {
-          var p, q; do { p = r.int(4, 12); q = r.int(2, p - 1); } while (p * q > 96);
-          return fac(tri({ a: 1, u: -p, b: 1, v: q, X: X, check: true }));
+      /* ---------- Q1 three-part test ---------- */
+      { num: '1', section: 'Part A — Perfect Squares, Disguised Trinomials and Differences of Squares', stem: 'Which of the following are perfect square trinomials?', parts: [
+        { id: '1', level: 'BEG', make: function (r) {
+          var rows = r.shuffle(q1Rows(r)), L = 'abcdef';
+          var gr = rows.map(function (x, i) { return { id: 'r' + i, html: '(' + L[i] + ')&nbsp; ' + t(x.tex) }; }), want = {};
+          rows.forEach(function (x, i) { want['r' + i] = x.yes ? 'y' : 'n'; });
+          var p = KP.grid('For each trinomial, decide whether it is a perfect square trinomial.', gr, [{ id: 'y', html: 'Perfect square' }, { id: 'n', html: 'Not' }], want,
+            { why: function (id) { var i = Number(id.slice(1)), x = rows[i]; return '(' + L[i] + ') ' + (x.yes ? 'passes all three conditions — check the middle term again.' : 'fails one of the three conditions: check the last term, then the middle term.'); } },
+            rows.map(function (x, i) { return '(' + L[i] + ') ' + x.note; }).join('<br>'), H.pst, 'which are perfect square trinomials');
+          return p;
+        } }] },
+      /* ---------- Q2 fill the blank ---------- */
+      { num: '2', stem: 'Fill in each blank so that the trinomial is a perfect square trinomial.', parts: [
+        { id: '2a', level: 'BEG', make: function (r) {
+          var k = r.int(5, 12), T = M(2 * k, 'x');
+          return blankPart(t('x^{2}+' + BL + '+' + k * k), T, [{ is: M(k, 'x'), code: 'not-doubled', hint: 'The middle term is <b>twice</b> the product of the square roots: ' + t('2(x)(' + k + ')') + '.' }, { is: N(2 * k), code: 'no-var', hint: 'The middle term needs the variable: ' + t('2(x)(' + k + ')') + ' has an ' + t('x') + ' in it.' }, { is: M(2 * k * k, 'x'), code: 'no-root', hint: 'Use the square <b>root</b> of the last term: ' + t('\\sqrt{' + k * k + '}=' + k) + '.' }],
+            { signGiven: '+' }, t('\\sqrt{' + k * k + '}=' + k) + ', so the middle term is ' + t('2(x)(' + k + ')=' + 2 * k + 'x') + '.<br>' + t('x^{2}+' + 2 * k + 'x+' + k * k + '=(x+' + k + ')^{2}'), ['The middle term of a perfect square trinomial is twice the product of the square roots of the first and last terms.'], 'blank: x^2 + __ + ' + k * k);
         } },
-        { id: '1c', level: 'EMG', make: function (r) {
-          var k = r.pick([2, 3, 5, 6, 7]), mn = r.pick([[2, 1], [2, 3], [2, 5], [3, 1], [3, 2], [3, 4], [3, 5], [2, 3], [1, 2], [1, 3]]), m = mn[0], n = mn[1];
-          var inner = S(M(m * m, { x: 2 }), N(n * n)), expr = P.mul(N(k), inner), tex = tx(expr), keyTex = k + '(' + tx(inner) + ')';
-          var pr = { expr: expr, tex: tex, list: [N(k), inner], keyTex: keyTex, text: 'factor ' + plain(tex),
-            sol: '<b>Common factor first:</b> ' + t(tex + '=' + keyTex) + '.<br>' + t(tx(inner) + '=' + sqx(M(m, 'x')) + '^{2}+' + n + '^{2}') + ' is a <b>sum</b> of squares, which does not factor over the integers, so this is fully factored.<br>' + t(tex + '=' + keyTex),
-            hints: ['Checklist step 1: every term is divisible by ' + t(k) + '.', 'Then look at the two terms left. Is it a <b>difference</b> of squares?'],
-            wrongs: [{ is: [N(k), S(M(m, 'x'), N(-n)), S(M(m, 'x'), N(n))], code: 'sum-squares', hint: t(tx(inner)) + ' is a <b>sum</b> of squares. ' + t('(' + m + 'x-' + n + ')(' + m + 'x+' + n + ')') + ' multiplies to ' + t(tx(P.sub(M(m * m, { x: 2 }), N(n * n)))) + ', a difference. A sum of squares does not factor.' },
-              { is: [N(k), { p: S(M(m, 'x'), N(n)), k: 2 }], code: 'sum-as-square', hint: t('(' + tx(S(M(m, 'x'), N(n))) + ')^{2}') + ' has a middle term. A sum of squares, ' + t(tx(inner)) + ', does not factor.' },
-              { is: [inner], code: 'gcf-missing', hint: 'Take out the common factor ' + t(k) + ' first.' }] };
-          var part = fac(pr); part.good = [];
-          return part;
+        { id: '2b', level: 'BEG', make: function (r) {
+          var k = r.int(6, 13), T = M(2 * k, 'x');
+          return blankPart(t('x^{2}-' + BL + '+' + k * k), T, [{ is: M(k, 'x'), code: 'not-doubled', hint: 'The middle term is <b>twice</b> the product of the square roots: ' + t('2(x)(' + k + ')') + '.' }, { is: N(2 * k), code: 'no-var', hint: 'The middle term needs the variable: ' + t('2(x)(' + k + ')') + ' has an ' + t('x') + ' in it.' }, { is: M(2 * k * k, 'x'), code: 'no-root', hint: 'Use the square <b>root</b> of the last term: ' + t('\\sqrt{' + k * k + '}=' + k) + '.' }],
+            { signGiven: '-' }, t('\\sqrt{' + k * k + '}=' + k) + ', so the middle term is ' + t('2(x)(' + k + ')=' + 2 * k + 'x') + ' (the minus sign is already printed).<br>' + t('x^{2}-' + 2 * k + 'x+' + k * k + '=(x-' + k + ')^{2}'), ['The middle term of a perfect square trinomial is twice the product of the square roots of the first and last terms.'], 'blank: x^2 - __ + ' + k * k);
         } },
-        { id: '1d', level: 'EMG', make: function (r) {
-          var p = r.int(1, 5), q = r.int(1, 6), b = V('b');
-          return fac(grp({ A1: M(1, { b: 2 }), A2: N(q), B1: b, B2: N(p), note: t('b^{2}+' + q) + ' is a sum and does not factor, so this is complete.' }));
+        { id: '2c', level: 'EMG', make: function (r) {
+          var g = pickWhere(function () { return { a: r.int(2, 5), b: r.int(3, 7) }; }, function (g) { return g.a !== g.b && gcd(g.a, g.b) === 1; }), a = g.a, b = g.b, T = M(2 * a * b, 'x');
+          return blankPart(t(a * a + 'x^{2}+' + BL + '+' + b * b), T, [{ is: M(a * b, 'x'), code: 'not-doubled', hint: 'The middle term is <b>twice</b> the product of the square roots.' }, { is: N(2 * a * b), code: 'no-var', hint: 'The middle term needs the variable: the square root of ' + t(a * a + 'x^{2}') + ' is ' + t(a + 'x') + '.' },
+            { is: M(2 * a * a * b, 'x'), code: 'no-root', hint: 'Use the square <b>root</b> of the first term: ' + t('\\sqrt{' + a * a + 'x^{2}}=' + a + 'x') + '.' }, { is: M(2 * a * b * b, 'x'), code: 'no-root', hint: 'Use the square <b>root</b> of the last term: ' + t('\\sqrt{' + b * b + '}=' + b) + '.' }, { is: M(2 * b, 'x'), code: 'no-root', hint: 'Don’t forget the coefficient: ' + t('\\sqrt{' + a * a + 'x^{2}}=' + a + 'x') + ', not ' + t('x') + '.' }],
+            { signGiven: '+' }, t('\\sqrt{' + a * a + 'x^{2}}=' + a + 'x') + ', ' + t('\\sqrt{' + b * b + '}=' + b) + ', so the middle term is ' + t('2(' + a + 'x)(' + b + ')=' + 2 * a * b + 'x') + '.<br>' + t(a * a + 'x^{2}+' + 2 * a * b + 'x+' + b * b + '=(' + a + 'x+' + b + ')^{2}'), ['Take the square root of the first term (coefficient and variable) and of the last term, multiply them, then double.'], 'blank: ' + a * a + 'x^2 + __ + ' + b * b);
         } },
-        { id: '1e', level: 'EMG', make: function (r) {
-          var a, s, u; do { a = r.pick([2, 3, 5]); s = r.int(1, 6); u = r.int(1, 7); } while (gcd(a, u) !== 1 || u - a * s >= 0 || a * s * u > 72);
-          return fac(tri({ a: 1, u: -s, b: a, v: u, X: V('q') }));
+        { id: '2d', level: 'PRG', make: function (r) {
+          var g = pickWhere(function () { return { a: r.int(2, 5), b: r.int(3, 9) }; }, function (g) { return g.a !== g.b && gcd(g.a, g.b) === 1; }), a = g.a, b = g.b, T = N(b * b);
+          return blankPart(t(a * a + 'm^{2}+' + 2 * a * b + 'm+' + BL), T, [{ is: N(b), code: 'not-squared', hint: t(b) + ' is the square <b>root</b> of the last term. The last term itself is its square.' }, { is: N(a * a * b * b), code: 'half-root', hint: 'The middle term is ' + t('2(' + a + 'm)(k)') + ', not ' + t('2(m)(k)') + ': divide ' + t(2 * a * b + 'm') + ' by ' + t('2(' + a + 'm)') + ' to find ' + t('k') + '.' },
+            { is: N(4 * b * b), code: 'not-halved', hint: 'Remember the <b>2</b> in “twice the product”: ' + t(2 * a * b + 'm=2(' + a + 'm)k') + '.' }, { is: M(b * b, 'm', 2), code: 'has-var', hint: 'The last term here is a constant — the ' + t('m^{2}') + ' is already in the first term.' }],
+            {}, t('\\sqrt{' + a * a + 'm^{2}}=' + a + 'm') + '; we need ' + t(2 * a * b + 'm=2(' + a + 'm)k=' + 2 * a + 'mk') + ', so ' + t('k=' + b) + ' and the last term is ' + t('k^{2}=' + b * b) + '.<br>' + t(a * a + 'm^{2}+' + 2 * a * b + 'm+' + b * b + '=(' + a + 'm+' + b + ')^{2}'),
+            ['Call the square root of the last term ' + t('k') + '. The middle term must be ' + t('2(' + a + 'm)(k)') + ' — solve for ' + t('k') + ', then square it.'], 'blank: ' + a * a + 'm^2 + ' + 2 * a * b + 'm + __');
         } },
-        { id: '1f', level: 'BEG', make: function (r) { var pq; do { pq = two(r, 2, 9); } while (pq[0] * pq[1] > 72); return fac(tri({ a: 1, u: Math.max(pq[0], pq[1]), b: 1, v: Math.min(pq[0], pq[1]), X: V('w') })); } }] },
-
-      { num: '2', stem: 'Factor completely.', parts: [
-        { id: '2a', level: 'EMG', make: function (r) {
-          var a, s, u; do { a = r.pick([3, 5, 7]); s = r.int(2, 6); u = r.int(1, 9); } while (gcd(a, u) !== 1 || u - a * s >= 0 || u === s);
-          return fac(tri({ a: 1, u: -s, b: a, v: u, X: X }));
+        { id: '2e', level: 'EMG', make: function (r) {
+          var g = pickWhere(function () { return { p: r.pick([3, 5, 7]), q: r.pick([1, 1, 2]) }; }, function (g) { return gcd(g.p, g.q) === 1; }), p = g.p, q = g.q, T = M([2 * q, p], 'a');
+          var first = M([1, p * p], 'a', 2), ws = [{ is: M([q, p], 'a'), code: 'not-doubled', hint: 'The middle term is <b>twice</b> the product of the square roots.' }, { is: M([2 * q, p * p], 'a'), code: 'no-root', hint: 'Use the square <b>root</b> of the first term: ' + t('\\sqrt{\\frac{1}{' + p * p + '}a^{2}}=\\frac{1}{' + p + '}a') + '.' }, { is: N([2 * q, p]), code: 'no-var', hint: 'The middle term needs the variable ' + t('a') + '.' }];
+          if (q > 1) ws.push({ is: M([2 * q * q, p], 'a'), code: 'no-root', hint: 'Use the square <b>root</b> of the last term: ' + t('\\sqrt{' + q * q + '}=' + q) + '.' });
+          var o = pst(M([1, p], 'a'), N(q));
+          return blankPart(t(tx(first) + '+' + BL + '+' + q * q), T, ws, { signGiven: '+' },
+            t('\\sqrt{\\tfrac{1}{' + p * p + '}a^{2}}=\\tfrac{1}{' + p + '}a') + ', ' + t('\\sqrt{' + q * q + '}=' + q) + ', so the middle term is ' + t('2\\left(\\tfrac{1}{' + p + '}a\\right)(' + q + ')=' + tx(T)) + '.<br>' + t(o.expr + '=' + o.key), ['The square root of ' + t('\\frac{1}{' + p * p + '}a^{2}') + ' is ' + t('\\frac{1}{' + p + '}a') + ' (square root of the top and of the bottom). Then multiply by the other root and double.'], 'blank: (1/' + p * p + ')a^2 + __ + ' + q * q);
         } },
-        { id: '2b', level: 'PRG', make: function (r) {
-          var a, u, s; do { a = r.pick([2, 3, 5]); u = r.int(2, 7); s = r.int(1, 4); } while (gcd(a, u) !== 1 || a * s - u === 0);
-          var pr = tri({ k: -1, a: a, u: -u, b: 1, v: s, X: X, order: 'asc', reorder: true });
-          pr.good = ['(' + u + '-' + a + 'x)(x+' + s + ')'];
-          return fac(pr);
-        } },
-        { id: '2c', level: 'EMG', make: function (r) { return fac(dos({ A: V('m'), B: M(r.int(2, 12), 'n') })); } },
-        { id: '2d', level: 'EMG', make: function (r) { var k = r.pick([2, 3, 5, 6, 7]), a = r.int(2, 9); return fac(dos({ k: k, A: N(a), B: V('z'), order: 'asc' })); } },
-        { id: '2e', level: 'EMG', make: function (r) { var pq = two(r, 1, 9); return fac(tri({ a: 1, u: Math.max(pq[0], pq[1]), b: 1, v: Math.min(pq[0], pq[1]), X: M(1, { x: 2 }) })); } },
         { id: '2f', level: 'PRG', make: function (r) {
-          var k, a, u, s; do { k = r.pick([2, 3, 4, 5]); a = r.pick([2, 3, 5]); u = r.int(1, 7); s = r.int(1, 6); } while (gcd(a, u) !== 1 || u - a * s >= 0);
-          return fac(tri({ k: k, a: a, u: u, b: 1, v: -s, X: V('v') }));
+          var g = pickWhere(function () { return { b: r.int(2, 5), k: r.int(5, 12) }; }, function (g) { return gcd(g.b, g.k) === 1; }), b = g.b, k = g.k, T = N(k * k);
+          return blankPart(t(BL + '-' + 2 * k * b + 'y+' + b * b + 'y^{2}'), T, [{ is: N(k), code: 'not-squared', hint: t(k) + ' is the square <b>root</b> of the missing term. The term itself is its square.' }, { is: N(k * k * b * b), code: 'half-root', hint: 'The middle term is ' + t('2(k)(' + b + 'y)') + ': divide ' + t(2 * k * b + 'y') + ' by ' + t('2(' + b + 'y)') + ' to find ' + t('k') + '.' },
+            { is: N(4 * k * k), code: 'not-halved', hint: 'Remember the <b>2</b> in “twice the product”: ' + t(2 * k * b + 'y=2(k)(' + b + 'y)') + '.' }, { is: M(k * k, 'y', 2), code: 'has-var', hint: 'The ' + t('y^{2}') + ' term is already there (' + t(b * b + 'y^{2}') + '). The missing term is the constant.' }],
+            {}, t('\\sqrt{' + b * b + 'y^{2}}=' + b + 'y') + '; we need ' + t(2 * k * b + 'y=2(' + b + 'y)k=' + 2 * b + 'yk') + ', so ' + t('k=' + k) + ' and the missing term is ' + t('k^{2}=' + k * k) + '.<br>' + t(k * k + '-' + 2 * k * b + 'y+' + b * b + 'y^{2}=(' + b + 'y-' + k + ')^{2}'),
+            ['Here the blank is the constant term. Call its square root ' + t('k') + ': the middle term must be ' + t('2(k)(' + b + 'y)') + '.'], 'blank: __ - ' + 2 * k * b + 'y + ' + b * b + 'y^2');
         } }] },
-
-      { num: '3', stem: 'Factor completely.', parts: [
-        { id: '3a', level: 'EMG', make: function (r) { var us = two(r, 2, 9); return fac(grp({ A1: V('m'), A2: N(-us[1]), B1: V('n'), B2: N(us[0]) })); } },
-        { id: '3b', level: 'PRG', make: function (r) { var pq = cop(r, 2, 9, 2, 9); return fac(tri({ a: pq[0], u: pq[1], b: pq[0], v: pq[1], X: V('a') })); } },
+      /* ---------- Q3 factor PSTs ---------- */
+      { num: '3', stem: 'Factor each perfect square trinomial.', parts: [
+        { id: '3a', level: 'EMG', make: function (r) {
+          var a = r.int(2, 9), o = pst(M(a, 'x'), N(-1)), m = P.mul(o.base, o.base);
+          return pstPart(t(o.expr), o, { solExtra: '<br>Verify by expanding: ' + t('(' + o.baseTex + ')(' + o.baseTex + ')=' + a * a + 'x^{2}-' + a + 'x-' + a + 'x+1=' + tx(m)) + ' ✓', hints: [H.pst[0], 'Then verify: expand your answer — you should get back ' + t(o.expr) + '.'] });
+        } },
+        { id: '3b', level: 'PRG', make: function (r) {
+          var g = pickWhere(function () { return { a: r.int(2, 7), b: r.int(2, 7) }; }, function (g) { return g.a !== g.b && gcd(g.a, g.b) === 1; }), o = pst(M(g.a, 'x'), N(g.b), 'asc');
+          return pstPart(t(o.expr), o, { solExtra: '', good: ['(' + g.b + '+' + g.a + 'x)^2'] });
+        } },
         { id: '3c', level: 'PRG', make: function (r) {
-          var a, b, u, v; do { a = r.pick([2, 3, 4, 5]); b = r.pick([2, 3]); u = r.int(1, 7); v = r.int(1, 7); } while (gcd(a, u) !== 1 || gcd(b, v) !== 1 || (a === b && u === v) || a * v === b * u);
-          return fac(tri({ a: a, u: u, b: b, v: v, X: V('g'), order: 'asc', reorder: true }));
+          var g = pickWhere(function () { return { a: r.int(2, 7), b: r.int(2, 7) }; }, function (g) { return g.a !== g.b && gcd(g.a, g.b) === 1; }), o = pst(M(g.a, 'a'), M(-g.b, 'b'));
+          return pstPart(t(o.expr), o);
         } },
-        { id: '3d', level: 'PRG', make: function (r) { var k = r.pick([1, 1, 2, 3]), a = r.pick([1, 2, 3]); return fac(dos({ k: M(k, 'x'), A: M(1, { x: 2 }), B: N(a * a), again: true })); } },
-        { id: '3e', level: 'PRG', make: function (r) { var a = r.pick([2, 3, 4, 5]); return fac(dos({ A: M(1, { t: 2 }), B: N(a * a), again: true, order: 'asc', reorder: true })); } }] },
-
+        { id: '3d', level: 'PRG', make: function (r) {
+          var g = pickWhere(function () { return { a: r.int(2, 5), b: r.pick([7, 9, 11, 13]) }; }, function (g) { return gcd(g.a, g.b) === 1; }), o = pst(M(g.a, 'x'), N(-g.b));
+          return pstPart(t(o.expr), o);
+        } }] },
+      /* ---------- Q4 x⁴ trinomials ---------- */
       { num: '4', stem: 'Factor completely.', parts: [
-        { id: '4a', level: 'PRG', make: function (r) { var p, q; do { p = r.int(5, 12); q = r.int(2, p - 2); } while (p * q > 96); return fac(tri({ a: 1, u: -p, b: 1, v: q, X: X, Y: V('y') })); } },
-        { id: '4b', level: 'PRG', make: function (r) {
-          var u, c, v; do { u = r.int(1, 5); c = r.pick([2, 3, 4, 5, 6]); v = r.int(1, 7); } while (gcd(c, v) !== 1 || (c === 1 && u === v) || v === c * u);
-          return fac(tri({ a: 1, u: u, b: c, v: v, X: V('a'), Y: V('b') }));
-        } }] },
-
-      { num: '5', stem: '<i>(Explain your strategy)</i> For each polynomial, name the method you would use <b>first</b> and why. Then factor completely.',
-        shared: function (r) {
-          var k = r.pick([2, 3, 5]), n = r.int(2, 7);
-          var d = decPair(r, [2, 3, 4], [2, 3], [1, 7], [1, 5]);
-          var us = two(r, 2, 7);
-          return { k: k, n: n, d: d, u: us[0], s: us[1] };
-        },
-        parts: [
-          { id: '5a1', sub: 'a i', level: 'EMG', make: function (r, sh) {
-            var pr = dos({ k: M(sh.k, 'x'), A: X, B: N(sh.n) });
-            return mcPart(r, 'Which method should you use <b>first</b> on ' + t(pr.tex) + ', and why?', [
-              { html: '<b>Common factor first</b>: every term shares ' + t(sh.k + 'x') + '. What is left, ' + t('x^{2}-' + sh.n * sh.n) + ', is then a difference of squares.', right: true },
-              { html: '<b>Difference of squares</b> straight away: there are two terms with a minus sign between them.', why: 'Two terms is a good sign, but ' + t(sh.k + 'x^{3}') + ' and ' + t(sh.k * sh.n * sh.n + 'x') + ' are not perfect squares. Step 1 comes first: take out ' + t(sh.k + 'x') + ', then look again.' },
-              { html: '<b>Inspection</b>: find two integers that multiply to ' + t(-sh.k * sh.n * sh.n) + '.', why: 'Inspection is for a trinomial ' + t('x^{2}+bx+c') + '. This has only two terms.' },
-              { html: '<b>Grouping</b>: split it into two pairs.', why: 'Grouping needs four terms. This has two — and every term shares a common factor, so step 1 applies first.' }],
-              'Every term shares ' + t(sh.k + 'x') + ', so <b>common factor first</b>: ' + t(pr.tex + '=' + sh.k + 'x(x^{2}-' + sh.n * sh.n + ')') + '. That leaves two terms, a difference of squares.', ['Checklist step 1: does every term share a factor?'], 'method for ' + plain(pr.tex));
-          } },
-          { id: '5a2', sub: 'a ii', level: 'PRG', make: function (r, sh) { return fac(dos({ k: M(sh.k, 'x'), A: X, B: N(sh.n) }), { prompt: 'Now factor ' + t(P.tex(P.mul(M(sh.k, 'x'), P.sub(M(1, { x: 2 }), N(sh.n * sh.n))))) + ' completely.' }); } },
-          { id: '5b1', sub: 'b i', level: 'BEG', make: function (r, sh) {
-            var d = sh.d, pr = tri({ a: d.a, u: d.u, b: d.b, v: -d.v, X: X });
-            return mcPart(r, 'Which method should you use <b>first</b> on ' + t(pr.tex) + ', and why?', [
-              { html: '<b>Decomposition</b>: three terms, no common factor, and the leading coefficient ' + t(pr.A) + ' is not ' + t('1') + '.', right: true },
-              { html: '<b>Inspection</b>: three terms, so find two integers that multiply to ' + t(pr.C) + ' and add to ' + t(pr.Bm) + '.', why: 'Inspection only works when the leading coefficient is ' + t('1') + '. Here ' + t('a=' + pr.A) + ', so decompose using ' + t('ac=' + pr.A * pr.C) + '.' },
-              { html: '<b>Common factor first</b>: every term shares a factor.', why: t(pr.A) + ', ' + t(pr.Bm) + ' and ' + t(pr.C) + ' have no common factor except ' + t('1') + ', and the last term has no ' + t('x') + '. There is nothing to take out.' },
-              { html: '<b>Difference of squares</b>: the first term is a product of two equal factors.', why: 'A difference of squares has exactly two terms. This has three.' }],
-              'No common factor; three terms with ' + t('a=' + pr.A + '\\neq 1') + ', so <b>decomposition</b>.', ['Count the terms, then look at the leading coefficient.'], 'method for ' + plain(pr.tex));
-          } },
-          { id: '5b2', sub: 'b ii', level: 'PRG', make: function (r, sh) { var d = sh.d, pr = tri({ a: d.a, u: d.u, b: d.b, v: -d.v, X: X }); return fac(pr, { prompt: 'Now factor ' + t(pr.tex) + ' completely.' }); } },
-          { id: '5c1', sub: 'c i', level: 'BEG', make: function (r, sh) {
-            var pr = grp({ A1: V('a'), A2: N(sh.u), B1: V('b'), B2: N(-sh.s) });
-            return mcPart(r, 'Which method should you use <b>first</b> on ' + t(pr.tex) + ', and why?', [
-              { html: '<b>Grouping</b>: four terms, and no factor is common to all four.', right: true },
-              { html: '<b>Common factor</b>: every term shares a factor.', why: 'Look again: ' + t(pr.t4.map(tx).join(',\\ ')) + ' have no factor common to all four terms. <i>Pairs</i> share factors — that is what grouping uses.' },
-              { html: '<b>Decomposition</b>: split the middle term.', why: 'Decomposition is for a trinomial (three terms). This already has four terms — it is like a decomposition with the split already done.' },
-              { html: '<b>Difference of squares</b>: two of the terms are perfect squares.', why: 'A difference of squares has exactly two terms. This has four.' }],
-              'Four terms and no common factor to all four, so <b>grouping</b>.', ['Count the terms.'], 'method for ' + plain(pr.tex));
-          } },
-          { id: '5c2', sub: 'c ii', level: 'EMG', make: function (r, sh) { var pr = grp({ A1: V('a'), A2: N(sh.u), B1: V('b'), B2: N(-sh.s) }); return fac(pr, { prompt: 'Now factor ' + t(pr.tex) + ' completely.' }); } }] },
-
-      { num: '6', stem: 'Each factorization below has an error. Identify it, then write the correct factored form (or decide that it does not factor).',
-        shared: function (r) {
-          var p, q; do { p = r.int(3, 8); q = r.int(1, p - 1); } while (p * q > 30);
-          return { k: r.pick([2, 3, 5, 7]), n: r.int(2, 7), m: r.int(2, 9), ck: r.pick([2, 3, 4, 5]), p: p, q: q };
-        },
-        parts: [
-          { id: '6a1', sub: 'a i', level: 'EMG', make: function (r, sh) {
-            var k = sh.k, n = sh.n, s = t(k + 'x^{2}-' + k * n * n + '=' + k + '(x^{2}-' + n * n + ')') + ', fully factored';
-            return mcPart(r, 'A student writes ' + s + '. What is wrong?', [
-              { html: 'It isn’t finished: ' + t('x^{2}-' + n * n) + ' is a difference of squares and still factors.', right: true },
-              { html: 'The common factor should be ' + t(k * n * n) + ', not ' + t(k) + '.', why: t(k * n * n) + ' doesn’t divide ' + t(k + 'x^{2}') + '. The common factor ' + t(k) + ' is right — look at what is left in the bracket.' },
-              { html: 'Nothing — once the common factor is out, the expression is fully factored.', why: 'Checklist step 6: look at each factor and ask whether <i>it</i> can be factored again. ' + t('x^{2}-' + n * n + '=x^{2}-' + n + '^{2}') + '.' },
-              { html: 'The bracket should be ' + t('x^{2}+' + n * n) + '.', why: 'Expand: ' + t(k + '(x^{2}+' + n * n + ')=' + k + 'x^{2}+' + k * n * n) + ', which has the wrong sign. The bracket ' + t('x^{2}-' + n * n) + ' is correct.' }],
-              'The student stopped one step early: ' + t('x^{2}-' + n * n + '=x^{2}-' + n + '^{2}') + ' is a difference of squares (checklist step 6).', ['After taking out the common factor, can the bracket be factored again?'], 'error: stopped early ' + k + '(x^2-' + n * n + ')');
-          } },
-          { id: '6a2', sub: 'a ii', level: 'BEG', make: function (r, sh) { var pr = dos({ k: sh.k, A: X, B: N(sh.n) }); return fac(pr, { prompt: 'Write the correct, complete factorization of ' + t(pr.tex) + '.' }); } },
-          { id: '6b', sub: 'b', level: 'EMG', make: function (r, sh) {
-            var m = sh.m, m2 = m * m;
-            return mcPart(r, 'A student writes ' + t('x^{2}+' + m2 + '=(x+' + m + ')(x-' + m + ')') + '. Which statement is correct?', [
-              { html: t('(x+' + m + ')(x-' + m + ')') + ' multiplies to ' + t('x^{2}-' + m2) + '. ' + t('x^{2}+' + m2) + ' is a <b>sum</b> of squares, so it does not factor over the integers.', right: true },
-              { html: 'Both signs should be ' + t('+') + ': ' + t('x^{2}+' + m2 + '=(x+' + m + ')^{2}') + '.', why: 'Expand: ' + t('(x+' + m + ')^{2}=x^{2}+' + 2 * m + 'x+' + m2) + '. That has a middle term.' },
-              { html: 'Nothing is wrong — the order of the factors doesn’t matter.', why: 'Expand the student’s answer: ' + t('(x+' + m + ')(x-' + m + ')=x^{2}-' + m2) + ', not ' + t('x^{2}+' + m2) + '.' },
-              { html: 'It should be ' + t('(x-' + m + ')^{2}') + '.', why: 'Expand: ' + t('(x-' + m + ')^{2}=x^{2}-' + 2 * m + 'x+' + m2) + '. That has a middle term.' }],
-              t('(x+' + m + ')(x-' + m + ')=x^{2}-' + m2) + '. ' + t('x^{2}+' + m2) + ' is a <b>sum</b> of squares and <b>does not factor</b> over the integers.', ['Expand the student’s answer. Do you get back ' + t('x^{2}+' + m2) + '?'], 'error: sum of squares x^2+' + m2);
-          } },
-          { id: '6c1', sub: 'c i', level: 'EMG', make: function (r, sh) {
-            var k = sh.ck, b = sh.p - sh.q, c = sh.p * sh.q, given = t('-' + k + 'x^{2}+' + k * b + 'x+' + k * c + '=-' + k + '(x^{2}+' + (b === 1 ? '' : b) + 'x+' + c + ')');
-            return mcPart(r, 'A student writes ' + given + '. What is wrong?', [
-              { html: 'Taking out ' + t('-' + k) + ' changes the sign of <b>every</b> term: the bracket should be ' + t('x^{2}-' + (b === 1 ? '' : b) + 'x-' + c) + '.', right: true },
-              { html: 'The common factor should be ' + t(k) + ', not ' + t('-' + k) + '.', why: 'Taking out ' + t('-' + k) + ' is right when the leading coefficient is negative. The problem is the signs inside the bracket.' },
-              { html: 'Nothing — ' + t('x^{2}+' + (b === 1 ? '' : b) + 'x+' + c) + ' doesn’t factor, so it is complete.', why: 'Expand the student’s answer: ' + t('-' + k + '(x^{2}+' + (b === 1 ? '' : b) + 'x+' + c + ')=-' + k + 'x^{2}-' + k * b + 'x-' + k * c) + '. That isn’t the original expression.' },
-              { html: 'Only the last sign is wrong: the bracket should be ' + t('x^{2}+' + (b === 1 ? '' : b) + 'x-' + c) + '.', why: t(k * b + 'x\\div(-' + k + ')=-' + (b === 1 ? '' : b) + 'x') + ' — the middle sign changes too.' }],
-              'Dividing by ' + t('-' + k) + ' flips every sign: ' + t(k * b + 'x\\div(-' + k + ')=-' + (b === 1 ? '' : b) + 'x') + ' and ' + t(k * c + '\\div(-' + k + ')=-' + c) + '.', ['Expand the student’s answer and compare it with the original.'], 'error: signs not flipped');
-          } },
-          { id: '6c2', sub: 'c ii', level: 'PRG', make: function (r, sh) { var pr = tri({ k: -sh.ck, a: 1, u: -sh.p, b: 1, v: sh.q, X: X }); return fac(pr, { prompt: 'Write the correct, complete factorization of ' + t(pr.tex) + '.' }); } }] },
-
-      /* ---------- Part B ---------- */
-      { num: '7', section: 'Part B — Multiple Choice and Numerical Response', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: '7', level: 'EMG', make: function (r) {
-          var p, q, rr, s, mid; do { p = r.pick([2, 3]); rr = r.pick([2, 3, 4, 5]); q = r.int(1, 7); s = r.int(1, 7); mid = -p * s + q * rr; } while (p === rr || gcd(p, q) !== 1 || gcd(rr, s) !== 1 || !mid || q === s);
-          var pr = tri({ a: p, u: q, b: rr, v: -s, X: X }), f = function (a, b) { return t(tx(S(M(a, 'x'), N(b))) ); };
-          return mcPart(r, t(pr.tex) + ' has a factor of', [
-            { html: f(p, q), right: true },
-            { html: f(p, -q), why: 'Right numbers, wrong sign. Test it: ' + t('(' + tx(S(M(p, 'x'), N(-q))) + ')(' + tx(S(M(rr, 'x'), N(s))) + ')') + ' gives a middle term of ' + t(-mid + 'x') + ', not ' + t(mid + 'x') + '.' },
-            { html: f(rr, s), why: 'Right numbers, wrong sign. Factor it fully: ' + t(pr.tex + '=' + pr.keyTex) + '.' },
-            { html: f(1, -s), why: 'The coefficient of ' + t('x') + ' matters. Factor it fully — by decomposition, ' + t('ac=' + pr.A * pr.C) + ' — and compare.' }],
-            '<b>Three terms, ' + t('a\\neq 1') + ' ⇒ decomposition.</b> ' + t('ac=' + pr.A + '\\times' + nn(pr.C) + '=' + pr.A * pr.C) + ', sum ' + t(mid) + '.<br>' + t(pr.tex + '=' + pr.keyTex) + '. Of the options, only ' + f(p, q) + ' is one of these factors.',
-            ['Factor it completely by decomposition, then compare with the options.'], 'which is a factor of ' + plain(pr.tex));
-        } }] },
-      { num: '8', stem: '<i>(Numerical Response)</i>', parts: [
-        { id: '8', level: 'PRG', make: function (r) {
-          var pq = cop(r, 2, 9, 2, 9), p = pq[0], q = pq[1], k = 2 * p * q;
-          return B.nr('If ' + t(p * p + 'a^{2}+ka+' + q * q) + ' is a perfect square trinomial and ' + t('k>0') + ', then the value of ' + t('k') + ' is ________.', k, function (v) {
-            if (v === p * q) return { code: 'k-half', hint: 'The middle term of ' + t('(A+B)^{2}') + ' is ' + t('2AB') + ' — don’t forget the ' + t('2') + '.' };
-            if (v === p * p + q * q) return { code: 'k-squares', hint: 'The middle coefficient isn’t the sum of the outside numbers. It is ' + t('2AB') + ', where ' + t('A^{2}') + ' and ' + t('B^{2}') + ' are the first and last terms.' };
-            if (v === 4 * p * q) return { code: 'k-four', hint: 'You doubled twice. The middle term is ' + t('2AB') + '.' };
-            if (v === p + q || v === 2 * (p + q)) return { code: 'k-sum', hint: 'Multiply, don’t add: the middle term is ' + t('2AB') + '.' };
-            return null;
-          }, '<b>Perfect square trinomial pattern.</b> ' + t(p * p + 'a^{2}=(' + p + 'a)^{2}') + ' and ' + t(q * q + '=' + q + '^{2}') + ', so the middle term must be ' + t('\\pm 2(' + p + 'a)(' + q + ')=\\pm ' + k + 'a') + '.<br>Since ' + t('k>0') + ', ' + t('k=' + k) + ', and ' + t(p * p + 'a^{2}+' + k + 'a+' + q * q + '=(' + p + 'a+' + q + ')^{2}') + '.',
-          ['Write the first and last terms as squares: ' + t('(\\ ?\\ )^{2}') + '.', 'In ' + t('(A+B)^{2}=A^{2}+2AB+B^{2}') + ', the middle term is ' + t('2AB') + '.'], 'k for perfect square ' + p * p + 'a^2+ka+' + q * q);
-        } }] },
-
-      /* ---------- Part C ---------- */
-      { num: '9', section: 'Part C — Extension', stem: '<i>(Extension)</i> Factor completely.', parts: [
-        { id: '9a', level: 'PRG', make: function (r) {
-          var p, q, pool = [2, 3, 4, 5, 6, 7, 9, 10]; do { p = r.pick(pool); q = r.pick(pool); } while (q >= p || p * q > 63);
-          var pr = tri({ a: 1, u: -p, b: 1, v: q, X: M(1, { t: 3 }) });
-          pr.sol += '<br>Neither bracket factors further over the integers.';
-          return fac(pr);
+        { id: '4a', level: 'EMG', make: function (r) {
+          var g = pickWhere(function () { return { p: r.int(1, 7), q: r.int(2, 9) }; }, function (g) { return g.p < g.q && g.p * g.q <= 45; });
+          return blockPart(null, { B: X2, Bt: 'x^{2}', Bw: B('x'), f: [[1, g.p], [1, g.q]], why: 'The degrees are ' + t('4,2,0') + ', so the block is ' + t('x^{2}') + '.' });
         } },
-        { id: '9b', level: 'ADV', make: function (r) {
-          var a, b, u, v, mid; do { a = r.pick([2, 3]); b = r.pick([3, 4, 5]); u = r.int(1, 5); v = r.int(1, 5); mid = a * v - u * b; } while (a === b || gcd(a, u) !== 1 || gcd(b, v) !== 1 || !mid);
-          var fix = function (s) { return s.replace(/p\^\{2\}t\^\{3\}/g, 't^{3}p^{2}'); };
-          return fac(tri({ a: a, u: -u, b: b, v: v, X: M(1, { t: 3 }), Y: M(1, { p: 2 }), fix: fix }));
+        { id: '4b', level: 'PRG', make: function (r) {
+          var sq = r.pick([1, 4, 9]), ns = r.pick([2, 3, 5, 6, 7].filter(function (x) { return x !== sq; })), pq = r.shuffle([sq, ns]);
+          return blockPart(null, { B: X2, Bt: 'x^{2}', Bw: B('x'), f: [[1, -pq[0]], [1, -pq[1]]], why: 'The degrees are ' + t('4,2,0') + ', so the block is ' + t('x^{2}') + '.' });
+        } },
+        { id: '4c', level: 'PRG', make: function (r) {
+          var g = pickWhere(function () { return { p: r.int(1, 4), q: r.int(2, 5) }; }, function (g) { return g.p < g.q && g.p * g.q <= 15; });
+          return blockPart(null, { B: B('a', 2), Bt: 'a^{2}', Bw: B('a'), f: [[1, -g.p * g.p], [1, -g.q * g.q]], why: 'The degrees are ' + t('4,2,0') + ', so the block is ' + t('a^{2}') + '.' });
+        } }] },
+      /* ---------- Q5 decomposition in a block ---------- */
+      { num: '5', stem: 'Factor completely.', parts: [
+        { id: '5a', level: 'PRG', make: function (r) {
+          var g = pickWhere(function () { return { r: r.pick([2, 3, 5, 7]), q: r.int(1, 6), s: r.int(1, 6) }; }, function (g) { var b = g.r * g.q - g.s; return b !== 0 && gcd(g.r, g.s) === 1 && gcd(gcd(g.r, b), g.q * g.s) === 1 && Math.abs(b) <= 25; });
+          return blockPart(null, { B: X2, Bt: 'x^{2}', Bw: B('x'), f: [[1, g.q], [g.r, -g.s]], why: 'The degrees are ' + t('4,2,0') + ', so the block is ' + t('x^{2}') + '.' });
+        } },
+        { id: '5b', level: 'PRG', make: function (r) {
+          var g = pickWhere(function () { return { r: r.pick([2, 3, 5, 7]), p: r.int(1, 6), q: r.int(1, 7) }; }, function (g) { return gcd(g.r, g.q) === 1 && gcd(g.r, g.p * g.q) === 1 && g.q + g.r * g.p <= 40; });
+          return blockPart(null, { B: M(1, { a: 1, b: 1 }), Bt: 'ab', f: [[1, -g.p], [g.r, -g.q]], why: 'The block is ' + t('ab') + ', since ' + t(g.r + 'a^{2}b^{2}=' + g.r + '(ab)^{2}') + '.', notes: false });
+        } },
+        { id: '5c', level: 'PRG', make: function (r) {
+          var g = pickWhere(function () { return { m: r.pick([2, 3, 3, 4]), n: r.pick([2, 3, 3, 4]), p: r.int(1, 7), q: r.int(1, 7) }; }, function (g) { var b = g.n * g.p - g.m * g.q; return b !== 0 && gcd(g.m, g.p) === 1 && gcd(g.n, g.q) === 1 && gcd(gcd(g.m * g.n, b), g.p * g.q) === 1 && g.m * g.n * g.p * g.q <= 240; });
+          var mn = g.m * g.n;
+          return blockPart(null, { B: M(1, { x: 1, y: 1 }), Bt: 'xy', f: [[g.m, g.p], [g.n, -g.q]], why: 'The block is ' + t('xy') + ', since ' + t(mn + 'x^{2}y^{2}=' + mn + '(xy)^{2}') + '.', notes: false });
+        } }] },
+      /* ---------- Q6 differences of squares ---------- */
+      { num: '6', stem: 'Factor completely.', parts: [
+        { id: '6a', level: 'PRG', make: function (r) {
+          var k = r.int(2, 5), d = dosFull(S(B('x', 4), N(-Math.pow(k, 4))));
+          return facPart(t(d.expr), d.TF, { wrong: d.wrongs, sol: d.sol, hints: H.dos, text: 'factor ' + plain(d.expr) });
+        } },
+        { id: '6b', level: 'PRG', make: function (r) {
+          var k = r.int(2, 5), d = dosFull(S(B('a', 4), M(-Math.pow(k, 4), 'b', 4)));
+          return facPart(t(d.expr), d.TF, { wrong: d.wrongs, sol: d.sol, hints: H.dos, text: 'factor ' + plain(d.expr) });
+        } },
+        { id: '6c', level: 'PRG', make: function (r) {
+          var g = r.pick([2, 3, 5, 6, 7]), k = r.pick([2, 3]), d = dosFull(S(B('z', 4), N(-Math.pow(k, 4))), N(g));
+          return facPart(t(d.expr), d.TF, { wrong: d.wrongs, sol: d.sol, hints: H.dos, text: 'factor ' + plain(d.expr) });
+        } },
+        { id: '6d', level: 'ADV', make: function (r) {
+          var g = r.pick([2, 3, 5]), m = r.pick([2, 3]), d = dosFull(S(M(Math.pow(m, 4), 'x', 4), M(-1, 'y', 4)), N(g));
+          return facPart(t(d.expr), d.TF, { wrong: d.wrongs, sol: d.sol, hints: H.dos, text: 'factor ' + plain(d.expr) });
+        } }] },
+      /* ---------- Q7 GCF then PST ---------- */
+      { num: '7', stem: 'In Lesson 1 you took the GCF out of an expression like this one. Now factor it <b>completely</b>.', parts: [
+        { id: '7', level: 'PRG', make: function (r) {
+          var g = r.pick([2, 3, 4, 5, 6, 8, 10, 12]), q = r.pick([1, 1, 2, 3]), G = M(-g, 'p'), inner = P.pow(S(B('p'), N(q)), 2), T = P.mul(G, inner), expr = tx(T);
+          var TF = [fo(G), fo(S(B('p'), N(q)), 2)];
+          return facPart(t(expr), TF, { wrong: [wr([fo(G), fo(S(B('p'), N(-q)), 2)], 'pst-sign', 'Check the sign inside the square: after taking out ' + t(-g + 'p') + ' the bracket is ' + t(tx(inner)) + ', with a <b>positive</b> middle term.'),
+            wr([fo(G), fo(S(B('p'), N(q))), fo(S(B('p'), N(-q)))], 'pst-dos', t(tx(inner)) + ' is a perfect square trinomial, not a difference of squares: ' + t('(p+' + q + ')(p-' + q + ')=p^{2}-' + q * q) + '.'), wr([fo(G), fo(S(B('p'), N(q)))], 'pst-half', 'Your factors multiply to ' + t('-' + g + 'p(p+' + q + ')') + ' — the bracket is ' + t('(p+' + q + ')^{2}') + ', squared.')],
+            sol: 'Take out ' + t(-g + 'p') + ' (negative, so the first term inside is positive): ' + t(expr + '=-' + g + 'p(' + tx(inner) + ')') + '<br>The bracket is a perfect square trinomial: ' + t('\\sqrt{p^{2}}=p') + ', ' + t('\\sqrt{' + q * q + '}=' + q) + ', ' + t('2(p)(' + q + ')=' + (2 * q === 1 ? '' : 2 * q) + 'p') + ' ✓<br>' + t(expr + '=-' + g + 'p(p+' + q + ')^{2}'),
+            hints: ['Take out the GCF first — use a negative GCF so the bracket starts with a positive term.', 'Then test the trinomial in the bracket: is it a perfect square?'], text: 'factor completely ' + plain(expr) });
+        } }] },
+      /* ---------- Q8 find the error ---------- */
+      { num: '8', stem: 'Identify and explain the error in each factorization. Then write the correct factored form (or state that it does not factor).',
+        shared: function (r) {
+          var a = pickWhere(function () { return { a: r.int(2, 5), b: r.int(1, 7) }; }, function (g) { return g.a !== g.b && gcd(g.a, g.b) === 1; });
+          return { a: a, k8: r.int(2, 4), kc: r.int(4, 9) };
+        },
+        parts: [
+          { id: '8a1', sub: 'a i', level: 'EMG', make: function (r, sh) {
+            var a = sh.a.a, b = sh.a.b, o = pst(M(a, 'x'), N(-b));
+            return mcTex(r, t(o.expr + '=(' + a + 'x+' + b + ')^{2}') + '<br>What is the error?', [
+              { html: 'The middle term is negative, but ' + t('(' + a + 'x+' + b + ')^{2}') + ' has a positive middle term, ' + t('+' + 2 * a * b + 'x') + '. The bracket must have a minus sign.', right: true },
+              { html: 'It should be a difference of squares, ' + t('(' + a + 'x-' + b + ')(' + a + 'x+' + b + ')') + '.', why: 'Expand it: ' + t('(' + a + 'x-' + b + ')(' + a + 'x+' + b + ')=' + a * a + 'x^{2}-' + b * b) + ' has no middle term. The trinomial is a perfect square — just check its sign.' },
+              { html: 'The first term inside the bracket should be ' + t(a * a + 'x') + '.', why: t('\\sqrt{' + a * a + 'x^{2}}=' + a + 'x') + ', so ' + t(a + 'x') + ' is right. Look at the sign of the middle term.' },
+              { html: 'There is no error.', why: 'Expand ' + t('(' + a + 'x+' + b + ')^{2}') + ': you get ' + t(a * a + 'x^{2}+' + 2 * a * b + 'x+' + b * b) + '. Compare the middle term with ' + t(tx(o.mid)) + '.' }],
+              'Expanding the student’s answer gives ' + t('(' + a + 'x+' + b + ')^{2}=' + a * a + 'x^{2}+' + 2 * a * b + 'x+' + b * b) + ' — the wrong sign on the middle term. Because the middle term ' + t(tx(o.mid)) + ' is negative, the bracket must be ' + t(o.baseTex) + '.', ['Expand the student’s answer and compare it with the trinomial, term by term.'], 'error: PST sign');
+          } },
+          { id: '8a2', sub: 'a ii', level: 'BEG', make: function (r, sh) {
+            var a = sh.a.a, b = sh.a.b, o = pst(M(a, 'x'), N(-b));
+            return pstPart('Write the correct factored form of ' + t(o.expr) + '.', o, { wrong: [wr([fo(S(M(a, 'x'), N(b)), 2)], 'student-ans', 'That’s the student’s answer — it expands to a <b>positive</b> middle term.')], text: 'correct PST ' + plain(o.expr) });
+          } },
+          { id: '8b1', sub: 'b i', level: 'EMG', make: function (r, sh) {
+            var k = sh.k8, k2 = k * k, k4 = k2 * k2;
+            return mcTex(r, t('x^{4}-' + k4 + '=(x^{2}-' + k2 + ')(x^{2}+' + k2 + ')') + ', fully factored.<br>What is the error?', [
+              { html: 'It is not finished: ' + t('x^{2}-' + k2) + ' is itself a difference of squares.', right: true },
+              { html: t('x^{2}+' + k2) + ' should also be factored, as ' + t('(x+' + k + ')^{2}') + '.', why: t('(x+' + k + ')^{2}=x^{2}+' + 2 * k + 'x+' + k2) + ' — a sum of squares does not factor.' },
+              { html: 'The signs are wrong: it should be ' + t('(x^{2}-' + k2 + ')^{2}') + '.', why: t('(x^{2}-' + k2 + ')^{2}=x^{4}-' + 2 * k2 + 'x^{2}+' + k4) + ', which has a middle term.' },
+              { html: 'There is no error — it is fully factored.', why: 'Check each bracket: is ' + t('x^{2}-' + k2) + ' a difference of two perfect squares?' }],
+              'The first step is right, but ' + t('x^{2}-' + k2 + '=(x-' + k + ')(x+' + k + ')') + ' factors again. ' + t('x^{2}+' + k2) + ' is a sum of squares and stops.', ['Look at each bracket in the answer. Can either one be factored again?'], 'error: not complete x^4-' + k4);
+          } },
+          { id: '8b2', sub: 'b ii', level: 'EMG', make: function (r, sh) {
+            var k = sh.k8, d = dosFull(S(B('x', 4), N(-Math.pow(k, 4))));
+            return facPart('Write the correct, complete factorization of ' + t(d.expr) + '.', d.TF, { wrong: d.wrongs, sol: d.sol, hints: H.dos, text: 'complete ' + plain(d.expr) });
+          } },
+          { id: '8c1', sub: 'c i', level: 'EMG', make: function (r, sh) {
+            var k = sh.kc;
+            return mcTex(r, t('x^{2}+' + k + 'x+' + k * k + '=(x+' + k + ')^{2}') + '<br>What is the error?', [
+              { html: t('(x+' + k + ')^{2}=x^{2}+' + 2 * k + 'x+' + k * k) + ': the middle term would have to be ' + t(2 * k + 'x') + '. ' + t('x^{2}+' + k + 'x+' + k * k) + ' is not a perfect square trinomial.', right: true },
+              { html: 'The sign is wrong: it should be ' + t('(x-' + k + ')^{2}') + '.', why: t('(x-' + k + ')^{2}=x^{2}-' + 2 * k + 'x+' + k * k) + ' — that has a negative middle term.' },
+              { html: 'It is a difference of squares: ' + t('(x+' + k + ')(x-' + k + ')') + '.', why: t('(x+' + k + ')(x-' + k + ')=x^{2}-' + k * k) + ': two terms and a minus sign. The trinomial has three terms.' },
+              { html: 'The number in the bracket should be halved: ' + t('(x+' + k / 2 + ')^{2}') + '.', why: t('(x+' + k / 2 + ')^{2}=x^{2}+' + k + 'x+' + k * k / 4) + ' — the last term would be ' + t(k * k / 4) + ', not ' + t(k * k) + '.' }],
+              'Expand the student’s answer: ' + t('(x+' + k + ')^{2}=x^{2}+' + 2 * k + 'x+' + k * k) + '. For a perfect square the middle term must be twice ' + t(k + 'x') + ', so condition (3) fails.', ['Expand the student’s answer and compare the middle terms.'], 'error: not a PST x^2+' + k + 'x+' + k * k);
+          } },
+          { id: '8c2', sub: 'c ii', level: 'EMG', make: function (r, sh) {
+            var k = sh.kc;
+            return mcTex(r, 'What is the correct factored form of ' + t('x^{2}+' + k + 'x+' + k * k) + '?', [
+              { html: 'It does not factor.', right: true },
+              { html: t('(x+1)(x+' + k * k + ')'), why: t('1') + ' and ' + t(k * k) + ' multiply to ' + t(k * k) + ' but add to ' + t(k * k + 1) + ', not ' + t(k) + '.' },
+              { html: t('(x+1)(x+' + (k - 1) + ')'), why: t('1') + ' and ' + t(k - 1) + ' add to ' + t(k) + ' but multiply to ' + t(k - 1) + ', not ' + t(k * k) + '.' },
+              { html: t('(x+' + k + ')^{2}'), why: 'That’s the student’s answer: ' + t('(x+' + k + ')^{2}=x^{2}+' + 2 * k + 'x+' + k * k) + '.' }],
+              'We need two integers with product ' + t(k * k) + ' and sum ' + t(k) + '. Every factor pair of ' + t(k * k) + ' with both numbers positive adds to more than ' + t(k) + ' (the smallest sum is ' + t(k + '+' + k + '=' + 2 * k) + '), so ' + t('x^{2}+' + k + 'x+' + k * k) + ' <b>does not factor</b>.', ['List the factor pairs of ' + t(k * k) + '. Does any pair add to ' + t(k) + '?'], 'does it factor: x^2+' + k + 'x+' + k * k);
+          } }] },
+      /* ---------- Part B ---------- */
+      { num: '9', section: 'Part B — Multiple Choice and Numerical Response', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: '9', level: 'EMG', make: function (r) {
+          var k1 = r.int(6, 10), k2 = pickWhere(function () { return r.int(9, 12); }, function (v) { return v !== k1; });
+          var c = pickWhere(function () { return { a: r.int(2, 4), b: r.pick([5, 7, 8]) }; }, function (g) { return gcd(g.a, g.b) === 1; });
+          var dd = r.pick([[4, 5], [3, 5], [2, 5], [4, 3], [3, 4], [5, 2]]);
+          var A = pst(B('x'), N(-k1)), Bq = pst(B('x'), N(k2), 'asc'), D = pst(M(dd[0], 'x', 2), N(dd[1]));
+          var Ct = S(M(c.a * c.a, 'x', 2), M(-c.a * c.b, 'x'), N(c.b * c.b));
+          var yes = function (o) { return 'It <i>is</i> a perfect square: ' + pstLine(o) + '.'; };
+          return mcTex(r, 'From the expressions below, the one which does <b>not</b> represent a perfect square trinomial is', [
+            { html: t(A.expr), why: yes(A) }, { html: t(Bq.expr), why: yes(Bq) }, { html: t(tx(Ct)), right: true }, { html: t(D.expr), why: yes(D) }],
+            t(A.expr) + ': ' + pstLine(A) + '<br>' + t(Bq.expr) + ': ' + pstLine(Bq) + '<br>' + t(D.expr) + ': ' + pstLine(D) + '<br>' + t(tx(Ct)) + ': ' + t('\\sqrt{' + c.a * c.a + 'x^{2}}=' + c.a + 'x') + ', ' + t('\\sqrt{' + c.b * c.b + '}=' + c.b) + ', but ' + t('2(' + c.a + 'x)(' + c.b + ')=' + 2 * c.a * c.b + 'x\\neq ' + c.a * c.b + 'x') + ' — <b>not</b> a perfect square.',
+            ['Run the three-part test on each option. Watch the middle term.'], 'which is not a PST');
+        } }] },
+      { num: '10', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: '10', level: 'EMG', make: function (r) {
+          var g = pickWhere(function () { return { p: r.int(1, 4), q: r.int(2, 5) }; }, function (g) { return g.p < g.q; }), p2 = g.p * g.p, q2 = g.q * g.q;
+          var expr = seq([B('n', 4), N(p2 * q2), M(-(p2 + q2), 'n', 2)]);
+          var bt = blockTri({ B: B('n', 2), Bt: 'n^{2}', f: [[1, -q2], [1, -p2]], expr: expr });
+          return mcTex(r, 'The complete factorization of ' + t(expr) + ' is', [
+            { html: t('(n^{2}-' + p2 + ')(n^{2}-' + q2 + ')'), why: 'Those brackets multiply back correctly, but each one is a difference of squares — it isn’t factored <b>completely</b>.' },
+            { html: t('(n^{2}+' + p2 + ')(n^{2}+' + q2 + ')'), why: 'Expand: the middle term would be ' + t('+' + (p2 + q2) + 'n^{2}') + '. The signs are wrong.' },
+            { html: t('n^{2}(n+' + p2 + ')(n+' + q2 + ')'), why: 'There is no common factor of ' + t('n^{2}') + ' (the constant term ' + t(p2 * q2) + ' has no ' + t('n') + '), and the brackets don’t multiply back.' },
+            { html: t('(n+' + g.p + ')(n-' + g.p + ')(n+' + g.q + ')(n-' + g.q + ')'), right: true }],
+            bt.sol + '<br>' + t('(n^{2}-' + p2 + ')(n^{2}-' + q2 + ')') + ' is only partly factored, ' + t('(n^{2}+' + p2 + ')(n^{2}+' + q2 + ')') + ' has the wrong signs and ' + t('n^{2}(n+' + p2 + ')(n+' + q2 + ')') + ' is not a factorization.', ['Rewrite in descending order first, then let ' + t('u=n^{2}') + '.', 'Check whether the brackets factor again.'], 'complete factorization of ' + plain(expr));
+        } }] },
+      { num: '11', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: '11', level: 'EMG', make: function (r) {
+          var k = r.int(2, 5), k2 = k * k, k4 = k2 * k2, full = t('z^{4}-' + k4 + '=(z^{2}-' + k2 + ')(z^{2}+' + k2 + ')=(z-' + k + ')(z+' + k + ')(z^{2}+' + k2 + ')');
+          var right = r.pick(['z+' + k, 'z-' + k, 'z^{2}+' + k2]);
+          var pool = r.sample(['z+' + k2, 'z-' + k2, 'z^{2}-' + k, 'z^{2}+' + k], 3);
+          return mcTex(r, 'One factor of ' + t('z^{4}-' + k4) + ' is', [{ html: t(right), right: true }].concat(pool.map(function (x) { return { html: t(x), why: 'Factor completely first: ' + full + '. ' + t(x) + ' is not one of the factors.' }; })),
+            full + '<br>The factors are ' + t('z-' + k) + ', ' + t('z+' + k) + ' and ' + t('z^{2}+' + k2) + ' (and products of these), so the answer is ' + t(right) + '.', ['Factor ' + t('z^{4}-' + k4) + ' completely, then compare with the options.'], 'one factor of z^4-' + k4);
+        } }] },
+      { num: '12', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: '12', level: 'EMG', make: function (r) {
+          var g = pickWhere(function () { return { p: r.int(1, 3), q: r.int(2, 5) }; }, function (g) { return g.p < g.q; }), p = g.p, q = g.q, p2 = p * p, q2 = q * q;
+          var expr = tx(S(B('x', 4), M(-(p2 + q2), 'x', 2), N(p2 * q2))), lin = [S(B('x'), N(p)), S(B('x'), N(-p)), S(B('x'), N(q)), S(B('x'), N(-q))];
+          var trueF = lin.concat([S(B('x', 2), N(-p2)), S(B('x', 2), N(-q2))]);
+          var right = r.pick(lin), cands = [S(B('x', 2), N(q2)), S(B('x'), N(q2)), S(B('x'), N(-q2)), S(B('x', 2), N(p2)), S(B('x'), N(p2 + q2)), S(B('x'), N(-p2 * q2))];
+          cands = cands.filter(function (c, i) { return !trueF.some(function (f) { return P.eq(f, c); }) && cands.slice(0, i).every(function (d) { return !P.eq(d, c); }); });
+          var full = t(expr + '=(x^{2}-' + p2 + ')(x^{2}-' + q2 + ')=(x-' + p + ')(x+' + p + ')(x-' + q + ')(x+' + q + ')');
+          return mcTex(r, 'One factor of ' + t(expr) + ' is', [{ html: t(tx(right)), right: true }].concat(r.sample(cands.slice(0, 4), 3).map(function (c) { return { html: t(tx(c)), why: 'Factor completely first: ' + full + '. ' + t(tx(c)) + ' is not among the factors.' }; })),
+            'Let ' + t('u=x^{2}') + ': ' + t('u^{2}-' + (p2 + q2) + 'u+' + p2 * q2 + '=(u-' + p2 + ')(u-' + q2 + ')') + '.<br>' + full + '<br>So ' + t(tx(right)) + ' is a factor.', ['Let ' + t('u=x^{2}') + ' and factor, then factor each bracket again.'], 'one factor of ' + plain(expr));
+        } }] },
+      { num: '13', stem: '<i>(Numerical Response)</i>', parts: [
+        { id: '13', level: 'PRG', make: function (r) {
+          var g = pickWhere(function () { return { A: r.pick([[2, 3], [3, 4], [2, 5], [3, 5], [4, 5], [5, 6], [4, 3], [3, 2], [5, 3], [1, 3], [2, 7]]), B: r.pick([[1, 2], [1, 3], [1, 4], [2, 3], [3, 4], [3, 2], [1, 5], [2, 5]]) }; },
+            function (g) { var ab = g.A[0] * g.B[0] / (g.A[1] * g.B[1]); return !(g.A[0] === g.B[0] && g.A[1] === g.B[1]) && ab < 10 && Math.abs(ab * 100 - Math.round(ab * 100)) > 1e-6 && g.A[1] * g.B[1] <= 30; });
+          var Am = M(g.A, 'x'), Bn = N(g.B), o = pst(Am, Bn), ab = g.A[0] * g.B[0] / (g.A[1] * g.B[1]), Af = ex.texRat(g.A), Bf = ex.texRat(g.B), abf = ex.texRat(ex.norm(g.A[0] * g.B[0], g.A[1] * g.B[1]));
+          var near = function (v, x) { return Math.abs(v - K.roundTo(x, 2)) < 1e-9; };
+          return KP.approx('The polynomial expression ' + t(o.expr) + ' can be written in the form ' + t('(Ax+B)^{2}') + '. The value of the product ' + t('AB') + ', to the nearest hundredth, is ________.', ab, 2,
+            { nr: true, diag: function (v) {
+              if (near(v, 2 * ab)) return { code: 'mid-coef', hint: 'That’s ' + t('2AB') + ', the middle coefficient. The question asks for ' + t('AB') + '.' };
+              if (near(v, g.A[0] / g.A[1] + g.B[0] / g.B[1])) return { code: 'ab-sum', hint: 'That’s ' + t('A+B') + '. Multiply ' + t('A') + ' and ' + t('B') + '.' };
+              if (near(v, ab * ab)) return { code: 'ab-sq', hint: 'Use the square <b>roots</b>: ' + t('A') + ' is the square root of the ' + t('x^{2}') + ' coefficient and ' + t('B') + ' is the square root of the constant.' };
+              return null; } },
+            'Expand: ' + t('(Ax+B)^{2}=A^{2}x^{2}+2ABx+B^{2}') + '.<br>Match the first and last terms: ' + t('A^{2}=' + ex.texRat(ex.norm(g.A[0] * g.A[0], g.A[1] * g.A[1])) + '\\Rightarrow A=' + Af) + ', ' + t('B^{2}=' + ex.texRat(ex.norm(g.B[0] * g.B[0], g.B[1] * g.B[1])) + '\\Rightarrow B=' + Bf) + '.<br>Check the middle term: ' + t('2AB=2\\left(' + Af + '\\right)\\left(' + Bf + '\\right)=' + tx(P.scale(N(g.A), [2 * g.B[0], g.B[1]]))) + ' ✓<br>' + t('AB=' + abf + '\\approx ' + K.roundTo(ab, 2).toFixed(2)),
+            ['Expand ' + t('(Ax+B)^{2}') + ' and match it term by term with the trinomial.', t('A') + ' is the square root of the ' + t('x^{2}') + ' coefficient; ' + t('B') + ' is the square root of the constant.'], 'NR: AB for ' + plain(o.expr));
+        } }] },
+      { num: '14', stem: '<i>(Numerical Response)</i>', parts: [
+        { id: '14', level: 'ADV', make: function (r) {
+          var g = pickWhere(function () { return { m: r.pick([3, 5, 7]), p: r.int(1, 4), q: r.int(1, 9), x: r.int(2, 5) }; }, function (g) {
+            if (g.q % g.m === 0) return false;
+            var L1 = g.x + g.p, L2 = g.m * g.x + g.q, D = L2 - L1, hyp = Math.sqrt(L1 * L1 + L2 * L2);
+            return D > 0 && D + g.q - g.p > 0 && hyp < 99 && Math.abs(hyp - Math.round(hyp)) > 0.05;
+          });
+          var m = g.m, p = g.p, q = g.q, x0 = g.x, L1 = x0 + p, L2 = m * x0 + q, D = L2 - L1, hyp = Math.sqrt(L1 * L1 + L2 * L2);
+          var prod = S(M(m, 'x', 2), M(q + m * p, 'x'), N(p * q)), area = P.scale(prod, [1, 2]), b = q + m * p;
+          var near = function (v, x) { return Math.abs(v - K.roundTo(x, 1)) < 1e-9; };
+          return KP.approx(TRI_SVG + '<br>Triangle ' + t('PQR') + ' is right-angled at ' + t('P') + '. The area of the triangle is ' + t(tx(area)) + ' cm' + t('^{2}') + ', where ' + t('x') + ' is a positive integer, and the lengths of ' + t('PR') + ' and ' + t('PQ') + ' are binomials in ' + t('x') + ' with integer coefficients. Given that the length of ' + t('PQ') + ' is ' + t(D) + ' cm more than the length of ' + t('PR') + ', the length of ' + t('QR') + ', to the nearest tenth of a cm, is ________.', hyp, 1,
+            { nr: true, diag: function (v) {
+              if (near(v, L2) || near(v, L1)) return { code: 'leg', hint: 'That’s the length of a <b>leg</b>. ' + t('QR') + ' is the hypotenuse: use the Pythagorean theorem.' };
+              if (near(v, L1 + L2)) return { code: 'leg-sum', hint: 'The hypotenuse isn’t the sum of the legs — use ' + t('QR^{2}=PR^{2}+PQ^{2}') + '.' };
+              if (near(v, Math.sqrt(L2 * L2 - L1 * L1))) return { code: 'subtracted', hint: t('QR') + ' is the hypotenuse, so <b>add</b> the squares of the legs.' };
+              return null; } },
+            'The legs are ' + t('PR') + ' and ' + t('PQ') + ', so ' + t('\\tfrac{1}{2}(PR)(PQ)=' + tx(area)) + ' and ' + t('(PR)(PQ)=' + tx(prod)) + '.<br>Factor by decomposition: ' + t('ac=' + m + '(' + p * q + ')=' + m * p * q) + '; product ' + t(m * p * q) + ', sum ' + t(b) + ': ' + t(m * p) + ' and ' + t(q) + '.<br>' + t(tx(prod) + '=' + m + 'x(x+' + p + ')+' + q + '(x+' + p + ')=(x+' + p + ')(' + m + 'x+' + q + ')') +
+              '<br>The longer leg is ' + t('PQ=' + m + 'x+' + q) + ' and ' + t('PR=x+' + p) + ': ' + t('(' + m + 'x+' + q + ')-(x+' + p + ')=' + D + '\\Rightarrow ' + (m - 1) + 'x' + cK(q - p) + '=' + D + '\\Rightarrow x=' + x0) + '.<br>' + t('PR=' + L1) + ' cm, ' + t('PQ=' + L2) + ' cm, so ' + t('QR=\\sqrt{' + L1 + '^{2}+' + L2 + '^{2}}=\\sqrt{' + (L1 * L1 + L2 * L2) + '}\\approx ' + K.roundTo(hyp, 1).toFixed(1)) + ' cm.',
+            ['Double the area to get the product of the legs, then factor that trinomial: the two binomials are the legs.', 'Use “' + t('PQ') + ' is ' + t(D) + ' more than ' + t('PR') + '” to find ' + t('x') + ', then the Pythagorean theorem.'], 'NR: hypotenuse from area ' + plain(tx(area)));
+        } }] },
+      /* ---------- Part C extension ---------- */
+      { num: '15', section: 'Part C — Extension: Higher-Degree Disguises', stem: '<i>(Extension)</i> Factor completely.', parts: [
+        { id: '15a', level: 'PRG', make: function (r) {
+          var g = pickWhere(function () { return { p: r.pick([2, 3, 4, 5, 6, 7, 9]), q: r.pick([2, 3, 4, 5, 6, 7]) }; }, function (g) { return g.p > g.q && g.p * g.q <= 42; });
+          return blockPart(null, { B: B('t', 3), Bt: 't^{3}', Bw: B('t'), f: [[1, -g.p], [1, g.q]], why: 'The degrees are ' + t('6,3,0') + ', so the block is ' + t('t^{3}') + '.', notes: false }, { hints: H.block });
+        } },
+        { id: '15b', level: 'PRG', make: function (r) {
+          var g = pickWhere(function () { return { p: r.int(3, 9), q: r.int(2, 7) }; }, function (g) { return g.p > g.q && g.p * g.q <= 42; });
+          return blockPart(null, { B: B('z', 5), Bt: 'z^{5}', Bw: B('z'), f: [[1, g.p], [1, -g.q]], why: 'The degrees are ' + t('10,5,0') + ', so the block is ' + t('z^{5}') + '.', notes: false });
+        } }] },
+      { num: '16', stem: '<i>(Extension)</i> Factor the polynomial expression completely.', parts: [
+        { id: '16', level: 'ADV', make: function (r) {
+          var g = pickWhere(function () { return { m: r.pick([2, 3, 5]), rr: r.pick([1, 1, 2, 3]), s: r.pick([2, 3, 5]) }; }, function (g) { return gcd(g.m, g.rr) === 1 && g.m * g.m * g.s * g.s + g.rr * g.rr <= 110; });
+          return blockPart(null, { B: B('a', 4), Bt: 'a^{4}', Bw: B('a', 2), f: [[1, -g.s * g.s], [g.m * g.m, -g.rr * g.rr]], why: 'The degrees are ' + t('8,4,0') + ', so the block is ' + t('a^{4}') + '.' });
         } }] }
     ],
 
     extra: [
-      /* ---------- EP Part A — name the strategy ---------- */
-      { num: '1', section: 'Extra practice A — Name the strategy, do not factor', stem: function (sh) { return '<b>Do not factor these.</b> Here are eight expressions:<br>' + sh.rows.map(function (rw) { return rw.html; }).join('<br>'); },
+      /* ---------- EP A: the three-part test ---------- */
+      { num: '1', section: 'Extra practice A — Running the Three-Part Test', stem: 'Do not factor yet. For each trinomial, run the three-part test: (1) the first term is a perfect square, (2) the last term is a perfect square and positive, (3) the middle term is twice the product of the square roots.', parts: [
+        { id: 'e1', level: 'EMG', make: function (r) {
+          var a = pickWhere(function () { return [r.int(2, 7), r.int(2, 7)]; }, function (v) { return v[0] !== v[1] && gcd(v[0], v[1]) === 1; }), A = pst(M(a[0], 'x'), M(a[1], 'y'));
+          var b = pickWhere(function () { return [r.int(2, 8), r.int(1, 7)]; }, function (v) { return v[0] !== v[1] && gcd(v[0], v[1]) === 1; }), Bo = pst(M(b[0], 'a'), N(-b[1]));
+          var c = pickWhere(function () { return [r.int(2, 6), r.int(2, 7)]; }, function (v) { return v[0] !== v[1] && gcd(v[0], v[1]) === 1; }), Ct = S(M(c[0] * c[0], 'm', 2), M(3 * c[0] * c[1], 'm'), N(c[1] * c[1]));
+          var d = pickWhere(function () { return [r.int(2, 6), r.int(1, 7)]; }, function (v) { return v[0] !== v[1] && gcd(v[0], v[1]) === 1; }), D = pst(M(d[0], 'x', 2), N(d[1]));
+          var e = pickWhere(function () { return [r.int(2, 5), r.int(1, 5)]; }, function (v) { return v[0] !== v[1] && gcd(v[0], v[1]) === 1; }), Et = S(M(e[0] * e[0], 'p', 2), M(-2 * e[0] * e[1], { p: 1, q: 1 }), M(-e[1] * e[1], 'q', 2));
+          var f = pickWhere(function () { return [r.int(2, 5), r.int(1, 2)]; }, function (v) { return gcd(v[0], v[1]) === 1; }), Fo = pst(M([1, f[0]], 'x'), N(f[1]));
+          var rows = [{ tex: A.expr, w: 'y', note: pstLine(A) }, { tex: Bo.expr, w: 'y', note: pstLine(Bo) },
+            { tex: tx(Ct), w: 'c3', note: t('\\sqrt{' + c[0] * c[0] + 'm^{2}}=' + c[0] + 'm') + ', ' + t('\\sqrt{' + c[1] * c[1] + '}=' + c[1]) + ', but ' + t('2(' + c[0] + 'm)(' + c[1] + ')=' + 2 * c[0] * c[1] + 'm\\neq ' + 3 * c[0] * c[1] + 'm') + ' — condition (3) fails' },
+            { tex: D.expr, w: 'y', note: pstLine(D) }, { tex: tx(Et), w: 'c2', note: 'the last term ' + t(tx(M(-e[1] * e[1], 'q', 2))) + ' is negative — condition (2) fails' }, { tex: Fo.expr, w: 'y', note: pstLine(Fo) }];
+          rows = r.shuffle(rows);
+          var L = 'abcdef', want = {};
+          var gr = rows.map(function (x, i) { want['r' + i] = x.w; return { id: 'r' + i, html: '(' + L[i] + ')' }; });
+          return KP.grid(rows.map(function (x, i) { return '(' + L[i] + ')&nbsp; ' + t(x.tex); }).join('<br>') + '<br>Choose the result of the test for each trinomial.', gr, [{ id: 'y', html: 'All hold' }, { id: 'c1', html: '(1) fails' }, { id: 'c2', html: '(2) fails' }, { id: 'c3', html: '(3) fails' }], want,
+            { why: function (id, got) { var i = Number(id.slice(1)), x = rows[i]; if (x.w === 'y') return '(' + L[i] + '): check each condition again — all three hold.'; if (got === 'y') return '(' + L[i] + '): one condition fails — check the sign of the last term and the middle term.'; return '(' + L[i] + '): a different condition fails.'; } },
+            rows.map(function (x, i) { return '(' + L[i] + ') ' + x.note + (x.w === 'y' ? ' — <b>a perfect square trinomial</b>.' : '.'); }).join('<br>'), H.pst, 'three-part test table');
+        } }] },
+      { num: '2', stem: 'Each of these fails <b>exactly one</b> of the three conditions.',
         shared: function (r) {
-          var rows = [], ab;
-          ab = cop(r, 2, 9, 2, 9); rows.push({ tex: tx(S(M(ab[0] * ab[0], { x: 2 }), M(-ab[1] * ab[1], { y: 2 }))), n: 2, m: 'dos', why: 'two perfect squares, ' + t('(' + ab[0] + 'x)^{2}') + ' and ' + t('(' + ab[1] + 'y)^{2}') + ', with a minus between them: a <b>difference of squares</b>.' });
-          var k, s, u; do { k = r.int(2, 5); s = r.int(2, 7); u = r.int(2, 7); } while (gcd(k, s) !== 1);
-          rows.push({ tex: grp({ A1: M(k, 'a'), A2: N(-s), B1: X, B2: N(u) }).tex, n: 4, m: 'grp', why: 'no factor common to all four: <b>grouping</b>.' });
-          var pq = two(r, 2, 9); rows.push({ tex: tri({ a: 1, u: pq[0], b: 1, v: pq[1], X: X }).tex, n: 3, m: 'insp', why: 'no common factor, ' + t('a=1') + ': <b>inspection</b>.' });
-          var d = decPair(r, [3, 5], [2, 3, 5], [1, 5], [1, 5]); var dp = tri({ a: d.a, u: d.u, b: d.b, v: -d.v, X: X }); rows.push({ tex: dp.tex, n: 3, m: 'dec', why: 'no common factor, ' + t('a=' + dp.A + '\\neq1') + ': <b>decomposition</b>.' });
-          var g = r.pick([2, 3, 4, 6]), c3; do { c3 = [r.int(2, 5), r.int(2, 5), r.int(2, 7)]; } while (gcd(gcd(c3[0], c3[1]), c3[2]) !== 1);
-          var gm = M(g, { a: 2, b: 2 }), br3 = S(M(c3[0], 'a'), M(c3[1], 'b'), N(-c3[2])); rows.push({ tex: tx(P.mul(gm, br3)), n: 3, m: 'gcf', why: 'the GCF ' + t(tx(gm)) + ' leaves ' + t(tx(br3)) + ', which cannot factor: <b>common factor only</b>.' });
-          var nn2 = r.int(3, 10); rows.push({ tex: 'p^{2}+' + nn2 * nn2, n: 2, m: 'none', why: t('p^{2}+' + nn2 + '^{2}') + ' is a <b>sum</b> of squares: it <b>does not factor</b>.' });
-          var mq = two(r, 1, 5).sort(); rows.push({ tex: tri({ a: 1, u: -mq[0] * mq[0], b: 1, v: -mq[1] * mq[1], X: M(1, { x: 2 }) }).tex, n: 3, m: 'insp', why: 'a trinomial in ' + t('x^{2}') + ' with ' + t('a=1') + ': <b>inspection</b> (then difference of squares on the brackets).' });
-          var pq2 = cop(r, 2, 9, 2, 9), hp = tri({ a: pq2[0], u: -pq2[1], b: pq2[0], v: -pq2[1], X: V('c'), Y: V('d') }); rows.push({ tex: hp.tex, n: 3, m: 'dec', why: t('a=' + hp.A + '\\neq1') + ': <b>decomposition</b> — and it is a perfect square trinomial, ' + t('(' + pq2[0] + 'c-' + pq2[1] + 'd)^{2}') + '.' });
-          rows.forEach(function (rw, i) { rw.id = String.fromCharCode(97 + i); rw.html = '(' + rw.id + ') ' + t(rw.tex); rw.label = rw.id; });
-          return { rows: rows };
+          var a = pickWhere(function () { return { a: r.pick([2, 3]), c: r.int(1, 2), b: r.int(3, 7) }; }, function (g) { return gcd(g.a, g.b) === 1 && g.c < g.a && gcd(g.c, g.b) === 1; });
+          var b = pickWhere(function () { return { a: r.int(2, 5), b: r.int(6, 10), d: r.int(2, 5) }; }, function (g) { return g.d < g.b && gcd(g.a, g.b) === 1 && gcd(g.a, g.d) === 1; });
+          var c = { k: r.int(3, 9) };
+          var d = pickWhere(function () { return { p: r.int(3, 7), q: r.int(3, 6), d: r.int(1, 4) }; }, function (g) { return g.d < g.q && gcd(g.p, g.q) === 1 && gcd(g.p, g.d) === 1 && g.p !== g.q; });
+          return { a: a, b: b, c: c, d: d,
+            ta: S(M(a.a * a.a, 'x', 2), M(2 * a.c * a.b, 'x'), N(a.b * a.b)), tb: S(M(b.a * b.a, 'y', 2), M(-2 * b.a * b.d, 'y'), N(b.b * b.b)),
+            tc: S(B('x', 2), M(2 * c.k, 'x'), N(-c.k * c.k)), td: S(M(d.p * d.p, 'a', 2), M(2 * d.p * d.d, { a: 1, b: 1 }), M(d.q * d.q, 'b', 2)) };
         },
         parts: [
-          { id: 'e1a', sub: 'i', level: 'LIM', make: function (r, sh) {
-            var cols = [{ id: '2', html: '2 terms' }, { id: '3', html: '3 terms' }, { id: '4', html: '4 terms' }], want = {};
-            sh.rows.forEach(function (rw) { want[rw.id] = String(rw.n); });
-            return B.grid('(i) How many terms does each expression have?', sh.rows.map(function (rw) { return { id: rw.id, html: rw.label }; }), cols, want, {
-              why: function (id) { var rw = sh.rows.filter(function (x) { return x.id === id; })[0]; return { code: 'row', hint: 'Count the terms of ' + t(rw.tex) + ' again: terms are separated by ' + t('+') + ' and ' + t('-') + ' signs.' }; }
-            }, sh.rows.map(function (rw) { return rw.html + ': ' + rw.n + ' terms'; }).join('<br>'), ['Terms are separated by plus and minus signs.'], 'count terms (8 expressions)');
+          { id: 'e2', sub: 'name', level: 'EMG', make: function (r, sh) {
+            var rows = [{ tex: tx(sh.ta), w: 'c3' }, { tex: tx(sh.tb), w: 'c3' }, { tex: tx(sh.tc), w: 'c2' }, { tex: tx(sh.td), w: 'c3' }], L = 'abcd', want = {};
+            var gr = rows.map(function (x, i) { want['r' + i] = x.w; return { id: 'r' + i, html: '(' + L[i] + ')' }; });
+            var a = sh.a, b = sh.b, d = sh.d;
+            return KP.grid(rows.map(function (x, i) { return '(' + L[i] + ')&nbsp; ' + t(x.tex); }).join('<br>') + '<br>Name the condition that fails for each trinomial.', gr, [{ id: 'c1', html: '(1) first term' }, { id: 'c2', html: '(2) last term' }, { id: 'c3', html: '(3) middle term' }], want,
+              { why: function (id) { var i = Number(id.slice(1)); return '(' + L[i] + '): ' + (rows[i].w === 'c2' ? 'look at the sign of the last term.' : 'both end terms are perfect squares — compare the middle term with twice the product of the roots.'); } },
+              '(a) ' + t('2(' + a.a + 'x)(' + a.b + ')=' + 2 * a.a * a.b + 'x') + ', not ' + t(2 * a.c * a.b + 'x') + ' — (3) fails.<br>(b) ' + t('2(' + b.a + 'y)(' + b.b + ')=' + 2 * b.a * b.b + 'y') + ', not ' + t(2 * b.a * b.d + 'y') + ' — (3) fails.<br>(c) the last term ' + t(-sh.c.k * sh.c.k) + ' is negative — (2) fails.<br>(d) ' + t('2(' + d.p + 'a)(' + d.q + 'b)=' + 2 * d.p * d.q + 'ab') + ', not ' + t(2 * d.p * d.d + 'ab') + ' — (3) fails.', H.pst, 'which condition fails');
           } },
-          { id: 'e1b', sub: 'ii a–d', level: 'BEG', make: function (r, sh) {
-            var rows = sh.rows.slice(0, 4);
-            return methodGrid('(ii) Name the method you would use for (a)–(d).', rows, MCOL, rows.map(function (rw) { return rw.html + ': ' + rw.n + ' terms; ' + rw.why; }).join('<br>'), 'method names (a)-(d)');
+          { id: 'e2a', sub: 'a', level: 'PRG', make: function (r, sh) {
+            var a = sh.a, R1 = pst(M(a.a, 'x'), N(a.b)), R2 = pst(M(a.c, 'x'), N(a.b));
+            var p = KP.fields('Repair ' + t(tx(sh.ta)) + ' two ways. Write the factored form of each repaired trinomial.', [box('Change the middle term:', ['x'], 'Middle term changed'), box('Change the first term:', ['x'], 'First term changed')],
+              [facChk(R1.TF, { wrong: pstWrongs(R1).concat([wr(R2.TF, 'swap', 'That keeps the middle term — this box changes the <b>middle</b> term and keeps the first term ' + t(a.a * a.a + 'x^{2}') + '.')]) }), facChk(R2.TF, { wrong: pstWrongs(R2).concat([wr(R1.TF, 'swap', 'That repair changes the middle term. Here keep ' + t(2 * a.c * a.b + 'x') + ' and change the <b>first</b> term.')]) })],
+              [R1.key, R2.key], t(R1.expr + '=' + R1.key) + ' and ' + t(R2.expr + '=' + R2.key),
+              'Condition (3) fails: ' + t('2(' + a.a + 'x)(' + a.b + ')=' + 2 * a.a * a.b + 'x') + ', not ' + t(2 * a.c * a.b + 'x') + '.<br><i>Repair 1:</i> middle term ' + t('\\to ' + 2 * a.a * a.b + 'x') + ': ' + t(R1.expr + '=' + R1.key) + '<br><i>Repair 2:</i> first term ' + t('\\to ' + tx(M(a.c * a.c, 'x', 2))) + ', since ' + t('2(' + tx(M(a.c, 'x')) + ')(' + a.b + ')=' + 2 * a.c * a.b + 'x') + ': ' + t(R2.expr + '=' + R2.key),
+              ['Repair 1: keep the first and last terms; the middle must be twice the product of their roots.', 'Repair 2: keep the middle and last terms. Which first term ' + t('(kx)^{2}') + ' makes ' + t('2(kx)(' + a.b + ')=' + 2 * a.c * a.b + 'x') + '?'], 'repair ' + plain(tx(sh.ta)));
+            return p;
           } },
-          { id: 'e1c', sub: 'ii e–h', level: 'EMG', make: function (r, sh) {
-            var rows = sh.rows.slice(4);
-            return methodGrid('(ii) Name the method you would use for (e)–(h).', rows, MCOL, rows.map(function (rw) { return rw.html + ': ' + rw.n + ' terms; ' + rw.why; }).join('<br>'), 'method names (e)-(h)');
+          { id: 'e2b', sub: 'b', level: 'PRG', make: function (r, sh) {
+            var b = sh.b, R1 = pst(M(b.a, 'y'), N(-b.b)), R2 = pst(M(b.a, 'y'), N(-b.d));
+            return KP.fields('Repair ' + t(tx(sh.tb)) + ' two ways. Write the factored form of each repaired trinomial.', [box('Change the middle term:', ['y'], 'Middle term changed'), box('Change the last term:', ['y'], 'Last term changed')],
+              [facChk(R1.TF, { wrong: pstWrongs(R1).concat([wr(R2.TF, 'swap', 'That repair changes the last term. In this box keep ' + t(b.b * b.b) + ' and change the <b>middle</b> term.')]) }), facChk(R2.TF, { wrong: pstWrongs(R2).concat([wr(R1.TF, 'swap', 'That repair changes the middle term. Here keep ' + t(-2 * b.a * b.d + 'y') + ' and change the <b>last</b> term.')]) })],
+              [R1.key, R2.key], t(R1.expr + '=' + R1.key) + ' and ' + t(R2.expr + '=' + R2.key),
+              'Condition (3) fails: ' + t('2(' + b.a + 'y)(' + b.b + ')=' + 2 * b.a * b.b + 'y') + ', not ' + t(2 * b.a * b.d + 'y') + '.<br><i>Repair 1:</i> middle term ' + t('\\to -' + 2 * b.a * b.b + 'y') + ': ' + t(R1.expr + '=' + R1.key) + '<br><i>Repair 2:</i> last term ' + t('\\to ' + b.d * b.d) + ', since ' + t('2(' + b.a + 'y)(' + b.d + ')=' + 2 * b.a * b.d + 'y') + ': ' + t(R2.expr + '=' + R2.key),
+              ['Repair 1: keep the first and last terms; the middle must be twice the product of their roots.', 'Repair 2: keep the first and middle terms. Which number ' + t('k') + ' makes ' + t('2(' + b.a + 'y)(k)=' + 2 * b.a * b.d + 'y') + '? The last term is ' + t('k^{2}') + '.'], 'repair ' + plain(tx(sh.tb)));
+          } },
+          { id: 'e2c', sub: 'c', level: 'EMG', make: function (r, sh) {
+            var k = sh.c.k, R = pst(B('x'), N(k));
+            return pstPart('Repair ' + t(tx(sh.tc)) + ' by changing one term, and write the factored form of the repaired trinomial. (This one has only one repair.)', R,
+              { sol: 'Condition (2) fails: the last term ' + t(-k * k) + ' is negative. The middle term is fine: ' + t('2(x)(' + k + ')=' + 2 * k + 'x') + '.<br>Repair: last term ' + t('\\to +' + k * k) + ': ' + t(R.expr + '=' + R.key), hints: ['Which condition fails? Change that term so it passes.'], text: 'repair ' + plain(tx(sh.tc)) });
+          } },
+          { id: 'e2d', sub: 'd', level: 'PRG', make: function (r, sh) {
+            var d = sh.d, R1 = pst(M(d.p, 'a'), M(d.q, 'b')), R2 = pst(M(d.p, 'a'), M(d.d, 'b'));
+            return KP.fields('Repair ' + t(tx(sh.td)) + ' two ways. Write the factored form of each repaired trinomial.', [box('Change the middle term:', ['a', 'b'], 'Middle term changed'), box('Change the last term:', ['a', 'b'], 'Last term changed')],
+              [facChk(R1.TF, { wrong: pstWrongs(R1).concat([wr(R2.TF, 'swap', 'That repair changes the last term. In this box keep ' + t(d.q * d.q + 'b^{2}') + ' and change the <b>middle</b> term.')]) }), facChk(R2.TF, { wrong: pstWrongs(R2).concat([wr(R1.TF, 'swap', 'That repair changes the middle term. Here keep ' + t(2 * d.p * d.d + 'ab') + ' and change the <b>last</b> term.')]) })],
+              [R1.key, R2.key], t(R1.expr + '=' + R1.key) + ' and ' + t(R2.expr + '=' + R2.key),
+              'Condition (3) fails: ' + t('2(' + d.p + 'a)(' + d.q + 'b)=' + 2 * d.p * d.q + 'ab') + ', not ' + t(2 * d.p * d.d + 'ab') + '.<br><i>Repair 1:</i> middle term ' + t('\\to ' + 2 * d.p * d.q + 'ab') + ': ' + t(R1.expr + '=' + R1.key) + '<br><i>Repair 2:</i> last term ' + t('\\to ' + tx(M(d.d * d.d, 'b', 2))) + ', since ' + t('2(' + d.p + 'a)(' + tx(M(d.d, 'b')) + ')=' + 2 * d.p * d.d + 'ab') + ': ' + t(R2.expr + '=' + R2.key),
+              ['Repair 1: keep the first and last terms; the middle must be twice the product of their roots.', 'Repair 2: keep the first and middle terms. Which ' + t('kb') + ' makes ' + t('2(' + d.p + 'a)(kb)=' + 2 * d.p * d.d + 'ab') + '?'], 'repair ' + plain(tx(sh.td)));
           } }] },
-
-      { num: '2', stem: '<b>Still do not factor.</b> Each of these needs step 1 before its shape is visible.',
+      { num: '3', stem: 'Read the pattern backwards. Fill in the blank so that the result is a perfect square trinomial, then state the factored form.', parts: [
+        { id: 'e3a', level: 'EMG', make: function (r) {
+          var g = pickWhere(function () { return [r.int(2, 7), r.int(2, 7)]; }, function (v) { return v[0] !== v[1] && gcd(v[0], v[1]) === 1; }), o = pst(M(g[0], 'x'), M(g[1], 'y'));
+          return e3Part(t(g[0] * g[0] + 'x^{2}+' + BL + '+' + tx(o.B2)), o, o.mid, [{ is: P.mul(o.A, o.B), code: 'not-doubled', hint: 'The middle term is <b>twice</b> the product of the square roots.' }, { is: M(2 * g[0] * g[1], 'x'), code: 'no-var', hint: 'The middle term is ' + t('2(' + g[0] + 'x)(' + g[1] + 'y)') + ' — it has both letters.' }], { signGiven: '+' },
+            t('\\sqrt{' + tx(o.A2) + '}=' + tx(o.A)) + ', ' + t('\\sqrt{' + tx(o.B2) + '}=' + tx(o.B)) + '; middle ' + t('=2(' + tx(o.A) + ')(' + tx(o.B) + ')=' + tx(o.mid)) + '.<br>' + t(o.expr + '=' + o.key), 'middle term');
+        } },
+        { id: 'e3b', level: 'PRG', make: function (r) {
+          var g = pickWhere(function () { return [r.int(2, 5), r.int(2, 7)]; }, function (v) { return v[0] !== v[1] && gcd(v[0], v[1]) === 1; }), o = pst(M(g[0], 'a'), M(-g[1], 'b'));
+          return e3Part(t(BL + tx(o.mid) + '+' + tx(o.B2)), o, o.A2, [{ is: o.A, code: 'not-squared', hint: t(tx(o.A)) + ' is the square <b>root</b> of the first term. The first term is its square.' }, { is: M(g[0] * g[0], 'a'), code: 'not-squared', hint: 'The first term must be a square: ' + t('(' + tx(o.A) + ')^{2}') + ' includes ' + t('a^{2}') + '.' }], {},
+            t('\\sqrt{' + tx(o.B2) + '}=' + tx(o.Bp)) + '. Need ' + t('2(k)(' + tx(o.Bp) + ')=' + tx(absM(o.mid))) + ', so ' + t('k=' + tx(o.A)) + '.<br>First term ' + t('=(' + tx(o.A) + ')^{2}=' + tx(o.A2)) + '<br>' + t(o.expr + '=' + o.key), 'first term');
+        } },
+        { id: 'e3c', level: 'EMG', make: function (r) {
+          var g = pickWhere(function () { return [r.int(2, 6), r.int(1, 7)]; }, function (v) { return v[0] !== v[1] && gcd(v[0], v[1]) === 1; }), o = pst(M(g[0], 'm', 2), N(g[1]));
+          return e3Part(t(tx(o.A2) + '+' + BL + '+' + tx(o.B2)), o, o.mid, [{ is: P.mul(o.A, o.B), code: 'not-doubled', hint: 'The middle term is <b>twice</b> the product of the square roots.' }, { is: M(2 * g[0] * g[1], 'm'), code: 'no-root', hint: t('\\sqrt{' + tx(o.A2) + '}=' + tx(o.A)) + ' — the square root of ' + t('m^{4}') + ' is ' + t('m^{2}') + '.' }, { is: M(2 * g[0] * g[1], 'm', 4), code: 'no-root', hint: 'Use the square <b>root</b> of the first term, ' + t(tx(o.A)) + ', not the first term itself.' }], { signGiven: '+' },
+            t('\\sqrt{' + tx(o.A2) + '}=' + tx(o.A)) + ', ' + t('\\sqrt{' + tx(o.B2) + '}=' + tx(o.B)) + '; middle ' + t('=2(' + tx(o.A) + ')(' + tx(o.B) + ')=' + tx(o.mid)) + '.<br>' + t(o.expr + '=' + o.key), 'middle term');
+        } },
+        { id: 'e3d', level: 'PRG', make: function (r) {
+          var g = pickWhere(function () { return [r.int(2, 4), r.pick([3, 5, 7])]; }, function (v) { return v[0] < v[1] && gcd(v[0], v[1]) === 1; }), o = pst(M([g[0], g[1]], 'x'), N(1));
+          return e3Part(t(tx(o.A2) + '+' + BL + '+1'), o, o.mid, [{ is: o.A, code: 'not-doubled', hint: 'The middle term is <b>twice</b> the product of the square roots.' }, { is: M([2 * g[0] * g[0], g[1] * g[1]], 'x'), code: 'no-root', hint: 'Use the square <b>root</b> of the first term: ' + t('\\sqrt{' + tx(o.A2) + '}=' + tx(o.A)) + '.' }, { is: N([2 * g[0], g[1]]), code: 'no-var', hint: 'The middle term needs the variable ' + t('x') + '.' }], { signGiven: '+' },
+            t('\\sqrt{' + tx(o.A2) + '}=' + tx(o.A)) + ', ' + t('\\sqrt{1}=1') + '; middle ' + t('=2\\left(' + tx(o.A) + '\\right)(1)=' + tx(o.mid)) + '.<br>' + t(o.expr + '=' + o.key), 'middle term', { good: [ex.texRat([1, g[1] * g[1]]) + '(' + g[0] + 'x+' + g[1] + ')^2'] });
+        } },
+        { id: 'e3e', level: 'PRG', make: function (r) {
+          var g = pickWhere(function () { return [r.int(2, 7), r.int(5, 11)]; }, function (v) { return v[0] !== v[1] && gcd(v[0], v[1]) === 1; }), a = g[0], b = g[1], o = pst(N(b), M(-a, 't'));
+          o.key = '(' + b + '-' + a + 't)^{2}';
+          return e3Part(t(b * b + '-' + 2 * a * b + 't+' + BL), o, o.B2, [{ is: M(a, 't'), code: 'not-squared', hint: t(a + 't') + ' is the square <b>root</b> of the missing term. The term itself is its square.' }, { is: M(a, 't', 2), code: 'not-squared', hint: 'Square the whole root, coefficient too: ' + t('(' + a + 't)^{2}') + '.' }, { is: N(a * a), code: 'has-var', hint: 'The missing term must contain ' + t('t^{2}') + ': it is ' + t('(kt)^{2}') + '.' }], {},
+            t('\\sqrt{' + b * b + '}=' + b) + '. Need ' + t('2(' + b + ')(k)=' + 2 * a * b + 't') + ', so ' + t('k=' + a + 't') + '.<br>Last term ' + t('=(' + a + 't)^{2}=' + a * a + 't^{2}') + '<br>' + t(b * b + '-' + 2 * a * b + 't+' + a * a + 't^{2}=(' + b + '-' + a + 't)^{2}') + ', or ' + t('(' + a + 't-' + b + ')^{2}'), 'last term', { good: ['(' + a + 't-' + b + ')^2'] });
+        } },
+        { id: 'e3f', level: 'EMG', make: function (r) {
+          var g = r.pick([[1, 1], [1, 1], [1, 2], [2, 1], [1, 3], [3, 1], [2, 3], [3, 2]]), o = pst(M(g[0], 'x', 2), M(g[1], 'y', 2));
+          return e3Part(t(tx(o.A2) + '+' + BL + '+' + tx(o.B2)), o, o.mid, [{ is: P.mul(o.A, o.B), code: 'not-doubled', hint: 'The middle term is <b>twice</b> the product of the square roots.' }, { is: M(2 * g[0] * g[1], { x: 1, y: 1 }), code: 'no-root', hint: t('\\sqrt{' + tx(o.A2) + '}=' + tx(o.A)) + ' and ' + t('\\sqrt{' + tx(o.B2) + '}=' + tx(o.B)) + ': the roots have squares in them.' }, { is: M(2 * g[0] * g[1], { x: 4, y: 4 }), code: 'no-root', hint: 'Multiply the square <b>roots</b> (' + t(tx(o.A)) + ' and ' + t(tx(o.B)) + '), not the terms themselves.' }], { signGiven: '+' },
+            t('\\sqrt{' + tx(o.A2) + '}=' + tx(o.A)) + ', ' + t('\\sqrt{' + tx(o.B2) + '}=' + tx(o.B)) + '; middle ' + t('=2(' + tx(o.A) + ')(' + tx(o.B) + ')=' + tx(o.mid)) + '.<br>' + t(o.expr + '=' + o.key), 'middle term');
+        } }] },
+      { num: '4', stem: 'Now factor. Every one of these is a perfect square trinomial — confirm the middle term as you go.', parts: [
+        { id: 'e4a', level: 'PRG', make: function (r) { var g = pickWhere(function () { return [r.int(3, 9), r.int(2, 8)]; }, function (v) { return v[0] !== v[1] && gcd(v[0], v[1]) === 1; }); var o = pst(M(g[0], 'x'), M(g[1], 'y')); return pstPart(t(o.expr), o); } },
+        { id: 'e4b', level: 'PRG', make: function (r) { var g = pickWhere(function () { return [r.int(4, 9), r.int(3, 9)]; }, function (v) { return v[0] !== v[1] && gcd(v[0], v[1]) === 1; }); var o = pst(M(g[0], 'a'), N(-g[1])); return pstPart(t(o.expr), o); } },
+        { id: 'e4c', level: 'PRG', make: function (r) {
+          var g = pickWhere(function () { return [r.int(2, 5), r.pick([2, 3, 5, 6, 7])]; }, function (v) { return gcd(v[0], v[1]) === 1; }), o = pst(M(g[0], 'm', 2), N(-g[1]));
+          return pstPart(t(o.expr), o, { solExtra: '<br>' + t(g[1]) + ' is not a perfect square, so ' + t(o.baseTex) + ' stops.', wrong: [wr([fo(S(M(g[0], 'm'), N(-g[1])), 2), fo(S(M(g[0], 'm'), N(g[1])), 2)], 'not-square', t(o.baseTex) + ' is not a difference of two perfect squares (' + t(g[1]) + ' isn’t a perfect square), so it doesn’t factor again.')] });
+        } },
+        { id: 'e4d', level: 'PRG', make: function (r) {
+          var g = pickWhere(function () { return [r.pick([2, 3]), r.int(1, 3)]; }, function (v) { return true; }), o = pst(M([1, g[0]], 'x'), M(g[1], 'y'));
+          var c = g[0] * g[1];
+          return pstPart(t(o.expr), o, { good: [ex.texRat([1, g[0] * g[0]]) + '(x+' + (c === 1 ? '' : c) + 'y)^2'], solExtra: '<br>(This can also be written ' + t(ex.texRat([1, g[0] * g[0]]) + '(x+' + (c === 1 ? '' : c) + 'y)^{2}') + '.)' });
+        } },
+        { id: 'e4e', level: 'PRG', make: function (r) { var g = pickWhere(function () { return [r.int(5, 12), r.int(2, 7)]; }, function (v) { return v[0] !== v[1] && gcd(v[0], v[1]) === 1; }); var o = pst(M(g[0], 'p'), M(g[1], 'q')); return pstPart(t(o.expr), o); } },
+        { id: 'e4f', level: 'PRG', make: function (r) {
+          var g = pickWhere(function () { return [r.int(3, 9), r.int(5, 12)]; }, function (v) { return v[0] !== v[1] && gcd(v[0], v[1]) === 1; }), o = pst(M(g[0], 't'), N(-g[1]), 'asc');
+          return pstPart(t(o.expr), o, { sol: 'Reorder: ' + t(tx(o.T)) + '<br>' + pstSol(o), good: ['(' + g[1] + '-' + g[0] + 't)^2'] });
+        } }] },
+      /* ---------- EP B: substitution ---------- */
+      { num: '5', section: 'Extra practice B — Substitution: Give the Block a Name', stem: 'In ' + t('a^{2}-b^{2}=(a-b)(a+b)') + ' the letter ' + t('a') + ' may stand for a whole expression. Let ' + t('A') + ' be the bracket, factor in terms of ' + t('A') + ', then replace ' + t('A') + ' and simplify inside each bracket.', parts: [
+        { id: 'e5a', level: 'PRG', make: function (r) {
+          var k = r.int(2, 9), A = S(B('x'), B('y'));
+          return binDos(t('(x+y)^{2}-' + k * k), A, 'x+y', N(k), String(k), false);
+        } },
+        { id: 'e5b', level: 'PRG', make: function (r) {
+          var c = r.pick([2, 3]), k = r.int(2, 7), A = S(M(c, 'm'), M(-1, 'n'));
+          return binDos(t('(' + c + 'm-n)^{2}-' + k * k), A, c + 'm-n', N(k), String(k), false);
+        } },
+        { id: 'e5c', level: 'ADV', make: function (r) {
+          var k = r.int(4, 9), c = r.int(2, 5), A = S(B('a'), M(c, 'b'));
+          return binDos(t(k * k + '-(a+' + c + 'b)^{2}'), A, 'a+' + c + 'b', N(k), String(k), true);
+        } },
+        { id: 'e5d', level: 'PRG', make: function (r) {
+          var c = r.int(2, 5), k = r.int(2, 6), A = S(M(c, 'p'), B('q'));
+          return binDos(t('(' + c + 'p+q)^{2}-' + k * k + 'r^{2}'), A, c + 'p+q', M(k, 'r'), k + 'r', false);
+        } }] },
+      { num: '6', stem: 'Same idea, but now the block sits inside a trinomial. Let ' + t('A') + ' be the repeated bracket, factor the trinomial in ' + t('A') + ' (by decomposition where ' + t('a\\neq 1') + '), then substitute back and collect like terms inside every bracket.', parts: [
+        { id: 'e6a', level: 'PRG', make: function (r) {
+          var g = pickWhere(function () { return { r: r.pick([2, 3]), q: r.int(1, 4), s: r.int(1, 7) }; }, function (g) { return gcd(g.r, g.s) === 1 && g.s !== g.r * g.q; });
+          return binTri(S(B('a'), B('b')), 'a+b', [[1, g.q], [g.r, g.s]]);
+        } },
+        { id: 'e6b', level: 'ADV', make: function (r) {
+          var g = pickWhere(function () { return { r: r.pick([2, 3]), s: r.int(1, 7), q: r.int(1, 4), h: r.int(1, 5) }; }, function (g) { return gcd(g.r, g.s) === 1 && g.s !== g.r * g.q; });
+          return binTri(S(B('x'), N(-g.h)), 'x-' + g.h, [[g.r, -g.s], [1, -g.q]]);
+        } },
+        { id: 'e6c', level: 'PRG', make: function (r) {
+          var g = pickWhere(function () { return { m: r.int(1, 6), n: r.int(2, 8) }; }, function (g) { return g.m < g.n; });
+          return binTri(S(B('p'), B('q')), 'p+q', [[1, -g.m], [1, -g.n]]);
+        } },
+        { id: 'e6d', level: 'ADV', make: function (r) {
+          var g = pickWhere(function () { return { c: r.pick([2, 3]), e: r.pick([2, 3]), d: r.int(1, 5), f: r.int(1, 7) }; }, function (g) { var b = g.d * g.e - g.c * g.f; return b !== 0 && Math.abs(b) <= 9 && gcd(g.c, g.d) === 1 && gcd(g.e, g.f) === 1 && gcd(gcd(g.c * g.e, b), g.d * g.f) === 1; });
+          return binTri(S(B('m'), B('n')), 'm+n', [[g.c, g.d], [g.e, -g.f]]);
+        } }] },
+      { num: '7', stem: 'Here the block is a monomial: let ' + t('A=x^{2}') + ' (or ' + t('y^{2}') + ', or ' + t('a^{2}') + '). Factor completely — in every one of these, <b>both</b> brackets factor again.', parts: [
+        { id: 'e7a', level: 'PRG', make: function (r) { var q = r.int(2, 3); return e7Part('x', 1, q); } },
+        { id: 'e7b', level: 'PRG', make: function (r) { var g = pickWhere(function () { return [r.int(2, 4), r.int(3, 6)]; }, function (v) { return v[0] < v[1] && v[0] * v[1] <= 20; }); return e7Part('y', g[0], g[1]); } },
+        { id: 'e7c', level: 'PRG', make: function (r) { var q = r.int(4, 6); return e7Part('x', 1, q); } },
+        { id: 'e7d', level: 'PRG', make: function (r) { var g = pickWhere(function () { return [r.int(2, 3), r.int(3, 5)]; }, function (v) { return v[0] < v[1]; }); return e7Part('a', g[0], g[1]); } }] },
+      { num: '8', stem: 'Three questions about the substitution itself.',
         shared: function (r) {
-          var L = [];
-          var k = r.pick([2, 3, 4, 5]), a = r.int(2, 7);
-          L.push({ g: M(k, 'x'), br: P.sub(M(1, { x: 2 }), N(a * a)), m: 'dos' });
-          var k2 = r.pick([2, 3, 5]), a2, u2, v2; do { a2 = r.pick([2, 3]); u2 = r.int(1, 7); v2 = r.int(1, 7); } while (gcd(a2, v2) !== 1 || a2 * u2 - v2 === 0); // (a y − v)(y + u)
-          L.push({ g: M(k2, 'y'), br: P.mul(S(M(a2, 'y'), N(-v2)), S(V('y'), N(u2))), m: 'dec' });
-          var k3 = r.pick([2, 3, 4, 5, 6]), pq = two(r, 1, 6); L.push({ g: M(k3, 'm'), br: P.mul(S(V('m'), N(pq[0])), S(V('m'), N(-pq[1]))), m: 'insp' });
-          var k4 = r.pick([2, 3, 5]), p4 = r.int(1, 5), q4 = r.int(2, 4); L.push({ g: N(k4), br: P.mul(S(X, N(p4)), P.sub(M(1, { x: 2 }), N(q4 * q4))), m: 'grp', note: ' — and the bracket ' + t('x^{2}-' + q4 * q4) + ' it produces is then a difference of squares' });
-          var k5 = r.pick([2, 3, 5, 7]), n5 = r.int(2, 6); L.push({ g: N(k5), br: S(M(1, { t: 2 }), N(n5 * n5)), m: 'none' });
-          var k6 = r.pick([2, 3, 5]), pq6 = cop(r, 2, 3, 1, 7); L.push({ g: N(-k6), br: P.sub(M(pq6[0] * pq6[0], { k: 2 }), N(pq6[1] * pq6[1])), m: 'dos' });
-          L.forEach(function (it, i) { it.expr = P.mul(it.g, it.br); it.tex = tx(it.expr); it.n = P.count(it.br); it.id = String.fromCharCode(97 + i); });
-          return { L: L };
-        },
-        parts: ['a', 'b', 'c', 'd', 'e', 'f'].map(function (s, i) {
-          return { id: 'e2' + s, sub: s, level: ['BEG', 'BEG', 'BEG', 'EMG', 'BEG', 'EMG'][i], make: function (r, sh) {
-            var it = sh.L[i], terms = P.terms(it.expr).map(function (T) { return P.mono(T.c, T.v); }), vs = P.vars(it.expr);
-            return B.fields('For ' + t(it.tex) + ', write (i) the greatest common factor and (ii) how many terms are left inside the bracket.',
-              [{ name: 'GCF', label: '(i) GCF', mode: 'math', keys: 'poly', vars: vs, wide: false, placeholder: 'e.g. 3x' }, { name: 'Terms left', label: '(ii) terms left' }],
-              [gcfChk(it.g, terms), K.number(it.n, function (v) { return { code: 'terms-count', hint: 'Divide every term by the GCF: ' + t(it.tex + '=' + kpre(it.g) + '(\\ldots)') + '. Count the terms in the bracket.' }; })],
-              [tx(it.g), String(it.n)], 'GCF ' + t(tx(it.g)) + '; ' + it.n + ' terms left',
-              t(it.tex + '=' + kpre(it.g) + '(' + tx(it.br) + ')') + '<br>(i) GCF ' + t(tx(it.g)) + (lead(it.g) < 0 ? ' (the leading term is negative, so take the negative out too)' : '') + '<br>(ii) <b>' + it.n + ' terms</b> left',
-              ['Find the greatest number that divides every coefficient, then the lowest power of each variable that appears in <b>every</b> term.', lead(it.g) < 0 ? 'The leading coefficient is negative: take out a negative.' : 'Divide each term by the GCF and count what is left.'], 'GCF and terms: ' + plain(it.tex));
-          } };
-        }).concat([{ id: 'e2g', sub: 'iii', level: 'EMG', make: function (r, sh) {
-          var cols = MCOL.slice(1);
-          var rows = sh.L.map(function (it) {
-            var w = { dos: 'two perfect squares with a minus between them: <b>difference of squares</b>', insp: 'three terms with ' + t('a=1') + ': <b>inspection</b>', dec: 'three terms with ' + t('a\\neq1') + ': <b>decomposition</b>', grp: 'four terms: <b>grouping</b>' + (it.note || ''), none: 'a <b>sum</b> of squares: nothing more to do, stop' };
-            return { id: it.id, label: it.id, br: '(' + it.id + ') ' + t(tx(it.br)), html: '(' + it.id + ') ' + t(it.tex + '=' + kpre(it.g) + '(' + tx(it.br) + ')'), m: it.m, why: t(tx(it.br)) + ' is ' + w[it.m] + '.' };
-          });
-          return methodGrid('(iii) Once the GCF is out, which method applies to what is inside the bracket?<br>' + rows.map(function (rw) { return rw.br; }).join('<br>'), rows, cols, rows.map(function (rw) { return rw.html + ': ' + rw.why; }).join('<br>'), 'method inside the bracket (a)-(f)');
-        } }]) },
-
-      { num: '3', stem: 'Each expression is a student’s answer — most are partly factored, and one was left exactly as it was given. Using step 6 only (can any factor be factored again?), choose the verdict.',
-        shared: function (r) {
-          var kinds = r.shuffle(['nf1', 'c1', 'c2', 'nf2', 'd', 'nf3']), rows = [];
-          kinds.forEach(function (kd) {
-            var o;
-            if (kd === 'nf1') { var pq = two(r, 2, 6); o = { given: '(x+' + pq[0] + ')(x^{2}-' + pq[1] * pq[1] + ')', v: 'nf', list: [S(X, N(pq[0])), S(X, N(-pq[1])), S(X, N(pq[1]))], why: 'the bracket ' + t('x^{2}-' + pq[1] * pq[1] + '=x^{2}-' + pq[1] + '^{2}') + ' is a difference of squares.' }; }
-            if (kd === 'c1') { var d = decPair(r, [2, 3, 5], [2, 3], [1, 9], [1, 7]); o = { given: '(' + tx(S(M(d.a, 'x'), N(-d.u))) + ')(' + tx(S(M(d.b, 'x'), N(d.v))) + ')', v: 'c', why: 'neither bracket has a common factor, and neither is a difference of squares.' }; }
-            if (kd === 'c2') { var kk = r.pick([2, 3, 5, 7]), n = r.int(2, 7); o = { given: kk + '(x^{2}+' + n * n + ')', v: 'c', why: t('x^{2}+' + n * n) + ' is a <b>sum</b> of squares, which does not factor over the integers.' }; }
-            if (kd === 'nf2') { var g = r.pick([2, 3, 5]), pq2 = cop(r, 2, 3, 1, 7); var pst = P.pow(S(M(pq2[0], 'x'), N(-pq2[1])), 2); o = { given: g + 'x(' + tx(pst) + ')', v: 'nf', list: [M(g, 'x'), { p: S(M(pq2[0], 'x'), N(-pq2[1])), k: 2 }], why: t(tx(pst)) + ' is a perfect square trinomial, ' + t('(' + pq2[0] + 'x)^{2}-2(' + pq2[0] + 'x)(' + pq2[1] + ')+' + pq2[1] + '^{2}') + '.' }; }
-            if (kd === 'd') { var ir = irreducibleMonic(r, 1, 6, 2, 12, '+'); o = { given: tx(S(M(1, { x: 2 }), M(ir.b, 'x'), N(ir.c))), v: 'd', why: noPairText(ir.c, ir.b) };
-            }
-            if (kd === 'nf3') { var p3 = r.int(1, 6), m3 = r.pick([2, 3]), aq; do { aq = [r.int(1, 3), r.int(1, 7)]; } while (gcd(aq[0], aq[1]) !== 1 || gcd(m3 * aq[0], m3 * aq[1]) !== m3); o = { given: '(x-' + p3 + ')(' + tx(S(M(m3 * aq[0], 'x'), N(m3 * aq[1]))) + ')', v: 'nf', list: [N(m3), S(X, N(-p3)), S(M(aq[0], 'x'), N(aq[1]))], why: 'the bracket ' + t('(' + tx(S(M(m3 * aq[0], 'x'), N(m3 * aq[1]))) + ')') + ' still has a common factor, ' + t(m3) + '.' }; }
-            o.kind = kd; rows.push(o);
-          });
-          rows.forEach(function (rw, i) { rw.id = String.fromCharCode(97 + i); rw.html = '(' + rw.id + ') ' + t(rw.given); });
-          return { rows: rows, nf: rows.filter(function (rw) { return rw.v === 'nf'; }) };
+          var a = pickWhere(function () { return { r: r.pick([2, 3]), q: r.int(1, 4), s: r.int(1, 7) }; }, function (g) { return gcd(g.r, g.s) === 1 && g.s !== g.r * g.q; });
+          var b = pickWhere(function () { return { h: r.int(1, 5), q: r.int(1, 4) }; }, function (g) { return true; });
+          var c = pickWhere(function () { return [r.pick([2, 3, 5, 6, 7]), r.pick([2, 3, 5, 6, 7])]; }, function (v) { return v[0] < v[1]; });
+          return { a: a, b: b, c: c };
         },
         parts: [
-          { id: 'e3', sub: 'verdicts', level: 'EMG', make: function (r, sh) {
-            var cols = [{ id: 'c', html: 'factored<br>completely' }, { id: 'nf', html: 'not yet<br>finished' }, { id: 'd', html: 'does not<br>factor' }], want = {}, VN = { c: '<b>factored completely</b>', nf: '<b>not yet finished</b>', d: '<b>does not factor</b> over the integers' };
-            sh.rows.forEach(function (rw) { want[rw.id] = rw.v; });
-            return B.grid('Choose the verdict for each answer:<br>' + sh.rows.map(function (rw) { return rw.html; }).join('<br>'), sh.rows.map(function (rw) { return { id: rw.id, html: '(' + rw.id + ')' }; }), cols, want, {
-              why: function (id) { var rw = sh.rows.filter(function (x) { return x.id === id; })[0]; return { code: 'row', hint: rw.html + ': look at each factor again — can it be factored? Does a pair of integers exist?' }; }
-            }, sh.rows.map(function (rw) { return rw.html + ': ' + VN[rw.v] + ' — ' + rw.why; }).join('<br>'), ['For each bracket: is there a common factor? Is it a difference of squares? A trinomial that factors?', 'A sum of squares, and a trinomial with no integer pair, do not factor.'], 'verdicts on six answers');
-          } }].concat([0, 1, 2].map(function (j) {
-            return { id: 'e3n' + (j + 1), sub: 'finish ' + ['i', 'ii', 'iii'][j], level: 'BEG', make: function (r, sh) {
-              var rw = sh.nf[j], pr = { expr: FA.product(rw.list), tex: rw.given, list: rw.list, keyTex: lst(rw.list), wrongs: [], hints: ['Look for the bracket that can still be factored.'] };
-              pr.sol = 'Not yet finished: ' + rw.why + '<br>' + t(rw.given + '=' + pr.keyTex);
-              return fac(pr, { prompt: 'Finish the factoring of answer (' + rw.id + '), ' + t(rw.given) + '.', text: 'finish ' + plain(rw.given) });
-            } };
-          })) },
-
-      /* ---------- EP Part B — sort first ---------- */
-      { num: '4', section: 'Extra practice B — Sort first, factor later', stem: 'Here are twelve expressions. <b>Do not factor any of them yet.</b> Put each one into the column for the method you would use.',
-        shared: function (r) {
-          var L = [];
-          L.push({ tex: tx(P.sub(M(1, { x: 2 }), N(Math.pow(r.int(2, 9), 2)))), m: 'dos' });
-          var dB = decPair(r, [2, 3], [2, 3], [1, 5], [1, 5]); L.push({ tex: tri({ a: dB.a, u: dB.u, b: dB.b, v: -dB.v, X: X }).tex, m: 'dec' });
-          var gC = r.pick([2, 3, 4, 5]), pqC = cop(r, 2, 5, 2, 5); L.push({ tex: tx(P.mul(M(gC, { x: 2, y: 1 }), S(M(pqC[0], 'x'), M(-pqC[1], 'y')))), m: 'gcf' });
-          var pqD = two(r, 2, 9); L.push({ tex: tri({ a: 1, u: pqD[0], b: 1, v: pqD[1], X: X }).tex, m: 'insp' });
-          var aE, uE, sE; do { aE = r.int(2, 5); uE = r.int(2, 7); sE = r.int(2, 5); } while (gcd(aE, uE) !== 1); L.push({ tex: grp({ A1: M(aE, 'a'), A2: N(uE), B1: V('b'), B2: N(-sE) }).tex, m: 'grp' });
-          var pqF = cop(r, 2, 9, 2, 9); L.push({ tex: tx(S(M(pqF[0] * pqF[0], { m: 2 }), M(-pqF[1] * pqF[1], { n: 2 }))), m: 'dos' });
-          var pqG = two(r, 2, 9); L.push({ tex: tri({ a: 1, u: -pqG[0], b: 1, v: -pqG[1], X: X }).tex, m: 'insp' });
-          var dH = decPair(r, [3, 5], [2, 3], [1, 7], [1, 5]); L.push({ tex: tri({ a: dH.a, u: -dH.u, b: dH.b, v: -dH.v, X: V('p') }).tex, m: 'dec' });
-          var qI = r.int(2, 9), pI = r.int(2, 6); L.push({ tex: grp({ A1: M(1, { y: 2 }), A2: N(qI), B1: V('y'), B2: N(-pI) }).tex, m: 'grp' });
-          L.push({ tex: P.tex(P.sub(N(Math.pow(r.int(2, 9), 2)), M(1, { t: 2 })), { order: 'asc' }), m: 'dos' });
-          var gK = r.pick([2, 3, 5, 7]), pqK = cop(r, 2, 5, 2, 5); L.push({ tex: tx(P.mul(M(gK, { u: 3, v: 3 }), S(M(pqK[0], 'u'), M(pqK[1], 'v')))), m: 'gcf' });
-          var pL, qL; do { pL = r.int(3, 9); qL = r.int(2, pL - 1); } while (pL * qL > 72); L.push({ tex: tri({ a: 1, u: -pL, b: 1, v: qL, X: X }).tex, m: 'insp' });
-          var why = { dos: 'two perfect squares with a minus between them: <b>difference of squares</b>', dec: 'three terms, no GCF, ' + t('a\\neq1') + ': <b>decomposition</b>', gcf: 'the GCF leaves a bracket that can’t factor: <b>common factor only</b>', insp: 'three terms, ' + t('a=1') + ': <b>inspection</b>', grp: 'four terms: <b>grouping</b>' };
-          L.forEach(function (it, i) { it.id = String.fromCharCode(65 + i); it.html = '<b>' + it.id + '.</b> ' + t(it.tex); it.label = '<b>' + it.id + '</b>'; it.why = why[it.m] + '.'; });
-          return { L: L };
-        },
-        parts: [0, 1].map(function (h) {
-          return { id: 'e4' + 'ab'.charAt(h), sub: h ? 'G–L' : 'A–F', level: 'BEG', make: function (r, sh) {
-            var rows = sh.L.slice(6 * h, 6 * h + 6), cols = MCOL.slice(0, 5);
-            return methodGrid('Sort these by the method you would use:<br>' + rows.map(function (rw) { return rw.html; }).join('<br>'), rows, cols, rows.map(function (rw) { return rw.html + ': ' + rw.why; }).join('<br>'), 'sort ' + (h ? 'G-L' : 'A-F'));
-          } };
-        }) },
-
-      { num: '5', stem: 'Factor completely. First decide which method each one needs — decomposition, grouping, difference of squares or inspection — then use it.', parts: [
-        { id: 'e5a', level: 'PRG', make: function (r) { var d = decPair(r, [2, 3], [2, 3], [1, 5], [1, 5]); return fac(tri({ a: d.a, u: d.u, b: d.b, v: -d.v, X: X })); } },
-        { id: 'e5b', level: 'PRG', make: function (r) { var a, u, s; do { a = r.int(2, 5); u = r.int(2, 7); s = r.int(2, 5); } while (gcd(a, u) !== 1); return fac(grp({ A1: M(a, 'a'), A2: N(u), B1: V('b'), B2: N(-s) })); } },
-        { id: 'e5c', level: 'PRG', make: function (r) { var pq = cop(r, 2, 9, 2, 9); return fac(dos({ A: M(pq[0], 'm'), B: M(pq[1], 'n') })); } },
-        { id: 'e5d', level: 'PRG', make: function (r) { var d = decPair(r, [3, 5], [2, 3], [1, 7], [1, 5]); return fac(tri({ a: d.a, u: -d.u, b: d.b, v: -d.v, X: V('p') })); } },
-        { id: 'e5e', level: 'EMG', make: function (r) { var q = r.int(2, 9), p = r.int(2, 6); return fac(grp({ A1: M(1, { y: 2 }), A2: N(q), B1: V('y'), B2: N(-p), note: t('y^{2}+' + q) + ' does not factor, so this is complete.' })); } },
-        { id: 'e5f', level: 'BEG', make: function (r) { var p, q; do { p = r.int(3, 9); q = r.int(2, p - 1); } while (p * q > 72); return fac(tri({ a: 1, u: -p, b: 1, v: q, X: X })); } }] },
-
-      /* ---------- EP Part C — two-step decisions ---------- */
-      { num: '6', section: 'Extra practice C — Two-step decisions', stem: 'The common factor is what <b>reveals</b> the difference of squares. Take out the GCF, then keep applying step 2 until no bracket is a difference of squares.', parts: [
-        { id: 'e6a', level: 'PRG', make: function (r) { var g = r.pick([2, 3]), pq = cop(r, 2, 5, 1, 7); return fac(dos({ k: M(g, 'x'), A: M(pq[0], 'x'), B: N(pq[1]) })); } },
-        { id: 'e6b', level: 'PRG', make: function (r) { var g = r.pick([2, 3, 5, 7]), n = r.pick([1, 1, 2]); return fac(dos({ k: M(g, 'b'), A: M(1, { a: 2 }), B: M(n * n, { b: 2 }), again: true })); } },
-        { id: 'e6c', level: 'PRG', make: function (r) { var g = r.pick([2, 3]), pq = cop(r, 2, 4, 2, 7); return fac(dos({ k: M(g, 'y'), A: N(pq[1]), B: M(pq[0], 'y'), order: 'asc' })); } },
-        { id: 'e6d', level: 'PRG', make: function (r) { var g = r.pick([2, 3]), pq = cop(r, 3, 5, 1, 4); return fac(dos({ k: M(g, 'w'), A: M(pq[0], 'w'), B: N(pq[1]) })); } }] },
-
-      { num: '7', stem: 'Here the common factor reveals a trinomial with ' + t('a\\neq1') + '. Take out the GCF, then decompose what is left (find ' + t('ac') + ', the sum ' + t('b') + ', and the split).',
-        shared: function (r) { var g = r.pick([2, 3]), d = decPair(r, [3, 2], [2, 3], [2, 5], [2, 5]); return { g: g, d: d }; },
-        parts: [
-          { id: 'e7s', sub: 'a steps', level: 'EMG', make: function (r, sh) {
-            var d = sh.d, pr = tri({ k: M(sh.g, 'x'), a: d.a, u: d.u, b: d.b, v: -d.v, X: X }), ac = pr.A * pr.C, m1 = d.a * -d.v, m2 = d.b * d.u;
-            var terms = P.terms(pr.expr).map(function (T) { return P.mono(T.c, T.v); });
-            var gchk = gcfChk(pr.k, terms), acchk = K.number(ac, function (v) { return v === pr.A * pr.C * sh.g * sh.g || v === ac * sh.g ? { code: 'ac-wrong', hint: 'Use ' + t('a') + ' and ' + t('c') + ' from the bracket <b>after</b> taking out the GCF: ' + t(tx(pr.inner)) + '.' } : null; });
-            var check = function (resp) {
-              resp = resp || [];
-              var r1 = gchk(resp[0] || ''); if (r1.v !== 'correct') return { v: r1.v, code: r1.code, hint: '<b>GCF:</b> ' + (r1.hint || 'Check this one again.') };
-              var r2 = acchk(resp[1] || ''); if (r2.v !== 'correct') return { v: r2.v, code: r2.code, hint: '<b>ac:</b> ' + (r2.hint || 'Multiply the first and last coefficients of the bracket.') };
-              var x = HW.parse.number(resp[2] || ''), y = HW.parse.number(resp[3] || '');
-              if (!x.ok || !y.ok) return form('empty', '<b>Split:</b> type the two numbers, one in each box.');
-              var a = x.value, b = y.value;
-              if ((a === m1 && b === m2) || (a === m2 && b === m1)) return ok();
-              return wrong('pair-wrong', '<b>Split:</b> ' + t(nn(a) + '\\times' + nn(b) + '=' + a * b) + ' and ' + t(nn(a) + '+' + nn(b) + '=' + (a + b)) + '. You need product ' + t(ac) + ' and sum ' + t(pr.Bm) + '.');
-            };
-            return { prompt: 'For ' + t(pr.tex) + ': take out the GCF, then give ' + t('ac') + ' for the trinomial that is left and the two numbers you split the middle term into.',
-              input: { type: 'fields', fields: [{ name: 'GCF', label: 'GCF', mode: 'math', keys: 'poly', vars: ['x'], wide: false, placeholder: 'e.g. 3x' }, { name: 'ac', label: t('ac') }, { name: 'first number', label: 'split:' }, { name: 'second number', label: 'and' }] },
-              check: check, key: [tx(pr.k), String(ac), String(m1), String(m2)], answer: 'GCF ' + t(tx(pr.k)) + ', ' + t('ac=' + ac) + ', split ' + t(m1) + ' and ' + t(m2),
-              solution: pr.sol.split('<br>').slice(0, 3).join('<br>'), hints: ['Take out the GCF first, then use the ' + t('a') + ' and ' + t('c') + ' of the bracket.', 'Find two integers with product ' + t('ac') + ' and sum ' + t('b') + '.'], text: 'decomposition steps ' + plain(pr.tex),
-              good: [[tx(pr.k), String(ac), String(m2), String(m1)]], bad: [[tx(pr.k), String(ac), String(-m1), String(-m2)], [tx(P.scale(pr.k, 1 / sh.g)), String(ac), String(m1), String(m2)]] };
+          { id: 'e8a1', sub: 'a i', level: 'EMG', make: function (r, sh) {
+            var g = sh.a, a = g.r, b = g.s + g.r * g.q, c = g.q * g.s, expr = cA(a, 'a+b', true, true) + cA(b, 'a+b') + cK(c);
+            var ans = '(A+' + g.q + ')(' + g.r + 'A+' + g.s + ')';
+            return mcTex(r, 'A student factors ' + t(expr) + ' and writes the final answer as ' + t(ans) + '. The factoring itself is right. What is missing?', [
+              { html: 'The back-substitution: ' + t('A') + ' is a letter the student invented, so it must be replaced by ' + t('a+b') + ' and the brackets simplified.', right: true },
+              { html: 'Nothing — ' + t(ans) + ' is fully factored.', why: 'The question is written in ' + t('a') + ' and ' + t('b') + '. An answer in ' + t('A') + ' isn’t an answer to it yet.' },
+              { html: 'The brackets should be multiplied out.', why: 'Multiplying out would undo the factoring. The problem is the letter ' + t('A') + '.' },
+              { html: t(g.r + 'A+' + g.s) + ' should be factored further.', why: t(g.r + 'A+' + g.s) + ' has no common factor and isn’t a difference of squares. Look at which letters the answer uses.' }],
+              t('A') + ' is not in the question, so replace ' + t('A=a+b') + ':<br>' + t(ans + '=\\big((a+b)+' + g.q + '\\big)\\big(' + g.r + '(a+b)+' + g.s + '\\big)=(a+b+' + g.q + ')(' + g.r + 'a+' + g.r + 'b+' + g.s + ')'), ['Which letters appear in the question? Which appear in the answer?'], 'what is missing: back-substitution');
           } },
-          { id: 'e7a', sub: 'a', level: 'PRG', make: function (r, sh) { var d = sh.d; return fac(tri({ k: M(sh.g, 'x'), a: d.a, u: d.u, b: d.b, v: -d.v, X: X }), { prompt: 'Factor ' + t(P.tex(P.mul(M(sh.g, 'x'), S(M(d.a, 'x'), N(d.u)), S(M(d.b, 'x'), N(-d.v))))) + ' completely.' }); } },
-          { id: 'e7b', sub: 'b', level: 'PRG', make: function (r) { var g = r.pick([2, 3, 5]), d = decPair(r, [1], [5, 6, 7, 10], [1, 3], [3, 9]); return fac(tri({ k: M(g, 'b'), a: 1, u: d.u, b: d.b, v: -d.v, X: V('a') })); } },
-          { id: 'e7c', sub: 'c', level: 'PRG', make: function (r) { var g = r.pick([2, 3]), d = decPair(r, [2, 3], [2, 3], [1, 4], [1, 4]); return fac(tri({ k: M(-g, 'k'), a: d.a, u: -d.u, b: d.b, v: -d.v, X: V('k') })); } },
-          { id: 'e7d', sub: 'd', level: 'PRG', make: function (r) { var g = r.pick([2, 3]), d = decPair(r, [1], [7, 11, 13, 14], [1, 1], [2, 5]); return fac(tri({ k: M(g, { p: 1, q: 1 }), a: 1, u: -d.u, b: d.b, v: -d.v, X: V('p') })); } }] },
-
-      { num: '8', stem: 'When a trinomial has a common factor, the GCF should come out <b>before</b> you decompose.', parts: [
-        { id: 'e8', level: 'EMG', make: function (r) {
-          var g = r.pick([2, 3]), d = decPair(r, [2, 3], [2, 3], [2, 5], [2, 5]), pr = tri({ k: M(g, 'x'), a: d.a, u: d.u, b: d.b, v: -d.v, X: X });
-          return mcPart(r, 'What goes wrong if you try decomposition on ' + t(pr.tex) + ' <b>without</b> removing ' + t(g + 'x') + ' first?', [
-            { html: 'Its terms have degrees ' + t('3') + ', ' + t('2') + ' and ' + t('1') + ' — it isn’t of the form ' + t('ax^{2}+bx+c') + ', so there is no ' + t('a') + ' (or ' + t('c') + ') to use until the GCF is out.', right: true },
-            { html: 'Nothing: use ' + t('a=' + P.coef(pr.expr, { x: 3 })[0]) + ' and ' + t('c=' + P.coef(pr.expr, { x: 1 })[0]) + ', it just gives bigger numbers.', why: t(P.coef(pr.expr, { x: 1 })[0] + 'x') + ' is an ' + t('x') + '-term, not a constant — the expression has no constant term at all. Decomposition needs a trinomial ' + t('ax^{2}+bx+c') + '.' },
-            { html: 'Use ' + t('a=' + g + 'x') + ', because the GCF is the leading coefficient.', why: 'The GCF is what every term shares; it isn’t ' + t('a') + '. Take it out first, then read ' + t('a') + ', ' + t('b') + ', ' + t('c') + ' from the bracket.' },
-            { html: 'A cubic can never be factored, so there is nothing to do.', why: 'Taking out ' + t(g + 'x') + ' leaves a quadratic trinomial that decomposes: ' + t(pr.tex + '=' + pr.keyTex) + '.' }],
-            'Decomposition works on a trinomial ' + t('ax^{2}+bx+c') + '. The terms of ' + t(pr.tex) + ' have degrees ' + t('3,2,1') + ': there is no constant term and the leading term is an ' + t('x^{3}') + '-term, so there is <b>no value to use for</b> ' + t('a') + '. Only after removing the GCF, ' + t(pr.tex + '=' + g + 'x(' + tx(pr.inner) + ')') + ', does a genuine trinomial appear, with ' + t('a=' + pr.A + ',\\ b=' + pr.Bm + ',\\ c=' + pr.C) + '. That is why step 1 comes first.',
-            ['What does decomposition need? Look at the degrees of the three terms.'], 'why GCF before decomposition');
+          { id: 'e8a2', sub: 'a ii', level: 'EMG', make: function (r, sh) {
+            var g = sh.a, ans = '(A+' + g.q + ')(' + g.r + 'A+' + g.s + ')', TF = [fo(S(B('a'), B('b'), N(g.q)), 1, 'a+b+' + g.q), fo(S(M(g.r, 'a'), M(g.r, 'b'), N(g.s)), 1, g.r + 'a+' + g.r + 'b+' + g.s)];
+            return facPart('Write the student’s answer ' + t(ans) + ' properly, with ' + t('A=a+b') + '.', TF, { sol: t(ans + '=\\big((a+b)+' + g.q + '\\big)\\big(' + g.r + '(a+b)+' + g.s + '\\big)') + '<br>' + t('=' + ftex(TF)), hints: ['Replace each ' + t('A') + ' by ' + t('(a+b)') + ', then expand the ' + t(g.r + '(a+b)') + ' inside the bracket.'], text: 'back-substitute A=a+b',
+              wrong: [wr([fo(S(B('a'), B('b'), N(g.q))), fo(S(M(g.r, 'a'), B('b'), N(g.s)))], 'minus-bracket', 'In the second bracket, ' + t(g.r + '(a+b)=' + g.r + 'a+' + g.r + 'b') + ' — the ' + t(g.r) + ' multiplies <b>both</b> letters.')] });
+          } },
+          { id: 'e8b', sub: 'b', level: 'EMG', make: function (r, sh) {
+            var h = sh.b.h, q = sh.b.q;
+            return mcTex(r, 'After substituting ' + t('A=x-' + h) + ', a bracket ' + t('A-' + q) + ' becomes ' + t('x-' + h + '-' + q) + '. Why must you collect like terms inside every bracket before you stop?', [
+              { html: t('x-' + h + '-' + q) + ' is not simplified: it is ' + t('x-' + (h + q)) + '. Unsimplified brackets hide the real factors, make checking harder, and can hide a common factor.', right: true },
+              { html: 'Collecting like terms changes the value of the bracket, so it shows a different factor.', why: t('x-' + h + '-' + q) + ' and ' + t('x-' + (h + q)) + ' are equal for every ' + t('x') + ' — collecting doesn’t change the value.' },
+              { html: 'You don’t have to: ' + t('(x-' + h + '-' + q + ')') + ' is a perfectly good final bracket.', why: 'A final answer should be simplified, just like any other expression.' },
+              { html: 'Because every bracket must be expanded completely before you stop.', why: 'Expanding would undo the factoring. Collecting like terms <i>inside</i> a bracket is different.' }],
+              t('x-' + h + '-' + q + '=x-' + (h + q)) + '. Writing brackets in simplest form shows the real factor, makes the check by expanding easier, and can reveal a common factor inside a bracket.', ['Is ' + t('x-' + h + '-' + q) + ' in simplest form?'], 'why collect like terms in brackets');
+          } },
+          { id: 'e8c1', sub: 'c i', level: 'EMG', make: function (r) {
+            var q = r.int(2, 3), q2 = q * q;
+            return mcTex(r, 'Factoring ' + t('x^{4}-' + (1 + q2) + 'x^{2}+' + q2) + ' with ' + t('A=x^{2}') + ' ends at ' + t('(A-1)(A-' + q2 + ')') + '. Why is that not the end of the question?', [
+              { html: 'After replacing ' + t('A=x^{2}') + ', both ' + t('x^{2}-1') + ' and ' + t('x^{2}-' + q2) + ' are differences of squares, so they factor again.', right: true },
+              { html: 'It is the end — the trinomial in ' + t('A') + ' is factored.', why: 'The answer must be in ' + t('x') + ', and then each bracket must be checked.' },
+              { html: 'Because ' + t('(A-1)(A-' + q2 + ')') + ' must be expanded to check it.', why: 'Checking is a good idea, but it doesn’t finish the factoring.' },
+              { html: 'Because ' + t('A-1') + ' and ' + t('A-' + q2) + ' have a common factor.', why: 'They don’t — but after replacing ' + t('A') + ', look at each bracket again.' }],
+              'Replace ' + t('A=x^{2}') + ': ' + t('(x^{2}-1)(x^{2}-' + q2 + ')') + '. Both are differences of squares: ' + t('=(x-1)(x+1)(x-' + q + ')(x+' + q + ')') + '.', ['What do the brackets look like once ' + t('A') + ' is replaced by ' + t('x^{2}') + '?'], 'why not finished at (A-1)(A-q)');
+          } },
+          { id: 'e8c2', sub: 'c ii', level: 'EMG', make: function (r, sh) {
+            var p = sh.c[0], q = sh.c[1];
+            return blockPart('How would the answer change if the expression were ' + t(tx(S(B('x', 4), M(-(p + q), 'x', 2), N(p * q)))) + ' instead? Factor it completely.', { B: X2, Bt: 'x^{2}', Bw: B('x'), f: [[1, -p], [1, -q]] });
+          } }] },
+      /* ---------- EP C: several methods ---------- */
+      { num: '9', section: 'Extra practice C — One Expression, Several Methods', stem: '<b>Common factor, then the disguised trinomial.</b> Remove the greatest common factor first, then factor what is left — and then look at <i>those</i> brackets.', parts: [
+        { id: 'e9a', level: 'PRG', make: function (r) {
+          var g = r.pick([2, 3, 5]), pq = pickWhere(function () { return [r.int(1, 4), r.int(2, 5)]; }, function (v) { return v[0] < v[1] && v[0] * v[1] <= 15; });
+          return blockPart(null, { B: X2, Bt: 'x^{2}', Bw: B('x'), g: N(g), f: [[1, -pq[0] * pq[0]], [1, -pq[1] * pq[1]]] });
+        } },
+        { id: 'e9b', level: 'ADV', make: function (r) {
+          var g = r.pick([2, 3, 5]), p = r.int(1, 3), s = r.pick([2, 3, 5, 6, 7]);
+          return blockPart(null, { B: B('a', 2), Bt: 'a^{2}', Bw: B('a'), g: M(g, 'a'), f: [[1, -p * p], [1, -s]] });
+        } },
+        { id: 'e9c', level: 'PRG', make: function (r) {
+          var gg = pickWhere(function () { return { g: r.pick([2, 3]), m: r.pick([2, 3, 5]), rr: r.int(1, 7), s: r.pick([2, 3, 5, 6, 7]) }; }, function (v) { return gcd(v.m, v.rr) === 1; });
+          return blockPart(null, { B: X2, Bt: 'x^{2}', Bw: B('x'), g: N(gg.g), f: [[1, -gg.s], [gg.m, -gg.rr]] });
         } }] },
-
-      /* ---------- EP Part D — mixed ---------- */
-      { num: '9', section: 'Extra practice D — Mixed set: decide every time', stem: 'Factor completely. The methods are scrambled — run the checklist before each one. One of these does not factor at all: if you meet it, press <b>none</b>.', parts: [
-        { id: 'e9a', level: 'BEG', make: function (r) { var p = r.int(5, 13); return fnone(tri({ a: 1, u: -p, b: 1, v: -p, X: X })); } },
-        { id: 'e9b', level: 'BEG', make: function (r) { var pq = cop(r, 2, 5, 3, 9); return fnone(dos({ A: M(pq[0], 'n'), B: N(pq[1]) })); } },
-        { id: 'e9c', level: 'PRG', make: function (r) { var p, q, s; do { p = r.int(2, 9); q = r.int(1, 7); s = r.int(2, 6); } while (gcd(p, q) !== 1); return fnone(grp({ A1: V('c'), A2: N(-s), B1: M(p, 'a'), B2: N(q) })); } },
-        { id: 'e9d', level: 'PRG', make: function (r) { var pq = cop(r, 2, 5, 2, 9); return fnone(tri({ a: pq[0], u: pq[1], b: pq[0], v: pq[1], X: V('h') })); } },
-        { id: 'e9e', level: 'PRG', make: function (r) { var k = r.pick([2, 3, 5]), n = r.int(2, 7); return fnone(dos({ k: M(k, 'g'), A: V('g'), B: N(n) })); } },
-        { id: 'e9f', level: 'EMG', make: function (r) {
-          var ir = irreducibleMonic(r, 3, 9, 5, 20, '+'), T = S(M(1, { x: 2 }), M(ir.b, 'x'), N(ir.c)), tex = tx(T);
-          return fnone(null, { expr: T, tex: tex, sol: 'No common factor, ' + t('a=1') + '. ' + noPairText(ir.c, ir.b) + '<br><b>Does not factor over the integers.</b>', hints: ['Find two integers that multiply to ' + t(ir.c) + ' and add to ' + t(ir.b) + ' — if there are none, it does not factor.'],
-            whyNot: 'No pair of integers multiplies to ' + t(ir.c) + ' and adds to ' + t(ir.b) + ' — check every pair. If none works, press <b>none</b>.', bad: ['(x+1)(x+' + ir.c + ')'] });
+      { num: '10', stem: '<b>Common factor, then the difference of squares — twice.</b>', parts: [
+        { id: 'e10a', level: 'PRG', make: function (r) {
+          var g = r.pick([2, 3, 5]), k = r.pick([2, 3]), G = M(g, { m: 1, n: 1 }), d = dosFull(S(B('m', 4), N(-Math.pow(k, 4))), G);
+          return facPart(t(d.expr), d.TF, { wrong: d.wrongs, sol: d.sol, hints: H.dos, text: 'factor ' + plain(d.expr) });
+        } },
+        { id: 'e10b', level: 'PRG', make: function (r) {
+          var g = r.pick([1, 1, 2, 3]), G = M(g, { x: 1, y: 1 }), d = dosFull(S(B('x', 4), M(-1, 'y', 4)), G);
+          return facPart(t(d.expr), d.TF, { wrong: d.wrongs, sol: d.sol, hints: H.dos, text: 'factor ' + plain(d.expr) });
+        } },
+        { id: 'e10c', level: 'ADV', make: function (r) {
+          var g = r.pick([2, 3, 5]), m = r.pick([2, 3]), G = M(g, 'q'), d = dosFull(S(M(Math.pow(m, 4), 'p', 4), M(-1, 'q', 4)), G);
+          return facPart(t(d.expr), d.TF, { wrong: d.wrongs, sol: d.sol, hints: H.dos, text: 'factor ' + plain(d.expr) });
         } }] },
-
-      { num: '10', stem: 'Factor completely. Again the order is scrambled, and again one of them does not factor — press <b>none</b> for that one.', parts: [
-        { id: 'e10a', level: 'PRG', make: function (r) { var d = decPair(r, [3, 4, 5], [4, 5, 6], [1, 5], [1, 5], '+'); return fnone(tri({ a: d.a, u: d.u, b: d.b, v: -d.v, X: V('r') })); } },
-        { id: 'e10b', level: 'EMG', make: function (r) {
-          var mn = r.sample([2, 3, 5, 6, 7], 2).sort(), pr = tri({ a: 1, u: -mn[0], b: 1, v: -mn[1], X: M(1, { z: 2 }) });
-          pr.sol += '<br>' + t(mn[0]) + ' and ' + t(mn[1]) + ' are not perfect squares, so neither bracket factors further.';
-          return fnone(pr);
-        } },
-        { id: 'e10c', level: 'PRG', make: function (r) { var g = r.pick([2, 3, 5]), pq = cop(r, 2, 5, 1, 5); return fnone(dos({ k: M(g, 't'), A: M(pq[0], 's'), B: M(pq[1], 't') })); } },
-        { id: 'e10d', level: 'EMG', make: function (r) { var uv = two(r, 2, 9); return fnone(grp({ A1: V('a'), A2: N(uv[0]), B1: V('b'), B2: N(uv[1]) })); } },
-        { id: 'e10e', level: 'BEG', make: function (r) {
-          var g = r.pick([2, 3, 4, 5]), c; do { c = [r.int(2, 5), r.int(2, 7), r.int(2, 9)]; } while (gcd(gcd(c[0], c[1]), c[2]) !== 1);
-          var gm = M(g, { u: 2, v: 2 }), brk = S(M(c[0], 'u'), M(-c[1], 'v'), N(c[2])), T = P.mul(gm, brk), tex = tx(T), key = lst([gm, brk]);
-          var pr = { expr: T, tex: tex, list: [gm, brk], keyTex: key, text: 'factor ' + plain(tex), wrongs: [],
-            sol: '<b>Common factor:</b> GCF ' + t(tx(gm)) + '.<br>' + t(tex + '=' + key) + '<br>The bracket’s terms share no factor and it isn’t a trinomial in one variable, so this is complete.',
-            hints: ['Find the GCF: the greatest number that divides ' + t(g * c[0]) + ', ' + t(g * c[1]) + ' and ' + t(g * c[2]) + ', and the lowest power of each variable.'] };
-          return fnone(pr);
-        } },
-        { id: 'e10f', level: 'BEG', make: function (r) {
-          var n = r.int(4, 12), T = S(M(1, { t: 2 }), N(n * n)), tex = tx(T);
-          return fnone(null, { expr: T, tex: tex, sol: t('t^{2}+' + n + '^{2}') + ' is a <b>sum</b> of squares.<br><b>Does not factor over the integers.</b>', hints: ['Is it a difference of squares, or a sum?'],
-            whyNot: 'A sum of squares does not factor over the integers (only a <b>difference</b> ' + t('A^{2}-B^{2}') + ' does). Press <b>none</b>.', bad: ['(t-' + n + ')(t+' + n + ')', '(t+' + n + ')^2'] });
-        } }] },
-
-      /* ---------- EP Part E — knowing when to stop ---------- */
-      { num: '11', section: 'Extra practice E — Knowing when to stop', stem: 'Each line is a student’s <b>final</b> answer. Is it factored completely? Type the completely factored form — if the student’s answer is already complete, type it as it is.', parts: [
-        { id: 'e11a', level: 'BEG', make: function (r) { var k = r.pick([2, 3, 5, 7]), n = r.int(2, 9); return stopPart(k + '(x^{2}-' + n * n + ')', dos({ k: k, A: X, B: N(n) }), 'Not complete: ' + t('x^{2}-' + n * n + '=x^{2}-' + n + '^{2}') + ' is a difference of squares.'); } },
-        { id: 'e11b', level: 'BEG', make: function (r) { var pq = cop(r, 2, 5, 1, 7); var pr = dos({ A: M(pq[0], 'x'), B: N(pq[1]) }); return stopPart('(' + pq[0] + 'x-' + pq[1] + ')(' + pq[0] + 'x+' + pq[1] + ')', pr, 'Neither bracket has a common factor or is a difference of squares. <b>Complete.</b>'); } },
-        { id: 'e11c', level: 'EMG', make: function (r) {
-          var k = r.int(2, 7), b, c; do { b = r.int(1, 6); c = r.int(2, 12); } while (hasPair(c, b) || b * b >= 4 * c);
-          var inner = S(M(1, { x: 2 }), M(b, 'x'), N(c)), given = k + 'x(' + tx(inner) + ')', T = P.mul(M(k, 'x'), inner);
-          return stopPart(given, { expr: T, list: [M(k, 'x'), inner], keyTex: given, wrongs: [], hints: ['Can ' + t(tx(inner)) + ' be factored? Look for two integers that multiply to ' + t(c) + ' and add to ' + t(b) + '.'] }, t(tx(inner)) + ': ' + noPairText(c, b) + ' So it is <b>complete</b>.');
-        } },
-        { id: 'e11d', level: 'PRG', make: function (r) {
-          var k = r.pick([2, 3, 5]), p = r.int(1, 5), given = '(x+' + p + ')(' + k + 'x^{2}-' + k * p * p + ')';
-          var list = [N(k), S(X, N(-p)), { p: S(X, N(p)), k: 2 }], T = FA.product(list);
-          return stopPart(given, { expr: T, list: list, keyTex: lst(list), wrongs: [{ is: [N(k), S(X, N(p)), S(X, N(-p))], code: 'value', hint: 'You lost a factor of ' + t('(x+' + p + ')') + ': the student’s first bracket is still there.' }], hints: ['The second bracket has a common factor, and what is left is a difference of squares.', 'Then collect the repeated factor as a square.'] },
-            'Not complete: ' + t(k + 'x^{2}-' + k * p * p) + ' has a GCF of ' + t(k) + ', and ' + t('x^{2}-' + p * p) + ' is a difference of squares.<br>' + t(given + '=' + k + '(x+' + p + ')(x^{2}-' + p * p + ')=' + k + '(x+' + p + ')(x-' + p + ')(x+' + p + ')'));
-        } },
-        { id: 'e11e', level: 'BEG', make: function (r) {
-          var k = r.pick([2, 3, 4, 5, 6]), n = r.int(2, 9), inner = S(M(1, { x: 2 }), N(n * n)), given = k + '(' + tx(inner) + ')';
-          return stopPart(given, { expr: P.mul(N(k), inner), list: [N(k), inner], keyTex: given, wrongs: [{ is: [N(k), S(X, N(-n)), S(X, N(n))], code: 'sum-squares', hint: t(tx(inner)) + ' is a <b>sum</b> of squares — it does not factor. ' + t('(x-' + n + ')(x+' + n + ')=x^{2}-' + n * n) + '.' }], hints: ['Is ' + t(tx(inner)) + ' a difference of squares?'] },
-            t(tx(inner)) + ' is a <b>sum</b> of squares, which does not factor. <b>Complete.</b>');
-        } },
-        { id: 'e11f', level: 'PRG', make: function (r) {
-          var pq = two(r, 1, 6), p = pq[0], q = pq[1], inner = P.mul(S(X, N(-p)), S(X, N(-q))), given = '(x-' + p + ')(' + tx(inner) + ')';
-          var list = [S(X, N(-q)), { p: S(X, N(-p)), k: 2 }];
-          return stopPart(given, { expr: FA.product(list), list: list, keyTex: lst(list), wrongs: [], hints: ['Can ' + t(tx(inner)) + ' be factored by inspection?', 'Collect the repeated factor as a square.'] },
-            'Not complete: ' + t(tx(inner)) + ' factors by inspection (product ' + t(p * q) + ', sum ' + t(-(p + q)) + ': ' + t(-p) + ' and ' + t(-q) + ').<br>' + t(given + '=(x-' + p + ')(x-' + p + ')(x-' + q + ')'));
-        } }] },
-
-      { num: '12', stem: 'Exactly <b>four</b> of the six below do not factor over the integers. Factor the two that do; for each of the others press <b>none</b>.',
-        shared: function (r) {
-          var A = irreducibleMonic(r, 2, 9, 2, 15, '+');
-          var Bq = cop(r, 2, 6, 1, 9);
-          var a, b, c; do { a = r.pick([2, 3, 5]); b = r.int(3, 11); c = r.int(1, 7); } while (gcd(gcd(a, b), c) !== 1 || hasPair(a * c, b));
-          var D = irreducibleMonic(r, 1, 5, 1, 7, '-');
-          var ea, ep, eu; do { ea = r.pick([2, 3, 5]); ep = r.int(1, 5); eu = r.int(1, 9); } while (gcd(ea, eu) !== 1);
-          var F = cop(r, 2, 5, 1, 7);
-          var tA = S(M(1, { x: 2 }), M(A.b, 'x'), N(A.c)), tB = S(M(Bq[0] * Bq[0], { x: 2 }), N(Bq[1] * Bq[1])), tC = S(M(a, { x: 2 }), M(b, 'x'), N(c)), tD = S(M(1, { x: 2 }), M(-D.b, 'x'), N(D.c));
-          return { A: A, Bq: Bq, C: [a, b, c], D: D, E: [ea, ep, eu], F: F, tex: [tx(tA), tx(tB), tx(tC), tx(tD)] };
-        },
+      { num: '11', stem: '<b>A perfect square trinomial in disguise, and then the bracket again.</b> Each of these is a perfect square trinomial in ' + t('x^{2}') + ', ' + t('a^{2}') + ' or ' + t('m^{2}') + '. Factor it as a square — then decide whether the bracket inside the square factors further.',
         parts: [
-          { id: 'e12a', sub: 'a', level: 'EMG', make: function (r, sh) { return noneTri(1, sh.A.b, sh.A.c); } },
+          { id: 'e11a', level: 'PRG', make: function (r) { return e11Split(r.int(1, 2), 'x'); } },
+          { id: 'e11b', level: 'PRG', make: function (r) { return e11Split(r.int(3, 5), 'a'); } },
+          { id: 'e11c', level: 'EMG', make: function (r) {
+            var g = pickWhere(function () { return [r.int(2, 5), r.pick([1, 1, 2, 3])]; }, function (v) { return gcd(v[0], v[1]) === 1; }), o = pst(M(g[0], 'x', 2), N(g[1]));
+            return pstPart(t(o.expr), o, { solExtra: '<br>' + t(o.baseTex) + ' is a sum — it stops.', wrong: autoWrongs([fo(o.base)], null).map(function (w) { return { is: P.pow(w.is, 2), code: w.code, hint: w.hint }; }) });
+          } },
+          { id: 'e11d', level: 'EMG', make: function (r) {
+            var g = pickWhere(function () { return [r.int(2, 5), r.pick([2, 3, 5, 6, 7])]; }, function (v) { return gcd(v[0], v[1]) === 1; }), o = pst(M(g[0], 'm', 2), N(-g[1]));
+            return pstPart(t(o.expr), o, { solExtra: '<br>' + t(g[1]) + ' is not a perfect square — ' + t(o.baseTex) + ' stops.', wrong: [wr([fo(S(M(g[0], 'm'), N(-g[1])), 2), fo(S(M(g[0], 'm'), N(g[1])), 2)], 'not-square', t(o.baseTex) + ' is not a difference of two perfect squares (' + t(g[1]) + ' isn’t a perfect square), so it doesn’t factor again.')] });
+          } },
+          { id: 'e11e', level: 'EMG', make: function (r) {
+            return mcTex(r, 'When a perfect square trinomial in ' + t('x^{2}') + ' is factored as a square, some answers go further and some stop. For example, ' + t('x^{4}-2x^{2}+1=(x^{2}-1)^{2}=(x-1)^{2}(x+1)^{2}') + ', but ' + t('16x^{4}+8x^{2}+1=(4x^{2}+1)^{2}') + ' stops. Which property of the bracket inside the square decides it?', [
+              { html: 'The bracket factors again only when it is a <b>difference of two perfect squares</b>, like ' + t('x^{2}-1') + ' or ' + t('a^{2}-9') + '.', right: true },
+              { html: 'The bracket factors again whenever its first term is a perfect square.', why: t('4x^{2}+1') + ' and ' + t('4m^{2}-3') + ' both start with a perfect square, but neither factors.' },
+              { html: 'The bracket factors again whenever it has a minus sign.', why: t('4m^{2}-3') + ' has a minus sign but ' + t('3') + ' isn’t a perfect square, so it stops.' },
+              { html: 'The bracket factors again whenever both of its terms are perfect squares.', why: t('4x^{2}+1') + ': both terms are perfect squares, but it’s a <b>sum</b> — it stops.' }],
+              'The bracket factors again only when it is a difference of two perfect squares.<br>' + t('x^{2}-1') + ', ' + t('a^{2}-9') + ': differences of perfect squares — they factor.<br>' + t('4x^{2}+1') + ': a sum of squares — it stops.<br>' + t('4m^{2}-3') + ': a difference, but ' + t('3') + ' isn’t a perfect square — it stops.', ['Compare a bracket that split with one that didn’t: what does the one that split have?'], 'when does the bracket factor again', false);
+          } }] },
+      /* ---------- EP D: find the error ---------- */
+      { num: '12', section: 'Extra practice D — Find the Error', stem: function (sh) { return 'Asked to factor ' + t('x^{2}+' + 2 * sh.k + 'x+' + sh.k * sh.k) + ', a student wrote ' + t('x^{2}+' + 2 * sh.k + 'x+' + sh.k * sh.k + '=(x+' + sh.k + ')(x-' + sh.k + ')') + ', saying “both ' + t('x^{2}') + ' and ' + t(sh.k * sh.k) + ' are perfect squares, so it is a difference of squares.”'; },
+        shared: function (r) { return { k: r.int(3, 9) }; },
+        parts: [
+          { id: 'e12a', sub: 'a', level: 'BEG', make: function (r, sh) {
+            var k = sh.k;
+            return mcTex(r, 'Run the three-part test on ' + t('x^{2}+' + 2 * k + 'x+' + k * k) + '. What kind of expression is it?', [
+              { html: 'A perfect square trinomial', right: true },
+              { html: 'A difference of squares', why: 'A difference of squares has exactly <b>two</b> terms joined by a <b>minus</b> sign. This has three terms.' },
+              { html: 'A trinomial that does not factor', why: 'Run the test: ' + t('x^{2}=(x)^{2}') + ', ' + t(k * k + '=' + k + '^{2}') + ', and ' + t('2(x)(' + k + ')=' + 2 * k + 'x') + ' — all three conditions hold.' },
+              { html: 'A sum of squares', why: 'It has a middle term, so it isn’t just a sum of two squares. Check the three conditions.' }],
+              '(1) ' + t('x^{2}=(x)^{2}') + ' ✓ (2) ' + t(k * k + '=' + k + '^{2}') + ', positive ✓ (3) ' + t('2(x)(' + k + ')=' + 2 * k + 'x') + ' ✓ — a <b>perfect square trinomial</b>, not a difference of squares.', H.pst, 'what kind of expression');
+          } },
           { id: 'e12b', sub: 'b', level: 'BEG', make: function (r, sh) {
-            var pq = sh.Bq, T = S(M(pq[0] * pq[0], { x: 2 }), N(pq[1] * pq[1])), tex = tx(T);
-            return fnone(null, { expr: T, tex: tex, sol: t(tex + '=(' + pq[0] + 'x)^{2}+' + pq[1] + '^{2}') + ' is a <b>sum</b> of squares.<br><b>Does not factor.</b>', hints: ['Difference or sum?'],
-              whyNot: 'A sum of squares does not factor over the integers. Press <b>none</b>.', bad: ['(' + pq[0] + 'x-' + pq[1] + ')(' + pq[0] + 'x+' + pq[1] + ')'] });
+            var k = sh.k, o1 = (1 + k) * (1 + k), s1 = 1 - k * k;
+            var p = KP.fields('Expand the student’s answer ' + t('(x+' + k + ')(x-' + k + ')') + ', then substitute ' + t('x=1') + ' into the original and into the student’s answer.',
+              [box('Expansion of ' + t('(x+' + k + ')(x-' + k + ')') + ':', ['x'], 'Expansion'), { name: 'Original at x = 1', label: 'Original at ' + t('x=1') + ':' }, { name: 'Student’s answer at x = 1', label: 'Student’s answer at ' + t('x=1') + ':' }],
+              [K.poly(S(B('x', 2), N(-k * k)), { wrong: [{ is: S(B('x', 2), M(2 * k, 'x'), N(-k * k)), code: 'sign', hint: 'The middle terms ' + t('-' + k + 'x') + ' and ' + t('+' + k + 'x') + ' cancel.' }, { is: S(B('x', 2), N(k * k)), code: 'sign', hint: t(k + '\\times(-' + k + ')=-' + k * k) + '.' }] }),
+                K.number(o1, function (v) { return v === s1 ? { code: 'student-ans', hint: 'That’s the student’s answer at ' + t('x=1') + '. Use the original trinomial here.' } : null; }),
+                K.number(s1, function (v) { return v === o1 ? { code: 'student-ans', hint: 'That’s the original at ' + t('x=1') + '. Use the student’s answer here.' } : v === -s1 ? { code: 'sign', hint: t('1-' + k * k + '=' + s1) + '.' } : null; })],
+              ['x^{2}-' + k * k, String(o1), String(s1)], t('x^{2}-' + k * k) + ', ' + t(o1) + ', ' + t(s1),
+              t('(x+' + k + ')(x-' + k + ')=x^{2}-' + k + 'x+' + k + 'x-' + k * k + '=x^{2}-' + k * k) + '<br>At ' + t('x=1') + ': original ' + t('1+' + 2 * k + '+' + k * k + '=' + o1) + '; student ' + t('1-' + k * k + '=' + s1) + '.<br>' + t(o1 + '\\neq ' + s1) + ', so the factoring is <b>wrong</b>.',
+              ['Expand with FOIL — the middle terms cancel.', 'Replace every ' + t('x') + ' with ' + t('1') + ' and evaluate each side.'], 'expand and test x=1');
+            p.bad = [['x^2+' + k * k, String(s1), String(o1)]];
+            return p;
           } },
-          { id: 'e12c', sub: 'c', level: 'EMG', make: function (r, sh) { return noneTri(sh.C[0], sh.C[1], sh.C[2]); } },
-          { id: 'e12d', sub: 'd', level: 'EMG', make: function (r, sh) { return noneTri(1, -sh.D.b, sh.D.c); } },
-          { id: 'e12e', sub: 'e', level: 'PRG', make: function (r, sh) { var e = sh.E; return fnone(tri({ a: 1, u: -e[1], b: e[0], v: -e[2], X: X })); } },
-          { id: 'e12f', sub: 'f', level: 'PRG', make: function (r, sh) { return fnone(tri({ a: sh.F[0], u: -sh.F[1], b: sh.F[0], v: -sh.F[1], X: X })); } },
-          { id: 'e12g', sub: 'reasons', level: 'EMG', make: function (r, sh) {
-            var ids = ['a', 'b', 'c', 'd'], ms = ['pair', 'sum', 'pair', 'pair'];
-            var rows = ids.map(function (id, i) { return { id: id, html: '(' + id + ') ' + t(sh.tex[i]) }; });
-            var cols = [{ id: 'sum', html: 'sum of<br>squares' }, { id: 'pair', html: 'no integer<br>pair' }], want = {}; ids.forEach(function (id, i) { want[id] = ms[i]; });
-            var C = sh.C, D = sh.D;
-            return B.grid('(a)–(d) do not factor. Give the reason for each.', rows, cols, want, {
-              why: function (id) { return { code: 'row', hint: id === 'b' ? 'Two terms, both perfect squares, with a <b>plus</b> between them.' : 'Three terms: the trouble is that no pair of integers has the right product and sum.' }; }
-            }, '(a) ' + t(sh.tex[0]) + ': <b>no integer pair</b> with product ' + t(sh.A.c) + ' and sum ' + t(sh.A.b) + '.<br>(b) ' + t(sh.tex[1] + '=(' + sh.Bq[0] + 'x)^{2}+' + sh.Bq[1] + '^{2}') + ': a <b>sum of squares</b>.<br>(c) ' + t(sh.tex[2]) + ': <b>no integer pair</b> with product ' + t('ac=' + C[0] * C[2]) + ' and sum ' + t(C[1]) + '.<br>(d) ' + t(sh.tex[3]) + ': <b>no integer pair</b> with product ' + t(D.c) + ' and sum ' + t(-D.b) + '.',
-            ['A binomial fails if it is a sum of squares; a trinomial fails if no pair of integers works.'], 'reasons it does not factor');
+          { id: 'e12c', sub: 'c', level: 'BEG', make: function (r, sh) {
+            var o = pst(B('x'), N(sh.k));
+            return pstPart('Factor ' + t(o.expr) + ' correctly.', o, { wrong: [wr([fo(S(B('x'), N(sh.k))), fo(S(B('x'), N(-sh.k)))], 'student-ans', 'That’s the student’s answer — it multiplies to ' + t('x^{2}-' + sh.k * sh.k) + '.')], text: 'correct factoring of ' + plain(o.expr) });
+          } },
+          { id: 'e12d', sub: 'd', level: 'EMG', make: function (r, sh) {
+            return mcTex(r, 'Which sentence about <i>how many terms</i> and <i>which sign</i> would have stopped the student?', [
+              { html: 'A difference of squares has exactly <b>two</b> terms joined by a <b>minus</b> sign, so a trinomial can never be one.', right: true },
+              { html: 'A difference of squares must start with a negative term.', why: t('x^{2}-9') + ' starts with a positive term and is a difference of squares. Count the terms instead.' },
+              { html: 'Whenever the first and last terms are perfect squares, the expression is a difference of squares.', why: 'That’s exactly the student’s mistake: ' + t('x^{2}+' + 2 * sh.k + 'x+' + sh.k * sh.k) + ' has perfect-square ends but three terms.' },
+              { html: 'A trinomial with only plus signs can never be factored.', why: 'This one can: it is ' + t('(x+' + sh.k + ')^{2}') + '.' }],
+              'A difference of squares ' + t('a^{2}-b^{2}') + ' has exactly two terms and a minus sign between them. A three-term expression is never one, however many of its terms are perfect squares.', ['Look at the form ' + t('a^{2}-b^{2}') + ': how many terms? Which sign?'], 'the sentence that stops the error');
           } }] },
-
-      /* ---------- EP Part F — error analysis ---------- */
-      { num: '13', section: 'Extra practice F — Error analysis', stem: function (sh) { return 'A student is asked to factor ' + t(sh.pr.tex) + '. Their work begins: <i>“' + t('a=' + sh.a + ',\\ c=' + (-sh.q * sh.p)) + ', so ' + t('ac=' + (-sh.a * sh.q * sh.p)) + '. I need two integers with product ' + t(-sh.a * sh.q * sh.p) + ' and sum ' + t(sh.a * sh.p) + '…”</i>'; },
-        shared: function (r) { var a, p, q; do { a = r.pick([2, 3, 5, 6, 7]); p = r.int(2, 6); q = r.int(1, 7); } while (gcd(a, q) !== 1); return { a: a, p: p, q: q, pr: grp({ A1: M(a, { x: 2 }), A2: N(-q), B1: X, B2: N(p), note: t(a + 'x^{2}-' + q) + ' is not a difference of squares over the integers, so this is complete.' }) }; },
+      { num: '13', stem: function (sh) { return 'Asked to factor ' + t('k^{4}-' + (sh.p * sh.p + sh.q * sh.q) + 'k^{2}+' + sh.p * sh.p * sh.q * sh.q) + ' completely, a student let ' + t('A=k^{2}') + ', factored ' + t('A^{2}-' + (sh.p * sh.p + sh.q * sh.q) + 'A+' + sh.p * sh.p * sh.q * sh.q + '=(A-' + sh.p * sh.p + ')(A-' + sh.q * sh.q + ')') + ', substituted back and wrote ' + t('k^{4}-' + (sh.p * sh.p + sh.q * sh.q) + 'k^{2}+' + sh.p * sh.p * sh.q * sh.q + '=(k^{2}-' + sh.p * sh.p + ')(k^{2}-' + sh.q * sh.q + ')') + '.'; },
+        shared: function (r) { var g = pickWhere(function () { return { p: r.int(1, 4), q: r.int(2, 6) }; }, function (g) { return g.p < g.q && g.p * g.q <= 15; }); return g; },
         parts: [
-          { id: 'e13a', sub: 'a', level: 'EMG', make: function (r, sh) {
-            return mcPart(r, 'Which line of the checklist did the student use, and which should they have used?', [
-              { html: 'They used <b>decomposition</b> (line 4), but the expression has <b>four</b> terms, so they should use <b>grouping</b> (line 5).', right: true },
-              { html: 'They used grouping, but it is a trinomial, so they should use decomposition.', why: 'Count the terms of ' + t(sh.pr.tex) + ': there are four. And ' + t('a') + ', ' + t('c') + ', ' + t('ac') + ' are decomposition words.' },
-              { html: 'They used decomposition correctly — only their sum is wrong.', why: 'There is no single middle term to split: the expression already has four terms, so ' + t('a') + ', ' + t('c') + ' and the sum mean nothing here.' },
-              { html: 'They should have used difference of squares, because the first and last terms are separated by a minus sign.', why: 'Difference of squares is for exactly two terms. This has four.' }],
-              'The student used line 4, <b>decomposition</b>, which is only for a trinomial ' + t('ax^{2}+bx+c') + '. ' + t(sh.pr.tex) + ' has <b>four</b> terms (and no factor common to all four), so they should have used line 5, <b>factoring by grouping</b>.', ['Count the terms first.'], 'which checklist line');
+          { id: 'e13a', sub: 'a', level: 'BEG', make: function (r, sh) {
+            var p2 = sh.p * sh.p, q2 = sh.q * sh.q, T = S(B('k', 4), M(-(p2 + q2), 'k', 2), N(p2 * q2));
+            var pt = KP.poly('Is the line the student wrote true? Expand ' + t('(k^{2}-' + p2 + ')(k^{2}-' + q2 + ')') + '.', T, { wrong: [{ is: S(B('k', 4), M(p2 + q2, 'k', 2), N(p2 * q2)), code: 'sign', hint: 'Both middle products are negative: ' + t('-' + q2 + 'k^{2}') + ' and ' + t('-' + p2 + 'k^{2}') + '.' }, { is: S(B('k', 4), N(p2 * q2)), code: 'foil', hint: 'Don’t skip the Outside and Inside products.' }] },
+              t('(k^{2}-' + p2 + ')(k^{2}-' + q2 + ')=k^{4}-' + q2 + 'k^{2}-' + p2 + 'k^{2}+' + p2 * q2 + '=' + tx(T)) + ' ✓<br><b>Yes</b>, the line is true — but it is not factored completely.', ['Multiply with FOIL and collect the ' + t('k^{2}') + ' terms.'], 'expand student line');
+            return pt;
           } },
           { id: 'e13b', sub: 'b', level: 'PRG', make: function (r, sh) {
-            var pr = sh.pr; pr.sol += '<br>Check: ' + t(pr.keyTex + '=' + P.seq([pr.t4[0], pr.t4[2], pr.t4[1], pr.t4[3]]) + '=' + pr.tex) + ' ✓';
-            return fac(pr, { prompt: 'Factor ' + t(pr.tex) + ' completely by the correct method.' });
+            return blockPart('The instruction was “factor completely.” Finish the question: factor ' + t(tx(S(B('k', 4), M(-(sh.p * sh.p + sh.q * sh.q), 'k', 2), N(sh.p * sh.p * sh.q * sh.q)))) + ' completely.', { B: B('k', 2), Bt: 'k^{2}', Bw: B('k'), f: [[1, -sh.p * sh.p], [1, -sh.q * sh.q]] });
+          } },
+          { id: 'e13c', sub: 'c', level: 'EMG', make: function (r) {
+            var k = r.int(3, 9), ot = 'x^{2}+' + 2 * k + 'x+' + k * k;
+            return mcTex(r, 'Another student, asked to factor ' + t(ot) + ', wrote ' + t(ot + '=(x+' + k + ')(x-' + k + ')') + ', calling it a difference of squares. That student and the one above made opposite mistakes. Which description, and which final check, is right?', [
+              { html: 'The other student used a difference of squares on something that isn’t one; this student stopped before factoring brackets that <i>are</i> differences of squares. Check: for every bracket, is there a common factor, a difference of squares, or a trinomial that factors?', right: true },
+              { html: 'Both students forgot to take out a common factor. Check: always take out the GCF.', why: 'Neither expression has a common factor. The mistakes are about differences of squares.' },
+              { html: 'The other student stopped too early and this student went too far. Check: never factor a bracket twice.', why: 'It’s the other way round, and “factor completely” often needs a second round on a bracket.' },
+              { html: 'Both students made sign errors. Check: expand the answer.', why: 'This student’s line was true. Expanding catches wrong answers like the other student’s, but not unfinished ones like this student’s.' }],
+              'The other student called a perfect square trinomial a difference of squares; this student stopped while two brackets were still differences of squares. Before writing a final answer, ask of <b>each</b> bracket: a common factor? a difference of two perfect squares? a trinomial that factors? Stop only when every answer is no.', ['One student did too much with the wrong pattern; the other did too little.'], 'opposite mistakes');
           } }] },
-
-      { num: '14', stem: function (sh) { return 'A student writes ' + t(sh.p * sh.p + 'x^{2}+' + sh.q * sh.q + '=(' + sh.p + 'x-' + sh.q + ')(' + sh.p + 'x+' + sh.q + ')') + '.'; },
-        shared: function (r) { var pq = cop(r, 2, 6, 1, 9); return { p: pq[0], q: pq[1] }; },
+      /* ---------- EP E: four terms ---------- */
+      { num: '14', section: 'Extra practice E — Four Terms: Grouping, or Something Else?', stem: 'Every polynomial in this question has four terms, but they do not all want the same treatment.',
+        shared: e14Shared,
         parts: [
-          { id: 'e14a', sub: 'a', level: 'BEG', make: function (r, sh) {
-            var p = sh.p, q = sh.q, T = P.sub(M(p * p, { x: 2 }), N(q * q));
-            var part = B.poly('Expand the student’s answer ' + t('(' + p + 'x-' + q + ')(' + p + 'x+' + q + ')') + '. (This is what they actually factored.)', T, { wrong: [{ is: S(M(p * p, { x: 2 }), N(q * q)), code: 'expand-sign', hint: 'The last terms are ' + t('-' + q) + ' and ' + t('+' + q) + ': their product is ' + t('-' + q * q) + ', not ' + t('+' + q * q) + '.' }] },
-              t('(' + p + 'x-' + q + ')(' + p + 'x+' + q + ')=' + p * p + 'x^{2}+' + p * q + 'x-' + p * q + 'x-' + q * q + '=' + tx(T)) + '<br>They actually factored ' + t(tx(T)) + ', a <b>difference</b> of squares, not ' + t(p * p + 'x^{2}+' + q * q) + '.',
-              ['Multiply every term in the first bracket by every term in the second.'], 'expand (' + p + 'x-' + q + ')(' + p + 'x+' + q + ')');
-            part.bad = [tx(S(M(p * p, { x: 2 }), N(q * q)))];
-            return part;
+          { id: 'e14', sub: 'decide', level: 'EMG', make: function (r, sh) {
+            /* rows shown in a shuffled order (labelled by the polynomial itself) so the answer pattern is not always the same */
+            var want = { a: '31', b: '22', c: '22', d: '31', e: '31', f: '22' }, order = r.shuffle(['a', 'b', 'c', 'd', 'e', 'f']);
+            var note = { a: t('x^{2}+' + 2 * sh.a.k + 'x+' + sh.a.k * sh.a.k) + ' is a perfect square trinomial.', b: 'no squares; the pairs share ' + t('a') + ' and ' + t('b') + '.', c: 'no square pattern.',
+              d: t('-(n^{2}-' + 2 * sh.d.k + 'n+' + sh.d.k * sh.d.k + ')') + ' is a perfect square, with the lone square ' + t('m^{2}') + '.', e: 'the first three terms are ' + t('(' + sh.e.bt + ')^{2}') + '.', f: 'no squares.' };
+            var rows = order.map(function (k) { return { id: k, html: t(sh[k].expr) }; });
+            return KP.grid('For each polynomial, would you split it ' + t('2+2') + ' (factoring by grouping) or ' + t('3+1') + ' (three terms forming a perfect square trinomial, leaving a difference of squares)?', rows, [{ id: '22', html: t('2+2') }, { id: '31', html: t('3+1') }], want,
+              { why: function (id) { return t(sh[id].expr) + ': ' + (want[id] === '31' ? 'count the perfect-square terms: three of them, with a lone square subtracted.' : 'there is no perfect square trinomial here — the terms fall into two pairs with common factors.'); } },
+              order.map(function (k) { return t(sh[k].expr) + ' — ' + t(want[k] === '31' ? '3+1' : '2+2') + ': ' + note[k]; }).join('<br>'),
+              ['A ' + t('3+1') + ' problem has three perfect-square terms, and a lone square with a minus sign in front of it.'], 'grouping or 3+1');
           } },
-          { id: 'e14b', sub: 'b', level: 'BEG', make: function (r, sh) {
-            var p = sh.p, q = sh.q, L = p * p + q * q, R = (p - q) * (p + q);
-            return B.fields('Substitute ' + t('x=1') + ' into both sides to give a one-line disproof.', [{ name: 'Left side', label: 'Left: ' + t(p * p + '(1)^{2}+' + q * q + '=') }, { name: 'Right side', label: 'Right: ' + t('(' + p + '-' + q + ')(' + p + '+' + q + ')=') }],
-              [K.number(L, function (v) { return v === p * p - q * q ? { code: 'sub-wrong', hint: 'The left side is ' + t(p * p + '+' + q * q) + ' — a sum.' } : v === p + q * q || v === 2 * p + q * q ? { code: 'sub-wrong', hint: t(p * p + '(1)^{2}=' + p * p) + '.' } : null; }),
-                K.number(R, function (v) { return v === L ? { code: 'sub-wrong', hint: 'Work out each bracket at ' + t('x=1') + ': ' + t(p + '-' + q + '=' + (p - q)) + ' and ' + t(p + '+' + q + '=' + (p + q)) + '.' } : null; })],
-              [String(L), String(R)], 'Left ' + t(L) + ', right ' + t(R),
-              'At ' + t('x=1') + ':<br>Left: ' + t(p * p + '(1)^{2}+' + q * q + '=' + L) + '<br>Right: ' + t('(' + p + '-' + q + ')(' + p + '+' + q + ')=' + (p - q) + '\\times' + nn(p + q) + '=' + R) + '<br>' + t(L + '\\neq' + nn(R)) + ', so the factoring is <b>wrong</b>.',
-              ['Replace ' + t('x') + ' with ' + t('1') + ' on each side and work it out.'], 'x = 1 disproof');
+          { id: 'e14a', sub: 'a', level: 'PRG', make: function (r, sh) {
+            var a = sh.a, yt = tx(M(a.cy, 'y'));
+            return facPart('Factor (a) completely: ' + t(a.expr), a.TF, { sol: t('3+1') + ': ' + t('(x^{2}+' + 2 * a.k + 'x+' + a.k * a.k + ')-' + tx(M(a.cy * a.cy, 'y', 2))) + '<br>' + t('=(x+' + a.k + ')^{2}-(' + yt + ')^{2}') + '<br>' + t('=' + ftex(a.TF)), hints: ['Group the three terms that make a perfect square trinomial, then use the difference of squares.'], text: 'factor ' + plain(a.expr),
+              wrong: [wr([fo(S(B('x'), N(a.k), M(-a.cy, 'y')), 2)], 'dos-square', 'A difference of squares ' + t('A^{2}-B^{2}') + ' is ' + t('(A-B)(A+B)') + ', not ' + t('(A-B)^{2}') + '.')] });
           } },
-          { id: 'e14c', sub: 'c', level: 'EMG', make: function (r, sh) {
-            var p = sh.p, q = sh.q, e = p * p + 'x^{2}+' + q * q;
-            return mcPart(r, 'What is the correct verdict for ' + t(e) + ', and the general rule behind it?', [
-              { html: 'It <b>does not factor</b> over the integers: ' + t('A^{2}-B^{2}=(A-B)(A+B)') + ' works only for a <b>difference</b>; a sum of squares ' + t('A^{2}+B^{2}') + ' does not factor.', right: true },
-              { html: 'It factors as ' + t('(' + p + 'x+' + q + ')^{2}') + ', because both signs must be ' + t('+') + '.', why: 'Expand: ' + t('(' + p + 'x+' + q + ')^{2}=' + p * p + 'x^{2}+' + 2 * p * q + 'x+' + q * q) + ' — it has a middle term.' },
-              { html: 'The student is right; substituting ' + t('x=1') + ' isn’t a fair check.', why: 'A factorization is an identity: it must be true for <b>every</b> value of ' + t('x') + '. One value that fails disproves it.' },
-              { html: 'Take out a common factor first, then it becomes a difference of squares.', why: t(p * p) + ' and ' + t(q * q) + ' have no common factor, and taking one out never turns a sum into a difference.' }],
-              t(e) + ' <b>does not factor over the integers</b>. Rule: ' + t('A^{2}-B^{2}=(A-B)(A+B)') + ' works only for a <b>difference</b>; a <b>sum</b> of squares ' + t('A^{2}+B^{2}') + ' does not factor over the integers.', ['Which pattern did the student use? Does it fit a sum?'], 'verdict sum of squares');
+          { id: 'e14b', sub: 'b', level: 'EMG', make: function (r, sh) {
+            var b = sh.b;
+            return facPart('Factor (b) completely: ' + t(b.expr), b.TF, { sol: t('2+2') + ': ' + t('a(' + tx(S(B('x'), M(b.s, 'y'))) + ')+' + (b.tt === 1 ? '' : b.tt) + 'b(' + tx(S(B('x'), M(b.s, 'y'))) + ')') + '<br>' + t('=' + ftex(b.TF)), hints: ['Group the first two terms and the last two terms; take a common factor out of each pair.'], text: 'factor ' + plain(b.expr) });
+          } },
+          { id: 'e14c', sub: 'c', level: 'PRG', make: function (r, sh) {
+            var c = sh.c;
+            return facPart('Factor (c) completely: ' + t(c.expr), c.TF, { sol: t('2+2') + ': ' + t(c.m + 'x^{2}(x-' + c.p + ')+' + c.n + '(x-' + c.p + ')') + '<br>' + t('=' + ftex(c.TF)) + '<br>' + t(c.m + 'x^{2}+' + c.n) + ' is a sum — it stops.', hints: ['Group in pairs: take ' + t(c.m + 'x^{2}') + ' out of the first pair and ' + t(c.n) + ' out of the second.'], text: 'factor ' + plain(c.expr),
+              wrong: autoWrongs(c.TF, null) });
+          } },
+          { id: 'e14d', sub: 'd', level: 'ADV', make: function (r, sh) {
+            var d = sh.d, k = d.k;
+            return facPart('Factor (d) completely: ' + t(d.expr), d.TF, { sol: t('3+1') + ', with the lone square ' + t('m^{2}') + ' first: ' + t('m^{2}-(n^{2}-' + 2 * k + 'n+' + k * k + ')') + '<br>' + t('=m^{2}-(n-' + k + ')^{2}') + '<br>' + t('=\\big[m-(n-' + k + ')\\big]\\big[m+(n-' + k + ')\\big]') + '<br>' + t('=' + ftex(d.TF)), hints: ['Take ' + t('-1') + ' out of the last three terms: ' + t('-n^{2}+' + 2 * k + 'n-' + k * k + '=-(n^{2}-' + 2 * k + 'n+' + k * k + ')') + '.', 'Then it is ' + t('m^{2}-(\\ldots)^{2}') + ': a difference of squares. Distribute the minus sign carefully.'], text: 'factor ' + plain(d.expr),
+              wrong: [wr([fo(S(B('m'), M(-1, 'n'), N(-k))), fo(S(B('m'), B('n'), N(-k)))], 'minus-bracket', 'Check the first bracket: ' + t('m-(n-' + k + ')=m-n+' + k) + ' — the minus sign changes <b>both</b> signs in the bracket.')] });
+          } },
+          { id: 'e14e', sub: 'e', level: 'ADV', make: function (r, sh) {
+            var e = sh.e;
+            return facPart('Factor (e) completely: ' + t(e.expr), e.TF, { sol: t('3+1') + ': ' + t('2(' + e.p + 'a)(' + e.q + 'b)=' + 2 * e.p * e.q + 'ab') + ' ✓<br>' + t('(' + tx(P.mul(e.base, e.base)) + ')-' + e.rr * e.rr + '=(' + e.bt + ')^{2}-' + e.rr + '^{2}') + '<br>' + t('=' + ftex(e.TF)), hints: ['The first three terms are a perfect square trinomial. Write them as a square, then use the difference of squares.'], text: 'factor ' + plain(e.expr),
+              wrong: [wr([fo(S(e.base, N(-e.rr * e.rr))), fo(S(e.base, N(e.rr * e.rr)))], 'no-root', 'Use the square <b>root</b> of ' + t(e.rr * e.rr) + ', which is ' + t(e.rr) + '.')] });
+          } },
+          { id: 'e14f', sub: 'f', level: 'PRG', make: function (r, sh) {
+            var f = sh.f;
+            return facPart('Factor (f) completely: ' + t(f.expr), f.TF, { sol: t('2+2') + ': ' + t(f.m + 'p(q-' + f.s + ')+' + f.n + '(q-' + f.s + ')') + '<br>' + t('=' + ftex(f.TF)), hints: ['Group in pairs: take ' + t(f.m + 'p') + ' out of the first pair and ' + t(f.n) + ' out of the second.'], text: 'factor ' + plain(f.expr) });
           } }] },
-
-      { num: '15', stem: function (sh) { return 'A student factors ' + t(sh.T) + ' as ' + t(sh.stu) + '.'; },
-        shared: function (r) {
-          var k = r.pick([2, 3]), pq = cop(r, 1, 4, 1, 7), p = pq[0], q = pq[1];
-          var T = tx(P.scale(P.sub(M(p * p, { x: 2 }), N(q * q)), k)), stu = '(' + tx(S(M(p, 'x'), N(-q))) + ')(' + tx(S(M(k * p, 'x'), N(k * q))) + ')';
-          return { k: k, p: p, q: q, T: T, stu: stu };
-        },
-        parts: [
-          { id: 'e15a', sub: 'a', level: 'EMG', make: function (r, sh) {
-            var kp = tx(S(M(sh.k * sh.p, 'x'), N(sh.k * sh.q)));
-            return mcPart(r, 'The student’s product really is ' + t(sh.T) + ' (expand to check). So what <b>is</b> wrong with the answer?', [
-              { html: 'It isn’t factored completely: the bracket ' + t('(' + kp + ')') + ' still has a common factor of ' + t(sh.k) + '.', right: true },
-              { html: 'The product is wrong.', why: 'Expand it: ' + t(sh.stu + '=' + sh.T) + '. The product is right — look at the brackets themselves.' },
-              { html: 'Nothing — any pair of brackets that multiplies back correctly is a complete factorization.', why: 'Checklist step 6: can any factor be factored again? ' + t('(' + kp + ')') + ' can.' },
-              { html: 'The signs should be swapped between the brackets.', why: 'Swapping signs gives the same product here, but it still leaves a common factor inside a bracket.' }],
-              t(sh.stu + '=' + sh.T) + ' ✓ The product is right, but the answer is <b>not factored completely</b>: ' + t(kp + '=' + sh.k + '(' + tx(S(M(sh.p, 'x'), N(sh.q))) + ')') + ' still has a common factor.', ['Look inside each bracket: is there a common factor?'], 'what is wrong: gcf left inside');
-          } },
-          { id: 'e15b', sub: 'b', level: 'BEG', make: function (r, sh) { return fac(dos({ k: sh.k, A: M(sh.p, 'x'), B: N(sh.q) }), { prompt: 'Give the completely factored form of ' + t(sh.T) + '.' }); } },
-          { id: 'e15c', sub: 'b steps', level: 'EMG', make: function (r, sh) {
-            return mcPart(r, 'Which checklist step did the student skip at the start, and which did they fail at the end?', [
-              { html: 'Skipped <b>step 1</b> (common factor first); failed <b>step 6</b> (can any factor be factored again?).', right: true },
-              { html: 'Skipped step 2 (difference of squares); failed step 1.', why: 'They did use a difference-of-squares style answer. What they never did was take out ' + t(sh.k) + ' first.' },
-              { html: 'Skipped step 5 (grouping); failed step 4 (decomposition).', why: 'Grouping is for four terms; this has two.' },
-              { html: 'Skipped step 6 only; step 1 doesn’t apply to two terms.', why: 'Step 1 always applies: ' + t(sh.T) + ' has a common factor of ' + t(sh.k) + '.' }],
-              t(sh.T + '=' + sh.k + '(' + tx(P.sub(M(sh.p * sh.p, { x: 2 }), N(sh.q * sh.q))) + ')') + ': they skipped <b>step 1</b> (common factor first) at the start and failed <b>step 6</b> (check each factor) at the end.', ['What does the checklist say to do first? And last?'], 'which steps skipped');
-          } }] },
-
-      /* ---------- EP Part G — stretch ---------- */
-      { num: '16', section: 'Extra practice G — Stretch', stem: function (sh) { return 'Factor ' + t(sh.tex) + ' by decomposition.'; },
-        shared: function (r) {
-          var a, u, b, v; do { a = r.int(2, 4); u = r.int(2, 5); b = r.int(2, 5); v = r.int(2, 5); } while (gcd(a, u) !== 1 || gcd(b, v) !== 1 || a === b || a * v === b * u);
-          var f1 = S(M(a, 'x'), N(u)), f2 = S(M(b, 'x'), N(v));
-          return { a: a, u: u, b: b, v: v, f1: f1, f2: f2, tex: tx(P.mul(f1, f2)), A: a * b, m1: b * u, m2: a * v, C: u * v };
-        },
-        parts: [0, 1].map(function (j) {
-          return { id: 'e16' + 'ab'.charAt(j), sub: 'ab'.charAt(j), level: 'EMG', make: function (r, sh) {
-            var first = j ? sh.m2 : sh.m1, second = j ? sh.m1 : sh.m2;
-            var g1 = j ? [M(sh.a, 'x'), sh.f2] : [M(sh.b, 'x'), sh.f1], g2 = j ? [N(sh.u), sh.f2] : [N(sh.v), sh.f1];
-            var p1 = P.seq([M(sh.A, { x: 2 }), M(first, 'x')]), p2 = P.seq([M(second, 'x'), N(sh.C)]);
-            var box = function (name, lab) { return { name: name, label: lab, mode: 'math', keys: 'poly', vars: ['x'], wide: true, placeholder: 'e.g. 2x(3x + 1)' }; };
-            var c1 = K.factored(g1, { gcfOnly: true }), c2 = K.factored(g2, { gcfOnly: true }), c3 = K.factored([sh.f1, sh.f2]);
-            var res = lst(j ? [sh.f2, sh.f1] : [sh.f1, sh.f2]);
-            var p = B.fields('Split the middle term as ' + t(first + 'x+' + second + 'x') + ': ' + t(P.seq([M(sh.A, { x: 2 }), M(first, 'x'), M(second, 'x'), N(sh.C)])) + '. Factor each pair, then write the result.',
-              [box('First pair', t(p1 + '=')), box('Second pair', t(p2 + '=')), box('Factored form', 'So ' + t(sh.tex + '='))],
-              [c1, c2, c3], [lst(g1), lst(g2), res], t(p1 + '=' + lst(g1)) + ', ' + t(p2 + '=' + lst(g2)) + '; ' + t(sh.tex + '=' + res),
-              t(sh.tex + '=' + P.seq([M(sh.A, { x: 2 }), M(first, 'x'), M(second, 'x'), N(sh.C)])) + '<br>' + t('=' + lst(g1) + '+' + lst(g2)) + '<br>' + t('=' + res),
-              ['Take the GCF out of each pair. The two brackets you get should match.'], 'decomposition split ' + first + 'x+' + second + 'x');
-            p.bad = [[lst(g1), lst(g2), lst([S(M(sh.a, 'x'), N(-sh.u)), sh.f2])]];
-            return p;
-          } };
-        }).concat([{ id: 'e16c', sub: 'c', level: 'EMG', make: function (r, sh) {
-          return mcPart(r, 'The two groupings look nothing alike. Why must they give the same answer?', [
-            { html: 'Both rewrite the <b>same</b> polynomial, and multiplication is commutative: they reach the same two brackets, just in the other order.', right: true },
-            { html: 'They don’t have to — one of the two splits is wrong.', why: 'Both splits add to ' + t(sh.m1 + sh.m2 + 'x') + ', so both are correct rewrites of the same polynomial. Finish both and compare.' },
-            { html: 'Because the first terms ' + t(sh.A + 'x^{2}') + ' are the same in both.', why: 'Matching first terms isn’t enough on its own — the whole polynomial is the same in both, which is why the factors match.' },
-            { html: 'Because every quadratic can be factored in only one order.', why: 'Order doesn’t matter in a product: ' + t(lst([sh.f1, sh.f2]) + '=' + lst([sh.f2, sh.f1])) + '.' }],
-            'Both groupings rewrite the <b>same</b> polynomial, so they must give equal products. They pull out different common factors but reach the same two brackets, ' + t(P.btex(sh.f1)) + ' and ' + t(P.btex(sh.f2)) + ', in the other order. Multiplication is commutative, so the order of the split never changes the answer.', ['Are the two split versions the same polynomial?'], 'why both splits agree');
-        } }]) },
-
-      { num: '17', stem: 'Neither of these is in a helpful order. Rearrange first, then factor completely.',
-        shared: function (r) { var p = r.int(2, 7), q = r.int(1, 3); return { p: p, q: q, pr: grp({ A1: X, A2: N(p), B1: X, B2: M(q, 'y'), idx: [0, 3, 2, 1] }) }; },
-        parts: [
-          { id: 'e17a1', sub: 'a i', level: 'EMG', make: function (r, sh) {
-            var t4 = sh.pr.t4, first = P.seq([t4[0], t4[3]]);
-            return mcPart(r, 'In ' + t(sh.pr.tex) + ', why does grouping the first two terms, ' + t('(' + first + ')') + ', get you nowhere?', [
-              { html: t(tx(t4[0])) + ' and ' + t(tx(t4[3])) + ' have no common factor, so nothing comes out and no matching bracket can appear.', right: true },
-              { html: 'Because the first pair has two different variables, and grouping only works with one variable.', why: 'Grouping works fine with several variables (for example ' + t('x(x+' + sh.p + ')+' + (sh.q === 1 ? '' : sh.q) + 'y(x+' + sh.p + ')') + '). The problem is that this pair shares no factor.' },
-              { html: 'Because a four-term expression must be factored by decomposition.', why: 'Four terms ⇒ grouping. The pairs just need to be chosen so each shares a factor.' },
-              { html: 'It does work: ' + t(first + '=x(x+' + sh.p * sh.q + 'y)') + '.', why: 'Expand ' + t('x(x+' + sh.p * sh.q + 'y)') + ': you get ' + t('x^{2}+' + sh.p * sh.q + 'xy') + ', not ' + t(first) + '.' }],
-              t(first) + ' has no common factor, so the first pair gives nothing to take out and no matching bracket can appear. Regroup so each pair shares a factor: ' + t(P.seq([t4[0], t4[2], t4[1], t4[3]])) + '.', ['What do ' + t(tx(t4[0])) + ' and ' + t(tx(t4[3])) + ' have in common?'], 'why the first grouping fails');
-          } },
-          { id: 'e17a2', sub: 'a ii', level: 'PRG', make: function (r, sh) {
-            var pr = sh.pr, t4 = pr.t4;
-            pr.sol = '<b>Regroup</b> so each pair shares a factor:<br>' + t(pr.tex + '=' + P.seq([t4[0], t4[2], t4[1], t4[3]])) + '<br>' + t('=x(x+' + sh.p + ')+' + (sh.q === 1 ? '' : sh.q) + 'y(x+' + sh.p + ')') + '<br>' + t('=' + lst([S(X, N(sh.p)), S(X, M(sh.q, 'y'))]));
-            pr.keyTex = lst([S(X, N(sh.p)), S(X, M(sh.q, 'y'))]);
-            pr.hints = ['Grouping the terms in the order given gets nowhere. Rearrange them so each pair shares a factor: put ' + t(tx(t4[0])) + ' next to ' + t(tx(t4[2])) + '.', 'Take the common factor out of each pair — the two brackets must match.'];
-            return fac(pr, { prompt: 'Regroup and factor ' + t(pr.tex) + ' completely.' });
-          } },
-          { id: 'e17b', sub: 'b', level: 'PRG', make: function (r) {
-            var pq = cop(r, 2, 5, 1, 7), p = pq[0], q = pq[1];
-            var tex = P.seq([M(2 * p * q, 'x'), N(-q * q), M(-p * p, { x: 2 })]);
-            var pr = tri({ k: -1, a: p, u: -q, b: p, v: -q, X: X, tex: tex, reorder: true });
-            return fac(pr, { prompt: t(tex) + '<br><i>Write it in descending order, take out the common factor including its sign, then look again.</i>' });
-          } }] },
-
-      { num: '18', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: 'e18', level: 'PRG', make: function (r) {
-          var k = r.pick([2, 3]), n = r.int(3, 9), p = r.int(1, 5), q = r.int(2, 6), m = r.pick([2, 3, 5, 6, 7]), c = r.int(2, 5), d = r.int(1, 4), kc = r.pick([2, 3, 4]);
-          var A = k + '(x^{2}-' + n * n + ')', Bt = '(x+' + p + ')(2x-' + 2 * q + ')', C = kc + 'x(x^{2}+' + m + ')', D = '(x-' + d + ')(x^{2}-' + d * d + ')';
-          return mcPart(r, 'Which of the following is factored <b>completely</b>?', [
-            { html: t(A), why: t('x^{2}-' + n * n) + ' is a difference of squares: ' + t(A + '=' + k + '(x-' + n + ')(x+' + n + ')') + '.' },
-            { html: t(Bt), why: t('2x-' + 2 * q) + ' has a common factor of ' + t('2') + ': ' + t(Bt + '=2(x+' + p + ')(x-' + q + ')') + '.' },
-            { html: t(C), right: true },
-            { html: t(D), why: t('x^{2}-' + d * d) + ' is a difference of squares: ' + t(D + '=(x-' + d + ')^{2}(x+' + d + ')') + '.' }],
-            t(A + '=' + k + '(x-' + n + ')(x+' + n + ')') + ' — not complete.<br>' + t(Bt + '=2(x+' + p + ')(x-' + q + ')') + ' — not complete.<br>' + t(C) + ': ' + t('x^{2}+' + m) + ' is a <b>sum</b>, not a difference, and has no common factor — <b>complete</b>.<br>' + t(D + '=(x-' + d + ')(x-' + d + ')(x+' + d + ')=(x-' + d + ')^{2}(x+' + d + ')') + ' — not complete.',
-            ['For each option, check every bracket: a common factor? a difference of squares?'], 'which is factored completely');
+      { num: '15', stem: 'The decision itself.', parts: [
+        { id: 'e15a', sub: 'a', level: 'EMG', make: function (r) {
+          return mcTex(r, 'What do you look for <i>at a glance</i> to tell a ' + t('2+2') + ' grouping problem from a ' + t('3+1') + ' problem?', [
+            { html: 'A ' + t('3+1') + ' problem has three perfect-square terms: two of them and the middle term make a perfect square trinomial, and the fourth is a lone perfect square with a minus sign in front of it. A ' + t('2+2') + ' problem splits into two pairs that each have a common factor.', right: true },
+            { html: 'A ' + t('3+1') + ' problem always has its perfect square trinomial in the first three terms.', why: 'Not always: in ' + t('m^{2}-n^{2}+10n-25') + ' the lone square comes first.' },
+            { html: 'Any four-term polynomial with a perfect square in it is a ' + t('3+1') + ' problem.', why: t('ax+ay+bx+by') + ' style problems can contain squares too (e.g. ' + t('x^{2}+3x+2x+6') + '); you need <b>three</b> squares, one standing alone with a minus sign.' },
+            { html: 'Count the minus signs: one minus sign means ' + t('3+1') + ', two means ' + t('2+2') + '.', why: 'The number of minus signs doesn’t decide it. Look for squared terms.' }],
+            'Look for squares. A ' + t('3+1') + ' problem has three perfect-square terms — a perfect square trinomial plus a lone square with a minus sign in front (or, as in ' + t('m^{2}-n^{2}+10n-25') + ', a lone positive square with the other three subtracted). A ' + t('2+2') + ' problem has no such pattern; its terms fall into two pairs with common factors.', ['How many of the four terms are perfect squares?'], 'how to tell 2+2 from 3+1');
+        } },
+        { id: 'e15b1', sub: 'b i', level: 'EMG', make: function (r) {
+          var k = r.int(2, 9);
+          return mcTex(r, 'In ' + t('m^{2}-n^{2}+' + 2 * k + 'n-' + k * k) + ' the last three terms are ' + t('-n^{2}+' + 2 * k + 'n-' + k * k) + '. Why must you remove a factor of ' + t('-1') + ' before you can see the perfect square?', [
+              { html: 'A perfect square trinomial needs a positive first and last term, but ' + t('-n^{2}') + ' and ' + t('-' + k * k) + ' are negative. Removing ' + t('-1') + ' flips every sign.', right: true },
+              { html: 'Because the GCF of the three terms is ' + t('-1') + ', and the GCF must always come out first.', why: 'Taking out ' + t('-1') + ' is a choice to make the square visible, not a GCF rule.' },
+              { html: 'Because ' + t('-n^{2}') + ' is a perfect square, so it needs a minus sign.', why: t('-n^{2}') + ' is not a perfect square — a square is never negative.' },
+              { html: 'You don’t have to; ' + t('-n^{2}+' + 2 * k + 'n-' + k * k + '=(-n+' + k + ')^{2}') + '.', why: 'Expand ' + t('(-n+' + k + ')^{2}') + ': you get ' + t('n^{2}-' + 2 * k + 'n+' + k * k) + ', with positive ends.' }],
+            'A perfect square trinomial has positive first and last terms. Taking out ' + t('-1') + ' flips every sign: ' + t('m^{2}-(n^{2}-' + 2 * k + 'n+' + k * k + ')=m^{2}-(n-' + k + ')^{2}') + '.', ['Can a perfect square be negative?'], 'why remove -1');
+        } },
+        { id: 'e15b2', sub: 'b ii', level: 'BEG', make: function (r) {
+          var k = r.int(2, 9), T = S(B('n', 2), M(-2 * k, 'n'), N(k * k));
+          var p = KP.poly('Write the three terms of ' + t('-n^{2}+' + 2 * k + 'n-' + k * k) + ' after you remove a factor of ' + t('-1') + ':', T, { wrong: [{ is: S(B('n', 2), M(2 * k, 'n'), N(k * k)), code: 'sign', hint: 'Taking out ' + t('-1') + ' flips <b>every</b> sign, including the middle one: ' + t('+' + 2 * k + 'n\\to -' + 2 * k + 'n') + '.' }, { is: S(B('n', 2), M(2 * k, 'n'), N(-k * k)), code: 'sign', hint: 'Every sign flips: ' + t('-n^{2}\\to n^{2}') + ', ' + t('+' + 2 * k + 'n\\to -' + 2 * k + 'n') + ', ' + t('-' + k * k + '\\to +' + k * k) + '.' }], before: t('-n^{2}+' + 2 * k + 'n-' + k * k + '=-\\Big(') , after: t('\\Big)') },
+            t('-n^{2}+' + 2 * k + 'n-' + k * k + '=-(n^{2}-' + 2 * k + 'n+' + k * k + ')') + ', and ' + t('n^{2}-' + 2 * k + 'n+' + k * k + '=(n-' + k + ')^{2}') + ' since ' + t('2(n)(' + k + ')=' + 2 * k + 'n') + ' ✓', ['Change the sign of every term.'], 'remove -1');
+          return p;
+        } },
+        { id: 'e15c', sub: 'c', level: 'EMG', make: function (r) {
+          var k = r.int(2, 6);
+          return mcTex(r, 'A classmate tries ' + t('2+2') + ' on ' + t('x^{2}+' + 2 * k + 'x+' + k * k + '-y^{2}') + ': ' + t('x(x+' + 2 * k + ')+(' + k + '-y)(' + k + '+y)') + '. Both halves are factored, yet the method failed. Why?', [
+            { html: 'After the halves are factored, the <b>same</b> bracket must appear in both so it can be taken out. ' + t('x(x+' + 2 * k + ')') + ' and ' + t('(' + k + '-y)(' + k + '+y)') + ' share no bracket.', right: true },
+            { html: 'The classmate factored the second half wrong.', why: t('(' + k + '-y)(' + k + '+y)=' + k * k + '-y^{2}') + ' — that half is right.' },
+            { html: 'Grouping only works when all four terms are positive.', why: 'Grouping works with any signs, as long as a common bracket appears.' },
+            { html: 'The halves still need to be multiplied together.', why: 'They are <b>added</b>, not multiplied — that’s why a common bracket is needed.' }],
+            'Grouping only finishes when both halves contain the same bracket. Here there is none, so the split was wrong. The ' + t('3+1') + ' split works: ' + t('(x+' + k + ')^{2}-y^{2}=(x+' + k + '-y)(x+' + k + '+y)') + '.', ['What has to happen after both pairs are factored, in a grouping problem?'], 'why 2+2 fails');
         } }] },
-
-      { num: '19', stem: '<i>(Numerical Response)</i>', parts: [
-        { id: 'e19', level: 'PRG', make: function (r) {
-          var a = r.pick([2, 3, 5]), bc = cop(r, 2, 5, 1, 9), b = bc[0], c = bc[1], tex = tx(S(M(a * b * b, { x: 3 }), M(-a * c * c, 'x'))), ans = a + b + c;
-          return B.nr('When ' + t(tex) + ' is factored completely it has the form ' + t('ax(bx-c)(bx+c)') + ', where ' + t('a') + ', ' + t('b') + ' and ' + t('c') + ' are positive integers. The value of ' + t('a+b+c') + ' is ________.', ans, function (v) {
-            if (v === b + c) return { code: 'nr-forgot-a', hint: 'Don’t forget ' + t('a') + ' — the number part of the GCF.' };
-            if (v === a + b * b + c * c) return { code: 'nr-partial-gcf', hint: 'Take out the GCF ' + t(a + 'x') + ' first; then the bracket is a difference of squares with ' + t('b') + ' and ' + t('c') + ' its square roots.' };
-            return null;
-          }, t(tex + '=' + a + 'x(' + b * b + 'x^{2}-' + c * c + ')') + '<br>' + t('=' + a + 'x\\big((' + b + 'x)^{2}-' + c + '^{2}\\big)=' + a + 'x(' + b + 'x-' + c + ')(' + b + 'x+' + c + ')') + '<br>So ' + t('a=' + a + ',\\ b=' + b + ',\\ c=' + c) + ' and ' + t('a+b+c=' + ans) + '.',
-          ['Take out the GCF first, then factor the difference of squares.'], 'a+b+c for ' + plain(tex));
+      /* ---------- EP F: stretch ---------- */
+      { num: '16', section: 'Extra practice F — Stretch', stem: '<b>Substitution twice over.</b> The repeated block is itself a binomial. Let ' + t('A') + ' be that block, factor the trinomial in ' + t('A') + ', substitute back — and then factor each of the two trinomials you get.', parts: [
+        { id: 'e16a', sub: 'a', level: 'ADV', make: function (r) { return e16Part(e16Gen(r, false), 'x'); } },
+        { id: 'e16b', sub: 'b', level: 'ADV', make: function (r) { return e16Part(e16Gen(r, true), 'y'); } },
+        { id: 'e16c', sub: 'c', level: 'EMG', make: function (r) {
+          return mcTex(r, 'Factoring ' + t('(y^{2}+2y)^{2}-2(y^{2}+2y)-3') + ', four students stop at different places. Which statement is correct?', [
+            { html: t('(y+3)(y-1)(y+1)(y+1)') + ' is complete and correct: every bracket is linear. Writing ' + t('(y+1)^{2}') + ' just combines the two equal brackets.', right: true },
+            { html: t('(A-3)(A+1)') + ' is a complete answer.', why: t('A') + ' is not in the question — the block must be substituted back.' },
+            { html: t('(y^{2}+2y-3)(y^{2}+2y+1)') + ' is a complete answer.', why: 'Both trinomials still factor: ' + t('(y+3)(y-1)') + ' and ' + t('(y+1)^{2}') + '.' },
+            { html: t('(y+3)(y-1)(y+1)(y+1)') + ' is wrong because the repeated bracket must be written as a square.', why: 'It equals ' + t('(y+3)(y-1)(y+1)^{2}') + ' exactly, and every bracket is linear — it is complete.' }],
+            'The repeated bracket comes from the perfect square trinomial ' + t('y^{2}+2y+1=(y+1)^{2}') + '. Stopping at ' + t('(A-3)(A+1)') + ' leaves a letter that isn’t in the question; stopping at ' + t('(y^{2}+2y-3)(y^{2}+2y+1)') + ' leaves trinomials that factor. ' + t('(y+3)(y-1)(y+1)(y+1)') + ' is complete — ' + t('(y+1)^{2}') + ' is just a shorter way to write it.', ['Which answers still have a bracket (or a letter) that needs work?'], 'where to stop');
+        } }] },
+      { num: '17', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: 'e17', level: 'EMG', make: function (r) {
+          var k = r.int(1, 5), k2 = k * k, expr = tx(S(B('x', 4), M(-2 * k2, 'x', 2), N(k2 * k2)));
+          return mcTex(r, 'When ' + t(expr) + ' is factored completely, the result is', [
+            { html: t('(x^{2}-' + k2 + ')^{2}'), why: 'That’s the first step, but ' + t('x^{2}-' + k2) + ' is a difference of squares — it factors again.' },
+            { html: t('(x-' + k + ')^{2}(x+' + k + ')^{2}'), right: true },
+            { html: t('(x-' + k + ')^{4}'), why: t('(x-' + k + ')^{4}=\\big((x-' + k + ')^{2}\\big)^{2}=(x^{2}-' + 2 * k + 'x+' + k2 + ')^{2}') + ', which has odd powers of ' + t('x') + '.' },
+            { html: t('(x^{2}-' + k2 + ')(x^{2}+' + k2 + ')'), why: 'That multiplies to ' + t('x^{4}-' + k2 * k2) + ' — no middle term.' }],
+            t('\\sqrt{x^{4}}=x^{2}') + ', ' + t('\\sqrt{' + k2 * k2 + '}=' + k2) + ', ' + t('2(x^{2})(' + k2 + ')=' + 2 * k2 + 'x^{2}') + ' ✓, so ' + t(expr + '=(x^{2}-' + k2 + ')^{2}') + '.<br>' + t('x^{2}-' + k2 + '=(x-' + k + ')(x+' + k + ')') + ', so ' + t('=\\big[(x-' + k + ')(x+' + k + ')\\big]^{2}=(x-' + k + ')^{2}(x+' + k + ')^{2}') + '.', ['It is a perfect square trinomial in ' + t('x^{2}') + '. Then check the bracket inside the square.'], 'complete factorization of ' + plain(expr));
+        } }] },
+      { num: '18', stem: '<i>(Numerical Response)</i>', parts: [
+        { id: 'e18', level: 'PRG', make: function (r) {
+          var g = r.pick([[2, 3], [3, 2], [2, 5], [3, 4], [4, 3], [5, 2], [3, 5], [5, 3], [5, 4]]), a = g[0], b = g[1], a2 = a * a, b2 = b * b, expr = tx(S(M(a2 * a2, 'x', 4), M(-2 * a2 * b2, 'x', 2), N(b2 * b2))), ans = Math.pow(a, b);
+          var A = Math.pow(a, b), Bv = Math.pow(b, a);
+          return KP.nr('When ' + t(expr) + ' is factored completely it can be written ' + t('(ax-b)^{2}(ax+b)^{2}') + ', where ' + t('a') + ' and ' + t('b') + ' are positive integers. The value of ' + t('a^{b}') + ' is ________. (Record your answer as a three-digit number.)', A,
+            function (v) { if (v === Bv && Bv !== A) return { code: 'swap-ab', hint: 'That’s ' + t('b^{a}') + '. The question asks for ' + t('a^{b}') + '.' }; if (v === Math.pow(a2, b2) || v === a2 * b2 || v === Math.pow(a2, b)) return { code: 'ab-sq', hint: t('a') + ' and ' + t('b') + ' come from the <b>second</b> round of factoring: ' + t('(' + a2 + 'x^{2}-' + b2 + ')=(' + a + 'x-' + b + ')(' + a + 'x+' + b + ')') + '.' }; if (v === a * b) return { code: 'ab-sum', hint: 'Raise ' + t('a') + ' to the power ' + t('b') + ', don’t multiply.' }; return null; },
+            t('\\sqrt{' + a2 * a2 + 'x^{4}}=' + a2 + 'x^{2}') + ', ' + t('\\sqrt{' + b2 * b2 + '}=' + b2) + ', ' + t('2(' + a2 + 'x^{2})(' + b2 + ')=' + 2 * a2 * b2 + 'x^{2}') + ' ✓<br>' + t(expr + '=(' + a2 + 'x^{2}-' + b2 + ')^{2}') + '<br>' + t(a2 + 'x^{2}-' + b2 + '=(' + a + 'x-' + b + ')(' + a + 'x+' + b + ')') + ', so ' + t('=(' + a + 'x-' + b + ')^{2}(' + a + 'x+' + b + ')^{2}') + '<br>' + t('a=' + a + ',\\ b=' + b + ':\\ a^{b}=' + a + '^{' + b + '}=' + A) + ' (recorded ' + ('000' + A).slice(-3) + ').',
+            ['Factor it as a perfect square trinomial in ' + t('x^{2}') + ' first, then factor the bracket inside the square.'], 'NR a^b for ' + plain(expr));
         } }] }
     ]
   });
 
-  /* "is it finished? type the complete form" (Extra 11) */
-  function stopPart(given, pr, why) {
-    var chk = strict(K.factored(pr.list, { wrong: (pr.wrongs || []).filter(function (w) { return !P.eq(FA.product(w.is), pr.expr); }) }));
-    var complete = lst(pr.list) === lst(FA.split(given).factors.map(function (f) { return { p: f.p, k: f.k }; }));
-    var sol = why + '<br>' + t(given + (complete ? '' : '=' + pr.keyTex));
-    var p = B.math('Student’s final answer: ' + t(given), chk, pr.keyTex, sol, pr.hints || ['Look at each factor: can it be factored again?'], 'stop or finish: ' + plain(given), { keys: 'poly', vars: P.vars(pr.expr), placeholder: 'the complete factored form' });
-    p.good = [lst(pr.list)];
-    if (!complete) p.bad = [given];
+  /* ---------------- extra-practice makers (hoisted) ---------------- */
+  /* EP3: missing term + factored form */
+  function e3Part(prompt, o, T, ws, bo, sol, what, x) {
+    x = x || {}; var vs = P.vars(o.T);
+    var p = KP.fields(prompt, [box('Missing ' + what + ':', vs, 'Missing ' + what), box('Factored form:', vs, 'Factored form')],
+      [termChk(T, ws, bo), facChk(o.TF, { wrong: pstWrongs(o) })], [tx(T), o.key], t(tx(T)) + ' and ' + t(o.key), sol, H.pst, 'fill in ' + what + ' and factor: ' + plain(prompt.replace(/\\\(|\\\)/g, '')));
+    p.bad = cleanW(P.lift(T), ws).map(function (w) { return [tx(w.is), o.key]; });
+    if (x.good) p.good = x.good.map(function (g) { return [tx(T), g]; });
     return p;
   }
-  /* a trinomial that does not factor (Extra 12) */
-  function noneTri(a, b, c) {
-    var T = S(M(a, { x: 2 }), M(b, 'x'), N(c)), tex = tx(T), ac = a * c;
-    return fnone(null, { expr: T, tex: tex, sol: (a === 1 ? 'No GCF, ' + t('a=1') + '. ' : 'No GCF, ' + t('a=' + a) + ': ' + t('ac=' + ac) + '. ') + noPairText(ac, b) + '<br><b>Does not factor</b> — no integer pair.',
-      hints: [a === 1 ? 'Look for two integers that multiply to ' + t(c) + ' and add to ' + t(b) + '.' : 'Decomposition: two integers that multiply to ' + t('ac=' + ac) + ' and add to ' + t(b) + '.'],
-      whyNot: 'No pair of integers multiplies to ' + t(ac) + ' and adds to ' + t(b) + ' — check every pair. If none works, press <b>none</b>.' });
+  /* EP5: A² − b² or b² − A² with a binomial block A */
+  function binDos(prompt, A, At, b, bt, rev) {
+    var TF = rev ? [fo(P.sub(b, A), 1, bt + '-' + At.replace(/\+/g, '#').replace(/-/g, '+').replace(/#/g, '-')), fo(S(b, A), 1, bt + '+' + At)]
+      : [fo(P.sub(A, b), 1, At + '-' + bt), fo(S(A, b), 1, At + '+' + bt)];
+    var b2 = P.mul(b, b), b2t = tx(b2);
+    var sol = rev ? 'Let ' + t('A=' + At) + '.<br>' + t(b2t + '-A^{2}=' + bt + '^{2}-A^{2}=(' + bt + '-A)(' + bt + '+A)') + '<br>Replace ' + t('A') + ': ' + t('\\big(' + bt + '-(' + At + ')\\big)\\big(' + bt + '+(' + At + ')\\big)') + '<br>' + t('=' + ftex(TF))
+      : 'Let ' + t('A=' + At) + '.<br>' + t('A^{2}-' + b2t + '=A^{2}-(' + bt + ')^{2}=(A-' + bt + ')(A+' + bt + ')') + '<br>Replace ' + t('A') + ': ' + t('=' + ftex(TF));
+    var ws = [wr([fo(P.sub(A, b2)), fo(S(A, b2))], 'no-root', 'Use the square <b>root</b> of ' + t(b2t) + ', which is ' + t(bt) + '.'), wr([fo(P.sub(A, b), 2)], 'dos-square', 'A difference of squares is ' + t('(A-B)(A+B)') + ', not ' + t('(A-B)^{2}') + '.')];
+    if (rev) { var ts = P.sorted(A), w1 = S(b, P.neg(P.mono(ts[0].c, ts[0].v)), P.mono(ts[1].c, ts[1].v)); ws.push(wr([fo(w1), fo(S(b, A))], 'minus-bracket', 'In the first bracket, ' + t(bt + '-(' + At + ')') + ': the minus sign changes the sign of <b>every</b> term of the block.')); }
+    return facPart(prompt, TF, { wrong: ws, sol: sol, hints: ['Let ' + t('A') + ' be the bracket, so the expression is a difference of squares in ' + t('A') + '.', 'Replace ' + t('A') + ', then simplify inside each bracket.'], text: 'factor ' + plain(prompt.replace(/\\\(|\\\)/g, '')) });
+  }
+  /* EP6: (pA+q)(rA+s) with a binomial block A */
+  function binTri(Ap, At, f) {
+    var p = f[0][0], q = f[0][1], r = f[1][0], s = f[1][1], st = triSteps(p, q, r, s, 'A'), a = st.a, b = st.b, c = st.c;
+    var expr = cA(a, At, true, true) + cA(b, At) + cK(c);
+    var real = [S(P.scale(Ap, p), N(q)), S(P.scale(Ap, r), N(s))], TF = real.map(function (x) { return fo(x); });
+    var back = function (pp, qq) { return (pp === 1 ? '(' + At + ')' : pp + '(' + At + ')') + sc1(qq).replace(/^\+/, '+'); };
+    var sol = ['Let ' + t('A=' + At) + ': ' + t(tx(st.tri)) + '.'].concat(st.lines).concat(['Replace ' + t('A') + ': ' + t('\\big(' + back(r, s) + '\\big)\\big(' + back(p, q) + '\\big)'), t('=' + br(real[1]) + br(real[0]))]).join('<br>');
+    var ts = P.sorted(Ap), part = function (k, c) { return S(P.scale(P.mono(ts[0].c, ts[0].v), k), P.mono(ts[1].c, ts[1].v), N(c)); }, w = [];
+    if (r !== 1) w.push(wr([fo(real[0]), fo(part(r, s))], 'minus-bracket', 'In the bracket ' + t(r + '(' + At + ')' + sc1(s)) + ', the ' + t(r) + ' multiplies <b>both</b> terms of the block.'));
+    if (p !== 1) w.push(wr([fo(part(p, q)), fo(real[1])], 'minus-bracket', 'In the bracket ' + t(p + '(' + At + ')' + sc1(q)) + ', the ' + t(p) + ' multiplies <b>both</b> terms of the block.'));
+    return facPart(t(expr), TF, { wrong: w, sol: sol, hints: ['Let ' + t('A=' + At) + '. Then the expression is an ordinary trinomial in ' + t('A') + '.', 'Factor it, replace ' + t('A') + ', and collect like terms inside each bracket.'], text: 'factor ' + plain(expr) });
+  }
+  /* EP7: x⁴ − (p²+q²)x² + p²q², both brackets split */
+  function e7Part(v, p, q) { return blockPart(null, { B: B(v, 2), Bt: v + '^{2}', Bw: B(v), f: [[1, -p * p], [1, -q * q]] }); }
+  /* EP11: (x² − k²)² = (x−k)²(x+k)² */
+  function e11Split(k, v) {
+    var o = pst(B(v, 2), N(-k * k)), TF = [fo(S(B(v), N(-k)), 2), fo(S(B(v), N(k)), 2)], key = ftex(TF);
+    return facPart(t(o.expr), TF, { sol: pstLine(o) + '<br>' + t(o.expr + '=' + o.key) + '<br>' + t(v + '^{2}-' + k * k + '=(' + v + '-' + k + ')(' + v + '+' + k + ')') + ', so ' + t('=\\big[(' + v + '-' + k + ')(' + v + '+' + k + ')\\big]^{2}=' + key),
+      wrong: [wr([fo(S(B(v, 2), N(-k * k))), fo(S(B(v, 2), N(k * k)))], 'pst-dos', 'That multiplies to ' + t(v + '^{4}-' + k * k * k * k) + ', with no middle term. It is a perfect square: ' + t(o.key) + '.'), wr([fo(S(B(v), N(-k)), 4)], 'dos-square', t('(' + v + '-' + k + ')^{4}') + ' has odd powers of ' + t(v) + '. Factor the bracket ' + t(v + '^{2}-' + k * k) + ' as a difference times a sum.'), wr([fo(S(B(v, 2), N(k * k)), 2)], 'pst-sign', 'Check the sign: the middle term is negative.')],
+      hints: H.pst.concat(['Then check the bracket inside the square: is it a difference of squares?']), text: 'factor ' + plain(o.expr), keyTex: key });
+  }
+  /* EP16: (x² + bx)² − (r1 + r2)(x² + bx) + r1 r2 */
+  function e16Part(g, v) {
+    var b = g.b, Bk = S(B(v, 2), M(b, v)), At = tx(Bk), mid = -(g.r1 + g.r2), cst = g.r1 * g.r2;
+    var expr = '(' + At + ')^{2}' + cA(mid, At) + cK(cst);
+    var lin = [g.P1, g.P2].map(function (pq) { return [fo(S(B(v), N(-pq[0]))), fo(S(B(v), N(-pq[1])))]; });
+    var TF = merge(lin[0].concat(lin[1])), key = ftex(TF);
+    var tri = [S(Bk, N(-g.r1)), S(Bk, N(-g.r2))];
+    function triLine(T, pq) {
+      if (pq[0] === pq[1]) return t(tx(T)) + ': ' + t('2(' + v + ')(' + Math.abs(pq[0]) + ')=' + Math.abs(2 * pq[0]) + v) + ' ✓, a perfect square ' + t('\\Rightarrow (' + tx(S(B(v), N(-pq[0]))) + ')^{2}');
+      return t(tx(T)) + ': product ' + t(pq[0] * pq[1]) + ', sum ' + t(b) + ': ' + t(-pq[0]) + ', ' + t(-pq[1]) + ' ' + t('\\Rightarrow ' + br(S(B(v), N(-pq[0]))) + br(S(B(v), N(-pq[1]))));
+    }
+    var sol = ['Let ' + t('A=' + At) + ': ' + t('A^{2}' + (mid === 1 ? '+A' : mid === -1 ? '-A' : (mid > 0 ? '+' : '') + mid + 'A') + cK(cst)) + '.', 'Product ' + t(cst) + ', sum ' + t(mid) + ': ' + t(-g.r1) + ' and ' + t(-g.r2) + '.<br>' + t('=(A' + cK(-g.r1) + ')(A' + cK(-g.r2) + ')'),
+      'Replace ' + t('A') + ': ' + t(br(tri[0]) + br(tri[1])), triLine(tri[0], g.P1), triLine(tri[1], g.P2), t(expr + '=' + key)].join('<br>');
+    return facPart(t(expr), TF, { sol: sol, hints: ['Let ' + t('A=' + At) + ' and factor the trinomial in ' + t('A') + '.', 'Replace ' + t('A') + ' — you get two trinomials in ' + t(v) + '. Factor each of them.'], text: 'factor ' + plain(expr) });
   }
 })(window);

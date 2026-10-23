@@ -1,1014 +1,1141 @@
-/* Math 10C · Unit 1 · Lesson 5 — Roots of Real Numbers (AN2; AN1 for square/cube roots of perfect squares/cubes)
- * Assignment questions 1–13 (u1_L05.tex) and the Lesson 5 Extra Practice (u1_EP05.tex).
- * Every part is a generator: it keeps the idea and difficulty of the booklet question (the booklet's numbers are one
- * of the possible values) and changes the numbers. "Evaluate, where possible" parts that involve a negative sign are
- * multiple choice with a "not possible (not a real number)" option, so the format never gives the answer away.
- * Levels: LIM BEG EMG PRG ADV MAS. */
+/* Math 10C · Unit 1 · Lesson 5 — Classifying the Real Number System (AN2)
+ * Assignment questions 1–21 (u1_L05.tex, Parts A–E) and the Lesson 5 Extra Practice (u1_EP05.tex).
+ * Every part is a generator: it keeps the idea and difficulty of the booklet question (the booklet's numbers are
+ * among the possible values) and changes the numbers or the wording. Levels: LIM BEG EMG PRG ADV MAS.
+ * Set names follow the booklet: N, W, I, Q, \overline{Q}, R (plain capitals, no blackboard bold). */
 (function (root) {
   'use strict';
   var HW = root.HW, ex = HW.ex, F = HW.fmt, K = HW.kit, P = K.P, t = K.t, ok = K.ok, wrong = K.wrong, form = K.form;
 
   HW.addCodes({
-    'no-coef': 'Forgot to multiply by the coefficient', 'added-coef': 'Added the coefficient instead of multiplying',
-    'divided-index': 'Divided by the index instead of taking the root', 'no-root': 'Didn’t take the root',
-    'top-only': 'Took the root of the numerator only', 'bottom-only': 'Took the root of the denominator only',
-    'wrong-index': 'Used the wrong index (wrong root key)', 'coef-inside': 'Put the coefficient inside the radical',
-    'added': 'Added radicands instead of multiplying', 'subtracted': 'Subtracted radicands instead of dividing',
-    'multiplied': 'Multiplied radicands in a quotient', 'root-first': 'Mixed a root and a radicand (e.g. √6 × 3 = √18)',
-    'inner-roots': 'Skipped the inner roots of a nested radical', 'cancel': 'Cancelled radicands incorrectly',
-    'multiply-out': 'Radicand not multiplied out', 'mixed-rad': 'Mixed radical instead of one radical', 'index-2': 'Not written as a square root',
-    'two-radicals': 'Not written as a product of two radicals', trivial: 'Used 1 as a factor',
-    'mc-np': 'Said “not possible” for a real root', 'mc-pm': 'Gave ± for a principal root', 'mc-neg-root': 'Said √(negative) is negative',
-    'mc-pos-root': 'Gave a positive root of a negative radicand', 'mc-flip': 'Fraction upside down', 'mc-index': 'Used the wrong index',
-    'kept-sign': 'Said √(x²) = x for negative x', 'squared-only': 'Squared but didn’t take the root', halfway: 'Rounded the estimate the wrong way',
-    'bracket': 'Wrong consecutive integers', 'swapped-bounds': 'Smaller and larger swapped', 'power-not-root': 'Gave the perfect power instead of its root',
-    'odd-index': 'Chose an odd index (that root is real)', positive: 'Radicand not negative', 'no-radical': 'Not a radical',
-    'as-radical': 'Gave the value instead of the radical', related: 'A different radical with the same value',
-    'added-index': 'Added the indices instead of multiplying', 'np-root': 'Kept √(negative)', 'count': 'Miscounted', 'swapped-ir': 'Swapped index and radicand',
-    'coef-index': 'Took the coefficient as the index', 'coef-radicand': 'Included the coefficient in the radicand', 'no-index': 'Didn’t know the hidden index is 2', 'mixed-num': 'Mixed number instead of an improper fraction'
+    'q-and-qbar': 'Checked both Q and Q̄', 'irr-as-rat': 'Called an irrational number rational', 'rat-as-irr': 'Called a rational number irrational',
+    'missing-r': 'Left out R', 'missed-qbar': 'Left out Q̄', 'zero-natural': 'Put 0 in N', 'neg-whole': 'Put a negative number in W or N',
+    'not-integer': 'Put a non-integer in I, W or N', 'missed-q': 'Forgot that integers are rational', nest: 'Missed a set the number is nested in',
+    'not-innermost': 'Chose an outer region, not the innermost', 'not-real': 'Not a real number', variable: 'Used a letter', 'dots-exact': 'Used … instead of an exact number',
+    'not-in-set': 'Number not in the required set', 'in-excluded-set': 'Number is in the excluded set', range: 'Number outside the given range',
+    'estimate-off': 'Estimate not close enough', 'estimate-far': 'Estimate far off', 'sqrt-halved': 'Halved instead of taking the root', 'square-not-cube': 'Square root instead of cube root',
+    'nested-one-root': 'Took only one of the two roots', 'rounded-early': 'Rounded too early', 'sum-own': 'Didn’t add own estimates', 'right-side': 'Right side wrong', 'took-root-not': 'Didn’t take the root',
+    'sig-digits': 'More than one significant digit', 'place-value': 'Right digit, wrong place value', chop: 'Chopped instead of rounding', 'between-pair': 'Not two consecutive whole numbers',
+    'between-wrong': 'Wrong pair of whole numbers', 'abs-negative': 'Gave a negative absolute value', 'abs-inside': 'Didn’t work inside the bars first', 'abs-each': 'Treated |a|−|b| as |a−b|',
+    'abs-outer': 'Forgot the outer bars', 'abs-minus-out': 'Dropped the minus sign outside the bars', 'abs-cube': 'Didn’t take the cube root', 'abs-added': 'Added instead of subtracting', 'abs-shade': 'Shaded inside/outside the wrong way (absolute value)', 'abs-one-side': 'Graphed only one side of an absolute value inequality',
+    'mc-said-always': 'Said “always”', 'mc-said-sometimes': 'Said “sometimes”', 'mc-said-never': 'Said “never”',
+    'as-irrational': 'Counted the irrational ones instead', 'cube-in': 'Put the coefficient inside the root', 'flip-99': 'Used 100 instead of 99 for the repeating block'
   });
 
+  /* ---------- the number sets ---------- */
+  var SETS = ['N', 'W', 'I', 'Q', 'Qb', 'R'];
+  var SYM = { N: 'N', W: 'W', I: 'I', Q: 'Q', Qb: '\\overline{Q}', R: 'R' };
+  var NAME = { N: 'natural numbers', W: 'whole numbers', I: 'integers', Q: 'rational numbers', Qb: 'irrational numbers', R: 'real numbers' };
+  var NOUN = { N: 'natural number', W: 'whole number', I: 'integer', Q: 'rational number', Qb: 'irrational number', R: 'real number' };
+  var ONE = { N: 'a natural number', W: 'a whole number', I: 'an integer', Q: 'a rational number', Qb: 'an irrational number', R: 'a real number' };
+  var RANK = { N: 0, W: 1, I: 2, Q: 3, R: 5 };
+  var SETS_OF = { nat: ['N', 'W', 'I', 'Q', 'R'], zero: ['W', 'I', 'Q', 'R'], negint: ['I', 'Q', 'R'], rat: ['Q', 'R'], irr: ['Qb', 'R'] };
+  var SMALLEST = { nat: 'N', zero: 'W', negint: 'I', rat: 'Q', irr: 'Qb' };
+  var COLS = SETS.map(function (x) { return { id: x, html: t(SYM[x]), label: NAME[x] }; });
+  var COLS5 = COLS.filter(function (c) { return c.id !== 'R'; });
+  function S(x) { return t(SYM[x]); }
+  function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+  function sub(x, y) { if (x === y) return true; if (x === 'Qb') return y === 'R'; if (y === 'Qb') return false; return RANK[x] <= RANK[y]; }
+  function bigToSmall(kind) { return ['R', 'Q', 'Qb', 'I', 'W', 'N'].filter(function (x) { return SETS_OF[kind].indexOf(x) >= 0; }); }
+  function setsTex(arr) { return t(arr.map(function (x) { return SYM[x]; }).join(',\\ ')); }
+  /* sample numbers used for examples and counterexamples */
+  var CAND = [{ tex: '5', s: SETS_OF.nat }, { tex: '0', s: SETS_OF.zero }, { tex: '-3', s: SETS_OF.negint }, { tex: '\\frac{1}{2}', s: SETS_OF.rat }, { tex: '\\sqrt{2}', s: SETS_OF.irr }];
+  function exIn(x, notY) { for (var i = 0; i < CAND.length; i++) { var c = CAND[i]; if (c.s.indexOf(x) >= 0 && (!notY || c.s.indexOf(notY) < 0)) return c.tex; } return null; }
+  function exBoth(x, y) { for (var i = 0; i < CAND.length; i++) { var c = CAND[i]; if (c.s.indexOf(x) >= 0 && c.s.indexOf(y) >= 0) return c.tex; } return null; }
+  function relation(x, y) { return sub(x, y) ? 'always' : exBoth(x, y) ? 'sometimes' : 'never'; }
+  var PAIRS = []; SETS.forEach(function (x) { SETS.forEach(function (y) { if (x !== y) PAIRS.push([x, y]); }); });
+  var TRUE_PAIRS = PAIRS.filter(function (p) { return sub(p[0], p[1]); });
+  var REV_PAIRS = PAIRS.filter(function (p) { return sub(p[1], p[0]); });
+  var DISJ_PAIRS = PAIRS.filter(function (p) { return relation(p[0], p[1]) === 'never'; });
+
   /* ---------- small helpers ---------- */
-  var NTH = { 2: 'square', 3: 'cube', 4: 'fourth', 5: 'fifth', 6: 'sixth', 7: 'seventh', 8: 'eighth', 9: 'ninth', 10: 'tenth', 11: 'eleventh' };
-  function nth(n) { return NTH[n] || n + 'th'; }
-  function perfName(n) { return n === 2 ? 'perfect square' : n === 3 ? 'perfect cube' : 'perfect ' + nth(n) + ' power'; }
-  function factorPhrase(n) { return n === 2 ? 'multiplied by itself' : 'used as a factor ' + n + ' times'; }
-  function nroot(x, n) { return x < 0 ? -Math.pow(-x, 1 / n) : Math.pow(x, 1 / n); }
-  function ipow(b, n) { return Math.round(Math.pow(b, n)); }
-  function nrm(p, q) { return ex.norm(p, q == null ? 1 : q); }
-  function R(x) { return typeof x === 'number' ? [x, 1] : x; }
-  function rTex(fr) { return ex.texRat(R(fr)); }
-  function rt(n, inner) { return ex.texRoot(n, inner); }
-  function same(v, x) { return isFinite(v) && isFinite(x) && Math.abs(v - x) < 1e-9 * Math.max(1, Math.abs(x)); }
-  function near(v, x) { return isFinite(v) && isFinite(x) && Math.abs(v - x) <= 0.006 + 1e-3 * Math.abs(x); }
-  function isPerfect(m, n) { return ipow(Math.round(nroot(m, n)), n) === m; }
-  function nonPerfect(r, lo, hi, n, avoid) { for (var i = 0; i < 400; i++) { var m = r.int(lo, hi); if (!isPerfect(m, n) && (!avoid || !avoid(m))) return m; } return lo; }
+  function gen(r, make, okf, n) { var v; for (var i = 0; i < (n || 600); i++) { v = make(); if (okf(v)) return v; } return v; }
+  function nonSq(n) { var q = Math.round(Math.sqrt(n)); return q * q !== n; }
+  function nonCube(n) { var q = Math.round(Math.cbrt(n)); return q * q * q !== n; }
+  function frac(v) { return v - Math.floor(v); }
+  function fracOK(v, lo, hi) { var f = frac(v); return f < lo || f > hi; }
   function gcd(a, b) { return ex.gcd(a, b); }
-  function dots(x) { var tr = Math.trunc(x * 1e5) / 1e5; return tr.toFixed(5) + '\\ldots'; }
-  /* value of w\frac{p}{q} read as a mixed number (null if the response isn't one) */
-  function mixedVal(ast) {
-    if (!ast || ast.t !== 'mul' || !ast.imp) return null;
-    var w = ast.a, f = ast.b, sg = 1;
-    if (w && w.t === 'neg') { sg = -1; w = w.a; }
-    if (!w || w.t !== 'num' || w.dec || !f || f.t !== 'div' || !f.frac || !f.a || !f.b || f.a.t !== 'num' || f.b.t !== 'num' || f.a.dec || f.b.dec || f.a.v >= f.b.v) return null;
-    return sg * (w.v + f.a.v / f.b.v);
+  /* decimal string with thin spaces in groups of three, as in the booklet: 1.41421388 -> 1.414\,213\,88 */
+  function fmtDec(s) {
+    s = String(s); var neg = s.charAt(0) === '-'; if (neg) s = s.slice(1);
+    var parts = s.split('.'), ip = F(Number(parts[0])), dp = parts[1] || '';
+    return (neg ? '-' : '') + ip + (parts.length > 1 ? '.' + dp.replace(/(\d{3})(?=\d)/g, '$1\\,') : '');
   }
-  function decStr(x, dp) { return x.toFixed(dp).replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, ''); }
-  /* radicand: integer, fraction (\dfrac) or decimal (dp places) */
-  function radTex(num, den, dp) {
-    if (dp) return (num < 0 ? '-' : '') + (Math.abs(num) / den).toFixed(dp);
-    if (den === 1) return F(num);
-    return (num < 0 ? '-' : '') + '\\dfrac{' + F(Math.abs(num)) + '}{' + F(den) + '}';
+  function d1(r, lo10, hi10) { var k = gen(r, function () { return r.int(lo10, hi10); }, function (k) { return k % 10 !== 0; }); return { v: k / 10, s: (k / 10).toFixed(1) }; }
+  function nonRepDigits(r, n) {
+    function periodic(d) { for (var p = 1; p <= Math.min(4, d.length - 3); p++) { var same = true; for (var i = p; i < d.length; i++) if (d[i] !== d[i - p]) { same = false; break; } if (same) return true; } return false; }
+    return gen(r, function () { var d = ''; for (var i = 0; i < n; i++) d += r.int(0, 9); return d; }, function (d) { return !periodic(d) && d.charAt(n - 1) !== '0'; });
   }
-  function valTex(fr, dec) { fr = R(fr); if (dec && fr[1] !== 1) return decStr(fr[0] / fr[1], 6); return rTex(fr); }
-  function coefTex(k) { if (k[0] === k[1]) return ''; if (k[0] === -k[1]) return '-'; return rTex(k); }
-  function powTex(fr, n, dec) { fr = R(fr); var s = valTex(fr, dec); return (fr[1] === 1 || dec ? (fr[0] < 0 ? '(' + s + ')' : s) : '\\left(' + s + '\\right)') + '^{' + n + '}'; }
-  function pm(fr) { return '\\pm ' + rTex([Math.abs(R(fr)[0]), R(fr)[1]]); }
-  function mcPart(r, prompt, opts, sol, hints, text, keepOrder) { return P.mc(r, prompt, opts, sol, hints, text, keepOrder); }
-  function tf(r, prompt, truth, why, sol, hints, text) { return P.tf(r, prompt, truth, why, sol, hints, text); }
-  var NPH = '<b>Not possible</b> (not a real number)';
-  var XKEY = 'the ' + t('\\sqrt[x]{\\ }') + ' key (' + '<b>2nd</b> then <b>^</b> on the TI-30XIIS)';
+  function blank() { return '<span style="display:inline-block;min-width:4.5em;border-bottom:1.5px solid currentColor">&nbsp;</span>'; }
 
-  /* ---------- one radical k·ⁿ√(num/den), possibly with a minus sign in front ---------- */
-  function rootSpec(s) {
-    var n = s.n, num = s.num, den = s.den || 1, k = s.k ? nrm(R(s.k)[0], R(s.k)[1]) : [1, 1], sg = s.neg ? -1 : 1;
-    var o = { n: n, num: num, den: den, k: k, neg: !!s.neg, dp: s.dp || 0 };
-    o.a = Math.round(nroot(Math.abs(num), n)); o.b = Math.round(nroot(den, n));
-    o.rad = radTex(num, den, s.dp); o.absRad = radTex(Math.abs(num), den, s.dp);
-    o.radical = rt(n, o.rad);
-    o.expr = (s.neg ? '-' : '') + coefTex(k) + o.radical;
-    o.np = num < 0 && n % 2 === 0;
-    o.root = nrm(o.a, o.b);
-    if (!o.np) { o.inner = nrm(num < 0 ? -o.a : o.a, o.b); o.val = nrm(sg * k[0] * o.inner[0], k[1] * o.inner[1]); }
-    o.plain = (s.neg ? '-' : '') + (k[0] === k[1] ? '' : k[0] === -k[1] ? '-' : k[0] + (k[1] !== 1 ? '/' + k[1] : '')) + (n === 2 ? '' : n) + '√(' + (s.dp ? (num / den).toFixed(s.dp) : num + (den !== 1 ? '/' + den : '')) + ')';
-    return o;
+  /* ---------- numbers to classify: { tex, kind, note, whyRat / whyIrr } ---------- */
+  function item(tex, kind, note, extra) { var o = { tex: tex, kind: kind, note: note }; Object.keys(extra || {}).forEach(function (k) { o[k] = extra[k]; }); return o; }
+  function natInt(k) { return item(F(k), 'nat', t(F(k)) + ' is a counting number.'); }
+  function sqrtPerfect(k) { return item('\\sqrt{' + k * k + '}', 'nat', t('\\sqrt{' + k * k + '}=' + k) + ', a counting number.', { whyRat: t('\\sqrt{' + k * k + '}=' + k) + ' because ' + t(k + '^{2}=' + k * k) + '. The square root of a perfect square is rational.' }); }
+  function negInt(k) { return item('-' + k, 'negint', t('-' + k) + ' is a negative integer.'); }
+  function negSqrt(k) { return item('-\\sqrt{' + k * k + '}', 'negint', t('-\\sqrt{' + k * k + '}=-' + k) + ', a negative integer.', { whyRat: t('-\\sqrt{' + k * k + '}=-' + k) + ': ' + t(k * k) + ' is a perfect square, so the root is rational.' }); }
+  function cbrtNeg(k) { return item('\\sqrt[3]{-' + F(k * k * k) + '}', 'negint', t('\\sqrt[3]{-' + F(k * k * k) + '}=-' + k) + ' because ' + t('(-' + k + ')^{3}=-' + F(k * k * k)) + ' — a negative integer.', { whyRat: t('\\sqrt[3]{-' + F(k * k * k) + '}=-' + k) + ': ' + t(F(k * k * k)) + ' is a perfect cube, so the root is rational.' }); }
+  function zeroItem(r, k) {
+    var v = r.pick(['0', '0', '0', '\\frac{0}{' + k + '}', '\\sqrt{0}']);
+    return item(v, 'zero', (v === '0' ? t('0') : t(v + '=0')) + ' is whole and an integer, but ' + S('N') + ' starts at ' + t('1') + '.', { whyRat: t(v === '0' ? '0=\\frac{0}{1}' : v + '=0') + ' is rational.' });
   }
-  function rootSolution(o) {
-    if (o.np) return 'The index ' + t(o.n) + ' is <b>even</b> and the radicand is negative. No real number ' + factorPhrase(o.n) + ' gives a negative result, so ' + t(o.expr) + ' is <b>not possible</b> (not a real number).';
-    var s = o.num < 0 ? 'The index ' + t(o.n) + ' is odd, so a negative radicand is allowed. ' : '';
-    s += t(powTex(o.inner, o.n, o.dp) + '=' + o.rad) + ', so ' + t(o.radical + '=' + valTex(o.inner, o.dp)) + '.';
-    if (o.k[0] !== o.k[1] || o.neg) {
-      var it = valTex(o.inner, o.dp), pin = o.inner[0] < 0 ? '(' + it + ')' : it, vt = valTex(o.val, o.dp);
-      var mid = (o.neg || o.k[0] === -o.k[1]) ? '-' + pin : coefTex(o.k) + '\\times ' + pin;
-      s += ' Then ' + t(o.expr + (mid === vt ? '' : '=' + mid) + '=' + vt) + '.';
-    }
-    return s;
+  function fracItem(p, q, neg) {
+    var tx = (neg ? '-' : '') + '\\frac{' + p + '}{' + q + '}', close = (p === 22 && q === 7) || (p === 355 && q === 113);
+    return item(tx, 'rat', t(tx) + ' is a ratio of integers, but not an integer.', { neg: neg, whyRat: t(tx) + ' is a ratio of two integers, so it is rational by definition.' + (close ? ' (It is close to ' + t((neg ? '-' : '') + '\\pi') + ', but it is <b>not</b> equal to it.)' : '') });
   }
-  function signWhy(o) {
-    if (o.num < 0 && (o.neg || o.k[0] < 0)) return 'Two negatives here: the radical itself is negative (odd index, negative radicand), and the ' + (o.neg ? 'minus sign' : 'coefficient') + ' in front is negative too.';
-    if (o.num < 0) return 'Check: ' + t(powTex(o.root, o.n, o.dp) + '=' + o.absRad) + ', not ' + t(o.rad) + '. Which number, used as a factor ' + o.n + ' times, gives a <b>negative</b> result?';
-    if (o.neg || o.k[0] < 0) return 'The minus sign is <b>outside</b> the radical. Find ' + t(o.radical) + ' first, then apply the minus sign.';
-    return 'The radical sign means the <b>principal</b> (positive) root, so the answer is positive.';
+  function sqrtIrr(n) { return item('\\sqrt{' + n + '}', 'irr', t(n) + ' is not a perfect square, so ' + t('\\sqrt{' + n + '}') + ' never terminates or repeats.', { whyIrr: t(n) + ' is not a perfect square, so ' + t('\\sqrt{' + n + '}') + ' is irrational: its decimal never terminates and never repeats.' }); }
+  function looksIrr(r) {
+    var n = r.pick([2, 3, 5, 6, 7, 10, 11]), s = Math.sqrt(n).toFixed(6) + String(r.int(1, 9)) + String(r.int(1, 9)), tx = fmtDec(s);
+    return item(tx, 'rat', 'The decimal ' + t(tx) + ' <b>stops</b>, so it is rational (it only looks like ' + t('\\sqrt{' + n + '}') + ').', { whyRat: 'Look closely: ' + t(tx) + ' <b>stops</b> after 8 decimal places. A terminating decimal is rational — it only looks like ' + t('\\sqrt{' + n + '}') + '.' });
   }
-  function rootHints(o, calc) {
-    var h = ['Ask yourself: what number, ' + factorPhrase(o.n) + ', gives ' + t(o.rad) + '?'];
-    if (calc) h.push('On your calculator: enter the index ' + t(o.n) + ', then ' + XKEY + ', then the radicand.');
-    else if (o.den > 1 && !o.dp) h.push('Take the root of the numerator and the root of the denominator separately.');
-    else if (o.k[0] !== o.k[1]) h.push('Take the root first, then multiply by the number in front.');
-    else if (o.num < 0) h.push('An odd index allows a negative radicand; an even index does not.');
-    return h;
+  function nonRepItem(r, neg) {
+    var tx = (neg ? '-' : '') + fmtDec(r.int(1, 9) + '.' + nonRepDigits(r, 7)) + '\\ldots';
+    return item(tx, 'irr', 'The “…” means ' + t(tx) + ' goes on forever with no repeating block.', { whyIrr: 'The “…” means the decimal never ends, and no block of digits repeats. Non-terminating <b>and</b> non-repeating means irrational.' });
   }
-  /* typed answer (number box for integers, fraction box otherwise) */
-  function rootTyped(s) {
-    var o = rootSpec(s), V = o.val, Vx = V[0] / V[1], kx = o.k[0] / o.k[1], sg = o.neg ? -1 : 1, radX = o.num / o.den, innerX = o.inner[0] / o.inner[1];
-    function diag(v) {
-      if (Vx !== 0 && same(v, -Vx)) return { code: 'sign', hint: signWhy(o) };
-      if (kx !== 1 && same(v, sg * innerX)) return { code: 'no-coef', hint: 'You found ' + t(o.radical + '=' + valTex(o.inner, o.dp)) + '. Now multiply by the coefficient ' + t(coefTex(o.k)) + ' in front.' };
-      if (kx !== 1 && Number.isInteger(kx) && (same(v, kx + innerX) || same(v, kx - innerX))) return { code: 'added-coef', hint: 'A number written in front of a radical <b>multiplies</b> it: ' + t(coefTex(o.k) + o.radical) + ' means ' + t(coefTex(o.k) + '\\times ' + o.radical) + '.' };
-      for (var idx = 2; idx <= 3; idx++) {
-        if (idx === o.n || (radX < 0 && idx % 2 === 0)) continue;
-        if (near(v, sg * kx * nroot(radX, idx))) return { code: 'wrong-index', hint: 'That’s the ' + nth(idx) + ' root' + (s.calc ? ' — check which root key you used' : '') + '. The index here is ' + t(o.n) + ': find the number that, ' + factorPhrase(o.n) + ', gives ' + t(o.rad) + '.' };
-      }
-      if (same(v, sg * kx * radX / o.n)) return { code: 'divided-index', hint: 'Taking a root isn’t dividing by the index. ' + t(o.radical) + ' is the number that, ' + factorPhrase(o.n) + ', gives ' + t(o.rad) + '.' };
-      if (same(v, sg * kx * radX) && Math.abs(radX) !== 1) return { code: 'no-root', hint: 'You still need to take the ' + nth(o.n) + ' root of ' + t(o.rad) + '.' };
-      if (o.den > 1 && !o.dp && same(v, sg * kx * (o.num < 0 ? -o.a : o.a) / o.den)) return { code: 'top-only', hint: 'You took the root of the numerator only. Take the ' + nth(o.n) + ' root of the denominator ' + t(F(o.den)) + ' too.' };
-      if (o.den > 1 && !o.dp && same(v, sg * kx * o.num / o.b)) return { code: 'bottom-only', hint: 'You took the root of the denominator only. Take the ' + nth(o.n) + ' root of the numerator ' + t(F(Math.abs(o.num))) + ' too.' };
-      return null;
-    }
-    var sol = rootSolution(o), hints = rootHints(o, s.calc), text = (s.calc ? 'calculator: ' : 'evaluate ') + o.plain, part;
-    if (V[1] === 1 && !s.fraction) {
-      part = P.number(t(o.expr), Vx, diag, sol, hints, text);
-      part.answer = t(valTex(V)); part.bad = Vx !== 0 ? [String(-Vx)] : [];
-    } else {
-      part = P.fraction(t(o.expr), V, { diag: function (v) { return diag(v); } }, sol, hints, text);
-      if (Math.abs(V[0]) > V[1] && V[1] > 1) {
-        // a mixed number such as 3\frac{1}{2} is read as 3 × ½: catch it before it is marked wrong
-        var chk0 = part.check;
-        part.check = function (resp) {
-          var a = K.read(resp), mv = a.res ? null : mixedVal(a.ast);
-          if (mv != null && same(mv, Vx)) return form('mixed-num', 'Right value as a mixed number — but give it as an improper fraction ' + t('\\frac{a}{b}') + ' (here a mixed number would be read as a product).');
-          return chk0(resp);
-        };
-      }
-      part.good = [V[1] === 1 ? String(V[0]) : V[0] + '/' + V[1]];
-      part.bad = [rTex([-V[0], V[1]])];
-      if (V[0] !== 0 && Math.abs(V[0]) !== V[1]) part.bad.push(rTex(nrm(V[1], V[0])));
-    }
-    return part;
+  function constItem(r, pool) {
+    var c = r.pick(pool), NOTE = { e: 'e=2.718\\,281\\ldots', '\\pi': '\\pi=3.141\\,59\\ldots' }, base = /e/.test(c) && !/pi/.test(c) ? 'e' : '\\pi';
+    return item(c, 'irr', t(NOTE[base]) + ' never terminates or repeats' + (c === base ? '.' : ', and neither does ' + t(c) + '.'), { whyIrr: t(NOTE[base]) + ' never terminates and never repeats, so it is irrational' + (c === base ? '.' : ' — and so is ' + t(c) + '.') });
   }
-  /* multiple choice with "not possible": right value + three diagnosed distractors */
-  function rootMC(r, s) {
-    var o = rootSpec(s), opts = [], seen = {}, absRoot = o.root;
-    function add(html, right, why, code) { if (seen[html] || opts.length >= 4) return; seen[html] = 1; opts.push({ html: html, right: right, why: why, code: code }); }
-    if (o.np) {
-      add(NPH, true);
-      add(t(rTex([-absRoot[0], absRoot[1]])), false, 'Check: ' + t(powTex([-absRoot[0], absRoot[1]], o.n) + '=' + o.absRad) + ' — positive, because an even number of negative factors multiplies to a positive. No real number raised to the power ' + o.n + ' is negative.', 'neg-root');
-      add(t(rTex(absRoot)), false, 'Check: ' + t(powTex(absRoot, o.n) + '=' + o.absRad) + ', not ' + t(o.rad) + '. Can any real number, ' + factorPhrase(o.n) + ', give a negative result?', 'pos-root');
-      add(t(pm(absRoot)), false, 'Both ' + t(rTex(absRoot)) + ' and ' + t(rTex([-absRoot[0], absRoot[1]])) + ' give ' + t(o.absRad) + ' (positive) when ' + factorPhrase(o.n) + '. Neither one gives ' + t(o.rad) + '.', 'pm');
-    } else {
-      var V = o.val;
-      add(t(valTex(V)), true);
-      var C = {
-        sign: function () { if (V[0]) add(t(valTex([-V[0], V[1]])), false, signWhy(o), 'sign'); },
-        np: function () {
-          add(NPH, false, o.num < 0 ? 'The index ' + t(o.n) + ' is <b>odd</b>, so a negative radicand is allowed: an odd power of a negative number is negative. Only an <b>even</b> index needs a non-negative radicand.'
-            : (o.neg || o.k[0] < 0) ? 'The radicand ' + t(o.rad) + ' is positive, so the root exists. The minus sign in front only makes the answer negative.'
-              : 'The radicand ' + t(o.rad) + ' is positive, so the root exists: look for a number that, ' + factorPhrase(o.n) + ', gives ' + t(o.rad) + '.', 'np');
-        },
-        pm: function () {
-          if (!V[0]) return;
-          add(t(pm(V)), false, o.n % 2 === 0 ? 'The radical sign means only the <b>principal</b> (positive) root, so ' + t(o.radical) + ' stands for one number, not two.' + (o.neg || o.k[0] < 0 ? ' The minus sign in front then makes it negative.' : '')
-            : 'An odd power keeps the sign: ' + t(powTex(absRoot, o.n) + '=' + o.absRad) + ' but ' + t(powTex([-absRoot[0], absRoot[1]], o.n) + '=-' + o.absRad) + '. So there is only one real ' + nth(o.n) + ' root.', 'pm');
-        },
-        coef: function () { if (o.k[0] !== o.k[1]) add(t(valTex(nrm((o.neg ? -1 : 1) * o.inner[0], o.inner[1]))), false, 'That’s ' + t(o.radical) + ' on its own. Now multiply it by the coefficient ' + t(coefTex(o.k)) + ' in front.', 'coef'); },
-        flip: function () { if (o.den > 1 && V[0]) add(t(valTex(nrm(V[1], V[0]))), false, 'Upside down: the root of the numerator stays on top and the root of the denominator stays on the bottom.', 'flip'); }
-      };
-      (s.order || ['sign', 'np', 'pm', 'coef', 'flip']).forEach(function (c) { C[c](); });
-      ['sign', 'np', 'pm', 'coef', 'flip'].forEach(function (c) { C[c](); });
-    }
-    var p = mcPart(r, t(o.expr), opts, rootSolution(o), rootHints(o, s.calc), (s.calc ? 'calculator: ' : 'evaluate ') + o.plain);
-    p.input.columns = 2;
+  function repItem(r) {
+    var a = r.int(1, 9), b = r.int(0, 9), c = r.int(1, 9), d = (c + r.int(1, 8)) % 10, tx = a + '.' + b + '\\overline{' + c + d + '}';
+    return item(tx, 'rat', 'The bar means the block ' + t(c + '' + d) + ' repeats forever, so ' + t(tx) + ' is rational.', { whyRat: 'The bar over ' + t(c + '' + d) + ' means that block repeats forever. A repeating decimal is rational — it can be written as a fraction.' });
+  }
+  function termItem(r) { var tx = r.int(2, 20) + '.' + r.int(1, 9); return item(tx, 'rat', t(tx) + ' terminates, so it is rational, but it isn’t an integer.', { whyRat: t(tx) + ' terminates, so it is rational: ' + t(tx + '=\\frac{' + tx.replace('.', '') + '}{10}') + '.' }); }
+  function smallDec(r) { var tx = fmtDec('0.' + '0000'.slice(0, r.int(3, 4)) + r.int(1, 9)); return item(tx, 'rat', t(tx) + ' is tiny, but it terminates, so it is rational.', { whyRat: t(tx) + ' terminates, so it is rational (tiny, but a ratio of integers).' }); }
+  function patternItem(r) {
+    var a = r.int(1, 9), n = r.int(10, 60), tx = fmtDec(a + '.' + n + (n + 1) + (n + 2)) + '\\ldots';
+    return item(tx, 'irr', t(tx) + ' follows a pattern (' + n + ', ' + (n + 1) + ', ' + (n + 2) + ', …) but no block repeats, so it is irrational.', { whyIrr: 'There is a pattern (' + n + ', ' + (n + 1) + ', ' + (n + 2) + ', …), but no block of digits <b>repeats</b> and it never ends. That makes it irrational.' });
+  }
+  function sqrtDecSq(r) {
+    var k = gen(r, function () { return r.int(1, 19); }, function (k) { return k % 10 !== 0; }), sq = (k * k / 100).toFixed(2), rt = String(k / 10);
+    return item('\\sqrt{' + sq + '}', 'rat', t('\\sqrt{' + sq + '}=' + rt) + ' because ' + t(rt + '^{2}=' + sq) + ' — a terminating decimal, not an integer.', { whyRat: t('\\sqrt{' + sq + '}=' + rt) + ' because ' + t(rt + '^{2}=' + sq) + '. That terminates, so it is rational.' });
+  }
+
+  /* hint for a wrong row in a "check every set" table */
+  function memberWhy(it, got) {
+    got = got || []; var has = function (x) { return got.indexOf(x) >= 0; }, want = SETS_OF[it.kind];
+    if (has('Q') && has('Qb')) return { code: 'q-and-qbar', hint: t(it.tex) + ': a number can’t be in both ' + S('Q') + ' and ' + S('Qb') + ' — its decimal either terminates or repeats (rational), or it doesn’t (irrational).' };
+    if (it.kind === 'irr' && (has('Q') || has('I') || has('W') || has('N'))) return { code: 'irr-as-rat', hint: it.whyIrr };
+    if (it.kind !== 'irr' && has('Qb')) return { code: 'rat-as-irr', hint: it.whyRat || t(it.tex) + ' is rational.' };
+    if (!has('R')) return { code: 'missing-r', hint: t(it.tex) + ': every number in this lesson is a real number, so ' + S('R') + ' always gets a check.' };
+    if (it.kind === 'irr' && !has('Qb')) return { code: 'missed-qbar', hint: it.whyIrr + ' Which set holds the irrational numbers?' };
+    if (it.kind === 'zero' && has('N')) return { code: 'zero-natural', hint: t(it.tex) + ': ' + S('N') + ' starts at ' + t('1') + ' — ' + t('0') + ' is whole, but not natural.' };
+    if ((it.kind === 'negint' || it.neg) && (has('N') || has('W'))) return { code: 'neg-whole', hint: t(it.tex) + ' is negative. ' + S('W') + ' and ' + S('N') + ' contain no negative numbers.' };
+    if (it.kind === 'rat' && (has('I') || has('W') || has('N'))) return { code: 'not-integer', hint: t(it.tex) + ' isn’t an integer (it falls between two integers), so it isn’t in ' + S('I') + ', ' + S('W') + ' or ' + S('N') + '.' };
+    var miss = want.filter(function (x) { return !has(x); });
+    if (miss.length && miss.indexOf('Q') >= 0) return { code: 'missed-q', hint: t(it.tex) + ': every integer is rational too (' + t('n=\\frac{n}{1}') + '), so ' + S('Q') + ' needs a check.' };
+    if (miss.length) return { code: 'nest', hint: t(it.tex) + ': the sets are nested, so a number belongs to its smallest set <b>and every set around it</b>. Check them all.' };
+    return null;
+  }
+  /* hint for a wrong row in an "innermost region" table */
+  function regionWhy(it, g) {
+    var w = SMALLEST[it.kind];
+    if (g === 'Qb' && it.kind !== 'irr') return { code: 'rat-as-irr', hint: it.whyRat || t(it.tex) + ' is rational.' };
+    if (g !== 'Qb' && it.kind === 'irr') return { code: 'irr-as-rat', hint: it.whyIrr };
+    if (RANK[g] > RANK[w]) return { code: 'not-innermost', hint: t(it.tex) + ' does sit in ' + S(g) + ', but it also fits in a smaller region inside it. Choose the <b>innermost</b> region.' };
+    if (g === 'N' && it.kind === 'zero') return { code: 'zero-natural', hint: t(it.tex) + ': ' + S('N') + ' starts at ' + t('1') + '.' };
+    if ((g === 'N' || g === 'W') && it.kind === 'negint') return { code: 'neg-whole', hint: t(it.tex) + ' is negative, so it can’t be in ' + S('W') + ' or ' + S('N') + '.' };
+    if (it.kind === 'rat') return { code: 'not-integer', hint: t(it.tex) + ' isn’t an integer, so it sits outside ' + S('I') + '.' };
+    return null;
+  }
+  var MEMBER_HINTS = ['Simplify first. Is the number rational (it terminates or repeats) or irrational? Every number here is in ' + S('R') + '.', 'If it is rational: is it an integer? Is it ' + t('\\ge 0') + ' (then it is whole)? Is it ' + t('\\ge 1') + ' (then it is natural)?'];
+  function memberSol(it) { return it.note + ' Sets (largest to smallest): ' + setsTex(bigToSmall(it.kind)) + '.'; }
+  function memberPart(it, prompt) {
+    var want = {}; want.x = SETS.filter(function (x) { return SETS_OF[it.kind].indexOf(x) >= 0; });
+    return P.grid(prompt || 'Check every set that ' + t(it.tex) + ' belongs to.', [{ id: 'x', html: t(it.tex) }], COLS, want,
+      { count: false, why: function (rid, got) { return memberWhy(it, got); } }, memberSol(it), MEMBER_HINTS, 'sets of ' + it.tex);
+  }
+  function memberTable(items, prompt, text) {
+    var rows = [], want = {}, L = 'abcdefghijkl';
+    items.forEach(function (it, i) { var id = L.charAt(i); rows.push({ id: id, html: t(it.tex) }); want[id] = SETS.filter(function (x) { return SETS_OF[it.kind].indexOf(x) >= 0; }); });
+    var byId = {}; rows.forEach(function (rw, i) { byId[rw.id] = items[i]; });
+    return P.grid(prompt, rows, COLS, want, { why: function (rid, got) { return memberWhy(byId[rid], got); } },
+      items.map(function (it) { return t(it.tex) + ': ' + setsTex(bigToSmall(it.kind)) + ' — ' + it.note; }).join('<br>'), MEMBER_HINTS, text);
+  }
+  function regionTable(items, prompt, text, withDiagram) {
+    var rows = [], want = {}, byId = {};
+    items.forEach(function (it, i) { var id = 'r' + i; rows.push({ id: id, html: t(it.tex) }); want[id] = SMALLEST[it.kind]; byId[id] = it; });
+    var p = P.grid((withDiagram ? vennSvg() : '') + prompt, rows, COLS5, want, { why: function (rid, g) { return regionWhy(byId[rid], g); } },
+      items.map(function (it) { return t(it.tex) + ' → ' + S(SMALLEST[it.kind]) + '. ' + it.note; }).join('<br>'), ['Work from the outside in: rational or irrational? If rational, is it an integer? Whole (' + t('\\ge 0') + ')? Natural (' + t('\\ge 1') + ')?'], text);
+    p.input.help = 'Choose the innermost region for each number.';
+    return p;
+  }
+  /* sort numbers into the nested diagram (setsort): each one in the innermost set; wrong placements get the regionWhy diagnosis */
+  var TO_SS = { N: 'N', W: 'W', I: 'I', Q: 'Q', Qb: 'Qbar' };
+  function sortPart(items, prompt, text, hints) {
+    var targets = {}, byId = {}, ids = [];
+    var inp = { items: items.map(function (it, i) { var id = 'n' + i; targets[id] = TO_SS[SMALLEST[it.kind]]; byId[id] = it; ids.push(id); return { id: id, tex: it.tex }; }) };
+    var p = P.setsort(prompt, inp, targets,
+      items.map(function (it) { return t(it.tex) + ' → ' + S(SMALLEST[it.kind]) + '. ' + it.note; }).join('<br>'),
+      hints || ['Work from the outside in: rational or irrational? If rational, is it an integer? Whole (' + t('\\ge 0') + ')? Natural (' + t('\\ge 1') + ')?', 'Simplify first — a radical sign or a long decimal doesn’t decide anything by itself.'], text);
+    var base = p.check;
+    p.check = function (resp) {
+      var b = base(resp); if (b.v !== 'wrong') return b;
+      var bad = ids.filter(function (id) { return resp[id] !== targets[id]; }), id = bad[0];
+      var h = regionWhy(byId[id], resp[id] === 'Qbar' ? 'Qb' : resp[id]);
+      return h ? wrong(h.code, (bad.length > 1 ? bad.length + ' numbers are in the wrong set. ' : '') + h.hint) : b;
+    };
+    /* typical slips: every rational number in Q (not the innermost set), and 0 in N */
+    var allQ = {}; ids.forEach(function (id) { allQ[id] = targets[id] === 'Qbar' ? 'Qbar' : 'Q'; });
+    p.bad = (p.bad || []).concat(ids.some(function (id) { return targets[id] !== 'Q' && targets[id] !== 'Qbar'; }) ? [allQ] : []);
     return p;
   }
 
-  /* ---------- rounded values ---------- */
-  function altDiag(dp, alts) {
-    return function (v) {
-      for (var i = 0; i < alts.length; i++) { var a = alts[i]; if (isFinite(a.x) && Math.abs(v - K.roundTo(a.x, dp)) < 1e-9) return { code: a.code, hint: a.hint }; }
-      return null;
-    };
+  /* ---------- pictures ---------- */
+  function vennSvg() {
+    return '<svg viewBox="0 0 304 184" width="100%" style="max-width:420px;display:block;margin:6px auto" role="img" aria-label="The real number system: rectangle R; on the left nested ellipses Q, I, W, N; on the right Q-bar">' +
+      '<g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="2" width="300" height="180" rx="3"/><line x1="222" y1="2" x2="222" y2="182"/>' +
+      '<ellipse cx="107" cy="94" rx="98" ry="80"/><ellipse cx="107" cy="102" rx="78" ry="64"/><ellipse cx="107" cy="110" rx="58" ry="48"/><ellipse cx="107" cy="124" rx="34" ry="28"/></g>' +
+      '<g fill="currentColor" font-size="15" font-style="italic" font-family="KaTeX_Math, Times New Roman, serif" text-anchor="middle"><text x="14" y="21">R</text><text x="107" y="31">Q</text><text x="107" y="55">I</text><text x="107" y="80">W</text><text x="107" y="129">N</text><text x="262" y="99">Q</text></g>' +
+      '<line x1="255" y1="85" x2="269" y2="85" stroke="currentColor" stroke-width="1.3"/></svg>';
   }
-  function approxPart(expr, x, dp, alts, sol, hints, text, opt) {
-    opt = opt || {};
-    var p = P.approx(t(expr), x, dp, { diag: altDiag(dp, alts), nr: opt.nr }, sol, hints, text);
-    p.bad = alts.filter(function (a) { return isFinite(a.x) && Math.abs(K.roundTo(a.x, dp) - K.roundTo(x, dp)) > 1e-9; }).map(function (a) { return K.roundTo(a.x, dp).toFixed(dp); });
+  /* number line −8…8; inside = shade between −k and k, else shade outward; closed = solid dots */
+  function numLine(k, inside, closed) {
+    var X = function (v) { return 20 + (v + 8) * 20; }, col = 'var(--brand,#0f5f5a)', rr = 5, s = '';
+    var desc = (closed ? 'solid dots' : 'open circles') + ' at −' + k + ' and ' + k + ', shaded ' + (inside ? 'between them' : 'outward in both directions');
+    s += '<svg viewBox="0 0 360 48" width="100%" style="max-width:520px;display:block" role="img" aria-label="' + desc + '">';
+    s += '<g stroke="currentColor" stroke-width="1.3"><line x1="4" y1="18" x2="350" y2="18"/>';
+    for (var v = -8; v <= 8; v++) s += '<line x1="' + X(v) + '" y1="14" x2="' + X(v) + '" y2="22"/>';
+    s += '</g><path d="M356 18 l-8 -4.5 v9 z" fill="currentColor"/>';
+    s += '<g fill="currentColor" font-size="13" text-anchor="middle" font-family="system-ui, sans-serif">';
+    for (v = -8; v <= 8; v++) if (v % 2 === 0 || Math.abs(v) === k) s += '<text x="' + X(v) + '" y="41">' + (v < 0 ? '−' + (-v) : v) + '</text>';
+    s += '</g>';
+    if (inside) s += '<line x1="' + (X(-k) + rr) + '" y1="18" x2="' + (X(k) - rr) + '" y2="18" style="stroke:' + col + '" stroke-width="4"/>';
+    else s += '<line x1="12" y1="18" x2="' + (X(-k) - rr) + '" y2="18" style="stroke:' + col + '" stroke-width="4"/><line x1="' + (X(k) + rr) + '" y1="18" x2="346" y2="18" style="stroke:' + col + '" stroke-width="4"/>' +
+      '<path d="M2 18 l11 -6.5 v13 z" style="fill:' + col + '"/><path d="M358 18 l-11 -6.5 v13 z" style="fill:' + col + '"/>';
+    [-k, k].forEach(function (e) { s += closed ? '<circle cx="' + X(e) + '" cy="18" r="' + rr + '" style="fill:' + col + '"/>' : '<circle cx="' + X(e) + '" cy="18" r="' + rr + '" style="fill:var(--card,#fff);stroke:' + col + '" stroke-width="2.2"/>'; });
+    return s + '</svg>';
+  }
+
+  /* ---------- reading a typed real number exactly ---------- */
+  function swapPi(a) {
+    if (!a || typeof a !== 'object') return a;
+    if (a.t === 'pi') return { t: 'var', n: '#pi' };
+    var o = {}; Object.keys(a).forEach(function (k) { o[k] = (k === 'a' || k === 'b' || k === 'n') ? swapPi(a[k]) : a[k]; }); return o;
+  }
+  function readReal(resp) {
+    var a = K.read(resp); if (a.res) return a;
+    var sh = ex.shape(a.ast), vars = Object.keys(sh.vars);
+    if (vars.some(function (v) { return v !== 'e'; })) return { res: form('variable', 'Give a number — no letters other than ' + t('\\pi') + ' or ' + t('e') + '.') };
+    if (sh.ell) return { res: form('dots-exact', 'A decimal ending in “…” could be anything. Give an exact number instead, like ' + t('-4') + ', ' + t('\\frac{3}{7}') + ', ' + t('\\sqrt{2}') + ' or ' + t('\\pi') + '.') };
+    var b = swapPi(a.ast), v1 = ex.value(b, { '#pi': Math.PI, e: Math.E }), v2 = ex.value(b, { '#pi': 3.3, e: 2.9 });
+    if (!isFinite(v1)) return { res: wrong('not-real', 'That doesn’t have a real value (for example, the square root of a negative number, or dividing by ' + t('0') + ').') };
+    if ((vars.length || sh.pi) && Math.abs(v1 - v2) > 1e-9) return { v: v1, rational: false };
+    var r = ex.rat(a.ast); if (r) return { v: r[0] / r[1], rational: true, p: r[0], q: r[1], dec: sh.decimals > 0 && !sh.rep };
+    // only float round-off may separate v1 from p/q (a looser tolerance called √11237 or 1000+√2 rational)
+    for (var q = 1; q <= 1000; q++) { var p = Math.round(v1 * q); if (Math.abs(v1 * q - p) < 1e-13 * q * Math.max(1, Math.abs(v1))) { var g = gcd(p, q) || 1; return { v: p / q, rational: true, p: p / g, q: q / g }; } }
+    return { v: v1, rational: false };
+  }
+  function kindOf(o) { if (!o.rational) return 'irr'; if (o.q !== 1) return 'rat'; return o.p > 0 ? 'nat' : o.p === 0 ? 'zero' : 'negint'; }
+  function describe(o) {
+    var k = kindOf(o), tx = o.rational ? ex.texRat([o.p, o.q]) : null;
+    return k === 'irr' ? 'Your number is irrational (in ' + S('Qb') + ').' : k === 'rat' ? (o.q > 100 ? 'Your number' : t(tx)) + ' is rational, but not an integer.' : k === 'nat' ? t(tx) + ' is a natural number (so it is also whole, an integer and rational).' :
+      k === 'zero' ? 'Your number is ' + t('0') + ': whole, an integer and rational, but not natural.' : t(tx) + ' is a negative integer (so it is also rational).';
+  }
+  /* "find a number that…": cond = { inS, notS, between: [lo, hi], neg } */
+  function findPart(prompt, cond, keyTex, good, bad, text) {
+    var tip = { N: 'one of the counting numbers ' + t('1, 2, 3, \\ldots'), W: 'one of ' + t('0, 1, 2, 3, \\ldots'), I: 'one of ' + t('\\ldots, -2, -1, 0, 1, 2, \\ldots'), Q: 'a fraction, or a decimal that terminates or repeats', Qb: 'a decimal that never terminates or repeats', R: 'any number on the number line' };
+    var notTip = { N: 'Every whole number except 0 is natural.', W: 'Whole numbers are 0, 1, 2, … — so think negative.', I: 'Think fraction or decimal that falls between two integers.', Q: 'You need a decimal that never terminates or repeats, e.g. the root of a non-perfect square.' };
+    return { prompt: prompt, input: { type: 'math', keys: 'expr' }, key: keyTex, answer: cond.only ? t(keyTex) : '(answers vary) e.g. ' + t(keyTex), good: good, bad: bad, text: text,
+      check: function (resp) {
+        var o = readReal(resp); if (o.res) return o.res;
+        var sets = SETS_OF[kindOf(o)];
+        if (sets.indexOf(cond.inS) < 0) return wrong('not-in-set', describe(o) + ' You need ' + ONE[cond.inS] + ': ' + tip[cond.inS] + '.');
+        if (cond.notS === 'Q' && o.rational && o.dec && o.q >= 100) return wrong('in-excluded-set', 'A decimal that stops is rational — even if it is a rounded value of an irrational number like ' + t('\\sqrt{2}') + '. Type the exact number instead (use the ' + t('\\sqrt{\\ }') + ' or ' + t('\\pi') + ' key).');
+        if (cond.notS && sets.indexOf(cond.notS) >= 0) return wrong('in-excluded-set', describe(o) + ' So it <b>is</b> ' + ONE[cond.notS] + '. ' + (notTip[cond.notS] || ''));
+        if (cond.between && !(o.v > cond.between[0] && o.v < cond.between[1])) return wrong('range', 'Your number is ' + ONE[cond.inS] + (cond.notS ? ' and not ' + ONE[cond.notS] : '') + ', but it isn’t between ' + t(cond.between[0]) + ' and ' + t(cond.between[1]) + '. Try the square root of a number between ' + t(cond.between[0] * cond.between[0]) + ' and ' + t(cond.between[1] * cond.between[1]) + '.');
+        if (cond.neg && !(o.v < 0)) return wrong('sign', 'Right kind of number, but it also has to be negative.');
+        return ok();
+      },
+      solution: cond.sol, hints: cond.hints };
+  }
+
+  /* ---------- always / sometimes / never ---------- */
+  /* d = { ans, yes (example that works), no (counterexample), reason } */
+  function asnPart(r, stmt, d, text) {
+    var why = function (w) {
+      if (w === 'always') return d.ans === 'sometimes' ? 'Not always. Counterexample: ' + d.no : 'Can you find even one example? ' + d.reason;
+      if (w === 'never') return d.ans === 'sometimes' ? 'It can happen: ' + d.yes : d.reason;
+      return d.ans === 'always' ? 'Look for a counterexample — there isn’t one. ' + d.reason : 'Look for an example that works — there isn’t one. ' + d.reason;
+    };
+    var opts = ['always', 'sometimes', 'never'].map(function (w) { return { html: '<b>' + w + '</b>', right: w === d.ans, why: w === d.ans ? null : why(w), code: 'said-' + w }; });
+    var p = P.mc(r, stmt.replace('___', blank()), opts, d.ans === 'sometimes' ? '<b>Sometimes.</b> It works: ' + d.yes + '<br>It fails: ' + d.no : '<b>' + cap(d.ans) + '.</b> ' + d.reason,
+      ['Try a few examples. If you can find one that works and one that fails, the answer is <i>sometimes</i>.'], text, true);
+    p.input.columns = 3;
     return p;
   }
-  function idxHint(used, n, calc) { return 'That’s the ' + nth(used) + ' root. The index here is ' + t(n) + (calc ? ': enter ' + t(n) + ', then ' + XKEY + ', then the radicand.' : '.'); }
+  function setASN(x, y) { // "a number in x is ___ in y"
+    var ans = relation(x, y), yes = exBoth(x, y), no = exIn(x, y);
+    return { ans: ans, yes: yes ? t(yes) + ' is ' + ONE[x] + ' and ' + ONE[y] + '.' : '', no: no ? t(no) + ' is ' + ONE[x] + ' but not ' + ONE[y] + '.' : '',
+      reason: ans === 'always' ? S(x) + ' is nested inside ' + S(y) + ': every ' + NOUN[x] + ' is ' + ONE[y] + '.' : S(x) + ' and ' + S(y) + ' don’t overlap: no number is in both.' };
+  }
+  function asnD(ans, yes, no, reason) { return { ans: ans, yes: yes, no: no, reason: reason }; }
+  function tfPart(r, stmt, truth, why, sol, text, hints) { return P.tf(r, stmt, truth, why, sol, hints || ['Picture the diagram:' + S('N') + ' inside ' + S('W') + ' inside ' + S('I') + ' inside ' + S('Q') + ', with ' + S('Qb') + ' beside ' + S('Q') + ', all inside ' + S('R') + '.'], text); }
+  function subsetWhy(x, y, truth) { return truth ? 'Every ' + NOUN[x] + ' is also ' + ONE[y] + ': ' + S(x) + ' sits inside ' + S(y) + ' on the diagram.' : t(exIn(x, y)) + ' is ' + ONE[x] + ' but not ' + ONE[y] + '.'; }
+  function nestedPart(r, x, y, symbols, text) {
+    var truth = sub(x, y), st = symbols ? 'The set ' + S(x) + ' is nested within the set ' + S(y) + '.' : 'The set of ' + NAME[x] + ' is nested within the set of ' + NAME[y] + '.';
+    var why = truth ? subsetWhy(x, y, true) : (sub(y, x) ? 'It’s the other way round: ' + S(y) + ' is nested within ' + S(x) + '. ' : '') + subsetWhy(x, y, false);
+    return tfPart(r, st, truth, why, '<b>' + (truth ? 'True' : 'False') + '.</b> ' + why, text);
+  }
+  function allPart(r, x, y, text) { var truth = sub(x, y), why = subsetWhy(x, y, truth); return tfPart(r, 'All ' + NAME[x] + ' are ' + NAME[y] + '.', truth, why, '<b>' + (truth ? 'True' : 'False') + '.</b> ' + why, text); }
+  function poolTF(r, pool, text, hints) { var s = r.pick(pool); return tfPart(r, s[0], s[1], s[2], '<b>' + (s[1] ? 'True' : 'False') + '.</b> ' + s[2], text || 'T/F: ' + s[0].replace(/\\\(|\\\)|<[^>]*>/g, ''), hints); }
+  var ROOT_TF_HINTS = ['Test it with a number: which numbers squared give ' + t('16') + '? Which number cubed gives ' + t('-8') + '?', 'The symbol ' + t('\\sqrt{\\ }') + ' means the principal (positive) square root only.'];
+  var ABS_TF_HINTS = ['Test the statement with a positive number, a negative number and ' + t('0') + '.', t('|x|') + ' is the distance of ' + t('x') + ' from ' + t('0') + ', so it is never negative.'];
+  function pickPair(r, truth) { return r.pick(truth ? TRUE_PAIRS : r.chance(0.75) ? REV_PAIRS : DISJ_PAIRS); }
 
-  /* ---------- one radical √x (Q9) ---------- */
-  function strip(a) { while (a && a.t === 'paren') a = a.a; return a; }
-  function singleRad(m, diag) {
-    var T = Math.sqrt(m);
-    return function (resp) {
-      var a = K.read(resp); if (a.res) return a.res;
-      var ast = strip(a.ast), sh = ex.shape(a.ast);
-      if (ex.eq(a.val, T)) {
-        if (ast.t === 'root') {
-          var n = ex.rat(ast.n);
-          if (!n || n[0] !== 2 || n[1] !== 1) return form('index-2', 'Right value — but write it as a <b>square</b> root, ' + t('\\sqrt{x}') + '.');
-          var inner = strip(ast.a);
-          if (inner.t === 'num' && !inner.dec) return ok();
-          return form('multiply-out', 'Right idea — now work out the radicand, so there is a single whole number under the root: ' + t('\\sqrt{x}') + '.');
-        }
-        var q = ex.rat(a.ast); if (q && q[1] === 1) return ok();
-        var rd = ex.radical(a.ast);
-        if (rd && rd.n === 2 && (rd.k[0] !== 1 || rd.k[1] !== 1)) return form('mixed-rad', 'Right value, but the question asks for one radical ' + t('\\sqrt{x}') + ' with nothing in front. Move ' + t(rTex(rd.k)) + ' back inside: it becomes ' + t(rTex([rd.k[0] * rd.k[0], rd.k[1] * rd.k[1]])) + ' under the root.');
-        return form('one-radical', 'Right value — now write it as one radical, ' + t('\\sqrt{x}') + '.');
-      }
-      if (sh.decimals && !sh.roots && Math.abs(a.val - T) < 0.01 * T) return form('decimal', 'That’s a decimal approximation. Give the <b>exact</b> answer as a radical ' + t('\\sqrt{x}') + '.');
-      if (!isFinite(a.val)) return wrong('undefined', null);
-      var M = a.val > 0 && Math.abs(a.val * a.val - Math.round(a.val * a.val)) < 1e-6 ? Math.round(a.val * a.val) : null;
-      var h = diag ? diag(M, a.val) : null;
-      if (h) return wrong(h.code, h.hint);
-      return wrong('value', null);
+  /* ---------- estimating roots ---------- */
+  function rootV(n, m) { return n === 2 ? Math.sqrt(m) : Math.cbrt(m); }
+  function rootT(n, mt) { return n === 2 ? '\\sqrt{' + mt + '}' : '\\sqrt[3]{' + mt + '}'; }
+  function cands(v) { var f = frac(v); return f < 0.35 ? [Math.floor(v)] : f > 0.65 ? [Math.ceil(v)] : [Math.floor(v), Math.ceil(v)]; }
+  function coefT(c) { return c[1] === 1 ? (c[0] === 1 ? '' : String(c[0])) : '\\frac{' + c[0] + '}{' + c[1] + '}'; }
+  function cv(c) { return c[0] / c[1]; }
+  function nb(n, m, mt) { // "√40 is between √36 = 6 and √49 = 7"
+    var L = Math.floor(rootV(n, m) + 1e-9), lo = Math.pow(L, n), hi = Math.pow(L + 1, n);
+    return t(rootT(n, mt)) + ' is between ' + t(rootT(n, F(lo)) + '=' + L) + ' and ' + t(rootT(n, F(hi)) + '=' + (L + 1)) + '.';
+  }
+  function fx(v, dp) { return K.roundTo(v, dp).toFixed(dp); }
+  function estNum(v) { var k = K.roundTo(v, 1); return k % 1 === 0 ? String(k) : k.toFixed(1); }
+  /* terms: [{ s: ±1, c: [p,q], n: 2|3, m, mt }] */
+  function termsTex(T) { return T.map(function (u, i) { return (u.s < 0 ? '-' : i ? '+' : '') + coefT(u.c) + rootT(u.n, u.mt); }).join(''); }
+  function termsVal(T, f) { return T.reduce(function (acc, u) { return acc + u.s * cv(u.c) * f(u); }, 0); }
+  function termsMentals(T) {
+    var out = [0];
+    T.forEach(function (u) { var cs = cands(rootV(u.n, u.m)), nx = []; out.forEach(function (o) { cs.forEach(function (c) { nx.push(o + u.s * cv(u.c) * c); }); }); out = nx; });
+    return out;
+  }
+  function termsSteps(T, f, dp, rel) {
+    return T.map(function (u, i) { var v = f(u), vs = dp == null ? String(v) : fx(v, dp); return (u.s < 0 ? '-' : i ? '+' : '') + (u.c[0] === 1 && u.c[1] === 1 ? vs : coefT(u.c) + '(' + vs + ')'); }).join('') + rel;
+  }
+  /* o = { tex, x, mentals, mentalKey, nb, mentalSol, calcSol, diagEst, diagCalc, text } */
+  function estPart(o) {
+    var tol = Math.max(0.65, 0.1 * Math.abs(o.x)), want = K.roundTo(o.x, 1), ks = estNum(o.mentalKey);
+    var estC = function (resp) {
+      var p = HW.parse.number(resp);
+      if (!p.ok) return form(p.code === 'empty' ? 'empty' : 'notnumber', p.code === 'empty' ? 'Type your mental estimate first.' : 'Give your estimate as a single number.');
+      var v = p.value;
+      if (Math.abs(v - o.x) <= tol + 1e-9 || o.mentals.some(function (m) { return Math.abs(v - m) <= 0.06; })) return ok();
+      var h = o.diagEst ? o.diagEst(v) : null; if (h) return wrong(h.code, h.hint);
+      var near = Math.abs(v - o.x) <= 3 * tol;
+      return wrong(near ? 'estimate-off' : 'estimate-far', (near ? 'Not close enough yet. ' : 'That’s a long way off. ') + o.nb);
     };
+    var calcC = K.approx(o.x, 1, { diag: o.diagCalc });
+    var reasonable = Math.abs(o.mentalKey - o.x) <= tol;
+    return { prompt: t(o.tex), input: { type: 'fields', fields: [{ label: '(i) Mental estimate', before: t('\\approx') }, { label: '(ii) Calculator, nearest tenth', before: t('\\approx') }] },
+      check: K.fields([estC, calcC], { labels: ['(i) Estimate', '(ii) Calculator'] }), key: [ks, want.toFixed(1)],
+      answer: '(i) ' + t('\\approx ' + ks) + ' &nbsp; (ii) ' + t('\\approx ' + want.toFixed(1)),
+      solution: '(i) ' + o.mentalSol + '<br>(ii) ' + o.calcSol + (reasonable ? '<br>The estimate was reasonable.' : ''),
+      hints: [o.nb, 'Estimate each root with the nearest perfect ' + (/sqrt\[3\]/.test(o.tex) ? (/sqrt\{/.test(o.tex) ? 'square or cube' : 'cube') : 'square') + ' first, then do the arithmetic. For (ii), round only at the very end.'], text: o.text };
   }
-  function singlePart(prompt, m, diag, sol, hints, text, bad, good) {
-    var p = P.math(t(prompt), singleRad(m, diag), '\\sqrt{' + m + '}', sol, hints, text, { keys: 'radical' });
-    p.good = ['sqrt(' + m + ')'].concat(good || []); p.bad = bad || [];
-    return p;
+  /* build an estimation part from a sum of root terms */
+  function termsEst(T, text) {
+    var x = termsVal(T, function (u) { return rootV(u.n, u.m); }), mk = termsVal(T, function (u) { return Math.round(rootV(u.n, u.m)); });
+    var early = K.roundTo(termsVal(T, function (u) { return K.roundTo(rootV(u.n, u.m), 1); }), 1), hasCube = T.some(function (u) { return u.n === 3; });
+    var sq = K.roundTo(termsVal(T, function (u) { return Math.sqrt(u.m); }), 1), want = K.roundTo(x, 1);
+    var single = T.length === 1 && T[0].c[0] === 1 && T[0].c[1] === 1, u0 = T[0];
+    return estPart({ tex: termsTex(T), x: x, mentals: termsMentals(T), mentalKey: single ? Math.round(x) : mk, text: text,
+      nb: T.map(function (u) { return nb(u.n, u.m, u.mt); }).join(' '),
+      mentalSol: T.map(function (u) { var e = Math.round(rootV(u.n, u.m)); return t(rootT(u.n, u.mt) + '\\approx ' + e) + ' (' + t(u.mt) + ' is near ' + t(F(Math.pow(e, u.n)) + '=' + e + '^{' + u.n + '}') + ')'; }).join(', ') +
+        (single ? '' : ', so ' + t(termsSteps(T, function (u) { return Math.round(rootV(u.n, u.m)); }, null, '\\approx ' + estNum(mk)))),
+      calcSol: single ? t(rootT(u0.n, u0.mt) + '=' + fx(x, 3) + '\\ldots\\approx ' + want.toFixed(1)) : t(termsSteps(T, function (u) { return rootV(u.n, u.m); }, 3, '\\approx ' + want.toFixed(1))),
+      diagEst: function (v) {
+        if (single && u0.n === 2 && Math.abs(v - u0.m / 2) < 0.6 && u0.m > 6) return { code: 'sqrt-halved', hint: 'A square root isn’t half the number. ' + nb(u0.n, u0.m, u0.mt) };
+        if (single && u0.n === 3 && Math.abs(v - Math.sqrt(u0.m)) <= 0.65) return { code: 'square-not-cube', hint: 'That’s about the <b>square</b> root. This is a cube root: which number cubed is close to ' + t(u0.mt) + '?' };
+        return null;
+      },
+      diagCalc: function (v) {
+        if (hasCube && Math.abs(v - sq) < 1e-9 && sq !== want) return { code: 'square-not-cube', hint: 'It looks like you used a square root where there is a cube root. Use the ' + t('\\sqrt[3]{\\ }') + ' (or ' + t('\\sqrt[x]{\\ }') + ' with ' + t('x=3') + ') key.' };
+        if (!single && Math.abs(v - early) < 1e-9 && early !== want) return { code: 'rounded-early', hint: 'Close — but you rounded the roots before combining them. Keep the full calculator values and round only at the end.' };
+        return null;
+      } });
   }
-  function productDiag(a, b) {
-    return function (M) {
-      if (M === a + b) return { code: 'added', hint: 'The product rule multiplies the radicands: ' + t('\\sqrt{a}\\times\\sqrt{b}=\\sqrt{ab}') + '. Don’t add them.' };
-      var sa = Math.round(Math.sqrt(a)), sb = Math.round(Math.sqrt(b));
-      if ((sb * sb === b && M === a * sb) || (sa * sa === a && M === b * sa)) return { code: 'root-first', hint: 'You mixed a root with a radicand. ' + (sb * sb === b ? t('\\sqrt{' + b + '}=' + sb) : t('\\sqrt{' + a + '}=' + sa)) + ', so to put it back under the radical you need ' + t(sb * sb === b ? b : a) + ', not ' + t(sb * sb === b ? sb : sa) + '. Multiply the radicands as they are.' };
-      return null;
-    };
+  function T1(n, m, mt, s, c) { return { s: s || 1, c: c || [1, 1], n: n, m: m, mt: mt == null ? F(m) : mt }; }
+
+  /* ---------- one significant digit ---------- */
+  function scaled(N, k) { if (!k) return String(N); var s = String(N); while (s.length < k + 1) s = '0' + s; return s.slice(0, s.length - k) + '.' + s.slice(s.length - k); }
+  function pairsTex(str) {
+    var parts = str.split('.'), ip = parts[0], dp = parts[1] || '', out = [];
+    if (!dp) { while (ip.length > 2) { out.unshift(ip.slice(-2)); ip = ip.slice(0, -2); } out.unshift(ip); return out.join('\\,|\\,'); }
+    if (dp.length % 2) dp += '0';
+    for (var i = 0; i < dp.length; i += 2) out.push(dp.slice(i, i + 2));
+    return '0.\\,' + out.join('\\,|\\,');
+  }
+  var PLACE = { 3: 'thousands', 2: 'hundreds', 1: 'tens', 0: 'ones', '-1': 'tenths', '-2': 'hundredths', '-3': 'thousandths' };
+  function sig1Info(x) { var e = Math.floor(Math.log10(x) + 1e-12), d = Math.round(x / Math.pow(10, e)); if (d === 10) { d = 1; e++; } return { d: d, e: e, v: e >= 0 ? d * Math.pow(10, e) : Number((d * Math.pow(10, e)).toFixed(-e)) }; }
+  function sigOK(N, k) { var x = Math.sqrt(N / Math.pow(10, k)), e = Math.floor(Math.log10(x) + 1e-12), m = x / Math.pow(10, e); return fracOK(m, 0.46, 0.54) && m < 9.46; }
+  function sigPart(N, k, text) {
+    var str = scaled(N, k), tx = fmtDec(str), x = Math.sqrt(N / Math.pow(10, k)), si = sig1Info(x), want = si.v, ws = si.e >= 0 ? String(want) : want.toFixed(-si.e);
+    var grp = 'Group the digits in pairs, starting at the decimal point: ' + t(pairsTex(str)) + '. Each pair gives one digit of the square root.';
+    var chopV = Math.floor(x / Math.pow(10, si.e)) * Math.pow(10, si.e);
+    return { prompt: t('\\sqrt{' + tx + '}'), input: { type: 'number' }, key: ws, answer: t(fmtDec(ws)), text: text || '1 s.f. sqrt ' + str,
+      check: function (resp) {
+        var p = HW.parse.number(resp);
+        if (!p.ok) return form(p.code === 'empty' ? 'empty' : 'notnumber', p.code === 'empty' ? 'Type your estimate first.' : 'Enter a single number.');
+        var v = p.value;
+        if (Math.abs(v - want) <= 1e-9 * Math.max(1, want)) return ok();
+        if (v > 0 && Math.abs(v - x) / x < 0.06 && Math.abs(sig1Info(v).v - want) <= 1e-9 * Math.max(1, want)) return form('sig-digits', 'Right size — now round it to <b>one</b> significant digit: keep only the first non-zero digit and replace the rest with zeros.');
+        for (var j = -5; j <= 5; j++) if (j && Math.abs(v - want * Math.pow(10, j)) <= 1e-9 * Math.max(1, Math.abs(v))) return wrong('place-value', 'Right digit, wrong place value. ' + grp + ' So the first digit of the root is in the <b>' + PLACE[si.e] + '</b> place.');
+        if (Math.abs(v - chopV) <= 1e-9 * Math.max(1, v) && chopV !== want) return wrong('chop', 'Round, don’t chop: look at the second digit of the square root. If it is 5 or more, the first digit rounds up.');
+        return wrong('value', null);
+      },
+      solution: 'Pairs: ' + t(pairsTex(str)) + ', so the first digit of the root is in the ' + PLACE[si.e] + ' place. A calculator gives ' + t('\\sqrt{' + tx + '}\\approx ' + fmtDec(Number(x.toPrecision(4)).toString())) + ', which is ' + t(fmtDec(ws)) + ' to one significant digit.',
+      hints: [grp, 'Estimate the square root of the first non-zero pair, then put that digit in the right place.'] };
   }
 
-  /* ---------- a product of two radicals (Q10) ---------- */
-  function twoRadicals(nv) {
-    return function (resp) {
-      var a = K.read(resp); if (a.res) return a.res;
-      var fs = [];
-      (function flat(x) { x = strip(x); if (x.t === 'mul') { flat(x.a); flat(x.b); } else fs.push(x); })(a.ast);
-      var roots = fs.filter(function (f) { return f.t === 'root'; });
-      if (roots.length === 2 && fs.length === 2) {
-        var ri = roots.map(function (f) { var n = ex.rat(f.n), m = ex.rat(f.a); return n && m && n[1] === 1 && m[1] === 1 ? { n: n[0], m: m[0] } : null; });
-        if (ri[0] && ri[1] && ri[0].n === 2 && ri[1].n === 2) {
-          var x = ri[0].m, y = ri[1].m;
-          if (x * y === nv) { if (x === 1 || y === 1) return form('trivial', 'True, but too easy: use two factors of ' + t(nv) + ' that are both bigger than ' + t('1') + '.'); return ok(); }
-          if (x + y === nv) return wrong('added', t(x + '+' + y + '=' + nv) + ', but the radicands have to <b>multiply</b> to ' + t(nv) + ': ' + t('\\sqrt{a}\\times\\sqrt{b}=\\sqrt{ab}') + '.');
-          return wrong('value', t('\\sqrt{' + x + '}\\times\\sqrt{' + y + '}=\\sqrt{' + (x * y) + '}') + ', not ' + t('\\sqrt{' + nv + '}') + '. Find two numbers that multiply to ' + t(nv) + '.');
-        }
-      }
-      if (ex.eq(a.val, Math.sqrt(nv))) return form('two-radicals', 'Right value — now write it as a product of <b>two</b> square roots, ' + t('\\sqrt{a}\\times\\sqrt{b}') + '.');
-      return wrong('value', null);
-    };
-  }
-  function twoPart(nv, p, q) {
-    var key = '\\sqrt{' + p + '}\\sqrt{' + q + '}';
-    var pt = P.math(t('\\sqrt{' + nv + '}'), twoRadicals(nv), key,
-      t(nv + '=' + p + '\\times ' + q) + ', so ' + t('\\sqrt{' + nv + '}=\\sqrt{' + p + '\\times ' + q + '}=' + key) + '.' + (p === q ? ' (This one is also ' + t(p) + ', since ' + t('\\sqrt{' + p + '}\\times\\sqrt{' + p + '}=' + p) + '.)' : ''),
-      ['Write ' + t(nv) + ' as a product of two whole numbers (not using ' + t('1') + ').', 'Then use ' + t('\\sqrt{ab}=\\sqrt{a}\\times\\sqrt{b}') + '.'], 'product of two radicals: √' + nv, { keys: 'radical' });
-    pt.good = ['\\sqrt{' + q + '}\\times\\sqrt{' + p + '}', 'sqrt(' + p + ')*sqrt(' + q + ')'];
-    pt.bad = ['\\sqrt{1}\\sqrt{' + nv + '}', '\\sqrt{' + nv + '}', String(p) + '\\sqrt{' + q + '}'];
-    return pt;
-  }
-
-  /* ---------- several-statement multiple choice (Q11, Extra 20) ---------- */
-  function statementsMC(r, intro, st, combos, otherLabel, text) {
-    // st: [{label, html, truth, reason}], combos: [[labels…]] for A–C, D = "some other combination"/listed
-    var truthSet = st.filter(function (s) { return s.truth; }).map(function (s) { return s.label; }).join(',');
-    var opts = combos.map(function (c) {
-      var right = c.join(',') === truthSet, why = null;
-      if (!right) for (var i = 0; i < st.length; i++) { var s = st[i], inC = c.indexOf(s.label) >= 0; if (inC !== s.truth) { why = 'Look again at statement ' + s.label + '. ' + s.reason; break; } }
-      return { html: c.join(', ').replace(/, ([^,]+)$/, ' and $1') + ' only', right: right, why: why };
-    });
-    if (otherLabel) {
-      var anyRight = opts.some(function (o) { return o.right; });
-      opts.push({ html: otherLabel, right: !anyRight, why: anyRight ? 'One of the listed combinations matches exactly. Decide true or false for each statement separately.' : null });
-    }
-    var prompt = intro + '<br>' + st.map(function (s) { return '<b>' + s.label + (/\)$/.test(s.label) ? '' : '.') + '</b> ' + s.html; }).join('<br>') + '<br>Which of the statements above are <b>true</b>?';
-    var sol = st.map(function (s) { return '<b>' + s.label + (/\)$/.test(s.label) ? '' : '.') + '</b> ' + s.reason + ' <b>' + (s.truth ? 'True' : 'False') + '.</b>'; }).join('<br>');
-    return mcPart(r, prompt, opts, sol, ['Decide true or false for each statement on its own, then find the matching choice.'], text, true);
-  }
-
-  /* ---------- ordering ---------- */
-  function orderPart(r, prompt, items, sol, text) {
-    return P.order(r, prompt, items, {
-      why: function (x, y) {
-        var X = items.filter(function (i) { return i.id === x; })[0], Y = items.filter(function (i) { return i.id === y; })[0];
-        return t(X.tex) + ' and ' + t(Y.tex) + ' are in the wrong order. Simplify both first: ' + t(X.tex + (X.exact ? '=' : '\\approx ') + X.vt) + ' and ' + t(Y.tex + (Y.exact ? '=' : '\\approx ') + Y.vt) + '.';
-      }
-    }, sol, ['Simplify each radical you can. Bracket the others between two integers.', 'Place the negatives first.'], text);
-  }
+  /* ---------- absolute value numbers ---------- */
+  function absPart(prompt, ans, diag, sol, text) { return P.number(t(prompt), ans, diag, sol, ['Work inside the bars first. Absolute value is a distance from ' + t('0') + ', so it is never negative.'], text); }
 
   HW.defineLesson({
-    id: 'u1l5', unit: 1, num: '5', title: 'Roots of Real Numbers', outcome: 'AN2',
-    blurb: 'Square roots, cube roots and roots of any index — when a root is (and isn’t) a real number, radical vocabulary, and the product and quotient rules.',
+    id: 'u1l5', unit: 1, num: '5', title: 'Classifying the Real Number System', outcome: 'AN2',
+    blurb: 'Sorting every real number into N, W, I, Q and Q̄ — then estimating square and cube roots, ordering them, and the absolute value extension.',
     questions: [
-      { num: '1', section: 'Part A — Evaluating Radicals', stem: 'Mentally evaluate, where possible, using the real number system.', parts: [
-        { id: '1a', level: 'LIM', outcome: 'AN1', make: function (r) { var s = r.int(11, 15); return rootTyped({ n: 2, num: s * s }); } },
-        { id: '1b', level: 'BEG', make: function (r) { var s = r.int(3, 6); return rootTyped({ n: 4, num: ipow(s, 4) }); } },
-        { id: '1c', level: 'BEG', outcome: 'AN1', make: function (r) { var s = r.int(2, 6), k = r.int(2, 6); return rootTyped({ n: 3, num: s * s * s, k: k }); } },
-        { id: '1d', level: 'BEG', make: function (r) { var s = r.int(3, 7); return rootTyped({ n: 5, num: ipow(s, 5) }); } },
-        { id: '1e', level: 'BEG', make: function (r) { var ab = r.pick([[3, 7], [2, 5], [4, 9], [5, 8], [3, 10], [2, 9], [5, 6], [7, 10], [4, 11], [6, 7]]); return rootTyped({ n: 2, num: ab[0] * ab[0], den: ab[1] * ab[1], fraction: true }); } },
-        { id: '1f', level: 'EMG', make: function (r) { var b = r.int(2, 5); return rootTyped({ n: 4, num: 1, den: ipow(b, 4), fraction: true }); } },
-        { id: '1g', level: 'EMG', make: function (r) { var b = r.int(3, 9), k = r.chance(0.4) ? b : r.pick([2, 3, 4, 6, 8, 10, 12].filter(function (x) { return x !== b; })); return rootTyped({ n: 2, num: 1, den: b * b, k: k, fraction: true }); } },
-        { id: '1h', level: 'LIM', outcome: 'AN1', make: function (r) { var s = r.int(2, 12); return rootMC(r, { n: 2, num: s * s, neg: true }); } },
-        { id: '1i', level: 'BEG', make: function (r) { var s = r.int(2, 9); return rootMC(r, { n: 2, num: -s * s }); } },
-        { id: '1j', level: 'BEG', make: function (r) { var c = r.pick([[5, 2], [5, 3], [7, 2], [3, 4], [3, 5]]); return rootMC(r, { n: c[0], num: -ipow(c[1], c[0]) }); } },
-        { id: '1k', level: 'BEG', outcome: 'AN1', make: function (r) { var s = r.int(2, 5), k = r.int(2, 6); return rootMC(r, { n: 3, num: -s * s * s, k: k, order: ['sign', 'np', 'coef'] }); } },
-        { id: '1l', level: 'BEG', make: function (r) { var c = r.pick([[4, 3], [4, 2], [4, 5], [6, 2], [4, 4]]); return rootMC(r, { n: c[0], num: -1, den: ipow(c[1], c[0]) }); } },
-        { id: '1m', level: 'BEG', outcome: 'AN1', make: function (r) { var s = r.int(11, 15), k = r.int(2, 9); return rootTyped({ n: 2, num: s * s, k: k }); } },
-        { id: '1n', level: 'EMG', make: function (r) { var s = r.pick([2, 3]), k = r.pick([2, 3, 4, 5, 6].filter(function (x) { return x !== s || r.chance(0.6); })); return rootTyped({ n: 5, num: ipow(s, 5), k: [1, k], fraction: true }); } },
-        { id: '1o', level: 'EMG', make: function (r) { var c = r.pick([[9, 1], [7, 1], [5, 1], [11, 1], [5, 2], [3, 3]]); return rootMC(r, { n: c[0], num: -ipow(c[1], c[0]), neg: true }); } },
-        { id: '1p', level: 'BEG', make: function (r) { var ab = r.pick([[3, 4], [2, 3], [2, 5], [1, 4], [3, 5], [4, 5], [5, 6]]); return rootMC(r, { n: 3, num: -ipow(ab[0], 3), den: ipow(ab[1], 3), order: ['sign', 'np', 'flip'] }); } }] },
-      { num: '2', stem: 'State whether each statement is true or false.',
-        shared: function (r) { var s = r.int(4, 12); return { s: s, n: s * s }; },
-        parts: [
-          { id: '2a', level: 'LIM', outcome: 'AN1', make: function (r, sh) {
-            return tf(r, 'The square roots of ' + t(sh.n) + ' are ' + t('\\pm ' + sh.s) + '.', true, 'Check: ' + t(sh.s + '^{2}=' + sh.n) + ' and ' + t('(-' + sh.s + ')^{2}=' + sh.n) + '. Both are square roots of ' + t(sh.n) + '.',
-              t(sh.s + '^{2}=' + sh.n) + ' and ' + t('(-' + sh.s + ')^{2}=' + sh.n) + ', so ' + t(sh.n) + ' has two square roots, ' + t('\\pm ' + sh.s) + '. <b>True.</b>', ['Square each of ' + t(sh.s) + ' and ' + t(-sh.s) + '.'], 'square roots of ' + sh.n + ' are ±' + sh.s);
-          } },
-          { id: '2b', level: 'BEG', outcome: 'AN1', make: function (r, sh) {
-            return tf(r, t('\\sqrt{' + sh.n + '}=\\pm ' + sh.s), false, 'The symbol ' + t('\\sqrt{\\ }') + ' means the <b>principal</b> (positive) square root only — one number, not two.',
-              t('\\sqrt{\\ }') + ' always means the principal (positive) root, so ' + t('\\sqrt{' + sh.n + '}=' + sh.s) + ' only. <b>False.</b>', ['Is ' + t('\\sqrt{' + sh.n + '}') + ' one number or two?'], '√' + sh.n + ' = ±' + sh.s);
-          } },
-          { id: '2c', level: 'EMG', outcome: 'AN1', make: function (r, sh) {
-            return tf(r, 'If ' + t('x^{2}=' + sh.n + ',\\ x\\in R') + ', then ' + t('x=\\pm ' + sh.s) + '.', true, 'This is an <b>equation</b>: any real number whose square is ' + t(sh.n) + ' is a solution, and ' + t('(-' + sh.s + ')^{2}=' + sh.n) + ' too.',
-              'Solving the equation ' + t('x^{2}=' + sh.n) + ' asks for <i>every</i> number whose square is ' + t(sh.n) + ': ' + t(sh.s + '^{2}=' + sh.n) + ' and ' + t('(-' + sh.s + ')^{2}=' + sh.n) + '. So ' + t('x=\\pm ' + sh.s) + '. <b>True.</b> (Only the symbol ' + t('\\sqrt{\\ }') + ' is restricted to the positive root.)',
-              ['Try ' + t('x=-' + sh.s) + ' in the equation.'], 'x²=' + sh.n + ' → ±' + sh.s);
-          } }] },
-      { num: '3', stem: 'Use a calculator to evaluate.',
-        shared: function (r) { return { s4: r.int(12, 16) }; },
-        parts: [
-          { id: '3a', level: 'BEG', make: function (r) { return rootTyped({ n: 4, num: ipow(r.int(7, 13), 4), calc: true }); } },
-          { id: '3b', level: 'BEG', make: function (r) { return rootTyped({ n: 5, num: -ipow(r.int(3, 6), 5), calc: true }); } },
-          { id: '3c', level: 'BEG', make: function (r, sh) { return rootTyped({ n: 4, num: ipow(sh.s4, 4), neg: true, calc: true }); } },
-          { id: '3d', level: 'BEG', outcome: 'AN1', make: function (r) { return rootTyped({ n: 3, num: ipow(r.int(9, 14), 3), neg: true, calc: true }); } },
-          { id: '3e', level: 'BEG', outcome: 'AN1', make: function (r) { return rootTyped({ n: 3, num: -ipow(r.int(12, 19), 3), calc: true }); } },
-          { id: '3f', level: 'EMG', make: function (r) { var s = r.int(4, 8), m = r.chance(0.5) ? 1 : r.int(2, 3); return rootTyped({ n: 4, num: 1, den: ipow(s, 4), k: -m * s, calc: true }); } },
-          { id: '3g', level: 'EMG', make: function (r) {
-            var c = r.pick([[2, 5], [2, 10], [2, 15], [5, 2], [5, 4], [5, 6], [4, 5], [4, 10], [3, 10]]); // [tenths of the root, coefficient]
-            return rootTyped({ n: 6, num: ipow(c[0], 6), den: 1000000, dp: 6, k: c[1], calc: true });
-          } },
-          { id: '3h', level: 'BEG', make: function (r, sh) { var p = rootMC(r, { n: 4, num: -ipow(sh.s4, 4), calc: true }); p.solution += ' (The calculator shows an error.)'; return p; } },
-          { id: '3i', level: 'EMG', make: function (r) {
-            var ab = r.pick([[3, 5], [2, 3], [2, 5], [3, 4], [3, 7], [4, 5]]), m = r.chance(0.5) ? 1 : 2;
-            return rootTyped({ n: 4, num: ipow(ab[0], 4), den: ipow(ab[1], 4), k: [m * ab[1], ab[0]], calc: true });
-          } }] },
-      { num: '4', stem: 'Evaluate to the nearest hundredth.', parts: [
-        { id: '4a', level: 'BEG', make: function (r) {
-          var n = nonPerfect(r, 11, 99, 2), x = Math.sqrt(n);
-          return approxPart('\\sqrt{' + n + '}', x, 2, [{ x: n / 2, code: 'divided-index', hint: 'A square root isn’t half the number: ' + t('\\sqrt{' + n + '}') + ' is the number that multiplies by itself to give ' + t(n) + '.' }],
-            t('\\sqrt{' + n + '}=' + dots(x) + '\\approx ' + x.toFixed(2)) + '.', ['Use the ' + t('\\sqrt{\\ }') + ' key, then round to two decimal places.'], 'nearest hundredth √' + n);
+      /* ================= Part A — The Real Number System ================= */
+      { num: '1', section: 'Part A — The Real Number System', stem: 'The real number system as a Venn diagram: the rectangle is ' + S('R') + ', a vertical line separates the rationals from the irrationals, and nested ellipses hold ' + S('Q') + ', ' + S('I') + ', ' + S('W') + ' and ' + S('N') + '.', parts: [
+        { id: '1a', level: 'LIM', make: function (r) {
+          var inward = r.chance(0.5), chain = ['N', 'W', 'I', 'Q', 'R'], items = chain.map(function (x) { return { id: x, tex: SYM[x] }; });
+          if (inward) items.reverse();
+          return P.order(r, 'Put the sets in order from the ' + (inward ? '<b>outermost</b> (largest) to the <b>innermost</b> (smallest)' : '<b>innermost</b> (smallest) ellipse to the <b>outermost</b> (largest) set') + '.', items,
+            { first: inward ? 'outermost' : 'innermost', last: inward ? 'innermost' : 'outermost', why: function (a, b) { var big = inward ? b : a, small = inward ? a : b; return 'Every ' + NOUN[small] + ' is also ' + ONE[big] + ', so ' + S(small) + ' sits <b>inside</b> ' + S(big) + '.'; } },
+            vennSvg() + 'From the inside out: ' + t('N\\subset W\\subset I\\subset Q\\subset R') + '. ' + S('W') + ' adds ' + t('0') + ' to ' + S('N') + ', ' + S('I') + ' adds the negatives, ' + S('Q') + ' adds the fractions, and ' + S('R') + ' adds the irrationals ' + S('Qb') + ', which sit beside ' + S('Q') + '.',
+            ['Start with the counting numbers ' + t('1, 2, 3, \\ldots') + ' — which set is that?', 'Each set contains everything in the one before it, plus more.'], 'nesting order of N W I Q R');
         } },
-        { id: '4b', level: 'BEG', make: function (r) {
-          var n = r.pick([6, 7, 8, 8, 9]), m = nonPerfect(r, 20, 99, n), x = nroot(m, n), e = rt(n, m);
-          return approxPart(e, x, 2, [{ x: Math.sqrt(m), code: 'wrong-index', hint: idxHint(2, n, true) }, { x: Math.cbrt(m), code: 'wrong-index', hint: idxHint(3, n, true) }, { x: m / n, code: 'divided-index', hint: 'Taking a root isn’t dividing by the index. Use ' + XKEY + '.' }, { x: Math.pow(m, n), code: 'wrong-index', hint: 'That’s a power, not a root. Enter the index first, then ' + XKEY + ', then the radicand.' }],
-            t(e + '=' + dots(x) + '\\approx ' + x.toFixed(2)) + '. (Enter ' + t(n) + ', then the ' + t('\\sqrt[x]{\\ }') + ' key, then ' + t(m) + '.)', ['Enter the index ' + t(n) + ' first, then ' + XKEY + ', then ' + t(m) + '.'], 'nearest hundredth ' + n + '√' + m);
-        } },
-        { id: '4c', level: 'EMG', make: function (r) {
-          var c = r.pick([[4, 3], [3, 2], [5, 4], [2, 3], [3, 4], [5, 2]]), n = r.pick([5, 7, 7]), m = nonPerfect(r, 200, 900, n), k = c[0] / c[1];
-          var x = k * nroot(m, n), e = '-' + rTex(c) + rt(n, '-' + m);
-          return approxPart(e, x, 2, [
-            { x: nroot(k * m, n), code: 'coef-inside', hint: 'The coefficient multiplies the root — it doesn’t go under the radical. Find ' + t(rt(n, '-' + m)) + ' first, then multiply by ' + t('-' + rTex(c)) + '.' },
-            { x: -nroot(-m, n), code: 'no-coef', hint: 'Don’t forget to multiply by the coefficient ' + t('-' + rTex(c)) + '.' },
-            { x: k * nroot(m, 3), code: 'wrong-index', hint: idxHint(3, n, true) },
-            { x: (1 / k) * nroot(m, n), code: 'flip', hint: 'Check the coefficient: it is ' + t(rTex(c)) + ', not ' + t(rTex([c[1], c[0]])) + '.' }],
-            t(rt(n, '-' + m) + '=' + dots(nroot(-m, n))) + ' (odd index, so it is negative). Then ' + t('-' + rTex(c) + '\\times(' + dots(nroot(-m, n)) + ')=' + dots(x) + '\\approx ' + x.toFixed(2)) + '.',
-            ['Find the root first (odd index: a negative radicand gives a negative root), then multiply by the coefficient.', 'Two negatives multiply to a positive.'], 'nearest hundredth ' + e);
+        { id: '1b', level: 'BEG', make: function (r) {
+          var its = r.shuffle([r.chance(0.5) ? natInt(r.int(2, 40)) : sqrtPerfect(r.int(2, 12)), zeroItem(r, r.int(2, 9)), negInt(r.int(2, 30)), r.chance(0.5) ? fracItem(r.int(1, 4), r.pick([5, 7, 9]), r.chance(0.5)) : termItem(r), r.chance(0.5) ? sqrtIrr(r.pick([2, 3, 5, 7, 10, 15, 20])) : constItem(r, ['\\pi', 'e'])]);
+          return sortPart(its, 'Place each number in the completed diagram: put it in the <b>innermost</b> set that contains it.', 'Venn regions');
         } }] },
-      { num: '5', stem: 'Evaluate to the nearest tenth.', parts: [
+      { num: '2', stem: 'For each number, check <b>all</b> the sets (' + t('N, W, I, Q, \\overline{Q}, R') + ') to which it belongs.', parts: [
+        { id: '2a', level: 'LIM', make: function (r) { return memberPart(negInt(r.int(2, 15))); } },
+        { id: '2b', level: 'BEG', make: function (r) { return memberPart(sqrtPerfect(r.int(2, 12))); } },
+        { id: '2c', level: 'EMG', make: function (r) { return memberPart(looksIrr(r)); } },
+        { id: '2d', level: 'BEG', make: function (r) { var q = r.int(2, 9), p = gen(r, function () { return r.int(q + 1, 4 * q); }, function (p) { return gcd(p, q) === 1; }); return memberPart(fracItem(p, q, true)); } },
+        { id: '2e', level: 'BEG', make: function (r) { return memberPart(zeroItem(r, r.int(2, 9))); } },
+        { id: '2f', level: 'BEG', make: function (r) { return memberPart(sqrtIrr(gen(r, function () { return r.int(2, 99); }, nonSq))); } },
+        { id: '2g', level: 'BEG', make: function (r) { return memberPart(nonRepItem(r, true)); } },
+        { id: '2h', level: 'BEG', make: function (r) { return memberPart(constItem(r, ['e', 'e', '\\pi', '\\pi', '2\\pi', '\\frac{\\pi}{2}', '-e'])); } },
+        { id: '2s', level: 'EMG', make: function (r) {
+          var q = r.int(2, 9), p = gen(r, function () { return r.int(q + 1, 4 * q); }, function (p) { return gcd(p, q) === 1; });
+          var its = r.shuffle([negInt(r.int(2, 15)), sqrtPerfect(r.int(2, 12)), looksIrr(r), fracItem(p, q, true), zeroItem(r, r.int(2, 9)), sqrtIrr(gen(r, function () { return r.int(2, 99); }, nonSq)), nonRepItem(r, true), constItem(r, ['e', '\\pi', '2\\pi', '-e'])]);
+          return sortPart(its, 'Now show the same kinds of numbers on the diagram: put each one in the <b>innermost</b> set it belongs to. (It also belongs to every set around that one.)', 'sort Q2-type numbers');
+        } }] },
+      { num: '3', stem: 'Comparing a negative integer with a negative fraction.', parts: [
+        { id: '3', level: 'EMG', make: function (r) {
+          var n = r.int(2, 12), d = gen(r, function () { return r.int(2, 9); }, function (d) { return n % d !== 0 && gcd(n, d) === 1; }), f = '-\\frac{' + n + '}{' + d + '}';
+          return P.mc(r, 'Which statement explains why ' + t('-' + n) + ' belongs to more number sets than ' + t(f) + '?', [
+            { html: t('-' + n) + ' is an integer, so it is in ' + t('I, Q') + ' and ' + t('R') + '. ' + t(f) + ' is not an integer, so it is only in ' + t('Q') + ' and ' + t('R') + '.', right: true },
+            { html: t(f) + ' is irrational, so it is only in ' + S('Qb') + ' and ' + t('R') + '.', why: t(f) + ' is a ratio of two integers — that makes it <b>rational</b>.' },
+            { html: t('-' + n) + ' is a natural number, so it is in all of ' + t('N, W, I, Q, R') + '.', why: 'Natural and whole numbers are never negative.' },
+            { html: 'Negative fractions are not real numbers, so ' + t(f) + ' is in fewer sets.', why: 'Every fraction of integers is a real number — it has a place on the number line.' }],
+            t('-' + n) + ' is an integer, and every integer is also rational and real: ' + t('I, Q, R') + ' (three sets). ' + t(f + (Number.isInteger(n / d * 100) ? '=-' + (n / d) : '')) + ' is a ratio of integers but not a whole count, so it is only in ' + t('Q, R') + ' (two sets). The extra condition — being an integer — puts ' + t('-' + n) + ' in one more set.',
+            ['List the sets for each number, then compare.'], 'why -' + n + ' in more sets than ' + f);
+        } }] },
+      { num: '4', stem: 'Check all the sets to which each number belongs.', parts: [
+        { id: '4af', sub: 'a–f', level: 'BEG', make: function (r) {
+          var q = r.int(2, 9), p = gen(r, function () { return r.int(1, q - 1); }, function (p) { return gcd(p, q) === 1; });
+          return memberTable([fracItem(p, q, false), natInt(r.int(100000, 999999)), negInt(r.int(2, 12)), repItem(r), termItem(r), sqrtIrr(gen(r, function () { return r.int(11, 99); }, nonSq))], 'Check every set each number belongs to.', 'set table a–f');
+        } },
+        { id: '4gl', sub: 'g–l', level: 'PRG', make: function (r) {
+          var pq = r.chance(0.5) ? r.pick([[22, 7], [355, 113]]) : r.pick([[19, 6], [25, 8], [17, 5], [29, 4], [23, 6]]);
+          return memberTable([constItem(r, ['-\\pi', '-\\pi', '\\frac{\\pi}{2}', '2\\pi', '-e']), fracItem(pq[0], pq[1], true), negSqrt(r.int(2, 12)), smallDec(r), patternItem(r), sqrtDecSq(r)], 'Check every set each number belongs to.', 'set table g–l');
+        } },
+        { id: '4s', sub: 'Venn', level: 'PRG', make: function (r) {
+          var pq = r.chance(0.5) ? r.pick([[22, 7], [355, 113]]) : r.pick([[19, 6], [25, 8], [17, 5], [29, 4], [23, 6]]);
+          var its = r.shuffle([constItem(r, ['-\\pi', '\\frac{\\pi}{2}', '2\\pi', '-e']), fracItem(pq[0], pq[1], true), negSqrt(r.int(2, 12)), smallDec(r), patternItem(r), sqrtDecSq(r), repItem(r), natInt(r.int(100000, 999999))]);
+          return sortPart(its, 'Sort the numbers into the diagram: each goes in the <b>innermost</b> set it belongs to.', 'sort Q4-type numbers');
+        } }] },
+      { num: '5', stem: 'Find one number that satisfies each condition. (Use the keypad for fractions, roots and ' + t('\\pi') + '.)', parts: [
         { id: '5a', level: 'BEG', make: function (r) {
-          var m = nonPerfect(r, 20, 200, 5), x = nroot(-m, 5), e = rt(5, '-' + m);
-          return approxPart(e, x, 1, [{ x: nroot(-m, 3), code: 'wrong-index', hint: idxHint(3, 5, true) }, { x: -m / 5, code: 'divided-index', hint: 'Taking a root isn’t dividing by the index. Use ' + XKEY + '.' }],
-            'The index is odd, so the root is negative: ' + t(e + '=' + dots(x) + '\\approx ' + x.toFixed(1)) + '.', ['Enter ' + t('5') + ', then ' + XKEY + ', then ' + t('(-)' + m) + '.', 'An odd root of a negative number is negative.'], 'nearest tenth ' + e);
+          var v = r.chance(0.6) ? 'W' : 'N', k = r.int(2, 9);
+          return findPart('An integer, but not ' + ONE[v] + '.', { inS: 'I', notS: v, sol: v === 'W' ? 'Any negative integer, e.g. ' + t('-' + k) + ' — ' + S('W') + ' contains no negatives.' : 'Any negative integer, or ' + t('0') + ' (e.g. ' + t('-' + k) + '): ' + S('N') + ' starts at ' + t('1') + '.', hints: ['The integers are ' + t('\\ldots,-2,-1,0,1,2,\\ldots') + '. Which ones are not ' + NAME[v] + '?'] },
+            '-' + k, ['-1', '-17'].concat(v === 'N' ? ['0'] : []), [String(k), '-\\frac{1}{2}'].concat(v === 'W' ? ['0'] : []), 'integer not ' + v);
         } },
-        { id: '5b', level: 'EMG', make: function (r) {
-          var k = r.int(2, 6), m = nonPerfect(r, 100, 900, 4), x = -k * nroot(m, 4), e = '-' + k + rt(4, m);
-          return approxPart(e, x, 1, [{ x: -k * Math.sqrt(m), code: 'wrong-index', hint: idxHint(2, 4, true) }, { x: -nroot(k * m, 4), code: 'coef-inside', hint: 'The ' + t(-k) + ' multiplies the root — it doesn’t go under the radical.' }, { x: -nroot(m, 4), code: 'no-coef', hint: 'Don’t forget to multiply by ' + t(-k) + '.' }],
-            t(rt(4, m) + '=' + dots(nroot(m, 4))) + ', so ' + t(e + '=-' + k + '\\times ' + dots(nroot(m, 4)) + '=' + dots(x) + '\\approx ' + x.toFixed(1)) + '.', ['Find ' + t(rt(4, m)) + ' first, then multiply by ' + t(-k) + '.'], 'nearest tenth ' + e);
+        { id: '5b', level: 'BEG', make: function (r) {
+          var v = r.chance(0.6) ? 'I' : 'W', q = r.int(3, 9), p = gen(r, function () { return r.int(1, q - 1); }, function (p) { return gcd(p, q) === 1; });
+          return findPart('A rational number, but not ' + ONE[v] + '.', { inS: 'Q', notS: v, sol: 'Any ' + (v === 'W' ? 'negative number or ' : '') + 'fraction that isn’t ' + (v === 'I' ? 'an integer' : 'whole') + ', e.g. ' + t('\\frac{' + p + '}{' + q + '}') + '.', hints: ['A rational number is a ratio of integers ' + t('\\frac{a}{b}') + '. Pick one that doesn’t simplify to ' + (v === 'I' ? 'an integer' : 'a whole number') + '.'] },
+            '\\frac{' + p + '}{' + q + '}', ['0.5', '-\\frac{7}{3}'].concat(v === 'W' ? ['-2'] : []), ['3', '\\sqrt{2}', '\\frac{8}{4}'], 'rational not ' + v);
         } },
-        { id: '5c', level: 'EMG', make: function (r) {
-          var c = r.pick([[2, 3], [3, 4], [3, 2], [4, 5], [5, 3]]), m = nonPerfect(r, 20, 200, 3), k = c[0] / c[1], x = k * nroot(-m, 3), e = rTex(c) + rt(3, '-' + m);
-          return approxPart(e, x, 1, [{ x: nroot(-k * m, 3), code: 'coef-inside', hint: 'The coefficient multiplies the root — it doesn’t go under the radical.' }, { x: nroot(-m, 3), code: 'no-coef', hint: 'Don’t forget to multiply by ' + t(rTex(c)) + '.' }, { x: nroot(-m, 3) / k, code: 'flip', hint: 'Multiply by ' + t(rTex(c)) + ' — don’t divide by it.' }],
-            t(rt(3, '-' + m) + '=' + dots(nroot(-m, 3))) + ', so ' + t(e + '=' + rTex(c) + '\\times(' + dots(nroot(-m, 3)) + ')=' + dots(x) + '\\approx ' + x.toFixed(1)) + '.' + (Math.abs(K.roundTo(x, 1) - Math.round(x)) < 1e-9 ? ' (Keep the zero: the nearest tenth is ' + t(x.toFixed(1)) + '.)' : ''),
-            ['Find the cube root first (negative, since the index is odd), then multiply by ' + t(rTex(c)) + '.'], 'nearest tenth ' + e);
+        { id: '5c', level: 'BEG', make: function (r) {
+          var a = r.int(2, 6), v = r.pick(['plain', 'plain', 'between', 'neg']);
+          var cond = v === 'between' ? { inS: 'R', notS: 'Q', between: [a, a + 1] } : v === 'neg' ? { inS: 'R', notS: 'Q', neg: true } : { inS: 'R', notS: 'Q' };
+          var key = v === 'between' ? '\\sqrt{' + (a * a + a) + '}' : v === 'neg' ? '-\\sqrt{2}' : '\\sqrt{2}';
+          cond.sol = 'Any irrational number' + (v === 'between' ? ' between ' + t(a) + ' and ' + t(a + 1) + ', e.g. ' + t(key) + ' (' + t(a * a + a) + ' is between ' + t(a * a) + ' and ' + t((a + 1) * (a + 1)) + ', and it isn’t a perfect square).' : v === 'neg' ? ' that is negative, e.g. ' + t(key) + ' or ' + t('-\\pi') + '.' : ', e.g. ' + t('\\sqrt{2}') + ' or ' + t('\\pi') + '.');
+          cond.hints = ['A real number that isn’t rational is irrational: its decimal never terminates or repeats.', 'Square roots of non-perfect squares are irrational.'];
+          return findPart(v === 'between' ? 'A real number between ' + t(a) + ' and ' + t(a + 1) + ' that is not a rational number.' : v === 'neg' ? 'A negative real number that is not a rational number.' : 'A real number, but not a rational number.', cond, key,
+            v === 'between' ? ['\\sqrt{' + (a * a + 1) + '}'] : v === 'neg' ? ['-\\pi'] : ['\\pi', '\\sqrt{3}', '1+\\sqrt{2}'], v === 'neg' ? ['\\sqrt{2}', '-\\sqrt{4}'] : ['\\sqrt{' + (a + 1) * (a + 1) + '}', '0.5'], 'real not rational (' + v + ')');
+        } },
+        { id: '5d', level: 'BEG', make: function (r) {
+          return findPart(r.pick(['A whole number, but not a natural number.', 'A number that is in ' + S('W') + ' but not in ' + S('N') + '.']), { inS: 'W', notS: 'N', only: true, sol: t('0') + ' — the only whole number that is not a natural number.', hints: ['Compare ' + t('W=\\{0,1,2,3,\\ldots\\}') + ' with ' + t('N=\\{1,2,3,\\ldots\\}') + '.'] },
+            '0', ['\\frac{0}{5}'], ['1', '-1', '\\frac{1}{2}'], 'whole not natural');
         } }] },
-      { num: '6', section: 'Part B — Radical Vocabulary', stem: 'Identify the index and the radicand.', parts: [
-        { id: '6a', level: 'LIM', make: function (r) { var n = r.pick([3, 5, 7, 9]), m = nonPerfect(r, 10, 99, n); return vocabPart(n, m, 1); } },
-        { id: '6b', level: 'LIM', make: function (r) { var n = r.pick([4, 6, 8]), m = r.pick([16, 25, 36, 49, 81, 100].filter(function (v) { return !isPerfect(v, n); })); return vocabPart(n, m, 1); } },
-        { id: '6c', level: 'BEG', make: function (r) { return vocabPart(2, nonPerfect(r, 11, 47, 2), r.int(2, 9)); } }] },
-      { num: '7', stem: 'The meaning of the index.', parts: [
-        { id: '7', level: 'EMG', make: function (r) {
-          var n = r.pick([4, 5, 6, 6, 7]), m = nonPerfect(r, 20, 99, n), e = rt(n, m), dv = Math.round(m / n * 100) / 100;
-          return mcPart(r, 'Which statement explains the meaning of the index ' + t(n) + ' in the radical ' + t(e) + '?', [
-            { html: t(e) + ' must be used as a <b>factor</b> ' + n + ' times to give ' + t(m) + ': ' + t('\\left(' + e + '\\right)^{' + n + '}=' + m) + '.', right: true },
-            { html: 'Divide ' + t(m) + ' by ' + t(n) + ': ' + t(e + '=' + m + '\\div ' + n) + '.', why: 'Test it: ' + t(m + '\\div ' + n + (Number.isInteger(m / n) ? '=' : '\\approx ') + dv) + ', and ' + t(dv + '^{' + n + '}') + ' is far more than ' + t(m) + '. The index counts equal <b>factors</b>, not equal parts.' },
-            { html: 'Multiply ' + t(m) + ' by itself ' + n + ' times.', why: 'That would be the power ' + t(m + '^{' + n + '}') + ' — a root goes the other way: it finds the number whose ' + nth(n) + ' power is ' + t(m) + '.' },
-            { html: 'The radical means ' + t(n + '\\times\\sqrt{' + m + '}') + '.', why: 'A number that multiplies a radical sits <b>in front</b> of it (a coefficient, like the 7 in ' + t('7\\sqrt{23}') + '). The index sits in the notch of the radical sign.' }],
-            'The index ' + t(n) + ' tells us that ' + t(e) + ' is used as a factor ' + n + ' times to produce ' + t(m) + ': ' + t('\\left(' + e + '\\right)^{' + n + '}=' + m) + '.', ['Think of ' + t('\\sqrt[3]{8}=2') + ': ' + t('2\\times 2\\times 2=8') + '. What does the 3 count?'], 'meaning of index ' + n);
+      { num: '6', stem: 'Complete each statement with <i>always</i>, <i>sometimes</i> or <i>never</i>.', parts: [
+        { id: '6a', level: 'BEG', make: function (r) { var pr = r.pick([['W', 'N'], ['W', 'N'], ['I', 'W'], ['Q', 'I'], ['I', 'N'], ['R', 'Q']]); return asnPart(r, cap(ONE[pr[0]]) + ' is ___ ' + ONE[pr[1]] + '.', setASN(pr[0], pr[1]), 'ASN ' + pr[0] + ' is ' + pr[1]); } },
+        { id: '6b', level: 'EMG', make: function (r) {
+          var V = [['The quotient of two integers is ___ an integer.', asnD('sometimes', t('8\\div 2=4') + ' is an integer.', t('8\\div 3=\\frac{8}{3}') + ' is not.')],
+            ['The quotient of two integers is ___ an integer.', asnD('sometimes', t('-12\\div 4=-3') + ' is an integer.', t('5\\div 2=2.5') + ' is not.')],
+            ['The quotient of two natural numbers is ___ a natural number.', asnD('sometimes', t('12\\div 4=3') + ' is natural.', t('3\\div 4=0.75') + ' is not.')],
+            ['The quotient of two non-zero rational numbers is ___ a rational number.', asnD('always', '', '', t('\\frac{a}{b}\\div\\frac{c}{d}=\\frac{ad}{bc}') + ', which is again a ratio of integers.')]];
+          var v = r.pick(V); return asnPart(r, v[0], v[1], 'ASN ' + v[0]);
+        } },
+        { id: '6c', level: 'BEG', make: function (r) { var pr = r.pick([['W', 'Q'], ['W', 'Q'], ['N', 'I'], ['I', 'R'], ['N', 'Q'], ['I', 'Q'], ['Qb', 'R']]); return asnPart(r, cap(ONE[pr[0]]) + ' is ___ ' + ONE[pr[1]] + '.', setASN(pr[0], pr[1]), 'ASN ' + pr[0] + ' is ' + pr[1]); } },
+        { id: '6d', level: 'EMG', make: function (r) {
+          var V = [['The difference of two integers is ___ an integer.', asnD('always', '', '', 'Subtracting one integer from another always lands on an integer, e.g. ' + t('3-8=-5') + '.')],
+            ['The sum of two integers is ___ an integer.', asnD('always', '', '', 'Adding integers always lands on an integer, e.g. ' + t('-7+4=-3') + '.')],
+            ['The product of two integers is ___ an integer.', asnD('always', '', '', 'Multiplying integers always gives an integer, e.g. ' + t('(-3)(8)=-24') + '.')],
+            ['The difference of two natural numbers is ___ a natural number.', asnD('sometimes', t('7-2=5') + ' is natural.', t('2-7=-5') + ' is not.')],
+            ['The difference of two whole numbers is ___ a whole number.', asnD('sometimes', t('9-4=5') + ' is whole.', t('3-8=-5') + ' is not.')]];
+          var v = r.pick(r.chance(0.4) ? V.slice(0, 1) : V); return asnPart(r, v[0], v[1], 'ASN ' + v[0]);
+        } },
+        { id: '6e', level: 'EMG', make: function (r) {
+          var k = r.int(2, 9), n = gen(r, function () { return r.int(2, 30); }, nonSq);
+          var V = [['The square root of a number is ___ in the set ' + S('Qb') + '.', asnD('sometimes', t('\\sqrt{' + n + '}') + ' is irrational.', t('\\sqrt{' + k * k + '}=' + k) + ' is rational.')],
+            ['The square root of a natural number is ___ a natural number.', asnD('sometimes', t('\\sqrt{' + k * k + '}=' + k) + ' is natural.', t('\\sqrt{' + n + '}') + ' is irrational.')],
+            ['The cube root of an integer is ___ an integer.', asnD('sometimes', t('\\sqrt[3]{-' + k * k * k + '}=-' + k) + ' is an integer.', t('\\sqrt[3]{' + (k * k * k + 1) + '}') + ' is not.')],
+            ['The square root of a negative number is ___ a real number.', asnD('never', '', '', 'A real number times itself is never negative, so a negative number has no real square root.')]];
+          var v = r.pick(r.chance(0.4) ? V.slice(0, 1) : V); return asnPart(r, v[0], v[1], 'ASN ' + v[0].replace(/\\\(|\\\)/g, ''));
+        } },
+        { id: '6f', level: 'EMG', make: function (r) {
+          var x = r.pick(['W', 'W', 'N', 'I', 'Q', 'Qb']), d;
+          if (x === 'W' || x === 'N') d = asnD('never', '', '', S(x) + ' holds ' + (x === 'W' ? t('0') + ' and the positive whole numbers' : 'the positive counting numbers') + ' only.');
+          else d = asnD('sometimes', { I: t('-3') + ' is negative and an integer.', Q: t('-\\frac{1}{2}') + ' is negative and rational.', Qb: t('-\\sqrt{2}') + ' is negative and irrational.' }[x], { I: t('-\\frac{1}{2}') + ' is negative but not an integer.', Q: t('-\\sqrt{2}') + ' is negative but not rational.', Qb: t('-3') + ' is negative but not irrational.' }[x]);
+          return asnPart(r, 'A negative number is ___ in the set ' + S(x) + '.', d, 'ASN negative in ' + x);
+        } },
+        { id: '6g', level: 'BEG', make: function (r) { var pr = r.pick([['N', 'R'], ['N', 'R'], ['W', 'Q'], ['Qb', 'R'], ['N', 'I'], ['I', 'W'], ['Qb', 'Q']]); return asnPart(r, 'A number in set ' + S(pr[0]) + ' is ___ a number in set ' + S(pr[1]) + '.', setASN(pr[0], pr[1]), 'ASN in ' + pr[0] + ' in ' + pr[1]); } }] },
+      { num: '7', stem: 'Decide whether each statement is true or false.', parts: [
+        { id: '7a', level: 'LIM', make: function (r) { var p = r.chance(0.65) ? r.pick([['N', 'I'], ['N', 'Q'], ['W', 'I'], ['N', 'W'], ['W', 'R']]) : pickPair(r, false); return allPart(r, p[0], p[1], 'all ' + p[0] + ' are ' + p[1]); } },
+        { id: '7b', level: 'LIM', make: function (r) {
+          return poolTF(r, [['Real numbers consist of rational numbers together with irrational numbers.', true, 'That is the definition: ' + t('R=\\{Q\\text{ and }\\overline{Q}\\}') + '.'],
+            ['Every real number is either rational or irrational.', true, t('R=\\{Q\\text{ and }\\overline{Q}\\}') + ': each real number is in exactly one of ' + S('Q') + ' or ' + S('Qb') + '.'],
+            ['Some real numbers are both rational and irrational.', false, 'A decimal either terminates/repeats (rational) or it doesn’t (irrational) — it can’t do both.'],
+            ['Real numbers consist of integers together with irrational numbers.', false, 'That leaves out fractions like ' + t('\\frac{1}{2}') + '. Real numbers are the <b>rational</b> numbers together with the irrational numbers.']], 'definition of R');
+        } },
+        { id: '7c', level: 'LIM', make: function (r) { var p = r.chance(0.65) ? r.pick([['I', 'Q'], ['W', 'I'], ['N', 'W'], ['Q', 'R'], ['Qb', 'R']]) : pickPair(r, false); return nestedPart(r, p[0], p[1], false, 'nested ' + p[0] + ' in ' + p[1]); } },
+        { id: '7d', level: 'LIM', make: function (r) { var p = r.chance(0.65) ? r.pick([['I', 'Q'], ['W', 'Q'], ['I', 'R'], ['N', 'Q']]) : pickPair(r, false); return allPart(r, p[0], p[1], 'all ' + p[0] + ' are ' + p[1]); } },
+        { id: '7e', level: 'LIM', make: function (r) {
+          return poolTF(r, [['All irrational numbers are real numbers.', true, S('Qb') + ' sits inside ' + S('R') + ': every irrational number has a place on the number line.'],
+            ['No irrational number is an integer.', true, 'Every integer is rational (' + t('n=\\frac{n}{1}') + '), and ' + S('Q') + ' and ' + S('Qb') + ' don’t overlap.'],
+            ['All real numbers are irrational numbers.', false, t('5') + ' is a real number, but it is rational.'],
+            ['Some irrational numbers are rational numbers.', false, S('Q') + ' and ' + S('Qb') + ' don’t overlap: no number is both.']], 'irrationals statement');
+        } },
+        { id: '7f', level: 'BEG', make: function (r) { var p = r.chance(0.7) ? r.pick([['R', 'N'], ['R', 'Q'], ['Q', 'I'], ['I', 'W']]) : r.pick(TRUE_PAIRS); return nestedPart(r, p[0], p[1], true, 'nested ' + p[0] + ' in ' + p[1]); } },
+        { id: '7g', level: 'BEG', make: function (r) { var p = r.chance(0.7) ? r.pick([['Q', 'W'], ['I', 'N'], ['W', 'N'], ['Q', 'Qb'], ['R', 'Qb']]) : r.pick(TRUE_PAIRS); return nestedPart(r, p[0], p[1], true, 'nested ' + p[0] + ' in ' + p[1]); } },
+        { id: '7h', level: 'BEG', make: function (r) {
+          return poolTF(r, [['There is exactly one number in set ' + S('W') + ' that is not also in set ' + S('N') + '.', true, 'That number is ' + t('0') + '.'],
+            ['There are infinitely many numbers in set ' + S('W') + ' that are not in set ' + S('N') + '.', false, S('W') + ' and ' + S('N') + ' differ only by ' + t('0') + ' — exactly one number.'],
+            ['There is exactly one number in set ' + S('I') + ' that is not also in set ' + S('W') + '.', false, 'Every negative integer ' + t('-1, -2, -3, \\ldots') + ' is in ' + S('I') + ' but not ' + S('W') + ' — infinitely many.'],
+            ['There are infinitely many numbers in set ' + S('I') + ' that are not in set ' + S('W') + '.', true, 'Every negative integer ' + t('-1, -2, -3, \\ldots') + ' is in ' + S('I') + ' but not in ' + S('W') + '.']], 'counting W not N');
         } }] },
-      { num: '8', section: 'Part C — Products and Quotients of Radicals', stem: 'Determine whether each statement is true or false.', parts: [
+      { num: '8', stem: 'Decide whether each statement is true or false.', parts: [
         { id: '8a', level: 'BEG', make: function (r) {
-          var ab = r.pick([[7, 8], [3, 5], [6, 7], [2, 11], [5, 6], [3, 10], [7, 5]]), p = ab[0] * ab[1];
-          return tf(r, t('\\sqrt{' + p + '}=\\sqrt{' + ab[0] + '}\\sqrt{' + ab[1] + '}'), true, 'The product rule: ' + t('\\sqrt{a}\\times\\sqrt{b}=\\sqrt{ab}') + '. What is ' + t(ab[0] + '\\times ' + ab[1]) + '?',
-            t('\\sqrt{' + ab[0] + '}\\sqrt{' + ab[1] + '}=\\sqrt{' + ab[0] + '\\times ' + ab[1] + '}=\\sqrt{' + p + '}') + '. <b>True.</b>', ['Use ' + t('\\sqrt{a}\\times\\sqrt{b}=\\sqrt{ab}') + '.'], '√' + p + ' = √' + ab[0] + '√' + ab[1]);
+          var k = r.int(2, 12);
+          return poolTF(r, [['Every positive number has two square roots, but only one cube root.', true, 'A positive number has one positive and one negative square root (e.g. ' + t(k + '^{2}=(-' + k + ')^{2}=' + k * k) + '), but its cube root is unique.'],
+            ['The number ' + t(k * k) + ' has two square roots, ' + t(k) + ' and ' + t('-' + k) + '.', true, t(k + '^{2}=' + k * k) + ' and ' + t('(-' + k + ')^{2}=' + k * k) + '. (The symbol ' + t('\\sqrt{' + k * k + '}') + ' means only the positive one, ' + t(k) + '.)'],
+            [t('\\sqrt{' + k * k + '}=\\pm ' + k), false, 'The symbol ' + t('\\sqrt{\\ }') + ' means the <b>principal</b> (positive) square root only: ' + t('\\sqrt{' + k * k + '}=' + k) + '.'],
+            ['Every positive number has exactly one square root.', false, 'It has two: ' + t(k) + ' and ' + t('-' + k) + ' are both square roots of ' + t(k * k) + '.']], 'square roots of positives', ROOT_TF_HINTS);
         } },
-        { id: '8b', level: 'BEG', make: function (r) {
-          var a = r.int(3, 10), b = r.int(2, a - 1), A = a * a, B = b * b, d = A - B;
-          return tf(r, t('\\sqrt{' + A + '-' + B + '}=\\sqrt{' + A + '}-\\sqrt{' + B + '}'), false, 'Test it: ' + t('\\sqrt{' + A + '-' + B + '}=\\sqrt{' + d + '}' + (isPerfect(d, 2) ? '=' + Math.sqrt(d) : '\\approx ' + Math.sqrt(d).toFixed(2))) + ', but ' + t('\\sqrt{' + A + '}-\\sqrt{' + B + '}=' + a + '-' + b + '=' + (a - b)) + '.',
-            t('\\sqrt{' + A + '-' + B + '}=\\sqrt{' + d + '}' + (isPerfect(d, 2) ? '=' + Math.sqrt(d) : '\\approx ' + Math.sqrt(d).toFixed(2))) + ', but ' + t(a + '-' + b + '=' + (a - b)) + '. A root of a difference is <b>not</b> the difference of the roots. <b>False.</b>', ['Work out each side separately.'], '√(' + A + '−' + B + ') = √' + A + '−√' + B);
-        } },
-        { id: '8c', level: 'BEG', make: function (r) {
-          var k = r.int(2, 7), b = r.pick([5, 6, 10, 11, 13, 15].filter(function (x) { return x !== k; })), a = k * b;
-          return tf(r, t('\\sqrt{' + k + '}=\\dfrac{\\sqrt{' + a + '}}{\\sqrt{' + b + '}}'), true, 'The quotient rule: ' + t('\\dfrac{\\sqrt{a}}{\\sqrt{b}}=\\sqrt{\\dfrac{a}{b}}') + '. What is ' + t(a + '\\div ' + b) + '?',
-            t('\\dfrac{\\sqrt{' + a + '}}{\\sqrt{' + b + '}}=\\sqrt{\\dfrac{' + a + '}{' + b + '}}=\\sqrt{' + k + '}') + '. <b>True.</b>', ['Use ' + t('\\dfrac{\\sqrt{a}}{\\sqrt{b}}=\\sqrt{\\dfrac{a}{b}}') + '.'], '√' + k + ' = √' + a + '/√' + b);
-        } },
-        { id: '8d', level: 'BEG', make: function (r) {
-          var bc = r.pick([[9, 4], [4, 9], [16, 4], [9, 16], [25, 4], [4, 25], [16, 9]]), b = bc[0], c = bc[1], a = b * c;
-          return tf(r, t('\\dfrac{\\sqrt{' + a + '}}{\\sqrt{' + b + '}}=\\sqrt{' + b + '}'), false, 'Divide the radicands: ' + t('\\dfrac{\\sqrt{' + a + '}}{\\sqrt{' + b + '}}=\\sqrt{\\dfrac{' + a + '}{' + b + '}}') + '. Is that ' + t('\\sqrt{' + b + '}') + '?',
-            t('\\dfrac{\\sqrt{' + a + '}}{\\sqrt{' + b + '}}=\\sqrt{\\dfrac{' + a + '}{' + b + '}}=\\sqrt{' + c + '}=' + Math.sqrt(c)) + ', not ' + t('\\sqrt{' + b + '}=' + Math.sqrt(b)) + '. <b>False.</b>', ['Use the quotient rule, or evaluate both sides: both radicands are perfect squares.'], '√' + a + '/√' + b + ' = √' + b);
-        } },
-        { id: '8e', level: 'EMG', make: function (r) {
-          var a = r.pick([2, 3, 5, 6, 7, 10]);
-          return tf(r, t('\\sqrt{' + a + '}+\\sqrt{' + a + '}=\\sqrt{' + (2 * a) + '}'), false, 'Test with decimals: ' + t('\\sqrt{' + a + '}+\\sqrt{' + a + '}\\approx ' + (2 * Math.sqrt(a)).toFixed(2)) + ', but ' + t('\\sqrt{' + 2 * a + '}\\approx ' + Math.sqrt(2 * a).toFixed(2)) + '. The rules work for × and ÷, not for +.',
-            t('\\sqrt{' + a + '}+\\sqrt{' + a + '}=2\\sqrt{' + a + '}\\approx ' + (2 * Math.sqrt(a)).toFixed(2)) + ', but ' + t('\\sqrt{' + 2 * a + '}\\approx ' + Math.sqrt(2 * a).toFixed(2)) + '. A sum of roots is not the root of the sum. <b>False.</b>', ['Use a calculator to compare both sides.'], '√' + a + '+√' + a + ' = √' + 2 * a);
-        } },
-        { id: '8f', level: 'BEG', make: function (r) {
-          var a = r.pick([2, 3, 5, 6, 7, 10, 11]);
-          return tf(r, t('\\sqrt{' + a + '}\\times\\sqrt{' + a + '}=\\sqrt{' + (a * a) + '}'), true, 'The product rule: ' + t('\\sqrt{' + a + '}\\times\\sqrt{' + a + '}=\\sqrt{' + a + '\\times ' + a + '}') + '.',
-            t('\\sqrt{' + a + '}\\times\\sqrt{' + a + '}=\\sqrt{' + a + '\\times ' + a + '}=\\sqrt{' + a * a + '}') + ' (which is ' + t(a) + '). <b>True.</b>', ['Use ' + t('\\sqrt{a}\\times\\sqrt{b}=\\sqrt{ab}') + '.'], '√' + a + '×√' + a + ' = √' + a * a);
-        } },
-        { id: '8g', level: 'BEG', make: function (r) {
-          var k = r.pick([2, 3, 4, 5]), j = r.pick([9, 4, 16, 5, 6, 7].filter(function (x) { return x !== k; })), m = k * j;
-          return tf(r, t('\\sqrt{\\dfrac{1}{' + k + '}\\times ' + m + '}=\\sqrt{' + j + '}'), true, 'Work out the radicand first: ' + t('\\dfrac{1}{' + k + '}\\times ' + m) + ' is just ' + t(m + '\\div ' + k) + '.',
-            t('\\dfrac{1}{' + k + '}\\times ' + m + '=' + j) + ', so both sides are ' + t('\\sqrt{' + j + '}') + '. <b>True.</b>', ['Simplify what is under the radical first.'], '√(1/' + k + '×' + m + ') = √' + j);
-        } },
-        { id: '8h', level: 'EMG', make: function (r) {
-          var k = r.pick([2, 3, 4]), j = r.pick([9, 4, 16, 5, 6, 7].filter(function (x) { return x !== k; })), m = k * j, q = nrm(m, k * k);
-          return tf(r, t('\\dfrac{1}{' + k + '}\\sqrt{' + m + '}=\\sqrt{' + j + '}'), false, 'Here the ' + t('\\dfrac{1}{' + k + '}') + ' is <b>outside</b> the radical. Compare with decimals: ' + t('\\dfrac{1}{' + k + '}\\sqrt{' + m + '}\\approx ' + (Math.sqrt(m) / k).toFixed(2)) + ' and ' + t('\\sqrt{' + j + '}\\approx ' + Math.sqrt(j).toFixed(2)) + '.',
-            'The ' + t('\\dfrac{1}{' + k + '}') + ' is outside the radical. To move it inside it must be squared: ' + t('\\dfrac{1}{' + k + '}\\sqrt{' + m + '}=\\sqrt{\\dfrac{' + m + '}{' + k * k + '}}=\\sqrt{' + rTex(q) + '}\\approx ' + (Math.sqrt(m) / k).toFixed(2)) + ', but ' + t('\\sqrt{' + j + '}\\approx ' + Math.sqrt(j).toFixed(2)) + '. <b>False.</b>',
-            ['Is the fraction inside or outside the radical this time? If it is outside, take the root first, then multiply.'], '1/' + k + '√' + m + ' = √' + j);
+        { id: '8b', level: 'EMG', make: function (r) {
+          var k = r.int(2, 5), c = k * k * k;
+          return poolTF(r, [['Every negative number has one cube root, but no square roots.', true, 'e.g. ' + t('-' + c) + ' has cube root ' + t('-' + k) + ', but no real number squares to a negative.'],
+            [t('\\sqrt[3]{-' + c + '}=-' + k), true, t('(-' + k + ')^{3}=-' + c) + '. Cube roots of negative numbers are negative.'],
+            [t('-' + c) + ' has no cube root.', false, t('(-' + k + ')^{3}=-' + c) + ', so ' + t('\\sqrt[3]{-' + c + '}=-' + k) + '.'],
+            [t('\\sqrt{-' + k * k + '}=-' + k), false, t('(-' + k + ')^{2}=+' + k * k) + ', not ' + t('-' + k * k) + '. No real number squares to a negative, so ' + t('\\sqrt{-' + k * k + '}') + ' is not real.']], 'roots of negatives', ROOT_TF_HINTS);
         } }] },
-      { num: '9', stem: 'Write as a single radical in the form ' + t('\\sqrt{x}') + '.', parts: [
-        { id: '9a', level: 'BEG', make: function (r) { var a = r.pick([2, 3, 5, 6, 7, 10, 11]), b = r.pick([4, 9, 16, 25]); return prodPart(a, b); } },
-        { id: '9b', level: 'BEG', make: function (r) { var c = r.pick([2, 3, 5]), j = r.pick([3, 5, 7].filter(function (x) { return x !== c; })); return prodPart(c * j, c); } },
-        { id: '9c', level: 'BEG', make: function (r) { var s = r.pick([4, 9, 16, 25]), p = r.pick([2, 3, 5, 7, 11, 13]); return prodPart(s, p); } },
-        { id: '9d', level: 'BEG', make: function (r) { var a = r.pick([8, 12, 18, 20, 24, 27]), b = r.pick([4, 9].filter(function (x) { return !isPerfect(a * x, 2); })); return prodPart(a, b); } },
-        { id: '9e', level: 'BEG', make: function (r) { var b = r.pick([2, 3, 5, 6, 7]), s = r.int(2, 4); return quotPart(b * s * s, b); } },
-        { id: '9f', level: 'BEG', make: function (r) { var p = r.pick([3, 5, 6, 7, 10, 11]); return quotPart(p * p, p); } },
-        { id: '9g', level: 'EMG', make: function (r) {
-          var c, a, b, m;
-          for (var i = 0; i < 200; i++) { c = r.pick([2, 3, 5]); b = c * r.pick([2, 3, 5, 7]); a = r.pick([6, 7, 10, 11, 13, 14, 15].filter(function (x) { return x % c; })); m = a * b / c; if (!isPerfect(m, 2) && m <= 200 && b !== c) break; }
-          var e = '\\dfrac{\\sqrt{' + a + '}\\sqrt{' + b + '}}{\\sqrt{' + c + '}}';
-          return singlePart(e, m, function (M) {
-            if (M === a * b * c) return { code: 'multiplied', hint: 'The ' + t('\\sqrt{' + c + '}') + ' is in the denominator: <b>divide</b> by ' + t(c) + ', don’t multiply.' };
-            if (M === a * b) return { code: 'multiplied', hint: 'You multiplied the top. Now divide by the radicand in the denominator, ' + t(c) + '.' };
+
+      /* ================= Part B — Estimating Square Roots ================= */
+      { num: '9', section: 'Part B — Estimating Square Roots', stem: 'Use whole-number estimates to show why each statement is true.', parts: [
+        { id: '9a', level: 'EMG', make: function (r) {
+          var c = r.int(5, 8), S2 = c * c, a = gen(r, function () { return r.int(Math.round(S2 * 0.3), Math.round(S2 * 0.5)); }, function (a) { return nonSq(a) && nonSq(S2 - a); }), b = S2 - a;
+          return sumEstPart([a, b], c, true);
+        } },
+        { id: '9b', level: 'EMG', make: function (r) {
+          var ns = gen(r, function () { return r.sample([2, 3, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15], 3).sort(function (x, y) { return x - y; }); }, function (ns) { var T = ns[0] + ns[1] + ns[2]; return nonSq(T) && fracOK(Math.sqrt(T), 0.4, 0.6); });
+          return sumEstPart(ns, null, false);
+        } }] },
+      { num: '10', stem: 'Decide whether each statement is true or false.',
+        shared: function (r) { var b = r.int(2, 5), k = r.int(2, 4), a = b * k; if (a > 12) { b = 2; a = 2 * k; } return { a: a, b: b, A: a * a, B: b * b, k: k }; },
+        parts: [
+          { id: '10a', level: 'BEG', make: function (r, sh) { return opTF(r, sh, '+'); } },
+          { id: '10b', level: 'BEG', make: function (r, sh) { return opTF(r, sh, '-'); } },
+          { id: '10c', level: 'BEG', make: function (r, sh) { return opTF(r, sh, '\\times'); } },
+          { id: '10d', level: 'BEG', make: function (r, sh) { return opTF(r, sh, '\\div'); } }] },
+      { num: '11', stem: 'In each of the following: (i) estimate the value mentally; (ii) use a calculator to find the decimal approximation to the nearest tenth, and decide if the estimate was reasonable.', parts: [
+        { id: '11a', level: 'BEG', make: function (r) { var n = gen(r, function () { return r.int(11, 99); }, function (n) { return nonSq(n) && fracOK(Math.sqrt(n), 0.42, 0.58); }); return termsEst([T1(2, n)], 'estimate sqrt ' + n); } },
+        { id: '11b', level: 'BEG', make: function (r) { var m = gen(r, function () { return d1(r, 101, 999); }, function (m) { return fracOK(Math.sqrt(m.v), 0.42, 0.58); }); return termsEst([T1(2, m.v, m.s)], 'estimate sqrt ' + m.s); } },
+        { id: '11c', level: 'EMG', make: function (r) {
+          var o = gen(r, function () { return { a: r.int(3, 6), b: r.int(2, 4), p: r.int(10, 99), q: r.int(10, 99) }; }, function (o) {
+            var x = o.a * Math.sqrt(o.p) - o.b * Math.sqrt(o.q), tol = Math.max(0.65, 0.1 * x);
+            // the whole-number and half-step mental estimates must both be reasonable (as in the booklet's 5√40 − 2√90), so that a sensible estimate is never rejected
+            var mk = o.a * Math.round(Math.sqrt(o.p)) - o.b * Math.round(Math.sqrt(o.q)), hk = o.a * Math.round(2 * Math.sqrt(o.p)) / 2 - o.b * Math.round(2 * Math.sqrt(o.q)) / 2;
+            return nonSq(o.p) && nonSq(o.q) && o.p !== o.q && x > 3 && x < 40 && Math.abs(mk - x) <= tol && Math.abs(hk - x) <= tol;
+          });
+          return termsEst([T1(2, o.p, null, 1, [o.a, 1]), T1(2, o.q, null, -1, [o.b, 1])], 'estimate ' + o.a + 'sqrt' + o.p + '-' + o.b + 'sqrt' + o.q);
+        } },
+        { id: '11d', level: 'EMG', make: function (r) {
+          var c1 = r.pick([[2, 3], [3, 4], [1, 2], [3, 5], [2, 5]]), c2 = r.pick([[1, 4], [1, 3], [1, 2], [1, 5]]), m1 = d1(r, 101, 400), m2 = gen(r, function () { return r.int(3, 15); }, nonSq);
+          return termsEst([T1(2, m1.v, m1.s, 1, c1), T1(2, m2, null, 1, c2)], 'estimate fractional coefficients');
+        } },
+        { id: '11e', level: 'EMG', make: function (r) { var n = gen(r, function () { return r.int(101, 399); }, function (n) { return nonSq(n) && fracOK(Math.sqrt(n), 0.42, 0.58); }); return termsEst([T1(2, n)], 'estimate sqrt ' + n); } },
+        { id: '11f', level: 'EMG', make: function (r) { var m = r.pick([5, 7, 8, 8, 10, 11, 14, 15]), n = m * m + r.pick([-2, -1, 1, 1, 2]); return nestedRootPart(n, m, 'sqrt sqrt ' + n); } },
+        { id: '11g', level: 'PRG', make: function (r) {
+          var a = gen(r, function () { return r.int(5, 50); }, nonSq), b = d1(r, 101, 600), Sx = Math.sqrt(a) + Math.sqrt(b.v), x = Math.sqrt(Sx);
+          var mentals = []; cands(Math.sqrt(a)).forEach(function (ca) { cands(Math.sqrt(b.v)).forEach(function (cb) { cands(Math.sqrt(ca + cb)).forEach(function (co) { mentals.push(co); }); }); });
+          var ea = Math.round(Math.sqrt(a)), eb = Math.round(Math.sqrt(b.v)), es = Math.round(Math.sqrt(ea + eb)), want = K.roundTo(x, 1);
+          return estPart({ tex: '\\sqrt{\\sqrt{' + a + '}+\\sqrt{' + b.s + '}}', x: x, mentals: mentals, mentalKey: es, text: 'sqrt(sqrt a + sqrt b)',
+            nb: nb(2, a, String(a)) + ' ' + nb(2, b.v, b.s) + ' Add those estimates, then estimate the square root of the sum.',
+            mentalSol: t('\\sqrt{' + a + '}\\approx ' + ea) + ', ' + t('\\sqrt{' + b.s + '}\\approx ' + eb) + '; sum ' + t('\\approx ' + (ea + eb)) + ', so ' + t('\\sqrt{' + (ea + eb) + '}\\approx ' + es),
+            calcSol: t(fx(Math.sqrt(a), 3) + '+' + fx(Math.sqrt(b.v), 3) + '=' + fx(Sx, 3)) + ', and ' + t('\\sqrt{' + fx(Sx, 3) + '}\\approx ' + want.toFixed(1)),
+            diagEst: function (v) { return Math.abs(v - Sx) < 1 ? { code: 'nested-one-root', hint: 'That’s about ' + t('\\sqrt{' + a + '}+\\sqrt{' + b.s + '}') + '. Don’t forget the big square root over the whole sum.' } : null; },
+            diagCalc: function (v) { return Math.abs(v - K.roundTo(Sx, 1)) < 1e-9 ? { code: 'nested-one-root', hint: 'That’s the sum inside. Take its square root too.' } : null; } });
+        } },
+        { id: '11h', level: 'EMG', make: function (r) { var k = r.pick([4, 5, 6, 7, 7, 8]), n = 100 * k * k + r.int(1, 9); return nestedRootPart(n, 10 * k, 'sqrt sqrt ' + n); } }] },
+      { num: '12', stem: 'Estimate each square root to one significant digit.', parts: [
+        { id: '12a', level: 'BEG', make: function (r) { return sigPart(gen(r, function () { return r.int(100, 999); }, function (N) { return nonSq(N) && sigOK(N, 0); }), 0); } },
+        { id: '12b', level: 'BEG', make: function (r) { return sigPart(gen(r, function () { return r.int(1000, 9999); }, function (N) { return nonSq(N) && sigOK(N, 0); }), 0); } },
+        { id: '12c', level: 'EMG', make: function (r) { return sigPart(gen(r, function () { return r.int(10000, 99999); }, function (N) { return nonSq(N) && sigOK(N, 0); }), 0); } },
+        { id: '12d', level: 'EMG', make: function (r) { return sigPart(1000 * gen(r, function () { return r.int(101, 999); }, function (N) { return sigOK(1000 * N, 0) && N % 10 !== 0; }), 0); } },
+        { id: '12e', level: 'EMG', make: function (r) { return sigPart(gen(r, function () { return r.int(101, 999); }, function (N) { return N % 10 !== 0 && sigOK(N, 3); }), 3); } },
+        { id: '12f', level: 'EMG', make: function (r) { return sigPart(gen(r, function () { return r.int(101, 999); }, function (N) { return N % 10 !== 0 && sigOK(N, 4); }), 4); } },
+        { id: '12g', level: 'EMG', make: function (r) { return sigPart(gen(r, function () { return r.int(101, 999); }, function (N) { return N % 10 !== 0 && sigOK(N, 5); }), 5); } },
+        { id: '12h', level: 'EMG', make: function (r) { return sigPart(gen(r, function () { return r.int(1001, 9999); }, function (N) { return N % 10 !== 0 && sigOK(N, 7); }), 7); } }] },
+
+      /* ================= Part C — Cube Roots and Ordering ================= */
+      { num: '13', section: 'Part C — Cube Roots and Ordering', stem: 'In each of the following: (i) estimate the value mentally; (ii) use a calculator to find the decimal approximation to the nearest tenth, and decide if the estimate was reasonable.', parts: [
+        { id: '13a', level: 'BEG', make: function (r) { var n = gen(r, function () { return r.int(10, 130); }, function (n) { return nonCube(n) && fracOK(Math.cbrt(n), 0.42, 0.58); }); return termsEst([T1(3, n)], 'estimate cbrt ' + n); } },
+        { id: '13b', level: 'BEG', make: function (r) { var n = r.pick([2, 4, 4, 5, 6, 7]); return termsEst([T1(3, n)], 'estimate cbrt ' + n); } },
+        { id: '13c', level: 'EMG', make: function (r) { return betweenPart(gen(r, function () { return r.int(126, 999); }, nonCube)); } },
+        { id: '13d', level: 'EMG', make: function (r) {
+          var c = r.int(5, 10), m = gen(r, function () { return d1(r, Math.round(c * c * c * 8), Math.round(c * c * c * 11.5)); }, function (m) { return fracOK(Math.cbrt(m.v), 0.42, 0.58) && Math.round(Math.cbrt(m.v)) === c; });
+          return termsEst([T1(3, m.v, fmtDec(m.s))], 'estimate cbrt ' + m.s);
+        } },
+        { id: '13e', level: 'EMG', make: function (r) {
+          var o = gen(r, function () { var Pc = r.pick([3, 4, 5]), Qc = r.pick([2, 3].filter(function (q) { return q < Pc; })), p = d1(r, Math.round(Pc * Pc * Pc * 9), Math.round(Pc * Pc * Pc * 11)), q = d1(r, Math.round(Qc * Qc * Qc * 9), Math.round(Qc * Qc * Qc * 12)); return { a: r.int(2, 4), b: r.int(2, 3), p: p, q: q }; },
+            function (o) { var x = o.a * Math.cbrt(o.p.v) - o.b * Math.cbrt(o.q.v), mk = o.a * Math.round(Math.cbrt(o.p.v)) - o.b * Math.round(Math.cbrt(o.q.v)); return x > 1.5 && Math.abs(mk - x) <= Math.max(0.65, 0.1 * x); });
+          return termsEst([T1(3, o.p.v, o.p.s, 1, [o.a, 1]), T1(3, o.q.v, o.q.s, -1, [o.b, 1])], 'estimate a cbrt p - b cbrt q');
+        } },
+        { id: '13f', level: 'EMG', make: function (r) {
+          var o = gen(r, function () { return { c1: r.pick([[3, 5], [2, 3], [3, 4], [2, 5]]), p: r.int(20, 80), c2: r.pick([[1, 3], [1, 2], [1, 4]]), q: r.int(20, 130) }; },
+            function (o) { return nonSq(o.p) && nonCube(o.q) && cv(o.c1) * Math.sqrt(o.p) - cv(o.c2) * Math.cbrt(o.q) > 0.6; });
+          return termsEst([T1(2, o.p, null, 1, o.c1), T1(3, o.q, null, -1, o.c2)], 'estimate square root minus cube root');
+        } },
+        { id: '13g', level: 'PRG', make: function (r) {
+          var a = r.int(2, 5), b = gen(r, function () { return r.int(8, 50); }, function (b) { var inner = a * Math.sqrt(b); return nonSq(b) && inner > 6 && inner < 45; }), inner = a * Math.sqrt(b), x = Math.cbrt(inner);
+          var mentals = []; cands(Math.sqrt(b)).forEach(function (cb) { cands(Math.cbrt(a * cb)).forEach(function (co) { mentals.push(co); }); });
+          var eb = Math.round(Math.sqrt(b)), want = K.roundTo(x, 1);
+          return estPart({ tex: '\\sqrt[3]{' + a + '\\sqrt{' + b + '}}', x: x, mentals: mentals, mentalKey: Math.round(x), text: 'cbrt(a sqrt b)',
+            nb: nb(2, b, String(b)) + ' Multiply by ' + t(a) + ', then find the perfect cubes on either side.',
+            mentalSol: t(a + '\\sqrt{' + b + '}\\approx ' + a + '(' + eb + ')=' + a * eb) + ', and ' + t('\\sqrt[3]{' + a * eb + '}') + ' is between ' + t(Math.floor(Math.cbrt(a * eb) + 1e-9)) + ' and ' + t(Math.floor(Math.cbrt(a * eb) + 1e-9) + 1) + ', so about ' + t(Math.round(x)),
+            calcSol: t(a + '(' + fx(Math.sqrt(b), 3) + ')=' + fx(inner, 2)) + ', and ' + t('\\sqrt[3]{' + fx(inner, 2) + '}\\approx ' + want.toFixed(1)),
+            diagEst: function (v) { return Math.abs(v - inner) < 1.5 ? { code: 'nested-one-root', hint: 'That’s about ' + t(a + '\\sqrt{' + b + '}') + '. Now take the cube root of it.' } : null; },
+            diagCalc: function (v) { if (Math.abs(v - K.roundTo(inner, 1)) < 1e-9) return { code: 'nested-one-root', hint: 'That’s ' + t(a + '\\sqrt{' + b + '}') + '. Take its cube root too.' }; if (Math.abs(v - K.roundTo(Math.sqrt(inner), 1)) < 1e-9) return { code: 'square-not-cube', hint: 'The outer root is a <b>cube</b> root, not a square root.' }; return null; } });
+        } }] },
+      { num: '14', stem: 'Order the numbers on a number line from ' + t('0') + ' to ' + t('30') + '.', parts: [
+        { id: '14', level: 'EMG', make: function (r) { return orderRootsPart(r); } }] },
+
+      /* ================= Part D — Multiple Choice and Numerical Response ================= */
+      { num: '15', section: 'Part D — Multiple Choice and Numerical Response', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: '15', level: 'EMG', make: function (r) { return nestMC(r); } }] },
+      { num: '16', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: '16', level: 'EMG', make: function (r) {
+          var k = gen(r, function () { return r.int(2, 30); }, function (k) { return nonSq(k) && nonCube(k); });
+          var F6 = [['-\\sqrt{' + k + '}', true], ['\\sqrt{-' + k + '}', false], ['-\\sqrt[3]{' + k + '}', true], ['\\sqrt[3]{-' + k + '}', true], ['-\\sqrt{-' + k + '}', false], ['-\\sqrt[3]{-' + k + '}', true]];
+          var four = r.chance(0.4) ? F6.slice(0, 4) : r.sample(F6, 4), cnt = four.filter(function (f) { return !f[1]; }).length;
+          var neg = four.filter(function (f) { return /-/.test(f[0]); }).length, negIn = four.filter(function (f) { return /\{-/.test(f[0]); }).length;
+          var opts = [0, 1, 2, 3].map(function (n) { return { html: t(n), right: n === cnt, why: n === cnt ? null : n === neg ? 'A minus sign <b>outside</b> a root is fine: ' + t('-\\sqrt{' + k + '}') + ' is just the opposite of a real number.' : n === negIn ? 'A <b>cube</b> root of a negative number is real (e.g. ' + t('\\sqrt[3]{-8}=-2') + '). Only a <b>square</b> root of a negative fails.' : 'Check each one: only a square root of a negative number is not real.' }; });
+          return P.mc(r, 'How many of the numbers ' + t(four.map(function (f) { return f[0]; }).join(',\\ ')) + ' do <b>not</b> belong to the real number system?', opts,
+            four.map(function (f) { return t(f[0]) + ': ' + (f[1] ? 'real' : '<b>not real</b> (square root of a negative)'); }).join('<br>') + '<br>So ' + t(cnt) + ' of them ' + (cnt === 1 ? 'is' : 'are') + ' not real.',
+            ['A square root of a negative number is not real. A cube root of a negative number is real (and negative).'], 'how many not real', true);
+        } }] },
+      { num: '17', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: '17', level: 'PRG', make: function (r) {
+          var k = r.int(2, 9), pq = r.pick([[3, 4], [2, 5], [4, 7], [5, 6], [3, 5], [2, 3]]), kk = k * k;
+          var pool = [['\\sqrt{' + kk + '}', true, t('\\sqrt{' + kk + '}=' + k + '=\\frac{' + k + '}{1}') + ' — yes.'], ['\\sqrt{' + fmtDec((kk / 10).toFixed(1).replace(/\.0$/, '')) + '}', false, t(fmtDec((kk / 10).toFixed(1))) + ' is not a perfect square, so its root is irrational — no.'],
+            ['\\sqrt{' + (kk / 100).toFixed(2) + '}', true, t('\\sqrt{' + (kk / 100).toFixed(2) + '}=' + k / 10 + '=\\frac{' + k + '}{10}') + ' — yes.'], ['\\sqrt{\\frac{' + pq[0] * pq[0] + '}{' + pq[1] * pq[1] + '}}', true, t('\\sqrt{\\frac{' + pq[0] * pq[0] + '}{' + pq[1] * pq[1] + '}}=\\frac{' + pq[0] + '}{' + pq[1] + '}') + ' — yes.'],
+            ['-\\sqrt{' + kk + '}', false, t('-\\sqrt{' + kk + '}=-' + k) + ' is negative, but ' + t('a, b\\in N') + ' gives only positive fractions — no.'], ['\\sqrt{' + kk * 10 + '}', false, t(kk * 10) + ' is not a perfect square, so its root is irrational — no.']];
+          if (kk % 10 === 0) pool.splice(1, 1);
+          var four = r.chance(0.4) ? pool.slice(0, 4) : gen(r, function () { return r.sample(pool, 4); }, function (f) { return f.some(function (x) { return x[1]; }); });
+          four = four.slice().sort(function (a, b) { return pool.indexOf(a) - pool.indexOf(b); });
+          var cnt = four.filter(function (f) { return f[1]; }).length;
+          return P.mc(r, 'How many of the numbers ' + t(four.map(function (f) { return f[0]; }).join(',\\ ')) + ' can be expressed in the form ' + t('\\frac{a}{b}') + ', where ' + t('a, b\\in N') + '?',
+            [1, 2, 3, 4].map(function (n) { return { html: t(n), right: n === cnt, why: n === cnt ? null : 'Check each number: ' + t('\\frac{a}{b}') + ' with ' + t('a, b\\in N') + ' means a <b>positive rational</b> number. Is the radicand a perfect square (decimals like ' + t('0.81=0.9^{2}') + ' count)? Is the number negative?' }; }),
+            t('\\frac{a}{b}') + ' with ' + t('a, b\\in N') + ' means a positive rational number.<br>' + four.map(function (f) { return f[2]; }).join('<br>') + '<br>So ' + t(cnt) + ' of them.', ['Simplify each root. Which are positive and rational?'], 'how many positive rational', true);
+        } }] },
+      { num: '18', stem: '<i>(Numerical Response)</i>', parts: [
+        { id: '18', level: 'BEG', make: function (r) {
+          var o = gen(r, function () { return { a: r.int(2, 6), b: r.int(3, 30) }; }, function (o) { var x = o.a * Math.cbrt(o.b); return nonCube(o.b) && x < 9.9 && Math.abs(frac(x * 100) - 0.5) > 0.03; });
+          var x = o.a * Math.cbrt(o.b), want = K.roundTo(x, 2), sq = K.roundTo(o.a * Math.sqrt(o.b), 2), inside = K.roundTo(Math.cbrt(o.a * o.b), 2), early = K.roundTo(o.a * K.roundTo(Math.cbrt(o.b), 2), 2);
+          var p = P.approx('To the nearest hundredth, the value of ' + t(o.a + '\\sqrt[3]{' + o.b + '}') + ' is ________.', x, 2, { nr: true, diag: function (v) {
+            if (Math.abs(v - sq) < 1e-9) return { code: 'square-not-cube', hint: 'That’s ' + t(o.a + '\\sqrt{' + o.b + '}') + '. This is a <b>cube</b> root.' };
+            if (Math.abs(v - inside) < 1e-9) return { code: 'cube-in', hint: 'The ' + t(o.a) + ' is outside the root: find ' + t('\\sqrt[3]{' + o.b + '}') + ' first, then multiply by ' + t(o.a) + '.' };
+            if (Math.abs(v - early) < 1e-9 && early !== want) return { code: 'rounded-early', hint: 'Close — you rounded ' + t('\\sqrt[3]{' + o.b + '}') + ' before multiplying. Keep the full value and round at the end.' };
             return null;
-          }, t(e + '=\\sqrt{\\dfrac{' + a + '\\times ' + b + '}{' + c + '}}=\\sqrt{\\dfrac{' + a * b + '}{' + c + '}}=\\sqrt{' + m + '}') + '.', ['Multiply the radicands on top, then divide by the radicand on the bottom — all under one radical.'], 'single radical √' + a + '√' + b + '/√' + c, ['\\sqrt{' + a * b + '}', '\\sqrt{' + a * b * c + '}']);
-        } },
-        { id: '9h', level: 'EMG', make: function (r) {
-          var qq = r.pick([[2, 4], [2, 3], [3, 2], [3, 3], [5, 2], [2, 5], [6, 2], [7, 2]]), k = qq[0], q = qq[1], p = q * k, P2 = p * p, Q2 = q * q;
-          var e = '\\dfrac{\\sqrt{\\sqrt{' + P2 + '}}}{\\sqrt{\\sqrt{' + Q2 + '}}}';
-          return singlePart(e, k, function (M, v) {
-            if (same(v, k)) return { code: 'inner-roots', hint: 'Work from the inside out: ' + t('\\sqrt{' + P2 + '}=' + p) + ' and ' + t('\\sqrt{' + Q2 + '}=' + q) + ' first. Then use the quotient rule on what is left.' };
-            if (M === p * q) return { code: 'multiplied', hint: 'This is a quotient: divide the radicands.' };
-            return null;
-          }, 'Inside first: ' + t('\\sqrt{' + P2 + '}=' + p) + ' and ' + t('\\sqrt{' + Q2 + '}=' + q) + '. So ' + t(e + '=\\dfrac{\\sqrt{' + p + '}}{\\sqrt{' + q + '}}=\\sqrt{\\dfrac{' + p + '}{' + q + '}}=\\sqrt{' + k + '}') + '.',
-          ['Work from the inside out: evaluate the inner square roots first.', 'Then use ' + t('\\dfrac{\\sqrt{a}}{\\sqrt{b}}=\\sqrt{\\dfrac{a}{b}}') + '.'], 'single radical nested ' + P2 + '/' + Q2, [String(k), '\\sqrt{' + k * k + '}']);
-        } }] },
-      { num: '10', stem: 'Express as a product of two radicals.', parts: [
-        { id: '10a', level: 'BEG', make: function (r) { var pq = r.pick([[7, 11], [3, 13], [7, 13], [5, 13], [3, 23], [7, 17]]); return twoPart(pq[0] * pq[1], pq[0], pq[1]); } },
-        { id: '10b', level: 'BEG', make: function (r) { var pq = r.pick([[3, 17], [3, 19], [5, 11], [3, 29], [5, 17], [2, 23]]); return twoPart(pq[0] * pq[1], pq[0], pq[1]); } },
-        { id: '10c', level: 'EMG', make: function (r) { var pq = r.pick([[5, 19], [7, 19], [5, 23], [11, 13], [3, 31], [2, 37]]); return twoPart(pq[0] * pq[1], pq[0], pq[1]); } },
-        { id: '10d', level: 'EMG', make: function (r) { var p = r.pick([11, 13, 7, 17, 19]); return twoPart(p * p, p, p); } }] },
-      { num: '11', section: 'Part D — Multiple Choice and Numerical Response', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: '11', level: 'PRG', make: function (r) {
-          var c = r.int(2, 5), d = r.int(2, 5), e = r.int(4, 9), f = r.int(2, 4), c3 = c * c * c, d4 = ipow(d, 4), e3 = e * e * e, f4 = ipow(f, 4);
-          var iT = r.chance(0.35), ivT = r.chance(0.35);
-          var st = [
-            iT ? { label: 'I', html: 'The cube root of ' + t(-c3) + ' is ' + t(-c) + '.', truth: true, reason: t('(-' + c + ')^{3}=-' + c3) + '.' }
-              : { label: 'I', html: 'The cube roots of ' + t(-c3) + ' are ' + t('\\pm ' + c) + '.', truth: false, reason: t('(-' + c + ')^{3}=-' + c3) + ' but ' + t(c + '^{3}=' + c3) + ', so ' + t(-c3) + ' has only one cube root, ' + t(-c) + '.' },
-            { label: 'II', html: 'The fourth roots of ' + t(F(d4)) + ' are ' + t('\\pm ' + d) + '.', truth: true, reason: t(d + '^{4}=' + F(d4)) + ' and ' + t('(-' + d + ')^{4}=' + F(d4)) + ', so both are fourth roots.' },
-            { label: 'III', html: t('-\\sqrt[3]{' + e3 + '}=\\sqrt[3]{-' + e3 + '}'), truth: true, reason: t('-\\sqrt[3]{' + e3 + '}=-' + e) + ' and ' + t('\\sqrt[3]{-' + e3 + '}=-' + e) + ' (odd index), so they match.' },
-            ivT ? { label: 'IV', html: t('-\\sqrt[4]{' + f4 + '}=-' + f), truth: true, reason: t('\\sqrt[4]{' + f4 + '}=' + f) + ', and the minus sign is outside, so ' + t('-\\sqrt[4]{' + f4 + '}=-' + f) + '.' }
-              : { label: 'IV', html: t('-\\sqrt[4]{' + f4 + '}=\\sqrt[4]{-' + f4 + '}'), truth: false, reason: t('-\\sqrt[4]{' + f4 + '}=-' + f) + ', but ' + t('\\sqrt[4]{-' + f4 + '}') + ' is not possible (even index, negative radicand).' }];
-          return statementsMC(r, 'Consider the following statements.', st, [['II', 'III'], ['I', 'II', 'III'], ['I', 'II', 'III', 'IV']], 'some other combination of I, II, III and IV', 'which root statements are true');
-        } }] },
-      { num: '12', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: '12', level: 'LIM', make: function (r) {
-          var m = nonPerfect(r, 11, 47, 2);
-          return mcPart(r, 'In the radical ' + t('\\sqrt{' + m + '}') + ',', [
-            { html: 'the index is ' + t('2') + ' and the radicand is ' + t('\\sqrt{' + m + '}'), why: 'The radicand is the number <b>under</b> the radical sign, not the whole radical.' },
-            { html: 'the index is ' + t('1') + ' and the radicand is ' + t('1'), why: 'When no index is written it is understood to be ' + t('2') + ' (a square root). And the radicand is the number under the radical sign.' },
-            { html: 'the index is ' + t(m) + ' and the radicand is ' + t('1'), why: t(m) + ' sits under the radical sign, so it is the radicand. The index goes in the notch.' },
-            { html: 'the index is ' + t('2') + ' and the radicand is ' + t(m), right: true }],
-            'No index is written, so by convention the index is ' + t('2') + '. The radicand is the number under the radical sign, ' + t(m) + '.', ['Which number is under the radical sign? What index does a plain ' + t('\\sqrt{\\ }') + ' have?'], 'index/radicand of √' + m);
-        } }] },
-      { num: '13', stem: '<i>(Numerical Response)</i>', parts: [
-        { id: '13', level: 'EMG', make: function (r) {
-          var fr = r.pick([[5, 6], [2, 3], [3, 4], [4, 5], [7, 8], [3, 5], [5, 7]]), c = r.pick([2, 3, 3, 4]), idx = r.pick([[5, 4], [5, 4], [3, 4], [5, 6]]), f = fr[0] / fr[1];
-          var A = nroot(-f, idx[0]), B = nroot(f, idx[1]), x = A + c * B;
-          var e = rt(idx[0], '-\\dfrac{' + fr[0] + '}{' + fr[1] + '}') + '+' + c + rt(idx[1], '\\dfrac{' + fr[0] + '}{' + fr[1] + '}');
-          var p = approxPart(e, x, 2, [
-            { x: -A + c * B, code: 'sign', hint: 'The first radical has an odd index and a negative radicand, so it is <b>negative</b>.' },
-            { x: A + nroot(c * f, idx[1]), code: 'coef-inside', hint: 'The ' + t(c) + ' multiplies the second radical — it doesn’t go under the radical.' },
-            { x: A + B, code: 'no-coef', hint: 'Don’t forget to multiply the second radical by ' + t(c) + '.' },
-            { x: nroot(-f, 3) + c * Math.sqrt(f), code: 'wrong-index', hint: 'Check the indices: ' + t(idx[0]) + ' for the first radical and ' + t(idx[1]) + ' for the second.' }],
-            t('\\tfrac{' + fr[0] + '}{' + fr[1] + '}\\approx ' + decStr(f, 5)) + '. Index ' + idx[0] + ' is odd, so the first radical is negative: ' + t(rt(idx[0], '-\\tfrac{' + fr[0] + '}{' + fr[1] + '}') + '=' + dots(A)) + '.<br>' + t(c + rt(idx[1], '\\tfrac{' + fr[0] + '}{' + fr[1] + '}') + '=' + c + '\\times ' + dots(B) + '=' + dots(c * B)) + '.<br>Sum: ' + t(dots(x) + '\\approx ' + x.toFixed(2)) + '.',
-            ['Evaluate each radical separately with ' + XKEY + ' (use brackets around the fraction), then add.', 'Odd index + negative radicand = negative root.'], 'NR ' + e, { nr: true });
-          p.prompt = 'To the nearest hundredth, the value of ' + t(e) + ' is ________.';
+          } }, t('\\sqrt[3]{' + o.b + '}=' + fx(Math.cbrt(o.b), 4) + '\\ldots') + ' (between ' + t(Math.floor(Math.cbrt(o.b))) + ' and ' + t(Math.floor(Math.cbrt(o.b)) + 1) + '), so ' + t(o.a + '\\sqrt[3]{' + o.b + '}=' + fx(x, 4) + '\\ldots') + ', which rounds to ' + t(want.toFixed(2)) + '.',
+          ['Find the cube root first, multiply, and round only at the end.', 'Numerical response: record all four characters, e.g. ' + t('8.90') + '.'], 'NR ' + o.a + 'cbrt' + o.b);
+          var base = p.check; // a numerical response to the nearest hundredth shows both decimal places (8.90, not 8.9)
+          p.check = function (resp) { var res = base(resp); if (res.v === 'correct' && (HW.parse.plain(resp).replace(/\s/g, '').split('.')[1] || '').length < 2) return form('places', 'Right value! To the nearest hundredth, a numerical-response answer shows <b>two</b> decimal places — record all four characters.'); return res; };
+          p.bad = [K.roundTo(o.a * Math.sqrt(o.b), 2) < 10 ? sq.toFixed(2) : '9.99'];
           return p;
-        } }] }
+        } }] },
+
+      /* ================= Part E — Extension: Absolute Value ================= */
+      { num: '19', section: 'Part E — Extension: Absolute Value', stem: 'Evaluate each of the following.',
+        shared: function (r) { var p = r.int(2, 9); return { p: p, q: p + r.int(3, 12), c: r.int(2, 6) }; },
+        parts: [
+          { id: '19a', level: 'LIM', make: function (r) { var k = r.int(2, 20); return absPart('|-' + k + '|', k, function (v) { return v === -k ? { code: 'abs-negative', hint: 'Absolute value is a distance from ' + t('0') + ', so it is never negative.' } : null; }, t('-' + k) + ' is ' + t(k) + ' units from ' + t('0') + ', so ' + t('|-' + k + '|=' + k) + '.', '|-' + k + '|'); } },
+          { id: '19b', level: 'LIM', make: function (r) { var k = r.int(5, 30); return absPart('|' + k + '|', k, function (v) { return v === -k ? { code: 'abs-negative', hint: 'Absolute value never makes a number negative. ' + t(k) + ' is already positive.' } : null; }, t(k) + ' is already positive, so ' + t('|' + k + '|=' + k) + '.', '|' + k + '|'); } },
+          { id: '19c', level: 'BEG', make: function (r, sh) { var p = sh.p, q = sh.q; return absPart('|' + p + '-' + q + '|', q - p, function (v) { if (v === p - q) return { code: 'abs-inside', hint: 'You worked out ' + t(p + '-' + q) + ' — now take its absolute value.' }; if (v === p + q) return { code: 'abs-added', hint: 'Inside the bars it is ' + t(p + '-' + q) + ': subtract.' }; return null; }, 'Inside the bars first: ' + t(p + '-' + q + '=-' + (q - p)) + '. Then ' + t('|-' + (q - p) + '|=' + (q - p)) + '.', '|' + p + '-' + q + '|'); } },
+          { id: '19d', level: 'EMG', make: function (r, sh) { var p = sh.p, q = sh.q; return absPart('|' + p + '|-|' + q + '|', p - q, function (v) { if (v === q - p) return { code: 'abs-each', hint: 'Here the bars go around each number separately: ' + t('|' + p + '|=' + p) + ' and ' + t('|' + q + '|=' + q) + '. Then subtract — there are no bars around the answer.' }; return null; }, 'Each absolute value first: ' + t('|' + p + '|-|' + q + '|=' + p + '-' + q + '=-' + (q - p)) + '. There are no bars around the result, so it stays negative.', '|' + p + '|-|' + q + '|'); } },
+          { id: '19e', level: 'EMG', make: function (r, sh) { var p = sh.p, q = sh.q; return absPart('\\big||' + p + '|-|' + q + '|\\big|', q - p, function (v) { if (v === p - q) return { code: 'abs-outer', hint: 'Don’t forget the outer bars: they make the result positive.' }; return null; }, t('|' + p + '|-|' + q + '|=' + p + '-' + q + '=-' + (q - p)) + ', then the outer bars: ' + t('|-' + (q - p) + '|=' + (q - p)) + '.', '||p|-|q||'); } },
+          { id: '19f', level: 'EMG', make: function (r, sh) { var c = sh.c, c3 = c * c * c; return absPart('-|\\sqrt[3]{' + c3 + '}|', -c, function (v) { if (v === c) return { code: 'abs-minus-out', hint: 'The minus sign is <b>outside</b> the bars, so it stays: the answer is negative.' }; if (Math.abs(v) === c3) return { code: 'abs-cube', hint: 'Take the cube root first: which number cubed is ' + t(c3) + '?' }; return null; }, t('\\sqrt[3]{' + c3 + '}=' + c) + ' and ' + t('|' + c + '|=' + c) + ', so ' + t('-|\\sqrt[3]{' + c3 + '}|=-' + c) + '.', '-|cbrt ' + c3 + '|'); } },
+          { id: '19g', level: 'BEG', make: function (r, sh) { var c = sh.c, c3 = c * c * c; return absPart('|-\\sqrt[3]{' + c3 + '}|', c, function (v) { if (v === -c) return { code: 'abs-negative', hint: 'The minus sign is <b>inside</b> the bars, and absolute value is never negative.' }; if (Math.abs(v) === c3) return { code: 'abs-cube', hint: 'Take the cube root first.' }; return null; }, t('-\\sqrt[3]{' + c3 + '}=-' + c) + ' and ' + t('|-' + c + '|=' + c) + '.', '|-cbrt ' + c3 + '|'); } },
+          { id: '19h', level: 'EMG', make: function (r, sh) { var c = sh.c, c3 = c * c * c; return absPart('|\\sqrt[3]{-' + c3 + '}|', c, function (v) { if (v === -c) return { code: 'abs-negative', hint: t('\\sqrt[3]{-' + c3 + '}=-' + c) + ' — but then the bars make it positive.' }; if (Math.abs(v) === c3) return { code: 'abs-cube', hint: 'Take the cube root first.' }; return null; }, t('\\sqrt[3]{-' + c3 + '}=-' + c) + ' (cube roots keep the sign), and ' + t('|-' + c + '|=' + c) + '.', '|cbrt -' + c3 + '|'); } }] },
+      { num: '20', stem: 'Decide whether each statement is true or false.', parts: [
+        { id: '20a', level: 'BEG', make: function (r) {
+          var k = r.int(2, 9);
+          return poolTF(r, [[t('|x|=x') + ' if ' + t('x>0'), true, 'If ' + t('x') + ' is positive, its distance from ' + t('0') + ' is ' + t('x') + ' itself, e.g. ' + t('|' + k + '|=' + k) + '.'],
+            [t('|x|=x') + ' if ' + t('x\\ge 0'), true, 'For ' + t('x>0') + ' the distance is ' + t('x') + ' itself, and ' + t('|0|=0') + '.'],
+            [t('|x|=x') + ' if ' + t('x<0'), false, 'Try ' + t('x=-' + k) + ': ' + t('|-' + k + '|=' + k) + ', not ' + t('-' + k) + '.']], 'abs positive case', ABS_TF_HINTS);
+        } },
+        { id: '20b', level: 'PRG', make: function (r) {
+          var k = r.int(2, 9);
+          return poolTF(r, [[t('|x|=-x') + ' if ' + t('x<0'), true, 'If ' + t('x') + ' is negative, ' + t('-x') + ' is positive, and that is its distance from ' + t('0') + ': e.g. ' + t('|-' + k + '|=' + k + '=-(-' + k + ')') + '.'],
+            [t('|x|=-x') + ' if ' + t('x>0'), false, 'Try ' + t('x=' + k) + ': ' + t('|' + k + '|=' + k) + ', but ' + t('-x=-' + k) + '.'],
+            [t('|-x|=x') + ' for every real number ' + t('x'), false, 'Try ' + t('x=-' + k) + ': ' + t('|-(-' + k + ')|=|' + k + '|=' + k) + ', but ' + t('x=-' + k) + '.']], 'abs negative case', ABS_TF_HINTS);
+        } }] },
+      { num: '21', stem: 'In each case, draw a graph on the number line to represent the absolute value inequality. The variables are defined on the set of real numbers.', parts: [
+        { id: '21a', level: 'EMG', make: function (r) { return absGraphPart(r, true, r.int(2, 7), r.pick(['x', 'x', 'y', 'n'])); } },
+        { id: '21b', level: 'PRG', make: function (r) { return absGraphPart(r, false, r.int(2, 7), r.pick(['a', 'a', 'x', 'm'])); } }] }
     ],
     extra: [
-      { num: '1', section: 'Extra practice A — Exact values without a calculator', stem: 'Evaluate exactly. Take the root of the numerator and the root of the denominator separately; leave each answer as a fraction in lowest terms.', parts: [
-        { id: 'e1a', level: 'BEG', make: function (r) { var ab = r.pick([[3, 4], [2, 5], [1, 4], [4, 5], [2, 3], [5, 6]]); return rootTyped({ n: 3, num: ipow(ab[0], 3), den: ipow(ab[1], 3), fraction: true }); } },
-        { id: 'e1b', level: 'EMG', make: function (r) { var ab = r.pick([[2, 3], [3, 5], [1, 3], [2, 5], [3, 4], [4, 5]]); return rootTyped({ n: 4, num: ipow(ab[0], 4), den: ipow(ab[1], 4), fraction: true }); } },
-        { id: 'e1c', level: 'EMG', make: function (r) { var ab = r.pick([[2, 3], [1, 2], [1, 3], [3, 2], [3, 4]]); return rootTyped({ n: 5, num: -ipow(ab[0], 5), den: ipow(ab[1], 5), fraction: true }); } },
-        { id: 'e1d', level: 'BEG', make: function (r) { var ab = r.pick([[5, 2], [4, 3], [7, 2], [5, 3], [6, 5]]); return rootTyped({ n: 3, num: ipow(ab[0], 3), den: ipow(ab[1], 3), fraction: true }); } }] },
-      { num: '2', stem: 'Evaluate exactly. Rewrite each decimal as a fraction over a power of ten first — the number of decimal places in the answer is the number of places in the radicand divided by the index.', parts: [
-        { id: 'e2a', level: 'EMG', make: function (r) { return decimalRoot(4, r.pick([1, 2, 3]), 1); } },
-        { id: 'e2b', level: 'EMG', make: function (r) { return decimalRoot(3, r.pick([2, 3, 4, 5]), 1); } },
-        { id: 'e2c', level: 'EMG', make: function (r) { return decimalRoot(2, r.pick([3, 4, 6, 7, 8, 9]), 2); } },
-        { id: 'e2d', level: 'EMG', make: function (r) { return decimalRoot(3, -r.pick([2, 3, 4, 5, 6, 7, 8, 9]), 1); } }] },
-      { num: '3', stem: 'Evaluate exactly. A coefficient in front of the radical multiplies the root <i>after</i> the root has been taken.', parts: [
-        { id: 'e3a', level: 'EMG', make: function (r) { return rootTyped({ n: 6, num: ipow(r.pick([2, 3]), 6) }); } },
-        { id: 'e3b', level: 'EMG', make: function (r) { var s = r.pick([2, 3, 4]), k = r.pick([2, 3]); return rootTyped({ n: 5, num: -ipow(s, 5), k: -k }); } },
-        { id: 'e3c', level: 'EMG', make: function (r) { var n = r.pick([6, 7, 8]), k = r.pick([2, 2, 4]); return rootTyped({ n: n, num: ipow(2, n), k: [1, k], fraction: true }); } },
-        { id: 'e3d', level: 'EMG', make: function (r) { var c = r.pick([[6, 2], [6, 3], [5, 2], [5, 3]]); return rootTyped({ n: c[0], num: 1, den: ipow(c[1], c[0]), fraction: true }); } }] },
-      { num: '4', stem: 'Evaluate exactly. The radicand is already written as a power — work out the power <i>first</i>, then take the root.', parts: [
-        { id: 'e4a', level: 'EMG', make: function (r) { return powRoot(2, r.int(2, 12), false); } },
-        { id: 'e4b', level: 'EMG', make: function (r) { return powRoot(3, r.int(2, 9), false); } },
-        { id: 'e4c', level: 'EMG', make: function (r) { return powRoot(4, r.int(2, 5), false); } },
-        { id: 'e4d', level: 'PRG', make: function (r) { return powRoot(2, r.int(2, 12), true); } }] },
-      { num: '5', section: 'Extra practice B — Possible or not possible', stem: 'Give the exact value, or choose <b>not possible</b> if the radical is not a real number. Remember: if the index is even, the radicand must be non-negative.', parts: [
-        { id: 'e5a', level: 'BEG', make: function (r) { var c = r.pick([[4, 2], [4, 3], [6, 2]]); return rootMC(r, { n: c[0], num: -ipow(c[1], c[0]) }); } },
-        { id: 'e5b', level: 'BEG', outcome: 'AN1', make: function (r) { var s = r.int(4, 9); return rootMC(r, { n: 3, num: -s * s * s }); } },
-        { id: 'e5c', level: 'BEG', make: function (r) { var c = r.pick([[6, 2], [6, 3], [4, 4], [8, 2]]); return rootMC(r, { n: c[0], num: -ipow(c[1], c[0]) }); } },
-        { id: 'e5d', level: 'BEG', make: function (r) { var c = r.pick([[5, 3], [5, 2], [5, 4], [7, 2]]); return rootMC(r, { n: c[0], num: -ipow(c[1], c[0]) }); } },
-        { id: 'e5e', level: 'LIM', outcome: 'AN1', make: function (r) { var s = r.int(4, 12); return rootMC(r, { n: 2, num: s * s, neg: true }); } },
-        { id: 'e5f', level: 'BEG', make: function (r) { var s = r.int(4, 12); return rootMC(r, { n: 2, num: -s * s }); } },
-        { id: 'e5g', level: 'BEG', make: function (r) { var c = r.pick([[8, 2], [6, 2], [10, 2], [6, 3], [4, 4]]); return rootMC(r, { n: c[0], num: ipow(c[1], c[0]) }); } },
-        { id: 'e5h', level: 'BEG', make: function (r) { var b = r.pick([10, 10, 4, 5, 6]); return rootMC(r, { n: 3, num: -1, den: b * b * b, order: ['sign', 'np', 'flip'] }); } }] },
-      { num: '6', stem: 'Each pair looks almost the same, but the minus sign has moved. Evaluate both expressions, then decide whether they are equal.', parts: [
-        { id: 'e6a', level: 'EMG', make: function (r) {
-          var c = r.pick([[4, 3], [4, 2], [4, 5], [6, 2]]), n = c[0], s = c[1], M = ipow(s, n), A = '-' + rt(n, M), B = rt(n, '-' + M);
-          return pairMC(r, A, B, [
-            { html: t(A + '=-' + s) + '; ' + t(B) + ' is not possible. <b>Not equal.</b>', right: true },
-            { html: 'Both equal ' + t(-s) + '. <b>Equal.</b>', why: 'The index ' + t(n) + ' is even, so a negative radicand has no real root: ' + t('(-' + s + ')^{' + n + '}=+' + M) + '.' },
-            { html: 'Both are not possible.', why: 'In ' + t(A) + ' the radicand ' + t(M) + ' is positive, so the root exists; the minus sign outside just makes it negative.' },
-            { html: t(A + '=' + s) + '; ' + t(B + '=-' + s) + '. <b>Not equal.</b>', why: 'The minus sign in ' + t(A) + ' makes that value negative.' }],
-            t(rt(n, M) + '=' + s) + ', so ' + t(A + '=-' + s) + '. In ' + t(B) + ' the index is even and the radicand is negative, so it is <b>not possible</b>. <b>Not equal:</b> outside the radical the minus sign negates a root that exists; inside, it makes an even-index radicand negative.', 'pair ' + A + ' vs ' + B);
-        } },
-        { id: 'e6b', level: 'PRG', make: function (r) {
-          var s = r.int(2, 9), A = '\\sqrt{(-' + s + ')^{2}}', B = '\\left(\\sqrt{-' + s + '}\\right)^{2}';
-          return pairMC(r, A, B, [
-            { html: t(A + '=' + s) + '; ' + t(B) + ' is not possible. <b>Not equal.</b>', right: true },
-            { html: 'Both equal ' + t(s) + '. <b>Equal.</b>', why: 'In ' + t(B) + ' you must take ' + t('\\sqrt{-' + s + '}') + ' first — and that isn’t a real number, so there is nothing to square.' },
-            { html: 'Both equal ' + t(-s) + '. <b>Equal.</b>', why: 'In ' + t(A) + ' the square comes first: ' + t('(-' + s + ')^{2}=' + s * s) + ', and ' + t('\\sqrt{' + s * s + '}') + ' is positive.' },
-            { html: t(A + '=-' + s) + '; ' + t(B + '=' + s) + '. <b>Not equal.</b>', why: 'Work inside out. ' + t('(-' + s + ')^{2}=' + s * s) + ' — what is its principal square root? And can you take ' + t('\\sqrt{-' + s + '}') + '?' }],
-            t(A + '=\\sqrt{' + s * s + '}=' + s) + '. In ' + t(B) + ', ' + t('\\sqrt{-' + s + '}') + ' is <b>not possible</b> (even index, negative radicand), so there is nothing to square. <b>Not equal:</b> squaring first removes the negative; taking the root first never gets started.', 'pair ' + A + ' vs ' + B);
-        } },
-        { id: 'e6c', level: 'EMG', make: function (r) {
-          var c = r.pick([[3, 3], [3, 2], [3, 4], [5, 2], [3, 5]]), n = c[0], s = c[1], M = ipow(s, n), A = '-' + rt(n, M), B = rt(n, '-' + M);
-          return pairMC(r, A, B, [
-            { html: 'Both equal ' + t(-s) + '. <b>Equal.</b>', right: true },
-            { html: t(A + '=-' + s) + '; ' + t(B) + ' is not possible. <b>Not equal.</b>', why: 'The index ' + t(n) + ' is <b>odd</b>, so a negative radicand is allowed: ' + t('(-' + s + ')^{' + n + '}=-' + M) + '.' },
-            { html: t(A + '=-' + s) + '; ' + t(B + '=' + s) + '. <b>Not equal.</b>', why: 'Check: ' + t(s + '^{' + n + '}=' + M) + ', not ' + t(-M) + '. An odd power keeps the sign.' },
-            { html: 'Both are not possible.', why: 'Only an <b>even</b> index needs a non-negative radicand. Here the index is ' + t(n) + '.' }],
-            t(rt(n, M) + '=' + s) + ', so ' + t(A + '=-' + s) + '. ' + t('(-' + s + ')^{' + n + '}=-' + M) + ', so ' + t(B + '=-' + s) + '. <b>Equal:</b> with an odd index the minus sign may move in or out freely, because an odd power keeps the sign of its base.', 'pair ' + A + ' vs ' + B);
+      /* ================= Extra practice A — Simplify first, then classify ================= */
+      { num: '1', section: 'Extra practice A — Simplify first, then classify', stem: 'Each number is written in a form that hides what it really is. <b>Simplify it first</b>, then check every set it belongs to.', parts: [
+        { id: 'e1a', level: 'BEG', make: function (r) { return memberPart(sqrtPerfect(r.int(2, 12))); } },
+        { id: 'e1b', level: 'BEG', make: function (r) { return memberPart(cbrtNeg(r.int(2, 5))); } },
+        { id: 'e1c', level: 'BEG', make: function (r) { var q = r.int(2, 9), k = r.int(2, 9), tx = '\\frac{' + k * q + '}{' + q + '}'; return memberPart(item(tx, 'nat', t(tx + '=' + k) + ', a counting number.', { whyRat: t(tx + '=' + k) + ' — a ratio of integers that simplifies to a natural number.' })); } },
+        { id: 'e1d', level: 'BEG', make: function (r) { var ab = gen(r, function () { return r.int(10, 98); }, function (n) { return n % 11 !== 0 && gcd(n, 99) > 1; }), fr = ex.norm(ab, 99), tx = '0.\\overline{' + ab + '}'; return memberPart(item(tx, 'rat', t(tx + '=\\frac{' + ab + '}{99}=' + ex.texRat(fr)) + ', a ratio of integers — not an integer.', { whyRat: 'The block ' + t(ab) + ' repeats, so it is rational: ' + t(tx + '=' + ex.texRat(fr)) + '.' })); } },
+        { id: 'e1e', level: 'EMG', make: function (r) { return memberPart(sqrtDecSq(r)); } },
+        { id: 'e1f', level: 'BEG', make: function (r) { return memberPart(negSqrt(r.int(2, 9))); } }] },
+      { num: '2', stem: 'Same instructions. These take one more step of simplifying.', parts: [
+        { id: 'e2a', level: 'EMG', make: function (r) { var k = r.int(2, 9), c = scaled(k * k * k, 3), tx = '\\sqrt[3]{' + c + '}'; return memberPart(item(tx, 'rat', t(tx + '=0.' + k) + ' because ' + t('0.' + k + '^{3}=' + c) + ' — it terminates, but it isn’t an integer.', { whyRat: t(tx + '=0.' + k) + ' because ' + t('0.' + k + '^{3}=' + c) + '. It terminates, so it is rational.' })); } },
+        { id: 'e2b', level: 'EMG', make: function (r) { var b = r.pick([2, 3, 5, 6, 7]), k = r.int(2, 5), tx = '\\frac{\\sqrt{' + b * k * k + '}}{\\sqrt{' + b + '}}'; return memberPart(item(tx, 'nat', t(tx + '=\\sqrt{\\frac{' + b * k * k + '}{' + b + '}}=\\sqrt{' + k * k + '}=' + k) + ', a counting number.', { whyRat: t(tx + '=\\sqrt{' + k * k + '}=' + k) + '. Simplify before you decide!' })); } },
+        { id: 'e2c', level: 'EMG', make: function (r) { var x = r.pick(['\\pi', '\\pi', '\\sqrt{' + r.pick([3, 5, 7]) + '}', '\\sqrt[3]{' + r.pick([2, 4, 9]) + '}']), tx = x + '-' + x; return memberPart(item(tx, 'zero', t(tx + '=0') + ': any number minus itself is ' + t('0') + ' — whole, but ' + S('N') + ' starts at ' + t('1') + '.', { whyRat: t(tx + '=0') + ', which is rational.' })); } },
+        { id: 'e2d', level: 'EMG', make: function (r) { var pq = r.pick([[3, 4], [2, 3], [1, 2], [2, 5], [4, 5], [3, 5]]), tx = '\\sqrt[3]{-\\frac{' + pq[0] * pq[0] * pq[0] + '}{' + pq[1] * pq[1] * pq[1] + '}}'; return memberPart(item(tx, 'rat', t(tx + '=-\\frac{' + pq[0] + '}{' + pq[1] + '}') + ', a ratio of integers — not an integer.', { neg: true, whyRat: t(tx + '=-\\frac{' + pq[0] + '}{' + pq[1] + '}') + ', a ratio of integers, so it is rational.' })); } },
+        { id: 'e2e', level: 'EMG', make: function (r) { var a = r.pick([2, 3, 5, 6, 7]), m = r.int(2, 5), tx = '\\sqrt{' + a + '}\\times\\sqrt{' + a * m * m + '}'; return memberPart(item(tx, 'nat', t(tx + '=\\sqrt{' + a * a * m * m + '}=' + a * m) + ', a counting number.', { whyRat: t(tx + '=\\sqrt{' + a * a * m * m + '}=' + a * m) + '. Simplify first!' })); } },
+        { id: 'e2f', level: 'EMG', make: function (r) { var k = r.pick([2, 3, 5, 6, 7, 10]), tx = '\\sqrt{' + k + '}+\\sqrt{' + k + '}'; return memberPart(item(tx, 'irr', t(tx + '=2\\sqrt{' + k + '}=' + fx(2 * Math.sqrt(k), 6) + '\\ldots') + ' — ' + t(k) + ' isn’t a perfect square, so it never terminates or repeats.', { whyIrr: t(tx + '=2\\sqrt{' + k + '}') + ', and ' + t(k) + ' isn’t a perfect square, so it is irrational.' })); } },
+        { id: 'e2s', level: 'EMG', make: function (r) {
+          var b = r.pick([2, 3, 5, 6, 7]), k = r.int(2, 5), q1 = '\\frac{\\sqrt{' + b * k * k + '}}{\\sqrt{' + b + '}}', x = r.pick(['\\pi', '\\sqrt{' + r.pick([3, 5, 7]) + '}']), z = x + '-' + x;
+          var c = r.int(2, 9), cc = scaled(c * c * c, 3), q3 = '\\sqrt[3]{' + cc + '}', n = r.pick([2, 3, 5, 6, 7, 10]), s2 = '\\sqrt{' + n + '}+\\sqrt{' + n + '}';
+          var its = r.shuffle([item(q1, 'nat', t(q1 + '=\\sqrt{' + k * k + '}=' + k) + ', a counting number.', { whyRat: t(q1 + '=\\sqrt{' + k * k + '}=' + k) + '. Simplify before you decide!' }),
+            item(z, 'zero', t(z + '=0') + ': whole, but not natural.', { whyRat: t(z + '=0') + ', which is rational.' }), cbrtNeg(r.int(2, 5)),
+            item(q3, 'rat', t(q3 + '=0.' + c) + ' — it terminates, but it isn’t an integer.', { whyRat: t(q3 + '=0.' + c) + ' because ' + t('0.' + c + '^{3}=' + cc) + '. It terminates, so it is rational.' }),
+            item(s2, 'irr', t(s2 + '=2\\sqrt{' + n + '}') + ' — ' + t(n) + ' isn’t a perfect square.', { whyIrr: t(s2 + '=2\\sqrt{' + n + '}') + ', and ' + t(n) + ' isn’t a perfect square, so it is irrational.' }), sqrtDecSq(r)]);
+          return sortPart(its, 'Simplify each number, then put it in the <b>innermost</b> set it belongs to.', 'sort simplify-first numbers', ['Simplify first: work out the root, cancel, or combine. Then decide: rational or irrational? integer? whole? natural?']);
         } }] },
-      { num: '7', stem: function (sh) { return 'Consider the radical ' + t('\\sqrt[n]{-' + sh.M + '}') + ', where ' + t('n\\in N') + '.'; },
-        shared: function (r) { var b = r.chance(0.7) ? 2 : 3; return { b: b, M: ipow(b, 6) }; },
+      { num: '3', stem: 'A number belongs to several sets at once, but only one of them is the <b>smallest</b> set that still contains it. Simplify, then name that single set.', parts: [
+        { id: 'e3a', level: 'LIM', make: function (r) { return strictPart(r, sqrtPerfect(r.int(5, 15))); } },
+        { id: 'e3b', level: 'BEG', make: function (r) { return strictPart(r, cbrtNeg(r.pick([2, 3, 4, 5, 10]))); } },
+        { id: 'e3c', level: 'BEG', make: function (r) { var d = r.int(1, 8), fr = ex.norm(d, 9), tx = '0.\\overline{' + d + '}'; return strictPart(r, item(tx, 'rat', t(tx + '=' + ex.texRat(fr)) + ', rational but not an integer.', { whyRat: 'A repeating decimal is rational: ' + t(tx + '=' + ex.texRat(fr)) + '.' })); } },
+        { id: 'e3d', level: 'LIM', make: function (r) { return strictPart(r, sqrtIrr(gen(r, function () { return r.int(2, 30); }, nonSq))); } },
+        { id: 'e3e', level: 'BEG', make: function (r) { var k = r.int(2, 9), tx = '\\sqrt{' + k * k + '}-' + k; return strictPart(r, item(tx, 'zero', t(tx + '=' + k + '-' + k + '=0') + ': whole, but not natural.', { whyRat: t(tx + '=0') + ', which is rational.' })); } },
+        { id: 'e3f', level: 'BEG', make: function (r) { var k = r.int(1, 9), sq = (k * k / 100).toFixed(2), tx = '-\\sqrt{' + sq + '}'; return strictPart(r, item(tx, 'rat', t(tx + '=-0.' + k) + ', a terminating decimal that isn’t an integer.', { neg: true, whyRat: t(tx + '=-0.' + k) + ' terminates, so it is rational.' })); } }] },
+
+      /* ================= Extra practice B — Nesting ================= */
+      { num: '4', section: 'Extra practice B — Nesting: why the sets sit inside one another', stem: 'Every natural number is a rational number, but not every rational number is a natural number.', parts: [
+        { id: 'e4a', level: 'EMG', make: function (r) {
+          var n = r.int(3, 250);
+          return P.mc(r, 'Which explanation shows that <b>every</b> number in ' + S('N') + ' is also in ' + S('Q') + '?', [
+            { html: 'Any natural number ' + t('n') + ' can be written as ' + t('\\frac{n}{1}') + ': a ratio of integers with ' + t('b=1\\ne 0') + '. For example, ' + t(n + '=\\frac{' + n + '}{1}') + '.', right: true },
+            { html: 'Any natural number ' + t('n') + ' can be written as ' + t('\\frac{0}{n}') + '.', why: t('\\frac{0}{n}=0') + ', not ' + t('n') + '.' },
+            { html: 'Every natural number is a perfect square, and roots of perfect squares are rational.', why: t('7') + ' is natural but not a perfect square. Being rational is about ratios of integers.' },
+            { html: 'Natural numbers and rational numbers are both positive.', why: 'Rational numbers can be negative (' + t('-\\frac{1}{2}') + '), and being positive doesn’t make a number a ratio of integers.' }],
+            'Any natural number ' + t('n') + ' equals ' + t('\\frac{n}{1}') + '. Here ' + t('a=n') + ' and ' + t('b=1') + ' are integers and ' + t('b\\ne 0') + ', so ' + t('n') + ' fits ' + t('Q=\\left\\{\\frac{a}{b},\\ a,b\\in I,\\ b\\ne 0\\right\\}') + '. This works for every natural number, so ' + S('N') + ' sits inside ' + S('Q') + '.',
+            ['Look at the definition ' + t('Q=\\left\\{\\frac{a}{b},\\ a,b\\in I,\\ b\\ne 0\\right\\}') + '. How could you write ' + t(n) + ' in that form?'], 'why N inside Q');
+        } },
+        { id: 'e4b', level: 'BEG', make: function (r) {
+          var a = r.int(3, 9), q = r.int(3, 9), p = gen(r, function () { return r.int(1, q - 1); }, function (p) { return gcd(p, q) === 1; });
+          var cN = function (resp) { var o = readReal(resp); if (o.res) return o.res; var k = kindOf(o); if (!o.rational) return wrong('not-in-set', 'That one is irrational. You need a <b>rational</b> number.'); if (!(o.v < 0)) return wrong('sign', describe(o) + ' This box needs a <b>negative</b> rational number.'); return ok(); };
+          var cP = function (resp) { var o = readReal(resp); if (o.res) return o.res; var k = kindOf(o); if (!o.rational) return wrong('not-in-set', 'That one is irrational. You need a <b>rational</b> number.'); if (!(o.v > 0)) return wrong('sign', 'This box needs a <b>positive</b> rational number.'); if (k === 'nat') return wrong('in-excluded-set', describe(o) + ' This box needs one that is <b>not</b> an integer, e.g. a fraction.'); return ok(); };
+          var p2 = P.fields('Give two rational numbers that are <b>not</b> natural numbers. (Use the fraction key for fractions.)', [{ label: 'Negative', wide: true, mode: 'math', keys: 'fraction' }, { label: 'Positive, not an integer', wide: true, mode: 'math', keys: 'fraction' }], [cN, cP], ['-' + (2 * a + 1) + '/2', p + '/' + q],
+            '(answers vary) e.g. ' + t('-\\frac{' + (2 * a + 1) + '}{2}') + ' and ' + t('\\frac{' + p + '}{' + q + '}'),
+            'A rational number only has to be a ratio of integers ' + t('\\frac{a}{b}') + '. Nothing makes it positive or a whole count, but ' + t('N=\\{1,2,3,\\ldots\\}') + ' holds only positive whole counts. Negative: e.g. ' + t('-\\frac{' + (2 * a + 1) + '}{2}=-' + (a + 0.5)) + '. Positive but not an integer: e.g. ' + t('\\frac{' + p + '}{' + q + '}') + '. So ' + S('N') + ' is nested inside ' + S('Q') + ', but is not equal to it.',
+            ['Rational numbers can be negative, and they can be fractions.'], 'two rationals not natural');
+          p2.good = [['-3', '0.75'], ['-0.5', '7/2']]; p2.bad = [['3', '0.75'], ['-3', '4']];
+          return p2;
+        } }] },
+      { num: '5', stem: 'The word <i>nested</i> means one set sits entirely inside the next.', parts: [
+        { id: 'e5a', level: 'LIM', make: function (r) {
+          var down = r.chance(0.3), items = ['N', 'W', 'I', 'Q', 'R'].map(function (x) { return { id: x, tex: SYM[x] }; }); if (down) items.reverse();
+          return P.order(r, 'Put the five sets of the nesting chain in order, ' + (down ? 'largest to smallest' : 'smallest to largest') + '.', items,
+            { first: down ? 'largest' : 'smallest', last: down ? 'smallest' : 'largest', sep: down ? '⊃' : '⊂', why: function (a, b) { var big = down ? a : b, small = down ? b : a; return 'Is every ' + NOUN[big] + ' ' + ONE[small] + '? No — but every ' + NOUN[small] + ' is ' + ONE[big] + '. So ' + S(small) + ' is the smaller set.'; } },
+            t('N\\subset W\\subset I\\subset Q\\subset R') + '. Each set holds everything in the one before it, plus more: ' + S('W') + ' adds ' + t('0') + ', ' + S('I') + ' adds the negatives, ' + S('Q') + ' adds the non-integer ratios, ' + S('R') + ' adds the irrationals.',
+            ['Start with the counting numbers ' + t('1, 2, 3, \\ldots') + '.'], 'nesting chain');
+        } },
+        { id: 'e5b', level: 'EMG', make: function (r) {
+          return P.mc(r, 'Where does ' + S('Qb') + ' belong relative to the chain ' + t('N\\subset W\\subset I\\subset Q\\subset R') + '?', [
+            { html: 'Beside the chain, inside ' + S('R') + ' only: an irrational decimal neither terminates nor repeats, so ' + S('Qb') + ' shares no numbers with ' + S('Q') + ' (or anything inside it).', right: true },
+            { html: 'Between ' + S('Q') + ' and ' + S('R') + ', because ' + S('Qb') + ' contains all of ' + S('Q') + '.', why: S('Qb') + ' contains <b>no</b> rational numbers. ' + t('\\frac{1}{2}') + ' is in ' + S('Q') + ' but not in ' + S('Qb') + '.' },
+            { html: 'Between ' + S('I') + ' and ' + S('Q') + ', because every integer is irrational.', why: 'Every integer is rational: ' + t('n=\\frac{n}{1}') + '.' },
+            { html: 'Inside ' + S('N') + ', because irrational numbers like ' + t('\\sqrt{2}') + ' are positive.', why: t('\\sqrt{2}=1.414\\ldots') + ' isn’t a counting number, and ' + t('-\\sqrt{2}') + ' is irrational too.' }],
+            S('Qb') + ' sits inside ' + S('R') + ' but <b>beside</b> the chain. A rational decimal terminates or repeats; an irrational one does neither. No number does both, so ' + S('Qb') + ' shares no members with ' + S('Q') + ', or with ' + S('I') + ', ' + S('W') + ', ' + S('N') + ' inside it.',
+            ['Can a number be rational and irrational at the same time?'], 'where Q-bar belongs');
+        } },
+        { id: 'e5c', level: 'BEG', make: function (r) {
+          var k = r.int(4, 15), tx = '\\sqrt{' + k * k + '}';
+          var opts = ['N', 'W', 'I', 'Q', 'R'].map(function (x) { return { html: S(x), right: x === 'N', why: x === 'N' ? null : t(tx + '=' + k) + ' is in ' + S(x) + ', but “strictest” means the <b>smallest</b> set in the chain that still contains it.' }; });
+          var p = P.mc(r, t(tx) + ' belongs to five sets. In the strictest sense it belongs to just one. Which one?', opts,
+            t(tx + '=' + k) + ' is in ' + t('R, Q, I, W, N') + '. “Strictest” means the smallest set in the nesting chain that still contains the number — naming it tells you the most. Strictest set: ' + S('N') + '.', ['Simplify, then find the smallest set it fits in.'], 'strictest set sqrt ' + k * k, true);
+          p.input.columns = 5; return p;
+        } }] },
+      { num: '6', stem: 'The diagram shows the real number system. Simplify where you need to, then choose the <b>innermost</b> region each number belongs in.', parts: [
+        { id: 'e6', level: 'EMG', make: function (r) {
+          var k = r.int(2, 5), q = r.pick([3, 7, 8, 9]), p = gen(r, function () { return r.int(1, q - 1); }, function (p) { return gcd(p, q) === 1; }), d = r.int(2, 6), n = gen(r, function () { return r.int(2, 30); }, nonCube), m = r.int(2, 9);
+          var its = [sqrtPerfect(r.int(5, 10)), item('-\\sqrt[3]{' + k * k * k + '}', 'negint', t('-\\sqrt[3]{' + k * k * k + '}=-' + k) + ', a negative integer.', { whyRat: t('-\\sqrt[3]{' + k * k * k + '}=-' + k) + ' — a perfect cube root is rational.' }), zeroItem(r, r.int(2, 9)),
+            fracItem(p, q, false), constItem(r, ['-\\pi', '\\pi', '2\\pi', 'e']), item('\\sqrt{' + (d * d / 100).toFixed(2) + '}', 'rat', t('\\sqrt{' + (d * d / 100).toFixed(2) + '}=0.' + d) + ', rational but not an integer.', { whyRat: t('\\sqrt{' + (d * d / 100).toFixed(2) + '}=0.' + d) + ' because ' + t('0.' + d + '^{2}=' + (d * d / 100).toFixed(2)) + '. That is rational.' }),
+            item('\\sqrt[3]{' + n + '}', 'irr', t(n) + ' is not a perfect cube, so ' + t('\\sqrt[3]{' + n + '}') + ' is irrational.', { whyIrr: t(n) + ' is not a perfect cube, so ' + t('\\sqrt[3]{' + n + '}') + ' never terminates or repeats.' }),
+            item('\\frac{' + m * 3 + '}{3}', 'nat', t('\\frac{' + m * 3 + '}{3}=' + m) + ', a counting number.', { whyRat: t('\\frac{' + m * 3 + '}{3}=' + m) + ' — simplify first.' })];
+          return sortPart(its, 'Sort the eight numbers into the diagram: each goes in the <b>innermost</b> set it belongs to.', 'Venn placement of 8 numbers');
+        } }] },
+      { num: '7', stem: 'For each description, decide whether <b>no number</b>, <b>exactly one number</b>, or <b>infinitely many numbers</b> fit it.', parts: [
+        { id: 'e7a', level: 'BEG', make: function (r) { return countPart(r, r.pick([['In ' + S('W') + ' but not in ' + S('N') + '.', 'one', 'Only ' + t('0') + ': ' + t('W=\\{0,1,2,\\ldots\\}') + ' and ' + t('N=\\{1,2,3,\\ldots\\}') + ' differ only by ' + t('0') + '.'], ['In ' + S('I') + ', but neither positive nor negative.', 'one', 'Only ' + t('0') + '.']])); } },
+        { id: 'e7b', level: 'BEG', make: function (r) { return countPart(r, r.pick([['In ' + S('I') + ' but not in ' + S('W') + '.', 'inf', 'Every negative integer, e.g. ' + t('-3') + ': ' + S('I') + ' adds the negatives to ' + S('W') + '.'], ['In ' + S('I') + ' but not in ' + S('N') + '.', 'inf', t('0') + ' and every negative integer, e.g. ' + t('-3') + '.']])); } },
+        { id: 'e7c', level: 'BEG', make: function (r) { return countPart(r, r.pick([['In ' + S('Q') + ' but not in ' + S('I') + '.', 'inf', 'Any ratio of integers that isn’t a whole count, e.g. ' + t('\\frac{2}{5}') + '.'], ['In ' + S('R') + ' but not in ' + S('Q') + '.', 'inf', 'Every irrational number, e.g. ' + t('\\sqrt{2}') + ' or ' + t('\\pi') + '.']])); } },
+        { id: 'e7d', level: 'EMG', make: function (r) { return countPart(r, r.pick([['In ' + S('I') + ' but not in ' + S('Q') + '.', 'none', 'Every integer ' + t('n') + ' is ' + t('\\frac{n}{1}') + ', so ' + S('I') + ' is nested inside ' + S('Q') + '.'], ['In ' + S('N') + ' but not in ' + S('W') + '.', 'none', S('N') + ' is nested inside ' + S('W') + ': every natural number is whole.']])); } },
+        { id: 'e7e', level: 'EMG', make: function (r) { return countPart(r, r.pick([['In ' + S('R') + ' but in neither ' + S('Q') + ' nor ' + S('Qb') + '.', 'none', t('R=\\{Q\\text{ and }\\overline{Q}\\}') + ': every real number is one or the other.'], ['In both ' + S('Q') + ' and ' + S('Qb') + '.', 'none', 'A decimal can’t both terminate/repeat and not — the two sets don’t overlap.']])); } },
+        { id: 'e7f', level: 'BEG', make: function (r) { return countPart(r, r.pick([['In ' + S('Qb') + ' but not in ' + S('R') + '.', 'none', S('Qb') + ' is nested inside ' + S('R') + ' — every irrational number is real.'], ['In both ' + S('Qb') + ' and ' + S('I') + '.', 'none', 'Every integer is rational, and no rational number is irrational.']])); } }] },
+
+      /* ================= Extra practice C — Always, sometimes, never ================= */
+      { num: '8', section: 'Extra practice C — Always, sometimes, or never', stem: 'Complete each statement with <i>always</i>, <i>sometimes</i> or <i>never</i>. (For “sometimes”, think of one example that works and one that doesn’t.)', parts: [
+        { id: 'e8a', level: 'EMG', make: function (r) { var V = [['The sum of two integers is ___ a natural number.', asnD('sometimes', t('4+3=7') + ' is natural.', t('4+(-9)=-5') + ' is not.')], ['The product of two integers is ___ a natural number.', asnD('sometimes', t('3\\times 4=12') + ' is natural.', t('(-3)\\times 4=-12') + ' is not.')], ['The difference of two natural numbers is ___ a natural number.', asnD('sometimes', t('9-2=7') + ' is natural.', t('2-9=-7') + ' is not.')]]; var v = r.pick(V); return asnPart(r, v[0], v[1], 'ASN ' + v[0]); } },
+        { id: 'e8b', level: 'EMG', make: function (r) { var V = [['The quotient of two integers is ___ an integer.', asnD('sometimes', t('\\frac{-12}{4}=-3') + ' is an integer.', t('\\frac{4}{-12}=-\\frac{1}{3}') + ' is not.')], ['The quotient of two natural numbers is ___ a natural number.', asnD('sometimes', t('15\\div 5=3') + ' is natural.', t('5\\div 15=\\frac{1}{3}') + ' is not.')]]; var v = r.pick(V); return asnPart(r, v[0], v[1], 'ASN ' + v[0]); } },
+        { id: 'e8c', level: 'PRG', make: function (r) { var V = [['An irrational number times an irrational number is ___ irrational.', asnD('sometimes', t('\\sqrt{2}\\times\\sqrt{3}=\\sqrt{6}') + ' is irrational.', t('\\sqrt{2}\\times\\sqrt{2}=2') + ' is rational.')], ['An irrational number plus an irrational number is ___ irrational.', asnD('sometimes', t('\\sqrt{2}+\\sqrt{3}') + ' is irrational.', t('\\pi+(-\\pi)=0') + ' is rational.')], ['An irrational number divided by an irrational number is ___ irrational.', asnD('sometimes', t('\\sqrt{6}\\div\\sqrt{2}=\\sqrt{3}') + ' is irrational.', t('\\sqrt{5}\\div\\sqrt{5}=1') + ' is rational.')]]; var v = r.pick(V); return asnPart(r, v[0], v[1], 'ASN ' + v[0]); } },
+        { id: 'e8d', level: 'PRG', make: function (r) { var why = 'If a rational ' + t('q') + ' plus an irrational ' + t('x') + ' gave a rational ' + t('r') + ', then ' + t('x=r-q') + ' would be rational — impossible. e.g. ' + t('1+\\sqrt{2}=2.414\\ldots'); var V = [['The sum of a rational number and an irrational number is ___ irrational.', asnD('always', '', '', why)], ['The sum of a rational number and an irrational number is ___ rational.', asnD('never', '', '', why)], ['The difference of a rational number and an irrational number is ___ irrational.', asnD('always', '', '', 'If ' + t('q-x=r') + ' with ' + t('q, r') + ' rational, then ' + t('x=q-r') + ' would be rational — impossible. e.g. ' + t('3-\\sqrt{2}=1.585\\ldots'))]]; var v = r.pick(V); return asnPart(r, v[0], v[1], 'ASN ' + v[0]); } },
+        { id: 'e8e', level: 'EMG', make: function (r) { var V = [['A number whose decimal never terminates is ___ in the set ' + S('Qb') + '.', asnD('sometimes', t('\\pi=3.141\\,59\\ldots') + ' never terminates and is irrational.', t('0.\\overline{45}') + ' never terminates, but it repeats, so it is ' + t('\\frac{5}{11}\\in Q') + '.')], ['A number whose decimal terminates is ___ in the set ' + S('Qb') + '.', asnD('never', '', '', 'A terminating decimal is a fraction over a power of 10, e.g. ' + t('0.37=\\frac{37}{100}') + ' — always rational.')], ['A number whose decimal repeats is ___ in the set ' + S('Q') + '.', asnD('always', '', '', 'Every repeating decimal can be written as a fraction, e.g. ' + t('0.\\overline{45}=\\frac{45}{99}') + '.')]]; var v = r.pick(V); return asnPart(r, v[0], v[1], 'ASN decimal'); } },
+        { id: 'e8f', level: 'PRG', make: function (r) { var V = [['A rational number times an irrational number is ___ irrational.', asnD('sometimes', t('2\\times\\pi=2\\pi') + ' is irrational.', t('0\\times\\pi=0') + ' is rational. (' + t('0') + ' is the only rational that breaks it.)')], ['A non-zero rational number times an irrational number is ___ irrational.', asnD('always', '', '', 'If ' + t('q\\times x=r') + ' with ' + t('q\\ne 0') + ' and ' + t('r') + ' rational, then ' + t('x=\\frac{r}{q}') + ' would be rational — impossible.')]]; var v = r.pick(V); return asnPart(r, v[0], v[1], 'ASN rational times irrational'); } },
+        { id: 'e8g', level: 'BEG', make: function (r) { var pr = r.pick([['Qb', 'R'], ['Qb', 'R'], ['R', 'Qb'], ['Qb', 'I']]); return asnPart(r, 'A number in ' + S(pr[0]) + ' is ___ in the set ' + S(pr[1]) + '.', setASN(pr[0], pr[1]), 'ASN in ' + pr[0] + ' in ' + pr[1]); } },
+        { id: 'e8h', level: 'BEG', make: function (r) { var V = [['The square root of a rational number is ___ rational.', asnD('sometimes', t('\\sqrt{\\frac{9}{16}}=\\frac{3}{4}') + ' is rational.', t('2') + ' is rational, but ' + t('\\sqrt{2}=1.414\\ldots') + ' is irrational.')], ['The cube root of a rational number is ___ rational.', asnD('sometimes', t('\\sqrt[3]{\\frac{8}{27}}=\\frac{2}{3}') + ' is rational.', t('\\sqrt[3]{2}') + ' is irrational.')], ['The square root of a perfect square is ___ rational.', asnD('always', '', '', 'If ' + t('n=k^{2}') + ' then ' + t('\\sqrt{n}=k') + ', an integer — rational.')]]; var v = r.pick(V); return asnPart(r, v[0], v[1], 'ASN roots of rationals'); } }] },
+
+      /* ================= Extra practice D — Error analysis ================= */
+      { num: '9', section: 'Extra practice D — Error analysis', stem: function (sh) { return 'A student writes: “' + t('\\sqrt{' + sh.k * sh.k + '}') + ' has a radical sign, so it is irrational. It goes in ' + S('Qb') + '.”'; },
+        shared: function (r) { return { k: r.int(3, 12) }; }, // k ≥ 3: for k = 2 the "√n = n/2" distractor would be true (√4 = 2)
         parts: [
-          { id: 'e7a', level: 'EMG', make: function (r, sh) {
-            var b = sh.b, M = sh.M, rows = [2, 3, 4, 5, 6, 7].map(function (n) { return { id: 'n' + n, html: t('n=' + n) }; });
-            var cols = [{ id: 'c3', html: t(-b * b * b) }, { id: 'c2', html: t(-b * b) }, { id: 'c1', html: t(-b) }, { id: 'irr', html: 'irrational' }, { id: 'np', html: 'not possible' }];
-            var want = { n2: 'np', n3: 'c2', n4: 'np', n5: 'irr', n6: 'np', n7: 'irr' }, colTex = { c3: -b * b * b, c2: -b * b, c1: -b };
-            var p = P.grid('For each index, choose the value of ' + t('\\sqrt[n]{-' + M + '}') + ': an exact integer, <i>irrational</i> (it exists but isn’t an integer), or <i>not possible</i>.', rows, cols, want, {
-              rowHead: t('n'),
-              why: function (row, got) {
-                var n = Number(row.slice(1));
-                if (n % 2 === 0) return { code: 'row', hint: 'Look at ' + t('n=' + n) + ': the index is even' + (colTex[got] != null ? ' and ' + t('(' + colTex[got] + ')^{' + n + '}=+' + F(ipow(colTex[got], n))) + ', not ' + t(-M) : '') + '. No real number raised to an even power is negative.' };
-                if (colTex[got] != null) return { code: 'row', hint: 'Look at ' + t('n=' + n) + ': check ' + t('(' + colTex[got] + ')^{' + n + '}=' + F(ipow(colTex[got], n))) + '. Is that ' + t(-M) + '?' };
-                if (n === 3) return { code: 'row', hint: 'Look at ' + t('n=3') + ': the index is odd, so the root exists. Is ' + t(-M) + ' a perfect cube?' };
-                var lo = Math.floor(nroot(-M, n));
-                return { code: 'row', hint: 'Look at ' + t('n=' + n) + ': the index is odd, so the root exists. Bracket it: ' + t(powTex(lo, n) + '=' + F(ipow(lo, n))) + ' and ' + t(powTex(lo + 1, n) + '=' + F(ipow(lo + 1, n))) + '. Is it an integer?' };
-              }
-            }, 'Even ' + t('n') + ' (2, 4, 6): <b>not possible</b>, since no real number raised to an even power is negative. ' + t('n=3') + ': ' + t('(' + (-b * b) + ')^{3}=-' + M) + ', so the root is ' + t(-b * b) + '. ' + t('n=5') + ' and ' + t('n=7') + ': the roots exist (odd index) but ' + t(-M) + ' is not a perfect fifth or seventh power, so they are <b>irrational</b> (' + t('\\approx ' + nroot(-M, 5).toFixed(2)) + ' and ' + t('\\approx ' + nroot(-M, 7).toFixed(2)) + ').',
-            ['Even index and negative radicand: not possible.', 'Odd index: the root exists. Is it an exact integer?'], 'table ⁿ√-' + M);
-            return p;
+          { id: 'e9a', level: 'EMG', make: function (r, sh) {
+            var k = sh.k, n = k * k;
+            return P.mc(r, 'What is the mistake?', [
+              { html: 'The radical sign decides nothing: ' + t(n + '=' + k + '^{2}') + ' is a perfect square, so ' + t('\\sqrt{' + n + '}=' + k) + ' is rational.', right: true },
+              { html: 'There is no mistake: every number written with a radical sign is irrational.', why: 'Work it out: ' + t('\\sqrt{' + n + '}') + ' — which number squared is ' + t(n) + '?' },
+              { html: t('\\sqrt{' + n + '}') + ' is irrational, but it also belongs in ' + S('Q') + '.', why: 'No number is in both ' + S('Q') + ' and ' + S('Qb') + '.' },
+              { html: t('\\sqrt{' + n + '}=' + n / 2) + ', so it is rational.', why: 'A square root isn’t half: ' + t('(' + n / 2 + ')^{2}=' + n * n / 4) + '.' }],
+              'What matters is whether ' + t(n) + ' is a perfect square. It is (' + t(k + '^{2}=' + n) + '), so ' + t('\\sqrt{' + n + '}=' + k) + ' is rational.', ['Evaluate ' + t('\\sqrt{' + n + '}') + ' first.'], 'radical sign error');
           } },
-          { id: 'e7b', level: 'EMG', make: function (r, sh) {
-            return mcPart(r, 'For ' + t('n=2,3,4,5,6,7') + ', the radical ' + t('\\sqrt[n]{-' + sh.M + '}') + ' is not possible for some indices and a real number for the others. Which statement explains the pattern, using only the index?', [
-              { html: 'Even index: not possible, because an even power of any real number is never negative. Odd index: a real negative root, because an odd power of a negative number is negative.', right: true },
-              { html: 'The root exists only when ' + t(sh.M) + ' is a perfect power of the index.', why: 'For ' + t('n=5') + ' and ' + t('n=7') + ' the root exists even though it isn’t an integer. And for ' + t('n=6') + ', ' + t(sh.M) + ' <i>is</i> a perfect sixth power, yet the root is not possible.' },
-              { html: 'Small indices give real roots and large indices don’t.', why: 'Compare ' + t('n=2') + ' (not possible) with ' + t('n=7') + ' (real).' },
-              { html: 'Even index: the root is positive. Odd index: the root is negative.', why: 'With a negative radicand an even index gives no real root at all — not a positive one.' }],
-              'Only the parity of the index matters. An even power of a real number is never negative, so an even root of a negative number is not real. An odd power keeps the sign, so an odd root of a negative number is a real negative number.', ['Which indices give “not possible”? What do they have in common?'], 'pattern even/odd index');
-          } },
-          { id: 'e7c', level: 'EMG', make: function (r, sh) {
-            var M = sh.M, b = sh.b;
-            return mcPart(r, 'A classmate says “' + t(-M) + ' has no roots at all.” Which is the best correction?', [
-              { html: t(-M) + ' has one real root for every <b>odd</b> index, e.g. ' + t('\\sqrt[3]{-' + M + '}=' + (-b * b)) + '; it has no roots of <b>even</b> index.', right: true },
-              { html: 'The classmate is right: negative numbers have no roots.', why: 'Check: ' + t('(' + (-b * b) + ')^{3}=-' + M) + ', so ' + t('\\sqrt[3]{-' + M + '}') + ' exists.' },
-              { html: t(-M) + ' has roots of every index, because ' + t('(-' + b + ')^{6}=-' + M) + '.', why: t('(-' + b + ')^{6}=+' + M) + ': an even power of a negative number is positive.' },
-              { html: t(-M) + ' only has a cube root; every other root is not possible.', why: 'The fifth and seventh roots exist too — they just aren’t integers.' }],
-              'Every odd index gives a real root (e.g. ' + t('\\sqrt[3]{-' + M + '}=' + (-b * b)) + ', and irrational fifth and seventh roots); only the even-index roots are not possible.', ['For which indices does ' + t('\\sqrt[n]{-' + sh.M + '}') + ' have a real value?'], 'correct “no roots”');
-          } },
-          { id: 'e7d', level: 'EMG', make: function (r, sh) {
-            return P.nr('For how many of the six values of ' + t('n') + ' (2 to 7) is ' + t('\\sqrt[n]{-' + sh.M + '}') + ' an <b>integer</b>?', 1, function (v) {
-              if (v === 2) return { code: 'count', hint: 'Check ' + t('n=6') + ': ' + t('(-' + sh.b + ')^{6}=+' + sh.M) + ', so that one is not possible.' };
-              if (v === 3) return { code: 'count', hint: 'The roots for ' + t('n=5') + ' and ' + t('n=7') + ' exist, but they are irrational, not integers.' };
-              if (v === 0) return { code: 'count', hint: 'Look at ' + t('n=3') + ': ' + t('(' + (-sh.b * sh.b) + ')^{3}=-' + sh.M) + '.' };
-              return null;
-            }, 'Only ' + t('n=3') + ' gives an integer, ' + t(-sh.b * sh.b) + '. The roots for ' + t('n=5, 7') + ' are irrational and the even ones are not possible. Answer: ' + t('1') + '.', ['Check each index from ' + t('2') + ' to ' + t('7') + ': is the root possible, and is it an integer?'], 'how many integer roots');
+          { id: 'e9b', level: 'BEG', make: function (r, sh) { return memberPart(sqrtPerfect(sh.k), 'Check every set ' + t('\\sqrt{' + sh.k * sh.k + '}') + ' actually belongs to.'); } },
+          { id: 'e9c', level: 'EMG', make: function (r) {
+            return P.mc(r, 'Which rule reliably decides when ' + t('\\sqrt{n}') + ', ' + t('n\\in N') + ', is irrational?', [
+              { html: t('\\sqrt{n}') + ' is irrational exactly when ' + t('n') + ' is <b>not a perfect square</b>.', right: true },
+              { html: t('\\sqrt{n}') + ' is irrational exactly when ' + t('n') + ' is odd.', why: t('\\sqrt{9}=3') + ' is rational, and ' + t('\\sqrt{8}') + ' is irrational.' },
+              { html: t('\\sqrt{n}') + ' is irrational exactly when ' + t('n') + ' is prime.', why: 'It is irrational for primes, but also for composites like ' + t('\\sqrt{6}') + ' — the rule has to cover every ' + t('n') + '.' },
+              { html: t('\\sqrt{n}') + ' is irrational exactly when ' + t('n>100') + '.', why: t('\\sqrt{144}=12') + ' is rational, and ' + t('\\sqrt{5}') + ' is irrational.' }],
+              t('\\sqrt{n}') + ' is rational exactly when ' + t('n') + ' is a perfect square (' + t('1, 4, 9, 16, 25, \\ldots') + '). For every other ' + t('n\\in N') + ', ' + t('\\sqrt{n}') + ' is irrational, e.g. ' + t('\\sqrt{15}') + ', ' + t('\\sqrt{17}') + '.', ['Test each rule on ' + t('\\sqrt{9}') + ', ' + t('\\sqrt{6}') + ' and ' + t('\\sqrt{144}') + '.'], 'rule for irrational roots');
           } }] },
-      { num: '8', section: 'Extra practice C — Estimating irrational roots', stem: 'Each root is irrational. <b>Without a calculator</b>, state the two consecutive integers it lies between.', parts: [
-        { id: 'e8a', level: 'BEG', make: function (r) { return bracketPart(2, nonPerfect(r, 20, 99, 2)); } },
-        { id: 'e8b', level: 'EMG', make: function (r) { return bracketPart(3, nonPerfect(r, 30, 200, 3)); } },
-        { id: 'e8c', level: 'EMG', make: function (r) { return bracketPart(4, nonPerfect(r, 20, 600, 4, function (v) { return v < 17; })); } },
-        { id: 'e8d', level: 'EMG', make: function (r) { return bracketPart(3, -nonPerfect(r, 10, 120, 3, function (v) { return v < 9; })); } }] },
-      { num: '9', stem: 'Refine each estimate to <b>one decimal place</b>, still without a calculator. Test the halfway value first: raise it to the power of the index and compare with the radicand.', parts: [
-        { id: 'e9a', level: 'EMG', make: function (r) { return refinePart(2, nonPerfect(r, 20, 99, 2)); } },
-        { id: 'e9b', level: 'PRG', make: function (r) { return refinePart(3, nonPerfect(r, 30, 150, 3)); } },
-        { id: 'e9c', level: 'EMG', make: function (r) { return refinePart(2, nonPerfect(r, 30, 60, 2)); } },
-        { id: 'e9d', level: 'PRG', make: function (r) { return refinePart(3, -nonPerfect(r, 10, 100, 3, function (v) { return v < 9; })); } }] },
-      { num: '10', stem: function (sh) { return 'Ivy claims that ' + t('\\sqrt[3]{' + sh.A + '}>\\sqrt{' + sh.B + '}') + ' “because ' + t(sh.A) + ' is bigger than ' + t(sh.B) + '.”'; },
-        shared: function (r) { var k = r.pick([3, 4, 4]); return { k: k, A: nonPerfect(r, k * k * k + 1, ipow(k + 1, 3) - 1, 3), B: nonPerfect(r, (k - 1) * (k - 1) + 1, k * k - 1, 2) }; },
+      { num: '10', stem: 'A second student writes: “' + t('0') + ' is a natural number, because you can count to it.”', parts: [
+        { id: 'e10a', level: 'BEG', make: function (r) {
+          return P.mc(r, 'What is the mistake?', [
+            { html: t('N=\\{1,2,3,\\ldots\\}') + ': the natural numbers are the counting numbers, and counting starts at ' + t('1') + '. So ' + t('0\\notin N') + '.', right: true },
+            { html: 'There is no mistake: ' + t('N=\\{0,1,2,\\ldots\\}') + '.', why: 'That is the set ' + S('W') + ' of whole numbers. In this course ' + S('N') + ' starts at ' + t('1') + '.' },
+            { html: t('0') + ' isn’t a real number, so it can’t be natural.', why: t('0') + ' is a real number — it is the middle of the number line.' },
+            { html: t('0') + ' is negative, so it can’t be natural.', why: t('0') + ' is neither positive nor negative.' }],
+            'In this course ' + t('N=\\{1,2,3,\\ldots\\}') + ' — counting starts at ' + t('1') + ', never at ' + t('0') + '. So ' + t('0\\notin N') + '. ' + S('W') + ' and ' + S('N') + ' differ only by ' + t('0') + '.', ['What is the first number in ' + S('N') + '?'], 'zero natural error');
+        } },
+        { id: 'e10b', level: 'BEG', make: function (r) { var it = zeroItem(r, r.int(2, 9)); return memberPart(it, 'Check every set ' + t(it.tex) + ' <b>does</b> belong to.'); } }] },
+      { num: '11', stem: function (sh) { return 'A third student writes: “' + t('0.\\overline{' + sh.ab + '}') + ' is irrational, because its decimal goes on forever.”'; },
+        shared: function (r) { return { ab: gen(r, function () { return r.int(10, 98); }, function (n) { return n % 11 !== 0 && gcd(n, 99) > 1; }) }; },
         parts: [
-          { id: 'e10a', level: 'EMG', make: function (r, sh) {
-            var k = sh.k, A = sh.A, B = sh.B;
-            return mcPart(r, 'Bracket each root between consecutive integers. Is her <b>conclusion</b> correct?', [
-              { html: 'Yes: ' + t(k + '<\\sqrt[3]{' + A + '}<' + (k + 1)) + ' and ' + t((k - 1) + '<\\sqrt{' + B + '}<' + k) + ', so ' + t('\\sqrt[3]{' + A + '}>\\sqrt{' + B + '}') + '.', right: true },
-              { html: 'No: square roots are always bigger than cube roots.', why: 'Bracket them: ' + t(k + '^{3}=' + k * k * k) + ' and ' + t((k + 1) + '^{3}=' + ipow(k + 1, 3)) + ', while ' + t((k - 1) + '^{2}=' + (k - 1) * (k - 1)) + ' and ' + t(k + '^{2}=' + k * k) + '.' },
-              { html: 'Yes, because ' + t(A + '>' + B) + ', and a larger radicand always gives a larger root.', why: 'Her conclusion is right, but that is her (faulty) reasoning — roots with different indices can’t be compared by their radicands alone. Show it by bracketing: use perfect cubes for ' + t('\\sqrt[3]{' + A + '}') + ' and perfect squares for ' + t('\\sqrt{' + B + '}') + '.' },
-              { html: 'You can’t tell without a calculator.', why: 'Bracketing is enough: find the perfect cubes around ' + t(A) + ' and the perfect squares around ' + t(B) + '.' }],
-              t(k + '^{3}=' + k * k * k + '<' + A + '<' + ipow(k + 1, 3) + '=' + (k + 1) + '^{3}') + ', so ' + t(k + '<\\sqrt[3]{' + A + '}<' + (k + 1)) + '. ' + t((k - 1) + '^{2}=' + (k - 1) * (k - 1) + '<' + B + '<' + k * k + '=' + k + '^{2}') + ', so ' + t((k - 1) + '<\\sqrt{' + B + '}<' + k) + '. So her conclusion is correct — but not for her reason.',
-              ['Use perfect cubes for the cube root and perfect squares for the square root.'], 'Ivy bracket ∛' + A + ' vs √' + B);
+          { id: 'e11a', level: 'BEG', make: function (r, sh) {
+            return P.mc(r, 'Which <b>two</b> conditions must a decimal meet before it is irrational?', [
+              { html: 'It must be non-terminating <b>and</b> non-repeating.', right: true },
+              { html: 'It must be non-terminating <b>or</b> non-repeating.', why: t('0.\\overline{' + sh.ab + '}') + ' is non-terminating, but it repeats — and it is rational. Both conditions are needed.' },
+              { html: 'It must be non-terminating and have a bar over it.', why: 'A bar shows a block that <b>repeats</b> — that makes a decimal rational.' },
+              { html: 'It must be non-terminating and greater than ' + t('1') + '.', why: 'Size has nothing to do with it: ' + t('\\frac{\\pi}{10}=0.314\\ldots') + ' is irrational.' }],
+              'Going on forever is only half the test. An irrational decimal is (1) non-terminating <b>and</b> (2) non-repeating. ' + t('0.\\overline{' + sh.ab + '}') + ' never terminates, but the block ' + t(sh.ab) + ' repeats, so it fails (2): it is rational.', ['Think of ' + t('0.\\overline{3}=\\frac{1}{3}') + '. It goes on forever — is it irrational?'], 'two conditions for irrational');
           } },
-          { id: 'e10b', level: 'PRG', make: function (r) {
-            var c = r.pick([[3, 4], [3, 5], [4, 5], [4, 6], [4, 7], [5, 6], [5, 9]]), a = c[0], b = c[1], A = a * a * a, B = b * b;
-            return mcPart(r, 'Her <b>reasoning</b> is wrong. Which pair is a counterexample: different indices, where the larger radicand gives the smaller value?', [
-              { html: t('\\sqrt[3]{' + A + '}') + ' and ' + t('\\sqrt{' + B + '}'), right: true },
-              { html: t('\\sqrt{' + B + '}') + ' and ' + t('\\sqrt{' + (a * a) + '}'), why: 'Same index: then the larger radicand really does give the larger value. A counterexample needs different indices.' },
-              { html: t('\\sqrt[3]{' + ipow(a + 2, 3) + '}') + ' and ' + t('\\sqrt{' + (a * a) + '}'), why: t('\\sqrt[3]{' + ipow(a + 2, 3) + '}=' + (a + 2)) + ' and ' + t('\\sqrt{' + a * a + '}=' + a) + ': the larger radicand gives the larger value here, so it agrees with Ivy.' },
-              { html: t('\\sqrt[3]{8}') + ' and ' + t('\\sqrt{' + B + '}'), why: t('8<' + B) + ' and ' + t('2<' + b) + ': the smaller radicand gives the smaller value, so it agrees with Ivy.' }],
-              t('\\sqrt[3]{' + A + '}=' + a) + ' and ' + t('\\sqrt{' + B + '}=' + b) + '. The radicand ' + t(A) + ' is larger than ' + t(B) + ', yet ' + t(a + '<' + b) + '. So a larger radicand does not guarantee a larger value.', ['Evaluate each radical in the pair. Which radicand is larger? Which value is larger?'], 'counterexample ∛' + A + ', √' + B);
-          } },
-          { id: 'e10c', level: 'EMG', make: function (r) {
-            return mcPart(r, 'Why may radicands only be compared directly when the two indices match?', [
-              { html: 'The index says how many equal factors the radicand is split into. Different indices undo different powers, so a bigger radicand can still give a smaller root. With the same index, the larger radicand always gives the larger root.', right: true },
-              { html: 'Because cube roots are always smaller than square roots.', why: 'Not always: ' + t('\\sqrt[3]{1000}=10') + ' is bigger than ' + t('\\sqrt{4}=2') + '.' },
-              { html: 'Because radicands with different indices are never comparable at all.', why: 'They can be compared — by evaluating or bracketing each root, just not by looking at the radicands alone.' },
-              { html: 'Because a larger index always gives a larger root.', why: 'For radicands bigger than 1 it is the opposite: ' + t('\\sqrt{64}=8') + ' but ' + t('\\sqrt[3]{64}=4') + '.' }],
-              'For radicands greater than 1, a larger index pulls the value down more (' + t('\\sqrt{64}=8') + ', ' + t('\\sqrt[3]{64}=4') + ', ' + t('\\sqrt[6]{64}=2') + '). When the indices match, the same “undoing” happens to both, and then the larger radicand gives the larger root.', ['Compare ' + t('\\sqrt{64}') + ' and ' + t('\\sqrt[3]{64}') + '.'], 'why indices must match');
+          { id: 'e11b', level: 'PRG', make: function (r, sh) {
+            var ab = sh.ab, fr = ex.norm(ab, 99);
+            var p = P.fraction('Convert ' + t('0.\\overline{' + ab + '}') + ' to a fraction in lowest terms.', fr, { diag: function (v) { if (Math.abs(v - ab / 100) < 1e-9) return { code: 'flip-99', hint: t('\\frac{' + ab + '}{100}=0.' + ab) + ' stops. For a two-digit repeating block, use ' + t('100x-x=99x') + '.' }; return null; } },
+              'Let ' + t('x=0.\\overline{' + ab + '}') + '. Then ' + t('100x=' + ab + '.\\overline{' + ab + '}') + ', so ' + t('100x-x=' + ab) + ', ' + t('99x=' + ab) + ' and ' + t('x=\\frac{' + ab + '}{99}=' + ex.texRat(fr)) + ' (divide the top and bottom by ' + t(gcd(ab, 99)) + '). A ratio of integers, so it is rational.',
+              ['Let ' + t('x=0.\\overline{' + ab + '}') + ' and multiply by ' + t('100') + '. Subtract to get rid of the repeating part.'], 'repeating to fraction 0.(' + ab + ')');
+            p.bad = ['\\frac{' + ab + '}{100}']; return p;
           } }] },
-      { num: '11', section: 'Extra practice D — Ordering roots', stem: 'Arrange from <b>least to greatest</b> without a calculator.', parts: [
-        { id: 'e11', level: 'EMG', make: function (r) {
-          var k = r.pick([3, 3, 4, 5]), m = r.int(2, k - 1), c = r.int(1, 3), pq = r.sample(range(k * k + 1, (k + 1) * (k + 1) - 1), 2).sort(function (x, y) { return x - y; });
-          for (var g = 0; g < 50 && pq[1] - pq[0] < 3; g++) pq = r.sample(range(k * k + 1, (k + 1) * (k + 1) - 1), 2).sort(function (x, y) { return x - y; });
-          var items = [
-            { id: 'neg', tex: rt(3, -c * c * c), vt: String(-c), exact: true },
-            { id: 'four', tex: rt(4, ipow(m, 4)), vt: String(m), exact: true },
-            { id: 'cube', tex: rt(3, k * k * k), vt: String(k), exact: true },
-            { id: 'p', tex: '\\sqrt{' + pq[0] + '}', vt: Math.sqrt(pq[0]).toFixed(1) },
-            { id: 'q', tex: '\\sqrt{' + pq[1] + '}', vt: Math.sqrt(pq[1]).toFixed(1) }];
-          return orderPart(r, 'Order these roots. Each one is an integer or lies between two integers you can name.', items,
-            t(rt(3, -c * c * c) + '=' + (-c)) + ', ' + t(rt(4, ipow(m, 4)) + '=' + m) + ', ' + t(rt(3, k * k * k) + '=' + k) + '. ' + t(k * k + '<' + pq[0] + '<' + pq[1] + '<' + (k + 1) * (k + 1)) + ', so ' + t('\\sqrt{' + pq[0] + '}') + ' and ' + t('\\sqrt{' + pq[1] + '}') + ' are both between ' + t(k) + ' and ' + t(k + 1) + ' (same index, so the smaller radicand is smaller).<br>' + t(items.map(function (x) { return x.tex; }).join('<')), 'order 5 roots');
-        } }] },
-      { num: '12', stem: 'Arrange from <b>least to greatest</b> without a calculator. Simplify every radical first, and be careful with the negatives.', parts: [
-        { id: 'e12', level: 'PRG', make: function (r) {
-          var a = r.pick([3, 4, 5]), b = r.pick([2, 3, 4].filter(function (x) { return x !== a; })), de = r.sample([2, 3, 4, 5, 6, 7, 8, 9], 2), d = de[0], e = de[1], g = r.pick([2, 2, 3]);
-          var rr = nonPerfect(r, g * g + 1, (g + 1) * (g + 1) - 1, 2);
-          var items = [
-            { id: 'a', tex: rt(3, -a * a * a), v: -a, vt: String(-a), exact: true },
-            { id: 'b', tex: '-' + rt(4, ipow(b, 4)), v: -b, vt: String(-b), exact: true },
-            { id: 'd', tex: '\\sqrt{' + (d * d / 100).toFixed(2) + '}', v: d / 10, vt: (d / 10).toFixed(1), exact: true },
-            { id: 'e', tex: rt(3, (e * e * e / 1000).toFixed(3)), v: e / 10, vt: (e / 10).toFixed(1), exact: true },
-            { id: 'g', tex: rt(6, ipow(g, 6)), v: g, vt: String(g), exact: true },
-            { id: 'r', tex: '\\sqrt{' + rr + '}', v: Math.sqrt(rr), vt: Math.sqrt(rr).toFixed(1) }].sort(function (x, y) { return x.v - y.v; });
-          return orderPart(r, 'Order these six roots.', items,
-            items.map(function (x) { return t(x.tex + (x.exact ? '=' : '\\approx ') + x.vt); }).join(', ') + '.<br>' + t(items.map(function (x) { return x.tex; }).join('<')), 'order 6 roots');
-        } }] },
-      { num: '13', section: 'Extra practice E — Error analysis', stem: function (sh) { return 'A student writes: “' + t('\\sqrt{-' + sh.c * sh.c + '}=-' + sh.c) + ', because ' + t('(-' + sh.c + ')\\times(-' + sh.c + ')') + ' has a negative in it, so it must give ' + t(-sh.c * sh.c) + '.”'; },
-        shared: function (r) { return { c: r.int(3, 9) }; },
-        parts: [
-          { id: 'e13a', level: 'LIM', make: function (r, sh) {
-            var c = sh.c;
-            return P.number('Evaluate ' + t('(-' + c + ')^{2}') + '.', c * c, function (v) { if (v === -c * c) return { code: 'sign', hint: 'A negative times a negative is <b>positive</b>.' }; if (v === -2 * c || v === 2 * c) return { code: 'diag', hint: 'Squaring means multiplying by itself: ' + t('(-' + c + ')\\times(-' + c + ')') + '.' }; return null; },
-              t('(-' + c + ')^{2}=(-' + c + ')\\times(-' + c + ')=' + c * c) + ', not ' + t(-c * c) + '. A negative times a negative is positive, so <b>no</b> real number squares to a negative number — that is the student’s mistake.', ['Multiply ' + t('(-' + c + ')\\times(-' + c + ')') + '.'], '(-' + c + ')²');
-          } },
-          { id: 'e13b', level: 'BEG', make: function (r, sh) { var p = rootMC(r, { n: 2, num: -sh.c * sh.c }); p.prompt = 'What is the correct answer for ' + t('\\sqrt{-' + sh.c * sh.c + '}') + '?'; return p; } },
-          { id: 'e13c', level: 'EMG', make: function (r, sh) {
-            var c = sh.c, C = c * c;
-            var chk = function (resp) {
-              var a = K.read(resp); if (a.res) return a.res;
-              var sh2 = ex.shape(a.ast), s = strip(a.ast);
-              if (ex.eq(a.val, -c)) {
-                if (!sh2.roots) return form('as-radical', 'That’s the value. Write the <b>radical</b> itself — it looks almost the same as ' + t('\\sqrt{-' + C + '}') + '.');
-                var in1 = s.t === 'neg' ? strip(s.a) : null;
-                if (in1 && in1.t === 'root') { var n = ex.rat(in1.n), m = ex.rat(in1.a); if (n && m && n[0] === 2 && n[1] === 1 && m[0] === C && m[1] === 1) return ok(); }
-                return form('related', 'That does equal ' + t(-c) + ', but find the radical that looks almost the same as ' + t('\\sqrt{-' + C + '}') + ' — move the minus sign.');
-              }
-              if (ex.eq(a.val, c)) return wrong('sign', 'That’s ' + t('\\sqrt{' + C + '}=' + c) + '. Where does the minus sign go?');
-              if (!isFinite(a.val)) return wrong('np-root', t('\\sqrt{-' + C + '}') + ' isn’t a real number. Move the minus sign <b>outside</b> the radical.');
-              return wrong('value', null);
-            };
-            var p = P.math('The student’s answer of ' + t(-c) + ' <i>is</i> the correct value of a closely related radical. Write that radical.', chk, '-\\sqrt{' + C + '}',
-              t('-\\sqrt{' + C + '}=-' + c) + ', since ' + t('\\sqrt{' + C + '}=' + c) + '. The minus sign belongs <b>outside</b> the radical, not inside it.', ['Keep the same numbers, but move the minus sign.'], 'related radical -√' + C, { keys: 'radical' });
-            p.good = ['-sqrt(' + C + ')']; p.bad = ['\\sqrt{-' + C + '}', '-' + c, '\\sqrt{' + C + '}', '-\\sqrt[3]{' + c * c * c + '}'];
-            return p;
-          } }] },
-      { num: '14', stem: function (sh) { return 'A second student writes: “' + t('\\sqrt[3]{-' + sh.s * sh.s * sh.s + '}') + ' is not possible, because you can never take the root of a negative number.”'; },
-        shared: function (r) { return { s: r.int(2, 6) }; },
-        parts: [
-          { id: 'e14a', level: 'BEG', outcome: 'AN1', make: function (r, sh) { var s = sh.s, p = rootMC(r, { n: 3, num: -s * s * s, order: ['np', 'sign', 'pm'] }); p.prompt = 'Evaluate ' + t('\\sqrt[3]{-' + s * s * s + '}') + '.'; p.solution += ' Check: ' + t('(-' + s + ')^{3}=(-' + s + ')(-' + s + ')(-' + s + ')=' + s * s + '\\times(-' + s + ')=-' + s * s * s) + ' ✓'; return p; } },
-          { id: 'e14b', level: 'EMG', make: function (r, sh) {
-            var s = sh.s;
-            return mcPart(r, 'Which rule should the student have used?', [
-              { html: 'Only an <b>even</b> index needs a non-negative radicand. The index here is ' + t('3') + ' (odd), so the root of a negative number is real.', right: true },
-              { html: 'No root of a negative number is ever real.', why: 'Test it: ' + t('(-' + s + ')^{3}=-' + s * s * s) + ', so ' + t('\\sqrt[3]{-' + s * s * s + '}') + ' is real.' },
-              { html: 'A cube root of a negative number is real only when the radicand is a perfect cube.', why: t('\\sqrt[3]{-30}\\approx -3.1') + ' is real too: every odd root of a negative number is real, perfect cube or not.' },
-              { html: 'Every index allows a negative radicand.', why: 'Not an even index: ' + t('(-2)^{4}=+16') + ', so no real number has a fourth power of ' + t('-16') + '.' }],
-              'The restriction applies only when the index is <b>even</b>. With an odd index, any real radicand is allowed, because an odd power of a negative number is negative.', ['What is special about odd powers of negative numbers?'], 'rule: even index only');
-          } },
-          { id: 'e14c', level: 'EMG', make: function (r, sh) {
-            var s = sh.s, key = '\\sqrt[4]{-' + ipow(s, 3) + '}';
-            var chk = function (resp) {
-              var a = K.read(resp); if (a.res) return a.res;
-              var roots = [];
-              (function walk(x) { if (!x || typeof x !== 'object') return; if (x.t === 'root') roots.push(x); ['a', 'b'].forEach(function (k) { if (x[k]) walk(x[k]); }); })(a.ast);
-              if (!roots.length) return form('no-radical', 'Write a radical with a negative radicand, like ' + t('\\sqrt[n]{-x}') + '.');
-              var info = roots.map(function (x) { var n = ex.rat(x.n), m = ex.rat(x.a); return { n: n && n[1] === 1 ? n[0] : null, neg: m ? m[0] < 0 : null }; });
-              if (info.some(function (i) { return i.n != null && i.n % 2 === 0 && i.neg; })) return ok();
-              var odd = info.filter(function (i) { return i.n != null && i.n % 2 === 1 && i.neg; })[0];
-              if (odd) return wrong('odd-index', 'That one is real: the index ' + t(odd.n) + ' is odd, and an odd power of a negative number is negative. Choose an index that makes it impossible.');
-              if (info.some(function (i) { return i.neg === false; })) return wrong('positive', 'The radicand must be <b>negative</b>.');
-              return wrong('value', null);
-            };
-            var p = P.math('Write one radical with a <b>negative</b> radicand that really <i>is</i> not possible.', chk, key,
-              'For example ' + t(key) + ' (or ' + t('\\sqrt{-' + ipow(s, 3) + '}') + ', ' + t('\\sqrt[6]{-' + ipow(s, 3) + '}') + '). The index is even, and no real number raised to an even power gives a negative result.', ['Which kind of index makes a negative radicand impossible?'], 'write an impossible radical', { keys: 'radical' });
-            p.good = ['\\sqrt{-5}', '\\sqrt[6]{-1}', 'sqrt(-9)']; p.bad = ['\\sqrt[3]{-8}', '\\sqrt[4]{16}', '\\sqrt[5]{-1}'];
-            return p;
-          } }] },
-      { num: '15', section: 'Extra practice F — Reasoning', stem: 'Counting roots.', parts: [
-        { id: 'e15a', level: 'EMG', make: function (r) {
-          var s = r.int(2, 6);
-          return mcPart(r, 'Why does a positive number have <b>two</b> square roots but only <b>one</b> cube root?', [
-            { html: 'Squaring makes every number positive: ' + t(s + '^{2}=(-' + s + ')^{2}=' + s * s) + '. Cubing keeps the sign: ' + t(s + '^{3}=' + s * s * s) + ' but ' + t('(-' + s + ')^{3}=-' + s * s * s) + '.', right: true },
-            { html: 'Because the square root sign gives ' + t('\\pm') + ' and the cube root sign does not.', why: 'The radical sign ' + t('\\sqrt{\\ }') + ' gives only the principal root. The two square roots come from the fact that ' + t(s) + ' and ' + t(-s) + ' have the same square.' },
-            { html: 'Because cube roots are only defined for positive numbers.', why: 'Cube roots of negative numbers exist: ' + t('\\sqrt[3]{-' + s * s * s + '}=-' + s) + '.' },
-            { html: 'Because 3 is bigger than 2.', why: 'Compare fourth roots: ' + t('4>2') + ', yet ' + t(ipow(s, 4)) + ' has two real fourth roots. What matters is whether the index is even or odd.' }],
-            'Multiplying a number by itself twice always gives a positive result, so two different numbers (' + t(s) + ' and ' + t(-s) + ') share the same square ' + t(s * s) + '. Multiplying three times keeps the sign, so only ' + t(s) + ' cubes to ' + t(s * s * s) + '.', ['Square and cube both ' + t(s) + ' and ' + t(-s) + '.'], 'two square roots, one cube root');
+
+      /* ================= Extra practice E — Closure ================= */
+      { num: '12', section: 'Extra practice E — Closure', stem: 'A set is <b>closed</b> under an operation if applying the operation to any two members always gives a result still in the set. One counterexample shows a set is not closed.', parts: [
+        { id: 'e12a', level: 'PRG', make: function (r) {
+          var a = r.int(2, 6), b = a + r.int(1, 6), c = r.int(2, 4), d = c + r.int(2, 6), ce = t(a + '-' + b + '=-' + (b - a));
+          return P.mc(r, 'Is ' + S('N') + ' closed under subtraction? If not, what is the smallest set that <b>is</b> closed under subtraction?', [
+            { html: 'No: ' + ce + ', which is not in ' + S('N') + '. Smallest closed set: ' + S('I') + '.', right: true },
+            { html: 'No: ' + ce + ', which is not in ' + S('N') + '. Smallest closed set: ' + S('W') + '.', why: S('W') + ' isn’t closed under subtraction either: ' + t(c + '-' + d + '=-' + (d - c)) + '.' },
+            { html: 'No: ' + ce + ', which is not in ' + S('N') + '. Smallest closed set: ' + S('Q') + '.', why: S('Q') + ' is closed under subtraction, but there is a smaller set that already works.' },
+            { html: 'Yes: subtracting two natural numbers always gives a natural number.', why: 'Try ' + t(a + '-' + b) + '.' }],
+            '<b>No.</b> Counterexample: ' + ce + ', and ' + t('-' + (b - a) + '\\notin N') + '. ' + S('W') + ' fails too (' + t(c + '-' + d + '=-' + (d - c)) + '), but the difference of two integers is always an integer. Smallest set closed under subtraction: ' + S('I') + '.', ['Try subtracting a bigger natural number from a smaller one.'], 'N closed under subtraction');
         } },
-        { id: 'e15b', level: 'EMG', make: function (r) {
-          var s = r.int(5, 12), n = s * s;
-          return mcPart(r, t(n) + ' has two square roots, yet ' + t('\\sqrt{' + n + '}=' + s) + ' only. Why?', [
-            { html: t('\\sqrt{\\ }') + ' is defined to mean the <b>principal</b> (positive) square root, because a symbol must name exactly one value. The other root is written ' + t('-\\sqrt{' + n + '}') + '.', right: true },
-            { html: 'Because ' + t(-s) + ' is not really a square root of ' + t(n) + '.', why: 'It is: ' + t('(-' + s + ')^{2}=' + n) + '.' },
-            { html: 'Because negative numbers can’t be written under a radical.', why: 'That isn’t the reason — ' + t('\\sqrt[3]{-8}') + ' is fine. The question is what the symbol ' + t('\\sqrt{\\ }') + ' itself stands for.' },
-            { html: 'It is a convention that only applies on calculators.', why: 'It is the mathematical definition of the symbol, used everywhere: ' + t('\\sqrt{' + n + '}') + ' stands for one number.' }],
-            t('\\sqrt{\\ }') + ' means the principal (positive) square root, so ' + t('\\sqrt{' + n + '}=' + s) + '. A symbol used in calculations must stand for one value; the other root is ' + t('-\\sqrt{' + n + '}=-' + s) + ', and together they are ' + t('\\pm\\sqrt{' + n + '}') + '.', ['How would you calculate with a symbol that meant two numbers at once?'], 'principal root');
-        } },
-        { id: 'e15c', level: 'EMG', make: function (r) {
-          var d = r.int(2, 4), D = ipow(d, 4);
-          return P.number('How many real <b>fourth</b> roots does ' + t(D) + ' have?', 2, function (v) { if (v === 1) return { code: 'count', hint: 'Try ' + t('(-' + d + ')^{4}') + '.' }; if (v === 4) return { code: 'count', hint: 'Only real numbers count. Which real numbers have a fourth power of ' + t(D) + '?' }; return null; },
-            t(d + '^{4}=' + D) + ' and ' + t('(-' + d + ')^{4}=' + D) + ', so ' + t(D) + ' has <b>two</b> real fourth roots, ' + t('\\pm ' + d) + '.', ['Test ' + t(d) + ' and ' + t(-d) + '.'], 'number of 4th roots of ' + D);
-        } },
-        { id: 'e15d', level: 'EMG', make: function (r) {
-          var e = r.int(2, 3), E = ipow(e, 5);
-          return P.number('How many real <b>fifth</b> roots does ' + t(E) + ' have?', 1, function (v) { if (v === 2) return { code: 'count', hint: 'Check ' + t('(-' + e + ')^{5}') + ': an odd power keeps the negative sign.' }; return null; },
-            t(e + '^{5}=' + E) + ' but ' + t('(-' + e + ')^{5}=-' + E) + ', so ' + t(E) + ' has just <b>one</b> real fifth root, ' + t(e) + '.', ['Test ' + t(e) + ' and ' + t(-e) + '.'], 'number of 5th roots of ' + E);
-        } },
-        { id: 'e15e', level: 'PRG', make: function (r) {
-          return mcPart(r, 'Which general rule is correct for a <b>positive</b> number?', [
-            { html: 'It has <b>two</b> real roots of any even index and <b>one</b> real root of any odd index.', right: true },
-            { html: 'It has two real roots of every index.', why: 'Try an odd index: ' + t('2^{5}=32') + ' but ' + t('(-2)^{5}=-32') + ', so ' + t('32') + ' has only one real fifth root.' },
-            { html: 'It has one real root of every index.', why: 'Try an even index: ' + t('3^{4}=81') + ' and ' + t('(-3)^{4}=81') + '.' },
-            { html: 'It has one real root of any even index and two of any odd index.', why: 'It’s the other way round: even powers lose the sign, so two numbers share each even power.' }],
-            'Even index: the even power hides the sign, so ' + t('\\pm') + ' both work — two real roots. Odd index: the sign survives, so only the positive number works — one real root. (A negative number has no real roots of even index and one of odd index.)', ['How many real fourth roots does a positive number have? How many real fifth roots?'], 'rule for number of roots');
+        { id: 'e12b', level: 'PRG', make: function (r) {
+          var b = r.int(2, 7), a = gen(r, function () { return r.int(1, 15); }, function (a) { return a % b !== 0; }), fr = ex.norm(a, b), ce = t(a + '\\div ' + b + '=' + ex.texRat(fr));
+          return P.mc(r, 'Is ' + S('I') + ' closed under division? If not, what is the smallest set that <b>is</b> closed under division by non-zero numbers?', [
+            { html: 'No: ' + ce + ', which is not in ' + S('I') + '. Smallest closed set: ' + S('Q') + '.', right: true },
+            { html: 'No: ' + ce + ', which is not in ' + S('I') + '. Smallest closed set: ' + S('R') + '.', why: S('R') + ' works, but ' + S('Q') + ' is smaller and already closed: ' + t('\\frac{a}{b}\\div\\frac{c}{d}=\\frac{ad}{bc}') + '.' },
+            { html: 'No: ' + ce + ', which is not in ' + S('I') + '. Smallest closed set: ' + S('W') + '.', why: S('W') + ' isn’t closed under division either: ' + t('2\\div 5=\\frac{2}{5}') + '.' },
+            { html: 'Yes: dividing integers always gives an integer.', why: 'Try ' + t(a + '\\div ' + b) + '.' }],
+            '<b>No.</b> Counterexample: ' + ce + ', which is not an integer. Dividing ' + t('\\frac{a}{b}') + ' by a non-zero ' + t('\\frac{c}{d}') + ' gives ' + t('\\frac{ad}{bc}') + ', another ratio of integers. Smallest set closed under division by non-zero numbers: ' + S('Q') + '.', ['Try a division that doesn’t come out evenly.'], 'I closed under division');
         } }] },
-      { num: '16', stem: 'The identity ' + t('\\sqrt{x^{2}}=|x|') + '.', parts: [
-        { id: 'e16a', level: 'EMG', make: function (r) {
-          var a = r.int(3, 9), fr = r.pick([[3, 4], [2, 3], [5, 6], [2, 5], [4, 7]]);
-          var xs = [[a, 1], [0, 1], [-a, 1], [-fr[0], fr[1]]];
-          var fields = xs.map(function (x) { var xt = rTex(x); return { name: t('x=' + xt), label: t('x=' + xt), before: t('\\sqrt{(' + xt + ')^{2}}='), mode: x[1] > 1 ? 'math' : undefined, keys: 'fraction' }; });
-          var checkers = xs.map(function (x) {
-            var X = x[0] / x[1];
-            return K.value(Math.abs(X), { only: 'fraction', diag: function (v) {
-              if (X < 0 && same(v, X)) return { code: 'kept-sign', hint: 'Squaring removed the sign: ' + t('(' + rTex(x) + ')^{2}=' + rTex([x[0] * x[0], x[1] * x[1]])) + '. The principal square root of that is positive.' };
-              if (X !== 0 && same(v, X * X)) return { code: 'squared-only', hint: 'That’s ' + t('x^{2}') + '. Now take its square root.' };
-              return null;
-            } });
-          });
-          var keys = xs.map(function (x) { return x[1] === 1 ? String(Math.abs(x[0])) : Math.abs(x[0]) + '/' + x[1]; });
-          var p = P.fields('Complete the table: evaluate ' + t('\\sqrt{x^{2}}') + ' for each value of ' + t('x') + '.', fields, checkers, keys, xs.map(function (x) { return t('\\sqrt{(' + rTex(x) + ')^{2}}=' + rTex([Math.abs(x[0]), x[1]])); }).join('<br>'),
-            xs.map(function (x) { return t('x=' + rTex(x)) + ': ' + t('x^{2}=' + rTex([x[0] * x[0], x[1] * x[1]])) + ', ' + t('\\sqrt{x^{2}}=' + rTex([Math.abs(x[0]), x[1]])); }).join('<br>') + '<br>In every row ' + t('\\sqrt{x^{2}}') + ' is the size of ' + t('x') + ' without its sign: ' + t('|x|') + '.',
-            ['Square first, then take the principal (positive) square root.'], 'table √(x²)');
-          p.bad = [keys.slice(0, 2).concat(['-' + a, keys[3]])];
-          return p;
+      { num: '13', stem: 'Closed or not closed?', parts: [
+        { id: 'e13a', level: 'BEG', make: function (r) { return closedPart(r, r.pick([['N', '+'], ['N', '×'], ['W', '+'], ['W', '×']])); } },
+        { id: 'e13b', level: 'BEG', make: function (r) { return closedPart(r, r.pick([['W', '−'], ['N', '−']])); } },
+        { id: 'e13c', level: 'BEG', make: function (r) { return closedPart(r, r.pick([['I', '×'], ['I', '+'], ['I', '−']])); } },
+        { id: 'e13d', level: 'PRG', make: function (r) { return closedPart(r, r.pick([['Q', '÷'], ['R', '÷']])); } },
+        { id: 'e13e', level: 'EMG', make: function (r) { return closedPart(r, r.pick([['R', '−'], ['R', '+'], ['R', '×'], ['Q', '−'], ['Q', '+'], ['Q', '×']])); } },
+        { id: 'e13f', level: 'BEG', make: function (r) { return closedPart(r, r.pick([['W', '÷'], ['N', '÷'], ['I', '÷']])); } }] },
+      { num: '14', stem: 'The irrationals behave worse than any other set here.', parts: [
+        { id: 'e14a', level: 'PRG', make: function (r) {
+          var k = r.pick([2, 3, 5, 7]);
+          return P.mc(r, 'Which example shows that ' + S('Qb') + ' is <b>not</b> closed under addition?', [
+            { html: t(r.pick(['\\pi+(-\\pi)=0', '\\sqrt{' + k + '}+(-\\sqrt{' + k + '})=0', '(1+\\sqrt{' + k + '})+(1-\\sqrt{' + k + '})=2'])), right: true },
+            { html: t('\\sqrt{2}+\\sqrt{3}=3.146\\ldots'), why: 'The answer is irrational, so this example stays inside ' + S('Qb') + '. A counterexample needs a <b>rational</b> answer.' },
+            { html: t('\\pi+\\pi=2\\pi'), why: t('2\\pi') + ' is irrational, so this doesn’t break closure.' },
+            { html: t('\\sqrt{' + k + '}+1'), why: t('1') + ' is rational. Closure is about adding two members of ' + S('Qb') + '.' }],
+            '<b>Not closed.</b> Two irrational numbers can cancel: e.g. ' + t('\\pi+(-\\pi)=0') + ', and ' + t('0') + ' is rational.', ['Look for two irrational numbers whose sum is rational.'], 'Qbar not closed +');
         } },
-        { id: 'e16b', level: 'PRG', make: function (r) {
-          return mcPart(r, 'Why is ' + t('\\sqrt{x^{2}}=|x|') + ' rather than ' + t('\\sqrt{x^{2}}=x') + '?', [
-            { html: 'Squaring destroys the sign (' + t('(-5)^{2}=5^{2}=25') + '), and the principal square root always gives back the non-negative number. So the result is the size of ' + t('x') + ': ' + t('|x|') + '.', right: true },
-            { html: 'Because ' + t('x') + ' is always positive.', why: t('x') + ' can be any real number, e.g. ' + t('x=-5') + '. Try it in ' + t('\\sqrt{x^{2}}') + '.' },
-            { html: 'Because the square root of a negative number is not possible.', why: 'Here the radicand is ' + t('x^{2}') + ', which is never negative. The issue is what the root gives back.' },
-            { html: 'They mean the same thing; ' + t('|x|') + ' is just another way to write ' + t('x') + '.', why: 'For ' + t('x=-5') + ': ' + t('|x|=5') + ' but ' + t('x=-5') + '.' }],
-            'Squaring makes ' + t('x') + ' and ' + t('-x') + ' give the same result, e.g. ' + t('(-5)^{2}=5^{2}=25') + '. The principal square root then always hands back the non-negative number, ' + t('5') + '. So the output is ' + t('|x|') + '; ' + t('\\sqrt{x^{2}}=x') + ' already fails at ' + t('x=-5') + '.', ['Try ' + t('x=-5') + '.'], 'why √(x²)=|x|');
+        { id: 'e14b', level: 'PRG', make: function (r) {
+          var k = r.pick([2, 3, 5, 7]);
+          return P.mc(r, 'Which example shows that ' + S('Qb') + ' is <b>not</b> closed under multiplication?', [
+            { html: t(r.pick(['\\sqrt{' + k + '}\\times\\sqrt{' + k + '}=' + k, '\\sqrt{2}\\times\\sqrt{8}=4', '\\sqrt{3}\\times\\sqrt{12}=6'])), right: true },
+            { html: t('\\sqrt{2}\\times\\sqrt{3}=\\sqrt{6}'), why: t('\\sqrt{6}') + ' is irrational, so this stays inside ' + S('Qb') + '.' },
+            { html: t('\\pi\\times\\pi=\\pi^{2}'), why: t('\\pi^{2}') + ' is irrational.' },
+            { html: t('2\\times\\sqrt{' + k + '}=2\\sqrt{' + k + '}'), why: t('2') + ' is rational, so this isn’t two members of ' + S('Qb') + '.' }],
+            '<b>Not closed.</b> e.g. ' + t('\\sqrt{2}\\times\\sqrt{2}=\\sqrt{4}=2') + ': both factors are irrational, but the product is rational.', ['Look for two irrational numbers whose product is rational.'], 'Qbar not closed ×');
         } },
-        { id: 'e16c', level: 'PRG', make: function (r) {
-          return mcPart(r, 'For which real values of ' + t('x') + ' is ' + t('\\sqrt{x^{2}}=x') + ' actually true?', [
-            { html: t('x\\ge 0'), right: true },
-            { html: t('x>0'), why: 'Check ' + t('x=0') + ': ' + t('\\sqrt{0^{2}}=0') + '. It works there too.' },
-            { html: 'all real ' + t('x'), why: 'Check ' + t('x=-5') + ': ' + t('\\sqrt{(-5)^{2}}=5\\ne -5') + '.' },
-            { html: t('x\\le 0'), why: 'Check ' + t('x=-5') + ': ' + t('\\sqrt{(-5)^{2}}=5') + ', not ' + t('-5') + '.' }],
-            t('\\sqrt{x^{2}}=|x|') + ', and ' + t('|x|=x') + ' exactly when ' + t('x\\ge 0') + '.', ['When does ' + t('|x|=x') + '?'], 'when √(x²)=x');
-        } },
-        { id: 'e16d', level: 'EMG', make: function (r) {
-          var s = r.int(2, 6);
-          return tf(r, t('\\sqrt[3]{x^{3}}=x') + ' for <b>every</b> real number ' + t('x') + '.', true, 'Test ' + t('x=-' + s) + ': ' + t('(-' + s + ')^{3}=-' + s * s * s) + ' and ' + t('\\sqrt[3]{-' + s * s * s + '}=-' + s) + '. An odd power keeps the sign, so nothing is lost.',
-            'True. With ' + t('x=-' + s) + ': ' + t('x^{3}=-' + s * s * s) + ' and ' + t('\\sqrt[3]{-' + s * s * s + '}=-' + s + '=x') + '. An odd power keeps the sign and the odd root restores the original number exactly — unlike squaring, which throws the sign away.', ['Test a negative value of ' + t('x') + '.'], '∛(x³)=x always');
+        { id: 'e14c', level: 'EMG', make: function (r) {
+          return P.mc(r, 'Why does ' + S('Qb') + ' fail where ' + S('Q') + ' succeeds?', [
+            { html: S('Q') + ' is built from ratios of integers, and ' + t('+,-,\\times,\\div') + ' of two ratios is again a ratio. ' + S('Qb') + ' is defined only by what it is <b>not</b>, so two irrationals can cancel and land back in ' + S('Q') + '.', right: true },
+            { html: 'Irrational numbers are too large to add or multiply.', why: t('\\sqrt{2}=1.414\\ldots') + ' isn’t large. Think about what defines each set.' },
+            { html: S('Qb') + ' is not part of the real numbers.', why: S('Qb') + ' is nested inside ' + S('R') + '.' },
+            { html: 'You can’t do arithmetic with irrational numbers.', why: 'You can: ' + t('\\sqrt{2}\\times\\sqrt{3}=\\sqrt{6}') + '. The problem is that the answer can leave the set.' }],
+            S('Q') + ' is defined by a structure (ratios of integers) that survives every operation. ' + S('Qb') + ' is defined by what it lacks (no terminating or repeating decimal), so irrational parts can cancel: ' + t('\\sqrt{2}\\times\\sqrt{2}=2') + ', ' + t('\\pi+(-\\pi)=0') + '.', ['What does a rational number look like? What does an irrational number look like?'], 'why Qbar fails');
         } }] },
-      { num: '17', stem: '<b>Stretch.</b> Solve each equation over the real numbers.', parts: [
-        { id: 'e17a', level: 'BEG', make: function (r) { return eqMC(r, 3, -1, r.int(2, 6)); } },
-        { id: 'e17b', level: 'EMG', make: function (r) { return eqMC(r, 4, 1, r.int(2, 5)); } },
-        { id: 'e17c', level: 'BEG', make: function (r) { return eqMC(r, 4, -1, r.int(2, 5)); } },
-        { id: 'e17d', level: 'BEG', make: function (r) { return eqMC(r, 5, 1, r.int(2, 3)); } },
-        { id: 'e17e', level: 'PRG', make: function (r) {
-          return mcPart(r, 'How many real solutions does ' + t('x^{n}=k') + ' have?', [
-            { html: 'Even ' + t('n') + ': two if ' + t('k>0') + ', one if ' + t('k=0') + ', none if ' + t('k<0') + '. Odd ' + t('n') + ': exactly one for every real ' + t('k') + '.', right: true },
-            { html: 'Always two, ' + t('x=\\pm\\sqrt[n]{k}') + '.', why: 'Check ' + t('x^{3}=-125') + ': only ' + t('-5') + ' works, and ' + t('x^{4}=-81') + ' has no solution.' },
-            { html: 'Even ' + t('n') + ': exactly one. Odd ' + t('n') + ': two if ' + t('k>0') + '.', why: 'Swap it around: ' + t('x^{4}=81') + ' has two solutions (' + t('\\pm 3') + ') and ' + t('x^{5}=32') + ' has one.' },
-            { html: 'Odd ' + t('n') + ': none if ' + t('k<0') + '.', why: t('x^{3}=-125') + ' has the solution ' + t('-5') + ': odd powers can be negative.' }],
-            'Even powers erase the sign, so two bases land on each positive value and none on a negative value. Odd powers keep the sign, so exactly one base gives each real value.', ['Look back at the four equations you just solved.'], 'number of solutions of xⁿ=k');
+
+      /* ================= Extra practice F — Stretch, MC and NR ================= */
+      { num: '15', section: 'Extra practice F — Stretch, multiple choice and numerical response', stem: '<b>Stretch.</b> Find a number for each description.', parts: [
+        { id: 'e15a', level: 'BEG', make: function (r) { var q = r.int(3, 9), p = gen(r, function () { return r.int(1, 2 * q); }, function (p) { return gcd(p, q) === 1 && p % q !== 0; }); return findPart('In ' + S('Q') + ' but not in ' + S('I') + '.', { inS: 'Q', notS: 'I', sol: 'e.g. ' + t('\\frac{' + p + '}{' + q + '}') + ': it is a ratio of integers, but not a whole count, so it is not an integer.', hints: ['Think of a fraction that doesn’t simplify to an integer.'] }, '\\frac{' + p + '}{' + q + '}', ['0.75'], ['4', '\\sqrt{3}'], 'Q not I'); } },
+        { id: 'e15b', level: 'BEG', make: function (r) { var k = r.int(2, 9); return findPart('In ' + S('I') + ' but not in ' + S('W') + '.', { inS: 'I', notS: 'W', sol: 'e.g. ' + t('-' + k) + ': it is negative, and ' + t('W=\\{0,1,2,\\ldots\\}') + ' contains no negatives.', hints: ['Which integers are not whole numbers?'] }, '-' + k, ['-1'], ['0', '3'], 'I not W'); } },
+        { id: 'e15c', level: 'BEG', make: function (r) { var n = r.pick([2, 3, 5, 6, 7]); return findPart('In ' + S('R') + ' but not in ' + S('Q') + '.', { inS: 'R', notS: 'Q', sol: 'e.g. ' + t('\\sqrt{' + n + '}') + ': ' + t(n) + ' is not a perfect square, so ' + t('\\sqrt{' + n + '}') + ' never terminates or repeats and can’t be written as ' + t('\\frac{a}{b}') + '.', hints: ['Think of a square root of a number that isn’t a perfect square.'] }, '\\sqrt{' + n + '}', ['\\pi'], ['\\sqrt{9}', '0.\\overline{3}'], 'R not Q'); } },
+        { id: 'e15e', level: 'EMG', make: function (r) {
+          return P.mc(r, 'Why is there no number that is in ' + S('Q') + ' and in ' + S('Qb') + ' at the same time? (Base it on the definitions, not on examples.)', [
+            { html: 'A number is in ' + S('Q') + ' when its decimal terminates or repeats, and in ' + S('Qb') + ' when it does neither. These are exact opposites, so no number can be in both. Together they make up ' + S('R') + '.', right: true },
+            { html: 'Because ' + S('Qb') + ' is nested inside ' + S('Q') + '.', why: 'If ' + S('Qb') + ' were inside ' + S('Q') + ', every irrational number would also be rational — the opposite of what we want.' },
+            { html: 'Because nobody has found an example yet.', why: 'The question asks for a reason from the definitions — and the definitions settle it for good.' },
+            { html: 'Because ' + S('Q') + ' and ' + S('Qb') + ' together make up only part of ' + S('R') + '.', why: 'Together they make up <b>all</b> of ' + S('R') + ': ' + t('R=\\{Q\\text{ and }\\overline{Q}\\}') + '.' }],
+            'By definition a number is in ' + S('Q') + ' when its decimal <b>terminates or repeats</b>, and in ' + S('Qb') + ' when it <b>neither terminates nor repeats</b>. A number has one decimal expansion, and it either does or doesn’t — so ' + S('Q') + ' and ' + S('Qb') + ' share no members. Together they make up all the real numbers: ' + t('R=\\{Q\\text{ and }\\overline{Q}\\}') + '.', ['Compare the two definitions word for word.'], 'Q and Qbar disjoint');
         } }] },
-      { num: '18', stem: '<b>Stretch — nested radicals.</b> Work from the inside out.', parts: [
-        { id: 'e18a', level: 'EMG', make: function (r) { var s = r.int(2, 5); return nestPart(2, 2, ipow(s, 4), s); } },
-        { id: 'e18b', level: 'EMG', make: function (r) { var s = r.pick([2, 3]); return nestPart(3, 2, ipow(s, 6), s); } },
-        { id: 'e18c', level: 'EMG', make: function (r) { var s = r.pick([2, 3]); return nestPart(2, 3, ipow(s, 6), s); } },
-        { id: 'e18d', level: 'ADV', make: function (r) {
-          var mn = r.pick([[2, 3], [2, 3], [3, 2], [2, 2], [3, 3], [2, 4]]), outer = mn[0], inner = mn[1], N = outer * inner, e = rt(outer, rt(inner, 'x'));
-          var p = P.math('Rewrite ' + t(e) + ' as a <b>single</b> radical (assume ' + t('x\\ge 0') + ').', K.varRadical(rt(N, 'x'), 'entire', { diag: function (rr) {
-            if (rr && rr.n === outer + inner && rr.rad.vars.x === 1 && !Object.keys(rr.vars).length) return { code: 'added-index', hint: 'Multiply the indices, don’t add them: the number is used as a factor ' + outer + ' times to make ' + t(rt(inner, 'x')) + ', and that ' + inner + ' times to make ' + t('x') + '.' };
-            return null;
-          } }), rt(N, 'x'), t(e + '=' + rt(N, 'x')) + '. Rule: an ' + t('m') + 'th root inside an ' + t('n') + 'th root is one root of index ' + t('m\\times n') + ': ' + t('\\sqrt[n]{\\sqrt[m]{x}}=\\sqrt[mn]{x}') + '. Check: ' + t('\\sqrt{\\sqrt{81}}=\\sqrt[4]{81}=3') + '.',
-            ['How many times must the answer be used as a factor to get back to ' + t('x') + '?', 'Try it with numbers: ' + t('\\sqrt{\\sqrt{81}}=\\sqrt{9}=3') + ', and ' + t('3^{4}=81') + '.'], 'single radical ' + outer + '√' + inner + '√x', { keys: 'var' });
-          p.bad = [rt(N, 'x^{2}'), rt(N + 1, 'x')].concat(outer + inner !== N ? [rt(outer + inner, 'x')] : []);
-          return p;
+      { num: '16', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: 'e16', level: 'PRG', make: function (r) {
+          var k = r.int(5, 9), c = r.int(2, 4), q = r.int(3, 9), b = r.pick([2, 3, 5]), m = r.int(2, 4), d = r.pick([3, 6]), h = r.pick([11, 13, 15, 17]), irr = gen(r, function () { return r.int(10, 40); }, nonSq);
+          var ints = [['\\sqrt{' + k * k + '}', t('\\sqrt{' + k * k + '}=' + k)], ['\\sqrt[3]{-' + c * c * c + '}', t('\\sqrt[3]{-' + c * c * c + '}=-' + c)], ['\\frac{' + q * 7 + '}{7}', t('\\frac{' + q * 7 + '}{7}=' + q)], ['\\frac{\\sqrt{' + b * m * m + '}}{\\sqrt{' + b + '}}', t('\\frac{\\sqrt{' + b * m * m + '}}{\\sqrt{' + b + '}}=\\sqrt{' + m * m + '}=' + m)], ['-\\sqrt{' + (k + 1) * (k + 1) + '}', t('-\\sqrt{' + (k + 1) * (k + 1) + '}=-' + (k + 1))]];
+          var non = [['0.\\overline{' + d + '}', t('0.\\overline{' + d + '}=' + ex.texRat(ex.norm(d, 9)))], ['\\sqrt{' + (h * h / 100).toFixed(2) + '}', t('\\sqrt{' + (h * h / 100).toFixed(2) + '}=' + (h / 10))], ['\\sqrt{' + irr + '}', t('\\sqrt{' + irr + '}') + ' is irrational']];
+          var ni = r.pick([3, 4, 4, 4, 5]), list = r.shuffle(r.sample(ints, ni).concat(r.sample(non, 6 - ni)));
+          return P.mc(r, 'How many of the numbers ' + list.map(function (x) { return '<span class="nw">' + t(x[0]) + '</span>'; }).join(', \u2003') + ' belong to the set ' + S('I') + '?',
+            [3, 4, 5, 6].map(function (n) { return { html: t(n), right: n === ni, why: n === ni ? null : n > ni ? 'One of the numbers you counted isn’t an integer — simplify each one carefully.' : 'You missed one: some of these simplify to integers. Simplify each one.' }; }),
+            list.map(function (x) { return x[1] + (ints.indexOf(x) >= 0 ? ' — integer' : ' — not an integer'); }).join('<br>') + '<br>So ' + t(ni) + ' of the ' + t(6) + ' are in ' + S('I') + '.', ['Simplify each number first, then ask: is it an integer?'], 'how many in I', true);
         } }] },
-      { num: '19', section: 'Extra practice G — Multiple choice and numerical response', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: 'e19', level: 'EMG', make: function (r) {
-          var f1 = r.pick([[2, 3], [1, 2], [3, 4], [2, 5]]), f2 = r.pick([[2, 3], [1, 2], [1, 3], [3, 5]]), e = r.pick([2, 3]);
-          var A = rt(3, '-\\dfrac{' + ipow(f1[0], 3) + '}{' + ipow(f1[1], 3) + '}'), B = rt(4, '-\\dfrac{' + ipow(f2[0], 4) + '}{' + ipow(f2[1], 4) + '}'), C = '-' + rt(4, '\\dfrac{' + ipow(f2[0], 4) + '}{' + ipow(f2[1], 4) + '}'), D = rt(5, '-\\dfrac{1}{' + ipow(e, 5) + '}');
-          return mcPart(r, 'Which of the following is <b>not possible</b> in the real number system?', [
-            { html: t(A), why: 'Index 3 is odd: ' + t(A + '=-' + rTex(f1)) + ', since ' + t('\\left(-' + rTex(f1) + '\\right)^{3}=-' + rTex([ipow(f1[0], 3), ipow(f1[1], 3)])) + '.' },
-            { html: t(B), right: true },
-            { html: t(C), why: 'The radicand is positive; the minus sign is outside: ' + t(C + '=-' + rTex(f2)) + '.' },
-            { html: t(D), why: 'Index 5 is odd: ' + t(D + '=-\\frac{1}{' + e + '}') + '.' }],
-            t(A + '=-' + rTex(f1)) + ' (odd index). ' + t(B) + ': even index, negative radicand — <b>not possible</b>. ' + t(C + '=-' + rTex(f2)) + ' (minus sign outside). ' + t(D + '=-\\frac{1}{' + e + '}') + ' (odd index).', ['Look for an even index with a negative radicand.'], 'which is not possible');
-        } }] },
-      { num: '20', stem: '<i>(Multiple Choice)</i>', parts: [
-        { id: 'e20', level: 'PRG', make: function (r) {
-          var s = r.int(3, 9), u = r.pick([2, 3]), w = r.pick([1, 1, 2]), iT = r.chance(0.3), iiiT = r.chance(0.3), U = ipow(u, 6), W5 = ipow(w, 5);
-          var st = [
-            iT ? { label: 'i)', html: t('\\sqrt{(-' + s + ')^{2}}=' + s), truth: true, reason: t('\\sqrt{(-' + s + ')^{2}}=\\sqrt{' + s * s + '}=' + s) + '.' }
-              : { label: 'i)', html: t('\\sqrt{(-' + s + ')^{2}}=-' + s), truth: false, reason: t('\\sqrt{(-' + s + ')^{2}}=\\sqrt{' + s * s + '}=' + s + '\\ne -' + s) + '.' },
-            { label: 'ii)', html: t('\\sqrt[3]{(-' + s + ')^{3}}=-' + s), truth: true, reason: t('(-' + s + ')^{3}=-' + s * s * s) + ' and ' + t('\\sqrt[3]{-' + s * s * s + '}=-' + s) + '.' },
-            iiiT ? { label: 'iii)', html: t('-\\sqrt[6]{' + U + '}=-' + u), truth: true, reason: t('\\sqrt[6]{' + U + '}=' + u) + ', and the minus sign is outside.' }
-              : { label: 'iii)', html: t('-\\sqrt[6]{' + U + '}=\\sqrt[6]{-' + U + '}'), truth: false, reason: t('-\\sqrt[6]{' + U + '}=-' + u) + ', but ' + t('\\sqrt[6]{-' + U + '}') + ' is not possible.' },
-            { label: 'iv)', html: t('\\sqrt[5]{-' + W5 + '}=-' + w), truth: true, reason: t('(-' + w + ')^{5}=-' + W5) + '.' }];
-          var p = statementsMC(r, 'Consider these four statements.', st, [['ii)', 'iv)'], ['i)', 'ii)', 'iv)'], ['ii)', 'iii)', 'iv)']], 'all four', 'which root statements are true (extra)');
-          return p;
-        } }] },
-      { num: '21', stem: '<i>(Numerical Response)</i>', parts: [
-        { id: 'e21', level: 'EMG', make: function (r) {
-          var a, b, c, ans;
-          for (var i = 0; i < 200; i++) { a = r.int(11, 16); b = r.int(8, 13); c = r.int(5, 12); ans = a - b + c; if (ans >= 1 && ans <= 99) break; }
-          var A = ipow(a, 4), B = b * b * b, e = rt(4, F(A)) + '+' + rt(3, '-' + F(B)) + '+\\sqrt{(-' + c + ')^{2}}';
-          var p = P.nr('The value of ' + t(e) + ' is ________. (Record your answer as a three-digit number.)', ans, function (v) {
-            if (v === a - b - c) return { code: 'kept-sign', hint: t('\\sqrt{(-' + c + ')^{2}}=\\sqrt{' + c * c + '}') + ' — the principal square root is positive.' };
-            if (v === a + b + c) return { code: 'sign', hint: 'The cube root of a negative number is negative.' };
-            return null;
-          }, t(a + '^{4}=' + F(A)) + ', so ' + t(rt(4, F(A)) + '=' + a) + '. ' + t('(-' + b + ')^{3}=-' + F(B)) + ', so ' + t(rt(3, '-' + F(B)) + '=-' + b) + '. ' + t('\\sqrt{(-' + c + ')^{2}}=\\sqrt{' + c * c + '}=' + c) + '.<br>' + t(a + '+(-' + b + ')+' + c + '=' + ans) + ', recorded as ' + t(('00' + ans).slice(-3)) + '.',
-          ['Evaluate each radical separately.', 'Watch the signs: odd root of a negative, and the square root of a square.'], 'NR sum of roots');
-          p.key = ('00' + ans).slice(-3); p.answer = t(p.key); p.good = [String(ans)];
-          return p;
+      { num: '17', stem: '<i>(Multiple Choice)</i>', parts: [
+        { id: 'e17', level: 'PRG', make: function (r) { return falseStmtMC(r); } }] },
+      { num: '18', stem: '<i>(Numerical Response)</i>', parts: [
+        { id: 'e18', level: 'EMG', make: function (r) {
+          var k = r.int(10, 15), c = r.int(2, 6), ab = gen(r, function () { return r.int(12, 98); }, function (n) { return n % 11 !== 0; }), j = r.int(1, 9), b = r.pick([2, 3, 5]), m = r.int(2, 5), h = r.int(11, 19);
+          var rats = [['\\sqrt{' + k * k + '}', t('\\sqrt{' + k * k + '}=' + k)], ['-\\frac{8}{3}', t('-\\frac{8}{3}')], ['\\sqrt[3]{-' + c * c * c + '}', t('=-' + c)], ['0.\\overline{' + ab + '}', t('0.\\overline{' + ab + '}=\\frac{' + ab + '}{99}')], ['\\sqrt{' + (j * j / 100).toFixed(2) + '}', t('=' + j / 10)], ['0', t('0')], ['\\frac{\\sqrt{' + b * m * m + '}}{\\sqrt{' + b + '}}', t('=' + m)], ['-\\sqrt{' + (h * h / 100).toFixed(2) + '}', t('=-' + h / 10)]];
+          var irrs = [['\\pi', ''], ['\\sqrt{20}', ''], ['2\\sqrt{5}', ''], ['\\sqrt[3]{9}', ''], ['\\sqrt{' + r.pick([7, 11, 13]) + '}', ''], ['-\\sqrt[3]{' + r.pick([4, 10, 25]) + '}', '']];
+          var nr = r.pick([6, 7, 8, 8]), list = r.shuffle(r.sample(rats, nr).concat(r.sample(irrs, 12 - nr)));
+          return P.nr('Of the twelve numbers ' + list.map(function (x) { return '<span class="nw">' + t(x[0]) + '</span>'; }).join(', ') + ', the number of them that belong to the set ' + S('Q') + ' is ________.', nr,
+            function (v) { return v === 12 - nr ? { code: 'as-irrational', hint: 'That’s how many are <b>irrational</b>. Count the rational ones.' } : null; },
+            'Rational: ' + list.filter(function (x) { return rats.indexOf(x) >= 0; }).map(function (x) { return t(x[0]); }).join(', ') + ' — ' + t(nr) + ' numbers.<br>Irrational: ' + list.filter(function (x) { return irrs.indexOf(x) >= 0; }).map(function (x) { return t(x[0]); }).join(', ') + ' — ' + t(12 - nr) + ' numbers. Check: ' + t(nr + '+' + (12 - nr) + '=12') + '.',
+            ['Simplify each one: perfect squares and cubes give rational roots; repeating decimals and fractions are rational.'], 'count rational of 12');
         } }] }
     ]
   });
 
-  /* ---------- part makers used above (function declarations are hoisted) ---------- */
-  function range(a, b) { var o = []; for (var i = a; i <= b; i++) o.push(i); return o; }
-  function vocabPart(n, m, k) {
-    var e = (k > 1 ? k : '') + rt(n, m), idxCheck = function (resp) {
-      if (String(resp == null ? '' : resp).trim() === '' && n === 2) return form('no-index', 'Every radical has an index. When none is written, which index is understood?');
-      return K.number(n, function (v) {
-        if (v === m) return { code: 'swapped-ir', hint: 'The index is the small number in the notch of the radical sign; the radicand is under the bar.' };
-        if (k > 1 && v === k) return { code: 'coef-index', hint: t(k) + ' is a coefficient — it multiplies the radical. The index sits in the notch' + (n === 2 ? ' (here nothing is written there).' : '.') };
-        if (n === 2 && (v === 1 || v === 0)) return { code: 'no-index', hint: 'A plain ' + t('\\sqrt{\\ }') + ' is a square root. What index does a square root have?' };
-        return null;
-      })(resp);
-    };
-    var radCheck = K.number(m, function (v) {
-      if (v === n) return { code: 'swapped-ir', hint: 'The radicand is the number <b>under</b> the radical sign.' };
-      if (k > 1 && v === k * m) return { code: 'coef-radicand', hint: 'The ' + t(k) + ' is outside the radical, so it isn’t part of the radicand.' };
-      return null;
-    });
-    return P.fields(t(e), [{ name: 'Index', label: 'Index' }, { name: 'Radicand', label: 'Radicand' }], [idxCheck, radCheck], [String(n), String(m)], 'index ' + t(n) + ', radicand ' + t(m),
-      (n === 2 ? 'No index is written, so the index is ' + t('2') + '. ' : 'Index ' + t('=' + n) + ' (the number in the notch). ') + (k > 1 ? 'The ' + t(k) + ' in front is a coefficient, not part of the radical. ' : '') + 'Radicand ' + t('=' + m) + ' (the number under the radical sign).',
-      ['The index sits in the notch of the radical sign; the radicand sits under the bar.'], 'index & radicand of ' + (k > 1 ? k : '') + n + '√' + m);
-  }
-  function prodPart(a, b) {
-    var m = a * b, e = '\\sqrt{' + a + '}\\times\\sqrt{' + b + '}';
-    return singlePart(e, m, productDiag(a, b), t(e + '=\\sqrt{' + a + '\\times ' + b + '}=\\sqrt{' + m + '}') + '.', ['Use the product rule: ' + t('\\sqrt{a}\\times\\sqrt{b}=\\sqrt{ab}') + '.'], 'single radical √' + a + '×√' + b,
-      ['\\sqrt{' + (a + b) + '}']);
-  }
-  function quotPart(a, b) {
-    var m = a / b, e = '\\dfrac{\\sqrt{' + a + '}}{\\sqrt{' + b + '}}', sm = Math.round(Math.sqrt(m));
-    return singlePart(e, m, function (M, v) {
-      if (same(v, m)) return { code: 'no-root', hint: t(a + '\\div ' + b + '=' + m) + ' is the radicand. Keep the square root: the answer is a radical.' };
-      if (M === a * b) return { code: 'multiplied', hint: 'This is a quotient: <b>divide</b> the radicands, ' + t('\\dfrac{\\sqrt{a}}{\\sqrt{b}}=\\sqrt{\\dfrac{a}{b}}') + '.' };
-      if (M === a - b) return { code: 'subtracted', hint: 'Divide the radicands — don’t subtract them.' };
-      if (same(v, 1)) return { code: 'cancel', hint: 'You can’t cancel like that. Use ' + t('\\dfrac{\\sqrt{a}}{\\sqrt{b}}=\\sqrt{\\dfrac{a}{b}}') + '.' };
-      return null;
-    }, t(e + '=\\sqrt{\\dfrac{' + a + '}{' + b + '}}=\\sqrt{' + m + '}') + (sm * sm === m ? ' (which equals ' + t(sm) + ')' : '') + '.', ['Use the quotient rule: ' + t('\\dfrac{\\sqrt{a}}{\\sqrt{b}}=\\sqrt{\\dfrac{a}{b}}') + '.'], 'single radical √' + a + '/√' + b,
-    ['\\sqrt{' + a * b + '}', '\\sqrt{' + (a - b) + '}', String(m)], sm * sm === m ? [String(sm)] : []);
-  }
-  function decimalRoot(n, k, dpAns) {
-    // root = k / 10^dpAns (k may be negative); radicand = k^n / 10^(n*dpAns)
-    var den = Math.pow(10, n * dpAns), num = ipow(k, n), x = k / Math.pow(10, dpAns), radDp = n * dpAns, radStr = (num < 0 ? '-' : '') + (Math.abs(num) / den).toFixed(radDp);
-    var e = rt(n, radStr), ans = x.toFixed(dpAns);
-    var chk = K.value(x, { only: 'fraction', diag: function (v) {
-      if (same(v, x * 10) || same(v, x / 10)) return { code: 'places', hint: 'Check the decimal places: the radicand has ' + radDp + ' decimal places, and ' + radDp + ' ÷ ' + n + ' = ' + dpAns + ', so the answer has ' + dpAns + (dpAns === 1 ? ' decimal place.' : ' decimal places.') + ' Check by raising your answer to the power ' + n + '.' };
-      if (same(v, -x)) return { code: 'sign', hint: n % 2 ? 'An odd root of a negative number is negative.' : 'The principal root is positive.' };
-      return null;
-    } });
-    var p = P.math(t(e), chk, ans, t(e + '=' + rt(n, (num < 0 ? '-' : '') + '\\dfrac{' + F(Math.abs(num)) + '}{' + F(den) + '}')) + '. ' + t(powTex(Math.abs(k), n) + '=' + F(Math.abs(num))) + ' and ' + t(powTex(Math.pow(10, dpAns), n) + '=' + F(den)) + ', so the root is ' + t((k < 0 ? '-' : '') + '\\dfrac{' + Math.abs(k) + '}{' + Math.pow(10, dpAns) + '}=' + ans) + ' (' + radDp + ' places ÷ ' + n + ' = ' + dpAns + ' place' + (dpAns > 1 ? 's' : '') + ').',
-      ['Write the decimal as a fraction over a power of ten, then take the root of the top and the bottom.', 'Check: raise your answer to the power ' + n + '.'], n + '√' + radStr, { keys: 'fraction' });
-    p.good = [ans.replace(/^(-?)0\./, '$1.')]; p.bad = [(x * 10).toFixed(Math.max(0, dpAns - 1)), (x / 10).toFixed(dpAns + 1)];
-    return p;
-  }
-  function powRoot(n, s, outerNeg) {
-    // ⁿ√((−s)ⁿ), optionally with a minus sign in front
-    var inner = '(-' + s + ')^{' + n + '}', e = (outerNeg ? '-' : '') + rt(n, inner), P2 = ipow(-s, n), root = n % 2 ? -s : s, ans = outerNeg ? -root : root;
-    return P.number(t(e), ans, function (v) {
-      if (v === -ans) {
-        if (n % 2 === 0 && !outerNeg) return { code: 'kept-sign', hint: 'Work out the power first: ' + t(inner + '=' + P2) + ' (positive, because the power is even). The principal root of a positive number is positive.' };
-        if (n % 2 === 0) return { code: 'sign', hint: 'Inside: ' + t(inner + '=' + P2) + ' and ' + t(rt(n, P2) + '=' + s) + '. Then apply the minus sign in front.' };
-        return { code: 'sign', hint: t(inner + '=' + P2) + ' (an odd power keeps the sign). Its ' + nth(n) + ' root is negative too.' };
+  /* ---------- part makers that need the helpers above ---------- */
+  function sumEstPart(ns, c, exact) {
+    var tot = ns.reduce(function (a, b) { return a + b; }, 0), L = ns.map(function (n) { return '\\sqrt{' + n + '}'; }).join('+');
+    var est = ns.map(function (n) { return Math.round(Math.sqrt(n)); }), sumE = est.reduce(function (a, b) { return a + b; }, 0), rhs = Math.round(Math.sqrt(tot));
+    var fields = ns.map(function (n) { return { label: t('\\sqrt{' + n + '}\\approx') }; }).concat([{ label: t(L + '\\approx') }, { label: t('\\sqrt{' + tot + '}' + (exact ? '=' : '\\approx')) }]);
+    var check = function (resp) {
+      resp = resp || []; var vals = [];
+      for (var i = 0; i < fields.length; i++) { var p = HW.parse.number(resp[i] == null ? '' : resp[i]); if (!p.ok) return form('empty', 'Fill in every box with a number (box ' + (i + 1) + ').'); vals.push(p.value); }
+      for (i = 0; i < ns.length; i++) if (Math.abs(vals[i] - Math.sqrt(ns[i])) > 0.65) return wrong('estimate-off', nb(2, ns[i], String(ns[i])) + ' Which is it closer to?');
+      var own = vals.slice(0, ns.length).reduce(function (a, b) { return a + b; }, 0);
+      if (Math.abs(vals[ns.length] - own) > 0.051) return wrong('sum-own', 'Add your estimates: ' + t(vals.slice(0, ns.length).join('+') + '=' + K.roundTo(own, 2)) + '.');
+      var v = vals[ns.length + 1];
+      if (exact ? Math.abs(v - c) > 1e-9 : Math.abs(v - Math.sqrt(tot)) > 0.65) {
+        if (Math.abs(v - tot) < 1e-9) return wrong('took-root-not', 'Take the square root of ' + t(tot) + ' — don’t just add the numbers.');
+        if (Math.abs(v - own) < 0.051) return wrong('right-side', 'That’s the left side. Work out ' + t('\\sqrt{' + tot + '}') + ' on its own: add under the root first, then take the root.');
+        return wrong('right-side', exact ? t(tot) + ' is a perfect square: which number times itself is ' + t(tot) + '?' : nb(2, tot, String(tot)));
       }
-      if (v === P2 || v === -P2) return { code: 'no-root', hint: 'That’s the power. Now take the ' + nth(n) + ' root.' };
-      return null;
-    }, t(inner + '=' + P2) + (n % 2 ? ' (odd power: the sign is kept)' : ' (even power: the sign is gone)') + ', so ' + t(rt(n, inner) + '=' + rt(n, P2) + '=' + root) + '.' + (outerNeg ? ' The minus sign in front then gives ' + t(e + '=' + ans) + '.' : ''),
-    ['Evaluate the power inside the radical first.', 'An even power is never negative; an odd power keeps the sign.'], (outerNeg ? '-' : '') + n + '√((-' + s + ')^' + n + ')');
+      return ok();
+    };
+    return { prompt: 'Show that ' + t(L + '\\ne\\sqrt{' + tot + '}') + '.', input: { type: 'fields', fields: fields }, check: check, key: est.map(String).concat([String(sumE), String(rhs)]),
+      answer: t(L + '\\approx ' + est.join('+') + '=' + sumE) + ', but ' + t('\\sqrt{' + tot + '}' + (exact ? '=' : '\\approx ') + rhs) + '. ' + t(sumE + '\\ne ' + rhs) + '.',
+      solution: ns.map(function (n, i) { return t('\\sqrt{' + n + '}\\approx ' + est[i]) + ' (' + t(n) + ' is near ' + t(est[i] * est[i]) + ')'; }).join(', ') + ', so the left side ' + t('\\approx ' + est.join('+') + '=' + sumE) + '.<br>But ' + t('\\sqrt{' + tot + '}' + (exact ? '=' : '\\approx ') + rhs) + (exact ? ' exactly' : ' (' + t(tot) + ' is near ' + t(rhs * rhs) + ')') + '.<br>' + t(sumE + '\\ne ' + rhs) + ': the sum of the square roots is not the square root of the sum.',
+      hints: ['Estimate each square root with the nearest perfect square, e.g. ' + t('\\sqrt{11}\\approx 3') + ' because ' + t('11') + ' is near ' + t('9') + '.', 'For the right side, add the numbers under the root first: ' + t('\\sqrt{' + ns.join('+') + '}=\\sqrt{' + tot + '}') + '.'],
+      text: 'estimate ' + ns.join('+') + ' vs ' + tot, good: [ns.map(function (n) { return Math.sqrt(n).toFixed(1); }).concat([K.roundTo(ns.reduce(function (a, n) { return a + Number(Math.sqrt(n).toFixed(1)); }, 0), 1).toFixed(1), exact ? String(c) : Math.sqrt(tot).toFixed(1)])],
+      bad: [est.map(String).concat([String(sumE), String(sumE)])] };
   }
-  function pairMC(r, A, B, opts, sol, text) { return mcPart(r, 'Evaluate ' + t(A) + ' and ' + t(B) + '. Are they equal?', opts, sol, ['Evaluate each one separately. Where is the minus sign — inside or outside the radical?'], text); }
-  function bracketPart(n, m) {
-    var x = nroot(m, n), lo = Math.floor(x), hi = lo + 1, e = rt(n, m);
-    function side(isLo) {
-      var want = isLo ? lo : hi;
-      return K.number(want, function (v) {
-        if (!Number.isInteger(v)) return { code: 'bracket', hint: 'Give a whole number (an integer).' };
-        if (v === ipow(want, n)) return { code: 'power-not-root', hint: t(ipow(want, n)) + ' is the ' + perfName(n) + '. Give the integer it comes from: the root, not the power.' };
-        if (isLo && v === hi) return { code: 'swapped-bounds', hint: 'That’s the larger integer. The first box is the smaller one' + (m < 0 ? ' — for negatives, that is the one further from zero.' : '.') };
-        if (!isLo && v === lo) return { code: 'swapped-bounds', hint: 'That’s the smaller integer. The second box is the larger one' + (m < 0 ? ' — for negatives, that is the one closer to zero.' : '.') };
-        var vp = ipow(v, n);
-        if (isLo) return vp > m ? { code: 'bracket', hint: 'Check: ' + t(powTex(v, n) + '=' + vp) + ', which is more than ' + t(m) + '.' } : { code: 'bracket', hint: 'Get closer: ' + t(powTex(v + 1, n) + '=' + ipow(v + 1, n)) + ' is still less than ' + t(m) + '.' };
-        return vp < m ? { code: 'bracket', hint: 'Check: ' + t(powTex(v, n) + '=' + vp) + ', which is less than ' + t(m) + '.' } : { code: 'bracket', hint: 'Get closer: ' + t(powTex(v - 1, n) + '=' + ipow(v - 1, n)) + ' is still more than ' + t(m) + '.' };
-      });
-    }
-    return P.fields(t(e), [{ name: 'Smaller integer', label: 'Smaller integer', after: t('<' + e) }, { name: 'Larger integer', label: 'Larger integer', before: t(e + '<') }], [side(true), side(false)], [String(lo), String(hi)], t(lo + '<' + e + '<' + hi),
-      t(powTex(lo, n) + '=' + ipow(lo, n)) + ' and ' + t(powTex(hi, n) + '=' + ipow(hi, n)) + ', and ' + t(ipow(lo, n) + '<' + m + '<' + ipow(hi, n)) + ', so ' + t(lo + '<' + e + '<' + hi) + '.',
-      ['List the ' + perfName(n) + 's' + (m < 0 ? ' of negative integers' : '') + ' near ' + t(m) + '.', 'Which two consecutive integers have ' + nth(n) + ' powers on either side of ' + t(m) + '?'], 'bracket ' + n + '√' + m);
+  function opTF(r, sh, op) {
+    var a = sh.a, b = sh.b, A = sh.A, B = sh.B, js = { '+': [a + b, A + B], '-': [a - b, A - B], '\\times': [a * b, A * B], '\\div': [a / b, A / B] }[op], L = js[0], inner = js[1], R = Math.sqrt(inner), truth = Math.abs(L - R) < 1e-9;
+    var lhs = '\\sqrt{' + A + '}' + op + '\\sqrt{' + B + '}', rhs = '\\sqrt{' + A + op + B + '}';
+    var calc = t(lhs + '=' + a + op + b + '=' + L) + ', and ' + t(rhs + '=\\sqrt{' + inner + '}' + (truth ? '=' + R : '\\approx ' + fx(R, 2))) + '.';
+    return P.tf(r, t(lhs + '=' + rhs), truth, calc + (truth ? ' They are equal.' : ' They are not equal.'), '<b>' + (truth ? 'True' : 'False') + '.</b> ' + calc + (op === '\\div' || op === '\\times' ? ' Multiplication and division pass through a square root; addition and subtraction do not.' : ' A square root does not distribute over ' + (op === '+' ? 'addition' : 'subtraction') + '.'),
+      ['Work out each side separately and compare.'], 'sqrt ' + A + ' ' + op.replace('\\', '') + ' sqrt ' + B);
   }
-  function refinePart(n, m) {
-    var x = nroot(m, n), want = K.roundTo(x, 1), e = rt(n, m), base = Math.floor(x * 10), mid = (base + 0.5) / 10, midP = Math.pow(mid, n);
-    var midStr = decStr(midP, 2 * n), lo = Math.floor(x), hi = lo + 1, a1 = base / 10, a2 = (base + 1) / 10;
-    var test = t(powTex(Number(mid.toFixed(2)), n, true) + '=' + midStr + (midP > m ? '>' : '<') + m);
-    var p = P.approx(t(e), x, 1, { diag: function (v) {
-      if (Math.abs(v - (want + 0.1)) < 1e-9 || Math.abs(v - (want - 0.1)) < 1e-9) return { code: 'halfway', hint: 'Close — test the halfway value ' + t(mid.toFixed(2)) + ': ' + test + '. Which way does that tell you to round?' };
-      if (v < lo || v > hi) return { code: 'bracket', hint: 'Bracket it first: ' + t(lo + '<' + e + '<' + hi) + ', since ' + t(powTex(lo, n) + '=' + ipow(lo, n)) + ' and ' + t(powTex(hi, n) + '=' + ipow(hi, n)) + '.' };
-      return null;
-    } }, 'Between ' + t(lo) + ' and ' + t(hi) + '. Halfway test: ' + test + ', so ' + t(e) + (midP > m ? ' is less than ' : ' is more than ') + t(mid.toFixed(2)) + '. Check: ' + t(powTex(a1, n, true) + '=' + decStr(Math.pow(a1, n), n)) + ' and ' + t(powTex(a2, n, true) + '=' + decStr(Math.pow(a2, n), n)) + '. So ' + t(e + '\\approx ' + want.toFixed(1)) + '.',
-    ['Bracket the root between two integers, then try tenths.', 'Raise the halfway value between two tenths to the power ' + n + ' and compare with ' + t(m) + '.'], 'estimate ' + n + '√' + m + ' to 1 dp');
-    p.bad = [(want + (midP > m ? 0.1 : -0.1)).toFixed(1)];
+  function nestedRootPart(n, m, text) { // √√n with √n ≈ m
+    var inner = Math.sqrt(n), x = Math.sqrt(inner), want = K.roundTo(x, 1), est = Math.round(Math.sqrt(m));
+    return estPart({ tex: '\\sqrt{\\sqrt{' + F(n) + '}}', x: x, mentals: cands(Math.sqrt(m)), mentalKey: est, text: text,
+      nb: t('\\sqrt{' + F(n) + '}\\approx ' + m) + ' because ' + t(F(m * m) + '=' + m + '^{2}') + '. Now estimate ' + t('\\sqrt{' + m + '}') + ': ' + nb(2, m, String(m)),
+      mentalSol: 'inner: ' + t('\\sqrt{' + F(n) + '}\\approx ' + m) + ' (near ' + t(F(m * m) + '=' + m + '^{2}') + '); outer: ' + t('\\sqrt{' + m + '}\\approx ' + est) + ' (near ' + t(est * est) + ')',
+      calcSol: t('\\sqrt{' + F(n) + '}=' + fx(inner, 3)) + ', then ' + t('\\sqrt{' + fx(inner, 3) + '}\\approx ' + want.toFixed(1)),
+      diagEst: function (v) { return Math.abs(v - inner) <= 1 ? { code: 'nested-one-root', hint: 'That’s about ' + t('\\sqrt{' + F(n) + '}') + '. There are <b>two</b> square roots: take the square root again.' } : null; },
+      diagCalc: function (v) { return Math.abs(v - K.roundTo(inner, 1)) < 1e-9 ? { code: 'nested-one-root', hint: 'That’s ' + t('\\sqrt{' + F(n) + '}') + '. Take the square root of that answer too.' } : null; } });
+  }
+  function betweenPart(n) {
+    var x = Math.cbrt(n), L = Math.floor(x), want = K.roundTo(x, 1), cubes = '1, 8, 27, 64, 125, 216, 343, 512, 729, 1\\,000';
+    var calcC = K.approx(x, 1, { diag: function (v) { return Math.abs(v - K.roundTo(Math.sqrt(n), 1)) < 1e-9 ? { code: 'square-not-cube', hint: 'That’s the square root. Use the cube root key.' } : null; } });
+    return { prompt: t('\\sqrt[3]{' + n + '}'), input: { type: 'fields', fields: [{ label: '(i) Between' }, { label: 'and' }, { label: '(ii) Calculator, nearest tenth', before: t('\\approx') }] }, key: [String(L), String(L + 1), want.toFixed(1)],
+      answer: '(i) between ' + t(L) + ' and ' + t(L + 1) + ' &nbsp; (ii) ' + t('\\approx ' + want.toFixed(1)), text: 'cube root between ' + n, bad: [[String(L - 1), String(L), want.toFixed(1)]], good: [[String(L + 1), String(L), want.toFixed(1)]],
+      check: function (resp) {
+        resp = resp || []; var a = HW.parse.number(resp[0] || ''), b = HW.parse.number(resp[1] || '');
+        if (!a.ok || !b.ok) return form('empty', '<b>(i)</b> Fill in two whole numbers: the cube root lies between them.');
+        var lo = Math.min(a.value, b.value), hi = Math.max(a.value, b.value);
+        if (lo % 1 || hi % 1 || hi - lo !== 1) return wrong('between-pair', '<b>(i)</b> Use two <b>consecutive</b> whole numbers, like ' + t('4') + ' and ' + t('5') + '.');
+        if (lo !== L) return wrong('between-wrong', '<b>(i)</b> List the perfect cubes ' + t(cubes) + '. Which two is ' + t(n) + ' between?');
+        var c = calcC(resp[2] == null ? '' : resp[2]); if (c.v !== 'correct') return { v: c.v, code: c.code, hint: '<b>(ii) Calculator:</b> ' + (c.hint || 'Check this one again.') };
+        return ok();
+      },
+      solution: '(i) ' + t(F(L * L * L) + '=' + L + '^{3}') + ' and ' + t(F((L + 1) * (L + 1) * (L + 1)) + '=' + (L + 1) + '^{3}') + ', so ' + t('\\sqrt[3]{' + n + '}') + ' is between ' + t(L) + ' and ' + t(L + 1) + '.<br>(ii) ' + t('\\sqrt[3]{' + n + '}=' + fx(x, 3) + '\\ldots\\approx ' + want.toFixed(1)) + ' — reasonable.',
+      hints: ['The perfect cubes are ' + t(cubes) + '.', 'Find the two cubes on either side of ' + t(n) + '.'] };
+  }
+  function orderRootsPart(r) {
+    var o = gen(r, function () { return { n: r.int(20, 99), a: r.int(2, 6), b: r.int(5, 30), c: r.int(3, 9), d: r.int(2, 12) }; }, function (o) {
+      if (![o.n, o.b, o.d].every(function (v) { return nonSq(v) && nonCube(v); }) || (o.a === o.c && o.b === o.d)) return false;
+      var vs = [Math.sqrt(o.n), Math.cbrt(o.n), o.a * Math.sqrt(o.b), o.a * Math.cbrt(o.b), o.c * Math.sqrt(o.d), o.c * Math.cbrt(o.d)].sort(function (x, y) { return x - y; });
+      if (vs[5] > 29.5) return false; for (var i = 1; i < 6; i++) if (vs[i] - vs[i - 1] < 0.9) return false; return true;
+    }, 2000);
+    var its = [['s1', '\\sqrt{' + o.n + '}', Math.sqrt(o.n), 2, o.n, 1], ['c1', '\\sqrt[3]{' + o.n + '}', Math.cbrt(o.n), 3, o.n, 1], ['s2', o.a + '\\sqrt{' + o.b + '}', o.a * Math.sqrt(o.b), 2, o.b, o.a], ['c2', o.a + '\\sqrt[3]{' + o.b + '}', o.a * Math.cbrt(o.b), 3, o.b, o.a], ['s3', o.c + '\\sqrt{' + o.d + '}', o.c * Math.sqrt(o.d), 2, o.d, o.c], ['c3', o.c + '\\sqrt[3]{' + o.d + '}', o.c * Math.cbrt(o.d), 3, o.d, o.c]]
+      .sort(function (x, y) { return x[2] - y[2]; });
+    var byId = {}, targets = {}, tols = {}, hints = {};
+    its.forEach(function (x, i) {
+      byId[x[0]] = x; targets[x[0]] = x[2];
+      var gap = Math.min(i ? x[2] - its[i - 1][2] : 99, i < its.length - 1 ? its[i + 1][2] - x[2] : 99);
+      tols[x[0]] = Math.max(0.45, Math.min(0.75, gap / 2)); // ≥ 0.9 apart, so a point within its tolerance can't be mistaken for a neighbour
+      var L = Math.floor(rootV(x[3], x[4]) + 1e-9), root = rootT(x[3], x[4]), inner = t(root) + ' is between ' + t(rootT(x[3], Math.pow(L, x[3])) + '=' + L) + ' and ' + t(rootT(x[3], Math.pow(L + 1, x[3])) + '=' + (L + 1));
+      hints[x[0]] = x[5] === 1 ? inner + '.' : t(x[1]) + ' means ' + t(x[5] + '\\times ' + root) + ', and ' + inner + ', so ' + t(x[1]) + ' is between ' + t(x[5] * L) + ' and ' + t(x[5] * (L + 1)) + '.';
+    });
+    var shown = r.shuffle(its); // its is sorted: list the numbers out of order in the prompt too
+    var p = P.numplace('Place the numbers on the number line from ' + t('0') + ' to ' + t('30') + ': ' + shown.map(function (x, i) { return t(x[1] + (i < shown.length - 1 ? ',' : '')); }).join(' '), { min: 0, max: 30, step: 1, labels: 5, items: shown.map(function (x) { return { id: x[0], tex: x[1] }; }) }, targets,
+      'Decimal values: ' + its.map(function (x) { return t(x[1] + '\\approx ' + fx(x[2], 2)); }).join(', ') + '.<br>Least to greatest: ' + t(its.map(function (x) { return x[1]; }).join('<')) + '.<br>Each cube root is smaller than the matching square root, because cubing grows faster than squaring.',
+      ['Use your calculator to find a decimal value for each number, then place it between the right whole numbers.', 'For numbers bigger than 1, ' + t('\\sqrt[3]{n}<\\sqrt{n}') + '.'], 'place 6 roots on a number line', { tols: tols, hints: hints });
+    /* the classic slip: a cube root placed at (or right of) the matching square root */
+    var base = p.check, swapped = {};
+    p.check = function (resp) {
+      resp = resp || {};
+      for (var k = 1; k <= 3; k++) {
+        var s = byId['s' + k], c = byId['c' + k];
+        if (resp[s[0]] != null && resp[c[0]] != null && resp[c[0]] >= resp[s[0]] - 1e-9) return wrong('square-not-cube', t(c[1]) + ' is a <b>cube</b> root: for a number bigger than ' + t('1') + ' it is <b>smaller</b> than the square root ' + t(s[1]) + ', so it goes to the left. ' + hints[c[0]]);
+        if (resp[c[0]] != null && Math.abs(resp[c[0]] - s[2]) <= tols[c[0]] && Math.abs(c[2] - s[2]) > 2 * tols[c[0]]) return wrong('square-not-cube', 'It looks like you used a square root for ' + t(c[1]) + '. ' + hints[c[0]]);
+      }
+      return base(resp);
+    };
+    its.forEach(function (x) { swapped[x[0]] = p.key[x[0]]; });
+    swapped.c1 = p.key.s1; swapped.s1 = p.key.c1;
+    p.bad = (p.bad || []).concat([swapped]);
     return p;
   }
-  function eqMC(r, n, sign, s) {
-    var k = sign * ipow(s, n), opts;
-    var NO = 'no real solution';
-    if (sign < 0 && n % 2 === 0) opts = [{ html: NO, right: true }, { html: t('x=' + -s), why: t('(-' + s + ')^{' + n + '}=+' + ipow(s, n)) + ': an even power is never negative.' }, { html: t('x=\\pm ' + s), why: 'Both ' + t(s) + ' and ' + t(-s) + ' give ' + t('+' + ipow(s, n)) + '.' }, { html: t('x=' + s), why: t(s + '^{' + n + '}=' + ipow(s, n)) + ', not ' + t(k) + '.' }];
-    else if (n % 2 === 0) opts = [{ html: t('x=\\pm ' + s), right: true }, { html: t('x=' + s), why: 'There is another one: try ' + t('(-' + s + ')^{' + n + '}') + '.' }, { html: t('x=' + -s), why: 'Try ' + t(s + '^{' + n + '}') + ' as well.' }, { html: NO, why: t(s + '^{' + n + '}=' + ipow(s, n)) + ', so there is a solution.' }];
-    else opts = [{ html: t('x=' + (sign * s)), right: true }, { html: t('x=\\pm ' + s), why: 'An odd power keeps the sign: ' + t(powTex(-sign * s, n) + '=' + (-k)) + ', not ' + t(k) + '.' }, { html: t('x=' + (-sign * s)), why: t(powTex(-sign * s, n) + '=' + (-k)) + '. Check the sign.' }, { html: NO, why: 'An odd power can be ' + (sign < 0 ? 'negative' : 'any real number') + ': try ' + t(powTex(sign * s, n)) + '.' }];
-    var sol = (sign < 0 && n % 2 === 0) ? 'An even power of a real number is never negative, so ' + t('x^{' + n + '}=' + k) + ' has <b>no real solution</b>.'
-      : n % 2 === 0 ? t(s + '^{' + n + '}=' + k) + ' and ' + t('(-' + s + ')^{' + n + '}=' + k) + ', so ' + t('x=\\pm ' + s) + ' (two solutions).'
-        : t(powTex(sign * s, n) + '=' + k) + ' (odd power: the sign is kept), so ' + t('x=' + sign * s) + ' (one solution).';
-    return mcPart(r, 'Solve ' + t('x^{' + n + '}=' + k) + '.', opts, sol, ['Test positive and negative values. Is the exponent even or odd?'], 'solve x^' + n + '=' + k);
+  function nestMC(r) {
+    var ROM = ['i', 'ii', 'iii', 'iv'], PAT = { A: [0, 0, 0, 1], B: [0, 0, 1, 0], C: [1, 0, 0, 0], D: [0, 0, 0, 0] }, ans = r.pick(['A', 'A', 'B', 'C', 'D']);
+    var FALSE = REV_PAIRS.concat([['Qb', 'Q'], ['Q', 'Qb'], ['Qb', 'I']]), used = {}, st = PAT[ans].map(function (tr) { var p = gen(r, function () { return r.pick(tr ? TRUE_PAIRS : FALSE); }, function (p) { return !used[p.join()]; }); used[p.join()] = 1; return p; });
+    var expl = function (i) { var p = st[i], tr = sub(p[0], p[1]); return ROM[i] + ') ' + (tr ? '<b>True</b>: every ' + NOUN[p[0]] + ' is ' + ONE[p[1]] + '.' : '<b>False</b>: ' + t(exIn(p[0], p[1])) + ' is ' + ONE[p[0]] + ' but not ' + ONE[p[1]] + '.'); };
+    var CLAIM = { A: [0, 1, 2], B: [0, 1, 3], C: [1, 2, 3], D: [0, 1, 2, 3] }, falseSet = [0, 1, 2, 3].filter(function (i) { return !PAT[ans][i]; });
+    var opts = ['A', 'B', 'C', 'D'].map(function (k) {
+      var cl = CLAIM[k], diff = [0, 1, 2, 3].filter(function (i) { return (cl.indexOf(i) >= 0) !== (falseSet.indexOf(i) >= 0); });
+      return { html: k === 'D' ? 'all four statements are false' : cl.map(function (i) { return ROM[i] + ')'; }).join(', ').replace(/, ([^,]*)$/, ', and $1') + ' only', right: k === ans, why: k === ans ? null : 'Check statement ' + ROM[diff[0]] + ') again.' };
+    });
+    return P.mc(r, 'Consider the following statements.<br>' + st.map(function (p, i) { return ROM[i] + ') The set of ' + NAME[p[0]] + ' is nested within the set of ' + NAME[p[1]] + '.'; }).join('<br>') + '<br>Which of the statements are <b>false</b>?', opts,
+      [0, 1, 2, 3].map(expl).join('<br>') + '<br>The false ones: ' + (falseSet.length ? falseSet.map(function (i) { return ROM[i] + ')'; }).join(', ') : 'none') + '.', ['Test each statement: is every number in the first set also in the second set?'], 'which nesting statements false', true);
   }
-  function nestPart(outer, inner, M, s) {
-    var e = rt(outer, rt(inner, M)), mid = Math.round(nroot(M, inner));
-    return P.number(t(e), s, function (v) {
-      if (v === mid) return { code: 'inner-roots', hint: 'You did the inside: ' + t(rt(inner, M) + '=' + mid) + '. Now take the ' + nth(outer) + ' root of ' + t(mid) + '.' };
-      if (isPerfect(M, outer) && v === Math.round(nroot(M, outer))) return { code: 'inner-roots', hint: 'Work from the <b>inside</b> out: start with ' + t(rt(inner, M)) + '.' };
-      return null;
-    }, 'Inside first: ' + t(rt(inner, M) + '=' + mid) + '. Then ' + t(rt(outer, mid) + '=' + s) + ' (since ' + t(s + '^{' + outer + '}=' + mid) + ').', ['Work from the inside out.'], 'nested ' + outer + '√' + inner + '√' + M);
+  /* Question 21: draw |v| < k (inside) or |v| >= k (outside) on a number line (dots + shading) */
+  function absGraphPart(r, inside, k, v) {
+    var ops = inside ? ['<', '\\le'] : ['\\ge', '>'], op = r.chance(0.7) ? ops[0] : ops[1], closed = op === '\\le' || op === '\\ge', ineq = '|' + v + '|' + op + ' ' + k;
+    var L = closed ? '[' : '(', R = closed ? ']' : ')';
+    var target = inside ? L + '-' + k + ',' + k + R : '(-\\infty,-' + k + R + '\\cup' + L + k + ',\\infty)';
+    var I = { min: -8, max: 8, step: 1 };
+    var sol = t(ineq) + ' means every point ' + (inside ? '<b>within</b> ' + t(k) + ' units of ' : (closed ? '<b>at least</b> ' : '<b>more than</b> ') + t(k) + ' units from ') + t('0') + (inside ? ': between ' + t('-' + k) + ' and ' + t(k) : ': outward from ' + t('-' + k) + ' and ' + t(k) + ' in both directions') + '. ' +
+      (closed ? 'The ' + t(op) + ' includes the endpoints, so they get solid dots.' : 'The strict ' + t(op) + ' excludes the endpoints, so they get open dots.') + numLine(k, inside, closed);
+    var p = P.numline('Draw the graph of ' + t(ineq + ',\\ ' + v + '\\in R') + ' on the number line.', I, target, sol,
+      ['Read ' + t('|' + v + '|') + ' as “the distance of ' + t(v) + ' from ' + t('0') + '”. Which numbers are ' + (inside ? (closed ? 'at most ' : 'less than ') : (closed ? 'at least ' : 'more than ')) + t(k) + ' units from ' + t('0') + '?', 'Solid dot: endpoint included (' + t('\\le') + ' or ' + t('\\ge') + '). Open dot: not included (' + t('<') + ' or ' + t('>') + ').'],
+      'graph ' + ineq, { v: v });
+    var base = p.check, D = HW.draw;
+    var dist = inside ? t('|' + v + '|' + op + ' ' + k) + ' means <b>less than' + (closed ? ' or equal to' : '') + '</b> ' + t(k) + ' units from ' + t('0') + ', so shade <b>between</b> ' + t('-' + k) + ' and ' + t(k) + '.' :
+      t('|' + v + '|' + op + ' ' + k) + ' means ' + (closed ? '<b>at least</b> ' : '<b>more than</b> ') + t(k) + ' units from ' + t('0') + ', so shade <b>outward</b> from ' + t('-' + k) + ' and from ' + t(k) + '.';
+    p.check = function (resp) {
+      var res = base(resp); if (res.v === 'correct' || res.v === 'form') return res;
+      var parts = D.numlineParts(resp), ends = [];
+      parts.forEach(function (q) { [q.lo, q.hi].forEach(function (x) { if (isFinite(x) && ends.indexOf(x) < 0) ends.push(x); }); });
+      var hasK = ends.indexOf(k) >= 0, hasNeg = ends.indexOf(-k) >= 0;
+      if (res.code === 'nl-side') return wrong('abs-shade', dist);
+      if (res.code === 'nl-dot') return wrong('nl-dot', 'Right stretch — check the dots: ' + (closed ? t(op) + ' includes ' + t('-' + k) + ' and ' + t(k) + ' (they are exactly ' + t(k) + ' units from ' + t('0') + '), so both get <b>solid</b> dots.' : 'the strict ' + t(op) + ' leaves out ' + t('-' + k) + ' and ' + t(k) + ', so both get <b>open</b> dots.'));
+      if (hasK && !hasNeg) return wrong('abs-one-side', 'Distance counts in <b>both</b> directions: ' + t('-' + k) + ' is also ' + t(k) + ' units from ' + t('0') + '. Your graph needs a boundary at ' + t('-' + k) + ' as well as at ' + t(k) + '. ' + dist);
+      if (ends.length === 2 && ends.indexOf(-ends[0]) === 1 && !hasK) return wrong('nl-values', 'The boundaries are where ' + t(v) + ' is exactly ' + t(k) + ' units from ' + t('0') + ': at ' + t('-' + k) + ' and ' + t(k) + '.');
+      return wrong(res.code, (res.hint ? res.hint + ' ' : '') + dist);
+    };
+    var dk = function (x, o) { return { x: x, open: o }; };
+    p.bad = [
+      inside ? { dots: [dk(-k, !closed), dk(k, !closed)], shade: [[null, -k], [k, null]] } : { dots: [dk(-k, !closed), dk(k, !closed)], shade: [[-k, k]] },   // inside/outside swapped
+      inside ? { dots: [dk(-k, closed), dk(k, closed)], shade: [[-k, k]] } : { dots: [dk(-k, closed), dk(k, closed)], shade: [[null, -k], [k, null]] },        // wrong dots
+      inside ? { dots: [dk(k, !closed)], shade: [[null, k]] } : { dots: [dk(k, !closed)], shade: [[k, null]] },                                                  // solved like v < k / v >= k
+      inside ? { dots: [dk(0, false), dk(k, !closed)], shade: [[0, k]] } : { dots: [dk(-k, !closed), dk(k, !closed)], shade: [[null, -k]] }];
+    return p;
+  }
+  function strictPart(r, it) {
+    var opts = ['N', 'W', 'I', 'Q', 'Qb'].map(function (x) { var right = x === SMALLEST[it.kind], h = right ? null : regionWhy(it, x); return { html: S(x), right: right, why: h ? h.hint : null }; });
+    var p = P.mc(r, t(it.tex), opts, it.note + ' Smallest set: ' + S(SMALLEST[it.kind]) + '.', ['Simplify first, then find the smallest set that still contains the number.'], 'strictest set ' + it.tex, true);
+    p.input.columns = 5; return p;
+  }
+  function countPart(r, d) {
+    var L = { none: 'no number', one: 'exactly one number', inf: 'infinitely many numbers' };
+    var p = P.mc(r, d[0], ['none', 'one', 'inf'].map(function (k) { return { html: L[k], right: k === d[1], why: k === d[1] ? null : d[2] }; }), '<b>' + cap(L[d[1]]) + '.</b> ' + d[2], ['Picture the diagram. Is the region described empty? Does it hold one number, or a whole family?'], 'how many: ' + d[0].replace(/\\\(|\\\)/g, ''), true);
+    p.input.columns = 3; return p;
+  }
+  var CLOSE = { '+': 'addition', '−': 'subtraction', '×': 'multiplication', '÷': 'division' };
+  var CLOSE_EX = {
+    'N+': [true, t('4+9=13') + '. Two counting numbers always add to a counting number.'], 'N×': [true, t('3\\times 4=12') + '. A product of counting numbers is a counting number.'],
+    'W+': [true, t('0+7=7') + '. Two whole numbers always add to a whole number.'], 'W×': [true, t('0\\times 5=0') + ', ' + t('3\\times 6=18') + ' — always whole.'],
+    'W−': [false, t('2-7=-5\\notin W') + '.'], 'N−': [false, t('3-5=-2\\notin N') + '.'], 'I×': [true, t('(-3)(8)=-24\\in I') + '. An integer times an integer is always an integer.'],
+    'I+': [true, t('-7+4=-3\\in I') + '.'], 'I−': [true, t('3-8=-5\\in I') + '.'], 'Q÷': [false, t('5\\div 0') + ' is undefined — <b>only</b> because of zero. With ' + t('0') + ' excluded as a divisor, ' + t('\\frac{a}{b}\\div\\frac{c}{d}=\\frac{ad}{bc}') + ' is always rational.'],
+    'R÷': [false, t('\\pi\\div 0') + ' is undefined — only because of zero. Dividing by any non-zero real number gives a real number.'], 'R−': [true, t('\\pi-5\\in R') + '. A real number minus a real number is always real.'],
+    'R+': [true, 'Adding two points on the number line always gives a point on the number line.'], 'R×': [true, 'A product of two real numbers is always real.'],
+    'Q−': [true, t('\\frac{a}{b}-\\frac{c}{d}=\\frac{ad-bc}{bd}') + ', again a ratio of integers.'], 'Q+': [true, t('\\frac{a}{b}+\\frac{c}{d}=\\frac{ad+bc}{bd}') + ', again a ratio of integers.'],
+    'Q×': [true, t('\\frac{a}{b}\\times\\frac{c}{d}=\\frac{ac}{bd}') + ', again a ratio of integers.'], 'W÷': [false, t('3\\div 2=1.5\\notin W') + ' (and ' + t('3\\div 0') + ' is undefined).'],
+    'N÷': [false, t('3\\div 4=0.75\\notin N') + '.'], 'I÷': [false, t('3\\div 2=1.5\\notin I') + '.']
+  };
+  function closedPart(r, so) {
+    var e = CLOSE_EX[so[0] + so[1]], closed = e[0];
+    var p = P.mc(r, S(so[0]) + ' under ' + CLOSE[so[1]], [{ html: '<b>Closed</b>', right: closed, why: closed ? null : 'Look for a counterexample: ' + e[1] }, { html: '<b>Not closed</b>', right: !closed, why: closed ? 'Can you find a counterexample? There isn’t one: ' + e[1] : null }],
+      '<b>' + (closed ? 'Closed' : 'Not closed') + '.</b> ' + e[1], ['Try a few pairs, including negatives, zero and pairs that don’t divide evenly.'], so[0] + ' closed under ' + CLOSE[so[1]], true);
+    p.tries = 1; p.input.columns = 2; return p;
+  }
+  function falseStmtMC(r) {
+    var ROM = ['i', 'ii', 'iii', 'iv'], PAT = { A: [0, 1, 0, 1], B: [1, 0, 1, 0], C: [1, 0, 1, 1], D: [1, 1, 1, 0] }, ans = r.pick(['A', 'B', 'B', 'C', 'D']), tr = PAT[ans];
+    var CT = ['N+', 'N×', 'W+', 'W×', 'I+', 'I−', 'I×', 'Q+', 'Q−', 'Q×', 'R+', 'R−', 'R×'], CF = ['N−', 'N÷', 'W−', 'W÷', 'I÷'];
+    var QBF = { '+': t('\\sqrt{2}+(-\\sqrt{2})=0') + ' is rational.', '×': t('\\sqrt{2}\\times\\sqrt{2}=2') + ' is rational.', '÷': t('\\sqrt{2}\\div\\sqrt{2}=1') + ' is rational.' };
+    var s1 = r.pick(tr[0] ? TRUE_PAIRS : REV_PAIRS), s2 = gen(r, function () { return r.pick(tr[1] ? TRUE_PAIRS : REV_PAIRS); }, function (p) { return p.join() !== s1.join(); });
+    var c3 = r.pick(tr[2] ? CT : CF), c4 = tr[3] ? gen(r, function () { return r.pick(CT); }, function (c) { return c !== c3; }) : (r.chance(0.6) ? 'Qb' + r.pick(['+', '×', '÷']) : gen(r, function () { return r.pick(CF); }, function (c) { return c !== c3; }));
+    function closeTxt(c) { var s = c.slice(0, c.length - 1), op = c.slice(-1); return S(s) + ' is closed under ' + CLOSE[op] + '.'; }
+    function closeExpl(c) { var s = c.slice(0, c.length - 1), op = c.slice(-1); if (s === 'Qb') return '<b>False</b>: ' + QBF[op]; var e = CLOSE_EX[c]; return (e[0] ? '<b>True</b>: ' : '<b>False</b>: ') + e[1]; }
+    var stm = ['Every number in ' + S(s1[0]) + ' is also in ' + S(s1[1]) + '.', 'Every number in ' + S(s2[0]) + ' is also in ' + S(s2[1]) + '.', closeTxt(c3), closeTxt(c4)];
+    var expl = [s1, s2].map(function (p) { return sub(p[0], p[1]) ? '<b>True</b>: ' + S(p[0]) + ' is nested inside ' + S(p[1]) + '.' : '<b>False</b>: ' + t(exIn(p[0], p[1])) + ' is in ' + S(p[0]) + ' but not in ' + S(p[1]) + '.'; }).concat([closeExpl(c3), closeExpl(c4)]);
+    var CLAIM = { A: [0, 2], B: [1, 3], C: [1], D: [3] }, falseSet = [0, 1, 2, 3].filter(function (i) { return !tr[i]; });
+    var opts = ['A', 'B', 'C', 'D'].map(function (k) { var cl = CLAIM[k], diff = [0, 1, 2, 3].filter(function (i) { return (cl.indexOf(i) >= 0) !== (falseSet.indexOf(i) >= 0); }); return { html: cl.map(function (i) { return ROM[i] + ')'; }).join(' and ') + ' only', right: k === ans, why: k === ans ? null : 'Check statement ' + ROM[diff[0]] + ') again.' }; });
+    return P.mc(r, 'Consider these four statements.<br>' + stm.map(function (s, i) { return ROM[i] + ') ' + s; }).join('<br>') + '<br>Which are <b>false</b>?', opts,
+      expl.map(function (e, i) { return ROM[i] + ') ' + e; }).join('<br>') + '<br>False: ' + falseSet.map(function (i) { return ROM[i] + ')'; }).join(' and ') + '.', ['Test each statement with an example, and look for a counterexample.'], 'which statements false (nesting + closure)', true);
   }
 })(window);

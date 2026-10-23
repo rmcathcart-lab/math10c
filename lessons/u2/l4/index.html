@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Scientific Notation · Math 10C 2.4</title>
-<meta name="description" content="Math 10C Unit 2 Lesson 4 (Application / Extension): scientific notation. Standard notation, product form and a × 10ⁿ, renormalizing a coefficient, and multiplying and dividing with the exponent laws. Write on it with an Apple Pencil.">
+<title>Rational Exponents and Radicals · Math 10C 2.4</title>
+<meta name="description" content="Math 10C Unit 2 Lesson 4: rational exponents and radicals. What a^(1/n) and a^(m/n) mean, evaluating them (root first), negative rational exponents, negative and fractional bases, and converting both ways between powers and radicals. Write on it with an Apple Pencil.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="10C Lessons">
@@ -27,278 +27,332 @@
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
   <div class="kicker">Math 10C · Unit 2 Exponents · Lesson 4</div>
-  <h1>Scientific Notation <span class="ext-tag">Application / Extension</span></h1>
-  <p class="lede">The Sun is about <b>150 000 000 000 m</b> away, and a red blood cell is <b>0.000008 m</b> across. Numbers like these are hard to read and easy to get wrong. Scientific notation writes them as <span class="tex">a\times10^{n}</span>, and then the exponent laws make multiplying and dividing them quick.</p>
+  <h1>Rational Exponents and Radicals</h1>
+  <p class="lede">What could <span class="tex">7^{1/2}</span> or <span class="tex">27^{2/3}</span> possibly mean? If the exponent laws still work for fractions, there is only one answer: a fraction exponent is a <b>root</b>. Today we find out why, evaluate powers like these without a calculator, and switch back and forth between powers and radicals.</p>
   <div class="goals">
     <div class="goals-h">I can…</div>
     <ul>
-      <li>move between <em>standard notation</em>, <em>product form</em> and <em>scientific notation</em></li>
-      <li>rewrite a number whose coefficient is out of range (<b>renormalize</b> it)</li>
-      <li>multiply and divide numbers in scientific notation with the <b>product</b> and <b>quotient</b> laws</li>
-      <li>solve problems with very large and very small numbers, and check them with the <kbd>EE</kbd> key</li>
+      <li>explain, using the exponent laws, why <span class="tex">a^{1/n}=\sqrt[n]{a}</span></li>
+      <li>evaluate <span class="tex">a^{m/n}</span> and <span class="tex">a^{-m/n}</span> without a calculator, taking the <b>root first</b></li>
+      <li>decide when a power with a <b>negative base</b> is a real number, and where its minus sign belongs</li>
+      <li>convert a power with a rational exponent to a radical, and a radical to a power</li>
+      <li>use rational exponents and a calculator to solve problems, like the edge of a cube of known volume</li>
     </ul>
   </div>
-  <div class="ext-note"><span class="ext-ic">+</span><div><b>Application / Extension.</b> Scientific notation is not a Math 10C outcome on its own: converting numbers is review from Grade 9 and Science 10. It appears here as a <b>context for using the exponent laws</b>.</div></div>
   <div class="outcome"><b>AN3</b> Demonstrate an understanding of powers with integral and rational exponents.</div>
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf wf-one" data-ink="warm" data-section="Warm-up: How Many Heartbeats?">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>How Many Heartbeats?</h2>
-  <p class="wf-rule">A resting heart beats about <b>70 times a minute</b>, every minute, for life.</p></div>
-
-  <div class="hb-top">
-    <div class="hb-heart" aria-hidden="true"><svg viewBox="-2.2 -1.9 4.4 4.6"><path d="M0 2.3 C-0.6 1.75 -2 0.8 -2 -0.25 C-2 -1.35 -0.55 -1.7 0 -0.65 C0.55 -1.7 2 -1.35 2 -0.25 C2 0.8 0.6 1.75 0 2.3 Z"/><ellipse cx="-1.2" cy="-0.6" rx="0.32" ry="0.2" fill="#fff" opacity=".35"/></svg></div>
-    <div class="hb-monitor" aria-label="Heart monitor: about 70 beats per minute">
-      <div class="hb-grid"></div>
-      <svg class="hb-trace" id="hb-trace" preserveAspectRatio="none"></svg>
-      <div class="hb-bpm">≈ 70 beats per minute</div>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: The Piano Puzzle" style="--wf-side: 300px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>The Piano Puzzle</h2>
+  <p class="wf-rule">Each step to the next key multiplies the pitch by the <b>same number</b>, <span class="tex">r</span>. <span class="muted">(Black keys count as steps too. Tap a key to hear it.)</span></p></div>
+  <div class="wf-grid"><div class="wf-main">
+  <div class="pn-wrap">
+    <div class="pn" id="piano"></div>
+    <div class="pn-bar no-ink">
+      <div class="pn-read" id="pn-read"><span class="muted">Tap a key</span></div>
+      <button class="pill small" id="pn-count">Count the steps</button>
+      <button class="pill small" id="pn-play">Play A to A</button>
     </div>
   </div>
-
-  <div class="hb-chain" id="hb-chain">
-    <div class="hb-card given"><div class="hb-t">1 minute</div><div class="hb-v">70 beats</div></div>
-    <div class="hb-x">× 60</div>
-    <button class="hb-card" data-hb="4200" data-sci=""><div class="hb-t">1 hour</div><div class="hb-v">? beats</div></button>
-    <div class="hb-x">× 24</div>
-    <button class="hb-card" data-hb="100800" data-sci="\approx1.0\times10^{5}"><div class="hb-t">1 day</div><div class="hb-v">? beats</div></button>
-    <div class="hb-x">× 365</div>
-    <button class="hb-card" data-hb="36792000" data-sci="\approx3.68\times10^{7}"><div class="hb-t">1 year</div><div class="hb-v">? beats</div></button>
-    <div class="hb-x">× 80</div>
-    <button class="hb-card big" data-hb="2943360000" data-sci="\approx2.9\times10^{9}"><div class="hb-t">80 years</div><div class="hb-v">? beats</div></button>
-  </div>
-  <p class="small muted hb-hint">Tap a <b>?</b> card to reveal it, after the class has had a go.</p>
 
   <div class="wq-grid">
     <div class="wq">
-      <div class="q-line"><div class="q-num">1</div><div>How many beats in <b>1 hour</b>?</div></div>
-      <div class="wq-a"><button class="pill small" data-wq>Answer</button><div class="q-ans"><span class="tex">70\times60=4\,200</span> beats.</div></div>
+      <div class="q-line"><div class="q-num">1</div><div>The top A is how many times the frequency of the bottom A?</div></div>
+      <div class="wq-a"><button class="pill small" data-wq="0,12">Answer</button><div class="q-ans"><b>2 times</b>: <span class="tex">880\div440=2</span>. Going up one octave <b>doubles</b> the frequency.</div></div>
     </div>
     <div class="wq">
-      <div class="q-line"><div class="q-num">2</div><div>About how many in <b>1 day</b>?</div></div>
-      <div class="wq-a"><button class="pill small" data-wq>Answer</button><div class="q-ans"><span class="tex">4\,200\times24=100\,800</span>, about <span class="tex">100\,000=1\times10^{5}</span> beats.</div></div>
+      <div class="q-line"><div class="q-num">2</div><div>Count the steps (<span class="tex">\times r</span>) from one A up to the next A.</div></div>
+      <div class="wq-a"><button class="pill small" data-wq="count">Answer</button><div class="q-ans"><b>12 steps</b>: A, A♯, B, C, C♯, D, D♯, E, F, F♯, G, G♯, A.</div></div>
     </div>
   </div>
 
-  <div class="wq q3">
-    <div class="q-line"><div class="q-num">3</div><div>One year is about <b>36 800 000</b> beats. Which of these <b>equal</b> it? <span class="muted">Tap each one to check.</span></div></div>
-    <div class="q3-opts">
-      <button class="q3-opt" data-q3="sci"><span class="tex">3.68\times10^{7}</span><small>&nbsp;</small></button>
-      <button class="q3-opt" data-q3="eq"><span class="tex">36.8\times10^{6}</span><small>&nbsp;</small></button>
-      <button class="q3-opt" data-q3="no"><span class="tex">3.68\times10^{6}</span><small>&nbsp;</small></button>
+  </div><div class="wf-side">
+  <div class="wq-grid wq-side">
+    <div class="wq">
+      <div class="q-line"><div class="q-num">3</div><div>Fill in the exponent: <span class="nw"><span class="tex">r^{\,\textcolor{#c93a33}{?}}=2</span></span></div></div>
+      <div class="wq-a"><button class="pill small" data-wq="12">Answer</button><div class="q-ans"><span class="tex">r^{12}=2</span>. Twelve equal multiplications take 440 to 880.</div></div>
     </div>
   </div>
-
-  <div class="poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> About how many times does a heart beat in an <b>80-year</b> life? <b>Guess first.</b></div></div>
+  <div class="poll wf-poll">
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> The <b class="red">red key</b> is <b>6 steps</b> up, exactly halfway. Its frequency is about… <b>Guess first.</b></div></div>
     <div class="poll-opts">
-      <div class="opt"><b>A</b> about 3 million</div>
-      <div class="opt right"><b>B</b> about 3 billion</div>
-      <div class="opt"><b>C</b> about 3 trillion</div>
+      <div class="opt"><b>A</b> 587 Hz</div>
+      <div class="opt right"><b>B</b> 622 Hz</div>
+      <div class="opt"><b>C</b> 660 Hz</div>
     </div>
     <button class="pill" data-poll>Reveal</button>
-    <div class="poll-ans"><b>B, about 3 billion.</b> <span class="tex">70\times60\times24\times365\times80=2\,943\,360\,000\approx2.9\times10^{9}</span>. One year alone is already over 36 million, so A is far too small; C has three extra zeros. <b>Surprise:</b> there are only about <span class="tex">2.5\times10^{9}</span> <em>seconds</em> in 80 years, so your heart beats more times than there are seconds in your life!</div>
+    <div class="poll-ans"><b>B, about 622 Hz.</b> Six steps multiply by <span class="tex">r^6</span>, and <span class="tex">r^6\times r^6=r^{12}=2</span>, so <span class="tex">r^6</span> is the number that squares to 2: <span class="tex">r^6=\sqrt{2}\approx1.414</span> and <span class="tex">440\times\sqrt{2}\approx622.3</span> Hz. <b>C</b> is halfway by <em>adding</em>, but the keys <em>multiply</em> (660 Hz is about 7 steps up). <b>A</b> is 5 steps up. <span class="muted">Tap the keys: the frequencies now show.</span></div>
   </div>
+  </div></div>
 
-  <div class="pulse-card">
-    <div class="q-line"><div class="q-num ok-n">♥</div><div><b>Try it.</b> Find your pulse (wrist or neck). Count the beats for <b>15 seconds</b>, then multiply by 4. Who’s closest to 70?</div></div>
-    <div class="pulse-row">
-      <button class="pill" id="pulse-go">Start the 15-second count</button>
-      <div class="pulse-clock" id="pulse-clock"><span class="pc-n">15</span><span class="pc-l">seconds</span></div>
-      <div class="pulse-msg" id="pulse-msg">Resting rates vary a lot (roughly 60 to 100 is typical), so 70 is just a round “about” value.</div>
-    </div>
+  <div class="wq bonus-q">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Bonus.</b> So what is <span class="tex">r</span> itself? It’s the number that, used <b>12 times</b> as a factor, gives 2. And which key is <span class="tex">440\times\sqrt[3]{2}</span> Hz?</div></div>
+    <div class="wq-a"><button class="pill small" data-wq="4">Answer</button><div class="q-ans"><span class="tex">r=\sqrt[12]{2}\approx1.0595</span>. Today we’ll write it as <span class="tex">2^{1/12}</span>. And <span class="tex">\sqrt[3]{2}\times\sqrt[3]{2}\times\sqrt[3]{2}=2</span>, so it’s <b>4 steps</b> (12 ÷ 3): <b>C♯</b>, about 554 Hz.</div></div>
+  </div>
+  <p class="hum">Hum a note, then hum it an octave higher: you just doubled the frequency!</p>
+</section>
+
+<!-- ================= 1. a^(1/n) ================= -->
+<section class="card" data-ink="s1" data-section="1. What a^(1/n) means">
+  <div class="sec-h"><span class="badge">1</span><h2>What Does <span class="tex">a^{1/n}</span> Mean?</h2></div>
+  <p>The exponent laws were built for whole-number exponents, but they ought to work for a fraction too, and that <b>forces</b> a meaning on <span class="tex">a^{1/2}</span>. Multiply <span class="tex">7^{1/2}</span> by itself, using the product law:</p>
+  <p class="eqn"><span class="tex">7^{1/2}\times7^{1/2}=7^{\frac12+\frac12}=7^{1}=7</span></p>
+  <p>But <span class="tex">\sqrt{7}\times\sqrt{7}=7</span> too. Both numbers give 7 when multiplied by themselves, so they’re the <b>same number</b>: <span class="tex">7^{1/2}=\sqrt{7}</span>. Three equal factors work the same way: <span class="tex">2^{1/3}\times2^{1/3}\times2^{1/3}=2^1=2</span>, so <span class="tex">2^{1/3}=\sqrt[3]{2}</span>.</p>
+  <div class="explainer" data-explainer="whyRoot"></div>
+  <div class="def rule-card"><b>The <span class="tex">n</span>th root as a power</b> <span class="muted small">(for a natural number <span class="tex">n\ge2</span>)</span>
+    <div class="rule-tex"><span class="tex">a^{1/n}=\sqrt[n]{a}</span></div>
+    <div class="eg">If <span class="tex">n</span> is <b>even</b>, <span class="tex">a</span> must be non-negative (<span class="tex">a\ge0</span>) for a real root. If <span class="tex">n</span> is <b>odd</b>, <span class="tex">a</span> can be any real number.</div>
+  </div>
+  <div class="tip piano-tip"><div class="tip-ic">♪</div><div><b>Back to the piano.</b> Twelve equal steps make <span class="tex">r^{12}=2</span>, so <span class="tex">r=2^{1/12}=\sqrt[12]{2}\approx1.0595</span>. Every key is <span class="tex">440\times2^{k/12}</span> Hz, where <span class="tex">k</span> is its number of steps up.</div></div>
+</section>
+
+<!-- ================= 2. a^(m/n) ================= -->
+<section class="card" data-ink="s2" data-section="2. Extending to a^(m/n)">
+  <div class="sec-h"><span class="badge">2</span><h2>Extending to <span class="tex">a^{m/n}</span></h2></div>
+  <p>The <b>denominator</b> of a rational exponent tells which <b>root</b> to take. The <b>numerator</b> is an ordinary <b>power</b>, applied before or after the root.</p>
+  <div class="anat">
+    <div class="an-lab an-m"><b>numerator <span class="tex">m</span></b><br>the <b>power</b></div>
+    <div class="an-big"><span class="tex">a^{\textcolor{#c27a0e}{m}/\textcolor{#13807a}{n}}=\left(\sqrt[\textcolor{#13807a}{n}]{a}\right)^{\textcolor{#c27a0e}{m}}=\sqrt[\textcolor{#13807a}{n}]{a^{\textcolor{#c27a0e}{m}}}</span></div>
+    <div class="an-lab an-n"><b>denominator <span class="tex">n</span></b><br>the <b>index</b> of the root</div>
+    <div class="an-tip">Roots grow at the <b>bottom</b>: the root is in the <b>denominator</b>.</div>
+  </div>
+  <p>Both orders give the same answer for <span class="tex">27^{2/3}</span>, but one is much easier:</p>
+  <div class="explainer" data-explainer="routes"></div>
+  <div class="def rule-card"><b>Rational exponents</b> <span class="muted small">(natural numbers <span class="tex">m</span> and <span class="tex">n\ge2</span>, with <span class="tex">\tfrac{m}{n}</span> in lowest terms)</span>
+    <div class="rule-tex"><span class="tex">a^{m/n}=\left(\sqrt[n]{a}\right)^m=\sqrt[n]{a^{m}}</span></div>
+    <div class="eg">If <span class="tex">n</span> is even, <span class="tex">a</span> must be non-negative. <b>Root first</b> keeps the numbers small.</div>
   </div>
 </section>
 
-<!-- ================= 1. Recap ================= -->
-<section class="card" data-ink="s1" data-section="1. Scientific Notation (Recap)">
-  <div class="sec-h"><span class="badge">1</span><h2>Scientific Notation (Recap)</h2></div>
-  <div class="def">A positive number is in <b>scientific notation</b> when it is written as <span class="tex">a\times10^{n}</span>, where the <b>coefficient</b> <span class="tex">a</span> satisfies <span class="tex">1\le a\lt10</span> and <span class="tex">n</span> is an <b>integer</b>. Every positive number has exactly <b>one</b> scientific-notation form.</div>
-  <p><b>Product form</b> shows where the power of ten comes from:</p>
+<!-- ================= 3. negative rational exponents ================= -->
+<section class="card" data-ink="s3" data-section="3. Negative Rational Exponents">
+  <div class="sec-h"><span class="badge">3</span><h2>Negative Rational Exponents</h2></div>
+  <p>A negative exponent still means <b>take the reciprocal</b>, <span class="tex">a^{-k}=\dfrac{1}{a^k}</span>, whether or not the exponent is a fraction: <span class="tex">27^{-2/3}=\dfrac{1}{27^{2/3}}=\dfrac{1}{9}</span>.</p>
+  <div class="def rule-card"><b>Negative rational exponents</b> <span class="muted small">(<span class="tex">\tfrac{m}{n}</span> in lowest terms, <span class="tex">a\ne0</span>)</span>
+    <div class="rule-tex"><span class="tex">a^{-m/n}=\dfrac{1}{a^{m/n}}=\dfrac{1}{\left(\sqrt[n]{a}\right)^m}=\dfrac{1}{\sqrt[n]{a^{m}}}</span></div>
+    <div class="eg">If <span class="tex">n</span> is even, <span class="tex">a</span> must be <b>positive</b>.</div>
+  </div>
+  <p>Think of any rational exponent as three jobs, done in order: the <b>sign</b> flips, the <b>denominator</b> roots, the <b>numerator</b> powers.</p>
+  <div class="explainer" data-explainer="machine"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>A negative exponent never makes the answer negative.</b> <span class="tex">27^{-2/3}=\tfrac19</span>, not <span class="tex">-9</span>. The minus sign in the exponent means <b>flip</b>.</div></div>
+</section>
+
+<section class="card" data-ink="s3b" data-section="3. When is it defined?">
+  <h3 class="sub">When is <span class="tex">a^{m/n}</span> a real number?</h3>
   <div class="def-grid">
-    <div class="def pf"><div class="pf-h">A big number: multiply by tens</div><span class="tex">52\,000=5.2\times10\times10\times10\times10=5.2\times10^{4}</span></div>
-    <div class="def amber pf"><div class="pf-h">A small number: divide by tens</div><span class="tex">0.00047=\dfrac{4.7}{10\times10\times10\times10}=4.7\times10^{-4}</span></div>
+    <div class="def"><b>Index <span class="tex">n</span> odd</b> <span class="muted small">(3, 5, 7, …)</span><div class="eg">Any base works, even a negative one: <span class="tex">(-2)^3=-8</span>, so <span class="tex">(-8)^{1/3}=-2</span>. <span class="muted">(<span class="tex">a\ne0</span> if the exponent is negative.)</span></div></div>
+    <div class="def amber"><b>Index <span class="tex">n</span> even</b> <span class="muted small">(2, 4, 6, …)</span><div class="eg">The base must be <span class="tex">\ge0</span> (<span class="tex">&gt;0</span> if the exponent is negative). No real number to an even power is negative, so <span class="tex">(-16)^{1/4}</span> isn’t real.</div></div>
   </div>
-  <p>To change <span class="tex">a\times10^{n}</span> to standard notation, move the decimal point of <span class="tex">a</span> by <span class="tex">n</span> places: to the <b>right</b> if <span class="tex">n</span> is positive, to the <b>left</b> if <span class="tex">n</span> is negative. <span class="muted">○ = where the point starts &nbsp; ● = where it ends</span></p>
-  <div class="explainer" data-explainer="hops"></div>
+  <div class="def gray"><b>Reduce the exponent first.</b> <span class="tex">(-8)^{2/6}</span> must be treated as <span class="tex">(-8)^{1/3}=-2</span>. Squaring first, <span class="tex">\sqrt[6]{(-8)^2}=\sqrt[6]{64}=2</span>, gives the wrong sign.</div>
 </section>
 
-<section class="card" data-ink="s1b" data-section="1. Which sign? + the EE key">
-  <h3 class="sub">Which sign does the exponent get?</h3>
-  <div class="sign-grid">
-    <div class="sign-t pos"><div class="sign-h">Number ≥ 10</div><div class="sign-n"><span class="tex">n</span> is <b>positive</b></div><span class="tex">84\,200=8.42\times10^{4}</span></div>
-    <div class="sign-t zero"><div class="sign-h">Number from 1 to 10</div><div class="sign-n"><span class="tex">n=0</span></div><span class="tex">9.1=9.1\times10^{0}</span></div>
-    <div class="sign-t neg"><div class="sign-h">Number less than 1</div><div class="sign-n"><span class="tex">n</span> is <b>negative</b></div><span class="tex">0.00072=7.2\times10^{-4}</span></div>
+<!-- ================= 4. Evaluating ================= -->
+<section class="card" data-ink="s4" data-section="4. Evaluating">
+  <div class="sec-h"><span class="badge">4</span><h2>Evaluating Rational-Exponent Powers</h2></div>
+  <div class="rules">
+    <div class="rule"><span class="rp">1</span><b>Negative exponent?</b> Flip the base.</div>
+    <div class="rule"><span class="rp">2</span><b>Denominator:</b> take that root first.</div>
+    <div class="rule"><span class="rp">3</span><b>Numerator:</b> raise to that power.</div>
+    <div class="rule"><span class="rp">4</span><b>Brackets</b> in the base? Work them out first.</div>
   </div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>A negative exponent does not make a negative number.</b> <span class="tex">7.2\times10^{-4}=0.00072</span> is small, but still positive. The sign of <span class="tex">n</span> only says <b>which way</b> the point moves.</div></div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>The <kbd>EE</kbd> key means “× 10 to the”.</b> It is the 2nd function of <kbd>x⁻¹</kbd>, so press <kbd>2nd</kbd> first. To type <span class="tex">4.1\times10^{-3}</span>: <span class="keys"><kbd>4</kbd><kbd>.</kbd><kbd>1</kbd><kbd>2nd</kbd><kbd>EE</kbd><kbd>(−)</kbd><kbd>3</kbd><kbd>ENTER</kbd></span>. The screen shows <b>4.1E-3</b> and the answer 0.0041. Use <kbd>(−)</kbd>, not <kbd>−</kbd>, for a negative exponent.</div>
-    <button class="pill" data-keys="4.1 EE (−) 3 =">Show me</button>
+    <div><b>Brackets around a fraction exponent.</b> <span class="keys"><kbd>8</kbd><kbd>^</kbd><kbd>(</kbd><kbd>2</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives <b>4</b>. Leave out the brackets and the calculator does <span class="tex">8^2\div3=\tfrac{64}{3}\approx21.33</span>: powers come before division.</div>
+    <div class="pill-col"><button class="pill" data-keys="8 ^ ( 2 ÷ 3 ) =">With brackets</button><button class="pill" data-keys="8 ^ 2 ÷ 3 =">Without</button></div>
   </div>
-</section>
-
-<section class="card" data-ink="s1c" data-section="1. Powers of ten: how big, how small">
-  <h3 class="sub">How big? How small? A powers-of-ten scale</h3>
-  <p>On this scale every tick is <b>10 times</b> the one to its left. The exponent tells you <b>where</b> a measurement sits: positive exponents are bigger than 1 m, negative exponents are smaller.</p>
-  <div class="explainer" data-explainer="zoom"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>The <span class="tex">\sqrt[x]{\ }</span> key</b> takes any root. Type the <b>index first</b>: <span class="keys"><kbd>3</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>6</kbd><kbd>4</kbd><kbd>ENTER</kbd></span> gives <span class="tex">\sqrt[3]{64}=4</span>.</div>
+    <button class="pill" data-keys="3 ˣ√ 64 =">Show me</button>
+  </div>
 </section>
 
 <section class="card example" data-ink="ex1" data-section="Example 1">
-  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Standard notation, product form, and scientific notation</h3></div>
-  <p class="q">Complete the table.</p>
-  <div class="sn-table">
-    <div class="sn-head"><div>Standard Notation</div><div>Product Form</div><div>Scientific Notation</div><div></div></div>
-    <div class="part sn-row">
-      <div class="sn-c given"><span class="tex">84\,200</span></div>
-      <div class="sn-c work"><div class="ans"><span class="tex">8.42\times10\times10\times10\times10</span></div></div>
-      <div class="sn-c work"><div class="ans"><span class="tex">\mathbf{8.42\times10^{4}}</span></div></div>
-      <div class="sn-b"><button class="reveal">Answer</button></div>
-    </div>
-    <div class="part sn-row">
-      <div class="sn-c given"><span class="tex">0.00072</span></div>
-      <div class="sn-c work"><div class="ans"><span class="tex">\dfrac{7.2}{10\times10\times10\times10}</span></div></div>
-      <div class="sn-c work"><div class="ans"><span class="tex">\mathbf{7.2\times10^{-4}}</span></div></div>
-      <div class="sn-b"><button class="reveal">Answer</button></div>
-    </div>
-    <div class="part sn-row">
-      <div class="sn-c work"><div class="ans"><span class="tex">\mathbf{605}</span></div></div>
-      <div class="sn-c given"><span class="tex">6.05\times10\times10</span></div>
-      <div class="sn-c work"><div class="ans"><span class="tex">\mathbf{6.05\times10^{2}}</span></div></div>
-      <div class="sn-b"><button class="reveal">Answer</button></div>
-    </div>
-    <div class="part sn-row">
-      <div class="sn-c work"><div class="ans"><span class="tex">\mathbf{0.0041}</span></div></div>
-      <div class="sn-c work"><div class="ans"><span class="tex">\dfrac{4.1}{10\times10\times10}</span></div></div>
-      <div class="sn-c given"><span class="tex">4.1\times10^{-3}</span></div>
-      <div class="sn-b"><button class="reveal">Answer</button></div>
-    </div>
+  <div class="ex-head"><span class="ex-tag">Example 1</span><h3>Evaluating numerical powers without a calculator</h3></div>
+  <p class="q">Evaluate each power without using a calculator.</p>
+  <div class="parts c4">
+    <div class="part"><div class="pl">(a) <span class="tex">16^{3/2}</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Root first, then power:<br><span class="tex">\left(\sqrt{16}\right)^3=4^3=\mathbf{64}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">1\,000^{2/3}</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\left(\sqrt[3]{1\,000}\right)^2=10^2</span><br><span class="tex">=\mathbf{100}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">8^{-4/3}</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Negative ⇒ reciprocal:<br><span class="tex">\dfrac{1}{\left(\sqrt[3]{8}\right)^4}=\dfrac{1}{2^4}=\mathbf{\dfrac{1}{16}}</span></div></div></div>
+    <div class="part"><div class="pl">(d) <span class="tex">\left(5^2+12^2\right)^{1/2}</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Brackets first: <span class="tex">25+144=169</span><br><span class="tex">169^{1/2}=\sqrt{169}=\mathbf{13}</span></div></div></div>
   </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Write <b>9.1</b> in scientific notation. What is the exponent, and why?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\mathbf{9.1\times10^{0}}</span>. 9.1 is already between 1 and 10, so the point makes <b>no hops</b>, and <span class="tex">10^{0}=1</span>.</div></div></div>
+  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Mo did (d) as <span class="tex">5+12=17</span>. Why is that wrong?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">An exponent doesn’t split over <b>+</b>: <span class="tex">\left(5^2+12^2\right)^{1/2}=\sqrt{169}=13</span>, not <span class="tex">5+12</span>. (It’s the hypotenuse of a 5-12-13 triangle!)</div></div></div>
   <div class="space" id="ex1-space"></div>
   <button class="more" data-more="ex1-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s1d" data-section="1. Out of range: renormalize">
-  <h3 class="sub">When the coefficient is out of range</h3>
-  <div class="def amber"><b>Renormalize</b>: if the coefficient is <b>not</b> between 1 and 10, move its decimal point until it is, and change the exponent by the <b>same number of places</b> the <b>other way</b>, so the value doesn’t change.</div>
-  <div class="renorm-rules">
-    <div class="rr"><span class="tex">34.5\times10^{4}</span><span class="rr-arrow">point <b>left</b> 1<br>exponent <b>up</b> 1</span><span class="tex">3.45\times10^{5}</span></div>
-    <div class="rr"><span class="tex">0.35\times10^{-6}</span><span class="rr-arrow">point <b>right</b> 1<br>exponent <b>down</b> 1</span><span class="tex">3.5\times10^{-7}</span></div>
+<!-- negative bases -->
+<section class="card" data-ink="s4b" data-section="4. Negative bases">
+  <h3 class="sub">Negative bases: where is the minus sign?</h3>
+  <div class="def-grid">
+    <div class="def"><b><span class="tex">(-27)^{2/3}</span></b>: the brackets make <span class="tex">-27</span> the <b>base</b>. The minus goes <b>into</b> the root.</div>
+    <div class="def amber"><b><span class="tex">-27^{2/3}</span></b>: the exponent belongs to <span class="tex">27</span> only. The minus <b>waits outside</b>: <span class="tex">-\left(27^{2/3}\right)</span>.</div>
   </div>
-  <div class="explainer" data-explainer="renorm"></div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>Coefficient smaller ⇒ exponent bigger</b> (and the other way round). A common slip: <span class="nw"><span class="tex">34.5\times10^{4}=3.45\times10^{3}</span> ✗</span>. That changes the value from 345 000 to 3 450.</div></div>
+  <div class="explainer" data-explainer="minus"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Negative base: take the root first.</b> The TI-30XIIS only takes a negative base when the exponent is 1 over an odd number, like <span class="tex">\tfrac13</span>. Typed straight in, <span class="tex">(-27)^{2/3}</span> gives a <b>DOMAIN error</b>. So find <span class="tex">(-27)^{1/3}=-3</span> first, then square it: <span class="keys"><kbd>(</kbd><kbd>(</kbd><kbd>(−)</kbd><kbd>2</kbd><kbd>7</kbd><kbd>)</kbd><kbd>^</kbd><kbd>(</kbd><kbd>1</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>)</kbd><kbd>)</kbd><kbd>x²</kbd></span> gives <b>9</b>. Without brackets, <span class="keys"><kbd>(−)</kbd><kbd>2</kbd><kbd>7</kbd><kbd>^</kbd><kbd>(</kbd><kbd>2</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>)</kbd></span> does the power first, then the negative: <b>−9</b>, which is <span class="tex">-27^{2/3}</span>. And <span class="tex">(-16)^{1/4}</span> is an error because it has no real value.</div>
+    <div class="pill-col"><button class="pill" data-keys="( (−) 27 ) ^ ( 2 ÷ 3 ) =">Typed straight in</button><button class="pill" data-keys="( ( (−) 27 ) ^ ( 1 ÷ 3 ) ) x² =">Root first: (−27)^(2/3)</button><button class="pill" data-keys="(−) 27 ^ ( 2 ÷ 3 ) =">Show −27^(2/3)</button><button class="pill" data-keys="( (−) 16 ) ^ ( 1 ÷ 4 ) =">Show (−16)^(1/4)</button></div>
+  </div>
 </section>
 
 <section class="card example" data-ink="ex2" data-section="Example 2">
-  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>A coefficient that is out of range</h3></div>
-  <p class="q">Each number is <b>not</b> in scientific notation. Explain why, and rewrite it correctly.</p>
+  <div class="ex-head"><span class="ex-tag">Example 2</span><h3>Negative bases and the placement of the minus sign</h3></div>
   <div class="parts c2">
-    <div class="part"><div class="pl">(a) <span class="tex">0.35\times10^{-6}</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The coefficient 0.35 is <b>less than 1</b>. Point 1 place <b>right</b> <span class="nw">(<span class="tex">0.35=3.5\times10^{-1}</span>)</span>, so the exponent goes <b>down</b> 1:<br><span class="tex">0.35\times10^{-6}=3.5\times10^{-1}\times10^{-6}=\mathbf{3.5\times10^{-7}}</span></div></div></div>
-    <div class="part"><div class="pl">(b) <span class="tex">34.5\times10^{4}</span></div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The coefficient 34.5 is <b>10 or more</b>. Point 1 place <b>left</b> <span class="nw">(<span class="tex">34.5=3.45\times10^{1}</span>)</span>, so the exponent goes <b>up</b> 1:<br><span class="tex">34.5\times10^{4}=3.45\times10^{1}\times10^{4}=\mathbf{3.45\times10^{5}}</span></div></div></div>
+    <div class="part"><div class="pl">(a) Evaluate <span class="tex">(-27)^{2/3}</span>.</div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Index 3 is <b>odd</b>, so the cube root of a negative exists:<br><span class="tex">\left(\sqrt[3]{-27}\right)^2=(-3)^2=\mathbf{9}</span></div></div></div>
+    <div class="part"><div class="pl">(b) Evaluate <span class="tex">-\left(27^{2/3}\right)</span>.</div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The minus is <b>outside</b>: evaluate, then negate.<br><span class="tex">27^{2/3}=\left(\sqrt[3]{27}\right)^2=9</span>, so the answer is <span class="tex">\mathbf{-9}</span></div></div></div>
+  </div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(c) Exactly one of these powers has no meaning (as a real number). Which one? Explain why the other three can be evaluated.
+      <div class="abcd"><span><b>A.</b> <span class="tex">27^{2/3}</span></span><span><b>B.</b> <span class="tex">(-27)^{2/3}</span></span><span><b>C.</b> <span class="tex">16^{3/2}</span></span><span><b>D.</b> <span class="tex">(-16)^{3/2}</span></span></div></div>
+      <div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A <span class="tex">=9</span> (positive base). B <span class="tex">=9</span> (odd index 3, part (a)). C <span class="tex">=\left(\sqrt{16}\right)^3=64</span> (positive base). <b>D has no meaning</b>: it needs <span class="tex">\sqrt{-16}</span>, an <b>even</b> root of a negative number. Check the <b>denominator</b> when the base is negative: odd is fine, even fails.</div></div></div>
   </div>
   <div class="space" id="ex2-space"></div>
   <button class="more" data-more="ex2-space">+ More space</button>
 </section>
 
-<!-- ================= 2. Multiplying and dividing ================= -->
-<section class="card" data-ink="s2" data-section="2. Multiplying and Dividing">
-  <div class="sec-h"><span class="badge">2</span><h2>Multiplying and Dividing with the Exponent Laws</h2></div>
-  <p>The exponent laws do this work by hand. Deal with the <b class="sn-coef">coefficients</b> and the <b class="sn-pow">powers of 10</b> separately, then <b>renormalize</b> if the new coefficient is not between 1 and 10.</p>
-  <div class="def-grid">
-    <div class="def"><b>Multiply</b>: multiply the coefficients, <b>add</b> the exponents (Product Law).<div class="law-tex"><span class="tex">(a\times10^{m})(b\times10^{n})=(a\times b)\times10^{m+n}</span></div></div>
-    <div class="def"><b>Divide</b>: divide the coefficients, <b>subtract</b> the exponents (Quotient Law).<div class="law-tex"><span class="tex">(a\times10^{m})\div(b\times10^{n})=(a\div b)\times10^{m-n}</span></div></div>
-  </div>
-  <div class="explainer" data-explainer="muldiv"></div>
-  <div class="tip-row">
-    <div class="tip watch"><div class="tip-ic">!</div><div><b>Coefficients multiply; only exponents add.</b> <span class="tex">(2.5\times10^{5})(3\times10^{4})</span> is <b>not</b> <span class="tex">5.5\times10^{9}</span> and not <span class="tex">7.5\times10^{20}</span>.</div></div>
-    <div class="tip watch"><div class="tip-ic">!</div><div><b>Watch the signs.</b> <span class="tex">-3-5=-8</span> and <span class="tex">4-(-2)=6</span>. Then renormalize the right way: <span class="tex">20\times10^{-9}=2\times10^{-8}</span>.</div></div>
+<!-- fractional bases -->
+<section class="card" data-ink="s4c" data-section="4. Fractional bases">
+  <h3 class="sub">Fractional bases: root the top and the bottom</h3>
+  <p>A root or a power of a fraction acts on the <b>numerator and the denominator separately</b>: <span class="tex">\left(\dfrac{16}{25}\right)^{1/2}=\dfrac{\sqrt{16}}{\sqrt{25}}=\dfrac45</span>. A negative exponent flips the fraction: <span class="tex">\left(\dfrac{a}{b}\right)^{-k}=\left(\dfrac{b}{a}\right)^{k}</span>.</p>
+  <p class="muted small">Use the three-job machine in Section 3 to check Example 3: tap the <b>Example 3 check</b> chips.</p>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Exact fractions.</b> After <kbd>ENTER</kbd>, the <b>F◂▸D</b> key turns the decimal into a fraction: <span class="keys"><kbd>2</kbd><kbd>7</kbd><kbd>^</kbd><kbd>(</kbd><kbd>(−)</kbd><kbd>2</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>)</kbd><kbd>ENTER</kbd><kbd>2nd</kbd><kbd>F◂▸D</kbd></span> gives <span class="tex">\tfrac19</span>.</div>
+    <button class="pill" data-keys="27 ^ ( (−) 2 ÷ 3 ) = F◂▸D">Show me</button>
   </div>
 </section>
 
 <section class="card example" data-ink="ex3" data-section="Example 3">
-  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Products and quotients, with renormalizing</h3></div>
-  <p class="q">Evaluate each expression and write the result in scientific notation.</p>
+  <div class="ex-head"><span class="ex-tag">Example 3</span><h3>Fractional bases</h3></div>
+  <p class="q">Evaluate each power. Express your answer as a fraction in lowest terms.</p>
   <div class="parts c2">
-    <div class="part"><div class="pl">(a) <span class="tex">(2.5\times10^{5})(3\times10^{4})</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">2.5\times3=7.5;\ \ 5+4=9</span><br><span class="tex">\mathbf{7.5\times10^{9}}</span> (already in range)</div></div></div>
-    <div class="part"><div class="pl">(b) <span class="tex">(6.4\times10^{8})\div(1.6\times10^{3})</span></div><div class="work" style="--h:200px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">6.4\div1.6=4;\ \ 8-3=5</span><br><span class="tex">\mathbf{4\times10^{5}}</span></div></div></div>
-    <div class="part"><div class="pl">(c) <span class="tex">(4\times10^{-3})(5\times10^{-6})</span></div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">4\times5=20;\ \ -3+(-6)=-9</span><br><span class="tex">20\times10^{-9}=2\times10^{1}\times10^{-9}=\mathbf{2\times10^{-8}}</span></div></div></div>
-    <div class="part"><div class="pl">(d) <span class="tex">(1.2\times10^{-3})\div(4\times10^{5})</span></div><div class="work" style="--h:240px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">1.2\div4=0.3;\ \ -3-5=-8</span><br><span class="tex">0.3\times10^{-8}=3\times10^{-1}\times10^{-8}=\mathbf{3\times10^{-9}}</span></div></div></div>
-  </div>
-  <div class="part think"><div class="pl"><span class="think-tag">Think</span> How could you tell, <b>before</b> calculating, that the answers to (c) and (d) are both less than 1?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">In (c) both numbers are less than 1, and multiplying two numbers less than 1 gives something even smaller. In (d) a tiny number is divided by a huge one. Both answers get <b>negative exponents</b>.</div></div></div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Check (c) with <kbd>EE</kbd>.</b> <span class="keys"><kbd>4</kbd><kbd>2nd</kbd><kbd>EE</kbd><kbd>(−)</kbd><kbd>3</kbd><kbd>×</kbd><kbd>5</kbd><kbd>2nd</kbd><kbd>EE</kbd><kbd>(−)</kbd><kbd>6</kbd><kbd>ENTER</kbd></span>. The answer shows as <b>2 ×10<sup>−8</sup></b>: read it as <span class="tex">2\times10^{-8}</span>.</div>
-    <div class="pill-col"><button class="pill" data-keys="4 EE (−) 3 × 5 EE (−) 6 =">Show (c)</button><button class="pill" data-keys="1.2 EE (−) 3 ÷ 4 EE 5 =">Show (d)</button></div>
-  </div>
-  <div class="tip watch"><div class="tip-ic">!</div><div><b>Typing “× 10 ^” instead of EE?</b> Then each number needs its own brackets. <span class="keys"><kbd>6.4</kbd><kbd>×</kbd><kbd>10</kbd><kbd>^</kbd><kbd>8</kbd><kbd>÷</kbd><kbd>1.6</kbd><kbd>×</kbd><kbd>10</kbd><kbd>^</kbd><kbd>3</kbd></span> works left to right, so it <b>multiplies</b> by <span class="tex">10^{3}</span> instead of dividing: you get <span class="tex">4\times10^{11}</span>, not <span class="tex">4\times10^{5}</span>. <kbd>EE</kbd> keeps each number in one piece.</div>
-    <div class="pill-col"><button class="pill" data-keys="6.4 × 10 ^ 8 ÷ 1.6 × 10 ^ 3 =">Show the slip</button><button class="pill" data-keys="6.4 EE 8 ÷ 1.6 EE 3 =">Show EE</button></div>
+    <div class="part"><div class="pl">(a) <span class="tex">\left(\dfrac{16}{25}\right)^{3/2}</span></div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Square-root the fraction, then cube:<br><span class="tex">\left(\sqrt{\tfrac{16}{25}}\right)^3=\left(\tfrac45\right)^3=\mathbf{\dfrac{64}{125}}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">\left(\dfrac{16}{25}\right)^{-3/2}</span></div><div class="work" style="--h:220px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The negative exponent flips the answer to (a):<br><span class="tex">\dfrac{1}{\frac{64}{125}}=\mathbf{\dfrac{125}{64}}</span></div></div></div>
   </div>
   <div class="space" id="ex3-space"></div>
   <button class="more" data-more="ex3-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s2b" data-section="2. Distance ÷ speed">
-  <h3 class="sub">Problems with huge distances: <span class="tex">\text{time}=\dfrac{\text{distance}}{\text{speed}}</span></h3>
-  <p>Light travels about <span class="tex">3\times10^{8}</span> m every second: that’s 300 000 km, about <b>7½ times around the Earth</b>. Even so, space is so big that light takes a while to cross it.</p>
-  <div class="explainer" data-explainer="light"></div>
+<!-- cube -->
+<section class="card" data-ink="s4d" data-section="4. A cube of known volume">
+  <h3 class="sub">A cube of known volume</h3>
+  <p>A cube’s volume is <span class="tex">V=e^3</span>, so its edge is the number that cubes to <span class="tex">V</span>: <span class="tex">e=V^{1/3}=\sqrt[3]{V}</span>. Each face is a square with area <span class="tex">e^2=\left(V^{1/3}\right)^2=V^{2/3}</span>.</p>
+  <div class="explainer" data-explainer="cube"></div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Very big answers.</b> How far does light go in a year (about <span class="tex">3.15\times10^{7}</span> s)? <span class="keys"><kbd>3</kbd><kbd>2nd</kbd><kbd>EE</kbd><kbd>8</kbd><kbd>×</kbd><kbd>3</kbd><kbd>.</kbd><kbd>1</kbd><kbd>5</kbd><kbd>2nd</kbd><kbd>EE</kbd><kbd>7</kbd><kbd>ENTER</kbd></span>. The calculator can’t fit all the digits, so it shows <b>9.45 ×10<sup>15</sup></b>. That means <span class="tex">9.45\times10^{15}</span> m (a <b>light-year</b>). Never copy it down as <span class="tex">9.45^{15}</span>.</div>
-    <button class="pill" data-keys="3 EE 8 × 3.15 EE 7 =">Show me</button>
+    <div><b>Two ways to type it.</b> <span class="keys"><kbd>3</kbd><kbd>2nd</kbd><kbd>^</kbd><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd></span> or <span class="keys"><kbd>1</kbd><kbd>0</kbd><kbd>0</kbd><kbd>^</kbd><kbd>(</kbd><kbd>1</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>)</kbd></span> both give 4.641588834. For the surface area, type it all at once and round <b>once</b>, at the end.</div>
+    <div class="pill-col"><button class="pill" data-keys="3 ˣ√ 100 =">Show ∛100</button><button class="pill" data-keys="6 × 100 ^ ( 2 ÷ 3 ) =">Show 6 × 100^(2/3)</button></div>
   </div>
 </section>
 
 <section class="card example" data-ink="ex4" data-section="Example 4">
-  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>How long does sunlight take to reach us?</h3></div>
-  <p class="q">The Sun is about <span class="tex">1.5\times10^{11}</span> m from Earth, and light travels about <span class="tex">3\times10^{8}</span> m/s.</p>
-  <div class="parts c2">
-    <div class="part"><div class="pl">(a) About how many <b>seconds</b> does sunlight take to reach Earth?</div><div class="work" style="--h:260px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">t=\dfrac{1.5\times10^{11}}{3\times10^{8}}=0.5\times10^{11-8}=0.5\times10^{3}</span><br><span class="tex">=5\times10^{-1}\times10^{3}=\mathbf{5\times10^{2}}</span> s (500 s)</div></div></div>
-    <div class="part"><div class="pl">(b) About how many <b>minutes</b> is that?</div><div class="work" style="--h:260px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">500\div60\approx\mathbf{8.3}</span> minutes<br>The sunlight you see left the Sun about 8 minutes ago.</div></div></div>
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>A cube of known volume</h3></div>
+  <p class="q">A cube has a volume of <span class="tex">100\text{ cm}^3</span>.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) Write a power that represents the edge length of the cube.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">V=e^3</span>, so<br>edge <span class="tex">=V^{1/3}=\mathbf{100^{1/3}}</span></div></div></div>
+    <div class="part"><div class="pl">(b) Write a power that represents the surface area of the cube.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">6 square faces, each <span class="tex">e^2=V^{2/3}</span>:<br>SA <span class="tex">=\mathbf{6\left(100^{2/3}\right)}</span></div></div></div>
+    <div class="part"><div class="pl">(c) Use a calculator to find the edge length and surface area, each to the nearest tenth.</div><div class="work" style="--h:230px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">100^{1/3}\approx4.6416</span>, edge <span class="tex">\approx\mathbf{4.6}</span> cm<br><span class="tex">6\left(100^{2/3}\right)\approx6(21.544)</span>, SA <span class="tex">\approx\mathbf{129.3\text{ cm}^2}</span></div></div></div>
   </div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Check it.</b> <span class="keys"><kbd>1</kbd><kbd>.</kbd><kbd>5</kbd><kbd>2nd</kbd><kbd>EE</kbd><kbd>1</kbd><kbd>1</kbd><kbd>÷</kbd><kbd>3</kbd><kbd>2nd</kbd><kbd>EE</kbd><kbd>8</kbd><kbd>ENTER</kbd></span> gives 500. Keep going <kbd>÷</kbd><kbd>6</kbd><kbd>0</kbd> for minutes: 8.333…</div>
-    <div class="pill-col"><button class="pill" data-keys="1.5 EE 11 ÷ 3 EE 8 =">Show seconds</button><button class="pill" data-keys="1.5 EE 11 ÷ 3 EE 8 ÷ 60 =">Show minutes</button></div>
-  </div>
+  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Ali rounded the edge to 4.6 cm first, then found <span class="tex">6(4.6)^2\approx127.0\text{ cm}^2</span>. What went wrong?</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">He <b>rounded too early</b>. Squaring 4.6 instead of 4.6416… loses accuracy, and multiplying by 6 makes the error bigger. Keep every digit (or use <span class="tex">6\left(100^{2/3}\right)</span>) and round once at the end: <b>129.3</b>.</div></div></div>
   <div class="space" id="ex4-space"></div>
   <button class="more" data-more="ex4-space">+ More space</button>
 </section>
 
-<!-- sources: https://en.wikipedia.org/wiki/The_Sand_Reckoner · https://ucolick.org/~laugh/reckoner.shtml · https://physics.weber.edu/carroll/archimedes/sand.htm (Heath's translation) · https://science.nasa.gov/asset/hubble/compass-and-scale-image-for-proxima-centauri -->
-<!-- ================= Math History box (brown) ================= -->
-<section class="card history" data-ink="hist" data-section="Math History: the Sand Reckoner">
-  <div class="hist-head"><span class="hist-tag">Math History</span><span class="hist-dates">Syracuse · 3rd century BCE</span></div>
-  <div class="hist-grid">
-    <div class="hist-text">
-      <h3 class="hist-title">Archimedes counts the sand</h3>
-      <p>Some Greeks said the grains of sand could never be counted. In <i>The Sand Reckoner</i>, Archimedes of Syracuse set out to show King Gelon they were wrong.</p>
-      <p>Greek number names stopped at a <b>myriad</b> (10&#8239;000), so he invented bigger units: a myriad myriads (<span class="tex">10^8</span>), then <span class="tex">10^8</span> of <em>those</em>, and so on. Then he estimated, guessing high.</p>
-      <div class="part hist-q"><div class="pl">A ball one stadium wide holds at most <span class="tex">10^{21}</span> grains, and the universe holds <span class="tex">10^{42}</span> such balls. At most how many grains is that?</div>
-        <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">10^{21}\times10^{42}=10^{21+42}=\mathbf{10^{63}}</span>, a 1 followed by 63 zeros. Archimedes worked out this “add the exponents” rule in the same book.</div></div></div>
-    </div>
-    <figure class="hist-anim">
-      <svg id="sand-anim" viewBox="0 0 600 300" role="img" aria-label="Zooming out from one grain of sand to a poppy seed (at most 10 to the 4 grains), a ball one finger wide (10 to the 9), a ball one stadium wide (10 to the 21) and the universe (10 to the 63)."></svg>
-      <figcaption><button class="hist-play" type="button">Replay</button><span>Tap the picture to play it again.</span></figcaption>
-      <p class="hist-note">His whole universe was only about 2 light-years across. Today we know the nearest star beyond the Sun is 4.2 light-years away.</p>
-    </figure>
+<!-- powers to radicals intro + Example 5 -->
+<section class="card" data-ink="s4e" data-section="4. Forcing an exponent">
+  <h3 class="sub">Forcing a chosen exponent, and powers as radicals</h3>
+  <div class="def-grid">
+    <div class="def"><b>Force an exponent of <span class="tex">\tfrac1n</span>:</b> raise the number to the <span class="tex">n</span>th power first, then undo it with the <span class="tex">n</span>th root.<div class="eg"><span class="tex">5=\left(5^2\right)^{1/2}=25^{1/2}\qquad5=\left(5^3\right)^{1/3}=125^{1/3}</span></div></div>
+    <div class="def amber"><b>Power → radical:</b> the <b>denominator</b> becomes the <b>index</b>, the <b>numerator</b> stays a <b>power</b>.<div class="eg"><span class="tex">a^{2/3}=\sqrt[3]{a^2}\qquad b^{-3/4}=\dfrac{1}{\sqrt[4]{b^3}}</span></div></div>
   </div>
+  <div class="explainer" data-explainer="conv1"></div>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Forcing a chosen exponent, and converting to radicals</h3></div>
+  <div class="parts c1">
+    <div class="part"><div class="pl">(a) Write <span class="tex">9</span> as a power with an exponent of <span class="tex">\dfrac12</span>, and again as a power with an exponent of <span class="tex">\dfrac13</span>.</div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Square 9 first, then undo it with a square root: <span class="tex">9=\left(9^2\right)^{1/2}=\mathbf{81^{1/2}}</span>. Cube 9 first: <span class="tex">9=\left(9^3\right)^{1/3}=\mathbf{729^{1/3}}</span>.</div></div></div>
+  </div>
+  <p class="q"><b>(b)</b> Write each expression as an equivalent radical.</p>
+  <div class="parts c4">
+    <div class="part"><div class="pl">(i) <span class="tex">x^{1/5}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x^{1/5}=\boldsymbol{\sqrt[5]{x}}</span></div></div></div>
+    <div class="part"><div class="pl">(ii) <span class="tex">y^{3/8}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\left(\sqrt[8]{y}\right)^3=\boldsymbol{\sqrt[8]{y^3}}</span></div></div></div>
+    <div class="part"><div class="pl">(iii) <span class="tex">z^{-1/4}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">z^{-1/4}=\boldsymbol{\dfrac{1}{\sqrt[4]{z}}}</span></div></div></div>
+    <div class="part"><div class="pl">(iv) <span class="tex">w^{-5/6}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\dfrac{1}{\left(\sqrt[6]{w}\right)^5}=\boldsymbol{\dfrac{1}{\sqrt[6]{w^5}}}</span></div></div></div>
+  </div>
+  <div class="space" id="ex5-space"></div>
+  <button class="more" data-more="ex5-space">+ More space</button>
+</section>
+
+<!-- ================= 5. Powers as radicals ================= -->
+<section class="card" data-ink="s5" data-section="5. Powers as Radicals">
+  <div class="sec-h"><span class="badge">5</span><h2>Writing Powers as Radicals</h2></div>
+  <p>The exponent acts only on the <b>base right under it</b>. A coefficient or a minus sign in front stays <b>outside</b> the radical, unless brackets make it part of the base.</p>
+  <div class="cmp-grid">
+    <div class="cmp-c"><div class="cmp-h">Outside: the exponent skips it</div><span class="tex">-a^{2/3}=-\sqrt[3]{a^2}</span><span class="tex">5a^{2/3}=5\sqrt[3]{a^2}</span></div>
+    <div class="cmp-c in"><div class="cmp-h">Bracketed: it’s part of the base</div><span class="tex">(-a)^{2/3}=\sqrt[3]{(-a)^2}</span><span class="tex">(5a)^{2/3}=\sqrt[3]{(5a)^2}=\sqrt[3]{25a^2}</span></div>
+  </div>
+  <div class="explainer" data-explainer="conv2"></div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Square the coefficient too</b> when it’s inside the brackets: <span class="tex">(5a)^2=25a^2</span>, not <span class="tex">5a^2</span>.</div></div>
+</section>
+
+<section class="card example" data-ink="ex6" data-section="Example 6">
+  <div class="ex-head"><span class="ex-tag">Example 6</span><h3>Where the minus sign and the coefficient belong</h3></div>
+  <p class="q">Write each power as a radical.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">m^{1/5}</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">m^{1/5}=\boldsymbol{\sqrt[5]{m}}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">-n^{3/7}</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The exponent applies only to <span class="tex">n</span>; the minus stays in front:<br><span class="tex">\boldsymbol{-\sqrt[7]{n^3}}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">(-p)^{5/3}</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Here the base is <span class="tex">(-p)</span> itself:<br><span class="tex">\boldsymbol{\sqrt[3]{(-p)^5}}</span></div></div></div>
+    <div class="part"><div class="pl">(d) <span class="tex">(-p)^{-5/3}</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Negative exponent ⇒ reciprocal:<br><span class="tex">\boldsymbol{\dfrac{1}{\sqrt[3]{(-p)^5}}}</span></div></div></div>
+    <div class="part"><div class="pl">(e) <span class="tex">4s^{2/3}</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The exponent applies only to <span class="tex">s</span>; the 4 stays in front:<br><span class="tex">\boldsymbol{4\sqrt[3]{s^2}}</span></div></div></div>
+    <div class="part"><div class="pl">(f) <span class="tex">(4s)^{2/3}</span></div><div class="work" style="--h:160px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Here the base is <span class="tex">(4s)</span>:<br><span class="tex">\sqrt[3]{(4s)^2}=\boldsymbol{\sqrt[3]{16s^2}}</span></div></div></div>
+  </div>
+  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Are <span class="tex">4s^{2/3}</span> and <span class="tex">(4s)^{2/3}</span> the same? Try <span class="tex">s=2</span>.</div><div class="work" style="--h:90px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No.</b> <span class="tex">4(2)^{2/3}=4\sqrt[3]{4}\approx6.35</span>, but <span class="tex">(4\times2)^{2/3}=8^{2/3}=4</span>. The brackets change the base.</div></div></div>
+  <div class="space" id="ex6-space"></div>
+  <button class="more" data-more="ex6-space">+ More space</button>
+</section>
+
+<!-- ================= 6. Radicals as powers ================= -->
+<section class="card" data-ink="s6" data-section="6. Radicals as Powers">
+  <div class="sec-h"><span class="badge">6</span><h2>Writing Radicals as Powers</h2></div>
+  <p>The same definition runs in reverse: match the <b>index</b> of the root to the <b>denominator</b> of the exponent, and the power inside to the <b>numerator</b>.</p>
+  <div class="def-grid">
+    <div class="def"><b>Radical → power</b><div class="rule-tex"><span class="tex">\sqrt[n]{x^m}=x^{m/n}</span></div><div class="eg">A plain <span class="tex">\sqrt{\ }</span> has index <b>2</b>: <span class="tex">\sqrt{x^5}=x^{5/2}</span></div></div>
+    <div class="def amber"><b>One over a radical</b><div class="rule-tex"><span class="tex">\dfrac{1}{\sqrt[n]{x^m}}=x^{-m/n}</span></div><div class="eg">A factor in the denominator gets a <b>negative</b> exponent.</div></div>
+  </div>
+  <div class="explainer" data-explainer="toPow"></div>
+</section>
+
+<section class="card example" data-ink="ex7" data-section="Example 7">
+  <div class="ex-head"><span class="ex-tag">Example 7</span><h3>From radical form back to a rational exponent</h3></div>
+  <p class="q">Write each radical as a power in the form <span class="tex">k^n</span>, where <span class="tex">n\in Q</span>.</p>
+  <div class="parts c4">
+    <div class="part"><div class="pl">(a) <span class="tex">\sqrt[4]{k^3}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Index → denominator, inside power → numerator:<br><span class="tex">\boldsymbol{k^{3/4}}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">\sqrt[6]{k^5}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sqrt[6]{k^5}=\boldsymbol{k^{5/6}}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">\sqrt{k^7}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">A square root has index 2:<br><span class="tex">\boldsymbol{k^{7/2}}</span></div></div></div>
+    <div class="part"><div class="pl">(d) <span class="tex">\dfrac{1}{\sqrt[3]{k^5}}</span></div><div class="work" style="--h:170px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">In the denominator ⇒ negative exponent:<br><span class="tex">\boldsymbol{k^{-5/3}}</span></div></div></div>
+  </div>
+  <div class="part think"><div class="pl"><span class="think-tag">Think</span> Write <span class="tex">\sqrt{k}</span> and <span class="tex">\dfrac{1}{\sqrt{k}}</span> as powers.</div><div class="work" style="--h:80px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">\sqrt{k}=k^{1/2}</span> and <span class="tex">\dfrac{1}{\sqrt{k}}=k^{-1/2}</span>. The hidden index is 2 and the hidden power is 1.</div></div></div>
+  <div class="space" id="ex7-space"></div>
+  <button class="more" data-more="ex7-space">+ More space</button>
 </section>
 
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
   <div class="sum-grid">
-    <div><b>Scientific notation</b> is <span class="tex">a\times10^{n}</span> with <span class="tex">1\le a\lt10</span>. Product form shows the tens: <span class="tex">52\,000=5.2\times10\times10\times10\times10</span>.</div>
-    <div><b>Count the hops.</b> Big numbers get a positive exponent, numbers less than 1 a negative one: <span class="tex">0.00047=4.7\times10^{-4}</span>.</div>
-    <div><b>Renormalize</b>: point left ⇒ exponent up; point right ⇒ exponent down. <span class="tex">34.5\times10^{4}=3.45\times10^{5}</span></div>
-    <div><b>Multiply</b>: coefficients × , exponents +. <b>Divide</b>: coefficients ÷ , exponents −. Then renormalize. Check with <kbd>EE</kbd>.</div>
+    <div><b>A fraction exponent is a root.</b> The product law forces it: <span class="tex">a^{1/2}\times a^{1/2}=a</span>, so <span class="tex">a^{1/n}=\sqrt[n]{a}</span>.</div>
+    <div><b>Denominator = root, numerator = power</b>: <span class="tex">a^{m/n}=\left(\sqrt[n]{a}\right)^m=\sqrt[n]{a^m}</span>. Take the <b>root first</b>.</div>
+    <div><b>Negative exponent = flip</b>, never a negative answer: <span class="tex">27^{-2/3}=\tfrac19</span>. An <b>even</b> root of a negative base isn’t real; an <b>odd</b> one is.</div>
+    <div><b>Watch the base.</b> <span class="tex">-n^{3/7}=-\sqrt[7]{n^3}</span> but <span class="tex">(4s)^{2/3}=\sqrt[3]{16s^2}</span>. Going back: <span class="tex">\sqrt[n]{x^m}=x^{m/n}</span>.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u2l4">
-    <div><div class="kicker">Your turn</div><b>Assignment 4 — Scientific Notation</b><div class="muted">Application / Extension · Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 4 — Rational Exponents and Radicals</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
-  <a class="assign next-l" href="../l5a/">
-    <div><div class="kicker">Next lesson</div><b>Lesson 5A — Rational Exponents and Radicals</b><div class="muted">What exponents like <span class="tex">\tfrac{1}{2}</span> and <span class="tex">\tfrac{2}{3}</span> mean</div></div><span class="arrow">→</span>
+  <a class="assign next-l" href="../l5/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 5 — Simplifying with Rational Exponents</b><div class="muted">The exponent laws, now with fraction exponents</div></div><span class="arrow">→</span>
   </a>
   <div class="space" id="sum-space" style="min-height:120px"></div>
 </section>
@@ -308,7 +362,7 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u2l4.js';
-  boot({ key: 'u2l4', homeHref: '../../', title: '2.4 Scientific Notation (Extension)' });
+  boot({ key: 'u2l4', homeHref: '../../', title: '2.4 Rational Exponents and Radicals' });
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

@@ -1,724 +1,546 @@
-/* Math 10C · Unit 5 · Lesson 5 — Graphing Calculator Techniques for Relations (TI-83/84).
- * Every explainer runs on a TI-84-style screen: a Graph with theme 'calc' (the Calc subclass hides an axis that is
- * outside the window, like the real screen), plus an LCD overlay for the text screens (Y=, WINDOW, TBLSET, TABLE,
- * the CALC / ZOOM / MATH menus, the home screen and ERR:INVALID). Keys pressed appear as keycaps under the screen.
- * The trace cursor, bound markers ▸ ◂ and the zero / intersect / maximum results are computed by the Graph block. */
-import { Graph, h, tex, add, box, pop, fadeIn, sleep, tween, pulse, shake, svgEl, stamp, stampIn, mountExplainers, liveCtx, calcNum, texNum, intersect } from '../blocks.js';
+/* Math 10C · Unit 5 · Lesson 5 — What Is a Function? (RF2). The explainers, figures and the warm-up class.
+ *   birthday    — person → birthday is a function; flip the arrows and Jul 14 has two outputs (arrows + graph)
+ *   twoRel      — build relation (i) "is a multiple of" and (ii) "is the cube of" by asking the question for each input
+ *   nested      — sort relations into the Relations / Functions ovals
+ *   threeViews  — Example 1 check: the same verdict from the arrow diagram, the ordered pairs and the graph
+ *   whyVertical — a vertical line is one input; a horizontal line is one output (allowed to repeat)
+ *   vlt         — Example 2 check: vertical sweep (rows 1 and 3) and horizontal sweep (row 2) on graphs A–D
+ *   sixWays     — one relation in six forms (words, table, pairs, arrows, graph, equation): y = x² vs x = y²
+ *   sixForms    — Example 3 check: the right test for each of the six parts
+ * plus the static figures (data-fig) and the warm-up birthday simulation. */
+import {
+  h, tex, add, box, Graph, MappingDiagram, ValueTable, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep, tween,
+  pulse, anim, linear, pairTex, texNum, svgEl, COLORS
+} from '../blocks.js';
 
-const T = (s) => tex(s);
-const TW = (s) => { // a long chain in a caption, in pieces that can wrap (before each ⇒, else before each later =)
-  s = String(s); const ar = s.includes('\\Rightarrow'); let p = ar ? s.split(/(?=\\ \\Rightarrow)/) : s.split(/(?==)/);
-  if (!ar && p.length > 2) p = [p[0] + p[1], ...p.slice(2)];
-  return p.map((q) => T(q)).join(' ');
-};
-const STD = { xmin: -10, xmax: 10, ymin: -10, ymax: 10, xscl: 1, yscl: 1 };
-const M = (s) => String(s).replace(/-/g, '−'); // calculator text: real minus signs
+const T = (s) => tex(String(s));
+const panel = (stage, x, y, w, hh, title, cls = '') => add(stage, box(h('div', 'u5l5-panel ' + cls, title ? `<div class="u5l5-ph">${title}</div>` : ''), w, hh), x, y);
+const line = (p, html, cls = '') => { const d = h('div', 'u5l5-line ' + cls, html); p.appendChild(d); return d; };
+const hidden = (...els) => els.forEach((e) => (e.style.opacity = 0));
+const fadeOut = (c, el, ms = 350) => anim(c, el, [{ opacity: 1 }, { opacity: 0 }], ms);
+const chip = (html, cls = '') => h('span', 'u5l5-pr ' + cls, html);
 
-/* ============ the calculator screen ============ */
-class Calc extends Graph {
-  constructor(host, o = {}) { super(host, Object.assign({ theme: 'calc' }, o)); }
-  // the real screen draws no axis when 0 is outside the window (the block would park it on the edge)
-  frame() {
-    super.frame();
-    const w = this.win, ax = this.layers.axes, showX = w.ymin <= 0 && w.ymax >= 0, showY = w.xmin <= 0 && w.xmax >= 0;
-    const ls = ax.querySelectorAll('.bk-axis');
-    if (ls[0]) ls[0].style.display = showX ? '' : 'none';
-    if (ls[1]) ls[1].style.display = showY ? '' : 'none';
-    ax.querySelectorAll('.bk-tick').forEach((t) => { const vert = t.getAttribute('x1') === t.getAttribute('x2'); t.style.display = (vert ? showX : showY) ? '' : 'none'; });
-  }
-  get dx() { return (this.win.xmax - this.win.xmin) / 94; } // one pixel of the TI-84 screen (95 columns)
-  get mid() { return (this.win.xmin + this.win.xmax) / 2; } // TRACE starts in the middle column
+/* a graph with named (categorical) positions 1, 2, 3 … on each axis, like the booklet's "domain / range" plots */
+function catGraph(host, o) {
+  const G = new Graph(host, { x: o.x, y: o.y, width: o.width, height: o.height, xmin: 0, xmax: o.xs.length + 0.7, ymin: 0, ymax: o.ys.length + 0.7,
+    numbers: false, ticks: true, grid: o.grid ?? true, xtitle: o.xtitle || '', ytitle: o.ytitle || '', pad: o.pad || [24, 22, 40, 74], fontSize: o.fontSize || 17 });
+  o.xs.forEach((t, i) => G.label(i + 1, 0, t, { pos: 's', cls: 'u5l5-axl', clip: false, gap: 7 }));
+  o.ys.forEach((t, i) => G.label(0, i + 1, t, { pos: 'w', cls: 'u5l5-axl', clip: false, gap: 9 }));
+  return G;
 }
 
-/* text screens (Y=, WINDOW, TABLE, menus, home screen) drawn over a screen element */
-function lcd(host) {
-  const d = h('div', 'u5l5-lcd'); d.style.display = 'none'; host.appendChild(d);
-  const L = {
-    el: d,
-    show(lines, cls = '') {
-      d.className = 'u5l5-lcd ' + cls;
-      d.innerHTML = lines.map((l) => (typeof l === 'object' ? `<div class="u5l5-ln ${l.cls || ''}">${l.t}</div>` : `<div class="u5l5-ln">${l}</div>`)).join('');
-      d.style.display = ''; return d;
-    },
-    html(s, cls = '') { d.className = 'u5l5-lcd ' + cls; d.innerHTML = s; d.style.display = ''; return d; },
-    hide() { d.style.display = 'none'; },
-    ln(i) { return d.children[i]; }
-  };
-  return L;
-}
-const inv = (s) => `<b class="u5l5-inv">${s}</b>`;
-const CUR = '<b class="u5l5-cur"></b>';
-
-/* equation (top left) and prompt / coordinates (bottom) on the graph screen */
-function hud(G) {
-  const tl = h('div', 'u5l5-eq'), bl = h('div', 'u5l5-bot');
-  tl.style.display = bl.style.display = 'none'; G.el.append(tl, bl);
-  return {
-    eq(s) { tl.innerHTML = s ? M(s) : ''; tl.style.display = s ? '' : 'none'; },
-    bot(title, xy, raw) {
-      if (!title && !xy && !raw) { bl.style.display = 'none'; return; }
-      const xs = xy && (xy.xs ?? calcNum(xy.x)), ys = xy && (xy.ys ?? calcNum(xy.y));
-      bl.innerHTML = (title ? `<div class="u5l5-bt">${title}</div>` : '') + (xy ? `<div class="u5l5-bxy"><i>X=${M(xs)}</i><i>Y=${M(ys)}</i></div>` : '') + (raw ? `<div class="u5l5-bxy">${raw}</div>` : '');
-      bl.style.display = '';
-    },
-    el: bl
-  };
+/* a horizontal sweep (the "row 2" test): like Graph.vlineTest, but along y, from the top down */
+async function hlineTest(G, c, o) {
+  const w = G.win, from = o.from ?? w.ymax, to = o.to ?? w.ymin, N = 600;
+  const xsAt = (y) => [...new Set((o.hitsY(y) || []).filter((x) => Number.isFinite(x) && x >= w.xmin && x <= w.xmax).map((x) => parseFloat(x.toFixed(9))))];
+  const gap = (o.minGap ?? 36) / G.ux, apart = (xs) => xs.length > 1 && Math.max(...xs) - Math.min(...xs) >= gap;
+  let stop = to, fail = null;
+  for (let i = 0; i <= N; i++) { const y = from + (to - from) * i / N, xs = xsAt(y); if (apart(xs)) { stop = y; fail = { y, xs }; break; } }
+  const sn = o.snap ?? 0.5;
+  if (fail && sn) for (let y = Math.floor(fail.y / sn + 1e-9) * sn, k = 0; y >= to && k < 4; y -= sn, k++) { const xs = xsAt(y); if (apart(xs)) { stop = y; fail = { y, xs }; break; } }
+  const ln = G.hline(from, { color: 'purple', width: 3.5, dash: false, cls: 'u5l5-hlt' });
+  const dots = svgEl('g', { class: 'bk-vlt-dots u5l5-hdots' }, G.layers.top);
+  const paint = (y, xs) => { ln.set(y); dots.innerHTML = ''; (xs || xsAt(y)).forEach((x) => { const [px, py] = G.toPx(x, y); svgEl('circle', { class: 'bk-vlt-dot', cx: px, cy: py, r: 8 }, dots); }); };
+  await tween(c, o.ms ?? 2600 * Math.abs(stop - from) / (Math.abs(to - from) || 1), (t) => paint(from + (stop - from) * t), linear);
+  if (fail) { paint(fail.y, fail.xs); ln.classList.add('u5l5-twice'); dots.classList.add('u5l5-twice'); if (c) await Promise.all([...dots.children].map((d) => pop(c, d, 360))); }
+  else ln.classList.add('bk-pass');
+  return { line: ln, dots, fail };
 }
 
-/* keycaps */
-const KCLS = { '2nd': 'u5l5-k2', ALPHA: 'u5l5-ka' };
-const kb = (k) => `<kbd${KCLS[k] ? ` class="${KCLS[k]}"` : ''}>${k}</kbd>`;
-const kk = (...ks) => ks.map(kb).join(' ');
-class Keys {
-  constructor(stage, x, y, w) { this.el = add(stage, box(h('div', 'u5l5-keys'), w, 50), x, y); this.clear(); }
-  clear() { this.el.innerHTML = '<b class="u5l5-kl">Keys</b>'; this.el.classList.remove('u5l5-many'); }
-  add(k) { // a keycap; long sequences switch to smaller caps so they stay on one line
-    const e = h('kbd', KCLS[k] || '', k); this.el.appendChild(e);
-    if (this.el.scrollWidth > this.el.clientWidth + 1 || this.el.scrollHeight > this.el.clientHeight + 1) this.el.classList.add('u5l5-many');
-    return e;
-  }
-  async set(c, ks, keep) {
-    if (!keep) this.clear();
-    for (const k of ks) { const e = this.add(k); await pop(c, e, 220); await sleep(c, 110); }
-  }
-}
-/* side panel */
-function panel(stage, x, y, w, hh, title) { return add(stage, box(h('div', 'u5l5-panel', title ? `<div class="u5l5-ph">${title}</div>` : ''), w, hh), x, y); }
-async function line(c, P, html, cls = '') { const d = h('div', 'u5l5-pl ' + cls, html); P.appendChild(d); await fadeIn(c, d); return d; }
-
-/* the standard explainer layout: screen left, keys under it, panel right */
-function rig(stage, ex, win, o = {}) {
-  const G = new Calc(stage, Object.assign({ x: 26, y: 26, width: 500, height: 330 }, win));
-  const L = lcd(G.el), H = hud(G), K = new Keys(stage, 16, 380, 530);
-  const P = panel(stage, o.px ?? 572, 14, ex.W - (o.px ?? 572) - 14, ex.def.height - 28, o.title ?? 'Check it algebraically');
-  return { G, L, H, K, P };
-}
-
-/* menus */
-const MENUS = {
-  calc: { tabs: ['CALCULATE'], items: ['value', 'zero', 'minimum', 'maximum', 'intersect', 'dy/dx', '∫f(x)dx'] },
-  zoom: { tabs: ['ZOOM', 'MEMORY'], items: ['ZBox', 'Zoom In', 'Zoom Out', 'ZDecimal', 'ZSquare', 'ZStandard', 'ZTrig', 'ZInteger', 'ZoomStat', 'ZoomFit'] },
-  math: { tabs: ['MATH', 'NUM', 'CPX', 'PRB'], items: ['▸Frac', '▸Dec', '³', '³√(', 'ˣ√', 'fMin(', 'fMax(', 'nDeriv(', 'fnInt(', 'Solver…'] }
-};
-function menuLines(m, sel) {
-  const n = m.items.length, first = Math.max(0, Math.min(sel - 6, n - 7)), rows = [m.tabs.map((t, i) => (i ? t : inv(t))).join('  ')];
-  for (let i = first; i < Math.min(n, first + 7); i++) {
-    const more = i === first + 6 && n > first + 7, lab = String((i + 1) % 10) + (more ? '↓' : ':');
-    rows.push((i === sel ? inv(lab) : lab) + m.items[i]);
-  }
-  return rows;
-}
-async function pick(c, L, key, sel) {
-  const m = MENUS[key]; L.show(menuLines(m, 0), 'u5l5-menu');
-  for (let i = 1; i <= sel; i++) { await sleep(c, 150); L.show(menuLines(m, i), 'u5l5-menu'); }
-  await sleep(c, 450);
-}
-
-/* screens */
-const MODE_ROWS = [['NORMAL', 'SCI', 'ENG'], ['FLOAT', '0123456789'], ['RADIAN', 'DEGREE'], ['FUNC', 'PAR', 'POL', 'SEQ'], ['CONNECTED', 'DOT'], ['SEQUENTIAL', 'SIMUL'], ['REAL', 'a+bi', 're^θi'], ['FULL', 'HORIZ', 'G-T']];
-const modeLines = (sel = {}) => MODE_ROWS.map((r, i) => r.map((w, j) => ((sel[i] ?? 0) === j ? inv(w) : w)).join(' '));
-const FORMAT = [['RectGC', 'PolarGC'], ['CoordOn', 'CoordOff'], ['GridOff', 'GridOn'], ['AxesOn', 'AxesOff'], ['LabelOff', 'LabelOn'], ['ExprOn', 'ExprOff']];
-const yEditor = (ys, plot1) => [(plot1 ? inv('Plot1') : 'Plot1') + ' Plot2 Plot3', ...[1, 2, 3, 4, 5, 6, 7].map((i) => `Y${i}=${M(ys[i - 1] || '')}`)];
-const winLines = (w, hl = []) => ['WINDOW', ...[['Xmin', w.xmin], ['Xmax', w.xmax], ['Xscl', w.xscl], ['Ymin', w.ymin], ['Ymax', w.ymax], ['Yscl', w.yscl], ['Xres', 1]].map(([k, v], i) => ({ t: `${k}=${M(v)}`, cls: hl.includes(i + 1) ? 'u5l5-hl' : '' }))];
-const tblset = (start, step, ask) => ['TABLE SETUP', `TblStart=${M(start)}`, `ΔTbl=${M(step)}`, `Indpnt: ${ask ? 'Auto ' + inv('Ask') : inv('Auto') + ' Ask'}`, `Depend: ${inv('Auto')} Ask`];
-/* the TABLE screen: rows [[x, y]…] (strings or numbers), hl = highlighted row, bottom line */
-function tableHTML(rows, o = {}) {
-  let s = `<div class="u5l5-tg"><div class="u5l5-th">X</div><div class="u5l5-th">Y1</div><div class="u5l5-th u5l5-tdim"></div>`;
-  for (let i = 0; i < 7; i++) {
-    const r = rows[i], hl = o.hl === i ? ' u5l5-thl' : '';
-    s += `<div class="u5l5-td${hl}">${r ? M(typeof r[0] === 'number' ? calcNum(r[0]) : r[0]) : ''}</div><div class="u5l5-td${hl}">${r && r[1] !== '' ? M(typeof r[1] === 'number' ? calcNum(r[1]) : r[1]) : ''}</div><div class="u5l5-td u5l5-tdim"></div>`;
-  }
-  return s + `</div><div class="u5l5-tb">${M(o.bottom || '')}</div>`;
-}
-const homeHTML = (rows) => rows.map((r) => `<div class="u5l5-ln${r.r ? ' u5l5-right' : ''}">${M(r.t)}</div>`).join('');
-const errLines = ['ERR:INVALID', inv('1:') + 'Quit', '', 'Xmin ≤ X ≤ Xmax only'];
-
-/* a bound marker ▸ / ◂ at the top of the screen, like the TI's */
-function bound(G, x, dir) {
-  const g = svgEl('polygon', { class: 'u5l5-bound' }, G.layers.top);
-  return G.track(g, () => {
-    const [px] = G.toPx(x, 0), py = G.P.t + 4, s = 18, e = dir > 0 ? px + s * 0.75 : px - s * 0.75;
-    g.setAttribute('points', `${px.toFixed(1)},${py} ${px.toFixed(1)},${py + s} ${e.toFixed(1)},${py + s / 2}`);
-  });
-}
-/* trace cursor whose coordinates show at the bottom */
-function cursor(G, H, f, x, title) {
-  const tr = G.traceMarker(f, x, { readout: false });
-  tr.title = title; tr.show = () => { if (!tr.quiet) H.bot(tr.title, { x: tr.x, y: tr.y }); }; tr.show();
-  tr.glide = (c, x2, ms = 900) => { const a = tr.x; return tween(c, ms, (t) => { tr.set(a + (x2 - a) * t); tr.show(); }); };
-  tr.steps = async (c, n, ms = 260) => { for (let i = 0; i < n; i++) { tr.set(tr.x + G.dx); tr.show(); await sleep(c, ms); } };
-  return tr;
-}
-/* type text into one line of the LCD, one key at a time */
-async function typeKeys(c, K, keys, onKey) { K.clear(); for (const k of keys) { const e = K.add(k); onKey(k); await pop(c, e, 200); await sleep(c, 150); } }
-const snap = (G, x) => G.mid + Math.round((x - G.mid) / G.dx) * G.dx; // nearest pixel column the arrows can reach
-const wTex = (w) => `x:[${w.xmin},\\ ${w.xmax},\\ ${w.xscl}],\\ \\ y:[${w.ymin},\\ ${w.ymax},\\ ${w.yscl}]`;
-
-/* ============ relations used in the lesson ============ */
+/* ======================= shared data ======================= */
+const D = [1, 8, 27, 64], R = [1, 2, 3, 4];
 const REL = {
-  run: { f: (x) => 0.75 * x - 9, y1: '0.75X-9', t: 'y=0.75x-9' },
-  ex1: { f: (x) => 4 * x - 30, y1: '4X-30', t: 'y=4x-30', win: { xmin: -2, xmax: 11, xscl: 1, ymin: -35, ymax: 15, yscl: 5 } },
-  ex2a: { f: (x) => (7 * x + 21) / 3, y1: '(7X+21)/3', t: 'y=\\frac{7x+21}{3}' },
-  ex2b: { f: (x) => -x * x + 2 * x + 8, y1: '-X²+2X+8', t: 'y=-x^2+2x+8' },
-  ex3: { f: (x) => (3 * x - 13) / 8, y1: '(3X-13)/8', t: 'y=\\frac{3x-13}{8}', win: { xmin: -3, xmax: 11, xscl: 1, ymin: -3, ymax: 3, yscl: 1 } },
-  fr2: { f: (x) => (2 * x + 7) / 6, y1: '(2X+7)/6', t: 'y=\\frac{2x+7}{6}', win: { xmin: -5, xmax: 3, xscl: 1, ymin: -2, ymax: 3, yscl: 1 } },
-  ex4: { f: (x) => -x * x + 7 * x + 12, y1: '-X²+7X+12', t: 'y=-x^2+7x+12', win: { xmin: -3, xmax: 10, xscl: 1, ymin: -10, ymax: 30, yscl: 5 } },
-  mn: { f: (x) => x * x - 2 * x - 3, y1: 'X²-2X-3', t: 'y=x^2-2x-3' }
+  mult: { name: '(i) “is a multiple of”', test: (d, r) => d % r === 0,
+    ask: (d) => `Is ${T(d)} a multiple of…`,
+    row: (d, r) => { const q = d / r, s = Number.isInteger(q * 100) ? '=' + texNum(q) : '\\approx' + q.toFixed(2); return T(`${d}\\div${r}${s}`); } },
+  cube: { name: '(ii) “is the cube of”', test: (d, r) => r ** 3 === d,
+    ask: (d) => `Is ${T(d)} the cube of…`,
+    row: (d, r) => T(`${r}^3=${r ** 3}`) }
 };
-const WIDE = { xmin: -5, xmax: 20, xscl: 5, ymin: -15, ymax: 10, yscl: 5 };
+const relPairs = (k) => { const out = []; D.forEach((d) => R.forEach((r) => { if (REL[k].test(d, r)) out.push([d, r]); })); return out; };
+const PEOPLE = ['Ava', 'Ben', 'Cleo', 'Dev', 'Eli'], DATES = ['Mar 3', 'Jul 14', 'Oct 31', 'Dec 25'], BDAY = [0, 1, 1, 2, 3];
 
-/* ======================================================================
-   1. setup — MODE, FORMAT and the stat plots
-   ====================================================================== */
-const setup = {
-  title: 'Before you graph: MODE, FORMAT and the stat plots',
-  height: 440,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
-  intro: 'Three quick checks on the TI-84 before graphing anything. Press <b>Next</b>.',
-  make(stage, v, ex) {
-    const { G, L, K, P } = rig(stage, ex, STD, { title: 'Checklist' });
-    const f = (x) => 0.5 * x + 2;
-    const items = ['<b>MODE:</b> Func', '<b>FORMAT:</b> RectGC, CoordOn, AxesOn, LabelOff', '<b>Y=:</b> Plot1, Plot2, Plot3 off'].map((s) => { const d = h('div', 'u5l5-chk', '<i class="u5l5-tick">✓</i><div>' + s + '</div>'); P.appendChild(d); return d; });
-    const tick = (c, i) => { items[i].classList.add('on'); return pulse(c, items[i], 1.04); };
-    const data = [[-7, 6], [-5, -4], [-2, 8], [1, -6], [3, 7], [6, -2], [8, 4], [-8, -8], [4, -8]];
-    let marks = [];
-    const plotMarks = () => data.map(([x, y]) => { const [px, py] = G.toPx(x, y); return svgEl('rect', { class: 'u5l5-stat', x: px - 6, y: py - 6, width: 12, height: 12 }, G.layers.top); });
-    return [
-      { cap: `${kk('MODE')}: the fourth line must have <b>FUNC</b> highlighted, so every relation is typed in solved for <b>y</b>.`,
-        run: async (c) => { await K.set(c, ['MODE']); L.show(modeLines()); await pulse(c, L.ln(3).querySelector('.u5l5-inv'), 1.3); await tick(c, 0); } },
-      { cap: `${kk('2nd', 'ZOOM')} opens FORMAT: <b>RectGC</b>, <b>CoordOn</b>, <b>AxesOn</b> and <b>LabelOff</b> highlighted.`,
-        run: async (c) => { await K.set(c, ['2nd', 'ZOOM']); L.show(FORMAT.map((r) => inv(r[0]) + ' ' + r.slice(1).join(' '))); for (const i of [0, 1, 3, 4]) await pulse(c, L.ln(i).querySelector('.u5l5-inv'), 1.25); await tick(c, 1); } },
-      { cap: `${kk('Y=')}: the relation is in Y1, but <b>Plot1</b> is highlighted: it is still on from an old statistics lesson.`,
-        run: async (c) => { await K.set(c, ['Y=']); L.show(yEditor(['0.5X+2'], true)); await pulse(c, L.ln(0).querySelector('.u5l5-inv'), 1.3); } },
-      { cap: `${kk('GRAPH')}: the old data points are plotted <b>on top of</b> the relation. Which marks belong to it?`,
-        run: async (c) => { await K.set(c, ['GRAPH']); L.hide(); await G.drawIn(G.fn(f), 700, c); marks = plotMarks(); for (const m of marks) { await pop(c, m, 200); } } },
-      { cap: `Fix it: ${kk('Y=')}, ${kk('▲')} up to <b>Plot1</b>, ${kk('ENTER')}. It is no longer highlighted.`,
-        run: async (c) => { await K.set(c, ['Y=', '▲', 'ENTER']); L.show(yEditor(['0.5X+2'], true)); await sleep(c, 400); L.show(yEditor(['0.5X+2'], false)); await pulse(c, L.ln(0), 1.08); } },
-      { cap: `${kk('GRAPH')}: just the relation. Ready to graph!`,
-        run: async (c) => { await K.set(c, ['GRAPH']); L.hide(); marks.forEach((m) => m.remove()); await tick(c, 2); await stampIn(c, stamp(P, 'Ready', { ok: true, cls: 'u5l5-pstamp' })); } }
-    ];
+/* closed smooth curve through points (TikZ "smooth cycle": cubic Béziers; pgf's default plot tension 0.5 → 0.5 × 0.2775 = 0.13875,
+   so the curve matches the booklet's figure and x = 0 crosses it near y ≈ 1.39 and y ≈ −1.68) */
+function smoothCycle(P, n = 60) {
+  const k = 0.13875, m = P.length, out = [];
+  for (let i = 0; i < m; i++) {
+    const p0 = P[(i - 1 + m) % m], p1 = P[i], p2 = P[(i + 1) % m], p3 = P[(i + 2) % m];
+    const c1 = [p1[0] + k * (p2[0] - p0[0]), p1[1] + k * (p2[1] - p0[1])], c2 = [p2[0] - k * (p3[0] - p1[0]), p2[1] - k * (p3[1] - p1[1])];
+    for (let j = 0; j < n; j++) { const t = j / n, u = 1 - t; out.push([0, 1].map((d) => u * u * u * p1[d] + 3 * u * u * t * c1[d] + 3 * u * t * t * c2[d] + t * t * t * p2[d])); }
   }
-};
+  return out;
+}
+/* every y where the closed polyline crosses the vertical line at x */
+const crossX = (pts, x) => { const ys = []; for (let i = 0; i < pts.length; i++) { const a = pts[i], b = pts[(i + 1) % pts.length]; if ((a[0] - x) * (b[0] - x) < 0 || (a[0] === x && b[0] !== x)) ys.push(a[1] + (b[1] - a[1]) * (x - a[0]) / (b[0] - a[0])); } return ys; };
+const BLOB = smoothCycle([[-2.2, -1], [-1.2, 1.6], [0.3, 1.2], [1.6, -0.3], [0.8, -1.9], [-0.8, -1.3]]);
+const circlePts = (r, n = 160) => Array.from({ length: n }, (_, i) => [r * Math.cos(2 * Math.PI * i / n), r * Math.sin(2 * Math.PI * i / n)]);
+const sideways = () => Array.from({ length: 81 }, (_, i) => { const y = -2.85 + 5.7 * i / 80; return [0.4 * y * y, y]; });
 
-/* ======================================================================
-   2. window — the WINDOW editor beside the screen
-   ====================================================================== */
-const windowEx = {
-  title: 'The WINDOW screen sets what part of the plane you see',
+/* Example 2's four graphs: how to draw them and where vertical / horizontal lines meet them */
+const EX2 = {
+  A: { name: 'Graph A', draw: (G, o = {}) => G.fn((x) => -0.5 * x * x + 3, { from: -2.4, to: 2.4, arrows: false, ...o }),
+    hits: (x) => (Math.abs(x) <= 2.4 ? [-0.5 * x * x + 3] : []),
+    hitsY: (y) => { if (y > 3 || y < 0.12) return []; const x = Math.sqrt(2 * (3 - y)); return x < 1e-9 ? [0] : [-x, x]; } },
+  B: { name: 'Graph B', draw: (G, o = {}) => G.fn((x) => 2 * x / 3, { from: -3.2, to: 3.2, arrows: false, ...o }),
+    hits: (x) => (Math.abs(x) <= 3.2 ? [2 * x / 3] : []), hitsY: (y) => (Math.abs(y) <= 2.1334 ? [1.5 * y] : []) },
+  C: { name: 'Graph C', draw: (G, o = {}) => G.polyline(circlePts(3), { closed: true, ...o }),
+    hits: (x) => (Math.abs(x) <= 3 ? [Math.sqrt(9 - x * x), -Math.sqrt(9 - x * x)] : []), hitsY: (y) => (Math.abs(y) <= 3 ? [Math.sqrt(9 - y * y), -Math.sqrt(9 - y * y)] : []) },
+  D: { name: 'Graph D', draw: (G, o = {}) => G.polyline(sideways(), o),
+    hits: (x) => (x >= 0 && x <= 0.4 * 2.85 * 2.85 ? [Math.sqrt(x / 0.4), -Math.sqrt(x / 0.4)] : []), hitsY: (y) => (Math.abs(y) <= 2.85 ? [0.4 * y * y] : []) }
+};
+const ex2Graph = (host, size, o = {}) => new Graph(host, { width: size, height: size, xmin: -4, xmax: 4, ymin: -4, ymax: 4, ...o });
+
+/* ======================= 0. warm-up bridge: person → birthday ======================= */
+const birthday = {
+  title: 'Person → birthday, then flip the arrows',
   height: 450,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
-  intro: `Left: the ${kk('WINDOW')} editor. Right: the graph screen it controls. Press <b>Next</b>.`,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
+  intro: 'Each person has one birthday. Is <b>person → birthday</b> a function? What about <b>birthday → person</b>? Press <b>Next</b>.',
   make(stage, v, ex) {
-    const ed = add(stage, box(h('div', 'u5l5-scr'), 310, 300), 26, 40), E = lcd(ed);
-    const W0 = { ...STD }, W1 = { ...WIDE };
-    E.show(winLines(W0));
-    const gx = 520, gw = Math.min(400, ex.W - gx - 30);
-    const G = new Calc(stage, { x: gx, y: 50, width: gw, height: 280, ...STD });
-    const call = (html, x, y, cls = '') => add(stage, h('div', 'u5l5-call ' + cls, html), x, y);
-    const cXmin = call('', gx - 4, 352, 'u5l5-cl'), cXmax = call('', gx + gw + 4, 352, 'u5l5-cr');
-    const cYmax = call('', gx - 26, 40, 'u5l5-cy'), cYmin = call('', gx - 26, 316, 'u5l5-cy');
-    [cXmin, cXmax, cYmax, cYmin].forEach((e) => (e.style.opacity = 0));
-    const setCalls = (w) => { cXmin.innerHTML = `↑ Xmin = ${M(w.xmin)}`; cXmax.innerHTML = `Xmax = ${M(w.xmax)} ↑`; cYmax.innerHTML = `Ymax = ${M(w.ymax)} →`; cYmin.innerHTML = `Ymin = ${M(w.ymin)} →`; };
-    setCalls(W0);
-    const note = add(stage, box(h('div', 'u5l5-note', ''), ex.W - 60, 50), 30, 392);
-    const tickDots = (axis) => {
-      const g = svgEl('g', { class: 'u5l5-tdots' }, G.layers.top), w = G.win, s = axis === 'x' ? w.xstep : w.ystep, lo = axis === 'x' ? w.xmin : w.ymin, hi = axis === 'x' ? w.xmax : w.ymax;
-      for (let v2 = Math.ceil(lo / s) * s; v2 <= hi + 1e-9; v2 += s) { if (Math.abs(v2) < 1e-9) continue; const [px, py] = axis === 'x' ? G.toPx(v2, 0) : G.toPx(0, v2); svgEl('circle', { cx: px, cy: py, r: 5 }, g); }
-      return g;
-    };
-    let dots;
+    const W = ex.W, mw = 380, gx = mw + 26, gw = W - gx - 10;
+    const p1 = PEOPLE.map((p, i) => [p, DATES[BDAY[i]]]), p2 = p1.map((q) => [q[1], q[0]]);
+    const M1 = new MappingDiagram(stage, { x: 8, y: 8, width: mw, height: 434, domain: PEOPLE, range: DATES, pairs: p1, titles: ['Person', 'Birthday'], tex: false, arrows: false, color: COLORS.red });
+    const M2 = new MappingDiagram(stage, { x: 8, y: 8, width: mw, height: 434, domain: DATES, range: PEOPLE, pairs: p2, titles: ['Birthday', 'Person'], tex: false, arrows: false, color: COLORS.red });
+    const G1 = catGraph(stage, { x: gx, y: 8, width: gw, height: 434, xs: PEOPLE, ys: DATES, xtitle: '\\text{person}', ytitle: '\\text{birthday}' });
+    const G2 = catGraph(stage, { x: gx, y: 8, width: gw, height: 434, xs: DATES, ys: PEOPLE, xtitle: '\\text{birthday}', ytitle: '\\text{person}' });
+    hidden(M2.el, G2.el);
+    const pts1 = PEOPLE.map((p, i) => [i + 1, BDAY[i] + 1]), pts2 = pts1.map((q) => [q[1], q[0]]);
     return [
-      { cap: `<b>Xmin = −10</b> is the <b>left edge</b> of the screen and <b>Xmax = 10</b> the <b>right edge</b>.`,
-        run: async (c) => { E.show(winLines(W0, [1, 2])); await Promise.all([fadeIn(c, cXmin), fadeIn(c, cXmax)]); } },
-      { cap: `<b>Xscl = 1</b>: a tick mark on the x-axis every <b>1</b> unit (scale, not a size).`,
-        run: async (c) => { E.show(winLines(W0, [3])); dots = tickDots('x'); await fadeIn(c, dots, 500); } },
-      { cap: `<b>Ymin</b> and <b>Ymax</b> are the bottom and top edges; <b>Yscl = 1</b> spaces the y-axis ticks.`,
-        run: async (c) => { dots.remove(); E.show(winLines(W0, [4, 5, 6])); dots = tickDots('y'); await Promise.all([fadeIn(c, cYmax), fadeIn(c, cYmin), fadeIn(c, dots, 500)]); } },
-      { cap: `<b>Xres = 1</b> is the screen resolution: leave it alone.`, run: async (c) => { dots.remove(); E.show(winLines(W0, [7])); await pulse(c, E.ln(7), 1.06); } },
-      { cap: `Short form: <b>[min, max, scale]</b> for each axis. The standard window is ${T('x:[-10,\\ 10,\\ 1]')}, ${T('y:[-10,\\ 10,\\ 1]')}.`,
-        run: async (c) => { E.show(winLines(W0)); note.innerHTML = T(wTex(W0)); await fadeIn(c, note); } },
-      { cap: `Type a new window, ${T('x:[-5,\\ 20,\\ 5]')}, ${T('y:[-15,\\ 10,\\ 5]')}, and press ${kk('GRAPH')}: the screen moves and stretches.`,
+      { cap: 'Draw an arrow from each person to their birthday.', run: (c) => M1.drawArrows(c, { stagger: 80 }) },
+      { cap: 'Count the arrows <b>leaving</b> each person: exactly <b>one</b> each. Two arrows <b>arrive</b> at Jul 14 (Ben and Cleo). That’s allowed.',
+        run: async (c) => { for (const p of PEOPLE) { M1.highlight('d', p, true, 'u5l5-good'); await sleep(c, 140); } M1.highlight('r', 'Jul 14'); await pulse(c, M1.item('r', 'Jul 14'), 1.15); } },
+      { cap: 'Plot each pair (person, birthday). Slide a vertical line across: every person’s column has <b>one</b> dot.',
+        run: async (c) => { for (const q of pts1) { await G1.reveal(G1.point(q[0], q[1], { color: 'red', r: 8 }), c, 260); } await G1.vlineTest(c, { points: pts1, ms: 2000 }); } },
+      { cap: '<b>Person → birthday is a function.</b> One input, one output, every time.',
+        run: (c) => stampIn(c, stamp(G1.el, 'Function', { ok: true, x: gw - 120, y: 46, size: 'lg' })) },
+      { cap: 'Now <b>flip the arrows</b>: the birthday is the input and the person is the output.',
+        run: async (c) => { await Promise.all([fadeOut(c, M1.el), fadeOut(c, G1.el)]); await Promise.all([appear(c, M2.el), appear(c, G2.el)]); await M2.drawArrows(c, { stagger: 80 }); } },
+      { cap: 'Jul 14 now has <b>two</b> arrows leaving it, to Ben and Cleo. One input, two outputs.', run: (c) => M2.oneToMany(c) },
+      { cap: 'On the graph, the Jul 14 column holds <b>two</b> dots, so a vertical line hits it twice. <b>Birthday → person is not a function.</b>',
         run: async (c) => {
-          const w = { ...W0 };
-          for (const k of ['xmin', 'xmax', 'xscl', 'ymin', 'ymax', 'yscl']) { w[k] = W1[k]; E.show(winLines(w, [['xmin', 'xmax', 'xscl', 'ymin', 'ymax', 'yscl'].indexOf(k) + 1])); await sleep(c, 260); }
-          E.show(winLines(W1)); setCalls(W1); note.innerHTML = T(wTex(W1)); await G.setWindow(W1, c, 1300);
-        } },
-      { cap: `Now x runs from −5 to 20 and y from −15 to 10, with a tick every <b>5</b>. Same plane, a different view of it.`,
-        run: async (c) => { dots = tickDots('x'); const d2 = tickDots('y'); await Promise.all([fadeIn(c, dots, 500), fadeIn(c, d2, 500)]); } }
+          for (const q of pts2) await G2.reveal(G2.point(q[0], q[1], { color: 'red', r: 8 }), c, 220);
+          await G2.vlineTest(c, { points: pts2, ms: 1400 });
+          await stampIn(c, stamp(G2.el, 'Not a function', { ok: false, x: gw - 205, y: 46, size: 'lg' }));
+        } }
     ];
   }
 };
 
-/* ======================================================================
-   3. graphIt — Y= then GRAPH, and the cut-off intercept
-   ====================================================================== */
-const graphIt = {
-  title: 'Enter y = 0.75x − 9 and graph it',
-  height: 440,
+/* ======================= 1. building relations (i) and (ii) ======================= */
+const twoRel = {
+  title: 'Ask the question for every input',
+  height: 462,
   minW: 900, // drawn this wide and scaled to fit beside the sidebar
-  intro: `The running example: ${T('y=0.75x-9')}, already solved for ${T('y')}. Press <b>Next</b>.`,
-  make(stage, v, ex) {
-    const { G, L, K, P } = rig(stage, ex, STD), f = REL.run.f;
-    let typed = '';
-    return [
-      { cap: `${kk('Y=')} opens the equation editor. The relation must be <b>solved for y</b>; this one is, so its right side goes into <b>Y1</b>.`,
-        run: async (c) => { await K.set(c, ['Y=']); L.show(yEditor([])); L.ln(1).innerHTML = 'Y1=' + CUR; } },
-      { cap: `Type ${kk('0', '.', '7', '5', 'X,T,θ,n', '−', '9')}. The ${kk('X,T,θ,n')} key types the <b>X</b>.`,
-        run: async (c) => {
-          const map = { 'X,T,θ,n': 'X', '−': '−' };
-          await typeKeys(c, K, ['0', '.', '7', '5', 'X,T,θ,n', '−', '9'], (k) => { typed += map[k] || k; L.ln(1).innerHTML = 'Y1=' + typed + CUR; });
-          L.ln(1).innerHTML = 'Y1=0.75X−9';
-        } },
-      { cap: `${kk('ZOOM', '6')} (ZStandard) graphs it in the standard window ${T('x:[-10,\\ 10,\\ 1]')}, ${T('y:[-10,\\ 10,\\ 1]')}.`,
-        run: async (c) => { await K.set(c, ['ZOOM', '6']); L.hide(); await G.drawIn(G.fn(f), 900, c); } },
-      { cap: `The <b>y-intercept</b>, ${T('(0,\\ -9)')}, is just inside the bottom edge.`,
-        run: async (c) => { await G.reveal(G.point(0, -9, { color: 'ink', label: T('(0,\\ -9)'), pos: 'e' }), c); await line(c, P, `${T('x=0:\\ y=0.75(0)-9=-9')}`); } },
-      { cap: `The <b>x-intercept</b>: ${T('0.75x-9=0')} gives ${T('x=12')}, past ${T('X_{\\max}=10')}. It is <b>cut off</b>.`,
-        run: async (c) => {
-          await line(c, P, T('0.75x-9=0')); await line(c, P, T('0.75x=9')); await line(c, P, T('x=12'), 'u5l5-big');
-          const off = G.label(10, 0, 'x = 12 is out here →', { pos: 'nw', cls: 'u5l5-off', gap: 6 }); await fadeIn(c, off);
-        } },
-      { cap: `<b>The default window rarely shows every feature worth seeing.</b> Next: change the window.`,
-        run: async (c) => { await stampIn(c, stamp(G.html, 'Cut off!', { ok: false, x: 250, y: 120 })); } }
-    ];
-  }
-};
-
-/* ======================================================================
-   4. adjust — custom window, Zoom Out, ZoomFit
-   ====================================================================== */
-const adjust = {
-  title: 'Three ways to change the window for y = 0.75x − 9',
-  height: 440,
-  minW: 900, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: 'custom', label: 'Custom window' }, { v: 'out', label: 'Zoom Out' }, { v: 'fit', label: 'ZoomFit' }],
-  intro: (k) => ({ custom: 'Type the window you want.', out: 'Let the calculator zoom out.', fit: 'Let the calculator fit the curve.' }[k] + ' The x-intercept is cut off in the standard window. Press <b>Next</b>.'),
+  choices: [{ v: 'mult', label: '(i) is a multiple of' }, { v: 'cube', label: '(ii) is the cube of' }],
+  intro: (k) => `${T('D=\\{1,8,27,64\\}')}, ${T('R=\\{1,2,3,4\\}')}. Relation ${REL[k].name}: for each domain element ask the question, and draw an arrow for every <b>yes</b>. Press <b>Next</b>.`,
   make(stage, k, ex) {
-    const { G, L, K, P } = rig(stage, ex, STD, { title: 'The window' }), f = REL.run.f;
-    G.fn(f); G.point(0, -9, { color: 'ink' });
-    const wl = h('div', 'u5l5-pl u5l5-win', T(wTex(STD))); P.appendChild(wl);
-    const setW = (w) => { wl.innerHTML = T(wTex(w)); };
-    const both = async (c) => { await G.reveal(G.point(12, 0, { color: 'ink', label: T('(12,\\ 0)'), pos: 'n' }), c); };
-    if (k === 'custom') return [
-      { cap: `${kk('WINDOW')}: type ${T('X_{\\min}=-5')}, ${T('X_{\\max}=20')}, ${T('X_{scl}=5')}, ${T('Y_{\\min}=-15')}, ${T('Y_{\\max}=10')}, ${T('Y_{scl}=5')}.`,
+    const W = ex.W, rel = REL[k], pairs = relPairs(k);
+    const M = new MappingDiagram(stage, { x: 8, y: 8, width: 400, height: 434, domain: D, range: R, pairs, arrows: false });
+    const Q = panel(stage, 428, 8, W - 438, 218, 'The question');
+    const P = panel(stage, 428, 236, W - 438, 140, 'Ordered pairs');
+    const pl = h('div', 'u5l5-prs'); P.appendChild(pl);
+    const steps = D.map((d) => {
+      const yes = R.filter((r) => rel.test(d, r)), n = yes.length;
+      const list = yes.map((r) => T(r)), said = list.length > 1 ? list.slice(0, -1).join(', ') + ' and ' + list[list.length - 1] : list[0];
+      return {
+        cap: k === 'mult'
+          ? `Is ${T(d)} a multiple of 1? of 2? of 3? of 4? Yes for ${said}: <b>${n === 1 ? 'one arrow</b> leaves' : n + ' arrows</b> leave'} ${T(d)}.`
+          : `Which of 1, 2, 3, 4 cubes to ${T(d)}? Only ${said}: <b>one arrow</b> leaves ${T(d)}.`,
         run: async (c) => {
-          await K.set(c, ['WINDOW']); const w = { ...STD };
-          L.show(winLines(w));
-          for (const [i, key] of ['xmin', 'xmax', 'xscl', 'ymin', 'ymax', 'yscl'].entries()) { w[key] = WIDE[key]; L.show(winLines(w, [i + 1])); await sleep(c, 300); }
-          L.show(winLines(WIDE)); setW(WIDE);
-        } },
-      { cap: `${kk('GRAPH')}: the view slides right and stretches to the new window.`, run: async (c) => { await K.set(c, ['GRAPH']); L.hide(); await G.setWindow(WIDE, c, 1300); } },
-      { cap: `Both intercepts, ${T('(12,\\ 0)')} and ${T('(0,\\ -9)')}, are on screen with room around them. <b>You choose: usually the best.</b>`,
-        run: async (c) => { await both(c); await stampIn(c, stamp(P, 'Best', { ok: true, cls: 'u5l5-pstamp' })); } }
+          [...Q.querySelectorAll('.u5l5-q, .u5l5-qrows')].forEach((e) => e.remove());
+          D.forEach((x) => M.highlight('d', x, x === d));
+          const qq = h('div', 'u5l5-q', rel.ask(d)); Q.appendChild(qq);
+          const rows = h('div', 'u5l5-qrows'); Q.appendChild(rows);
+          for (const r of R) {
+            const ok = rel.test(d, r), el = h('div', 'u5l5-qrow ' + (ok ? 'yes' : 'no'), `<span>${rel.row(d, r)}</span><b>${ok ? '✓ yes' : '✗ no'}</b>`);
+            rows.appendChild(el); await fadeIn(c, el, 260); await sleep(c, 90);
+          }
+          for (const r of yes) { await M.drawArrow(c, pairs.findIndex((p) => p[0] === d && p[1] === r), 380); const ch = chip(T(pairTex(d, r))); pl.appendChild(ch); await pop(c, ch, 260); }
+        }
+      };
+    });
+    const bad = k === 'mult';
+    steps.push({
+      cap: bad ? `${T('8')}, ${T('27')} and ${T('64')} each have <b>more than one</b> arrow leaving them. One input, several outputs: <b>not a function</b>.`
+        : 'Every domain element has <b>exactly one</b> arrow leaving it. <b>A function.</b>',
+      run: async (c) => {
+        D.forEach((x) => M.highlight('d', x, false));
+        if (bad) { await M.oneToMany(c); pl.querySelectorAll('.u5l5-pr').forEach((e, i) => { if (pairs.filter((p) => p[0] === pairs[i][0]).length > 1) e.classList.add('bad'); }); }
+        else D.forEach((x) => M.highlight('d', x, true, 'u5l5-good'));
+        await stampIn(c, stamp(stage, bad ? 'Not a function' : 'Function', { ok: !bad, x: 428 + (W - 438) / 2, y: 410, size: 'lg', rotate: -2 }));
+      }
+    });
+    return steps;
+  }
+};
+
+/* ======================= 1. relations and functions: the nested ovals ======================= */
+const NEST = [
+  { t: '(i) “is a multiple of”', f: false, why: `${T('8')} is paired with ${T('1')}, ${T('2')} and ${T('4')}` },
+  { t: '(ii) “is the cube of”', f: true, why: 'each domain element is the cube of exactly one number' },
+  { t: 'person → birthday', f: true, why: 'everyone has exactly one birthday' },
+  { t: 'birthday → person', f: false, why: 'Jul 14 goes to Ben <b>and</b> Cleo' },
+  { t: 'student → student ID', f: true, why: 'each student has one ID number' },
+  { t: 'the circle, graph C', f: false, why: 'a vertical line can cross a circle twice' }
+];
+const nested = {
+  title: 'Which relations are functions?',
+  height: 440,
+  intro: 'Every relation goes in the big oval. Only the functions go in the inner one. Press <b>Next</b>.',
+  make(stage, v, ex) {
+    const W = ex.W, cx = W / 2, svg = svgEl('svg', { class: 'u5l5-nestsvg', width: W, height: 440, viewBox: `0 0 ${W} 440` }, stage);
+    const icx = cx + 150, icy = 220;
+    const outer = svgEl('ellipse', { cx, cy: 205, rx: cx - 14, ry: 192, fill: '#f1f0ec', stroke: COLORS.slate, 'stroke-width': 3 }, svg);
+    const inner = svgEl('ellipse', { cx: icx, cy: icy, rx: 268, ry: 152, fill: '#e3ecfb', stroke: COLORS.blue, 'stroke-width': 3 }, svg);
+    const lo = add(stage, h('div', 'u5l5-ovlab', 'Relations'), 90, 52), li = add(stage, h('div', 'u5l5-ovlab blue', 'Functions'), icx - 70, 82);
+    hidden(outer, inner, lo, li);
+    const slots = { true: [[icx, 152], [icx, 222], [icx, 292]], false: [[205, 150], [205, 220], [205, 290]] }, used = { true: 0, false: 0 };
+    const cards = NEST.map((n) => { const s = slots[n.f][used[n.f]++], el = add(stage, h('div', 'u5l5-ncard ' + (n.f ? 'fn' : 'rel'), n.t), s[0] - 125, s[1] - 24); el.style.opacity = 0; return el; });
+    const banner = add(stage, h('div', 'u5l5-banner', 'Every function is a relation, but not every relation is a function.'), 0, 404);
+    banner.style.width = W + 'px'; banner.style.opacity = 0;
+    return [
+      { cap: 'The big oval holds <b>every relation</b>: any pairing of inputs with outputs.', run: async (c) => { await appear(c, outer, 400); await fadeIn(c, lo); } },
+      { cap: 'Inside it, a smaller oval for the <b>functions</b>: the relations where every input has exactly one output.', run: async (c) => { await appear(c, inner, 400); await fadeIn(c, li); } },
+      ...NEST.map((n, i) => ({
+        cap: `<b>${n.t}</b>: ${n.why}, so it ${n.f ? '<b>is a function</b> and goes inside the inner oval' : 'is a relation but <b>not a function</b>: outside the inner oval'}.`,
+        run: (c) => anim(c, cards[i], [{ opacity: 0, transform: 'translateY(-36px) scale(1.12)' }, { opacity: 1, transform: 'none' }], 520)
+      })),
+      { cap: 'The inner oval sits <b>inside</b> the outer one: every function is a relation. The cards on the left show that <b>not every relation is a function</b>.', run: (c) => fadeIn(c, banner) }
     ];
-    if (k === 'out') {
-      const W4 = { xmin: -40, xmax: 40, ymin: -40, ymax: 40, xscl: 1, yscl: 1 };
+  }
+};
+
+/* ======================= Example 1 check: three pictures, one verdict ======================= */
+const threeViews = {
+  title: 'Example 1 check: arrow diagram, ordered pairs, graph',
+  height: 500,
+  value: 'mult',
+  choices: [{ sep: 'Example 1 check:' }, { v: 'mult', label: '(i) is a multiple of' }, { v: 'cube', label: '(ii) is the cube of' }],
+  intro: (k) => `Relation ${REL[k].name}, drawn three ways. Apply the function test to each picture. Press <b>Next</b>.`,
+  make(stage, k, ex) {
+    const W = ex.W, pw = Math.floor((W - 28) / 3), pairs = relPairs(k), bad = k === 'mult';
+    const X = [0, 1, 2].map((i) => 6 + i * (pw + 8));
+    const Pa = panel(stage, X[0], 6, pw, 420, '(a) Arrow diagram'), Pb = panel(stage, X[1], 6, pw, 420, '(b) Ordered pairs'), Pc = panel(stage, X[2], 6, pw, 420, '(c) Graph');
+    void Pa; void Pc;
+    const M = new MappingDiagram(stage, { x: X[0] + 4, y: 40, width: pw - 8, height: 320, domain: D, range: R, pairs, titles: null });
+    const lst = h('div', 'u5l5-plist cols'); Pb.appendChild(lst);
+    const chips = pairs.map((p) => { const e = chip(T(pairTex(p[0], p[1]))); lst.appendChild(e); return e; });
+    const G = catGraph(stage, { x: X[2] + 4, y: 40, width: pw - 8, height: 320, xs: D.map(String), ys: R.map(String), xtitle: '\\text{domain}', ytitle: '\\text{range}', pad: [26, 24, 40, 36], grid: false });
+    const pts = pairs.map((p) => [D.indexOf(p[0]) + 1, p[1]]);
+    pts.forEach((q) => G.point(q[0], q[1], { color: 'ink', r: 7 }));
+    const verdict = (P, html, ok) => { const d = h('div', 'u5l5-verd ' + (ok ? 'ok' : 'no'), html); P.appendChild(d); return d; };
+    const rep = (x) => pairs.filter((p) => p[0] === x).length > 1;
+    return [
+      { cap: bad ? '(a) Look at the arrows <b>leaving</b> each domain element. ' + T('8') + ' has <b>three</b> (to 1, 2 and 4). So do 27 and 64… more than one each.'
+        : '(a) Look at the arrows <b>leaving</b> each domain element: exactly <b>one</b> each.',
+        run: async (c) => { if (bad) await M.oneToMany(c); else for (const d of D) { M.highlight('d', d, true, 'u5l5-good'); await sleep(c, 150); } await fadeIn(c, verdict(Pa, bad ? `${T('8')} has 3 arrows ✗` : 'one arrow each ✓', !bad)); } },
+      { cap: bad ? '(b) Look at the <b>first coordinates</b>. ' + T('(8,1),\\ (8,2),\\ (8,4)') + ' all start with ' + T('8') + ': one input, three outputs.'
+        : '(b) Look at the <b>first coordinates</b>: 1, 8, 27, 64. No first coordinate repeats.',
+        run: async (c) => { for (let i = 0; i < pairs.length; i++) { const e = chips[i]; if (rep(pairs[i][0])) { e.classList.add(pairs[i][0] === 8 ? 'bad' : 'bad2'); await pop(c, e, 240); } else if (!bad) { e.classList.add('good'); await pop(c, e, 200); } } await fadeIn(c, verdict(Pb, bad ? `${T('8')} repeats ✗` : 'no repeats ✓', !bad)); } },
+      { cap: bad ? '(c) Slide a vertical line across. The line through ' + T('8') + ' passes through <b>three</b> plotted points.'
+        : '(c) Slide a vertical line across. Every line through a domain value meets <b>exactly one</b> point.',
+        run: async (c) => { await G.vlineTest(c, { points: pts, ms: 2000 }); await fadeIn(c, verdict(Pc, bad ? '3 dots above 8 ✗' : 'one dot per line ✓', !bad)); } },
+      { cap: bad ? 'All three pictures agree: relation (i) is <b>not a function</b>.' : 'All three pictures agree: relation (ii) <b>is a function</b>.',
+        run: (c) => stampIn(c, stamp(stage, bad ? 'Not a function' : 'Function', { ok: !bad, x: W / 2, y: 460, size: 'lg', rotate: -2 })) }
+    ];
+  }
+};
+
+/* ======================= 2. why a vertical line? ======================= */
+const WV = {
+  s1: { label: 'Set 1', pts: [[-4, -1], [-2, 3], [1, -2], [1, 4], [3, 4], [5, 1]] },
+  s2: { label: 'Set 2', pts: [[-4, -1], [-2, 3], [1, 4], [3, 4], [5, 1]] }
+};
+const whyVertical = {
+  title: 'Why a vertical line?',
+  height: 460,
+  minW: 860, // drawn this wide and scaled to fit beside the sidebar
+  choices: Object.keys(WV).map((k) => ({ v: k, label: WV[k].label + ': ' + WV[k].pts.map((p) => T(pairTex(p[0], p[1]).replace(/\\ /g, ''))).join(', ') })), // one pair per piece: the chip can wrap
+  intro: 'A vertical line is every point with the <b>same input</b>. Watch which ordered pairs it catches. Press <b>Next</b>.',
+  make(stage, k, ex) {
+    const W = ex.W, d = WV[k], pts = d.pts, two = pts.filter((p) => p[0] === 1).length > 1;
+    const G = new Graph(stage, { x: 10, y: 10, width: 440, height: 440, xmin: -6, xmax: 6, ymin: -6, ymax: 6 });
+    const P = panel(stage, 470, 10, W - 480, 440, 'Ordered pairs');
+    const lst = h('div', 'u5l5-plist two'); P.appendChild(lst);
+    const chips = pts.map((p) => { const e = chip(T(pairTex(p[0], p[1]))); e.style.opacity = 0.3; lst.appendChild(e); return e; });
+    const note = h('div', 'u5l5-note', ''); P.appendChild(note);
+    const dots = [];
+    let tr;
+    const on1 = pts.map((p, i) => (p[0] === 1 ? i : -1)).filter((i) => i >= 0), on4 = pts.map((p, i) => (p[1] === 4 ? i : -1)).filter((i) => i >= 0);
+    const L = (ps) => ps.map((i) => T(pairTex(pts[i][0], pts[i][1]))).join(' and ');
+    return [
+      { cap: 'Plot the ordered pairs.', run: async (c) => { for (let i = 0; i < pts.length; i++) { chips[i].style.opacity = 1; const p = G.point(pts[i][0], pts[i][1], { color: 'teal', r: 7.5 }); dots.push(p); await G.reveal(p, c, 240); } } },
+      { cap: `Here is the vertical line ${T('x=1')}. Every point on it has first coordinate ${T('1')}: the whole line is the <b>input 1</b>.`,
+        run: async (c) => {
+          const vl = G.vline(1, { color: 'blue', dash: false, width: 3 }); await G.drawIn(vl, 600, c);
+          G.label(1, 5.4, T('x=1'), { pos: 'e', cls: 'bk-pill', color: 'blue' });
+          tr = G.point(1, -5, { color: 'blue', r: 6, label: T(pairTex(1, -5)), pos: 'e' });
+          let last = -5;
+          await tween(c, 1600, (t) => { const y = -5 + 10 * t, yi = Math.round(y); G.moveTo(tr, 1, y); if (yi !== last) { last = yi; tr.label.innerHTML = T(pairTex(1, yi)); } });
+          G.remove(tr);
+        } },
+      { cap: two ? `It passes through ${L(on1)}: the input ${T('1')} has <b>two outputs</b>.` : `It passes through only ${L(on1)}: the input ${T('1')} has <b>one output</b>.`,
+        run: async (c) => { for (const i of on1) { chips[i].classList.add(two ? 'bad' : 'good'); dots[i].querySelector('circle').setAttribute('fill', two ? COLORS.red : COLORS.green); await pop(c, dots[i], 320); } note.innerHTML = two ? `Same first coordinate, different second coordinates.` : 'One pair starts with 1.'; await fadeIn(c, note); } },
+      { cap: `A <b>horizontal</b> line is every point with the same <b>output</b>. ${T('y=4')} passes through ${L(on4)}: two inputs share the output 4. That is <b>allowed</b>.`,
+        run: async (c) => { const hl = G.hline(4, { color: 'amber', dash: true, width: 3 }); await G.drawIn(hl, 600, c); G.label(-5.6, 4, T('y=4'), { pos: 'n', cls: 'bk-pill', color: 'amber' }); for (const i of on4) if (!(two && pts[i][0] === 1)) chips[i].classList.add('fine'); } },
+      { cap: 'So only vertical lines matter. Sweep one across the whole graph…',
+        run: async (c) => { await G.vlineTest(c, { points: pts, ms: 2400 }); } },
+      { cap: two ? `…it catches two dots at ${T('x=1')}. <b>Not a function.</b>` : '…it never catches more than one dot. <b>A function</b>, even though two dots share a row.',
+        run: (c) => stampIn(c, stamp(P, two ? 'Not a function' : 'Function', { ok: !two, x: (W - 480) / 2, y: 392, size: 'lg', rotate: -4 })) }
+    ];
+  }
+};
+
+/* ======================= Example 2 check: vertical and horizontal sweeps ======================= */
+const ROWS = ['For each input value there is only one output', 'For each output value there is only one input', 'The relation is a function'];
+const ANS2 = { A: 'TFT', B: 'TTT', C: 'FFF', D: 'FTF' };
+const vlt = {
+  title: 'Example 2 check: sweep a vertical line, then a horizontal line',
+  height: 470,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
+  value: 'A',
+  choices: [{ sep: 'Example 2 check:' }, ...'ABCD'.split('').map((k) => ({ v: k, label: EX2[k].name }))],
+  intro: (k) => `${EX2[k].name}. Fill in its column of the table. Press <b>Next</b>.`,
+  make(stage, k, ex) {
+    const W = ex.W, g = EX2[k], ans = ANS2[k];
+    const G = ex2Graph(stage, 448, { x: 8, y: 10 });
+    const P = panel(stage, 470, 10, W - 480, 448, 'Example 2(a)');
+    const tb = h('table', 'u5l5-tf small'); P.appendChild(tb);
+    tb.innerHTML = '<tr><th></th>' + 'ABCD'.split('').map((x) => `<th class="${x === k ? 'cur' : ''}">${x}</th>`).join('') + '</tr>' + ROWS.map((r) => `<tr><td>${r}</td>` + 'ABCD'.split('').map((x) => `<td class="${x === k ? 'cur' : ''}"></td>`).join('') + '</tr>').join('');
+    const cell = (r) => tb.rows[r + 1].cells['ABCD'.indexOf(k) + 1];
+    const fill = async (c, r) => { const v = ans[r], s = h('b', v === 'T' ? 't' : 'f', v); cell(r).appendChild(s); await pop(c, s, 320); };
+    const note = h('div', 'u5l5-note', ''); P.appendChild(note);
+    let res, hres;
+    const steps = [
+      { cap: `${g.name}.`, run: (c) => G.reveal(g.draw(G, { color: 'teal' }), c, 900) },
+      { cap: 'Rows 1 and 3: slide a <b>vertical</b> line across. Does it ever cross the graph twice?', run: async (c) => { res = await G.vlineTest(c, { hits: g.hits, ms: 2400 }); } },
+      { cap: () => (res && res.fail ? 'It crosses <b>twice</b>: one input, two outputs. Row 1 is <b>F</b>, so the relation is <b>not a function</b>: row 3 is <b>F</b>.'
+        : 'Every vertical line crosses <b>at most once</b>: each input has one output. Row 1 is <b>T</b>, so it <b>is a function</b>: row 3 is <b>T</b>.'),
+      run: async (c) => { await fill(c, 0); await fill(c, 2); } }
+    ];
+    if (k === 'C' || k === 'D') {
+      const x0 = k === 'C' ? 0 : 1.6, ys = k === 'C' ? [3, -3] : [2, -2];
+      steps.push({
+        cap: k === 'C' ? `Example 2(b): move the line to ${T('x=0')}. It meets C at ${T('(0,3)')} and ${T('(0,-3)')}: same first coordinate, different second coordinates.`
+          : `Example 2(c): move the line to ${T('x=1.6')}. It meets D at ${T('(1.6,2)')} and ${T('(1.6,-2)')}, since ${T('0.4(2)^2=1.6')} and ${T('0.4(-2)^2=1.6')}.`,
+        run: async (c) => {
+          res.dots.innerHTML = ''; const x1 = res.line.gx;
+          await tween(c, 900, (t) => { res.line.set(x1 + (x0 - x1) * t); });
+          for (const y of ys) { const p = G.point(x0, y, { color: 'red', r: 8, coords: true, pos: y > 0 ? 'ne' : 'se' }); await G.reveal(p, c, 320); }
+          note.innerHTML = `Proof: ${T(pairTex(x0, ys[0]))} and ${T(pairTex(x0, ys[1]))}`; await fadeIn(c, note);
+        }
+      });
+    }
+    steps.push(
+      { cap: 'Row 2: slide a <b>horizontal</b> line down. Does any output come from <b>two</b> inputs?', run: async (c) => { hres = await hlineTest(G, c, { hitsY: g.hitsY, ms: 2400 }); } },
+      { cap: () => (hres && hres.fail
+        ? `It crosses twice${k === 'A' ? ` at ${T('y=2.5')} (${T('x=-1')} and ${T('x=1')})` : ''}: two inputs share an output. Row 2 is <b>F</b>.` + (ans[2] === 'T' ? ' That doesn’t stop it being a function.' : '')
+        : 'Every horizontal line crosses <b>at most once</b>: each output comes from one input. Row 2 is <b>T</b>.' + (ans[2] === 'F' ? ' But row 2 doesn’t decide it: still <b>not a function</b>.' : '')),
+      run: async (c) => { await fill(c, 1); await stampIn(c, stamp(P, ans[2] === 'T' ? 'Function' : 'Not a function', { ok: ans[2] === 'T', x: (W - 480) / 2, y: 390, size: 'lg', rotate: -3 })); } }
+    );
+    return steps;
+  }
+};
+
+/* ======================= 3. one relation, six forms ======================= */
+const SIX = {
+  sq: { label: T('y=x^2') + ' (squares)', words: 'Pair each number with its <b>square</b>.', eq: 'y=x^2',
+    pairs: [[-2, 4], [-1, 1], [0, 0], [1, 1], [2, 4]], dom: [-2, -1, 0, 1, 2], ran: [0, 1, 4], win: { xmin: -3, xmax: 3, ymin: -1, ymax: 5 },
+    eqLines: [`Pick ${T('x=2')}: ${T('y=2^2=4')}.`, 'Squaring gives <b>one</b> answer.'] },
+  rt: { label: T('x=y^2') + ' (square roots)', words: 'Pair each number with its <b>square roots</b>.', eq: 'x=y^2',
+    pairs: [[0, 0], [1, 1], [1, -1], [4, 2], [4, -2]], dom: [0, 1, 4], ran: [-2, -1, 0, 1, 2], win: { xmin: -1, xmax: 5, ymin: -3, ymax: 3 },
+    eqLines: [`Pick ${T('x=4')}: ${T('y^2=4')},`, `so ${T('y=2')} <b>or</b> ${T('y=-2')}.`] }
+};
+const sixWays = {
+  title: 'One relation, six forms',
+  height: 486,
+  minW: 966, // drawn this wide and scaled to fit beside the sidebar
+  choices: Object.keys(SIX).map((k) => ({ v: k, label: SIX[k].label })),
+  intro: (k) => `${SIX[k].words} Build it in six forms, then apply the function test to every one. Press <b>Next</b>.`,
+  make(stage, k, ex) {
+    const W = ex.W, d = SIX[k], pw = Math.floor((W - 28) / 3), ph = 234, X = [0, 1, 2].map((i) => 6 + i * (pw + 8)), Y = [6, 6 + ph + 8];
+    const reps = d.pairs.map((p) => d.pairs.filter((q) => q[0] === p[0]).length > 1), bad = reps.some(Boolean);
+    const P = ['1 · Words', '2 · Table', '3 · Ordered pairs', '4 · Arrow diagram', '5 · Graph', '6 · Equation'].map((t, i) => panel(stage, X[i % 3], Y[Math.floor(i / 3)], pw, ph, t));
+    P.forEach((p) => (p.style.opacity = 0));
+    const words = h('div', 'u5l5-words', d.words); P[0].appendChild(words);
+    const tb = new ValueTable(stage, { x: X[1] + (pw - 6 * 44) / 2, y: Y[0] + 62, headers: ['x', 'y'], rows: d.pairs, layout: 'h', cellW: 44, cellH: 46, tap: false });
+    const plist = h('div', 'u5l5-prs'); P[2].appendChild(plist);
+    const pchips = d.pairs.map((p) => { const e = chip(T(pairTex(p[0], p[1]))); plist.appendChild(e); return e; });
+    const M = new MappingDiagram(stage, { x: X[0] + 6, y: Y[1] + 30, width: pw - 12, height: ph - 36, domain: d.dom, range: d.ran, pairs: d.pairs, titles: null, arrows: false, cls: 'u5l5-smallmap' });
+    const G = new Graph(stage, { x: X[1] + 6, y: Y[1] + 30, width: pw - 12, height: ph - 36, ...d.win, fontSize: 15 });
+    const eq = h('div', 'u5l5-eqbox', `<div class="u5l5-eqbig">${T(d.eq)}</div>` + d.eqLines.map((s) => `<div>${s}</div>`).join('')); P[5].appendChild(eq);
+    [tb.el, M.el, G.el].forEach((e) => (e.style.opacity = 0));
+    const show = async (c, i, ...els) => { await appear(c, P[i], 300); for (const e of els) await appear(c, e, 300); };
+    return [
+      { cap: `<b>Words:</b> ${d.words}`, run: (c) => show(c, 0) },
+      { cap: '<b>Table:</b> inputs in the top row, outputs underneath.', run: (c) => show(c, 1, tb.el) },
+      { cap: '<b>Ordered pairs:</b> each column of the table is one pair (input, output).', run: (c) => show(c, 2) },
+      { cap: '<b>Arrow diagram:</b> one arrow for each pair, from the domain to the range.', run: async (c) => { await show(c, 3, M.el); await M.drawArrows(c, { ms: 320, stagger: 60 }); } },
+      { cap: '<b>Graph:</b> each pair is a point.', run: async (c) => { await show(c, 4, G.el); for (const p of d.pairs) await G.reveal(G.point(p[0], p[1], { color: 'teal', r: 6.5 }), c, 200); } },
+      { cap: `<b>Equation:</b> ${T(d.eq)}. ` + d.eqLines.join(' '), run: (c) => show(c, 5) },
+      { cap: bad ? `Now the test, in every form. Inputs ${T('1')} and ${T('4')} each have <b>two outputs</b>: repeated in the table and the pairs, two arrows each, two dots on one vertical line, ${T('\\pm')} in the equation.`
+        : `Now the test, in every form. Every input has <b>one</b> output. The output ${T('4')} comes from ${T('-2')} <b>and</b> ${T('2')}, and that is fine.`,
+        run: async (c) => {
+          d.pairs.forEach((p, i) => { if (reps[i]) { tb.highlight(i, true, 'u5l5-hbad'); pchips[i].classList.add('bad'); } else if (!bad) pchips[i].classList.add(p[1] === 4 ? 'fine' : 'good'); });
+          if (bad) { await M.oneToMany(c); for (const x of [1, 4]) await G.drawIn(G.vline(x, { color: 'red', width: 2.5 }), 400, c); }
+          else { d.dom.forEach((x) => M.highlight('d', x, true, 'u5l5-good')); M.highlight('r', 4); await G.vlineTest(c, { points: d.pairs, ms: 1500 }); }
+          eq.classList.add(bad ? 'bad' : 'good'); await pulse(c, eq, 1.05);
+        } },
+      { cap: bad ? `Same verdict in all six forms: ${T('x=y^2')} is <b>not a function</b>.` : `Same verdict in all six forms: ${T('y=x^2')} <b>is a function</b>.`,
+        run: (c) => stampIn(c, stamp(stage, bad ? 'Not a function' : 'Function', { ok: !bad, x: X[0] + pw / 2, y: Y[0] + ph - 50, rotate: -4, cls: 'u5l5-midstamp' })) }
+    ];
+  }
+};
+
+/* ======================= Example 3 check ======================= */
+const E3 = {
+  a: [[7, 3], [5, 7], [-2, 9], [0, 3], [5, 4]],
+  b: [[4, 4], [1, 3], [6, 9], [-5, 4]]
+};
+const CAR = '<svg class="u5l5-car" viewBox="0 0 64 32"><path d="M4 22v-6l8-2 8-8h20l10 8 9 2v6z" fill="#e05a4c" stroke="#1e2d46" stroke-width="2" stroke-linejoin="round"/><path d="M22 8h8v7H15zM34 8h5l7 7H34z" fill="#e8f0fc" stroke="#1e2d46" stroke-width="1.5"/><circle cx="17" cy="23" r="5" fill="#1e2d46"/><circle cx="48" cy="23" r="5" fill="#1e2d46"/></svg>';
+const CARS = ['red', 'blue', 'green'], PLATES = ['CXK 4471', 'BTR 2096', 'DMW 5813'];
+const carItem = (i) => `<span class="u5l5-cari" data-c="${i}">${CAR.replace('#e05a4c', ['#e05a4c', '#3b78d8', '#2e9b64'][i])}</span>`;
+const plateItem = (i) => `<span class="u5l5-plate">${PLATES[i]}</span>`;
+const sixForms = {
+  title: 'Example 3 check: one test, six forms',
+  height: 440,
+  minW: 940, // drawn this wide and scaled to fit beside the sidebar
+  value: 'a',
+  choices: [{ sep: 'Example 3 check:' }, ...['a', 'b', 'c', 'd', 'e', 'f'].map((k) => ({ v: k, label: `(${k})` }))],
+  intro: (k) => ({ a: 'Part (a): a list of ordered pairs.', b: 'Part (b): a list of ordered pairs.', c: 'Part (c): an arrow diagram.', d: 'Part (d): a graph of points.', e: 'Part (e): a description in words.', f: 'Part (f): a closed curve.' }[k]) + ' Press <b>Next</b>.',
+  make(stage, k, ex) {
+    const W = ex.W, lw = 520, P = panel(stage, lw + 20, 8, W - lw - 30, 424, 'The test'), pw = W - lw - 30;
+    const verdict = (ok) => (c) => stampIn(c, stamp(P, ok ? 'Function' : 'Not a function', { ok, x: pw / 2, y: 376, size: 'lg', rotate: -4 }));
+    if (k === 'a' || k === 'b') {
+      const pairs = E3[k], sorted = pairs.map((p, i) => [p, i]).sort((u, v) => u[0][0] - v[0][0]);
+      const top = add(stage, h('div', 'u5l5-rowlab', 'As given'), 14, 20), bot = add(stage, h('div', 'u5l5-rowlab', 'Sorted by first coordinate'), 14, 170);
+      void top; bot.style.opacity = 0;
+      const cw = 100, X0 = 14;
+      pairs.forEach((p, i) => add(stage, chip(T(pairTex(p[0], p[1]))), X0 + i * cw, 56));
+      const moved = sorted.map(([p], j) => { const e = add(stage, chip(T(pairTex(p[0], p[1]))), X0 + j * cw, 206); e.style.opacity = 0; return e; });
+      const xs = pairs.map((p) => p[0]), rep = (x) => xs.filter((v) => v === x).length > 1, bad = xs.some(rep);
+      const outs = pairs.map((p) => p[1]), repOut = (y) => outs.filter((v) => v === y).length > 1;
+      const L1 = line(P, `Inputs: ${xs.map((x) => T(x)).join(', ')}`); L1.style.opacity = 0;
+      const badX = xs.find(rep), dupY = outs.find(repOut);
+      const steps = [
+        { cap: 'The inputs are the <b>first coordinates</b>. List them.', run: (c) => fadeIn(c, L1) },
+        { cap: 'Sort the pairs by first coordinate, so a repeated input sits side by side.', run: async (c) => { await fadeIn(c, bot); for (let j = 0; j < sorted.length; j++) { const i = sorted[j][1], dx = (i - j) * cw; await anim(c, moved[j], [{ opacity: 0, transform: `translate(${dx}px, -150px)` }, { opacity: 1, transform: 'none' }], 420); } } },
+        { cap: bad ? `${T(badX)} appears <b>twice</b>, with outputs ${T(pairs.filter((p) => p[0] === badX).map((p) => p[1]).join('\\text{ and }'))}. One input, two outputs. (The output ${T(dupY)} repeating is fine.)`
+          : `The inputs ${xs.map((x) => T(x)).join(', ')} are <b>all different</b>. The output ${T(dupY)} repeats, and that doesn’t matter.`,
+          run: async (c) => {
+            sorted.forEach(([p], j) => moved[j].classList.add(rep(p[0]) ? 'bad' : repOut(p[1]) ? 'fine' : 'good'));
+            await Promise.all(moved.map((e) => pop(c, e, 300)));
+            await fadeIn(c, line(P, bad ? `${T(badX)} has two outputs ✗` : 'every input once ✓', bad ? 'no' : 'ok'));
+            await fadeIn(c, line(P, `repeated output ${T(dupY)}: fine`, 'fine'));
+          } },
+        { cap: bad ? 'Part (a) is <b>not a function</b>.' : 'Part (b) <b>is a function</b>.', run: verdict(!bad) }
+      ];
+      return steps;
+    }
+    if (k === 'c') {
+      const M = new MappingDiagram(stage, { x: 20, y: 10, width: 480, height: 410, domain: ['D', 'E', 'F'], range: ['X', 'Y'], pairs: [['D', 'X'], ['E', 'Y'], ['F', 'Y']], tex: false });
       return [
-        { cap: `${kk('ZOOM')} and choose <b>3:Zoom Out</b>, then ${kk('ENTER')} to zoom out from the centre.`, run: async (c) => { await K.set(c, ['ZOOM', '3', 'ENTER']); await pick(c, L, 'zoom', 2); } },
-        { cap: `Each axis becomes <b>4 times</b> longer: ${T('x:[-40,\\ 40,\\ 1]')}, ${T('y:[-40,\\ 40,\\ 1]')}.`, run: async (c) => { L.hide(); setW(W4); await G.setWindow(W4, c, 1300); } },
-        { cap: `${T('x=12')} is on screen now, but the line is squeezed into the middle and Xscl = 1 makes the axes look like rulers. <b>Fast, but rarely ideal.</b>`,
-          run: async (c) => { await both(c); await stampIn(c, stamp(P, 'Rough', { ok: null, cls: 'u5l5-pstamp' })); } }
+        { cap: 'Count the arrows <b>leaving</b> each domain element: ' + T('D') + ', ' + T('E') + ', ' + T('F') + ' have one each.',
+          run: async (c) => { for (const v of ['D', 'E', 'F']) { M.highlight('d', v, true, 'u5l5-good'); await sleep(c, 200); } await fadeIn(c, line(P, 'one arrow leaves each of D, E, F ✓', 'ok')); } },
+        { cap: T('Y') + ' <b>receives</b> two arrows. That’s two inputs sharing an output: allowed.', run: async (c) => { M.highlight('r', 'Y'); await pulse(c, M.item('r', 'Y'), 1.2); await fadeIn(c, line(P, 'Y receives two: fine', 'fine')); } },
+        { cap: 'Part (c) <b>is a function</b>.', run: verdict(true) }
       ];
     }
-    const lo = f(-10), hi = f(10), WF = { ...STD, ymin: lo, ymax: hi };
+    if (k === 'd') {
+      const pts = [[1, 3], [2, 1], [4, 4], [5, 2]];
+      const G = new Graph(stage, { x: 30, y: 12, width: 470, height: 410, xmin: 0, xmax: 6, ymin: 0, ymax: 5 });
+      pts.forEach((p) => G.point(p[0], p[1], { color: 'ink', r: 7 }));
+      return [
+        { cap: 'Read the points as ordered pairs.', run: async (c) => { for (const p of pts) await fadeIn(c, line(P, T(pairTex(p[0], p[1])))); } },
+        { cap: 'Slide a vertical line across: it meets <b>at most one</b> point at a time (the ' + T('x') + '-coordinates 1, 2, 4, 5 are all different).', run: (c) => G.vlineTest(c, { points: pts, ms: 2400 }) },
+        { cap: 'Part (d) <b>is a function</b>.', run: verdict(true) }
+      ];
+    }
+    if (k === 'e') {
+      const M = new MappingDiagram(stage, { x: 10, y: 10, width: 500, height: 410, domain: [0, 1, 2].map(carItem), range: [0, 1, 2].map(plateItem), pairs: [0, 1, 2].map((i) => [carItem(i), plateItem(i)]), titles: ['Vehicle', 'Plate number'], tex: false, arrows: false });
+      return [
+        { cap: 'The domain is every vehicle registered in Alberta; the range is the licence plate numbers.', run: async (c) => { await fadeIn(c, line(P, '<b>Input:</b> a vehicle')); await fadeIn(c, line(P, '<b>Output:</b> its plate number')); } },
+        { cap: 'Each vehicle is issued <b>exactly one</b> licence plate number: one arrow leaves each vehicle.', run: async (c) => { await M.drawArrows(c, { stagger: 100 }); await fadeIn(c, line(P, 'one plate per vehicle ✓', 'ok')); } },
+        { cap: 'Part (e) <b>is a function</b>.', run: verdict(true) }
+      ];
+    }
+    // (f): the closed curve
+    const G = new Graph(stage, { x: 20, y: 12, width: 490, height: 410, xmin: -4, xmax: 4, ymin: -3, ymax: 3 });
+    G.polyline(BLOB, { closed: true, color: 'ink' });
+    const ys = crossX(BLOB, 0).sort((u, v) => v - u);
+    let res;
     return [
-      { cap: `${kk('ZOOM', '0')}: <b>0:ZoomFit</b> is at the bottom of the ZOOM menu.`, run: async (c) => { await K.set(c, ['ZOOM', '0']); await pick(c, L, 'zoom', 9); } },
-      { cap: `ZoomFit keeps x from −10 to 10 and fits y to the line: from ${T('0.75(-10)-9=' + lo)} to ${T('0.75(10)-9=' + hi)}.`,
-        run: async (c) => { L.hide(); setW(WF); await G.setWindow(WF, c, 1300); } },
-      { cap: `Now ${T('y=0')} is above ${T('Y_{\\max}')}, so the x-axis is <b>gone</b>, and ${T('x=12')} is still off to the right. ZoomFit fits <b>y only</b>.`,
-        run: async (c) => { await stampIn(c, stamp(P, 'Not here', { ok: false, cls: 'u5l5-pstamp' })); } }
+      { cap: 'A graph: slide a vertical line across.', run: async (c) => { res = await G.vlineTest(c, { hits: (x) => crossX(BLOB, x), ms: 1800 }); await fadeIn(c, line(P, 'a vertical line crosses twice ✗', 'no')); } },
+      { cap: `Example 3(f): the line ${T('x=0')} crosses the closed curve twice, near ${T('y\\approx1.4')} and ${T('y\\approx-1.7')}.`,
+        run: async (c) => {
+          res.dots.innerHTML = ''; const x1 = res.line.gx; await tween(c, 800, (t) => { res.line.set(x1 * (1 - t)); });
+          for (const y of ys) await G.reveal(G.point(0, y, { color: 'red', r: 8, label: T(y > 0 ? 'y\\approx1.4' : 'y\\approx-1.7'), pos: y > 0 ? 'ne' : 'se' }), c, 300);
+          await fadeIn(c, line(P, `the input ${T('0')} has two outputs`, 'no'));
+        } },
+      { cap: 'Part (f) is <b>not a function</b>.', run: verdict(false) }
     ];
   }
 };
 
-/* ======================================================================
-   5. table — TBLSET and TABLE, Ask mode, and the G-T split screen
-   ====================================================================== */
-const table = {
-  title: 'The table of values for y = 0.75x − 9',
-  height: 440,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: 'tbl', label: 'TBLSET & TABLE' }, { v: 'ask', label: 'Ask mode: x = 500' }, { v: 'gt', label: 'G-T split screen' }],
-  intro: (k) => ({ tbl: 'Set up the table, then read it.', ask: 'One far-away input, typed straight in.', gt: 'The graph and the table side by side.' }[k] + ' Press <b>Next</b>.'),
-  make(stage, k, ex) {
-    const f = REL.run.f, rowsFrom = (a, n = 7) => Array.from({ length: n }, (_, i) => [a + i, f(a + i)]);
-    if (k === 'gt') return gtSteps(stage, ex, f, rowsFrom);
-    const { G, L, K, P } = rig(stage, ex, STD, { px: 610 });
-    G.fn(f);
-    if (k === 'tbl') {
-      const diffs = [];
-      const rowY = (i) => 26 + 8 + 38 + 36 * i; // top of row i on the stage (see .u5l5-tg)
-      return [
-        { cap: `${kk('2nd', 'WINDOW')} opens TBLSET. <b>TblStart = −3</b> is the first x; <b>ΔTbl = 1</b> is the step from one x to the next.`,
-          run: async (c) => { await K.set(c, ['2nd', 'WINDOW']); L.show(tblset(-3, 1)); await pulse(c, L.ln(1), 1.06); await pulse(c, L.ln(2), 1.06); } },
-        { cap: `${kk('2nd', 'GRAPH')} shows the TABLE: each x from −3 up, with its output y.`,
-          run: async (c) => { await K.set(c, ['2nd', 'GRAPH']); const rows = rowsFrom(-3); for (let i = 0; i <= 7; i++) { L.html(tableHTML(rows.map((r, j) => (j < i ? r : [r[0], ''])), { bottom: 'X=-3', hl: 0 }), 'u5l5-tbl'); await sleep(c, 170); } } },
-        { cap: `Each step of <b>+1</b> in x adds <b>+0.75</b> to y: the line rises 0.75 for every unit across.`,
-          run: async (c) => { for (let i = 0; i < 6; i++) { const d = add(stage, h('div', 'u5l5-diff', '+0.75'), 540, rowY(i + 1) - 13); diffs.push(d); await pop(c, d, 200); } } },
-        { cap: `${kk('▼')} scrolls down: the next row is x = 4, y = −6.`,
-          run: async (c) => { await K.set(c, ['▼', '▼', '▼', '▼', '▼', '▼', '▼']); diffs.forEach((d) => d.remove()); L.html(tableHTML(rowsFrom(-2), { bottom: 'X=4', hl: 6 }), 'u5l5-tbl'); } },
-        { cap: `Check that row: ${TW('y=0.75(4)-9=3-9=-6')} ✓`,
-          run: async (c) => { await line(c, P, T('y=0.75(4)-9')); await line(c, P, T('=3-9')); await line(c, P, T('=-6') + ' ✓', 'u5l5-big'); } }
-      ];
-    }
-    // Ask mode
-    return [
-      { cap: `In TBLSET (${kk('2nd', 'WINDOW')}), go down to <b>Indpnt</b> and choose <b>Ask</b>, ${kk('ENTER')}.`,
-        run: async (c) => { await K.set(c, ['2nd', 'WINDOW', '▼', '▼', '▼', '▶', 'ENTER']); L.show(tblset(-3, 1, false)); await sleep(c, 450); L.show(tblset(-3, 1, true)); await pulse(c, L.ln(3).querySelector('.u5l5-inv'), 1.3); } },
-      { cap: `${kk('2nd', 'GRAPH')}: the table starts <b>empty</b>, waiting for an x.`,
-        run: async (c) => { await K.set(c, ['2nd', 'GRAPH']); L.html(tableHTML([], { bottom: 'X=' }), 'u5l5-tbl'); } },
-      { cap: `Type ${kk('5', '0', '0')} ${kk('ENTER')}: y = <b>366</b>. Any x works, inside the window or not.`,
-        run: async (c) => {
-          let s = ''; await typeKeys(c, K, ['5', '0', '0'], (k2) => { s += k2; L.html(tableHTML([], { bottom: 'X=' + s }), 'u5l5-tbl'); });
-          await K.set(c, ['ENTER'], true); L.html(tableHTML([[500, f(500)]], { bottom: 'Y1=366', hl: 0 }), 'u5l5-tbl');
-        } },
-      { cap: `Check: ${TW('y=0.75(500)-9=375-9=366')} ✓`,
-        run: async (c) => { await line(c, P, T('y=0.75(500)-9')); await line(c, P, T('=375-9')); await line(c, P, T('=366') + ' ✓', 'u5l5-big'); } },
-      { cap: `Type more inputs, in any order: ${T('x=-200')} gives ${T('y=-159')}.`,
-        run: async (c) => { let s = ''; await typeKeys(c, K, ['(−)', '2', '0', '0', 'ENTER'], (k2) => { if (k2 !== 'ENTER') { s += k2 === '(−)' ? '−' : k2; L.html(tableHTML([[500, f(500)]], { bottom: 'X=' + s }), 'u5l5-tbl'); } }); L.html(tableHTML([[500, f(500)], [-200, f(-200)]], { bottom: 'Y1=-159', hl: 1 }), 'u5l5-tbl'); } }
-    ];
-  }
-};
-function gtSteps(stage, ex, f, rowsFrom) {
-  const wrap = add(stage, box(h('div', 'u5l5-split'), 520, 330), 26, 26);
-  const G = new Calc(wrap, { x: 0, y: 0, width: 314, height: 330, ...STD, cls: 'u5l5-flat' });
-  const tb = add(wrap, box(h('div', 'u5l5-lcd u5l5-tbl u5l5-side'), 206, 330), 314, 0);
-  const L = lcd(wrap), H = hud(G), K = new Keys(stage, 16, 380, 530), P = panel(stage, 572, 14, ex.W - 586, ex.def.height - 28, 'What you see');
-  tb.style.display = 'none';
-  let tr, start = -3;
-  const showT = (hlX) => { tb.innerHTML = tableHTML(rowsFrom(start), { hl: hlX - start, bottom: 'X=' + calcNum(hlX) }); };
-  return [
-    { cap: `${kk('MODE')}, ${kk('▼')} to the last line, choose <b>G-T</b> (graph–table), ${kk('ENTER')}.`,
-      run: async (c) => { await K.set(c, ['MODE', '▼', '▶', '▶', 'ENTER']); L.show(modeLines()); await sleep(c, 400); L.show(modeLines({ 7: 2 })); await pulse(c, L.ln(7).querySelector('.u5l5-inv'), 1.3); } },
-    { cap: `${kk('GRAPH')}: the screen splits. Graph on the left, table on the right (TblStart = −3, ΔTbl = 1).`,
-      run: async (c) => { await K.set(c, ['GRAPH']); L.hide(); tb.style.display = ''; tb.innerHTML = tableHTML(rowsFrom(-3), {}); await G.drawIn(G.fn(f), 800, c); await line(c, P, 'Graph and table of the <b>same</b> relation, at the same time.'); } },
-    { cap: `${kk('TRACE')}: the cursor sits on the line at x = 0, and the table highlights the <b>same</b> point.`,
-      run: async (c) => { await K.set(c, ['TRACE']); H.eq('Y1=0.75X-9'); tr = cursor(G, H, f, 0, ''); tr.quiet = true; H.bot(null); showT(0); await pop(c, tr.el); await line(c, P, T('x=0\\ \\rightarrow\\ y=-9')); } },
-    { cap: `${kk('▶')} ${kk('▶')} ${kk('▶')}: the cursor walks along the line and the table follows, to x = 3, y = −6.75.`,
-      run: async (c) => { await K.set(c, ['▶', '▶', '▶']); for (let x = 1; x <= 3; x++) { await tr.glide(c, x, 380); H.bot(null); showT(x); await sleep(c, 200); } await line(c, P, T('x=3\\ \\rightarrow\\ y=-6.75')); } },
-    { cap: `${kk('▶')} once more: the table <b>scrolls</b> to keep up: x = 4, y = −6.`,
-      run: async (c) => { await K.set(c, ['▶']); await tr.glide(c, 4, 380); H.bot(null); start = -2; showT(4); await line(c, P, T('x=4\\ \\rightarrow\\ y=-6')); } }
-  ];
+/* ======================= static figures ======================= */
+function mountFigures() {
+  const F = {
+    mapI: (el) => new MappingDiagram(el, { width: 330, height: 230, domain: D, range: R, pairs: relPairs('mult') }),
+    mapII: (el) => new MappingDiagram(el, { width: 330, height: 230, domain: D, range: R, pairs: relPairs('cube') }),
+    grI: (el) => { const G = catGraph(el, { width: 300, height: 230, xs: D.map(String), ys: R.map(String), xtitle: '\\text{domain}', ytitle: '\\text{range}', pad: [24, 24, 38, 34], grid: false }); relPairs('mult').forEach((p) => G.point(D.indexOf(p[0]) + 1, p[1], { color: 'ink', r: 6 })); },
+    grII: (el) => { const G = catGraph(el, { width: 300, height: 230, xs: D.map(String), ys: R.map(String), xtitle: '\\text{domain}', ytitle: '\\text{range}', pad: [24, 24, 38, 34], grid: false }); relPairs('cube').forEach((p) => G.point(D.indexOf(p[0]) + 1, p[1], { color: 'ink', r: 6 })); },
+    A: (el) => EX2.A.draw(ex2Graph(el, 226, { fontSize: 15 }), { color: 'ink' }),
+    B: (el) => EX2.B.draw(ex2Graph(el, 226, { fontSize: 15 }), { color: 'ink' }),
+    C: (el) => EX2.C.draw(ex2Graph(el, 226, { fontSize: 15 }), { color: 'ink' }),
+    D: (el) => EX2.D.draw(ex2Graph(el, 226, { fontSize: 15 }), { color: 'ink' }),
+    Cans: (el) => { const G = ex2Graph(el, 200, { fontSize: 14 }); EX2.C.draw(G, { color: 'ink', width: 3 }); G.vline(0, { color: 'red' }); [3, -3].forEach((y) => G.point(0, y, { color: 'red', r: 6 })); },
+    Dans: (el) => { const G = ex2Graph(el, 200, { fontSize: 14 }); EX2.D.draw(G, { color: 'ink', width: 3 }); G.vline(1.6, { color: 'red' }); [2, -2].forEach((y) => G.point(1.6, y, { color: 'red', r: 6 })); },
+    Aans: (el) => { const G = ex2Graph(el, 190, { fontSize: 14 }); EX2.A.draw(G, { color: 'ink', width: 3 }); [1, -1, 2].forEach((x) => G.vline(x, { color: 'red', width: 2 })); },
+    Bans: (el) => { const G = ex2Graph(el, 190, { fontSize: 14 }); EX2.B.draw(G, { color: 'ink', width: 3 }); [1.5, -2].forEach((x) => G.vline(x, { color: 'red', width: 2 })); },
+    map3c: (el) => new MappingDiagram(el, { width: 300, height: 190, domain: ['D', 'E', 'F'], range: ['X', 'Y'], pairs: [['D', 'X'], ['E', 'Y'], ['F', 'Y']], tex: false, titles: null, color: COLORS.ink }),
+    gr3d: (el) => { const G = new Graph(el, { width: 300, height: 230, xmin: 0, xmax: 6, ymin: 0, ymax: 5, fontSize: 15 }); [[1, 3], [2, 1], [4, 4], [5, 2]].forEach((p) => G.point(p[0], p[1], { color: 'ink', r: 6 })); },
+    gr3f: (el) => { const G = new Graph(el, { width: 300, height: 230, xmin: -4, xmax: 4, ymin: -3, ymax: 3, fontSize: 15 }); G.polyline(BLOB, { closed: true, color: 'ink', width: 3 }); },
+    gr3fans: (el) => { const G = new Graph(el, { width: 220, height: 170, xmin: -4, xmax: 4, ymin: -3, ymax: 3, fontSize: 13, numbers: false }); G.polyline(BLOB, { closed: true, color: 'ink', width: 3 }); G.vline(0, { color: 'red' }); crossX(BLOB, 0).forEach((y) => G.point(0, y, { color: 'red', r: 6 })); }
+  };
+  document.querySelectorAll('[data-fig]').forEach((el) => { const f = F[el.dataset.fig]; if (f && !el.dataset.done) { el.dataset.done = '1'; f(el); } });
 }
 
-/* ======================================================================
-   6. trace — an output from an input
-   ====================================================================== */
-const traceEx = {
-  title: 'TRACE: type the x, read the y',
-  height: 440,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: 'run', label: T('y=0.75x-9,\\ x=4') }, { v: 'ex1', label: 'Example 1 check: ' + T('x=4.2') }],
-  intro: (k) => (k === 'run' ? `Find ${T('y')} when ${T('x=4')} for ${T('y=0.75x-9')}.` : `Example 1(b): ${T('y')} when ${T('x=4.2')} for ${T('y=4x-30')}.`) + ' Press <b>Next</b>.',
-  make(stage, k, ex) {
-    const R = k === 'run' ? REL.run : REL.ex1, win = R.win || STD, x0 = k === 'run' ? 4 : 4.2, y0 = R.f(x0);
-    const { G, L, H, K, P } = rig(stage, ex, win);
-    const span = win.xmax - win.xmin, mid = (win.xmin + win.xmax) / 2, ys = calcNum(y0);
-    let tr;
-    const sub = k === 'run' ? ['y=0.75(4)-9', '=3-9', '=-6'] : ['y=4(4.2)-30', '=16.8-30', '=-13.2'];
-    return [
-      { cap: `Graph ${T(R.t)} in the window ${T(wTex(win))}.`, run: async (c) => { await G.drawIn(G.fn(R.f), 800, c); } },
-      { cap: `${kk('TRACE')}: a cursor appears on the graph in the <b>middle</b> of the screen, x = ${M(calcNum(mid))}, with its coordinates at the bottom.`,
-        run: async (c) => { await K.set(c, ['TRACE']); H.eq('Y1=' + R.y1); tr = cursor(G, H, R.f, mid, ''); await pop(c, tr.el); } },
-      { cap: `${kk('▶')} moves one <b>pixel</b>: x jumps by ${T(span + '\\div 94\\approx' + (span / 94).toFixed(3))}. The arrows never land exactly on ${T('x=' + x0)}.`,
-        run: async (c) => { await K.set(c, ['▶', '▶', '▶']); await tr.steps(c, 3, 420); } },
-      { cap: `Instead, just <b>type</b> the input: ${kk(...String(x0).split(''))}. The bottom line shows X=${x0}.`,
-        run: async (c) => { let s = ''; await typeKeys(c, K, String(x0).split(''), (ch) => { s += ch; H.bot('', null, `<i>X=${s}</i>`); }); } },
-      { cap: `${kk('ENTER')}: the cursor jumps to x = ${x0}. Read the output: <b>Y = ${M(ys)}</b>.`,
-        run: async (c) => { await K.set(c, ['ENTER']); H.bot(null); await tr.glide(c, x0, 700); tr.show(); await pulse(c, H.el, 1.12); } },
-      { cap: `Check algebraically: ${TW(sub.join(''))} ✓`,
-        run: async (c) => { for (const s of sub) await line(c, P, T(s), s === sub[2] ? 'u5l5-big' : ''); await stampIn(c, stamp(P, '✓ Matches', { ok: true, cls: 'u5l5-pstamp' })); } }
-    ];
+/* ======================= warm-up: the class of 30 ======================= */
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], MDAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+const dayName = (n) => { let m = 0; while (n >= MDAYS[m]) { n -= MDAYS[m]; m++; } return MONTHS[m] + ' ' + (n + 1); };
+function mountWarmup() {
+  const map = document.getElementById('wu-map');
+  const mw = map ? Math.min(400, (map.clientWidth || 408) - 8) : 400; // CSS sets the box width (smaller on one-screen pages)
+  if (map) new MappingDiagram(map, { width: mw, height: Math.round(mw * 330 / 400), domain: PEOPLE, range: DATES, pairs: PEOPLE.map((p, i) => [p, DATES[BDAY[i]]]), titles: ['Person', 'Birthday'], tex: false, color: COLORS.red });
+  const svg = document.getElementById('wu-faces'), out = document.getElementById('wu-out'); if (!svg || !out) return;
+  const HATS = ['#5a96d2', '#3ca05a', '#965ab4', '#e68228'], faces = [];
+  for (let r = 0; r < 3; r++) for (let cI = 0; cI < 10; cI++) {
+    const i = r * 10 + cI, x = 26 + cI * 52, y = 56 + r * 80, g = svgEl('g', { class: 'u5l5-face' }, svg);
+    svgEl('circle', { cx: x, cy: y, r: 23, class: 'u5l5-ring', fill: 'none' }, g);
+    svgEl('circle', { cx: x, cy: y, r: 17, fill: '#ffecb3', stroke: '#1e2d46', 'stroke-width': 1.6 }, g);
+    svgEl('path', { d: `M${x - 12} ${y - 12}L${x + 12} ${y - 12}L${x + 1} ${y - 42}Z`, fill: HATS[(i + r) % 4], stroke: '#1e2d46', 'stroke-width': 1.5, 'stroke-linejoin': 'round' }, g);
+    svgEl('circle', { cx: x + 1, cy: y - 43, r: 3.6, fill: '#d23c32' }, g);
+    svgEl('circle', { cx: x - 6, cy: y - 2, r: 2, fill: '#1e2d46' }, g); svgEl('circle', { cx: x + 6, cy: y - 2, r: 2, fill: '#1e2d46' }, g);
+    svgEl('path', { d: `M${x - 7} ${y + 5}Q${x} ${y + 11} ${x + 7} ${y + 5}`, fill: 'none', stroke: '#1e2d46', 'stroke-width': 1.6, 'stroke-linecap': 'round' }, g);
+    const tag = svgEl('text', { x, y: y + 33, 'text-anchor': 'middle', class: 'u5l5-ftag' }, g);
+    faces.push({ g, tag });
   }
-};
-
-/* ======================================================================
-   7. intersect — an input from an output
-   ====================================================================== */
-const intersectEx = {
-  title: '5:intersect: set Y2 to the output, find the input',
-  height: 440,
-  minW: 780, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: 'run', label: T('y=0.75x-9,\\ y=-3') }, { v: 'ex1', label: 'Example 1 check: ' + T('y=-5.4') }],
-  intro: (k) => (k === 'run' ? `Find ${T('x')} when ${T('y=-3')} for ${T('y=0.75x-9')}.` : `Example 1(d): ${T('x')} when ${T('y=-5.4')} for ${T('y=4x-30')}.`) + ' Press <b>Next</b>.',
-  make(stage, k, ex) {
-    const R = k === 'run' ? REL.run : REL.ex1, win = R.win || STD, yT = k === 'run' ? -3 : -5.4, g = () => yT;
-    const { G, L, H, K, P } = rig(stage, ex, win), mid = G.mid;
-    const it = G.intersect(R.f, g, mid), xg = snap(G, it.x + 3 * G.dx);
-    const alg = k === 'run' ? ['-3=0.75x-9', '6=0.75x', 'x=8'] : ['-5.4=4x-30', '24.6=4x', 'x=6.15'];
-    let tr;
-    const y2 = M(String(yT));
-    return [
-      { cap: `${kk('Y=')}: the relation in <b>Y1</b>, the given output in <b>Y2 = ${y2}</b>.`,
-        run: async (c) => { await K.set(c, ['Y=']); L.show(yEditor([R.y1, String(yT)])); await pulse(c, L.ln(2), 1.08); } },
-      { cap: `${kk('GRAPH')}: the relation, and Y2 as a horizontal line at ${T('y=' + yT)}.`,
-        run: async (c) => { await K.set(c, ['GRAPH']); L.hide(); await G.drawIn(G.fn(R.f), 700, c); await G.drawIn(G.fn(g, { color: 'red' }), 600, c); } },
-      { cap: `${kk('2nd', 'TRACE')} opens CALC; choose <b>5:intersect</b>.`, run: async (c) => { await K.set(c, ['2nd', 'TRACE', '5']); await pick(c, L, 'calc', 4); L.hide(); } },
-      { cap: `<b>First curve?</b> The cursor is on Y1: ${kk('ENTER')}.`,
-        run: async (c) => { await K.set(c, ['ENTER']); H.eq('Y1=' + R.y1); tr = cursor(G, H, R.f, mid, 'First curve?'); await pop(c, tr.el); } },
-      { cap: `<b>Second curve?</b> It jumps to Y2: ${kk('ENTER')}.`,
-        run: async (c) => { await K.set(c, ['ENTER']); tr.remove(); H.eq('Y2=' + yT); tr = cursor(G, H, g, mid, 'Second curve?'); await pop(c, tr.el); } },
-      { cap: `<b>Guess?</b> Move close to the crossing (${kk('▶')}), then ${kk('ENTER')}.`,
-        run: async (c) => { await K.set(c, ['▶', '▶', '▶', 'ENTER']); tr.title = 'Guess?'; await tr.glide(c, xg, 1000); } },
-      { cap: `<b>Intersection</b> X = ${M(calcNum(it.x))}, Y = ${y2}. So ${T('x=' + texNum(it.x))} when ${T('y=' + yT)}.`,
-        run: async (c) => { tr.remove(); await G.reveal(G.point(it.x, it.y, { color: 'ink', r: 7, label: T(`(${texNum(it.x)},\\ ${yT})`), pos: 'se' }), c); H.bot('Intersection', it); await pulse(c, H.el, 1.12); } },
-      { cap: `Check algebraically: ${TW(alg.join('\\ \\Rightarrow\\ '))} ✓`,
-        run: async (c) => { for (const s of alg) await line(c, P, T(s), s === alg[2] ? 'u5l5-big' : ''); await stampIn(c, stamp(P, '✓ Matches', { ok: true, cls: 'u5l5-pstamp' })); } }
-    ];
-  }
-};
-
-/* ======================================================================
-   8. inside — stay inside the window
-   ====================================================================== */
-const inside = {
-  title: 'Stay inside the window',
-  height: 440,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: 'tr', label: 'TRACE ' + T('x=15') }, { v: 'val', label: '1:value ' + T('x=500') }, { v: 'int', label: 'intersect ' + T('y=3') }],
-  intro: (k) => ({ tr: `${T('y=0.75x-9')} in the standard window. Find ${T('y')} when ${T('x=15')}.`, val: `Find ${T('y')} when ${T('x=500')} with 1:value.`, int: `Find ${T('x')} when ${T('y=3')}.` }[k] + ' Press <b>Next</b>.'),
-  make(stage, k, ex) {
-    const { G, L, H, K, P } = rig(stage, ex, STD), f = REL.run.f;
-    G.fn(f);
-    const err = async (c) => { L.show(errLines, 'u5l5-err'); await shake(c, L.el); await line(c, P, '<b class="red">ERR:INVALID</b>: x is outside the window.'); };
-    let tr;
-    if (k === 'tr') return [
-      { cap: `${kk('TRACE')}, then type ${kk('1', '5')}. But ${T('X_{\\max}=10')}…`,
-        run: async (c) => { H.eq('Y1=0.75X-9'); tr = cursor(G, H, f, 0, ''); let s = ''; await typeKeys(c, K, ['TRACE', '1', '5'], (ch) => { if (ch !== 'TRACE') { s += ch; H.bot('', null, `<i>X=${s}</i>`); } }); } },
-      { cap: `${kk('ENTER')}: <b>ERR:INVALID</b>. ${T('x=15')} is outside the window, so trace refuses it.`, run: async (c) => { await K.set(c, ['ENTER']); await err(c); } },
-      { cap: `Fix: <b>widen the window</b>. ${kk('WINDOW')}: ${T('x:[-5,\\ 20,\\ 5]')}, ${T('y:[-15,\\ 10,\\ 5]')}, then ${kk('GRAPH')}.`,
-        run: async (c) => { await K.set(c, ['ENTER', 'WINDOW', 'GRAPH']); L.show(winLines(WIDE)); await sleep(c, 500); L.hide(); tr.remove(); H.eq(null); H.bot(null); await G.setWindow(WIDE, c, 1200); } },
-      { cap: `${kk('TRACE')} ${kk('1', '5')} ${kk('ENTER')} works now: <b>Y = 2.25</b>.`,
-        run: async (c) => { await K.set(c, ['TRACE', '1', '5', 'ENTER']); H.eq('Y1=0.75X-9'); tr = cursor(G, H, f, G.mid, ''); await tr.glide(c, 15, 800); await pulse(c, H.el, 1.12); } },
-      { cap: `Check: ${TW('y=0.75(15)-9=11.25-9=2.25')} ✓`,
-        run: async (c) => { await line(c, P, T('y=0.75(15)-9')); await line(c, P, T('=11.25-9=2.25') + ' ✓', 'u5l5-big'); } }
-    ];
-    if (k === 'val') return [
-      { cap: `${kk('2nd', 'TRACE')}, <b>1:value</b>, then type ${kk('5', '0', '0')}.`,
-        run: async (c) => { await K.set(c, ['2nd', 'TRACE', '1']); await pick(c, L, 'calc', 0); L.hide(); H.eq('Y1=0.75X-9'); let s = ''; await typeKeys(c, K, ['5', '0', '0'], (ch) => { s += ch; H.bot('', null, `<i>X=${s}</i>`); }); } },
-      { cap: `${kk('ENTER')}: <b>ERR:INVALID</b>. And a window wide enough to reach 500 would squash the whole graph.`, run: async (c) => { await K.set(c, ['ENTER']); H.bot(null); H.eq(null); await err(c); } },
-      { cap: `Better: the <b>table in Ask mode</b>. ${kk('2nd', 'GRAPH')}, type ${kk('5', '0', '0')} ${kk('ENTER')}: <b>y = 366</b>.`,
-        run: async (c) => { await K.set(c, ['2nd', 'GRAPH', '5', '0', '0', 'ENTER']); L.html(tableHTML([[500, f(500)]], { bottom: 'Y1=366', hl: 0 }), 'u5l5-tbl'); await line(c, P, 'The table works for <b>any</b> input.'); } },
-      { cap: `Check: ${TW('y=0.75(500)-9=375-9=366')} ✓`, run: async (c) => { await line(c, P, T('0.75(500)-9=366') + ' ✓', 'u5l5-big'); } }
-    ];
-    const g = () => 3, it = intersect(f, g, 10); let off;
-    return [
-      { cap: `${kk('Y=')}: Y2 = 3. ${kk('GRAPH')}: the horizontal line at ${T('y=3')}.`,
-        run: async (c) => { await K.set(c, ['Y=', '3', 'GRAPH']); await G.drawIn(G.fn(g, { color: 'red' }), 600, c); } },
-      { cap: `They don’t meet on screen: ${T('3=0.75x-9')} gives ${T('x=16')}, past ${T('X_{\\max}=10')}. The cursor <b>stops at the edge</b>, so intersect can’t reach it.`,
-        run: async (c) => {
-          await K.set(c, ['2nd', 'TRACE', '5', '▶', '▶', '▶']); H.eq('Y2=3'); tr = cursor(G, H, g, 0, 'Guess?'); await tr.glide(c, 10, 1000); await shake(c, H.el);
-          off = G.label(10, 3, 'they meet out here →', { pos: 'nw', cls: 'u5l5-off', gap: 8 }); await fadeIn(c, off);
-        } },
-      { cap: `Widen the window to ${T('x:[-5,\\ 20,\\ 5]')}, ${T('y:[-15,\\ 10,\\ 5]')}: now the crossing is visible.`,
-        run: async (c) => { await K.set(c, ['WINDOW', 'GRAPH']); tr.remove(); if (off) off.remove(); H.eq(null); H.bot(null); await G.setWindow(WIDE, c, 1200); } },
-      { cap: `<b>5:intersect</b> (First curve?, Second curve?, Guess?) finds <b>(16, 3)</b>: ${T('x=16')} when ${T('y=3')}.`,
-        run: async (c) => { await K.set(c, ['2nd', 'TRACE', '5', 'ENTER', 'ENTER', 'ENTER']); await G.reveal(G.point(it.x, it.y, { color: 'ink', r: 7, label: T('(16,\\ 3)'), pos: 'nw' }), c); H.bot('Intersection', it); } },
-      { cap: `Check: ${TW('3=0.75x-9\\ \\Rightarrow\\ 12=0.75x\\ \\Rightarrow\\ x=16')} ✓`,
-        run: async (c) => { await line(c, P, T('3=0.75x-9')); await line(c, P, T('12=0.75x')); await line(c, P, T('x=16') + ' ✓', 'u5l5-big'); } }
-    ];
-  }
-};
-
-/* ======================================================================
-   9. zero — x-intercepts
-   ====================================================================== */
-const ZERO = {
-  run: { R: REL.run, win: WIDE, alg: ['0.75x-9=0', '0.75x=9', 'x=12'] },
-  ex2a: { R: REL.ex2a, win: STD, alg: ['\\tfrac{7x+21}{3}=0', '7x+21=0', 'x=-3'] },
-  ex2b: { R: REL.ex2b, win: STD, alg: ['-x^2+2x+8=0', 'x^2-2x-8=0', '(x-4)(x+2)=0', 'x=4\\ \\text{or}\\ x=-2'] }
-};
-const zeroEx = {
-  title: '2:zero finds the x-intercepts',
-  height: 450,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: 'run', label: T('y=0.75x-9') }, { v: 'ex2a', label: 'Example 2(a) check' }, { v: 'ex2b', label: 'Example 2(b) check' }],
-  intro: (k) => `Find the x-intercept${k === 'ex2b' ? 's' : ''} of ${T(ZERO[k].R.t)}. Press <b>Next</b>.`,
-  make(stage, k, ex) {
-    const Z = ZERO[k], R = Z.R, { G, L, H, K, P } = rig(stage, ex, Z.win);
-    const span = Z.win.xmax - Z.win.xmin, d = snap(G, G.mid + (k === 'ex2b' ? 0.05 : 0.1) * span) - G.mid;
-    const zs = k === 'ex2b' ? [G.zero(R.f, -5, 1), G.zero(R.f, 1, 7)] : [G.zero(R.f, Z.win.xmin, Z.win.xmax)];
-    let tr; const bl = [];
-    const steps = [
-      { cap: `Graph ${T(R.t)} in ${T(wTex(Z.win))}.`, run: async (c) => { await G.drawIn(G.fn(R.f), 800, c); } },
-      { cap: `${kk('2nd', 'TRACE')} opens CALC; choose <b>2:zero</b>.`, run: async (c) => { await K.set(c, ['2nd', 'TRACE', '2']); await pick(c, L, 'calc', 1); L.hide(); } }
-    ];
-    zs.forEach((z, i) => {
-      const lb = snap(G, z - d), rb = snap(G, z + d), gs = snap(G, z + G.dx * 2);
-      const pre = i ? 'The other crossing: <b>2:zero</b> again. ' : '';
-      if (!i) {
-        steps.push(
-          { cap: `<b>Left Bound?</b> Move the cursor to the <b>left</b> of the crossing, ${kk('ENTER')}. A ▸ marks the bound.`,
-            run: async (c) => { await K.set(c, ['◀', '◀', 'ENTER']); H.eq('Y1=' + R.y1); tr = cursor(G, H, R.f, G.mid, 'Left Bound?'); await pop(c, tr.el); await tr.glide(c, lb, 900); bl.push(bound(G, lb, 1)); await pop(c, bl[bl.length - 1]); } },
-          { cap: `<b>Right Bound?</b> Move to the <b>right</b> of the crossing, ${kk('ENTER')}: ◂.`,
-            run: async (c) => { await K.set(c, ['▶', '▶', 'ENTER']); tr.title = 'Right Bound?'; await tr.glide(c, rb, 900); bl.push(bound(G, rb, -1)); await pop(c, bl[bl.length - 1]); } },
-          { cap: `<b>Guess?</b> Close to the crossing, ${kk('ENTER')}.`,
-            run: async (c) => { await K.set(c, ['◀', 'ENTER']); tr.title = 'Guess?'; await tr.glide(c, gs, 700); } });
-      } else {
-        steps.push({ cap: `${pre}<b>Left Bound?</b> and <b>Right Bound?</b> on either side of it, then <b>Guess?</b>`,
-          run: async (c) => {
-            await K.set(c, ['2nd', 'TRACE', '2', 'ENTER', 'ENTER', 'ENTER']); bl.forEach((b) => b.remove());
-            tr = cursor(G, H, R.f, zs[0], 'Left Bound?'); await tr.glide(c, lb, 700); bl.push(bound(G, lb, 1)); await pop(c, bl[bl.length - 1]);
-            tr.title = 'Right Bound?'; await tr.glide(c, rb, 700); bl.push(bound(G, rb, -1)); await pop(c, bl[bl.length - 1]);
-            tr.title = 'Guess?'; await tr.glide(c, gs, 500);
-          } });
-      }
-      steps.push({ cap: `<b>Zero</b> X = ${M(calcNum(z))}, Y = 0: the x-intercept ${T(`(${texNum(z)},\\ 0)`)}.`,
-        run: async (c) => { tr.remove(); await G.reveal(G.point(z, 0, { color: 'ink', r: 7, label: T(`(${texNum(z)},\\ 0)`), pos: z < G.mid ? 'nw' : 'ne' }), c); H.bot('Zero', { x: z, y: 0 }); await pulse(c, H.el, 1.12); } });
-    });
-    steps.push({ cap: `Check algebraically: set ${T('y=0')}. ${TW(Z.alg.join('\\ \\Rightarrow\\ '))} ✓`,
-      run: async (c) => { for (const s of Z.alg) await line(c, P, T(s), s === Z.alg[Z.alg.length - 1] ? 'u5l5-big' : ''); } });
-    steps.push({ cap: `Or: set <b>Y2 = 0</b> (that is the x-axis) and use <b>5:intersect</b>. It lands on the same point${zs.length > 1 ? 's' : ''}.`,
-      run: async (c) => { bl.forEach((b) => b.remove()); H.bot(null); H.eq('Y2=0'); await G.drawIn(G.fn(() => 0, { color: 'red', width: 4 }), 800, c); await stampIn(c, stamp(P, '✓ Same answer', { ok: true, cls: 'u5l5-pstamp' })); } });
-    return steps;
-  }
-};
-
-/* ======================================================================
-   10. yint — the y-intercept three ways
-   ====================================================================== */
-const YI = { run: REL.run, ex2a: REL.ex2a, ex2b: REL.ex2b };
-const yintEx = {
-  title: 'The y-intercept: the output when x = 0',
-  height: 440,
-  minW: 820, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: 'run', label: T('y=0.75x-9') }, { v: 'ex2a', label: 'Example 2(a) check' }, { v: 'ex2b', label: 'Example 2(b) check' }],
-  intro: (k) => `Three ways to read the y-intercept of ${T(YI[k].t)}. Press <b>Next</b>.`,
-  make(stage, k, ex) {
-    const R = YI[k], { G, L, H, K, P } = rig(stage, ex, STD, { title: 'Three ways, one answer' }), b = R.f(0), bs = texNum(b);
-    const tiles = ['Trace', 'Value', 'Table'].map((t) => { const d = h('div', 'u5l5-way', `<b>${t}</b><i class="u5l5-wv">?</i>`); P.appendChild(d); return d; });
-    const fill = async (c, i) => { tiles[i].querySelector('.u5l5-wv').innerHTML = T(`(0,\\ ${bs})`); tiles[i].classList.add('on'); await pulse(c, tiles[i], 1.05); };
-    let tr;
-    const sub = k === 'run' ? '0.75(0)-9=-9' : k === 'ex2a' ? '\\tfrac{7(0)+21}{3}=\\tfrac{21}{3}=7' : '-(0)^2+2(0)+8=8';
-    return [
-      { cap: `Graph ${T(R.t)} in the standard window.`, run: async (c) => { await G.drawIn(G.fn(R.f), 800, c); } },
-      { cap: `<b>Trace:</b> ${kk('TRACE', '0', 'ENTER')}: X = 0, Y = ${M(bs)}.`,
-        run: async (c) => { await K.set(c, ['TRACE', '0', 'ENTER']); H.eq('Y1=' + R.y1); tr = cursor(G, H, R.f, 0, ''); await pop(c, tr.el); await fill(c, 0); } },
-      { cap: `<b>Value:</b> ${kk('2nd', 'TRACE')}, <b>1:value</b>, type ${kk('0')}, ${kk('ENTER')}: the same point.`,
-        run: async (c) => {
-          await K.set(c, ['2nd', 'TRACE', '1']); tr.remove(); H.bot(null); await pick(c, L, 'calc', 0); L.hide(); H.bot('', null, '<i>X=0</i>');
-          await K.set(c, ['0', 'ENTER'], true); tr = cursor(G, H, R.f, 0, ''); await pop(c, tr.el); await fill(c, 1);
-        } },
-      { cap: `<b>Table:</b> TblStart = 0. The first row is x = 0, y = ${M(bs)}.`,
-        run: async (c) => { await K.set(c, ['2nd', 'GRAPH']); L.html(tableHTML(Array.from({ length: 7 }, (_, i) => [i, R.f(i)]), { bottom: 'X=0', hl: 0 }), 'u5l5-tbl'); await fill(c, 2); } },
-      { cap: `Three ways, one answer: the y-intercept is ${T(`(0,\\ ${bs})`)}. Check: ${TW(sub)} ✓`,
-        run: async (c) => { L.hide(); tr.remove(); H.bot(null); H.eq(null); await G.reveal(G.point(0, b, { color: 'ink', r: 7, label: T(`(0,\\ ${bs})`), pos: 'e' }), c); await line(c, P, T(sub) + ' ✓', 'u5l5-big'); } }
-    ];
-  }
-};
-
-/* ======================================================================
-   11. frac — decimal intercept to an exact fraction
-   ====================================================================== */
-const FR = {
-  ex3: { R: REL.ex3, zs: '4.3333333', xf: '13/3', yv: -1.625, ys: '-1.625', yf: '-13/8', xt: '\\tfrac{13}{3}', yt: '-\\tfrac{13}{8}', back: ['13/3', '4.333333333'], backT: '\\tfrac{13}{3}=4.333333333', backK: ['1', '3', '÷', '3', 'ENTER'] },
-  fr2: { R: REL.fr2, zs: '-3.5', xf: '-7/2', yv: 7 / 6, ys: '1.1666667', yf: '7/6', xt: '-\\tfrac{7}{2}', yt: '\\tfrac{7}{6}', back: ['-7/2', '-3.5'], backT: '-\\tfrac{7}{2}=-3.5', backK: ['(−)', '7', '÷', '2', 'ENTER'] }
-};
-const fracEx = {
-  title: 'Exact intercepts: ▸Frac on the home screen',
-  height: 450,
-  minW: 900, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: 'ex3', label: 'Example 3 check' }, { v: 'fr2', label: T('y=\\frac{2x+7}{6}') }],
-  intro: (k) => `Exact intercepts of ${T(FR[k].R.t)}. Press <b>Next</b>.`,
-  make(stage, k, ex) {
-    const F = FR[k], R = F.R, { G, L, H, K, P } = rig(stage, ex, R.win, { title: 'Exact values' });
-    const z = G.zero(R.f, R.win.xmin, R.win.xmax), home = [];
-    const showHome = () => L.html(homeHTML(home), 'u5l5-home');
-    return [
-      { cap: `Graph ${T(R.t)} in ${T(wTex(R.win))}.`, run: async (c) => { await G.drawIn(G.fn(R.f), 800, c); } },
-      { cap: `<b>2:zero</b> (Left Bound?, Right Bound?, Guess?) gives <b>X = ${M(F.zs)}</b>${k === 'ex3' ? ': a repeating decimal' : ''}.`,
-        run: async (c) => { await K.set(c, ['2nd', 'TRACE', '2', 'ENTER', 'ENTER', 'ENTER']); H.eq('Y1=' + R.y1); await G.reveal(G.point(z, 0, { color: 'ink', r: 7 }), c); H.bot('Zero', { xs: F.zs, ys: '0' }); } },
-      { cap: `${kk('2nd', 'QUIT')} (QUIT is above ${kk('MODE')}) goes to the <b>home screen</b>.`, run: async (c) => { await K.set(c, ['2nd', 'QUIT']); home.length = 0; showHome(); L.el.innerHTML += CUR; } },
-      { cap: `${kk('X,T,θ,n')} types <b>X</b>, the last x the cursor sat on. ${kk('MATH')} ${kk('ENTER')} picks <b>1:▸Frac</b>.`,
-        run: async (c) => { await K.set(c, ['X,T,θ,n', 'MATH']); home.push({ t: 'X' }); showHome(); await sleep(c, 300); await pick(c, L, 'math', 0); await K.set(c, ['ENTER'], true); home[0] = { t: 'X▸Frac' }; showHome(); } },
-      { cap: `${kk('ENTER')}: <b>${M(F.xf)}</b>, exactly.`,
-        run: async (c) => { await K.set(c, ['ENTER']); home.push({ t: F.xf, r: true }); showHome(); await pulse(c, L.ln(1), 1.15); await line(c, P, `x-intercept: ${T(`\\left(${F.xt},\\ 0\\right)`)}`, 'u5l5-big'); } },
-      { cap: `Check the conversion: divide it back out, ${T(F.backT)}${k === 'ex3' ? ', the same repeating decimal' : ''} ✓`,
-        run: async (c) => { await K.set(c, F.backK); home.push({ t: F.back[0] }, { t: F.back[1], r: true }); showHome(); } },
-      { cap: `y-intercept: <b>1:value</b> at x = 0 gives <b>Y = ${M(F.ys)}</b>.`,
-        run: async (c) => { await K.set(c, ['GRAPH', '2nd', 'TRACE', '1', '0', 'ENTER']); L.hide(); await G.reveal(G.point(0, F.yv, { color: 'ink', r: 7 }), c); H.bot('', { xs: '0', ys: F.ys }); } },
-      { cap: `${kk('2nd', 'QUIT')}, then ${kk('ALPHA', '1')} types <b>Y</b>; ${kk('MATH', 'ENTER', 'ENTER')}: <b>${M(F.yf)}</b>.`,
-        run: async (c) => { await K.set(c, ['2nd', 'QUIT', 'ALPHA', '1', 'MATH', 'ENTER', 'ENTER']); home.push({ t: 'Y▸Frac' }, { t: F.yf, r: true }); showHome(); await pulse(c, L.ln(home.length - 1), 1.15); await line(c, P, `y-intercept: ${T(`\\left(0,\\ ${F.yt}\\right)`)}`, 'u5l5-big'); } }
-    ];
-  }
-};
-
-/* ======================================================================
-   12. maxmin — the vertex
-   ====================================================================== */
-const MX = {
-  ex4: { R: REL.ex4, max: true, xs: '3.4999986', xr: 3.5, sub: ['-(3.5)^2+7(3.5)+12', '=-12.25+24.5+12', '=24.25'], near: 'x=3.4\\ \\text{and}\\ x=3.6\\ \\text{give}\\ 24.24' },
-  mn: { R: REL.mn, max: false, xs: '0.9999986', xr: 1, sub: ['(1)^2-2(1)-3', '=1-2-3', '=-4'], near: 'x=0.9\\ \\text{and}\\ x=1.1\\ \\text{give}\\ -3.99' }
-};
-const maxminEx = {
-  title: 'The vertex with 4:maximum or 3:minimum',
-  height: 450,
-  minW: 860, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: 'ex4', label: 'Example 4 check: maximum' }, { v: 'mn', label: '3:minimum ' + T('y=x^2-2x-3') }],
-  intro: (k) => `Find the ${MX[k].max ? 'maximum' : 'minimum'} point of ${T(MX[k].R.t)}. Press <b>Next</b>.`,
-  make(stage, k, ex) {
-    const X = MX[k], R = X.R, win = R.win || STD, { G, L, H, K, P } = rig(stage, ex, win);
-    const v = G.extremum(R.f, win.xmin, win.xmax, { max: X.max }), word = X.max ? 'maximum' : 'minimum', top = X.max ? 'top' : 'bottom';
-    const span = win.xmax - win.xmin, d = snap(G, G.mid + 0.13 * span) - G.mid, lb = snap(G, v.x - d), rb = snap(G, v.x + d), gs = snap(G, v.x - 2 * G.dx);
-    const ys = calcNum(R.f(X.xr)); let tr; const bl = [];
-    const steps = [
-      { cap: `Graph ${T(R.t)} in ${T(wTex(win))}. It opens <b>${X.max ? 'down' : 'up'}</b>, so its vertex is a <b>${word}</b>.`, run: async (c) => { await G.drawIn(G.fn(R.f), 900, c); } },
-      { cap: `${kk('2nd', 'TRACE')} opens CALC; choose <b>${X.max ? '4:maximum' : '3:minimum'}</b>.`, run: async (c) => { await K.set(c, ['2nd', 'TRACE', X.max ? '4' : '3']); await pick(c, L, 'calc', X.max ? 3 : 2); L.hide(); } },
-      { cap: `<b>Left Bound?</b> Left of the ${top}, ${kk('ENTER')}.`,
-        run: async (c) => { await K.set(c, ['◀', '◀', 'ENTER']); H.eq('Y1=' + R.y1); tr = cursor(G, H, R.f, G.mid, 'Left Bound?'); await pop(c, tr.el); await tr.glide(c, lb, 900); bl.push(bound(G, lb, 1)); await pop(c, bl[0]); } },
-      { cap: `<b>Right Bound?</b> Right of the ${top}, ${kk('ENTER')}.`,
-        run: async (c) => { await K.set(c, ['▶', '▶', 'ENTER']); tr.title = 'Right Bound?'; await tr.glide(c, rb, 1000); bl.push(bound(G, rb, -1)); await pop(c, bl[1]); } },
-      { cap: `<b>Guess?</b> Near the ${top}, ${kk('ENTER')}.`, run: async (c) => { await K.set(c, ['◀', 'ENTER']); tr.title = 'Guess?'; await tr.glide(c, gs, 800); } },
-      { cap: `<b>${X.max ? 'Maximum' : 'Minimum'}</b> X = ${X.xs}, Y = ${M(ys)}. The x is a hair off: the calculator <b>searches</b> for the ${top}, it doesn’t solve exactly.`,
-        run: async (c) => { tr.remove(); await G.reveal(G.point(v.x, v.y, { color: 'ink', r: 7 }), c); H.bot(X.max ? 'Maximum' : 'Minimum', { xs: X.xs, ys }); await pulse(c, H.el, 1.12); } },
-      { cap: `Round to ${T('x=' + X.xr)} and <b>check by substituting</b>: ${T('y=' + X.sub.join(''))} ✓ Nearby inputs give ${X.max ? 'less' : 'more'}: ${T(X.near)}.`,
-        run: async (c) => { await line(c, P, T('x\\approx' + X.xs + '\\ \\rightarrow\\ x=' + X.xr)); for (const s of X.sub) await line(c, P, T((s[0] === '=' ? '' : 'y=') + s)); await line(c, P, T(X.near), 'u5l5-small'); } }
-    ];
-    if (X.max) steps.push({ cap: `Exact values: on the home screen, <b>3.5 ▸Frac</b> gives <b>7/2</b> and <b>24.25 ▸Frac</b> gives <b>97/4</b>. Maximum point ${T('\\left(\\tfrac{7}{2},\\ \\tfrac{97}{4}\\right)')}.`,
-      run: async (c) => { await K.set(c, ['2nd', 'QUIT', '3', '.', '5', 'MATH', 'ENTER', 'ENTER']); L.html(homeHTML([{ t: '3.5▸Frac' }, { t: '7/2', r: true }, { t: '24.25▸Frac' }, { t: '97/4', r: true }]), 'u5l5-home'); await line(c, P, T('\\left(\\tfrac{7}{2},\\ \\tfrac{97}{4}\\right)'), 'u5l5-big'); } });
-    else steps.push({ cap: `Whole numbers already: the minimum point is ${T('(1,\\ -4)')}.`,
-      run: async (c) => { bl.forEach((b) => b.remove()); await G.reveal(G.label(1, -4, T('(1,\\ -4)'), { pos: 'e', cls: 'bk-ptlab', gap: 12 }), c); await line(c, P, T('(1,\\ -4)'), 'u5l5-big'); } });
-    return steps;
-  }
-};
-
-/* ============ warm-up: Zoom and Enhance ============ */
-function mountWarm() {
-  const q = (s) => document.querySelector(s);
-  const A = q('[data-wu="A"]'), B = q('[data-wu="B"]'), Cf = q('[data-wu="C"]'); if (!A || !B || !Cf) return;
-  const cw = parseFloat(getComputedStyle(A).getPropertyValue('--calc-w')) || 290; // CSS can shrink the screens (one-screen pages)
-  const sq = (x) => x * x, p2 = (x) => 2 ** x, size = { width: cw, height: Math.round(cw * 196 / 290) };
-  new Calc(A, { ...size, ...STD }).fn(sq);
-  new Calc(B, { ...size, xmin: 0.95, xmax: 1.05, ymin: 0.88, ymax: 1.12 }).fn(sq);
-  const C = new Calc(Cf, { ...size, ...STD });
-  C.fn(sq); C.fn(p2, { color: 'red' });
-  const winEl = q('.u5l5-wwin'), fig = Cf.closest('figure');
-  const setWin = (w) => { winEl.innerHTML = `${T(`x:[${w.xmin},\\ ${w.xmax}]`)}, ${T(`y:[${w.ymin},\\ ${w.ymax}]`)}`; fig.classList.toggle('u5l5-zo', w.xmax > 20); };
-  let marks = null;
-  const W = { out: { xmin: -40, xmax: 40, ymin: -40, ymax: 40 }, custom: { xmin: -5, xmax: 5, ymin: -5, ymax: 20, xscl: 1, yscl: 5 }, std: { ...STD } };
-  document.querySelectorAll('[data-wz]').forEach((b) => b.addEventListener('click', () => {
-    const k = b.dataset.wz;
-    if (k === 'mark') {
-      if (marks) return;
-      marks = [[-1, 'nw'], [2, 'se'], [4, 'w']].map(([g, pos]) => { const r = intersect(sq, p2, g); return C.point(r.x, r.y, { color: 'ink', r: 5, label: T(`(${texNum(r.x, 2)},\\ ${texNum(r.y, 2)})`), pos }); });
-      const c = liveCtx(); marks.forEach((m) => C.reveal(m, c)); return;
-    }
-    const w = Object.assign({ xscl: 1, yscl: 1 }, W[k]); setWin(w); C.setWindow(w, liveCtx(), 900);
+  let tries = 0, hits = 0;
+  const deal = () => { const b = Array.from({ length: 30 }, () => Math.floor(Math.random() * 365)); const seen = {}; b.forEach((d, i) => (seen[d] = (seen[d] || []).concat(i))); return { b, groups: Object.entries(seen).filter(([, v]) => v.length > 1) }; };
+  const tally = () => (tries ? `<span class="u5l5-tally">Classes tried: <b>${tries}</b> · with a match: <b>${hits}</b> (${Math.round(100 * hits / tries)}%)</span>` : '');
+  const clear = () => faces.forEach((f) => { f.g.classList.remove('hit'); f.tag.textContent = ''; });
+  document.querySelectorAll('[data-wu]').forEach((btn) => btn.addEventListener('click', () => {
+    const k = btn.dataset.wu; clear();
+    if (k === 'reset') { tries = hits = 0; out.innerHTML = 'Deal random birthdays to the class. Does anyone match?'; return; }
+    if (k === 'many') { for (let n = 0; n < 100; n++) { tries++; if (deal().groups.length) hits++; } out.innerHTML = tally(); return; }
+    const { groups } = deal(); tries++; if (groups.length) hits++;
+    groups.forEach(([d, idx], gi) => idx.forEach((i) => { faces[i].g.classList.add('hit'); faces[i].tag.textContent = String.fromCharCode(65 + gi); }));
+    out.innerHTML = (groups.length ? `<b>Match!</b> ${groups.map(([d, idx], gi) => `${String.fromCharCode(65 + gi)}: ${dayName(+d)} (${idx.length} people)`).join(' · ')}` : '<b>No match</b> this time.') + '<br>' + tally();
   }));
 }
 
-/* ============ static figures in the examples ============ */
-function mountFigures() {
-  const fig = (k) => document.querySelector(`[data-fig="${k}"]`);
-  const pt = (G, x, y, lab, pos) => G.point(x, y, { color: 'red', label: T(lab), pos });
-  let G;
-  if (fig('ex1')) { G = new Graph(fig('ex1'), { width: 270, height: 290, xmin: -2, xmax: 11, ymin: -35, ymax: 15, ystep: 5, xlabels: 2, ylabels: 10, fontSize: 15 }); G.fn(REL.ex1.f, { color: 'ink' }); pt(G, 7.5, 0, '(7.5,\\ 0)', 'nw'); pt(G, 0, -30, '(0,\\ -30)', 'se'); }
-  if (fig('ex2a')) { G = new Graph(fig('ex2a'), { width: 230, height: 270, xmin: -7, xmax: 4, ymin: -8, ymax: 16, ystep: 2, xlabels: 2, ylabels: 4, fontSize: 15 }); G.fn(REL.ex2a.f, { color: 'ink' }); pt(G, -3, 0, '(-3,\\ 0)', 'se'); pt(G, 0, 7, '(0,\\ 7)', 'se'); }
-  if (fig('ex2b')) { G = new Graph(fig('ex2b'), { width: 230, height: 270, xmin: -5, xmax: 7, ymin: -12, ymax: 12, ystep: 2, xlabels: 2, ylabels: 4, fontSize: 15 }); G.fn(REL.ex2b.f, { color: 'ink' }); pt(G, -2, 0, '(-2,\\ 0)', 'nw'); pt(G, 4, 0, '(4,\\ 0)', 'ne'); pt(G, 0, 8, '(0,\\ 8)', 'nw'); }
-  if (fig('ex3')) { G = new Graph(fig('ex3'), { width: 560, height: 240, xmin: -3, xmax: 11, ymin: -3, ymax: 3, fontSize: 15 }); G.fn(REL.ex3.f, { color: 'ink' }); pt(G, 13 / 3, 0, '\\left(\\tfrac{13}{3},\\ 0\\right)', 'se'); pt(G, 0, -13 / 8, '\\left(0,\\ -\\tfrac{13}{8}\\right)', 'se'); }
-  if (fig('ex4')) { G = new Graph(fig('ex4'), { width: 420, height: 300, xmin: -3, xmax: 10, ymin: -10, ymax: 30, ystep: 5, ylabels: 10, fontSize: 15 }); G.fn(REL.ex4.f, { color: 'ink' }); pt(G, 3.5, 24.25, '\\left(\\tfrac{7}{2},\\ \\tfrac{97}{4}\\right)', 'e'); }
-  document.querySelectorAll('[data-blank]').forEach((el) => new Graph(el, { width: 230, height: 230, xmin: -6, xmax: 6, ymin: -6, ymax: 6, grid: false, numbers: false }));
-}
-
-mountWarm(); mountFigures();
-mountExplainers({ setup, window: windowEx, graphIt, adjust, table, trace: traceEx, intersect: intersectEx, inside, zero: zeroEx, yint: yintEx, frac: fracEx, maxmin: maxminEx });
+/* ======================= mount ======================= */
+mountFigures();
+mountWarmup();
+export const explainers = mountExplainers({ birthday, twoRel, nested, threeViews, whyVertical, vlt, sixWays, sixForms });

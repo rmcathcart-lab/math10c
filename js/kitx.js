@@ -5,7 +5,7 @@
  *   K.value(target, opt)               any exact expression equal to target (opt.only: 'integer' | 'fraction' | 'decimal')
  *   K.fraction([p,q], opt)             a fraction in lowest terms (or an integer when q = 1)
  *   K.radical({k,n,m}, mode, opt)      k·ⁿ√m; mode 'mixed' (simplest mixed radical), 'entire', or 'any'
- *   K.varRadical(latex, mode, opt)     the same with variables (Lesson 6B extension)
+ *   K.varRadical(latex, mode, opt)     the same with variables (Unit 1 Lesson 8 extension)
  *   K.repeating([p,q], opt)            a decimal, with a bar over the repeating block when it repeats
  *   K.approx(x, dp, opt)               a value rounded to dp decimal places
  *   K.order(ids, opt)                  an ordering (ids in the right order)
