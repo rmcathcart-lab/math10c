@@ -57,15 +57,26 @@
       for (var i = 0; i < alts.length; i++) { var a = alts[i]; if (Math.abs(v - a.v) <= Math.max(tol, Math.abs(a.v) * 0.0015)) return { code: a.code || 'alt', hint: a.hint }; }
       return base ? base(v) : null;
     };
-    return K.approx(x, dp, o);
+    o.diagFirst = true;
+    var inner = K.approx(x, dp, o);
+    return function (resp) {
+      var raw = String(resp == null ? '' : resp), plain = raw.replace(/\\(text|mathrm|operatorname)\{\s*([^{}]*)\}/g, '$2').replace(/\^\{?\\circ\}?|\\degree/g, '°').replace(/\\[,;: ]|~/g, ' '); plain = HW.parse.plain ? HW.parse.plain(plain) : plain;
+      if (!HW.parse.number(raw).ok && /^\s*-?[\d.,\s]*\d\s*(°|\^\{?\\circ\}?|\\circ|\\degree|[a-zA-Z]{1,3}(\^\{?[23]\}?|²|³)?)\s*\.?\s*$/.test(plain)) {
+        var num = plain.replace(/(°|\^\{?\\circ\}?|\\circ|\\degree|[a-zA-Z]{1,3}(\^\{?[23]\}?|²|³)?)\s*\.?\s*$/, '');
+        if (HW.parse.number(num).ok) return K.form('units', 'Leave the unit out — just type the number' + (opt.unit ? ' (the unit is already after the box).' : '.'));
+      }
+      return inner(resp);
+    };
   };
   K.P.near = function (prompt, x, dp, opt, sol, hints, text) {
     opt = opt || {};
     var p = K.P.approx(prompt, x, dp, { nr: opt.nr, before: opt.before, after: opt.unit || opt.after }, sol, hints, text);
     p.check = K.near(x, dp, opt);
-    if (opt.unit && !opt.noUnitInAnswer) p.answer = t(K.roundTo(x, dp).toFixed(dp)) + ' ' + esc(opt.unit);
+    if (opt.unit && !opt.noUnitInAnswer) p.answer = t(HW.fmt(K.roundTo(x, dp).toFixed(Math.max(dp, 0)))) + ' ' + esc(opt.unit);
     return p;
   };
+
+  if (HW.addCodes) HW.addCodes({ units: 'Typed a unit in the box' });
 
   /* ---------------- HW.fig ---------------- */
   HW.fig = function (spec) {
@@ -157,7 +168,7 @@
     };
     var rad = opt.r || null, dia = opt.d || null;
     if (kind === 'rectprism' || kind === 'cube') {
-      var A = [40, 160], B = [160, 160], C = [160, 70], D = [40, 70], dx = 50, dy = -35, Bp = [B[0] + dx, B[1] + dy], Cp = [C[0] + dx, C[1] + dy], Dp = [D[0] + dx, D[1] + dy], Ap = [A[0] + dx, A[1] + dy];
+      var A = [22, 160], B = [142, 160], C = [142, 70], D = [22, 70], dx = 50, dy = -35, Bp = [B[0] + dx, B[1] + dy], Cp = [C[0] + dx, C[1] + dy], Dp = [D[0] + dx, D[1] + dy], Ap = [A[0] + dx, A[1] + dy];
       s += '<polygon points="' + [A, B, C, D].map(function (p) { return p.join(','); }).join(' ') + '" fill="#f4faf9" stroke="' + INK + '" stroke-width="2"/>';
       s += line(B, Bp) + line(C, Cp) + line(D, Dp) + line(Cp, Dp) + line(Bp, Cp) + line(A, Ap, { dash: 1, w: 1.4 }) + line(Ap, Bp, { dash: 1, w: 1.4 }) + line(Ap, Dp, { dash: 1, w: 1.4 });
       if (kind === 'cube') s += dim(A, B, opt.s, 1); else s += dim(A, B, opt.l, 1) + dim(B, Bp, opt.w, 1) + dim(Bp, Cp, opt.h, 1);
@@ -187,8 +198,8 @@
       var p1 = [40, 160], p2 = [150, 160], p3 = [195, 130], p4 = [85, 130], ap = [117, 30], ctr = [117, 145];
       s += '<polygon points="' + [ap, p1, p2, p3].map(function (p) { return p.join(','); }).join(' ') + '" fill="#f4faf9" stroke="none"/>';
       s += line(p1, p2) + line(p2, p3) + line(ap, p1) + line(ap, p2) + line(ap, p3) + line(p1, p4, { dash: 1, w: 1.4 }) + line(p4, p3, { dash: 1, w: 1.4 }) + line(ap, p4, { dash: 1, w: 1.4 });
-      if (opt.h) s += line(ap, ctr, { dash: 1, w: 1.3 }) + txt(ctr[0] + 5, 100, opt.h, { size: 13, anchor: 'start' });
-      if (opt.sl) { var mf = [(p1[0] + p2[0]) / 2, 160]; s += line(ap, mf, { dash: 1, w: 1.3, color: COL }) + txt((ap[0] + mf[0]) / 2 - 5, (ap[1] + mf[1]) / 2 + 10, opt.sl, { size: 13, anchor: 'end', color: COL }); }
+      if (opt.h) s += line(ap, ctr, { dash: 1, w: 1.3 }) + txt(ctr[0] + 5, 106, opt.h, { size: 13, anchor: 'start' });
+      if (opt.sl) { var mf = [(p1[0] + p2[0]) / 2, 160]; s += line(ap, mf, { dash: 1, w: 1.3, color: COL }) + txt((ap[0] + mf[0]) / 2 - 6, (ap[1] + mf[1]) / 2 - 6, opt.sl, { size: 13, anchor: 'end', color: COL }); }
       if (kind === 'sqpyramid') s += dim(p1, p2, opt.s, 1); else s += dim(p1, p2, opt.l, 1) + dim(p2, p3, opt.w, 1);
     } else if (kind === 'sphere' || kind === 'hemisphere') {
       var cx3 = 110, cy3 = kind === 'sphere' ? 100 : 130, r3 = 72;

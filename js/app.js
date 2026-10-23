@@ -674,7 +674,7 @@
       var pills = el('div', 'qpills');
       g.items.forEach(function (it) {
         var r = l.items[it.id], st = r ? r.s : 'new';
-        var b = el('a', 'qi st-' + st + (r && r.s === 'done' ? ' cr-' + r.credit : '') + (it.id === cur.item ? ' on' : ''), g.items.length > 1 ? (it.p.sub || it.label.replace(/^.*\(|\)$/g, '')) : '•');
+        var b = el('a', 'qi st-' + st + (r && r.s === 'done' ? ' cr-' + r.credit : '') + (it.id === cur.item ? ' on' : ''), g.items.length > 1 ? (it.p.sub || it.label.replace(/^[^(]*\(|\)$/g, '')) : '•');
         b.href = '#/lesson/' + lesson.id + '/' + it.id; b.title = it.label + ' — ' + ({ 'new': 'not started', open: 'in progress', shown: 'answer shown — try a new version', done: r && r.credit === 'first' ? 'done (first try)' : 'done' }[st]);
         pills.appendChild(b);
       });
@@ -690,12 +690,12 @@
     var card = el('article', 'qcard');
     card.appendChild(el('div', 'qsection', esc(it.q.sectionLabel || (it.extra ? 'Extra practice' : ''))));
     var h = el('div', 'qhead');
-    h.appendChild(el('h2', '', (it.extra ? 'Extra ' : 'Question ') + esc(it.q.num) + (it.q.parts.length > 1 ? ' <span class="qpart">(' + esc(it.label.replace(/^.*\(|\)$/g, '')) + ')</span>' : '')));
+    h.appendChild(el('h2', '', (it.extra ? 'Extra ' : 'Question ') + esc(it.q.num) + (it.q.parts.length > 1 ? ' <span class="qpart">(' + esc(it.label.replace(/^[^(]*\(|\)$/g, '')) + ')</span>' : '')));
     h.appendChild(el('span', 'lvl lvl-' + it.level, HW.LEVEL_NAMES[it.level]));
     card.appendChild(h);
     if (cur.notice) { card.appendChild(el('div', 'notice warn', cur.notice)); cur.notice = null; }
     if (inst.stem) card.appendChild(el('div', 'qstem', HW.tex(inst.stem)));
-    card.appendChild(el('div', 'qprompt', (it.q.parts.length > 1 && !/^[A-Z]/.test(stripTags(inst.prompt)) && stripTags(inst.prompt).trim().indexOf('(' + it.label.replace(/^.*\(|\)$/g, '') + ')') !== 0 ? '<span class="qlabel">(' + esc(it.label.replace(/^.*\(|\)$/g, '')) + ')</span> ' : '') + HW.tex(inst.prompt)));
+    card.appendChild(el('div', 'qprompt', (it.q.parts.length > 1 && !/^[A-Z]/.test(stripTags(inst.prompt)) && stripTags(inst.prompt).trim().indexOf('(' + it.label.replace(/^[^(]*\(|\)$/g, '') + ')') !== 0 ? '<span class="qlabel">(' + esc(it.label.replace(/^[^(]*\(|\)$/g, '')) + ')</span> ' : '') + HW.tex(inst.prompt)));
     var fb = el('div', 'feedback'); fb.setAttribute('aria-live', 'polite');
     var done = r.s === 'done' && !cur.practice, shown = r.s === 'shown' && !cur.practice;
 

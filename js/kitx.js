@@ -213,7 +213,7 @@
   K.roundTo = function (x, dp) { var f = Math.pow(10, dp); return Math.round(x * f + (x >= 0 ? 1e-9 : -1e-9)) / f; };
   K.approx = function (x, dp, opt) {
     opt = opt || {};
-    var want = K.roundTo(x, dp), place = dp === 0 ? 'whole number' : dp === 1 ? 'tenth' : dp === 2 ? 'hundredth' : dp === 3 ? 'thousandth' : dp + ' decimal places';
+    var want = K.roundTo(x, dp), place = dp === -1 ? 'ten' : dp === -2 ? 'hundred' : dp === -3 ? 'thousand' : dp === 0 ? 'whole number' : dp === 1 ? 'tenth' : dp === 2 ? 'hundredth' : dp === 3 ? 'thousandth' : dp + ' decimal places';
     var trunc = Math.trunc(x * Math.pow(10, dp)) / Math.pow(10, dp);
     return function (resp) {
       var raw = String(resp == null ? '' : resp);
@@ -224,6 +224,7 @@
       if (Math.abs(v - want) < 1e-9) return ok();
       if (dec > dp && Math.abs(K.roundTo(v, dp) - want) < 1e-9) return form('round', 'Right — now round it to the nearest ' + place + '.');
       if (dec < dp && Math.abs(v - K.roundTo(x, dec)) < 1e-9) return form('places', 'Round to the nearest ' + place + ' (' + dp + ' decimal place' + (dp === 1 ? '' : 's') + ').');
+      if (opt.diagFirst && opt.diag) { var h0 = opt.diag(v); if (h0) return wrong(h0.code || 'diag', h0.hint); }
       if (Math.abs(v - trunc) < 1e-9 && trunc !== want) return wrong('truncate', 'Round, don’t chop: look at the next digit. If it is 5 or more, round up.');
       var h = opt.diag ? opt.diag(v) : null;
       if (h) return wrong(h.code || 'diag', h.hint);
@@ -407,7 +408,7 @@
   P.approx = function (prompt, x, dp, opt, sol, hints, text) {
     opt = opt || {};
     var want = K.roundTo(x, dp);
-    return { prompt: prompt, input: { type: 'number', nr: !!opt.nr, before: opt.before, after: opt.after }, check: K.approx(x, dp, opt), key: want.toFixed(dp), answer: t(want.toFixed(dp)), solution: sol, hints: hints || [], text: text };
+    return { prompt: prompt, input: { type: 'number', nr: !!opt.nr, before: opt.before, after: opt.after }, check: K.approx(x, dp, opt), key: want.toFixed(Math.max(dp, 0)), answer: t(F(want.toFixed(Math.max(dp, 0)))), solution: sol, hints: hints || [], text: text };
   };
   P.math = function (prompt, check, keyTex, sol, hints, text, inp) {
     return { prompt: prompt, input: Object.assign({ type: 'math', keys: 'expr' }, inp || {}), check: check, key: keyTex, answer: t(keyTex), solution: sol, hints: hints || [], text: text };
