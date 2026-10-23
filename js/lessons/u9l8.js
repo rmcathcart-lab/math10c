@@ -493,7 +493,7 @@
       { num: '18',
         shared: function (r) { var tr = r.pick([[12, 5], [12, 5], [8, 6], [15, 8], [12, 9], [24, 7], [16, 12], [20, 15]]); return gen(r, function (r) { return { ab: tr[0], ad: tr[1], ap: d1(r, 4.0, 12.0) }; }, function (s) { return safe(T.atan(s.ap / Math.hypot(s.ab, s.ad)), 1); }); },
         stem: function (s) {
-          var k = 0.4, A = [0, 0], B = [s.ab * k, 0], D = [s.ad * k * 0.75, s.ad * k * 0.66], C = [B[0] + D[0], D[1]], Pp = [0, s.ap * k];
+          var k = 0.4, A = [0, 0], B = [s.ab * k, 0], D = [s.ad * k * 1.05, s.ad * k * 0.92], C = [B[0] + D[0], D[1]], Pp = [0, s.ap * k];
           var fig = HW.fig({ pts: { A: A, B: B, C: C, D: D, P: Pp }, segs: [['A', 'B', s1(s.ab) + ' m'], ['B', 'C'], ['C', 'D'], ['A', 'D', s1(s.ad) + ' m'], ['A', 'P', s1(s.ap) + ' m'], ['P', 'C'], ['A', 'C', { dash: 1 }]], right: [['A', 'B', 'P']], width: 300, aria: 'flagpole in a courtyard' });
           return '<i>(Extension)</i> A vertical flagpole ' + t('AP') + ' stands at corner ' + t('A') + ' of a horizontal rectangular courtyard ' + t('ABCD') + ', where ' + t('AB=' + s1(s.ab)) + ' m, ' + t('AD=' + s1(s.ad)) + ' m and ' + t('AP=' + s1(s.ap)) + ' m.' + figWrap(fig);
         },
@@ -818,8 +818,8 @@
           function (s) { var R = s.s1 * T.sin(s.a1) + s.s2 * T.sin(s.a2), H = s.s1 * T.cos(s.a1) + s.s2 * T.cos(s.a2), A = T.atan(R / H); return Math.round(A) !== Math.round((s.a1 + s.a2) / 2 + 1e-9) && safe(A, 0) && safe(R, 1) && safe(H, 1) && safe(Math.hypot(R, H), 1); }); },
         stem: function (s) {
           var M = [s.s1 * T.cos(s.a1), s.s1 * T.sin(s.a1)], S = [M[0] + s.s2 * T.cos(s.a2), M[1] + s.s2 * T.sin(s.a2)];
-          var fig = HW.fig({ pts: { B: [0, 0], M: M, S: S, Hz: [S[0] * 1.05, M[1]], G: [S[0] * 1.05, 0] }, segs: [['B', 'M', s.s1 + ' m', { width: 3, side: -1 }], ['M', 'S', s.s2 + ' m', { width: 3 }], ['B', 'G', { width: 1.4 }]], angles: [['B', 'G', 'M', s.a1 + '°', { r: 30 }], ['M', 'Hz', 'S', s.a2 + '°', { r: 34 }]], names: { B: 'B', M: 'M', S: 'S' },
-            extra: [{ type: 'dash', from: M, to: [S[0] * 1.05, M[1]] }, { type: 'dash', from: M, to: [M[0], 0] }, { type: 'dash', from: S, to: [S[0], 0] }], width: 320, aria: 'gondola runs' });
+          var fig = HW.fig({ pts: { B: [0, 0], M: M, S: S, Hz: [S[0] * 1.05, M[1]], G: [S[0] * 1.05, 0] }, segs: [['B', 'M', s.s1 + ' m', { width: 3 }], ['M', 'S', s.s2 + ' m', { width: 3 }], ['B', 'G', { width: 1.4 }]], angles: [['B', 'G', 'M', s.a1 + '°', { r: 30 }], ['M', 'Hz', 'S', s.a2 + '°', { r: 34 }]], names: { B: 'B', S: 'S' },
+            extra: [{ type: 'text', at: [M[0] + S[0] * 0.03, M[1] - S[0] * 0.035], text: 'M' }, { type: 'dash', from: M, to: [S[0] * 1.05, M[1]] }, { type: 'dash', from: M, to: [M[0], 0] }, { type: 'dash', from: S, to: [S[0], 0] }], width: 320, aria: 'gondola runs' });
           return 'A gondola line climbs in two straight runs. From the base station ' + t('B') + ' the cable rises to a mid-station ' + t('M') + ' along a straight span ' + t(s.s1) + ' m long, at ' + t(dg(s.a1)) + ' to the horizontal. From ' + t('M') + ' it rises to the summit ' + t('S') + ' along a span ' + t(s.s2) + ' m long, at ' + t(dg(s.a2)) + ' to the horizontal.' + figWrap(fig);
         },
         parts: [
@@ -1107,7 +1107,7 @@
         shared: function (r) { var c = r.pick(EP16); return { x: c[0], a: c[1], w: c[2] }; },
         stem: function (s) {
           var h = s.x * T.tan(s.a), D = s.x + s.w, her = T.atan(rnd(h, 1) / D), cor = T.atan(h / D);
-          var fig = HW.fig({ pts: { Bs: [0, 0], Tp: [0, h], X: [s.x, 0], Y: [D, 0] }, segs: [['Bs', 'Tp', 'h', { width: 2.6 }], ['Tp', 'X', { dash: 1 }], ['Tp', 'Y', { dash: 1 }], ['Bs', 'X', s1(s.x) + ' m'], ['X', 'Y', s1(s.w) + ' m']], right: [['Bs', 'X', 'Tp']], angles: [['X', 'Bs', 'Tp', s.a + '°', { r: 20 }], ['Y', 'Bs', 'Tp', 'θ', { r: 40 }]], width: 320, aria: 'tower sighted from two points' });
+          var fig = HW.fig({ pts: { Bs: [0, 0], Tp: [0, h], X: [s.x, 0], Y: [D, 0] }, segs: [['Bs', 'Tp', 'h', { width: 2.6 }], ['Tp', 'X', { dash: 1 }], ['Tp', 'Y', { dash: 1 }], ['Bs', 'X', s1(s.x) + ' m'], ['X', 'Y', s1(s.w) + ' m']], right: [['Bs', 'X', 'Tp']], angles: [['X', 'Bs', 'Tp', s.a + '°', { r: 20 }], ['Y', 'Bs', 'Tp', 'θ', { r: 40 }]], names: false, extra: [{ type: 'text', at: [s.x + D * 0.035, h * 0.07], text: 'X' }, { type: 'text', at: [D * 1.04, h * 0.07], text: 'Y' }, { type: 'ground', y: 0, x0: -D * 0.04, x1: D * 1.06 }], width: 320, aria: 'tower sighted from two points' });
           return 'A surveyor stands at ' + t('X') + ', ' + t(s1(s.x)) + ' m from the foot of a vertical tower, and measures the angle of elevation of the top as ' + t(dg(s.a)) + '. She then walks ' + t(s1(s.w)) + ' m directly away from the tower to ' + t('Y') + '. Her work reads ' + t('h=' + s1(s.x) + '\\tan ' + dg(s.a) + '=' + fx(h, 1) + '\\text{ m},\\ \\theta=\\tan^{-1}\\!\\left(\\frac{' + fx(h, 1) + '}{' + s1(D) + '}\\right)=' + dg(fx(her, 0))) + '. The correct answer is ' + t(dg(fx(cor, 0))) + '.' + figWrap(fig);
         },
         parts: [
@@ -1145,7 +1145,7 @@
       { num: '17', section: 'Extra practice F — Challenge',
         shared: function (r) { return gen(r, function (r) { return { sp: d1(r, 8, 16), a1: r.int(30, 45), a2: r.int(18, 28) }; }, function (s) { var g = roof(s); return s.a1 - s.a2 >= 6 && safe(g.h, 1) && safe(g.l1, 1) && safe(g.l2, 1) && safe(g.lf, 1) && safe(g.fr, 1); }); },
         stem: function (s) {
-          var g = roof(s), fig = HW.fig({ pts: { L: [0, 0], Rg: [g.lf, g.h], R: [s.sp, 0], F: [g.lf, 0] }, segs: [['L', 'Rg', { width: 2.6 }], ['Rg', 'R', { width: 2.6 }], ['L', 'R', s1(s.sp) + ' m'], ['Rg', 'F', 'h', { dash: 1 }]], right: [['F', 'R', 'Rg']], angles: [['L', 'R', 'Rg', s.a1 + '°', { r: 30 }], ['R', 'L', 'Rg', s.a2 + '°', { r: 34 }]], names: { L: 'L', R: 'R', Rg: 'ridge', F: 'F' }, width: 320, aria: 'unequal pitch roof' });
+          var g = roof(s), fig = HW.fig({ pts: { L: [0, 0], Rg: [g.lf, g.h], R: [s.sp, 0], F: [g.lf, 0] }, segs: [['L', 'Rg', { width: 2.6 }], ['Rg', 'R', { width: 2.6 }], ['L', 'R', s1(s.sp) + ' m'], ['Rg', 'F', 'h', { dash: 1 }]], right: [['F', 'R', 'Rg']], angles: [['L', 'R', 'Rg', s.a1 + '°', { r: 30 }], ['R', 'L', 'Rg', s.a2 + '°', { r: 34 }]], names: { L: 'L', R: 'R', Rg: 'ridge' }, extra: [{ type: 'text', at: [g.lf + s.sp * 0.035, g.h * 0.14], text: 'F' }], width: 320, aria: 'unequal pitch roof' });
           return 'A roof has an <b>unequal pitch</b>. The two walls are ' + t(s1(s.sp)) + ' m apart and their tops are level. The left rafter makes ' + t(dg(s.a1)) + ' with the horizontal and the right rafter makes ' + t(dg(s.a2)) + '. Let ' + t('h') + ' be the height of the ridge above the wall tops, with foot ' + t('F') + '.' + figWrap(fig);
         },
         parts: [
@@ -1264,7 +1264,7 @@
         shared: function (r) { return gen(r, function (r) { return { L: d1(r, 6.0, 14.0), W: d1(r, 2.0, 3.0), H: d1(r, 2.2, 3.0) }; }, function (s) { var ac = Math.hypot(s.L, s.W); return safe(ac, 1) && safe(Math.hypot(ac, s.H), 1) && safe(T.atan(s.H / ac), 0) && safe(T.atan(Math.hypot(s.W, s.H) / s.L), 0); }); },
         stem: function (s) {
           var k = 0.4, dx = s.W * 0.3, dy = s.W * 0.26, A = [0, 0], B = [s.L * k, 0], C = [s.L * k + dx, dy], D = [dx, dy], E = [0, s.H * k], Fp = [s.L * k, s.H * k], G = [s.L * k + dx, dy + s.H * k], Hh = [dx, dy + s.H * k];
-          var fig = HW.fig({ pts: { A: A, B: B, C: C, D: D, E: E, F: Fp, G: G, H: Hh }, segs: [['A', 'B', s1(s.L) + ' m'], ['B', 'F'], ['F', 'E'], ['E', 'A', s1(s.H) + ' m'], ['E', 'H'], ['H', 'G'], ['G', 'F'], ['B', 'C', s1(s.W) + ' m'], ['C', 'G'], ['A', 'D', { dash: 1, width: 1.2 }], ['D', 'C', { dash: 1, width: 1.2 }], ['D', 'H', { dash: 1, width: 1.2 }], ['A', 'C', { dash: 1, color: '#13807a' }], ['A', 'G', { color: '#c0563b', width: 2.4 }]], width: 330, pad: 34, aria: 'shipping container with a cable' });
+          var fig = HW.fig({ pts: { A: A, B: B, C: C, D: D, E: E, F: Fp, G: G, H: Hh }, segs: [['A', 'B', s1(s.L) + ' m'], ['B', 'F'], ['F', 'E'], ['E', 'A', s1(s.H) + ' m'], ['E', 'H'], ['H', 'G'], ['G', 'F'], ['B', 'C', s1(s.W) + ' m'], ['C', 'G'], ['A', 'D', { dash: 1, width: 1.2 }], ['D', 'C', { dash: 1, width: 1.2 }], ['D', 'H', { dash: 1, width: 1.2 }], ['A', 'C', { dash: 1, color: '#13807a' }], ['A', 'G', { color: '#c0563b', width: 2.4 }]], width: 330, aria: 'shipping container with a cable' });
           return 'A shipping container is a rectangular prism ' + t('ABCDEFGH') + ' with floor ' + t('ABCD') + ' and ' + t('E,F,G,H') + ' directly above ' + t('A,B,C,D') + ': ' + t('AB=' + s1(s.L)) + ' m, ' + t('BC=' + s1(s.W)) + ' m and ' + t('AE=' + s1(s.H)) + ' m. A cable runs from the bottom corner ' + t('A') + ' to the top corner ' + t('G') + '.' + figWrap(fig);
         },
         parts: [

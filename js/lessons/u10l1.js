@@ -47,6 +47,7 @@
       var v = p.value;
       if (near(v, x)) { if (opt.dp != null && decs(resp) < opt.dp) return form('precision', opt.precisionHint || ('Right value! Write it to ' + opt.dp + ' decimal places: ' + t(fx(x, opt.dp)) + '.')); return ok(); }
       for (var i = 0; i < (alts || []).length; i++) if (near(v, alts[i].v)) return wrong(alts[i].code || 'diag', alts[i].hint);
+      if (opt.dp != null && decs(resp) < opt.dp && near(v, rnd(x, decs(resp)))) return form('places', 'Close — read it more precisely: give ' + opt.dp + ' decimal place' + (opt.dp > 1 ? 's' : '') + '.');
       if (!opt.noRoundNudge && x !== 0 && Math.abs(v - x) <= 0.006 * Math.abs(x) && decs(resp) < String(x).replace(/^[^.]*\.?/, '').length) return form('rounded', 'Close — but this value comes out exactly. Give it without rounding.');
       return wrong('value', null);
     };

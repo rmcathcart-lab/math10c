@@ -617,7 +617,7 @@
           } },
           { id: 'e7c', sub: 'c', level: 'EMG', make: function (r, sh) {
             var A = T.asin(sh.l / sh.h), rA = rd(A, 0), y = rd(sh.h * T.cos(rA), 1), x = rd(Math.sqrt(sh.h * sh.h - sh.l * sh.l), 1), dd = Math.abs(y - x).toFixed(1);
-            return mc(r, 'The two routes disagree by ' + t(dd) + '. Where did the error enter?', [
+            return mc(r, '<b>Route 1</b> (the Pythagorean theorem on ' + t(seg(sh.P, sh.Q)) + ' and ' + t(seg(sh.Q, sh.R)) + ') gives ' + t(seg(sh.P, sh.R) + '\\approx ' + x.toFixed(1)) + '. <b>Route 2</b> (' + t('\\angle ' + sh.P) + ' found and rounded to ' + t(dg(rA)) + ', then used with ' + t(seg(sh.P, sh.Q)) + ') gives ' + t(seg(sh.P, sh.R) + '\\approx ' + y.toFixed(1)) + '. The two routes disagree by ' + t(dd) + '. Where did the error enter?', [
               { html: 'When ' + t('\\angle ' + sh.P + '=' + fl(A) + '^\\circ') + ' was rounded to ' + t(dg(rA)) + ' and then used. Take every unknown from the original given data, never from a rounded value.', right: true },
               { html: 'In Route 1: the Pythagorean theorem is less accurate than trigonometry.', why: 'Route 1 used only the exact given numbers — nothing was rounded until the end. It is the trustworthy one.' },
               { html: 'When ' + t(fx(sh.h, 1)) + ' was squared: squaring big numbers loses accuracy.', why: 'Squaring is exact (your calculator keeps every digit). Nothing was rounded in Route 1.' },

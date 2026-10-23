@@ -37,6 +37,81 @@
   function find(gen, fb) { for (var i = 0; i < 600; i++) { var v = gen(); if (v) return v; } return fb; }
   function nz(r, a, b) { var v; do { v = r.int(a, b); } while (v === 0); return v; }
 
+  HW.addCodes({
+    'u8l6-swap': 'Two answers in each other’s boxes',
+    'u8l6-eq-boxes': 'Right equations in the wrong boxes',
+    'u8l6-gave-x': 'Gave x instead of y',
+    'u8l6-early-round': 'Rounded an intermediate value too early',
+    'u8l6-sum': 'Gave the sum instead of the asked combination',
+    'u8l6-one-value': 'Stopped after finding one value',
+    'u8l6-a-sign': 'Sign of a (a = −slope)',
+    'u8l6-gave-cost': 'Gave the common value instead of the input (or one cost instead of the difference)',
+    'u8l6-rate-sum': 'Added the rates instead of subtracting',
+    'u8l6-flat-sum': 'Added the flat charges instead of subtracting',
+    'u8l6-rate-flat': 'Flat charge and rate swapped in the equation',
+    'u8l6-gr-int-sign': 'Graph: y-intercept sign after rearranging',
+    'u8l6-gr-slope-sign': 'Graph: slope sign',
+    'u8l6-points-only': 'Graph: points without lines',
+    'u8l6-line-missing': 'Graph: a line missing',
+    'u8l6-line-wrong': 'Graph: one line wrong',
+    'u8l6-line-extra': 'Graph: an extra line',
+    'u8l6-mix-percent': 'Mixture: percent used as the amount',
+    'u8l6-mix-decimal': 'Percent not written as a decimal',
+    'u8l6-mix-total': 'Wrong total in the volume/amount equation',
+    'u8l6-rhs-swap': 'Right-hand sides swapped (count vs money)',
+    'u8l6-price-swap': 'Prices on the wrong variables',
+    'u8l6-perimeter': 'Perimeter: sides not all counted',
+    'u8l6-backwards': 'Relationship written backwards',
+    'u8l6-cond-sign': 'More than / less than sign',
+    'u8l6-isolate': 'Isolating a variable changed the line',
+    'u8l6-not-isolated': 'Variable not isolated',
+    'u8l6-not-lowest': 'Common multiple, not the lowest',
+    'u8l6-mult-swap': 'Multipliers swapped',
+    'u8l6-elim-sign': 'Subtracted instead of added (or vice versa)',
+    'u8l6-rhs-unscaled': 'Right side not scaled',
+    'u8l6-elim-rhs': 'Eliminated equation: right side wrong',
+    'u8l6-elim': 'Elimination step wrong',
+    'u8l6-elim-scale': 'Didn’t scale before eliminating',
+    'u8l6-rate-sign': 'Burn/decrease rate given a positive slope',
+    'u8l6-rate-swap': 'Rates matched to the wrong item',
+    'u8l6-half': 'Estimate not to the nearest half',
+    'u8l6-estimate': 'Graph estimate too far off',
+    'u8l6-gave-h': 'Gave the height instead of the time',
+    'u8l6-k-x1': 'k for x = 1 given for “no solution”',
+    'u8l6-k-solve': 'Didn’t finish solving for k',
+    'u8l6-const': 'Constant condition missed (infinitely many)',
+    'u8l6-weights-swap': 'Weights swapped',
+    'u8l6-weights': 'Final mark not a weighted sum',
+    'u8l6-divide': 'Didn’t divide by the coefficient',
+    'u8l6-coef-swap': 'Model: mass multiplied the wrong constant',
+    'u8l6-sub-swap': 'Model: L and m substituted in the wrong places',
+    'u8l6-scale': 'Read squares instead of units on an axis',
+    'u8l6-single-frac': 'Not written as a single fraction',
+    'u8l6-param': 'Expression in k wrong',
+    'u8l6-list': 'List unreadable',
+    'u8l6-k-int': 'k not an integer',
+    'u8l6-k-none': 'Included the no-solution k',
+    'u8l6-k-negx': 'Included a k that gives negative x',
+    'u8l6-k-bad': 'Included a k that gives a non-whole x',
+    'u8l6-k-missing': 'Some k values missing',
+    'u8l6-order': 'List not in order',
+    'u8l6-clear-one-side': 'Fractions cleared on one side only',
+    'u8l6-distribute': 'Bracket multiplied into the first term only',
+    'u8l6-time-speed': 'Used a time where a speed is needed',
+    'u8l6-with-against': 'With/against: speeds added or subtracted the wrong way',
+    'u8l6-clear-frac': 'Fraction not cleared',
+    'u8l6-cross': 'Cross-multiplied the wrong way',
+    'u8l6-add-both': 'Forgot the number added to both',
+    'u8l6-as-fraction': 'Gave a decimal instead of the fraction',
+    'u8l6-equiv-frac': 'Gave an equivalent fraction (not the actual one)',
+    'u8l6-frac': 'Wrong fraction',
+    'u8l6-swapxy': 'x and y swapped',
+    'mc-asn-A': 'Said “always true”',
+    'mc-asn-S': 'Said “sometimes true”',
+    'mc-asn-N': 'Said “never true”',
+    'mc-forms': 'Thought different forms mean different lines'
+  });
+
   /* ---------- part makers ---------- */
   function mc(r, prompt, opts, sol, hints, text, keep) {
     var seen = {}, o2 = opts.filter(function (o) { if (seen[o.html]) return false; seen[o.html] = 1; return true; });
@@ -60,7 +135,7 @@
       resp = resp || [];
       if (boxes.length >= 2 && !near(vals[0], vals[1]) && !boxes[0].check && !boxes[1].check) {
         var a = HW.parse.number(String(resp[0] || '')), b = HW.parse.number(String(resp[1] || ''));
-        if (a.ok && b.ok && near(a.value, vals[1]) && near(b.value, vals[0])) return wrong(o.swapCode || 'l6-swap', o.swapHint || 'Both numbers are right but in the wrong boxes — check which quantity each box asks for.');
+        if (a.ok && b.ok && near(a.value, vals[1]) && near(b.value, vals[0])) return wrong(o.swapCode || 'u8l6-swap', o.swapHint || 'Both numbers are right but in the wrong boxes — check which quantity each box asks for.');
       }
       if (o.pre) { var h = o.pre(resp); if (h) return h; }
       return base(resp);
@@ -80,7 +155,7 @@
       resp = resp || [];
       if (items.length === 2) {
         var r0 = Ln.read(String(resp[0] || ''), vars), r1 = Ln.read(String(resp[1] || ''), vars);
-        if (r0.ok && r1.ok && Ln.same([r0.a, r0.b, r0.c], TL[1]) && Ln.same([r1.a, r1.b, r1.c], TL[0])) return form('l6-eq-boxes', 'Both equations are right, but they are in each other’s boxes. Put each equation next to its own label.');
+        if (r0.ok && r1.ok && Ln.same([r0.a, r0.b, r0.c], TL[1]) && Ln.same([r1.a, r1.b, r1.c], TL[0])) return form('u8l6-eq-boxes', 'Both equations are right, but they are in each other’s boxes. Put each equation next to its own label.');
       }
       return base(resp);
     };
@@ -172,11 +247,11 @@
       resp = splitBends(resp);
       var res = base(resp); if (res.v !== 'wrong' || res.code !== 'graph') return res;
       var v = DR.norm(resp);
-      if (!v.pieces.length && v.pts.length) return wrong('l6-points-only', 'Plotting points is a good start — now draw each line through its points with the Line tool (arrows on both ends).');
+      if (!v.pieces.length && v.pts.length) return wrong('u8l6-points-only', 'Plotting points is a good start — now draw each line through its points with the Line tool (arrows on both ends).');
       var have = Object.keys(DR.geom(resp).lines), miss = [], extra = have.filter(function (k) { return keys.indexOf(k) < 0; });
       keys.forEach(function (k, i) { if (have.indexOf(k) < 0) miss.push(names[i]); });
-      if (miss.length && !extra.length) return wrong('l6-line-missing', 'Correct so far — still to draw: ' + miss.join(' and ') + '.');
-      if (miss.length && extra.length && miss.length < Ls.length) return wrong('l6-line-wrong', 'One of your lines is right. Check ' + miss.join(' and ') + ': find its slope and ' + t('y') + '-intercept again.');
+      if (miss.length && !extra.length) return wrong('u8l6-line-missing', 'Correct so far — still to draw: ' + miss.join(' and ') + '.');
+      if (miss.length && extra.length && miss.length < Ls.length) return wrong('u8l6-line-wrong', 'One of your lines is right. Check ' + miss.join(' and ') + ': find its slope and ' + t('y') + '-intercept again.');
       return res;
     };
     var pad = Object.assign({ x: win[0], y: win[1], grid: 1, labels: 2, mode: 'lines', defaultEnd: 'arrow', max: 360 }, o.pad || {});
@@ -234,8 +309,8 @@
           var E1 = eqT(s.a, 1, s.c), E2 = eqT(s.d, -s.e, s.f), want = K.roundTo(s.y, 2), xr = K.roundTo(s.x, 2), early = K.roundTo(s.c - s.a * xr, 2);
           var xn = s.c * s.e + s.f, yn = s.c * s.D - s.a * xn;
           var p = K.P.approx('Solve the system ' + both(E1, E2) + ' by substitution or elimination. The ' + t('y') + '-coordinate of the point of intersection, to the nearest hundredth, is ________.', s.y, 2, { nr: true, diag: function (v) {
-            if (Math.abs(v - xr) < 1e-9) return { code: 'l6-gave-x', hint: 'That’s the ' + t('x') + '-coordinate. The question asks for ' + t('y') + '.' };
-            if (Math.abs(v - early) < 1e-9 && early !== want) return { code: 'l6-early-round', hint: 'Close — but you rounded ' + t('x') + ' before substituting. Keep ' + t('x') + ' as an exact fraction and round only at the end.' };
+            if (Math.abs(v - xr) < 1e-9) return { code: 'u8l6-gave-x', hint: 'That’s the ' + t('x') + '-coordinate. The question asks for ' + t('y') + '.' };
+            if (Math.abs(v - early) < 1e-9 && early !== want) return { code: 'u8l6-early-round', hint: 'Close — but you rounded ' + t('x') + ' before substituting. Keep ' + t('x') + ' as an exact fraction and round only at the end.' };
             return null;
           } }, '<b>Substitution:</b> ' + t(E1 + '\\Rightarrow y=' + s.c + '-' + s.a + 'x') + '.<br>' + t(lin([s.d], ['x']) + '-' + s.e + '(' + s.c + '-' + s.a + 'x)=' + s.f) + '<br>' + t(s.d + 'x-' + (s.e * s.c) + '+' + (s.e * s.a) + 'x=' + s.f + '\\Rightarrow ' + s.D + 'x=' + xn + '\\Rightarrow x=' + fr2(xn, s.D)) + '<br>' + t('y=' + s.c + '-' + s.a + '\\left(' + fr2(xn, s.D) + '\\right)=' + fr2(yn, s.D) + '\\approx ' + rd(s.y, 4)) + '<br>Rounded to the nearest hundredth: <b>' + want.toFixed(2) + '</b>.',
           ['The first equation has ' + t('y') + ' with coefficient ' + t('1') + ': solve it for ' + t('y') + ' and substitute.', 'Keep fractions exact until the last step, then round.'], 'NR y of ' + E1 + ', ' + E2);
@@ -363,8 +438,8 @@
           if (r.chance(0.2)) s = { m0: 7, n0: -2, p: 4, q: 3, s: 2, c1: 15, c2: 25 };
           var V = ['m', 'n'], E1 = lin([1, -s.p], V) + '-' + s.c1, E2 = lin([s.q, -s.s], V) + '-' + s.c2, ans = s.m0 - s.n0;
           return K.P.nr('If ' + t(E1 + '=' + E2 + '=0') + ', then the value of ' + t('m-n') + ' is ________.', ans, function (v) {
-            if (v === s.m0 + s.n0) return { code: 'l6-sum', hint: 'That’s ' + t('m+n') + '. The question asks for ' + t('m-n') + ' — careful with the sign of ' + t('n') + '.' };
-            if (v === s.m0) return { code: 'l6-one-value', hint: 'That’s ' + t('m') + '. Now find ' + t('n') + ' and work out ' + t('m-n') + '.' };
+            if (v === s.m0 + s.n0) return { code: 'u8l6-sum', hint: 'That’s ' + t('m+n') + '. The question asks for ' + t('m-n') + ' — careful with the sign of ' + t('n') + '.' };
+            if (v === s.m0) return { code: 'u8l6-one-value', hint: 'That’s ' + t('m') + '. Now find ' + t('n') + ' and work out ' + t('m-n') + '.' };
             if (v === s.n0 - s.m0 || v === -ans) return { code: 'sign', hint: 'Check the order: ' + t('m-n') + ', not ' + t('n-m') + '.' };
             return null;
           }, 'The chain says both expressions equal ' + t('0') + ': ' + t(lin([1, -s.p], V) + '=' + s.c1) + ' and ' + t(lin([s.q, -s.s], V) + '=' + s.c2) + '.<br>' + t('m=' + s.c1 + '+' + s.p + 'n') + '<br>' + t(s.q + '(' + s.c1 + '+' + s.p + 'n)-' + (s.s === 1 ? '' : s.s) + 'n=' + s.c2 + '\\Rightarrow ' + (s.q * s.p - s.s) + 'n=' + (s.c2 - s.q * s.c1) + '\\Rightarrow n=' + s.n0) + '<br>' + t('m=' + s.c1 + '+' + s.p + '(' + s.n0 + ')=' + s.m0) + '<br>' + t('m-n=' + s.m0 + '-(' + s.n0 + ')=' + ans),
@@ -383,9 +458,9 @@
           if (r.chance(0.2)) s = { x1: 1, y1: 3, x2: 4, y2: -4, a: 7 / 3, b: 16 / 3, ab: 112 / 9, rise: -7, run: 3 };
           var aF = fx(s.a), bF = fx(s.b), want = K.roundTo(s.ab, 1), aw = -s.a, bw = s.y1 + aw * s.x1;
           return K.P.approx('The line ' + t('ax+y=b') + ' passes through the points ' + t(ptT([s.x1, s.y1])) + ' and ' + t(ptT([s.x2, s.y2])) + '. The value of ' + t('ab') + ', to the nearest tenth, is ________.', s.ab, 1, { nr: true, diag: function (v) {
-            if (Math.abs(v - K.roundTo(aw * bw, 1)) < 1e-9) return { code: 'l6-a-sign', hint: 'Rewrite ' + t('ax+y=b') + ' as ' + t('y=-ax+b') + ': the slope is ' + t('-a') + ', so ' + t('a') + ' is the <b>opposite</b> of the slope.' };
-            if (Math.abs(v - K.roundTo(s.a + s.b, 1)) < 1e-9) return { code: 'l6-sum', hint: 'That’s ' + t('a+b') + '. Multiply: ' + t('ab') + '.' };
-            if (Math.abs(v - K.roundTo(s.a, 1)) < 1e-9 || Math.abs(v - K.roundTo(s.b, 1)) < 1e-9) return { code: 'l6-one-value', hint: 'You have one of the two constants. Find both ' + t('a') + ' and ' + t('b') + ', then multiply.' };
+            if (Math.abs(v - K.roundTo(aw * bw, 1)) < 1e-9) return { code: 'u8l6-a-sign', hint: 'Rewrite ' + t('ax+y=b') + ' as ' + t('y=-ax+b') + ': the slope is ' + t('-a') + ', so ' + t('a') + ' is the <b>opposite</b> of the slope.' };
+            if (Math.abs(v - K.roundTo(s.a + s.b, 1)) < 1e-9) return { code: 'u8l6-sum', hint: 'That’s ' + t('a+b') + '. Multiply: ' + t('ab') + '.' };
+            if (Math.abs(v - K.roundTo(s.a, 1)) < 1e-9 || Math.abs(v - K.roundTo(s.b, 1)) < 1e-9) return { code: 'u8l6-one-value', hint: 'You have one of the two constants. Find both ' + t('a') + ' and ' + t('b') + ', then multiply.' };
             return null;
           } }, 'Rewrite ' + t('ax+y=b') + ' as ' + t('y=-ax+b') + ': the slope is ' + t('-a') + ' and the ' + t('y') + '-intercept is ' + t('b') + '.<br>Slope through the points: ' + t('\\frac{' + s.y2 + '-(' + s.y1 + ')}{' + s.x2 + '-(' + s.x1 + ')}=' + fx(s.rise / s.run)) + ', so ' + t('a=' + aF) + '.<br>Using ' + t(ptT([s.x1, s.y1])) + ' in ' + t('ax+y=b') + ': ' + t('b=' + aF + '(' + s.x1 + ')' + sg(s.y1) + '=' + bF) + '.<br>Check with ' + t(ptT([s.x2, s.y2])) + ': ' + t(ck(aF + '(' + s.x2 + ')' + sg(s.y2) + '=' + bF)) + '.<br>' + t('ab=' + aF + '\\times ' + bF + '=' + fx(s.ab) + '\\approx ' + rd(s.ab, 3)) + ', so the answer is <b>' + want.toFixed(1) + '</b>.',
           ['Substitute each point for ' + t('x') + ' and ' + t('y') + ' in ' + t('ax+y=b') + ': that gives a system in ' + t('a') + ' and ' + t('b') + '.', 'Or: ' + t('y=-ax+b') + ', so ' + t('-a') + ' is the slope and ' + t('b') + ' the ' + t('y') + '-intercept.'], 'NR ab for ax+y=b');
@@ -444,16 +519,16 @@
           { id: '14a', sub: 'a', level: 'EMG', make: function (r, s) {
             var A = { A: s.rA * 4, B: -4, C: s.fA * 4 }, B = { A: s.rB * 4, B: -4, C: s.fB * 4 };
             var kA = 'y=' + num(s.fA) + '+' + num(s.rA) + 'x', kB = 'y=' + num(s.fB) + '+' + num(s.rB) + 'x';
-            var swapW = function (f, rate) { return [{ is: { A: f * 4, B: -4, C: rate * 4 }, code: 'l6-rate-flat', hint: 'The flat charge is the starting cost — the ' + t('y') + '-intercept. The hourly charge is the slope, the number multiplied by ' + t('x') + '.' }]; };
+            var swapW = function (f, rate) { return [{ is: { A: f * 4, B: -4, C: rate * 4 }, code: 'u8l6-rate-flat', hint: 'The flat charge is the starting cost — the ' + t('y') + '-intercept. The hourly charge is the slope, the number multiplied by ' + t('x') + '.' }]; };
             return eqBoxes('(a) Write a linear cost equation for each garage, using ' + t('y') + ' for total cost (dollars) and ' + t('x') + ' for hours parked.', [{ label: 'Garage A:', T: A, keyTex: kA, wrong: swapW(s.fA, s.rA) }, { label: 'Garage B:', T: B, keyTex: kB, wrong: swapW(s.fB, s.rB) }], { bad: [['y=' + num(s.rA) + '+' + num(s.fA) + 'x', kB]] },
               'The flat charge is the ' + t('y') + '-intercept (the cost at ' + t('0') + ' hours) and the hourly charge is the slope:<br>Garage A: ' + t(kA) + '<br>Garage B: ' + t(kB),
               ['Total cost = flat charge + (hourly charge) × (hours).'], '14a garage equations');
           } },
           { id: '14b', sub: 'b', level: 'PRG', make: function (r, s) {
             return K.P.number('(b) Determine algebraically the number of hours at which both garages cost the same amount.', s.h, function (v) {
-              if (near(v, s.C)) return { code: 'l6-gave-cost', hint: 'That’s the common <b>cost</b> in dollars. The question asks for the number of <b>hours</b>.' };
-              if (near(v, (s.fA - s.fB) / (s.rA + s.rB))) return { code: 'l6-rate-sum', hint: 'When you collect the ' + t('x') + '-terms on one side, the rates are <b>subtracted</b>: ' + t(num(s.rB) + 'x-' + num(s.rA) + 'x') + '.' };
-              if (near(v, (s.fA + s.fB) / s.d)) return { code: 'l6-flat-sum', hint: 'Move the constants carefully: ' + t(num(s.fA) + '-' + num(s.fB)) + ', not ' + t(num(s.fA) + '+' + num(s.fB)) + '.' };
+              if (near(v, s.C)) return { code: 'u8l6-gave-cost', hint: 'That’s the common <b>cost</b> in dollars. The question asks for the number of <b>hours</b>.' };
+              if (near(v, (s.fA - s.fB) / (s.rA + s.rB))) return { code: 'u8l6-rate-sum', hint: 'When you collect the ' + t('x') + '-terms on one side, the rates are <b>subtracted</b>: ' + t(num(s.rB) + 'x-' + num(s.rA) + 'x') + '.' };
+              if (near(v, (s.fA + s.fB) / s.d)) return { code: 'u8l6-flat-sum', hint: 'Move the constants carefully: ' + t(num(s.fA) + '-' + num(s.fB)) + ', not ' + t(num(s.fA) + '+' + num(s.fB)) + '.' };
               return null;
             }, 'Set the two costs equal:<br>' + t(num(s.fA) + '+' + num(s.rA) + 'x=' + num(s.fB) + '+' + num(s.rB) + 'x') + '<br>' + t(num(rd(s.fA - s.fB)) + '=' + lin([s.d], ['x']) + '\\Rightarrow x=' + s.h) + ' hours.<br>Common cost: ' + t(num(s.fA) + '+' + num(s.rA) + '(' + s.h + ')=' + money(s.C)) + ', and ' + t(ck(num(s.fB) + '+' + num(s.rB) + '(' + s.h + ')=' + money(s.C))) + '.',
             ['Set the two cost expressions equal to each other and solve for ' + t('x') + '.'], '14b break-even hours', { after: 'hours' });
@@ -470,7 +545,7 @@
           { id: '14c2', sub: 'c ii', level: 'EMG', make: function (r, s) {
             var dif = rd(Math.abs(s.cA - s.cB), 2);
             var p = K.P.number('(c) By how much is the cheaper garage cheaper for a stay of ' + t(s.T) + ' hours?', dif, function (v) {
-              if (near(v, s.cA) || near(v, s.cB)) return { code: 'l6-gave-cost', hint: 'That’s the cost at one garage. The question asks for the <b>difference</b> between the two costs.' };
+              if (near(v, s.cA) || near(v, s.cB)) return { code: 'u8l6-gave-cost', hint: 'That’s the cost at one garage. The question asks for the <b>difference</b> between the two costs.' };
               return null;
             }, 'A: ' + t(money(s.cA)) + ', B: ' + t(money(s.cB)) + '. Difference: ' + t(money(Math.max(s.cA, s.cB)) + '-' + money(Math.min(s.cA, s.cB)) + '=' + money(dif)) + '.', ['Find both costs at ' + t('x=' + s.T) + ' and subtract.'], '14c difference', { before: '$' });
             p.answer = t(money(dif)); return p;
@@ -490,9 +565,9 @@
           { id: '15a', sub: 'a i', level: 'EMG', make: function (r, s) {
             var win = [[-8, 8], [-8, 8]], L1 = line(1, 1, -s.s), L2 = line(s.p, -1, -s.c);
             return graphSys('(a) Graph both equations on the grid without using technology.', [L1, L2], [t(s.E1), t(s.E2)], win, { wrong: [
-              { Ls: [L1, line(s.p, -1, s.c)], code: 'l6-gr-int-sign', hint: 'Check the ' + t('y') + '-intercept of ' + t(s.E2) + ': ' + t('-y=-' + s.p + 'x' + sg(s.c)) + ', so ' + t('y=' + s.p + 'x' + sg(-s.c)) + '. The ' + t('y') + '-intercept is ' + t(-s.c) + '.' },
-              { Ls: [line(1, -1, s.s), L2], code: 'l6-gr-slope-sign', hint: t(s.E1) + ' rearranges to ' + t('y=-x' + sg(s.s)) + ': its slope is ' + t('-1') + ', so it falls from left to right.' },
-              { Ls: [L1, line(s.p, 1, -s.c)], code: 'l6-gr-slope-sign', hint: t(s.E2) + ' rearranges to ' + t('y=' + s.p + 'x' + sg(-s.c)) + ': its slope is ' + t('+' + s.p) + ', so it rises from left to right.' }] },
+              { Ls: [L1, line(s.p, -1, s.c)], code: 'u8l6-gr-int-sign', hint: 'Check the ' + t('y') + '-intercept of ' + t(s.E2) + ': ' + t('-y=-' + s.p + 'x' + sg(s.c)) + ', so ' + t('y=' + s.p + 'x' + sg(-s.c)) + '. The ' + t('y') + '-intercept is ' + t(-s.c) + '.' },
+              { Ls: [line(1, -1, s.s), L2], code: 'u8l6-gr-slope-sign', hint: t(s.E1) + ' rearranges to ' + t('y=-x' + sg(s.s)) + ': its slope is ' + t('-1') + ', so it falls from left to right.' },
+              { Ls: [L1, line(s.p, 1, -s.c)], code: 'u8l6-gr-slope-sign', hint: t(s.E2) + ' rearranges to ' + t('y=' + s.p + 'x' + sg(-s.c)) + ': its slope is ' + t('+' + s.p) + ', so it rises from left to right.' }] },
               t(s.E1) + ' has intercepts ' + t(ptT([s.s, 0])) + ' and ' + t(ptT([0, s.s])) + ' (slope ' + t('-1') + ').<br>' + t(s.E2 + '\\Rightarrow y=' + s.p + 'x' + sg(-s.c)) + ': start at ' + t(ptT([0, -s.c])) + ', then up ' + t(s.p) + ', right ' + t(1) + '.<br>The lines cross at ' + t(ptT([s.x0, s.y0])) + '.',
               ['Find two easy points on each line (the intercepts work well for ' + t(s.E1) + ').', 'For ' + t(s.E2) + ', solve for ' + t('y') + ' first.'], '15a graph system');
           } },
@@ -539,10 +614,10 @@
             var T1 = { A: 1, B: 1, C: -s.V }, T2 = { A: s.p1, B: s.p2, C: -100 * s.A };
             return sysPart('(a) Write a system of two equations modelling this situation — one for the total volume, one for the total amount of acid.', [T1, T2], {
               labels: ['Total volume:', 'Total acid:'], keyTex: ['x+y=' + s.V, pc(s.p1) + 'x+' + pc(s.p2) + 'y=' + num(s.A)], alt: [[], [[s.p1 - s.p3, s.p2 - s.p3, 0]]],
-              diags: [{ is: [s.p1, s.p2, -100 * s.p3], code: 'l6-mix-percent', hint: 'The acid equation counts mL of acid: the mixture holds ' + t(pc(s.p3) + '\\times ' + s.V + '=' + num(s.A)) + ' mL of acid, not ' + t(s.p3) + '.' },
-                { is: [s.p1, s.p2, -s.p3], code: 'l6-mix-percent', hint: 'The right side of the acid equation is an amount of acid in mL: ' + t(pc(s.p3) + '\\times ' + s.V + '=' + num(s.A)) + '.' },
-                { is: [100 * s.p1, 100 * s.p2, -100 * s.A], code: 'l6-mix-decimal', hint: 'Write the percents as decimals: ' + t(s.p1 + '\\%=' + pc(s.p1)) + ' and ' + t(s.p2 + '\\%=' + pc(s.p2)) + '.' },
-                { is: [1, 1, -s.A], code: 'l6-mix-total', hint: 'The volume equation uses the total volume of the mixture, ' + t(s.V) + ' mL.' }],
+              diags: [{ is: [s.p1, s.p2, -100 * s.p3], code: 'u8l6-mix-percent', hint: 'The acid equation counts mL of acid: the mixture holds ' + t(pc(s.p3) + '\\times ' + s.V + '=' + num(s.A)) + ' mL of acid, not ' + t(s.p3) + '.' },
+                { is: [s.p1, s.p2, -s.p3], code: 'u8l6-mix-percent', hint: 'The right side of the acid equation is an amount of acid in mL: ' + t(pc(s.p3) + '\\times ' + s.V + '=' + num(s.A)) + '.' },
+                { is: [100 * s.p1, 100 * s.p2, -100 * s.A], code: 'u8l6-mix-decimal', hint: 'Write the percents as decimals: ' + t(s.p1 + '\\%=' + pc(s.p1)) + ' and ' + t(s.p2 + '\\%=' + pc(s.p2)) + '.' },
+                { is: [1, 1, -s.A], code: 'u8l6-mix-total', hint: 'The volume equation uses the total volume of the mixture, ' + t(s.V) + ' mL.' }],
               bad: [['x+y=' + s.V, pc(s.p1) + 'x+' + pc(s.p2) + 'y=' + s.p3]], good: [['x+y=' + s.V, pc(s.p1) + 'x+' + pc(s.p2) + 'y=' + pc(s.p3) + '(x+y)']] },
               '<b>Total volume:</b> ' + t('x+y=' + s.V) + '<br><b>Total acid:</b> each mL of the ' + t(s.p1 + '\\%') + ' solution carries ' + t(pc(s.p1)) + ' mL of acid and each mL of the ' + t(s.p2 + '\\%') + ' solution carries ' + t(pc(s.p2)) + ' mL; the mixture must carry ' + t(pc(s.p3) + '(' + s.V + ')=' + num(s.A)) + ' mL:<br>' + t(pc(s.p1) + 'x+' + pc(s.p2) + 'y=' + num(s.A)),
               ['One equation adds the volumes; the other adds the amounts of pure acid (percent as a decimal × volume).'], '16a mixture system');
@@ -556,7 +631,7 @@
             return numBoxes('(c) State how many mL of each stock solution are required, and check against the words: how much pure acid is in the final ' + t(s.V) + ' mL?', [
               { label: t(s.p1 + '\\%') + ' solution:', after: 'mL', v: s.x0, name: t(s.p1 + '\\%') + ' solution' },
               { label: t(s.p2 + '\\%') + ' solution:', after: 'mL', v: s.y0, name: t(s.p2 + '\\%') + ' solution' },
-              { label: 'pure acid:', after: 'mL', v: s.A, name: 'pure acid', diag: function (v) { if (near(v, s.p3)) return { code: 'l6-mix-percent', hint: 'That’s the percent. The amount of acid is ' + t(pc(s.p3) + '\\times ' + s.V) + ' mL.' }; return null; } }],
+              { label: 'pure acid:', after: 'mL', v: s.A, name: 'pure acid', diag: function (v) { if (near(v, s.p3)) return { code: 'u8l6-mix-percent', hint: 'That’s the percent. The amount of acid is ' + t(pc(s.p3) + '\\times ' + s.V) + ' mL.' }; return null; } }],
               t(s.x0) + ' mL of the ' + t(s.p1 + '\\%') + ' solution and ' + t(s.y0) + ' mL of the ' + t(s.p2 + '\\%') + ' solution.<br>Check: ' + t(ck(s.x0 + '+' + s.y0 + '=' + s.V)) + ' mL; acid: ' + t(pcS(s.p1) + '(' + s.x0 + ')+' + pcS(s.p2) + '(' + s.y0 + ')=' + num(s.p1 * s.x0 / 100) + '+' + num(s.p2 * s.y0 / 100) + '=' + num(s.A)) + ' mL, and ' + t(ck('\\frac{' + num(s.A) + '}{' + s.V + '}=' + pcS(s.p3) + '=' + s.p3 + '\\%')) + '.',
               ['The solution of the system gives the two volumes. The acid in the mixture is ' + t(s.p3 + '\\%') + ' of ' + t(s.V) + ' mL.'], '16c mixture answer', { swapHint: 'Check which solution is which: ' + t('x') + ' is the ' + t(s.p1 + '\\%') + ' solution.' });
           } }] },
@@ -575,9 +650,9 @@
           { id: '17a', sub: 'i', level: 'EMG', make: function (r, s) {
             return sysPart('Let ' + t('h') + ' be the number of hot dogs and ' + t('d') + ' the number of drinks. Write a system of two equations — one counting items, one totalling the money.', [{ A: 1, B: 1, C: -s.N }, { A: s.p1 * 2, B: s.p2 * 2, C: -2 * s.V }], {
               vars: ['h', 'd'], labels: ['Items:', 'Money:'], keyTex: ['h+d=' + s.N, num(s.p1) + 'h+' + num(s.p2) + 'd=' + s.V],
-              diags: [{ is: [1, 1, -s.V], code: 'l6-rhs-swap', hint: 'The count of items, ' + t(s.N) + ', goes with ' + t('h+d') + '; the money, ' + t(money(s.V)) + ', goes with the price equation.' },
-                { is: [s.p1 * 2, s.p2 * 2, -2 * s.N], code: 'l6-rhs-swap', hint: 'The price equation totals money, so its right side is ' + t(money(s.V)) + ', not the number of items.' },
-                { is: [s.p2 * 2, s.p1 * 2, -2 * s.V], code: 'l6-price-swap', hint: 'Each hot dog brings in ' + t(money(s.p1)) + ', so ' + t(num(s.p1)) + ' multiplies ' + t('h') + '.' }],
+              diags: [{ is: [1, 1, -s.V], code: 'u8l6-rhs-swap', hint: 'The count of items, ' + t(s.N) + ', goes with ' + t('h+d') + '; the money, ' + t(money(s.V)) + ', goes with the price equation.' },
+                { is: [s.p1 * 2, s.p2 * 2, -2 * s.N], code: 'u8l6-rhs-swap', hint: 'The price equation totals money, so its right side is ' + t(money(s.V)) + ', not the number of items.' },
+                { is: [s.p2 * 2, s.p1 * 2, -2 * s.V], code: 'u8l6-price-swap', hint: 'Each hot dog brings in ' + t(money(s.p1)) + ', so ' + t(num(s.p1)) + ' multiplies ' + t('h') + '.' }],
               bad: [['h+d=' + s.V, num(s.p1) + 'h+' + num(s.p2) + 'd=' + s.N]] },
               'Counting items: ' + t('h+d=' + s.N) + '. Totalling value, in dollars: ' + t(num(s.p1) + 'h+' + num(s.p2) + 'd=' + s.V) + '.',
               ['One equation adds the numbers of items; the other adds price × number for each kind.'], '17 concession system');
@@ -602,16 +677,16 @@
           { id: '18a', sub: 'i', level: 'EMG', make: function (r, s) {
             return sysPart('Let ' + t('l') + ' be the length and ' + t('w') + ' the width, in metres. Write a system of two equations.', [{ A: 2, B: 2, C: -s.P }, { A: 1, B: -s.k, C: -s.c }], {
               vars: ['l', 'w'], labels: ['Perimeter:', 'Length:'], keyTex: ['2l+2w=' + s.P, s.cond],
-              diags: [{ is: [1, 1, -s.P], code: 'l6-perimeter', hint: 'The perimeter goes all the way around: two lengths and two widths, ' + t('2l+2w=' + s.P) + '.' },
-                { is: [-s.k, 1, -s.c], code: 'l6-backwards', hint: 'Read it again: the <b>length</b> is ' + s.words + ' the width, so the equation starts ' + t('l=') + '.' },
-                { is: [1, -s.k, s.c], code: 'l6-cond-sign', hint: s.c > 0 ? '“More than” means add: ' + t(s.cond) + '.' : '“Less than” means subtract: ' + t(s.cond) + '.' }],
+              diags: [{ is: [1, 1, -s.P], code: 'u8l6-perimeter', hint: 'The perimeter goes all the way around: two lengths and two widths, ' + t('2l+2w=' + s.P) + '.' },
+                { is: [-s.k, 1, -s.c], code: 'u8l6-backwards', hint: 'Read it again: the <b>length</b> is ' + s.words + ' the width, so the equation starts ' + t('l=') + '.' },
+                { is: [1, -s.k, s.c], code: 'u8l6-cond-sign', hint: s.c > 0 ? '“More than” means add: ' + t(s.cond) + '.' : '“Less than” means subtract: ' + t(s.cond) + '.' }],
               bad: [['l+w=' + s.P, s.cond]] },
               'Perimeter: ' + t('2l+2w=' + s.P) + ' (or ' + t('l+w=' + (s.P / 2)) + '). Length condition: ' + t(s.cond) + '.',
               ['A rectangle’s perimeter is ' + t('2l+2w') + '.'], '18 dog run system');
           } },
           { id: '18b', sub: 'ii', level: 'EMG', make: function (r, s) {
             var w2 = (s.P - s.c) / (s.k + 1), l2 = s.k * w2 + s.c;
-            return numBoxes('Solve the system ' + both('2l+2w=' + s.P, s.cond) + '. State the dimensions of the dog run.', [{ label: 'length:', after: 'm', v: s.l0, diag: function (v) { return near(v, l2) ? { code: 'l6-perimeter', hint: 'Check the perimeter: ' + t('2l+2w=' + s.P) + ', so ' + t('l+w=' + (s.P / 2)) + ', not ' + t(s.P) + '.' } : null; } }, { label: 'width:', after: 'm', v: s.w0 }],
+            return numBoxes('Solve the system ' + both('2l+2w=' + s.P, s.cond) + '. State the dimensions of the dog run.', [{ label: 'length:', after: 'm', v: s.l0, diag: function (v) { return near(v, l2) ? { code: 'u8l6-perimeter', hint: 'Check the perimeter: ' + t('2l+2w=' + s.P) + ', so ' + t('l+w=' + (s.P / 2)) + ', not ' + t(s.P) + '.' } : null; } }, { label: 'width:', after: 'm', v: s.w0 }],
               'Perimeter: ' + t('2(l+w)=' + s.P) + ', so ' + t('l+w=' + (s.P / 2)) + '. Substitute ' + t(s.cond) + ':<br>' + t('(' + s.k + 'w' + (s.c > 0 ? '+' + s.c : num(s.c)) + ')+w=' + (s.P / 2) + '\\Rightarrow ' + (s.k + 1) + 'w=' + (s.P / 2 - s.c) + '\\Rightarrow w=' + s.w0) + ', so ' + t('l=' + s.k + '(' + s.w0 + ')' + (s.c > 0 ? '+' + s.c : num(s.c)) + '=' + s.l0) + '.<br>Check: ' + t(ck('2(' + s.l0 + ')+2(' + s.w0 + ')=' + s.P)) + '. The dog run is <b>' + s.l0 + ' m long and ' + s.w0 + ' m wide</b>.',
               ['Substitute the length condition into the perimeter equation.'], '18 dog run answer', { swapHint: 'Check which is which: the length is the longer side here.' });
           } }] }
@@ -680,10 +755,10 @@
     return function (resp) {
       var rr = Ln.read(resp, vars);
       if (!rr.ok) return form(rr.why === 'empty' ? 'empty' : 'line-' + rr.why, rr.why === 'empty' ? 'Type your equation first.' : 'Write an equation that starts ' + t(Y + '=') + '.');
-      if (!Ln.same([rr.a, rr.b, rr.c], TL)) return wrong('l6-isolate', 'That isn’t the same line any more. Move the ' + t(vars[0]) + '-term to the other side, then divide <b>every</b> term by the coefficient of ' + t(Y) + '.');
+      if (!Ln.same([rr.a, rr.b, rr.c], TL)) return wrong('u8l6-isolate', 'That isn’t the same line any more. Move the ' + t(vars[0]) + '-term to the other side, then divide <b>every</b> term by the coefficient of ' + t(Y) + '.');
       var l = strip(rr.lAst), rt = strip(rr.rAst);
       if ((l && l.t === 'var' && l.n === Y && !hasY(rr.rAst)) || (rt && rt.t === 'var' && rt.n === Y && !hasY(rr.lAst))) return ok();
-      return form('l6-not-isolated', 'Right equation — now get ' + t(Y) + ' by itself on one side, e.g. ' + t(Y + '=\\ldots') + '.');
+      return form('u8l6-not-isolated', 'Right equation — now get ' + t(Y) + ' by itself on one side, e.g. ' + t(Y + '=\\ldots') + '.');
     };
   }
   /* an expression in one letter (e.g. k), equivalent to targetTex; opt.single: nudge unless it is one fraction */
@@ -695,11 +770,11 @@
       var a = K.read(s); if (a.res) return a.res;
       var extra = vs(a.ast).filter(function (x) { return x !== v; }); if (extra.length) return wrong('var', 'Write it using only the letter ' + t(v) + '.');
       if (ex.equiv(a.ast, tp, [v], 6)) {
-        if (opt.single) { var top = a.ast; while (top.t === 'paren') top = top.a; if (top.t !== 'div' && !(top.t === 'neg' && top.a.t === 'div')) return form('l6-single-frac', 'Right — now write it as a single fraction, e.g. ' + t('\\frac{2' + v + '+12}{7}') + '.'); }
+        if (opt.single) { var top = a.ast; while (top.t === 'paren') top = top.a; if (top.t !== 'div' && !(top.t === 'neg' && top.a.t === 'div')) return form('u8l6-single-frac', 'Right — now write it as a single fraction, e.g. ' + t('\\frac{2' + v + '+12}{7}') + '.'); }
         return ok();
       }
       if (opt.diag) { var h = opt.diag(a.ast); if (h) return wrong(h.code, h.hint); }
-      return wrong('l6-param', null);
+      return wrong('u8l6-param', null);
     };
   }
   function clipSeg(Lo, xr, yr) {   // the part of line Lo inside the box, as two points
@@ -715,14 +790,14 @@
     return function (resp) {
       if (DR.empty(resp)) return form('empty', 'Draw your answer on the grid first.');
       var v = splitBends(resp, true), have = Object.keys(DR.geom(v).lines);
-      if (!have.length) return wrong('l6-points-only', 'Plotting points is a good start — now join each candle’s points with a line (Line tool).');
+      if (!have.length) return wrong('u8l6-points-only', 'Plotting points is a good start — now join each candle’s points with a line (Line tool).');
       var miss = [], extra = have.filter(function (k) { return keys.indexOf(k) < 0; });
       keys.forEach(function (k, i) { if (have.indexOf(k) < 0) miss.push(names[i]); });
       if (!miss.length && !extra.length) return ok();
       for (var i = 0; i < W.length; i++) if (have.indexOf(W[i].k) >= 0) return wrong(W[i].code, W[i].hint);
-      if (miss.length && !extra.length) return wrong('l6-line-missing', 'Correct so far — still to draw: ' + miss.join(' and ') + '.');
-      if (!miss.length) return wrong('l6-line-extra', 'Both lines are there, but there is an extra line too. Remove it.');
-      return wrong('l6-line-wrong', miss.length < Ls.length ? 'One line is right. Check ' + miss.join(' and ') + ': its starting height and how much it drops each hour.' : 'Check each line: it starts at the candle’s height at ' + t('t=0') + ' and drops by the burn rate every hour.');
+      if (miss.length && !extra.length) return wrong('u8l6-line-missing', 'Correct so far — still to draw: ' + miss.join(' and ') + '.');
+      if (!miss.length) return wrong('u8l6-line-extra', 'Both lines are there, but there is an extra line too. Remove it.');
+      return wrong('u8l6-line-wrong', miss.length < Ls.length ? 'One line is right. Check ' + miss.join(' and ') + ': its starting height and how much it drops each hour.' : 'Check each line: it starts at the candle’s height at ' + t('t=0') + ' and drops by the burn rate every hour.');
     };
   }
   /* the four "which method?" options of EP question 2 */
@@ -806,8 +881,8 @@
           { id: 'e1a2', sub: 'a ii', level: 'PRG', make: function (r, s) {
             var L1 = line(s.a, s.b, -s.c), L2 = line(s.b, -s.a, -s.f);
             return graphSys('(a) Graph both lines: ' + t(s.si1) + ' and ' + t(s.si2) + '.', [L1, L2], [t(s.si1), t(s.si2)], E1W, { wrong: [
-              { Ls: [line(s.a, -s.b, -s.c), L2], code: 'l6-gr-slope-sign', hint: 'Check the slope of ' + t(s.si1) + ': it is negative, so the line falls from left to right.' },
-              { Ls: [L1, line(s.b, s.a, -s.f)], code: 'l6-gr-slope-sign', hint: 'Check the slope of ' + t(s.si2) + ': it is positive, so the line rises from left to right.' }] },
+              { Ls: [line(s.a, -s.b, -s.c), L2], code: 'u8l6-gr-slope-sign', hint: 'Check the slope of ' + t(s.si1) + ': it is negative, so the line falls from left to right.' },
+              { Ls: [L1, line(s.b, s.a, -s.f)], code: 'u8l6-gr-slope-sign', hint: 'Check the slope of ' + t(s.si2) + ': it is positive, so the line rises from left to right.' }] },
               'Plot each ' + t('y') + '-intercept, then use the slope (rise over run) to reach another grid point — for a fractional intercept, step along the line until you land on a grid point.<br>' + t(s.si1) + ' passes through ' + lat(L1, E1W[0], E1W[1]).slice(0, 2).map(ptT).map(t).join(' and ') + '; ' + t(s.si2) + ' passes through ' + lat(L2, E1W[0], E1W[1]).slice(0, 2).map(ptT).map(t).join(' and ') + '. They cross at ' + t(ptT(s.P)) + '.',
               ['If a ' + t('y') + '-intercept is a fraction, find a grid point on the line instead: try ' + t('x') + '-values until ' + t('y') + ' is a whole number.'], 'EP1a graph');
           } },
@@ -827,9 +902,9 @@
           } },
           { id: 'e1c', sub: 'c i', level: 'EMG', make: function (r, s) {
             return numBoxes('(c) <b>By elimination.</b> To eliminate ' + t('y') + ' from ' + both(s.E1, s.E2) + ', state the lowest common multiple of the ' + t('y') + '-coefficients and the two multipliers.', [
-              { label: 'LCM:', v: s.Lm, diag: function (v) { return near(v, s.a * s.b * 2) ? { code: 'l6-not-lowest', hint: 'That’s a common multiple, but not the <b>lowest</b> one.' } : null; } },
-              { label: 'multiply Eq. 1 by', v: s.m1, name: 'Eq. 1', diag: function (v) { return near(v, s.m2) ? { code: 'l6-mult-swap', hint: 'Eq. 1 has ' + t(s.b + 'y') + ': it needs ×' + t(s.m1) + ' to reach ' + t(s.Lm + 'y') + '.' } : null; } },
-              { label: 'multiply Eq. 2 by', v: s.m2, name: 'Eq. 2', diag: function (v) { return near(v, s.m1) ? { code: 'l6-mult-swap', hint: 'Eq. 2 has ' + t('-' + s.a + 'y') + ': it needs ×' + t(s.m2) + ' to reach ' + t('-' + s.Lm + 'y') + '.' } : null; } }],
+              { label: 'LCM:', v: s.Lm, diag: function (v) { return near(v, s.a * s.b * 2) ? { code: 'u8l6-not-lowest', hint: 'That’s a common multiple, but not the <b>lowest</b> one.' } : null; } },
+              { label: 'multiply Eq. 1 by', v: s.m1, name: 'Eq. 1', diag: function (v) { return near(v, s.m2) ? { code: 'u8l6-mult-swap', hint: 'Eq. 1 has ' + t(s.b + 'y') + ': it needs ×' + t(s.m1) + ' to reach ' + t(s.Lm + 'y') + '.' } : null; } },
+              { label: 'multiply Eq. 2 by', v: s.m2, name: 'Eq. 2', diag: function (v) { return near(v, s.m1) ? { code: 'u8l6-mult-swap', hint: 'Eq. 2 has ' + t('-' + s.a + 'y') + ': it needs ×' + t(s.m2) + ' to reach ' + t('-' + s.Lm + 'y') + '.' } : null; } }],
               'The ' + t('y') + '-coefficients are ' + t(s.b) + ' and ' + t(-s.a) + '; ' + t('\\text{LCM}(' + s.b + ',' + s.a + ')=' + s.Lm) + ', so multiply Eq. 1 by ' + t(s.m1) + ' and Eq. 2 by ' + t(s.m2) + ':<br>' + t(eqT(s.a * s.m1, s.b * s.m1, s.c * s.m1)) + ' and ' + t(eqT(s.b * s.m2, -s.a * s.m2, s.f * s.m2)) + '.',
               ['The ' + t('y') + '-terms are ' + t(s.b + 'y') + ' and ' + t('-' + s.a + 'y') + '. What is the smallest number both ' + t(s.b) + ' and ' + t(s.a) + ' divide into?'], 'EP1c LCM');
           } },
@@ -839,10 +914,10 @@
               if (!a.ok || !b.ok) return form('empty', 'Fill in both boxes with numbers.');
               if (near(a.value, s.cx) && near(b.value, s.cr)) return ok();
               if (a.value !== 0 && near(b.value / a.value, s.x0) && isInt(a.value / s.cx)) return ok();
-              if (near(a.value, s.a * s.m1 - s.b * s.m2)) return wrong('l6-elim-sign', 'The ' + t('y') + '-terms are ' + t('+' + s.Lm + 'y') + ' and ' + t('-' + s.Lm + 'y') + ' — opposites — so <b>add</b> the equations.');
-              if (near(a.value, s.cx) && near(b.value, s.c + s.f)) return wrong('l6-rhs-unscaled', 'Multiply the right sides too: ' + t(s.c + '\\times ' + s.m1) + ' and ' + t(s.f + '\\times ' + s.m2) + '.');
-              if (near(a.value, s.cx)) return wrong('l6-elim-rhs', 'The ' + t('x') + '-coefficient is right. Add the two scaled right sides: ' + t(s.c * s.m1 + '+' + (s.f * s.m2 < 0 ? '(' + s.f * s.m2 + ')' : s.f * s.m2)) + '.');
-              return wrong('l6-elim', null);
+              if (near(a.value, s.a * s.m1 - s.b * s.m2)) return wrong('u8l6-elim-sign', 'The ' + t('y') + '-terms are ' + t('+' + s.Lm + 'y') + ' and ' + t('-' + s.Lm + 'y') + ' — opposites — so <b>add</b> the equations.');
+              if (near(a.value, s.cx) && near(b.value, s.c + s.f)) return wrong('u8l6-rhs-unscaled', 'Multiply the right sides too: ' + t(s.c + '\\times ' + s.m1) + ' and ' + t(s.f + '\\times ' + s.m2) + '.');
+              if (near(a.value, s.cx)) return wrong('u8l6-elim-rhs', 'The ' + t('x') + '-coefficient is right. Add the two scaled right sides: ' + t(s.c * s.m1 + '+' + (s.f * s.m2 < 0 ? '(' + s.f * s.m2 + ')' : s.f * s.m2)) + '.');
+              return wrong('u8l6-elim', null);
             };
             var res = { prompt: '(c) After multiplying (Eq. 1 × ' + t(s.m1) + ', Eq. 2 × ' + t(s.m2) + ') and adding, the ' + t('y') + '-terms are gone. Complete the equation that is left: ' + t('\\square\\,x=\\square') + '. Then solve it.', input: { type: 'fields', fields: [{ label: 'coefficient:', after: t('x') }, { label: '= ' }] }, check: check,
               key: [String(s.cx), String(s.cr)], answer: t(s.cx + 'x=' + s.cr) + ', so ' + t('x=' + s.x0),
@@ -938,8 +1013,8 @@
         },
         parts: [
           { id: 'e4a', sub: 'a i', level: 'EMG', make: function (r, s) {
-            return eqBoxes('(a) Write an equation for each candle.', [{ label: 'taller:', T: s.T1, keyTex: s.e1, wrong: [{ is: { A: -2 * s.r1, B: 2, C: -2 * s.H1 }, code: 'l6-rate-sign', hint: 'The candle gets <b>shorter</b>: its height goes down ' + t(num(s.r1)) + ' cm each hour, so the slope is negative.' }] },
-              { label: 'shorter:', T: s.T2, keyTex: s.e2, wrong: [{ is: { A: -2 * s.r2, B: 2, C: -2 * s.H2 }, code: 'l6-rate-sign', hint: 'The candle gets <b>shorter</b>: its height goes down ' + t(num(s.r2)) + ' cm each hour, so the slope is negative.' }] }], { vars: ['t', 'h'] },
+            return eqBoxes('(a) Write an equation for each candle.', [{ label: 'taller:', T: s.T1, keyTex: s.e1, wrong: [{ is: { A: -2 * s.r1, B: 2, C: -2 * s.H1 }, code: 'u8l6-rate-sign', hint: 'The candle gets <b>shorter</b>: its height goes down ' + t(num(s.r1)) + ' cm each hour, so the slope is negative.' }] },
+              { label: 'shorter:', T: s.T2, keyTex: s.e2, wrong: [{ is: { A: -2 * s.r2, B: 2, C: -2 * s.H2 }, code: 'u8l6-rate-sign', hint: 'The candle gets <b>shorter</b>: its height goes down ' + t(num(s.r2)) + ' cm each hour, so the slope is negative.' }] }], { vars: ['t', 'h'] },
               'Each starts at its initial height (the ' + t('h') + '-intercept) and loses its burn rate every hour (a negative slope):<br>taller: ' + t(s.e1) + '<br>shorter: ' + t(s.e2),
               ['height = starting height − (burn rate) × (hours).'], 'EP4a equations');
           } },
@@ -949,9 +1024,9 @@
             var key = { pts: [], pieces: [seg(s.H1, s.r1), seg(s.H2, s.r2)], join: 'none' };
             var Lt = line(2 * s.r1, 2, -2 * s.H1), Ls2 = line(2 * s.r2, 2, -2 * s.H2);
             var check = lineSetCheck([Lt, Ls2], ['the taller candle (' + t(s.e1) + ')', 'the shorter candle (' + t(s.e2) + ')'], [
-              { Lo: line(-2 * s.r1, 2, -2 * s.H1), code: 'l6-rate-sign', hint: 'The candles burn <b>down</b>: each line should fall from left to right.' },
-              { Lo: line(-2 * s.r2, 2, -2 * s.H2), code: 'l6-rate-sign', hint: 'The candles burn <b>down</b>: each line should fall from left to right.' },
-              { Lo: line(2 * s.r2, 2, -2 * s.H1), code: 'l6-rate-swap', hint: 'Check which rate goes with which candle: the taller one burns ' + t(num(s.r1)) + ' cm per hour.' }]);
+              { Lo: line(-2 * s.r1, 2, -2 * s.H1), code: 'u8l6-rate-sign', hint: 'The candles burn <b>down</b>: each line should fall from left to right.' },
+              { Lo: line(-2 * s.r2, 2, -2 * s.H2), code: 'u8l6-rate-sign', hint: 'The candles burn <b>down</b>: each line should fall from left to right.' },
+              { Lo: line(2 * s.r2, 2, -2 * s.H1), code: 'u8l6-rate-swap', hint: 'Check which rate goes with which candle: the taller one burns ' + t(num(s.r1)) + ' cm per hour.' }]);
             var p = K.P.graph('(a) Graph both candles on the grid: ' + t(s.e1) + ' and ' + t(s.e2) + '. (One grid square is ' + t(1) + ' h across and ' + t(2) + ' cm up; you can tap every ' + t(1) + ' cm.)',
               { x: win[0], y: win[1], grid: 1, gridY: 2, snapX: 1, snapY: 1, labelsX: 2, labelsY: 4, unitX: 34, unitY: 11, xName: 't', yName: 'h', xTitle: 't (hours)', yTitle: 'h (cm)', mode: 'lines', defaultEnd: 'closed', firstQuadrant: true, max: 360 },
               check, key, 'Taller: start at ' + t('(0,\\ ' + s.H1 + ')') + ' and drop ' + t(num(s.r1)) + ' cm per hour, e.g. through ' + t(ptD(key.pieces[0].v[1])) + '.<br>Shorter: start at ' + t('(0,\\ ' + s.H2 + ')') + ' and drop ' + t(num(s.r2)) + ' cm per hour, e.g. through ' + t(ptD(key.pieces[1].v[1])) + '.',
@@ -961,8 +1036,8 @@
           } },
           { id: 'e4b', sub: 'b', level: 'EMG', make: function (r, s) {
             var tk = Math.round(s.ts * 2) / 2, hk = Math.round(s.hs);
-            var ct = function (resp) { var p = HW.parse.number(String(resp)); if (!p.ok) return form('empty', 'Type the time as a number of hours.'); if (!isInt(p.value * 2)) return form('l6-half', 'Give the time to the nearest <b>half</b> hour (e.g. ' + t('4.5') + ').'); if (Math.abs(p.value - s.ts) <= 0.5 + 1e-9) return ok(); return wrong('l6-estimate', 'Look again at where the two lines cross: read straight down to the ' + t('t') + '-axis.'); };
-            var ch = function (resp) { var p = HW.parse.number(String(resp)); if (!p.ok) return form('empty', 'Type the height as a number of centimetres.'); if (!isInt(p.value)) return form('round', 'Give the height to the nearest centimetre.'); if (Math.abs(p.value - s.hs) <= 1.5) return ok(); return wrong('l6-estimate', 'Read across from the crossing point to the ' + t('h') + '-axis.'); };
+            var ct = function (resp) { var p = HW.parse.number(String(resp)); if (!p.ok) return form('empty', 'Type the time as a number of hours.'); if (!isInt(p.value * 2)) return form('u8l6-half', 'Give the time to the nearest <b>half</b> hour (e.g. ' + t('4.5') + ').'); if (Math.abs(p.value - s.ts) <= 0.5 + 1e-9) return ok(); return wrong('u8l6-estimate', 'Look again at where the two lines cross: read straight down to the ' + t('t') + '-axis.'); };
+            var ch = function (resp) { var p = HW.parse.number(String(resp)); if (!p.ok) return form('empty', 'Type the height as a number of centimetres.'); if (!isInt(p.value)) return form('round', 'Give the height to the nearest centimetre.'); if (Math.abs(p.value - s.hs) <= 1.5) return ok(); return wrong('u8l6-estimate', 'Read across from the crossing point to the ' + t('h') + '-axis.'); };
             return numBoxes('(b) From your graph, estimate when the candles are the same height, to the nearest half hour, and estimate that common height to the nearest centimetre.', [
               { label: 'time:', after: 'hours', v: tk, check: ct }, { label: 'height:', after: 'cm', v: hk, check: ch }],
               'The lines cross a little ' + (s.ts > tk ? 'after' : 'before') + ' ' + t(tk) + ' h, at a height of about ' + t(hk) + ' cm. <b>About ' + tk + ' hours after being lit, both candles are about ' + hk + ' cm tall.</b> (Any reading within half an hour and about a centimetre is a fair estimate.)',
@@ -979,7 +1054,7 @@
           { id: 'e4d', sub: 'd', level: 'PRG', make: function (r, s) {
             var tT = frT(s.tF[0], s.tF[1]), hT = frT(s.hF[0], s.hF[1]);
             return { prompt: '(d) Now find the exact answer algebraically. Give both values as fractions in lowest terms.', input: { type: 'fields', fields: [{ label: 'time:', mode: 'math', keys: 'fraction', after: 'hours' }, { label: 'height:', mode: 'math', keys: 'fraction', after: 'cm' }] },
-              check: K.fields([K.fraction(s.tF, { diag: function (v) { return Math.abs(v - s.hs) < 1e-9 ? { code: 'l6-gave-h', hint: 'That’s the common height. The time is the value of ' + t('t') + '.' } : null; } }), K.fraction(s.hF)], { labels: ['time', 'height'] }), key: [tT, hT],
+              check: K.fields([K.fraction(s.tF, { diag: function (v) { return Math.abs(v - s.hs) < 1e-9 ? { code: 'u8l6-gave-h', hint: 'That’s the common height. The time is the value of ' + t('t') + '.' } : null; } }), K.fraction(s.hF)], { labels: ['time', 'height'] }), key: [tT, hT],
               answer: t('t=' + tT) + ' h, ' + t('h=' + hT) + ' cm',
               solution: 'Set the heights equal: ' + t(s.H1 + '-' + num(s.r1) + 't=' + s.H2 + '-' + num(s.r2) + 't\\Rightarrow ' + (s.H1 - s.H2) + '=' + num(rd(s.r1 - s.r2)) + 't') + '<br>' + t('t=\\frac{' + (s.H1 - s.H2) + '}{' + num(rd(s.r1 - s.r2)) + '}=' + tT) + ' h ' + t('\\approx ' + rd(s.ts, 2)) + ' h, and ' + t('h=' + s.H1 + '-' + num(s.r1) + '\\left(' + tT + '\\right)=' + hT) + ' cm ' + t('\\approx ' + rd(s.hs, 2)) + ' cm.<br>Check in the other equation: ' + t(ck(s.H2 + '-' + num(s.r2) + '\\left(' + tT + '\\right)=' + hT)) + '. A half-hour estimate of ' + t(Math.round(s.ts * 2) / 2) + ' h is off by ' + t(rd(Math.abs(s.ts - Math.round(s.ts * 2) / 2) * 60, 0)) + ' minutes.',
               hints: ['Set the two expressions for ' + t('h') + ' equal and solve for ' + t('t') + '. Multiply by ' + t(2) + ' first if the decimals bother you.'], text: 'EP4d exact', bad: [[rd(s.ts, 2).toString(), rd(s.hs, 2).toString()]] };
@@ -999,15 +1074,15 @@
         parts: [
           { id: 'e5a', sub: 'a', level: 'PRG', make: function (r, s) {
             return numBoxes('(a) Eliminate ' + t('y') + '. The system reduces to an equation of the form ' + t('(k+\\square)\\,x=\\square') + '. Fill in the two boxes.', [
-              { label: t('(k+\\square)') + ':', v: s.ma, name: 'first box', diag: function (v) { return near(v, s.a) ? { code: 'l6-rhs-unscaled', hint: 'Multiply <b>every</b> term of ' + t(s.E1) + ' by ' + t(s.m) + ' — the ' + t('x') + '-term becomes ' + t(s.ma + 'x') + '.' } : near(v, -s.ma) ? { code: 'l6-elim-sign', hint: 'The ' + t('y') + '-terms are ' + t('-' + (s.m * s.b) + 'y') + ' and ' + t('+' + (s.m * s.b) + 'y') + ': add the equations.' } : null; } },
-              { label: t('=\\square') + ':', v: s.N, name: 'second box', diag: function (v) { return near(v, s.c + s.d) ? { code: 'l6-rhs-unscaled', hint: 'Scale the right side too: ' + t(s.c + '\\times ' + s.m + '=' + (s.m * s.c)) + '.' } : near(v, s.m * s.c - s.d) ? { code: 'l6-elim-sign', hint: 'You are adding the equations, so add the right sides: ' + t((s.m * s.c) + sg(s.d)) + '.' } : null; } }],
+              { label: t('(k+\\square)') + ':', v: s.ma, name: 'first box', diag: function (v) { return near(v, s.a) ? { code: 'u8l6-rhs-unscaled', hint: 'Multiply <b>every</b> term of ' + t(s.E1) + ' by ' + t(s.m) + ' — the ' + t('x') + '-term becomes ' + t(s.ma + 'x') + '.' } : near(v, -s.ma) ? { code: 'u8l6-elim-sign', hint: 'The ' + t('y') + '-terms are ' + t('-' + (s.m * s.b) + 'y') + ' and ' + t('+' + (s.m * s.b) + 'y') + ': add the equations.' } : null; } },
+              { label: t('=\\square') + ':', v: s.N, name: 'second box', diag: function (v) { return near(v, s.c + s.d) ? { code: 'u8l6-rhs-unscaled', hint: 'Scale the right side too: ' + t(s.c + '\\times ' + s.m + '=' + (s.m * s.c)) + '.' } : near(v, s.m * s.c - s.d) ? { code: 'u8l6-elim-sign', hint: 'You are adding the equations, so add the right sides: ' + t((s.m * s.c) + sg(s.d)) + '.' } : null; } }],
               'The ' + t('y') + '-coefficients are ' + t(-s.b) + ' and ' + t(s.m * s.b) + '; multiply Eq. 1 by ' + t(s.m) + ':<br>' + t(eqT(s.ma, -s.m * s.b, s.m * s.c)) + '<br>Add ' + t(s.E2) + ': ' + t(s.ma + 'x+kx=' + (s.m * s.c) + sg(s.d)) + ', so ' + t('(k+' + s.ma + ')x=' + s.N) + '.',
               ['Make the ' + t('y') + '-terms opposites (multiply the first equation), then add.'], 'EP5a reduce', { bad: [[String(s.a), String(s.N)]] });
           } },
           { id: 'e5b', sub: 'b', level: 'ADV', make: function (r, s) {
             return K.P.number('(b) The system reduces to ' + t('(k+' + s.ma + ')x=' + s.N) + '. Determine the value of ' + t('k') + ' for which the system has <b>no solution</b>.', -s.ma, function (v) {
               if (near(v, s.ma)) return { code: 'sign', hint: 'You need ' + t('k+' + s.ma + '=0') + '. Solve that for ' + t('k') + ' — watch the sign.' };
-              if (near(v, s.k1)) return { code: 'l6-k-x1', hint: 'That value makes ' + t('x=1') + ' — there is a solution. No solution needs the left side to vanish: ' + t('k+' + s.ma + '=0') + '.' };
+              if (near(v, s.k1)) return { code: 'u8l6-k-x1', hint: 'That value makes ' + t('x=1') + ' — there is a solution. No solution needs the left side to vanish: ' + t('k+' + s.ma + '=0') + '.' };
               return null;
             }, 'No solution needs the left side to vanish while the right does not: ' + t('k+' + s.ma + '=0\\Rightarrow k=' + (-s.ma)) + ', leaving ' + t('0=' + s.N) + ', which is never true.<br>Slopes: ' + t(s.E1) + ' has slope ' + t(fx(s.a / s.b)) + '; with ' + t('k=' + (-s.ma)) + ', ' + t((-s.ma) + 'x+' + (s.m * s.b) + 'y=' + s.d) + ' has slope ' + t(fx(s.ma / (s.m * s.b))) + ' — equal slopes, different intercepts: parallel and distinct.',
             ['When is ' + t('(k+' + s.ma + ')x=' + s.N) + ' impossible for every ' + t('x') + '?'], 'EP5b no solution k');
@@ -1023,7 +1098,7 @@
           } },
           { id: 'e5d', sub: 'd i', level: 'ADV', make: function (r, s) {
             return K.P.number('(d) The system reduces to ' + t('(k+' + s.ma + ')x=' + s.N) + '. Determine the value of ' + t('k') + ' for which the ' + t('x') + '-coordinate of the solution is ' + t(1) + '.', s.k1, function (v) {
-              if (near(v, s.N)) return { code: 'l6-k-solve', hint: 'With ' + t('x=1') + ': ' + t('k+' + s.ma + '=' + s.N) + '. Now subtract ' + t(s.ma) + '.' };
+              if (near(v, s.N)) return { code: 'u8l6-k-solve', hint: 'With ' + t('x=1') + ': ' + t('k+' + s.ma + '=' + s.N) + '. Now subtract ' + t(s.ma) + '.' };
               if (near(v, s.N + s.ma)) return { code: 'sign', hint: t('k+' + s.ma + '=' + s.N) + ': subtract ' + t(s.ma) + ' from both sides.' };
               return null;
             }, t('(k+' + s.ma + ')(1)=' + s.N + '\\Rightarrow k=' + s.N + '-' + s.ma + '=' + s.k1) + '.', ['Substitute ' + t('x=1') + ' into the reduced equation.'], 'EP5d k for x=1');
@@ -1058,8 +1133,8 @@
               if (v.some(function (x) { return x == null; })) return form('empty', 'Fill in all four boxes with numbers.');
               var lam = v[1] / want[1];
               if (lam > 0 && v.every(function (x, i) { return near(x, lam * want[i]); })) return ok();
-              if (near(v[0], s.b) || near(v[2], s.e)) return wrong('l6-rhs-unscaled', 'Scale <b>every</b> term of the first equation: ×' + t(s.ma) + ' gives ' + t(eqT(s.a * s.ma, s.b * s.ma, s.e * s.ma)) + '.');
-              return wrong('l6-elim', 'Make the ' + t('x') + '-coefficients equal (' + t(s.Lm) + '): multiply the first equation by ' + t(s.ma) + ' and the second by ' + t(s.mp) + ', then subtract.');
+              if (near(v[0], s.b) || near(v[2], s.e)) return wrong('u8l6-rhs-unscaled', 'Scale <b>every</b> term of the first equation: ×' + t(s.ma) + ' gives ' + t(eqT(s.a * s.ma, s.b * s.ma, s.e * s.ma)) + '.');
+              return wrong('u8l6-elim', 'Make the ' + t('x') + '-coefficients equal (' + t(s.Lm) + '): multiply the first equation by ' + t(s.ma) + ' and the second by ' + t(s.mp) + ', then subtract.');
             };
             return { prompt: '(a) Eliminate ' + t('x') + '. The system reduces to ' + t('(\\square-\\square k)\\,y=\\square-\\square c') + '. Fill in the four numbers.', input: { type: 'fields', fields: [{ label: t('(\\square') + ':' }, { label: t('-\\square k)') + ':' }, { label: t('y=\\square') + ':' }, { label: t('-\\square c') + ':' }] }, check: check,
               key: want.map(String), answer: t(s.red), bad: [[String(s.b), String(s.mp), String(s.e), String(s.mp)]],
@@ -1068,7 +1143,7 @@
           } },
           { id: 'e6b', sub: 'b', level: 'ADV', make: function (r, s) {
             return { prompt: '(b) The system reduces to ' + t(s.red) + '. Determine the values of ' + t('k') + ' and ' + t('c') + ' for which the system has <b>infinitely many solutions</b>, and the multiplier that links the two equations.', input: { type: 'fields', fields: [{ label: t('k=') }, { label: t('c=') }, { label: 'multiplier:', mode: 'math', keys: 'fraction' }] },
-              check: K.fields([K.number(s.kInf), K.number(s.cInf, function (v) { return near(v, s.e) ? { code: 'l6-const', hint: 'Both sides must vanish: ' + t((s.e * s.ma) + '-' + (s.mp === 1 ? '' : s.mp) + 'c=0') + '.' } : null; }), K.fraction([s.u, s.v], { decimalOk: true })], { labels: ['k', 'c', 'multiplier'] }),
+              check: K.fields([K.number(s.kInf), K.number(s.cInf, function (v) { return near(v, s.e) ? { code: 'u8l6-const', hint: 'Both sides must vanish: ' + t((s.e * s.ma) + '-' + (s.mp === 1 ? '' : s.mp) + 'c=0') + '.' } : null; }), K.fraction([s.u, s.v], { decimalOk: true })], { labels: ['k', 'c', 'multiplier'] }),
               key: [String(s.kInf), String(s.cInf), s.qT], answer: t('k=' + s.kInf) + ', ' + t('c=' + s.cInf) + ', multiplier ' + t(s.qT),
               solution: 'Infinitely many needs ' + t('0=0') + ': ' + t((s.b * s.ma) + '-' + (s.mp === 1 ? '' : s.mp) + 'k=0\\Rightarrow k=' + s.kInf) + ' and ' + t((s.e * s.ma) + '-' + (s.mp === 1 ? '' : s.mp) + 'c=0\\Rightarrow c=' + s.cInf) + '.<br>The second equation is then ' + t(eqT(s.p, s.kInf, s.cInf)) + ', which is ' + t(s.qT) + ' times ' + t(s.E1) + ' — the same line written twice.',
               hints: ['Both brackets must be zero: the coefficient of ' + t('y') + ' <b>and</b> the right side.', 'The multiplier turns ' + t(s.a + 'x') + ' into ' + t(s.p + 'x') + '.'], text: 'EP6b infinite k, c', bad: [[String(s.kInf), String(s.e), s.qT]] };
@@ -1111,10 +1186,10 @@
           { id: 'e7a', sub: 'a', level: 'PRG', make: function (r, s) {
             return sysPart('(a) Let ' + t('c') + ' be Amara’s coursework mark and ' + t('e') + ' her exam mark, both in percent. Write a system of two equations.', [{ A: 1, B: -1, C: s.d }, { A: s.w1, B: s.w2, C: -100 * s.F }], {
               vars: ['c', 'e'], labels: ['Marks:', 'Final:'], keyTex: [s.eq1, s.eq2],
-              diags: [{ is: [1, -1, -s.d], code: 'l6-backwards', hint: 'The <b>exam</b> mark is the higher one: ' + t('e=c+' + s.d) + '.' },
-                { is: [s.w2, s.w1, -100 * s.F], code: 'l6-weights-swap', hint: 'Coursework counts ' + t(s.w1 + '\\%') + ', so ' + t(s.q1) + ' multiplies ' + t('c') + '.' },
-                { is: [100 * s.w1, 100 * s.w2, -100 * s.F], code: 'l6-mix-decimal', hint: 'Write the weights as decimals: ' + t(s.w1 + '\\%=' + s.q1) + ', ' + t(s.w2 + '\\%=' + s.q2) + '.' },
-                { is: [1, 1, -s.F], code: 'l6-weights', hint: 'The final mark is a <b>weighted</b> sum: ' + t(s.q1 + 'c+' + s.q2 + 'e') + '.' }],
+              diags: [{ is: [1, -1, -s.d], code: 'u8l6-backwards', hint: 'The <b>exam</b> mark is the higher one: ' + t('e=c+' + s.d) + '.' },
+                { is: [s.w2, s.w1, -100 * s.F], code: 'u8l6-weights-swap', hint: 'Coursework counts ' + t(s.w1 + '\\%') + ', so ' + t(s.q1) + ' multiplies ' + t('c') + '.' },
+                { is: [100 * s.w1, 100 * s.w2, -100 * s.F], code: 'u8l6-mix-decimal', hint: 'Write the weights as decimals: ' + t(s.w1 + '\\%=' + s.q1) + ', ' + t(s.w2 + '\\%=' + s.q2) + '.' },
+                { is: [1, 1, -s.F], code: 'u8l6-weights', hint: 'The final mark is a <b>weighted</b> sum: ' + t(s.q1 + 'c+' + s.q2 + 'e') + '.' }],
               bad: [['e=c-' + s.d, s.eq2]] },
               'Exam is ' + t(s.d) + ' points higher: ' + t(s.eq1) + '.<br>Final mark: ' + t(s.eq2) + '.', ['One equation compares the two marks; the other builds the final mark from the weights.'], 'EP7a system');
           } },
@@ -1142,8 +1217,8 @@
           } },
           { id: 'e7d', sub: 'd', level: 'PRG', make: function (r, s) {
             return K.P.number('(d) Amara’s exam mark was ' + t(s.e0 + '\\%') + ' (coursework ' + t(s.w1 + '\\%') + ', exam ' + t(s.w2 + '\\%') + ' of the final mark). With the same exam mark, what coursework mark would she have needed for a final mark of exactly ' + t(num(s.F2)) + '?', s.c2, function (v) {
-              if (near(v, (s.F2 - s.w1 * s.e0 / 100) / (s.w2 / 100))) return { code: 'l6-weights-swap', hint: 'Coursework is weighted ' + t(s.q1) + ': ' + t(s.q1 + 'c+' + s.q2 + '(' + s.e0 + ')=' + num(s.F2)) + '.' };
-              if (near(v, s.F2 - s.w2 * s.e0 / 100)) return { code: 'l6-divide', hint: 'Almost: that is ' + t(s.q1 + 'c') + '. Divide by ' + t(s.q1) + '.' };
+              if (near(v, (s.F2 - s.w1 * s.e0 / 100) / (s.w2 / 100))) return { code: 'u8l6-weights-swap', hint: 'Coursework is weighted ' + t(s.q1) + ': ' + t(s.q1 + 'c+' + s.q2 + '(' + s.e0 + ')=' + num(s.F2)) + '.' };
+              if (near(v, s.F2 - s.w2 * s.e0 / 100)) return { code: 'u8l6-divide', hint: 'Almost: that is ' + t(s.q1 + 'c') + '. Divide by ' + t(s.q1) + '.' };
               return null;
             }, t(s.q1 + 'c+' + s.q2 + '(' + s.e0 + ')=' + num(s.F2) + '\\Rightarrow ' + s.q1 + 'c=' + num(s.F2) + '-' + num(s.w2 * s.e0 / 100) + '=' + num(rd(s.F2 - s.w2 * s.e0 / 100)) + '\\Rightarrow c=' + s.c2) + '.<br>With the same exam mark of ' + s.e0 + '%, Amara would have needed a coursework mark of <b>' + s.c2 + '%</b>.',
             ['Keep ' + t('e=' + s.e0) + ' and replace the final mark with ' + t(num(s.F2)) + '.'], 'EP7d needed coursework', { after: '%' });
@@ -1174,8 +1249,8 @@
           { id: 'e8a', sub: 'a', level: 'EMG', make: function (r, s) {
             return sysPart('(a) Substitute each measurement into ' + t('L=a+bm') + ' to form a system of two equations in ' + t('a') + ' and ' + t('b') + '.', [{ A: 1, B: s.m1, C: -s.L1 }, { A: 1, B: s.m2, C: -s.L2 }], {
               vars: s.V, labels: [t(s.m1) + ' kg:', t(s.m2) + ' kg:'], keyTex: [s.q1, s.q2],
-              diags: [{ is: [s.m1, 1, -s.L1], code: 'l6-coef-swap', hint: 'In ' + t('L=a+bm') + ' the mass multiplies ' + t('b') + ': ' + t('a+' + s.m1 + 'b') + '.' },
-                { is: [1, s.L1, -s.m1], code: 'l6-sub-swap', hint: 'Substitute ' + t('L=' + s.L1) + ' and ' + t('m=' + s.m1) + ' — the length goes on the left, the mass multiplies ' + t('b') + '.' }],
+              diags: [{ is: [s.m1, 1, -s.L1], code: 'u8l6-coef-swap', hint: 'In ' + t('L=a+bm') + ' the mass multiplies ' + t('b') + ': ' + t('a+' + s.m1 + 'b') + '.' },
+                { is: [1, s.L1, -s.m1], code: 'u8l6-sub-swap', hint: 'Substitute ' + t('L=' + s.L1) + ' and ' + t('m=' + s.m1) + ' — the length goes on the left, the mass multiplies ' + t('b') + '.' }],
               bad: [[s.m1 + 'a+b=' + s.L1, s.q2]] },
               t('m=' + s.m1 + ',\\ L=' + s.L1) + ': ' + t(s.q1) + '<br>' + t('m=' + s.m2 + ',\\ L=' + s.L2) + ': ' + t(s.q2),
               ['Replace ' + t('L') + ' and ' + t('m') + ' by each pair of measurements; ' + t('a') + ' and ' + t('b') + ' stay as letters.'], 'EP8a system');
@@ -1195,12 +1270,12 @@
               ['What is ' + t('L') + ' when ' + t('m=0') + '? What does the coefficient of ' + t('m') + ' measure?'], 'EP8c meaning');
           } },
           { id: 'e8c2', sub: 'c ii', level: 'BEG', make: function (r, s) {
-            return K.P.number('(c) Using ' + t('L=' + s.a0 + '+' + s.b0 + 'm') + ', predict the length with a ' + t(s.mp) + ' kg mass.', s.Lp, function (v) { return near(v, s.b0 + s.a0 * s.mp) ? { code: 'l6-coef-swap', hint: 'The mass multiplies ' + t('b=' + s.b0) + ': ' + t(s.a0 + '+' + s.b0 + '(' + s.mp + ')') + '.' } : null; },
+            return K.P.number('(c) Using ' + t('L=' + s.a0 + '+' + s.b0 + 'm') + ', predict the length with a ' + t(s.mp) + ' kg mass.', s.Lp, function (v) { return near(v, s.b0 + s.a0 * s.mp) ? { code: 'u8l6-coef-swap', hint: 'The mass multiplies ' + t('b=' + s.b0) + ': ' + t(s.a0 + '+' + s.b0 + '(' + s.mp + ')') + '.' } : null; },
               t('L=' + s.a0 + '+' + s.b0 + '(' + s.mp + ')=' + s.Lp) + ' cm.', ['Substitute ' + t('m=' + s.mp) + '.'], 'EP8c predict', { after: 'cm' });
           } },
           { id: 'e8d', sub: 'd', level: 'EMG', make: function (r, s) {
             return numBoxes('(d) The first spring is ' + t('L=' + s.a0 + '+' + s.b0 + 'm') + '. A second spring on the same hook is modelled by ' + t('L=' + s.a2 + '+' + s.b2 + 'm') + '. Determine the mass at which the two springs have the same length, and that common length.', [
-              { label: 'mass:', after: 'kg', v: s.ms, diag: function (v) { return near(v, s.Ls) ? { code: 'l6-gave-cost', hint: 'That’s the common <b>length</b>. The mass is the value of ' + t('m') + '.' } : null; } }, { label: 'length:', after: 'cm', v: s.Ls }],
+              { label: 'mass:', after: 'kg', v: s.ms, diag: function (v) { return near(v, s.Ls) ? { code: 'u8l6-gave-cost', hint: 'That’s the common <b>length</b>. The mass is the value of ' + t('m') + '.' } : null; } }, { label: 'length:', after: 'cm', v: s.Ls }],
               t(s.a0 + '+' + s.b0 + 'm=' + s.a2 + '+' + s.b2 + 'm\\Rightarrow ' + (s.b0 - s.b2 === 1 ? 'm=' + s.ms : (s.b0 - s.b2) + 'm=' + (s.a2 - s.a0) + '\\Rightarrow m=' + s.ms)) + '<br>' + t('L=' + s.a0 + '+' + s.b0 + '(' + s.ms + ')=' + s.Ls) + ', and ' + t(ck(s.a2 + '+' + s.b2 + '(' + s.ms + ')=' + s.Ls)) + '.<br><b>With ' + s.ms + ' kg attached, both springs measure ' + s.Ls + ' cm.</b>',
               ['Set the two expressions for ' + t('L') + ' equal.'], 'EP8d equal length', { swapHint: 'Check which is which: the mass is in kg, the length in cm.' });
           } },
@@ -1263,7 +1338,7 @@
               ['Look at the numbers on the ' + t('y') + '-axis: how many units is one square?'], 'EP10a reading error');
           } },
           { id: 'e10b', sub: 'b', level: 'BEG', make: function (r, s) {
-            return ptPart('(b) Read the marked point correctly and state the solution as an ordered pair.', s.P, s.sys, { wrong: [{ is: s.bad, code: 'l6-scale', hint: 'That counts squares. On the ' + t('y') + '-axis one square is ' + t(2) + ' units — read the labels.' }], bad: ['(' + s.bad[0] + ',' + s.bad[1] + ')'] },
+            return ptPart('(b) Read the marked point correctly and state the solution as an ordered pair.', s.P, s.sys, { wrong: [{ is: s.bad, code: 'u8l6-scale', hint: 'That counts squares. On the ' + t('y') + '-axis one square is ' + t(2) + ' units — read the labels.' }], bad: ['(' + s.bad[0] + ',' + s.bad[1] + ')'] },
               'Reading the axes properly, the point is ' + t(ptT(s.P)) + '.<br>Check: ' + t(ck(subT(s.p, -1, s.P) + '=' + s.c1)) + ', ' + t(ck(subT(1, 1, s.P) + '=' + s.c2)) + '. (Algebra agrees: adding the equations gives ' + t((s.p + 1) + 'x=' + (s.c1 + s.c2) + '\\Rightarrow x=' + s.x0) + ', then ' + t('y=' + s.y0) + '.)',
               ['Use the axis labels, not a count of squares.'], 'EP10b read correctly');
           } },
@@ -1294,7 +1369,7 @@
           { id: 'e11a2', sub: 'a ii', level: 'EMG', make: function (r, s) {
             return sysPart('(a) Write the system as it should have been written.', [{ A: 1, B: 1, C: -s.N }, { A: s.p1, B: s.p2, C: -s.V }], {
               labels: ['Services:', 'Money:'], keyTex: ['x+y=' + s.N, s.p1 + 'x+' + s.p2 + 'y=' + s.V],
-              diags: [{ is: [1, 1, -s.V], code: 'l6-rhs-swap', hint: 'That’s the student’s equation. ' + t(s.V) + ' is money — it doesn’t count services.' }, { is: [s.p1, s.p2, -s.N], code: 'l6-rhs-swap', hint: 'That’s the student’s equation. The money equation must equal the money collected, ' + t(money(s.V)) + '.' }],
+              diags: [{ is: [1, 1, -s.V], code: 'u8l6-rhs-swap', hint: 'That’s the student’s equation. ' + t(s.V) + ' is money — it doesn’t count services.' }, { is: [s.p1, s.p2, -s.N], code: 'u8l6-rhs-swap', hint: 'That’s the student’s equation. The money equation must equal the money collected, ' + t(money(s.V)) + '.' }],
               bad: [[s.p1 + 'x+' + s.p2 + 'y=' + s.N, 'x+y=' + s.V]] },
               'Correct system: ' + t('x+y=' + s.N) + ' and ' + t(s.p1 + 'x+' + s.p2 + 'y=' + s.V) + '.', ['Count services in one equation and total money in the other.'], 'EP11a correct system');
           } },
@@ -1340,9 +1415,9 @@
         parts: [
           { id: 'e12a', sub: 'a', level: 'ADV', make: function (r, s) {
             var xs = '\\frac{' + lin([s.q], ['k']) + '-' + s.rr + '}{' + s.D + '}';
-            return { prompt: '(a) Solve the system in terms of ' + t('k') + '. Write each coordinate as a single fraction with denominator ' + t(s.D) + '.', input: { type: 'fields', fields: [{ label: t('x='), mode: 'math', keys: 'eq', vars: ['k'], placeholder: ' ' }, { label: t('y='), mode: 'math', keys: 'eq', vars: ['k'], placeholder: ' ' }] },
+            return { prompt: '(a) Solve the system in terms of ' + t('k') + '. Write each coordinate as a single fraction with denominator ' + t(s.D) + '.', input: { type: 'fields', fields: [{ label: t('x='), mode: 'math', keys: 'poly', vars: ['k'], placeholder: ' ' }, { label: t('y='), mode: 'math', keys: 'poly', vars: ['k'], placeholder: ' ' }] },
               check: (function () { var cx = exprIn(s.xT, 'k', { single: true, diag: function (a) { return ex.equiv(a, ex.parse(xs).ast, ['k']) ? { code: 'sign', hint: 'Check the sign of the constant: ' + t(s.D + 'x=' + s.q + 'k+' + s.rr) + '.' } : null; } }), cy = exprIn(s.yT, 'k', { single: true });
-                return function (resp) { resp = resp || []; var sw = [cx(String(resp[1] || '')), cy(String(resp[0] || ''))]; if (sw[0].v === 'correct' && sw[1].v === 'correct') return form('l6-eq-boxes', 'Both expressions are right, but they are in each other’s boxes.'); var a = cx(String(resp[0] || '')); if (a.v !== 'correct') return { v: a.v, code: a.code, hint: '<b>x:</b> ' + (a.hint || 'Check this one again.') }; var b = cy(String(resp[1] || '')); if (b.v !== 'correct') return { v: b.v, code: b.code, hint: '<b>y:</b> ' + (b.hint || 'Check this one again: back-substitute ' + t('x') + ' into ' + t('y=k-' + (s.a === 1 ? '' : s.a) + 'x') + '.') }; return ok(); }; })(),
+                return function (resp) { resp = resp || []; var sw = [cx(String(resp[1] || '')), cy(String(resp[0] || ''))]; if (sw[0].v === 'correct' && sw[1].v === 'correct') return form('u8l6-eq-boxes', 'Both expressions are right, but they are in each other’s boxes.'); var a = cx(String(resp[0] || '')); if (a.v !== 'correct') return { v: a.v, code: a.code, hint: '<b>x:</b> ' + (a.hint || 'Check this one again.') }; var b = cy(String(resp[1] || '')); if (b.v !== 'correct') return { v: b.v, code: b.code, hint: '<b>y:</b> ' + (b.hint || 'Check this one again: back-substitute ' + t('x') + ' into ' + t('y=k-' + (s.a === 1 ? '' : s.a) + 'x') + '.') }; return ok(); }; })(),
               key: [s.xT, s.yT], answer: t('x=' + s.xT) + ', ' + t('y=' + s.yT),
               solution: 'From ' + t(s.E1) + ': ' + t('y=k-' + (s.a === 1 ? '' : s.a) + 'x') + '. Substitute into ' + t(s.E2) + ':<br>' + t(s.p + 'x-' + s.q + '(k-' + (s.a === 1 ? '' : s.a) + 'x)=' + s.rr + '\\Rightarrow ' + s.D + 'x=' + s.q + 'k+' + s.rr + '\\Rightarrow x=' + s.xT) + '<br>' + t('y=k-' + (s.a === 1 ? '' : s.a) + '\\left(' + s.xT + '\\right)=\\frac{' + s.D + 'k-' + (s.a * s.q) + 'k-' + (s.a * s.rr) + '}{' + s.D + '}=' + s.yT),
               hints: ['Solve the first equation for ' + t('y') + ' (keep ' + t('k') + ' as a letter) and substitute.'], text: 'EP12a in terms of k', bad: [[xs, s.yT]] };
@@ -1391,7 +1466,7 @@
         parts: [
           { id: 'e13a', sub: 'a', level: 'PRG', make: function (r, s) {
             return numBoxes('(a) Substituting ' + t('y=' + lin([s.p], ['x']) + '-' + s.sv) + ' reduces the system to ' + t('(k+\\square)\\,x=\\square') + '. Fill in the boxes, and state the one value of ' + t('k') + ' for which the system has no solution.', [
-              { label: t('(k+\\square)') + ':', v: s.qp, name: 'first box' }, { label: t('=\\square') + ':', v: s.N, name: 'second box', diag: function (v) { return near(v, s.c) ? { code: 'l6-rhs-unscaled', hint: 'The ' + t(-s.q * s.sv) + ' from ' + t(s.q + '(' + lin([s.p], ['x']) + '-' + s.sv + ')') + ' moves to the right side too: ' + t(s.c + '+' + (s.q * s.sv)) + '.' } : null; } },
+              { label: t('(k+\\square)') + ':', v: s.qp, name: 'first box' }, { label: t('=\\square') + ':', v: s.N, name: 'second box', diag: function (v) { return near(v, s.c) ? { code: 'u8l6-rhs-unscaled', hint: 'The ' + t(-s.q * s.sv) + ' from ' + t(s.q + '(' + lin([s.p], ['x']) + '-' + s.sv + ')') + ' moves to the right side too: ' + t(s.c + '+' + (s.q * s.sv)) + '.' } : null; } },
               { label: 'no solution when ' + t('k='), v: -s.qp, name: 'k', diag: function (v) { return near(v, s.qp) ? { code: 'sign', hint: 'Solve ' + t('k+' + s.qp + '=0') + '.' } : null; } }],
               t(s.E2 + '\\Rightarrow y=' + lin([s.p], ['x']) + '-' + s.sv) + '. Substitute into ' + t(s.E1) + ': ' + t('kx+' + s.q + '(' + lin([s.p], ['x']) + '-' + s.sv + ')=' + s.c + '\\Rightarrow kx+' + s.qp + 'x-' + (s.q * s.sv) + '=' + s.c) + ', so ' + t('(k+' + s.qp + ')x=' + s.N) + '.<br>No solution when the left side vanishes but the right doesn’t: ' + t('k+' + s.qp + '=0') + ', i.e. ' + t('k=' + (-s.qp)) + ', leaving ' + t('0=' + s.N) + '.',
               ['Solve the second equation for ' + t('y') + ' and substitute into the first.'], 'EP13a reduce', {});
@@ -1402,13 +1477,13 @@
               var raw = String(resp == null ? '' : resp).replace(/\\left|\\right|\\lbrace|\\rbrace|\\\{|\\\}|[{}]|\\text\{[^}]*\}|k\s*=|\\in/g, ' ').replace(/\\,|\\ |\\;/g, ' ').trim();
               if (!raw) return form('empty', 'Type the list of values of ' + t('k') + ', separated by commas.');
               var bits = raw.split(/[,;]+/).map(function (b) { return b.trim(); }).filter(Boolean), vals = [];
-              for (var i = 0; i < bits.length; i++) { var a = ex.parse(bits[i]); if (!a.ok) return form('l6-list', 'Write the values as a list of integers separated by commas, e.g. ' + t('-5,\\ -4,\\ 0') + '.'); var v = ex.value(a.ast); if (!isInt(v)) return wrong('l6-k-int', t('k') + ' must be an integer.'); vals.push(Math.round(v)); }
+              for (var i = 0; i < bits.length; i++) { var a = ex.parse(bits[i]); if (!a.ok) return form('u8l6-list', 'Write the values as a list of integers separated by commas, e.g. ' + t('-5,\\ -4,\\ 0') + '.'); var v = ex.value(a.ast); if (!isInt(v)) return wrong('u8l6-k-int', t('k') + ' must be an integer.'); vals.push(Math.round(v)); }
               var seen = {}; for (var j = 0; j < vals.length; j++) { if (seen[vals[j]]) return form('duplicate', 'You listed ' + t(vals[j]) + ' more than once.'); seen[vals[j]] = 1; }
-              if (vals.indexOf(-s.qp) >= 0) return wrong('l6-k-none', 'With ' + t('k=' + (-s.qp)) + ' the system has no solution at all, so there is no ' + t('x') + '-coordinate.');
-              var negIn = vals.filter(function (v) { return neg.indexOf(v) >= 0; }); if (negIn.length) return wrong('l6-k-negx', 'With ' + t('k=' + negIn[0]) + ', ' + t('x=\\frac{' + s.N + '}{' + (negIn[0] + s.qp) + '}') + ' is negative — not a whole number. ' + t('k+' + s.qp) + ' must be a <b>positive</b> divisor of ' + t(s.N) + '.');
-              var bad = vals.filter(function (v) { return want.indexOf(v) < 0; }); if (bad.length) return wrong('l6-k-bad', 'With ' + t('k=' + bad[0]) + ', ' + t('x=\\frac{' + s.N + '}{' + (bad[0] + s.qp) + '}') + ' isn’t a whole number.');
-              var miss = want.filter(function (v) { return vals.indexOf(v) < 0; }); if (miss.length) return wrong('l6-k-missing', 'Correct so far — but you have ' + vals.length + ' of the ' + want.length + ' values. List every positive divisor of ' + t(s.N) + ' first.');
-              for (var q = 1; q < vals.length; q++) if (vals[q] < vals[q - 1]) return form('l6-order', 'Right values — now list them in order, from least to greatest.');
+              if (vals.indexOf(-s.qp) >= 0) return wrong('u8l6-k-none', 'With ' + t('k=' + (-s.qp)) + ' the system has no solution at all, so there is no ' + t('x') + '-coordinate.');
+              var negIn = vals.filter(function (v) { return neg.indexOf(v) >= 0; }); if (negIn.length) return wrong('u8l6-k-negx', 'With ' + t('k=' + negIn[0]) + ', ' + t('x=\\frac{' + s.N + '}{' + (negIn[0] + s.qp) + '}') + ' is negative — not a whole number. ' + t('k+' + s.qp) + ' must be a <b>positive</b> divisor of ' + t(s.N) + '.');
+              var bad = vals.filter(function (v) { return want.indexOf(v) < 0; }); if (bad.length) return wrong('u8l6-k-bad', 'With ' + t('k=' + bad[0]) + ', ' + t('x=\\frac{' + s.N + '}{' + (bad[0] + s.qp) + '}') + ' isn’t a whole number.');
+              var miss = want.filter(function (v) { return vals.indexOf(v) < 0; }); if (miss.length) return wrong('u8l6-k-missing', 'Correct so far — but you have ' + vals.length + ' of the ' + want.length + ' values. List every positive divisor of ' + t(s.N) + ' first.');
+              for (var q = 1; q < vals.length; q++) if (vals[q] < vals[q - 1]) return form('u8l6-order', 'Right values — now list them in order, from least to greatest.');
               return ok();
             };
             var key = want.join(',\\ ');
@@ -1450,7 +1525,7 @@
           var w = function (c1, c2) { var xx = (c1 * B2 - B1 * c2) / det, yy = (A1 * c2 - A2 * c1) / det; return [xx, yy]; };   // RHS not scaled
           var wp = w(R1, R2n / L2);
           var E1 = '\\dfrac{' + lin([s.al, -1], ['x', 'y']) + '}{' + s.d1 + '}+\\dfrac{' + lin([1, s.be], ['x', 'y']) + '}{' + s.d2 + '}=' + R1, E2 = '\\dfrac{x}{' + s.d3 + '}-\\dfrac{y}{' + s.d4 + '}=' + frT(R2[0], R2[1]).replace('\\frac', '\\dfrac');
-          var W = []; if (isFinite(wp[0]) && !(near(wp[0], s.x0) && near(wp[1], s.y0))) W.push({ is: wp, code: 'l6-clear-one-side', hint: 'It looks like the fractions were cleared on the left side only. Multiply <b>both</b> sides of each equation by its LCD.' });
+          var W = []; if (isFinite(wp[0]) && !(near(wp[0], s.x0) && near(wp[1], s.y0))) W.push({ is: wp, code: 'u8l6-clear-one-side', hint: 'It looks like the fractions were cleared on the left side only. Multiply <b>both</b> sides of each equation by its LCD.' });
           return ptPart(stack(E1, E2), [s.x0, s.y0], [[A1, B1, -C1], [A2, B2, -R2n]], { wrong: W },
             'First equation, LCD ' + t(L1) + ': ' + t(s.d2 + '(' + lin([s.al, -1], ['x', 'y']) + ')+' + s.d1 + '(' + lin([1, s.be], ['x', 'y']) + ')=' + C1 + '\\Rightarrow ' + eqT(A1, B1, C1)) + '<br>Second equation, LCD ' + t(L2) + ': ' + t(eqT(A2, B2, R2n)) + '<br>Solve (substitution or elimination): ' + t(ptT([s.x0, s.y0])) + '.<br>Check in the originals: ' + t(ck('\\frac{' + (s.al * s.x0 - s.y0) + '}{' + s.d1 + '}+\\frac{' + (s.x0 + s.be * s.y0) + '}{' + s.d2 + '}=' + R1)) + ' and ' + t(ck('\\frac{' + s.x0 + '}{' + s.d3 + '}-\\frac{' + s.y0 + '}{' + s.d4 + '}=' + frT(R2[0], R2[1]))) + '.',
             ['Multiply every term of each equation (both sides) by its lowest common denominator, then collect like terms.'], 'EP14a fractions system');
@@ -1474,7 +1549,7 @@
           var simp = s.e.map(function (e) { return [e[0] * e[1] - e[4] * e[5], e[0] * e[2] - e[4] * e[6], e[7] - e[3]]; });
           var bad = s.e.map(function (e) { return [e[0] * e[1] - e[4] * e[5], e[2] - e[6], e[7] - e[3]]; });   // bracket multiplied into the first term only
           var d0 = simp[0][0] * simp[1][1] - simp[1][0] * simp[0][1], db = bad[0][0] * bad[1][1] - bad[1][0] * bad[0][1], W = [];
-          if (db !== 0) { var bx = (bad[0][2] * bad[1][1] - bad[0][1] * bad[1][2]) / db, by2 = (bad[0][0] * bad[1][2] - bad[1][0] * bad[0][2]) / db; if (!(near(bx, s.x0) && near(by2, s.y0))) W.push({ is: [bx, by2], code: 'l6-distribute', hint: 'Check the brackets: the number in front multiplies <b>every</b> term inside, e.g. ' + t(s.e[0][0] + '(' + lin([s.e[0][1], s.e[0][2]], ['x', 'y']) + ')=' + lin([s.e[0][0] * s.e[0][1], s.e[0][0] * s.e[0][2]], ['x', 'y'])) + '.' }); }
+          if (db !== 0) { var bx = (bad[0][2] * bad[1][1] - bad[0][1] * bad[1][2]) / db, by2 = (bad[0][0] * bad[1][2] - bad[1][0] * bad[0][2]) / db; if (!(near(bx, s.x0) && near(by2, s.y0))) W.push({ is: [bx, by2], code: 'u8l6-distribute', hint: 'Check the brackets: the number in front multiplies <b>every</b> term inside, e.g. ' + t(s.e[0][0] + '(' + lin([s.e[0][1], s.e[0][2]], ['x', 'y']) + ')=' + lin([s.e[0][0] * s.e[0][1], s.e[0][0] * s.e[0][2]], ['x', 'y'])) + '.' }); }
           return ptPart(stack(Ts[0], Ts[1]), [s.x0, s.y0], simp.map(function (q) { return [q[0], q[1], -q[2]]; }), { wrong: W },
             'Expand and collect each equation:<br>' + t(Ts[0] + '\\Rightarrow ' + eqT(simp[0][0], simp[0][1], simp[0][2])) + '<br>' + t(Ts[1] + '\\Rightarrow ' + eqT(simp[1][0], simp[1][1], simp[1][2])) + '<br>Solving gives ' + t(ptT([s.x0, s.y0])) + '.<br>Check in the originals: both sides of the first equal ' + t(s.e[0][0] * (s.e[0][1] * s.x0 + s.e[0][2] * s.y0) + s.e[0][3]) + ', both sides of the second equal ' + t(s.e[1][0] * (s.e[1][1] * s.x0 + s.e[1][2] * s.y0) + s.e[1][3]) + ' ✓.',
             ['Expand every bracket, then move the variable terms to the left and the constants to the right.'], 'EP14b brackets system');
@@ -1490,8 +1565,8 @@
           { id: 'e15a', sub: 'a', level: 'PRG', make: function (r, s) {
             return sysPart('(a) Let ' + t('w') + ' be Nadia’s walking speed and ' + t('c') + ' the speed of the walkway, both in m/s. Using speed ' + t('=') + ' distance ÷ time, write a system of two equations.', [{ A: 1, B: 1, C: -s.s1 }, { A: 1, B: -1, C: -s.s2 }], {
               vars: ['w', 'c'], labels: ['With:', 'Against:'], keyTex: ['w+c=' + num(s.s1), 'w-c=' + num(s.s2)],
-              diags: [{ is: [1, 1, -s.t1], code: 'l6-time-speed', hint: t(s.t1) + ' s is a time. The equation needs a <b>speed</b>: ' + t('\\frac{' + s.D + '}{' + s.t1 + '}=' + num(s.s1)) + ' m/s.' }, { is: [1, -1, -s.t2], code: 'l6-time-speed', hint: t(s.t2) + ' s is a time. The equation needs a <b>speed</b>: ' + t('\\frac{' + s.D + '}{' + s.t2 + '}=' + num(s.s2)) + ' m/s.' },
-                { is: [1, -1, -s.s1], code: 'l6-with-against', hint: 'With the walkway the two speeds <b>add</b>: ' + t('w+c') + '. Against it they subtract.' }, { is: [1, 1, -s.s2], code: 'l6-with-against', hint: 'Against the walkway the speeds <b>subtract</b>: ' + t('w-c') + '. With it they add.' }],
+              diags: [{ is: [1, 1, -s.t1], code: 'u8l6-time-speed', hint: t(s.t1) + ' s is a time. The equation needs a <b>speed</b>: ' + t('\\frac{' + s.D + '}{' + s.t1 + '}=' + num(s.s1)) + ' m/s.' }, { is: [1, -1, -s.t2], code: 'u8l6-time-speed', hint: t(s.t2) + ' s is a time. The equation needs a <b>speed</b>: ' + t('\\frac{' + s.D + '}{' + s.t2 + '}=' + num(s.s2)) + ' m/s.' },
+                { is: [1, -1, -s.s1], code: 'u8l6-with-against', hint: 'With the walkway the two speeds <b>add</b>: ' + t('w+c') + '. Against it they subtract.' }, { is: [1, 1, -s.s2], code: 'u8l6-with-against', hint: 'Against the walkway the speeds <b>subtract</b>: ' + t('w-c') + '. With it they add.' }],
               bad: [['w+c=' + s.t1, 'w-c=' + s.t2]] },
               'With the walkway the speeds add; against it they subtract.<br>With: ' + t('w+c=\\frac{' + s.D + '}{' + s.t1 + '}=' + num(s.s1)) + '<br>Against: ' + t('w-c=\\frac{' + s.D + '}{' + s.t2 + '}=' + num(s.s2)),
               ['Her speed relative to the floor is ' + t('w+c') + ' with the walkway and ' + t('w-c') + ' against it.'], 'EP15a system');
@@ -1511,8 +1586,8 @@
           } },
           { id: 'e15d', sub: 'd', level: 'EMG', make: function (r, s) {
             return numBoxes('(d) Nadia walks at ' + t(num(s.w)) + ' m/s and the walkway moves at ' + t(num(s.c)) + ' m/s. How long would the walkway take to carry a passenger who just stands still on it, and how long would Nadia take to walk ' + t(s.D) + ' m on ordinary floor?', [
-              { label: 'standing on the walkway:', after: 's', v: s.D / s.c, diag: function (v) { return near(v, s.D * s.c) ? { code: 'l6-time-speed', hint: 'time ' + t('=') + ' distance ÷ speed: ' + t('\\frac{' + s.D + '}{' + num(s.c) + '}') + '.' } : null; } },
-              { label: 'walking on the floor:', after: 's', v: s.D / s.w, diag: function (v) { return near(v, s.D * s.w) ? { code: 'l6-time-speed', hint: 'time ' + t('=') + ' distance ÷ speed: ' + t('\\frac{' + s.D + '}{' + num(s.w) + '}') + '.' } : null; } }],
+              { label: 'standing on the walkway:', after: 's', v: s.D / s.c, diag: function (v) { return near(v, s.D * s.c) ? { code: 'u8l6-time-speed', hint: 'time ' + t('=') + ' distance ÷ speed: ' + t('\\frac{' + s.D + '}{' + num(s.c) + '}') + '.' } : null; } },
+              { label: 'walking on the floor:', after: 's', v: s.D / s.w, diag: function (v) { return near(v, s.D * s.w) ? { code: 'u8l6-time-speed', hint: 'time ' + t('=') + ' distance ÷ speed: ' + t('\\frac{' + s.D + '}{' + num(s.w) + '}') + '.' } : null; } }],
               'Standing still, the walkway alone carries her: ' + t('t=\\frac{' + s.D + '}{' + num(s.c) + '}=' + (s.D / s.c)) + ' s. Walking on the floor: ' + t('t=\\frac{' + s.D + '}{' + num(s.w) + '}=' + (s.D / s.w)) + ' s.',
               ['time ' + t('=') + ' distance ÷ speed.'], 'EP15d times', { swapHint: 'Check which is which: standing still, only the walkway’s speed counts.' });
           } }] },
@@ -1527,9 +1602,9 @@
           { id: 'e16a', sub: 'a', level: 'PRG', make: function (r, s) {
             return sysPart('(a) Write a system — one equation for total volume, one for total butterfat.', [{ A: 1, B: 1, C: -s.V }, { A: s.p1, B: s.p2, C: -100 * s.B }], {
               labels: ['Volume:', 'Butterfat:'], keyTex: ['x+y=' + s.V, pc(s.p1) + 'x+' + pc(s.p2) + 'y=' + num(s.B)], alt: [[], [[s.p1 - s.pt, s.p2 - s.pt, 0]]],
-              diags: [{ is: [s.p1, s.p2, -100 * s.pt], code: 'l6-mix-percent', hint: 'The butterfat equation counts litres of butterfat: ' + t(pc(s.pt) + '\\times ' + s.V + '=' + num(s.B)) + ' L, not ' + t(s.pt) + '.' },
-                { is: [100 * s.p1, 100 * s.p2, -100 * s.B], code: 'l6-mix-decimal', hint: 'Write the percents as decimals: ' + t(s.p1 + '\\%=' + pc(s.p1)) + ', ' + t(s.p2 + '\\%=' + pc(s.p2)) + '.' },
-                { is: [s.p1, s.p2, -s.pt], code: 'l6-mix-percent', hint: 'The right side is an amount of butterfat in litres: ' + t(pc(s.pt) + '\\times ' + s.V + '=' + num(s.B)) + '.' }],
+              diags: [{ is: [s.p1, s.p2, -100 * s.pt], code: 'u8l6-mix-percent', hint: 'The butterfat equation counts litres of butterfat: ' + t(pc(s.pt) + '\\times ' + s.V + '=' + num(s.B)) + ' L, not ' + t(s.pt) + '.' },
+                { is: [100 * s.p1, 100 * s.p2, -100 * s.B], code: 'u8l6-mix-decimal', hint: 'Write the percents as decimals: ' + t(s.p1 + '\\%=' + pc(s.p1)) + ', ' + t(s.p2 + '\\%=' + pc(s.p2)) + '.' },
+                { is: [s.p1, s.p2, -s.pt], code: 'u8l6-mix-percent', hint: 'The right side is an amount of butterfat in litres: ' + t(pc(s.pt) + '\\times ' + s.V + '=' + num(s.B)) + '.' }],
               bad: s.B === s.pt ? [] : [['x+y=' + s.V, pc(s.p1) + 'x+' + pc(s.p2) + 'y=' + s.pt]], good: [['x+y=' + s.V, pc(s.p1) + 'x+' + pc(s.p2) + 'y=' + pc(s.pt) + '(x+y)']] },
               'Volume: ' + t('x+y=' + s.V) + '<br>Butterfat: ' + t(pc(s.p1) + 'x+' + pc(s.p2) + 'y=' + pc(s.pt) + '(' + s.V + ')=' + num(s.B)),
               ['One equation adds litres of liquid; the other adds litres of butterfat (percent as a decimal × volume).'], 'EP16a system');
@@ -1540,8 +1615,8 @@
               resp = resp || []; var A = HW.parse.number(String(resp[0] || '')), Bv = HW.parse.number(String(resp[1] || ''));
               if (!A.ok || !Bv.ok) return form('empty', 'Fill in both boxes with numbers.');
               if (A.value !== 0 && near(Bv.value / A.value, s.x0)) return ok();
-              if (near(A.value, s.p1 - s.p2) && near(Bv.value, 100 * s.B - s.V)) return wrong('l6-elim-scale', 'Scale the volume equation to match the ' + t('y') + '-coefficient first (×' + t(s.p2) + '), then subtract.');
-              return wrong('l6-elim', 'Clear the decimals (×' + t(100) + '), make the ' + t('y') + '-coefficients match, then subtract the volume equation.');
+              if (near(A.value, s.p1 - s.p2) && near(Bv.value, 100 * s.B - s.V)) return wrong('u8l6-elim-scale', 'Scale the volume equation to match the ' + t('y') + '-coefficient first (×' + t(s.p2) + '), then subtract.');
+              return wrong('u8l6-elim', 'Clear the decimals (×' + t(100) + '), make the ' + t('y') + '-coefficients match, then subtract the volume equation.');
             };
             var cx = s.p1 - s.p2, cr = 100 * s.B - s.p2 * s.V, gg = (cx % s.p2 === 0 && cr % s.p2 === 0) ? s.p2 : 1;
             return { prompt: '(b) Clear the decimals in ' + t(pc(s.p1) + 'x+' + pc(s.p2) + 'y=' + num(s.B)) + ' and eliminate ' + t('y') + ' using ' + t('x+y=' + s.V) + '. The result has the form ' + t('\\square\\,x=\\square') + '.', input: { type: 'fields', fields: [{ label: 'coefficient:', after: t('x') }, { label: '= ' }] }, check: check,
@@ -1574,10 +1649,10 @@
           { id: 'e17a', sub: 'a', level: 'PRG', make: function (r, s) {
             return sysPart('(a) Let ' + t('n') + ' be the numerator and ' + t('d') + ' the denominator. Write a system of two equations, clearing the fraction in the second one.', [{ A: 1, B: -1, C: s.dl }, { A: s.q, B: -s.p, C: -s.C2 }], {
               vars: ['n', 'd'], labels: ['Difference:', 'New fraction:'], keyTex: [s.e1, s.e2],
-              pre: function (raw) { for (var i = 0; i < 2; i++) if (/\\frac\{[^}]*\}\{[^}]*[nd][^}]*\}|\/\s*\(?\s*[nd]/.test(raw[i])) return form('l6-clear-frac', 'Clear the fraction first: cross-multiply ' + t('\\frac{n+' + s.a + '}{d+' + s.a + '}=\\frac{' + s.p + '}{' + s.q + '}') + ' to get ' + t(s.q + '(n+' + s.a + ')=' + s.p + '(d+' + s.a + ')') + '.'); return null; },
-              diags: [{ is: [s.p, -s.q, (s.p - s.q) * s.a], code: 'l6-cross', hint: 'Cross-multiply carefully: the numerator ' + t('n+' + s.a) + ' goes with the denominator ' + t(s.q) + ': ' + t(s.q + '(n+' + s.a + ')=' + s.p + '(d+' + s.a + ')') + '.' },
-                { is: [1, -1, -s.dl], code: 'l6-backwards', hint: 'The numerator is the <b>smaller</b> one: ' + t('n=d-' + s.dl) + '.' },
-                { is: [s.q, -s.p, 0], code: 'l6-add-both', hint: 'Remember the ' + t(s.a) + ' added to both: ' + t('\\frac{n+' + s.a + '}{d+' + s.a + '}') + '.' }],
+              pre: function (raw) { for (var i = 0; i < 2; i++) if (/\\frac\{[^}]*\}\{[^}]*[nd][^}]*\}|\/\s*\(?\s*[nd]/.test(raw[i])) return form('u8l6-clear-frac', 'Clear the fraction first: cross-multiply ' + t('\\frac{n+' + s.a + '}{d+' + s.a + '}=\\frac{' + s.p + '}{' + s.q + '}') + ' to get ' + t(s.q + '(n+' + s.a + ')=' + s.p + '(d+' + s.a + ')') + '.'); return null; },
+              diags: [{ is: [s.p, -s.q, (s.p - s.q) * s.a], code: 'u8l6-cross', hint: 'Cross-multiply carefully: the numerator ' + t('n+' + s.a) + ' goes with the denominator ' + t(s.q) + ': ' + t(s.q + '(n+' + s.a + ')=' + s.p + '(d+' + s.a + ')') + '.' },
+                { is: [1, -1, -s.dl], code: 'u8l6-backwards', hint: 'The numerator is the <b>smaller</b> one: ' + t('n=d-' + s.dl) + '.' },
+                { is: [s.q, -s.p, 0], code: 'u8l6-add-both', hint: 'Remember the ' + t(s.a) + ' added to both: ' + t('\\frac{n+' + s.a + '}{d+' + s.a + '}') + '.' }],
               bad: [[s.e1, s.p + 'n-' + s.q + 'd=' + (-s.C2)]] },
               'Numerator ' + t(s.dl) + ' less than the denominator: ' + t(s.e1) + '.<br>' + t('\\frac{n+' + s.a + '}{d+' + s.a + '}=\\frac{' + s.p + '}{' + s.q + '}\\Rightarrow ' + s.q + '(n+' + s.a + ')=' + s.p + '(d+' + s.a + ')\\Rightarrow ' + s.e2) + '.',
               ['Cross-multiply to clear the fraction, then collect the variables on the left.'], 'EP17a system');
@@ -1586,11 +1661,11 @@
             var check = function (resp) {
               var a = K.read(resp); if (a.res) return a.res;
               var pf = ex.plainFraction(a.ast);
-              if (!pf) return near(a.val, s.n0 / s.d0) ? form('l6-as-fraction', 'Write the fraction itself, ' + t('\\frac{n}{d}') + ', not a decimal.') : wrong('l6-frac', null);
+              if (!pf) return near(a.val, s.n0 / s.d0) ? form('u8l6-as-fraction', 'Write the fraction itself, ' + t('\\frac{n}{d}') + ', not a decimal.') : wrong('u8l6-frac', null);
               if (pf[0] === s.n0 && pf[1] === s.d0) return ok();
-              if (near(pf[0] / pf[1], s.n0 / s.d0)) return wrong('l6-equiv-frac', 'Same value — but the conditions are about the actual numerator and denominator. Check: is your numerator ' + t(s.dl) + ' less than your denominator?');
+              if (near(pf[0] / pf[1], s.n0 / s.d0)) return wrong('u8l6-equiv-frac', 'Same value — but the conditions are about the actual numerator and denominator. Check: is your numerator ' + t(s.dl) + ' less than your denominator?');
               if (pf[0] === s.d0 && pf[1] === s.n0) return wrong('flip', 'Upside down: the numerator is the smaller number.');
-              return wrong('l6-frac', null);
+              return wrong('u8l6-frac', null);
             };
             var p = { prompt: '(b) Solve ' + both(s.e1, s.e2) + ' and state the original fraction.', input: { type: 'math', keys: 'fraction' }, check: check, key: '\\frac{' + s.n0 + '}{' + s.d0 + '}', answer: t('\\frac{' + s.n0 + '}{' + s.d0 + '}'),
               solution: 'Substitute ' + t(s.e1) + ' into ' + t(s.e2) + ': ' + t(s.q + '(d-' + s.dl + ')-' + s.p + 'd=' + s.C2 + '\\Rightarrow ' + (s.q - s.p === 1 ? 'd=' + s.d0 : (s.q - s.p) + 'd=' + (s.C2 + s.q * s.dl) + '\\Rightarrow d=' + s.d0)) + ', ' + t('n=' + s.n0) + '.<br>The original fraction is ' + t('\\frac{' + s.n0 + '}{' + s.d0 + '}') + '. Against the words: ' + t(ck(s.d0 + '-' + s.dl + '=' + s.n0)) + ' and ' + t(ck('\\frac{' + s.n0 + '+' + s.a + '}{' + s.d0 + '+' + s.a + '}=\\frac{' + (s.n0 + s.a) + '}{' + (s.d0 + s.a) + '}=\\frac{' + s.p + '}{' + s.q + '}')) + '.',
@@ -1612,7 +1687,7 @@
         { id: 'e18a', sub: 'a i', level: 'EMG', make: function (r) { var s = ep18a(r);
           return sysPart(s.st + '<br>Let ' + t('b') + ' be the base and ' + t('s') + ' each equal side, in cm. Write a system of two equations.', [{ A: 1, B: 2, C: -s.P }, { A: -s.k, B: 1, C: -s.c }], {
             vars: ['b', 's'], labels: ['Perimeter:', 'Equal side:'], keyTex: ['b+2s=' + s.P, 's=' + s.k + 'b+' + s.c],
-            diags: [{ is: [1, 1, -s.P], code: 'l6-perimeter', hint: 'An isosceles triangle has <b>two</b> equal sides: ' + t('b+2s=' + s.P) + '.' }, { is: [2, 1, -s.P], code: 'l6-perimeter', hint: 'There is one base and two equal sides: ' + t('b+2s') + '.' }, { is: [1, -s.k, s.c], code: 'l6-backwards', hint: 'Each <b>equal side</b> is ' + t(s.c) + ' cm more than ' + (s.k === 2 ? 'twice' : 'three times') + ' the base: ' + t('s=' + s.k + 'b+' + s.c) + '.' }],
+            diags: [{ is: [1, 1, -s.P], code: 'u8l6-perimeter', hint: 'An isosceles triangle has <b>two</b> equal sides: ' + t('b+2s=' + s.P) + '.' }, { is: [2, 1, -s.P], code: 'u8l6-perimeter', hint: 'There is one base and two equal sides: ' + t('b+2s') + '.' }, { is: [1, -s.k, s.c], code: 'u8l6-backwards', hint: 'Each <b>equal side</b> is ' + t(s.c) + ' cm more than ' + (s.k === 2 ? 'twice' : 'three times') + ' the base: ' + t('s=' + s.k + 'b+' + s.c) + '.' }],
             bad: [['b+s=' + s.P, 's=' + s.k + 'b+' + s.c]] },
             'Perimeter: ' + t('b+2s=' + s.P) + '. Each equal side: ' + t('s=' + s.k + 'b+' + s.c) + '.', ['Perimeter = base + two equal sides.'], 'EP18a system');
         } },
@@ -1624,7 +1699,7 @@
         { id: 'e18b', sub: 'b i', level: 'PRG', make: function (r) { var s = ep18b(r);
           return sysPart(s.st + '<br>Let ' + t('x') + ' be the dollars in the savings bond and ' + t('y') + ' the dollars in the term deposit. Write a system of two equations.', [{ A: 1, B: 1, C: -s.T }, { A: s.r1 * 10, B: s.r2 * 10, C: -1000 * s.I }], {
             labels: ['Amount:', 'Interest:'], keyTex: ['x+y=' + s.T, s.q1 + 'x+' + s.q2 + 'y=' + num(s.I)],
-            diags: [{ is: [s.r1 * 10, s.r2 * 10, -10 * s.I], code: 'l6-mix-decimal', hint: 'Write the rates as decimals: ' + t(num(s.r1) + '\\%=' + s.q1) + ', ' + t(num(s.r2) + '\\%=' + s.q2) + '.' }, { is: [1, 1, -s.I], code: 'l6-mix-total', hint: 'The amounts invested add to ' + t(money(s.T)) + '. The interest goes in the other equation.' }, { is: [s.r2 * 10, s.r1 * 10, -1000 * s.I], code: 'l6-rate-swap', hint: 'The savings bond (' + t('x') + ') pays ' + t(num(s.r1) + '\\%') + '.' }],
+            diags: [{ is: [s.r1 * 10, s.r2 * 10, -10 * s.I], code: 'u8l6-mix-decimal', hint: 'Write the rates as decimals: ' + t(num(s.r1) + '\\%=' + s.q1) + ', ' + t(num(s.r2) + '\\%=' + s.q2) + '.' }, { is: [1, 1, -s.I], code: 'u8l6-mix-total', hint: 'The amounts invested add to ' + t(money(s.T)) + '. The interest goes in the other equation.' }, { is: [s.r2 * 10, s.r1 * 10, -1000 * s.I], code: 'u8l6-rate-swap', hint: 'The savings bond (' + t('x') + ') pays ' + t(num(s.r1) + '\\%') + '.' }],
             bad: [['x+y=' + s.T, num(s.r1) + 'x+' + num(s.r2) + 'y=' + num(s.I)]] },
             'Amounts: ' + t('x+y=' + s.T) + '. Interest after one year: ' + t(s.q1 + 'x+' + s.q2 + 'y=' + num(s.I)) + '.', ['One equation adds the amounts; the other adds the interest (rate as a decimal × amount).'], 'EP18b system');
         } },
@@ -1653,8 +1728,8 @@
           var s = r.chance(0.2) ? book : find(function () { var a = r.int(2, 7), b = r.int(1, 4), c = r.int(2, 6), x0 = r.int(1, 9), y0 = r.int(1, 9), al = r.pick([10, 15, 20, 25, 30]), be = r.int(2, 9); var v = al * x0 + be * y0; if (v < 100 || v > 999 || x0 === y0 || c * x0 - 2 * b * y0 === 0 || be * x0 + al * y0 === v) return null; return { a: a, b: b, c: c, x0: x0, y0: y0, al: al, be: be }; }, book);
           var c1 = s.a * s.x0 + s.b * s.y0, c2 = s.c * s.x0 - 2 * s.b * s.y0, ans = s.al * s.x0 + s.be * s.y0, E1 = eqT(s.a, s.b, c1), E2 = eqT(s.c, -2 * s.b, c2), ex0 = lin([s.al, s.be], ['x', 'y']);
           return K.P.nr('The system ' + both(E1, E2) + ' has solution ' + t('(x,\\ y)') + '. The value of ' + t(ex0) + ' is ________. <i>(Record your answer as a three-digit number.)</i>', ans, function (v) {
-            if (v === s.al * s.y0 + s.be * s.x0) return { code: 'l6-swapxy', hint: 'It looks like ' + t('x') + ' and ' + t('y') + ' were swapped: ' + t('x=' + s.x0) + ', ' + t('y=' + s.y0) + '.' };
-            if (v === s.x0 + s.y0) return { code: 'l6-one-value', hint: 'That’s ' + t('x+y') + '. Now evaluate ' + t(ex0) + '.' };
+            if (v === s.al * s.y0 + s.be * s.x0) return { code: 'u8l6-swapxy', hint: 'It looks like ' + t('x') + ' and ' + t('y') + ' were swapped: ' + t('x=' + s.x0) + ', ' + t('y=' + s.y0) + '.' };
+            if (v === s.x0 + s.y0) return { code: 'u8l6-one-value', hint: 'That’s ' + t('x+y') + '. Now evaluate ' + t(ex0) + '.' };
             return null;
           }, 'Eliminate ' + t('y') + ': ' + t('\\text{Eq.~1}\\times 2:\\ ' + eqT(2 * s.a, 2 * s.b, 2 * c1)) + '. Add ' + t(E2) + ': ' + t((2 * s.a + s.c) + 'x=' + (2 * c1 + c2) + '\\Rightarrow x=' + s.x0) + '.<br>' + t(s.a + '(' + s.x0 + ')+' + (s.b === 1 ? '' : s.b) + 'y=' + c1 + '\\Rightarrow y=' + s.y0) + '. Check: ' + t(ck(subT(s.c, -2 * s.b, [s.x0, s.y0]) + '=' + c2)) + '.<br>' + t(ex0 + '=' + s.al + '(' + s.x0 + ')+' + s.be + '(' + s.y0 + ')=' + ans) + '.',
           ['Multiply the first equation by ' + t(2) + ' so the ' + t('y') + '-terms are opposites, then add.'], 'NR value of ' + ex0);

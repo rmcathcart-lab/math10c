@@ -32,7 +32,7 @@ Object.keys(HW.lessons).forEach(function (lid) {
         var t = inst.input.type, bad = null;
         if (t === 'number') bad = String(Number(inst.key) + 1);
         else if (t === 'list') bad = inst.key.slice(0, -1).length ? inst.key.slice(0, -1) : [999];
-        else if (t === 'math') bad = '2\\times 3';
+        else if (t === 'math') bad = '2\\times 3' === String(inst.key).replace(/\s/g, '') || String(inst.key).trim() === '6' ? '2\\times 4' : '2\\times 3';
         else if (t === 'ladder' || t === 'tree') bad = { done: true, final: '2\\times 3' };
         else if (t === 'mc') bad = inst.input.options.filter(function (o) { return o.key !== inst.key; })[0].key;
         else if (t === 'classify') bad = { choice: inst.key.choice === 'prime' ? 'composite' : 'prime', a: '3', b: '5' };

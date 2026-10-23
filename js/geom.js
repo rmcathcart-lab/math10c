@@ -72,7 +72,7 @@
     opt = opt || {};
     var p = K.P.approx(prompt, x, dp, { nr: opt.nr, before: opt.before, after: opt.unit || opt.after }, sol, hints, text);
     p.check = K.near(x, dp, opt);
-    if (opt.unit && !opt.noUnitInAnswer) p.answer = t(HW.fmt(K.roundTo(x, dp).toFixed(Math.max(dp, 0)))) + ' ' + esc(opt.unit);
+    if (opt.unit && !opt.noUnitInAnswer) p.answer = t(HW.fmt(K.roundTo(x, dp).toFixed(Math.max(dp, 0)))) + (/^°/.test(opt.unit) ? '' : ' ') + esc(opt.unit);
     return p;
   };
 
