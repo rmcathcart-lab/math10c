@@ -387,7 +387,7 @@ const radical = {
   }
 };
 
-/* ============ 8. Extension: scientific notation ============ */
+/* ============ 8. Scientific notation (Lesson 2.3) ============ */
 const SCI = {
   a: { op: 'mul', A: ['2', 3], B: ['4', 5] },
   b: { op: 'mul', A: ['7.5', 4], B: ['6.0', -9] },
@@ -473,7 +473,7 @@ const sci = {
   }
 };
 
-/* ============ 8. Extension: the stack of thin sheets ============ */
+/* ============ 8. Scientific notation: the stack of thin sheets ============ */
 const STACK = {
   e10: { what: 'aluminum foil', t: ['6.4', -5], dec: '0.000\\,064', H: 1.6, ratio: '0.25', e: 5, sn: '2.5\\times10^{4}', N: 25000, tag: 'Example 10' },
   paper: { what: 'printer paper', t: ['1.0', -4], dec: '0.000\\,1', H: 1.2, ratio: '1.2', e: 4, sn: '1.2\\times10^{4}', N: 12000 },

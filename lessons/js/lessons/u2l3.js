@@ -1,4 +1,4 @@
-/* Math 10C · Unit 2 · Lesson 3 — Negative Exponents: the warm-up and the explainers on this page. */
+/* Math 10C · Unit 2 · Lesson 3 — Negative Exponents and Scientific Notation: the warm-up and the explainers on this page. */
 import { h, Explainer } from '../explain.js';
 import { tex } from '../tex.js';
 
@@ -169,7 +169,7 @@ const stairs = {
       if (e > 0) cap = i === 1 ? `${calc}: one fewer factor of ${tex(bT)}, so the value is <b>divided by ${tex(divT)}</b>${B.half ? ' (dividing by ½ <b>doubles</b>)' : ''}. ${tex(now)}.` : `Down another step: divide by ${tex(divT)} again. ${calc}, so ${tex(now)}.`;
       else if (e === 0) cap = `${calc}, so <b>${tex(`${pw(0)}=1`)}</b>. That’s why any nonzero base to the power 0 is 1.`;
       else if (e === -1) cap = `Keep going <b>past zero</b>! ${calc}, so ${tex(now)}. ` + (B.half ? 'It got <b>bigger</b>: dividing by ½ doubles.' : 'Small, but <b>not negative</b>.');
-      else cap = `${calc}, so ${tex(now)}.` + (e === -3 && v === 2 ? ' That’s bounce 7 from the warm-up: ⅛ m.' : e === -3 && v === 10 ? ' As a decimal that’s <b>0.001</b>: tiny numbers like this are Lesson 4.' : e === -2 && !B.half ? ' The value keeps shrinking, but it never reaches 0 and never goes negative.' : '');
+      else cap = `${calc}, so ${tex(now)}.` + (e === -3 && v === 2 ? ' That’s bounce 7 from the warm-up: ⅛ m.' : e === -3 && v === 10 ? ' As a decimal that’s <b>0.001</b>: tiny numbers like this are coming up in Section 5, scientific notation.' : e === -2 && !B.half ? ' The value keeps shrinking, but it never reaches 0 and never goes negative.' : '');
       steps.push({ cap, run: (c) => Promise.all([c.pop(divs[i - 1], 360), c.fadeIn(cards[i], 450, { delay: 200, from: 'translateY(-14px)' })]) });
     }
     steps.push({
@@ -682,9 +682,264 @@ const flip = {
   }
 };
 
+/* =====================================================================
+ * 5. Scientific notation (condensed from the old Lesson 2.4 page): hop the decimal point; multiply and divide
+ * with the product and quotient laws. Classes sn3-…
+ * ===================================================================== */
+/* decimals as strings, so nothing is lost to floating point. A number is { sig, e }: value = sig[0].sig[1…] × 10^e */
+function snParse(str) {
+  const [ip, fp = ''] = String(str).split('.'), all = ip + fp;
+  let f = 0; while (f < all.length - 1 && all[f] === '0') f++;
+  return { sig: all.slice(f).replace(/0+$/, '') || '0', e: ip.length - 1 - f };
+}
+const snCoef = (sig) => sig[0] + (sig.length > 1 ? '.' + sig.slice(1) : '');
+const snGroup = (ip, sep) => (ip.length < 4 ? ip : ip.replace(/\B(?=(\d{3})+(?!\d))/g, sep));
+function snStd(sig, e, sep = ' ') { // standard notation, spaces between groups of three like the booklet
+  let ip, fp;
+  if (e >= 0) { ip = sig.slice(0, e + 1).padEnd(e + 1, '0'); fp = sig.slice(e + 1); } else { ip = '0'; fp = '0'.repeat(-e - 1) + sig; }
+  ip = snGroup(ip, sep); return fp ? ip + '.' + fp : ip;
+}
+const snStdT = (sig, e) => snStd(sig, e, '\\,');
+const snSci = (c, n) => `${c}\\times10^{${n}}`;
+const snNeg = (n) => (n < 0 ? '−' + -n : String(n)); // a real minus sign in captions
+const snPar = (n) => (n < 0 ? `(${n})` : String(n));
+const snParN = (n) => (n < 0 ? `(−${-n})` : String(n));
+const snNum = (x) => String(Number(Number(x).toPrecision(12))); // 2.5 × 3 → "7.5", not 7.499999…
+const snPlural = (k, w) => k + ' ' + w + (k === 1 ? '' : 's');
+const snEq = (s) => s.split('=').map((p, i) => tex((i ? '=' : '') + p)).join(' '); // a chain that may wrap at each "="
+
+/* a row of digits with a decimal point that hops along arcs, one place at a time */
+function snDigitRow(stage, cells, o) {
+  const { x0, y, cw, ch, fs } = o, svg = add(stage, svgEl('svg', { class: 'sn3-svg' }), 0, 0);
+  svg.setAttribute('width', stage.clientWidth || 1000); svg.setAttribute('height', o.H);
+  const els = cells.map((d, i) => { const e = add(stage, h('div', 'sn3-cell', d), x0 + i * cw, y); e.style.width = cw + 'px'; e.style.height = ch + 'px'; e.style.fontSize = fs + 'px'; e.style.lineHeight = ch + 'px'; return e; });
+  const sx = (k) => x0 + k * cw, base = y + ch * 0.86;
+  return {
+    els, sx, base,
+    async hop(c, dot, k, dir, label) {
+      const x1 = sx(k), x2 = sx(k + dir), top = y - 10, mid = (x1 + x2) / 2;
+      const p = svgEl('path', { class: 'sn3-arc' + (dir < 0 ? ' left' : ''), d: `M ${x1} ${base - 8} C ${x1} ${top}, ${x2} ${top}, ${x2} ${base - 8}` }); svg.appendChild(p);
+      const len = p.getTotalLength ? p.getTotalLength() || 120 : 120; p.style.strokeDasharray = len; p.style.strokeDashoffset = len;
+      const tag = add(stage, h('div', 'sn3-tag c' + (dir < 0 ? ' left' : ''), label), mid, top - 6); tag.style.opacity = 0;
+      const ah = svgEl('path', { class: 'sn3-head' + (dir < 0 ? ' left' : ''), d: `M ${x2 - 6} ${base - 20} L ${x2} ${base - 8} L ${x2 + 6} ${base - 20}` }); ah.style.opacity = 0; svg.appendChild(ah);
+      await Promise.all([
+        c.anim(p, [{ strokeDashoffset: len }, { strokeDashoffset: 0 }], 420),
+        c.anim(dot, [{ transform: 'translate(0,0)' }, { transform: `translate(${(x2 - x1) / 2}px, ${top - base + 4}px)`, offset: 0.5 }, { transform: `translate(${x2 - x1}px, 0)` }], 420, { easing: 'ease-in-out' }),
+        c.anim(tag, [{ opacity: 0, transform: 'scale(.6)' }, { opacity: 1, transform: 'scale(1)' }], 260, { delay: 180 }),
+        c.anim(ah, [{ opacity: 0 }, { opacity: 1 }], 120, { delay: 330 })
+      ]);
+      dot.style.left = x2 + 'px'; dot.style.transform = 'none';
+    }
+  };
+}
+
+const snHops = {
+  title: 'Hop the decimal point',
+  height: 440,
+  minW: 780, // drawn this wide and scaled to fit beside the sidebar
+  choices: [{ v: 's:52000', label: '52 000' }, { v: 's:0.00047', label: '0.00047' }, { v: 'e:2.9:9', label: tex('2.9\\times10^{9}') }, { v: 'e:8:-6', label: tex('8\\times10^{-6}') },
+    { sep: 'Example 7 check:' }, { v: 's:84200', label: '(a)' }, { v: 's:0.00072', label: '(b)' }, { v: 'e:4.1:-3', label: '(c)' }],
+  intro: (v) => {
+    const [mode, a, b] = v.split(':');
+    if (mode === 's') { const q = snParse(a); return `Write <b>${snStd(q.sig, q.e)}</b> in <b>scientific notation</b>. The decimal point will hop from ○ to ●, and we count the hops.`; }
+    return `Write ${tex(snSci(snCoef(snParse(a).sig), b))} in <b>standard notation</b>. The exponent says how many places the point hops, and which way.`;
+  },
+  make(stage, v, ex) {
+    const W = ex.W, H = 440, [mode, a, b] = v.split(':');
+    let sig, e;
+    if (mode === 's') ({ sig, e } = snParse(a)); else { sig = snParse(a).sig; e = Number(b); }
+    const big = e >= 0, nh = Math.abs(e), dir = big ? 1 : -1, coef = snCoef(sig);
+    const cells = big ? sig.padEnd(Math.max(sig.length, e + 1), '0').split('') : ('0'.repeat(-e) + sig).split('');
+    const cIdx = big ? 1 : -e + 1, sIdx = big ? e + 1 : 1, L = cells.length;
+    const pad = (i) => (big ? i >= sig.length : i < -e);
+    const cw = Math.min(66, (W - 200) / (L + 1)), ch = cw * 1.25, fs = Math.min(56, cw * 0.86), x0 = (W - L * cw) / 2, y = 120;
+    const row = snDigitRow(stage, cells, { x0, y, cw, ch, fs, H });
+    add(stage, h('div', 'sn3-task', mode === 's' ? `Write <b>${snStd(sig, e)}</b> in scientific notation` : `Write ${K(snSci(coef, e))} in standard notation`), 22, 14);
+    add(stage, h('div', 'sn3-legend', '<span class="sn3-ring-i"></span> start: the coefficient’s point &nbsp; <span class="sn3-dot-i"></span> end: the standard number’s point'), 22, 58);
+    const ring = add(stage, h('div', 'sn3-ring c'), row.sx(cIdx), row.base);
+    const dot = add(stage, h('div', 'sn3-dot c'), row.sx(cIdx), row.base);
+    const ghost = add(stage, h('div', 'sn3-dot ghost c'), row.sx(sIdx), row.base);
+    hide(dot, ghost); if (mode === 's') hide(ring);
+    const lab = (t, yy) => add(stage, h('div', 'sn3-lab', t), 28, yy);
+    const yPF = 262, yOut = 348;
+    const lPF = lab('Product form', yPF + 10), pf = add(stage, h('div', 'sn3-math'), 250, yPF);
+    const lOut = lab(mode === 's' ? 'Scientific notation' : 'Standard notation', yOut + 6), out = add(stage, h('div', 'sn3-math out'), 250, yOut);
+    const setPF = (html) => { pf.innerHTML = html; pf.style.fontSize = ''; const room = W - 264; if (pf.offsetWidth > room) pf.style.fontSize = (30 * room / pf.offsetWidth) + 'px'; }; // a long product shrinks to fit
+    hide(lPF, lOut);
+    const tens = (k) => Array(k).fill('10').join('\\times');
+    const pfT = (k) => (k === 0 ? coef : big ? `${coef}\\times${tens(k)}` : `\\dfrac{${coef}}{${tens(k)}}`);
+    const steps = [];
+
+    if (mode === 's') {
+      const first = cells.findIndex((d) => d !== '0');
+      steps.push({
+        cap: big ? `In <b>${snStd(sig, e)}</b> the decimal point is hiding at the <b>end</b> (●). For a coefficient between 1 and 10 the point must sit right after the <b>first non-zero digit</b> (○): <b>${coef}</b>.`
+          : `In <b>${snStd(sig, e)}</b> the decimal point is after the first 0 (●). For a coefficient between 1 and 10 it must sit right after the <b>first non-zero digit</b>, the ${cells[first]} (○): <b>${coef}</b>.`,
+        run: async (c) => {
+          out.innerHTML = K(`${coef}\\times10^{\\,?}`);
+          row.els[first].classList.add('lead');
+          await Promise.all([c.anim(ghost, [{ opacity: 0 }, { opacity: 0.45 }], 300), c.pop(ring, 380, { delay: 250 }), c.fadeIn(lOut, 300, { delay: 400 }), c.fadeIn(out, 400, { delay: 400 }), c.anim(row.els[first], [{ transform: 'scale(1)' }, { transform: 'scale(1.18)' }, { transform: 'scale(1)' }], 420)]);
+        }
+      });
+      steps.push({
+        cap: big ? 'Now hop from ○ to ●. Each hop to the <b>right</b> multiplies by 10, so write one “× 10” for every hop.'
+          : 'Now hop from ○ to ●. Each hop to the <b>left</b> divides by 10, so every hop puts one more 10 in the <b>denominator</b>.',
+        run: async (c) => {
+          dot.style.opacity = 1;
+          await Promise.all([c.fadeIn(lPF, 300), c.fadeIn(pf, 300)]);
+          for (let i = 0; i < nh; i++) {
+            setPF(K(pfT(i)));
+            await row.hop(c, dot, cIdx + i * dir, dir, big ? '×10' : '÷10');
+            setPF(K(pfT(i + 1)));
+            if (!c.fast) pf.animate([{ opacity: 0.4 }, { opacity: 1 }], 200);
+          }
+          ghost.style.opacity = 0;
+        }
+      });
+      steps.push({
+        cap: big ? `<b>${snPlural(nh, 'hop')}</b> to the right means ${nh === 1 ? 'one 10' : nh + ' tens multiplied together'}: ${tex(`10^{${nh}}`)}. So ${snStd(sig, e)} = <b>${tex(snSci(coef, e))}</b>.`
+          : `Dividing by ${nh === 1 ? 'one 10' : nh + ' tens'} is the same as multiplying by ${tex(`10^{${e}}`)}: a <b>negative exponent</b>, just like ${tex(`\\tfrac{1}{10^{${nh}}}=10^{${e}}`)}. So ${snStd(sig, e)} = <b>${tex(snSci(coef, e))}</b>.`,
+        run: async (c) => {
+          setPF(K(`${pfT(nh)}=${snSci(coef, e)}`)); out.innerHTML = K(`\\mathbf{${snSci(coef, e)}}`);
+          out.classList.add('done');
+          await Promise.all([c.fadeIn(pf, 300), c.pop(out, 420)]);
+        }
+      });
+      const nPad = cells.filter((_, i) => pad(i)).length;
+      steps.push({
+        cap: (big ? 'A <b>big</b> number (10 or more) gets a <b>positive</b> exponent.' : 'A number <b>less than 1</b> gets a <b>negative</b> exponent.')
+          + (nPad ? ` The ${nPad === 1 ? 'zero was a placeholder' : nPad + ' zeros were only placeholders'}: the coefficient keeps the digits <b>${sig.split('').join(', ')}</b>.` : '')
+          + ` Check: ${tex(snSci(coef, e))} means hop ${nh} ${big ? 'right' : 'left'}, back to ${snStd(sig, e)} ✓`,
+        run: async (c) => {
+          const ph = row.els.filter((_, i) => pad(i));
+          ph.forEach((el) => el.classList.add('ph'));
+          await Promise.all(ph.map((el, i) => c.anim(el, [{ transform: 'scale(1)' }, { transform: 'scale(.86)' }, { transform: 'scale(1)' }], 360, { delay: i * 60 })));
+        }
+      });
+      return steps;
+    }
+
+    /* standard notation from a × 10^n */
+    row.els.forEach((el, i) => { if (pad(i)) { el.textContent = '0'; el.classList.add('ph'); hide(el); } });
+    row.els.forEach((el, i) => { if (i === cIdx - 1) el.classList.add('lead'); });
+    steps.push({
+      cap: big ? `${tex(`10^{${e}}`)} means <b>multiply by 10, ${snPlural(nh, 'time')}</b>. In product form: ${[coef, ...Array(nh).fill('10')].map((t) => tex(t)).join(' × ')}.`
+        : `${tex(`10^{${e}}`)} means <b>divide by 10, ${snPlural(nh, 'time')}</b>. In product form: ${tex(pfT(nh))}.`,
+      run: async (c) => { setPF(K(pfT(nh))); await Promise.all([c.fadeIn(lPF, 300), c.fadeIn(pf, 400)]); }
+    });
+    const fills = Array.from({ length: nh }, (_, i) => (big ? cIdx + i : cIdx - i - 1)).filter((i) => pad(i)).length;
+    steps.push({
+      cap: (big ? `Each × 10 moves the point <b>one place right</b>. Hop ${snPlural(nh, 'place')}` : `Each ÷ 10 moves the point <b>one place left</b>. Hop ${snPlural(nh, 'place')}`)
+        + (fills ? ', filling each empty place with a <b>zero</b>.' : '.'),
+      run: async (c) => {
+        dot.style.opacity = 1;
+        for (let i = 0; i < nh; i++) {
+          const k = cIdx + i * dir, cross = big ? k : k - 1;
+          await row.hop(c, dot, k, dir, big ? '×10' : '÷10');
+          if (pad(cross)) await c.pop(row.els[cross], 260);
+        }
+      }
+    });
+    steps.push({
+      cap: big ? `Read off the number: ${tex(snSci(coef, e))} = <b>${snStd(sig, e)}</b>. A positive exponent gives a <b>big</b> number.`
+        : `Put a <b>0</b> in front of the point and read it off: ${tex(snSci(coef, e))} = <b>${snStd(sig, e)}</b>. A negative exponent gives a number <b>less than 1</b>, not a negative number.`,
+      run: async (c) => {
+        const jobs = [];
+        if (!big && row.els[0].style.opacity === '0') jobs.push(c.pop(row.els[0], 300));
+        out.innerHTML = K(`\\mathbf{${snStdT(sig, e)}}`); out.classList.add('done');
+        jobs.push(c.fadeIn(lOut, 300), c.pop(out, 420, { delay: 200 }));
+        await Promise.all(jobs);
+      }
+    });
+    return steps;
+  }
+};
+
+/* multiply and divide: coefficients with coefficients, powers of 10 with powers of 10 */
+const SN_MD = {
+  big: { a: '6', m: 4, op: '×', b: '5', n: 3 },
+  tiny: { a: '2', m: -5, op: '÷', b: '8', n: 3 },
+  d: { a: '2.5', m: 5, op: '×', b: '3', n: 4 },
+  e: { a: '1.2', m: -3, op: '÷', b: '4', n: 5 }
+};
+function snExprT(p, tagged) { // (a × 10^m)(b × 10^n) or (a × 10^m) ÷ (b × 10^n), optionally with flyable tokens
+  const T = (cls, s) => (tagged ? `\\htmlClass{${cls}}{${s}}` : s);
+  const A = `(${T('sn3-ea', p.a)}\\times${T('sn3-em', `10^{${p.m}}`)})`, B = `(${T('sn3-eb', p.b)}\\times${T('sn3-en', `10^{${p.n}}`)})`;
+  return p.op === '×' ? A + B : `${A}\\div${B}`;
+}
+const snMulDiv = {
+  title: 'Coefficients with coefficients, powers of 10 with powers of 10',
+  height: 470,
+  choices: [{ v: 'big', label: tex('(6\\times10^{4})(5\\times10^{3})') }, { v: 'tiny', label: tex('(2\\times10^{-5})\\div(8\\times10^{3})') },
+    { sep: 'Example 7 check:' }, { v: 'd', label: '(d)' }, { v: 'e', label: '(e)' }],
+  intro: (v) => `Evaluate ${tex(snExprT(SN_MD[v]))} and write the answer in scientific notation.`,
+  make(stage, v, ex) {
+    const W = ex.W, p = SN_MD[v], mul = p.op === '×';
+    const cr = snNum(mul ? Number(p.a) * Number(p.b) : Number(p.a) / Number(p.b)), er = mul ? p.m + p.n : p.m - p.n;
+    const { sig, e } = snParse(cr), coef2 = snCoef(sig), inRange = e === 0, n2 = er + e;
+    const top = add(stage, h('div', 'sn3-expr c', K(snExprT(p, true))), W / 2, 44);
+    const bwA = (W - 70) * 0.42, bwB = (W - 70) * 0.58;
+    const boxA = add(stage, h('div', 'sn3-box coef', '<div class="sn3-h">Coefficients</div>'), 24, 92), boxB = add(stage, h('div', 'sn3-box pow', '<div class="sn3-h">Powers of 10</div>'), 46 + bwA, 92);
+    boxA.style.width = bwA + 'px'; boxB.style.width = bwB + 'px';
+    const a1 = h('div', 'sn3-l', K(mul ? `\\htmlClass{sn3-ta}{${p.a}}\\times\\htmlClass{sn3-tb}{${p.b}}` : `\\dfrac{\\htmlClass{sn3-ta}{${p.a}}}{\\htmlClass{sn3-tb}{${p.b}}}`)), a2 = h('div', 'sn3-l res', K(`=\\htmlClass{sn3-ra}{${cr}}`));
+    const b1 = h('div', 'sn3-l', K(mul ? `\\htmlClass{sn3-tm}{10^{${p.m}}}\\times\\htmlClass{sn3-tn}{10^{${p.n}}}` : `\\dfrac{\\htmlClass{sn3-tm}{10^{${p.m}}}}{\\htmlClass{sn3-tn}{10^{${p.n}}}}`));
+    const b2 = h('div', 'sn3-l res', K(`=10^{${p.m}${mul ? '+' : '-'}${snPar(p.n)}}=\\htmlClass{sn3-rb}{10^{${er}}}`));
+    const law = h('div', 'sn3-law', mul ? '<b>Product law</b>: add the exponents' : '<b>Quotient law</b>: subtract the exponents');
+    const rowA = h('div', 'sn3-row'), rowB = h('div', 'sn3-row'); rowA.append(a1, a2); rowB.append(b1, b2);
+    boxA.append(rowA); boxB.append(rowB, law);
+    hide(a1, a2, b1, b2, law);
+    const comb = add(stage, h('div', 'sn3-comb c', K(`=\\htmlClass{sn3-ca}{${cr}}\\times\\htmlClass{sn3-cb}{10^{${er}}}`)), W / 2, 300); hide(comb);
+    const chk = add(stage, h('div', 'sn3-chk c'), W / 2, 372); hide(chk);
+    const fin = add(stage, h('div', 'sn3-fin c'), W / 2, 430); hide(fin);
+    const q = (s) => stage.querySelector(s);
+    const steps = [{
+      cap: mul ? 'Multiplication can be done in any order, so <b>group</b> the <b class="sn3-coef">coefficients</b> together and the <b class="sn3-pow">powers of 10</b> together.'
+        : 'Split the division in two: <b class="sn3-coef">coefficient ÷ coefficient</b>, and <b class="sn3-pow">power of 10 ÷ power of 10</b>.',
+      run: async (c) => {
+        top.classList.add('colored');
+        const toks = ['.sn3-ta', '.sn3-tb', '.sn3-tm', '.sn3-tn'].map(q); hide(...toks); a1.style.opacity = 1; b1.style.opacity = 1;
+        await Promise.all([fly(c, stage, q('.sn3-expr .sn3-ea'), toks[0], p.a, { fs: 30, cls: 'coef' }), fly(c, stage, q('.sn3-expr .sn3-eb'), toks[1], p.b, { fs: 30, cls: 'coef', delay: 120 }),
+          fly(c, stage, q('.sn3-expr .sn3-em'), toks[2], `10^{${p.m}}`, { fs: 30, cls: 'pow', delay: 240 }), fly(c, stage, q('.sn3-expr .sn3-en'), toks[3], `10^{${p.n}}`, { fs: 30, cls: 'pow', delay: 360 })]);
+      }
+    }, {
+      cap: `Coefficients: <b>${p.a} ${p.op} ${p.b} = ${cr}</b>.`,
+      run: (c) => c.fadeIn(a2, 400, { from: 'translateX(-10px)' })
+    }, {
+      cap: mul ? `Powers of 10, <b>product law</b>: same base, so <b>add</b> the exponents: ${snNeg(p.m)} + ${snParN(p.n)} = <b>${snNeg(er)}</b>.`
+        : `Powers of 10, <b>quotient law</b>: same base, so <b>subtract</b> the exponents: ${snNeg(p.m)} − ${snParN(p.n)} = <b>${snNeg(er)}</b>.`,
+      run: (c) => Promise.all([c.fadeIn(b2, 400, { from: 'translateX(-10px)' }), c.fadeIn(law, 400, { delay: 300 })])
+    }, {
+      cap: `Put the two answers back together: <b>${tex(snSci(cr, er))}</b>.`,
+      run: async (c) => {
+        const ca = q('.sn3-ca'), cb = q('.sn3-cb'); hide(ca, cb);
+        await Promise.all([c.fadeIn(comb, 300), fly(c, stage, q('.sn3-ra'), ca, cr, { fs: 30, cls: 'coef' }), fly(c, stage, q('.sn3-rb'), cb, `10^{${er}}`, { fs: 30, cls: 'pow', delay: 150 })]);
+      }
+    }];
+    if (inRange) steps.push({
+      cap: `Is ${cr} between 1 and 10? <b>Yes</b>, so ${tex(snSci(cr, er))} is already in scientific notation. <b>Done!</b>`,
+      run: async (c) => { chk.innerHTML = `<b class="ok">✓</b> ${K(`1\\le${cr}\\lt10`)} &nbsp;in range`; fin.innerHTML = K(`\\mathbf{${snSci(cr, er)}}`); await c.fadeIn(chk, 350); await c.pop(fin, 420); }
+    });
+    else {
+      steps.push({
+        cap: `Is ${cr} between 1 and 10? <b>No</b>: ${cr} is ${e > 0 ? 'too big' : 'too small'}, so this isn’t scientific notation yet.`,
+        run: async (c) => { chk.innerHTML = `<b class="red">✗</b> ${K(cr)} is ${e > 0 ? '10 or more' : 'less than 1'}`; await c.fadeIn(chk, 350); await c.shake(chk); }
+      });
+      steps.push({
+        cap: `Fix the coefficient: ${tex(`${cr}=${snSci(coef2, e)}`)}, so the exponent goes <b>${e > 0 ? 'up' : 'down'} ${Math.abs(e)}</b>: ${snEq(`${snSci(coef2, e)}\\times10^{${er}}=${snSci(coef2, n2)}`)}.`,
+        run: async (c) => {
+          chk.innerHTML = K(`${snSci(cr, er)}=${snSci(coef2, e)}\\times10^{${er}}`);
+          fin.innerHTML = K(`=\\mathbf{${snSci(coef2, n2)}}`);
+          await c.fadeIn(chk, 350); await c.pop(fin, 420);
+        }
+      });
+    }
+    return steps;
+  }
+};
+
 /* ============ wiring ============ */
 function mountExplainers() {
-  const defs = { stairs, cancel, hops, move, sorter, flip };
+  const defs = { stairs, cancel, hops, move, sorter, flip, snhops: snHops, snmuldiv: snMulDiv };
   document.querySelectorAll('[data-explainer]').forEach((el) => new Explainer(el, defs[el.dataset.explainer]));
 }
 

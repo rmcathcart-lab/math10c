@@ -6,7 +6,7 @@
  * Slopes are typed with the slope keypad (K.slope: fractions, integers, "undefined"); "prove / show / test" items are
  * split into checkable steps (the slopes in a fields box, then the conclusion as multiple choice); "explain" items are
  * multiple choice with misconception hints. Q4 asks for k and then the segment on the graph pad; EP 13(a) plots the
- * five points on the graph pad. Distance and midpoint parts (marked Extension in the booklet) have outcome EXT.
+ * five points on the graph pad. Distance and midpoint parts (regular content since the 2026 restructure) count toward RF3.
  * Levels: LIM BEG EMG PRG ADV MAS (LEVEL_RUBRIC.md, anchored on u6_test_A RF3 part 1 and part 3). */
 (function (root) {
   'use strict';
@@ -340,15 +340,15 @@
         parts: [
           { id: '3a', level: 'EMG', make: function (r, s) { var v = sV(s.s), exact = s.s[1] === 2 || s.s[1] === 4;
             return slopeAns('(a) Calculate the slope of the path.', s.s, slopeChk(s.s, function (x) { if (Math.abs(x - v) < 0.006) return { code: 'slope', hint: 'That decimal is rounded. Give the exact slope as a fraction in lowest terms.' }; return null; }), t(calc(s.A, s.B)) + ' (the path rises ' + t(sT(s.s) + (exact ? '=' : '\\approx ') + (exact ? nT(v) : v.toFixed(2))) + ' m for every metre across).', [SLOPE_HINT, 'Reduce the fraction to lowest terms.'], 'slope of a ski path'); } },
-          { id: '3b', level: 'BEG', outcome: 'EXT', make: function (r, s) {
+          { id: '3b', level: 'BEG', outcome: 'RF3', make: function (r, s) {
             var M = [(s.A[0] + s.B[0]) / 2, (s.A[1] + s.B[1]) / 2], base = K.pairs([[M[0], M[1]]]), sub = K.pairs([[(s.B[0] - s.A[0]) / 2, (s.B[1] - s.A[1]) / 2]]), sum = K.pairs([[s.A[0] + s.B[0], s.A[1] + s.B[1]]]);
             var chk = function (resp) { var a = base(resp); if (a.v !== 'wrong') return a; if (sub(resp).v === 'correct') return wrong('mid-sub', 'For a midpoint, <b>add</b> the coordinates and then halve them: ' + t('\\left(\\frac{x_1+x_2}{2},\\ \\frac{y_1+y_2}{2}\\right)') + '.'); if (sum(resp).v === 'correct') return wrong('mid-half', 'You added the coordinates — now divide each sum by ' + t('2') + '.'); return a; };
-            var p = B.math('(b) <i>(Extension)</i> Calculate the coordinates of the midpoint of the path.', chk, '(' + nT(M[0]) + ', ' + nT(M[1]) + ')', t('\\left(\\frac{' + s.A[0] + '+' + s.B[0] + '}{2},\\ \\frac{' + s.A[1] + '+' + s.B[1] + '}{2}\\right)=' + ptT(M)), ['Midpoint: average the ' + t('x') + '-coordinates and average the ' + t('y') + '-coordinates.'], 'midpoint of the path', { keys: 'pairs', placeholder: 'e.g. (3, 4.5)' });
+            var p = B.math('(b) Calculate the coordinates of the midpoint of the path.', chk, '(' + nT(M[0]) + ', ' + nT(M[1]) + ')', t('\\left(\\frac{' + s.A[0] + '+' + s.B[0] + '}{2},\\ \\frac{' + s.A[1] + '+' + s.B[1] + '}{2}\\right)=' + ptT(M)), ['Midpoint: average the ' + t('x') + '-coordinates and average the ' + t('y') + '-coordinates.'], 'midpoint of the path', { keys: 'pairs', placeholder: 'e.g. (3, 4.5)' });
             p.bad = ['(' + (s.A[0] + s.B[0]) + ', ' + (s.A[1] + s.B[1]) + ')', '(' + nT((s.B[0] - s.A[0]) / 2) + ', ' + nT((s.B[1] - s.A[1]) / 2) + ')']; return p;
           } },
-          { id: '3c', level: 'EMG', outcome: 'EXT', make: function (r, s) {
+          { id: '3c', level: 'EMG', outcome: 'RF3', make: function (r, s) {
             var dx = s.B[0] - s.A[0], dy = s.B[1] - s.A[1], n = dx * dx + dy * dy, d = Math.sqrt(n);
-            return B.approx('(c) <i>(Extension)</i> Calculate the length of the path, to the nearest tenth of a metre.', d, 1, { after: ' m', diag: function (v) { if (near(v, n)) return { code: 'len-no-root', hint: 'That is ' + t('d^{2}') + ' — take the square root.' }; if (near(v, dx + dy) || near(v, K.roundTo(Math.sqrt(dx + dy), 1))) return { code: 'sum-sq', hint: 'Square the run and the rise <b>before</b> adding: ' + t('d=\\sqrt{(\\Delta x)^{2}+(\\Delta y)^{2}}') + '.' }; return null; } },
+            return B.approx('(c) Calculate the length of the path, to the nearest tenth of a metre.', d, 1, { after: ' m', diag: function (v) { if (near(v, n)) return { code: 'len-no-root', hint: 'That is ' + t('d^{2}') + ' — take the square root.' }; if (near(v, dx + dy) || near(v, K.roundTo(Math.sqrt(dx + dy), 1))) return { code: 'sum-sq', hint: 'Square the run and the rise <b>before</b> adding: ' + t('d=\\sqrt{(\\Delta x)^{2}+(\\Delta y)^{2}}') + '.' }; return null; } },
               t('d=\\sqrt{(' + s.B[0] + '-' + s.A[0] + ')^{2}+(' + s.B[1] + '-' + s.A[1] + ')^{2}}=\\sqrt{' + dx + '^{2}+' + dy + '^{2}}=\\sqrt{' + n + '}\\approx ' + K.roundTo(d, 1).toFixed(1)) + ' m', ['Distance formula: ' + t('d=\\sqrt{(x_2-x_1)^{2}+(y_2-y_1)^{2}}') + '.'], 'length of the path');
           } }] },
       /* ---------------- Q4 ---------------- */
@@ -390,8 +390,8 @@
               { html: 'The lengths ' + t('XY') + ' and ' + t('YZ') + ' are equal.', why: 'Slopes say nothing about lengths — and the lengths here aren’t even equal. What two facts about the segments ' + t('XY') + ' and ' + t('YZ') + ' put them on one line?' }],
               'Two segments with equal slopes are parallel; if they also share an endpoint (' + t('Y') + '), they must lie on the same line. So ' + t('X') + ', ' + t('Y') + ', ' + t('Z') + ' are collinear.', ['Two parallel segments can be side by side. What stops that here?'], 'why equal slopes prove collinear');
           } },
-          { id: '5b', sub: 'b', level: 'PRG', outcome: 'EXT', make: function (r, s) {
-            var p = B.fields('(b) <i>(Extension)</i> Use the distance formula to prove that ' + t('X') + ', ' + t('Y') + ' and ' + t('Z') + ' are collinear: find the exact lengths (simplest radical form).', [radField('XY'), radField('YZ'), radField('XZ')], [radChk(s.X, s.Y), radChk(s.Y, s.Z), radChk(s.X, s.Z)], [lenT(s.X, s.Y), lenT(s.Y, s.Z), lenT(s.X, s.Z)],
+          { id: '5b', sub: 'b', level: 'PRG', outcome: 'RF3', make: function (r, s) {
+            var p = B.fields('(b) Use the distance formula to prove that ' + t('X') + ', ' + t('Y') + ' and ' + t('Z') + ' are collinear: find the exact lengths (simplest radical form).', [radField('XY'), radField('YZ'), radField('XZ')], [radChk(s.X, s.Y), radChk(s.Y, s.Z), radChk(s.X, s.Z)], [lenT(s.X, s.Y), lenT(s.Y, s.Z), lenT(s.X, s.Z)],
               t('XY=' + lenT(s.X, s.Y) + ',\\ YZ=' + lenT(s.Y, s.Z) + ',\\ XZ=' + lenT(s.X, s.Z)),
               t('XY=\\sqrt{' + (s.Y[0] - s.X[0]) + '^{2}+' + nb(s.Y[1] - s.X[1]) + '^{2}}=' + lenT(s.X, s.Y)) + '<br>' + t('YZ=\\sqrt{' + (s.Z[0] - s.Y[0]) + '^{2}+' + nb(s.Z[1] - s.Y[1]) + '^{2}}=\\sqrt{' + d2(s.Y, s.Z) + '}=' + lenT(s.Y, s.Z)) + '<br>' + t('XZ=\\sqrt{' + (s.Z[0] - s.X[0]) + '^{2}+' + nb(s.Z[1] - s.X[1]) + '^{2}}=\\sqrt{' + d2(s.X, s.Z) + '}=' + lenT(s.X, s.Z)) + '<br>' + t('XY+YZ=' + lenT(s.X, s.Y) + '+' + lenT(s.Y, s.Z) + '=' + lenT(s.X, s.Z) + '=XZ') + ', so the points lie on one straight line, with ' + t('Y') + ' between ' + t('X') + ' and ' + t('Z') + '.',
               ['Distance formula: ' + t('d=\\sqrt{(x_2-x_1)^{2}+(y_2-y_1)^{2}}') + ', then simplify the radical.'], 'collinear by distances');
@@ -469,7 +469,7 @@
             t('\\frac{k-' + y1 + '}{' + g.x2 + '-' + g.A[0] + '}=' + sT(g.m) + '\\ \\Rightarrow\\ \\frac{k-' + y1 + '}{' + (g.x2 - g.A[0]) + '}=' + sT(g.m) + '\\ \\Rightarrow\\ k-' + y1 + '=' + g.rise + '\\ \\Rightarrow\\ k=' + g.k) + '.', ['Write the slope formula with ' + t('k') + ' and set it equal to the slope.'], 'MC find k from slope');
         } }] },
       { num: '10', parts: [
-        { id: '10', level: 'PRG', outcome: 'EXT', make: function (r) {
+        { id: '10', level: 'PRG', outcome: 'RF3', make: function (r) {
           var g = gen(r, function (r) { var p = r.int(1, 4), q = r.int(1, 4); if (gcd(p, q) !== 1 || p === q) return null; var y1 = p * r.int(1, 4) * (q % 2 ? 1 : 1); if (y1 < 3 || y1 > 12) return null; var x1 = r.int(-3, 5), x0 = x1 + y1 * q / p; if (!Number.isInteger(x0)) return null; if ((y1 % 2) === 0 && ((x1 + x0) % 2) === 0) return null; return { P: [x1, y1], x0: x0, m: [-p, q] }; }, { P: [2, 9], x0: 8, m: [-3, 2] });
           var M = [(g.P[0] + g.x0) / 2, g.P[1] / 2], xs = g.P[0] - (g.x0 - g.P[0]);
           var c = [[[g.P[0] + g.x0, g.P[1] / 2], 'You added the ' + t('x') + '-coordinates but didn’t divide by ' + t('2') + '.'], [[M[0], g.P[1]], 'The ' + t('y') + '-coordinate of the midpoint is the average of ' + t(g.P[1]) + ' and ' + t('0') + '.'], [[(g.P[0] + xs) / 2, g.P[1] / 2], 'Check the other endpoint: a negative slope means it is to the <b>right</b> of ' + t(ptT(g.P)) + ' (going down to the ' + t('x') + '-axis).'], [[(g.x0 - g.P[0]) / 2, g.P[1] / 2], 'For a midpoint, <b>add</b> the coordinates before halving.']];
@@ -479,7 +479,7 @@
             'Let the other endpoint be ' + t('(x,\\ 0)') + ': ' + t('\\frac{0-' + g.P[1] + '}{x-' + nb(g.P[0]) + '}=' + sT(g.m)) + ', so ' + t('x=' + g.x0) + '.<br>Midpoint ' + t('=\\left(\\frac{' + g.P[0] + '+' + g.x0 + '}{2},\\ \\frac{' + g.P[1] + '+0}{2}\\right)=' + ptT(M)) + '.', ['The point on the ' + t('x') + '-axis has ' + t('y=0') + '. Use the slope to find its ' + t('x') + '.'], 'MC endpoint on x-axis then midpoint');
         } }] },
       { num: '11', parts: [
-        { id: '11', level: 'PRG', outcome: 'EXT', make: function (r) {
+        { id: '11', level: 'PRG', outcome: 'RF3', make: function (r) {
           var g = gen(r, function (r) { var D = [r.int(-5, 6), r.int(-9, 0)], E = [r.int(4, 14), r.int(6, 18)], Fp = [r.int(12, 22), r.int(-2, 8)]; var M = [(E[0] + Fp[0]) / 2, (E[1] + Fp[1]) / 2]; if (M[0] - D[0] < 4) return null; var s = (M[1] - D[1]) / (M[0] - D[0]); if (s < 0.3 || s > 9.4 || Number.isInteger(M[0] + M[1])) return null; if (Math.abs(s * 10 - Math.round(s * 10)) < 0.02 || Math.abs(Math.abs((s * 10) % 1) - 0.5) < 0.01) return null; return { D: D, E: E, F: Fp, M: M, s: s }; }, { D: [3, -7], E: [11, 15], F: [19, 4], M: [15, 9.5], s: 1.375 });
           var sDE = (g.E[1] - g.D[1]) / (g.E[0] - g.D[0]), sDF = (g.F[1] - g.D[1]) / (g.F[0] - g.D[0]);
           return B.approx('<i>(Numerical response, Extension)</i> ' + nP('D', g.D) + ', ' + nP('E', g.E) + ' and ' + nP('F', g.F) + ' are the vertices of a triangle. The slope of the median from ' + t('D') + ' to the midpoint of ' + t('EF') + ', to the nearest tenth, is ____.', g.s, 1, { nr: true, diag: function (v) { if (near(v, K.roundTo(sDE, 1)) || near(v, K.roundTo(sDF, 1))) return { code: 'median-vertex', hint: 'The median goes from ' + t('D') + ' to the <b>midpoint</b> of ' + t('EF') + ', not to ' + t('E') + ' or ' + t('F') + '.' }; if (near(v, K.roundTo(1 / g.s, 1))) return { code: 'slope-flip', hint: 'Slope is rise over run — you have run over rise.' }; return null; } },
@@ -645,9 +645,9 @@
               t('m_{AB}=' + sT(s1) + ',\\ m_{BC}=' + sT(s2) + ',\\ m_{AB}\\times m_{BC}=-1'), t(calc(s.A, s.B, 'AB')) + '<br>' + t(calc(s.B, s.C, 'BC')) + '<br>' + t(prodT(s1, s2)) + ', so ' + t('AB\\perp BC') + ': the right angle is at ' + t('B') + '.', [SLOPE_HINT, 'Multiply the two slopes: perpendicular slopes give ' + t('-1') + '.'], 'show right angle at B');
             p.bad = [[sT(s1), sT(s2), '1']]; return p;
           } },
-          { id: '20b', level: 'EMG', outcome: 'EXT', make: function (r, s) {
+          { id: '20b', level: 'EMG', outcome: 'RF3', make: function (r, s) {
             var a = d2(s.A, s.B), b = d2(s.B, s.C), c = d2(s.A, s.C);
-            var p = B.fields('(b) <i>(Extension)</i> Use the distance formula and the Pythagorean theorem to confirm that ' + t('\\triangle ABC') + ' is right-angled at ' + t('B') + ': find the three squared lengths.', [{ label: t('AB^{2}=') }, { label: t('BC^{2}=') }, { label: t('AC^{2}=') }], [K.number(a), K.number(b), K.number(c, function (v) { if (near(v, Math.sqrt(c))) return { code: 'len-no-root', hint: 'Give the <b>square</b> of the length here (no square root).' }; return null; })], [String(a), String(b), String(c)],
+            var p = B.fields('(b) Use the distance formula and the Pythagorean theorem to confirm that ' + t('\\triangle ABC') + ' is right-angled at ' + t('B') + ': find the three squared lengths.', [{ label: t('AB^{2}=') }, { label: t('BC^{2}=') }, { label: t('AC^{2}=') }], [K.number(a), K.number(b), K.number(c, function (v) { if (near(v, Math.sqrt(c))) return { code: 'len-no-root', hint: 'Give the <b>square</b> of the length here (no square root).' }; return null; })], [String(a), String(b), String(c)],
               t('AB^{2}=' + a + ',\\ BC^{2}=' + b + ',\\ AC^{2}=' + c), t('AB^{2}=' + (s.B[0] - s.A[0]) + '^{2}+' + nb(s.B[1] - s.A[1]) + '^{2}=' + a) + '<br>' + t('BC^{2}=' + (s.C[0] - s.B[0]) + '^{2}+' + nb(s.C[1] - s.B[1]) + '^{2}=' + b) + '<br>' + t('AC^{2}=' + (s.C[0] - s.A[0]) + '^{2}+' + nb(s.C[1] - s.A[1]) + '^{2}=' + c) + '<br>' + t(a + '+' + b + '=' + c) + ': ' + t('AB^{2}+BC^{2}=AC^{2}') + ', so the right angle is at ' + t('B') + ' ✓.', ['Squared length: ' + t('(x_2-x_1)^{2}+(y_2-y_1)^{2}') + ' — no square root needed.'], 'Pythagorean check');
             p.bad = [[String(a), String(b), String(a + b + 1)]]; return p;
           } }] },
@@ -721,7 +721,7 @@
         parts: [
           { id: 'e1a', level: 'EMG', make: function (r, s) { return slopeFields('(a) Test the points for collinearity by comparing ' + t('m_{AB}') + ' with ' + t('m_{BC}') + '.', [{ nm: 'AB', s: s.s }, { nm: 'BC', s: s.s }], t(calc(s.X, s.Y, 'AB')) + '<br>' + t(calc(s.Y, s.Z, 'BC')) + '<br>Equal slopes sharing ' + t('B') + ': <b>collinear</b>.', [SLOPE_HINT], 'collinear test m_AB vs m_BC'); } },
           { id: 'e1b', level: 'BEG', make: function (r, s) { return slopeAns('(b) Test them again: find ' + t('m_{AC}') + ' and compare it with ' + t('m_{AB}') + '.', s.s, null, t(calc(s.X, s.Z, 'AC')) + ' — equal to ' + t('m_{AB}') + ', and the segments share ' + t('A') + ': collinear again.', [SLOPE_HINT], 'm_AC', t('m_{AC}=')); } },
-          { id: 'e1c', level: 'PRG', outcome: 'EXT', make: function (r, s) {
+          { id: 'e1c', level: 'PRG', outcome: 'RF3', make: function (r, s) {
             var p = B.fields('(c) Test them a third way: find the exact lengths ' + t('AB') + ', ' + t('BC') + ' and ' + t('AC') + ' (simplest radical form). Does ' + t('AB+BC=AC') + '?', [radField('AB'), radField('BC'), radField('AC')], [radChk(s.X, s.Y), radChk(s.Y, s.Z), radChk(s.X, s.Z)], [lenT(s.X, s.Y), lenT(s.Y, s.Z), lenT(s.X, s.Z)],
               t('AB=' + lenT(s.X, s.Y) + ',\\ BC=' + lenT(s.Y, s.Z) + ',\\ AC=' + lenT(s.X, s.Z)), t('AB=\\sqrt{' + d2(s.X, s.Y) + '}=' + lenT(s.X, s.Y) + ',\\ BC=\\sqrt{' + d2(s.Y, s.Z) + '}=' + lenT(s.Y, s.Z) + ',\\ AC=\\sqrt{' + d2(s.X, s.Z) + '}=' + lenT(s.X, s.Z)) + '<br>' + t('AB+BC=' + lenT(s.X, s.Y) + '+' + lenT(s.Y, s.Z) + '=' + lenT(s.X, s.Z) + '=AC') + ': collinear, with ' + t('B') + ' between ' + t('A') + ' and ' + t('C') + '.', ['Distance formula, then simplify each radical so they can be added.'], 'collinear by distance');
             p.bad = [[String(d2(s.X, s.Y)), lenT(s.Y, s.Z), lenT(s.X, s.Z)]]; return p;
@@ -990,13 +990,13 @@
               return B.mc(r, 'Use the slopes to prove the triangle is right-angled. At which vertex is the right angle?', N.map(function (n, i) { return { html: 'At ' + t(n), right: i === s.at, why: i === s.at ? null : 'The two sides that meet at ' + t(n) + ' don’t have slopes with product ' + t('-1') + '.' }; }).concat([{ html: 'It isn’t right-angled.', why: 'One pair of slopes multiplies to ' + t('-1') + '. Find it.' }]),
                 t(prodT(s1, s2)) + ', so ' + t(lg[0].nm + '\\perp ' + lg[1].nm) + ': the right angle is at <b>' + t(N[s.at]) + '</b>.', ['The right angle is where the two perpendicular sides meet.'], 'right angle at which vertex', true);
             } },
-            { id: 'e11b', sub: 'b', level: 'PRG', outcome: 'EXT', make: function (r, s) {
+            { id: 'e11b', sub: 'b', level: 'PRG', outcome: 'RF3', make: function (r, s) {
               var lg = legs(s);
               var p = B.fields('(b) Find the exact lengths of the two sides that meet at the right angle (simplest radical form).', lg.map(function (l) { return radField(l.nm); }), lg.map(function (l) { return radChk(l.P, l.Q); }), lg.map(function (l) { return lenT(l.P, l.Q); }), t(lg.map(function (l) { return l.nm + '=' + lenT(l.P, l.Q); }).join(',\\quad ')),
                 lg.map(function (l) { var rt = '\\sqrt{' + d2(l.P, l.Q) + '}'; return t(l.nm + '=' + rt + (lenT(l.P, l.Q) === rt ? '' : '=' + lenT(l.P, l.Q))); }).join('<br>'), ['Distance formula, then simplify.'], 'legs of a right triangle');
               p.bad = [lg.map(function (l) { return String(d2(l.P, l.Q)); })]; return p;
             } },
-            { id: 'e11c', sub: 'c', level: 'PRG', outcome: 'EXT', make: function (r, s) {
+            { id: 'e11c', sub: 'c', level: 'PRG', outcome: 'RF3', make: function (r, s) {
               var lg = legs(s), a2 = d2(lg[0].P, lg[0].Q), b2 = d2(lg[1].P, lg[1].Q), area = Math.sqrt(a2 * b2) / 2;
               return B.number('(c) Calculate the area of ' + t('\\triangle ABC') + ' (square units).', cl(area), function (v) { if (near(v, 2 * area)) return { code: 'area-no-half', hint: 'Area of a triangle is ' + t('\\frac{1}{2}bh') + ' — halve it.' }; return null; },
                 'The legs ' + t(lg[0].nm) + ' and ' + t(lg[1].nm) + ' meet at a right angle, so one is the base and the other is already the height (the third side plays no part):<br>' + t('A=\\frac{1}{2}(' + lenT(lg[0].P, lg[0].Q) + ')(' + lenT(lg[1].P, lg[1].Q) + ')=' + nT(area)) + ' square units.', ['The two perpendicular sides are the base and the height.'], 'area of a right triangle');
@@ -1017,12 +1017,12 @@
               return B.mc(r, '(a) Prove by slope that ' + t('\\triangle PQR') + ' is right-angled. At which vertex is the right angle?', N.map(function (n, i) { return { html: 'At ' + t(n), right: i === s.at, why: i === s.at ? null : 'Multiply the slopes of the two sides that meet at ' + t(n) + ': the product isn’t ' + t('-1') + '.' }; }).concat([{ html: 'It isn’t right-angled.', why: 'Calculate all three slopes: one pair multiplies to ' + t('-1') + '.' }]),
                 t(calc(lg[0].P, lg[0].Q, lg[0].nm)) + '<br>' + t(calc(lg[1].P, lg[1].Q, lg[1].nm)) + '<br>' + t(calc(h.P, h.Q, h.nm)) + '<br>' + t(prodT(s1, s2)) + ', so the right angle is at <b>' + t(N[s.at]) + '</b>.', ['Find all three slopes, then look for a product of ' + t('-1') + '.'], 'prove right-angled by slope', true);
             } },
-            { id: 'e12b', level: 'PRG', outcome: 'EXT', make: function (r, s) {
+            { id: 'e12b', level: 'PRG', outcome: 'RF3', make: function (r, s) {
               var lg = legs(s), a2 = d2(lg[0].P, lg[0].Q), b2 = d2(lg[1].P, lg[1].Q), area = Math.sqrt(a2 * b2) / 2;
               return B.number('(b) Calculate the area of ' + t('\\triangle PQR') + ' (square units).', cl(area), function (v) { if (near(v, 2 * area)) return { code: 'area-no-half', hint: 'Area of a triangle is ' + t('\\frac{1}{2}bh') + '.' }; return null; },
                 t(lg[0].nm + '=' + lenT(lg[0].P, lg[0].Q) + ',\\ ' + lg[1].nm + '=' + lenT(lg[1].P, lg[1].Q)) + '<br>' + t('A=\\frac{1}{2}(' + lenT(lg[0].P, lg[0].Q) + ')(' + lenT(lg[1].P, lg[1].Q) + ')=' + nT(area)) + ' square units.', ['The sides that meet at the right angle are the base and the height.'], 'area of a right triangle');
             } },
-            { id: 'e12c', level: 'EMG', outcome: 'EXT', make: function (r, s) {
+            { id: 'e12c', level: 'EMG', outcome: 'RF3', make: function (r, s) {
               var lg = legs(s), h = hyp(s), a = d2(lg[0].P, lg[0].Q), b = d2(lg[1].P, lg[1].Q), c = d2(h.P, h.Q);
               var p = B.fields('(c) Confirm the right angle a second way with the Pythagorean theorem: find the three squared side lengths.', [{ label: t(lg[0].nm + '^{2}=') }, { label: t(lg[1].nm + '^{2}=') }, { label: t(h.nm + '^{2}=') }], [K.number(a), K.number(b), K.number(c)], [String(a), String(b), String(c)],
                 t(lg[0].nm + '^{2}=' + a + ',\\ ' + lg[1].nm + '^{2}=' + b + ',\\ ' + h.nm + '^{2}=' + c), t(a + '+' + b + '=' + c) + ': ' + t(lg[0].nm + '^{2}+' + lg[1].nm + '^{2}=' + h.nm + '^{2}') + ' ✓, so the right angle is opposite ' + t(h.nm) + ', at ' + t(N[s.at]) + '.', ['Squared length: ' + t('(\\Delta x)^{2}+(\\Delta y)^{2}') + '.'], 'Pythagorean confirmation');

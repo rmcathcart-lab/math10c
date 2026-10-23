@@ -1,5 +1,5 @@
 /* Math 10C · Unit 4 · Lesson 2 — Common Factors: Binomial Common Factors and Grouping (AN5)
- * Assignment questions 1–9 (u4_L02.tex) and the binomial-common-factor / grouping half of the Lesson 1 Extra Practice
+ * Assignment questions 1–9 (u4_L02.tex) and the binomial-common-factor / grouping half of the Lessons 1–2 Extra Practice
  * (u4_EP01.tex Questions 7, 8, 9, 10, 13, 16, 17; the GCF-of-monomials half goes with Lesson 1).
  * Every part is a generator that keeps the booklet question's structure (which bracket is common, the sign pattern,
  * hidden 1s, opposite brackets that need a sign flip, the booklet's term order, rearranging before grouping) and

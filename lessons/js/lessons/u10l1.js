@@ -1,4 +1,4 @@
-/* Math 10C · Unit 10 · Lesson 1 — Estimating Length with Personal Referents.
+/* Math 10C · Unit 10 · Lesson 1 — Systems of Measurement, Referents, and Measuring Instruments.
  * Warm-up (arm span = height), the five body referents to scale (static), and the explainers:
  *   imperial (inch → foot → yard built from thumbs, Henry I's yard; zoom into a mile: furlongs, chains, rods, cubits),
  *   metric (zoom into a kilometre: 1 000 m, 100 cm, 10 mm; imperial vs SI factor chains),
@@ -7,12 +7,14 @@
  *   ladder (everyday referents on a ×10 ladder of sizes; where a phone, a gym and the Example 2 towel sit),
  *   towel (Example 2: workbook widths above, paces below), shed (Example 3(a): heel-to-toe around a rectangle),
  *   wheel (Example 3(b): wrap a string, roll it out straight, count pinky nails), card (Example 4: on-screen cm and
- *   1/16-inch rulers, the 1:3 scale), km (Example 5: 20 pool lengths, or 1 111 paces).
+ *   1/16-inch rulers, the 1:3 scale), km (Example 5: 20 pool lengths, or 1 111 paces),
+ *   instr (Section 5, from the old Lesson 3: read a vernier caliper, then a micrometer; notes and Example 6 checks).
  * Colours: imperial blue, SI teal, referent copies amber, true measurement (tape) red. */
 import {
   h, tex, add, svgEl, place, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep, tween, pulse, liveCtx,
   arrowHead, COLORS
 } from '../blocks.js';
+import * as BLK from '../blocks.js';
 
 const T = (s) => tex(s);
 /** a caption equation that may wrap before each = or \approx (the sidebar caption is narrow) */
@@ -986,9 +988,368 @@ function poolTile(g, x, y, w, hh, n) {
 }
 
 /* =============================== mount =============================== */
+/* =============================== Section 5: the vernier caliper and the micrometer =============================== *
+ * From the old Lesson 3 (Reading Precision Measuring Instruments, cut in the 2026 restructure): the instruments are
+ * drawn to the booklet's true geometry (\vernierScale, \microScale). One explainer, instr, replays the old vread
+ * (main scale, the vernier tick that lines up, the sum) and mread (sleeve + thimble) explainers; static figures
+ * [data-u10l1i-fig="vmm:M,N" | "micro:half,fine"]. Colours: coarse blue, fine amber, index red, matching tick green.
+ * Wrapped in a block so its helper names don't clash with the rest of this file. */
+const instr = (() => {
+  const { box } = BLK;
+  const T = (s) => tex(s);
+  const S = (tag, a, p) => svgEl(tag, a, p);
+  const CO = COLORS.blue, FI = COLORS.amber, IDX = COLORS.red, OK = COLORS.green, INK = COLORS.ink, TEAL = COLORS.teal;
+  const f1 = (v) => v.toFixed(1), f2 = (v) => v.toFixed(2);
+  const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+  let CLIP = 0;
+  function txt(p, x, y, s, a = {}) {
+    const t = S('text', Object.assign({ x, y, 'text-anchor': 'middle', 'dominant-baseline': 'central', class: 'u10l1i-st' }, a), p);
+    t.textContent = s; return t;
+  }
+  function pillAt(host, x, y, html, cls = '') { const d = h('div', 'u10l1i-pill ' + cls, html); add(host, d, x, y); return d; }
+  function panel(stage, x, y, w, hh, title, cls = '') { return add(stage, box(h('div', 'u10l1i-panel ' + cls, title ? `<div class="u10l1i-ph">${title}</div>` : ''), w, hh), x, y); }
+  function line(p, html, cls = '') { const d = h('div', 'u10l1i-line ' + cls, html); p.appendChild(d); return d; }
+  const show = (c, el) => fadeIn(c, el, 320);
+  const hidden = (el) => { el.style.opacity = 0; return el; };
+  function overlay(stage, W, H) { return add(stage, S('svg', { width: W, height: H, class: 'u10l1i-over' }), 0, 0); }
+  const mixTex = (w, n, d) => (n === 0 ? String(w) : w === 0 ? `\\tfrac{${n}}{${d}}` : `${w}\\tfrac{${n}}{${d}}`);
+
+  /* =============================== micrometer scale (booklet \microScale) =============================== */
+  class MicroScale {
+    /** o: { R (reading the figure is built for, mm), r0 (start), rmax, mlo, k (px per booklet cm), x, y, labels } */
+    constructor(host, o) {
+      const k = this.k = o.k || 80;
+      this.R = o.R; this.mlo = o.mlo ?? Math.max(0, Math.floor(o.R + 1e-9) - 6);
+      const rmax = Math.max(o.R, o.rmax || 0), mEmax = (rmax - this.mlo) * 0.55, mEf = (o.R - this.mlo) * 0.55;
+      this.W = Math.ceil((mEmax + 3.62) * k); this.H = Math.ceil((o.labels === false ? 3.0 : 3.78) * k);
+      const el = this.el = box(h('div', 'u10l1i-fhost'), this.W, this.H);
+      if (o.x != null) add(host, el, o.x, o.y); else host.appendChild(el);
+      const svg = this.svg = S('svg', { width: this.W, height: this.H, class: 'u10l1i-svg' }, el);
+      const X = this.X = (x) => (x + 0.5) * k, Y = this.Y = (y) => (1.45 - y) * k;
+      this.sleeve = S('rect', { x: X(-0.45), y: Y(0.86), height: 1.48 * k, width: 1, class: 'u10l1i-sleeve' }, svg);
+      this.ticks = [];
+      const gT = S('g', {}, svg);
+      for (let kk = 2 * this.mlo; kk <= Math.floor(rmax / 0.5 + 1e-9); kk++) {
+        const v = kk * 0.5, x = X((v - this.mlo) * 0.55), g = S('g', {}, gT);
+        let ln, lab = null;
+        if (kk % 2) ln = S('line', { x1: x, x2: x, y1: Y(-0.03), y2: Y(-0.26), class: 'u10l1i-tk' }, g);
+        else if ((kk / 2) % 5 === 0) { ln = S('line', { x1: x, x2: x, y1: Y(0.03), y2: Y(0.48), class: 'u10l1i-tk u10l1i-tkM' }, g); lab = txt(g, x, Y(0.48) - 13, String(kk / 2)); }
+        else ln = S('line', { x1: x, x2: x, y1: Y(0.03), y2: Y(0.30), class: 'u10l1i-tk' }, g);
+        this.ticks.push({ v, x, g, ln, lab, half: !!(kk % 2) });
+      }
+      this.sline = S('line', { x1: X(-0.38), y1: Y(0), y2: Y(0), class: 'u10l1i-tk u10l1i-tkM' }, svg);
+      const th = this.th = S('g', {}, svg);
+      S('rect', { x: X(0), y: Y(1.35), width: 2.95 * k, height: 2.7 * k, class: 'u10l1i-thim' }, th);
+      this.thT = S('g', {}, th);
+      S('line', { x1: X(0), x2: X(0), y1: Y(1.35), y2: Y(-1.35), class: 'u10l1i-tk u10l1i-tkM' }, th);
+      S('line', { x1: X(1.55), x2: X(3.0), y1: Y(0), y2: Y(0), class: 'u10l1i-idx' }, th);
+      txt(th, X(2.93), Y(0) - 12, 'index line', { 'text-anchor': 'end', class: 'u10l1i-st u10l1i-sred' });
+      if (o.labels !== false) {
+        const cx = X((mEf + 2.5) / 2);
+        txt(svg, cx, Y(-1.66), 'Sleeve: a mark every 0.5 mm', { class: 'u10l1i-sb' });
+        txt(svg, cx, Y(-2.02), 'Thimble: 0.01 mm per division', { class: 'u10l1i-sb' });
+      }
+      this.set(o.r0 ?? o.R);
+    }
+    set(r) {
+      this.r = r; const k = this.k, X = this.X, Y = this.Y, mE = (r - this.mlo) * 0.55;
+      this.mE = mE;
+      this.sleeve.setAttribute('width', Math.max(1, X(mE) - X(-0.45)));
+      this.sline.setAttribute('x2', X(mE));
+      this.th.setAttribute('transform', `translate(${mE * k} 0)`);
+      for (const t of this.ticks) t.g.style.display = t.x <= X(mE) + 0.5 ? '' : 'none';
+      const half = Math.floor(r / 0.5 + 1e-7), f = Math.round(Math.max(0, (r - half * 0.5) / 0.01) * 1e6) / 1e6;
+      this.f = f; this.thT.innerHTML = ''; this.thMap = {};
+      for (let v = Math.ceil(f - 6.1); v <= Math.floor(f + 6.1); v++) {
+        const y = Y(-(v - f) * 0.22), lab = ((v % 50) + 50) % 50, maj = lab % 5 === 0;
+        const ln = S('line', { x1: X(0.12), x2: X(maj ? 0.72 : 0.5), y1: y, y2: y, class: 'u10l1i-tk' + (maj ? ' u10l1i-tkM' : '') }, this.thT);
+        const t = maj ? txt(this.thT, X(0.78), y, String(lab), { 'text-anchor': 'start' }) : null;
+        if (Math.abs(v - f) < 0.5) this.thMap.cur = { ln, t, lab, y };
+      }
+    }
+    /** turn the thimble from the current reading to r */
+    turn(c, r, ms) { const a = this.r; return tween(c, ms ?? Math.min(2600, 500 + Math.abs(r - a) * 420), (t) => this.set(a + (r - a) * t)); }
+    tick(v) { return this.ticks.find((t) => Math.abs(t.v - v) < 1e-6); }
+    pill(xcm, ycm, html, cls) { return pillAt(this.el, this.X(xcm), this.Y(ycm), html, cls); }
+    /** count the sleeve marks from the labelled multiple of 5 up to the coarse reading; returns the bubbles */
+    async count(c, coarse) {
+      const L5 = Math.max(this.mlo, 5 * Math.floor(coarse / 5 + 1e-9)), out = [], els = [];
+      for (let m = L5 + 1; m <= Math.floor(coarse + 1e-9); m++) out.push({ v: m, lab: String(m) });
+      if (Math.abs(coarse - Math.floor(coarse + 1e-9) - 0.5) < 1e-6) out.push({ v: coarse, lab: f1(coarse), half: true });
+      const lt = this.tick(L5); if (lt && lt.lab) { lt.lab.classList.add('u10l1i-hiCt'); }
+      for (const b of out) {
+        const t = this.tick(b.v); if (!t) continue;
+        const e = hidden(pillAt(this.el, t.x, this.Y(b.half ? -0.47 : 0.66), b.lab, 'u10l1i-bub' + (b.half ? ' u10l1i-bubH' : '')));
+        els.push(e); await pop(c, e, 300); await sleep(c, 200);
+      }
+      return els;
+    }
+    hiCoarse(coarse) { const t = this.tick(coarse); if (t) { t.ln.classList.add('u10l1i-hiC'); if (t.lab) t.lab.classList.add('u10l1i-hiCt'); } return t; }
+    async hiFine(c, F) {
+      const m = this.thMap.cur; if (!m) return null;
+      m.ln.classList.add('u10l1i-hiF'); if (m.t) m.t.classList.add('u10l1i-hiFt');
+      if (m.t) { await pulse(c, m.t, 1.25); return null; }
+      const p = hidden(this.pill(this.mE + 0.98, 0, String(F), 'u10l1i-pF'));
+      await pop(c, p); return p;
+    }
+  }
+
+  /* =============================== main scale + sliding vernier (booklet \vernierScale / \vernierInch) =============================== */
+  class VScale {
+    /** o: { lo, hi, u (px per main unit), k (px per booklet cm), p (index position), nDiv, div, mainTick(m), verTick(n),
+     *       mainTitle, verTitle, x, y, minMain } — ticks return { len (cm), thick, lab } */
+    constructor(host, o) {
+      Object.assign(this, { nDiv: 20, div: 0.95, minMain: 0, plateL: 1.15, plateR: 0.55 }, o);
+      const k = this.k, u = this.u;
+      this.padL = Math.round(0.3 * k + 4);
+      this.fullW = Math.ceil((this.hi - this.lo) * u + 2 * this.padL); this.W = this.viewW || this.fullW; this.dx = 0;
+      this.y0 = Math.round(1.05 * k + (this.mainTitle ? 30 : 6)); this.H = Math.ceil(this.y0 + 1.0 * k + (this.verTitle ? 32 : 8));
+      const el = this.el = box(h('div', 'u10l1i-fhost'), this.W, this.H);
+      if (o.x != null) add(host, el, o.x, o.y); else host.appendChild(el);
+      this.svgOuter = S('svg', { width: this.W, height: this.H, class: 'u10l1i-svg' + (this.viewW ? ' u10l1i-clip' : '') }, el);
+      const svg = this.svg = S('g', {}, this.svgOuter);
+      const X = this.X = (m) => this.padL + (m - this.lo) * u, y0 = this.y0;
+      S('rect', { x: 2, y: y0 - 1.05 * k, width: this.fullW - 4, height: 1.05 * k, class: 'u10l1i-mpanel' }, svg);
+      this.main = {};
+      for (let m = Math.ceil(this.lo); m <= Math.floor(this.hi); m++) {
+        if (m < this.minMain) continue;
+        const d = this.mainTick(m), x = X(m);
+        const ln = S('line', { x1: x, x2: x, y1: y0, y2: y0 - d.len * k, class: 'u10l1i-tk' + (d.thick ? ' u10l1i-tkM' : '') }, svg);
+        const lab = d.lab != null ? txt(svg, x, y0 - d.len * k - 11, d.lab) : null;
+        this.main[m] = { ln, lab, x };
+      }
+      if (this.mainTitle) { const t = add(el, h('div', 'u10l1i-ttl', this.mainTitle), this.W / 2, y0 - 1.05 * k - 15); t.style.translate = '-50% -50%'; }
+      const cid = 'u10l1ic' + (++CLIP);
+      S('rect', { x: 2, y: 0, width: this.fullW - 4, height: this.H }, S('clipPath', { id: cid }, svg));
+      this.vg = S('g', { 'clip-path': `url(#${cid})` }, svg);
+      this.vgi = S('g', {}, this.vg);
+      this.p0 = this.p; const xz = X(this.p0), xe = xz + this.nDiv * this.div * u;
+      S('rect', { x: xz - this.plateL * k, y: y0, width: xe - xz + (this.plateL + this.plateR) * k, height: 1.0 * k, class: 'u10l1i-vpanel' }, this.vgi);
+      this.ver = {};
+      for (let n = 0; n <= this.nDiv; n++) {
+        const d = this.verTick(n), x = xz + n * this.div * u;
+        const ln = S('line', { x1: x, x2: x, y1: y0, y2: y0 + d.len * k, class: 'u10l1i-tk' + (d.thick ? ' u10l1i-tkM' : '') }, this.vgi);
+        const lab = d.lab != null ? txt(this.vgi, x, y0 + d.len * k + 11, d.lab) : null;
+        this.ver[n] = { ln, lab, x0: x };
+      }
+      this.idx = S('line', { x1: xz, x2: xz, y1: y0, y2: y0 + this.verTick(0).len * k, class: 'u10l1i-idxV' }, this.vgi);
+      this.idxLab = txt(this.vgi, xz - 10, y0 + 0.72 * k, 'index', { 'text-anchor': 'end', class: 'u10l1i-st u10l1i-sred' });
+      if (this.verTitle) { this.vt = add(el, h('div', 'u10l1i-ttl', this.verTitle), (xz + xe) / 2, y0 + 1.0 * k + 17); this.vt.style.translate = '-50% -50%'; this.vtx = (xz + xe) / 2; }
+      this.hot = S('g', {}, svg);
+      this.set(this.p0);
+    }
+    set(p) {
+      this.p = p; const dx = (p - this.p0) * this.u;
+      this.vgi.setAttribute('transform', `translate(${dx} 0)`);
+      if (this.vt) this.vt.style.left = (this.vtx + dx) + 'px';
+    }
+    slide(c, p, ms = 1400) { const a = this.p; return tween(c, ms, (t) => this.set(a + (p - a) * t)); }
+    vx(n) { return this.X(this.p) + n * this.div * this.u; }
+    pill(x, y, html, cls) { return pillAt(this.el, x + this.dx, y, html, cls); }
+    pan(dx) { this.dx = dx; this.svg.setAttribute('transform', `translate(${dx} 0)`); }
+    hiMain(m, cls) { const t = this.main[m]; if (t) { t.ln.classList.add(cls); if (t.lab) t.lab.classList.add(cls + 't'); } return t; }
+    hiVer(n, cls) { const t = this.ver[n]; if (t) { t.ln.classList.add(cls); if (t.lab) t.lab.classList.add(cls + 't'); } return t; }
+    unVer(n, cls) { const t = this.ver[n]; if (t) { t.ln.classList.remove(cls); if (t.lab) t.lab.classList.remove(cls + 't'); } }
+    /** sweep a highlight along the vernier marks 0 … upTo */
+    async scan(c, upTo, o = {}) {
+      const band = S('rect', { y: this.y0 - 0.62 * this.k, width: 16, height: 1.24 * this.k, rx: 6, class: 'u10l1i-scanbar' }, this.hot);
+      const place = (v) => band.setAttribute('x', this.vx(v) - 8);
+      let last = -1;
+      await tween(c, o.ms ?? 380 + upTo * 140, (t) => {
+        const v = upTo * t; place(v); const n = Math.round(v);
+        if (n !== last) { if (last >= 0) this.unVer(last, 'u10l1i-hiS'); this.hiVer(n, 'u10l1i-hiS'); last = n; }
+      }, (t) => t);
+      if (last >= 0) this.unVer(last, 'u10l1i-hiS');
+      place(upTo); return band;
+    }
+    /** the vernier mark n and the main mark it lands on light up green */
+    async match(c, n, m) {
+      this.hiVer(n, 'u10l1i-hiM'); this.hiMain(m, 'u10l1i-hiM');
+      const x = this.vx(n), y1 = this.y0 - this.mainTick(m).len * this.k - 2, y2 = this.y0 + this.verTick(n).len * this.k + 2;
+      const glow = S('rect', { x: x - 7, y: y1, width: 14, height: y2 - y1, rx: 7, class: 'u10l1i-glow' }, this.hot);
+      glow.style.opacity = 0; await appear(c, glow, 350); return glow;
+    }
+  }
+  function vmm(host, M, N, o = {}) {
+    const u = o.u || 36, lo = o.lo ?? M - 3;
+    return new VScale(host, Object.assign({
+      lo, hi: lo + 24, u, k: u / 0.74, p: M + 0.05 * N, nDiv: 20, div: 0.95,
+      mainTick: (m) => (m % 5 === 0 ? { len: 0.55, thick: true, lab: String(m) } : { len: 0.32 }),
+      verTick: (n) => (n % 5 === 0 ? { len: 0.55, thick: true, lab: String(n) } : { len: 0.32 }),
+      mainTitle: '<b>Main scale (mm)</b>', verTitle: '<b>Vernier scale: 0.05 mm per division</b>'
+    }, o));
+  }
+
+  /* =============================== the whole vernier caliper =============================== */
+  class Caliper {
+    /** o: { s (px per mm), x, y, L (beam end, mm), open, rod, rodMax } — the main scale's 0 sits Z mm right of the jaw face */
+    constructor(host, o) {
+      const s = this.s = o.s; this.L = o.L; this.Z = 10; this.rod = !!o.rod;
+      const xmin = -17, xmax = o.L + (o.rod ? (o.rodMax || 30) : 0) + 2, ymin = -12.5, ymax = 36.5;
+      this.W = Math.ceil((xmax - xmin) * s); this.H = Math.ceil((ymax - ymin) * s);
+      this.ox = -xmin * s; this.oy = -ymin * s;
+      const el = this.el = box(h('div', 'u10l1i-fhost'), this.W, this.H);
+      if (o.x != null) add(host, el, o.x, o.y); else host.appendChild(el);
+      const svg = this.svg = S('svg', { width: this.W, height: this.H, class: 'u10l1i-svg' }, el);
+      const ns = { 'vector-effect': 'non-scaling-stroke' };
+      const g = this.g = S('g', { transform: `translate(${this.ox} ${this.oy}) scale(${s})` }, svg);
+      this.back = S('g', {}, g);
+      S('rect', Object.assign({ x: -17, y: 0, width: o.L + 17, height: 13, class: 'u10l1i-beam' }, ns), g);
+      S('path', Object.assign({ d: 'M-17,13 H0 V32.5 L-2.6,35.6 L-6.5,32 L-17,21 Z', class: 'u10l1i-beam' }, ns), g);
+      S('path', Object.assign({ d: 'M0,0 H6 L2.2,-8.6 L0.6,-11.2 H0 Z', class: 'u10l1i-beam' }, ns), g);
+      const tk = S('g', { class: 'u10l1i-ctk' }, g);
+      for (let m = 0; m <= o.L - this.Z - 3; m++) S('line', Object.assign({ x1: this.Z + m, x2: this.Z + m, y1: 9, y2: 9 - (m % 10 === 0 ? 4.6 : m % 5 === 0 ? 3.4 : 2.3) }, ns), tk);
+      for (let m = 0; m <= o.L - this.Z - 3; m += 10) { const [px, py] = this.P(this.Z + m, 2.3); txt(svg, px, py, String(m), { class: 'u10l1i-cst' }); }
+      if (o.rod) this.rodEl = S('rect', Object.assign({ x: o.L, y: 5.6, height: 1.8, width: 0, class: 'u10l1i-rod' }, ns), g);
+      const sl = this.sl = S('g', {}, g);
+      S('path', Object.assign({ d: 'M0,-2 V-11.2 H-0.6 L-2.4,-8.6 L-6.2,-2 Z', class: 'u10l1i-slid' }, ns), sl);
+      S('path', Object.assign({ d: 'M2,-2 H44 V19.5 H2 Z M5,0.6 V9 H42 V0.6 Z', 'fill-rule': 'evenodd', class: 'u10l1i-slid' }, ns), sl);
+      S('path', Object.assign({ d: 'M0,19 H16 V21 L6.5,32 L2.6,35.6 L0,32.5 Z', class: 'u10l1i-slid' }, ns), sl);
+      S('circle', Object.assign({ cx: 28, cy: -4.2, r: 2.3, class: 'u10l1i-slidD' }, ns), sl);
+      S('circle', Object.assign({ cx: 10, cy: 21.6, r: 2.4, class: 'u10l1i-slidD' }, ns), sl);
+      const vt = S('g', { class: 'u10l1i-ctk' }, sl);
+      for (let n = 0; n <= 20; n++) S('line', Object.assign({ x1: this.Z + 0.95 * n, x2: this.Z + 0.95 * n, y1: 9, y2: 9 + (n % 5 ? 2.2 : 3.4), class: n ? '' : 'u10l1i-cidx' }, ns), vt);
+      this.front = S('g', {}, g);
+      this.set(o.open || 0);
+    }
+    P(x, y) { return [this.ox + x * this.s, this.oy + y * this.s]; }
+    set(v) { this.open = v; this.sl.setAttribute('transform', `translate(${v} 0)`); if (this.rodEl) this.rodEl.setAttribute('width', v); }
+    slide(c, v, ms = 1200) { const a = this.open; return tween(c, ms, (t) => this.set(a + (v - a) * t)); }
+    label(at, to, html, cls = '') {
+      const [px, py] = this.P(...at), [qx, qy] = this.P(...to);
+      const ln = S('line', { x1: px, y1: py, x2: qx, y2: qy, class: 'u10l1i-lead' }, this.svg);
+      const p = pillAt(this.el, px, py, html, 'u10l1i-part ' + cls); p.lead = ln; return p;
+    }
+    /** a block (or a coin seen edge-on) between the outside jaws */
+    object(w, kind = 'block') {
+      const gg = S('g', {}, this.back);
+      if (kind === 'coin') S('rect', { x: 0, y: 14.5, width: w, height: 19, rx: 0.4, class: 'u10l1i-coin', 'vector-effect': 'non-scaling-stroke' }, gg);
+      else S('rect', { x: 0, y: 21, width: w, height: 9.5, rx: 1.2, class: 'u10l1i-obj', 'vector-effect': 'non-scaling-stroke' }, gg);
+      return gg;
+    }
+  }
+
+
+  const MREAD = {
+    notes: { label: 'Micrometer: the notes, 8.77 mm', R: 8.77, coarse: 8.5, F: 27 },
+    trap: { label: 'Micrometer: the half-millimetre trap', R: 8.77, coarse: 8.5, F: 27, trap: true },
+    ex6b: { label: 'Example 6(b) check', R: 11.66, coarse: 11.5, F: 16 }
+  };
+  const mread = {
+    title: 'Extension: sleeve + thimble',
+    height: 360,
+    minW: 900, // drawn this wide and scaled to fit beside the sidebar
+    choices: Object.keys(MREAD).map((k) => ({ v: k, label: MREAD[k].label })),
+    intro: (k) => (MREAD[k].trap ? 'Two readings with the <b>same</b> thimble number. Press <b>Next</b>.' : 'Turn the thimble to the reading, then read the <b>sleeve</b> and the <b>thimble</b>. Press <b>Next</b>.'),
+    make(stage, key, ex) {
+      const d = MREAD[key], W = ex.W, H = ex.def.height, mlo = Math.max(0, Math.floor(d.R + 1e-9) - 6);
+      const r0 = d.trap ? Math.max(mlo + 0.2, 8.27 - 1.6) : Math.max(mlo + 0.15, d.R - 2.4);
+      const k = Math.min(80, 560 / ((d.R - mlo) * 0.55 + 3.62));
+      const MS = new MicroScale(stage, { R: d.R, r0, k, x: 14, y: 10 });
+      const P = panel(stage, MS.W + 34, 14, W - MS.W - 48, H - 28, 'Reading');
+      const fine = d.F * 0.01, cS = f1(d.coarse);
+      let bubs = [];
+      if (d.trap) {
+        return [
+          { cap: 'Turn the thimble until the index line sits on <b>27</b>.',
+            run: (c) => MS.turn(c, 8.27, 1800) },
+          { cap: 'Count the sleeve marks: 6, 7, <b>8</b>. No half mark shows yet, so the coarse reading is 8 mm.',
+            run: async (c) => { bubs = await MS.count(c, 8.0); MS.hiCoarse(8.0); await show(c, line(P, `<span class="u10l1i-co">Coarse</span> ${T('8.0\\text{ mm}')}`)); } },
+          { cap: `Reading: ${T('8.0+0.27=8.27\\text{ mm}')}.`,
+            run: async (c) => { const p = await MS.hiFine(c, 27); await show(c, line(P, `${T('8.0+0.27=8.27\\text{ mm}')}`)); bubs.push(p); } },
+          { cap: 'Now turn the thimble <b>one more full turn</b> (50 divisions). The spindle moves 0.5 mm.',
+            run: async (c) => { bubs.forEach((b) => b && b.remove()); MS.ticks.forEach((t) => { t.ln.classList.remove('u10l1i-hiC'); if (t.lab) t.lab.classList.remove('u10l1i-hiCt'); }); await MS.turn(c, 8.77, 2200); } },
+          { cap: 'The thimble says <b>27</b> again, but the <b>8.5 mm</b> half mark now shows below the line.',
+            run: async (c) => { await MS.count(c, 8.5); MS.hiCoarse(8.5); await MS.hiFine(c, 27); await show(c, line(P, `<span class="u10l1i-co">Coarse</span> ${T('8.5\\text{ mm}')}`)); } },
+          { cap: `Reading: ${T('8.5+0.27=8.77\\text{ mm}')}. Same thimble number, readings 0.5 mm apart: always look for a half mark <b>below</b> the line.`,
+            run: async (c) => { const l = line(P, `${T('8.5+0.27=\\boldsymbol{8.77\\text{ mm}}')}`, 'u10l1i-big'); await show(c, l); const s = stamp(P, 'check the half mark', { ok: null, size: 'sm' }); s.classList.add('u10l1i-stampP'); await stampIn(c, s); } }
+        ];
+      }
+      const steps = [
+        { cap: 'Turn the thimble. Its edge slides along the sleeve and <b>covers</b> every mark to its right.',
+          run: (c) => MS.turn(c, d.R) },
+        { cap: `Count the sleeve marks up to the edge: whole millimetres above the line${d.coarse % 1 ? ', half millimetres below' : ''}.`,
+          run: async (c) => { await MS.count(c, d.coarse); } },
+        { cap: `The last mark showing is <b>${cS} mm</b>: the <b>coarse reading</b>.`,
+          run: async (c) => { MS.hiCoarse(d.coarse); await show(c, line(P, `<span class="u10l1i-co">Coarse (sleeve)</span><br>${T(cS + '\\text{ mm}')}`)); } },
+        { cap: `The index line lands on thimble mark <b>${d.F}</b>: the <b>fine reading</b> is ${T(`${d.F}\\times0.01=${f2(fine)}\\text{ mm}`)}.`,
+          run: async (c) => { await MS.hiFine(c, d.F); await show(c, line(P, `<span class="u10l1i-fi">Fine (thimble)</span><br>${T(`${d.F}\\times0.01=${f2(fine)}\\text{ mm}`)}`)); } },
+        { cap: `Add them: ${T(`${cS}+${f2(fine)}=${f2(d.R)}\\text{ mm}`)}. The sleeve alone is only good to 0.5 mm.`,
+          run: async (c) => { await show(c, line(P, T(`${cS}+${f2(fine)}=\\boldsymbol{${f2(d.R)}\\text{ mm}}`), 'u10l1i-big')); const s = stamp(P, f2(d.R) + ' mm', { ok: true, size: 'sm' }); s.classList.add('u10l1i-stampP'); await stampIn(c, s); } }
+      ];
+      return steps;
+    }
+  };
+
+
+  const VREAD = {
+    notes: { label: 'Caliper: the notes, 54.65 mm', M: 54, N: 13 },
+    ex6a: { label: 'Example 6(a) check', M: 42, N: 13 }
+  };
+  const vread = {
+    title: 'Reading a vernier caliper',
+    height: 440,
+    minW: 940, // drawn this wide and scaled to fit beside the sidebar
+    choices: Object.keys(VREAD).map((k) => ({ v: k, label: VREAD[k].label })),
+    intro: 'Close the jaws, then read the <b>main scale</b>, then the <b>vernier</b>, then add. Press <b>Next</b>.',
+    make(stage, key, ex) {
+      const d = VREAD[key], W = ex.W, R = d.M + 0.05 * d.N, fine = 0.05 * d.N, start = R + 6;
+      const C = new Caliper(stage, { s: 4.55, x: 8, y: 8, L: 122, open: start });
+      if (d.coin) C.object(R, 'coin'); else C.object(R);
+      const V = vmm(stage, d.M, d.N, { u: 36 }); V.el.style.left = ((W - V.W) / 2) + 'px'; V.el.style.top = '272px';
+      const startP = start; V.set(startP);
+      const ov = overlay(stage, W, 440);
+      const [ax, ay] = C.P(C.Z + V.lo, -1), [bx, by] = C.P(C.Z + V.hi, 15);
+      S('rect', { x: 8 + ax, y: 8 + ay, width: bx - ax, height: by - ay, rx: 4, class: 'u10l1i-zbox' }, ov);
+      S('path', { d: `M${8 + ax} ${8 + by} L${(W - V.W) / 2 + 2} 274 M${8 + bx} ${8 + by} L${(W + V.W) / 2 - 2} 274`, class: 'u10l1i-zline' }, ov);
+      const P = panel(stage, C.W + 22, 8, W - C.W - 30, 240, 'Reading');
+      const fT = f2(fine), rT = f2(R), match = d.M + d.N;
+      return [
+        { cap: `Close the jaws on the ${d.coin ? 'loonie' : 'object'}. The vernier slides along the main scale with them.`,
+          run: (c) => Promise.all([C.slide(c, R, 1600), V.slide(c, R, 1600)]) },
+        { cap: `The <b>index</b> is the vernier’s own 0 mark (red). It sits just past the ${d.M} mm mark.`,
+          run: async (c) => { V.idx.classList.add('u10l1i-idxOn'); V.idxLab.classList.add('u10l1i-idxOnT'); await pulse(c, V.idxLab, 1.3); } },
+        { cap: `<b>Coarse reading</b>: the last main-scale mark at or left of the index: <b>${d.M} mm</b>.`,
+          run: async (c) => {
+            V.hiMain(d.M, 'u10l1i-hiC'); const p = hidden(V.pill(V.X(d.M), V.y0 - 0.55 * V.k - 11, String(d.M), 'u10l1i-pC')); await pop(c, p);
+            await show(c, line(P, `<span class="u10l1i-co">Coarse (main scale)</span><br>${T(d.M + '\\text{ mm}')}`));
+          } },
+        { cap: '<b>Fine reading</b>: look along the whole vernier for the mark that lines up with a main-scale mark.',
+          run: (c) => V.scan(c, d.N) },
+        { cap: `Vernier mark <b>${d.N}</b> lines up exactly with the ${match} mm mark. Fine reading: ${T(`${d.N}\\times0.05=${fT}\\text{ mm}`)}.`,
+          run: async (c) => { await V.match(c, d.N, match); await show(c, line(P, `<span class="u10l1i-fi">Fine (vernier)</span><br>${T(`${d.N}\\times0.05=${fT}\\text{ mm}`)}`)); } },
+        { cap: `Add: ${T(`${d.M}+${fT}=${rT}\\text{ mm}`)}${d.coin ? ', one loonie, the same as the stack gave' : ''}. Stated to the caliper’s 0.05 mm, so two decimals.`,
+          run: async (c) => { await show(c, line(P, T(`${d.M}+${fT}=\\boldsymbol{${rT}\\text{ mm}}`), 'u10l1i-big')); const s = stamp(P, rT + ' mm', { ok: true, size: 'sm' }); s.classList.add('u10l1i-stampP'); await stampIn(c, s); } }
+      ];
+    }
+  };
+
+
+  document.querySelectorAll('[data-u10l1i-fig]').forEach((el) => {
+    const [kind, ...a] = el.dataset.u10l1iFig.split(':'), n = (a[0] || '').split(',').map(Number), maxW = Number(el.dataset.w || 900);
+    if (kind === 'micro') {
+      const R = n[0] * 0.5 + n[1] * 0.01, mlo = Math.max(0, Math.floor(R + 1e-9) - 6), wcm = (R - mlo) * 0.55 + 3.62;
+      new MicroScale(el, { R, k: Math.min(80, maxW / wcm) });
+    } else if (kind === 'vmm') vmm(el, n[0], n[1], { u: Math.min(36, (maxW - 12) / 24.8) });
+  });
+
+  const CH = [
+    ...Object.keys(VREAD).map((k) => ({ v: 'v:' + k, label: VREAD[k].label })),
+    ...Object.keys(MREAD).map((k) => ({ v: 'm:' + k, label: MREAD[k].label }))
+  ];
+  return {
+    title: 'Reading a vernier caliper and a micrometer',
+    height: 440,
+    minW: 940, // drawn this wide and scaled to fit beside the sidebar
+    choices: CH,
+    intro: (v) => { const [t, k] = v.split(':'); return t === 'v' ? vread.intro : (typeof mread.intro === 'function' ? mread.intro(k) : mread.intro); },
+    make(stage, v, ex) { const [t, k] = v.split(':'); return (t === 'v' ? vread : mread).make(stage, k, ex); }
+  };
+})();
+
 mountWarm();
 mountFive();
-export const explainers = mountExplainers({ imperial, metric, lay, fit, ladder, towel, shed, wheel, card, km });
+export const explainers = mountExplainers({ imperial, metric, lay, fit, ladder, towel, shed, wheel, card, km, instr });
 
 /* =============================== Math History: the royal cubit (u10l1-hist) =============================== */
 (function royalCubit() {

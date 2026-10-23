@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>A Strategy for Every Form · Math 10C 7.5</title>
-<meta name="description" content="Math 10C Unit 7 Lesson 5: graphing linear equations without rearranging them. One line in three forms, graphing from (0, b) or (x1, y1) by stepping the slope, graphing general form from its intercepts (and what to do when C = 0 or an intercept is a fraction), matching equations to graphs, graphing with a TI-84 (solve for y, Y=, WINDOW), and recovering an equation from a table of data. Write on it with an Apple Pencil.">
+<meta name="description" content="Math 10C Unit 7 Lesson 5: graphing linear equations without rearranging them. One line in three forms, graphing from (0, b) or (x1, y1) by stepping the slope, graphing general form from its intercepts (and what to do when C = 0 or an intercept is a fraction), matching equations to graphs, and recovering an equation from a table of data. Write on it with an Apple Pencil.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="10C Lessons">
@@ -36,7 +36,6 @@
       <li>graph <span class="tex">y=mx+b</span> from <span class="tex">(0,b)</span> and <span class="tex">y-y_1=m(x-x_1)</span> from <span class="tex">(x_1,y_1)</span> by <b>stepping the slope</b>, without rearranging</li>
       <li>graph <span class="tex">Ax+By+C=0</span> from its <b>two intercepts</b>, and find another point when <span class="tex">C=0</span> or an intercept is a fraction</li>
       <li>match equations to graphs using the <b>sign and size of <span class="tex">m</span></b> and the <span class="tex">y</span>-intercept</li>
-      <li>graph with a <b>graphing calculator</b>: solve for <span class="tex">y</span>, enter it in <kbd>Y=</kbd>, and choose a <kbd>WINDOW</kbd> that shows the intercepts</li>
       <li>find the equation of a line from a <b>table of data</b>, write it in general form, and solve it for either variable</li>
     </ul>
   </div>
@@ -126,7 +125,7 @@
 
 <section class="card example" data-ink="ex1" data-section="Example 1">
   <div class="ex-head"><span class="ex-tag">Example 1</span><h3>One line, three forms, three strategies</h3></div>
-  <p class="q">Without altering the form in which each equation is written, state the strategy you would use to graph it <em>without</em> technology, then draw the graph on the grid provided.</p>
+  <p class="q">Without altering the form in which each equation is written, state the strategy you would use to graph it <em>by hand</em>, then draw the graph on the grid provided.</p>
   <div class="parts c3">
     <div class="part"><div class="pl">(a) <span class="tex">y=3x-6</span></div>
       <div class="u7l5-pgrid" id="u7l5-g1a"></div><div class="work" style="--h:120px"></div>
@@ -161,7 +160,7 @@
 
 <section class="card example" data-ink="ex2" data-section="Example 2">
   <div class="ex-head"><span class="ex-tag">Example 2</span><h3>When the quick strategy needs care</h3></div>
-  <p class="q">Graph each line without technology and without rearranging it. In (a), watch the signs; in (b) and (c), the intercepts alone are not enough: find another point.</p>
+  <p class="q">Graph each line by hand, without rearranging it. In (a), watch the signs; in (b) and (c), the intercepts alone are not enough: find another point.</p>
   <div class="parts c3">
     <div class="part"><div class="pl">(a) <span class="tex">y+1=-\dfrac{2}{3}(x-4)</span></div>
       <div class="u7l5-pgrid" id="u7l5-g2a"></div><div class="work" style="--h:100px"></div>
@@ -225,52 +224,14 @@
   <div class="explainer" data-explainer="match"></div>
 </section>
 
-<!-- ================= 4. technology ================= -->
-<section class="card" data-ink="s4" data-section="4. Graphing With Technology">
-  <div class="sec-h"><span class="badge">4</span><h2>Graphing With Technology</h2></div>
-  <p>Graphing technology removes the choice of strategy altogether: every equation is first <b>solved for <span class="tex">y</span></b>, entered in the equation editor, and graphed. The only decision left is the <b>window</b>: the visible <span class="tex">x</span>-range and <span class="tex">y</span>-range, which must be wide enough to show the features you care about, such as both intercepts of both lines.</p>
-  <div class="def u7l5-ti"><b>These steps are for a graphing calculator (TI-83/84), not the TI-30XIIS.</b>
-    <div class="u7l5-three">
-      <div><span class="u7l5-n">1</span>Solve each equation for <span class="tex">y</span>.</div>
-      <div><span class="u7l5-n">2</span>Press <kbd>Y=</kbd> and type them in as <span class="tex">Y_1</span>, <span class="tex">Y_2</span> (use <kbd>(−)</kbd> for a negative and <kbd>X,T,θ,n</kbd> for <span class="tex">x</span>).</div>
-      <div><span class="u7l5-n">3</span>Press <kbd>WINDOW</kbd>, choose Xmin, Xmax, Xscl, Ymin, Ymax, Yscl, then <kbd>GRAPH</kbd>.</div>
-    </div>
-  </div>
-  <div class="explainer" data-explainer="ti84"></div>
-</section>
-
-<section class="card example" data-ink="ex4" data-section="Example 4">
-  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Solving for <span class="tex">y</span>, then choosing a window</h3></div>
-  <div class="parts c1">
-    <div class="part"><div class="pl">(a) Explain the strategy used to graph, with technology, the linear relations <span class="tex">y-4=-2(x+5)</span> and <span class="tex">3x-y+12=0</span>.</div><div class="work" style="--h:170px"></div>
-      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Graphing technology needs every equation solved for <span class="tex">y</span> before it can be entered.<br><span class="tex">y-4=-2(x+5)\Rightarrow y-4=-2x-10\Rightarrow y=-2x-6</span><br><span class="tex">3x-y+12=0\Rightarrow -y=-3x-12\Rightarrow y=3x+12</span><br>Enter <span class="tex">Y_1=-2x-6</span> and <span class="tex">Y_2=3x+12</span> in the equation editor, choose a window, then graph.</div></div></div>
-    <div class="part"><div class="pl">(b) State an appropriate window to show the <span class="tex">x</span>- and <span class="tex">y</span>-intercepts of both relations, then draw both graphs on the axes below and label the scale you chose.</div>
-      <div class="u7l5-ex4">
-        <div id="u7l5-ex4fig"></div>
-        <div class="work" style="--h:400px"></div>
-      </div>
-      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><div class="u7l5-ans4"><div id="u7l5-ex4ans"></div><div><span class="tex">y=-2x-6</span> has intercepts <span class="tex">(-3,0)</span> and <span class="tex">(0,-6)</span>; <span class="tex">y=3x+12</span> has intercepts <span class="tex">(-4,0)</span> and <span class="tex">(0,12)</span>.<br>The window must include <span class="tex">x</span> from <span class="tex">-4</span> to <span class="tex">0</span> and <span class="tex">y</span> from <span class="tex">-6</span> to <span class="tex">12</span>. On the <span class="tex">16\times16</span> grid, counting <span class="tex">x</span> by 1 and <span class="tex">y</span> by 2 gives the window <b><span class="tex">x:[-8,8,1]</span>, <span class="tex">y:[-16,16,2]</span></b>, which contains all four.<br><span class="muted">(Any window containing the four intercepts, e.g. <span class="tex">x:[-6,4,2]</span>, <span class="tex">y:[-10,14,4]</span>, is acceptable.)</span></div></div></div></div></div>
-    <div class="part"><div class="pl">(c) Determine the <span class="tex">x</span>- and <span class="tex">y</span>-intercepts of <span class="tex">3x-y+12=0</span>.</div><div class="work" style="--h:150px"></div>
-      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x</span>-intercept: set <span class="tex">y=0</span>: <span class="tex">3x+12=0\Rightarrow x=-4</span>, so <span class="tex">(-4,0)</span>.<br><span class="tex">y</span>-intercept: set <span class="tex">x=0</span>: <span class="tex">-y+12=0\Rightarrow y=12</span>, so <span class="tex">(0,12)</span>.<br>Check in the original: <span class="tex">3(-4)-0+12=0</span> ✓ and <span class="tex">3(0)-12+12=0</span> ✓</div></div></div>
-  </div>
-  <div class="space" id="ex4-space"></div>
-  <button class="more" data-more="ex4-space">+ More space</button>
-</section>
-
-<section class="card" data-ink="s4b" data-section="4. Choosing a window">
-  <h3 class="sub">Choosing a window: a rectangle that holds every intercept</h3>
-  <p>The window is the rectangle of the plane that the screen shows. List the intercepts, find the <span class="tex">x</span>-range and <span class="tex">y</span>-range they need, then pick a scale that fits your grid.</p>
-  <div class="explainer" data-explainer="window"></div>
-</section>
-
-<!-- ================= 5. data ================= -->
-<section class="card" data-ink="s5" data-section="5. From a Table of Data to an Equation">
-  <div class="sec-h"><span class="badge">5</span><h2>From a Table of Data to an Equation, and Back Again</h2></div>
+<!-- ================= 4. data ================= -->
+<section class="card" data-ink="s5" data-section="4. From a Table of Data to an Equation">
+  <div class="sec-h"><span class="badge">4</span><h2>From a Table of Data to an Equation, and Back Again</h2></div>
   <p>A linear relation can also be recovered from a table of values: <b>plot</b> the ordered pairs, confirm they are <b>collinear</b>, take any two of them to find the <b>slope</b>, and build the equation in whichever form is convenient before converting to <b>general form</b>. Solving that finished equation for the other variable <b>reverses</b> the relationship.</p>
 </section>
 
-<section class="card example" data-ink="ex5" data-section="Example 5">
-  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>From data to an equation, and back</h3></div>
+<section class="card example" data-ink="ex5" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>From data to an equation, and back</h3></div>
   <p class="q">The table records values of <span class="tex">x</span> and <span class="tex">y</span> taken from a continuous linear relationship.</p>
   <div class="u7l5-ex5tab" id="u7l5-ex5tab"></div>
   <div class="parts c1">
@@ -294,13 +255,13 @@
   <button class="more" data-more="ex5-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s5b" data-section="5. Table to equation">
+<section class="card" data-ink="s5b" data-section="4. Table to equation">
   <h3 class="sub">From the table to the equation, step by step</h3>
   <p>Equal steps in <span class="tex">x</span> giving equal steps in <span class="tex">y</span> mean the points are collinear. Two points give the slope, <span class="tex">x=0</span> gives the intercept, and clearing the fraction gives general form.</p>
   <div class="explainer" data-explainer="data"></div>
 </section>
 
-<section class="card" data-ink="s5c" data-section="5. And back again">
+<section class="card" data-ink="s5c" data-section="4. And back again">
   <h3 class="sub">And back again: solving for the other variable</h3>
   <p><span class="tex">y=\tfrac95x+32</span> is a two-step machine: <b>multiply</b> by <span class="tex">\tfrac95</span>, then <b>add</b> 32. Solving for <span class="tex">x</span> builds the reverse machine: undo each step <b>in reverse order</b>.</p>
   <div class="explainer" data-explainer="machine"></div>
@@ -317,7 +278,7 @@
   <div class="sum-grid">
     <div><b>One line, three forms.</b> <span class="tex">y=mx+b</span> shows <span class="tex">m</span> and <span class="tex">(0,b)</span>; <span class="tex">y-y_1=m(x-x_1)</span> shows <span class="tex">m</span> and <span class="tex">(x_1,y_1)</span> (signs flipped); <span class="tex">Ax+By+C=0</span> gives both intercepts by substitution.</div>
     <div><b>Graph without rearranging.</b> Plot the point the form hands you and step <span class="tex">\tfrac{\text{rise}}{\text{run}}</span>; or cover <span class="tex">x</span>, cover <span class="tex">y</span> for the intercepts. If <span class="tex">C=0</span> or an intercept is a fraction, pick a convenient <span class="tex">x</span> for another integer point.</div>
-    <div><b>Match by <span class="tex">m</span> and <span class="tex">b</span>.</b> Sign of <span class="tex">m</span>: rises or falls. Size of <span class="tex">m</span>: steep or shallow. <span class="tex">b</span>: where it crosses the <span class="tex">y</span>-axis. With a graphing calculator, solve for <span class="tex">y</span>, use <kbd>Y=</kbd>, and choose a <kbd>WINDOW</kbd> holding every intercept.</div>
+    <div><b>Match by <span class="tex">m</span> and <span class="tex">b</span>.</b> Sign of <span class="tex">m</span>: rises or falls. Size of <span class="tex">m</span>: steep or shallow. <span class="tex">b</span>: where it crosses the <span class="tex">y</span>-axis.</div>
     <div><b>Data → equation → back.</b> Equal steps mean collinear; slope from two points, <span class="tex">b</span> at <span class="tex">x=0</span>, then clear fractions for general form (<span class="tex">9x-5y+160=0</span>). Solving for the other variable undoes the steps in reverse order: <span class="tex">x=\tfrac59(y-32)</span>.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u7l5">

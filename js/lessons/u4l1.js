@@ -1,6 +1,6 @@
 /* Math 10C · Unit 4 · Lesson 1 — Common Factors: The GCF of Monomials and Polynomials (AN5)
  * Assignment questions 1–23 (u4_L01.tex: Part A 1–13, Part B 14–18, Part C Extension 19–23) and the Extra Practice
- * questions of u4_EP01.tex that belong to 1A (GCFs of monomials and polynomials, negative and fractional/decimal
+ * questions of u4_EP01.tex that belong to Lesson 1 (GCFs of monomials and polynomials, negative and fractional/decimal
  * common factors): EP 1–6, 11, 12, 14, 15, 18, 19, 20. (EP 7–10, 13, 16, 17 — binomial common factors and grouping —
  * belong to Lesson 2.)
  * Every part is a generator: it keeps the structure of the booklet question (number of terms and letters, a letter

@@ -1,7 +1,6 @@
 /* Math 10C · Unit 6 · Lesson 5 — Coordinate Geometry Review. Styles used only on this page.
- * Unit 6 colours: run amber, rise purple, segments blue. Extension/Foundation parts use the slate "Extension" pill of
- * Unit 5 L7B (Unit 4's Extension purple would clash with the purple rise). */
-:root { --u6l5-ext: #5d6475; --u6l5-pu: #7b4fc4; }
+ * Unit 6 colours: run amber, rise purple, segments blue. */
+:root { --u6l5-pu: #7b4fc4; }
 
 /* captions may run to four lines; reserve the room so nothing below an explainer moves while it plays */
 .ex-cap { min-height: 128px; }
@@ -9,13 +8,6 @@
 .pl .katex { font-size: 1.08em; }
 .ans .katex { font-size: 1.04em; }
 
-/* ---------------- Extension / Foundation ---------------- */
-.u6l5-ext { display: inline-block; background: var(--u6l5-ext); color: #fff; font: 800 13px var(--round); letter-spacing: .06em; text-transform: uppercase; padding: 2px 9px; border-radius: 6px; vertical-align: 2px; margin-right: 4px; }
-.u6l5-ext.sm { font-size: 11px; padding: 1px 6px; vertical-align: 1px; }
-.u6l5-extbox { display: flex; align-items: flex-start; gap: 12px; margin-top: 12px; padding: 10px 16px; border-radius: 12px; background: #f1f2f5; border: 1.5px solid #c6cad3; font-size: 16px; color: #3a4254; }
-.u6l5-extbox .u6l5-ext { flex: none; margin-top: 2px; }
-.u6l5-extcard { border-left: 6px solid #a5a9b3; }
-.u6l5-ext-tag { margin-left: auto; font-size: 13px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--u6l5-ext); background: #f1f2f5; border: 1.5px solid #c6cad3; border-radius: 8px; padding: 3px 10px; white-space: nowrap; align-self: center; }
 .u6l5-outs .outcome { margin-top: 6px; }
 
 /* ---------------- warm-up ---------------- */
@@ -38,7 +30,6 @@
 /* ---------------- tools at a glance ---------------- */
 .u6l5-tools { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 .u6l5-tool { background: #f6f5f1; border-radius: 14px; padding: 10px 14px 12px; display: flex; flex-direction: column; gap: 4px; }
-.u6l5-tool-ext { background: #f1f2f5; border: 1.5px dashed #c6cad3; }
 .u6l5-th { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; font-size: 19px; }
 .u6l5-th small { color: var(--muted); font-weight: 700; font-size: 13px; white-space: nowrap; }
 .u6l5-tfig { height: 132px; display: flex; justify-content: center; }

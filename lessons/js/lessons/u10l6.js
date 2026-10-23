@@ -503,7 +503,7 @@ function numStrip(host, x, y, D, e, unit, range, cw = 36) {
 const ladder = {
   title: 'The prefix number line: the decimal point hops',
   height: 360,
-  choices: [{ v: 'how', label: 'How it works' }, { v: 'e1a', label: 'Example 1(a) check' }, { v: 'e1b', label: 'Example 1(b) check (Ext)' }, { v: 'e1c', label: 'Example 1(c) check' }],
+  choices: [{ v: 'how', label: 'How it works' }, { v: 'e1a', label: 'Example 1(a) check' }, { v: 'e1c', label: 'Example 1(b) check (Ext)' }],
   intro: (v) => (v === 'how' ? 'Each step along the line is a factor of 10. Press <b>Next</b>.' : 'Check the class’s work. Press <b>Next</b>.'),
   make(stage, v, ex) {
     const W = ex.W;
@@ -538,16 +538,6 @@ const ladder = {
         { cap: `${T('1.46\\text{ m}=1460\\text{ mm}')}. Now ${T('54\\text{ cm}')}: centi → milli is <b>1 step right</b>, ${T('54\\to540\\text{ mm}')}.`,
           run: async (c) => { a1.innerHTML = `${T('1.46\\text{ m}=1460\\text{ mm}')}`; await fadeIn(c, a1); S.el.style.opacity = 0.0; wipe(); S2 = strip('54', 2, 'cm', [0, 4]); await fadeIn(c, S2.el); await pop(c, here(2, BLUE)); await Promise.all([N.hop(c, 2, 3, { label: '×10', color: BLUE, height: 34 }), S2.to(c, 3)]); S2.unit('mm'); } },
         { cap: `Same unit now, so subtract: ${T('1460-540=920\\text{ mm}')}.`, run: async (c) => { a1.innerHTML = `${T('1460\\text{ mm}-540\\text{ mm}=\\mathbf{920\\ mm}')}`; a1.classList.add('u10l6-good'); await pulse(c, a1, 1.06); } }
-      ];
-    }
-    if (v === 'e1b') {
-      let S; const a1 = ans('');
-      return [
-        { cap: `Example 1(b): ${T('0.045\\text{ cm}')} to kilometres. Kilo is <b>5 steps left</b> of centi: divide by 10 five times.`, run: async (c) => { S = strip('45', -1, 'cm', [-7, 1]); await fadeIn(c, S.el); await pop(c, here(2)); } },
-        { cap: `Two steps to metres: ${T('0.045\\to0.0045\\to0.00045\\text{ m}')}.`, run: async (c) => { for (let k = 0; k < 2; k++) await Promise.all([N.hop(c, 2 - k, 1 - k, { label: '÷10', color: PUR, height: 34 }), S.to(c, -2 - k)]); S.unit('m'); } },
-        { cap: `Three more to kilometres: ${T('0.00045\\to0.00000045\\text{ km}')}. Zeros fill in as the point hops left.`, run: async (c) => { for (let k = 0; k < 3; k++) await Promise.all([N.hop(c, -k, -k - 1, { label: '÷10', color: PUR, height: 34 }), S.to(c, -4 - k)]); S.unit('km'); await pop(c, here(-3, GRN)); } },
-        { cap: `Scientific notation: the point hops 7 places right to make the coefficient ${T('4.5')} (between 1 and 10), so ${T('0.00000045\\text{ km}=\\mathbf{4.5\\times10^{-7}\\ km}')}. A larger unit, a smaller number ✓`,
-          run: async (c) => { a1.innerHTML = `${T('0.045\\text{ cm}=0.00000045\\text{ km}=\\mathbf{4.5\\times10^{-7}\\ km}')}`; a1.classList.add('u10l6-good'); await fadeIn(c, a1); } }
       ];
     }
     // e1c: four statements
@@ -1110,10 +1100,10 @@ const tank = {
 /* =============================== static mount =============================== */
 function mountStatic() {
   const room = document.getElementById('u10l6-room'); if (room) roomFig(room);
-  document.querySelectorAll('[data-u10l6-fig]').forEach((el) => { const f = FIGS[el.dataset.u10l9Fig]; if (f) f(el); });
-  document.querySelectorAll('[data-u10l6-micro]').forEach((el) => { const [k, t] = el.dataset.u10l9Micro.split(',').map(Number); microStatic(el, k, t); });
-  document.querySelectorAll('[data-u10l6-vernier]').forEach((el) => { const [w, f] = el.dataset.u10l9Vernier.split(',').map(Number); vernierMM(el, w, f); });
-  document.querySelectorAll('[data-u10l6-vinch]').forEach((el) => { const [w, s, f] = el.dataset.u10l9Vinch.split(',').map(Number); vernierInch(el, w, s, f); });
+  document.querySelectorAll('[data-u10l6-fig]').forEach((el) => { const f = FIGS[el.dataset.u10l6Fig]; if (f) f(el); });
+  document.querySelectorAll('[data-u10l6-micro]').forEach((el) => { const [k, t] = el.dataset.u10l6Micro.split(',').map(Number); microStatic(el, k, t); });
+  document.querySelectorAll('[data-u10l6-vernier]').forEach((el) => { const [w, f] = el.dataset.u10l6Vernier.split(',').map(Number); vernierMM(el, w, f); });
+  document.querySelectorAll('[data-u10l6-vinch]').forEach((el) => { const [w, s, f] = el.dataset.u10l6Vinch.split(',').map(Number); vernierInch(el, w, s, f); });
 }
 
 /* =============================== mount =============================== */

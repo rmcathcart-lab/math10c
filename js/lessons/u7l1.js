@@ -368,7 +368,7 @@
           return p;
         } }] },
       /* ================= Q4 ================= */
-      { num: '4', section: 'Part B — Graphing from y = mx + b', shared: q4Shared, stem: 'For each line, state the slope and the ' + t('y') + '-intercept, then graph the equation without using a graphing calculator.', parts: [
+      { num: '4', section: 'Part B — Graphing from y = mx + b', shared: q4Shared, stem: 'For each line, state the slope and the ' + t('y') + '-intercept, then graph the equation.', parts: [
         { id: '4a', sub: 'a i', level: 'BEG', make: function (r, sh) {
           var eq = siT(sh.ma, sh.ba);
           return mbPart(t(eq), sh.ma, sh.ba, {}, t('m=' + qT(sh.ma)) + ', ' + t('b=' + sh.ba) + '.', null, 'm, b of ' + eq);
@@ -414,7 +414,7 @@
             'Slope ' + t('0') + ', ' + t('y') + '-intercept ' + t(k) + ': the horizontal line through ' + t(ptT([0, k])) + '.', ['Every point on the line has the same ' + t('y') + '-value.'], 'graph y = k', [segOf(key)], [lineV([0, k], [1, k])]);
         } }] },
       /* ================= Q5 ================= */
-      { num: '5', shared: q5Shared, stem: 'For each line, state the ' + t('y') + '-intercept, determine the ' + t('x') + '-intercept algebraically, and graph the equation without using a graphing calculator.', parts: (function () {
+      { num: '5', shared: q5Shared, stem: 'For each line, state the ' + t('y') + '-intercept, determine the ' + t('x') + '-intercept algebraically, and graph the equation.', parts: (function () {
         function eqOf(sh, L) {
           if (L === 'a') return siT(sh.a[0], sh.a[2]);
           if (L === 'b') return 'y=-x' + sh.b;

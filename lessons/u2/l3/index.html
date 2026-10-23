@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Negative Exponents · Math 10C 2.3</title>
-<meta name="description" content="Math 10C Unit 2 Lesson 3: negative exponents. Extend the pattern of powers past a⁰ = 1, see where a⁻ⁿ = 1/aⁿ comes from, rewrite expressions with positive exponents, simplify algebraic expressions, and flip fractional bases. Write on it with an Apple Pencil.">
+<title>Negative Exponents and Scientific Notation · Math 10C 2.3</title>
+<meta name="description" content="Math 10C Unit 2 Lesson 3: negative exponents and scientific notation. Extend the pattern of powers past a⁰ = 1, see where a⁻ⁿ = 1/aⁿ comes from, rewrite expressions with positive exponents, simplify algebraic expressions, flip fractional bases, then write very large and very small numbers as a × 10ⁿ and multiply and divide them with the exponent laws. Write on it with an Apple Pencil.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="10C Lessons">
@@ -27,8 +27,8 @@
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
   <div class="kicker">Math 10C · Unit 2 Exponents · Lesson 3</div>
-  <h1>Negative Exponents</h1>
-  <p class="lede">We know <span class="tex">a^0=1</span>. Today we keep walking down the pattern <b>past zero</b>: <span class="tex">2^{-1}</span>, <span class="tex">2^{-2}</span>, <span class="tex">2^{-3}</span>, and beyond. A negative exponent doesn’t make a number negative. It makes it <b>small</b>: it means <b>one over</b> the positive power.</p>
+  <h1>Negative Exponents and Scientific Notation</h1>
+  <p class="lede">We know <span class="tex">a^0=1</span>. Today we keep walking down the pattern <b>past zero</b>: <span class="tex">2^{-1}</span>, <span class="tex">2^{-2}</span>, <span class="tex">2^{-3}</span>, and beyond. A negative exponent doesn’t make a number negative. It makes it <b>small</b>: it means <b>one over</b> the positive power. Negative powers of 10 then give <b>scientific notation</b>, a short way to write tiny numbers like <span class="tex">0.00047=4.7\times10^{-4}</span>.</p>
   <div class="goals">
     <div class="goals-h">I can…</div>
     <ul>
@@ -37,6 +37,7 @@
       <li>rewrite an expression with positive exponents, moving <b>only</b> the factor the exponent belongs to</li>
       <li>simplify numerical and algebraic expressions with the exponent laws, then write the answer with positive exponents</li>
       <li>evaluate a fraction raised to a negative exponent by <b>flipping</b> it</li>
+      <li>write numbers in and out of <b>scientific notation</b> <span class="tex">a\times10^{n}</span>, and multiply and divide them with the exponent laws (checking with <kbd>EE</kbd>)</li>
     </ul>
   </div>
   <div class="outcome"><b>AN3</b> Demonstrate an understanding of powers with integral and rational exponents.</div>
@@ -281,20 +282,73 @@
   <button class="more" data-more="ex6-space">+ More space</button>
 </section>
 
+<!-- ================= 5. Scientific notation ================= -->
+<section class="card" data-ink="s5" data-section="5. Scientific Notation">
+  <div class="sec-h"><span class="badge">5</span><h2>Scientific Notation</h2></div>
+  <p>Negative exponents of <b>10</b> are the small place values: each step down divides by 10 once more.</p>
+  <div class="pattern6 sn3-tens">
+    <div><span class="tex">10^{2}</span><small>100</small></div>
+    <div><span class="tex">10^{1}</span><small>10</small></div>
+    <div><span class="tex">10^{0}</span><small>1</small></div>
+    <div class="neg"><span class="tex">10^{-1}</span><small>0.1</small></div>
+    <div class="neg"><span class="tex">10^{-2}</span><small>0.01</small></div>
+    <div class="neg"><span class="tex">10^{-3}</span><small>0.001</small></div>
+    <div class="neg"><span class="tex">10^{-4}</span><small>0.0001</small></div>
+  </div>
+  <div class="def">A positive number is in <b>scientific notation</b> when it is written as <span class="tex">a\times10^{n}</span>, where the <b>coefficient</b> satisfies <span class="tex">1\le a\lt10</span> and <span class="tex">n</span> is an integer. Numbers of 10 or more get a <b>positive</b> exponent; numbers less than 1 get a <b>negative</b> one: <span class="nw"><span class="tex">52\,000=5.2\times10^{4}</span></span> and <span class="nw"><span class="tex">0.00047=4.7\times10^{-4}</span>.</span></div>
+  <div class="explainer" data-explainer="snhops"></div>
+</section>
+
+<section class="card" data-ink="s5b" data-section="5. Multiplying and dividing">
+  <h3 class="sub">Multiplying and dividing: the exponent laws do the work</h3>
+  <div class="def-grid sn3-laws">
+    <div class="def"><b>Multiply</b> the coefficients, <b>add</b> the exponents (product law).<div class="rule-tex"><span class="tex">(a\times10^{m})(b\times10^{n})=(a\times b)\times10^{m+n}</span></div></div>
+    <div class="def"><b>Divide</b> the coefficients, <b>subtract</b> the exponents (quotient law).<div class="rule-tex"><span class="tex">(a\times10^{m})\div(b\times10^{n})=(a\div b)\times10^{m-n}</span></div></div>
+  </div>
+  <p>If the new coefficient is not between 1 and 10, move its decimal point and change the exponent the <b>other way</b> by the same number of places: <span class="nw"><span class="tex">30\times10^{7}=3\times10^{8}</span></span>.</p>
+  <div class="explainer" data-explainer="snmuldiv"></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>The <kbd>EE</kbd> key means “× 10 to the”.</b> It is the 2nd function of <kbd>x⁻¹</kbd>. To type <span class="tex">4.1\times10^{-3}</span>: <span class="keys"><kbd>4</kbd><kbd>.</kbd><kbd>1</kbd><kbd>2nd</kbd><kbd>EE</kbd><kbd>(−)</kbd><kbd>3</kbd><kbd>ENTER</kbd></span>. The screen shows <b>4.1E-3</b> and the answer 0.0041. An answer too long for the screen shows as, say, <b>2.5 ×10<sup>−9</sup></b>: that means <span class="tex">2.5\times10^{-9}</span>, never <span class="tex">2.5^{-9}</span>.</div>
+    <div class="pill-col"><button class="pill" data-keys="4.1 EE (−) 3 =">Show 4.1E-3</button><button class="pill" data-keys="2 EE (−) 5 ÷ 8 EE 3 =">Show a tiny one</button></div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex7" data-section="Example 7">
+  <div class="ex-head"><span class="ex-tag">Example 7</span><h3>Scientific notation both ways, then the exponent laws</h3></div>
+  <p class="q">Write (a) and (b) in scientific notation and (c) in standard notation. Evaluate (d) and (e), and write each result in scientific notation.</p>
+  <div class="parts c3">
+    <div class="part"><div class="pl">(a) <span class="tex">84\,200</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The point moves 4 places left, to 8.42:<br><span class="tex">84\,200=\mathbf{8.42\times10^{4}}</span></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">0.00072</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">The point moves 4 places right, to 7.2. Less than 1, so a negative exponent:<br><span class="tex">0.00072=\mathbf{7.2\times10^{-4}}</span></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">4.1\times10^{-3}</span></div><div class="work" style="--h:150px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans">Negative exponent: move the point 3 places <b>left</b>.<br><span class="tex">4.1\times10^{-3}=\mathbf{0.0041}</span></div></div></div>
+  </div>
+  <div class="parts c2">
+    <div class="part"><div class="pl">(d) <span class="tex">(2.5\times10^{5})(3\times10^{4})</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">2.5\times3=7.5;\ \ 5+4=9</span><br><span class="tex">\mathbf{7.5\times10^{9}}</span> (already in range)</div></div></div>
+    <div class="part"><div class="pl">(e) <span class="tex">(1.2\times10^{-3})\div(4\times10^{5})</span></div><div class="work" style="--h:190px"></div><div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">1.2\div4=0.3;\ \ -3-5=-8</span><br><span class="tex">0.3\times10^{-8}=3\times10^{-1}\times10^{-8}=\mathbf{3\times10^{-9}}</span></div></div></div>
+  </div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Check (e) with <kbd>EE</kbd>.</b> <span class="keys"><kbd>1</kbd><kbd>.</kbd><kbd>2</kbd><kbd>2nd</kbd><kbd>EE</kbd><kbd>(−)</kbd><kbd>3</kbd><kbd>÷</kbd><kbd>4</kbd><kbd>2nd</kbd><kbd>EE</kbd><kbd>5</kbd><kbd>ENTER</kbd></span>. <kbd>EE</kbd> keeps each number in one piece, so no extra brackets are needed.</div>
+    <div class="pill-col"><button class="pill" data-keys="2.5 EE 5 × 3 EE 4 =">Show (d)</button><button class="pill" data-keys="1.2 EE (−) 3 ÷ 4 EE 5 =">Show (e)</button></div>
+  </div>
+  <div class="space" id="ex7-space"></div>
+  <button class="more" data-more="ex7-space">+ More space</button>
+</section>
+
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
   <div class="sum-grid">
-    <div><b>The pattern:</b> each step down divides by the base, right past zero: <span class="tex">2^0=1,\ 2^{-1}=\tfrac12,\ 2^{-2}=\tfrac14</span>.</div>
-    <div><b>The law:</b> <span class="tex">a^{-n}=\dfrac{1}{a^n}</span> and <span class="tex">\dfrac{1}{a^{-n}}=a^n</span>. A negative exponent means <b>small</b>, not negative.</div>
+    <div><b>The law:</b> each step down divides by the base, right past zero: <span class="tex">a^{-n}=\dfrac{1}{a^n}</span> and <span class="tex">\dfrac{1}{a^{-n}}=a^n</span>. A negative exponent means <b>small</b>, not negative.</div>
     <div><b>Move only what the exponent touches</b>, and flip its sign: <span class="tex">5x^{-2}=\dfrac{5}{x^2}</span>, but <span class="tex">(5x)^{-2}=\dfrac{1}{25x^2}</span>.</div>
     <div><b>Laws first, then positive exponents.</b> A fraction to a negative power <b>flips</b>: <span class="tex">\left(\dfrac{a}{b}\right)^{-n}=\left(\dfrac{b}{a}\right)^{n}</span>.</div>
+    <div><b>Scientific notation</b> <span class="tex">a\times10^{n}</span>, <span class="tex">1\le a\lt10</span>: <span class="tex">0.00047=4.7\times10^{-4}</span>. Multiply: coefficients ×, exponents +. Divide: coefficients ÷, exponents −. Check with <kbd>EE</kbd>.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u2l3">
-    <div><div class="kicker">Your turn</div><b>Assignment 3 — Negative Exponents</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 3 — Negative Exponents and Scientific Notation</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
   <a class="assign next-l" href="../l4/">
-    <div><div class="kicker">Next lesson</div><b>Lesson 4 — Scientific Notation</b><div class="muted">Negative exponents of 10 make tiny numbers easy to write</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Next lesson</div><b>Lesson 4 — Rational Exponents and Radicals</b><div class="muted">What exponents like <span class="tex">\tfrac{1}{2}</span> and <span class="tex">\tfrac{2}{3}</span> mean</div></div><span class="arrow">→</span>
   </a>
   <div class="space" id="sum-space" style="min-height:120px"></div>
 </section>
@@ -304,7 +358,7 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u2l3.js';
-  boot({ key: 'u2l3', homeHref: '../../', title: '2.3 Negative Exponents' });
+  boot({ key: 'u2l3', homeHref: '../../', title: '2.3 Negative Exponents and Scientific Notation' });
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

@@ -179,13 +179,13 @@
     'l5-gr-bsign': 'Wrong sign on the y-intercept', 'l5-gr-axes': 'Intercepts on the wrong axes', 'l5-gr-coef': 'Used coefficients as intercepts', 'l5-gr-isign': 'Intercept signs wrong', 'l5-gr-pt': 'Point signs not flipped (slope–point)',
     'l5-gr-y1': 'Used y₁ as the y-intercept', 'l5-gr-round': 'Rounded a fractional intercept', 'l5-gr-hv': 'Horizontal / vertical mixed up', 'l5-gr-half': 'Forgot to divide by the coefficient', 'l5-gr-student': 'Redrew the student’s wrong line',
     'l5-solve-x': 'Not solved for x', 'l5-rise': 'Slope sign (cooling = negative)', 'l5-run': 'Change in y not divided by the run', 'l5-nodiv': 'Didn’t divide every term', 'l5-dist': 'Didn’t distribute the slope',
-    'l5-window-x': 'Window misses an x-intercept', 'l5-window-y': 'Window misses a y-intercept', 'l5-window-big': 'Window far too large', 'l5-window-order': 'Window min/max reversed', 'l5-int-swap': 'x- and y-intercepts swapped',
+    'l5-int-swap': 'x- and y-intercepts swapped',
     'l5-ps-sign': 'Point read with the bracket signs', 'l5-b-table': 'Took b from a table value not at x = 0', 'l5-step': 'Slope from y-change alone', 'l5-c-sign': 'Sign slip moving the constant', 'l5-nr-dist': 'Slope not distributed',
     'l5-pair-axes': 'Intercepts on the wrong axes', 'l5-pair-coef': 'Coefficients taken as intercepts', 'l5-origin': 'Gave (0, 0) again', 'l5-not-on': 'Point not on the line', 'l5-tab-sign': 'Sign slip in a table value', 'l5-half-area': 'Forgot the ½ in the area'
   });
 
   var W6 = [[-6, 6], [-6, 6]], W8 = [[-8, 8], [-8, 8]], W10 = [[-10, 10], [-10, 10]];
-  var STRAT = 'Without using technology and without altering the form in which the equation is written, ';
+  var STRAT = 'Without altering the form in which the equation is written, ';
 
   /* ---------- reusable graph makers (slope–intercept, slope–point, general by intercepts) ---------- */
   function siGraph(prompt, m, b, win, text) {
@@ -231,7 +231,7 @@
 
   HW.defineLesson({
     id: 'u7l5', unit: 7, num: '5', title: 'Graphing Linear Equations: A Strategy for Every Form', outcome: 'RF6',
-    blurb: 'Pick the fastest hand-graphing strategy for the form you are given — slope and y-intercept, a point and the slope, or the two intercepts — then graph with technology and recover an equation from a table.',
+    blurb: 'Pick the fastest hand-graphing strategy for the form you are given — slope and y-intercept, a point and the slope, or the two intercepts — graph two lines on one grid, and recover an equation from a table.',
     questions: [
       /* ---------- Q1: slope–intercept ---------- */
       { num: '1', section: 'Assignment — Graphing without changing the form',
@@ -284,7 +284,7 @@
           } },
           { id: '3b', sub: 'graph', level: 'EMG', make: function (r, sh) { return psGraph('Draw the graph on the grid.', sh.m, sh.P, W8, 'graph ' + ps(sh.L, sh.P)); } }] },
       /* ---------- Q4: six lines in three forms ---------- */
-      { num: '4', stem: 'Without altering the form in which each equation is written, draw the graph of each of the following (without technology). Choose the strategy that fits the form: the starting point and the slope, the two intercepts, or other points you find.',
+      { num: '4', stem: 'Without altering the form in which each equation is written, draw the graph of each of the following. Choose the strategy that fits the form: the starting point and the slope, the two intercepts, or other points you find.',
         parts: [
           { id: '4a', level: 'BEG', make: function (r) { var f = r.pick([[1, 2], [1, 3], [2, 3]]), b = r.int(2, 5); return siGraph(t(si(mb([-f[0], f[1]], b))), [-f[0], f[1]], b, W6, 'graph si fraction slope'); } },
           { id: '4b', level: 'EMG', make: function (r) { var P0 = [-r.int(2, 5), r.int(1, 4)], m = -r.pick([2, 3]); return psGraph(t(ps(ms(m, P0), P0)), m, P0, W6, 'graph slope-point integer slope'); } },
@@ -426,57 +426,30 @@
               { html: t('\\{x\\mid 0\\le x\\le ' + sh.T + ',\\ x\\in\\mathbb{R}\\}'), why: 'That domain includes ' + t('x=' + sh.T) + ', where the model gives an impossible temperature.' }],
               'The line matches the measured data, so it is reasonable for about the measured times: ' + t('\\{x\\mid 0\\le x\\le ' + xl + ',\\ x\\in\\mathbb{R}\\}') + '. (It reaches room temperature at ' + t('x=' + nT((sh.y0 - 20) / sh.k)) + ', and real cooling slows long before that.)', ['Where does the model stop matching real coffee?'], 'reasonable domain');
           } }] },
-      /* ---------- Q8: technology ---------- */
-      { num: '8', section: 'Assignment — Graphing with technology',
+      /* ---------- Q8: two lines on one grid (by hand) ---------- */
+      { num: '8', section: 'Assignment — Two lines on one grid',
         shared: function (r) {
           var A, b1, m2, rr, g = 0;
           do { A = r.pick([2, 3, 4]); b1 = -r.int(1, 3); m2 = r.pick([2, 3]); rr = -r.int(2, m2 === 2 ? 4 : 3); g++; } while ((A * -b1 > 8 || A * b1 === rr) && g < 100);
           var L1 = line(1, A, -A * b1), x1 = r.int(rr + 1, -1), P = [x1, m2 * (x1 - rr)], L2 = ms(m2, P), b2 = -m2 * rr;
           return { A: A, b1: b1, L1: L1, x1a: A * b1, m2: m2, r: rr, P: P, L2: L2, b2: b2 };
         },
-        stem: function (sh) { return 'Use graphing technology for the linear relations ' + t(gen(sh.L1)) + ' and ' + t(ps(sh.L2, sh.P)) + '.'; },
+        stem: function (sh) { return 'Consider the linear relations ' + t(gen(sh.L1)) + ' and ' + t(ps(sh.L2, sh.P)) + '.'; },
         parts: [
-          { id: '8a1', sub: 'a i', level: 'EMG', make: function (r, sh) {
-            return K.P.line('Technology needs each equation solved for ' + t('y') + '. Write ' + t(gen(sh.L1)) + ' in the form you would enter as ' + t('Y_1') + ': ' + t('y=\\ldots') + '.', sh.L1, { form: 'slope-intercept', wrong: [{ is: { m: -1, b: sh.b1 }, code: 'l5-nodiv', hint: 'Divide <b>every</b> term by ' + t(sh.A) + ', including the ' + t('x') + '-term.' }, { is: { m: [-1, sh.A], b: -sh.A * sh.b1 }, code: 'l5-nodiv', hint: 'Divide <b>every</b> term by ' + t(sh.A) + ', including the constant.' }] },
-              t(gen(sh.L1)) + ' → ' + t(sh.A + 'y=-x' + sg(sh.A * sh.b1)) + ' → ' + t(si(sh.L1)) + '.', ['Move ' + t('x') + ' and the constant to the right, then divide every term by ' + t(sh.A) + '.'], 'tech: general to y=');
-          } },
-          { id: '8a2', sub: 'a ii', level: 'EMG', make: function (r, sh) {
-            var P = sh.P;
-            return K.P.line('Write ' + t(ps(sh.L2, P)) + ' in the form you would enter as ' + t('Y_2') + ': ' + t('y=\\ldots') + '.', sh.L2, { form: 'slope-intercept', wrong: [{ is: { m: sh.m2, b: P[1] - P[0] }, code: 'l5-dist', hint: 'Multiply the slope by <b>both</b> terms in the bracket: ' + t(sh.m2 + '(x' + sg(-P[0]) + ')=' + sh.m2 + 'x' + sg(-sh.m2 * P[0])) + '.' }, { is: { m: sh.m2, b: -sh.m2 * P[0] - P[1] }, code: 'l5-c-sign', hint: 'To undo ' + t('-' + P[1]) + ' on the left, <b>add</b> ' + t(P[1]) + ' to both sides.' }] },
-              t(ps(sh.L2, P)) + ' → ' + t('y-' + P[1] + '=' + sh.m2 + 'x' + sg(-sh.m2 * P[0])) + ' → ' + t(si(sh.L2)) + '.', ['Expand the bracket, then get ' + t('y') + ' by itself.'], 'tech: slope-point to y=');
-          } },
-          { id: '8b1', sub: 'b', level: 'EMG', outcome: 'RF5', make: function (r, sh) {
-            var xs = [sh.x1a, sh.r], ys = [sh.b1, sh.b2], need = { x: [Math.min(0, sh.x1a, sh.r), 0], y: [Math.min(0, sh.b1), Math.max(0, sh.b2)] };
-            var key = [String(need.x[0] - 2), '2', String(need.y[0] - 2), String(need.y[1] + 2)], labs = ['Xmin', 'Xmax', 'Ymin', 'Ymax'];
-            var check = function (resp) {
-              resp = resp || []; var v = [];
-              for (var i = 0; i < 4; i++) { var pn = HW.parse.number(String(resp[i] == null ? '' : resp[i])); if (!pn.ok) return form('empty', 'Fill in all four window values (' + labs[i] + ' is ' + (pn.code === 'empty' ? 'empty' : 'not a number') + ').'); v.push(pn.value); }
-              if (v[0] >= v[1] || v[2] >= v[3]) return form('l5-window-order', 'Each minimum must be less than its maximum.');
-              for (var j = 0; j < 2; j++) if (xs[j] < v[0] || xs[j] > v[1]) return wrong('l5-window-x', 'Your ' + t('x') + '-range doesn’t show the ' + t('x') + '-intercept ' + t(xs[j]) + ' of ' + t(j ? ps(sh.L2, sh.P) : gen(sh.L1)) + '.');
-              if (v[0] > 0 || v[1] < 0) return wrong('l5-window-x', 'The ' + t('y') + '-intercepts are on the ' + t('y') + '-axis, where ' + t('x=0') + ': include ' + t('x=0') + ' in the window.');
-              for (var k = 0; k < 2; k++) if (ys[k] < v[2] || ys[k] > v[3]) return wrong('l5-window-y', 'Your ' + t('y') + '-range doesn’t show the ' + t('y') + '-intercept ' + t(ys[k]) + ' of ' + t(k ? ps(sh.L2, sh.P) : gen(sh.L1)) + '.');
-              if (v[1] - v[0] > 10 * Math.max(need.x[1] - need.x[0], 4) || v[3] - v[2] > 10 * Math.max(need.y[1] - need.y[0], 4)) return wrong('l5-window-big', 'That window is so large the lines and intercepts will be squashed together. Keep each range within about 10 times what you need.');
-              return ok();
-            };
-            return { prompt: 'State an appropriate window that shows the ' + t('x') + '- and ' + t('y') + '-intercepts of both relations.', input: { type: 'fields', fields: labs.map(function (l) { return { label: l }; }) }, check: check, key: key,
-              answer: 'For example ' + t('x:[' + key[0] + ',\\ ' + key[1] + ']') + ', ' + t('y:[' + key[2] + ',\\ ' + key[3] + ']') + ' — any window containing all four intercepts.',
-              solution: t(si(sh.L1)) + ' has intercepts ' + ptt([sh.x1a, 0]) + ' and ' + ptt([0, sh.b1]) + '; ' + t(si(sh.L2)) + ' has ' + ptt([sh.r, 0]) + ' and ' + ptt([0, sh.b2]) + '. The window must include ' + t('x') + ' from ' + t(need.x[0]) + ' to ' + t(0) + ' and ' + t('y') + ' from ' + t(need.y[0]) + ' to ' + t(need.y[1]) + '; e.g. ' + t('x:[' + key[0] + ',\\ ' + key[1] + ']') + ', ' + t('y:[' + key[2] + ',\\ ' + key[3] + ']') + '.',
-              hints: ['Find all four intercepts first; the window has to contain every one of them.'], text: 'tech window', bad: [['0', '10', '0', '10'], ['-1', '1', '-1', '1']] };
-          } },
-          { id: '8b2', sub: 'b graph', level: 'PRG', make: function (r, sh) {
-            var win = [[Math.min(sh.x1a, sh.r) - 1, 2], [sh.b1 - 1, sh.b2 + 1]];
-            var p = gpart('Draw both graphs on the grid.', [sh.L1, sh.L2], win, { names: [t(gen(sh.L1)), t(ps(sh.L2, sh.P))],
-              wrong: [{ v: lineV(sh.L1, win), code: 'l5-line-missing', hint: 'The line for ' + t(gen(sh.L1)) + ' is right — now draw ' + t(ps(sh.L2, sh.P)) + ' too.' }, { v: lineV(sh.L2, win), code: 'l5-line-missing', hint: 'The line for ' + t(ps(sh.L2, sh.P)) + ' is right — now draw ' + t(gen(sh.L1)) + ' too.' }] },
-              t(si(sh.L1)) + ': through ' + ptt([sh.x1a, 0]) + ' and ' + ptt([0, sh.b1]) + '.<br>' + t(si(sh.L2)) + ': through ' + ptt([sh.r, 0]) + ' and ' + ptt([0, sh.b2]) + ' (and ' + ptt(sh.P) + ').',
-              ['Plot the two intercepts of each line, then draw each line with arrows.'], 'tech: draw both lines');
-            return p;
-          } },
-          { id: '8c', level: 'EMG', outcome: 'RF5', make: function (r, sh) {
+          { id: '8a', sub: 'a', level: 'EMG', outcome: 'RF5', make: function (r, sh) {
             var vals = [sh.x1a, sh.b1, sh.r, sh.b2], names = [t(gen(sh.L1)) + ': ' + t('x') + '-int', t('y') + '-int', t(ps(sh.L2, sh.P)) + ': ' + t('x') + '-int', t('y') + '-int'];
             var chk = vals.map(function (v, i) { var other = vals[i % 2 ? i - 1 : i + 1]; return K.number(v, function (x) { if (x === other && other !== v) return { code: 'l5-int-swap', hint: 'That is the other intercept. The ' + t('x') + '-intercept comes from ' + t('y=0') + '; the ' + t('y') + '-intercept from ' + t('x=0') + '.' }; if (x === -v) return { code: 'sign', hint: 'Check the sign.' }; return null; }); });
-            return K.P.fields('Determine the ' + t('x') + '- and ' + t('y') + '-intercepts of <b>each</b> graph.', names.map(function (n) { return { label: n }; }), chk, vals.map(String), names.map(function (n, i) { return n + ' ' + t(vals[i]); }).join('<br>'),
+            return K.P.fields('Determine the ' + t('x') + '- and ' + t('y') + '-intercepts of <b>each</b> line.', names.map(function (n) { return { label: n }; }), chk, vals.map(String), names.map(function (n, i) { return n + ' ' + t(vals[i]); }).join('<br>'),
               t(gen(sh.L1)) + ': ' + t('y=0') + ' → ' + t('x=' + sh.x1a) + '; ' + t('x=0') + ' → ' + t(sh.A + 'y' + sg(-sh.A * sh.b1) + '=0') + ', ' + t('y=' + sh.b1) + '.<br>' + t(ps(sh.L2, sh.P)) + ': ' + t('y=0') + ' → ' + t('-' + sh.P[1] + '=' + sh.m2 + '(x' + sg(-sh.P[0]) + ')') + ', ' + t('x=' + sh.r) + '; ' + t('x=0') + ' → ' + t('y=' + sh.b2) + '.',
               ['Substitute ' + t('y=0') + ' for an ' + t('x') + '-intercept and ' + t('x=0') + ' for a ' + t('y') + '-intercept.'], 'intercepts of both lines');
+          } },
+          { id: '8b', sub: 'b', level: 'PRG', make: function (r, sh) {
+            var win = [[Math.min(sh.x1a, sh.r) - 1, 2], [sh.b1 - 1, sh.b2 + 1]];
+            var p = gpart('Graph both lines on one grid (it is big enough to show all four intercepts).', [sh.L1, sh.L2], win, { names: [t(gen(sh.L1)), t(ps(sh.L2, sh.P))],
+              wrong: [{ v: lineV(sh.L1, win), code: 'l5-line-missing', hint: 'The line for ' + t(gen(sh.L1)) + ' is right — now draw ' + t(ps(sh.L2, sh.P)) + ' too.' }, { v: lineV(sh.L2, win), code: 'l5-line-missing', hint: 'The line for ' + t(ps(sh.L2, sh.P)) + ' is right — now draw ' + t(gen(sh.L1)) + ' too.' }] },
+              t(si(sh.L1)) + ': through ' + ptt([sh.x1a, 0]) + ' and ' + ptt([0, sh.b1]) + '.<br>' + t(si(sh.L2)) + ': through ' + ptt([sh.r, 0]) + ' and ' + ptt([0, sh.b2]) + ' (and ' + ptt(sh.P) + ').',
+              ['Plot the two intercepts of each line, then draw each line with arrows.'], 'draw both lines');
+            return p;
           } }] },
       /* ---------- Q9–Q11 ---------- */
       { num: '9', section: 'Assignment — Multiple choice and numerical response', parts: [

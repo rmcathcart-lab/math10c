@@ -1,17 +1,10 @@
-/* Math 10C · Unit 10 · Lesson 2 — Converting Units Within the Metric (SI) System.
- * Warm-up road scene (mile vs km bars to scale, "Convert 65 mph" with the miles cancelling), the static metric number
- * line (Section 2), and the explainers:
- *   zoom   (a metre split into 10 dm, 100 cm, 1000 mm; a kilometre; Extension mm → μm → nm by 1000s)
- *   hop    (the metric number line: count steps while the decimal point hops one place per step and the number
- *           re-writes itself; the notes and Examples 1–2 checks)
- *   sci    (Extension: one big jump of 10^n, then tidy into scientific notation; Example 3 checks)
- *   prop   (Sam's cross multiplication and Priya's table of headers side by side; Example 4 check)
- *   ratio  (the whale on a double number line, the smoothie as a tape diagram; Examples 5 and 6 checks)
- *   map    (a 1:250 000 map: what 1 cm stands for; Example 7 checks)
- *   one    (a conversion fraction is a fancy 1: 1 km and 1000 m are the same length)
- *   cancel (unit analysis with units cancelling like fractions; the notes, Examples 8 and 9 checks, an upside-down factor)
- *   rate   (two units change at once; Example 10 check, an upside-down time factor, a one-unit rate)
- *   which  (flowchart: which method fits which question)
+/* Math 10C · Unit 10 · Lesson 2 — Converting Units Within and Between SI and Imperial (old Lessons 4A + 4B merged).
+ * Part 1 (SI review, the old 4A page): warm-up road scene (mile vs km bars to scale, "Convert 65 mph" with the miles
+ * cancelling), the static metric number line (Section 1), and the explainers
+ *   hop    (the metric number line: count steps while the decimal point hops one place per step; notes, Example 1 checks)
+ *   map    (a 1:250 000 map: what 1 cm stands for; Example 2 checks)
+ *   cancel (unit analysis with units cancelling like fractions; the notes, Example 3(a) check, an upside-down factor)
+ *   rate   (two units change at once; Example 3(b) check, an upside-down time factor, a one-unit rate)
  * Colours: right / multiply blue, left / divide purple, the decimal point red, cancelled units red (and blue for a
  * second pair), the unit that is left green. Chips never use assignment questions. */
 import {
@@ -187,70 +180,15 @@ function mountStatics() {
   if (f) prefixLine(f, { width: 940, height: 112, axisY: 52 });
 }
 
-/* =============================== explainer: zoom (what a prefix means) =============================== */
-const ZOOM = {
-  m: { label: 'Zoom into a metre', rows: [['1\\text{ m}', 10, '1\\text{ dm}', '=10\\text{ dm}'], ['1\\text{ dm}', 10, '1\\text{ cm}', '=10\\text{ cm}'], ['1\\text{ cm}', 10, '1\\text{ mm}', '=10\\text{ mm}']],
-    caps: ['One <b>metre</b>, split into <b>10 equal parts</b>. Each part is a <b>decimetre</b> (deci = a tenth): ' + T('1\\text{ m}=10\\text{ dm}') + '.',
-      'Zoom into one decimetre: 10 parts again, each a <b>centimetre</b>. ' + T('1\\text{ dm}=10\\text{ cm}') + ', so ' + T('1\\text{ m}=10\\times10=100\\text{ cm}') + '.',
-      'Zoom into one centimetre: 10 <b>millimetres</b>. So ' + TQ('1\\text{ m}=10\\times10\\times10=1000\\text{ mm}') + '.',
-      'Every step down the chart is <b>×10</b>: that is why the prefixes are powers of ten (centi ' + T('10^{-2}') + ', milli ' + T('10^{-3}') + '). The same prefixes work for grams and litres.'],
-    eq: '1\\text{ m}=10\\text{ dm}=100\\text{ cm}=1000\\text{ mm}' },
-  km: { label: 'Zoom out to a kilometre', rows: [['1\\text{ km}', 10, '1\\text{ hm}', '=10\\text{ hm}'], ['1\\text{ hm}', 10, '1\\text{ dam}', '=10\\text{ dam}'], ['1\\text{ dam}', 10, '1\\text{ m}', '=10\\text{ m}']],
-    caps: ['One <b>kilometre</b>, split into 10: each part is a <b>hectometre</b>. ' + T('1\\text{ km}=10\\text{ hm}') + '.',
-      'Zoom into one hectometre: 10 <b>decametres</b>. ' + T('1\\text{ hm}=10\\text{ dam}') + '.',
-      'Zoom into one decametre: 10 <b>metres</b>. So ' + TQ('1\\text{ km}=10\\times10\\times10=1000\\text{ m}') + '.',
-      '<b>kilo</b> means ' + T('10^{3}=1000') + ' for any base unit: ' + T('1\\text{ kg}=1000\\text{ g}') + ' and ' + T('1\\text{ kL}=1000\\text{ L}') + '.'],
-    eq: '1\\text{ km}=10\\text{ hm}=100\\text{ dam}=1000\\text{ m}' },
-  ext: { label: 'Extension: milli → micro → nano', rows: [['1\\text{ mm}', 1000, '1\\ \\mu\\text{m}', '=1000\\ \\mu\\text{m}'], ['1\\ \\mu\\text{m}', 1000, '1\\text{ nm}', '=1000\\text{ nm}']],
-    caps: ['<b>Extension.</b> One millimetre split into <b>1000</b> equal parts: each is a <b>micrometre</b>, ' + T('1\\ \\mu\\text{m}') + '. Far too many to count!',
-      'Zoom into one micrometre: another 1000 parts, each a <b>nanometre</b>. ' + T('1\\ \\mu\\text{m}=1000\\text{ nm}') + '.',
-      'Each Extension step is <b>×1000</b>, three places at once. That is why m, ' + T('\\mu') + ' and n sit <b>3 positions apart</b> on the number line.'],
-    eq: '1\\text{ mm}=1000\\ \\mu\\text{m}=1\\,000\\,000\\text{ nm}' }
-};
-const zoom = {
-  title: 'What a prefix means: zoom in by tens',
-  height: 410,
-  choices: Object.keys(ZOOM).map((k) => ({ v: k, label: ZOOM[k].label })),
-  intro: 'Split one unit into equal parts, then zoom into one part. Press <b>Next</b>.',
-  make(stage, k, ex) {
-    const d = ZOOM[k], W = ex.W, x0 = 150, BW = W - x0 - 150, gap = d.rows.length === 3 ? 108 : 150, rows = [];
-    d.rows.forEach((r, i) => {
-      const y = 20 + i * gap, g = svgEl('svg', { width: W, height: 70, class: 'u10l2-zsvg' }, stage); g.style.left = '0px'; g.style.top = y + 'px';
-      svgEl('rect', { x: x0, y: 8, width: BW, height: 34, rx: 4, fill: '#fff', stroke: INK, 'stroke-width': 2.5 }, g);
-      svgEl('rect', { x: x0, y: 8, width: BW / r[1], height: 34, fill: i % 2 ? '#e2ebfb' : '#fff1d6', stroke: 'none' }, g);
-      for (let j = 1; j < r[1]; j++) { const xx = x0 + BW * j / r[1]; svgEl('line', { x1: xx, x2: xx, y1: r[1] > 10 && j % 100 ? 22 : 8, y2: 42, stroke: INK, 'stroke-width': r[1] > 10 ? (j % 100 ? 0.35 : 1.6) : 1.8 }, g); }
-      const wl = add(stage, h('div', 'u10l2-zlab', T(r[0])), 14, y + 12);
-      const pl = add(stage, h('div', 'u10l2-zsub', 'each part ' + T(r[2])), x0, y + 46);
-      const eq = add(stage, h('div', 'u10l2-zeq', T(r[3])), x0 + BW + 12, y + 12);
-      let fun = null;
-      if (i) {
-        const yy = 20 + (i - 1) * gap + 42;
-        fun = svgEl('svg', { width: W, height: gap }, stage); fun.style.left = '0px'; fun.style.top = yy + 'px';
-        const pw = BW / d.rows[i - 1][1];
-        svgEl('path', { d: `M${x0} 0 L${x0 + pw} 0 L${x0 + BW} ${gap - 34} L${x0} ${gap - 34} Z`, fill: '#9aa0ab', 'fill-opacity': 0.12, stroke: '#7a8090', 'stroke-width': 1.6, 'stroke-dasharray': '6 5' }, fun);
-      }
-      [g, wl, pl, eq, fun].forEach((e) => e && hide(e)); rows.push([fun, g, wl, pl, eq]);
-    });
-    const fin = hide(add(stage, h('div', 'u10l2-line big', T(d.eq)), 0, ex.def.height - 52)); centerX(fin, W / 2);
-    const steps = d.rows.map((r, i) => ({
-      cap: d.caps[i],
-      run: async (c) => { const [fun, g, wl, pl, eq] = rows[i]; if (fun) await appear(c, fun, 350); await appear(c, g, 350); await show(c, wl); await show(c, pl); await pop(c, eq); }
-    }));
-    steps.push({ cap: d.caps[d.rows.length], run: async (c) => { await pop(c, fin, 420); } });
-    return steps;
-  }
-};
-
 /* =============================== explainer: hop (the star) =============================== */
 const HOP = {
   notes: { label: `The notes: ${T('1\\text{ km}\\to\\text{mm}')}`, D: '1', p: 1, from: 'k', to: 'm', base: 'm' },
-  e1a: { label: `Example 1(a): ${T('1\\text{ m}\\to\\text{cm}')}`, D: '1', p: 1, from: '', to: 'c', base: 'm' },
-  e1b: { label: `Example 1(b): ${T('1\\text{ cm}\\to\\text{m}')}`, D: '1', p: 1, from: 'c', to: '', base: 'm' },
-  e1c: { label: `Example 1(c): ${T('1\\text{ kL}\\to\\text{L}')}`, D: '1', p: 1, from: 'k', to: '', base: 'L' },
-  e2a: { label: `Example 2(a): ${T('4.6\\text{ m}\\to\\text{cm}')}`, D: '46', p: 1, from: '', to: 'c', base: 'm' },
-  e2b: { label: `Example 2(b): ${T('58\\,400\\text{ mg}\\to\\text{kg}')}`, D: '58400', p: 5, from: 'm', to: 'k', base: 'g' },
-  e2c: { label: `Ext: Example 2(c): ${T('215\\ \\mu\\text{m}\\to\\text{nm}')}`, D: '215', p: 3, from: '\\mu', to: 'n', base: 'm' }
+  kL: { label: `${T('1\\text{ kL}\\to\\text{L}')}`, D: '1', p: 1, from: 'k', to: '', base: 'L' },
+  e1a: { label: `Example 1(a): ${T('4.6\\text{ m}\\to\\text{cm}')}`, D: '46', p: 1, from: '', to: 'c', base: 'm' },
+  e1b: { label: `Example 1(b): ${T('58\\,400\\text{ mg}\\to\\text{kg}')}`, D: '58400', p: 5, from: 'm', to: 'k', base: 'g' },
+  e1c: { label: `Example 1(c): ${T('36\\text{ mm}\\to\\text{m}')}`, D: '36', p: 2, from: 'm', to: '', base: 'm' }
 };
+const capU = (p, b) => (p === '\\mu' ? `\\ \\mu\\text{${b}}` : `\\text{ ${p}${b}}`);
 const hop = {
   title: 'The metric number line: count the steps, hop the point',
   height: 400,
@@ -294,197 +232,6 @@ const hop = {
   }
 };
 
-/* =============================== explainer: sci (Extension) =============================== */
-const SCI = {
-  a: { label: `Example 3(a) check: ${T('18\\text{ km}\\to\\text{mm}')}`, D: '18', p: 2, from: 'k', to: 'm', base: 'm', std: '18\\,000\\,000' },
-  b: { label: `Example 3(b) check: ${T('640\\ \\mu\\text{g}\\to\\text{g}')}`, D: '640', p: 3, from: '\\mu', to: '', base: 'g', std: '0.00064' },
-  c: { label: `Example 3(c) check: ${T('12\\,400\\text{ cL}\\to\\text{ML}')}`, D: '12400', p: 5, from: 'c', to: 'M', base: 'L', std: '0.000124' }
-};
-const capU = (p, b) => (p === '\\mu' ? `\\ \\mu\\text{${b}}` : `\\text{ ${p}${b}}`);
-const sci = {
-  title: 'Extension: one big jump, then scientific notation',
-  height: 420,
-  choices: Object.keys(SCI).map((k) => ({ v: k, label: SCI[k].label })),
-  intro: 'Count the steps and jump all at once, then slide the point so one digit sits in front of it. Press <b>Next</b>.',
-  make(stage, key, ex) {
-    const d = SCI[key], W = ex.W, a = pos(d.from), b = pos(d.to), k = b - a, n = Math.abs(k), right = k > 0;
-    const val = nT(d.D), U0 = capU(d.from, d.base), U1 = capU(d.to, d.base);
-    const nx = 20, N = prefixLine(stage, { x: nx, y: 4, width: W - 40, height: 168, axisY: 92, base: d.base, unitLift: 50 });
-    const pA = hide(linePill(stage, N, nx, a, 'from ' + T(uTex(d.from, d.base)), 'st', 140, right ? 'l' : 'r')), pB = hide(linePill(stage, N, nx, b, 'to ' + T(uTex(d.to, d.base)), 'en', 140, right ? 'r' : 'l'));
-    const shift = 1 - d.p, e1 = k - shift; // the point moves left (p − 1) places; the exponent goes up by the same
-    const tape = new Tape(stage, { D: d.D, p: d.p, k: shift, cx: W / 2 - 150, y: 196, unit: '' }); hide(tape.el);
-    const expEl = add(tape.el, h('div', 'u10l2-tunit u10l2-sciexp', T(`\\times10^{${k}}`)), tape.full.length * tape.slot + 16, 14);
-    expEl.style.color = INK; expEl.style.fontSize = '40px';
-    const unitEl = add(tape.el, h('div', 'u10l2-tunit', T(uTex(d.to, d.base))), tape.full.length * tape.slot + 190, 18);
-    tape.el.style.width = tape.full.length * tape.slot + 300 + 'px';
-    const mant = tape.answer(), mT = mant;
-    const fin = hide(add(stage, h('div', 'u10l2-line big', T(`${val}${U0}=${val}\\times10^{${k}}${U1}=${mT}\\times10^{${e1}}${U1}`)), 0, 318)); centerX(fin, W / 2);
-    const std = hide(add(stage, h('div', 'u10l2-line muted', `in standard notation, ${T(d.std + U1)}`), 0, 364)); centerX(std, W / 2);
-    const big = { el: null };
-    return [
-      { cap: `${T(val + U0)} to ${uCap(d.to, d.base)}: from ${pName(d.from)} to ${pName(d.to)} is <b>${n} steps ${right ? 'right' : 'left'}</b>. Too many to hop one at a time.`,
-        run: async (c) => { await show(c, pA); await show(c, pB); await N.drawIn(N.interval(Math.min(a, b), Math.max(a, b), { color: right ? RT : LT, width: 7 }), 500, c); } },
-      { cap: `${n} steps ${right ? 'right' : 'left'} is ${T(`\\times10^{${k}}`)} in one jump: ${T(`${val}${U0}=${val}\\times10^{${k}}${U1}`)}.`,
-        run: async (c) => { big.el = await N.hop(c, a, b, { label: T(`\\times10^{${k}}`), color: right ? RT : LT, height: 20, ms: 700 }); await fadeIn(c, tape.el, 380); } },
-      { cap: `Scientific notation wants <b>one</b> non-zero digit in front of the point. Slide the point <b>${-shift} place${-shift > 1 ? 's' : ''} left</b>: the front number gets ${-shift > 1 ? T('10^{' + -shift + '}') : '10'} times smaller, so the exponent goes <b>up ${-shift}</b> to balance.`,
-        run: async (c) => {
-          let e = k;
-          for (let i = 0; i < -shift; i++) { await tape.hop(c, -1); e += 1; expEl.innerHTML = T(`\\times10^{${e}}`); await pulse(c, expEl, 1.15, 320); }
-        } },
-      { cap: `Tidy the zeros at the end: ${T(`${val}${U0}=${mT}\\times10^{${e1}}${U1}`)}.`,
-        run: async (c) => { await tape.tidy(c); await pop(c, fin, 420); await show(c, std); } }
-    ];
-  }
-};
-
-/* =============================== explainer: prop (two arrangements) =============================== */
-const PROP = {
-  ex4: { label: `Example 4 check: ${T('450\\text{ cm}\\to\\text{m}')}`,
-    A: ['1\\text{ m}', '100\\text{ cm}'], B: ['x', '450\\text{ cm}'],
-    cross: '(1\\text{ m})(450\\text{ cm})=(x)(100\\text{ cm})',
-    solve: 'x=\\dfrac{(1\\text{ m})(450\\,\\cancel{\\text{cm}})}{100\\,\\cancel{\\text{cm}}}=\\dfrac{450}{100}',
-    ans: 'x=4.5\\text{ m}', cu: 'cm', tab: [['1', '100'], ['x', '450']],
-    pr: '\\dfrac{1}{x}=\\dfrac{100}{450}', pr2: '100x=450', pAns: 'x=\\dfrac{450}{100}=4.5\\text{ m}', fin: '450\\text{ cm}=4.5\\text{ m}' },
-  alt: { label: `Another: ${T('1.75\\text{ m}\\to\\text{cm}')}`,
-    A: ['1\\text{ m}', '100\\text{ cm}'], B: ['1.75\\text{ m}', 'x'],
-    cross: '(1\\text{ m})(x)=(1.75\\text{ m})(100\\text{ cm})',
-    solve: 'x=\\dfrac{(1.75\\,\\cancel{\\text{m}})(100\\text{ cm})}{1\\,\\cancel{\\text{m}}}=1.75\\times100',
-    ans: 'x=175\\text{ cm}', cu: 'm', tab: [['1', '100'], ['1.75', 'x']],
-    pr: '\\dfrac{1}{1.75}=\\dfrac{100}{x}', pr2: 'x=1.75\\times100', pAns: 'x=175\\text{ cm}', fin: '1.75\\text{ m}=175\\text{ cm}' }
-};
-function pFrac(host, x, y, nTex, dTex) {
-  const f = add(host, h('div', 'u10l2-pfr'), x, y);
-  f.n = f.appendChild(h('div', 'num', T(nTex))); f.d = f.appendChild(h('div', 'den', T(dTex)));
-  return f;
-}
-const prop = {
-  title: 'Two correct arrangements of the same proportion',
-  height: 430,
-  minW: 900, // drawn this wide and scaled to fit beside the sidebar (Sam's fractions are laid out on a fixed 400 px row)
-  choices: Object.keys(PROP).map((k) => ({ v: k, label: PROP[k].label })),
-  intro: 'Sam cross-multiplies; Priya builds a table with headers. Same ratio, two layouts. Press <b>Next</b>.',
-  make(stage, key, ex) {
-    const d = PROP[key], W = ex.W, pw = (W - 42) * 0.55, pw2 = W - 42 - pw, H = ex.def.height;
-    const S = panel(stage, 14, 12, pw, H - 24, 'Sam · cross multiplication'), P = panel(stage, 28 + pw, 12, pw2, H - 24, 'Priya · table of headers');
-    const row = h('div', 'u10l2-eqrow'); S.appendChild(row);
-    const fA = pFrac(row, 6, 0, d.A[0], d.A[1]), eq = add(row, h('div', 'u10l2-peq', '='), 190, 34), fB = pFrac(row, 250, 0, d.B[0], d.B[1]);
-    const X = svgEl('svg', { width: 400, height: 112, style: 'position:absolute;left:0;top:0;overflow:visible' }, row);
-    const xl1 = svgEl('line', { x1: 146, y1: 24, x2: 252, y2: 84, stroke: AMB, 'stroke-width': 3.5, 'stroke-linecap': 'round' }, X);
-    const xl2 = svgEl('line', { x1: 146, y1: 84, x2: 252, y2: 24, stroke: RT, 'stroke-width': 3.5, 'stroke-linecap': 'round' }, X);
-    [fA, eq, fB, xl1, xl2].forEach(hide);
-    const s1 = hide(line(S, T(d.cross))), s2 = hide(line(S, T(d.solve))), s3 = hide(line(S, T(d.ans), 'big'));
-    const tb = h('table', 'u10l2-ptab'); P.appendChild(tb);
-    tb.innerHTML = `<tr><th>m</th><th>cm</th></tr>` + d.tab.map((r) => `<tr><td>${T(r[0])}</td><td>${T(r[1])}</td></tr>`).join('');
-    tb.style.alignSelf = 'center'; tb.style.margin = '6px 0'; hide(tb);
-    const cells = [...tb.querySelectorAll('td')];
-    const q1 = hide(line(P, T(d.pr))), q2 = hide(line(P, T(d.pr2))), q3 = hide(line(P, T(d.pAns), 'big'));
-    [s1, s2, s3, q1, q2, q3].forEach((e) => { e.style.textAlign = 'center'; });
-    let sa = null, sb = null;
-    return [
-      { cap: `<b>Sam:</b> the known ratio and the unknown ratio, with <b>matching units in matching positions</b> (m on top, cm on the bottom).`,
-        run: async (c) => { await pop(c, fA); await appear(c, eq, 200); await pop(c, fB); } },
-      { cap: `<b>Sam:</b> cross-multiply. Each top times the <b>other</b> bottom: ${T(d.cross)}.`,
-        run: async (c) => {
-          fA.n.classList.add('a'); fB.d.classList.add('a'); await appear(c, xl1, 300);
-          fA.d.classList.add('b2'); fB.n.classList.add('b2'); await appear(c, xl2, 300); await show(c, s1);
-        } },
-      { cap: `<b>Sam:</b> divide to get ${T('x')} alone. <b>${d.cu}</b> is on the top and the bottom, so it cancels: ${T(d.ans)}.`,
-        run: async (c) => { await show(c, s2); await pop(c, s3); } },
-      { cap: `<b>Priya:</b> a table keeps each unit in its own <b>column</b>. Row 1 is the fact ${T('1\\text{ m}=100\\text{ cm}')}; row 2 is the question.`,
-        run: async (c) => { await fadeIn(c, tb, 400); } },
-      { cap: `<b>Priya:</b> each column makes a ratio: ${T(d.pr)}. Solve: ${T(d.pr2)}, so ${T(d.pAns)}.`,
-        run: async (c) => {
-          cells[0].classList.add('a'); cells[2].classList.add('a'); await sleep(c, 250); cells[1].classList.add('b2'); cells[3].classList.add('b2');
-          await show(c, q1); await show(c, q2); await pop(c, q3);
-        } },
-      { cap: `Different layouts, <b>the same answer</b>: ${T(d.fin)}. Any arrangement works as long as matching units sit in matching positions.`,
-        run: async (c) => {
-          sa = stamp(S, 'same ✓', { x: pw - 70, y: H - 70 }); sb = stamp(P, 'same ✓', { x: pw2 - 70, y: H - 70 });
-          await Promise.all([stampIn(c, sa), stampIn(c, sb)]);
-        } }
-    ];
-  }
-};
-
-/* =============================== explainer: ratio (whale and smoothie) =============================== */
-const ratio = {
-  title: 'Ratios from the question: a scale and a recipe',
-  height: 420,
-  minW: 900, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: 'whale', label: 'Example 5 check: the whale' }, { v: 'smoothie', label: 'Example 6 check: the smoothie' }],
-  intro: (v) => (v === 'whale' ? 'A double number line: photo centimetres on top, real metres below. Press <b>Next</b>.' : 'A tape diagram: equal-sized parts of yogurt and juice. Press <b>Next</b>.'),
-  make(stage, v, ex) { return v === 'whale' ? whaleSteps(stage, ex) : smoothieSteps(stage, ex); }
-};
-function whaleSteps(stage, ex) {
-  const W = ex.W, x0 = 150, w = W - x0 - 40;
-  const top = new NumberLine(stage, { x: x0, y: 20, width: w, height: 90, min: 0, max: 3, step: 0.5, arrows: true, labels: [{ v: 0, html: '0' }, { v: 1, html: '1' }, { v: 2, html: '2' }, { v: 2.5, html: '2.5' }] });
-  const bot = new NumberLine(stage, { x: x0, y: 150, width: w, height: 90, min: 0, max: 7.2, step: 1.2, arrows: true, labels: [{ v: 0, html: '0' }, { v: 2.4, html: '2.4' }, { v: 4.8, html: '4.8' }] });
-  add(stage, h('div', 'u10l2-tlab', 'photo (cm)'), 14, 20 + top.ay - 14);
-  add(stage, h('div', 'u10l2-tlab', 'actual (m)'), 14, 150 + bot.ay - 14);
-  const link = (vt, vb, color) => { const s = svgEl('svg', { width: W, height: 260, style: 'position:absolute;left:0;top:0;overflow:visible' }, stage); svgEl('line', { x1: x0 + top.toPx(vt), y1: 20 + top.ay + 10, x2: x0 + bot.toPx(vb), y2: 150 + bot.ay - 10, stroke: color, 'stroke-width': 3, 'stroke-dasharray': '7 6' }, s); return s; };
-  const l1 = hide(link(1, 2.4, TEAL)), l2 = hide(link(2.5, 6, PT));
-  const q = hide(add(stage, h('div', 'u10l2-line big', T('x')), x0 + bot.toPx(6) - 8, 150 + bot.ay + 16));
-  const six = hide(add(stage, h('div', 'u10l2-line big', '<b>6</b>'), x0 + bot.toPx(6) - 8, 150 + bot.ay + 16)); six.style.color = PT;
-  const eqs = add(stage, h('div', 'u10l2-frow'), 0, 300); eqs.style.gap = '40px';
-  const e1 = eqs.appendChild(h('div', 'u10l2-line big', T('\\dfrac{1\\text{ cm}}{2.4\\text{ m}}=\\dfrac{2.5\\text{ cm}}{x}')));
-  const e2 = eqs.appendChild(h('div', 'u10l2-line big', T('(1)(x)=(2.5)(2.4)')));
-  const e3 = eqs.appendChild(h('div', 'u10l2-line big', T('x=6\\text{ m}')));
-  centerX(eqs, W / 2); [e1, e2, e3].forEach(hide);
-  let band = null;
-  return [
-    { cap: 'The scale: <b>1 cm</b> on the photo stands for <b>2.4 m</b> of whale. Line them up.',
-      run: async (c) => { await pop(c, top.point(1, { color: TEAL })); await pop(c, bot.point(2.4, { color: TEAL })); await appear(c, l1, 300); } },
-    { cap: `The flukes are <b>2.5 cm</b> on the photo. Matching units in matching positions: ${T('\\dfrac{1\\text{ cm}}{2.4\\text{ m}}=\\dfrac{2.5\\text{ cm}}{x}')}.`,
-      run: async (c) => { await pop(c, top.point(2.5, { color: PT })); await appear(c, l2, 300); await show(c, q); await show(c, e1); } },
-    { cap: `2.5 cm is <b>2.5 times</b> as far along the photo line, so ${T('x')} is 2.5 times 2.4 m. Cross-multiplying says the same: ${T('(1)(x)=(2.5)(2.4)')}, so ${T('x=6')} m.`,
-      run: async (c) => {
-        await top.drawIn(top.interval(0, 2.5, { color: PT, width: 6 }), 500, c); await bot.drawIn(bot.interval(0, 6, { color: PT, width: 6 }), 500, c);
-        await show(c, e2); hide(q); await pop(c, six); await pop(c, e3);
-      } },
-    { cap: 'Is it reasonable? A blue whale’s tail flukes span roughly <b>6 to 7 m</b>, and 6 m lands right in that range. ✓',
-      run: async (c) => { band = bot.interval(6, 7, { color: KEEP, width: 16 }); band.style.opacity = 0.35; await bot.drawIn(band, 400, c); const s = stamp(stage, 'reasonable ✓', { x: W - 140, y: 258 }); await stampIn(c, s); } }
-  ];
-}
-function smoothieSteps(stage, ex) {
-  const W = ex.W, x0 = 170, bw0 = 64, bw1 = bw0 * 110 / 80, yY = 40, yJ = 130;
-  add(stage, h('div', 'u10l2-tlab', 'yogurt'), 20, yY + 10).style.color = '#8a5a06';
-  add(stage, h('div', 'u10l2-tlab', 'juice'), 20, yJ + 10).style.color = '#9b2c25';
-  const mk = (y, cls, n) => Array.from({ length: n }, (_, i) => add(stage, box(h('div', 'u10l2-blk ' + cls, ''), bw0, 46), x0 + i * bw0, y));
-  const Y = mk(yY, 'y', 3), J = mk(yJ, 'j', 7);
-  const totY = add(stage, h('div', 'u10l2-tlab', T('240\\text{ mL}')), x0 + 3 * bw0 + 14, yY + 10), totJ = add(stage, h('div', 'u10l2-tlab', T('560\\text{ mL}')), x0 + 7 * bw0 + 14, yJ + 10);
-  Y.concat(J).concat([totY, totJ]).forEach(hide);
-  const ex1 = hide(add(stage, box(h('div', 'u10l2-blk y add', '+90'), bw0 * 90 / 80, 46), x0 + 3 * bw0, yY));
-  const eqs = add(stage, h('div', 'u10l2-frow'), 0, 230); eqs.style.gap = '34px';
-  const e1 = eqs.appendChild(h('div', 'u10l2-line big', T('240:560=3:7')));
-  const e2 = eqs.appendChild(h('div', 'u10l2-line big', T('\\dfrac{3}{7}=\\dfrac{330}{j}')));
-  const e3 = eqs.appendChild(h('div', 'u10l2-line big', T('3j=2310,\\ \\ j=770\\text{ mL}')));
-  centerX(eqs, W / 2); [e1, e2, e3].forEach(hide);
-  const e4 = hide(add(stage, h('div', 'u10l2-line big', T('\\text{extra juice}=770-560=210\\text{ mL}')), 0, 316)); centerX(e4, W / 2);
-  const setW = (bw, t) => {
-    Y.forEach((b, i) => { b.style.width = bw + 'px'; b.style.left = x0 + i * bw + 'px'; });
-    J.forEach((b, i) => { b.style.width = bw + 'px'; b.style.left = x0 + i * bw + 'px'; });
-    totY.style.left = x0 + 3 * bw + 14 + 'px'; totJ.style.left = x0 + 7 * bw + 14 + 'px';
-  };
-  let jx = null;
-  return [
-    { cap: `The recipe: <b>240 mL</b> of yogurt to <b>560 mL</b> of juice. Both bars are cut into equal parts of <b>80 mL</b>, so the ratio is ${T('240:560=3:7')}.`,
-      run: async (c) => { Y.concat(J).forEach((b) => (b.innerHTML = T('80'))); await Promise.all(Y.concat(J).map((b, i) => pop(c, b, 240, { delay: i * 40 }))); await show(c, totY); await show(c, totJ); await show(c, e1); } },
-    { cap: 'Dana adds <b>90 mL</b> more yogurt: now there is <b>330 mL</b>. To keep 3 : 7, the yogurt must still be exactly 3 equal parts.',
-      run: async (c) => { await pop(c, ex1); totY.innerHTML = T('330\\text{ mL}'); await pulse(c, totY); } },
-    { cap: `So each part grows to ${T('330\\div3=110')} mL, in <b>both</b> bars. The proportion: ${T('\\dfrac{3}{7}=\\dfrac{330}{j}')}, so ${T('3j=7(330)=2310')} and ${T('j=770')} mL of juice in total.`,
-      run: async (c) => {
-        hide(ex1); await tween(c, 700, (t) => setW(bw0 + (bw1 - bw0) * t));
-        Y.concat(J).forEach((b) => (b.innerHTML = T('110'))); totJ.innerHTML = T('770\\text{ mL}');
-        await show(c, e2); await show(c, e3);
-      } },
-    { cap: `She already poured 560 mL, so the <b>extra</b> juice is ${T('770-560=210')} mL. (Shortcut: extra to extra, ${T('\\dfrac{3}{7}=\\dfrac{90}{e}')} gives ${T('e=210')} too.)`,
-      run: async (c) => {
-        jx = add(stage, box(h('div', 'u10l2-blk j add', T('+210')), 7 * (bw1 - bw0), 34), x0 + 7 * bw0, yJ + 54); await pop(c, jx); await pop(c, e4);
-        const s = stamp(stage, '210 mL ✓', { x: W - 110, y: 330 }); await stampIn(c, s);
-      } }
-  ];
-}
-
 /* =============================== explainer: map (1 : 250 000) =============================== */
 function drawMap(stage, x, y, w, hh) {
   const s = svgEl('svg', { width: w, height: hh, style: `position:absolute;left:${x}px;top:${y}px;overflow:visible` }, stage);
@@ -498,7 +245,7 @@ const map = {
   title: 'Map scales: 1 : 250 000',
   height: 420,
   minW: 900, // drawn this wide and scaled to fit beside the sidebar
-  choices: [{ v: 'cm', label: 'What 1 map cm stands for' }, { v: 'a', label: 'Example 7(a) check: towns' }, { v: 'b', label: 'Example 7(b) check: lakes' }],
+  choices: [{ v: 'cm', label: 'What 1 map cm stands for' }, { v: 'a', label: 'Example 2(a) check: towns' }, { v: 'b', label: 'Example 2(b) check: lakes' }],
   intro: 'The same unit on both sides of the ratio; convert to a convenient unit at the end. Press <b>Next</b>.',
   make(stage, v, ex) {
     const W = ex.W, H = ex.def.height, mw = 430, mh = H - 30, M = drawMap(stage, 14, 14, mw, mh);
@@ -518,12 +265,12 @@ const map = {
       for (const xx of [60, 160]) svgEl('line', { x1: xx, y1: 290, x2: xx, y2: 310, stroke: INK, 'stroke-width': 3 }, bar);
       const bl = segLab(110, 272, T('1\\text{ cm}'), INK); hide(bar); hide(bl);
       const l1 = L('1\\text{ cm}\\ \\to\\ 250\\,000\\text{ cm}', 'big'), l2 = L('250\\,000\\text{ cm}\\div100=2500\\text{ m}'), l3 = L('2500\\text{ m}\\div1000=2.5\\text{ km}'), l4 = L('1\\text{ cm on the map}=2.5\\text{ km}', 'big');
-      const l5 = hide(line(P, `Quick check for Example 7(a): ${T('18.4\\times2.5=46')} km.`));
+      const l5 = hide(line(P, `Quick check for Example 2(a): ${T('18.4\\times2.5=46')} km.`));
       return [
         { cap: `${T('1:250\\,000')} means <b>1 cm</b> on the map stands for <b>250 000 cm</b> on the ground. Same unit on both sides.`, run: async (c) => { await appear(c, bar, 300); await pop(c, bl); await show(c, l1); } },
         { cap: `That many centimetres is hard to picture. cm to m is <b>2 steps left</b> on the number line: ${T('\\div100')}, so 2500 m.`, run: async (c) => { await show(c, l2); } },
         { cap: `m to km is <b>3 steps left</b>: ${T('\\div1000')}. Every centimetre on this map is <b>2.5 km</b> on the ground.`, run: async (c) => { await show(c, l3); await pop(c, l4); } },
-        { cap: `Handy for estimating: towns 18.4 cm apart are about ${T('18.4\\times2.5=46')} km apart. That matches Example 7(a).`, run: async (c) => { await show(c, l5); } }
+        { cap: `Handy for estimating: towns 18.4 cm apart are about ${T('18.4\\times2.5=46')} km apart. That matches Example 2(a).`, run: async (c) => { await show(c, l5); } }
       ];
     }
     if (v === 'a') {
@@ -552,47 +299,13 @@ const map = {
   }
 };
 
-/* =============================== explainer: one (a conversion factor is 1) =============================== */
-const ONE = {
-  km: { label: `${T('1\\text{ km}=1000\\text{ m}')}`, big: '1 km', small: '100 m', top: '1000\\text{ m}', bot: '1\\text{ km}', ex: ['9\\text{ km}', '9000\\text{ m}'], exCap: '9 km of trail is still the same trail when you call it 9000 m.' },
-  L: { label: `${T('1\\text{ L}=1000\\text{ mL}')}`, big: '1 L', small: '100 mL', top: '1000\\text{ mL}', bot: '1\\text{ L}', ex: ['0.64\\text{ L}', '640\\text{ mL}'], exCap: 'A 640 mL drink is the same drink when you call it 0.64 L.' }
-};
-const one = {
-  title: 'A conversion fraction is a fancy 1',
-  height: 330,
-  minW: 900, // drawn this wide and scaled to fit beside the sidebar
-  choices: Object.keys(ONE).map((k) => ({ v: k, label: ONE[k].label })),
-  intro: 'Two names for the same amount make a fraction equal to 1. Press <b>Next</b>.',
-  make(stage, k, ex) {
-    const d = ONE[k], W = ex.W, x0 = 120, bw = 560;
-    const s = svgEl('svg', { width: W, height: 150, style: 'position:absolute;left:0;top:0' }, stage);
-    const r1 = svgEl('rect', { x: x0, y: 22, width: bw, height: 40, rx: 4, fill: '#fff1d6', stroke: AMB, 'stroke-width': 2.5 }, s);
-    const g2 = svgEl('g', {}, s);
-    for (let i = 0; i < 10; i++) svgEl('rect', { x: x0 + i * bw / 10, y: 88, width: bw / 10, height: 40, fill: i % 2 ? '#e2ebfb' : '#edf3fd', stroke: RT, 'stroke-width': 2 }, g2);
-    const lb1 = add(stage, h('div', 'u10l2-zlab', T(d.bot)), 20, 30), lb2 = add(stage, h('div', 'u10l2-zlab', T(d.top)), 14, 96);
-    const sm = add(stage, h('div', 'u10l2-zsub', T('10\\times' + d.small.replace(/(\d+) (\w+)/, '$1\\text{ $2}') + '=' + d.top)), x0 + bw + 16, 100);
-    [r1, g2, lb1, lb2, sm].forEach(hide);
-    const fr = add(stage, h('div', 'u10l2-frow'), 0, 160); fr.style.gap = '60px';
-    const f1 = fr.appendChild(h('div', 'u10l2-line big', T(`\\dfrac{${d.top}}{${d.bot}}=1`))), f2 = fr.appendChild(h('div', 'u10l2-line big', T(`\\dfrac{${d.bot}}{${d.top}}=1`)));
-    centerX(fr, W / 2 - 120); [f1, f2].forEach(hide);
-    const e = hide(add(stage, h('div', 'u10l2-line big', T(`${d.ex[0]}=${d.ex[1]}`)), 0, 262)); centerX(e, W / 2);
-    return [
-      { cap: `${T(d.bot)} and ${T(d.top)}: the <b>same amount</b>, two names. The bars are the same length.`,
-        run: async (c) => { await appear(c, r1, 300); await show(c, lb1); await appear(c, g2, 300); await show(c, lb2); await show(c, sm); await stampIn(c, stamp(stage, 'same length', { x: x0 + bw + 130, y: 50, size: 'sm' })); } },
-      { cap: `Stack them as a fraction: the same amount over the same amount is <b>1</b>, just like ${T('\\dfrac{5}{5}=1')}.`, run: async (c) => { await pop(c, f1); } },
-      { cap: 'Upside down it is <b>still 1</b>. So we may use whichever way up makes the unit we don’t want cancel.', run: async (c) => { await pop(c, f2); } },
-      { cap: `Multiplying by 1 changes the <b>name</b>, not the amount. ${d.exCap}`, run: async (c) => { await pop(c, e); } }
-    ];
-  }
-};
-
 /* =============================== explainer: cancel (the star) =============================== */
 const CAN = {
   notes: { label: `The notes: ${T('640\\text{ mL}\\to\\text{L}')}`, fr: [{ n: ['640', 'mL'], d: ['1', ''] }, { n: ['1', 'L'], d: ['1000', 'mL'] }], fact: ['1\\text{ L}=1000\\text{ mL}'], keep: 'L', calc: '\\dfrac{640}{1000}\\text{ L}=0.64\\text{ L}' },
-  e8a: { label: `Example 8(a) check: ${T('9\\text{ km}\\to\\text{m}')}`, fr: [{ n: ['9', 'km'], d: ['1', ''] }, { n: ['1000', 'm'], d: ['1', 'km'] }], fact: ['1\\text{ km}=1000\\text{ m}'], keep: 'm', calc: '9\\times1000=9000\\text{ m}' },
-  e8b: { label: `Ext: Example 8(b) check: ${T('3140\\text{ nm}\\to\\text{m}')}`, fr: [{ n: ['3140', 'nm'], d: ['1', ''] }, { n: ['1', 'm'], d: ['10^{9}', 'nm'] }], fact: ['1\\text{ m}=10^{9}\\text{ nm}'], keep: 'm', calc: '\\dfrac{3140}{10^{9}}=3.14\\times10^{-6}\\text{ m}' },
-  e9b: { label: `Example 9(b) check: ${T('5.3\\text{ km}\\to\\text{mm}')}`, fr: [{ n: ['5.3', 'km'], d: ['1', ''] }, { n: ['1000', 'm'], d: ['1', 'km'] }, { n: ['1000', 'mm'], d: ['1', 'm'] }], fact: ['1\\text{ km}=1000\\text{ m}', '1\\text{ m}=1000\\text{ mm}'], keep: 'mm', calc: '5.3\\times1000\\times1000=5\\,300\\,000\\text{ mm}' },
-  e9a: { label: `Ext: Example 9(a) check: ${T('0.42\\text{ Gm}\\to\\text{Mm}')}`, fr: [{ n: ['0.42', 'Gm'], d: ['1', ''] }, { n: ['10^{9}', 'm'], d: ['1', 'Gm'] }, { n: ['1', 'Mm'], d: ['10^{6}', 'm'] }], fact: ['1\\text{ Gm}=10^{9}\\text{ m}', '1\\text{ Mm}=10^{6}\\text{ m}'], keep: 'Mm', calc: '0.42\\times10^{3}=420\\text{ Mm}' },
+  e8a: { label: `${T('9\\text{ km}\\to\\text{m}')}`, fr: [{ n: ['9', 'km'], d: ['1', ''] }, { n: ['1000', 'm'], d: ['1', 'km'] }], fact: ['1\\text{ km}=1000\\text{ m}'], keep: 'm', calc: '9\\times1000=9000\\text{ m}' },
+  e8b: { label: `Ext: ${T('3140\\text{ nm}\\to\\text{m}')}`, fr: [{ n: ['3140', 'nm'], d: ['1', ''] }, { n: ['1', 'm'], d: ['10^{9}', 'nm'] }], fact: ['1\\text{ m}=10^{9}\\text{ nm}'], keep: 'm', calc: '\\dfrac{3140}{10^{9}}=3.14\\times10^{-6}\\text{ m}' },
+  e9b: { label: `Example 3(a) check: ${T('5.3\\text{ km}\\to\\text{mm}')}`, fr: [{ n: ['5.3', 'km'], d: ['1', ''] }, { n: ['1000', 'm'], d: ['1', 'km'] }, { n: ['1000', 'mm'], d: ['1', 'm'] }], fact: ['1\\text{ km}=1000\\text{ m}', '1\\text{ m}=1000\\text{ mm}'], keep: 'mm', calc: '5.3\\times1000\\times1000=5\\,300\\,000\\text{ mm}' },
+  e9a: { label: `Ext: ${T('0.42\\text{ Gm}\\to\\text{Mm}')}`, fr: [{ n: ['0.42', 'Gm'], d: ['1', ''] }, { n: ['10^{9}', 'm'], d: ['1', 'Gm'] }, { n: ['1', 'Mm'], d: ['10^{6}', 'm'] }], fact: ['1\\text{ Gm}=10^{9}\\text{ m}', '1\\text{ Mm}=10^{6}\\text{ m}'], keep: 'Mm', calc: '0.42\\times10^{3}=420\\text{ Mm}' },
   flip: { label: 'Upside down? 9 km → m', flip: true, fr: [{ n: ['9', 'km'], d: ['1', ''] }, { n: ['1000', 'm'], d: ['1', 'km'] }], keep: 'm', calc: '9\\times1000=9000\\text{ m}' }
 };
 const cancel = {
@@ -646,7 +359,7 @@ function flipSteps(stage, ex, d) {
 
 /* =============================== explainer: rate (two units at once) =============================== */
 const RATE = {
-  e10: { label: `Example 10 check: ${T('64\\text{ m/s}\\to\\text{km/min}')}` },
+  e10: { label: `Example 3(b) check: ${T('64\\text{ m/s}\\to\\text{km/min}')}` },
   flip: { label: 'Upside-down time factor' },
   one: { label: `Only one unit changes: ${T('110\\text{ km/h}\\to\\text{m/h}')}` }
 };
@@ -721,40 +434,894 @@ const rate = {
   }
 };
 
-/* =============================== explainer: which (flowchart) =============================== */
-const WHICH = {
-  e2b: { label: `Example 2(b): ${T('58\\,400\\text{ mg}\\to\\text{kg}')}`, cat: 'n1', m: 'm1', caps: ['One metric prefix changes to another: mg to kg.', 'The <b>number line</b>: 6 steps left, move the point 6 places: <b>0.0584 kg</b>. (A proportion or unit analysis works too; this is quickest.)'] },
-  e5: { label: 'Example 5: the whale photo', cat: 'n2', m: 'm2', caps: ['The question gives its own ratio: 1 cm on the photo stands for 2.4 m.', 'A <b>proportion</b>: ' + T('\\frac{1\\text{ cm}}{2.4\\text{ m}}=\\frac{2.5\\text{ cm}}{x}') + ', so <b>6 m</b>.'] },
-  e7: { label: `Example 7: a ${T('1:250\\,000')} map`, cat: 'n2', m: 'm2', caps: ['A map scale is a ratio given by the question.', 'A <b>proportion</b> first (4 600 000 cm), then a prefix change at the end to get <b>46 km</b>.'] },
-  e10: { label: `Example 10: ${T('64\\text{ m/s}\\to\\text{km/min}')}`, cat: 'n3', m: 'm3', caps: ['A rate: the distance unit <b>and</b> the time unit both change.', '<b>Unit analysis</b>: one fraction for each unit, cancel both, <b>3.84 km/min</b>. (The number line can only change one unit at a time.)'] }
-};
-const which = {
-  title: 'Which method fits the question?',
-  height: 360,
-  choices: Object.keys(WHICH).map((k) => ({ v: k, label: WHICH[k].label })),
-  intro: 'Ask what the question gives you, then pick the method. Press <b>Next</b>.',
-  make(stage, k, ex) {
-    const d = WHICH[k], W = ex.W, cx = [W * 0.18, W * 0.5, W * 0.82], nw = Math.min(270, (W - 40) / 3 - 8);
-    const F = new Flowchart(stage, { x: 10, y: 6, width: W - 20, height: 340,
-      nodes: {
-        start: { x: (W - 20) / 2, y: 36, w: 360, h: 52, html: '<b>What does the question give you?</b>', cls: 'bk-round' },
-        n1: { x: cx[0] - 10, y: 148, w: nw, h: 72, html: '<b>A prefix change</b>one metric unit to another' },
-        n2: { x: cx[1] - 10, y: 148, w: nw, h: 72, html: '<b>A ratio in the question</b>scale, map, recipe, exchange rate' },
-        n3: { x: cx[2] - 10, y: 148, w: nw, h: 72, html: '<b>A chain or a rate</b>two or more units change' },
-        m1: { x: cx[0] - 10, y: 280, w: nw, h: 72, html: '<b>Number line</b>count steps, move the point', color: 'blue' },
-        m2: { x: cx[1] - 10, y: 280, w: nw, h: 72, html: '<b>Proportion</b>matching units, cross-multiply', color: 'amber' },
-        m3: { x: cx[2] - 10, y: 280, w: nw, h: 72, html: '<b>Unit analysis</b>fractions whose units cancel', color: 'green' }
-      },
-      edges: [{ from: 'start', to: 'n1', route: 'vhv' }, { from: 'start', to: 'n2' }, { from: 'start', to: 'n3', route: 'vhv' }, { from: 'n1', to: 'm1' }, { from: 'n2', to: 'm2' }, { from: 'n3', to: 'm3' }] });
-    return [
-      { cap: 'Start with the question itself: <b>what does it give you?</b>', run: (c) => F.visit(c, 'start') },
-      { cap: d.caps[0], run: async (c) => { await F.go(c, 'start', d.cat); await F.visit(c, d.cat); } },
-      { cap: d.caps[1], run: async (c) => { await F.go(c, d.cat, d.m); await F.visit(c, d.m); } }
-    ];
-  }
-};
-
 mountRoad();
 mountStatics();
-export const explainers = mountExplainers({ zoom, hop, sci, prop, ratio, map, one, cancel, rate, which });
-export const _test = { HOP, SCI, PROP, CAN, ZOOM, Tape };
+/* =============================== Part 2: imperial units and converting between systems (the old Lesson 4B) ===============================
+ * The old 4B page's code, wrapped in a block so its helper names don't clash with Part 1's. Example numbers are the merged
+ * lesson's (old 4B Examples 1-7 = Examples 4-10). Explainers: exact, bench, ladder, mixed, twoways, chain, estimate, heights,
+ * roundup, and the Gimli Glider history animation. Classes u10l2b-. */
+const B = (() => {
+  const T = (s) => tex(s);
+  /** a caption equation that may wrap before each = or \approx (the sidebar caption is narrow) */
+  const TQ = (s) => s.split(/(?==|\\approx)/).map((q) => T(q)).join(' ');
+  const IMP = COLORS.amber, SI = COLORS.blue, RED = COLORS.red, GRN = COLORS.green, INK = COLORS.ink;
+
+  /* ---------------- number formatting ---------------- */
+  const group = (s, sep) => { const [i, d] = s.split('.'); const neg = i.startsWith('-'); let a = neg ? i.slice(1) : i; if (a.length >= 5) a = a.replace(/\B(?=(\d{3})+(?!\d))/g, sep); return (neg ? '-' : '') + a + (d != null ? '.' + d : ''); };
+  const str = (v, dp) => (dp == null ? String(parseFloat(v.toFixed(6))) : v.toFixed(dp));
+  /** TeX number with thin spaces from five digits on, like the booklet (5280, 38\,016) */
+  const tn = (v, dp) => group(str(v, dp), '\\,');
+  /** HTML number with narrow no-break spaces */
+  const hn = (v, dp) => group(str(v, dp), ' ');
+  const U = (u) => `\\text{ ${u}}`;
+  const q = (v, u, dp) => tn(v, dp) + U(u);
+
+  /* ---------------- small layout helpers ---------------- */
+  const panel = (stage, x, y, w, hh, title, cls = '') => add(stage, box(h('div', 'u10l2b-panel ' + cls, title ? `<div class="u10l2b-ph">${title}</div>` : ''), w, hh), x, y);
+  const line = (p, html, cls = '') => { const d = h('div', 'u10l2b-line ' + cls, html); p.appendChild(d); return d; };
+  const hide = (el) => { el.style.opacity = 0; return el; };
+  const show = (c, el) => fadeIn(c, el, 320);
+  const say = async (c, p, html, cls) => { const d = hide(line(p, html, cls)); await show(c, d); return d; };
+  const sstamp = (host, text, ok = true, o = {}) => { const s = stamp(host, text, Object.assign({ ok }, o)); s.style.opacity = 0; return s; };
+
+  /* ---------------- fraction cards for unit analysis ---------------- */
+  /** a fraction card: top/bot = { n: TeX number, u: unit text } */
+  function fracEl(top, bot, cls = '') {
+    const f = h('div', 'u10l2b-fr ' + cls);
+    const mk = (p, c) => {
+      const r = h('div', c);
+      r.num = h('span', 'u10l2b-n', T(p.n)); r.appendChild(r.num);
+      r.unit = null;
+      if (p.u) { r.unit = h('span', 'u10l2b-u', p.u); r.appendChild(r.unit); }
+      return r;
+    };
+    f.top = mk(top, 'u10l2b-ft'); f.bot = mk(bot, 'u10l2b-fb'); f.append(f.top, f.bot);
+    return f;
+  }
+  const op = (s) => h('div', 'u10l2b-op', T(s));
+  /** snap a card onto the chain: it rises from the tray below and clicks into place */
+  const snap = (c, el) => anim(c, el, [{ opacity: 0, transform: 'translateY(120px) scale(.9) rotate(-6deg)' }, { opacity: 1, transform: 'translateY(-10px) scale(1.05) rotate(1deg)', offset: 0.75 }, { opacity: 1, transform: 'none' }], 700);
+  /** strike matching units: flash them, then a red slash through each */
+  async function cancelU(c, ...us) {
+    us.forEach((u) => u.classList.add('u10l2b-match'));
+    await sleep(c, 350);
+    const sl = us.map((u) => { const s = h('i', 'u10l2b-slash'); u.appendChild(s); u.classList.remove('u10l2b-match'); u.classList.add('u10l2b-gone'); return s; });
+    await Promise.all(sl.map((s) => anim(c, s, [{ transform: 'rotate(-28deg) scaleX(0)' }, { transform: 'rotate(-28deg) scaleX(1)' }], 380)));
+  }
+  const keep = (...us) => us.forEach((u) => u && u.classList.add('u10l2b-keep'));
+
+  /* ---------------- a tape measure: inches along the top edge, centimetres along the bottom ---------------- */
+  class Tape {
+    constructor(host, o) {
+      this.o = o; this.W = o.width; this.pad = 46;
+      const el = this.el = add(host, box(h('div', 'u10l2b-tape'), o.width, 176), o.x, o.y);
+      const svg = this.svg = svgEl('svg', { width: o.width, height: 176, viewBox: `0 0 ${o.width} 176` }, el);
+      this.html = h('div', 'u10l2b-tapehtml'); el.appendChild(this.html);
+      const y0 = 36, y1 = 136; this.y0 = y0; this.y1 = y1;
+      const L = this.pad, R = o.width - 14;
+      this.ppi = (R - L) / o.maxIn; this.ppc = this.ppi / 2.54;
+      svgEl('rect', { x: L - 8, y: y0, width: R - L + 16, height: y1 - y0, rx: 6, fill: '#f7d65a', stroke: '#b98f12', 'stroke-width': 1.6 }, svg);
+      // inch ticks (top edge, pointing down)
+      const sub = [8, 4, 2, 1].find((s) => this.ppi / s >= 5) || 1;
+      const lab = [1, 2, 6, 12, 24].find((s) => s * this.ppi >= 34);
+      for (let i = 0; i <= o.maxIn * sub + 1e-9; i++) {
+        const v = i / sub, x = this.x(v);
+        const len = i % sub === 0 ? (v % 12 === 0 && v > 0 ? 34 : 24) : (i % (sub / 2) === 0 ? 16 : i % (sub / 4) === 0 ? 11 : 7);
+        svgEl('line', { x1: x, x2: x, y1: y0, y2: y0 + len, stroke: INK, 'stroke-width': i % sub === 0 ? 1.6 : 1 }, svg);
+        if (i % sub === 0 && v % lab === 0 && v > 0) svgEl('text', { x: x - 3, y: y0 + 40, class: 'u10l2b-tnum', 'text-anchor': 'end' }, svg).textContent = v;
+        if (i % sub === 0 && v % 12 === 0 && v > 0 && o.maxIn >= 24) { const t = svgEl('text', { x: x + 3, y: y0 + 22, class: 'u10l2b-tft' }, svg); t.textContent = v / 12 + ' ft'; }
+      }
+      // centimetre ticks (bottom edge, pointing up)
+      const maxCm = o.maxIn * 2.54, mm = this.ppc / 10 >= 4.5, cmOk = this.ppc >= 4.5;
+      const clab = [1, 2, 5, 10, 20, 50].find((s) => s * this.ppc >= 34);
+      for (let i = 0; i <= Math.floor(maxCm * (mm ? 10 : 1)); i++) {
+        const v = mm ? i / 10 : i; if (!mm && !cmOk && v % 5) continue;
+        const x = this.cx(v), whole = Math.abs(v - Math.round(v)) < 1e-9;
+        const len = whole ? (Math.round(v) % 10 === 0 ? 26 : Math.round(v) % 5 === 0 ? 18 : 13) : (i % 5 === 0 ? 9 : 6);
+        svgEl('line', { x1: x, x2: x, y1: y1 - len, y2: y1, stroke: '#173a8a', 'stroke-width': whole ? 1.4 : 0.9 }, svg);
+        if (whole && Math.round(v) % clab === 0 && v > 0) svgEl('text', { x: x - 3, y: y1 - 30, class: 'u10l2b-tnum u10l2b-tcm', 'text-anchor': 'end' }, svg).textContent = Math.round(v);
+      }
+      svgEl('text', { x: L - 14, y: y0 + 22, class: 'u10l2b-tunit', 'text-anchor': 'end' }, svg).textContent = 'in';
+      svgEl('text', { x: L - 14, y: y1 - 8, class: 'u10l2b-tunit u10l2b-tcm', 'text-anchor': 'end' }, svg).textContent = 'cm';
+      this.top = svgEl('g', {}, svg);
+    }
+    x(inches) { return this.pad + inches * this.ppi; }
+    cx(cm) { return this.pad + cm * this.ppc; }
+    /** slide a red hairline from 0 to `inches`, then pop the two readouts */
+    async mark(c, inches, inHtml, cmHtml) {
+      const g = svgEl('g', {}, this.top);
+      const ln = svgEl('line', { y1: this.y0 - 8, y2: this.y1 + 8, stroke: RED, 'stroke-width': 3 }, g);
+      const sh = svgEl('rect', { y: this.y0, height: this.y1 - this.y0, x: this.pad, fill: RED, 'fill-opacity': 0.12 }, g);
+      const set = (v) => { const x = this.x(v); ln.setAttribute('x1', x); ln.setAttribute('x2', x); sh.setAttribute('width', Math.max(0, x - this.pad)); };
+      set(0); await tween(c, 1300, (t) => set(inches * t));
+      const xi = this.x(inches);
+      const a = add(this.html, h('div', 'u10l2b-tread u10l2b-tri', inHtml), 0, 2), b = add(this.html, h('div', 'u10l2b-tread u10l2b-trc', cmHtml), 0, 144);
+      for (const p of [a, b]) { p.style.left = Math.min(this.W - 190, Math.max(0, xi - 90)) + 'px'; p.style.width = '180px'; p.style.opacity = 0; }
+      await pop(c, a); await pop(c, b);
+      return g;
+    }
+  }
+
+  /* =============================== warm-up: race them to scale =============================== */
+  function mountRace() {
+    const btn = document.getElementById('u10l2b-race'), host = document.getElementById('u10l2b-lanes');
+    if (!btn || !host) return;
+    const races = [{ n: 'A', name: 'The Mile', m: 1609.344, lab: '1 mi ≈ 1609 m', cls: 'u10l2b-ba' }, { n: 'B', name: 'The 1500 m', m: 1500, lab: '1500 m', cls: 'u10l2b-bb' }, { n: 'C', name: '5000 ft hill climb', m: 1524, lab: '5000 ft = 1524 m', cls: 'u10l2b-bc' }];
+    const MAX = 1700;
+    let on = false;
+    const c = liveCtx();
+    btn.addEventListener('click', async () => {
+      if (on) { host.innerHTML = ''; on = false; btn.textContent = 'Race them to scale'; return; }
+      on = true; btn.textContent = 'Hide the race';
+      host.innerHTML = '';
+      const axis = h('div', 'u10l2b-axis');
+      for (let m = 0; m <= MAX; m += 100) { const t = h('div', 'u10l2b-axt' + (m % 500 ? '' : ' u10l2b-axt5'), m % 500 ? '' : hn(m) + ' m'); t.style.left = (m / MAX * 100) + '%'; axis.appendChild(t); }
+      const bars = races.map((r) => {
+        const ln = h('div', 'u10l2b-lane', `<div class="u10l2b-lname"><b>${r.n}</b> ${r.name}</div>`);
+        const track = h('div', 'u10l2b-ltrack'), bar = h('div', 'u10l2b-bar ' + r.cls, `<span>${r.lab}</span>`);
+        bar.style.width = (r.m / MAX * 100) + '%'; track.appendChild(bar); ln.appendChild(track); host.appendChild(ln);
+        return bar;
+      });
+      const at = h('div', 'u10l2b-lane'); at.appendChild(h('div', 'u10l2b-lname', '')); const tr = h('div', 'u10l2b-ltrack u10l2b-axrow'); tr.appendChild(axis); at.appendChild(tr); host.appendChild(at);
+      await Promise.all(bars.map((b, i) => c.anim(b, [{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], 2400 * races[i].m / 1609, { easing: 'linear' })));
+      if (on) { const w = h('div', 'u10l2b-win', 'The mile wins: about 85 m ahead of the 5000 ft climb and 109 m ahead of the 1500 m.'); host.appendChild(w); c.fadeIn(w); }
+    });
+  }
+
+  /* =============================== explainer: use the exact factor =============================== */
+  const EXA = {
+    cm: { label: 'Example 7(b) numbers: 315 cm → in', v: 315, from: 'cm', to: 'in', dp: 4,
+      ex: { fact: '1\\text{ in}=2.54\\text{ cm}', tag: 'exact', op: '\\div', k: 2.54, scr: '124.015748' },
+      rd: { fact: '1\\text{ cm}\\approx0.3937\\text{ in}', tag: 'rounded', op: '\\times', k: 0.3937, scr: '124.0155' },
+      rA: '124.0157', rB: '124.0155', why: 'to four decimal places', key: 'At the nearest inch both say 124, but a key written to four decimals says 124.0157.' },
+    ft: { label: 'Example 10 numbers: 1650 m → ft', v: 1650, from: 'm', to: 'ft', dp: 2,
+      ex: { fact: '1\\text{ ft}=0.3048\\text{ m}', tag: 'exact', op: '\\div', k: 0.3048, scr: '5413.385827' },
+      rd: { fact: '1\\text{ m}\\approx3.2808\\text{ ft}', tag: 'rounded', op: '\\times', k: 3.2808, scr: '5413.32' },
+      rA: '5413.39', rB: '5413.32', why: 'to two decimal places', key: 'Even the tenths differ: 5413.4 vs 5413.3. The key uses the exact factor.' }
+  };
+  function screen(p, digits, label) {
+    const s = h('div', 'u10l2b-scr'); s.appendChild(h('div', 'u10l2b-scrl', label));
+    const d = h('div', 'u10l2b-scrd'); [...digits].forEach((ch) => d.appendChild(h('i', 'u10l2b-dg', ch))); s.appendChild(d); s.digits = [...d.children];
+    p.appendChild(s); return s;
+  }
+  const exact = {
+    title: 'Use the exact factor',
+    height: 440,
+    minW: 860, // drawn this wide and scaled to fit beside the sidebar
+    choices: Object.keys(EXA).map((k) => ({ v: k, label: EXA[k].label })),
+    intro: 'Two facts in the table connect the same pair of units. Do they give the same answer? Press <b>Next</b>.',
+    make(stage, k, ex) {
+      const d = EXA[k], H = ex.def.height, PW = (ex.W - 54) / 2;
+      const top = add(stage, box(h('div', 'u10l2b-qbar', `Convert <b>${hn(d.v)} ${d.from}</b> to <b>${d.to}</b>.`), ex.W - 36, 46), 18, 14);
+      const A = panel(stage, 18, 74, PW, H - 92, `${T(d.ex.fact)} <span class="u10l2b-tag u10l2b-tagx">${d.ex.tag}</span>`, 'u10l2b-pA');
+      const B = panel(stage, 36 + PW, 74, PW, H - 92, `${T(d.rd.fact)} <span class="u10l2b-tag">${d.rd.tag}</span>`, 'u10l2b-pB');
+      hide(A); hide(B); top.style.opacity = 1;
+      let sA, sB, wA, wB;
+      return [
+        { cap: `The table has <b>two</b> facts linking ${d.from} and ${d.to}: one is <b>exact</b> (true by definition), the other is <b>rounded</b> to four decimal places.`,
+          run: async (c) => { await show(c, A); await show(c, B); } },
+        { cap: `Exact fact: ${d.ex.op === '\\div' ? 'divide' : 'multiply'} by ${T(String(d.ex.k))}. ${T(`${tn(d.v)}${d.ex.op}${d.ex.k}`)} on the calculator:`,
+          run: async (c) => { wA = await say(c, A, T(`${tn(d.v)}${d.ex.op}${d.ex.k}=`)); sA = screen(A, d.ex.scr, 'screen'); hide(sA); await show(c, sA); } },
+        { cap: `Rounded fact: ${d.rd.op === '\\times' ? 'multiply' : 'divide'} by ${T(String(d.rd.k))}. ${T(`${tn(d.v)}${d.rd.op}${d.rd.k}`)}:`,
+          run: async (c) => { wB = await say(c, B, T(`${tn(d.v)}${d.rd.op}${d.rd.k}=`)); sB = screen(B, d.rd.scr, 'screen'); hide(sB); await show(c, sB); } },
+        { cap: 'Compare the screens digit by digit: <b>green</b> digits agree, <b>red</b> digits don’t. The rounded factor has already lost some accuracy.',
+          run: async (c) => {
+            const n = Math.max(sA.digits.length, sB.digits.length);
+            for (let i = 0; i < n; i++) {
+              const a = sA.digits[i], b = sB.digits[i], same = a && b && a.textContent === b.textContent;
+              for (const e of [a, b]) if (e) { e.classList.add(same ? 'u10l2b-same' : 'u10l2b-diff'); }
+            }
+            await Promise.all([pulse(c, sA, 1.05), pulse(c, sB, 1.05)]);
+          } },
+        { cap: `Rounded ${d.why}: <b>${d.rA}</b> vs <b>${d.rB}</b>. ${d.key}`,
+          run: async (c) => {
+            await say(c, A, T(`\\approx ${tn(+d.rA, d.dp)}${U(d.to)}`), 'u10l2b-big');
+            await say(c, B, T(`\\approx ${tn(+d.rB, d.dp)}${U(d.to)}`), 'u10l2b-big u10l2b-off');
+          } },
+        { cap: '<b>Use the exact factor when there is one</b> (divide by 2.54, 0.3048 or 0.9144), so your answer matches the key to the last digit.',
+          run: async (c) => { const s1 = sstamp(A, 'matches the key', true); await stampIn(c, s1); const s2 = sstamp(B, 'off in the last place', false); await stampIn(c, s2); } }
+      ];
+    }
+  };
+
+  /* =============================== explainer: benchmarks side by side =============================== */
+  const BEN = {
+    in: { label: '1 in vs cm', imp: 'in', si: 'cm', L: 2.54, ref: 'imp', n: 1, ppu: 330, fact: '1\\text{ in}=2.54\\text{ cm}', bench: '1\\text{ in}\\approx2.5\\text{ cm}',
+      c1: 'One <b>inch</b> (amber). Lay <b>centimetres</b> beside it (blue).', c2: 'Two whole centimetres and a bit more fit along one inch.',
+      dir: 'The centimetre is the <b>smaller</b> unit, so the cm number is <b>bigger</b>: inches → cm, <b>multiply</b> by 2.54.' },
+    ft: { label: '1 ft vs cm', imp: 'ft', si: 'cm', L: 30.48, ref: 'imp', n: 1, ppu: 29, fact: '1\\text{ ft}=30.48\\text{ cm}', bench: '1\\text{ ft}\\approx30\\text{ cm}',
+      c1: 'One <b>foot</b>: about the length of a school ruler.', c2: 'Count the centimetres: 30 whole ones and a sliver more.',
+      dir: 'A 30 cm ruler is <b>about a foot</b>. Feet → cm makes the number about <b>30 times bigger</b>.' },
+    yd: { label: '1 m vs yd', imp: 'yd', si: 'm', L: 0.9144, ref: 'si', n: 1, ppu: 860, fact: '1\\text{ yd}=0.9144\\text{ m}', bench: '1\\text{ m}\\approx1.1\\text{ yd}',
+      c1: 'One <b>metre</b> (blue) and one <b>yard</b> (amber). The yard is a little shorter.', c2: 'To match the metre, the yard needs about one-tenth more.',
+      dir: 'A metre is a bit <b>longer</b> than a yard: about 1.1 yd. Metres → yards makes the number a little <b>bigger</b>.' },
+    mi: { label: '1 mi vs km', imp: 'mi', si: 'km', L: 1.609344, ref: 'imp', n: 1, ppu: 330, fact: '1\\text{ mi}\\approx1.6093\\text{ km}', bench: '1\\text{ mi}\\approx1.6\\text{ km}',
+      c1: 'One <b>mile</b>. Lay <b>kilometres</b> beside it.', c2: 'One whole kilometre and about six-tenths more.',
+      dir: 'Kilometres are <b>shorter</b>, so there are more of them: miles → km, <b>multiply</b> by about 1.6.', five: true },
+    kg: { label: '1 kg vs lb', kg: true }
+  };
+  function bars(stage, d, n, ppu, x0, yI, yS, o = {}) {
+    // returns elements (not yet shown): imp segments, si blocks
+    const imp = [], si = [];
+    const impW = d.L * ppu; // one imperial unit, px
+    const refLen = d.ref === 'imp' ? n * d.L : n; // in SI units
+    const nImp = d.ref === 'imp' ? n : refLen / d.L, nSi = refLen;
+    for (let i = 0; i < Math.ceil(nImp - 1e-9); i++) {
+      const w = Math.min(1, nImp - i) * impW, part = nImp - i < 1 - 1e-9;
+      const e = add(stage, box(h('div', 'u10l2b-bimp' + (part ? ' u10l2b-part' : ''), part ? T(tn(nImp - i, 4).replace(/0+$/, '')) : (w > 50 ? T('1' + U(d.imp)) : '')), w, 46), x0 + i * impW, yI);
+      e.part = part; imp.push(hide(e));
+    }
+    for (let i = 0; i < Math.ceil(nSi - 1e-9); i++) {
+      const w = Math.min(1, nSi - i) * ppu, part = nSi - i < 1 - 1e-9;
+      const txt = part ? (w > 34 ? T(String(parseFloat((nSi - i).toFixed(4)))) : '') : (w > 44 ? T('1' + U(d.si)) : w > 15 && ((i + 1) % 5 === 0 || i === 0) ? `<small>${i + 1}</small>` : '');
+      const e = add(stage, box(h('div', 'u10l2b-bsi' + (i % 2 ? ' u10l2b-alt' : '') + (part ? ' u10l2b-part' : ''), txt), w, 46), x0 + i * ppu, yS);
+      e.part = part; si.push(hide(e));
+    }
+    return { imp, si };
+  }
+  function balance(stage, W, H) {
+    const svg = add(stage, svgEl('svg', { width: 560, height: H - 20, viewBox: `0 0 560 ${H - 20}` }), 20, 10);
+    const cx = 280, cy = 120, L = 190;
+    svgEl('path', { d: `M${cx} ${cy} L${cx - 40} ${H - 60} L${cx + 40} ${H - 60} Z`, fill: '#d9d5c9', stroke: INK, 'stroke-width': 2 }, svg);
+    svgEl('rect', { x: cx - 120, y: H - 62, width: 240, height: 14, rx: 4, fill: '#bdb7a6', stroke: INK, 'stroke-width': 1.5 }, svg);
+    const beam = svgEl('g', {}, svg); beam.style.transformBox = 'view-box'; beam.style.transformOrigin = '0 0';
+    svgEl('rect', { x: cx - L - 6, y: cy - 6, width: 2 * L + 12, height: 12, rx: 6, fill: '#6b5a3a' }, beam);
+    svgEl('circle', { cx, cy, r: 9, fill: INK }, svg);
+    const pan = (side) => {
+      const g = svgEl('g', {}, svg); g.style.transformBox = 'view-box'; g.style.transformOrigin = '0 0';
+      svgEl('path', { d: 'M0 0 L-60 120 M0 0 L60 120', stroke: '#777', 'stroke-width': 1.6 }, g);
+      svgEl('path', { d: 'M-78 120 Q0 150 78 120 Z', fill: '#c9c3b2', stroke: INK, 'stroke-width': 1.8 }, g);
+      g.load = svgEl('g', {}, g); g.side = side; return g;
+    };
+    const P = [pan(-1), pan(1)];
+    const set = (deg) => {
+      beam.setAttribute('transform', `rotate(${deg} ${cx} ${cy})`);
+      const r = deg * Math.PI / 180;
+      P.forEach((p) => p.setAttribute('transform', `translate(${cx + p.side * L * Math.cos(r)} ${cy + p.side * L * Math.sin(r)})`));
+    };
+    return { svg, P, set, deg: 0 };
+  }
+  function weight(g, x, w, hh, color, text, y = 122) {
+    const e = svgEl('g', {}, g);
+    svgEl('rect', { x: x - w / 2, y: y - hh, width: w, height: hh, rx: 4, fill: color, stroke: INK, 'stroke-width': 1.4 }, e);
+    if (text) { const t = svgEl('text', { x, y: y - hh / 2 + 6, 'text-anchor': 'middle', class: 'u10l2b-wt' }, e); t.textContent = text; }
+    e.style.opacity = 0; return e;
+  }
+  const bench = {
+    title: 'Side by side: imperial units against SI benchmarks',
+    height: 460,
+    minW: 966, // drawn this wide and scaled to fit beside the sidebar
+    choices: Object.keys(BEN).map((k) => ({ v: k, label: BEN[k].label })),
+    intro: 'How big is each imperial unit compared with an SI unit you already know? Press <b>Next</b>.',
+    make(stage, k, ex) {
+      const d = BEN[k], H = ex.def.height;
+      if (d.kg) {
+        const B = balance(stage, ex.W, H); B.set(-18);
+        const P = panel(stage, 600, 30, ex.W - 620, H - 60, 'Mass');
+        const kgW = weight(B.P[0].load, 0, 62, 62, SI, '1 kg');
+        const lb1 = weight(B.P[1].load, -44, 42, 38, IMP, '1 lb'), lb2 = weight(B.P[1].load, 2, 42, 38, IMP, '1 lb'), lb3 = weight(B.P[1].load, 38, 18, 18, IMP, '');
+        const tip = (c, from, to) => tween(c, 700, (t) => { B.deg = from + (to - from) * t; B.set(B.deg); });
+        B.set(0); kgW.style.opacity = 0;
+        return [
+          { cap: 'Put a <b>1 kg</b> mass on the left pan. The beam tips down on that side.',
+            run: async (c) => { await appear(c, kgW); await tip(c, 0, -18); await say(c, P, `${T('1\\text{ kg}')} on the left`); } },
+          { cap: 'Add <b>1 lb</b>, then another <b>1 lb</b> on the right. Still not balanced: two pounds is less than a kilogram.',
+            run: async (c) => { await appear(c, lb1); await tip(c, -18, -12); await appear(c, lb2); await tip(c, -12, -3); await say(c, P, `${T('2\\text{ lb}')}: not enough`); } },
+          { cap: 'Add <b>0.2 lb</b> more and the beam levels: <b>1 kg ≈ 2.2 lb</b>.',
+            run: async (c) => { await appear(c, lb3); await tip(c, -3, 0); await say(c, P, T('1\\text{ kg}\\approx2.2\\text{ lb}'), 'u10l2b-big'); } },
+          { cap: 'The kilogram is the <b>heavier</b> unit. kg → lb: <b>multiply</b> by 2.2 (the number gets bigger). lb → kg: <b>divide</b> by 2.2 (the number gets smaller).',
+            run: async (c) => { await say(c, P, `kg → lb: ${T('\\times2.2')}`, 'u10l2b-imp'); await say(c, P, `lb → kg: ${T('\\div2.2')}`, 'u10l2b-si'); const s = sstamp(P, 'fewer kg than lb'); await stampIn(c, s); } }
+        ];
+      }
+      const x0 = 60, yI = 96, yS = 168;
+      let B = bars(stage, d, d.n, d.ppu, x0, yI, yS);
+      const lab = (y, t, cls) => add(stage, h('div', 'u10l2b-rowlab ' + cls, t), 6, y + 10);
+      const lI = hide(lab(yI, d.imp, 'u10l2b-imp')), lS = hide(lab(yS, d.si, 'u10l2b-si'));
+      const P = panel(stage, 60, 250, ex.W - 120, H - 270, '');
+      const refFirst = d.ref === 'imp' ? B.imp : B.si, other = d.ref === 'imp' ? B.si : B.imp;
+      const steps = [
+        { cap: d.c1, run: async (c) => {
+          await appear(c, lI); await appear(c, lS);
+          for (const e of refFirst) await anim(c, e, [{ opacity: 0, transform: 'scaleX(0)', transformOrigin: 'left' }, { opacity: 1, transform: 'scaleX(1)', transformOrigin: 'left' }], 500);
+          if (d.ref === 'si') for (const e of other.filter((e) => !e.part)) await anim(c, e, [{ opacity: 0, transform: 'scaleX(0)', transformOrigin: 'left' }, { opacity: 1, transform: 'scaleX(1)', transformOrigin: 'left' }], 500);
+        } },
+        { cap: d.c2, run: async (c) => {
+          const list = d.ref === 'si' ? other.filter((e) => e.part) : other;
+          const ms = list.length > 10 ? 50 : 260;
+          for (const e of list) await anim(c, e, [{ opacity: 0, transform: 'translateY(-14px)' }, { opacity: 1, transform: 'none' }], ms);
+        } },
+        { cap: `${T(d.fact)}${d.L === 1.609344 ? '' : ' <b>(exact)</b>'}. For mental math, the <b>benchmark</b> is ${T(d.bench)}.`,
+          run: async (c) => { await say(c, P, `${T(d.fact)}${d.L === 1.609344 ? '' : ' <span class="u10l2b-tag u10l2b-tagx">exact</span>'}`, 'u10l2b-big'); await say(c, P, `Benchmark: ${T(d.bench)}`, 'u10l2b-bmk'); } },
+        { cap: d.dir, run: async (c) => { await say(c, P, d.dir); } }
+      ];
+      if (d.five) steps.push({ cap: 'Scale it up: <b>5 mi ≈ 8 km</b> (more precisely, about 8.05 km). Worth memorizing.',
+        run: async (c) => {
+          [...B.imp, ...B.si].forEach((e) => e.remove());
+          B = bars(stage, d, 5, 108, x0, yI, yS);
+          for (const e of B.imp) await anim(c, e, [{ opacity: 0, transform: 'scaleX(0)', transformOrigin: 'left' }, { opacity: 1, transform: 'scaleX(1)', transformOrigin: 'left' }], 260);
+          for (const e of B.si) await anim(c, e, [{ opacity: 0, transform: 'translateY(-14px)' }, { opacity: 1, transform: 'none' }], 160);
+          await say(c, P, T('5\\text{ mi}\\approx8\\text{ km}'), 'u10l2b-bmk');
+        } });
+      return steps;
+    }
+  };
+
+  /* =============================== explainer: the imperial staircase =============================== */
+  const STEPS = { mi: [30, 24], yd: [250, 112], ft: [470, 200], in: [690, 288] };
+  const LAD = {
+    down: { label: 'Down the stairs: 2 mi → in' },
+    routes: { label: 'Two routes to a mile' },
+    up: { label: 'Up the stairs: 7920 ft → mi' }
+  };
+  function staircase(stage, W) {
+    const svg = add(stage, svgEl('svg', { width: W, height: 420, viewBox: `0 0 ${W} 420` }), 0, 0);
+    const bw = 180, bh = 80, nodes = {};
+    const defs = svgEl('defs', {}, svg);
+    for (const [id, col] of [['u10l2b-ah', IMP], ['u10l2b-ahp', COLORS.purple]]) {
+      const m = svgEl('marker', { id, viewBox: '0 0 10 10', refX: 8, refY: 5, markerWidth: 6, markerHeight: 6, orient: 'auto-start-reverse' }, defs);
+      svgEl('path', { d: 'M0 0 L10 5 L0 10 z', fill: col }, m);
+    }
+    const pts = ['mi', 'yd', 'ft', 'in'].map((u) => STEPS[u]);
+    let d = `M${pts[0][0] - 10} ${pts[0][1] + bh + 6}`;
+    pts.forEach((p, i) => { d += ` H${i < 3 ? pts[i + 1][0] - 10 : p[0] + bw + 10}`; if (i < 3) d += ` V${pts[i + 1][1] + bh + 6}`; });
+    svgEl('path', { d, fill: 'none', stroke: '#d6d0bf', 'stroke-width': 6, 'stroke-linejoin': 'round' }, svg);
+    const names = { mi: 'mile', yd: 'yard', ft: 'foot', in: 'inch' };
+    for (const u in STEPS) {
+      const [x, y] = STEPS[u], n = add(stage, box(h('div', 'u10l2b-step', `<div class="u10l2b-stepn"><b>${u}</b> <small>${names[u]}</small></div>`), bw, bh), x, y);
+      n.val = h('div', 'u10l2b-stepv'); n.appendChild(n.val); nodes[u] = n;
+    }
+    const arrows = {};
+    [['mi', 'yd', '1760'], ['yd', 'ft', '3'], ['ft', 'in', '12']].forEach(([a, b, k]) => {
+      const [x1, y1] = STEPS[a], [x2, y2] = STEPS[b];
+      arrows[a + b] = svgEl('path', { d: `M${x1 + bw + 6} ${y1 + bh / 2} C${x2 + 40} ${y1 + bh / 2} ${x2 + bw / 2} ${y1 + bh / 2} ${x2 + bw / 2} ${y2 - 6}`, fill: 'none', stroke: IMP, 'stroke-width': 3, 'marker-end': 'url(#u10l2b-ah)' }, svg);
+      add(stage, h('div', 'u10l2b-mult', T(`\\times${k}`) + ' <small>/ ' + T(`\\div${k}`) + '</small>'), x2 + bw / 2 + 12, y2 - 40);
+    });
+    const sc = svgEl('path', { d: `M${STEPS.mi[0] + 90} ${STEPS.mi[1] + bh + 6} C110 330 330 240 ${STEPS.ft[0] - 8} ${STEPS.ft[1] + bh / 2}`, fill: 'none', stroke: COLORS.purple, 'stroke-width': 3, 'stroke-dasharray': '9 6', 'marker-end': 'url(#u10l2b-ahp)' }, svg);
+    add(stage, h('div', 'u10l2b-mult u10l2b-multp', T('\\times5280') + ' <small>/ ' + T('\\div5280') + '</small>'), 14, 236);
+    add(stage, h('div', 'u10l2b-dirtag', '<b>down</b> (smaller unit): multiply · <b>up</b> (bigger unit): divide'), 30, 384);
+    return { nodes, arrows, sc, bw, bh };
+  }
+  /** light a path, then show the value in the step box it reaches */
+  async function reach(c, S, path, u, html, from) {
+    if (from) S.nodes[from].classList.replace('u10l2b-on', 'u10l2b-was');
+    if (path) await anim(c, path, [{ strokeWidth: 3 }, { strokeWidth: 9 }, { strokeWidth: 4 }], 650);
+    const n = S.nodes[u]; n.classList.remove('u10l2b-was'); n.classList.add('u10l2b-on'); n.val.innerHTML = html; await pop(c, n.val);
+  }
+  const ladder = {
+    title: 'The imperial staircase: four multipliers',
+    height: 446,
+    minW: 940, // drawn this wide and scaled to fit beside the sidebar
+    choices: Object.keys(LAD).map((k) => ({ v: k, label: LAD[k].label })),
+    intro: 'Each step down the staircase is a smaller unit, with its own multiplier. Press <b>Next</b>.',
+    make(stage, k, ex) {
+      const S = staircase(stage, ex.W), A = S.arrows;
+      const P = panel(stage, ex.W - 290, 16, 282, 190, 'Work', 'u10l2b-pnar');
+      if (k === 'down') return [
+        { cap: 'Going <b>down</b> the stairs (to a smaller unit) means <b>multiply</b>: more of the smaller units fit.',
+          run: async (c) => { await reach(c, S, null, 'mi', T(q(2, 'mi'))); await say(c, P, T('2\\text{ mi}\\to\\ ?\\text{ in}')); } },
+        { cap: `Fact: 1 mi = 5280 ft. Take the shortcut: ${T('2\\times5280=10\\,560')} ft.`,
+          run: async (c) => { await reach(c, S, S.sc, 'ft', T(q(10560, 'ft')), 'mi'); await say(c, P, T('2\\times5280=10\\,560\\text{ ft}')); } },
+        { cap: `Fact: 1 ft = 12 in. ${T('10\\,560\\times12=126\\,720')} in.`,
+          run: async (c) => { await reach(c, S, A.ftin, 'in', T(q(126720, 'in')), 'ft'); await say(c, P, T('10\\,560\\times12=126\\,720\\text{ in}'), 'u10l2b-big'); } },
+        { cap: 'Two steps, two facts, both <b>written down</b>. A mile is a long way in inches!',
+          run: async (c) => { const s = sstamp(stage, '2 mi = 126 720 in', true, { x: ex.W - 160, y: 408 }); await stampIn(c, s); } }
+      ];
+      if (k === 'routes') return [
+        { cap: 'Start with <b>1 mile</b> at the top of the stairs.', run: async (c) => { await reach(c, S, null, 'mi', T(q(1, 'mi'))); } },
+        { cap: 'Step down to yards: 1 mi = 1760 yd.', run: async (c) => { await reach(c, S, A.miyd, 'yd', T(q(1760, 'yd')), 'mi'); await say(c, P, T('1\\times1760=1760\\text{ yd}')); } },
+        { cap: `Step down to feet: ${T('1760\\times3=5280')} ft.`, run: async (c) => { await reach(c, S, A.ydft, 'ft', T(q(5280, 'ft')), 'yd'); await say(c, P, T('1760\\times3=5280\\text{ ft}')); } },
+        { cap: 'The shortcut says the same: <b>1 mi = 5280 ft</b>. The facts agree, so use whichever route is shorter.',
+          run: async (c) => { await anim(c, S.sc, [{ strokeWidth: 3 }, { strokeWidth: 9 }, { strokeWidth: 4 }], 900); await say(c, P, T('1\\text{ mi}=1760\\text{ yd}=5280\\text{ ft}')); } }
+      ];
+      return [
+        { cap: 'Going <b>up</b> the stairs (to a bigger unit) means <b>divide</b>: fewer of the bigger units fit.',
+          run: async (c) => { await reach(c, S, null, 'ft', T(q(7920, 'ft'))); await say(c, P, T('7920\\text{ ft}\\to\\ ?\\text{ mi}')); } },
+        { cap: `Shortcut up: ${T('7920\\div5280=1.5')} mi.`,
+          run: async (c) => { await reach(c, S, S.sc, 'mi', T(q(1.5, 'mi')), 'ft'); await say(c, P, T('7920\\div5280=1.5\\text{ mi}'), 'u10l2b-big'); } },
+        { cap: `Check by the other route: ${T('7920\\div3=2640')} yd, then ${T('2640\\div1760=1.5')} mi ✓`,
+          run: async (c) => {
+            await reach(c, S, A.ydft, 'yd', T(q(2640, 'yd')), 'mi'); await say(c, P, T('7920\\div3=2640\\text{ yd}'));
+            await reach(c, S, A.miyd, 'mi', T(q(1.5, 'mi') + '\\ \\checkmark'), 'yd'); await say(c, P, T('2640\\div1760=1.5\\text{ mi}'));
+          } },
+        { cap: '<b>Direction check:</b> a bigger unit gives a smaller number (7920 → 1.5) ✓',
+          run: async (c) => { const s = sstamp(stage, '7920 ft = 1.5 mi', true, { x: ex.W - 160, y: 408 }); await stampIn(c, s); } }
+      ];
+    }
+  };
+
+  /* =============================== explainer: mixed measures, unpack and pack =============================== */
+  const MIX = {
+    a: { label: 'Example 4(a)', pack: false, big: 'ft', small: 'in', k: 12, qq: 8, r: 5 },
+    b: { label: '(b)', pack: false, big: 'yd', small: 'ft', k: 3, qq: 6, r: 1 },
+    c: { label: '(c)', pack: false, big: 'mi', small: 'yd', k: 1760, qq: 2, r: 410 },
+    d: { label: '(d)', pack: true, big: 'ft', small: 'in', k: 12, total: 68 },
+    e: { label: '(e)', pack: true, big: 'yd', small: 'ft', k: 3, total: 97 },
+    f: { label: '(f)', pack: true, big: 'mi', small: 'yd', k: 1760, total: 5555 }
+  };
+  for (const v of Object.values(MIX)) { if (v.pack) { v.qq = Math.floor(v.total / v.k); v.r = v.total - v.qq * v.k; } else v.total = v.qq * v.k + v.r; }
+  const mixed = {
+    title: 'Mixed measures: unpack and pack',
+    height: 470,
+    choices: [{ sep: 'Example 4 check:' }, ...Object.keys(MIX).map((k) => ({ v: k, label: MIX[k].label }))],
+    intro: 'A mixed measure is whole big units plus some small ones. Press <b>Next</b>.',
+    make(stage, key, ex) {
+      const d = MIX[key], x0 = 40, wid = ex.W - 80, sc = wid / d.total, bw = d.k * sc, y = 120;
+      const head = add(stage, box(h('div', 'u10l2b-qbar', d.pack ? `Convert <b>${hn(d.total)} ${d.small}</b> to ${d.big} and ${d.small}.` : `Convert <b>${d.qq} ${d.big} ${hn(d.r)} ${d.small}</b> to ${d.small}.`), ex.W - 36, 46), 18, 14);
+      head.style.opacity = 1;
+      const P = panel(stage, 40, 292, ex.W - 80, 166, 'Work'), stX = ex.W - 80 - 150;
+      const blocks = [], labs = [];
+      for (let i = 0; i < d.qq; i++) {
+        const b = hide(add(stage, box(h('div', 'u10l2b-blk' + (i % 2 ? ' u10l2b-alt' : ''), bw > 46 ? T('1' + U(d.big)) : bw > 18 ? `<small>${i + 1}</small>` : ''), bw, 56), x0 + i * bw, y));
+        blocks.push(b);
+      }
+      const rest = hide(add(stage, box(h('div', 'u10l2b-blk u10l2b-rest', d.r * sc > 50 ? T(hn(d.r) + U(d.small)) : ''), d.r * sc, 56), x0 + d.qq * bw, y));
+      const brace = (from, to, html, below = true) => { to = Math.min(to, ex.W - 8); const e = hide(add(stage, box(h('div', 'u10l2b-brace' + (below ? '' : ' u10l2b-brup'), html), to - from, 22), from, below ? y + 62 : y - 28)); return e; };
+      if (!d.pack) {
+        return [
+          { cap: `${d.qq} ${d.big} ${hn(d.r)} ${d.small} is <b>${d.qq} whole ${d.big === 'ft' ? 'feet' : d.big === 'yd' ? 'yards' : 'miles'}</b> plus <b>${hn(d.r)} extra ${d.small === 'in' ? 'inches' : d.small === 'ft' ? (d.r === 1 ? 'foot' : 'feet') : 'yards'}</b>.`,
+            run: async (c) => {
+              for (const b of blocks) await anim(c, b, [{ opacity: 0, transform: 'translateY(-16px)' }, { opacity: 1, transform: 'none' }], 220);
+              await anim(c, rest, [{ opacity: 0, transform: 'translateY(-16px)' }, { opacity: 1, transform: 'none' }], 300);
+              if (d.r * sc <= 50) { const l = brace(x0 + d.qq * bw - 30, x0 + d.qq * bw + d.r * sc + 30, T(hn(d.r) + U(d.small)), false); await appear(c, l); }
+            } },
+          { cap: `Write the fact: 1 ${d.big} = ${hn(d.k)} ${d.small}. Each block is ${hn(d.k)} ${d.small}, so ${T(`${d.qq}\\times${tn(d.k)}=${tn(d.qq * d.k)}`)} ${d.small}.`,
+            run: async (c) => {
+              await say(c, P, `Fact: ${T(`1${U(d.big)}=${tn(d.k)}${U(d.small)}`)}`);
+              if (bw > 46) for (const b of blocks) { b.innerHTML = T(tn(d.k) + U(d.small)); await pulse(c, b, 1.06, 200); }
+              const br = brace(x0, x0 + d.qq * bw, T(`${d.qq}\\times${tn(d.k)}=${tn(d.qq * d.k)}`)); await appear(c, br);
+              await say(c, P, T(`${d.qq}\\times${tn(d.k)}=${tn(d.qq * d.k)}${U(d.small)}`));
+            } },
+          { cap: `Add the extra ${hn(d.r)} ${d.small}: ${T(`${tn(d.qq * d.k)}+${tn(d.r)}=${tn(d.total)}`)} ${d.small}.`,
+            run: async (c) => {
+              const br = hide(add(stage, box(h('div', 'u10l2b-brace u10l2b-brall', T(`${tn(d.total)}${U(d.small)}`)), d.qq * bw + d.r * sc, 22), x0, y + 112)); await appear(c, br);
+              await say(c, P, T(`${tn(d.qq * d.k)}+${tn(d.r)}=${tn(d.total)}${U(d.small)}`), 'u10l2b-big');
+              const s = sstamp(P, `${hn(d.total)} ${d.small}`, true, { x: stX, y: 92 }); await stampIn(c, s);
+            } }
+        ];
+      }
+      // pack: one long bar, cut into big units
+      const long = hide(add(stage, box(h('div', 'u10l2b-long', T(tn(d.total) + U(d.small))), wid, 56), x0, y));
+      const tsvg = add(stage, svgEl('svg', { width: wid, height: 56, viewBox: `0 0 ${wid} 56` }), x0, y);
+      if (sc >= 4) for (let i = 1; i < d.total; i++) svgEl('line', { x1: i * sc, x2: i * sc, y1: 0, y2: 10, stroke: INK, 'stroke-width': 1 }, tsvg);
+      tsvg.style.opacity = 0;
+      [...blocks, rest].forEach((b) => stage.appendChild(b));
+      return [
+        { cap: `${hn(d.total)} ${d.small} in one long piece. How many whole ${d.big === 'ft' ? 'feet' : d.big === 'yd' ? 'yards' : 'miles'} are in it?`,
+          run: async (c) => { await anim(c, long, [{ opacity: 0, transform: 'scaleX(0)', transformOrigin: 'left' }, { opacity: 1, transform: 'scaleX(1)', transformOrigin: 'left' }], 700); await appear(c, tsvg); } },
+        { cap: `Fact: 1 ${d.big} = ${hn(d.k)} ${d.small}. Cut off ${hn(d.k)} ${d.small} at a time: <b>${d.qq}</b> whole ${d.big === 'ft' ? 'feet' : d.big === 'yd' ? 'yards' : 'miles'} fit.`,
+          run: async (c) => {
+            long.innerHTML = ''; long.classList.add('u10l2b-longc');
+            const ms = d.qq > 10 ? 45 : 260;
+            for (const b of blocks) await anim(c, b, [{ opacity: 0, transform: 'scaleY(.2)' }, { opacity: 1, transform: 'none' }], ms);
+            await say(c, P, `Fact: ${T(`1${U(d.big)}=${tn(d.k)}${U(d.small)}`)}`);
+          } },
+        { cap: `That is a division with a remainder: ${T(`${tn(d.total)}\\div${tn(d.k)}=${d.qq}`)} remainder <b>${hn(d.r)}</b> (${T(`${d.qq}\\times${tn(d.k)}=${tn(d.qq * d.k)}`)}, and ${T(`${tn(d.total)}-${tn(d.qq * d.k)}=${tn(d.r)}`)}).`,
+          run: async (c) => {
+            await anim(c, rest, [{ opacity: 0 }, { opacity: 1 }], 300); await pulse(c, rest, 1.1);
+            const br = brace(x0, x0 + d.qq * bw, T(`${d.qq}${U(d.big)}`)); await appear(c, br);
+            const br2 = brace(x0 + d.qq * bw - (d.r * sc < 70 ? 40 : 0), x0 + d.qq * bw + d.r * sc + (d.r * sc < 70 ? 40 : 0), T(`${tn(d.r)}${U(d.small)}`), false); br2.classList.add('u10l2b-brrest'); await appear(c, br2);
+            await say(c, P, T(`${tn(d.total)}\\div${tn(d.k)}=${d.qq}\\ \\text{remainder}\\ ${tn(d.r)}`));
+            await say(c, P, `Calculator: ${T(`${tn(d.total)}\\div${tn(d.k)}=${tn(d.total / d.k, 4)}\\ldots`)}, so ${d.qq} whole; ${T(`${tn(d.total)}-${d.qq}\\times${tn(d.k)}=${tn(d.r)}`)}`, 'u10l2b-sm');
+          } },
+        { cap: `So ${hn(d.total)} ${d.small} = <b>${d.qq} ${d.big} ${hn(d.r)} ${d.small}</b>. The remainder is always smaller than ${hn(d.k)}.`,
+          run: async (c) => { await say(c, P, T(`${tn(d.total)}${U(d.small)}=${d.qq}${U(d.big)}\\ ${tn(d.r)}${U(d.small)}`), 'u10l2b-big'); const s = sstamp(P, `${d.qq} ${d.big} ${hn(d.r)} ${d.small}`, true, { x: stX, y: 60 }); await stampIn(c, s); } }
+      ];
+    }
+  };
+
+  /* =============================== explainer: one chain, two methods =============================== */
+  const TWO = {
+    yd: { label: '2.5 yd → in', v: 2.5, u: ['yd', 'ft', 'in'], k: [3, 12] },
+    ex2: { label: 'Example 5 check: 0.6 mi → in', v: 0.6, u: ['mi', 'ft', 'in'], k: [5280, 12] }
+  };
+  for (const d of Object.values(TWO)) { d.m1 = d.v * d.k[0]; d.m2 = d.m1 * d.k[1]; }
+  const twoways = {
+    title: 'One chain, two methods',
+    height: 500,
+    minW: 800, // drawn this wide and scaled to fit beside the sidebar
+    choices: Object.keys(TWO).map((k) => ({ v: k, label: TWO[k].label })),
+    intro: 'Two facts are needed, so the conversion is a chain. Do it both ways. Press <b>Next</b>.',
+    make(stage, k, ex) {
+      const d = TWO[k], H = ex.def.height, PW = (ex.W - 54) * 0.415, PR = ex.W - 54 - PW, [u0, u1, u2] = d.u;
+      const route = add(stage, h('div', 'u10l2b-route', `<span class="u10l2b-ru">${tn(d.v)} ${u0}</span><span class="u10l2b-ra">${T('\\times' + tn(d.k[0]))}</span><span class="u10l2b-ru">${u1}</span><span class="u10l2b-ra">${T('\\times' + tn(d.k[1]))}</span><span class="u10l2b-ru">${u2}</span>`), 18, 12);
+      route.style.opacity = 0;
+      const L = panel(stage, 18, 70, PW, H - 86, 'Proportional reasoning', 'u10l2b-pbig'), R = panel(stage, 36 + PW, 70, PR, H - 86, 'Unit analysis', 'u10l2b-pbig');
+      const row = h('div', 'u10l2b-chain u10l2b-chsm'); R.appendChild(row);
+      const f0 = fracEl({ n: tn(d.v), u: u0 }, { n: '1' }), f1 = fracEl({ n: tn(d.k[0]), u: u1 }, { n: '1', u: u0 }), f2 = fracEl({ n: tn(d.k[1]), u: u2 }, { n: '1', u: u1 });
+      const o1 = op('\\times'), o2 = op('\\times');
+      [f0, o1, f1, o2, f2].forEach((e) => { row.appendChild(e); hide(e); });
+      let sL;
+      return [
+        { cap: `Route: ${u0} → ${u1} → ${u2}. Two facts: 1 ${u0} = ${hn(d.k[0])} ${u1}, and 1 ${u1} = ${hn(d.k[1])} ${u2}.`,
+          run: async (c) => { await show(c, route); } },
+        { cap: `<b>Proportion 1</b> (${u0} to ${u1}): the fact on one side, the question on the other. ${T(`x=${tn(d.v)}\\times${tn(d.k[0])}=${tn(d.m1)}`)} ${u1}.`,
+          run: async (c) => {
+            await say(c, L, T(`\\dfrac{1${U(u0)}}{${tn(d.k[0])}${U(u1)}}=\\dfrac{${tn(d.v)}${U(u0)}}{x}`), 'u10l2b-frl');
+            await say(c, L, T(`x=${tn(d.v)}\\times${tn(d.k[0])}=${tn(d.m1)}${U(u1)}`));
+          } },
+        { cap: `<b>Proportion 2</b> (${u1} to ${u2}) uses the answer from proportion 1: ${T(`y=${tn(d.m1)}\\times${tn(d.k[1])}=${tn(d.m2)}`)} ${u2}.`,
+          run: async (c) => {
+            await say(c, L, T(`\\dfrac{1${U(u1)}}{${tn(d.k[1])}${U(u2)}}=\\dfrac{${tn(d.m1)}${U(u1)}}{y}`), 'u10l2b-frl');
+            sL = await say(c, L, T(`y=${tn(d.m2)}${U(u2)}`), 'u10l2b-big');
+          } },
+        { cap: `<b>Unit analysis:</b> start with ${hn(d.v)} ${u0} over 1, then snap on both factors, each with the unit to get rid of on the <b>bottom</b>.`,
+          run: async (c) => { await show(c, f0); for (const e of [o1, f1, o2, f2]) { if (e.classList.contains('u10l2b-op')) await appear(c, e); else await snap(c, e); } } },
+        { cap: `${u0} cancels, then ${u1} cancels. Only <b>${u2}</b> is left: the unit we want.`,
+          run: async (c) => { await cancelU(c, f0.top.unit, f1.bot.unit); await cancelU(c, f1.top.unit, f2.bot.unit); keep(f2.top.unit); } },
+        { cap: `Multiply the tops: ${T(`${tn(d.v)}\\times${tn(d.k[0])}\\times${tn(d.k[1])}=${tn(d.m2)}`)} ${u2}. <b>Both methods agree.</b>`,
+          run: async (c) => {
+            await say(c, R, T(`=${tn(d.v)}\\times${tn(d.k[0])}\\times${tn(d.k[1])}`));
+            await say(c, R, T(`=${tn(d.m2)}${U(u2)}`), 'u10l2b-big');
+            const s1 = sstamp(L, `${hn(d.m2)} ${u2}`); const s2 = sstamp(R, `${hn(d.m2)} ${u2}`); await stampIn(c, s1); await stampIn(c, s2);
+          } }
+      ];
+    }
+  };
+
+  /* =============================== explainer: STAR, snap on a factor, cancel a unit =============================== */
+  const CH = {
+    ft: { label: '1 ft → cm', maxIn: 14 },
+    ex3: { label: 'Example 6 check: 1 m → in', maxIn: 42 },
+    ex4a: { label: 'Example 7(a) check', maxIn: 90 },
+    ex4b: { label: 'Example 7(b) check', maxIn: 130 }
+  };
+  const chain = {
+    title: 'Unit analysis: snap on a factor, cancel a unit',
+    height: 450,
+    minW: 820, // drawn this wide and scaled to fit beside the sidebar
+    choices: Object.keys(CH).map((k) => ({ v: k, label: CH[k].label })),
+    intro: 'Each conversion factor is worth 1. Choose it so the unit you want gone is on the bottom. Press <b>Next</b>.',
+    make(stage, k, ex) {
+      const d = CH[k], W = ex.W;
+      const row = add(stage, h('div', 'u10l2b-chain'), 24, 22);
+      const tray = add(stage, box(h('div', 'u10l2b-tray', 'conversion factors'), W - 48, 50), 24, 196);
+      const res = add(stage, box(h('div', 'u10l2b-res'), W - 48, 50), 24, 196); res.style.opacity = 0;
+      const tape = new Tape(stage, { x: 10, y: 262, width: W - 20, maxIn: d.maxIn }); tape.el.style.opacity = 0;
+      const put = (...els) => els.forEach((e) => { row.appendChild(e); hide(e); });
+      const result = async (c, html) => { tray.style.opacity = 0; res.innerHTML = html; await show(c, res); };
+      const tapeIn = (c) => appear(c, tape.el, 400);
+      if (k === 'ft') {
+        const f0 = fracEl({ n: '1', u: 'ft' }, { n: '1' }), f1 = fracEl({ n: '12', u: 'in' }, { n: '1', u: 'ft' }), f2 = fracEl({ n: '2.54', u: 'cm' }, { n: '1', u: 'in' });
+        const o1 = op('\\times'), o2 = op('\\times'), eq = op('='), ans = h('div', 'u10l2b-ansq', T(q(30.48, 'cm')));
+        put(f0, o1, f1, o2, f2, eq, ans);
+        return [
+          { cap: 'Start with what you have: <b>1 ft</b>, written over 1.', run: async (c) => { await pop(c, f0); await tapeIn(c); } },
+          { cap: 'Snap on <b>12 in per 1 ft</b>. ft is on the bottom, so it cancels the ft on top.',
+            run: async (c) => { await appear(c, o1); await snap(c, f1); await cancelU(c, f0.top.unit, f1.bot.unit); } },
+          { cap: 'Now inches are on top. Snap on <b>2.54 cm per 1 in</b>: in cancels.',
+            run: async (c) => { await appear(c, o2); await snap(c, f2); await cancelU(c, f1.top.unit, f2.bot.unit); keep(f2.top.unit); } },
+          { cap: `Only <b>cm</b> is left. Multiply the tops: ${T('1\\times12\\times2.54=30.48')} cm.`,
+            run: async (c) => { await appear(c, eq); await pop(c, ans); await result(c, T('1\\text{ ft}=30.48\\text{ cm}\\ \\text{(exact)}')); } },
+          { cap: 'On the tape: 12 inches lines up with <b>30.48 cm</b>, just past the 30 cm benchmark.',
+            run: async (c) => { await tape.mark(c, 12, T('12\\text{ in}=1\\text{ ft}'), T('30.48\\text{ cm}')); } }
+        ];
+      }
+      if (k === 'ex3') {
+        const f1 = fracEl({ n: '100', u: 'cm' }, { n: '1', u: 'm' }), f2 = fracEl({ n: '1', u: 'in' }, { n: '2.54', u: 'cm' });
+        const o1 = op('\\cdot'), eq = op('='), ans = h('div', 'u10l2b-ansq', T('39.37\\,\\dfrac{\\text{in}}{\\text{m}}'));
+        put(f1, o1, f2, eq, ans);
+        return [
+          { cap: 'The student starts with <b>100 cm per 1 m</b>: a metre is 100 cm. The unit she wants is <b>inches per metre</b>.',
+            run: async (c) => { await pop(c, f1); await tapeIn(c); } },
+          { cap: 'She snaps on <b>1 in per 2.54 cm</b>, with cm on the bottom.', run: async (c) => { await appear(c, o1); await snap(c, f2); } },
+          { cap: '(a) <b>cm cancels</b>: once on top, once on the bottom. Left: <b>in</b> on top and <b>m</b> on the bottom, inches per metre.',
+            run: async (c) => { await cancelU(c, f1.top.unit, f2.bot.unit); keep(f2.top.unit, f1.bot.unit); } },
+          { cap: `(b) ${T('\\dfrac{100}{2.54}=39.370078\\ldots\\approx39.37')}.`,
+            run: async (c) => { await appear(c, eq); await pop(c, ans); } },
+          { cap: '(c) On the tape: <b>100 cm</b> (one metre) lines up with about <b>39.37 in</b>, a little over 3 ft. So <b>1 m ≈ 39.37 in</b>.',
+            run: async (c) => { await tape.mark(c, 100 / 2.54, T('\\approx39.37\\text{ in}'), T('100\\text{ cm}=1\\text{ m}')); await result(c, T('1\\text{ m}\\approx39.37\\text{ in}')); } }
+        ];
+      }
+      if (k === 'ex4a') {
+        const f0 = fracEl({ n: '81', u: 'in' }, { n: '1' }), f1 = fracEl({ n: '2.54', u: 'cm' }, { n: '1', u: 'in' }), f2 = fracEl({ n: '1', u: 'm' }, { n: '100', u: 'cm' });
+        const o1 = op('\\times'), o2 = op('\\times'), eq = op('='), ans = h('div', 'u10l2b-ansq', T(q(2.0574, 'm')));
+        put(f0, o1, f1, o2, f2, eq, ans);
+        return [
+          { cap: `Mixed measure? <b>Single unit first</b>: 6 ft 9 in = ${T('6\\times12+9=81')} in.`,
+            run: async (c) => { await pop(c, f0); await tapeIn(c); } },
+          { cap: 'Cross to SI with the exact fact: snap on <b>2.54 cm per 1 in</b>. in cancels.',
+            run: async (c) => { await appear(c, o1); await snap(c, f1); await cancelU(c, f0.top.unit, f1.bot.unit); } },
+          { cap: 'The answer is wanted in metres: snap on <b>1 m per 100 cm</b>. cm cancels.',
+            run: async (c) => { await appear(c, o2); await snap(c, f2); await cancelU(c, f1.top.unit, f2.bot.unit); keep(f2.top.unit); } },
+          { cap: `Tops over bottoms: ${T('\\dfrac{81\\times2.54\\times1}{100}=2.0574')} m ${T('\\approx2.057')} m (three decimal places).`,
+            run: async (c) => { await appear(c, eq); await pop(c, ans); await result(c, T('6\\text{ ft }9\\text{ in}\\approx2.057\\text{ m}')); } },
+          { cap: 'On the tape: 81 in (6 ft 9 in) lines up with <b>205.74 cm</b>, just over 2 m.',
+            run: async (c) => { await tape.mark(c, 81, T('81\\text{ in}=6\\text{ ft }9\\text{ in}'), T('205.74\\text{ cm}')); } }
+        ];
+      }
+      const f0 = fracEl({ n: '3.15', u: 'm' }, { n: '1' }), f1 = fracEl({ n: '100', u: 'cm' }, { n: '1', u: 'm' }), f2 = fracEl({ n: '1', u: 'in' }, { n: '2.54', u: 'cm' });
+      const o1 = op('\\times'), o2 = op('\\times'), eq = op('='), ans = h('div', 'u10l2b-ansq', T('124.0157\\ldots\\text{ in}'));
+      put(f0, o1, f1, o2, f2, eq, ans);
+      return [
+        { cap: 'Now the other direction: start with <b>3.15 m</b>.', run: async (c) => { await pop(c, f0); await tapeIn(c); } },
+        { cap: 'Snap on <b>100 cm per 1 m</b>: m cancels.', run: async (c) => { await appear(c, o1); await snap(c, f1); await cancelU(c, f0.top.unit, f1.bot.unit); } },
+        { cap: 'Snap on <b>1 in per 2.54 cm</b> (the exact fact, upside down so cm is on the bottom): cm cancels.',
+          run: async (c) => { await appear(c, o2); await snap(c, f2); await cancelU(c, f1.top.unit, f2.bot.unit); keep(f2.top.unit); } },
+        { cap: `Tops over bottoms: ${TQ('\\dfrac{3.15\\times100}{2.54}=124.0157\\ldots\\approx124')} in (nearest inch).`,
+          run: async (c) => { await appear(c, eq); await pop(c, ans); } },
+        { cap: `Split into feet: ${T('124\\div12=10')} remainder 4. On the tape, 315 cm sits just past the 10 ft mark: <b>10 ft 4 in</b>.`,
+          run: async (c) => { await tape.mark(c, 315 / 2.54, T('124\\text{ in}=10\\text{ ft }4\\text{ in}'), T('315\\text{ cm}')); await result(c, T('3.15\\text{ m}\\approx10\\text{ ft }4\\text{ in}')); } }
+      ];
+    }
+  };
+
+  /* =============================== explainer: estimate first, then convert =============================== */
+  const EST = {
+    a: { label: 'Example 8(a)', min: 1.5, max: 2.0, step: 0.05, labs: [1.5, 1.6, 1.7, 1.8, 1.9, 2.0], dp: 2, unit: 'm',
+      q: 'Convert <b>5 ft 9 in</b> to metres.', bench: '1\\text{ in}\\approx2.5\\text{ cm}',
+      est: ['5\\text{ ft }9\\text{ in}=69\\text{ in}', '69\\times2.5\\approx172\\text{ cm}\\approx1.7\\text{ m}'], ev: 1.725, evTex: '\\approx1.7',
+      exa: ['69\\times2.54=175.26\\text{ cm}', '=1.7526\\text{ m}\\approx\\mathbf{1.75}\\text{ m}'], xv: 1.7526, xvTex: '1.75', capX: '69\\times2.54=175.26\\text{ cm}=1.7526\\text{ m}\\approx1.75\\text{ m}',
+      end: 'The exact answer (1.75 m) lands right beside the estimate: <b>reasonable</b> ✓' },
+    b: { label: '(b)', min: 20, max: 30, step: 1, labs: [20, 22, 24, 26, 28, 30], dp: 1, unit: 'mi',
+      q: 'Convert <b>40 km</b> to miles.', bench: '5\\text{ mi}\\approx8\\text{ km}',
+      est: ['40\\text{ km}=5\\times8\\text{ km}', '\\approx5\\times5=25\\text{ mi}'], ev: 25, evTex: '\\approx25',
+      exa: ['40\\text{ km}\\times\\dfrac{1\\text{ mi}}{1.6093\\text{ km}}', '=24.86\\ldots\\approx\\mathbf{24.9}\\text{ mi}'], xv: 24.8555, xvTex: '24.9', capX: '40\\div1.6093=24.86\\ldots\\approx24.9\\text{ mi}',
+      end: '24.9 mi is close to 25 ✓ (km is the smaller unit, so the mile number is smaller).' },
+    c: { label: '(c)', min: 0, max: 350, step: 10, labs: [0, 50, 100, 150, 200, 250, 300, 350], dp: 0, unit: 'kg', wrong: 330,
+      q: 'A student writes <b>150 lb = 330 kg</b>.', bench: '1\\text{ kg}\\approx2.2\\text{ lb}',
+      est: ['150\\div2\\approx75\\text{ kg}', '\\text{(a bit less, since }2.2>2)'], ev: 75, evTex: '\\approx75',
+      exa: ['150\\div2.2=68.18\\ldots', '\\approx\\mathbf{68}\\text{ kg}'], xv: 68.18, xvTex: '68',
+      end: 'Corrected: <b>68 kg</b>. The student multiplied by 2.2 instead of dividing.' }
+  };
+  const estimate = {
+    title: 'Estimate first, then convert',
+    height: 480,
+    choices: [{ sep: 'Example 8 check:' }, ...Object.keys(EST).map((k) => ({ v: k, label: EST[k].label }))],
+    intro: 'A benchmark estimate tells you roughly where the answer should land. Press <b>Next</b>.',
+    make(stage, k, ex) {
+      const d = EST[k], W = ex.W, PW = (W - 54) / 2;
+      const head = add(stage, box(h('div', 'u10l2b-qbar', `${d.q} Benchmark: ${T(d.bench)}`), W - 36, 46), 18, 12); head.style.opacity = 1;
+      const A = panel(stage, 18, 70, PW, 180, 'Estimate (mental math)', 'u10l2b-pE'), B = panel(stage, 36 + PW, 70, PW, 180, 'Exact (calculator)', 'u10l2b-pX');
+      const NL = new NumberLine(stage, { x: 30, y: 290, width: W - 60, height: 130, min: d.min, max: d.max, step: d.step, labels: d.labs.map((v, i) => ({ v, html: T((d.dp === 2 ? v.toFixed(1) : String(v)) + (i === d.labs.length - 1 ? U(d.unit) : '')) })) });
+      const pt = (v, color, html, pos = 'n') => { const p = NL.point(v, { color }); const m = NL.mark(v, html, { pos }); p.style.opacity = 0; m.style.opacity = 0; return [p, m]; };
+      const reveal = async (c, [p, m]) => { await pop(c, p); await pop(c, m); };
+      if (d.wrong) {
+        return [
+          { cap: '<b>Direction first.</b> A kilogram is <b>heavier</b> than a pound (1 kg ≈ 2.2 lb), so there must be <b>fewer</b> kilograms than pounds: the answer is less than 150.',
+            run: async (c) => { await NL.drawIn(NL.interval(0, 150, { color: GRN }), 700, c); await say(c, A, 'kg is the bigger unit, so the number must be <b>smaller than 150</b>'); } },
+          { cap: '330 kg is <b>bigger</b> than 150: impossible. 330 is what you get by <b>multiplying</b> by 2.2 instead of dividing.',
+            run: async (c) => { const w = pt(330, RED, '<b class="u10l2b-red">330 ✗</b>'); await reveal(c, w); await say(c, B, `${T('150\\times2.2=330')}: the wrong way`, 'u10l2b-off'); } },
+          { cap: `Estimate: 2.2 is about 2, so ${T('150\\div2\\approx75')} kg, a little less since we really divide by more than 2.`,
+            run: async (c) => { for (const s of d.est) await say(c, A, T(s)); await reveal(c, pt(d.ev, IMP, T(d.evTex), 'n')); } },
+          { cap: `Exact: ${T('150\\div2.2=68.18\\ldots\\approx68')} kg. Close to the estimate, inside the green zone ✓`,
+            run: async (c) => { for (const s of d.exa) await say(c, B, T(s)); await reveal(c, pt(d.xv, SI, `<b>${T(d.xvTex)}</b>`, 's')); } },
+          { cap: d.end, run: async (c) => { const s = sstamp(B, '68 kg'); await stampIn(c, s); } }
+        ];
+      }
+      return [
+        { cap: `Estimate with the benchmark ${T(d.bench)}: ${T(d.est[1])}.`,
+          run: async (c) => { for (const s of d.est) await say(c, A, T(s)); } },
+        { cap: 'Mark the estimate on the number line.', run: async (c) => { await reveal(c, pt(d.ev, IMP, `est. ${T(d.evTex)}`, 'n')); } },
+        { cap: `Now convert exactly: ${TQ(d.capX)}.`,
+          run: async (c) => { for (const s of d.exa) await say(c, B, T(s)); } },
+        { cap: 'Mark the exact answer. How far is it from the estimate?',
+          run: async (c) => { await reveal(c, pt(d.xv, SI, `<b>${T(d.xvTex)}</b>`, 's')); } },
+        { cap: d.end, run: async (c) => { const s = sstamp(B, 'reasonable'); await stampIn(c, s); } }
+      ];
+    }
+  };
+
+  /* =============================== explainer: heights on a growth chart, masses on a dial =============================== */
+  const HT = {
+    a: { label: 'Example 9(a)', who: 'Wayne Gretzky', ft: 6, inch: 0 },
+    b: { label: '(b)', who: 'Shaquille O’Neal', ft: 7, inch: 1 },
+    c: { label: '(c)', who: 'Simone Biles', ft: 4, inch: 8 },
+    d: { label: '(d)', what: 'bull moose', lb: 1200, max: 1400, lbStep: 200, kgStep: 100 },
+    e: { label: '(e)', what: 'Canada goose', lb: 9, max: 12, lbStep: 2, kgStep: 1 },
+    f: { label: '(f)', what: 'grizzly bear', lb: 600, max: 700, lbStep: 100, kgStep: 50 }
+  };
+  function person(svg, x, floor, hpx, color, op = 1) {
+    const s = hpx, g = svgEl('g', { opacity: op }, svg);
+    const w = s * 0.26;
+    svgEl('circle', { cx: x, cy: floor - s + s * 0.065, r: s * 0.065, fill: color }, g);
+    svgEl('path', { d: `M${x - w / 2} ${floor - s * 0.82} Q${x} ${floor - s * 0.87} ${x + w / 2} ${floor - s * 0.82} L${x + w * 0.42} ${floor - s * 0.47} L${x + w * 0.2} ${floor - s * 0.47} L${x + w * 0.22} ${floor} L${x + w * 0.04} ${floor} L${x} ${floor - s * 0.42} L${x - w * 0.04} ${floor} L${x - w * 0.22} ${floor} L${x - w * 0.2} ${floor - s * 0.47} L${x - w * 0.42} ${floor - s * 0.47} Z`, fill: color }, g);
+    g.style.transformBox = 'view-box'; g.style.transformOrigin = `${x}px ${floor}px`;
+    return g;
+  }
+  const heights = {
+    title: 'Heights on a growth chart, masses on a scale',
+    height: 500,
+    minW: 880, // drawn this wide and scaled to fit beside the sidebar (the chart is 570 px, the work panel sits to its right)
+    choices: [{ sep: 'Example 9 check:' }, ...Object.keys(HT).map((k) => ({ v: k, label: HT[k].label }))],
+    intro: 'Read the same height (or mass) on an imperial scale and an SI scale. Press <b>Next</b>.',
+    make(stage, k, ex) {
+      const d = HT[k], H = ex.def.height, W = ex.W;
+      const P = panel(stage, W - 306, 20, 296, H - 40, d.who ? d.who : 'a ' + d.what);
+      if (d.who) {
+        const svg = add(stage, svgEl('svg', { width: 560, height: H, viewBox: `0 0 560 ${H}` }), 10, 0);
+        const floor = H - 34, top = 30, ppi = (floor - top) / 96, sx = 130;
+        svgEl('rect', { x: sx, y: top, width: 70, height: floor - top, fill: '#fffaf0', stroke: '#c9c3b2' }, svg);
+        for (let i = 0; i <= 96; i++) { const y = floor - i * ppi, L = i % 12 === 0 ? 26 : i % 6 === 0 ? 16 : 8; svgEl('line', { x1: sx, x2: sx + L, y1: y, y2: y, stroke: IMP, 'stroke-width': i % 12 ? 1 : 2 }, svg); if (i % 12 === 0 && i) { const t = svgEl('text', { x: sx - 8, y: y + 6, 'text-anchor': 'end', class: 'u10l2b-gimp' }, svg); t.textContent = i / 12 + ' ft'; } }
+        const ppc = ppi / 2.54;
+        for (let cm = 0; cm <= 96 * 2.54; cm += 10) { const y = floor - cm * ppc, L = cm % 50 === 0 ? 26 : 14; svgEl('line', { x1: sx + 70 - L, x2: sx + 70, y1: y, y2: y, stroke: SI, 'stroke-width': cm % 50 ? 1 : 2 }, svg); if (cm % 50 === 0 && cm) { const t = svgEl('text', { x: sx + 78, y: y + 6, class: 'u10l2b-gsi' }, svg); t.textContent = (cm / 100).toFixed(1) + ' m'; } }
+        svgEl('line', { x1: 20, x2: 550, y1: floor, y2: floor, stroke: INK, 'stroke-width': 2 }, svg);
+        const others = Object.values(HT).filter((o) => o.who && o !== d);
+        others.forEach((o, i) => { const hi = o.ft * 12 + o.inch, ox = 290 + i * 105; person(svg, ox, floor, hi * ppi, '#c9ccd3', 0.7); const t = svgEl('text', { x: ox, y: floor + 20, 'text-anchor': 'middle', class: 'u10l2b-gname' }, svg); t.textContent = o.who.split(' ').pop(); });
+        const inches = d.ft * 12 + d.inch, cm = inches * 2.54, m = cm / 100, hpx = inches * ppi, yH = floor - hpx;
+        const me = person(svg, 500, floor, hpx, IMP);
+        const myn = svgEl('text', { x: 500, y: floor + 20, 'text-anchor': 'middle', class: 'u10l2b-gname u10l2b-gme' }, svg); myn.textContent = d.who.split(' ').pop(); me.style.transform = 'scaleY(0)';
+        const hl = svgEl('line', { x1: sx - 4, x2: 500, y1: yH, y2: yH, stroke: RED, 'stroke-width': 2.5, 'stroke-dasharray': '7 5' }, svg); hl.style.opacity = 0;
+        const pI = hide(add(stage, h('div', 'u10l2b-hread u10l2b-imp', T(`${d.ft}'${d.inch}''=${inches}\\text{ in}`)), 6, yH - 44));
+        const pS = hide(add(stage, h('div', 'u10l2b-hread u10l2b-si', T(`${tn(m, 2)}\\text{ m}`)), 214, yH - 44));
+        return [
+          { cap: `${d.who}: ${T(`${d.ft}'${d.inch}''`)} means <b>${d.ft} ft ${d.inch} in</b>.`,
+            run: async (c) => { await anim(c, me, [{ transform: 'scaleY(0)' }, { transform: 'scaleY(1)' }], 900); await anim(c, hl, [{ opacity: 0 }, { opacity: 1 }], 300); } },
+          { cap: `Single unit first: ${T(`${d.ft}\\times12+${d.inch}=${inches}`)} in.`,
+            run: async (c) => { await pop(c, pI); await say(c, P, T(`${d.ft}'${d.inch}''=${d.ft}\\times12+${d.inch}=${inches}\\text{ in}`)); } },
+          { cap: `Cross to SI: ${T(`${inches}\\times2.54=${tn(cm)}`)} cm = ${T(tn(m))} m.`,
+            run: async (c) => { await say(c, P, T(`${inches}\\times2.54=${tn(cm)}\\text{ cm}`)); await say(c, P, T(`=${tn(m)}\\text{ m}`)); } },
+          { cap: `To the nearest hundredth: <b>${tn(m, 2)} m</b>. Read across: the head line meets the metre scale there too.`,
+            run: async (c) => { await pop(c, pS); await say(c, P, T(`\\approx\\mathbf{${tn(m, 2)}}\\text{ m}`), 'u10l2b-big'); const s = sstamp(P, `${tn(m, 2)} m`); await stampIn(c, s); } }
+        ];
+      }
+      // dial scale
+      const svg = add(stage, svgEl('svg', { width: 560, height: H, viewBox: `0 0 560 ${H}` }), 10, 0);
+      const cx = 280, cy = 255, R = 190, kgMax = d.max / 2.2;
+      const ang = (lb) => (-130 + 260 * lb / d.max) * Math.PI / 180, pt = (lb, r) => [cx + r * Math.sin(ang(lb)), cy - r * Math.cos(ang(lb))];
+      svgEl('circle', { cx, cy, r: R + 22, fill: '#fbfaf6', stroke: INK, 'stroke-width': 3 }, svg);
+      svgEl('circle', { cx, cy, r: R - 62, fill: '#eef3fc', stroke: '#c9d6ef', 'stroke-width': 1.5 }, svg);
+      const fine = d.lbStep / (d.max <= 20 ? 4 : 4);
+      for (let lb = 0; lb <= d.max + 1e-9; lb += fine) {
+        const major = Math.abs(lb / d.lbStep - Math.round(lb / d.lbStep)) < 1e-9, [x1, y1] = pt(lb, R + 20), [x2, y2] = pt(lb, R + (major ? 2 : 10));
+        svgEl('line', { x1, y1, x2, y2, stroke: IMP, 'stroke-width': major ? 3 : 1.5 }, svg);
+        if (major) { const [tx, ty] = pt(lb, R - 16); const t = svgEl('text', { x: tx, y: ty + 7, 'text-anchor': 'middle', class: 'u10l2b-dimp' }, svg); t.textContent = hn(lb); }
+      }
+      for (let kg = 0; kg <= kgMax + 1e-9; kg += d.kgStep / 2) {
+        const major = Math.abs(kg / d.kgStep - Math.round(kg / d.kgStep)) < 1e-9, lb = kg * 2.2, [x1, y1] = pt(lb, R - 62), [x2, y2] = pt(lb, R - (major ? 80 : 72));
+        svgEl('line', { x1, y1, x2, y2, stroke: SI, 'stroke-width': major ? 2.5 : 1.2 }, svg);
+        if (major) { const [tx, ty] = pt(lb, R - 98); const t = svgEl('text', { x: tx, y: ty + 6, 'text-anchor': 'middle', class: 'u10l2b-dsi' }, svg); t.textContent = hn(kg); }
+      }
+      const ul = svgEl('text', { x: cx, y: cy + 70, 'text-anchor': 'middle', class: 'u10l2b-dimp' }, svg); ul.textContent = 'lb (outer)';
+      const uk = svgEl('text', { x: cx, y: cy + 96, 'text-anchor': 'middle', class: 'u10l2b-dsi' }, svg); uk.textContent = 'kg (inner)';
+      const needle = svgEl('line', { x1: cx, y1: cy, stroke: RED, 'stroke-width': 4, 'stroke-linecap': 'round' }, svg);
+      svgEl('circle', { cx, cy, r: 10, fill: INK }, svg);
+      const setN = (lb) => { const [x, y] = pt(lb, R + 14); needle.setAttribute('x2', x); needle.setAttribute('y2', y); };
+      setN(0);
+      const kg = d.lb / 2.2, kgR = Math.round(kg);
+      return [
+        { cap: `A ${d.what} on the scale: about <b>${hn(d.lb)} lb</b> on the outer (pound) ring.`,
+          run: async (c) => { await tween(c, 1200, (t) => setN(d.lb * t)); await say(c, P, T(q(d.lb, 'lb'))); } },
+        { cap: `The inner ring reads <b>kilograms</b>. The same needle points to about ${hn(kgR)} kg.`,
+          run: async (c) => { await anim(c, needle, [{ strokeWidth: 4 }, { strokeWidth: 9 }, { strokeWidth: 4 }], 700); } },
+        { cap: `Exact: ${T(`${tn(d.lb)}\\text{ lb}\\times\\dfrac{1\\text{ kg}}{2.2\\text{ lb}}=${tn(kg, 2)}\\ldots`)} kg. lb cancels.`,
+          run: async (c) => { await say(c, P, T(`${tn(d.lb)}\\text{ lb}\\times\\dfrac{1\\text{ kg}}{2.2\\text{ lb}}`), 'u10l2b-frl'); await say(c, P, T(`=${tn(d.lb)}\\div2.2=${tn(kg, 2)}\\ldots`)); } },
+        { cap: `To the nearest kilogram: <b>${hn(kgR)} kg</b>. Fewer kilograms than pounds, because the kilogram is the heavier unit ✓`,
+          run: async (c) => { await say(c, P, T(`\\approx\\mathbf{${tn(kgR)}}\\text{ kg}`), 'u10l2b-big'); const s = sstamp(P, `${hn(kgR)} kg`); await stampIn(c, s); } }
+      ];
+    }
+  };
+
+  /* =============================== explainer: film to DVDs, rounding up =============================== */
+  const RU = {
+    ex7: { label: 'Example 10 check: 1650 m', m: 1650 },
+    m1100: { label: '1100 m of film', m: 1100 }
+  };
+  const roundup = {
+    title: 'Film to DVDs: why the count rounds up',
+    height: 470,
+    choices: Object.keys(RU).map((k) => ({ v: k, label: RU[k].label })),
+    intro: 'Convert the film to feet, then cut it into 1200 ft DVD loads. Press <b>Next</b>.',
+    make(stage, k, ex) {
+      const d = RU[k], W = ex.W, ft = d.m / 0.3048, n = ft / 1200, full = Math.floor(n), need = Math.ceil(n), left = ft - full * 1200;
+      const x0 = 40, wid = W - 80, sc = wid / 6000, y = 70;
+      const film = hide(add(stage, box(h('div', 'u10l2b-film', `<span>${hn(d.m)} m of film</span>`), ft * sc, 54), x0, y));
+      const ruler = add(stage, svgEl('svg', { width: wid + 20, height: 30, viewBox: `0 0 ${wid + 20} 30` }), x0, y + 58); ruler.style.opacity = 0;
+      for (let f = 0; f <= 6000; f += 500) { const x = f * sc; svgEl('line', { x1: x, x2: x, y1: 0, y2: f % 1000 ? 7 : 13, stroke: INK, 'stroke-width': 1.4 }, ruler); if (f % 1000 === 0 && f < 6000) { const t = svgEl('text', { x: x + 2, y: 27, class: 'u10l2b-rtx' }, ruler); t.textContent = hn(f) + (f ? ' ft' : ''); } }
+      const loads = [], discs = [];
+      for (let i = 0; i < need; i++) {
+        const w = Math.max(6, Math.min(1200, ft - i * 1200) * sc);
+        loads.push(hide(add(stage, box(h('div', 'u10l2b-load' + (i % 2 ? ' u10l2b-alt' : '') + (i === full ? ' u10l2b-lastl' : ''), ''), w, 54), x0 + i * 1200 * sc, y)));
+        const dk = hide(add(stage, h('div', 'u10l2b-disc', `<div class="u10l2b-fill"></div><b>DVD ${i + 1}</b>`), x0 + i * 1200 * sc + 1200 * sc / 2 - 52, y + 104));
+        dk.fill = dk.firstChild; dk.fill.style.height = '0%'; discs.push(dk);
+      }
+      const P = panel(stage, 40, 330, W - 80, 126, '');
+      return [
+        { cap: `${hn(d.m)} m of film, but the DVD capacity is in <b>feet</b>. Convert first.`,
+          run: async (c) => { await anim(c, film, [{ opacity: 0, transform: 'scaleX(0)', transformOrigin: 'left' }, { opacity: 1, transform: 'scaleX(1)', transformOrigin: 'left' }], 900); } },
+        { cap: `Exact fact 1 ft = 0.3048 m: ${TQ(`${tn(d.m)}\\div0.3048=${tn(ft, 4)}\\ldots\\approx${tn(ft, 2)}`)} ft.`,
+          run: async (c) => { await appear(c, ruler); film.innerHTML = `<span>${T(`\\approx${tn(ft, 2)}\\text{ ft}`)}</span>`; await pulse(c, film, 1.03); await say(c, P, T(`${tn(d.m)}\\text{ m}\\times\\dfrac{1\\text{ ft}}{0.3048\\text{ m}}=${tn(ft, 4)}\\ldots\\approx${tn(ft, 2)}\\text{ ft}`), 'u10l2b-frl'); } },
+        { cap: `Cut the film into 1200 ft DVD loads: <b>${full}</b> full DVDs.`,
+          run: async (c) => {
+            film.style.opacity = 0.25;
+            for (let i = 0; i < full; i++) { await appear(c, loads[i], 250); await appear(c, discs[i], 200); await anim(c, discs[i].fill, [{ height: '0%' }, { height: '100%' }], 350); }
+          } },
+        { cap: `${T(`${tn(ft, 2)}\\div1200=${tn(n, 3)}\\ldots`)} About ${hn(Math.round(left))} ft of film is <b>left over</b>, with nowhere to go.`,
+          run: async (c) => { await appear(c, loads[full], 300); await pulse(c, loads[full], 1.08); await say(c, P, T(`${tn(ft, 2)}\\div1200=${tn(n, 3)}\\ldots`)); } },
+        { cap: n - full < 0.5 ? `Normal rounding says ${full}, but ${full} DVDs leave film behind. Round <b>up</b>: <b>${need} DVDs</b>.` : `${full} DVDs aren’t enough, so the count rounds <b>up</b>: <b>${need} DVDs</b> (the last one only partly full).`,
+          run: async (c) => {
+            await appear(c, discs[full], 250); await anim(c, discs[full].fill, [{ height: '0%' }, { height: Math.round((n - full) * 100) + '%' }], 600);
+            await say(c, P, `${T(`${tn(n, 3)}\\ldots`)} rounds <b>up</b> to <b>${need} DVDs</b>`, 'u10l2b-big');
+            const s = sstamp(P, `${need} DVDs`, true, { x: W - 80 - 110, y: 64 }); await stampIn(c, s);
+          } }
+      ];
+    }
+  };
+
+  /* =============================== mount =============================== */
+  mountRace();
+  const explainers = { exact, bench, ladder, mixed, twoways, chain, estimate, heights, roundup };
+  const test = { EXA, BEN, MIX, TWO, CH, EST, HT, RU };
+
+  /* =============================== Math History: the Gimli Glider (u10l2b-hist) =============================== */
+  (function gimliGlider() {
+    const svg = document.getElementById('u10l2b-hist'); if (!svg) return;
+    const NS = 'http://www.w3.org/2000/svg';
+    const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); Object.keys(attrs || {}).forEach((k) => e.setAttribute(k, attrs[k])); (parent || svg).appendChild(e); return e; };
+    const txt = (s, attrs, parent) => { const e = mk('text', attrs, parent); e.textContent = s; return e; };
+    const seg = (t, a, b) => Math.max(0, Math.min(1, (t - a) / (b - a)));
+    const ease = (p) => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2);
+    const op = (el, v) => { el.style.opacity = v; };
+    const fmt = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    // the fuel bar: 0 to 24 000 kg
+    const BX = 24, BW = 552, BY = 40, BH = 32, KG = (k) => BX + (BW * k) / 24000, NEED = 22300, REAL = 10100;
+    txt('Fuel needed: 22 300 kg', { x: BX, y: 28, class: 'u10l2bh-title' });
+    mk('rect', { x: BX, y: BY, width: BW, height: BH, rx: 7, class: 'u10l2bh-tank' });
+    const fill = mk('rect', { x: BX, y: BY, width: 0, height: BH, rx: 7, class: 'u10l2bh-fill' });
+    const half = mk('g', {});
+    mk('line', { x1: KG(NEED / 2), x2: KG(NEED / 2), y1: BY - 4, y2: BY + BH + 4, class: 'u10l2bh-half' }, half);
+    txt('half', { x: KG(NEED / 2), y: BY + BH + 16, 'text-anchor': 'middle', class: 'u10l2bh-small' }, half);
+    mk('line', { x1: KG(NEED), x2: KG(NEED), y1: BY - 6, y2: BY + BH + 6, class: 'u10l2bh-need' });
+    txt('needed', { x: KG(NEED), y: BY + BH + 18, 'text-anchor': 'middle', class: 'u10l2bh-small' });
+    const val = txt('', { x: 0, y: BY + 22, 'text-anchor': 'end', class: 'u10l2bh-val' });
+    const st1 = txt('Crew’s sums: litres × 1.77 → “22 300 kg”. Enough!', { x: BX, y: 114, class: 'u10l2bh-st' });
+    const st2 = txt('But 1.77 is pounds per litre: 22 300 lb ≈ 10 100 kg.', { x: BX, y: 114, class: 'u10l2bh-st u10l2bh-bad' });
+    // the glide
+    const GY = 276, glide = mk('g', {});
+    mk('line', { x1: 0, x2: 600, y1: GY, y2: GY, class: 'u10l2bh-ground' }, glide);
+    mk('rect', { x: 440, y: GY - 5, width: 150, height: 9, rx: 2, class: 'u10l2bh-runway' }, glide);
+    for (let x = 452; x < 584; x += 22) mk('line', { x1: x, x2: x + 10, y1: GY, y2: GY, class: 'u10l2bh-dash' }, glide);
+    txt('Gimli, Manitoba', { x: 515, y: 296, 'text-anchor': 'middle', class: 'u10l2bh-place' }, glide);
+    txt('41 000 ft', { x: 24, y: 158, class: 'u10l2bh-alt' }, glide);
+    const path = mk('path', { d: 'M60,170 C210,178 380,236 486,270', class: 'u10l2bh-path' }, glide);
+    const trail = mk('path', { d: 'M60,170 C210,178 380,236 486,270', class: 'u10l2bh-trail' }, glide);
+    const out = txt('both engines stop', { x: 96, y: 160, class: 'u10l2bh-out' }, glide);
+    const clock = txt('', { x: 590, y: 158, 'text-anchor': 'end', class: 'u10l2bh-clock' }, glide);
+    const safe = txt('landed: all 69 on board survive', { x: 590, y: 184, 'text-anchor': 'end', class: 'u10l2bh-safe' }, glide);
+    const plane = mk('g', {}, glide), body = mk('g', { transform: 'scale(1.25)' }, plane);
+    mk('path', { d: 'M-22,-2.5 L14,-3 Q23,-2.5 25,0.5 Q23,3.5 14,3.5 L-22,3 Z', class: 'u10l2bh-jet' }, body);
+    mk('path', { d: 'M-22,-1 L-27,-12 L-20,-12 L-12,-2 Z', class: 'u10l2bh-jet' }, body);
+    mk('path', { d: 'M-3,1 L7,1 L-5,10 L-11,10 Z', class: 'u10l2bh-wing' }, body);
+    mk('path', { d: 'M17,-2.2 L21,-2 L22.5,0 L17,0 Z', class: 'u10l2bh-win' }, body);
+    const LEN = path.getTotalLength ? path.getTotalLength() : 470;
+    trail.style.strokeDasharray = `${LEN} ${LEN}`;
+    const T = 13400;
+    function draw(t) {
+      // fill up to the crew's number, then drop to what was really there
+      const up = ease(seg(t, 400, 3200)), down = ease(seg(t, 4300, 6100));
+      const kg = NEED * up - (NEED - REAL) * down, w = KG(kg) - BX;
+      fill.setAttribute('width', Math.max(0, w).toFixed(1));
+      fill.classList.toggle('bad', t >= 4300);
+      val.setAttribute('x', (BX + w - 8).toFixed(1)); op(val, w > 90 ? 1 : 0);
+      val.textContent = t < 4300 ? fmt(kg) : fmt(kg) + ' kg';
+      op(st1, t < 4300 ? seg(t, 900, 1300) : 0); op(st2, seg(t, 4300, 4700)); op(half, seg(t, 5600, 6100));
+      // the glide
+      op(glide, seg(t, 6400, 6900));
+      const g = ease(seg(t, 7300, 12500)), pt = path.getPointAtLength ? path.getPointAtLength(g * LEN) : { x: 60, y: 170 }, pt2 = path.getPointAtLength ? path.getPointAtLength(Math.min(LEN, g * LEN + 2)) : { x: 61, y: 170 };
+      const ang = g >= 1 ? 0 : (Math.atan2(pt2.y - pt.y, pt2.x - pt.x) * 180) / Math.PI;
+      const p = g >= 1 ? { x: 520, y: GY - 6 } : g > 0.97 ? { x: pt.x + (520 - pt.x) * ((g - 0.97) / 0.03), y: pt.y + (GY - 6 - pt.y) * ((g - 0.97) / 0.03) } : { x: pt.x, y: pt.y - 6 };
+      plane.setAttribute('transform', `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) rotate(${ang.toFixed(1)})`);
+      trail.style.strokeDashoffset = (LEN * (1 - g)).toFixed(1);
+      op(out, seg(t, 6900, 7300) * (1 - seg(t, 9000, 9600)));
+      clock.textContent = t < 7300 ? '' : 'gliding: ' + Math.floor(17 * g) + ' min';
+      op(safe, seg(t, 12600, 13000));
+    }
+    let t0 = 0, raf = 0;
+    function frame(now) { if (!t0) t0 = now; const t = Math.min(T, now - t0); draw(t); if (t < T) raf = requestAnimationFrame(frame); }
+    function play() {
+      cancelAnimationFrame(raf); t0 = 0;
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(T); return; }
+      draw(0); raf = requestAnimationFrame(frame);
+    }
+    draw(0);
+    svg.addEventListener('click', play);
+    const btn = svg.closest('.hist-anim') && svg.closest('.hist-anim').querySelector('.hist-play'); if (btn) btn.addEventListener('click', play);
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); play(); } }, { threshold: 0.5 });
+      io.observe(svg);
+    } else play();
+  })();
+  return { explainers, test };
+})();
+
+export const explainers = mountExplainers({ hop, map, cancel, rate, ...B.explainers });
+export const _test = { HOP, CAN, Tape, ...B.test };

@@ -1,5 +1,5 @@
 /* Math 10C · Unit 7 · Lesson 7 — Equations of Lines: A Review of Slope, Intercepts, and Perpendicularity.
- * Static figures (warm-up city map, Example 2 graph, Example 4(b) diagram, review Q9(c) TI-84 screen, Q12 tap-to-plot
+ * Static figures (warm-up city map, Example 2 graph, Example 4(b) diagram, review Q9(c) graph of both lines, Q12 tap-to-plot
  * grids, Q14 phone-plan graph) and the explainers:
  *   planner (warm-up: build the perpendicular road; traps B, C, D; the corner), forms (one line in three forms; graph each
  *   form as it is; horizontal and vertical as limits), dials (b slides, m tilts; Ex 1(b), 1(d)), coverUp (cover-up
@@ -791,9 +791,11 @@ function mountStatic() {
   }
   const q9 = document.getElementById('u7l7-q9calc');
   if (q9) {
-    const G = new Graph(q9, { width: 300, height: 220, theme: 'calc', xmin: -12, xmax: 8, ymin: -2, ymax: 12, xscl: 2, yscl: 2 });
-    G.fn((x) => -4 / 3 * x + 10); G.fn((x) => 0.75 * x + 8.5);
-    q9.appendChild(h('div', 'u7l7-calc-cap', 'TI-84 window x:[−12, 8, 2], y:[−2, 12, 2]'));
+    const G = new Graph(q9, { width: 300, height: 220, xmin: -13.5, xmax: 9.5, ymin: -2.5, ymax: 13, xstep: 2, ystep: 2, xlabels: 4, ylabels: 4, fontSize: 13 });
+    G.fn((x) => -4 / 3 * x + 10, { color: BLUE, width: 3 }); G.fn((x) => 0.75 * x + 8.5, { color: RED, width: 3 });
+    [[7.5, 0], [0, 10], [-34 / 3, 0], [0, 8.5]].forEach(([x, y]) => G.point(x, y, { color: INK, r: 4.5 }));
+    G.label(5.6, 4.2, T('L_1'), { cls: 'bk-ptlab', color: BLUE }); G.label(-9.6, 3.6, T('L_2'), { cls: 'bk-ptlab', color: RED });
+    q9.appendChild(h('div', 'u7l7-calc-cap', 'axes −12 to 8 and −2 to 12, counting by 2'));
   }
   document.querySelectorAll('[data-u7l7-plot]').forEach((el) => new Graph(el, { width: 300, height: 300, xmin: -6, xmax: 6, ymin: -6, ymax: 6, xlabels: 2, ylabels: 2, fontSize: 14, interactive: { snap: 1, color: 'blue' } }));
   const q14 = document.getElementById('u7l7-q14fig');

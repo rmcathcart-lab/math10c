@@ -1,4 +1,4 @@
-/* Math 10C · Unit 2 · Lesson 3 — Negative Exponents: styles used only on this page. */
+/* Math 10C · Unit 2 · Lesson 3 — Negative Exponents and Scientific Notation: styles used only on this page. */
 
 /* captions may run to three lines; reserve the room so nothing below an explainer moves while it plays */
 .ex-cap { min-height: 104px; }
@@ -205,3 +205,53 @@
 .wf .try-it { font-size: 17px; }
 .ex-side .so-bin.tight .so-terms, .ex-side .so-bin.tight .so-coef { font-size: 16.5px; } /* four bins beside the sidebar */
 .ex-side .so-bin.tight .so-bb { padding: 4px 3px; }
+
+/* ---------------- 5. scientific notation (sn3-) ---------------- */
+.lesson { --sn3-coef: #b86e08; --sn3-pow: #0f6f69; }
+.sn3-coef { color: var(--sn3-coef); } .sn3-pow { color: var(--sn3-pow); }
+.sn3-tens { grid-template-columns: repeat(7, 1fr); }
+.sn3-tens > div { font-size: 20px; }
+.sn3-tens > div.neg small { color: #6a4fb0; }
+.nw { white-space: nowrap; }
+/* hop the decimal point */
+.sn3-svg { left: 0; top: 0; overflow: visible; pointer-events: none; }
+.sn3-cell { display: grid; place-items: center; font-family: KaTeX_Main, "Times New Roman", serif; color: var(--ink); transition: color .3s, opacity .3s; }
+.sn3-cell.lead { color: var(--brand); font-weight: 700; }
+.sn3-cell.ph { color: #a7abb4; }
+.sn3-ring, .sn3-dot { width: 14px; height: 14px; border-radius: 50%; z-index: 2; }
+.sn3-ring { border: 3px solid var(--ink); background: #fbfaf6; }
+.sn3-dot { background: var(--red); box-shadow: 0 0 0 3px rgba(201, 58, 51, .18); }
+.sn3-dot.ghost { background: var(--ink); box-shadow: none; }
+.sn3-arc { fill: none; stroke: var(--brand2); stroke-width: 3; stroke-linecap: round; }
+.sn3-arc.left, .sn3-head.left { stroke: var(--amber); }
+.sn3-head { fill: none; stroke: var(--brand2); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.sn3-tag { font: 800 16px var(--round); color: var(--brand); white-space: nowrap; }
+.sn3-tag.left { color: var(--amber); }
+.sn3-task { font-size: 26px; font-weight: 600; }
+.sn3-task .katex { font-size: 1.1em; }
+.sn3-legend { font-size: 15px; color: var(--muted); display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.sn3-ring-i, .sn3-dot-i { display: inline-block; width: 13px; height: 13px; border-radius: 50%; vertical-align: -1px; }
+.sn3-ring-i { border: 2.5px solid var(--ink); } .sn3-dot-i { background: var(--red); }
+.sn3-lab { width: 210px; font-weight: 800; font-size: 15px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.sn3-math { font-size: 30px; white-space: nowrap; }
+.sn3-math.out.done { color: var(--ok); }
+/* multiply / divide */
+.n3-fly.coef { color: var(--sn3-coef); } .n3-fly.pow { color: var(--sn3-pow); }
+.sn3-expr { font-size: 36px; white-space: nowrap; }
+.sn3-expr.colored .sn3-ea, .sn3-expr.colored .sn3-eb { color: var(--sn3-coef); }
+.sn3-expr.colored .sn3-em, .sn3-expr.colored .sn3-en { color: var(--sn3-pow); }
+.sn3-box { height: 166px; border-radius: 14px; padding: 8px 16px; background: #fff; border: 2px solid; }
+.sn3-box.coef { border-color: #ecc98d; background: #fffaf0; } .sn3-box.pow { border-color: #9fd0c9; background: #f2faf8; }
+.sn3-h { font-weight: 800; font-size: 15px; text-transform: uppercase; letter-spacing: .05em; }
+.sn3-box.coef .sn3-h { color: var(--sn3-coef); } .sn3-box.pow .sn3-h { color: var(--sn3-pow); }
+.sn3-row { display: flex; align-items: center; gap: 10px; font-size: 24px; min-height: 90px; white-space: nowrap; }
+.sn3-box.coef .sn3-ta, .sn3-box.coef .sn3-tb, .sn3-box.coef .sn3-ra { color: var(--sn3-coef); }
+.sn3-box.pow .sn3-tm, .sn3-box.pow .sn3-tn, .sn3-box.pow .sn3-rb { color: var(--sn3-pow); }
+.sn3-l.res { font-weight: 600; }
+.sn3-law { font-size: 17px; color: var(--sn3-pow); }
+.sn3-comb { font-size: 36px; white-space: nowrap; }
+.sn3-comb .sn3-ca { color: var(--sn3-coef); } .sn3-comb .sn3-cb { color: var(--sn3-pow); }
+.sn3-chk { font-size: 24px; white-space: nowrap; background: #f6f5f1; border-radius: 12px; padding: 4px 16px; }
+.sn3-fin { font-size: 32px; white-space: nowrap; color: var(--ok); }
+.sn3-laws .def { margin-bottom: 10px; font-size: 18.5px; }
+.sn3-laws .rule-tex { font-size: 21px; }

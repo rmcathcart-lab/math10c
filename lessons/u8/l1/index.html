@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Graphing Systems of Linear Equations · Math 10C 8.1</title>
-<meta name="description" content="Math 10C Unit 8 Lesson 1: graphing systems of linear equations. What a system is and what its solution means (a point on both lines, verified in both equations), reading a solution off a graph, graphing both lines by hand, modelling a real situation with a system, solving with a TI-84 (Y=, WINDOW, 2nd CALC 5:intersect), and cost, revenue and break-even. Write on it with an Apple Pencil.">
+<title>Solving Systems by Graphing: How Many Solutions? · Math 10C 8.1</title>
+<meta name="description" content="Math 10C Unit 8 Lesson 1: solving systems of linear equations by graphing, and how many solutions a system has. What a system is and what its solution means (a point on both lines, verified in both equations), reading a solution off a graph, graphing both lines by hand, modelling a situation with a system, cost, revenue and break-even, the three ways two lines can meet (one point, parallel, coincident), and classifying a system from its slopes and y-intercepts without graphing. Write on it with an Apple Pencil.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="10C Lessons">
@@ -27,72 +27,75 @@
 <!-- ================= title ================= -->
 <section class="card hero" data-ink="hero" data-section="Start">
   <div class="kicker">Math 10C · Unit 8 Systems of Linear Equations · Lesson 1</div>
-  <h1>Graphing Systems of Linear Equations</h1>
-  <p class="lede">Two equations at once: the <b>solution</b> is the point where the two lines <b>cross</b>, found by hand or with a graphing calculator.</p>
+  <h1>Solving Systems by Graphing: How Many Solutions?</h1>
+  <p class="lede">Two equations at once: the <b>solution</b> is the point where the two lines <b>cross</b>. Two lines can cross <b>once</b>, <b>never</b>, or <b>everywhere</b>, and their slopes and <span class="tex">y</span>-intercepts tell you which.</p>
   <div class="goals">
     <div class="goals-h">I can…</div>
     <ul>
       <li>explain what a <b>system of linear equations</b> is, and why its solution is the <b>point of intersection</b> of the lines</li>
-      <li>read the solution of a system off a graph and write it as an <b>ordered pair</b> <span class="tex">(x,\ y)</span></li>
-      <li>graph both lines <b>by hand</b>, state the solution, and <b>verify it in BOTH equations</b></li>
-      <li>use a system to <b>model a real situation</b> and explain what the solution means</li>
-      <li>solve a system with a <b>graphing calculator</b> (<kbd>Y=</kbd> <kbd>WINDOW</kbd> <kbd>2nd</kbd> <kbd>TRACE</kbd> <b>5:intersect</b>)</li>
-      <li>find a <b>break-even point</b> from cost and revenue, and read profit and loss from the graph</li>
+      <li>read the solution of a system off a graph as an <b>ordered pair</b> <span class="tex">(x,\ y)</span> and <b>verify it in BOTH equations</b></li>
+      <li>graph both lines <b>by hand</b> and state the solution</li>
+      <li>use a system to <b>model a real situation</b>, and find a <b>break-even point</b> from cost and revenue</li>
+      <li>describe the <b>three ways</b> two lines can meet and state how many solutions each gives</li>
+      <li>rewrite both equations as <span class="tex">y=mx+b</span> and <b>classify a system without graphing</b></li>
     </ul>
   </div>
   <div class="outcome"><b>RF9</b> Solve problems that involve systems of linear equations in two variables, graphically and algebraically.</div>
 </section>
 
 <!-- ================= warm-up ================= -->
-<section class="card warm wf" data-ink="warm" data-section="Warm-up: Hot Tea, Iced Tea" id="wu" style="--wf-side: 360px">
-  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Hot Tea, Iced Tea</h2>
-  <p class="wf-rule">Poured at the same moment. Pretend each drink changes at a <b>steady</b> rate.</p></div>
-  <div class="wf-grid"><div class="wf-main">
-  <div id="u8l1-tea" class="u8l1-tea"></div>
-  <div class="u8l1-clockrow">
-    <button type="button" class="pill" id="u8l1-plus">+1 minute</button>
-    <button type="button" class="pill" id="u8l1-run">Run the clock ▸</button>
-    <button type="button" class="pill" id="u8l1-reset">Back to 0</button>
+<section class="card warm wf" data-ink="warm" data-section="Warm-up: Head Start" id="wu" style="--wf-side: 364px">
+  <div class="wf-head"><span class="badge warm-b">Warm-up</span><h2>Head Start</h2>
+  <div class="u8l1-m-clockrow">
+    <button type="button" class="pill" id="u8l1-m-run">Run the races ▸</button>
+    <button type="button" class="pill" id="u8l1-m-step">+5 s</button>
+    <button type="button" class="pill" id="u8l1-m-reset">Back to the start</button>
+    <span class="u8l1-m-clock" id="u8l1-m-clock"><span class="u8l1-m-ck-k">time</span> <b id="u8l1-m-clockv">0 s</b></span>
   </div>
+  <p class="wf-rule">Three races on a <b>200 m</b> track. Every runner keeps a <b>steady</b> pace.</p></div>
+  <div id="u8l1-m-races" class="u8l1-m-races"></div>
+  <div class="wf-grid"><div class="wf-main">
 
-  <div class="u8l1-wqs">
+  <div class="u8l1-m-wqs">
     <div class="bk-wq">
-      <div class="q-line"><div class="q-num">1</div><div>How hot is the hot tea after <b>5</b> min?</div></div>
-      <div class="u8l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">80-4(5)=</span> <b>60 °C</b></div></div>
+      <div class="q-line"><div class="q-num">1</div><div>Race 1: where are <b class="u8l1-m-c1">Rosa</b> and <b class="u8l1-m-c2">Max</b> after <b>5</b> s?</div></div>
+      <div class="u8l1-m-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Rosa: <span class="tex">30+4(5)=50</span> m. Max: <span class="tex">6(5)=30</span> m. Rosa is still 20 m ahead, but the gap is shrinking by 2 m every second.</div></div>
     </div>
     <div class="bk-wq">
-      <div class="q-line"><div class="q-num">2</div><div>How cold is the iced tea after <b>5</b> min?</div></div>
-      <div class="u8l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><span class="tex">5+1(5)=</span> <b>10 °C</b></div></div>
+      <div class="q-line"><div class="q-num">2</div><div>Race 2: how far apart are <b class="u8l1-m-c1">Lee</b> and <b class="u8l1-m-c2">Ana</b> after <b>10</b> s? After <b>30</b> s?</div></div>
+      <div class="u8l1-m-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>20 m both times</b> (at 10 s: 70 m and 50 m; at 30 s: 170 m and 150 m). Same speed, so the gap never changes.</div></div>
+    </div>
+    <div class="bk-wq">
+      <div class="q-line"><div class="q-num">3</div><div>Race 3: Jo’s coach says that after <span class="tex">t</span> seconds, <b class="u8l1-m-c2">Jo</b> is at <span class="tex">2(5+1.5t)</span> m. Where is Jo at <span class="tex">t=0</span>? At <span class="tex">t=10</span>? Where is <b class="u8l1-m-c1">Kai</b> (10 m head start, 3 m/s) at those times?</div></div>
+      <div class="u8l1-m-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Jo: <span class="tex">2(5+0)=10</span> m and <span class="tex">2(5+15)=40</span> m. Kai: <span class="tex">10</span> m and <span class="tex">10+3(10)=40</span> m. They match, because <span class="tex">2(5+1.5t)=10+3t</span>, which <b>is</b> Kai’s rule.</div></div>
     </div>
   </div>
 
   </div><div class="wf-side">
 
-  <div class="u8l1-wqs u8l1-wqs-side">
-    <div class="bk-wq">
-      <div class="q-line"><div class="q-num">3</div><div>At the start the drinks are <b>75 °C</b> apart. By how much does that gap shrink <b>each minute</b>?</div></div>
-      <div class="u8l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>5 °C per minute</b>: the hot tea comes down 4 and the iced tea comes up 1, so they close in by <span class="tex">4+1</span>. (After 5 min: <span class="tex">60-10=50=75-5(5)</span>.)</div></div>
-    </div>
-  </div>
-
   <div class="poll wf-poll">
-    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> When are the two drinks the <b>same</b> temperature? <b>Guess first.</b></div></div>
-    <div class="poll-opts">
-      <div class="opt"><b>A</b> after 7.5 min, at 42.5 °C</div>
-      <div class="opt right"><b>B</b> after 15 min, at 20 °C</div>
-      <div class="opt"><b>C</b> after about 19 min, at 5 °C</div>
+    <div class="q-line"><div class="q-num big-one">!</div><div><b>The big one.</b> How often are the two runners <b>side by side</b>? <b>Guess first.</b></div></div>
+    <div class="u8l1-m-pollhead"><span></span><b>Race 1</b><b>Race 2</b><b>Race 3</b></div>
+    <div class="poll-opts u8l1-m-popts">
+      <div class="opt"><b>A</b> <span class="u8l1-m-o3"><i>once</i><i>once</i><i>once</i></span></div>
+      <div class="opt"><b>B</b> <span class="u8l1-m-o3"><i>once</i><i>never</i><i>once</i></span></div>
+      <div class="opt right"><b>C</b> <span class="u8l1-m-o3"><i>once</i><i>never</i><i>the whole race</i></span></div>
+      <div class="opt"><b>D</b> <span class="u8l1-m-o3"><i>never</i><i>never</i><i>never</i></span></div>
     </div>
     <button class="pill" type="button" data-poll-reveal>Reveal</button>
-    <div class="poll-ans"><b>B: after 15 minutes, both at 20 °C.</b> The 75 °C gap closes 5 °C a minute: <span class="tex">75\div5=15</span> min. Hot: <span class="tex">80-4(15)=20</span>. Iced: <span class="tex">5+15=20</span> ✓<br>
-      <span class="muted"><b>A</b> is exactly halfway between 80 and 5, but that only works if both drinks change equally fast (at 7.5 min they are at 50 and 12.5). <b>C</b> counts only the hot tea, <span class="tex">75\div4\approx19</span>, and forgets the iced tea is climbing to meet it.</span></div>
+    <div class="poll-ans"><b>C.</b> Race 1: Max catches Rosa once, when <span class="tex">30+4t=6t</span>, at <span class="tex">t=15</span> s, 90 m from the start. Race 2: never. Race 3: Jo and Kai run step for step the whole race; they are side by side at <b>every</b> moment.<br>
+      <span class="muted"><b>B</b> is the popular trap: Jo’s coach’s formula <i>looks</i> different, so it seems they meet once. Simplify it first. <b>A</b> assumes any two runners must pass each other eventually; not if their speeds are equal.</span></div>
   </div>
   </div></div>
 
-  <div class="bk-wq u8l1-early">
-    <div class="q-line"><div class="q-num u8l1-hands">✋</div><div><b>Hands up:</b> two <b>hot</b> teas at 80 °C and 70 °C both cool 4 °C a minute. Will they ever match?</div></div>
-    <div class="u8l1-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>Never.</b> Both drop 4 °C a minute, so they stay 10 °C apart forever: two lines with the <b>same slope</b> never cross. (More in Lesson 1.)</div></div>
+  <div class="bk-wq u8l1-m-early">
+    <div class="q-line"><div class="q-num bonus">+</div><div><b>Early finishers.</b> How fast must Max run to catch Rosa <b>exactly at the 200 m finish</b>?</div></div>
+    <div class="u8l1-m-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans">Rosa finishes at <span class="tex">t=170\div4=42.5</span> s, so Max needs <span class="tex">200\div42.5\approx4.7</span> m/s.</div></div>
   </div>
-  <p class="u8l1-social">Each drink is a line: hot <span class="tex">T=80-4t</span>, iced <span class="tex">T=5+t</span>. Together they make a <b>system</b>, and the moment they match is where the lines <b>cross</b>.</p>
+  <div class="bk-wq u8l1-m-early">
+    <div class="q-line"><div class="q-num bonus">?</div><div><b>Challenge your neighbour:</b> invent a Race 4 where the runners are <b>never</b> side by side. What has to be true?</div></div>
+    <div class="u8l1-m-wa"><button class="pill small" type="button" data-bk-toggle>Answer</button><div class="bk-ans"><b>Equal speeds, different head starts</b> (Race 2 is one example). Keep that in mind: speed will turn out to be the <b>slope</b>, and the head start the <b><span class="tex">y</span>-intercept</b>.</div></div>
+  </div>
 </section>
 
 <!-- ================= 1. What is a system? ================= -->
@@ -100,7 +103,6 @@
   <div class="sec-h"><span class="badge">1</span><h2>What Is a System of Linear Equations?</h2></div>
   <p>The equation <span class="tex u8l1-c1">x+2y=8</span> is satisfied by many pairs of values: for instance <span class="tex">x=0,\ y=4</span>, or <span class="tex">x=8,\ y=0</span>, or <span class="tex">x=4,\ y=2</span>. A second equation, <span class="tex u8l1-c2">2x-y=1</span>, has many solutions of its own: <span class="tex">x=0,\ y=-1</span>, or <span class="tex">x=1,\ y=1</span>, or <span class="tex">x=3,\ y=5</span>. Requiring a pair to satisfy <b>both</b> equations at the same time leaves only one pair: <span class="tex">x=2</span> and <span class="tex">y=3</span>, since <span class="tex">2+2(3)=2+6=8</span> ✓ and <span class="tex">2(2)-3=4-3=1</span> ✓.</p>
   <div class="def">A <b>system of linear equations</b> is a set of two (or more) linear equations considered together. A <b>solution to the system</b> is an ordered pair <span class="tex">(x,\ y)</span> that satisfies <b>every</b> equation in the system simultaneously. Graphically, the solution is the <b>point of intersection</b> of the lines.</div>
-  <div class="explainer" data-explainer="onePair"></div>
 </section>
 
 <section class="card" data-ink="s1b" data-section="1. On both lines">
@@ -150,7 +152,7 @@
 <!-- ================= 3. By hand ================= -->
 <section class="card" data-ink="s3" data-section="3. Graphing by Hand">
   <div class="sec-h"><span class="badge">3</span><h2>Solving a System by Graphing Without Technology</h2></div>
-  <p>To solve a system by hand, graph each line (from a <b>table of values</b>, from the <b>slope and <span class="tex">y</span>-intercept</b>, or from the <b>two intercepts</b>), then read the coordinates of the point where the lines cross. Substituting those coordinates back into <b>both original equations</b> checks the solution: if both equations balance, the solution is confirmed.</p>
+  <p>To solve a system by hand, graph each line (from a <b>table of values</b>, from the <b>slope and <span class="tex">y</span>-intercept</b>, or from the <b>two intercepts</b>), then read the coordinates of the point where the lines cross. Substituting those coordinates back into <b>both original equations</b> checks the solution: if both equations balance, the solution is confirmed. A hand-drawn graph gives an <b>exact</b> answer only when the lines cross <b>on grid lines</b>; between grid lines it gives only an estimate (Lesson 2 finds exact values algebraically).</p>
   <div class="u8l1-oneline">
     <div class="def gray">
       <b>Graphing one line from slope–intercept form</b> (from Unit 7). To graph <span class="tex">2x+y=3</span>:
@@ -162,7 +164,6 @@
     </div>
     <div data-bk-graph='{"width":250,"height":300,"xmin":-2.5,"xmax":4.5,"ymin":-3.5,"ymax":5.5,"xlabels":2,"ylabels":2,"fontSize":15,"items":[{"line":[[0,3],[1,1],{"color":"ink","width":3.5}]},{"segment":[[1,1],[1,-1],{"color":"blue","width":3.5,"ends":[null,"arrow"]}]},{"segment":[[1,-1],[2,-1],{"color":"blue","width":3.5,"ends":[null,"arrow"]}]},{"point":[0,3,{"color":"ink"}]},{"point":[1,1,{"color":"ink"}]},{"point":[2,-1,{"color":"ink"}]},{"label":[1,0,"-2",{"tex":true,"pos":"w","cls":"bk-ptlab","color":"blue"}]},{"label":[1.5,-1,"+1",{"tex":true,"pos":"s","cls":"bk-ptlab","color":"blue"}]},{"label":[1.1,3.6,"y=-2x+3",{"tex":true,"pos":"e","cls":"bk-ptlab"}]}]}'></div>
   </div>
-  <div class="explainer" data-explainer="oneLine"></div>
 </section>
 
 <section class="card" data-ink="s3b" data-section="3. The shortcut">
@@ -226,62 +227,9 @@
   <div class="explainer" data-explainer="tickets"></div>
 </section>
 
-<!-- ================= 5. Graphing calculator ================= -->
-<section class="card" data-ink="s5" data-section="5. Graphing Calculator">
-  <div class="sec-h"><span class="badge">5</span><h2>Solving a System With a Graphing Calculator</h2></div>
-  <p>A hand-drawn graph gives an exact answer only when the lines cross <b>on grid lines</b>. A graphing calculator finds the point of intersection to several decimal places, whatever its coordinates.</p>
-  <div class="u8l1-tinote"><b>Graphing calculator steps (TI-83/84).</b> These keys are on the <b>graphing</b> calculator, not the TI-30XIIS scientific calculator built into this page.</div>
-  <div class="u8l1-steps">
-    <div>
-      <div class="u8l1-sh">Steps (TI-84)</div>
-      <ol class="u8l1-ol">
-        <li>Solve each equation for <span class="tex">y</span>.</li>
-        <li>Press <kbd>Y=</kbd> and enter one equation in <code>Y1</code> and the other in <code>Y2</code>.</li>
-        <li>Press <kbd>WINDOW</kbd> and set <code>Xmin</code>, <code>Xmax</code>, <code>Xscl</code> (distance between tick marks), <code>Ymin</code>, <code>Ymax</code>, <code>Yscl</code> so the crossing point is on the screen. A window is written <span class="tex">x{:}\,[\text{Xmin},\text{Xmax},\text{Xscl}]</span>, <span class="tex">y{:}\,[\text{Ymin},\text{Ymax},\text{Yscl}]</span>, for example <span class="tex">x{:}\,[0,350,50]</span>, <span class="tex">y{:}\,[0,500,50]</span>. (<kbd>ZOOM</kbd> <code>6:ZStandard</code> gives <span class="tex">x{:}\,[-10,10,1]</span>, <span class="tex">y{:}\,[-10,10,1]</span>.)</li>
-        <li>Press <kbd>GRAPH</kbd>, then <kbd class="u8l1-k2">2nd</kbd> <kbd>TRACE</kbd> (CALC) and choose <code>5:intersect</code>. Press <kbd>ENTER</kbd> at <code>First curve?</code>, again at <code>Second curve?</code>, move the cursor close to the crossing point and press <kbd>ENTER</kbd> at <code>Guess?</code>.</li>
-        <li>Read <code>X=</code> and <code>Y=</code>, round as the question asks, and <b>verify by substituting</b>.</li>
-      </ol>
-    </div>
-    <figure class="u8l1-tifig"><div id="u8l1-tiscreen"></div><figcaption><span class="tex u8l1-c1">y=x+1</span> and <span class="tex u8l1-c2">y=-2x+7</span> in the standard window</figcaption></figure>
-  </div>
-  <div class="explainer" data-explainer="ti84"></div>
-</section>
-
-<section class="card example" data-ink="ex4" data-section="Example 4">
-  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>A solution that is hard to read by hand</h3></div>
-  <p class="q">Consider the system of equations <span class="tex u8l1-c1">4x+3y=2</span> and <span class="tex u8l1-c2">2x-y=5</span>.</p>
-  <div class="parts c2">
-    <div class="part"><div class="pl">(a) Rewrite each equation in the form <span class="tex">y=\ldots</span>, ready for <kbd>Y=</kbd>.</div>
-      <div class="work" style="--h:190px"></div>
-      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex u8l1-c1">4x+3y=2\Rightarrow 3y=-4x+2\Rightarrow y=-\tfrac43x+\tfrac23</span><br><span class="tex u8l1-c2">2x-y=5\Rightarrow -y=-2x+5\Rightarrow y=2x-5</span><br>Enter <code>Y1=(−4/3)X+2/3</code> and <code>Y2=2X−5</code>.</div></div></div>
-    <div class="part"><div class="pl">(c) Verify the solution by substituting into both original equations.</div>
-      <div class="work" style="--h:190px"></div>
-      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex u8l1-c1">4(1.7)+3(-1.6)=6.8-4.8=2</span> ✓<br><span class="tex u8l1-c2">2(1.7)-(-1.6)=3.4+1.6=5</span> ✓<br>Both equations balance.</div></div></div>
-    <div class="part"><div class="pl">(b) Graph the system in the standard window and use <code>5:intersect</code> to find the solution.</div>
-      <div class="work" style="--h:130px"></div>
-      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The calculator shows <code>X=1.7</code>, <code>Y=−1.6</code>, so the solution is <span class="tex">\boldsymbol{(1.7,\ -1.6)}</span>.</div></div></div>
-    <div class="part"><div class="pl">(d) Why would it be hard to find this solution from a hand-drawn graph?</div>
-      <div class="work" style="--h:130px"></div>
-      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The point <span class="tex">(1.7,\ -1.6)</span> is <b>not on grid lines</b>, so it can only be estimated by eye. (Lesson 2 shows how to get exact answers algebraically.)</div></div></div>
-  </div>
-  <div class="tip calc-tip">
-    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
-    <div><b>Part (c) on the TI-30XIIS.</b> <span class="keys"><kbd>4</kbd><kbd>×</kbd><kbd>1</kbd><kbd>.</kbd><kbd>7</kbd><kbd>+</kbd><kbd>3</kbd><kbd>×</kbd><kbd>(−)</kbd><kbd>1</kbd><kbd>.</kbd><kbd>6</kbd><kbd>ENTER</kbd></span> gives 2, and <span class="keys"><kbd>2</kbd><kbd>×</kbd><kbd>1</kbd><kbd>.</kbd><kbd>7</kbd><kbd>−</kbd><kbd>(−)</kbd><kbd>1</kbd><kbd>.</kbd><kbd>6</kbd><kbd>ENTER</kbd></span> gives 5. Use <kbd>(−)</kbd> for the negative, not <kbd>−</kbd>.</div>
-    <div class="pill-col"><button class="pill" data-keys="4 × 1.7 + 3 × (−) 1.6 =">First equation</button><button class="pill" data-keys="2 × 1.7 − (−) 1.6 =">Second equation</button></div>
-  </div>
-  <div class="space" id="ex4-space"></div>
-  <button class="more" data-more="ex4-space">+ More space</button>
-</section>
-
-<section class="card" data-ink="s5b" data-section="5. Example 4 check">
-  <h3 class="sub">Example 4 check: why the calculator?</h3>
-  <p>By eye, the crossing looks close to a grid point. Check the guess in <b>both</b> equations, then zoom in.</p>
-  <div class="explainer" data-explainer="zoomIn"></div>
-</section>
-
-<!-- ================= 6. Break-even ================= -->
-<section class="card" data-ink="s6" data-section="6. Break-Even Analysis">
-  <div class="sec-h"><span class="badge">6</span><h2>An Application: Break-Even Analysis</h2></div>
+<!-- ================= 4b. Break-even ================= -->
+<section class="card" data-ink="s4c" data-section="4. Break-Even">
+  <h3 class="sub">An application: break-even</h3>
   <div class="def">A business <b>breaks even</b> when its <b>cost</b> and its <b>revenue</b> are equal: the point where the cost line and the revenue line intersect. Both are measured in dollars, so they share one vertical axis, and since both equations are written as “dollars <span class="tex">=\ldots</span>”, the break-even point can also be found by setting the two expressions equal (the shortcut from Section 3).</div>
   <div class="u8l1-pl3">
     <div class="u8l1-loss"><b>Loss</b> cost line above the revenue line: <span class="tex">R&lt;C</span></div>
@@ -290,8 +238,8 @@
   </div>
 </section>
 
-<section class="card example u8l1-ex5" data-ink="ex5" data-section="Example 5">
-  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Cost, revenue and the break-even point</h3></div>
+<section class="card example u8l1-ex4" data-ink="ex4" data-section="Example 4">
+  <div class="ex-head"><span class="ex-tag">Example 4</span><h3>Cost, revenue and the break-even point</h3></div>
   <p class="q">The Robotics Club is fundraising by selling custom mugs. Designing and printing the mugs has a fixed setup cost of $450, plus $3 per mug produced. The club plans to sell the mugs for $9 each. The cost <span class="tex">C</span> and the revenue <span class="tex">R</span>, both in dollars, from producing and selling <span class="tex">n</span> mugs are</p>
   <p class="u8l1-eqs"><span class="u8l1-c1">Cost: <span class="tex">C=450+3n</span></span><span class="u8l1-c2">Revenue: <span class="tex">R=9n</span></span></p>
   <div class="u8l1-exg">
@@ -299,54 +247,181 @@
       <div class="u8l1-gfig" data-bk-graph='{"width":430,"height":430,"xmin":0,"xmax":125,"ymin":0,"ymax":1260,"xstep":10,"ystep":100,"xlabels":20,"ylabels":200,"origin":true,"fontSize":15,"xtitle":"n","ytitle":"\\text{dollars}","items":[{"polyline":[[[75,675],[125,1125],[125,825]],{"closed":true,"fill":"green","fillOpacity":0.22,"width":0.1,"color":"green","cls":"u8l1-ans-e"}]},{"polyline":[[[0,450],[75,675],[0,0]],{"closed":true,"fill":"gray","fillOpacity":0.22,"width":0.1,"color":"gray","cls":"u8l1-ans-e"}]},{"label":[108,920,"profit",{"cls":"u8l1-rlab u8l1-ans-e","color":"green"}]},{"label":[24,380,"loss",{"cls":"u8l1-rlab u8l1-ans-e","color":"slate"}]},{"line":[[0,450],[100,750],{"color":"blue","width":4,"cls":"u8l1-ansline"}]},{"line":[[0,0],[100,900],{"color":"amber","width":4,"cls":"u8l1-ansline"}]},{"label":[20,525,"C=450+3n",{"tex":true,"pos":"ne","cls":"bk-ptlab u8l1-ansline","color":"blue"}]},{"label":[100,980,"R=9n",{"tex":true,"pos":"w","cls":"bk-ptlab u8l1-ansline","color":"amber"}]},{"point":[75,675,{"color":"purple","r":7.5,"cls":"u8l1-ans-d","label":"(75,\\ 675)","tex":true,"pos":"nw"}]}]}'></div>
       <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex u8l1-c1">C=450+3n</span> starts at $450 (the setup cost) and rises $3 per mug; <span class="tex u8l1-c2">R=9n</span> starts at 0 and rises $9 per mug.</div></div></div>
     <div class="parts c1">
-      <div class="part"><div class="pl">(b) How much profit or loss is made if (i) 30 mugs are sold? (ii) 90 mugs are sold?</div>
+      <div class="part u8l1-pd"><div class="pl">(b) Mark the break-even point on the grid. Then confirm it algebraically by setting the cost equal to the revenue.</div>
+        <div class="work" style="--h:170px"></div>
+        <div class="ansrow"><button class="reveal">Answer</button><div class="ans">The lines cross at <span class="tex">(75,\ 675)</span>. At break-even, cost equals revenue, so set the expressions equal: <span class="tex">450+3n=9n\Rightarrow 450=6n\Rightarrow n=75</span>, and <span class="tex">R=9(75)=675</span>. The club must sell <b>75 mugs</b>; cost and revenue are both $675.</div></div></div>
+      <div class="part"><div class="pl">(c) How much profit or loss is made if (i) 30 mugs are sold? (ii) 90 mugs are sold?</div>
         <div class="work" style="--h:170px"></div>
         <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>(i)</b> <span class="tex">n=30</span>: cost <span class="tex">=450+3(30)=540</span>; revenue <span class="tex">=9(30)=270</span>. <span class="tex">270-540=-270</span>, a <b>loss of $270</b>.<br><b>(ii)</b> <span class="tex">n=90</span>: cost <span class="tex">=450+3(90)=720</span>; revenue <span class="tex">=9(90)=810</span>. <span class="tex">810-720=90</span>, a <b>profit of $90</b>.</div></div></div>
-      <div class="part"><div class="pl">(c) Determine algebraically the number of mugs which must be sold to break even.</div>
-        <div class="work" style="--h:150px"></div>
-        <div class="ansrow"><button class="reveal">Answer</button><div class="ans">At break-even, cost equals revenue, so set the expressions equal: <span class="tex">450+3n=9n\Rightarrow 450=6n\Rightarrow n=75</span>. The club must sell <b>75 mugs</b>, matching the graph.</div></div></div>
     </div>
   </div>
-  <div class="parts c3">
-    <div class="part u8l1-pd"><div class="pl">(d) The break-even point is where no profit or loss is made. Mark the break-even point on the grid.</div>
-      <div class="work" style="--h:90px"></div>
-      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Where the two lines cross: <span class="tex">(75,\ 675)</span>, 75 mugs and $675.</div></div></div>
-    <div class="part u8l1-pe"><div class="pl">(e) Shade the region of the graph where the club makes a profit.</div>
-      <div class="work" style="--h:90px"></div>
+  <div class="parts c1">
+    <div class="part u8l1-pe"><div class="pl">(d) Shade the region of the graph where the club makes a profit.</div>
+      <div class="work" style="--h:70px"></div>
       <div class="ansrow"><button class="reveal">Answer</button><div class="ans">Profit means <span class="tex">R&gt;C</span>: between the lines to the <b>right</b> of <span class="tex">n=75</span>, where the revenue line is above the cost line. To the left, the cost line is higher: a loss.</div></div></div>
-    <div class="part"><div class="pl">(f) If all 250 students in the school bought a mug, how much profit would the Robotics Club make?</div>
-      <div class="work" style="--h:90px"></div>
-      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">n=250</span>: cost <span class="tex">=450+3(250)=1200</span>; revenue <span class="tex">=9(250)=2250</span>. Profit <span class="tex">=2250-1200=</span> <b>$1050</b>.</div></div></div>
   </div>
   <div class="tip calc-tip">
     <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
     <div><b>Profit in one line.</b> Profit = revenue − cost: <span class="keys"><kbd>9</kbd><kbd>×</kbd><kbd>3</kbd><kbd>0</kbd><kbd>−</kbd><kbd>(</kbd><kbd>4</kbd><kbd>5</kbd><kbd>0</kbd><kbd>+</kbd><kbd>3</kbd><kbd>×</kbd><kbd>3</kbd><kbd>0</kbd><kbd>)</kbd><kbd>ENTER</kbd></span> gives −270: negative means a <b>loss</b>. Bracket the whole cost.</div>
-    <div class="pill-col"><button class="pill" data-keys="9 × 30 − ( 450 + 3 × 30 ) =">30 mugs</button><button class="pill" data-keys="9 × 90 − ( 450 + 3 × 90 ) =">90 mugs</button><button class="pill" data-keys="9 × 250 − ( 450 + 3 × 250 ) =">250 mugs</button></div>
+    <div class="pill-col"><button class="pill" data-keys="9 × 30 − ( 450 + 3 × 30 ) =">30 mugs</button><button class="pill" data-keys="9 × 90 − ( 450 + 3 × 90 ) =">90 mugs</button></div>
   </div>
+  <div class="space" id="ex4-space"></div>
+  <button class="more" data-more="ex4-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="s4d" data-section="4. Example 4 check">
+  <h3 class="sub">Example 4 check: watch the gap between the lines</h3>
+  <p>At any number of mugs, the vertical gap between the lines is the profit (revenue on top) or the loss (cost on top).</p>
+  <div class="explainer" data-explainer="breakEven"></div>
+</section>
+
+<!-- ================= 5. Three ways ================= -->
+<section class="card" data-ink="s5" data-section="5. Three Ways Two Lines Can Meet">
+  <div class="sec-h"><span class="badge">5</span><h2>How Many Solutions? Three Ways Two Lines Can Meet</h2></div>
+  <p>So far every system has had exactly one solution. Two lines do not always cross exactly once, though. When two linear equations are graphed on the same set of axes, exactly one of three things happens: the lines <b>cross at a single point</b>, the lines <b>run side by side and never touch</b>, or the lines <b>lie perfectly on top of one another</b>. Each outcome gives the system a different number of solutions.</p>
+  <div class="u8l1-m-ways">
+    <div class="u8l1-m-way u8l1-m-w1">
+      <svg viewBox="0 0 160 110"><line x1="18" y1="94" x2="142" y2="16" class="u8l1-m-sl1"/><line x1="18" y1="22" x2="142" y2="92" class="u8l1-m-sl2"/><circle cx="80" cy="55" r="7" class="u8l1-m-sdot"/></svg>
+      <div class="u8l1-m-wh">The lines cross once</div>
+      <div class="u8l1-m-wb">intersecting lines</div>
+      <div class="u8l1-m-wn"><b>one solution</b></div>
+    </div>
+    <div class="u8l1-m-way u8l1-m-w0">
+      <svg viewBox="0 0 160 110"><line x1="18" y1="80" x2="142" y2="18" class="u8l1-m-sl1"/><line x1="18" y1="104" x2="142" y2="42" class="u8l1-m-sl2"/></svg>
+      <div class="u8l1-m-wh">The lines never touch</div>
+      <div class="u8l1-m-wb">parallel (distinct) lines</div>
+      <div class="u8l1-m-wn"><b>no solution</b></div>
+    </div>
+    <div class="u8l1-m-way u8l1-m-wi">
+      <svg viewBox="0 0 160 110"><line x1="18" y1="92" x2="142" y2="18" class="u8l1-m-sl1 u8l1-m-fat"/><line x1="18" y1="92" x2="142" y2="18" class="u8l1-m-sl2 u8l1-m-dash"/></svg>
+      <div class="u8l1-m-wh">The lines lie on top of each other</div>
+      <div class="u8l1-m-wb">coincident lines (the same line)</div>
+      <div class="u8l1-m-wn"><b>infinitely many solutions</b></div>
+    </div>
+  </div>
+  <p>Watch one line <b>turn</b> until it is parallel to the other, then <b>slide</b> until it lies on top. Keep an eye on the solution count and the chart.</p>
+  <div class="explainer" data-explainer="turnSlide"></div>
+  <div class="parts c1">
+    <div class="part think"><div class="pl"><span class="think-tag">Think</span> Could two different straight lines cross at exactly <b>two</b> points?</div><div class="work" style="--h:80px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>No.</b> Only one straight line passes through two given points. If two lines share two points, they are the <b>same line</b>, and then they share every point: infinitely many solutions. So the only possible counts are 1, 0 or infinitely many.</div></div></div>
+  </div>
+</section>
+
+<section class="card" data-ink="s5b" data-section="5. The warm-up races as lines">
+  <h3 class="sub">The warm-up races as lines</h3>
+  <p>Distance after <span class="tex">t</span> seconds <span class="tex">=</span> head start <span class="tex">+</span> speed <span class="tex">\times\,t</span>. That is <span class="tex">y=mx+b</span>: the <b>speed is the slope</b> and the <b>head start is the intercept</b>. “Side by side” means the same <span class="tex">t</span> and the same <span class="tex">d</span>: a point on <b>both</b> lines.</p>
+  <div class="explainer" data-explainer="races"></div>
+</section>
+
+<section class="card example" data-ink="ex5" data-section="Example 5">
+  <div class="ex-head"><span class="ex-tag">Example 5</span><h3>Graphing three systems and counting their solutions</h3></div>
+  <p class="q">Graph each system of equations on the grid provided, then state how many solutions the system has.</p>
+  <div class="parts c3 u8l1-m-ex5">
+    <div class="part" data-u8l1-m-sys="a"><div class="pl">(a) <span class="tex">\textcolor{#1f5bd6}{y=x-2}</span><br><span class="u8l1-m-pl2"><span class="tex">\textcolor{#c27a0e}{y=-x+6}</span></span></div>
+      <div class="u8l1-m-grid" id="u8l1-m-g1a"></div>
+      <div class="u8l1-m-count">Number of solutions:</div>
+      <div class="work" style="--h:60px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>One</b>, at <span class="tex">\textcolor{#7b4fc4}{(4,\ 2)}</span>. The lines cross once.</div></div></div>
+    <div class="part" data-u8l1-m-sys="b"><div class="pl">(b) <span class="tex">\textcolor{#1f5bd6}{y=2x+3}</span><br><span class="u8l1-m-pl2"><span class="tex">\textcolor{#c27a0e}{y=2x-5}</span></span></div>
+      <div class="u8l1-m-grid" id="u8l1-m-g1b"></div>
+      <div class="u8l1-m-count">Number of solutions:</div>
+      <div class="work" style="--h:60px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>None.</b> The lines are parallel: they never meet.</div></div></div>
+    <div class="part" data-u8l1-m-sys="c"><div class="pl">(c) <span class="tex">\textcolor{#1f5bd6}{y=4x-6}</span><br><span class="u8l1-m-pl2"><span class="tex">\textcolor{#c27a0e}{8x-2y-12=0}</span></span></div>
+      <div class="u8l1-m-grid" id="u8l1-m-g1c"></div>
+      <div class="u8l1-m-count">Number of solutions:</div>
+      <div class="work" style="--h:60px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><b>Infinitely many.</b> <span class="tex">8x-2y-12=0</span> rearranges to <span class="tex">y=4x-6</span>: the same line, drawn twice.</div></div></div>
+  </div>
+  <p class="u8l1-m-note">Look back at the <b>slope</b> and <b><span class="tex">y</span>-intercept</b> of each pair of equations above, and compare them to what you actually drew on the three grids.</p>
   <div class="space" id="ex5-space"></div>
   <button class="more" data-more="ex5-space">+ More space</button>
 </section>
 
-<section class="card" data-ink="s6b" data-section="6. Example 5 check">
-  <h3 class="sub">Example 5 check: watch the gap between the lines</h3>
-  <p>At any number of mugs, the vertical gap between the lines is the profit (revenue on top) or the loss (cost on top).</p>
-  <div class="explainer" data-explainer="breakEven"></div>
+<section class="card" data-ink="ex5c" data-section="Example 5 check">
+  <h3 class="sub">Example 5 check: graph, then count</h3>
+  <p>Plot each <span class="tex">y</span>-intercept, step out the slope, draw the line. Then <b>count</b> the points that are on <b>both</b> lines.</p>
+  <div class="explainer" data-explainer="count"></div>
+</section>
+
+<section class="card example" data-ink="ex6" data-section="Example 6">
+  <div class="ex-head"><span class="ex-tag">Example 6</span><h3>The classification chart</h3></div>
+  <p class="q">Use what you noticed in Example 5 to complete the chart below.</p>
+  <div class="parts c1">
+    <div class="part">
+      <div class="u8l1-m-chart">
+        <div class="u8l1-m-chh">One Solution</div><div class="u8l1-m-chh">No Solution</div><div class="u8l1-m-chh">Infinitely Many</div>
+        <div class="u8l1-m-chp"><svg viewBox="0 0 160 90"><line x1="30" y1="76" x2="130" y2="14" class="u8l1-m-sl1"/><line x1="30" y1="14" x2="130" y2="76" class="u8l1-m-sl2"/></svg></div>
+        <div class="u8l1-m-chp"><svg viewBox="0 0 160 90"><line x1="30" y1="80" x2="130" y2="34" class="u8l1-m-sl1"/><line x1="30" y1="56" x2="130" y2="10" class="u8l1-m-sl2"/></svg></div>
+        <div class="u8l1-m-chp"><svg viewBox="0 0 160 90"><line x1="30" y1="76" x2="130" y2="14" class="u8l1-m-sl1 u8l1-m-fat"/><line x1="30" y1="76" x2="130" y2="14" class="u8l1-m-sl2 u8l1-m-dash"/></svg></div>
+        <div class="u8l1-m-chr"><div>Slopes: <span class="u8l1-m-blank" data-reveal><b>different</b></span></div><div>Intercepts: <span class="u8l1-m-blank" data-reveal><b>any values</b></span></div></div>
+        <div class="u8l1-m-chr"><div>Slopes: <span class="u8l1-m-blank" data-reveal><b>equal</b></span></div><div>Intercepts: <span class="u8l1-m-blank" data-reveal><b>different</b></span></div></div>
+        <div class="u8l1-m-chr"><div>Slopes: <span class="u8l1-m-blank" data-reveal><b>equal</b></span></div><div>Intercepts: <span class="u8l1-m-blank" data-reveal><b>equal</b></span></div></div>
+      </div>
+      <div class="work" style="--h:70px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans">When two lines have <b>different slopes</b> they must cross exactly once, whatever their intercepts. When the <b>slopes match</b>, the lines are either always the same distance apart (parallel, no solution) or exactly on top of each other (coincident, infinitely many solutions): the <b>intercepts decide which</b>.</div></div>
+    </div>
+  </div>
+  <div class="space" id="ex6-space"></div>
+  <button class="more" data-more="ex6-space">+ More space</button>
+</section>
+
+<!-- ================= 6. Without graphing ================= -->
+<section class="card" data-ink="s6" data-section="6. Classifying Without Graphing">
+  <div class="sec-h"><span class="badge">6</span><h2>Classifying a System Without Graphing</h2></div>
+  <p>Once both equations of a system are written in <b>slope–intercept form</b>, the pattern from Example 6 predicts the number of solutions directly from the numbers in the equations: no graph paper required.</p>
+  <div class="u8l1-m-rules">
+    <div class="u8l1-m-rule u8l1-m-r1"><div class="u8l1-m-rh">Different slopes</div><div class="u8l1-m-rb"><span class="tex">m_1\neq m_2</span></div><div class="u8l1-m-rf"><b>one solution</b></div></div>
+    <div class="u8l1-m-rule u8l1-m-r0"><div class="u8l1-m-rh">Same slope, different intercepts</div><div class="u8l1-m-rb"><span class="tex">m_1=m_2,\ \ b_1\neq b_2</span></div><div class="u8l1-m-rf"><b>no solution</b></div></div>
+    <div class="u8l1-m-rule u8l1-m-ri"><div class="u8l1-m-rh">Same slope, same intercept</div><div class="u8l1-m-rb"><span class="tex">m_1=m_2,\ \ b_1=b_2</span></div><div class="u8l1-m-rf"><b>infinitely many solutions</b></div></div>
+  </div>
+  <div class="def">To use the chart, first get <b><span class="tex">y</span> alone</b>: move the <span class="tex">x</span>-term and the constant to the other side, then divide <b>every term</b> by the coefficient of <span class="tex">y</span>.</div>
+  <div class="tip watch"><div class="tip-ic">!</div><div><b>Rearrange before you compare.</b> <span class="tex">8x-2y-12=0</span> and <span class="tex">y=4x-6</span> look nothing alike, but they are the same line. Comparing the numbers in two different forms (the 8 and the 4) leads to the wrong answer.</div></div>
+  <div class="tip calc-tip">
+    <div class="tip-ic"><svg viewBox="0 0 24 24"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><rect x="8" y="5.5" width="8" height="4" rx="1"/></svg></div>
+    <div><b>Are two fraction slopes equal?</b> Divide both on the calculator: <span class="tex">\tfrac{10}{4}</span> and <span class="tex">\tfrac{5}{2}</span> both give <b>2.5</b>, so they are the same slope.</div>
+    <div class="pill-col"><button class="pill" data-keys="10 ÷ 4 =">10 ÷ 4</button><button class="pill" data-keys="5 ÷ 2 =">5 ÷ 2</button></div>
+  </div>
+</section>
+
+<section class="card example" data-ink="ex7" data-section="Example 7">
+  <div class="ex-head"><span class="ex-tag">Example 7</span><h3>Classifying from <span class="tex">y=mx+b</span> alone</h3></div>
+  <p class="q">Without graphing, determine whether each system has no solution, one solution, or infinitely many solutions.</p>
+  <div class="parts c3 u8l1-m-ex7">
+    <div class="part"><div class="pl">(a) <span class="tex">\textcolor{#1f5bd6}{5x+2y=20}</span><br><span class="u8l1-m-pl2"><span class="tex">\textcolor{#c27a0e}{y=-\dfrac{5}{2}x}</span></span></div>
+      <div class="work" style="--h:270px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">5x+2y=20\Rightarrow 2y=-5x+20</span><br><span class="tex">\Rightarrow y=-\tfrac{5}{2}x+10</span>.<br>The second equation is <span class="tex">y=-\tfrac{5}{2}x+0</span>.<br>Same slope <span class="tex">-\tfrac{5}{2}</span>, different intercepts (<span class="tex">10</span> and <span class="tex">0</span>).<br><b>No solution.</b></div></div></div>
+    <div class="part"><div class="pl">(b) <span class="tex">\textcolor{#1f5bd6}{x-3y+9=0}</span><br><span class="u8l1-m-pl2"><span class="tex">\textcolor{#c27a0e}{y=\dfrac{1}{3}x+3}</span></span></div>
+      <div class="work" style="--h:270px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">x-3y+9=0\Rightarrow -3y=-x-9</span><br><span class="tex">\Rightarrow y=\tfrac{1}{3}x+3</span>,<br>which is identical to the second equation.<br>Same slope and same intercept.<br><b>Infinitely many solutions.</b></div></div></div>
+    <div class="part"><div class="pl">(c) <span class="tex">\textcolor{#1f5bd6}{6x+y=11}</span><br><span class="u8l1-m-pl2"><span class="tex">\textcolor{#c27a0e}{x-5y=20}</span></span></div>
+      <div class="work" style="--h:270px"></div>
+      <div class="ansrow"><button class="reveal">Answer</button><div class="ans"><span class="tex">6x+y=11\Rightarrow y=-6x+11</span> (slope <span class="tex">-6</span>).<br><span class="tex">x-5y=20\Rightarrow -5y=-x+20</span><br><span class="tex">\Rightarrow y=\tfrac{1}{5}x-4</span> (slope <span class="tex">\tfrac{1}{5}</span>).<br>The slopes are different.<br><b>One solution.</b></div></div></div>
+  </div>
+  <div class="space" id="ex7-space"></div>
+  <button class="more" data-more="ex7-space">+ More space</button>
+</section>
+
+<section class="card" data-ink="ex7c" data-section="Example 7 check">
+  <h3 class="sub">Example 7 check: two questions decide it</h3>
+  <p>Rearrange both, then ask: <b>same slope?</b> If not, one solution. If so, <b>same intercept?</b></p>
+  <div class="explainer" data-explainer="classify"></div>
 </section>
 
 <!-- ================= summary ================= -->
 <section class="card summary" data-ink="sum" data-section="Summary">
   <div class="sec-h"><span class="badge">✓</span><h2>Key ideas</h2></div>
   <div class="sum-grid">
-    <div><b>System and solution.</b> A system is two (or more) equations taken together. Its solution is an ordered pair <span class="tex">(x,\ y)</span> that satisfies <b>every</b> equation: the <b>point of intersection</b> of the lines.</div>
-    <div><b>Solve by graphing.</b> Graph both lines (table of values, slope and <span class="tex">y</span>-intercept, or intercepts), read the crossing point, then <b>verify in BOTH original equations</b>. Both in <span class="tex">y=\ldots</span> form? Set the expressions equal.</div>
-    <div><b>Graphing calculator.</b> Solve for <span class="tex">y</span>, <kbd>Y=</kbd>, choose a <kbd>WINDOW</kbd> that shows the crossing, <kbd>GRAPH</kbd>, <kbd class="u8l1-k2">2nd</kbd> <kbd>TRACE</kbd> <code>5:intersect</code>, <kbd>ENTER</kbd> three times. Best when the crossing is not on grid lines.</div>
-    <div><b>In context.</b> Say what each coordinate means (adult fee $4, child fee $1). <b>Break-even:</b> cost = revenue, where the lines cross. Revenue above cost is a <b>profit</b>, below is a <b>loss</b>.</div>
+    <div><b>System and solution.</b> A system is two (or more) equations taken together. Its solution is an ordered pair <span class="tex">(x,\ y)</span> that satisfies <b>every</b> equation: the <b>point of intersection</b> of the lines. Always <b>verify in BOTH</b> equations.</div>
+    <div><b>Solve by graphing.</b> Graph both lines by hand (table of values, slope and <span class="tex">y</span>-intercept, or intercepts) and read the crossing point. Both in <span class="tex">y=\ldots</span> form? Set the expressions equal. In context, say what each coordinate means; <b>break-even</b> is where cost = revenue.</div>
+    <div><b>Three ways to meet.</b> Two lines cross <b>once</b> (one solution), are <b>parallel</b> and never touch (no solution), or are <b>coincident</b>, the same line (infinitely many solutions). Never exactly two.</div>
+    <div><b>Without graphing.</b> Rewrite <b>both</b> equations as <span class="tex">y=mx+b</span>. Different slopes: one solution. Equal slopes, different intercepts: no solution. Equal slopes, equal intercepts: infinitely many.</div>
   </div>
   <a class="assign" href="../../../#/lesson/u8l1">
-    <div><div class="kicker">Your turn</div><b>Assignment 1 — Graphing Systems of Linear Equations</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
+    <div><div class="kicker">Your turn</div><b>Assignment 1 — Solving Systems by Graphing: How Many Solutions?</b><div class="muted">Practice on the Math 10C Practice site</div></div><span class="arrow">→</span>
   </a>
-  <a class="assign next-l" href="../l1/">
-    <div><div class="kicker">Next lesson</div><b>Lesson 1 — Classifying Systems</b><div class="muted">One solution, no solution or infinitely many: what the slopes and intercepts tell us</div></div><span class="arrow">→</span>
+  <a class="assign next-l" href="../l2/">
+    <div><div class="kicker">Next lesson</div><b>Lesson 2 — Solving Systems of Equations by Substitution</b><div class="muted">An exact algebraic method: isolate one variable, substitute it into the other equation, solve, then back-substitute</div></div><span class="arrow">→</span>
   </a>
   <div class="space" id="sum-space" style="min-height:120px"></div>
 </section>
@@ -356,7 +431,7 @@
 <script type="module">
   import { boot } from '../../js/ui.js';
   import '../../js/lessons/u8l1.js';
-  boot({ key: 'u8l1', homeHref: '../../', title: '8.1 Graphing Systems' });
+  boot({ key: 'u8l1', homeHref: '../../', title: '8.1 Solving Systems by Graphing' });
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('../../sw.js').catch(function () {});</script>
 </body>

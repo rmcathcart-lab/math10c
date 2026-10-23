@@ -8,8 +8,8 @@
  * numbers are among the possible values. Plotting and sketching (11b, 13a, Extra 6a–c) use the graph pad (js/draw.js):
  * exact plots via K.graphExact, the cyclist's speed story via K.graphStory (stages and times checked, any steady-speed
  * height), the open "sketch a relation with this domain/range" tasks via K.graphRules plus a local intercept count;
- * "explain" items become multiple choice with misconception hints. Nothing needs a graphing calculator: the quadratic
- * models (10, 12) are read from a table of values and its symmetry.
+ * "explain" items become multiple choice with misconception hints. The quadratic models (10, 12) are worked by hand
+ * from a table of values and its symmetry.
  * js/draw2.js: graphs whose domain and range are asked (15, Extra 1b, 2a, 4a, 4b, 8a, 12b) get a domrange part first (shade
  * them on number lines under the graph, same graph via shared numbers), then the typed set notation; intercepts read off a
  * given graph (Extra 1f, 4a–c iii, 8c, 12f) are tapped on the graph (K.P.points, see tapPart()).

@@ -1,0 +1,158 @@
+/* Math 10C · Unit 1 · Lesson 3 (Perfect Squares and Perfect Cubes) — lesson-specific styles (shared patterns live in css/site.css) */
+.parts.c4 { grid-template-columns: repeat(4, 1fr); }
+.parts.c4 .pl { font-size: 19px; }
+.parts.c4 .ans { font-size: 16px; }
+
+/* ---------- warm-up: the lockers ---------- */
+.lk-box { background: #f6f5f1; border: 1px solid var(--line2); border-radius: 14px; padding: 14px 10px 10px; margin: 6px 0 4px; }
+.lockers { display: grid; grid-template-columns: repeat(25, 33px); gap: 10px 4px; justify-content: center; }
+.lk { position: relative; width: 33px; height: 52px; padding: 0; border: 1.5px solid #1e2d46; border-radius: 4px; background: #233150; cursor: pointer; overflow: visible; }
+.lk::after { content: ""; position: absolute; inset: -1.5px; border: 1.5px solid #1e2d46; border-radius: 4px; transform-origin: 100% 50%; transition: transform .28s, background-color .28s;
+  background: linear-gradient(#1e2d46, #1e2d46) 50% 74% / 56% 1.5px no-repeat, linear-gradient(#1e2d46, #1e2d46) 50% 80% / 56% 1.5px no-repeat, linear-gradient(#1e2d46, #1e2d46) 50% 86% / 56% 1.5px no-repeat,
+    linear-gradient(#d7dbe2, #d7dbe2) 80% 52% / 3px 8px no-repeat, #6e96c8; }
+.lk.open::after { transform: perspective(90px) rotateY(-68deg); background-color: #9db9de; }
+.lk span { position: absolute; z-index: 2; left: 50%; top: 4px; translate: -50% 0; background: #fff; border: 1px solid #1e2d46; border-radius: 4px; font: 800 12px var(--font); line-height: 15px; min-width: 22px; padding: 0 2px; color: var(--ink); }
+.lk.hit span { background: #ffd56b; }
+.lk.sq span { background: #ffd56b; border-color: #a06a00; box-shadow: 0 0 0 2px #ffd56b; }
+.lk.sel { outline: 3px solid var(--red); outline-offset: 2px; }
+.lk-bar { display: flex; align-items: center; gap: 8px; margin-top: 12px; padding: 0 6px; }
+.lk-status { flex: 1; font-size: 17px; line-height: 1.3; height: 46px; overflow: hidden; }
+.lk-hist { height: 78px; font-size: 17px; line-height: 1.4; padding: 8px 8px 0; overflow: hidden; }
+.lk-seq { display: inline-flex; gap: 3px; vertical-align: -4px; margin: 0 4px; }
+.lk-seq i { display: block; width: 13px; height: 20px; border-radius: 2px; border: 1.5px solid #1e2d46; background: #6e96c8; }
+.lk-seq i.o { background: #233150; }
+.wq .q-line { margin: 10px 0; }
+.wq-body { flex: 1; }
+.w-ans { visibility: hidden; color: var(--red); font-size: 18px; margin-top: 2px; min-height: 1.4em; }
+.wq-body.shown .w-ans { visibility: visible; animation: fadeUp .35s; }
+.wq-body.shown [data-wa] { background: #fde9e7; color: var(--red); border-color: #f2c9c4; }
+.poll-opts.c4 { grid-template-columns: repeat(4, 1fr); }
+.poll-opts.c4 .opt { font-size: 22px; font-weight: 700; text-align: center; }
+.traps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; font-size: 16px; }
+.traps span { background: #fff; border: 1px solid #ead8d5; border-radius: 10px; padding: 6px 10px; }
+
+/* ---------- static figures ---------- */
+.concrete { display: grid; grid-template-columns: 1fr auto auto; gap: 22px; align-items: center; background: #f6f5f1; border-radius: 12px; padding: 14px 18px; margin: 0 0 16px; }
+.cc-text { font-size: 18px; }
+.cc-fig { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.cc-cap { font-size: 15px; font-weight: 700; white-space: nowrap; }
+.gridsvg rect { fill: #48a99f; stroke: #0f5f5a; stroke-width: 2; }
+.gridsvg line { stroke: rgba(255, 255, 255, .85); stroke-width: 1.5; }
+.boxsvg .f-front { fill: #8fcac2; } .boxsvg .f-top { fill: #c8e7e2; }
+.boxsvg .f-side { fill: #5faea4; }
+.boxsvg polygon, .boxsvg rect { stroke: #0f5f5a; stroke-width: 2; stroke-linejoin: round; }
+.boxsvg line { stroke: #0f5f5a; stroke-width: 1.1; stroke-opacity: .7; }
+.pairs-list { display: grid; grid-template-columns: repeat(3, auto); justify-content: space-evenly; gap: 6px 18px; text-align: center; font: 600 22px var(--round); margin: 4px 0 8px; }
+.pairs-list > div { white-space: nowrap; }
+.pairs-list .pl-n { font-weight: 800; }
+.pairs-list .pr { border: 2px solid var(--brand2); border-radius: 10px; padding: 0 6px; background: var(--brand-soft); white-space: nowrap; }
+.pairs-list .root { color: var(--brand); font-weight: 700; }
+
+.def.why { background: #f6f5f1; border-left-color: var(--brand2); }
+.hl-m { background: var(--amber-soft); color: var(--amber); border-radius: 6px; padding: 0 6px; }
+
+/* ---------- summary: next lesson ---------- */
+.assign.next-l { margin-top: 12px; border-color: var(--line); background: #f6f5f1; }
+.assign.next-l b { font-size: 19px; }
+
+/* ---------- prime chips (one colour per prime) ---------- */
+.pc { display: grid; place-items: center; min-width: 48px; height: 48px; padding: 0 8px; border-radius: 24px; border: 2.5px solid var(--pc); background: color-mix(in srgb, var(--pc) 13%, #fff); color: color-mix(in srgb, var(--pc) 85%, #000); font: 800 24px var(--round); white-space: nowrap; transition: background .3s, color .3s, box-shadow .3s; z-index: 2; }
+.pc.sm { min-width: 38px; height: 38px; font-size: 19px; border-width: 2px; }
+.pc.lit-g { background: var(--pc); color: #fff; box-shadow: 0 0 0 4px rgba(15, 95, 90, .35); }
+.pc.lit-l { background: var(--pc); color: #fff; box-shadow: 0 0 0 4px rgba(194, 122, 14, .45); }
+.pc.lone { background: #fff; border-style: dashed; box-shadow: 0 0 0 4px rgba(201, 58, 51, .25); }
+
+/* powers: why the exponents double / triple */
+.pw-lab { font: 800 28px var(--round); white-space: nowrap; }
+.pw-brk { height: 52px; border: 2px dashed #cfc7b5; border-radius: 14px; }
+.pw-th { font: 800 19px var(--round); color: var(--muted); white-space: nowrap; }
+.pw-td { display: grid; place-items: center; min-width: 50px; height: 40px; border-radius: 10px; font: 800 23px var(--round); background: #fff; border: 2px solid #e2ddd1; }
+.pw-td.m2 { border-color: var(--brand2); background: var(--brand-soft); color: var(--brand); }
+.pw-td.m3 { border-color: var(--amber); background: var(--amber-soft); color: #9a5f05; }
+.pw-tag { font: 800 16px var(--round); padding: 1px 10px; border-radius: 10px; white-space: nowrap; }
+.pw-tag.m2 { background: var(--brand2); color: #fff; } .pw-tag.m3 { background: var(--amber); color: #fff; }
+.pw-eq { font: 700 24px var(--round); white-space: nowrap; }
+.pw-note { font: 700 15px var(--font); color: var(--ok); background: #e3f4ea; border-radius: 8px; padding: 2px 8px; margin-left: 8px; vertical-align: 3px; }
+
+/* multiplier: towers of prime blocks */
+.mt-blk { width: 40px; height: 38px; border-radius: 8px; display: grid; place-items: center; font: 800 19px var(--round); color: #fff; background: var(--pc); border: 2px solid rgba(0, 0, 0, .2); z-index: 2; }
+.mt-blk.new { background: #fff; color: var(--pc); border: 2.5px solid var(--pc); box-shadow: 0 0 0 3px rgba(18, 128, 90, .3); }
+.mt-blk.lone { box-shadow: 0 0 0 4px rgba(201, 58, 51, .45); }
+.mt-blk.pick { outline: 3px solid var(--ink); outline-offset: 1px; }
+.mt-grp { width: 52px; border: 2.5px solid var(--brand2); border-radius: 12px; background: rgba(19, 128, 122, .07); }
+.mt-line { font: 700 24px var(--round); white-space: nowrap; }
+.mt-m { color: var(--amber); font-size: 28px; }
+
+/* sides: a square from its area, a cube from its volume */
+.sd-pic svg { display: block; }
+.sd-big { font: 700 18px var(--round); text-align: center; background: rgba(255, 255, 255, .92); border-radius: 10px; padding: 4px 10px; line-height: 1.25; white-space: nowrap; z-index: 2; }
+.sd-big b { font-size: 22px; }
+.sd-side { font: 800 22px var(--round); color: var(--red); white-space: nowrap; }
+.sd-line { font: 700 25px var(--round); white-space: nowrap; }
+
+/* piles */
+.pl-lab { font: 800 30px var(--round); white-space: nowrap; transition: opacity .3s; }
+.pile { border: 2.5px dashed #cfc7b5; border-radius: 16px; background: #fff; }
+.pile-h { font-size: 14px; font-weight: 800; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; padding: 6px 12px; }
+.pile-v { font: 800 26px var(--round); color: var(--ok); white-space: nowrap; }
+.pl-left { font-size: 18px; font-weight: 800; color: var(--red); white-space: nowrap; }
+.pl-eq { font: 700 27px var(--round); white-space: nowrap; }
+.pl-eq2 { font: 600 22px var(--round); white-space: nowrap; }
+.pl-eq2 .good { color: var(--ok); } .pl-eq2 .bad { color: var(--red); background: #fbe7e5; border-radius: 6px; padding: 0 4px; }
+.pl-pic { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.pl-pcap { text-align: center; font: 700 20px var(--round); color: var(--ink2); }
+.pl-extra { background: var(--red); color: #fff; font-weight: 800; font-size: 17px; padding: 2px 12px; border-radius: 10px; }
+
+/* tester */
+.tp-lab { font: 800 36px var(--round); white-space: nowrap; }
+.tp-pow { font: 800 44px var(--round); white-space: nowrap; }
+.tp-pow.sm { font-size: 32px; }
+.tp-pow sup { font-size: .55em; color: var(--brand); transition: color .3s; }
+.tp-pow.odd2 sup, .tp-pow.odd3 sup { color: var(--red); }
+.tp-x { font: 700 30px var(--round); color: var(--muted); }
+.tp-rl { font: 800 24px var(--round); line-height: 1.15; }
+.tp-rl small { display: block; font: 600 15px var(--font); color: var(--muted); }
+.tp-b { min-width: 58px; height: 40px; padding: 0 10px; display: grid; place-items: center; border-radius: 20px; font: 800 21px var(--round); }
+.tp-b.yes { background: #e3f4ea; color: var(--ok); } .tp-b.no { background: #fbe7e5; color: var(--red); }
+.tp-v { font: 800 22px var(--round); padding: 6px 14px; border: 4px solid; border-radius: 12px; white-space: nowrap; background: rgba(255, 255, 255, .9); }
+.tp-v.yes { color: var(--brand); } .tp-v.no { color: var(--amber); }
+
+/* captions get a steady height so ink written below an explainer doesn't move as the steps change */
+.lesson .ex-cap { min-height: 96px; }
+
+/* keep short inline formulas on one line */
+.sum-grid .katex, .tip .katex, .ans .katex, .ex-cap .katex { white-space: nowrap; }
+
+/* ---------- one screen (main.lesson.screen): lockers on the left, the questions and the big one on the right ---------- */
+.wf .lk-box { margin: 10px 0 0; padding: 12px 8px 8px; }
+.wf .lockers { grid-template-columns: repeat(20, 30px); gap: 9px 3px; }
+.wf .lk { width: 30px; height: 48px; }
+.wf .lk span { font-size: 11px; min-width: 20px; }
+.wf .lk-status { font-size: 16px; }
+.wf .lk-hist { height: 70px; font-size: 16px; }
+.wf .wq { margin-top: 12px; }
+.wf .w-ans { font-size: 16px; }
+.wf-poll .poll-opts.c4 .opt { font-size: 19px; padding: 6px 10px; }
+.wf .lockers { grid-template-columns: repeat(20, 28px); gap: 9px 3px; }
+.wf .lk { width: 28px; height: 46px; }
+.wf .lk span { min-width: 19px; font-size: 10.5px; padding: 0 1px; }
+.wf .wf-poll .poll-opts.c4 { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.wf .wf-poll .poll-opts.c4 .opt { padding: 6px 4px; }
+.wf-side .wq .q-line { font-size: 17px; margin-bottom: 10px; }
+.wf .lk-bar { flex-wrap: wrap; }
+.wf .lk-status { flex: 1 1 100%; height: auto; min-height: 42px; }
+.wf .w-ans { font-size: 15.5px; line-height: 1.3; }
+.wf .wf-main .wq { margin-top: 10px; }
+.wf .wf-main .wq .q-line { margin: 0 0 4px; font-size: 17px; gap: 10px; }
+.wf .wf-main .w-ans { margin-top: 0; }
+.wf .lk-hist { height: 48px; }
+.wf .lockers { grid-template-columns: repeat(20, 27px); gap: 7px 3px; }
+.wf .lk { width: 27px; height: 42px; }
+.wf .lk-bar { flex-wrap: nowrap; margin-top: 8px; }
+.wf .lk-status { flex: 1 1 auto; font-size: 15px; height: 40px; min-height: 0; line-height: 1.3; }
+.wf .lk-bar .exb { height: 40px; font-size: 15px; padding: 0 10px; }
+.wf .lk-hist { height: 44px; font-size: 15px; padding-top: 4px; }
+.wf .lk-bar .exb { flex: none; white-space: nowrap; }
+.wf .wq-side { margin-top: 14px; }
+.wf .wq-side .q-line { font-size: 17px; gap: 10px; }
+.wf .wq-side { margin: 0 0 10px; }

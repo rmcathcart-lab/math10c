@@ -149,3 +149,111 @@
 .u10l2h-cut { stroke: #b07a12; stroke-width: 1.5; stroke-dasharray: 4 3; }
 .u10l2h-count { font: 700 26px Georgia, "Iowan Old Style", serif; fill: #b07a12; }
 .u10l2h-total { font: 800 16px var(--round); fill: #b07a12; }
+
+/* ================= Section 5: the vernier caliper and the micrometer (from the old Lesson 3, prefix u10l1i-) =================
+ * Colours: coarse reading blue, fine reading amber, index red, the matching tick green. */
+:root { --u10l1i-co: #1f5bd6; --u10l1i-fi: #c27a0e; --u10l1i-idx: #c93a33; --u10l1i-ok: #12805a; }
+.u10l1i-fig { margin: 4px 0 8px; }
+.u10l1i-figC { display: flex; justify-content: center; }
+.u10l1i-disp { text-align: center; font-size: 22px; margin: 4px 0 6px; }
+/* ---------------- drawn instruments ---------------- */
+.u10l1i-fhost { position: relative; flex: none; }
+.u10l1i-svg { display: block; overflow: visible; }
+.u10l1i-over { pointer-events: none; z-index: 0; }
+.u10l1i-st { font: 600 16px var(--font); fill: var(--ink); }
+.u10l1i-stB { font: 700 17px var(--round); }
+.u10l1i-stC { fill: var(--u10l1i-co); font-size: 15px; }
+.u10l1i-sb { font: 800 15px var(--font); fill: var(--ink); }
+.u10l1i-cst { font: 600 12px var(--font); fill: #3a4254; }
+.u10l1i-sred { fill: var(--u10l1i-idx); font-size: 15px; }
+.u10l1i-tk { stroke: #1c2230; stroke-width: 1.4; }
+.u10l1i-tkM { stroke-width: 2.4; }
+.u10l1i-tkC { stroke: var(--u10l1i-co); stroke-width: 2; }
+.u10l1i-tkF { stroke: var(--u10l1i-fi); stroke-width: 1.2; }
+.u10l1i-sleeve { fill: #f3f3f3; stroke: #b2b2b2; }
+.u10l1i-thim { fill: #d6d6d6; stroke: #a5a5a5; }
+.u10l1i-idx { stroke: var(--u10l1i-idx); stroke-width: 1.8; stroke-dasharray: 5 4; }
+.u10l1i-idxV { stroke: var(--u10l1i-idx); stroke-width: 4; }
+.u10l1i-mpanel { fill: #f4f4f4; stroke: #b2b2b2; }
+.u10l1i-vpanel { fill: #e2e2e2; stroke: #a5a5a5; }
+.u10l1i-ttl { position: absolute; font-size: 16px; white-space: nowrap; line-height: 1.2; }
+.u10l1i-ttl .katex { font-size: 1.05em; }
+/* caliper + micrometer bodies */
+.u10l1i-beam { fill: #dfe4ea; stroke: #6f7a89; stroke-width: 1.4; }
+.u10l1i-slid { fill: #c3ccd7; stroke: #5f6b7a; stroke-width: 1.4; fill-opacity: .96; }
+.u10l1i-slidD { fill: #8994a3; stroke: #4b5563; stroke-width: 1.2; }
+.u10l1i-ctk line { stroke: #1c2230; stroke-width: 1.1; }
+.u10l1i-ctk line.u10l1i-cidx { stroke: var(--u10l1i-idx); stroke-width: 2; }
+.u10l1i-rod { fill: #6f7a89; stroke: #3a4254; stroke-width: 1; }
+.u10l1i-obj { fill: #f0c27a; stroke: #a8752a; stroke-width: 1.6; }
+.u10l1i-coin { fill: #deb23c; stroke: #96701a; stroke-width: 1.6; }
+.u10l1i-pipe { fill: #b9a58a; stroke: #6d5a40; stroke-width: 1.4; }
+.u10l1i-frame { fill: #5a6f8f; stroke: #2f3d52; stroke-width: 1.6; }
+.u10l1i-plate { fill: #8fa0b8; stroke: #2f3d52; stroke-width: 1; }
+.u10l1i-steel { fill: #d7dde5; stroke: #6f7a89; stroke-width: 1.2; }
+.u10l1i-steelD { fill: #8994a3; stroke: #3a4254; stroke-width: 1; }
+.u10l1i-sleeve2 { fill: #e9ecf0; stroke: #6f7a89; stroke-width: 1.2; }
+.u10l1i-thim2 { fill: #c9d1db; stroke: #5f6b7a; stroke-width: 1.3; }
+.u10l1i-knurl { stroke: #8f99a6; stroke-width: 1; }
+.u10l1i-mtk line { stroke: #1c2230; stroke-width: 1; }
+.u10l1i-ball { fill: #b8c1cc; stroke: #4b5563; stroke-width: 1.4; }
+.u10l1i-rulerB { fill: #fbe7b2; stroke: #a8752a; stroke-width: 1.4; }
+.u10l1i-dashR { stroke: var(--u10l1i-idx); stroke-width: 2.4; stroke-dasharray: 8 6; }
+.u10l1i-lead { stroke: #3a4254; stroke-width: 1.6; }
+.u10l1i-leadR { stroke: var(--u10l1i-idx); stroke-width: 2.2; }
+.u10l1i-zbox { fill: none; stroke: var(--teal, #13807a); stroke-width: 2; stroke-dasharray: 6 5; }
+.u10l1i-zline { fill: none; stroke: #13807a; stroke-width: 1.6; stroke-dasharray: 6 5; opacity: .7; }
+.u10l1i-zpanel { fill: #fff; stroke: #d6d1c4; }
+.u10l1i-rodT { fill: #13807a; fill-opacity: .8; }
+.u10l1i-endR { stroke: var(--u10l1i-idx); stroke-width: 3; }
+.u10l1i-dotC { fill: none; stroke: var(--u10l1i-co); stroke-width: 3; transform-box: fill-box; transform-origin: center; }
+.u10l1i-dotF { fill: none; stroke: var(--u10l1i-fi); stroke-width: 3; transform-box: fill-box; transform-origin: center; }
+.u10l1i-gap { fill: var(--u10l1i-fi); }
+/* highlights */
+.u10l1i-hiC { stroke: var(--u10l1i-co) !important; stroke-width: 4.5 !important; }
+.u10l1i-hiCt { fill: var(--u10l1i-co) !important; font-weight: 800; }
+.u10l1i-hiF { stroke: var(--u10l1i-fi) !important; stroke-width: 4.5 !important; }
+.u10l1i-hiFt { fill: var(--u10l1i-fi) !important; font-weight: 800; }
+.u10l1i-hiS { stroke: var(--u10l1i-fi) !important; stroke-width: 3.5 !important; }
+.u10l1i-hiSt { fill: var(--u10l1i-fi) !important; font-weight: 800; }
+.u10l1i-hiM { stroke: var(--u10l1i-ok) !important; stroke-width: 4.5 !important; }
+.u10l1i-hiMt { fill: var(--u10l1i-ok) !important; font-weight: 800; }
+.u10l1i-scanbar { fill: var(--u10l1i-fi); fill-opacity: .18; }
+.u10l1i-glow { fill: var(--u10l1i-ok); fill-opacity: .2; stroke: var(--u10l1i-ok); stroke-width: 1.5; }
+
+/* pills on figures */
+.u10l1i-pill { position: absolute; translate: -50% -50%; white-space: nowrap; z-index: 3; }
+.u10l1i-bub { font: 800 15px var(--round); color: #fff; background: var(--u10l1i-co); border-radius: 12px; padding: 1px 7px; line-height: 20px; }
+.u10l1i-bubH { background: #4f83e6; }
+.u10l1i-pF { font: 800 18px var(--round); color: var(--u10l1i-fi); background: #fff; border: 2.5px solid var(--u10l1i-fi); border-radius: 10px; padding: 0 7px; }
+.u10l1i-pC { font: 800 18px var(--round); color: var(--u10l1i-co); background: #fff; border: 2.5px solid var(--u10l1i-co); border-radius: 10px; padding: 0 7px; }
+.u10l1i-pI { font: 800 16px var(--round); color: var(--u10l1i-idx); background: #fff; border: 2px solid var(--u10l1i-idx); border-radius: 9px; padding: 0 6px; }
+.u10l1i-pT { font: 700 18px var(--round); color: var(--brand); background: var(--brand-soft); border: 2px solid var(--brand2); border-radius: 10px; padding: 2px 10px; translate: 0 0; }
+.u10l1i-part { font: 700 16px var(--round); color: var(--ink); background: #fff; border: 2px solid #3a4254; border-radius: 9px; padding: 0 7px; }
+.u10l1i-partG { border-color: var(--u10l1i-ok); color: var(--u10l1i-ok); }
+.u10l1i-tag { font: 700 17px var(--round); color: #6d5a40; background: #fff8ec; border: 2px solid #b9a58a; border-radius: 9px; padding: 1px 8px; }
+.u10l1i-gapL { font: 800 14px var(--round); color: var(--u10l1i-fi); }
+.u10l1i-mag { position: absolute; overflow: hidden; border: 2px solid #b9d8d4; border-radius: 12px; background: #fff; }
+.u10l1i-mag > .u10l1i-fhost { position: absolute; top: 0; }
+
+/* explainer panels */
+.u10l1i-panel { background: #fff; border: 1px solid var(--line2); border-radius: 14px; padding: 10px 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; overflow: hidden; }
+.u10l1i-ph { font: 800 15px var(--round); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.u10l1i-line { font-size: 19px; line-height: 1.3; }
+.u10l1i-big { font-size: 22px; font-weight: 700; }
+.u10l1i-sm { font-size: 17px; }
+.u10l1i-co { color: var(--u10l1i-co); font-weight: 800; font-size: 15px; text-transform: uppercase; letter-spacing: .03em; }
+.u10l1i-fi { color: var(--u10l1i-fi); font-weight: 800; font-size: 15px; text-transform: uppercase; letter-spacing: .03em; }
+.u10l1i-stampP { align-self: center; margin-top: 4px; }
+.u10l1i-fpanel { flex-direction: row; flex-wrap: wrap; align-content: flex-start; column-gap: 26px; }
+.u10l1i-fpanel .u10l1i-line { font-size: 21px; }
+.u10l1i-fpanel .u10l1i-big { flex-basis: 100%; font-size: 25px; }
+.u10l1i-fpanel .u10l1i-sm { flex-basis: 100%; }
+
+.ex-stage > .u10l1i-fhost, .u10l1i-mag > .u10l1i-fhost { position: absolute; }
+.u10l1i-svg.u10l1i-clip { overflow: hidden; }
+.u10l1i-idxOn { stroke-width: 6 !important; }
+.u10l1i-idxOnT { font-weight: 800; font-size: 18px; }
+.u10l1i-hiFt { font-size: 19px; }
+.u10l1i-svg text { transform-box: fill-box; transform-origin: center; }
+.parts.c2.u10l1i-ex6 { grid-template-columns: 1.4fr 1fr; }

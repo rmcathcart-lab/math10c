@@ -513,7 +513,7 @@ const linear = {
           run: async (c) => {
             await G.drawIn(G.segment([6, 30], [16, 0], { color: BLUE, width: 4, dash: '9 7' }), 700, c);
             await G.reveal(G.point(0, 48, { color: PUR, r: 8, label: T('(0,\\ 48)'), pos: 'e' }), c);
-            await G.reveal(G.point(16, 0, { color: AMB, r: 8, label: T('(16,\\ 0)'), pos: 'ne' }), c);
+            await G.reveal(G.point(16, 0, { color: AMB, r: 8, label: T('(16,\\ 0)'), pos: 'nw' }), c);
             await say(c, Pn, `${T('d')}-int ${T('48')} &nbsp; ${T('t')}-int ${T('48\\div3=16')}`);
           } },
         { cap: `The story runs from ${T('t=0')} until the snow is gone at ${T('t=16')}. Domain: the shadow on the ${T('t')}-axis. Range: the shadow on the ${T('d')}-axis.`,
@@ -805,7 +805,7 @@ function mountStatic() {
     lin(G) { G.line([0, 4], [5, 0], { color: BLUE, width: 3 }); G.point(5, 0, { color: AMB, r: 5.5 }); G.point(0, 4, { color: PUR, r: 5.5 }); },
     dr(G) { G.segment([1, 1], [5, 4], { color: BLUE, width: 3.5, ends: ['closed', 'closed'] }); G.shadeX(1, 5, { width: 7 }); G.shadeY(1, 4, { width: 7 }); }
   };
-  document.querySelectorAll('[data-u6l5-mini]').forEach((el) => { const k = el.dataset.u6l6Mini; const G = mini(el); M[k](G); });
+  document.querySelectorAll('[data-u6l5-mini]').forEach((el) => { const k = el.dataset.u6l5Mini; const G = mini(el); M[k](G); });
   // Example 5: tap to plot
   const e5 = document.getElementById('u6l5-ex5grid');
   if (e5) new Graph(e5, { width: 400, height: 300, xmin: -6, xmax: 6, ymin: -4, ymax: 4, fontSize: 15, xlabels: 2, ylabels: 2, interactive: { snap: 1, coords: true, max: 4, color: 'blue' } });

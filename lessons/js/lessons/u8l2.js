@@ -3,12 +3,12 @@
  *   lift (the star: the isolated expression lifts out of one equation and drops, in brackets, into the other; the value
  *   flies back; the graph's crossing point confirms), choose (which variable to isolate: coefficients of 1 or −1),
  *   checkBoth (a solution balances BOTH equations; a point on one line only does not), fracs (fractions that clear:
- *   multiply every term, or let a coefficient cancel), exact (graphing-calculator decimal vs exact values),
+ *   multiply every term, or let a coefficient cancel), exact (a hand-drawn graph's estimate vs exact values),
  *   expand (clear the brackets first), vanish (0 = 0 or 0 = k: same line or parallel lines),
  *   three (Extension: three unknowns down to one).
  * Colours: first equation / line blue, second amber, third (Extension) green, solution purple. */
 import {
-  h, tex, add, box, place, Graph, stamp, stampIn, mountExplainers, pop, fadeIn, appear, sleep,
+  h, tex, add, box, place, Graph, stamp, stampIn, mountExplainers, pop, fadeIn, sleep,
   svgEl, liveCtx, pulse, shake, anim, arrowHead, drawIn, COLORS
 } from '../blocks.js';
 
@@ -21,7 +21,6 @@ const panel = (stage, x, y, w, hh, title, cls = '') => add(stage, box(h('div', '
 const chunk = (s, cls = '') => h('span', 'u8l2-ch' + (cls ? ' ' + cls : ''), T(s));
 const bw = (k, s) => `<b style="color:${EQC[k]}">${s}</b>`;
 const gone = (el, on = true) => el.classList.toggle('u8l2-gone', on);
-const kbd = (k) => `<kbd${k === '2nd' ? ' class="u8l2-k2"' : ''}>${k}</kbd>`;
 
 /** a row in a work panel: gutter label + math (+ an optional note) */
 function wrow(p, gut, t, o = {}) {
@@ -383,51 +382,56 @@ const fracs = {
   }
 };
 
-/* =============================== explainer 5: exact values vs the graphing calculator =============================== */
+/* =============================== explainer 5: a hand-drawn graph's estimate vs the exact value =============================== */
 const EX = {
-  e3: { label: 'Example 3: 1.7 or 17/10?', lines: [{ m: -4 / 3, b: 2 / 3 }, { m: 2, b: -5 }], ys: ['Y_1=(2-4X)/3', 'Y_2=2X-5'], pt: [1.7, -1.6], ro: ['1.7', '-1.6'] },
-  third: { label: 'A decimal that never ends', lines: [{ m: -1, b: 1 }, { m: 2, b: 0 }], ys: ['Y_1=1-X', 'Y_2=2X'], pt: [1 / 3, 2 / 3], ro: ['.33333333', '.66666667'] }
+  e3: { label: 'Example 3: 1.7 or 17/10?', lines: [{ m: -4 / 3, b: 2 / 3 }, { m: 2, b: -5 }], eq: ['4x+3y=2', '2x-y=5'], pt: [1.7, -1.6],
+    g: { xmin: -1.5, xmax: 4.5, ymin: -5.5, ymax: 1.5 }, labs: [[2.6, 'ne'], [3.15, 'e']], guess: [2, -2], gTex: '(2,\\ -2)',
+    gChk: [['4(2)+3(-2)=2', '✓'], ['2(2)-(-2)=6\\neq5', '✗']], zoom: { xmin: -0.1, xmax: 2.6, ymin: -2.6, ymax: 0.1, xstep: 0.1, ystep: 0.1 } },
+  third: { label: 'A decimal that never ends', lines: [{ m: -1, b: 1 }, { m: 2, b: 0 }], eq: ['x+y=1', 'y=2x'], pt: [1 / 3, 2 / 3],
+    g: { xmin: -2.5, xmax: 2.5, ymin: -2.5, ymax: 3.5 }, labs: [[-1.6, 'e'], [1.4, 'e']], guess: [0.3, 0.7], gTex: '(0.3,\\ 0.7)',
+    gChk: [['0.3+0.7=1', '✓'], ['2(0.3)=0.6\\neq0.7', '✗']], zoom: { xmin: -0.1, xmax: 1.1, ymin: -0.1, ymax: 1.1, xstep: 0.1, ystep: 0.1 } }
 };
 const exact = {
-  title: 'The calculator’s decimal vs the exact value',
+  title: 'A hand-drawn graph’s estimate vs the exact value',
   height: 450,
   minW: 966, // drawn this wide and scaled to fit beside the sidebar
   choices: Object.keys(EX).map((k) => ({ v: k, label: EX[k].label })),
-  intro: (k) => (k === 'e3' ? `Lesson 1, Example 4: ${T(tc(BL, '4x+3y=2'))} and ${T(tc(AM, '2x-y=5'))}, solved on the <b>graphing calculator</b> (TI-84). Press <b>Next</b>.`
-    : `A new system: ${T(tc(BL, 'x+y=1'))} and ${T(tc(AM, 'y=2x'))}. Graphing calculator first. Press <b>Next</b>.`),
+  intro: (k) => `${T(tc(BL, EX[k].eq[0]))} and ${T(tc(AM, EX[k].eq[1]))}, graphed <b>by hand</b>. Where do they cross? Press <b>Next</b>.`,
   make(stage, k, ex) {
     const d = EX[k], GW = 400;
-    const G = new Graph(stage, { x: 14, y: 14, width: GW, height: 300, theme: 'calc', xmin: -10, xmax: 10, ymin: -10, ymax: 10 });
-    const L = d.lines.map((ln, i) => G.line(ln, { color: EQC[i], width: 3 })); L.forEach((l) => (l.style.opacity = 0));
-    const KB = add(stage, box(h('div', 'u8l2-keys'), GW, 44), 14, 326);
-    const note = add(stage, box(h('div', 'u8l2-calcnote', 'TI-83/84 graphing calculator keys (Lesson 1)'), GW, 24), 14, 376);
-    const P = panel(stage, GW + 34, 14, ex.W - GW - 48, ex.def.height - 28, 'Substitution: exact values');
-    const keys = async (c, ks) => { KB.innerHTML = ''; for (const kk of ks) { const e = h('span', '', kbd(kk)); KB.appendChild(e); await pop(c, e, 200); } };
+    const G = new Graph(stage, Object.assign({ x: 14, y: 14, width: GW, height: 420, fontSize: 15 }, d.g));
+    const L = d.lines.map((ln, i) => G.line(ln, { color: EQC[i], width: 4 })); L.forEach((l) => (l.style.opacity = 0));
+    const labs = d.labs.map(([lx, pos], i) => G.label(lx, d.lines[i].m * lx + d.lines[i].b, T(d.eq[i]), { pos, cls: 'bk-ptlab', color: EQC[i] }));
+    labs.forEach((l) => (l.style.opacity = 0));
+    const P = panel(stage, GW + 34, 14, ex.W - GW - 48, ex.def.height - 28, 'Estimate, then exact values');
+    const est = d.gChk.map(([t, n], i) => { const r = wrow(P, i ? '' : 'Guess', t, { note: n, cls: 'u8l2-est' }); r.lastChild.className = 'u8l2-why ' + (n === '✓' ? 'u8l2-good' : 'u8l2-bad'); r.style.opacity = 0; return r; });
     const rows = k === 'e3'
       ? [['Step 2', `4x+3(${tc(AM, '2x-5')})=2`], ['Step 3', '10x=17'], ['', `${tc(PU, 'x=\\dfrac{17}{10}')}`], ['Step 4', `y=2\\left(\\dfrac{17}{10}\\right)-5=${tc(PU, '-\\dfrac{8}{5}')}`]]
       : [['Step 2', `x+${tc(AM, '2x')}=1`], ['Step 3', '3x=1'], ['', `${tc(PU, 'x=\\dfrac13')}`], ['Step 4', `y=2\\left(\\dfrac13\\right)=${tc(PU, '\\dfrac23')}`]];
-    const R = rows.map(([g, t]) => { const r = wrow(P, g, t); r.style.opacity = 0; return r; });
+    const R = rows.map(([g, t]) => { const r = wrow(P, g, t); r.style.opacity = 0; r.style.display = 'none'; return r; });
     const cmp = k === 'e3'
       ? [['Compare', `\\dfrac{17}{10}=1.7`, '✓ exactly'], ['', `-\\dfrac{8}{5}=-1.6`, '✓ exactly']]
-      : [['Check', `2(.33333333)=.66666666`, '✗ not .66666667'], ['', `2\\left(\\dfrac13\\right)=\\dfrac23`, '✓ exactly']];
-    const C = cmp.map(([g, t, n]) => { const r = wrow(P, g, t, { note: n }); r.style.opacity = 0; r.lastChild.className = 'u8l2-why ' + (n[0] === '✓' ? 'u8l2-good' : 'u8l2-bad'); return r; });
+      : [['Check', `2(0.33)=0.66`, '✗ not 0.67'], ['', `2\\left(\\dfrac13\\right)=\\dfrac23`, '✓ exactly']];
+    const C = cmp.map(([g, t, n]) => { const r = wrow(P, g, t, { note: n }); r.style.opacity = 0; r.style.display = 'none'; r.lastChild.className = 'u8l2-why ' + (n[0] === '✓' ? 'u8l2-good' : 'u8l2-bad'); return r; });
+    let ring, Q;
     return [
-      { cap: `${kbd('Y=')} ${T(d.ys[0])} and ${T(d.ys[1])}, then ${kbd('GRAPH')} in the standard window.`,
-        run: async (c) => { await keys(c, ['Y=', 'GRAPH']); for (const l of L) { l.style.opacity = 1; await G.drawIn(l, 600, c); } } },
-      { cap: `${kbd('2nd')} ${kbd('TRACE')} <b>5:intersect</b>, then ${kbd('ENTER')} three times: X=${d.ro[0]}, Y=${d.ro[1].replace('-', '−')}.`,
+      { cap: `Graph both lines by hand. They cross <b>between</b> the grid lines.`,
         run: async (c) => {
-          await keys(c, ['2nd', 'TRACE', '5', 'ENTER', 'ENTER', 'ENTER']);
-          const p = G.point(d.pt[0], d.pt[1], { color: PU, r: 6 }); await G.reveal(p, c);
-          const ro = G.readout('Intersection', { x: d.pt[0], y: d.pt[1] });
-          ro.querySelector('.bk-ro-x').textContent = 'X=' + d.ro[0]; ro.querySelector('.bk-ro-y').textContent = 'Y=' + d.ro[1];
-          await appear(c, ro);
+          for (let i = 0; i < 2; i++) { L[i].style.opacity = 1; await G.drawIn(L[i], 600, c); await fadeIn(c, labs[i], 200); }
+          const [px, py] = G.toPx(d.pt[0], d.pt[1]); ring = svgEl('circle', { cx: px, cy: py, r: 30, fill: 'none', stroke: PU, 'stroke-width': 3, 'stroke-dasharray': '7 6' }, G.layers.top); await pop(c, ring, 400);
         } },
-      { cap: k === 'e3' ? `Is ${T('1.7')} exact, or rounded? The screen can’t say. Substitution: ${T('10x=17')}, so ${T('x=\\tfrac{17}{10}')} and ${T('y=-\\tfrac{8}{5}')}.`
+      { cap: `A guess by eye: ${T(d.gTex)}. It checks in ${T(tc(BL, d.eq[0]))} ✓ but not in ${T(tc(AM, d.eq[1]))} ✗. A graph can only <b>estimate</b>.`,
+        run: async (c) => { Q = G.point(d.guess[0], d.guess[1], { color: COLORS.ink, r: 6 }); await G.reveal(Q, c); for (const r of est) { await show(c, r); await sleep(c, 120); } } },
+      { cap: k === 'e3' ? `Substitution gives exact values: ${T('10x=17')}, so ${T('x=\\tfrac{17}{10}')} and ${T('y=-\\tfrac{8}{5}')}.`
         : `Substitution: ${T('x+2x=1')}, so ${T('3x=1')}: ${T('x=\\tfrac13')} and ${T('y=\\tfrac23')}.`,
-        run: async (c) => { for (const r of R) { await show(c, r); await sleep(c, 100); } } },
-      { cap: k === 'e3' ? `${T('\\tfrac{17}{10}=1.7')} and ${T('-\\tfrac{8}{5}=-1.6')} <b>exactly</b>: this time the screen happened to be exact. Only the algebra proves it.`
-        : `The screen <b>rounded</b>: ${T('\\tfrac13=0.333\\ldots')} never ends. Rounded decimals don’t even check: ${T('2(.33333333)=.66666666')}. The fractions check exactly.`,
-        run: async (c) => { for (const r of C) { await show(c, r); await sleep(c, 150); } } }
+        run: async (c) => { est.forEach((r) => (r.style.display = 'none')); for (const r of R) { r.style.display = ''; await show(c, r); await sleep(c, 100); } } },
+      { cap: k === 'e3' ? `${T('\\tfrac{17}{10}=1.7')} and ${T('-\\tfrac{8}{5}=-1.6')} <b>exactly</b>. Zoom in: the lines really cross at ${T('(1.7,\\ -1.6)')}, between the grid lines. Only the algebra could say so for sure.`
+        : `Zoom in: the crossing is at ${T('\\left(\\tfrac13,\\ \\tfrac23\\right)')}, and ${T('\\tfrac13=0.333\\ldots')} never ends, so no grid can show it exactly. Rounded decimals don’t even check: ${T('2(0.33)=0.66')}. The fractions check exactly.`,
+        run: async (c) => {
+          ring.remove(); Q.style.opacity = 0; labs.forEach((l) => (l.style.opacity = 0)); G.o.xlabels = 0.5; G.o.ylabels = 0.5; await G.setWindow(d.zoom, c, 1200);
+          const p = G.point(d.pt[0], d.pt[1], { color: PU, r: 7 }); await G.reveal(p, c);
+          for (const r of C) { r.style.display = ''; await show(c, r); await sleep(c, 150); }
+        } }
     ];
   }
 };

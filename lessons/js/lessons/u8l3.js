@@ -883,7 +883,7 @@ const choose = {
     const F = new Flowchart(stage, { x: 6, y: 4, width: 560, height: 470,
       nodes: {
         start: { x: 360, y: 34, w: 300, h: 50, html: '<b>Look at the system</b>', cls: 'bk-round' },
-        q0: { x: 360, y: 134, w: 320, h: 78, html: '<b>Need a picture or an estimate?</b>(or a graphing calculator is allowed)' },
+        q0: { x: 360, y: 134, w: 320, h: 78, html: '<b>Need a picture or an estimate?</b>(by hand: exact only for integer solutions)' },
         graph: { x: 84, y: 134, w: 150, h: 60, html: '<b>Graphing</b>', color: 'teal' },
         q1: { x: 360, y: 262, w: 320, h: 86, html: '<b>Is a variable isolated?</b>or does one have coefficient 1 or −1?' },
         sub: { x: 84, y: 262, w: 150, h: 60, html: '<b>Substitution</b>', color: 'purple' },

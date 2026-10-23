@@ -1,5 +1,5 @@
 /* Math 10C · Unit 2 · Lesson 6 — Exponent Laws in Review (AN3)
- * Assignment questions 1–19 (u2_L06.tex; Part F, questions 17–19, is the scientific-notation extension) and the
+ * Assignment questions 1–19 (u2_L06.tex; Part F, questions 17–19, reviews scientific notation from Lesson 3) and the
  * cumulative Lesson 6 Extra Practice (u2_EP06.tex, questions 1–23). Every part is a generator: it keeps the idea and
  * difficulty of the booklet question (the booklet's numbers are one of the possible values) and changes the numbers.
  * Multiple-choice distractors are computed from the generated numbers, one per real misconception, each with a hint.
@@ -381,7 +381,7 @@
     return '<b>Written response.</b> Jordan simplified ' + t(sh.orig) + ' as shown.\\[\\begin{array}{rl}\\text{Step 1:} & ' + sh.orig + '=' + sh.steps[0] + '\\\\ \\text{Step 2:} & =' + sh.steps[1] + '\\\\ \\text{Step 3:} & =' + sh.steps[2] + '\\\\ \\text{Step 4:} & =' + sh.steps[3] + '\\end{array}\\]';
   }
 
-  /* Q17–Q19 — scientific notation (extension) */
+  /* Q17–Q19 — scientific notation (Lesson 3) */
   function q17(r) {
     var a, b, pr;
     for (var g = 0; g < 300; g++) { a = r.int(12, 95) / 10; b = r.int(12, 95) / 10; pr = Math.round(a * b * 100); if (pr >= 1000 && pr % 10 === 0) break; }
@@ -749,7 +749,7 @@
 
   HW.defineLesson({
     id: 'u2l6', unit: 2, num: '6', title: 'Exponent Laws in Review', outcome: 'AN3',
-    blurb: 'Every law from the unit in one place — vocabulary, the product and quotient laws, zero and negative exponents, rational exponents, an error-analysis written response, and scientific notation as an extension.',
+    blurb: 'Every law from the unit in one place — vocabulary, the product and quotient laws, zero and negative exponents, scientific notation, rational exponents, and an error-analysis written response.',
     questions: [
       { num: '1', section: 'Part A — Vocabulary and Repeated Multiplication', stem: '<i>(Multiple Choice)</i>', parts: [{ id: '1', level: 'BEG', make: q1 }] },
       { num: '2', stem: '<i>(Multiple Choice)</i>', parts: [{ id: '2', level: 'BEG', make: q2 }] },
@@ -842,8 +842,8 @@
             'Original: ' + t('\\left(' + sh.C + '\\cdot 1\\cdot 1\\right)^{' + eS(sh.Rr) + '}\\cdot\\left(1^{1/2}\\right)^{' + (2 * sh.w) + '}=' + sh.C + '^{' + eS(sh.Rr) + '}=\\frac{1}{' + s + '}') + '. The corrected answer also gives ' + t('\\frac{1}{' + s + '}') + ' ✔, while Jordan’s gives ' + t(sh.J) + '.',
             ['Every power of ' + t('1') + ' is ' + t('1') + ', so only the number ' + t(sh.C + '^{' + eS(sh.Rr) + '}') + ' is left.'], 'Jordan check a=b=1');
         } }] },
-      { num: '17', section: 'Part F — Extension: Scientific Notation', stem: '<i>(Extension, Multiple Choice)</i>', parts: [{ id: '17', level: 'BEG', make: q17 }] },
-      { num: '18', stem: '<i>(Extension, Multiple Choice)</i>', parts: [{ id: '18', level: 'BEG', make: q18 }] },
+      { num: '17', section: 'Part F — Scientific Notation', stem: '<i>(Multiple Choice)</i>', parts: [{ id: '17', level: 'BEG', make: q17 }] },
+      { num: '18', stem: '<i>(Multiple Choice)</i>', parts: [{ id: '18', level: 'BEG', make: q18 }] },
       { num: '19', stem: q19stem, shared: q19shared, parts: [
         { id: '19a', level: 'EMG', make: function (r, sh) {
           var x = sh.body.c / sh.lng.L, N = Math.round(x / 1e6) * 1e6;
