@@ -712,7 +712,7 @@
               t('x\\tan ' + dg(a2) + '=(x+' + d + '.0)\\tan ' + dg(a1)) + '<br>' + t('x\\tan ' + dg(a2) + '-x\\tan ' + dg(a1) + '=' + d + '.0\\tan ' + dg(a1)) + '<br>' + t('x=\\dfrac{' + d + '.0\\tan ' + dg(a1) + '}{\\tan ' + dg(a2) + '-\\tan ' + dg(a1) + '}=\\dfrac{' + fl(d * t1) + '}{' + fl(t2 - t1) + '}=' + fl(x) + '\\approx ' + fx(x, 1)) + ' m (keep ' + t(fl(x)) + ')',
               ['Set the two expressions for ' + t('h') + ' equal.', 'Expand, collect the ' + t('x') + ' terms on one side, then factor out ' + t('x') + '.'], 'solve for x, two observations');
           } },
-          { id: 'e6d', level: 'PRG', make: function (r, sh) {
+          { id: 'e6d', level: 'EMG', make: function (r, sh) {
             var a1 = sh.a1, a2 = sh.a2, d = sh.d, x = sh.x, h = sh.h;
             return nearP('Determine the height ' + t('h') + ' of the tower to the nearest tenth of a metre. (' + t('x=BF') + ' is about ' + t(fx(x, 1)) + ' m — use the full value ' + t('x=\\dfrac{' + d + '.0\\tan ' + dg(a1) + '}{\\tan ' + dg(a2) + '-\\tan ' + dg(a1) + '}') + '.)', h, 1, 'm', [
               A(RT(x, 1) * Tg.tan(a2), 'early-round', 'Very close — that comes from the <b>rounded</b> ' + t('x') + '. Use the full calculator value of ' + t('x') + '.'),
@@ -739,7 +739,7 @@
               'With the rounded ' + t('x=' + fx(x, 1)) + ': ' + t(fx(x, 1) + '\\tan ' + dg(a2) + '=' + fl(hr) + '\\approx ' + fx(hr, 1)) + ' m.<br>With the full ' + t('x=' + fl(x)) + ': ' + t('h=' + fl(h) + '\\approx ' + fx(h, 1)) + ' m.<br>Report ' + t(fx(h, 1)) + ' m. ' + t('x') + ' was an intermediate value; rounding it threw information away, and multiplying by ' + t('\\tan ' + dg(a2)) + ' magnified the error. Round only at the very end.',
               ['Do the multiplication twice with the two different values of ' + t('x') + '.'], 'rounded vs full x');
           } },
-          { id: 'e6g', level: 'PRG', make: function (r, sh) {
+          { id: 'e6g', level: 'EMG', make: function (r, sh) {
             var a2 = sh.a2, h = sh.h, bt = h / Tg.sin(a2);
             return nearP('The tower is ' + t('h\\approx ' + fl(h)) + ' m tall. Determine the length of the line of sight ' + t('BT') + ', to the nearest tenth of a metre.', bt, 1, 'm', [
               A(h * Tg.sin(a2), 'trig-inverted', t('BT') + ' is in the denominator of ' + t('\\sin ' + dg(a2) + '=\\frac{h}{BT}') + ': divide.'),
@@ -774,7 +774,7 @@
               'Each angle of depression equals the angle of elevation at the car, so in each triangle ' + t(f1(H)) + ' m is opposite and the distance is adjacent.<br>' + t('d_N=\\dfrac{' + f1(H) + '}{\\tan ' + dg(sh.thN) + '}=' + fl(dN) + '\\approx ' + fx(dN, 1)) + ' m<br>' + t('d_F=\\dfrac{' + f1(H) + '}{\\tan ' + dg(sh.thF) + '}=' + fl(dF) + '\\approx ' + fx(dF, 1)) + ' m',
               ['Use the equal angle of elevation at each car: tan = height ÷ distance.'], 'distances to two cars');
           } },
-          { id: 'e7c', level: 'PRG', make: function (r, sh) {
+          { id: 'e7c', level: 'ADV', make: function (r, sh) {
             var H = sh.H, dN = H / Tg.tan(sh.thN), dF = H / Tg.tan(sh.thF), g = dF - dN;
             return nearP('Determine the distance between the two cars, to the nearest tenth of a metre.', g, 1, 'm', [
               A(dF + dN, 'cars-sum', 'Both cars are on the <b>same side</b> of the garage, so the gap is the difference of the two distances.'),
@@ -1118,7 +1118,7 @@
               t('\\triangle AFL') + ': ' + t('AF=\\dfrac{h}{\\tan ' + dg(l1) + '}') + '. ' + t('\\triangle BFL') + ': ' + t('FB=\\dfrac{h}{\\tan ' + dg(l2) + '}') + '.<br>' + t('h\\left(\\dfrac{1}{\\tan ' + dg(l1) + '}+\\dfrac{1}{\\tan ' + dg(l2) + '}\\right)=' + AB) + '<br>' + t('h(' + fl(1 / Tg.tan(l1)) + '+' + fl(1 / Tg.tan(l2)) + ')=' + AB) + '<br>' + t('h=\\dfrac{' + AB + '}{' + fl(s) + '}=' + fl(h) + '\\approx ' + fx(h, 1)) + ' km',
               ['In each right triangle, ' + t('h') + ' is opposite and the run along the track is adjacent: run ' + t('=\\frac{h}{\\tan}') + '.', 'Add the two runs, set them equal to ' + t('AB') + ', and factor out ' + t('h') + '.'], 'closest approach, two bearings');
           } },
-          { id: 'e17d', level: 'PRG', make: function (r, sh) {
+          { id: 'e17d', level: 'EMG', make: function (r, sh) {
             var AB = sh.v * sh.tm / 60, l1 = 90 - sh.b1, l2 = sh.b2 - 270, h = AB / (1 / Tg.tan(l1) + 1 / Tg.tan(l2)), bl = h / Tg.sin(l2);
             return nearP(t('LF=h\\approx ' + fl(h)) + ' km and angle ' + t('LBF=' + dg(l2)) + '. Determine the distance from the ship to the lighthouse at 09:' + (sh.tm < 10 ? '0' : '') + sh.tm + ' (that is, ' + t('BL') + '), to the nearest tenth of a km.', bl, 1, 'km', [
               A(h / Tg.sin(l1), 'one-tri', 'That is ' + t('AL') + ', the distance at 09:00. At ' + t('B') + ' use ' + t('\\angle LBF=' + dg(l2)) + '.'), A(h * Tg.sin(l2), 'trig-inverted', t('BL') + ' is in the denominator of ' + t('\\sin ' + dg(l2) + '=\\frac{h}{BL}') + ': divide.'), A(h / Tg.cos(l2), 'trig-ratio', t('h') + ' is <b>opposite</b> the angle at ' + t('B') + ' ⇒ SOH.'), aRad(h / Tg.radSin(l2))],

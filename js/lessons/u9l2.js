@@ -231,6 +231,7 @@
     var opts = [{ html: t(TX('sin', x)), right: hi === 'sin', why: hi === 'sin' ? null : 'Below ' + t(D(45)) + ' the adjacent side is longer than the opposite side, so the cosine is the greater one.' },
       { html: t(TX('cos', x)), right: hi === 'cos', why: hi === 'cos' ? null : 'Above ' + t(D(45)) + ' the opposite side is longer than the adjacent side, so the sine is the greater one.' },
       { html: 'They are equal', why: 'Sine and cosine of the same angle are equal only at ' + t(D(45)) + ', where opp ' + t('=') + ' adj.' }];
+    if (r.chance(0.5)) opts = [opts[1], opts[0], opts[2]];                              // vary the letter of the answer
     return mc(r, 'Without a calculator: which is greater, ' + t(TX('sin', x)) + ' or ' + t(TX('cos', x)) + '?', opts,
       (x < 45 ? 'Since ' + t(D(x) + '<45^\\circ') + ', the adjacent side is longer than the opposite side, so ' + t(TX('cos', x)) + ' is greater.' : 'Since ' + t(D(x) + '>45^\\circ') + ', the opposite side is longer than the adjacent side, so ' + t(TX('sin', x)) + ' is greater.') +
       ' (' + t(TX('sin', x) + '\\approx ' + fx(T.sin(x), 4)) + ', ' + t(TX('cos', x) + '\\approx ' + fx(T.cos(x), 4)) + '.)', ['Compare the angle with the ' + t(D(45)) + ' benchmark, where opp ' + t('=') + ' adj.'], 'sin vs cos ' + x, true);
@@ -330,11 +331,12 @@
               { html: t('90.00'), why: 'The tangent is a ratio of two sides, not an angle. Try ' + t('\\tan 90^\\circ') + ' on your calculator.' }],
               t('\\tan 90^\\circ=\\frac{\\text{opp}}{\\text{adj}}') + ' would divide by an adjacent side of length ' + t('0') + ', so it is <b>undefined</b> (the calculator gives an error).', ['Try it on your calculator. What happens to the adjacent side as the angle reaches ' + t(D(90)) + '?'], 'tan 90');
           } },
-          { id: '6b', sub: 'b(i)', level: 'BEG', make: function (r) {
+          { id: '6b', sub: 'b(i)', level: 'BEG', make: function (r, sh) {
+            var first = function (fn) { return t(sh.S.slice(0, 3).map(function (a) { return fx(FN[fn](a), 2); }).join(',\\ ') + ',\\ldots'); };
             var rows = r.shuffle([{ id: 'cos', html: t('\\cos x^\\circ') }, { id: 'tan', html: t('\\tan x^\\circ') }]);
             return B.grid('As the angle ' + t('x^\\circ') + ' increases from ' + t(D(0)) + ' to ' + t(D(90)) + ', what does each ratio do?', rows,
               [{ id: 'inc', html: 'increases' }, { id: 'dec', html: 'decreases' }, { id: 'same', html: 'stays the same' }], { cos: 'dec', tan: 'inc' },
-              { why: function (row) { return { code: 'tv-wrong-dir', hint: row === 'cos' ? 'Read the cosine row of your table from left to right: ' + t('1.00,\\ 0.98,\\ 0.94,\\ldots') : 'Read the tangent row of your table from left to right: ' + t('0.00,\\ 0.18,\\ 0.36,\\ldots') }; } },
+              { why: function (row) { return { code: 'tv-wrong-dir', hint: row === 'cos' ? 'Read the cosine row of your table from left to right: ' + first('cos') : 'Read the tangent row of your table from left to right: ' + first('tan') }; } },
               'The cosine row falls from ' + t('1') + ' to ' + t('0') + ' (the adjacent side shrinks); the tangent row rises from ' + t('0') + ' (the opposite side grows and the adjacent side shrinks).', ['Read each row of the table from left to right.'], 'cos/tan direction');
           } },
           { id: '6b2', sub: 'b(ii)', level: 'BEG', make: function (r) {
@@ -435,6 +437,7 @@
           { id: '11b', sub: 'b', level: 'BEG', make: function (r, sh) {
             var target = ex.parse('90-x').ast;
             var chk = function (resp) {
+              resp = String(resp == null ? '' : resp).replace(/\^\{?\\circ\}?|\\degree|°/g, '');   // (90-x)° is fine: the angle is in degrees
               var a = K.read(resp); if (a.res) return a.res;
               var vs = Object.keys(ex.shape(a.ast).vars || {});
               if (vs.some(function (v) { return v !== 'x'; })) return wrong('var', 'Use the letter ' + t('x') + ' from the question.');
@@ -535,7 +538,7 @@
           } },
           { id: 'e1h', sub: 'h', level: 'EMG', make: function (r, sh) {
             var a = sh.a, b = sh.b;
-            return mc(r, t(a + '+' + b + '=90') + '. Why did those pairs <b>have</b> to come out equal?', [
+            return mc(r, 'The calculator gives ' + t(TX('sin', a) + '=' + TX('cos', b)) + ' and ' + t(TX('cos', a) + '=' + TX('sin', b)) + ', and ' + t(a + '+' + b + '=90') + '. Why did those pairs <b>have</b> to come out equal?', [
               { html: t(D(a)) + ' and ' + t(D(b)) + ' are the two acute angles of one right triangle. The side opposite ' + t(D(a)) + ' is the side adjacent to ' + t(D(b)) + ', so ' + t(TX('sin', a)) + ' and ' + t(TX('cos', b)) + ' are the same fraction.', right: true },
               { html: 'Sine and cosine always give the same values, just in a different order.', why: 'That is the pattern, not the reason. The reason comes from the sides of one right triangle.' },
               { html: 'The two angles add to ' + t(D(90)) + ', so their ratios add to ' + t('1') + '.', why: 'Check: ' + t(TX('sin', a) + '+' + TX('sin', b)) + ' is not ' + t('1') + '. The angles add to ' + t(D(90)) + '; the ratios are <b>equal</b>, not adding to 1.' },
@@ -574,7 +577,7 @@
               'In <b>degree</b> mode: ' + [['sin', sh.a], ['cos', sh.b], ['tan', sh.c], ['sin', sh.d]].map(function (q) { return t(TX(q[0], q[1]) + '\\approx ' + fx(FN[q[0]](q[1]), 4)); }).join(', ') + '.', ['Set the calculator to degree mode first (DEG on the screen).'], 'radian disaster: correct values');
           } },
           { id: 'e2b', sub: 'b', level: 'EMG', make: function (r, sh) {
-            return mc(r, 'Two of the answers are negative. Why is a negative answer impossible for an acute angle — and why is that one symptom enough to diagnose the mode?', [
+            return mc(r, 'Three of the four answers are negative. Why is a negative answer impossible for an acute angle — and why is that one symptom enough to diagnose the mode?', [
               { html: 'Each ratio is one side length divided by another, and side lengths are positive — so a negative value cannot be a ratio of any triangle’s sides. The calculator must be answering a different question (radians).', right: true },
               { html: 'Negative values only happen for angles bigger than ' + t(D(90)) + ', and these angles are smaller.', why: 'The question is about acute angles in a triangle: argue from the sides. ' + t('\\frac{\\text{opp}}{\\text{hyp}}') + ' is positive over positive.' },
               { html: 'Sine and cosine are always between ' + t('0.5') + ' and ' + t('1') + '.', why: 'Not true: ' + t('\\sin 10^\\circ\\approx 0.1736') + '. The point is that they are never <b>negative</b>, because lengths are positive.' },
@@ -692,7 +695,7 @@
         { id: 'e6c', sub: 'c', level: 'EMG', make: function (r) {
           var a = r.pick([87, 87, 85, 86, 88]), v2 = R(T.sin(a), 2), back = Math.round(T.asin(v2));
           return boxes('Repeat both steps for ' + t(TX('sin', a)) + ': four decimal places, then two.', tripFields('sin', a).concat([
-            vBox('sin', a, 2, t(TX('sin', a)) + ' (2 d.p.)'),
+            Object.assign(vBox('sin', a, 2, t(TX('sin', a)) + ' (2 d.p.)'), { label: t(TX('sin', a)) + ' to 2 d.p. ' + t('=') }),
             { label: t('\\sin^{-1}') + ' of that ' + t('='), name: t('\\sin^{-1}(' + v2.toFixed(2) + ')'), x: T.asin(v2), dp: 0, after: '°', tex: D(back), alts: [{ v: a, code: 'tv-early-round', hint: 'Use the <b>two-decimal</b> value ' + t(v2.toFixed(2)) + ' in the inverse key.' }] },
             intBox('out by', Math.abs(back - a), function (v) { return v === 0 ? { code: 'tv-out-by', hint: 'Compare the two-decimal trip’s angle with ' + t(D(a)) + '.' } : null; }, '°')]),
             t(TX('sin', a) + '\\approx ' + fx(T.sin(a), 4)) + ' and ' + t(TXI('sin', fx(T.sin(a), 4)) + '\\approx ' + D(a)) + ' ✓. To two decimal places ' + t(TX('sin', a) + '\\approx ' + v2.toFixed(2)) + ', and ' + t('\\sin^{-1}(' + v2.toFixed(2) + ')=' + D(back)) + ': out by ' + t(D(back - a)) + '.', ['First two boxes: the four-decimal trip. Next two: the two-decimal trip.'], 'sin trips ' + a);
@@ -701,7 +704,7 @@
           var a = pickWhere(function () { return r.int(50, 70); }, function (a) { return Math.round(T.atan(R(T.tan(a), 2))) === a && Math.round(T.atan(R(T.tan(a), 4))) === a; });
           if (r.chance(0.3)) a = 61;
           var v2 = R(T.tan(a), 2);
-          return boxes('Repeat both steps for ' + t(TX('tan', a)) + ': four decimal places, then two.', tripFields('tan', a).concat([vBox('tan', a, 2, t(TX('tan', a)) + ' (2 d.p.)'),
+          return boxes('Repeat both steps for ' + t(TX('tan', a)) + ': four decimal places, then two.', tripFields('tan', a).concat([Object.assign(vBox('tan', a, 2, t(TX('tan', a)) + ' (2 d.p.)'), { label: t(TX('tan', a)) + ' to 2 d.p. ' + t('=') }),
             { label: t('\\tan^{-1}') + ' of that ' + t('='), name: t('\\tan^{-1}(' + v2.toFixed(2) + ')'), x: T.atan(v2), dp: 0, after: '°', tex: D(a), alts: angAlts('tan', v2) }]),
             t(TX('tan', a) + '\\approx ' + fx(T.tan(a), 4)) + ' and ' + t(TXI('tan', fx(T.tan(a), 4)) + '\\approx ' + D(a)) + '. To two decimals, ' + t(v2.toFixed(2)) + ', and ' + t('\\tan^{-1}(' + v2.toFixed(2) + ')=' + T.atan(v2).toFixed(4) + '\\ldots^\\circ\\approx ' + D(a)) + ' — the trip survives.', ['First two boxes: the four-decimal trip. Last two: the two-decimal trip.'], 'tan trips ' + a);
         } },
@@ -738,7 +741,7 @@
               { html: t('\\tan 90^\\circ') + ' is a number too big for the calculator to display.', why: 'Any number you name, ' + t('\\tan\\theta') + ' passes it before ' + t(D(90)) + '. There is no number at all — the error means “no such number”.' },
               { html: t('\\tan 90^\\circ=0') + ', but the calculator can’t show it.', why: 'That is ' + t('\\cos 90^\\circ') + '. The tangent near ' + t(D(90)) + ' is huge, not near ' + t('0') + '.' },
               { html: t('\\tan 90^\\circ=1') + ', like ' + t('\\sin 90^\\circ') + '.', why: 'The tangent already equals ' + t('1') + ' at ' + t(D(45)) + ' and keeps growing.' }],
-              'The values (' + t('\\tan 88^\\circ\\approx 28.6363') + ', ' + t('\\tan 89.5^\\circ\\approx 114.5887') + ', ' + t('\\tan 89.999^\\circ\\approx 57\\,295.7795') + ') are not closing in on any number. So there is no number to hand back for ' + t('\\tan 90^\\circ') + ': the error means “no such number exists”, not “the calculator can’t manage it”.', ['Do the values in (c) seem to be settling down to some number?'], 'tan 90 refusal');
+              'The values (' + t('\\tan 88^\\circ\\approx 28.6363') + ', ' + t('\\tan 89.5^\\circ\\approx 114.5887') + ', ' + t('\\tan 89.999^\\circ\\approx 57\\,295.7795') + ') are not closing in on any number. So there is no number to hand back for ' + t('\\tan 90^\\circ') + ': the error means “no such number exists”, not “the calculator can’t manage it”.', ['Look at ' + t('\\tan 88^\\circ') + ', ' + t('\\tan 89.5^\\circ') + ' and ' + t('\\tan 89.999^\\circ') + '. Are they settling down to some number?'], 'tan 90 refusal');
           } },
           { id: 'e7d', sub: 'd', level: 'EMG', make: function (r, sh) {
             var big = fxT(T.tan(sh.S[5]), 4);
@@ -755,8 +758,10 @@
         { id: 'e8c', sub: 'c', level: 'LIM', make: function (r) { var p = r.chance(0.3) ? [8, 80] : [r.int(5, 15), r.int(70, 85)]; if (r.chance(0.5)) p.reverse(); return greaterSame(r, 'tan', p[0], p[1]); } },
         { id: 'e8d', sub: 'd', level: 'BEG', make: function (r) {
           var f = r.pick(['cos', 'cos', 'sin']), v = r.pick([1.4, 1.2, 1.3, 1.5, 1.05, 1.8]);
-          return mc(r, 'Can ' + t('\\' + f + '\\theta=' + v) + ' for some acute angle ' + t('\\theta') + '?', [
-            { html: '<b>No</b>', right: true }, { html: '<b>Yes</b>', why: t('\\' + f + '\\theta=' + (f === 'cos' ? '\\frac{\\text{adj}}{\\text{hyp}}' : '\\frac{\\text{opp}}{\\text{hyp}}')) + ', and the hypotenuse is the longest side, so the fraction is less than ' + t('1') + '.' }],
+          var yn = [
+            { html: '<b>No</b>', right: true }, { html: '<b>Yes</b>', why: t('\\' + f + '\\theta=' + (f === 'cos' ? '\\frac{\\text{adj}}{\\text{hyp}}' : '\\frac{\\text{opp}}{\\text{hyp}}')) + ', and the hypotenuse is the longest side, so the fraction is less than ' + t('1') + '.' }];
+          if (r.chance(0.5)) yn.reverse();
+          return mc(r, 'Can ' + t('\\' + f + '\\theta=' + v) + ' for some acute angle ' + t('\\theta') + '?', yn,
             '<b>No.</b> ' + t('\\' + f + '\\theta=' + (f === 'cos' ? '\\frac{\\text{adj}}{\\text{hyp}}' : '\\frac{\\text{opp}}{\\text{hyp}}')) + ' and the hypotenuse is the longest side, so the ' + NAME[f] + ' of an acute angle is always less than ' + t('1') + '. The row never passes ' + t('1') + '.', ['Which side is on the bottom of the fraction? Can the top ever be longer?'], 'can ' + f + ' = ' + v, true);
         } },
         { id: 'e8e', sub: 'e', level: 'EMG', make: function (r) {
@@ -844,7 +849,7 @@
             t('\\sin ' + D(a1) + '=\\cos ' + D(90 - a1)) + ' (both ' + t(fx(T.sin(a1), 4)) + '), ' + t('\\sin ' + D(a2) + '=\\cos ' + D(90 - a2)) + ' (both ' + t(fx(T.sin(a2), 4)) + '), ' + t('\\sin 45^\\circ=\\cos 45^\\circ') + ' (both ' + t('0.7071') + ').', ['Match each sine value with the same number in the cosine row.'], 'three cofunction pairs');
         } },
         { id: 'e10b', sub: 'b', level: 'BEG', make: function (r) {
-          return mc(r, 'Which general rule do those equations suggest?', [
+          return mc(r, 'A table of values gives ' + t('\\sin 5^\\circ=\\cos 85^\\circ') + ', ' + t('\\sin 25^\\circ=\\cos 65^\\circ') + ' and ' + t('\\sin 45^\\circ=\\cos 45^\\circ') + '. Which general rule do these equations suggest?', [
             { html: t('\\sin\\theta=\\cos(90^\\circ-\\theta)'), right: true },
             { html: t('\\sin\\theta=\\cos\\theta'), why: 'Only at ' + t(D(45)) + '. In the pairs, the two angles are different and add to ' + t(D(90)) + '.' },
             { html: t('\\sin\\theta=\\cos(180^\\circ-\\theta)'), why: 'Check the pairs: the two angles add to ' + t(D(90)) + ', not ' + t(D(180)) + '.' },
@@ -875,7 +880,7 @@
         { id: 'e10e2', sub: 'e(ii)', level: 'BEG', make: function (r) { var a = r.chance(0.3) ? 74 : r.pick(range(8, 82).filter(function (v) { return v !== 45; })); return degNum('Use the rule (no calculator): ' + t('\\cos ' + D(a) + '=\\sin\\ \\underline{\\quad}'), 90 - a, cofDiag(a), t('90-' + a + '=' + (90 - a)) + ', so ' + t('\\cos ' + D(a) + '=\\sin ' + D(90 - a)) + '.', ['The two angles add to ' + t(D(90)) + '.'], 'cos ' + a + ' = sin ?', t('\\cos ' + D(a) + '=\\sin')); } },
         { id: 'e10e3', sub: 'e(iii)', level: 'BEG', make: function (r) { var s = r.chance(0.5); return degNum('Use the rule (no calculator): ' + t((s ? '\\sin' : '\\cos') + ' 45^\\circ=' + (s ? '\\cos' : '\\sin') + '\\ \\underline{\\quad}'), 45, function (v) { return v === 135 ? cofDiag(45)(135) : v === 0 ? { code: 'value', hint: 'The angle must make ' + t('45+?=90') + '.' } : null; }, t('90-45=45') + ': ' + t(D(45)) + ' is its own complement.', ['What angle adds to ' + t(D(45)) + ' to make ' + t(D(90)) + '?'], '45 self-complementary', t((s ? '\\sin' : '\\cos') + ' 45^\\circ=' + (s ? '\\cos' : '\\sin'))); } },
         { id: 'e10e4', sub: 'e(iv)', level: 'ADV', make: function (r) {
-          var o = r.chance(0.3) ? { p: 2, q: 30, x: 20 } : pickWhere(function () { var p = r.pick([2, 3, 4]), x = r.int(5, 25), q = 90 - (p + 1) * x; return { p: p, q: q, x: x }; }, function (o) { return o.q >= 5 && o.q <= 50 && o.p * o.x < 90 && o.x + o.q < 90; });
+          var o = r.chance(0.3) ? { p: 2, q: 30, x: 20 } : pickWhere(function () { var p = r.pick([2, 3, 4]), x = r.int(5, 25), q = 90 - (p + 1) * x; return { p: p, q: q, x: x }; }, function (o) { return o.q >= 5 && o.q <= 50 && o.p * o.x < 90 && o.x + o.q < 90 && o.p * o.x !== o.x + o.q; }); // not both 45° (then “set them equal” would also give x)
           var p = o.p, q = o.q, x = o.x, eqv = (o.p - 1) ? q / (p - 1) : null, e180 = (180 - q) / (p + 1);
           var lhs = '\\sin(' + p + 'x)^\\circ', rhs = '\\cos(x+' + q + ')^\\circ';
           return B.number('Solve for ' + t('x') + ': ' + t(lhs + '=' + rhs) + ', where both angles are acute.', x, function (v) {
@@ -947,7 +952,7 @@
         } }] },
       /* ---------- Part E ---------- */
       { num: '13', section: 'Extra practice E — Error analysis: three ways to misread the inverse key', stem: function (sh) { return '<b>The notation trap.</b> Asked for the acute angle with ' + t('\\sin\\theta=' + sh.v) + ', a student wrote ' + t('\\sin^{-1}(' + sh.v + ')=\\frac{1}{' + sh.v + '}=' + sh.rec) + '.'; },
-        shared: function (r) { var v = r.chance(0.35) ? 0.8 : r.pick([0.8, 0.4, 0.25, 0.5, 0.625, 0.2]); return { v: v, rec: +(1 / v).toFixed(4) }; },
+        shared: function (r) { var v = r.chance(0.35) ? 0.8 : r.pick([0.8, 0.4, 0.25, 0.5, 0.625, 0.64]); return { v: v, rec: +(1 / v).toFixed(4) }; },
         parts: [
           { id: 'e13a', sub: 'a', level: 'BEG', make: function (r, sh) {
             return mc(r, 'Name the error precisely.', [
@@ -959,7 +964,7 @@
           } },
           { id: 'e13b', sub: 'b', level: 'EMG', make: function (r, sh) {
             var lo = [0, 5, 25, 45, 65, 85].filter(function (a) { return T.sin(a) < sh.v; }).pop(), hi = [5, 25, 45, 65, 85, 90].filter(function (a) { return T.sin(a) > sh.v; })[0];
-            var o = [{ value: 'deg', html: t(sh.rec) + ' is a pure number with no degree sign — it is not an angle.' }, { value: 'tab', html: 'From the table, ' + t('\\sin ' + D(lo) + '<' + sh.v + '<\\sin ' + D(hi)) + ', so the angle is between ' + t(D(lo)) + ' and ' + t(D(hi)) + ' — nowhere near ' + t(sh.rec + '^\\circ') + '.' },
+            var o = [{ value: 'deg', html: t(sh.rec) + ' is a pure number with no degree sign — it is not an angle.' }, { value: 'tab', html: 'From the table, ' + t('\\sin ' + D(lo) + '<' + sh.v + '<\\sin ' + D(hi)) + ', so the angle is between ' + t(D(lo)) + ' and ' + t(D(hi)) + ' — and ' + t(sh.rec + '^\\circ') + ' is not in that range.' },
               { value: 'big', html: t(sh.rec) + ' is greater than ' + t('1') + ', and a sine can never be more than ' + t('1') + '.' }, { value: 'whole', html: t('\\sin^{-1}') + ' always gives a whole number of degrees.' }];
             return { prompt: 'Select the <b>two</b> good reasons, before any calculation, that ' + t(sh.rec) + ' cannot be the answer.', input: { type: 'select', options: r.shuffle(o) }, key: ['deg', 'tab'], answer: o[0].html + '<br>' + o[1].html, text: 'two reasons 1/v wrong',
               check: K.selectSet(['deg', 'tab'], function (extra) {
@@ -1176,7 +1181,7 @@
           return statementMC(r, '<i>(Multiple Choice)</i> Three statements are made about acute angles.', pool, '', ['Use the ceilings (sine and cosine below ' + t('1') + ', tangent unlimited) and the directions (sine and tangent increase, cosine decreases).'], 'three statements');
         } },
         { id: 'e18b', sub: 'b', level: 'EMG', make: function (r) {
-          var a = r.chance(0.3) ? 63 : r.int(20, 85), b = r.chance(0.3) ? 70 : r.int(15, 80), ans = a + 90 - b;
+          var a = r.chance(0.3) ? 63 : r.int(20, 85), b = r.chance(0.3) ? 70 : r.pick(range(15, 80).filter(function (v) { return v !== 45; })), ans = a + 90 - b; // b = 45 would let a + b pass
           return B.nr('<i>(Numerical Response)</i> To the nearest degree, the value of ' + t('\\tan^{-1}\\!\\left(\\tan ' + D(a) + '\\right)+\\sin^{-1}\\!\\left(\\cos ' + D(b) + '\\right)') + ' is ________ degrees.', ans, function (v) {
             if (v === a + b) return { code: 'tv-sum', hint: t('\\sin^{-1}(\\cos ' + D(b) + ')') + ' is not ' + t(D(b)) + ': the inverse <b>sine</b> undoes a sine, not a cosine. Rewrite ' + t('\\cos ' + D(b)) + ' as the sine of another angle first.' };
             if (v === a + 180 - b) return { code: 'tv-cof-180', hint: 'Use ' + t('\\cos\\theta=\\sin(90^\\circ-\\theta)') + ': complementary angles add to ' + t('90') + '.' };

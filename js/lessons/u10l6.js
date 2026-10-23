@@ -94,7 +94,11 @@
   /* several boxes. rows: [{ label, after, x, dp, alts, exact, check, key, show }] */
   function fields(prompt, rows, sol, hints, text) {
     var fl = rows.map(function (rw) { return { label: rw.label, after: rw.after, name: String(rw.label).replace(/\s*(C\$|\$)\s*$/, '').replace(/:\s*$/, '').replace(/=\\\)$/, '\\)').replace(/\s+$/, '') + (rw.after ? ' (' + rw.after + ')' : '') }; });
-    var checks = rows.map(function (rw) { return rw.check || (rw.exact ? nearX(rw.x, rw.dp, { alts: rw.alts || [] }) : K.near(rw.x, rw.dp, { alts: rw.alts || [] })); });
+    var checks = rows.map(function (rw) {
+      var c = rw.check || (rw.exact ? nearX(rw.x, rw.dp, { alts: rw.alts || [] }) : K.near(rw.x, rw.dp, { alts: rw.alts || [] }));
+      if (!rw.also) return c;   // rw.also: other values whose rounding is also right (e.g. from a value the prompt shows rounded)
+      return function (resp) { var p = HW.parse.number(resp); if (p.ok && rw.also.some(function (a) { return Math.abs(p.value - rnd(a, rw.dp)) < 1e-9; })) return ok(); return c(resp); };
+    });
     var keys = rows.map(function (rw) { return rw.key != null ? String(rw.key) : rw.exact ? plain(rw.x) : kx(rw.x, rw.dp); });
     var ans = rows.map(function (rw, i) { return rw.label + ' ' + (rw.show || t(rw.key != null ? F(String(rw.key)) : rw.exact ? num(rw.x) : fx(rw.x, rw.dp))) + (rw.after ? ' ' + rw.after : ''); }).join('<br>');
     var p = B.fields(prompt, fl, checks, keys, ans, sol, hints, text);
@@ -102,7 +106,7 @@
     var bad = [];
     rows.forEach(function (rw, i) {
       if (rw.check || !rw.alts) return;
-      var bs = badOf(rw.x, rw.dp, rw.alts);
+      var bs = badOf(rw.x, rw.dp, rw.alts).filter(function (b) { return !(rw.also || []).some(function (a) { return kx(a, rw.dp) === b; }); });
       if (bs.length) { var b = keys.slice(); b[i] = bs[0]; bad.push(b); }
     });
     p.bad = bad;
@@ -181,8 +185,10 @@
       else b += ln([x, Y(0.03)], [x, Y(0.30)], { w: 1.4 });
     }
     b += ln([X(-0.38), Y(0)], [X(mE), Y(0)], { w: 1.8 });
-    b += '<rect x="' + f1(X(mE)) + '" y="' + f1(Y(1.35)) + '" width="' + f1(2.95 * k) + '" height="' + f1(2.7 * k) + '" fill="#d9dee5" stroke="#a9b0bb" stroke-width="1"/>';
-    b += ln([X(mE), Y(1.35)], [X(mE), Y(-1.35)], { w: 2.4 });
+    // the thimble (its outline and thick edge) is drawn just right of the reading, so a sleeve mark the edge has only
+    // just uncovered (thimble reading 0.08 mm → 2.2 px) stays visible instead of hiding under the edge line
+    b += '<rect x="' + f1(X(mE) + 0.5) + '" y="' + f1(Y(1.35)) + '" width="' + f1(2.95 * k - 0.5) + '" height="' + f1(2.7 * k) + '" fill="#d9dee5" stroke="#a9b0bb" stroke-width="1"/>';
+    b += ln([X(mE) + 1.2, Y(1.35)], [X(mE) + 1.2, Y(-1.35)], { w: 2.4 });
     for (var d = -6; d <= 6; d++) {
       var yy = Y(-d * 0.22), tv = ((fine + d) % 50 + 50) % 50, maj = tv % 5 === 0;
       b += ln([X(mE + 0.12), yy], [X(mE + (maj ? 0.72 : 0.5)), yy], { w: maj ? 1.8 : 1.2 });
@@ -589,9 +595,11 @@
           } },
           { id: '21d', sub: 'd-i', level: 'ADV', outcome: 'M2', make: function (r, s) {
             var lead = 'The milk (' + t(dots(s.V, 3) + '\\text{ m}^{3}') + ') needs ' + t(s.n) + ' trucks. Foothills Transport charges C$' + s.f1 + ' per truck plus C$' + s.v1.toFixed(2) + ' per m³ of milk. Rocky Mountain Haulers charges US$' + s.f2 + ' per truck plus US$' + s.v2.toFixed(2) + ' per ft³ of milk. Using C$1 = US$' + s.x.toFixed(2) + ' and ' + t('2.54\\text{ cm}=1\\text{ inch}') + ', determine each company’s total cost in <b>Canadian</b> dollars, to the nearest cent.';
+            // the prompt shows the volume to 3 decimals and the booklet quotes 35.3147 ft³ per m³: either route's cents count
+            var Vd = rnd(s.V, 3), also1 = [s.f1 * s.n + s.v1 * Vd], also2 = [(s.f2 * s.n + s.v2 * Vd * M3FT) / s.x, (s.f2 * s.n + s.v2 * s.V * 35.3147) / s.x, (s.f2 * s.n + s.v2 * Vd * 35.3147) / s.x];
             return fields(lead, [
-              { label: 'Foothills Transport: C$', x: s.C1, dp: 2, alts: [{ v: s.f1 + s.v1 * s.V, code: 'per-rate', hint: 'The truck fee is per truck: ' + t(s.n) + ' trucks.' }, { v: s.f1 * s.n + s.v1 * rnd(s.V, 1), code: 'early-round', hint: 'Use the unrounded volume.' }] },
-              { label: 'Rocky Mountain Haulers: C$', x: s.C2, dp: 2, alts: [
+              { label: 'Foothills Transport: C$', x: s.C1, dp: 2, also: also1, alts: [{ v: s.f1 + s.v1 * s.V, code: 'per-rate', hint: 'The truck fee is per truck: ' + t(s.n) + ' trucks.' }, { v: s.f1 * s.n + s.v1 * rnd(s.V, 1), code: 'early-round', hint: 'Use the unrounded volume.' }] },
+              { label: 'Rocky Mountain Haulers: C$', x: s.C2, dp: 2, also: also2, alts: [
                 { v: s.US, code: 'currency', hint: 'That’s the cost in <b>US</b> dollars. Change it to Canadian: divide by ' + s.x.toFixed(2) + '.' },
                 { v: s.US * s.x, code: 'currency', hint: 'C$1 buys only US$' + s.x.toFixed(2) + ', so a US amount is <b>more</b> Canadian dollars: divide by ' + s.x.toFixed(2) + '.' },
                 { v: (s.f2 * s.n + s.v2 * s.V * 3.2808) / s.x, code: 'lin-factor', hint: 'Volume needs the <b>cubic</b> factor: ' + t('1\\text{ m}^{3}=(\\tfrac{1}{0.3048})^{3}\\approx 35.3147\\text{ ft}^{3}') + ', not 3.2808.' },
@@ -716,7 +724,7 @@
         } }] },
       { num: '28', stem: '<i>(Multiple Choice)</i> The micrometer below has a measuring range of 0–25 mm and is accurate to ' + t('0.01') + ' mm. The sleeve scale has increments of ' + t('0.5') + ' mm and the thimble scale has increments of ' + t('0.01') + ' mm.', parts: [
         { id: '28', level: 'EMG', outcome: 'M1', make: function (r) {
-          var half = r.int(10, 46), fine = r.int(5, 45); if (r.chance(0.15)) { half = 29; fine = 33; }
+          var half = r.int(10, 46), fine = r.int(8, 45);   // fine ≥ 8: a just-uncovered sleeve mark stays visible if (r.chance(0.15)) { half = 29; fine = 33; }
           var R = half * 0.5 + fine / 100, odd = half % 2 === 1, hv = odd ? R - 0.5 : R + 0.5;
           return mcVals(r, 'The reading is' + figWrap(microSVG(half, fine)), R, [
             { v: hv, code: 'read-half', why: odd ? 'The half-millimetre mark below the line has been uncovered — add the 0.5 mm.' : 'No half-millimetre mark is showing past the last whole millimetre: don’t add 0.5 mm.' },
@@ -728,7 +736,7 @@
         } }] },
       { num: '29', stem: '<i>(Written Response)</i>', parts: [
         { id: '29', level: 'PRG', outcome: 'M1', make: function (r) {
-          var half = r.int(4, 46), fine = r.int(4, 46); if (r.chance(0.15)) { half = 13; fine = 8; }
+          var half = r.int(4, 46), fine = r.int(8, 46);   // fine ≥ 8: a just-uncovered sleeve mark stays visible if (r.chance(0.15)) { half = 13; fine = 8; }
           var R = half * 0.5 + fine / 100, odd = half % 2 === 1;
           return near('State the reading of this micrometer, accurate to ' + t('0.01') + ' mm.' + figWrap(microSVG(half, fine)), R, 2, 'mm', [
             { v: odd ? R - 0.5 : R + 0.5, code: 'read-half', hint: odd ? 'A half-millimetre mark below the index line is showing — add 0.5 mm to the whole millimetres.' : 'Only whole millimetres are showing past the last mark — no extra 0.5 mm.' },
@@ -879,7 +887,7 @@
 
       /* ======================= Part B — Measure, convert, compute ======================= */
       { num: '3', section: 'Extra practice B — Measure, convert, compute', shared: function (r) {
-          var o = r.chance(0.25) ? { half: 19, fine: 37 } : { half: 2 * r.int(6, 19) + 1, fine: r.int(6, 44) };
+          var o = r.chance(0.25) ? { half: 19, fine: 37 } : { half: 2 * r.int(6, 19) + 1, fine: r.int(8, 44) };
           o.D = o.half * 0.5 + o.fine / 100; o.r = o.D / 2; o.V = 4 / 3 * PI * Math.pow(o.r, 3); o.SA = 4 * PI * o.r * o.r; o.m = o.V / 1000 * 7.85; o.q = 1000 / o.m; o.nb = Math.floor(o.q);
           return o;
         }, stem: function (s) { return 'A steel ball bearing is measured with a micrometer. The sleeve carries a mark every 0.5 mm — whole millimetres above the index line, half millimetres below it — and the thimble reads to 0.01 mm.' + figWrap(microSVG(s.half, s.fine)); },
