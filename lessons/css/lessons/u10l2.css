@@ -376,3 +376,4 @@ h2 .katex, h3 .katex { font-size: .95em; }
 .wf-one .u10l2-wqs .bk-wq .u10l2-wa, .wf-one .u10l2-early .u10l2-wa { display: contents; }
 .wf-one .u10l2-wqs .bk-wq .bk-ans, .wf-one .u10l2-early .bk-ans { grid-column: 1 / -1; margin: 0 0 4px 40px; }
 .wf-one .u10l2-wqs .bk-wq .pill.small, .wf-one .u10l2-early .pill.small { margin: 4px 0 0; }
+.wf-one .u10l2-wtop { grid-template-columns: 1.3fr 1fr; gap: 18px; }
