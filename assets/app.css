@@ -803,3 +803,6 @@ button.ulv:hover { border-color: var(--brand); }
 .notes-print { display: inline-flex; align-items: center; gap: 6px; }
 .notes-print svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 @media (max-width: 520px) { .notes-row { grid-template-columns: 36px minmax(0, 1fr) auto; } .notes-open { display: none; } }
+/* the next-test notice and the Class calendar button side by side: the same height */
+.hh-cal > .hh-test, .hh-cal > .hh-calbtn { box-sizing: border-box; height: 44px; display: inline-flex; align-items: center; padding-top: 0; padding-bottom: 0; }
+.hh-cal > .hh-test { gap: 4px; }
