@@ -122,6 +122,7 @@
     var base = K.number(ans, diag);
     var check = function (resp) {
       var v = numOf(resp);
+      if (v != null && near(v, ans)) return ok();   // a fraction such as 9/2 is fine too
       if (v != null && !near(v, ans) && opt.pct && near(v * 100, ans)) return form('pct-decimal', 'Right value — now write it as a percent (for example ' + t('0.75=75\\%') + ').');
       return base(String(resp == null ? '' : resp).replace(/\\%|%/g, ''));
     };
@@ -187,7 +188,8 @@
   var Q5 = []; [2, 2.5, 3, 3.5, 4].forEach(function (tt) { for (var v = 60; v <= 100; v++) for (var k = 15; k <= 45; k++) { if (v + k > 150 || !isInt(v * tt) || !isInt((v + k) * tt)) continue; Q5.push({ t: tt, v: v, k: k, D2: v * tt, D1: (v + k) * tt }); } });
     return Q5;
   });
-  var CITY = [['Lethbridge', 'Edmonton', 450], ['Calgary', 'Saskatoon', 600], ['Edmonton', 'Saskatoon', 500], ['Calgary', 'Regina', 700], ['Grande Prairie', 'Edmonton', 400], ['Fort McMurray', 'Calgary', 650], ['Edmonton', 'Winnipeg', 1200], ['Calgary', 'Vancouver', 700]];
+  /* straight-line (flying) distances, km, rounded to 10; generated distances stay within ±10% of these */
+  var CITY = [['Lethbridge', 'Edmonton', 430], ['Calgary', 'Saskatoon', 520], ['Edmonton', 'Saskatoon', 480], ['Calgary', 'Regina', 670], ['Grande Prairie', 'Edmonton', 390], ['Fort McMurray', 'Calgary', 660], ['Edmonton', 'Winnipeg', 1190], ['Calgary', 'Vancouver', 670]];
   var TIMES = [1, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 3, 3.5, 4];
   var Q6 = lazy(function () {
   var Q6 = []; CITY.forEach(function (cp) { for (var D = Math.round(cp[2] * 0.9 / 10) * 10; D <= cp[2] * 1.1; D += 10) TIMES.forEach(function (t1) { TIMES.forEach(function (t2) {
@@ -863,9 +865,16 @@
               t(n(sh.shelf) + '\\text{ L}=' + n(mL) + '\\text{ mL}') + (yes ? ' ≥ ' : ' < ') + t(n(c.x) + '\\text{ mL}') + ', so the order <b>' + (yes ? 'can' : 'cannot') + '</b> be filled.', ['1 L = 1000 mL.'], 'can the order be filled');
           } },
           { id: 'e10c', sub: 'c', level: 'EMG', make: function (r, sh) {
-            var c = sh.a, cw = (c.D / c.td - c.D / c.tu) / 2;
-            return numP('In the rowing problem (' + t(n(c.D)) + ' m downstream in ' + c.td + ' min, upstream in ' + c.tu + ' min), suppose ' + t(c.td) + ' and ' + t(c.tu) + ' had been used as though they were <b>hours</b>. What would the current have come out to, in metres per hour?', rnd(cw), function (v) { if (near(v, 2 * cw)) return { code: 'mot-not-halved', hint: 'Subtracting gives ' + t('2c') + ' — divide by 2.' }; if (near(v, c.ck)) return { code: 'mot-other', hint: 'That is the real current in km/h. Redo the calculation with ' + c.td + ' and ' + c.tu + ' as hours.' }; return null; },
-              'Treating them as hours: ' + t('b+c=' + n(c.D) + '\\div ' + c.td + '=' + n(rnd(c.D / c.td))) + ' m/h and ' + t('b-c=' + n(c.D) + '\\div ' + c.tu + '=' + n(rnd(c.D / c.tu))) + ' m/h, so ' + t('c=' + n(rnd(cw))) + ' m/h ' + t('=' + n(rnd(cw / 1000))) + ' km/h — sixty times smaller than the real ' + c.ck + ' km/h, far too slow for any river. The minutes had to be converted first.', ['Find ' + t('b+c') + ' and ' + t('b-c') + ' using the numbers as hours, then solve for ' + t('c') + '.'], 'units trap', { after: 'm/h' });
+            var c = sh.a, cw = (c.D / c.td - c.D / c.tu) / 2, exact = isInt(cw * 100);   // cw = 50·ck/3: exact only when ck is a multiple of 3
+            var fr = function (p, q) { var g = gcd(p, q); p /= g; q /= g; return q === 1 ? String(p) : '\\frac{' + p + '}{' + q + '}'; };
+            var cwT = exact ? n(rnd(cw)) : fr(c.D * (c.tu - c.td), 2 * c.td * c.tu) + '\\approx ' + K.roundTo(cw, 1).toFixed(1);
+            var dg = function (v) { if (near(v, 2 * cw) || near(v, K.roundTo(2 * cw, 1))) return { code: 'mot-not-halved', hint: 'Subtracting gives ' + t('2c') + ' — divide by 2.' }; if (near(v, c.ck)) return { code: 'mot-other', hint: 'That is the real current in km/h. Redo the calculation with ' + c.td + ' and ' + c.tu + ' as hours.' }; return null; };
+            var pr = 'In the rowing problem (' + t(n(c.D)) + ' m downstream in ' + c.td + ' min, upstream in ' + c.tu + ' min), suppose ' + t(c.td) + ' and ' + t(c.tu) + ' had been used as though they were <b>hours</b>. What would the current have come out to, in metres per hour?' + (exact ? '' : ' (Nearest tenth.)');
+            var sol = 'Treating them as hours: ' + t('b+c=' + n(c.D) + '\\div ' + c.td + '=' + fr(c.D, c.td)) + ' m/h and ' + t('b-c=' + n(c.D) + '\\div ' + c.tu + '=' + fr(c.D, c.tu)) + ' m/h, so ' + t('c=' + cwT) + ' m/h ' + t((exact ? '=' : '\\approx ') + (exact ? n(rnd(cw / 1000)) : K.roundTo(cw / 1000, 3).toFixed(3))) + ' km/h — sixty times smaller than the real ' + c.ck + ' km/h, far too slow for any river. The minutes had to be converted first.';
+            var hs = ['Find ' + t('b+c') + ' and ' + t('b-c') + ' using the numbers as hours, then solve for ' + t('c') + '.'];
+            if (exact) return numP(pr, rnd(cw), dg, sol, hs, 'units trap', { after: 'm/h' });
+            var p = B.approx(pr, cw, 1, { after: 'm/h', diag: dg }, sol, hs, 'units trap');
+            p.answer = t(K.roundTo(cw, 1).toFixed(1)) + ' m/h'; return p;
           } }] },
 
       /* ---------------- Part E — two-leg journeys ---------------- */

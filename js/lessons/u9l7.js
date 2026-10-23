@@ -55,6 +55,7 @@
   function fin(s) { return Object.keys(s).every(function (k) { return typeof s[k] !== 'number' || isFinite(s[k]); }); }
   function gen(r, draw, build, valid, book) { for (var i = 0; i < 400; i++) { var s = build(draw(r)); if (fin(s) && valid(s)) return s; } return build(book); }
   function hyp(a, b) { return Math.sqrt(a * a + b * b); }
+  function half(x, dp) { var f = x * Math.pow(10, dp); return Math.abs(f - Math.floor(f) - 0.5) < 1e-6; }   // exactly halfway: the rounding is ambiguous
 
   /* ---------------- hints used across the lesson ---------------- */
   var RADH = 'Check that your calculator is in <b>degree</b> mode (DEG), not radians.';
@@ -366,7 +367,7 @@
         shared: function (r) {
           var want = r.chance(0.45) ? 'B' : 'A';   // decided once, so both outcomes really occur
           return gen(r, function (r) { return { H: 5 * r.int(10, 18), s: r.pick([10, 12, 15, 18, 20]), al: r.int(28, 38), be: r.int(20, 34), vA: tenth(r, 3.5, 5.5), vB: tenth(r, 3.8, 7.0), want: want, k: r.int(108, 130) / 100 }; },
-            function (p) { var o = { H: p.H, s: p.s, al: p.al, be: p.be, vA: p.vA, vB: p.vB, want: p.want }; o.dA = p.H / Tg.tan(p.al); o.dB = p.H / Tg.tan(p.be); if (p.want === 'B' && p.k) o.vB = rd(p.vA * (o.dB - p.s) / (o.dA - p.s) * p.k, 1); o.gap = o.dB - o.dA; o.tA = (o.dA - p.s) / p.vA; o.tB = (o.dB - p.s) / p.vB; o.win = o.tA < o.tB ? 'A' : 'B'; return o; },
+            function (p) { var o = { H: p.H, s: p.s, al: p.al, be: p.be, vA: p.vA, vB: p.vB, want: p.want }; o.dA = p.H / Tg.tan(p.al); o.dB = p.H / Tg.tan(p.be); if (p.want === 'B' && p.k) o.vB = rd(p.vA * (o.dB - p.s) / (o.dA - p.s) * p.k, 1); o.gap = o.dB - o.dA; o.tA = (o.dA - p.s) / p.vA; o.tB = (o.dB - p.s) / o.vB; o.win = o.tA < o.tB ? 'A' : 'B'; return o; },
             function (s) { return s.win === s.want && s.vB <= 7.5 && s.al - s.be >= 4 && Math.abs(s.tA - s.tB) >= 0.8 && Math.abs(s.vA - s.vB) >= 0.3 && Math.abs(s.dA / s.vA - s.dB / s.vB) >= 0.3; }, { H: 65, s: 15, al: 31, be: 26, vA: 4.2, vB: 4.8, want: 'A' });
         },
         stem: function (s) {
@@ -411,7 +412,7 @@
       { num: '8', section: 'Two sightings, one unknown distance',
         shared: function (r) {
           return gen(r, function (r) { return { d: 5 * r.int(5, 12), a: r.int(18, 30), b: r.int(10, 17) }; },
-            function (p) { var o = { d: p.d, a: p.a, b: p.b }; o.ka = 1 / Tg.tan(p.a); o.kb = 1 / Tg.tan(p.b); o.h = p.d / (o.kb - o.ka); o.w = o.h * o.ka; return o; }, function (s) { return s.a - s.b >= 5; }, { d: 40, a: 21, b: 14 });
+            function (p) { var o = { d: p.d, a: p.a, b: p.b }; o.ka = 1 / Tg.tan(p.a); o.kb = 1 / Tg.tan(p.b); o.h = p.d / (o.kb - o.ka); o.w = o.h * o.ka; return o; }, function (s) { return s.a - s.b >= 5 && !half(s.h, 0); }, { d: 40, a: 21, b: 14 });
         },
         stem: function (s) {
           var F = fig({ pts: { C: [0, 0], T: [0, s.h], X: [s.w, 0], Y: [s.w + s.d, 0] }, segs: [['T', 'X', DASH], ['T', 'Y', DASH], ['X', 'Y', s.d + ' m', { width: 1.4, side: 1 }]],
@@ -642,7 +643,7 @@
     E.push({ num: '4',
       shared: function (r) {
         return gen(r, function (r) { return { wx: tenth(r, 7.0, 11.0), w: r.int(25, 36), y: r.int(50, 65) }; },
-          function (p) { var o = { wx: p.wx, w: p.w, y: p.y }; o.xm = p.wx * Tg.sin(p.w); o.wm = p.wx * Tg.cos(p.w); o.my = o.xm / Tg.tan(p.y); o.wy = o.wm + o.my; o.xy = o.xm / Tg.sin(p.y); o.area = o.wy * o.xm; return o; }, function () { return true; }, { wx: 9.2, w: 31, y: 58 });
+          function (p) { var o = { wx: p.wx, w: p.w, y: p.y }; o.xm = p.wx * Tg.sin(p.w); o.wm = p.wx * Tg.cos(p.w); o.my = o.xm / Tg.tan(p.y); o.wy = o.wm + o.my; o.xy = o.xm / Tg.sin(p.y); o.area = o.wy * o.xm; return o; }, function (s) { return !half(s.xm, 1) && !half(s.wm, 1) && !half(s.my, 1) && !half(s.wy, 1) && !half(s.xy, 1) && !half(s.area, 1); }, { wx: 9.2, w: 31, y: 58 });
       },
       stem: function (s) {
         var F = fig({ pts: { W: [0, 0], M: [s.wm, 0], Y: [s.wy, 0], X: [s.wm, s.xm], Z: [s.wm, -s.xm] }, segs: [['W', 'X', g1(s.wx) + ' cm'], ['X', 'Y'], ['Y', 'Z'], ['Z', 'W'], ['W', 'Y', { width: 1.6 }], ['X', 'Z', { width: 1.6 }]], right: [['M', 'Y', 'X']], angles: [['W', 'M', 'X', s.w + '°', { r: 36 }], ['Y', 'M', 'X', s.y + '°', { r: 20 }]], names: { W: 'W', X: 'X', Y: 'Y', Z: 'Z' }, extra: [{ type: 'text', at: [s.wm - 0.06 * s.wy, -0.16 * s.xm], text: 'M' }], aria: 'kite WXYZ' });
@@ -659,7 +660,7 @@
             { label: t('WM='), name: 'WM', unit: 'cm', x: s.wm, dp: 1, alts: [{ v: s.xm, code: 'ch-ratio', hint: 'From ' + t('\\angle XWM') + ', ' + t('WM') + ' is <b>adjacent</b>: CAH.' }, radAlt(function (T) { return s.wx * T.cos(s.w); })] },
             { label: t('MY='), name: 'MY', unit: 'cm', x: s.my, dp: 1, alts: early(function (xm) { return xm / Tg.tan(s.y); }, s.xm, t('XM')).concat([{ v: s.xm * Tg.tan(s.y), code: 'ch-inverted', hint: 'From ' + t('\\angle XYM') + ', ' + t('XM') + ' is opposite and ' + t('MY') + ' adjacent: ' + t('MY=' + fr('XM', TAN(s.y))) + '.' }, { v: s.xm / Tg.sin(s.y), code: 'ch-ratio', hint: 'That is ' + t('XY') + ', the hypotenuse. ' + t('MY') + ' is the leg adjacent to ' + t('\\angle Y') + ': TOA.' }]) },
             { label: t('WY='), name: 'WY', unit: 'cm', x: s.wy, dp: 1, alts: [{ v: rd(s.wm, 1) + rd(s.my, 1), code: 'ch-early', hint: earlyH(t('WM') + ' and ' + t('MY')) }, { v: s.wm, code: 'ch-one-piece', hint: t('WY=WM+MY') + '.' }] }],
-            t('WM=' + g1(s.wx) + COS(s.w) + '=' + v4(s.wm)) + ' cm<br>Hand the unrounded ' + t('XM=' + v4(s.xm)) + ' to ' + t('\\triangle XMY') + ': ' + t('XM') + ' is opposite ' + t(dg(s.y)) + ', ' + t('MY') + ' adjacent (TOA): ' + t('MY=' + fr(v4(s.xm), TAN(s.y)) + '=' + v4(s.my)) + ' cm<br>' + t('WY=WM+MY=' + v4(s.wy) + '\\approx ' + fx(s.wy, 1)) + ' cm',
+            t('WM=' + g1(s.wx) + COS(s.w) + '=' + v4(s.wm) + '\\approx ' + fx(s.wm, 1)) + ' cm<br>Hand the unrounded ' + t('XM=' + v4(s.xm)) + ' to ' + t('\\triangle XMY') + ': ' + t('XM') + ' is opposite ' + t(dg(s.y)) + ', ' + t('MY') + ' adjacent (TOA): ' + t('MY=' + fr(v4(s.xm), TAN(s.y)) + '=' + v4(s.my) + '\\approx ' + fx(s.my, 1)) + ' cm<br>' + t('WY=WM+MY=' + v4(s.wy) + '\\approx ' + fx(s.wy, 1)) + ' cm',
             ['The shared side is ' + t('XM') + ', a leg of both ' + t('\\triangle WXM') + ' and ' + t('\\triangle XMY') + '.', 'Add the unrounded pieces for ' + t('WY') + '.'], 'kite long diagonal');
         } },
         { id: 'e4c', level: 'PRG', make: function (r, s) {
@@ -677,7 +678,7 @@
     E.push({ num: '5',
       shared: function (r) {
         return gen(r, function (r) { return { ae: tenth(r, 4.0, 8.0), ab: tenth(r, 6.0, 12.0), D: r.int(50, 65), C: r.int(38, 50) }; },
-          function (p) { var o = { ae: p.ae, ab: p.ab, D: p.D, C: p.C }; o.de = p.ae / Tg.tan(p.D); o.fc = p.ae / Tg.tan(p.C); o.dc = o.de + p.ab + o.fc; o.ad = p.ae / Tg.sin(p.D); o.bc = p.ae / Tg.sin(p.C); o.per = p.ab + o.bc + o.dc + o.ad; return o; }, function () { return true; }, { ae: 6.2, ab: 9.4, D: 58, C: 43 });
+          function (p) { var o = { ae: p.ae, ab: p.ab, D: p.D, C: p.C }; o.de = p.ae / Tg.tan(p.D); o.fc = p.ae / Tg.tan(p.C); o.dc = o.de + p.ab + o.fc; o.ad = p.ae / Tg.sin(p.D); o.bc = p.ae / Tg.sin(p.C); o.per = p.ab + o.bc + o.dc + o.ad; return o; }, function (s) { return s.D !== s.C; }, { ae: 6.2, ab: 9.4, D: 58, C: 43 });
       },
       stem: function (s) {
         var F = fig({ pts: { D: [0, 0], E: [s.de, 0], F: [s.de + s.ab, 0], C: [s.dc, 0], A: [s.de, s.ae], B: [s.de + s.ab, s.ae] }, segs: [['A', 'B', g1(s.ab) + ' m'], ['B', 'C'], ['D', 'E'], ['E', 'F'], ['F', 'C'], ['D', 'A'], ['A', 'E', g1(s.ae) + ' m', { dash: 1, width: 1.6, side: -1 }], ['B', 'F', { dash: 1, width: 1.6 }]], right: [['E', 'F', 'A'], ['F', 'C', 'B']], angles: [['D', 'E', 'A', s.D + '°', { r: 24 }], ['C', 'F', 'B', s.C + '°', { r: 28 }]], width: 340, aria: 'trapezoid ABCD' });
@@ -800,7 +801,7 @@
     E.push({ num: '8',
       shared: function (r) {
         return gen(r, function (r) { return { bd: tenth(r, 9.0, 15.0), b: r.int(45, 60) }; },
-          function (p) { var o = { bd: p.bd, b: p.b }; o.ad = p.bd * Tg.tan(p.b); o.ac = p.bd / Tg.cos(p.b); o.de = o.ad * Tg.sin(90 - p.b); o.ae = o.ad * Tg.cos(90 - p.b); return o; }, function () { return true; }, { bd: 13.0, b: 52 });
+          function (p) { var o = { bd: p.bd, b: p.b }; o.ad = p.bd * Tg.tan(p.b); o.ac = p.bd / Tg.cos(p.b); o.de = o.ad * Tg.sin(90 - p.b); o.ae = o.ad * Tg.cos(90 - p.b); return o; }, function (s) { return !half(s.ad, 1) && !half(s.ac, 1) && !half(s.de, 1) && !half(s.ae, 1); }, { bd: 13.0, b: 52 });
       },
       stem: function (s) {
         var ce = s.bd * Tg.cos(s.b), k = ce / s.ac, F = fig({ pts: { B: [-s.bd, 0], D: [0, 0], C: [s.bd, 0], A: [0, s.ad], E: [s.bd - s.bd * k, s.ad * k] }, segs: [['B', 'D'], ['D', 'C'], ['A', 'B'], ['A', 'C'], ['A', 'D'], ['D', 'E']], right: [['D', 'C', 'A'], ['E', 'D', 'C']], angles: [['B', 'D', 'A', s.b + '°', { r: 26 }], ['C', 'D', 'A', s.b + '°', { r: 26 }]], extra: [{ type: 'text', at: [s.bd * 0.45, -s.ad * 0.2], text: 'BC = ' + g1(2 * s.bd) + ' cm' }], aria: 'isosceles triangle with altitude AD' });
@@ -912,7 +913,7 @@
       shared: function (r) {
         return gen(r, function (r) { var tr = r.pick([[5, 12, 13], [8, 15, 17], [7, 24, 25], [9, 12, 15], [20, 21, 29], [12, 16, 20]]), k = r.pick([1, 1.5, 2, 2.5]); return { ml: tr[0] * k, kl: tr[1] * k, km: tr[2] * k, m: r.int(38, 55) }; },
           function (p) { var o = { ml: p.ml, kl: p.kl, km: p.km, m: p.m }; o.ln = p.ml * Tg.tan(p.m); o.mn = p.ml / Tg.cos(p.m); o.kml = Tg.atan(p.kl / p.ml); o.kmn = o.kml + p.m; return o; },
-          function (s) { return s.ml >= 6 && s.km <= 40 && s.kmn < 150; }, { ml: 10, kl: 24, km: 26, m: 47 });
+          function (s) { return s.ml >= 6 && s.km <= 40 && s.kmn < 150 && Math.abs(s.kmn - 90) >= 3; }, { ml: 10, kl: 24, km: 26, m: 47 });
       },
       stem: function (s) {
         var F = fig({ pts: { K: [-s.kl, 0], L: [0, 0], N: [s.ln, 0], M: [0, s.ml] }, segs: [['K', 'L', g1(s.kl) + ' mm'], ['L', 'N'], ['K', 'M', g1(s.km) + ' mm'], ['M', 'N'], ['M', 'L']], right: [['L', 'N', 'M']], angles: [['M', 'L', 'N', s.m + '°', { r: 28 }]], aria: 'two right triangles sharing ML' });
@@ -1048,7 +1049,7 @@
           var r1 = rd(s.a1, 0), r2 = rd(s.a2, 0), c1 = r1 - s.a1, c2 = r2 - s.a2, sg = function (x) { return (x >= 0 ? '+' : '-') + fx(Math.abs(x), 2) + '^\\circ'; };
           return mc(r, 'Adding the two rounded angles gives ' + t(dg(r1) + '+' + dg(r2) + '=' + dg(r1 + r2)) + ', but ' + t('\\angle BAC\\approx ' + dg(fx(s.bac, 0))) + '. Where did the difference come from?', [
             { html: 'Rounding each angle changed it a little (' + t(sg(c1)) + ' and ' + t(sg(c2)) + '). Together that is ' + t(sg(c1 + c2)) + ' — enough to cross a halfway mark. Rounding <b>before</b> adding caused it.', right: true },
-            { html: 'One of the angles in (a) must have been calculated wrongly.', why: 'Both are correct to the nearest degree. The difference comes from rounding before adding.' },
+            { html: 'One of the two rounded angles must have been calculated wrongly.', why: 'Both are correct to the nearest degree. The difference comes from rounding before adding.' },
             { html: 'The angles of a triangle never add exactly, so a degree is always lost.', why: 'They do add exactly to ' + t('180^\\circ') + '. The lost degree is in the arithmetic: rounding happened before the addition.' },
             { html: 'The calculator rounds tangent ratios differently each time.', why: 'The calculator is consistent. We rounded the two angles before adding them — that changed the total.' }],
             'Each rounding changed its angle: ' + t(v4(s.a1) + '^\\circ\\to ' + dg(r1)) + ' and ' + t(v4(s.a2) + '^\\circ\\to ' + dg(r2)) + '. The true sum ' + t(v4(s.bac) + '^\\circ') + ' rounds to ' + t(dg(fx(s.bac, 0))) + ', but the rounded pieces add to ' + t(dg(r1 + r2)) + '. The degree was lost in the arithmetic, because rounding happened <b>before</b> the addition instead of after it.',
@@ -1119,7 +1120,7 @@
             { html: t(g1(s.ad)) + ' belongs to ' + t('\\triangle ABD') + '; the numerator should be ' + t('AB') + '.', why: t('AB') + ' isn’t in ' + t('\\triangle BDC') + ' either. The only side the triangles share is ' + t('BD') + '.' },
             { html: 'The numerator is fine; the student should have used ' + t(SIN(s.C)) + ' instead of tangent.', why: 'Changing the ratio doesn’t fix it: ' + t(g1(s.ad)) + ' simply isn’t a side of the ' + t(dg(s.C)) + ' triangle.' }],
             t(g1(s.ad)) + ' cm is ' + t('AD') + ', a side of ' + t('\\triangle ABD') + ' — the triangle with the ' + t(dg(s.A)) + ' angle. The ' + t(dg(s.C)) + ' angle is in ' + t('\\triangle BDC') + ', and the only side ' + t('\\triangle BDC') + ' shares with ' + t('\\triangle ABD') + ' is the altitude ' + t('BD') + '. So the numerator should have been ' + t('BD') + ': ' + t(TAN(s.C) + '=' + fr('BD', 'DC')) + '.',
-            ['List the three sides of ' + t('\\triangle BDC') + '. Is ' + t('AD') + ' one of them?'], 'wrong triangle: where 11.0 belongs');
+            ['List the three sides of ' + t('\\triangle BDC') + '. Is ' + t('AD') + ' one of them?'], 'wrong triangle: where AD belongs');
         } },
         { id: 'e14b', level: 'PRG', make: function (r, s) {
           var f = function (bd) { return bd / Tg.tan(s.C); };
@@ -1273,7 +1274,7 @@
             { html: 'The angle ' + t('\\angle B') + ' was handed across.', why: t('\\angle B') + ' was never used. The shared side ' + t('BD') + ' was written twice, once from each triangle.' },
             { html: 'The whole base ' + t('AC') + ' was handed across, as in earlier questions.', why: t('AC') + ' isn’t a side of either right triangle. What links them is the shared side ' + t('BD') + '.' }],
             'What was handed across was an <b>expression</b> for the shared side: each triangle described ' + t('BD') + ' in terms of what it knew (' + t('x') + ' on one side, ' + t('AC-x') + ' on the other), and because both describe the same segment they can be set equal. Same method: find what the two triangles have in common and make one triangle tell the other about it.',
-            ['What do the two expressions from part (a) both describe?'], 'expression handed across');
+            ['Each triangle gave an expression for ' + t('BD') + ' in terms of ' + t('x') + '. What do the two expressions both describe?'], 'expression handed across');
         } }] });
     E.push({ num: '18', stem: '<i>(Numerical Response)</i>',
       shared: function (r) {

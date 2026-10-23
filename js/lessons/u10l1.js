@@ -116,7 +116,9 @@
     s += TX(Math.max(padL, xz - 1.15 * k + 4), H - 10, 'Vernier scale: 0.05 mm per division', { weight: 700, size: 14, anchor: 'start' });
     return svgScroll(W, H, s, 'vernier caliper scale', W);
   }
-  /* ---------------- micrometer (booklet \microScale{h}{f}: reading 0.5h + 0.01f mm) ---------------- */
+  /* ---------------- micrometer (booklet \microScale{h}{f}: reading 0.5h + 0.01f mm) ----------------
+   * The last uncovered sleeve mark sits 0.275f px left of the thimble edge, so the generators use f >= 10: below that
+   * the mark is hidden by the 2-px edge line at phone width and the coarse reading can't be seen. */
   function micSvg(h, f, opt) {
     opt = opt || {};
     var k = 50, R0 = 0.5 * h + 0.01 * f, mlo = Math.max(0, Math.floor(R0 + 1e-9) - 6), mE = (R0 - mlo) * 0.55;
@@ -410,7 +412,7 @@
       } },
       { id: '1bii', sub: 'b ii', level: 'EMG', make: function (r, s) {
         var tot = s.kEst, kh = s.kh;
-        var p = { prompt: 'Your classmate stands against a wall. Laid off up the wall beside them, <b>2 paces</b> (about 1 yd each) reach a little above their head: the top of their head is <b>' + kh + ' hand width' + (kh > 1 ? 's' : '') + '</b> (about 4 in each) below the top of the second pace. Estimate the classmate’s height in feet and inches.',
+        var p = { prompt: 'Your classmate stands against a wall. Laid off up the wall beside them, <b>2 paces</b> (about 1 yd each) reach above their head: the top of their head is <b>' + kh + ' hand width' + (kh > 1 ? 's' : '') + '</b> (about 4 in each) below the top of the second pace. Estimate the classmate’s height in feet and inches.',
           input: { type: 'fields', fields: [{ label: 'Height', after: 'ft', name: 'Feet' }, { label: '', after: 'in', name: 'Inches' }] },
           check: ftInCk(tot, function (T) {
             if (near(T, 24 - 4 * kh)) return { code: 'pace-ft', hint: 'A pace is about 1 <b>yard</b> = 3 ft, so 2 paces are 6 ft, not 2 ft.' };
@@ -565,8 +567,8 @@
       { id: '16a', level: 'PRG', make: function (r) { return vernPart('', r.int(12, 95), r.int(1, 9)); } },
       { id: '16b', level: 'PRG', make: function (r) { return vernPart('', r.int(12, 95), r.int(1, 19)); } }] },
     { num: '17', stem: 'Determine each micrometer reading, in millimetres.', parts: [
-      { id: '17a', level: 'EMG', make: function (r) { return micPart('', 2 * r.int(3, 16), r.int(3, 47)); } },
-      { id: '17b', level: 'PRG', make: function (r) { return micPart('', 2 * r.int(3, 11) + 1, r.int(3, 47)); } }] },
+      { id: '17a', level: 'EMG', make: function (r) { return micPart('', 2 * r.int(3, 16), r.int(10, 47)); } },
+      { id: '17b', level: 'PRG', make: function (r) { return micPart('', 2 * r.int(3, 11) + 1, r.int(10, 47)); } }] },
     { num: '18', stem: 'Match each object with the best measuring instrument. Each instrument may be used once, more than once, or not at all.', parts: [
       { id: '18', level: 'BEG', make: function (r) {
         var ks = ['A', 'B', 'C', 'D'], picks;
@@ -611,7 +613,7 @@
           ['Compare each object’s size with the six referent lengths and pick the nearest.'], 'closest referent matching');
       } },
       { id: 'e1b', sub: 'b i', level: 'EMG', make: function (r) {
-        return mc(r, 'Every count in (a) is about 1. Which rule for choosing a referent does that illustrate?', [
+        return mc(r, 'When each object is matched with the referent closest to it in size (a stamp with a thumb, a fridge with a doorway), every count comes out about 1. Which rule for choosing a referent does that illustrate?', [
           { html: 'Choose the referent closest in size to the object, so it covers the object in about one repetition — at most a handful.', right: true },
           { html: 'Always choose the smallest referent, because small referents are the most precise.', why: 'A tiny referent has to be laid down many times; every placement adds error and the count is easy to lose (see part ii).' },
           { html: 'Always choose the pace, because you always have it with you.', why: 'A pace is far too big for a stamp or a debit card — you can’t count a fraction of a pace by eye.' },
@@ -658,11 +660,12 @@
         return nearPart('Still reading to the nearest half-pace (largest error 22.5 cm), find the <b>shortest</b> object whose length a pace can estimate to within ' + t(sh.q + '\\%') + '. Give it in metres.', Lm, 2, 'm', [{ v: 45 / (sh.q / 100) / 100, code: 'half-pace', hint: 'The largest error is 22.5 cm (half of a half-pace), not 45 cm.' }, { v: 22.5 * sh.q / 100 / 100, code: 'multiplied', hint: 'Set ' + t('\\frac{22.5}{L}\\le' + sh.q / 100) + ' and solve for ' + t('L') + ': divide.' }, { v: 22.5 / (sh.q / 100), code: 'unit-slip', hint: 'That is in centimetres; give the length in metres.' }],
           t('\\frac{22.5}{L}\\le' + sh.q / 100 + '\\ \\Rightarrow\\ L\\ge\\frac{22.5}{' + sh.q / 100 + '}=' + N(22.5 / (sh.q / 100)) + '\\text{ cm}') + ' ' + t('=' + fx(Lm, 2) + '\\text{ m}') + '.', ['The error 22.5 cm must be at most ' + sh.q + '% of the length L.'], 'shortest object for ' + sh.q + '%');
       } },
-      { id: 'e3d', sub: 'd', level: 'PRG', make: function (r) {
-        return mc(r, 'Question 2 showed a referent far too small; question 3 shows one far too large. Which two-sided rule do they illustrate?', [
+      { id: 'e3d', sub: 'd', level: 'PRG', make: function (r, sh) {
+        var pe = fx(22.5 / sh.o[1] * 100, 0);
+        return mc(r, 'A thumb (2.5 cm) laid along a whole school hallway (question 2) is a referent far too small: it is placed about a thousand times. A pace used on the ' + sh.o[0] + ' is one far too large. Which two-sided rule do the two cases illustrate?', [
           { html: 'The referent must be small enough that the smallest step it can be read to is a small fraction of the object (or the resolution error blows up), and large enough that the count stays small (or the count, and the accumulated error, blows up).', right: true },
-          { html: 'Use the smallest referent you have: more repetitions always means a better estimate.', why: 'Question 2 says otherwise: 1 260 thumb placements turned a 0.1-cm slip into more than a metre.' },
-          { html: 'Use the largest referent you have: fewer repetitions always means a better estimate.', why: 'Question 3 says otherwise: a pace can’t resolve a phone at all (an error of over 300%).' },
+          { html: 'Use the smallest referent you have: more repetitions always means a better estimate.', why: 'The hallway says otherwise: about a thousand thumb placements turned a 0.1-cm slip in the thumb’s value into roughly a metre of error.' },
+          { html: 'Use the largest referent you have: fewer repetitions always means a better estimate.', why: 'The ' + sh.o[0] + ' says otherwise: read to the nearest half-pace, a pace can be out by 22.5 cm, about ' + pe + '% of the object.' },
           { html: 'The size of the referent doesn’t matter if you are careful.', why: 'Both questions had perfect counting and still went wrong — because of the referent’s size.' }],
           'Too large: the <b>resolution</b> error blows up (question 3). Too small: the <b>count</b> blows up, and with it the accumulated error (question 2). Pick a referent in between — close in size to the object.', ['What went wrong in each question, and what was the cause?'], 'two-sided referent rule');
       } }] },
@@ -692,7 +695,7 @@
           'Nearest whole: ' + t(w) + ' cubits ' + t('\\rightarrow' + w + '\\times45=' + est + '\\text{ cm}=' + fx(est / 100, 2) + '\\text{ m}') + '. ' + t('\\frac{' + est + '-' + sh.E + '}{' + sh.E + '}\\times100\\approx' + fx(pc, 1) + '\\%') + '.', ['Round, multiply back by 45 cm, then compare with the original estimate.'], 'rounding a cubit count');
       } },
       { id: 'e5e', sub: 'd ii', level: 'EMG', make: function (r, sh) {
-        return mc(r, 'Which referent from the list (thumb, hand, span, cubit, pace, doorway) would have made the rounding in (d i) matter less for this length — and why?', [
+        return mc(r, 'The ' + t(fx(sh.E / 100, 2)) + '-m estimate, counted in 45-cm cubits, is ' + t(fx(sh.E / 45, 3) + '\\ldots') + ' cubits, and rounding that to a whole number of cubits changes the estimate. Which referent from the list (thumb, hand, span, cubit, pace, doorway) would have made rounding to a whole count matter less for this length — and why?', [
           { html: 'The span (20 cm): rounding to a whole span is off by at most half a span, 10 cm, against half a cubit, 22.5 cm.', right: true },
           { html: 'The pace (90 cm): bigger referents mean fewer repetitions.', why: 'Rounding to a whole pace can be off by up to 45 cm — worse, not better.' },
           { html: 'The doorway (200 cm): the length is close to one doorway.', why: 'Rounding to a whole doorway can be off by up to 100 cm.' },
@@ -722,7 +725,7 @@
         var F0 = sh.m * 90, tr = sh.m * sh.p;
         return fieldsPart('Last week Priya reported a fence as ' + t(fx(F0 / 100, 2)) + ' m, using 90 cm per pace. Recover her pace count, then give the fence’s true length (her true pace is ' + t(sh.p) + ' cm).',
           [{ label: 'Pace count', x: sh.m, exact: true, alts: [{ v: F0 / sh.p, code: 'divided', hint: 'She multiplied by <b>90</b> to get her report, so divide the report by 90.' }] },
-            { label: 'True length', after: 'm', x: tr / 100, dp: 2, exact: true, alts: [{ v: F0 * 90 / sh.p / 100, code: 'divided', hint: 'Her true pace is ' + (sh.p > 90 ? 'longer' : 'shorter') + ' than 90 cm, so the true fence is ' + (sh.p > 90 ? 'longer' : 'shorter') + ' than she reported.' }].concat(unitAlts(tr / 100, 'm')) }],
+            { label: 'True length', after: 'm', x: tr / 100, exact: true, alts: [{ v: F0 * 90 / sh.p / 100, code: 'divided', hint: 'Her true pace is ' + (sh.p > 90 ? 'longer' : 'shorter') + ' than 90 cm, so the true fence is ' + (sh.p > 90 ? 'longer' : 'shorter') + ' than she reported.' }].concat(unitAlts(tr / 100, 'm')) }],
           'Count: ' + t(F(F0) + '\\div90=' + sh.m) + ' paces. True length: ' + t(sh.m + '\\times' + sh.p + '=' + F(tr) + '\\text{ cm}=' + fx(tr / 100, 2) + '\\text{ m}') + '.', ['Undo her multiplication, then multiply by the true pace.'], 'recover fence length');
       } }] },
     /* ---------- Part C ---------- */
@@ -750,7 +753,7 @@
       { id: 'e8a', sub: 'a', level: 'EMG', make: function (r, sh) {
         return fieldsPart('Find each student’s count from the true referent lengths, then each student’s estimate in metres.',
           [{ label: 'Dara’s spans', x: sh.d, exact: true, alts: [{ v: sh.L / 20, code: 'used-assumed', hint: 'The count comes from the <b>true</b> span, 18 cm.' }] }, { label: 'Rowan’s paces', x: sh.w, exact: true, alts: [{ v: sh.L / 95, code: 'used-assumed', hint: 'The count comes from the <b>true</b> pace, 90 cm.' }] },
-            { label: 'Dara’s estimate', after: 'm', x: sh.d * 20 / 100, dp: 2, exact: true, alts: [{ v: sh.L / 100, code: 'used-true', hint: 'Dara multiplies her count by the value she <b>uses</b>, 20 cm.' }] }, { label: 'Rowan’s estimate', after: 'm', x: sh.w * 95 / 100, dp: 2, exact: true, alts: [{ v: sh.L / 100, code: 'used-true', hint: 'Rowan multiplies his count by the value he <b>uses</b>, 95 cm.' }] }],
+            { label: 'Dara’s estimate', after: 'm', x: sh.d * 20 / 100, exact: true, alts: [{ v: sh.L / 100, code: 'used-true', hint: 'Dara multiplies her count by the value she <b>uses</b>, 20 cm.' }] }, { label: 'Rowan’s estimate', after: 'm', x: sh.w * 95 / 100, exact: true, alts: [{ v: sh.L / 100, code: 'used-true', hint: 'Rowan multiplies his count by the value he <b>uses</b>, 95 cm.' }] }],
           t(F(sh.L) + '\\div18=' + sh.d) + ' spans, ' + t(F(sh.L) + '\\div90=' + sh.w) + ' paces.<br>Dara: ' + t(sh.d + '\\times20=' + F(sh.d * 20) + '\\text{ cm}=' + fx(sh.d * 0.2, 2) + '\\text{ m}') + '. Rowan: ' + t(sh.w + '\\times95=' + F(sh.w * 95) + '\\text{ cm}=' + fx(sh.w * 0.95, 2) + '\\text{ m}') + '.', ['Counts use the true lengths; estimates use the values they assumed.'], 'two students counts and estimates');
       } },
       { id: 'e8b', sub: 'b', level: 'PRG', make: function (r, sh) {
@@ -772,7 +775,7 @@
           'Dara: ' + t(sh.d + '\\times' + sh.e + '=' + N(sh.d * sh.e)) + ' cm. Rowan: ' + t(sh.w + '\\times' + sh.e + '=' + N(sh.w * sh.e)) + ' cm.', ['Worst case = number of placements × the error per placement.'], 'placement error totals');
       } },
       { id: 'e8e', sub: 'd ii', level: 'EMG', make: function (r, sh) {
-        return mc(r, 'What does the placement error in (d i) add to the case for the larger referent?', [
+        return mc(r, 'Suppose both knew their referent lengths exactly, but each placement can be out by up to ' + t(sh.e) + ' cm: in the worst case Dara’s ' + t(sh.d) + ' spans are out by ' + t(N(sh.d * sh.e)) + ' cm and Rowan’s ' + t(sh.w) + ' paces by ' + t(N(sh.w * sh.e)) + ' cm. What does this placement error add to the case for the larger referent?', [
           { html: 'Placement error grows with the count and does not cancel out of the percent error, so even with perfect referent values the larger referent wins: it is laid down far fewer times.', right: true },
           { html: 'Nothing: placement error cancels out of the percent error, like the referent-value error.', why: 'It doesn’t: the true length stays the same while the placement error grows with the count.' },
           { html: 'It favours the smaller referent, because each of its placements is small.', why: 'Each placement can be out by the same ' + sh.e + ' cm whatever the referent; the small referent needs more placements.' },
@@ -810,15 +813,16 @@
       } },
       { id: 'e9d', sub: 'd', level: 'PRG', make: function (r, sh) {
         var v = sh.v;
-        return mc(r, 'Parts (b) and (c) say two different things about using a small referent many times. Which pair of statements is correct?', [
+        return mc(r, 'The absolute error is (b) ' + t('E-L=' + v.n + '(' + v.a + '-' + v.t + ')') + ', and the percent error simplifies to (c) ' + t('\\frac{|' + v.a + '-' + v.t + '|}{' + v.t + '}\\times100') + '. These say two different things about using a small referent many times. Which pair of statements is correct?', [
           { html: '(b): the absolute error is proportional to the count, so it grows with many repetitions. (c): the percent error does not depend on the count at all.', right: true },
           { html: '(b): the absolute error does not depend on the count. (c): the percent error grows with the count.', why: 'Look again: ' + t(v.n) + ' is a factor of the error in (b), and it cancels in (c).' },
           { html: 'Both errors grow with the count.', why: 'In (c) the ' + t(v.n) + ' cancels.' },
           { html: 'Neither error depends on the count.', why: 'In (b) the error is ' + t(v.n) + ' times ' + t('(' + v.a + '-' + v.t + ')') + '.' }],
           'From (b), ' + t(v.n + '(' + v.a + '-' + v.t + ')') + ': the error in centimetres is proportional to the count (question 7: 20 spans gave 10 cm, 60 spans gave 30 cm). From (c), the count cancels: question 7’s two estimates were both out by 2.6%.', ['Where does the count appear in each formula?'], 'absolute vs percent error and count');
       } },
-      { id: 'e9e', sub: 'e', level: 'EMG', make: function (r) {
-        return mc(r, 'What does a real estimate suffer from that the formula in (c) cannot see?', [
+      { id: 'e9e', sub: 'e', level: 'EMG', make: function (r, sh) {
+        var v = sh.v;
+        return mc(r, 'The percent error of the estimate is ' + t('\\frac{|' + v.a + '-' + v.t + '|}{' + v.t + '}\\times100') + ', whatever the count. What does a real estimate suffer from that this formula cannot see?', [
           { html: 'Placement and counting error — each placement can land a little short or long, and the count can be lost. It <b>does</b> grow with the count (question 8(d)).', right: true },
           { html: 'Arithmetic errors, which grow with the count.', why: 'The formula assumes the arithmetic is right; the real-world problem is in placing and counting the referent.' },
           { html: 'Nothing: the formula covers every source of error.', why: 'It assumes exactly n perfect placements. What happens in real life each time you pick up the referent and put it down?' },
@@ -857,7 +861,7 @@
           { html: 'The percent errors must have been calculated wrongly.', why: 'Recheck: (b)’s ' + Math.abs(b[0] - b[1]) + ' cm is out of only ' + b[1] + ' cm, a bigger share than the others.' },
           { html: 'Estimates in centimetres are always worse than estimates in metres.', why: 'The unit isn’t the issue — the size of the error compared with the size of the object is.' },
           { html: 'The smallest error in centimetres is always the best estimate.', why: 'That is exactly what (b) disproves.' }],
-          Math.abs(b[0] - b[1]) + ' cm is a large share of a ' + b[1] + '-cm object but a tiny share of a ' + fx(sh.c[1], 1) + '-m one. Judge an estimate by its percent error.', ['Compare each error with the length of its own object.'], 'absolute vs percent error');
+          Math.abs(b[0] - b[1]) + ' cm is a large share of ' + (/^(8|11|18)/.test(String(b[1])) ? 'an ' : 'a ') + b[1] + '-cm object but a tiny share of a ' + fx(sh.c[1], 1) + '-m one. Judge an estimate by its percent error.', ['Compare each error with the length of its own object.'], 'absolute vs percent error');
       } }] },
     { num: '11', stem: function (sh) { return 'A rectangular room’s two walls are measured with a tape as ' + t(fx(sh.w1, 2)) + ' m and ' + t(fx(sh.w2, 2)) + ' m. Estimating with a pace, a student reports them as ' + t(fx(sh.e1, 2)) + ' m and ' + t(fx(sh.e2, 2)) + ' m.'; },
       shared: function (r) {
@@ -886,7 +890,7 @@
           ['Area × 1.1, then ÷ 2.2, then round up.'], 'flooring boxes');
       } },
       { id: 'e11d', sub: 'd', level: 'PRG', make: function (r, sh) {
-        return mc(r, 'One of these purposes (the shelf, the flooring) tolerates an error of about ' + t(fx(pct(sh.e1, sh.w1), 0) + '\\%') + ' and the other does not. Which is which, and why?', [
+        return mc(r, 'The estimates are used for two jobs: a <b>shelf</b> cut to the estimated length to fit between the two walls, and <b>laminate flooring</b> bought in whole boxes with ' + t('10\\%') + ' added for waste. One of these purposes tolerates an error of about ' + t(fx(pct(sh.e1, sh.w1), 0) + '\\%') + ' and the other does not. Which is which, and why?', [
           { html: 'The flooring tolerates it — it already has a margin (10% waste, rounding up to whole boxes); the shelf does not — it is cut <b>to</b> the number.', right: true },
           { html: 'The shelf tolerates it, because a shelf is shorter than a floor.', why: 'A shelf cut ' + N(rnd((sh.e1 - sh.w1) * 100, 4)) + ' cm too long won’t fit at all.' },
           { html: 'Neither tolerates any error, because every estimate must be exact.', why: 'Some purposes have a margin built in: an extra box of flooring doesn’t ruin the job.' },
@@ -1020,7 +1024,7 @@
     { num: '16', stem: function (sh) { return 'A rectangular vegetable plot is paced out as ' + t(sh.L) + ' paces by ' + t(sh.W) + ' paces, with the pace taken as 90 cm.'; },
       shared: function (r) {
         for (var g = 0; g < 400; g++) { var L = r.int(15, 30), W = r.int(8, L - 4), p = r.pick([87, 87, 85, 86, 88, 92, 93]), n = 2 * (L + W), e = n * 0.9, tr = n * p / 100, pe = Math.ceil(e / 2.5 - 1e-9), pt = Math.ceil(tr / 2.5 - 1e-9);
-          if (pe !== pt && Math.abs(e / 2.5 - Math.round(e / 2.5)) > 0.05 && Math.abs(tr / 2.5 - Math.round(tr / 2.5)) > 0.05) return { L: L, W: W, p: p, n: n, e: e, tr: tr, pe: pe, pt: pt }; }
+          if (Math.abs(pe - pt) === 1 && Math.abs(e / 2.5 - Math.round(e / 2.5)) > 0.05 && Math.abs(tr / 2.5 - Math.round(tr / 2.5)) > 0.05) return { L: L, W: W, p: p, n: n, e: e, tr: tr, pe: pe, pt: pt }; }
         return { L: 23, W: 14, p: 87, n: 74, e: 66.6, tr: 64.38, pe: 27, pt: 26 };
       }, parts: [
       { id: 'e16a', sub: 'a', level: 'BEG', make: function (r, sh) {
@@ -1037,18 +1041,19 @@
           t(sh.n + '\\times' + sh.p + '=' + F(sh.n * sh.p) + '\\text{ cm}=' + fx(sh.tr, 2) + '\\text{ m}') + '; ' + t(fx(sh.tr, 2) + '\\div2.5=' + fx(sh.tr / 2.5, 3) + '\\rightarrow' + sh.pt) + ' panels; ' + pctTex(fx(sh.e, 2), fx(sh.tr, 2)) + '.', ['True perimeter = paces × true pace.'], 'true fence');
       } },
       { id: 'e16d', sub: 'd', level: 'PRG', make: function (r, sh) {
-        return mc(r, 'The percent error is small (about ' + t(fx(pct(sh.e, sh.tr), 1) + '\\%') + '), yet the estimate orders the wrong number of panels. How — and what should the gardener do?', [
+        var more = sh.pe > sh.pt, dir = more ? 'one panel too many' : 'one panel too few';
+        return mc(r, 'Fencing comes in rigid 2.5-m panels that can’t be cut. The gardener’s pace is really ' + t(sh.p) + ' cm, so the estimate (' + t(fx(sh.e, 2)) + ' m) is off by only about ' + t(fx(pct(sh.e, sh.tr), 1) + '\\%') + ' — yet it calls for ' + t(sh.pe) + ' panels when ' + t(sh.pt) + ' are needed. How — and what should the gardener do?', [
           { html: 'Rounding up to whole panels is a step: ' + t(fx(sh.tr / 2.5, 2)) + ' and ' + t(fx(sh.e / 2.5, 2)) + ' fall on opposite sides of a whole number, so a small error becomes a whole panel. Measure the sides with a tape (or measure his pace) before ordering.', right: true },
           { html: 'A ' + fx(pct(sh.e, sh.tr), 1) + '% error is too large for any purpose; he should pace more carefully.', why: 'The problem is the rounding step, and pacing more carefully won’t fix a wrong pace value.' },
-          { html: 'The extra panel comes from rounding the pace count.', why: 'The counts are exact; the extra panel comes from rounding up the number of panels.' },
+          { html: 'The wrong panel count comes from rounding the pace count.', why: 'The counts are exact; the step comes from rounding up the number of panels.' },
           { html: 'He should cut the last panel to fit.', why: 'The panels are rigid and can’t be cut.' }],
-          'The number of panels jumps only when the length crosses a multiple of 2.5 m. Here it did, so ' + t(fx(pct(sh.e, sh.tr), 1) + '\\%') + ' became a whole extra panel. One tape measurement (or measuring his own pace once) fixes it.', ['Look at the two quotients before rounding up.'], 'small error, extra panel');
+          'The number of panels jumps only when the length crosses a multiple of 2.5 m. Here it did, so ' + t(fx(pct(sh.e, sh.tr), 1) + '\\%') + ' became ' + dir + '. One tape measurement (or measuring his own pace once) fixes it.', ['Look at the two quotients before rounding up.'], 'small error, extra panel');
       } }] },
     /* ---------- Part H ---------- */
     { num: '17', section: 'Extra practice H — Error analysis', stem: function (sh) { return 'Asked to estimate the length of a running track’s straight, Jon used his hand width (10 cm). He counted the hands three separate times and got ' + t(sh.c[0]) + ', then ' + t(sh.c[1]) + ', then ' + t(sh.c[2]) + '. He reported the first count: “about ' + t(fx(sh.c[0] / 10, 0)) + ' m”.'; },
       shared: function (r) {
         for (var g = 0; g < 300; g++) { var T = 70 + 0.5 * r.int(0, 50), base = Math.round(T * 10 / 10) * 10, c = [base - 10 * r.int(1, 4), base + 10 * r.int(2, 5), base + 10 * r.pick([-1, 0, 1])];
-          var below = c.filter(function (x) { return x < T * 10; }).length; if (below === 0 || below === 3) continue; if (c[0] === c[2] || c[1] === c[2]) continue; return { T: T, c: c }; }
+          var below = c.filter(function (x) { return x < T * 10; }).length; if (below === 0 || below === 3) continue; if (c[0] === c[2] || c[1] === c[2] || c.indexOf(Math.round(T * 10)) >= 0) continue; return { T: T, c: c }; }
         return { T: 87.5, c: [850, 910, 870] };
       }, parts: [
       { id: 'e17a', sub: 'a i', level: 'BEG', make: function (r, sh) {
@@ -1089,8 +1094,8 @@
     { num: '18', stem: function (sh) { return 'Asked to estimate the width of a classroom, Amara stepped it out in ' + t(sh.n) + ' shoe lengths, took her shoe to be 12 in, and converted:<br>' + t(sh.lines.join(',\\qquad ')); },
       shared: function (r) {
         var n = r.pick([24, 24, 20, 23, 26, 30]), i = 12 * n, c = rnd(i * 2.54, 4), m = rnd(c / 100, 4), slip = r.pick([0, 0, 1, 2, 3]);
-        var s1 = slip === 1 ? i + 10 * r.pick([-2, -1, 1, 2]) : i, s2 = slip === 2 ? rnd(s1 * 2.54 / 10, 4) : rnd(s1 * 2.54, 4), s3 = slip === 3 ? rnd(s2 / 10, 4) : rnd(s2 / 100, 4);
-        return { n: n, i: i, c: c, m: m, slip: slip, rep: fx(s3, 3), sh: r.pick([[29, 32], [29, 32], [28, 31], [27, 30]]),
+        var s1 = slip === 1 ? i + 10 * r.pick([-2, -1, 1, 2]) : i, s2 = slip === 2 ? rnd(s1 * 2.54 / 10, 4) : rnd(s1 * 2.54, 4), s3 = slip === 3 ? rnd(s2 / 10, 6) : rnd(s2 / 100, 6);
+        return { n: n, i: i, c: c, m: m, slip: slip, rep: fx(s3, 3), sh: r.pick([[29, 32], [29, 32], [28, 31], [28, 31]]),
           lines: [n + '\\times12=' + F(s1) + '\\text{ in}', F(s1) + '\\times2.54=' + N(s2) + '\\text{ cm}', '\\text{width}=' + fx(s3, 3) + '\\text{ m}'] };
       }, parts: [
       { id: 'e18a', sub: 'a', level: 'EMG', make: function (r, sh) {
@@ -1206,7 +1211,7 @@
       } }] },
     /* ---------- Part J ---------- */
     { num: '21', section: 'Extra practice J — Reading a vernier caliper and a micrometer', stem: 'State the coarse reading and the fine reading separately, then add them. Then find how far the thimble must still turn — in complete revolutions (one revolution ' + t('=50') + ' divisions ' + t('=0.50') + ' mm) and divisions — to bring the reading up to the next whole millimetre.',
-      shared: function (r) { return { a: [2 * r.int(4, 14), r.int(3, 47)], b: [2 * r.int(4, 14), r.int(3, 47)] }; }, parts: [
+      shared: function (r) { return { a: [2 * r.int(4, 14), r.int(10, 47)], b: [2 * r.int(4, 14), r.int(10, 47)] }; }, parts: [
       { id: 'e21a', sub: 'a i', level: 'PRG', make: function (r, sh) { return micSteps(sh.a[0], sh.a[1]); } },
       { id: 'e21b', sub: 'a ii', level: 'ADV', make: function (r, sh) { return micTurn(sh.a[0], sh.a[1]); } },
       { id: 'e21c', sub: 'b i', level: 'PRG', make: function (r, sh) { return micSteps(sh.b[0], sh.b[1]); } },
@@ -1230,7 +1235,7 @@
           { label: 'Reading', after: 'mm', x: M + 1, dp: 2, exact: true, alts: [] }],
           t((M + 1) + '-' + fx(x, 2) + '=' + fx(d, 2)) + ' mm further. Then the index sits on the ' + (M + 1) + ' mm line, so division <b>0</b> lines up and the reading is ' + t((M + 1) + '+0\\times0.05=' + fx(M + 1, 2)) + ' mm.', ['How far is the index from the next whole millimetre?'], 'vernier to next whole mm');
       } }] },
-    { num: '23', stem: function (sh) { return '<b>The half-millimetre line.</b> A micrometer reads as shown.' + micSvg(sh.h, sh.f); }, shared: function (r) { return { h: 2 * r.int(3, 11) + 1, f: r.int(3, 47) }; }, parts: [
+    { num: '23', stem: function (sh) { return '<b>The half-millimetre line.</b> A micrometer reads as shown.' + micSvg(sh.h, sh.f); }, shared: function (r) { return { h: 2 * r.int(3, 11) + 1, f: r.int(10, 47) }; }, parts: [
       { id: 'e23a', sub: 'a', level: 'PRG', make: function (r, sh) { var p = micSteps(sh.h, sh.f, true); p.prompt = 'State the coarse reading, the fine reading, and the total.'; return p; } },
       { id: 'e23b', sub: 'b', level: 'EMG', make: function (r, sh) {
         var w = Math.floor(sh.h / 2);
@@ -1247,7 +1252,7 @@
           t(w + '+' + fx(0.01 * sh.f, 2) + '=' + fx(x - 0.5, 2)) + ' mm, which is ' + t(fx(x, 2) + '-' + fx(x - 0.5, 2) + '=0.50') + ' mm too small.', ['Coarse = ' + w + ' mm (wrongly), plus the same fine reading.'], 'missed half mark');
       } },
       { id: 'e23d', sub: 'c ii', level: 'EMG', make: function (r) {
-        return mc(r, 'Why is that mistake always exactly the same size?', [
+        return mc(r, 'A student who takes the coarse reading from the last <b>whole</b>-millimetre mark, missing the half-millimetre mark, is out by exactly ' + t('0.50') + ' mm. Why is that mistake always exactly the same size?', [
           { html: 'The only thing skipped is one half-millimetre sleeve mark, and every sleeve mark is ' + t('0.50') + ' mm from its neighbour.', right: true },
           { html: 'Because the thimble always reads 50 divisions.', why: 'The thimble reading is the same in both answers; what changes is the sleeve reading.' },
           { html: 'It isn’t: it depends on the thimble reading.', why: 'The fine reading is added the same way either way, so it cancels in the difference.' },

@@ -449,7 +449,7 @@
         },
         parts: [
           { id: 'e3a', level: 'LIM', make: function (r, s) { var f = s.useBC ? 'sin' : 'cos'; return ratioMC(r, t('\\angle A') + ' in ' + t('\\triangle ABC'), f, s.useBC ? t('BC=' + s.l1) + ' is opposite ' + t('\\angle A') + ' and ' + t('AB=' + s.h1) + ' is the hypotenuse: opp + hyp, so ' + t('\\sin^{-1}') + '.' : t('AC=' + s.l1) + ' touches ' + t('\\angle A') + ' (adjacent) and ' + t('AB=' + s.h1) + ' is the hypotenuse: adj + hyp, so ' + t('\\cos^{-1}') + '.', 'sort: angle A'); } },
-          { id: 'e3b', level: 'BEG', make: function (r, s) { var f = s.useBC ? 'cos' : 'sin'; return ratioMC(r, t('\\angle B') + ' in ' + t('\\triangle ABC'), f, s.useBC ? 'The same two sides, but ' + t('BC=' + s.l1) + ' runs into ' + t('B') + ', so it is adjacent; ' + t('AB') + ' is still the hypotenuse: ' + t('\\cos^{-1}') + '.' : t('AC=' + s.l1) + ' is across from ' + t('B') + ' (opposite) and ' + t('AB') + ' is the hypotenuse: ' + t('\\sin^{-1}') + '.', 'sort: angle B'); } },
+          { id: 'e3b', level: 'LIM', make: function (r, s) { var f = s.useBC ? 'cos' : 'sin'; return ratioMC(r, t('\\angle B') + ' in ' + t('\\triangle ABC'), f, s.useBC ? 'The same two sides, but ' + t('BC=' + s.l1) + ' runs into ' + t('B') + ', so it is adjacent; ' + t('AB') + ' is still the hypotenuse: ' + t('\\cos^{-1}') + '.' : t('AC=' + s.l1) + ' is across from ' + t('B') + ' (opposite) and ' + t('AB') + ' is the hypotenuse: ' + t('\\sin^{-1}') + '.', 'sort: angle B'); } },
           { id: 'e3c', level: 'BEG', make: function (r, s) { var f = s.legs ? 'tan' : 'sin'; return ratioMC(r, t('\\angle M') + ' in ' + t('\\triangle MNP'), f, s.legs ? t('NP=' + s.b2) + ' is opposite ' + t('\\angle M') + ' and ' + t('MN=' + s.a2) + ' is adjacent. The hypotenuse ' + t('MP') + ' is drawn but not known: opp + adj, so ' + t('\\tan^{-1}') + '.' : t('NP=' + s.b2) + ' is across from ' + t('\\angle M') + ' (opposite) and ' + t('MP=' + s.mp) + ' is the hypotenuse: opp + hyp, so ' + t('\\sin^{-1}') + '.', 'sort: angle M'); } },
           { id: 'e3d', level: 'LIM', make: function (r, s) { var f = s.legs ? 'tan' : 'cos'; return ratioMC(r, t('\\angle P') + ' in ' + t('\\triangle MNP'), f, s.legs ? t('MN=' + s.a2) + ' is opposite ' + t('\\angle P') + ' and ' + t('NP=' + s.b2) + ' is adjacent — still the two legs, so ' + t('\\tan^{-1}') + '. Only the fraction flips.' : t('NP=' + s.b2) + ' touches ' + t('P') + ' (adjacent) and ' + t('MP=' + s.mp) + ' is the hypotenuse: ' + t('\\cos^{-1}') + '.', 'sort: angle P'); } },
           { id: 'e3e', level: 'BEG', make: function (r) {
@@ -543,7 +543,7 @@
               { html: 'Neither — only measuring with a protractor checks an angle.', why: 'An independent calculation from the sides is a real check.' }],
               'The side-length route reaches ' + t('\\angle ' + N[0]) + ' without touching ' + t('\\angle ' + N[2]) + ', so agreement is real evidence. Subtraction is built from ' + t('\\angle ' + N[2]) + ' and will happily copy a mistake.', [], 'which method checks');
           } },
-          { id: 'e7d', level: 'PRG', make: function (r, s) {
+          { id: 'e7d', level: 'EMG', make: function (r, s) {
             var x = TR.asin(s.leg / s.hyp);
             return mc(r, 'Is the subtraction method ever <b>inaccurate</b> at the nearest degree?', [
               { html: 'No (except for an exact half-degree): the decimal parts of ' + t('\\theta') + ' and ' + t('90^{\\circ}-\\theta') + ' add to 1, so exactly one rounds up, and ' + t('90-\\text{round}(\\theta)=\\text{round}(90-\\theta)') + '.', right: true },
@@ -754,7 +754,7 @@
         parts: [
           { id: 'e16a', level: 'BEG', make: function (r, s) { return rampPart('A', s.A, true); } },
           { id: 'e16b', level: 'BEG', make: function (r, s) { return rampPart('B', s.B, false); } },
-          { id: 'e16c', sub: 'b ii', level: 'PRG', make: function (r, s) {
+          { id: 'e16c', sub: 'b ii', level: 'ADV', make: function (r, s) {
             var m = s.B.rise / TAN48, up = Math.ceil(m * 10 - 1e-9) / 10;
             return near('Ramp B (rise ' + t(s.B.rise) + ' cm) is too steep. Determine the <b>shortest</b> horizontal run that would make ' + an(s.B.rise) + ' ' + t(s.B.rise) + ' cm rise comply, to the nearest tenth of a centimetre.', up, 1,
               [{ v: Math.floor(m * 10) / 10 + 0.0001, code: 'round-direction', hint: 'Careful: rounding normally gives a run slightly <b>shorter</b> than the minimum, so that ramp would be too steep. The run must be <i>at least</i> the exact value — round <b>up</b>.' },
@@ -773,7 +773,7 @@
               { html: 'No — any ramp whose angle rounds to ' + t('5^{\\circ}') + ' breaks the code.', why: 'False: a ' + t('4.6^{\\circ}') + ' ramp also rounds to ' + t('5^{\\circ}') + ' and it complies. Compare the unrounded values.' }],
               t('\\theta=\\tan^{-1}\\left(' + frac(s.C.rise, s.C.run) + '\\right)=' + x.toFixed(6) + '^{\\circ}') + '. Compare before rounding: ' + t(frac(s.C.rise, s.C.run) + '=' + rd(s.C.rise / s.C.run, 6)) + ' and ' + t('\\tan 4.8^{\\circ}=' + TAN48.toFixed(6) + '\\ldots') + ', so the angle exceeds ' + t('4.8^{\\circ}') + ' by about ' + t((x - 4.8).toFixed(4) + '^{\\circ}') + '. Ramp C does <b>not</b> comply. Rounding an angle before testing it against a limit can land it on either side of the boundary.', [], 'borderline ramp');
           } },
-          { id: 'e16f', sub: 'd', level: 'PRG', make: function (r, s) {
+          { id: 'e16f', sub: 'd', level: 'ADV', make: function (r, s) {
             var m = s.C.run * TAN48, down = Math.floor(m * 10 + 1e-9) / 10;
             return near('A builder is committed to a horizontal run of exactly ' + t(s.C.run) + ' cm. Determine the <b>greatest</b> rise, to the nearest tenth of a centimetre, that still complies — be careful which way you round.', down, 1,
               [{ v: Math.ceil(m * 10) / 10, code: 'round-direction', hint: 'Rounding normally gives a rise slightly <b>above</b> the maximum, so that ramp would be too steep. The rise must be <i>no more</i> than the exact value — round <b>down</b>.' },
