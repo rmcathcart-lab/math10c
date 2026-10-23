@@ -340,7 +340,7 @@
     return def;
   }
   HW.defineLesson(fixSubs({
-    id: 'u10l6', unit: 10, num: '6', title: 'Measurement — A Cumulative Review', outcome: 'M3',
+    id: 'u10l6', unit: 10, num: '6', title: 'Measurement Unit Review', outcome: 'M3',
     blurb: 'Every skill of the unit together: referents and instruments, SI and imperial conversions, map scales, and surface area and volume of every solid.',
     questions: [
       { num: '1', section: 'Assignment — Multiple choice and numerical response', stem: '<i>(Multiple Choice)</i>', parts: [

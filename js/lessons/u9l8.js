@@ -196,7 +196,7 @@
     return def;
   }
   HW.defineLesson(subs({
-    id: 'u9l8', unit: 9, num: '8', title: 'Right Triangle Trigonometry: A Cumulative Review', outcome: 'M4',
+    id: 'u9l8', unit: 9, num: '8', title: 'Trigonometry Unit Review', outcome: 'M4',
     blurb: 'Naming sides, solving for a side, solving for an angle, elevation and depression, and splitting a figure into right triangles (extension: bearings and 3-D).',
     questions: [
       /* ---------- 1 ---------- */

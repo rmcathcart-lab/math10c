@@ -265,7 +265,7 @@
 
   /* =================================================================================================== */
   HW.defineLesson({
-    id: 'u8l6', unit: 8, num: '6', title: 'Systems of Linear Equations: Cumulative Review', outcome: 'RF9',
+    id: 'u8l6', unit: 8, num: '6', title: 'Systems of Linear Equations Unit Review', outcome: 'RF9',
     blurb: 'Every method of the unit together — classifying, graphing, substitution, elimination and choosing among them — then mixed problems.',
     questions: [
       /* ---------------- 1 ---------------- */
