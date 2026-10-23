@@ -512,7 +512,7 @@
         } }] },
       { num: '18', stem: '<i>(Multiple Choice)</i>', parts: [
         { id: '18', level: 'EMG', make: function (r) {
-          var d = r.chance(0.2) ? 14 : 2 * r.int(4, 15), rr = d / 2, A = 4 * PI * rr * rr, none = r.chance(0.25);
+          var d = r.chance(0.2) ? 14 : r.pick([8, 10, 12, 14, 16, 18, 20, 22, 26, 28, 30]), rr = d / 2, A = 4 * PI * rr * rr, none = r.chance(0.25);
           var obj = r.pick(['ornament', 'ball', 'globe', 'lantern']);
           var ws = [{ v: 2 * PI * rr * rr, code: 'formula', why: 'That is half the sphere’s area (a hemisphere’s curved surface). A sphere is ' + t('4\\pi r^{2}') + '.' },
             { v: 4 * PI * d * d, code: 'diam-radius', why: 'You used the diameter as the radius. Halve it first: ' + t('r=' + rr) + ' in.' },

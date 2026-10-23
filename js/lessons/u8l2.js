@@ -236,7 +236,7 @@
     'less-than': '“Less than” translated in the wrong order', 'nr-sum': 'Combined the values the wrong way (sum vs difference)', 'nr-one': 'Gave one unknown instead of the combination', 'z-wrong': 'Three unknowns: last value wrong',
     'xy-right-z': 'Three unknowns: x and y right, z wrong', 'mix-pct': 'Mixture: percent not used correctly', 'mix-total': 'Mixture: total not used', 'mix-swap': 'Mixture: amounts swapped', 'boat-swap': 'Current: downstream and upstream swapped',
     'boat-dist': 'Used the distance as a speed', 'boat-avg': 'Averaged the two times', 'cx-solution': 'Counter-example: gave the actual solution', 'cx-not-on': 'Counter-example: point not on the first line', 'pts-not-on': 'Point not on the line', 'pts-repeat': 'Same point listed twice',
-    'k-expr': 'Expression in k wrong', 'dropped-bracket': 'Dropped the bracket when substituting', 'k-den': 'Denominator set to zero wrong', 'one-eq': 'Used only one equation'
+    'k-expr': 'Expression in k wrong', 'dropped-bracket': 'Dropped the bracket when substituting'
   });
 
   HW.defineLesson({

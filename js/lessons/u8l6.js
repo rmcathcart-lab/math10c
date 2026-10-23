@@ -926,7 +926,7 @@
           var s = r.chance(0.2) ? book : find(function () {
             var H1 = r.int(20, 28), r1 = r.pick([3, 3.5, 4, 4.5, 5]), H2 = r.int(12, H1 - 4), r2 = r.pick([1.5, 2, 2.5, 3]);
             if (r1 - r2 < 1) return null; var ts = (H1 - H2) / (r1 - r2), hs = H1 - r1 * ts;
-            if (isInt(ts) || ts < 3 || ts > 7 || hs < 1.5 || Math.abs((2 * ts) % 1 - 0.5) < 0.15 || Math.abs(hs % 1 - 0.5) < 0.15) return null;
+            if (isInt(ts) || isInt(hs) || ts < 3 || ts > 7 || hs < 1.5 || Math.abs((2 * ts) % 1 - 0.5) < 0.15 || Math.abs(hs % 1 - 0.5) < 0.15) return null;
             return { H1: H1, r1: r1, H2: H2, r2: r2 };
           }, book);
           s.ts = (s.H1 - s.H2) / (s.r1 - s.r2); s.hs = s.H1 - s.r1 * s.ts;
@@ -1200,7 +1200,7 @@
           { id: 'e8d', sub: 'd', level: 'EMG', make: function (r, s) {
             return numBoxes('(d) The first spring is ' + t('L=' + s.a0 + '+' + s.b0 + 'm') + '. A second spring on the same hook is modelled by ' + t('L=' + s.a2 + '+' + s.b2 + 'm') + '. Determine the mass at which the two springs have the same length, and that common length.', [
               { label: 'mass:', after: 'kg', v: s.ms, diag: function (v) { return near(v, s.Ls) ? { code: 'l6-gave-cost', hint: 'That’s the common <b>length</b>. The mass is the value of ' + t('m') + '.' } : null; } }, { label: 'length:', after: 'cm', v: s.Ls }],
-              t(s.a0 + '+' + s.b0 + 'm=' + s.a2 + '+' + s.b2 + 'm\\Rightarrow ' + (s.b0 - s.b2 === 1 ? '' : s.b0 - s.b2) + 'm=' + (s.a2 - s.a0) + '\\Rightarrow m=' + s.ms) + '<br>' + t('L=' + s.a0 + '+' + s.b0 + '(' + s.ms + ')=' + s.Ls) + ', and ' + t(ck(s.a2 + '+' + s.b2 + '(' + s.ms + ')=' + s.Ls)) + '.<br><b>With a ' + s.ms + ' kg mass, both springs measure ' + s.Ls + ' cm.</b>',
+              t(s.a0 + '+' + s.b0 + 'm=' + s.a2 + '+' + s.b2 + 'm\\Rightarrow ' + (s.b0 - s.b2 === 1 ? 'm=' + s.ms : (s.b0 - s.b2) + 'm=' + (s.a2 - s.a0) + '\\Rightarrow m=' + s.ms)) + '<br>' + t('L=' + s.a0 + '+' + s.b0 + '(' + s.ms + ')=' + s.Ls) + ', and ' + t(ck(s.a2 + '+' + s.b2 + '(' + s.ms + ')=' + s.Ls)) + '.<br><b>With ' + s.ms + ' kg attached, both springs measure ' + s.Ls + ' cm.</b>',
               ['Set the two expressions for ' + t('L') + ' equal.'], 'EP8d equal length', { swapHint: 'Check which is which: the mass is in kg, the length in cm.' });
           } },
           { id: 'e8e', sub: 'e', level: 'EMG', make: function (r, s) {
@@ -1348,7 +1348,7 @@
           } },
           { id: 'e12b', sub: 'b i', level: 'ADV', make: function (r, s) {
             return K.P.number('(b) The solution of the system is ' + t('x=' + s.xT) + ', ' + t('y=' + s.yT) + '. Determine the value of ' + t('k') + ' for which the solution also lies on the line ' + t(s.E3) + '.', s.k, function (v) { return near(v, -s.k) ? { code: 'sign', hint: 'Check the sign when you collect the ' + t('k') + '-terms.' } : null; },
-              'Require ' + t(s.E3) + ': ' + t(s.yT + '=' + s.xT + sg(s.sh)) + '<br>Multiply by ' + t(s.D) + ': ' + t(lin([s.p], ['k']) + '-' + (s.a * s.rr) + '=' + lin([s.q], ['k']) + '+' + s.rr + sg(s.sh * s.D)) + '<br>' + t((s.p - s.q === 1 ? '' : s.p - s.q) + 'k=' + (s.rr + s.a * s.rr + s.sh * s.D) + '\\Rightarrow k=' + s.k) + '.',
+              'Require ' + t(s.E3) + ': ' + t(s.yT + '=' + s.xT + sg(s.sh)) + '<br>Multiply by ' + t(s.D) + ': ' + t(lin([s.p], ['k']) + '-' + (s.a * s.rr) + '=' + lin([s.q], ['k']) + '+' + s.rr + sg(s.sh * s.D)) + '<br>' + t(s.p - s.q === 1 ? 'k=' + s.k : (s.p - s.q) + 'k=' + (s.rr + s.a * s.rr + s.sh * s.D) + '\\Rightarrow k=' + s.k) + '.',
               ['Substitute both coordinates into ' + t(s.E3) + ' and clear the denominator ' + t(s.D) + '.'], 'EP12b k on line');
           } },
           { id: 'e12b2', sub: 'b ii', level: 'PRG', make: function (r, s) {
@@ -1542,7 +1542,7 @@
               if (near(A.value, s.p1 - s.p2) && near(Bv.value, 100 * s.B - s.V)) return wrong('l6-elim-scale', 'Scale the volume equation to match the ' + t('y') + '-coefficient first (×' + t(s.p2) + '), then subtract.');
               return wrong('l6-elim', 'Clear the decimals (×' + t(100) + '), make the ' + t('y') + '-coefficients match, then subtract the volume equation.');
             };
-            var cx = s.p1 - s.p2, cr = 100 * s.B - s.p2 * s.V, gg = gcd(cx, cr);
+            var cx = s.p1 - s.p2, cr = 100 * s.B - s.p2 * s.V, gg = (cx % s.p2 === 0 && cr % s.p2 === 0) ? s.p2 : 1;
             return { prompt: '(b) Clear the decimals in ' + t(pc(s.p1) + 'x+' + pc(s.p2) + 'y=' + num(s.B)) + ' and eliminate ' + t('y') + ' using ' + t('x+y=' + s.V) + '. The result has the form ' + t('\\square\\,x=\\square') + '.', input: { type: 'fields', fields: [{ label: 'coefficient:', after: t('x') }, { label: '= ' }] }, check: check,
               key: [String(cx / gg), String(cr / gg)], answer: t((cx / gg) + 'x=' + (cr / gg)) + ' (or any multiple), so ' + t('x=' + s.x0),
               solution: 'Clear the decimals (×' + t(100) + '): ' + t(eqT(s.p1, s.p2, 100 * s.B)) + (g > 1 ? ', i.e. ' + t(eqT(a, 1, rhs)) : '') + '.<br>Subtract ' + (g > 1 ? t('x+y=' + s.V) : t(s.p2 + '(x+y)=' + (s.p2 * s.V))) + ': ' + t((g > 1 ? (a - 1) + 'x=' + (rhs - s.V) : cx + 'x=' + cr) + '\\Rightarrow x=' + s.x0) + ', and ' + t('y=' + s.V + '-' + s.x0 + '=' + s.y0) + '.<br>Check: ' + t(ck(pcS(s.p1) + '(' + s.x0 + ')+' + pcS(s.p2) + '(' + s.y0 + ')=' + num(s.p1 * s.x0 / 100) + '+' + num(s.p2 * s.y0 / 100) + '=' + num(s.B))) + '.',
@@ -1592,7 +1592,7 @@
               return wrong('l6-frac', null);
             };
             var p = { prompt: '(b) Solve ' + both(s.e1, s.e2) + ' and state the original fraction.', input: { type: 'math', keys: 'fraction' }, check: check, key: '\\frac{' + s.n0 + '}{' + s.d0 + '}', answer: t('\\frac{' + s.n0 + '}{' + s.d0 + '}'),
-              solution: 'Substitute ' + t(s.e1) + ' into ' + t(s.e2) + ': ' + t(s.q + '(d-' + s.dl + ')-' + s.p + 'd=' + s.C2 + '\\Rightarrow ' + (s.q - s.p === 1 ? '' : s.q - s.p) + 'd=' + (s.C2 + s.q * s.dl) + '\\Rightarrow d=' + s.d0) + ', ' + t('n=' + s.n0) + '.<br>The original fraction is ' + t('\\frac{' + s.n0 + '}{' + s.d0 + '}') + '. Against the words: ' + t(ck(s.d0 + '-' + s.dl + '=' + s.n0)) + ' and ' + t(ck('\\frac{' + s.n0 + '+' + s.a + '}{' + s.d0 + '+' + s.a + '}=\\frac{' + (s.n0 + s.a) + '}{' + (s.d0 + s.a) + '}=\\frac{' + s.p + '}{' + s.q + '}')) + '.',
+              solution: 'Substitute ' + t(s.e1) + ' into ' + t(s.e2) + ': ' + t(s.q + '(d-' + s.dl + ')-' + s.p + 'd=' + s.C2 + '\\Rightarrow ' + (s.q - s.p === 1 ? 'd=' + s.d0 : (s.q - s.p) + 'd=' + (s.C2 + s.q * s.dl) + '\\Rightarrow d=' + s.d0)) + ', ' + t('n=' + s.n0) + '.<br>The original fraction is ' + t('\\frac{' + s.n0 + '}{' + s.d0 + '}') + '. Against the words: ' + t(ck(s.d0 + '-' + s.dl + '=' + s.n0)) + ' and ' + t(ck('\\frac{' + s.n0 + '+' + s.a + '}{' + s.d0 + '+' + s.a + '}=\\frac{' + (s.n0 + s.a) + '}{' + (s.d0 + s.a) + '}=\\frac{' + s.p + '}{' + s.q + '}')) + '.',
               hints: ['Substitute ' + t('n=d-' + s.dl) + ' into the second equation.'], text: 'EP17b fraction', bad: ['\\frac{' + (2 * s.n0) + '}{' + (2 * s.d0) + '}', '\\frac{' + s.d0 + '}{' + s.n0 + '}'] };
             return p;
           } },

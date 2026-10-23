@@ -149,8 +149,7 @@
       s += sT(m[0] - Math.sin(d * rad) * 11, m[1] - Math.cos(d * rad) * 11, '1', { color: c });
       var rr = 24 + 22 * i, e = [O[0] + rr * Math.cos(d * rad), O[1] - rr * Math.sin(d * rad)];
       s += '<path d="M' + (O[0] + rr) + ' ' + O[1] + ' A' + rr + ' ' + rr + ' 0 0 0 ' + e[0].toFixed(1) + ' ' + e[1].toFixed(1) + '" fill="none" stroke="' + c + '" stroke-width="1.6"/>';
-      var lr = rr + 15, la = d / 2 * rad;
-      s += sT(O[0] + lr * Math.cos(la) + 4, O[1] - lr * Math.sin(la), d + '°', { color: c, size: 12 });
+      s += sL([196, 16 + 20 * i], [214, 16 + 20 * i], { w: 3, color: c }) + sT(220, 16 + 20 * i, d + '° triangle', { anchor: 'start', color: c, size: 12 });
       if (vert) { var yl = i ? O[1] - Rr * (Math.sin(a1 * rad) + Math.sin(a2 * rad)) / 2 : O[1] - Rr * Math.sin(d * rad) / 2; s += sT(A[0] + 6, yl, (show === 'sin' ? 'sin ' + d + '°' : 'opp'), { anchor: 'start', color: c, size: 12 }); }
       if (hor) { var yb = O[1] + 14 + 16 * i; s += sL([O[0], yb], [A[0], yb], { w: 3, color: c }) + sT(A[0] + 6, yb, (show === 'cos' ? 'cos ' + d + '°' : 'adj'), { anchor: 'start', color: c, size: 12 }); }
     });
