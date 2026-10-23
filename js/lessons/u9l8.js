@@ -1145,7 +1145,7 @@
       { num: '17', section: 'Extra practice F — Challenge',
         shared: function (r) { return gen(r, function (r) { return { sp: d1(r, 8, 16), a1: r.int(30, 45), a2: r.int(18, 28) }; }, function (s) { var g = roof(s); return s.a1 - s.a2 >= 6 && safe(g.h, 1) && safe(g.l1, 1) && safe(g.l2, 1) && safe(g.lf, 1) && safe(g.fr, 1); }); },
         stem: function (s) {
-          var g = roof(s), fig = HW.fig({ pts: { L: [0, 0], Rg: [g.lf, g.h], R: [s.sp, 0], F: [g.lf, 0] }, segs: [['L', 'Rg', { width: 2.6 }], ['Rg', 'R', { width: 2.6 }], ['L', 'R', s1(s.sp) + ' m'], ['Rg', 'F', 'h', { dash: 1 }]], right: [['F', 'R', 'Rg']], angles: [['L', 'R', 'Rg', s.a1 + '°', { r: 30 }], ['R', 'L', 'Rg', s.a2 + '°', { r: 34 }]], names: { L: 'L', R: 'R', Rg: 'ridge' }, extra: [{ type: 'text', at: [g.lf, -g.h * 0.16], text: 'F' }], width: 320, aria: 'unequal pitch roof' });
+          var g = roof(s), fig = HW.fig({ pts: { L: [0, 0], Rg: [g.lf, g.h], R: [s.sp, 0], F: [g.lf, 0] }, segs: [['L', 'Rg', { width: 2.6 }], ['Rg', 'R', { width: 2.6 }], ['L', 'R', s1(s.sp) + ' m'], ['Rg', 'F', 'h', { dash: 1 }]], right: [['F', 'R', 'Rg']], angles: [['L', 'R', 'Rg', s.a1 + '°', { r: 30 }], ['R', 'L', 'Rg', s.a2 + '°', { r: 34 }]], names: { L: 'L', R: 'R', Rg: 'ridge' }, extra: [{ type: 'text', at: [g.lf - s.sp * 0.035, g.h * 0.13], text: 'F' }], width: 320, aria: 'unequal pitch roof' });
           return 'A roof has an <b>unequal pitch</b>. The two walls are ' + t(s1(s.sp)) + ' m apart and their tops are level. The left rafter makes ' + t(dg(s.a1)) + ' with the horizontal and the right rafter makes ' + t(dg(s.a2)) + '. Let ' + t('h') + ' be the height of the ridge above the wall tops, with foot ' + t('F') + '.' + figWrap(fig);
         },
         parts: [

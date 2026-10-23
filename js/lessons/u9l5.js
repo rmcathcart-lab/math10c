@@ -925,7 +925,7 @@
             return mc(r, 'Which of the three self-checks catches this error?', [
               { html: 'None of them: the student’s triangle passes all three.', right: true },
               { html: '(i) the angle sum', why: 'The student’s angles still add to ' + t('180^\\circ') + '.' },
-              { html: '(ii) longest side faces largest angle', why: 'The sides and angles are still in the right order — the error is only a tenth.' },
+              { html: '(ii) longest side faces largest angle', why: 'The sides and angles are still in the right order — the error is only a tenth or two.' },
               { html: '(iii) hypotenuse longer than both legs', why: 'The hypotenuse is still the longest side.' }],
               '<b>None.</b> The self-checks catch <b>blunders</b> that make an impossible triangle. Drift from early rounding makes a triangle that very nearly could exist, so no check flags it. It has to be <b>prevented</b> by taking every unknown from the original data.', ['Run each check on the student’s numbers.'], 'self-checks miss drift');
           } }] },

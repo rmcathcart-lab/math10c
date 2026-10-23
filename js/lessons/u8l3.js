@@ -204,6 +204,7 @@
      accepted exactly or with both sides negated; another multiple → nudge; o.wrong: [{ is: [A, B, C], code, hint }] */
   function stepEq(T, o) {
     o = o || {}; var V = o.vars || ['x', 'y'];
+    o.wrong = (o.wrong || []).filter(function (w) { return !prop(w.is, T); }); // a "slip" that happens to give the right equation is no slip
     function sc(s, w, k) { return near(s[0], k * w[0]) && near(s[1], k * w[1]) && near(s[2], k * w[2]); }
     function prop(s, w) { return near(s[0] * w[1], s[1] * w[0]) && near(s[0] * w[2], s[2] * w[0]) && near(s[1] * w[2], s[2] * w[1]); }
     return function (resp) {
@@ -220,8 +221,8 @@
     };
   }
   function stepPart(prompt, T, o, sol, hints, text) {
-    o = o || {}; var V = o.vars || ['x', 'y'], key = eqT(T, V);
-    var p = K.P.math(prompt, stepEq(T, o), key, sol, hints, text, { keys: 'eq', vars: V, placeholder: 'e.g. ' + (o.placeholder || '5x = 15') });
+    o = o || {}; var V = o.vars || ['x', 'y'], key = eqT(T, V), chk = stepEq(T, o);
+    var p = K.P.math(prompt, chk, key, sol, hints, text, { keys: 'eq', vars: V, placeholder: 'e.g. ' + (o.placeholder || '5x = 15') });
     p.bad = (o.wrong || []).map(function (w) { return eqT(w.is, V); });
     p.good = [eqT(T.map(function (x) { return -x; }), V)];
     return p;
@@ -662,7 +663,7 @@
             alts: alts, hints: ['Clear each equation with its LCD (' + t(12) + ' and ' + t(6) + '). Keep ' + t('(n' + sgnAdd(-d.s) + ')') + ' in brackets: the ' + t('-3') + ' multiplies both terms.', 'Then scale both equations to line up ' + t('n') + '.'] });
         } },
         { id: '9c', sub: 'c', level: 'ADV', make: function (r) {
-          var d = find(r, function (r) { var x0 = r.pick([4, 8, 12, -4]), y0 = r.pick([3, 6, -3, 9]); var c1 = x0 - 2 * y0 / 3 + x0 / 4, c2 = x0 / 4 - y0 / 2; if (!c1 || !c2 || Math.abs(c1) > 20) return null; return { P: [x0, y0], c1: c1, c2: c2 }; }, { P: [8, 3], c1: 8, c2: 0.5 });
+          var d = find(r, function (r) { var x0 = r.pick([4, 8, 12, -4, -8, 16]), y0 = r.pick([3, 6, -3, 9, -6]); var c1 = x0 - 2 * y0 / 3 + x0 / 4, c2 = x0 / 4 - y0 / 2; if (!c1 || !c2 || Math.abs(c1) > 20) return null; return { P: [x0, y0], c1: c1, c2: c2 }; }, { P: [8, 3], c1: 8, c2: 0.5 });
           var e = ['\\dfrac{1}{3}(3x-2y)+\\dfrac{1}{4}x=' + N(d.c1), '\\dfrac{1}{4}x-\\dfrac{1}{2}y=' + N(d.c2, true).replace('\\frac', '\\dfrac')];
           var S = [[15, -8, 12 * d.c1], [1, -2, 4 * d.c2]];
           var alts = [{ S: [[15, -24, 12 * d.c1], S[1]], code: 'clear-bracket', hint: t('\\frac{1}{3}') + ' multiplies <b>both</b> terms in the bracket: ' + t('\\frac{1}{3}(3x-2y)=x-\\frac{2}{3}y') + '.' },

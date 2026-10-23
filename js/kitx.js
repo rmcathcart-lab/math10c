@@ -222,6 +222,8 @@
       var v = p.value, s = HW.parse.plain(raw).replace(/\s/g, ''), dec = (s.split('.')[1] || '').length;
       if (opt.nr && s.length > 4) { var hl = opt.diag && Math.abs(K.roundTo(v, dp) - want) > 1e-9 ? opt.diag(v) : null; if (hl) return wrong(hl.code || 'diag', hl.hint); return form('nr-long', 'Numerical response answers fit in 4 boxes (digits and a decimal point only).'); }
       if (Math.abs(v - want) < 1e-9) return ok();
+      var sc = Math.pow(10, dp), fl = Math.floor(x * sc + 1e-9);
+      if (Math.abs(x * sc - fl - 0.5) < 1e-7 && Math.abs(v - fl / sc) < 1e-9) return ok(); // exactly halfway: either rounding
       if (dec > dp && Math.abs(K.roundTo(v, dp) - want) < 1e-9) return form('round', 'Right — now round it to the nearest ' + place + '.');
       if (dec < dp && Math.abs(v - K.roundTo(x, dec)) < 1e-9) return form('places', 'Round to the nearest ' + place + ' (' + dp + ' decimal place' + (dp === 1 ? '' : 's') + ').');
       if (opt.diagFirst && opt.diag) { var h0 = opt.diag(v); if (h0) return wrong(h0.code || 'diag', h0.hint); }
