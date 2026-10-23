@@ -1,7 +1,7 @@
 /* Math 10C · Unit 1 · Lesson 3 — Perfect Squares and Perfect Cubes. The explainers on this page and the locker warm-up.
  * The piles, the square/cube/both tester and the lockers came from the old Lesson 2 (GCF, LCM, and Perfect Powers);
  * "powers" (why the exponents double / triple), "multiplier" and "sides" are new. */
-import { h, fmt, Explainer, factors, primeFactors, expHTML } from '../explain.js';
+import { h, fmt, Explainer, factors, primeFactors, productHTML, expHTML } from '../explain.js';
 import { tex } from '../tex.js';
 
 const at = (el, x, y) => { el.style.left = x + 'px'; el.style.top = y + 'px'; return el; };

@@ -676,9 +676,9 @@ const sizeUp = {
   }
 };
 
-/* =============================== explainer: micro (Extension) =============================== */
+/* =============================== explainer: micro =============================== */
 const micro = {
-  title: 'Extension: inside the micrometer',
+  title: 'Inside the micrometer',
   height: 300,
   minW: 860, // drawn this wide and scaled to fit beside the sidebar
   choices: [{ v: 'how', label: 'How it works' }, { v: 'e3', label: 'Example 3 check' }],

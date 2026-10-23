@@ -1236,7 +1236,7 @@ const instr = (() => {
     ex6b: { label: 'Example 6(b) check', R: 11.66, coarse: 11.5, F: 16 }
   };
   const mread = {
-    title: 'Extension: sleeve + thimble',
+    title: 'Micrometer: sleeve + thimble',
     height: 360,
     minW: 900, // drawn this wide and scaled to fit beside the sidebar
     choices: Object.keys(MREAD).map((k) => ({ v: k, label: MREAD[k].label })),
