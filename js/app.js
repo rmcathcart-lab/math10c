@@ -351,6 +351,11 @@
     em.href = 'mailto:' + TEACHER_EMAIL + '?subject=' + encodeURIComponent('Math 10C' + (session && session.name ? ' question from ' + session.name : ' question'));
     em.title = 'Email Mr. Cathcart (' + TEACHER_EMAIL + ')';
     foot.appendChild(em);
+    // the lessons-only booklets (notes and examples, no assignments) to print and follow along with in class
+    var nb = el('button', 'btn home-about-btn', 'Printable Notes'); nb.type = 'button';
+    nb.title = 'Print a unit’s notes package to follow along with during the lessons';
+    nb.addEventListener('click', openNotes); foot.appendChild(nb);
+    foot.appendChild(el('div', 'home-break'));   // Lorebound sits centred on its own line below
     // Lorebound, the class's math adventure game, in its own style; opens in a new tab
     var lb = el('a', 'home-lore', '<span class="hl-k">Play</span><span class="hl-t">Lorebound</span>');
     lb.href = LOREBOUND_URL; lb.target = '_blank'; lb.rel = 'noopener'; lb.title = 'Lorebound: the Math 10C adventure game (opens in a new tab)';
@@ -574,6 +579,45 @@
     if (location.hash.indexOf('#/calendar') === 0) history.replaceState(null, '', '#/');
     loadCal();
   }
+  /* Printable Notes: one row per unit with its lessons-only booklet (assets/notes/math10c-unit-N-notes.pdf).
+     Print opens the browser's print dialog for the PDF (a new tab on iPad/iPhone, where printing a frame doesn't work). */
+  var NOTES_PAGES = { 1: 17, 2: 15, 3: 17, 4: 17, 5: 27, 6: 17, 7: 19, 8: 17, 9: 25, 10: 21 };
+  function notesUrl(u) { return 'assets/notes/math10c-unit-' + u + '-notes.pdf'; }
+  function printPdf(url) {
+    var ios = /iP(ad|hone|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (ios) { window.open(url, '_blank', 'noopener'); return; }
+    var old = document.getElementById('notes-print'); if (old) old.remove();
+    var f = el('iframe'); f.id = 'notes-print'; f.style.cssText = 'position:fixed;right:0;bottom:0;width:1px;height:1px;border:0;opacity:0';
+    f.onload = function () { setTimeout(function () { try { f.contentWindow.focus(); f.contentWindow.print(); } catch (e) { window.open(url, '_blank', 'noopener'); } }, 300); };
+    f.src = url; document.body.appendChild(f);
+  }
+  function openNotes() {
+    closeNotes();
+    var ov = el('div', 'cal-pop notes-pop'); ov.id = 'notes-pop'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true'); ov.setAttribute('aria-label', 'Printable notes');
+    var box = el('div', 'cal-pop-box notes-box'); ov.appendChild(box);
+    var head = el('div', 'notes-head', '<div><h2>Printable Notes</h2><p class="muted">The notes and examples for each unit, with space to work — no assignments. Print a unit to follow along during the lessons.</p></div>');
+    var x = el('button', 'btn btn-ghost cal-pop-x', '×'); x.type = 'button'; x.setAttribute('aria-label', 'Close'); x.addEventListener('click', closeNotes); head.appendChild(x);
+    box.appendChild(head);
+    var CD = calData(), LAY = CD && HW.Cal ? HW.Cal.layout(CD.cal, CD.noSchool) : null;
+    var list = el('div', 'notes-list'), cu = currentUnit(CD, LAY, HW.Cal ? HW.Cal.today() : '');
+    HW.CATALOG.forEach(function (u) {
+      var n = u.lessons.filter(function (c) { return !c.intro; }).length;
+      var row = el('div', 'notes-row' + (u.unit === cu ? ' is-cur' : '')); row.setAttribute('style', HW.unitStyle(u.unit));
+      row.appendChild(el('div', 'notes-n', String(u.unit)));
+      row.appendChild(el('div', 'notes-t', '<b>' + esc(u.title) + '</b><span class="muted">' + n + ' lessons · ' + (NOTES_PAGES[u.unit] || '') + ' pages' + (u.unit === cu ? ' · <span class="notes-cur">Current unit</span>' : '') + '</span>'));
+      var open = el('a', 'btn btn-ghost btn-small notes-open', 'Open'); open.href = notesUrl(u.unit); open.target = '_blank'; open.rel = 'noopener'; open.title = 'Open the PDF (to save or print it yourself)';
+      var pr = el('button', 'btn btn-primary btn-small notes-print', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 9V3h10v6M7 18H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M7 14h10v7H7z"/></svg> Print'); pr.type = 'button';
+      pr.title = 'Print the Unit ' + u.unit + ' notes'; pr.addEventListener('click', function () { L.push({ t: 'event', type: 'notes-print', unit: u.unit }); printPdf(notesUrl(u.unit)); });
+      row.appendChild(open); row.appendChild(pr); list.appendChild(row);
+    });
+    box.appendChild(list);
+    ov.addEventListener('click', function (e) { if (e.target === ov) closeNotes(); });
+    document.addEventListener('keydown', notesKeys);
+    document.body.appendChild(ov);
+    var cur = list.querySelector('.is-cur'); if (cur) cur.scrollIntoView({ block: 'nearest' });
+  }
+  function notesKeys(e) { if (e.key === 'Escape') closeNotes(); }
+  function closeNotes() { var o = document.getElementById('notes-pop'); if (o) o.remove(); document.removeEventListener('keydown', notesKeys); }
   function closeCalendar() { var o = document.getElementById('cal-pop'); if (o) o.remove(); document.removeEventListener('keydown', calKeys); }
   function calKeys(e) { if (e.key === 'Escape') closeCalendar(); }
   /* the unit the class is on: from the class calendar (the next lesson or test from today), else the unit of the last

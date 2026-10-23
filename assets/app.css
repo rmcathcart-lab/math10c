@@ -784,3 +784,22 @@ button.ulv:hover { border-color: var(--brand); }
 .home-lore:hover { border-color: #f0a060; box-shadow: 0 0 0 1px #3a3144 inset, 0 4px 20px rgba(217, 120, 46, .5); }
 .home-lore:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
 .home-about { align-items: center; }
+
+/* ---------- Printable Notes (student home): one row per unit, Print / Open its lessons-only booklet ---------- */
+.home-break { flex-basis: 100%; height: 0; }
+.notes-box { width: min(640px, 100%); }
+.notes-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.notes-head h2 { margin: 0 0 4px; font-size: 22px; }
+.notes-head p { margin: 0; font-size: 14.5px; }
+.notes-list { display: flex; flex-direction: column; gap: 8px; overflow: auto; padding: 2px; }
+.notes-row { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto auto; align-items: center; gap: 12px; padding: 10px 12px; background: var(--card, #fff); border: 1px solid var(--line); border-radius: 14px; }
+.notes-row.is-cur { border-color: var(--uc); box-shadow: 0 0 0 1px var(--uc) inset; }
+.notes-n { width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; background: var(--ucl); color: var(--ucd); font-weight: 800; font-size: 18px; }
+.notes-row.is-cur .notes-n { background: var(--uct); color: #fff; }
+.notes-t { display: flex; flex-direction: column; min-width: 0; }
+.notes-t b { font-size: 16px; }
+.notes-t .muted { font-size: 13px; }
+.notes-cur { color: var(--ucd); font-weight: 700; }
+.notes-print { display: inline-flex; align-items: center; gap: 6px; }
+.notes-print svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+@media (max-width: 520px) { .notes-row { grid-template-columns: 36px minmax(0, 1fr) auto; } .notes-open { display: none; } }
