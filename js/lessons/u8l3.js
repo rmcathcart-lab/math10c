@@ -973,7 +973,7 @@
         shared: function (r) { return find(r, function (r) { var A = pickNZ(r, -5, 5), B = pickNZ(r, -5, 5), p = r.int(1, 4), q = r.pick([-4, -3, -2, 2, 3]); if (Math.abs(A) < 2 && Math.abs(B) < 2) return null; var c1 = A * p + B * q, c2 = B * p - A * q; return c1 && c2 && p !== Math.abs(q) ? { A: A, B: B, p: p, q: q, c1: c1, c2: c2 } : null; }, { A: 4, B: -1, p: 3, q: -2, c1: 14, c2: 5 }); },
         stem: function (sh) { return 'Determine the values of ' + t('A') + ' and ' + t('B') + ' for which the ordered pair ' + t('(' + sh.p + ',\\ ' + sh.q + ')') + ' is the solution of the system ' + t(sysT('Ax+By=' + sh.c1, 'Bx-Ay=' + sh.c2)); },
         parts: [
-          { id: 'e15a', sub: 'a', level: 'ADV', make: function (r, sh) {
+          { id: 'e15a', sub: 'a', level: 'PRG', make: function (r, sh) {
             var V = ['A', 'B'], T1 = [sh.p, sh.q, sh.c1], T2 = [-sh.q, sh.p, sh.c2];
             var p = K.P.system('Substitute ' + t('x=' + sh.p) + ' and ' + t('y=' + sh.q) + ' into each equation to form a system of two equations in ' + t('A') + ' and ' + t('B') + '.', [{ A: T1[0], B: T1[1], C: -T1[2] }, { A: T2[0], B: T2[1], C: -T2[2] }],
               { vars: V, keyTex: [eqT(T1, V), eqT(T2, V)], labels: ['From Eq. 1', 'From Eq. 2'], diag: function (resp) {
@@ -995,7 +995,7 @@
         shared: function (r) { return find(r, function (r) { var a = r.int(2, 5), b = r.int(2, 4), x0 = pickNZ(r, -3, 3), y0 = pickNZ(r, -3, 3), k = r.int(1, 9); if (k === 2 * a) return null; var c2 = a * x0 + b * y0, c1 = k * x0 + 2 * b * y0; return c1 && c2 ? { a: a, b: b, P: [x0, y0], k: k, c1: c1, c2: c2 } : null; }, { a: 4, b: 3, P: [1, 1], k: 3, c1: 9, c2: 7 }); },
         stem: function (sh) { return 'In the system ' + t(sysT('kx+' + 2 * sh.b + 'y=' + sh.c1, eqT([sh.a, sh.b, sh.c2], ['x', 'y']))) + ', ' + t('k') + ' is a constant.'; },
         parts: [
-          { id: 'e16a', sub: 'a', level: 'ADV', make: function (r, sh) {
+          { id: 'e16a', sub: 'a', level: 'PRG', make: function (r, sh) {
             var A2 = 2 * sh.a, R = sh.c1 - 2 * sh.c2;
             return K.P.fields('Eliminate ' + t('y') + ' (Eq. 1 − 2 × Eq. 2). Complete the result.', [{ name: 'Inside the bracket', before: t('(k-'), after: t(')\\,x') }, { name: 'Right side', before: t('=') }],
               [K.number(A2, function (v) { return v === sh.a ? { code: 'elim-const', hint: 'Doubling Eq. 2 doubles every term: ' + t('2(' + sh.a + 'x)=' + A2 + 'x') + '.' } : null; }),
@@ -1004,7 +1004,7 @@
               'Eq. 2 × ' + t(2) + ': ' + t(eqT([A2, 2 * sh.b, 2 * sh.c2], ['x', 'y'])) + '. The ' + t('y') + '-terms match, so subtract:<br>' + t('(kx+' + 2 * sh.b + 'y)-(' + A2 + 'x+' + 2 * sh.b + 'y)=' + sh.c1 + '-' + NP(2 * sh.c2) + '\\ \\Rightarrow\\ (k-' + A2 + ')x=' + R),
               ['Double Eq. 2 so both ' + t('y') + '-terms are ' + t(2 * sh.b + 'y') + ', then subtract.'], 'eliminate y with k');
           } },
-          { id: 'e16b', sub: 'b', level: 'ADV', make: function (r, sh) {
+          { id: 'e16b', sub: 'b', level: 'PRG', make: function (r, sh) {
             var A2 = 2 * sh.a, R = sh.c1 - 2 * sh.c2;
             var p = K.P.number('For what value of ' + t('k') + ' does the system have <b>no solution</b>? (Eliminating ' + t('y') + ' gives ' + t('(k-' + A2 + ')x=' + R) + '.)', A2, function (v) { return v === sh.a ? { code: 'elim-const', hint: 'Use the eliminated equation: ' + t('(k-' + A2 + ')x=' + R) + '. Which ' + t('k') + ' makes the left side ' + t('0') + '?' } : null; },
               'With ' + t('k=' + A2) + ' the equation becomes ' + t('0x=' + R) + ', i.e. ' + t('0=' + R) + ' — false for every ' + t('x') + ', so <b>no solution</b>.<br>By slopes: ' + t('y=-\\frac{k}{' + 2 * sh.b + '}x' + sgnAdd(sh.c1 / (2 * sh.b), true)) + ' and ' + t('y=' + lin([-sh.a / sh.b, sh.c2 / sh.b], ['x', ''], true)) + ': equal slopes exactly when ' + t('k=' + A2) + ', and the intercepts differ — parallel, distinct lines.',

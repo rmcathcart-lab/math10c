@@ -347,12 +347,12 @@
           } else if (kind === 'none') {
             ask = 'never intersect. Which statement must be true?';
             opts = [{ html: t(a + '=' + c) + ' and ' + t(b + '\\neq ' + d), right: true }, { html: t(a + '\\neq ' + c), why: 'Different slopes means the lines cross somewhere.' },
-              { html: t(a + '=' + c) + ' and ' + t(b + '=' + d), why: 'Equal slopes and equal intercepts give the <b>same line</b> — every point is shared.' }, { html: t(b + '\\neq ' + d) + ' only', why: 'Different intercepts alone aren’t enough: if the slopes differ, the lines still cross.' }];
+              { html: t(a + '=' + c) + ' and ' + t(b + '=' + d), why: 'Equal slopes and equal intercepts give the <b>same line</b> — every point is shared.' }, { html: t(a + '\\neq ' + c) + ' and ' + t(b + '\\neq ' + d), why: 'Different slopes means the lines cross somewhere — different intercepts don’t stop that.' }];
             sol = slopes + ' Lines that never meet are parallel and distinct: equal slopes, different intercepts. So ' + t(a + '=' + c) + ' and ' + t(b + '\\neq ' + d) + '.';
           } else {
             ask = 'are the same line. Which statement must be true?';
             opts = [{ html: t(a + '=' + c) + ' and ' + t(b + '=' + d), right: true }, { html: t(a + '=' + c) + ' and ' + t(b + '\\neq ' + d), why: 'Equal slopes with different intercepts give parallel lines that never meet.' },
-              { html: t(a + '\\neq ' + c) + ' and ' + t(b + '=' + d), why: 'Different slopes: these lines meet only at their shared ' + t('y') + '-intercept.' }, { html: t(b + '=' + d) + ' only', why: 'A shared intercept alone gives one shared point. The slopes must match too.' }];
+              { html: t(a + '\\neq ' + c) + ' and ' + t(b + '=' + d), why: 'Different slopes: these lines meet only at their shared ' + t('y') + '-intercept.' }, { html: t(a + '\\neq ' + c) + ' and ' + t(b + '\\neq ' + d), why: 'Different slopes means the lines cross at just one point — the same line needs the same slope <b>and</b> the same intercept.' }];
             sol = slopes + ' The same line needs the same slope and the same ' + t('y') + '-intercept: ' + t(a + '=' + c) + ' and ' + t(b + '=' + d) + '.';
           }
           return mc(r, 'The graphs of ' + lines + ' ' + ask, opts, sol, ['In ' + t('y=mx+b') + ', the coefficient of ' + t('x') + ' is the slope. What decides whether two lines cross?'], 'slopes/intercepts: ' + kind);
@@ -728,6 +728,7 @@
   function q13c(r) {
     var s = find(function () {
       var m1 = r.pick([0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.6]), m2 = r.pick([-0.4, -0.5, -0.6, -0.7, -0.8, -0.9, -1.1, -1.2]), x0 = r.int(2, 8), b1 = r.pick([0.4, 0.8, 1.2, 1.5, 2, 2.4]);
+      if (near(m1, -m2)) return null;   // opposite x-coefficients would make "Elimination — x-coefficients are opposites" true too
       var y0 = rd(m1 * x0 + b1), b2 = rd(y0 - m2 * x0); if (!isInt(rd(y0 * 100)) || isInt(y0) || b2 <= 0) return null;
       if (isInt(rd(y0 * 10)) === false && r.chance(0.5)) return null;
       return { m1: m1, m2: m2, x0: x0, b1: b1, y0: y0, b2: b2 };
@@ -818,7 +819,7 @@
     return find(function () {
       var x0 = r.int(-3, 6), y0 = nz(r, -5, 5), E1, E2, L1, L2, ax, sol;
       if (kind === 'A') {
-        var m = r.int(2, 4), c = y0 + m * x0, p = r.int(2, 5), q = r.int(2, 5); if (c === 0 || p === m) return null;
+        var m = r.int(2, 4), c = y0 + m * x0, p = r.int(2, 5), q = r.int(2, 5); if (c === 0 || p === m || p === q * m) return null;   // p = q·m makes the two equations the same line
         var rr = p * x0 + q * y0; if (rr === 0) return null;
         E1 = 'y=' + c + '-' + m + 'x'; E2 = eqT(p, q, rr); L1 = L(m, 1, c); L2 = L(p, q, rr); ax = [-m, p];
         sol = t(p + 'x+' + q + '(' + c + '-' + m + 'x)=' + rr + '\\Rightarrow ' + (p - q * m) + 'x=' + (rr - q * c) + '\\Rightarrow x=' + x0) + ', ' + t('y=' + c + '-' + m + '(' + x0 + ')=' + y0) + '.';
@@ -1274,13 +1275,13 @@
               t('L=' + s.a0 + '+' + s.b0 + '(' + s.mp + ')=' + s.Lp) + ' cm.', ['Substitute ' + t('m=' + s.mp) + '.'], 'EP8c predict', { after: 'cm' });
           } },
           { id: 'e8d', sub: 'd', level: 'EMG', make: function (r, s) {
-            return numBoxes('(d) The first spring is ' + t('L=' + s.a0 + '+' + s.b0 + 'm') + '. A second spring on the same hook is modelled by ' + t('L=' + s.a2 + '+' + s.b2 + 'm') + '. Determine the mass at which the two springs have the same length, and that common length.', [
+            return numBoxes('(d) The first spring is ' + t('L=' + s.a0 + '+' + s.b0 + 'm') + '. A second spring on the same hook is modelled by ' + t('L=' + s.a2 + '+' + (s.b2 === 1 ? '' : s.b2) + 'm') + '. Determine the mass at which the two springs have the same length, and that common length.', [
               { label: 'mass:', after: 'kg', v: s.ms, diag: function (v) { return near(v, s.Ls) ? { code: 'u8l6-gave-cost', hint: 'That’s the common <b>length</b>. The mass is the value of ' + t('m') + '.' } : null; } }, { label: 'length:', after: 'cm', v: s.Ls }],
-              t(s.a0 + '+' + s.b0 + 'm=' + s.a2 + '+' + s.b2 + 'm\\Rightarrow ' + (s.b0 - s.b2 === 1 ? 'm=' + s.ms : (s.b0 - s.b2) + 'm=' + (s.a2 - s.a0) + '\\Rightarrow m=' + s.ms)) + '<br>' + t('L=' + s.a0 + '+' + s.b0 + '(' + s.ms + ')=' + s.Ls) + ', and ' + t(ck(s.a2 + '+' + s.b2 + '(' + s.ms + ')=' + s.Ls)) + '.<br><b>With ' + s.ms + ' kg attached, both springs measure ' + s.Ls + ' cm.</b>',
+              t(s.a0 + '+' + s.b0 + 'm=' + s.a2 + '+' + (s.b2 === 1 ? '' : s.b2) + 'm\\Rightarrow ' + (s.b0 - s.b2 === 1 ? 'm=' + s.ms : (s.b0 - s.b2) + 'm=' + (s.a2 - s.a0) + '\\Rightarrow m=' + s.ms)) + '<br>' + t('L=' + s.a0 + '+' + s.b0 + '(' + s.ms + ')=' + s.Ls) + ', and ' + t(ck(s.a2 + '+' + s.b2 + '(' + s.ms + ')=' + s.Ls)) + '.<br><b>With ' + s.ms + ' kg attached, both springs measure ' + s.Ls + ' cm.</b>',
               ['Set the two expressions for ' + t('L') + ' equal.'], 'EP8d equal length', { swapHint: 'Check which is which: the mass is in kg, the length in cm.' });
           } },
           { id: 'e8e', sub: 'e', level: 'EMG', make: function (r, s) {
-            return mc(r, '(e) Classify the system ' + both('L=' + s.a0 + '+' + s.b0 + 'm', 'L=' + s.a2 + '+' + s.b2 + 'm') + ', and say what a “no solution” answer would have meant physically.', [
+            return mc(r, '(e) Classify the system ' + both('L=' + s.a0 + '+' + s.b0 + 'm', 'L=' + s.a2 + '+' + (s.b2 === 1 ? '' : s.b2) + 'm') + ', and say what a “no solution” answer would have meant physically.', [
               { html: '<b>One solution</b> (slopes ' + t(s.b0) + ' and ' + t(s.b2) + ' differ). “No solution” would mean the springs stretch at the same rate but start at different lengths, so one is always longer.', right: true },
               { html: '<b>One solution</b>. “No solution” would mean the springs break.', why: 'A system’s solution count is about the lines: no solution means equal slopes and different intercepts. What would that mean for the springs?' },
               { html: '<b>No solution</b>, because the springs start at different lengths.', why: 'Different starting lengths alone don’t prevent a meeting — the slopes differ, so the lines cross (at ' + t(s.ms) + ' kg).' },
@@ -1383,18 +1384,18 @@
               { html: t(s.x0 + '+' + s.y0 + '=' + s.N) + ' services, and ' + t(s.x0 + '\\times ' + money(s.p1) + '+' + s.y0 + '\\times ' + money(s.p2) + '=' + money(s.V)) + '; both counts are whole and positive.', right: true },
               { html: 'Only ' + t(s.p1 + '(' + s.x0 + ')+' + s.p2 + '(' + s.y0 + ')=' + s.V) + ' needs checking.', why: 'The words give two facts — the number of services and the money. Check both.' },
               { html: 'The values satisfy the student’s original equations.', why: 'The student’s equations were wrong. Check against the words of the problem.' },
-              { html: t(s.x0 + '-' + s.y0 + '=' + (s.x0 - s.y0)) + ', so there were more tune-ups.', why: 'That’s true but doesn’t check either fact in the problem.' }],
+              { html: t(s.x0 + '-' + s.y0 + '=' + (s.x0 - s.y0)) + ', so there were more ' + (s.x0 > s.y0 ? 'tune-ups' : 'safety checks') + '.', why: 'That’s true but doesn’t check either fact in the problem.' }],
               '<b>The shop performed ' + s.x0 + ' tune-ups and ' + s.y0 + ' safety checks.</b> Against the words: ' + t(s.x0 + '+' + s.y0 + '=' + s.N) + ' services; ' + t(s.x0 + '\\times ' + money(s.p1) + '=' + money(s.p1 * s.x0)) + ' and ' + t(s.y0 + '\\times ' + money(s.p2) + '=' + money(s.p2 * s.y0)) + ', total ' + t(money(s.V)) + '. Both are whole, positive numbers, as counts must be.',
               ['Go back to each sentence of the problem and test the numbers.'], 'EP11c words check');
           } },
           { id: 'e11d', sub: 'd', level: 'EMG', make: function (r, s) {
-            var sx = rd(s.sx, 2), sy = rd(s.sy, 2);
-            return mc(r, '(d) Solving the student’s system as written gives ' + t('x=' + F(sx)) + ' and ' + t('y=' + F(sy)) + '. What is wrong, and why didn’t checking in the equations catch it?', [
-              { html: 'A negative number of tune-ups and decimal counts are impossible — yet both values satisfy the student’s equations, so only a check against the <b>words</b> catches a system set up wrongly.', right: true },
+            var sx = rd(s.sx, 2), sy = rd(s.sy, 2), dec = !isInt(s.sx), rel = near(sx, s.sx) ? '=' : '\\approx ';
+            return mc(r, '(d) Solving the student’s system as written gives ' + t('x' + rel + F(sx)) + ' and ' + t('y' + rel + F(sy)) + '. What is wrong, and why didn’t checking in the equations catch it?', [
+              { html: 'A negative number of tune-ups' + (dec ? ' and decimal counts are' : ' is') + ' impossible — yet both values satisfy the student’s equations, so only a check against the <b>words</b> catches a system set up wrongly.', right: true },
               { html: 'Nothing is wrong: the values satisfy both equations, so they must be right.', why: 'They satisfy the student’s equations — but those equations don’t describe the shop. Can there be ' + t(F(sx)) + ' tune-ups?' },
               { html: 'The student made an arithmetic slip while solving.', why: 'The solving is fine — substitute back and the student’s equations check. The error is in setting them up.' },
-              { html: 'Decimals are fine, but the negative value means the student should have used elimination.', why: 'The method can’t fix a wrong system. And a count of services can’t be a decimal either.' }],
-              'From ' + t('x=' + s.V + '-y') + ': ' + t(s.p1 + '(' + s.V + '-y)+' + s.p2 + 'y=' + s.N) + ' gives ' + t('y=' + F(sy)) + ' and ' + t('x=' + F(sx)) + '. A negative count of tune-ups is impossible, and counts can’t be decimals. Both values satisfy the student’s equations exactly, so substituting back into those equations would pass — only a check against the words reveals that the system itself is wrong.',
+              { html: (dec ? 'Decimals are fine, but the' : 'The') + ' negative value means the student should have used elimination.', why: 'The method can’t fix a wrong system' + (dec ? '. And a count of services can’t be a decimal either.' : ' — a negative count means the system itself is wrong.') }],
+              'From ' + t('x=' + s.V + '-y') + ': ' + t(s.p1 + '(' + s.V + '-y)+' + s.p2 + 'y=' + s.N) + ' gives ' + t('y' + rel + F(sy)) + ' and ' + t('x' + rel + F(sx)) + '. A negative count of tune-ups is impossible' + (dec ? ', and counts can’t be decimals' : '') + '. Both values satisfy the student’s equations exactly, so substituting back into those equations would pass — only a check against the words reveals that the system itself is wrong.',
               ['Could a shop do a negative number of tune-ups?'], 'EP11d impossible solution');
           } }] },
       /* ---------------- EP 12 ---------------- */
@@ -1718,8 +1719,8 @@
             { html: 'All three are right, because each used a different method.', why: 'A system has one solution, whatever the method. Different answers mean someone made an error.' },
             { html: 'The second and third students agree exactly, and the first has misread a point that no one-unit grid can display.', right: true },
             { html: 'The system has infinitely many solutions, since three different answers were obtained.', why: 'Three <i>reported</i> answers say nothing about the solution set. Two of them are actually the same point.' }],
-            t(num(x) + '=\\frac{' + a + '}{2}') + ' and ' + t(num(y) + '=\\frac{' + b + '}{4}') + ', so the second and third students reported the <b>same</b> point in two notations — both methods are exact. The grapher’s ' + t(ptT([gx, gy])) + ' is a reading error from a grid that cannot display quarters. <b>C</b>',
-            ['Convert the decimals to fractions and compare the second and third answers.'], 'EP19 three students', true);
+            t(num(x) + '=\\frac{' + a + '}{2}') + ' and ' + t(num(y) + '=\\frac{' + b + '}{4}') + ', so the second and third students reported the <b>same</b> point in two notations — both methods are exact. The grapher’s ' + t(ptT([gx, gy])) + ' is a reading error from a grid that cannot display quarters.',
+            ['Convert the decimals to fractions and compare the second and third answers.'], 'EP19 three students');
         } }] },
       /* ---------------- EP 20 ---------------- */
       { num: '20', stem: '<i>(Numerical Response)</i>', parts: [
