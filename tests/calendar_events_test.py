@@ -7,6 +7,10 @@ exec(open(__import__('os').path.join(__import__('os').path.dirname(__file__), 't
 def get(q): return json.loads(urllib.request.urlopen(MOCK + '?' + q).read())
 def cal(): return get('action=cal&class=10c-b')['cal']
 async def cell(tp, d): return await tp.evaluate("(d) => { const c = document.querySelector('.kc-grid .calm-day[data-date=\"' + d + '\"]'); return c ? [...c.querySelectorAll('.calm-chip')].map(x => x.innerText.replace(/\\s+/g, ' ')) : null; }", d)
+import datetime
+_t = datetime.date.today(); _thu = _t + datetime.timedelta(days=(3 - _t.weekday()) % 7 or 7)
+D1, D2 = _thu.isoformat(), (_thu + datetime.timedelta(days=1)).isoformat()
+
 async def main():
     errs = []
     async with async_playwright() as p:
@@ -19,14 +23,14 @@ async def main():
         await tp.click('.kc-start .btn-primary:has-text("Make the calendar")'); await tp.wait_for_selector('.kc-grid')
         c0 = cal(); print('made, start', c0['start'])
         ub = await tp.inner_text('.kc-top .btn:has-text("Undo")'); assert ub.strip() == 'Undo', ub
-        before = await cell(tp, '2026-10-22'); print('Oct 22 before:', before)
-        # add a cumulative exam on Thu Oct 22
+        before = await cell(tp, D1); print(D1, 'before:', before)
+        # add a cumulative exam on next week's Thursday (in the future, so it is the students' next test)
         await tp.click('.kc-add'); await tp.wait_for_selector('#kc-modal .calp')
         await tp.fill('.kc-ev-title', 'Cumulative exam')
-        await tp.click('#kc-modal .calp-day[data-date="2026-10-22"]')
+        await tp.click('#kc-modal .calp-day[data-date="' + D1 + '"]')
         await tp.screenshot(path='/tmp/ce_add.png')
         await tp.click('#kc-modal .kc-ok'); await tp.wait_for_timeout(1200)
-        after = await cell(tp, '2026-10-22'); nxt = await cell(tp, '2026-10-23'); print('Oct 22 after:', after, '| Oct 23:', nxt)
+        after = await cell(tp, D1); nxt = await cell(tp, D2); print(D1, 'after:', after, '|', D2, nxt)
         assert after == ['Cumulative exam Exam · no lesson'], after
         assert before and before[0].split(' ')[0:3] == nxt[0].split(' ')[0:3], (before, nxt)
         c1 = cal(); print('saved events:', c1.get('events')); assert c1['events'][0]['title'] == 'Cumulative exam' and c1['events'][0]['takes']
@@ -40,7 +44,7 @@ async def main():
         await tp.click('.kc-grid .kc-evchip'); await tp.wait_for_selector('#kc-modal')
         await tp.fill('.kc-ev-title', 'Assembly (short class)'); await tp.click('#kc-modal input[value="event"]'); await tp.uncheck('#kc-modal .kc-takes input')
         await tp.click('#kc-modal .kc-ok'); await tp.wait_for_timeout(1200)
-        after2 = await cell(tp, '2026-10-22'); print('Oct 22 as an event:', after2); assert after2[0].startswith('Assembly (short class) Event') and len(after2) == 2, after2
+        after2 = await cell(tp, D1); print(D1, 'as an event:', after2); assert after2[0].startswith('Assembly (short class) Event') and len(after2) == 2, after2
         # start over from Sep 8 with the picker: the entry stays
         await tp.click('.kc-top .btn:has-text("Start over")'); await tp.wait_for_selector('#kc-modal .calp')
         for _ in range(3):
