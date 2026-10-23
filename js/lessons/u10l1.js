@@ -296,7 +296,7 @@
     'no-fine': 'Gave only the coarse reading', 'no-coarse': 'Gave only the fine reading',
     'mic-half': 'Micrometer: half-millimetre mark missed or added', 'mic-hidden': 'Micrometer: read a sleeve mark still under the thimble', 'mic-tenths': 'Micrometer: used 0.1 mm per thimble division',
     'mic-coarse': 'Micrometer: whole millimetres miscounted', 'mic-neighbour': 'Micrometer: thimble mark beside the index line', 'mic-label': 'Micrometer: read the nearest numbered thimble mark',
-    'ruler-start': 'Ruler: read the end mark without subtracting the start', 'ruler-mm': 'Ruler: millimetres miscounted', 'tape-neighbour': 'Tape: read the neighbouring mark',
+    'ruler-mm': 'Ruler: millimetres miscounted', 'tape-neighbour': 'Tape: read the neighbouring mark',
     'in-over-12': '12 or more inches not carried to feet', 'pace-ft': 'Used 1 pace = 1 ft (it is 1 yd = 3 ft)', 'hands-added': 'Added the hand widths instead of subtracting', inches: 'Inches wrong', feet: 'Feet wrong',
     'gave-other-unit': 'Answer in the wrong unit', 'pct-base': 'Percent error divided by the estimate instead of the measured value', 'pct-no100': 'Percent error not multiplied by 100',
     'pct-abs': 'Gave the absolute error, not the percent', 'km-not-m': 'Didn’t change km to m', 'multiplied': 'Multiplied instead of dividing', divided: 'Divided instead of multiplying',
@@ -816,7 +816,7 @@
           { html: 'Neither error depends on the count.', why: 'In (b) the error is ' + t(v.n) + ' times ' + t('(' + v.a + '-' + v.t + ')') + '.' }],
           'From (b), ' + t(v.n + '(' + v.a + '-' + v.t + ')') + ': the error in centimetres is proportional to the count (question 7: 20 spans gave 10 cm, 60 spans gave 30 cm). From (c), the count cancels: question 7’s two estimates were both out by 2.6%.', ['Where does the count appear in each formula?'], 'absolute vs percent error and count');
       } },
-      { id: 'e9e', sub: 'e', level: 'PRG', make: function (r) {
+      { id: 'e9e', sub: 'e', level: 'EMG', make: function (r) {
         return mc(r, 'What does a real estimate suffer from that the formula in (c) cannot see?', [
           { html: 'Placement and counting error — each placement can land a little short or long, and the count can be lost. It <b>does</b> grow with the count (question 8(d)).', right: true },
           { html: 'Arithmetic errors, which grow with the count.', why: 'The formula assumes the arithmetic is right; the real-world problem is in placing and counting the referent.' },
@@ -843,7 +843,7 @@
       { id: 'e10b', sub: 'b', level: 'EMG', make: function (r, sh) { return e10part(sh.b, 'b'); } },
       { id: 'e10c', sub: 'c', level: 'EMG', make: function (r, sh) { return e10part(sh.c, 'c'); } },
       { id: 'e10d', sub: 'd i', level: 'PRG', make: function (r, sh) {
-        var items = ['a', 'b', 'c'].map(function (k, i) { var v = sh[k]; return { id: k, tex: '(' + k + ')', html: '(' + k + ') ' + t(fx(v[0], v[3]) + '\\text{ ' + v[2] + '} \\text{ vs } ' + fx(v[1], v[3]) + '\\text{ ' + v[2] + '}'), p: sh.p[i] }; });
+        var items = ['a', 'b', 'c'].map(function (k, i) { var v = sh[k]; return { id: k, tex: '(' + k + ')', html: '(' + k + ') estimate ' + t(fx(v[0], v[3]) + '\\text{ ' + v[2] + '}') + ', measured ' + t(fx(v[1], v[3]) + '\\text{ ' + v[2] + '}'), p: sh.p[i] }; });
         items.sort(function (x, y) { return x.p - y.p; });
         var p = P.order(r, 'Rank the three estimates from <b>best</b> (smallest percent error) to <b>worst</b>.', items, { first: 'best', last: 'worst' },
           items.map(function (x) { return x.html + ': ' + t(fx(x.p, 1) + '\\%'); }).join('<br>'), ['Work out the percent error of each one first.'], 'rank estimates by percent error');
@@ -927,7 +927,7 @@
         return { a: 5, b: 16, A: 4.5, B: 4.8768 };
       }, parts: [
       { id: 'e13a', sub: 'a', level: 'EMG', outcome: M2, make: function (r, sh) {
-        return fieldsPart('Express both estimates in metres, to the nearest hundredth of a metre.', [{ label: 'Bed A', after: 'm', x: sh.A, dp: 2, alts: unitAlts(sh.A, 'm') }, { label: 'Bed B', after: 'm', x: sh.B, dp: 2, alts: [{ v: sh.b / 3.2808 * 1, code: 'other-factor', hint: 'Use ' + t('1\\text{ ft}=0.3048\\text{ m}') + ': multiply the feet by 0.3048.' }, { v: sh.b * 3.2808, code: 'divided', hint: 'A metre is longer than a foot, so there are <b>fewer</b> metres: multiply by 0.3048 (or divide by 3.2808).' }] }],
+        return fieldsPart('Express both estimates in metres, to the nearest hundredth of a metre.', [{ label: 'Bed A', after: 'm', x: sh.A, dp: 2, alts: unitAlts(sh.A, 'm') }, { label: 'Bed B', after: 'm', x: sh.B, dp: 2, alts: [{ v: sh.b * 3.2808, code: 'divided', hint: 'A metre is longer than a foot, so there are <b>fewer</b> metres: multiply by 0.3048 (or divide by 3.2808).' }] }],
           'Bed A: ' + t(sh.a + '\\times90=' + 90 * sh.a + '\\text{ cm}=' + fx(sh.A, 2) + '\\text{ m}') + '. Bed B: ' + t(sh.b + '\\text{ ft}\\times0.3048=' + N(rnd(sh.B, 6)) + '\\approx' + fx(sh.B, 2) + '\\text{ m}') + '.', ['Paces: count × 90 cm. Shoes: count feet × 0.3048.'], 'beds in metres');
       } },
       { id: 'e13b', sub: 'b', level: 'EMG', outcome: M2, make: function (r, sh) {
@@ -1109,7 +1109,7 @@
         return fieldsPart('Amara’s shoe is somewhere between ' + t(sh.sh[0]) + ' cm and ' + t(sh.sh[1]) + ' cm long. Work out the interval her estimate really lies in, and its width in centimetres.', [{ label: 'From', after: 'm', x: lo / 100, exact: true, alts: unitAlts(lo / 100, 'm') }, { label: 'To', after: 'm', x: hi / 100, exact: true, alts: unitAlts(hi / 100, 'm') }, { label: 'Width', after: 'cm', x: hi - lo, exact: true, alts: [] }],
           t(sh.n + '\\times' + sh.sh[0] + '=' + lo + '\\text{ cm}=' + fx(lo / 100, 2) + '\\text{ m}') + ' to ' + t(sh.n + '\\times' + sh.sh[1] + '=' + hi + '\\text{ cm}=' + fx(hi / 100, 2) + '\\text{ m}') + ': a band ' + t(hi - lo) + ' cm wide. Even the first decimal place isn’t secure.', ['Multiply the count by the shortest and the longest possible shoe.'], 'shoe interval');
       } },
-      { id: 'e18d', sub: 'd', level: 'PRG', make: function (r, sh) {
+      { id: 'e18d', sub: 'd', level: 'EMG', make: function (r, sh) {
         var lo = sh.n * sh.sh[0] / 100, hi = sh.n * sh.sh[1] / 100, mid = Math.round(sh.m);
         return mc(r, 'How should Amara have reported the width? (Her interval is ' + t(fx(lo, 2)) + '–' + t(fx(hi, 2)) + ' m.)', [
           { html: '“About ' + mid + ' m” — an estimate is never more precise than the referent it was built from.', right: true },
@@ -1165,7 +1165,7 @@
         return fieldsPart('Suppose Nadia’s estimate is correct: what would Beckett’s true pace have to be? Suppose instead Beckett’s is correct: what would Nadia’s true cubit have to be? (Nearest tenth of a centimetre.)', [{ label: 'Beckett’s pace', after: 'cm', x: sh.N / sh.b, dp: 1, alts: [{ v: sh.B / sh.c, code: 'swapped', hint: 'If <b>Nadia</b> is right, the wall is ' + F(sh.N) + ' cm, and Beckett took ' + sh.b + ' paces.' }] }, { label: 'Nadia’s cubit', after: 'cm', x: sh.B / sh.c, dp: 1, alts: [{ v: sh.N / sh.b, code: 'swapped', hint: 'If <b>Beckett</b> is right, the wall is ' + F(sh.B) + ' cm, and Nadia took ' + sh.c + ' cubits.' }] }],
           'If Nadia is right: ' + t('\\frac{' + F(sh.N) + '}{' + sh.b + '}\\approx' + fx(sh.N / sh.b, 1)) + ' cm per pace. If Beckett is right: ' + t('\\frac{' + F(sh.B) + '}{' + sh.c + '}\\approx' + fx(sh.B / sh.c, 1)) + ' cm per cubit.', ['Referent = wall length ÷ that student’s count.'], 'implied referents');
       } },
-      { id: 'e20c', sub: 'c', level: 'PRG', make: function (r, sh) {
+      { id: 'e20c', sub: 'c', level: 'EMG', make: function (r, sh) {
         var ip = fx(sh.N / sh.b, 1), ic = fx(sh.B / sh.c, 1);
         return mc(r, 'A ' + ip + '-cm pace and a ' + ic + '-cm cubit: what do these tell you?', [
           { html: 'Both are possible for a real person (a long stride; a short forearm), so neither estimate can be thrown out as absurd — the disagreement has to be settled by measuring.', right: true },
@@ -1182,7 +1182,7 @@
           { html: 'Neither can be favoured at all; the counts tell us nothing.', why: 'The counts matter: placement error grows with the number of placements.' }],
           'The argument the numbers support: placement error ' + t('=\\text{count}\\times\\text{error per placement}') + ', and Beckett placed his referent less than half as often. But the referent-value error doesn’t depend on the count, so the verdict is only weak.', ['Which student laid their referent down fewer times?'], 'likelier closer estimate');
       } },
-      { id: 'e20e', sub: 'e', level: 'PRG', make: function (r) {
+      { id: 'e20e', sub: 'e', level: 'EMG', make: function (r) {
         return mc(r, 'What extra information would settle the disagreement? Distinguish what settles <b>how long the wall is</b> from what settles <b>whose method was better</b>.', [
           { html: 'A tape measure on the wall settles its length. Measuring each student’s own referent (Nadia’s cubit, Beckett’s pace) settles whose assumed value — and so whose method — was better.', right: true },
           { html: 'Averaging the two estimates settles both questions.', why: 'An average is still an estimate; it can’t say whose method was better.' },
@@ -1350,7 +1350,7 @@
 
   HW.addCodes({
     'hand-1in': 'Used 1 in for a hand width (it is 4 in)', 'half-pace': 'Used a half-pace (45 cm) as the largest error', 'used-assumed': 'Used the assumed referent where the true one belongs', 'used-true': 'Used the true referent where the assumed one belongs',
-    factor: 'Not factored', 'no-waste': 'Left out the 10% waste allowance', 'other-factor': 'Wrong conversion factor', perimeter: 'Gave the perimeter for an area', 'area-units': 'Area not computed in metres',
+    factor: 'Not factored', 'no-waste': 'Left out the 10% waste allowance', perimeter: 'Gave the perimeter for an area', 'area-units': 'Area not computed in metres',
     'pct-double': 'Took the area error as exactly double', 'pct-same': 'Took the area error as the length error', 'pct-triple': 'Took the volume error as exactly triple', 'pct-square': 'Squared instead of cubed for a volume',
     'half-perimeter': 'Added only two sides of the rectangle', area: 'Gave the area for a perimeter', 'mixed-referents': 'Added counts of different referents', swapped: 'Swapped which estimate is assumed correct',
     'vern-backwards': 'Vernier: distance past the mark instead of to the next mark', 'vern-zero': 'Vernier: wrong division at a whole millimetre', 'div-over-50': '50 or more thimble divisions not carried',

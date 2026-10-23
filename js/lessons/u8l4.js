@@ -1193,7 +1193,7 @@
         stem: function (o) { return 'A school store sells hoodies in three sizes: small at ' + Dh(o.ps) + ', medium at ' + Dh(o.pm) + ' and large at ' + Dh(o.pl) + '. On one day it sold ' + t(o.N) + ' hoodies for ' + Dh(o.T) + ', and the number of large hoodies sold was exactly <b>' + TIMES[o.k] + '</b> the number of small hoodies sold. Let ' + t('s') + ', ' + t('m') + ' and ' + t('l') + ' be the numbers of small, medium and large hoodies sold.'; },
         parts: [
           { id: 'e18a', sub: 'a', level: 'EMG', make: function (r, o) {
-            var E = function (a, b, c) { return t(a) + ',&nbsp; ' + t(b) + ',&nbsp; ' + t(c); };
+            var E = function (a, b, c) { return t(a) + '<br>' + t(b) + '<br>' + t(c); };
             return mc(r, 'Which three equations model the three facts?', [
               { html: E('s+m+l=' + o.N, o.ps + 's+' + o.pm + 'm+' + o.pl + 'l=' + N(o.T), 'l=' + o.k + 's'), right: true },
               { html: E('s+m+l=' + o.N, o.ps + 's+' + o.pm + 'm+' + o.pl + 'l=' + N(o.T), o.k + 'l=s'), why: 'Test: with ' + t('s=5') + ' small there are ' + t(5 * o.k) + ' large. So ' + t('l=' + o.k + 's') + '.' },

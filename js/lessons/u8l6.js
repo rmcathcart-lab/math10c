@@ -54,11 +54,11 @@
   /* several plain number boxes. boxes: [{ label, before, after, v, diag, name }]; o.swapHint for two swapped values */
   function numBoxes(prompt, boxes, sol, hints, text, o) {
     o = o || {};
-    var vals = boxes.map(function (b) { return b.v; }), names = boxes.map(function (b) { return b.name || b.label; });
+    var vals = boxes.map(function (b) { return b.v; }), names = boxes.map(function (b) { return b.name || String(b.label || '').replace(/:\s*$/, ''); });
     var base = K.fields(boxes.map(function (b) { return b.check || K.number(b.v, b.diag); }), { labels: names });
     var check = function (resp) {
       resp = resp || [];
-      if (boxes.length === 2 && !near(vals[0], vals[1]) && !boxes[0].check) {
+      if (boxes.length >= 2 && !near(vals[0], vals[1]) && !boxes[0].check && !boxes[1].check) {
         var a = HW.parse.number(String(resp[0] || '')), b = HW.parse.number(String(resp[1] || ''));
         if (a.ok && b.ok && near(a.value, vals[1]) && near(b.value, vals[0])) return wrong(o.swapCode || 'l6-swap', o.swapHint || 'Both numbers are right but in the wrong boxes — check which quantity each box asks for.');
       }
@@ -68,14 +68,14 @@
     var keys = boxes.map(function (b) { return b.key != null ? b.key : String(b.v); });
     var bad = (o.bad || []).slice(); if (boxes.length === 2 && !near(vals[0], vals[1])) bad.push([keys[1], keys[0]]);
     return { prompt: prompt, input: { type: 'fields', fields: boxes.map(function (b) { return { label: b.label, before: b.before, after: b.after }; }) }, check: check, key: keys,
-      answer: boxes.map(function (b, i) { return (b.name || b.label || '') + ' ' + (b.before ? HW.tex(b.before) : '') + t(b.keyTex || keys[i]) + (b.after ? ' ' + b.after : ''); }).join('<br>'),
+      answer: boxes.map(function (b, i) { return (b.label || b.name || '') + ' ' + (b.before ? HW.tex(b.before) : '') + t(b.keyTex || keys[i]) + (b.after ? ' ' + b.after : ''); }).join('<br>'),
       solution: sol, hints: hints || [], text: text, bad: bad };
   }
   /* equation boxes whose order matters. items: [{ label, T (line target), keyTex, form, wrong }] */
   function eqBoxes(prompt, items, o, sol, hints, text) {
     o = o || {}; var vars = o.vars || ['x', 'y'];
     var TL = items.map(function (it) { return Ln.of(it.T); });
-    var base = K.fields(items.map(function (it) { return K.line(it.T, { form: it.form || 'any', vars: vars, wrong: it.wrong }); }), { labels: items.map(function (it) { return it.label; }) });
+    var base = K.fields(items.map(function (it) { return K.line(it.T, { form: it.form || 'any', vars: vars, wrong: it.wrong }); }), { labels: items.map(function (it) { return String(it.label).replace(/:\s*$/, ''); }) });
     var check = function (resp) {
       resp = resp || [];
       if (items.length === 2) {

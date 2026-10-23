@@ -494,7 +494,7 @@
         shared: function (r) { var tr = r.pick([[12, 5], [12, 5], [8, 6], [15, 8], [12, 9], [24, 7], [16, 12], [20, 15]]); return gen(r, function (r) { return { ab: tr[0], ad: tr[1], ap: d1(r, 4.0, 12.0) }; }, function (s) { return safe(T.atan(s.ap / Math.hypot(s.ab, s.ad)), 1); }); },
         stem: function (s) {
           var k = 0.4, A = [0, 0], B = [s.ab * k, 0], D = [s.ad * k * 0.75, s.ad * k * 0.66], C = [B[0] + D[0], D[1]], Pp = [0, s.ap * k];
-          var fig = HW.fig({ pts: { A: A, B: B, C: C, D: D, P: Pp }, segs: [['A', 'B', s1(s.ab) + ' m'], ['B', 'C'], ['C', 'D'], ['A', 'D', s1(s.ad) + ' m', { side: -1 }], ['A', 'P', s1(s.ap) + ' m'], ['P', 'C'], ['A', 'C', { dash: 1 }]], right: [['A', 'B', 'P']], width: 300, aria: 'flagpole in a courtyard' });
+          var fig = HW.fig({ pts: { A: A, B: B, C: C, D: D, P: Pp }, segs: [['A', 'B', s1(s.ab) + ' m'], ['B', 'C'], ['C', 'D'], ['A', 'D', s1(s.ad) + ' m'], ['A', 'P', s1(s.ap) + ' m'], ['P', 'C'], ['A', 'C', { dash: 1 }]], right: [['A', 'B', 'P']], width: 300, aria: 'flagpole in a courtyard' });
           return '<i>(Extension)</i> A vertical flagpole ' + t('AP') + ' stands at corner ' + t('A') + ' of a horizontal rectangular courtyard ' + t('ABCD') + ', where ' + t('AB=' + s1(s.ab)) + ' m, ' + t('AD=' + s1(s.ad)) + ' m and ' + t('AP=' + s1(s.ap)) + ' m.' + figWrap(fig);
         },
         parts: [
@@ -582,8 +582,8 @@
           return { h: h, run: run, ramp: ramp, lim: lim, L2: L2 };
         },
         stem: function (s) {
-          var k = 6 / s.run, fig = HW.fig({ pts: { F: [0, 0], S: [s.run, 0], Tp: [s.run, s.h] }, segs: [['F', 'Tp', s1(s.ramp) + ' m', { width: 3 }], ['F', 'S', s1(s.run) + ' m', { dash: 1 }], ['S', 'Tp', s1(s.h) + ' m', { dash: 1 }]], right: [['S', 'F', 'Tp']], angles: [['F', 'S', 'Tp', 'θ', { r: 40 }]], names: { F: 'foot' },
-            extra: [{ type: 'ground', y: 0, x0: -0.05 * s.run, x1: s.run * 1.45 }, { type: 'building', at: [s.run * 1.22, s.h], w: s.run * 0.43, h: 1.8 / k }, { type: 'text', at: [s.run * 1.22, s.h + 0.9 / k], text: 'van' }], width: 320, aria: 'ramp into a van' });
+          var k = 6 / s.run, hv = 2 * s.h, fig = HW.fig({ pts: { F: [0, 0], S: [s.run, 0], Tp: [s.run, hv] }, segs: [['F', 'Tp', s1(s.ramp) + ' m', { width: 3 }], ['F', 'S', s1(s.run) + ' m', { dash: 1 }], ['S', 'Tp', s1(s.h) + ' m', { dash: 1 }]], right: [['S', 'F', 'Tp']], angles: [['F', 'S', 'Tp', 'θ', { r: 40 }]], names: { F: 'foot' },
+            extra: [{ type: 'ground', y: 0, x0: -0.05 * s.run, x1: s.run * 1.45 }, { type: 'building', at: [s.run * 1.22, hv], w: s.run * 0.43, h: 3 / k }, { type: 'text', at: [s.run * 1.22, hv + 1.5 / k], text: 'van' }], width: 320, aria: 'ramp into a van (not to scale)' });
           return 'A courier loads barrels into a delivery van up a straight portable ramp. The van’s sill is ' + t(s1(s.h)) + ' m above the ground, the foot of the ramp rests ' + t(s1(s.run)) + ' m out from the van, and the ramp surface is ' + t(s1(s.ramp)) + ' m long. The depot’s safety sheet allows a loaded ramp of at most ' + t(dg(s.lim)) + '.' + figWrap(fig);
         },
         parts: [
@@ -649,8 +649,8 @@
           return near('Determine ' + t('JL') + '.' + figWrap(tri({ w: 4, h: 4 * T.tan(s.A), names: ['J', 'L', 'K'], sides: { b: s1(s.a) }, angles: { A: s.A + '°' }, width: 230 }, r)), x, 1, '', sideAlts(s.a, s.A, 'adj', 'hyp'),
             '<b>A ratio</b> (cosine). ' + sideWork(s.a, s1(s.a), s.A, 'adj', 'hyp', x, 1, '', 'JL'), ['Relative to ' + t('\\angle J') + ', the given side is adjacent and ' + t('JL') + ' is the hypotenuse.', 'The unknown ends up in the denominator.'], 'JL cosine'); } },
         { id: 'e3g', level: 'EMG', make: function (r) {
-          var rows = r.shuffle([{ id: 'a', html: '(a) ' + t('PQ') + ': both legs known, hypotenuse wanted' }, { id: 'b', html: '(b) ' + t('\\angle P') + ': the other acute angle is known' }, { id: 'c', html: '(c) ' + t('YZ') + ': an angle and the hypotenuse known' }, { id: 'd', html: '(d) ' + t('\\angle D') + ': both legs known, an angle wanted' }, { id: 'e', html: '(e) ' + t('JL') + ': an angle and the adjacent leg known' }]);
-          return grid('Name the tool for each triangle.', rows, [{ id: 'py', html: 'Pythagorean theorem' }, { id: 'ra', html: 'ratio' }, { id: 'inv', html: 'inverse ratio' }, { id: 'co', html: t('90^\\circ') + ' complement' }], { a: 'py', b: 'co', c: 'ra', d: 'inv', e: 'ra' },
+          var rows = r.shuffle([{ id: 'a', html: '(a) ' + t('PQ') + ' from two legs' }, { id: 'b', html: '(b) ' + t('\\angle P') + ' from ' + t('\\angle M') }, { id: 'c', html: '(c) ' + t('YZ') + ' from an angle and the hyp.' }, { id: 'd', html: '(d) ' + t('\\angle D') + ' from two legs' }, { id: 'e', html: '(e) ' + t('JL') + ' from an angle and a leg' }]);
+          return grid('Name the tool for each triangle.', rows, [{ id: 'py', html: 'Pythag.' }, { id: 'ra', html: 'ratio' }, { id: 'inv', html: 'inverse' }, { id: 'co', html: t('90^\\circ-') }], { a: 'py', b: 'co', c: 'ra', d: 'inv', e: 'ra' },
             function (row, got) { return { code: 'trig-ratio', hint: { a: 'Two sides known and a side wanted, with no angle in sight: no trigonometry needed.', b: 'One acute angle gives the other for free: they add to ' + t('90^\\circ') + '.', c: 'A side is wanted from an angle and a side: a ratio (SOH CAH TOA).', d: 'An <b>angle</b> is wanted from two sides: an inverse ratio.', e: 'A side is wanted from an angle and a side: a ratio.' }[row] }; },
             '(a) Pythagorean theorem; (b) ' + t('90^\\circ') + ' complement; (c) a ratio (sine); (d) an inverse ratio (' + t('\\tan^{-1}') + '); (e) a ratio (cosine).', ['Sides only → Pythagoras. Angle → angle: complement. Angle + side → side: ratio. Two sides → angle: inverse ratio.'], 'tool for each');
         } },
@@ -785,7 +785,7 @@
         stem: function (s) {
           var b = s.d * T.tan(s.a1) + s.e, tp = s.d * T.tan(s.a2) + s.e, sc = 1;
           var fig = HW.fig({ pts: { G: [0, 0], E: [0, s.e], Bt: [s.d, b], Tp: [s.d, tp], Fo: [s.d, 0], Hz: [s.d, s.e] }, segs: [['Fo', 'Tp', { width: 1.6 }], ['Bt', 'Tp', { width: 5, color: '#c0563b' }], ['G', 'E'], ['E', 'Bt', { dash: 1 }], ['E', 'Tp', { dash: 1 }], ['G', 'Fo', s1(s.d) + ' m']], right: [['Hz', 'E', 'Tp']],
-            angles: [['E', 'Hz', 'Tp', s.a2 + '°', { r: 30 }], ['E', 'Hz', 'Bt', s.a1 + '°', { r: 58 }]], names: { Bt: 'bottom', Tp: 'top' }, extra: [{ type: 'dash', from: [0, s.e], to: [s.d, s.e] }, { type: 'person', at: [0, 0], h: s.e * 1.05 }, { type: 'ground', y: 0, x0: -4, x1: s.d + 4 }], width: 320, aria: 'banner on a tower' });
+            angles: [['E', 'Hz', 'Tp', s.a2 + '°', { r: 34 }], ['E', 'Hz', 'Bt', s.a1 + '°', { r: 80 }]], names: false, extra: [{ type: 'text', at: [s.d * 1.13, tp], text: 'top' }, { type: 'text', at: [s.d * 1.15, b], text: 'bottom' }, { type: 'dash', from: [0, s.e], to: [s.d, s.e] }, { type: 'person', at: [0, 0], h: s.e * 1.05 }, { type: 'ground', y: 0, x0: -4, x1: s.d + 4 }], width: 320, aria: 'banner on a tower' });
           return 'A sign installer sights a tall vertical banner hanging flat against the front of a tower. Her clinometer is at her eye, ' + t(s.e.toFixed(2)) + ' m above level ground. Standing ' + t(s1(s.d)) + ' m from the foot of the tower, she measures the angle of elevation of the <b>top</b> edge of the banner as ' + t(dg(s.a2)) + ' and of the <b>bottom</b> edge as ' + t(dg(s.a1)) + '.' + figWrap(fig);
         },
         parts: [
@@ -818,7 +818,7 @@
           function (s) { var R = s.s1 * T.sin(s.a1) + s.s2 * T.sin(s.a2), H = s.s1 * T.cos(s.a1) + s.s2 * T.cos(s.a2), A = T.atan(R / H); return Math.round(A) !== Math.round((s.a1 + s.a2) / 2 + 1e-9) && safe(A, 0) && safe(R, 1) && safe(H, 1) && safe(Math.hypot(R, H), 1); }); },
         stem: function (s) {
           var M = [s.s1 * T.cos(s.a1), s.s1 * T.sin(s.a1)], S = [M[0] + s.s2 * T.cos(s.a2), M[1] + s.s2 * T.sin(s.a2)];
-          var fig = HW.fig({ pts: { B: [0, 0], M: M, S: S, Hz: [S[0] * 1.05, M[1]], G: [S[0] * 1.05, 0] }, segs: [['B', 'M', s.s1 + ' m', { width: 3 }], ['M', 'S', s.s2 + ' m', { width: 3 }], ['B', 'G', { width: 1.4 }]], angles: [['B', 'G', 'M', s.a1 + '°', { r: 40 }], ['M', 'Hz', 'S', s.a2 + '°', { r: 34 }]], names: { B: 'B', M: 'M', S: 'S' },
+          var fig = HW.fig({ pts: { B: [0, 0], M: M, S: S, Hz: [S[0] * 1.05, M[1]], G: [S[0] * 1.05, 0] }, segs: [['B', 'M', s.s1 + ' m', { width: 3, side: -1 }], ['M', 'S', s.s2 + ' m', { width: 3 }], ['B', 'G', { width: 1.4 }]], angles: [['B', 'G', 'M', s.a1 + '°', { r: 30 }], ['M', 'Hz', 'S', s.a2 + '°', { r: 34 }]], names: { B: 'B', M: 'M', S: 'S' },
             extra: [{ type: 'dash', from: M, to: [S[0] * 1.05, M[1]] }, { type: 'dash', from: M, to: [M[0], 0] }, { type: 'dash', from: S, to: [S[0], 0] }], width: 320, aria: 'gondola runs' });
           return 'A gondola line climbs in two straight runs. From the base station ' + t('B') + ' the cable rises to a mid-station ' + t('M') + ' along a straight span ' + t(s.s1) + ' m long, at ' + t(dg(s.a1)) + ' to the horizontal. From ' + t('M') + ' it rises to the summit ' + t('S') + ' along a span ' + t(s.s2) + ' m long, at ' + t(dg(s.a2)) + ' to the horizontal.' + figWrap(fig);
         },
@@ -893,7 +893,7 @@
         shared: function (r) { return gen(r, function (r) { return { H: r.int(20, 50) * 10, a: r.int(18, 35), b: r.int(40, 60) }; }, function (s) { var f = s.H / T.tan(s.a), k = s.H / T.tan(s.b); return safe(f, 1) && safe(k, 1) && safe(f + k, 1) && safe(s.H / T.sin(s.a), 1) && safe(s.H / T.sin(s.b), 1); }); },
         stem: function (s) {
           var f = s.H / T.tan(s.a), k = s.H / T.tan(s.b);
-          var fig = HW.fig({ pts: { Bl: [0, s.H], G: [0, 0], F: [-f, 0], K: [k, 0], L: [-f * 0.6, s.H], Rr: [k * 0.9, s.H] }, segs: [['Bl', 'G', s.H + ' m', { dash: 1 }], ['Bl', 'F', { dash: 1 }], ['Bl', 'K', { dash: 1 }], ['F', 'K', { width: 1.4 }]], right: [['G', 'K', 'Bl']],
+          var fig = HW.fig({ pts: { Bl: [0, s.H], G: [0, 0], F: [-f, 0], K: [k, 0], L: [-f * 0.6, s.H], Rr: [k * 0.9, s.H] }, segs: [['Bl', 'G', s.H + ' m', { dash: 1, side: -1 }], ['Bl', 'F', { dash: 1 }], ['Bl', 'K', { dash: 1 }], ['F', 'K', { width: 1.4 }]], right: [['G', 'K', 'Bl']],
             angles: [['Bl', 'L', 'F', s.a + '°', { r: 40 }], ['Bl', 'Rr', 'K', s.b + '°', { r: 30 }]], names: { Bl: 'balloon', G: 'G', F: 'F', K: 'K' }, extra: [{ type: 'dash', from: [-f * 0.6, s.H], to: [k * 0.9, s.H] }], width: 330, aria: 'balloon over two points' });
           return 'A hot-air balloon hovers ' + t(s.H) + ' m above level ground. Looking down one side of the basket, the pilot sees a landing field ' + t('F') + ' at an angle of depression of ' + t(dg(s.a)) + '; looking down the <b>opposite</b> side, she sees a road marker ' + t('K') + ' at an angle of depression of ' + t(dg(s.b)) + '. ' + t('G') + ' is the point on the ground directly below the balloon.' + figWrap(fig);
         },

@@ -93,7 +93,7 @@
   }
   /* several boxes. rows: [{ label, after, x, dp, alts, exact, check, key, show }] */
   function fields(prompt, rows, sol, hints, text) {
-    var fl = rows.map(function (rw) { return { label: rw.label, after: rw.after }; });
+    var fl = rows.map(function (rw) { return { label: rw.label, after: rw.after, name: String(rw.label).replace(/\s*(C\$|\$)\s*$/, '').replace(/:\s*$/, '').replace(/=\\\)$/, '\\)').replace(/\s+$/, '') + (rw.after ? ' (' + rw.after + ')' : '') }; });
     var checks = rows.map(function (rw) { return rw.check || (rw.exact ? nearX(rw.x, rw.dp, { alts: rw.alts || [] }) : K.near(rw.x, rw.dp, { alts: rw.alts || [] })); });
     var keys = rows.map(function (rw) { return rw.key != null ? String(rw.key) : rw.exact ? plain(rw.x) : kx(rw.x, rw.dp); });
     var ans = rows.map(function (rw, i) { return rw.label + ' ' + (rw.show || t(rw.key != null ? F(String(rw.key)) : rw.exact ? num(rw.x) : fx(rw.x, rw.dp))) + (rw.after ? ' ' + rw.after : ''); }).join('<br>');
@@ -159,12 +159,12 @@
     var X = function (mm) { return pad + (mm - lo) * s; }, b = '';
     b += '<rect x="4" y="30" width="' + (W - 8) + '" height="' + (y0 - 30) + '" fill="#f1f3f6" stroke="#a9b0bb" stroke-width="1"/>';
     for (var m = lo; m <= hi; m++) { var big = m % 5 === 0; b += ln([X(m), y0], [X(m), y0 - (big ? 20 : 11)], { w: big ? 1.6 : 1.1 }); if (big) b += tx(X(m), y0 - 30, String(m), { size: 13 }); }
-    b += tx(W / 2, 14, 'Main scale (mm)', { size: 13, b: true });
+    b += tx(8, 14, 'Main scale (mm)', { size: 13, b: true, a: 'start' });
     var xz = X(R), xe = xz + 19 * 0.95 * s, pl = Math.max(4, xz - 1.55 * s), pr = Math.min(W - 4, xe + 0.74 * s);
     b += '<rect x="' + f1(pl) + '" y="' + y0 + '" width="' + f1(pr - pl) + '" height="44" fill="#e3e7ec" stroke="#a9b0bb" stroke-width="1"/>';
     for (var n = 0; n <= 20; n++) { var x = xz + 0.95 * n * s, bg = n % 5 === 0; b += ln([x, y0], [x, y0 + (bg ? 20 : 11)], { w: n === 0 ? 2.4 : bg ? 1.6 : 1.1, c: n === 0 ? RED : INK }); if (bg) b += tx(x, y0 + 30, String(n), { size: 13 }); }
     b += tx(xz - 8, y0 + 34, 'index', { size: 12, a: 'end', c: RED });
-    b += tx((xz + xe) / 2, H - 14, 'Vernier scale: 0.05 mm per division', { size: 13, b: true });
+    b += tx(Math.max(8, pl), H - 14, 'Vernier scale: 0.05 mm per division', { size: 13, b: true, a: 'start' });
     return '<div class="u10l6-scroll" style="overflow-x:auto;-webkit-overflow-scrolling:touch;margin:6px 0">' + svg(W, H, b, W, 'vernier caliper scale', 'min-width:560px') + '</div><div class="small muted" style="font-size:12px">On a narrow screen, scroll the scale sideways (or zoom in) to see every mark.</div>';
   }
   /* ---- micrometer (booklet \microScale{half}{fine}: reading half×0.5 + fine×0.01 mm; whole-mm marks above the index line,
@@ -555,17 +555,17 @@
             if (frac(o.q) > 0.12 && frac(o.q) < 0.88 && o.pct > 8 && o.pct < 92 && Math.abs(o.C1 - o.C2) > 15 && Math.abs(o.C1 - o.US) > 15) break;
           }
           return o;
-        }, stem: function (s) { return 'Golden Plains Dairy stores fresh milk in a cylindrical vat with a radius of ' + t(dec(s.rr)) + ' m and a height of ' + t(dec(s.h)) + ' m, filled completely.' + figWrap(HW.solid('cylinder', { r: dec(s.rr) + ' m', h: dec(s.h) + ' m', width: 200 })); },
+        }, stem: function (s) { return 'Golden Plains Dairy stores fresh milk in a cylindrical vat with a radius of ' + t(dec(s.rr)) + ' m and a height of ' + t(s.h.toFixed(1)) + ' m, filled completely.' + figWrap(HW.solid('cylinder', { r: dec(s.rr) + ' m', h: s.h.toFixed(1) + ' m', width: 200 })); },
         parts: [
           { id: '21a', level: 'BEG', make: function (r, s) {
             return near('Determine the volume of milk in the vat, correct to one decimal place.', s.V, 1, 'm³', [
               { v: PI * 4 * s.rr * s.rr * s.h, code: 'diam-radius', hint: 'Use the radius ' + t(dec(s.rr)) + ' m as given — don’t double it.' },
               { v: 2 * PI * s.rr * s.h, code: 'vol-sa', hint: 'That’s the curved surface area. Volume is ' + t('\\pi r^{2}h') + '.' },
               { v: s.V / 3, code: 'formula', hint: 'A cylinder has no ' + t('\\tfrac13') + ' — that is a cone.' }],
-              t('V=\\pi r^{2}h=\\pi(' + dec(s.rr) + ')^{2}(' + dec(s.h) + ')=' + num(s.rr * s.rr * s.h) + '\\pi=' + dots(s.V)) + ' ≈ ' + t(fx(s.V, 1) + '\\text{ m}^{3}') + '.', ['Volume of a cylinder: ' + t('V=\\pi r^{2}h') + '.'], 'vat volume');
+              t('V=\\pi r^{2}h=\\pi(' + dec(s.rr) + ')^{2}(' + s.h.toFixed(1) + ')=' + num(s.rr * s.rr * s.h) + '\\pi=' + dots(s.V)) + ' ≈ ' + t(fx(s.V, 1) + '\\text{ m}^{3}') + '.', ['Volume of a cylinder: ' + t('V=\\pi r^{2}h') + '.'], 'vat volume');
           } },
           { id: '21b', level: 'EMG', make: function (r, s) {
-            var p = { prompt: 'The vat holds ' + t('\\pi(' + dec(s.rr) + ')^{2}(' + dec(s.h) + ')\\approx ' + dots(s.V, 3) + '\\text{ m}^{3}') + ' of milk. It is transported using rectangular tanker trucks with interior dimensions ' + t(dec(s.tk[0]) + '\\text{ m}\\times ' + s.tk[1] + '\\text{ m}\\times ' + s.tk[2] + '\\text{ m}') + '. Determine the number of trucks needed.',
+            var p = { prompt: 'The vat holds ' + t('\\pi(' + dec(s.rr) + ')^{2}(' + s.h.toFixed(1) + ')\\approx ' + dots(s.V, 3) + '\\text{ m}^{3}') + ' of milk. It is transported using rectangular tanker trucks with interior dimensions ' + t(dec(s.tk[0]) + '\\text{ m}\\times ' + s.tk[1] + '\\text{ m}\\times ' + s.tk[2] + '\\text{ m}') + '. Determine the number of trucks needed.',
               input: { type: 'number', after: 'trucks' }, key: String(s.n), answer: t(s.n) + ' trucks', text: 'number of trucks',
               check: countCheck(s.n, s.q, 'up', function (v) { if (Math.abs(v - s.Vt) < 1e-9) return { code: 'vol-sa', hint: 'That’s the volume of one truck. Divide the milk by it.' }; return null; }),
               solution: t('V_{\\text{truck}}=' + dec(s.tk[0]) + '\\times ' + s.tk[1] + '\\times ' + s.tk[2] + '=' + num(s.Vt) + '\\text{ m}^{3}') + '.<br>' + t('\\dfrac{' + dots(s.V, 3) + '}{' + num(s.Vt) + '}=' + dots(s.q, 3)) + '. A part-load still needs a whole truck, so <b>' + s.n + ' trucks</b>.',
@@ -574,7 +574,7 @@
           } },
           { id: '21c', level: 'PRG', make: function (r, s) {
             var P = s.pct;
-            return near('At the plant, the ' + t(dots(s.V, 3) + '\\text{ m}^{3}') + ' of milk (the full vat: ' + t('\\pi(' + dec(s.rr) + ')^{2}(' + dec(s.h) + ')') + ') is poured into a hemispherical storage tank with a diameter of ' + t(s.D) + ' m. Determine what percentage of the hemispherical tank’s capacity is filled, to the nearest tenth of a percent.', P, 1, '%', [
+            return near('At the plant, the ' + t(dots(s.V, 3) + '\\text{ m}^{3}') + ' of milk (the full vat: ' + t('\\pi(' + dec(s.rr) + ')^{2}(' + s.h.toFixed(1) + ')') + ') is poured into a hemispherical storage tank with a diameter of ' + t(s.D) + ' m. Determine what percentage of the hemispherical tank’s capacity is filled, to the nearest tenth of a percent.', P, 1, '%', [
               { v: P / 2, code: 'sphere-for-hemi', hint: 'You used a whole sphere. The tank is a <b>hemisphere</b>: ' + t('V=\\tfrac23\\pi r^{3}') + '.' },
               { v: P / 8, code: 'diam-radius', hint: 'Halve the diameter: ' + t('r=' + (s.D / 2)) + ' m.' },
               { v: 10000 / P, code: 'ratio-flip', hint: 'Percentage filled = milk ÷ tank capacity × 100 — your fraction is upside down.' }],

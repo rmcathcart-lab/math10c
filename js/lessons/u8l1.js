@@ -7,7 +7,7 @@
  * slope–intercept form (review) is tagged RF7. Levels: LIM BEG EMG PRG ADV MAS. */
 (function (root) {
   'use strict';
-  var HW = root.HW, K = HW.kit, t = K.t, ok = K.ok, wrong = K.wrong, form = K.form, Ln = HW.lines, DR = HW.draw, ex = HW.ex, F = HW.fmt;
+  var HW = root.HW, K = HW.kit, t = K.t, ok = K.ok, wrong = K.wrong, form = K.form, Ln = HW.lines, DR = HW.draw, ex = HW.ex, F = HW.fmt, Fp = function (n) { return HW.fmt(n, true); };
 
   /* ---------- numbers and LaTeX ---------- */
   function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var c = a % b; a = b; b = c; } return a; }
@@ -282,9 +282,9 @@
       if (v === -pr) return { code: 'u8-profit-sign', hint: 'Profit = revenue − cost. Here the ' + (pr < 0 ? 'cost is bigger, so it is a <b>loss</b>: negative.' : 'revenue is bigger, so it is a <b>profit</b>: positive.') };
       if (v === rev) return { code: 'u8-rev-only', hint: 'That is the revenue. Subtract the cost of making ' + n + ' bottles.' };
       if (v === cost || v === -cost) return { code: 'u8-cost-only', hint: 'That is the cost. Profit = revenue − cost.' };
-      if (v === rev - sh.c * n) return { code: 'u8-no-fee', hint: 'Include the \\$' + sh.F + ' set-up charge in the cost.' };
+      if (v === rev - sh.c * n) return { code: 'u8-no-fee', hint: 'Include the $' + sh.F + ' set-up charge in the cost.' };
       return null; },
-      'Cost: ' + t(sh.c + '(' + n + ')+' + sh.F + '=' + F(cost)) + '. Revenue: ' + t(sh.p + '(' + n + ')=' + F(rev)) + '.<br>' + t(F(rev) + '-' + F(cost) + '=' + F(pr)) + ': ' + (pr < 0 ? 'a <b>loss</b> of \\$' + F(-pr) : 'a <b>profit</b> of \\$' + F(pr)) + '.',
+      'Cost: ' + t(sh.c + '(' + n + ')+' + sh.F + '=' + F(cost)) + '. Revenue: ' + t(sh.p + '(' + n + ')=' + F(rev)) + '.<br>' + t(F(rev) + '-' + F(cost) + '=' + F(pr)) + ': ' + (pr < 0 ? 'a <b>loss</b> of $' + Fp(-pr) : 'a <b>profit</b> of $' + Fp(pr)) + '.',
       ['Profit = revenue − cost. A negative profit is a loss.'], 'profit at ' + n);
   }
 
@@ -416,15 +416,15 @@
           s.n1 = 'a+s=' + s.N; s.n2 = s.p + 'a+' + s.q + 's=' + F(s.R);
           return s;
         },
-        stem: function (sh) { return 'All ' + t(sh.N) + ' tickets for a school play were sold. Adult tickets cost \\$' + sh.p + ' each, and student tickets cost \\$' + sh.q + ' each. Total receipts were \\$' + F(sh.R) + '. The information from the number of tickets can be represented by ' + t(sh.n1) + ', where ' + t('a') + ' is the number of adult tickets and ' + t('s') + ' the number of student tickets.'; },
+        stem: function (sh) { return 'All ' + t(sh.N) + ' tickets for a school play were sold. Adult tickets cost $' + sh.p + ' each, and student tickets cost $' + sh.q + ' each. Total receipts were $' + Fp(sh.R) + '. The information from the number of tickets can be represented by ' + t(sh.n1) + ', where ' + t('a') + ' is the number of adult tickets and ' + t('s') + ' the number of student tickets.'; },
         parts: [
           { id: '3a', sub: 'a', level: 'BEG', make: function (r, sh) {
             var p = K.P.line('State an equation which can be formed from the costs of the tickets.', sh.L2, { vars: ['a', 's'], keyTex: sh.n2, placeholder: 'e.g. 3a + 2s = 100',
-              wrong: [{ is: line(sh.q, sh.p, -sh.R), code: 'u8-price-swap', hint: 'Match each price to its ticket: adult tickets ' + t('a') + ' cost \\$' + sh.p + ', student tickets ' + t('s') + ' cost \\$' + sh.q + '.' },
-                { is: line(sh.p, sh.q, -sh.N), code: 'u8-total-n', hint: t(sh.p + 'a+' + sh.q + 's') + ' is an amount of <b>money</b>, so it equals the total receipts, \\$' + F(sh.R) + ' — not the number of tickets.' },
-                { is: line(1, 1, -sh.R), code: 'u8-total-n', hint: 'This equation is about money: each adult ticket brings in \\$' + sh.p + ' and each student ticket \\$' + sh.q + '.' }] },
+              wrong: [{ is: line(sh.q, sh.p, -sh.R), code: 'u8-price-swap', hint: 'Match each price to its ticket: adult tickets ' + t('a') + ' cost $' + sh.p + ', student tickets ' + t('s') + ' cost $' + sh.q + '.' },
+                { is: line(sh.p, sh.q, -sh.N), code: 'u8-total-n', hint: t(sh.p + 'a+' + sh.q + 's') + ' is an amount of <b>money</b>, so it equals the total receipts, $' + Fp(sh.R) + ' — not the number of tickets.' },
+                { is: line(1, 1, -sh.R), code: 'u8-total-n', hint: 'This equation is about money: each adult ticket brings in $' + sh.p + ' and each student ticket $' + sh.q + '.' }] },
               'Money from adult tickets: ' + t(sh.p + 'a') + '; from student tickets: ' + t(sh.q + 's') + '. Together they make the total receipts:<br>' + t(sh.n2) + '.',
-              ['Each adult ticket brings in \\$' + sh.p + ', so ' + t('a') + ' adult tickets bring in ' + t(sh.p + 'a') + ' dollars.', 'Add the money from both kinds of ticket and set it equal to the total.'], 'ticket money equation');
+              ['Each adult ticket brings in $' + sh.p + ', so ' + t('a') + ' adult tickets bring in ' + t(sh.p + 'a') + ' dollars.', 'Add the money from both kinds of ticket and set it equal to the total.'], 'ticket money equation');
             p.good = [sh.q + 's+' + sh.p + 'a=' + sh.R]; p.bad = [sh.q + 'a+' + sh.p + 's=' + sh.R, sh.p + 'a+' + sh.q + 's=' + sh.N];
             return p;
           } },
@@ -453,13 +453,13 @@
           s.nA = 'C=' + F(s.F) + '+' + dT(s.a) + 'd'; s.nB = 'C=' + dT(s.b) + 'd';
           return s;
         },
-        stem: function (sh) { return 'A school is choosing a bus company for a field trip. Company A charges \\$' + sh.F + ' plus \\$' + sh.a.toFixed(2) + ' per kilometre. Company B charges \\$' + sh.b.toFixed(2) + ' per kilometre. Let ' + t('C') + ' be the cost in dollars for a trip of ' + t('d') + ' kilometres.'; },
+        stem: function (sh) { return 'A school is choosing a bus company for a field trip. Company A charges $' + sh.F + ' plus $' + sh.a.toFixed(2) + ' per kilometre. Company B charges $' + sh.b.toFixed(2) + ' per kilometre. Let ' + t('C') + ' be the cost in dollars for a trip of ' + t('d') + ' kilometres.'; },
         parts: [
           { id: '4a', sub: 'a', level: 'BEG', make: function (r, sh) {
             var cA = K.line(line(2 * sh.F, -2, 2 * sh.a), { vars: ['d', 'C'] }), cN = K.line(line(2 * sh.a, -2, 0), { vars: ['d', 'C'] });
             return twoEq('Write a cost equation for each company.', [sh.LA, sh.LB], ['Company A:', 'Company B:'], ['d', 'C'],
-              function (a) { if (cA(a).v === 'correct') return { code: 'u8-fee-rate', hint: 'Company A: the \\$' + sh.F + ' is charged once (the constant); the \\$' + sh.a.toFixed(2) + ' is charged for every kilometre, so it multiplies ' + t('d') + '.' }; if (cN(a).v === 'correct') return { code: 'u8-no-fee', hint: 'Company A also charges a fixed \\$' + sh.F + ' on top of the per-kilometre cost.' }; return null; },
-              'Company A: a fixed \\$' + sh.F + ' plus \\$' + sh.a.toFixed(2) + ' for each of the ' + t('d') + ' kilometres: ' + t(sh.nA) + '.<br>Company B: \\$' + sh.b.toFixed(2) + ' for each kilometre: ' + t(sh.nB) + '.',
+              function (a) { if (cA(a).v === 'correct') return { code: 'u8-fee-rate', hint: 'Company A: the $' + sh.F + ' is charged once (the constant); the $' + sh.a.toFixed(2) + ' is charged for every kilometre, so it multiplies ' + t('d') + '.' }; if (cN(a).v === 'correct') return { code: 'u8-no-fee', hint: 'Company A also charges a fixed $' + sh.F + ' on top of the per-kilometre cost.' }; return null; },
+              'Company A: a fixed $' + sh.F + ' plus $' + sh.a.toFixed(2) + ' for each of the ' + t('d') + ' kilometres: ' + t(sh.nA) + '.<br>Company B: $' + sh.b.toFixed(2) + ' for each kilometre: ' + t(sh.nB) + '.',
               ['Cost = fixed charge + (rate per km) × (number of km).'], 'bus cost equations', [sh.nA, sh.nB]);
           } },
           { id: '4b', sub: 'b', level: 'EMG', make: function (r, sh) {
@@ -475,20 +475,20 @@
           } },
           { id: '4c2', sub: 'c meaning', level: 'LIM', make: function (r, sh) {
             return mc(r, 'What does the point ' + ptt([sh.d0, sh.C0]) + ' mean for the school?', [
-              { html: 'A ' + sh.d0 + ' km trip costs \\$' + sh.C0 + ' with either company.', right: true },
-              { html: 'A ' + sh.C0 + ' km trip costs \\$' + sh.d0 + ' with either company.', why: 'In ' + t('(d,\\ C)') + ' the first number is the distance ' + t('d') + ' and the second is the cost ' + t('C') + '.', code: 'swap' },
-              { html: 'Company A is \\$' + sh.d0 + ' cheaper than Company B.', why: 'At the crossing point the two costs are <b>equal</b>.', code: 'cheaper' },
+              { html: 'A ' + sh.d0 + ' km trip costs $' + sh.C0 + ' with either company.', right: true },
+              { html: 'A ' + sh.C0 + ' km trip costs $' + sh.d0 + ' with either company.', why: 'In ' + t('(d,\\ C)') + ' the first number is the distance ' + t('d') + ' and the second is the cost ' + t('C') + '.', code: 'swap' },
+              { html: 'Company A is $' + sh.d0 + ' cheaper than Company B.', why: 'At the crossing point the two costs are <b>equal</b>.', code: 'cheaper' },
               { html: 'Company B is always the better choice.', why: 'The point is where the two lines cross: on one side B is cheaper, on the other side A is.', code: 'always' }],
-              'At the crossing point both equations have the same ' + t('d') + ' and the same ' + t('C') + ': a trip of ' + sh.d0 + ' km costs \\$' + sh.C0 + ' with either company.', ['What do ' + t('d') + ' and ' + t('C') + ' stand for?'], 'meaning of crossing point');
+              'At the crossing point both equations have the same ' + t('d') + ' and the same ' + t('C') + ': a trip of ' + sh.d0 + ' km costs $' + sh.C0 + ' with either company.', ['What do ' + t('d') + ' and ' + t('C') + ' stand for?'], 'meaning of crossing point');
           } },
           { id: '4d', sub: 'd', level: 'EMG', make: function (r, sh) {
             var dd = sh.d0 / 2, A1 = sh.F + sh.a * dd, B1 = sh.b * dd;
             return mc(r, 'For which trip lengths is Company B cheaper?', [
               { html: 'Trips shorter than ' + sh.d0 + ' km', right: true },
-              { html: 'Trips longer than ' + sh.d0 + ' km', why: 'Test a short trip, e.g. ' + dd + ' km: A costs \\$' + A1 + ', B costs \\$' + B1 + '. B has no fixed charge, so it wins on short trips.', code: 'longer' },
+              { html: 'Trips longer than ' + sh.d0 + ' km', why: 'Test a short trip, e.g. ' + dd + ' km: A costs $' + A1 + ', B costs $' + B1 + '. B has no fixed charge, so it wins on short trips.', code: 'longer' },
               { html: 'Trips shorter than ' + sh.C0 + ' km', why: sh.C0 + ' is the cost (in dollars) at the crossing point, not a distance.', code: 'cost' },
               { html: 'Only a trip of exactly ' + sh.d0 + ' km', why: 'At exactly ' + sh.d0 + ' km the costs are equal. Look at which line is lower on either side.', code: 'equal' }],
-              'Left of ' + t('d=' + sh.d0) + ' Company B’s line is lower (e.g. ' + t('d=' + dd) + ': B costs \\$' + B1 + ', A costs \\$' + A1 + '), so <b>B is cheaper for trips shorter than ' + sh.d0 + ' km</b>. For longer trips, A is cheaper.',
+              'Left of ' + t('d=' + sh.d0) + ' Company B’s line is lower (e.g. ' + t('d=' + dd) + ': B costs $' + B1 + ', A costs $' + A1 + '), so <b>B is cheaper for trips shorter than ' + sh.d0 + ' km</b>. For longer trips, A is cheaper.',
               ['Which line is lower to the left of the crossing point?'], 'which company cheaper');
           } }] },
       /* ---------- Q5: graph and count ---------- */
@@ -943,13 +943,13 @@
           s.nC = 'd=' + s.c + 'n+' + s.F; s.nR = 'd=' + s.p + 'n';
           return s;
         },
-        stem: function (sh) { return 'A student council orders reusable water bottles printed with the school crest. The order costs a fixed \\$' + sh.F + ' set-up charge plus \\$' + sh.c + ' for each bottle printed, and the council sells the bottles for \\$' + sh.p + ' each. Let ' + t('n') + ' be the number of bottles and ' + t('d') + ' the amount in dollars.'; },
+        stem: function (sh) { return 'A student council orders reusable water bottles printed with the school crest. The order costs a fixed $' + sh.F + ' set-up charge plus $' + sh.c + ' for each bottle printed, and the council sells the bottles for $' + sh.p + ' each. Let ' + t('n') + ' be the number of bottles and ' + t('d') + ' the amount in dollars.'; },
         parts: [
           { id: 'e10a', sub: 'a equations', level: 'BEG', make: function (r, sh) {
             var cS = K.line(line(sh.F, -1, sh.c), { vars: ['n', 'd'] });
             return twoEq('Write the cost equation and the revenue equation.', [sh.LC, sh.LR], ['Cost:', 'Revenue:'], ['n', 'd'],
-              function (a) { if (cS(a).v === 'correct') return { code: 'u8-fee-rate', hint: 'The \\$' + sh.F + ' is charged once (the constant); the \\$' + sh.c + ' is charged per bottle, so it multiplies ' + t('n') + '.' }; return null; },
-              'Cost = set-up + \\$' + sh.c + ' per bottle: ' + t(sh.nC) + '.<br>Revenue = \\$' + sh.p + ' per bottle sold: ' + t(sh.nR) + '.', ['Cost = fixed charge + (cost per bottle)·n. Revenue = (price)·n.'], 'cost and revenue equations', [sh.nC, sh.nR]);
+              function (a) { if (cS(a).v === 'correct') return { code: 'u8-fee-rate', hint: 'The $' + sh.F + ' is charged once (the constant); the $' + sh.c + ' is charged per bottle, so it multiplies ' + t('n') + '.' }; return null; },
+              'Cost = set-up + $' + sh.c + ' per bottle: ' + t(sh.nC) + '.<br>Revenue = $' + sh.p + ' per bottle sold: ' + t(sh.nR) + '.', ['Cost = fixed charge + (cost per bottle)·n. Revenue = (price)·n.'], 'cost and revenue equations', [sh.nC, sh.nR]);
           } },
           { id: 'e10a2', sub: 'a graph', level: 'EMG', make: function (r, sh) {
             var pc = latS(sh.LC, sh.win, 10, 200), pr = latS(sh.LR, sh.win, 10, 200).filter(function (q) { return q[0] > 0; });
@@ -965,21 +965,21 @@
           } },
           { id: 'e10b2', sub: 'b meaning', level: 'LIM', make: function (r, sh) {
             return mc(r, 'Which sentence interprets the break-even point ' + ptt([sh.n0, sh.d0]) + '?', [
-              { html: 'Selling ' + sh.n0 + ' bottles, the council’s cost and revenue are both \\$' + F(sh.d0) + ', so it breaks even.', right: true },
-              { html: 'Selling ' + F(sh.d0) + ' bottles brings in \\$' + sh.n0 + '.', why: 'The first coordinate is the number of bottles ' + t('n') + '; the second is the dollar amount ' + t('d') + '.', code: 'swap' },
-              { html: 'Selling ' + sh.n0 + ' bottles makes a profit of \\$' + F(sh.d0) + '.', why: 'At the break-even point the profit is \\$0: the cost and the revenue are both \\$' + F(sh.d0) + '.', code: 'profit' },
+              { html: 'Selling ' + sh.n0 + ' bottles, the council’s cost and revenue are both $' + Fp(sh.d0) + ', so it breaks even.', right: true },
+              { html: 'Selling ' + Fp(sh.d0) + ' bottles brings in $' + sh.n0 + '.', why: 'The first coordinate is the number of bottles ' + t('n') + '; the second is the dollar amount ' + t('d') + '.', code: 'swap' },
+              { html: 'Selling ' + sh.n0 + ' bottles makes a profit of $' + Fp(sh.d0) + '.', why: 'At the break-even point the profit is $0: the cost and the revenue are both $' + Fp(sh.d0) + '.', code: 'profit' },
               { html: 'The council has to sell exactly ' + sh.n0 + ' bottles, or it loses money.', why: 'Selling <b>more</b> than ' + sh.n0 + ' bottles makes a profit.', code: 'exact' }],
-              'At ' + ptt([sh.n0, sh.d0]) + ' cost = revenue = \\$' + F(sh.d0) + ': selling ' + sh.n0 + ' bottles breaks even. Fewer bottles: a loss; more: a profit.', ['What do ' + t('n') + ' and ' + t('d') + ' stand for?'], 'break-even meaning');
+              'At ' + ptt([sh.n0, sh.d0]) + ' cost = revenue = $' + Fp(sh.d0) + ': selling ' + sh.n0 + ' bottles breaks even. Fewer bottles: a loss; more: a profit.', ['What do ' + t('n') + ' and ' + t('d') + ' stand for?'], 'break-even meaning');
           } },
           { id: 'e10c1', sub: 'c i', level: 'EMG', make: function (r, sh) { var n = sh.n0 - r.pick([40, 40, 20]); return profitPart(sh, n); } },
           { id: 'e10c2', sub: 'c ii', level: 'EMG', make: function (r, sh) { var n = sh.n0 + r.pick([75, 75, 50, 25]); return profitPart(sh, n); } },
           { id: 'e10d', sub: 'd', level: 'EMG', make: function (r, sh) {
             return mc(r, 'Without graphing anything further, how do the two slopes guarantee that this system has exactly one break-even point?', [
-              { html: 'The slopes (\\$' + sh.c + ' and \\$' + sh.p + ' per bottle) are different, so the lines are not parallel and cross exactly once.', right: true },
+              { html: 'The slopes ($' + sh.c + ' and $' + sh.p + ' per bottle) are different, so the lines are not parallel and cross exactly once.', right: true },
               { html: 'Both slopes are positive, so the lines must cross.', why: 'Two lines with the same positive slope never cross. What matters is that the slopes are <b>different</b>.', code: 'pos' },
               { html: 'The revenue line starts at the origin, so it crosses every other line.', why: 'A line through the origin can still be parallel to another line. It is the different slopes that guarantee one crossing.', code: 'origin' },
               { html: 'The cost slope is smaller than the set-up charge.', why: 'The set-up charge is the intercept, not a slope; comparing them says nothing about crossing.', code: 'fee' }],
-              'Cost rises \\$' + sh.c + ' per bottle and revenue \\$' + sh.p + ' per bottle. Different slopes mean the lines aren’t parallel, so they meet at exactly one point: one break-even number of bottles (no “never” and no “always”).',
+              'Cost rises $' + sh.c + ' per bottle and revenue $' + sh.p + ' per bottle. Different slopes mean the lines aren’t parallel, so they meet at exactly one point: one break-even number of bottles (no “never” and no “always”).',
               ['When do two lines fail to cross exactly once?'], 'slopes guarantee one solution');
           } }] },
       /* ---------- EP Part F: error analysis ---------- */

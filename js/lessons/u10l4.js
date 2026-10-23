@@ -310,9 +310,9 @@
     blurb: 'A pyramid or cone holds exactly one third of the prism or cylinder on the same base; surface area uses the slant height, volume uses the perpendicular height.',
     questions: [
       { num: '1', stem: 'Each part describes one solid that “just fits” inside another (identical base, identical height). Use the ' + t('\\tfrac13') + ' volume relationship to state the requested volume — no formula needed.', parts: [
-        { id: '1a', sub: 'a', level: 'LIM', make: function (r) { return q1(r, 'coneOf'); } },
+        { id: '1a', sub: 'a', level: 'BEG', make: function (r) { return q1(r, 'coneOf'); } },
         { id: '1b', sub: 'b', level: 'BEG', make: function (r) { return q1(r, 'cylOf'); } },
-        { id: '1c', sub: 'c', level: 'LIM', make: function (r) { return q1(r, 'pyrOf'); } },
+        { id: '1c', sub: 'c', level: 'BEG', make: function (r) { return q1(r, 'pyrOf'); } },
         { id: '1d', sub: 'd', level: 'BEG', make: function (r) { return q1(r, 'prismOf'); } }] },
       { num: '2', stem: 'In each part, make a sketch of the figure and calculate its volume to the nearest whole number. (Use the ' + t('\\pi') + ' key and round once, at the end.)', parts: [
         { id: '2a', sub: 'a', level: 'BEG', make: q2a },
@@ -534,7 +534,7 @@
               ['Find both volumes, then divide A’s by B’s.'], 'atrium volume ratio');
           } }] },
       { num: '12', stem: '', parts: [
-        { id: '12', level: 'ADV', make: function (r) {
+        { id: '12', level: 'PRG', make: function (r) {
           var d = r.pick([12, 14, 16, 18, 20, 22, 24]), hv = r.pick([5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9]); if (r.chance(0.15)) { d = 18; hv = 7.5; }
           var rf = d / 2, rm = rf * 0.3048, hm = hv * 0.3048, V = PI * rm * rm * hm / 3, Vft = PI * rf * rf * hv / 3;
           return near('Sand dropped from a conveyor belt forms a conical pile with a diameter of ' + t(d1(d) + uT('ft')) + ' and a height of ' + t(d1(hv) + uT('ft')) + '. Determine the volume of the sand pile to the nearest ' + t('0.01\\text{ m}^3') + '. (' + t('1\\text{ ft}=0.3048\\text{ m}') + ')', V, 2, 'm³',
@@ -798,7 +798,7 @@
       { num: '8', stem: function (o) { return 'A solid block is a square prism with base edge ' + t(d1(o.a) + uT('cm')) + ' and height ' + t(d1(o.h) + uT('cm')) + '. The largest possible pyramid on the same square base and with the same height is carved from it; the rest is waste.'; },
         shared: function (r) { var a = r.int(5, 12), h = r.int(8, 25); while ((a * a * h) % 3) h++; if (r.chance(0.2)) { a = 9; h = 20; } return { a: a, h: h, V: a * a * h }; },
         parts: [
-          { id: 'e8a', sub: 'a', level: 'LIM', make: function (r, o) { return exact('Find the volume of the block.', o.V, 'cm³', [{ v: o.V / 3, code: 'cyl-third', hint: 'The block is a prism — no ' + t('\\tfrac13') + '.' }], t('V=(' + o.a + ')^2(' + o.h + ')=' + o.V) + ' cm³.', ['Base area × height.'], 'block volume'); } },
+          { id: 'e8a', sub: 'a', level: 'BEG', make: function (r, o) { return exact('Find the volume of the block.', o.V, 'cm³', [{ v: o.V / 3, code: 'cyl-third', hint: 'The block is a prism — no ' + t('\\tfrac13') + '.' }], t('V=(' + o.a + ')^2(' + o.h + ')=' + o.V) + ' cm³.', ['Base area × height.'], 'block volume'); } },
           { id: 'e8b', sub: 'b', level: 'BEG', make: function (r, o) { return exact('Find the volume of the pyramid <b>without</b> using the pyramid formula.', o.V / 3, 'cm³', [{ v: o.V * 3, code: 'third-flip', hint: 'The pyramid is the <b>smaller</b> solid: one third of the block.' }], 'Same base and same height, so the pyramid is ' + t('\\tfrac13') + ' of the block: ' + t('\\tfrac13(' + o.V + ')=' + o.V / 3) + ' cm³.', ['One third of the block.'], 'pyramid from block'); } },
           { id: 'e8c', sub: 'c', level: 'BEG', make: function (r, o) { return exact('Find the volume of the waste.', 2 * o.V / 3, 'cm³', [{ v: o.V / 3, code: 'third-flip', hint: 'That’s the pyramid. The waste is the block minus the pyramid.' }], t(o.V + '-' + o.V / 3 + '=' + 2 * o.V / 3) + ' cm³.', ['Block minus pyramid.'], 'waste'); } },
           { id: 'e8d', sub: 'd', level: 'EMG', make: function (r, o) {

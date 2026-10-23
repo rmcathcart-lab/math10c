@@ -113,7 +113,7 @@
     boxes.forEach(function (b) {
       fields.push({ label: b.label, after: b.unit, name: b.name, mode: b.text ? 'text' : undefined });
       if (b.text) { checks.push(b.check); keys.push(b.key); ans.push(b.label + ' ' + b.show); }
-      else if (b.mid) { var need = b.need == null ? 2 : b.need; checks.push(midCheck(b.x, need, b.alts, b.nm || t(b.name))); keys.push(fx(b.x, Math.max(4, need + 1))); ans.push(b.label + ' ' + ansU(v4(b.x), b.unit) + ' (unrounded)'); }
+      else if (b.mid) { var need = b.need == null ? 2 : b.need; checks.push(midCheck(b.x, need, b.alts, b.nm || (/^[A-Za-z]{1,3}$/.test(b.name) ? t(b.name) : b.name))); keys.push(fx(b.x, Math.max(4, need + 1))); ans.push(b.label + ' ' + ansU(v4(b.x), b.unit) + ' (unrounded)'); }
       else { var c = K.near(b.x, b.dp, { alts: b.alts }); checks.push(b.abs ? absCheck(c) : c); keys.push(fx(b.x, b.dp)); ans.push(b.label + ' ' + ansU(fx(b.x, b.dp), b.unit)); }
     });
     var p = K.P.fields(prompt, fields, checks, keys, ans.join('<br>'), sol, hints, text);
@@ -364,9 +364,10 @@
       /* ---------------- Q7 ---------------- */
       { num: '7',
         shared: function (r) {
-          return gen(r, function (r) { return { H: 5 * r.int(10, 18), s: r.pick([10, 12, 15, 18, 20]), al: r.int(28, 38), be: r.int(20, 27), vA: tenth(r, 3.8, 5.4), vB: tenth(r, 3.8, 5.4) }; },
-            function (p) { var o = { H: p.H, s: p.s, al: p.al, be: p.be, vA: p.vA, vB: p.vB }; o.dA = p.H / Tg.tan(p.al); o.dB = p.H / Tg.tan(p.be); o.gap = o.dB - o.dA; o.tA = (o.dA - p.s) / p.vA; o.tB = (o.dB - p.s) / p.vB; o.win = o.tA < o.tB ? 'A' : 'B'; return o; },
-            function (s) { return s.al - s.be >= 4 && Math.abs(s.tA - s.tB) >= 0.8 && Math.abs(s.vA - s.vB) >= 0.3 && Math.abs(s.dA / s.vA - s.dB / s.vB) >= 0.3; }, { H: 65, s: 15, al: 31, be: 26, vA: 4.2, vB: 4.8 });
+          var want = r.chance(0.45) ? 'B' : 'A';   // decided once, so both outcomes really occur
+          return gen(r, function (r) { return { H: 5 * r.int(10, 18), s: r.pick([10, 12, 15, 18, 20]), al: r.int(28, 38), be: r.int(20, 34), vA: tenth(r, 3.5, 5.5), vB: tenth(r, 3.8, 7.0), want: want, k: r.int(108, 130) / 100 }; },
+            function (p) { var o = { H: p.H, s: p.s, al: p.al, be: p.be, vA: p.vA, vB: p.vB, want: p.want }; o.dA = p.H / Tg.tan(p.al); o.dB = p.H / Tg.tan(p.be); if (p.want === 'B' && p.k) o.vB = rd(p.vA * (o.dB - p.s) / (o.dA - p.s) * p.k, 1); o.gap = o.dB - o.dA; o.tA = (o.dA - p.s) / p.vA; o.tB = (o.dB - p.s) / p.vB; o.win = o.tA < o.tB ? 'A' : 'B'; return o; },
+            function (s) { return s.win === s.want && s.vB <= 7.5 && s.al - s.be >= 4 && Math.abs(s.tA - s.tB) >= 0.8 && Math.abs(s.vA - s.vB) >= 0.3 && Math.abs(s.dA / s.vA - s.dB / s.vB) >= 0.3; }, { H: 65, s: 15, al: 31, be: 26, vA: 4.2, vB: 4.8, want: 'A' });
         },
         stem: function (s) {
           var w = s.dB * 0.08;

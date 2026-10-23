@@ -399,12 +399,12 @@
           return p;
         } }] },
       { num: '10', section: 'Extension — Tangent near 90° and the cofunction relationship', stem: '<i>(Extension)</i> The tangent near ' + t(D(90)) + '.', parts: [
-        { id: '10a', sub: 'a', level: 'BEG', make: function (r) {
+        { id: '10a', sub: 'values', level: 'BEG', make: function (r) {
           var S = r.pick([[89, 89.9, 89.99], [88, 89.5, 89.9], [89, 89.5, 89.99], [87, 89.9, 89.95]]);
           return boxes('Use a calculator to complete, to two decimal places.', S.map(function (a) { return vBox('tan', a, 2); }),
             'In degree mode: ' + S.map(function (a) { return t('\\tan ' + D(a) + '\\approx ' + fxT(T.tan(a), 2)); }).join(', ') + '. The closer the angle gets to ' + t(D(90)) + ', the bigger the tangent.', ['Check degree mode. Type the decimal angle exactly as given.'], 'tan near 90: ' + S.join(', '));
         } },
-        { id: '10b', sub: 'b', level: 'BEG', make: function (r) {
+        { id: '10b', sub: 'statement', level: 'BEG', make: function (r) {
           return mc(r, 'Complete the statement: as the angle ' + t('x^\\circ') + ' increases toward ' + t(D(90)) + ', ' + t('\\tan x^\\circ') + ' …', [
             { html: 'increases without bound (it is undefined at ' + t(D(90)) + ')', right: true },
             { html: 'increases toward ' + t('1'), why: 'That is the sine. ' + t('\\tan 60^\\circ') + ' is already about ' + t('1.73') + ', and ' + t('\\tan 89^\\circ\\approx 57.29') + '.' },
@@ -412,7 +412,7 @@
             { html: 'decreases toward ' + t('0'), why: 'That is the cosine. Look at your tangent values near ' + t(D(90)) + '.' }],
             'The tangent values near ' + t(D(90)) + ' (' + t('\\tan 89^\\circ\\approx 57.29,\\ \\tan 89.9^\\circ\\approx 572.96,\\ \\tan 89.99^\\circ\\approx 5729.58') + ') grow without any limit, and ' + t('\\tan 90^\\circ') + ' is undefined.', ['Look at ' + t('\\tan 89^\\circ') + ', ' + t('\\tan 89.9^\\circ') + ' and ' + t('\\tan 89.99^\\circ') + '.'], 'tan toward 90');
         } },
-        { id: '10c', sub: 'b (why)', level: 'PRG', make: function (r) {
+        { id: '10c', sub: 'why', level: 'PRG', make: function (r) {
           return mc(r, 'Using ' + t('\\tan x^\\circ=\\frac{\\text{opp}}{\\text{adj}}') + ', why does the tangent behave this way as ' + t('x^\\circ') + ' approaches ' + t(D(90)) + '?', [
             { html: 'The adjacent side shrinks toward ' + t('0') + ' while the opposite side approaches the hypotenuse, so we divide by a smaller and smaller number.', right: true },
             { html: 'The opposite side becomes infinitely long.', why: 'Picture a fixed hypotenuse: the opposite side can never be longer than it. It is the <b>denominator</b> that changes the story.' },
